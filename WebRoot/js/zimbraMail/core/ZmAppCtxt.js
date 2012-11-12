@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -42,8 +42,6 @@ ZmAppCtxt = function() {
 	// account-specific
 	this.isFamilyMbox = false;
 	this.multiAccounts = false;
-    this.sendAsEmails = [];
-    this.sendOboEmails = [];
 
 	this._evtMgr = new AjxEventMgr();
 
@@ -230,11 +228,6 @@ function(settings, account) {
 ZmAppCtxt.prototype.get =
 function(id, key, account) {
 
-	//todo - when we re-enable IM, remove the following lines:
-	if (id == ZmSetting.IM_ENABLED) {
-		return false;
-	}
-
     //use parentAppCtxt in case of new window
     var context = this.isChildWindow ? parentAppCtxt : this;
 
@@ -253,17 +246,16 @@ function(id, key, account) {
  * @param {Boolean}	setDefault			if <code>true</code>, also replace setting default value
  * @param {Boolean}	skipNotify			if <code>true</code>, do not notify setting listeners
  * @param {ZmZimbraAccount}	account		if set, use this account setting instead of the currently active account
- * @param {Boolean}	skipImplicit		if <code>true</code>, do not check for change to implicit pref
  */
 ZmAppCtxt.prototype.set =
-function(id, value, key, setDefault, skipNotify, account, skipImplicit) {
+function(id, value, key, setDefault, skipNotify, account) {
 	// for offline, global settings always come from "parent" account
 	var acct = (this.multiAccounts && ZmSetting.IS_GLOBAL[id])
 		? this.accountList.mainAccount : account;
 	var setting = this.getSettings(acct).getSetting(id);
 
 	if (setting) {
-		setting.setValue(value, key, setDefault, skipNotify, skipImplicit);
+		setting.setValue(value, key, setDefault, skipNotify);
 	}
 };
 
@@ -376,6 +368,19 @@ ZmAppCtxt.prototype.getImportExportController = function() {
 };
 
 /**
+ * Gets the login dialog.
+ * 
+ * @return	{ZmLoginDialog}		the login dialog
+ */
+ZmAppCtxt.prototype.getLoginDialog =
+function() {
+	if (!this._loginDialog) {
+		this._loginDialog = new ZmLoginDialog(this._shell);
+	}
+	return this._loginDialog;
+};
+
+/**
  * Gets the message dialog.
  * 
  * @return	{DwtMessageDialog}	the message dialog
@@ -389,27 +394,14 @@ function() {
 };
 
 /**
- * Gets the message dialog with a help button.
- *
- * @return	{DwtMessageDialog}	the message dialog
- */
-ZmAppCtxt.prototype.getHelpMsgDialog =
-	function() {
-		if (!this._helpMsgDialog) {
-			this._helpMsgDialog = new DwtMessageDialog({parent:this._shell, helpText:ZmMsg.help, id: "ZmHelpMsgDialog"});
-		}
-		return this._helpMsgDialog;
-	};
-
-/**
  * Gets the yes/no message dialog.
  * 
  * @return	{DwtMessageDialog}	the message dialog
  */
 ZmAppCtxt.prototype.getYesNoMsgDialog =
-function(id) {
+function() {
 	if (!this._yesNoMsgDialog) {
-		this._yesNoMsgDialog = new DwtMessageDialog({parent:this._shell, buttons:[DwtDialog.YES_BUTTON, DwtDialog.NO_BUTTON], id: "YesNoMsgDialog"});
+		this._yesNoMsgDialog = new DwtMessageDialog({parent:this._shell, buttons:[DwtDialog.YES_BUTTON, DwtDialog.NO_BUTTON]});
 	}	
 	return this._yesNoMsgDialog;
 };
@@ -481,19 +473,6 @@ function() {
 };
 
 /**
- * Gets the new contact group dialog.
- *
- * @return	{ZmNewContactGroupDialog}	the new contact group dialog
- */
-ZmAppCtxt.prototype.getNewContactGroupDialog =
-function() {
-	if (!this._newContactGroupDialog) {
-		this._newContactGroupDialog = new ZmNewContactGroupDialog(this._shell);
-	}
-	return this._newContactGroupDialog;
-};
-
-/**
  * Gets the rename tag dialog.
  * 
  * @return	{ZmRenameTagDialog}		the rename tag dialog
@@ -558,10 +537,24 @@ function() {
 ZmAppCtxt.prototype.getNewCalendarDialog =
 function() {
 	if (!this._newCalendarDialog) {
-		AjxDispatcher.require(["MailCore", "CalendarCore", "Calendar", "CalendarAppt"]);
+		AjxDispatcher.require(["CalendarCore", "Calendar", "CalendarAppt"]);
 		this._newCalendarDialog = new ZmNewCalendarDialog(this._shell);
 	}
 	return this._newCalendarDialog;
+};
+
+/**
+ * Gets the new notebook dialog.
+ * 
+ * @return	{ZmNewNotebookDialog}		the new notebook dialog
+ */
+ZmAppCtxt.prototype.getNewNotebookDialog =
+function() {
+	if (!this._newNotebookDialog) {
+		AjxDispatcher.require(["NotebookCore", "Notebook"]);
+		this._newNotebookDialog = new ZmNewNotebookDialog(this._shell);
+	}
+	return this._newNotebookDialog;
 };
 
 /**
@@ -579,17 +572,17 @@ function() {
 };
 
 /**
- * Gets the new suggestion Preferences dialog
- *
- * @return	{ZmTimeSuggestionPrefDialog}
+ * Gets the page conflict dialog.
+ * 
+ * @return	{ZmPageConflictDialog}		the page conflict dialog
  */
-ZmAppCtxt.prototype.getSuggestionPreferenceDialog =
+ZmAppCtxt.prototype.getPageConflictDialog =
 function() {
-	if (!this._suggestionPrefDialog) {
-		AjxDispatcher.require(["MailCore", "CalendarCore", "Calendar"]);
-        this._suggestionPrefDialog = new ZmTimeSuggestionPrefDialog(this._shell);
-    }
-    return this._suggestionPrefDialog;
+	if (!this._pageConflictDialog) {
+		AjxDispatcher.require(["NotebookCore", "Notebook"]);
+		this._pageConflictDialog = new ZmPageConflictDialog(this._shell);
+	}
+	return this._pageConflictDialog;
 };
 
 /**
@@ -703,7 +696,7 @@ function() {
 ZmAppCtxt.prototype.getLinkPropsDialog =
 function() {
 	if (!this._linkPropsDialog) {
-		AjxDispatcher.require("Extras");
+		AjxDispatcher.require("Share");
 		this._linkPropsDialog = new ZmLinkPropsDialog(this._shell);
 	}
 	return this._linkPropsDialog;
@@ -802,71 +795,14 @@ function() {
 };
 
 /**
- * Gets the priority message filter dialog.
- * 
- * @return {ZmPriorityMessageFilterDialog}  the priority message filter dialog
- */
-ZmAppCtxt.prototype.getPriorityMessageFilterDialog = 
-function() {
-	if (!this._priorityMessageFilterDialog) {
-		AjxDispatcher.require(["PreferencesCore", "Preferences"]);
-		this._priorityMessageFilterDialog = new ZmPriorityMessageFilterDialog();
-	}
-	return this._priorityMessageFilterDialog;
-};
-
-
-/**
- * Gets the activity stream prompt dialog for running activity stream filters
- * 
- * @return {ZmActivityStreamPromptDialog}
-*/
-ZmAppCtxt.prototype.getActivityStreamFilterDialog = 
-function() {
-	if (!this._activityStreamFilterDialog) {
-		AjxDispatcher.require(["PreferencesCore", "Preferences"]);
-		this._activityStreamFilterDialog = new ZmActivityStreamPromptDialog();
-	}
-	return this._activityStreamFilterDialog;
-};
-
-/**
- * Gets the prompt for moving files from the Activity Stream to the Inbox
- * 
- * @return {ZmActivityToInboxPromptDialog}
- */
-ZmAppCtxt.prototype.getActivityToInboxFilterDialog =
-function() {
-	if (!this._activityToInboxFilterDialog) {
-		AjxDispatcher.require(["PreferencesCore", "Preferences"]);
-		this._activityToInboxFilterDialog = new ZmActivityToInboxPromptDialog();
-	}
-	return this._activityToInboxFilterDialog;
-};
-
-/**
- * Gets the quickadd dialog for creating a contact
- * 
- * @return {ZmContactQuickAddDialog}
- */
-ZmAppCtxt.prototype.getContactQuickAddDialog = 
-function() {
-	if (!this._contactQuickAddDialog) {
-		AjxDispatcher.require(["ContactsCore", "Contacts"]);
-		this._contactQuickAddDialog = new ZmContactQuickAddDialog();
-	}
-	return this._contactQuickAddDialog;
-};
-
-/**
  * Gets the confirm dialog.
  * 
  * @return	{DwtConfirmDialog}		the confirmation dialog
  */
 ZmAppCtxt.prototype.getConfirmationDialog =
-function(id) {
+function() {
 	if (!this._confirmDialog) {
-		this._confirmDialog = new DwtConfirmDialog(this._shell, null, "CONFIRM_DIALOG");
+		this._confirmDialog = new DwtConfirmDialog(this._shell);
 	}
 	return this._confirmDialog;
 };
@@ -883,6 +819,20 @@ function() {
 		this._uploadDialog = new ZmUploadDialog(this._shell);
 	}
 	return this._uploadDialog;
+};
+
+/**
+ * Gets the import dialog.
+ * 
+ * @return	{ZmImportDialog}		the import dialog
+ */
+ZmAppCtxt.prototype.getImportDialog =
+function() {
+	if (!this._importDialog) {
+		AjxDispatcher.require(["NotebookCore", "Notebook"]);
+		this._importDialog = new ZmImportDialog(this._shell);
+	}
+	return this._importDialog;
 };
 
 /**
@@ -908,34 +858,6 @@ function() {
 	}
 	return this._dumpsterDialog;
 };
-
-
-/**
- * Gets the mail redirect dialog.
- *
- * @return	{ZmMailRedirectDialog}	the new mail redirect dialog
- */
-ZmAppCtxt.prototype.getMailRedirectDialog =
-function() {
-	if (!this._mailRedirectDialog) {
-		this._mailRedirectDialog = new ZmMailRedirectDialog(this._shell);
-	}
-	return this._mailRedirectDialog;
-};
-
-/**
- * Gets the mail retention warning dialog.
- *
- * @return	{ZmRetetionWarningDialog}	the new mail retention warning dialog
- */
-ZmAppCtxt.prototype.getRetentionWarningDialog =
-function() {
-	if (!this._retentionWarningDialog) {
-		this._retentionWarningDialog = new ZmRetentionWarningDialog(this._shell);
-	}
-	return this._retentionWarningDialog;
-};
-
 
 /**
  * Runs the attach dialog callbacks.
@@ -973,7 +895,7 @@ function(callback) {
 ZmAppCtxt.prototype.getUploadConflictDialog =
 function() {
 	if (!this._uploadConflictDialog) {
-		AjxDispatcher.require(["Extras"]);
+		AjxDispatcher.require(["NotebookCore", "Notebook"]);
 		this._uploadConflictDialog = new ZmUploadConflictDialog(this._shell);
 	}
 	return this._uploadConflictDialog;
@@ -1015,7 +937,7 @@ function() {
 ZmAppCtxt.prototype.getAddrSelectDialog =
 function() {
 	if (!this._addrSelectDialog) {
-		AjxDispatcher.require(["Startup2", "MailCore", "Mail"]);
+		AjxDispatcher.require(["MailCore", "Mail"]);
 		this._addrSelectDialog = new ZmSelectAddrDialog(this._shell);
 	}
 	return this._addrSelectDialog;
@@ -1084,16 +1006,6 @@ function() {
 	return this.isChildWindow
 		? parentAppCtxt.accountList.activeAccount
 		: this.accountList.activeAccount;
-};
-
-/**
- * Gets the active account.
- *
- * @return	{ZmZimbraAccount}	the active account
- */
-ZmAppCtxt.prototype.isExternalAccount =
-function() {
-	return this.get(ZmSetting.IS_EXTERNAL);
 };
 
 /**
@@ -1204,20 +1116,6 @@ function(account) {
 };
 
 /**
- * Gets the tag organizer tree's root.
- *
- * @param	{ZmItem}	item		item to look up the account of for and get the account tag list.
- * @return	{ZmTag}		the root of the tree, which is also a list.
- */
-ZmAppCtxt.prototype.getAccountTagList =
-function(item) {
-	var account = (item && appCtxt.multiAccounts) ? item.getAccount() : null;
-
-	return this.getTagTree(account).root;
-};
-
-
-/**
  * Gets the zimlet organizer tree.
  * 
  * @param	{ZmZimbraAccount}	account		the account
@@ -1249,7 +1147,7 @@ function(account) {
 ZmAppCtxt.prototype.getUserDomain =
 function(account) {
 	if (!this.userDomain) {
-        var username = this.getUsername(account);
+		var username = this.getUsername(account);
 		if (username) {
 			var parts = username.split("@");
 			this.userDomain = (parts && parts.length) ? parts[1] : "";
@@ -1298,55 +1196,18 @@ function() {
  * @return	{ZmSearch}		the current search
  */
 ZmAppCtxt.prototype.getCurrentSearch =
-function() {
-	var app = this.getCurrentApp();
-	if (app && app.currentSearch) {
-		return app.currentSearch;
-	}
-	var ctlr = this.getCurrentController();
-	return ctlr && ctlr._currentSearch;
+function() { 
+	return this.getCurrentApp().currentSearch;
 };
 
 /**
- * Gets the current view id. If we're showing search results, returns the ID of the
- * view within the search results (rather than the ID of the search results).
+ * Gets the current view id.
  * 
  * @return	{String}		the current view id
  */
 ZmAppCtxt.prototype.getCurrentViewId =
 function() {
-	var viewId = this.getAppViewMgr().getCurrentViewId();
-	if (viewId && viewId.indexOf(ZmId.VIEW_SEARCH_RESULTS) === 0) {
-		viewId = this.getCurrentController().getCurrentViewId();
-	}
-	return viewId;
-};
-
-/**
- * Gets the current view type. If we're showing search results, returns the type of the
- * view within the search results (rather than the type of the search results).
- * 
- * @return	{String}		the current view type
- */
-ZmAppCtxt.prototype.getCurrentViewType =
-function() {
-	var viewType = this.getAppViewMgr().getCurrentViewType();
-	if (viewType && viewType.indexOf(ZmId.VIEW_SEARCH_RESULTS) === 0) {
-		viewType = this.getCurrentController().getCurrentViewType();
-	}
-	return viewType;
-};
-
-/**
- * Extracts the view type from a view ID.
- * 
- * @param	{string}	viewId		a view ID
- * @return	{String}	the view type
- */
-ZmAppCtxt.prototype.getViewTypeFromId =
-function(viewId) {
-	var array = viewId && viewId.split(ZmController.SESSION_ID_SEP);
-	return array ? array[0] : "";
+	return this.getAppViewMgr().getCurrentViewId();
 };
 
 /**
@@ -1645,7 +1506,6 @@ function() {
  */
 ZmAppCtxt.prototype.notifyZimlets =
 function(event, args, options) {
-	this.notifySkin(event, args, options); // Also notify skin
 
 	var context = this.isChildWindow ? parentAppCtxt : this;
 
@@ -1660,22 +1520,6 @@ function(event, args, options) {
 
 	return this.getZimletMgr().notifyZimlets(event, args);
 };
-
-ZmAppCtxt.prototype.notifyZimlet =
-function(zimletName, event, args, options) {
-	if (options && options.noChildWindow && this.isChildWindow) { return false; }
-	return this.getZimletMgr().notifyZimlet(zimletName, event, args);
-};
-
-ZmAppCtxt.prototype.notifySkin =
-function(event, args, options) {
-	var context = this.isChildWindow ? parentAppCtxt : this;
-	if (options && options.noChildWindow && this.isChildWindow) { return; }
-	try {
-		return window.skin && AjxUtil.isFunction(window.skin.handleNotification) && window.skin.handleNotification(event, args);
-	} catch (e) {}
-};
-
 
 /**
  * Gets the calendar manager.
@@ -1768,35 +1612,6 @@ function() {
 };
 
 /**
- * Opens a new change password window
- *
- */
-ZmAppCtxt.prototype.getChangePasswordWindow =
-function(ev) {
-    var url = appCtxt.get(ZmSetting.CHANGE_PASSWORD_URL);
-
-    	if (!url) {
-    		var isHttp	= appCtxt.get(ZmSetting.PROTOCOL_MODE) == ZmSetting.PROTO_HTTP;
-    		var proto	= isHttp ? ZmSetting.PROTO_HTTP : ZmSetting.PROTO_HTTPS;
-    		var port	= appCtxt.get(isHttp ? ZmSetting.HTTP_PORT : ZmSetting.HTTPS_PORT);
-    		var path	= appContextPath+"/h/changepass";
-
-    		var publicUrl = appCtxt.get(ZmSetting.PUBLIC_URL);
-    		if (publicUrl) {
-    			var parts = AjxStringUtil.parseURL(publicUrl);
-    			path = parts.path + "/h/changepass";
-    			var switchMode = (parts.protocol == "http" && proto == ZmSetting.PROTO_HTTPS);
-    			proto = switchMode ? proto : parts.protocol;
-    			port = switchMode ? port : parts.port;
-    		}
-    		url = AjxUtil.formatUrl({protocol:proto, port:port, path:path, qsReset:true});
-    	}
-
-    	var args  = "height=465,width=705,location=no,menubar=no,resizable=yes,scrollbars=no,status=yes,toolbar=no";
-    	window.open(url,'ChangePasswordWindow', args);
-}
-
-/**
  * Gets the skin hint for the given argument(s), which will be used to look
  * successively down the properties chain.
  * 
@@ -1836,13 +1651,12 @@ function() {
 /**
  * Checks if my address belongs to the current user (include aliases).
  * 
- * @param {String}		addr			            the address
- * @param {Boolean}		allowLocal		            if <code>true</code>, domain is not required
- * @param {Boolean}		excludeAllowFromAddress		if <code>true</code>, addresses in zimbraAllowFromAddresses are ignored
+ * @param {String}		addr			the address
+ * @param {Boolean}		allowLocal		if <code>true</code>, domain is not required
  * @return	{Boolean}		<code>true</code> if the given address belongs to the current user; <code>false</code> otherwise
  */
 ZmAppCtxt.prototype.isMyAddress =
-function(addr, allowLocal, excludeAllowFromAddress) {
+function(addr, allowLocal) {
 
 	if (allowLocal && (addr.indexOf('@') == -1)) {
 		addr = [addr, this.getUserDomain()].join("@");
@@ -1852,15 +1666,7 @@ function(addr, allowLocal, excludeAllowFromAddress) {
 		return true;
 	}
 
-	var allAddresses;
-    if(excludeAllowFromAddress){
-        allAddresses= appCtxt.get(ZmSetting.MAIL_ALIASES);
-    }
-    else
-    {
-        allAddresses= appCtxt.get(ZmSetting.MAIL_ALIASES).concat(appCtxt.get(ZmSetting.ALLOW_FROM_ADDRESSES));
-    }
-
+	var allAddresses = appCtxt.get(ZmSetting.MAIL_ALIASES).concat(appCtxt.get(ZmSetting.ALLOW_FROM_ADDRESSES));
 	if (allAddresses && allAddresses.length) {
 		for (var i = 0; i < allAddresses.length; i++) {
 			if (addr == allAddresses[i])
@@ -1943,6 +1749,30 @@ function(type, account) {
 	}
 };
 
+ZmAppCtxt.prototype.setNotifyDebug =
+function(notify) {
+
+    if (!window.isNotifyDebugOn) {
+        return;
+    }
+
+    if (this._notify) {
+        this._notify =  [this._notify, notify, "\n\n"].join("");
+    } else {
+        this._notify = ["\n\n", notify, "\n\n"].join("");
+    }
+};
+
+ZmAppCtxt.prototype.getNotifyDebug =
+function() {
+    return this._notify;
+};
+
+ZmAppCtxt.prototype.clearNotifyDebug =
+function() {
+    this._notify = "";
+};
+
 ZmAppCtxt.prototype.getOutsideMouseEventMgr =
 function() {
 	return DwtOutsideMouseEventMgr.INSTANCE;
@@ -2003,31 +1833,4 @@ ZmAppCtxt.prototype.isZDOnline =
 function() {
     var ac = window["appCtxt"].getAppController();
     return !AjxEnv.isPrism || (ac._isPrismOnline && ac._isUserOnline);
-};
-
-/**
- * Returns true for enabling tinymce editor
-*/
-ZmAppCtxt.prototype.isTinyMCEEnabled =
-function() {
-    return true;
-};
-
-/**
- * When using pre-auth window.opener.appCtxt may not be accessible.  This function
- * handles appCtxt assignment to avoid a permission denied error
- * @return {Object} ZmAppCtxt
- */
-ZmAppCtxt.handleWindowOpener = 
-function() {
-	var aCtxt = appCtxt;
-	if (window.opener) {
-		try {
-			aCtxt = window.opener.appCtxt;
-		}
-		catch (ex) {
-			aCtxt = appCtxt;
-		}
-	}
-	return aCtxt;
 };

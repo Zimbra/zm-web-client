@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -119,21 +119,6 @@ function() {
 };
 
 /**
- * overriding in order to prevent distribution lists from being draggable.
- */
-ZmContactsBaseView.prototype._getDragProxy =
-function(dragOp) {
-	var dndSelection = this.getDnDSelection();
-	dndSelection = AjxUtil.toArray(dndSelection); // it might be array or just a scalar ZmContact. So this will always get array.
-	for (var i = 0; i < dndSelection.length; i++) { //if any is a DL - don't allow the drag. There could be a mix in search results.
-		if (dndSelection[i].isDistributionList()) { //don't allow dragging a DL
-			return null;
-		}
-	}
-	return ZmListView.prototype._getDragProxy.call(this, dragOp);
-};
-
-/**
  * @private
  */
 ZmContactsBaseView.prototype._changeListener =
@@ -160,17 +145,16 @@ function(ev) {
 			// folder search and it belongs!
 			if (folderId && newFolder && folderId == newFolderId && visible) {
 				var index = ev.getDetail("sortIndex");
-				var alphaBar = this.parent ? this.parent.getAlphabetBar() : null;
-				var inAlphaBar = alphaBar ? alphaBar.isItemInAlphabetLetter(newContact) : true;
-				if (index != null && inAlphaBar) {
+				if (index != null) {
 					this.addItem(newContact, index);
 				}
 
 				// always select newly added contact if its been added to the
 				// current page of contacts
-				if (inAlphaBar) {
-					this.setSelection(newContact, false, true);
-				}
+				this.setSelection(newContact, false, true);
+			} else {
+				this.deselectAll();
+				this.setSelection(newContact, false, true);
 			}
 		} else if (ev.event == ZmEvent.E_DELETE) {
 			// bug fix #19308 - do house-keeping on controller's list so
@@ -213,10 +197,7 @@ function(ev) {
 	// if fileAs changed, resort the internal list
 	// XXX: this is somewhat inefficient. We should just remove this contact and reinsert
 	if (ev.getDetail("fileAsChanged")) {
-		var list = this.getList();
-		if (list) {
-			list.sort(ZmContact.compareByFileAs);
-		}
+		this.getList().sort(ZmContact.compareByFileAs);
 	}
 };
 
@@ -340,7 +321,7 @@ function(useCell) {
 	if (cell != this._current) {
 		this.setSelected(this._current, false);
 		this._current = cell;
-		this._currentLetter = useCell && useCell != this._all ? useCell.innerHTML : null;
+		this._currentLetter = useCell ? useCell.innerHTML : null;
 		this.setSelected(cell, true);
 		return true;
 	}
@@ -405,7 +386,7 @@ ZmContactAlphabetBar.alphabetClicked =
 function(cell, letter, endLetter) {
 	// get reference to alphabet bar - ugh
 	var clc = AjxDispatcher.run("GetContactListController");
-	var alphabetBar = clc && clc.getCurrentView() && clc.getCurrentView().getAlphabetBar();
+	var alphabetBar = clc && clc.getParentView() && clc.getParentView().getAlphabetBar();
 	if (alphabetBar && alphabetBar.enabled()) {
 		if (alphabetBar.reset(cell)) {
             letter = letter && String(letter).substr(0,1);
@@ -413,43 +394,6 @@ function(cell, letter, endLetter) {
 			clc.searchAlphabet(letter, endLetter);
         }
 	}
-};
-
-/**
- * determine if contact belongs in the current alphabet bar.  Used when creating a new contact and not doing a reload --
- * such as new contact group from action menu.
- * @param item  {ZmContact}
- * @return {boolean} true/false if item belongs in alphabet selection
- */
-ZmContactAlphabetBar.prototype.isItemInAlphabetLetter =
-function(item) {
-    var inCurrentBar = false;
-	if (item) {
-	  if (ZmMsg.alphabet && ZmMsg.alphabet.length > 0) {
-		  var all = ZmMsg.alphabet.split(",")[0]; //get "All" for locale
-	  }
-	  var fileAs = item.getFileAs();
-	  var currentLetter = this.getCurrentLetter();
-	  if (!currentLetter || currentLetter.toLowerCase() == all) {
-		  inCurrentBar = true; //All is selected
-	  }
-	  else if (currentLetter && fileAs) {
-		var itemLetter = String(fileAs).substr(0,1).toLowerCase();
-		var cellLetter = currentLetter.substr(0,1).toLowerCase();
-		if (itemLetter == cellLetter) {
-			inCurrentBar = true;
-		}
-		else if(AjxStringUtil.isDigit(cellLetter) && AjxStringUtil.isDigit(itemLetter)) {
-			//handles "123" in alphabet bar
-			inCurrentBar = true;
-		}
-		else if (currentLetter.toLowerCase() == "a-z" && itemLetter.match("[a-z]")) {
-			//handle A-Z cases for certain locales
-			inCurrentBar = true;
-		}
-	  }
-  }
-  return inCurrentBar;
 };
 
 /**
@@ -493,7 +437,7 @@ function(sortVal) {
 ZmContactAlphabetBar._onMouseOver =
 function(cell) {
 	// get reference to alphabet bar - ugh
-	var alphabetBar = AjxDispatcher.run("GetContactListController").getCurrentView().getAlphabetBar();
+	var alphabetBar = AjxDispatcher.run("GetContactListController").getParentView().getAlphabetBar();
 	if (alphabetBar.enabled()) {
 		cell.className = "DwtButton-hover AlphabetBarCell";
 	}
@@ -505,10 +449,8 @@ function(cell) {
 ZmContactAlphabetBar._onMouseOut =
 function(cell) {
 	// get reference to alphabet bar - ugh
-	var alphabetBar = AjxDispatcher.run("GetContactListController").getCurrentView().getAlphabetBar();
+	var alphabetBar = AjxDispatcher.run("GetContactListController").getParentView().getAlphabetBar();
 	if (alphabetBar.enabled()) {
 		alphabetBar.setSelected(cell, cell == alphabetBar.getCurrent());
 	}
 };
-
-

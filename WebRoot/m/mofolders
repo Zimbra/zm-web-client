@@ -1,4 +1,4 @@
-<%@ page import="com.zimbra.client.ZSearchFolder" %>
+<%@ page import="com.zimbra.cs.zclient.ZSearchFolder" %>
 <%@ page buffer="8kb" autoFlush="true" %>
 <%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>

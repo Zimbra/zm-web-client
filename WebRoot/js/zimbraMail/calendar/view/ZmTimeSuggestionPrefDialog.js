@@ -1,13 +1,13 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
- *
+ * Copyright (C) 2010, 2011 VMware, Inc.
+ * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- *
+ * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
@@ -31,7 +31,6 @@ ZmTimeSuggestionPrefDialog = function(parent, className) {
 
     this._prefs = {};
     this._prefFields = {};
-    this._prefLoaded = false;
 
 	className = className || "ZmTimeSuggestionPrefDialog";
 	DwtDialog.call(this, {parent:parent, className:className, title:ZmMsg.suggestionPreferences});
@@ -47,15 +46,13 @@ ZmTimeSuggestionPrefDialog.prototype.constructor = ZmTimeSuggestionPrefDialog;
 // Constants
 
 ZmTimeSuggestionPrefDialog.META_DATA_KEY = "MD_LOCATION_SEARCH_PREF";
-ZmTimeSuggestionPrefDialog.PREF_FIELDS = ["name", "site", "capacity", "building", "desc", "floor",
-                                          "my_working_hrs_pref", "others_working_hrs_pref",
-                                          "recurrenceSelect"];
+ZmTimeSuggestionPrefDialog.PREF_FIELDS = ["name", "site", "capacity", "building", "desc", "floor", "green_suggestions", "working_hrs_pref", "manualsuggest", "suggestrooms"];
 
 // corresponding attributes for search command
 ZmTimeSuggestionPrefDialog.SF_ATTR = {};
 ZmTimeSuggestionPrefDialog.SF_ATTR["name"]		  = "fullName";
 ZmTimeSuggestionPrefDialog.SF_ATTR["capacity"]	  = "zimbraCalResCapacity";
-ZmTimeSuggestionPrefDialog.SF_ATTR["desc"]        = "description";
+ZmTimeSuggestionPrefDialog.SF_ATTR["desc"]        = "notes";
 ZmTimeSuggestionPrefDialog.SF_ATTR["site"]		  = "zimbraCalResSite";
 ZmTimeSuggestionPrefDialog.SF_ATTR["building"]	  = "zimbraCalResBuilding";
 ZmTimeSuggestionPrefDialog.SF_ATTR["floor"]		  = "zimbraCalResFloor";
@@ -65,22 +62,32 @@ ZmTimeSuggestionPrefDialog.SF_OP = {};
 ZmTimeSuggestionPrefDialog.SF_OP["capacity"]	= "ge";
 ZmTimeSuggestionPrefDialog.SF_OP["floor"]		= "eq";
 
-ZmTimeSuggestionPrefDialog.MY_WORKING_HOURS_FIELD = 'my_working_hrs_pref';
-ZmTimeSuggestionPrefDialog.OTHERS_WORKING_HOURS_FIELD = 'others_working_hrs_pref';
-ZmTimeSuggestionPrefDialog.RECURRENCE = 'recurrenceSelect';
+
+ZmTimeSuggestionPrefDialog.INCLUDE_MY_WORKING_HOURS = 0;
+ZmTimeSuggestionPrefDialog.INCLUDE_ALL_WORKING_HOURS = 1;
+ZmTimeSuggestionPrefDialog.INCLUDE_NON_WORKING_HOURS = 2;
+
+ZmTimeSuggestionPrefDialog.INCLUDE_OPTIONS = [
+	{ label: ZmMsg.includeMyWorkingHours, 			value: ZmTimeSuggestionPrefDialog.INCLUDE_MY_WORKING_HOURS, 	selected: false },
+	{ label: ZmMsg.allAttendeeWorkingHours, 		value: ZmTimeSuggestionPrefDialog.INCLUDE_ALL_WORKING_HOURS, 	selected: true },
+	{ label: ZmMsg.nonWorkingHours, 				value: ZmTimeSuggestionPrefDialog.INCLUDE_NON_WORKING_HOURS, 	selected: false  }
+];
+
+ZmTimeSuggestionPrefDialog.WORKING_HOURS_FIELD = 'working_hrs_pref';
+ZmTimeSuggestionPrefDialog.GREEN_SUGGESTIONS_FIELD = 'green_suggestions';
+ZmTimeSuggestionPrefDialog.MANUAL_SUGGESTIONS_FIELD = 'manualsuggest';
+ZmTimeSuggestionPrefDialog.AUTO_SUGGESTIONS_FIELD = 'autosuggest';
+ZmTimeSuggestionPrefDialog.SUGGESTROOMS_FIELD = 'suggestrooms';
 
 ZmTimeSuggestionPrefDialog.CHECKBOX_FIELDS = {};
-ZmTimeSuggestionPrefDialog.CHECKBOX_FIELDS[ZmTimeSuggestionPrefDialog.MY_WORKING_HOURS_FIELD]      = true;
-ZmTimeSuggestionPrefDialog.CHECKBOX_FIELDS[ZmTimeSuggestionPrefDialog.OTHERS_WORKING_HOURS_FIELD]   = true;
+ZmTimeSuggestionPrefDialog.CHECKBOX_FIELDS[ZmTimeSuggestionPrefDialog.GREEN_SUGGESTIONS_FIELD]      = true;
+ZmTimeSuggestionPrefDialog.CHECKBOX_FIELDS[ZmTimeSuggestionPrefDialog.MANUAL_SUGGESTIONS_FIELD]    = true;
+ZmTimeSuggestionPrefDialog.CHECKBOX_FIELDS[ZmTimeSuggestionPrefDialog.SUGGESTROOMS_FIELD]           = true;
 
 ZmTimeSuggestionPrefDialog.DEFAULT_VAL = {};
-ZmTimeSuggestionPrefDialog.DEFAULT_VAL[ZmTimeSuggestionPrefDialog.MY_WORKING_HOURS_FIELD]    = 'true';
-ZmTimeSuggestionPrefDialog.DEFAULT_VAL[ZmTimeSuggestionPrefDialog.OTHERS_WORKING_HOURS_FIELD] = 'true';
-ZmTimeSuggestionPrefDialog.DEFAULT_NUM_RECURRENCE = 4;
-ZmTimeSuggestionPrefDialog.MAX_NUM_RECURRENCE = 10;
-ZmTimeSuggestionPrefDialog.DEFAULT_VAL[ZmTimeSuggestionPrefDialog.RECURRENCE] =
-    ZmTimeSuggestionPrefDialog.DEFAULT_NUM_RECURRENCE.toString();
-
+ZmTimeSuggestionPrefDialog.DEFAULT_VAL[ZmTimeSuggestionPrefDialog.MANUAL_SUGGESTIONS_FIELD] = 'true';
+ZmTimeSuggestionPrefDialog.DEFAULT_VAL[ZmTimeSuggestionPrefDialog.SUGGESTROOMS_FIELD] = 'true';
+ZmTimeSuggestionPrefDialog.DEFAULT_VAL[ZmTimeSuggestionPrefDialog.WORKING_HOURS_FIELD] = ZmTimeSuggestionPrefDialog.INCLUDE_ALL_WORKING_HOURS;
 
 // Public methods
 
@@ -94,7 +101,7 @@ function(event) {
     this.readPrefs();
     this.setSearchPreference();
     this.popdown();
-    if(this._callback) this._callback.run();
+    if(this._callback) this._callback.run();    
 };
 
 ZmTimeSuggestionPrefDialog.prototype._handleCancelButton =
@@ -120,11 +127,6 @@ function() {
 	DwtDialog.prototype.popdown.call(this);
 };
 
-ZmTimeSuggestionPrefDialog.prototype.getPrefLoaded =
-function() {
-    return this._prefLoaded;
-}
-
 ZmTimeSuggestionPrefDialog.prototype._getContentHtml =
 function() {
     return AjxTemplate.expand("calendar.Appointment#TimeLocationPreference", {id: this.getHTMLElId()});
@@ -137,21 +139,31 @@ function(text) {
 		d.innerHTML = text || "";
 	}
 
-    this._recurrenceSelect = new DwtSelect({id:this._htmlElId + "_recurrenceSelect",
-                                parent:this, parentElement:(this._htmlElId + "_recurrence")});
-    for (var i = 1; i <= ZmTimeSuggestionPrefDialog.MAX_NUM_RECURRENCE; i++) {
-        this._recurrenceSelect.addOption(i.toString(), (i == 1), i);
-    }
-
 
     this._dlgId = AjxCore.assignId(this);
 
+    this._includeSelect = new DwtSelect({parent:this, parentElement: (this._htmlElId + "_incSelect")});
+
+    for (var i = 0; i < ZmTimeSuggestionPrefDialog.INCLUDE_OPTIONS.length; i++) {
+        var option = ZmTimeSuggestionPrefDialog.INCLUDE_OPTIONS[i];
+        this._includeSelect.addOption(option.label, option.selected, option.value);
+    }
+    
     var suffix, id;
     for(var i=0; i<ZmTimeSuggestionPrefDialog.PREF_FIELDS.length; i++) {
         id = ZmTimeSuggestionPrefDialog.PREF_FIELDS[i];
         this._prefFields[id] = document.getElementById(this.getHTMLElId() + "_" + id);
+        if(id == ZmTimeSuggestionPrefDialog.WORKING_HOURS_FIELD) {
+            this._prefFields[id] = this._includeSelect;
+        }
         this._prefs[id] = this.getPreferenceFieldValue(id);
     }
+
+    var manualSuggestCheckbox = document.getElementById(this.getHTMLElId() + "_" + ZmTimeSuggestionPrefDialog.MANUAL_SUGGESTIONS_FIELD);
+    manualSuggestCheckbox._dlgId = this._dlgId;
+    var disableRoomCheckbox = document.getElementById(this.getHTMLElId() + "_" + ZmTimeSuggestionPrefDialog.SUGGESTROOMS_FIELD);
+    disableRoomCheckbox._dlgId = this._dlgId;
+    Dwt.setHandler(disableRoomCheckbox, DwtEvent.ONCLICK, ZmTimeSuggestionPrefDialog._handleRoomCheckbox);
 };
 
 ZmTimeSuggestionPrefDialog.prototype.getPreference =
@@ -174,33 +186,29 @@ function(text) {
 
 ZmTimeSuggestionPrefDialog.prototype.getPreferenceFieldValue =
 function(id) {
-    if (id == "recurrenceSelect") {
-        return this._recurrenceSelect.getValue();
-    } else {
-        var field = this._prefFields[id];
-        if(!field) return;
+    var field = this._prefFields[id];
+    if(!field) return;
 
-        if(ZmTimeSuggestionPrefDialog.CHECKBOX_FIELDS[id]){
-            return field.checked ? 'true' : 'false';
-        }else {
-            return field.value;
-        }
+    if(id == ZmTimeSuggestionPrefDialog.WORKING_HOURS_FIELD) {
+        return field.getValue();
+    }else if(ZmTimeSuggestionPrefDialog.CHECKBOX_FIELDS[id]){
+        return field.checked ? 'true' : 'false';
+    }else {
+        return field.value;
     }
 };
 
 ZmTimeSuggestionPrefDialog.prototype.setPreferenceFieldValue =
 function(id, value) {
-    if (id == "recurrenceSelect") {
-       this._recurrenceSelect.setSelectedValue(value);
-    } else {
-        var field = this._prefFields[id];
-        if(!field) return;
-
-        if(ZmTimeSuggestionPrefDialog.CHECKBOX_FIELDS[id]){
-            field.checked = (value == 'true');
-        }else {
-            field.value = value || "";
-        }
+    var field = this._prefFields[id];
+    if(!field) return;
+    
+    if(id == ZmTimeSuggestionPrefDialog.WORKING_HOURS_FIELD) {
+        field.setSelectedValue(value);
+    }else if(ZmTimeSuggestionPrefDialog.CHECKBOX_FIELDS[id]){
+        field.checked = (value == 'true');
+    }else {
+        field.value = value || "";
     }
 };
 
@@ -230,7 +238,6 @@ function(prefSearchCallback, metadataResponse) {
         }
     }
 
-    this._prefLoaded = true;
     if(prefSearchCallback) prefSearchCallback.run();
 };
 
@@ -251,7 +258,9 @@ function(id) {
 
 ZmTimeSuggestionPrefDialog.prototype.handleRoomCheckbox =
 function() {
-    this.enableLocationFields(true);
+    var field = this._prefFields[ZmTimeSuggestionPrefDialog.SUGGESTROOMS_FIELD];
+    var suggestRooms = field.checked;
+    this.enableLocationFields(suggestRooms);
 };
 
 ZmTimeSuggestionPrefDialog.prototype.enableLocationFields =

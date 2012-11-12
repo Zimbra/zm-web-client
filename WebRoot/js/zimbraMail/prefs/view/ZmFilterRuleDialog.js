@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -35,7 +35,7 @@ ZmFilterRuleDialog = function() {
 
 	// set content
 	this.setContent(this._contentHtml());
-	this._createControls();
+    this._createControls();
 	this._setConditionSelect();
 	this._createTabGroup();
 
@@ -45,11 +45,9 @@ ZmFilterRuleDialog = function() {
 	this._dateLstnr			= new AjxListener(this, this._dateListener);
 	this._plusMinusLstnr	= new AjxListener(this, this._plusMinusListener);
 	this._browseLstnr		= new AjxListener(this, this._browseListener);
-	this._addrBookChangeLstnr = new AjxListener(this, this._addrBookChangeListener);
-	this._importanceChangeLstnr = new AjxListener(this, this._importanceChangeListener);
-		
+	
 	this.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._okButtonListener));
-	this.setButtonListener(DwtDialog.CANCEL_BUTTON, new AjxListener(this, this._cancelButtonListener));
+    this.setButtonListener(DwtDialog.CANCEL_BUTTON, new AjxListener(this, this._cancelButtonListener));
 	this._conditionErrorFormatter = new AjxMessageFormat(ZmMsg.filterErrorCondition);
 	this._actionErrorFormatter = new AjxMessageFormat(ZmMsg.filterErrorAction);
 };
@@ -190,7 +188,7 @@ function(parent, segment, i) {
 		var formats = format.getFormats();
 		var values = [ZmFilterRule.GROUP_ANY, ZmFilterRule.GROUP_ALL];
 
-		var select = this._conditionSelect = new DwtSelect({parent:parent, id: "FilterRuleGroupCondition_" + ZmFilterRuleDialog.CONDITIONS_INDEX++});
+		var select = this._conditionSelect = new DwtSelect({parent:parent});
 		for (var i = 0; i < values.length; i++) {
 			// TODO: guard against badly specified message
 			select.addOption(formats[i].toPattern(), i == 0, values[i]);
@@ -353,7 +351,7 @@ function(data, test, isCondition, rowId) {
 				html[i++] = "<tr><td>" + ZmMsg.actionNotifyReadOnlyMsg + "</td></tr>";
 				html[i++] = "<tr><td>" + ZmMsg.emailLabel + " " + email + " | " + subject + " | " + ZmMsg.maxBodySize + ": " + maxBodySize + "</td><tr>";
 				html[i++] = "<tr><td>" + ZmMsg.body + ": " + content + "</td></tr></table></td>";
-			}
+		    }
 			else if (actionId == ZmFilterRule.A_REPLY && data) {
 				var content = AjxUtil.isArray(data.content) ? data.content[0]._content : "";
 				html[i++] = "<td><table><tr><td>" + ZmMsg.actionReplyReadOnlyMsg + "</td></tr>";
@@ -373,12 +371,7 @@ ZmFilterRuleDialog.prototype._getConditionFromTest =
 function(test, data) {
 	var condition;
 	switch (test) {
-		case ZmFilterRule.TEST_ADDRESS:
-			condition = ZmFilterRule.C_ADDRESS_MAP[data.header];
-			if (!condition) { // shouldn't get here
-				condition = ZmFilterRule.C_ADDRESS;
-			}
-			break;
+		case ZmFilterRule.TEST_ADDRESS:			condition = null; break; // currently not supported.
 		case ZmFilterRule.TEST_HEADER_EXISTS:	condition = ZmFilterRule.C_HEADER; break;
 		case ZmFilterRule.TEST_SIZE:			condition = ZmFilterRule.C_SIZE; break;
 		case ZmFilterRule.TEST_DATE:			condition = ZmFilterRule.C_DATE; break;
@@ -387,32 +380,14 @@ function(test, data) {
 		case ZmFilterRule.TEST_MIME_HEADER:		condition = ZmFilterRule.C_MIME_HEADER; break;
 		case ZmFilterRule.TEST_ADDRBOOK:		condition = ZmFilterRule.C_ADDRBOOK; break;
 		case ZmFilterRule.TEST_INVITE:			condition = ZmFilterRule.C_INVITE; break;
-		case ZmFilterRule.TEST_CONVERSATIONS:   condition = ZmFilterRule.C_CONV; break;
-		case ZmFilterRule.TEST_SOCIAL:          condition = ZmFilterRule.C_SOCIAL; break;
-		case ZmFilterRule.TEST_FACEBOOK:        condition = ZmFilterRule.C_SOCIAL; break;
-		case ZmFilterRule.TEST_SOCIALCAST:      condition = ZmFilterRule.C_SOCIAL; break;
-		case ZmFilterRule.TEST_TWITTER:         condition = ZmFilterRule.C_SOCIAL; break;
-		case ZmFilterRule.TEST_LINKEDIN:        condition = ZmFilterRule.C_SOCIAL; break;
-		case ZmFilterRule.TEST_LIST:            condition = ZmFilterRule.C_CONV; break;
-		case ZmFilterRule.TEST_BULK:            condition = ZmFilterRule.C_CONV; break;
-		case ZmFilterRule.TEST_ME:              condition = ZmFilterRule.C_ADDRBOOK; break;
-		case ZmFilterRule.TEST_RANKING:         condition = ZmFilterRule.C_ADDRBOOK; break;
-		case ZmFilterRule.TEST_IMPORTANCE:      condition = ZmFilterRule.C_CONV; break;
-		case ZmFilterRule.TEST_FLAGGED:         condition = ZmFilterRule.C_CONV; break;
 		case ZmFilterRule.TEST_HEADER:
 			condition = ZmFilterRule.C_HEADER_MAP[data.header];
 			if (!condition) { // means custom header
 				condition = ZmFilterRule.C_HEADER;
-			}  
+			}
 			break;
 	}
 
-	//TODO: find a better way to do this.  Preconditions for opsOptions?
-	if (condition == ZmFilterRule.C_SOCIAL) {
-		condition = ZmFilterRule.CONDITIONS[condition];
-		condition.opsOptions = ZmFilterRule.getSocialFilters();
-		return condition;
-	}
 	return (condition ? ZmFilterRule.CONDITIONS[condition] : null);
 };
 
@@ -475,7 +450,7 @@ ZmFilterRuleDialog.prototype._removeRow =
 function(rowId, isCondition) {
 	var row = Dwt.byId(rowId);
 	if (!row) { return; }
-		
+	
 	var table = Dwt.byId(isCondition ? this._conditionsTableId : this._actionsTableId);
 	var rows = table.rows;
 	for (var i = 0; i < rows.length; i++) {
@@ -536,41 +511,16 @@ function(conf, field, options, rowData, testType, rowId) {
 		var selectId = "FilterRuleDialog_SELECT_" + ZmFilterRuleDialog.CONDITIONS_INDEX++;
 		var select = new DwtSelect({parent:this, id: selectId});
 		select.setData(ZmFilterRuleDialog.ROW_ID, rowId);
-        select.fixedButtonWidth();
 		this._inputs[rowId][field] = {id: id, dwtObj: select};
 		if (isMainSelect) {
 			select.setData(ZmFilterRuleDialog.IS_CONDITION, isCondition);
 			select.addChangeListener(this._rowChangeLstnr);
-		} 
-		else if (field == "ops") {
+		} else if (field == "ops") {
 			if (testType == ZmFilterRule.TEST_HEADER) {
 				select.setData(ZmFilterRuleDialog.IS_CONDITION, isCondition);
 				select.addChangeListener(this._opsChangeLstnr);
 			}
-			else if (testType == ZmFilterRule.TEST_ADDRBOOK || testType == ZmFilterRule.TEST_ME) {
-				select.addChangeListener(this._addrBookChangeLstnr);
-			}
 		}
-		else if (field == "value") {
-			if (testType == ZmFilterRule.TEST_ADDRESS || testType == ZmFilterRule.TEST_ME)
-			{
-				select.setVisibility(false); //Don't show value "me" for address test 
-			}
-			else if (testType == ZmFilterRule.TEST_CONVERSATIONS || testType == ZmFilterRule.TEST_LIST  ||  testType == ZmFilterRule.TEST_BULK || testType == ZmFilterRule.TEST_IMPORTANCE || testType == ZmFilterRule.TEST_FLAGGED) {
-				select.addChangeListener(this._importanceChangeLstnr);
-			}
-		}
-		else if (field == "valueMod"){
-			if (testType == ZmFilterRule.TEST_FLAGGED && (rowData.flagName == ZmFilterRule.READ || rowData.flagName == ZmFilterRule.PRIORITY)) {
-				var valueSelect = this._inputs[rowId]["value"].dwtObj;
-				var index = valueSelect.getIndexForValue(ZmFilterRule.IMPORTANCE);
-				valueSelect.setSelected(index);
-			}
-			else if (testType == ZmFilterRule.TEST_CONVERSATIONS || testType == ZmFilterRule.TEST_LIST ||  testType == ZmFilterRule.TEST_BULK || testType == ZmFilterRule.TEST_FLAGGED) {
-				select.setVisibility(false);
-			}
-		}
-		
 		for (var i = 0; i < options.length; i++) {
 			var o = options[i];
 			// skip if the action or this option is disabled
@@ -589,10 +539,7 @@ function(conf, field, options, rowData, testType, rowId) {
 				value = o.value;
 				label = o.label;
 			}
-			var selected = (dataValue && value && (value.toLowerCase() == dataValue.toLowerCase()));
-			if (value && value.toLowerCase()== "bcc" && !this._outgoing && !selected) {
-				continue;
-			}
+			var selected = (dataValue && (value == dataValue));
 			select.addOption(new DwtSelectOptionData(value, label, selected));
 		}
 		if (!select.getValue()) {
@@ -634,8 +581,8 @@ function(conf, field, options, rowData, testType, rowId) {
 			if (type == ZmFilterRule.TYPE_FOLDER_PICKER) {
 				var folderTree = appCtxt.getFolderTree();
 				if (folderTree) {
-					dataValue = (dataValue.charAt(0) == '/') ? dataValue.substring(1) : dataValue;
-					organizer = folderTree.getByPath(dataValue, true);
+                    dataValue = (dataValue.charAt(0) == '/') ? dataValue.substring(1) : dataValue;
+                    organizer = folderTree.getByPath(dataValue, true);
 				}
 			} else {
 				var tagTree = appCtxt.getTagTree();
@@ -661,12 +608,12 @@ function(isMainSelect, testType, field, rowData) {
 	var dataValue;
 	if (isMainSelect) {
 		switch (testType) {
-		case ZmFilterRule.TEST_HEADER:
-			dataValue = ZmFilterRule.C_HEADER_MAP[rowData.header];
-			if (!dataValue) { // means custom header
-			        dataValue = ZmFilterRule.C_HEADER;
-			}
-			break;
+			case ZmFilterRule.TEST_HEADER:
+				dataValue = ZmFilterRule.C_HEADER_MAP[rowData.header];
+				if (!dataValue) { // means custom header
+					dataValue = ZmFilterRule.C_HEADER;
+				}
+				break;
 			case ZmFilterRule.TEST_HEADER_EXISTS:	dataValue = ZmFilterRule.C_HEADER; break;
 			case ZmFilterRule.TEST_SIZE:			dataValue = ZmFilterRule.C_SIZE; break;
 			case ZmFilterRule.TEST_DATE:			dataValue = ZmFilterRule.C_DATE; break;
@@ -675,24 +622,6 @@ function(isMainSelect, testType, field, rowData) {
 			case ZmFilterRule.TEST_MIME_HEADER:		dataValue = ZmFilterRule.C_MIME_HEADER; break;
 			case ZmFilterRule.TEST_ADDRBOOK:		dataValue = ZmFilterRule.C_ADDRBOOK; break;
 			case ZmFilterRule.TEST_INVITE:			dataValue = ZmFilterRule.C_INVITE; break;
-			case ZmFilterRule.TEST_CONVERSATIONS:   dataValue = ZmFilterRule.C_CONV; break;
-			case ZmFilterRule.TEST_SOCIAL:          dataValue = ZmFilterRule.C_SOCIAL; break;
-			case ZmFilterRule.TEST_FACEBOOK:        dataValue = ZmFilterRule.C_SOCIAL; break;
-			case ZmFilterRule.TEST_SOCIALCAST:      dataValue = ZmFilterRule.C_SOCIAL; break;
-			case ZmFilterRule.TEST_TWITTER:         dataValue = ZmFilterRule.C_SOCIAL; break;
-			case ZmFilterRule.TEST_LINKEDIN:        dataValue = ZmFilterRule.C_SOCIAL; break;
-			case ZmFilterRule.TEST_ADDRESS:
-				dataValue = ZmFilterRule.C_ADDRESS_MAP[rowData.header];
-				if (!dataValue) { 
-					dataValue = ZmFilterRule.C_ADDRESS;
-				}
-				break;
-			case ZmFilterRule.TEST_LIST:            dataValue = ZmFilterRule.C_CONV; break;
-			case ZmFilterRule.TEST_BULK:            dataValue = ZmFilterRule.C_CONV; break;
-			case ZmFilterRule.TEST_ME:              dataValue = ZmFilterRule.C_ADDRBOOK; break;
-			case ZmFilterRule.TEST_RANKING:         dataValue = ZmFilterRule.C_ADDRBOOK; break;
-			case ZmFilterRule.TEST_IMPORTANCE:      dataValue = ZmFilterRule.C_CONV; break;
-			case ZmFilterRule.TEST_FLAGGED:         dataValue = ZmFilterRule.C_CONV; break;
 			// default returns action type
 			default:								return ZmFilterRule.A_VALUE_MAP[testType];
 		}
@@ -703,10 +632,10 @@ function(isMainSelect, testType, field, rowData) {
 				dataValue = rowData.header;
 			} else if (field == "ops") {
 				dataValue = ZmFilterRule.OP_VALUE_MAP[rowData.stringComparison] == ZmFilterRule.OP_IS_READRECEIPT ? ZmFilterRule.OP_CONTAINS : 
-						ZmFilterRule.OP_VALUE_MAP[rowData.stringComparison];
+                        ZmFilterRule.OP_VALUE_MAP[rowData.stringComparison];
 				if (dataValue && rowData.negative == "1") {
-					dataValue = ZmFilterRule.getNegativeComparator(dataValue);
-				}
+                    dataValue = ZmFilterRule.getNegativeComparator(dataValue);
+                }
 			} else if (field == "value") {
 				dataValue = rowData.value;
 			}
@@ -726,8 +655,8 @@ function(isMainSelect, testType, field, rowData) {
 			if (field == "ops") {
 				dataValue = ZmFilterRule.OP_VALUE_MAP[rowData.numberComparison];
 				if (dataValue && rowData.negative == "1") {
-					dataValue = ZmFilterRule.getNegativeComparator(dataValue);
-				}
+                    dataValue = ZmFilterRule.getNegativeComparator(dataValue);
+                }
 			} else if (field == "valueMod") {
 				var m = rowData.s ? rowData.s.match(/(\d+)([A-Z]*)/) : null;
 				dataValue = m ? ((!m[2]) ? "B" : m[2]) : null;
@@ -739,8 +668,8 @@ function(isMainSelect, testType, field, rowData) {
 			if (field == "ops") {
 				dataValue = ZmFilterRule.OP_VALUE_MAP[rowData.dateComparison];
 				if (dataValue && rowData.negative == "1") {
-					dataValue = ZmFilterRule.getNegativeComparator(dataValue);
-				}
+                    dataValue = ZmFilterRule.getNegativeComparator(dataValue);
+                }
 			} else if (field == "value") {
 				dataValue = rowData.d * 1000;
 			}
@@ -761,116 +690,19 @@ function(isMainSelect, testType, field, rowData) {
 					: ZmFilterRule.OP_EXISTS;
 			}
 		}
-		else if (testType == ZmFilterRule.TEST_LIST) {
-			if (field == "ops") {
-				dataValue = (rowData.negative == "1")
-					? ZmFilterRule.OP_NOT_CONV
-					: ZmFilterRule.OP_CONV_IS;
-			}
-			else if (field == "value") {
-				dataValue = ZmFilterRule.C_LIST;
-			}
-		}
-		else if (testType == ZmFilterRule.TEST_BULK) {
-			if (field == "ops") {
-				dataValue = (rowData.negative == "1")
-					? ZmFilterRule.OP_NOT_CONV
-					: ZmFilterRule.OP_CONV_IS;
-			}
-			else if (field == "value") {
-				dataValue = ZmFilterRule.C_BULK;
-			}
-		}
-		else if (testType == ZmFilterRule.TEST_CONVERSATIONS) {
-			if (field == "ops") {
-				dataValue = (rowData.negative == "1")
-					? ZmFilterRule.OP_NOT_CONV
-					: ZmFilterRule.OP_CONV_IS;	
-			}
-			else if (field == "value") {
-				dataValue = rowData.where;
-			}
-		}
-		else if (testType == ZmFilterRule.TEST_IMPORTANCE) {
-			if (field == "ops") {
-				dataValue = (rowData.negative == "1")
-					? ZmFilterRule.OP_NOT_CONV
-					: ZmFilterRule.OP_CONV_IS;	
-			}
-			else if (field == "value") {
-				dataValue = ZmFilterRule.IMPORTANCE;
-			}
-			else if (field == "valueMod") {
-				dataValue = rowData.imp;
-			}
-		}
-		else if (testType == ZmFilterRule.TEST_FLAGGED) {
-			if (field == "ops") {
-				dataValue = (rowData.negative == "1")
-					? ZmFilterRule.OP_NOT_CONV
-					: ZmFilterRule.OP_CONV_IS;	
-			}
-			else if (field == "value") {
-				dataValue = ZmFilterRule.FLAGGED;	
-			}
-			else if (field == "valueMod") {
-				dataValue = rowData.flagName;
-			}
-		}
-		else if (testType == ZmFilterRule.TEST_SOCIALCAST) {
-			if (field == "ops") {
-				dataValue = ZmFilterRule.OP_SOCIAL_SOCIALCAST;
-			}
-			else if (field == "value") {
-				dataValue = (rowData.negative == "1") ? 
-							ZmFilterRule.IS_NOT_SOCIAL : 
-							ZmFilterRule.IS_SOCIAL;	
-			}
-						
-		}
-		else if (testType == ZmFilterRule.TEST_FACEBOOK) {
-			if (field == "ops") {
-				dataValue = ZmFilterRule.OP_SOCIAL_FACEBOOK;
-			}
-			else if (field == "value") {
-				dataValue = (rowData.negative == "1") ? 
-							ZmFilterRule.IS_NOT_SOCIAL : 
-							ZmFilterRule.IS_SOCIAL;
-			}
-		}
-		else if (testType == ZmFilterRule.TEST_TWITTER) {
-			if (field == "ops") {
-				dataValue = ZmFilterRule.OP_SOCIAL_TWITTER;
-			}
-			else if (field == "value") {
-				dataValue = (rowData.negative == "1") ? 
-							ZmFilterRule.IS_NOT_SOCIAL : 
-							ZmFilterRule.IS_SOCIAL;
-			}
-		}
-		else if (testType == ZmFilterRule.TEST_LINKEDIN) {
-			if (field == "ops") {
-				dataValue = ZmFilterRule.OP_SOCIAL_LINKEDIN; 
-			}
-			else if (field == "value") {
-				dataValue = (rowData.negative == "1") ? 
-							ZmFilterRule.IS_NOT_SOCIAL : 
-							ZmFilterRule.IS_SOCIAL;
-			}
-		}
 		else if (testType == ZmFilterRule.TEST_INVITE) {
 			if (field == "ops") {
 				var isRequested = ZmFilterRule.OP_VALUE[ZmFilterRule.OP_IS_REQUESTED];
-				var tmpValue = rowData.method && rowData.method[0]._content;
-				if (rowData.negative!=1) {
-					dataValue = (isRequested == tmpValue)
+                var tmpValue = rowData.method && rowData.method[0]._content;
+                if (rowData.negative!=1) {
+				    dataValue = (isRequested == tmpValue)
 					? ZmFilterRule.OP_IS_REQUESTED
 					: ZmFilterRule.OP_IS_REPLIED;
-				}else {
-					dataValue = (isRequested == tmpValue)
+                }else {
+                    dataValue = (isRequested == tmpValue)
 					? ZmFilterRule.OP_NOT_REQUESTED
 					: ZmFilterRule.OP_NOT_REPLIED;
-				}
+                }
 			}
 		}
 		else if (testType == ZmFilterRule.TEST_ADDRBOOK) {
@@ -881,53 +713,16 @@ function(isMainSelect, testType, field, rowData) {
 					? ZmFilterRule.OP_NOT_IN
 					: ZmFilterRule.OP_IN;
 			} else if (field == "value") {
-				dataValue = rowData.type;
-			}
-		}
-		else if (testType == ZmFilterRule.TEST_ADDRESS) {
-			if (field == "subjectMod") {
-				dataValue = rowData.header;
-			} else if (field == "ops") {
-				dataValue = ZmFilterRule.OP_VALUE_MAP[rowData.stringComparison] == ZmFilterRule.OP_IS_READRECEIPT ? ZmFilterRule.OP_CONTAINS : 
-				ZmFilterRule.OP_VALUE_MAP[rowData.stringComparison];
-				if (dataValue && rowData.negative == "1") {
-					dataValue = ZmFilterRule.getNegativeComparator(dataValue);
-				}						
-			} else if (field == "value") {
-				dataValue = rowData.value;
-			} else if (field == "valueMod") {
-				dataValue = rowData.part;
-			}
-		}
-		else if (testType == ZmFilterRule.TEST_ME) {
-			if (field == "subjectMod") {
-				dataValue = rowData.header;
-			} else if (field == "ops") {
-				dataValue = (rowData.negative == "1")
-							? ZmFilterRule.OP_NOT_ME
-							: ZmFilterRule.OP_IS_ME;						
-			} else if (field == "value") {
 				dataValue = rowData.value;
 			}
 		}
-		else if (testType == ZmFilterRule.TEST_RANKING) {
-			if (field == "subjectMod") {
-				dataValue = rowData.header;
-			} else if (field == "ops") {
-				dataValue = (rowData.negative == "1")
-					? ZmFilterRule.OP_NOT_IN
-					: ZmFilterRule.OP_IN;
-			} else if (field == "value") {
-				dataValue = ZmFilterRule.RANKING;
-			}
-		}
-		else if (testType == ZmFilterRule.TEST_MIME_HEADER) {
-			if (field == "ops") {
-				dataValue = (rowData.negative == "1")
-					? ZmFilterRule.OP_NOT_READRECEIPT
-					: ZmFilterRule.OP_IS_READRECEIPT;
-			}
-		}
+        else if (testType == ZmFilterRule.TEST_MIME_HEADER) {
+            if (field == "ops") {
+                dataValue = (rowData.negative == "1")
+                    ? ZmFilterRule.OP_NOT_READRECEIPT
+                    : ZmFilterRule.OP_IS_READRECEIPT;
+            }
+        }
 		// actions
 		else if (testType == ZmFilterRule.A_NAME_FOLDER) {
 			dataValue = rowData.folderPath;
@@ -970,7 +765,7 @@ function(rowId, isCondition) {
 		button.setData(ZmFilterRuleDialog.IS_CONDITION, isCondition);
 		button.setData(ZmFilterRuleDialog.DO_ADD, (b == "Plus"));
 		button.addSelectionListener(this._plusMinusLstnr);
-		var id = Dwt.getNextId("TEST_");
+		var id = Dwt.getNextId();
 		this._inputs[rowId][b] = {id: id, dwtObj: button};
 		html[j++] = "<td id='";
 		html[j++] = id;
@@ -1029,11 +824,7 @@ function(ev) {
 		comparator = this._getInputValue(this._inputs[rowId], ZmFilterRule.CONDITIONS[oldValue], "ops");
 		dataValue = this._getInputValue(this._inputs[rowId], ZmFilterRule.CONDITIONS[oldValue], "value");
 	}
-	else if (isCondition && (ZmFilterRule.IS_ADDRESS[oldValue] && ZmFilterRule.IS_ADDRESS[newValue])) {
-		comparator = this._getInputValue(this._inputs[rowId], ZmFilterRule.CONDITIONS[oldValue], "ops");
-		dataValue = this._getInputValue(this._inputs[rowId], ZmFilterRule.CONDITIONS[oldValue], "value");
-	}
-		
+	
 	var row = Dwt.byId(rowId);
 	var index = this._getIndexForRow(row, isCondition);
 	var table = Dwt.byId(isCondition ? this._conditionsTableId : this._actionsTableId);
@@ -1041,15 +832,10 @@ function(ev) {
 	table.deleteRow(index);
 	var newIndex = (index >= table.rows.length) ? null : index; // null means add to end
 
-	var test, data, subjectMod;
+	var test, data;
 	if (isCondition) {
 		test = ZmFilterRule.C_TEST_MAP[newValue];
-		if (test == ZmFilterRule.TEST_HEADER) {
-			subjectMod = ZmFilterRule.C_HEADER_VALUE[newValue];
-		}
-		else if (test == ZmFilterRule.TEST_ADDRESS) {
-			subjectMod = ZmFilterRule.C_ADDRESS_VALUE[newValue];
-		}
+		var subjectMod = (test == ZmFilterRule.TEST_HEADER) ? ZmFilterRule.C_HEADER_VALUE[newValue] : null;
 		data = ZmFilterRule.getConditionData(test, comparator, dataValue, subjectMod);
 	} else {
 		test = ZmFilterRule.A_VALUE[newValue];
@@ -1093,38 +879,6 @@ function(ev) {
 	if (!input) { return; }
 	var newValue = ev._args.newValue;
 	input["value"].dwtObj.setVisibility(!(newValue == ZmFilterRule.OP_EXISTS || newValue == ZmFilterRule.OP_NOT_EXISTS));
-};
-
-ZmFilterRuleDialog.prototype._addrBookChangeListener =
-function(ev) {
-	var rowId = ev._args.selectObj.getData(ZmFilterRuleDialog.ROW_ID);
-	var input = this._inputs[rowId];
-	if (!input && !input["ops"] && !input["ops"].dwtObj) {
-		return;
-	}
-	var value = input["ops"].dwtObj.getValue();
-	if (value == ZmFilterRule.OP_IS_ME || value == ZmFilterRule.OP_NOT_ME) {
-		input["value"].dwtObj.setVisibility(false);
-	}
-	else {
-		input["value"].dwtObj.setVisibility(true);
-	}
-};
-
-ZmFilterRuleDialog.prototype._importanceChangeListener = 
-function(ev) {
-	var rowId = ev._args.selectObj.getData(ZmFilterRuleDialog.ROW_ID);
-	var input = this._inputs[rowId];
-	if (!input && !input["value"] && !input["value"].dwtObj) {
-		return;
-	}
-	var value = input["value"].dwtObj.getValue();
-	if (value == ZmFilterRule.IMPORTANCE) {
-		input["valueMod"].dwtObj.setVisibility(true);
-	}
-	else {
-		input["valueMod"].dwtObj.setVisibility(false);
-	}		
 };
 
 /**
@@ -1229,9 +983,9 @@ function(ev) {
 		var cancelCallback = new AjxCallback(this, function(){target.checked = false;});
 		if (active) {
 			var outgoingFilterController = ZmPreferencesApp.getFilterRulesController(this._outgoing);
-			if (outgoingFilterContrller) {
-				outgoingFilterController.handleBeforeFilterChange(null, cancelCallback);
-			}
+            if (outgoingFilterContrller) {
+			    outgoingFilterController.handleBeforeFilterChange(null, cancelCallback);
+            }
 		}
 	}
 };
@@ -1282,23 +1036,23 @@ function(rowId) {
 
 ZmFilterRuleDialog.prototype._cancelButtonListener =
 function(ev) {
-	var filterRulesController = ZmPreferencesApp.getFilterRulesController(this._outgoing);
-	if (filterRulesController) {
-		//get index before loading rules to keep selection on cancel
-		var sel = filterRulesController.getListView() ? filterRulesController.getListView().getSelection()[0] : null;
-		var index = sel ? this._rules.getIndexOfRule(sel) : null;
-		var callback = new AjxCallback(this, this._handleResponseLoadRules, [index]);
-		this._rules.loadRules(true, callback);
-	}
-	this.popdown();
+    var filterRulesController = ZmPreferencesApp.getFilterRulesController(this._outgoing);
+    if (filterRulesController) {
+        //get index before loading rules to keep selection on cancel
+        var sel = filterRulesController.getListView() ? filterRulesController.getListView().getSelection()[0] : null;
+        var index = sel ? this._rules.getIndexOfRule(sel) : null;
+        var callback = new AjxCallback(this, this._handleResponseLoadRules, [index]);
+        this._rules.loadRules(true, callback);
+    }
+    this.popdown();
 };
 
 ZmFilterRuleDialog.prototype._handleResponseLoadRules =
 function(index) {
-	var filterRulesController = ZmPreferencesApp.getFilterRulesController(this._outgoing);
-	if (filterRulesController) {
-		filterRulesController.resetListView(index);
-	}
+    var filterRulesController = ZmPreferencesApp.getFilterRulesController(this._outgoing);
+    if (filterRulesController) {
+        filterRulesController.resetListView(index);
+    }
 };
 
 /**
@@ -1318,15 +1072,15 @@ function(ev) {
 		msg = ZmMsg.filterErrorNoName;
 	}
 
-	var rule1 = this._rules.getRuleByName(name);
+   	var rule1 = this._rules.getRuleByName(name);
 	if ( rule1 && (rule1 != rule))  {
 		msg = ZmMsg.filterErrorNameExists;
 	}
 	if (msg) {
 		var msgDialog = appCtxt.getMsgDialog();
-		msgDialog.setMessage(msg, DwtMessageDialog.CRITICAL_STYLE);
-		msgDialog.popup();
-		return;
+    	msgDialog.setMessage(msg, DwtMessageDialog.CRITICAL_STYLE);
+	    msgDialog.popup();
+	    return;
 	}
 
 	var active = Dwt.byId(this._activeCheckboxId).checked;
@@ -1373,7 +1127,7 @@ function(ev) {
 			rule.addAction(action.actionType, action.value);
 		}
 	}
-	    
+    
 	if (msg) {
 		// bug #35912 - restore values from cached rule
 		if (cachedRule) {
@@ -1384,16 +1138,16 @@ function(ev) {
 		}
 
 		var msgDialog = appCtxt.getMsgDialog();
-		msgDialog.setMessage(msg, DwtMessageDialog.CRITICAL_STYLE);
-		msgDialog.popup();
-		return;
+    	msgDialog.setMessage(msg, DwtMessageDialog.CRITICAL_STYLE);
+	    msgDialog.popup();
+	    return;
 	}
 
 	var stopAction = Dwt.byId(this._stopCheckboxId).checked;
 	if (stopAction) {
 		rule.addAction(ZmFilterRule.A_STOP);
 	}
-	    
+    
 	var respCallback = new AjxCallback(this, this._handleResponseOkButtonListener);
 	if (this._editMode) {
 		this._rules._saveRules(this._rules.getIndexOfRule(rule), true, respCallback);
@@ -1440,10 +1194,6 @@ function(rowId) {
 			}
 		}
 	}
-	else if (testType == ZmFilterRule.TEST_ADDRESS && subject) {
-		subjectMod = ZmFilterRule.C_ADDRESS_VALUE[subject];
-		value += ";" + valueMod;   //addressTest has value=email part=all|domain|localpart
-	}
 	else if (testType == ZmFilterRule.TEST_SIZE && valueMod && valueMod != "B") {
 		value += valueMod;
 	}
@@ -1452,13 +1202,7 @@ function(rowId) {
 		subjectMod = "Content-Type";
 		value = ZmMimeTable.MSG_READ_RECEIPT;
 	}
-	else if (testType == ZmFilterRule.TEST_ADDRESS) {
-		value += ";" + valueMod;   //addressTest has value=email part=all|domain|localpart
-	}
-	else if (testType == ZmFilterRule.TEST_CONVERSATIONS && value == ZmFilterRule.IMPORTANCE) {
-		value = valueMod;  //importanceTest
-	}
-		
+	
 	if (testType == ZmFilterRule.TEST_HEADER || testType == ZmFilterRule.TEST_MIME_HEADER || testType == ZmFilterRule.TEST_ADDRESS) {
 		caseSensitive = inputs["caseSensitive"] ? inputs["caseSensitive"].value : null;	
 	}
@@ -1595,5 +1339,5 @@ function(action) {
 
 ZmFilterRuleDialog.prototype.isEditMode =
 function() {
-	return this._editMode;
+    return this._editMode;
 };

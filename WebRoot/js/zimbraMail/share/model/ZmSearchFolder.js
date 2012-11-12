@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -33,12 +33,11 @@ ZmSearchFolder = function(params) {
 	
 	if (params.query) {
 		var searchParams = {
-			query:			params.query,
-			types:			params.types,
-			checkTypes:		true,
-			sortBy:			params.sortBy,
-			searchId:		params.id,
-			accountName:	(params.account && params.account.name)
+			query:params.query,
+			types:params.types,
+			sortBy:params.sortBy,
+			searchId:params.id,
+			accountName:(params.account && params.account.name)
 		};
 		this.search = new ZmSearch(searchParams);
 	}
@@ -77,32 +76,14 @@ function(params) {
 		accountName = appCtxt.accountList.mainAccount.name;
 	}
 
-	searchNode.setAttribute("l", params.l);
-
-	if (params.rgb) {
-		searchNode.setAttribute("rgb", params.rgb);
-	}
-	else if (params.color) {
-		var color = ZmOrganizer.getColorValue(params.color, params.type);
-		if (color) {
-			searchNode.setAttribute("color", color);
-		}
-	}
-
+	searchNode.setAttribute("l", params.parent.id);
 	appCtxt.getAppController().sendRequest({
 		soapDoc: soapDoc,
 		asyncMode: true,
 		accountName: accountName,
-		callback: ZmSearchFolder._handleCreate,
 		errorCallback: (new AjxCallback(null, ZmOrganizer._handleErrorCreate, params))
 	});
 };
-
-ZmSearchFolder._handleCreate =
-function(params) {
-	appCtxt.setStatusMsg(ZmMsg.searchSaved);
-};
-
 
 ZmSearchFolder.prototype = new ZmFolder;
 ZmSearchFolder.prototype.constructor = ZmSearchFolder;

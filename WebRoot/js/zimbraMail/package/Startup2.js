@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2007, 2008, 2009, 2010, 2011 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -13,13 +13,14 @@
  * ***** END LICENSE BLOCK *****
  */
 
+AjxPackage.require("ajax.net.AjxInclude");
+AjxPackage.require("ajax.util.AjxDateUtil");
 AjxPackage.require("ajax.util.AjxSelectionManager");
 AjxPackage.require("ajax.net.AjxPost");
 AjxPackage.require("ajax.util.AjxBuffer");
 AjxPackage.require("ajax.xslt.AjxXslt");
 AjxPackage.require("ajax.util.AjxSHA1");
 AjxPackage.require("ajax.dwt.events.DwtDateRangeEvent");
-AjxPackage.require("ajax.dwt.events.DwtIdleTimer");
 AjxPackage.require("ajax.dwt.widgets.DwtColorPicker");
 AjxPackage.require("ajax.dwt.widgets.DwtCheckbox");
 AjxPackage.require("ajax.dwt.widgets.DwtRadioButton");
@@ -50,29 +51,25 @@ AjxPackage.require("zimbra.common.ZmErrorDialog");
 AjxPackage.require("zimbraMail.share.model.ZmAuthenticate");
 AjxPackage.require("zimbraMail.share.model.ZmAutocomplete");
 AjxPackage.require("zimbraMail.share.model.ZmInvite");
-AjxPackage.require("zimbraMail.share.model.ZmSystemRetentionPolicy");
 
 AjxPackage.require("zimbraMail.share.view.ZmAutocompleteListView");
 AjxPackage.require("zimbraMail.share.view.ZmPeopleAutocompleteListView");
 AjxPackage.require("zimbraMail.share.view.ZmDLAutocompleteListView");
 AjxPackage.require("zimbraMail.share.view.ZmAddressInputField");
+AjxPackage.require("zimbraMail.share.view.assistant.ZmAssistant");
 
 AjxPackage.require("zimbraMail.share.view.ZmColorMenu");
 AjxPackage.require("zimbraMail.share.view.ZmColorButton");
-AjxPackage.require("zimbraMail.share.view.ZmFolderChooser");
 
 AjxPackage.require("zimbraMail.share.view.htmlEditor.ZmHtmlEditor");
 AjxPackage.require("zimbraMail.share.view.htmlEditor.ZmAdvancedHtmlEditor");
-AjxPackage.require("zimbraMail.share.view.ZmDragAndDrop");
 
 AjxPackage.require("zimbraMail.share.view.dialog.ZmDialog");
 AjxPackage.require("zimbraMail.share.view.dialog.ZmAttachDialog");
+AjxPackage.require("zimbraMail.share.view.dialog.ZmLoginDialog");
 AjxPackage.require("zimbraMail.share.view.dialog.ZmNewOrganizerDialog");
 AjxPackage.require("zimbraMail.share.view.dialog.ZmNewSearchDialog");
 AjxPackage.require("zimbraMail.share.view.dialog.ZmNewTagDialog");
-AjxPackage.require("zimbraMail.share.view.dialog.ZmFolderDialogTabView");
-AjxPackage.require("zimbraMail.share.view.dialog.ZmFolderPropertyView");
-AjxPackage.require("zimbraMail.share.view.dialog.ZmFolderRetentionView");
 AjxPackage.require("zimbraMail.share.view.dialog.ZmFolderPropsDialog");
 AjxPackage.require("zimbraMail.share.view.dialog.ZmQuickAddDialog");
 AjxPackage.require("zimbraMail.share.view.dialog.ZmTimeDialog");
@@ -80,13 +77,8 @@ AjxPackage.require("zimbraMail.core.ZmNewWindow");
 AjxPackage.require("zimbraMail.core.ZmToolTipMgr");
 
 AjxPackage.require("zimbraMail.calendar.model.ZmCalMgr");
-AjxPackage.require("zimbraMail.calendar.model.ZmRecurrence");
 AjxPackage.require("zimbraMail.tasks.model.ZmTaskMgr");
 AjxPackage.require("zimbraMail.calendar.model.ZmMiniCalCache");
-AjxPackage.require("zimbraMail.calendar.controller.ZmSnoozeBeforeProcessor");
 AjxPackage.require("zimbraMail.calendar.controller.ZmReminderController");
 AjxPackage.require("zimbraMail.calendar.view.ZmReminderDialog");
 AjxPackage.require("zimbraMail.calendar.view.ZmQuickReminderDialog");
-
-AjxPackage.require("zimbraMail.mail.view.ZmRetentionWarningDialog");
-

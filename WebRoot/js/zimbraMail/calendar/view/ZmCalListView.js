@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2008, 2009, 2010, 2011 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -222,9 +222,7 @@ function(ev, div) {
 	if (type && type == DwtListView.TYPE_HEADER_ITEM) {
 		var itemIdx = data.index;
 		var field = this._headerList[itemIdx]._field;
-        // Bug: 76489 - Added <span> as workaround to show tooltip as HTML
-        // The ideal fix should add a method in DwtControl to remove the tooltip
-		this.setToolTipContent('<span>'+this._getHeaderToolTip(field, itemIdx)+'</span>');
+		this.setToolTipContent(this._getHeaderToolTip(field, itemIdx));
 	} else {
 		var item = this.getItemFromElement(div);
 		if (item) {
@@ -467,17 +465,6 @@ function(list) {
 };
 
 /**
- * Method overridden to hnadle action popdown - left it blank coz DwtListView.prototype.handleActionPopdown is clearing
- * the this._rightSelItem.
- *
- * @param	{array}		itemArray		an array of items
- */
-ZmCalListView.prototype.handleActionPopdown =
-function(ev) {
-    //kept empty to avoid clearing of this._rightSelItem.
-};
-
-/**
  * Adds the items.
  * The function is overridden to not to show the "No results found" if anything is present in the list.
  *
@@ -494,23 +481,14 @@ function(itemArray) {
 		if (this._list.size() == 0) {
 			this._resetList();
 		}
-
-		// Prune the appts before passing to the underlying ListView
-		var showDeclined = appCtxt.get(ZmSetting.CAL_SHOW_DECLINED_MEETINGS);
-		var filterV = new AjxVector();
-		for (var i = 0; i < itemArray.length; i++) {
-            var appt = itemArray[i];
-            if (showDeclined || (appt.ptst != ZmCalBaseItem.PSTATUS_DECLINED)) {
-                filterV.add(appt);
-            }
-		}
-
-		this._renderList(filterV, this._list.size() != 0, true);
-		this._list.addList(filterV.getArray());
+		this._renderList(AjxVector.fromArray(itemArray), this._list.size() != 0, true);
+		this._list.addList(itemArray);
         this._resetColWidth();
-        //Does not make sense but required to make the scrollbar appear
-        var size = this.getSize();
-        this._listDiv.style.height = (size.y - DwtListView.HEADERITEM_HEIGHT)+"px";
+        if(AjxEnv.isIE) {
+            //Does not make sense but required to make the scrollbar appear
+            var size = this.getSize();
+            this._listDiv.style.height = (size.y - DwtListView.HEADERITEM_HEIGHT)+"px";
+        }
 	}
 };
 

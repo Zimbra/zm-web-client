@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -22,7 +22,7 @@
  *
  * @author Conrad Damon
  *
- * @param {DwtShell}			container		the shell
+ * @param {DwtShell}		container		the shell
  * @param {ZmPreferencesApp}	prefsApp		the preferences application
  * 
  * @extends		ZmController
@@ -33,11 +33,11 @@ ZmPrefController = function(container, prefsApp) {
 	
 	ZmController.call(this, container, prefsApp);
 
+	this._currentView = ZmId.VIEW_PREF;
+
 	this._listeners = {};
-	this._listeners[ZmOperation.SAVE] = this._saveListener.bind(this);
-	this._listeners[ZmOperation.CANCEL] = this._backListener.bind(this);
-	this._listeners[ZmOperation.REVERT_PAGE] =
-		this._resetPageListener.bind(this);
+	this._listeners[ZmOperation.SAVE] = new AjxListener(this, this._saveListener);
+	this._listeners[ZmOperation.CANCEL] = new AjxListener(this, this._backListener);
 
 	this._filtersEnabled = appCtxt.get(ZmSetting.FILTERS_ENABLED);
 	this._dirty = {};
@@ -46,15 +46,10 @@ ZmPrefController = function(container, prefsApp) {
 ZmPrefController.prototype = new ZmController;
 ZmPrefController.prototype.constructor = ZmPrefController;
 
-ZmPrefController.prototype.isZmPrefController = true;
-ZmPrefController.prototype.toString = function() { return "ZmPrefController"; };
-
-
-ZmPrefController.getDefaultViewType =
+ZmPrefController.prototype.toString = 
 function() {
-	return ZmId.VIEW_PREF;
+	return "ZmPrefController";
 };
-ZmPrefController.prototype.getDefaultViewType = ZmPrefController.getDefaultViewType;
 
 /**
  * Shows the tab options pages.
@@ -63,7 +58,7 @@ ZmPrefController.prototype.show =
 function() {
 	this._setView();
 	this._prefsView.show();
-	this._app.pushView(this._currentViewId);
+	this._app.pushView(this._currentView);
 };
 
 /**
@@ -74,17 +69,6 @@ function() {
 ZmPrefController.prototype.getPrefsView =
 function() {
 	return this._prefsView;
-};
-
-/**
- * Gets the current preferences page
- *
- * @return	{ZmPreferencesPage}		the current page
- */
-ZmPrefController.prototype.getCurrentPage =
-function() {
-	var tabKey = this._prefsView.getCurrentTab();
-	return this._prefsView.getTabView(tabKey);
 };
 
 /**
@@ -175,7 +159,7 @@ function(obj, precondition) {
 
 ZmPrefController.prototype.getKeyMapName =
 function() {
-	return ZmKeyMap.MAP_OPTIONS;
+	return "ZmPrefController";
 };
 
 ZmPrefController.prototype.handleKeyAction =
@@ -213,11 +197,6 @@ function(map) {
 ZmPrefController.prototype.getTabView =
 function() {
 	return this.getPrefsView();
-};
-
-ZmPrefController.prototype.resetDirty =
-function(view, dirty) {
-	this._dirty = {};
 };
 
 ZmPrefController.prototype.setDirty =
@@ -279,47 +258,18 @@ ZmPrefController.prototype._setView =
 function() {
 	if (!this._prefsView) {
 		this._initializeToolBar();
-		this._initializeLeftToolBar();
 		var callbacks = new Object();
-		callbacks[ZmAppViewMgr.CB_PRE_HIDE]		= this._preHideCallback.bind(this);
-		callbacks[ZmAppViewMgr.CB_PRE_UNLOAD]	= this._preUnloadCallback.bind(this);
-		callbacks[ZmAppViewMgr.CB_PRE_SHOW]		= this._preShowCallback.bind(this);
-		callbacks[ZmAppViewMgr.CB_POST_SHOW]	= this._postShowCallback.bind(this);
-
+		callbacks[ZmAppViewMgr.CB_PRE_HIDE] = new AjxCallback(this, this._preHideCallback);
+		callbacks[ZmAppViewMgr.CB_PRE_UNLOAD] = new AjxCallback(this, this._preUnloadCallback);
+		callbacks[ZmAppViewMgr.CB_PRE_SHOW] = new AjxCallback(this, this._preShowCallback);
+		callbacks[ZmAppViewMgr.CB_POST_SHOW] = new AjxCallback(this, this._postShowCallback);
 		this._prefsView = new ZmPrefView({parent:this._container, posStyle:Dwt.ABSOLUTE_STYLE, controller:this});
 		var elements = {};
-		elements[ZmAppViewMgr.C_NEW_BUTTON] = this._lefttoolbar;
 		elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar;
 		elements[ZmAppViewMgr.C_APP_CONTENT] = this._prefsView;
-
-		this._app.createView({	viewId:		this._currentViewId,
-								elements:	elements,
-								controller:	this,
-								callbacks:	callbacks,
-								isAppView:	true});
+		this._app.createView({viewId:this._currentView, elements:elements, callbacks:callbacks, isAppView:true});
 		this._initializeTabGroup();
 	}
-};
-
-/**
- * Initializes the left toolbar and sets up the listeners.
- *
- * @private
- */
-ZmPrefController.prototype._initializeLeftToolBar =
-function () {
-	if (this._lefttoolbar) return;
-
-	var buttons = [ZmOperation.SAVE, ZmOperation.CANCEL];
-	this._lefttoolbar = new ZmButtonToolBar({parent:this._container, buttons:buttons, context:this._currentViewId});
-	buttons = this._lefttoolbar.opList;
-	for (var i = 0; i < buttons.length; i++) {
-		var button = buttons[i];
-		if (this._listeners[button]) {
-			this._lefttoolbar.addSelectionListener(button, this._listeners[button]);
-		}
-	}
-	this._lefttoolbar.getButton(ZmOperation.SAVE).setToolTipContent(ZmMsg.savePrefs);
 };
 
 /**
@@ -331,8 +281,8 @@ ZmPrefController.prototype._initializeToolBar =
 function () {
 	if (this._toolbar) return;
 	
-	var buttons = this._getToolBarOps();
-	this._toolbar = new ZmButtonToolBar({parent:this._container, buttons:buttons, context:this._currentViewId});
+	var buttons = [ZmOperation.SAVE, ZmOperation.CANCEL];
+	this._toolbar = new ZmButtonToolBar({parent:this._container, buttons:buttons, context:this._currentView});
 	buttons = this._toolbar.opList;
 	for (var i = 0; i < buttons.length; i++) {
 		var button = buttons[i];
@@ -340,14 +290,8 @@ function () {
 			this._toolbar.addSelectionListener(button, this._listeners[button]);
 		}
 	}
-
-	appCtxt.notifyZimlets("initializeToolbar", [this._app, this._toolbar, this, this._currentViewId], {waitUntilLoaded:true});
-
-};
-
-ZmPrefController.prototype._getToolBarOps =
-function () {
-	return [ZmOperation.REVERT_PAGE];
+	this._toolbar.getButton(ZmOperation.SAVE).setToolTipContent(ZmMsg.savePrefs);
+	appCtxt.notifyZimlets("initializeToolbar", [this._app, this._toolbar, this, this._currentView], {waitUntilLoaded:true});
 };
 
 ZmPrefController.prototype._initializeTabGroup = 
@@ -355,7 +299,6 @@ function () {
 	var tg = this._createTabGroup();
 	var rootTg = appCtxt.getRootTabGroup();
 	tg.newParent(rootTg);
-	tg.addMember(this._lefttoolbar.getTabGroupMember());
 	tg.addMember(this._toolbar.getTabGroupMember());
 	tg.addMember(this._prefsView.getTabGroupMember());
 };
@@ -423,16 +366,15 @@ function(callback, noPop) {
 
 	// save generic settings
 	appCtxt.getSettings().save(list, null, batchCommand);
-    this.resetDirty();
 
 	// save any extra commands that may have been added
 	if (batchCommand.size()) {
-		var respCallback = this._handleResponseSaveListener.bind(this, true, callback, noPop, list);
-		var errorCallback = this._handleResponseSaveError.bind(this);
+		var respCallback = new AjxCallback(this, this._handleResponseSaveListener, [true, callback, noPop]);
+		var errorCallback = new AjxCallback(this, this._handleResponseSaveError);
 		batchCommand.run(respCallback, errorCallback);
 	}
 	else {
-		this._handleResponseSaveListener(list.length > 0, callback, noPop, list);
+		this._handleResponseSaveListener(list.length > 0, callback, noPop);
 	}
 };
 
@@ -453,7 +395,7 @@ function(exception1/*, ..., exceptionN*/) {
 };
 
 ZmPrefController.prototype._handleResponseSaveListener =
-function(optionsSaved, callback, noPop, list, result) {
+function(optionsSaved, callback, noPop, result) {
 	if (optionsSaved) {
 		appCtxt.setStatusMsg(ZmMsg.optionsSaved);
 	}
@@ -474,14 +416,10 @@ function(optionsSaved, callback, noPop, list, result) {
 		callback.run(result);
 	}
 
-	var changed = {};
-	for (var i = 0; i < list.length; i++) {
-		changed[list[i].id] = true;
-	}
 	var postSaveCallbacks = this._prefsView.getPostSaveCallbacks();
 	if (postSaveCallbacks && postSaveCallbacks.length) {
 		for (var i = 0; i < postSaveCallbacks.length; i++) {
-			postSaveCallbacks[i].run(changed);
+			postSaveCallbacks[i].run();
 		}
 	}
 };
@@ -490,20 +428,6 @@ ZmPrefController.prototype._backListener =
 function() {
 	appCtxt.getAppViewMgr().popView();
 };
-
-ZmPrefController.prototype._resetPageListener =
-function() {
-	var viewPage = this.getCurrentPage();
-
-	viewPage.reset(false);
-	appCtxt.setStatusMsg(ZmMsg.defaultsPageRestore);
-};
-
-ZmPrefController.prototype._stateChangeListener =
-function (ev) {
-	var resetbutton = this._toolbar.getButton(ZmOperation.REVERT_PAGE);
-	resetbutton.setEnabled(this.getCurrentPage().hasResetButton());
-}
 
 ZmPrefController.prototype._preHideCallback =
 function(view, force) {
@@ -519,7 +443,8 @@ function(view) {
 ZmPrefController.prototype._preShowCallback =
 function() {
 	if (appCtxt.multiAccounts) {
-		var viewPage = this.getCurrentPage();
+		var tabKey = this._prefsView.getCurrentTab();
+		var viewPage = this._prefsView.getTabView(tabKey);
 		if (viewPage) {
 			// bug: 42399 - the active account may not be "owned" by what is
 			// initially shown in prefs
@@ -576,7 +501,6 @@ ZmPrefController.prototype._popShieldNoCallback =
 function() {
 	this._prefsView.reset();
 	this._popShield.popdown();
-    this.resetDirty();
 	appCtxt.getAppViewMgr().showPendingView(true);
 };
 
@@ -588,5 +512,5 @@ function() {
 
 ZmPrefController.prototype._getDefaultFocusItem = 
 function() {
-	return this._prefsView.getTabGroupMember() || this._lefttoolbar || this._toolbar || null;
+	return this._prefsView.getTabGroupMember() || this._toolbar || null;
 };

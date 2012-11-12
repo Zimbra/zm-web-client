@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2007, 2008, 2009, 2010, 2011 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -23,18 +23,16 @@
  * @class
  * This class represents the portal controller.
  * 
- * @param	{DwtComposite}	container	the containing element
+ * @param {DwtComposite}	container	the containing element
  * @param	{ZmPortalApp}	app			the application
- * @param	{constant}		type		controller type
- * @param	{string}		sessionId	the session id
  * 
  * @extends		ZmListController
  */
-ZmPortalController = function(container, app, type, sessionId) {
+ZmPortalController = function(container, app) {
 	if (arguments.length == 0) { return; }
-	ZmListController.apply(this, arguments);
+	ZmListController.call(this, container, app);
 
-    // TODO: Where does this really belong? Answer: in ZmPortalApp
+    // TODO: Where does this really belong?
     ZmOperation.registerOp(ZmId.OP_PAUSE_TOGGLE, {textKey:"pause", image:"Pause", style: DwtButton.TOGGLE_STYLE});
 
     this._listeners[ZmOperation.REFRESH] = new AjxListener(this, this._refreshListener);
@@ -43,27 +41,27 @@ ZmPortalController = function(container, app, type, sessionId) {
 ZmPortalController.prototype = new ZmListController;
 ZmPortalController.prototype.constructor = ZmPortalController;
 
-ZmPortalController.prototype.isZmPortalController = true;
-ZmPortalController.prototype.toString = function() { return "ZmPortalController"; };
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
+ZmPortalController.prototype.toString = function() {
+	return "ZmPortalController";
+};
 
 //
 // Public methods
 //
 
-ZmPortalController.prototype.getDefaultViewType = function() {
-	return ZmId.VIEW_PORTAL;
-};
-
 ZmPortalController.prototype.show = function() {
 	ZmListController.prototype.show.call(this);
-	this._setup(this._currentViewId);
+	this._setup(this._currentView);
 
-	var elements = this.getViewElements(this._currentViewId, this._listView[this._currentViewId]);
-
-	this._setView({ view:		this._currentViewId,
-					viewType:	this._currentViewType,
-					elements:	elements,
-					isAppView:	true});
+	var elements = new Object();
+	elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[this._currentView];
+	elements[ZmAppViewMgr.C_APP_CONTENT] = this._listView[this._currentView];
+	this._setView({view:this._currentView, elements:elements, isAppView:true});
 };
 
 /**
@@ -72,7 +70,7 @@ ZmPortalController.prototype.show = function() {
  * @param	{Boolean}	paused		if <code>true</code>, pause the portlets
  */
 ZmPortalController.prototype.setPaused = function(paused) {
-    var view = this._listView[this._currentViewId];
+    var view = this._listView[this._currentView];
     var portletIds = view && view.getPortletIds();
     if (portletIds && portletIds.length > 0) {
         var portletMgr = appCtxt.getApp(ZmApp.PORTAL).getPortletMgr();
@@ -86,6 +84,10 @@ ZmPortalController.prototype.setPaused = function(paused) {
 //
 // Protected methods
 //
+
+ZmPortalController.prototype._defaultView = function() {
+	return ZmId.VIEW_PORTAL;
+};
 
 ZmPortalController.prototype._getToolBarOps = function() {
 	return [ ZmOperation.REFRESH /*, ZmOperation.PAUSE_TOGGLE*/ ];
@@ -106,7 +108,7 @@ ZmPortalController.prototype._refreshListener = function() {
 };
 
 ZmPortalController.prototype._pauseListener = function(event) {
-    var toolbar = this._toolbar[this._currentViewId];
+    var toolbar = this._toolbar[this._currentView];
 
     // en/disable refresh button
     var button = toolbar && toolbar.getButton(ZmOperation.REFRESH);

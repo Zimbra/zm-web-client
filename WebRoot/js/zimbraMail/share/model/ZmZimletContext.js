@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -334,7 +334,8 @@ function() {
  */
 ZmZimletContext.prototype.getVal =
 function(key) {
-	return this.json.zimlet[key];
+	var zim = this.json.zimlet;
+	return eval("zim." + key);
 };
 
 /**
@@ -910,15 +911,19 @@ function(xslt, canvas, result) {
 ZmZimletContext._getMsgBody =
 function(o) {
 	//If message is not loaded let developer take care of it
-	if (!o._loaded) {
+	var content = "";
+	if(!o._loaded) {
 		return "";
 	}
 	var part = o.getBodyPart(ZmMimeTable.TEXT_PLAIN) || o.getBodyPart(ZmMimeTable.TEXT_HTML);
-	var content = part && part.getContent();
-	if (content && (part.contentType == ZmMimeTable.TEXT_HTML)) {
-		var div = document.createElement("div");
-		div.innerHTML = content;
-		content = AjxStringUtil.convertHtml2Text(div);
+	if(part && part.content) {
+		if(part.ct == ZmMimeTable.TEXT_PLAIN) {
+			content = part.content;
+		} else if(part.ct == ZmMimeTable.TEXT_HTML) {
+			var div = document.createElement("div");
+			div.innerHTML = part.content;
+			content = AjxStringUtil.convertHtml2Text(div);
+		}
 	}
-	return content || "";
+	return content;
 };

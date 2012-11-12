@@ -26,9 +26,9 @@
 <%-- bug:35733 Deep linking  --%>
 <c:if test="${not empty param.app}">
 	<c:choose>
-          <c:when test="${param.app eq 'calendar' and (mailbox.features.calendar or mailbox.features.calendarUpsell)}">
-              <c:redirect url="/h/calendar" />
-          </c:when>
+		  <c:when test="${param.app eq 'calendar' and (mailbox.features.calendar or mailbox.features.calendarUpsell)}">
+			  <c:redirect url="/h/calendar" />
+		  </c:when>
           <c:when test="${param.app eq 'mail' and mailbox.features.mail and not empty param.id}">
               <c:redirect url="/h/search?st=message&id=${param.id}&action=view" />
           </c:when>
@@ -39,7 +39,7 @@
 			<c:redirect url="/h/search?st=voicemail" />
 		  </c:when>
 		  <c:when test="${param.app eq 'options' and mailbox.features.options}">
-			  <c:redirect url="/h/options?selected=${param.section}" />
+			  <c:redirect url="/h/options" />
 		  </c:when>
 		  <c:when test="${param.app eq 'contacts' and mailbox.features.contacts}">
 			  <c:redirect url="/h/search?st=contact" />

@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -268,15 +268,11 @@ function() {
 ZmTask.prototype.cancel =
 function(mode, batchCmd) {
 	this.setViewMode(mode);
-    var jsonObj = {},
-        requestName = this._getRequestNameForMode(mode),
-        request = jsonObj[requestName] = {
-            _jsns : "urn:zimbraMail"
-        };
-	this._addInviteAndCompNum(request);
+	var soapDoc = AjxSoapDoc.create(this._getSoapForMode(mode), "urn:zimbraMail");
+	this._addInviteAndCompNum(soapDoc);
 
 	// NOTE: we dont bother w/ handling the response - since UI gets updated via notifications
-	batchCmd.addRequestParams(jsonObj);
+	batchCmd.addRequestParams(soapDoc);
 };
 
 /**
@@ -335,15 +331,15 @@ function(node, instNode) {
     this.allDayEvent	= (instNode ? instNode.allDay : null || node.allDay)  ? "1" : "0";
 
     var nodeInst = node.inst && node.inst.length > 0 ? node.inst[0] : null;
-    var tzo = this.tzo = nodeInst && nodeInst.tzo != null ? parseInt(nodeInst.tzo) : 0;
-    var tzoDue = this.tzoDue = nodeInst && nodeInst.tzoDue != null ? parseInt(nodeInst.tzoDue) : 0;
+    var tzo = this.tzo = nodeInst && nodeInst.tzo != null ? nodeInst.tzo : 0;
+    var tzoDue = this.tzoDue = nodeInst && nodeInst.tzoDue != null ? nodeInst.tzoDue : 0;
 
     if (nodeInst && nodeInst.s) {
-        var adjustMs = this.isAllDayEvent() ? (tzo + new Date(parseInt(nodeInst.s,10)).getTimezoneOffset()*60*1000) : 0;
-        var startTime = parseInt(nodeInst.s,10) + adjustMs;
-        this.startDate = new Date(startTime);
-        this.uniqStartTime = this.startDate.getTime();
-    } else {
+		var adjustMs = this.isAllDayEvent() ? (tzo + new Date(nodeInst.s).getTimezoneOffset()*60*1000) : 0;
+		var startTime = parseInt(nodeInst.s,10) + adjustMs;
+		this.startDate = new Date(startTime);
+		this.uniqStartTime = this.startDate.getTime();
+	} else {
         this.startDate = null;
         if(comp && comp.s && comp.s[0].d) {
             var start = comp.s[0].d;
@@ -355,10 +351,10 @@ function(node, instNode) {
     }
 
     if (nodeInst && nodeInst.dueDate) {
-        var adjustMs = this.isAllDayEvent() ? (tzoDue + new Date(parseInt(nodeInst.dueDate,10)).getTimezoneOffset()*60*1000) : 0;
-        var endTime = parseInt(nodeInst.dueDate,10) + adjustMs;
-        this.endDate = new Date(endTime);
-    } else {
+        var adjustMs = this.isAllDayEvent() ? (tzoDue + new Date(nodeInst.dueDate).getTimezoneOffset()*60*1000) : 0;
+		var endTime = parseInt(nodeInst.dueDate,10) + adjustMs;
+		this.endDate = new Date(endTime);
+	} else {
         this.endDate = null;
         if(comp && comp.e && comp.e[0].d) {
             var end = comp.e[0].d;
@@ -369,15 +365,8 @@ function(node, instNode) {
         }
     }
 
-    if(node.alarm){
-        if(node.alarm) this.alarm = node.alarm;
-        if(node.alarmData) this.alarmData = this._getAttr(node, comp, "alarmData");
-    } else {
-       if(comp && comp.alarm && (comp.alarm.length > 0) ){
-         this.alarm = node.alarm = true;
-         this.alarmData = node.alarmData = comp.alarm;
-       }
-    }
+    if(node.alarm) this.alarm = node.alarm;
+    if(node.alarmData) this.alarmData = this._getAttr(node, comp, "alarmData");
 
     if (node.name || comp)				this.name		= this._getAttr(node, comp, "name");
 	if (node.loc || comp)				this.location	= this._getAttr(node, comp, "loc");
@@ -385,15 +374,13 @@ function(node, instNode) {
 	if (node.priority || comp)			this.priority	= parseInt(this._getAttr(node, comp, "priority"));
 	if (node.percentComplete || comp)	this.pComplete	= parseInt(this._getAttr(node, comp, "percentComplete"));
 	if (node.status || comp)			this.status	= this._getAttr(node, comp, "status");
-	if (node.isOrg || comp)				this.isOrg		= new Boolean(this._getAttr(node, comp, "isOrg"));
+	if (node.isOrg || comp)				this.isOrg		= this._getAttr(node, comp, "isOrg");
 	if (node.or || comp)				this.organizer	= node.or ? node.or.a : (comp.or ? comp.or.a : null);
 	if (node.ptst || comp)				this.ptst		= this._getAttr(node, comp, "ptst");
 	if (node.compNum != null)			this.compNum	= (this._getAttr(node, comp, "compNum") || "0");
 
 	if (node.f)	this._parseFlags(node.f);
-	if (node.tn) {
-		this._parseTagNames(node.tn);
-	}
+	if (node.t)	this._parseTags(node.t);
 
     this.type = ZmItem.TASK;
 };
@@ -521,7 +508,7 @@ function(tmp) {
 /**
  * @private
  */
-ZmTask.prototype._getRequestNameForMode =
+ZmTask.prototype._getSoapForMode =
 function(mode, isException) {
 	switch (mode) {
 		case ZmCalItem.MODE_NEW:
@@ -551,11 +538,11 @@ function(mode, isException) {
 /**
  * @private
  */
-ZmTask.prototype._addExtrasToRequest =
-function(request, comp) {
-	ZmCalItem.prototype._addExtrasToRequest.call(this, request, comp);
+ZmTask.prototype._addExtrasToSoap =
+function(soapDoc, inv, comp) {
+	ZmCalItem.prototype._addExtrasToSoap.call(this, soapDoc, inv, comp);
 
-	comp.percentComplete = this.pComplete;
+	comp.setAttribute("percentComplete", this.pComplete);
 
 	// TODO - set "completed" if applicable
 };

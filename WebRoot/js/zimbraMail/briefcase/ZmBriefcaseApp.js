@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2007, 2008, 2009, 2010, 2011 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -37,10 +37,6 @@ ZmBriefcaseApp = function(container, parentController) {
 ZmBriefcaseApp.prototype = new ZmApp;
 ZmBriefcaseApp.prototype.constructor = ZmBriefcaseApp;
 
-ZmBriefcaseApp.prototype.isZmBriefcaseApp = true;
-ZmBriefcaseApp.prototype.toString = function() { return "ZmBriefcaseApp"; };
-
-
 // Constants
 
 // Organizer and item-related constants
@@ -68,6 +64,15 @@ ZmApp.LOAD_SORT[ZmApp.BRIEFCASE]	= 65;
 ZmApp.QS_ARG[ZmApp.BRIEFCASE]		= "briefcase";
 ZmApp.BUTTON_ID[ZmApp.BRIEFCASE]	= ZmId.BRIEFCASE_APP;
 
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
+ZmBriefcaseApp.prototype.toString =
+function() {
+	return "ZmBriefcaseApp";
+};
 
 ZmBriefcaseApp.prototype._defineAPI =
 function() {
@@ -84,9 +89,10 @@ function() {
 	ZmOperation.registerOp(ZmId.OP_NEW_SPREADSHEET, {textKey:"newSpreadSheetBeta", tooltipKey:"newSpreadSheet", image:"ZSpreadSheet", textPrecedence:11});
 	ZmOperation.registerOp(ZmId.OP_NEW_DOC, {textKey:"newDocument", tooltipKey:"newDocument", image:"NewDoc", shortcut:ZmKeyMap.NEW_DOC, textPrecedence:12});
 	ZmOperation.registerOp(ZmId.OP_SHARE_BRIEFCASE, {textKey:"shareFolder", image:"SharedMailFolder"}, ZmSetting.SHARING_ENABLED);
-	ZmOperation.registerOp(ZmId.OP_OPEN_FILE, {textKey:"openFile", tooltipKey:"openFileTooltip", image:"NewDoc"});
+//	ZmOperation.registerOp(ZmId.OP_MOUNT_BRIEFCASE, {textKey:"mountBriefcase", image:"Notebook"}, ZmSetting.SHARING_ENABLED);
+	ZmOperation.registerOp(ZmId.OP_OPEN_FILE, {textKey:"openFile", tooltipKey:"openFileTooltip", image:"NewPage"});
 	ZmOperation.registerOp(ZmId.OP_SAVE_FILE, {textKey:"saveFile", tooltipKey:"saveFileTooltip", image:"DownArrow"});
-    ZmOperation.registerOp(ZmId.OP_NEW_BRIEFCASE_WIN, {textKey:"detachTT", tooltipKey:"detach", image:"OpenInNewWindow"});
+    ZmOperation.registerOp(ZmId.OP_NEW_BRIEFCASE_WIN, {tooltipKey:"detach", image:"OpenInNewWindow"});
 	ZmOperation.registerOp(ZmId.OP_VIEW_FILE_AS_HTML, {textKey:"viewFileAsHtml", tooltipKey:"viewAsHtml", image:"HtmlDoc"});
 	ZmOperation.registerOp(ZmId.OP_SEND_FILE, {textKey:"sendLink", tooltipKey:"sendLink", image:"Send"});
 	ZmOperation.registerOp(ZmId.OP_SEND_FILE_AS_ATT, {textKey:"sendAsAttachment", tooltipKey:"sendAsAttachment", image:"Attachment"});
@@ -100,6 +106,7 @@ function() {
     ZmOperation.registerOp(ZmId.OP_VERSION_HISTORY, {textKey: "versionHistory", image:"VersionHistory"});
     ZmOperation.registerOp(ZmId.OP_RESTORE_VERSION, {textKey: "restoreCurrentVersion", image:"RestoreVersion"});
     ZmOperation.registerOp(ZmId.OP_DELETE_VERSION, {textKey: "deleteVersion", image:"Delete"});
+
 };
 
 ZmBriefcaseApp.prototype._registerSettings =
@@ -167,7 +174,7 @@ function() {
 								{msgKey:		"searchBriefcase",
 								 tooltipKey:	"searchForFiles",
 								 icon:			"Doc",
-								 shareIcon:		null, // the following doesn't work now, so keep the regular icon. doesn't really matter in my opinion --> "SharedBriefcase",
+								 shareIcon:		"SharedBriefcase",
 								 setting:		ZmSetting.BRIEFCASE_ENABLED,
 								 id:			ZmId.getMenuItemId(ZmId.SEARCH, ZmId.ITEM_BRIEFCASE)
 								});
@@ -204,8 +211,7 @@ function() {
 					  gotoActionCode:		ZmKeyMap.GOTO_BRIEFCASE,
 					  newActionCode:		ZmKeyMap.NEW_DOC,
 					  chooserSort:			70,
-					  defaultSort:			60,
-					  searchResultsTab:		true
+					  defaultSort:			60
 					  });
 };
 
@@ -301,7 +307,7 @@ function(contentType, name, winName) {
 		folderId = briefcase ? briefcase.id : ZmOrganizer.ID_BRIEFCASE;
 	}
 
-    if (AjxDispatcher.run("GetBriefcaseController").chkFolderPermission(folderId)) {
+    if(this.getBriefcaseController().chkFolderPermission(folderId)) {
         var url = this.getEditURLForContentType(contentType) + "?" + (name ?"name=" + name + "&" : "") + "l="+folderId + "&skin=" + appCurrentSkin + "&localeId=" + AjxEnv.DEFAULT_LOCALE;
         if (window.appCoverageMode)
             url = url + "&coverage=1";
@@ -334,9 +340,9 @@ function() {
  */
 ZmBriefcaseApp.addEditorParam =
 function(restUrl) {
-//    if (restUrl && window.isTinyMCE) {
+    if(restUrl && window.isTinyMCE) {
     //        restUrl += (restUrl.match(/\?/) ?  "&editor=tinymce" : "?editor=tinymce");
-//    }
+    }
     return restUrl;
 };
 
@@ -378,7 +384,7 @@ function(item) {
 ZmBriefcaseApp.prototype._handleNewItem =
 function() {
 	appCtxt.getAppViewMgr().popView(true, ZmId.VIEW_LOADING);	// pop "Loading..." page
-	AjxDispatcher.run("GetBriefcaseController").__popupUploadDialog(ZmMsg.uploadFileToBriefcase);
+	this.getBriefcaseController().__popupUploadDialog(ZmMsg.uploadFileToBriefcase);
 };
 
 ZmBriefcaseApp.prototype._handleLoadNewBriefcase =
@@ -386,7 +392,7 @@ function() {
 	appCtxt.getAppViewMgr().popView(true, ZmId.VIEW_LOADING); // pop "Loading..." page
 
 	if (!this._newBriefcaseCb) {
-		this._newBriefcaseCb = this._newBriefcaseCallback.bind(this);
+		this._newBriefcaseCb = new AjxCallback(this, this._newBriefcaseCallback);
 	}
 	ZmController.showDialog(appCtxt.getNewBriefcaseDialog(), this._newBriefcaseCb);
 };
@@ -397,7 +403,7 @@ function() {
 ZmBriefcaseApp.prototype.launch =
 function(params, callback) {
 	this._setLaunchTime(this.toString(), new Date());
-	var loadCallback = this._handleLoadLaunch.bind(this, callback);
+	var loadCallback = new AjxCallback(this, this._handleLoadLaunch, [callback]);
 	AjxDispatcher.require(["BriefcaseCore","Briefcase"], true, loadCallback, null, true);
 };
 
@@ -405,18 +411,6 @@ ZmBriefcaseApp.prototype._handleLoadLaunch =
 function(callback) {
 	this.search();
 	if (callback) { callback.run(); }
-};
-
-ZmBriefcaseApp.prototype.getNewButtonProps =
-function() {
-	return {
-		text:		ZmMsg.newDocument,
-		tooltip:	ZmMsg.newDocument,
-		icon:		"NewDoc",
-		iconDis:	"NewDocDis",
-		defaultId:	ZmOperation.NEW_DOC,
-        disabled:	!this.containsWritableFolder()
-	};
 };
 
 /**
@@ -428,14 +422,13 @@ function() {
  * @param {AjxCallback}	[params.callback]			the callback
  * @param {String}	[params.accountName]		the account name
  * @param {Boolean}	[params.noRender]			if <code>true</code>, do not display results
+ * @param {Boolean}	[params.noClear]			if <code>true</code>, do not destroy previous search results
  */
 ZmBriefcaseApp.prototype.search =
 function(params) {
 
 	params = params || {};
-    var folderId = params.folderId || (appCtxt.isExternalAccount() ? this.getDefaultFolderId() : ZmOrganizer.ID_BRIEFCASE);
-	var folder = appCtxt.getById(folderId);
-
+	var folder = appCtxt.getById(params.folderId || ZmOrganizer.ID_BRIEFCASE);
 	var searchParams = {
 		query:			params.query || folder.createQuery(),
 		types:			[ZmItem.BRIEFCASE_ITEM],
@@ -443,7 +436,8 @@ function(params) {
 		searchFor:		ZmId.ITEM_BRIEFCASE,
 		callback:		params.callback,
 		accountName:	params.accountName,
-		noRender:		params.noRender
+		noRender:		params.noRender,
+		noClear:		params.noClear
 	};
 	var sc = appCtxt.getSearchController();
 	sc.searchAllAccounts = false;
@@ -457,20 +451,16 @@ function(params) {
  * @param	{AjxCallback}	callback		the callback
  */
 ZmBriefcaseApp.prototype.showSearchResults =
-function(results, callback, searchResultsController) {
-	var loadCallback = this._handleLoadShowSearchResults.bind(this, results, callback, searchResultsController);
+function(results, callback) {
+	var loadCallback = new AjxCallback(this, this._handleLoadShowSearchResults, [results, callback]);
 	AjxDispatcher.require(["BriefcaseCore", "Briefcase"], false, loadCallback, null, true);
 };
 
 ZmBriefcaseApp.prototype._handleLoadShowSearchResults =
-function(results, callback, searchResultsController) {
-	var sessionId = searchResultsController ? searchResultsController.getCurrentViewId() : ZmApp.MAIN_SESSION;
-	var controller = AjxDispatcher.run("GetBriefcaseController", sessionId, searchResultsController);
-	controller.show(results);
+function(results, callback) {
+	this.getBriefcaseController().show(results);
 	this._setLoadedTime(this.toString(), new Date());
-	if (callback) {
-		callback.run(controller);
-	}
+	if (callback) { callback.run(); }
 };
 
 ZmBriefcaseApp.prototype.setActive =
@@ -498,10 +488,11 @@ function(parent, name, color) {
 };
 
 ZmBriefcaseApp.prototype.getBriefcaseController =
-function(sessionId, searchResultsController) {
-	return this.getSessionController({controllerClass:			"ZmBriefcaseController",
-									  sessionId:				sessionId || ZmApp.MAIN_SESSION,
-									  searchResultsController:	searchResultsController});
+function() {
+	if (!this._briefcaseController) {
+		this._briefcaseController = new ZmBriefcaseController(this._container, this);
+	}
+	return this._briefcaseController;
 };
 
 ZmBriefcaseApp.prototype.createFromAttachment =
@@ -515,7 +506,7 @@ function(msgId, partId, name) {
 	if (this._deferredFolders.length != 0) {
 		this._createDeferredFolders(ZmApp.BRIEFCASE);
 	}
-    AjxDispatcher.run("GetBriefcaseController").createFromAttachment(msgId, partId, name);
+    this.getBriefcaseController().createFromAttachment(msgId, partId, name);
 };
 
 
