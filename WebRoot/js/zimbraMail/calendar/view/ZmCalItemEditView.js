@@ -612,7 +612,7 @@ function(calItem, mode) {
     this._controller.setFormatBtnItem(true, isSavedinHTML ? ZmMimeTable.TEXT_HTML : ZmMimeTable.TEXT_PLAIN);
     this.setComposeMode(isSavedinHTML ? DwtHtmlEditor.HTML : DwtHtmlEditor.TEXT);
 
-    if(this._isForward && !calItem.isOrganizer()) {
+    if(this._isForward /* && !calItem.isOrganizer() */) {
         var preface = [ZmMsg.DASHES, " ", ZmMsg.originalAppointment, " ", ZmMsg.DASHES].join("");
         if(isSavedinHTML) {
             var crlf2 = "<br><br>";
