@@ -122,10 +122,10 @@ ZmCalendarApp.prototype._defineAPI =
 function() {
 	AjxDispatcher.setPackageLoadFunction("CalendarCore", new AjxCallback(this, this._postLoadCore));
 	AjxDispatcher.setPackageLoadFunction("Calendar", new AjxCallback(this, this._postLoad, ZmOrganizer.CALENDAR));
-	AjxDispatcher.registerMethod("GetCalController", "CalendarCore", new AjxCallback(this, this.getCalController));
-	AjxDispatcher.registerMethod("GetReminderController", "CalendarCore", new AjxCallback(this, this.getReminderController));
-	AjxDispatcher.registerMethod("ShowMiniCalendar", "CalendarCore", new AjxCallback(this, this.showMiniCalendar));
-	AjxDispatcher.registerMethod("GetApptComposeController", ["CalendarCore", "Calendar", "CalendarAppt"], new AjxCallback(this, this.getApptComposeController));
+	AjxDispatcher.registerMethod("GetCalController", ["MailCore","CalendarCore"], new AjxCallback(this, this.getCalController));
+	AjxDispatcher.registerMethod("GetReminderController", ["MailCore","CalendarCore"], new AjxCallback(this, this.getReminderController));
+	AjxDispatcher.registerMethod("ShowMiniCalendar", ["MailCore","CalendarCore"], new AjxCallback(this, this.showMiniCalendar));
+	AjxDispatcher.registerMethod("GetApptComposeController", ["MailCore","CalendarCore", "Calendar", "CalendarAppt"], new AjxCallback(this, this.getApptComposeController));
 };
 
 ZmCalendarApp.prototype._registerSettings =
