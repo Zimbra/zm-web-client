@@ -699,6 +699,10 @@ function(msg, node) {
 	else if (node.attributes && node.getAttribute("dfbackground") != -1) {
 		hasExternalImages = ZmMailMsgView.__unfangInternalImage(msg, node, "background", true);	
 	}
+	
+	if (!hasExternalImages && $(node).find("table[dfbackground], td[dfbackground]").length) {
+		hasExternalImages = true;
+	}
 
 	return hasExternalImages;
 };
@@ -836,6 +840,14 @@ function(msg, parent, id) {
 				} catch (ex) {
 					// do nothing
 				}
+			}
+		}
+		//determine if any tables or table cells have an external background image
+		var tableCells = $(parent).find("table[dfbackground], td[dfbackground]");
+		for (var i=0; i<tableCells.length; i++) {
+			var dfbackground = $(tableCells[i]).attr("dfbackground");
+			if (ZmMailMsgView._URL_RE.test(dfbackground)) {
+				$(tableCells[i]).attr("background", dfbackground);
 			}
 		}
 
