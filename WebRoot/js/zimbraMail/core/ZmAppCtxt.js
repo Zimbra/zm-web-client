@@ -56,6 +56,7 @@ ZmAppCtxt = function() {
 };
 
 ZmAppCtxt.ONE_MINUTE = 60 * 1000;
+ZmAppCtxt.MAX_TIMEOUT_VALUE = 2147483647;
 
 ZmAppCtxt._ZIMLETS_EVENT = 'ZIMLETS';
 
@@ -70,8 +71,8 @@ function() {
 };
 
 ZmAppCtxt.prototype._setAuthTokenWarning =
-function() {
-	var millisToLive = window.authTokenTimeLeftInMillis;
+function(timeLeftInMillis) {
+	var millisToLive = timeLeftInMillis || window.authTokenTimeLeftInMillis;
 	var wholeMinutesToLive = Math.floor(millisToLive / ZmAppCtxt.ONE_MINUTE);
 	var minutesToWarnBeforeLogout = Math.min(5, wholeMinutesToLive - 1); 
 
@@ -81,7 +82,14 @@ function() {
 
 	var millisToWarning = millisToLive - ZmAppCtxt.ONE_MINUTE * minutesToWarnBeforeLogout;
 	if (millisToWarning > 0) {
-		window.setTimeout(this._authTokenWarningTimeout.bind(this, minutesToWarnBeforeLogout), millisToWarning);
+		if (millisToWarning <= ZmAppCtxt.MAX_TIMEOUT_VALUE) {
+			window.setTimeout(this._authTokenWarningTimeout.bind(this, minutesToWarnBeforeLogout), millisToWarning);
+		} else {
+			//2147483647 is the max int value for which the timeout will work in most browsers. If the value exceeds the max
+			//then call this function again after the max time.
+			window.setTimeout(this._setAuthTokenWarning.bind(this, millisToLive - ZmAppCtxt.MAX_TIMEOUT_VALUE), ZmAppCtxt.MAX_TIMEOUT_VALUE);
+		}
+
 	}
 };
 
