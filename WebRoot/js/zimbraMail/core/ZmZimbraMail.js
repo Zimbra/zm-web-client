@@ -129,9 +129,6 @@ ZmZimbraMail = function(params) {
 ZmZimbraMail.prototype = new ZmController;
 ZmZimbraMail.prototype.constructor = ZmZimbraMail;
 
-ZmZimbraMail.prototype.isZmZimbraMail = true;
-ZmZimbraMail.prototype.toString = function() { return "ZmZimbraMail"; };
-
 // REVISIT: This is done so that we when we switch from being "beta"
 //          to production, we don't have to ensure that all of the
 //          translations are changed at the same time. We can simply
@@ -154,6 +151,15 @@ ZmZimbraMail.UI_NETWORK_DOWN	= "network_down";
 
 // Public methods
 
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
+ZmZimbraMail.prototype.toString =
+function() {
+	return "ZmZimbraMail";
+};
 
 /**
  * Sets up ZimbraMail, and then starts it by calling its constructor. It is assumed that the
@@ -224,13 +230,12 @@ function() {
 	ZmZimbraMail.setExitTimer(false);
 	ZmZimbraMail.sessionTimerInvoked = false;
 	window._zimbraMail = window.onload = window.onunload = window.onresize = window.document.onkeypress = null;
-	delete _zimbraMail;
 };
 
 ZmZimbraMail.closeChildWindows =
 function() {
 	
-	var childWinList = window._zimbraMail && window._zimbraMail._childWinList;
+	var childWinList = window._zimbraMail ? window._zimbraMail._childWinList : null;
 	if (childWinList) {
 		// close all child windows
 		for (var i = 0; i < childWinList.size(); i++) {
@@ -724,9 +729,8 @@ function(params, result) {
 				sc.resetSearchToolbar();
 			}
 
-			if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
-				AjxDispatcher.run(appCtxt.multiAccounts ? "GetContactsForAllAccounts" : "GetContacts");
-			}
+			var contactListPkg = appCtxt.multiAccounts ? "GetContactsForAllAccounts" : "GetContacts";
+			AjxDispatcher.run(contactListPkg);
 	
 			if (appCtxt.get(ZmSetting.OFFLINE_SUPPORTS_MAILTO) && appCtxt.isOffline) {
 				this.handleOfflineMailTo(location.search);
@@ -815,7 +819,7 @@ function() {
 
 	// reminder controlled by calendar preferences setting
 	if (appCtxt.get(ZmSetting.CAL_REMINDER_WARNING_TIME) != 0) {
-		AjxDispatcher.require(["ContactsCore", "MailCore", "CalendarCore", "Calendar"]);
+        AjxDispatcher.require(["CalendarCore", "Calendar"]);
 		var reminderAction = new AjxTimedAction(this, this.showReminder);
 		var delay = appCtxt.isOffline ? 0 : ZmCalendarApp.REMINDER_START_DELAY;
 		AjxTimedAction.scheduleAction(reminderAction, delay);
@@ -2665,13 +2669,13 @@ function(url) {
  * @private
  */
 ZmZimbraMail.helpLinkCallback =
-function(helpurl) {
+function() {
 	ZmZimbraMail.unloadHackCallback();
 
 	var ac = window.parentAppCtxt || window.appCtxt;
 	var url;
 	if (!ac.isOffline) {
-		try { url = helpurl || skin.hints.helpButton.url; } catch (e) { /* ignore */ }
+		try { url = skin.hints.helpButton.url; } catch (e) { /* ignore */ }
 		url = url || ac.get(ZmSetting.HELP_URI);
 		var sep = url.match(/\?/) ? "&" : "?";
 		url = [url, sep, "locid=", AjxEnv.DEFAULT_LOCALE].join("");
