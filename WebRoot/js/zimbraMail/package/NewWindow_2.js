@@ -45,6 +45,7 @@ AjxPackage.require("ajax.dwt.widgets.DwtForm");
 AjxPackage.require("ajax.dwt.widgets.DwtCalendar");
 
 AjxPackage.require("ajax.util.AjxDateUtil");
+AjxPackage.require("ajax.util.AjxPluginDetector");
 
 AjxPackage.require("zimbra.csfe.ZmBatchCommand");
 AjxPackage.require("zimbra.csfe.ZmCsfeCommand");
