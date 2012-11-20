@@ -1760,8 +1760,6 @@ function(params) {
 	if (!appCtxt.inStartup && (appCtxt.get(ZmSetting.READING_PANE_LOCATION) != ZmSetting.RP_OFF)) {
 		params.fetch = true;
 	}
-	AjxDispatcher.require("MailCore");
-    params.headers = ZmMailMsg.requestHeaders;
 	return params;
 };
 
