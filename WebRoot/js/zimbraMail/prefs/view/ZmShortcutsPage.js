@@ -298,7 +298,7 @@ function(ks, style) {
 	var i = 0;
 	html[i++] = "<span class='" + ZmShortcutList._getClass("shortcutKeyCombo", style) + "'>";
 
-	var keys = (ks[ks.length - 1] != DwtKeyMap.SEP) ? ks.split(DwtKeyMap.SEP) : [ks];
+	var keys = ((ks[ks.length - 1] != DwtKeyMap.SEP) && (ks != DwtKeyMap.SEP)) ? ks.split(DwtKeyMap.SEP) : [ks];
 	for (var j = 0; j < keys.length; j++) {
 		var key = keys[j];
 		var parts = key.split(DwtKeyMap.JOIN);
