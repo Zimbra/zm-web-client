@@ -171,7 +171,7 @@ function(conv, container) {
 
 	this._msgViews = {};
 	this._msgViewList = [];
-	var msgs = conv.getMsgList();
+	var msgs = conv.getMsgList(0, false, AjxUtil.arrayAsHash(ZmConvListController.FOLDERS_TO_OMIT));
 	
 	// base the ordering off a list of msg IDs
 	var idList = [], idHash = {};
