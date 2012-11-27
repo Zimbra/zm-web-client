@@ -2255,8 +2255,10 @@ function(parent, parentElement, adminUrl) {
 
     menu.createSeparator();
 
-    mi = menu.createMenuItem("changePassword", {text: ZmMsg.changePassword});
-    mi.addSelectionListener(new AjxListener(this, this._changePasswordListener));
+	if (appCtxt.get(ZmSetting.CHANGE_PASSWORD_ENABLED)) {
+        mi = menu.createMenuItem("changePassword", {text: ZmMsg.changePassword});
+        mi.addSelectionListener(new AjxListener(this, this._changePasswordListener));
+	}
 
     mi = menu.createMenuItem("logOff", {text: ZmMsg.logOff});
 	mi.addSelectionListener(new AjxListener(null, ZmZimbraMail.logOff));
