@@ -1205,7 +1205,7 @@ function(ev){
 		this._groupMembersListView.getList().remove(item);
 		var contact = item.__contact;
 		var type = item.type;
-		var value = item.value;
+		var value = item.groupRefValue || item.value;
 
 		//var value = item.value || (contact ? contact.getId(!contact.isGal) : item);
 
@@ -1268,7 +1268,9 @@ function(list) {
 				else {
 					obj = ZmContactsHelper._wrapInlineContact(value);
 				}
-				items.push(obj);
+				if (obj) {
+					items.push(obj);
+				}
 			}
 		}
 		else {
@@ -1287,6 +1289,7 @@ function(list) {
 
 ZmGroupView.prototype._addToMembers =
 function(items){
+	var userZid = appCtxt.accountList.mainAccount.id;
 	for (var i = 0; i < items.length; i++) {
 		var item = items[i];
 		var type = item.type;
@@ -1294,6 +1297,9 @@ function(items){
 		var email = item.address;
 		var obj = this._groupMemberMods[value];
 		if (!obj) {
+			if (type === ZmContact.GROUP_CONTACT_REF && value && value.indexOf(":") === -1 ) {
+				value = userZid + ":" + value;
+			}
 			this._groupMemberMods[value] = {op : "+", value : value, type : type, email: email};
 		}
 		else if (obj.op == "-") {
@@ -1522,7 +1528,9 @@ function(result) {
 	this._groupMembersListView.getList().remove(selectedItem);
 
 	var obj = ZmContactsHelper._wrapContact(contact);
-	this._addItems([obj]);
+	if (obj) {
+		this._addItems([obj]);
+	}
 };
 
 /**
