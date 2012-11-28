@@ -859,7 +859,12 @@ function() {
 				continue;
 			}
 			var ajxEmailAddress = ZmContactsHelper._wrapContact(contact);
-			addrs.push(ajxEmailAddress);
+			if (ajxEmailAddress && type === ZmContact.GROUP_CONTACT_REF) {
+				ajxEmailAddress.groupRefValue = value; //don't normalize value
+			}
+			if (ajxEmailAddress) {
+				addrs.push(ajxEmailAddress);
+			}
 		}
 	}
 	return addrs;
@@ -2580,7 +2585,10 @@ function(contactId) {
 	else {
 		contact = appCtxt.cacheGet(contactId);
 	}
-	return contact;
+	if (contact instanceof ZmContact) {
+		return contact;
+	}
+	return null;
 };
 
 // these need to be kept in sync with ZmContact.F_*
