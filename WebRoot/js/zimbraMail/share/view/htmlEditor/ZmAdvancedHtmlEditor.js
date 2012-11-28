@@ -637,6 +637,14 @@ function(id, content) {
         directionality : appCtxt.get(ZmSetting.COMPOSE_INIT_DIRECTION),
         paste_retain_style_properties : "all",
         paste_remove_styles_if_webkit : false,
+        paste_postprocess : function(pl, o) {
+            //Finding all tables in the pasted content and set the border as 1 if it is 0
+            var tableArray = pl.editor.dom.select("table", o.node),
+                table;
+            while ((table = tableArray.shift()) && table.border === "0") {
+                table.border = 1;
+            }
+        },
 		setup : function(ed) {
             ed.onLoadContent.add(obj.onLoadContent.bind(obj));
             ed.onPostRender.add(obj.onPostRender.bind(obj));
