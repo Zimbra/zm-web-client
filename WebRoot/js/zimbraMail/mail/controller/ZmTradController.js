@@ -93,6 +93,7 @@ function(actionCode, ev) {
 		default:
 			return ZmDoublePaneController.prototype.handleKeyAction.apply(this, arguments);
 	}
+	return true;
 };
 
 // Private methods
