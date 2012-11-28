@@ -1,0 +1,2669 @@
+/*
+ * ***** BEGIN LICENSE BLOCK *****
+ * Zimbra Collaboration Suite Web Client
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * 
+ * The contents of this file are subject to the Zimbra Public License
+ * Version 1.3 ("License"); you may not use this file except in
+ * compliance with the License.  You may obtain a copy of the License at
+ * http://www.zimbra.com/license.
+ * 
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * ***** END LICENSE BLOCK *****
+ */
+.ImgCalendarFolder_000066 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px 0px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgCalendarFolder_000099 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -17px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgCalendarFolder_003300 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -34px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgCalendarFolder_003333 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -51px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgCalendarFolder_006600 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -68px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgCalendarFolder_009900 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -85px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgCalendarFolder_00cccc {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -102px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgCalendarFolder_1a1a1a {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -119px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgCalendarFolder_330000 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -136px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgCalendarFolder_330033 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -153px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgCalendarFolder_330066 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -170px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgCalendarFolder_330099 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -187px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgCalendarFolder_333300 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -204px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgCalendarFolder_333333 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -221px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgCalendarFolder_3333ff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -238px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgCalendarFolder_336666 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -255px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgCalendarFolder_3366ff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -272px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgCalendarFolder_339999 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -289px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgCalendarFolder_43eded {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -306px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgCalendarFolder_4d4d4d {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -323px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgCalendarFolder_5b9bf2 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -340px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgCalendarFolder_663300 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -357px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgCalendarFolder_663366 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -374px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgCalendarFolder_6633ff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -391px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgCalendarFolder_666666 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -408px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgCalendarFolder_6666ff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -425px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgCalendarFolder_66cc66 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -442px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgCalendarFolder_6acb9e {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -459px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgCalendarFolder_808080 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -476px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgCalendarFolder_990000 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -493px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgCalendarFolder_993300 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -510px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgCalendarFolder_993399 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -527px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgCalendarFolder_996633 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -544px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgCalendarFolder_99ccff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -561px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgCalendarFolder_aaaaaa {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -578px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgCalendarFolder_b3b3b3 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -595px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgCalendarFolder_ba86e5 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -612px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgCalendarFolder_bebebe {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -629px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgCalendarFolder_cc0000 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -646px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgCalendarFolder_cc33cc {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -663px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgCalendarFolder_cc6600 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -680px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgCalendarFolder_cc9933 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -697px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgCalendarFolder_cccccc {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -714px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgCalendarFolder_ccccff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -731px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgCalendarFolder_ccffcc {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -748px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgCalendarFolder_ccffff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -765px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgCalendarFolder_d5d5d5 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -782px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgCalendarFolder_ededed {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -799px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgCalendarFolder_f66666 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -816px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgCalendarFolder_f8fa33 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -833px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgCalendarFolder_fdbc55 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -850px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgCalendarFolder_fe98d3 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -867px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgCalendarFolder_ff0000 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -884px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgCalendarFolder_ff6600 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -901px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgCalendarFolder_ff8686 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -918px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgCalendarFolder_ff9966 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -935px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgCalendarFolder_ffcc33 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -952px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgCalendarFolder_ffccff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -969px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgCalendarFolder_ffff99 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -986px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgContactsFolder_000066 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -1003px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgContactsFolder_000099 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -1020px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgContactsFolder_003300 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -1037px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgContactsFolder_003333 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -1054px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgContactsFolder_006600 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -1071px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgContactsFolder_009900 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -1088px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgContactsFolder_00cccc {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -1105px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgContactsFolder_1a1a1a {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -1122px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgContactsFolder_330000 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -1139px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgContactsFolder_330033 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -1156px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgContactsFolder_330066 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -1173px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgContactsFolder_330099 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -1190px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgContactsFolder_333300 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -1207px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgContactsFolder_333333 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -1224px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgContactsFolder_3333ff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -1241px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgContactsFolder_336666 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -1258px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgContactsFolder_3366ff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -1275px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgContactsFolder_339999 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -1292px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgContactsFolder_43eded {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -1309px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgContactsFolder_4d4d4d {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -1326px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgContactsFolder_5b9bf2 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -1343px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgContactsFolder_663300 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -1360px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgContactsFolder_663366 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -1377px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgContactsFolder_6633ff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -1394px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgContactsFolder_666666 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -1411px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgContactsFolder_6666ff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -1428px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgContactsFolder_66cc66 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -1445px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgContactsFolder_6acb9e {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -1462px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgContactsFolder_808080 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -1479px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgContactsFolder_990000 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -1496px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgContactsFolder_993300 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -1513px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgContactsFolder_993399 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -1530px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgContactsFolder_996633 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -1547px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgContactsFolder_99ccff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -1564px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgContactsFolder_aaaaaa {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -1581px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgContactsFolder_b3b3b3 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -1598px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgContactsFolder_ba86e5 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -1615px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgContactsFolder_bebebe {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -1632px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgContactsFolder_cc0000 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -1649px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgContactsFolder_cc33cc {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -1666px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgContactsFolder_cc6600 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -1683px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgContactsFolder_cc9933 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -1700px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgContactsFolder_cccccc {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -1717px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgContactsFolder_ccccff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -1734px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgContactsFolder_ccffcc {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -1751px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgContactsFolder_ccffff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -1768px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgContactsFolder_d5d5d5 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -1785px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgContactsFolder_ededed {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -1802px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgContactsFolder_f66666 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -1819px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgContactsFolder_f8fa33 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -1836px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgContactsFolder_fdbc55 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -1853px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgContactsFolder_fe98d3 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -1870px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgContactsFolder_ff0000 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -1887px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgContactsFolder_ff6600 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -1904px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgContactsFolder_ff8686 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -1921px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgContactsFolder_ff9966 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -1938px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgContactsFolder_ffcc33 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -1955px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgContactsFolder_ffccff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -1972px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgContactsFolder_ffff99 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -1989px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgEmailedContacts_000066 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -2006px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgEmailedContacts_000099 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -2023px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgEmailedContacts_003300 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -2040px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgEmailedContacts_003333 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -2057px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgEmailedContacts_006600 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -2074px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgEmailedContacts_009900 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -2091px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgEmailedContacts_00cccc {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -2108px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgEmailedContacts_1a1a1a {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -2125px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgEmailedContacts_330000 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -2142px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgEmailedContacts_330033 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -2159px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgEmailedContacts_330066 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -2176px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgEmailedContacts_330099 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -2193px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgEmailedContacts_333300 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -2210px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgEmailedContacts_333333 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -2227px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgEmailedContacts_3333ff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -2244px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgEmailedContacts_336666 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -2261px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgEmailedContacts_3366ff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -2278px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgEmailedContacts_339999 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -2295px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgEmailedContacts_43eded {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -2312px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgEmailedContacts_4d4d4d {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -2329px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgEmailedContacts_5b9bf2 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -2346px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgEmailedContacts_663300 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -2363px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgEmailedContacts_663366 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -2380px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgEmailedContacts_6633ff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -2397px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgEmailedContacts_666666 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -2414px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgEmailedContacts_6666ff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -2431px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgEmailedContacts_66cc66 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -2448px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgEmailedContacts_6acb9e {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -2465px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgEmailedContacts_808080 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -2482px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgEmailedContacts_990000 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -2499px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgEmailedContacts_993300 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -2516px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgEmailedContacts_993399 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -2533px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgEmailedContacts_996633 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -2550px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgEmailedContacts_99ccff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -2567px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgEmailedContacts_aaaaaa {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -2584px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgEmailedContacts_b3b3b3 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -2601px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgEmailedContacts_ba86e5 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -2618px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgEmailedContacts_bebebe {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -2635px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgEmailedContacts_cc0000 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -2652px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgEmailedContacts_cc33cc {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -2669px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgEmailedContacts_cc6600 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -2686px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgEmailedContacts_cc9933 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -2703px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgEmailedContacts_cccccc {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -2720px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgEmailedContacts_ccccff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -2737px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgEmailedContacts_ccffcc {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -2754px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgEmailedContacts_ccffff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -2771px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgEmailedContacts_d5d5d5 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -2788px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgEmailedContacts_ededed {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -2805px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgEmailedContacts_f66666 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -2822px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgEmailedContacts_f8fa33 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -2839px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgEmailedContacts_fdbc55 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -2856px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgEmailedContacts_fe98d3 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -2873px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgEmailedContacts_ff0000 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -2890px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgEmailedContacts_ff6600 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -2907px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgEmailedContacts_ff8686 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -2924px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgEmailedContacts_ff9966 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -2941px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgEmailedContacts_ffcc33 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -2958px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgEmailedContacts_ffccff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -2975px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgEmailedContacts_ffff99 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -2992px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgFolder_000066 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -3009px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgFolder_000099 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -3026px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgFolder_003300 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -3043px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgFolder_003333 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -3060px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgFolder_006600 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -3077px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgFolder_009900 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -3094px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgFolder_00cccc {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -3111px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgFolder_1a1a1a {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -3128px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgFolder_330000 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -3145px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgFolder_330033 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -3162px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgFolder_330066 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -3179px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgFolder_330099 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -3196px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgFolder_333300 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -3213px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgFolder_333333 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -3230px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgFolder_3333ff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -3247px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgFolder_336666 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -3264px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgFolder_3366ff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -3281px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgFolder_339999 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -3298px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgFolder_43eded {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -3315px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgFolder_4d4d4d {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -3332px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgFolder_5b9bf2 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -3349px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgFolder_663300 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -3366px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgFolder_663366 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -3383px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgFolder_6633ff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -3400px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgFolder_666666 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -3417px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgFolder_6666ff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -3434px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgFolder_66cc66 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -3451px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgFolder_6acb9e {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -3468px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgFolder_808080 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -3485px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgFolder_990000 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -3502px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgFolder_993300 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -3519px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgFolder_993399 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -3536px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgFolder_996633 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -3553px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgFolder_99ccff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -3570px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgFolder_aaaaaa {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -3587px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgFolder_b3b3b3 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -3604px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgFolder_ba86e5 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -3621px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgFolder_bebebe {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -3638px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgFolder_cc0000 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -3655px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgFolder_cc33cc {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -3672px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgFolder_cc6600 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -3689px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgFolder_cc9933 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -3706px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgFolder_cccccc {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -3723px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgFolder_ccccff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -3740px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgFolder_ccffcc {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -3757px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgFolder_ccffff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -3774px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgFolder_d5d5d5 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -3791px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgFolder_ededed {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -3808px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgFolder_f66666 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -3825px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgFolder_f8fa33 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -3842px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgFolder_fdbc55 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -3859px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgFolder_fe98d3 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -3876px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgFolder_ff0000 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -3893px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgFolder_ff6600 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -3910px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgFolder_ff8686 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -3927px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgFolder_ff9966 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -3944px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgFolder_ffcc33 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -3961px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgFolder_ffccff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -3978px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgFolder_ffff99 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -3995px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgInbox_000066 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -4012px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgInbox_000099 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -4029px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgInbox_003300 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -4046px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgInbox_003333 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -4063px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgInbox_006600 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -4080px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgInbox_009900 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -4097px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgInbox_00cccc {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -4114px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgInbox_1a1a1a {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -4131px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgInbox_330000 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -4148px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgInbox_330033 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -4165px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgInbox_330066 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -4182px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgInbox_330099 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -4199px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgInbox_333300 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -4216px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgInbox_333333 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -4233px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgInbox_3333ff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -4250px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgInbox_336666 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -4267px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgInbox_3366ff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -4284px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgInbox_339999 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -4301px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgInbox_43eded {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -4318px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgInbox_4d4d4d {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -4335px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgInbox_5b9bf2 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -4352px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgInbox_663300 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -4369px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgInbox_663366 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -4386px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgInbox_6633ff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -4403px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgInbox_666666 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -4420px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgInbox_6666ff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -4437px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgInbox_66cc66 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -4454px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgInbox_6acb9e {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -4471px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgInbox_808080 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -4488px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgInbox_990000 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -4505px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgInbox_993300 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -4522px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgInbox_993399 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -4539px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgInbox_996633 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -4556px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgInbox_99ccff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -4573px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgInbox_aaaaaa {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -4590px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgInbox_b3b3b3 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -4607px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgInbox_ba86e5 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -4624px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgInbox_bebebe {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -4641px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgInbox_cc0000 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -4658px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgInbox_cc33cc {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -4675px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgInbox_cc6600 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -4692px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgInbox_cc9933 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -4709px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgInbox_cccccc {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -4726px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgInbox_ccccff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -4743px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgInbox_ccffcc {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -4760px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgInbox_ccffff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -4777px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgInbox_d5d5d5 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -4794px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgInbox_ededed {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -4811px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgInbox_f66666 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -4828px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgInbox_f8fa33 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -4845px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgInbox_fdbc55 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -4862px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgInbox_fe98d3 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -4879px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgInbox_ff0000 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -4896px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgInbox_ff6600 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -4913px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgInbox_ff8686 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -4930px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgInbox_ff9966 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -4947px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgInbox_ffcc33 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -4964px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgInbox_ffccff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -4981px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgInbox_ffff99 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -4998px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgMailFolder_000066 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -5015px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgMailFolder_000099 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -5032px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgMailFolder_003300 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -5049px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgMailFolder_003333 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -5066px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgMailFolder_006600 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -5083px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgMailFolder_009900 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -5100px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgMailFolder_00cccc {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -5117px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgMailFolder_1a1a1a {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -5134px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgMailFolder_330000 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -5151px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgMailFolder_330033 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -5168px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgMailFolder_330066 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -5185px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgMailFolder_330099 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -5202px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgMailFolder_333300 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -5219px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgMailFolder_333333 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -5236px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgMailFolder_3333ff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -5253px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgMailFolder_336666 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -5270px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgMailFolder_3366ff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -5287px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgMailFolder_339999 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -5304px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgMailFolder_43eded {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -5321px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgMailFolder_4d4d4d {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -5338px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgMailFolder_5b9bf2 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -5355px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgMailFolder_663300 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -5372px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgMailFolder_663366 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -5389px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgMailFolder_6633ff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -5406px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgMailFolder_666666 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -5423px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgMailFolder_6666ff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -5440px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgMailFolder_66cc66 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -5457px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgMailFolder_6acb9e {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -5474px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgMailFolder_808080 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -5491px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgMailFolder_990000 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -5508px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgMailFolder_993300 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -5525px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgMailFolder_993399 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -5542px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgMailFolder_996633 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -5559px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgMailFolder_99ccff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -5576px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgMailFolder_aaaaaa {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -5593px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgMailFolder_b3b3b3 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -5610px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgMailFolder_ba86e5 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -5627px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgMailFolder_bebebe {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -5644px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgMailFolder_cc0000 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -5661px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgMailFolder_cc33cc {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -5678px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgMailFolder_cc6600 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -5695px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgMailFolder_cc9933 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -5712px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgMailFolder_cccccc {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -5729px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgMailFolder_ccccff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -5746px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgMailFolder_ccffcc {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -5763px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgMailFolder_ccffff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -5780px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgMailFolder_d5d5d5 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -5797px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgMailFolder_ededed {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -5814px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgMailFolder_f66666 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -5831px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgMailFolder_f8fa33 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -5848px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgMailFolder_fdbc55 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -5865px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgMailFolder_fe98d3 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -5882px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgMailFolder_ff0000 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -5899px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgMailFolder_ff6600 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -5916px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgMailFolder_ff8686 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -5933px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgMailFolder_ff9966 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -5950px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgMailFolder_ffcc33 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -5967px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgMailFolder_ffccff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -5984px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgMailFolder_ffff99 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -6001px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgRSS_000066 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -6018px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgRSS_000099 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -6035px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgRSS_003300 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -6052px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgRSS_003333 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -6069px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgRSS_006600 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -6086px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgRSS_009900 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -6103px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgRSS_00cccc {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -6120px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgRSS_1a1a1a {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -6137px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgRSS_330000 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -6154px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgRSS_330033 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -6171px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgRSS_330066 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -6188px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgRSS_330099 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -6205px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgRSS_333300 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -6222px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgRSS_333333 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -6239px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgRSS_3333ff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -6256px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgRSS_336666 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -6273px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgRSS_3366ff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -6290px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgRSS_339999 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -6307px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgRSS_43eded {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -6324px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgRSS_4d4d4d {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -6341px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgRSS_5b9bf2 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -6358px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgRSS_663300 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -6375px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgRSS_663366 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -6392px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgRSS_6633ff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -6409px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgRSS_666666 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -6426px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgRSS_6666ff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -6443px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgRSS_66cc66 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -6460px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgRSS_6acb9e {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -6477px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgRSS_808080 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -6494px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgRSS_990000 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -6511px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgRSS_993300 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -6528px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgRSS_993399 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -6545px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgRSS_996633 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -6562px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgRSS_99ccff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -6579px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgRSS_aaaaaa {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -6596px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgRSS_b3b3b3 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -6613px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgRSS_ba86e5 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -6630px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgRSS_bebebe {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -6647px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgRSS_cc0000 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -6664px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgRSS_cc33cc {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -6681px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgRSS_cc6600 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -6698px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgRSS_cc9933 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -6715px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgRSS_cccccc {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -6732px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgRSS_ccccff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -6749px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgRSS_ccffcc {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -6766px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgRSS_ccffff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -6783px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgRSS_d5d5d5 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -6800px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgRSS_ededed {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -6817px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgRSS_f66666 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -6834px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgRSS_f8fa33 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -6851px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgRSS_fdbc55 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -6868px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgRSS_fe98d3 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -6885px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgRSS_ff0000 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -6902px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgRSS_ff6600 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -6919px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgRSS_ff8686 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -6936px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgRSS_ff9966 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -6953px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgRSS_ffcc33 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -6970px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgRSS_ffccff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -6987px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgRSS_ffff99 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -7004px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSearchFolder_000066 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -7021px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSearchFolder_000099 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -7038px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSearchFolder_003300 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -7055px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSearchFolder_003333 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -7072px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSearchFolder_006600 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -7089px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSearchFolder_009900 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -7106px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSearchFolder_00cccc {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -7123px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSearchFolder_1a1a1a {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -7140px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSearchFolder_330000 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -7157px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSearchFolder_330033 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -7174px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSearchFolder_330066 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -7191px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSearchFolder_330099 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -7208px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSearchFolder_333300 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -7225px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSearchFolder_333333 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -7242px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSearchFolder_3333ff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -7259px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSearchFolder_336666 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -7276px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSearchFolder_3366ff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -7293px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSearchFolder_339999 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -7310px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSearchFolder_43eded {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -7327px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSearchFolder_4d4d4d {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -7344px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSearchFolder_5b9bf2 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -7361px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSearchFolder_663300 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -7378px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSearchFolder_663366 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -7395px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSearchFolder_6633ff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -7412px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSearchFolder_666666 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -7429px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSearchFolder_6666ff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -7446px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSearchFolder_66cc66 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -7463px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSearchFolder_6acb9e {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -7480px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSearchFolder_808080 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -7497px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSearchFolder_990000 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -7514px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSearchFolder_993300 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -7531px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSearchFolder_993399 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -7548px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSearchFolder_996633 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -7565px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSearchFolder_99ccff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -7582px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSearchFolder_aaaaaa {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -7599px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSearchFolder_b3b3b3 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -7616px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSearchFolder_ba86e5 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -7633px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSearchFolder_bebebe {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -7650px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSearchFolder_cc0000 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -7667px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSearchFolder_cc33cc {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -7684px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSearchFolder_cc6600 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -7701px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSearchFolder_cc9933 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -7718px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSearchFolder_cccccc {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -7735px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSearchFolder_ccccff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -7752px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSearchFolder_ccffcc {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -7769px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSearchFolder_ccffff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -7786px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSearchFolder_d5d5d5 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -7803px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSearchFolder_ededed {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -7820px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSearchFolder_f66666 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -7837px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSearchFolder_f8fa33 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -7854px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSearchFolder_fdbc55 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -7871px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSearchFolder_fe98d3 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -7888px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSearchFolder_ff0000 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -7905px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSearchFolder_ff6600 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -7922px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSearchFolder_ff8686 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -7939px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSearchFolder_ff9966 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -7956px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSearchFolder_ffcc33 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -7973px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSearchFolder_ffccff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -7990px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSearchFolder_ffff99 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -8007px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSentFolder_000066 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -8024px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSentFolder_000099 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -8041px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSentFolder_003300 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -8058px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSentFolder_003333 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -8075px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSentFolder_006600 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -8092px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSentFolder_009900 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -8109px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSentFolder_00cccc {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -8126px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSentFolder_1a1a1a {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -8143px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSentFolder_330000 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -8160px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSentFolder_330033 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -8177px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSentFolder_330066 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -8194px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSentFolder_330099 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -8211px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSentFolder_333300 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -8228px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSentFolder_333333 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -8245px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSentFolder_3333ff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -8262px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSentFolder_336666 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -8279px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSentFolder_3366ff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -8296px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSentFolder_339999 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -8313px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSentFolder_43eded {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -8330px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSentFolder_4d4d4d {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -8347px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSentFolder_5b9bf2 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -8364px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSentFolder_663300 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -8381px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSentFolder_663366 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -8398px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSentFolder_6633ff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -8415px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSentFolder_666666 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -8432px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSentFolder_6666ff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -8449px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSentFolder_66cc66 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -8466px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSentFolder_6acb9e {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -8483px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSentFolder_808080 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -8500px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSentFolder_990000 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -8517px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSentFolder_993300 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -8534px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSentFolder_993399 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -8551px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSentFolder_996633 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -8568px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSentFolder_99ccff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -8585px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSentFolder_aaaaaa {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -8602px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSentFolder_b3b3b3 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -8619px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSentFolder_ba86e5 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -8636px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSentFolder_bebebe {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -8653px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSentFolder_cc0000 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -8670px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSentFolder_cc33cc {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -8687px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSentFolder_cc6600 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -8704px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSentFolder_cc9933 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -8721px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSentFolder_cccccc {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -8738px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSentFolder_ccccff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -8755px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSentFolder_ccffcc {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -8772px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSentFolder_ccffff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -8789px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSentFolder_d5d5d5 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -8806px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSentFolder_ededed {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -8823px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSentFolder_f66666 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -8840px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSentFolder_f8fa33 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -8857px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSentFolder_fdbc55 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -8874px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSentFolder_fe98d3 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -8891px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSentFolder_ff0000 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -8908px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSentFolder_ff6600 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -8925px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSentFolder_ff8686 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -8942px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSentFolder_ff9966 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -8959px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSentFolder_ffcc33 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -8976px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSentFolder_ffccff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -8993px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSentFolder_ffff99 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -9010px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedCalendarFolder_000066 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -9027px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedCalendarFolder_000099 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -9044px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedCalendarFolder_003300 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -9061px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedCalendarFolder_003333 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -9078px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedCalendarFolder_006600 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -9095px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedCalendarFolder_009900 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -9112px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedCalendarFolder_00cccc {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -9129px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedCalendarFolder_1a1a1a {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -9146px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedCalendarFolder_330000 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -9163px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedCalendarFolder_330033 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -9180px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedCalendarFolder_330066 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -9197px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedCalendarFolder_330099 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -9214px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedCalendarFolder_333300 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -9231px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedCalendarFolder_333333 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -9248px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedCalendarFolder_3333ff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -9265px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedCalendarFolder_336666 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -9282px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedCalendarFolder_3366ff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -9299px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedCalendarFolder_339999 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -9316px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedCalendarFolder_43eded {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -9333px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedCalendarFolder_4d4d4d {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -9350px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedCalendarFolder_5b9bf2 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -9367px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedCalendarFolder_663300 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -9384px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedCalendarFolder_663366 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -9401px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedCalendarFolder_6633ff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -9418px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedCalendarFolder_666666 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -9435px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedCalendarFolder_6666ff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -9452px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedCalendarFolder_66cc66 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -9469px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedCalendarFolder_6acb9e {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -9486px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedCalendarFolder_808080 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -9503px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedCalendarFolder_990000 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -9520px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedCalendarFolder_993300 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -9537px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedCalendarFolder_993399 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -9554px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedCalendarFolder_996633 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -9571px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedCalendarFolder_99ccff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -9588px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedCalendarFolder_aaaaaa {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -9605px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedCalendarFolder_b3b3b3 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -9622px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedCalendarFolder_ba86e5 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -9639px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedCalendarFolder_bebebe {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -9656px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedCalendarFolder_cc0000 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -9673px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedCalendarFolder_cc33cc {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -9690px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedCalendarFolder_cc6600 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -9707px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedCalendarFolder_cc9933 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -9724px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedCalendarFolder_cccccc {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -9741px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedCalendarFolder_ccccff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -9758px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedCalendarFolder_ccffcc {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -9775px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedCalendarFolder_ccffff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -9792px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedCalendarFolder_d5d5d5 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -9809px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedCalendarFolder_ededed {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -9826px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedCalendarFolder_f66666 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -9843px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedCalendarFolder_f8fa33 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -9860px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedCalendarFolder_fdbc55 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -9877px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedCalendarFolder_fe98d3 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -9894px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedCalendarFolder_ff0000 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -9911px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedCalendarFolder_ff6600 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -9928px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedCalendarFolder_ff8686 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -9945px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedCalendarFolder_ff9966 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -9962px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedCalendarFolder_ffcc33 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -9979px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedCalendarFolder_ffccff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -9996px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedCalendarFolder_ffff99 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -10013px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedContactsFolder_000066 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -10030px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedContactsFolder_000099 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -10047px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedContactsFolder_003300 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -10064px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedContactsFolder_003333 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -10081px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedContactsFolder_006600 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -10098px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedContactsFolder_009900 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -10115px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedContactsFolder_00cccc {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -10132px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedContactsFolder_1a1a1a {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -10149px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedContactsFolder_330000 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -10166px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedContactsFolder_330033 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -10183px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedContactsFolder_330066 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -10200px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedContactsFolder_330099 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -10217px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedContactsFolder_333300 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -10234px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedContactsFolder_333333 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -10251px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedContactsFolder_3333ff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -10268px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedContactsFolder_336666 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -10285px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedContactsFolder_3366ff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -10302px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedContactsFolder_339999 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -10319px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedContactsFolder_43eded {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -10336px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedContactsFolder_4d4d4d {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -10353px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedContactsFolder_5b9bf2 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -10370px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedContactsFolder_663300 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -10387px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedContactsFolder_663366 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -10404px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedContactsFolder_6633ff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -10421px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedContactsFolder_666666 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -10438px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedContactsFolder_6666ff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -10455px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedContactsFolder_66cc66 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -10472px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedContactsFolder_6acb9e {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -10489px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedContactsFolder_808080 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -10506px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedContactsFolder_990000 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -10523px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedContactsFolder_993300 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -10540px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedContactsFolder_993399 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -10557px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedContactsFolder_996633 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -10574px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedContactsFolder_99ccff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -10591px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedContactsFolder_aaaaaa {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -10608px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedContactsFolder_b3b3b3 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -10625px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedContactsFolder_ba86e5 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -10642px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedContactsFolder_bebebe {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -10659px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedContactsFolder_cc0000 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -10676px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedContactsFolder_cc33cc {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -10693px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedContactsFolder_cc6600 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -10710px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedContactsFolder_cc9933 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -10727px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedContactsFolder_cccccc {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -10744px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedContactsFolder_ccccff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -10761px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedContactsFolder_ccffcc {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -10778px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedContactsFolder_ccffff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -10795px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedContactsFolder_d5d5d5 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -10812px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedContactsFolder_ededed {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -10829px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedContactsFolder_f66666 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -10846px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedContactsFolder_f8fa33 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -10863px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedContactsFolder_fdbc55 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -10880px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedContactsFolder_fe98d3 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -10897px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedContactsFolder_ff0000 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -10914px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedContactsFolder_ff6600 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -10931px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedContactsFolder_ff8686 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -10948px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedContactsFolder_ff9966 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -10965px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedContactsFolder_ffcc33 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -10982px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedContactsFolder_ffccff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -10999px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedContactsFolder_ffff99 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -11016px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedMailFolder_000066 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -11033px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedMailFolder_000099 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -11050px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedMailFolder_003300 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -11067px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedMailFolder_003333 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -11084px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedMailFolder_006600 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -11101px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedMailFolder_009900 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -11118px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedMailFolder_00cccc {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -11135px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedMailFolder_1a1a1a {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -11152px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedMailFolder_330000 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -11169px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedMailFolder_330033 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -11186px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedMailFolder_330066 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -11203px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedMailFolder_330099 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -11220px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedMailFolder_333300 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -11237px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedMailFolder_333333 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -11254px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedMailFolder_3333ff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -11271px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedMailFolder_336666 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -11288px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedMailFolder_3366ff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -11305px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedMailFolder_339999 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -11322px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedMailFolder_43eded {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -11339px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedMailFolder_4d4d4d {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -11356px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedMailFolder_5b9bf2 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -11373px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedMailFolder_663300 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -11390px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedMailFolder_663366 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -11407px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedMailFolder_6633ff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -11424px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedMailFolder_666666 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -11441px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedMailFolder_6666ff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -11458px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedMailFolder_66cc66 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -11475px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedMailFolder_6acb9e {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -11492px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedMailFolder_808080 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -11509px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedMailFolder_990000 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -11526px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedMailFolder_993300 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -11543px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedMailFolder_993399 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -11560px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedMailFolder_996633 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -11577px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedMailFolder_99ccff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -11594px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedMailFolder_aaaaaa {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -11611px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedMailFolder_b3b3b3 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -11628px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedMailFolder_ba86e5 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -11645px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedMailFolder_bebebe {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -11662px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedMailFolder_cc0000 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -11679px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedMailFolder_cc33cc {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -11696px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedMailFolder_cc6600 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -11713px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedMailFolder_cc9933 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -11730px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedMailFolder_cccccc {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -11747px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedMailFolder_ccccff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -11764px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedMailFolder_ccffcc {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -11781px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedMailFolder_ccffff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -11798px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedMailFolder_d5d5d5 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -11815px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedMailFolder_ededed {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -11832px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedMailFolder_f66666 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -11849px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedMailFolder_f8fa33 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -11866px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedMailFolder_fdbc55 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -11883px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedMailFolder_fe98d3 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -11900px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedMailFolder_ff0000 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -11917px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedMailFolder_ff6600 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -11934px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedMailFolder_ff8686 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -11951px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedMailFolder_ff9966 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -11968px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedMailFolder_ffcc33 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -11985px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedMailFolder_ffccff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -12002px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedMailFolder_ffff99 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -12019px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedTaskList_000066 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -12036px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedTaskList_000099 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -12053px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedTaskList_003300 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -12070px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedTaskList_003333 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -12087px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedTaskList_006600 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -12104px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedTaskList_009900 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -12121px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedTaskList_00cccc {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -12138px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedTaskList_1a1a1a {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -12155px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedTaskList_330000 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -12172px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedTaskList_330033 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -12189px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedTaskList_330066 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -12206px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedTaskList_330099 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -12223px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedTaskList_333300 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -12240px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedTaskList_333333 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -12257px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedTaskList_3333ff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -12274px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedTaskList_336666 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -12291px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedTaskList_3366ff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -12308px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedTaskList_339999 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -12325px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedTaskList_43eded {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -12342px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedTaskList_4d4d4d {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -12359px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedTaskList_5b9bf2 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -12376px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedTaskList_663300 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -12393px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedTaskList_663366 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -12410px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedTaskList_6633ff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -12427px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedTaskList_666666 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -12444px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedTaskList_6666ff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -12461px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedTaskList_66cc66 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -12478px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedTaskList_6acb9e {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -12495px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedTaskList_808080 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -12512px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedTaskList_990000 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -12529px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedTaskList_993300 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -12546px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedTaskList_993399 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -12563px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedTaskList_996633 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -12580px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedTaskList_99ccff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -12597px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedTaskList_aaaaaa {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -12614px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedTaskList_b3b3b3 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -12631px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedTaskList_ba86e5 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -12648px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedTaskList_bebebe {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -12665px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedTaskList_cc0000 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -12682px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedTaskList_cc33cc {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -12699px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedTaskList_cc6600 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -12716px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedTaskList_cc9933 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -12733px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedTaskList_cccccc {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -12750px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedTaskList_ccccff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -12767px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedTaskList_ccffcc {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -12784px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedTaskList_ccffff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -12801px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedTaskList_d5d5d5 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -12818px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedTaskList_ededed {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -12835px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedTaskList_f66666 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -12852px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedTaskList_f8fa33 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -12869px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedTaskList_fdbc55 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -12886px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedTaskList_fe98d3 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -12903px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedTaskList_ff0000 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -12920px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedTaskList_ff6600 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -12937px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedTaskList_ff8686 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -12954px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedTaskList_ff9966 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -12971px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedTaskList_ffcc33 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -12988px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedTaskList_ffccff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -13005px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgSharedTaskList_ffff99 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -13022px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTag_000066 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -13039px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTag_000099 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -13056px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTag_003300 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -13073px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTag_003333 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -13090px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTag_006600 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -13107px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTag_009900 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -13124px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTag_00cccc {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -13141px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTag_1a1a1a {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -13158px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTag_330000 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -13175px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTag_330033 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -13192px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTag_330066 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -13209px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTag_330099 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -13226px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTag_333300 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -13243px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTag_333333 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -13260px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTag_3333ff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -13277px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTag_336666 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -13294px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTag_3366ff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -13311px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTag_339999 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -13328px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTag_43eded {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -13345px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTag_4d4d4d {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -13362px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTag_5b9bf2 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -13379px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTag_663300 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -13396px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTag_663366 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -13413px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTag_6633ff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -13430px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTag_666666 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -13447px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTag_6666ff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -13464px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTag_66cc66 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -13481px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTag_6acb9e {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -13498px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTag_808080 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -13515px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTag_990000 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -13532px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTag_993300 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -13549px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTag_993399 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -13566px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTag_996633 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -13583px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTag_99ccff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -13600px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTag_aaaaaa {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -13617px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTag_b3b3b3 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -13634px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTag_ba86e5 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -13651px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTag_bebebe {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -13668px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTag_cc0000 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -13685px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTag_cc33cc {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -13702px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTag_cc6600 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -13719px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTag_cc9933 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -13736px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTag_cccccc {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -13753px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTag_ccccff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -13770px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTag_ccffcc {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -13787px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTag_ccffff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -13804px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTag_d5d5d5 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -13821px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTag_ededed {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -13838px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTag_f66666 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -13855px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTag_f8fa33 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -13872px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTag_fdbc55 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -13889px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTag_fe98d3 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -13906px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTag_ff0000 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -13923px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTag_ff6600 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -13940px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTag_ff8686 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -13957px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTag_ff9966 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -13974px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTag_ffcc33 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -13991px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTag_ffccff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -14008px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTag_ffff99 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -14025px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTaskList_000066 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -14042px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTaskList_000099 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -14059px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTaskList_003300 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -14076px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTaskList_003333 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -14093px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTaskList_006600 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -14110px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTaskList_009900 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -14127px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTaskList_00cccc {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -14144px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTaskList_1a1a1a {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -14161px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTaskList_330000 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -14178px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTaskList_330033 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -14195px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTaskList_330066 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -14212px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTaskList_330099 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -14229px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTaskList_333300 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -14246px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTaskList_333333 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -14263px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTaskList_3333ff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -14280px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTaskList_336666 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -14297px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTaskList_3366ff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -14314px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTaskList_339999 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -14331px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTaskList_43eded {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -14348px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTaskList_4d4d4d {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -14365px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTaskList_5b9bf2 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -14382px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTaskList_663300 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -14399px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTaskList_663366 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -14416px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTaskList_6633ff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -14433px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTaskList_666666 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -14450px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTaskList_6666ff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -14467px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTaskList_66cc66 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -14484px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTaskList_6acb9e {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -14501px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTaskList_808080 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -14518px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTaskList_990000 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -14535px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTaskList_993300 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -14552px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTaskList_993399 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -14569px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTaskList_996633 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -14586px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTaskList_99ccff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -14603px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTaskList_aaaaaa {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -14620px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTaskList_b3b3b3 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -14637px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTaskList_ba86e5 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -14654px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTaskList_bebebe {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -14671px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTaskList_cc0000 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -14688px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTaskList_cc33cc {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -14705px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTaskList_cc6600 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -14722px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTaskList_cc9933 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -14739px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTaskList_cccccc {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -14756px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTaskList_ccccff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -14773px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTaskList_ccffcc {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -14790px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTaskList_ccffff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -14807px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTaskList_d5d5d5 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -14824px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTaskList_ededed {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -14841px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTaskList_f66666 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -14858px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTaskList_f8fa33 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -14875px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTaskList_fdbc55 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -14892px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTaskList_fe98d3 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -14909px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTaskList_ff0000 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -14926px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTaskList_ff6600 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -14943px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTaskList_ff8686 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -14960px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTaskList_ff9966 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -14977px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTaskList_ffcc33 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -14994px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTaskList_ffccff {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -15011px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
+.ImgTaskList_ffff99 {
+    background:url('/img/ie-custom-icons/ie-custom-icons.png?v=120917165803') 0px -15028px no-repeat;
+    width:16px !important;height:16px !important;overflow:hidden;}
