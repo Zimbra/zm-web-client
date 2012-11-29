@@ -935,8 +935,7 @@ function(request, comp) {
     if(!this.isSend && this.hasAttendees()){
         draftFlag = this.isDraft || this.makeDraft;
     }
-    draftFlag = draftFlag ? 1 : 0;
-    comp.draft = this.draftFlag;
+    comp.draft = draftFlag ? 1 : 0;
 
     if(!this.isSend && this.hasAttendees()){
         request.echo = "1";
