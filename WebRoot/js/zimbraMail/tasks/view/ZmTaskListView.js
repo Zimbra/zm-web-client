@@ -953,8 +953,8 @@ function() {
 
 ZmTaskListView.prototype._getPrefSortField =
 function(){
-var activeSortBy = this.getActiveSearchSortBy();
-return activeSortBy && ZmTaskListView.SORTBY_HASH[activeSortBy] ?
+	var activeSortBy = this.getActiveSearchSortBy();
+	return activeSortBy && ZmTaskListView.SORTBY_HASH[activeSortBy] ?
        ZmTaskListView.SORTBY_HASH[activeSortBy].field : ZmItem.F_DATE;
 };
 

@@ -175,7 +175,7 @@ function(params) {
 	// TODO: I opened bug 34447 for this performance enhancement.
 	var pkg = [];
 	if (treeIdMap[ZmOrganizer.BRIEFCASE]) pkg.push("BriefcaseCore","Briefcase");
-	if (treeIdMap[ZmOrganizer.CALENDAR]) pkg.push("CalendarCore","Calendar");
+	if (treeIdMap[ZmOrganizer.CALENDAR]) pkg.push("MailCore","CalendarCore","Calendar");
 	if (treeIdMap[ZmOrganizer.ADDRBOOK]) pkg.push("ContactsCore","Contacts");
 	if (treeIdMap[ZmOrganizer.FOLDER]) pkg.push("MailCore","Mail");
 	if (treeIdMap[ZmOrganizer.TASKS]) pkg.push("TasksCore","Tasks");
