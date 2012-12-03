@@ -710,26 +710,35 @@ function(ev) {
  * @private
  */
 ZmContactPicker.prototype._resetSearchColHeaders =
-function() {
-	var slv = this._chooser.sourceListView;
-	slv.headerColCreated = false;
-	var isGal = this._searchInSelect && (this._searchInSelect.getValue() == ZmContactsApp.SEARCHFOR_GAL);
+function () {
+    var slv = this._chooser.sourceListView;
+    var tlv = this._chooser.targetListView;
+    slv.headerColCreated = false;
+    tlv.headerColCreated = false;
+    var isGal = this._searchInSelect && (this._searchInSelect.getValue() == ZmContactsApp.SEARCHFOR_GAL);
 
-	// find the participant column
-	var part = 0;
-	for (var i = 0; i < slv._headerList.length; i++) {
-		var field = slv._headerList[i]._field;
-		if (field == ZmItem.F_NAME) {
-			part = i;
-		}
-		if (field == ZmItem.F_DEPARTMENT) {
-			slv._headerList[i]._visible = isGal && this._detailedSearch;
-		}
-	}
+    // find the participant column
+    var part = 0;
+    for (var i = 0; i < slv._headerList.length; i++) {
+        var field = slv._headerList[i]._field;
+        if (field == ZmItem.F_NAME) {
+            part = i;
+        }
+        if (field == ZmItem.F_DEPARTMENT) {
+            slv._headerList[i]._visible = isGal && this._detailedSearch;
+        }
+    }
 
-	var sortable = isGal ? null : ZmItem.F_NAME;
-	slv._headerList[part]._sortable = sortable;
-	slv.createHeaderHtml(sortable);
+    var sortable = isGal ? null : ZmItem.F_NAME;
+    slv._headerList[part]._sortable = sortable;
+    slv.createHeaderHtml(sortable);
+
+    for (i = 0; i < tlv._headerList.length; i++) {
+        if (tlv._headerList[i]._field == ZmItem.F_DEPARTMENT) {
+            tlv._headerList[i]._visible = isGal && this._detailedSearch;
+        }
+    }
+    tlv.createHeaderHtml();
 };
 
 /**
@@ -1020,7 +1029,8 @@ function() {
 		headerList.push(new DwtListHeaderItem({field:ZmItem.F_TYPE, icon:"ContactsPicker", width:ZmMsg.COLUMN_WIDTH_TYPE_CN}));
 	}
 	headerList.push(new DwtListHeaderItem({field:ZmItem.F_NAME, text:ZmMsg._name, width:ZmMsg.COLUMN_WIDTH_NAME_CN, resizeable: true}));
-	headerList.push(new DwtListHeaderItem({field:ZmItem.F_EMAIL, text:ZmMsg.email, resizeable: true}));
+    headerList.push(new DwtListHeaderItem({field:ZmItem.F_DEPARTMENT, text:ZmMsg.department, width:ZmMsg.COLUMN_WIDTH_DEPARTMENT_CN, resizeable: true}));
+    headerList.push(new DwtListHeaderItem({field:ZmItem.F_EMAIL, text:ZmMsg.email, resizeable: true}));
 
 	return headerList;
 };

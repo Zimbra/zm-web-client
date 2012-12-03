@@ -47,6 +47,10 @@ ZmMailList.prototype.constructor = ZmMailList;
 ZmMailList.prototype.isZmMailList = true;
 ZmMailList.prototype.toString = function() { return "ZmMailList"; };
 
+ZmMailList._SPECIAL_FOLDERS = [ZmFolder.ID_DRAFTS, ZmFolder.ID_TRASH, ZmFolder.ID_SPAM, ZmFolder.ID_SENT];
+ZmMailList._SPECIAL_FOLDERS_HASH = AjxUtil.arrayAsHash(ZmMailList._SPECIAL_FOLDERS);
+
+
 /**
  * Override so that we can specify "tcon" attribute for conv move - we don't want
  * to move messages in certain system folders as a side effect. Also, we need to
@@ -767,38 +771,77 @@ function(items, sortBy, event, details) {
 	}
 };
 
+ZmMailList.prototype._isItemInSpecialFolder =
+function(item) {
+	if (item.folderId) { //case of one message in conv, even if not loaded yet, we know the folder.
+		return ZmMailList._SPECIAL_FOLDERS_HASH[item.folderId];
+	}
+	var msgs = item.msgs;
+	if (!msgs) { //might not be loaded yet. In this case, tough luck - the tcon will be set as usual - based on searched folder, if set
+		return false;
+	}
+	for (var i = 0; i < msgs.size(); i++) {
+		var msg = msgs.get(i);
+		var msgFolderId = msg.folderId;
+		if (!ZmMailList._SPECIAL_FOLDERS_HASH[msgFolderId]) {
+			return false;
+		}
+	}
+	return true;
+};
+
 ZmMailList.prototype._getTcon =
-function(items, nId) {
-	var chars = [];
-	var folders = [ZmFolder.ID_DRAFTS, ZmFolder.ID_TRASH, ZmFolder.ID_SPAM, ZmFolder.ID_SENT];
-    var id;
-    if(!nId){
-        var searchFolder = this.search && appCtxt.getById(this.search.folderId);
-        if(searchFolder){
-            nId = searchFolder.isRemote() ? searchFolder.rid : searchFolder.nId;
-            id = searchFolder.id;
-        }
+function(items, nFromFolderId) {
+
+	//if all items are in a special folder (draft/trash/spam/sent) - then just allow the move without any restriction
+	var allItemsSpecial = true;
+	for (var i = 0; i < items.length; i++) {
+		if (!this._isItemInSpecialFolder(items[i])) {
+			allItemsSpecial = false;
+			break;
+		}
+	}
+
+	if (allItemsSpecial) {
+		return "";
+	}
+
+	var fromFolder;
+	if (nFromFolderId) {
+		fromFolder = appCtxt.getById(nFromFolderId);
+	}
+	else {
+		fromFolder = this.search && appCtxt.getById(this.search.folderId);
     }
 
-	for (var i = 0; i < folders.length; i++) {
-		var folderId = folders[i];
-        var folder;
+	var tcon = [];
+	for (i = 0; i < ZmMailList._SPECIAL_FOLDERS.length; i++) {
+		var specialFolderId = ZmMailList._SPECIAL_FOLDERS[i];
+		if (!fromFolder) {
+			tcon.push(ZmFolder.TCON_CODE[specialFolderId]);
+			continue;
+		}
+		if (fromFolder.id == specialFolderId) {
+			continue; //we're moving out of the special folder - allow  items under it
+		}
+        var specialFolder;
         // get folder object from qualified Ids for multi-account
         if (appCtxt.multiAccounts) {
             var acct  = items && items[0].getAccount && items[0].getAccount();
             var acctId = acct ? acct.id : appCtxt.getActiveAccount().id;
-            var fId = [acctId, ":", folderId].join("");
-            folder = appCtxt.getById(fId);
-        } else {
-            folder = appCtxt.getById(folderId);
+			var fId = [acctId, ":", specialFolderId].join("");
+			specialFolder = appCtxt.getById(fId);
         }
-        var nFolder = (id) ? appCtxt.getById(id) : appCtxt.getById(nId);
-        // if nId is undefined send the default tcon [-tjs].
-		if (!nId || (nId != folderId && folder && nFolder && !nFolder.isChildOf(folder))) {
-			chars.push(ZmFolder.TCON_CODE[folderId]);
+		else {
+            specialFolder = appCtxt.getById(specialFolderId);
+        }
+
+		if (!fromFolder.isChildOf(specialFolder)) {
+			//if origin folder (searched folder) not descendant of the special folder - add the tcon code - don't move items from under the special folder.
+			tcon.push(ZmFolder.TCON_CODE[specialFolderId]);
 		}
 	}
-	return (chars.length) ?  ("-" + chars.join("")) : "";
+	return (tcon.length) ?  ("-" + tcon.join("")) : "";
 };
 
 // If this list is the result of a search that is constrained by the read
