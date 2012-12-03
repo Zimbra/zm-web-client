@@ -135,7 +135,15 @@ ZmListView.prototype.set =
 function(list, sortField) {
 
 	this._sortByString = this._controller._currentSearch && this._controller._currentSearch.sortBy;
-    var settings = appCtxt.getSettings();
+    //TODO: We need a longer term fix but this is to prevent a sort by that doesn't match our ZmSearch
+	//constants and lead to notification issues. 
+	if (this._sortByString && this._sortByString.indexOf("asc") != -1) {
+	    this._sortByString = this._sortByString.replace("asc", "Asc");   
+    }
+	else if (this._sortByString && this._sortByString.indexOf("desc")!= -1) {
+	    this._sortByString = this._sortByString.replace("desc", "Desc");
+    } 
+	var settings = appCtxt.getSettings();
 	if(!appCtxt.isExternalAccount() && this.view && ( settings && settings.persistImplicitSortPrefs(this.view) ) )
         appCtxt.set(ZmSetting.SORTING_PREF, this._sortByString, this.view);
 

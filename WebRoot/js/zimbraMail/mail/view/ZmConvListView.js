@@ -1094,8 +1094,8 @@ function(conv, sortBy) {
 			var item = a[i];
 			if (!item || (item && item.type == ZmItem.MSG)) { continue; }
 			var date = parseInt(item.date);
-			if ((sortBy == ZmSearch.DATE_DESC && (itemDate >= date)) ||
-				(sortBy == ZmSearch.DATE_ASC && (itemDate <= date))) {
+			if ((sortBy && sortBy.toLowerCase() === ZmSearch.DATE_DESC.toLowerCase() && (itemDate >= date)) ||
+				(sortBy && sortBy.toLowerCase() === ZmSearch.DATE_ASC.toLowerCase() && (itemDate <= date))) {
 				return i;
 			}
 		}
