@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2007, 2008, 2009, 2010, 2011 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -45,7 +45,6 @@
  * @param	{constant}	params.treeStyle			the default display style for tree views
  * @param	{Boolean}	params.isCheckedByDefault	the default state for "checked" display style
  * @param	{Boolean}	params.noTooltips			if <code>true</code>, do not show toolt ips for tree items
- * @param	{Boolean}	params.skipImplicit			if <code>true</code>, do not save implicit prefs of expanded/collapsed node status for this overview (see ZmDialog.prototype._setOverview)
  * @param {ZmOverviewController}	controller			the overview controller
  * 
  * @extends	DwtComposite
@@ -73,7 +72,6 @@ ZmOverview = function(params, controller) {
 	this.isCheckedByDefault = params.isCheckedByDefault;
 	this.noTooltips			= params.noTooltips;
 	this.isAppOverview		= params.isAppOverview;
-	this.skipImplicit 		= params.skipImplicit;
 
 	this._treeIds			= [];
 	this._treeHash			= {};

@@ -1,7 +1,7 @@
 <%--
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2007, 2008, 2009, 2010, 2011 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -77,13 +77,13 @@
 		<SCRIPT TYPE="text/javascript">
 			<!--
 			var zprint = function() { var e = document.getElementById("OPPRINT"); window.open(e.href, e.target); }
-			/*var zcallManager = function() { var e = document.getElementById("OPCALLMANAGER"); window.location = e.href; }*/
+			var zcallManager = function() { var e = document.getElementById("OPCALLMANAGER"); window.location = e.href; }
 			//-->
 		</SCRIPT>
 
 		<app:keyboard cache="voice.callListView" globals="true" mailbox="${mailbox}" tags="false" folders="false">
 			<zm:bindKey message="call.Print" func="zprint"/>
-			<%--zm:bindKey message="call.CallManager" func="zcallManager"/--%>
+			<zm:bindKey message="call.CallManager" func="zcallManager"/>
 		</app:keyboard>
 	</c:if>
 </app:view>

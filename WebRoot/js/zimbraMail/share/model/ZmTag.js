@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -29,12 +29,10 @@
 ZmTag = function(params) {
 	params.type = ZmOrganizer.TAG;
 	ZmOrganizer.call(this, params);
-	this.notLocal = params.notLocal;
 };
 
 ZmTag.prototype = new ZmOrganizer;
 ZmTag.prototype.constructor = ZmTag;
-ZmTag.prototype.isZmTag = true;
 
 /**
  * Returns a string representation of the object.
@@ -95,22 +93,6 @@ function(parent, obj, tree, sorted, account) {
 	var index = sorted ? ZmOrganizer.getSortIndex(tag, ZmTag.sortCompare) : null;
 	parent.children.add(tag, index);
 
-	var tagNameMap = parent.getTagNameMap();
-	tagNameMap[obj.name] = tag;
-
-	return tag;
-};
-
-ZmTag.createNotLocalTag =
-function(name) {
-	//cache so we don't create many objects in case many items are tagged by non local tags.
-	var cache = ZmTag.notLocalCache = ZmTag.notLocalCache || [];
-	var tag = cache[name];
-	if (tag) {
-		return tag;
-	}
-	tag = new ZmTag({notLocal: true, id: name, name: name});
-	cache[name] = tag;
 	return tag;
 };
 
@@ -162,7 +144,7 @@ function(color) {
 };
 
 ZmTag.getIcon = function(color) {
-    var object = { getIcon:ZmTag.prototype.getIcon, getColor:ZmTag.prototype.getColor, color:color };
+    var object = { getIcon:ZmTag.prototype.getIcon, color:color };
     if (String(color).match(/^#/)) {
         object.rgb = color;
         object.color = null;
@@ -177,23 +159,18 @@ ZmTag.getIcon = function(color) {
  */
 ZmTag.create =
 function(params) {
-	var request = {_jsns: "urn:zimbraMail"};
-	var jsonObj = {CreateTagRequest: request};
-	request.tag = {name: params.name}
-
+	var soapDoc = AjxSoapDoc.create("CreateTagRequest", "urn:zimbraMail");
+	var tagNode = soapDoc.set("tag");
+	tagNode.setAttribute("name", params.name);
     if (params.rgb) {
-        request.tag.rgb = params.rgb;
+        tagNode.setAttribute("rgb", params.rgb);
     }
     else {
-        request.tag.color = ZmOrganizer.checkColor(params.color) || ZmOrganizer.DEFAULT_COLOR[ZmOrganizer.TAG];
+        var color = ZmOrganizer.checkColor(params.color) || ZmOrganizer.DEFAULT_COLOR[ZmOrganizer.TAG];
+        tagNode.setAttribute("color", color);
     }
 	var errorCallback = new AjxCallback(null, ZmTag._handleErrorCreate, params);
-	appCtxt.getAppController().sendRequest({
-			jsonObj: jsonObj,
-			asyncMode: true,
-			errorCallback: errorCallback,
-			accountName: params.accountName
-	});
+	appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true, errorCallback:errorCallback, accountName:params.accountName});
 };
 
 /**
@@ -218,22 +195,7 @@ function(params, ex) {
  */
 ZmTag.prototype.getIcon = 
 function() {
-	if (this.notLocal) {
-		return "TagShared";
-	}
-	
 	return (this.id == ZmOrganizer.ID_ROOT) ? null : "Tag";
-};
-
-/**
- * map from tag names to tags. used by getByNameOrRemote
- */
-ZmTag.prototype.getTagNameMap =
-function() {
-	if (!this.tagNameMap) {
-		this.tagNameMap = {};
-	}
-	return this.tagNameMap;
 };
 
 /**
@@ -262,29 +224,6 @@ function(obj) {
 	child._notify(ZmEvent.E_CREATE);
 };
 
-
-ZmTag.prototype.notifyModify =
-function(obj) {
-	if (obj.name) {
-		//this is a rename - update the tagNameMap
-		var oldName = this.name;
-		var nameMap = this.parent.getTagNameMap();
-		delete nameMap[oldName];
-		nameMap[obj.name] = this;
-		//we don't change the name on this ZmTag object here, it is done in ZmOrganizer.prototype.notifyModify
-	}
-	ZmOrganizer.prototype.notifyModify.call(this, obj);
-};
-
-
-ZmTag.prototype.notifyDelete =
-function() {
-	var nameMap = this.parent.getTagNameMap();
-	delete nameMap[this.name];  //remove from name map
-	
-	ZmOrganizer.prototype.notifyDelete.call(this);
-};
-
 /**
  * Checks if the tag supports sharing.
  * 
@@ -295,16 +234,3 @@ function() {
 	// tags cannot be shared
 	return false;
 };
-
-ZmTag.prototype.getByNameOrRemote =
-function(name) {
-	var tagNameMap = this.getTagNameMap();
-	var tag = tagNameMap[name];
-	if (tag) {
-		return tag;
-	}
-	return ZmTag.createNotLocalTag(name);
-};
-
-
-

@@ -1,13 +1,13 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
- *
+ * Copyright (C) 2010, 2011 VMware, Inc.
+ * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- *
+ * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
@@ -35,7 +35,7 @@ ZmPreviewPaneView = function(parent, controller, dropTgt) {
 	this._horizMsgSash.registerCallback(this._sashCallback, this);
 
 	this._previewView = new ZmPreviewView({parent:this, posStyle:DwtControl.ABSOLUTE_STYLE, controller: this._controller});
-	
+
     this._detailListView = new ZmDetailListView(this, this._controller, this._controller._dropTgt );
     this._detailListView.addSelectionListener(new AjxListener(this, this._listSelectionListener));
     this._listSelectionShortcutDelayAction = new AjxTimedAction(this, this._listSelectionTimedAction);
@@ -185,7 +185,7 @@ function(newWidth, newHeight, force) {
 		var sashSize = sash.getSize();
 		var sashThickness = readingPaneOnRight ? sashSize.x : sashSize.y;
 		if (readingPaneOnRight) {
-			var listViewWidth = this._vertSashX || (Number(ZmMsg.LISTVIEW_WIDTH)) || Math.floor(newWidth / 2.5);
+			var listViewWidth = this._vertSashX || (Number(ZmMsg.LISTVIEW_WIDTH)) || Math.floor(newWidth / 3);
 			this._detailListView.resetSize(listViewWidth, newHeight);
 			sash.setLocation(listViewWidth, 0);
 			this._previewView.setBounds(listViewWidth + sashThickness, 0,
@@ -210,32 +210,30 @@ ZmPreviewPaneView.prototype._sashCallback =
 function(delta) {
 
 	var readingPaneOnRight = this._controller.isReadingPaneOnRight();
+
 	if (delta > 0) {
 		if (readingPaneOnRight) {
 			// moving sash right
 			var minMsgViewWidth = 300;
-			var currentMsgWidth = this._previewView.getSize(true).x;
+			var currentMsgWidth = this._previewView.getSize().x;
 			delta = Math.max(0, Math.min(delta, currentMsgWidth - minMsgViewWidth));
-			var newListWidth = ((AjxEnv.isIE) ? this._vertMsgSash.getLocation().x : this._detailListView.getSize(true).x) + delta;
+			var newListWidth = ((AjxEnv.isIE) ? this._vertMsgSash.getLocation().x : this._detailListView.getSize().x) + delta;
+
 			if (delta > 0) {
 				this._detailListView.resetSize(newListWidth, Dwt.DEFAULT);
 				this._previewView.setBounds(this._previewView.getLocation().x + delta, Dwt.DEFAULT,
 										currentMsgWidth - delta, Dwt.DEFAULT);
-				
 			} else {
 				delta = 0;
 			}
-			
-			
-			
 		} else {
 			// moving sash down
 			var newMsgViewHeight = this._previewView.getSize().y - delta;
 			var minMsgViewHeight = 150;
 			if (newMsgViewHeight > minMsgViewHeight) {
-				this._detailListView.resetSize(Dwt.DEFAULT, this._detailListView.getSize(true).y + delta);
+				this._detailListView.resetSize(Dwt.DEFAULT, this._detailListView.getSize().y + delta);
 				this._previewView.setBounds(Dwt.DEFAULT, this._previewView.getLocation().y + delta,
-							Dwt.DEFAULT, newMsgViewHeight);
+										Dwt.DEFAULT, newMsgViewHeight);
 			} else {
 				delta = 0;
 			}
@@ -245,14 +243,24 @@ function(delta) {
 
 		if (readingPaneOnRight) {
 			// moving sash left
-			var currentWidth = this._vertMsgSash.getLocation().x;
-			absDelta = Math.max(0, Math.min(absDelta, currentWidth - 300));
+			if (!this._minMLVWidth) {
+				var firstHdr = this._detailListView._headerList[0];
+				var hdrWidth = firstHdr._width;
+				if (hdrWidth == "auto") {
+					var header = Dwt.byId(firstHdr._id);
+					hdrWidth = header && Dwt.getSize(header).x;
+				}
+				this._minMLVWidth = hdrWidth;
+			}
+
+			var currentWidth = ((AjxEnv.isIE) ? this._vertMsgSash.getLocation().x : this._detailListView.getSize().x);
+			absDelta = Math.max(0, Math.min(absDelta, currentWidth - this._minMLVWidth));
 
 			if (absDelta > 0) {
 				delta = -absDelta;
 				this._detailListView.resetSize(currentWidth - absDelta, Dwt.DEFAULT);
 				this._previewView.setBounds(this._previewView.getLocation().x - absDelta, Dwt.DEFAULT,
-						this._previewView.getSize(true).x + absDelta, Dwt.DEFAULT);
+										this._previewView.getSize().x + absDelta, Dwt.DEFAULT);
 			} else {
 				delta = 0;
 			}
@@ -271,9 +279,9 @@ function(delta) {
 
 			if (this.getSash().getLocation().y - absDelta > this._minMLVHeight) {
 				// moving sash up
-				this._detailListView.resetSize(Dwt.DEFAULT, this._detailListView.getSize(true).y - absDelta);
+				this._detailListView.resetSize(Dwt.DEFAULT, this._detailListView.getSize().y - absDelta);
 				this._previewView.setBounds(Dwt.DEFAULT, this._previewView.getLocation().y - absDelta,
-						Dwt.DEFAULT, this._previewView.getSize(true).y + absDelta);
+										Dwt.DEFAULT, this._previewView.getSize().y + absDelta);
 			} else {
 				delta = 0;
 			}
@@ -312,6 +320,16 @@ function() {
 ZmPreviewPaneView.prototype.getLimit =
 function(offset) {
 	return this._detailListView.getLimit(offset);
+};
+
+ZmPreviewPaneView.prototype._staleHandler =
+function() {
+	var search = this._controller._currentSearch;
+	if (search) {
+		search.lastId = search.lastSortVal = null
+		search.offset = search.limit = 0;
+		appCtxt.getSearchController().redoSearch(search);
+	}
 };
 
 ZmPreviewPaneView.prototype.set =
@@ -524,8 +542,6 @@ function(){
 		noscroll: false,
 		posStyle: DwtControl.STATIC_STYLE
 	};
-	
-	
 	this._iframePreview = new DwtIframe(params);
 	this._iframePreviewId = this._iframePreview.getIframe().id;
 
@@ -587,9 +603,9 @@ function(item, errorCode, error){
             this._iframePreview.setIframeContent(html);
         }else{
             //Show Download Link
-            var downloadLink = restUrl + (restUrl.match(/\?/) ? '&' : '?') + "disp=a";
+            var downloadLink = restUrl+ "?disp=a";
             var html = [
-                "<div style='height:100%;width:100%;text-align:center;vertical-align:middle;padding-top:30px;font-family: \'Helvetica Neue\',Helvetica,Arial,\'Liberation Sans\',sans-serif;'>",
+                "<div style='height:100%;width:100%;text-align:center;vertical-align:middle;padding-top:30px;'>",
                     AjxMessageFormat.format(ZmMsg.previewDownloadLink, downloadLink),
                 "</div>"
             ].join('');
@@ -646,7 +662,7 @@ function(item){
     }
 
     this._iframePreview.setSrc(restUrl);
-	Dwt.setLoadedTime("ZmBriefcaseItem"); //iframe src set but item may not be downloaded by browser
+	Dwt.setLoadedTime("ZmBriefcaseItem", new Date()); //iframe src set but item may not be downloaded by browser
 };
 
 ZmPreviewView.prototype._setupLoading =
@@ -755,14 +771,12 @@ function(item){
 
     //Modified & Created
     var dateFormatter = AjxDateFormat.getDateTimeInstance(AjxDateFormat.LONG, AjxDateFormat.SHORT);
-    if (this._headerModified && item.modifyDate) {
+    if(this._headerModified)
         this._headerModified.innerHTML = dateFormatter.format(item.modifyDate);
-	}
     if(this._headerModifier)
         this._headerModifier.innerHTML = item.modifier;
-    if (this._headerCreated && item.createDate) {
+    if(this._headerCreated)
         this._headerCreated.innerHTML = dateFormatter.format(item.createDate);
-	}
     if(this._headerCreator)
         this._headerCreator.innerHTML = item.creator;
 
