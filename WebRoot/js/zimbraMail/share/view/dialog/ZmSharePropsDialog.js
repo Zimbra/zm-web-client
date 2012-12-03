@@ -288,8 +288,7 @@ function(event) {
 	var isUserShare = this._userRadioEl.checked;
 	var isGuestShare = this._guestRadioEl.checked;
 	var isPublicShare = this._publicRadioEl.checked;
-	var shareWithMyself = false;
-	
+
 	// validate input
 	if (!isPublicShare) {
 		var error;
@@ -328,10 +327,7 @@ function(event) {
                     //bug#66610: allow Calendar Sharing with addresses present in zimbraAllowFromAddress
                     var allowLocal;
                     var excludeAllowFromAddress = true;
-					if (appCtxt.isMyAddress(addr, allowLocal, excludeAllowFromAddress)) { 
-						shareWithMyself = true;
-						continue;
-					}
+					if (appCtxt.isMyAddress(addr, allowLocal, excludeAllowFromAddress)) { continue; }
 
 					var share = this._setUpShare();
 					share.grantee.name = addr;
@@ -353,13 +349,6 @@ function(event) {
 	var batchCmd = new ZmBatchCommand(null, accountName);
 	var perm = this._getPermsFromRole();
 	//var pw = isGuestShare && this._passwordInput.getValue();
-	if (shares && shares.length == 0 && shareWithMyself) {
-		var msgDlg = appCtxt.getMsgDialog(true);
-		msgDlg.setMessage(ZmMsg.sharingErrorWithSelf,DwtMessageDialog.INFO_STYLE);
-		msgDlg.setTitle(ZmMsg.sharing);
-		msgDlg.popup();
-		return;
-	}
 	for (var i = 0; i < shares.length; i++) {
 		var share = shares[i];
 		if (perm != share.link.perm) {
