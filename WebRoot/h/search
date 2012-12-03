@@ -81,6 +81,7 @@
       </c:choose>
   </c:if>
   <c:if test="${not empty param.view}">
+      <c:choose>
 	  <c:when test="${param.view eq 'compose'}">
 		  <c:redirect url="/h/search?action=compose">
 			  <c:param name="subject" value="${param.subject}" />
@@ -93,6 +94,7 @@
             <c:remove var="toAddresses" scope="session"/>
           </c:if>
       </c:otherwise>
+      </c:choose>
 	  <c:if test="${(param.view eq 'day') or (param.view eq 'workWeek') or (param.view eq 'week') or (param.view eq 'month')}">
 		  <c:redirect url="/h/calendar" >
 			  <c:param name="view" value="${param.view}" />
