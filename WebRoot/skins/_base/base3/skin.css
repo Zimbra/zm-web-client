@@ -101,6 +101,7 @@ BODY						{	margin:0px; 	}
 	margin-right:100px; /* space to not overlap app row toolbar buttons */
 	position:absolute;
 	width:auto;
+	height: auto;
 	z-index:1;
 	@AppTabChooser@
 }
