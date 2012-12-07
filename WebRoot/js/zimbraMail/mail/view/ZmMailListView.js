@@ -216,6 +216,21 @@ function() {
 	return !this._controller.isReadingPaneOnRight();
 };
 
+
+ZmMailListView.prototype._getExtraStyle =
+function(item) {
+	if (!appCtxt.get(ZmSetting.COLOR_MESSAGES)) {
+		return null;
+	}
+	var color = item.getColor && item.getColor();
+	if (!color) {
+		return null;
+	}
+
+	return Dwt.createLinearGradientCss(AjxColor.lighten(color, 0.75), AjxColor.lighten(color, 0.25), "v");
+};
+
+
 ZmMailListView.prototype._getAbridgedContent =
 function(item, colIdx) {
 	// override me
