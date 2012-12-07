@@ -818,6 +818,8 @@ function(parent, num) {
 
 	parent.enable(printOp, !isDl);
 
+	parent.enable(ZmOperation.NEW_MESSAGE, num > 0 && !appCtxt.isExternalAccount());
+
 	var folder = this._folderId && appCtxt.getById(this._folderId);
 
 	parent.enable([ZmOperation.CONTACTGROUP_MENU], num > 0 && !isDl && !appCtxt.isExternalAccount());
@@ -835,7 +837,6 @@ function(parent, num) {
 			var isInTrash = folder.isInTrash();
 			var canEdit = !folder.isReadOnly();
 
-			parent.enable([ZmOperation.NEW_MESSAGE], (num > 0));
 			parent.enable([ZmOperation.TAG_MENU], canEdit && num > 0);
 			parent.enable([ZmOperation.DELETE, ZmOperation.MOVE, ZmOperation.MOVE_MENU], canEdit && num > 0);
 			parent.enable([ZmOperation.EDIT, ZmOperation.CONTACT], canEdit && num == 1 && !isInTrash);
@@ -855,9 +856,7 @@ function(parent, num) {
 	} else {
 		// gal contacts cannot be tagged/moved/deleted
 		parent.enable([ZmOperation.PRINT, ZmOperation.PRINT_CONTACT, ZmOperation.MOVE, ZmOperation.MOVE_MENU, ZmOperation.TAG_MENU], false);
-		parent.enable(ZmOperation.NEW_MESSAGE, (num > 0 && !appCtxt.isExternalAccount()));
 		parent.enable([ZmOperation.SEARCH_MENU, ZmOperation.BROWSE, ZmOperation.NEW_MENU, ZmOperation.VIEW_MENU], true);
-		parent.enable(ZmOperation.NEW_MESSAGE, num > 0);
 		parent.enable(ZmOperation.CONTACT, num == 1);
 		var selection = this._listView[this._currentViewId].getSelection();
 		var canEdit = false;
@@ -871,9 +870,6 @@ function(parent, num) {
 		var canDelete = ZmContactList.deleteGalItemsAllowed(selection);
 
 		parent.enable([ZmOperation.DELETE], canDelete);
-
-
-
 	}
 
     //this._resetQuickCommandOperations(parent);
