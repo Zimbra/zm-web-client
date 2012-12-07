@@ -160,7 +160,7 @@ function(ev) {
 	var data = this._apptData[obj.apptUid];
 	var appt = data ? data.appt : null;
 	if (appt) {
-		AjxDispatcher.require(["MailCore", "CalendarCore", "Calendar"]);
+		AjxDispatcher.require(["CalendarCore", "Calendar"]);
 
 		var cc = AjxDispatcher.run("GetCalController");
 

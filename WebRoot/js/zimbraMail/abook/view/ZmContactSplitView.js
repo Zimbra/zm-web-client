@@ -44,9 +44,10 @@ ZmContactSplitView = function(params) {
 	if (folderTree) {
 		folderTree.addChangeListener(new AjxListener(this, this._addrbookTreeListener));
 	}
-
-	ZmTagsHelper.setupListeners(this);
-
+	var tagTree = appCtxt.getTagTree();
+	if (tagTree) {
+		tagTree.addChangeListener(new AjxListener(this, this._tagChangeListener));
+	}
 };
 
 ZmContactSplitView.prototype = new DwtComposite;
@@ -54,7 +55,6 @@ ZmContactSplitView.prototype.constructor = ZmContactSplitView;
 
 // Consts
 ZmContactSplitView.ALPHABET_HEIGHT = 35;
-
 ZmContactSplitView.NUM_DL_MEMBERS = 10;	// number of distribution list members to show initially
 
 ZmContactSplitView.LIST_MIN_WIDTH = 100;
@@ -156,7 +156,7 @@ function(contact, isGal) {
 	}
 
 	var oldContact = this._contact;
-	this._contact = this._item = contact;
+	this._contact = contact;
 
 	if (this._contact.isLoaded) {
 		this._setContact(contact, isGal, oldContact);
@@ -273,7 +273,7 @@ function() {
 		this._contactGroupView.getHtmlElement().innerHTML = "";
 	}
 
-	this._clearTags();
+	this._setHeaderInfo(true);
 };
 
 /**
@@ -406,7 +406,7 @@ function(ev, treeView) {
 				: this._contact.folderId;
 
 			if (organizer.id == folderId) {
-				this._setTags();
+				this._setHeaderInfo();
 			}
 		}
 	}
@@ -498,16 +498,9 @@ function(contact, isGal, oldContact, expandDL, isBack) {
 		this._showContact(subs);
 	}
 
-	this._setTags();
+	this._setHeaderInfo();
 	Dwt.setLoadedTime("ZmContactItem");
 };
-
-ZmContactSplitView.prototype.dispose =
-function() {
-	ZmTagsHelper.disposeListeners(this);
-	DwtComposite.prototype.dispose.apply(this, arguments);
-};
-
 
 ZmContactSplitView.prototype._showContact =
 function(subs) {
@@ -568,9 +561,6 @@ function(contact) {
 			: dlInfo.isOwner ? ZmMsg.youAreOwner
 			: dlInfo.isMember ? ZmMsg.youAreMember
 			: "";
-	if (statusMsg != '') {
-		statusMsg = "<li>" + statusMsg + "</li>";
-	}
 	var actionMsg;
 	if (!dlInfo.isMember) {
 		actionMsg =	policy == ZmContactSplitView.SUBSCRIPTION_POLICY_APPROVAL ? ZmMsg.dlSubscriptionRequiresApproval
@@ -583,10 +573,7 @@ function(contact) {
 			: "";
 
 	}
-	if (actionMsg != '') {
-		actionMsg = "<li>" + actionMsg + "</li>";
-	}
-	this._subscriptionMsg.innerHTML = statusMsg + actionMsg;
+	this._subscriptionMsg.innerHTML = statusMsg + (actionMsg != "" && statusMsg != "" ? "<br>" : "") + actionMsg;
 
 };
 
@@ -881,7 +868,7 @@ function(subs, result) {
 
 	subs.dl = this._distributionList = result;
 	this._showContact(subs);
-	this._setTags();
+	this._setHeaderInfo();
 	if (!this._rowHeight) {
 		var table = document.getElementById(this._detailsId);
 		if (table) {
@@ -899,7 +886,7 @@ ZmContactSplitView.prototype._encodeIM =
 function(data) {
 	var result = ZmContactSplitView.IM_RE_VALUE.exec(data);
 	if (result) {
-		var params = [result[1], result[2]]; //, ZmMsg["AB_FIELD_", result[1]]];  <-- this 3rd param looks like syntax error and ZmMsg.AB_DISPLAY_IM only accepts 2 params anyway.
+		var params = [result[1], result[2], ZmMsg["AB_FIELD_", result[1]]];
 		return AjxMessageFormat.format(ZmMsg.AB_DISPLAY_IM, params);
 	} else {
 		return data;
@@ -924,32 +911,81 @@ function() {
 /**
  * @private
  */
-ZmContactSplitView.prototype._setTags =
+ZmContactSplitView.prototype._getTagHtml =
 function() {
-	//use the helper to get the tags.
-	var tagsHtml = ZmTagsHelper.getTagsHtml(this._item, this);
-	this._setTagsHtml(tagsHtml);
+	var html = [];
+	var idx = 0;
+
+	var tagList = appCtxt.getAccountTagList(this._contact);
+
+	// get sorted list of tags for this msg
+	var tags = this._contact.tags;
+	var ta = [];
+	for (var i = 0; i < tags.length; i++) {
+		ta.push(tagList.getByNameOrRemote(tags[i]));
+	}
+	ta.sort(ZmTag.sortCompare);
+
+	for (var j = 0; j < ta.length; j++) {
+		var tag = ta[j];
+		if (!tag) { continue; }
+		var icon = tag.getIconWithColor();
+		var attr = ["id='", this._getTagsElementId(), tag.id, "'"].join("");
+		// XXX: set proper class name for link once defined!
+		html[idx++] = "<a href='javascript:;' class='' onclick='ZmContactSplitView._tagClicked(";
+		html[idx++] = '"';
+		html[idx++] = AjxStringUtil.encodeQuotes(tag.name);
+		html[idx++] = '"';
+		html[idx++] = "); return false;'>";
+		html[idx++] = AjxImg.getImageSpanHtml(icon, null, attr, AjxStringUtil.htmlEncode(tag.name));
+		html[idx++] = "</a>&nbsp;";
+	}
+	return html.join("");
 };
 
 /**
  * @private
  */
-ZmContactSplitView.prototype._clearTags =
-function() {
-	this._setTagsHtml("");
+ZmContactSplitView.prototype._setHeaderInfo =
+function(clear) {
+	// set tags
+	var tagCell = document.getElementById(this._getTagsElementId());
+	if (tagCell) {
+		tagCell.innerHTML = clear ? "" : this._getTagHtml();
+	}
 };
 
 /**
- * note this is called from ZmTagsHelper
- * @param html
+ * @private
  */
-ZmContactSplitView.prototype._setTagsHtml =
-function(html) {
-	var tagCell = document.getElementById(this._getTagsElementId());
-	if (!tagCell) { return; }
-	tagCell.innerHTML = html;
+ZmContactSplitView.prototype._tagChangeListener =
+function(ev) {
+	if (ev.type != ZmEvent.S_TAG) { return; }
+
+	var fields = ev.getDetail("fields");
+	var changed = fields && (fields[ZmOrganizer.F_COLOR] || fields[ZmOrganizer.F_NAME]);
+	if ((ev.event == ZmEvent.E_MODIFY && changed) ||
+			ev.event == ZmEvent.E_DELETE ||
+			ev.event == ZmEvent.E_CREATE) { //could be tag that was not local (from share) becomes local now.
+		var tagCell = document.getElementById(this._getTagsElementId());
+        if (tagCell) {
+		    tagCell.innerHTML = this._getTagHtml();
+        }
+	}
 };
 
+/**
+ * @private
+ */
+ZmContactSplitView._tagClicked =
+function(tagId) {
+	var tagList = appCtxt.getAccountTagList(this._contact);
+	var tag = tagList.getByNameOrRemote(tagId);
+	if (!tag) {
+		return;
+	}
+	appCtxt.getSearchController().search({query: tag.createQuery(), inclSharedItems: true});
+};
 
 ZmContactSplitView.prototype._sashCallback = function(delta) {
 	var sashWidth = this._sash.getSize().x;
