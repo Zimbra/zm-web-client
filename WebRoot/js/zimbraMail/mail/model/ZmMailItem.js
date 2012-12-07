@@ -80,6 +80,19 @@ function() {
 	return "";
 };
 
+
+ZmMailItem.prototype.getColor =
+function() {
+	if (!this.tags || this.tags.length !== 1) {
+		return null;
+	}
+	var tagList = appCtxt.getAccountTagList(this);
+
+	var tag = tagList.getByNameOrRemote(this.tags[0]);
+
+	return tag.getColor();
+};
+
 /**
  * Clears this item.
  * 

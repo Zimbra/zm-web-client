@@ -492,8 +492,10 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 /* message fragment text */
 .Row .ZmConvListFragment,
 .Conv2MsgHeader .ZmConvListFragment,
-.Row .Row-Selected .ZmConvListFragment {
-	@Text-disabled@
+.Row .Row-Selected .ZmConvListFragment,
+.SubjectDoubleRow .ZmConvListFragment {
+	color:black;
+	opacity:0.4;
 	font-weight:normal;
 }
 
@@ -512,11 +514,6 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 
 .Unread .ZmConvListNumMsgs {
 	background-color:@darken(AppC,40)@;
-}
-
-.SubjectDoubleRow .ZmConvListFragment {
-	@Text-disabled@
-	font-weight:normal;
 }
 
 .ZmConvExpanded {

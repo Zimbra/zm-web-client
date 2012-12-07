@@ -908,6 +908,11 @@ function() {
 		displayContainer:	ZmPref.TYPE_CHECKBOX
 	});
 
+	ZmPref.registerPref("COLOR_MESSAGES", {
+		displayName:		ZmMsg.colorMessages,
+		displayContainer:	ZmPref.TYPE_CHECKBOX
+	});
+
 	if (appCtxt.isOffline) {
 		ZmPref.registerPref("OFFLINE_SHOW_ALL_MAILBOXES", {
 			displayName:		ZmMsg.showAllMailboxes,
