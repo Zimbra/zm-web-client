@@ -609,7 +609,7 @@ function(ev) {
 	// only tags can be dropped on us
 	var data = ev.srcData.data;
 	if (ev.action == DwtDropEvent.DRAG_ENTER) {
-		ev.doIt = (item && (item instanceof ZmItem) && !item.isShared() && this._dropTgt.isValidTarget(data));
+		ev.doIt = (item && (item instanceof ZmItem) && !item.isReadOnly() && this._dropTgt.isValidTarget(data));
         // Bug: 44488 - Don't allow dropping tag of one account to other account's item
         if (appCtxt.multiAccounts) {
            var listAcctId = item ? item.getAccount().id : null;
