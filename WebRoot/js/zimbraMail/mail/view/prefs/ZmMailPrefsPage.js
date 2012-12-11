@@ -197,7 +197,7 @@ function() {
             this._initialAllDayFlag = ((prefStartDate.getTime() == startDate.getTime()) &&
                                        (prefEndDate.getTime()   == endDate.getTime()));
         } else {
-            this._initialAllDayFlag = false;
+            this._initialAllDayFlag = true;
         }
         this._allDayCheckbox.setSelected(this._initialAllDayFlag);
         this._updateOriginalValue(ZmSetting.VACATION_DURATION_ALL_DAY);
