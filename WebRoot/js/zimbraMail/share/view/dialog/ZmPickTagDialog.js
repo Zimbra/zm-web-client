@@ -227,7 +227,7 @@ function(ev) {
 		var value = tag.getName(false, null, true, true);
 		this._lastVal = value.toLowerCase();
 		this._inputField.setValue(value);
-		if (ev.detail == DwtTree.ITEM_DBL_CLICKED) {
+		if (ev.detail == DwtTree.ITEM_DBL_CLICKED || ev.enter) {
 			this._okButtonListener();
 		}
 	}
