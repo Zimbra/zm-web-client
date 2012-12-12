@@ -176,7 +176,7 @@
 <c:set var="firstAttachment" value="${true}"/>
 <c:if test="${!empty compose.messageAttachments}">
 <div class="View"><div class="tbl">
-        <c:forEach var="ma" items="${compose.messageAttachments}" varStatus="status">
+        <c:forEach var="ma" items="${zm:cook(compose.messageAttachments)}" varStatus="status">
         <div class="tr ${status.index gt 0 ? 'nr':''} cmp_msg_att_row"><span class="td"><span class="SmlIcnHldr Attachment">&nbsp;</span>
                 <c:choose>
                     <c:when test="${empty ma.subject}"><fmt:message var="subj" key="noSubject"/></c:when>
@@ -188,7 +188,7 @@
         </c:forEach>
 </div></div></c:if>
 <c:if test="${!empty param.messageAttachments}"><div class="View"><div class="tbl">
-    <c:forEach var="id" items="${param.messageAttachments}" varStatus="status">
+    <c:forEach var="id" items="${zm:cook(param.messageAttachments)}" varStatus="status">
         <%--Fetch the message, get the attachment subject --%>
         <zm:getMessage var="ma" id="${id}"/>
         <div class="tr ${status.index gt 0 ? 'nr':''} cmp_msg_att_row">
@@ -204,7 +204,7 @@
     </c:forEach>
 </div></div></c:if>
 <c:if test="${!empty compose.documentAttachments}"><div class="View"><div class="tbl">
-            <c:forEach var="doc" items="${compose.documentAttachments}" varStatus="status">
+            <c:forEach var="doc" items="${zm:cook(compose.documentAttachments)}" varStatus="status">
             <div class="tr ${status.index gt 0 ? 'nr':''} cmp_msg_att_row">
                 <span class="td"><span class="SmlIcnHldr Attachment">&nbsp;</span>
                     <c:choose>
