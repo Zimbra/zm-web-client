@@ -2289,6 +2289,14 @@ function(newAppt, mode, isDirty, startDate) {
         if(attendees && attendees.length > 0) appt.setAttendees(attendees, ZmCalBaseItem.PERSON);
     }
 
+	if (appt.allDayEvent) {
+		var endDate = appt.endDate;
+		if (endDate && endDate.getHours() === 0 && endDate.getMinutes() === 0 && endDate.getSeconds() === 0) {
+			//the end date is set to the beginning of the next day - we do not want to count it as 2 days (or 3, 4, etc) instead of 1 (or 2, 3, etc). It is just one day.
+			endDate.setDate(endDate.getDate() - 1);
+		}
+	}
+
     if (AjxTimezone.TIMEZONE_CONFLICT || AjxTimezone.DEFAULT_RULE.autoDetected) {
 		var timezonePicker = this.getTimezonePicker();
 		var callback = new AjxCallback(this, this.handleTimezoneSelection, [appt, mode, isDirty]);
