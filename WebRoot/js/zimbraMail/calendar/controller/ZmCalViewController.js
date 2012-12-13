@@ -1541,8 +1541,7 @@ function(appt, mode, params) {
 	if(params.startDate) appt.setStartDate(params.startDate);
 	if(params.endDate) appt.setEndDate(params.endDate);
 
-    if(!appt.isOrganizer() || appt.isShared())
-    {
+    if (!appt.isOrganizer() || appt.isReadOnly()) {  //isOrganizer means current user is the organizer of the appt. (which is not the case if the appt is on a shared folder, even if the current user has admin or manager rights (i.e. not read only)
           var origOrganizer=appt.organizer;
           var myEmail=appt.getFolder().getAccount().getEmail();
           appt.replaceAttendee(myEmail,origOrganizer);
@@ -1561,7 +1560,8 @@ function(appt, mode, params) {
 		  dlg.setMessage(ZmMsg.confirmApptDuplication);
 		  dlg.popup();
     }
-    else{
+    else {
+		appt.organizer = null; // Let the organizer be set according to the choise in the form. (the calendar).
 	    this.newAppointment(appt, mode, true);
     }
 };
