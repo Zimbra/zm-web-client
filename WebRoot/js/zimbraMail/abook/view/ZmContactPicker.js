@@ -222,7 +222,21 @@ function(colItem, ascending, firstTime, lastId, lastSortVal, offset) {
 			if (isGal) {
 				conds.push([{attr:ZmContact.F_email, op:"has", value: emailQuery},
 				{attr:ZmContact.F_email2, op:"has", value: emailQuery},
-				{attr:ZmContact.F_email3, op:"has", value: emailQuery}]);
+				{attr:ZmContact.F_email3, op:"has", value: emailQuery},
+				{attr:ZmContact.F_email4, op:"has", value: emailQuery},
+				{attr:ZmContact.F_email5, op:"has", value: emailQuery},
+				{attr:ZmContact.F_email6, op:"has", value: emailQuery},
+				{attr:ZmContact.F_email7, op:"has", value: emailQuery},
+				{attr:ZmContact.F_email8, op:"has", value: emailQuery},
+				{attr:ZmContact.F_email9, op:"has", value: emailQuery},
+				{attr:ZmContact.F_email10, op:"has", value: emailQuery},
+				{attr:ZmContact.F_email11, op:"has", value: emailQuery},
+				{attr:ZmContact.F_email12, op:"has", value: emailQuery},
+				{attr:ZmContact.F_email13, op:"has", value: emailQuery},
+				{attr:ZmContact.F_email14, op:"has", value: emailQuery},
+				{attr:ZmContact.F_email15, op:"has", value: emailQuery},
+				{attr:ZmContact.F_email16, op:"has", value: emailQuery}
+				]);
 			} else {
 				queryHint.push("to:"+emailQuery+"*");
 			}
