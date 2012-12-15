@@ -150,7 +150,7 @@ We have two bugs that we'd like you to consider for mainline and GnR.<br>\
 -----------<br>\
 Please let us know which are\
 ___________<br>\
-3)Ê other / in-progress<br><br>Thanks!<br>- Matt<br></div></body></html>\
+3)ï¿½ other / in-progress<br><br>Thanks!<br>- Matt<br></div></body></html>\
 ",
 		output: UtZWCUtils.SAME
     },
@@ -820,5 +820,51 @@ some text\n\
 		output: "\
 Hello\n\
 "
-    }
+    },
+
+	// 31
+	// Alternative delimiter, same meaning as "----- Forwarded Message -----"
+	// Text: U OS
+	{
+		input: "\
+Are you guys around next Fri?\n\
+\n\
+Begin forwarded message:\n\
+\n\
+> I can be on campus on Friday.\n\
+"
+,
+		output: "\
+Are you guys around next Fri?\n\
+"
+	},
+
+	// 32
+	// "wrote" separator followed by inline reply
+	// HTML: U W Q U Q U
+	{
+		isHtml: true,
+		input: "\
+<html><head></head><body>\
+<font style='font-size:11.0pt;font-family:&quot;Calibri&quot;,&quot;sans-serif&quot;;color:#1F497D'>\
+Yes I will be in the office next friday. </font>\
+<div style='border:none;border-top:solid #B5C4DF 1.0pt;padding:3.0pt 0in 0in 0in'>\
+<font style='font-size:10.0pt;font-family:&quot;Tahoma&quot;,&quot;sans-serif&quot;'>\
+<b>From</b>: John Robb [mailto:jrobb@vmware.com]<br>\
+<b>Sent</b>: Friday, August 24, 2012 11:20 AM<br>\
+<b>To</b>: John Hurley &lt;jhurley@vmware.com&gt;; Matt Rhoades &lt;Matt.rhoades@zimbra.com&gt;<br>\
+<b>Subject</b>: Fwd: where do you sit?  we want to come by next week to see your ZCO<br>\
+</font>&nbsp;<br>\
+</div>\
+<div>Are you guys around next Fri?<br><br>-jr</div>\
+</body></html>\n\
+"
+,
+		output: "\
+<html><head></head><body>\
+<font style='font-size:11.0pt;font-family:&quot;Calibri&quot;,&quot;sans-serif&quot;;color:#1F497D'>\
+Yes I will be in the office next friday. </font>\
+</body></html>\n\
+"
+	}
 ];
