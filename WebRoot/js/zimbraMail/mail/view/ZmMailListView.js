@@ -530,7 +530,8 @@ function(defaultColumnSort) {
 			// set the received column name based on search folder
 			colLabel = ZmMsg.received;
 			if (this._isOutboundFolder()) {
-				colLabel = "&nbsp;" + (this._folderId == ZmFolder.ID_DRAFTS) ? ZmMsg.lastSaved : ZmMsg.sentAt;
+				colLabel = (this._folderId == ZmFolder.ID_DRAFTS) ? ZmMsg.lastSaved : ZmMsg.sentAt;
+				colLabel = "&nbsp;" + colLabel;
 			}
 		}
 		else if (activeSortBy && ZmMailListView.SORTBY_HASH[activeSortBy]){
