@@ -1718,7 +1718,7 @@ function(findHits, includeInlineImages, includeInlineAtts) {
 
 	var attachments = this.attachments;
 
-	if (includeInlineAtts) {
+	if (includeInlineAtts || includeInlineImages) {
 		var parts = this.getBodyParts();
 		if (parts && parts.length > 1) {
 			var iAtts = [], part;
@@ -1739,7 +1739,7 @@ function(findHits, includeInlineImages, includeInlineAtts) {
 		for (var i = 0; i < attachments.length; i++) {
 			var attach = attachments[i];
 
-			if (!this.isRealAttachment(attach) || (attach.ct.match(/^image/) && attach.ci && attach.foundInMsgBody && !includeInlineImages) || (attach.cd == "inline" && attach.filename && ZmMimeTable.isRenderable(attach.ct) && !includeInlineAtts)) {
+			if (!this.isRealAttachment(attach) || (attach.ct.match(/^image/) && attach.ci && attach.foundInMsgBody && !includeInlineImages) || (attach.cd == "inline" && attach.filename && ZmMimeTable.isRenderable(attach.ct, true) && !includeInlineAtts)) {
 				continue;
 			}
 
