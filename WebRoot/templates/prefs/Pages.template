@@ -28,6 +28,7 @@ and the container element is replaced with that control.
 			<td class='ZOptionsSectionMain'>
 				<table width=100%>
 				<$ if (!appCtxt.isOffline) { $>
+				  <$ if (data.isEnabled(ZmSetting.CHANGE_PASSWORD_ENABLED)) { $>
 					<tr id='prefs.Pages#General_PASSWORD_LABEL'>
 						<td class='ZOptionsLabel'><$=ZmMsg.password$>:</td>
 						<td class='ZOptionsField'><div id='${id}_PASSWORD' tabindex='50'></div></td>
@@ -36,6 +37,7 @@ and the container element is replaced with that control.
 						<td class='ZOptionsLabelTop'><$=ZmMsg.loginLabel$></td>
 						<td class='ZOptionsField'><div id='${id}_CLIENT_TYPE' tabindex='20'></div></td>
 					</tr>
+				  <$ } $>	
 				<$ } $>
 				<$ if (!appCtxt.isOffline) { $>
 					<tr><td colspan=2><hr></td></tr>
