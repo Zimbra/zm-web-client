@@ -334,7 +334,12 @@ function() {
  */
 ZmZimletContext.prototype.getVal =
 function(key) {
-	return this.json.zimlet[key];
+	var ret = this.json.zimlet;
+	var keyParts = key.split('.');
+	for (var i = 0; i < keyParts.length; i++) {
+		ret = ret[keyParts[i]];
+	}
+	return ret;
 };
 
 /**
