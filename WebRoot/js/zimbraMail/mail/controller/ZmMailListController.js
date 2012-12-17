@@ -171,7 +171,7 @@ function(view, force) {
 			delete this._showingAccountColumn;
 		}
 
-		if (!appCtxt.isExternalAccount() && !this.isSearchResults) {
+		if (!appCtxt.isExternalAccount() && !this.isSearchResults && !this._currentSearch.isDefaultToMessageView) {
 			this._app.setGroupMailBy(ZmMailListController.GROUP_BY_SETTING[view]);
 		}
 
@@ -201,7 +201,8 @@ function(view, force) {
 			offset:			0,
 			limit:			limit,
 			sortBy:			sortBy,
-			getHtml:		getHtml
+			getHtml:		getHtml,
+			isViewSwitch:	true
 		};
 		appCtxt.getSearchController().redoSearch(this._currentSearch, null, params);
 	}

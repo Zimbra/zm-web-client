@@ -773,9 +773,9 @@ function(items, sortBy, event, details) {
 
 ZmMailList.prototype._isItemInSpecialFolder =
 function(item) {
-	if (item.folderId) { //case of one message in conv, even if not loaded yet, we know the folder.
-		return ZmMailList._SPECIAL_FOLDERS_HASH[item.folderId];
-	}
+//	if (item.folderId) { //case of one message in conv, even if not loaded yet, we know the folder.
+//		return ZmMailList._SPECIAL_FOLDERS_HASH[item.folderId];
+//	}
 	var msgs = item.msgs;
 	if (!msgs) { //might not be loaded yet. In this case, tough luck - the tcon will be set as usual - based on searched folder, if set
 		return false;

@@ -553,7 +553,13 @@ function(params, noRender, callback, errorCallback) {
 	params.sortBy = params.sortBy || this._getSuitableSortBy(types);
 	params.types = types;
 	var search = new ZmSearch(params);
-	
+
+	// force drafts folder into msg view
+		if (searchFor === ZmId.SEARCH_MAIL && !params.isViewSwitch && search.folderId && Number(search.folderId) === ZmFolder.ID_DRAFTS) {
+		search.types = new AjxVector([ZmItem.MSG]);
+		search.isDefaultToMessageView = true;
+	}
+
 	var respCallback = this._handleResponseDoSearch.bind(this, search, noRender, callback, params.noUpdateOverview);
 	if (!errorCallback) {
 		errorCallback = this._handleErrorDoSearch.bind(this, search);
