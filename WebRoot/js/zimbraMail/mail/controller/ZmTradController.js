@@ -70,7 +70,7 @@ ZmTradController.prototype.getDefaultViewType = ZmTradController.getDefaultViewT
 ZmTradController.prototype.show =
 function(searchResults) {
 	ZmDoublePaneController.prototype.show.call(this, searchResults, searchResults.getResults(ZmItem.MSG));
-	if (!appCtxt.isExternalAccount() && !this.isSearchResults) {
+	if (!appCtxt.isExternalAccount() && !this.isSearchResults && !(searchResults && searchResults.search && searchResults.search.isDefaultToMessageView)) {
 		appCtxt.set(ZmSetting.GROUP_MAIL_BY, ZmSetting.GROUP_BY_MESSAGE);
 	}
 	this._resetNavToolBarButtons(ZmId.VIEW_TRAD);
@@ -84,10 +84,6 @@ function(actionCode, ev) {
 	switch (actionCode) {
 		case ZmKeyMap.KEEP_READING:
 			return this._keepReading(false, ev);
-			break;
-
-		case ZmKeyMap.VIEW_BY_CONV:
-			return ZmDoublePaneController.prototype.handleKeyAction.apply(this, arguments);
 			break;
 
 		default:

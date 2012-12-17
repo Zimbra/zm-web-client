@@ -171,7 +171,7 @@ function(view, force) {
 			delete this._showingAccountColumn;
 		}
 
-		if (!appCtxt.isExternalAccount() && !this.isSearchResults) {
+		if (!appCtxt.isExternalAccount() && !this.isSearchResults && !this._currentSearch.isDefaultToMessageView) {
 			this._app.setGroupMailBy(ZmMailListController.GROUP_BY_SETTING[view]);
 		}
 
@@ -201,7 +201,8 @@ function(view, force) {
 			offset:			0,
 			limit:			limit,
 			sortBy:			sortBy,
-			getHtml:		getHtml
+			getHtml:		getHtml,
+			isViewSwitch:	true
 		};
 		appCtxt.getSearchController().redoSearch(this._currentSearch, null, params);
 	}
@@ -943,7 +944,7 @@ function() {
 	var msg = this.getMsg();
 	if (!msg) { return; }
 
-	var msgFetchUrl = appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI) + "&id=" + msg.id;
+	var msgFetchUrl = appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI) + "&id=" + msg.id);
 	// create a new window w/ generated msg based on msg id
 	window.open(msgFetchUrl, "_blank", "menubar=yes,resizable=yes,scrollbars=yes");
 };

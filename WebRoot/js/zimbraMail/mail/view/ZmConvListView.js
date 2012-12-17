@@ -871,7 +871,8 @@ function(columnItem, bSortAsc, callback) {
 			limit:			this.getLimit(),
 			callback:		callback,
 			userInitiated:	this._controller._currentSearch.userInitiated,
-			sessionId:		this._controller._currentSearch.sessionId
+			sessionId:		this._controller._currentSearch.sessionId,
+			isViewSwitch:	true
 		};
 		appCtxt.getSearchController().search(params);
 	}
