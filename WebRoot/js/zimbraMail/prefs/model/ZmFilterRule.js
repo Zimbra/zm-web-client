@@ -834,7 +834,7 @@ function() {
 	for (var i in this.actions) {
 		var actionIndex = ZmFilterRule.A_VALUE_MAP[i];
 		var actionCfg = ZmFilterRule.ACTIONS[actionIndex];
-		if ((actionIndex != ZmFilterRule.A_STOP) && (ZmFilterRule.checkPreconditions(actionCfg))) {
+		if ((actionIndex != ZmFilterRule.A_STOP && actionIndex != ZmFilterRule.A_FORWARD) && (ZmFilterRule.checkPreconditions(actionCfg))) {
 			return true;
 		}
 	}
