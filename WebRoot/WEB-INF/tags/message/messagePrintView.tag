@@ -230,7 +230,7 @@
         </tr>
     </c:if>
     <tr>
-        <td id="iframeBody${counter}" style="padding:5px;" valign='top' colspan="${needExtraCol ? 1 : 2}">
+        <td id="iframeBody${counter}" style="padding:5px; font-family: monospace" valign='top' colspan="${needExtraCol ? 1 : 2}">
             <app:body message="${message}" body="${body}" theBody="${body.isTextHtml ? zm:stripHtmlComments(theBody) : theBody}" mailbox="${mailbox}" counter="${counter}" isPrintView="${true}"/>
             <c:set var="bodies" value="${zm:getAdditionalBodies(body,message)}"/>
             <c:if test="${not empty bodies}">
