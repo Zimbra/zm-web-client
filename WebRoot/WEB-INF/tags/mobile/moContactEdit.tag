@@ -1,7 +1,7 @@
 <%--
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2008, 2009, 2010, 2011 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -74,7 +74,7 @@
                         <div class="buttonRight button"><a id="cancel" href="${caction}"><span onclick="return zClickLink('cancel')"><fmt:message key="cancel"/></span></a></div>
                     </c:otherwise>
                 </c:choose>
-                <input class="zo_button" name="actionSave" type="submit" value="<fmt:message key="save"/>">
+                <div class="compose button"><input class="zo_button" name="actionSave" type="submit" value="<fmt:message key="save"/>"></div>
         </span>
     </div>
 </div>
@@ -94,10 +94,7 @@
                                ${fn:escapeXml(noDisplayAs)}
                            </c:when>
                            <c:otherwise>
-                               <c:set var="contactFileAs">
-                                    <app:contactFileAs contact="${contact}"/>
-                               </c:set>
-                               ${fn:escapeXml(contactFileAs)}
+                               <app:contactFileAs contact="${contact}" />
                            </c:otherwise>
                        </c:choose>
                    </div>

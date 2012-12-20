@@ -7,7 +7,7 @@
 <!--
 ***** BEGIN LICENSE BLOCK *****
 Zimbra Collaboration Suite Web Client
-Copyright (C) 2008, 2009, 2010 Zimbra, Inc.
+Copyright (C) 2008, 2009, 2010, 2011 VMware, Inc.
 
 The contents of this file are subject to the Zimbra Public License
 Version 1.3 ("License"); you may not use this file except in
@@ -121,7 +121,7 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
     <title>Zimbra Docs</title>
     <style type="text/css">
         <!--
-        @import url(<%= contextPath %>/css/common,dwt,msgview,login,zm,spellcheck,spreadsheet,docs,images,skin.css?v=<%= vers %><%= inSkinDebugMode || isDevMode ? "&debug=1" : "" %>&skin=${zm:cook(skin)});
+        @import url(<%= contextPath %>/css/common,dwt,msgview,login,zm,spellcheck,wiki,spreadsheet,docs,images,skin.css?v=<%= vers %><%= inSkinDebugMode || isDevMode ? "&debug=1" : "" %>&skin=${zm:cook(skin)});
         -->
     </style>
     <jsp:include page="Resources.jsp">
@@ -136,6 +136,9 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
     <%
 
         String packages = "Ajax,Startup1_1,Startup1_2,Startup2,Docs";
+
+        String extraPackages = request.getParameter("packages");
+        if (extraPackages != null) packages += ","+ BeanUtils.cook(extraPackages);
 
         String pprefix = isDevMode && !isCoverage ? "public/jsp" : "js";
         String psuffix = isDevMode && !isCoverage ? ".jsp" : "_all.js";

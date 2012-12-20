@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2010, 2011 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -48,9 +48,9 @@ function() {
  * @param {String}	[id] 		id of item to perform the action for, if there is only one. Accomplishes the same as putting the id in an array and giving it as [ids].
  */
 ZmActionController.prototype.actionPerformed = function(params) {
+	this.dismiss();
 	var logElement = this._actionStack.logAction(params);
 	if (logElement) {
-		this.dismiss();
 		this._active = true;
 	}
 	return logElement;

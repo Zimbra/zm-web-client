@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -18,9 +18,9 @@
  */
 
 /**
- * Creates a link properties dialog.
+ * Creates a link folder dialog.
  * @class
- * This class represents a dialog used to set the properties of an HTML link.
+ * This class represents a link folder dialog.
  * 
  * @param	{DwtControl}	shell		the parent
  * @param	{String}	className		the class name
@@ -32,7 +32,7 @@ ZmLinkPropsDialog = function(shell, className) {
 	DwtDialog.call(this, {parent:shell, className:className, title:ZmMsg.linkProperties});
 	this.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._handleOkButton));
 
-//	this._cache = AjxDispatcher.run("GetNotebookCache");
+	this._cache = AjxDispatcher.run("GetNotebookCache");
 
 	// set view
 	this.setView(this._createView());
@@ -41,10 +41,6 @@ ZmLinkPropsDialog = function(shell, className) {
 ZmLinkPropsDialog.prototype = new DwtDialog;
 ZmLinkPropsDialog.prototype.constructor = ZmLinkPropsDialog;
 
-ZmLinkPropsDialog.prototype.isZmLinkPropsDialog = true;
-ZmLinkPropsDialog.prototype.toString = function() { return "ZmLinkPropsDialog"; };
-		
-		
 // Public methods
 
 /**
@@ -102,8 +98,6 @@ function() {
 
 ZmLinkPropsDialog.prototype.autocompleteMatch =
 function(s) {
-	return [];
-	
 	var notebookId = this._notebookSelect.getValue();
 	var pages = this._cache.getPagesInFolder(notebookId);
 
@@ -278,7 +272,7 @@ function() {
 					"<td rowspan=2>",
 						"<input id='",typePageId,"' type=radio name='",typeName,"'>",
 					"</td>",
-					"<td>","<label for='",typePageId,"'>", ZmMsg.notebookPageLabel, "</label>","</td>",
+					"<td>",ZmMsg.notebookPageLabel,"</td>",
 				"</tr>",
 				"<tr>",
 					"<td id='",pagePropsId,"'></td>",
@@ -287,9 +281,7 @@ function() {
 					"<td rowspan=2>",
 						"<input id='",typeUrlId,"' type=radio name='",typeName,"'>",
 					"</td>",
-					"<td>",
-						"<label for='",typeUrlId, "'>", ZmMsg.webPageLabel, "</label>",
-					"</td>",
+					"<td>",ZmMsg.webPageLabel,"</td>",
 				"</tr>",
 				"<tr>",
 					"<td>",
@@ -376,13 +368,12 @@ function() {
 
 		// setup auto-completer
 		var params = {
-			dataClass:		this,
-			dataLoader:		this.getPageDataLoader,
-			matchValue:		"name",
-			separator:		"",
-			compCallback:	this._setAcPageCompletion.bind(this),
-			keyUpCallback:	this._acKeyUpListener.bind(this),
-			contextId:		this.toString()
+			dataClass: this,
+			dataLoader: this.getPageDataLoader,
+			matchValue: "name",
+			separator: "",
+			compCallback: new AjxCallback(this, this._setAcPageCompletion),
+			keyUpCallback: new AjxCallback(this, this._acKeyUpListener)
 		}
 		this._acPageList = new ZmAutocompleteListView(params);
 		this._acPageList.handle(pageInputEl);

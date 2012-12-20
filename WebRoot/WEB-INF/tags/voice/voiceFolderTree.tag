@@ -1,7 +1,7 @@
 <%--
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2007, 2008, 2009, 2010, 2011 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -23,48 +23,26 @@
 
 <zm:getMailbox var="mailbox"/>
 
-<jsp:useBean id="expanded" scope="session" class="java.util.HashMap"/>
+<jsp:useBean id="expanded" scope="session" class="java.util.HashMap" />
 <c:set var="expanded" value="${sessionScope.expanded.contacts ne 'collapse'}"/>
 
 <div class=Tree>
     <table width=100% cellpadding=0 cellspacing=0>
-        <c:set var="firstAccount" value="true" scope="page"/>
-        <zm:forEachPhoneAccount var="account">
-            <c:if test="${account.phoneType eq 'DeskPhone'}">
-                <fmt:message var="displayNameType" key="deskphone"/>
-                <c:set var="displayName" value="${displayNameType} - ${account.phone.display}" scope="page"/>
-            </c:if>
-        </zm:forEachPhoneAccount>
-
+        <c:set var="firstAccount" value="true"/>
         <zm:forEachPhoneAccount var="account">
             <c:set var="query" value="phone:${account.phone.name}"/>
-            <c:if test="${account.hasVoiceMail}">
-                <tr>
-                    <c:url var="toggleUrl" value="/h/search">
-                        <c:param name="st" value="voicemail"/>
-                        <c:param name="sq" value="${query}"/>
-                    </c:url>
-                    <th class='Header'>
-                        <a href="${toggleUrl}">
-                            <c:choose>
-                                <c:when test="${not empty displayName}">
-                                    ${displayName}
-                                </c:when>
-                                <c:otherwise>
-                                    ${account.phone.display}
-                                </c:otherwise>
-                            </c:choose>
-                        </a>
-                    </th>
-                </tr>
-
-                <c:set var="expanded"
-                       value="${(fn:indexOf(param.sq, query) ne -1) or ((fn:indexOf(param.sq, 'phone:') eq -1) and firstAccount eq 'true')}"/>
-                <c:if test="${expanded}">
-                    <app:doVoiceFolderTree parentfolder="${account.rootFolder}" skiproot="${true}" skipsystem="true"/>
-                </c:if>
-                <c:set var="firstAccount" value="false"/>
+            <tr>
+                <c:url var="toggleUrl" value="/h/search">
+                    <c:param name="st" value="voicemail"/>
+                    <c:param name="sq" value="${query}"/>
+                </c:url>
+                <th class='Header'><a href="${toggleUrl}">${account.phone.display}</a></th>
+            </tr>
+            <c:set var="expanded" value="${(fn:indexOf(param.sq, query) ne -1) or ((fn:indexOf(param.sq, 'phone:') eq -1) and firstAccount eq 'true')}"/>
+            <c:if test="${expanded}">
+                <app:doVoiceFolderTree parentfolder="${account.rootFolder}" skiproot="${true}" skipsystem="true" />
             </c:if>
+            <c:set var="firstAccount" value="false"/>
         </zm:forEachPhoneAccount>
     </table>
 

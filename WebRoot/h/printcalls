@@ -7,7 +7,6 @@
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
 <app:handleError>
     <zm:getMailbox var="mailbox"/>
-    ${zm:refreshPrefs(mailbox)}
     <app:skin mailbox="${mailbox}"/>
     <c:choose>
     <c:when test="${not empty mailbox.prefs.locale}">
@@ -46,10 +45,10 @@
 
             <c:forEach items="${context.searchResult.hits}" var="hit" varStatus="status">
             <tr>
-                <td nowrap id="vm_${status.index}_name">${zm:getDisplayCaller(pageContext, useTo ? hit.callHit.recipient : hit.callHit.caller)}</td>
+                <td nowrap>${zm:getDisplayCaller(pageContext, useTo ? hit.callHit.recipient : hit.callHit.caller)}</td>
                 <td nowrap>${fn:escapeXml(zm:displayDuration(pageContext, hit.callHit.duration))}</td>
                 <td nowrap>
-                    <div id="vm_${status.index}_date">${fn:escapeXml(zm:displayVoiceDate(pageContext, hit.callHit.date))}</div>
+                    <div id="vm_${status.count}_date">${fn:escapeXml(zm:displayVoiceDate(pageContext, hit.callHit.date))}</div>
                 </td>
             </tr>
             </c:forEach>
@@ -94,7 +93,11 @@
 				return out;
 			}
 
-			var dates = [<c:forEach items="${context.searchResult.hits}" var="hit" varStatus="status">"<fmt:formatDate pattern="yyyyMMdd'T'HHmmss'.'SSS'Z'" value="${hit.callHit.date}" timeZone="UTC"/>"<c:if test="${!status.last}">,</c:if></c:forEach>];
+			var dates = {};
+			<c:forEach items="${context.searchResult.hits}" var="hit" varStatus="status">
+			<fmt:formatDate var="date" pattern="yyyyMMdd'T'HHmmss'.'SSS'Z'" value="${hit.callHit.date}" timeZone="UTC"/>
+			dates['vm_${status.count}_date'] = "${date}";
+            </c:forEach>
 
 			var resources = {
 				ZM_formatVoiceDateToday: "<fmt:message key='ZM_formatVoiceDateToday'/>",
@@ -109,93 +112,52 @@
 			var nowTime = nowDate.getTime();
 			var nowDay = nowDate.getDate();
 			var nowYesterday = new Date(nowTime - ONE_DAY).getDate();
-			for (var i=0; i<${context.searchResult.size}; i++) {
-				var el = document.getElementById("vm_"+i+"_date");
-				if (el) {
-					var msgDate = new Date();
-					var str = dates[i];
-					msgDate.setUTCFullYear(parseInt(str.substr(0,4),10));
-					msgDate.setUTCMonth(parseInt(str.substr(4,2),10)-1);
-					msgDate.setUTCDate(parseInt(str.substr(6,2),10));
-					msgDate.setUTCHours(parseInt(str.substr(9,2),10));
-					msgDate.setUTCMinutes(parseInt(str.substr(11,2),10));
-					msgDate.setUTCSeconds(parseInt(str.substr(13,2),10));
-					
-					var msgTime = msgDate.getTime();
-					var msgDay = msgDate.getDate();
-					var resource;
+			for (var id in dates) {
+				if (dates.hasOwnProperty(id)) {
+					var el = document.getElementById(id);
+					if (el) {
+						var msgDate = new Date();
+						var str = dates[id];
+						msgDate.setUTCFullYear(parseInt(str.substr(0,4),10));
+						msgDate.setUTCMonth(parseInt(str.substr(4,2),10)-1);
+						msgDate.setUTCDate(parseInt(str.substr(6,2),10));
+						msgDate.setUTCHours(parseInt(str.substr(9,2),10));
+						msgDate.setUTCMinutes(parseInt(str.substr(11,2),10));
+						msgDate.setUTCSeconds(parseInt(str.substr(13,2),10));
+						
+						var msgTime = msgDate.getTime();
+						var msgDay = msgDate.getDate();
+						var resource;
 
-					if (nowTime - msgTime < ONE_DAY && nowDay == msgDay) {
-						resource = "ZM_formatVoiceDateToday";
-					} else if ((nowTime - msgTime) < (2 * ONE_DAY) && nowYesterday == msgDay) {
-						resource = "ZM_formatVoiceDateYesterday";
-					} else {
-						resource = "ZM_formatVoiceDate";
+						if (nowTime - msgTime < ONE_DAY && nowDay == msgDay) {
+							resource = "ZM_formatVoiceDateToday";
+						} else if ((nowTime - msgTime) < (2 * ONE_DAY) && nowYesterday == msgDay) {
+							resource = "ZM_formatVoiceDateYesterday";
+						} else {
+							resource = "ZM_formatVoiceDate";
+						}
+						var am = msgDate.getHours() < 12;
+						var ampmhours = msgDate.getHours() % 12;
+						if (ampmhours == 0) ampmhours = 12;
+
+						var out = resources[resource];
+							out = insert(out, "EEE", "'"+days[msgDate.getDay()]+"'");
+							out = insert(out, "M", msgDate.getMonth()+1);
+							out = insert(out, "d", msgDate.getDate());
+							out = insert(out, "yy", (""+msgDate.getFullYear()).substr(2,2));
+							out = insert(out, "h", ampmhours);
+							out = insert(out, "HH", pad(ampmhours,2));
+							out = insert(out, "mm", pad(msgDate.getMinutes(),2));
+							out = insert(out, "ss", pad(msgDate.getSeconds(),2));
+							out = insert(out, "a", am ? "AM" : "PM");
+							out = out.replace(/'/g, '');
+
+						el.innerHTML = out;
 					}
-					var am = msgDate.getHours() < 12;
-					var ampmhours = msgDate.getHours() % 12;
-					if (ampmhours == 0) ampmhours = 12;
-
-					var out = resources[resource];
-						out = insert(out, "EEE", "'"+days[msgDate.getDay()]+"'");
-						out = insert(out, "M", msgDate.getMonth()+1);
-						out = insert(out, "d", msgDate.getDate());
-						out = insert(out, "yy", (""+msgDate.getFullYear()).substr(2,2));
-						out = insert(out, "h", ampmhours);
-						out = insert(out, "HH", pad(ampmhours,2));
-						out = insert(out, "mm", pad(msgDate.getMinutes(),2));
-						out = insert(out, "ss", pad(msgDate.getSeconds(),2));
-						out = insert(out, "a", am ? "AM" : "PM");
-						out = out.replace(/'/g, '');
-
-					el.innerHTML = out;
 				}
 			}
-			
 
 		</c:if>
-		var callData = [<c:forEach items="${context.searchResult.hits}" var="hit" varStatus="status">{date:${hit.callHit.date.time},recp:"${hit.callHit.recipient.name}",caller:"${hit.callHit.caller.name}"}<c:if test="${!status.last}">,</c:if></c:forEach>];
-		
-		var actxt = window.opener && window.opener.appCtxt;
-		if (actxt) {
-		    var controller = actxt.getApp("Voice").getCallListController();
-		    var view = controller.getCurrentView();
-                    var list = controller.getList();
-		    for (var i=0; i<${context.searchResult.size}; i++) {
-		        var el = document.getElementById("vm_"+i+"_name");
-		        if (el) {
-		            var call = getCallEntry(list, callData[i]);
-		            if (call) {
-		                var name = view._getCallerNameHtml(call);
-		                if (name) {
-		                    el.innerHTML = name;
-		                }
-		            }
-		        }
-		    }
-		}
-
-		function getCallEntry(list, rawData) {
-			for (var i=0; i<list.size(); i++) {
-				var entry = list.get(i);
-				if (entry.date && entry.date.getTime() == rawData.date) {
-					var foundRecp = false;
-					var foundCaller = false;
-					for (var key in entry._callingParties) {
-						if (entry._callingParties[key].name == rawData.recp) {
-							foundRecp = true;
-						}
-						if (entry._callingParties[key].name == rawData.caller) {
-							foundCaller = true;
-						}
-					}
-					if (foundRecp && foundCaller) {
-						return entry;
-					}
-				}
-			}
-		}
-
 
         setTimeout(window.print, 2000);
         // -->

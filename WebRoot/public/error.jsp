@@ -1,7 +1,7 @@
 <%--
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2008, 2009, 2010, 2011 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -57,7 +57,7 @@
 <div id="ZLoginPanel">
 <table width="500" cellpadding="5" cellspacing="5" border="0" align="center" id="ZLoginBodyContainer">
  <tr>
-	<td><img src="<c:url value='/img/dwt/ImgWarning_32.png?v=${version}' />" width="32" height="32" border="0"></td>
+	<td><img src="<c:url value='/img/dwt/ImgWarning_32.png' />" width="32" height="32" border="0"></td>
     <td vlaign="middle"><h2 style="margin: 0px;"><fmt:message key="${errTitle}"/></h2></td>
  </tr>
  <tr>

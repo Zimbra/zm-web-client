@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2008, 2009, 2010, 2011 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -78,11 +78,11 @@ html,body {
 }
 
 .NavbarBg{
-	background: black url("@AppContextPath@/img/mobile/NavbarBg.gif?v=@jsVersion@") repeat-x top left;
+	background: black url("@AppContextPath@/img/mobile/NavbarBg.gif") repeat-x top left;
 	height: 48px;
 }
 .ToolbarBg1{
-    background: url(@AppContextPath@/img/mobile/iPhoneToolbar.png?v=@jsVersion@) #6d84a2 repeat-x;
+    background: url(@AppContextPath@/img/mobile/iPhoneToolbar.png) #6d84a2 repeat-x;
     height: 37px;
 }
 .SubToolbar{
@@ -94,7 +94,7 @@ html,body {
 .ToolbarBg a{ font-size:medium;}
 .searchbar input[type='text']{font-size: medium;}
 .ToolbarBg{
-	background: #e7e7e6 url("@AppContextPath@/img/mobile/ToolbarBg.gif?v=@jsVersion@") repeat-x top left;
+	background: #e7e7e6 url("@AppContextPath@/img/mobile/ToolbarBg.gif") repeat-x top left;
 	height: 37px;
 }
 .zo_button_active{
@@ -118,13 +118,13 @@ html,body {
 
 .Email a,.zo_m_list_frag, .zo_m_list_size {font-size: small; color: #999999;}
 .Email a{text-decoration: none;}
-.zo_ab_list_arrow {display: none;} /*background: url("@AppContextPath@/img/mobile/iPhoneArrow.png?v=@jsVersion@") no-repeat right center; width:25px;*/
+.zo_ab_list_arrow {display: none;} /*background: url("@AppContextPath@/img/mobile/iPhoneArrow.png") no-repeat right center; width:25px;*/
 
 .zo_m_list_date, .zo_m_list_date a:link{font-size: small;color: #4d8dc3;}
 
 .zo_m_list_row {border-bottom: 1px dotted #E0E0E0;}
 
-.Stripes{background: #c5ccd4 url("@AppContextPath@/img/mobile/pinstripes.png?v=@jsVersion@") top left;}
+.Stripes{background: #c5ccd4 url("@AppContextPath@/img/mobile/pinstripes.png") top left;}
 
 .View{-moz-border-radius: 8px; -webkit-border-radius: 8px; background-color: white; margin: 5px; border: 1px solid #a7b2bc; padding: 5px; font-size:small;}
 

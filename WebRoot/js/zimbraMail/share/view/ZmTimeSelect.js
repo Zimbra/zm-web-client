@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2010, 2011 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -375,22 +375,18 @@ function() {
  *
  * @private
 */
-ZmTimeInput = function(parent, id, parentElement, interval) {
+ZmTimeInput = function(parent, id, parentElement) {
     var params = {parent:parent, id: "ZmTimeInput"};
     if(parentElement) {
         params.parentElement = parentElement;
     }
 	DwtComposite.call(this, params);
 
-    this._interval = interval || ZmTimeInput.FIFTEEN_MIN_INTERVAL;
 	this.id = id;
 	this._isLocale24Hour = true;
 	this._createSelects();
     this._useTextInput = true;
 };
-
-ZmTimeInput.THIRTY_MIN_INTERVAL = 30;
-ZmTimeInput.FIFTEEN_MIN_INTERVAL = 15;
 
 // IDs for types of time selects
 ZmTimeInput.START	= 1;
@@ -657,7 +653,6 @@ function(ev) {
             mi,
             smi,
             text,
-            maxMinutesItem,
             minutesSelectMenu,
             now = new Date(),
             timeSelectButton = this._timeSelectBtn,
@@ -686,12 +681,11 @@ function(ev) {
             minutesSelectMenu = new DwtMenu({parent:mi, style:DwtMenu.DROPDOWN_STYLE, layout:DwtMenu.LAYOUT_CASCADE, maxRows:1, congruent: true});
             mi.setMenu(minutesSelectMenu, true);
             mi.setSelectableWithSubmenu(true);
-            maxMinutesItem = 60/this._interval;
-            for (k = 1; k < maxMinutesItem; k++) {
-                now.setMinutes(k*this._interval);
+            for (k = 1; k < 4; k++) {
+                now.setMinutes(k*15);
                 smi = new DwtMenuItem({parent: minutesSelectMenu, style: DwtMenuItem.NO_STYLE});
                 smi.setText(timeFormatter.format(now));
-                smi.setData("value", j*60 + k*this._interval);
+                smi.setData("value", j*60 + k*15);
                 if (menuSelectionListener) smi.addSelectionListener(menuSelectionListener);
             }
         }

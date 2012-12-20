@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2008, 2009, 2010, 2011 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -77,7 +77,7 @@ function(date) {
 	// add mini-calendar to skin
 	var components = {};
 	components[ZmAppViewMgr.C_TREE_FOOTER] = this._miniCalendar;
-	appCtxt.getAppViewMgr().setViewComponents(ZmAppViewMgr.GLOBAL, components, true);
+	appCtxt.getAppViewMgr().addComponents(components, true);
 	
 	var app = appCtxt.getApp(ZmApp.CALENDAR);
 	var show = app._active || appCtxt.get(ZmSetting.CAL_ALWAYS_SHOW_MINI_CAL);
@@ -134,7 +134,7 @@ function(list) {
 ZmCalMgr.prototype.getReminderController =
 function() {
 	if (!this._reminderController) {
-		this._reminderController = new ZmReminderController(this, "appt");
+		this._reminderController = new ZmReminderController(this);
 	}
 	return this._reminderController;
 };
@@ -149,7 +149,6 @@ function(ev) {
 
 ZmCalMgr.prototype._miniCalActionListener =
 function(ev) {
-    if (appCtxt.isExternalAccount()) { return; }
 	var mm = this._getMiniCalActionMenu();
 	mm.__detail = ev.detail;
 	mm.popup(0, ev.docX, ev.docY);
@@ -213,7 +212,7 @@ function() {
 ZmCalMgr.prototype._miniCalDateRangeListener =
 function(ev) { 
 	var viewId = appCtxt.getCurrentViewId();
-	if (viewId == ZmId.VIEW_CAL) {
+	if (viewId == ZmId.VIEW_CAL_APPT || viewId == ZmId.VIEW_CAL) {
 		var calController = this.getCalViewController();
 		calController._scheduleMaintenance(ZmCalViewController.MAINT_MINICAL);
 	} else {
@@ -464,12 +463,6 @@ ZmCalMgr.prototype.getCheckedCalendarFolderIds =
 function(localOnly) {
 	var app = appCtxt.getApp(ZmApp.CALENDAR);
 	return app.getCheckedCalendarFolderIds(localOnly);
-};
-
-ZmCalMgr.prototype.getReminderCalendarFolderIds =
-function() {
-	var app = appCtxt.getApp(ZmApp.CALENDAR);
-	return app.getReminderCalendarFolderIds();
 };
 
 ZmCalMgr.prototype._handleError =

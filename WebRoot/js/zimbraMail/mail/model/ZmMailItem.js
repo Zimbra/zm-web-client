@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -61,39 +61,6 @@ function() {
 };
 
 /**
- * Gets the read/unread icon.
- *
- * @return	{String}	the icon
- */
-ZmMailItem.prototype.getReadIcon =
-function() {
-	return this.isUnread ? "MsgUnread" : "MsgRead";
-};
-
-/**
- * Gets the mute/unmute icon.
- *
- * @return	{String}	the icon
- */
-ZmMailItem.prototype.getMuteIcon =
-function() {
-	return "";
-};
-
-
-ZmMailItem.prototype.getColor =
-function() {
-	if (!this.tags || this.tags.length !== 1) {
-		return null;
-	}
-	var tagList = appCtxt.getAccountTagList(this);
-
-	var tag = tagList.getByNameOrRemote(this.tags[0]);
-
-	return tag.getColor();
-};
-
-/**
  * Clears this item.
  * 
  */
@@ -143,7 +110,7 @@ function() {
 ZmMailItem.prototype._getFlags =
 function() {
 	var list = ZmItem.prototype._getFlags.call(this);
-	list.push(ZmItem.FLAG_UNREAD, ZmItem.FLAG_MUTE, ZmItem.FLAG_REPLIED, ZmItem.FLAG_FORWARDED, ZmItem.FLAG_READ_RECEIPT_SENT, ZmItem.FLAG_PRIORITY);
+	list.push(ZmItem.FLAG_UNREAD, ZmItem.FLAG_REPLIED, ZmItem.FLAG_FORWARDED, ZmItem.FLAG_READ_RECEIPT_SENT);
 	return list;
 };
 

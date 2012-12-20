@@ -1,13 +1,13 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
- *
+ * Copyright (C) 2010, 2011 VMware, Inc.
+ * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- *
+ * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
@@ -20,7 +20,7 @@ ZmTaskMultiView = function(params) {
     params.className = params.className || "ZmTaskMultiView";
     params.mode = ZmId.VIEW_TASKMULTI;
 
-	var view = params.controller.getCurrentViewId();
+	var view = params.controller._getViewType();
 	params.id = ZmId.getViewId(view);
 	DwtComposite.call(this, params);
 
@@ -111,7 +111,7 @@ ZmTaskMultiView.prototype._createTaskListView =
 function(params) {
 	params.parent = this;
 	params.posStyle = Dwt.ABSOLUTE_STYLE;
-	params.id = DwtId.getListViewId(this._controller.getCurrentViewType());
+	params.id = DwtId.getListViewId(this._controller._getViewType());
 	return new ZmTaskListView(this, this._controller, this._controller._dropTgt );
 };
 
@@ -314,6 +314,16 @@ function() {
 ZmTaskMultiView.prototype.getLimit =
 function(offset) {
 	return this._taskListView.getLimit(offset);
+};
+
+ZmTaskMultiView.prototype._staleHandler =
+function() {
+	var search = this._controller._currentSearch;
+	if (search) {
+		search.lastId = search.lastSortVal = null
+		search.offset = search.limit = 0;
+		appCtxt.getSearchController().redoSearch(search);
+	}
 };
 
 ZmTaskMultiView.prototype.set =
