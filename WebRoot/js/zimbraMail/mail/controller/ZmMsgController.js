@@ -102,6 +102,17 @@ function(callback, hidePagination, result) {
 
 
 /**
+ * can't repro bug 77538 - but since the exception happens in ZmListController.prototype._setupContinuation if lastItem is not set, let's set it here to be on the safe side.
+ */
+ZmMsgController.prototype._setupContinuation =
+function() {
+	this._continuation.lastItem = true; //just a dummy value.  I could use this._msg but afraid that in the case of the bug (77538) - that I can't repro - this._msg might be empty.
+	this._continuation.totalItems = 1;
+	ZmListController.prototype._setupContinuation.apply(this, arguments);
+};
+
+
+/**
  * Called by ZmNewWindow.unload to remove tag list listener (which resides in 
  * the parent window). Otherwise, after the child window is closed, the parent 
  * window is still referencing the child window's msg controller, which has
