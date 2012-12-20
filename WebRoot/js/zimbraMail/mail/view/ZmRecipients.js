@@ -27,7 +27,7 @@
  */
 ZmRecipients = function(params) {
 
-    this._useAcAddrBubbles = appCtxt.get(ZmSetting.USE_ADDR_BUBBLES);
+    this._useAcAddrBubbles = appCtxt.get(ZmSetting.USE_ADDR_BUBBLES) && appCtxt.get(ZmSetting.CONTACTS_ENABLED);
 	this._divId			= {};
 	this._buttonTdId	= {};
 	this._fieldId		= {};
