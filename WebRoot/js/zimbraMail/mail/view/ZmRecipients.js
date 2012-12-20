@@ -382,7 +382,10 @@ function() {
 	addrs[ZmRecipients.BAD] = new AjxVector();
 	for (var i = 0; i < this._fieldNames.length; i++) {
 		var type = this._fieldNames[i];
-		if (!this._using[type]) { continue; }
+
+		if (!this._field[type]) { //this check is in case we don't have all fields set up (might be configurable. Didn't look deeply).
+			continue;
+		}
 
 		var val = this.getAddrFieldValue(type);
 		if (val.length == 0) { continue; }
