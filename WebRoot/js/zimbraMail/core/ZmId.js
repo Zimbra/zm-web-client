@@ -1145,3 +1145,239 @@ ZmId.GROUPBY_NONE               = "GROUPBY_NONE";
 ZmId.GROUPBY_PRIORITY           = "GROUPBY_PRIORITY";
 ZmId.GROUPBY_SIZE               = "GROUPBY_SIZE";
 ZmId.GROUPBY_TAG                = "GROUPBY_TAG";
+
+
+/*
+ * Experimental ID code below. The main idea is to make easier for a third party (such as QA) to find what they're
+ * looking for. A secondary goal is to ensure that we always use unique IDs. The systematic approach above is prone
+ * to failure in that regard, since the same set of inputs will produce the same ID.
+ *
+ * The new approach is to introduce a level of indirection between the fields and the ID. IDs will go back to being
+ * unique and opaque, based on an incrementing number. A hash will be maintained which maps a collection of fields
+ * to the actual ID used in the DOM.
+ *
+ * The core of the new system is related closely to the old system: a set of params which, taken together, should
+ * uniquely identify an element. The possible values for each param are typically constants defined in this class.
+ *
+ * To make it easy for clients of this ID system to successfully look up IDs, creators of IDs should provide as many
+ * parameters as possible. For example, providing both skinComponent and componentType may be redundant, but then
+ * the ID can be looked up using either parameter.
+ *
+ * The parameters and their values:
+ *
+ * skinComponent
+ *
+ *      The HTML skin for ZCS defines a number of components and provides containers for them. This param identifies
+ *      which skin component contains the element. Note that the IDs for the skin containers themselves (as well as
+ *      a few elements within those containers) are defined by the skin (in skin.html), and are not part of this set
+ *      of IDs. May often be omitted when looking up an ID.
+ *
+ *      ZmId.SKIN_*
+ *
+ * componentType
+ *
+ *      The general category of view component that maps to the element. It may be a type of widget such as a button
+ *      or a menu, something more general like a view, or even a subcomponent like a list view header.
+ *
+ *      DwtId.WIDGET_*
+ *      ZmId.WIDGET_*
+ *
+ * componentName
+ *
+ *      The component name identifies the component among components of a similar type. It may be the name of an
+ *      operation. For example, a search button would have the type "button" and the name "search". (There may be
+ *      more than one search button, so other params may be necessary to uniquely identify each one.)
+ *
+ *      ZmId.VIEW_*
+ *      ZmId.OP_*
+ *      ZmId.TB_*
+ *      ZmId.SEARCH_*
+ *      ZmId.MV_*
+ *      ZmId.CMP_*
+ *      ZmId.GROUPBY_*
+ *
+ * app
+ *
+ *      The name of the application that contains the element. Some elements are global and do not have an associated
+ *      application. Elements associated with an app appear within the main content area.
+ *
+ *      ZmId.APP_*
+ *
+ * containingView
+ *
+ *      For an element within the main content area, the identifier of the view that contains it.
+ *
+ *      ZmId.VIEW_*
+ *
+ * sessionId
+ *
+ *      A number identifying a session for a view which can appear in more than one tab at a time. For example, there
+ *      may be multiple compose sessions if the user replies to several different messages without sending the replies.
+ *
+ * itemType
+ *
+ *      The type of item, such as message, contact, or appointment.
+ *
+ *      ZmId.ITEM_*
+ *
+ * itemId
+ *
+ *      The ID of the item (for example, a mail message) that the element is tied to. For local items, it's a number.
+ *      For shared items, it's a compound string comprising an account ID and a local numeric ID.
+ *
+ * organizerType
+ *
+ *      The type of organizer, such as folder, tag, or zimlet. Organizers generally appear in the overview.
+ *
+ *      ZmId.ORG_*
+ *
+ * organizerId
+ *
+ *      The ID of the organizer (for example, a mail folder) that the element is tied to. For local organizers, it's a
+ *      number. For shared folders, it's a compound string comprising an account ID and a local numeric ID.
+ *
+ * field
+ *
+ *      A field identifies a specific sub-part of a component. It might be something that helps make up a widget,
+ *      such as the "left icon" in a button, or it might be something ZCS-specific like the "subject" field in a list
+ *      view that displays mail messages. The line between componentName and field can be a bit blurry. Generally a
+ *      componentName refers to a container of some sort, like a list row or header.
+ *
+ *      ZmId.FLD_*
+ *
+ * tagName
+ *
+ *      The tag name of the HTML element, such as "TABLE" or "TR". May usually be omitted when looking up an ID.
+ *
+ * sequence
+ *
+ *      A number used to diffentiate between otherwise identical IDs.
+ *
+ * parentId
+ *
+ *      The ID of the parent of this element.
+ *
+ */
+
+ZmId.BASE = "zcs";
+ZmId.SEQ = 1;
+
+ZmId._idList = [];
+
+ZmId._idHash = {};
+
+/**
+ * Returns a unique ID that can later be looked up. As many params as possible should be provided, in order to
+ * make lookup easier. If one or more IDs is found to already have been created with the given set of params,
+ * a sequence number is added as a parameter.
+ *
+ * @param {hash}        params          set of fields describing the ID's element
+ * @param {string}      description     (optional) a brief description of the purpose of the ID
+ */
+ZmId.create = function(params, description) {
+
+	var idParams = AjxUtil.hashCopy(params);
+	var ids = ZmId.lookup(params);
+	if (ids) {
+		idParams.sequence = (typeof ids === "string") ? 1 : ids.length;
+	}
+	idParams.description = description || "";
+	var newId = ZmId.BASE + ZmId.SEQ++;
+	idParams.id = newId;
+	ZmId._idHash[newId] = idParams;
+	ZmId._idList.push(idParams);
+
+	return newId;
+};
+
+/**
+ * Returns the DOM ID that matches the given set of params. If more than one ID matches, a list is returned.
+ * A partial set of params may be provided. The more params provided, the better the chance of finding just one ID.
+ * The best approach is to provide the minimal set of params that will uniquely differentiate the element. If no
+ * params are provided, returns all IDs.
+ *
+ * @param params    set of fields describing the ID(s) being sought
+ */
+ZmId.lookup = function(params) {
+
+	if (!params) {
+		return ZmId._idList;
+	}
+
+	var ids = [];
+	for (var i = 0, len = ZmId._idList.length; i < len; i++) {
+		var idParams = ZmId._idList[i];
+		var add = true;
+		for (var param in params) {
+			if (params[param] !== idParams[param]) {
+				add = false;
+				continue;
+			}
+		}
+		if (add) {
+			ids.push(idParams.id);
+		}
+	}
+	return (ids.length === 0) ? null : (ids.length === 1) ? ids[0] : ids;
+};
+
+/**
+ * Returns the set of params used to create the given ID.
+ *
+ * @param id
+ */
+ZmId.getParams = function(id) {
+	return ZmId._idHash[id];
+};
+
+/**
+ * Displays a list of matching IDs in a popup, with the params used to create them and their descriptions.
+ * Intended as a development tool.
+ *
+ * @param params    set of fields describing the ID(s) being sought
+ */
+ZmId.showIds = function(params) {
+
+	if (!DBG || DBG.isDisabled()) { return; }
+
+	var ids = ZmId.lookup(params),
+		len = ids.length,
+		backMap = ZmId._getBackMap(),
+		text = "",
+		i;
+
+	for (i = 0; i < len; i++) {
+		var id = ids[i].id;
+		var params = ZmId._idHash[id];
+		text += "\n-----\n\n" + id + AjxStringUtil.repeat(" ", 16 - id.length) + params.description + "\n\n";
+		var paramNames = AjxUtil.keys(params).sort();
+		for (var j = 0; j < paramNames.length; j++) {
+			var paramName = paramNames[j];
+			if (paramName === 'id' || paramName === 'description') {
+				continue;
+			}
+			var value = params[paramName];
+			if (!value) {
+				continue;
+			}
+			value = backMap[value] ? "ZmId." + backMap[value] : value;
+			text += paramName + AjxStringUtil.repeat(" ", 16 - paramName.length) + value + "\n";
+		}
+	}
+
+	DBG.printRaw(text);
+};
+
+ZmId._getBackMap =
+function() {
+	if (!ZmId._backMap) {
+		ZmId._backMap = {};
+		for (var key in ZmId) {
+			var value = ZmId[key];
+			if (typeof value === 'string') {
+				ZmId._backMap[value] = key;
+			}
+		}
+	};
+	return ZmId._backMap;
+};

@@ -35,11 +35,25 @@ ZmTaskListView = function(parent, controller, dropTgt) {
     
 	var headerList = this._getHeaderList(parent);
 
-    var params = {parent:parent, posStyle:Dwt.ABSOLUTE_STYLE, view:ZmId.VIEW_TASKLIST, pageless:false,
-				  type:ZmItem.TASK, controller:controller, headerList:headerList, dropTgt:dropTgt}
+	var idParams = {
+		skinComponent:  ZmId.SKIN_APP_MAIN,
+		app:            ZmId.APP_TASKS,
+		componentType:  ZmId.WIDGET_VIEW,
+		componentName:  ZmId.VIEW_TASKLIST
+	};
+    var params = {
+	    parent:     parent,
+        posStyle:   Dwt.ABSOLUTE_STYLE,
+	    view:       ZmId.VIEW_TASKLIST,
+	    id:         ZmId.create(idParams, "The main task list view"),
+	    pageless:   false,
+		type:       ZmItem.TASK,
+	    controller: controller,
+	    headerList: headerList,
+	    dropTgt:    dropTgt
+    };
 
 	ZmListView.call(this, params);
-
 };
 
 ZmTaskListView.prototype = new ZmListView;
