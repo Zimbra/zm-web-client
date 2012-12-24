@@ -1641,8 +1641,8 @@ ZmCalViewController.prototype.duplicateAppt =
 function(appt, params) {
 	var clone = ZmAppt.quickClone(appt);
 	var mode = ZmCalItem.MODE_EDIT;
-	if(appt.isRecurring()) {
-		mode = params.isException ? ZmCalItem.MODE_EDIT_SINGLE_INSTANCE : ZmCalItem.MODE_EDIT_SERIES
+	if (appt.isRecurring()) {
+		mode = params.isException ? ZmCalItem.MODE_COPY_SINGLE_INSTANCE : ZmCalItem.MODE_EDIT_SERIES;  //at first I also created a MODE_COPY_SERIES but I'm afraid of the impact and regressions. So keep it as "edit".
 	}
 	clone.getDetails(mode, new AjxCallback(this, this._duplicateApptContinue, [clone, ZmCalItem.MODE_NEW, params]));
 };
@@ -2288,14 +2288,6 @@ function(newAppt, mode, isDirty, startDate) {
         var attendees = this._viewMgr.getCurrentView().getAtttendees();
         if(attendees && attendees.length > 0) appt.setAttendees(attendees, ZmCalBaseItem.PERSON);
     }
-
-	if (appt.allDayEvent) {
-		var endDate = appt.endDate;
-		if (endDate && endDate.getHours() === 0 && endDate.getMinutes() === 0 && endDate.getSeconds() === 0) {
-			//the end date is set to the beginning of the next day - we do not want to count it as 2 days (or 3, 4, etc) instead of 1 (or 2, 3, etc). It is just one day.
-			endDate.setDate(endDate.getDate() - 1);
-		}
-	}
 
     if (AjxTimezone.TIMEZONE_CONFLICT || AjxTimezone.DEFAULT_RULE.autoDetected) {
 		var timezonePicker = this.getTimezonePicker();
