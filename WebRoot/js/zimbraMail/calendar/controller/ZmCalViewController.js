@@ -1118,7 +1118,7 @@ function(mailItem, date) {
 	if (mailItem instanceof ZmConv) {
 		mailItem = mailItem.getFirstHotMsg();
 	}
-	mailItem.load({getHtml:false, markRead: true, forceLoad: true,
+	mailItem.load({getHtml:false, markRead: true, forceLoad: true, noTruncate: true,
 	               callback:new AjxCallback(this, this._msgLoadedCallback, [mailItem, date, subject])});
 };
 
