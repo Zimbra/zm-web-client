@@ -1,10 +1,13 @@
-var itemTpl = "<span class='x-button-icon list x-icon-mask'></span>" +
+var itemTpl = "<div style='display:inline-block; width=20'>" +
+			  "<img src='/t/resources/icons/" +
+			  "<tpl if='isUnread'>unread.png<tpl else>read.png</tpl>' /></div>" +
 			  "<tpl if='isUnread'>" +
 			  "<span style='font-weight:bold'>{from}</span>" +
 			  "<tpl else>" +
 			  "<span>{from}</span>" +
 			  "</tpl>" +
-			  "<div>{subject} ({numMsgs})</div>";
+			  "<div>{subject} " +
+			  "<tpl if='numMsgs &gt; 1'>({numMsgs})</tpl></div>";
 
 Ext.define("ZCS.view.mail.ZtConvListView", {
 	extend: "Ext.dataview.List",
@@ -13,20 +16,10 @@ Ext.define("ZCS.view.mail.ZtConvListView", {
 		loadingText: "Loading conversations ...",
 		emptyText: "<div class=\"notes-list-empty-text\">No conversations found.</div>",
 		itemTpl: itemTpl,
-//		scrollable: {
-//			direction: 'vertical'
-//		},
 		scrollable : {
 			direction: 'vertical',
 			slotSnapSize : {
-				y:50
-			},
-			scroller : {
-				listeners: {
-					scroll : function(scroller, x, y) {
-						console.log('scrolling!');
-					}
-				}
+				y: 50
 			}
 		},
 		listeners: {

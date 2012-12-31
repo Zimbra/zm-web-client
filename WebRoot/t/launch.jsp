@@ -70,10 +70,9 @@
             <c:set var="sortOrder" value="${requestScope.authResult.prefs.zimbraPrefSortOrder[0]}"/>
         </c:if>
 
-        <c:set var="types" value="${requestScope.authResult.attrs.zimbraFeatureConversationsEnabled[0] eq 'FALSE' ? 'message' : requestScope.authResult.prefs.zimbraPrefGroupMailBy[0]}"/>
         <c:set var="numItems" value="${requestScope.authResult.prefs.zimbraPrefItemsPerVirtualPage[0]}"/>
 
-        <zm:getInfoJSON var="getInfoJSON" authtoken="${requestScope.authResult.authToken}" dosearch="${not empty app and app ne 'mail' or isOfflineMode ? false : true}" itemsperpage="${numItems * 2}" types="${types}" folderpath="${path}" sortby="${sortOrder}"/>
+        <zm:getInfoJSON var="getInfoJSON" authtoken="${requestScope.authResult.authToken}" dosearch="true" itemsperpage="20" types="conversation" folderpath="${path}" sortby="${sortOrder}"/>
         var batchInfoResponse = ${getInfoJSON};
         window.inlineData = {
             header:batchInfoResponse.Header,

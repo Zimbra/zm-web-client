@@ -15,7 +15,8 @@ Ext.application({
 
 	controllers: [
 		'ZCS.controller.mail.ZtConvListController',
-		'ZCS.controller.mail.ZtConvController'
+		'ZCS.controller.mail.ZtConvController',
+		'ZCS.controller.mail.ZtComposeController'
 	],
 
     views: ['Main'],
@@ -42,8 +43,7 @@ Ext.application({
         // Destroy the #appLoadingIndicator element
         Ext.fly('appLoadingIndicator').destroy();
 
-	    ZCS.common.ZtUserSession.setSettings(window.inlineData.response.GetInfoResponse[0]);
-	    ZCS.common.ZtUserSession.setInitialSearchResults(window.inlineData.response.SearchResponse[0]);
+	    ZCS.common.ZtUserSession.initSession(window.inlineData);
 
         // Initialize the main view
         Ext.Viewport.add(Ext.create('ZCS.view.Main'));

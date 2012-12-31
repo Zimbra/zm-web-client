@@ -1,9 +1,9 @@
 Ext.define("ZCS.view.mail.ZtMsgListView", {
-	extend: "Ext.dataview.List",
+//	extend: "Ext.dataview.List",
+	extend: "Ext.dataview.DataView",
 	xtype: "msglistview",
 	config: {
 		loadingText: "Loading messages ...",
-		emptyText: "<div class=\"notes-list-empty-text\">No messages found.</div>",
-		itemTpl: "<div>{content}</div>"
+		itemTpl: "<div>{content}</div><hr>"
 	}
 });

@@ -7,12 +7,19 @@ Ext.define('ZCS.model.mail.ZtConv', {
 	],
 	config: {
 		fields: [
-			{ name: 'subject',  type: 'string' },
-			{ name: 'from',     type: 'string' },
-			{ name: 'fragment', type: 'string' },
+			'subject',
+			'from',
+			'fragment',
 			{ name: 'isUnread', type: 'boolean' },
 			{ name: 'numMsgs',  type: 'int' }
 		],
+//		associations: [
+//			{
+//				type: 'hasMany',
+//				model: 'ZCS.model.mail.ZtMsg',
+//				name: 'messages'
+//			}
+//		],
 		proxy: {
 			type: 'soapproxy',
 			api: {
@@ -32,6 +39,7 @@ Ext.define('ZCS.model.mail.ZtConv', {
 */
 			reader: 'convreader',
 			writer: 'convwriter'
-		}
+		},
+		messages: []
 	}
 });

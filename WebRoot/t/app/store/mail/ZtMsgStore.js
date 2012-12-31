@@ -11,6 +11,27 @@ Ext.define('ZCS.store.mail.ZtMsgStore', {
 			{from: 'Joanna', subject: 'Conv 4'}
 		],
 */
-		remoteSort: true
+		remoteSort: true,
+
+		listeners: {
+			load: function(me, records, successful, operation, eOpts) {
+				console.log('msg store load event');
+				var conv = ZCS.app.getController('ZCS.controller.mail.ZtConvController').getConv(),
+					msg, i, convId,
+					messages = [];
+
+				for (i = 0; i < records.length; i++) {
+					msg = records[i];
+					convId = conv.get('id');
+					if (msg.get('convId') === convId) {
+						messages.push(msg);
+					}
+					else {
+						console.log('conv ID ' + msg.get('convId') + ' in msg does not match current conv ID ' + convId);
+					}
+				}
+				conv.setMessages(messages);
+			}
+		}
 	}
 });

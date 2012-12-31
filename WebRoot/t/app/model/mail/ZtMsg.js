@@ -1,29 +1,32 @@
 Ext.define('ZCS.model.mail.ZtMsg', {
 	extend: 'ZCS.model.ZtItem',
 	requires: [
+		'ZCS.model.ZtSoapProxy',
 		'ZCS.model.mail.ZtMsgReader',
 		'ZCS.model.mail.ZtMsgWriter'
 	],
 	config: {
 		fields: [
-			{ name: 'content',  type: 'string' }
+			'subject',
+			'content',
+			'from',
+			'to',
+			'convId'
 		],
+//		associations: [
+//			{
+//				type: 'belongsTo',
+//				model: 'ZCS.model.mail.ZtConv'
+//			}
+//		],
 		proxy: {
-			type: 'ajax',
+			type: 'soapproxy',
 			api: {
-				create  : '',
+				create  : '/service/soap/SendMsgRequest',
 				read    : '/service/soap/SearchConvRequest',
 				update  : '/service/soap/MsgActionRequest',
 				destroy : '/service/soap/MsgActionRequest'
 			},
-/*
-			reader: {
-				type: 'json',
-				rootProperty: 'Body.SearchResponse.c',
-				idProperty: 'id',
-				totalProperty: 'Body.SearchResponse.c.length'
-			},
-*/
 			reader: 'msgreader',
 			writer: 'msgwriter'
 		}

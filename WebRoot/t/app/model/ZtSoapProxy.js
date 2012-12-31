@@ -56,4 +56,13 @@ Ext.define('ZCS.model.ZtSoapProxy', {
 			return me.callParent(arguments);
 		}
 	}
+
+//	processResponse: function(success, operation, request, response, callback, scope) {
+//		if (success === true && (request.getUrl().indexOf('SendMsgResponse') !== -1)) {
+//			return;
+//		}
+//		else {
+//			this.callParent(arguments);
+//		}
+//	}
 });

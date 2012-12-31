@@ -1,8 +1,13 @@
 Ext.define('ZCS.model.mail.ZtConvWriter', {
+
 	extend: 'ZCS.model.ZtWriter',
+
 	alias: 'writer.convwriter',
+
 	writeRecords: function(request, data) {
+
 		var json = this.getSoapEnvelope(request, data);
+
 		json.Body.SearchRequest = {
 			_jsns: "urn:zimbraMail",
 			sortBy: "dateDesc",
@@ -20,7 +25,7 @@ Ext.define('ZCS.model.mail.ZtConvWriter', {
 			offset: 0,
 			limit: 20,
 //			query: "in:inbox",
-			query: "in:inbox not is:solo",
+			query: request.getOperation().config.query,
 			types: "conversation",
 			fetch: 1,
 			html: 1,

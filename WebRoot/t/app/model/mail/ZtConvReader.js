@@ -14,14 +14,14 @@ Ext.define('ZCS.model.mail.ZtConvReader', {
 		me.rawData = data;
 
 		var root = data.Body.SearchResponse.c,
-			total = root.length,
+			total = root ? root.length : 0,
 			success = true,
 			message,
 			recordCount = 0,
 			records = [],
 			i, j, len, node, data, participant;
 
-		if (root && total) {
+		if (total > 0) {
 //			records = me.extractData(data);
 			for (i = 0; i < total; i++) {
 				node = root[i];

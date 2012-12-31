@@ -37,8 +37,7 @@ Ext.define('ZCS.view.mail.ZtConvListPanel', {
 				{
 					xtype: 'button',
 					handler: function() {
-						var mv = this.up('mailview');
-						mv.fireEvent('showFolders', mv);
+						this.up('mailview').fireEvent('showFolders');
 					},
 					iconCls: 'list',
 					iconMask: true,
@@ -47,8 +46,7 @@ Ext.define('ZCS.view.mail.ZtConvListPanel', {
 				{
 					xtype: 'button',
 					handler: function() {
-						var mv = this.up('mailview');
-						mv.fireEvent('compose', mv);
+						this.up('mailview').fireEvent('compose');
 					},
 					iconCls: 'compose',
 					iconMask: true,
@@ -64,7 +62,15 @@ Ext.define('ZCS.view.mail.ZtConvListPanel', {
 				{
 					xtype: 'searchfield',
 					name: 'searchField',
-					width: '95%'
+					width: '95%',
+					listeners: {
+						keyup: function(fld, ev) {
+							var keyCode = ev.browserEvent.keyCode;
+							if (keyCode === 13 || keyCode === 3) {
+								this.up('mailview').fireEvent('search', fld.getValue());
+							}
+						}
+					}
 				}
 			]
 		};
