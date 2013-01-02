@@ -145,8 +145,13 @@ function(contact, addr, isGroup) {
  */
 ZmContactsHelper._wrapInlineContact =
 function(addr) {
-	var email = new AjxEmailAddress(addr, ZmContact.GROUP_INLINE_REF, addr, null, false);
-	email.value = addr;
+	var email = AjxEmailAddress.parse(addr); //from legacy data at least (not sure about new), the format might be something like "Inigo Montoya <inigo@theprincessbride.com>" so we have to parse.
+	if (!email) {
+		//shouldn't happen but just in case
+		email = new AjxEmailAddress(addr, null, addr);
+	}
+	email.type = ZmContact.GROUP_INLINE_REF;
+	email.value = email.address;
 	email.id = Dwt.getNextId();
 	return email;
 };
