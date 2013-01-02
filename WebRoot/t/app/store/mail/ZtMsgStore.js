@@ -1,21 +1,17 @@
 Ext.define('ZCS.store.mail.ZtMsgStore', {
-	extend: 'Ext.data.Store',
+
+	extend: 'ZCS.store.mail.ZtMailStore',
+
 	config: {
 		model: 'ZCS.model.mail.ZtMsg',
-		fields: ['content'],
-/*
-		data: [
-			{from: 'Bill Lumbergh', subject: 'TPS Report Meeting Scrum'},
-			{from: 'Michael Bolton', subject: 'Conv 2'},
-			{from: 'Michael, Samir, me', subject: 'Conv 3'},
-			{from: 'Joanna', subject: 'Conv 4'}
-		],
-*/
-		remoteSort: true,
 
 		listeners: {
+
+			// add the msgs that were just loaded to their owning conv
 			load: function(me, records, successful, operation, eOpts) {
-				console.log('msg store load event');
+
+				this.convertAddresses(records, false);
+
 				var conv = ZCS.app.getController('ZCS.controller.mail.ZtConvController').getConv(),
 					msg, i, convId,
 					messages = [];

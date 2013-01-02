@@ -22,8 +22,9 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 
 	compose: function() {
 
-		var panel = this.getComposePanel();
-		var form = panel.down('formpanel');
+		var panel = this.getComposePanel(),
+			form = panel.down('formpanel');
+
 		form.reset();
 		panel.show({
 			type: 'slide',
@@ -34,15 +35,62 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 
 	reply: function(msg) {
 
-		var panel = this.getComposePanel();
-		var form = panel.down('formpanel');
+		var panel = this.getComposePanel(),
+			form = panel.down('formpanel'),
+			toFld = form.down('field[name=to]'),
+			bodyFld = form.down('field[name=body]');
+
 		form.reset();
 		panel.show({
 			type: 'slide',
 			direction: 'up'
 		});
-//		form.down('field[name=to]').focus();
-		form.down('field[name=body]').setValue(msg.get('content'));
+
+		toFld.setValue(msg.getReplyAddress().getFullEmail());
+		bodyFld.setValue('\n\n' + msg.get('content'));
+		var textarea = bodyFld.element.query('textarea')[0];
+		textarea.scrollTop = 0;
+		bodyFld.focus();
+	},
+
+	replyAll: function(msg) {
+
+		var panel = this.getComposePanel(),
+			form = panel.down('formpanel'),
+			toFld = form.down('field[name=to]'),
+			ccFld = form.down('field[name=cc]'),
+			bodyFld = form.down('field[name=body]');
+
+		form.reset();
+		panel.show({
+			type: 'slide',
+			direction: 'up'
+		});
+
+		var userEmail = ZCS.common.ZtUserSession.getAccountName(),
+			replyAddr = msg.getReplyAddress(),
+			origToAddrs = msg.getAddressesByType(ZCS.common.ZtConstants.TO),
+			origCcAddrs = msg.getAddressesByType(ZCS.common.ZtConstants.CC),
+			ccAddrs = [],
+			used = {};
+
+		// Remember emails we don't want to repeat in Cc
+		// TODO: add aliases to used hash
+		used[userEmail] = true;
+		used[replyAddr.getEmail()] = true;
+
+		Ext.each(origToAddrs.concat(origCcAddrs), function(addr) {
+			if (!used[addr.getEmail()]) {
+				ccAddrs.push(addr.getFullEmail());
+			}
+		});
+
+		toFld.setValue(replyAddr.getFullEmail());
+		ccFld.setValue(ccAddrs.join('; '));
+		bodyFld.setValue('\n\n' + msg.get('content'));
+		bodyFld.focus();
+		var textarea = bodyFld.element.query('textarea')[0];
+		textarea.scrollTop = 0;
 	},
 
 	onCancelCompose: function() {

@@ -1,16 +1,14 @@
 //Ext.Loader.setPath('Ext.plugin', './plugin');
-Ext.define('ZCS.view.mail.ZtConvPanel', {
+Ext.define('ZCS.view.contacts.ZtContactPanel', {
 
 	extend: 'Ext.Panel',
 
 	requires: [
-		'Ext.dataview.List',
 		'Ext.TitleBar',
-//		'ZCS.view.mail.ZtConvToolbar',
-		'ZCS.view.mail.ZtMsgListView'
+		'ZCS.view.contacts.ZtContactView'
 	],
 
-	xtype: 'convpanel',
+	xtype: 'contactpanel',
 
 	config: {
 		layout: 'fit',
@@ -21,8 +19,7 @@ Ext.define('ZCS.view.mail.ZtConvPanel', {
 
 		this.callParent(arguments);
 
-		var convToolbar = {
-//			xtype: 'convtoolbar'
+		var contactToolbar = {
 			xtype: 'titlebar',
 			docked: 'top',
 			ui: 'light',
@@ -33,21 +30,20 @@ Ext.define('ZCS.view.mail.ZtConvPanel', {
 					iconMask: true,
 					align: 'right',
 					handler: function() {
-						this.up('convpanel').fireEvent('showConvMenu');
+						this.up('contactpanel').fireEvent('showContactMenu');
 					},
 					hidden: true
 				}
 			]
 		};
 
-		var msgListView = {
-			xtype: 'msglistview',
-			store: Ext.getStore('ZtMsgStore')
+		var contactView = {
+			xtype: 'contactview'
 		};
 
 		this.add([
-			convToolbar,
-			msgListView
+			contactToolbar,
+			contactView
 		]);
 	}
 });

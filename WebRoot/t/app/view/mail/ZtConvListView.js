@@ -1,13 +1,14 @@
-var itemTpl = "<div style='display:inline-block; width=20'>" +
-			  "<img src='/t/resources/icons/" +
-			  "<tpl if='isUnread'>unread.png<tpl else>read.png</tpl>' /></div>" +
-			  "<tpl if='isUnread'>" +
-			  "<span style='font-weight:bold'>{from}</span>" +
-			  "<tpl else>" +
-			  "<span>{from}</span>" +
-			  "</tpl>" +
-			  "<div>{subject} " +
-			  "<tpl if='numMsgs &gt; 1'>({numMsgs})</tpl></div>";
+var itemTpl =
+	"<div style='display:inline-block; width=20'>" +
+	"<img src='/t/resources/icons/" +
+	"<tpl if='isUnread'>unread.png<tpl else>read.png</tpl>' /></div>" +
+	"<tpl if='isUnread'>" +
+	"<span style='font-weight:bold'>{senders}</span>" +
+	"<tpl else>" +
+	"<span>{senders}</span>" +
+	"</tpl>" +
+	"<div>{subject} " +
+	"<tpl if='numMsgs &gt; 1'>({numMsgs})</tpl></div>";
 
 Ext.define("ZCS.view.mail.ZtConvListView", {
 	extend: "Ext.dataview.List",

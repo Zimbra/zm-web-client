@@ -1,6 +1,6 @@
-Ext.define('ZCS.model.mail.ZtConvReader', {
+Ext.define('ZCS.model.contacts.ZtContactReader', {
 	extend: 'Ext.data.reader.Json',
-	alias: 'reader.convreader',
+	alias: 'reader.contactreader',
 
 	/**
 	 * Override this method since there's no easy way to override the generated methods that return the
@@ -15,25 +15,25 @@ Ext.define('ZCS.model.mail.ZtConvReader', {
 		var me  = this;
 		me.rawData = data;
 
-		var root = data.Body.SearchResponse.c,
+		var root = (data.Body.GetContactsResponse && data.Body.GetContactsResponse.cn) ||
+				   (data.Body.SearchResponse && data.Body.SearchResponse.cn),
 			total = root ? root.length : 0,
 			success = true,
 			message,
 			recordCount = 0,
 			records = [],
-			i, j, len, node, data, senders;
+			i, j, len, node, data, attrs;
 
 		if (total > 0) {
 			for (i = 0; i < total; i++) {
 				node = root[i];
 				data = {};
-				data.subject = node.su;
-				data.numMsgs = node.n;
-				data.isUnread = node.f && (node.f.indexOf('u') !== -1);
-				data.fragment = node.fr;
-
-				// converted to ZtEmailAddress objects and added to conv in ZtConvStore 'load' listener
-				data.rawAddresses = node.e;
+				attrs = node._attrs;
+				data.firstName = attrs.firstName;
+				data.lastName = attrs.lastName;
+				data.email = attrs.email;
+				data.company = attrs.company;
+				data.fileAs = attrs.fileAs;
 
 				records.push({
 					clientId: null,

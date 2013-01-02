@@ -30,16 +30,10 @@ Ext.define('ZCS.model.mail.ZtMsgReader', {
 //				data.fragment = node.fr;
 				data.content = (node.mp && node.mp[0] && node.mp[0].content) || node.fr;
 				data.convId = node.cid;
-/*
-				data.numMsgs = node.n;
-				len = node.e.length;
-				for (j = 0; j < len; j++) {
-					participant = node.e[j];
-					if (participant && participant.t === "f") {
-						data.from = participant.p || participant.a;
-					}
-				}
-*/
+
+				// converted to ZtEmailAddress objects and added to conv in ZtConvStore 'load' listener
+				data.rawAddresses = node.e;
+
 				records.push({
 					clientId: null,
 					id: node.id,

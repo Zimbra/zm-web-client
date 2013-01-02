@@ -7,7 +7,7 @@ Ext.define("ZCS.controller.mail.ZtConvListController", {
 		stores: ['ZCS.store.mail.ZtConvStore'],
 		refs: {
 			mailView: 'mailview',
-			overview: 'overview',
+			overview: 'mailoverview',
 			convPanel: 'convpanel',
 			convListView: 'convlistview'
 		},

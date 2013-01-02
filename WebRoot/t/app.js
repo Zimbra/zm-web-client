@@ -10,13 +10,18 @@ Ext.application({
 
     requires: [
         'Ext.MessageBox',
-	    'ZCS.common.ZtUserSession'
+	    'ZCS.common.ZtUtil',
+	    'ZCS.common.ZtConstants',
+	    'ZCS.common.ZtUserSession',
+	    'ZCS.model.ZtEmailAddress'
     ],
 
 	controllers: [
 		'ZCS.controller.mail.ZtConvListController',
 		'ZCS.controller.mail.ZtConvController',
-		'ZCS.controller.mail.ZtComposeController'
+		'ZCS.controller.mail.ZtComposeController',
+		'ZCS.controller.contacts.ZtContactListController',
+		'ZCS.controller.contacts.ZtContactController'
 	],
 
     views: ['Main'],

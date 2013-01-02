@@ -52,10 +52,12 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 
 	doReplyAll: function() {
 		console.log("conv controller REPLY_ALL");
+		this.getComposeController().replyAll(this.getActiveMsg());
 	},
 
 	doForward: function() {
 		console.log("conv controller FORWARD");
+		this.getComposeController().forward(this.getActiveMsg());
 	},
 
 	doDelete: function() {
@@ -85,8 +87,15 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 	getActiveMsg: function() {
 		var conv = this.getConv(),
 			msgs = conv.getMessages(),
-			msg = (msgs && msgs.length) ? msgs[0] : null;
+			msg = null;
+//			msg = (msgs && msgs.length) ? msgs[0] : null;
 
-		return msg;
+		Ext.each(msgs, function(msg) {
+			if (msg.get('isUnread') === true) {
+				return msg;
+			}
+		});
+
+		return (msgs && msgs[0]) || null;
 	}
 });

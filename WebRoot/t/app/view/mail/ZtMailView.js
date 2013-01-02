@@ -7,7 +7,7 @@ Ext.define("ZCS.view.mail.ZtMailView", {
 		'Ext.field.Text',
 		'Ext.Label',
 
-		'ZCS.view.ZtOverview',
+		'ZCS.view.mail.ZtMailOverview',
 		"ZCS.view.mail.ZtConvListPanel",
 		"ZCS.view.mail.ZtConvPanel"
 	],
@@ -24,7 +24,7 @@ Ext.define("ZCS.view.mail.ZtMailView", {
 		this.callParent(arguments);
 
 		var overview = {
-			xtype: 'overview',
+			xtype: 'mailoverview',
 //			flex: 1,
 			width: '20%',
 			hidden: true

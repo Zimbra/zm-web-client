@@ -1,13 +1,13 @@
-Ext.define('ZCS.view.mail.ZtConvListPanel', {
+Ext.define('ZCS.view.contacts.ZtContactListPanel', {
 
 	extend: 'Ext.Panel',
 	requires: [
 		'Ext.dataview.List',
 		'Ext.TitleBar',
 		'Ext.field.Search',
-		'ZCS.view.mail.ZtConvListView'
+		'ZCS.view.contacts.ZtContactListView'
 	],
-	xtype: 'convlistpanel',
+	xtype: 'contactlistpanel',
 
 	config: {
 		layout: 'fit',
@@ -18,18 +18,15 @@ Ext.define('ZCS.view.mail.ZtConvListPanel', {
 
 		this.callParent(arguments);
 
-		var inbox = ZCS.common.ZtUserSession.getFolderList().getStore().getById(ZCS.common.ZtConstants.ID_INBOX),
-			unread = inbox ? inbox.get('unreadCount') : 0;
-
 		var listToolbar = {
 			docked: 'top',
 			xtype: 'titlebar',
-			title: '<b>Inbox (' + unread + ')</b>',
+			title: '<b>Contacts</b>',
 			items: [
 				{
 					xtype: 'button',
 					handler: function() {
-						this.up('mailview').fireEvent('showFolders');
+						this.up('contactsview').fireEvent('showFolders');
 					},
 					iconCls: 'list',
 					iconMask: true,
@@ -38,9 +35,9 @@ Ext.define('ZCS.view.mail.ZtConvListPanel', {
 				{
 					xtype: 'button',
 					handler: function() {
-						this.up('mailview').fireEvent('compose');
+						this.up('contactsview').fireEvent('newContact');
 					},
-					iconCls: 'compose',
+					iconCls: 'plus',
 					iconMask: true,
 					align: 'right'
 				}
@@ -59,7 +56,7 @@ Ext.define('ZCS.view.mail.ZtConvListPanel', {
 						keyup: function(fld, ev) {
 							var keyCode = ev.browserEvent.keyCode;
 							if (keyCode === 13 || keyCode === 3) {
-								this.up('mailview').fireEvent('search', fld.getValue());
+								this.up('contactsview').fireEvent('search', fld.getValue());
 							}
 						}
 					}
@@ -68,8 +65,8 @@ Ext.define('ZCS.view.mail.ZtConvListPanel', {
 		};
 
 		var listView = {
-			xtype: 'convlistview',
-			store: Ext.getStore('ZtConvStore')
+			xtype: 'contactlistview',
+			store: Ext.getStore('ZtContactStore')
 		}
 
 		this.add([

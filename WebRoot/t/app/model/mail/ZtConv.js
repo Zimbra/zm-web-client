@@ -1,3 +1,5 @@
+var urlBase = ZCS.common.ZtConstants.SERVICE_URL_BASE;
+
 Ext.define('ZCS.model.mail.ZtConv', {
 	extend: 'ZCS.model.ZtItem',
 	requires: [
@@ -7,9 +9,8 @@ Ext.define('ZCS.model.mail.ZtConv', {
 	],
 	config: {
 		fields: [
-			'subject',
-			'from',
-			'fragment',
+			{ name: 'senders', type: 'string' },
+			{ name: 'fragment', type: 'string' },
 			{ name: 'isUnread', type: 'boolean' },
 			{ name: 'numMsgs',  type: 'int' }
 		],
@@ -24,9 +25,9 @@ Ext.define('ZCS.model.mail.ZtConv', {
 			type: 'soapproxy',
 			api: {
 				create  : '',
-				read    : '/service/soap/SearchRequest',
-				update  : '/service/soap/ConvActionRequest',
-				destroy : '/service/soap/ConvActionRequest'
+				read    : urlBase + 'SearchRequest',
+				update  : urlBase + 'ConvActionRequest',
+				destroy : urlBase + 'ConvActionRequest'
 			},
 //			limit: 50,
 /*
@@ -40,6 +41,7 @@ Ext.define('ZCS.model.mail.ZtConv', {
 			reader: 'convreader',
 			writer: 'convwriter'
 		},
+
 		messages: []
 	}
 });
