@@ -126,10 +126,11 @@ function() {
 
 ZmContactController.prototype._getTabParams =
 function() {
+	var text = this._isGroup() ? ZmMsg.group : ZmMsg.contact;
 	return {id:this.tabId,
 			image:"CloseGray",
             hoverImage:"Close",
-			text: null, //we update it using _updateTabTitle since before calling _setViewContents _getFullName does not return the name
+			text: null, //we update it using updateTabTitle since before calling _setViewContents _getFullName does not return the name
 			textPrecedence:77,
 			tooltip: text,
             style: DwtLabel.IMAGE_RIGHT};
@@ -141,7 +142,7 @@ function() {
 	if (!tabTitle) {
 		tabTitle = this._getDefaultTabText();
 	}
-	tabTitle = 	tabTitle.substr(0, ZmAppViewMgr.TAB_BUTTON_MAX_TEXT)
+	tabTitle = 	tabTitle.substr(0, ZmAppViewMgr.TAB_BUTTON_MAX_TEXT);
 
 	appCtxt.getAppViewMgr().setTabTitle(this._currentViewId, tabTitle);
 };

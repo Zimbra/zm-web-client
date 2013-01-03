@@ -84,10 +84,13 @@ function(htmlElId, typeStr) {
 
 ZmRecipients.prototype.createRecipientHtml =
 function(parent, viewId, htmlElId, fieldNames, bccToggleId) {
+
     this._fieldNames = fieldNames;
+	var contactsEnabled = appCtxt.get(ZmSetting.CONTACTS_ENABLED);
+	var galEnabled = appCtxt.get(ZmSetting.GAL_ENABLED);
 
     	// init autocomplete list
-    if (appCtxt.get(ZmSetting.CONTACTS_ENABLED) || appCtxt.get(ZmSetting.GAL_ENABLED) || appCtxt.isOffline) {
+    if (contactsEnabled || galEnabled || appCtxt.isOffline) {
 		var params = {
 			dataClass:		appCtxt.getAutocompleter(),
 			matchValue:		ZmAutocomplete.AC_VALUE_FULL,
@@ -99,9 +102,8 @@ function(parent, viewId, htmlElId, fieldNames, bccToggleId) {
 		this._acAddrSelectList = new ZmAutocompleteListView(params);
 	}
 
-	var isPickerEnabled = (appCtxt.get(ZmSetting.CONTACTS_ENABLED) ||
-						   appCtxt.get(ZmSetting.GAL_ENABLED) ||
-						   appCtxt.multiAccounts);
+	var isPickerEnabled = contactsEnabled || galEnabled || appCtxt.multiAccounts;	
+	
 	this._pickerButton = {};
 
 	// process compose fields
@@ -145,6 +147,12 @@ function(parent, viewId, htmlElId, fieldNames, bccToggleId) {
 
 		// create picker
 		if (isPickerEnabled) {
+
+			// bug 78318 - if GAL enabled but not contacts, we need some things defined to handle GAL search
+			if (!contactsEnabled) {
+				appCtxt.getAppController()._createApp(ZmApp.CONTACTS);
+			}
+
 			var pickerId = this._buttonTdId[type];
 			var pickerEl = document.getElementById(pickerId);
 			if (pickerEl) {
@@ -153,11 +161,11 @@ function(parent, viewId, htmlElId, fieldNames, bccToggleId) {
 				button.setText(pickerEl.innerHTML);
 				button.replaceElement(pickerEl);
 
-				button.addSelectionListener(new AjxListener(this, this.addressButtonListener));
+				button.addSelectionListener(this.addressButtonListener.bind(this));
 				button.addrType = type;
 
 				// autocomplete-related handlers
-				if (appCtxt.get(ZmSetting.CONTACTS_ENABLED) || appCtxt.isOffline) {
+				if (contactsEnabled || appCtxt.isOffline) {
 					this._acAddrSelectList.handle(this._field[type], aifId);
  				} else {
 					this._setEventHandler(this._fieldId[type], "onKeyUp");
@@ -374,7 +382,10 @@ function() {
 	addrs[ZmRecipients.BAD] = new AjxVector();
 	for (var i = 0; i < this._fieldNames.length; i++) {
 		var type = this._fieldNames[i];
-		if (!this._using[type]) { continue; }
+
+		if (!this._field[type]) { //this check is in case we don't have all fields set up (might be configurable. Didn't look deeply).
+			continue;
+		}
 
 		var val = this.getAddrFieldValue(type);
 		if (val.length == 0) { continue; }

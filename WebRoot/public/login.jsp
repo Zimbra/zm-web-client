@@ -21,7 +21,7 @@
 
 <%-- get useragent --%>
 <zm:getUserAgent var="ua" session="false"/>
-<c:set var="useMobile" value="${ua.isiPhone or ua.isiPod or ua.isOsAndroid}"/>
+<c:set var="useMobile" value="${ua.isiPhone or ua.isiPad or ua.isiPod or ua.isOsAndroid}"/>
 <c:set var="trimmedUserName" value="${fn:trim(param.username)}"/>
 
 <%--'virtualacctdomain' param is set only for external virtual accounts--%>
@@ -176,7 +176,9 @@
                     </c:redirect>
         		</c:when>
                 <c:when test="${client eq 'mobile'}">
-                        <c:set var="mobURL" value="/m/zmain"/>
+                    <jsp:forward page="/t/launch.jsp"/>
+<%--
+                        <c:set var="mobURL" value="/t/launch.jsp"/>
                         <c:redirect url="${mobURL}">
                             <c:forEach var="p" items="${paramValues}">
                                 <c:forEach var='value' items='${p.value}'>
@@ -186,6 +188,7 @@
                                 </c:forEach>
                             </c:forEach>
                     </c:redirect>
+--%>
                 </c:when>
                 <c:otherwise>
                    <jsp:forward page="/public/launchZCS.jsp"/>
@@ -464,7 +467,7 @@ if (application.getInitParameter("offlineMode") != null)  {
   if (link) {
     link.href = skin.hints.banner.url;
   }
-  
+
 <c:if test="${smallScreen && ua.isIE}">       /*HACK FOR IE*/
   var resizeLoginPanel = function(){
       var panelElem = document.getElementById('ZLoginPanel');

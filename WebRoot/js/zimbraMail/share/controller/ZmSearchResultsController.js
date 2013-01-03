@@ -115,10 +115,9 @@ function(search, resultsCtlr) {
 					resultsApp:	resultsCtlr.getApp().getName()
 				});
 	}
-	this._filterPanel.reset();
-	
+
 	this._resultsController = resultsCtlr;
-	if (appCtxt.getCurrentViewId() == this._currentViewId) {
+	if (appCtxt.getCurrentViewId().indexOf(this._currentViewId) !== -1) {
 		var elements = {};
 		elements[ZmAppViewMgr.C_TOOLBAR_TOP] = resultsCtlr.getCurrentToolbar();
 		elements[ZmAppViewMgr.C_APP_CONTENT] = resultsCtlr.getViewMgr ? resultsCtlr.getViewMgr() : resultsCtlr.getCurrentView();
@@ -139,7 +138,8 @@ function(search, resultsCtlr) {
 								hide:		[ ZmAppViewMgr.C_TREE_FOOTER ],
 								tabParams:	this._getTabParams()});
 		this._app.pushView(this._currentViewId);
-		
+		this._filterPanel.reset();
+
 		// search tab button menu
 		var button = appCtxt.getAppChooser().getButton(this.tabId);
 		var menu = new DwtMenu({ parent: button	});
@@ -172,6 +172,10 @@ function(search, resultsCtlr) {
         resultsCtlr.updateTimeIndicator();
     }
 	setTimeout(this._toolbar.focus.bind(this._toolbar), 100);
+};
+
+ZmSearchResultsController.prototype._postHideCallback =
+function() {
 };
 
 // returns params for the search tab button
