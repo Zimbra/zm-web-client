@@ -1239,15 +1239,17 @@ function(ev) {
 		var hasTagListener = this._evtMgr.isListenerRegistered(ZmEvent.L_MODIFY);
 		for (var i = 0; i < a.length; i++) {
 			var item = this.getById(a[i].id);	// make sure item is realized (contact may not be)
-			if (item.isShared()) {
-				continue; //overview tag delete does not affect remote items tags
-			}
-			if (item && item.hasTag(tag.name)) {
-				item.tagLocal(tag.name, false);
-				if (hasTagListener) {
-					this._notify(ZmEvent.E_TAGS, {items:[item]});
-				}
-			}
+            if (item) {
+                if (item.isShared()) {
+                    continue; //overview tag delete does not affect remote items tags
+                }
+                if (item.hasTag(tag.name)) {
+                    item.tagLocal(tag.name, false);
+                    if (hasTagListener) {
+                        this._notify(ZmEvent.E_TAGS, {items:[item]});
+                    }
+                }
+            }
 		}
 
 		// If search results are based on this tag, keep them around so that user can still
