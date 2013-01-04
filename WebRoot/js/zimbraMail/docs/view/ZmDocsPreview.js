@@ -101,5 +101,24 @@ function(){
         var dateFormatter = AjxDateFormat.getDateTimeInstance(AjxDateFormat.LONG, AjxDateFormat.SHORT);
         params.dateContainer.innerHTML = dateFormatter.format(params.dateModified) || params.dateModified;
     }
+	this.fixImages();
 
+};
+
+ZmDocsPreview.prototype.fixImages = 
+function() {
+	var images = document.getElementsByTagName("img");
+	
+	for (var i = 0; i < images.length; i++) {
+		var dfsrc = images[i].getAttribute("dfsrc");
+		if (dfsrc && dfsrc.match(/https?:\/\/([-\w\.]+)+(:\d+)?(\/([\w\_\.]*(\?\S+)?)?)?/)) {
+			// Fix for IE: Over HTTPS, http src urls for images might cause an issue.
+			try {
+				images[i].src = ''; //unload it first
+				images[i].src = dfsrc;
+			} catch (ex) {
+				// do nothing
+			}
+		}
+	}	
 };
