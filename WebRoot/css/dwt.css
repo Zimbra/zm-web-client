@@ -483,6 +483,10 @@
 	@ListColHeaderContainer-normal@
 }
 
+.DwtListView-Column table {
+	table-layout:fixed
+}
+
 /* ??? SHOTGUN */
 
 .DwtListView-Column td {
