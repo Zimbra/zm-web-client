@@ -554,7 +554,6 @@ function(){
     Dwt.setHandler(this._headerExpand, DwtEvent.ONCLICK, AjxCallback.simpleClosure(this._toggleExpand, this));
 
     this._iframePreview.getIframe().onload = AjxCallback.simpleClosure(this._updatePreview, this);
-
 };
 
 ZmPreviewView._errorCallback =
@@ -713,6 +712,7 @@ function(){
 	    if (!iframeDoc) {
 		    return;
 	    }
+	    this._iframePreview._resetEventHandlers();  //for resizing reading pane on right
         var images = iframeDoc && iframeDoc.getElementsByTagName("img");
 	    if (images && images.length) {
 		    for (var i = 0; i <images.length; i++) {
@@ -728,6 +728,8 @@ function(){
 			    }
 		    }
 	    }
+	    
+	    this._iframePreview
     }
 };
 
