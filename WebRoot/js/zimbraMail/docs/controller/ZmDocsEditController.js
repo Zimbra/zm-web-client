@@ -80,6 +80,8 @@ ZmDocsEditController.prototype.loadDocument = function(item) {
     //        if(window.isTinyMCE) {
     //            this._docsEdit.setPendingContent(content);
     //        }else {
+	content = content.replace(/<img dfsrc="http:\/\//g, '<img src="http:\/\/');
+	content = content.replace(/<img dfsrc="https:\/\//g, '<img src="https:\/\/');
             this._docsEdit._editor.setContent(content);
     //        }
         ZmDocsEditController.savedDoc = content;

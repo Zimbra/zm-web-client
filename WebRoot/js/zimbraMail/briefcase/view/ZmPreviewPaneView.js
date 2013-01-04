@@ -708,6 +708,27 @@ function(){
         this._iframePreview.setIframeContent(this._previewContent);
         this._previewContent = false;
     }
+	else {
+	    var iframeDoc = this._iframePreview && this._iframePreview.getDocument();
+	    if (!iframeDoc) {
+		    return;
+	    }
+        var images = iframeDoc && iframeDoc.getElementsByTagName("img");
+	    if (images && images.length) {
+		    for (var i = 0; i <images.length; i++) {
+			    var dfsrc = images[i].getAttribute("dfsrc");
+			    if (dfsrc && dfsrc.match(/https?:\/\/([-\w\.]+)+(:\d+)?(\/([\w\_\.]*(\?\S+)?)?)?/)) {
+				    // Fix for IE: Over HTTPS, http src urls for images might cause an issue.
+				    try {
+					    images[i].src = ''; //unload it first
+					    images[i].src = dfsrc;
+				    } catch (ex) {
+					    // do nothing
+				    }
+			    }
+		    }
+	    }
+    }
 };
 
 
