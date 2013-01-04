@@ -38,13 +38,6 @@ ZmReminderController = function(calController, apptType) {
 	this._oldAppts = new AjxVector(); // set of appts which are olde and needs silent dismiss    
 	this._housekeepingTimedAction = new AjxTimedAction(this, this._housekeepingAction);
 	this._refreshTimedAction = new AjxTimedAction(this, this.refresh);
-	var settings = appCtxt.getSettings();
-	var listener = new AjxListener(this, this._settingChangeListener);
-	var setting = settings.getSetting(ZmSetting.CAL_REMINDER_WARNING_TIME);
-	if (setting) {
-		setting.addChangeListener(listener);
-		this._warningTime = appCtxt.get(ZmSetting.CAL_REMINDER_WARNING_TIME);
-	}
 };
 
 ZmReminderController.prototype.constructor = ZmReminderController;
@@ -70,28 +63,6 @@ function() {
 	return "ZmReminderController";
 };
 
-ZmReminderController.prototype._settingChangeListener =
-function(ev) {
-	if (ev.type != ZmEvent.S_SETTING) return;
-	var setting = ev.source;
-	if (setting.id != ZmSetting.CAL_REMINDER_WARNING_TIME) return;
-
-	var oldWarningTime = this._warningTime;
-	var newWarningTime = this._warningTime = setting.getValue();
-	if (newWarningTime == 0) {
-		this._cancelRefreshAction();
-		this._cancelHousekeepingAction();
-	} else {
-		if (oldWarningTime == 0) {
-			this.refresh();
-		} else {
-			this._cancelHousekeepingAction();
-			this._housekeepingAction();
-		}
-	}
-	this._warningTime = newWarningTime;
-};
-
 /**
  * called when: (1) app first loads, (2) on refresh blocks, (3) after appt cache is cleared. Our
  * _apptState info will keep us from popping up the same appt again if we aren't supposed to
@@ -101,8 +72,6 @@ function(ev) {
  */
 ZmReminderController.prototype.refresh =
 function() {
-	if (this._warningTime == 0) { return; }
-
 	this._searchTimeRange = this.getSearchTimeRange();
 	DBG.println(AjxDebug.DBG1, "reminder search time range: " + this._searchTimeRange.start + " to " + this._searchTimeRange.end);
 
@@ -284,11 +253,6 @@ function() {
 	}
 
 	var numNotify = 0;
-
-	// look for appts that fall with startTime/endTime
-	var startTime = (new Date()).getTime();
-	var endTime = startTime + (this._warningTime * 60 * 1000);
-
 	var toRemove = [];
 
 	for (var i=0; i < cachedSize; i++) {
