@@ -1800,7 +1800,7 @@ input.xform_field {
 
 .ZCenterTitle .ZWidgetTitle		{	text-align:center;  vertical-align:middle;	}
 
-
+.ZDisabled .ZDropDown           { @Text-disabled@ }
 
 .ZWidgetTable DIV				{	}
 .ZHasText .ZWidgetTitle			{	padding:0px 4px;	}
