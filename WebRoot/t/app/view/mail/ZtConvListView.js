@@ -7,26 +7,20 @@ var itemTpl =
 	"<tpl else>" +
 	"<span>{senders}</span>" +
 	"</tpl>" +
-	"<div>{subject} " +
-	"<tpl if='numMsgs &gt; 1'>({numMsgs})</tpl></div>";
+	"<span class='zcs-conv-date'>{dateStr}</span>" +
+	"<div>{subject:ellipsis(35, true)} " +
+	"<tpl if='numMsgs &gt; 1'>({numMsgs})</tpl></div>" +
+	"<div class='zcs-fragment'>{fragment:ellipsis(80, true)}</div>";
 
-Ext.define("ZCS.view.mail.ZtConvListView", {
-	extend: "Ext.dataview.List",
-	xtype: "convlistview",
+Ext.define('ZCS.view.mail.ZtConvListView', {
+
+	extend: 'ZCS.view.ZtListView',
+
+	xtype: 'convlistview',
+
 	config: {
 		loadingText: "Loading conversations ...",
 		emptyText: "<div class=\"notes-list-empty-text\">No conversations found.</div>",
-		itemTpl: itemTpl,
-		scrollable : {
-			direction: 'vertical',
-			slotSnapSize : {
-				y: 50
-			}
-		},
-		listeners: {
-			select: function(view, record) {
-				this.fireEvent('showConv', view, record);
-			}
-		}
+		itemTpl: itemTpl
 	}
 });

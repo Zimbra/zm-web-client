@@ -1,5 +1,7 @@
 Ext.define('ZCS.model.mail.ZtMsgReader', {
-	extend: 'Ext.data.reader.Json',
+
+	extend: 'ZCS.model.mail.ZtMailReader',
+
 	alias: 'reader.msgreader',
 
 	/**
@@ -30,6 +32,7 @@ Ext.define('ZCS.model.mail.ZtMsgReader', {
 //				data.fragment = node.fr;
 				data.content = (node.mp && node.mp[0] && node.mp[0].content) || node.fr;
 				data.convId = node.cid;
+				this.parseFlags(node, data);
 
 				// converted to ZtEmailAddress objects and added to conv in ZtConvStore 'load' listener
 				data.rawAddresses = node.e;

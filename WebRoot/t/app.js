@@ -24,7 +24,7 @@ Ext.application({
 		'ZCS.controller.contacts.ZtContactController'
 	],
 
-    views: ['Main'],
+    views: ['ZtMain'],
 
     icon: {
         '57': 'resources/icons/Icon.png',
@@ -51,7 +51,7 @@ Ext.application({
 	    ZCS.common.ZtUserSession.initSession(window.inlineData);
 
         // Initialize the main view
-        Ext.Viewport.add(Ext.create('ZCS.view.Main'));
+        Ext.Viewport.add(Ext.create('ZCS.view.ZtMain'));
     },
 
     onUpdated: function() {

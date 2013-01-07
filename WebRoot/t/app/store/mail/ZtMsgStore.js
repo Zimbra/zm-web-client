@@ -12,7 +12,7 @@ Ext.define('ZCS.store.mail.ZtMsgStore', {
 
 				this.convertAddresses(records, false);
 
-				var conv = ZCS.app.getController('ZCS.controller.mail.ZtConvController').getConv(),
+				var conv = ZCS.app.getController('ZCS.controller.mail.ZtConvController').getItem(),
 					msg, i, convId,
 					messages = [];
 

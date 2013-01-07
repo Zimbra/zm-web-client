@@ -1,6 +1,6 @@
 Ext.define('ZCS.model.mail.ZtMsgWriter', {
 
-	extend: 'ZCS.model.ZtWriter',
+	extend: 'ZCS.model.mail.ZtMailWriter',
 
 	alias: 'writer.msgwriter',
 
@@ -67,6 +67,9 @@ Ext.define('ZCS.model.mail.ZtMsgWriter', {
 					]
 				}
 			};
+		}
+		else if (action === 'update') {
+			this.setActionRequest(json.Body, data[0], true);
 		}
 
 		request.setJsonData(json);

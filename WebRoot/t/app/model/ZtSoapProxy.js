@@ -7,11 +7,13 @@ Ext.define('ZCS.model.ZtSoapProxy', {
 	doRequest: function(operation, callback, scope) {
 
 		var me = this,
-			inlineResults = ZCS.common.ZtUserSession.getInitialSearchResults();
+			inlineResults = ZCS.session.getInitialSearchResults();
 
 		if (inlineResults) {
 			var request = me.buildRequest(operation),
 				response;
+
+			operation.config.query = ZCS.session.getSetting(ZCS.constant.SETTING_INITIAL_SEARCH);
 
 			request.setConfig({
 				headers  : me.getHeaders(),
@@ -21,13 +23,6 @@ Ext.define('ZCS.model.ZtSoapProxy', {
 				scope    : me,
 				proxy    : me
 			});
-
-			/*
-			 Date: Fri, 21 Dec 2012 06:14:01 GMT
-			 Content-Length: 13322
-			 Content-Type: text/javascript; charset=utf-8
-			 Cache-Control: no-store, no-cache
-			 */
 
 			var data = {
 				Body: {
@@ -50,19 +45,18 @@ Ext.define('ZCS.model.ZtSoapProxy', {
 			};
 
 			this.processResponse(true, operation, request, response, callback, scope);
-			ZCS.common.ZtUserSession.setInitialSearchResults(null);
+			ZCS.session.setInitialSearchResults(null);
 		}
 		else {
 			return me.callParent(arguments);
 		}
-	}
+	},
 
-//	processResponse: function(success, operation, request, response, callback, scope) {
-//		if (success === true && (request.getUrl().indexOf('SendMsgResponse') !== -1)) {
-//			return;
-//		}
-//		else {
-//			this.callParent(arguments);
-//		}
-//	}
+	processResponse: function(success, operation, request, response, callback, scope) {
+		this.callParent(arguments);
+		var query = operation.config.query;
+		if (query && ZCS.session.getSetting(ZCS.constant.SETTING_SHOW_SEARCH)) {
+			ZCS.session.getActiveSearchField().setValue(query);
+		}
+	}
 });

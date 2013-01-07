@@ -67,10 +67,10 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 			direction: 'up'
 		});
 
-		var userEmail = ZCS.common.ZtUserSession.getAccountName(),
+		var userEmail = ZCS.session.getAccountName(),
 			replyAddr = msg.getReplyAddress(),
-			origToAddrs = msg.getAddressesByType(ZCS.common.ZtConstants.TO),
-			origCcAddrs = msg.getAddressesByType(ZCS.common.ZtConstants.CC),
+			origToAddrs = msg.getAddressesByType(ZCS.constant.TO),
+			origCcAddrs = msg.getAddressesByType(ZCS.constant.CC),
 			ccAddrs = [],
 			used = {};
 
@@ -83,7 +83,7 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 			if (!used[addr.getEmail()]) {
 				ccAddrs.push(addr.getFullEmail());
 			}
-		});
+		}, this);
 
 		toFld.setValue(replyAddr.getFullEmail());
 		ccFld.setValue(ccAddrs.join('; '));
@@ -91,6 +91,10 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 		bodyFld.focus();
 		var textarea = bodyFld.element.query('textarea')[0];
 		textarea.scrollTop = 0;
+	},
+
+	forward: function(msg) {
+
 	},
 
 	onCancelCompose: function() {
@@ -102,7 +106,7 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 //		Ext.getStore('ZtMsgStore').add(values);
 		console.log('Send message');
 		var msg = Ext.create('ZCS.model.mail.ZtMsg', {
-			from: ZCS.common.ZtUserSession.getAccountName(),
+			from: ZCS.session.getAccountName(),
 			to: values.to,
 			subject: values.subject,
 			content: values.body

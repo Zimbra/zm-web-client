@@ -1,9 +1,8 @@
-var urlBase = ZCS.common.ZtConstants.SERVICE_URL_BASE;
+var urlBase = ZCS.constant.SERVICE_URL_BASE;
 
 Ext.define('ZCS.model.mail.ZtMsg', {
-	extend: 'ZCS.model.ZtItem',
+	extend: 'ZCS.model.mail.ZtMailItem',
 	requires: [
-		'ZCS.model.ZtSoapProxy',
 		'ZCS.model.mail.ZtMsgReader',
 		'ZCS.model.mail.ZtMsgWriter'
 	],
@@ -14,14 +13,7 @@ Ext.define('ZCS.model.mail.ZtMsg', {
 //			{ name: 'to', type: 'string' },
 			{ name: 'convId', type: 'string', mapping: 'cid' }
 		],
-//		associations: [
-//			{
-//				type: 'belongsTo',
-//				model: 'ZCS.model.mail.ZtConv'
-//			}
-//		],
 		proxy: {
-			type: 'soapproxy',
 			api: {
 				create  : urlBase + 'SendMsgRequest',
 				read    : urlBase + 'SearchConvRequest',
@@ -34,7 +26,7 @@ Ext.define('ZCS.model.mail.ZtMsg', {
 	},
 
 	getReplyAddress: function() {
-		return this.getAddressByType(ZCS.common.ZtConstants.REPLY_TO) ||
-			   this.getAddressByType(ZCS.common.ZtConstants.FROM);
+		return this.getAddressByType(ZCS.constant.REPLY_TO) ||
+			   this.getAddressByType(ZCS.constant.FROM);
 	}
 });

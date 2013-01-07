@@ -4,22 +4,20 @@ Ext.define('ZCS.view.ZtFolderList', {
 
 	config: {
 		onItemDisclosure: function(record, item, index, e) {
-			console.log('Folder list DISCLOSE');
-//			Ext.dataview.NestedList.prototype.onItemTap.call(this, item.dataview, index, item, record, e);
-//			ZCS.view.ZtFolderList.superclass.onItemTap.call(this, item.dataview, index, item, record, e);
+			// This event is scoped to the sub-list that caught it, so we need to get the top-level nested
+			// list to expand the node, since a sub-list only knows how to display a flat series of items.
 			var list = item.dataview,
 				store = list.getStore(),
 				node = store.getAt(index),
 				nestedList = this.up('nestedlist');
-//			this.goToNode(node);
+
 			nestedList.goToNode(node);
 		}
 	},
 
 	onItemTap: function(list, index, target, folder, e) {
-//		console.log('ZtFolderList folder selected');
-		var query = 'in:' + folder.getQueryPath();
-		this.up('mailoverview').fireEvent('search', query);
+		var query = 'in:"' + folder.getQueryPath() + '"';
+		this.fireEvent('search', query);
 	},
 
 	getById: function(id) {

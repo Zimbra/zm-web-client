@@ -1,9 +1,8 @@
-var urlBase = ZCS.common.ZtConstants.SERVICE_URL_BASE;
+var urlBase = ZCS.constant.SERVICE_URL_BASE;
 
 Ext.define('ZCS.model.contacts.ZtContact', {
 	extend: 'ZCS.model.ZtItem',
 	requires: [
-		'ZCS.model.ZtSoapProxy',
 		'ZCS.model.contacts.ZtContactReader',
 		'ZCS.model.contacts.ZtContactWriter'
 	],
@@ -16,7 +15,6 @@ Ext.define('ZCS.model.contacts.ZtContact', {
 			{ name: 'fileAs', type: 'int' }
 		],
 		proxy: {
-			type: 'soapproxy',
 			api: {
 				create  : '',
 				read    : urlBase + 'GetContactsRequest',
@@ -25,8 +23,6 @@ Ext.define('ZCS.model.contacts.ZtContact', {
 			},
 			reader: 'contactreader',
 			writer: 'contactwriter'
-		},
-
-		messages: []
+		}
 	}
 });

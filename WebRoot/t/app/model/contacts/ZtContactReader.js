@@ -1,5 +1,7 @@
 Ext.define('ZCS.model.contacts.ZtContactReader', {
-	extend: 'Ext.data.reader.Json',
+
+	extend: 'ZCS.model.ZtReader',
+
 	alias: 'reader.contactreader',
 
 	/**

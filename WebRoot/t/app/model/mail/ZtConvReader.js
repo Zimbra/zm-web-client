@@ -1,5 +1,7 @@
 Ext.define('ZCS.model.mail.ZtConvReader', {
-	extend: 'Ext.data.reader.Json',
+
+	extend: 'ZCS.model.mail.ZtMailReader',
+
 	alias: 'reader.convreader',
 
 	/**
@@ -15,13 +17,14 @@ Ext.define('ZCS.model.mail.ZtConvReader', {
 		var me  = this;
 		me.rawData = data;
 
-		var root = data.Body.SearchResponse.c,
+		var root = data.Body.SearchResponse && data.Body.SearchResponse.c,
 			total = root ? root.length : 0,
 			success = true,
 			message,
 			recordCount = 0,
 			records = [],
-			i, j, len, node, data, senders;
+			nowMs = Ext.Date.now(),
+			i, node, data;
 
 		if (total > 0) {
 			for (i = 0; i < total; i++) {
@@ -29,11 +32,13 @@ Ext.define('ZCS.model.mail.ZtConvReader', {
 				data = {};
 				data.subject = node.su;
 				data.numMsgs = node.n;
-				data.isUnread = node.f && (node.f.indexOf('u') !== -1);
 				data.fragment = node.fr;
+				this.parseFlags(node, data);
 
 				// converted to ZtEmailAddress objects and added to conv in ZtConvStore 'load' listener
 				data.rawAddresses = node.e;
+
+				data.dateStr = this.getDateString(node, nowMs);
 
 				records.push({
 					clientId: null,

@@ -1,44 +1,23 @@
 Ext.define('ZCS.controller.mail.ZtConvController', {
 
-	extend: 'ZCS.controller.ZtBaseController',
-
-	requires: [
-		'ZCS.common.ZtMenu'
-	],
+	extend: 'ZCS.controller.ZtItemController',
 
 	config: {
 		models: ['ZCS.model.mail.ZtMsg'],
 		stores: ['ZCS.store.mail.ZtMsgStore'],
 		refs: {
-			convPanel: 'convpanel',
-			convToolbar: 'convpanel titlebar',
-			convMenuButton: 'convpanel titlebar button',
+			itemPanel: 'convpanel',
+			itemToolbar: 'convpanel titlebar',
+			menuButton: 'convpanel titlebar button',
 			msgListView: 'msglistview'
 		},
-		control: {
-			convPanel: {
-				showConvMenu: 'onShowConvMenu'
-			}
-		},
-		conv: null
-	},
-
-	onShowConvMenu: function() {
-		console.log("Conv menu event caught");
-
-		if (!this.convMenu) {
-			this.convMenu = Ext.create('ZCS.common.ZtMenu', {
-				referenceComponent: this.getConvMenuButton()
-			});
-		}
-		this.convMenu.setMenuItems([
-			{label: 'Reply', action: 'REPLY', listener: this.doReply},
-			{label: 'Reply All', action: 'REPLY_ALL', listener: this.doReplyAll},
-			{label: 'Forward', action: 'FORWARD', listener: this.doForward},
-			{label: 'Delete', action: 'DELETE', listener: this.doDelete},
-			{label: 'Mark Read', action: 'MARK_READ', listener: this.doMarkRead}
-		], this);
-		this.convMenu.popup();
+		menuData: [
+			{label: 'Reply', action: 'REPLY', listener: 'doReply'},
+			{label: 'Reply All', action: 'REPLY_ALL', listener: 'doReplyAll'},
+			{label: 'Forward', action: 'FORWARD', listener: 'doForward'},
+			{label: 'Delete', action: 'DELETE', listener: 'doDelete'},
+			{label: 'Mark Read', action: 'MARK_READ', listener: 'doMarkRead'}
+		]
 	},
 
 	getComposeController: function() {
@@ -66,26 +45,53 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 
 	doMarkRead: function() {
 		console.log("conv controller MARK_READ");
+		var conv = this.getItem(),
+			wasUnread = conv.get('isUnread');
+
+		conv.set('op', wasUnread ? 'read' : '!read');
+		conv.save({ success: function(conv, operation) {
+			console.log('conv saved successfully');
+			conv.set('isUnread', !wasUnread);
+		}});
 	},
 
 	clear: function() {
-		this.getConvToolbar().setTitle('');
-		this.getConvMenuButton().hide();
+		this.callParent(arguments);
 		this.getMsgListView().getStore().removeAll();
 	},
 
-	showConv: function(conv) {
+	showItem: function(conv) {
 		console.log("conv controller: show conv " + conv.get('id'));
-		this.clear();
-		this.setConv(conv);
-		this.getConvToolbar().setTitle(conv.get("subject"));
-		this.getConvMenuButton().show();
+		this.callParent(arguments);
+		this.getItemToolbar().setTitle(conv.get("subject"));
 		this.getMsgListView().getStore().load({convId: conv.get('id')});
+	},
+
+	onShowMenu: function() {
+
+		var label = this.getItem().get('isUnread') ? 'Mark Read' : 'Mark Unread';
+		if (this.itemMenu) {
+			var list = this.itemMenu.down('list'),
+				store = list.getStore(),
+				item = list.getItemAt(store.find('action', 'MARK_READ'));
+
+			item.getRecord().set('label', label);
+		}
+		else {
+			// first time showing menu, change data since menu not ready yet
+			var menuData = this.getMenuData();
+			Ext.each(menuData, function(menuItem) {
+				if (menuItem.action === 'MARK_READ') {
+					menuItem.label = label;
+				}
+			}, this);
+		}
+		this.callParent(arguments);
 	},
 
 	// private
 	getActiveMsg: function() {
-		var conv = this.getConv(),
+		var conv = this.getItem(),
 			msgs = conv.getMessages(),
 			msg = null;
 //			msg = (msgs && msgs.length) ? msgs[0] : null;
@@ -94,7 +100,7 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 			if (msg.get('isUnread') === true) {
 				return msg;
 			}
-		});
+		}, this);
 
 		return (msgs && msgs[0]) || null;
 	}

@@ -9,7 +9,7 @@ Ext.define('ZCS.store.mail.ZtConvStore', {
 
 			// convert JSON address nodes into address objects
 			load: function(me, records, successful, operation, eOpts) {
-				this.convertAddresses(records, true);
+				this.convertAddresses(records, 2);
 			}
 		}
 	}

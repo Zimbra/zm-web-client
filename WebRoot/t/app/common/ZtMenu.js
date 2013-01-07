@@ -2,6 +2,10 @@ Ext.define('ZCS.common.ZtMenu', {
 
 	extend: 'Ext.Panel',
 
+	requires: [
+		'ZCS.model.ZtMenuItem'
+	],
+
 	config: {
 		layout: 'fit',
 		width: 160,
@@ -12,7 +16,7 @@ Ext.define('ZCS.common.ZtMenu', {
 			{
 				xtype:'list',
 				store: {
-					fields: ['label', 'action']
+					model: 'ZCS.model.ZtMenuItem'
 				},
 				itemTpl: '{label}',
 				listeners: {
@@ -20,7 +24,7 @@ Ext.define('ZCS.common.ZtMenu', {
 						var action = record.get('action'),
 							menu = this.up('panel');
 						console.log('Menu click: ' + action);
-						var listener = menu.getActionListeners()[action];
+						var listener = record.get('listener');
 						if (listener) {
 							listener(record);
 							menu.popdown();
@@ -29,8 +33,7 @@ Ext.define('ZCS.common.ZtMenu', {
 				}
 			}
 		],
-		referenceComponent: null,
-		actionListeners: {}
+		referenceComponent: null
 	},
 
 	initialize: function() {
@@ -57,16 +60,13 @@ Ext.define('ZCS.common.ZtMenu', {
 		});
 	},
 
-	setMenuItems: function(menuItems, scope) {
-		var actionListeners = {};
-		Ext.each(menuItems, function(menuItem) {
-			actionListeners[menuItem.action] = Ext.bind(menuItem.listener, scope);
-		});
-		this.setActionListeners(actionListeners);
+	setMenuItems: function(menuItems) {
 		this.down('list').getStore().setData(menuItems);
 	},
 
 	popup: function() {
+		var list = this.down('list');
+		list.deselect(list.getSelection()); // clear the previous selection
 		this.showBy(this.getReferenceComponent(), 'tr-br?');
 	},
 

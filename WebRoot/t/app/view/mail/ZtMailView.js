@@ -1,52 +1,19 @@
-Ext.define("ZCS.view.mail.ZtMailView", {
+Ext.define('ZCS.view.mail.ZtMailView', {
 
-	extend: "Ext.Container",
+	extend: 'ZCS.view.ZtAppView',
 
 	requires: [
-		'Ext.Panel',
-		'Ext.field.Text',
-		'Ext.Label',
-
 		'ZCS.view.mail.ZtMailOverview',
-		"ZCS.view.mail.ZtConvListPanel",
-		"ZCS.view.mail.ZtConvPanel"
+		'ZCS.view.mail.ZtConvListPanel',
+		'ZCS.view.mail.ZtConvPanel'
 	],
 
-	xtype: "mailview",
+	xtype: 'mailview',
 
 	config: {
-		layout: 'hbox',
-		padding: 0
-	},
-
-	initialize: function() {
-
-		this.callParent(arguments);
-
-		var overview = {
-			xtype: 'mailoverview',
-//			flex: 1,
-			width: '20%',
-			hidden: true
-		};
-
-		var convListPanel = {
-			xtype: 'convlistpanel',
-//			flex: 1
-			width: '30%'
-		};
-
-		var convPanel = {
-			xtype: 'convpanel',
-//			flex: 2
-			width: '70%'
-		};
-
-		this.add([
-			overview,
-			convListPanel,
-			convPanel
-		]);
+		overviewXtype: 'mailoverview',
+		listPanelXtype: ZCS.constant.LIST_PANEL_XTYPE[ZCS.constant.APP_MAIL],
+		itemPanelXtype: 'convpanel'
 	}
 });
 

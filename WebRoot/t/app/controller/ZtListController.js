@@ -1,0 +1,74 @@
+Ext.define('ZCS.controller.ZtListController', {
+
+	extend: 'Ext.app.Controller',
+
+	config: {
+		refs: {
+			parentView: null,
+			overview: null,
+			folderList: null,
+			itemPanel: null,
+			listView: null
+		},
+		control: {
+			parentView: {
+				showFolders: 'onShowFolders',
+				search: 'onSearch'
+			},
+			listView: {
+				showItem: 'onShowItem'
+			},
+			folderList: {
+				search: 'onSearch'
+			}
+		}
+	},
+
+	launch: function () {
+		this.callParent();
+		Ext.getStore(this.getStoreShortName()).load();
+	},
+
+	getStoreShortName: function() {
+		var parts = this.getStores()[0].split('.');
+		return parts[parts.length - 1];
+	},
+
+	getItemController: function() {},
+
+	onShowFolders: function() {
+		console.log("Folders event caught");
+		var overview = this.getOverview(),
+			itemPanel = this.getItemPanel();
+
+		if (overview.isHidden()) {
+			itemPanel.setWidth('50%');
+			// animation clears space then slides in (not great)
+			overview.show({
+				type: 'slide',
+				direction: 'right',
+				duration: 500
+			});
+//			overview.show();
+		}
+		else {
+			// animation starts overview at far right (flex) or doesn't work at all (%) :(
+//			overview.hide({
+//				type: 'slide',
+//				direction: 'left'
+//			});
+			itemPanel.setWidth('70%');
+			overview.hide();
+		}
+	},
+
+	onShowItem: function(view, item) {
+		this.getItemController().showItem(item);
+	},
+
+	onSearch: function(query) {
+		this.getItemController().clear();
+		console.log('SearchRequest: ' + query);
+		Ext.getStore(this.getStoreShortName()).load({query: query});
+	}
+});

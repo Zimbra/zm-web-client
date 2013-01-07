@@ -6,3 +6,6 @@ Ext.define('ZCS.common.ZtUtil', {
 //		return this;
 //	},
 });
+
+// shortcut
+ZCS.util = ZCS.common.ZtUtil;

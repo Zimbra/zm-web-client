@@ -2,13 +2,17 @@ Ext.define('ZCS.model.ZtWriter', {
 
 	extend: 'Ext.data.writer.Json',
 
+	config: {
+		writeAllFields: false
+	},
+
 	getSoapEnvelope: function(request, data, nameSpace) {
 
-		var sessionId = ZCS.common.ZtUserSession.getSessionId();
+		var sessionId = ZCS.session.getSessionId();
 
 		var envelope = {
 			Header: {
-				_jsns: nameSpace || "urn:zimbra",
+				_jsns: nameSpace || 'urn:zimbra',
 				context: {
 					userAgent: {
 						name: Ext.browser.userAgent,
@@ -19,11 +23,11 @@ Ext.define('ZCS.model.ZtWriter', {
 						id: sessionId
 					},
 					notify: {
-						seq: ZCS.common.ZtUserSession.getNotifySeq()
+						seq: ZCS.session.getNotifySeq()
 					},
 					account: {
-						_content: ZCS.common.ZtUserSession.getAccountName(),
-						by: "name"
+						_content: ZCS.session.getAccountName(),
+						by: 'name'
 					}
 				}
 			},
