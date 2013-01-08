@@ -2873,7 +2873,7 @@ function() {
 
 		ZmZimbraMail._endSession();
 	}
-	
+    ZmDesktopAlert.closeNotification();
 	ZmZimbraMail._endSessionDone = true;
 };
 

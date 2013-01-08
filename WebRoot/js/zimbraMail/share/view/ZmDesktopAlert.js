@@ -113,10 +113,16 @@ function(title, message, sticky) {
     var popup = window.webkitNotifications.createNotification(icon, title, message);
     popup.show();
 	popup.onclick = function() {popup.cancel();};
-	if (!sticky) {
+    if (sticky) {
+        if (!ZmDesktopAlert.notificationArray) {
+            ZmDesktopAlert.notificationArray = [];
+        }
+        ZmDesktopAlert.notificationArray.push(popup);
+    }
+    else {
         // Close the popup after 5 seconds.
         setTimeout(popup.cancel.bind(popup), 5000);
-	}
+    }
 };
 
 ZmDesktopAlert.prototype._notityServiceCallback =
@@ -131,3 +137,23 @@ function(result) {
 	DBG.println(AjxDebug.DBG1, "BrowserPlus error: " + (result ? (result.error + " - " + result.verboseError) : result));
 };
 
+
+/**
+ * Closes desktop notification if any during onbeforeunload event
+ */
+ZmDesktopAlert.closeNotification =
+function() {
+    var notificationArray = ZmDesktopAlert.notificationArray,
+        popup;
+
+    if (notificationArray) {
+        while (popup = notificationArray.pop()) {
+            //notifications may be already closed by the user go for try catch
+            try {
+                popup.cancel();
+            }
+            catch (e) {
+            }
+        }
+    }
+};
