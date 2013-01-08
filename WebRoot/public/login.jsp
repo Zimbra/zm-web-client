@@ -176,7 +176,7 @@
                     </c:redirect>
         		</c:when>
                 <c:when test="${client eq 'mobile'}">
-                        <c:set var="mobURL" value="/t/launch.jsp"/>
+                        <c:set var="mobURL" value="/m/zmain"/>
                         <c:redirect url="${mobURL}">
                             <c:forEach var="p" items="${paramValues}">
                                 <c:forEach var='value' items='${p.value}'>
