@@ -345,7 +345,7 @@ function(folderSelect, folderRow, calendarOrgs, calItem) {
 		folderSelect.addOption(option, selected);
 	}
 
-
+    ZmApptViewHelper.folderSelectResize(folderSelect);
     //todo: new ui hide folder select if there is only one folder
 };
 
@@ -837,4 +837,30 @@ function(calItem, attach, hasCheckbox) {
 	html[i++] = "</td></tr></table>";
 
 	return html.join("");
+};
+
+/**
+ * @param {DwtSelect} folderSelect
+ *
+ * TODO: set the width for folderSelect once the image icon gets loaded if any
+ */
+ZmApptViewHelper.folderSelectResize =
+function(folderSelect) {
+
+    var divEl = folderSelect._containerEl,
+        childNodes,
+        img;
+
+    if (divEl) {
+        childNodes = divEl.childNodes[0];
+        if (childNodes) {
+            img = childNodes.getElementsByTagName("img")[0];
+            if (img) {
+                img.onload = function() {
+                    divEl.style.width = childNodes.offsetWidth || "auto";// offsetWidth doesn't work in IE if the element or one of its parents has display:none
+                    img.onload = "";
+                }
+            }
+        }
+    }
 };
