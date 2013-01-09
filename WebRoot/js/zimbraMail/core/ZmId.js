@@ -1266,6 +1266,8 @@ ZmId._idList = [];
 
 ZmId._idHash = {};
 
+ZmId._valueToParam = {};
+
 /**
  * Returns a unique ID that can later be looked up. As many params as possible should be provided, in order to
  * make lookup easier. If one or more IDs is found to already have been created with the given set of params,
@@ -1287,6 +1289,10 @@ ZmId.create = function(params, description) {
 	ZmId._idHash[newId] = idParams;
 	ZmId._idList.push(idParams);
 
+	for (var key in params) {
+		ZmId._valueToParam[params[key]] = key;
+	}
+
 	return newId;
 };
 
@@ -1296,7 +1302,10 @@ ZmId.create = function(params, description) {
  * The best approach is to provide the minimal set of params that will uniquely differentiate the element. If no
  * params are provided, returns all IDs.
  *
- * @param params    set of fields describing the ID(s) being sought
+ * Optionally, a list of values can be given. An attempt will be made to reverse-engineer the params by figuring
+ * out the appropriate key for each value. This method will never be as reliable as providing a hash in the first place.
+ *
+ * @param {hash|array}  params    set of fields describing the ID(s) being sought
  */
 ZmId.lookup = function(params) {
 
@@ -1304,12 +1313,16 @@ ZmId.lookup = function(params) {
 		return ZmId._idList;
 	}
 
+	if (AjxUtil.isArray(params)) {
+		params = ZmId._convertValues(params);
+	}
+
 	var ids = [];
 	for (var i = 0, len = ZmId._idList.length; i < len; i++) {
 		var idParams = ZmId._idList[i];
 		var add = true;
 		for (var param in params) {
-			if (params[param] !== idParams[param]) {
+			if (idParams[param] && params[param] !== idParams[param]) {
 				add = false;
 				continue;
 			}
@@ -1380,4 +1393,59 @@ function() {
 		}
 	};
 	return ZmId._backMap;
+};
+
+// Create a static hash so we know if a string is a view type (eg "CLV")
+ZmId._isViewType = {};
+keys = AjxUtil.keys(ZmId);
+len = keys.length;
+for (i = 0; i < len; i++) {
+	key = keys[i];
+	if (typeof ZmId[key] === "string" && key.indexOf("VIEW_") ===0) {
+		ZmId._isViewType[ZmId[key]] = true;
+	}
+}
+delete keys;
+delete key;
+delete len;
+delete i;
+
+// Convert a list of values of ID parameters back into a hash by figuring out the matching key for each value.
+// View names (such as "CLV") are a bit tricky since they can be either a componentName (for a view widget), or
+// a containingView. A small number might be an organizer ID (eg Inbox is 2), or a session ID.
+ZmId._convertValues = function(values) {
+
+	var params = {},
+		viewValue, numValue;
+
+	for (var i = 0; i < values.length; i++) {
+		var value = values[i];
+		if (ZmId._isViewType[value]) {
+			viewValue = value;
+		}
+		else if (AjxUtil.isNumber(value) || AjxUtil.isNumeric(value)) {
+			var num = parseInt(value);
+			if (num < 10) {
+				numValue = num;
+			}
+		}
+		else {
+			var param = ZmId._valueToParam[value];
+			params[param] = value;
+		}
+	}
+
+	// A view value is a componentName only if the componentType is a view.
+	if (viewValue) {
+		var viewParam = (params.componentType === ZmId.WIDGET_VIEW) ? "componentName" : "containingView";
+		params[viewParam] = viewValue;
+	}
+
+	// A single-digit number is probably an organizer ID or a session ID.
+	if (numValue) {
+		var viewParam = params.organizerType ? "organizerId" : "sessionId";
+		params[viewParam] = viewValue;
+	}
+
+	return params;
 };
