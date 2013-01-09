@@ -53,8 +53,8 @@ UT.test("Wrap Inline Contact",
 		var obj2 = ZmContactsHelper._wrapInlineContact(inline2);
 		UT.equal(obj2.address, "jwagner@vmware.com");
 		  
-		var inline3 = "\"John Doe\" <x.com>";
+		var inline3 = "\"John Doe\" <x@x.com>";
 		var obj3 = ZmContactsHelper._wrapInlineContact(inline3);
-		UT.equal(obj3.address, "x.com");
+		UT.equal(obj3.address, "x@x.com");
 	  }
 );
