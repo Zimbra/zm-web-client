@@ -236,7 +236,7 @@
         <option value="" selected="selected"><fmt:message key="moreActions"/></option>
         <optgroup label="<fmt:message key="delete"/>">
             <c:choose>
-                <c:when test="${not context.folder.isInTrash}"><option value="actionHardDelete"><fmt:message key="delete"/></option></c:when>
+                <c:when test="${context.folder.isInTrash}"><option value="actionHardDelete"><fmt:message key="delete"/></option></c:when>
                 <c:otherwise><option value="actionDelete"><fmt:message key="delete"/></option></c:otherwise>
             </c:choose>
         </optgroup>
