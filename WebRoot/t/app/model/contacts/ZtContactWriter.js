@@ -1,3 +1,6 @@
+/**
+ * This class generates the JSON for contact-related SOAP requests.
+ */
 Ext.define('ZCS.model.contacts.ZtContactWriter', {
 
 	extend: 'ZCS.model.ZtWriter',
@@ -10,9 +13,11 @@ Ext.define('ZCS.model.contacts.ZtContactWriter', {
 			query = request.getOperation().config.query;
 
 		if (!query) {
+			// if there's no query, this is the initial load so get all contacts
 			json.Body.GetContactsRequest = {
 				_jsns: "urn:zimbraMail",
 				sortBy: "nameDesc",
+				// ask server only for the fields we need
 				a: [
 					{ n: 'firstName' },
 					{ n: 'lastName' },
@@ -23,7 +28,9 @@ Ext.define('ZCS.model.contacts.ZtContactWriter', {
 			};
 		}
 		else {
-			request.setUrl(ZCS.common.ZtConstants.SERVICE_URL_BASE + 'SearchRequest');
+			// replace the configured 'read' operation URL
+			request.setUrl(ZCS.constant.SERVICE_URL_BASE + 'SearchRequest');
+
 			json.Body.SearchRequest = {
 				_jsns: "urn:zimbraMail",
 				sortBy: "dateDesc",

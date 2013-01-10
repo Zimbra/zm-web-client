@@ -1,3 +1,6 @@
+/**
+ * Generates the proper JSON for a message-related request.
+ */
 Ext.define('ZCS.model.mail.ZtMsgWriter', {
 
 	extend: 'ZCS.model.mail.ZtMailWriter',
@@ -12,6 +15,7 @@ Ext.define('ZCS.model.mail.ZtMsgWriter', {
 
 		if (action === 'read') {
 
+			// 'read' operation means we are expanding a conv
 			json.Body.SearchConvRequest = {
 				_jsns: "urn:zimbraMail",
 				cid: cid,
@@ -38,7 +42,7 @@ Ext.define('ZCS.model.mail.ZtMsgWriter', {
 		}
 		else if (action === 'create') {
 
-			console.log('create msg record');
+			// 'create' operation means we are sending a msg
 			var msg = request.getRecords()[0];
 
 			json.Body.SendMsgRequest = {
@@ -69,6 +73,7 @@ Ext.define('ZCS.model.mail.ZtMsgWriter', {
 			};
 		}
 		else if (action === 'update') {
+			// 'update' operation means we are performing a MsgActionRequest
 			this.setActionRequest(json.Body, data[0], true);
 		}
 

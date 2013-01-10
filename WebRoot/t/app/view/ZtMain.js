@@ -1,9 +1,15 @@
+/**
+ * The main view is a tab panel with a tab for each app.
+ */
 Ext.define("ZCS.view.ZtMain", {
+
     extend: 'Ext.TabPanel',
+
 	requires: [
 		'ZCS.view.mail.ZtMailView',
 		'ZCS.view.contacts.ZtContactsView'
 	],
+
     config: {
 	    fullscreen: true,
         tabBarPosition: 'top',
@@ -28,6 +34,7 @@ Ext.define("ZCS.view.ZtMain", {
 		    }
 	    ],
 	    listeners: {
+		    // track the current app via tab panel change
 		    activeitemchange: function (tabPanel, tab, oldTab) {
 			    ZCS.session.setActiveApp(tab.config.app);
 		    }

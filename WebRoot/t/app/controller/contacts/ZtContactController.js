@@ -1,3 +1,8 @@
+/**
+ * This class manages the display and manipulation of a single contact in its panel.
+ *
+ * @see ZtContact
+ */
 Ext.define('ZCS.controller.contacts.ZtContactController', {
 
 	extend: 'ZCS.controller.ZtItemController',
@@ -16,10 +21,18 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
 		]
 	},
 
+	/**
+	 * Moves the contact to Trash.
+	 */
 	doDelete: function() {
 		console.log("contact controller DELETE");
 	},
 
+	/**
+	 * Displays the given contact. Changes the toolbar text to the full name of the contact.
+	 *
+	 * @param {ZtContact}   contact     contact to show
+	 */
 	showItem: function(contact) {
 		console.log("contact controller: show contact " + contact.get('id'));
 		this.callParent(arguments);

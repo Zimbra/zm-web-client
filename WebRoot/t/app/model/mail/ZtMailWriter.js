@@ -1,3 +1,6 @@
+/**
+ * This is a base class for writing a JSON SOAP request for a mail item.
+ */
 Ext.define('ZCS.model.mail.ZtMailWriter', {
 
 	extend: 'ZCS.model.ZtWriter',
@@ -14,6 +17,13 @@ Ext.define('ZCS.model.mail.ZtMailWriter', {
 	}
 */
 
+	/**
+	 * Returns the JSON for a skeleton SOAP request body.
+	 *
+	 * @param {object}  parent      the SOAP Body
+	 * @param {object}  item        record data that maps to the ZtMailItem
+	 * @param {boolean} isMsg       true if the mail item is a ZtMsg
+	 */
 	setActionRequest: function(parent, item, isMsg) {
 		var method = isMsg ? 'MsgActionRequest' : 'ConvActionRequest';
 		parent[method] = {

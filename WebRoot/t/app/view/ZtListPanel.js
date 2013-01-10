@@ -1,3 +1,8 @@
+/**
+ * A list panel consists of three components: A header describing the list contents in general, a search box, and a list
+ * of items. The header has a button on the left to show the folder tree, and a button on the right to create a new
+ * item.
+ */
 Ext.define('ZCS.view.ZtListPanel', {
 
 	extend: 'Ext.Panel',

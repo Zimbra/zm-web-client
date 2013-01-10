@@ -1,3 +1,6 @@
+/**
+ * This class parses JSON conversation data into ZtConv objects.
+ */
 Ext.define('ZCS.model.mail.ZtConvReader', {
 
 	extend: 'ZCS.model.mail.ZtMailReader',

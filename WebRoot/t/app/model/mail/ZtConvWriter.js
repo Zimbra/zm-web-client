@@ -1,3 +1,6 @@
+/**
+ * This class generates the JSON for conversation-related SOAP requests.
+ */
 Ext.define('ZCS.model.mail.ZtConvWriter', {
 
 	extend: 'ZCS.model.mail.ZtMailWriter',
@@ -6,10 +9,11 @@ Ext.define('ZCS.model.mail.ZtConvWriter', {
 
 	writeRecords: function(request, data) {
 
-		var json = this.getSoapEnvelope(request, data),
+		var json = this.getSoapEnvelope(),
 			action = request.getAction();
 
 		if (action === 'read') {
+			// 'read' operation means we're doing a search
 			json.Body.SearchRequest = {
 				_jsns: 'urn:zimbraMail',
 				sortBy: 'dateDesc',
@@ -34,6 +38,7 @@ Ext.define('ZCS.model.mail.ZtConvWriter', {
 			};
 		}
 		else if (action === 'update') {
+			// 'update' operation means we're performing a ConvActionRequest
 			this.setActionRequest(json.Body, data[0], false);
 		}
 

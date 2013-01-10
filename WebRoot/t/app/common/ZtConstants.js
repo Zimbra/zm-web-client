@@ -25,10 +25,10 @@ Ext.define('ZCS.common.ZtConstants', {
 //	}
 });
 
-// shortcut
+// shortcut to this class
 ZCS.constant = ZCS.common.ZtConstants;
 
-// URL portion that precedes the API call
+// URL portion that precedes a server API call
 ZCS.constant.SERVICE_URL_BASE = '/service/soap/';
 
 // Apps
@@ -145,6 +145,7 @@ ZCS.constant.FLAG_PROP[ZCS.constant.FLAG_UNREAD]			= "isUnread";
 
 //ZCS.constant.PROP_FLAG = ZCS.constant.getBackMap(ZCS.constant.FLAG_PROP);
 
+// Date/time constants
 ZCS.constant.MSEC_PER_MINUTE = 60000;
 ZCS.constant.MSEC_PER_HOUR = 60 * ZCS.constant.MSEC_PER_MINUTE;
 ZCS.constant.MSEC_PER_DAY = 24 * ZCS.constant.MSEC_PER_HOUR;

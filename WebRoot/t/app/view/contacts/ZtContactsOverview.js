@@ -3,7 +3,7 @@ Ext.define('ZCS.view.contacts.ZtContactsOverview', {
 	extend: 'ZCS.view.ZtOverview',
 
 	requires: [
-		'ZCS.model.contacts.ZtContactsFolder',
+		'ZCS.model.contacts.ZtContactsFolder'
 	],
 
 	xtype: 'contactsoverview',

@@ -1,3 +1,6 @@
+/**
+ * The contacts panel contains a 'contactsoverview', a 'contactlistpanel', and a 'contactpanel'.
+ */
 Ext.define('ZCS.view.contacts.ZtContactsView', {
 
 	extend: 'ZCS.view.ZtAppView',

@@ -1,3 +1,7 @@
+/**
+ * Base class for a panel that displays a single item. It has a toolbar at the top, and the item is
+ * displayed below. The toolbar has a button that will show an action menu for the item.
+ */
 Ext.define('ZCS.view.ZtItemPanel', {
 
 	extend: 'Ext.Panel',

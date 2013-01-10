@@ -1,3 +1,6 @@
+/**
+ * This class translates JSON for a message into a ZtMsg.
+ */
 Ext.define('ZCS.model.mail.ZtMsgReader', {
 
 	extend: 'ZCS.model.mail.ZtMailReader',
@@ -6,9 +9,8 @@ Ext.define('ZCS.model.mail.ZtMsgReader', {
 
 	/**
 	 * Override this method since there's no easy way to override the generated methods that return the
-	 * total, success, and message properties.
-	 *
-	 * @param data
+	 * total, success, and message properties. Also, we need to do some more in-depth processing of
+	 * non-trivial fields such as addresses.
 	 */
 	readRecords: function(data) {
 
@@ -25,7 +27,6 @@ Ext.define('ZCS.model.mail.ZtMsgReader', {
 			i, j, len, node, data, participant;
 
 		if (root && total) {
-//			records = me.extractData(data);
 			for (i = 0; i < total; i++) {
 				node = root[i];
 				data = {};

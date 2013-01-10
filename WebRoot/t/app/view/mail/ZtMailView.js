@@ -1,3 +1,6 @@
+/**
+ * The mail panel contains a 'mailoverview', a 'convlistpanel', and a 'convpanel'.
+ */
 Ext.define('ZCS.view.mail.ZtMailView', {
 
 	extend: 'ZCS.view.ZtAppView',
@@ -16,4 +19,3 @@ Ext.define('ZCS.view.mail.ZtMailView', {
 		itemPanelXtype: 'convpanel'
 	}
 });
-

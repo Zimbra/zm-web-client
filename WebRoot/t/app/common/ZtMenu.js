@@ -1,3 +1,10 @@
+/**
+ * A simple dropdown menu. It's a panel that contains a list with actions that can be tapped.
+ *
+ * @see ZtMenuItem
+ *
+ * TODO: See if this can be implemented more simply as a combo box with a hidden text field.
+ */
 Ext.define('ZCS.common.ZtMenu', {
 
 	extend: 'Ext.Panel',
@@ -8,7 +15,7 @@ Ext.define('ZCS.common.ZtMenu', {
 
 	config: {
 		layout: 'fit',
-		width: 160,
+		width: 160,     // TODO: would be nicer to have it autosize to width of longest item
 		modal: true,
 		hideOnMaskTap: true,
 		padding: 5,
@@ -33,6 +40,7 @@ Ext.define('ZCS.common.ZtMenu', {
 				}
 			}
 		],
+		// the reference component is typically the button that triggered display of this menu
 		referenceComponent: null
 	},
 
@@ -41,13 +49,17 @@ Ext.define('ZCS.common.ZtMenu', {
 		Ext.defer(this.initMenu, 100, this);
 	},
 
+	/**
+	 * Set the menu's height so that it matches the list of items.
+	 * @private
+	 */
 	initMenu: function() {
-		console.log('Initializing menu');
+//		console.log('Initializing menu');
 		this.on({
 			painted: {
 				scope: this,
 				fn: function(el) {
-					console.log('PAINTED event fired on menu');
+//					console.log('PAINTED event fired on menu');
 					var list = this.down('list');
 					var firstItem = list && list.element.down('.x-list-item');
 					var itemHeight = firstItem && firstItem.getHeight();
@@ -60,16 +72,27 @@ Ext.define('ZCS.common.ZtMenu', {
 		});
 	},
 
+	/**
+	 * Populates the menu with actions.
+	 *
+	 * @param {array}   menuItems       list of ZtMenuItem models
+	 */
 	setMenuItems: function(menuItems) {
 		this.down('list').getStore().setData(menuItems);
 	},
 
+	/**
+	 * Displays the menu.
+	 */
 	popup: function() {
 		var list = this.down('list');
 		list.deselect(list.getSelection()); // clear the previous selection
 		this.showBy(this.getReferenceComponent(), 'tr-br?');
 	},
 
+	/**
+	 * Hides the menu.
+	 */
 	popdown: function() {
 		this.hide();
 	}

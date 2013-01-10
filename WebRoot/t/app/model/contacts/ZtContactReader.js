@@ -1,3 +1,6 @@
+/**
+ * This class parses JSON contact data into ZtContact objects.
+ */
 Ext.define('ZCS.model.contacts.ZtContactReader', {
 
 	extend: 'ZCS.model.ZtReader',
@@ -6,9 +9,9 @@ Ext.define('ZCS.model.contacts.ZtContactReader', {
 
 	/**
 	 * Override this method since there's no easy way to override the generated methods that return the
-	 * total, success, and message properties. Note that we have not created a ZtConv yet, so we can't
+	 * total, success, and message properties. Note that we have not created a ZtContact yet, so we can't
 	 * directly add values to it. All we can do is set up the 'data' object, which is then used to transfer
-	 * properties into a newly created ZtConv in Operation::processRead.
+	 * properties into a newly created ZtContact in Operation::processRead.
 	 *
 	 * @param data
 	 */
@@ -31,11 +34,13 @@ Ext.define('ZCS.model.contacts.ZtContactReader', {
 				node = root[i];
 				data = {};
 				attrs = node._attrs;
-				data.firstName = attrs.firstName;
-				data.lastName = attrs.lastName;
-				data.email = attrs.email;
-				data.company = attrs.company;
-				data.fileAs = attrs.fileAs;
+				Ext.copyTo(data, attrs, [
+					'firstName',
+					'lastName',
+					'email',
+					'company',
+					'fileAs'
+				]);
 
 				records.push({
 					clientId: null,

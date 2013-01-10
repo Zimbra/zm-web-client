@@ -1,3 +1,6 @@
+/**
+ * This class represents a Zimbra item such as a mail message, a conversation, or a contact.
+ */
 Ext.define('ZCS.model.ZtItem', {
 	extend: 'Ext.data.Model',
 	requires: [
@@ -7,6 +10,7 @@ Ext.define('ZCS.model.ZtItem', {
 		idProperty: 'id',
 		proxy: {
 			type: 'soapproxy',
+			// our server always wants us to POST for API calls
 			actionMethods: {
 				create  : 'POST',
 				read    : 'POST',
@@ -16,6 +20,7 @@ Ext.define('ZCS.model.ZtItem', {
 			headers: {
 				'Content-Type': "application/soap+xml; charset=utf-8"
 			},
+			// prevent Sencha from adding junk to the URL
 			pageParam: false,
 			startParam: false,
 			limitParam: false,

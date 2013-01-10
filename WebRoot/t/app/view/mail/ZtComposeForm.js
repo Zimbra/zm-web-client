@@ -1,3 +1,8 @@
+/**
+ * This class represents a compose form that can be used to compose, reply to, or forward a message. It has a toolbar
+ * on top and the actual form below. The form has fields for entering addresses, a subject, and the body of the
+ * message. The toolbar has button to cancel or send the message.
+ */
 Ext.define('ZCS.view.mail.ZtComposeForm', {
 
 	extend: 'Ext.Sheet',

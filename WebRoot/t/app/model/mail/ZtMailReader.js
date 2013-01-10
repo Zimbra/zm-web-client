@@ -1,13 +1,31 @@
+/**
+ * This class is a base class for parsing mail item JSON into a ZtMailItem.
+ */
 Ext.define('ZCS.model.mail.ZtMailReader', {
 
 	extend: 'ZCS.model.ZtReader',
 
+	/**
+	 * Sets flag-related boolean properties based on the JSON flags string. For example, if the letter 'u'
+	 * is present in the flags string, the property 'isUnread' will get set to true.
+	 *
+	 * @param {object}  node        JSON for the mail item
+	 * @param {object}  data        data used to create ZtMailItem
+	 */
 	parseFlags: function(node, data) {
 		Ext.each(ZCS.constant.ALL_FLAGS, function(flag) {
 			data[ZCS.constant.FLAG_PROP[flag]] = (node.f && node.f.indexOf(flag) !== -1);
 		});
 	},
 
+	/**
+	 * Returns a summary relative date string (eg '5 minutes ago') for the date in the given JSON node, relative
+	 * to the given time, or the current time if no time is provided. The string indicates how many minutes ago,
+	 * how many hours ago, or if the difference is more than a day, a short version of the month and day.
+	 *
+	 * @param {object}  node        JSON for the mail item
+	 * @param {int}     nowMs       base time in ms
+	 */
 	getDateString: function(node, nowMs) {
 
 		var nowMs = nowMs || Ext.Date.now(),
@@ -21,12 +39,12 @@ Ext.define('ZCS.model.mail.ZtMailReader', {
 		}
 		else if (dateDiff < ZCS.constant.MSEC_PER_HOUR) {
 			num = Math.round(dateDiff / ZCS.constant.MSEC_PER_MINUTE);
-			unit = num > 1 ? Ext.util.Inflector.pluralize(' minute') : ' minute';
+			unit = num > 1 ? 'minutes' : ' minute';
 			dateStr = num + unit + ' ago';
 		}
 		else if (dateDiff < ZCS.constant.MSEC_PER_DAY) {
 			num = Math.round(dateDiff / ZCS.constant.MSEC_PER_HOUR);
-			unit = num > 1 ? Ext.util.Inflector.pluralize(' hour') : ' hour';
+			unit = num > 1 ? 'hours' : ' hour';
 			dateStr = num + unit + ' ago';
 		}
 		else {

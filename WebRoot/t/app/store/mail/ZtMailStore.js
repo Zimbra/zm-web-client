@@ -8,13 +8,13 @@ Ext.define('ZCS.store.mail.ZtMailStore', {
 
 	/**
 	 * Convert JSON objects into address objects. Done here so that we can add the
-	 * addresses to the actual ZtConv (rather than pass it through data in the reader).
+	 * addresses to the actual ZtMailItem (rather than pass it through data in the reader).
 	 * Optionally builds a string of senders using display names.
 	 *
-	 * @param items
-	 * @param setSenders
+	 * @param {array}   items       list of mail records
+	 * @param {int}     numSenders  number of senders to summarize into a 'senders' property (optional)
 	 */
-	convertAddresses: function(items, setSenders) {
+	convertAddresses: function(items, numSenders) {
 
 		for (var i = 0; i < items.length; i++) {
 			var item = items[i],
@@ -27,13 +27,13 @@ Ext.define('ZCS.store.mail.ZtMailStore', {
 				for (j = 0; j < len; j++) {
 					var addr = ZCS.model.ZtEmailAddress.fromAddressNode(addrNodes[j]);
 					item.addAddress(addr);
-					if (setSenders && addr.getType() === ZCS.constant.FROM) {
+					if (numSenders && addr.getType() === ZCS.constant.FROM) {
 						senders.push(addr.getDisplayName() || addr.getName() || addr.getEmail());
 					}
 				}
-				if (setSenders && senders.length) {
-					if (senders.length > setSenders) {
-						senders = senders.slice(0, setSenders);
+				if (numSenders && senders.length) {
+					if (senders.length > numSenders) {
+						senders = senders.slice(0, numSenders);
 						senders.push('...');
 					}
 					item.set('senders', senders.join(', '));

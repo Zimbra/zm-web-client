@@ -1,3 +1,7 @@
+/**
+ * An app panel consists of an overview (which shows the app's folder tree), a list of items,
+ * and a panel that shows the details of a single item.
+ */
 Ext.define('ZCS.view.ZtAppView', {
 
 	extend: 'Ext.Container',
