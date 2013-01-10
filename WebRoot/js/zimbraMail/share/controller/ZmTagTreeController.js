@@ -225,9 +225,7 @@ function(ev) {
 		var tag = ev.targetControl.getData(Dwt.KEY_OBJECT);
 		if (tag.id == ZmOrganizer.ID_ROOT) {
 			ev.doIt = false;
-		} else if (sample instanceof ZmContact && (sample.isGal || sample.isShared())) {
-			ev.doIt = false;
-		} else if (sample && (sample instanceof ZmItem) && sample.isShared()) {
+		} else if (sample instanceof ZmItem && sample.isReadOnly()) {
 			ev.doIt = false;
 		} else if (appCtxt.multiAccounts && tag.getAccount() != sample.account) {
 			ev.doIt = false;
