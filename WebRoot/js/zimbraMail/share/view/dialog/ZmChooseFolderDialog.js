@@ -42,7 +42,6 @@ ZmChooseFolderDialog = function(parent, className) {
 	this._treeViewListener = new AjxListener(this, this._treeViewSelectionListener);
 
 	this._multiAcctOverviews = {};
-    this._selected = "";
     this._showRemainingFolders = AjxMessageFormat.format(ZmMsg.showRemainingFolders, "folders");
 };
 
@@ -218,22 +217,10 @@ function(params) {
 	if (this.isZmDialog) {
 		this._focusElement = this._inputField;
 		this._inputField.setValue("");
-		this._selected = null;
 		ZmDialog.prototype.popup.call(this);
 	}
 };
 
-/**
- * Clears selected items
- */
-ZmChooseFolderDialog.prototype.popdown = 
-function() {
-	var ov = this._getOverview();
-	if (ov && ov.itemSelected) { //I'm not sure how ov.itemSelected may be not a function, but I got that in ZD so making sure it's defined. 
-		ov.itemSelected(null);  //clear selected items
-	}
-	DwtDialog.prototype.popdown.call(this);
-};
 
 ZmChooseFolderDialog.prototype.getOverviewId =
 function(part) {
@@ -286,7 +273,7 @@ function(treeIds, overview) {
 	folderTree.addChangeListener(this._changeListener);
 
 	this._loadFolders();
-	this._resetTreeView(true,true);
+	this._resetTreeView(true);
 };
 
 ZmChooseFolderDialog.prototype.reset =
@@ -356,9 +343,6 @@ function(ev) {
 ZmChooseFolderDialog.prototype._okButtonListener =
 function(ev) {
     var tgtFolder = this._getOverview().getSelected();
-    if  (!tgtFolder) {
-        tgtFolder = appCtxt.getById(this._selected);
-    }
 	var folderList = (tgtFolder && (!(tgtFolder instanceof Array)))
 		? [tgtFolder] : tgtFolder;
 
@@ -490,7 +474,7 @@ function(ev) {
 
 	// now that we know which folders match, hide all items and then show
 	// the matches, expanding their parent chains as needed
-	this._resetTreeView(false, true);
+	this._resetTreeView(false);
 
 	for (var i = 0, len = matches.length; i < len; i++) {
 		var ti = matches[i];
@@ -505,7 +489,6 @@ function(ev) {
 			ov.deselectAllTreeViews();
 		}
 		tv.setSelected(appCtxt.getById(firstMatch.id), true, true);
-		this._selected = firstMatch.id;
 		if (appCtxt.multiAccounts) {
 		    var ov = this._getOverview();
 		    for (var h in ov._headerItems) {
@@ -513,13 +496,10 @@ function(ev) {
 		    }
 		}
 	}
-	else{
-	    this._selected = null;
-	}
 };
 
 ZmChooseFolderDialog.prototype._resetTreeView =
-    function(visible, deselect) {
+    function(visible) {
 	for (var i = 0, len = this._folders.length; i < len; i++) {
 		var folderInfo = this._folders[i];
 		var tv = this._treeView[folderInfo.accountId][folderInfo.type];
@@ -527,9 +507,6 @@ ZmChooseFolderDialog.prototype._resetTreeView =
 		if (ti) {
 			ti.setVisible(visible);
 			ti.setChecked(false, true);
-		}
-		if (deselect){
-		    tv.deselectAll();
 		}
 	}
 };
