@@ -1848,7 +1848,7 @@ function() {
 		var list = this._deleteList[j];
 		for (var i = 0; i < list.length; i++) {
 			var appt = list[i];
-			var args = [parseInt(j), null, null, null, null];
+			var args = [j, null, null, null, null];
 			batchCmd.add(new AjxCallback(appt, appt.getDetails, args));
 		}
 	}
@@ -1862,7 +1862,7 @@ function() {
 		var list = this._deleteList[j];
 		for (var i = 0; i < list.length; i++) {
 			var appt = list[i];
-			var args = [parseInt(j), null, null, null];
+			var args = [j, null, null, null];
 			batchCmd.add(new AjxCallback(appt, appt.cancel, args));
 		}
 	}
