@@ -187,9 +187,27 @@
                             </c:forEach>
                     </c:redirect>
                 </c:when>
-	            <c:when test="${client eq 'touch'}">
-		            <jsp:forward page="/t/launch.jsp"/>
-	            </c:when>
+                <c:when test="${client eq 'touch'}">
+                    <c:choose>
+                        <c:when test="${(param.loginOp eq 'login') && !(empty param.username) && !(empty param.password)}">
+                            <c:redirect url="/">
+                                <c:forEach var="p" items="${paramValues}">
+                                    <c:forEach var='value' items='${p.value}'>
+                                        <c:if test="${not fn:contains(ignoredQueryParams, p.key)}">
+                                            <c:param name="${p.key}" value='${value}'/>
+                                        </c:if>
+                                    </c:forEach>
+                                </c:forEach>
+                                <c:if test="${param.client eq 'touch'}">
+                                    <c:param name='client' value='touch'/>
+                                </c:if>
+                            </c:redirect>
+                        </c:when>
+                        <c:otherwise>
+                           <jsp:forward page="/t/launch.jsp"/>
+                        </c:otherwise>
+                    </c:choose>
+                </c:when>
                 <c:otherwise>
                    <jsp:forward page="/public/launchZCS.jsp"/>
                 </c:otherwise>
@@ -422,6 +440,8 @@ if (application.getInitParameter("offlineMode") != null)  {
 									<option value="advanced"  <c:if test="${client eq 'advanced'}">selected</c:if>> <fmt:message key="clientAdvanced"/></option>
 									<option value="standard"  <c:if test="${client eq 'standard'}">selected</c:if>> <fmt:message key="clientStandard"/></option>
 									<option value="mobile"  <c:if test="${client eq 'mobile'}">selected</c:if>> <fmt:message key="clientMobile"/></option>
+                                    <option value="touch"  <c:if test="${client eq 'touch'}">selected</c:if>> <fmt:message key="clientTouch"/></option>
+
 								</select>
 <script TYPE="text/javascript">
 	document.write("<a href='#' onclick='showWhatsThis()' id='ZLoginWhatsThisAnchor'><fmt:message key="whatsThis"/><"+"/a>");

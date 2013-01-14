@@ -1,7 +1,7 @@
 //<debug>
 Ext.Loader.setPath({
-    'Ext': 'touch/src',
-    'ZCS': 'app'
+    'Ext': '/t/touch/src',
+    'ZCS': '/t/app'
 });
 //</debug>
 
