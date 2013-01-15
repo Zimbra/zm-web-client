@@ -19,6 +19,7 @@ Ext.application({
 	controllers: [
 		'ZCS.controller.mail.ZtConvListController',
 		'ZCS.controller.mail.ZtConvController',
+		'ZCS.controller.mail.ZtMsgController',
 		'ZCS.controller.mail.ZtComposeController',
 		'ZCS.controller.contacts.ZtContactListController',
 		'ZCS.controller.contacts.ZtContactController'
@@ -45,6 +46,7 @@ Ext.application({
     },
 
     launch: function() {
+	    console.log('STARTUP: app launch');
         // Destroy the #appLoadingIndicator element
         Ext.fly('appLoadingIndicator').destroy();
 

@@ -81,6 +81,7 @@ ZCS.constant.FOLDER_SORT_VALUE[ZCS.constant.ID_INBOX]   = '_____a';
 ZCS.constant.FOLDER_SORT_VALUE[ZCS.constant.ID_SENT]    = '____a';
 ZCS.constant.FOLDER_SORT_VALUE[ZCS.constant.ID_DRAFTS]  = '___a';
 ZCS.constant.FOLDER_SORT_VALUE[ZCS.constant.ID_JUNK]    = '__a';
+ZCS.constant.FOLDER_SORT_VALUE[ZCS.constant.ID_TRASH]   = '_a';
 
 ZCS.constant.FOLDER_SORT_VALUE[ZCS.constant.ID_CONTACTS]    = '___a';
 ZCS.constant.FOLDER_SORT_VALUE[ZCS.constant.ID_EMAILED]     = '__a';

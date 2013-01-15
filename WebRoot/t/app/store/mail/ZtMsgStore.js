@@ -7,17 +7,17 @@ Ext.define('ZCS.store.mail.ZtMsgStore', {
 
 		listeners: {
 
-			// add the msgs that were just loaded to their owning conv
-			load: function(me, records, successful, operation, eOpts) {
+			// process addresses then add the msgs that were just loaded to their owning conv
+			refresh: function(me, records, eOpts) {
 
-				this.convertAddresses(records, false);
+				// records is a Collection, which is a private Sencha class - break privacy to get the array
+				this.convertAddresses(records.all, false);
 
 				var conv = ZCS.app.getController('ZCS.controller.mail.ZtConvController').getItem(),
 					msg, i, convId,
 					messages = [];
 
-				for (i = 0; i < records.length; i++) {
-					msg = records[i];
+				records.each(function(msg) {
 					convId = conv.get('id');
 					if (msg.get('convId') === convId) {
 						messages.push(msg);
@@ -25,7 +25,8 @@ Ext.define('ZCS.store.mail.ZtMsgStore', {
 					else {
 						console.log('conv ID ' + msg.get('convId') + ' in msg does not match current conv ID ' + convId);
 					}
-				}
+				}, this);
+
 				conv.setMessages(messages);
 			}
 		}

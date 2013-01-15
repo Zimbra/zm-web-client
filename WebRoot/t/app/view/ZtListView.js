@@ -15,6 +15,9 @@ Ext.define('ZCS.view.ZtListView', {
 		listeners: {
 			select: function(view, record) {
 				this.fireEvent('showItem', view, record);
+			},
+			refresh: function(view, eOpts) {
+				this.fireEvent('updateTitlebar');
 			}
 		}
 	}

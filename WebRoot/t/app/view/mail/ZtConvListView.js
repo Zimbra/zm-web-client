@@ -7,7 +7,7 @@ var itemTpl =
 	"<tpl else>" +
 	"<span>{senders}</span>" +
 	"</tpl>" +
-	"<span class='zcs-conv-date'>{dateStr}</span>" +
+	"<span class='zcs-mail-date'>{dateStr}</span>" +
 	"<div>{subject:ellipsis(35, true)} " +
 	"<tpl if='numMsgs &gt; 1'>({numMsgs})</tpl></div>" +
 	"<div class='zcs-fragment'>{fragment:ellipsis(80, true)}</div>";

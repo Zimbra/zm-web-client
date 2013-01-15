@@ -20,8 +20,6 @@ Ext.define('ZCS.view.ZtItemPanel', {
 
 		this.callParent(arguments);
 
-		var itemPanelXtype = this.xtype;
-
 		var toolbar = {
 			xtype: 'titlebar',
 			docked: 'top',
@@ -33,7 +31,7 @@ Ext.define('ZCS.view.ZtItemPanel', {
 					iconMask: true,
 					align: 'right',
 					handler: function() {
-						this.up(itemPanelXtype).fireEvent('showMenu');
+						this.up('titlebar').fireEvent('showMenu');
 					},
 					hidden: true
 				}

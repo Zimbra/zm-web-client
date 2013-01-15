@@ -15,12 +15,12 @@ Ext.define('ZCS.controller.ZtItemController', {
 
 	config: {
 		refs: {
-			itemPanel: null,
+//			itemPanel: null,
 			itemToolbar: null,
 			menuButton: null
 		},
 		control: {
-			itemPanel: {
+			itemToolbar: {
 				showMenu: 'onShowMenu'
 			}
 		},

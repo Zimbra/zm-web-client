@@ -6,13 +6,13 @@
  */
 Ext.define('ZCS.controller.mail.ZtConvController', {
 
-	extend: 'ZCS.controller.ZtItemController',
+	extend: 'ZCS.controller.mail.ZtMailItemController',
 
 	config: {
 		models: ['ZCS.model.mail.ZtMsg'],
 		stores: ['ZCS.store.mail.ZtMsgStore'],
 		refs: {
-			itemPanel: 'convpanel',
+//			itemPanel: 'convpanel',
 			itemToolbar: 'convpanel titlebar',
 			menuButton: 'convpanel titlebar button',
 			msgListView: 'msglistview'
@@ -27,17 +27,9 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 	},
 
 	/**
-	 * Returns the compose controller
-	 */
-	getComposeController: function() {
-		return ZCS.app.getController('ZCS.controller.mail.ZtComposeController');
-	},
-
-	/**
 	 * Starts a reply session with the active message as the original message.
 	 */
 	doReply: function() {
-		console.log("conv controller REPLY");
 		this.getComposeController().reply(this.getActiveMsg());
 	},
 
@@ -45,7 +37,6 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 	 * Starts a reply-all session with the active message as the original message.
 	 */
 	doReplyAll: function() {
-		console.log("conv controller REPLY_ALL");
 		this.getComposeController().replyAll(this.getActiveMsg());
 	},
 
@@ -53,7 +44,6 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 	 * Starts a forward session with the active message as the original message.
 	 */
 	doForward: function() {
-		console.log("conv controller FORWARD");
 		this.getComposeController().forward(this.getActiveMsg());
 	},
 
@@ -80,14 +70,6 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 	},
 
 	/**
-	 * Clears out toolbar text and the msg list.
-	 */
-	clear: function() {
-		this.callParent(arguments);
-		this.getMsgListView().getStore().removeAll();
-	},
-
-	/**
 	 * Displays the given conv as a list of messages. Sets toolbar text to the conv subject.
 	 *
 	 * @param {ZtConv}  conv        conv to show
@@ -95,7 +77,7 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 	showItem: function(conv) {
 		console.log("conv controller: show conv " + conv.get('id'));
 		this.callParent(arguments);
-		this.getItemToolbar().setTitle(conv.get("subject"));
+		this.getItemToolbar().setTitle(conv.get('subject'));
 		this.getMsgListView().getStore().load({convId: conv.get('id')});
 	},
 

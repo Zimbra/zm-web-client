@@ -41,5 +41,9 @@ Ext.define('ZCS.model.ZtEmailAddress', {
 		else {
 			return email;
 		}
+	},
+
+	toString: function() {
+		return this.getFullEmail();
 	}
 });

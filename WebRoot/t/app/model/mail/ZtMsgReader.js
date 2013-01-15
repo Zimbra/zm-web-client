@@ -24,6 +24,7 @@ Ext.define('ZCS.model.mail.ZtMsgReader', {
 			message,
 			recordCount = 0,
 			records = [],
+			nowMs = Ext.Date.now(),
 			i, j, len, node, data, participant;
 
 		if (root && total) {
@@ -35,8 +36,10 @@ Ext.define('ZCS.model.mail.ZtMsgReader', {
 				data.convId = node.cid;
 				this.parseFlags(node, data);
 
-				// converted to ZtEmailAddress objects and added to conv in ZtConvStore 'load' listener
+				// converted to ZtEmailAddress objects and added to msg in ZtMsgStore 'refresh' listener
 				data.rawAddresses = node.e;
+
+				data.dateStr = this.getDateString(node, nowMs);
 
 				records.push({
 					clientId: null,

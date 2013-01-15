@@ -7,6 +7,12 @@
 	color: gray;
 }
 
-.zcs-conv-date {
+.zcs-mail-date {
 	float: right;
+}
+
+.zcs-msg-footer {
+	background-image: none;
+	background-color: transparent;
+	border-style: none !important;
 }

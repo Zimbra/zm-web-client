@@ -33,7 +33,7 @@ Ext.define('ZCS.model.mail.ZtMsgWriter', {
 					"_content": "en_US"
 				},
 				offset: 0,
-				limit: 20,
+				limit: 100,
 				query: "underid:1 AND NOT underid:3 AND NOT underid:4",
 				read: 1,
 				html: 1,

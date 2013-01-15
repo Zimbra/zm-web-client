@@ -16,9 +16,9 @@ Ext.define('ZCS.store.mail.ZtMailStore', {
 	 */
 	convertAddresses: function(items, numSenders) {
 
-		for (var i = 0; i < items.length; i++) {
-			var item = items[i],
-				addrNodes = item.get('rawAddresses'),
+		Ext.each(items, function(item) {
+
+			var	addrNodes = item.get('rawAddresses'),
 				len = addrNodes.length,
 				senders, j;
 
@@ -39,7 +39,6 @@ Ext.define('ZCS.store.mail.ZtMailStore', {
 					item.set('senders', senders.join(', '));
 				}
 			}
-		}
-
+		}, this);
 	}
 });

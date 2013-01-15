@@ -32,6 +32,7 @@ Ext.define('ZCS.controller.ZtListController', {
 
 	// On launch, populate the list with items
 	launch: function () {
+		console.log('STARTUP: list ctlr launch - ' + this.$className);
 		this.callParent();
 		Ext.getStore(this.getStoreShortName()).load();
 	},
