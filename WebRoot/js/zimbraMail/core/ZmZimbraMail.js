@@ -2731,11 +2731,12 @@ function(bStartTimer) {
 
 		DwtEventManager.addListener(DwtEvent.ONMOUSEUP, ZmZimbraMail._userEventHdlr);
 		this._shell.setHandler(DwtEvent.ONMOUSEUP, ZmZimbraMail._userEventHdlr);
-		if (AjxEnv.isIE)
-			this._shell.setHandler(DwtEvent.ONMOUSEDOWN, ZmZimbraMail._userEventHdlr);
-		else
-			window.onkeydown = ZmZimbraMail._userEventHdlr;
-	} else {
+		if (AjxEnv.isIE)  {
+			document.attachEvent("onkeydown", ZmZimbraMail._userEventHdlr);
+		}
+		window.onkeydown = ZmZimbraMail._userEventHdlr;		
+	}
+	else {
 		DBG.println(AjxDebug.DBG3, "INACTIVITY TIMER CANCELED (" + (new Date()).toLocaleString() + ")");
 
 		AjxTimedAction.cancelAction(this._sessionTimerId);
@@ -2743,10 +2744,10 @@ function(bStartTimer) {
 
 		DwtEventManager.removeListener(DwtEvent.ONMOUSEUP, ZmZimbraMail._userEventHdlr);
 		this._shell.clearHandler(DwtEvent.ONMOUSEUP);
-		if (AjxEnv.isIE)
-			this._shell.clearHandler(DwtEvent.ONMOUSEDOWN);
-		else
-			window.onkeydown = null;
+		if (AjxEnv.isIE) {
+			document.detachEvent("onkeydown", ZmZimbraMail._userEventHdlr);
+		}	
+		window.onkeydown = null;
 	}
 };
 
