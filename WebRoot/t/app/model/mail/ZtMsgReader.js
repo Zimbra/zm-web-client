@@ -36,6 +36,7 @@ Ext.define('ZCS.model.mail.ZtMsgReader', {
 //				data.content = (node.mp && node.mp[0] && node.mp[0].content) || node.fr;
 				data.content = node.fr;
 				data.convId = node.cid;
+				data.subject = node.su;
 				me.parseFlags(node, data);
 
 				me.convertAddresses(node.e, data);

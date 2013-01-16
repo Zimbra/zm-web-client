@@ -16,8 +16,8 @@ Ext.define('ZCS.model.mail.ZtMsg', {
 
 		fields: [
 			{ name: 'content', type: 'string' },
-//			{ name: 'from', type: 'string' },
-//			{ name: 'to', type: 'string' },
+			{ name: 'from', type: 'string' },
+			{ name: 'to', type: 'string' },
 			{ name: 'convId', type: 'string', mapping: 'cid' }
 		],
 
