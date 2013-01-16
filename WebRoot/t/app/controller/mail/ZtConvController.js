@@ -27,49 +27,6 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 	},
 
 	/**
-	 * Starts a reply session with the active message as the original message.
-	 */
-	doReply: function() {
-		this.getComposeController().reply(this.getActiveMsg());
-	},
-
-	/**
-	 * Starts a reply-all session with the active message as the original message.
-	 */
-	doReplyAll: function() {
-		this.getComposeController().replyAll(this.getActiveMsg());
-	},
-
-	/**
-	 * Starts a forward session with the active message as the original message.
-	 */
-	doForward: function() {
-		this.getComposeController().forward(this.getActiveMsg());
-	},
-
-	/**
-	 * Moves the conv to Trash.
-	 */
-	doDelete: function() {
-		console.log("conv controller DELETE");
-	},
-
-	/**
-	 * Toggles read/unread on the conv.
-	 */
-	doMarkRead: function() {
-		console.log("conv controller MARK_READ");
-		var conv = this.getItem(),
-			wasUnread = conv.get('isUnread');
-
-		conv.set('op', wasUnread ? 'read' : '!read');
-		conv.save({ success: function(conv, operation) {
-			console.log('conv saved successfully');
-			conv.set('isUnread', !wasUnread);
-		}});
-	},
-
-	/**
 	 * Displays the given conv as a list of messages. Sets toolbar text to the conv subject.
 	 *
 	 * @param {ZtConv}  conv        conv to show

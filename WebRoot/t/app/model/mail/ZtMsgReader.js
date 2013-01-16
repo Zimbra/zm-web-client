@@ -17,6 +17,7 @@ Ext.define('ZCS.model.mail.ZtMsgReader', {
 		var me  = this;
 		me.rawData = data;
 
+		// TODO: find a cleaner way to grab the appropriate response
 		var root = (data.Body.SearchConvResponse && data.Body.SearchConvResponse.m) ||
 				   (data.Body.SendMsgResponse && data.Body.SendMsgResponse.m),
 			total = root.length,
@@ -32,7 +33,8 @@ Ext.define('ZCS.model.mail.ZtMsgReader', {
 				node = root[i];
 				data = {};
 //				data.fragment = node.fr;
-				data.content = (node.mp && node.mp[0] && node.mp[0].content) || node.fr;
+//				data.content = (node.mp && node.mp[0] && node.mp[0].content) || node.fr;
+				data.content = node.fr;
 				data.convId = node.cid;
 				me.parseFlags(node, data);
 

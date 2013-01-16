@@ -47,7 +47,7 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 		});
 
 		toFld.setValue(msg.getReplyAddress().getFullEmail());
-		bodyFld.setValue('\n\n' + msg.get('content'));
+		bodyFld.setValue('\n\n' + '----- Original Message -----\n' + msg.get('content'));
 		var textarea = bodyFld.element.query('textarea')[0];
 		textarea.scrollTop = 0;
 		bodyFld.focus();
@@ -87,7 +87,7 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 
 		toFld.setValue(replyAddr.getFullEmail());
 		ccFld.setValue(ccAddrs.join('; '));
-		bodyFld.setValue('\n\n' + msg.get('content'));
+		bodyFld.setValue('\n\n' + '----- Original Message -----\n' + msg.get('content'));
 		bodyFld.focus();
 		var textarea = bodyFld.element.query('textarea')[0];
 		textarea.scrollTop = 0;
@@ -95,6 +95,17 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 
 	forward: function(msg) {
 
+		var panel = this.getComposePanel(),
+			form = panel.down('formpanel'),
+			bodyFld = form.down('field[name=body]');
+
+		form.reset();
+		panel.show({
+			type: 'slide',
+			direction: 'up'
+		});
+		bodyFld.setValue('\n\n' + '----- Forwarded Message -----\n' + msg.get('content'));
+		form.down('field[name=to]').focus();
 	},
 
 	onCancelCompose: function() {

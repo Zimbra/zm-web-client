@@ -33,7 +33,7 @@ Ext.define('ZCS.common.ZtMenu', {
 						console.log('Menu click: ' + action);
 						var listener = record.get('listener');
 						if (listener) {
-							listener(record);
+							listener();
 							menu.popdown();
 						}
 					}
