@@ -534,6 +534,10 @@ function(ed, ev) {
 		DwtIdleTimer.resetIdle();
 	}
 
+	if (window.onkeydown) {
+		window.onkeydown.call(this);
+	}
+	
 	return retVal;
 };
 
