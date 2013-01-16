@@ -3,6 +3,7 @@
  * a type, a name, and a display name (short version of name).
  */
 Ext.define('ZCS.model.ZtEmailAddress', {
+
 	config: {
 		type: '',
 		email: '',
@@ -43,6 +44,10 @@ Ext.define('ZCS.model.ZtEmailAddress', {
 		}
 	},
 
+	/**
+	 * Returns a full email string, with name and email parts.
+	 * @return {string}     email string
+	 */
 	toString: function() {
 		return this.getFullEmail();
 	}

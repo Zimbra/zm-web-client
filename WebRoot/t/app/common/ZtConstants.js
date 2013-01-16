@@ -76,15 +76,27 @@ ZCS.constant.MAX_SYSTEM_ID = 255;
 ZCS.constant.FOLDER_SORT_VALUE = {};
 ZCS.constant.FOLDER_SORT_VALUE[ZCS.constant.ID_TRASH]   = '_a';
 
-ZCS.constant.FOLDER_SORT_VALUE = {};
 ZCS.constant.FOLDER_SORT_VALUE[ZCS.constant.ID_INBOX]   = '_____a';
 ZCS.constant.FOLDER_SORT_VALUE[ZCS.constant.ID_SENT]    = '____a';
 ZCS.constant.FOLDER_SORT_VALUE[ZCS.constant.ID_DRAFTS]  = '___a';
 ZCS.constant.FOLDER_SORT_VALUE[ZCS.constant.ID_JUNK]    = '__a';
-ZCS.constant.FOLDER_SORT_VALUE[ZCS.constant.ID_TRASH]   = '_a';
 
 ZCS.constant.FOLDER_SORT_VALUE[ZCS.constant.ID_CONTACTS]    = '___a';
 ZCS.constant.FOLDER_SORT_VALUE[ZCS.constant.ID_EMAILED]     = '__a';
+
+// System folder names (used in search queries)
+ZCS.constant.FOLDER_SYSTEM_NAME = {};
+ZCS.constant.FOLDER_SYSTEM_NAME[ZCS.constant.ID_TRASH]   = 'trash';
+
+ZCS.constant.FOLDER_SYSTEM_NAME[ZCS.constant.ID_INBOX]   = 'inbox';
+ZCS.constant.FOLDER_SYSTEM_NAME[ZCS.constant.ID_SENT]    = 'sent';
+ZCS.constant.FOLDER_SYSTEM_NAME[ZCS.constant.ID_DRAFTS]  = 'drafts';
+ZCS.constant.FOLDER_SYSTEM_NAME[ZCS.constant.ID_JUNK]    = 'junk';
+
+ZCS.constant.FOLDER_SYSTEM_NAME[ZCS.constant.ID_CONTACTS]    = 'contacts';
+ZCS.constant.FOLDER_SYSTEM_NAME[ZCS.constant.ID_EMAILED]     = 'emailedContacts';
+
+ZCS.constant.FOLDER_SYSTEM_ID = ZCS.constant.getBackMap(ZCS.constant.FOLDER_SYSTEM_NAME);
 
 // Folders we don't want to show in overview
 ZCS.constant.FOLDER_HIDE = {};
@@ -114,6 +126,7 @@ ZCS.constant.TO_SOAP_TYPE = ZCS.constant.getBackMap(ZCS.constant.FROM_SOAP_TYPE)
 ZCS.constant.SETTING_ALIASES            = 'zimbraMailAlias';
 ZCS.constant.SETTING_INITIAL_SEARCH     = 'zimbraPrefMailInitialSearch';
 ZCS.constant.SETTING_SHOW_SEARCH        = 'zimbraPrefShowSearchString'
+ZCS.constant.SETTING_CUR_SEARCH         = 'currentSearch'
 
 // Item flags
 ZCS.constant.FLAG_ATTACH			= 'a';
@@ -150,3 +163,6 @@ ZCS.constant.FLAG_PROP[ZCS.constant.FLAG_UNREAD]			= "isUnread";
 ZCS.constant.MSEC_PER_MINUTE = 60000;
 ZCS.constant.MSEC_PER_HOUR = 60 * ZCS.constant.MSEC_PER_MINUTE;
 ZCS.constant.MSEC_PER_DAY = 24 * ZCS.constant.MSEC_PER_HOUR;
+
+// How many senders to show for a conv in the conv list
+ZCS.constant.NUM_CONV_SENDERS = 3;

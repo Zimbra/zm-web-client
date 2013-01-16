@@ -52,5 +52,28 @@ Ext.define('ZCS.model.mail.ZtMailReader', {
 		}
 
 		return dateStr;
+	},
+
+	/**
+	 * Convert JSON objects into address objects.
+	 *
+	 * @param {array}   addrs       list of address nodes
+	 * @param {hash}    data        model data
+	 */
+	convertAddresses: function(addrs, data, numSenders) {
+
+		var	addresses = {};
+
+		Ext.each(addrs, function(addr) {
+			var emailAddr = ZCS.model.ZtEmailAddress.fromAddressNode(addr),
+				type = emailAddr.getType();
+
+			if (!addresses[type]) {
+				addresses[type] = [];
+			}
+			addresses[type].push(emailAddr);
+		});
+
+		data.addresses = addresses;
 	}
 });

@@ -8,13 +8,18 @@ Ext.define('ZCS.controller.ZtListController', {
 
 	extend: 'Ext.app.Controller',
 
+	requires: [
+		'ZCS.model.ZtSearch'
+	],
+
 	config: {
 		refs: {
 			parentView: null,
 			overview: null,
 			folderList: null,
 			itemPanel: null,
-			listView: null
+			listView: null,
+			titlebar: null
 		},
 		control: {
 			parentView: {
@@ -22,7 +27,8 @@ Ext.define('ZCS.controller.ZtListController', {
 				search: 'onSearch'
 			},
 			listView: {
-				showItem: 'onShowItem'
+				showItem: 'onShowItem',
+				updateTitlebar: 'onUpdateTitlebar'
 			},
 			folderList: {
 				search: 'onSearch'
@@ -102,5 +108,27 @@ Ext.define('ZCS.controller.ZtListController', {
 		this.getItemController().clear();
 		console.log('SearchRequest: ' + query);
 		Ext.getStore(this.getStoreShortName()).load({query: query});
+	},
+
+	/**
+	 *
+	 */
+	onUpdateTitlebar: function() {
+
+		var curQuery = ZCS.session.getSetting(ZCS.constant.SETTING_CUR_SEARCH),
+			search = curQuery && Ext.create('ZCS.model.ZtSearch', {
+				query: curQuery
+			});
+
+		var folderId = search && search.getFolderId(),
+			folder = folderId && ZCS.session.getFolderById(folderId),
+			folderName = folder && folder.get('name'),
+			unread = folder && folder.get('unreadCount'),
+			title = 'Search Results';
+
+		if (folderName) {
+			title = (unread > 0) ? '<b>' + folderName + ' (' + unread + ')</b>' : folderName;
+		}
+		this.getTitlebar().setTitle(title);
 	}
 });

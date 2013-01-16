@@ -7,12 +7,11 @@ Ext.define('ZCS.model.mail.ZtMailItem', {
 
 	config: {
 		fields: [
-			{ name: 'rawAddresses', type: 'auto' },
+			{ name: 'addresses', type: 'auto' },
 			{ name: 'subject', type: 'string' },
 			{ name: 'flags', type: 'string' },
 			{ name: 'dateStr', type: 'string' }
-		],
-		addresses: null
+		]
 	},
 
 	/**
@@ -45,7 +44,7 @@ Ext.define('ZCS.model.mail.ZtMailItem', {
 	 */
 	getAddressesByType: function(type) {
 		type = type || ZCS.constant.FROM;
-		var addrs = this.getAddresses();
+		var addrs = this.get('addresses');
 		return (addrs && addrs[type]) || [];
 	},
 

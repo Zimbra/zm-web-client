@@ -36,12 +36,23 @@ Ext.define('ZCS.model.mail.ZtConvReader', {
 				data.subject = node.su;
 				data.numMsgs = node.n;
 				data.fragment = node.fr;
-				this.parseFlags(node, data);
+				me.parseFlags(node, data);
 
-				// converted to ZtEmailAddress objects and added to conv in ZtConvStore 'load' listener
-				data.rawAddresses = node.e;
+				// process addresses, and create a string showing the senders
+				me.convertAddresses(node.e, data);
+				if (data.addresses[ZCS.constant.FROM]) {
+					var senders = Ext.Array.map(data.addresses[ZCS.constant.FROM], function(addr) {
+						return addr.getDisplayName() || addr.getName() || addr.getEmail();
+					});
+					var numSenders = ZCS.constant.NUM_CONV_SENDERS;
+					if (senders.length > numSenders) {
+						senders = senders.slice(0, numSenders);
+						senders.push('...');
+					}
+					data.senders = senders.join(', ');
+				}
 
-				data.dateStr = this.getDateString(node, nowMs);
+				data.dateStr = me.getDateString(node, nowMs);
 
 				records.push({
 					clientId: null,

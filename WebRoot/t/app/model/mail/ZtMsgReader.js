@@ -34,10 +34,9 @@ Ext.define('ZCS.model.mail.ZtMsgReader', {
 //				data.fragment = node.fr;
 				data.content = (node.mp && node.mp[0] && node.mp[0].content) || node.fr;
 				data.convId = node.cid;
-				this.parseFlags(node, data);
+				me.parseFlags(node, data);
 
-				// converted to ZtEmailAddress objects and added to msg in ZtMsgStore 'refresh' listener
-				data.rawAddresses = node.e;
+				me.convertAddresses(node.e, data);
 
 				data.dateStr = this.getDateString(node, nowMs);
 

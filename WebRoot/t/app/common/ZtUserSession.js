@@ -64,6 +64,16 @@ Ext.define('ZCS.common.ZtUserSession', {
 	},
 
 	/**
+	 * Sets the value of the setting with the given name.
+	 *
+	 * @param {string}  setting     setting's name (LDAP attr name)
+	 * @param {mixed}  the setting's new value
+	 */
+	setSetting: function(setting, value) {
+		this._settingsCache[setting] = value;
+	},
+
+	/**
 	 * Returns the folder tree for the given app, in a form that is consumable by a TreeStore.
 	 *
 	 * @param {string}  app     app name

@@ -15,9 +15,8 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 	},
 
 	setContent: function() {
-//		var msg = this.getMsg();
-
-		this.setHtml(this.getTpl().apply(this.getMsg().getData()));
+		var msg = this.getMsg();
+		this.setHtml(this.getTpl().apply(msg.getData()));
 	},
 
 	getMsg: function() {

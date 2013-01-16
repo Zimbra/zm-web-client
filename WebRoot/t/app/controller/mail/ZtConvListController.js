@@ -10,7 +10,8 @@ Ext.define('ZCS.controller.mail.ZtConvListController', {
 			overview: 'mailoverview',
 			folderList: 'mailoverview nestedlist',
 			itemPanel: 'convpanel',
-			listView: 'convlistview'
+			listView: 'convlistview',
+			titlebar: 'convlistpanel titlebar'
 		},
 		control: {
 			parentView: {

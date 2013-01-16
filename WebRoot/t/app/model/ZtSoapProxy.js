@@ -24,6 +24,7 @@ Ext.define('ZCS.model.ZtSoapProxy', {
 				response;
 
 			operation.config.query = ZCS.session.getSetting(ZCS.constant.SETTING_INITIAL_SEARCH);
+			ZCS.session.setSetting(ZCS.constant.SETTING_CUR_SEARCH, operation.config.query);
 
 			request.setConfig({
 				headers  : me.getHeaders(),
@@ -71,10 +72,11 @@ Ext.define('ZCS.model.ZtSoapProxy', {
 	 * search query if the user wants to see it.
 	 */
 	processResponse: function(success, operation, request, response, callback, scope) {
-		this.callParent(arguments);
 		var query = operation.config.query;
-		if (query && ZCS.session.getSetting(ZCS.constant.SETTING_SHOW_SEARCH)) {
+		if (query && success && ZCS.session.getSetting(ZCS.constant.SETTING_SHOW_SEARCH)) {
 			ZCS.session.getActiveSearchField().setValue(query);
+			ZCS.session.setSetting(ZCS.constant.SETTING_CUR_SEARCH, query);
 		}
+		this.callParent(arguments);
 	}
 });

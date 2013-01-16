@@ -10,7 +10,8 @@ Ext.define('ZCS.controller.contacts.ZtContactListController', {
 			overview: 'contactsoverview',
 			folderList: 'contactsoverview nestedlist',
 			itemPanel: 'contactpanel',
-			listView: 'contactlistview'
+			listView: 'contactlistview',
+			titlebar: 'contactlistpanel titlebar'
 		},
 		control: {
 			contactsView: {

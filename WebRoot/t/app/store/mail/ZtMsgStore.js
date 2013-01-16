@@ -7,11 +7,8 @@ Ext.define('ZCS.store.mail.ZtMsgStore', {
 
 		listeners: {
 
-			// process addresses then add the msgs that were just loaded to their owning conv
+			// add the msgs that were just loaded to their owning conv
 			refresh: function(me, records, eOpts) {
-
-				// records is a Collection, which is a private Sencha class - break privacy to get the array
-				this.convertAddresses(records.all, false);
 
 				var conv = ZCS.app.getController('ZCS.controller.mail.ZtConvController').getItem(),
 					msg, i, convId,
