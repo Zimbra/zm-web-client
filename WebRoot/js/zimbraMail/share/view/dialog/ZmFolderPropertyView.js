@@ -56,7 +56,7 @@ function() {
         this._dialog.setButtonVisible(ZmFolderPropsDialog.ADD_SHARE_BUTTON, true);
     }
 
-	this.setSize(Dwt.DEFAULT, "200");
+	this.setSize(Dwt.DEFAULT, "100");
     if (Dwt.getVisible(this._nameInputEl)) {
         this._nameInputEl.focus();
     }
