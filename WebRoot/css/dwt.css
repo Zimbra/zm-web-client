@@ -483,7 +483,7 @@
 	@ListColHeaderContainer-normal@
 }
 
-.DwtListView-Column table {
+.FixedColumnHeaderTables .DwtListView-Column table {
 	table-layout:fixed
 }
 
