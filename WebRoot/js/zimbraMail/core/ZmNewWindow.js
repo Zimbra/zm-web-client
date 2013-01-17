@@ -109,6 +109,10 @@ function() {
 	// create new window and Go!
 	var newWindow = new ZmNewWindow();
     newWindow.startup();
+	
+	if (winOpener.onkeydown) {
+		window.onkeydown = winOpener.onkeydown;
+	}
 };
 
 /**
