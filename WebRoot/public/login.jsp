@@ -21,7 +21,8 @@
 
 <%-- get useragent --%>
 <zm:getUserAgent var="ua" session="false"/>
-<c:set var="useMobile" value="${ua.isiPhone or ua.isiPad or ua.isiPod or ua.isOsAndroid}"/>
+<c:set var="useMobile" value="${ua.isiPhone or ua.isiPod or ua.isOsAndroid}"/>
+<c:set var="useTablet" value="${ua.isiPad}"/>
 <c:set var="trimmedUserName" value="${fn:trim(param.username)}"/>
 
 <%--'virtualacctdomain' param is set only for external virtual accounts--%>
@@ -134,6 +135,7 @@
         <c:otherwise>
             <c:set var="client" value="${param.client}"/>
             <c:if test="${empty client and useMobile}"><c:set var="client" value="mobile"/></c:if>
+            <c:if test="${empty client and useTablet}"><c:set var="client" value="touch"/></c:if>
             <c:if test="${empty client or client eq 'preferred'}">
                 <c:set var="client" value="${requestScope.authResult.prefs.zimbraPrefClientType[0]}"/>
             </c:if>
@@ -311,7 +313,7 @@ if (application.getInitParameter("offlineMode") != null)  {
     <c:set var="useStandard" value="${not (ua.isFirefox3up or ua.isGecko1_9up or ua.isIE7up or ua.isSafari4Up or ua.isChrome)}"/>
     <c:if test="${empty client}">
         <%-- set client select default based on user agent. --%>
-        <c:set var="client" value="${useMobile ? 'mobile' : useStandard ? 'standard' : 'preferred' }"/>
+        <c:set var="client" value="${useTablet ? 'touch' : useMobile ? 'mobile' : useStandard ? 'standard' : 'preferred' }"/>
     </c:if>
     <c:set var="smallScreen" value="${client eq 'mobile'}"/>
     <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE9" />
