@@ -41,3 +41,20 @@ UT.test("Add new contact",
         zmContactsApp._handleLoadNewItem();
     }
 );
+
+UT.test("Wrap Inline Contact",
+  	function() {
+		UT.expect(3);
+		var inline1 = "jwagner@vmware.com";
+		var obj = ZmContactsHelper._wrapInlineContact(inline1);
+		UT.equal(obj.address, inline1);
+		  
+		var inline2 = "Jeff Wagner <jwagner@vmware.com>";
+		var obj2 = ZmContactsHelper._wrapInlineContact(inline2);
+		UT.equal(obj2.address, "jwagner@vmware.com");
+		  
+		var inline3 = "\"John Doe\" <x@x.com>";
+		var obj3 = ZmContactsHelper._wrapInlineContact(inline3);
+		UT.equal(obj3.address, "x@x.com");
+	  }
+);
