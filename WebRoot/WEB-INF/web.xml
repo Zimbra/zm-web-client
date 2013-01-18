@@ -81,7 +81,12 @@
   <filter>
     <filter-name>DoSFilter</filter-name>
     <filter-class>com.zimbra.cs.servlet.DoSFilter</filter-class>
-    
+
+    <init-param>
+     <param-name>maxRequestsPerSec</param-name>
+     <param-value>%%zimbraHttpDosFilterMaxRequestsPerSec%%</param-value>
+    </init-param>
+
     <init-param>
      <param-name>remotePort</param-name>
      <param-value>true</param-value>
