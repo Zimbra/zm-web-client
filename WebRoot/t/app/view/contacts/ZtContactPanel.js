@@ -6,7 +6,7 @@ Ext.define('ZCS.view.contacts.ZtContactPanel', {
 		'ZCS.view.contacts.ZtContactView'
 	],
 
-	xtype: 'contactpanel',
+	xtype: ZCS.constant.APP_CONTACTS + 'itempanel',
 
 	getItemView: function() {
 		return {

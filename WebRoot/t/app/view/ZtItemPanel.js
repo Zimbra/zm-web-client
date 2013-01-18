@@ -11,9 +11,13 @@ Ext.define('ZCS.view.ZtItemPanel', {
 		'Ext.TitleBar'
 	],
 
+	xtype: 'itempanel',
+
 	config: {
 		layout: 'fit',
-		style: 'border: solid blue 1px;'
+		style: 'border: solid blue 1px;',
+		itemView: null,
+		itemClass: null
 	},
 
 	initialize: function() {
@@ -38,9 +42,13 @@ Ext.define('ZCS.view.ZtItemPanel', {
 			]
 		};
 
+		var itemView = {
+			xtype: this.getItemView()
+		}
+
 		this.add([
 			toolbar,
-			this.getItemView()
+			itemView
 		]);
 	}
 });

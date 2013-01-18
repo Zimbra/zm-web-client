@@ -15,6 +15,12 @@ Ext.define('ZCS.model.ZtFolder', {
 		]
 	},
 
+	statics: {
+		fromPath: function(path) {
+
+		}
+	},
+
 	/**
 	 * Returns true if this folder is a system folder.
 	 *

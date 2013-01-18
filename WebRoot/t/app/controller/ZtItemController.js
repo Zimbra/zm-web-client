@@ -5,6 +5,7 @@
  * @see ZtItemPanel
  * @see ZtItem
  */
+
 Ext.define('ZCS.controller.ZtItemController', {
 
 	extend: 'Ext.app.Controller',
@@ -14,16 +15,21 @@ Ext.define('ZCS.controller.ZtItemController', {
 	],
 
 	config: {
+
 		refs: {
-//			itemPanel: null,
-			itemToolbar: null,
-			menuButton: null
+			// event handlers
+			itemPanelToolbar: '',
+
+			// other
+			menuButton: ''
 		},
+
 		control: {
-			itemToolbar: {
-				showMenu: 'onShowMenu'
+			itemPanelToolbar: {
+				showMenu: 'doShowMenu'
 			}
 		},
+
 		item: null
 	},
 
@@ -43,8 +49,7 @@ Ext.define('ZCS.controller.ZtItemController', {
 	 * Displays the action menu after the dropdown button on the toolbar has been tapped.
 	 * @protected
 	 */
-	onShowMenu: function() {
-//		console.log("Item menu event caught");
+	doShowMenu: function() {
 
 		if (!this.itemMenu) {
 			this.itemMenu = Ext.create('ZCS.common.ZtMenu', {
@@ -59,7 +64,7 @@ Ext.define('ZCS.controller.ZtItemController', {
 	 * Clears the content of the toolbar and hides the dropdown button.
 	 */
 	clear: function() {
-		this.getItemToolbar().setTitle('');
+		this.getItemPanelToolbar().setTitle('');
 		this.getMenuButton().hide();
 	},
 

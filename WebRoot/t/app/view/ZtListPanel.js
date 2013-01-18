@@ -10,35 +10,38 @@ Ext.define('ZCS.view.ZtListPanel', {
 	requires: [
 		'Ext.dataview.List',
 		'Ext.TitleBar',
-		'Ext.field.Search'
+		'Ext.field.Search',
+
+		'ZCS.view.mail.ZtConvListView',
+		'ZCS.view.contacts.ZtContactListView'
 	],
+
+	xtype: 'listpanel',
 
 	config: {
 		layout: 'fit',
 		style:  'border: solid blue 1px;',
+
 		app: null,
-		listPanelTitle: null,
-		newItemIconCls: null,
-		listPanelStoreName: null
+		newButtonIcon: null,
+		storeName: null
 	},
 
 	initialize: function() {
 
 		this.callParent(arguments);
 
-		var app = this.getApp(),
-			parentXtype = ZCS.constant.MAIN_XTYPE[app],
-			listXtype = ZCS.constant.LIST_VIEW_XTYPE[app];
+		var app = this.getApp();
 
 		var listToolbar = {
 			docked: 'top',
 			xtype: 'titlebar',
-			title: this.getListPanelTitle(),
+			title: '',
 			items: [
 				{
 					xtype: 'button',
 					handler: function() {
-						this.up(parentXtype).fireEvent('showFolders');
+						this.up('listpanel').fireEvent('showFolders');
 					},
 					iconCls: 'list',
 					iconMask: true,
@@ -47,9 +50,9 @@ Ext.define('ZCS.view.ZtListPanel', {
 				{
 					xtype: 'button',
 					handler: function() {
-						this.up(parentXtype).fireEvent('compose');
+						this.up('listpanel').fireEvent('newItem');
 					},
-					iconCls: this.getNewItemIconCls(),
+					iconCls: this.getNewButtonIcon(),
 					iconMask: true,
 					align: 'right'
 				}
@@ -68,7 +71,7 @@ Ext.define('ZCS.view.ZtListPanel', {
 						keyup: function(fld, ev) {
 							var keyCode = ev.browserEvent.keyCode;
 							if (keyCode === 13 || keyCode === 3) {
-								this.up(parentXtype).fireEvent('search', fld.getValue());
+								this.fireEvent('search', fld.getValue());
 							}
 						}
 					}
@@ -77,8 +80,8 @@ Ext.define('ZCS.view.ZtListPanel', {
 		};
 
 		var listView = {
-			xtype: listXtype,
-			store: Ext.getStore(this.getListPanelStoreName())
+			xtype: app + 'listview',
+			store: Ext.getStore(this.getStoreName())
 		}
 
 		this.add([

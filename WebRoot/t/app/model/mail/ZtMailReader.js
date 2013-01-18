@@ -39,12 +39,12 @@ Ext.define('ZCS.model.mail.ZtMailReader', {
 		}
 		else if (dateDiff < ZCS.constant.MSEC_PER_HOUR) {
 			num = Math.round(dateDiff / ZCS.constant.MSEC_PER_MINUTE);
-			unit = num > 1 ? 'minutes' : ' minute';
+			unit = num > 1 ? ' minutes' : ' minute';
 			dateStr = num + unit + ' ago';
 		}
 		else if (dateDiff < ZCS.constant.MSEC_PER_DAY) {
 			num = Math.round(dateDiff / ZCS.constant.MSEC_PER_HOUR);
-			unit = num > 1 ? 'hours' : ' hour';
+			unit = num > 1 ? ' hours' : ' hour';
 			dateStr = num + unit + ' ago';
 		}
 		else {

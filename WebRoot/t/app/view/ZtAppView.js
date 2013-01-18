@@ -9,32 +9,59 @@ Ext.define('ZCS.view.ZtAppView', {
 	requires: [
 		'Ext.Panel',
 		'Ext.field.Text',
-		'Ext.Label'
+		'Ext.Label',
+
+		'ZCS.view.ZtOverview',
+		'ZCS.view.ZtListPanel',
+		'ZCS.view.ZtItemPanel'
 	],
+
+	xtype: 'appview',
 
 	config: {
 		layout: 'hbox',
-		padding: 0
+		padding: 0,
+		app: null
 	},
 
 	initialize: function() {
 
 		this.callParent(arguments);
 
+		var app = this.getApp();
+
 		var overview = {
-			xtype: this.getOverviewXtype(),
 			width: '20%',
-			hidden: true
+			hidden: true,
+
+			xtype: 'overview',
+			itemId: app + 'overview',
+
+			app: app,
+			model: ZCS.constant.OVERVIEW_MODEL[app],
+			title: ZCS.constant.OVERVIEW_TITLE[app]
 		};
 
 		var listPanel = {
-			xtype: this.getListPanelXtype(),
-			width: '30%'
+			width: '30%',
+
+			xtype: 'listpanel',
+			itemId: app + 'listpanel',
+
+			app: app,
+			newButtonIcon: ZCS.constant.NEW_ITEM_ICON[app],
+			storeName: ZCS.constant.STORE[app]
 		};
 
 		var itemPanel = {
-			xtype: this.getItemPanelXtype(),
-			width: '70%'
+			width: '70%',
+
+			xtype: 'itempanel',
+			itemId: app + 'itempanel',
+
+			app: app,
+			itemView: ZCS.constant.ITEM_VIEW[app],
+			itemClass: ZCS.constant.ITEM_CLASS[app]
 		};
 
 		this.add([

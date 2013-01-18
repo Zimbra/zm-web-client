@@ -35,7 +35,7 @@ Ext.define('ZCS.view.mail.ZtComposeForm', {
 					xtype: 'button',
 					text: 'Cancel',
 					handler: function() {
-						this.up('composepanel').fireEvent('cancelCompose');
+						this.up('composepanel').fireEvent('cancel');
 					}
 				},
 				{
@@ -43,7 +43,7 @@ Ext.define('ZCS.view.mail.ZtComposeForm', {
 					text: 'Send',
 					align: 'right',
 					handler: function() {
-						this.up('composepanel').fireEvent('sendMessage');
+						this.up('composepanel').fireEvent('send');
 					}
 				}
 			]

@@ -7,15 +7,20 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 	],
 
 	config: {
+
 		refs: {
-			mailView: 'mailview',
+			// event handlers
 			composePanel: 'composepanel',
+
+			// other
+			mailView: '#' + ZCS.constant.APP_MAIL + 'view',
 			composeForm: 'composepanel formpanel'
 		},
+
 		control: {
 			composePanel: {
-				cancelCompose: 'onCancelCompose',
-				sendMessage: 'onSendMessage'
+				cancel: 'doCancel',
+				send: 'doSend'
 			}
 		}
 	},
@@ -121,11 +126,11 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 		return pre + subject;
 	},
 
-	onCancelCompose: function() {
+	doCancel: function() {
 		this.getComposePanel().hide();
 	},
 
-	onSendMessage: function() {
+	doSend: function() {
 		var values = this.getComposeForm().getValues();
 //		Ext.getStore('ZtMsgStore').add(values);
 		console.log('Send message');
@@ -143,7 +148,6 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 	getComposePanel: function() {
 		if (!this.composePanel) {
 			this.composePanel = Ext.create('ZCS.view.mail.ZtComposeForm');
-//			var mailView = Ext.ComponentQuery.query('mailview')[0];
 			var mailView = this.getMailView();
 			if (mailView) {
 				mailView.add(this.composePanel);

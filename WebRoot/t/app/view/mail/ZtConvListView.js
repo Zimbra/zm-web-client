@@ -16,7 +16,7 @@ Ext.define('ZCS.view.mail.ZtConvListView', {
 
 	extend: 'ZCS.view.ZtListView',
 
-	xtype: 'convlistview',
+	xtype: ZCS.constant.APP_MAIL + 'listview',
 
 	config: {
 		loadingText: "Loading conversations ...",

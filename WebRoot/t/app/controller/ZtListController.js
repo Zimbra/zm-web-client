@@ -13,25 +13,34 @@ Ext.define('ZCS.controller.ZtListController', {
 	],
 
 	config: {
+
 		refs: {
-			parentView: null,
-			overview: null,
+			// event handlers
+			listPanel: null,
+			listView: null,
 			folderList: null,
 			itemPanel: null,
-			listView: null,
+
+			// other
+			overview: null,
 			titlebar: null
 		},
+
 		control: {
-			parentView: {
-				showFolders: 'onShowFolders',
-				search: 'onSearch'
+			listPanel: {
+				showFolders: 'doShowFolders',
+				newItem: null,
+				search: 'doSearch'
 			},
 			listView: {
-				showItem: 'onShowItem',
-				updateTitlebar: 'onUpdateTitlebar'
+				showItem: 'doShowItem',
+				updateTitlebar: 'doUpdateTitlebar'
 			},
 			folderList: {
-				search: 'onSearch'
+				search: 'doSearch'
+			},
+			itemPanel: {
+				showMenu: null
 			}
 		}
 	},
@@ -62,7 +71,7 @@ Ext.define('ZCS.controller.ZtListController', {
 	 * Displays the overview, which contains the folder list. Panel widths are adjusted.
 	 * @protected
 	 */
-	onShowFolders: function() {
+	doShowFolders: function() {
 		console.log("Folders event caught");
 		var overview = this.getOverview(),
 			itemPanel = this.getItemPanel();
@@ -95,7 +104,7 @@ Ext.define('ZCS.controller.ZtListController', {
 	 * @param {ZtItem}      item        item that was tapped
 	 * @protected
 	 */
-	onShowItem: function(view, item) {
+	doShowItem: function(view, item) {
 		this.getItemController().showItem(item);
 	},
 
@@ -104,16 +113,21 @@ Ext.define('ZCS.controller.ZtListController', {
 	 *
 	 * @param {string}  query       query to run
 	 */
-	onSearch: function(query) {
+	doSearch: function(query) {
 		this.getItemController().clear();
 		console.log('SearchRequest: ' + query);
 		Ext.getStore(this.getStoreShortName()).load({query: query});
 	},
 
 	/**
-	 *
+	 * Updates the text on the list panel's titlebar to reflect the current search results
 	 */
-	onUpdateTitlebar: function() {
+	doUpdateTitlebar: function() {
+
+		var titlebar = this.getTitlebar();  // might not be available during startup
+		if (!titlebar) {
+			return;
+		}
 
 		var curQuery = ZCS.session.getSetting(ZCS.constant.SETTING_CUR_SEARCH),
 			search = curQuery && Ext.create('ZCS.model.ZtSearch', {
@@ -129,6 +143,7 @@ Ext.define('ZCS.controller.ZtListController', {
 		if (folderName) {
 			title = (unread > 0) ? '<b>' + folderName + ' (' + unread + ')</b>' : folderName;
 		}
-		this.getTitlebar().setTitle(title);
+
+		titlebar.setTitle(title);
 	}
 });

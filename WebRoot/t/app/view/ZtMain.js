@@ -6,8 +6,7 @@ Ext.define("ZCS.view.ZtMain", {
     extend: 'Ext.TabPanel',
 
 	requires: [
-		'ZCS.view.mail.ZtMailView',
-		'ZCS.view.contacts.ZtContactsView'
+		'ZCS.view.ZtAppView'
 	],
 
     config: {
@@ -21,18 +20,7 @@ Ext.define("ZCS.view.ZtMain", {
 			    type: 'fade'
 		    }
 	    },
-	    items: [
-		    {
-			    title: 'Mail',
-			    xtype: 'mailview',
-			    app: ZCS.constant.APP_MAIL
-			},
-		    {
-			    title: 'Contacts',
-			    xtype: 'contactsview',
-			    app: ZCS.constant.APP_CONTACTS
-		    }
-	    ],
+
 	    listeners: {
 		    // track the current app via tab panel change
 		    activeitemchange: function (tabPanel, tab, oldTab) {
@@ -44,6 +32,16 @@ Ext.define("ZCS.view.ZtMain", {
 	initialize: function() {
 
 		this.callParent(arguments);
+
+		Ext.each(ZCS.constant.ALL_APPS, function(app) {
+			var mainView = {
+				title: ZCS.constant.TAB_TITLE[app],
+				xtype: 'appview',
+				itemId: app + 'view',
+				app: app
+			};
+			this.add(mainView);
+		}, this);
 
 		// Place some branding text on the right side of the tab bar
 		this.getTabBar().add([

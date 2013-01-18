@@ -9,14 +9,19 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 	extend: 'ZCS.controller.mail.ZtMailItemController',
 
 	config: {
+
 		models: ['ZCS.model.mail.ZtMsg'],
 		stores: ['ZCS.store.mail.ZtMsgStore'],
+
 		refs: {
-//			itemPanel: 'convpanel',
-			itemToolbar: 'convpanel titlebar',
-			menuButton: 'convpanel titlebar button',
+			// event handlers
+			itemPanelToolbar: 'appview #' + ZCS.constant.APP_MAIL + 'itempanel titlebar',
+
+			// other
+			menuButton: 'appview #' + ZCS.constant.APP_MAIL + 'itempanel titlebar button',
 			msgListView: 'msglistview'
 		},
+
 		menuData: [
 			{label: 'Reply', action: 'REPLY', listener: 'doReply'},
 			{label: 'Reply All', action: 'REPLY_ALL', listener: 'doReplyAll'},
@@ -34,7 +39,7 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 	showItem: function(conv) {
 		console.log("conv controller: show conv " + conv.get('id'));
 		this.callParent(arguments);
-		this.getItemToolbar().setTitle(conv.get('subject'));
+		this.getItemPanelToolbar().setTitle(conv.get('subject'));
 		this.getMsgListView().getStore().load({convId: conv.get('id')});
 	},
 
@@ -42,7 +47,7 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 	 * Make sure the action menu shows the appropriate action based on the unread status of this conversation.
 	 * The action will be either Mark Read or Mark Unread.
 	 */
-	onShowMenu: function() {
+	doShowMenu: function() {
 
 		var label = this.getItem().get('isUnread') ? 'Mark Read' : 'Mark Unread';
 		if (this.itemMenu) {

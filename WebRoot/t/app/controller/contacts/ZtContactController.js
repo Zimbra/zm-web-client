@@ -8,14 +8,19 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
 	extend: 'ZCS.controller.ZtItemController',
 
 	config: {
+
 		models: ['ZCS.model.contacts.ZtContact'],
 		stores: ['ZCS.store.contacts.ZtContactStore'],
+
 		refs: {
-			itemPanel: 'contactpanel',
-			itemToolbar: 'contactpanel titlebar',
-			menuButton: 'contactpanel titlebar button',
+			// event handlers
+			itemPanelToolbar: 'appview #' + ZCS.constant.APP_CONTACTS + 'itempanel titlebar',
+
+			// other
+			menuButton: 'appview #' + ZCS.constant.APP_CONTACTS + 'itempanel titlebar button',
 			contactView: 'contactview'
 		},
+
 		menuData: [
 			{label: 'Delete', action: 'DELETE', listener: 'doDelete'}
 		]
@@ -36,7 +41,7 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
 	showItem: function(contact) {
 		console.log("contact controller: show contact " + contact.get('id'));
 		this.callParent(arguments);
-		this.getItemToolbar().setTitle(contact.get('lastName') + ', ' + contact.get('firstName'));
+		this.getItemPanelToolbar().setTitle(contact.get('lastName') + ', ' + contact.get('firstName'));
 		var tpl = this.getContactView().getTpl();
 		this.getContactView().setHtml(tpl.apply(contact.getData()));
 	}

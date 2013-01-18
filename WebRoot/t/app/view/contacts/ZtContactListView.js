@@ -5,7 +5,7 @@ Ext.define('ZCS.view.contacts.ZtContactListView', {
 
 	extend: 'ZCS.view.ZtListView',
 
-	xtype: 'contactlistview',
+	xtype: ZCS.constant.APP_CONTACTS + 'listview',
 
 	config: {
 		loadingText: "Loading contacts ...",

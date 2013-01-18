@@ -7,7 +7,8 @@ Ext.define('ZCS.common.ZtUserSession', {
 	singleton: true,
 
 	requires: [
-		'ZCS.common.ZtConstants'
+		'ZCS.common.ZtConstants',
+		'ZCS.model.ZtSetting'
 	],
 
 	config: {
@@ -41,7 +42,8 @@ Ext.define('ZCS.common.ZtUserSession', {
 
 		// grab the user's settings
 		var gir = data.response.GetInfoResponse[0];
-		this._settingsCache = Ext.apply(Ext.clone(gir.attrs._attrs), gir.prefs._attrs);
+		this._settings = {};
+		this.createSettings(Ext.apply(Ext.clone(gir.attrs._attrs), gir.prefs._attrs));
 
 		// name of logged-in account
 		this.setAccountName(gir.name);
@@ -56,21 +58,26 @@ Ext.define('ZCS.common.ZtUserSession', {
 	/**
 	 * Returns the value of the setting with the given name.
 	 *
-	 * @param {string}  setting     setting's name (LDAP attr name)
+	 * @param {string}  settingName     setting's name (LDAP attr name)
 	 * @return {mixed}  the setting's value
 	 */
-	getSetting: function(setting) {
-		return this._settingsCache[setting];
+	getSetting: function(settingName) {
+		var setting = this._settings[settingName];
+		return setting ? setting.getValue() : null
 	},
 
 	/**
-	 * Sets the value of the setting with the given name.
+	 * Sets the value of the setting with the given name. The given value will not be
+	 * converted based on the type (eg a value of "TRUE" is a string and not a boolean).
 	 *
-	 * @param {string}  setting     setting's name (LDAP attr name)
+	 * @param {string}  settingName     setting's name (LDAP attr name)
 	 * @param {mixed}  the setting's new value
 	 */
-	setSetting: function(setting, value) {
-		this._settingsCache[setting] = value;
+	setSetting: function(settingName, value) {
+		var setting = this._settings[settingName];
+		if (setting) {
+			setting.setValue(value);
+		}
 	},
 
 	/**
@@ -120,6 +127,18 @@ Ext.define('ZCS.common.ZtUserSession', {
 	getFolderById: function(id, app) {
 		if (app) {
 			var folderList = this.getFolderListByApp(app);
+			if (folderList) {
+				return folderList.getById(id);
+			}
+			else {
+				var folderData = this.getFolderDataByApp(app),
+					folder;
+				Ext.each(folderData, function(folderNode) {
+					if (folderNode.id === id) {
+
+					}
+				}, this);
+			}
 			return folderList ? folderList.getById(id) : null;
 		}
 		else {
@@ -186,10 +205,40 @@ Ext.define('ZCS.common.ZtUserSession', {
 	 *
 	 * @return {Ext.field.Search}   search field
 	 */
-	getActiveSearchField: function() {
-		var app = this.getActiveApp(),
-			panel = ZCS.constant.LIST_PANEL_XTYPE[app];
+	getCurrentSearchField: function() {
+		return Ext.ComponentQuery.query(this.getActiveApp() + 'listpanel searchfield')[0];
+	},
 
-		return Ext.ComponentQuery.query(panel + ' searchfield')[0];
+	getCurrentOverview: function() {
+		return Ext.ComponentQuery.query(this.getActiveApp() + 'overview')[0];
+	},
+
+	/**
+	 * @private
+	 */
+	createSettings: function(settings) {
+
+		// process just those settings we use
+		Ext.each(ZCS.constant.SETTINGS, function(key) {
+
+			var setting = Ext.create('ZCS.model.ZtSetting', {
+				name: key,
+				type: ZCS.constant.SETTING_TYPE[key] || ZCS.constant.TYPE_STRING
+			});
+
+			var value = ZCS.constant.SETTING_VALUE[key] || settings[key] || ZCS.constant.SETTING_DEFAULT[key];
+			if (setting.getType() === ZCS.constant.TYPE_NUMBER) {
+				var newValue = parseInt(value);
+				if (!isNaN(newValue)) {
+					value = newValue;
+				}
+			}
+			else if (setting.getType() === ZCS.constant.TYPE_BOOLEAN) {
+				value = !!(value.toLowerCase() === 'true');
+			}
+
+			setting.setValue(value);
+			this._settings[setting.getName()] = setting;
+		}, this);
 	}
 });

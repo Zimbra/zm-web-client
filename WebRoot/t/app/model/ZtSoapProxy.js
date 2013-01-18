@@ -72,10 +72,11 @@ Ext.define('ZCS.model.ZtSoapProxy', {
 	 * search query if the user wants to see it.
 	 */
 	processResponse: function(success, operation, request, response, callback, scope) {
+
 		var query = operation.config.query;
+		ZCS.session.setSetting(ZCS.constant.SETTING_CUR_SEARCH, query);
 		if (query && success && ZCS.session.getSetting(ZCS.constant.SETTING_SHOW_SEARCH)) {
-			ZCS.session.getActiveSearchField().setValue(query);
-			ZCS.session.setSetting(ZCS.constant.SETTING_CUR_SEARCH, query);
+			ZCS.session.getCurrentSearchField().setValue(query);
 		}
 		this.callParent(arguments);
 	}

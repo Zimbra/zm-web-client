@@ -6,7 +6,7 @@ Ext.define('ZCS.view.mail.ZtConvPanel', {
 		'ZCS.view.mail.ZtMsgListView'
 	],
 
-	xtype: 'convpanel',
+	xtype: ZCS.constant.APP_MAIL + 'itempanel',
 
 	getItemView: function() {
 		return {

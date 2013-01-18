@@ -32,31 +32,52 @@ ZCS.constant = ZCS.common.ZtConstants;
 ZCS.constant.SERVICE_URL_BASE = '/service/soap/';
 
 // Apps
-ZCS.constant.APP_MAIL     = 'MAIL';
-ZCS.constant.APP_CONTACTS = 'CONTACTS';
+ZCS.constant.APP_MAIL     = 'mail';
+ZCS.constant.APP_CONTACTS = 'contacts';
 ZCS.constant.ALL_APPS = [
 	ZCS.constant.APP_MAIL,
 	ZCS.constant.APP_CONTACTS
 ];
 
-// Various xtypes by app
+// Text for tab bar
+ZCS.constant.TAB_TITLE = {};
+ZCS.constant.TAB_TITLE[ZCS.constant.APP_MAIL]       = 'Mail';
+ZCS.constant.TAB_TITLE[ZCS.constant.APP_CONTACTS]   = 'Contacts';
 
-ZCS.constant.MAIN_XTYPE = {};
-ZCS.constant.MAIN_XTYPE[ZCS.constant.APP_MAIL]      = 'mailview';
-ZCS.constant.MAIN_XTYPE[ZCS.constant.APP_CONTACTS]  = 'contactsview';
+// Organizer type to show in overview
+ZCS.constant.OVERVIEW_MODEL = {};
+ZCS.constant.OVERVIEW_MODEL[ZCS.constant.APP_MAIL]       = 'ZCS.model.mail.ZtMailFolder';
+ZCS.constant.OVERVIEW_MODEL[ZCS.constant.APP_CONTACTS]   = 'ZCS.model.contacts.ZtContactsFolder';
 
-ZCS.constant.LIST_PANEL_XTYPE = {};
-ZCS.constant.LIST_PANEL_XTYPE[ZCS.constant.APP_MAIL]     = 'convlistpanel';
-ZCS.constant.LIST_PANEL_XTYPE[ZCS.constant.APP_CONTACTS] = 'contactlistpanel';
-
-ZCS.constant.LIST_VIEW_XTYPE = {};
-ZCS.constant.LIST_VIEW_XTYPE[ZCS.constant.APP_MAIL]     = 'convlistview';
-ZCS.constant.LIST_VIEW_XTYPE[ZCS.constant.APP_CONTACTS] = 'contactlistview';
+// Organizer type to show in overview
+ZCS.constant.OVERVIEW_TITLE = {};
+ZCS.constant.OVERVIEW_TITLE[ZCS.constant.APP_MAIL]       = 'Folders';
+ZCS.constant.OVERVIEW_TITLE[ZCS.constant.APP_CONTACTS]   = 'Address Books';
 
 // View (from JSON folder data) that determines which app a folder belongs to
 ZCS.constant.FOLDER_VIEW = {};
 ZCS.constant.FOLDER_VIEW[ZCS.constant.APP_MAIL]     = 'message';
 ZCS.constant.FOLDER_VIEW[ZCS.constant.APP_CONTACTS] = 'contact';
+
+// Icon for button that creates a new item
+ZCS.constant.NEW_ITEM_ICON = {};
+ZCS.constant.NEW_ITEM_ICON[ZCS.constant.APP_MAIL]       = 'compose';
+ZCS.constant.NEW_ITEM_ICON[ZCS.constant.APP_CONTACTS]   = 'plus';
+
+// Store that holds items for list view
+ZCS.constant.STORE = {};
+ZCS.constant.STORE[ZCS.constant.APP_MAIL]       = 'ZtConvStore';
+ZCS.constant.STORE[ZCS.constant.APP_CONTACTS]   = 'ZtContactStore';
+
+// Xtype of view that displays a single item from the list
+ZCS.constant.ITEM_VIEW = {};
+ZCS.constant.ITEM_VIEW[ZCS.constant.APP_MAIL]     = 'msglistview';
+ZCS.constant.ITEM_VIEW[ZCS.constant.APP_CONTACTS] = 'contactview';
+
+// Xtype of view that displays a single item from the list
+ZCS.constant.ITEM_CLASS = {};
+ZCS.constant.ITEM_CLASS[ZCS.constant.APP_MAIL]     = 'ZCS.view.mail.ZtMsgListView';
+ZCS.constant.ITEM_CLASS[ZCS.constant.APP_CONTACTS] = 'ZCS.view.contacts.ZtContactPanel';
 
 // System folder IDs
 ZCS.constant.ID_ROOT      = 1;
@@ -122,11 +143,36 @@ ZCS.constant.FROM_SOAP_TYPE['s']  = ZCS.constant.SENDER;
 // and the other way too
 ZCS.constant.TO_SOAP_TYPE = ZCS.constant.getBackMap(ZCS.constant.FROM_SOAP_TYPE);
 
-// Setting names
+// Data types
+ZCS.constant.TYPE_STRING    = 'string';
+ZCS.constant.TYPE_NUMBER    = 'number';
+ZCS.constant.TYPE_BOOLEAN   = 'boolean';
+
+// Names of user settings (LDAP attribute names)
 ZCS.constant.SETTING_ALIASES            = 'zimbraMailAlias';
 ZCS.constant.SETTING_INITIAL_SEARCH     = 'zimbraPrefMailInitialSearch';
-ZCS.constant.SETTING_SHOW_SEARCH        = 'zimbraPrefShowSearchString'
-ZCS.constant.SETTING_CUR_SEARCH         = 'currentSearch'
+ZCS.constant.SETTING_SHOW_SEARCH        = 'zimbraPrefShowSearchString';
+
+// Names of internal settings
+ZCS.constant.SETTING_CUR_SEARCH         = 'currentSearch';
+
+// List of all settings we care about
+ZCS.constant.SETTINGS = [
+	ZCS.constant.SETTING_ALIASES,
+	ZCS.constant.SETTING_INITIAL_SEARCH,
+	ZCS.constant.SETTING_SHOW_SEARCH,
+	ZCS.constant.SETTING_CUR_SEARCH
+];
+
+// Setting type; defaults to string, so just note exceptions
+ZCS.constant.SETTING_TYPE = {};
+ZCS.constant.SETTING_TYPE[ZCS.constant.SETTING_SHOW_SEARCH] = ZCS.constant.TYPE_BOOLEAN;
+
+// Forced setting values, which override user setting
+ZCS.constant.SETTING_VALUE = {};
+ZCS.constant.SETTING_VALUE[ZCS.constant.SETTING_SHOW_SEARCH] = 'false';
+
+ZCS.constant.SETTING_DEFAULT = {};
 
 // Item flags
 ZCS.constant.FLAG_ATTACH			= 'a';

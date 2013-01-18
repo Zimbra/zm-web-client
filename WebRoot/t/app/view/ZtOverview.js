@@ -9,13 +9,18 @@ Ext.define('ZCS.view.ZtOverview', {
 
 	requires: [
 		'Ext.dataview.NestedList',
-		'ZCS.view.ZtFolderList',
-		'ZCS.constant'
+		'ZCS.view.ZtFolderList'
 	],
+
+	xtype: 'overview',
 
 	config: {
 		layout: 'fit',
-		style:  'border: solid blue 1px;'
+		style:  'border: solid blue 1px;',
+
+		app: null,
+		model: null,
+		title: null
 	},
 
 	initialize: function() {
@@ -23,14 +28,13 @@ Ext.define('ZCS.view.ZtOverview', {
 		this.callParent(arguments);
 
 		// get the folder tree data for this app
-		var app = this.getOverviewApp(),
+		var app = this.getApp(),
 			data = {
 				items: ZCS.session.getFolderDataByApp(app)
 			};
 
-		// create a TreeStore as the data backing the nested list
 		var store = Ext.create('Ext.data.TreeStore', {
-			model: this.getOverviewModel(),
+			model: this.getModel(),
 			defaultRootProperty: 'items',
 			root: data,
 			sorters: [
@@ -53,12 +57,12 @@ Ext.define('ZCS.view.ZtOverview', {
 
 		// create the nested list
 		var folderList = Ext.create('ZCS.view.ZtFolderList', {
-			title: this.getOverviewTitle(),
+			title: this.getTitle(),
 			displayField: 'name',
 			store: store
 		});
 
-		ZCS.session.setFolderListByApp(folderList, app);
+		ZCS.session.setFolderListByApp(folderList, this.getApp());
 		this.add(folderList);
 	}
 });

@@ -8,20 +8,24 @@ Ext.define('ZCS.controller.mail.ZtMsgController', {
 	extend: 'ZCS.controller.mail.ZtMailItemController',
 
 	config: {
+
 		models: ['ZCS.model.mail.ZtMsg'],
 		stores: ['ZCS.store.mail.ZtMsgStore'],
+
 		refs: {
 			msgFooter: 'msgfooter',
 			menuButton: 'msgfooter button'
 		},
+
 		control: {
 			msgFooter: {
 				reply: 'doReply',
 				replyAll: 'doReplyAll',
 				delete: 'doDelete',
-				showMenu: 'onShowMenu'
+				showMenu: 'doShowMenu'
 			}
 		},
+
 		menuData: [
 			{label: 'Delete', action: 'DELETE', listener: 'doDelete'},
 			{label: 'Mark Read', action: 'MARK_READ', listener: 'doMarkRead'}
@@ -33,7 +37,7 @@ Ext.define('ZCS.controller.mail.ZtMsgController', {
 		this.callParent(arguments);
 	},
 
-	onShowMenu: function(msg) {
+	doShowMenu: function(msg) {
 		this.setItem(msg);
 		this.callParent(arguments);
 	},
