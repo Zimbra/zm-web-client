@@ -45,7 +45,7 @@
             </select></c:if>
         </c:otherwise>
     </c:choose>
-    <c:if test="${not empty param.sq && context.searchResult.size > 0}">&laquo; <a href="?saveSearch=1&sq=${param.sq}&search=0"  onclick='toggleElem("searchbar",this); return toggleElem("savesearchbar",this);'><fmt:message key="saveSearch"/></a></c:if>
+    <c:if test="${not empty param.sq && context.searchResult.size > 0}">&laquo; <a href="?saveSearch=1&sq=${zm:cook(param.sq)}&search=0"  onclick='toggleElem("searchbar",this); return toggleElem("savesearchbar",this);'><fmt:message key="saveSearch"/></a></c:if>
 </div></div></div>
 </c:if><c:if test="${((isTop && '1' eq  top_tb ) || (!isTop && '1' eq btm_tb))}">
 <div class="tb tbl ${isTop ? 'top_' : 'btm_'}${context.isContactSearch ? 'cont' : (context.isMessageSearch ? 'mesg' : 'conv') }_lv_toolbar"><div class="tr"><span class="td">
