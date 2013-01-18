@@ -115,6 +115,30 @@ ZmCalendarApp.METHOD_COUNTER			= "COUNTER";
 ZmCalendarApp.DEFAULT_WORKING_HOURS			= "1:N:0800:1700,2:Y:0800:1700,3:Y:0800:1700,4:Y:0800:1700,5:Y:0800:1700,6:Y:0800:1700,7:N:0800:1700";
 ZmCalendarApp.DEFAULT_APPT_DURATION         = "60"; //60minutes
 
+ZmCalendarApp.reminderTimeWarningDisplayMsgs = [
+	ZmMsg.apptRemindNever,
+	ZmMsg.apptRemindNMinutesBefore,
+	ZmMsg.apptRemindNMinutesBefore,
+	ZmMsg.apptRemindNMinutesBefore,
+	ZmMsg.apptRemindNMinutesBefore,
+	ZmMsg.apptRemindNMinutesBefore,
+	ZmMsg.apptRemindNMinutesBefore,
+	ZmMsg.apptRemindNMinutesBefore,
+	ZmMsg.apptRemindNHoursBefore,
+	ZmMsg.apptRemindNHoursBefore,
+	ZmMsg.apptRemindNHoursBefore,
+	ZmMsg.apptRemindNHoursBefore,
+	ZmMsg.apptRemindNHoursBefore,
+	ZmMsg.apptRemindNDaysBefore,
+	ZmMsg.apptRemindNDaysBefore,
+	ZmMsg.apptRemindNDaysBefore,
+	ZmMsg.apptRemindNDaysBefore,
+	ZmMsg.apptRemindNWeeksBefore,
+	ZmMsg.apptRemindNWeeksBefore
+];
+
+ZmCalendarApp.reminderTimeWarningValues = [0, 1, 5, 10, 15, 30, 45, 60, 120, 180, 240, 300, 1080, 1440, 2880, 4320, 5760, 10080, 20160];
+ZmCalendarApp.reminderTimeWarningLabels = [0, 1, 5, 10, 15, 30, 45, 60, 2, 3, 4, 5, 18, 1, 2, 3, 4, 1, 2];
 
 // Construction
 
@@ -293,8 +317,8 @@ function() {
 	ZmPref.registerPref("CAL_REMINDER_WARNING_TIME", {
 		displayName:		ZmMsg.numberOfMinutes,
 		displayContainer:	ZmPref.TYPE_SELECT,
-		displayOptions:		[ZmMsg.apptRemindNever, ZmMsg.apptRemindNMinutesBefore, ZmMsg.apptRemindNMinutesBefore, ZmMsg.apptRemindNMinutesBefore, ZmMsg.apptRemindNMinutesBefore, ZmMsg.apptRemindNMinutesBefore, ZmMsg.apptRemindNMinutesBefore, ZmMsg.apptRemindNMinutesBefore],
-		options:			[0, 1, 5, 10, 15, 30, 45, 60]
+		displayOptions:		ZmCalendarApp.getReminderTimeWarningDisplayOptions(),
+		options:            ZmCalendarApp.reminderTimeWarningValues
 	});
 
 	ZmPref.registerPref("CAL_SHOW_DECLINED_MEETINGS", {
@@ -1056,38 +1080,13 @@ function(parent, buttonId, buttonListener, menuSelectionListener) {
 	reminderMenu.setSize("150");
 	reminderButton.setMenu(reminderMenu, true);
 
-
-	var displayOptions = [
-		ZmMsg.apptRemindNever,
-		ZmMsg.apptRemindNMinutesBefore,
-		ZmMsg.apptRemindNMinutesBefore,
-		ZmMsg.apptRemindNMinutesBefore,
-		ZmMsg.apptRemindNMinutesBefore,
-		ZmMsg.apptRemindNMinutesBefore,
-		ZmMsg.apptRemindNMinutesBefore,
-		ZmMsg.apptRemindNMinutesBefore,
-		ZmMsg.apptRemindNHoursBefore,
-		ZmMsg.apptRemindNHoursBefore,
-		ZmMsg.apptRemindNHoursBefore,
-		ZmMsg.apptRemindNHoursBefore,
-		ZmMsg.apptRemindNHoursBefore,
-		ZmMsg.apptRemindNDaysBefore,
-		ZmMsg.apptRemindNDaysBefore,
-		ZmMsg.apptRemindNDaysBefore,
-		ZmMsg.apptRemindNDaysBefore,
-		ZmMsg.apptRemindNWeeksBefore,
-		ZmMsg.apptRemindNWeeksBefore
-	];
-
-	var	options = [0, 1, 5, 10, 15, 30, 45, 60, 120, 180, 240, 300, 1080, 1440, 2880, 4320, 5760, 10080, 20160];
-	var	labels = [0, 1, 5, 10, 15, 30, 45, 60, 2, 3, 4, 5, 18, 1, 2, 3, 4, 1, 2];
 	var defaultWarningTime = appCtxt.get(ZmSetting.CAL_REMINDER_WARNING_TIME);
 
-	for (var j = 0; j < options.length; j++) {
-		var optLabel = ZmCalendarApp.__formatLabel(displayOptions[j], labels[j]);
+	for (var i = 0; i < ZmCalendarApp.reminderTimeWarningDisplayMsgs.length; i++) {
+		var optLabel = ZmCalendarApp.__formatLabel(ZmCalendarApp.reminderTimeWarningDisplayMsgs[i], ZmCalendarApp.reminderTimeWarningLabels[i]);
 		var mi = new DwtMenuItem({parent: reminderMenu, style: DwtMenuItem.NO_STYLE});
 		mi.setText(optLabel);
-		mi.setData("value", options[j]);
+		mi.setData("value",ZmCalendarApp.reminderTimeWarningValues[i]);
 		if(menuSelectionListener) mi.addSelectionListener(menuSelectionListener);
 	}
 
@@ -1449,4 +1448,17 @@ function(folderId,response) {
 ZmCalendarApp.prototype._handleImportApptError =
 function(ex) {
 	appCtxt.getAppController().setStatusMsg(ZmMsg.errorImportAppt, ZmStatusView.LEVEL_CRITICAL);
+};
+
+/**
+ * Returns the reminder warning time display options formatted for preferences
+ */
+ZmCalendarApp.getReminderTimeWarningDisplayOptions = 
+function() {
+	var returnArr = [];
+	for (var i = 0; i < ZmCalendarApp.reminderTimeWarningDisplayMsgs.length; i++) {
+		returnArr.push(ZmCalendarApp.__formatLabel(ZmCalendarApp.reminderTimeWarningDisplayMsgs[i], ZmCalendarApp.reminderTimeWarningLabels[i]));
+		
+	}
+	return returnArr;
 };
