@@ -497,8 +497,10 @@ function(inputEl, sizeEl){
     for(var i=0; i<files.length;i++){
         var file = files[i];
         var size = file.size || file.fileSize /*Safari*/;
-        if(size > appCtxt.get(ZmSetting.ATTACHMENT_SIZE_LIMIT))
+        if ((-1 /* means unlimited */ != appCtxt.get(ZmSetting.ATTACHMENT_SIZE_LIMIT)) &&
+            (size > appCtxt.get(ZmSetting.ATTACHMENT_SIZE_LIMIT))) {
             className = "RedC";
+        }
         totalSize += size;
     }
 
@@ -598,7 +600,8 @@ function(){
         for(var j=0; j<file.length;j++){
             var f = file[j];
             size = f.size || f.fileSize /*Safari*/;
-            if(size > appCtxt.get(ZmSetting.ATTACHMENT_SIZE_LIMIT)){
+            if ((-1 /* means unlimited */ != appCtxt.get(ZmSetting.ATTACHMENT_SIZE_LIMIT)) &&
+                (size > appCtxt.get(ZmSetting.ATTACHMENT_SIZE_LIMIT))) {
                 return false;
             }
         }

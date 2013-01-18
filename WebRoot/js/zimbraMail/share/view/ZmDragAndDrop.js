@@ -74,7 +74,8 @@ ZmDragAndDrop.isAttachmentSizeExceeded = function(files, showDialog) {
         if (file) {
             size += file.size || file.fileSize; /*Safari*/
             //Showing Error dialog if the attachment size is exceeded
-            if (size > ZmDragAndDrop.ATTACHMENT_SIZE_LIMIT) {
+            if ((-1 /* means unlimited */ != ZmDragAndDrop.ATTACHMENT_SIZE_LIMIT) &&
+                (size > ZmDragAndDrop.ATTACHMENT_SIZE_LIMIT)) {
                 if (showDialog) {
                     var msgDlg = appCtxt.getMsgDialog();
                     var errorMsg = AjxMessageFormat.format(ZmMsg.attachmentSizeError, AjxUtil.formatSize(ZmDragAndDrop.ATTACHMENT_SIZE_LIMIT));
