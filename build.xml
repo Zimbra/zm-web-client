@@ -106,10 +106,7 @@
     <property name="tinymce.version" value="3.5.4.1"/>
     <property name='tinymce.dir' value='${js.dir}/ajax/3rdparty/tinymce'/>
     <property name="tinymce.zplugins.dir" value="${web.dir}/tiny_mce_plugins"/>
-
-    <!-- jQuery INTEGRATION -->
-    <property name="jquery.version" value="1.8.1"/>
-
+        
     <!-- Tasks -->
 
     <taskdef resource="net/sf/antcontrib/antlib.xml">
@@ -205,7 +202,7 @@
         <property name='skins.dir' value='${web.dir}/skins'/>
         <property name='help.dir' value='${web.dir}/help'/>
         <property name='build.help.dir' value='${build.web.dir}/help'/>
-        <property name='web.includes' value='${common.web.includes},h/**,m/**,t/**,portals/**,sounds/**,test/**,yui/**,tiny_mce/**,qunit/**'/>
+        <property name='web.includes' value='${common.web.includes},h/**,m/**,portals/**,sounds/**,test/**,yui/**,tiny_mce/**,qunit/**'/>
         <property name='web.excludes' value='${common.web.excludes},js/zimbraAdmin/**'/>
         <property name='jsp.includes' value='${common.jsp.includes}'/>
         <property name='jsp.excludes' value='${common.jsp.excludes},admin.jsp'/>
@@ -322,7 +319,7 @@
         </war>
     </target>
 
-    <target name='sync' depends='jquery,tinymce,templates'>
+    <target name='sync' depends='tinymce,templates'>
         <!-- NOTE: Keep order in sync with list of war filesets. -->
         <copy todir='${webapp.dir}/WEB-INF' verbose='${sync.verbose}'>
             <fileset refid="webinf.fileset" />
@@ -980,7 +977,7 @@
         </if>
     </target>
 
-    <target name='jam-files' depends='jquery,tinymce,templates,timezones'>
+    <target name='jam-files' depends='tinymce,templates,timezones'>
         <property name='jam.jsp.dir' value='${build.web.dir}/public/jsp'/>
 
         <mkdir dir='${build.js.dir}'/>
@@ -1525,9 +1522,5 @@ if (ext == null) ext = "";
                 <different targetdir="${tinymce.dir}"/>
             </fileset>
         </copy>
-    </target>
-
-    <target name="jquery">
-        <copy todir='${js.dir}/ajax/3rdparty/jquery' file='${web.dir}/jquery/${jquery.version}/jquery.js' verbose='${sync.verbose}'/>
     </target>
 </project>

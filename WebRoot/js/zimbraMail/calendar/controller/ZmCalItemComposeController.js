@@ -82,6 +82,7 @@ function(view) {
 
 ZmCalItemComposeController.prototype._preShowCallback =
 function() {
+	this._setSearchToolbarVisibilityPerSkin(false);
 	return true;
 };
 
@@ -94,6 +95,7 @@ function(view, force) {
 ZmCalItemComposeController.prototype._postHideCallback =
 function() {
 	// overload me
+	this._setSearchToolbarVisibilityPerSkin(true);
 };
 
 ZmCalItemComposeController.prototype.popShield =
@@ -342,13 +344,7 @@ function() {
 	}
 	buttons.push(ZmOperation.SEP, ZmOperation.COMPOSE_OPTIONS);
 
-	this._toolbar = new ZmButtonToolBar({
-		parent:     this._container,
-		buttons:    buttons,
-		overrides:  this._getButtonOverrides(buttons),
-		context:    this._currentViewId,
-		controller: this
-	});
+	this._toolbar = new ZmButtonToolBar({parent:this._container, buttons:buttons, context:this._currentViewId, controller:this});
 	this._toolbar.addSelectionListener(ZmOperation.SAVE, new AjxListener(this, this._saveListener));
 	this._toolbar.addSelectionListener(ZmOperation.CANCEL, new AjxListener(this, this._cancelListener));
 
