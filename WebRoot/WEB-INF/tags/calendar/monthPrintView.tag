@@ -32,19 +32,22 @@
     <fmt:message var="dayMonthChangeFormat" key="CAL_MONTH_DAY_MONTH_CHANGE_FORMAT"/>
     <fmt:message var="titleFormat" key="CAL_MONTH_TITLE_FORMAT"/>
     <fmt:formatDate var="title" value="${date.time}" pattern="${titleFormat}"/>
+    <c:set var="startYear" value="${zm:getYear(date)}"/>
     <c:set var="startMonth" value="${zm:getMonth(date)}"/>
     <c:set var="currentDay" value="${zm:getFirstDayOfMonthView(date, mailbox.prefs.calendarFirstDayOfWeek)}"/>
     <c:choose>
         <c:when test="${not empty endDate}">
             <c:set var="endMonth" value="${zm:getMonth(endDate)}"/>
             <c:set var="endDay" value="${endDate}"/>
+            <c:set var="endYear" value="${zm:getYear(endDate)}"/>
         </c:when>
         <c:otherwise>
             <c:set var="endMonth" value="${startMonth}"/>
             <c:set var="endDay" value="${zm:addDay(currentDay, 42)}"/>
+            <c:set var="endYear" value="${startYear}"/>
         </c:otherwise>
     </c:choose>
-    <c:set var="noOfMonths" value="${endMonth-startMonth + 1}"/>
+    <c:set var="noOfMonths" value="${((endYear - startYear) * 12) + (endMonth - startMonth + 1)}"/>
     <fmt:getLocale var="userLocale"/>
     <c:set var="dateSymbols" value="${zm:getDateFormatSymbols(userLocale,pageContext)}"/>
     <c:set var="weekDays" value="${dateSymbols.weekdays}"/>
