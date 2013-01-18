@@ -3230,7 +3230,8 @@ function(files, node) {
 		for (var j = 0; j < files.length; j++) {
 			var file = files[j];
 			size += file.size || file.fileSize; /*Safari*/;
-			if (size > appCtxt.get(ZmSetting.ATTACHMENT_SIZE_LIMIT)) {
+			if ((-1 /* means unlimited */ != appCtxt.get(ZmSetting.ATTACHMENT_SIZE_LIMIT)) &&
+				(size > appCtxt.get(ZmSetting.ATTACHMENT_SIZE_LIMIT))) {
 				var msgDlg = appCtxt.getMsgDialog();
 				var errorMsg = AjxMessageFormat.format(ZmMsg.attachmentSizeError, AjxUtil.formatSize(appCtxt.get(ZmSetting.ATTACHMENT_SIZE_LIMIT)));
 				msgDlg.setMessage(errorMsg, DwtMessageDialog.WARNING_STYLE);
