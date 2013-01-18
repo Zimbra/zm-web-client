@@ -875,11 +875,10 @@ function(params) {
     var dow = weekStartDate.getDay();
     weekStartDate.setDate(weekStartDate.getDate()-((dow+7))%7);
 
-    if (onlyIncludeOthersWorkingHours) {
-        emails = params._nonOrganizerAttendeeEmails;
-    }
+    var emails = onlyIncludeOthersWorkingHours ? params._nonOrganizerAttendeeEmails : null;
+
     if (onlyIncludeMyWorkingHours) {
-        emails = emails.concat([this._organizerEmail]);
+        emails = emails && emails.concat([this._organizerEmail]);
     }
 
     var whrsParams = {
