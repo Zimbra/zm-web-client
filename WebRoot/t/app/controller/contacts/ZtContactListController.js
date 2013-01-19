@@ -6,7 +6,7 @@ Ext.define('ZCS.controller.contacts.ZtContactListController', {
 	// asynchronous request (which introduces timing problems)
 	requires: [
 		'ZCS.model.contacts.ZtContactsFolder',
-		'ZCS.view.contacts.ZtContactPanel'
+		'ZCS.view.contacts.ZtContactView'
 	],
 
 	config: {

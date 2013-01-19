@@ -13,6 +13,7 @@ Ext.application({
 
 	    'ZCS.common.ZtUtil',
 	    'ZCS.common.ZtConstants',
+	    'ZCS.common.ZtTemplate',
 	    'ZCS.common.ZtUserSession',
 	    'ZCS.model.ZtEmailAddress'
     ],

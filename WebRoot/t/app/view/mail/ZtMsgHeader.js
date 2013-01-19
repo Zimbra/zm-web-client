@@ -7,13 +7,7 @@ Ext.define('ZCS.view.mail.ZtMsgHeader', {
 	config: {
 		msg: null,
 		padding: 5,
-		tpl: Ext.create('Ext.XTemplate',
-			'<tpl>',
-			'<div>From: <span>{from}</span><span class="zcs-mail-date">{dateStr}</span></div>',
-			'<tpl if="to"><div>To: <span>{to}</span></div></tpl>',
-			'<tpl if="cc"><div>Cc: <span>{cc}</span></div></tpl>',
-			'</tpl>'
-		)
+		tpl: Ext.create('Ext.XTemplate', ZCS.template.MSG_HEADER)
 	},
 
 	setContent: function(msg) {
