@@ -59,9 +59,7 @@ Ext.define('ZCS.view.ZtAppView', {
 			xtype: 'itempanel',
 			itemId: app + 'itempanel',
 
-			app: app,
-			itemView: ZCS.constant.ITEM_VIEW[app],
-			itemClass: ZCS.constant.ITEM_CLASS[app]
+			app: app
 		};
 
 		this.add([
@@ -71,4 +69,3 @@ Ext.define('ZCS.view.ZtAppView', {
 		]);
 	}
 });
-

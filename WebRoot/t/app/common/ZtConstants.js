@@ -69,16 +69,6 @@ ZCS.constant.STORE = {};
 ZCS.constant.STORE[ZCS.constant.APP_MAIL]       = 'ZtConvStore';
 ZCS.constant.STORE[ZCS.constant.APP_CONTACTS]   = 'ZtContactStore';
 
-// Xtype of view that displays a single item from the list
-ZCS.constant.ITEM_VIEW = {};
-ZCS.constant.ITEM_VIEW[ZCS.constant.APP_MAIL]     = 'msglistview';
-ZCS.constant.ITEM_VIEW[ZCS.constant.APP_CONTACTS] = 'contactview';
-
-// Xtype of view that displays a single item from the list
-ZCS.constant.ITEM_CLASS = {};
-ZCS.constant.ITEM_CLASS[ZCS.constant.APP_MAIL]     = 'ZCS.view.mail.ZtMsgListView';
-ZCS.constant.ITEM_CLASS[ZCS.constant.APP_CONTACTS] = 'ZCS.view.contacts.ZtContactPanel';
-
 // System folder IDs
 ZCS.constant.ID_ROOT      = 1;
 ZCS.constant.ID_INBOX     = 2;

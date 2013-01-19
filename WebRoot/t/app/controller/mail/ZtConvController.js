@@ -19,7 +19,7 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 
 			// other
 			menuButton: 'appview #' + ZCS.constant.APP_MAIL + 'itempanel titlebar button',
-			msgListView: 'msglistview'
+			msgListView: ZCS.constant.APP_MAIL + 'itemview'
 		},
 
 		menuData: [

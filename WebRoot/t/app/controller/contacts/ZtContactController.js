@@ -18,7 +18,7 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
 
 			// other
 			menuButton: 'appview #' + ZCS.constant.APP_CONTACTS + 'itempanel titlebar button',
-			contactView: 'contactview'
+			contactView: ZCS.constant.APP_CONTACTS + 'itemview'
 		},
 
 		menuData: [

@@ -32,7 +32,7 @@ Ext.define('ZCS.view.mail.ZtMsgView', {
 			updatedata: function(msgView, msgData) {
 				if (msgData) {
 					console.log('updatedata for msg ' + msgData.id);
-					var msg = this.up('msglistview').getStore().getById(msgData.id);
+					var msg = this.up(ZCS.constant.APP_MAIL + 'itemview').getStore().getById(msgData.id);
 					if (msg) {
 //						msgView.displayMsg(msg);
 						this.setMsg(msg);

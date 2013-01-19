@@ -16,13 +16,14 @@ Ext.define('ZCS.view.ZtItemPanel', {
 	config: {
 		layout: 'fit',
 		style: 'border: solid blue 1px;',
-		itemView: null,
-		itemClass: null
+		app: null
 	},
 
 	initialize: function() {
 
 		this.callParent(arguments);
+
+		var app = this.getApp();
 
 		var toolbar = {
 			xtype: 'titlebar',
@@ -43,7 +44,7 @@ Ext.define('ZCS.view.ZtItemPanel', {
 		};
 
 		var itemView = {
-			xtype: this.getItemView()
+			xtype: app + 'itemview'
 		}
 
 		this.add([
