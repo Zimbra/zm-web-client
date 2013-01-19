@@ -257,8 +257,10 @@ function(type, used, addAsContact, dontUpdateUsed) {
 ZmMailMsg.prototype.getReplyAddresses =
 function(mode, aliases, isDefaultIdentity) {
 
-	// reply-to has precedence over everything else
-	var addrVec = this._addrs[AjxEmailAddress.REPLY_TO];
+	if (!this.isSent) { //ignore reply_to for sent messages.
+		// reply-to has precedence over everything else
+		var addrVec = this._addrs[AjxEmailAddress.REPLY_TO];
+	}
 	if (!addrVec && this.isInvite() && this.needsRsvp()) {
 		var invEmail = this.invite.getOrganizerEmail(0);
 		if (invEmail) {
