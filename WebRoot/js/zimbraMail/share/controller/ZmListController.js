@@ -775,11 +775,13 @@ function(search, offset) {
  */
 ZmListController.prototype._search =
 function(view, offset, limit, callback, isCurrent, lastId, lastSortVal) {
+	var originalSearch = this._activeSearch && this._activeSearch.search;
 	var params = {
 		query:			this.getSearchString(),
 		queryHint:		this.getSearchStringHint(),
-		types:			((this._activeSearch && this._activeSearch.search) ? this._activeSearch.search.types : []), // use types from original search 
-		sortBy:			appCtxt.get(ZmSetting.SORTING_PREF, view), 
+		types:			originalSearch && originalSearch.types || [], // use types from original search
+		userInitiated:	originalSearch && originalSearch.userInitiated,
+		sortBy:			appCtxt.get(ZmSetting.SORTING_PREF, view),
 		offset:			offset,
 		limit:			limit,
 		lastId:			lastId,

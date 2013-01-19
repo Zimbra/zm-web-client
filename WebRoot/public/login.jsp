@@ -22,6 +22,7 @@
 <%-- get useragent --%>
 <zm:getUserAgent var="ua" session="false"/>
 <c:set var="useMobile" value="${ua.isiPhone or ua.isiPod or ua.isOsAndroid}"/>
+<c:set var="useTablet" value="${ua.isiPad}"/>
 <c:set var="trimmedUserName" value="${fn:trim(param.username)}"/>
 
 <%--'virtualacctdomain' param is set only for external virtual accounts--%>
@@ -134,6 +135,7 @@
         <c:otherwise>
             <c:set var="client" value="${param.client}"/>
             <c:if test="${empty client and useMobile}"><c:set var="client" value="mobile"/></c:if>
+            <c:if test="${empty client and useTablet}"><c:set var="client" value="touch"/></c:if>
             <c:if test="${empty client or client eq 'preferred'}">
                 <c:set var="client" value="${requestScope.authResult.prefs.zimbraPrefClientType[0]}"/>
             </c:if>
@@ -186,6 +188,27 @@
                                 </c:forEach>
                             </c:forEach>
                     </c:redirect>
+                </c:when>
+                <c:when test="${client eq 'touch'}">
+                    <c:choose>
+                        <c:when test="${(param.loginOp eq 'login') && !(empty param.username) && !(empty param.password)}">
+                            <c:redirect url="/">
+                                <c:forEach var="p" items="${paramValues}">
+                                    <c:forEach var='value' items='${p.value}'>
+                                        <c:if test="${not fn:contains(ignoredQueryParams, p.key)}">
+                                            <c:param name="${p.key}" value='${value}'/>
+                                        </c:if>
+                                    </c:forEach>
+                                </c:forEach>
+                                <c:if test="${param.client eq 'touch'}">
+                                    <c:param name='client' value='touch'/>
+                                </c:if>
+                            </c:redirect>
+                        </c:when>
+                        <c:otherwise>
+                           <jsp:forward page="/t/launch.jsp"/>
+                        </c:otherwise>
+                    </c:choose>
                 </c:when>
                 <c:otherwise>
                    <jsp:forward page="/public/launchZCS.jsp"/>
@@ -290,7 +313,7 @@ if (application.getInitParameter("offlineMode") != null)  {
     <c:set var="useStandard" value="${not (ua.isFirefox3up or ua.isGecko1_9up or ua.isIE7up or ua.isSafari4Up or ua.isChrome)}"/>
     <c:if test="${empty client}">
         <%-- set client select default based on user agent. --%>
-        <c:set var="client" value="${useMobile ? 'mobile' : useStandard ? 'standard' : 'preferred' }"/>
+        <c:set var="client" value="${useTablet ? 'touch' : useMobile ? 'mobile' : useStandard ? 'standard' : 'preferred' }"/>
     </c:if>
     <c:set var="smallScreen" value="${client eq 'mobile'}"/>
     <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE9" />
@@ -419,6 +442,8 @@ if (application.getInitParameter("offlineMode") != null)  {
 									<option value="advanced"  <c:if test="${client eq 'advanced'}">selected</c:if>> <fmt:message key="clientAdvanced"/></option>
 									<option value="standard"  <c:if test="${client eq 'standard'}">selected</c:if>> <fmt:message key="clientStandard"/></option>
 									<option value="mobile"  <c:if test="${client eq 'mobile'}">selected</c:if>> <fmt:message key="clientMobile"/></option>
+                                    <option value="touch"  <c:if test="${client eq 'touch'}">selected</c:if>> <fmt:message key="clientTouch"/></option>
+
 								</select>
 <script TYPE="text/javascript">
 	document.write("<a href='#' onclick='showWhatsThis()' id='ZLoginWhatsThisAnchor'><fmt:message key="whatsThis"/><"+"/a>");
@@ -464,7 +489,7 @@ if (application.getInitParameter("offlineMode") != null)  {
   if (link) {
     link.href = skin.hints.banner.url;
   }
-  
+
 <c:if test="${smallScreen && ua.isIE}">       /*HACK FOR IE*/
   var resizeLoginPanel = function(){
       var panelElem = document.getElementById('ZLoginPanel');

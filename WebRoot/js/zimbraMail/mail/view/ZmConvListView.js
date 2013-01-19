@@ -115,7 +115,7 @@ function(item, force) {
 	if (changed && itemView && itemView._replyView) {
 		itemView._replyView.reset();
 	}
-	this._itemView.setVisible(true);
+	this._itemView.setVisible(true,null,item);
 	if (changed) {
 		this.setReadingPane(true);	// so that second view gets positioned
 	}
@@ -654,7 +654,7 @@ function(conv, msg, force) {
 			index--;	// for ascending, we want to expand upward (add above expandable msg row)
 		}
 		var offset = this._msgOffset[item.id] || 0;
-		var a = conv.getMsgList(offset, ascending);
+		var a = conv.getMsgList(offset, ascending, AjxUtil.arrayAsHash(ZmConvListController.FOLDERS_TO_OMIT));
 		for (var i = 0; i < a.length; i++) {
 			var msg = a[i];
 			var div = this._createItemHtml(msg);
