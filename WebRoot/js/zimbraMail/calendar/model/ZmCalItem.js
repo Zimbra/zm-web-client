@@ -1455,22 +1455,15 @@ ZmCalItem.prototype._setAlarmData =
 function(comp) {
 
 	var useAbs = this._useAbsoluteReminder,
-        emailAlarmNode,
-        email,
-        action,
-        isEmailAlarm,
-        alarm,
-        trigger,
-        at,
-        i,
         time = useAbs ? this._reminderAbs : this._reminderMinutes;
 
     if (!time) {
         return;
     }
 
-	for (i = 0, len = this.alarmActions.size(); i < len; i++) {
-		action = this.alarmActions.get(i);
+	for (var i = 0, len = this.alarmActions.size(); i < len; i++) {
+		var email = null;
+		var action = this.alarmActions.get(i);
 		if (action == ZmCalItem.ALARM_EMAIL) {
 			email = appCtxt.get(ZmSetting.CAL_EMAIL_REMINDERS_ADDRESS);
 			if (!email) {
@@ -1485,22 +1478,14 @@ function(comp) {
             // NOTE: treat device email alarm as a standard email alarm
             action = ZmCalItem.ALARM_EMAIL;
         }
-        isEmailAlarm = action == ZmCalItem.ALARM_EMAIL;
-        alarm = isEmailAlarm && emailAlarmNode;
-        if (!alarm) {
-            alarm = comp.alarm = {};
-            alarm.action = action;
-            trigger = alarm.trigger = {};
-            this._setReminderUnits(trigger, time);
-            this._addXPropsToAlarm(alarm);
-            if (isEmailAlarm) {
-                emailAlarmNode = alarm;
-            }
-        }
+		var alarms = comp.alarm = comp.alarm || [];
+		var alarm = {action: action};
+		alarms.push(alarm);
+		var trigger = alarm.trigger = {};
+		this._setReminderUnits(trigger, time);
+		this._addXPropsToAlarm(alarm);
 		if (email) {
-			at = alarm.at = {};
-			at.a = email;
-            email = null;
+			alarm.at = {a: email};
 		}
 	}
 };
