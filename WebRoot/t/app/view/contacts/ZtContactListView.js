@@ -7,6 +7,6 @@ Ext.define('ZCS.view.contacts.ZtContactListView', {
 	config: {
 		loadingText: "Loading contacts ...",
 		emptyText: "<div class=\"notes-list-empty-text\">No contacts found.</div>",
-		itemTpl: ZCS.template.CONTACT_LIST_ITEM
+		itemTpl: ZCS.template.ContactListItem
 	}
 });

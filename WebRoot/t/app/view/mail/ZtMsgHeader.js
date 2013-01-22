@@ -7,7 +7,7 @@ Ext.define('ZCS.view.mail.ZtMsgHeader', {
 	config: {
 		msg: null,
 		padding: 5,
-		tpl: Ext.create('Ext.XTemplate', ZCS.template.MSG_HEADER)
+		tpl: Ext.create('Ext.XTemplate', ZCS.template.MsgHeader)
 	},
 
 	setContent: function(msg) {

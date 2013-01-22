@@ -188,7 +188,7 @@ Ext.define('ZCS.common.ZtUserSession', {
 			else {
 				folder.leaf = true;
 			}
-			console.log('adding folder ' + folder.name + ' to parent ' + folderNode.l);
+//			console.log('adding folder ' + folder.name + ' to parent ' + folderNode.l);
 			folders.push(folder);
 		}
 
