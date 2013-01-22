@@ -256,6 +256,9 @@ function(params) {
 						// special handling for showing participants ("To" instead of "From")
 						var folder = this.folderId && appCtxt.getById(this.folderId);
 						method.setAttribute("recip", (folder && folder.isOutbound()) ? "1" : "0");
+					} else if (this.types.contains(ZmItem.CONV)){
+						//this is a conv so get both TO and From
+						method.setAttribute("recip", "2");
 					}
 					// if we're prefetching the first hit message, also mark it as read
 					if (this.fetch) {
@@ -405,6 +408,9 @@ function(params) {
 						// special handling for showing participants ("To" instead of "From")
 						var folder = this.folderId && appCtxt.getById(this.folderId);
 						request.recip = (folder && folder.isOutbound()) ? "1" : "0";
+					} else if (this.types.contains(ZmItem.CONV)) {
+						//this is a conv so get both To and From
+						request.recip =  "2";
 					}
 
 					// if we're prefetching the first hit message, also mark it as read
@@ -574,6 +580,9 @@ function(params) {
 	if (!params.noTruncate) {
 		request.max = appCtxt.get(ZmSetting.MAX_MESSAGE_SIZE);
 	}
+
+	//get both TO and From
+	request.recip =  "2";
 
 	var searchParams = {
 		jsonObj:		jsonObj,
