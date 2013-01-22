@@ -2874,7 +2874,9 @@ function() {
 
 		ZmZimbraMail._endSession();
 	}
-    ZmDesktopAlert.closeNotification();
+    if (window.ZmDesktopAlert) {
+        ZmDesktopAlert.closeNotification();
+    }
 	ZmZimbraMail._endSessionDone = true;
 };
 
