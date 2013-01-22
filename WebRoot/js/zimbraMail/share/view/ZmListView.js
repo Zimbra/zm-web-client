@@ -136,16 +136,21 @@ function(list, sortField) {
 
 	this._sortByString = this._controller._currentSearch && this._controller._currentSearch.sortBy;
     //TODO: We need a longer term fix but this is to prevent a sort by that doesn't match our ZmSearch
-	//constants and lead to notification issues. 
-	if (this._sortByString && this._sortByString.indexOf("asc") != -1) {
-	    this._sortByString = this._sortByString.replace("asc", "Asc");   
-    }
-	else if (this._sortByString && this._sortByString.indexOf("desc")!= -1) {
-	    this._sortByString = this._sortByString.replace("desc", "Desc");
-    } 
+	//constants and lead to notification issues.
+	if (this._sortByString) {
+    	this._sortByString = this._sortByString.replace("asc", "Asc").replace("desc", "Desc");// bug 75687
+	}
+
 	var settings = appCtxt.getSettings();
-	if(!appCtxt.isExternalAccount() && this.view && ( settings && settings.persistImplicitSortPrefs(this.view) ) )
-        appCtxt.set(ZmSetting.SORTING_PREF, this._sortByString, this.view);
+	if (!appCtxt.isExternalAccount() && this.view) {
+		appCtxt.set(ZmSetting.SORTING_PREF,
+					this._sortByString,
+					this.view,
+					false, //setDefault
+					false, //skipNotify
+					null, //account
+					settings && !settings.persistImplicitSortPrefs(this.view)); //skipImplicit - do not persist
+	}
 
 	this.setSelectionHdrCbox(false);
 
@@ -1232,7 +1237,14 @@ function(columnItem, bSortAsc, callback) {
 		this._sortByString = sortBy;
 		var skipFirstNotify = this._folderId ? true : false; //just making it explicit boolean
         if (!appCtxt.isExternalAccount()) {
-            appCtxt.set(ZmSetting.SORTING_PREF, sortBy, this.view, null, skipFirstNotify);
+			var settings = appCtxt.getSettings();
+           	appCtxt.set(ZmSetting.SORTING_PREF,
+					   sortBy,
+					   this.view,
+					   false, //setDefault
+					   skipFirstNotify, //skipNotify
+					   null, //account
+					   settings && !settings.persistImplicitSortPrefs(this.view)); //skipImplicit
             if (this._folderId) {
                 appCtxt.set(ZmSetting.SORTING_PREF, sortBy, this._folderId);
             }
