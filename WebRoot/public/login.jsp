@@ -322,19 +322,12 @@ if (application.getInitParameter("offlineMode") != null)  {
     <c:set var="version" value="${initParam.zimbraCacheBusterVersion}"/>
     <meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=1;">
     <meta name="description" content="<fmt:message key="zimbraLoginMetaDesc"/>">
-    <link  rel="stylesheet" type="text/css" href="<c:url value='/css/common,login,zhtml.css'>
+    <link  rel="stylesheet" type="text/css" href="<c:url value='/css/common,login,zhtml,skin.css'>
 		<c:param name="skin"	value="${skin}" />
 		<c:param name="v"		value="${version}" />
 		<c:if test="${not empty param.debug}">
 		    <c:param name="debug" value="${param.debug}" />
 		</c:if>
-		<c:if test="${not empty param.customerDomain}">
-			<c:param name="customerDomain"	value="${param.customerDomain}" />
-		</c:if>	
-	</c:url>">
-	<link  rel="stylesheet" type="text/css" href="<c:url value='/css/skin.css'>
-		<c:param name="skin"	value="${skin}" />
-		<c:param name="v"		value="${version}" />
 		<c:if test="${not empty param.customerDomain}">
 			<c:param name="customerDomain"	value="${param.customerDomain}" />
 		</c:if>	
