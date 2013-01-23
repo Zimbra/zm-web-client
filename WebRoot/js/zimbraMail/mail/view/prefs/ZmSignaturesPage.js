@@ -502,7 +502,7 @@ function(identity, table, signatures, index) {
 	var row = table.insertRow(index);
 	row.id = identity.id + "_row";
 	var name = identity.getField(ZmIdentity.NAME);
-	if (name == ZmMsg.defaultIdentityName) {
+	if (name === ZmIdentity.DEFAULT_NAME) {
 		name = ZmMsg.accountDefault;
 	}
 	var cell = row.insertCell(-1);

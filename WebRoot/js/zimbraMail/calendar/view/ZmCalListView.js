@@ -87,6 +87,11 @@ function(timeRange) {
     this._search();
 };
 
+ZmCalListView.prototype.createHeaderHtml =
+function(defaultColumnSort) {
+	DwtListView.prototype.createHeaderHtml.call(this, defaultColumnSort, true);
+};
+
 ZmCalListView.prototype.getDate =
 function() {
 	return this._date;
