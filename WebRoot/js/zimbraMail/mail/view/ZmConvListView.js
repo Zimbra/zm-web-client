@@ -404,6 +404,16 @@ function(item, field, params) {
 		: (ZmMailListView.prototype._getCellClass.apply(this, arguments));
 };
 
+
+ZmConvListView.prototype._getCellCollapseExpandImage =
+function(item) {
+	if (!this._isExpandable(item)) {
+		return null;
+	}
+	return this._expanded[item.id] ? "NodeExpanded" : "NodeCollapsed";
+};
+
+
 ZmConvListView.prototype._getCellContents =
 function(htmlArr, idx, item, field, colIdx, params) {
 
@@ -411,7 +421,7 @@ function(htmlArr, idx, item, field, colIdx, params) {
 		idx = ZmMailListView.prototype._getCellContents.apply(this, arguments);
 	}
 	else if (field == ZmItem.F_EXPAND) {
-		idx = this._getImageHtml(htmlArr, idx, this._isExpandable(item) ? "NodeCollapsed" : null, this._getFieldId(item, field));
+		idx = this._getImageHtml(htmlArr, idx, this._getCellCollapseExpandImage(item), this._getFieldId(item, field));
 	}
     else if (field == ZmItem.F_READ) {
 		idx = this._getImageHtml(htmlArr, idx, item.getReadIcon(), this._getFieldId(item, field));
