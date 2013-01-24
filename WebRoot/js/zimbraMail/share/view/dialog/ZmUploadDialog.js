@@ -655,6 +655,18 @@ ZmUploadDialog._addHandler = function(event) {
 ZmUploadDialog.prototype._createUploadHtml = function() {
 	var id = this._htmlElId;
 	var aCtxt = ZmAppCtxt.handleWindowOpener();
+	if (!aCtxt) {
+		//hack if ZmAppCtxt is not defined; not sure why that would be the case.
+		aCtxt = appCtxt;
+		if (window.opener) {
+			try {
+				aCtxt = window.opener.appCtxt;
+			}
+			catch (ex) {
+				aCtxt = appCtxt;
+			}
+		}
+	}
     var uri = aCtxt.get(ZmSetting.CSFE_UPLOAD_URI);
 
     var subs = {
