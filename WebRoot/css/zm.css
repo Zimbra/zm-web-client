@@ -1901,14 +1901,14 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 }
 .calendar_cur_time_indicator_arr{
 	height:10px;
-	color:@darken(CalendarNowColor,25)@;
+	color:@CalendarIndicatorColor@;
 	overflow:hidden;
 	right:1px;
 }
 .calendar_cur_time_indicator_strip{
 	font-size:0;
 	line-height:0;
-	background-color:@CalendarNowColor@;
+	background-color:@CalendarIndicatorColor@;
 	height:4px;
 	position:static;
 	margin:-3px;
