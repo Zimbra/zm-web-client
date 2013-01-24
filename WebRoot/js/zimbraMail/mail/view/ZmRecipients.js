@@ -84,10 +84,13 @@ function(htmlElId, typeStr) {
 
 ZmRecipients.prototype.createRecipientHtml =
 function(parent, viewId, htmlElId, fieldNames, bccToggleId) {
-    this._fieldNames = fieldNames;
 
-    	// init autocomplete list
-    if (appCtxt.get(ZmSetting.CONTACTS_ENABLED) || appCtxt.get(ZmSetting.GAL_ENABLED) || appCtxt.isOffline) {
+	this._fieldNames = fieldNames;
+	var contactsEnabled = appCtxt.get(ZmSetting.CONTACTS_ENABLED);
+	var galEnabled = appCtxt.get(ZmSetting.GAL_ENABLED);
+
+	// init autocomplete list
+	if (contactsEnabled || galEnabled || appCtxt.isOffline) {
 		var params = {
 			dataClass:		appCtxt.getAutocompleter(),
 			matchValue:		ZmAutocomplete.AC_VALUE_FULL,
@@ -99,9 +102,8 @@ function(parent, viewId, htmlElId, fieldNames, bccToggleId) {
 		this._acAddrSelectList = new ZmAutocompleteListView(params);
 	}
 
-	var isPickerEnabled = (appCtxt.get(ZmSetting.CONTACTS_ENABLED) ||
-						   appCtxt.get(ZmSetting.GAL_ENABLED) ||
-						   appCtxt.multiAccounts);
+	var isPickerEnabled = contactsEnabled || galEnabled || appCtxt.multiAccounts;
+
 	this._pickerButton = {};
 
 	// process compose fields
@@ -110,7 +112,7 @@ function(parent, viewId, htmlElId, fieldNames, bccToggleId) {
 		var typeStr = AjxEmailAddress.TYPE_STRING[type];
 
 		// save identifiers
-        var ids = this.createRecipientIds(htmlElId, typeStr);
+		var ids = this.createRecipientIds(htmlElId, typeStr);
 		this._divId[type] = ids.row;
 		this._buttonTdId[type] = ids.picker;
 		var inputId = this._fieldId[type] = ids.control;
@@ -145,6 +147,12 @@ function(parent, viewId, htmlElId, fieldNames, bccToggleId) {
 
 		// create picker
 		if (isPickerEnabled) {
+
+			// bug 78318 - if GAL enabled but not contacts, we need some things defined to handle GAL search
+			if (!contactsEnabled) {
+				appCtxt.getAppController()._createApp(ZmApp.CONTACTS);
+			}
+
 			var pickerId = this._buttonTdId[type];
 			var pickerEl = document.getElementById(pickerId);
 			if (pickerEl) {
@@ -153,13 +161,13 @@ function(parent, viewId, htmlElId, fieldNames, bccToggleId) {
 				button.setText(pickerEl.innerHTML);
 				button.replaceElement(pickerEl);
 
-				button.addSelectionListener(new AjxListener(this, this.addressButtonListener));
+				button.addSelectionListener(this.addressButtonListener.bind(this));
 				button.addrType = type;
 
 				// autocomplete-related handlers
-				if (appCtxt.get(ZmSetting.CONTACTS_ENABLED) || appCtxt.isOffline) {
+				if (contactsEnabled || appCtxt.isOffline) {
 					this._acAddrSelectList.handle(this._field[type], aifId);
- 				} else {
+				} else {
 					this._setEventHandler(this._fieldId[type], "onKeyUp");
 				}
 
@@ -169,12 +177,12 @@ function(parent, viewId, htmlElId, fieldNames, bccToggleId) {
 	}
 
 	// Toggle BCC
-    if (bccToggleId){
-        this._toggleBccEl = document.getElementById(bccToggleId);
-        if (this._toggleBccEl) {
-            Dwt.setHandler(this._toggleBccEl, DwtEvent.ONCLICK, AjxCallback.simpleClosure(this._toggleBccField, this));
-        }
-    }
+	if (bccToggleId){
+		this._toggleBccEl = document.getElementById(bccToggleId);
+		if (this._toggleBccEl) {
+			Dwt.setHandler(this._toggleBccEl, DwtEvent.ONCLICK, AjxCallback.simpleClosure(this._toggleBccField, this));
+		}
+	}
 }
 
 ZmRecipients.prototype.reset =
