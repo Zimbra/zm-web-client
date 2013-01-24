@@ -865,8 +865,8 @@ function(parent, num) {
 			var isDL = contact && contact.isDistributionList();
 			canEdit = isDL && contact.dlInfo && contact.dlInfo.isOwner;
 		}
-		parent.enable([ZmOperation.EDIT, ZmOperation.CONTACT], canEdit);  //not sure what is this ZmOperation.CONTACT exactly, but it's used as the "edit group" below. 
-
+		parent.enable([ZmOperation.EDIT], canEdit);  //not sure what is this ZmOperation.CONTACT exactly, but it's used as the "edit group" below. 
+		parent.enable([ZmOperation.CONTACT], isDL ? canEdit : num == 1);
 		var canDelete = ZmContactList.deleteGalItemsAllowed(selection);
 
 		parent.enable([ZmOperation.DELETE], canDelete);
