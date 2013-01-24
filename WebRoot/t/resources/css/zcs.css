@@ -1,0 +1,18 @@
+.zcs-form-input {
+    border-bottom: 1px solid #f7f7f7;
+}
+
+.zcs-fragment {
+	font-size: 0.9em;
+	color: gray;
+}
+
+.zcs-mail-date {
+	float: right;
+}
+
+.zcs-msg-footer {
+	background-image: none;
+	background-color: transparent;
+	border-style: none !important;
+}

@@ -1507,8 +1507,10 @@ function(msgId, partId, name, folder, results) {
     var folderId = (!folder.account || folder.account == appCtxt.getActiveAccount() || (folder.id.indexOf(":") != -1)) ? folder.id : [folder.account.id, folder.id].join(":");
     if(itemFound){
         var dlg = this._conflictDialog = this._getFileConflictDialog();
-        dlg.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._handleConflictDialog, [msgId, partId, name, folderId, itemFound]))
-		dlg.popup();
+        dlg.setButtonListener(DwtDialog.OK_BUTTON, this._handleConflictDialog.bind(this, msgId, partId, name, folderId, itemFound));
+		dlg.setEnterListener(DwtDialog.OK_BUTTON, this._handleConflictDialog.bind(this, msgId, partId, name, folderId, itemFound));
+	    this._renameField.value = "";
+	    dlg.popup();
     }else{
        this._createFromAttachment(msgId, partId, name, folderId);
     }
@@ -1517,13 +1519,24 @@ function(msgId, partId, name, folder, results) {
         this._saveAttDialog.popdown();
 };
 
+ZmBriefcaseController.prototype._popupConflictDialog = 
+function(dlg) {
+	if (dlg) {
+		dlg.popdown();
+	}
+	if (!this._conflictDialog) {
+		this._conflictDialog = this._getFileConflictDialog();
+	}
+	this._conflictDialog.popup();
+};
+
 ZmBriefcaseController.prototype._handleConflictDialog =
 function(msgId, partId, name, folderId, itemFound){
 
     var attribs = {};
     if(this._renameRadio.checked){
         var newName = this._renameField.value;
-        var errorMsg = this.checkInvalidFileName(newName);
+        var errorMsg = this.checkInvalidFileName(newName, itemFound && itemFound.name);
         if(errorMsg){
 		    var dialog = appCtxt.getMsgDialog();
 		    dialog.setMessage(errorMsg, DwtMessageDialog.WARNING_STYLE);
@@ -1535,22 +1548,27 @@ function(msgId, partId, name, folderId, itemFound){
         attribs.id = itemFound.id;
         attribs.version = itemFound.version;
     }
-
+	this._conflictDialog.popdown(); //hide dialog so user doesn't get it into a state that can be hung
     this._createFromAttachment(msgId, partId, name, folderId, attribs);
 };
 
 ZmBriefcaseController.prototype.checkInvalidFileName =
-function(fileName) {
+function(fileName, itemFound) {
 
     var message;
     fileName = fileName.replace(/^\s+/,"").replace(/\s+$/,"");
 
     if(fileName == ""){
         message = ZmMsg.emptyDocName;
-    }else if (!ZmOrganizer.VALID_NAME_RE.test(fileName)) {
+    }
+    else if (!ZmOrganizer.VALID_NAME_RE.test(fileName)) {
         message = AjxMessageFormat.format(ZmMsg.errorInvalidName, AjxStringUtil.htmlEncode(fileName));
-    } else if ( fileName.length > ZmOrganizer.MAX_NAME_LENGTH){
+    } 
+    else if (fileName.length > ZmOrganizer.MAX_NAME_LENGTH){
         message = AjxMessageFormat.format(ZmMsg.nameTooLong, ZmOrganizer.MAX_NAME_LENGTH);
+    }
+	else if (itemFound === fileName) {
+	    message = AjxMessageFormat.format(ZmMsg.errorFileExistsWarning, AjxStringUtil.htmlEncode(fileName));
     }
 
     return message;
@@ -1563,7 +1581,7 @@ function(msgId, partId, name, folderId, attribs){
     if(attribs.id || attribs.rename)
         attribs.callback = new AjxCallback(this, this._handleSuccessCreateFromAttachment, [msgId, partId, name, folderId]);
     if(attribs.rename)
-        attribs.errorCallback = new AjxCallback(this, this._handleErrorCreateFromAttachment, [msgId, partId, name, folderId]);
+        attribs.errorCallback = new AjxCallback(this, this._handleErrorCreateFromAttachment, [msgId, partId, attribs.rename, folderId]);
 
     var srcData = new ZmBriefcaseItem();
     srcData.createFromAttachment(msgId, partId, name, folderId, attribs);
@@ -1585,6 +1603,7 @@ function(msgId, partId, name, folderId, ex){
         handled = true;
         var dlg = appCtxt.getMsgDialog();
         dlg.setMessage(AjxMessageFormat.format(ZmMsg.errorFileExistsWarning, name), DwtMessageDialog.WARNING_STYLE);
+	    dlg.setButtonListener(DwtDialog.OK_BUTTON, this._popupConflictDialog.bind(this, dlg));
         dlg.popup();
     }
 
@@ -1594,7 +1613,7 @@ function(msgId, partId, name, folderId, ex){
 ZmBriefcaseController.prototype._getFileConflictDialog =
 function(){
     if(!this._nameConflictDialog){
-       var dlg = this._nameConflictDialog = new DwtDialog({parent:appCtxt.getShell()});
+       var dlg = this._nameConflictDialog = appCtxt.getOkCancelMsgDialog();
        var id = this._nameConflictId = Dwt.getNextId();
        dlg.setContent(AjxTemplate.expand("briefcase.Briefcase#NameConflictDialog", {id: id}));
        dlg.setTitle(ZmMsg.addToBriefcaseTitle);

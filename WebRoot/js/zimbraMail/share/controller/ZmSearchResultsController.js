@@ -115,10 +115,9 @@ function(search, resultsCtlr) {
 					resultsApp:	resultsCtlr.getApp().getName()
 				});
 	}
-	this._filterPanel.reset();
-	
+
 	this._resultsController = resultsCtlr;
-	if (appCtxt.getCurrentViewId() == this._currentViewId) {
+	if (appCtxt.getCurrentViewId().indexOf(this._currentViewId) !== -1) {
 		var elements = {};
 		elements[ZmAppViewMgr.C_TOOLBAR_TOP] = resultsCtlr.getCurrentToolbar();
 		elements[ZmAppViewMgr.C_APP_CONTENT] = resultsCtlr.getViewMgr ? resultsCtlr.getViewMgr() : resultsCtlr.getCurrentView();
@@ -139,7 +138,8 @@ function(search, resultsCtlr) {
 								hide:		[ ZmAppViewMgr.C_TREE_FOOTER ],
 								tabParams:	this._getTabParams()});
 		this._app.pushView(this._currentViewId);
-		
+		this._filterPanel.reset();
+
 		// search tab button menu
 		var button = appCtxt.getAppChooser().getButton(this.tabId);
 		var menu = new DwtMenu({ parent: button	});
@@ -174,6 +174,10 @@ function(search, resultsCtlr) {
 	setTimeout(this._toolbar.focus.bind(this._toolbar), 100);
 };
 
+ZmSearchResultsController.prototype._postHideCallback =
+function() {
+};
+
 // returns params for the search tab button
 ZmSearchResultsController.prototype._getTabParams =
 function() {
@@ -200,6 +204,9 @@ function(ev, zimletEvent) {
 		toolbar._settingSearch = false;
 	}
 
+	var view = appCtxt.getCurrentViewId(); //this view should be the results list view. Somehow it seems to be.
+	var sortBy = view ? appCtxt.get(ZmSetting.SORTING_PREF, view) : null; // repeat the previous sort order (from same search tab only, which is this case)
+
 	// run the search
 	var query = this._toolbar.getSearchFieldValue();
 	var params = {
@@ -211,8 +218,9 @@ function(ev, zimletEvent) {
 		skipUpdateSearchToolbar:	true,
 		origin:						ZmId.SEARCHRESULTS,
 		searchFor:					this._curSearch && this._curSearch.searchFor,
+		sortBy:						sortBy,
 		errorCallback:				this._errorCallback.bind(this)
-	}
+	};
 	toolbar.setLabel(ZmMsg.searching);
 	appCtxt.getSearchController()._toolbarSearch(params);
 };

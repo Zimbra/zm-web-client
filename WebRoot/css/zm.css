@@ -157,7 +157,6 @@
 .DwtTreeItemLevel1ChildDiv {
 	padding-left:0;
 	margin-bottom:5px;
-	@PanelBg@
 }
 
 .panelTopBorder {
@@ -1089,7 +1088,7 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 	@WarningText@
 	@BottomSeparator@
 	@ActiveCursor@
-	@PanelPadding@
+	padding:1em 0;
 }
 
 /* for images that are rendered inline of a message body */
@@ -1569,14 +1568,22 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 
 .ZmContactView .contactHeaderTable,
 .ZmContactInfoView .contactHeaderTable {
-	border-bottom:1px solid #777;
-	background-color:@darken(AppC,20)@;
+	background-color:@darken(AppC,5)@;
+	border-bottom:1px solid @darken(AppC,50)@;
 }
 
+.ZmContactView .contactHeaderSubTable,
+.ZmContactInfoView .contactHeaderSubTable {
+	background-color:@darken(AppC,15)@;
+	border-bottom:1px solid @darken(AppC,50)@;
+}
 .ZmContactInfoView .contactGroupTable {
 	background-color:white;
+	border:1px solid @darken(AppC,50)@;
+	float:left;
+	margin:.5em;
+	width:30%;
 }
-
 .ZmContactInfoView .contactHeaderSection {
 	@WidgetHeaderContainer@
 	@WidgetHeaderContainer-normal@
@@ -1592,6 +1599,10 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 
 .ZmEditGroupContact .Row {
 	height:auto;
+}
+.ZmEditGroupContact .contactGroupTable {
+	float:none;
+	width:100%;
 }
 
 .ZmContactInfoView .contactHeader,
@@ -1890,14 +1901,14 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 }
 .calendar_cur_time_indicator_arr{
 	height:10px;
-	color:@darken(CalendarNowColor,25)@;
+	color:@CalendarIndicatorColor@;
 	overflow:hidden;
 	right:1px;
 }
 .calendar_cur_time_indicator_strip{
 	font-size:0;
 	line-height:0;
-	background-color:@CalendarNowColor@;
+	background-color:@CalendarIndicatorColor@;
 	height:4px;
 	position:static;
 	margin:-3px;
@@ -5164,18 +5175,9 @@ If you feel compelled to have a background color, please do so on a per skin lev
 	background-color:#E7B2B2;
 }
 
-.InviteStatusTentative {
-	background-color:#FFC;
-}
-
-.InviteIntendedFor {
-	background-color:#FFB;
-}
-
-.InviteOutDated {
-	background-color:@lighten(AppC,90)@;
-}
-
+.InviteStatusTentative,
+.InviteIntendedFor,
+.InviteOutDated,
 .InvHeaderTable .InvCounter {
 	background-color:#FFC;
 }
