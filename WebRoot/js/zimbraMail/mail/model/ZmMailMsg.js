@@ -226,6 +226,8 @@ function(type, used, addAsContact, dontUpdateUsed) {
 		for (var i = 0; i < a.length; i++) {
 			var addr = a[i];
 			var email = addr.getAddress();
+			if (!email) { continue; }
+			email = email.toLowerCase();
 			if (!used[email]) {
 				var contact = addr;
 				if (addAsContact) {
