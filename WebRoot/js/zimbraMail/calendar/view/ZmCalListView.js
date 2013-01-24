@@ -41,7 +41,7 @@ ZmCalListView.prototype.constructor = ZmCalListView;
 
 // Consts
 ZmCalListView.DEFAULT_CALENDAR_PERIOD	= AjxDateUtil.MSEC_PER_DAY * 14;			// 2 weeks
-ZmCalListView.DEFAULT_SEARCH_PERIOD		= AjxDateUtil.MSEC_PER_DAY * 31;			// 1 month
+ZmCalListView.DEFAULT_SEARCH_PERIOD		= AjxDateUtil.MSEC_PER_DAY * 400;			// 400 days (maximum supported by the server)
 
 
 // Public methods
@@ -405,7 +405,7 @@ function(isStartDate) {
 };
 
 /**
- * Chunks the date range into intervals per the default calendar period. We do
+ * Chunks the date range into intervals per the default search period. We do
  * this to avoid taxing the server with a large date range.
  *
  * @param startTime		[String]	start time in ms
@@ -415,7 +415,7 @@ function(isStartDate) {
 ZmCalListView.prototype._segmentDates =
 function(startTime, endTime) {
 	var startPeriod = startTime;
-	var endPeriod = startTime + ZmCalListView.DEFAULT_CALENDAR_PERIOD;
+	var endPeriod = startTime + ZmCalListView.DEFAULT_SEARCH_PERIOD;
 
 	// reset back to end time if we're search less than next block (e.g. two weeks)
 	if (endPeriod > endTime) {
@@ -425,9 +425,9 @@ function(startTime, endTime) {
 	do {
 		this._segmentedDates.push({startTime: startPeriod, endTime: endPeriod});
 
-		startPeriod += ZmCalListView.DEFAULT_CALENDAR_PERIOD;
+		startPeriod += ZmCalListView.DEFAULT_SEARCH_PERIOD;
 
-		var newEndPeriod = endPeriod + ZmCalListView.DEFAULT_CALENDAR_PERIOD;
+		var newEndPeriod = endPeriod + ZmCalListView.DEFAULT_SEARCH_PERIOD;
 		endPeriod = (newEndPeriod > endTime) ? endTime : newEndPeriod;
 	}
 	while (startPeriod < endTime);
