@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -97,12 +97,11 @@ function(notes){
 };
 
 ZmUploadDialog.prototype.popup =
-function(folder, callback, title, loc, oneFileOnly, noResolveAction, showNotes, isImage) {
+function(folder, callback, title, loc, oneFileOnly, noResolveAction, showNotes) {
 	this._uploadFolder = folder;
 	this._uploadCallback = callback;
-	var aCtxt = ZmAppCtxt.handleWindowOpener();
 
-    this._supportsHTML5 = AjxEnv.supportsHTML5File && !this._showLinkTitleText && (aCtxt.get(ZmSetting.DOCUMENT_SIZE_LIMIT) != null);
+    this._supportsHTML5 = AjxEnv.supportsHTML5File && !this._showLinkTitleText && (appCtxt.get(ZmSetting.DOCUMENT_SIZE_LIMIT) != null);
 
 	this.setTitle(title || ZmMsg.uploadDocs);
 
@@ -119,19 +118,12 @@ function(folder, callback, title, loc, oneFileOnly, noResolveAction, showNotes, 
 	this.setButtonEnabled(DwtDialog.CANCEL_BUTTON, true);
 
 	// hide/show elements
-    var id = this._htmlElId;
-    var labelEl = document.getElementById(id+"_label");
-    if (labelEl) {
-        if(oneFileOnly && isImage){
-            labelEl.innerHTML = ZmMsg.uploadChooseImage;
-            Dwt.setVisible(labelEl, true);
-        }
-        else{
-            labelEl.innerHTML = ZmMsg.uploadChoose;
-            Dwt.setVisible(labelEl, !oneFileOnly);
-        }
-    }
-    var actionRowEl = document.getElementById(id+"_actionRow");
+	var id = this._htmlElId;
+	var labelEl = document.getElementById(id+"_label");
+	if (labelEl) {
+		Dwt.setVisible(labelEl, !oneFileOnly);
+	}
+	var actionRowEl = document.getElementById(id+"_actionRow");
 	if (actionRowEl) {
 		Dwt.setVisible(actionRowEl, !noResolveAction);
 	}
@@ -140,19 +132,6 @@ function(folder, callback, title, loc, oneFileOnly, noResolveAction, showNotes, 
 	if (notesEl) {
 		Dwt.setVisible(notesEl, showNotes);
 	}
-    // In case of a single file upload show proper info message
-
-    var docSizeInfo = document.getElementById((id+"_info"));
-    var attSize = AjxUtil.formatSize(aCtxt.get(ZmSetting.DOCUMENT_SIZE_LIMIT) || 0, true);
-        if(docSizeInfo){
-            if(oneFileOnly){
-                docSizeInfo.innerHTML = AjxMessageFormat.format(ZmMsg.attachmentLimitMsgSingleFile, attSize);
-            }
-            else{
-                docSizeInfo.innerHTML = AjxMessageFormat.format(ZmMsg.attachmentLimitMsg, attSize);
-            }
-        }
-
 
 	// show
 	DwtDialog.prototype.popup.call(this, loc);
@@ -229,8 +208,7 @@ ZmUploadDialog.prototype._upload = function(){
                     files.push({name:f[j].name, fullname: f[j].name, notes: notes});
                 }
             }else{
-	            var aCtxt = ZmAppCtxt.handleWindowOpener();
-                this._msgInfo.innerHTML = AjxMessageFormat.format(ZmMsg.attachmentSizeError, AjxUtil.formatSize(aCtxt.get(ZmSetting.DOCUMENT_SIZE_LIMIT)));;
+                this._msgInfo.innerHTML = AjxMessageFormat.format(ZmMsg.attachmentSizeError, AjxUtil.formatSize(appCtxt.get(ZmSetting.DOCUMENT_SIZE_LIMIT)));;
                 return;
             }
         }else{
@@ -294,8 +272,7 @@ function(){
         for(var j=0; j<file.length;j++){
             var f = file[j];
             size = f.size || f.fileSize /*Safari*/;
-	        var aCtxt = ZmAppCtxt.handleWindowOpener();
-            if(size > aCtxt.get(ZmSetting.DOCUMENT_SIZE_LIMIT)){
+            if(size > appCtxt.get(ZmSetting.DOCUMENT_SIZE_LIMIT)){
                 return false;
             }
         }
@@ -382,9 +359,6 @@ function(files, status, guids) {
 		};
 		var appController = appCtxt.getAppController();
 		appController.sendRequest(params);
-	}
-	else {
-		this._finishUpload(files); //this calls the callback of the client - e.g. ZmSignatureEditor.prototype._imageUploaded since _uploadSaveDocsResponse is not called in this case, we still need the client callback since the user chose the "old" version of the image
 	}
 };
 
@@ -527,9 +501,8 @@ ZmUploadDialog.prototype._addFileInputRow = function(oneInputOnly) {
     cellLabel.innerHTML = ZmMsg.fileLabel;
 
 	var cell = row.insertCell(-1);
-	// bug:53841 allow only one file upload when oneInputOnly is set
 	cell.innerHTML = [
-		"<input id='",inputId,"' type='file' name='",ZmUploadDialog.UPLOAD_FIELD_NAME,"' size=30 ",(this._supportsHTML5 ? (oneInputOnly ? "" : "multiple") : ""),">"
+		"<input id='",inputId,"' type='file' name='",ZmUploadDialog.UPLOAD_FIELD_NAME,"' size=30 ",(this._supportsHTML5 ? "multiple" : ""),">"
 	].join("");
 
 	var cell = row.insertCell(-1);
@@ -600,8 +573,7 @@ function(inputEl, sizeEl){
     for(var i=0; i<files.length;i++){
         var file = files[i];
         var size = file.size || file.fileSize /*Safari*/;
-	    var aCtxt = ZmAppCtxt.handleWindowOpener();
-        if(size > aCtxt.get(ZmSetting.DOCUMENT_SIZE_LIMIT))
+        if(size > appCtxt.get(ZmSetting.DOCUMENT_SIZE_LIMIT))
             className = "RedC";
         totalSize += size;
     }
@@ -653,25 +625,12 @@ ZmUploadDialog._addHandler = function(event) {
 };
 
 ZmUploadDialog.prototype._createUploadHtml = function() {
-	var id = this._htmlElId;
-	var aCtxt = ZmAppCtxt.handleWindowOpener();
-	if (!aCtxt) {
-		//hack if ZmAppCtxt is not defined; not sure why that would be the case.
-		aCtxt = appCtxt;
-		if (window.opener) {
-			try {
-				aCtxt = window.opener.appCtxt;
-			}
-			catch (ex) {
-				aCtxt = appCtxt;
-			}
-		}
-	}
-    var uri = aCtxt.get(ZmSetting.CSFE_UPLOAD_URI);
+	var id = this._htmlElId;    
+    var uri = appCtxt.get(ZmSetting.CSFE_UPLOAD_URI);
 
     var subs = {
         id: id,
-        uri: uri
+        uri: uri 
     };
     this.setContent(AjxTemplate.expand("share.Dialogs#UploadDialog", subs));
 
@@ -692,7 +651,7 @@ ZmUploadDialog.prototype._createUploadHtml = function() {
     //Info Section
     var docSizeInfo = document.getElementById((id+"_info"));
     if(docSizeInfo){
-        var attSize = AjxUtil.formatSize(aCtxt.get(ZmSetting.DOCUMENT_SIZE_LIMIT) || 0, true)
+        var attSize = AjxUtil.formatSize(appCtxt.get(ZmSetting.DOCUMENT_SIZE_LIMIT) || 0, true)
         docSizeInfo.innerHTML = AjxMessageFormat.format(ZmMsg.attachmentLimitMsg, attSize);
     }
     	

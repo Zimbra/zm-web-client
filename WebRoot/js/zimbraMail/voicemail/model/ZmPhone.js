@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2007, 2008, 2009, 2010, 2011 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -73,12 +73,8 @@ function(str) {
 
 ZmPhone.prototype.getDisplay =
 function() {
-	this._display = ZmPhone.calculateDisplay(this.name);
-	if(this.label) {
-		this._display = [this.label, " - ", this._display].join("");
-	}
-	if(this._display == "") {
-		this._display = ZmMsg.phoneNotConfigured;
+	if (!this._display) {
+		this._display = ZmPhone.calculateDisplay(this.name);
 	}
 	return this._display;
 };
@@ -91,12 +87,8 @@ function() {
 ZmPhone.prototype._loadFromDom = 
 function(node) {
 	this.name =  node.name;
-	this.id = node.id;
-	this.label = node.label;
+	this.id = node.name; // March '08: id only used in list view in voice prefs.
 	this.hasVoiceMail = node.vm;
-	this.allProps = node;
-	this.phoneType = node.type;
-	
 	if (node.used && node.used.length) this.used =  node.used[0]._content;
 	if (this.limit && this.limit.length) this.limit = node.limit[0]._content;
 	this._initializeFeatures();

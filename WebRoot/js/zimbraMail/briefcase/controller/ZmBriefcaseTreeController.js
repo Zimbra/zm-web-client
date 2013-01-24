@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2007, 2008, 2009, 2010, 2011 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -36,6 +36,7 @@ ZmBriefcaseTreeController = function(type) {
 
 	this._listeners[ZmOperation.NEW_BRIEFCASE] = new AjxListener(this, this._newListener);
 	this._listeners[ZmOperation.SHARE_BRIEFCASE] = new AjxListener(this, this._shareBriefcaseListener);
+	this._listeners[ZmOperation.BROWSE] = new AjxListener(this, function(){ appCtxt.getSearchController().fromBrowse(""); });
 
 	this._eventMgrs = {};
     this._app = appCtxt.getApp(ZmApp.BRIEFCASE);
@@ -66,11 +67,11 @@ function(actionMenu, type, id) {
         var nId = ZmOrganizer.normalizeId(id);
 		var isRoot = (nId == rootId);
 		var isBriefcase = (nId == ZmOrganizer.getSystemId(ZmOrganizer.ID_BRIEFCASE));
+        var isNotebook = ( nId == ZmOrganizer.getSystemId(ZmOrganizer.ID_NOTEBOOK));
 		var isTopLevel = (!isRoot && briefcase.parent.id == rootId);
 		var isLink = briefcase.link;
 		var isLinkOrRemote = isLink || briefcase.isRemote();
         var isTrash = (nId == ZmFolder.ID_TRASH);
-        var isReadOnly = briefcase ? briefcase.isReadOnly() : false;
 
         var deleteText = ZmMsg.del;
 
@@ -83,15 +84,13 @@ function(actionMenu, type, id) {
             actionMenu.getOp(ZmOperation.EMPTY_FOLDER).setText(ZmMsg.emptyTrash);            
         } else {
             actionMenu.enableAll(true);
-            var showEditMenu = !appCtxt.isExternalAccount() && (!isLinkOrRemote || !isReadOnly || (isLink && isTopLevel) || ZmBriefcaseTreeController.__isAllowed(briefcase.parent, ZmShare.PERM_DELETE));
-            actionMenu.enable(ZmOperation.DELETE_WITHOUT_SHORTCUT, showEditMenu && !isBriefcase);
-            actionMenu.enable(ZmOperation.EDIT_PROPS, showEditMenu);
+            var menuItem = actionMenu.getMenuItem(ZmOperation.DELETE);
+            menuItem.setEnabled(!isNotebook && !isBriefcase && (!isLinkOrRemote || (isLink && isTopLevel) || ZmBriefcaseTreeController.__isAllowed(briefcase.parent, ZmShare.PERM_DELETE)));
 
-			var menuItem;
             menuItem = actionMenu.getMenuItem(ZmOperation.NEW_BRIEFCASE);
             menuItem.setText(ZmMsg.newFolder);
             menuItem.setImage("NewFolder");
-            menuItem.setEnabled(!appCtxt.isExternalAccount() && (!isLinkOrRemote || ZmBriefcaseTreeController.__isAllowed(briefcase, ZmShare.PERM_CREATE_SUBDIR) || briefcase.isAdmin() || ZmShare.getRoleFromPerm(briefcase.perm) == ZmShare.ROLE_MANAGER));
+            menuItem.setEnabled(!isLinkOrRemote || ZmBriefcaseTreeController.__isAllowed(briefcase, ZmShare.PERM_CREATE_SUBDIR) || briefcase.isAdmin() || ZmShare.getRoleFromPerm(briefcase.perm) == ZmShare.ROLE_MANAGER);
 
             if (appCtxt.get(ZmSetting.SHARING_ENABLED)) {
                 isBriefcase = (!isRoot && briefcase.parent.id == rootId) || type==ZmOrganizer.BRIEFCASE;
@@ -106,7 +105,7 @@ function(actionMenu, type, id) {
                 menuItem.setEnabled(isShareVisible);
             }
         }
-        var op = actionMenu.getOp(ZmOperation.DELETE_WITHOUT_SHORTCUT);
+        var op = actionMenu.getOp(ZmOperation.DELETE);
         if (op) {
             op.setText(deleteText);
         }
@@ -147,11 +146,12 @@ function(organizer, perm) {
 // Returns a list of desired header action menu operations
 ZmBriefcaseTreeController.prototype._getHeaderActionMenuOps =
 function() {
-    var ops = [];
-    if (!appCtxt.isExternalAccount()) {
-        ops.push(ZmOperation.NEW_BRIEFCASE);
-    }
-    ops.push(ZmOperation.EXPAND_ALL);
+	var ops = [ZmOperation.NEW_BRIEFCASE];
+	ops.push(
+		ZmOperation.EXPAND_ALL,
+		ZmOperation.SEP,
+		ZmOperation.BROWSE
+	);
 	return ops;
 };
 
@@ -162,7 +162,7 @@ function() {
 	if (appCtxt.get(ZmSetting.SHARING_ENABLED)) {
 		ops.push(ZmOperation.SHARE_BRIEFCASE);
 	}
-	ops.push(ZmOperation.DELETE_WITHOUT_SHORTCUT, ZmOperation.EDIT_PROPS, ZmOperation.EMPTY_FOLDER, ZmOperation.RECOVER_DELETED_ITEMS);
+	ops.push(ZmOperation.DELETE, ZmOperation.EDIT_PROPS, ZmOperation.EMPTY_FOLDER, ZmOperation.RECOVER_DELETED_ITEMS);
 	return ops;
 };
 
@@ -196,6 +196,10 @@ function(folder) {
 
 ZmBriefcaseTreeController.prototype._shareBriefcaseListener =
 function(ev) {
+	if (!this._sharingPossible()) {
+		return;
+	}
+
 	this._pendingActionData = this._getActionedOrganizer(ev);
 
 	var briefcase = this._pendingActionData;

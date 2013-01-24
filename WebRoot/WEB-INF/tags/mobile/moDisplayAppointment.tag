@@ -1,7 +1,7 @@
 <%--
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2007, 2008, 2009, 2010, 2011 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -14,7 +14,7 @@
 --%>
 <%@ tag body-content="empty" %>
 <%@ attribute name="message" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.bean.ZMessageBean" %>
-<%@ attribute name="invite" rtexprvalue="true" required="true" type="com.zimbra.client.ZInvite" %>
+<%@ attribute name="invite" rtexprvalue="true" required="true" type="com.zimbra.cs.zclient.ZInvite" %>
 <%@ attribute name="mailbox" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.bean.ZMailboxBean" %>
 <%@ attribute name="hideops" rtexprvalue="true" required="false" %>
 <%@ attribute name="showInviteReply" rtexprvalue="true" required="false" %>
@@ -54,23 +54,6 @@
                <br/>
            </div>
     </c:if>
-    <c:if test="${not empty appt.attendees}">
-        <div class='small-gray-text'>
-            <fmt:message key="attendeesLabel"/>
-            <c:forEach var="attendee" items="${appt.attendees}" varStatus="status">
-                    <c:if test="${not status.first}">, </c:if>
-                    ${fn:escapeXml(attendee.emailAddress.fullAddress)}
-                </c:forEach>
-        </div>
-    </c:if>
-    <c:if test="${not invite.component.isOrganizer}">
-        <c:if test="${not empty pstat}">
-            <div class='small-gray-text'>
-                <fmt:message key="status"/>:
-                <fmt:message key="apptPtst${pstat}"/>
-            </div>
-        </c:if>
-    </c:if>
     <p class='label Medium'>
         <c:choose>
             <c:when test="${param.useInstance eq '1' and (not empty param.instStartTime and not empty param.instDuration)}">
@@ -90,45 +73,6 @@
         <a <c:if test="${mailbox.features.calendar}">href="?st=cal&amp;view=day&amp;date=${date}"</c:if>>${fn:escapeXml(zm:getApptDateBlurb(pageContext, mailbox.prefs.timeZone, startDate.time, endDate.time, appt.allDay))}</a>
         <%--&nbsp;<span class='ZhCalTimeZone'>${mailbox.prefs.timeZoneCanonicalId}</span> --%>
     </p>
-    <table width="100%" >
-        <tr valign="middle">
-            <td nowrap align="left" style='padding-left: 5px'>
-                <table cellspacing="4" cellpadding="0" class='Tb'>
-                    <tr>
-                        <c:choose>
-                            <c:when test="${showInviteReply and not invite.component.isOrganizer}">
-                                <c:set var="keyOffset" value="${3}"/>
-                                <td style='padding: 0 2px 0 2px'>
-                                    <a <c:if test="${not isPart}"></c:if> href="${fn:escapeXml(composeUrl)}&amp;op=accept">
-                                        <img alt="check" title="check" src="/img/zimbra/ImgCheck.png">
-                                        <span><fmt:message key="replyAccept"/></span>
-                                    </a>
-                                </td>
-                                <td><div class='vertSep'></div></td>
-                                <td style='padding: 0 2px 0 2px'>
-                                    <a <c:if test="${not isPart}"></c:if> href="${fn:escapeXml(composeUrl)}&amp;op=tentative">
-                                        <img alt="quesetionmark" title="quesetionmark" src="/img/zimbra/ImgQuestionMark.png">
-                                        <span><fmt:message key="replyTentative"/></span>
-                                    </a>
-                                </td>
-                                <td><div class='vertSep'></div></td>
-                                <td style='padding: 0 2px 0 2px'>
-                                    <a <c:if test="${not isPart}"></c:if> href="${fn:escapeXml(composeUrl)}&amp;op=decline">
-                                        <img alt="cancel" title="cancel" src="/img/zimbra/ImgCancel.png">
-                                        <span><fmt:message key="replyDecline"/></span>
-                                    </a>
-                                </td>
-                            </c:when>
-                            <c:otherwise>
-                                <td>&nbsp;</td>
-                            </c:otherwise>
-                        </c:choose>
-                    </tr>
-                </table>
-            </td>
-        </tr>
-    </table>
-
     <c:if test="${not empty appt.description}">
         <hr size="1"/>
         ${fn:escapeXml(appt.description)}

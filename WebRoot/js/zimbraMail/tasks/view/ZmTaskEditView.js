@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011 Zimbra, Inc.
+ * Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -30,18 +30,10 @@
  */
 ZmTaskEditView = function(parent, controller) {
 
-    this._view = controller.getCurrentViewId();
-	this._sessionId = controller.getSessionId();
+    this._view = ZmId.VIEW_TASKEDIT + controller.sessionId;
+	this._sessionId = controller.sessionId;
 
-	var idParams = {
-		skinComponent:  ZmId.SKIN_APP_MAIN,
-		app:            ZmId.APP_TASKS,
-		componentType:  ZmId.WIDGET_VIEW,
-		componentName:  ZmId.VIEW_TASKEDIT
-	};
-
-	var domId = ZmId.create(idParams, "A task editing view");
-    ZmCalItemEditView.call(this, parent, null, controller, null, DwtControl.ABSOLUTE_STYLE, "ZmTaskEditView", domId);
+    ZmCalItemEditView.call(this, parent, null, controller, null, DwtControl.ABSOLUTE_STYLE, "ZmTaskEditView", ZmId.getViewId(this._view));
 };
 
 ZmTaskEditView.prototype = new ZmCalItemEditView;
@@ -162,9 +154,6 @@ function(calItem, mode) {
 	this._setPriority(calItem.priority);
 	this._statusSelect.setSelectedValue(calItem.status);
     this._pCompleteSelectInput.setValue(this.formatPercentComplete(calItem.pComplete));
-    if (!this._notesHtmlEditor.getContent() && calItem.message){
-        this._notesHtmlEditor.setContent(calItem.message.getInviteDescriptionContentValue(ZmMimeTable.TEXT_PLAIN) || "");
-    }
 };
 
 ZmTaskEditView.prototype._populateForSave =
@@ -487,15 +476,6 @@ function(ev) {
 	ev.item.popup();
 };
 
-ZmTaskEditView.prototype._checkReminderDate =
-function(){
-    var currDate = new Date();
-    var rd = AjxDateUtil.simpleParseDateStr(this._remindDateField.value);
-    if (rd.valueOf() < currDate.valueOf()){
-        this._remindDateField.value = AjxDateFormat.getDateInstance(AjxDateFormat.SHORT).format(currDate);
-    }
-};
-
 ZmTaskEditView.prototype._dateCalSelectionListener = function(ev) {
 
     ZmCalItemEditView.prototype._dateCalSelectionListener.call(this,ev);
@@ -526,7 +506,7 @@ ZmTaskEditView.prototype._dateCalSelectionListener = function(ev) {
               this._remindDateField.value = newDate;
         }
     }
-    this._checkReminderDate();
+    
 };
 
 

@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -28,9 +28,8 @@
  * @param	{ZmCalViewController}		calController		the controller
  * 
  */
-ZmReminderController = function(calController, apptType) {
+ZmReminderController = function(calController) {
 	this._calController = calController;
-    this._apptType = apptType;
 	this._apptState = {};	// keyed on appt.getUniqueId(true)
     this._cacheMap = {};    
 	this._cachedAppts = new AjxVector(); // set of appts in cache from refresh
@@ -114,9 +113,7 @@ function() {
 		start: timeRange.start,
 		end: timeRange.end,
 		fanoutAllDay: false,
-		folderIds: this._apptType ==
-            "appt" ? this._calController.getReminderCalendarFolderIds() :
-                     this._calController.getCheckedCalendarFolderIds(true),
+		folderIds: this._calController.getCheckedCalendarFolderIds(true),
 		callback: (new AjxCallback(this, this._refreshCallback)),
 		includeReminders: true
 	};
@@ -141,7 +138,7 @@ function() {
 /**
  * called after we get upcoming appts from server. Save list,
  * and call housekeeping.
- *
+ * 
  * @private
  */
 ZmReminderController.prototype._refreshCallback =
@@ -165,8 +162,8 @@ function(list) {
 	for (var i = 0; i < size; i++) {
 		var appt = list.get(i);
 		var id = appt.id;
-        var hasAlarm = appt.recurring ? appt.isAlarmInstance() : appt.hasAlarmData();
-		if (hasAlarm) {
+
+		if (appt.hasAlarmData()) {
 			if (!this._cacheMap[id]) {
 				this._cacheMap[id] = true;
 				newList.add(appt);
@@ -257,6 +254,17 @@ function() {
 
 	for (var i=0; i < cachedSize; i++) {
 		var appt = this._cachedAppts.get(i);
+		if (appt && this._snoozedAppt) {
+			var uid = appt.getUniqueId(true);
+			if (this._snoozedAppt[uid]) {
+				this._apptState[uid] = ZmReminderController._STATE_ACTIVE;
+				toRemove.push(appt);
+				numNotify++;
+				this._activeAppts.add(appt);
+				delete this._snoozedAppt[uid];
+				continue;
+			}
+		}
 
 		if (!appt || appt.ptst == ZmCalBaseItem.PSTATUS_DECLINED) {
 			toRemove.push(appt);
@@ -268,7 +276,7 @@ function() {
 				// just remove themn
 			} else if (state == ZmReminderController._STATE_ACTIVE) {
 				addToActiveList = true;
-			} else {
+			} else if (state != ZmReminderController._STATE_SNOOZED) {
 				// we need to notify on this one
 				numNotify++;
 				addToActiveList = true;
@@ -289,7 +297,7 @@ function() {
 
 	// remove any appts in cachedAppts that are no longer supposed to be in there	
 	// need to do this here so we don't screw up iteration above
-	for (var i = 0; i < toRemove.length; i++) {
+	for (var i in toRemove) {
 		this._cachedAppts.remove(toRemove[i]);
 	}
 
@@ -377,6 +385,31 @@ function(list) {
 	return snoozedIds;
 };
 
+ZmReminderController.prototype.activateSnoozedAppts =
+function(list) {
+	var rd = this.getReminderDialog();
+	if (rd && rd.isPoppedUp()) {
+		rd.popdown();
+	}
+
+	if (this._snoozedAppt == null) {
+		this._snoozedAppt = {};
+	}
+
+	var appt;
+	var uid;
+	for (var i = 0; i < list.size(); i++) {
+		appt = list.get(i);
+		if (appt) {
+			uid = appt.getUniqueId(true);
+			this._snoozedAppt[uid] = true;
+		}
+	}
+
+	this._cancelHousekeepingAction();
+	this._housekeepingAction();
+};
+
 ZmReminderController.prototype.dismissApptRequest = 
 function(list, callback) {
 	var soapDoc = AjxSoapDoc.create("DismissCalendarItemAlarmRequest", "urn:zimbraMail");
@@ -417,7 +450,23 @@ function(list, callback, result) {
 	var appts = dismissResponse ? dismissResponse.appt : null;
 	if (!appts) { return; }
 
-    this._updateApptAlarmData(list, appts);
+	var updateData = {};
+	for (var i in appts) {
+		var appt = appts[i];
+		if (appt && appt.calItemId) {
+			updateData[appt.calItemId] = appt.alarmData ? appt.alarmData : {};
+		}
+	}
+
+	var size = list.size();
+	for (var i = 0; i < size; i++) {
+		var appt = list.get(i);
+		if (appt) {
+			if (updateData[appt.id]) {
+				appt.alarmData = (updateData[appt.id] != {}) ? updateData[appt.id] : null;
+			}
+		}
+	}
 
 	if (callback) {
 		callback.run(list);
@@ -428,28 +477,6 @@ ZmReminderController.prototype._handleErrorDismissAppt =
 function(list, callback, response) {
 };
 
-
-ZmReminderController.prototype._updateApptAlarmData =
-function(apptList, responseAppts) {
-    var updateData = {};
-    for (var i = 0; i < responseAppts.length; i++) {
-        var appt = responseAppts[i];
-        if (appt && appt.calItemId) {
-            updateData[appt.calItemId] = appt.alarmData ? appt.alarmData : {};
-        }
-    }
-
-    var size = apptList.size();
-    for (var i = 0; i < size; i++) {
-        var appt = apptList.get(i);
-        if (appt) {
-            if (updateData[appt.id]) {
-                appt.alarmData = (updateData[appt.id] != {}) ? updateData[appt.id] : null;
-            }
-        }
-    }
-}
-
 /**
  * Gets the reminder dialog.
  * 
@@ -458,70 +485,7 @@ function(apptList, responseAppts) {
 ZmReminderController.prototype.getReminderDialog =
 function() {
 	if (this._reminderDialog == null) {
-		this._reminderDialog = new ZmReminderDialog(appCtxt.getShell(), this, this._calController, this._apptType);
+		this._reminderDialog = new ZmReminderDialog(appCtxt.getShell(), this, this._calController);
 	}
 	return this._reminderDialog;
-};
-
-
-ZmReminderController.prototype._snoozeApptAction =
-function(apptList, snoozeMinutes, beforeAppt) {
-    var chosenSnoozeMilliseconds = snoozeMinutes*60*1000;
-    var added = false;
-
-    var soapDoc = AjxSoapDoc.create("SnoozeCalendarItemAlarmRequest", "urn:zimbraMail");
-    if (beforeAppt) {
-        // Using a before time, relative to the start of each appointment
-        if (!this._beforeProcessor) {
-            this._beforeProcessor = new ZmSnoozeBeforeProcessor(this._apptType);
-        }
-        added = this._beforeProcessor.execute(apptList, chosenSnoozeMilliseconds, soapDoc);
-    } else {
-        // using a fixed untilTime for all appts
-        added = apptList.size() > 0;
-        var untilTime = (new Date()).getTime() + chosenSnoozeMilliseconds;
-        for (var i = 0; i < apptList.size(); i++) {
-            var appt = apptList.get(i);
-            var actionNode = soapDoc.set(this._apptType);
-            actionNode.setAttribute("id", appt.id);
-            actionNode.setAttribute("until", untilTime);
-        }
-    }
-
-
-    if (added) {
-        var respCallback = this._handleResponseSnoozeAction.bind(this, apptList, snoozeMinutes);
-        var errorCallback = this._handleErrorResponseSnoozeAction.bind(this);
-        var acct = appCtxt.multiAccounts && appCtxt.accountList.mainAccount;
-        appCtxt.getAppController().sendRequest({
-            soapDoc:       soapDoc,
-            asyncMode:     true,
-            accountName:   acct,
-            callback:      respCallback,
-            errorCallback: errorCallback
-        });
-    }
-};
-
-
-ZmReminderController.prototype._handleResponseSnoozeAction =
-function(apptList, snoozeMinutes, result) {
-    if (result.isException()) { return; }
-
-	var response = result.getResponse();
-	var snoozeResponse = response.SnoozeCalendarItemAlarmResponse;
-	var appts = snoozeResponse ? snoozeResponse[this._apptType] : null;
-	if (!appts) { return; }
-
-    this._updateApptAlarmData(apptList, appts);
-
-    if (snoozeMinutes == 1) {
-	    // cancel outstanding timed action and update now...
-	    this._cancelHousekeepingAction();
-	    this._housekeepingAction();
-    }
-};
-ZmReminderController.prototype._handleErrorResponseSnoozeAction =
-function(result) {
-    //appCtxt.getAppController().popupErrorDialog(ZmMsg.reminderSnoozeError, result.msg, null, true);
 };

@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2008, 2009, 2010, 2011 Zimbra, Inc.
+ * Copyright (C) 2008, 2009, 2010, 2011 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -65,26 +65,62 @@ ZmId = function() {};
 //
 
 // widget types (used to prefix IDs)
-// TODO: move most of these to DwtId
+/**
+ * Defines the "generic element" widget type prefix.
+ */
 ZmId.WIDGET					= "z";			// generic element
+/**
+ * Defines the "view within content area" widget type prefix.
+ */
 ZmId.WIDGET_VIEW			= "zv";			// view within content area
+/**
+ * Defines the "toolbar" widget type prefix.
+ */
 ZmId.WIDGET_TOOLBAR			= "ztb";		// toolbar
+/**
+ * Defines the "button" widget type prefix.
+ */
 ZmId.WIDGET_BUTTON			= "zb";			// button
+/**
+ * Defines the "text input or textarea" widget type prefix.
+ */
 ZmId.WIDGET_INPUT			= "zi";			// text input or textarea
+/**
+ * Defines the "menu" widget type prefix.
+ */
 ZmId.WIDGET_MENU			= "zm";			// menu
+/**
+ * Defines the "menu item" widget type prefix.
+ */
 ZmId.WIDGET_MENU_ITEM		= "zmi";		// menu item
+/**
+ * Defines the "dropdown select" widget type prefix.
+ */
 ZmId.WIDGET_SELECT			= "zs";			// dropdown select
+/**
+ * Defines the "collection of overview" widget type prefix.
+ */
 ZmId.WIDGET_OVERVIEW_CNTR	= "zovc";		// collection of overviews
+/**
+ * Defines the "collection of tree views" widget type prefix.
+ */
 ZmId.WIDGET_OVERVIEW		= "zov";		// collection of tree views
+/**
+ * Defines the "tree view" widget type prefix.
+ */
 ZmId.WIDGET_TREE			= "zt";			// tree view
+/**
+ * Defines the "root tree item" widget type prefix.
+ */
 ZmId.WIDGET_TREE_ITEM_HDR	= "ztih";		// root tree item
+/**
+ * Defines the "tree item (node)" widget type prefix.
+ */
 ZmId.WIDGET_TREE_ITEM		= "zti";		// tree item (node)
+/**
+ * Defines the "tab button" widget type prefix.
+ */
 ZmId.WIDGET_TAB				= "ztab";		// tab button
-ZmId.WIDGET_AUTOCOMPLETE	= "zac";		// autocomplete list
-ZmId.WIDGET_CHECKBOX		= "zcb";		// checkbox
-ZmId.WIDGET_COMBOBOX		= "zcombo";		// combo box
-ZmId.WIDGET_CHOOSER			= "zchooser";	// folder chooser
-ZmId.WIDGET_CALENDAR		= "zcal";		// popup calendar
 
 //
 // Preset IDs
@@ -103,7 +139,6 @@ ZmId.SKIN_APP_MAIN					= "skin_container_app_main";
 ZmId.SKIN_APP_MAIN_ROW_FULL			= "skin_tr_main_full";
 ZmId.SKIN_APP_MAIN_ROW				= "skin_tr_main";
 ZmId.SKIN_APP_TOP_TOOLBAR			= "skin_container_app_top_toolbar";
-ZmId.SKIN_APP_NEW_BUTTON			= "skin_container_app_new_button"; 
 ZmId.SKIN_LINKS						= "skin_container_links";
 ZmId.SKIN_LOGO						= "skin_container_logo";
 ZmId.SKIN_QUOTA_INFO				= "skin_container_quota";
@@ -112,8 +147,7 @@ ZmId.SKIN_SEARCH_BUILDER			= "skin_container_search_builder";
 ZmId.SKIN_SEARCH_BUILDER_TOOLBAR	= "skin_container_search_builder_toolbar";
 ZmId.SKIN_SEARCH_BUILDER_TR			= "skin_tr_search_builder";
 ZmId.SKIN_SEARCH					= "skin_container_search";
-ZmId.SKIN_SEARCH_RESULTS_TOOLBAR	= "skin_container_search_results_toolbar";
-ZmId.SKIN_REFRESH					= "skin_container_refresh";
+ZmId.SKIN_PEOPLE_SEARCH				= "skin_container_people_search";
 ZmId.SKIN_SHELL						= "skin_outer";
 ZmId.SKIN_SPACING_SEARCH			= "skin_spacing_search";
 ZmId.SKIN_SPLASH_SCREEN				= "skin_container_splash_screen";
@@ -125,7 +159,6 @@ ZmId.SKIN_USER_INFO					= "skin_container_username";
 ZmId.SKIN_TASKBAR					= "skin_container_taskbar";
 ZmId.SKIN_FOOTER					= "skin_footer";
 ZmId.SKIN_AD						= "skin_adsrvc";
-ZmId.SKIN_UNITTEST					= "skin_unittest";
 
 //
 // Literal IDs
@@ -139,8 +172,7 @@ ZmId.LOADING_VIEW			= "z_loading";			// "Loading..." view
 ZmId.MAIN_SASH				= "z_sash";				// sash between overview and content
 ZmId.BANNER					= "z_banner";			// logo (at upper left by default)
 ZmId.SEARCH_TOOLBAR			= "ztb_search";			// search toolbar
-ZmId.SEARCHRESULTS_TOOLBAR	= "ztb_searchresults";	// search results toolbar
-ZmId.SEARCHRESULTS_PANEL	= "z_filterPanel";		// search results filter panel
+ZmId.PEOPLE_SEARCH_TOOLBAR	= "ztb_people_search";	// people search toolbar
 ZmId.USER_NAME				= "z_userName";			// account name
 ZmId.USER_QUOTA				= "z_userQuota";		// quota
 ZmId.PRESENCE				= "z_presence";			// presence
@@ -171,7 +203,7 @@ ZmId.APP_CHOOSER			= "ztb_appChooser";		// app chooser toolbar
  */
 ZmId.getToolbarId =
 function(context, tbType) {
-	return DwtId.makeId(ZmId.WIDGET_TOOLBAR, context, tbType);
+	return DwtId._makeId(ZmId.WIDGET_TOOLBAR, context, tbType);
 };
 
 // special toolbars
@@ -179,8 +211,6 @@ ZmId.TB_INVITE	= "Inv";
 ZmId.TB_COUNTER	= "Cou";
 ZmId.TB_NAV		= "Nav";
 ZmId.TB_SHARE	= "Shr";
-ZmId.TB_REPLY	= "Rep";
-ZmId.TB_SUBSCRIBE = "Sub";
 
 /**
  * Generates the ID for a button. Intended for use with the top toolbar, nav toolbar,
@@ -197,7 +227,7 @@ ZmId.TB_SUBSCRIBE = "Sub";
  */
 ZmId.getButtonId =
 function(context, op, tbType) {
-	return DwtId.makeId(ZmId.WIDGET_BUTTON, context, tbType, op);
+	return DwtId._makeId(ZmId.WIDGET_BUTTON, context, tbType, op);
 };
 
 /**
@@ -213,7 +243,7 @@ function(context, op, tbType) {
  */
 ZmId.getMenuId =
 function(context, menuType) {
-	return DwtId.makeId(ZmId.WIDGET_MENU, context, menuType);
+	return DwtId._makeId(ZmId.WIDGET_MENU, context, menuType);
 };
 
 // special menus
@@ -234,7 +264,7 @@ ZmId.MENU_DRAFTS		= "Dra";
  */
 ZmId.getMenuItemId =
 function(context, op, menuType) {
-	return DwtId.makeId(ZmId.WIDGET_MENU_ITEM, context, menuType, op);
+	return DwtId._makeId(ZmId.WIDGET_MENU_ITEM, context, menuType, op);
 };
 
 /**
@@ -245,7 +275,7 @@ function(context, op, menuType) {
  */
 ZmId.getOverviewContainerId =
 function(overviewContainerId) {
-	return DwtId.makeId(ZmId.WIDGET_OVERVIEW_CNTR, overviewContainerId);
+	return DwtId._makeId(ZmId.WIDGET_OVERVIEW_CNTR, overviewContainerId);
 };
 
 /**
@@ -260,7 +290,7 @@ function(overviewContainerId) {
  */
 ZmId.getOverviewId =
 function(overviewId) {
-	return DwtId.makeId(ZmId.WIDGET_OVERVIEW, overviewId);
+	return DwtId._makeId(ZmId.WIDGET_OVERVIEW, overviewId);
 };
 
 /**
@@ -276,7 +306,7 @@ function(overviewId) {
  */
 ZmId.getTreeId =
 function(overviewId, orgType) {
-	return DwtId.makeId(ZmId.WIDGET_TREE, overviewId, orgType);
+	return DwtId._makeId(ZmId.WIDGET_TREE, overviewId, orgType);
 };
 
 /**
@@ -302,9 +332,9 @@ ZmId.getTreeItemId =
 function(overviewId, organizerId, type) {
 	if (!organizerId && !type) { return; }
 	if (type) {
-		return DwtId.makeId(ZmId.WIDGET_TREE_ITEM_HDR, overviewId, type);
+		return DwtId._makeId(ZmId.WIDGET_TREE_ITEM_HDR, overviewId, type);
 	} else {
-		return DwtId.makeId(ZmId.WIDGET_TREE_ITEM, overviewId, organizerId);
+		return DwtId._makeId(ZmId.WIDGET_TREE_ITEM, overviewId, organizerId);
 	}
 };
 
@@ -319,13 +349,13 @@ function(overviewId, organizerId, type) {
  * </p>
  * 
  * @param {constant}	viewId		the view identifier (see <code>ZmId.VIEW_</code> constants)
- * @param {constant}	component	the component identifier (see <code>ZmId.MV_</code> constants)
+ * @param {constant}	component		the component identifier (see <code>ZmId.MV_</code> constants)
  * @param {constant}	context		the ID of owning view
  * @return	{String}	the id
  */
 ZmId.getViewId =
 function(viewId, component, context) {
-	var id = DwtId.makeId(ZmId.WIDGET_VIEW, context, viewId);
+	var id = DwtId._makeId(ZmId.WIDGET_VIEW, context, viewId);
 	return component ? [id, component].join("") : id;
 };
 
@@ -343,7 +373,7 @@ function(viewId, component, context) {
  */
 ZmId.getComposeViewId =
 function(component) {
-	var id = DwtId.makeId(ZmId.WIDGET, ZmId.COMPOSE_VIEW);
+	var id = DwtId._makeId(ZmId.WIDGET, ZmId.COMPOSE_VIEW);
 	return component ? [id, component].join("") : id;
 };
 
@@ -368,7 +398,7 @@ function(component) {
  */
 ZmId.getTabId =
 function(context, tabName) {
-	return DwtId.makeId(ZmId.WIDGET_TAB, context, tabName);
+	return DwtId._makeId(ZmId.WIDGET_TAB, context, tabName);
 };
 
 /**
@@ -414,11 +444,13 @@ ZmId.getPrefPageId = function(tabKey) {
  * Otherwise, pass one of the menu item constants below as the operation:
  * 
  * 		ZmId.getMenuItemId(ZmId.SEARCH, ZmId.ITEM_CONTACT)
+ * 		ZmId.getMenuItemId(ZmId.SEARCH, ZmId.SEARCH_ANY)
  * 		ZmId.getMenuItemId(ZmId.SEARCH, ZmId.SEARCH_SHARED)
  */
  
 ZmId.SEARCH_INPUT			= "zi_search";			// text input in search toolbar
 ZmId.SEARCH_INPUTFIELD      = ZmId.SEARCH_INPUT + "_inputfield";
+ZmId.PEOPLE_SEARCH_INPUTFIELD = "zi_peoplesearch_inputfield";
 
 // context
 ZmId.SEARCH					= "Search";				// element is within search panel
@@ -434,28 +466,26 @@ ZmId.SEARCH_ADVANCED		= "ADV";				// open/close the search builder
 ZmId.SEARCH_LOCAL			= "LOCAL";				// added by the "local" zimlet
 
 // menu item (also see ZmId.ITEM_*)
-ZmId.SEARCH_ALL_ACCOUNTS	= "ALL_ACCOUNTS";		// all accounts
-ZmId.SEARCH_GAL				= "GAL";				// GAL contacts
-ZmId.SEARCH_MAIL			= "MAIL";				// mail items
-ZmId.SEARCH_SHARED			= "SHARED";				// include shared items
-
-/*
- * ----------------------
- * Search Results Toolbar
- * ----------------------
- * 
- * This toolbar appears at the top of the search results tab.
+/**
+ * Defines the "all accounts" search type.
  */
-
-ZmId.SEARCHRESULTS_INPUT		= "zi_searchresults";			// text input in search toolbar
-ZmId.SEARCHRESULTS_INPUTFIELD	= ZmId.SEARCHRESULTS_INPUT + "_inputfield";
-
-// context
-ZmId.SEARCHRESULTS				= "SearchResults";				// element is within search panel
-
-// button
-ZmId.SEARCHRESULTS_SEARCH		= "SEARCH";				// perform a search
-ZmId.SEARCHRESULTS_SAVE			= "SAVE";				// save a search
+ZmId.SEARCH_ALL_ACCOUNTS	= "ALL_ACCOUNTS";		// all accounts
+/**
+ * Defines the "any" search type.
+ */
+ZmId.SEARCH_ANY				= "ANY";				// all item types
+/**
+ * Defines the "GAL" search type.
+ */
+ZmId.SEARCH_GAL				= "GAL";				// GAL contacts
+/**
+ * Defines the "mail" search type.
+ */
+ZmId.SEARCH_MAIL			= "MAIL";				// mail items
+/**
+ * Defines the "shared" search type.
+ */
+ZmId.SEARCH_SHARED			= "SHARED";				// include shared items
 
 /*
  * -----------
@@ -518,6 +548,7 @@ ZmId.TREEITEM_TRASH_MAIL			= "zti|Mail|3";
 ZmId.TREEITEM_TRASH_CONTACTS		= "zti|Contacts|3";
 ZmId.TREEITEM_CONTACTS				= "zti|Contacts|7";
 ZmId.TREEITEM_CALENDAR				= "zti|Calendar|10";
+ZmId.TREEITEM_NOTEBOOK				= "zti|Notebook|12";
 ZmId.TREEITEM_TASKS					= "zti|Tasks|15";
 ZmId.TREEITEM_BRIEFCASE				= "zti|Briefcase|16";
 
@@ -596,6 +627,7 @@ ZmId.TREEITEM_BRIEFCASE				= "zti|Briefcase|16";
 // components that are part of the template
 ZmId.MV_HDR_TABLE			= "_hdrTable";			// TABLE that holds header elements
 ZmId.MV_HDR_TABLE_TOP_ROW	= "_hdrTableTopRow";	// first TR in header table
+ZmId.MV_CLOSE_BTN_CELL		= "_closeBtnCell";		// TD that holds Close button
 ZmId.MV_REPORT_BTN_CELL		= "_reportBtnCell";		// TD that holds Report button (sync failure msg)
 ZmId.MV_EXPAND_ROW			= "_expandRow";			// TR that holds expandable headers
 ZmId.MV_EXPAND_HDR			= "_expandHeader";		// TD that holds expand button
@@ -610,11 +642,6 @@ ZmId.MV_INFO_BAR			= "_infoBar";			// DIV that is placeholder for optional links
 ZmId.MV_TAG_ROW				= "_tagRow";			// TR for tags
 ZmId.MV_TAG_CELL			= "_tagCell";			// TD for tags
 ZmId.MV_MSG_BODY			= "_body";				// DIV that contains content iframe
-ZmId.MV_MSG_HEADER			= "_header";			// DIV that contains header (conv 2.0 msg capsule view)
-ZmId.MV_MSG_FOOTER			= "_footer";			// DIV that contains footer (conv 2.0 msg capsule view)
-
-ZmId.MV_PRIORITY			= "_msgPriority";
-
 
 /*
  * ------------
@@ -667,13 +694,8 @@ ZmId.CMP_SUBJECT_INPUT		= "_subject_control";
 ZmId.CMP_IDENTITY_ROW		= "_identity_row";
 ZmId.CMP_IDENTITY_SELECT	= "_identity_control";
 ZmId.CMP_PRIORITY			= "_priority";
-ZmId.CMP_REPLY_ATT_ROW		= "_reply_attachments_link";
 ZmId.CMP_ATT_ROW			= "_attachments_row";
 ZmId.CMP_ATT_DIV			= "_attachments_div";
-ZmId.CMP_ATT_BTN			= "_attachments_btn";
-ZmId.CMP_ATT_INP			= "_file_input";
-ZmId.CMP_ATT_INLINE_INP		= "_file_input_inline";
-ZmId.CMP_ATT_INCL_ORIG_LINK	= "_show_orig";
 ZmId.CMP_DND_TOOLTIP        = "_zdnd_tooltip";
 
 ZmId.CMP_TO_CELL			= "_to_cell";
@@ -692,22 +714,55 @@ ZmId.CMP_BCC				= "BCC";
  */
 
 // apps
+/**
+ * Defines the "briefcase" application.
+ */
 ZmId.APP_BRIEFCASE		= "Briefcase";
+/**
+ * Defines the "calendar" application.
+ */
 ZmId.APP_CALENDAR		= "Calendar";
+/**
+ * Defines the "contacts" application.
+ */
 ZmId.APP_CONTACTS		= "Contacts";
+/**
+ * Defines the "IM" application.
+ */
 ZmId.APP_IM				= "IM";
+/**
+ * Defines the "mail" application.
+ */
 ZmId.APP_MAIL			= "Mail";
+/**
+ * Defines the "mixed" application.
+ */
+ZmId.APP_MIXED			= "Mixed";
+/**
+ * Defines the "notebook" application.
+ */
+ZmId.APP_NOTEBOOK		= "Notebook";
+/**
+ * Defines the "portal" application.
+ */
 ZmId.APP_PORTAL			= "Portal";
+/**
+ * Defines the "preferences" application.
+ */
 ZmId.APP_PREFERENCES	= "Options";
-ZmId.APP_SEARCH			= "Search";
+/**
+ * Defines the "tasks" application.
+ */
 ZmId.APP_TASKS			= "Tasks";
+/**
+ * Defines the "voice" application.
+ */
 ZmId.APP_VOICE			= "Voice";
 
 // views - often used as context for ID
 ZmId.VIEW_ACCOUNT				= "ACCT";
 ZmId.VIEW_APPOINTMENT 			= "APPT";
 ZmId.VIEW_SIMPLE_ADD_APPOINTMENT= "SAPPT";
-ZmId.VIEW_APPOINTMENT_READONLY  = "APPTRO";
 ZmId.VIEW_APPT_SCHEDULE			= "APPTS";
 ZmId.VIEW_BRIEFCASE			    = "BC";
 ZmId.VIEW_BRIEFCASE_DETAIL		= "BCD";
@@ -721,35 +776,57 @@ ZmId.VIEW_CAL_APPT				= "CLA";
 ZmId.VIEW_CAL_DAY				= "CLD";
 ZmId.VIEW_CAL_LIST				= "CLL";
 ZmId.VIEW_CAL_MONTH				= "CLM";
+ZmId.VIEW_CAL_SCHEDULE			= "CLS";
 ZmId.VIEW_CAL_WEEK				= "CLW";
 ZmId.VIEW_CAL_WORK_WEEK			= "CLWW";
 ZmId.VIEW_CAL_FB			    = "CLFB";
 ZmId.VIEW_CAL_TRASH             = "CLT";
-ZmId.VIEW_SUGGEST_TIME_PANE     = "CSTP";
-ZmId.VIEW_SUGGEST_LOCATION_PANE = "CSLP";
+ZmId.VIEW_SCHEDULE_PANE         = "CSP";
 ZmId.VIEW_CALL_LIST				= "CLIST";
+/**
+ * Defines the "compose" view.
+ * @type String
+ */
 ZmId.VIEW_COMPOSE				= "COMPOSE";
-ZmId.VIEW_CONTACT_SIMPLE 		= "CNS";			// dual panes, list and contact
-ZmId.VIEW_CONTACT_SRC			= "CNSRC";			// contact picker
-ZmId.VIEW_CONTACT_TGT			= "CNTGT";			// contact picker
+ZmId.VIEW_CONTACT_SIMPLE 		= "CNS";
+ZmId.VIEW_CONTACT_SRC			= "CNSRC";
+ZmId.VIEW_CONTACT_TGT			= "CNTGT";
+/**
+ * Defines the "contact" view.
+ * @type String
+ */
 ZmId.VIEW_CONTACT				= "CN";
-ZmId.VIEW_CONV 					= "CV";				// dual-pane conv view
-ZmId.VIEW_CONV2 				= "CV2";			// conv shown in reading pane
-ZmId.VIEW_CONVLIST 				= "CLV";			// hybrid conv list view
+/**
+ * Defines the "conversation list" mail view.
+ * @type String
+ */
+ZmId.VIEW_CONVLIST 				= "CLV";
+/**
+ * Defines the "conversation" view.
+ * @type String
+ */
+ZmId.VIEW_CONV 					= "CV";
 ZmId.VIEW_FILTER_RULES			= "FRV";
 ZmId.VIEW_GROUP					= "GRP";
 ZmId.VIEW_IM_CHAT_MEMBER_LIST	= "IMCML";
 ZmId.VIEW_IM_CHAT_MULTI_WINDOW	= "IMCMW";
 ZmId.VIEW_IM_CHAT_TAB			= "IMCT";
-ZmId.VIEW_LOADING				= "LOADING";		// generic placeholder
+ZmId.VIEW_LOADING				= "LOADING";
 ZmId.VIEW_MAIL_CONFIRM			= "MAILCONFIRM";
+ZmId.VIEW_MIXED					= "MX";
 ZmId.VIEW_MOBILE_DEVICES		= "MD";
+/**
+ * Defines the "message" view.
+ * @type String
+ */
 ZmId.VIEW_MSG 					= "MSG";
-ZmId.VIEW_MSG_CAPSULE			= "MSGC";
+ZmId.VIEW_NOTEBOOK_FILE			= "NBF";
+ZmId.VIEW_NOTEBOOK_PAGE_EDIT	= "NBPE";
+ZmId.VIEW_NOTEBOOK_PAGE			= "NBP";
+ZmId.VIEW_NOTEBOOK_PAGE_VERSION = "NBPV";
+ZmId.VIEW_NOTEBOOK_SITE			= "NBS";
 ZmId.VIEW_PORTAL                = "PORTAL";
 ZmId.VIEW_PREF					= "PREF";
-//ZmId.VIEW_QUICK_COMMAND			= "QCV";
-ZmId.VIEW_SEARCH_RESULTS		= "SR";
 ZmId.VIEW_SHARE_PENDING			= "SVP";
 ZmId.VIEW_SHARE_MOUNTED			= "SVM";
 ZmId.VIEW_SHARE_GRANTS			= "SVG";
@@ -764,6 +841,10 @@ ZmId.VIEW_TASK_ALL				= "TKVA";
 ZmId.VIEW_TASK_TODO				= "TKVT";
 ZmId.VIEW_TASKEDIT				= "TKE";
 ZmId.VIEW_TASKLIST				= "TKL";
+/**
+ * Defines the "traditional" mail view.
+ * @type String
+ */
 ZmId.VIEW_TRAD 					= "TV";
 ZmId.VIEW_VOICEMAIL				= "VM";
 ZmId.VIEW_ATTACHMENTS           = "AV";
@@ -787,20 +868,57 @@ ZmId.ITEM_ROSTER		= "ROSTER_ITEM";
 ZmId.ITEM_TASK			= "TASK";
 ZmId.ITEM_VOICEMAIL		= "VOICEMAIL";
 
-// organizer types - generally appear in overview
+// organizer types
+/**
+ * Defines the "address book" organizer.
+ */
 ZmId.ORG_ADDRBOOK			= "ADDRBOOK";
+/**
+ * Defines the "briefcase" organizer.
+ */
 ZmId.ORG_BRIEFCASE			= "BRIEFCASE";
+/**
+ * Defines the "calendar" organizer.
+ */
 ZmId.ORG_CALENDAR			= "CALENDAR";
+/**
+ * Defines the "folder" organizer.
+ */
 ZmId.ORG_FOLDER				= "FOLDER";
-ZmId.ORG_PREF_PAGE			= "PREF_PAGE";
-ZmId.ORG_ROSTER_TREE_ITEM	= "ROSTER_TREE_ITEM";	// IM
-ZmId.ORG_ROSTER_TREE_GROUP	= "ROSTER_TREE_GROUP";	// IM
-ZmId.ORG_SEARCH				= "SEARCH";				// saved search
+/**
+ * Defines the "notebook" organizer.
+ */
+ZmId.ORG_NOTEBOOK			= "NOTEBOOK";
+/**
+ * Defines the "roster tree item" organizer.
+ */
+ZmId.ORG_ROSTER_TREE_ITEM	= "ROSTER_TREE_ITEM";
+/**
+ * Defines the "roster tree group" organizer.
+ */
+ZmId.ORG_ROSTER_TREE_GROUP	= "ROSTER_TREE_GROUP";
+/**
+ * Defines the "search" organizer.
+ */
+ZmId.ORG_SEARCH				= "SEARCH";
+/**
+ * Defines the "tag" organizer.
+ */
 ZmId.ORG_TAG				= "TAG";
+/**
+ * Defines the "tasks" organizer.
+ */
 ZmId.ORG_TASKS				= "TASKS";
+/**
+ * Defines the "zimlet" organizer.
+ */
 ZmId.ORG_ZIMLET				= "ZIMLET";
+/**
+ * Defines the "preferences page" organizer.
+ */
+ZmId.ORG_PREF_PAGE			= "PREF_PAGE";
 
-// fields of an item - generally equates to a column in a list view
+// fields of an item
 ZmId.FLD_ACCOUNT		= "ac";
 ZmId.FLD_ATTACHMENT		= "at";
 ZmId.FLD_CAPACITY		= "cp";
@@ -809,7 +927,7 @@ ZmId.FLD_DATE			= "dt";
 ZmId.FLD_DEPARTMENT		= "de";
 ZmId.FLD_EMAIL			= "em";
 ZmId.FLD_EXPAND			= "ex";	// CLV
-ZmId.FLD_FILE_TYPE		= "ft";
+ZmId.FLD_FILE_TYPE		= "ft";	// Notebook
 ZmId.FLD_FLAG			= "fg";
 ZmId.FLD_FOLDER			= "fo";
 ZmId.FLD_FRAGMENT		= "fm";
@@ -820,8 +938,6 @@ ZmId.FLD_INDEX			= "ix";
 ZmId.FLD_ITEM_ROW		= "rw";
 ZmId.FLD_ITEM_ROW_3PANE	= "r3";
 ZmId.FLD_LOCATION		= "lo";
-ZmId.FLD_LOCK           = "loid";
-ZmId.FLD_MSG_PRIORITY   = "mp"; //message prioritization
 ZmId.FLD_NAME			= "na";
 ZmId.FLD_NOTES			= "no";
 ZmId.FLD_PARTICIPANT	= "pa";
@@ -833,28 +949,23 @@ ZmId.FLD_SELECTION_CELL	= "sec";
 ZmId.FLD_SIZE			= "sz";
 ZmId.FLD_SORTED_BY		= "sb";
 ZmId.FLD_STATUS			= "st";
-ZmId.FLD_READ			= "rd";
-ZmId.FLD_MUTE			= "mt";
 ZmId.FLD_SUBJECT		= "su";
 ZmId.FLD_TAG			= "tg";
 ZmId.FLD_TAG_CELL		= "tc";
 ZmId.FLD_TYPE			= "ty";
-ZmId.FLD_TO             = "to";
 ZmId.FLD_VERSION        = "ver";
 ZmId.FLD_WORK_PHONE		= "wp"; // Contacts
+ZmId.FLD_LOCK           = "loid";
 
-// operations - things the user can do, usually via a button or menu item
+// operations
 ZmId.OP_ACCEPT_PROPOSAL         = "ACCEPT_PROPOSAL";
-ZmId.OP_ADD       		     	= "ADD";
 ZmId.OP_ADD_FILTER_RULE			= "ADD_FILTER_RULE";
-//ZmId.OP_ADD_QUICK_COMMAND		= "ADD_QUICK_COMMAND";
 ZmId.OP_ADD_SIGNATURE			= "ADD_SIGNATURE";
-ZmId.OP_ADD_EXTERNAL_CALENDAR	= "ADD_EXTERNAL_CALENDAR";
 ZmId.OP_ATTACHMENT				= "ATTACHMENT";
-ZmId.OP_ACTIONS_MENU			= "ACTIONS_MENU";
 ZmId.OP_BROWSE					= "BROWSE";
 ZmId.OP_BROWSE_FOLDER			= "BROWSE_FOLDER";
 ZmId.OP_CALL					= "CALL";
+ZmId.OP_CALL_MANAGER			= "CALL_MANAGER";
 ZmId.OP_CAL_REFRESH				= "CAL_REFRESH";
 ZmId.OP_CAL_REPLY				= "CAL_REPLY";
 ZmId.OP_CAL_REPLY_ALL			= "CAL_REPLY_ALL";
@@ -864,42 +975,43 @@ ZmId.OP_CANCEL					= "CANCEL";
 ZmId.OP_CHECKIN                 = "CHECKIN";
 ZmId.OP_CHECKOUT                = "CHECKOUT";
 ZmId.OP_CHECK_ALL				= "CHECK_ALL";
+ZmId.OP_CHECK_CALLS				= "CHECK_CALLS";
 ZmId.OP_CHECK_MAIL				= "CHECK_MAIL";
-ZmId.OP_CALL_BACK				= "CALL_BACK";
+ZmId.OP_CHECK_VOICEMAIL			= "CHECK_VOICEMAIL";
 ZmId.OP_CLEAR_ALL				= "CLEAR_ALL";
 ZmId.OP_CLOSE					= "CLOSE";
 ZmId.OP_COMPOSE_FORMAT			= "COMPOSE_FORMAT";
 ZmId.OP_COMPOSE_OPTIONS			= "COMPOSE_OPTIONS";
 ZmId.OP_CONTACT					= "CONTACT";
-ZmId.OP_CONTACTGROUP_MENU       = "CONTACTGROUP_MENU";
-ZmId.OP_COPY		     		= "COPY";
 ZmId.OP_CREATE_APPT     		= "CREATE_APPT";
 ZmId.OP_CREATE_TASK     		= "CREATE_TASK";
 ZmId.OP_CREATE_SLIDE_SHOW		= "CREATE_SLIDE_SHOW";
 ZmId.OP_DAY_VIEW				= "DAY_VIEW";
 ZmId.OP_DECLINE_PROPOSAL        = "DECLINE_PROPOSAL";
 ZmId.OP_DELETE					= "DELETE";
-ZmId.OP_DELETE_WITHOUT_SHORTCUT		= "DELETE_WITHOUT_SHORTCUT";
 ZmId.OP_DELETE_APPT_INSTANCE	= "DELETE_INSTANCE";
 ZmId.OP_DELETE_APPT_SERIES  	= "DELETE_SERIES";
 ZmId.OP_DELETE_CONV				= "DELETE_CONV";
 ZmId.OP_DELETE_MENU				= "DELETE_MENU";
 ZmId.OP_DELETE_MSG				= "DELETE_MSG";
-ZmId.OP_DELETE_VERSION          = "DELETE_VERSION";
+ZmId.OP_DELETE_VERSION          = "DELETE_VERSION"
 ZmId.OP_DETACH					= "DETACH";
 ZmId.OP_DETACH_WIN				= "DETACH_WIN";
 ZmId.OP_DETACH_COMPOSE			= "DETACH_COMPOSE";
 ZmId.OP_DISCARD_CHECKOUT        = "DISCARD_CHECKOUT";
 ZmId.OP_DOWNLOAD_VOICEMAIL		= "DOWNLOAD_VOICEMAIL";
-ZmId.OP_NEW_CALL				= "NEW_CALL";
 ZmId.OP_DUPLICATE_APPT  		= "DUPLICATE_APPT";
 ZmId.OP_DRAFT					= "DRAFT";
 ZmId.OP_EDIT					= "EDIT";
-ZmId.OP_EDIT_AS_NEW				= "EDIT_AS_NEW";
 ZmId.OP_EDIT_CONTACT			= "EDIT_CONTACT";
 ZmId.OP_EDIT_FILE				= "EDIT_FILE";
 ZmId.OP_EDIT_FILTER_RULE		= "EDIT_FILTER_RULE";
-//ZmId.OP_EDIT_QUICK_COMMAND		= "EDIT_QUICK_COMMAND";
+ZmId.OP_EDIT_NOTEBOOK_CHROME	= "EDIT_NOTEBOOK_CHROME";
+ZmId.OP_EDIT_NOTEBOOK_CHROME	= "EDIT_NOTEBOOK_CHROME";
+ZmId.OP_EDIT_NOTEBOOK_FOOTER	= "EDIT_NOTEBOOK_FOOTER";
+ZmId.OP_EDIT_NOTEBOOK_HEADER	= "EDIT_NOTEBOOK_HEADER";
+ZmId.OP_EDIT_NOTEBOOK_INDEX		= "EDIT_NOTEBOOK_INDEX";
+ZmId.OP_EDIT_NOTEBOOK_SIDE_BAR	= "EDIT_NOTEBOOK_SIDE_BAR";
 ZmId.OP_EDIT_PROPS				= "EDIT_PROPS";
 ZmId.OP_EDIT_REPLY_ACCEPT		= "EDIT_REPLY_ACCEPT";
 ZmId.OP_EDIT_REPLY_CANCEL		= "EDIT_REPLY_CANCEL";
@@ -925,13 +1037,6 @@ ZmId.OP_FORWARD_APPT			= "FORWARD_APPT";
 ZmId.OP_FORWARD_APPT_INSTANCE	= "FORWARD_APPT_INSTANCE";
 ZmId.OP_FORWARD_APPT_SERIES		= "FORWARD_APPT_SERIES";
 ZmId.OP_FREE_BUSY_LINK			= "FREE_BUSY_LINK";
-ZmId.OP_GROUPBY                 = "GROUPBY";
-ZmId.OP_GROUPBY_DATE            = "GROUPBY_DATE";
-ZmId.OP_GROUPBY_NONE            = "GROUPBY_NONE";
-ZmId.OP_GROUPBY_FROM            = "GROUPBY_FROM";
-ZmId.OP_GROUPBY_PRIORITY        = "GROUPBY_PRIORITY";
-ZmId.OP_GROUPBY_SIZE            = "GROUPBY_SIZE";
-ZmId.OP_GROUPBY_TAG             = "GROUPBY_TAG";
 ZmId.OP_GO_TO_URL				= "GO_TO_URL";
 ZmId.OP_IM						= "IM";
 ZmId.OP_IMPORT_FILE				= "IMPORT_FILE";
@@ -976,7 +1081,6 @@ ZmId.OP_INVITE_REPLY_ACCEPT		= "INVITE_REPLY_ACCEPT";
 ZmId.OP_INVITE_REPLY_DECLINE	= "INVITE_REPLY_DECLINE";
 ZmId.OP_INVITE_REPLY_MENU		= "INVITE_REPLY_MENU";
 ZmId.OP_INVITE_REPLY_TENTATIVE	= "INVITE_REPLY_TENTATIVE";
-ZmId.OP_KEEP_READING			= "KEEP_READING";
 ZmId.OP_MARK_ALL_READ			= "MARK_ALL_READ";
 ZmId.OP_MARK_HEARD				= "MARK_HEARD";
 ZmId.OP_MARK_READ				= "MARK_READ";
@@ -993,22 +1097,20 @@ ZmId.OP_MOUNT_ADDRBOOK			= "MOUNT_ADDRBOOK";
 ZmId.OP_MOUNT_BRIEFCASE			= "MOUNT_BRIEFCASE";
 ZmId.OP_MOUNT_CALENDAR			= "MOUNT_CALENDAR";
 ZmId.OP_MOUNT_FOLDER			= "MOUNT_FOLDER";
+ZmId.OP_MOUNT_NOTEBOOK			= "MOUNT_NOTEBOOK";
 ZmId.OP_MOUNT_TASK_FOLDER		= "MOUNT_TASK_FOLDER";
 ZmId.OP_MOVE					= "MOVE";
-ZmId.OP_MOVE_MENU				= "MOVE_MENU";
 ZmId.OP_MOVE_DOWN_FILTER_RULE	= "MOVE_DOWN_FILTER_RULE";
 ZmId.OP_MOVE_TO_BCC				= "MOVE_TO_BCC";
 ZmId.OP_MOVE_TO_CC				= "MOVE_TO_CC";
 ZmId.OP_MOVE_TO_TO				= "MOVE_TO_TO";
 ZmId.OP_MOVE_UP_FILTER_RULE		= "MOVE_UP_FILTER_RULE";
-ZmId.OP_MUTE_CONV		        = "MUTE_CONV";
 ZmId.OP_NEW_ADDRBOOK			= "NEW_ADDRBOOK";
 ZmId.OP_NEW_ALLDAY_APPT			= "NEW_ALLDAY_APPT";
 ZmId.OP_NEW_APPT				= "NEW_APPT";
 ZmId.OP_NEW_BRIEFCASE			= "NEW_BRIEFCASE";
 ZmId.OP_NEW_CALENDAR			= "NEW_CALENDAR";
 ZmId.OP_NEW_CONTACT				= "NEW_CONTACT";
-ZmId.OP_NEW_DISTRIBUTION_LIST	= "NEW_DISTRIBUTION_LIST";
 ZmId.OP_NEW_DOC                 = "NEW_DOC";
 ZmId.OP_NEW_FILE				= "NEW_FILE";
 ZmId.OP_NEW_FOLDER				= "NEW_FOLDER";
@@ -1017,6 +1119,7 @@ ZmId.OP_NEW_MENU				= "NEW_MENU";
 ZmId.OP_NEW_MESSAGE				= "NEW_MESSAGE";
 ZmId.OP_NEW_MESSAGE_WIN			= "NEW_MESSAGE_WIN";
 ZmId.OP_NEW_BRIEFCASE_WIN		= "NEW_BRIEFCASE_WIN";
+ZmId.OP_NEW_NOTEBOOK			= "NEW_NOTEBOOK";
 ZmId.OP_NEW_PAGE				= "NEW_PAGE";
 ZmId.OP_NEW_PRESENTATION		= "NEW_PRESENTATION";
 ZmId.OP_NEW_ROSTER_GROUP		= "NEW_ROSTER_GROUP";
@@ -1034,18 +1137,11 @@ ZmId.OP_PAGE_FORWARD			= "PAGE_FORWARD";
 ZmId.OP_PAUSE_TOGGLE			= "PAUSE_TOGGLE";
 ZmId.OP_PRINT					= "PRINT";
 ZmId.OP_PRINT_ADDRBOOK			= "PRINT_ADDRBOOK";
-ZmId.OP_PRINT_CALENDAR			= "PRINT_CALENDAR";
 ZmId.OP_PRINT_CONTACT			= "PRINT_CONTACT";
-ZmId.OP_PRIORITY_FILTER         = "PRIORITY_FILTER";
 ZmId.OP_PROPOSE_NEW_TIME        = "PROPOSE_NEW_TIME";
-ZmId.OP_OPTS         			= "OPTIONS";
-//ZmId.OP_QUICK_COMMANDS  	    = "QUICK_COMMANDS";
 ZmId.OP_RECOVER_DELETED_ITEMS	= "RECOVER_DELETED_ITEMS";
-ZmId.OP_REDIRECT				= "REDIRECT";
 ZmId.OP_REFRESH					= "REFRESH";
-ZmId.OP_REINVITE_ATTENDEES      = "REINVITE_ATTENDEES";
 ZmId.OP_REMOVE_FILTER_RULE		= "REMOVE_FILTER_RULE";
-//ZmId.OP_REMOVE_QUICK_COMMAND	= "REMOVE_QUICK_COMMAND";
 ZmId.OP_RENAME_FILE             = "RENAME_FILE";
 ZmId.OP_RENAME_FOLDER			= "RENAME_FOLDER";
 ZmId.OP_RENAME_SEARCH			= "RENAME_SEARCH";
@@ -1078,6 +1174,7 @@ ZmId.OP_RUN_FILTER_RULE			= "RUN_FILTER_RULE";
 ZmId.OP_SAVE					= "SAVE";
 ZmId.OP_SAVE_DRAFT				= "SAVE_DRAFT";
 ZmId.OP_SAVE_FILE				= "SAVE_FILE";
+ZmId.OP_SCHEDULE_VIEW			= "SCHEDULE_VIEW";
 ZmId.OP_SEARCH					= "SEARCH";
 ZmId.OP_SEARCH_MAIL				= "SEARCH_MAIL";
 ZmId.OP_SEARCH_MENU             = "SEARCH_MENU";
@@ -1090,9 +1187,6 @@ ZmId.OP_SEND_MENU				= "SEND_MENU";
 ZmId.OP_SEND_LATER				= "SEND_LATER";
 ZmId.OP_SEND_PAGE				= "SEND_PAGE";
 ZmId.OP_SEND_INVITE				= "SEND_INVITE";
-ZmId.OP_SEND_FB_HTML			= "SEND_FB_HTML";
-ZmId.OP_SEND_FB_ICS			    = "SEND_FB_ICS";
-ZmId.OP_SEND_FB_ICS_EVENT	    = "SEND_FB_ICS_EVENT";
 ZmId.OP_SHARE					= "SHARE";
 ZmId.OP_SHARE_ACCEPT			= "SHARE_ACCEPT";
 ZmId.OP_SHARE_ADDRBOOK			= "SHARE_ADDRBOOK";
@@ -1100,20 +1194,16 @@ ZmId.OP_SHARE_BRIEFCASE			= "SHARE_BRIEFCASE";
 ZmId.OP_SHARE_CALENDAR			= "SHARE_CALENDAR";
 ZmId.OP_SHARE_DECLINE			= "SHARE_DECLINE";
 ZmId.OP_SHARE_FOLDER			= "SHARE_FOLDER";
+ZmId.OP_SHARE_NOTEBOOK			= "SHARE_NOTEBOOK";
 ZmId.OP_SHARE_TASKFOLDER		= "SHARE_TASKFOLDER";
 ZmId.OP_SHOW_ALL_ITEM_TYPES		= "SHOW_ALL_ITEM_TYPES";
 ZmId.OP_SHOW_BCC				= "SHOW_BCC";
-ZmId.OP_SHOW_CONV				= "SHOW_CONV";
+ZmId.OP_SHOW_ONLY_CONTACTS		= "SHOW_ONLY_CONTACTS";
 ZmId.OP_SHOW_ONLY_MAIL			= "SHOW_ONLY_MAIL";
 ZmId.OP_SHOW_ORIG				= "SHOW_ORIG";
-ZmId.OP_SORT_ASC                = "SORT_ASC";
-ZmId.OP_SORT_DESC               = "SORT_DESC";
 ZmId.OP_SPAM					= "SPAM";
 ZmId.OP_SPELL_CHECK				= "SPELL_CHECK";
-ZmId.OP_SUBSCRIBE_APPROVE		= "SUBSCRIBE_APPROVE";
-ZmId.OP_SUBSCRIBE_REJECT		= "SUBSCRIBE_REJECT";
 ZmId.OP_SYNC					= "SYNC";
-ZmId.OP_SYNC_ALL				= "SYNC_ALL";
 ZmId.OP_SYNC_OFFLINE_FOLDER		= "SYNC_OFFLINE_FOLDER";
 ZmId.OP_TAG						= "TAG";
 ZmId.OP_TAG_COLOR_MENU			= "TAG_COLOR_MENU";
@@ -1123,7 +1213,6 @@ ZmId.OP_PRINT_TASKFOLDER		= "PRINT_TASKFOLDER";
 ZmId.OP_TEXT					= "TEXT";
 ZmId.OP_TODAY					= "TODAY";
 ZmId.OP_UNDELETE				= "UNDELETE";
-ZmId.OP_UNMUTE_CONV		        = "UNMUTE_CONV";
 ZmId.OP_USE_PREFIX				= "USE_PREFIX";
 ZmId.OP_VERSION_HISTORY         = "VERSION_HISTORY";
 ZmId.OP_VIEW					= "VIEW";
@@ -1137,315 +1226,4 @@ ZmId.OP_SORTBY_MENU			    = "SORTBY_MENU";
 ZmId.OP_WEEK_VIEW				= "WEEK_VIEW";
 ZmId.OP_WORK_WEEK_VIEW			= "WORK_WEEK_VIEW";
 ZmId.OP_ZIMLET					= "ZIMLET";
-
-//Group By IDs
-ZmId.GROUPBY_DATE               = "GROUPBY_DATE";
-ZmId.GROUPBY_FROM               = "GROUPBY_FROM";
-ZmId.GROUPBY_NONE               = "GROUPBY_NONE";
-ZmId.GROUPBY_PRIORITY           = "GROUPBY_PRIORITY";
-ZmId.GROUPBY_SIZE               = "GROUPBY_SIZE";
-ZmId.GROUPBY_TAG                = "GROUPBY_TAG";
-
-
-/*
- * Experimental ID code below. The main idea is to make easier for a third party (such as QA) to find what they're
- * looking for. A secondary goal is to ensure that we always use unique IDs. The systematic approach above is prone
- * to failure in that regard, since the same set of inputs will produce the same ID.
- *
- * The new approach is to introduce a level of indirection between the fields and the ID. IDs will go back to being
- * unique and opaque, based on an incrementing number. A hash will be maintained which maps a collection of fields
- * to the actual ID used in the DOM.
- *
- * The core of the new system is related closely to the old system: a set of params which, taken together, should
- * uniquely identify an element. The possible values for each param are typically constants defined in this class.
- *
- * To make it easy for clients of this ID system to successfully look up IDs, creators of IDs should provide as many
- * parameters as possible. For example, providing both skinComponent and componentType may be redundant, but then
- * the ID can be looked up using either parameter.
- *
- * The parameters and their values:
- *
- * skinComponent
- *
- *      The HTML skin for ZCS defines a number of components and provides containers for them. This param identifies
- *      which skin component contains the element. Note that the IDs for the skin containers themselves (as well as
- *      a few elements within those containers) are defined by the skin (in skin.html), and are not part of this set
- *      of IDs. May often be omitted when looking up an ID.
- *
- *      ZmId.SKIN_*
- *
- * componentType
- *
- *      The general category of view component that maps to the element. It may be a type of widget such as a button
- *      or a menu, something more general like a view, or even a subcomponent like a list view header.
- *
- *      DwtId.WIDGET_*
- *      ZmId.WIDGET_*
- *
- * componentName
- *
- *      The component name identifies the component among components of a similar type. It may be the name of an
- *      operation. For example, a search button would have the type "button" and the name "search". (There may be
- *      more than one search button, so other params may be necessary to uniquely identify each one.)
- *
- *      ZmId.VIEW_*
- *      ZmId.OP_*
- *      ZmId.TB_*
- *      ZmId.SEARCH_*
- *      ZmId.MV_*
- *      ZmId.CMP_*
- *      ZmId.GROUPBY_*
- *
- * app
- *
- *      The name of the application that contains the element. Some elements are global and do not have an associated
- *      application. Elements associated with an app appear within the main content area.
- *
- *      ZmId.APP_*
- *
- * containingView
- *
- *      For an element within the main content area, the identifier of the view that contains it.
- *
- *      ZmId.VIEW_*
- *
- * sessionId
- *
- *      A number identifying a session for a view which can appear in more than one tab at a time. For example, there
- *      may be multiple compose sessions if the user replies to several different messages without sending the replies.
- *
- * itemType
- *
- *      The type of item, such as message, contact, or appointment.
- *
- *      ZmId.ITEM_*
- *
- * itemId
- *
- *      The ID of the item (for example, a mail message) that the element is tied to. For local items, it's a number.
- *      For shared items, it's a compound string comprising an account ID and a local numeric ID.
- *
- * organizerType
- *
- *      The type of organizer, such as folder, tag, or zimlet. Organizers generally appear in the overview.
- *
- *      ZmId.ORG_*
- *
- * organizerId
- *
- *      The ID of the organizer (for example, a mail folder) that the element is tied to. For local organizers, it's a
- *      number. For shared folders, it's a compound string comprising an account ID and a local numeric ID.
- *
- * field
- *
- *      A field identifies a specific sub-part of a component. It might be something that helps make up a widget,
- *      such as the "left icon" in a button, or it might be something ZCS-specific like the "subject" field in a list
- *      view that displays mail messages. The line between componentName and field can be a bit blurry. Generally a
- *      componentName refers to a container of some sort, like a list row or header.
- *
- *      ZmId.FLD_*
- *
- * tagName
- *
- *      The tag name of the HTML element, such as "TABLE" or "TR". May usually be omitted when looking up an ID.
- *
- * sequence
- *
- *      A number used to diffentiate between otherwise identical IDs.
- *
- * parentId
- *
- *      The ID of the parent of this element.
- *
- */
-
-ZmId.BASE = "zcs";
-ZmId.SEQ = 1;
-
-ZmId._idList = [];
-
-ZmId._idHash = {};
-
-ZmId._valueToParam = {};
-
-/**
- * Returns a unique ID that can later be looked up. As many params as possible should be provided, in order to
- * make lookup easier. If one or more IDs is found to already have been created with the given set of params,
- * a sequence number is added as a parameter.
- *
- * @param {hash}        params          set of fields describing the ID's element
- * @param {string}      description     (optional) a brief description of the purpose of the ID
- */
-ZmId.create = function(params, description) {
-
-	var idParams = AjxUtil.hashCopy(params);
-	var ids = ZmId.lookup(params);
-	if (ids) {
-		idParams.sequence = (typeof ids === "string") ? 1 : ids.length;
-	}
-	idParams.description = description || "";
-	var newId = ZmId.BASE + ZmId.SEQ++;
-	idParams.id = newId;
-	ZmId._idHash[newId] = idParams;
-	ZmId._idList.push(idParams);
-
-	for (var key in params) {
-		ZmId._valueToParam[params[key]] = key;
-	}
-
-	return newId;
-};
-
-/**
- * Returns the DOM ID that matches the given set of params. If more than one ID matches, a list is returned.
- * A partial set of params may be provided. The more params provided, the better the chance of finding just one ID.
- * The best approach is to provide the minimal set of params that will uniquely differentiate the element. If no
- * params are provided, returns all IDs.
- *
- * Optionally, a list of values can be given. An attempt will be made to reverse-engineer the params by figuring
- * out the appropriate key for each value. This method will never be as reliable as providing a hash in the first place.
- *
- * @param {hash|array}  params    set of fields describing the ID(s) being sought
- */
-ZmId.lookup = function(params) {
-
-	if (!params) {
-		return ZmId._idList;
-	}
-
-	if (AjxUtil.isArray(params)) {
-		params = ZmId._convertValues(params);
-	}
-
-	var ids = [];
-	for (var i = 0, len = ZmId._idList.length; i < len; i++) {
-		var idParams = ZmId._idList[i];
-		var add = true;
-		for (var param in params) {
-			if (idParams[param] && params[param] !== idParams[param]) {
-				add = false;
-				continue;
-			}
-		}
-		if (add) {
-			ids.push(idParams.id);
-		}
-	}
-	return (ids.length === 0) ? null : (ids.length === 1) ? ids[0] : ids;
-};
-
-/**
- * Returns the set of params used to create the given ID.
- *
- * @param id
- */
-ZmId.getParams = function(id) {
-	return ZmId._idHash[id];
-};
-
-/**
- * Displays a list of matching IDs in a popup, with the params used to create them and their descriptions.
- * Intended as a development tool.
- *
- * @param params    set of fields describing the ID(s) being sought
- */
-ZmId.showIds = function(params) {
-
-	if (!DBG || DBG.isDisabled()) { return; }
-
-	var ids = ZmId.lookup(params),
-		len = ids.length,
-		backMap = ZmId._getBackMap(),
-		text = "",
-		i;
-
-	for (i = 0; i < len; i++) {
-		var id = ids[i].id;
-		var params = ZmId._idHash[id];
-		text += "\n-----\n\n" + id + AjxStringUtil.repeat(" ", 16 - id.length) + params.description + "\n\n";
-		var paramNames = AjxUtil.keys(params).sort();
-		for (var j = 0; j < paramNames.length; j++) {
-			var paramName = paramNames[j];
-			if (paramName === 'id' || paramName === 'description') {
-				continue;
-			}
-			var value = params[paramName];
-			if (!value) {
-				continue;
-			}
-			value = backMap[value] ? "ZmId." + backMap[value] : value;
-			text += paramName + AjxStringUtil.repeat(" ", 16 - paramName.length) + value + "\n";
-		}
-	}
-
-	DBG.printRaw(text);
-};
-
-ZmId._getBackMap =
-function() {
-	if (!ZmId._backMap) {
-		ZmId._backMap = {};
-		for (var key in ZmId) {
-			var value = ZmId[key];
-			if (typeof value === 'string') {
-				ZmId._backMap[value] = key;
-			}
-		}
-	};
-	return ZmId._backMap;
-};
-
-// Create a static hash so we know if a string is a view type (eg "CLV")
-ZmId._isViewType = {};
-keys = AjxUtil.keys(ZmId);
-len = keys.length;
-for (i = 0; i < len; i++) {
-	key = keys[i];
-	if (typeof ZmId[key] === "string" && key.indexOf("VIEW_") ===0) {
-		ZmId._isViewType[ZmId[key]] = true;
-	}
-}
-delete keys;
-delete key;
-delete len;
-delete i;
-
-// Convert a list of values of ID parameters back into a hash by figuring out the matching key for each value.
-// View names (such as "CLV") are a bit tricky since they can be either a componentName (for a view widget), or
-// a containingView. A small number might be an organizer ID (eg Inbox is 2), or a session ID.
-ZmId._convertValues = function(values) {
-
-	var params = {},
-		viewValue, numValue;
-
-	for (var i = 0; i < values.length; i++) {
-		var value = values[i];
-		if (ZmId._isViewType[value]) {
-			viewValue = value;
-		}
-		else if (AjxUtil.isNumber(value) || AjxUtil.isNumeric(value)) {
-			var num = parseInt(value);
-			if (num < 10) {
-				numValue = num;
-			}
-		}
-		else {
-			var param = ZmId._valueToParam[value];
-			params[param] = value;
-		}
-	}
-
-	// A view value is a componentName only if the componentType is a view.
-	if (viewValue) {
-		var viewParam = (params.componentType === ZmId.WIDGET_VIEW) ? "componentName" : "containingView";
-		params[viewParam] = viewValue;
-	}
-
-	// A single-digit number is probably an organizer ID or a session ID.
-	if (numValue) {
-		var viewParam = params.organizerType ? "organizerId" : "sessionId";
-		params[viewParam] = viewValue;
-	}
-
-	return params;
-};
+ZmId.OP_SYNC_ALL				= "SYNC_ALL";

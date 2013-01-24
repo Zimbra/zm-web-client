@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2007, 2008, 2009, 2010, 2011 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -70,7 +70,7 @@ function(params) {
  * @private
  */
 ZmContactsHelper._processSearchResponse = 
-function(resp, includeContactsWithNoEmail) {
+function(resp) {
 	var vec = resp.getResults(ZmItem.CONTACT);
 
 	// Take the contacts and create a list of their email addresses (a contact may have more than one)
@@ -86,9 +86,6 @@ function(resp, includeContactsWithNoEmail) {
 			for (var j = 0; j < emails.length; j++) {
 				ZmContactsHelper._addContactToList(list, contact, emails[j]);
 			}
-			if (includeContactsWithNoEmail && emails.length == 0) {
-				ZmContactsHelper._addContactToList(list, contact, null);
-			}
 		}
 	}
 	
@@ -100,31 +97,10 @@ function(resp, includeContactsWithNoEmail) {
  */
 ZmContactsHelper._addContactToList = 
 function(list, contact, addr, isGroup) {
-
-	var email = ZmContactsHelper._wrapContact(contact, addr, isGroup);  
-	list.push(email);
-};
-
-/**
- * wrapps the contact inside a AjxEmailAddress object, and adds a couple extra fields to the AjxEmailAddress instance (value, contact, icon [which I'm not sure is used])
- *
- * @param contact
- * @param addr {String} optional.
- * @param isGroup
- */
-ZmContactsHelper._wrapContact =
-function(contact, addr, isGroup) {
-
-	addr = addr || contact.getEmail();
+	
 	var fileAs = contact.getFileAs();
-	var name = (fileAs != addr) ? fileAs : "";  //todo ??? this is weird.
-	var	type = contact.isGal ? ZmContact.GROUP_GAL_REF : ZmContact.GROUP_CONTACT_REF;
-	var	value = contact.isGal ? (contact.ref || contact.id) : contact.id;  //defaulting to contact.id in the gal case since from GetContactsResponse the ref is not returned and we can end up with it cached without the ref. Probably need to fix that.
-	var displayName = contact.getFullNameForDisplay();
-
-	var email = new AjxEmailAddress(addr, type, name, displayName, isGroup);
-
-	email.value = value;
+	var name = (fileAs != addr) ? fileAs : "";
+	var email = new AjxEmailAddress(addr, null, name, null, isGroup);
 	email.id = Dwt.getNextId();
 	email.__contact = contact;
 	email.icon = contact.getIcon();
@@ -134,28 +110,8 @@ function(contact, addr, isGroup) {
 		var ac = window.parentAppCtxt || window.appCtxt;
 		ac.setIsExpandableDL(addr, email.canExpand);
 	}
-	return email;
+	list.push(email);
 };
-
-/**
- * wrapps the inline address (there's no real ZmContact object) inside AjxEmailAddress and adds the value attribute to it.
- * this is so we treat real contacts and inline contacts consistently throughout the rest of the code.
- *
- * @param addr  {String} - the inline email address.
- */
-ZmContactsHelper._wrapInlineContact =
-function(addr) {
-	var email = AjxEmailAddress.parse(addr); //from legacy data at least (not sure about new), the format might be something like "Inigo Montoya <inigo@theprincessbride.com>" so we have to parse.
-	if (!email) {
-		//shouldn't happen but just in case
-		email = new AjxEmailAddress(addr, null, addr);
-	}
-	email.type = ZmContact.GROUP_INLINE_REF;
-	email.value = email.address;
-	email.id = Dwt.getNextId();
-	return email;
-};
-
 
 /**
  * The items are AjxEmailAddress objects
@@ -168,7 +124,7 @@ function(html, idx, item, field, colIdx) {
 		html[idx++] = AjxImg.getImageHtml(item.icon);
 	} else if (field == ZmItem.F_NAME) {
 		html[idx++] = "<nobr>";
-		html[idx++] = AjxStringUtil.htmlEncode(item.name || ZmMsg.noName);
+		html[idx++] = AjxStringUtil.htmlEncode(item.name);
 		html[idx++] = "</nobr>";
 	} else if (field == ZmItem.F_EMAIL) {
 		html[idx++] = AjxStringUtil.htmlEncode(item.address);

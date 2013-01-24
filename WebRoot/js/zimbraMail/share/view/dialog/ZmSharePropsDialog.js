@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -35,11 +35,10 @@ ZmSharePropsDialog = function(shell, className) {
 	// create auto-completer	
 	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED) || appCtxt.get(ZmSetting.GAL_ENABLED)) {
 		var params = {
-			dataClass:		appCtxt.getAutocompleter(),
-			options:		{massDLComplete:true},
-			matchValue:		ZmAutocomplete.AC_VALUE_EMAIL,
-			keyUpCallback:	this._acKeyUpListener.bind(this),
-			contextId:		this.toString()
+			dataClass: appCtxt.getAutocompleter(),
+			matchValue: ZmAutocomplete.AC_VALUE_EMAIL,
+			compCallback: (new AjxCallback(this, this._handleCompletionData, [this])),
+			keyUpCallback: (new AjxCallback(this, this._acKeyUpListener))
 		};
 		this._acAddrSelectList = new ZmAutocompleteListView(params);
 	}
@@ -52,8 +51,6 @@ ZmSharePropsDialog = function(shell, className) {
 ZmSharePropsDialog.prototype = new DwtDialog;
 ZmSharePropsDialog.prototype.constructor = ZmSharePropsDialog;
 
-ZmSharePropsDialog.prototype.isZmSharePropsDialog = true;
-ZmSharePropsDialog.prototype.toString = function() { return "ZmSharePropsDialog"; };
 
 // Constants
 /**
@@ -71,6 +68,10 @@ ZmSharePropsDialog.prototype._mode = ZmSharePropsDialog.NEW;
 
 // Public methods
 
+ZmSharePropsDialog.prototype.toString =
+function() {
+	return "ZmSharePropsDialog";
+};
 
 /**
  * Pops-up the dialog.
@@ -88,15 +89,6 @@ function(mode, object, share) {
 
 	this._nameEl.innerHTML = AjxStringUtil.htmlEncode(object.name);
 	this._typeEl.innerHTML = ZmMsg[ZmOrganizer.FOLDER_KEY[this._object.type]] || ZmMsg.folder;
-	// TODO: False until server handling of the flag is added
-	//if (object.type == ZmOrganizer.FOLDER) {
-	if (false) {
-		this._markReadEl.innerHTML = object.globalMarkRead ? ZmMsg.sharingDialogGlobalMarkRead :
-                                                             ZmMsg.sharingDialogPerUserMarkRead;
-		this._props.setPropertyVisible(this._markReadId, true)
-	} else {
-		this._props.setPropertyVisible(this._markReadId, false)
-	}
 
 	var isNewShare = (this._shareMode == ZmSharePropsDialog.NEW);
 	var isUserShare = share ? share.isUser() || share.isGroup() : true;
@@ -109,7 +101,7 @@ function(mode, object, share) {
 	this._guestRadioEl.checked = isGuestShare;
 	this._guestRadioEl.disabled = !isNewShare || !supportsPublic;
 	this._publicRadioEl.checked = isPublicShare;
-	this._publicRadioEl.disabled = !isNewShare || !supportsPublic || (object.type === ZmOrganizer.FOLDER);
+	this._publicRadioEl.disabled = !isNewShare || !supportsPublic;
 
 	var type = this._getType(isUserShare, isGuestShare, isPublicShare);
 	this._handleShareWith(type);
@@ -131,14 +123,14 @@ function(mode, object, share) {
 	// document. Otherwise, we won't be able to get a handle on them to perform
 	// operations.
 	this._props.setPropertyVisible(this._shareWithOptsId, true);
-	//this._shareWithOptsProps.setPropertyVisible(this._passwordId, true);
+	this._shareWithOptsProps.setPropertyVisible(this._passwordId, true);
 	this._props.setPropertyVisible(this._shareWithBreakId, true);
 
 	this._granteeInput.setValidatorFunction(null, isGuestShare ? DwtInputField.validateEmail : DwtInputField.validateAny);
 
-	//this._passwordButton.setVisible(!isNewShare);
-	//this._shareWithOptsProps.setPropertyVisible(this._passwordId, isGuestShare);
-	//this._passwordInput.setValue(password, true);
+	this._passwordButton.setVisible(!isNewShare);
+	this._shareWithOptsProps.setPropertyVisible(this._passwordId, isGuestShare);
+	this._passwordInput.setValue(password, true);
 
 	if (this._inheritEl) {
 		this._inheritEl.checked = share ? share.link.inh : isNewShare;
@@ -183,7 +175,7 @@ function(mode, object, share) {
 
 	var size = this.getSize();
 	Dwt.setSize(this._granteeInput.getInputElement(), 0.6*size.x);
-	//Dwt.setSize(this._passwordInput.getInputElement(), 0.6*size.x);
+	Dwt.setSize(this._passwordInput.getInputElement(), 0.6*size.x);
 
 	DwtDialog.prototype.popup.call(this);
 	this.setButtonEnabled(DwtDialog.OK_BUTTON, false);
@@ -220,14 +212,6 @@ function() {
 		text = text.substr(0, index) + "..." + text.substr(index + length);
 	}
 
-    var webcalURL = "webcal:" + url.substring((url.indexOf("//")));
-    var webcalText = webcalURL;
-    if (webcalText.length > 50) {
-		var length = webcalText.length - 50;
-		var index = (webcalText.length - length) / 2;
-		webcalText = webcalText.substr(0, index) + "..." + webcalText.substr(index + length);
-	}
-
 	var isRestFolder = this._object.type != ZmOrganizer.FOLDER;
 	this._urlGroup.setVisible(isRestFolder);
 	if (isRestFolder) {
@@ -238,9 +222,6 @@ function() {
 				"</div>",
 				"<div>", ZmMsg.view, ":&nbsp;&nbsp;",
 					'<a target=_new href="',url,'.html">',text,".html</a>",
-				"</div>",
-                "<div>", ZmMsg.outlookURL, ":&nbsp;&nbsp;",
-					'<a target=_new href="',webcalURL,'">',webcalText,"</a>",
 				"</div>"
 			].join("");
 		} else {
@@ -278,9 +259,9 @@ function(isUserShare, isGuestShare, isPublicShare) {
 
 ZmSharePropsDialog.prototype._handleChangeButton =
 function(event) {
-	//this._passwordButton.setVisible(false);
-	//this._passwordInput.setVisible(true);
-	//this._passwordInput.focus();
+	this._passwordButton.setVisible(false);
+	this._passwordInput.setVisible(true);
+	this._passwordInput.focus();
 };
 
 ZmSharePropsDialog.prototype._handleOkButton =
@@ -288,17 +269,16 @@ function(event) {
 	var isUserShare = this._userRadioEl.checked;
 	var isGuestShare = this._guestRadioEl.checked;
 	var isPublicShare = this._publicRadioEl.checked;
-	var shareWithMyself = false;
-	
+
 	// validate input
 	if (!isPublicShare) {
 		var error;
 		if (this._granteeInput.isValid() == null) {
 			error = this._granteeInput.getValue() ? AjxMsg.invalidEmailAddr : AjxMsg.valueIsRequired;
 		}
-		/*if (!error && isGuestShare && this._passwordInput.isValid() == null) {
+		if (!error && isGuestShare && this._passwordInput.isValid() == null) {
 			error = AjxMsg.valueIsRequired;
-		}*/
+		}
 		if (error) {
 			var dialog = appCtxt.getErrorDialog();
 			dialog.setMessage(error);
@@ -306,11 +286,6 @@ function(event) {
 			return;
 		}
 	}
-
-    var replyType = this._reply.getReplyType();
-    if (replyType != ZmShareReply.NONE) {
-        var notes = (replyType == ZmShareReply.QUICK) ? this._reply.getReplyNote() : "";
-    }
 
 	var shares = [];
 	if (this._shareMode == ZmSharePropsDialog.NEW) {
@@ -325,13 +300,7 @@ function(event) {
 					if (email) {
 						addr = email.getAddress();
 					}
-                    //bug#66610: allow Calendar Sharing with addresses present in zimbraAllowFromAddress
-                    var allowLocal;
-                    var excludeAllowFromAddress = true;
-					if (appCtxt.isMyAddress(addr, allowLocal, excludeAllowFromAddress)) { 
-						shareWithMyself = true;
-						continue;
-					}
+					if (appCtxt.isMyAddress(addr)) { continue; }
 
 					var share = this._setUpShare();
 					share.grantee.name = addr;
@@ -352,20 +321,11 @@ function(event) {
 	var accountName = appCtxt.multiAccounts ? this._object.getAccount().name : null;
 	var batchCmd = new ZmBatchCommand(null, accountName);
 	var perm = this._getPermsFromRole();
-	//var pw = isGuestShare && this._passwordInput.getValue();
-	if (shares && shares.length == 0 && shareWithMyself) {
-		var msgDlg = appCtxt.getMsgDialog(true);
-		msgDlg.setMessage(ZmMsg.sharingErrorWithSelf,DwtMessageDialog.INFO_STYLE);
-		msgDlg.setTitle(ZmMsg.sharing);
-		msgDlg.popup();
-		return;
-	}
+	var pw = isGuestShare && this._passwordInput.getValue();
 	for (var i = 0; i < shares.length; i++) {
 		var share = shares[i];
-		if (perm != share.link.perm) {
-			var cmd = new AjxCallback(share, share.grant,
-			                          [perm, null, notes,
-			                           replyType, this._shareMode]);
+		if (perm != share.link.perm || pw != share.link.pw) {
+			var cmd = new AjxCallback(share, share.grant, [perm, pw]);
 			batchCmd.add(cmd);
 		}
 	}
@@ -381,111 +341,100 @@ function(event) {
 ZmSharePropsDialog.prototype._handleResponseBatchCmd =
 function(shares, result) {
 
+	if (!shares || (shares && shares.length == 0)) { return; }
 
-    var response = result.getResponse();
-    var batchResponse = response.BatchResponse;
+	var ignore = this._getFaultyEmails(result);
+	var replyType = this._reply.getReplyType();
+	if (replyType != ZmShareReply.NONE) {
+		var notes = (replyType == ZmShareReply.QUICK) ? this._reply.getReplyNote() : "";
+		var guestnotes;
+		var batchCmd;
 
-    //bug:67698 Do not send notification on failed share
-    if(batchResponse.Fault){
-       appCtxt.setStatusMsg(ZmMsg.shareNotCreated,ZmStatusView.LEVEL_WARNING);
-       return false;
-    }
-    else{
-        if (!shares || (shares && shares.length == 0)) { return; }
-        var ignore = this._getFaultyEmails(result);
-        var replyType = this._reply.getReplyType();
-        if (replyType != ZmShareReply.NONE) {
-            var notes = (replyType == ZmShareReply.QUICK) ? this._reply.getReplyNote() : "";
-            var guestnotes;
-            var batchCmd;
+		if (replyType != ZmShareReply.COMPOSE && shares.length > 1) {
+			var accountName = appCtxt.multiAccounts ? this._object.getAccount().name : null;
+			batchCmd = new ZmBatchCommand(false, accountName, true);
+		}
 
-            if (shares.length > 1) {
-                var accountName = appCtxt.multiAccounts ? this._object.getAccount().name : null;
-                batchCmd = new ZmBatchCommand(false, accountName, true);
+		for (var i = 0; i < shares.length; i++) {
+			var share = shares[i];
+			var email = share.grantee.email || share.grantee.id;
+			if (!email) {
+				// last resort: check if grantee name is a valid email address
+				if (AjxEmailAddress.isValid(share.grantee.name))
+					email = share.grantee.name;
+			}
+
+			if (!email || (email && ignore[email])) { continue; }
+
+			var addrs = new AjxVector();
+			var addr = new AjxEmailAddress(email, AjxEmailAddress.TO);
+			addrs.add(addr);
+
+			var tmpShare = new ZmShare({object:share.object});
+
+			tmpShare.grantee.id = share.grantee.id;
+			tmpShare.grantee.email = email;
+			tmpShare.grantee.name = share.grantee.name;
+
+			// REVISIT: What if you have delegated access???
+			if (tmpShare.object.isRemote()) {
+				tmpShare.grantor.id = tmpShare.object.zid;
+				tmpShare.grantor.email = tmpShare.object.owner;
+				tmpShare.grantor.name = tmpShare.grantor.email;
+				tmpShare.link.id = tmpShare.object.rid;
+                tmpShare.link.name = tmpShare.object.oname || tmpShare.object.name;
+			} else {
+                // bug: 50936  get setting for respective account 
+                // to prevent sharing the default account unintentionally
+				tmpShare.grantor.id = appCtxt.get(ZmSetting.USERID, null, this._object.getAccount());
+				tmpShare.grantor.email = appCtxt.get(ZmSetting.USERNAME, null, this._object.getAccount());
+				tmpShare.grantor.name = appCtxt.get(ZmSetting.DISPLAY_NAME, null, this._object.getAccount()) || tmpShare.grantor.email;
+				tmpShare.link.id = tmpShare.object.id;
+                tmpShare.link.name = tmpShare.object.name;
+			}
+            // If folder is not synced before sharing, link ID might have changed in ZD.
+            // Always get from response.
+            if(appCtxt.isOffline) {
+                var linkId = this.getLinkIdfromResp(result);
+                if(linkId) {
+                    tmpShare.link.id =  [tmpShare.grantor.id, linkId].join(":");
+                }
             }
 
-            for (var i = 0; i < shares.length; i++) {
-                var share = shares[i];
-                var email = share.grantee.email || share.grantee.id;
-                if (!email) {
-                    // last resort: check if grantee name is a valid email address
-                    if (AjxEmailAddress.isValid(share.grantee.name))
-                        email = share.grantee.name;
-                }
+			tmpShare.link.perm = share.link.perm;
+			tmpShare.link.view = ZmOrganizer.getViewName(tmpShare.object.type);
+			tmpShare.link.inh = this._inheritEl ? this._inheritEl.checked : true;
 
-                if (!email || (email && ignore[email])) { continue; }
+			if (this._guestRadioEl.checked) {
+				if (!this._guestFormatter) {
+					this._guestFormatter = new AjxMessageFormat(ZmMsg.shareWithGuestNotes);
+				}
 
-                var addrs = new AjxVector();
-                var addr = new AjxEmailAddress(email, AjxEmailAddress.TO);
-                addrs.add(addr);
+				var url = share.object.getRestUrl();
+				url = url.replace(/&/g,'%26');
+				if (appCtxt.isOffline) {
+					var remoteUri = appCtxt.get(ZmSetting.OFFLINE_REMOTE_SERVER_URI);
+					url = remoteUri + url.substring((url.indexOf("/",7)));
+				}
 
-                var tmpShare = new ZmShare({object:share.object});
+				var password = this._passwordInput.getValue();
+				guestnotes = this._guestFormatter.format([url, email, password, notes]);
+			}
+			tmpShare.notes = guestnotes || notes;
 
-                tmpShare.grantee.id = share.grantee.id;
-                tmpShare.grantee.email = email;
-                tmpShare.grantee.name = share.grantee.name;
+			if (replyType == ZmShareReply.COMPOSE) {
+				tmpShare.composeMessage(this._shareMode, addrs);
+			} else {
+				tmpShare.sendMessage(this._shareMode, addrs, null, batchCmd);
+			}
+		}
+		if (batchCmd)
+			batchCmd.run();
 
-                // REVISIT: What if you have delegated access???
-                if (tmpShare.object.isRemote()) {
-                    tmpShare.grantor.id = tmpShare.object.zid;
-                    tmpShare.grantor.email = tmpShare.object.owner;
-                    tmpShare.grantor.name = tmpShare.grantor.email;
-                    tmpShare.link.id = tmpShare.object.rid;
-                    tmpShare.link.name = tmpShare.object.oname || tmpShare.object.name;
-                } else {
-                    // bug: 50936  get setting for respective account
-                    // to prevent sharing the default account unintentionally
-                    tmpShare.grantor.id = appCtxt.get(ZmSetting.USERID, null, this._object.getAccount());
-                    tmpShare.grantor.email = appCtxt.get(ZmSetting.USERNAME, null, this._object.getAccount());
-                    tmpShare.grantor.name = appCtxt.get(ZmSetting.DISPLAY_NAME, null, this._object.getAccount()) || tmpShare.grantor.email;
-                    tmpShare.link.id = tmpShare.object.id;
-                    tmpShare.link.name = tmpShare.object.name;
-                }
-                // If folder is not synced before sharing, link ID might have changed in ZD.
-                // Always get from response.
-                if(appCtxt.isOffline) {
-                    var linkId = this.getLinkIdfromResp(result);
-                    if(linkId) {
-                        tmpShare.link.id =  [tmpShare.grantor.id, linkId].join(":");
-                    }
-                }
+        var shareMsg = (this._shareMode==ZmSharePropsDialog.NEW)?ZmMsg.shareCreatedSubject:ZmMsg.shareModifiedSubject;
+        appCtxt.setStatusMsg(shareMsg);
 
-                tmpShare.link.perm = share.link.perm;
-                tmpShare.link.view = ZmOrganizer.getViewName(tmpShare.object.type);
-                tmpShare.link.inh = this._inheritEl ? this._inheritEl.checked : true;
-
-                if (this._guestRadioEl.checked) {
-                    if (!this._guestFormatter) {
-                        this._guestFormatter = new AjxMessageFormat(ZmMsg.shareCalWithGuestNotes);
-                    }
-
-                    var url = share.object.getRestUrl();
-                    url = url.replace(/&/g,'%26');
-                    if (appCtxt.isOffline) {
-                        var remoteUri = appCtxt.get(ZmSetting.OFFLINE_REMOTE_SERVER_URI);
-                        url = remoteUri + url.substring((url.indexOf("/",7)));
-                    }
-
-                    //bug:34647 added webcal url for subscribing to outlook/ical on a click
-                    var webcalURL = "webcal:" + url.substring((url.indexOf("//")));
-
-                    //var password = this._passwordInput.getValue();
-                    guestnotes = this._guestFormatter.format([url, webcalURL, email, "", notes]);
-                }
-                tmpShare.notes = guestnotes || notes;
-
-                /*
-                    tmpShare.sendMessage(this._shareMode, addrs, null, batchCmd);
-                */
-            }
-            if (batchCmd)
-                batchCmd.run();
-
-            var shareMsg = (this._shareMode==ZmSharePropsDialog.NEW)?ZmMsg.shareCreatedSubject:ZmMsg.shareModifiedSubject;
-            appCtxt.setStatusMsg(shareMsg);
-
-        }
-    }
+	}
 };
 
 ZmSharePropsDialog.prototype.getLinkIdfromResp =
@@ -564,12 +513,12 @@ function(dialog) {
 	dialog._privatePermission.setVisible(dialog._privatePermissionEnabled && !dialog._noneRadioEl.checked && !isPublicShare);
 
 	var hasEmail = AjxStringUtil.trim(dialog._granteeInput.getValue()) != "";
-	//var hasPassword = AjxStringUtil.trim(dialog._passwordInput.getValue()) != "";
+	var hasPassword = AjxStringUtil.trim(dialog._passwordInput.getValue()) != "";
 
 	var enabled = isEdit ||
 				  isPublicShare ||
 				  (isUserShare && hasEmail) ||
-				  (isGuestShare && hasEmail);
+				  (isGuestShare && hasEmail && hasPassword);
 	dialog.setButtonEnabled(DwtDialog.OK_BUTTON, enabled);
 };
 
@@ -592,17 +541,10 @@ ZmSharePropsDialog.prototype._handleShareWith = function(type) {
 	this._rolesGroup.setVisible(isUserShare);
 	this._messageGroup.setVisible(!isPublicShare);
 	this._privatePermission.setVisible(this._privatePermissionEnabled && !isPublicShare);
-    if (isGuestShare) {
-        this._reply && this._reply.setReplyOptions(ZmShareReply.EXTERNAL_USER_OPTIONS);
-    }
-    else {
-        this._reply && this._reply.setReplyOptions(ZmShareReply.DEFAULT_OPTIONS);
-        this._reply.setReplyType(ZmShareReply.STANDARD);
-    }
+
 	this._props.setPropertyVisible(this._shareWithOptsId, !isPublicShare);
-	//this._shareWithOptsProps.setPropertyVisible(this._passwordId, isGuestShare);
+	this._shareWithOptsProps.setPropertyVisible(this._passwordId, isGuestShare);
 	this._props.setPropertyVisible(this._shareWithBreakId, !isPublicShare);
-    this._setAutoComplete(isGuestShare);
 
 	if (!isUserShare) {
 		this._viewerRadioEl.checked = true;
@@ -631,13 +573,29 @@ function() {
 	return perm;
 };
 
+ZmSharePropsDialog.prototype._handleCompletionData = 
+function (control, text, element) {
+	element.value = text;
+	try {
+		if (element.fireEvent) {
+			element.fireEvent("onchange");
+		} else if (document.createEvent) {
+			var ev = document.createEvent("UIEvents");
+			ev.initUIEvent("change", false, window, 1);
+			element.dispatchEvent(ev);
+		}
+	}
+	catch (ex) {
+		// ignore -- TODO: what to do with this error?
+	}
+};
+
 ZmSharePropsDialog.prototype._createView =
 function() {
 	var view = new DwtComposite(this);
 
 	// ids
 	var nameId = Dwt.getNextId();
-    var markReadValueId = Dwt.getNextId();
 	var typeId = Dwt.getNextId();
 	var granteeId = Dwt.getNextId();
 	var inheritId = Dwt.getNextId();
@@ -650,13 +608,13 @@ function() {
 
 	var shareWith = new DwtPropertySheet(this, null, null, DwtPropertySheet.RIGHT);
 	var shareWithProperties = [
-		{ label: "<label for='ShareWith_user' >" +  ZmMsg.shareWithUserOrGroup + "</label>",
+		{ label: ZmMsg.shareWithUserOrGroup,
 		  field: ["<input type='radio' id='ShareWith_user' name='",shareWithRadioName,"' value='",ZmShare.TYPE_USER,"'>"].join("")
 		},
-		{ label: "<label for='ShareWith_external' >" + ZmMsg.shareWithGuest + "</label>",
+		{ label: ZmMsg.shareWithGuest,
 		  field: ["<input type='radio' id='ShareWith_external' name='",shareWithRadioName,"' value='",ZmShare.TYPE_GUEST,"'>"].join("")
 		},
-		{ label: "<label for='ShareWith_public' >" + ZmMsg.shareWithPublicLong + "</label>",
+		{ label: ZmMsg.shareWithPublicLong,
 		  field: ["<input type='radio' id='ShareWith_public' name='",shareWithRadioName,"' value='",ZmShare.TYPE_PUBLIC,"'>"].join("")
 		}
 	];
@@ -670,34 +628,33 @@ function() {
 	this._granteeInput.setRequired(true);
 	Dwt.associateElementWithObject(this._granteeInput.getInputElement(), this);
 
-	//var password = new DwtComposite(this);
-	//this._passwordInput = new DwtInputField({parent: password, id:"ShareDialog_password"});
-	//this._passwordInput.setData(Dwt.KEY_OBJECT, this);
-	//this._passwordInput.setRequired(true);
-	//this._passwordButton = new DwtButton({parent:password, id:"ShareDialog_Button"});
-	//this._passwordButton.setText(ZmMsg.changePassword);
-	//this._passwordButton.addSelectionListener(new AjxListener(this, this._handleChangeButton));
-	//Dwt.associateElementWithObject(this._passwordInput.getInputElement(), this);
+	var password = new DwtComposite(this);
+	this._passwordInput = new DwtInputField({parent: password, id:"ShareDialog_password"});
+	this._passwordInput.setData(Dwt.KEY_OBJECT, this);
+	this._passwordInput.setRequired(true);
+	this._passwordButton = new DwtButton({parent:password, id:"ShareDialog_Button"});
+	this._passwordButton.setText(ZmMsg.changePassword);
+	this._passwordButton.addSelectionListener(new AjxListener(this, this._handleChangeButton));
+	Dwt.associateElementWithObject(this._passwordInput.getInputElement(), this);
 
 	this._shareWithOptsProps = new DwtPropertySheet(this);
 	this._shareWithOptsProps.addProperty(ZmMsg.emailLabel, this._granteeInput);
-	//this._passwordId = this._shareWithOptsProps.addProperty(ZmMsg.passwordLabel, password);
+	this._passwordId = this._shareWithOptsProps.addProperty(ZmMsg.passwordLabel, password);
 
 	var otherHtml = [
-		"<table class='ZCheckboxTable'>",
+		"<table border='0' cellpadding='0' cellpadding='3'>",
 			"<tr>",
 				"<td>",
 					"<input type='checkbox' id='",inheritId,"' checked>",
 				"</td>",
-				"<td>","<label for='", inheritId,  "'>" , ZmMsg.inheritPerms, "</label>", "</td>",
+				"<td>", ZmMsg.inheritPerms, "</td>",
 			"</tr>",
 		"</table>"
 	].join("");
 
 	this._props = new DwtPropertySheet(view);
 	this._props.addProperty(ZmMsg.nameLabel, "<span id='"+nameId+"'></span>");
-    this._props.addProperty(ZmMsg.typeLabel, "<span id='"+typeId+"'></span>");
-    this._markReadId = this._props.addProperty(ZmMsg.sharingDialogMarkReadLabel, "<span id='"+markReadValueId+"'></span>");
+	this._props.addProperty(ZmMsg.typeLabel, "<span id='"+typeId+"'></span>");
 	this._props.addProperty(ZmMsg.shareWithLabel, shareWith);
 	var otherId = this._props.addProperty(ZmMsg.otherLabel, otherHtml);
 
@@ -711,30 +668,22 @@ function() {
 	// add role group
 	var idx = 0;
 	var html = [];
-	html[idx++] = "<table class='ZRadioButtonTable'>";
+	html[idx++] = "<table border=0 cellpadding=0 cellspacing=3>";
 
 	var roles = [ZmShare.ROLE_NONE, ZmShare.ROLE_VIEWER, ZmShare.ROLE_MANAGER, ZmShare.ROLE_ADMIN];
 	for (var i = 0; i < roles.length; i++) {
 		var role = roles[i];
 
-		html[idx++] = "<tr><td style='padding-left:10px; vertical-align:top;'><input type='radio' name='";
+		html[idx++] = "<tr><td valign=top><input type='radio' name='";
 		html[idx++] = roleRadioName;
 		html[idx++] = "' value='";
 		html[idx++] = role;
 		html[idx++] = "' id='ShareRole_";
         html[idx++] = role;
-        html[idx++] = "'></td><td style='font-weight:bold; padding:0 0.5em 0 .25em;'>";
-		html[idx++] = "<label for='ShareRole_";
-        	html[idx++] = role;
-        	html[idx++] = "'>";
+        html[idx++] = "'></td><td style='font-weight:bold; padding-right:0.25em'>";
 		html[idx++] = ZmShare.getRoleName(role);
-		html[idx++] = "</label>"
 		html[idx++] = "</td><td style='white-space:nowrap'>";
-		html[idx++] = "<label for='ShareRole_";
-        	html[idx++] = role;
-        	html[idx++] = "'>";
 		html[idx++] = ZmShare.getRoleActions(role);
-		html[idx++] = "</label>"
 		html[idx++] = "</td></tr>";
 	}
 
@@ -746,7 +695,7 @@ function() {
 
 	this._privatePermission = new DwtPropertySheet(view);
 	this._privatePermission._vAlign = "middle";
-	this._privatePermission.addProperty("<input type='checkbox' id='" + permissionId + "'/>",  "<label for='" + permissionId + "' >" +  ZmMsg.privatePermission +  "</label>");
+	this._privatePermission.addProperty("<input type='checkbox' id='" + permissionId + "'/>",  ZmMsg.privatePermission);
 	this._privateEl = document.getElementById(permissionId);
 	Dwt.setHandler(this._privateEl, DwtEvent.ONCLICK, ZmSharePropsDialog._handleEdit);
 	Dwt.associateElementWithObject(this._privateEl, this);
@@ -773,11 +722,16 @@ function() {
 
 	// save information elements
 	this._nameEl = document.getElementById(nameId);
-    this._typeEl = document.getElementById(typeId);
-    this._markReadEl = document.getElementById(markReadValueId);
+	this._typeEl = document.getElementById(typeId);
 	this._urlEl = document.getElementById(urlId);
 
-	this._setAutoComplete();
+	var inputEl = this._granteeInput.getInputElement();
+	if (this._acAddrSelectList) {
+		this._acAddrSelectList.handle(inputEl);
+	}
+	else {
+		Dwt.setHandler(inputEl, DwtEvent.ONKEYUP, ZmSharePropsDialog._handleKeyUp);
+	}
 
 	// add change handlers
 	if (this._inheritEl) {
@@ -793,8 +747,8 @@ function() {
 		Dwt.associateElementWithObject(radioEls[i], this);
 	}
 
-	//var inputEl = this._passwordInput.getInputElement();
-	//Dwt.setHandler(inputEl, DwtEvent.ONKEYUP, ZmSharePropsDialog._handleEdit);
+	var inputEl = this._passwordInput.getInputElement();
+	Dwt.setHandler(inputEl, DwtEvent.ONKEYUP, ZmSharePropsDialog._handleEdit);
 
 	var radios = ["_noneRadioEl", "_viewerRadioEl", "_managerRadioEl", "_adminRadioEl"];
 	var radioEls = document.getElementsByName(roleRadioName);
@@ -808,15 +762,4 @@ function() {
 	}
 
 	return view;
-};
-
-ZmSharePropsDialog.prototype._setAutoComplete =
-function(disabled) {
-    var inputEl = this._granteeInput.getInputElement();
-	if (!disabled && this._acAddrSelectList) {
-		this._acAddrSelectList.handle(inputEl);
-	}
-	else {
-		Dwt.setHandler(inputEl, DwtEvent.ONKEYUP, ZmSharePropsDialog._handleKeyUp);
-	}
 };

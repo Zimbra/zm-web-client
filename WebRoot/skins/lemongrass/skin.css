@@ -1,0 +1,109 @@
+/*
+ * ***** BEGIN LICENSE BLOCK *****
+ * Zimbra Collaboration Suite Web Client
+ * Copyright (C) 2007, 2009, 2010, 2011 VMware, Inc.
+ * 
+ * The contents of this file are subject to the Zimbra Public License
+ * Version 1.3 ("License"); you may not use this file except in
+ * compliance with the License.  You may obtain a copy of the License at
+ * http://www.zimbra.com/license.
+ * 
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * ***** END LICENSE BLOCK *****
+ */
+#skin_container_splash_screen {	
+	background: #f5faeb url("@SkinImgDir@/bg_lemongrass.png") repeat-x bottom left;
+}
+
+/** set the height for the top row -- must be set to a fixed number! **/
+#skin_spacing_top_row					{	height:36px; 
+											background-color: @MastheadColor@;
+											background-image: -moz-linear-gradient(top, @lighten(MastheadColor,50)@, @MastheadColor@); /* FF3.6 */
+ 											background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0, @lighten(MastheadColor,50)@),color-stop(1, @MastheadColor@)); /* Saf4+, Chrome */
+    										filter:  progid:DXImageTransform.Microsoft.gradient(startColorStr='@lighten(MastheadColor,50)@', EndColorStr='@MastheadColor@'); /* IE6,IE7 */
+    										-ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='@lighten(MastheadColor,50)@', EndColorStr='@MastheadColor@')"; /* IE8 */
+}
+
+
+#skin_spacing_app_row{
+	background-color: @MastheadColor@;
+}
+
+/* Cell for the 'body' (notice/form/about/license) 
+#ZLoginBodyContainer {
+	@WindowInnerContainer-light@
+	@AppBg@
+	padding-top:20px;
+	padding-bottom:20px;
+	color: white;
+}*/
+
+
+#ZLoginAppName {
+	margin-top:5px;
+	font-size:18px;
+	width:100%;
+	font-weight:bold;
+	text-align:right;
+	color: black;
+}
+
+
+/* Outer panel for the entire login/splash dialog */
+#ZLoginPanel {
+	position:relative;
+	width:500px;
+	overflow:visible;
+	border: 1px solid; 
+	border-color: #9B3A19;
+	background: #996627 url("@SkinImgDir@/login_bg.png");
+}
+
+
+
+/* Container that owns the login button */
+#ZLoginButton {
+	@LoginButton@
+}
+
+/* Container that owns the name of the login button */
+#ZLoginButtonText {
+@Text-light@
+}
+
+.AlphabetBarCell {
+	text-align:center;	
+	@ActiveCursor@
+	width:30px;
+	min-width:30px;
+	border-right-width: 1px;
+}
+
+.viewLabel .Text {
+	white-space: nowrap;
+	width: 1%;
+	color: black;
+}
+
+.ZmNavToolBar {
+	/*background-color: transparent;*/
+	color: white;
+}
+
+.calendar_header_allday_separator {
+	background-color: #d2e6a2;
+}
+
+.ZOptionsSectionTabView .ZTab.ZSelected .ZTabBorder {
+	background-color: #f5faeb;
+}
+
+#skin_spacing_filler				{	
+	height:12px; 
+	background-color: @AltC@;
+	background-image: -moz-linear-gradient(top, @AltC@, @AppC@); /* FF3.6 */
+ 	background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0, @AltC@),color-stop(1, @AppC@));                /* Saf4+, Chrome */
+    filter:  progid:DXImageTransform.Microsoft.gradient(startColorStr='@darken(AltC,90)@', EndColorStr='@AppC@');                          /* IE6,IE7 */
+    -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='@darken(AltC,90)@', EndColorStr='@AppC@')";                     /* IE8 */
+ }

@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2007, 2008, 2009, 2010, 2011 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -143,10 +143,6 @@ function() {
 			displayContainer:	ZmPref.TYPE_SELECT,
 			hint:				ZmMsg.emailAddr
 		},
-		FROM_EMAIL_TYPE: {
-			displayContainer:	ZmPref.TYPE_SELECT,
-			hint:				ZmMsg.emailAddr
-		},
 		WHEN_SENT_TO: {
 			displayName:		ZmMsg.personaWhenSentTo,
 			displayContainer:	ZmPref.TYPE_CHECKBOX
@@ -183,7 +179,6 @@ function() {
 				"VISIBLE",				//
 				"FROM_NAME",			// I
 				"FROM_EMAIL",			// I
-				"FROM_EMAIL_TYPE",			// I
 				"REPLY_TO",				// I
 				"REPLY_TO_NAME",		// I
 				"REPLY_TO_EMAIL"		// I
@@ -222,7 +217,6 @@ function() {
 				"HEADER",
 				"FROM_NAME",				// I
 				"FROM_EMAIL",				// I
-				"FROM_EMAIL_TYPE",				// I
 				"REPLY_TO",					// I
 				"REPLY_TO_NAME",			// I
 				"REPLY_TO_EMAIL",			// I
@@ -261,7 +255,6 @@ function() {
 ZmAccountsPage.ACCOUNT_PROPS = {
 	"NAME":						{ setter: "setName",	getter: "getName" },
 	"EMAIL":					{ setter: "setEmail",	getter: "getEmail" },
-	"EMAIL_TYPE":					"emailType",
 	"VISIBLE":					"visible",
 	"ACCOUNT_TYPE":				"type",
 	"USERNAME":					"userName",
@@ -276,7 +269,6 @@ ZmAccountsPage.ACCOUNT_PROPS = {
 ZmAccountsPage.IDENTITY_PROPS = {
 	"FROM_NAME":			"sendFromDisplay",
 	"FROM_EMAIL":			"sendFromAddress",
-	"FROM_EMAIL_TYPE":		"sendFromAddressType",
 	"REPLY_TO":				"setReplyTo",
 	"REPLY_TO_NAME":		"setReplyToDisplay",
 	"REPLY_TO_EMAIL":		"setReplyToAddress",
@@ -286,282 +278,6 @@ ZmAccountsPage.IDENTITY_PROPS = {
 	"WHEN_IN_FOLDER_LIST":	"whenInFolderIds"
 };
 
-ZmAccountsPage.prototype.getGrantRightsDlg =
-function(callback) {
-
-    if (!this._grantRightsDlg){
-        this._grantRightsDlg = new ZmGrantRightsDialog(appCtxt.getShell(),null);
-    }
-    this._grantRightsDlg._okCallBack = callback;
-    return this._grantRightsDlg;
-
-};
-
-ZmAccountsPage.prototype._errRightsCommand =
-function(user, ex){
-    this._delegateErrFormatter = this._delegateErrFormatter || new AjxMessageFormat(ZmMsg.delegateNoSuchAccErr);
-    var msg = this._delegateErrFormatter.format(user);
-    if (ex.code == "account.NO_SUCH_ACCOUNT"){
-        appCtxt.getAppController().popupErrorDialog(msg, ex);
-        return true;
-    }
-
-    return false;
-
-};
-
-ZmAccountsPage.prototype._handleDelegateRights =
-function(user,sendAs,sendObo,isGrant,refresh) {
-   var request = (isGrant) ? ZmSetting.GRANT_RIGHTS_REQUEST : ZmSetting.REVOKE_RIGHTS_REQUEST;
-   var soapDoc = AjxSoapDoc.create(request, "urn:zimbraAccount");
-   var batchCmd = new ZmBatchCommand(null, appCtxt.accountList.mainAccount.name);
-   var callback = this._handleDelegateRightsCallback.bind(this,user,sendAs,sendObo,isGrant,refresh);
-   var errCallback = this._errRightsCommand.bind(this, user);
-   var aceNode = null;
-   if (sendAs){
-            aceNode = soapDoc.set("ace");
-            aceNode.setAttribute("gt", "usr");
-            aceNode.setAttribute("d", user);
-            aceNode.setAttribute("right",ZmSetting.SEND_AS);
-   }
-
-   if (sendObo){
-            aceNode = soapDoc.set("ace");
-            aceNode.setAttribute("gt", "usr");
-            aceNode.setAttribute("d", user);
-            aceNode.setAttribute("right",ZmSetting.SEND_ON_BEHALF_OF);
-   }
-
-   batchCmd.addNewRequestParams(soapDoc, callback, errCallback);
-   batchCmd.run();
-};
-
- ZmAccountsPage.prototype._handleDelegateRightsCallback =
- function(user, sendAs,sendObo,isGrant,refresh,result){
-     var email = user;
-     if (isGrant){
-        var response = result.getResponse();
-        var aces = response && response.GrantRightsResponse && response.GrantRightsResponse.ace;
-        if (aces && aces.length && aces[0].d)
-            email = aces[0].d;
-     }
-     if (refresh) {
-         this._getGrants();
-     }
-     this._sendGrantRightsMessage(appCtxt.accountList.mainAccount.name, email, sendAs,sendObo,isGrant);
-
- };
-
-ZmAccountsPage.prototype._grantDelegateRights =
-function(user,sendAs,sendObo) {
-    if (sendAs || sendObo){
-        this._handleDelegateRights(user,sendAs,sendObo,true,true);
-    }
-};
-
-ZmAccountsPage.prototype._handleAddDelegateButton =
-function() {
-    var callback = this._grantDelegateRights.bind(this);
-    var dlg = this.getGrantRightsDlg(callback);
-    dlg.setData();
-    dlg.popup();
-};
-
-
-ZmAccountsPage.prototype._editDelegateRights =
-function() {
-    var user = this._editDelegateOrig.user;
-    var sendAs = arguments[1];
-    var sendObo = arguments[2];
-    var isGrant = null;
-    var updateSendAs = false;
-    var updateSendObo = false;
-
-    if (sendAs != this._editDelegateOrig.sendAs && sendObo != this._editDelegateOrig.sendOnBehalfOf){
-        if (sendAs == sendObo){
-            updateSendAs = updateSendObo = true;
-            isGrant = sendAs;
-        }else{
-            this._handleDelegateRights(user,true,false,sendAs,false);
-            updateSendObo = true;
-            isGrant = sendObo;
-        }
-    }else if (sendAs != this._editDelegateOrig.sendAs){
-            updateSendAs = true;
-            isGrant = sendAs;
-    }else if (sendObo != this._editDelegateOrig.sendOnBehalfOf){
-            updateSendObo = true;
-            isGrant = sendObo;
-    }
-    this._handleDelegateRights(user,updateSendAs,updateSendObo,isGrant,true)
-};
-
-ZmAccountsPage.prototype._editDelegateButton =
-    function() {
-    var item = this.delegatesList.getSelection()[0];
-    this._editDelegateOrig = item;
-    this._editDelegateOrig.sendAs = item.sendAs || false;
-    this._editDelegateOrig.sendOnBehalfOf = item.sendOnBehalfOf || false;
-    var callback = this._editDelegateRights.bind(this);
-    var dlg = this.getGrantRightsDlg(callback);
-    dlg.setData(item);
-    dlg.popup();
-};
-ZmAccountsPage.prototype._compareDelegateEntries =
-function(a, b) {
-	return a.user < b.user ? -1 : (a.user > b.user ? 1 : 0);
-};
-ZmAccountsPage.prototype._setDelegateSendPrefs =
-function(grants) {
-    var ace = grants._data.GetRightsResponse && grants._data.GetRightsResponse.ace;
-    var userRights = [];
-    var right = user = node = null;
-    var res = new AjxVector();
-    if (!ace){
-        this._dlSelectionListener(false);
-        return res;
-    }
-    for (var i=0;i<ace.length;i++){
-        user = ace[i].d;
-        right = ace[i].right;
-        if (!userRights[user]){
-         userRights[user] = {user:user, id:ace[i].zid};
-
-        }
-        userRights[user][right] = true;
-    }
-
-    for (var usr in userRights) {
-        res.add(userRights[usr])
-    }
-
-    res.sort(this._compareDelegateEntries);
-    return res;
-};
-
-ZmAccountsPage.prototype._refreshRights =
-function(grants) {
-    var delegatesEl =   document.getElementById(this._htmlElId+"_DELEGATE_RIGHTS") || (this.delegatesList && this.delegatesList.getHtmlElement());
-    var dlUsers = this._setDelegateSendPrefs(grants);
-    var delegatesList = new ZmAccountDelegatesListView(this);
-    delegatesList.replaceElement(delegatesEl);
-    delegatesList.setEnabled(true);
-    delegatesList.set(dlUsers);
-    delegatesList.addSelectionListener(this._dlSelectionListener.bind(this,(dlUsers.size() > 0)));
-    this.delegatesList = delegatesList;
-    if (this._grantRightsDlg && this._grantRightsDlg.isPoppedUp()) this._grantRightsDlg.popdown();
-
-    this._dlSelectionListener(false);
-};
-
-ZmAccountsPage.prototype._removeDelegateButton =
-function() {
-    var item = this.delegatesList.getSelection()[0];
-    this._handleDelegateRights(item.user,item.sendAs,item.sendOnBehalfOf,false,true);
-};
-
-ZmAccountsPage.prototype._sendGrantRightsMessage =
-function(granter, grantee, sendAs,sendObo,isGrant) {
-    var msg = new ZmMailMsg();
-    var addrs = new AjxVector();
-    var permissions = (sendAs && sendObo)?ZmMsg.sendAsAndSendOnBehalfOf:(sendAs?ZmMsg.sendAs:ZmMsg.sendOnBehalfOflbl);
-    var subject = "";
-    var status = "";
-    if (isGrant){
-        status = (sendAs && sendObo) ? ZmMsg.delegateRightsStatus : ZmMsg.delegateRightStatus;
-        subject = (sendAs && sendObo) ? ZmMsg.delegateRightsSubject : ZmMsg.delegateRightSubject;
-    } else{
-        status = (sendAs && sendObo) ? ZmMsg.revokeRightsStatus : ZmMsg.revokeRightStatus;
-        subject = (sendAs && sendObo) ? ZmMsg.revokeRightsSubject : ZmMsg.revokeRightSubject;
-    }
-    subject = AjxMessageFormat.format(subject, [granter]);
-    status = AjxMessageFormat.format(status, grantee);
-    var text = (isGrant)?ZmMsg.delegateCreatedText : ZmMsg.delegateRevokedText;
-    text = AjxMessageFormat.format(text, [permissions, grantee, granter]);
-    var html = (isGrant)?ZmMsg.delegateCreatedHtml : ZmMsg.delegateRevokedHtml;
-    html = AjxMessageFormat.format(html, [permissions, grantee, granter]);
-    appCtxt.setStatusMsg(status);
-
-    addrs.add(new AjxEmailAddress(grantee, AjxEmailAddress.TO));
-    msg.setAddresses(AjxEmailAddress.TO, addrs);
-    msg.setSubject(subject);
-    var topPart = new ZmMimePart();
-    topPart.setContentType(ZmMimeTable.MULTI_ALT);
-
-    var htmlPart = new ZmMimePart();
-    htmlPart.setContentType(ZmMimeTable.TEXT_HTML);
-    htmlPart.setContent(html);
-
-    var textPart = new ZmMimePart();
-    textPart.setContentType(ZmMimeTable.TEXT_PLAIN);
-    textPart.setContent(text);
-
-    topPart.children.add(textPart);
-    topPart.children.add(htmlPart);
-    msg.setTopPart(topPart);
-    msg.send();
-};
-
-ZmAccountsPage.prototype._getGrants =
-function() {
-    var jsonObj = {GetRightsRequest:{
-        _jsns:"urn:zimbraAccount",
-        "ace":[
-            {right:ZmSetting.SEND_AS},
-            {right:ZmSetting.SEND_ON_BEHALF_OF}
-        ]
-      }
-    };
-    var respCallback = this._refreshRights.bind(this);
-    appCtxt.getAppController().sendRequest({jsonObj:jsonObj, asyncMode:true, callback:respCallback});
-};
-
-ZmAccountsPage.prototype._dlSelectionListener =
-function(opt) {
-    this.editDelegateButton.setEnabled(opt);
-    this.removeDelegateButton.setEnabled(opt);
-}
-
-ZmAccountsPage.prototype.setAccountDelegates =
-function() {
-    var delegatesEl =   document.getElementById(this._htmlElId+"_DELEGATE_RIGHTS");
-    if(!delegatesEl) return;
-    this._getGrants(delegatesEl);
-
-
-    var addDelegateButtonDiv = document.getElementById(this._htmlElId+"_ADD_DELEGATE");
-	if (addDelegateButtonDiv) {
-		var button = new DwtButton({parent:this, id:"addDelegateBtn"});
-		button.setText(ZmMsg.addDelegate);
-		button.setEnabled(true);
-		button.addSelectionListener(new AjxListener(this, this._handleAddDelegateButton));
-        button.replaceElement(addDelegateButtonDiv);
-		this.addDelegateButton = button;
-	}
-
-    var editDelegateButtonDiv = document.getElementById(this._htmlElId+"_EDIT_DELEGATE");
-    if (editDelegateButtonDiv) {
-        var button = new DwtButton({parent:this, id:"editDelegateBtn"});
-        button.setText(ZmMsg.editPermissions);
-        button.setEnabled(false);
-        button.addSelectionListener(new AjxListener(this, this._editDelegateButton));
-        button.replaceElement(editDelegateButtonDiv);
-        this.editDelegateButton = button;
-    }
-
-    var removeDelegateButtonDiv = document.getElementById(this._htmlElId+"_REMOVE_DELEGATE");
-    if (removeDelegateButtonDiv) {
-       var button = new DwtButton({parent:this, id:"removeDelegateBtn"});
-       button.setText(ZmMsg.remove);
-       button.setEnabled(false);
-       button.addSelectionListener(new AjxListener(this, this._removeDelegateButton));
-       button.replaceElement(removeDelegateButtonDiv);
-       this.removeDelegateButton = button;
-    }
-
-
-
-}
 //
 // Public methods
 //
@@ -735,7 +451,6 @@ function(useDefaults) {
 	var account = this._accounts.get(0);
 	this._resetAccountListView(account);
 	this.setAccount(account);
-    this.setAccountDelegates();
 };
 
 // saving
@@ -745,29 +460,15 @@ function() {
 	// make sure that the current object proxy is up-to-date
 	this._setAccountFields(this._currentAccount, this._currentSection, true);
 
-	var printAcct = function(acct) {
-		if (AjxUtil.isArray(acct)) {
-			return AjxUtil.map(acct, printAcct).join("\n");
-		}
-		return ["name: ",acct.name,", id: ",acct.id].join("");
-	}
-
 	var dirty = this._deletedAccounts.length > 0;
-	if (dirty) {
-		AjxDebug.println(AjxDebug.PREFS, "Dirty preferences:\n" + "Deleted accounts:\n" + printAcct(this._deletedAccounts));
-	}
 	if (!dirty) {
 		var accounts = this._accounts.getArray();
-		var dirtyAccounts = [];
 		for (var i = 0; i < accounts.length; i++) {
 			var account = accounts[i];
 			if (account._new || account._dirty || account._visibleDirty) {
 				dirty = true;
-				dirtyAccounts.push(account);
+				break;
 			}
-		}
-		if (dirty) {
-			AjxDebug.println(AjxDebug.PREFS, "Dirty preferences:\n" + "Dirty accounts:\n" + printAcct(dirtyAccounts));
 		}
 	}
 	return dirty;
@@ -1044,9 +745,8 @@ function(account, section) {
 	var identity = account.getIdentity();
 
 	this._setControlValue("FROM_NAME", section, identity.sendFromDisplay);
-    this._setControlValue("FROM_EMAIL", section, (identity.sendFromAddressType == ZmSetting.SEND_ON_BEHALF_OF) ? ZmMsg.onBehalfOfMidLabel + " " + identity.sendFromAddress : identity.sendFromAddress);
-    this._setControlValue("FROM_EMAIL_TYPE", section, identity.sendFromAddressType);
-    this._setControlValue("REPLY_TO", section, identity.setReplyTo);
+	this._setControlValue("FROM_EMAIL", section, identity.sendFromAddress);
+	this._setControlValue("REPLY_TO", section, identity.setReplyTo);
 	this._setControlValue("REPLY_TO_NAME", section, identity.setReplyToDisplay);
 	this._setControlValue("REPLY_TO_EMAIL", section, identity.setReplyToAddress);
 	this._setControlValue("READ_RECEIPT_TO_ADDR", section, identity.readReceiptAddr);
@@ -1221,7 +921,7 @@ function(id, section) {
 		var folderPaths = control.getValue().replace(/\s*(;|,)\s*/g,"$1").split(/;|,/);
 		var array = [];
 		for (var i = 0; i < folderPaths.length; i++) {
-			var folder = root.getByPath(folderPaths[i],true);
+			var folder = root.getByPath(folderPaths[i]);
 			if (!folder) continue;
 			array.push(folder.id);
 		}
@@ -1331,18 +1031,9 @@ function(account, section, dontClearFolder) {
 		var prop = ZmAccountsPage.IDENTITY_PROPS[id];
 		var isField = AjxUtil.isString(prop);
 
-		var ovalue = (isField ? identity[prop] : identity[prop.getter]())|| "";
-		var nvalue = (this._getControlValue(id, section))||"";
-        if (id == "FROM_EMAIL" && identity.sendFromAddressType == ZmSetting.SEND_ON_BEHALF_OF) ovalue = ZmMsg.sendOnBehalfOf + " " + ovalue;
-
-        if (this._valuesEqual(ovalue, nvalue)) { continue; }
-
-        if (id == "FROM_EMAIL" && nvalue.indexOf(ZmMsg.sendOnBehalfOf + " ") == 0) {
-            nvalue = nvalue.replace(ZmMsg.sendOnBehalfOf + " ", "");
-            identity.sendFromAddressType = ZmSetting.SEND_ON_BEHALF_OF;
-        } else {
-            identity.sendFromAddressType = ZmSetting.SEND_AS;
-        }
+		var ovalue = isField ? identity[prop] : identity[prop.getter]();
+		var nvalue = this._getControlValue(id, section);
+		if (this._valuesEqual(ovalue, nvalue)) { continue; }
 
 		account._dirty = true;
 		if (isField) {
@@ -1460,62 +1151,14 @@ function(id, setup, value) {
 	return container;
 };
 
-ZmAccountsPage.prototype._setSelectFromLabels =
-function( displayOptions, fromAddress){
- if (!this._selectFromLabels){
-    var tmpArray1 = [];
-    var tmpArray2 = [];
-    var email  = null;
-    var index = -1;
-     // Add sendOnBehalfOf emails
-    for (var i=0;i < appCtxt.sendOboEmails.length; i++){
-      email = appCtxt.sendOboEmails[i];
-      index = -1;
-      if (index = AjxUtil.indexOf(fromAddress,email) != -1)
-          fromAddress.splice(index, 1);
-      if (index = AjxUtil.indexOf(displayOptions,email) != -1)
-           displayOptions.splice(index, 1);
-      tmpArray2.push({label:(ZmMsg.sendOnBehalfOf + " " + email), value:(ZmMsg.sendOnBehalfOf + " " + email)});
-    }
-
-    // Add sendAs emails
-    for (var i=0;i < appCtxt.sendAsEmails.length; i++){
-      email = appCtxt.sendAsEmails[i];
-      index = -1;
-      if ((index = AjxUtil.indexOf(fromAddress,email)) != -1)
-          fromAddress.splice(index, 1);
-      if ((index = AjxUtil.indexOf(displayOptions,email)) != -1)
-           displayOptions.splice(index, 1);
-      tmpArray2.push({label:email, value:email});
-    }
-
-
-    if (fromAddress && fromAddress.length)
-        fromAddress = fromAddress.sort();
-
-    if (displayOptions && displayOptions.length)
-        displayOptions = displayOptions.sort();
-
-    displayOptions = AjxUtil.mergeArrays(displayOptions, fromAddress);
-
-    var length = displayOptions.length;
-    for (var i=0;i<length; i++){
-        tmpArray1.push({label:displayOptions[i], value:displayOptions[i]});
-    }
-    this._selectFromLabels =  tmpArray1.concat(tmpArray2);
- }
- return this._selectFromLabels;
-};
-
-
 ZmAccountsPage.prototype._setupSelect =
 function(id, setup, value) {
 	var select;
 	if (id == "FROM_EMAIL") {
 		setup.displayOptions = this._getAllAddresses();
 		var fromAddress = appCtxt.get(ZmSetting.MAIL_FROM_ADDRESS);
-        setup.options = this._setSelectFromLabels(setup.displayOptions, fromAddress );
-        setup.choices = setup.options;
+		setup.displayOptions = AjxUtil.mergeArrays(setup.displayOptions, fromAddress);
+
 		if (appCtxt.get(ZmSetting.ALLOW_ANY_FROM_ADDRESS)) {
 			select = this._setupComboBox(id, setup, value);
 			// By setting the setSelectedValue method on the combox
@@ -1876,14 +1519,8 @@ function(evt) {
 ZmAccountsPage.prototype._updateList =
 function(account) {
 	var lv = this._accountListView;
-    var email = AjxStringUtil.htmlEncode(account.getEmail());
-    var identity = account.getIdentity();
-    if (!account.isMain && identity && identity.sendFromAddressType == ZmSetting.SEND_ON_BEHALF_OF){
-        email = appCtxt.getUsername() + " " + ZmMsg.sendOnBehalfOf + " " + email;
-    }
-
 	lv.setCellContents(account, ZmItem.F_NAME, AjxStringUtil.htmlEncode(account.getName()));
-	lv.setCellContents(account, ZmItem.F_EMAIL,email);
+	lv.setCellContents(account, ZmItem.F_EMAIL,AjxStringUtil.htmlEncode(account.getEmail()));
 	lv.setCellContents(account, ZmItem.F_TYPE, AjxStringUtil.htmlEncode(lv._getAccountType(account)));
 };
 
@@ -1892,11 +1529,8 @@ function(account) {
 ZmAccountsPage.prototype._handleNameChange =
 function(evt) {
 	var inputEl = DwtUiEvent.getTarget(evt);
-	var newName = inputEl.value;
-	this._accountListView.setCellContents(this._currentAccount, ZmItem.F_NAME, AjxStringUtil.htmlEncode(newName));
-	this._setControlValue("HEADER", this._currentSection, newName);
-
-	this._currentAccount.identity.name = newName;
+	this._accountListView.setCellContents(this._currentAccount, ZmItem.F_NAME, AjxStringUtil.htmlEncode(inputEl.value));
+	this._setControlValue("HEADER", this._currentSection, inputEl.value);
 
 	var type = this._currentAccount.type;
 	if (type == ZmAccount.TYPE_POP || type == ZmAccount.TYPE_IMAP) {
@@ -2463,10 +2097,7 @@ function(buffer, i, item, field, col, params) {
 		return i;
 	}
 	if (field == ZmItem.F_EMAIL) {
-        var email = item.getEmail();
-        var identity = item.getIdentity();
-        if (!item.isMain && identity.sendFromAddressType == ZmSetting.SEND_ON_BEHALF_OF) email = appCtxt.getActiveAccount().name + " " + ZmMsg.sendOnBehalfOf + " " + email;
-		buffer[i++] = "<div style='margin-left: 10px;'>"+ AjxStringUtil.htmlEncode(email) +"</div>";
+		buffer[i++] = "<div style='margin-left: 10px;'>"+ AjxStringUtil.htmlEncode(item.getEmail()) +"</div>";
 		return i;
 	}
 	if (field == ZmItem.F_TYPE) {
@@ -2496,94 +2127,6 @@ function(account) {
 	var provider = ZmDataSource.getProviderForAccount(account);
 	return (provider && AjxStringUtil.htmlEncode(provider.name)) || (account.isMain ? ZmMsg.accountTypePrimary : ZmAccount.getTypeName(account.type));
 };
-
-// Delegate Permissions
-
-ZmAccountDelegatesListView = function(parent, className, posStyle, noMaximize) {
-	className = className || "DwtListView";
-	className += " ZOptionsItemsListView";
-	DwtListView.call(this, {parent:parent, className:className, posStyle:posStyle,
-							headerList:this._getHeaderList(), noMaximize:noMaximize});
-	this.multiSelectEnabled = false;
-};
-ZmAccountDelegatesListView.prototype = new DwtListView;
-ZmAccountDelegatesListView.prototype.constructor = ZmAccountDelegatesListView;
-
-ZmAccountDelegatesListView.prototype.toString =
-function() {
-	return "ZmAccountDelegatesListView";
-};
-
-// Constants
-
-ZmAccountDelegatesListView.WIDTH_NAME	= ZmMsg.COLUMN_WIDTH_NAME_ACC;
-ZmAccountDelegatesListView.WIDTH_STATUS	= ZmMsg.COLUMN_WIDTH_STATUS_ACC;
-ZmAccountDelegatesListView.WIDTH_TYPE	= ZmMsg.COLUMN_WIDTH_TYPE_ACC;
-
-// Public methods
-
-ZmAccountDelegatesListView.prototype.getCellElement =
-function(account, field) {
-	return document.getElementById(this._getCellId(account, field));
-};
-
-ZmAccountDelegatesListView.prototype.setCellContents =
-function(account, field, html) {
-	var el = this.getCellElement(account, field);
-	if (!el) { return; }
-
-	if (field == ZmItem.F_NAME) {
-		el = document.getElementById(this._getCellId(account, field)+"_name");
-    }
-    if(field == ZmItem.F_EMAIL) {
-        html = "<div style='margin-left: 10px;'>"+ html +"</div>";
-    }
-	el.innerHTML = html;
-};
-
-// Protected methods
-
-ZmAccountDelegatesListView.prototype._getCellContents =
-function(buffer, i, item, field, col, params) {
-	if (field == ZmItem.F_NAME) {
-		var cellId = this._getCellId(item, field);
-		buffer[i++] = "<div id='";
-		buffer[i++] = cellId;
-		buffer[i++] = "_name' style='margin:0 5px; overflow:hidden;'>";
-		buffer[i++] = AjxStringUtil.htmlEncode(item.user);
-		buffer[i++] = "</div>";
-		return i;
-	}
-	if (field == ZmItem.F_TYPE) {
-        var cellId = this._getCellId(item, field);
-		buffer[i++] = "<div id='";
-		buffer[i++] = cellId;
-		buffer[i++] = "_type' style='margin:0 5px;'>";
-		buffer[i++] = (item.sendAs && item.sendOnBehalfOf)  ? ZmMsg.sendAsAndSendOnBehalfOf : (item.sendAs ? ZmMsg.sendAs : ZmMsg.sendOnBehalfOflbl);
-		buffer[i++] = "</div>";
-		return i;
-	}
-	return DwtListView.prototype._getCellContents.apply(this, arguments);
-};
-
-ZmAccountDelegatesListView.prototype._getCellId =
-function(item, field, params) {
-    return DwtId.getListViewItemId(DwtId.WIDGET_ITEM_CELL, this._view, item.id, field);
-};
-
-ZmAccountDelegatesListView.prototype._getHeaderList =
-function() {
-	return [
-		new DwtListHeaderItem({field:ZmItem.F_NAME, text:ZmMsg.name, width:ZmMsg.COLUMN_WIDTH_NAME_DELEGATE, margin:"5px"}),
-		new DwtListHeaderItem({field:ZmItem.F_TYPE, text:ZmMsg.type})
-	];
-};
-
-ZmAccountDelegatesListView.prototype._doubleClickAction =
-function(){
-   this.parent._editDelegateButton();
-}
-
 
 //
 // New data source class
@@ -2657,115 +2200,3 @@ function() {
 
 ZmNewPersona.ID = 0;
 }; // function ZmAccountsPage._defineClasses
-
-
-// GrantRights Dialog
-
-
-/**
- * Creates a grantRights Dialog.
- * @class
- * This class represents a rename folder dialog.
- *
- * @param	{DwtComposite}	parent		the parent
- * @param	{String}	className		the class name
- *
- * @extends		ZmDialog
- */
-ZmGrantRightsDialog = function(parent, className,callback) {
-
-	ZmDialog.call(this, {parent:parent, className:className, title:ZmMsg.grantRights, id:"GrantRightsDialog"});
-    var id = "ZmGrantRightsDialog";
-    this._userName = document.getElementById(id+"_name");
-
-    this._userNameRow = document.getElementById(id+"_name_row");
-    this._sendAs = document.getElementById(id+"_sendAs");
-    this._sendObo = document.getElementById(id+"_sendObo");
-    this._editPermissions = false;
-    this._okCallBack = callback;
-    this._initAutoComplete();
-};
-
-ZmGrantRightsDialog.prototype = new ZmDialog;
-ZmGrantRightsDialog.prototype.constructor = ZmGrantRightsDialog;
-
-ZmGrantRightsDialog.prototype.toString =
-function() {
-	return "ZmGrantRightsDialog";
-};
-
-/**
- * Pops-up the dialog.
- *
- */
-ZmGrantRightsDialog.prototype.popup =
-function() {
-	ZmDialog.prototype.popup.call(this);
-    if (!this._editPermissions){
-     this._userName.focus();
-    } else {
-     this._sendAs.focus();
-    }
-};
-
-ZmGrantRightsDialog.prototype._contentHtml =
-function() {
-    var subs = {id:ZmSetting.ZM_GRANT_RIGHTS_DIALOG}
-	return AjxTemplate.expand("prefs.Pages#GrantRightsDialog",subs);
-};
-
-ZmGrantRightsDialog.prototype._okButtonListener =
-function(ev) {
-    this._okCallBack.run(this._userName.value,this._sendAs.checked, this._sendObo.checked);
-};
-
-ZmGrantRightsDialog.prototype.setData =
-function(item){
-    if (item){
-        this.setTitle(ZmMsg.editDelegatePermissions + " - " + item.user);
-        this._userNameRow.style.display ="none";
-        this._sendAs.checked = item.sendAs;
-        this._sendObo.checked = item.sendOnBehalfOf;
-        this._editPermissions = true;
-        this._prevData = item;
-    } else {
-        this.setTitle(ZmMsg.delegatePermissions);
-        this._userNameRow.style.display ="";
-        this._userName.value="";
-        this._sendAs.checked = false;
-        this._sendObo.checked = false;
-        this._editPermissions = false;
-        Dwt.setHandler(this._userName, DwtEvent.ONCHANGE, this._onChange.bind(this));
-    }
-    this.getButton(DwtDialog.OK_BUTTON).setEnabled(false);
-    Dwt.setHandler(this._sendAs, DwtEvent.ONCLICK, this._onChange.bind(this));
-    Dwt.setHandler(this._sendObo, DwtEvent.ONCLICK, this._onChange.bind(this));
-};
-ZmGrantRightsDialog.prototype._initAutoComplete =
-function(){
-    if (appCtxt.get(ZmSetting.CONTACTS_ENABLED) || appCtxt.get(ZmSetting.GAL_ENABLED)) {
-                var params = {
-                        parent:                 appCtxt.getShell(),
-                        dataClass:              appCtxt.getAutocompleter(),
-                        options:                {type:ZmAutocomplete.AC_TYPE_GAL, acType:ZmAutocomplete.AC_TYPE_CONTACT, excludeGroups:true},
-                        matchValue:             ZmAutocomplete.AC_VALUE_EMAIL,
-                        separator:              "",
-                        galType:                ZmSearch.GAL_ACCOUNT,
-                        contextId:              this.toString()
-                };
-                this._acAddrSelectList = new ZmAutocompleteListView(params);
-                this._acAddrSelectList.handle(this._userName);
-    }
-};
-
-ZmGrantRightsDialog.prototype._onChange =
-function(){
-    var enable = false;
-    if (!this._editPermissions){
-       enable = Boolean(this._userName.value) && (this._sendAs.checked || this._sendObo.checked);
-    }else {
-       enable = (this._prevData.sendAs != this._sendAs.checked) || (this._prevData.sendOnBehalfOf != this._sendObo.checked);
-    }
-    this.getButton(DwtDialog.OK_BUTTON).setEnabled(enable);
-
-}

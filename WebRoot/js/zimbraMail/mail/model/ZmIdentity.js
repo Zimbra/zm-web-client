@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -62,7 +62,6 @@ function(id, params) {
 ZmIdentity.addField("NAME",						{ name: "name", soap: "zimbraPrefIdentityName", type: ZmSetting.D_STRING });
 ZmIdentity.addField("SEND_FROM_DISPLAY",		{ name: "sendFromDisplay", soap: "zimbraPrefFromDisplay", type: ZmSetting.D_STRING });
 ZmIdentity.addField("SEND_FROM_ADDRESS",		{ name: "sendFromAddress", soap: "zimbraPrefFromAddress", type: ZmSetting.D_STRING });
-ZmIdentity.addField("SEND_FROM_ADDRESS_TYPE",	{ name: "sendFromAddressType", soap: "zimbraPrefFromAddressType", type: ZmSetting.D_STRING });
 ZmIdentity.addField("SET_REPLY_TO",				{ name: "setReplyTo", soap: "zimbraPrefReplyToEnabled", type: ZmSetting.D_BOOLEAN });
 ZmIdentity.addField("SET_REPLY_TO_DISPLAY",		{ name: "setReplyToDisplay", soap: "zimbraPrefReplyToDisplay", type: ZmSetting.D_STRING });
 ZmIdentity.addField("SET_REPLY_TO_ADDRESS",		{ name: "setReplyToAddress", soap: "zimbraPrefReplyToAddress", type: ZmSetting.D_STRING });
@@ -184,8 +183,7 @@ function(requestType, respFunction, callback, errorCallback, batchCmd) {
 					}
 					var isSignature = (i == ZmIdentity.SIGNATURE || i == ZmIdentity.REPLY_SIGNATURE);
 					var isDisplayName = (i == ZmIdentity.SEND_FROM_DISPLAY || i == ZmIdentity.SET_REPLY_TO_DISPLAY);
-					var isEmailAddress = (i == ZmIdentity.SET_REPLY_TO_ADDRESS);
-					if (value || isSignature || isDisplayName || isEmailAddress) {
+					if (value || isSignature || isDisplayName) {
 						var propertyNode = soapDoc.set("a", value, identityNode);
 						propertyNode.setAttribute("name", field.soap);
 					}

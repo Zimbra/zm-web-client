@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2007, 2009, 2010, 2011 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -48,15 +48,4 @@ function() {
 ZmNewBriefcaseDialog.prototype._createRemoteContentHtml =
 function(html, idx) {
 	return idx;
-};
-
-/**
- * @private
- */
-ZmNewBriefcaseDialog.prototype._setupFolderControl =
-function(){
-	ZmNewOrganizerDialog.prototype._setupFolderControl.call(this);
-	if (this._omit) {
-		this._omit[ZmFolder.ID_TRASH] = true;
-	}
 };

@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2007, 2008, 2009, 2010, 2011 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -273,28 +273,8 @@ function() {
 		host = host + ":" + loc.port;
 	}
 
-	var searchPath =  this.getSearchPath(true);
-	var generatedRestURL = [loc.protocol, "//", host, "/service/user/", uname, "/", AjxStringUtil.urlEncode(searchPath)].join("");
-	var restUrl = this.restUrl;
-	var oname = this.oname;
-	var parent = this.parent;
-	//Get the restUrl and oname from remote share
-	while (parent) {
-		if (parent.restUrl) {
-			restUrl = parent.restUrl;
-		}
-		if (parent.oname) {
-			oname = parent.oname;
-		}
-		parent = parent.parent;
-	}
-
-	if (restUrl) {
-		var index = searchPath.indexOf(oname);  //remove oname from searchPath
-		if (index != -1) {
-			searchPath = searchPath.substring(index + oname.length);
-		}
-		generatedRestURL = restUrl +  AjxStringUtil.urlEncode(searchPath);
-	}
-	return generatedRestURL;
+	return [
+		loc.protocol, "//", host, "/service/user/", uname, "/",
+		AjxStringUtil.urlEncode(this.getSearchPath(true))
+	].join("");
 };
