@@ -1215,6 +1215,20 @@ function(account) {
 		button.setVisible(visible);
 		button.parent.cleanupSeparators();
 	}
+	this._setOptionsVisibility();
+};
+
+ZmComposeController.prototype._setOptionsVisibility =
+function() {
+	var button = this._toolbar.getButton(ZmOperation.COMPOSE_OPTIONS);
+	var menu = button.getMenu();
+	var optionsEmpty = menu.opList.length === 0;
+	if (menu.opList.length === 1 && menu.opList[0] === ZmOperation.ADD_SIGNATURE) {
+		//this is kinda ugly, special case for the signature menu that is empty. It gets hidden instead of removed so it's still here.
+		var sigButton = this._getSignatureButton();
+		optionsEmpty = !sigButton.getVisible();
+	}
+	button.setVisible(!optionsEmpty);
 };
 
 ZmComposeController.prototype._createOptionsMenu =
@@ -1338,6 +1352,7 @@ function(composeMode, incOptions) {
 	this._setDependentOptions(incOptions);
 
 	button.setMenu(menu);
+	this._setOptionsVisibility();
 };
 
 ZmComposeController.prototype._setDependentOptions =
@@ -2084,10 +2099,6 @@ function() {
 	} else {
         this._composeView.enableAttachButton(true);
     }
-	var op = this._toolbar.getOp(ZmOperation.COMPOSE_OPTIONS);
-	if (op) {
-		op.setVisible(appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED));
-	}
 	appCtxt.notifyZimlets("resetToolbarOperations", [this._toolbar, 1]);
 };
 
