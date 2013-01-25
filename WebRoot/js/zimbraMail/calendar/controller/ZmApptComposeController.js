@@ -328,8 +328,6 @@ function(appt, attId, numRecurrence) {
 ZmApptComposeController.prototype.updateToolbarOps =
 function(mode, appt) {
 
-    if (!this._requestResponses) return;
-
     var saveButton = this._toolbar.getButton(ZmOperation.SAVE);
     var sendButton = this._toolbar.getButton(ZmOperation.SEND_INVITE);
 
@@ -337,8 +335,6 @@ function(mode, appt) {
         saveButton.setText(ZmMsg.saveClose);
         saveButton.setVisible(true);
         sendButton.setVisible(false);
-
-        this._requestResponses.setEnabled(false);
     } else {
         sendButton.setVisible(true);
         saveButton.setVisible(true);
@@ -347,15 +343,18 @@ function(mode, appt) {
         //change cancel button's text/icon to close
         var cancelButton = this._toolbar.getButton(ZmOperation.CANCEL);
         cancelButton.setText(ZmMsg.close);
-
-        this._requestResponses.setEnabled(true);
     }
+	if (this._requestResponses) {
+		this._requestResponses.setEnabled(mode !== ZmCalItemComposeController.APPT_MODE);
+	}
 
-    if((this._mode == ZmCalItem.MODE_PROPOSE_TIME) || ZmCalItem.FORWARD_MAPPING[this._mode]) {
+    if ((this._mode == ZmCalItem.MODE_PROPOSE_TIME) || ZmCalItem.FORWARD_MAPPING[this._mode]) {
         sendButton.setVisible(true);
         saveButton.setVisible(false);
         // Enable the RequestResponse when Forwarding
-        this._requestResponses.setEnabled(this._mode != ZmCalItem.MODE_PROPOSE_TIME);
+		if (this._requestResponses) {
+			this._requestResponses.setEnabled(this._mode !== ZmCalItem.MODE_PROPOSE_TIME);
+		}
     }
 
 };
