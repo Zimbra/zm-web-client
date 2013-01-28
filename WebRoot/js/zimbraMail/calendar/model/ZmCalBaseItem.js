@@ -385,7 +385,10 @@ function(calItemNode, instNode) {
 	}
 
 	this.alarm 			= this._getAttr(calItemNode, instNode, "alarm");
-	this.alarmData 		= this._getAttr(calItemNode, instNode, "alarmData");	
+	this.alarmData 		= this._getAttr(calItemNode, instNode, "alarmData");
+    if (!this.alarmData && this.isException) {
+        this.alarmData  = calItemNode.alarmData;
+    }
 	this.priority 		= parseInt(this._getAttr(calItemNode, instNode, "priority"));
 
 	this.recurring 		= instNode.recur != null ? instNode.recur : calItemNode.recur; // TEST for null since recur can be FALSE
