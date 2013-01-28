@@ -334,9 +334,9 @@ function() {
  */
 ZmBriefcaseApp.addEditorParam =
 function(restUrl) {
-    if(restUrl && window.isTinyMCE) {
+//    if (restUrl && window.isTinyMCE) {
     //        restUrl += (restUrl.match(/\?/) ?  "&editor=tinymce" : "?editor=tinymce");
-    }
+//    }
     return restUrl;
 };
 

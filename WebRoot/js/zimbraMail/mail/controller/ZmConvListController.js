@@ -54,6 +54,7 @@ ZmMailListController.GROUP_BY_MSG_KEY[ZmId.VIEW_CONVLIST]	= "byConversation";
 ZmMailListController.GROUP_BY_SHORTCUT[ZmId.VIEW_CONVLIST]	= ZmKeyMap.VIEW_BY_CONV;
 ZmMailListController.GROUP_BY_VIEWS.push(ZmId.VIEW_CONVLIST);
 
+ZmConvListController.FOLDERS_TO_OMIT = [ZmFolder.ID_TRASH, ZmFolder.ID_SPAM];
 
 // Public methods
 
@@ -493,7 +494,7 @@ function() {
 				var terms = ["underid:" + rootFolderId];
 				var search = this._currentSearch;
 				if (search) {
-					var foldersToExclude = [ZmFolder.ID_TRASH, ZmFolder.ID_SPAM];
+					var foldersToExclude = ZmConvListController.FOLDERS_TO_OMIT;
 					for (var i = 0; i < foldersToExclude.length; i++) {
 						var folderId = foldersToExclude[i];
 						if (acctId) {

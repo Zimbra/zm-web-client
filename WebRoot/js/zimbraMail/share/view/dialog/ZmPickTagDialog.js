@@ -99,6 +99,8 @@ function(params) {
 	if (tags.length == 1) {
 		this._tagTreeView.setSelected(tags[0], true, true);
 	}
+	this.setButtonEnabled(DwtDialog.OK_BUTTON, this._tagTreeView.getSelected());
+
 	ZmDialog.prototype.popup.apply(this, arguments);
 };
 
@@ -158,7 +160,11 @@ function(ev) {
 
 ZmPickTagDialog.prototype._okButtonListener = 
 function(ev) {
-	DwtDialog.prototype._buttonListener.call(this, ev, [this._tagTreeView.getSelected()]);
+	var selectedTag = this._tagTreeView.getSelected();
+	if (!selectedTag) {
+		return;
+	}
+	DwtDialog.prototype._buttonListener.call(this, ev, [selectedTag]);
 };
 
 ZmPickTagDialog.prototype._handleKeyUp =
@@ -190,6 +196,11 @@ function(ev) {
 	if (firstMatch) {
 		this._tagTreeView.setSelected(appCtxt.getById(firstMatch), true, true);
 	}
+	else {
+		this._tagTreeView.deselectAll();
+	}
+	this.setButtonEnabled(DwtDialog.OK_BUTTON, firstMatch);
+
 	this._lastVal = value;
 };
 
