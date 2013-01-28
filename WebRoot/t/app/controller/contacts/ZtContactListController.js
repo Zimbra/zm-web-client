@@ -43,7 +43,8 @@ Ext.define('ZCS.controller.contacts.ZtContactListController', {
 
 			// other
 			overview: 'appview #' + ZCS.constant.APP_CONTACTS + 'overview',
-			titlebar: 'appview #' + ZCS.constant.APP_CONTACTS + 'listpanel titlebar'
+			titlebar: 'appview #' + ZCS.constant.APP_CONTACTS + 'listpanel titlebar',
+			searchBox: 'appview #' + ZCS.constant.APP_MAIL + 'listpanel searchfield'
 		},
 
 		control: {
@@ -62,6 +63,6 @@ Ext.define('ZCS.controller.contacts.ZtContactListController', {
 	},
 
 	doNewContact: function() {
-		console.log('Create new contact');
+		Ext.Logger.warn('TODO: Create new contact');
 	}
 });

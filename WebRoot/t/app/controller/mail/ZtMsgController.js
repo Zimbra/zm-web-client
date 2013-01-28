@@ -16,7 +16,7 @@
 /**
  * This class manages the display and manipulation of a single message.
  *
- * @see ZtMsg
+ * @see ZtMailMsg
  * @author Conrad Damon <cdamon@zimbra.com>
  */
 Ext.define('ZCS.controller.mail.ZtMsgController', {
@@ -25,15 +25,19 @@ Ext.define('ZCS.controller.mail.ZtMsgController', {
 
 	config: {
 
-		models: ['ZCS.model.mail.ZtMsg'],
+		models: ['ZCS.model.mail.ZtMailMsg'],
 		stores: ['ZCS.store.mail.ZtMsgStore'],
 
 		refs: {
+			msgHeader: 'msgheader',
 			msgFooter: 'msgfooter',
-			menuButton: 'msgfooter button'
+			menuButton: 'msgfooter #menuButton'
 		},
 
 		control: {
+			msgHeader: {
+				toggleView: 'doToggleView'
+			},
 			msgFooter: {
 				reply: 'doReply',
 				replyAll: 'doReplyAll',
@@ -49,16 +53,30 @@ Ext.define('ZCS.controller.mail.ZtMsgController', {
 	},
 
 	launch: function() {
-		console.log('STARTUP: msg ctlr launch - ' + this.$className);
-		this.callParent(arguments);
-	},
-
-	doShowMenu: function(msg) {
-		this.setItem(msg);
+		Ext.Logger.verbose('STARTUP: msg ctlr launch - ' + this.$className);
 		this.callParent(arguments);
 	},
 
 	getActiveMsg: function() {
 		return this.getItem();
+	},
+
+	doToggleView: function(msgHeader) {
+
+		var msgView = msgHeader.up('msgview'),
+			msg = msgView.getMsg();
+
+		if (!msgView.getExpanded() && msg && !msg.get('isLoaded')) {
+			msg.set('op', 'load');
+			msg.save(); // ZtMsgView updated via 'updatedata' event
+		}
+		else {
+			msgView.toggleView();
+		}
+	},
+
+	doShowMenu: function(msg) {
+		this.setItem(msg);
+		this.callParent(arguments);
 	}
 });

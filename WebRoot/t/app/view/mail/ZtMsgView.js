@@ -20,8 +20,6 @@
  */
 Ext.define('ZCS.view.mail.ZtMsgView', {
 
-//	extend: 'Ext.Container',
-//	extend: 'Ext.Panel',
 	extend: 'Ext.dataview.component.ListItem',
 
 	requires: [
@@ -33,12 +31,10 @@ Ext.define('ZCS.view.mail.ZtMsgView', {
 	xtype: 'msgview',
 
 	config: {
-//		layout: 'fit',
-		msg: null,
-//		html: 'Hello',
+
+		// Using add() in an initialize method did not work for adding these components
 		items: [
 			{
-//				html: 'Howdy'
 				xtype: 'msgheader'
 			},
 			{
@@ -48,58 +44,63 @@ Ext.define('ZCS.view.mail.ZtMsgView', {
 				xtype: 'msgfooter'
 			}
 		],
+
+		// Custom properties
+		msg: null,
+		expanded: false,
+
 		listeners: {
 			updatedata: function(msgView, msgData) {
 				if (msgData) {
-					console.log('updatedata for msg ' + msgData.id);
+					Ext.Logger.info('updatedata for msg ' + msgData.id);
 					var msg = this.up(ZCS.constant.APP_MAIL + 'itemview').getStore().getById(msgData.id);
 					if (msg) {
-//						msgView.displayMsg(msg);
+						if (msg.op === 'load' && !msgData.isLoaded) {
+							return;
+						}
+						// Note: partial update on msg load results in double-render, so do whole thing
 						this.setMsg(msg);
-						var msgHeader = msgView.down('msgheader');
-						msgHeader.setContent(msg);
-						var msgBody = msgView.down('msgbody');
-						msgBody.setContent(msg);
+						this.setExpanded(msgData.isLoaded);
+						msgView.renderHeader();
+						msgView.renderBody();
+						this.updateExpansion();
 					}
 				}
 			}
 		}
 	},
 
-	displayMsg: function(msg) {
+	renderHeader: function() {
+		this.down('msgheader').render(this.getMsg());
+	},
 
-//		var msg = this.getMsg();
-//		if (!msg) {
-//			return;
-//		}
+	renderBody: function() {
+		this.down('msgbody').render(this.getMsg());
+	},
 
-		var msgHeader = {
-//			xtype: 'msgheader',
-			xtype: 'component',
-			html: 'Header',
-			msg: msg
-		};
-//		var msgHeader = Ext.create('ZCS.view.mail.ZtMsgHeader', {msg:msg});
+	/**
+	 * Toggles view between expanded and collapsed state.
+	 */
+	toggleView: function() {
+		this.setExpanded(!this.getExpanded());
+		this.updateExpansion();
+		this.down('msgheader').render(this.getMsg());
+	},
 
-		var msgBody = {
-//			xtype: 'msgbody',
-			xtype: 'component',
-			html: 'Body',
-			msg: msg
-		};
+	/**
+	 * Displays view according to whether it is collapsed or expanded. When the view is
+	 * collapsed, the body and footer are hidden.
+	 * @private
+	 */
+	updateExpansion: function() {
 
-		var msgFooter = {
-//			xtype: 'msgfooter',
-			xtype: 'component',
-			html: 'Footer',
-			msg: msg
-		};
-
-		this.add([
-			msgHeader,
-			msgBody,
-			msgFooter
-		]);
+		if (this.getExpanded()) {
+			this.down('msgbody').show();
+			this.down('msgfooter').show();
+		}
+		else {
+			this.down('msgbody').hide();
+			this.down('msgfooter').hide();
+		}
 	}
 });
-

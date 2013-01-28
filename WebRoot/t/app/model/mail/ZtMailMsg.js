@@ -20,7 +20,7 @@
  */
 var urlBase = ZCS.constant.SERVICE_URL_BASE;
 
-Ext.define('ZCS.model.mail.ZtMsg', {
+Ext.define('ZCS.model.mail.ZtMailMsg', {
 
 	extend: 'ZCS.model.mail.ZtMailItem',
 
@@ -31,16 +31,20 @@ Ext.define('ZCS.model.mail.ZtMsg', {
 
 	config: {
 
-		// TODO: since we're using our own custom reader, I don't think we need these
-/*
 		fields: [
 			{ name: 'content', type: 'string' },    // placeholder until we get MIME parsing
 			{ name: 'from', type: 'string' },
 			{ name: 'to', type: 'string' },
 			{ name: 'convId', type: 'string' },
-			{ name: 'topPart', type: 'auto' }
+			{ name: 'fragment', type: 'string' },
+			{ name: 'topPart', type: 'auto' },
+			{ name: 'attachments', type: 'auto' },
+			{ name: 'bodyParts', type: 'auto' },
+			{ name: 'contentTypes', type: 'auto' },
+
+			{ name: 'isLoaded', type: 'boolean' },
+			{ name: 'op', type: 'string' }          // operation to perform on server
 		],
-*/
 
 		proxy: {
 			api: {
@@ -62,5 +66,45 @@ Ext.define('ZCS.model.mail.ZtMsg', {
 	getReplyAddress: function() {
 		return this.getAddressByType(ZCS.constant.REPLY_TO) ||
 			   this.getAddressByType(ZCS.constant.FROM);
+	},
+
+	/**
+	 * Returns true if this msg has loaded a part with the given content type.
+	 *
+	 * @param	{string}		contentType		MIME type
+	 */
+	hasContentType: function(contentType) {
+		return this.getContentTypes()[contentType];
+	},
+
+	/**
+	 * Returns the list of body parts.
+	 *
+	 * @param	{string}	contentType		preferred MIME type of alternative parts (optional)
+	 */
+	getBodyPartsByType: function(contentType) {
+
+		var bodyParts = this.getBodyParts();
+
+		// no multi/alt, so we have a plain list
+		if (!this.hasContentType(ZmMimeTable.MULTI_ALT)) {
+			return bodyParts;
+		}
+
+		// grab the preferred type out of multi/alt parts
+		var parts = [];
+		Ext.each(bodyParts, function(part) {
+			if (ZCS.util.getClassName(part) === 'ZtMimePart') {
+				parts.push(part);
+			}
+			else if (part) {
+				// part is a hash of alternative parts by content type
+				var altPart = contentType && part[contentType];
+				parts.push(altPart || AjxUtil.values(part)[0]);
+			}
+		}, this);
+
+		return parts;
 	}
+
 });

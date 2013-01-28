@@ -27,12 +27,13 @@ Ext.define('ZCS.view.mail.ZtMsgHeader', {
 	xtype: 'msgheader',
 
 	config: {
-		msg: null,
 		padding: 5,
-		tpl: Ext.create('Ext.XTemplate', ZCS.template.MsgHeader)
+		tpl: Ext.create('Ext.XTemplate', ZCS.template.MsgHeader),
+//		cls: 'zcs-msg-header x-list-item-body'
+		cls: 'zcs-msg-header'
 	},
 
-	setContent: function(msg) {
+	render: function(msg) {
 
 		var data = msg.getData(),
 			addressTypes = [
@@ -40,6 +41,8 @@ Ext.define('ZCS.view.mail.ZtMsgHeader', {
 				ZCS.constant.TO,
 				ZCS.constant.CC
 			];
+
+		data.expanded = this.up('msgview').getExpanded();
 
 		Ext.each(addressTypes, function(type) {
 			var addrs = msg.getAddressesByType(type);

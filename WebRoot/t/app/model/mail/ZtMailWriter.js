@@ -39,7 +39,7 @@ Ext.define('ZCS.model.mail.ZtMailWriter', {
 	 *
 	 * @param {object}  parent      the SOAP Body
 	 * @param {object}  item        record data that maps to the ZtMailItem
-	 * @param {boolean} isMsg       true if the mail item is a ZtMsg
+	 * @param {boolean} isMsg       true if the mail item is a ZtMailMsg
 	 */
 	setActionRequest: function(parent, item, isMsg) {
 		var method = isMsg ? 'MsgActionRequest' : 'ConvActionRequest';

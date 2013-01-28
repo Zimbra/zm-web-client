@@ -19,27 +19,21 @@
  * convenience, since the code will never have to worry about whether the defining class
  * has been loaded.
  *
- * Use of the shortcut ZCS.constant is recommended for accessing these constants.
+ * Use of the shortcut ZCS.constant is recommended for defining and accessing these constants.
  *
  * @author Conrad Damon <cdamon@zimbra.com>
  */
 Ext.define('ZCS.common.ZtConstants', {
-	singleton: true,
-	requires: [
-//		'ZCS.common.ZtUtil'
-	],
 
-//	statics: {
-		// putting this in ZtUtil leads to random load-order errors :(
-		getBackMap: function(map) {
-			var backMap = {},
-				key;
-			for (key in map) {
-				backMap[map[key]] = key;
-			}
-			return backMap;
+	singleton: true,
+
+	getBackMap: function(map) {
+		var backMap = {}, key;
+		for (key in map) {
+			backMap[map[key]] = key;
 		}
-//	}
+		return backMap;
+	}
 });
 
 // shortcut to this class
@@ -219,3 +213,7 @@ ZCS.constant.MSEC_PER_DAY = 24 * ZCS.constant.MSEC_PER_HOUR;
 
 // How many senders to show for a conv in the conv list
 ZCS.constant.NUM_CONV_SENDERS = 3;
+
+// Useful regexes
+ZCS.constant.REGEX_NON_WHITESPACE = /\S+/;
+ZCS.constant.REGEX_SPLIT = /\r\n|\r|\n/;

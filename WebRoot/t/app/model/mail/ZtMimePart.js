@@ -21,7 +21,7 @@
 Ext.define('ZCS.model.mail.ZtMimePart', {
 
 	requires: [
-		'ZCS.common.ZtMimeTable'
+		'ZCS.common.mail.ZtMimeTable'
 	],
 
 	config: {

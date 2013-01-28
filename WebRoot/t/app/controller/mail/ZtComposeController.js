@@ -153,9 +153,8 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 
 	doSend: function() {
 		var values = this.getComposeForm().getValues();
-//		Ext.getStore('ZtMsgStore').add(values);
-		console.log('Send message');
-		var msg = Ext.create('ZCS.model.mail.ZtMsg', {
+		Ext.Logger.info('Send message');
+		var msg = Ext.create('ZCS.model.mail.ZtMailMsg', {
 			from: ZCS.session.getAccountName(),
 			to: values.to,
 			subject: values.subject,

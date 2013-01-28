@@ -43,7 +43,8 @@ Ext.define('ZCS.controller.mail.ZtConvListController', {
 
 			// other
 			overview: 'appview #' + ZCS.constant.APP_MAIL + 'overview',
-			titlebar: 'appview #' + ZCS.constant.APP_MAIL + 'listpanel titlebar'
+			titlebar: 'appview #' + ZCS.constant.APP_MAIL + 'listpanel titlebar',
+			searchBox: 'appview #' + ZCS.constant.APP_MAIL + 'listpanel searchfield'
 		},
 
 		control: {

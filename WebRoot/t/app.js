@@ -27,9 +27,23 @@ Ext.application({
 	    'ZCS.common.ZtUtil',
 	    'ZCS.common.ZtConstants',
 	    'ZCS.common.ZtTemplate',
-	    'ZCS.common.ZtUserSession',
-	    'ZCS.model.ZtEmailAddress'
+	    'ZCS.common.ZtUserSession'
     ],
+
+	logger: {
+		enabled: true,
+		xclass: 'Ext.log.Logger',
+		minPriority: 'info',
+		writers: {
+			console: {
+				xclass: 'Ext.log.writer.Console',
+				throwOnErrors: true,
+				formatter: {
+					xclass: 'Ext.log.formatter.Default'
+				}
+			}
+		}
+	},
 
 	controllers: [
 		'ZCS.controller.mail.ZtConvListController',
@@ -61,7 +75,7 @@ Ext.application({
     },
 
     launch: function() {
-	    console.log('STARTUP: app launch');
+	    Ext.Logger.info('STARTUP: app launch');
         // Destroy the #appLoadingIndicator element
         Ext.fly('appLoadingIndicator').destroy();
 

@@ -23,7 +23,7 @@ Ext.define('ZCS.store.mail.ZtMsgStore', {
 	extend: 'ZCS.store.mail.ZtMailStore',
 
 	config: {
-		model: 'ZCS.model.mail.ZtMsg',
+		model: 'ZCS.model.mail.ZtMailMsg',
 
 		listeners: {
 
@@ -40,7 +40,7 @@ Ext.define('ZCS.store.mail.ZtMsgStore', {
 						messages.push(msg);
 					}
 					else {
-						console.log('conv ID ' + msg.get('convId') + ' in msg does not match current conv ID ' + convId);
+						Ext.Logger.error('conv ID ' + msg.get('convId') + ' in msg does not match current conv ID ' + convId);
 					}
 				}, this);
 

@@ -18,8 +18,9 @@
  * a type, a name, and a display name (short version of name).
  *
  * @author Conrad Damon <cdamon@zimbra.com>
+ * @adapts AjxEmailAddress
  */
-Ext.define('ZCS.model.ZtEmailAddress', {
+Ext.define('ZCS.common.mail.ZtEmailAddress', {
 
 	config: {
 		type: '',
@@ -38,7 +39,7 @@ Ext.define('ZCS.model.ZtEmailAddress', {
 	statics: {
 		fromAddressNode: function(node) {
 			var type = ZCS.constant.FROM_SOAP_TYPE[node.t];
-			return new ZCS.model.ZtEmailAddress(type, node.a, node.p, node.d);
+			return new ZCS.common.mail.ZtEmailAddress(type, node.a, node.p, node.d);
 		}
 	},
 

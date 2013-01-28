@@ -88,7 +88,7 @@ Ext.define('ZCS.view.ZtListPanel', {
 						keyup: function(fld, ev) {
 							var keyCode = ev.browserEvent.keyCode;
 							if (keyCode === 13 || keyCode === 3) {
-								this.fireEvent('search', fld.getValue());
+								this.up('listpanel').fireEvent('search', fld.getValue(), false);
 							}
 						}
 					}

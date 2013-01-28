@@ -22,20 +22,26 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 
 	extend: 'Ext.Component',
 
+	requires: [
+		'ZCS.common.mail.ZtQuotedContent'
+	],
+
 	xtype: 'msgbody',
 
 	config: {
-		msg: null,
 		padding: 5,
 		tpl: Ext.create('Ext.XTemplate', ZCS.template.MsgBody)
 	},
 
-	setContent: function() {
-		var msg = this.getMsg();
-		this.setHtml(this.getTpl().apply(msg.getData()));
-	},
+	render: function(msg) {
 
-	getMsg: function() {
-		return this.up('msgview').getMsg();
+		var bodyParts = msg.get('bodyParts'),
+			html = '';
+
+		Ext.each(bodyParts, function(part) {
+			html += ZCS.quoted.getOriginalContent(part.getContent(), part.getContentType() === ZCS.mime.TEXT_HTML);
+		}, this);
+
+		this.setHtml(html);
 	}
 });

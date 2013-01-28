@@ -45,7 +45,7 @@ Ext.define('ZCS.view.ZtFolderList', {
 	 */
 	onItemTap: function(list, index, target, folder, e) {
 		var query = 'in:"' + folder.getQueryPath() + '"';
-		this.fireEvent('search', query);
+		this.fireEvent('search', query, true);
 	},
 
 	/**

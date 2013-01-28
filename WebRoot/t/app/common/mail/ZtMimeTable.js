@@ -17,28 +17,24 @@
  * Static class for handling MIME types.
  *
  * @author Conrad Damon <cdamon@zimbra.com>
+ * @adapts ZmMimeTable
  */
-Ext.define('ZCS.common.ZtMimeTable', {
+Ext.define('ZCS.common.mail.ZtMimeTable', {
 	
 	singleton: true,
 
 	/**
-	 * Checks if the type is a renderable image.
+	 * Returns true if the type is a renderable image.
 	 *
-	 * @param	{constant}	type		the type
-	 * @return	{Boolean}	<code>true</code> if the type is a renderable image
+	 * @param	{string}	type		the type
+	 * @return	{boolean}	<code>true</code> if the type is a renderable image
 	 */
 	isRenderableImage: function(type) {
-		return (type == ZmMimeTable.IMG_JPEG ||
-			type == ZmMimeTable.IMG_GIF ||
-			type == ZmMimeTable.IMG_BMP ||
-			type == ZmMimeTable.IMG_PNG);
+		return ZCS.mime.IS_RENDERABLE_IMAGE[type];
 	}
-
-
 });
 
-ZCS.mime = ZCS.common.ZtMimeTable;
+ZCS.mime = ZCS.common.mail.ZtMimeTable;
 
 // MIME types (IGNORE denotes types that are not shown as attachments)
 ZCS.mime.APP					= 'application';

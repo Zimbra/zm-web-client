@@ -46,7 +46,7 @@ Ext.define('ZCS.common.ZtMenu', {
 					select: function(list, record) {
 						var action = record.get('action'),
 							menu = this.up('panel');
-						console.log('Menu click: ' + action);
+						Ext.Logger.verbose('Menu click: ' + action);
 						var listener = record.get('listener');
 						if (listener) {
 							listener();
@@ -70,12 +70,12 @@ Ext.define('ZCS.common.ZtMenu', {
 	 * @private
 	 */
 	initMenu: function() {
-//		console.log('Initializing menu');
+		Ext.Logger.verbose('Initializing menu');
 		this.on({
 			painted: {
 				scope: this,
 				fn: function(el) {
-//					console.log('PAINTED event fired on menu');
+					Ext.Logger.verbose('PAINTED event fired on menu');
 					var list = this.down('list');
 					var firstItem = list && list.element.down('.x-list-item');
 					var itemHeight = firstItem && firstItem.getHeight();

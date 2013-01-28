@@ -14,7 +14,7 @@
  */
 
 /**
- * This class translates JSON for a message into a ZtMsg.
+ * This class translates JSON for a message into a ZtMailMsg.
  *
  * @author Conrad Damon <cdamon@zimbra.com>
  */
@@ -40,8 +40,10 @@ Ext.define('ZCS.model.mail.ZtMsgReader', {
 
 		// TODO: find a cleaner way to grab the appropriate response
 		var root = (data.Body.SearchConvResponse && data.Body.SearchConvResponse.m) ||
-				   (data.Body.SendMsgResponse && data.Body.SendMsgResponse.m),
-			total = root.length,
+				   (data.Body.SendMsgResponse && data.Body.SendMsgResponse.m) ||
+				   (data.Body.GetMsgResponse && data.Body.GetMsgResponse.m),
+
+			total = root && root.length,
 			success = true,
 			message,
 			recordCount = 0,
@@ -53,7 +55,7 @@ Ext.define('ZCS.model.mail.ZtMsgReader', {
 			for (i = 0; i < total; i++) {
 				node = root[i];
 				data = {};
-//				data.fragment = node.fr;
+				data.fragment = node.fr;
 //				data.content = (node.mp && node.mp[0] && node.mp[0].content) || node.fr;
 				data.content = node.fr;
 				data.convId = node.cid;
@@ -71,6 +73,10 @@ Ext.define('ZCS.model.mail.ZtMsgReader', {
 						contentTypes:   {}
 					}
 					data.topPart = ZCS.model.mail.ZtMimePart.fromJson(node.mp[0], ctxt);
+					data.attachments = ctxt.attachments;
+					data.bodyParts = ctxt.bodyParts;
+					data.contentTypes = ctxt.contentTypes;
+					data.isLoaded = !!(data.bodyParts.length > 0 || data.attachments.length > 0);
 				}
 
 				records.push({

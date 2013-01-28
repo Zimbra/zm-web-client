@@ -18,7 +18,7 @@
  *
  * @author Conrad Damon <cdamon@zimbra.com>
  */
-Ext.define('ZCS.model.ZtSearch', {
+Ext.define('ZCS.common.ZtSearch', {
 
 	config: {
 		query: null,
@@ -26,6 +26,12 @@ Ext.define('ZCS.model.ZtSearch', {
 		folderName: null
 	},
 
+	/**
+	 * Parses the given query so we can save some useful fields.
+	 *
+	 * @param config
+	 * @adapts ZmParsedQuery
+	 */
 	constructor: function(config) {
 
 		this.initConfig(config);

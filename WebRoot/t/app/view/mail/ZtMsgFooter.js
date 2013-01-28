@@ -59,6 +59,7 @@ Ext.define('ZCS.view.mail.ZtMsgFooter', {
 			},
 			{
 				xtype: 'button',
+				itemId: 'menuButton',
 				iconCls: 'arrow_down',
 				iconMask: true,
 				handler: function() {

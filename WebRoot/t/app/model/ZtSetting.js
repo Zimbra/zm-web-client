@@ -17,6 +17,7 @@
  * This class represents a setting, which usually maps to a user preference.
  *
  * @author Conrad Damon <cdamon@zimbra.com>
+ * @adapts ZmSetting
  */
 Ext.define('ZCS.model.ZtSetting', {
 

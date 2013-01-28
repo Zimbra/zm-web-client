@@ -205,7 +205,7 @@ Ext.define('ZCS.common.ZtUserSession', {
 			else {
 				folder.leaf = true;
 			}
-//			console.log('adding folder ' + folder.name + ' to parent ' + folderNode.l);
+			Ext.Logger.verbose('adding folder ' + folder.name + ' to parent ' + folderNode.l);
 			folders.push(folder);
 		}
 
@@ -223,11 +223,11 @@ Ext.define('ZCS.common.ZtUserSession', {
 	 * @return {Ext.field.Search}   search field
 	 */
 	getCurrentSearchField: function() {
-		return Ext.ComponentQuery.query(this.getActiveApp() + 'listpanel searchfield')[0];
+		return Ext.ComponentQuery.query('#' + this.getActiveApp() + 'listpanel searchfield')[0];
 	},
 
 	getCurrentOverview: function() {
-		return Ext.ComponentQuery.query(this.getActiveApp() + 'overview')[0];
+		return Ext.ComponentQuery.query('#' + this.getActiveApp() + 'overview')[0];
 	},
 
 	/**

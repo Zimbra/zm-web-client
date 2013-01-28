@@ -61,21 +61,24 @@ Ext.define('ZCS.controller.mail.ZtMailItemController', {
 	 * Moves the conv to Trash.
 	 */
 	doDelete: function() {
-		console.log("conv controller DELETE");
+		Ext.Logger.warn("TODO: conv controller DELETE");
 	},
 
 	/**
 	 * Toggles read/unread on the conv.
 	 */
 	doMarkRead: function() {
-		console.log("conv controller MARK_READ");
-		var conv = this.getItem(),
-			wasUnread = conv.get('isUnread');
+		Ext.Logger.info("mail item controller MARK_READ");
+		var item = this.getItem(),
+			wasUnread = item.get('isUnread');
 
-		conv.set('op', wasUnread ? 'read' : '!read');
-		conv.save({ success: function(conv, operation) {
-			console.log('conv saved successfully');
-			conv.set('isUnread', !wasUnread);
-		}});
+		item.set('op', wasUnread ? 'read' : '!read');
+		item.save({
+			success: function(item, operation) {
+				Ext.Logger.info('mail item saved successfully');
+				item.set('isUnread', !wasUnread);
+				item.set('op', null);
+			}
+		});
 	}
 });

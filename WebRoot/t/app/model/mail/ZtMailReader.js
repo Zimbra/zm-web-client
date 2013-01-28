@@ -22,6 +22,10 @@ Ext.define('ZCS.model.mail.ZtMailReader', {
 
 	extend: 'ZCS.model.ZtReader',
 
+	requires: [
+		'ZCS.common.mail.ZtEmailAddress'
+	],
+
 	/**
 	 * Sets flag-related boolean properties based on the JSON flags string. For example, if the letter 'u'
 	 * is present in the flags string, the property 'isUnread' will get set to true.
@@ -82,7 +86,7 @@ Ext.define('ZCS.model.mail.ZtMailReader', {
 		var	addresses = {};
 
 		Ext.each(addrs, function(addr) {
-			var emailAddr = ZCS.model.ZtEmailAddress.fromAddressNode(addr),
+			var emailAddr = ZCS.common.mail.ZtEmailAddress.fromAddressNode(addr),
 				type = emailAddr.getType();
 
 			if (!addresses[type]) {

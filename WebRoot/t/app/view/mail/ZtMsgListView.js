@@ -20,8 +20,6 @@
  */
 Ext.define('ZCS.view.mail.ZtMsgListView', {
 
-//	extend: 'Ext.Container',
-//	extend: 'Ext.Panel',
 	extend: 'Ext.dataview.List',
 
 	requires: [
@@ -30,29 +28,34 @@ Ext.define('ZCS.view.mail.ZtMsgListView', {
 
 	xtype: ZCS.constant.APP_MAIL + 'itemview',
 
-//	layout: 'fit',
-
 	config: {
 		useComponents: true,
 		defaultType: 'msgview',
+		disableSelection: true,
 		scrollable: {
 			direction: 'vertical'
 		},
 		store: 'ZtMsgStore',
-		msgList: null
+		itemCls: 'zcs-msgview'
 	},
 
-	updateMsgList: function(msgs) {
-//		this.removeAll();
-//		this.setHtml("Holy crap, " + msgs.length + " messages!");
-		this.add({
-			html: "Holy shit, " + msgs.length + " messages!"
+	initialize: function() {
+
+		this.callParent(arguments);
+
+		// Add a delegate here so we can catch a tap on a msg header.
+		// Note: Adding this listener via config does not work.
+		this.on({
+			tap: function(e) {
+				Ext.Logger.verbose('TAP via delegate');
+				var msgHeader = this.down('#' + e.delegatedTarget.id);
+				if (msgHeader) {
+					msgHeader.fireEvent('toggleView', msgHeader);
+				}
+			},
+			element: 'element',
+			delegate: '.zcs-msg-header',
+			scope: this
 		});
-		return;
-		Ext.each(msgs, function(msg) {
-			var msgView = new ZCS.view.mail.ZtMsgView();
-			msgView.setMsg(msg);
-			this.add(msgView);
-		}, this);
 	}
 });

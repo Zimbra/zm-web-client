@@ -17,7 +17,7 @@
  * This class manages the display and manipulation of a single conversation, which is made up of one or more messages.
  *
  * @see ZtConv
- * @see ZtMsg
+ * @see ZtMailMsg
  * @author Conrad Damon <cdamon@zimbra.com>
  */
 Ext.define('ZCS.controller.mail.ZtConvController', {
@@ -26,7 +26,7 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 
 	config: {
 
-		models: ['ZCS.model.mail.ZtMsg'],
+		models: ['ZCS.model.mail.ZtMailMsg'],
 		stores: ['ZCS.store.mail.ZtMsgStore'],
 
 		refs: {
@@ -53,10 +53,12 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 	 * @param {ZtConv}  conv        conv to show
 	 */
 	showItem: function(conv) {
-		console.log("conv controller: show conv " + conv.get('id'));
+		Ext.Logger.info("conv controller: show conv " + conv.get('id'));
 		this.callParent(arguments);
 		this.getItemPanelToolbar().setTitle(conv.get('subject'));
-		this.getMsgListView().getStore().load({convId: conv.get('id')});
+		Ext.getStore(ZCS.util.getStoreShortName(this)).load({
+			convId: conv.get('id')
+		});
 	},
 
 	/**
@@ -71,7 +73,9 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 				store = list.getStore(),
 				item = list.getItemAt(store.find('action', 'MARK_READ'));
 
-			item.getRecord().set('label', label);
+			if (item) {
+				item.getRecord().set('label', label);
+			}
 		}
 		else {
 			// first time showing menu, change data since menu not ready yet

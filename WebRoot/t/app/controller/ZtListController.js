@@ -25,7 +25,7 @@ Ext.define('ZCS.controller.ZtListController', {
 	extend: 'Ext.app.Controller',
 
 	requires: [
-		'ZCS.model.ZtSearch'
+		'ZCS.common.ZtSearch'
 	],
 
 	config: {
@@ -39,7 +39,8 @@ Ext.define('ZCS.controller.ZtListController', {
 
 			// other
 			overview: null,
-			titlebar: null
+			titlebar: null,
+			searchBox: null
 		},
 
 		control: {
@@ -63,18 +64,9 @@ Ext.define('ZCS.controller.ZtListController', {
 
 	// On launch, populate the list with items
 	launch: function () {
-		console.log('STARTUP: list ctlr launch - ' + this.$className);
+		Ext.Logger.verbose('STARTUP: list ctlr launch - ' + this.$className);
 		this.callParent();
-		Ext.getStore(this.getStoreShortName()).load();
-	},
-
-	/**
-	 * Class name of the store, without the initial name-spacing parts.
-	 * @protected
-	 */
-	getStoreShortName: function() {
-		var parts = this.getStores()[0].split('.');
-		return parts[parts.length - 1];
+		Ext.getStore(ZCS.util.getStoreShortName(this)).load();
 	},
 
 	/**
@@ -88,7 +80,7 @@ Ext.define('ZCS.controller.ZtListController', {
 	 * @protected
 	 */
 	doShowFolders: function() {
-		console.log("Folders event caught");
+		Ext.Logger.verbose("Folders event caught");
 		var overview = this.getOverview(),
 			itemPanel = this.getItemPanel();
 
@@ -127,12 +119,17 @@ Ext.define('ZCS.controller.ZtListController', {
 	/**
 	 * Runs a search using the text in the search box as the query.
 	 *
-	 * @param {string}  query       query to run
+	 * @param {string}  query           query to run
+	 * @param {boolean} isFromOverview  true if the search was triggered by tap on overview item
 	 */
-	doSearch: function(query) {
+	doSearch: function(query, isFromOverview) {
+
 		this.getItemController().clear();
-		console.log('SearchRequest: ' + query);
-		Ext.getStore(this.getStoreShortName()).load({query: query});
+		Ext.Logger.info('SearchRequest: ' + query);
+		if (isFromOverview) {
+			this.getSearchBox().setValue('');
+		}
+		Ext.getStore(ZCS.util.getStoreShortName(this)).load({query: query});
 	},
 
 	/**
@@ -146,7 +143,7 @@ Ext.define('ZCS.controller.ZtListController', {
 		}
 
 		var curQuery = ZCS.session.getSetting(ZCS.constant.SETTING_CUR_SEARCH),
-			search = curQuery && Ext.create('ZCS.model.ZtSearch', {
+			search = curQuery && Ext.create('ZCS.common.ZtSearch', {
 				query: curQuery
 			});
 
