@@ -2067,8 +2067,11 @@ ZmComposeController.prototype._pasteHandler = function( ev ){
 };
 
 ZmComposeController.prototype._processDataURIImages = function(idoc, callback){
-    var BlobBuilder = window.MozBlobBuilder || window.WebKitBlobBuilder || window.BlobBuilder;
-    if(!BlobBuilder || !idoc || !window.atob){
+    if (!window.atob) {
+        return;
+    }
+    var BlobBuilder = window.MozBlobBuilder || window.WebKitBlobBuilder || window.MSBlobBuilder || window.BlobBuilder;
+    if (!(BlobBuilder || window.Blob)) {
         return;
     }
     var imgArray = idoc.getElementsByTagName("img");
@@ -2103,12 +2106,18 @@ ZmComposeController.prototype._processDataURIImages = function(idoc, callback){
                         ia[i] = byteString.charCodeAt(i);
                     }
                     // write the ArrayBuffer to a blob, and you're done
-                    var blobbuilder = new BlobBuilder();
-                    blobbuilder.append(ab);
+                    var blob;
+                    if (window.Blob) {
+                        blob = new Blob([ab], {"type" : mimeString});
+                    }
+                    else {
+                        var blobbuilder = new BlobBuilder();
+                        blobbuilder.append(ab);
 
-                    var blob = blobbuilder.getBlob(mimeString);
-                    blob.type = mimeString;
-                    blob.name = blob.name || new Date().getTime();
+                        blob = blobbuilder.getBlob(mimeString);
+                        blob.type = mimeString;
+                        blob.name = blob.name || new Date().getTime();
+                    }
                     return blob;
                 }
             }
