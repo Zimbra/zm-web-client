@@ -1892,8 +1892,11 @@ function(account) {
 ZmAccountsPage.prototype._handleNameChange =
 function(evt) {
 	var inputEl = DwtUiEvent.getTarget(evt);
-	this._accountListView.setCellContents(this._currentAccount, ZmItem.F_NAME, AjxStringUtil.htmlEncode(inputEl.value));
-	this._setControlValue("HEADER", this._currentSection, inputEl.value);
+	var newName = inputEl.value;
+	this._accountListView.setCellContents(this._currentAccount, ZmItem.F_NAME, AjxStringUtil.htmlEncode(newName));
+	this._setControlValue("HEADER", this._currentSection, newName);
+
+	this._currentAccount.identity.name = newName;
 
 	var type = this._currentAccount.type;
 	if (type == ZmAccount.TYPE_POP || type == ZmAccount.TYPE_IMAP) {
