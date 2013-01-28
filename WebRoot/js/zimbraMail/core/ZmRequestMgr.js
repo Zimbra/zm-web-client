@@ -67,7 +67,6 @@ ZmRequestMgr._nextReqId = 1;
 
 ZmRequestMgr.OFFLINE_HEAP_DUMP          = "heapdump_upload";
 ZmRequestMgr.OFFLINE_MUST_RESYNC        = "resync";
-ZmRequestMgr.OFFLINE_MUST_GAL_RESYNC        = "gal_resync";
 ZmRequestMgr.OFFLINE_FOLDER_MOVE_FAILED = "foldermove_failed";
 /**
  * Returns a string representation of the object.
@@ -232,6 +231,7 @@ function(params, result) {
 	
 		if (!params.noBusyOverlay) {
 			this._shell.setBusy(false, params.reqId); // remove busy overlay
+		} else if (params.timeout) {
 		}
 	}
 
@@ -439,17 +439,17 @@ function(dlg, acct) {
             cont = AjxMessageFormat.format(ZmMsg.offlineMustReSync, acct.name);
             break;
         }
-		case ZmRequestMgr.OFFLINE_MUST_GAL_RESYNC: {
-			cont = AjxMessageFormat.format(ZmMsg.offlineMustGalReSync, acct.name);
-			break;
-		}
         case ZmRequestMgr.OFFLINE_FOLDER_MOVE_FAILED: {
             appCtxt.setStatusMsg(ZmMsg.offlineMoveFolderError);
+            cont = "";
             break;
         }
-        default:
+        default: {
+            cont = "";
+            break;
+        }
     }
-    if (!cont) {
+    if(!cont || cont == "") {
         return;
     }
     var dialog = appCtxt.getOkCancelMsgDialog();
