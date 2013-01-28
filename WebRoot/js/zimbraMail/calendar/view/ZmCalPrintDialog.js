@@ -395,6 +395,11 @@ function() {
 
     if(viewSelected == ZmId.VIEW_CAL_MONTH) {
         var endMonthDate = AjxDateUtil._daysPerMonth[dateRangeTo.getMonth()];
+        if (dateRangeTo.getMonth() == '1' && !AjxDateUtil.isLeapYear(dateRangeTo.getYear())) {
+            //By default,_daysPerMonth sets number of days for Feb as 29.
+            //If it's not a leap year, set it to 28.
+            endMonthDate = '28';
+        }
         dateRangeTo.setDate(endMonthDate);
         dateRangeFrom.setDate(1);
     }
