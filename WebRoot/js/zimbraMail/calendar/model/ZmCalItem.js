@@ -2397,7 +2397,7 @@ function(m, cancel) {
 	var hasAttendees = this.hasAttendees(),
         tprefix = hasAttendees ? this._getDefaultBlurb(cancel) : "",
         hprefix = hasAttendees ? this._getDefaultBlurb(cancel, true) : "",
-        mp = m.mp = {},
+        mp = m.mp = {"mp" : []},
         numSubParts,
         part,
         pct,
@@ -2420,26 +2420,26 @@ function(m, cancel) {
 			} else {
 				content = this._includeEditReply ? part.getContent() : AjxBuffer.concat(tprefix, part.getContent());
 			}
-            mp.mp = {
+            mp.mp.push({
                 ct : pct,
                 content : content
-            };
+            });
 		}
 	} else {
         ntp = this.notesTopPart;
 		tcontent = ntp ? ntp.getContent() : "";
         pct = ntp ? ntp.getContentType() : ZmMimeTable.TEXT_PLAIN;
-        mp.mp = {
+        mp.mp.push({
             ct : pct
-        };
+        });
         if (pct == ZmMimeTable.TEXT_HTML) {
             //bug fix #9592 - html encode the text before setting it as the "HTML" part
             hcontent = AjxStringUtil.nl2br(AjxStringUtil.htmlEncode(tcontent));
             html = "<html><body>" + (this._includeEditReply ? hcontent : AjxBuffer.concat(hprefix, hcontent)) + "</body></html>";
-            mp.mp.content = html;
+            mp.mp[0].content = html;
         }
         else {
-            mp.mp.content = (this._includeEditReply ? tcontent : AjxBuffer.concat(tprefix, tcontent));
+            mp.mp[0].content = (this._includeEditReply ? tcontent : AjxBuffer.concat(tprefix, tcontent));
         }
 	}
 };
