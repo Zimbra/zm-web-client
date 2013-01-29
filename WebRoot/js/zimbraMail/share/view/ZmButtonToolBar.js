@@ -166,7 +166,7 @@ function(id, params) {
 		params.textClassName = params.textClassName || "ZWidgetTitle";
 		b = new DwtText({parent:this, className:params.textClassName, id:id});
 	} else {
-		params.id = this._context ? ZmId.getButtonId(this._context, id, this._toolbarType) : null;
+		params.id = params.domId || (this._context ? ZmId.getButtonId(this._context, id, this._toolbarType) : null);
 		params.textPrecedence = ZmOperation.getProp(id, "textPrecedence");
 		params.iconPrecedence = ZmOperation.getProp(id, "iconPrecedence");
 		var showImage = params.showImageInToolbar || false; //default to false;
