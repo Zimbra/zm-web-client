@@ -745,7 +745,6 @@ function(ev) {
  * @param {string}		origin						indicates what initiated the search
  * @param {string}		sessionId					session ID of search results tab (if search came from one)
  * @param {boolean}		skipUpdateSearchToolbar     don't update the search toolbar (e.g. from the ZmDumpsterDialog where the search is called from its own search toolbar
- * @param {String}		sortBy
  * 
  * @private
  */
@@ -776,7 +775,6 @@ function(params) {
 			origin:						params.origin,
 			sessionId:					params.sessionId,
 			errorCallback:				params.errorCallback,
-			sortBy:						params.sortBy,
 			isEmpty:					params.isEmpty || !queryString
 		};
 		this.search(searchParams);
@@ -816,6 +814,8 @@ function(ev, id, noFocus) {
 
 	var selItem = menu.getSelectedItem();
 	var sharedMI = menu.getItemById(ZmSearchToolBar.MENUITEM_ID, ZmId.SEARCH_SHARED);
+
+	this._searchToolBar.setPeopleAutocomplete(id);
 
 	// enable shared menu item if not a gal search
 	if (id == ZmId.SEARCH_GAL) {
