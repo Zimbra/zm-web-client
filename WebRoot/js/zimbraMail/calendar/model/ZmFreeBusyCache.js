@@ -229,7 +229,7 @@ function(startTime, endTime, emailList, callback, errorCallback, noBusyOverlay, 
 ZmFreeBusyCache.prototype.getWorkingHours =
 function(params) {
 
-    var requiredEmails = [], whKey, emails = params.emails;
+    var requiredEmails = [], whKey, emails = params.emails || [];
     for (var i = emails.length; --i >= 0;) {
         whKey = this.getWorkingHoursKey(emails[i], (new Date(params.startTime)).getDay());
         //check local cache
