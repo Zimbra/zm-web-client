@@ -483,6 +483,10 @@
 	@ListColHeaderContainer-normal@
 }
 
+.FixedColumnHeaderTables .DwtListView-Column table {
+	table-layout:fixed
+}
+
 /* ??? SHOTGUN */
 
 .DwtListView-Column td {
@@ -1791,12 +1795,12 @@ input.xform_field {
 .ZWidgetIcon					{	width:0px;	height:@SmallIconHeight@; overflow:hidden;}
 .ZDisabled .ZWidgetIcon DIV		{ 	@Icon-disabled@	}
 
-.ZWidgetTitle					{ 	height:@SmallIconHeight@;	width:100%;	white-space:nowrap;		}
+.ZWidgetTitle					{ 	height:@SmallIconHeight@;	width:100%;	white-space:nowrap;	overflow: hidden;	}
 .ZDisabled .ZWidgetTitle		{ 	@Text-disabled@	}
 
 .ZCenterTitle .ZWidgetTitle		{	text-align:center;  vertical-align:middle;	}
 
-
+.ZDisabled .ZDropDown           { @Text-disabled@ }
 
 .ZWidgetTable DIV				{	}
 .ZHasText .ZWidgetTitle			{	padding:0px 4px;	}

@@ -1093,7 +1093,10 @@ function(inv, m, notifyList, attendee, type, request) {
 			role = attendee.getParticipantRole() ? attendee.getParticipantRole() : ZmCalItem.ROLE_REQUIRED;
 		}
 		at.role = role;
-		var ptst = attendee.getParticipantStatus() || ZmCalBaseItem.PSTATUS_NEEDS_ACTION;
+		var ptst = attendee.getParticipantStatus();
+		if (!ptst || type === ZmCalBaseItem.PERSON && this.dndUpdate) {  //Bug 56639 - special case for drag-n-drop since the ptst was not updated correctly as we didn't have the informations about attendees and changes.
+			ptst = ZmCalBaseItem.PSTATUS_NEEDS_ACTION
+		}
 		if (notifyList) {
 			var attendeeFound = false;
 			for (var i = 0; i < notifyList.length; i++) {

@@ -502,7 +502,7 @@ function(defaultColumnSort) {
 		if (activeSortBy && ZmMailListView.SORTBY_HASH[activeSortBy]) {
 			defaultColumnSort = ZmMailListView.SORTBY_HASH[activeSortBy].field;
 		}
-		DwtListView.prototype.createHeaderHtml.call(this, defaultColumnSort);
+		DwtListView.prototype.createHeaderHtml.call(this, defaultColumnSort, this._isMultiColumn);
 
 		if (rpLoc == ZmSetting.RP_RIGHT) {
 			var td = document.getElementById(this._itemCountTextTdId);
