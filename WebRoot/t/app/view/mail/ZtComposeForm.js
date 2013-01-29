@@ -46,18 +46,18 @@ Ext.define('ZCS.view.mail.ZtComposeForm', {
 		var toolbar = {
 			xtype: 'titlebar',
 			docked: 'top',
-			title: 'Compose',
+			title: ZtMsg.compose,
 			items: [
 				{
 					xtype: 'button',
-					text: 'Cancel',
+					text: ZtMsg.cancel,
 					handler: function() {
 						this.up('composepanel').fireEvent('cancel');
 					}
 				},
 				{
 					xtype: 'button',
-					text: 'Send',
+					text: ZtMsg.send,
 					align: 'right',
 					handler: function() {
 						this.up('composepanel').fireEvent('send');
@@ -76,17 +76,17 @@ Ext.define('ZCS.view.mail.ZtComposeForm', {
 				{
 					xtype: 'emailfield',
 					name: 'to',
-					label: 'To:'
+					label: ZtMsg.toLabel
 				},
 				{
 					xtype: 'emailfield',
 					name: 'cc',
-					label: 'Cc:'
+					label: ZtMsg.ccLabel
 				},
 				{
 					xtype: 'textfield',
 					name: 'subject',
-					label: 'Subject:'
+					label: ZtMsg.subjectLabel
 				},
 				{
 					xtype: 'textareafield',

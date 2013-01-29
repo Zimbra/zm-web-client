@@ -52,8 +52,8 @@ ZCS.constant.ALL_APPS = [
 
 // Text for tab bar
 ZCS.constant.TAB_TITLE = {};
-ZCS.constant.TAB_TITLE[ZCS.constant.APP_MAIL]       = 'Mail';
-ZCS.constant.TAB_TITLE[ZCS.constant.APP_CONTACTS]   = 'Contacts';
+ZCS.constant.TAB_TITLE[ZCS.constant.APP_MAIL]       = ZtMsg.mail;
+ZCS.constant.TAB_TITLE[ZCS.constant.APP_CONTACTS]   = ZtMsg.contacts;
 
 // Organizer type to show in overview
 ZCS.constant.OVERVIEW_MODEL = {};
@@ -62,8 +62,8 @@ ZCS.constant.OVERVIEW_MODEL[ZCS.constant.APP_CONTACTS]   = 'ZCS.model.contacts.Z
 
 // Organizer type to show in overview
 ZCS.constant.OVERVIEW_TITLE = {};
-ZCS.constant.OVERVIEW_TITLE[ZCS.constant.APP_MAIL]       = 'Folders';
-ZCS.constant.OVERVIEW_TITLE[ZCS.constant.APP_CONTACTS]   = 'Address Books';
+ZCS.constant.OVERVIEW_TITLE[ZCS.constant.APP_MAIL]       = ZtMsg.folders;
+ZCS.constant.OVERVIEW_TITLE[ZCS.constant.APP_CONTACTS]   = ZtMsg.addrbook;
 
 // View (from JSON folder data) that determines which app a folder belongs to
 ZCS.constant.FOLDER_VIEW = {};

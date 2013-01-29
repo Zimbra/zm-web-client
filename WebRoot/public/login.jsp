@@ -206,7 +206,7 @@
                             </c:redirect>
                         </c:when>
                         <c:otherwise>
-                           <jsp:forward page="/t/launch.jsp"/>
+                           <jsp:forward page="/public/launchTouch.jsp"/>
                         </c:otherwise>
                     </c:choose>
                 </c:when>
