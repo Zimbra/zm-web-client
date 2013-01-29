@@ -1465,6 +1465,7 @@ function(item, index, skipNotify, itemIndex) {
                 headerDiv = this._getSectionHeaderDiv(group, section);
                 this._addRow(headerDiv, index);
             }
+			index = parseInt(index) || 0;  //check for NaN index
             this._addRow(div, index+1); //account for header
 
 		}
