@@ -166,7 +166,11 @@ function(list) {
 		var appt = list.get(i);
 		var id = appt.id;
         var hasAlarm = appt.recurring ? appt.isAlarmInstance() : appt.hasAlarmData();
+        AjxDebug.println(AjxDebug.REMINDER, "8_0_3 :: " + i + " :: " + appt.name + " :: " + appt.startDate + " :: " + appt.endDate + " :: " + appt.recurring + " :: " +appt.isException);
 		if (hasAlarm) {
+            var alarmData = appt.getAlarmData();
+            alarmData = (alarmData && alarmData.length > 0) ? alarmData[0] : {};
+            AjxDebug.println(AjxDebug.REMINDER, "8_0_3 :: " + (alarmData.nextAlarm || " NA ") + " / " + (alarmData.alarmInstStart || " NA "));
 			if (!this._cacheMap[id]) {
 				this._cacheMap[id] = true;
 				newList.add(appt);

@@ -115,7 +115,7 @@ function(item, force) {
 	if (changed && itemView && itemView._replyView) {
 		itemView._replyView.reset();
 	}
-	this._itemView.setVisible(true,null,item);
+	this._itemView.setVisible(true);
 	if (changed) {
 		this.setReadingPane(true);	// so that second view gets positioned
 	}
@@ -404,16 +404,6 @@ function(item, field, params) {
 		: (ZmMailListView.prototype._getCellClass.apply(this, arguments));
 };
 
-
-ZmConvListView.prototype._getCellCollapseExpandImage =
-function(item) {
-	if (!this._isExpandable(item)) {
-		return null;
-	}
-	return this._expanded[item.id] ? "NodeExpanded" : "NodeCollapsed";
-};
-
-
 ZmConvListView.prototype._getCellContents =
 function(htmlArr, idx, item, field, colIdx, params) {
 
@@ -421,7 +411,7 @@ function(htmlArr, idx, item, field, colIdx, params) {
 		idx = ZmMailListView.prototype._getCellContents.apply(this, arguments);
 	}
 	else if (field == ZmItem.F_EXPAND) {
-		idx = this._getImageHtml(htmlArr, idx, this._getCellCollapseExpandImage(item), this._getFieldId(item, field));
+		idx = this._getImageHtml(htmlArr, idx, this._isExpandable(item) ? "NodeCollapsed" : null, this._getFieldId(item, field));
 	}
     else if (field == ZmItem.F_READ) {
 		idx = this._getImageHtml(htmlArr, idx, item.getReadIcon(), this._getFieldId(item, field));
@@ -664,7 +654,7 @@ function(conv, msg, force) {
 			index--;	// for ascending, we want to expand upward (add above expandable msg row)
 		}
 		var offset = this._msgOffset[item.id] || 0;
-		var a = conv.getMsgList(offset, ascending, AjxUtil.arrayAsHash(ZmConvListController.FOLDERS_TO_OMIT));
+		var a = conv.getMsgList(offset, ascending);
 		for (var i = 0; i < a.length; i++) {
 			var msg = a[i];
 			var div = this._createItemHtml(msg);
