@@ -2028,15 +2028,17 @@ function() {
 
 /**
  * Get the image URL.
- * 
+ *
+ * maxWidth {int} max pixel width (optional - default 48)
  * @return	{String}	the image URL
  */
 ZmContact.prototype.getImageUrl =
-function() {
+function(maxWidth) {
   	var image = this.getAttr(ZmContact.F_image);
-  	if(!image || !image.part) { return null; }
+  	if (!image || !image.part) { return null; }
   	var msgFetchUrl = appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI);
-  	return  [msgFetchUrl, "&id=", this.id, "&part=", image.part, "&t=", (new Date()).getTime()].join("");
+	maxWidth = maxWidth || 48;
+  	return  [msgFetchUrl, "&id=", this.id, "&part=", image.part, "&max_width=", maxWidth, "&t=", (new Date()).getTime()].join("");
 };
 
 /**
