@@ -785,10 +785,10 @@ function() {
  * @return	{String}	the URL
  */
 ZmOrganizer.prototype.getRestUrl =
-function() {
+function(noRemote) {
 
 	var restUrl = appCtxt.get(ZmSetting.REST_URL);
-	if (restUrl && !this.isRemote()) { //for remote - this does not work. either use this.restUrl (if set, which is for shared folder, but not for sub-folders) or call _generateRestUrl which seems to work for subfodlers of shared as well.
+	if (restUrl && (!this.isRemote() || noRemote)) { //for remote - this does not work. either use this.restUrl (if set, which is for shared folder, but not for sub-folders) or call _generateRestUrl which seems to work for subfodlers of shared as well.
 		var path = AjxStringUtil.urlEncode(this.getSearchPath()).replace("#","%23").replace(";", "%3B"); // User may type in a # in a folder name, but that's not ok for our urls
 		// return REST URL as seen by the GetInfoResponse
 		return ([restUrl, "/", path].join(""));

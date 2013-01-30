@@ -288,10 +288,10 @@ function() {
 };
 
 ZmCalendar.prototype.getRestUrl =
-function(acct) {
+function(acct, noRemote) {
 
     if(!appCtxt.multiAccounts){
-        return ZmFolder.prototype.getRestUrl.call(this);
+        return ZmFolder.prototype.getRestUrl.call(this, noRemote);
     }
 
 	// return REST URL as seen by server
