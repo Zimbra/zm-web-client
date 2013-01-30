@@ -169,8 +169,8 @@ function(obj) {
     this.uid = obj.uid;
     if (obj.l) this.folderId = obj.l;
 
-	// update this tasks's list and notify
-	this.list.modifyLocal(obj, {task:this});
+	// update this task with notify data
+	this._loadFromDom(obj);
 	this._notify(ZmEvent.E_MODIFY, obj);
 };
 
