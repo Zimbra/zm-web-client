@@ -581,7 +581,7 @@ function() {
         html.append("</td>");
     }
 
-	html.append("<td>");
+    html.append("<td class='calendar_month_body_container'>");
 	html.append("<div id='", this._daysId, "' class=calendar_month_body>");
 	
 	html.append("<table id='", this._bodyId, "' class=calendar_month_table>");
