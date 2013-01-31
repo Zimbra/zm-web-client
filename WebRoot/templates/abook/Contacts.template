@@ -286,7 +286,7 @@
 	<table class='contactGroupTable'>
 		<tr>
 		<$ if (imageUrl) { $>
-			<td width=48 style='vertical-align:top;text-align:center;padding:1em 5px;height:70px;'><img src="<$= imageUrl $>"
+			<td class='contactGroupTableImage' width=48><img src="<$= imageUrl $>"
 			<$ if (AjxEnv.isIE) { $>
 				height=48
 			<$ } else { $>
@@ -294,7 +294,7 @@
 			<$ } $>
 			border=0></td>
 		<$ } else { $>
-			<td width=48 style='vertical-align:top;text-align:center;padding:1em 5px;'><$= AjxImg.getImageHtml(imgClassName) $></td>
+			<td class='contactGroupTableImage' width=48><$= AjxImg.getImageHtml(imgClassName) $></td>
 		<$ } $>
 			<td>
 				<$ if (fullName) {$>

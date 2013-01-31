@@ -2026,10 +2026,12 @@ function() {
 	return this.id ? this.getFileAs() : ZmMsg.newContact;
 };
 
+ZmContact.NO_MAX_IMAGE_WIDTH = - 1;
+
 /**
  * Get the image URL.
  *
- * maxWidth {int} max pixel width (optional - default 48)
+ * maxWidth {int} max pixel width (optional - default 48, or pass ZmContact.NO_MAX_IMAGE_WIDTH if full size image is required)
  * @return	{String}	the image URL
  */
 ZmContact.prototype.getImageUrl =
@@ -2037,8 +2039,12 @@ function(maxWidth) {
   	var image = this.getAttr(ZmContact.F_image);
   	if (!image || !image.part) { return null; }
   	var msgFetchUrl = appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI);
-	maxWidth = maxWidth || 48;
-  	return  [msgFetchUrl, "&id=", this.id, "&part=", image.part, "&max_width=", maxWidth, "&t=", (new Date()).getTime()].join("");
+	var maxWidthStyle = "";
+	if (maxWidth !== ZmContact.NO_MAX_IMAGE_WIDTH) {
+		maxWidth = maxWidth || 48;
+		maxWidthStyle = ["&max_width=", maxWidth].join("");
+	}
+  	return  [msgFetchUrl, "&id=", this.id, "&part=", image.part, maxWidthStyle, "&t=", (new Date()).getTime()].join("");
 };
 
 /**

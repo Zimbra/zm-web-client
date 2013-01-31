@@ -408,8 +408,8 @@ ZmEditContactView.prototype.set = function(contact, isDirty) {
 		}
 		this.setValue(id, value);
 	}
-	this.setValue("IMAGE", (contact && contact.getImageUrl()) || "", true);
-	
+	this.setValue("IMAGE", (contact && contact.getImageUrl(ZmContact.NO_MAX_IMAGE_WIDTH)) || "", true);
+
 	// fill in folder field
 	if (this.getControl("FOLDER")) {
 		var folderOrId = contact && contact.getAddressBook();
