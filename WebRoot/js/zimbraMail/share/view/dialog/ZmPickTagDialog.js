@@ -224,6 +224,7 @@ function(ev) {
 
 	var tag = ev.item.getData(Dwt.KEY_OBJECT);
 	if (tag) {
+		this.setButtonEnabled(DwtDialog.OK_BUTTON, true);
 		var value = tag.getName(false, null, true, true);
 		this._lastVal = value.toLowerCase();
 		this._inputField.setValue(value);
