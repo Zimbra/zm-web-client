@@ -2195,7 +2195,7 @@ ZmComposeController.prototype._processDataURIImages = function(imgArray, length,
     }
 
     var BlobBuilder = window.MozBlobBuilder || window.WebKitBlobBuilder || window.MSBlobBuilder || window.BlobBuilder;
-    if (!(BlobBuilder || window.Blob)) {
+    if (typeof (BlobBuilder || window.Blob) !== "function") {
         return;
     }
 
@@ -2235,7 +2235,7 @@ ZmComposeController.prototype._processDataURIImages = function(imgArray, length,
                     }
                     var blob;
                     // write the ArrayBuffer to a blob, and you're done
-                    if (window.Blob) {
+                    if (typeof window.Blob === "function") {
                         blob = new Blob([ab], {"type" : mimeString});
                     }
                     else {
