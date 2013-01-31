@@ -2071,7 +2071,7 @@ ZmComposeController.prototype._processDataURIImages = function(idoc, callback){
         return;
     }
     var BlobBuilder = window.MozBlobBuilder || window.WebKitBlobBuilder || window.MSBlobBuilder || window.BlobBuilder;
-    if (!(BlobBuilder || window.Blob)) {
+    if (typeof (BlobBuilder || window.Blob) !== "function") {
         return;
     }
     var imgArray = idoc.getElementsByTagName("img");
@@ -2107,7 +2107,7 @@ ZmComposeController.prototype._processDataURIImages = function(idoc, callback){
                     }
                     // write the ArrayBuffer to a blob, and you're done
                     var blob;
-                    if (window.Blob) {
+                    if (typeof window.Blob === "function") {
                         blob = new Blob([ab], {"type" : mimeString});
                     }
                     else {
