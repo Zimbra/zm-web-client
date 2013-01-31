@@ -55,30 +55,68 @@ ZCS.constant.TAB_TITLE = {};
 ZCS.constant.TAB_TITLE[ZCS.constant.APP_MAIL]       = ZtMsg.mail;
 ZCS.constant.TAB_TITLE[ZCS.constant.APP_CONTACTS]   = ZtMsg.contacts;
 
-// Organizer type to show in overview
-ZCS.constant.OVERVIEW_MODEL = {};
-ZCS.constant.OVERVIEW_MODEL[ZCS.constant.APP_MAIL]       = 'ZCS.model.mail.ZtMailFolder';
-ZCS.constant.OVERVIEW_MODEL[ZCS.constant.APP_CONTACTS]   = 'ZCS.model.contacts.ZtContactsFolder';
-
-// Organizer type to show in overview
+// Title to show in overview
 ZCS.constant.OVERVIEW_TITLE = {};
 ZCS.constant.OVERVIEW_TITLE[ZCS.constant.APP_MAIL]       = ZtMsg.folders;
-ZCS.constant.OVERVIEW_TITLE[ZCS.constant.APP_CONTACTS]   = ZtMsg.addrbook;
-
-// View (from JSON folder data) that determines which app a folder belongs to
-ZCS.constant.FOLDER_VIEW = {};
-ZCS.constant.FOLDER_VIEW[ZCS.constant.APP_MAIL]     = 'message';
-ZCS.constant.FOLDER_VIEW[ZCS.constant.APP_CONTACTS] = 'contact';
+ZCS.constant.OVERVIEW_TITLE[ZCS.constant.APP_CONTACTS]   = ZtMsg.addrbooks;
 
 // Icon for button that creates a new item
 ZCS.constant.NEW_ITEM_ICON = {};
 ZCS.constant.NEW_ITEM_ICON[ZCS.constant.APP_MAIL]       = 'compose';
 ZCS.constant.NEW_ITEM_ICON[ZCS.constant.APP_CONTACTS]   = 'plus';
 
+// Item types as known by server
+ZCS.constant.ITEM_TYPE_CONVERSATION = 'conversation';
+ZCS.constant.ITEM_TYPE_MESSAGE      = 'message';
+ZCS.constant.ITEM_TYPE_CONTACT      = 'contact';
+
+// App to which each item type belongs
+ZCS.constant.APP_FOR_TYPE = {};
+ZCS.constant.APP_FOR_TYPE[ZCS.constant.ITEM_TYPE_CONVERSATION]  = ZCS.constant.APP_MAIL;
+ZCS.constant.APP_FOR_TYPE[ZCS.constant.ITEM_TYPE_MESSAGE]       = ZCS.constant.APP_MAIL;
+ZCS.constant.APP_FOR_TYPE[ZCS.constant.ITEM_TYPE_CONTACT]       = ZCS.constant.APP_CONTACTS;
+
 // Store that holds items for list view
 ZCS.constant.STORE = {};
 ZCS.constant.STORE[ZCS.constant.APP_MAIL]       = 'ZtConvStore';
 ZCS.constant.STORE[ZCS.constant.APP_CONTACTS]   = 'ZtContactStore';
+
+// Organizer types
+ZCS.constant.ORG_FOLDER         = 'folder';
+ZCS.constant.ORG_MAIL_FOLDER    = 'mailFolder';
+ZCS.constant.ORG_ADDRESS_BOOK   = 'addressBook';
+ZCS.constant.ORG_SAVED_SEARCH   = 'search';
+ZCS.constant.ORG_TAG            = 'tag';
+
+// View (from JSON folder data) that determines which app a folder belongs to
+ZCS.constant.FOLDER_VIEW = {};
+ZCS.constant.FOLDER_VIEW[ZCS.constant.APP_MAIL]     = 'message';
+ZCS.constant.FOLDER_VIEW[ZCS.constant.APP_CONTACTS] = 'contact';
+
+// Folder type by app
+ZCS.constant.FOLDER_TYPE = {};
+ZCS.constant.FOLDER_TYPE[ZCS.constant.APP_MAIL]     = ZCS.constant.ORG_MAIL_FOLDER;
+ZCS.constant.FOLDER_TYPE[ZCS.constant.APP_CONTACTS] = ZCS.constant.ORG_ADDRESS_BOOK;
+
+// Organizer names (appear in overview groups)
+ZCS.constant.ORG_NAME = {};
+ZCS.constant.ORG_NAME[ZCS.constant.ORG_MAIL_FOLDER]   = 'Folders';
+ZCS.constant.ORG_NAME[ZCS.constant.ORG_ADDRESS_BOOK]  = 'Address Books';
+ZCS.constant.ORG_NAME[ZCS.constant.ORG_SAVED_SEARCH]  = 'Searches';
+ZCS.constant.ORG_NAME[ZCS.constant.ORG_TAG]           = 'Tags';
+
+// Organizer nodes (in JSON within a refresh block from the server)
+ZCS.constant.ORG_NODE = {};
+ZCS.constant.ORG_NODE[ZCS.constant.ORG_FOLDER]        = 'folder';
+ZCS.constant.ORG_NODE[ZCS.constant.ORG_SAVED_SEARCH]  = 'search';
+ZCS.constant.ORG_NODE[ZCS.constant.ORG_TAG]           = 'tag';
+
+// Order in which organizers should appear grouped in overview
+ZCS.constant.ORG_SORT_VALUE = {};
+ZCS.constant.ORG_SORT_VALUE[ZCS.constant.ORG_MAIL_FOLDER]   = 1;
+ZCS.constant.ORG_SORT_VALUE[ZCS.constant.ORG_ADDRESS_BOOK]  = 1;
+ZCS.constant.ORG_SORT_VALUE[ZCS.constant.ORG_SAVED_SEARCH]  = 2;
+ZCS.constant.ORG_SORT_VALUE[ZCS.constant.ORG_TAG]           = 3;
 
 // System folder IDs
 ZCS.constant.ID_ROOT      = 1;
@@ -96,15 +134,16 @@ ZCS.constant.MAX_SYSTEM_ID = 255;
 
 // System folder sort order
 ZCS.constant.FOLDER_SORT_VALUE = {};
-ZCS.constant.FOLDER_SORT_VALUE[ZCS.constant.ID_TRASH]   = '_a';
 
-ZCS.constant.FOLDER_SORT_VALUE[ZCS.constant.ID_INBOX]   = '_____a';
-ZCS.constant.FOLDER_SORT_VALUE[ZCS.constant.ID_SENT]    = '____a';
-ZCS.constant.FOLDER_SORT_VALUE[ZCS.constant.ID_DRAFTS]  = '___a';
-ZCS.constant.FOLDER_SORT_VALUE[ZCS.constant.ID_JUNK]    = '__a';
+ZCS.constant.FOLDER_SORT_VALUE[ZCS.constant.ID_TRASH]   = 5;
 
-ZCS.constant.FOLDER_SORT_VALUE[ZCS.constant.ID_CONTACTS]    = '___a';
-ZCS.constant.FOLDER_SORT_VALUE[ZCS.constant.ID_EMAILED]     = '__a';
+ZCS.constant.FOLDER_SORT_VALUE[ZCS.constant.ID_INBOX]   = 1;
+ZCS.constant.FOLDER_SORT_VALUE[ZCS.constant.ID_SENT]    = 2;
+ZCS.constant.FOLDER_SORT_VALUE[ZCS.constant.ID_DRAFTS]  = 3;
+ZCS.constant.FOLDER_SORT_VALUE[ZCS.constant.ID_JUNK]    = 4;
+
+ZCS.constant.FOLDER_SORT_VALUE[ZCS.constant.ID_CONTACTS]    = 1;
+ZCS.constant.FOLDER_SORT_VALUE[ZCS.constant.ID_EMAILED]     = 2;
 
 // System folder names (used in search queries)
 ZCS.constant.FOLDER_SYSTEM_NAME = {};
@@ -153,6 +192,9 @@ ZCS.constant.TYPE_BOOLEAN   = 'boolean';
 ZCS.constant.SETTING_ALIASES            = 'zimbraMailAlias';
 ZCS.constant.SETTING_INITIAL_SEARCH     = 'zimbraPrefMailInitialSearch';
 ZCS.constant.SETTING_SHOW_SEARCH        = 'zimbraPrefShowSearchString';
+ZCS.constant.SETTING_LOCALE             = 'zimbraPrefLocale';
+ZCS.constant.SETTING_TIMEZONE           = 'zimbraPrefTimeZoneId';
+ZCS.constant.SETTING_MARK_READ          = 'zimbraPrefMarkMsgRead';  // -1 = never, 0 = now, [int] = delay in seconds
 
 // Names of internal settings
 ZCS.constant.SETTING_CUR_SEARCH         = 'currentSearch';
@@ -162,7 +204,9 @@ ZCS.constant.SETTINGS = [
 	ZCS.constant.SETTING_ALIASES,
 	ZCS.constant.SETTING_INITIAL_SEARCH,
 	ZCS.constant.SETTING_SHOW_SEARCH,
-	ZCS.constant.SETTING_CUR_SEARCH
+	ZCS.constant.SETTING_LOCALE,
+	ZCS.constant.SETTING_TIMEZONE,
+	ZCS.constant.SETTING_MARK_READ
 ];
 
 // Setting type; defaults to string, so just note exceptions
@@ -173,7 +217,9 @@ ZCS.constant.SETTING_TYPE[ZCS.constant.SETTING_SHOW_SEARCH] = ZCS.constant.TYPE_
 ZCS.constant.SETTING_VALUE = {};
 ZCS.constant.SETTING_VALUE[ZCS.constant.SETTING_SHOW_SEARCH] = 'false';
 
+// Default values for settings
 ZCS.constant.SETTING_DEFAULT = {};
+ZCS.constant.SETTING_DEFAULT[ZCS.constant.SETTING_LOCALE] = 'en_US';
 
 // Item flags
 ZCS.constant.FLAG_ATTACH			= 'a';
@@ -213,6 +259,13 @@ ZCS.constant.MSEC_PER_DAY = 24 * ZCS.constant.MSEC_PER_HOUR;
 
 // How many senders to show for a conv in the conv list
 ZCS.constant.NUM_CONV_SENDERS = 3;
+
+// Extra mail headers to fetch for a SOAP request
+ZCS.constant.ADDITIONAL_MAIL_HEADERS = [
+	{ n: 'List-ID' },
+	{ n: 'X-Zimbra-DL' },
+	{ n: 'IN-REPLY-TO' }
+];
 
 // Useful regexes
 ZCS.constant.REGEX_NON_WHITESPACE = /\S+/;

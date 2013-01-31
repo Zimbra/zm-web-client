@@ -85,7 +85,7 @@ Ext.define('ZCS.common.mail.ZtQuotedContent', {
 			}
 
 			// Bugzilla is very good at fooling us, and does not have quoted content, so bail
-			if ((testLine.indexOf("| DO NOT REPLY") === 0) && (lines[i + 2].indexOf("bugzilla") !== -1)) {
+			if ((testLine.indexOf('| DO NOT REPLY') === 0) && (lines[i + 2].indexOf('bugzilla') !== -1)) {
 				return text;
 			}
 
@@ -95,7 +95,7 @@ Ext.define('ZCS.common.mail.ZtQuotedContent', {
 			nextLine = lines[i + 1];
 			isMerged = false;
 			if (nextLine && (type === this.UNKNOWN) && this.REGEX_INTRO.test(testLine) && nextLine.match(/\w+:$/)) {
-				testLine = [testLine, nextLine].join(" ");
+				testLine = [testLine, nextLine].join(' ');
 				type = this.getLineType(testLine);
 				isMerged = true;
 			}
@@ -234,7 +234,7 @@ Ext.define('ZCS.common.mail.ZtQuotedContent', {
 				if (this.REGEX_DATE.test(testLine)) {
 					points += 3;
 				}
-				var regEx = new RegExp("^(--|" + ZtMsg.on + ")", "i");
+				var regEx = new RegExp('^(--|' + ZtMsg.on + ')', 'i');
 				if (this.REGEX_INTRO.test(testLine)) {
 					points += 1;
 				}
@@ -255,8 +255,8 @@ Ext.define('ZCS.common.mail.ZtQuotedContent', {
 		if (!(block && block.length)) {
 			return null;
 		}
-		var originalText = block.join("\n") + "\n";
-		originalText = originalText.replace(/\s+$/, "\n");
+		var originalText = block.join('\n') + '\n';
+		originalText = originalText.replace(/\s+$/, '\n');
 		return (ZCS.constant.REGEX_NON_WHITESPACE.test(originalText)) ? originalText : null;
 	},
 
@@ -274,7 +274,7 @@ Ext.define('ZCS.common.mail.ZtQuotedContent', {
 
 		// strip <script> tags (which should not be there)
 		while (this.REGEX_SCRIPT.test(text)) {
-			text = text.replace(this.REGEX_SCRIPT, "");
+			text = text.replace(this.REGEX_SCRIPT, '');
 		}
 
 		var htmlNode = this.writeToTestIframeDoc(text);
@@ -307,7 +307,7 @@ Ext.define('ZCS.common.mail.ZtQuotedContent', {
 		}
 
 		// convert back to text, restoring html, head, and body nodes
-		return ctxt.done ? "<html>" + htmlNode.innerHTML + "</html>" : text;
+		return ctxt.done ? '<html>' + htmlNode.innerHTML + '</html>' : text;
 	},
 
 
@@ -323,10 +323,10 @@ Ext.define('ZCS.common.mail.ZtQuotedContent', {
 			processChildren = true,
 			type, testLine;
 
-		Ext.Logger.verbose("html", Ext.String.repeat("&nbsp;&nbsp;&nbsp;&nbsp;", ctxt.level) + nodeName + ((nodeName === "#text" && /\S+/.test(el.nodeValue) ? " - " + el.nodeValue.substr(0, 20) : "")));
+		Ext.Logger.verbose('html', Ext.String.repeat('&nbsp;&nbsp;&nbsp;&nbsp;', ctxt.level) + nodeName + ((nodeName === '#text' && /\S+/.test(el.nodeValue) ? ' - ' + el.nodeValue.substr(0, 20) : '')));
 
 		// Text node: test against our regexes
-		if (nodeName === "#text") {
+		if (nodeName === '#text') {
 			if (!ZCS.constant.REGEX_NON_WHITESPACE.test(el.nodeValue)) {
 				return;
 			}
@@ -337,7 +337,7 @@ Ext.define('ZCS.common.mail.ZtQuotedContent', {
 			}
 			else if (type !== this.WROTE_STRONG) {
 				// Check for colon in case we have a "wrote:" line or a header
-				if (testLine.indexOf(":") !== -1 && el.parentNode) {
+				if (testLine.indexOf(':') !== -1 && el.parentNode) {
 					// what appears as a single "... wrote:" line may have multiple elements, so gather it all
 					// together into one line and test that
 					testLine = Ext.String.trim(Ext.String.htmlDecode(ZCS.util.stripTags(el.parentNode.innerHTML)));
@@ -364,7 +364,7 @@ Ext.define('ZCS.common.mail.ZtQuotedContent', {
 							}
 						}
 						if (startNodeIndex !== null && stopNodeIndex !== null) {
-							var span = document.createElement("span");
+							var span = document.createElement('span');
 							for (var i = 0; i < (stopNodeIndex - startNodeIndex) + 1; i++) {
 								span.appendChild(nodes[startNodeIndex]);
 							}
@@ -373,7 +373,7 @@ Ext.define('ZCS.common.mail.ZtQuotedContent', {
 						}
 					}
 					else if (type === this.HEADER) {
-						if (ctxt.results[ctxt.results.length - 1].type === this.LINE && ctxt.lineNode) {
+						if (ctxt.results.length && ctxt.results[ctxt.results.length - 1].type === this.LINE && ctxt.lineNode) {
 							ctxt.sepNode = ctxt.lineNode;
 							ctxt.done = true;
 						}
@@ -382,29 +382,29 @@ Ext.define('ZCS.common.mail.ZtQuotedContent', {
 			}
 
 			// HR: look for a couple different forms that are used to delimit quoted content
-		} else if (nodeName === "hr") {
+		} else if (nodeName === 'hr') {
 			// see if the HR is ours, or one commonly used by other mail clients such as Outlook
-			if (el.id === ZCS.quoted.HTML_SEP_ID || (el.size === "2" && el.width === "100%" && el.align === "center")) {
+			if (el.id === ZCS.quoted.HTML_SEP_ID || (el.size === '2' && el.width === '100%' && el.align === 'center')) {
 				type = this.SEP_STRONG;
 				ctxt.sepNode = el;	// mark for removal
 			}
 
 			// PRE: treat as one big line of text (should maybe go line by line)
-		} else if (nodeName === "pre") {
+		} else if (nodeName === 'pre') {
 			var text = Ext.String.htmlDecode(ZCS.util.stripTags(el.innerHTML));
 			type = this.getLineType(text);
 
 			// BR: ignore
-		} else if (nodeName === "br") {
+		} else if (nodeName === 'br') {
 			return;
 
 			// DIV: check for Outlook class used as delimiter
-		} else if (nodeName === "div") {
-			if (el.className === "OutlookMessageHeader" || el.className === "gmail_quote") {
+		} else if (nodeName === 'div') {
+			if (el.className === 'OutlookMessageHeader' || el.className === 'gmail_quote') {
 				type = this.SEP_STRONG;
 				ctxt.sepNode = el;	// mark for removal
 			}
-			else if (el.outerHTML.toLowerCase().indexOf("border-top") !== -1) {
+			else if (el.outerHTML.toLowerCase().indexOf('border-top') !== -1) {
 				var styleObj = window.getComputedStyle(el);
 				if (styleObj && styleObj.borderTopWidth && parseInt(styleObj.borderTopWidth) > 0) {
 					type = this.LINE;
@@ -413,25 +413,25 @@ Ext.define('ZCS.common.mail.ZtQuotedContent', {
 			}
 
 			// SPAN: check for Outlook ID used as delimiter
-		} else if (nodeName === "span") {
-			if (el.id === "OLK_SRC_BODY_SECTION") {
+		} else if (nodeName === 'span') {
+			if (el.id === 'OLK_SRC_BODY_SECTION') {
 				type = this.SEP_STRONG;
 				ctxt.sepNode = el;	// mark for removal
 			}
 
 			// IMG: treat as original content
-		} else if (nodeName === "img") {
+		} else if (nodeName === 'img') {
 			type = this.UNKNOWN;
 
 			// BLOCKQUOTE: treat as quoted section
-		} else if (nodeName === "blockquote") {
+		} else if (nodeName === 'blockquote') {
 			type = this.QUOTED;
 			ctxt.toRemove.push(el);
 			ctxt.hasQuoted = true;
 			processChildren = false;
 
-		} else if (nodeName === "script") {
-			throw new Error("SCRIPT tag found in this.traverseOriginalHtmlContent");
+		} else if (nodeName === 'script') {
+			throw new Error('SCRIPT tag found in this.traverseOriginalHtmlContent');
 
 			// node types to ignore
 		} else if (this.IGNORE_NODE[nodeName]) {
@@ -563,17 +563,17 @@ ZCS.quoted.REGEXES = [
 	{
 		// marker for Original or Forwarded message, used by ZCS and others
 		type:	ZCS.quoted.SEP_STRONG,
-		regex:	new RegExp("^\\s*--+\\s*(" + ZtMsg.origMsg + "|" + ZtMsg.forwardedMessage + "|" + ZtMsg.origAppt + ")\\s*--+\\s*$", "i")
+		regex:	new RegExp('^\\s*--+\\s*(' + ZtMsg.origMsg + '|' + ZtMsg.forwardedMessage + '|' + ZtMsg.origAppt + ')\\s*--+\\s*$', 'i')
 	},
 	{
 		// marker for Original or Forwarded message, used by ZCS and others
 		type:	ZCS.quoted.SEP_STRONG,
-		regex:	new RegExp("^" + ZtMsg.forwardedMessage1 + "$", "i")
+		regex:	new RegExp('^' + ZtMsg.forwardedMessage1 + '$', 'i')
 	},
 	{
 		// one of the commonly quoted email headers
 		type:	ZCS.quoted.HEADER,
-		regex:	new RegExp("^\\s*(" + [ZtMsg.from, ZtMsg.to, ZtMsg.subject, ZtMsg.date, ZtMsg.sent, ZtMsg.cc].join("|") + ")")
+		regex:	new RegExp('^\\s*(' + [ZtMsg.from, ZtMsg.to, ZtMsg.subject, ZtMsg.date, ZtMsg.sent, ZtMsg.cc].join('|') + ')', 'i')
 	},
 	{
 		// some clients use a series of underscores as a text-mode separator (text version of <hr>)
@@ -594,12 +594,12 @@ ZCS.quoted.REGEXES = [
 
 ZCS.quoted.REGEX_EMAIL    = /[^@\s]+@[A-Za-z0-9\-]{2,}(\.[A-Za-z0-9\-]{2,})+/;
 ZCS.quoted.REGEX_DATE     = /, 20\d\d/;
-ZCS.quoted.REGEX_INTRO    = new RegExp("^(-{2,}|" + ZtMsg.on + ")", "i");
+ZCS.quoted.REGEX_INTRO    = new RegExp('^(-{2,}|' + ZtMsg.on + ')', 'i');
 
 ZCS.quoted.REGEX_SCRIPT = /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi;
 
 ZCS.quoted.HTML_SEP_ID = 'zwchr';
 
 // nodes to ignore; they won't have anything we're interested in
-ZCS.quoted.IGNORE_NODE_LIST = ["#comment", "script", "select", "style"];
+ZCS.quoted.IGNORE_NODE_LIST = ['#comment', 'script', 'select', 'style'];
 ZCS.quoted.IGNORE_NODE = ZCS.util.arrayAsLookupHash(ZCS.quoted.IGNORE_NODE_LIST);

@@ -34,7 +34,7 @@ Ext.define('ZCS.common.ZtUserSession', {
 		notifySeq: 0,
 		initialSearchResults: null,
 		folderData: null,
-		folderList: null,
+		folderList: null,   // organizer list
 		activeApp: null
 	},
 
@@ -47,13 +47,17 @@ Ext.define('ZCS.common.ZtUserSession', {
 		this.setSessionId(data.header.context.session.id);
 
 		// parse folder info from the {refresh} block
-		var root = data.header.context.refresh.folder[0],
+		var folderRoot = data.header.context.refresh.folder[0],
+			tagRoot = data.header.context.refresh.tags,
 			folderData = {};
 
+		// each overview needs data with unique IDs, so even though tags are global, we
+		// need to create a separate record for each tag per app
 		Ext.each(ZCS.constant.ALL_APPS, function(app) {
-			var folders = folderData[app] = [],
-				view = ZCS.constant.FOLDER_VIEW[app];
-			this.addFolder(root, folders, view);
+			var folders = folderData[app] = [];
+			this.addFolder(folderRoot, folders, app, ZCS.constant.ORG_FOLDER);
+			this.addFolder(folderRoot, folders, app, ZCS.constant.ORG_SAVED_SEARCH);
+			this.addFolder(tagRoot, folders, app, ZCS.constant.ORG_TAG);
 		}, this);
 		this.setFolderData(folderData);
 
@@ -101,7 +105,7 @@ Ext.define('ZCS.common.ZtUserSession', {
 	 * Returns the folder tree for the given app, in a form that is consumable by a TreeStore.
 	 *
 	 * @param {string}  app     app name
-	 * @return {object}     folder tree (each node is a ZtFolder)
+	 * @return {object}     folder tree (each node is a ZtOrganizer)
 	 */
 	getFolderDataByApp: function(app) {
 		var folderData = this.getFolderData();
@@ -142,21 +146,12 @@ Ext.define('ZCS.common.ZtUserSession', {
 	 * @return ZtFolder
 	 */
 	getFolderById: function(id, app) {
+
 		if (app) {
 			var folderList = this.getFolderListByApp(app);
 			if (folderList) {
 				return folderList.getById(id);
 			}
-			else {
-				var folderData = this.getFolderDataByApp(app),
-					folder;
-				Ext.each(folderData, function(folderNode) {
-					if (folderNode.id === id) {
-
-					}
-				}, this);
-			}
-			return folderList ? folderList.getById(id) : null;
 		}
 		else {
 			var folder = null;
@@ -173,30 +168,58 @@ Ext.define('ZCS.common.ZtUserSession', {
 	/**
 	 * @private
 	 */
-	addFolder: function(folderNode, folders, view) {
+	addFolder: function(folderNode, folders, app, orgType) {
 
-		var id = folderNode.id,
-			isRoot = (id == ZCS.constant.ID_ROOT),
-			isTrash = (id == ZCS.constant.ID_TRASH),
-			hideFolder = ZCS.constant.FOLDER_HIDE[id];
+		var itemId = folderNode.id,
+			isRoot = (!itemId || itemId == ZCS.constant.ID_ROOT),   // use == since IDs come as strings
+			isTrash = (itemId == ZCS.constant.ID_TRASH),
+			view = ZCS.constant.FOLDER_VIEW[app],
+			hideFolder = ZCS.constant.FOLDER_HIDE[itemId],
+			childNodeName = ZCS.constant.ORG_NODE[orgType];
 
-		var hasChildren = !!(folderNode.folder && folderNode.folder.length > 0),
+		var hasChildren = !!(folderNode[childNodeName] && folderNode[childNodeName].length > 0),
+			validType = false,
 			folder;
 
-		// add the folder if it has the right view; Trash is part of every folder tree
-		if (!isRoot && ((folderNode.view === view && !hideFolder) || isTrash)) {
+		if (!isRoot && (orgType === ZCS.constant.ORG_SAVED_SEARCH) && folderNode.types) {
+			Ext.each(folderNode.types.split(','), function(type) {
+				if (ZCS.constant.APP_FOR_TYPE[Ext.String.trim(type)] === app) {
+					validType = true;
+					return false;
+				}
+			}, this);
+		}
+		else if (orgType === ZCS.constant.ORG_FOLDER) {
+			validType = (folderNode.view === view);
+		}
+		else if (orgType === ZCS.constant.ORG_TAG) {
+			validType = true;
+		}
+
+		// add the folder if it has the right view/type; Trash is part of every folder tree
+		if (!isRoot && ((validType && !hideFolder) || isTrash)) {
+
+			// Get exact folder type if we're dealing with a folder
+			var type = (orgType === ZCS.constant.ORG_FOLDER) ? ZCS.constant.FOLDER_TYPE[app] : orgType;
 
 			folder = {
-				id: id,
-				parentId: folderNode.l,
+				id: [app, type, itemId].join('-'),
+				itemId: itemId,
 				name: folderNode.name,
 				itemCount: folderNode.n,
-				disclosure: hasChildren
+				disclosure: hasChildren,
+				type: type
 			};
+			folder.typeName = ZCS.constant.ORG_NAME[type];
 
-			// app-specific fields
-			if (folderNode.u != null) {
-				folder.unreadCount = folderNode.u;
+			// type-specific fields
+			if (type === ZCS.constant.ORG_MAIL_FOLDER) {
+				if (folderNode.u != null) {
+					folder.unreadCount = folderNode.u;
+				}
+			}
+			else if (type === ZCS.constant.ORG_SAVED_SEARCH) {
+				folder.query = folderNode.query;
 			}
 
 			if (hasChildren) {
@@ -211,8 +234,8 @@ Ext.define('ZCS.common.ZtUserSession', {
 
 		// process child folders
 		if ((isRoot || folder) && hasChildren) {
-			Ext.each(folderNode.folder, function(node) {
-				this.addFolder(node, isRoot ? folders : folder.items, view);
+			Ext.each(folderNode[childNodeName], function(node) {
+				this.addFolder(node, isRoot ? folders : folder.items, app, orgType);
 			}, this);
 		}
 	},

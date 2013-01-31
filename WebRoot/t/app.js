@@ -13,9 +13,6 @@ Ext.require([
 	ZCS.common.ZtTemplate.loadTemplates();
 });
 
-// Placeholder until we get strings support
-window.ZtMsg = {};
-
 // Define and run the app
 Ext.application({
 

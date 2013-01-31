@@ -33,22 +33,50 @@ Ext.define('ZCS.model.mail.ZtMailWriter', {
 		data.f = flags;
 	}
 */
+	getSoapEnvelope: function(request, data, method, options) {
+
+		options = options || {};
+
+		var json = this.callParent(arguments),
+			methodJson = json.Body[method + 'Request'];
+
+		if (options.addHeaders) {
+			methodJson.header = ZCS.constant.ADDITIONAL_MAIL_HEADERS;
+		}
+
+		if (options.isSearch) {
+			methodJson.locale = ZCS.session.getSetting(ZCS.constant.SETTING_LOCALE);
+			methodJson.tz = ZCS.session.getSetting(ZCS.constant.SETTING_TIMEZONE);
+			if (ZCS.session.getSetting(ZCS.constant.SETTING_MARK_READ) === 0) {
+				methodJson.read = 1;
+			}
+			methodJson.html = 1;
+		}
+
+		return json;
+	},
 
 	/**
-	 * Returns the JSON for a skeleton SOAP request body.
+	 * Fills in the JSON for an action request
 	 *
-	 * @param {object}  parent      the SOAP Body
-	 * @param {object}  item        record data that maps to the ZtMailItem
-	 * @param {boolean} isMsg       true if the mail item is a ZtMailMsg
+	 * @param {Ext.data.Request}    request     request object
+	 * @param {object}              data        record data
+	 * @param {string}              method      action request method
 	 */
-	setActionRequest: function(parent, item, isMsg) {
-		var method = isMsg ? 'MsgActionRequest' : 'ConvActionRequest';
-		parent[method] = {
-			_jsns: 'urn:zimbraMail',
+	getActionRequest: function(request, data, method) {
+
+		var json = this.getSoapEnvelope(request, data, method),
+		methodJson = json.Body[method + 'Request'];
+
+		var	item = data[0];
+
+		Ext.apply(methodJson, {
 			action: {
 				id: item.id,
 				op: item.op
 			}
-		}
+		});
+
+		return json;
 	}
 });

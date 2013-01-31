@@ -31,18 +31,16 @@ Ext.define('ZCS.model.mail.ZtMsgReader', {
 	/**
 	 * Override this method since there's no easy way to override the generated methods that return the
 	 * total, success, and message properties. Also, we need to do some more in-depth processing of
-	 * non-trivial fields such as addresses.
+	 * non-trivial fields such as MIME parts.
 	 */
 	readRecords: function(data) {
 
 		var me  = this;
 		me.rawData = data;
 
-		// TODO: find a cleaner way to grab the appropriate response
-		var root = (data.Body.SearchConvResponse && data.Body.SearchConvResponse.m) ||
-				   (data.Body.SendMsgResponse && data.Body.SendMsgResponse.m) ||
-				   (data.Body.GetMsgResponse && data.Body.GetMsgResponse.m),
-
+		var responseMethod = data.soapMethod + 'Response',
+			responseObj = data.Body[responseMethod],
+			root = responseObj && responseObj.m,
 			total = root && root.length,
 			success = true,
 			message,

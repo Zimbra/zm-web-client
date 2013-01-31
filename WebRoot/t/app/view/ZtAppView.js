@@ -24,7 +24,6 @@ Ext.define('ZCS.view.ZtAppView', {
 	extend: 'Ext.Container',
 
 	requires: [
-		'Ext.Panel',
 		'Ext.field.Text',
 		'Ext.Label',
 
@@ -55,7 +54,6 @@ Ext.define('ZCS.view.ZtAppView', {
 			itemId: app + 'overview',
 
 			app: app,
-			model: ZCS.constant.OVERVIEW_MODEL[app],
 			title: ZCS.constant.OVERVIEW_TITLE[app]
 		};
 

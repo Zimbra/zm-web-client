@@ -26,40 +26,35 @@ Ext.define('ZCS.model.mail.ZtConvWriter', {
 
 	writeRecords: function(request, data) {
 
-		var json = this.getSoapEnvelope(),
-			action = request.getAction();
+		var	action = request.getAction(),
+			json, methodJson;
 
 		if (action === 'read') {
+
 			// 'read' operation means we're doing a search
-			json.Body.SearchRequest = {
-				_jsns: 'urn:zimbraMail',
+			json = this.getSoapEnvelope(request, data, 'Search', {
+				addHeaders: true,
+				isSearch: true
+			});
+			methodJson = json.Body.SearchRequest;
+
+			Ext.apply(methodJson, {
 				sortBy: 'dateDesc',
-				header: [
-					{ n: 'List-ID' },
-					{ n: 'X-Zimbra-DL' },
-					{ n: 'IN-REPLY-TO' }
-				],
-				tz: {
-					id: 'America/Los_Angeles'
-				},
-				locale: {
-					'_content': 'en_US'
-				},
 				offset: 0,
 				limit: 20,
 				query: request.getOperation().config.query,
 				types: 'conversation',
-				fetch: 1,
-				html: 1,
-				needExp: 1
-			};
+				fetch: 1
+			});
 		}
 		else if (action === 'update') {
+
 			// 'update' operation means we're performing a ConvActionRequest
-			this.setActionRequest(json.Body, data[0], false);
+			json = this.getActionRequest(request, data, 'ConvAction');
 		}
 
 		request.setJsonData(json);
+
 		return request;
 	}
 });

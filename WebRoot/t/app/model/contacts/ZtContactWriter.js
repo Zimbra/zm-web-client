@@ -26,39 +26,48 @@ Ext.define('ZCS.model.contacts.ZtContactWriter', {
 
 	writeRecords: function(request, data) {
 
-		var json = this.getSoapEnvelope(request, data),
-			query = request.getOperation().config.query;
+		var	action = request.getAction(),
+			query = request.getOperation().config.query,
+			json, methodJson;
 
-		if (!query) {
-			// if there's no query, this is the initial load so get all contacts
-			json.Body.GetContactsRequest = {
-				_jsns: "urn:zimbraMail",
-				sortBy: "nameDesc",
-				// ask server only for the fields we need
-				a: [
-					{ n: 'firstName' },
-					{ n: 'lastName' },
-					{ n: 'email' },
-					{ n: 'company' },
-					{ n: 'fileAs' }
-				]
-			};
-		}
-		else {
-			// replace the configured 'read' operation URL
-			request.setUrl(ZCS.constant.SERVICE_URL_BASE + 'SearchRequest');
+		if (action === 'read') {
 
-			json.Body.SearchRequest = {
-				_jsns: "urn:zimbraMail",
-				sortBy: "dateDesc",
-				offset: 0,
-				limit: 20,
-				query: query,
-				types: 'contact'
-			};
+			if (!query) {
+				// if there's no query, this is the initial load so get all contacts
+				json = this.getSoapEnvelope(request, data, 'GetContacts');
+				methodJson = json.Body.GetContactsRequest;
+
+				Ext.apply(methodJson, {
+					sortBy: "nameDesc",
+					// ask server only for the fields we need
+					a: [
+						{ n: 'firstName' },
+						{ n: 'lastName' },
+						{ n: 'email' },
+						{ n: 'company' },
+						{ n: 'fileAs' }
+					]
+				});
+			}
+			else {
+				// doing a search - replace the configured 'read' operation URL
+				request.setUrl(ZCS.constant.SERVICE_URL_BASE + 'SearchRequest');
+
+				json = this.getSoapEnvelope(request, data, 'Search');
+				methodJson = json.Body.SearchRequest;
+
+				Ext.apply(methodJson, {
+					sortBy: "dateDesc",
+					offset: 0,
+					limit: 20,
+					query: query,
+					types: 'contact'
+				});
+			}
 		}
 
 		request.setJsonData(json);
+
 		return request;
 	}
 });

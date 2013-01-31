@@ -25,7 +25,6 @@ Ext.define('ZCS.controller.contacts.ZtContactListController', {
 	// slight hack to load some needed files early, rather than dynamically loading as needed via an
 	// asynchronous request (which introduces timing problems)
 	requires: [
-		'ZCS.model.contacts.ZtContactsFolder',
 		'ZCS.view.contacts.ZtContactView'
 	],
 

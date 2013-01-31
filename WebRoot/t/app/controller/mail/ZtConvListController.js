@@ -25,7 +25,6 @@ Ext.define('ZCS.controller.mail.ZtConvListController', {
 	// slight hack to load some needed files early, rather than dynamically loading as needed via an
 	// asynchronous request (which introduces timing problems)
 	requires: [
-		'ZCS.model.mail.ZtMailFolder',
 		'ZCS.view.mail.ZtMsgListView'
 	],
 

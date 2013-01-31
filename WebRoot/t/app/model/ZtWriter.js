@@ -24,19 +24,26 @@ Ext.define('ZCS.model.ZtWriter', {
 	extend: 'Ext.data.writer.Json',
 
 	config: {
-		writeAllFields: false       // may as well try to be efficient; turn back on if signs of trouble
+		writeAllFields: false       // may as well try to be efficient; remove if signs of trouble
 	},
 
 	/**
-	 * Returns a SOAP envelope with a Header and Body. The header will have a few fields filled in.
+	 * Returns a SOAP envelope with a Header and a Body.
+	 *
+	 * @param {Ext.data.Request}    request     request object
+	 * @param {object}              data        record data
+	 * @param {string}              method      SOAP method (without 'Request' at end)
+	 * @param {object}              options     additional options
 	 *
 	 * @return {object}     SOAP envelope
 	 */
-	getSoapEnvelope: function(request, data, nameSpace) {
+	getSoapEnvelope: function(request, data, method, options) {
+
+		options = options || {};
 
 		var sessionId = ZCS.session.getSessionId();
 
-		var envelope = {
+		var json = {
 			Header: {
 				_jsns: 'urn:zimbra',
 				context: {
@@ -60,6 +67,13 @@ Ext.define('ZCS.model.ZtWriter', {
 			Body: {}
 		};
 
-		return envelope;
+		json.Body[method + 'Request'] = {
+			_jsns: options.namespace || 'urn:zimbraMail'
+		};
+
+		// TODO: Is it acceptable in Sencha to add properties to its objects?
+		request.soapMethod = method;
+
+		return json;
 	}
 });

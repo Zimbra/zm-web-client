@@ -51,6 +51,7 @@ Ext.define('ZCS.model.ZtSoapProxy', {
 				scope    : me,
 				proxy    : me
 			});
+			request.soapMethod = 'Search';
 
 			var data = {
 				Body: {

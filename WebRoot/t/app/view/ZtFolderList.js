@@ -24,6 +24,8 @@ Ext.define('ZCS.view.ZtFolderList', {
 
 	extend: 'Ext.dataview.NestedList',
 
+	xtype: 'folderlist',
+
 	config: {
 
 		 // Show the folder's child list.
@@ -44,8 +46,7 @@ Ext.define('ZCS.view.ZtFolderList', {
 	 * Runs a search that will show the folder's contents.
 	 */
 	onItemTap: function(list, index, target, folder, e) {
-		var query = 'in:"' + folder.getQueryPath() + '"';
-		this.fireEvent('search', query, true);
+		this.fireEvent('search', folder.getQuery(), true);
 	},
 
 	/**
@@ -56,5 +57,19 @@ Ext.define('ZCS.view.ZtFolderList', {
 	 */
 	getById: function(id) {
 		return this.getStore().getById(id);
+	},
+
+	/**
+	 * Override Ext.dataview.NestedList.getList to propagate grouping info from
+	 * parent NestedList to List sublist.
+	 */
+	getList: function(node) {
+
+		var list = this.callParent(arguments);
+
+		list.grouped = this.grouped;
+		list.store.setGrouper(this.getStore().config.grouper);
+
+		return list;
 	}
 });

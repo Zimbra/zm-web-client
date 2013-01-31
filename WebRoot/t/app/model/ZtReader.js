@@ -20,7 +20,27 @@
  */
 Ext.define('ZCS.model.ZtReader', {
 
-	extend: 'Ext.data.reader.Json'
+	extend: 'Ext.data.reader.Json',
+
+	/**
+	 * Pass along the method name that was set by the writer.
+	 *
+	 * @param {object}  response    response object
+	 */
+	getResponseData: function(response) {
+
+		var data = this.callParent(arguments),
+			request = response.request,
+			requestObj = Ext.getClassName(response.request) ? request : request && request.options &&
+							request.options.operation && request.options.operation.getRequest(),
+			soapMethod = requestObj && requestObj.soapMethod;
+
+		if (soapMethod) {
+			data.soapMethod = soapMethod;
+		}
+
+		return data;
+	}
 
 	// TODO: parse tags
 	// TODO: handle notifications?

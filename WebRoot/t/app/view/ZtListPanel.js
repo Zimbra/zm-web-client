@@ -22,7 +22,7 @@
  */
 Ext.define('ZCS.view.ZtListPanel', {
 
-	extend: 'Ext.Panel',
+	extend: 'Ext.Container',
 
 	requires: [
 		'Ext.dataview.List',
