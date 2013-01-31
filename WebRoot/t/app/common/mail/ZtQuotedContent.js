@@ -563,7 +563,7 @@ ZCS.quoted.REGEXES = [
 	{
 		// marker for Original or Forwarded message, used by ZCS and others
 		type:	ZCS.quoted.SEP_STRONG,
-		regex:	new RegExp('^\\s*--+\\s*(' + ZtMsg.origMsg + '|' + ZtMsg.forwardedMessage + '|' + ZtMsg.origAppt + ')\\s*--+\\s*$', 'i')
+		regex:	new RegExp('^\\s*--+\\s*(' + ZtMsg.originalMessage + '|' + ZtMsg.forwardedMessage + '|' + ZtMsg.originalAppointment + ')\\s*--+\\s*$', 'i')
 	},
 	{
 		// marker for Original or Forwarded message, used by ZCS and others

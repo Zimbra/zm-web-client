@@ -151,7 +151,7 @@ Ext.define('ZCS.controller.ZtListController', {
 			folder = folderId && ZCS.session.getFolderById(folderId),
 			folderName = folder && folder.get('name'),
 			unread = folder && folder.get('unreadCount'),
-			title = 'Search Results';
+			title = ZtMsg.searchResults;
 
 		if (folderName) {
 			title = (unread > 0) ? '<b>' + folderName + ' (' + unread + ')</b>' : folderName;

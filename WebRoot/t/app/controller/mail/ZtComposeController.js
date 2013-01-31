@@ -75,7 +75,7 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 
 		toFld.setValue(msg.getReplyAddress().getFullEmail());
 		subjectFld.setValue(this.getSubject(msg, 'Re:'));
-		bodyFld.setValue('\n\n' + '----- Original Message -----\n' + msg.get('content'));
+		bodyFld.setValue('\n\n' + '----- ' + ZtMsg.originalMessage + ' -----\n' + msg.get('content'));
 		var textarea = bodyFld.element.query('textarea')[0];
 		textarea.scrollTop = 0;
 		bodyFld.focus();
@@ -117,7 +117,7 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 		toFld.setValue(replyAddr.getFullEmail());
 		ccFld.setValue(ccAddrs.join('; '));
 		subjectFld.setValue(this.getSubject(msg, 'Re:'));
-		bodyFld.setValue('\n\n' + '----- Original Message -----\n' + msg.get('content'));
+		bodyFld.setValue('\n\n' + '----- ' + ZtMsg.originalMessage + ' -----\n' + msg.get('content'));
 		bodyFld.focus();
 		var textarea = bodyFld.element.query('textarea')[0];
 		textarea.scrollTop = 0;
@@ -136,7 +136,7 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 			direction: 'up'
 		});
 		subjectFld.setValue(this.getSubject(msg, 'Fwd:'));
-		bodyFld.setValue('\n\n' + '----- Forwarded Message -----\n' + msg.get('content'));
+		bodyFld.setValue('\n\n' + '----- ' + ZtMsg.forwardedMessage + ' -----\n' + msg.get('content'));
 		form.down('field[name=to]').focus();
 	},
 

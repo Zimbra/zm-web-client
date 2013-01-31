@@ -67,7 +67,7 @@ Ext.define("ZCS.view.ZtMain", {
 			},
 			{
 				xtype: 'label',
-				html: 'VMware Zimbra',
+				html: ZtMsg.bannerText,
 				style: 'color:white;'
 			}
 		]);

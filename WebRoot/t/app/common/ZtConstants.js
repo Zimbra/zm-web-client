@@ -45,6 +45,7 @@ ZCS.constant.SERVICE_URL_BASE = '/service/soap/';
 // Apps
 ZCS.constant.APP_MAIL     = 'mail';
 ZCS.constant.APP_CONTACTS = 'contacts';
+// Order of app tabs
 ZCS.constant.ALL_APPS = [
 	ZCS.constant.APP_MAIL,
 	ZCS.constant.APP_CONTACTS
@@ -100,10 +101,10 @@ ZCS.constant.FOLDER_TYPE[ZCS.constant.APP_CONTACTS] = ZCS.constant.ORG_ADDRESS_B
 
 // Organizer names (appear in overview groups)
 ZCS.constant.ORG_NAME = {};
-ZCS.constant.ORG_NAME[ZCS.constant.ORG_MAIL_FOLDER]   = 'Folders';
-ZCS.constant.ORG_NAME[ZCS.constant.ORG_ADDRESS_BOOK]  = 'Address Books';
-ZCS.constant.ORG_NAME[ZCS.constant.ORG_SAVED_SEARCH]  = 'Searches';
-ZCS.constant.ORG_NAME[ZCS.constant.ORG_TAG]           = 'Tags';
+ZCS.constant.ORG_NAME[ZCS.constant.ORG_MAIL_FOLDER]   = ZtMsg.folders;
+ZCS.constant.ORG_NAME[ZCS.constant.ORG_ADDRESS_BOOK]  = ZtMsg.addressBooks;
+ZCS.constant.ORG_NAME[ZCS.constant.ORG_SAVED_SEARCH]  = ZtMsg.searches;
+ZCS.constant.ORG_NAME[ZCS.constant.ORG_TAG]           = ZtMsg.tags;
 
 // Organizer nodes (in JSON within a refresh block from the server)
 ZCS.constant.ORG_NODE = {};
@@ -242,13 +243,13 @@ ZCS.constant.ALL_FLAGS = [
 
 // Map flag to item property
 ZCS.constant.FLAG_PROP = {};
-ZCS.constant.FLAG_PROP[ZCS.constant.FLAG_ATTACH]			= "hasAttach";
-ZCS.constant.FLAG_PROP[ZCS.constant.FLAG_FLAGGED]			= "isFlagged";
-ZCS.constant.FLAG_PROP[ZCS.constant.FLAG_FORWARDED]			= "isForwarded";
-ZCS.constant.FLAG_PROP[ZCS.constant.FLAG_ISDRAFT] 			= "isDraft";
-ZCS.constant.FLAG_PROP[ZCS.constant.FLAG_ISSENT]			= "isSent";
-ZCS.constant.FLAG_PROP[ZCS.constant.FLAG_REPLIED]			= "isReplied";
-ZCS.constant.FLAG_PROP[ZCS.constant.FLAG_UNREAD]			= "isUnread";
+ZCS.constant.FLAG_PROP[ZCS.constant.FLAG_ATTACH]			= 'hasAttach';
+ZCS.constant.FLAG_PROP[ZCS.constant.FLAG_FLAGGED]			= 'isFlagged';
+ZCS.constant.FLAG_PROP[ZCS.constant.FLAG_FORWARDED]			= 'isForwarded';
+ZCS.constant.FLAG_PROP[ZCS.constant.FLAG_ISDRAFT] 			= 'isDraft';
+ZCS.constant.FLAG_PROP[ZCS.constant.FLAG_ISSENT]			= 'isSent';
+ZCS.constant.FLAG_PROP[ZCS.constant.FLAG_REPLIED]			= 'isReplied';
+ZCS.constant.FLAG_PROP[ZCS.constant.FLAG_UNREAD]			= 'isUnread';
 
 //ZCS.constant.PROP_FLAG = ZCS.constant.getBackMap(ZCS.constant.FLAG_PROP);
 

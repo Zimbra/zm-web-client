@@ -126,6 +126,5 @@ Ext.define('ZCS.view.ZtOverview', {
 			userInfo,
 			folderList
 		]);
-
 	}
 });

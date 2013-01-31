@@ -39,11 +39,11 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 		},
 
 		menuData: [
-			{label: 'Reply', action: 'REPLY', listener: 'doReply'},
-			{label: 'Reply All', action: 'REPLY_ALL', listener: 'doReplyAll'},
-			{label: 'Forward', action: 'FORWARD', listener: 'doForward'},
-			{label: 'Delete', action: 'DELETE', listener: 'doDelete'},
-			{label: 'Mark Read', action: 'MARK_READ', listener: 'doMarkRead'}
+			{label: ZtMsg.reply, action: 'REPLY', listener: 'doReply'},
+			{label: ZtMsg.replyAll, action: 'REPLY_ALL', listener: 'doReplyAll'},
+			{label: ZtMsg.forward, action: 'FORWARD', listener: 'doForward'},
+			{label: ZtMsg.del, action: 'DELETE', listener: 'doDelete'},
+			{label: ZtMsg.markRead, action: 'MARK_READ', listener: 'doMarkRead'}
 		]
 	},
 
@@ -67,7 +67,7 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 	 */
 	doShowMenu: function() {
 
-		var label = this.getItem().get('isUnread') ? 'Mark Read' : 'Mark Unread';
+		var label = this.getItem().get('isUnread') ? ZtMsg.markRead : ZtMsg.markUnread;
 		if (this.itemMenu) {
 			var list = this.itemMenu.down('list'),
 				store = list.getStore(),

@@ -25,8 +25,8 @@ Ext.define('ZCS.view.mail.ZtConvListView', {
 	xtype: ZCS.constant.APP_MAIL + 'listview',
 
 	config: {
-		loadingText: "Loading conversations ...",
-		emptyText: "<div class=\"notes-list-empty-text\">No conversations found.</div>",
+		loadingText: ZtMsg.loadingConvs,
+		emptyText: "<div class=\"notes-list-empty-text\">" + ZtMsg.noConvs + "</div>",
 		itemTpl: ZCS.template.ConvListItem
 	}
 });
