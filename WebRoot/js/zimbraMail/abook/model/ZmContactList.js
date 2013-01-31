@@ -613,7 +613,8 @@ function(items) {
 		var email = contact.getEmail();
 		var domain = email.split("@")[1];
 		var isDL = contact && contact.isDistributionList();
-		if (!isDL || !deleteDomainsAllowed[domain] || !contact.dlInfo.isOwner) {
+		//see bug 71368 and also bug 79672 - the !contact.dlInfo is in case somehow dlInfo is missing - so unfortunately if that happens (can't repro) - let's not allow to delete since we do not know if it's an owner
+		if (!isDL || !deleteDomainsAllowed[domain] || !contact.dlInfo || !contact.dlInfo.isOwner) {
 			return false;
 		}
 	}
