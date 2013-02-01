@@ -765,6 +765,7 @@ function(message) {
 			var location = ZmApptViewHelper.getAttendeeFromItem(resourceEmail, ZmCalBaseItem.LOCATION, false, false, true);
 			if (location || this.isLocationResource(resourceEmail, resources[i].d)) {
                 if(!location) location = ZmApptViewHelper.getAttendeeFromItem(resourceEmail, ZmCalBaseItem.LOCATION);
+                if(!location) continue;
                 if(resources[i].d) location.setAttr(ZmResource.F_locationName, resources[i].d);
 
                 location.setParticipantStatus(ptstReplies[resourceEmail] || ptst);
