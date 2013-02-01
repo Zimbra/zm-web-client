@@ -148,7 +148,7 @@ Ext.define('ZCS.controller.ZtListController', {
 			});
 
 		var folderId = search && search.getFolderId(),
-			folder = folderId && ZCS.session.getOrganizerById(folderId),
+			folder = folderId && ZCS.cache.get(folderId),
 			folderName = folder && folder.get('name'),
 			unread = folder && folder.get('unreadCount'),
 			title = ZtMsg.searchResults;

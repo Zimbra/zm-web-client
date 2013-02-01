@@ -43,5 +43,10 @@ Ext.define('ZCS.model.ZtItem', {
 			limitParam: false,
 			noCache: false
 		}
+	},
+
+	constructor: function(data, id) {
+		ZCS.cache.set(data.id || id, this);
+		return this.callParent(arguments);
 	}
 });

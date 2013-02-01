@@ -120,8 +120,6 @@ Ext.define('ZCS.view.ZtOverview', {
 			grouped: true
 		});
 
-		ZCS.session.setOrganizerListByApp(organizerList, this.getApp());
-
 		this.add([
 			userInfo,
 			organizerList

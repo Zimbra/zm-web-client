@@ -43,12 +43,9 @@ Ext.define('ZCS.common.ZtSearch', {
 		if (m && m.length) {
 			var organizerName = m[1].toLowerCase(),
 				systemId = ZCS.constant.FOLDER_SYSTEM_ID[organizerName],
-				systemFolder = systemId && ZCS.session.getOrganizerById(systemId),
+				systemFolder = systemId && ZCS.cache.get(systemId),
 				systemName = systemFolder && systemFolder.get('name');
 
-//			if (folderId) {
-//				folderName =
-//			}
 			this.setFolderId(ZCS.constant.FOLDER_SYSTEM_ID[m[1].toLowerCase()] || m[1]);
 		}
 	}

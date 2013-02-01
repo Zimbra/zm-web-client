@@ -34,7 +34,6 @@ Ext.define('ZCS.common.ZtUserSession', {
 		notifySeq: 0,
 		initialSearchResults: null,
 		organizerData: null,
-		organizerList: null,   // organizer list
 		activeApp: null
 	},
 
@@ -113,59 +112,6 @@ Ext.define('ZCS.common.ZtUserSession', {
 	},
 
 	/**
-	 * Returns the list component (a nested list) for the given app.
-	 *
-	 * @param {string}  app     app name
-	 * @return {Ext.dataview.NestedList}    list component
-	 */
-	getOrganizerListByApp: function(app) {
-		var organizerList = this.getOrganizerList();
-		return organizerList ? organizerList[app] : null;
-	},
-
-	/**
-	 * Sets the list component for the given app.
-	 *
-	 * @param {Ext.dataview.NestedList} list    list component
-	 * @param {string}  app     app name
-	 */
-	setOrganizerListByApp: function(list, app) {
-		var organizerList = this.getOrganizerList();
-		if (!organizerList) {
-			organizerList = {};
-			this.setOrganizerList(organizerList);
-		}
-		organizerList[app] = list;
-	},
-
-	/**
-	 * Returns the organizer with the given ID, within the given app if provided.
-	 *
-	 * @param {string}  id  organizer ID
-	 * @param {string}  app     (optional) app name
-	 * @return ZtOrganizer
-	 */
-	getOrganizerById: function(id, app) {
-
-		if (app) {
-			var organizerList = this.getOrganizerListByApp(app),
-				store = organizerList.getStore();
-
-			return store.getAt(store.find('itemId', id));
-		}
-		else {
-			var organizer = null;
-			Ext.each(ZCS.constant.ALL_APPS, function(app) {
-				organizer = this.getOrganizerById(id, app);
-				if (organizer) {
-					return false;   // break out of loop
-				}
-			}, this);
-			return organizer;
-		}
-	},
-
-	/**
 	 * @private
 	 */
 	addOrganizer: function(node, organizers, app, type, parents) {
@@ -205,6 +151,7 @@ Ext.define('ZCS.common.ZtUserSession', {
 			organizer = {
 				id: [app, type, itemId].join('-'),
 				itemId: itemId,
+				parentItemId: node.l,
 				name: node.name,
 				path: node.name,
 				itemCount: node.n,

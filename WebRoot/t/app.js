@@ -24,6 +24,7 @@ Ext.application({
 	    'ZCS.common.ZtUtil',
 	    'ZCS.common.ZtConstants',
 	    'ZCS.common.ZtTemplate',
+	    'ZCS.common.ZtItemCache',
 	    'ZCS.common.ZtUserSession'
     ],
 

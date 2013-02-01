@@ -29,6 +29,7 @@ Ext.define('ZCS.model.ZtOrganizer', {
 			{ name: 'type', type: 'string' },       // ZCS.constant.ORG_*
 			{ name: 'typeName', type: 'string' },   // display name of group
 			{ name: 'itemId', type: 'string' },     // ID on ZCS server
+			{ name: 'parentItemId', type: 'string' },
 			{ name: 'name', type: 'string' },
 			{ name: 'path', type: 'string' },
 			{ name: 'itemCount', type: 'int' },
@@ -45,10 +46,14 @@ Ext.define('ZCS.model.ZtOrganizer', {
 		]
 	},
 
-	statics: {
-		fromPath: function(path) {
+	constructor: function(data, id) {
 
+		ZCS.cache.set(data.itemId || data.id || id, this);
+		if (data.path) {
+			ZCS.cache.set(data.path, this);
 		}
+
+		return this.callParent(arguments);
 	},
 
 	isFolder: function() {
@@ -71,7 +76,7 @@ Ext.define('ZCS.model.ZtOrganizer', {
 
 		if (this.isFolder()) {
 			var path = this.get('name'),
-				parent = ZCS.session.getOrganizerById(this.get('parentId'));
+				parent = ZCS.cache.get(this.get('parentItemId'));
 
 			if (this.isSystem()) {
 				path = path.toLowerCase();
@@ -79,7 +84,7 @@ Ext.define('ZCS.model.ZtOrganizer', {
 
 			while (parent && (parent.get('itemId') != ZCS.constant.ID_ROOT)) {
 				path = parent.get('name') + '/' + path;
-				parent = ZCS.session.getOrganizerById(parent.get('parentId'));
+				parent = ZCS.cache.get(parent.get('parentItemId'));
 			}
 
 			return 'in:"' + path + '"';
