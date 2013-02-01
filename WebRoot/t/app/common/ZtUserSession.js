@@ -33,8 +33,8 @@ Ext.define('ZCS.common.ZtUserSession', {
 		accountName: null,
 		notifySeq: 0,
 		initialSearchResults: null,
-		folderData: null,
-		folderList: null,   // organizer list
+		organizerData: null,
+		organizerList: null,   // organizer list
 		activeApp: null
 	},
 
@@ -46,20 +46,20 @@ Ext.define('ZCS.common.ZtUserSession', {
 		// session ID
 		this.setSessionId(data.header.context.session.id);
 
-		// parse folder info from the {refresh} block
+		// parse organizer info from the {refresh} block
 		var folderRoot = data.header.context.refresh.folder[0],
 			tagRoot = data.header.context.refresh.tags,
-			folderData = {};
+			organizerData = {};
 
 		// each overview needs data with unique IDs, so even though tags are global, we
 		// need to create a separate record for each tag per app
 		Ext.each(ZCS.constant.ALL_APPS, function(app) {
-			var folders = folderData[app] = [];
-			this.addFolder(folderRoot, folders, app, ZCS.constant.ORG_FOLDER);
-			this.addFolder(folderRoot, folders, app, ZCS.constant.ORG_SAVED_SEARCH);
-			this.addFolder(tagRoot, folders, app, ZCS.constant.ORG_TAG);
+			var organizers = organizerData[app] = [];
+			this.addOrganizer(folderRoot, organizers, app, ZCS.constant.ORG_FOLDER, []);
+			this.addOrganizer(folderRoot, organizers, app, ZCS.constant.ORG_SAVED_SEARCH, []);
+			this.addOrganizer(tagRoot, organizers, app, ZCS.constant.ORG_TAG, []);
 		}, this);
-		this.setFolderData(folderData);
+		this.setOrganizerData(organizerData);
 
 		// grab the user's settings
 		var gir = data.response.GetInfoResponse[0];
@@ -102,141 +102,153 @@ Ext.define('ZCS.common.ZtUserSession', {
 	},
 
 	/**
-	 * Returns the folder tree for the given app, in a form that is consumable by a TreeStore.
+	 * Returns the tree for the given app, in a form that is consumable by a TreeStore.
 	 *
 	 * @param {string}  app     app name
-	 * @return {object}     folder tree (each node is a ZtOrganizer)
+	 * @return {object}     tree (each node is a ZtOrganizer)
 	 */
-	getFolderDataByApp: function(app) {
-		var folderData = this.getFolderData();
-		return folderData ? folderData[app] : null;
+	getOrganizerDataByApp: function(app) {
+		var organizerData = this.getOrganizerData();
+		return organizerData ? organizerData[app] : null;
 	},
 
 	/**
-	 * Returns the folder list component (a nested list) for the given app.
+	 * Returns the list component (a nested list) for the given app.
 	 *
 	 * @param {string}  app     app name
-	 * @return {Ext.dataview.NestedList}    folder list component
+	 * @return {Ext.dataview.NestedList}    list component
 	 */
-	getFolderListByApp: function(app) {
-		var folderList = this.getFolderList();
-		return folderList ? folderList[app] : null;
+	getOrganizerListByApp: function(app) {
+		var organizerList = this.getOrganizerList();
+		return organizerList ? organizerList[app] : null;
 	},
 
 	/**
-	 * Sets the folder list component for the given app.
+	 * Sets the list component for the given app.
 	 *
-	 * @param {Ext.dataview.NestedList} list    folder list component
+	 * @param {Ext.dataview.NestedList} list    list component
 	 * @param {string}  app     app name
 	 */
-	setFolderListByApp: function(list, app) {
-		var folderList = this.getFolderList();
-		if (!folderList) {
-			folderList = {};
-			this.setFolderList(folderList);
+	setOrganizerListByApp: function(list, app) {
+		var organizerList = this.getOrganizerList();
+		if (!organizerList) {
+			organizerList = {};
+			this.setOrganizerList(organizerList);
 		}
-		folderList[app] = list;
+		organizerList[app] = list;
 	},
 
 	/**
-	 * Returns the folder with the given ID, within the given app if provided.
+	 * Returns the organizer with the given ID, within the given app if provided.
 	 *
-	 * @param {string}  id  folder ID
+	 * @param {string}  id  organizer ID
 	 * @param {string}  app     (optional) app name
-	 * @return ZtFolder
+	 * @return ZtOrganizer
 	 */
-	getFolderById: function(id, app) {
+	getOrganizerById: function(id, app) {
 
 		if (app) {
-			var folderList = this.getFolderListByApp(app);
-			if (folderList) {
-				return folderList.getById(id);
-			}
+			var organizerList = this.getOrganizerListByApp(app),
+				store = organizerList.getStore();
+
+			return store.getAt(store.find('itemId', id));
 		}
 		else {
-			var folder = null;
+			var organizer = null;
 			Ext.each(ZCS.constant.ALL_APPS, function(app) {
-				folder = this.getFolderById(id, app);
-				if (folder) {
+				organizer = this.getOrganizerById(id, app);
+				if (organizer) {
 					return false;   // break out of loop
 				}
 			}, this);
-			return folder;
+			return organizer;
 		}
 	},
 
 	/**
 	 * @private
 	 */
-	addFolder: function(folderNode, folders, app, orgType) {
+	addOrganizer: function(node, organizers, app, type, parents) {
 
-		var itemId = folderNode.id,
+		var itemId = node.id,
 			isRoot = (!itemId || itemId == ZCS.constant.ID_ROOT),   // use == since IDs come as strings
 			isTrash = (itemId == ZCS.constant.ID_TRASH),
 			view = ZCS.constant.FOLDER_VIEW[app],
 			hideFolder = ZCS.constant.FOLDER_HIDE[itemId],
-			childNodeName = ZCS.constant.ORG_NODE[orgType];
+			childNodeName = ZCS.constant.ORG_NODE[type];
 
-		var hasChildren = !!(folderNode[childNodeName] && folderNode[childNodeName].length > 0),
+		var hasChildren = !!(node[childNodeName] && node[childNodeName].length > 0),
 			validType = false,
-			folder;
+			organizer;
 
-		if (!isRoot && (orgType === ZCS.constant.ORG_SAVED_SEARCH) && folderNode.types) {
-			Ext.each(folderNode.types.split(','), function(type) {
+		if (!isRoot && (type === ZCS.constant.ORG_SAVED_SEARCH) && node.types) {
+			Ext.each(node.types.split(','), function(type) {
 				if (ZCS.constant.APP_FOR_TYPE[Ext.String.trim(type)] === app) {
 					validType = true;
 					return false;
 				}
 			}, this);
 		}
-		else if (orgType === ZCS.constant.ORG_FOLDER) {
-			validType = (folderNode.view === view);
+		else if (type === ZCS.constant.ORG_FOLDER) {
+			validType = (node.view === view);
 		}
-		else if (orgType === ZCS.constant.ORG_TAG) {
+		else if (type === ZCS.constant.ORG_TAG) {
 			validType = true;
 		}
 
-		// add the folder if it has the right view/type; Trash is part of every folder tree
+		// add the organizer if it has the right view/type; Trash is part of every folder list
 		if (!isRoot && ((validType && !hideFolder) || isTrash)) {
 
 			// Get exact folder type if we're dealing with a folder
-			var type = (orgType === ZCS.constant.ORG_FOLDER) ? ZCS.constant.FOLDER_TYPE[app] : orgType;
+			var type1 = (type === ZCS.constant.ORG_FOLDER) ? ZCS.constant.FOLDER_TYPE[app] : type;
 
-			folder = {
+			organizer = {
 				id: [app, type, itemId].join('-'),
 				itemId: itemId,
-				name: folderNode.name,
-				itemCount: folderNode.n,
+				name: node.name,
+				path: node.name,
+				itemCount: node.n,
 				disclosure: hasChildren,
-				type: type
+				type: type1
 			};
-			folder.typeName = ZCS.constant.ORG_NAME[type];
+			organizer.typeName = ZCS.constant.ORG_NAME[type1];
+
+			if (parents.length) {
+				organizer.path = parents.join('/') + '/' + node.name;
+			}
 
 			// type-specific fields
 			if (type === ZCS.constant.ORG_MAIL_FOLDER) {
-				if (folderNode.u != null) {
-					folder.unreadCount = folderNode.u;
+				if (node.u != null) {
+					organizer.unreadCount = node.u;
 				}
 			}
 			else if (type === ZCS.constant.ORG_SAVED_SEARCH) {
-				folder.query = folderNode.query;
+				organizer.query = node.query;
 			}
 
 			if (hasChildren) {
-				folder.items = [];
+				organizer.items = [];
 			}
 			else {
-				folder.leaf = true;
+				organizer.leaf = true;
 			}
-			Ext.Logger.verbose('adding folder ' + folder.name + ' to parent ' + folderNode.l);
-			folders.push(folder);
+
+			Ext.Logger.verbose('adding folder ' + organizer.path);
+			organizers.push(organizer);
 		}
 
-		// process child folders
-		if ((isRoot || folder) && hasChildren) {
-			Ext.each(folderNode[childNodeName], function(node) {
-				this.addFolder(node, isRoot ? folders : folder.items, app, orgType);
+		// process child organizers
+		if ((isRoot || organizer) && hasChildren) {
+			if (!isRoot) {
+				parents.push(organizer.name);
+			}
+			Ext.each(node[childNodeName], function(node) {
+				this.addOrganizer(node, isRoot ? organizers : organizer.items, app, type, parents);
 			}, this);
+			if (!isRoot) {
+				parents.pop();
+			}
 		}
 	},
 

@@ -38,10 +38,8 @@ Ext.define('ZCS.model.mail.ZtMsgReader', {
 		var me  = this;
 		me.rawData = data;
 
-		var responseMethod = data.soapMethod + 'Response',
-			responseObj = data.Body[responseMethod],
-			root = responseObj && responseObj.m,
-			total = root && root.length,
+		var root = this.getRoot(data, 'm'),
+			total = root ? root.length : 0,
 			success = true,
 			message,
 			recordCount = 0,

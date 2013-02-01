@@ -30,7 +30,7 @@ Ext.application({
 	logger: {
 		enabled: true,
 		xclass: 'Ext.log.Logger',
-		minPriority: 'info',
+		minPriority: 'verbose',
 		writers: {
 			console: {
 				xclass: 'Ext.log.writer.Console',

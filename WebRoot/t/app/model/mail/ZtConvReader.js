@@ -37,9 +37,7 @@ Ext.define('ZCS.model.mail.ZtConvReader', {
 		var me  = this;
 		me.rawData = data;
 
-		var responseMethod = data.soapMethod + 'Response',
-			responseObj = data.Body[responseMethod],
-			root = responseObj && responseObj.c,
+		var root = this.getRoot(data, 'c'),
 			total = root ? root.length : 0,
 			success = true,
 			message,

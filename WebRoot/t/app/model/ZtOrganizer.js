@@ -28,8 +28,9 @@ Ext.define('ZCS.model.ZtOrganizer', {
 			// global fields
 			{ name: 'type', type: 'string' },       // ZCS.constant.ORG_*
 			{ name: 'typeName', type: 'string' },   // display name of group
-			{ name: 'itemId', type: 'string' },
+			{ name: 'itemId', type: 'string' },     // ID on ZCS server
 			{ name: 'name', type: 'string' },
+			{ name: 'path', type: 'string' },
 			{ name: 'itemCount', type: 'int' },
 			{ name: 'color', type: 'string' },
 
@@ -70,7 +71,7 @@ Ext.define('ZCS.model.ZtOrganizer', {
 
 		if (this.isFolder()) {
 			var path = this.get('name'),
-				parent = ZCS.session.getFolderById(this.get('parentId'));
+				parent = ZCS.session.getOrganizerById(this.get('parentId'));
 
 			if (this.isSystem()) {
 				path = path.toLowerCase();
@@ -78,7 +79,7 @@ Ext.define('ZCS.model.ZtOrganizer', {
 
 			while (parent && (parent.get('itemId') != ZCS.constant.ID_ROOT)) {
 				path = parent.get('name') + '/' + path;
-				parent = ZCS.session.getFolderById(parent.get('parentId'));
+				parent = ZCS.session.getOrganizerById(parent.get('parentId'));
 			}
 
 			return 'in:"' + path + '"';

@@ -23,7 +23,7 @@ Ext.define('ZCS.model.ZtReader', {
 	extend: 'Ext.data.reader.Json',
 
 	/**
-	 * Pass along the method name that was set by the writer.
+	 * Override so we can pass along the method name that was set by the writer.
 	 *
 	 * @param {object}  response    response object
 	 */
@@ -40,6 +40,19 @@ Ext.define('ZCS.model.ZtReader', {
 		}
 
 		return data;
+	},
+
+	/**
+	 * Returns a list of JSON-encoded items from a server response.
+	 *
+	 * @param {object}      data        response data
+	 * @param {string}      nodeName    name of node that contains list of results (eg 'm' for messages)
+	 */
+	getRoot: function(data, nodeName) {
+		var responseMethod = data.soapMethod + 'Response',
+			responseObj = data.Body[responseMethod];
+
+		return responseObj ? responseObj[nodeName] : null;
 	}
 
 	// TODO: parse tags

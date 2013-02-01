@@ -38,12 +38,12 @@ Ext.define('ZCS.common.ZtSearch', {
 
 		var query = this.getQuery(),
 			q = query && Ext.String.trim(query),
-			m = q && q.match(/^in:["']?([a-z\/]+)["']?$/);
+			m = q && q.match(/^(in|tag):["']?([\w \/]+)["']?$/);
 
 		if (m && m.length) {
-			var folderName = m[1],
-				systemId = ZCS.constant.FOLDER_SYSTEM_ID[m[1].toLowerCase()],
-				systemFolder = systemId && ZCS.session.getFolderById(systemId),
+			var organizerName = m[1].toLowerCase(),
+				systemId = ZCS.constant.FOLDER_SYSTEM_ID[organizerName],
+				systemFolder = systemId && ZCS.session.getOrganizerById(systemId),
 				systemName = systemFolder && systemFolder.get('name');
 
 //			if (folderId) {

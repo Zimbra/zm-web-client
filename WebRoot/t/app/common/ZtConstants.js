@@ -202,12 +202,17 @@ ZCS.constant.SETTING_CUR_SEARCH         = 'currentSearch';
 
 // List of all settings we care about
 ZCS.constant.SETTINGS = [
+
+	// LDAP
 	ZCS.constant.SETTING_ALIASES,
 	ZCS.constant.SETTING_INITIAL_SEARCH,
 	ZCS.constant.SETTING_SHOW_SEARCH,
 	ZCS.constant.SETTING_LOCALE,
 	ZCS.constant.SETTING_TIMEZONE,
-	ZCS.constant.SETTING_MARK_READ
+	ZCS.constant.SETTING_MARK_READ,
+
+	// internal
+	ZCS.constant.SETTING_CUR_SEARCH
 ];
 
 // Setting type; defaults to string, so just note exceptions

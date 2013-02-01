@@ -20,7 +20,7 @@
  *
  * @author Conrad Damon <cdamon@zimbra.com>
  */
-Ext.define('ZCS.view.ZtFolderList', {
+Ext.define('ZCS.view.ZtOrganizerList', {
 
 	extend: 'Ext.dataview.NestedList',
 

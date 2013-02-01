@@ -37,8 +37,7 @@ Ext.define('ZCS.model.contacts.ZtContactReader', {
 		var me  = this;
 		me.rawData = data;
 
-		var root = (data.Body.GetContactsResponse && data.Body.GetContactsResponse.cn) ||
-				   (data.Body.SearchResponse && data.Body.SearchResponse.cn),
+		var root = this.getRoot(data, 'cn'),
 			total = root ? root.length : 0,
 			success = true,
 			message,
