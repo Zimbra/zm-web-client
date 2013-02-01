@@ -50,7 +50,7 @@ Ext.define('ZCS.model.ZtOrganizer', {
 
 		ZCS.cache.set(data.itemId || data.id || id, this);
 		if (data.path) {
-			ZCS.cache.set(data.path, this);
+			ZCS.cache.set(data.path, this, 'path');
 		}
 
 		return this.callParent(arguments);

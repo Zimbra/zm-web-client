@@ -116,6 +116,10 @@ Ext.define('ZCS.common.ZtUserSession', {
 	 */
 	addOrganizer: function(node, organizers, app, type, parents) {
 
+		if (!node) {
+			return;
+		}
+
 		var itemId = node.id,
 			isRoot = (!itemId || itemId == ZCS.constant.ID_ROOT),   // use == since IDs come as strings
 			isTrash = (itemId == ZCS.constant.ID_TRASH),
