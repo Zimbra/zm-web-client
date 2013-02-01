@@ -2067,7 +2067,7 @@ ZmComposeController.prototype._pasteHandler = function( ev ){
 };
 
 ZmComposeController.prototype._processDataURIImages = function(idoc, callback){
-    if (!window.atob) {
+    if (!idoc || !window.atob) {
         return;
     }
     var BlobBuilder = window.MozBlobBuilder || window.WebKitBlobBuilder || window.MSBlobBuilder || window.BlobBuilder;
