@@ -23,6 +23,8 @@ Ext.define('ZCS.common.ZtUserSession', {
 
 	singleton: true,
 
+	alternateClassName: 'ZCS.session',
+
 	requires: [
 		'ZCS.common.ZtConstants',
 		'ZCS.model.ZtSetting'
@@ -30,17 +32,15 @@ Ext.define('ZCS.common.ZtUserSession', {
 
 	config: {
 		sessionId: 0,
-		accountName: null,
+		accountName: '',
+		accountId: '',
 		notifySeq: 0,
 		initialSearchResults: null,
 		organizerData: null,
-		activeApp: null
+		activeApp: ''
 	},
 
 	initSession: function(data) {
-
-		// shortcut - setting this after Ext.define doesn't work for some reason
-		ZCS.session = ZCS.common.ZtUserSession;
 
 		// session ID
 		this.setSessionId(data.header.context.session.id);
@@ -52,7 +52,7 @@ Ext.define('ZCS.common.ZtUserSession', {
 
 		// each overview needs data with unique IDs, so even though tags are global, we
 		// need to create a separate record for each tag per app
-		Ext.each(ZCS.constant.ALL_APPS, function(app) {
+		Ext.each(ZCS.constant.APPS, function(app) {
 			var organizers = organizerData[app] = [];
 			this.addOrganizer(folderRoot, organizers, app, ZCS.constant.ORG_FOLDER, []);
 			this.addOrganizer(folderRoot, organizers, app, ZCS.constant.ORG_SAVED_SEARCH, []);
@@ -67,6 +67,13 @@ Ext.define('ZCS.common.ZtUserSession', {
 
 		// name of logged-in account
 		this.setAccountName(gir.name);
+
+		// ID of logged-in account
+		Ext.each(gir.identities.identity, function(identity) {
+			if (identity.name === 'DEFAULT') {
+				this.setAccountId(identity.id);
+			}
+		}, this);
 
 		// save the JSON results of the user's initial search (usually 'in:inbox')
 		this.setInitialSearchResults(data.response.SearchResponse[0]);
@@ -149,11 +156,13 @@ Ext.define('ZCS.common.ZtUserSession', {
 		// add the organizer if it has the right view/type; Trash is part of every folder list
 		if (!isRoot && ((validType && !hideFolder) || isTrash)) {
 
-			// Get exact folder type if we're dealing with a folder
-			var type1 = (type === ZCS.constant.ORG_FOLDER) ? ZCS.constant.FOLDER_TYPE[app] : type;
+			// Get exact folder type if we're dealing with a folder. Tag needs unique ID for each store
+			// it appears in (tag is only organizer that can appear in multiple overviews).
+			var type1 = (type === ZCS.constant.ORG_FOLDER) ? ZCS.constant.FOLDER_TYPE[app] : type,
+				id = (type === ZCS.constant.ORG_TAG) ? [app, type, itemId].join('-') : itemId;
 
 			organizer = {
-				id: [app, type, itemId].join('-'),
+				id: id,
 				itemId: itemId,
 				parentItemId: node.l,
 				name: node.name,

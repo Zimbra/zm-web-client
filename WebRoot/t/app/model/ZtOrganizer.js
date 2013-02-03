@@ -48,12 +48,14 @@ Ext.define('ZCS.model.ZtOrganizer', {
 
 	constructor: function(data, id) {
 
-		ZCS.cache.set(data.itemId || data.id || id, this);
-		if (data.path) {
-			ZCS.cache.set(data.path, this, 'path');
-		}
+		this.callParent(arguments);
 
-		return this.callParent(arguments);
+		var orgId = data.itemId || data.id || id;
+
+		ZCS.cache.set(orgId, this);
+		if (data.path) {
+			ZCS.cache.set(this.isSystem() ? ZCS.constant.FOLDER_SYSTEM_NAME[orgId] : data.path, this, 'path');
+		}
 	},
 
 	isFolder: function() {
@@ -95,5 +97,7 @@ Ext.define('ZCS.model.ZtOrganizer', {
 		else if (type === ZCS.constant.ORG_TAG) {
 			return 'tag:"' + this.get('name') + '"';
 		}
-	}
+	},
+
+	handleModifyNotification: function(mod) {}
 });

@@ -65,5 +65,15 @@ Ext.define('ZCS.controller.mail.ZtConvListController', {
 
 	doCompose: function() {
 		this.getComposeController().compose();
+	},
+
+	handleCreateNotification: function(create) {
+
+		var reader = ZCS.model.mail.ZtConv.getProxy().getReader(),
+			data = reader.getDataFromNode(create),
+			store = this.getStore(),
+			conv = new ZCS.model.mail.ZtConv(data, create.id);
+
+		store.insert(0, [conv]);
 	}
 });

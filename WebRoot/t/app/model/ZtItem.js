@@ -19,12 +19,18 @@
  * @author Conrad Damon <cdamon@zimbra.com>
  */
 Ext.define('ZCS.model.ZtItem', {
+
 	extend: 'Ext.data.Model',
+
 	requires: [
 		'ZCS.model.ZtSoapProxy'
 	],
+
 	config: {
-		idProperty: 'id',
+		fields: [
+			{ name: 'type', type: 'string' },
+			{ name: 'itemId', type: 'string' }
+		],
 		proxy: {
 			type: 'soapproxy',
 			// our server always wants us to POST for API calls
@@ -48,5 +54,13 @@ Ext.define('ZCS.model.ZtItem', {
 	constructor: function(data, id) {
 		ZCS.cache.set(data.id || id, this);
 		return this.callParent(arguments);
+	},
+
+	/**
+	 * Processes a notification that this item has been modified.
+	 *
+	 * @param {object}  mod     notification
+	 */
+	handleModifyNotification: function(mod) {
 	}
 });

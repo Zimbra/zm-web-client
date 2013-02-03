@@ -55,7 +55,7 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
 	 * @param {ZtContact}   contact     contact to show
 	 */
 	showItem: function(contact) {
-		Ext.Logger.info("contact controller: show contact " + contact.get('id'));
+		Ext.Logger.info("contact controller: show contact " + contact.getId());
 		this.callParent(arguments);
 		this.getItemPanelToolbar().setTitle(contact.get('lastName') + ', ' + contact.get('firstName'));
 		var tpl = this.getContactView().getTpl();

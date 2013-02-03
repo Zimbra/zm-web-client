@@ -22,6 +22,8 @@ Ext.define('ZCS.common.ZtUtil', {
 
 	singleton: true,
 
+	alternateClassName: 'ZCS.util',
+
 	getAppFromObject: function(obj) {
 
 		var path = Ext.getDisplayName(obj),
@@ -82,11 +84,34 @@ Ext.define('ZCS.common.ZtUtil', {
 			return '';
 		}
 		if (removeContent) {
-			str = str.replace(/(<(\w+)[^>]*>).*(<\/\2[^>]*>)/, "$1$3");
+			str = str.replace(/(<(\w+)[^>]*>).*(<\/\2[^>]*>)/, '$1$3');
 		}
 		return str.replace(/<\/?[^>]+>/gi, '');
+	},
+
+	/**
+	 * Parses a possibly compound ID into account and local parts, and returns
+	 * them in an object. If the ID is not a compound ID, then the account ID is
+	 * set to the current account ID.
+	 *
+	 * @param {string}  id      item ID
+	 *
+	 * @return {object}     object with 'account' and 'localId' properties
+	 */
+	parseId: function(id) {
+
+		var result = {};
+
+		if (id.indexOf(':') > 0) {
+			var parts = id.split(':');
+			result.account = parts[0];
+			result.localId = parts[1];
+		}
+		else {
+			result.account = ZCS.session.getAccountId();
+			result.localId = id;
+		}
+
+		return result;
 	}
 });
-
-// shortcut
-ZCS.util = ZCS.common.ZtUtil;

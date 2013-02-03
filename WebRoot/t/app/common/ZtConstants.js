@@ -27,6 +27,8 @@ Ext.define('ZCS.common.ZtConstants', {
 
 	singleton: true,
 
+	alternateClassName: 'ZCS.constant',
+
 	getBackMap: function(map) {
 		var backMap = {}, key;
 		for (key in map) {
@@ -36,17 +38,15 @@ Ext.define('ZCS.common.ZtConstants', {
 	}
 });
 
-// shortcut to this class
-ZCS.constant = ZCS.common.ZtConstants;
-
 // URL portion that precedes a server API call
 ZCS.constant.SERVICE_URL_BASE = '/service/soap/';
 
 // Apps
 ZCS.constant.APP_MAIL     = 'mail';
 ZCS.constant.APP_CONTACTS = 'contacts';
+
 // Order of app tabs
-ZCS.constant.ALL_APPS = [
+ZCS.constant.APPS = [
 	ZCS.constant.APP_MAIL,
 	ZCS.constant.APP_CONTACTS
 ];
@@ -67,15 +67,51 @@ ZCS.constant.NEW_ITEM_ICON[ZCS.constant.APP_MAIL]       = 'compose';
 ZCS.constant.NEW_ITEM_ICON[ZCS.constant.APP_CONTACTS]   = 'plus';
 
 // Item types as known by server
-ZCS.constant.ITEM_TYPE_CONVERSATION = 'conversation';
-ZCS.constant.ITEM_TYPE_MESSAGE      = 'message';
-ZCS.constant.ITEM_TYPE_CONTACT      = 'contact';
+ZCS.constant.ITEM_CONVERSATION = 'conversation';
+ZCS.constant.ITEM_MESSAGE      = 'message';
+ZCS.constant.ITEM_CONTACT      = 'contact';
 
 // App to which each item type belongs
 ZCS.constant.APP_FOR_TYPE = {};
-ZCS.constant.APP_FOR_TYPE[ZCS.constant.ITEM_TYPE_CONVERSATION]  = ZCS.constant.APP_MAIL;
-ZCS.constant.APP_FOR_TYPE[ZCS.constant.ITEM_TYPE_MESSAGE]       = ZCS.constant.APP_MAIL;
-ZCS.constant.APP_FOR_TYPE[ZCS.constant.ITEM_TYPE_CONTACT]       = ZCS.constant.APP_CONTACTS;
+ZCS.constant.APP_FOR_TYPE[ZCS.constant.ITEM_CONVERSATION]  = ZCS.constant.APP_MAIL;
+ZCS.constant.APP_FOR_TYPE[ZCS.constant.ITEM_MESSAGE]       = ZCS.constant.APP_MAIL;
+ZCS.constant.APP_FOR_TYPE[ZCS.constant.ITEM_CONTACT]       = ZCS.constant.APP_CONTACTS;
+
+// Model class for each item type
+ZCS.constant.CLASS_FOR_TYPE = {};
+ZCS.constant.CLASS_FOR_TYPE[ZCS.constant.ITEM_CONVERSATION]    = 'ZCS.model.mail.ZtConv';
+ZCS.constant.CLASS_FOR_TYPE[ZCS.constant.ITEM_MESSAGE]         = 'ZCS.model.mail.ZtMailMsg';
+ZCS.constant.CLASS_FOR_TYPE[ZCS.constant.ITEM_CONTACT]         = 'ZCS.model.contacts.ZtContact';
+
+// Item type for model class
+ZCS.constant.TYPE_FOR_CLASS = ZCS.constant.getBackMap(ZCS.constant.CLASS_FOR_TYPE);
+
+// JSON node names for items
+ZCS.constant.NODE_CONVERSATION  = 'c';
+ZCS.constant.NODE_MESSAGE       = 'm';
+ZCS.constant.NODE_CONTACT       = 'cn';
+
+// Order in which to handle notifications
+ZCS.constant.NODES = [
+	ZCS.constant.NODE_CONVERSATION,
+	ZCS.constant.NODE_MESSAGE,
+	ZCS.constant.NODE_CONTACT
+];
+
+// JSON node name for each item type
+ZCS.constant.ITEM_NODE = {};
+ZCS.constant.ITEM_NODE[ZCS.constant.ITEM_CONVERSATION] = ZCS.constant.NODE_CONVERSATION;
+ZCS.constant.ITEM_NODE[ZCS.constant.ITEM_MESSAGE]      = ZCS.constant.NODE_MESSAGE;
+ZCS.constant.ITEM_NODE[ZCS.constant.ITEM_CONTACT]      = ZCS.constant.NODE_CONTACT;
+
+// Item type based on JSON node name
+ZCS.constant.NODE_ITEM = ZCS.constant.getBackMap(ZCS.constant.ITEM_NODE);
+
+// Controller that handles create for each item type
+ZCS.constant.LIST_CONTROLLER = {};
+ZCS.constant.LIST_CONTROLLER[ZCS.constant.ITEM_CONVERSATION]    = 'ZCS.controller.mail.ZtConvListController';
+ZCS.constant.LIST_CONTROLLER[ZCS.constant.ITEM_MESSAGE]         = 'ZCS.controller.mail.ZtConvController';
+ZCS.constant.LIST_CONTROLLER[ZCS.constant.ITEM_CONTACT]         = 'ZCS.controller.contacts.ZtContactListController';
 
 // Store that holds items for list view
 ZCS.constant.STORE = {};

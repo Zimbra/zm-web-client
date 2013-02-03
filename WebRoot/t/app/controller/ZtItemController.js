@@ -67,13 +67,14 @@ Ext.define('ZCS.controller.ZtItemController', {
 	 */
 	doShowMenu: function() {
 
-		if (!this.itemMenu) {
-			this.itemMenu = Ext.create('ZCS.common.ZtMenu', {
-				referenceComponent: this.getMenuButton()
-			});
+		var menu = this.itemMenu;
+
+		if (!menu) {
+			menu = this.itemMenu = Ext.create('ZCS.common.ZtMenu');
 			this.setMenuItems();
 		}
-		this.itemMenu.popup();
+		menu.setReferenceComponent(this.getMenuButton());
+		menu.popup();
 	},
 
 	/**

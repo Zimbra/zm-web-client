@@ -23,7 +23,9 @@ Ext.define('ZCS.model.ZtReader', {
 	extend: 'Ext.data.reader.Json',
 
 	/**
-	 * Override so we can pass along the method name that was set by the writer.
+	 * Override so we can pass along the method name that was set by the writer. We override
+	 * this method because it has access to the Request object; we then copy the SOAP method
+	 * from there to the data, which readRecords() receives as an argument.
 	 *
 	 * @param {object}  response    response object
 	 */
@@ -31,6 +33,7 @@ Ext.define('ZCS.model.ZtReader', {
 
 		var data = this.callParent(arguments),
 			request = response.request,
+			// see if we have a Request, or if we need to go digging in the Operation for it
 			requestObj = Ext.getClassName(response.request) ? request : request && request.options &&
 							request.options.operation && request.options.operation.getRequest(),
 			soapMethod = requestObj && requestObj.soapMethod;
@@ -39,7 +42,51 @@ Ext.define('ZCS.model.ZtReader', {
 			data.soapMethod = soapMethod;
 		}
 
+		// copy header to response object so ZtSoapProxy can check for notifications, etc
+		response.soapHeader = data.Header;
+
 		return data;
+	},
+
+	/**
+	 * Override this method since there's no easy way to override the generated methods that return the
+	 * total, success, and message properties. Note that we have not created an item yet, so we can't
+	 * directly add values to it. All we can do is set up the 'data' object, which is then used to transfer
+	 * properties into a newly created item in Operation::processRead.
+	 *
+	 * @param data
+	 */
+	readRecords: function(data) {
+
+		this.rawData = data;
+
+		var Model = this.getModel(),
+			className = Ext.getClassName(Model),
+			type = ZCS.constant.TYPE_FOR_CLASS[className],
+			nodeName = ZCS.constant.ITEM_NODE[type];
+
+		var root = this.getRoot(data, nodeName),
+			total = root ? root.length : 0,
+			success = true,
+			records = [],
+			message, node;
+
+		Ext.each(root, function(node) {
+			records.push({
+				clientId: null,
+				id: node.id,
+				data: this.getDataFromNode(node),
+				node: node
+			});
+		}, this);
+
+		return new Ext.data.ResultSet({
+			total  : total,
+			count  : total,
+			records: records,
+			success: success,
+			message: message
+		});
 	},
 
 	/**
@@ -53,6 +100,16 @@ Ext.define('ZCS.model.ZtReader', {
 			responseObj = data.Body[responseMethod];
 
 		return responseObj ? responseObj[nodeName] : null;
+	},
+
+	/**
+	 * Returns a data object with populated fields for the model, based on the given
+	 * JSON node.
+	 *
+	 * @param {object}  node        JSON node representing model instance
+	 */
+	getDataFromNode: function(node) {
+		return node;
 	}
 
 	// TODO: parse tags

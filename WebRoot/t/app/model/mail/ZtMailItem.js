@@ -26,8 +26,8 @@ Ext.define('ZCS.model.mail.ZtMailItem', {
 		fields: [
 			{ name: 'addresses', type: 'auto' },
 			{ name: 'subject', type: 'string' },
-			{ name: 'flags', type: 'string' },
-			{ name: 'dateStr', type: 'string' }
+			{ name: 'dateStr', type: 'string' },
+			{ name: 'isUnread', type: 'boolean' }
 		]
 	},
 
@@ -73,5 +73,23 @@ Ext.define('ZCS.model.mail.ZtMailItem', {
 	 */
 	getAddressByType: function(type) {
 		return this.getAddressesByType(type)[0];
+	},
+
+	handleModifyNotification: function(mod) {
+
+		this.callParent(arguments);
+
+		// flags
+		if (mod.f != null) {
+			Ext.each(ZCS.constant.ALL_FLAGS, function(flag) {
+				var prop = ZCS.constant.FLAG_PROP[flag],
+					wasOn = this.get(prop),
+					isOn = (mod.f.indexOf(flag) !== -1);
+
+				if (wasOn !== isOn) {
+					this.set(prop, isOn);
+				}
+			}, this);
+		}
 	}
 });

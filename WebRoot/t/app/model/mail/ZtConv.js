@@ -51,5 +51,14 @@ Ext.define('ZCS.model.mail.ZtConv', {
 		},
 
 		messages: []
+	},
+
+	handleModifyNotification: function(mod) {
+
+		this.callParent(arguments);
+
+		if (mod.newId) {
+			this.set('id', mod.newId);
+		}
 	}
 });

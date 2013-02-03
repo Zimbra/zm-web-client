@@ -15,6 +15,8 @@
 
 /**
  * This class manages the display and manipulation of a single conversation, which is made up of one or more messages.
+ * It is sort of a hybrid of an item controller (the item is a conversation), and a list controller (the list is the
+ * conversation's messages).
  *
  * @see ZtConv
  * @see ZtMailMsg
@@ -53,11 +55,11 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 	 * @param {ZtConv}  conv        conv to show
 	 */
 	showItem: function(conv) {
-		Ext.Logger.info("conv controller: show conv " + conv.get('id'));
+		Ext.Logger.info("conv controller: show conv " + conv.getId());
 		this.callParent(arguments);
 		this.getItemPanelToolbar().setTitle(conv.get('subject'));
 		Ext.getStore(ZCS.util.getStoreShortName(this)).load({
-			convId: conv.get('id')
+			convId: conv.getId()
 		});
 	},
 
@@ -105,5 +107,22 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 //		}, this);
 
 		return (msgs && msgs[0]) || null;
+	},
+
+	handleCreateNotification: function(create) {
+
+		var item = this.getItem(),
+			curId = item && item.getId();
+
+		if (create.cid !== curId) {
+			return;
+		}
+
+		var reader = ZCS.model.mail.ZtMailMsg.getProxy().getReader(),
+			data = reader.getDataFromNode(create),
+			store = this.getStore(),
+			msg = new ZCS.model.mail.ZtMailMsg(data, create.id);
+
+		store.insert(0, [msg]);
 	}
 });

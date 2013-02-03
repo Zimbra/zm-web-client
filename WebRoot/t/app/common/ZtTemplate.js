@@ -29,6 +29,8 @@ Ext.define('ZCS.common.ZtTemplate', {
 
 	singleton: true,
 
+	alternateClassName: 'ZCS.template',
+
 	loadTemplates: function(callback) {
 		Ext.Ajax.request({
 			url: '/t/resources/templates/zcs.tpl',
@@ -64,5 +66,3 @@ Ext.define('ZCS.common.ZtTemplate', {
 		});
 	}
 });
-
-ZCS.template = ZCS.common.ZtTemplate;

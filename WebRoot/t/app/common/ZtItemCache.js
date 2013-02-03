@@ -28,6 +28,8 @@ Ext.define('ZCS.common.ZtItemCache', {
 
 	singleton: true,
 
+	alternateClassName: 'ZCS.cache',
+
 	constructor: function() {
 		this._cache = {};
 	},
@@ -74,5 +76,3 @@ Ext.define('ZCS.common.ZtItemCache', {
 		cache[key] = item;
 	}
 });
-
-ZCS.cache = ZCS.common.ZtItemCache;

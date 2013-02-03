@@ -41,12 +41,12 @@ Ext.define('ZCS.common.ZtSearch', {
 			m = q && q.match(/^(in|tag):["']?([\w \/]+)["']?$/);
 
 		if (m && m.length) {
-			var organizerName = m[1].toLowerCase(),
-				systemId = ZCS.constant.FOLDER_SYSTEM_ID[organizerName],
-				systemFolder = systemId && ZCS.cache.get(systemId),
-				systemName = systemFolder && systemFolder.get('name');
+			var path = m[2],
+				organizer = ZCS.cache.get(path, 'path') || (path && ZCS.cache.get(path.toLowerCase(), 'path'));
 
-			this.setFolderId(ZCS.constant.FOLDER_SYSTEM_ID[m[1].toLowerCase()] || m[1]);
+			if (organizer) {
+				this.setFolderId(organizer.get('itemId'));
+			}
 		}
 	}
 });

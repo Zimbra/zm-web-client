@@ -50,7 +50,7 @@ Ext.define("ZCS.view.ZtMain", {
 
 		this.callParent(arguments);
 
-		Ext.each(ZCS.constant.ALL_APPS, function(app) {
+		Ext.each(ZCS.constant.APPS, function(app) {
 			var mainView = {
 				title: ZCS.constant.TAB_TITLE[app],
 				xtype: 'appview',

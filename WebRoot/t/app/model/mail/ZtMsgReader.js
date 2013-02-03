@@ -28,69 +28,37 @@ Ext.define('ZCS.model.mail.ZtMsgReader', {
 
 	alias: 'reader.msgreader',
 
-	/**
-	 * Override this method since there's no easy way to override the generated methods that return the
-	 * total, success, and message properties. Also, we need to do some more in-depth processing of
-	 * non-trivial fields such as MIME parts.
-	 */
-	readRecords: function(data) {
+	getDataFromNode: function(node) {
 
-		var me  = this;
-		me.rawData = data;
-
-		var root = this.getRoot(data, 'm'),
-			total = root ? root.length : 0,
-			success = true,
-			message,
-			recordCount = 0,
-			records = [],
+		var data = {},
 			nowMs = Ext.Date.now(),
-			i, j, len, node, data, participant;
+			ctxt;
 
-		if (root && total) {
-			for (i = 0; i < total; i++) {
-				node = root[i];
-				data = {};
-				data.fragment = node.fr;
-//				data.content = (node.mp && node.mp[0] && node.mp[0].content) || node.fr;
-				data.content = node.fr;
-				data.convId = node.cid;
-				data.subject = node.su;
-				me.parseFlags(node, data);
+		data.itemId = node.id;
+		data.type = ZCS.constant.ITEM_MESSAGE;
+		data.fragment = node.fr;
+		data.content = node.fr;
+		data.convId = node.cid;
+		data.subject = node.su;
+		this.parseFlags(node, data);
 
-				me.convertAddresses(node.e, data);
+		this.convertAddresses(node.e, data);
 
-				data.dateStr = this.getDateString(node, nowMs);
+		data.dateStr = this.getDateString(node, nowMs);
 
-				if (node.mp) {
-					var ctxt = {
-						attachments:    [],
-						bodyParts:      [],
-						contentTypes:   {}
-					}
-					data.topPart = ZCS.model.mail.ZtMimePart.fromJson(node.mp[0], ctxt);
-					data.attachments = ctxt.attachments;
-					data.bodyParts = ctxt.bodyParts;
-					data.contentTypes = ctxt.contentTypes;
-					data.isLoaded = !!(data.bodyParts.length > 0 || data.attachments.length > 0);
-				}
-
-				records.push({
-					clientId: null,
-					id: node.id,
-					data: data,
-					node: node
-				});
+		if (node.mp) {
+			ctxt = {
+				attachments:    [],
+				bodyParts:      [],
+				contentTypes:   {}
 			}
-			recordCount = total;
+			data.topPart = ZCS.model.mail.ZtMimePart.fromJson(node.mp[0], ctxt);
+			data.attachments = ctxt.attachments;
+			data.bodyParts = ctxt.bodyParts;
+			data.contentTypes = ctxt.contentTypes;
+			data.isLoaded = !!(data.bodyParts.length > 0 || data.attachments.length > 0);
 		}
 
-		return new Ext.data.ResultSet({
-			total  : total,
-			count  : recordCount,
-			records: records,
-			success: success,
-			message: message
-		});
+		return data;
 	}
 });

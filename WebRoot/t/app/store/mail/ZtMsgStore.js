@@ -31,11 +31,10 @@ Ext.define('ZCS.store.mail.ZtMsgStore', {
 			refresh: function(me, records, eOpts) {
 
 				var conv = ZCS.app.getController('ZCS.controller.mail.ZtConvController').getItem(),
-					msg, i, convId,
+					convId = conv.getId(),
 					messages = [];
 
 				records.each(function(msg) {
-					convId = conv.get('id');
 					if (msg.get('convId') === convId) {
 						messages.push(msg);
 					}

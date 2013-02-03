@@ -24,56 +24,20 @@ Ext.define('ZCS.model.contacts.ZtContactReader', {
 
 	alias: 'reader.contactreader',
 
-	/**
-	 * Override this method since there's no easy way to override the generated methods that return the
-	 * total, success, and message properties. Note that we have not created a ZtContact yet, so we can't
-	 * directly add values to it. All we can do is set up the 'data' object, which is then used to transfer
-	 * properties into a newly created ZtContact in Operation::processRead.
-	 *
-	 * @param data
-	 */
-	readRecords: function(data) {
+	getDataFromNode: function(node) {
 
-		var me  = this;
-		me.rawData = data;
+		var data = {},
+			attrs = node._attrs;
 
-		var root = this.getRoot(data, 'cn'),
-			total = root ? root.length : 0,
-			success = true,
-			message,
-			recordCount = 0,
-			records = [],
-			i, j, len, node, data, attrs;
+		data.type = ZCS.constant.ITEM_CONTACT;
+		Ext.copyTo(data, attrs, [
+			'firstName',
+			'lastName',
+			'email',
+			'company',
+			'fileAs'
+		]);
 
-		if (total > 0) {
-			for (i = 0; i < total; i++) {
-				node = root[i];
-				data = {};
-				attrs = node._attrs;
-				Ext.copyTo(data, attrs, [
-					'firstName',
-					'lastName',
-					'email',
-					'company',
-					'fileAs'
-				]);
-
-				records.push({
-					clientId: null,
-					id: node.id,
-					data: data,
-					node: node
-				});
-			}
-			recordCount = total;
-		}
-
-		return new Ext.data.ResultSet({
-			total  : total,
-			count  : recordCount,
-			records: records,
-			success: success,
-			message: message
-		});
+		return data;
 	}
 });

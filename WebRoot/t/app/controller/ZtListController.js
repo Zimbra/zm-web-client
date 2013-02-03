@@ -62,11 +62,22 @@ Ext.define('ZCS.controller.ZtListController', {
 		}
 	},
 
-	// On launch, populate the list with items
+	/**
+	 * Returns the store that holds the data this controller is managing.
+	 *
+	 * @return {Ext.data.Store}     store
+	 */
+	getStore: function() {
+		return Ext.getStore(ZCS.util.getStoreShortName(this));
+	},
+
+	/**
+	 * On launch, populate the list with items
+	 */
 	launch: function () {
 		Ext.Logger.verbose('STARTUP: list ctlr launch - ' + this.$className);
 		this.callParent();
-		Ext.getStore(ZCS.util.getStoreShortName(this)).load();
+		this.getStore().load();
 	},
 
 	/**
@@ -74,6 +85,17 @@ Ext.define('ZCS.controller.ZtListController', {
 	 * @protected
 	 */
 	getItemController: function() {},
+
+	/**
+	 * Notification handling
+	 */
+	handleDeleteNotification: function(id) {
+		this.getStore().remove(item);
+	},
+	handleCreateNotification: function(create) {},
+	handleModifyNotification: function(item, modify) {
+		item.handleModifyNotification(modify);
+	},
 
 	/**
 	 * Displays the overview, which contains the folder list. Panel widths are adjusted.
@@ -129,7 +151,7 @@ Ext.define('ZCS.controller.ZtListController', {
 		if (isFromOverview) {
 			this.getSearchBox().setValue('');
 		}
-		Ext.getStore(ZCS.util.getStoreShortName(this)).load({query: query});
+		this.getStore().load({query: query});
 	},
 
 	/**
@@ -142,12 +164,8 @@ Ext.define('ZCS.controller.ZtListController', {
 			return;
 		}
 
-		var curQuery = ZCS.session.getSetting(ZCS.constant.SETTING_CUR_SEARCH),
-			search = curQuery && Ext.create('ZCS.common.ZtSearch', {
-				query: curQuery
-			});
-
-		var folderId = search && search.getFolderId(),
+		var search = ZCS.session.getSetting(ZCS.constant.SETTING_CUR_SEARCH),
+			folderId = search && search.getFolderId(),
 			folder = folderId && ZCS.cache.get(folderId),
 			folderName = folder && folder.get('name'),
 			unread = folder && folder.get('unreadCount'),

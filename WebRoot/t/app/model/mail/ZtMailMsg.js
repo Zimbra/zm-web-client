@@ -105,6 +105,14 @@ Ext.define('ZCS.model.mail.ZtMailMsg', {
 		}, this);
 
 		return parts;
-	}
+	},
 
+	handleModifyNotification: function(mod) {
+
+		this.callParent(arguments);
+
+		if (mod.cid) {
+			this.set('convId', mod.cid);
+		}
+	}
 });

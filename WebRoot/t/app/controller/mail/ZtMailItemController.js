@@ -76,7 +76,6 @@ Ext.define('ZCS.controller.mail.ZtMailItemController', {
 		item.save({
 			success: function(item, operation) {
 				Ext.Logger.info('mail item saved successfully');
-				item.set('isUnread', !wasUnread);
 				item.set('op', null);
 			}
 		});
