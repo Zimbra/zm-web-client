@@ -26,7 +26,7 @@ Ext.define('ZCS.common.ZtMenu', {
 	extend: 'Ext.Panel',
 
 	requires: [
-		'ZCS.model.ZtMenuItem'
+		'ZCS.common.ZtMenuItem'
 	],
 
 	config: {
@@ -39,7 +39,7 @@ Ext.define('ZCS.common.ZtMenu', {
 			{
 				xtype:'list',
 				store: {
-					model: 'ZCS.model.ZtMenuItem'
+					model: 'ZCS.common.ZtMenuItem'
 				},
 				itemTpl: '{label}',
 				listeners: {

@@ -21,7 +21,7 @@
  *
  * TODO: Do we want to have an 'args' field?
  */
-Ext.define('ZCS.model.ZtMenuItem', {
+Ext.define('ZCS.common.ZtMenuItem', {
 	extend: 'Ext.data.Model',
 	config: {
 		fields: [
