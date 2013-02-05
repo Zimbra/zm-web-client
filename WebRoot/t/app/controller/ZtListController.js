@@ -58,6 +58,9 @@ Ext.define('ZCS.controller.ZtListController', {
 			},
 			itemPanel: {
 				showMenu: null
+			},
+			overview: {
+				logout: 'doLogout'
 			}
 		}
 	},
@@ -176,5 +179,12 @@ Ext.define('ZCS.controller.ZtListController', {
 		}
 
 		titlebar.setTitle(title);
+	},
+	
+	/**
+	 * Logs off the application
+	 */
+	doLogout: function() {	
+		window.location.href = "/?loginOp=logout";
 	}
 });

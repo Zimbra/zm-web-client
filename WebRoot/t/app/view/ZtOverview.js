@@ -107,7 +107,9 @@ Ext.define('ZCS.view.ZtOverview', {
 				{
 					xtype: 'button',
 					iconCls: 'eject',
-					iconMask: true
+					iconMask: true,
+					handler: this.onLogOutButtonTap,
+					scope:this
 				}
 			]
 		};
@@ -124,5 +126,9 @@ Ext.define('ZCS.view.ZtOverview', {
 			userInfo,
 			organizerList
 		]);
+	},
+	
+	onLogOutButtonTap: function() {
+		this.fireEvent('logout');
 	}
 });
