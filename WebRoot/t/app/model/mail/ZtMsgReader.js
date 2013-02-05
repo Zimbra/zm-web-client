@@ -44,7 +44,7 @@ Ext.define('ZCS.model.mail.ZtMsgReader', {
 
 		this.convertAddresses(node.e, data);
 
-		data.dateStr = this.getDateString(node, nowMs);
+		data.dateStr = this.getDateString(node.d, nowMs);
 
 		if (node.mp) {
 			ctxt = {

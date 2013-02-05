@@ -218,6 +218,8 @@ Ext.define('ZCS.model.ZtSoapProxy', {
 	 *		modified:	c {id:-676, _newId: 678}
 	 * 					m {id:676, cid:678}
 	 *
+	 * The notifications object is modified in place.
+	 *
 	 * @adapts ZmMailApp.prototype.preNotify
 	 * @private
 	 */
@@ -256,6 +258,7 @@ Ext.define('ZCS.model.ZtSoapProxy', {
 		var gotNewConv = false,
 			createdMsgs = {},
 			createdConvs = {},
+			fragments = {},
 			name, create, id;
 
 		for (name in creates) {
@@ -263,6 +266,7 @@ Ext.define('ZCS.model.ZtSoapProxy', {
 				id = create.id;
 				if (name === 'm') {
 					createdMsgs[id] = create;
+					fragments[create.cid] = create.fr;
 				}
 				else if (name === 'c' && (create.n > 1)) {
 					// this is *probably* a create for a real conv from a virtual conv
@@ -279,27 +283,29 @@ Ext.define('ZCS.model.ZtSoapProxy', {
 		// last thing to confirm virt conv promotion is msg changing cid
 		var msgMoved = false,
 			newToOldCid = {},
-			movedMsgs = {},
+//			movedMsgs = {},
 			list = modifies.m,
-			virtCid, msg;
+			virtCid, msg, createdConv;
 
 		Ext.each(list, function(mod) {
 			id = mod.id;
 			parsedId = ZCS.util.parseId(id);
 			virtCid = parsedId.localId * -1;
-			if (virtConv[virtCid] && createdConvs[mod.cid]) {
+			createdConv = createdConvs[mod.cid];
+			if (virtConv[virtCid] && createdConv) {
 				msgMoved = true;
-				movedMsgs[id] = mod;
+//				movedMsgs[id] = mod;
 				newToOldCid[mod.cid] = virtCid;
-				createdConvs[mod.cid]._wasVirtConv = true;
-				createdConvs[mod.cid].m = [{id:id}];
+				createdConv._wasVirtConv = true;
+				createdConv.fr = fragments[mod.cid];
+//				createdConvs[mod.cid].m = [{id:id}];
 				// TODO: step below needed?
 				// go ahead and update the msg cid, since it's used in
 				// notification processing for creates
-				msg = ZCS.cache.get(id);
-				if (msg) {
-					msg.set('convId', mod.cid);
-				}
+//				msg = ZCS.cache.get(id);
+//				if (msg) {
+//					msg.set('convId', mod.cid);
+//				}
 			}
 		}, this);
 
@@ -319,13 +325,10 @@ Ext.define('ZCS.model.ZtSoapProxy', {
 		}
 
 		// get rid of creates for promoted virtual convs, since they aren't really creates
-		var tmp = [],
-			list = creates.c,
-			c;
+		var tmp = [];
 
-		Ext.each(list, function(create) {
-			c = createdConvs[create.id];
-			if (!(c && c._wasVirtConv)) {
+		Ext.each(creates.c, function(create) {
+			if (!createdConvs[create.id]._wasVirtConv) {
 				tmp.push(create);
 			}
 		}, this);
@@ -336,38 +339,23 @@ Ext.define('ZCS.model.ZtSoapProxy', {
 			delete notifications.created.c;
 		}
 
-		// TODO: step below needed?
-		// if the first msg matched the current search, we'll want to use the conv
-		// create node to create the conv later, so save it
-/*
-		for (id in createdMsgs) {
-			var msgCreate = createdMsgs[id];
-			var convCreate = createdConvs[msgCreate.cid];
-			if (convCreate && convCreate._wasVirtConv) {
-				msgCreate._convCreateNode = convCreate;
-			}
-		}
-*/
-
 		// create modified notifs for the virtual convs that have been promoted, using
 		// the create notif for the conv as a base
-		var newMods = [];
-		for (var cid in newToOldCid) {
-			var node = createdConvs[cid];
+		var newMods = [],
+			cid, node;
+
+		for (cid in newToOldCid) {
+			node = createdConvs[cid];
 			node.id = newToOldCid[cid];
 			node.newId = cid;
 			newMods.push(node);
 		}
 
-		// Go ahead and process these changes, which will change the ID of each promoted conv
-		// from its virtual (negative) ID to its real (positive) one. That will replace the DOM
-		// IDs of that conv's elements with ones that reflect the new conv ID.
-/*
-		if (newMods.length) {
-			var mods = {};
-			mods["c"] = newMods;
-			appCtxt.getRequestMgr()._handleModifies(mods);
+		if (!modifies.c) {
+			modifies.c = newMods;
 		}
-*/
+		else {
+			modifies.c = modifies.c.concat(newMods);
+		}
 	}
 });

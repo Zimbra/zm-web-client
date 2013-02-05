@@ -22,7 +22,7 @@
  */
 Ext.define('ZCS.controller.ZtListController', {
 
-	extend: 'Ext.app.Controller',
+	extend: 'ZCS.controller.ZtBaseController',
 
 	requires: [
 		'ZCS.common.ZtSearch'
@@ -65,14 +65,6 @@ Ext.define('ZCS.controller.ZtListController', {
 		}
 	},
 
-	/**
-	 * Returns the store that holds the data this controller is managing.
-	 *
-	 * @return {Ext.data.Store}     store
-	 */
-	getStore: function() {
-		return Ext.getStore(ZCS.util.getStoreShortName(this));
-	},
 
 	/**
 	 * On launch, populate the list with items
@@ -88,17 +80,6 @@ Ext.define('ZCS.controller.ZtListController', {
 	 * @protected
 	 */
 	getItemController: function() {},
-
-	/**
-	 * Notification handling
-	 */
-	handleDeleteNotification: function(id) {
-		this.getStore().remove(item);
-	},
-	handleCreateNotification: function(create) {},
-	handleModifyNotification: function(item, modify) {
-		item.handleModifyNotification(modify);
-	},
 
 	/**
 	 * Displays the overview, which contains the folder list. Panel widths are adjusted.

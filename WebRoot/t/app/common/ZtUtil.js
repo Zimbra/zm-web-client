@@ -96,7 +96,7 @@ Ext.define('ZCS.common.ZtUtil', {
 	 *
 	 * @param {string}  id      item ID
 	 *
-	 * @return {object}     object with 'account' and 'localId' properties
+	 * @return {object}     object with 'accountId' and 'localId' properties
 	 */
 	parseId: function(id) {
 
@@ -104,11 +104,11 @@ Ext.define('ZCS.common.ZtUtil', {
 
 		if (id.indexOf(':') > 0) {
 			var parts = id.split(':');
-			result.account = parts[0];
+			result.accountId = parts[0];
 			result.localId = parts[1];
 		}
 		else {
-			result.account = ZCS.session.getAccountId();
+			result.accountId = ZCS.session.getAccountId();
 			result.localId = id;
 		}
 

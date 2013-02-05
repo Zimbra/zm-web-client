@@ -29,7 +29,8 @@ Ext.define('ZCS.model.ZtItem', {
 	config: {
 		fields: [
 			{ name: 'type', type: 'string' },
-			{ name: 'itemId', type: 'string' }
+			{ name: 'itemId', type: 'string' },
+			{ name: 'op', type: 'string' }          // operation to perform on server
 		],
 		proxy: {
 			type: 'soapproxy',

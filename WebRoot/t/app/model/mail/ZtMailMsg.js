@@ -32,18 +32,18 @@ Ext.define('ZCS.model.mail.ZtMailMsg', {
 	config: {
 
 		fields: [
+			// server
 			{ name: 'content', type: 'string' },    // placeholder until we get MIME parsing
 			{ name: 'from', type: 'string' },
 			{ name: 'to', type: 'string' },
 			{ name: 'convId', type: 'string' },
-			{ name: 'fragment', type: 'string' },
+
+			// internal
 			{ name: 'topPart', type: 'auto' },
 			{ name: 'attachments', type: 'auto' },
 			{ name: 'bodyParts', type: 'auto' },
 			{ name: 'contentTypes', type: 'auto' },
-
-			{ name: 'isLoaded', type: 'boolean' },
-			{ name: 'op', type: 'string' }          // operation to perform on server
+			{ name: 'isLoaded', type: 'boolean' }
 		],
 
 		proxy: {

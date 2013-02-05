@@ -24,7 +24,7 @@
 
 Ext.define('ZCS.controller.ZtItemController', {
 
-	extend: 'Ext.app.Controller',
+	extend: 'ZCS.controller.ZtBaseController',
 
 	requires: [
 		'ZCS.common.ZtMenu'

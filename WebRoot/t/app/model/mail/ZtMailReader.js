@@ -44,13 +44,13 @@ Ext.define('ZCS.model.mail.ZtMailReader', {
 	 * to the given time, or the current time if no time is provided. The string indicates how many minutes ago,
 	 * how many hours ago, or if the difference is more than a day, a short version of the month and day.
 	 *
-	 * @param {object}  node        JSON for the mail item
+	 * @param {int}     date        date in ms
 	 * @param {int}     nowMs       base time in ms
 	 */
-	getDateString: function(node, nowMs) {
+	getDateString: function(date, nowMs) {
 
 		var nowMs = nowMs || Ext.Date.now(),
-			then = new Date(node.d),
+			then = new Date(date),
 			thenMs = then.getTime(),
 			dateDiff = nowMs - thenMs,
 			num, unit, dateStr;

@@ -29,7 +29,6 @@ Ext.define('ZCS.model.mail.ZtConvReader', {
 		var data = {},
 			nowMs = Ext.Date.now();
 
-//		data.itemId = new ZCS.common.ZtItemId(node.id);
 		data.itemId = node.id;
 		data.type = ZCS.constant.ITEM_CONVERSATION;
 		data.subject = node.su;
@@ -51,7 +50,7 @@ Ext.define('ZCS.model.mail.ZtConvReader', {
 			data.senders = senders.join(', ');
 		}
 
-		data.dateStr = this.getDateString(node, nowMs);
+		data.dateStr = this.getDateString(node.d, nowMs);
 
 		return data;
 	}

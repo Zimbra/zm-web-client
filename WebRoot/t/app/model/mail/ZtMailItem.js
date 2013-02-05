@@ -26,6 +26,7 @@ Ext.define('ZCS.model.mail.ZtMailItem', {
 		fields: [
 			{ name: 'addresses', type: 'auto' },
 			{ name: 'subject', type: 'string' },
+			{ name: 'fragment', type: 'string' },
 			{ name: 'dateStr', type: 'string' },
 			{ name: 'isUnread', type: 'boolean' }
 		]
@@ -90,6 +91,11 @@ Ext.define('ZCS.model.mail.ZtMailItem', {
 					this.set(prop, isOn);
 				}
 			}, this);
+		}
+
+		// fragment
+		if (mod.fr != null) {
+			this.set('fragment', mod.fr);
 		}
 	}
 });
