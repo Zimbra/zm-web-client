@@ -90,7 +90,7 @@ Ext.define('ZCS.model.ZtSoapProxy', {
 	 */
 	processResponse: function(success, operation, request, response, callback, scope) {
 
-		var query = operation.config.query,
+		var query = operation && operation.config && operation.config.query,
 			search;
 
 		if (query && success) {
@@ -357,5 +357,31 @@ Ext.define('ZCS.model.ZtSoapProxy', {
 		else {
 			modifies.c = modifies.c.concat(newMods);
 		}
+	},
+
+	/**
+	 * Sends a request to the server and processes the response's header, without being tied
+	 * to any changes to data.
+	 *
+	 * @param {object}  options     request options (generally need to have at least 'url' and 'jsonData')
+	 */
+	sendSoapRequest: function(options) {
+
+		var me = this;
+
+		Ext.apply(options, {
+			scope: options.scope || me,
+			method: options.method || 'POST'
+		});
+
+		options.callback = me.processSoapResponse.bind(me);
+
+		Ext.Ajax.request(options);
+	},
+
+	processSoapResponse: function(options, success, response) {
+
+		var data = this.getReader().getResponseData(response);
+		this.processHeader(data.Header);
 	}
 });

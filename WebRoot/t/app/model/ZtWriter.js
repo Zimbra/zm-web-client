@@ -41,7 +41,11 @@ Ext.define('ZCS.model.ZtWriter', {
 
 		options = options || {};
 
-		var sessionId = ZCS.session.getSessionId();
+		var sessionId = ZCS.session.getSessionId(),
+			session = !sessionId ? {} : {
+				_content: sessionId,
+				id: sessionId
+			};
 
 		var json = {
 			Header: {
@@ -51,10 +55,7 @@ Ext.define('ZCS.model.ZtWriter', {
 						name: Ext.browser.userAgent,
 						version: Ext.browser.version.version
 					},
-					session: {
-						_content: sessionId,
-						id: sessionId
-					},
+					session: session,
 					notify: {
 						seq: ZCS.session.getNotifySeq()
 					},
@@ -71,8 +72,10 @@ Ext.define('ZCS.model.ZtWriter', {
 			_jsns: options.namespace || 'urn:zimbraMail'
 		};
 
-		// TODO: Is it acceptable in Sencha to add properties to its objects?
-		request.soapMethod = method;
+		if (request) {
+			// TODO: Is it acceptable in Sencha to add properties to its objects?
+			request.soapMethod = method;
+		}
 
 		return json;
 	}

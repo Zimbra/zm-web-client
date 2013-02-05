@@ -25,7 +25,8 @@ Ext.define('ZCS.controller.ZtListController', {
 	extend: 'ZCS.controller.ZtBaseController',
 
 	requires: [
-		'ZCS.common.ZtSearch'
+		'ZCS.common.ZtSearch',
+		'ZCS.common.ZtClientCmdHandler'
 	],
 
 	config: {
@@ -129,6 +130,11 @@ Ext.define('ZCS.controller.ZtListController', {
 	 * @param {boolean} isFromOverview  true if the search was triggered by tap on overview item
 	 */
 	doSearch: function(query, isFromOverview) {
+
+		if (query.indexOf('$cmd:') === 0) {
+			ZCS.common.ZtClientCmdHandler.handle(query.substr(5), this.getStore().getProxy());
+			return;
+		}
 
 		this.getItemController().clear();
 		Ext.Logger.info('SearchRequest: ' + query);
