@@ -4574,6 +4574,7 @@ HTML>BODY .appt-selected .appt_allday_body
 .ZRadioButtonTable INPUT[type="radio"] {
 	padding:0;
 	margin:1px 3px;
+	vertical-align:text-bottom;
 }
 
 .ZInlineInput {
