@@ -86,12 +86,11 @@
         <c:set var="initialMailSearch" value="${requestScope.authResult.prefs.zimbraPrefMailInitialSearch[0]}"/>
         <c:if test="${fn:startsWith(initialMailSearch, 'in:')}">
             <c:set var="path" value="${fn:substring(initialMailSearch, 3, -1)}"/>
-            <c:set var="sortOrder" value="${requestScope.authResult.prefs.zimbraPrefSortOrder[0]}"/>
         </c:if>
 
         <c:set var="numItems" value="${requestScope.authResult.prefs.zimbraPrefItemsPerVirtualPage[0]}"/>
 
-        <zm:getInfoJSON var="getInfoJSON" authtoken="${requestScope.authResult.authToken}" dosearch="true" itemsperpage="20" types="conversation" folderpath="${path}" sortby="${sortOrder}"/>
+        <zm:getInfoJSON var="getInfoJSON" authtoken="${requestScope.authResult.authToken}" dosearch="true" itemsperpage="20" types="conversation" folderpath="${path}" sortby="dateDesc"/>
         var batchInfoResponse = ${getInfoJSON};
         window.inlineData = {
             header:batchInfoResponse.Header,
