@@ -283,29 +283,19 @@ Ext.define('ZCS.model.ZtSoapProxy', {
 		// last thing to confirm virt conv promotion is msg changing cid
 		var msgMoved = false,
 			newToOldCid = {},
-//			movedMsgs = {},
 			list = modifies.m,
 			virtCid, msg, createdConv;
 
 		Ext.each(list, function(mod) {
 			id = mod.id;
 			parsedId = ZCS.util.parseId(id);
-			virtCid = parsedId.localId * -1;
+			virtCid = '-' + parsedId.localId;
 			createdConv = createdConvs[mod.cid];
 			if (virtConv[virtCid] && createdConv) {
 				msgMoved = true;
-//				movedMsgs[id] = mod;
 				newToOldCid[mod.cid] = virtCid;
 				createdConv._wasVirtConv = true;
 				createdConv.fr = fragments[mod.cid];
-//				createdConvs[mod.cid].m = [{id:id}];
-				// TODO: step below needed?
-				// go ahead and update the msg cid, since it's used in
-				// notification processing for creates
-//				msg = ZCS.cache.get(id);
-//				if (msg) {
-//					msg.set('convId', mod.cid);
-//				}
 			}
 		}, this);
 

@@ -75,5 +75,41 @@ Ext.define('ZCS.controller.mail.ZtConvListController', {
 			conv = new ZCS.model.mail.ZtConv(data, create.id);
 
 		store.insert(0, [conv]);
+	},
+
+	/**
+	 * Handle promotion of virtual convs here since we need to interact with the store. Also handle anything
+	 * we need a reader for, since we can get at it here.
+	 *
+	 * @param {ZtConv}  item    conversation
+	 * @param {object}  modify  JSON notification
+	 */
+	handleModifyNotification: function(item, modify) {
+
+		var store = this.getStore(),
+			reader = store.getProxy().getReader();
+
+		// virtual conv changes ID when it gets a second message; we can't just change the ID
+		// field since that breaks the connection to the list item in the UI
+		if (modify.newId) {
+			var oldConv = ZCS.cache.get(modify.id),
+				newConv = oldConv && oldConv.copy(modify.newId);
+
+			if (newConv) {
+				store.remove(oldConv);
+				ZCS.cache.remove(modify.id);
+				store.insert(0, newConv);
+				item = newConv;
+			}
+		}
+
+		// regenerate addresses and senders (the possibly truncated string in the list view)
+		if (modify.e) {
+			modify.addresses = reader.convertAddresses(modify.e);
+			modify.senders = reader.getSenders(modify.addresses);
+		}
+
+		// let the conv itself handle the simple stuff
+		item.handleModifyNotification(modify);
 	}
 });

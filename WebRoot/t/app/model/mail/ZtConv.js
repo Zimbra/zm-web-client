@@ -50,21 +50,18 @@ Ext.define('ZCS.model.mail.ZtConv', {
 		messages: []
 	},
 
-	handleModifyNotification: function(mod) {
+	handleModifyNotification: function(modify) {
 
 		this.callParent(arguments);
 
-		// TODO: Update everything that can change when a virtual conv gets promoted -
-		// TODO: date, addresses, flags, number, and fragment. The conv's messages should
-		// TODO: get updated when the new message is processed, via its convId.
-		if (mod.newId) {
-			this.set('id', mod.newId);
+		if (modify.n) {
+			this.set('numMsgs', modify.n);
 		}
-
-		if (mod.n) {
-			this.set('numMsgs', mod.n);
+		if (modify.addresses) {
+			this.set('addresses', modify.addresses);
 		}
-
-		// TODO: handle changes to addresses (should just be adds)
+		if (modify.senders) {
+			this.set('senders', modify.senders);
+		}
 	}
 });

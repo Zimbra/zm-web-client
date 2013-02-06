@@ -74,5 +74,17 @@ Ext.define('ZCS.common.ZtItemCache', {
 		}
 
 		cache[key] = item;
+	},
+
+	/**
+	 * Removes the item with the given key from the cache. Does not destroy the item.
+	 *
+	 * @param {string}  key         item key, defaults to ID
+	 * @param {string}  altKey      (optional) name of key type if not ID
+	 */
+	remove: function(key, altKey) {
+		var cache = altKey ? this._cache[altKey] : this._cache;
+		cache[key] = null;
+		delete cache[key];
 	}
 });

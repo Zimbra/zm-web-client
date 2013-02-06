@@ -32,6 +32,16 @@ Ext.define('ZCS.model.mail.ZtMailItem', {
 		]
 	},
 
+	statics: {
+		stripSubjectPrefixes: function(subj) {
+			var regex = ZCS.constant.REGEX_SUBJ_PREFIX;
+			while (regex.test(subj)) {
+				subj = subj.replace(regex, '');
+			}
+			return subj;
+		}
+	},
+
 	/**
 	 * Add the given address to this mail item.
 	 *
