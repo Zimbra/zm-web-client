@@ -98,11 +98,14 @@ Ext.define('ZCS.view.ZtOverview', {
 			]
 		});
 
-		// show the account at the top of the overview, and a logout button
+		// show the account name at the top of the overview, and a logout button
+		var accountName = ZCS.session.getAccountName(),
+			userName = accountName.substr(0, accountName.indexOf('@'));
+
 		var userInfo = {
 			xtype: 'titlebar',
 			docked: 'top',
-			title: ZCS.session.getAccountName(),
+			title: userName,
 			items: [
 				{
 					xtype: 'button',

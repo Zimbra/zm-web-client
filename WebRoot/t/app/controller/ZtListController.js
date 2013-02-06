@@ -126,10 +126,10 @@ Ext.define('ZCS.controller.ZtListController', {
 	/**
 	 * Runs a search using the text in the search box as the query.
 	 *
-	 * @param {string}  query           query to run
-	 * @param {boolean} isFromOverview  true if the search was triggered by tap on overview item
+	 * @param {string}      query           query to run
+	 * @param {ZtOrganizer} folder          overview folder that was tapped (optional)
 	 */
-	doSearch: function(query, isFromOverview) {
+	doSearch: function(query, folder) {
 
 		if (query.indexOf('$cmd:') === 0) {
 			ZCS.common.ZtClientCmdHandler.handle(query.substr(5), this.getStore().getProxy());
@@ -138,14 +138,22 @@ Ext.define('ZCS.controller.ZtListController', {
 
 		this.getItemController().clear();
 		Ext.Logger.info('SearchRequest: ' + query);
-		if (isFromOverview) {
+		if (folder) {
 			this.getSearchBox().setValue('');
 		}
-		this.getStore().load({query: query});
+
+		// If we got here via tap on a saved search in the overview, remember it so we can show its name
+		var searchId = (folder && folder.get('type') === ZCS.constant.ORG_SAVED_SEARCH) ? folder.getId() : null;
+		ZCS.session.setSetting(ZCS.constant.SETTING_CUR_SEARCH_ID, searchId);
+
+		this.getStore().load({
+			query: query
+		});
 	},
 
 	/**
 	 * Updates the text on the list panel's titlebar to reflect the current search results
+	 * TODO: handle tag search
 	 */
 	doUpdateTitlebar: function() {
 
@@ -154,9 +162,17 @@ Ext.define('ZCS.controller.ZtListController', {
 			return;
 		}
 
-		var search = ZCS.session.getSetting(ZCS.constant.SETTING_CUR_SEARCH),
-			folderId = search && search.getFolderId(),
-			folder = folderId && ZCS.cache.get(folderId),
+		// see if user just tapped on a saved search
+		var folderId = ZCS.session.getSetting(ZCS.constant.SETTING_CUR_SEARCH_ID),
+			search;
+
+		// now see if current search was for folder contents
+		if (!folderId) {
+			search = ZCS.session.getSetting(ZCS.constant.SETTING_CUR_SEARCH);
+			folderId = search && search.getFolderId();
+		}
+
+		var	folder = folderId && ZCS.cache.get(folderId),
 			folderName = folder && folder.get('name'),
 			unread = folder && folder.get('unreadCount'),
 			title = ZtMsg.searchResults;

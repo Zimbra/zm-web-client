@@ -46,7 +46,7 @@ Ext.define('ZCS.view.ZtOrganizerList', {
 	 * Runs a search that will show the folder's contents.
 	 */
 	onItemTap: function(list, index, target, folder, e) {
-		this.fireEvent('search', folder.getQuery(), true);
+		this.fireEvent('search', folder.getQuery(), folder);
 	},
 
 	/**
