@@ -205,7 +205,7 @@ function() {
  */
 ZmContactsApp.prototype._createVirtualFolders =
 function() {
-	if (!window.ZmContactList) {
+	if (!window.ZmContactList || !window.ZmAddrBook) {
 		return; //do it only if it's loaded. If not, it will be loaded when called from ZmContactList.prototype._handleResponseLoad
 	}
 	ZmContactList.addDlFolder();
