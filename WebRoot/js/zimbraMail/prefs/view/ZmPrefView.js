@@ -352,6 +352,7 @@ ZmPrefView.prototype._checkSection =
 function(section, viewPage, dirtyCheck, noValidation, list, errors, view, isSaveCommand) {
 	var settings = appCtxt.getSettings();
 	var prefs = section && section.prefs;
+	var isAllDayVacation = false;
 	for (var j = 0, count = prefs ? prefs.length : 0; j < count; j++) {
 		var id = prefs[j];
 		if (!viewPage._prefPresent || !viewPage._prefPresent[id]) { continue; }
@@ -364,8 +365,9 @@ function(section, viewPage, dirtyCheck, noValidation, list, errors, view, isSave
 		if (type == ZmPref.TYPE_PASSWORD || type == ZmPref.TYPE_CUSTOM) { continue;	}
 
 		// check if value has changed
+		var value;
 		try {
-			var value = viewPage.getFormValue(id);
+			value = viewPage.getFormValue(id);
 		} catch (e) {
 			if (dirtyCheck) {
 				return true;
@@ -392,8 +394,22 @@ function(section, viewPage, dirtyCheck, noValidation, list, errors, view, isSave
           if (orig == current)
               origValue = value;
         }
-		
-		if (this._prefChanged(pref.dataType, origValue, value)) {
+
+		//this is ugly but it's all due to keeping the information on whether the duration is all-day by setting end hour to 23:59:59, instead of having a separate flag on the server. See Bug 80059.
+		//the field does not support seconds so we set to 23:59 and so we need to take care of it not to think the vacation_until has changed.
+		if (id === "VACATION_DURATION_ALL_DAY") {
+			isAllDayVacation = value; //keep this info for the iteration that checks VACATION_UNTIL (luckily it's after... a bit hacky to rely on it maybe).
+		}
+		var comparableValue = value;
+		var comparableOrigValue = origValue;
+		if (id === "VACATION_UNTIL" && isAllDayVacation) {
+			//for comparing, compare just the dates (e.g. 20130214) since it's an all day, so only significant change is the date, not the time. See bug 80059
+			comparableValue = value.substr(0, 8);
+			comparableOrigValue = origValue.substr(0, 8);
+		}
+
+
+		if (this._prefChanged(pref.dataType, comparableOrigValue, comparableValue)) {
 			var isValid = true;
 			if (!noValidation) {
 				var maxLength = setup ? setup.maxLength : null;
