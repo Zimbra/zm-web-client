@@ -69,9 +69,10 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 	 */
 	doShowMenu: function() {
 
-		var label = this.getItem().get('isUnread') ? ZtMsg.markRead : ZtMsg.markUnread;
-		if (this.itemMenu) {
-			var list = this.itemMenu.down('list'),
+		var menu = this.getMenu(),
+			label = this.getItem().get('isUnread') ? ZtMsg.markRead : ZtMsg.markUnread;
+		if (menu) {
+			var list = menu.down('list'),
 				store = list.getStore(),
 				item = list.getItemAt(store.find('action', 'MARK_READ'));
 

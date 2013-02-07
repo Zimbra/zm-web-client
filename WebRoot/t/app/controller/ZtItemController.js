@@ -46,7 +46,13 @@ Ext.define('ZCS.controller.ZtItemController', {
 			}
 		},
 
-		item: null
+		item: null,
+		menu: null
+	},
+
+	launch: function () {
+		Ext.Logger.verbose('STARTUP: item ctlr launch - ' + ZCS.util.getClassName(this));
+		this.callParent();
 	},
 
 	/**
@@ -58,7 +64,7 @@ Ext.define('ZCS.controller.ZtItemController', {
 		Ext.each(menuData, function(menuItem) {
 			menuItem.listener = Ext.bind(this[menuItem.listener], this);
 		}, this);
-		this.itemMenu.setMenuItems(menuData);
+		this.getMenu().setMenuItems(menuData);
 	},
 
 	/**
@@ -67,10 +73,10 @@ Ext.define('ZCS.controller.ZtItemController', {
 	 */
 	doShowMenu: function() {
 
-		var menu = this.itemMenu;
-
+		var menu = this.getMenu();
 		if (!menu) {
-			menu = this.itemMenu = Ext.create('ZCS.common.ZtMenu');
+			menu = Ext.create('ZCS.common.ZtMenu');
+			this.setMenu(menu);
 			this.setMenuItems();
 		}
 		menu.setReferenceComponent(this.getMenuButton());

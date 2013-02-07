@@ -52,11 +52,6 @@ Ext.define('ZCS.controller.mail.ZtMsgController', {
 		]
 	},
 
-	launch: function() {
-		Ext.Logger.verbose('STARTUP: msg ctlr launch - ' + this.$className);
-		this.callParent(arguments);
-	},
-
 	getActiveMsg: function() {
 		return this.getItem();
 	},

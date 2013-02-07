@@ -31,7 +31,7 @@ Ext.define('ZCS.common.ZtMenu', {
 
 	config: {
 		layout: 'fit',
-		width: 160,     // TODO: would be nicer to have it autosize to width of longest item
+		width: 160,     // TODO: would be nicer to have it autosize to width of longest label
 		modal: true,
 		hideOnMaskTap: true,
 		padding: 5,
@@ -62,7 +62,9 @@ Ext.define('ZCS.common.ZtMenu', {
 
 	initialize: function() {
 		// if we don't wait before doing this, the 'painted' event is fired before DOM is ready :(
-		Ext.defer(this.initMenu, 100, this);
+		// TODO: find a better way to do this
+		Ext.Logger.verbose('Initializing menu');
+		Ext.defer(this.initMenu, 200, this);
 	},
 
 	/**
@@ -70,7 +72,6 @@ Ext.define('ZCS.common.ZtMenu', {
 	 * @private
 	 */
 	initMenu: function() {
-		Ext.Logger.verbose('Initializing menu');
 		this.on({
 			painted: {
 				scope: this,
