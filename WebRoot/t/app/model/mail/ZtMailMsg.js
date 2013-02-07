@@ -32,13 +32,14 @@ Ext.define('ZCS.model.mail.ZtMailMsg', {
 	config: {
 
 		fields: [
-			// server
-			{ name: 'content', type: 'string' },    // placeholder until we get MIME parsing
-			{ name: 'from', type: 'string' },
-			{ name: 'to', type: 'string' },
+			// directly from server
+			{ name: 'folderId', type: 'string' },
 			{ name: 'convId', type: 'string' },
 
-			// internal
+			// internal (via parsing)
+			{ name: 'from', type: 'string' },
+			{ name: 'to', type: 'string' },
+			{ name: 'cc', type: 'string' },
 			{ name: 'topPart', type: 'auto' },
 			{ name: 'attachments', type: 'auto' },
 			{ name: 'bodyParts', type: 'auto' },
@@ -111,6 +112,7 @@ Ext.define('ZCS.model.mail.ZtMailMsg', {
 
 		this.callParent(arguments);
 
+		// conv ID changes when a conv gets promoted from virtual (negative ID) to real
 		if (mod.cid) {
 			this.set('convId', mod.cid);
 		}

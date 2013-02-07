@@ -84,7 +84,7 @@ Ext.define('ZCS.model.ZtOrganizer', {
 				path = path.toLowerCase();
 			}
 
-			while (parent && (parent.get('itemId') != ZCS.constant.ID_ROOT)) {
+			while (parent && (parent.get('itemId') !== ZCS.constant.ID_ROOT)) {
 				path = parent.get('name') + '/' + path;
 				parent = ZCS.cache.get(parent.get('parentItemId'));
 			}

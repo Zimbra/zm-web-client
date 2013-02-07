@@ -128,8 +128,8 @@ Ext.define('ZCS.common.ZtUserSession', {
 		}
 
 		var itemId = node.id,
-			isRoot = (!itemId || itemId == ZCS.constant.ID_ROOT),   // use == since IDs come as strings
-			isTrash = (itemId == ZCS.constant.ID_TRASH),
+			isRoot = (!itemId || itemId === ZCS.constant.ID_ROOT),
+			isTrash = (itemId === ZCS.constant.ID_TRASH),
 			view = ZCS.constant.FOLDER_VIEW[app],
 			hideFolder = ZCS.constant.FOLDER_HIDE[itemId],
 			childNodeName = ZCS.constant.ORG_NODE[type];
@@ -252,5 +252,25 @@ Ext.define('ZCS.common.ZtUserSession', {
 			setting.setValue(value);
 			this._settings[setting.getName()] = setting;
 		}, this);
+	},
+
+	/**
+	 * Returns the organizer corresponding to the current search, which must be a result
+	 * of a tap in the overview, or a simple search using either 'in:' or 'tag:'.
+	 *
+	 * @return {ZtOrganizer}    organizer whose contents are being displayed
+	 */
+	getCurrentSearchOrganizer: function() {
+
+		// see if user tapped on a saved search
+		var orgId = ZCS.session.getSetting(ZCS.constant.SETTING_CUR_SEARCH_ID);
+
+		// now see if current search was for folder or tag
+		if (!orgId) {
+			var search = ZCS.session.getSetting(ZCS.constant.SETTING_CUR_SEARCH),
+				orgId = search && search.getOrganizerId();
+		}
+
+		return orgId ? ZCS.cache.get(orgId) : null;
 	}
 });

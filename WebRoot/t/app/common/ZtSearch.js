@@ -22,8 +22,7 @@ Ext.define('ZCS.common.ZtSearch', {
 
 	config: {
 		query: null,
-		folderId: null,
-		folderName: null
+		organizerId: null
 	},
 
 	/**
@@ -41,11 +40,11 @@ Ext.define('ZCS.common.ZtSearch', {
 			m = q && q.match(/^(in|tag):["']?([\w \/]+)["']?$/);
 
 		if (m && m.length) {
-			var path = m[2],
+			var	path = m[2],
 				organizer = ZCS.cache.get(path, 'path') || (path && ZCS.cache.get(path.toLowerCase(), 'path'));
 
 			if (organizer) {
-				this.setFolderId(organizer.get('itemId'));
+				this.setOrganizerId(organizer.get('itemId'));
 			}
 		}
 	}

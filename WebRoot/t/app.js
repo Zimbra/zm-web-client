@@ -94,5 +94,31 @@ Ext.application({
                 }
             }
         );
-    }
+    },
+
+	// Convenience methods for getting controllers
+
+	getComposeController: function() {
+		return this.getController('ZCS.controller.mail.ZtComposeController');
+	},
+
+	getConvListController: function() {
+		return this.getController('ZCS.controller.mail.ZtConvListController');
+	},
+
+	getConvController: function() {
+		return this.getController('ZCS.controller.mail.ZtConvController');
+	},
+
+	getMsgController: function() {
+		return this.getController('ZCS.controller.mail.ZtMsgController');
+	},
+
+	getContactListController: function() {
+		return this.getController('ZCS.controller.contacts.ZtContactListController');
+	},
+
+	getContactController: function() {
+		return this.getController('ZCS.controller.contacts.ZtContactController');
+	}
 });

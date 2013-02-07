@@ -56,15 +56,11 @@ Ext.define('ZCS.controller.mail.ZtConvListController', {
 	},
 
 	getItemController: function() {
-		return ZCS.app.getController('ZCS.controller.mail.ZtConvController');
-	},
-
-	getComposeController: function() {
-		return ZCS.app.getController('ZCS.controller.mail.ZtComposeController');
+		return ZCS.app.getConvController();
 	},
 
 	doCompose: function() {
-		this.getComposeController().compose();
+		ZCS.app.getComposeController().compose();
 	},
 
 	handleCreateNotification: function(create) {
@@ -86,8 +82,7 @@ Ext.define('ZCS.controller.mail.ZtConvListController', {
 	 */
 	handleModifyNotification: function(item, modify) {
 
-		var store = this.getStore(),
-			reader = store.getProxy().getReader();
+		var store = this.getStore();
 
 		// virtual conv changes ID when it gets a second message; we can't just change the ID
 		// field since that breaks the connection to the list item in the UI
@@ -105,8 +100,8 @@ Ext.define('ZCS.controller.mail.ZtConvListController', {
 
 		// regenerate addresses and senders (the possibly truncated string in the list view)
 		if (modify.e) {
-			modify.addresses = reader.convertAddresses(modify.e);
-			modify.senders = reader.getSenders(modify.addresses);
+			modify.addresses = ZCS.model.mail.ZtMailItem.convertAddresses(modify.e);
+			modify.senders = ZCS.model.mail.ZtConv.getSenders(modify.addresses);
 		}
 
 		// let the conv itself handle the simple stuff

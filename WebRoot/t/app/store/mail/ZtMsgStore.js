@@ -30,7 +30,7 @@ Ext.define('ZCS.store.mail.ZtMsgStore', {
 			// add the msgs that were just loaded to their owning conv
 			refresh: function(me, records, eOpts) {
 
-				var conv = ZCS.app.getController('ZCS.controller.mail.ZtConvController').getItem(),
+				var conv = ZCS.app.getConvController().getItem(),
 					convId = conv.getId(),
 					messages = [];
 

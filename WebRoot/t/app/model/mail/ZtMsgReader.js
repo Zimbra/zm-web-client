@@ -31,20 +31,19 @@ Ext.define('ZCS.model.mail.ZtMsgReader', {
 	getDataFromNode: function(node) {
 
 		var data = {},
-			nowMs = Ext.Date.now(),
 			ctxt;
 
 		data.itemId = node.id;
 		data.type = ZCS.constant.ITEM_MESSAGE;
+		data.folderId = node.l;
 		data.fragment = node.fr;
-		data.content = node.fr;
 		data.convId = node.cid;
 		data.subject = node.su;
 		this.parseFlags(node, data);
 
-		data.addresses = this.convertAddresses(node.e);
+		data.addresses = ZCS.model.mail.ZtMailItem.convertAddresses(node.e);
 
-		data.dateStr = this.getDateString(node.d, nowMs);
+		data.dateStr = ZCS.model.mail.ZtMailItem.getDateString(node.d);
 
 		if (node.mp) {
 			ctxt = {

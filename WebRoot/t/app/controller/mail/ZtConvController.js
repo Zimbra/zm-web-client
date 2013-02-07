@@ -109,20 +109,116 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 		return (msgs && msgs[0]) || null;
 	},
 
+	/**
+	 * Handle arrival of a new message. First, find its owning conversation. If we're currently
+	 * showing that conv in the item pane, add the message to the top of the list. If the conv
+	 * is in the conv list view, move it to the top.
+	 *
+	 * @param {object}  create      JSON notification object
+	 */
 	handleCreateNotification: function(create) {
 
 		var item = this.getItem(),
-			curId = item && item.getId();
+			curId = item && item.getId(),
+			convId = create.cid,
+			conv = ZCS.cache.get(convId),
+			convListCtlr = ZCS.app.getConvListController(),
+			convStore = convListCtlr.getStore();
 
-		if (create.cid !== curId) {
-			return;
+		// Move the conv to the top since it got a new msg and we always sort date descending.
+		// Also propagate some fields from the message that don't appear in the conv's modified
+		// notification.
+		if (convStore.getById(convId)) {
+			conv.handleModifyNotification({
+				d: create.d,
+				fr: create.fr
+			});
+			convStore.remove(conv);
+			convStore.insert(0, conv);
+			// TODO: if conv was selected we should re-select it to match what's in item pane
 		}
 
-		var reader = ZCS.model.mail.ZtMailMsg.getProxy().getReader(),
-			data = reader.getDataFromNode(create),
-			store = this.getStore(),
-			msg = new ZCS.model.mail.ZtMailMsg(data, create.id);
+		if (convId === curId) {
+			var reader = ZCS.model.mail.ZtMailMsg.getProxy().getReader(),
+				data = reader.getDataFromNode(create),
+				store = this.getStore(),
+				msg = new ZCS.model.mail.ZtMailMsg(data, create.id);
 
-		store.insert(0, [msg]);
+			store.insert(0, [msg]);
+		}
+	},
+
+	/**
+	 * Handle message notifications.
+	 *
+	 * @param {ZtMailMsg}   item    message
+	 * @param {object}      modify  JSON notification
+	 */
+	handleModifyNotification: function(item, modify) {
+
+		var store = this.getStore();
+
+		if (modify.l) {
+
+			item.set('folderId', modify.l);
+
+			if (store.getById(item.getId())) {
+				// if the msg was moved to Trash or Junk, remove it from the list in the item panel
+				var parsedId = ZCS.util.parseId(modify.l);
+				if (parsedId.localId === ZCS.constant.ID_TRASH || parsedId.localId === ZCS.constant.ID_JUNK) {
+					store.remove(item);
+				}
+			}
+
+			// Figure out if the conv should still be displayed in the list panel. If the user is viewing
+			// Trash or Junk, then we leave the conv if it has at least one message in that folder. Otherwise,
+			// we leave it as long as all of its messages aren't in Trash/Junk. We can only figure this out
+			// if the conversation has been loaded (viewed). Otherwise, we have no idea what folders its
+			// messages are in, since we only get message IDs in the conv objects returned by a search that
+			// are shown in the list view.
+			var convId = item.get('convId'),
+				convListCtlr = ZCS.app.getConvListController(),
+				convStore = convListCtlr.getStore();
+
+			if (convStore.getById(convId)) {
+				var	conv = ZCS.cache.get(convId),
+					messages = conv && conv.getMessages(),
+					organizer = ZCS.session.getCurrentSearchOrganizer(),
+					parsedOrgId = organizer && ZCS.util.parseId(organizer.get('itemId')),
+					viewingTrash = parsedOrgId && (parsedOrgId.localId === ZCS.constant.ID_TRASH),
+					viewingJunk = parsedOrgId && (parsedOrgId.localId === ZCS.constant.ID_JUNK),
+					removeConv = true,
+					folderId, index, convListView, wasSelected;
+
+				Ext.each(messages, function(msg) {
+					parsedId = ZCS.util.parseId(msg.get('folderId'));
+					folderId = parsedId.localId;
+					if ((viewingTrash && (folderId.localId === ZCS.constant.ID_TRASH)) ||
+						(viewingJunk && (folderId.localId === ZCS.constant.ID_JUNK))) {
+						removeConv = false;
+					}
+					else if (folderId !== ZCS.constant.ID_TRASH && folderId !== ZCS.constant.ID_JUNK) {
+						removeConv = false;
+					}
+					return removeConv;
+				}, this);
+
+				if (removeConv) {
+					// before removing conv, note where it was and whether it was selected
+					convListView = convListCtlr.getListView();
+					wasSelected = (convListView && convListView.isSelected(conv));
+					index = wasSelected && convStore.indexOf(conv);
+					// remove conv
+					convStore.remove(conv);
+					// if we removed selected conv, clear item panel and select next (or last) conv
+					if (wasSelected) {
+						this.clear();
+						convListView.select(Math.min(index, convStore.getCount() - 1));
+					}
+				}
+			}
+		}
+
+		item.handleModifyNotification(modify);
 	}
 });

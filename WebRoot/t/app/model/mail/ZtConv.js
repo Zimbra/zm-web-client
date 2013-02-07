@@ -50,6 +50,35 @@ Ext.define('ZCS.model.mail.ZtConv', {
 		messages: []
 	},
 
+	statics: {
+
+		/**
+		 * Create a sender string from addresses. It shows up to a certain number of senders,
+		 * with an ellipsis at the end if not all of them are shown.
+		 *
+		 * @param {object}  addresses   hash of addresses by type
+		 */
+		getSenders: function(addresses) {
+
+			var senderStr = '',
+				senders;
+
+			if (addresses && addresses[ZCS.constant.FROM]) {
+				senders = Ext.Array.map(addresses[ZCS.constant.FROM], function(addr) {
+					return addr.getDisplayName() || addr.getName() || addr.getEmail();
+				});
+				var numSenders = ZCS.constant.NUM_CONV_SENDERS;
+				if (senders.length > numSenders) {
+					senders = senders.slice(0, numSenders);
+					senders.push('...');
+				}
+				senderStr = senders.join(', ');
+			}
+
+			return senderStr;
+		}
+	},
+
 	handleModifyNotification: function(modify) {
 
 		this.callParent(arguments);

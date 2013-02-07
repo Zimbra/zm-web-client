@@ -156,15 +156,15 @@ ZCS.constant.ORG_SORT_VALUE[ZCS.constant.ORG_SAVED_SEARCH]  = 2;
 ZCS.constant.ORG_SORT_VALUE[ZCS.constant.ORG_TAG]           = 3;
 
 // System folder IDs
-ZCS.constant.ID_ROOT      = 1;
-ZCS.constant.ID_INBOX     = 2;
-ZCS.constant.ID_TRASH     = 3;
-ZCS.constant.ID_JUNK      = 4;
-ZCS.constant.ID_SENT      = 5;
-ZCS.constant.ID_DRAFTS    = 6;
-ZCS.constant.ID_CONTACTS  = 7;
-ZCS.constant.ID_EMAILED   = 13;
-ZCS.constant.ID_CHATS     = 14;
+ZCS.constant.ID_ROOT      = '1';
+ZCS.constant.ID_INBOX     = '2';
+ZCS.constant.ID_TRASH     = '3';
+ZCS.constant.ID_JUNK      = '4';
+ZCS.constant.ID_SENT      = '5';
+ZCS.constant.ID_DRAFTS    = '6';
+ZCS.constant.ID_CONTACTS  = '7';
+ZCS.constant.ID_EMAILED   = '13';
+ZCS.constant.ID_CHATS     = '14';
 
 // An ID less than this indicates a system folder
 ZCS.constant.MAX_SYSTEM_ID = 255;

@@ -58,7 +58,7 @@ Ext.define('ZCS.controller.contacts.ZtContactListController', {
 	// TODO: launch happens on startup; delay load until Contacts tab shown
 
 	getItemController: function() {
-		return ZCS.app.getController('ZCS.controller.contacts.ZtContactController');
+		return ZCS.app.getContactController();
 	},
 
 	doNewContact: function() {

@@ -162,23 +162,13 @@ Ext.define('ZCS.controller.ZtListController', {
 			return;
 		}
 
-		// see if user just tapped on a saved search
-		var folderId = ZCS.session.getSetting(ZCS.constant.SETTING_CUR_SEARCH_ID),
-			search;
-
-		// now see if current search was for folder contents
-		if (!folderId) {
-			search = ZCS.session.getSetting(ZCS.constant.SETTING_CUR_SEARCH);
-			folderId = search && search.getFolderId();
-		}
-
-		var	folder = folderId && ZCS.cache.get(folderId),
-			folderName = folder && folder.get('name'),
-			unread = folder && folder.get('unreadCount'),
+		var	organizer = ZCS.session.getCurrentSearchOrganizer(),
+			organizerName = organizer && organizer.get('name'),
+			unread = organizer && organizer.get('unreadCount'),
 			title = ZtMsg.searchResults;
 
-		if (folderName) {
-			title = (unread > 0) ? '<b>' + folderName + ' (' + unread + ')</b>' : folderName;
+		if (organizerName) {
+			title = (unread > 0) ? '<b>' + organizerName + ' (' + unread + ')</b>' : organizerName;
 		}
 
 		titlebar.setTitle(title);

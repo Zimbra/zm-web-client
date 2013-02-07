@@ -25,13 +25,6 @@ Ext.define('ZCS.controller.mail.ZtMailItemController', {
 	extend: 'ZCS.controller.ZtItemController',
 
 	/**
-	 * Returns the compose controller
-	 */
-	getComposeController: function() {
-		return ZCS.app.getController('ZCS.controller.mail.ZtComposeController');
-	},
-
-	/**
 	 * Returns the message that an operation should be applied to.
 	 */
 	getActiveMsg: function() {},
@@ -40,36 +33,44 @@ Ext.define('ZCS.controller.mail.ZtMailItemController', {
 	 * Starts a reply session with the active message as the original message.
 	 */
 	doReply: function(msg) {
-		this.getComposeController().reply(msg || this.getActiveMsg());
+		ZCS.app.getComposeController().reply(msg || this.getActiveMsg());
 	},
 
 	/**
 	 * Starts a reply-all session with the active message as the original message.
 	 */
 	doReplyAll: function(msg) {
-		this.getComposeController().replyAll(msg || this.getActiveMsg());
+		ZCS.app.getComposeController().replyAll(msg || this.getActiveMsg());
 	},
 
 	/**
 	 * Starts a forward session with the active message as the original message.
 	 */
 	doForward: function(msg) {
-		this.getComposeController().forward(msg || this.getActiveMsg());
+		ZCS.app.getComposeController().forward(msg || this.getActiveMsg());
 	},
 
 	/**
 	 * Moves the conv to Trash.
 	 */
-	doDelete: function() {
+	doDelete: function(msg) {
 		Ext.Logger.warn("TODO: conv controller DELETE");
+		var item = msg || this.getItem();
+		item.set('op', 'trash');
+		item.save({
+			success: function(item, operation) {
+				Ext.Logger.info('mail item saved successfully');
+				item.set('op', null);
+			}
+		});
 	},
 
 	/**
 	 * Toggles read/unread on the conv.
 	 */
-	doMarkRead: function() {
+	doMarkRead: function(msg) {
 		Ext.Logger.info("mail item controller MARK_READ");
-		var item = this.getItem(),
+		var item = msg || this.getItem(),
 			wasUnread = item.get('isUnread');
 
 		item.set('op', wasUnread ? 'read' : '!read');
