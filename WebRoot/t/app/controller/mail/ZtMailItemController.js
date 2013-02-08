@@ -51,18 +51,21 @@ Ext.define('ZCS.controller.mail.ZtMailItemController', {
 	},
 
 	/**
-	 * Moves the conv to Trash.
+	 * Moves the mail item to Trash.
+	 *
+	 * @param {ZtMailMsg}   msg     mail msg (present if delete action triggered by button)
 	 */
 	doDelete: function(msg) {
-		Ext.Logger.warn("TODO: conv controller DELETE");
-		var item = msg || this.getItem();
-		item.set('op', 'trash');
-		item.save({
-			success: function(item, operation) {
-				Ext.Logger.info('mail item saved successfully');
-				item.set('op', null);
-			}
-		});
+		this.performOp(msg, 'trash');
+	},
+
+	/**
+	 * Moves the mail item to Junk.
+	 *
+	 * @param {ZtMailMsg}   msg     mail msg (present if spam action triggered by button)
+	 */
+	doSpam: function(msg) {
+		this.performOp(msg, 'spam');
 	},
 
 	/**

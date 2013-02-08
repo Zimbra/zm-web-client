@@ -100,5 +100,25 @@ Ext.define('ZCS.controller.ZtItemController', {
 		this.clear();
 		this.setItem(item);
 		this.getMenuButton().show();
+	},
+
+	/**
+	 * Performs a server operation on an item by setting its 'op' field and then saving it.
+	 * The value of 'op' will be used to set the 'op' field in the *ActionRequest SOAP request.
+	 *
+	 * @param {ZtItem}  item    item to act on
+	 * @param {string}  op      op to perform (eg 'trash' or 'spam')
+	 */
+	performOp: function(item, op) {
+		item = item || this.getItem();
+		if (item) {
+			item.set('op', op);
+			item.save({
+				success: function(item, operation) {
+					Ext.Logger.info('item saved successfully');
+					item.set('op', null);
+				}
+			});
+		}
 	}
 });

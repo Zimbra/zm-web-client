@@ -41,11 +41,11 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 		},
 
 		menuData: [
-			{label: ZtMsg.reply, action: 'REPLY', listener: 'doReply'},
-			{label: ZtMsg.replyAll, action: 'REPLY_ALL', listener: 'doReplyAll'},
-			{label: ZtMsg.forward, action: 'FORWARD', listener: 'doForward'},
-			{label: ZtMsg.del, action: 'DELETE', listener: 'doDelete'},
-			{label: ZtMsg.markRead, action: 'MARK_READ', listener: 'doMarkRead'}
+			{label: ZtMsg.reply, action: ZCS.constant.OP_REPLY, listener: 'doReply'},
+			{label: ZtMsg.replyAll, action: ZCS.constant.OP_REPLY_ALL, listener: 'doReplyAll'},
+			{label: ZtMsg.forward, action: ZCS.constant.OP_FORWARD, listener: 'doForward'},
+			{label: ZtMsg.del, action: ZCS.constant.OP_DELETE, listener: 'doDelete'},
+			{label: ZtMsg.markRead, action: ZCS.constant.OP_MARK_READ, listener: 'doMarkRead'}
 		]
 	},
 

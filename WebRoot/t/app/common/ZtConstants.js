@@ -265,6 +265,14 @@ ZCS.constant.SETTING_VALUE[ZCS.constant.SETTING_SHOW_SEARCH] = 'false';
 ZCS.constant.SETTING_DEFAULT = {};
 ZCS.constant.SETTING_DEFAULT[ZCS.constant.SETTING_LOCALE] = 'en_US';
 
+// Operations (generally tied to dropdown menu items)
+ZCS.constant.OP_DELETE      = 'DELETE';
+ZCS.constant.OP_FORWARD     = 'FORWARD';
+ZCS.constant.OP_MARK_READ   = 'MARK_READ';
+ZCS.constant.OP_REPLY       = 'REPLY';
+ZCS.constant.OP_REPLY_ALL   = 'REPLY_ALL';
+ZCS.constant.OP_SPAM        = 'SPAM';
+
 // Item flags
 ZCS.constant.FLAG_ATTACH			= 'a';
 ZCS.constant.FLAG_FLAGGED			= 'f';
