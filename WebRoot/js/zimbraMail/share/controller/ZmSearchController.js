@@ -745,6 +745,7 @@ function(ev) {
  * @param {string}		origin						indicates what initiated the search
  * @param {string}		sessionId					session ID of search results tab (if search came from one)
  * @param {boolean}		skipUpdateSearchToolbar     don't update the search toolbar (e.g. from the ZmDumpsterDialog where the search is called from its own search toolbar
+ * @param {String}		sortBy
  * 
  * @private
  */
@@ -775,6 +776,7 @@ function(params) {
 			origin:						params.origin,
 			sessionId:					params.sessionId,
 			errorCallback:				params.errorCallback,
+			sortBy:						params.sortBy,
 			isEmpty:					params.isEmpty || !queryString
 		};
 		this.search(searchParams);

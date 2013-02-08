@@ -202,6 +202,9 @@ function(ev, zimletEvent) {
 		toolbar._settingSearch = false;
 	}
 
+	var view = appCtxt.getCurrentViewId(); //this view should be the results list view. Somehow it seems to be.
+	var sortBy = view ? appCtxt.get(ZmSetting.SORTING_PREF, view) : null; // repeat the previous sort order (from same search tab only, which is this case)
+
 	// run the search
 	var query = this._toolbar.getSearchFieldValue();
 	var params = {
@@ -213,8 +216,9 @@ function(ev, zimletEvent) {
 		skipUpdateSearchToolbar:	true,
 		origin:						ZmId.SEARCHRESULTS,
 		searchFor:					this._curSearch && this._curSearch.searchFor,
+		sortBy:						sortBy,
 		errorCallback:				this._errorCallback.bind(this)
-	}
+	};
 	toolbar.setLabel(ZmMsg.searching);
 	appCtxt.getSearchController()._toolbarSearch(params);
 };
