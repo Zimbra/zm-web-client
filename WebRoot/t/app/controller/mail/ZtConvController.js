@@ -58,7 +58,10 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 		this.callParent(arguments);
 		this.getItemPanelToolbar().setTitle(conv.get('subject'));
 		Ext.getStore(ZCS.util.getStoreShortName(this)).load({
-			convId: conv.getId()
+			convId: conv.getId(),
+			callback: function(records, operation, success) {
+				Ext.Logger.info('Conv load callback');
+			}
 		});
 	},
 
@@ -166,7 +169,7 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 			if (store.getById(item.getId())) {
 				// if the msg was moved to Trash or Junk, remove it from the list in the item panel
 				var parsedId = ZCS.util.parseId(modify.l);
-				if (parsedId.localId === ZCS.constant.ID_TRASH || parsedId.localId === ZCS.constant.ID_JUNK) {
+				if (ZCS.constant.CONV_HIDE[parsedId.localId]) {
 					store.remove(item);
 				}
 			}
@@ -198,7 +201,7 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 						(viewingJunk && (folderId.localId === ZCS.constant.ID_JUNK))) {
 						removeConv = false;
 					}
-					else if (folderId !== ZCS.constant.ID_TRASH && folderId !== ZCS.constant.ID_JUNK) {
+					else if (!ZCS.constant.CONV_HIDE[folderId]) {
 						removeConv = false;
 					}
 					return removeConv;

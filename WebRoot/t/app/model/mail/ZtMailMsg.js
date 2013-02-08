@@ -44,7 +44,8 @@ Ext.define('ZCS.model.mail.ZtMailMsg', {
 			{ name: 'attachments', type: 'auto' },
 			{ name: 'bodyParts', type: 'auto' },
 			{ name: 'contentTypes', type: 'auto' },
-			{ name: 'isLoaded', type: 'boolean' }
+			{ name: 'isLoaded', type: 'boolean' },
+			{ name: 'isLast', type: 'boolean' }
 		],
 
 		proxy: {

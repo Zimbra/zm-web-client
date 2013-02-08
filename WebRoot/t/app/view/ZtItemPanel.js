@@ -62,7 +62,7 @@ Ext.define('ZCS.view.ZtItemPanel', {
 
 		var itemView = {
 			xtype: app + 'itemview'
-		}
+		};
 
 		this.add([
 			toolbar,

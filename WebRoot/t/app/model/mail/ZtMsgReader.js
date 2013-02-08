@@ -28,7 +28,38 @@ Ext.define('ZCS.model.mail.ZtMsgReader', {
 
 	alias: 'reader.msgreader',
 
-	getDataFromNode: function(node) {
+	/**
+	 * Override so we can figure out which message will be the last one displayed, so we know not
+	 * to hide its quoted content.
+	 */
+	getRecords: function(root) {
+
+		var records = [],
+			lastIndex = root.length - 1,
+			idx = 0;
+
+		// Invert the list and find the first displayable (non-Trash, non-Junk) message
+		Ext.each(root.reverse(), function(node, index) {
+			if (node.l && !ZCS.constant.CONV_HIDE[node.l]) {
+				idx = index;
+				return false;
+			}
+		}, this);
+		lastIndex = lastIndex - idx;
+
+		Ext.each(root, function(node, index) {
+			records.push({
+				clientId: null,
+				id: node.id,
+				data: this.getDataFromNode(node, index === lastIndex),
+				node: node
+			});
+		}, this);
+
+		return records;
+	},
+
+	getDataFromNode: function(node, isLast) {
 
 		var data = {},
 			ctxt;
@@ -57,6 +88,8 @@ Ext.define('ZCS.model.mail.ZtMsgReader', {
 			data.contentTypes = ctxt.contentTypes;
 			data.isLoaded = !!(data.bodyParts.length > 0 || data.attachments.length > 0);
 		}
+
+		data.isLast = isLast;
 
 		return data;
 	}

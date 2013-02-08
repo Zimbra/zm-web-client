@@ -66,26 +66,14 @@ Ext.define('ZCS.model.ZtReader', {
 			nodeName = ZCS.constant.ITEM_NODE[type];
 
 		var root = this.getRoot(data, nodeName),
-			total = root ? root.length : 0,
-			success = true,
-			records = [],
-			message, node;
-
-		Ext.each(root, function(node) {
-			records.push({
-				clientId: null,
-				id: node.id,
-				data: this.getDataFromNode(node),
-				node: node
-			});
-		}, this);
+			total = root ? root.length : 0;
 
 		return new Ext.data.ResultSet({
 			total  : total,
 			count  : total,
-			records: records,
-			success: success,
-			message: message
+			records: this.getRecords(root),
+			success: true,
+			message: ''
 		});
 	},
 
@@ -100,6 +88,28 @@ Ext.define('ZCS.model.ZtReader', {
 			responseObj = data.Body[responseMethod];
 
 		return responseObj ? responseObj[nodeName] : null;
+	},
+
+	/**
+	 * Converts a list of JSON nodes into a list of records.
+	 *
+	 * @param {array}   root        list of JSON nodes
+	 * @return {array}  list of records
+	 */
+	getRecords: function(root) {
+
+		var records = [];
+
+		Ext.each(root, function(node) {
+			records.push({
+				clientId: null,
+				id: node.id,
+				data: this.getDataFromNode(node),
+				node: node
+			});
+		}, this);
+
+		return records;
 	},
 
 	/**

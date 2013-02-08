@@ -33,13 +33,18 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 		tpl: Ext.create('Ext.XTemplate', ZCS.template.MsgBody)
 	},
 
-	render: function(msg) {
+	render: function(msg, isLast) {
 
 		var bodyParts = msg.get('bodyParts'),
-			html = '';
+			html = '',
+			content;
 
 		Ext.each(bodyParts, function(part) {
-			html += ZCS.quoted.getOriginalContent(part.getContent(), part.getContentType() === ZCS.mime.TEXT_HTML);
+			content = part.getContent();
+			if (!isLast) {
+				content = ZCS.quoted.getOriginalContent(content, part.getContentType() === ZCS.mime.TEXT_HTML);
+			}
+			html += content;
 		}, this);
 
 		this.setHtml(html);

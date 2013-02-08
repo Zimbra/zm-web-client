@@ -169,6 +169,11 @@ ZCS.constant.ID_CHATS     = '14';
 // An ID less than this indicates a system folder
 ZCS.constant.MAX_SYSTEM_ID = 255;
 
+// When showing a conv, don't show messages in these folders
+ZCS.constant.CONV_HIDE = {};
+ZCS.constant.CONV_HIDE[ZCS.constant.ID_TRASH]   = true;
+ZCS.constant.CONV_HIDE[ZCS.constant.ID_JUNK]    = true;
+
 // System folder sort order
 ZCS.constant.FOLDER_SORT_VALUE = {};
 
