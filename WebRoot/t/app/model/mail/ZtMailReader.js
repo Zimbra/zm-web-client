@@ -23,7 +23,7 @@ Ext.define('ZCS.model.mail.ZtMailReader', {
 	extend: 'ZCS.model.ZtReader',
 
 	requires: [
-		'ZCS.common.mail.ZtEmailAddress'
+		'ZCS.model.mail.ZtEmailAddress'
 	],
 
 	/**

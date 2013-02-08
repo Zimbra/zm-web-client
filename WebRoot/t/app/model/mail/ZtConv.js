@@ -65,7 +65,7 @@ Ext.define('ZCS.model.mail.ZtConv', {
 
 			if (addresses && addresses[ZCS.constant.FROM]) {
 				senders = Ext.Array.map(addresses[ZCS.constant.FROM], function(addr) {
-					return addr.getDisplayName() || addr.getName() || addr.getEmail();
+					return addr.get('displayName') || addr.get('name') || addr.get('email');
 				});
 				var numSenders = ZCS.constant.NUM_CONV_SENDERS;
 				if (senders.length > numSenders) {

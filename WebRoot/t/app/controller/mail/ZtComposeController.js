@@ -24,7 +24,8 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 	extend: "Ext.app.Controller",
 
 	requires: [
-		'ZCS.view.mail.ZtComposeForm'
+		'ZCS.view.mail.ZtComposeForm',
+		'ZCS.common.ZtUtil'
 	],
 
 	config: {
@@ -32,6 +33,7 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 		refs: {
 			// event handlers
 			composePanel: 'composepanel',
+			contactField: 'composepanel contactfield',
 
 			// other
 			mailView: '#' + ZCS.constant.APP_MAIL + 'view',
@@ -42,55 +44,85 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 			composePanel: {
 				cancel: 'doCancel',
 				send: 'doSend'
+			},
+			contactField: {
+				bubbleHold: 'showBubbleMenu'
 			}
 		}
 	},
 
+	showBubbleMenu: function (field, bubble, bubbleModel) {
+		var menu = Ext.create('ZCS.common.ZtMenu', {
+			referenceComponent: bubble,
+			modal: true
+		});
+
+		menu.setMenuItems(Ext.create('ZCS.model.ZtMenuItem', {
+			label: 'Remove',
+			listener: function () {
+				field.removeBubble(bubble);
+			}
+		}));
+
+		menu.popup();
+	},
+
 	compose: function() {
-
 		var panel = this.getComposePanel(),
-			form = panel.down('formpanel');
+			form = panel.down('formpanel'),
+			fieldComponent = form.down('contactfield[name=to]');
 
-		form.reset();
+		panel.resetForm();	
+
 		panel.show({
 			type: 'slide',
-			direction: 'up'
+			direction: 'up',
+			delay: 0
 		});
-		form.down('field[name=to]').focus();
+
+		fieldComponent.focusInput();
+
+		//Due to a timing issue between the virtual keyboard showing, and the
+		//panel animating, IOS sets the window scroll when it should not,
+		//so we manually fix that here.
+		ZCS.util.resetWindowScroll();
 	},
 
 	reply: function(msg) {
 
 		var panel = this.getComposePanel(),
 			form = panel.down('formpanel'),
-			toFld = form.down('field[name=to]'),
+			toFld = form.down('contactfield[name=to]'),
 			subjectFld = form.down('field[name=subject]'),
 			bodyFld = form.down('field[name=body]');
 
-		form.reset();
+		panel.resetForm();
 		panel.show({
 			type: 'slide',
 			direction: 'up'
 		});
 
-		toFld.setValue(msg.getReplyAddress().getFullEmail());
+		toFld.addBubble(msg.getReplyAddress());
 		subjectFld.setValue(this.getSubject(msg, 'Re:'));
 		bodyFld.setValue('\n\n' + '----- ' + ZtMsg.originalMessage + ' -----\n' + msg.get('content'));
 		var textarea = bodyFld.element.query('textarea')[0];
 		textarea.scrollTop = 0;
 		bodyFld.focus();
+		ZCS.util.resetWindowScroll();
 	},
 
 	replyAll: function(msg) {
 
 		var panel = this.getComposePanel(),
 			form = panel.down('formpanel'),
-			toFld = form.down('field[name=to]'),
-			ccFld = form.down('field[name=cc]'),
+			toFld = form.down('contactfield[name=to]'),
+			ccFld = form.down('contactfield[name=cc]'),
 			subjectFld = form.down('field[name=subject]'),
 			bodyFld = form.down('field[name=body]');
 
-		form.reset();
+		panel.resetForm();
+		panel.showCc();
+
 		panel.show({
 			type: 'slide',
 			direction: 'up'
@@ -106,21 +138,22 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 		// Remember emails we don't want to repeat in Cc
 		// TODO: add aliases to used hash
 		used[userEmail] = true;
-		used[replyAddr.getEmail()] = true;
+		used[replyAddr.get('email')] = true;
 
 		Ext.each(origToAddrs.concat(origCcAddrs), function(addr) {
-			if (!used[addr.getEmail()]) {
-				ccAddrs.push(addr.getFullEmail());
+			if (!used[addr.get('email')]) {
+				ccAddrs.push(addr);
 			}
 		}, this);
 
-		toFld.setValue(replyAddr.getFullEmail());
-		ccFld.setValue(ccAddrs.join('; '));
+		toFld.addBubble(replyAddr);
+		ccFld.addBubbles(ccAddrs);
 		subjectFld.setValue(this.getSubject(msg, 'Re:'));
 		bodyFld.setValue('\n\n' + '----- ' + ZtMsg.originalMessage + ' -----\n' + msg.get('content'));
 		bodyFld.focus();
 		var textarea = bodyFld.element.query('textarea')[0];
 		textarea.scrollTop = 0;
+		ZCS.util.resetWindowScroll();
 	},
 
 	forward: function(msg) {
@@ -130,14 +163,15 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 			subjectFld = form.down('field[name=subject]'),
 			bodyFld = form.down('field[name=body]');
 
-		form.reset();
+		panel.resetForm();
 		panel.show({
 			type: 'slide',
 			direction: 'up'
 		});
 		subjectFld.setValue(this.getSubject(msg, 'Fwd:'));
 		bodyFld.setValue('\n\n' + '----- ' + ZtMsg.forwardedMessage + ' -----\n' + msg.get('content'));
-		form.down('field[name=to]').focus();
+		form.down('contactfield[name=to]').focus();
+		ZCS.util.resetWindowScroll();
 	},
 
 	getSubject: function(msg, prefix) {
@@ -157,6 +191,8 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 		var msg = Ext.create('ZCS.model.mail.ZtMailMsg', {
 			from: ZCS.session.getAccountName(),
 			to: values.to,
+			cc: values.cc,
+			bcc: values.bcc,
 			subject: values.subject,
 			content: values.body
 		});
@@ -166,13 +202,12 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 
 	// private
 	getComposePanel: function() {
+
 		if (!this.composePanel) {
 			this.composePanel = Ext.create('ZCS.view.mail.ZtComposeForm');
-			var mailView = this.getMailView();
-			if (mailView) {
-				mailView.add(this.composePanel);
-			}
+			Ext.Viewport.add(this.composePanel);
 		}
+
 		return this.composePanel;
 	}
 });

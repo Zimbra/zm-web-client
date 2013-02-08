@@ -28,29 +28,60 @@ Ext.define('ZCS.view.mail.ZtMsgHeader', {
 
 	config: {
 		padding: 5,
-		tpl: Ext.create('Ext.XTemplate', ZCS.template.MsgHeader),
-//		cls: 'zcs-msg-header x-list-item-body'
-		cls: 'zcs-msg-header'
+		cls: 'zcs-msg-header',
+		msg: null,
+		listeners: {
+			destroy: function () {
+				//dereference to prevent memory leaks
+				this.setMsg(null);
+			}
+		}
 	},
+
 
 	render: function(msg) {
 
 		var data = msg.getData(),
+			tpl,
 			addressTypes = [
 				ZCS.constant.FROM,
 				ZCS.constant.TO,
 				ZCS.constant.CC
 			];
 
+		this.setMsg(msg);
+
 		data.expanded = this.up('msgview').getExpanded();
+		data.addrs = {};
 
 		Ext.each(addressTypes, function(type) {
 			var addrs = msg.getAddressesByType(type);
+
 			if (addrs.length > 0) {
-				data[type.toLowerCase()] = Ext.String.htmlEncode(addrs.join('; '));
+				data.addrs[type.toLowerCase()] = Ext.Array.map(addrs, 
+					function (addr) {
+						var viewInfo = {
+							address: Ext.String.htmlEncode(addr.toString()),
+							displayName: Ext.String.htmlEncode(addr.get('displayName') || addr.get('name'))
+						};
+
+						viewInfo.displayName = viewInfo.displayName.replace('"', '');
+
+						return viewInfo;
+					}
+				);
 			}
 		}, this);
 
-		this.setHtml(this.getTpl().apply(data));
+		if (data.expanded) {
+			tpl = ZCS.view.mail.ZtMsgHeader.expandedTpl;
+		} else {
+			tpl = ZCS.view.mail.ZtMsgHeader.collapsedTpl;
+		}
+
+		this.setHtml(tpl.apply(data));
 	}
+}, function (thisClass) {
+	thisClass.collapsedTpl = Ext.create('Ext.XTemplate', ZCS.template.MsgHeader);
+	thisClass.expandedTpl = Ext.create('Ext.XTemplate', ZCS.template.ExpandedMsgHeader);
 });

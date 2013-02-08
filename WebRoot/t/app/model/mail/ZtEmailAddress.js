@@ -20,26 +20,26 @@
  * @author Conrad Damon <cdamon@zimbra.com>
  * @adapts AjxEmailAddress
  */
-Ext.define('ZCS.common.mail.ZtEmailAddress', {
-
+Ext.define('ZCS.model.mail.ZtEmailAddress', {
+	extend: 'Ext.data.Model',
 	config: {
-		type: '',
-		email: '',
-		name: '',
-		displayName: ''
-	},
-
-	constructor: function(type, email, name, displayName) {
-		this.setType(type);
-		this.setEmail(email);
-		this.setName(name || '');
-		this.setDisplayName(displayName || '');
+		fields: [
+			{name: 'type', type: 'string'},
+			{name: 'email', type: 'string'},
+			{name: 'name', type: 'string'},
+			{name: 'displayName', type: 'string'}
+		]
 	},
 
 	statics: {
 		fromAddressNode: function(node) {
 			var type = ZCS.constant.FROM_SOAP_TYPE[node.t];
-			return new ZCS.common.mail.ZtEmailAddress(type, node.a, node.p, node.d);
+			return Ext.create('ZCS.model.ZtEmailAddress', {
+				type: type,
+				email: node.a, 
+				name: node.p, 
+				displayName: node.d
+			});
 		}
 	},
 
@@ -49,8 +49,8 @@ Ext.define('ZCS.common.mail.ZtEmailAddress', {
 	 */
 	getFullEmail: function() {
 
-		var name = this.getName(),
-			email = this.getEmail();
+		var name = this.get('name'),
+			email = this.get('email');
 
 		if (name) {
 			name = name.replace(/\\+"/g, '"');  // unescape double quotes (avoid double-escaping)
@@ -68,5 +68,14 @@ Ext.define('ZCS.common.mail.ZtEmailAddress', {
 	 */
 	toString: function() {
 		return this.getFullEmail();
+	},
+
+	/**
+	 * TODO: make this a robust email regular expression checker
+	 *
+	 */
+	isValid: function () {
+		return true;
 	}
 });
+

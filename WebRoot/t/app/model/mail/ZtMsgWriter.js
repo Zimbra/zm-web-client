@@ -28,7 +28,7 @@ Ext.define('ZCS.model.mail.ZtMsgWriter', {
 
 		var convId = request.getOperation().getInitialConfig().convId,
 			action = request.getAction(),
-			json, methodJson;
+			json, methodJson = {};
 
 		if (action === 'read' && convId) {
 
@@ -55,16 +55,14 @@ Ext.define('ZCS.model.mail.ZtMsgWriter', {
 
 			var	msg = request.getRecords()[0];
 
+			methodJson = json.Body.SendMsgRequest;
+
 			Ext.apply(methodJson, {
 				m: {
 					e: [
 						{
 							t: 'f',
 							a: msg.get('from')
-						},
-						{
-							t: 't',
-							a: msg.get('to')
 						}
 					],
 					su: {
@@ -80,6 +78,32 @@ Ext.define('ZCS.model.mail.ZtMsgWriter', {
 					]
 				}
 			});
+
+			//Add the to, cc, bcc.  Note, we're assuming these are ZCS.model.ZtEmailAddress objects at this point.
+			Ext.each(msg.get('to'), function (to) {
+				methodJson.m.e.push({
+					t: 't',
+					a: to.get('email'),
+					p: to.get('name')
+				});
+			});
+
+			Ext.each(msg.get('cc'), function (cc) {
+				methodJson.m.e.push({
+					t: 'c',
+					a: cc.get('email'),
+					p: cc.get('name')
+				});
+			});
+
+			Ext.each(msg.get('bcc'), function (bcc) {
+				methodJson.m.e.push({
+					t: 'b',
+					a: bcc.get('email'),
+					p: bcc.get('name')
+				});
+			});
+
 		}
 		else if (action === 'update') {
 			// 'update' operation means we are performing a MsgActionRequest or GetMsgRequest

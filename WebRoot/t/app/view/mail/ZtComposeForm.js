@@ -28,7 +28,8 @@ Ext.define('ZCS.view.mail.ZtComposeForm', {
 		'Ext.form.Panel',
 		'Ext.field.Email',
 		'Ext.field.Text',
-		'Ext.field.TextArea'
+		'Ext.field.TextArea',
+		'ZCS.view.contacts.ZtContactField'
 	],
 
 	xtype: 'composepanel',
@@ -38,67 +39,154 @@ Ext.define('ZCS.view.mail.ZtComposeForm', {
 		width: '80%',
 		height: '90%',
 		hidden: true,
-		modal: true
+		modal: false,
+		cls: 'compose-form'
 	},
 
 	initialize: function() {
 
-		var toolbar = {
-			xtype: 'titlebar',
-			docked: 'top',
-			title: ZtMsg.compose,
-			items: [
-				{
-					xtype: 'button',
-					text: ZtMsg.cancel,
-					handler: function() {
-						this.up('composepanel').fireEvent('cancel');
+		var composeForm = this,
+			toolbar = {
+				xtype: 'titlebar',
+				docked: 'top',
+				title: ZtMsg.compose,
+				items: [
+					{
+						xtype: 'button',
+						text: ZtMsg.cancel,
+						handler: function() {
+							this.up('composepanel').fireEvent('cancel');
+						}
+					},
+					{
+						xtype: 'button',
+						text: ZtMsg.send,
+						align: 'right',
+						handler: function() {
+							this.up('composepanel').fireEvent('send');
+						}
 					}
+				]
+			}, 
+			form = {
+				xtype: 'formpanel',
+				defaults: {
+					labelWidth: '100px',
+					inputCls: 'zcs-form-input'
 				},
-				{
-					xtype: 'button',
-					text: ZtMsg.send,
-					align: 'right',
-					handler: function() {
-						this.up('composepanel').fireEvent('send');
-					}
-				}
-			]
-		};
-
-		var form = {
-			xtype: 'formpanel',
-			defaults: {
-				labelWidth: '100px',
-				inputCls: 'zcs-form-input'
-			},
-			items: [
-				{
-					xtype: 'emailfield',
-					name: 'to',
-					label: ZtMsg.toLabel
+				layout: {
+					type: 'vbox'
 				},
-				{
-					xtype: 'emailfield',
+				items: [{
+					height: 44,
+					layout: {
+						type: 'hbox'
+					},
+					items: [{
+						xtype: 'contactfield',
+						name: 'to',
+						labelWidth: 32,
+						flex: 1,
+						label: ZtMsg.toLabel || 'To'
+					}, {
+						width: 80,
+						height: 44,
+						xtype: 'component',
+						html: 'Cc/Bcc',
+						itemId: 'ccToggle',
+						cls: 'x-form-label x-form-label-nowrap x-field zcs-toggle-field',
+						listeners: {
+							painted: function () {
+								var comp = this;
+								this.element.on('tap', function () {
+									composeForm.showCc();
+								});
+							}
+						}
+					}]
+				}, {
+					xtype: 'contactfield',
 					name: 'cc',
-					label: ZtMsg.ccLabel
-				},
-				{
-					xtype: 'textfield',
-					name: 'subject',
-					label: ZtMsg.subjectLabel
-				},
-				{
+					height: 44,
+					labelWidth: 35,
+					hidden: true,
+					itemId: 'cc',
+					label: ZtMsg.ccLabel || 'CC'
+				}, {
+					xtype: 'contactfield',
+					name: 'bcc',
+					itemId: 'bcc',
+					height: 44,
+					labelWidth: 50,
+					hidden: true,
+					label: ZtMsg.bccLabel || 'BCC'
+				}, {
+					height: 44,
+					layout: {
+						type: 'hbox'
+					},
+					items: [{
+						xtype: 'textfield',
+						name: 'subject',
+						height: 44,
+						labelWidth: 80,
+						flex: 1,
+						listeners: {
+							blur: function () {
+								//Because this panel is floating, and a keystroke may have forced the whole window to scroll,
+								//when we blur, reset the scroll.
+								ZCS.util.resetWindowScroll();
+							}
+						},
+						label: ZtMsg.subjectLabel || 'Subject'
+					}, {
+						width: 80,
+						height: 44,
+						xtype: 'component',
+						html: 'Attach',
+						itemId: 'attach',
+						cls: 'x-form-label x-form-label-nowrap x-field zcs-toggle-field',
+						listeners: {
+							painted: function () {
+								var comp = this;
+								this.element.on('tap', function () {
+									composeForm.doAttach();
+								});
+							}
+						}
+					}]
+				}, {
 					xtype: 'textareafield',
 					name: 'body',
-					maxRows: 16     // TODO: would be nicer to auto-size to remaining height
-				}
-			]
-		};
+					flex: 1,
+					maxRows: 16,
+					listeners: {
+						blur: function () {
+							//Because this panel is floating, and a keystroke may have forced the whole window to scroll,
+							//when we blur, reset the scroll.
+							ZCS.util.resetWindowScroll();
+						}
+					}
+				}]
+			};
 
 		this.add([
 			toolbar,
 			form
 		]);
+	},
+	showCc: function () {
+		this.down('#ccToggle').hide();
+		this.down('#cc').show();
+		this.down('#bcc').show();
+	},
+	doAttach: function () {
+		this.fireEvent('doAttachment');
+	},
+	resetForm: function () {
+		this.down('.formpanel').reset();	
+		this.down('#ccToggle').show();
+		this.down('#cc').hide();
+		this.down('#bcc').hide();	
 	}
 });

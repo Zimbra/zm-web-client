@@ -90,6 +90,14 @@ Ext.define('ZCS.common.ZtUtil', {
 	},
 
 	/**
+	 * Resets the scroll of the window, which often gets messed up in Safari on iOS
+	 * after animations or orientation change events.
+	 */
+	resetWindowScroll: function () {
+		window.scrollTo(0,0);
+	},
+
+	/**
 	 * Parses a possibly compound ID into account and local parts, and returns
 	 * them in an object. If the ID is not a compound ID, then the account ID is
 	 * set to the current account ID.

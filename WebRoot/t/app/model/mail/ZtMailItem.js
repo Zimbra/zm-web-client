@@ -22,6 +22,10 @@ Ext.define('ZCS.model.mail.ZtMailItem', {
 
 	extend: 'ZCS.model.ZtItem',
 
+	requires: [
+		'ZCS.model.mail.ZtEmailAddress'
+	],
+
 	config: {
 		fields: [
 			{ name: 'addresses', type: 'auto' },
@@ -90,8 +94,8 @@ Ext.define('ZCS.model.mail.ZtMailItem', {
 			var	addresses = {};
 
 			Ext.each(addrs, function(addr) {
-				var emailAddr = ZCS.common.mail.ZtEmailAddress.fromAddressNode(addr),
-					type = emailAddr.getType();
+				var emailAddr = ZCS.model.mail.ZtEmailAddress.fromAddressNode(addr),
+					type = emailAddr.get('type');
 
 				if (!addresses[type]) {
 					addresses[type] = [];
@@ -124,7 +128,7 @@ Ext.define('ZCS.model.mail.ZtMailItem', {
 			this.setAddresses(addrs);
 		}
 
-		var	addrType = address.getType(),
+		var	addrType = address.get('type'),
 			addrsByType = addrs[addrType];
 
 		if (!addrsByType) {

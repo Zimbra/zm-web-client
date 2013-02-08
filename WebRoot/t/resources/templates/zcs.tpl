@@ -25,12 +25,41 @@
 
 <template id='MsgHeader'>
 	<tpl>
-		<div>From: <span>{from}</span><span class='zcs-mail-date'>{dateStr}</span></div>
-		<tpl if='expanded'>
-			<tpl if='to'><div>To: <span>{to}</span></div></tpl>
-			<tpl if='cc'><div>Cc: <span>{cc}</span></div></tpl>
-		<tpl else>
-			<div class='zcs-fragment'>{fragment}</div>
+		<tpl if='addrs.from'>
+			<div>From: 
+				<tpl for='addrs.from'>
+					<span class='vm-area-bubble' address='{address}'>{displayName}</span>
+				</tpl>
+				<span class='zcs-mail-date'>{dateStr}</span>
+			</div>
+		</tpl>
+		<div class='zcs-fragment'>{fragment}</div>
+	</tpl>
+</template>
+
+<template id='ExpandedMsgHeader'>
+	<tpl>
+		<tpl if='addrs.from'>
+			<div>From: 
+				<tpl for='addrs.from'>
+					<span address='{address}'>{displayName}</span>
+				</tpl>
+				<span class='zcs-mail-date'>{dateStr}</span>
+			</div>
+		</tpl>
+		<tpl if='addrs.to'>
+			<div>To: 
+				<tpl for='addrs.to'>
+					<span class='vm-area-bubble' address='{address}'>{displayName}</span>
+				</tpl>
+			</div>
+		</tpl>
+		<tpl if='addrs.cc'>
+			<div>Cc:
+				<tpl for='addrs.cc'>
+					<span class='vm-area-bubble' address='{address}'>{displayName}</span>
+				</tpl>
+			</div>
 		</tpl>
 	</tpl>
 </template>

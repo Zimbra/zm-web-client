@@ -46,12 +46,12 @@ Ext.define('ZCS.view.mail.ZtMsgView', {
 		],
 
 		// Custom properties
-		msg: null,
 		expanded: false,
 
 		listeners: {
 			updatedata: function(msgView, msgData) {
 				if (msgData) {
+
 					Ext.Logger.info('updatedata for msg ' + msgData.id);
 					var msg = ZCS.cache.get(msgData.id),
 						conv = ZCS.cache.get(msgData.convId),
@@ -64,11 +64,10 @@ Ext.define('ZCS.view.mail.ZtMsgView', {
 							return;
 						}
 						// Note: partial update on msg load results in double-render, so do whole thing
-						this.setMsg(msg);
 						this.setExpanded(msgData.isLoaded);
 						msgView.renderHeader();
 						msgView.renderBody(isLast);
-						this.updateExpansion();
+						this.updateExpansion(true);
 					}
 				}
 			}
@@ -76,11 +75,11 @@ Ext.define('ZCS.view.mail.ZtMsgView', {
 	},
 
 	renderHeader: function() {
-		this.down('msgheader').render(this.getMsg());
+		this.down('msgheader').render(this.getRecord());
 	},
 
 	renderBody: function(isLast) {
-		this.down('msgbody').render(this.getMsg(), isLast);
+		this.down('msgbody').render(this.getRecord(), isLast);
 	},
 
 	/**
@@ -89,23 +88,33 @@ Ext.define('ZCS.view.mail.ZtMsgView', {
 	toggleView: function() {
 		this.setExpanded(!this.getExpanded());
 		this.updateExpansion();
-		this.down('msgheader').render(this.getMsg());
+		this.down('msgheader').render(this.getRecord());
 	},
 
 	/**
 	 * Displays view according to whether it is collapsed or expanded. When the view is
 	 * collapsed, the body and footer are hidden.
+	 *
+	 * @param {boolean} doNotRecomputeHeights		True to recompute heights, false to not recompute.
 	 * @private
 	 */
-	updateExpansion: function() {
+	updateExpansion: function(doNotRecomputeHeights) {
 
 		if (this.getExpanded()) {
 			this.down('msgbody').show();
 			this.down('msgfooter').show();
-		}
-		else {
+		} else {
 			this.down('msgbody').hide();
 			this.down('msgfooter').hide();
+		}
+
+		//Only recompute heights if this function has been called without parameters
+		if (!doNotRecomputeHeights) {
+			var listRef = this.up('.list');
+			//Let the list know this item got updated.
+			listRef.updatedItems.push(this);
+			listRef.updateItemHeights();
+			listRef.refreshScroller(listRef.getScrollable().getScroller());
 		}
 	}
 });

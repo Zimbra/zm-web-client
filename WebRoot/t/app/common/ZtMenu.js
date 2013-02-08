@@ -26,45 +26,47 @@ Ext.define('ZCS.common.ZtMenu', {
 	extend: 'Ext.Panel',
 
 	requires: [
-		'ZCS.common.ZtMenuItem'
+		'ZCS.model.ZtMenuItem'
 	],
 
 	config: {
 		layout: 'fit',
-		width: 160,     // TODO: would be nicer to have it autosize to width of longest label
+		width: 160,     // TODO: would be nicer to have it autosize to width of longest item
 		modal: true,
 		hideOnMaskTap: true,
 		padding: 5,
+		defaultItemHeight: 47,
 		items: [
 			{
 				xtype:'list',
 				store: {
-					model: 'ZCS.common.ZtMenuItem'
+					model: 'ZCS.model.ZtMenuItem'
 				},
 				itemTpl: '{label}',
+				scrollable: 'vertical',
 				listeners: {
-					select: function(list, record) {
+					itemtap: function(list, index, target, record, e) {
 						var action = record.get('action'),
 							menu = this.up('panel');
 						Ext.Logger.verbose('Menu click: ' + action);
 						var listener = record.get('listener');
 						if (listener) {
-							listener();
 							menu.popdown();
+							listener();
+							e.stopEvent();
 						}
 					}
 				}
 			}
 		],
+		maxHeight: 300,
 		// the reference component is typically the button that triggered display of this menu
 		referenceComponent: null
 	},
 
 	initialize: function() {
 		// if we don't wait before doing this, the 'painted' event is fired before DOM is ready :(
-		// TODO: find a better way to do this
-		Ext.Logger.verbose('Initializing menu');
-		Ext.defer(this.initMenu, 200, this);
+		Ext.defer(this.initMenu, 100, this);
 	},
 
 	/**
@@ -72,21 +74,45 @@ Ext.define('ZCS.common.ZtMenu', {
 	 * @private
 	 */
 	initMenu: function() {
+		Ext.Logger.verbose('Initializing menu');
 		this.on({
 			painted: {
 				scope: this,
 				fn: function(el) {
 					Ext.Logger.verbose('PAINTED event fired on menu');
-					var list = this.down('list');
-					var firstItem = list && list.element.down('.x-list-item');
-					var itemHeight = firstItem && firstItem.getHeight();
-					if (itemHeight) {
-						var itemCount = list.getStore().getCount();
-						this.setHeight((itemHeight * itemCount) + 12);
-					}
+					//refresh the list as it may not have rendered anything since the menu was not ready.
+					this.down('list').refresh();
+					this.adjustHeight();
 				}
 			}
 		});
+	},
+
+	/**
+	 *
+	 * Adjusts the menus height to fit all items, are be the max height
+	 * whichever is smaller.
+	 */
+	adjustHeight: function () {
+		var list = this.down('list');
+		var firstItem = list && list.element.down('.x-list-item');
+		var itemHeight = firstItem && firstItem.getHeight();
+
+		var hasItems = list.getStore().getCount() > 0;
+		
+		//The view has not yet rendered, so we need to set a height anyway.
+		if (!itemHeight && hasItems) {
+			itemHeight = this.getDefaultItemHeight();
+		}
+
+		if (itemHeight) {
+			var itemCount = list.getStore().getCount(),
+				height = Math.min(this.getMaxHeight(), (itemHeight * itemCount) + 12);
+
+
+			this.setHeight(height);
+			list.setHeight(height - 12);
+		}
 	},
 
 	/**
@@ -101,10 +127,10 @@ Ext.define('ZCS.common.ZtMenu', {
 	/**
 	 * Displays the menu.
 	 */
-	popup: function() {
+	popup: function(positioning) {
 		var list = this.down('list');
 		list.deselect(list.getSelection()); // clear the previous selection
-		this.showBy(this.getReferenceComponent(), 'tr-br?');
+		this.showBy(this.getReferenceComponent(), positioning || 'tr-br?');
 	},
 
 	/**

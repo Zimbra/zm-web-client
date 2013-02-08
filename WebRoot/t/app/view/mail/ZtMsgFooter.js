@@ -38,7 +38,7 @@ Ext.define('ZCS.view.mail.ZtMsgFooter', {
 				iconCls: 'reply',
 				iconMask: true,
 				handler: function(a, b, c) {
-					this.up('msgfooter').fireEvent('reply', this.up('msgview').getMsg());
+					this.up('msgfooter').fireEvent('reply', this.up('msgview').getRecord());
 				}
 			},
 			{
@@ -46,7 +46,7 @@ Ext.define('ZCS.view.mail.ZtMsgFooter', {
 				iconCls: 'replytoall',
 				iconMask: true,
 				handler: function() {
-					this.up('msgfooter').fireEvent('replyAll', this.up('msgview').getMsg());
+					this.up('msgfooter').fireEvent('replyAll', this.up('msgview').getRecord());
 				}
 			},
 			{
@@ -54,7 +54,7 @@ Ext.define('ZCS.view.mail.ZtMsgFooter', {
 				iconCls: 'trash',
 				iconMask: true,
 				handler: function() {
-					this.up('msgfooter').fireEvent('delete', this.up('msgview').getMsg());
+					this.up('msgfooter').fireEvent('delete', this.up('msgview').getRecord());
 				}
 			},
 			{
@@ -62,7 +62,7 @@ Ext.define('ZCS.view.mail.ZtMsgFooter', {
 				iconCls: 'arrow_down',
 				iconMask: true,
 				handler: function() {
-					this.up('msgfooter').fireEvent('showMenu', this, this.up('msgview').getMsg());
+					this.up('msgfooter').fireEvent('showMenu', this, this.up('msgview').getRecord());
 				}
 			}
 		]

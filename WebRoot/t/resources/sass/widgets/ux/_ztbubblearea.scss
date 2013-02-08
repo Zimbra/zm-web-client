@@ -1,0 +1,100 @@
+$bubble-height: 18px;
+$bubble-text-padding: 1px 6px;
+$bubble-border-radius: 10px; // to match other input borders
+$space-between-rows:2px;
+$space-between-bubbles:6px;
+$font-size: 11px;
+$input-font-size:14px;
+
+//Disabling close icon for now.
+$bubble-close-icon-width: 0px;
+$bubble-close-icon-height: 0px;
+$bubble-close-icon-margin: 0 0 0 0px;
+
+
+.vm-area-bubble {
+    line-height: $bubble-height;
+    font-color: $dark-grey !important;
+    font-size: $font-size;
+    padding: $bubble-text-padding;
+    background-color: $light-grey !important;
+    @include border-radius($bubble-border-radius);
+    border: $default-border;
+    display:inline-block;
+}
+
+.vm-bubblearea {
+
+    background-color: $white;
+    @include border-radius($default-textarea-radius);
+    
+    > div {
+        .bubble-comp, .input-comp {
+            display: inline-block;
+            margin-top: $space-between-rows;
+            margin-left: $space-between-bubbles;
+        }
+
+
+
+        .bubble-close-icon {
+            display:inline-block;
+            width: $bubble-close-icon-width;
+            height: $bubble-close-icon-height;
+            margin: $bubble-close-icon-margin;
+            cursor: pointer;
+            cursor: hand;
+        }
+        
+    }
+
+    .bubble-main-contents {
+        .x-inner {
+            padding:6px 4px !important;
+        }
+    }
+
+    .input-comp {
+        .x-innerhtml {
+            height:18px;
+            position:relative;
+            display:inline-block;
+            input {
+                top: 5px;
+                height:18px;
+                font-size: $input-font-size;
+                position:absolute;
+            }
+        }
+    }
+    
+    .emptyText {
+        color: $medium-grey;
+        position: absolute;
+        font-style: italic;
+        top: 6px;
+        left: 6px;
+        text-transform:lowercase;
+    }
+    
+    input {
+        line-height: $bubble-height;
+        font-color: $dark-grey !important;
+        padding: $bubble-text-padding;
+        background-color: transparent !important;
+        border: 0 !important;
+        display: inline-block;
+    }
+
+    &[class~=vm-read-only] {
+         background: $default-readonly-color !important;
+         border-color: $default-border-disabled;
+        .bubble-close-icon{
+            display: none !important;
+        }
+    }
+}
+
+.x-form-invalid .vm-bubblearea {
+    background-position: bottom;
+}

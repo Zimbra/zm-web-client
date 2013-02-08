@@ -1,7 +1,3 @@
-.zcs-form-input {
-    border-bottom: 1px solid #f7f7f7;
-}
-
 .zcs-fragment {
 	font-size: 0.9em;
 	color: gray;
@@ -21,10 +17,4 @@
    http://www.sencha.com/forum/showthread.php?253388-List-with-useComponents-true-dosen-t-fire-the-itemtap-event */
 .zcs-msgview .x-list-item-body {
 	display: none;
-}
-
-.zcs-offscreen {
-	position: absolute;
-	top: -10000;
-	left: -10000;
 }

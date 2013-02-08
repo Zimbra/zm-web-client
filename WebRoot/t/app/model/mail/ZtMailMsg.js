@@ -38,8 +38,9 @@ Ext.define('ZCS.model.mail.ZtMailMsg', {
 
 			// internal (via parsing)
 			{ name: 'from', type: 'string' },
-			{ name: 'to', type: 'string' },
-			{ name: 'cc', type: 'string' },
+			{ name: 'to', type: 'auto' },
+			{ name: 'cc', type: 'auto' },
+			{ name: 'bcc', type: 'auto' },
 			{ name: 'topPart', type: 'auto' },
 			{ name: 'attachments', type: 'auto' },
 			{ name: 'bodyParts', type: 'auto' },

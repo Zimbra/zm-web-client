@@ -34,6 +34,17 @@ Ext.define('ZCS.model.contacts.ZtContact', {
 		fields: [
 			{ name: 'firstName', type: 'string' },
 			{ name: 'lastName', type: 'string' },
+			{ 
+				name: 'displayName',
+				type: 'string', 
+				convert: function (v, record) {
+					if (record.data.firstName && record.data.lastName) {
+						return record.data.firstName + ' ' + record.data.lastName;
+					} else {
+						return record.data.email;
+					}
+				}
+			},
 			{ name: 'email', type: 'string' },
 			{ name: 'company', type: 'string' },
 			{ name: 'fileAs', type: 'int' }

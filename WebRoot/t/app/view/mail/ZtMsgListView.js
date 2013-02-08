@@ -32,16 +32,22 @@ Ext.define('ZCS.view.mail.ZtMsgListView', {
 		useComponents: true,
 		defaultType: 'msgview',
 		disableSelection: true,
+		variableHeights: true,
 		scrollable: {
 			direction: 'vertical'
 		},
 		store: 'ZtMsgStore',
-		itemCls: 'zcs-msgview'
+		itemCls: 'zcs-msgview',
+
+		//Sets the default list item height, which corresponds to collapsed message height
+		itemHeight: 70
 	},
 
 	initialize: function() {
 
 		this.callParent(arguments);
+
+		this.preventTap = false;
 
 		// Add a delegate here so we can catch a tap on a msg header.
 		// Note: Adding this listener via config does not work.
@@ -49,8 +55,32 @@ Ext.define('ZCS.view.mail.ZtMsgListView', {
 			tap: function(e) {
 				Ext.Logger.verbose('TAP via delegate');
 				var msgHeader = this.down('#' + e.delegatedTarget.id);
-				if (msgHeader) {
+				if (msgHeader && !this.preventTap) {
 					msgHeader.fireEvent('toggleView', msgHeader);
+				}
+
+				if (this.preventTap) {
+					this.preventTap = false;
+				}
+			},
+			element: 'element',
+			delegate: '.zcs-msg-header',
+			scope: this
+		});
+
+		this.on({
+			taphold: function(e, node) {
+				//This will not prevent tap events by itself, so we have to manually prevent taps for a period of time to prevent collapse
+				//when holding on an address.
+
+				var elm = Ext.fly(e.target),
+					msgHeader = this.down('#' + e.delegatedTarget.id),
+					msg = msgHeader.getMsg();
+
+				if (elm.hasCls('vm-area-bubble')) {
+
+					this.preventTap = true;
+					msgHeader.fireEvent('bubbleHold', elm, msg, Ext.String.htmlDecode(elm.getAttribute('address')));
 				}
 			},
 			element: 'element',

@@ -65,11 +65,7 @@
         {
             "path": "/t/resources/css/app.css",
             "update": "delta"
-        },
-		{
-			"path": "/t/resources/css/zcs.css",
-			"update": "delta"
-		}
+        }
     ],
 
     /**

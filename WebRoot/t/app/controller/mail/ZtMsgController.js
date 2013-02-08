@@ -59,7 +59,7 @@ Ext.define('ZCS.controller.mail.ZtMsgController', {
 	doToggleView: function(msgHeader) {
 
 		var msgView = msgHeader.up('msgview'),
-			msg = msgView.getMsg();
+			msg = msgView.getRecord();
 
 		if (!msgView.getExpanded() && msg && !msg.get('isLoaded')) {
 			msg.set('op', 'load');
