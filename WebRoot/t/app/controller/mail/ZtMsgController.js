@@ -30,8 +30,7 @@ Ext.define('ZCS.controller.mail.ZtMsgController', {
 
 		refs: {
 			msgHeader: 'msgheader',
-			msgFooter: 'msgfooter',
-			menuButton: 'msgfooter #menuButton'
+			msgFooter: 'msgfooter'
 		},
 
 		control: {
@@ -71,7 +70,7 @@ Ext.define('ZCS.controller.mail.ZtMsgController', {
 		}
 	},
 
-	doShowMenu: function(msg) {
+	doShowMenu: function(menuButton, msg) {
 		this.setItem(msg);
 		this.callParent(arguments);
 	}

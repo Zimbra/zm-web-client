@@ -33,7 +33,6 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
 			itemPanelToolbar: 'appview #' + ZCS.constant.APP_CONTACTS + 'itempanel titlebar',
 
 			// other
-			menuButton: 'appview #' + ZCS.constant.APP_CONTACTS + 'itempanel titlebar button',
 			contactView: ZCS.constant.APP_CONTACTS + 'itemview'
 		},
 

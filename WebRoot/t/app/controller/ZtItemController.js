@@ -34,10 +34,7 @@ Ext.define('ZCS.controller.ZtItemController', {
 
 		refs: {
 			// event handlers
-			itemPanelToolbar: '',
-
-			// other
-			menuButton: ''
+			itemPanelToolbar: ''
 		},
 
 		control: {
@@ -47,7 +44,8 @@ Ext.define('ZCS.controller.ZtItemController', {
 		},
 
 		item: null,
-		menu: null
+		menu: null,
+		menuButton: null
 	},
 
 	launch: function () {
@@ -69,10 +67,10 @@ Ext.define('ZCS.controller.ZtItemController', {
 
 	/**
 	 * Displays the action menu after the dropdown button on the toolbar has been tapped.
-	 * @protected
 	 */
-	doShowMenu: function() {
+	doShowMenu: function(menuButton) {
 
+		this.setMenuButton(menuButton);
 		var menu = this.getMenu();
 		if (!menu) {
 			menu = Ext.create('ZCS.common.ZtMenu');
@@ -88,7 +86,10 @@ Ext.define('ZCS.controller.ZtItemController', {
 	 */
 	clear: function() {
 		this.getItemPanelToolbar().setTitle('');
-		this.getMenuButton().hide();
+		var menuButton = this.getMenuButton();
+		if (menuButton) {
+			menuButton.hide();
+		}
 	},
 
 	/**
@@ -99,7 +100,10 @@ Ext.define('ZCS.controller.ZtItemController', {
 	showItem: function(item) {
 		this.clear();
 		this.setItem(item);
-		this.getMenuButton().show();
+		var menuButton = this.getMenuButton();
+		if (menuButton) {
+			menuButton.show();
+		}
 	},
 
 	/**

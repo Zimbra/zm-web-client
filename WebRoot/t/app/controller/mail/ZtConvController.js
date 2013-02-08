@@ -36,7 +36,6 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 			itemPanelToolbar: 'appview #' + ZCS.constant.APP_MAIL + 'itempanel titlebar',
 
 			// other
-			menuButton: 'appview #' + ZCS.constant.APP_MAIL + 'itempanel titlebar button',
 			msgListView: ZCS.constant.APP_MAIL + 'itemview'
 		},
 
@@ -67,10 +66,11 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 	 * Make sure the action menu shows the appropriate action based on the unread status of this conversation.
 	 * The action will be either Mark Read or Mark Unread.
 	 */
-	doShowMenu: function() {
+	doShowMenu: function(menuButton) {
 
 		var menu = this.getMenu(),
 			label = this.getItem().get('isUnread') ? ZtMsg.markRead : ZtMsg.markUnread;
+
 		if (menu) {
 			var list = menu.down('list'),
 				store = list.getStore(),
