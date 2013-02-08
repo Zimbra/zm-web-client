@@ -1230,8 +1230,9 @@ function(msg, force) {
 		this._expanded = this._isMatchingMsg = msg.inHitList;
 	}
 	else {
-		this._expanded = this._forceExpand || (!this._forceCollapse && msg.isUnread);
+		this._expanded = !this._forceCollapse && msg.isUnread;
 	}
+	this._expanded = this._expanded || this._forceExpand;
 	if (this._expanded) {
 		this._convView._hasBeenExpanded[msg.id] = true;
 	}
