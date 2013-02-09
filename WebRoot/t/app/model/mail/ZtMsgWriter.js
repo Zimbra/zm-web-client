@@ -79,7 +79,7 @@ Ext.define('ZCS.model.mail.ZtMsgWriter', {
 				}
 			});
 
-			//Add the to, cc, bcc.  Note, we're assuming these are ZCS.model.ZtEmailAddress objects at this point.
+			//Add the to, cc, bcc.  Note, we're assuming these are ZtEmailAddress objects at this point.
 			Ext.each(msg.get('to'), function (to) {
 				methodJson.m.e.push({
 					t: 't',

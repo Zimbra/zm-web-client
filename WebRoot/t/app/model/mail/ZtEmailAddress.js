@@ -34,7 +34,7 @@ Ext.define('ZCS.model.mail.ZtEmailAddress', {
 	statics: {
 		fromAddressNode: function(node) {
 			var type = ZCS.constant.FROM_SOAP_TYPE[node.t];
-			return Ext.create('ZCS.model.ZtEmailAddress', {
+			return Ext.create('ZCS.model.mail.ZtEmailAddress', {
 				type: type,
 				email: node.a, 
 				name: node.p, 
