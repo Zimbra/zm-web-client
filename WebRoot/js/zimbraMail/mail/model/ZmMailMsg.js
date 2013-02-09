@@ -2576,7 +2576,12 @@ function() {
 	if (this.isUnread)		{ status.push(ZmMsg.unread); }
 	if (this.isReplied)		{ status.push(ZmMsg.replied); }
 	if (this.isForwarded)	{ status.push(ZmMsg.forwarded); }
-	if (this.isSent && !this.isDraft) { status.push(ZmMsg.sentAt); }
+	if (this.isDraft) {
+		status.push(ZmMsg.draft);
+	}
+	else if (this.isSent) {
+		status.push(ZmMsg.sentAt); //sentAt is for some reason "sent", which is what we need.
+	}
 	if (status.length == 0) {
 		status = [ZmMsg.read];
 	}
