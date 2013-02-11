@@ -328,3 +328,6 @@ ZCS.constant.ADDITIONAL_MAIL_HEADERS = [
 ZCS.constant.REGEX_NON_WHITESPACE = /\S+/;
 ZCS.constant.REGEX_SPLIT = /\r\n|\r|\n/;
 ZCS.constant.REGEX_SUBJ_PREFIX = new RegExp('^\\s*(Re|Fw|Fwd|' + ZtMsg.re + '|' + ZtMsg.fwd + '|' + ZtMsg.fw + '):' + '\\s*', 'i');
+
+// URL paths
+ZCS.constant.PATH_MSG_FETCH = '/service/home/~/';

@@ -53,12 +53,7 @@ Ext.define('ZCS.view.mail.ZtMsgView', {
 				if (msgData) {
 
 					Ext.Logger.info('updatedata for msg ' + msgData.id);
-					var msg = ZCS.cache.get(msgData.id),
-						conv = ZCS.cache.get(msgData.convId),
-//						messages = conv && conv.getMessages(),
-//						isLast = messages && (msgData.id === messages[messages.length - 1].getId());
-						isLast = msg.get('isLast');
-
+					var msg = ZCS.cache.get(msgData.id);
 					if (msg) {
 						if (msg.op === 'load' && !msgData.isLoaded) {
 							return;
@@ -66,7 +61,7 @@ Ext.define('ZCS.view.mail.ZtMsgView', {
 						// Note: partial update on msg load results in double-render, so do whole thing
 						this.setExpanded(msgData.isLoaded);
 						msgView.renderHeader();
-						msgView.renderBody(isLast);
+						msgView.renderBody(msg.get('isLast'));
 						this.updateExpansion(true);
 					}
 				}

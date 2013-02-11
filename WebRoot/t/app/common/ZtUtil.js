@@ -124,5 +124,119 @@ Ext.define('ZCS.common.ZtUtil', {
 		}
 
 		return result;
+	},
+
+	/**
+	 * Creates a URL out of the given components, using the current location as a default.
+	 *
+	 * @param params	[hash]		hash of params:
+	 *        relative	[boolean]*	if true, return a relative URL
+	 *        protocol	[string]*	protocol (trailing : is optional)
+	 *        host		[string]*	server hostname
+	 *        port		[int]*		server port
+	 *        path		[string]*	URL path
+	 *        qsReset	[boolean]*	if true, clear current query string
+	 *        qsArgs	[hash]*		set of query string names and values
+	 *
+	 * @return {string} a complete URL
+	 * @adapts AjxUtil.formatUrl
+	 */
+	buildUrl: function(params) {
+
+		params = params || {};
+
+		var url = [],
+			i = 0,
+			proto = params.protocol || location.protocol,
+			host = params.host || location.hostname,
+			port = Number(params.port || location.port),
+			path = params.path || location.pathname,
+			qs = '',
+			qsArgs = [];
+
+		if (!params.relative) {
+			if (proto.indexOf(':') === -1) {
+				proto += ':';
+			}
+			url[i++] = proto + '//' + host;
+			if (port && ((proto === 'http:' && port !== 80) || (proto === 'https:' && port !== 443))) {
+				url[i++] =  ':';
+				url[i++] = port;
+			}
+		}
+		url[i++] = path;
+		if (params.qsArgs) {
+			Ext.each(params.qsArgs, function(name) {
+				qsArgs.push(name + '=' + params.qsArgs[name]);
+			});
+			qs = '?' + qsArgs.join('&');
+		} else {
+			qs = params.qsReset ? '' : location.search;
+		}
+		url[i++] = qs;
+
+		return url.join('');
+	},
+
+	/**
+	 * Converts the string to HTML, replacing tabs and returns. Optionally turns blocks of
+	 * quoted content (which use > or | to mark quoted text) into <blockquote> sections.
+	 *
+	 * @param {string}	str		                the string
+	 * @param {boolean} convertQuotedContent    if true, convert quoted content into blockquotes
+	 * @return	{string}	the resulting string
+	 */
+	convertToHtml: function(str, convertQuotedContent) {
+
+		var openTag = '<blockquote>',
+			closeTag = '</blockquote>',
+			prefix_re = /^(>|&gt;|\|\s+)/,
+			lines, lineLevel,
+			level = 0;
+
+		if (!str) {
+			return '';
+		}
+
+		str = Ext.String.htmlEncode(str);
+		if (convertQuotedContent) {
+			// Convert a section of lines prefixed with > or |
+			// to a section encapsulated in <blockquote> tags
+			lines = str.split(/\r?\n/);
+			level = 0;
+			Ext.each(lines, function(line, index) {
+				if (line.length > 0) {
+					lineLevel = 0;
+					// Remove prefixes while counting how many there are on the line
+					while (line.match(prefix_re)) {
+						line = line.replace(prefix_re, "");
+						lineLevel++;
+					}
+					// If the lineLevel has changed since the last line, add blockquote start or end tags, and adjust level accordingly
+					while (lineLevel > level) {
+						line = openTag + line;
+						level++;
+					}
+					while (lineLevel < level) {
+						lines[index - 1] = lines[index - 1] + closeTag;
+						level--;
+					}
+				}
+				lines[index] = line;
+			}, this);
+
+			while (level > 0) {
+				lines.push(closeTag);
+				level--;
+			}
+
+			str = lines.join('\n');
+		}
+
+		str = str
+			.replace(/\t/mg, '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;')
+			.replace(/\r?\n/mg, '<br>');
+
+		return str;
 	}
 });

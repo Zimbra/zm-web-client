@@ -27,11 +27,13 @@ Ext.define('ZCS.model.ZtItem', {
 	],
 
 	config: {
+
 		fields: [
-			{ name: 'type', type: 'string' },
-			{ name: 'itemId', type: 'string' },
-			{ name: 'op', type: 'string' }          // operation to perform on server
+			{ name: 'type', type: 'string' },   // ZCS.constant.ITEM_*
+			{ name: 'itemId', type: 'string' }, // ID on server
+			{ name: 'op', type: 'string' }      // (internal) operation to perform on server
 		],
+
 		proxy: {
 			type: 'soapproxy',
 			// our server always wants us to POST for API calls
@@ -54,7 +56,7 @@ Ext.define('ZCS.model.ZtItem', {
 
 	constructor: function(data, id) {
 		ZCS.cache.set((data && data.id) || id, this);
-		return this.callParent(arguments);
+		this.callParent(arguments);
 	},
 
 	/**

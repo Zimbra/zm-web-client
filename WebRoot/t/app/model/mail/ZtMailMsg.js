@@ -58,7 +58,16 @@ Ext.define('ZCS.model.mail.ZtMailMsg', {
 			},
 			reader: 'msgreader',
 			writer: 'msgwriter'
-		}
+		},
+
+		hasMultipleBodyParts: false
+	},
+
+	constructor: function(data, id) {
+
+		this.callParent(arguments);
+
+		this.setHasMultipleBodyParts(data.bodyParts && (data.bodyParts > 1));
 	},
 
 	/**

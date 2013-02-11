@@ -307,7 +307,9 @@ Ext.define('ZCS.common.mail.ZtQuotedContent', {
 		}
 
 		// convert back to text, restoring html, head, and body nodes
-		return ctxt.done ? '<html>' + htmlNode.innerHTML + '</html>' : text;
+		var content = ctxt.done ? '<html>' + htmlNode.innerHTML + '</html>' : text;
+		htmlNode.innerHTML = '';
+		return content;
 	},
 
 
