@@ -24,56 +24,50 @@ Ext.define('ZCS.view.contacts.ZtContactField', {
 	extend: 'ZCS.view.ux.ZtBubbleDropdown',
 	alias: 'widget.contactfield',
 	config: {
-		menuStore: null,
-		//TODO: change this to use the remote options on the taggable dropdown.
-		filterFunction: function (searchValue, record) {
-			var firstName = record.get('firstName'),
-				lastName = record.get('lastName'),
-				email = record.get('email');
 
-			searchValue = ".*" + searchValue + ".*";
-
-			if (firstName && firstName.match(searchValue)) {
-				return true;
-			} else if (lastName && lastName.match(searchValue)) {
-				return true;
-			} else if (email && email.match(searchValue)) {
-				return true;
-			}
-
-			return false;
-		},
 		//TODO: if a contact model is no longer used, return perhaps an email model.
 		getBubbleModelFromInput: function (input) {
 			var emailObject = Ext.create('ZCS.model.mail.ZtEmailAddress', {
-					email: input 
+					email: input
 				});
 
 			if (emailObject.isValid()){
-				return Ext.create('ZCS.model.contacts.ZtContact', {
+				return Ext.create('ZCS.model.address.ZtAutoComplete', {
 					'email': input
 				});
 			} else {
 				return false;
 			}
 		},
-		//TODO: if a contact model is no longer used, change this
 		bubbleDisplayField: 'displayName',
-		//TODO: if a contact model is no longer used, change this
-		dropdownDisplayField: 'displayName',
-		//TODO: change this to use the remote options on the taggable dropdown.
-		stores: ['ZCS.store.contacts.ZtContactStore']
-	},
-	initialize: function () {
-		//TODO: change this to use the remote options on the taggable dropdown.
-		var contactStore = Ext.getStore(ZCS.util.getStoreShortName(this));
 
-		this.setMenuStore(contactStore);
+		menuItemTpl: [
+			'<tpl if="name">',
+			'<span class="zcs-auto-complete-name">{name}</span>',
+			'</tpl>',
+			'<tpl if="email">',
+			'<span class="zcs-auto-complete-email">{email}</span>',
+			'</tpl>'
+		],
+
+		remoteFilter: true,
+
+		menuWidth: 300
+	},
+
+	configureStore: function (value, store) {
+		store.getProxy().setExtraParams({
+			'name': value
+		});
+	},
+
+	initialize: function () {
+		var store = Ext.create('ZCS.store.address.ZtAutoCompleteStore');
+
+		this.setMenuStore(store);
 	},
 	/**
 	 * Called by default EXT form functionality to retrieve the value of this form input.
-	 * 
-	 * TODO, Implement this properly whem message writer can accept objects
 	 */
 	getValue: function () {
 		var bubbles = this.getBubbles(),
@@ -82,7 +76,7 @@ Ext.define('ZCS.view.contacts.ZtContactField', {
 		//TODO, remove this when what is in the store is the desired ZtEmailAddress.
 		Ext.each(bubbles, function (bubbleModel) {
 			returnBubbles.push(Ext.create('ZCS.model.mail.ZtEmailAddress', {
-				name: bubbleModel.get('firstName') + ' ' + bubbleModel.get('lastName'),
+				name: bubbleModel.get('name'),
 				email: bubbleModel.get('email')
  			}));
 		});

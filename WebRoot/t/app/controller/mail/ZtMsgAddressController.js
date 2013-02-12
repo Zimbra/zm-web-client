@@ -36,12 +36,7 @@ Ext.define('ZCS.controller.mail.ZtMsgAddressController', {
 			msgHeader: {
 				bubbleHold: 'doAddressMenu'
 			}
-		},
-
-		menuData: [
-			{label: 'Add to Contacts', action: '', listener: 'doAddToContacts'},
-			{label: 'New Message', action: '', listener: 'doNewMessage'}
-		],
+		}
 	},
 
 	doAddressMenu: function(element, msg, address) {
@@ -52,12 +47,15 @@ Ext.define('ZCS.controller.mail.ZtMsgAddressController', {
 			this.itemMenu.destroy();
 		}
 
-
 		this.itemMenu = Ext.create('ZCS.common.ZtMenu', {
-			referenceComponent: element
+			referenceComponent: element,
+			width: 180
 		});
 			
-		this.itemMenu.setMenuItems(this.getMenuData());
+		this.itemMenu.setMenuItems([
+			{label: 'Add to Contacts', action: '', listener: Ext.bind(this.doAddToContacts, this, [msg])},
+			{label: 'New Message', action: '', listener: Ext.bind(this.doNewMessage, this, [msg])}
+		]);
 
 		this.itemMenu.popup();
 	},
@@ -68,10 +66,10 @@ Ext.define('ZCS.controller.mail.ZtMsgAddressController', {
 		//TODO, determine how to add an address to contacts, should this pop up a dialog?
 	},
 
-	doNewMessage: function () {
-		var toAddress = this.address;
+	doNewMessage: function (msg) {
+		var toAddress = this.address,
+			messageObject = msg.getAddressObject('email', toAddress);
 
-
+		ZCS.app.getComposeController().showComposeForm([messageObject]);
 	}
-
 });

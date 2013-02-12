@@ -82,8 +82,8 @@ Ext.define('ZCS.view.mail.ZtMsgView', {
 	 */
 	toggleView: function() {
 		this.setExpanded(!this.getExpanded());
-		this.updateExpansion();
 		this.down('msgheader').render(this.getRecord());
+		this.updateExpansion();
 	},
 
 	/**

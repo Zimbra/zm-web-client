@@ -25,6 +25,7 @@ Ext.define('ZCS.model.ZtMenuItem', {
 	extend: 'Ext.data.Model',
 	config: {
 		fields: [
+			'id',
 			{ name: 'label', type: 'string' },      // user-visible text
 			{ name: 'action', type: 'string' },     // constant for the operation to perform
 			{ name: 'listener', type: 'auto' }      // function to run when the action is invoked

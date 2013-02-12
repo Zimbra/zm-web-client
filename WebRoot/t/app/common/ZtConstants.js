@@ -70,6 +70,7 @@ ZCS.constant.NEW_ITEM_ICON[ZCS.constant.APP_CONTACTS]   = 'plus';
 ZCS.constant.ITEM_CONVERSATION = 'conversation';
 ZCS.constant.ITEM_MESSAGE      = 'message';
 ZCS.constant.ITEM_CONTACT      = 'contact';
+ZCS.constant.ADDRESS_AUTOCOMPLETE = 'match';
 
 // App to which each item type belongs
 ZCS.constant.APP_FOR_TYPE = {};
@@ -82,6 +83,7 @@ ZCS.constant.CLASS_FOR_TYPE = {};
 ZCS.constant.CLASS_FOR_TYPE[ZCS.constant.ITEM_CONVERSATION]    = 'ZCS.model.mail.ZtConv';
 ZCS.constant.CLASS_FOR_TYPE[ZCS.constant.ITEM_MESSAGE]         = 'ZCS.model.mail.ZtMailMsg';
 ZCS.constant.CLASS_FOR_TYPE[ZCS.constant.ITEM_CONTACT]         = 'ZCS.model.contacts.ZtContact';
+ZCS.constant.CLASS_FOR_TYPE[ZCS.constant.ADDRESS_AUTOCOMPLETE] = 'ZCS.model.address.ZtAutoComplete';
 
 // Item type for model class
 ZCS.constant.TYPE_FOR_CLASS = ZCS.constant.getBackMap(ZCS.constant.CLASS_FOR_TYPE);
@@ -90,6 +92,7 @@ ZCS.constant.TYPE_FOR_CLASS = ZCS.constant.getBackMap(ZCS.constant.CLASS_FOR_TYP
 ZCS.constant.NODE_CONVERSATION  = 'c';
 ZCS.constant.NODE_MESSAGE       = 'm';
 ZCS.constant.NODE_CONTACT       = 'cn';
+ZCS.constant.NODE_MATCH         = 'match';
 
 // Order in which to handle notifications
 ZCS.constant.NODES = [
@@ -103,6 +106,7 @@ ZCS.constant.ITEM_NODE = {};
 ZCS.constant.ITEM_NODE[ZCS.constant.ITEM_CONVERSATION] = ZCS.constant.NODE_CONVERSATION;
 ZCS.constant.ITEM_NODE[ZCS.constant.ITEM_MESSAGE]      = ZCS.constant.NODE_MESSAGE;
 ZCS.constant.ITEM_NODE[ZCS.constant.ITEM_CONTACT]      = ZCS.constant.NODE_CONTACT;
+ZCS.constant.ITEM_NODE[ZCS.constant.ADDRESS_AUTOCOMPLETE]      = ZCS.constant.NODE_MATCH;
 
 // Item type based on JSON node name
 ZCS.constant.NODE_ITEM = ZCS.constant.getBackMap(ZCS.constant.ITEM_NODE);

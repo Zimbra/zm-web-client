@@ -21,27 +21,17 @@
 * will be filtered based on the text entered.  An autocomplete menu will
 * then appear.  If the user hits enter without selecting an option from the menu,
 * a bubble with exactly what they inputted will appear.  If the user selects
-* an item from the menu, the configured displayField from the model will 
+* an item from the menu, the configured displayField from the model will
 * be displayed in a bubble.
 */
 Ext.define('ZCS.view.ux.ZtBubbleDropdown', {
 	extend: 'ZCS.view.ux.ZtBubbleArea',
 	config: {
 		/**
-		* @cfg {boolean} 		    remoteFilter  Set this to true for the bubble dropdown to
-		*										  reload the menu store when a filtering is triggered.
+		* @cfg {boolean} 		    remoteFilter   Set this to true for the bubble dropdown to
+		*										   reload the menu store when a filtering is triggered.
 		*/
 		remoteFilter: false,
-
-		/**
-		 * @cfg {Function}			configureStore If remoteFilter is true, then provide this function
-		 *										   to configure the menuStore before it is loaded.  The
-		 *										   function will receieve two parameters, value and store.
-		 *										   The value is the text value used to filter, and the
-		 *										   store is the menuStore.
-		 *
-		 */
-		configureStore: null,
 
 		/**
 		 * @cfg {Ext.data.Store}    menuStore      The store which should be used to populate the dropdown.
@@ -52,19 +42,43 @@ Ext.define('ZCS.view.ux.ZtBubbleDropdown', {
 		/**
 		 * @cfg {Funtion} filterFunction The function to filter the auto complete results.
 		 *
-		 * @param {String} 			value		  The value currently in the input.
-		 * @param {Ext.data.Model}	record        The record to consider.
+		 * @param {String} 			value		   The value currently in the input.
+		 * @param {Ext.data.Model}	record         The record to consider.
 		 *
 		 * @return {boolean} 		true to include the record, false to filter it out.
 		 */
 		filterFunction: null,
-		
+
 		/**
 		 * @cfg {String}			dropdownDisplayField  The field which decides what piece of data to display in the menu
 		 *
 		 */
-		dropdownDisplayField: null
+		dropdownDisplayField: null,
+
+		/**
+		 * @cfg {String}			menuItemTpl    The tpl to use to format each item in the dropdown menu
+		 *
+		 */
+		menuItemTpl: null,
+
+		/**
+		 * @cfg {Number}			menuWidth      Controls the width of the dropdown menu.
+		 *
+		 */
+		menuWidth: 250,
+
+		maxResults: 5
 	},
+
+	/**
+	 * @template
+	 * If remoteFilter is true, then provide this function to configure the menuStore before it is loaded.
+	 *
+	 * @param {String}  	   value        The value is the text value used to filter, and the
+	 * @param {Ext.data.Store} store        The configured menuStore before it is loaded.
+	 *
+	 */
+	configureStore: null,
 
 	/**
 	 * If the drop down is currently being displayed, then the blur events or key presses may
@@ -77,16 +91,24 @@ Ext.define('ZCS.view.ux.ZtBubbleDropdown', {
 
 	/**
 	 * @private
-	 * 
+	 *
 	 * Retrieve menu items based on the current menu store.
 	 */
 	getMenuItems: function () {
 		var menuRecords = [],
-			me = this;
+			me = this,
+			label,
+			tpl = this.getMenuItemTpl() ? new Ext.XTemplate(this.getMenuItemTpl()) : null;
 
 		this.getMenuStore().each(function (record) {
+			if (tpl) {
+				label = tpl.apply(record.raw);
+			} else {
+				label = record.get(me.getDropdownDisplayField());
+			}
+
 			menuRecords.push({
-				label: record.get(me.getDropdownDisplayField()),
+				label: label,
 				listener: function () {
 					me.clearInput();
 					me.addBubble(record);
@@ -94,9 +116,10 @@ Ext.define('ZCS.view.ux.ZtBubbleDropdown', {
 					me.focusInput();
 				}
 			});
-		})
+		});
 
-		return menuRecords;
+		//Only return the number specified in the config and no more.
+		return Ext.Array.slice(menuRecords, 0, this.getMaxResults() - 1);
 	},
 
 	/**
@@ -111,7 +134,6 @@ Ext.define('ZCS.view.ux.ZtBubbleDropdown', {
 			menuItems = this.getMenuItems();
 			this.menu.setMenuItems(menuItems);
 			this.menu.popup('tc-bc?');
-			this.menu.adjustHeight();
 		} else {
 			this.menu.hide();
 		}
@@ -135,18 +157,21 @@ Ext.define('ZCS.view.ux.ZtBubbleDropdown', {
 		 * Setup the menu that will be used to display options after
 		 * the user inputs some search text.
 		 */
-		painted: function () {		
+		painted: function () {
 			this.menu = Ext.create('ZCS.common.ZtMenu', {
 				referenceComponent: this.getInput(),
-				modal: false
+				modal: true,
+				hideOnMaskTap: false,
+				maxHeight: 400,
+				width: this.getMenuWidth()
 			});
 
 			this.showMenu = Ext.Function.createBuffered(function (value) {
-				
+
 				if (this.getRemoteFilter()) {
 					this.configureStore(value, this.getMenuStore());
 
-					this.getMenuStore.load({
+					this.getMenuStore().load({
 						callback: this.loadMenuFromStore,
 						scope: this
 					});

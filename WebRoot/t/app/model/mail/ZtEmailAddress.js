@@ -40,6 +40,20 @@ Ext.define('ZCS.model.mail.ZtEmailAddress', {
 				name: node.p,
 				displayName: node.d
 			});
+		},
+		fromFullEmail: function(fullEmail) {
+			//Tested against these two formats:
+			//<admin@admin.com>
+			//"blah" <admin@admin.com>
+
+			var match = fullEmail.match(/"*([^"<]*)"*\s*<*([^>]*)>*/),
+				name = match[1],
+				email = match[2];
+
+			return Ext.create('ZCS.model.mail.ZtEmailAddress', {
+				email: email,
+				name: name
+			});
 		}
 	},
 

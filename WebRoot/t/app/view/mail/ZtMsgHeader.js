@@ -61,7 +61,7 @@ Ext.define('ZCS.view.mail.ZtMsgHeader', {
 				data.addrs[type.toLowerCase()] = Ext.Array.map(addrs, 
 					function (addr) {
 						var viewInfo = {
-							address: Ext.String.htmlEncode(addr.toString()),
+							address: Ext.String.htmlEncode(addr.get('email').toString()),
 							displayName: Ext.String.htmlEncode(addr.get('displayName') || addr.get('name'))
 						};
 

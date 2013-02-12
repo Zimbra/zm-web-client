@@ -149,6 +149,40 @@ Ext.define('ZCS.model.mail.ZtMailItem', {
 		return (addrs && addrs[type]) || [];
 	},
 
+
+	/**
+	 * Returns the ZtEmailAddress object that matches the parameterized field
+	 *
+	 * @param {String} email Email address
+	 *
+	 * @return {ZCS.model.mail.ZtEmailAddress}
+	 */
+	getAddressObject: function (field, fieldValue) {
+		var addrs = this.get('addresses'),
+			found = false,
+			to = addrs[ZCS.constant.TO],
+			cc = addrs[ZCS.constant.CC],
+			from = addrs[ZCS.constant.FROM],
+			sender = addrs[ZCS.constant.SENDER],
+			replyTo = addrs[ZCS.constant.REPLY_TO],
+			bcc = addrs[ZCS.constant.BCC];
+
+		Ext.Object.each(addrs, function (addrType, addrList) {
+			Ext.each(addrList, function (addr) {
+				if (addr.get(field) === fieldValue) {
+					found = addr;
+					return false;
+				}
+			});
+
+			if (found) {
+				return false;
+			}
+		});
+
+		return found;
+	},
+
 	/**
 	 * Returns the first address of the given type.
 	 *
