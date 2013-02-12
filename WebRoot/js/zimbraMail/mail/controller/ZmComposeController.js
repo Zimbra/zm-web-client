@@ -764,7 +764,9 @@ function(event) {
 
 ZmComposeController.prototype._switchIdentityOkCallback =
 function() {
-	this._currentDlg.popdown();
+    if(this._currentDlg) {
+	    this._currentDlg.popdown();
+    }
 	this._switchIdentity();
 };
 
