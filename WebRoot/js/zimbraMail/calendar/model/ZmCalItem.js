@@ -588,8 +588,19 @@ function() {
 			return false;
 		}
 	}
-
+   // TODO: Correct this method in order to return fasle for users with manager/admin rights
 	return (!this.isOrganizer() || (folder.link && folder.isReadOnly()));
+};
+
+/**
+ * Checks if the folder containing the item is read-only by the .
+ *
+ * @return	{Boolean}	<code>true</code> if the folder is read-only
+ */
+ZmCalItem.prototype.isFolderReadOnly =
+function() {
+	var folder = this.getFolder();
+    return (folder && folder.isReadOnly());
 };
 
 /*

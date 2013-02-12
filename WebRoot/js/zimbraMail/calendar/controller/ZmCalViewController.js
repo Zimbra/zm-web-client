@@ -3275,9 +3275,14 @@ function() {
 
 ZmCalViewController.prototype._enableActionMenuReplyOptions =
 function(appt, actionMenu) {
+
+    if (!(appt && actionMenu)) {
+        return;
+    }
 	var isOrganizer = appt.isOrganizer();
     var isExternalAccount = appCtxt.isExternalAccount();
-    var isSharedViewOnly = appt.isReadOnly() && appt.isShared();
+    var isFolderReadOnly = appt.isFolderReadOnly();
+    var isSharedViewOnly = isFolderReadOnly && appt.isShared();
 
 	// find the checked calendar for this appt
 	var calendar;
