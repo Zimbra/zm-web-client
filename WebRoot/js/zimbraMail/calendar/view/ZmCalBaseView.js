@@ -112,6 +112,39 @@ ZmCalBaseView._getColors = function(color) {
 	return { standard: { header: hs, body: bs }, deeper: { header: hd, body: bd } };
 };
 
+/**
+ * Gets the key map name.
+ *
+ * @return	{String}	the key map name
+ */
+ZmCalBaseView.prototype.getKeyMapName =
+    function() {
+        return DwtKeyMap.MAP_MENU;
+    };
+
+/**
+ * Handles the key action.
+ *
+ * @param	{constant}		actionCode		the action code
+ * @param	{Object}	ev		the event
+ * @see		ZmApp.ACTION_CODES_R
+ * @see		ZmKeyMap
+ * @see     DwtControl
+ */
+ZmCalBaseView.prototype.handleKeyAction =
+    function(actionCode, ev) {
+        switch (actionCode) {
+            //Gets the Esc key handle
+            case DwtKeyMap.CANCEL:
+                this.deselectAppt();
+                return true;
+
+            default:
+                return false;
+        }
+        return true;
+    };
+
 ZmCalBaseView._toColorsCss =
 function(object) {
 	var a = [ "background-color:",object.bgcolor,";" ];
@@ -514,12 +547,8 @@ function(clickedEl, ev) {
 	var type = this._getItemData(clickedElSet[0], "type");
 
 	if (ev.shiftKey && bContained) {
-        for (var i = 0; i < clickedElSet.length; i++) {
-		    this._selectedItems.remove(clickedElSet[i]);
-            clickedElSet[i].className = this._getStyle(type);
-        }
-		this._selEv.detail = DwtListView.ITEM_DESELECTED;
-		this._evtMgr.notifyListeners(DwtEvent.SELECTION, this._selEv);
+        //Deselect the current selected appointment
+        this.deselectAppt(clickedElSet);
 	} else if (!bContained) {
 		// clear out old left click selection(s)
 		for (i = 0; i < numSelectedItems; i++) {
@@ -1331,3 +1360,24 @@ ZmCalBaseView.prototype.setTimer=function(min){
 };
 
 ZmCalBaseView.prototype.updateTimeIndicator=function() { };
+
+/**
+ * De-selects a selected appointment
+ *
+ * @param   {array}  clickedAppts an array of appointments
+ */
+ZmCalBaseView.prototype.deselectAppt =
+function (clickedAppts) {
+    clickedAppts = clickedAppts || this._selectedItems.getArray();
+
+    if(clickedAppts.length > 0) {
+        var type = this._getItemData(this._getItemClickedSet(clickedAppts), "type");
+
+        for(var i = 0; i < clickedAppts.length; i++) {
+            clickedAppts[i].className = this._getStyle(type);
+            this._selectedItems.remove(clickedAppts[i]);
+        }
+        this._selEv.detail = DwtListView.ITEM_DESELECTED;
+        this._evtMgr.notifyListeners(DwtEvent.SELECTION, this._selEv);
+    }
+};
