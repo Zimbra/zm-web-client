@@ -255,25 +255,19 @@ function(snoozeSelectButton, menuSelectionListener, apptList) {
     snoozeSelectButton.setMenu(snoozeMenu, true);
 
     var appts = apptList.getArray();
-    var minStartDelta =  1;
+    var maxStartDelta = -Infinity; //It was called minStartDelta which was true if you think of the absolute value (as it is negative). But it's actually max.
 
     if (this._apptType == "task") {
         // Tasks are simpler: No 'before' times allowed, and all fixed times are allowed
-        minStartDelta = 1;
+        maxStartDelta = 0;
     } else {
         for (var i = 0; i < appts.length; i++) {
             var appt = appts[i];
             var startDelta = this._computeDelta(appt);
-            // Only limit the snooze menu with appts that have not already started/completed
-            if (startDelta < 0) {
-                // Limit the list of 'before' times by the appt that will appear the soonest in the future
-                if ((startDelta > minStartDelta) || (minStartDelta >= 0)) {
-                    minStartDelta = startDelta;
-                }
-                // Get the largest snooze period that can be used by any appt (without snoozing past its start)
-                startDelta = -startDelta;
-            }
+			maxStartDelta = Math.max(startDelta, maxStartDelta);
         }
+		//if maxStartDelta is >= 0, there was at least one appt that is already started, in which case for the aggregate "snooze" we do not show any "before" item
+		maxStartDelta = Math.min(maxStartDelta, 0); //don't get positive - we don't care about that later in the loop below. We want max to be 0.
     }
 
     var snoozeFormatter = [];
@@ -291,7 +285,7 @@ function(snoozeSelectButton, menuSelectionListener, apptList) {
     var addSeparator = false;
     var anyAdded = false;
     for (var i = 0; i < ZmReminderDialog.SNOOZE_MINUTES.length; i++) {
-        if (ZmReminderDialog.SNOOZE_MSEC[i] >= minStartDelta) {
+        if (ZmReminderDialog.SNOOZE_MSEC[i] >= maxStartDelta) {
             // Found a snooze period to display
             snoozeDisplayValue = ZmReminderDialog.SNOOZE_MINUTES[i];
             if (snoozeDisplayValue == 0) {
@@ -617,9 +611,22 @@ function(appt) {
 
 ZmReminderDialog.prototype._computeDelta =
 function(appt) {
-	return (appt.alarmData && appt.alarmData.length > 0)
-		? (appt.alarmData[0].alarmInstStart ? (new Date()).getTime() - appt.adjustMS(appt.alarmData[0].alarmInstStart, appt.tzo) : appt.getEndTime()  ? (new Date()).getTime() - appt.getEndTime() : null)
-		: ((new Date()).getTime() - appt.getStartTime());
+	//I refactored the big nested ternary operator (?:) to make it more readable and try to understand what's the logic here.
+	// After doing so, this doesn't make sense to me. But I have no idea if it should be this way on purpose, and that is the way it was with the ?:
+	// Basically if there is NO alarmData it uses the appt startTime, which makes sense. But if there IS alarmData but no alarmInstStart it uses the endTime? WHY? What about the startTime?
+	// I don't get it. Seems wrong.
+	var now = (new Date()).getTime();
+	if (!appt.alarmData || appt.alarmData.length === 0) {
+		return now - appt.getStartTime();
+	}
+	var alarmInstStart = appt.alarmData[0].alarmInstStart; //returned from the server in case i'm wondering
+	if (alarmInstStart) {
+		return now - appt.adjustMS(alarmInstStart, appt.tzo);
+	}
+	if (!appt.getEndTime()) {
+		return null;
+	}
+	return now - appt.getEndTime();
 };
 
 ZmReminderDialog.prototype._formatDeltaString =
