@@ -762,6 +762,7 @@ function(data) {
 
 	// display custom
 	for (var a in attrs) {
+		if (a === "notesHtml") { continue; }
 		itemListData.name = a;
 		itemListData.type = AjxStringUtil.capitalizeWords(AjxStringUtil.fromMixed(a));
 		html.push(ZmContactSplitView._showContactListItem(itemListData));
