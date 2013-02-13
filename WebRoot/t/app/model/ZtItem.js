@@ -56,7 +56,7 @@ Ext.define('ZCS.model.ZtItem', {
 
 	constructor: function(data, id) {
 		ZCS.cache.set((data && data.id) || id, this);
-		this.callParent(arguments);
+		return this.callParent(arguments);
 	},
 
 	/**
