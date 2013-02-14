@@ -502,7 +502,7 @@ function(defaultColumnSort) {
 		if (activeSortBy && ZmMailListView.SORTBY_HASH[activeSortBy]) {
 			defaultColumnSort = ZmMailListView.SORTBY_HASH[activeSortBy].field;
 		}
-		DwtListView.prototype.createHeaderHtml.call(this, defaultColumnSort);
+		DwtListView.prototype.createHeaderHtml.call(this, defaultColumnSort, this._isMultiColumn);
 
 		if (rpLoc == ZmSetting.RP_RIGHT) {
 			var td = document.getElementById(this._itemCountTextTdId);
@@ -1187,8 +1187,13 @@ function(columnItem) {
 
 ZmMailListView.prototype._getDefaultSortbyForCol =
 function(colHeader) {
-	// if not date field, sort asc by default
-	return (colHeader._sortable != ZmItem.F_DATE);
+	// if date, flag, attachment or size fields, sort desc by default - otherwise ascending.
+	var sortable = colHeader._sortable;
+	var desc = sortable === ZmItem.F_DATE
+			|| sortable === ZmItem.F_FLAG
+			|| sortable === ZmItem.F_ATTACHMENT
+			|| sortable === ZmItem.F_SIZE;
+	return !desc; //this method returns whether it's ascending (despite the confusing name which we might want to change).
 };
 
 //GROUP SUPPORT

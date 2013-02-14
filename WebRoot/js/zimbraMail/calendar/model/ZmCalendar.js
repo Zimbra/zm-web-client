@@ -169,21 +169,21 @@ function(what) {
 
 			// can't move items to folder they're already in; we're okay if
 			// we have one item from another folder
-			if (item.folderId) {
-				invalid = true;
-				for (var i = 0; i < items.length; i++) {
+            if (item && item.folderId) {
+                invalid = true;
+                for (var i = 0; i < items.length; i++) {
                     var folder = appCtxt.getById(items[i].folderId);
                     if(items[i].isReadOnly() && folder.owner != this.owner) {
                         invalid = true;
                         break;
                     }
-					if (item.viewMode == ZmCalItem.MODE_NEW || folder != this) {
-						invalid = false;
-						break;
-					}
+                    if (item.viewMode == ZmCalItem.MODE_NEW || folder != this) {
+                        invalid = false;
+                        break;
+                    }
 
-				}
-			}
+                }
+            }
 		}
 
 	}

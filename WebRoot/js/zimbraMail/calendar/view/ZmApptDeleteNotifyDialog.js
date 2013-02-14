@@ -110,13 +110,12 @@ function() {
 	var html = new Array();
 	var i = 0;
 
-	html[i++] = "<div style='width:300px' id='";
+	html[i++] = "<div style='width:300px;' id='";
     html[i++] = this._confirmMessageDivId;
     html[i++] = "'>";
 	html[i++] = this._confirmMsg;
-	html[i++] = "<br>";
-	html[i++] = "</div><p>";
-	html[i++] = "<table align=center border=0 width='300px'>";
+	html[i++] = "</div><div style='margin:1em;width:300px;'>";
+	html[i++] = "<table class='ZRadioButtonTable'>";
 	html[i++] = "<tr><td width=1%><input checked value='1' type='radio' id='";
 	html[i++] = this._defaultRadioId;
 	html[i++] = "' name='";
@@ -126,7 +125,7 @@ function() {
 	html[i++] = this._choiceLabel1;
 	html[i++] = "</label>";
 	html[i++] = "</td></tr>";
-	html[i++] = "<tr><td width=1% valign=top><input value='2' type='radio' id='";
+	html[i++] = "<tr><td width=1%><input value='2' type='radio' id='";
 	html[i++] = this._defaultRadioId + this._notifyChoiceName;
 	html[i++] = "' name='";
 	html[i++] = this._notifyChoiceName;
@@ -134,11 +133,11 @@ function() {
 	html[i++] = "<label for='" + this._defaultRadioId + this._notifyChoiceName + "'>"
 	html[i++] = this._choiceLabel2;
 	html[i++] = "</label>";
-    if (this._choice2WarningMsg) {
-        html[i++] = "<br><span style='font-style:italic'>" + this._choice2WarningMsg + "</span>";
-    }
 	html[i++] = "</td></tr>";
-	html[i++] = "</table>";
+    if (this._choice2WarningMsg) {
+        html[i++] = "<tr><td></td><td style='font-style:italic'>" + this._choice2WarningMsg + "</td></tr>";
+    }
+	html[i++] = "</table></div>";
 
 	return html.join("");
 };

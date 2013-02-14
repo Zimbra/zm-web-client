@@ -129,6 +129,9 @@ ZmZimbraMail = function(params) {
 ZmZimbraMail.prototype = new ZmController;
 ZmZimbraMail.prototype.constructor = ZmZimbraMail;
 
+ZmZimbraMail.prototype.isZmZimbraMail = true;
+ZmZimbraMail.prototype.toString = function() { return "ZmZimbraMail"; };
+
 // REVISIT: This is done so that we when we switch from being "beta"
 //          to production, we don't have to ensure that all of the
 //          translations are changed at the same time. We can simply
@@ -151,15 +154,6 @@ ZmZimbraMail.UI_NETWORK_DOWN	= "network_down";
 
 // Public methods
 
-/**
- * Returns a string representation of the object.
- * 
- * @return		{String}		a string representation of the object
- */
-ZmZimbraMail.prototype.toString =
-function() {
-	return "ZmZimbraMail";
-};
 
 /**
  * Sets up ZimbraMail, and then starts it by calling its constructor. It is assumed that the
@@ -230,12 +224,13 @@ function() {
 	ZmZimbraMail.setExitTimer(false);
 	ZmZimbraMail.sessionTimerInvoked = false;
 	window._zimbraMail = window.onload = window.onunload = window.onresize = window.document.onkeypress = null;
+	delete _zimbraMail;
 };
 
 ZmZimbraMail.closeChildWindows =
 function() {
 	
-	var childWinList = window._zimbraMail ? window._zimbraMail._childWinList : null;
+	var childWinList = window._zimbraMail && window._zimbraMail._childWinList;
 	if (childWinList) {
 		// close all child windows
 		for (var i = 0; i < childWinList.size(); i++) {
@@ -797,9 +792,9 @@ function(params, result) {
  */
 ZmZimbraMail.prototype.handleTaskComponents =
 function() {
-    var reminderAction = new AjxTimedAction(this, this.showTaskReminder);
-    var delay = appCtxt.isOffline ? 0 : ZmTasksApp.REMINDER_START_DELAY;
-    AjxTimedAction.scheduleAction(reminderAction, delay);
+	var reminderAction = new AjxTimedAction(this, this.showTaskReminder);
+	var delay = appCtxt.isOffline ? 0 : ZmTasksApp.REMINDER_START_DELAY;
+	AjxTimedAction.scheduleAction(reminderAction, delay);
 };
 
 /**
@@ -815,10 +810,10 @@ function() {
         AjxTimedAction.scheduleAction(miniCalAction, delay);
 	}
 
-    AjxDispatcher.require(["CalendarCore", "Calendar"]);
-    var reminderAction = new AjxTimedAction(this, this.showReminder);
-    var delay = appCtxt.isOffline ? 0 : ZmCalendarApp.REMINDER_START_DELAY;
-    AjxTimedAction.scheduleAction(reminderAction, delay);
+	AjxDispatcher.require(["ContactsCore", "MailCore", "CalendarCore", "Calendar"]);
+	var reminderAction = new AjxTimedAction(this, this.showReminder);
+	var delay = appCtxt.isOffline ? 0 : ZmCalendarApp.REMINDER_START_DELAY;
+	AjxTimedAction.scheduleAction(reminderAction, delay);
 };
 
 /**
@@ -2534,10 +2529,10 @@ function(login, username) {
 		quotaTemplateId = 'UsedLimited';
 		data.limit = AjxUtil.formatSize(data.quota, false, 1);
 		data.percent = Math.min(Math.round((data.usedQuota / data.quota) * 100), 100);
-		data.desc = AjxMessageFormat.format(ZmMsg.quotaDescLimited, [data.percent+'%', data.limit]);
+		data.desc = AjxMessageFormat.format(ZmMsg.usingDescLimited, [data.size, '(' + data.percent + '%)', data.limit]);
 	}
     else {
-		data.desc = AjxMessageFormat.format(ZmMsg.quotaDescUnlimited, [data.size]);
+		data.desc = AjxMessageFormat.format(ZmMsg.usingDescUnlimited, [data.size]);
 		quotaTemplateId = 'UsedUnlimited';
 	}
     this._usedQuotaField.getHtmlElement().innerHTML = AjxTemplate.expand('share.Quota#'+quotaTemplateId, data);
@@ -2665,13 +2660,13 @@ function(url) {
  * @private
  */
 ZmZimbraMail.helpLinkCallback =
-function() {
+function(helpurl) {
 	ZmZimbraMail.unloadHackCallback();
 
 	var ac = window.parentAppCtxt || window.appCtxt;
 	var url;
 	if (!ac.isOffline) {
-		try { url = skin.hints.helpButton.url; } catch (e) { /* ignore */ }
+		try { url = helpurl || skin.hints.helpButton.url; } catch (e) { /* ignore */ }
 		url = url || ac.get(ZmSetting.HELP_URI);
 		var sep = url.match(/\?/) ? "&" : "?";
 		url = [url, sep, "locid=", AjxEnv.DEFAULT_LOCALE].join("");

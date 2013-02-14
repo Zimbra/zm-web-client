@@ -27,7 +27,7 @@
 */
 ZmApptNotifyDialog = function(parent) {
 
-	DwtDialog.call(this, {parent:parent});
+	DwtDialog.call(this, {parent:parent, id:"SEND_NOTIFY_DIALOG"});
 
 	this.setTitle(ZmMsg.sendUpdateTitle);
 	this.setContent(this._setHtml());

@@ -1,0 +1,15 @@
+.compose-form {
+	.x-form-inner{
+		padding: 0px !important;
+	}
+	.x-field {
+		border-bottom: 1px solid $light-grey;
+		min-height: 1.8em;
+	}
+}
+
+.zcs-auto-complete-name, .zcs-auto-complete-email {
+	height: 30px;
+	@include ellipsis();
+	display: block;
+}
