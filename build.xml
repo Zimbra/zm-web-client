@@ -1532,4 +1532,42 @@ if (ext == null) ext = "";
     <target name="jquery">
         <copy todir='${js.dir}/ajax/3rdparty/jquery' file='${web.dir}/jquery/${jquery.version}/jquery.js' verbose='${sync.verbose}'/>
     </target>
+    
+    <!--Touch Client Targets-->
+
+    <property name="app.root" value="${zwc.basedir}/WebRoot/t"/>
+    <property name="sass.dir" value="${app.root}/resources/sass" />
+    <property name="compass.dir" value="${app.root}/compass"/>
+
+    <!-- Include jruby-complete jar -->
+    <path id="jruby.classpath">
+        <fileset dir="${app.root}/lib">
+            <include name="jruby*.jar"/>
+        </fileset>
+    </path>
+
+    <!--Compass compilation-->
+    <target name='compile.sass'>
+        <java classname="org.jruby.Main" fork="true" failonerror="true"
+              classpathref="jruby.classpath">
+            <arg line="${compass.dir}/compile.rb ${compass.dir} compile ${sass.dir}"/>
+        </java>
+    </target>
+
+    <!--Builds all the dependencies and deploys the touch client-->
+    <target name='deploy-touch' depends='compile.sass,deploy'/>
+
+    <!--Sync touch client specific source files-->
+    <target name='sync-touch'>
+        <property name='deploy.server' value='jetty'/>
+        <property name='deploy.dir' value='/opt/zimbra/${deploy.server}/webapps'/>
+        <property name='webapp.dir' value='${deploy.dir}/zimbra'/>
+
+        <fileset id="touch.fileset" dir="${app.root}" casesensitive="yes" excludes="touch/**,lib/**,compass/**"/>
+
+        <copy todir='${webapp.dir}/t' verbose='true'>
+            <fileset refid="touch.fileset"/>
+        </copy>
+    </target>
+
 </project>

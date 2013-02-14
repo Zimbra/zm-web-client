@@ -1,4 +1,4 @@
-@import 'sencha-touch/default/all';
+@import '../../touch/resources/themes/stylesheets/sencha-touch/default/all';
 
 // You may remove any of the following modules that you
 // do not use in order to create a smaller css file.
@@ -33,3 +33,4 @@
 @include pictos-iconmask('list');
 @include pictos-iconmask('replytoall');
 @include pictos-iconmask('eject');
+
