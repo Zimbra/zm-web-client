@@ -2529,10 +2529,10 @@ function(login, username) {
 		quotaTemplateId = 'UsedLimited';
 		data.limit = AjxUtil.formatSize(data.quota, false, 1);
 		data.percent = Math.min(Math.round((data.usedQuota / data.quota) * 100), 100);
-		data.desc = AjxMessageFormat.format(ZmMsg.quotaDescLimited, [data.percent+'%', data.limit]);
+		data.desc = AjxMessageFormat.format(ZmMsg.usingDescLimited, [data.size, '(' + data.percent + '%)', data.limit]);
 	}
     else {
-		data.desc = AjxMessageFormat.format(ZmMsg.quotaDescUnlimited, [data.size]);
+		data.desc = AjxMessageFormat.format(ZmMsg.usingDescUnlimited, [data.size]);
 		quotaTemplateId = 'UsedUnlimited';
 	}
     this._usedQuotaField.getHtmlElement().innerHTML = AjxTemplate.expand('share.Quota#'+quotaTemplateId, data);
