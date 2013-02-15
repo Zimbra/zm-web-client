@@ -196,20 +196,21 @@ function(actionCode, ev) {
 			return DwtListView.prototype.handleKeyAction.apply(mlv, arguments);
 
 		// these are for quick reply
-		case ZmKeyMap.CANCEL:
-			var itemView = this.getItemView();
-			if (itemView && itemView._cancelListener) {
-				itemView._cancelListener();
-			}
-			break;
-		
 		case ZmKeyMap.SEND:
 			var itemView = this.getItemView();
 			if (itemView && itemView._sendListener) {
 				itemView._sendListener();
 			}
 			break;
-			
+
+		// do this last since we want CANCEL to bubble up if not handled
+		case ZmKeyMap.CANCEL:
+			var itemView = this.getItemView();
+			if (itemView && itemView._cancelListener && itemView._replyView && itemView._replyView.getVisible()) {
+				itemView._cancelListener();
+				break;
+			}
+
 		default:
 			return ZmDoublePaneController.prototype.handleKeyAction.apply(this, arguments);
 	}

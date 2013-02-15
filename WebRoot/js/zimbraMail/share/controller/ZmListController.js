@@ -260,6 +260,14 @@ function(actionCode, ev) {
 			}
 			break;
 
+		// Esc pops search results tab
+		case ZmKeyMap.CANCEL:
+			var ctlr = this.isSearchResults && this.searchResultsController;
+			if (ctlr) {
+				ctlr._closeListener();
+			}
+			break;
+
 		default:
 			return ZmBaseController.prototype.handleKeyAction.apply(this, arguments);
 	}
