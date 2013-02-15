@@ -1541,7 +1541,7 @@ if (ext == null) ext = "";
 
     <!-- Include jruby-complete jar -->
     <path id="jruby.classpath">
-        <fileset dir="${app.root}/lib">
+        <fileset dir="${common.dir}/jars-internal/jars">
             <include name="jruby*.jar"/>
         </fileset>
     </path>
