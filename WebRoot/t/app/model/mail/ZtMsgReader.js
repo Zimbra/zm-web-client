@@ -28,11 +28,20 @@ Ext.define('ZCS.model.mail.ZtMsgReader', {
 
 	alias: 'reader.msgreader',
 
+	// SendMsgResponse hands us back empty msg object, no need to process it
+	getRoot: function(data, nodeName) {
+		return (data.soapMethod === 'SendMsg') ? null : this.callParent(arguments);
+	},
+
 	/**
 	 * Override so we can figure out which message will be the last one displayed, so we know not
 	 * to hide its quoted content.
 	 */
 	getRecords: function(root) {
+
+		if (!root) {
+			return [];
+		}
 
 		var records = [],
 			lastIndex = root.length - 1,

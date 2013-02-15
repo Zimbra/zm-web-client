@@ -36,7 +36,8 @@ Ext.define('ZCS.model.mail.ZtMailMsg', {
 			{ name: 'folderId', type: 'string' },
 			{ name: 'convId', type: 'string' },
 
-			// internal (via parsing)
+			// internal (via parsing), or for composed msgs
+			{ name: 'content', type: 'string' },
 			{ name: 'from', type: 'string' },
 			{ name: 'to', type: 'auto' },
 			{ name: 'cc', type: 'auto' },

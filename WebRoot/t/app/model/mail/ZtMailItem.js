@@ -56,6 +56,10 @@ Ext.define('ZCS.model.mail.ZtMailItem', {
 		 */
 		getDateString: function(date, nowMs) {
 
+			if (date == null) {
+				return '';
+			}
+
 			var nowMs = nowMs || Ext.Date.now(),
 				then = new Date(date),
 				thenMs = then.getTime(),
