@@ -27,7 +27,6 @@ Ext.define('ZCS.view.mail.ZtMsgHeader', {
 	xtype: 'msgheader',
 
 	config: {
-		padding: 5,
 		cls: 'zcs-msg-header',
 		msg: null,
 		listeners: {

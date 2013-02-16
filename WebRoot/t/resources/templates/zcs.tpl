@@ -9,53 +9,111 @@
 # not is an itemTpl.
 
 <template id='ConvListItem'>
-	<div style='display:inline-block; width=20'>
-		<img src='/t/resources/icons/<tpl if='isUnread'>unread.png<tpl else>read.png</tpl>' />
+	<div class='zcs-mail-list'>
+		<tpl if='isInvite'>
+		<div class='zcs-mail-invitation'>
+			<img src='/t/resources/icons/invitation<tpl if='isUnread'>_unread</tpl>.png' />
+		</div>
+		<tpl else>
+		<div class='zcs-mail-readState'>
+			<img src='/t/resources/icons/<tpl if='isUnread'>un</tpl>read.png' />
+		</div>
+		</tpl>
+		<div class='zcs-mail-senders<tpl if='isUnread'>-unread</tpl>'>
+			{senders}
+			<tpl if='numMsgs &gt; 1'><span class='zcs-numMsgs'>{numMsgs}</span></tpl>
+		</div>
+		<div class='zcs-mail-date'>{dateStr}</div>
+		<tpl if='hasAttachment'><div class='zcs-mail-attachment'>
+			<img src='/t/resources/icons/attachment.png' /></div></tpl>
+		<div class='zcs-mail-subject<tpl if='isUnread'>-unread</tpl>'>{subject}</div>
+		<tpl if='isFlagged'><div class='zcs-mail-flag'>
+			<img src='/t/resources/icons/flagged.png' /></div></tpl>
+		<div class='zcs-mail-fragment'>{fragment}</div>
 	</div>
-	<tpl if='isUnread'>
-		<span style='font-weight:bold'>{senders}</span>
-	<tpl else>
-		<span>{senders}</span>
-	</tpl>
-	<span class='zcs-mail-date'>{dateStr}</span>
-	<div>{subject:ellipsis(35, true)}
-	<tpl if='numMsgs &gt; 1'>({numMsgs})</tpl></div>
-	<div class='zcs-fragment'>{fragment:ellipsis(80, true)}</div>
 </template>
 
+# TODO: remove last comma after To/Cc list.
 <template id='MsgHeader'>
 	<tpl>
-		<tpl if='addrs.from'>
-			<div>From: 
-				<tpl for='addrs.from'>
-					<span class='vm-area-bubble' address='{address}'>{displayName}</span>
+		<div class='zcs-mail-msgHdr'>
+			<div class='zcs-msgHdr-person'>
+				<img src='/t/resources/icons/person.png' />
+			</div> 
+			<tpl if='addrs.from'>
+				<div class='zcs-msgHdr-fromBubble'>
+					<tpl for='addrs.from'>
+						<span class='vm-area-bubble' address='{address}'>{displayName}</span>
+					</tpl>
+				</div>
+			</tpl>
+			<div class='zcs-msgHdr-date'>{dateStr}</div>
+			<div class='zcs-msgHdr-to'>
+				<span>to</span>
+				<tpl if='addrs.to'>
+					<tpl for='addrs.to'>
+						<span>{displayName},</span>
+					</tpl>
 				</tpl>
-				<span class='zcs-mail-date'>{dateStr}</span>
+				<tpl if='addrs.cc'>
+					<tpl for='addrs.cc'>
+						<span>{displayName},</span>
+					</tpl>
+				</tpl>
 			</div>
-		</tpl>
-		<div class='zcs-fragment'>{fragment}</div>
+			<div class='zcs-msgHdr-link'>Details</div>
+		</div>
 	</tpl>
 </template>
+
+<template id='CollapsedMsgHeader'>
+	<tpl>
+		<div class='zcs-mail-msgHdr'>
+			<div class='zcs-msgHdr-person'>
+				<img src='/t/resources/icons/person.png' />
+			</div>
+			<tpl if='addrs.from'>
+			<div class='zcs-msgHdr-fromBubble'>
+				<span class='vm-area-bubble' address='{address}'>{displayName}</span>
+			</div>
+			<div class='zcs-msgHdr-date'>{dateStr}</div>
+			<div class='zcs-colMsgHdr-fragment'>{fragment}</div>
+		</div>
+	</tpl>
+</template>
+
+# TODO: Put OBO display into zcs-msgHdr-from element
 
 <template id='ExpandedMsgHeader'>
 	<tpl>
-		<tpl if='addrs.from'>
-			<div>From: 
+		<div class='zcs-mail-msgHdr'>
+			<div class='zcs-msgHdr-person'>
+				<img src='/t/resources/icons/person.png' />
+			</div>  
+			<tpl if='addrs.from'>
+				<div class='zcs-msgHdr-fromBubble'>
+					<tpl for='addrs.from'>
+						<span class='vm-area-bubble' address='{address}'>{displayName}</span>
+					</tpl>
+				</div>
 				<tpl for='addrs.from'>
-					<span address='{address}'>{displayName}</span>
+					<div class='zcs-msgHdr-from'>from {address}</div>
 				</tpl>
-				<span class='zcs-mail-date'>{dateStr}</span>
-			</div>
-		</tpl>
+			</tpl>
+			<div class='zcs-msgHdr-date'>{dateStr}</div>
+			<div class='zcs-msgHdr-link'>Hide</div>
+		</div>
 		<tpl if='addrs.to'>
-			<div>To: 
+			<div class='zcs-mail-expMsgHdr'>
+				<div class='zcs-msgHdr-label'>To</div>
 				<tpl for='addrs.to'>
 					<span class='vm-area-bubble' address='{address}'>{displayName}</span>
 				</tpl>
 			</div>
 		</tpl>
 		<tpl if='addrs.cc'>
-			<div>Cc:
+			<div class='zcs-mail-expMsgHdr'>
+				<div class='zcs-msgHdr-label'>Cc</div>
 				<tpl for='addrs.cc'>
 					<span class='vm-area-bubble' address='{address}'>{displayName}</span>
 				</tpl>

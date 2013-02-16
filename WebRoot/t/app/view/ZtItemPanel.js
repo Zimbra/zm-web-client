@@ -32,7 +32,6 @@ Ext.define('ZCS.view.ZtItemPanel', {
 
 	config: {
 		layout: 'fit',
-		style: 'border: solid blue 1px;',
 		app: null
 	},
 

@@ -33,8 +33,7 @@ Ext.define('ZCS.view.ZtOverview', {
 
 	config: {
 		layout: 'fit',
-		style:  'border: solid blue 1px;',
-
+		style: 'border-right: 1px solid #303030;',
 		app: null,
 		title: null
 	},

@@ -1,11 +1,220 @@
+/* BEGIN COMMON */
+
 .zcs-fragment {
 	font-size: 0.9em;
-	color: gray;
+	@include opacity(.6);
+}
+
+.zcs-date {
+	font-size: 0.9em;
+	text-align: right;
+	white-space: nowrap;
+}
+
+/* END COMMON */
+
+/* BEGIN CONV LIST */
+
+$zcs-mail-indent: 22px;
+$zcs-mail-topline1: .1em;
+$zcs-mail-topline2: 1.8em;
+$zcs-mail-topline3: 3.5em;
+
+.zcs-mail-list {
+	min-height: 5.75em;
+	margin: -0.65em -0.8em; /* reverses .x-list-item-body */
+	overflow: hidden; /* necessary? */
+	position: relative;
+}
+
+.zcs-mail-list-item {
+	position: absolute;
+}
+
+.zcs-mail-list-item-icon {
+	@extend .zcs-mail-list-item;
+	height: 16px;
+	margin-top: .4em;
+	overflow: hidden;
+	width: 16px;
+}
+
+.zcs-mail-readState {
+	@extend .zcs-mail-list-item-icon;
+	left: .25em;
+	top: $zcs-mail-topline1;
+}
+
+.zcs-mail-invitation {
+	@extend .zcs-mail-readState;
+}
+
+.zcs-mail-senders {
+	@extend .zcs-mail-list-item;
+	font-size: 1.2em;
+	left: $zcs-mail-indent;
+	overflow:hidden;
+	right: 3em;
+	top: $zcs-mail-topline1;
+	white-space: nowrap;
+}
+
+.zcs-mail-senders-unread {
+	@extend .zcs-mail-senders;
+	font-weight:bold;
+}
+
+.zcs-numMsgs {
+	@include border-radius(1.5em,1.5em);
+	background-color: #8E8E8E;
+	color: $light-grey;
+	display:inline-block;
+	font-size: .7em;
+	padding: 0 .39em 0 .38em;
+	vertical-align: text-bottom;
 }
 
 .zcs-mail-date {
-	float: right;
+	@extend .zcs-mail-list-item;
+	@extend .zcs-date;
+	right: .5em;
+	top: .4em;
+	white-space: nowrap;
 }
+
+.zcs-mail-attachment {
+	@extend .zcs-mail-list-item-icon;
+	left: .25em;
+	top: $zcs-mail-topline2;
+}
+
+.zcs-mail-subject {
+	@extend .zcs-mail-list-item;
+	font-size: 1em;
+	left: $zcs-mail-indent;
+	overflow:hidden;
+	right: .5em;
+	top: $zcs-mail-topline2;
+	white-space: nowrap;
+}
+
+.zcs-mail-subject-unread {
+	@extend .zcs-mail-subject;
+	font-weight:bold;
+}
+
+.zcs-mail-flag {
+	@extend .zcs-mail-list-item-icon;
+	left: .25em;
+	top: $zcs-mail-topline3;
+}
+
+.zcs-mail-fragment {
+	@extend .zcs-mail-list-item;
+	@extend .zcs-fragment;
+	bottom: .2em;
+	left: $zcs-mail-indent;
+	line-height: 1.3em;
+	overflow: hidden;
+	right: .25em;
+	top: $zcs-mail-topline3;
+}
+
+/* END CONV LIST */
+
+/* BEGIN MSG HEADER */
+
+$msgHdrTextSize: 0.9em;
+$msgHdrTextIndent: 46px;
+$msgHdrLabelIndent: 41px;
+$msgHdrTopOffset: 5px;
+$msgHdrLeftOffset: 5px;
+$msgHdrRightOffset: 10px;
+$msgHdrTopOffset2: 2.3em;
+
+.zcs-mail-msgHdr {
+	min-height: 46px;
+	position: relative;
+}
+
+.zcs-msgHdr-element {
+	position: absolute;
+}
+
+.zcs-msgHdr-person {
+	@extend .zcs-msgHdr-element;
+	height: 36px;
+	left: $msgHdrLeftOffset;
+	top: $msgHdrTopOffset;
+	width: 36px;
+}
+
+.zcs-msgHdr-fromBubble {
+	@extend .zcs-msgHdr-element;
+	left: $msgHdrTextIndent;
+	top: $msgHdrTopOffset;
+}
+
+.zcs-msgHdr-from {
+	@extend .zcs-msgHdr-element;
+	font-size: $msgHdrTextSize;
+	left: $msgHdrTextIndent;
+	overflow: hidden;
+	top: $msgHdrTopOffset2;
+	white-space: nowrap;
+}
+
+.zcs-colMsgHdr-fragment {
+	@extend .zcs-msgHdr-element;
+	@extend .zcs-fragment;
+	left: $msgHdrTextIndent;
+	overflow: hidden;
+	right: $msgHdrRightOffset;
+	top: $msgHdrTopOffset2;
+	white-space: nowrap;
+}
+
+.zcs-msgHdr-date {
+	@extend .zcs-msgHdr-element;
+	@extend .zcs-date;
+	top: $msgHdrTopOffset;
+	right: $msgHdrRightOffset;
+}
+
+.zcs-msgHdr-to {
+	@extend .zcs-msgHdr-element;
+	font-size: $msgHdrTextSize;
+	left: $msgHdrTextIndent;
+	overflow: hidden;
+	right: $msgHdrRightOffset;
+	top: $msgHdrTopOffset2;
+	white-space: nowrap;
+}
+
+.zcs-msgHdr-link {
+	@extend .zcs-msgHdr-element;
+	color: #336699;
+	font-size: $msgHdrTextSize;
+	text-decoration:underline;
+	top: $msgHdrTopOffset2;
+	right: $msgHdrRightOffset;
+}
+
+.zcs-msgHdr-label {
+	display: inline-block;
+	font-size: $msgHdrTextSize;
+	text-align: right;
+	width: $msgHdrLabelIndent;
+	@include opacity(.75);
+}
+
+.zcs-mail-expMsgHdr {
+	margin: .15em 0;
+}
+
+/* END MSG HEADER */
+
+/* BEGIN MSG FOOTER */
 
 .zcs-msg-footer {
 	background-image: none;
@@ -13,8 +222,11 @@
 	border-style: none !important;
 }
 
+
 /* Work around Sencha bug TOUCH-3894, where a 46-pixel empty DIV gets added between msg body and footer
    http://www.sencha.com/forum/showthread.php?253388-List-with-useComponents-true-dosen-t-fire-the-itemtap-event */
 .zcs-msgview .x-list-item-body {
 	display: none;
 }
+
+/* END MSG FOOTER*/

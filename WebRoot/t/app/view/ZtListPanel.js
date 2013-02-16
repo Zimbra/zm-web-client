@@ -37,8 +37,7 @@ Ext.define('ZCS.view.ZtListPanel', {
 
 	config: {
 		layout: 'fit',
-		style:  'border: solid blue 1px;',
-
+		style: 'border-right: 1px solid #303030;',
 		app: null,
 		newButtonIcon: null,
 		storeName: null
@@ -83,7 +82,7 @@ Ext.define('ZCS.view.ZtListPanel', {
 				{
 					xtype: 'searchfield',
 					name: 'searchField',
-					width: '95%',
+					style: 'width:95%;',
 					listeners: {
 						keyup: function(fld, ev) {
 							var keyCode = ev.browserEvent.keyCode;

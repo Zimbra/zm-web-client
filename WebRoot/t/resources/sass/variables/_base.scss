@@ -1,16 +1,16 @@
 
 $light-grey: #E3E3E3;
 $medium-grey: #C3C3C3;
-$dark-grey: #3f3f3f;	 
+$dark-grey: #3F3F3F;	 
 $white: #FFF;
 
 $default-border-color: $medium-grey;
 $default-border: 1px solid $default-border-color;
-$default-border-disabled: 1px solid #E0E0E0;
+$default-border-disabled: 1px solid $light-grey;
 
-$default-readonly-color: #f0f0f0;
+$default-readonly-color: #F0F0F0;
 
 $default-textarea-radius: 3px;
 
 //Form overrides
-$form-label-background-color: #fff;
+$form-label-background-color: $white;
