@@ -72,7 +72,9 @@ Ext.define('ZCS.controller.ZtListController', {
 	launch: function () {
 		Ext.Logger.verbose('STARTUP: list ctlr launch - ' + ZCS.util.getClassName(this));
 		this.callParent();
-		this.getStore().load();
+		this.getStore().load({
+			callback: this.storeLoaded.bind(this, null)
+		});
 	},
 
 	/**
@@ -148,23 +150,33 @@ Ext.define('ZCS.controller.ZtListController', {
 
 		this.getStore().load({
 			query: query,
-
-			// After the search has run, remember it as the one backing the current list,
-			// and set the title if it was a folder, saved search, or tag that got tapped.
-			callback: function(records, operation, success) {
-				if (query && success) {
-					var search = Ext.create('ZCS.common.ZtSearch', {
-						query: query
-					});
-					ZCS.session.setSetting(ZCS.constant.SETTING_CUR_SEARCH, search);
-					if (ZCS.session.getSetting(ZCS.constant.SETTING_SHOW_SEARCH)) {
-						ZCS.session.getCurrentSearchField().setValue(query);
-					}
-					this.updateTitlebar();
-				}
-			},
-			scope: this
+			callback: this.storeLoaded.bind(this, query)
 		});
+	},
+
+	/**
+	 * After the search has run, remember it as the one backing the current list,
+	 * and set the title in the top toolbar.
+	 *
+	 * @param {string}      query       search query that produced these results
+	 * @param {array}       records
+	 * @param {Operation}   operation
+	 * @param {boolean}     success
+	 */
+	storeLoaded: function(query, records, operation, success) {
+
+		query = query || operation.config.query;
+
+		if (query && success) {
+			var search = Ext.create('ZCS.common.ZtSearch', {
+				query: query
+			});
+			ZCS.session.setSetting(ZCS.constant.SETTING_CUR_SEARCH, search);
+			if (ZCS.session.getSetting(ZCS.constant.SETTING_SHOW_SEARCH)) {
+				ZCS.session.getCurrentSearchField().setValue(query);
+			}
+			this.updateTitlebar();
+		}
 	},
 
 	/**

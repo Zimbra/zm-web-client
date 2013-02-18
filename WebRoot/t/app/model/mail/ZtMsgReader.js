@@ -60,12 +60,14 @@ Ext.define('ZCS.model.mail.ZtMsgReader', {
 		// Process each msg from JSON to data
 		for (i = 0; i < ln; i++) {
 			node = root[i];
-			records.push({
-				clientId: null,
-				id: node.id,
-				data: this.getDataFromNode(node, i === lastIndex),
-				node: node
-			});
+			if (node.l && !ZCS.constant.CONV_HIDE[node.l]) {
+				records.push({
+					clientId: null,
+					id: node.id,
+					data: this.getDataFromNode(node, i === lastIndex),
+					node: node
+				});
+			}
 		}
 
 		return records;
