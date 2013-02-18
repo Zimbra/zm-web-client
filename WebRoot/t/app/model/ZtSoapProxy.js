@@ -93,15 +93,6 @@ Ext.define('ZCS.model.ZtSoapProxy', {
 		var query = operation && operation.config && operation.config.query,
 			search;
 
-		if (query && success) {
-			search = Ext.create('ZCS.common.ZtSearch', {
-				query: query
-			});
-			ZCS.session.setSetting(ZCS.constant.SETTING_CUR_SEARCH, search);
-			if (ZCS.session.getSetting(ZCS.constant.SETTING_SHOW_SEARCH)) {
-				ZCS.session.getCurrentSearchField().setValue(query);
-			}
-		}
 		this.callParent(arguments);
 
 		this.processHeader(response.soapHeader);

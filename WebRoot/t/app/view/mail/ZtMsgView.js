@@ -45,13 +45,12 @@ Ext.define('ZCS.view.mail.ZtMsgView', {
 			}
 		],
 
-		// Custom properties
-		expanded: false,
+		msg: null,          // ZtMailMsg underlying this view
+		expanded: false,    // true if this view is expanded (shows header, body, footer)
 
 		listeners: {
 			updatedata: function(msgView, msgData) {
 				if (msgData) {
-
 					Ext.Logger.info('updatedata for msg ' + msgData.id);
 					var msg = ZCS.cache.get(msgData.id);
 					if (msg) {
@@ -59,10 +58,11 @@ Ext.define('ZCS.view.mail.ZtMsgView', {
 							return;
 						}
 						// Note: partial update on msg load results in double-render, so do whole thing
-						this.setExpanded(msgData.isLoaded);
+						this.setMsg(msg);
+						this.setExpanded(!!msgData.isLoaded);
 						msgView.renderHeader();
 						msgView.renderBody(msg.get('isLast'));
-						this.updateExpansion(true);
+						this.updateExpansion();
 					}
 				}
 			}
@@ -70,11 +70,11 @@ Ext.define('ZCS.view.mail.ZtMsgView', {
 	},
 
 	renderHeader: function() {
-		this.down('msgheader').render(this.getRecord());
+		this.down('msgheader').render(this.getMsg());
 	},
 
 	renderBody: function(isLast) {
-		this.down('msgbody').render(this.getRecord(), isLast);
+		this.down('msgbody').render(this.getMsg(), isLast);
 	},
 
 	/**
@@ -82,8 +82,8 @@ Ext.define('ZCS.view.mail.ZtMsgView', {
 	 */
 	toggleView: function() {
 		this.setExpanded(!this.getExpanded());
-		this.down('msgheader').render(this.getRecord());
 		this.updateExpansion();
+		this.down('msgheader').render(this.getMsg());
 	},
 
 	/**
@@ -98,7 +98,8 @@ Ext.define('ZCS.view.mail.ZtMsgView', {
 		if (this.getExpanded()) {
 			this.down('msgbody').show();
 			this.down('msgfooter').show();
-		} else {
+		}
+		else {
 			this.down('msgbody').hide();
 			this.down('msgfooter').hide();
 		}
@@ -106,7 +107,7 @@ Ext.define('ZCS.view.mail.ZtMsgView', {
 		//Only recompute heights if this function has been called without parameters
 		if (!doNotRecomputeHeights) {
 			var listRef = this.up('.list');
-			//Let the list know this item got updated.
+			// Let the list know this item got updated.
 			listRef.updatedItems.push(this);
 			listRef.updateItemHeights();
 			listRef.refreshScroller(listRef.getScrollable().getScroller());

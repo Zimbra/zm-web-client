@@ -30,16 +30,21 @@ Ext.define('ZCS.store.mail.ZtMsgStore', {
 			// add the msgs that were just loaded to their owning conv
 			refresh: function(me, records, eOpts) {
 
+				if (!records || (records.getCount() === 0)) {
+					return;
+				}
+
 				var conv = ZCS.app.getConvController().getItem(),
-					convId = conv.getId(),
+					convId = conv && conv.getId(),
 					messages = [];
 
 				records.each(function(msg) {
-					if (msg.get('convId') === convId) {
+					var cid = msg.get('convId');
+					if (cid === convId) {
 						messages.push(msg);
 					}
-					else {
-						Ext.Logger.error('conv ID ' + msg.get('convId') + ' in msg does not match current conv ID ' + convId);
+					else if (cid && convId) {
+						Ext.Logger.error('conv ID ' + cid + ' in msg does not match current conv ID ' + convId);
 					}
 				}, this);
 

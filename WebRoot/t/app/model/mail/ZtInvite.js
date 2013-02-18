@@ -14,28 +14,18 @@
  */
 
 /**
- * Base class for a List view of items. Tapping an item displays it in the item panel.
+ * This class represents an invite within the context of a mail message.
  *
  * @author Conrad Damon <cdamon@zimbra.com>
  */
-Ext.define('ZCS.view.ZtListView', {
+Ext.define('ZCS.model.mail.ZtInvite', {
 
-	extend: 'Ext.dataview.List',
+	extend: 'Ext.data.Model',
 
 	config: {
-		scrollable : {
-			direction: 'vertical',
-			slotSnapSize : {
-				y: 50
-			}
-		},
-		listeners: {
-			select: function(view, record) {
-				this.fireEvent('showItem', view, record);
-			},
-			refresh: function() {
-				this.deselect(this.getSelection());
-			}
-		}
+
+		fields: [
+			{ name: '', type: 'string' }
+		]
 	}
 });

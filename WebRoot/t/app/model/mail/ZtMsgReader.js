@@ -44,26 +44,29 @@ Ext.define('ZCS.model.mail.ZtMsgReader', {
 		}
 
 		var records = [],
-			lastIndex = root.length - 1,
-			idx = 0;
+			ln = root.length, i, node,
+			lastIndex = ln - 1;
 
-		// Invert the list and find the first displayable (non-Trash, non-Junk) message
-		Ext.each(root.reverse(), function(node, index) {
+		// Find the last displayable (non-Trash, non-Junk) message (which will not
+		// have quoted content hidden when it is displayed)
+		for (i = lastIndex; i >= 0; i--) {
+			node = root[i];
 			if (node.l && !ZCS.constant.CONV_HIDE[node.l]) {
-				idx = index;
-				return false;
+				lastIndex = i;
+				break;
 			}
-		}, this);
-		lastIndex = lastIndex - idx;
+		}
 
-		Ext.each(root, function(node, index) {
+		// Process each msg from JSON to data
+		for (i = 0; i < ln; i++) {
+			node = root[i];
 			records.push({
 				clientId: null,
 				id: node.id,
-				data: this.getDataFromNode(node, index === lastIndex),
+				data: this.getDataFromNode(node, i === lastIndex),
 				node: node
 			});
-		}, this);
+		}
 
 		return records;
 	},

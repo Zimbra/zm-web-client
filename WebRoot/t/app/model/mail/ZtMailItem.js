@@ -34,7 +34,7 @@ Ext.define('ZCS.model.mail.ZtMailItem', {
 			{ name: 'dateStr', type: 'string' },
 
 			// flags
-			{ name: 'hasAttach', type: 'boolean' },
+			{ name: 'hasAttachment', type: 'boolean' },
 			{ name: 'isFlagged', type: 'boolean' },
 			{ name: 'isForwarded', type: 'boolean' },
 			{ name: 'isDraft', type: 'boolean' },

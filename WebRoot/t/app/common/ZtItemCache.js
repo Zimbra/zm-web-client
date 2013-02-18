@@ -66,12 +66,14 @@ Ext.define('ZCS.common.ZtItemCache', {
 			cache = this._cache[altKey] = {};
 		}
 
+/*
 		if (this.get(key, altKey) === item) {
 			Ext.Logger.warn('Setting item in cache that is already there. Key: ' + key);
 		}
 		else if (this.get(key, altKey)) {
 			Ext.Logger.warn('Overwriting item in cache. Key: ' + key);
 		}
+*/
 
 		cache[key] = item;
 	},

@@ -49,6 +49,16 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 	},
 
 	/**
+	 * Clears messages from the store, so they're removed from the view as well.
+	 */
+	clear: function() {
+
+		this.callParent();
+
+		this.getStore().removeAll();
+	},
+
+	/**
 	 * Displays the given conv as a list of messages. Sets toolbar text to the conv subject.
 	 *
 	 * @param {ZtConv}  conv        conv to show
@@ -56,8 +66,12 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 	showItem: function(conv) {
 		Ext.Logger.info("conv controller: show conv " + conv.getId());
 		this.callParent(arguments);
-		this.getItemPanelToolbar().setTitle(conv.get('subject'));
-		Ext.getStore(ZCS.util.getStoreShortName(this)).load({
+
+		var toolbar = this.getItemPanelToolbar(),
+			store = this.getStore();
+
+		toolbar.setTitle(conv.get('subject'));
+		store.load({
 			convId: conv.getId(),
 			callback: function(records, operation, success) {
 				Ext.Logger.info('Conv load callback');

@@ -51,8 +51,7 @@ Ext.define('ZCS.controller.ZtListController', {
 				search: 'doSearch'
 			},
 			listView: {
-				showItem: 'doShowItem',
-				updateTitlebar: 'doUpdateTitlebar'
+				showItem: 'doShowItem'
 			},
 			folderList: {
 				search: 'doSearch'
@@ -124,7 +123,8 @@ Ext.define('ZCS.controller.ZtListController', {
 	},
 
 	/**
-	 * Runs a search using the text in the search box as the query.
+	 * This function is the centralized kickoff for searches. It can be triggered by
+	 * typing a query into the search box, or by clicking on something in the overview.
 	 *
 	 * @param {string}      query           query to run
 	 * @param {ZtOrganizer} folder          overview folder that was tapped (optional)
@@ -147,15 +147,30 @@ Ext.define('ZCS.controller.ZtListController', {
 		ZCS.session.setSetting(ZCS.constant.SETTING_CUR_SEARCH_ID, searchId);
 
 		this.getStore().load({
-			query: query
+			query: query,
+
+			// After the search has run, remember it as the one backing the current list,
+			// and set the title if it was a folder, saved search, or tag that got tapped.
+			callback: function(records, operation, success) {
+				if (query && success) {
+					var search = Ext.create('ZCS.common.ZtSearch', {
+						query: query
+					});
+					ZCS.session.setSetting(ZCS.constant.SETTING_CUR_SEARCH, search);
+					if (ZCS.session.getSetting(ZCS.constant.SETTING_SHOW_SEARCH)) {
+						ZCS.session.getCurrentSearchField().setValue(query);
+					}
+					this.updateTitlebar();
+				}
+			},
+			scope: this
 		});
 	},
 
 	/**
-	 * Updates the text on the list panel's titlebar to reflect the current search results
-	 * TODO: handle tag search
+	 * Updates the text on the list panel's titlebar to reflect the current search results.
 	 */
-	doUpdateTitlebar: function() {
+	updateTitlebar: function() {
 
 		var titlebar = this.getTitlebar();  // might not be available during startup
 		if (!titlebar) {

@@ -45,6 +45,7 @@ Ext.define('ZCS.model.mail.ZtMsgWriter', {
 				sortBy: 'dateDesc',
 				offset: 0,
 				limit: 100,
+				recip: '2',
 				query: 'underid:1 AND NOT underid:3 AND NOT underid:4'
 			});
 		}

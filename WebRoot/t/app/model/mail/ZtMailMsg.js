@@ -59,16 +59,7 @@ Ext.define('ZCS.model.mail.ZtMailMsg', {
 			},
 			reader: 'msgreader',
 			writer: 'msgwriter'
-		},
-
-		hasMultipleBodyParts: false
-	},
-
-	constructor: function(data, id) {
-
-		this.callParent(arguments);
-
-		this.setHasMultipleBodyParts(data.bodyParts && (data.bodyParts > 1));
+		}
 	},
 
 	/**
@@ -87,37 +78,42 @@ Ext.define('ZCS.model.mail.ZtMailMsg', {
 	 * @param	{string}		contentType		MIME type
 	 */
 	hasContentType: function(contentType) {
-		return this.getContentTypes()[contentType];
+		var types = this.get('contentTypes');
+		return types && types[contentType];
 	},
 
 	/**
-	 * Returns the list of body parts.
+	 * Returns true if this message has an inline image
 	 *
-	 * @param	{string}	contentType		preferred MIME type of alternative parts (optional)
+	 * @return {boolean}    true if this message has an inline image
 	 */
-	getBodyPartsByType: function(contentType) {
+	hasInlineImage: function() {
 
-		var bodyParts = this.getBodyParts();
+		var bodyParts = this.get('bodyParts'),
+			ln = bodyParts ? bodyParts.length : 0,
+			i;
 
-		// no multi/alt, so we have a plain list
-		if (!this.hasContentType(ZmMimeTable.MULTI_ALT)) {
-			return bodyParts;
+		for (i = 0; i < ln; i++) {
+			var part = bodyParts[i],
+				disp = part.getContentDisposition(),
+				type = part.getContentType(),
+				fileName = part.getFileName();
+
+			if (disp === "inline" && fileName && ZCS.mime.IS_RENDERABLE_IMAGE[type]) {
+				return true;
+			}
 		}
+		return false;
+	},
 
-		// grab the preferred type out of multi/alt parts
-		var parts = [];
-		Ext.each(bodyParts, function(part) {
-			if (ZCS.util.getClassName(part) === 'ZtMimePart') {
-				parts.push(part);
-			}
-			else if (part) {
-				// part is a hash of alternative parts by content type
-				var altPart = contentType && part[contentType];
-				parts.push(altPart || AjxUtil.values(part)[0]);
-			}
-		}, this);
-
-		return parts;
+	/**
+	 * Returns true if this message has an HTML part (a part with a content-type
+	 * of text/html, or an inline image).
+	 *
+	 * @return {boolean}    true if this message has an HTML part
+	 */
+	hasHtmlPart: function() {
+		return this.hasContentType(ZCS.mime.TEXT_HTML) || this.hasInlineImage();
 	},
 
 	handleModifyNotification: function(mod) {

@@ -303,7 +303,7 @@ ZCS.constant.ALL_FLAGS = [
 
 // Map flag to item property
 ZCS.constant.FLAG_PROP = {};
-ZCS.constant.FLAG_PROP[ZCS.constant.FLAG_ATTACH]			= 'hasAttach';
+ZCS.constant.FLAG_PROP[ZCS.constant.FLAG_ATTACH]			= 'hasAttachment';
 ZCS.constant.FLAG_PROP[ZCS.constant.FLAG_FLAGGED]			= 'isFlagged';
 ZCS.constant.FLAG_PROP[ZCS.constant.FLAG_FORWARDED]			= 'isForwarded';
 ZCS.constant.FLAG_PROP[ZCS.constant.FLAG_ISDRAFT] 			= 'isDraft';
@@ -335,3 +335,6 @@ ZCS.constant.REGEX_SUBJ_PREFIX = new RegExp('^\\s*(Re|Fw|Fwd|' + ZtMsg.re + '|' 
 
 // URL paths
 ZCS.constant.PATH_MSG_FETCH = '/service/home/~/';
+
+// Default height of IFRAME element
+ZCS.constant.DEFAULT_IFRAME_HEIGHT = 150;

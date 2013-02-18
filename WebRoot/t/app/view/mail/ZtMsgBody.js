@@ -20,10 +20,11 @@
  */
 Ext.define('ZCS.view.mail.ZtMsgBody', {
 
-	extend: 'Ext.Component',
+	extend: 'Ext.Container',
 
 	requires: [
-		'ZCS.common.mail.ZtQuotedContent'
+		'ZCS.common.mail.ZtQuotedContent',
+		'ZCS.view.ux.ZtIframe'
 	],
 
 	xtype: 'msgbody',
@@ -97,16 +98,48 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 	},
 
 	/**
+	 * Renders the given msg.
 	 *
-	 * @param msg
-	 * @param isLast
+	 * @param {ZtMailMsg}   msg     a mail message
+	 * @param {boolean}     isLast  true if this is the last msg in the conv to be rendered,
+	 *                              in which case its quoted text will not be trimmed
 	 *
 	 * @adapts ZmMailMsgView._renderMessageBody1
 	 */
 	render: function(msg, isLast) {
 
+		Ext.Logger.info('ZtMsgBody render into element ' + this.element.id);
+
+		var html = this.getHtmlFromBodyParts(msg, isLast),
+			iframe = this.iframe;
+
+		html = this.fixSmileys(html);
+		// TODO: images and info bar
+		// TODO: invites
+		// TODO: truncation
+
+		if (msg.hasHtmlPart()) {
+			if (!iframe) {
+				iframe = this.iframe = new ZCS.view.ux.ZtIframe({
+					name: 'ZCSIframe-' + msg.getId()
+				});
+				this.add(iframe);
+			}
+			iframe.setContent(html);
+		}
+		else {
+			this.setHtml(html);
+		}
+	},
+
+	/**
+	 * Converts each body part to HTML and returns the accumulated content.
+	 *
+	 * @private
+	 */
+	getHtmlFromBodyParts: function(msg, isLast) {
+
 		var bodyParts = msg.get('bodyParts'),
-			hasMultiple = msg.getHasMultipleBodyParts(),
 			html = [];
 
 		Ext.each(bodyParts, function(part) {
@@ -119,13 +152,13 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 			if (ZCS.mime.IS_RENDERABLE_IMAGE[contentType]) {
 				if (disposition !== 'inline') {
 					var src = content || ZCS.util.buildUrl({
-											path: ZCS.constant.PATH_MSG_FETCH,
-											qsArgs: {
-												auth: 'co',
-												id: msg.id,
-												part: part.part
-											}
-										});
+						path: ZCS.constant.PATH_MSG_FETCH,
+						qsArgs: {
+							auth: 'co',
+							id: msg.id,
+							part: part.part
+						}
+					});
 					html.push("<img zmforced='1' class='InlineImage' src='" + src + "'>");
 				}
 			}
@@ -152,13 +185,19 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 			else {
 				html.push(ZCS.util.convertToHtml(content));
 			}
-
-//			if (!isLast) {
-//				content = ZCS.quoted.getOriginalContent(content, part.getContentType() === ZCS.mime.TEXT_HTML);
-//			}
-//			html.push(content);
 		}, this);
 
-		this.setHtml(html.join(''));
+		return html.join('');
+	},
+
+	/**
+	 * Replaces Microsoft-specific emoticons (Wingdings) with their Unicode equivalents.
+	 * When that doesn't happen, you see a bare J hanging out.
+	 *
+	 * @private
+	 */
+	fixSmileys: function(html) {
+		return html.replace(/<span style=["']font-family:Wingdings["']>J<\/span>/gi, '\u263a')  // :)
+				   .replace(/<span style=["']font-family:Wingdings["']>L<\/span>/gi, '\u2639'); // :(
 	}
 });
