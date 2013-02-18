@@ -87,12 +87,12 @@ Ext.define('ZCS.view.mail.ZtComposeForm', {
 						name: 'to',
 						labelWidth: 32,
 						flex: 1,
-						label: ZtMsg.toLabel || 'To'
+						label: ZtMsg.toHdr
 					}, {
 						width: 80,
 						height: 44,
 						xtype: 'component',
-						html: 'Cc/Bcc',
+						html: ZtMsg.ccOrBcc,
 						itemId: 'ccToggle',
 						cls: 'x-form-label x-form-label-nowrap x-field zcs-toggle-field',
 						listeners: {
@@ -111,7 +111,7 @@ Ext.define('ZCS.view.mail.ZtComposeForm', {
 					labelWidth: 35,
 					hidden: true,
 					itemId: 'cc',
-					label: ZtMsg.ccLabel || 'CC'
+					label: ZtMsg.ccHdr
 				}, {
 					xtype: 'contactfield',
 					name: 'bcc',
@@ -119,7 +119,7 @@ Ext.define('ZCS.view.mail.ZtComposeForm', {
 					height: 44,
 					labelWidth: 50,
 					hidden: true,
-					label: ZtMsg.bccLabel || 'BCC'
+					label: ZtMsg.bccHdr
 				}, {
 					height: 44,
 					layout: {
@@ -138,12 +138,12 @@ Ext.define('ZCS.view.mail.ZtComposeForm', {
 								ZCS.util.resetWindowScroll();
 							}
 						},
-						label: ZtMsg.subjectLabel || 'Subject'
+						label: ZtMsg.subjectHdr
 					}, {
 						width: 80,
 						height: 44,
 						xtype: 'component',
-						html: 'Attach',
+						html: ZtMsg.attach,
 						itemId: 'attach',
 						cls: 'x-form-label x-form-label-nowrap x-field zcs-toggle-field',
 						listeners: {

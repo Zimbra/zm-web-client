@@ -81,6 +81,6 @@ Ext.define('ZCS.view.mail.ZtMsgHeader', {
 		this.setHtml(tpl.apply(data));
 	}
 }, function (thisClass) {
-	thisClass.collapsedTpl = Ext.create('Ext.XTemplate', ZCS.template.MsgHeader);
+	thisClass.collapsedTpl = Ext.create('Ext.XTemplate', ZCS.template.CollapsedMsgHeader);
 	thisClass.expandedTpl = Ext.create('Ext.XTemplate', ZCS.template.ExpandedMsgHeader);
 });

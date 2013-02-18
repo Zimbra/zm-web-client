@@ -49,7 +49,7 @@
 			</tpl>
 			<div class='zcs-msgHdr-date'>{dateStr}</div>
 			<div class='zcs-msgHdr-to'>
-				<span>to</span>
+				<span>{[ZtMsg.to]}</span>
 				<tpl if='addrs.to'>
 					<tpl for='addrs.to'>
 						<span>{displayName},</span>
@@ -61,7 +61,7 @@
 					</tpl>
 				</tpl>
 			</div>
-			<div class='zcs-msgHdr-link'>Details</div>
+			<div class='zcs-msgHdr-link'>{[details]}</div>
 		</div>
 	</tpl>
 </template>
@@ -74,7 +74,9 @@
 			</div>
 			<tpl if='addrs.from'>
 			<div class='zcs-msgHdr-fromBubble'>
-				<span class='vm-area-bubble' address='{address}'>{displayName}</span>
+				<tpl for='addrs.from'>
+					<span class='vm-area-bubble' address='{address}'>{displayName}</span>
+				</tpl>
 			</div>
 			<div class='zcs-msgHdr-date'>{dateStr}</div>
 			<div class='zcs-colMsgHdr-fragment'>{fragment}</div>
@@ -97,15 +99,15 @@
 					</tpl>
 				</div>
 				<tpl for='addrs.from'>
-					<div class='zcs-msgHdr-from'>from {address}</div>
+					<div class='zcs-msgHdr-from'>{[ZtMsg.from]} {address}</div>
 				</tpl>
 			</tpl>
 			<div class='zcs-msgHdr-date'>{dateStr}</div>
-			<div class='zcs-msgHdr-link'>Hide</div>
+			<div class='zcs-msgHdr-link'>{[ZtMsg.hide]}</div>
 		</div>
 		<tpl if='addrs.to'>
 			<div class='zcs-mail-expMsgHdr'>
-				<div class='zcs-msgHdr-label'>To</div>
+				<div class='zcs-msgHdr-label'>{[ZtMsg.toHdr]}</div>
 				<tpl for='addrs.to'>
 					<span class='vm-area-bubble' address='{address}'>{displayName}</span>
 				</tpl>
@@ -113,7 +115,7 @@
 		</tpl>
 		<tpl if='addrs.cc'>
 			<div class='zcs-mail-expMsgHdr'>
-				<div class='zcs-msgHdr-label'>Cc</div>
+				<div class='zcs-msgHdr-label'>{[ZtMsg.ccHdr]}</div>
 				<tpl for='addrs.cc'>
 					<span class='vm-area-bubble' address='{address}'>{displayName}</span>
 				</tpl>

@@ -575,7 +575,7 @@ ZCS.quoted.REGEXES = [
 	{
 		// one of the commonly quoted email headers
 		type:	ZCS.quoted.HEADER,
-		regex:	new RegExp('^\\s*(' + [ZtMsg.from, ZtMsg.to, ZtMsg.subject, ZtMsg.date, ZtMsg.sent, ZtMsg.cc].join('|') + ')', 'i')
+		regex:	new RegExp('^\\s*(' + [ZtMsg.fromHdr, ZtMsg.toHdr, ZtMsg.subjectHdr, ZtMsg.dateHdr, ZtMsg.sentHdr, ZtMsg.ccHdr].join('|') + ')', 'i')
 	},
 	{
 		// some clients use a series of underscores as a text-mode separator (text version of <hr>)
