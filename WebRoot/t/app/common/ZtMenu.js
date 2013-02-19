@@ -73,7 +73,7 @@ Ext.define('ZCS.common.ZtMenu', {
 
 	/**
 	 *
-	 * Adjusts the menus height to fit all items, are be the max height
+	 * Adjusts the menus height to fit all items, or be the max height
 	 * whichever is smaller.
 	 */
 	adjustHeight: function () {
@@ -95,8 +95,14 @@ Ext.define('ZCS.common.ZtMenu', {
                 actualHeight += item.element.getFirstChild().getHeight();
             }
         }
-        menu.setHeight(actualHeight + 12);
-        list.setHeight(actualHeight);
+
+        if (actualHeight === 0) {
+        	//The list hasn't actually rendered yet, lets do this again until it has been
+        	Ext.defer(this.adjustHeight, 100, menu);
+        } else {
+	        menu.setHeight(actualHeight + 12);
+	        list.setHeight(actualHeight);
+		}
 	},
 
 	/**
@@ -107,6 +113,7 @@ Ext.define('ZCS.common.ZtMenu', {
 	setMenuItems: function(menuItems) {
 		this.down('list').getStore().removeAll();
 		this.down('list').getStore().setData(menuItems);
+		this.adjustHeight();
 	},
 
 	/**

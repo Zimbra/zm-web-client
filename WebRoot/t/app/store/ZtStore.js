@@ -14,24 +14,20 @@
  */
 
 /**
- * This class is a List that shows conversations.
+ * This class respresents a store of messages.
  *
- * @author Conrad Damon <cdamon@zimbra.com>
+ * @author Macy Abbey
  */
-Ext.define('ZCS.view.mail.ZtConvListView', {
+Ext.define('ZCS.store.ZtStore', {
+	extend: 'Ext.data.Store',
+	requires: [
+		'ZCS.common.ZtConstants'
+	],
+	constructor: function (cfg) {
+		if (!cfg.pageSize) {
+			cfg.pageSize = ZCS.constant.DEFAULT_PAGE_SIZE;
+		}
 
-	extend: 'ZCS.view.ZtListView',
-
-	xtype: ZCS.constant.APP_MAIL + 'listview',
-
-	plugins: [{
-        xclass: 'Ext.plugin.ListPaging',
-        autoPaging: true
-    }],
-
-	config: {
-		loadingText: ZtMsg.loadingConvs,
-		emptyText: "<div class=\"notes-list-empty-text\">" + ZtMsg.noConvs + "</div>",
-		itemTpl: ZCS.template.ConvListItem
+		this.callParent(arguments);
 	}
 });

@@ -37,9 +37,9 @@ Ext.define('ZCS.view.mail.ZtComposeForm', {
 	config: {
 		layout: 'fit',
 		width: '80%',
-		height: '90%',
+		height: '100%',
 		hidden: true,
-		modal: false,
+		modal: true,
 		cls: 'compose-form'
 	},
 
@@ -67,7 +67,7 @@ Ext.define('ZCS.view.mail.ZtComposeForm', {
 						}
 					}
 				]
-			}, 
+			},
 			form = {
 				xtype: 'formpanel',
 				defaults: {
@@ -184,9 +184,9 @@ Ext.define('ZCS.view.mail.ZtComposeForm', {
 		this.fireEvent('doAttachment');
 	},
 	resetForm: function () {
-		this.down('.formpanel').reset();	
+		this.down('.formpanel').reset();
 		this.down('#ccToggle').show();
 		this.down('#cc').hide();
-		this.down('#bcc').hide();	
+		this.down('#bcc').hide();
 	}
 });

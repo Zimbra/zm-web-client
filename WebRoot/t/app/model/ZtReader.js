@@ -63,14 +63,27 @@ Ext.define('ZCS.model.ZtReader', {
 		var Model = this.getModel(),
 			className = Ext.getClassName(Model),
 			type = ZCS.constant.TYPE_FOR_CLASS[className],
-			nodeName = ZCS.constant.ITEM_NODE[type];
+			nodeName = ZCS.constant.ITEM_NODE[type],
+			total,
+			root = this.getRoot(data, nodeName),
+			body = this.getResponseBody(data);
 
-		var root = this.getRoot(data, nodeName),
+		//If the server gives us feedback in regards to paging, lets compute
+		//the total intelligently.
+		if (body.more && body.offset !== undefined && root) {
+			//Since ext wants to know the total, and all the server tells us is that there is more, we
+			//Need to set a fake total.
+			total = body.more ? body.offset + (root.length * 3) : body.offset + root.length;
+			count = root.length;
+		} else {
 			total = root ? root.length : 0;
+			count = root ? root.length : 0;
+		}
+
 
 		return new Ext.data.ResultSet({
 			total  : total,
-			count  : total,
+			count  : count,
 			records: this.getRecords(root),
 			success: true,
 			message: ''
@@ -84,10 +97,15 @@ Ext.define('ZCS.model.ZtReader', {
 	 * @param {string}      nodeName    name of node that contains list of results (eg 'm' for messages)
 	 */
 	getRoot: function(data, nodeName) {
-		var responseMethod = data.soapMethod + 'Response',
-			responseObj = data.Body[responseMethod];
+		var responseObj = this.getResponseBody(data);
 
 		return responseObj ? responseObj[nodeName] : null;
+	},
+
+	getResponseBody: function (data) {
+		var responseMethod = data.soapMethod + 'Response';
+
+		return data.Body[responseMethod];
 	},
 
 	/**

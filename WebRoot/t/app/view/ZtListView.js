@@ -24,10 +24,7 @@ Ext.define('ZCS.view.ZtListView', {
 
 	config: {
 		scrollable : {
-			direction: 'vertical',
-			slotSnapSize : {
-				y: 50
-			}
+			direction: 'vertical'
 		},
 		listeners: {
 			select: function(view, record) {

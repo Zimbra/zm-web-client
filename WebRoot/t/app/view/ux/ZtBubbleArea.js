@@ -57,15 +57,15 @@ Ext.define('ZCS.view.ux.ZtBubbleArea', {
         },
 
         /**
-         * @cfg {boolean} readOnly 
-         * 
+         * @cfg {boolean} readOnly
+         *
          * Controls whether this area has an input or not.
          */
         readOnly: false,
 
         /**
          * @cfg {boolean} preventDuplicates
-         * 
+         *
          * Specifies if the dropdown should prevent selecting / adding
          * duplicate bubbles.
          */
@@ -73,7 +73,7 @@ Ext.define('ZCS.view.ux.ZtBubbleArea', {
 
         /**
          * @cfg {Function} getBubbleModelFromInput
-         *  
+         *
          * A function which when passed a string input, will return a bubble model,
          * if a falsy value is returned, it will be assumed the input should not
          * be made into a bubble.
@@ -189,7 +189,7 @@ Ext.define('ZCS.view.ux.ZtBubbleArea', {
         me.bubbles = new Ext.util.MixedCollection();
 
         me.bubbleElements = new Ext.util.MixedCollection();
-        
+
         me.emptyTextHtml =  '<span class="emptyText">' + cfg.emptyText + '</span>';
 
         me.html = !cfg.readOnly ? me.emptyTextHtml : '';
@@ -259,7 +259,7 @@ Ext.define('ZCS.view.ux.ZtBubbleArea', {
     /**
      *
      * Add an array of bubbles to the area.
-     * 
+     *
      * @param {Ext.data.Model[]} bubbleModels The models to add.
      */
     addBubbles: function(bubbleModels) {
@@ -420,6 +420,22 @@ Ext.define('ZCS.view.ux.ZtBubbleArea', {
     /**
      * @private
      *
+     *  Remove the last bubble in the area.
+     */
+    removeLastBubble: function() {
+        var bubbles = this.getBubbles(),
+            lastBubble,
+            numBubbles = bubbles ? bubbles.length : 0;
+
+        if (numBubbles > 0) {
+            lastBubble = this.bubbleElements.getAt(numBubbles - 1);
+            this.removeBubble(lastBubble);
+        }
+    },
+
+    /**
+     * @private
+     *
      * @return {Object}   The configuration for the input field used by this bubble area.
      */
     getInputField: function() {
@@ -458,7 +474,11 @@ Ext.define('ZCS.view.ux.ZtBubbleArea', {
                                 }
                             } else {
                                 me.resizeInput(this, isDelete, parentDimensions);
-                                me.fireEvent('inputKeyup', e, el);    
+
+                                if (isDelete && this.getValue() === '') {
+                                    me.removeLastBubble();
+                                }
+                                me.fireEvent('inputKeyup', e, el);
                             }
                         });
 
@@ -530,7 +550,7 @@ Ext.define('ZCS.view.ux.ZtBubbleArea', {
      */
     considerBubblingInput: function (input) {
         if (this.getGetBubbleModelFromInput()) {
-            this.addBubble(this.getGetBubbleModelFromInput()(input));            
+            this.addBubble(this.getGetBubbleModelFromInput()(input));
         }
 
         this.clearInput();
@@ -543,7 +563,7 @@ Ext.define('ZCS.view.ux.ZtBubbleArea', {
 
             if (!me.getReadOnly()) {
                 me.inputField = me.down('#inputField');
-                me.element.on('tap', function (e, el) { 
+                me.element.on('tap', function (e, el) {
                     me.focusInput();
                     return true;
                 });

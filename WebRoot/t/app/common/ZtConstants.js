@@ -38,6 +38,11 @@ Ext.define('ZCS.common.ZtConstants', {
 	}
 });
 
+// Default page size for data requests. Note this is in sync with the size
+// of the initial inline search results.  If they are not in sync, there
+// could be paging errors on initial search result load.
+ZCS.constant.DEFAULT_PAGE_SIZE = 20;
+
 // URL portion that precedes a server API call
 ZCS.constant.SERVICE_URL_BASE = '/service/soap/';
 
