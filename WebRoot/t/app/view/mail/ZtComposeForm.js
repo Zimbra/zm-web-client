@@ -155,24 +155,18 @@ Ext.define('ZCS.view.mail.ZtComposeForm', {
 							}
 						}
 					}]
-				}, /*{
-					xtype: 'textareafield',
-					name: 'body',
-					flex: 1,
-					maxRows: 16,
-					listeners: {
-						blur: function () {
-							//Because this panel is floating, and a keystroke may have forced the whole window to scroll,
-							//when we blur, reset the scroll.
-							ZCS.util.resetWindowScroll();
-						}
-					}
-				}*/
-					{
+				}, {
 						xtype: 'component',
-//						html: '<div contenteditable="true" id="zcs-body-field" style="-webkit-user-select:auto;-webkit-user-drag:auto;background-color:white;height:400px;"></div>',
-						html: '<div contenteditable="true" id="zcs-body-field" class="zcs-editable zcs-body-field"></div>',
-						itemId: 'body'
+						html: '<div contenteditable="true" class="zcs-editable zcs-body-field"></div>',
+						itemId: 'body',
+						// TODO: listener below doesn't get fired, not sure about blur on editable DIV
+						listeners: {
+							blur: function () {
+								//Because this panel is floating, and a keystroke may have forced the whole window to scroll,
+								//when we blur, reset the scroll.
+								ZCS.util.resetWindowScroll();
+							}
+						}
 					}]
 			};
 
@@ -181,14 +175,17 @@ Ext.define('ZCS.view.mail.ZtComposeForm', {
 			form
 		]);
 	},
+
 	showCc: function () {
 		this.down('#ccToggle').hide();
 		this.down('#cc').show();
-		this.down('#bcc').show();
+//		this.down('#bcc').show();
 	},
+
 	doAttach: function () {
 		this.fireEvent('doAttachment');
 	},
+
 	resetForm: function () {
 		this.down('.formpanel').reset();
 		this.down('#ccToggle').show();

@@ -15,12 +15,24 @@
 }
 
 .zcs-editable, .zcs-editable * {
-	-webkit-user-select:auto;
-	-webkit-user-drag:auto;
+	-webkit-user-select: auto;
+	-webkit-user-drag: auto;
 }
 
 .zcs-body-field {
-	background-color:white;
-	height:400px;
-	margin: 3px;
+	background-color: white;
+	height: 540px;
+	padding: 8px;
+}
+
+.zcs-quote-html {
+	border-left: 2px solid #1010FF;
+	margin-left: 5px;
+	padding-left: 5px;
+	color: #000;
+	font-weight: normal;
+	font-style: normal;
+	text-decoration: none;
+	font-family: Helvetica,Arial,sans-serif;
+	font-size: 12pt;
 }

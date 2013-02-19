@@ -83,10 +83,11 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 		var to = [msg.getReplyAddress()],
 			cc,
 			subject = this.getSubject(msg, 'Re:'),
-			quoted = ZCS.constant.HTML_QUOTE_PREFIX_PRE + msg.getHtmlFromBodyParts() + ZCS.constant.HTML_QUOTE_PREFIX_POST,
-			body = '\n\n' + '----- ' + ZtMsg.originalMessage + ' -----\n';
+			sep = '<br><br>',
+			quoted = this.quoteHtml(msg.getHtmlFromBodyParts()),
+			body = sep + '----- ' + ZtMsg.originalMessage + ' -----' + sep + quoted;
 
-		this.showComposeForm(to, cc, subject, body, quoted);
+		this.showComposeForm(to, cc, subject, body);
 	},
 
 	replyAll: function(msg) {
@@ -96,8 +97,10 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 			origCcAddrs = msg.getAddressesByType(ZCS.constant.CC),
 			ccAddrs = [],
 			used = {},
-			subject,
-			body;
+			subject = this.getSubject(msg, 'Re:'),
+			sep = '<br><br>',
+			quoted = this.quoteHtml(msg.getHtmlFromBodyParts()),
+			body = sep + '----- ' + ZtMsg.originalMessage + ' -----' + sep + quoted;
 
 		// Remember emails we don't want to repeat in Cc
 		// TODO: add aliases to used hash
@@ -110,9 +113,6 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 			}
 		}, this);
 
-		subject = this.getSubject(msg, 'Re:');
-		body = '\n\n' + '----- ' + ZtMsg.originalMessage + ' -----\n' + msg.get('content');
-
 		this.showComposeForm([replyAddr], ccAddrs, subject, body);
 	},
 
@@ -120,7 +120,9 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 		var to,
 			cc,
 			subject = this.getSubject(msg, 'Fwd:'),
-			body = '\n\n' + '----- ' + ZtMsg.forwardedMessage + ' -----\n' + msg.get('content');
+			sep = '<br><br>',
+			quoted = msg.getHtmlFromBodyParts(),
+			body = sep + '----- ' + ZtMsg.originalMessage + ' -----' + sep + quoted;
 
 		this.showComposeForm(to, cc, subject, body);
 	},
@@ -128,15 +130,14 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 	/**
 	 * Show the compose form, prepopulating any parameterized fields
 	 */
-	showComposeForm: function (toFieldAddresses, ccFieldAddresses, subject, body, quoted) {
+	showComposeForm: function (toFieldAddresses, ccFieldAddresses, subject, body) {
 		var panel = this.getComposePanel(),
 			form = panel.down('formpanel'),
 			toFld = form.down('contactfield[name=to]'),
 			ccFld = form.down('contactfield[name=cc]'),
 			subjectFld = form.down('field[name=subject]'),
-//			bodyFld = form.down('field[name=body]'),
-			bodyFld = form.down('#body');
-//			iframe = form.down('iframe');
+			bodyFld = form.down('#body'),
+			editor = bodyFld.element.query('.zcs-editable')[0];
 
 		panel.resetForm();
 
@@ -154,44 +155,22 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 		}
 
 		if (ccFieldAddresses) {
-			ccFld.addBubbles(toFieldAddresses);
+			ccFld.addBubbles(ccFieldAddresses);
 		}
 
 		if (subject) {
 			subjectFld.setValue(subject);
 		}
 
-		if (bodyFld) {
-//			bodyFld.setValue(body);
-			var x = document.getElementById('zcs-body-field');
-			if (x) {
-				x.innerHTML = '<br><br>' + body + '<br><br>' + quoted;
-			}
-		}
+		editor.innerHTML = body || '';
 
 		if (!toFieldAddresses) {
 			toFld.focusInput();
 		} else if (!subject) {
 			subjectFld.focus();
 		} else {
-//			bodyFld.focus();
-//			var textarea = bodyFld.element.query('textarea')[0];
-//			textarea.scrollTop = 0;
-			x.focus();
-			x.scrollTop = 0
-		}
-
-		if (false && quoted) {
-			if (iframe) {
-				iframe.getBody().innerHTML = '';
-			}
-			else {
-				iframe = new ZCS.view.ux.ZtIframe({
-					name: 'ZCSIframe-compose'
-				});
-				panel.add(iframe);
-			}
-			iframe.setContent(quoted);
+			editor.focus();
+			editor.scrollTop = 0
 		}
 
 		ZCS.util.resetWindowScroll();
@@ -240,5 +219,9 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 		}
 
 		return this.composePanel;
+	},
+
+	quoteHtml: function(html) {
+		return '<blockquote class="zcs-quote-html">' + html + '</blockquote>';
 	}
 });
