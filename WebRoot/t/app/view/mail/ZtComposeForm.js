@@ -155,7 +155,7 @@ Ext.define('ZCS.view.mail.ZtComposeForm', {
 							}
 						}
 					}]
-				}, {
+				}, /*{
 					xtype: 'textareafield',
 					name: 'body',
 					flex: 1,
@@ -167,7 +167,13 @@ Ext.define('ZCS.view.mail.ZtComposeForm', {
 							ZCS.util.resetWindowScroll();
 						}
 					}
-				}]
+				}*/
+					{
+						xtype: 'component',
+//						html: '<div contenteditable="true" id="zcs-body-field" style="-webkit-user-select:auto;-webkit-user-drag:auto;background-color:white;height:400px;"></div>',
+						html: '<div contenteditable="true" id="zcs-body-field" class="zcs-editable zcs-body-field"></div>',
+						itemId: 'body'
+					}]
 			};
 
 		this.add([

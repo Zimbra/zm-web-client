@@ -13,3 +13,14 @@
 	@include ellipsis();
 	display: block;
 }
+
+.zcs-editable, .zcs-editable * {
+	-webkit-user-select:auto;
+	-webkit-user-drag:auto;
+}
+
+.zcs-body-field {
+	background-color:white;
+	height:400px;
+	margin: 3px;
+}

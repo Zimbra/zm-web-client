@@ -83,9 +83,10 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 		var to = [msg.getReplyAddress()],
 			cc,
 			subject = this.getSubject(msg, 'Re:'),
-			body = '\n\n' + '----- ' + ZtMsg.originalMessage + ' -----\n' + msg.get('content');
+			quoted = ZCS.constant.HTML_QUOTE_PREFIX_PRE + msg.getHtmlFromBodyParts() + ZCS.constant.HTML_QUOTE_PREFIX_POST,
+			body = '\n\n' + '----- ' + ZtMsg.originalMessage + ' -----\n';
 
-		this.showComposeForm(to, cc, subject, body);
+		this.showComposeForm(to, cc, subject, body, quoted);
 	},
 
 	replyAll: function(msg) {
@@ -127,13 +128,15 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 	/**
 	 * Show the compose form, prepopulating any parameterized fields
 	 */
-	showComposeForm: function (toFieldAddresses, ccFieldAddresses, subject, body) {
+	showComposeForm: function (toFieldAddresses, ccFieldAddresses, subject, body, quoted) {
 		var panel = this.getComposePanel(),
 			form = panel.down('formpanel'),
 			toFld = form.down('contactfield[name=to]'),
 			ccFld = form.down('contactfield[name=cc]'),
 			subjectFld = form.down('field[name=subject]'),
-			bodyFld = form.down('field[name=body]');
+//			bodyFld = form.down('field[name=body]'),
+			bodyFld = form.down('#body');
+//			iframe = form.down('iframe');
 
 		panel.resetForm();
 
@@ -159,7 +162,11 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 		}
 
 		if (bodyFld) {
-			bodyFld.setValue(body);
+//			bodyFld.setValue(body);
+			var x = document.getElementById('zcs-body-field');
+			if (x) {
+				x.innerHTML = '<br><br>' + body + '<br><br>' + quoted;
+			}
 		}
 
 		if (!toFieldAddresses) {
@@ -167,9 +174,24 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 		} else if (!subject) {
 			subjectFld.focus();
 		} else {
-			bodyFld.focus();
-			var textarea = bodyFld.element.query('textarea')[0];
-			textarea.scrollTop = 0;
+//			bodyFld.focus();
+//			var textarea = bodyFld.element.query('textarea')[0];
+//			textarea.scrollTop = 0;
+			x.focus();
+			x.scrollTop = 0
+		}
+
+		if (false && quoted) {
+			if (iframe) {
+				iframe.getBody().innerHTML = '';
+			}
+			else {
+				iframe = new ZCS.view.ux.ZtIframe({
+					name: 'ZCSIframe-compose'
+				});
+				panel.add(iframe);
+			}
+			iframe.setContent(quoted);
 		}
 
 		ZCS.util.resetWindowScroll();
