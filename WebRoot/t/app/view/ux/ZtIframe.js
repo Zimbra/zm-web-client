@@ -43,7 +43,6 @@ Ext.define('ZCS.view.ux.ZtIframe', {
 			body = this.getBody();
 
 		if (doc && body) {
-			body.innerHTML = '';
 			doc.open();
 			doc.write(html);
 			doc.close();
@@ -57,7 +56,7 @@ Ext.define('ZCS.view.ux.ZtIframe', {
 	resizeToContent: function() {
 
 		if (this.hasBeenSized) {
-			return;
+//			return;
 		}
 
 		var doc = this.getDoc(),
@@ -72,12 +71,13 @@ Ext.define('ZCS.view.ux.ZtIframe', {
 			iframe.setWidth(contentWidth);
 		}
 
+		// TODO: Revisit. For now, always use heights of child nodes to figure out the height of the actual content.
 		var height = Math.max(docEl.scrollHeight, contentHeight);
-		if (height === ZCS.constant.DEFAULT_IFRAME_HEIGHT) {
+		if (true || height === ZCS.constant.DEFAULT_IFRAME_HEIGHT) {
 			// handle content whose height is less than 150
 			var styleObj = doc.defaultView.getComputedStyle(body);
 			height = parseInt(styleObj.height);
-			if (!height || height === ZCS.constant.DEFAULT_IFRAME_HEIGHT) {
+			if (true || !height || height === ZCS.constant.DEFAULT_IFRAME_HEIGHT) {
 				height = 0;
 				var ln = body.childNodes.length,
 					i, el;

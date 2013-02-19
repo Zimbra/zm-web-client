@@ -118,16 +118,25 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 		// TODO: invites
 		// TODO: truncation
 
-		if (msg.hasHtmlPart()) {
+		if (iframe) {
+			iframe.getBody().innerHTML = '';
+//			iframe.getBody().height = 150;
+		}
+		if (true || msg.hasHtmlPart()) {
 			if (!iframe) {
 				iframe = this.iframe = new ZCS.view.ux.ZtIframe({
 					name: 'ZCSIframe-' + msg.getId()
 				});
 				this.add(iframe);
 			}
+//			this.setHtml('');
 			iframe.setContent(html);
+//			iframe.show();
 		}
 		else {
+			if (iframe) {
+				iframe.hide();
+			}
 			this.setHtml(html);
 		}
 	},

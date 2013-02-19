@@ -75,8 +75,17 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 			convId: conv.getId(),
 			callback: function(records, operation, success) {
 				Ext.Logger.info('Conv load callback');
-			}
+				Ext.defer(this.adjustItemHeights.bind(this, Ext.ComponentQuery.query('msgview')), 500);
+			},
+			scope: this
 		});
+	},
+
+	adjustItemHeights: function(msgViews) {
+		var msgListView = this.getMsgListView();
+		msgListView.updatedItems = msgViews;
+		msgListView.updateItemHeights();
+		msgListView.refreshScroller(msgListView.getScrollable().getScroller());
 	},
 
 	/**
