@@ -27,6 +27,7 @@ Ext.define('ZCS.model.contacts.ZtContactWriter', {
 	writeRecords: function(request, data) {
 
 		var	action = request.getAction(),
+			offset = request.getOperation().getStart(),
 			query = request.getOperation().config.query,
 			json, methodJson;
 
@@ -38,7 +39,9 @@ Ext.define('ZCS.model.contacts.ZtContactWriter', {
 				methodJson = json.Body.GetContactsRequest;
 
 				Ext.apply(methodJson, {
-					sortBy: "nameDesc",
+					sortBy: 'nameDesc',
+					offset: offset,
+					limit: ZCS.constant.DEFAULT_PAGE_SIZE,
 					// ask server only for the fields we need
 					a: [
 						{ n: 'firstName' },

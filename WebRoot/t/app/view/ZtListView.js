@@ -22,6 +22,12 @@ Ext.define('ZCS.view.ZtListView', {
 
 	extend: 'Ext.dataview.List',
 
+	plugins: [{
+		xclass: 'Ext.plugin.ListPaging',
+		autoPaging: true,
+		noMoreRecordsText: ''
+	}],
+
 	config: {
 		scrollable : {
 			direction: 'vertical'

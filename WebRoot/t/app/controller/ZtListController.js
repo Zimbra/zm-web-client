@@ -70,25 +70,26 @@ Ext.define('ZCS.controller.ZtListController', {
 	 * On launch, populate the list with items
 	 */
 	launch: function () {
-		var defaultQuery = ZCS.session.getSetting(ZCS.constant.SETTING_INITIAL_SEARCH);
 
 		Ext.Logger.verbose('STARTUP: list ctlr launch - ' + ZCS.util.getClassName(this));
 		this.callParent();
-
-		//Set the proxies params so this parameter persists between paging requests.
-		this.getStore().getProxy().setExtraParams({
-			query: defaultQuery
-		});
-
 		this.getStore().load({
-			query: defaultQuery,
+			query: this.getDefaultQuery(),
 			callback: this.storeLoaded.bind(this, null)
 		});
 	},
 
 	/**
+	 * Returns the default query used to launch this controller/app.
+	 * @return {string}
+	 */
+	getDefaultQuery: function() {
+		return '';
+	},
+
+	/**
 	 * Returns the controller for a single item.
-	 * @protected
+	 * @return {ZtListController}
 	 */
 	getItemController: function() {},
 
@@ -159,11 +160,6 @@ Ext.define('ZCS.controller.ZtListController', {
 
 
 		this.getStore().currentPage = 1;
-
-		//Set the proxies params so this parameter persists between paging requests.
-		this.getStore().getProxy().setExtraParams({
-			query: query
-		});
 
 		this.getStore().load({
 			query: query,

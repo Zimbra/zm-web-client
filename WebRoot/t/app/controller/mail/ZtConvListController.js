@@ -55,6 +55,10 @@ Ext.define('ZCS.controller.mail.ZtConvListController', {
 		app: ZCS.constant.APP_MAIL
 	},
 
+	getDefaultQuery: function() {
+		return ZCS.session.getSetting(ZCS.constant.SETTING_INITIAL_SEARCH);
+	},
+
 	getItemController: function() {
 		return ZCS.app.getConvController();
 	},

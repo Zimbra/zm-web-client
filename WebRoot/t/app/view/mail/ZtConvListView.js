@@ -24,11 +24,6 @@ Ext.define('ZCS.view.mail.ZtConvListView', {
 
 	xtype: ZCS.constant.APP_MAIL + 'listview',
 
-	plugins: [{
-        xclass: 'Ext.plugin.ListPaging',
-        autoPaging: true
-    }],
-
 	config: {
 		loadingText: ZtMsg.loadingConvs,
 		emptyText: "<div class=\"notes-list-empty-text\">" + ZtMsg.noConvs + "</div>",
