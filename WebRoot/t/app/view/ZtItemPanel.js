@@ -67,5 +67,15 @@ Ext.define('ZCS.view.ZtItemPanel', {
 			toolbar,
 			itemView
 		]);
+	},
+
+	showMenuButton: function () {
+		this.down('.titlebar .button').show();
+	},
+
+	hideMenuButton: function () {
+		this.down('.titlebar .button').hide();
 	}
+
+
 });

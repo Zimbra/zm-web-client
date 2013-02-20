@@ -73,6 +73,7 @@ Ext.define('ZCS.controller.ZtListController', {
 
 		Ext.Logger.verbose('STARTUP: list ctlr launch - ' + ZCS.util.getClassName(this));
 		this.callParent();
+
 		this.getStore().load({
 			query: this.getDefaultQuery(),
 			callback: this.storeLoaded.bind(this, null)
@@ -160,6 +161,8 @@ Ext.define('ZCS.controller.ZtListController', {
 
 
 		this.getStore().currentPage = 1;
+
+		this.getListView().getScrollable().getScroller().scrollToTop();
 
 		this.getStore().load({
 			query: query,

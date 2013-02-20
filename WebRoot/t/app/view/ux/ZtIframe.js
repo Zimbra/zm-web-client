@@ -24,7 +24,7 @@ Ext.define('ZCS.view.ux.ZtIframe', {
 		Ext.Logger.info('IFRAME ID: ' + iframe.dom.id);
 
 		// not sure yet if we need to relay events
-//		this.relayEvents(iframe, '*');
+		this.relayEvents(iframe, '*');
 	},
 
 	getDoc: function() {
@@ -39,8 +39,70 @@ Ext.define('ZCS.view.ux.ZtIframe', {
 
 	setContent: function(html) {
 
-		var doc = this.getDoc(),
-			body = this.getBody();
+		var component = this,
+			doc = this.getDoc(),
+			body = this.getBody(),
+			//Convert coordinates in the touch objects to be coordinates for this window
+			//and not the iframe
+			touchProcessor = function (touches, newTarget) {
+				var i,
+					oldTouch,
+					numTouches = touches.length,
+					newTouchList,
+					newTouch,
+					newTouches = [];
+
+				for (i = 0; i < numTouches; i += 1) {
+					oldTouch = touches[i];
+					newTouch = window.document.createTouch(window, newTarget, 1 - oldTouch.identifier, oldTouch.screenX, oldTouch.screenY, oldTouch.screenX, oldTouch.screenY);
+					newTouches.push(newTouch);
+				}
+
+				return window.document.createTouchList.apply(window.document, newTouches);
+			},
+			touchEventListener = function (ev) {
+
+				// clone the event for our window / document
+
+				// This function is based on Apple's implementation, it may differ in other touch based browsers.
+				// http://developer.apple.com/library/safari/#documentation/UserExperience/Reference/TouchEventClassReference/TouchEvent/TouchEvent.html
+				// Notes here: http://lists.w3.org/Archives/Public/public-webevents/2012AprJun/0004.html
+				var cloneEvent = document.createEvent('TouchEvent'),
+					touches,
+					targetTouches,
+					changedTouches;
+
+				touches = touchProcessor(ev.touches, component.element.dom);
+				targetTouches = touchProcessor(ev.targetTouches, component.element.dom);
+				changedTouches = touchProcessor(ev.changedTouches, component.element.dom);
+
+				cloneEvent.initTouchEvent(
+					ev.type, //type, The type of event that occurred.
+					true, //canBubble, Indicates whether an event can bubble. If true, the event can bubble; otherwise, it cannot.
+					true, //cancelable, Indicates whether an event can have its default action prevented. If true, the default action can be prevented; otherwise, it cannot.
+					window, //view, The view (DOM window) in which the event occurred.
+					ev.detail, //detail Specifies some detail information about the event depending on the type of event.
+					ev.pageX, //screenX The x-coordinate of the event’s location in screen coordinates.
+					ev.pageY, //screenY The y-coordinate of the event’s location in screen coordinates.
+					ev.pageX, //clientX The x-coordinate of the event’s location relative to the window’s viewport.
+					ev.pageY, //clientY The y-coordinate of the event’s location relative to the window’s viewport.
+					ev.ctrlKey, //ctrlKey, If true, the control key is pressed; otherwise, it is not.
+					ev.altKey, //altKey If true, the alt key is pressed; otherwise, it is not.
+					ev.shiftKey, //shiftKey If true, the shift key is pressed; otherwise, it is not.
+					ev.metaKey, //metaKey If true, the meta key is pressed; otherwise, it is not.
+					touches, //touches, A collection of Touch objects representing all touches associated with this event.
+					targetTouches, //targetTouches, A collection of Touch objects representing all touches associated with this target.
+					changedTouches, //changedTouches, A collection of Touch objects representing all touches that changed in this event.
+					ev.scale, //scale The distance between two fingers since the start of an event as a multiplier of the initial distance. The initial value is 1.0. If less than 1.0, the gesture is pinch close (to zoom out). If greater than 1.0, the gesture is pinch open (to zoom in).
+					ev.rotation //rotation The delta rotation since the start of an event, in degrees, where clockwise is positive and counter-clockwise is negative. The initial value is 0.0.
+				);
+
+				component.element.dom.dispatchEvent(cloneEvent);
+
+				ev.preventDefault();
+
+				return false;
+			};
 
 		if (doc && body) {
 			doc.open();
@@ -50,6 +112,14 @@ Ext.define('ZCS.view.ux.ZtIframe', {
 			body.style.margin = '0';
 			body.style.height = 'auto';
 			this.fixSize();
+
+			//Capture these touch events being sent to the iframe.
+			body.addEventListener("touchstart", touchEventListener, true);
+			body.addEventListener("touchend", touchEventListener, true);
+			body.addEventListener("touchcancel", touchEventListener, true);
+			body.addEventListener("touchleave", touchEventListener, true);
+			body.addEventListener("touchmove", touchEventListener, true);
+
 		}
 	},
 

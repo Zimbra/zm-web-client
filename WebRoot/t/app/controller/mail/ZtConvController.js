@@ -35,6 +35,8 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 			// event handlers
 			itemPanelToolbar: 'appview #' + ZCS.constant.APP_MAIL + 'itempanel titlebar',
 
+			itemPanel: 'appview #' + ZCS.constant.APP_MAIL + 'itempanel',
+
 			// other
 			msgListView: ZCS.constant.APP_MAIL + 'itemview'
 		},
@@ -68,12 +70,17 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 		this.callParent(arguments);
 
 		var toolbar = this.getItemPanelToolbar(),
+			itemPanel = this.getItemPanel(),
 			store = this.getStore();
 
 		toolbar.setTitle(conv.get('subject'));
+
 		store.load({
 			convId: conv.getId(),
 			callback: function(records, operation, success) {
+				if (records.length > 1) {
+					itemPanel.showMenuButton();
+				}
 				Ext.Logger.info('Conv load callback');
 				Ext.defer(this.adjustItemHeights.bind(this, Ext.ComponentQuery.query('msgview')), 500);
 			},

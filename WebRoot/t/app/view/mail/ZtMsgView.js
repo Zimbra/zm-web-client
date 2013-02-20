@@ -84,6 +84,7 @@ Ext.define('ZCS.view.mail.ZtMsgView', {
 		this.setExpanded(!this.getExpanded());
 		this.updateExpansion();
 		this.down('msgheader').render(this.getMsg());
+		this.updateHeight();
 	},
 
 	/**
@@ -93,7 +94,7 @@ Ext.define('ZCS.view.mail.ZtMsgView', {
 	 * @param {boolean} doNotRecomputeHeights		True to recompute heights, false to not recompute.
 	 * @private
 	 */
-	updateExpansion: function(doNotRecomputeHeights) {
+	updateExpansion: function() {
 
 		if (this.getExpanded()) {
 			this.down('msgbody').show();
@@ -103,7 +104,9 @@ Ext.define('ZCS.view.mail.ZtMsgView', {
 			this.down('msgbody').hide();
 			this.down('msgfooter').hide();
 		}
+	},
 
+	updateHeight: function (doNotRecomputeHeights) {
 		//Only recompute heights if this function has been called without parameters
 		if (!doNotRecomputeHeights) {
 			var listRef = this.up('.list');
