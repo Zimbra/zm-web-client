@@ -392,7 +392,7 @@ if (application.getInitParameter("offlineMode") != null)  {
                                                 <%--Internal user login - username & password input fields--%>
                                                 <tr>
                                                     <td><label for="username"><fmt:message key="username"/>:</label></td>
-                                                    <td><input id="username" class="zLoginField" name="username" type="text" value="${fn:escapeXml(param.username)}" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}"/></td>
+                                                    <td><input id="username" class="zLoginField" name="username" type="text" value="${fn:escapeXml(param.username)}" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}" autocapitalize="off" autocorrect="off"/></td>
                                                 </tr>
                                             </c:otherwise>
                                         </c:choose>
