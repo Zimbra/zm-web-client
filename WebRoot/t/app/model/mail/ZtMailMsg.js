@@ -59,7 +59,11 @@ Ext.define('ZCS.model.mail.ZtMailMsg', {
 			},
 			reader: 'msgreader',
 			writer: 'msgwriter'
-		}
+		},
+
+		mime: null,             // root MIME part (used when creating a msg for sending)
+		composeAction: '',      // compose, reply, reply all, or forward
+		origId: null            // ID or original if replying or forwarding
 	},
 
 	statics: {
@@ -181,11 +185,12 @@ Ext.define('ZCS.model.mail.ZtMailMsg', {
 	getHtmlFromBodyParts: function() {
 
 		var bodyParts = this.get('bodyParts'),
+			ln = bodyParts ? bodyParts.length : 0, i,
 			html = [];
 
-		Ext.each(bodyParts, function(part) {
-
-			var content = part.getContent(),
+		for (i = 0; i < ln; i++) {
+			var part = bodyParts[i],
+				content = part.getContent(),
 				contentType = part.getContentType(),
 				disposition = part.getContentDisposition();
 
@@ -217,7 +222,7 @@ Ext.define('ZCS.model.mail.ZtMailMsg', {
 			else {
 				html.push(ZCS.util.convertToHtml(content));
 			}
-		}, this);
+		}
 
 		return html.join('');
 	},
@@ -245,5 +250,36 @@ Ext.define('ZCS.model.mail.ZtMailMsg', {
 		}
 
 		return content;
+	},
+
+	/**
+	 * Creates the MIME structure for this message from the given content. If the content
+	 * is HTML, the top part will be multipart/alternative. Otherwise, it's just text/plain.
+	 *
+	 * @param {string}      content     message text
+	 * @param {boolean}     isHtml      true if content is HTML
+	 */
+	createMime: function(content, isHtml) {
+
+		var top = new ZCS.model.mail.ZtMimePart(),
+			textPart, htmlPart;
+
+		if (isHtml) {
+			top.setContentType(ZCS.mime.MULTI_ALT);
+			textPart = new ZCS.model.mail.ZtMimePart();
+			textPart.setContentType(ZCS.mime.TEXT_PLAIN);
+			textPart.setContent(ZCS.util.htmlToText(content));
+			top.add(textPart);
+			htmlPart = new ZCS.model.mail.ZtMimePart();
+			htmlPart.setContentType(ZCS.mime.TEXT_HTML);
+			htmlPart.setContent(content);
+			top.add(htmlPart);
+		}
+		else {
+			top.setContentType(ZCS.mime.TEXT_PLAIN);
+			top.setContent(content);
+		}
+
+		this.setMime(top);
 	}
 });

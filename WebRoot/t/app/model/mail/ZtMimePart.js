@@ -60,10 +60,10 @@ Ext.define('ZCS.model.mail.ZtMimePart', {
 		fromJson: function(node, ctxt, parent) {
 
 			var part = new ZCS.model.mail.ZtMimePart({
-				parent:             parent,
-				node:               node,
-				contentType:        node.ct,
-				format:             node.format,
+				parent:             parent,             // ZtMimePart
+				node:               node,               // JSON node from which this was created
+				contentType:        node.ct,            // ZCS.mime.*
+				format:             node.format,        // applies only to text/plain, can be 'flowed'
 				name:               node.name,
 				part:               node.part,
 				cachekey:           node.cachekey,
@@ -73,7 +73,7 @@ Ext.define('ZCS.model.mail.ZtMimePart', {
 				contentLocation:    node.cl,
 				fileName:           node.filename,
 				isTruncated:        !!node.truncated,
-				isBody:             !!node.body,
+				isBody:             !!node.body,        // server flags viewable content
 				hasContent:         !!node.content
 			});
 
@@ -139,25 +139,31 @@ Ext.define('ZCS.model.mail.ZtMimePart', {
 		}
 	},
 
-	getContent: function() {
-		var node = this.getNode();
-		return node ? node.content : '';
+	/**
+	 * Adds the given part to this part's children.
+	 *
+	 * @param {ZtMimePart}  part
+	 */
+	add: function(part) {
+		this.getChildren().push(part);
 	},
 
-	getHtml: function() {
+	/**
+	 * Returns the textual content of this part.
+	 * @return {string}
+	 */
+	getContent: function() {
+		var node = this.getNode();
+		return this.content || (node && node.content) || '';
+	},
 
-		var type = this.getContentType(),
-			content = this.getContent(),
-			html = '';
-
-		if (type === ZCS.mime.TEXT_HTML) {
-			html = content;
-		}
-		else if (type === ZCS.mime.TEXT_PLAIN) {
-			html = '<pre>' + content + '</pre>';
-		}
-
-		return html;
+	/**
+	 * Sets the textual content of this part. Used when creating a message to be sent.
+	 *
+	 * @param {string}  content
+	 */
+	setContent: function(content) {
+		this.content = content;
 	},
 
 	/**

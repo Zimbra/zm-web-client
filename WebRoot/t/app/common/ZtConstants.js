@@ -222,6 +222,13 @@ ZCS.constant.BCC      = 'BCC';
 ZCS.constant.REPLY_TO = 'REPLY_TO';
 ZCS.constant.SENDER   = 'SENDER';
 
+// Recipients
+ZCS.constant.RECIP_TYPES = [
+	ZCS.constant.TO,
+	ZCS.constant.CC,
+	ZCS.constant.BCC
+];
+
 // Map SOAP type constants to those above
 ZCS.constant.FROM_SOAP_TYPE = {};
 ZCS.constant.FROM_SOAP_TYPE['f']  = ZCS.constant.FROM;
@@ -280,6 +287,7 @@ ZCS.constant.SETTING_DEFAULT = {};
 ZCS.constant.SETTING_DEFAULT[ZCS.constant.SETTING_LOCALE] = 'en_US';
 
 // Operations (generally tied to dropdown menu items)
+ZCS.constant.OP_COMPOSE     = 'COMPOSE';
 ZCS.constant.OP_DELETE      = 'DELETE';
 ZCS.constant.OP_FORWARD     = 'FORWARD';
 ZCS.constant.OP_MARK_READ   = 'MARK_READ';

@@ -58,53 +58,56 @@ Ext.define('ZCS.model.mail.ZtMsgWriter', {
 
 			methodJson = json.Body.SendMsgRequest;
 
-			Ext.apply(methodJson, {
-				m: {
-					e: [
-						{
-							t: 'f',
-							a: msg.get('from')
-						}
-					],
-					su: {
-						_content: msg.get('subject')
-					},
-					mp: [
-						{
-							content: {
-								_content: msg.get('content')
-							},
-							ct: 'text/plain'
-						}
-					]
-				}
+			var m = methodJson.m = {},
+				e = m.e = [],
+				ln = ZCS.constant.RECIP_TYPES.length,
+				i, type, field,
+				action = msg.getComposeAction(),
+				origId = msg.getOrigId(),
+				parts = m.mp = [],                  // Note: should only ever be one top-level part
+				mime = msg.getMime();
+
+			// from address
+			e.push({
+				t: ZCS.constant.TO_SOAP_TYPE[ZCS.constant.FROM],
+				a: msg.get('from')
+				// TODO: add name part
 			});
 
-			//Add the to, cc, bcc.  Note, we're assuming these are ZtEmailAddress objects at this point.
-			Ext.each(msg.get('to'), function (to) {
-				methodJson.m.e.push({
-					t: 't',
-					a: to.get('email'),
-					p: to.get('name')
-				});
-			});
+			// recipient addresses
+			for (i = 0; i < ln; i++) {
+				type = ZCS.constant.RECIP_TYPES[i];
+				field = type.toLowerCase();
+				Ext.each(msg.get(field), function(addr) {
+					e.push({
+						t: ZCS.constant.TO_SOAP_TYPE[type],
+						a: addr.get('email'),
+						p: addr.get('name')
+					});
+				}, this);
+			}
 
-			Ext.each(msg.get('cc'), function (cc) {
-				methodJson.m.e.push({
-					t: 'c',
-					a: cc.get('email'),
-					p: cc.get('name')
-				});
-			});
+			// reply type
+			if (action === ZCS.constant.OP_REPLY || action === ZCS.constant.OP_REPLY_ALL) {
+				m.rt = 'r';
+			}
+			else if (action === ZCS.constant.OP_FORWARD) {
+				m.rt = 'w';
+			}
 
-			Ext.each(msg.get('bcc'), function (bcc) {
-				methodJson.m.e.push({
-					t: 'b',
-					a: bcc.get('email'),
-					p: bcc.get('name')
-				});
-			});
+			// subject
+			m.su = {
+				_content: msg.get('subject')
+			};
 
+			// ID or original if this is reply or forward
+			if (origId) {
+				m.origId = origId;
+			}
+
+			// TODO: irtMessageId (from Message-ID header)
+
+			this.addMimePart(parts, mime);
 		}
 		else if (action === 'update') {
 			// 'update' operation means we are performing a MsgActionRequest or GetMsgRequest
@@ -139,5 +142,38 @@ Ext.define('ZCS.model.mail.ZtMsgWriter', {
 		Ext.Logger.info('--- ' + request.soapMethod);
 
 		return request;
+	},
+
+	/**
+	 * Adds the given part to the list of part nodes, then handles the part's children.
+	 *
+	 * @param {array}       parts       array of JSON part nodes
+	 * @param {ZtMimePart}  part        part to add
+	 */
+	addMimePart: function(parts, part) {
+
+		var node = {
+		   ct: part.getContentType()
+		};
+		parts.push(node);
+
+		var content = part.getContent();
+		if (content) {
+			node.content = {
+				_content: content
+			}
+		}
+
+		var children = part.getChildren(),
+			ln = children ? children.length : 0,
+			i, child, mp;
+
+		if (ln) {
+			var subParts = node.mp = [];
+			for (i = 0; i < ln; i++) {
+				child = children[i];
+				this.addMimePart(subParts, child);
+			}
+		}
 	}
 });

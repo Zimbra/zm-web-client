@@ -238,5 +238,9 @@ Ext.define('ZCS.common.ZtUtil', {
 			.replace(/\r?\n/mg, '<br>');
 
 		return str;
+	},
+
+	htmlToText: function(html) {
+		return 'Conversion of HTML to text not yet implemented';
 	}
 });
