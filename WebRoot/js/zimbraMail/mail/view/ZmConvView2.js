@@ -37,6 +37,7 @@ ZmConvView2 = function(params) {
 	this._listChangeListener = this._msgListChangeListener.bind(this);
 	this._standalone = params.standalone;
 	this._hasBeenExpanded = {};	// track which msgs have been expanded at least once
+	this.inviteMsgsExpanded = 0; //track how many invite messages have been expanded.
 
 	this.addControlListener(this._scheduleResize.bind(this));
 	this._setAllowSelection();
@@ -50,6 +51,7 @@ ZmConvView2.prototype.constructor = ZmConvView2;
 
 ZmConvView2.prototype.isZmConvView2 = true;
 ZmConvView2.prototype.toString = function() { return "ZmConvView2"; };
+ZmConvView2.MAX_INVITE_MSG_EXPANDED = 10;
 
 
 /**
@@ -153,6 +155,7 @@ function(conv) {
 
 	this._header._setExpandIcon();
 	this._scheduleResize(firstExpanded || true);
+	this.inviteMsgsExpanded = 0; //reset the inviteMsgExpanded count.
 	Dwt.setLoadedTime("ZmConv");
 };
 
@@ -1232,17 +1235,24 @@ function(msg, force) {
 	else {
 		this._expanded = !this._forceCollapse && msg.isUnread;
 	}
+	this._isCalendarInvite = appCtxt.get(ZmSetting.CALENDAR_ENABLED) && msg.invite && !msg.invite.isEmpty();
 	this._expanded = this._expanded || this._forceExpand;
+	if (this._expanded && this._isCalendarInvite && this._convView.inviteMsgsExpanded >= ZmConvView2.MAX_INVITE_MSG_EXPANDED) {
+		//do not expand more than MAX_INVITE_MSG_EXPANDED messages.
+		this._expanded = false;
+		this._forceExpand = false;
+	}
 	if (this._expanded) {
 		this._convView._hasBeenExpanded[msg.id] = true;
 	}
 	this._setHeaderClass();
 
-	this._isCalendarInvite = appCtxt.get(ZmSetting.CALENDAR_ENABLED) && msg.invite && !msg.invite.isEmpty();
-
 	var dayViewCallback = null;
 	var showCalInConv = appCtxt.get(ZmSetting.CONV_SHOW_CALENDAR);
     if (this._expanded) {
+		if (this._isCalendarInvite) {
+			this._convView.inviteMsgsExpanded++;
+		}
 		dayViewCallback = this._handleShowCalendarLink.bind(this, ZmOperation.SHOW_ORIG, showCalInConv);
 	}
 	ZmMailMsgView.prototype.set.apply(this, [msg, force, dayViewCallback]);
