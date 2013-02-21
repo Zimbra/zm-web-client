@@ -141,6 +141,8 @@ Ext.define('ZCS.controller.ZtListController', {
 	 *
 	 * @param {string}      query           query to run
 	 * @param {ZtOrganizer} folder          overview folder that was tapped (optional)
+	 *
+	 * TODO: we don't really handle the search request failing
 	 */
 	doSearch: function(query, folder) {
 

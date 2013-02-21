@@ -208,7 +208,7 @@ Ext.define('ZCS.model.mail.ZtMailMsg', {
 				}
 			}
 			else if (contentType === ZCS.mime.TEXT_PLAIN) {
-				html.push(ZCS.util.convertToHtml(content));
+				html.push(ZCS.util.textToHtml(content));
 			}
 			else if (contentType === ZCS.mime.TEXT_HTML) {
 				// TODO: handle invite
@@ -220,7 +220,7 @@ Ext.define('ZCS.model.mail.ZtMailMsg', {
 				html.push(ZCS.model.mail.ZtMailMsg.extractCalendarText(content));
 			}
 			else {
-				html.push(ZCS.util.convertToHtml(content));
+				html.push(ZCS.util.textToHtml(content));
 			}
 		}
 
@@ -268,7 +268,7 @@ Ext.define('ZCS.model.mail.ZtMailMsg', {
 			top.setContentType(ZCS.mime.MULTI_ALT);
 			textPart = new ZCS.model.mail.ZtMimePart();
 			textPart.setContentType(ZCS.mime.TEXT_PLAIN);
-			textPart.setContent(ZCS.util.htmlToText(content));
+			textPart.setContent(ZCS.util.htmlToText(content, ZCS.session.getSetting(ZCS.constant.SETTING_REPLY_PREFIX)));
 			top.add(textPart);
 			htmlPart = new ZCS.model.mail.ZtMimePart();
 			htmlPart.setContentType(ZCS.mime.TEXT_HTML);

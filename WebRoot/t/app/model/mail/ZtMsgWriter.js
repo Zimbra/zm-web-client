@@ -137,10 +137,6 @@ Ext.define('ZCS.model.mail.ZtMsgWriter', {
 
 		request.setJsonData(json);
 
-		// TODO: does Sencha have pretty-print for objects? There's always the Network tab
-		// TODO: in the debugger, but that's not available when at a breakpoint
-		Ext.Logger.info('--- ' + request.soapMethod);
-
 		return request;
 	},
 

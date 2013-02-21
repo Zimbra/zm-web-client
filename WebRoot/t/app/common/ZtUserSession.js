@@ -252,6 +252,18 @@ Ext.define('ZCS.common.ZtUserSession', {
 			setting.setValue(value);
 			this._settings[setting.getName()] = setting;
 		}, this);
+
+		// fill in settings that control what's included when replying to or forwarding a message
+		var value, list;
+		Ext.each(['REPLY', 'FORWARD'], function(which) {
+			value = this.getSetting(ZCS.constant['SETTING_' + which + '_INCLUDE']);
+			if (value) {
+				list = ZCS.constant.INC_MAP[value];
+				this.setSetting(ZCS.constant['SETTING_' + which + '_INCLUDE_WHAT'], list[0]);
+				this.setSetting(ZCS.constant['SETTING_' + which + '_USE_PREFIX'], list[1]);
+				this.setSetting(ZCS.constant['SETTING_' + which + '_INCLUDE_HEADERS'], list[2]);
+			}
+		}, this);
 	},
 
 	/**

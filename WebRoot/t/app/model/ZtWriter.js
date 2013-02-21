@@ -28,6 +28,16 @@ Ext.define('ZCS.model.ZtWriter', {
 	},
 
 	/**
+	 * Override so that we can log the request.
+	 */
+	write: function(request) {
+		this.callParent(arguments);
+		Ext.Logger.info('--- ' + request.soapMethod);
+		Ext.Logger.verbose(JSON.stringify(request.getJsonData(), null, 4));
+		return request;
+	},
+
+	/**
 	 * Returns a SOAP envelope with a Header and a Body.
 	 *
 	 * @param {Ext.data.Request}    request     request object

@@ -246,6 +246,6 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 	},
 
 	quoteHtml: function(html) {
-		return '<blockquote class="zcs-quote-html">' + html + '</blockquote>';
+		return ZCS.constant.HTML_QUOTE_PREFIX_PRE + html + ZCS.constant.HTML_QUOTE_PREFIX_POST;
 	}
 });

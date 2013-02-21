@@ -253,10 +253,19 @@ ZCS.constant.SETTING_SHOW_SEARCH        = 'zimbraPrefShowSearchString';
 ZCS.constant.SETTING_LOCALE             = 'zimbraPrefLocale';
 ZCS.constant.SETTING_TIMEZONE           = 'zimbraPrefTimeZoneId';
 ZCS.constant.SETTING_MARK_READ          = 'zimbraPrefMarkMsgRead';  // -1 = never, 0 = now, [int] = delay in seconds
+ZCS.constant.SETTING_REPLY_INCLUDE      = 'zimbraPrefReplyIncludeOriginalText';
+ZCS.constant.SETTING_FORWARD_INCLUDE    = 'zimbraPrefForwardIncludeOriginalText';
+ZCS.constant.SETTING_REPLY_PREFIX       = 'zimbraPrefForwardReplyPrefixChar';
 
 // Names of internal settings
-ZCS.constant.SETTING_CUR_SEARCH         = 'currentSearch';
-ZCS.constant.SETTING_CUR_SEARCH_ID      = 'currentSearchId';
+ZCS.constant.SETTING_CUR_SEARCH                 = 'CUR_SEARCH';
+ZCS.constant.SETTING_CUR_SEARCH_ID              = 'CUR_SEARCH_ID';
+ZCS.constant.SETTING_REPLY_INCLUDE_WHAT         = 'REPLY_INCLUDE_WHAT';
+ZCS.constant.SETTING_REPLY_USE_PREFIX           = 'REPLY_USE_PREFIX';
+ZCS.constant.SETTING_REPLY_INCLUDE_HEADERS      = 'REPLY_INCLUDE_HEADERS';
+ZCS.constant.SETTING_FORWARD_INCLUDE_WHAT       = 'FORWARD_INCLUDE_WHAT';
+ZCS.constant.SETTING_FORWARD_USE_PREFIX         = 'FORWARD_USE_PREFIX';
+ZCS.constant.SETTING_FORWARD_INCLUDE_HEADERS    = 'FORWARD_INCLUDE_HEADERS';
 
 // List of all settings we care about
 ZCS.constant.SETTINGS = [
@@ -268,10 +277,19 @@ ZCS.constant.SETTINGS = [
 	ZCS.constant.SETTING_LOCALE,
 	ZCS.constant.SETTING_TIMEZONE,
 	ZCS.constant.SETTING_MARK_READ,
+	ZCS.constant.SETTING_REPLY_INCLUDE,
+	ZCS.constant.SETTING_FORWARD_INCLUDE,
+	ZCS.constant.SETTING_REPLY_PREFIX,
 
 	// internal
 	ZCS.constant.SETTING_CUR_SEARCH,
-	ZCS.constant.SETTING_CUR_SEARCH_ID
+	ZCS.constant.SETTING_CUR_SEARCH_ID,
+	ZCS.constant.SETTING_REPLY_INCLUDE_WHAT,
+	ZCS.constant.SETTING_REPLY_USE_PREFIX,
+	ZCS.constant.SETTING_REPLY_INCLUDE_HEADERS,
+	ZCS.constant.SETTING_FORWARD_INCLUDE_WHAT,
+	ZCS.constant.SETTING_FORWARD_USE_PREFIX,
+	ZCS.constant.SETTING_FORWARD_INCLUDE_HEADERS
 ];
 
 // Setting type; defaults to string, so just note exceptions
@@ -285,6 +303,33 @@ ZCS.constant.SETTING_VALUE[ZCS.constant.SETTING_SHOW_SEARCH] = 'false';
 // Default values for settings
 ZCS.constant.SETTING_DEFAULT = {};
 ZCS.constant.SETTING_DEFAULT[ZCS.constant.SETTING_LOCALE] = 'en_US';
+
+// Values for what is included on reply/forward - server bundles several options into a single value
+ZCS.constant.INC_NONE				= "includeNone";
+ZCS.constant.INC_ATTACH			    = "includeAsAttachment";
+ZCS.constant.INC_BODY				= "includeBody";				// deprecated - same as includeBodyAndHeaders
+ZCS.constant.INC_BODY_ONLY			= "includeBodyOnly";
+ZCS.constant.INC_BODY_PRE			= "includeBodyWithPrefix";
+ZCS.constant.INC_BODY_HDR			= "includeBodyAndHeaders";
+ZCS.constant.INC_BODY_PRE_HDR		= "includeBodyAndHeadersWithPrefix";
+ZCS.constant.INC_SMART				= "includeSmart";
+ZCS.constant.INC_SMART_PRE			= "includeSmartWithPrefix";
+ZCS.constant.INC_SMART_HDR			= "includeSmartAndHeaders";
+ZCS.constant.INC_SMART_PRE_HDR		= "includeSmartAndHeadersWithPrefix";
+
+// Map to translate setting value to values for three related settings
+ZCS.constant.INC_MAP = {};
+ZCS.constant.INC_MAP[ZCS.constant.INC_NONE]			    = [ZCS.constant.INC_NONE, false, false];
+ZCS.constant.INC_MAP[ZCS.constant.INC_ATTACH]			= [ZCS.constant.INC_ATTACH, false, false];
+ZCS.constant.INC_MAP[ZCS.constant.INC_BODY]			    = [ZCS.constant.INC_BODY, false, true];
+ZCS.constant.INC_MAP[ZCS.constant.INC_BODY_ONLY]		= [ZCS.constant.INC_BODY, false, false];
+ZCS.constant.INC_MAP[ZCS.constant.INC_BODY_PRE]		    = [ZCS.constant.INC_BODY, true, false];
+ZCS.constant.INC_MAP[ZCS.constant.INC_BODY_HDR]		    = [ZCS.constant.INC_BODY, false, true];
+ZCS.constant.INC_MAP[ZCS.constant.INC_BODY_PRE_HDR] 	= [ZCS.constant.INC_BODY, true, true];
+ZCS.constant.INC_MAP[ZCS.constant.INC_SMART]			= [ZCS.constant.INC_SMART, false, false];
+ZCS.constant.INC_MAP[ZCS.constant.INC_SMART_PRE]		= [ZCS.constant.INC_SMART, true, false];
+ZCS.constant.INC_MAP[ZCS.constant.INC_SMART_HDR]		= [ZCS.constant.INC_SMART, false, true];
+ZCS.constant.INC_MAP[ZCS.constant.INC_SMART_PRE_HDR]	= [ZCS.constant.INC_SMART, true, true];
 
 // Operations (generally tied to dropdown menu items)
 ZCS.constant.OP_COMPOSE     = 'COMPOSE';
@@ -345,9 +390,26 @@ ZCS.constant.ADDITIONAL_MAIL_HEADERS = [
 ZCS.constant.REGEX_NON_WHITESPACE = /\S+/;
 ZCS.constant.REGEX_SPLIT = /\r\n|\r|\n/;
 ZCS.constant.REGEX_SUBJ_PREFIX = new RegExp('^\\s*(Re|Fw|Fwd|' + ZtMsg.re + '|' + ZtMsg.fwd + '|' + ZtMsg.fw + '):' + '\\s*', 'i');
+ZCS.constant.REGEX_SPACE_WORD = new RegExp('\\s*\\S+', 'g');
+ZCS.constant.REGEX_MSG_SEP = new RegExp('^\\s*--+\\s*(' + ZtMsg.originalMessage + '|' + ZtMsg.forwardedMessage + ')\\s*--+', 'i');
+ZCS.constant.REGEX_SIG = /^(- ?-+)|(__+)\r?$/;
+ZCS.constant.REGEX_HDR = /^\s*\w+:/;
+ZCS.constant.REGEX_COLON = /\S+:$/;
 
 // URL paths
 ZCS.constant.PATH_MSG_FETCH = '/service/home/~/';
 
 // Default height of IFRAME element
 ZCS.constant.DEFAULT_IFRAME_HEIGHT = 150;
+
+// Quoting original content when replying
+ZCS.constant.HTML_QUOTE_COLOR			= '#1010FF';
+ZCS.constant.HTML_QUOTE_STYLE			= 'color:#000;font-weight:normal;font-style:normal;text-decoration:none;font-family:Helvetica,Arial,sans-serif;font-size:12pt;';
+ZCS.constant.HTML_QUOTE_PREFIX_PRE		= '<blockquote style="border-left:2px solid ' + ZCS.constant.HTML_QUOTE_COLOR + ';margin-left:5px;padding-left:5px;' + ZCS.constant.HTML_QUOTE_STYLE + '">';
+ZCS.constant.HTML_QUOTE_PREFIX_POST     = '</blockquote>';
+ZCS.constant.HTML_QUOTE_NONPREFIX_PRE	= '<div style="' + ZCS.constant.HTML_QUOTE_STYLE + '">';
+ZCS.constant.HTML_QUOTE_NONPREFIX_POST	= '</div><br/>';
+
+// Wrapping text
+ZCS.constant.WRAP_LENGTH				= 80;
+ZCS.constant.HDR_WRAP_LENGTH			= 120;

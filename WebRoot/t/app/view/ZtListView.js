@@ -25,7 +25,8 @@ Ext.define('ZCS.view.ZtListView', {
 	plugins: [{
 		xclass: 'Ext.plugin.ListPaging',
 		autoPaging: true,
-		noMoreRecordsText: ''
+		noMoreRecordsText: '',
+		loadMoreText: ZtMsg.loadMore
 	}],
 
 	config: {
