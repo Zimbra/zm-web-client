@@ -246,13 +246,13 @@ ZmApptListView.prototype._getCellContents = function(htmlArr, idx, appt, field, 
 //
 
 ZmApptListView._sortSubject = function(a, b) {
-	var aVal = a.getName();
-	var bVal = b.getName();
+    // Bug fix # 80458 - Convert the subject line to lower case and compare
+    var aVal = a.getName().toLowerCase();
+    var bVal = b.getName().toLowerCase();
 
 	if (aVal < bVal)		{ return ZmApptListView.sortByAsc ? -1 : 1; }
 	else if (aVal > bVal)	{ return ZmApptListView.sortByAsc ? 1 : -1; }
 	else 					{ return 0; }
-
 };
 
 ZmApptListView._sortStatus = function(a, b) {
