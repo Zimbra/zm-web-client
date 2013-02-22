@@ -1795,7 +1795,7 @@ input.xform_field {
 .ZWidgetIcon					{	width:0px;	height:@SmallIconHeight@; overflow:hidden;}
 .ZDisabled .ZWidgetIcon DIV		{ 	@Icon-disabled@	}
 
-.ZWidgetTitle					{ 	height:@SmallIconHeight@;	width:100%;	white-space:nowrap;	overflow: hidden;	}
+.ZWidgetTitle					{ 	height:@SmallIconHeight@;	width:100%;	white-space:nowrap;	overflow: hidden; cursor: default;	}
 .ZDisabled .ZWidgetTitle		{ 	@Text-disabled@	}
 
 .ZCenterTitle .ZWidgetTitle		{	text-align:center;  vertical-align:middle;	}
