@@ -13,6 +13,8 @@
     if (localePref != null && localePref.size() > 0) {
         request.setAttribute("localeId", localePref.get(0));
     }
+
+	String debug = request.getParameter("debug");
 %>
 
 <!DOCTYPE HTML>
@@ -92,9 +94,11 @@
 
         <zm:getInfoJSON var="getInfoJSON" authtoken="${requestScope.authResult.authToken}" dosearch="true" itemsperpage="20" types="conversation" folderpath="${path}" sortby="dateDesc"/>
         var batchInfoResponse = ${getInfoJSON};
+        var debugLevel = "<%= (debug != null) ? debug : "" %>";
         window.inlineData = {
             header:batchInfoResponse.Header,
-            response:batchInfoResponse.Body.BatchResponse
+            response:batchInfoResponse.Body.BatchResponse,
+	        debugLevel:debugLevel
         };
     </script>
 

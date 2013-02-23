@@ -21,6 +21,7 @@ Ext.application({
     requires: [
         'Ext.MessageBox',
 
+	    'ZCS.common.ZtLogger',
 	    'ZCS.common.ZtUtil',
 	    'ZCS.common.ZtConstants',
 	    'ZCS.common.ZtTemplate',
@@ -30,7 +31,8 @@ Ext.application({
 
 	logger: {
 		enabled: true,
-		xclass: 'Ext.log.Logger',
+//		xclass: 'Ext.log.Logger',
+		xclass: 'ZCS.common.ZtLogger',
 		minPriority: 'verbose',
 		writers: {
 			console: {
@@ -74,12 +76,14 @@ Ext.application({
     },
 
     launch: function() {
-	    Ext.Logger.info('STARTUP: app launch');
         // Destroy the #appLoadingIndicator element
         Ext.fly('appLoadingIndicator').destroy();
 
 	    // Process the inline data (GetInfoResponse and SearchResponse)
 	    ZCS.common.ZtUserSession.initSession(window.inlineData);
+
+	    Ext.Logger.getWriters().console.getFormatter().setMessageFormat('{message}');
+	    Ext.Logger.info('STARTUP: app launch');
 
         // Initialize the main view
         Ext.Viewport.add(Ext.create('ZCS.view.ZtMain'));
