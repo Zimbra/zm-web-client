@@ -50,7 +50,8 @@ Ext.define('ZCS.view.mail.ZtMsgView', {
 
 		listeners: {
 			updatedata: function(msgView, msgData) {
-				if (msgData) {
+
+				if (msgData && !this.up('.itempanel').suppressRedraw) {
 					Ext.Logger.info('updatedata for msg ' + msgData.id);
 					var msg = ZCS.cache.get(msgData.id);
 					if (msg) {

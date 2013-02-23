@@ -41,12 +41,23 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 			msgListView: ZCS.constant.APP_MAIL + 'itemview'
 		},
 
+		control: {
+			'.moveview': {
+				assignment: 'saveItemMove'
+			},
+			'.tagview': {
+				assignment: 'saveItemTag'
+			}
+		},
+
 		menuData: [
 			{label: ZtMsg.reply, action: ZCS.constant.OP_REPLY, listener: 'doReply'},
 			{label: ZtMsg.replyAll, action: ZCS.constant.OP_REPLY_ALL, listener: 'doReplyAll'},
 			{label: ZtMsg.forward, action: ZCS.constant.OP_FORWARD, listener: 'doForward'},
 			{label: ZtMsg.del, action: ZCS.constant.OP_DELETE, listener: 'doDelete'},
-			{label: ZtMsg.markRead, action: ZCS.constant.OP_MARK_READ, listener: 'doMarkRead'}
+			{label: ZtMsg.markRead, action: ZCS.constant.OP_MARK_READ, listener: 'doMarkRead'},
+			{label: ZtMsg.move || 'Move', action: ZCS.constant.OP_MOVE, listener: 'doMove'},
+			{label: ZtMsg.tag || 'Tag', action: ZCS.constant.OP_MOVE, listener: 'doTag'}
 		]
 	},
 
@@ -78,9 +89,7 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 		store.load({
 			convId: conv.getId(),
 			callback: function(records, operation, success) {
-				if (records.length > 1) {
-					itemPanel.showMenuButton();
-				}
+				itemPanel.showMenuButton();
 				Ext.Logger.info('Conv load callback');
 				Ext.defer(this.adjustItemHeights.bind(this, Ext.ComponentQuery.query('msgview')), 500);
 			},
@@ -100,6 +109,7 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 	 * The action will be either Mark Read or Mark Unread.
 	 */
 	doShowMenu: function(menuButton) {
+		this.setActiveMailComponent(menuButton.up('.itempanel'));
 
 		var menu = this.getMenu(),
 			label = this.getItem().get('isUnread') ? ZtMsg.markRead : ZtMsg.markUnread;

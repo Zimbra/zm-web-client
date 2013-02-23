@@ -118,6 +118,19 @@ Ext.define('ZCS.common.ZtUserSession', {
 		return organizerData ? organizerData[app] : null;
 	},
 
+	getOrganizerDataByAppAndOrgType: function (app, type) {
+		var organizerData = this.getOrganizerDataByApp(app),
+			typeData = Ext.Array.filter(organizerData, function (data) {
+			    if (data.type === type) {
+			    	return true;
+			    } else {
+			    	return false;
+			    }
+			});
+
+		return typeData;
+	},
+
 	/**
 	 * @private
 	 */

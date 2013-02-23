@@ -72,6 +72,7 @@ Ext.define('ZCS.controller.mail.ZtMsgController', {
 
 	doShowMenu: function(menuButton, msg) {
 		this.setItem(msg);
+		this.setActiveMailComponent(menuButton.up('.msgview'));
 		this.callParent(arguments);
 	}
 });

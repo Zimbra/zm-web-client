@@ -24,10 +24,84 @@ Ext.define('ZCS.controller.mail.ZtMailItemController', {
 
 	extend: 'ZCS.controller.ZtItemController',
 
+	requires: [
+		'ZCS.view.mail.ZtFolderAssignmentView',
+		'ZCS.view.mail.ZtTagAssignmentView'
+	],
+
+	config: {
+		/**
+		 * This is the mail component which contains the menu that has been triggered.  Since the menu
+		 * implementation is entirely decoupled from its component context, this seems the only reasonable
+		 * way to re-establish that context.
+		 */
+		activeMailComponent: null
+	},
+
 	/**
 	 * Returns the message that an operation should be applied to.
 	 */
 	getActiveMsg: function() {},
+
+	/**
+	 * Launches a move assignment view.
+	 */
+	doMove: function(item) {
+		this.doAssignmentView(item, 'ZCS.view.mail.ZtFolderAssignmentView', 'folderView');
+	},
+
+	/**
+	 * Launches a tag assignment view.
+	 */
+	doTag: function (item) {
+		this.doAssignmentView(item, 'ZCS.view.mail.ZtTagAssignmentView', 'tagView');
+	},
+
+	/**
+	 * Launches an assignment view
+	 */
+	doAssignmentView: function (item, view, viewProp) {
+		var targetComp = Ext.Viewport.down('tabpanel');
+
+		if (!this[viewProp]) {
+			this[viewProp] = Ext.create(view, {
+				targetElement: targetComp.bodyElement,
+				record: item || this.getItem()
+			});
+		}
+
+		this[viewProp].showWithComponent(this.getActiveMailComponent(), item || this.getItem());
+	},
+
+	/**
+	 * Saves the item and tags it.
+	 */
+	saveItemTag: function (tag, item) {
+		item.set('op', 'tag');
+		item.set('tn', tag.get('name'));
+
+		item.save({
+			success: function(item, operation) {
+				Ext.Logger.info('mail item tagged successfully');
+				item.set('op', null);
+			}
+		});
+	},
+
+	/**
+	 * Saves the item and moves it into the selected folder.
+	 */
+	saveItemMove: function (folder, item) {
+		item.set('op', 'move');
+		item.set('l', folder.get('id'));
+
+		item.save({
+			success: function(item, operation) {
+				Ext.Logger.info('mail item moved successfully');
+				item.set('op', null);
+			}
+		});
+	},
 
 	/**
 	 * Starts a reply session with the active message as the original message.

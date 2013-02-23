@@ -77,6 +77,26 @@ Ext.define('ZCS.model.mail.ZtMailWriter', {
 			}
 		});
 
+		if (item.l) {
+			methodJson.action.l = item.l;
+		}
+
+		if (item.tn) {
+			methodJson.action.tn = item.tn;
+		}
+
 		return json;
+	},
+
+	/**
+	 * The data to pass along when writing by a piece of mail
+	 */
+	getRecordData: function(record) {
+		return {
+			id: record.get('id'),
+			op: record.get('op'),
+			l: record.get('l'),
+			tn: record.get('tn')
+		};
 	}
 });

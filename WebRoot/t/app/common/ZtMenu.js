@@ -37,7 +37,7 @@ Ext.define('ZCS.common.ZtMenu', {
 		padding: 5,
 		defaultItemHeight: 47,
 		menuItemTpl: '{label}',
-		maxHeight: 300,
+		maxHeight: 350,
 		// the reference component is typically the button that triggered display of this menu
 		referenceComponent: null
 	},
