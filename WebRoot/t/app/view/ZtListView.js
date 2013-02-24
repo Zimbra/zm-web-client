@@ -22,17 +22,16 @@ Ext.define('ZCS.view.ZtListView', {
 
 	extend: 'Ext.dataview.List',
 
-	plugins: [{
-		xclass: 'Ext.plugin.ListPaging',
-		autoPaging: true,
-		noMoreRecordsText: '',
-		loadMoreText: ZtMsg.loadMore
-	}],
+	requires: [
+		'Ext.plugin.ListPaging'
+	],
 
 	config: {
+
 		scrollable : {
 			direction: 'vertical'
 		},
+
 		listeners: {
 			select: function(view, record) {
 				this.fireEvent('showItem', view, record);
@@ -40,6 +39,13 @@ Ext.define('ZCS.view.ZtListView', {
 			refresh: function() {
 				this.deselect(this.getSelection());
 			}
-		}
+		},
+
+		plugins: [{
+			xclass: 'Ext.plugin.ListPaging',
+			autoPaging: true,
+			noMoreRecordsText: '',
+			loadMoreText: ZtMsg.loadMore
+		}]
 	}
 });

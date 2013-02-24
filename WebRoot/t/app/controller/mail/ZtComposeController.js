@@ -28,14 +28,6 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 		'ZCS.common.ZtUtil'
 	],
 
-	models: [
-		'ZCS.model.address.ZtAutoComplete'
-	],
-
-	stores: [
-		'ZCS.store.address.ZtAutoCompleteStore'
-	],
-
 	config: {
 
 		refs: {
@@ -57,6 +49,14 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 				bubbleHold: 'showBubbleMenu'
 			}
 		},
+
+		models: [
+			'ZCS.model.address.ZtAutoComplete'
+		],
+
+		stores: [
+			'ZCS.store.address.ZtAutoCompleteStore'
+		],
 
 		action: null,
 		origId: null

@@ -79,10 +79,11 @@ Ext.application({
         // Destroy the #appLoadingIndicator element
         Ext.fly('appLoadingIndicator').destroy();
 
+	    Ext.Logger.getWriters().console.getFormatter().setMessageFormat('{message}');
+
 	    // Process the inline data (GetInfoResponse and SearchResponse)
 	    ZCS.common.ZtUserSession.initSession(window.inlineData);
 
-	    Ext.Logger.getWriters().console.getFormatter().setMessageFormat('{message}');
 	    Ext.Logger.info('STARTUP: app launch');
 
         // Initialize the main view

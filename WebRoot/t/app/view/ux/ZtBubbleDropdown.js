@@ -67,7 +67,60 @@ Ext.define('ZCS.view.ux.ZtBubbleDropdown', {
 		 */
 		menuWidth: 250,
 
-		maxResults: 5
+		maxResults: 5,
+
+		listeners: {
+			inputKeyup: function (e, el) {
+				var value = el.value;
+				this.showMenu(value);
+			},
+			inputBlur: function (e, el) {
+				if (this.menu) {
+					this.menu.hide();
+				}
+			},
+			destroy: function () {
+				this.menu.destroy();
+				this.showMenu = null;
+			},
+			/**
+			 * Setup the menu that will be used to display options after
+			 * the user inputs some search text.
+			 */
+			painted: function () {
+				this.menu = Ext.create('ZCS.common.ZtMenu', {
+					referenceComponent: this.getInput(),
+					modal: true,
+					hideOnMaskTap: false,
+					maxHeight: 400,
+					width: this.getMenuWidth()
+				});
+
+				this.showMenu = Ext.Function.createBuffered(function (value) {
+
+					if (this.getRemoteFilter()) {
+						this.configureStore(value, this.getMenuStore());
+
+						this.getMenuStore().load({
+							callback: this.loadMenuFromStore,
+							scope: this
+						});
+					} else {
+						var filterFunction = this.getFilterFunction(),
+							menuItems = null;
+
+						if (filterFunction) {
+							this.getMenuStore().clearFilter(true);
+							this.getMenuStore().filterBy(function (record) {
+								return filterFunction(value, record);
+							});
+						}
+
+						this.loadMenuFromStore();
+					}
+				}, 100, this);
+			}
+		}
 	},
 
 	/**
@@ -136,59 +189,6 @@ Ext.define('ZCS.view.ux.ZtBubbleDropdown', {
 			this.menu.popup('tc-bc?');
 		} else {
 			this.menu.hide();
-		}
-	},
-
-	listeners: {
-		inputKeyup: function (e, el) {
-			var value = el.value;
-			this.showMenu(value);
-		},
-		inputBlur: function (e, el) {
-			if (this.menu) {
-				this.menu.hide();
-			}
-		},
-		destroy: function () {
-			this.menu.destroy();
-			this.showMenu = null;
-		},
-		/**
-		 * Setup the menu that will be used to display options after
-		 * the user inputs some search text.
-		 */
-		painted: function () {
-			this.menu = Ext.create('ZCS.common.ZtMenu', {
-				referenceComponent: this.getInput(),
-				modal: true,
-				hideOnMaskTap: false,
-				maxHeight: 400,
-				width: this.getMenuWidth()
-			});
-
-			this.showMenu = Ext.Function.createBuffered(function (value) {
-
-				if (this.getRemoteFilter()) {
-					this.configureStore(value, this.getMenuStore());
-
-					this.getMenuStore().load({
-						callback: this.loadMenuFromStore,
-						scope: this
-					});
-				} else {
-					var filterFunction = this.getFilterFunction(),
-						menuItems = null;
-
-					if (filterFunction) {
-						this.getMenuStore().clearFilter(true);
-						this.getMenuStore().filterBy(function (record) {
-							return filterFunction(value, record);
-						});
-					}
-
-					this.loadMenuFromStore();
-				}
-			}, 100, this);
 		}
 	}
 });
