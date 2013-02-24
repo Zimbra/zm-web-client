@@ -23,6 +23,8 @@ Ext.define('ZCS.common.mail.ZtMimeTable', {
 	
 	singleton: true,
 
+	alternateClassName: 'ZCS.mime',
+
 	/**
 	 * Returns true if the type is a renderable image.
 	 *
@@ -31,10 +33,12 @@ Ext.define('ZCS.common.mail.ZtMimeTable', {
 	 */
 	isRenderableImage: function(type) {
 		return ZCS.mime.IS_RENDERABLE_IMAGE[type];
+	},
+
+	isTextType: function(type) {
+		return (/^text\//.test(type) && type !== ZCS.mime.TEXT_HTML && type !== ZCS.mime.TEXT_CAL);
 	}
 });
-
-ZCS.mime = ZCS.common.mail.ZtMimeTable;
 
 // MIME types (IGNORE denotes types that are not shown as attachments)
 ZCS.mime.APP					= 'application';

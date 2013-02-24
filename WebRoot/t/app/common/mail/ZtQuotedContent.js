@@ -23,6 +23,8 @@ Ext.define('ZCS.common.mail.ZtQuotedContent', {
 
 	singleton: true,
 
+	alternateClassName: 'ZCS.quoted',
+
 	/**
 	 * Lazily creates a test hidden IFRAME and writes the given HTML to it, then returns the HTML element.
 	 *
@@ -542,9 +544,6 @@ Ext.define('ZCS.common.mail.ZtQuotedContent', {
 	}
 
 });
-
-// shortcut
-ZCS.quoted = ZCS.common.mail.ZtQuotedContent;
 
 ZCS.quoted.UNKNOWN         = 'UNKNOWN';
 ZCS.quoted.QUOTED          = 'QUOTED';

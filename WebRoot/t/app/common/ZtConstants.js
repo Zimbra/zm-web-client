@@ -414,3 +414,27 @@ ZCS.constant.HTML_QUOTE_NONPREFIX_POST	= '</div><br/>';
 // Wrapping text
 ZCS.constant.WRAP_LENGTH				= 80;
 ZCS.constant.HDR_WRAP_LENGTH			= 120;
+
+// Email header IDs
+ZCS.constant.HDR_FROM		= ZCS.constant.FROM;
+ZCS.constant.HDR_TO		    = ZCS.constant.TO;
+ZCS.constant.HDR_CC		    = ZCS.constant.CC;
+ZCS.constant.HDR_DATE		= 'DATE';
+ZCS.constant.HDR_SUBJECT	= 'SUBJECT';
+
+// Which headers to include when quoting original message
+ZCS.constant.QUOTED_HDRS = [
+	ZCS.constant.HDR_FROM,
+	ZCS.constant.HDR_TO,
+	ZCS.constant.HDR_CC,
+	ZCS.constant.HDR_DATE,
+	ZCS.constant.HDR_SUBJECT
+];
+
+// String value of header, as in "From:'
+ZCS.constant.HDR_KEY = {};
+ZCS.constant.HDR_KEY[ZCS.constant.HDR_FROM]		= ZtMsg.fromHdr;
+ZCS.constant.HDR_KEY[ZCS.constant.HDR_TO]		= ZtMsg.toHdr;
+ZCS.constant.HDR_KEY[ZCS.constant.HDR_CC]		= ZtMsg.ccHdr;
+ZCS.constant.HDR_KEY[ZCS.constant.HDR_DATE]		= ZtMsg.sentHdr;
+ZCS.constant.HDR_KEY[ZCS.constant.HDR_SUBJECT]	= ZtMsg.subjectHdr;

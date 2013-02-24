@@ -85,15 +85,15 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 
 	reply: function(msg) {
 
-		this.setAction(ZCS.constant.OP_REPLY);
+		var action = ZCS.constant.OP_REPLY;
+
+		this.setAction(action);
 		this.setOrigId(msg.getId());
 
 		var to = [msg.getReplyAddress()],
 			cc,
 			subject = this.getSubject(msg, 'Re:'),
-			sep = '<br><br>',
-			quoted = this.quoteHtml(msg.getHtmlFromBodyParts()),
-			body = sep + '----- ' + ZtMsg.originalMessage + ' -----' + sep + quoted;
+			body = this.quoteOrigMsg(msg, action);
 
 		this.showComposeForm(to, cc, subject, body);
 	},
@@ -247,5 +247,50 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 
 	quoteHtml: function(html) {
 		return ZCS.constant.HTML_QUOTE_PREFIX_PRE + html + ZCS.constant.HTML_QUOTE_PREFIX_POST;
+	},
+
+	quoteOrigMsg: function(msg, action) {
+
+		var isForward = (action === ZCS.constant.OP_FORWARD),
+			which = isForward ? 'FORWARD' : 'REPLY',
+			incWhat = ZCS.session.getSetting(ZCS.constant['SETTING_' + which + '_INCLUDE_WHAT']),
+			usePrefix = ZCS.session.getSetting(ZCS.constant['SETTING_' + which + '_USE_PREFIX']),
+			incHeaders = ZCS.session.getSetting(ZCS.constant['SETTING_' + which + '_INCLUDE_HEADERS']);
+
+		if (incWhat === ZCS.constant.INC_NONE) {
+			return '';
+		}
+
+		if (incWhat === ZCS.constant.INC_ATTACH) {
+			return '';
+		}
+
+		var headerText = '',
+			headers = [],
+			hdrList = ZCS.constant.QUOTED_HDRS,
+			sep = '<br><br>',
+			ln = hdrList.length, i, hdr;
+
+		if (incHeaders) {
+			for (i = 0; i < ln; i++) {
+				hdr = msg.getHeaderStr(hdrList[i]);
+				if (hdr) {
+					headers.push(hdr);
+				}
+			}
+			headerText += headers.join('<br>') + sep;
+		}
+
+		var content = msg.getContentForInclusion(),
+			isHtml = msg.hasHtmlPart();
+
+		if (incWhat === ZCS.constant.INC_SMART) {
+			content = ZCS.quoted.getOriginalContent(content, isHtml);
+		}
+
+		content = headerText + content;
+		var	quoted = usePrefix ? this.quoteHtml(content) : content;
+
+		return sep + '----- ' + ZtMsg.originalMessage + ' -----' + sep + quoted;
 	}
 });

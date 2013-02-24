@@ -113,7 +113,7 @@ Ext.define('ZCS.model.mail.ZtMimePart', {
 			isAtt = !isIgnored && (isAttDisp || isAttType || hasAttProp),
 
 			isBody = this.getIsBody(),
-			hasContent = (ZCS.mime.IS_RENDERABLE_IMAGE[type] || this.getHasContent()),
+			hasContent = (ZCS.mime.isRenderableImage(type) || this.getHasContent()),
 			hasSize = (this.getSize() > 0),
 
 			addAsAtt = isAtt || (isBody && !hasContent && hasSize && !isIgnored),

@@ -35,6 +35,9 @@ Ext.define('ZCS.model.mail.ZtMailMsg', {
 			// directly from server
 			{ name: 'folderId', type: 'string' },
 			{ name: 'convId', type: 'string' },
+			{ name: 'subject', type: 'string' },
+			{ name: 'date', type: 'int' },
+			{ name: 'sentDate', type: 'int' },
 
 			// internal (via parsing), or for composed msgs
 			{ name: 'content', type: 'string' },
@@ -152,7 +155,7 @@ Ext.define('ZCS.model.mail.ZtMailMsg', {
 				type = part.getContentType(),
 				fileName = part.getFileName();
 
-			if (disp === "inline" && fileName && ZCS.mime.IS_RENDERABLE_IMAGE[type]) {
+			if (disp === "inline" && fileName && ZCS.mime.isRenderableImage(type)) {
 				return true;
 			}
 		}
@@ -182,7 +185,7 @@ Ext.define('ZCS.model.mail.ZtMailMsg', {
 	/**
 	 * Converts each body part to HTML and returns the accumulated content.
 	 */
-	getHtmlFromBodyParts: function() {
+	getContentAsHtml: function() {
 
 		var bodyParts = this.get('bodyParts'),
 			ln = bodyParts ? bodyParts.length : 0, i,
@@ -194,7 +197,7 @@ Ext.define('ZCS.model.mail.ZtMailMsg', {
 				contentType = part.getContentType(),
 				disposition = part.getContentDisposition();
 
-			if (ZCS.mime.IS_RENDERABLE_IMAGE[contentType]) {
+			if (ZCS.mime.isRenderableImage(contentType)) {
 				if (disposition !== 'inline') {
 					var src = content || ZCS.util.buildUrl({
 						path: ZCS.constant.PATH_MSG_FETCH,
@@ -281,5 +284,83 @@ Ext.define('ZCS.model.mail.ZtMailMsg', {
 		}
 
 		this.setMime(top);
+	},
+
+	/**
+	 * Returns a header string for the given header.
+	 *
+	 * @param	{string}	hdr			header type
+	 * @return	{string}	header string
+	 */
+	getHeaderStr: function(header) {
+
+		var key, value;
+
+		if (header === ZCS.constant.HDR_DATE) {
+			var date = new Date(this.get('sentDate') || this.get('date'));
+			if (date) {
+				value = Ext.Date.format(date, 'l, F j, Y h:i:s A');
+			}
+		}
+		else if (header === ZCS.constant.HDR_SUBJECT) {
+			value = this.get('subject');
+		}
+		else {
+			var addrs = Ext.Array.map(this.getAddressesByType(header), function(addr) {
+				return addr.getFullEmail();
+			});
+			value = addrs.join(', ');
+		}
+
+		if (!value) {
+			return '';
+		}
+
+		key = ZCS.constant.HDR_KEY[header] + ' ';
+		key = '<b>' + key + '</b>';
+		value = ZCS.util.textToHtml(value);
+
+		return key + value;
+	},
+
+	/**
+	 * Returns this message's content in a form that is suitable for use as the "original
+	 * message" in a reply.
+	 *
+	 * @return {string}
+	 * @adapts ZmComposeView._getBodyContent
+	 */
+	getContentForInclusion: function() {
+
+		var bodyParts = this.get('bodyParts'),
+			ln = bodyParts ? bodyParts.length : 0, i,
+			crlf = '<br>',
+			crlf2 = '<br><br>',
+			result = [];
+
+		for (i = 0; i < ln; i++) {
+			var part = bodyParts[i],
+				content = part.getContent(),
+				contentType = part.getContentType(),
+				disposition = part.getContentDisposition(),
+				fileName = part.getFileName();
+
+			if (ZCS.mime.isRenderableImage(contentType)) {
+				result.push([crlf, '[', contentType, ':', (fileName || '...'), ']', crlf].join(''));
+			}
+			else if (fileName && disposition === 'inline') {
+				var attInfo = ZCS.mime.table[contentType],
+					desc = attInfo ? attInfo.desc : contentType;
+				result.push([crlf, '[', attInfo, ':', (fileName || '...'), ']', crlf].join(''));
+			}
+			else if (contentType === ZCS.mime.TEXT_PLAIN || (part.getIsBody() && ZCS.mime.isTextType(contentType))) {
+				result.push(content);
+			}
+			else if (contentType === ZCS.mime.TEXT_HTML) {
+				result.push(content);
+			}
+		}
+
+		return result.join('').replace(/<\/?(html|head|body)[^>]*>/gi, '');
 	}
 });
