@@ -32,8 +32,8 @@ Ext.define('ZCS.model.ZtWriter', {
 	 */
 	write: function(request) {
 		this.callParent(arguments);
-		Ext.Logger.info('--- ' + request.soapMethod);
-		Ext.Logger.verbose(JSON.stringify(request.getJsonData(), null, 4));
+		Ext.Logger.force('--- ' + request.soapMethod);
+		Ext.Logger.force(JSON.stringify(request.getJsonData(), null, 4));
 		return request;
 	},
 

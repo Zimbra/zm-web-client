@@ -208,7 +208,7 @@ Ext.define('ZCS.model.mail.ZtMailMsg', {
 				}
 			}
 			else if (contentType === ZCS.mime.TEXT_PLAIN) {
-				html.push(ZCS.util.textToHtml(content));
+				html.push('<div>' + ZCS.util.textToHtml(content) + '</div>');
 			}
 			else if (contentType === ZCS.mime.TEXT_HTML) {
 				// TODO: handle invite

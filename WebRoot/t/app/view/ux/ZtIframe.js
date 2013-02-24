@@ -1,3 +1,24 @@
+/*
+ * ***** BEGIN LICENSE BLOCK *****
+ * Zimbra Collaboration Suite Web Client
+ * Copyright (C) 2013 Zimbra, Inc.
+ *
+ * The contents of this file are subject to the Zimbra Public License
+ * Version 1.3 ("License"); you may not use this file except in
+ * compliance with the License.  You may obtain a copy of the License at
+ * http://www.zimbra.com/license.
+ *
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * ***** END LICENSE BLOCK *****
+ */
+
+/**
+ * This class is an IFRAME component. So far the only use it to display
+ * message content, if the message has anything other than plain text.
+ *
+ * @author Conrad Damon <cdamon@zimbra.com>
+ */
 Ext.define('ZCS.view.ux.ZtIframe', {
 
 	extend: 'Ext.Component',
@@ -21,9 +42,8 @@ Ext.define('ZCS.view.ux.ZtIframe', {
 
 		this.setIframeEl(iframe);
 
-		Ext.Logger.info('IFRAME ID: ' + iframe.dom.id);
+		Ext.Logger.iframe('IFRAME with name ' + this.getName() + ' has DOM ID: ' + iframe.dom.id);
 
-		// not sure yet if we need to relay events
 		this.relayEvents(iframe, '*');
 	},
 
@@ -41,7 +61,7 @@ Ext.define('ZCS.view.ux.ZtIframe', {
 
 		var component = this,
 			doc = this.getDoc(),
-			body = this.getBody(),
+
 			//Convert coordinates in the touch objects to be coordinates for this window
 			//and not the iframe
 			touchProcessor = function (touches, newTarget) {
@@ -104,7 +124,7 @@ Ext.define('ZCS.view.ux.ZtIframe', {
 				return false;
 			};
 
-		if (doc && body) {
+		if (doc) {
 			doc.open();
 			doc.write(html);
 			doc.close();
@@ -123,11 +143,11 @@ Ext.define('ZCS.view.ux.ZtIframe', {
 		}
 	},
 
+	/**
+	 * Resizes the IFRAME to match its content. IFRAMEs do not automatically size to their content. By default, they
+	 * are 150px high.
+	 */
 	resizeToContent: function() {
-
-		if (this.hasBeenSized) {
-//			return;
-		}
 
 		var doc = this.getDoc(),
 			body = this.getBody(),
@@ -138,49 +158,25 @@ Ext.define('ZCS.view.ux.ZtIframe', {
 			iframeWidth = iframe.getWidth();
 
 		if (contentWidth > iframeWidth) {
+			Ext.Logger.iframe('Set iframe width to ' + contentWidth);
 			iframe.setWidth(contentWidth);
 		}
 
-		// TODO: Revisit. For now, always use heights of child nodes to figure out the height of the actual content.
-		var height = Math.max(docEl.scrollHeight, contentHeight);
-		if (true || height === ZCS.constant.DEFAULT_IFRAME_HEIGHT) {
-			// handle content whose height is less than 150
-			var styleObj = doc.defaultView.getComputedStyle(body);
-			height = parseInt(styleObj.height);
-			if (true || !height || height === ZCS.constant.DEFAULT_IFRAME_HEIGHT) {
-				height = 0;
-				var ln = body.childNodes.length,
-					i, el;
-				for (i = 0; i < ln; i++) {
-					el = body.childNodes[i];
-					if (el && el.nodeType === Node.ELEMENT_NODE) {
-						height += el.offsetHeight;
-						styleObj = doc.defaultView.getComputedStyle(el);
-						if (styleObj) {
-							height += parseInt(styleObj.marginTop) + parseInt(styleObj.marginBottom);
-						}
-					}
-				}
-			}
-			if (height > 0 && height < 150) {
-				height += 12;	// fudge to make sure nothing is cut off
-				Ext.Logger.info('Resizing msg view body IFRAME height to ' + height);
-				iframe.setHeight(height);
-				this.hasBeenSized = true;
-			}
-		}
-		else {
-			iframe.setHeight(height);
-			this.hasBeenSized = true;
-		}
+		var contentHeight = Math.max(docEl.scrollHeight, contentHeight),
+			computedHeight = ZCS.util.getHeightFromComputedStyle(body, doc),
+			childrenHeight = ZCS.util.getHeightFromChildren(body, doc);
+		Ext.Logger.iframe('IFRAME content heights: ' + [contentHeight, docEl.scrollHeight, computedHeight, childrenHeight].join(' / '));
 
-		var newHeight = Math.max(body.scrollHeight, docEl.scrollHeight);
-		if (newHeight > height) {
-			Ext.Logger.warn('New iframe height not as expected, set to ' + height + ' but is now ' + newHeight);
-			iframe.setHeight(newHeight);
-		}
+		// Since IFRAMEs are reused, childrenHeight appears to be the most reliable measure of the height
+		// of the content. The others tend to persist even if we clear the IFRAME's content.
+		var height = childrenHeight || computedHeight || contentHeight;
+		Ext.Logger.iframe('Set IFRAME height to ' + height);
+		iframe.setHeight(height);
 	},
 
+	/**
+	 * Resets the iframe's height via a timer so that the iframe has time to lay itself out.
+	 */
 	fixSize: function() {
 		Ext.defer(this.resizeToContent, 200, this);
 	}

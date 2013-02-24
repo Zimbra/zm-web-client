@@ -629,5 +629,50 @@ Ext.define('ZCS.common.ZtUtil', {
 			words.push(result[0]);
 		}
 		return words;
+	},
+
+	/**
+	 * Calculates an element's height based on its computed style.
+	 *
+	 * @param {Element}     el          an element
+	 * @param {Document}    doc         its owning document
+	 *
+	 * @return {int}    the height of the element
+	 */
+	getHeightFromComputedStyle: function(el, doc) {
+		doc = doc || window.document;
+		var styleObj = doc.defaultView.getComputedStyle(el);
+		return parseInt(styleObj.height);
+	},
+
+	/**
+	 * Calculates an element's height by summing the heights of its child nodes.
+	 *
+	 * @param {Element}     el          an element
+	 * @param {Document}    doc         its owning document
+	 *
+	 * @return {int}    the height of the element
+	 */
+	getHeightFromChildren: function(el, doc) {
+
+		var height = 0,
+			ln = el ? el.childNodes.length : 0,
+			i, child, styleObj;
+
+		doc = doc || window.document;
+
+		Ext.Logger.iframe(ln + ' child nodes');
+		for (i = 0; i < ln; i++) {
+			child = el.childNodes[i];
+			if (child && child.nodeType === Node.ELEMENT_NODE) {
+				height += child.offsetHeight;
+				styleObj = doc.defaultView.getComputedStyle(child);
+				if (styleObj) {
+					height += parseInt(styleObj.marginTop) + parseInt(styleObj.marginBottom);
+				}
+			}
+		}
+
+		return height;
 	}
 });

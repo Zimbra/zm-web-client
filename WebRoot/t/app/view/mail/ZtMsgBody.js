@@ -45,9 +45,9 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 	 */
 	render: function(msg, isLast) {
 
-		Ext.Logger.info('ZtMsgBody render into element ' + this.element.id);
+		Ext.Logger.conv('ZtMsgBody render into element ' + this.element.id);
 
-		var html = msg.getHtmlFromBodyParts(),
+		var html = msg.getContentAsHtml(),
 			iframe = this.iframe;
 
 		if (!isLast) {
@@ -58,11 +58,8 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 		// TODO: invites
 		// TODO: truncation
 
-		if (iframe) {
-			iframe.getBody().innerHTML = '';
-//			iframe.getBody().height = 150;
-		}
-		if (true || msg.hasHtmlPart()) {
+		if (msg.hasHtmlPart()) {
+			Ext.Logger.conv('Use IFRAME for [' + msg.get('fragment') + ']');
 			if (!iframe) {
 				iframe = this.iframe = new ZCS.view.ux.ZtIframe({
 					// TODO: components are reused, should name iframe after msgview index
@@ -70,11 +67,12 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 				});
 				this.add(iframe);
 			}
-//			this.setHtml('');
+			this.setHtml('');
 			iframe.setContent(html);
-//			iframe.show();
+			iframe.show();
 		}
 		else {
+			Ext.Logger.conv('No IFRAME for [' + msg.get('fragment') + ']');
 			if (iframe) {
 				iframe.hide();
 			}

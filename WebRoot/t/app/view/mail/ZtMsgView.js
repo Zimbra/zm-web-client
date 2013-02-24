@@ -53,16 +53,19 @@ Ext.define('ZCS.view.mail.ZtMsgView', {
 
 				if (msgData && !this.up('.itempanel').suppressRedraw) {
 					Ext.Logger.info('updatedata for msg ' + msgData.id);
-					var msg = ZCS.cache.get(msgData.id);
+					var msg = ZCS.cache.get(msgData.id),
+						loaded = !!msgData.isLoaded;
 					if (msg) {
-						if (msg.op === 'load' && !msgData.isLoaded) {
+						if (msg.op === 'load' && !loaded) {
 							return;
 						}
 						// Note: partial update on msg load results in double-render, so do whole thing
 						this.setMsg(msg);
-						this.setExpanded(!!msgData.isLoaded);
+						this.setExpanded(loaded);
 						msgView.renderHeader();
-						msgView.renderBody(msg.get('isLast'));
+						if (loaded) {
+							msgView.renderBody(msg.get('isLast'));
+						}
 						this.updateExpansion();
 					}
 				}

@@ -45,15 +45,20 @@ Ext.define('ZCS.model.mail.ZtMsgReader', {
 
 		var records = [],
 			ln = root.length, i, node,
-			lastIndex = ln - 1;
+			lastIndex = -1,
+			firstMsg = root[0],
+			conv = firstMsg && ZCS.cache.get(firstMsg.cid),
+			numMsgs = conv && conv.get('numMsgs');
 
-		// Find the last displayable (non-Trash, non-Junk) message (which will not
-		// have quoted content hidden when it is displayed)
-		for (i = lastIndex; i >= 0; i--) {
-			node = root[i];
-			if (node.l && !ZCS.constant.CONV_HIDE[node.l]) {
-				lastIndex = i;
-				break;
+		if (ln === numMsgs) {
+			// Find the last displayable (non-Trash, non-Junk) message (which will not
+			// have quoted content hidden when it is displayed)
+			for (i = ln - 1; i >= 0; i--) {
+				node = root[i];
+				if (node.l && !ZCS.constant.CONV_HIDE[node.l]) {
+					lastIndex = i;
+					break;
+				}
 			}
 		}
 
@@ -84,6 +89,9 @@ Ext.define('ZCS.model.mail.ZtMsgReader', {
 		data.fragment = node.fr;
 		data.convId = node.cid;
 		data.subject = node.su;
+		data.date = node.d;
+		data.sentDate = node.sd;
+
 		this.parseFlags(node, data);
 
 		data.addresses = ZCS.model.mail.ZtMailItem.convertAddresses(node.e);

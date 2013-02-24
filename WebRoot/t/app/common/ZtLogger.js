@@ -41,7 +41,8 @@ Ext.define('ZCS.common.ZtLogger', {
 			'force',        // special priority that means "always log this"
 
 			// custom levels
-			'iframe'
+			'iframe',
+			'conv'
 		]
 	},
 

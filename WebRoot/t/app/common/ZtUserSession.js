@@ -36,11 +36,14 @@ Ext.define('ZCS.common.ZtUserSession', {
 		accountId: '',
 		notifySeq: 0,
 		initialSearchResults: null,
+		debugLevel: '',
 		organizerData: null,
 		activeApp: ''
 	},
 
 	initSession: function(data) {
+
+		this.setDebugLevel(data.debugLevel);
 
 		// session ID
 		this.setSessionId(data.header.context.session.id);
