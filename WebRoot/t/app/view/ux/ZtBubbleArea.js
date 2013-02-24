@@ -88,7 +88,21 @@ Ext.define('ZCS.view.ux.ZtBubbleArea', {
         */
         defaultInputWidth: 30,
 
-        name: null
+        name: null,
+
+	    listeners: {
+		    initialize: function() {
+			    var me = this;
+
+			    if (!me.getReadOnly()) {
+				    me.inputField = me.down('#inputField');
+				    me.element.on('tap', function (e, el) {
+					    me.focusInput();
+					    return true;
+				    });
+			    }
+		    }
+	    }
     },
 
     /**
@@ -172,15 +186,6 @@ Ext.define('ZCS.view.ux.ZtBubbleArea', {
     constructor: function(cfg) {
         var me = this,
             inputField = this.getInputField();
-
-        me.addEvents([
-            'initialBubblesAdded',
-            'inputKeyup',
-            'inputBlur',
-            'bubbleRemoved',
-            'bubbleAdded',
-            'focus'
-        ]);
 
         if (cfg.readOnly) {
             me.fieldBodyCls += ' vm-read-only';
@@ -555,19 +560,5 @@ Ext.define('ZCS.view.ux.ZtBubbleArea', {
 
         this.clearInput();
         this.focusInput();
-    },
-
-    listeners: {
-        initialize: function() {
-            var me = this;
-
-            if (!me.getReadOnly()) {
-                me.inputField = me.down('#inputField');
-                me.element.on('tap', function (e, el) {
-                    me.focusInput();
-                    return true;
-                });
-            }
-        }
     }
 });
