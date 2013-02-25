@@ -98,25 +98,30 @@ Ext.define('ZCS.view.ux.ZtBubbleDropdown', {
 
 				this.showMenu = Ext.Function.createBuffered(function (value) {
 
-					if (this.getRemoteFilter()) {
-						this.configureStore(value, this.getMenuStore());
+					//If the value length is greater than 0 and defined.
+					if (value.length) {
+						if (this.getRemoteFilter()) {
+							this.configureStore(value, this.getMenuStore());
 
-						this.getMenuStore().load({
-							callback: this.loadMenuFromStore,
-							scope: this
-						});
-					} else {
-						var filterFunction = this.getFilterFunction(),
-							menuItems = null;
-
-						if (filterFunction) {
-							this.getMenuStore().clearFilter(true);
-							this.getMenuStore().filterBy(function (record) {
-								return filterFunction(value, record);
+							this.getMenuStore().load({
+								callback: this.loadMenuFromStore,
+								scope: this
 							});
-						}
+						} else {
+							var filterFunction = this.getFilterFunction(),
+								menuItems = null;
 
-						this.loadMenuFromStore();
+							if (filterFunction) {
+								this.getMenuStore().clearFilter(true);
+								this.getMenuStore().filterBy(function (record) {
+									return filterFunction(value, record);
+								});
+							}
+
+							this.loadMenuFromStore();
+						}
+					} else {
+						this.menu.hide();
 					}
 				}, 100, this);
 			}
