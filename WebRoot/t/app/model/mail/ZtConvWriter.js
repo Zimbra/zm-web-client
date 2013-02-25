@@ -28,7 +28,7 @@ Ext.define('ZCS.model.mail.ZtConvWriter', {
 
 		var	action = request.getAction(),
 			offset = request.getOperation().getStart(),
-			query = request.getOperation().config.query,
+			query = request.getParams().query,
 			json, methodJson;
 
 		if (action === 'read') {

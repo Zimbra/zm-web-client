@@ -33,7 +33,7 @@ Ext.define('ZCS.model.ZtOrganizer', {
 			{ name: 'name', type: 'string' },
 			{ name: 'path', type: 'string' },
 			{ name: 'itemCount', type: 'int' },
-			{ name: 'color', type: 'string' },
+			{ name: 'color', type: 'int' },
 
 			// folder fields
 			{ name: 'disclosure', type: 'boolean' }, // override NestedList button behavior

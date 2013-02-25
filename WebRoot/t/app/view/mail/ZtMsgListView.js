@@ -34,7 +34,7 @@ Ext.define('ZCS.view.mail.ZtMsgListView', {
 		disableSelection: true,
 		variableHeights: true,
 		scrollable: {
-			direction: 'both'
+			direction: 'vertical'
 		},
 		store: 'ZtMsgStore',
 		itemCls: 'zcs-msgview',
@@ -87,5 +87,17 @@ Ext.define('ZCS.view.mail.ZtMsgListView', {
 			delegate: '.zcs-msg-header',
 			scope: this
 		});
+	},
+
+	setReadOnly: function (isReadOnly) {
+		var listRef = this;
+
+		Ext.each(this.query('msgview'), function (view) {
+			view.setReadOnly(isReadOnly);
+			listRef.updatedItems.push(view);
+		});
+
+		listRef.updateItemHeights();
+		listRef.refreshScroller(listRef.getScrollable().getScroller());
 	}
 });

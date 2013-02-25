@@ -67,6 +67,17 @@ Ext.define('ZCS.controller.mail.ZtConvListController', {
 		ZCS.app.getComposeController().compose();
 	},
 
+	refreshAndSelect: function (conv) {
+		var list = this.getListView(),
+			conversationStore = list.getStore(),
+			currentIndex = conversationStore.indexOf(conv);
+
+		conversationStore.load(function () {
+			var toSelect = this.getAt(currentIndex);
+			list.select(toSelect, false);
+		});
+	},
+
 	handleCreateNotification: function(create) {
 
 		var reader = ZCS.model.mail.ZtConv.getProxy().getReader(),

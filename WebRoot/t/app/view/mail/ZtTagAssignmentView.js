@@ -24,6 +24,7 @@ Ext.define('ZCS.view.mail.ZtTagAssignmentView', {
 	constructor: function (config) {
 		cfg = config || {};
 
+		cfg.listItemTpl = ZCS.template.TagAssignmentListItem;
 		cfg.listData = ZCS.common.ZtUserSession.getOrganizerDataByAppAndOrgType(ZCS.constant.APP_MAIL, ZCS.constant.ORG_TAG);
 		cfg.listDataModel = 'ZCS.model.ZtOrganizer';
 

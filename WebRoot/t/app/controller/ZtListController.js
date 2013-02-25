@@ -68,8 +68,15 @@ Ext.define('ZCS.controller.ZtListController', {
 	 */
 	launch: function () {
 
+		var defaultQuery = ZCS.session.getSetting(ZCS.constant.SETTING_INITIAL_SEARCH);
+
 		Ext.Logger.verbose('STARTUP: list ctlr launch - ' + ZCS.util.getClassName(this));
 		this.callParent();
+
+		//Set the proxies params so this parameter persists between paging requests.
+		this.getStore().getProxy().setExtraParams({
+			query: defaultQuery
+		});
 
 		this.getStore().load({
 			query: this.getDefaultQuery(),
@@ -158,8 +165,12 @@ Ext.define('ZCS.controller.ZtListController', {
 		var searchId = (folder && folder.get('type') === ZCS.constant.ORG_SAVED_SEARCH) ? folder.getId() : null;
 		ZCS.session.setSetting(ZCS.constant.SETTING_CUR_SEARCH_ID, searchId);
 
-
 		this.getStore().currentPage = 1;
+
+		//Set the proxies params so this parameter persists between paging requests.
+		this.getStore().getProxy().setExtraParams({
+			query: query
+		});
 
 		this.getListView().getScrollable().getScroller().scrollToTop();
 

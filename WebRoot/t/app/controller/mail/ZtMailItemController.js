@@ -47,30 +47,56 @@ Ext.define('ZCS.controller.mail.ZtMailItemController', {
 	 * Launches a move assignment view.
 	 */
 	doMove: function(item) {
-		this.doAssignmentView(item, 'ZCS.view.mail.ZtFolderAssignmentView', 'folderView');
+		this.doAssignmentView(item, 'ZCS.view.mail.ZtFolderAssignmentView', ZtMsg.folders, 'folderView');
 	},
 
 	/**
 	 * Launches a tag assignment view.
 	 */
 	doTag: function (item) {
-		this.doAssignmentView(item, 'ZCS.view.mail.ZtTagAssignmentView', 'tagView');
+		this.doAssignmentView(item, 'ZCS.view.mail.ZtTagAssignmentView', ZtMsg.tags, 'tagView');
 	},
 
 	/**
 	 * Launches an assignment view
 	 */
-	doAssignmentView: function (item, view, viewProp) {
-		var targetComp = Ext.Viewport.down('tabpanel');
+	doAssignmentView: function (item, view, listTitle, viewProp) {
+		var targetComp = Ext.Viewport.down('tabpanel'),
+			activeComp = this.getActiveMailComponent(),
+			activeList = activeComp.down('list'),
+			activeStore = activeList.getStore(),
+			item = item || this.getItem(),
+			contentHeight,
+			isMessage = item instanceof ZCS.model.mail.ZtMailMsg;
+
+
+		if (isMessage) {
+			activeStore.filter('id', item.get('id'));
+		}
+
+		activeList.setReadOnly(true);
+
+		contentHeight = activeList.getItemMap().getTotalHeight();
+
+		//To account for the panel header
+		contentHeight += 20;
 
 		if (!this[viewProp]) {
 			this[viewProp] = Ext.create(view, {
 				targetElement: targetComp.bodyElement,
-				record: item || this.getItem()
+				record: item || this.getItem(),
+				listTitle: listTitle,
+				onAssignmentComplete: function () {
+					activeComp.showMenuButton();
+					activeList.setReadOnly(false);
+					//undo any filtering we may have done
+					activeStore.clearFilter();
+				}
 			});
 		}
 
-		this[viewProp].showWithComponent(this.getActiveMailComponent(), item || this.getItem());
+		activeComp.hideMenuButton();
+		this[viewProp].showWithComponent(activeComp, item, contentHeight);
 	},
 
 	/**
@@ -97,6 +123,27 @@ Ext.define('ZCS.controller.mail.ZtMailItemController', {
 
 		item.save({
 			success: function(item, operation) {
+				var isConversation = item instanceof ZCS.model.mail.ZtConv,
+					isMessage = item instanceof ZCS.model.mail.ZtMailMsg,
+					conv,
+					convHasOneMessage,
+					listIndex;
+
+				if (isMessage) {
+					conv = ZCS.cache.get(item.get('convId'));
+				} else {
+					conv = item;
+				}
+
+				convHasOneMessage = conv.get('numMsgs') === 1;
+
+				//Refresh the converation list, selecting the conversation that was after this conversation.
+				if (isConversation || convHasOneMessage) {
+					ZCS.app.getConvListController().refreshAndSelect(conv);
+				} else {
+					//Refresh the message pane since just a single message was moved.
+				}
+
 				Ext.Logger.info('mail item moved successfully');
 				item.set('op', null);
 			}

@@ -56,8 +56,8 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 			{label: ZtMsg.forward, action: ZCS.constant.OP_FORWARD, listener: 'doForward'},
 			{label: ZtMsg.del, action: ZCS.constant.OP_DELETE, listener: 'doDelete'},
 			{label: ZtMsg.markRead, action: ZCS.constant.OP_MARK_READ, listener: 'doMarkRead'},
-			{label: ZtMsg.move || 'Move', action: ZCS.constant.OP_MOVE, listener: 'doMove'},
-			{label: ZtMsg.tag || 'Tag', action: ZCS.constant.OP_MOVE, listener: 'doTag'}
+			{label: ZtMsg.move, action: ZCS.constant.OP_MOVE, listener: 'doMove'},
+			{label: ZtMsg.tag, action: ZCS.constant.OP_MOVE, listener: 'doTag'}
 		]
 	},
 

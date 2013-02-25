@@ -29,7 +29,6 @@ Ext.define('ZCS.view.mail.ZtAssignmentView', {
 	config: {
 		/**
 		 * @cfg {Ext.dom.Element} The element that this assignment view will sit on top of and mask.
-		 *
 		 */
 		targetElement: null,
 
@@ -38,23 +37,33 @@ Ext.define('ZCS.view.mail.ZtAssignmentView', {
 			align: 'stretch'
 		},
 
+		/**
+		 * @cfg {Ext.data.Model} The record which is having things assigned to it.
+		 */
 		record: null,
 
 		hidden: false,
 
-		assignmentListConfig: null,
-
 		modal: false,
 
 		/**
-		 * The data with which to populate the store.
+		 * @cfg {Object[]} The data with which to populate the store.
 		 */
 		listData: null,
 
 		/**
-		 * The store's model
+		 * @cfg {Ext.data.Model} The store's model
 		 */
 		listDataModel: null,
+
+		/**
+		 * @cfg {String} The title of the list on the left hand side
+		 */
+		listTitle: null,
+
+		listItemTpl: [
+			'{name}'
+		],
 
 		/**
 		 * @cfg {Number} How long it takes to transition a component from its original location to its
@@ -78,10 +87,18 @@ Ext.define('ZCS.view.mail.ZtAssignmentView', {
 
 		cfg.style = "visibility: hidden; position: absolute; padding: 0.0em";
 
-		cfg.items = [
-			{
+		cfg.items = [{
+			xtype: 'panel',
+			layout: 'fit',
+			width: 250,
+			cls: 'zcs-assignment-panel',
+			items: [{
+				xtype: 'titlebar',
+				title: cfg.listTitle,
+				docked: 'top'
+			}, {
 				xtype: 'list',
-				width: 250,
+				ui: 'dark',
 				store: Ext.create('Ext.data.Store', {
 					data: cfg.listData,
 					proxy: {
@@ -89,11 +106,12 @@ Ext.define('ZCS.view.mail.ZtAssignmentView', {
 						type: 'memory'
 					}
 				}),
-				itemTpl: [
-					'{name}'
-				]
-			}, {
+				itemTpl: cfg.listItemTpl
+			}]
+		}, {
 			xtype: 'panel',
+			ui: 'light',
+			cls: 'zcs-preview-panel',
 			flex: 1,
 			padding: '0 15 0 15',
 			layout: {
@@ -132,16 +150,24 @@ Ext.define('ZCS.view.mail.ZtAssignmentView', {
 		});
 	},
 
-	showWithComponent: function (component, record) {
+	/**
+	 * Show the assignment view.
+	 *
+	 * @param {Ext.Component}  component
+	 * @param {Ext.data.Model} record
+	 * @param {Number}         contentHeight
+	 *
+	 */
+	showWithComponent: function (component, record, contentHeight) {
 		//Clear any previous selections.
-		this.down('list').refresh();
+		this.down('list').deselectAll();
 
 		this.setRecord(record);
 
-		this.animateComponentIntoPosition(component);
+		this.animateComponentIntoPosition(component, contentHeight);
 	},
 
-	animateComponentIntoPosition: function (component) {
+	animateComponentIntoPosition: function (component, contentHeight) {
 
 		var sheet = this;
 
@@ -168,7 +194,7 @@ Ext.define('ZCS.view.mail.ZtAssignmentView', {
 				top: targetBox.top,
 				left: targetBox.left,
 				width: targetBox.width,
-				height: targetBox.height
+				height: Math.min(targetBox.height, contentHeight)
 			},
 			preserveEndState: true,
 			onEnd: function () {

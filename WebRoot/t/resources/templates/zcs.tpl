@@ -39,7 +39,7 @@
 		<div class='zcs-mail-msgHdr'>
 			<div class='zcs-msgHdr-person'>
 				<img src='/t/resources/icons/person.png' />
-			</div> 
+			</div>
 			<tpl if='addrs.from'>
 				<div class='zcs-msgHdr-fromBubble'>
 					<tpl for='addrs.from'>
@@ -91,7 +91,7 @@
 		<div class='zcs-mail-msgHdr'>
 			<div class='zcs-msgHdr-person'>
 				<img src='/t/resources/icons/person.png' />
-			</div>  
+			</div>
 			<tpl if='addrs.from'>
 				<div class='zcs-msgHdr-fromBubble'>
 					<tpl for='addrs.from'>
@@ -138,4 +138,14 @@
 	<tpl>
 		<div>{firstName} {lastName}</div>
 	</tpl>
+</template>
+
+#widgets/_assignmentview.scss
+<template id='TagAssignmentListItem'>
+	<div cls="zcs-tag zcs-tag-{color}" style="color:{color};">{name}</div>
+</template>
+
+#widgets/_assignmentview.scss
+<template id='FolderAssignmentListItem'>
+	{name}
 </template>

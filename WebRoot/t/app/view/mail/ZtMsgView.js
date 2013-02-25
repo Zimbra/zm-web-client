@@ -99,7 +99,6 @@ Ext.define('ZCS.view.mail.ZtMsgView', {
 	 * @private
 	 */
 	updateExpansion: function() {
-
 		if (this.getExpanded()) {
 			this.down('msgbody').show();
 			this.down('msgfooter').show();
@@ -107,6 +106,15 @@ Ext.define('ZCS.view.mail.ZtMsgView', {
 		else {
 			this.down('msgbody').hide();
 			this.down('msgfooter').hide();
+		}
+	},
+
+	setReadOnly: function(isReadOnly) {
+		if (isReadOnly) {
+			//Remove the interactions in the footer if it is in readonly mode.
+			this.down('msgfooter').hide();
+		} else {
+			this.updateExpansion();
 		}
 	},
 

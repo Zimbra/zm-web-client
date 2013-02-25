@@ -24,11 +24,10 @@
 //Widget styling
 @import 'widgets/base';
 
+@import 'widgets/mail/assignmentview';
 @import 'widgets/mail/ztcomposeform';
 @import 'widgets/mail/ztmsgview';
 @import 'widgets/ux/ztbubblearea';
-
-
 
 // Your custom code goes here...
 @include pictos-iconmask('list');

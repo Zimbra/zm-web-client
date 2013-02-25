@@ -25,6 +25,7 @@ Ext.define('ZCS.view.mail.ZtFolderAssignmentView', {
 
 		cfg = config || {};
 
+		cfg.listItemTpl = ZCS.template.FolderAssignmentListItem;
 		cfg.listData = ZCS.common.ZtUserSession.getOrganizerDataByAppAndOrgType(ZCS.constant.APP_MAIL, ZCS.constant.ORG_MAIL_FOLDER);
 		cfg.listDataModel = 'ZCS.model.ZtOrganizer';
 

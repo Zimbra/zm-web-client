@@ -48,7 +48,9 @@ Ext.define('ZCS.controller.mail.ZtMsgController', {
 		menuData: [
 			{label: ZtMsg.del, action: ZCS.constant.OP_DELETE, listener: 'doDelete'},
 			{label: ZtMsg.markRead, action: ZCS.constant.OP_MARK_READ, listener: 'doMarkRead'},
-			{label: ZtMsg.markSpam, action: ZCS.constant.OP_SPAM, listener: 'doSpam'}
+			{label: ZtMsg.move, action: ZCS.constant.OP_MOVE, listener: 'doMove'},
+			{label: ZtMsg.markSpam, action: ZCS.constant.OP_SPAM, listener: 'doSpam'},
+			{label: ZtMsg.tag, action: ZCS.constant.OP_MOVE, listener: 'doTag'}
 		]
 	},
 
@@ -72,7 +74,7 @@ Ext.define('ZCS.controller.mail.ZtMsgController', {
 
 	doShowMenu: function(menuButton, msg) {
 		this.setItem(msg);
-		this.setActiveMailComponent(menuButton.up('.msgview'));
+		this.setActiveMailComponent(menuButton.up('.itempanel'));
 		this.callParent(arguments);
 	}
 });
