@@ -111,7 +111,7 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 			used = {},
 			subject = this.getSubject(msg, 'Re:'),
 			sep = '<br><br>',
-			quoted = this.quoteHtml(msg.getHtmlFromBodyParts()),
+			quoted = this.quoteHtml(msg.getContentAsHtml()),
 			body = sep + '----- ' + ZtMsg.originalMessage + ' -----' + sep + quoted;
 
 		// Remember emails we don't want to repeat in Cc
@@ -137,7 +137,7 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 			cc,
 			subject = this.getSubject(msg, 'Fwd:'),
 			sep = '<br><br>',
-			quoted = msg.getHtmlFromBodyParts(),
+			quoted = msg.getContentAsHtml(),
 			body = sep + '----- ' + ZtMsg.originalMessage + ' -----' + sep + quoted;
 
 		this.showComposeForm(to, cc, subject, body);
