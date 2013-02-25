@@ -31,7 +31,6 @@ Ext.application({
 
 	logger: {
 		enabled: true,
-//		xclass: 'Ext.log.Logger',
 		xclass: 'ZCS.common.ZtLogger',
 		minPriority: 'verbose',
 		writers: {
@@ -75,6 +74,11 @@ Ext.application({
         '1496x2048': 'resources/startup/1496x2048.png'
     },
 
+	// items for settings menu
+	menuData: [
+		{ label: ZtMsg.logout, action: 'LOGOUT', listener: 'doLogout' }
+	],
+
     launch: function() {
         // Destroy the #appLoadingIndicator element
         Ext.fly('appLoadingIndicator').destroy();
@@ -101,6 +105,32 @@ Ext.application({
             }
         );
     },
+
+	setMenuItems: function() {
+		var menuData = this.config.menuData;
+		Ext.each(menuData, function(menuItem) {
+			menuItem.listener = Ext.bind(this[menuItem.listener], this);
+		}, this);
+		this.menu.setMenuItems(menuData);
+	},
+
+	doShowMenu: function(button) {
+		Ext.Logger.info('Settings menu (app)');
+		var menu = this.menu;
+		if (!menu) {
+			menu = this.menu = Ext.create('ZCS.common.ZtMenu');
+			this.setMenuItems();
+		}
+		menu.setReferenceComponent(button);
+		menu.popup();
+	},
+
+	/**
+	 * Logs off the application
+	 */
+	doLogout: function() {
+		window.location.href = "/?loginOp=logout";
+	},
 
 	// Convenience methods for getting controllers
 

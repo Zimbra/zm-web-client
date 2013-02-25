@@ -97,40 +97,18 @@ Ext.define('ZCS.view.ZtOverview', {
 			]
 		});
 
-		// show the account name at the top of the overview, and a logout button
+		// show the account name at the top of the overview
 		var accountName = ZCS.session.getAccountName(),
 			userName = accountName.substr(0, accountName.indexOf('@'));
 
-		var userInfo = {
-			xtype: 'titlebar',
-			docked: 'top',
-			title: userName,
-			items: [
-				{
-					xtype: 'button',
-					iconCls: 'eject',
-					iconMask: true,
-					handler: this.onLogOutButtonTap,
-					scope:this
-				}
-			]
-		};
-
 		// create the nested list that contains the grouped organizers
 		var organizerList = Ext.create('ZCS.view.ZtOrganizerList', {
-			title: 'All',
+			title: userName,
 			displayField: 'name',
 			store: organizerStore,
 			grouped: true
 		});
 
-		this.add([
-			userInfo,
-			organizerList
-		]);
-	},
-	
-	onLogOutButtonTap: function() {
-		this.fireEvent('logout');
+		this.add(organizerList);
 	}
 });

@@ -335,6 +335,7 @@ ZCS.constant.INC_MAP[ZCS.constant.INC_SMART_PRE_HDR]	= [ZCS.constant.INC_SMART, 
 ZCS.constant.OP_COMPOSE     = 'COMPOSE';
 ZCS.constant.OP_DELETE      = 'DELETE';
 ZCS.constant.OP_FORWARD     = 'FORWARD';
+ZCS.constant.OP_LOGOUT      = 'LOGOUT';
 ZCS.constant.OP_MARK_READ   = 'MARK_READ';
 ZCS.constant.OP_REPLY       = 'REPLY';
 ZCS.constant.OP_REPLY_ALL   = 'REPLY_ALL';

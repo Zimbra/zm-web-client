@@ -84,6 +84,10 @@
         }
     </style>
 
+	<jsp:include page="Resources.jsp">
+		<jsp:param name="res" value="ZtMsg"/>
+	</jsp:include>
+
     <script>
         <c:set var="initialMailSearch" value="${requestScope.authResult.prefs.zimbraPrefMailInitialSearch[0]}"/>
         <c:if test="${fn:startsWith(initialMailSearch, 'in:')}">
@@ -106,10 +110,6 @@
     <script id="microloader" type="text/javascript" src="/t/touch/microloader/development.js"></script>
 </head>
 <body>
-
-<jsp:include page="Resources.jsp">
-    <jsp:param name="res" value="ZtMsg"/>
-</jsp:include>
 
 <div id="appLoadingIndicator">
     <div></div>

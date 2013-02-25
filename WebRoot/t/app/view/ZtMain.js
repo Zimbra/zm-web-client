@@ -69,6 +69,14 @@ Ext.define("ZCS.view.ZtMain", {
 				xtype: 'label',
 				html: ZtMsg.bannerText,
 				style: 'color:white;'
+			},
+			{
+				xtype: 'button',
+				iconCls: 'settings8',
+				iconMask: true,
+				handler: function() {
+					ZCS.app.doShowMenu(this)
+				}
 			}
 		]);
 	}
