@@ -2616,6 +2616,10 @@ function(msg, htmlMode, incWhat) {
 				// just grab the first body part and convert it to HTML
 				content = AjxStringUtil.convertToHtml(msg.getBodyContent());
 			}
+            else if(msg.isInvite() && msg._lastContentType === ZmMimeTable.TEXT_PLAIN) {
+                // Bug fix# 80197 Convert the content to HTML in case of reply when invitation is not current
+                content = AjxStringUtil.convertToHtml(content);
+            }
 			body = getOrig ? AjxStringUtil.getOriginalContent(content, true) : content;
 		} else {
 			hasInlineImages = msg.hasInlineImagesInMsgBody();
