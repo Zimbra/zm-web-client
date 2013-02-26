@@ -46,6 +46,9 @@ ZCS.constant.DEFAULT_PAGE_SIZE = 20;
 // URL portion that precedes a server API call
 ZCS.constant.SERVICE_URL_BASE = '/service/soap/';
 
+// How often to check for notifications, in seconds
+ZCS.constant.POLL_INTERVAL = 120;
+
 // Apps
 ZCS.constant.APP_MAIL     = 'mail';
 ZCS.constant.APP_CONTACTS = 'contacts';

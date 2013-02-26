@@ -45,6 +45,7 @@ Ext.application({
 	},
 
 	controllers: [
+		'ZCS.controller.ZtMainController',
 		'ZCS.controller.mail.ZtConvListController',
 		'ZCS.controller.mail.ZtConvController',
 		'ZCS.controller.mail.ZtMsgController',
@@ -74,11 +75,6 @@ Ext.application({
         '1496x2048': 'resources/startup/1496x2048.png'
     },
 
-	// items for settings menu
-	menuData: [
-		{ label: ZtMsg.logout, action: 'LOGOUT', listener: 'doLogout' }
-	],
-
     launch: function() {
         // Destroy the #appLoadingIndicator element
         Ext.fly('appLoadingIndicator').destroy();
@@ -90,8 +86,7 @@ Ext.application({
 
 	    Ext.Logger.info('STARTUP: app launch');
 
-        // Initialize the main view
-        Ext.Viewport.add(Ext.create('ZCS.view.ZtMain'));
+	    // Note: initial view created by ZtMainController
     },
 
     onUpdated: function() {
@@ -106,33 +101,11 @@ Ext.application({
         );
     },
 
-	setMenuItems: function() {
-		var menuData = this.config.menuData;
-		Ext.each(menuData, function(menuItem) {
-			menuItem.listener = Ext.bind(this[menuItem.listener], this);
-		}, this);
-		this.menu.setMenuItems(menuData);
-	},
-
-	doShowMenu: function(button) {
-		Ext.Logger.info('Settings menu (app)');
-		var menu = this.menu;
-		if (!menu) {
-			menu = this.menu = Ext.create('ZCS.common.ZtMenu');
-			this.setMenuItems();
-		}
-		menu.setReferenceComponent(button);
-		menu.popup();
-	},
-
-	/**
-	 * Logs off the application
-	 */
-	doLogout: function() {
-		window.location.href = "/?loginOp=logout";
-	},
-
 	// Convenience methods for getting controllers
+
+	getMainController: function() {
+		return this.getController('ZCS.controller.ZtMainController');
+	},
 
 	getComposeController: function() {
 		return this.getController('ZCS.controller.mail.ZtComposeController');

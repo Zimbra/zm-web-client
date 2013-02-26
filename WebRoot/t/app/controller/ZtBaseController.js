@@ -22,6 +22,12 @@ Ext.define('ZCS.controller.ZtBaseController', {
 
 	extend: 'Ext.app.Controller',
 
+	config: {
+		menu: null,
+		menuButton: null,
+		menuData: []
+	},
+
 	/**
 	 * Returns the store that holds the data this controller is managing.
 	 *
@@ -29,6 +35,34 @@ Ext.define('ZCS.controller.ZtBaseController', {
 	 */
 	getStore: function() {
 		return Ext.getStore(ZCS.util.getStoreShortName(this));
+	},
+
+	/**
+	 * Sets up the action menu, creating a listener for each action.
+	 * @protected
+	 */
+	setMenuItems: function() {
+		var menuData = this.getMenuData();
+		Ext.each(menuData, function(menuItem) {
+			menuItem.listener = Ext.bind(this[menuItem.listener], this);
+		}, this);
+		this.getMenu().setMenuItems(menuData);
+	},
+
+	/**
+	 * Displays the action menu after the dropdown button on the toolbar has been tapped.
+	 */
+	doShowMenu: function(menuButton) {
+
+		this.setMenuButton(menuButton);
+		var menu = this.getMenu();
+		if (!menu) {
+			menu = Ext.create('ZCS.common.ZtMenu');
+			this.setMenu(menu);
+			this.setMenuItems();
+		}
+		menu.setReferenceComponent(this.getMenuButton());
+		menu.popup();
 	},
 
 	/**

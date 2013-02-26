@@ -75,7 +75,7 @@ Ext.define("ZCS.view.ZtMain", {
 				iconCls: 'settings8',
 				iconMask: true,
 				handler: function() {
-					ZCS.app.doShowMenu(this)
+					this.up('tabbar').fireEvent('showMenu', this);
 				}
 			}
 		]);

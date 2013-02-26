@@ -206,7 +206,7 @@ Ext.define('ZCS.controller.ZtListController', {
 				ZCS.session.getCurrentSearchField().setValue(query);
 			}
 			this.updateTitlebar();
-			if (folder) {
+			if (folder && records.length) {
 				this.doShowFolders(false);
 			}
 		}

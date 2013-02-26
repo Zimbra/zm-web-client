@@ -286,8 +286,10 @@ Ext.define('ZCS.common.mail.ZtQuotedContent', {
 			level:		0,
 			toRemove:	[],
 			done:		false,
+			stop:		false,
 			hasQuoted:	false,
 			sepNode:	null,
+			nodeCount:  0,
 			results:	[]
 		};
 		this.traverseOriginalHtmlContent(htmlNode, ctxt);
@@ -319,9 +321,11 @@ Ext.define('ZCS.common.mail.ZtQuotedContent', {
 	// that's a delimiter, we clip it and all subsequent nodes at its level, and we're done.
 	traverseOriginalHtmlContent: function(el, ctxt) {
 
-		if (ctxt.done || !el) {
+		if (ctxt.done || !el || ctxt.stop) {
 			return;
 		}
+
+		ctxt.nodeCount++;
 
 		var nodeName = el.nodeName.toLowerCase(),
 			processChildren = true,
@@ -457,6 +461,13 @@ Ext.define('ZCS.common.mail.ZtQuotedContent', {
 			}
 		}
 
+		// if we find an UNKNOWN block after quoted content we may have inline comments, so stop
+		if (ctxt.hasQuoted && type === this.UNKNOWN && ctxt.count[this.WROTE_STRONG] === 1) {
+			ctxt.stop = true;
+			ctxt.sepNode = null;
+			return;
+		}
+
 		// if we found a recognized delimiter, set flag to clip it and subsequent nodes at its level
 		if (type === this.SEP_STRONG) {
 			ctxt.done = true;
@@ -471,6 +482,10 @@ Ext.define('ZCS.common.mail.ZtQuotedContent', {
 		// any element that gets here will get recursed into
 		for (var i = 0, len = el.childNodes.length; i < len; i++) {
 			var childNode = el.childNodes[i];
+			if (ctxt.nodeCount > ZCS.quoted.MAX_NODES) {
+				ctxt.sepNode = null;
+				return;
+			}
 			this.traverseOriginalHtmlContent(childNode, ctxt);
 			// see if we ran into a delimiter
 			if (ctxt.done) {
@@ -542,9 +557,9 @@ Ext.define('ZCS.common.mail.ZtQuotedContent', {
 			}
 		}
 	}
-
 });
 
+// Possible types for a block of content
 ZCS.quoted.UNKNOWN         = 'UNKNOWN';
 ZCS.quoted.QUOTED          = 'QUOTED';
 ZCS.quoted.SEP_STRONG      = 'SEP_STRONG';
@@ -555,6 +570,7 @@ ZCS.quoted.HEADER          = 'HEADER';
 ZCS.quoted.LINE            = 'LINE';
 ZCS.quoted.SIG_SEP         = 'SIG_SEP';
 
+// Regexes for figuring out block type
 ZCS.quoted.REGEXES = [
 	{
 		// the two most popular quote characters, > and |
@@ -599,8 +615,11 @@ ZCS.quoted.REGEX_INTRO    = new RegExp('^(-{2,}|' + ZtMsg.on + ')', 'i');
 
 ZCS.quoted.REGEX_SCRIPT = /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi;
 
-ZCS.quoted.HTML_SEP_ID = 'zwchr';
+ZCS.quoted.HTML_SEP_ID = 'zwchr';   // inserted by ZCS HTML composer
 
 // nodes to ignore; they won't have anything we're interested in
 ZCS.quoted.IGNORE_NODE_LIST = ['#comment', 'script', 'select', 'style'];
 ZCS.quoted.IGNORE_NODE = ZCS.util.arrayAsLookupHash(ZCS.quoted.IGNORE_NODE_LIST);
+
+// Give up after processing this many nodes
+ZCS.quoted.MAX_NODES       = 200;

@@ -42,16 +42,21 @@ Ext.define('ZCS.common.ZtLogger', {
 
 			// custom levels
 			'iframe',
-			'conv'
+			'conv',
+			'poll'
 		]
 	},
 
 	log: function(message, priority, callerId) {
-		var custom = ZCS.session.getDebugLevel();
-		if (priority === 'deprecate' || priority === 'warn' || priority === 'error') {
+
+		var custom = ZCS.session.getDebugLevel(),
+			priorities = Ext.log.Logger.priorities,
+			priorityValue = priorities[priority];
+
+		if (priorityValue && priorityValue >= 2) {
 			message = '[' + priority.toUpperCase() + '] ' + message;
 		}
-		return (!custom || priority === 'force' || priority === custom) ? this.callParent(arguments) : this;
+		return ((priorityValue && !custom) || priority === 'force' || priority === custom) ? this.callParent(arguments) : this;
 	}
 
 }, function() {

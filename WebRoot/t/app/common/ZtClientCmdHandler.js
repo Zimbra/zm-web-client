@@ -57,12 +57,7 @@ Ext.define('ZCS.common.ZtClientCmdHandler', {
 	 * @private
 	 */
 	handle_poll: function(server) {
-
-		var options = {
-			url: ZCS.constant.SERVICE_URL_BASE + 'NoOpRequest',
-			jsonData: server.getWriter().getSoapEnvelope(null, null, 'NoOp')
-		};
-		server.sendSoapRequest(options);
+		ZCS.app.getMainController().sendPoll();
 	},
 
 	/**

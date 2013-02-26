@@ -43,42 +43,12 @@ Ext.define('ZCS.controller.ZtItemController', {
 			}
 		},
 
-		item: null,
-		menu: null,
-		menuButton: null
+		item: null
 	},
 
 	launch: function () {
 		Ext.Logger.verbose('STARTUP: item ctlr launch - ' + ZCS.util.getClassName(this));
 		this.callParent();
-	},
-
-	/**
-	 * Sets up the action menu, creating a listener for each action.
-	 * @protected
-	 */
-	setMenuItems: function() {
-		var menuData = this.getMenuData();
-		Ext.each(menuData, function(menuItem) {
-			menuItem.listener = Ext.bind(this[menuItem.listener], this);
-		}, this);
-		this.getMenu().setMenuItems(menuData);
-	},
-
-	/**
-	 * Displays the action menu after the dropdown button on the toolbar has been tapped.
-	 */
-	doShowMenu: function(menuButton) {
-
-		this.setMenuButton(menuButton);
-		var menu = this.getMenu();
-		if (!menu) {
-			menu = Ext.create('ZCS.common.ZtMenu');
-			this.setMenu(menu);
-			this.setMenuItems();
-		}
-		menu.setReferenceComponent(this.getMenuButton());
-		menu.popup();
 	},
 
 	/**

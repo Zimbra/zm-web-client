@@ -96,6 +96,7 @@ Ext.define('ZCS.model.ZtSoapProxy', {
 		this.callParent(arguments);
 
 		this.processHeader(response.soapHeader);
+		ZCS.app.getMainController().schedulePoll();
 	},
 
 	processHeader: function(header) {
@@ -370,5 +371,6 @@ Ext.define('ZCS.model.ZtSoapProxy', {
 
 		var data = this.getReader().getResponseData(response);
 		this.processHeader(data.Header);
+		ZCS.app.getMainController().schedulePoll();
 	}
 });
