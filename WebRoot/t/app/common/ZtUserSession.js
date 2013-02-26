@@ -304,6 +304,10 @@ Ext.define('ZCS.common.ZtUserSession', {
 				this.setSetting(ZCS.constant['SETTING_' + which + '_INCLUDE_HEADERS'], list[2]);
 			}
 		}, this);
+
+		// Contacts app needs to be enabled by us and the user
+		var contactsSetting = ZCS.constant.SETTING_CONTACTS_ENABLED;
+		this.setSetting(contactsSetting, this.getSetting(contactsSetting) && ZCS.constant.IS_ENABLED[ZCS.constant.APP_CONTACTS]);
 	},
 
 	/**

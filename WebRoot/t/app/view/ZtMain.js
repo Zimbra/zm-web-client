@@ -51,13 +51,15 @@ Ext.define("ZCS.view.ZtMain", {
 		this.callParent(arguments);
 
 		Ext.each(ZCS.constant.APPS, function(app) {
-			var mainView = {
-				title: ZCS.constant.TAB_TITLE[app],
-				xtype: 'appview',
-				itemId: app + 'view',
-				app: app
-			};
-			this.add(mainView);
+			if (ZCS.session.getSetting(ZCS.constant.APP_SETTING[app])) {
+				var mainView = {
+					title: ZCS.constant.TAB_TITLE[app],
+					xtype: 'appview',
+					itemId: app + 'view',
+					app: app
+				};
+				this.add(mainView);
+			}
 		}, this);
 
 		// Place some branding text on the right side of the tab bar

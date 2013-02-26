@@ -59,6 +59,10 @@ ZCS.constant.APPS = [
 	ZCS.constant.APP_CONTACTS
 ];
 
+// Turn features on/off
+ZCS.constant.IS_ENABLED = {};
+ZCS.constant.IS_ENABLED[ZCS.constant.APP_CONTACTS]  = true;
+
 // Text for tab bar
 ZCS.constant.TAB_TITLE = {};
 ZCS.constant.TAB_TITLE[ZCS.constant.APP_MAIL]       = ZtMsg.mail;
@@ -75,10 +79,10 @@ ZCS.constant.NEW_ITEM_ICON[ZCS.constant.APP_MAIL]       = 'compose';
 ZCS.constant.NEW_ITEM_ICON[ZCS.constant.APP_CONTACTS]   = 'plus';
 
 // Item types as known by server
-ZCS.constant.ITEM_CONVERSATION = 'conversation';
-ZCS.constant.ITEM_MESSAGE      = 'message';
-ZCS.constant.ITEM_CONTACT      = 'contact';
-ZCS.constant.ADDRESS_AUTOCOMPLETE = 'match';
+ZCS.constant.ITEM_CONVERSATION      = 'conversation';
+ZCS.constant.ITEM_MESSAGE           = 'message';
+ZCS.constant.ITEM_CONTACT           = 'contact';
+ZCS.constant.ADDRESS_AUTOCOMPLETE   = 'match';
 
 // App to which each item type belongs
 ZCS.constant.APP_FOR_TYPE = {};
@@ -259,6 +263,8 @@ ZCS.constant.SETTING_MARK_READ          = 'zimbraPrefMarkMsgRead';  // -1 = neve
 ZCS.constant.SETTING_REPLY_INCLUDE      = 'zimbraPrefReplyIncludeOriginalText';
 ZCS.constant.SETTING_FORWARD_INCLUDE    = 'zimbraPrefForwardIncludeOriginalText';
 ZCS.constant.SETTING_REPLY_PREFIX       = 'zimbraPrefForwardReplyPrefixChar';
+ZCS.constant.SETTING_MAIL_ENABLED       = 'zimbraFeatureMailEnabled';
+ZCS.constant.SETTING_CONTACTS_ENABLED   = 'zimbraFeatureContactsEnabled';
 
 // Names of internal settings
 ZCS.constant.SETTING_CUR_SEARCH                 = 'CUR_SEARCH';
@@ -268,7 +274,7 @@ ZCS.constant.SETTING_REPLY_USE_PREFIX           = 'REPLY_USE_PREFIX';
 ZCS.constant.SETTING_REPLY_INCLUDE_HEADERS      = 'REPLY_INCLUDE_HEADERS';
 ZCS.constant.SETTING_FORWARD_INCLUDE_WHAT       = 'FORWARD_INCLUDE_WHAT';
 ZCS.constant.SETTING_FORWARD_USE_PREFIX         = 'FORWARD_USE_PREFIX';
-ZCS.constant.SETTING_FORWARD_INCLUDE_HEADERS    = 'FORWARD_INCLUDE_HEADERS';
+ZCS.constant.SETTING_FORWARD_INCLUDE_HEADERS    = 'SETTING_FORWARD_INCLUDE_HEADERS';
 
 // List of all settings we care about
 ZCS.constant.SETTINGS = [
@@ -283,6 +289,8 @@ ZCS.constant.SETTINGS = [
 	ZCS.constant.SETTING_REPLY_INCLUDE,
 	ZCS.constant.SETTING_FORWARD_INCLUDE,
 	ZCS.constant.SETTING_REPLY_PREFIX,
+	ZCS.constant.SETTING_MAIL_ENABLED,
+	ZCS.constant.SETTING_CONTACTS_ENABLED,
 
 	// internal
 	ZCS.constant.SETTING_CUR_SEARCH,
@@ -306,6 +314,11 @@ ZCS.constant.SETTING_VALUE[ZCS.constant.SETTING_SHOW_SEARCH] = 'false';
 // Default values for settings
 ZCS.constant.SETTING_DEFAULT = {};
 ZCS.constant.SETTING_DEFAULT[ZCS.constant.SETTING_LOCALE] = 'en_US';
+
+// Setting that tells us if an app is enabled
+ZCS.constant.APP_SETTING = {};
+ZCS.constant.APP_SETTING[ZCS.constant.APP_MAIL]     = ZCS.constant.SETTING_MAIL_ENABLED;
+ZCS.constant.APP_SETTING[ZCS.constant.APP_CONTACTS] = ZCS.constant.SETTING_CONTACTS_ENABLED;
 
 // Values for what is included on reply/forward - server bundles several options into a single value
 ZCS.constant.INC_NONE				= "includeNone";

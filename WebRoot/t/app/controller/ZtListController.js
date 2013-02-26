@@ -68,7 +68,7 @@ Ext.define('ZCS.controller.ZtListController', {
 	 */
 	launch: function () {
 
-		var defaultQuery = ZCS.session.getSetting(ZCS.constant.SETTING_INITIAL_SEARCH);
+		var defaultQuery = this.getDefaultQuery();
 
 		Ext.Logger.verbose('STARTUP: list ctlr launch - ' + ZCS.util.getClassName(this));
 		this.callParent();
@@ -79,7 +79,7 @@ Ext.define('ZCS.controller.ZtListController', {
 		});
 
 		this.getStore().load({
-			query: this.getDefaultQuery(),
+			query: defaultQuery,
 			callback: this.storeLoaded.bind(this, null, null)
 		});
 	},
