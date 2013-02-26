@@ -2629,7 +2629,7 @@ HTML>BODY .appt-selected .appt_allday_body
 
 .ZmReminderDialog {
 	overflow:auto;
-	width:475px; 			/*??? SIZE */
+	width:auto; 			/*??? SIZE */
 	@BoxMargin@
 	margin-bottom:0;
 }

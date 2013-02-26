@@ -65,7 +65,7 @@ function(list) {
 		var appt = list.get(i);
 		var uid = appt.getUniqueId(true);
 		var data = this._apptData[uid] = {appt:appt};
-		idx = this._addAppt(html, idx, appt, data, (i > 0));
+		idx = this._addAppt(html, idx, appt, data, (i === size - 1));
 	}
     if(size == 0) {
         html[idx++] = '<tr name="rdsep">';
@@ -92,9 +92,8 @@ function(list) {
 		var data = this._apptData[uid];
 
 		// open button
-		var openBtn = this._openButtons[data.openBtnId] = new DwtButton({parent:this, className:"DwtToolbarButton", parentElement:data.openBtnId});
-		openBtn.setImage(appt.otherAttendees ? "ApptMeeting" : "Appointment");
-		openBtn.setText(ZmMsg.viewAppointment);
+		var openBtn = this._openButtons[data.openBtnId] = new DwtLinkButton({id: "openBtn_" + id, parent: this, parentElement: data.openLinkId, noDropDown: true});
+		openBtn.setText(appt.getName());
 		openBtn.addSelectionListener(openListener);
 		openBtn.apptUid = uid;
 
@@ -123,9 +122,9 @@ function(data) {
 };
 
 ZmQuickReminderDialog.prototype._addAppt =
-function(html, idx, appt, data, needSep) {
+function(html, idx, appt, data, noSep) {
 
-	data.openBtnId = Dwt.getNextId();
+	data.openLinkId = Dwt.getNextId();
 	data.deltaId = Dwt.getNextId();
 	data.rowId = Dwt.getNextId();
 
@@ -137,7 +136,7 @@ function(html, idx, appt, data, needSep) {
     var apptLabel = appt.isUpcomingEvent ? " (" + ZmMsg.upcoming + ")" : ""
 
 	var params = {
-		needSep: needSep,
+		noSep: noSep,
 		rowId: data.rowId,
 		calName: calName,
 		accountName: (appCtxt.multiAccounts && calendar && calendar.getAccount().getDisplayName()),
@@ -147,7 +146,7 @@ function(html, idx, appt, data, needSep) {
 		reminderName: (AjxStringUtil.htmlEncode(appt.name + apptLabel)),
 		durationText: (AjxStringUtil.trim(this._getDurationText(appt))),
 		deltaId: data.deltaId,
-		openBtnId: data.openBtnId
+		openLinkId: data.openLinkId
 	};
 	html[idx++] = AjxTemplate.expand("calendar.Calendar#ReminderDialogRow", params);
 	return idx;

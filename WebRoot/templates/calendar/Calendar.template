@@ -366,17 +366,12 @@
 </template>
 
 <template id='calendar.Calendar#ReminderDialogRow'>
-	<$ if (data.needSep) { $>
-		<tr name="rdsep">
-			<td colspan=3><div class="horizSep"></div></td>
-		</tr>
-	<$ } $>
 	<tr id='${rowId}'>
-		<td width=100% valign=top>
-			<span id='${reminderNameContainerId}'><b>${reminderName}</b></span><br>
-			<span id='${reminderDescContainerId}'>
+		<td style="max-width:350px;" valign=top>
+			<div id='${openLinkId}' class='ZmApptOpenLink'></div>
+			<div id='${reminderDescContainerId}'>
 			<$ if (data.durationText != "") { $>
-			    <$= ZmMsg.whenLabel $> ${durationText}<br>
+			    ${durationText}<br>
             <$ } $>
 
 			<$ if (data.organizer) { $>
@@ -398,15 +393,17 @@
 			<$ if (data.location) { $>
 				<$= ZmMsg.locationLabel $> ${location}<br>
 			<$ } $>
-			</span>
+			</div>
 		</td>
 		<td valign=top align=right>
-			<table>
-				<tr>
+			<table style="margin-left:15px;">
+				<tr id='${actionsRowId}'>
 					<td valign=top align=right>
 						<table class='ZPropertySheet' cellspacing='6'>
 							<tr>
-								<td valign=top id='${openBtnId}'></td>
+								<td valign=top id='${snoozeSelectInputId}' style="padding-right:0;"></td>
+								<td valign=top id='${snoozeSelectBtnId}' style="padding-left:0"></td>
+								<td valign=top id='${snoozeBtnId}'></td>
 								<td valign=top id='${dismissBtnId}'></td>
 							</tr>
 						</table>
@@ -418,7 +415,29 @@
 			</table>
 		</td>
 	</tr>
+	<$ if (!data.noSep) { /* used only from ZmQuickReminderDialog */ $>
+		<tr name="rdsep">
+			<td colspan=3><div class="horizSep"></div></td>
+		</tr>
+	<$ } $>
+
 </template>
+
+<template id='calendar.Calendar#ReminderDialogAllSection'>
+	<table class='ZPropertySheet' cellspacing='6' cellpadding=0 border=0 width="100%">
+		<tr>
+			<td width=100% valign=middle align=right>
+				<span id='${snoozeAllLabelId}'></span>
+			</td>
+			<td valign=top id='${snoozeSelectInputId}' style="padding-right:0"></td>
+			<td valign=top id='${snoozeSelectBtnId}' style="padding-left:0"></td>
+			<td valign=top id='${snoozeBtnId}' class="DwtDialogButtonBar"></td>
+			<td valign=top id='${dismissBtnId}' class="DwtDialogButtonBar"></td>
+		</tr>
+	</table>
+</template>
+
+
 
 
 <template id='calendar.Appointment#DnDProxy'>
