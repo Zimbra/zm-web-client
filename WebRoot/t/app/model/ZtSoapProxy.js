@@ -115,10 +115,8 @@ Ext.define('ZCS.model.ZtSoapProxy', {
 
 	handleNotifications: function(notifications) {
 
-		// TODO: check for stale notifications based on seq
-
-
 		Ext.each(notifications, function(notify) {
+			ZCS.session.setNotifySeq(notify.seq);
 			this.normalizeNotifications(notify);
 			if (notify.deleted) {
 				this.handleDeletes(notify.deleted);
@@ -190,7 +188,15 @@ Ext.define('ZCS.model.ZtSoapProxy', {
 		}, this);
 	},
 
+	/**
+	 * Handle receipt of a {refresh} block, which typically happens when a new session
+	 * on the server has been started (for example at login).
+	 *
+	 * @param {object}  refresh     JSON folder data
+	 */
 	handleRefresh: function(refresh) {
+		ZCS.session.loadFolders(refresh);
+		ZCS.session.setNotifySeq(0, true);
 	},
 
 	/**

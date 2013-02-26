@@ -34,7 +34,6 @@ Ext.define('ZCS.common.ZtUserSession', {
 		sessionId: 0,
 		accountName: '',
 		accountId: '',
-		notifySeq: 0,
 		initialSearchResults: null,
 		debugLevel: '',
 		organizerData: null,
@@ -48,20 +47,11 @@ Ext.define('ZCS.common.ZtUserSession', {
 		// session ID
 		this.setSessionId(data.header.context.session.id);
 
-		// parse organizer info from the {refresh} block
-		var folderRoot = data.header.context.refresh.folder[0],
-			tagRoot = data.header.context.refresh.tags,
-			organizerData = {};
+		// Notification sequence number (so the server knows what we've seen)
+		this.notifySeq = 0;
 
-		// each overview needs data with unique IDs, so even though tags are global, we
-		// need to create a separate record for each tag per app
-		Ext.each(ZCS.constant.APPS, function(app) {
-			var organizers = organizerData[app] = [];
-			this.addOrganizer(folderRoot, organizers, app, ZCS.constant.ORG_FOLDER, []);
-			this.addOrganizer(folderRoot, organizers, app, ZCS.constant.ORG_SAVED_SEARCH, []);
-			this.addOrganizer(tagRoot, organizers, app, ZCS.constant.ORG_TAG, []);
-		}, this);
-		this.setOrganizerData(organizerData);
+		// Load organizers
+		this.loadFolders(data.header.context.refresh);
 
 		// grab the user's settings
 		var gir = data.response.GetInfoResponse[0];
@@ -86,6 +76,29 @@ Ext.define('ZCS.common.ZtUserSession', {
 	},
 
 	/**
+	 * Loads folders (and saved searches and tags) from data in a {refresh} block.
+	 *
+	 * @param {object}  refresh     JSON folder data
+	 */
+	loadFolders: function(refresh) {
+
+		// parse organizer info from the {refresh} block
+		var folderRoot = refresh.folder[0],
+			tagRoot = refresh.tags,
+			organizerData = {};
+
+		// each overview needs data with unique IDs, so even though tags are global, we
+		// need to create a separate record for each tag per app
+		Ext.each(ZCS.constant.APPS, function(app) {
+			var organizers = organizerData[app] = [];
+			this.addOrganizer(folderRoot, organizers, app, ZCS.constant.ORG_FOLDER, []);
+			this.addOrganizer(folderRoot, organizers, app, ZCS.constant.ORG_SAVED_SEARCH, []);
+			this.addOrganizer(tagRoot, organizers, app, ZCS.constant.ORG_TAG, []);
+		}, this);
+		this.setOrganizerData(organizerData);
+	},
+
+	/**
 	 * Returns the value of the setting with the given name.
 	 *
 	 * @param {string}  settingName     setting's name (LDAP attr name)
@@ -107,6 +120,16 @@ Ext.define('ZCS.common.ZtUserSession', {
 		var setting = this._settings[settingName];
 		if (setting) {
 			setting.setValue(value);
+		}
+	},
+
+	getNotifySeq: function() {
+		return this.notifySeq;
+	},
+
+	setNotifySeq: function(seq, force) {
+		if (force || (seq > this.notifySeq)) {
+			this.notifySeq = seq;
 		}
 	},
 
