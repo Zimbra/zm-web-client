@@ -94,6 +94,7 @@ Ext.define('ZCS.common.ZtUserSession', {
 			this.addOrganizer(folderRoot, organizers, app, ZCS.constant.ORG_FOLDER, []);
 			this.addOrganizer(folderRoot, organizers, app, ZCS.constant.ORG_SAVED_SEARCH, []);
 			this.addOrganizer(tagRoot, organizers, app, ZCS.constant.ORG_TAG, []);
+			organizers.sort(ZCS.util.compareOrganizers);
 		}, this);
 		this.setOrganizerData(organizerData);
 	},
@@ -169,7 +170,8 @@ Ext.define('ZCS.common.ZtUserSession', {
 		var itemId = node.id,
 			isRoot = (!itemId || itemId === ZCS.constant.ID_ROOT),
 			isTrash = (itemId === ZCS.constant.ID_TRASH),
-			view = ZCS.constant.FOLDER_VIEW[app],
+			view = node.view || ZCS.constant.FOLDER_VIEW[ZCS.constant.APP_MAIL],    // if view missing, default to 'message'
+			appView = ZCS.constant.FOLDER_VIEW[app],
 			hideFolder = ZCS.constant.FOLDER_HIDE[itemId],
 			childNodeName = ZCS.constant.ORG_NODE[type];
 
@@ -186,7 +188,7 @@ Ext.define('ZCS.common.ZtUserSession', {
 			}, this);
 		}
 		else if (type === ZCS.constant.ORG_FOLDER) {
-			validType = (node.view === view);
+			validType = (view === appView);
 		}
 		else if (type === ZCS.constant.ORG_TAG) {
 			validType = true;

@@ -54,47 +54,12 @@ Ext.define('ZCS.view.ZtOverview', {
 
 		// create a store for the organizers
 		var organizerStore = Ext.create('Ext.data.TreeStore', {
-
 			model: 'ZCS.model.ZtOrganizer',
 			defaultRootProperty: 'items',
 			root: organizerData,
 			grouper: function(record) {
 				return record.get('typeName');
-			},
-			sorters: [
-				{
-					// Sort by organizer type, then system folders to top, then by name.
-					// We use organizer type as the first sort key because specifying a 'sortProperty'
-					// in the grouper above does not work, maybe because this is a TreeStore.
-					sorterFn: function(organizer1, organizer2) {
-
-						var orgType1 = organizer1.get('type'),
-							orgType2 = organizer2.get('type'),
-							isSystem1 = organizer1.isSystem(),
-							isSystem2 = organizer2.isSystem(),
-							sortField1, sortField2;
-
-						if (orgType1 !== orgType2) {
-							sortField1 = ZCS.constant.ORG_SORT_VALUE[orgType1];
-							sortField2 = ZCS.constant.ORG_SORT_VALUE[orgType2];
-						}
-						else if (isSystem1 !== isSystem2) {
-							return isSystem1 ? -1 : 1;
-						}
-						else if (isSystem1 && isSystem2) {
-							sortField1 = ZCS.constant.FOLDER_SORT_VALUE[organizer1.get('itemId')];
-							sortField2 = ZCS.constant.FOLDER_SORT_VALUE[organizer2.get('itemId')];
-						}
-						else {
-							sortField1 = organizer1.get('name').toLowerCase();
-							sortField2 = organizer2.get('name').toLowerCase();
-						}
-
-						return sortField1 > sortField2 ? 1 : (sortField1 === sortField2 ? 0 : -1);
-					},
-					direction: 'ASC'
-				}
-			]
+			}
 		});
 
 		// show the account name at the top of the overview

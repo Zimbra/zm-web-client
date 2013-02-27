@@ -140,5 +140,34 @@ Ext.define('ZCS.common.ZtUtil', {
 		}
 
 		return dateStr;
+	},
+
+	compareOrganizers: function(organizer1, organizer2) {
+
+		var orgType1 = organizer1.type,
+			orgType2 = organizer2.type,
+			id1 = organizer1.itemId,
+			id2 = organizer2.itemId,
+			isSystem1 = (orgType1 !== ZCS.constant.ORG_SAVED_SEARCH && orgType1 !== ZCS.constant.ORG_TAG && id1 <= ZCS.constant.MAX_SYSTEM_ID),
+			isSystem2 = (orgType2 !== ZCS.constant.ORG_SAVED_SEARCH && orgType2 !== ZCS.constant.ORG_TAG && id2 <= ZCS.constant.MAX_SYSTEM_ID),
+			sortField1, sortField2;
+
+		if (orgType1 !== orgType2) {
+			sortField1 = ZCS.constant.ORG_SORT_VALUE[orgType1];
+			sortField2 = ZCS.constant.ORG_SORT_VALUE[orgType2];
+		}
+		else if (isSystem1 !== isSystem2) {
+			return isSystem1 ? -1 : 1;
+		}
+		else if (isSystem1 && isSystem2) {
+			sortField1 = ZCS.constant.FOLDER_SORT_VALUE[id1];
+			sortField2 = ZCS.constant.FOLDER_SORT_VALUE[id2];
+		}
+		else {
+			sortField1 = organizer1.name.toLowerCase();
+			sortField2 = organizer2.name.toLowerCase();
+		}
+
+		return sortField1 > sortField2 ? 1 : (sortField1 === sortField2 ? 0 : -1);
 	}
 });
