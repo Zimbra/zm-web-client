@@ -21,12 +21,12 @@
 		</tpl>
 		<div class='zcs-mail-senders<tpl if='isUnread'>-unread</tpl>'>
 			{senders}
-			<tpl if='numMsgs &gt; 1'><span class='zcs-numMsgs'>{numMsgs}</span></tpl>
 		</div>
 		<div class='zcs-mail-date'>{dateStr}</div>
 		<tpl if='hasAttachment'><div class='zcs-mail-attachment'>
 			<img src='/t/resources/icons/attachment.png' /></div></tpl>
 		<div class='zcs-mail-subject<tpl if='isUnread'>-unread</tpl>'>{subject}</div>
+		<tpl if='numMsgs &gt; 1'><span class='zcs-numMsgs'>{numMsgs}</span></tpl>
 		<tpl if='isFlagged'><div class='zcs-mail-flag'>
 			<img src='/t/resources/icons/flagged.png' /></div></tpl>
 		<div class='zcs-mail-fragment'>{fragment}</div>

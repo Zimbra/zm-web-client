@@ -55,6 +55,7 @@ $zcs-mail-topline3: 3.5em;
 	left: $zcs-mail-indent;
 	overflow:hidden;
 	right: 3em;
+	text-overflow: ellipsis;
 	top: $zcs-mail-topline1;
 	white-space: nowrap;
 }
@@ -62,16 +63,6 @@ $zcs-mail-topline3: 3.5em;
 .zcs-mail-senders-unread {
 	@extend .zcs-mail-senders;
 	font-weight:bold;
-}
-
-.zcs-numMsgs {
-	@include border-radius(1.5em,1.5em);
-	background-color: #8E8E8E;
-	color: $light-grey;
-	display:inline-block;
-	font-size: .7em;
-	padding: 0 .39em 0 .38em;
-	vertical-align: text-bottom;
 }
 
 .zcs-mail-date {
@@ -93,9 +84,24 @@ $zcs-mail-topline3: 3.5em;
 	font-size: 1em;
 	left: $zcs-mail-indent;
 	overflow:hidden;
-	right: .5em;
+	right: 1.6em;
+	text-overflow: ellipsis;
 	top: $zcs-mail-topline2;
 	white-space: nowrap;
+}
+
+.zcs-numMsgs {
+	@extend .zcs-mail-list-item;
+	@include border-radius(1.5em,1.5em);
+	background-color: #000000;
+	color: #FFFFFF;
+	display:inline-block;
+	font-size: .8em;
+	margin-top: .5em;
+	padding: 0 .39em 0 .39em;
+	right: .5em;
+	top: $zcs-mail-topline2;
+	@include opacity(.5);
 }
 
 .zcs-mail-subject-unread {
@@ -117,6 +123,7 @@ $zcs-mail-topline3: 3.5em;
 	line-height: 1.3em;
 	overflow: hidden;
 	right: .25em;
+	text-overflow: ellipsis;
 	top: $zcs-mail-topline3;
 }
 
@@ -160,6 +167,7 @@ $msgHdrTopOffset2: 2.3em;
 	font-size: $msgHdrTextSize;
 	left: $msgHdrTextIndent;
 	overflow: hidden;
+	text-overflow: ellipsis;
 	top: $msgHdrTopOffset2;
 	white-space: nowrap;
 }
@@ -170,6 +178,7 @@ $msgHdrTopOffset2: 2.3em;
 	left: $msgHdrTextIndent;
 	overflow: hidden;
 	right: $msgHdrRightOffset;
+	text-overflow: ellipsis;
 	top: $msgHdrTopOffset2;
 	white-space: nowrap;
 }
@@ -187,6 +196,7 @@ $msgHdrTopOffset2: 2.3em;
 	left: $msgHdrTextIndent;
 	overflow: hidden;
 	right: $msgHdrRightOffset;
+	text-overflow: ellipsis;
 	top: $msgHdrTopOffset2;
 	white-space: nowrap;
 }
