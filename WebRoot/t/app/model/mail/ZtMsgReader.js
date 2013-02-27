@@ -96,7 +96,7 @@ Ext.define('ZCS.model.mail.ZtMsgReader', {
 
 		data.addresses = ZCS.model.mail.ZtMailItem.convertAddresses(node.e);
 
-		data.dateStr = ZCS.model.mail.ZtMailItem.getDateString(node.d);
+		data.dateStr = ZCS.util.getRelativeDateString(node.d);
 
 		if (node.mp) {
 			ctxt = {

@@ -47,47 +47,6 @@ Ext.define('ZCS.model.mail.ZtMailItem', {
 	statics: {
 
 		/**
-		 * Returns a summary relative date string (eg '5 minutes ago') for the date in the given JSON node, relative
-		 * to the given time, or the current time if no time is provided. The string indicates how many minutes ago,
-		 * how many hours ago, or if the difference is more than a day, a short version of the month and day.
-		 *
-		 * @param {int}     date        date in ms
-		 * @param {int}     nowMs       base time in ms
-		 */
-		getDateString: function(date, nowMs) {
-
-			if (date == null) {
-				return '';
-			}
-
-			var nowMs = nowMs || Ext.Date.now(),
-				then = new Date(date),
-				thenMs = then.getTime(),
-				dateDiff = nowMs - thenMs,
-				num, unit, dateStr;
-
-			if (dateDiff < ZCS.constant.MSEC_PER_MINUTE) {
-				dateStr = ZtMsg.receivedNow;
-			}
-			else if (dateDiff < ZCS.constant.MSEC_PER_DAY) {
-				if (dateDiff < ZCS.constant.MSEC_PER_HOUR) {
-					num = Math.round(dateDiff / ZCS.constant.MSEC_PER_MINUTE);
-					unit = num > 1 ? ZtMsg.minutes : ZtMsg.minute;
-				}
-				else {
-					num = Math.round(dateDiff / ZCS.constant.MSEC_PER_HOUR);
-					unit = num > 1 ? ZtMsg.hours : ZtMsg.hour;
-				}
-				dateStr = Ext.String.format(ZtMsg.receivedRecently, num, unit);
-			}
-			else {
-				dateStr = Ext.Date.format(then, 'M j');
-			}
-
-			return dateStr;
-		},
-
-		/**
 		 * Convert JSON objects into address objects.
 		 *
 		 * @param {array}   addrs       list of address nodes
@@ -108,14 +67,6 @@ Ext.define('ZCS.model.mail.ZtMailItem', {
 			});
 
 			return addresses;
-		},
-
-		stripSubjectPrefixes: function(subj) {
-			var regex = ZCS.constant.REGEX_SUBJ_PREFIX;
-			while (regex.test(subj)) {
-				subj = subj.replace(regex, '');
-			}
-			return subj;
 		}
 	},
 
@@ -216,7 +167,7 @@ Ext.define('ZCS.model.mail.ZtMailItem', {
 
 		// date
 		if (modify.d) {
-			this.set('dateStr', ZCS.model.mail.ZtMailItem.getDateString(modify.d));
+			this.set('dateStr', ZCS.util.getRelativeDateString(modify.d));
 		}
 
 		// fragment

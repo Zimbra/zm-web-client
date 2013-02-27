@@ -320,6 +320,6 @@ Ext.define('ZCS.view.mail.ZtAssignmentView', {
 
         this.alignTo(component, alignment);
 
-        ZCS.util.resetWindowScroll();
+        ZCS.util.html.resetWindowScroll();
     }
 });

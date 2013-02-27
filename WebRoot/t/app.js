@@ -23,6 +23,8 @@ Ext.application({
 
 	    'ZCS.common.ZtLogger',
 	    'ZCS.common.ZtUtil',
+	    'ZCS.common.ZtHtmlUtil',
+	    'ZCS.common.mail.ZtMailUtil',
 	    'ZCS.common.ZtConstants',
 	    'ZCS.common.ZtTemplate',
 	    'ZCS.common.ZtItemCache',

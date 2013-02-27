@@ -135,7 +135,7 @@ Ext.define('ZCS.view.mail.ZtComposeForm', {
 							blur: function () {
 								//Because this panel is floating, and a keystroke may have forced the whole window to scroll,
 								//when we blur, reset the scroll.
-								ZCS.util.resetWindowScroll();
+								ZCS.util.html.resetWindowScroll();
 							}
 						},
 						label: ZtMsg.subjectHdr
@@ -164,7 +164,7 @@ Ext.define('ZCS.view.mail.ZtComposeForm', {
 							blur: function () {
 								//Because this panel is floating, and a keystroke may have forced the whole window to scroll,
 								//when we blur, reset the scroll.
-								ZCS.util.resetWindowScroll();
+								ZCS.util.html.resetWindowScroll();
 							}
 						}
 					}]

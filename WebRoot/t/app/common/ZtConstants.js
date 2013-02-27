@@ -47,7 +47,7 @@ ZCS.constant.DEFAULT_PAGE_SIZE = 20;
 ZCS.constant.SERVICE_URL_BASE = '/service/soap/';
 
 // How often to check for notifications, in seconds
-ZCS.constant.POLL_INTERVAL = 120;
+ZCS.constant.POLL_INTERVAL = 10;
 
 // Apps
 ZCS.constant.APP_MAIL     = 'mail';

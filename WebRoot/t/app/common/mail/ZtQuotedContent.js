@@ -348,7 +348,7 @@ Ext.define('ZCS.common.mail.ZtQuotedContent', {
 				if (testLine.indexOf(':') !== -1 && el.parentNode) {
 					// what appears as a single "... wrote:" line may have multiple elements, so gather it all
 					// together into one line and test that
-					testLine = Ext.String.trim(Ext.String.htmlDecode(ZCS.util.stripTags(el.parentNode.innerHTML)));
+					testLine = Ext.String.trim(Ext.String.htmlDecode(ZCS.util.html.stripTags(el.parentNode.innerHTML)));
 					type = this.getLineType(testLine);
 					if (type === this.WROTE_STRONG) {
 						// check for a multinode WROTE; if we find one, gather it into a SPAN so that we
@@ -399,7 +399,7 @@ Ext.define('ZCS.common.mail.ZtQuotedContent', {
 
 			// PRE: treat as one big line of text (should maybe go line by line)
 		} else if (nodeName === 'pre') {
-			var text = Ext.String.htmlDecode(ZCS.util.stripTags(el.innerHTML));
+			var text = Ext.String.htmlDecode(ZCS.util.html.stripTags(el.innerHTML));
 			type = this.getLineType(text);
 
 			// BR: ignore

@@ -163,8 +163,8 @@ Ext.define('ZCS.view.ux.ZtIframe', {
 		}
 
 		var contentHeight = Math.max(docEl.scrollHeight, contentHeight),
-			computedHeight = ZCS.util.getHeightFromComputedStyle(body, doc),
-			childrenHeight = ZCS.util.getHeightFromChildren(body, doc);
+			computedHeight = ZCS.util.html.getHeightFromComputedStyle(body, doc),
+			childrenHeight = ZCS.util.html.getHeightFromChildren(body, doc);
 		Ext.Logger.iframe('IFRAME content heights: ' + [contentHeight, docEl.scrollHeight, computedHeight, childrenHeight].join(' / '));
 
 		// Since IFRAMEs are reused, childrenHeight appears to be the most reliable measure of the height

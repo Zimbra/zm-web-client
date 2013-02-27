@@ -104,17 +104,6 @@ Ext.define('ZCS.model.mail.ZtMailMsg', {
 
 			content = desc.join('');
 			return content.replace(/\\t/g, '\t').replace(/\\n/g, '\n').replace(/\\(.)/g, '$1');
-		},
-
-		/**
-		 * Replaces Microsoft-specific emoticons (Wingdings) with their Unicode equivalents.
-		 * When that doesn't happen, you see a bare J hanging out.
-		 *
-		 * @private
-		 */
-		fixSmileys: function(html) {
-			return html.replace(/<span style=["']font-family:Wingdings["']>J<\/span>/gi, '\u263a')  // :)
-				.replace(/<span style=["']font-family:Wingdings["']>L<\/span>/gi, '\u2639'); // :(
 		}
 	},
 
@@ -199,7 +188,7 @@ Ext.define('ZCS.model.mail.ZtMailMsg', {
 
 			if (ZCS.mime.isRenderableImage(contentType)) {
 				if (disposition !== 'inline') {
-					var src = content || ZCS.util.buildUrl({
+					var src = content || ZCS.util.html.buildUrl({
 						path: ZCS.constant.PATH_MSG_FETCH,
 						qsArgs: {
 							auth: 'co',
@@ -211,19 +200,19 @@ Ext.define('ZCS.model.mail.ZtMailMsg', {
 				}
 			}
 			else if (contentType === ZCS.mime.TEXT_PLAIN) {
-				html.push('<div>' + ZCS.util.textToHtml(content) + '</div>');
+				html.push('<div>' + ZCS.util.mail.textToHtml(content) + '</div>');
 			}
 			else if (contentType === ZCS.mime.TEXT_HTML) {
 				// TODO: handle invite
 				content = this.fixInlineImages(content);
-				content = ZCS.model.mail.ZtMailMsg.fixSmileys(content);
+				content = ZCS.util.html.fixSmileys(content);
 				html.push(content);
 			}
 			else if (contentType === ZCS.mime.TEXT_CAL) {
 				html.push(ZCS.model.mail.ZtMailMsg.extractCalendarText(content));
 			}
 			else {
-				html.push(ZCS.util.textToHtml(content));
+				html.push(ZCS.util.mail.textToHtml(content));
 			}
 		}
 
@@ -271,7 +260,7 @@ Ext.define('ZCS.model.mail.ZtMailMsg', {
 			top.setContentType(ZCS.mime.MULTI_ALT);
 			textPart = new ZCS.model.mail.ZtMimePart();
 			textPart.setContentType(ZCS.mime.TEXT_PLAIN);
-			textPart.setContent(ZCS.util.htmlToText(content, ZCS.session.getSetting(ZCS.constant.SETTING_REPLY_PREFIX)));
+			textPart.setContent(ZCS.util.mail.htmlToText(content, ZCS.session.getSetting(ZCS.constant.SETTING_REPLY_PREFIX)));
 			top.add(textPart);
 			htmlPart = new ZCS.model.mail.ZtMimePart();
 			htmlPart.setContentType(ZCS.mime.TEXT_HTML);
@@ -318,7 +307,7 @@ Ext.define('ZCS.model.mail.ZtMailMsg', {
 
 		key = ZCS.constant.HDR_KEY[header] + ' ';
 		key = '<b>' + key + '</b>';
-		value = ZCS.util.textToHtml(value);
+		value = ZCS.util.mail.textToHtml(value);
 
 		return key + value;
 	},

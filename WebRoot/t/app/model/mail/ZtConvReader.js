@@ -31,15 +31,15 @@ Ext.define('ZCS.model.mail.ZtConvReader', {
 
 		data.itemId = node.id;
 		data.type = ZCS.constant.ITEM_CONVERSATION;
-		data.subject = ZCS.model.mail.ZtMailItem.stripSubjectPrefixes(node.su);
+		data.subject = ZCS.util.mail.stripSubjectPrefixes(node.su);
 		data.numMsgs = node.n;
 		data.fragment = node.fr;
 		this.parseFlags(node, data);
 
 		// process addresses, and create a string showing the senders
 		data.addresses = ZCS.model.mail.ZtMailItem.convertAddresses(node.e);
-		data.senders = ZCS.model.mail.ZtConv.getSenders(data.addresses);
-		data.dateStr = ZCS.model.mail.ZtMailItem.getDateString(node.d, nowMs);
+		data.senders = ZCS.util.mail.getSenders(data.addresses);
+		data.dateStr = ZCS.util.getRelativeDateString(node.d, nowMs);
 
 		return data;
 	}
