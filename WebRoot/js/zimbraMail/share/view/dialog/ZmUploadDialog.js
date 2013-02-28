@@ -224,13 +224,22 @@ ZmUploadDialog.prototype._upload = function(){
         var notes = this.getNotes();
         if(this._supportsHTML5){
             if(this._validateSize()){
-                var f = element.files; 
+                var f = element.files;
                 for(var j=0; j<f.length; j++){
-                    files.push({name:f[j].name, fullname: f[j].name, notes: notes});
+                    //Bug fix #79986 Check for invalid filename before upload
+                    if(!ZmBriefcaseBaseView.INVALID_NAME_CHARS_RE.test(f[j].name)) {
+                        files.push({name:f[j].name, fullname: f[j].name, notes: notes});
+                    }
+                    else {
+                        //Bug fix # 79986 show warning in the upload dialog
+                        var aCtxt = ZmAppCtxt.handleWindowOpener();
+                        this._msgInfo.innerHTML = AjxMessageFormat.format(ZmMsg.errorInvalidName, AjxStringUtil.htmlEncode(f[j].name));
+                        return;
+                    }
                 }
             }else{
 	            var aCtxt = ZmAppCtxt.handleWindowOpener();
-                this._msgInfo.innerHTML = AjxMessageFormat.format(ZmMsg.attachmentSizeError, AjxUtil.formatSize(aCtxt.get(ZmSetting.DOCUMENT_SIZE_LIMIT)));;
+                this._msgInfo.innerHTML = AjxMessageFormat.format(ZmMsg.attachmentSizeError, AjxUtil.formatSize(aCtxt.get(ZmSetting.DOCUMENT_SIZE_LIMIT)));
                 return;
             }
         }else{

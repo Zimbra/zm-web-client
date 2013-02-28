@@ -318,8 +318,8 @@ function(themePath)
     return docContent;
 };
 
-
-ZmDocletMgr.INVALID_DOC_NAME_CHARS = "[\\|]";
+//Bug fix # 79986 - < > , ? | / \ * : are invalid filenames
+ZmDocletMgr.INVALID_DOC_NAME_CHARS = "[\\|?<>:*\",\\\\\/]";
 ZmDocletMgr.INVALID_DOC_NAME_RE = new RegExp(ZmDocletMgr.INVALID_DOC_NAME_CHARS);
 
 ZmDocletMgr.prototype.checkInvalidDocName = function(fileName) {
