@@ -1,26 +1,34 @@
-$bubble-height: 18px;
-$bubble-text-padding: 1px 6px;
-$bubble-border-radius: 10px; // to match other input borders
-$space-between-rows:2px;
-$space-between-bubbles:6px;
+$font-color: $dark-grey;
 $font-size: 11px;
-$input-font-size:14px;
+$font-weight: bold;
+$input-font-size: 14px;
+
+$bubble-border-radius: 10px; // to match other input borders
+$bubble-bkgd-color: #D8D8D8;
+$bubble-height: 18px;
+$bubble-text-color: darken($bubble-bkgd-color,25%);
+$bubble-text-padding: 0 8px;
+
+$space-between-bubbles: 6px;
+$space-between-rows: 2px;
+
 
 //Disabling close icon for now.
-$bubble-close-icon-width: 0px;
-$bubble-close-icon-height: 0px;
-$bubble-close-icon-margin: 0 0 0 0px;
+$bubble-close-icon-width: 0;
+$bubble-close-icon-height: 0;
+$bubble-close-icon-margin: 0;
 
 
 .vm-area-bubble {
-    line-height: $bubble-height;
-    font-color: $dark-grey !important;
+    border: 1px solid $bubble-text-color;
+    display: inline-block;
+    font-color: $bubble-text-color;
     font-size: $font-size;
+	font-weight: $font-weight;
+    line-height: $bubble-height;
     padding: $bubble-text-padding;
-    background-color: $light-grey !important;
     @include border-radius($bubble-border-radius);
-    border: $default-border;
-    display:inline-block;
+	@include background-gradient($bubble-bkgd-color,'glossy');
 }
 
 .vm-bubblearea {
@@ -56,12 +64,12 @@ $bubble-close-icon-margin: 0 0 0 0px;
 
     .input-comp {
         .x-innerhtml {
-            height:18px;
+            height:$bubble-height;
             position:relative;
             display:inline-block;
             input {
                 top: 5px;
-                height:18px;
+                height:$bubble-height;
                 font-size: $input-font-size;
                 position:absolute;
             }
@@ -79,7 +87,7 @@ $bubble-close-icon-margin: 0 0 0 0px;
     
     input {
         line-height: $bubble-height;
-        font-color: $dark-grey !important;
+        font-color: $font-color;
         padding: $bubble-text-padding;
         background-color: transparent !important;
         border: 0 !important;

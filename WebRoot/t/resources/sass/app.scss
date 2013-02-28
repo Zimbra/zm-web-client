@@ -1,11 +1,11 @@
+//Base variables referenced through widgets, also overriding default sencha style variables.
+@import 'variables/base';
+
+// Importing defaults - this has to follow the overrides!!!
 @import '../../touch/resources/themes/stylesheets/sencha-touch/default/all';
 
 // You may remove any of the following modules that you
 // do not use in order to create a smaller css file.
-
-//Base variables referenced through widgets, also overriding default sencha style variables.
-@import 'variables/base';
-
 @include sencha-panel;
 @include sencha-buttons;
 @include sencha-sheet;
@@ -24,8 +24,10 @@
 //Widget styling
 @import 'widgets/base';
 
-@import 'widgets/mail/assignmentview';
+@import 'widgets/mail/base';
+@import 'widgets/mail/ztassignmentview';
 @import 'widgets/mail/ztcomposeform';
+@import 'widgets/mail/ztconvlistview';
 @import 'widgets/mail/ztmsgview';
 @import 'widgets/ux/ztbubblearea';
 
