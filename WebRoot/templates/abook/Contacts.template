@@ -357,16 +357,16 @@
 					<div><$= AjxStringUtil.htmlEncode(data.dlInfo.description) $></div>
 				<$ } $>
 			</td>
-			<td valign=bottom align='right'>
+			<td valign=bottom align='right' width='1%'>
 				<$ if (accountName) { $>
-					<table width=1%>
+					<table>
 						<tr>
 							<td class='contactLocation' nowrap="nowrap"><$= ZmMsg.accountLabel $>&nbsp;</td>
 							<td class='companyFolder' colspan=10><$= AjxStringUtil.htmlEncode(accountName) $></td>
 						</tr>
 					</table>
 				<$ } $>
-				<table width=1%>
+				<table>
 					<tr>
 						<$ if (data.addrbook && !isEdit) { $>
 							<td class='contactLocation' nowrap="nowrap"><$= ZmMsg.locationLabel $>&nbsp;</td>
