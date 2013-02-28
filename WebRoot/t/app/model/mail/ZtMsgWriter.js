@@ -149,7 +149,7 @@ Ext.define('ZCS.model.mail.ZtMsgWriter', {
 	addMimePart: function(parts, part) {
 
 		var node = {
-		   ct: part.getContentType()
+		   ct: part.get('contentType')
 		};
 		parts.push(node);
 
@@ -160,7 +160,7 @@ Ext.define('ZCS.model.mail.ZtMsgWriter', {
 			}
 		}
 
-		var children = part.getChildren(),
+		var children = part.get('children'),
 			ln = children ? children.length : 0,
 			i, child, mp;
 

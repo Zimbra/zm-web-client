@@ -57,6 +57,7 @@ Ext.define('ZCS.common.ZtUserSession', {
 		var gir = data.response.GetInfoResponse[0];
 		this._settings = {};
 		this.createSettings(Ext.apply(Ext.clone(gir.attrs._attrs), gir.prefs._attrs));
+		this.setSetting(ZCS.constant.SETTING_REST_URL, gir.rest);
 
 		// name of logged-in account
 		this.setAccountName(gir.name);

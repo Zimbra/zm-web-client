@@ -41,6 +41,7 @@ Ext.define('ZCS.common.mail.ZtQuotedContent', {
 			});
 			idoc = this.htmlContentIframeDoc = iframe.contentDocument;
 		}
+		html = ZCS.util.html.hideCidImages(html);
 		idoc.open();
 		idoc.write(html);
 		idoc.close();

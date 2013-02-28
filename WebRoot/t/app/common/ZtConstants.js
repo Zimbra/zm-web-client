@@ -274,7 +274,8 @@ ZCS.constant.SETTING_REPLY_USE_PREFIX           = 'REPLY_USE_PREFIX';
 ZCS.constant.SETTING_REPLY_INCLUDE_HEADERS      = 'REPLY_INCLUDE_HEADERS';
 ZCS.constant.SETTING_FORWARD_INCLUDE_WHAT       = 'FORWARD_INCLUDE_WHAT';
 ZCS.constant.SETTING_FORWARD_USE_PREFIX         = 'FORWARD_USE_PREFIX';
-ZCS.constant.SETTING_FORWARD_INCLUDE_HEADERS    = 'SETTING_FORWARD_INCLUDE_HEADERS';
+ZCS.constant.SETTING_FORWARD_INCLUDE_HEADERS    = 'FORWARD_INCLUDE_HEADERS';
+ZCS.constant.SETTING_REST_URL                   = 'REST_URL';
 
 // List of all settings we care about
 ZCS.constant.SETTINGS = [
@@ -292,7 +293,7 @@ ZCS.constant.SETTINGS = [
 	ZCS.constant.SETTING_MAIL_ENABLED,
 	ZCS.constant.SETTING_CONTACTS_ENABLED,
 
-	// internal
+	// internal, or not from LDAP
 	ZCS.constant.SETTING_CUR_SEARCH,
 	ZCS.constant.SETTING_CUR_SEARCH_ID,
 	ZCS.constant.SETTING_REPLY_INCLUDE_WHAT,
@@ -300,7 +301,8 @@ ZCS.constant.SETTINGS = [
 	ZCS.constant.SETTING_REPLY_INCLUDE_HEADERS,
 	ZCS.constant.SETTING_FORWARD_INCLUDE_WHAT,
 	ZCS.constant.SETTING_FORWARD_USE_PREFIX,
-	ZCS.constant.SETTING_FORWARD_INCLUDE_HEADERS
+	ZCS.constant.SETTING_FORWARD_INCLUDE_HEADERS,
+	ZCS.constant.SETTING_REST_URL
 ];
 
 // Setting type; defaults to string, so just note exceptions
@@ -413,6 +415,7 @@ ZCS.constant.REGEX_MSG_SEP = new RegExp('^\\s*--+\\s*(' + ZtMsg.originalMessage 
 ZCS.constant.REGEX_SIG = /^(- ?-+)|(__+)\r?$/;
 ZCS.constant.REGEX_HDR = /^\s*\w+:/;
 ZCS.constant.REGEX_COLON = /\S+:$/;
+ZCS.constant.REGEX_IMG_SRC_CID = /<img([^>]*)\ssrc=["']cid:/gi;
 
 // URL paths
 ZCS.constant.PATH_MSG_FETCH = '/service/home/~/';

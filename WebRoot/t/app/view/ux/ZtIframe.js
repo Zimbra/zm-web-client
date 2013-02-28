@@ -124,6 +124,8 @@ Ext.define('ZCS.view.ux.ZtIframe', {
 				return false;
 			};
 
+		html = ZCS.util.html.hideCidImages(html);
+
 		if (doc) {
 			doc.open();
 			doc.write(html);

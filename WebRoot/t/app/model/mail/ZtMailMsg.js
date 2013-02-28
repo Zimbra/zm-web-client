@@ -33,24 +33,24 @@ Ext.define('ZCS.model.mail.ZtMailMsg', {
 
 		fields: [
 			// directly from server
-			{ name: 'folderId', type: 'string' },
-			{ name: 'convId', type: 'string' },
-			{ name: 'subject', type: 'string' },
-			{ name: 'date', type: 'int' },
-			{ name: 'sentDate', type: 'int' },
+			{ name: 'folderId',     type: 'string' },
+			{ name: 'convId',       type: 'string' },
+			{ name: 'subject',      type: 'string' },
+			{ name: 'date',         type: 'int' },
+			{ name: 'sentDate',     type: 'int' },
 
 			// internal (via parsing), or for composed msgs
-			{ name: 'content', type: 'string' },
-			{ name: 'from', type: 'string' },
-			{ name: 'to', type: 'auto' },
-			{ name: 'cc', type: 'auto' },
-			{ name: 'bcc', type: 'auto' },
-			{ name: 'topPart', type: 'auto' },
-			{ name: 'attachments', type: 'auto' },
-			{ name: 'bodyParts', type: 'auto' },
+			{ name: 'content',      type: 'string' },
+			{ name: 'from',         type: 'string' },
+			{ name: 'to',           type: 'auto' },
+			{ name: 'cc',           type: 'auto' },
+			{ name: 'bcc',          type: 'auto' },
+			{ name: 'topPart',      type: 'auto' },
+			{ name: 'attachments',  type: 'auto' },
+			{ name: 'bodyParts',    type: 'auto' },
 			{ name: 'contentTypes', type: 'auto' },
-			{ name: 'isLoaded', type: 'boolean' },
-			{ name: 'isLast', type: 'boolean' }
+			{ name: 'isLoaded',     type: 'boolean' },
+			{ name: 'isLast',       type: 'boolean' }
 		],
 
 		proxy: {
@@ -140,9 +140,9 @@ Ext.define('ZCS.model.mail.ZtMailMsg', {
 
 		for (i = 0; i < ln; i++) {
 			var part = bodyParts[i],
-				disp = part.getContentDisposition(),
-				type = part.getContentType(),
-				fileName = part.getFileName();
+				disp = part.get('contentDisposition'),
+				type = part.get('contentType'),
+				fileName = part.get('fileName');
 
 			if (disp === "inline" && fileName && ZCS.mime.isRenderableImage(type)) {
 				return true;
@@ -183,8 +183,8 @@ Ext.define('ZCS.model.mail.ZtMailMsg', {
 		for (i = 0; i < ln; i++) {
 			var part = bodyParts[i],
 				content = part.getContent(),
-				contentType = part.getContentType(),
-				disposition = part.getContentDisposition();
+				contentType = part.get('contentType'),
+				disposition = part.get('contentDisposition');
 
 			if (ZCS.mime.isRenderableImage(contentType)) {
 				if (disposition !== 'inline') {
@@ -193,7 +193,7 @@ Ext.define('ZCS.model.mail.ZtMailMsg', {
 						qsArgs: {
 							auth: 'co',
 							id: this.getId(),
-							part: part.part
+							part: part.get('part')
 						}
 					});
 					html.push("<img zmforced='1' class='InlineImage' src='" + src + "'>");
@@ -229,8 +229,8 @@ Ext.define('ZCS.model.mail.ZtMailMsg', {
 
 		if (attachments && regex.test(content)) {
 			Ext.each(attachments, function(att) {
-				var contentId = att.getContentId(),
-					part = att.getPart();
+				var contentId = att.get('contentId'),
+					part = att.get('part');
 				if (contentId) {
 					partToCid[att.part] = contentId.substring(1, contentId.length - 1);
 				}
@@ -257,18 +257,18 @@ Ext.define('ZCS.model.mail.ZtMailMsg', {
 			textPart, htmlPart;
 
 		if (isHtml) {
-			top.setContentType(ZCS.mime.MULTI_ALT);
+			top.set('contentType', ZCS.mime.MULTI_ALT);
 			textPart = new ZCS.model.mail.ZtMimePart();
-			textPart.setContentType(ZCS.mime.TEXT_PLAIN);
+			textPart.set('contentType', ZCS.mime.TEXT_PLAIN);
 			textPart.setContent(ZCS.util.mail.htmlToText(content, ZCS.session.getSetting(ZCS.constant.SETTING_REPLY_PREFIX)));
 			top.add(textPart);
 			htmlPart = new ZCS.model.mail.ZtMimePart();
-			htmlPart.setContentType(ZCS.mime.TEXT_HTML);
+			htmlPart.set('contentType', ZCS.mime.TEXT_HTML);
 			htmlPart.setContent(content);
 			top.add(htmlPart);
 		}
 		else {
-			top.setContentType(ZCS.mime.TEXT_PLAIN);
+			top.set('contentType', ZCS.mime.TEXT_PLAIN);
 			top.setContent(content);
 		}
 
@@ -330,9 +330,9 @@ Ext.define('ZCS.model.mail.ZtMailMsg', {
 		for (i = 0; i < ln; i++) {
 			var part = bodyParts[i],
 				content = part.getContent(),
-				contentType = part.getContentType(),
-				disposition = part.getContentDisposition(),
-				fileName = part.getFileName();
+				contentType = part.get('contentType'),
+				disposition = part.get('contentDisposition'),
+				fileName = part.get('fileName');
 
 			if (ZCS.mime.isRenderableImage(contentType)) {
 				result.push([crlf, '[', contentType, ':', (fileName || '...'), ']', crlf].join(''));
@@ -342,7 +342,7 @@ Ext.define('ZCS.model.mail.ZtMailMsg', {
 					desc = attInfo ? attInfo.desc : contentType;
 				result.push([crlf, '[', attInfo, ':', (fileName || '...'), ']', crlf].join(''));
 			}
-			else if (contentType === ZCS.mime.TEXT_PLAIN || (part.getIsBody() && ZCS.mime.isTextType(contentType))) {
+			else if (contentType === ZCS.mime.TEXT_PLAIN || (part.get('isBody') && ZCS.mime.isTextType(contentType))) {
 				result.push(content);
 			}
 			else if (contentType === ZCS.mime.TEXT_HTML) {
@@ -351,5 +351,28 @@ Ext.define('ZCS.model.mail.ZtMailMsg', {
 		}
 
 		return result.join('').replace(/<\/?(html|head|body)[^>]*>/gi, '');
+	},
+
+	getPartUrl: function(field, value) {
+
+		var bodyParts = this.get('bodyParts') || [],
+			attachments = this.get('attachments') || [],
+			allParts = bodyParts.concat(attachments),
+			ln = allParts.length, i, part;
+
+		for (i = 0; i < ln; i++) {
+			part = allParts[i];
+			if (part.get(field) === value) {
+				return ZCS.util.html.buildUrl({
+					path: ZCS.constant.PATH_MSG_FETCH,
+					qsArgs: {
+						id: this.getId(),
+						part: part.get('part')
+					}
+				});
+			}
+		}
+
+		return null;
 	}
 });

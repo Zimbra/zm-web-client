@@ -90,7 +90,7 @@ Ext.define('ZCS.common.ZtHtmlUtil', {
 		}
 		url[i++] = path;
 		if (params.qsArgs) {
-			Ext.each(params.qsArgs, function(name) {
+			Ext.Object.each(params.qsArgs, function(name) {
 				qsArgs.push(name + '=' + params.qsArgs[name]);
 			});
 			qs = '?' + qsArgs.join('&');
@@ -151,10 +151,19 @@ Ext.define('ZCS.common.ZtHtmlUtil', {
 	 * Replaces Microsoft-specific emoticons (Wingdings) with their Unicode equivalents.
 	 * When that doesn't happen, you see a bare J or L hanging out.
 	 *
-	 * @private
+	 * @param {string}  html
 	 */
 	fixSmileys: function(html) {
 		return html.replace(/<span style=["']font-family:Wingdings["']>J<\/span>/gi, '\u263a')  // :)
 			.replace(/<span style=["']font-family:Wingdings["']>L<\/span>/gi, '\u2639'); // :(
+	},
+
+	/**
+	 * Hides any content-ID image by changing its 'src' attribute.
+	 *
+	 * @param {string}  html
+	 */
+	hideCidImages: function(html) {
+		return html.replace(ZCS.constant.REGEX_IMG_SRC_CID, '<img pnsrc="cid:');
 	}
 });

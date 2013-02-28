@@ -20,32 +20,30 @@
  */
 Ext.define('ZCS.model.mail.ZtMimePart', {
 
+	extend: 'Ext.data.Model',
+
 	requires: [
 		'ZCS.common.mail.ZtMimeTable'
 	],
 
-	config: {
-		parent:             null,
-		children:           [],
-		node:               null,
-		contentType:        '',
-		format:             '',  // optional for text/plain
-		name:               '',
-		part:               '',
-		cachekey:           '',
-		size:               0,
-		contentDisposition: '',
-		contentId:          '',
-		contentLocation:    '',
-		fileName:           '',
-		isTruncated:        false,
-		isBody:             false,
-		hasContent:         false
-	},
-
-	constructor: function(config) {
-		this.initConfig(config);
-	},
+	fields: [
+		{ name: 'parent',               type: 'auto' },     // ZtMimePart
+		{ name: 'children',             type: 'auto' },     // list of child parts
+		{ name: 'node',                 type: 'auto' },     // JSON node from which this was created
+		{ name: 'contentType',          type: 'string' },   // ZCS.mime.*
+		{ name: 'format',               type: 'string' },   // applies only to text/plain, can be 'flowed'
+		{ name: 'name',                 type: 'string' },
+		{ name: 'part',                 type: 'string' },
+		{ name: 'cachekey',             type: 'string' },
+		{ name: 'size',                 type: 'int' },
+		{ name: 'contentDisposition',   type: 'string' },
+		{ name: 'contentId',            type: 'string' },
+		{ name: 'contentLocation',      type: 'string' },
+		{ name: 'fileName',             type: 'string' },
+		{ name: 'isTruncated',          type: 'boolean' },
+		{ name: 'isBody',               type: 'boolean' },  // server tells us if it's viewable content
+		{ name: 'hasContent',           type: 'boolean' }
+	],
 
 	statics: {
 		/**
@@ -60,10 +58,11 @@ Ext.define('ZCS.model.mail.ZtMimePart', {
 		fromJson: function(node, ctxt, parent) {
 
 			var part = new ZCS.model.mail.ZtMimePart({
-				parent:             parent,             // ZtMimePart
-				node:               node,               // JSON node from which this was created
-				contentType:        node.ct,            // ZCS.mime.*
-				format:             node.format,        // applies only to text/plain, can be 'flowed'
+				parent:             parent,
+				children:           [],
+				node:               node,
+				contentType:        node.ct,
+				format:             node.format,
 				name:               node.name,
 				part:               node.part,
 				cachekey:           node.cachekey,
@@ -73,7 +72,7 @@ Ext.define('ZCS.model.mail.ZtMimePart', {
 				contentLocation:    node.cl,
 				fileName:           node.filename,
 				isTruncated:        !!node.truncated,
-				isBody:             !!node.body,        // server flags viewable content
+				isBody:             !!node.body,
 				hasContent:         !!node.content
 			});
 
@@ -103,18 +102,18 @@ Ext.define('ZCS.model.mail.ZtMimePart', {
 	 */
 	load: function(node, ctxt) {
 
-		var	disp = this.getContentDisposition(),
-			type = this.getContentType(),
+		var	disp = this.get('contentDisposition'),
+			type = this.get('contentType'),
 
 			isAttDisp = (disp === ZCS.mime.DISP_ATTACHMENT),
 			isAttType = (type === ZCS.mime.MSG_RFC822 || type === ZCS.mime.TEXT_CAL),
-			hasAttProp = !!(this.getFileName() || this.getContentId() || this.getContentLocation()),
+			hasAttProp = !!(this.get('fileName') || this.get('contentId') || this.get('contentLocation')),
 			isIgnored = this.isIgnoredPart(),
 			isAtt = !isIgnored && (isAttDisp || isAttType || hasAttProp),
 
-			isBody = this.getIsBody(),
-			hasContent = (ZCS.mime.isRenderableImage(type) || this.getHasContent()),
-			hasSize = (this.getSize() > 0),
+			isBody = this.get('isBody'),
+			hasContent = (ZCS.mime.isRenderableImage(type) || this.get('hasContent')),
+			hasSize = (this.get('size') > 0),
 
 			addAsAtt = isAtt || (isBody && !hasContent && hasSize && !isIgnored),
 			addAsBodyPart = isBody && hasContent;
@@ -134,7 +133,7 @@ Ext.define('ZCS.model.mail.ZtMimePart', {
 		// don't descend into attached message, it's considered a single attachment
 		if (node.mp && type !== ZCS.mime.MSG_RFC822) {
 			for (var i = 0; i < node.mp.length; i++) {
-				this.getChildren().push(ZCS.model.mail.ZtMimePart.fromJson(node.mp[i], ctxt, this));
+				this.get('children').push(ZCS.model.mail.ZtMimePart.fromJson(node.mp[i], ctxt, this));
 			}
 		}
 	},
@@ -145,7 +144,7 @@ Ext.define('ZCS.model.mail.ZtMimePart', {
 	 * @param {ZtMimePart}  part
 	 */
 	add: function(part) {
-		this.getChildren().push(part);
+		this.get('children').push(part);
 	},
 
 	/**
@@ -153,7 +152,7 @@ Ext.define('ZCS.model.mail.ZtMimePart', {
 	 * @return {string}
 	 */
 	getContent: function() {
-		var node = this.getNode();
+		var node = this.get('node');
 		return this.content || (node && node.content) || '';
 	},
 
@@ -174,9 +173,9 @@ Ext.define('ZCS.model.mail.ZtMimePart', {
 	 */
 	isIgnoredPart: function() {
 
-		var type = this.getContentType(),
-			parent = this.getParent(),
-			parentType = parent && parent.getContentType();
+		var type = this.get('contentType'),
+			parent = this.get('parent'),
+			parentType = parent && parent.get('contentType');
 
 		// bug fix #5889 - if parent node was multipart/appledouble,
 		// ignore all application/applefile attachments - YUCK
@@ -185,7 +184,7 @@ Ext.define('ZCS.model.mail.ZtMimePart', {
 		}
 
 		// bug fix #7271 - don't show renderable body parts as attachments anymore
-		if (this.getIsBody() && this.getHasContent() && (type === ZCS.mime.TEXT_HTML || type === ZCS.mime.TEXT_PLAIN)) {
+		if (this.get('isBody') && this.get('hasContent') && (type === ZCS.mime.TEXT_HTML || type === ZCS.mime.TEXT_PLAIN)) {
 			return true;
 		}
 

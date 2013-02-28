@@ -31,7 +31,9 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 
 	config: {
 		padding: 5,
-		tpl: Ext.create('Ext.XTemplate', ZCS.template.MsgBody)
+		tpl: Ext.create('Ext.XTemplate', ZCS.template.MsgBody),
+
+		usingIframe: false
 	},
 
 	/**
@@ -58,7 +60,9 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 		// TODO: invites
 		// TODO: truncation
 
-		if (msg.hasHtmlPart()) {
+		this.setUsingIframe(msg.hasHtmlPart());
+
+		if (this.getUsingIframe()) {
 			Ext.Logger.conv('Use IFRAME for [' + msg.get('fragment') + ']');
 			if (!iframe) {
 				iframe = this.iframe = new ZCS.view.ux.ZtIframe({
@@ -69,6 +73,7 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 			}
 			this.setHtml('');
 			iframe.setContent(html);
+			this.fixImages(msg, iframe.getBody());
 			iframe.show();
 		}
 		else {
@@ -78,5 +83,101 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 			}
 			this.setHtml(html);
 		}
+	},
+
+	fixImages: function(msg, containerEl) {
+
+		var images = containerEl.getElementsByTagName('img'),
+			ln = images.length,
+			isExternal = false,
+			hasExternalImages = false,
+			me = this,
+			onloadHandler, i, img;
+
+		if (this.getUsingIframe()) {
+			onloadHandler = function() {
+				me.iframe.resizeToContent();
+				this.onload = null; // scope is an <img> - clear its onload handler
+			};
+		}
+
+		for (i = 0; i < ln; i++) {
+			img = images[i];
+			var external = !!img.getAttribute('dfsrc');
+			if (!external) {
+				// inline image of some sort
+				this.restoreImage(msg, img, 'src', false);
+				if (onloadHandler) {
+					img.onload = onloadHandler;
+				}
+			}
+			else {
+				// placeholder for img until user decides to load images
+				img.src = '/t/resources/icons/1x1-trans.png';
+			}
+			hasExternalImages = external || hasExternalImages;
+		}
+		// fix all elems with "background" attribute
+//		hasExternalImages = this._fixMultipartRelatedImagesRecurse(msg, this._usingIframe ? parent.body : parent) || hasExternalImages;
+
+		// did we get them all?
+		return !hasExternalImages;
+	},
+
+	/**
+	 * Reverses the work of the (server-side) defanger, so that images are displayed.
+	 *
+	 * @param {ZmMailMsg}	msg			mail message
+	 * @param {Element}		elem		element to be checked (img)
+	 * @param {string}		aname		attribute name
+	 * @param {boolean}		external	if true, look only for external images
+	 *
+	 * @return	true if the image is external
+	 */
+	restoreImage: function(msg, elem, aname, external) {
+
+		var avalue, pnsrc;
+		try {
+			if (external) {
+				avalue = elem.getAttribute('df' + aname);
+			}
+			else {
+				pnsrc = avalue = elem.getAttribute('pn' + aname);
+				avalue = avalue || elem.getAttribute(aname);
+			}
+		}
+		catch(e) {
+			Ext.Logger.warn('ZtMsgBody.restoreImages: exception accessing attribute ' + aname + ' in ' + elem.nodeName);
+		}
+
+		if (avalue) {
+			if (avalue.indexOf('cid:') === 0) {
+				// image came as a related part keyed by Content-ID
+				var cid = '<' + decodeURIComponent(avalue.substr(4)) + '>';
+				avalue = msg.getPartUrl('contentId', cid);
+				if (avalue) {
+					elem.setAttribute(aname, avalue);
+				}
+				return false;
+			} else if (avalue.indexOf('doc:') === 0) {
+				// image is in Briefcase
+				avalue = [ZCS.session.getSetting(ZCS.constant.SETTING_REST_URL), '/', avalue.substring(4)].join('');
+				if (avalue) {
+					elem.setAttribute(aname, avalue);
+					return false;
+				}
+			} else if (pnsrc) {
+				// image came as a related part keyed by Content-Location
+				avalue = msg.getPartUrl('contentLocation', avalue);
+				if (avalue) {
+					elem.setAttribute(aname, avalue);
+					return false;
+				}
+			} else if (avalue.indexOf('data:') === 0) {
+				return false;
+			}
+			return true;	// not recognized as inline img
+		}
+		return false;
 	}
 });
