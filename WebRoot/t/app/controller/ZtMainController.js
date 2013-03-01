@@ -52,17 +52,22 @@ Ext.define('ZCS.controller.ZtMainController', {
 	 */
 	doLogout: function() {
         var qs = location.search;
-        var qsArgs = qs.split("&");
         var pairs = [];
         var j = 0;
-        for (var i = 0; i < qsArgs.length; i++) {
-            var f = qsArgs[i].split("=");
-            if (f[0] != 'loginOp') {
-                pairs[j++] = [f[0], f[1]].join("=");
+        var logoutUrl;
+        if (qs) {
+            var qsArgs = qs.split("&");
+            for (var i = 0; i < qsArgs.length; i++) {
+                var f = qsArgs[i].split("=");
+                if (f[0] != 'loginOp') {
+                    pairs[j++] = [f[0], f[1]].join("=");
+                }
             }
+            pairs[j] = ["loginOp", "logout"].join("=");
+            logoutUrl = "/" + pairs.join("&");
+        }  else {
+            logoutUrl = "/?loginOp=logout";
         }
-        pairs[j] = ["loginOp", "logout"].join("=");
-        var logoutUrl = "/" + pairs.join("&");
 		window.location.href = logoutUrl;
 	},
 
