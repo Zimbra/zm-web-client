@@ -82,6 +82,10 @@ Ext.define('ZCS.view.ux.ZtIframe', {
 			},
 			touchEventListener = function (ev) {
 
+				if (ev.srcElement.nodeName === 'A') {
+					return true;
+				}
+
 				// clone the event for our window / document
 
 				// This function is based on Apple's implementation, it may differ in other touch based browsers.
