@@ -27,7 +27,20 @@ Ext.define('ZCS.model.mail.ZtEmailAddress', {
 			{name: 'type', type: 'string'},
 			{name: 'email', type: 'string'},
 			{name: 'name', type: 'string'},
-			{name: 'displayName', type: 'string'}
+			{name: 'displayName', type: 'string'},
+			{
+				name: 'viewName',
+				type: 'string',
+				convert: function (v, record) {
+					if (record.data.name) {
+						return record.data.name;
+					} else if (record.data.displayName) {
+						return record.data.displayName;
+					} else {
+						return record.data.email;
+					}
+				}
+			}
 		]
 	},
 

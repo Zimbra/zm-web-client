@@ -57,11 +57,11 @@ Ext.define('ZCS.view.mail.ZtMsgHeader', {
 			var addrs = msg.getAddressesByType(type);
 
 			if (addrs.length > 0) {
-				data.addrs[type.toLowerCase()] = Ext.Array.map(addrs, 
+				data.addrs[type.toLowerCase()] = Ext.Array.map(addrs,
 					function (addr) {
 						var viewInfo = {
 							address: Ext.String.htmlEncode(addr.get('email').toString()),
-							displayName: Ext.String.htmlEncode(addr.get('displayName') || addr.get('name'))
+							displayName: Ext.String.htmlEncode(addr.get('viewName'))
 						};
 
 						viewInfo.displayName = viewInfo.displayName.replace('"', '');

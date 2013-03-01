@@ -39,7 +39,7 @@ Ext.define('ZCS.view.contacts.ZtContactField', {
 				return false;
 			}
 		},
-		bubbleDisplayField: 'displayName',
+		bubbleDisplayField: 'viewName',
 
 		menuItemTpl: [
 			'<tpl if="name">',
