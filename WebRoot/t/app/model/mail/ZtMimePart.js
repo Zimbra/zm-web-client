@@ -144,6 +144,9 @@ Ext.define('ZCS.model.mail.ZtMimePart', {
 	 * @param {ZtMimePart}  part
 	 */
 	add: function(part) {
+		if (!this.get('children')) {
+			this.set('children', []);
+		}
 		this.get('children').push(part);
 	},
 
