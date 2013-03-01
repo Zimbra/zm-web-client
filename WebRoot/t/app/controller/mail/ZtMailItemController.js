@@ -100,6 +100,37 @@ Ext.define('ZCS.controller.mail.ZtMailItemController', {
 	},
 
 	/**
+	 * Make sure the action menu shows the appropriate action based on the unread status of this conversation.
+	 * The action will be either Mark Read or Mark Unread.
+	 */
+	doShowMenu: function(menuButton) {
+		this.setActiveMailComponent(menuButton.up('.itempanel'));
+
+		var menu = this.getMenu(),
+			label = this.getItem().get('isUnread') ? ZtMsg.markRead : ZtMsg.markUnread;
+
+		if (menu) {
+			var list = menu.down('list'),
+				store = list.getStore(),
+				item = list.getItemAt(store.find('action', 'MARK_READ'));
+
+			if (item) {
+				item.getRecord().set('label', label);
+			}
+		}
+		else {
+			// first time showing menu, change data since menu not ready yet
+			var menuData = this.getMenuData();
+			Ext.each(menuData, function(menuItem) {
+				if (menuItem.action === 'MARK_READ') {
+					menuItem.label = label;
+				}
+			}, this);
+		}
+		this.callParent(arguments);
+	},
+
+	/**
 	 * Saves the item and tags it.
 	 */
 	saveItemTag: function (tag, item) {
@@ -135,6 +166,10 @@ Ext.define('ZCS.controller.mail.ZtMailItemController', {
 					conv = item;
 				}
 
+				if (!isMessage || conv.get('numMsgs') === 1) {
+					ZCS.app.getConvListController().removeConv(conv);
+				}
+
 				Ext.Logger.info('mail item moved successfully');
 				item.set('op', null);
 			}
@@ -162,12 +197,23 @@ Ext.define('ZCS.controller.mail.ZtMailItemController', {
 		ZCS.app.getComposeController().forward(msg || this.getActiveMsg());
 	},
 
+
+	/**
+	 * Do a delete originating form a button.  This drops the button parameter and
+	 * allows doDelete to be used by both a button and the standard menu behavior.
+	 */
+	doButtonDelete: function() {
+		this.doDelete();
+	},
+
 	/**
 	 * Moves the mail item to Trash.
 	 *
 	 * @param {ZtMailMsg}   msg     mail msg (present if delete action triggered by button)
 	 */
 	doDelete: function(msg) {
+		var item = msg || this.getItem();
+
 		this.performOp(msg, 'trash', function (item) {
 			//Because a conversation trash can occur when messages are not present in the UI,
 			//our standard notificaiton logic won't work, so manually force a removal.

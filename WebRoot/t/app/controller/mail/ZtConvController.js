@@ -47,14 +47,15 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 			},
 			'.tagview': {
 				assignment: 'saveItemTag'
+			},
+			itemPanelToolbar: {
+				"delete": 'doButtonDelete'
 			}
 		},
 
 		menuData: [
 			{label: ZtMsg.reply, action: ZCS.constant.OP_REPLY, listener: 'doReply'},
 			{label: ZtMsg.replyAll, action: ZCS.constant.OP_REPLY_ALL, listener: 'doReplyAll'},
-			{label: ZtMsg.forward, action: ZCS.constant.OP_FORWARD, listener: 'doForward'},
-			{label: ZtMsg.del, action: ZCS.constant.OP_DELETE, listener: 'doDelete'},
 			{label: ZtMsg.markRead, action: ZCS.constant.OP_MARK_READ, listener: 'doMarkRead'},
 			{label: ZtMsg.move, action: ZCS.constant.OP_MOVE, listener: 'doMove'},
 			{label: ZtMsg.tag, action: ZCS.constant.OP_MOVE, listener: 'doTag'}
@@ -108,37 +109,6 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 	},
 
 	/**
-	 * Make sure the action menu shows the appropriate action based on the unread status of this conversation.
-	 * The action will be either Mark Read or Mark Unread.
-	 */
-	doShowMenu: function(menuButton) {
-		this.setActiveMailComponent(menuButton.up('.itempanel'));
-
-		var menu = this.getMenu(),
-			label = this.getItem().get('isUnread') ? ZtMsg.markRead : ZtMsg.markUnread;
-
-		if (menu) {
-			var list = menu.down('list'),
-				store = list.getStore(),
-				item = list.getItemAt(store.find('action', 'MARK_READ'));
-
-			if (item) {
-				item.getRecord().set('label', label);
-			}
-		}
-		else {
-			// first time showing menu, change data since menu not ready yet
-			var menuData = this.getMenuData();
-			Ext.each(menuData, function(menuItem) {
-				if (menuItem.action === 'MARK_READ') {
-					menuItem.label = label;
-				}
-			}, this);
-		}
-		this.callParent(arguments);
-	},
-
-	/**
 	 * Returns the message that a conversation-level operation should be applied to.
 	 */
 	getActiveMsg: function() {
@@ -146,12 +116,6 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 			msgs = conv.getMessages(),
 			msg = null;
 			msg = (msgs && msgs.length) ? msgs[0] : null;
-
-//		Ext.each(msgs, function(msg) {
-//			if (msg.get('isUnread') === true) {
-//				return msg;
-//			}
-//		}, this);
 
 		return (msgs && msgs[0]) || null;
 	},
