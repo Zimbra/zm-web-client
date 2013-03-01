@@ -181,8 +181,7 @@ Ext.define('ZCS.model.ZtSoapProxy', {
 				ctlr = ZCS.app.getController(ZCS.constant.LIST_CONTROLLER[itemType]);
 				if (ctlr && ctlr.handleModifyNotification) {
 					ctlr.handleModifyNotification(item, modify);
-				}
-				else {
+				} else {
 					Ext.Logger.warn('Could not find modified item ' + modify.id);
 				}
 			}, this);

@@ -49,10 +49,17 @@ Ext.define('ZCS.controller.mail.ZtConvListController', {
 		control: {
 			listPanel: {
 				newItem: 'doCompose'
+			},
+			listView: {
+				itemswipe: 'doDelete'
 			}
 		},
 
 		app: ZCS.constant.APP_MAIL
+	},
+
+	doDelete: function (list, item, target, record) {
+		ZCS.app.fireEvent('deleteMailItem', record);
 	},
 
 	getDefaultQuery: function() {
@@ -67,15 +74,15 @@ Ext.define('ZCS.controller.mail.ZtConvListController', {
 		ZCS.app.getComposeController().compose();
 	},
 
-	refreshAndSelect: function (conv) {
+	removeConv: function (conv) {
 		var list = this.getListView(),
 			conversationStore = list.getStore(),
-			currentIndex = conversationStore.indexOf(conv);
+			currentIndex = conversationStore.indexOf(conv),
+			toSelect;
 
-		conversationStore.load(function () {
-			var toSelect = this.getAt(currentIndex);
-			list.select(toSelect, false);
-		});
+		conversationStore.remove(conv);
+		toSelect = conversationStore.getAt(currentIndex);
+		list.select(toSelect, false);
 	},
 
 	handleCreateNotification: function(create) {

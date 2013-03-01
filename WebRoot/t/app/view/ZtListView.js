@@ -23,7 +23,8 @@ Ext.define('ZCS.view.ZtListView', {
 	extend: 'Ext.dataview.List',
 
 	requires: [
-		'Ext.plugin.ListPaging'
+		'Ext.plugin.ListPaging',
+		'Ext.plugin.PullRefresh'
 	],
 
 	config: {
@@ -46,6 +47,9 @@ Ext.define('ZCS.view.ZtListView', {
 			autoPaging: true,
 			noMoreRecordsText: '',
 			loadMoreText: ZtMsg.loadMore
-		}]
+		}, {
+            xclass: 'Ext.plugin.PullRefresh',
+            pullRefreshText: 'Pull down to refresh'
+        }]
 	}
 });

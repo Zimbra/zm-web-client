@@ -5,9 +5,33 @@
 .zcs-offscreen {
 	position: absolute;
 	top: -10000;
-	left: -10000; 
+	left: -10000;
 }
 
 .zcs-toggle-field {
 	border-bottom: 1px solid $light-grey;
 }
+
+@mixin zimbra-button() {
+	background-image: none;
+	background-color: transparent;
+	border: none;
+
+	.x-button-icon.x-icon-mask {
+		-webkit-mask-size: 1.4em;
+		width: 1.4em;
+		height: 1.4em;
+	}
+}
+
+/**
+ * Make our buttons flat, no border, bigger images.
+ */
+.x-toolbar .x-button.zcs-flat {
+	@include zimbra-button;
+}
+
+.x-tabbar .x-button.zcs-flat {
+	@include zimbra-button;
+}
+

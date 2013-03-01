@@ -135,15 +135,6 @@ Ext.define('ZCS.controller.mail.ZtMailItemController', {
 					conv = item;
 				}
 
-				convHasOneMessage = conv.get('numMsgs') === 1;
-
-				//Refresh the converation list, selecting the conversation that was after this conversation.
-				if (isConversation || convHasOneMessage) {
-					ZCS.app.getConvListController().refreshAndSelect(conv);
-				} else {
-					//Refresh the message pane since just a single message was moved.
-				}
-
 				Ext.Logger.info('mail item moved successfully');
 				item.set('op', null);
 			}
@@ -177,7 +168,13 @@ Ext.define('ZCS.controller.mail.ZtMailItemController', {
 	 * @param {ZtMailMsg}   msg     mail msg (present if delete action triggered by button)
 	 */
 	doDelete: function(msg) {
-		this.performOp(msg, 'trash');
+		this.performOp(msg, 'trash', function (item) {
+			//Because a conversation trash can occur when messages are not present in the UI,
+			//our standard notificaiton logic won't work, so manually force a removal.
+			if (item.get('type') === ZCS.constant.ITEM_CONVERSATION) {
+				ZCS.app.getConvListController().removeConv(item);
+			}
+		});
 	},
 
 	/**
