@@ -49,6 +49,7 @@ Ext.define('ZCS.view.ZtItemPanel', {
 				{
 					xtype: 'button',
 					iconCls: 'arrow_down',
+					cls: 'zcs-flat',
 					iconMask: true,
 					align: 'right',
 					handler: function() {

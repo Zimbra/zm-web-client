@@ -29,6 +29,8 @@ Ext.define("ZCS.view.ZtMain", {
     config: {
 	    fullscreen: true,
         tabBarPosition: 'top',
+        cls: 'zcs-main-tabs',
+        ui: 'dark',
 	    defaults: {
 		    styleHtmlContent: true
 	    },
@@ -75,6 +77,7 @@ Ext.define("ZCS.view.ZtMain", {
 			{
 				xtype: 'button',
 				iconCls: 'settings8',
+				cls: 'zcs-flat',
 				iconMask: true,
 				handler: function() {
 					this.up('tabbar').fireEvent('showMenu', this);

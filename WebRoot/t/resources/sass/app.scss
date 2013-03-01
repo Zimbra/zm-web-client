@@ -17,6 +17,7 @@
 @include sencha-list;
 @include sencha-layout;
 @include sencha-list-paging;
+@include sencha-list-pullrefresh;
 @include sencha-carousel;
 @include sencha-form;
 @include sencha-msgbox;
@@ -24,6 +25,7 @@
 //Widget styling
 @import 'widgets/base';
 
+@import 'widgets/main';
 @import 'widgets/mail/base';
 @import 'widgets/mail/ztassignmentview';
 @import 'widgets/mail/ztcomposeform';

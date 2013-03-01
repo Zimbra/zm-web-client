@@ -56,6 +56,7 @@ Ext.define('ZCS.view.ZtListPanel', {
 			items: [
 				{
 					xtype: 'button',
+					cls: 'zcs-flat',
 					handler: function() {
 						this.up('listpanel').fireEvent('showFolders');
 					},
@@ -65,6 +66,7 @@ Ext.define('ZCS.view.ZtListPanel', {
 				},
 				{
 					xtype: 'button',
+					cls: 'zcs-flat',
 					handler: function() {
 						this.up('listpanel').fireEvent('newItem');
 					},
