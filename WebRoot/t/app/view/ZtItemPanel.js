@@ -48,8 +48,20 @@ Ext.define('ZCS.view.ZtItemPanel', {
 			items: [
 				{
 					xtype: 'button',
+					iconCls: 'trash',
+					itemId: 'trashBtn',
+					cls: 'zcs-flat',
+					iconMask: true,
+					align: 'right',
+					handler: function() {
+						this.up('titlebar').fireEvent('delete', this);
+					},
+					hidden: true
+				}, {
+					xtype: 'button',
 					iconCls: 'arrow_down',
 					cls: 'zcs-flat',
+					itemId: 'menuBtn',
 					iconMask: true,
 					align: 'right',
 					handler: function() {
@@ -71,11 +83,13 @@ Ext.define('ZCS.view.ZtItemPanel', {
 	},
 
 	showMenuButton: function () {
-		this.down('.titlebar .button').show();
+		this.down('.titlebar #trashBtn').show();
+		this.down('.titlebar #menuBtn').show();
 	},
 
 	hideMenuButton: function () {
-		this.down('.titlebar .button').hide();
+		this.down('.titlebar #trashBtn').hide();
+		this.down('.titlebar #menuBtn').hide();
 	}
 
 
