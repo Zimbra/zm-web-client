@@ -61,6 +61,10 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 		]
 	},
 
+	launch: function () {
+		ZCS.app.on('deleteMailItem', this.doDelete, this);
+	},
+
 	/**
 	 * Clears messages from the store, so they're removed from the view as well.
 	 */
@@ -91,7 +95,6 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 			callback: function(records, operation, success) {
 				itemPanel.showMenuButton();
 				Ext.Logger.info('Conv load callback');
-				Ext.defer(this.adjustItemHeights.bind(this, Ext.ComponentQuery.query('msgview')), 500);
 			},
 			scope: this
 		});

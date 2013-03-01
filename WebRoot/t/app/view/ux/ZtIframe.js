@@ -102,10 +102,10 @@ Ext.define('ZCS.view.ux.ZtIframe', {
 					true, //cancelable, Indicates whether an event can have its default action prevented. If true, the default action can be prevented; otherwise, it cannot.
 					window, //view, The view (DOM window) in which the event occurred.
 					ev.detail, //detail Specifies some detail information about the event depending on the type of event.
-					ev.pageX, //screenX The x-coordinate of the event’s location in screen coordinates.
-					ev.pageY, //screenY The y-coordinate of the event’s location in screen coordinates.
-					ev.pageX, //clientX The x-coordinate of the event’s location relative to the window’s viewport.
-					ev.pageY, //clientY The y-coordinate of the event’s location relative to the window’s viewport.
+					ev.touches[0].screenX, //screenX The x-coordinate of the event’s location in screen coordinates.
+					ev.touches[0].screenY, //screenY The y-coordinate of the event’s location in screen coordinates.
+					ev.touches[0].screenX, //clientX The x-coordinate of the event’s location relative to the window’s viewport.
+					ev.touches[0].screenY, //clientY The y-coordinate of the event’s location relative to the window’s viewport.
 					ev.ctrlKey, //ctrlKey, If true, the control key is pressed; otherwise, it is not.
 					ev.altKey, //altKey If true, the alt key is pressed; otherwise, it is not.
 					ev.shiftKey, //shiftKey If true, the shift key is pressed; otherwise, it is not.
@@ -172,8 +172,13 @@ Ext.define('ZCS.view.ux.ZtIframe', {
 		// Since IFRAMEs are reused, childrenHeight appears to be the most reliable measure of the height
 		// of the content. The others tend to persist even if we clear the IFRAME's content.
 		var height = childrenHeight || computedHeight || contentHeight;
-		Ext.Logger.iframe('Set IFRAME height to ' + height);
-		iframe.setHeight(height);
+
+		//Only modify the dom and fire corresponding event if it's needed.
+		if (iframe.getHeight() !== height) {
+			Ext.Logger.iframe('Set IFRAME height to ' + height);
+			iframe.setHeight(height);
+			this.fireEvent('msgContentResize');
+		}
 	},
 
 	/**

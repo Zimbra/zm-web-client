@@ -36,17 +36,15 @@ Ext.define('ZCS.view.mail.ZtMsgView', {
 		items: [
 			{
 				xtype: 'msgheader'
-			},
-			{
+			}, {
 				xtype: 'msgbody'
-			},
-			{
+			}, {
 				xtype: 'msgfooter'
 			}
 		],
 
 		msg: null,          // ZtMailMsg underlying this view
-		expanded: false,    // true if this view is expanded (shows header, body, footer)
+		expanded: undefined,    // true if this view is expanded (shows header, body, footer)
 
 		listeners: {
 			updatedata: function(msgView, msgData) {
@@ -54,19 +52,32 @@ Ext.define('ZCS.view.mail.ZtMsgView', {
 				if (msgData && !this.up('.itempanel').suppressRedraw) {
 					Ext.Logger.info('updatedata for msg ' + msgData.id);
 					var msg = ZCS.cache.get(msgData.id),
-						loaded = !!msgData.isLoaded;
+						loaded = !!msgData.isLoaded,
+						op = msg.get('op'),
+						isSingleExpand = msg.isExpand;
+
 					if (msg) {
-						if (msg.op === 'load' && !loaded) {
+						if (isSingleExpand && !loaded) {
 							return;
 						}
 						// Note: partial update on msg load results in double-render, so do whole thing
 						this.setMsg(msg);
-						this.setExpanded(loaded);
+
+						if (!isSingleExpand) {
+							this.setExpanded(loaded);
+						} else {
+							this.setExpanded(true);
+						}
+
 						msgView.renderHeader();
 						if (loaded) {
 							msgView.renderBody(msg.get('isLast'));
 						}
 						this.updateExpansion();
+
+						if (isSingleExpand) {
+							msg.isExpand = false;
+						}
 					}
 				}
 			}
@@ -78,6 +89,12 @@ Ext.define('ZCS.view.mail.ZtMsgView', {
 	},
 
 	renderBody: function(isLast) {
+		this.down('msgbody').on('msgContentResize', function () {
+			this.updateHeight();
+		}, this, {
+			single: true
+		});
+
 		this.down('msgbody').render(this.getMsg(), isLast);
 	},
 

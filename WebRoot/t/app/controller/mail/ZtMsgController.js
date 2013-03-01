@@ -30,7 +30,8 @@ Ext.define('ZCS.controller.mail.ZtMsgController', {
 
 		refs: {
 			msgHeader: 'msgheader',
-			msgFooter: 'msgfooter'
+			msgFooter: 'msgfooter',
+			msgView: 'msgview'
 		},
 
 		control: {
@@ -65,9 +66,9 @@ Ext.define('ZCS.controller.mail.ZtMsgController', {
 
 		if (!msgView.getExpanded() && msg && !msg.get('isLoaded')) {
 			msg.set('op', 'load');
+			msg.isExpand = true;
 			msg.save(); // ZtMsgView updated via 'updatedata' event
-		}
-		else {
+		} else {
 			msgView.toggleView();
 		}
 	},

@@ -27,6 +27,7 @@ Ext.define('ZCS.view.mail.ZtConvListView', {
 	config: {
 		loadingText: ZtMsg.loadingConvs,
 		emptyText: "<div class=\"notes-list-empty-text\">" + ZtMsg.noConvs + "</div>",
+		scrollToTopOnRefresh: true,
 		itemTpl: ZCS.template.ConvListItem
 	}
 });

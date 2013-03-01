@@ -99,5 +99,15 @@ Ext.define('ZCS.view.mail.ZtMsgListView', {
 
 		listRef.updateItemHeights();
 		listRef.refreshScroller(listRef.getScrollable().getScroller());
+	},
+
+	forceHeightRecalc: function () {
+		var listRef = this;
+
+		Ext.each(this.query('msgview'), function (view) {
+			listRef.updatedItems.push(view);
+		});
+
+		listRef.updateItemHeights();
 	}
 });

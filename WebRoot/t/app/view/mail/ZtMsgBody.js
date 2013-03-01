@@ -49,7 +49,8 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 
 		Ext.Logger.conv('ZtMsgBody render into element ' + this.element.id);
 
-		var html = msg.getContentAsHtml(),
+		var me = this,
+			html = msg.getContentAsHtml(),
 			iframe = this.iframe;
 
 		if (!isLast) {
@@ -69,6 +70,11 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 					// TODO: components are reused, should name iframe after msgview index
 					name: 'ZCSIframe-' + msg.getId()
 				});
+
+				iframe.on('msgContentResize', function () {
+					me.fireEvent('msgContentResize');
+				}, this);
+
 				this.add(iframe);
 			}
 			this.setHtml('');
