@@ -453,7 +453,7 @@ TD.vSpace {
 	table-layout:fixed;
 }
 
-.Row TD, .RowDouble TD {
+.Row TD, .RowDouble TD, .Row DIV, .RowDouble DIV {
 	@ListItemText@
 }
 
@@ -462,16 +462,47 @@ TD.vSpace {
 }
 
 .RowDouble TD.SubjectDoubleRow {
-    vertical-align:text-bottom;
+	vertical-align:text-bottom;
+}
+
+.ZmMsgListBottomRowIcon {
+#IFNDEF MSIE
+	margin-left: 28px;
+#ENDIF
+#IFDEF MSIE
+	margin-left: 18px;
+#ENDIF
+}
+
+.ZmConvExpanded .ZmMsgListBottomRowIcon {
+#IFNDEF MSIE
+	margin-left: 50px;
+#ENDIF
+#IFDEF MSIE
+	margin-left: 36px;
+#ENDIF
+}
+
+.ZmMsgListSelection .ZmMsgListBottomRowIcon {
+	margin-left: 46px;
+}
+
+.ZmConvExpanded .ZmMsgListSelection .ZmMsgListBottomRowIcon {
+	margin-left: 68px;
 }
 
 #IFDEF MACINTOSH
 #IFDEF WEBKIT
-	.RowDouble TD.SubjectDoubleRow 			{	padding-top:1px; 		} 
-	.RowDouble .Unread TD.SubjectDoubleRow 	{	padding-top:0px; 		}
+	.RowDouble TD.SubjectDoubleRow, .RowDouble DIV.SubjectDoubleRow  			{	padding-top:1px; 		}
+	.RowDouble .Unread TD.SubjectDoubleRow, .RowDouble .Unread DIV.SubjectDoubleRow  	{	padding-top:0px; 		}
 #ENDIF
 #ENDIF
 
+#IFDEF MSIE
+.SubjectDoubleRow {
+	width:100%;
+}
+#ENDIF
 /* list row styles (bgs & border) */
 
 .Row						{	@ListItemContainer-normal@			}
@@ -480,8 +511,12 @@ TD.vSpace {
 
 .selected, 	/* TODO: used? */
 .Row-selected,
+.Row-selected .ZmMsgListFlagsWrapper,
+.Row-selected .ZmMsgListDate,
 .Row-selected-dragProxy,
-.Row-selected-disabled 		{	@ListItemContainer-selected@		}
+.Row-selected-disabled,
+.Row-selected-disabled .ZmMsgListDate,
+.Row-selected-disabled .ZmMsgListFlagsWrapper 		{	@ListItemContainer-selected@		}
 
 /* .Row-matched, */
 .Row-matched-dragProxy 		{ 	@ListItemContainer-matched@		}
@@ -496,12 +531,16 @@ TD.vSpace {
 .Row-dragProxy,
 .Row-matched-dragProxy 		{	@ListItemContainer-dragProxy@		}
 
+.RowDouble-dragProxy .ZmMsgListFlagsWrapper,
+.RowDouble-dragProxy .ZmMsgListDate	{	@ListItemContainer-dragProxy@	}
 
 /* list row TD's (eg: text) */
 
-.Row TD, .RowDouble TD		{	@ListItemText-normal@				}
+.Row TD, .RowDouble TD, .Row DIV, .RowDouble DIV		{	@ListItemText-normal@				}
 
-.RowOdd TD					{	@ListItemText-alt@					}
+.RowOdd TD, .RowOdd DIV					{	@ListItemText-alt@					}
+
+li.RowDouble {list-style: none;}
 
 .selected TD,	/* TODO: used? */
 

@@ -516,7 +516,9 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 	background-color:@darken(AppC,40)@;
 }
 
-.ZmConvExpanded {
+.ZmConvExpanded,
+.ZmConvExpanded .ZmMsgListFlagsWrapper,
+.ZmConvExpanded .ZmMsgListDate {
 	@MailConvExpanded@
 }
 

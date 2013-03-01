@@ -46,7 +46,8 @@ ZmMailMsgListView.SINGLE_COLUMN_SORT_CV = [
 ZmMailMsgListView.prototype.markUIAsRead = 
 function(msg) {
 	ZmMailListView.prototype.markUIAsRead.apply(this, arguments);
-	this._setImage(msg, ZmItem.F_STATUS, msg.getStatusIcon());
+	var classes = this._getClasses(ZmItem.F_STATUS, !this.isMultiColumn() ? ["ZmMsgListBottomRowIcon"]:null);
+	this._setImage(msg, ZmItem.F_STATUS, msg.getStatusIcon(), classes);
 };
 
 // Private / protected methods
@@ -78,7 +79,7 @@ function(base, item, params) {
 
 ZmMailMsgListView.prototype._getRowClass =
 function(msg) {
-	var classes = [];
+	var classes = this._isMultiColumn ? ["DwtMsgListMultiCol"]:["ZmRowDoubleHeader"];
 	if (this._mode != ZmId.VIEW_TRAD) {
 		var folder = appCtxt.getById(msg.folderId);
 		if (folder && folder.isInTrash()) {
@@ -88,7 +89,7 @@ function(msg) {
 	if (msg.isUnread)	{	classes.push("Unread"); }
 	if (msg.isSent)		{	classes.push("Sent"); }
 
-	return classes.length ? classes.join(" ") : null;
+	return classes.join(" ");
 };
 
 ZmMailMsgListView.prototype._getCellId =
@@ -102,14 +103,15 @@ function(item, field) {
 };
 
 ZmMailMsgListView.prototype._getCellContents =
-function(htmlArr, idx, msg, field, colIdx, params) {
+function(htmlArr, idx, msg, field, colIdx, params, classes) {
 
 	if (field == ZmItem.F_READ) {
-		idx = this._getImageHtml(htmlArr, idx, msg.getReadIcon(), this._getFieldId(msg, field));
+		idx = this._getImageHtml(htmlArr, idx, msg.getReadIcon(), this._getFieldId(msg, field), classes);
 	}
 	else if (field == ZmItem.F_STATUS) {
-		idx = this._getImageHtml(htmlArr, idx, msg.getStatusIcon(), this._getFieldId(msg, field));
+		idx = this._getImageHtml(htmlArr, idx, msg.getStatusIcon(), this._getFieldId(msg, field), classes);
 	} else if (field == ZmItem.F_FROM || field == ZmItem.F_PARTICIPANT) {
+		htmlArr[idx++] = "<div " + AjxUtil.getClassAttr(classes) + ">";
 		// setup participants list for Sent/Drafts/Outbox folders
 		if (this._isOutboundFolder()) {
 			var addrs = msg.getAddresses(AjxEmailAddress.TO).getArray();
@@ -126,7 +128,7 @@ function(htmlArr, idx, msg, field, colIdx, params) {
 					} else if (parts.length > 1 && j > 0) {
 						htmlArr[idx++] = AjxStringUtil.LIST_SEP;
 					}
-					htmlArr[idx++] = "<span style='white-space: nowrap' id='";
+					htmlArr[idx++] = "<span id='";
 					htmlArr[idx++] = [fieldId, parts[j].index].join(DwtId.SEP);
 					htmlArr[idx++] = "'>";
 					htmlArr[idx++] = AjxStringUtil.htmlEncode(parts[j].name);
@@ -142,18 +144,20 @@ function(htmlArr, idx, msg, field, colIdx, params) {
 			var fromAddr = msg.getAddress(AjxEmailAddress.FROM);
 			var fromText = fromAddr && (fromAddr.getName() || fromAddr.getDispName() || fromAddr.getAddress());
 			if (fromText) {
-				htmlArr[idx++] = "<span style='white-space:nowrap' id='";
+				htmlArr[idx++] = "<span id='";
 				htmlArr[idx++] = this._getFieldId(msg, ZmItem.F_FROM);
 				htmlArr[idx++] = "'>";
 				htmlArr[idx++] = AjxStringUtil.htmlEncode(fromText);
 				htmlArr[idx++] = "</span>";
 			}
 			else {
-				htmlArr[idx++] = "<span style='white-space:nowrap'>" + ZmMsg.unknown + "</span>";
+				htmlArr[idx++] = "<span>" + ZmMsg.unknown + "</span>";
 			}
 		}
+		htmlArr[idx++] = "</div>";
 
 	} else if (field == ZmItem.F_SUBJECT) {
+		htmlArr[idx++] = "<div " + AjxUtil.getClassAttr(classes) + ">";
 		if (this._mode == ZmId.VIEW_CONV || this._mode == ZmId.VIEW_CONVLIST) {
 			// msg within a conv shows just the fragment
 			if ((this._mode == ZmId.VIEW_CONVLIST) && this._isMultiColumn) {
@@ -169,32 +173,36 @@ function(htmlArr, idx, msg, field, colIdx, params) {
 		} else {
 			// msg on its own (TV) shows subject and fragment
 			var subj = msg.subject || ZmMsg.noSubject;
-			htmlArr[idx++] = "<span style='white-space: nowrap' id='";
+			htmlArr[idx++] = "<span id='";
 			htmlArr[idx++] = this._getFieldId(msg, field);
 			htmlArr[idx++] = "'>" + AjxStringUtil.htmlEncode(subj) + "</span>";
 			if (appCtxt.get(ZmSetting.SHOW_FRAGMENTS) && msg.fragment) {
 				htmlArr[idx++] = this._getFragmentSpan(msg);
 			}
 		}
+		htmlArr[idx++] = "</div>";
 
 	} else if (field == ZmItem.F_FOLDER) {
-		htmlArr[idx++] = "<span style='white-space:nowrap' id='";
+		htmlArr[idx++] = "<div " + AjxUtil.getClassAttr(classes) + " id='";
 		htmlArr[idx++] = this._getFieldId(msg, field);
 		htmlArr[idx++] = "'>"; // required for IE bug
 		var folder = appCtxt.getById(msg.folderId);
 		if (folder) {
 			htmlArr[idx++] = folder.getName();
 		}
-		htmlArr[idx++] = "</span>";
+		htmlArr[idx++] = "</div>";
 
 	} else if (field == ZmItem.F_SIZE) {
-		htmlArr[idx++] = "<span style='white-space:nowrap'>";
+		htmlArr[idx++] = "<div " + AjxUtil.getClassAttr(classes) + ">";
 		htmlArr[idx++] = AjxUtil.formatSize(msg.size);
-		htmlArr[idx++] = "</span>";
+		htmlArr[idx++] = "</div>";
 	} else if (field == ZmItem.F_SORTED_BY) {
 		htmlArr[idx++] = this._getAbridgedContent(msg, colIdx);
 	} else {
-		idx = ZmMailListView.prototype._getCellContents.apply(this, arguments);
+		if (this.isMultiColumn() || field !== ZmItem.F_SELECTION) {
+			//do not call this for checkbox in single column layout
+			idx = ZmMailListView.prototype._getCellContents.apply(this, arguments);
+		}
 	}
 	
 	return idx;
@@ -206,26 +214,29 @@ function(item, colIdx) {
 	var idx = 0;
 	var width = (AjxEnv.isIE || AjxEnv.isSafari) ? "22" : "16";
 
+	var selectionCssClass = '';
+	for (var i = 0; i < this._headerList.length; i++) {
+		if (this._headerList[i]._field == ZmItem.F_SELECTION) {
+			selectionCssClass = "ZmMsgListSelection";
+			break;
+		}
+	}
 	// first row
-	htmlArr[idx++] = "<table class='TopRow' style='width:100%;border-collapse:collapse;border-spacing:0;'>";
-	htmlArr[idx++] = (item.isUnread) ? "<tr class='Unread' " : "<tr ";
+	htmlArr[idx++] = "<div class='TopRow " + selectionCssClass + "' ";
 	htmlArr[idx++] = "id='";
 	htmlArr[idx++] = DwtId.getListViewItemId(DwtId.WIDGET_ITEM_FIELD, this._view, item.id, ZmItem.F_ITEM_ROW_3PANE);
 	htmlArr[idx++] = "'>";
-	
+	if (selectionCssClass) {
+		idx = ZmMailListView.prototype._getCellContents.apply(this, [htmlArr, idx, item, ZmItem.F_SELECTION, colIdx]);
+	}
 	idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_READ, colIdx, width);
 	idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_FROM, colIdx);
-	idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_DATE, colIdx, ZmMsg.COLUMN_WIDTH_DATE, "align=right");
-
-	htmlArr[idx++] = "</tr></table>";
-
+	idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_DATE, colIdx, ZmMsg.COLUMN_WIDTH_DATE, "align=right", ["ZmMsgListDate"]);
+	htmlArr[idx++] = "</div>";
 
 	// second row
-	htmlArr[idx++] = "<table class='BottomRow' style='width:100%;border-collapse:collapse;border-spacing:0;'><tr>";
-	htmlArr[idx++] = "<td width=";
-	htmlArr[idx++] = width;
-	htmlArr[idx++] = "></td>";
-	idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_STATUS, colIdx, width);
+	htmlArr[idx++] = "<div class='BottomRow " + selectionCssClass + "'>";
+	idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_STATUS, colIdx, width,  null, ["ZmMsgListBottomRowIcon"]);
 	
 	// for multi-account, show the account icon for cross mbox search results
 	if (appCtxt.multiAccounts && appCtxt.getSearchController().searchAllAccounts) {
@@ -235,17 +246,19 @@ function(item, colIdx) {
 		idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_PRIORITY, colIdx, "10", "align=right");
 	}
 	idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_SUBJECT, colIdx);
+	//add the attach, flag and tags in a wrapping div
+	htmlArr[idx++] = "<div class='ZmMsgListFlagsWrapper'>";
 	if (item.hasAttach) {
 		idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_ATTACHMENT, colIdx, width);
 	}
 	var tags = item.getVisibleTags();
 	if (tags && tags.length) {
-		idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_TAG, colIdx, width);
+		idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_TAG, colIdx, width, null, ["ZmMsgListColTag"]);
 	}
 	if (appCtxt.get("FLAGGING_ENABLED")) {
 		idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_FLAG, colIdx, width);
 	}
-	htmlArr[idx++] = "</tr></table>";
+	htmlArr[idx++] = "</div></div>";
 
 	return htmlArr.join("");
 };
@@ -312,9 +325,9 @@ function(ev) {
 			var flag = flags[j];
 			var on = msg[ZmItem.FLAG_PROP[flag]];
 			if (flag == ZmItem.FLAG_REPLIED && on) {
-				this._setImage(msg, ZmItem.F_STATUS, "MsgStatusReply");
+				this._setImage(msg, ZmItem.F_STATUS, "MsgStatusReply", this._getClasses(ZmItem.F_STATUS));
 			} else if (flag == ZmItem.FLAG_FORWARDED && on) {
-				this._setImage(msg, ZmItem.F_STATUS, "MsgStatusForward");
+				this._setImage(msg, ZmItem.F_STATUS, "MsgStatusForward", this._getClasses(ZmItem.F_STATUS));
 			}
 		}
 		ZmMailListView.prototype._changeListener.call(this, ev); // handle other flags

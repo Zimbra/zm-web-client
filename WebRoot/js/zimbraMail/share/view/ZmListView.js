@@ -87,6 +87,7 @@ ZmListView = function(params) {
 
 ZmListView.prototype = new DwtListView;
 ZmListView.prototype.constructor = ZmListView;
+ZmListView.prototype.isZmListView = true;
 
 ZmListView.prototype.toString =
 function() {
@@ -258,7 +259,7 @@ function(ev) {
 
 	if (ev.event == ZmEvent.E_TAGS || ev.event == ZmEvent.E_REMOVE_ALL) {
 		DBG.println(AjxDebug.DBG2, "ZmListView: TAG");
-		this._setImage(item, ZmItem.F_TAG, item.getTagImageInfo());
+		this._replaceTagImage(item, ZmItem.F_TAG, this._getClasses(ZmItem.F_TAG));
 	}
 
 	if (ev.event == ZmEvent.E_FLAGS) { // handle "flagged" and "has attachment" flags
@@ -268,11 +269,11 @@ function(ev) {
 			var flag = flags[j];
 			var on = item[ZmItem.FLAG_PROP[flag]];
 			if (flag == ZmItem.FLAG_FLAGGED) {
-				this._setImage(item, ZmItem.F_FLAG, on ? "FlagRed" : "FlagDis");
+				this._setImage(item, ZmItem.F_FLAG, on ? "FlagRed" : "FlagDis", this._getClasses(ZmItem.F_FLAG));
 			} else if (flag == ZmItem.FLAG_ATTACH) {
-				this._setImage(item, ZmItem.F_ATTACHMENT, on ? "Attachment" : null);
+				this._setImage(item, ZmItem.F_ATTACHMENT, on ? "Attachment" : null, this._getClasses(ZmItem.F_ATTACHMENT));
 			} else if (flag == ZmItem.FLAG_PRIORITY) {
-				this._setImage(item, ZmItem.F_MSG_PRIORITY, on ? "Priority" : "PriorityDis");
+				this._setImage(item, ZmItem.F_MSG_PRIORITY, on ? "Priority" : "PriorityDis", this._getClasses(ZmItem.F_MSG_PRIORITY));
 			}
 		}
 	}
@@ -363,7 +364,8 @@ function(item, field) {
 		var html = [];
 		var colIdx = this._headerHash[field] && this._headerHash[field]._index;
 		this._getCellContents(html, 0, item, field, colIdx, new Date());
-		el.innerHTML = html.join("");
+		//replace the old inner html with the new updated data
+		el.innerHTML = $(html.join("")).html();
 	}
 };
 
@@ -446,7 +448,7 @@ function(ev) {
 			updateRequired = true;
 		}
 		if (updateRequired) {
-			this._setImage(item, ZmItem.F_TAG, item.getTagImageInfo());
+			this._replaceTagImage(item, ZmItem.F_TAG, this._getClasses(ZmItem.F_TAG));
 		}
 	}
 };
@@ -483,17 +485,17 @@ function(item, field, params) {
 };
 
 ZmListView.prototype._getCellContents =
-function(htmlArr, idx, item, field, colIdx, params) {
+function(htmlArr, idx, item, field, colIdx, params, classes) {
 	if (field == ZmItem.F_SELECTION) {
-		idx = this._getImageHtml(htmlArr, idx, "CheckboxUnchecked", this._getFieldId(item, field));
+		idx = this._getImageHtml(htmlArr, idx, "CheckboxUnchecked", this._getFieldId(item, field), classes);
 	} else if (field == ZmItem.F_TYPE) {
-		idx = this._getImageHtml(htmlArr, idx, ZmItem.ICON[item.type], this._getFieldId(item, field));
+		idx = this._getImageHtml(htmlArr, idx, ZmItem.ICON[item.type], this._getFieldId(item, field), classes);
 	} else if (field == ZmItem.F_FLAG) {
-		idx = this._getImageHtml(htmlArr, idx, this._getFlagIcon(item.isFlagged), this._getFieldId(item, field));
+		idx = this._getImageHtml(htmlArr, idx, this._getFlagIcon(item.isFlagged), this._getFieldId(item, field), classes);
 	} else if (field == ZmItem.F_TAG) {
-		idx = this._getImageHtml(htmlArr, idx, item.getTagImageInfo(), this._getFieldId(item, field));
+		idx = this._getImageHtml(htmlArr, idx, item.getTagImageInfo(), this._getFieldId(item, field), classes);
 	} else if (field == ZmItem.F_ATTACHMENT) {
-		idx = this._getImageHtml(htmlArr, idx, item.hasAttach ? "Attachment" : null, this._getFieldId(item, field));
+		idx = this._getImageHtml(htmlArr, idx, item.hasAttach ? "Attachment" : null, this._getFieldId(item, field), classes);
 	} else if (field == ZmItem.F_DATE) {
 		htmlArr[idx++] = AjxDateUtil.computeDateStr(params.now || new Date(), item.date);
 	} else if (field == ZmItem.F_PRIORITY) {
@@ -502,10 +504,12 @@ function(htmlArr, idx, item, field, colIdx, params) {
             priorityImage = "PriorityHigh_list";
         } else if (item.isLowPriority) {
 			priorityImage = "PriorityLow_list";
-		} else {
-			priorityImage = "";
 		}
-        idx = this._getImageHtml(htmlArr, idx, priorityImage, this._getFieldId(item, field));
+		if (priorityImage) {
+        	idx = this._getImageHtml(htmlArr, idx, priorityImage, this._getFieldId(item, field), classes);
+		} else {
+			htmlArr[idx++] = "<div id='" + this._getFieldId(item, field) + "' " + AjxUtil.getClassAttr(classes) + "></div>";
+		}
 	} else {
 		idx = DwtListView.prototype._getCellContents.apply(this, arguments);
 	}
@@ -514,19 +518,44 @@ function(htmlArr, idx, item, field, colIdx, params) {
 };
 
 ZmListView.prototype._getImageHtml =
-function(htmlArr, idx, imageInfo, id) {
+function(htmlArr, idx, imageInfo, id, classes) {
 	imageInfo = imageInfo || "Blank_16";
 	var idText = id ? ["id='", id, "'"].join("") : null;
-	htmlArr[idx++] = AjxImg.getImageHtml(imageInfo, null, idText);
+	htmlArr[idx++] = AjxImg.getImageHtml(imageInfo, null, idText, null, null, classes);
 	return idx;
 };
 
+ZmListView.prototype._getClasses =
+function(field, classes) {
+	if (this.isMultiColumn && this.isMultiColumn()) {
+		classes = classes || [];
+		classes = [this._headerHash[field]._cssClass];
+	}
+	return classes;
+};
+
 ZmListView.prototype._setImage =
-function(item, field, imageInfo) {
+function(item, field, imageInfo, classes) {
 	var img = this._getElement(item, field);
-	if (img && img.parentNode) {
+	if (img) {
 		imageInfo = imageInfo || "Blank_16";
-		AjxImg.setImage(img.parentNode, imageInfo);
+		classes = classes || [];
+		var newClass = AjxImg.getClassForImage(imageInfo);
+		if (newClass) {
+			classes.push(newClass);
+		}
+		img.className = classes.join(" ");
+		//AjxImg.setImage(img.parentNode, imageInfo, null, null, classes);
+	}
+};
+
+ZmListView.prototype._replaceTagImage =
+function(item, field, classes) {
+	var img = this._getElement(item, field);
+	if (img) {
+		var htmlArr = [];
+		this._getImageHtml(htmlArr, 0, item.getTagImageInfo(), this._getFieldId(item, field), classes);
+		$(img).replaceWith(htmlArr.join(""));
 	}
 };
 
@@ -612,7 +641,7 @@ function(ev, div) {
 	if (field == ZmItem.F_FLAG) {
 		var item = this.getItemFromElement(div);
 		if (!item.isFlagged) {
-			AjxImg.setImage(ev.target, this._getFlagIcon(item.isFlagged, false), true);
+			AjxImg.setImage(ev.target, this._getFlagIcon(item.isFlagged, false), true, false, this._getClasses(field));
 		}
 	}
 	return true;
@@ -631,7 +660,7 @@ function(ev, div) {
 	if (field == ZmItem.F_FLAG) {
 		var item = this.getItemFromElement(div);
 		if (!item.isFlagged) {
-			AjxImg.setDisabledImage(ev.target, this._getFlagIcon(item.isFlagged, true), true);
+			AjxImg.setDisabledImage(ev.target, this._getFlagIcon(item.isFlagged, true), true, this._getClasses(field));
 		}
 	}
 	return true;

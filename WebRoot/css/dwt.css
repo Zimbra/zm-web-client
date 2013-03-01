@@ -551,10 +551,25 @@
 }
 
 /* ??? SHOTGUN */
-.DwtListView-Rows td {
+.DwtListView-Rows TD, .ZmRowDoubleHeader, .ZmRowDoubleHeader DIV, .DwtMsgListMultiCol DIV {
 	padding-left:@TextPaddingSize@;
 	padding-right:2px;
 	overflow:hidden;
+}
+
+UL.DwtListView-Rows {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+
+.TopRow DIV, .BottomRow DIV, .DwtMsgListMultiCol DIV, LI.Row-dragProxy {
+#IFNDEF MSIE
+	display: inline-block;
+#ENDIF
+#IFDEF MSIE
+	display: inline;
+#ENDIF
 }
 
 .DwtListHeaderItem-label {
