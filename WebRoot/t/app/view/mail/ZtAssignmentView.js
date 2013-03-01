@@ -66,6 +66,11 @@ Ext.define('ZCS.view.mail.ZtAssignmentView', {
 		],
 
 		/**
+		 * @cfg {Object} Config for the whole list
+		 */
+		list: null,
+
+		/**
 		 * @cfg {Number} How long it takes to transition a component from its original location to its
 		 *				 assignment overlay position.
 		 */
@@ -79,7 +84,11 @@ Ext.define('ZCS.view.mail.ZtAssignmentView', {
 		/**
 		 * @cfg {Function}
 		 */
-		onAssignmentComplete: null
+		onAssignmentComplete: null,
+
+		listHasOwnHeader: false,
+
+		border: 0
 	},
 
 	constructor: function (cfg) {
@@ -92,22 +101,7 @@ Ext.define('ZCS.view.mail.ZtAssignmentView', {
 			layout: 'fit',
 			width: 250,
 			cls: 'zcs-assignment-panel',
-			items: [{
-				xtype: 'titlebar',
-				title: cfg.listTitle,
-				docked: 'top'
-			}, {
-				xtype: 'list',
-				ui: 'dark',
-				store: Ext.create('Ext.data.Store', {
-					data: cfg.listData,
-					proxy: {
-						model: cfg.listDataModel,
-						type: 'memory'
-					}
-				}),
-				itemTpl: cfg.listItemTpl
-			}]
+			items: []
 		}, {
 			xtype: 'panel',
 			ui: 'light',
@@ -141,6 +135,29 @@ Ext.define('ZCS.view.mail.ZtAssignmentView', {
 				}]
 			}]
 		}];
+
+		//Don't add another toolbar if the list has its own header
+		if (!cfg.listHasOwnHeader) {
+			cfg.items[0].items.push({
+				xtype: 'titlebar',
+				title: cfg.listTitle,
+				docked: 'top'
+			});
+		}
+
+		//Add either a fully configured list or a list using config options
+		cfg.items[0].items.push(cfg.list || {
+			xtype: 'list',
+			ui: 'dark',
+			store: Ext.create('Ext.data.Store', {
+				data: cfg.listData,
+				proxy: {
+					model: cfg.listDataModel,
+					type: 'memory'
+				}
+			}),
+			itemTpl: cfg.listItemTpl
+		});
 
 		this.callParent(arguments);
 
@@ -249,14 +266,14 @@ Ext.define('ZCS.view.mail.ZtAssignmentView', {
 			sheetTargetElement = this.getTargetElement(),
 			sheetTargetElementBox = sheetTargetElement.getPageBox();
 
-		sheet.setWidth(sheetTargetElementBox.width);
-		sheet.setHeight(sheetTargetElementBox.height);
+		sheet.setWidth(sheetTargetElementBox.width + 1);
+		sheet.setHeight(sheetTargetElementBox.height + 1);
 
 		sheet.showBy(this.getTargetElement());
 
 		//Why it's off by 5 I don't know.
 		sheet.setLeft(sheet.getLeft() - 5);
-		sheet.setTop(sheet.getTop() + 5);
+		sheet.setTop(sheet.getTop() + 4);
 	},
 
 	updateComponentBox: function (component, targetBox) {

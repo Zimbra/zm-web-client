@@ -144,8 +144,3 @@
 <template id='TagAssignmentListItem'>
 	<div cls="zcs-tag zcs-tag-{color}" style="color:{color};">{name}</div>
 </template>
-
-#widgets/_assignmentview.scss
-<template id='FolderAssignmentListItem'>
-	{name}
-</template>

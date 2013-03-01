@@ -57,6 +57,7 @@ Ext.define('ZCS.view.ZtOverview', {
 			model: 'ZCS.model.ZtOrganizer',
 			defaultRootProperty: 'items',
 			root: organizerData,
+			storeId: 'organizerStore',
 			grouper: function(record) {
 				return record.get('typeName');
 			}

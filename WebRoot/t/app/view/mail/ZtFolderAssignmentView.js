@@ -20,14 +20,40 @@
  */
 Ext.define('ZCS.view.mail.ZtFolderAssignmentView', {
 	extend: 'ZCS.view.mail.ZtAssignmentView',
+	requires: [
+		'ZCS.model.ZtFolder'
+	],
 	alias: 'widget.moveview',
 	constructor: function (config) {
 
 		cfg = config || {};
 
-		cfg.listItemTpl = ZCS.template.FolderAssignmentListItem;
-		cfg.listData = ZCS.common.ZtUserSession.getOrganizerDataByAppAndOrgType(ZCS.constant.APP_MAIL, ZCS.constant.ORG_MAIL_FOLDER);
-		cfg.listDataModel = 'ZCS.model.ZtOrganizer';
+				// get the organizer data for this app
+		var organizerData = {
+				items: ZCS.common.ZtUserSession.getOrganizerDataByAppAndOrgType(ZCS.constant.APP_MAIL, ZCS.constant.ORG_MAIL_FOLDER)
+			};
+
+		// create a store for the organizers
+		var organizerStore = Ext.create('Ext.data.TreeStore', {
+			model: 'ZCS.model.ZtFolder',
+			defaultRootProperty: 'items',
+			root: organizerData,
+			storeId: 'organizerStore',
+			proxy: {
+				type: 'memory',
+				model: 'ZCS.model.ZtFolder'
+			}
+		});
+
+		cfg.list = {
+			xtype: 'folderlist',
+			displayField: 'name',
+			title: cfg.listTitle,
+			store: organizerStore,
+			grouped: false
+		};
+
+		cfg.listHasOwnHeader = true;
 
 		this.callParent([cfg]);
 	}
