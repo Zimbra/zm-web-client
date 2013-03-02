@@ -374,5 +374,22 @@ Ext.define('ZCS.model.mail.ZtMailMsg', {
 		}
 
 		return null;
+	},
+
+	hasTrustedSender: function() {
+
+		var	sender = this.getAddressByType(ZCS.constant.SENDER) || this.getAddressByType(ZCS.constant.FROM),
+			addr = sender.get('email').toLowerCase(),
+			domain = addr.substr(addr.indexOf("@") + 1),
+			trustedSenders = ZCS.session.getSetting(ZCS.constant.SETTING_TRUSTED_SENDERS),
+			ln = trustedSenders ? trustedSenders.length : 0, i, trusted;
+
+		for (i = 0; i < ln; i++) {
+			trusted = trustedSenders[i].toLowerCase();
+			if (addr === trusted || domain === trusted) {
+				return true;
+			}
+		}
+		return false;
 	}
 });

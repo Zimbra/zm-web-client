@@ -121,9 +121,10 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 			// already pressed the button to display them.
 			var parsedId = ZCS.util.parseId(msg.get('folderId')),
 				isSpam = (parsedId && parsedId.localId === ZCS.constant.ID_JUNK),
+				isTrusted = msg.hasTrustedSender(),
 				imagesShown = ZCS.view.mail.ZtMsgBody.externalImagesShown[msg.getId()],
 				showExternalImages = ZCS.session.getSetting(ZCS.constant.SETTING_DISPLAY_IMAGES),
-				hideExternalImages = (!showExternalImages || isSpam) && !imagesShown;
+				hideExternalImages = (!showExternalImages || isSpam) && !isTrusted && !imagesShown;
 
 			this.hiddenImages = this.fixImages(msg, iframe.getBody(), hideExternalImages);
 			if (this.hiddenImages.length > 0) {

@@ -47,7 +47,7 @@ ZCS.constant.DEFAULT_PAGE_SIZE = 20;
 ZCS.constant.SERVICE_URL_BASE = '/service/soap/';
 
 // How often to check for notifications, in seconds
-ZCS.constant.POLL_INTERVAL = 10;
+ZCS.constant.POLL_INTERVAL = 120;
 
 // Apps
 ZCS.constant.APP_MAIL     = 'mail';
@@ -252,6 +252,7 @@ ZCS.constant.TO_SOAP_TYPE = ZCS.constant.getBackMap(ZCS.constant.FROM_SOAP_TYPE)
 ZCS.constant.TYPE_STRING    = 'string';
 ZCS.constant.TYPE_NUMBER    = 'number';
 ZCS.constant.TYPE_BOOLEAN   = 'boolean';
+ZCS.constant.TYPE_ARRAY     = 'array';
 
 // Names of user settings (LDAP attribute names)
 ZCS.constant.SETTING_ALIASES            = 'zimbraMailAlias';
@@ -266,6 +267,7 @@ ZCS.constant.SETTING_REPLY_PREFIX       = 'zimbraPrefForwardReplyPrefixChar';
 ZCS.constant.SETTING_MAIL_ENABLED       = 'zimbraFeatureMailEnabled';
 ZCS.constant.SETTING_CONTACTS_ENABLED   = 'zimbraFeatureContactsEnabled';
 ZCS.constant.SETTING_DISPLAY_IMAGES     = 'zimbraPrefDisplayExternalImages';
+ZCS.constant.SETTING_TRUSTED_SENDERS    = 'zimbraPrefMailTrustedSenderList';
 
 // Names of internal settings
 ZCS.constant.SETTING_CUR_SEARCH                 = 'CUR_SEARCH';
@@ -278,39 +280,18 @@ ZCS.constant.SETTING_FORWARD_USE_PREFIX         = 'FORWARD_USE_PREFIX';
 ZCS.constant.SETTING_FORWARD_INCLUDE_HEADERS    = 'FORWARD_INCLUDE_HEADERS';
 ZCS.constant.SETTING_REST_URL                   = 'REST_URL';
 
-// List of all settings we care about
-ZCS.constant.SETTINGS = [
-
-	// LDAP
-	ZCS.constant.SETTING_ALIASES,
-	ZCS.constant.SETTING_INITIAL_SEARCH,
-	ZCS.constant.SETTING_SHOW_SEARCH,
-	ZCS.constant.SETTING_LOCALE,
-	ZCS.constant.SETTING_TIMEZONE,
-	ZCS.constant.SETTING_MARK_READ,
-	ZCS.constant.SETTING_REPLY_INCLUDE,
-	ZCS.constant.SETTING_FORWARD_INCLUDE,
-	ZCS.constant.SETTING_REPLY_PREFIX,
-	ZCS.constant.SETTING_MAIL_ENABLED,
-	ZCS.constant.SETTING_CONTACTS_ENABLED,
-	ZCS.constant.SETTING_DISPLAY_IMAGES,
-
-	// internal, or not from LDAP
-	ZCS.constant.SETTING_CUR_SEARCH,
-	ZCS.constant.SETTING_CUR_SEARCH_ID,
-	ZCS.constant.SETTING_REPLY_INCLUDE_WHAT,
-	ZCS.constant.SETTING_REPLY_USE_PREFIX,
-	ZCS.constant.SETTING_REPLY_INCLUDE_HEADERS,
-	ZCS.constant.SETTING_FORWARD_INCLUDE_WHAT,
-	ZCS.constant.SETTING_FORWARD_USE_PREFIX,
-	ZCS.constant.SETTING_FORWARD_INCLUDE_HEADERS,
-	ZCS.constant.SETTING_REST_URL
-];
+ZCS.constant.SETTINGS = [];
+Ext.Object.each(ZCS.constant, function(prop) {
+	if (prop.indexOf('SETTING_') === 0) {
+		ZCS.constant.SETTINGS.push(ZCS.constant[prop]);
+	}
+});
 
 // Setting type; defaults to string, so just note exceptions
 ZCS.constant.SETTING_TYPE = {};
 ZCS.constant.SETTING_TYPE[ZCS.constant.SETTING_SHOW_SEARCH]     = ZCS.constant.TYPE_BOOLEAN;
 ZCS.constant.SETTING_TYPE[ZCS.constant.SETTING_DISPLAY_IMAGES]  = ZCS.constant.TYPE_BOOLEAN;
+ZCS.constant.SETTING_TYPE[ZCS.constant.SETTING_TRUSTED_SENDERS] = ZCS.constant.TYPE_ARRAY;
 
 // Forced setting values, which override user setting
 ZCS.constant.SETTING_VALUE = {};
