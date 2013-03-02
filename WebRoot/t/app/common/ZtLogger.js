@@ -43,7 +43,8 @@ Ext.define('ZCS.common.ZtLogger', {
 			// custom levels
 			'iframe',
 			'conv',
-			'poll'
+			'poll',
+			'image'
 		]
 	},
 

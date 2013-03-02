@@ -37,7 +37,38 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 	},
 
 	statics: {
-		externalImagesShown:    {}  // lookup hash of IDs of msgs whose external images user has loaded
+		externalImagesShown:    {},     // lookup hash of IDs of msgs whose external images user has loaded
+		numImgsToLoad:          0,      // number of images whose 'src' has been set so they load
+		numImgsLoaded:          0,      // number of images whose 'onload' handlers have fired
+
+		/**
+		 * Resizes the IFRAME after all of the fixed images have loaded. The alternative is to resize
+		 * the IFRAME after each image loads, but that could be a lot of resizing. This approach should
+		 * be much more efficient, with the risk that a single slow-loading or failing image could
+		 * prevent the resize.
+		 *
+		 * Only IMG elements are handled this way. For background images, we set a timer to do the
+		 * resize, since there is no 'onload' event fired when a background image has loaded. (One way
+		 * to get around that is by 'image preloading', but I don't think it's worth it.)
+		 *
+		 * @param {ZtMsgBody}   me      the msg body object
+		 * @param {Element}     img     the IMG whose onload handler was invoked
+		 *
+		 * @private
+		 */
+		imgOnloadHandler: function(me, img) {
+
+			ZCS.view.mail.ZtMsgBody.numImgsLoaded += 1;
+			var toLoad = ZCS.view.mail.ZtMsgBody.numImgsToLoad,
+				loaded = ZCS.view.mail.ZtMsgBody.numImgsLoaded;
+
+			Ext.Logger.image('Img onload handler: ' + loaded + ' / ' + toLoad);
+			if (toLoad > 0 && loaded === toLoad) {
+				Ext.Logger.image('Img onload handler: resize iframe');
+				me.iframe.resizeToContent();
+			}
+			img.onload = null;
+		}
 	},
 
 	/**
@@ -61,7 +92,6 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 			html = ZCS.quoted.getOriginalContent(html, false);
 		}
 
-		// TODO: images and info bar
 		// TODO: invites
 		// TODO: truncation
 
@@ -131,19 +161,14 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 			checkBackground = (html.indexOf('dfbackground') !== -1) ||
 			                  (html.indexOf('pnbackground') !== -1),
 			hiddenImages = [],
-			onloadHandler;
+			onloadHandler,
+			fixedBackground = false;
 
-/*
 		if (this.getUsingIframe()) {
-			// TODO: would be smarter to only resize once, when all images have loaded
-			// TODO: maybe skip onload if img has height and width
-			// TODO: for background image, maybe use timer since they don't have onload event
-			onloadHandler = function() {
-				me.iframe.resizeToContent();
-				this.onload = null; // scope is an <img> - clear its onload handler
-			};
+			ZCS.view.mail.ZtMsgBody.numImgsToLoad = 0;
+			ZCS.view.mail.ZtMsgBody.numImgsLoaded = 0;
+			onloadHandler = ZCS.view.mail.ZtMsgBody.imgOnloadHandler;
 		}
-*/
 
 		for (var i = 0; i < ln; i++) {
 
@@ -151,11 +176,19 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 				nodeName = el.nodeName.toLowerCase(),
 				isImg = (nodeName === 'img');
 
-			if ((isImg && this.fixImage(msg, el, 'src', hideExternalImages)) ||
+			if ((isImg && this.fixImage(msg, el, 'src', hideExternalImages, onloadHandler)) ||
 				(checkBackground && this.fixImage(msg, el, 'background', hideExternalImages))) {
 
 				hiddenImages.push(el);
+				if (!isImg) {
+					fixedBackground = true;
+				}
 			}
+		}
+
+		if (fixedBackground) {
+			Ext.Logger.image('Background handled, resize on timer');
+			Ext.defer(this.iframe.resizeToContent, 500, this.iframe);
 		}
 
 		return hiddenImages;
@@ -174,11 +207,13 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 	 *
 	 * @return	true if the image is external and was replaced
 	 */
-	fixImage: function(msg, el, attr, hideExternalImages) {
+	fixImage: function(msg, el, attr, hideExternalImages, onloadHandler) {
 
 		var dfAttr = 'df' + attr,
 			pnAttr = 'pn' + attr,
-			baseValue, dfValue, pnValue, value;
+			baseValue, dfValue, pnValue, value,
+			imgChanged = false,
+			me = this;
 
 		try {
 			baseValue = el.getAttribute(attr);
@@ -198,6 +233,7 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 				value = msg.getPartUrl('contentId', cid);
 				if (value) {
 					el.setAttribute(attr, value);
+					imgChanged = true;
 				}
 			}
 			else if (value.indexOf('doc:') === 0) {
@@ -205,6 +241,7 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 				value = [ZCS.session.getSetting(ZCS.constant.SETTING_REST_URL), '/', value.substring(4)].join('');
 				if (value) {
 					el.setAttribute(attr, value);
+					imgChanged = true;
 				}
 			}
 			else if (pnValue) {
@@ -212,6 +249,7 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 				value = msg.getPartUrl('contentLocation', value);
 				if (value) {
 					el.setAttribute(attr, value);
+					imgChanged = true;
 				}
 			}
 			else if (dfValue) {
@@ -223,11 +261,18 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 				}
 				else {
 					el.src = dfValue;
+					imgChanged = true;
 				}
 			}
 			else if (value.indexOf('data:') === 0) {
 			}
 		}
+
+		if (imgChanged && onloadHandler) {
+			el.onload = onloadHandler.bind(null, me, el);
+			ZCS.view.mail.ZtMsgBody.numImgsToLoad += 1;
+		}
+
 		return false;
 	},
 
@@ -275,10 +320,32 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 	 */
 	showExternalImages: function() {
 
+		var onloadHandler = ZCS.view.mail.ZtMsgBody.imgOnloadHandler,
+			fixedBackground = false,
+			me = this;
+
+		ZCS.view.mail.ZtMsgBody.numImgsToLoad = 0;
+		ZCS.view.mail.ZtMsgBody.numImgsLoaded = 0;
+
 		Ext.each(this.hiddenImages, function(el) {
-			var attr = (el.nodeName.toLowerCase() === 'img') ? 'src' : 'background';
+			var isImg = (el.nodeName.toLowerCase() === 'img'),
+				attr = isImg ? 'src' : 'background';
+
 			el.setAttribute(attr, el.getAttribute('df' + attr));
+			if (isImg) {
+				ZCS.view.mail.ZtMsgBody.numImgsToLoad += 1;
+				el.onload = onloadHandler.bind(null, me, el);
+			}
+			else {
+				fixedBackground = true;
+			}
 		}, this);
+
+		if (fixedBackground) {
+			Ext.Logger.image('External background loaded, resize on timer');
+			Ext.defer(this.iframe.resizeToContent, 500, this.iframe);
+		}
+
 		var msgId = this.getMsg().getId();
 		ZCS.view.mail.ZtMsgBody.externalImagesShown[msgId] = true;
 		this.infoBar.hide();
