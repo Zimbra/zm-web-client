@@ -85,14 +85,21 @@ Ext.define('ZCS.controller.mail.ZtConvListController', {
 		list.select(toSelect, false);
 	},
 
+	/**
+	 * Handle a newly created conv. Add it to view if user is viewing Inbox.
+	 *
+	 * @param {object}  create      JSON for new conv
+	 */
 	handleCreateNotification: function(create) {
 
-		var reader = ZCS.model.mail.ZtConv.getProxy().getReader(),
-			data = reader.getDataFromNode(create),
-			store = this.getStore(),
-			conv = new ZCS.model.mail.ZtConv(data, create.id);
+		if (ZCS.session.getCurrentSearchOrganizer().getId() === ZCS.constant.ID_INBOX) {
+			var reader = ZCS.model.mail.ZtConv.getProxy().getReader(),
+				data = reader.getDataFromNode(create),
+				store = this.getStore(),
+				conv = new ZCS.model.mail.ZtConv(data, create.id);
 
-		store.insert(0, [conv]);
+			store.insert(0, [conv]);
+		}
 	},
 
 	/**
