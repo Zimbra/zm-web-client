@@ -190,7 +190,7 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 			editor.scrollTop = 0
 		}
 
-		ZCS.util.html.resetWindowScroll();
+		ZCS.htmlutil.resetWindowScroll();
 	},
 
 	/**

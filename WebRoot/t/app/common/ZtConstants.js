@@ -265,6 +265,7 @@ ZCS.constant.SETTING_FORWARD_INCLUDE    = 'zimbraPrefForwardIncludeOriginalText'
 ZCS.constant.SETTING_REPLY_PREFIX       = 'zimbraPrefForwardReplyPrefixChar';
 ZCS.constant.SETTING_MAIL_ENABLED       = 'zimbraFeatureMailEnabled';
 ZCS.constant.SETTING_CONTACTS_ENABLED   = 'zimbraFeatureContactsEnabled';
+ZCS.constant.SETTING_DISPLAY_IMAGES     = 'zimbraPrefDisplayExternalImages';
 
 // Names of internal settings
 ZCS.constant.SETTING_CUR_SEARCH                 = 'CUR_SEARCH';
@@ -292,6 +293,7 @@ ZCS.constant.SETTINGS = [
 	ZCS.constant.SETTING_REPLY_PREFIX,
 	ZCS.constant.SETTING_MAIL_ENABLED,
 	ZCS.constant.SETTING_CONTACTS_ENABLED,
+	ZCS.constant.SETTING_DISPLAY_IMAGES,
 
 	// internal, or not from LDAP
 	ZCS.constant.SETTING_CUR_SEARCH,
@@ -307,7 +309,8 @@ ZCS.constant.SETTINGS = [
 
 // Setting type; defaults to string, so just note exceptions
 ZCS.constant.SETTING_TYPE = {};
-ZCS.constant.SETTING_TYPE[ZCS.constant.SETTING_SHOW_SEARCH] = ZCS.constant.TYPE_BOOLEAN;
+ZCS.constant.SETTING_TYPE[ZCS.constant.SETTING_SHOW_SEARCH]     = ZCS.constant.TYPE_BOOLEAN;
+ZCS.constant.SETTING_TYPE[ZCS.constant.SETTING_DISPLAY_IMAGES]  = ZCS.constant.TYPE_BOOLEAN;
 
 // Forced setting values, which override user setting
 ZCS.constant.SETTING_VALUE = {};

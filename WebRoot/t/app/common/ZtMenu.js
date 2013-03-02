@@ -85,7 +85,9 @@ Ext.define('ZCS.common.ZtMenu', {
 		this.setHeight(totalHeight + 12);
 		list.refresh();
 
-		var ln = list.listItems.length;
+		var ln = list.listItems.length,
+			i, item, itemIndex;
+
 		// First we do all the reads
         for (i = 0; i < ln; i++) {
             item = list.listItems[i];

@@ -188,7 +188,7 @@ Ext.define('ZCS.model.mail.ZtMailMsg', {
 
 			if (ZCS.mime.isRenderableImage(contentType)) {
 				if (disposition !== 'inline') {
-					var src = content || ZCS.util.html.buildUrl({
+					var src = content || ZCS.htmlutil.buildUrl({
 						path: ZCS.constant.PATH_MSG_FETCH,
 						qsArgs: {
 							auth: 'co',
@@ -200,19 +200,19 @@ Ext.define('ZCS.model.mail.ZtMailMsg', {
 				}
 			}
 			else if (contentType === ZCS.mime.TEXT_PLAIN) {
-				html.push('<div>' + ZCS.util.mail.textToHtml(content) + '</div>');
+				html.push('<div>' + ZCS.mailutil.textToHtml(content) + '</div>');
 			}
 			else if (contentType === ZCS.mime.TEXT_HTML) {
 				// TODO: handle invite
 				content = this.fixInlineImages(content);
-				content = ZCS.util.html.fixSmileys(content);
+				content = ZCS.htmlutil.fixSmileys(content);
 				html.push(content);
 			}
 			else if (contentType === ZCS.mime.TEXT_CAL) {
 				html.push(ZCS.model.mail.ZtMailMsg.extractCalendarText(content));
 			}
 			else {
-				html.push(ZCS.util.mail.textToHtml(content));
+				html.push(ZCS.mailutil.textToHtml(content));
 			}
 		}
 
@@ -260,7 +260,7 @@ Ext.define('ZCS.model.mail.ZtMailMsg', {
 			top.set('contentType', ZCS.mime.MULTI_ALT);
 			textPart = new ZCS.model.mail.ZtMimePart();
 			textPart.set('contentType', ZCS.mime.TEXT_PLAIN);
-			textPart.setContent(ZCS.util.mail.htmlToText(content, ZCS.session.getSetting(ZCS.constant.SETTING_REPLY_PREFIX)));
+			textPart.setContent(ZCS.mailutil.htmlToText(content, ZCS.session.getSetting(ZCS.constant.SETTING_REPLY_PREFIX)));
 			top.add(textPart);
 			htmlPart = new ZCS.model.mail.ZtMimePart();
 			htmlPart.set('contentType', ZCS.mime.TEXT_HTML);
@@ -307,7 +307,7 @@ Ext.define('ZCS.model.mail.ZtMailMsg', {
 
 		key = ZCS.constant.HDR_KEY[header] + ' ';
 		key = '<b>' + key + '</b>';
-		value = ZCS.util.mail.textToHtml(value);
+		value = ZCS.mailutil.textToHtml(value);
 
 		return key + value;
 	},
@@ -363,7 +363,7 @@ Ext.define('ZCS.model.mail.ZtMailMsg', {
 		for (i = 0; i < ln; i++) {
 			part = allParts[i];
 			if (part.get(field) === value) {
-				return ZCS.util.html.buildUrl({
+				return ZCS.htmlutil.buildUrl({
 					path: ZCS.constant.PATH_MSG_FETCH,
 					qsArgs: {
 						id: this.getId(),

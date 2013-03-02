@@ -31,9 +31,13 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 
 	config: {
 		padding: 5,
-		tpl: Ext.create('Ext.XTemplate', ZCS.template.MsgBody),
 
-		usingIframe: false
+		msg:            null,       // msg being displayed
+		usingIframe:    false       // true if msg content is within an IFRAME
+	},
+
+	statics: {
+		externalImagesShown:    {}  // lookup hash of IDs of msgs whose external images user has loaded
 	},
 
 	/**
@@ -61,14 +65,14 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 		// TODO: invites
 		// TODO: truncation
 
+		this.setMsg(msg);
 		this.setUsingIframe(msg.hasHtmlPart());
 
 		if (this.getUsingIframe()) {
 			Ext.Logger.conv('Use IFRAME for [' + msg.get('fragment') + ']');
 			if (!iframe) {
 				iframe = this.iframe = new ZCS.view.ux.ZtIframe({
-					// TODO: components are reused, should name iframe after msgview index
-					name: 'ZCSIframe-' + msg.getId()
+					name: 'ZCSIframe-' + this.up('msgview').getId()
 				});
 
 				iframe.on('msgContentResize', function () {
@@ -79,7 +83,23 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 			}
 			this.setHtml('');
 			iframe.setContent(html);
-			this.fixImages(msg, iframe.getBody());
+
+			if (this.infoBar) {
+				this.infoBar.hide();
+			}
+			// We hide external images if user wants us to, or this is Spam, and the user hasn't
+			// already pressed the button to display them.
+			var parsedId = ZCS.util.parseId(msg.get('folderId')),
+				isSpam = (parsedId && parsedId.localId === ZCS.constant.ID_JUNK),
+				imagesShown = ZCS.view.mail.ZtMsgBody.externalImagesShown[msg.getId()],
+				showExternalImages = ZCS.session.getSetting(ZCS.constant.SETTING_DISPLAY_IMAGES),
+				hideExternalImages = (!showExternalImages || isSpam) && !imagesShown;
+
+			this.hiddenImages = this.fixImages(msg, iframe.getBody(), hideExternalImages);
+			if (this.hiddenImages.length > 0) {
+				this.showInfoBar();
+			}
+
 			iframe.show();
 		}
 		else {
@@ -91,99 +111,176 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 		}
 	},
 
-	fixImages: function(msg, containerEl) {
+	/**
+	 * Goes through the message DOM looking for images to fix, including those that are used
+	 * as background images (usually in BODY or TD). Internal images will get their URLs set
+	 * to grab a part from the server. External images will be hidden or shown based on a user
+	 * setting.
+	 *
+	 * @param {ZtMailMsg}       msg                     msg being displayed
+	 * @param {Element}         containerEl             top-level element of DOM
+	 * @param {boolean}         hideExternalImages      if true, hide external images
+	 *
+	 * @return {Boolean}    true if any external images were hidden
+	 */
+	fixImages: function(msg, containerEl, hideExternalImages) {
 
-		var images = containerEl.getElementsByTagName('img'),
-			ln = images.length,
-			isExternal = false,
-			hasExternalImages = false,
-			me = this,
-			onloadHandler, i, img;
+		var	els = containerEl.getElementsByTagName('*'),
+			ln = els.length,
+			html = containerEl.innerHTML,
+			checkBackground = (html.indexOf('dfbackground') !== -1) ||
+			                  (html.indexOf('pnbackground') !== -1),
+			hiddenImages = [],
+			onloadHandler;
 
+/*
 		if (this.getUsingIframe()) {
+			// TODO: would be smarter to only resize once, when all images have loaded
+			// TODO: maybe skip onload if img has height and width
+			// TODO: for background image, maybe use timer since they don't have onload event
 			onloadHandler = function() {
 				me.iframe.resizeToContent();
 				this.onload = null; // scope is an <img> - clear its onload handler
 			};
 		}
+*/
 
-		for (i = 0; i < ln; i++) {
-			img = images[i];
-			var external = !!img.getAttribute('dfsrc');
-			if (!external) {
-				// inline image of some sort
-				this.restoreImage(msg, img, 'src', false);
-				if (onloadHandler) {
-					img.onload = onloadHandler;
-				}
+		for (var i = 0; i < ln; i++) {
+
+			var el = els[i],
+				nodeName = el.nodeName.toLowerCase(),
+				isImg = (nodeName === 'img');
+
+			if ((isImg && this.fixImage(msg, el, 'src', hideExternalImages)) ||
+				(checkBackground && this.fixImage(msg, el, 'background', hideExternalImages))) {
+
+				hiddenImages.push(el);
 			}
-			else {
-				// placeholder for img until user decides to load images
-				img.src = '/t/resources/icons/1x1-trans.png';
-			}
-			hasExternalImages = external || hasExternalImages;
 		}
-		// fix all elems with "background" attribute
-//		hasExternalImages = this._fixMultipartRelatedImagesRecurse(msg, this._usingIframe ? parent.body : parent) || hasExternalImages;
 
-		// did we get them all?
-		return !hasExternalImages;
+		return hiddenImages;
 	},
 
 	/**
-	 * Reverses the work of the (server-side) defanger, so that images are displayed.
+	 * Rewrites the src reference for internal images so that they display, and optionally
+	 * does the same for external images. Internal images will have 'cid', 'doc', and 'pnsrc'
+	 * converted to a URL with a part value that can be used to fetch the image from our
+	 * server. The part value is taken from the message's MIME parts.
 	 *
-	 * @param {ZmMailMsg}	msg			mail message
-	 * @param {Element}		elem		element to be checked (img)
-	 * @param {string}		aname		attribute name
-	 * @param {boolean}		external	if true, look only for external images
+	 * @param {ZmMailMsg}	msg			        mail message
+	 * @param {Element}		el		            element to be checked (img)
+	 * @param {string}		attr		        attribute name
+	 * @param {boolean}     hideExternalImages  if true, replace external image with placeholder
 	 *
-	 * @return	true if the image is external
+	 * @return	true if the image is external and was replaced
 	 */
-	restoreImage: function(msg, elem, aname, external) {
+	fixImage: function(msg, el, attr, hideExternalImages) {
 
-		var avalue, pnsrc;
+		var dfAttr = 'df' + attr,
+			pnAttr = 'pn' + attr,
+			baseValue, dfValue, pnValue, value;
+
 		try {
-			if (external) {
-				avalue = elem.getAttribute('df' + aname);
-			}
-			else {
-				pnsrc = avalue = elem.getAttribute('pn' + aname);
-				avalue = avalue || elem.getAttribute(aname);
-			}
+			baseValue = el.getAttribute(attr);
+			dfValue = el.getAttribute(dfAttr);
+			pnValue = el.getAttribute(pnAttr);
 		}
 		catch(e) {
-			Ext.Logger.warn('ZtMsgBody.restoreImages: exception accessing attribute ' + aname + ' in ' + elem.nodeName);
+			Ext.Logger.warn('ZtMsgBody.restoreImages: exception accessing base attribute ' + attr + ' in ' + el.nodeName);
 		}
 
-		if (avalue) {
-			if (avalue.indexOf('cid:') === 0) {
+		value = baseValue || dfValue || pnValue;
+
+		if (value) {
+			if (value.indexOf('cid:') === 0) {
 				// image came as a related part keyed by Content-ID
-				var cid = '<' + decodeURIComponent(avalue.substr(4)) + '>';
-				avalue = msg.getPartUrl('contentId', cid);
-				if (avalue) {
-					elem.setAttribute(aname, avalue);
+				var cid = '<' + decodeURIComponent(value.substr(4)) + '>';
+				value = msg.getPartUrl('contentId', cid);
+				if (value) {
+					el.setAttribute(attr, value);
 				}
-				return false;
-			} else if (avalue.indexOf('doc:') === 0) {
-				// image is in Briefcase
-				avalue = [ZCS.session.getSetting(ZCS.constant.SETTING_REST_URL), '/', avalue.substring(4)].join('');
-				if (avalue) {
-					elem.setAttribute(aname, avalue);
-					return false;
-				}
-			} else if (pnsrc) {
-				// image came as a related part keyed by Content-Location
-				avalue = msg.getPartUrl('contentLocation', avalue);
-				if (avalue) {
-					elem.setAttribute(aname, avalue);
-					return false;
-				}
-			} else if (avalue.indexOf('data:') === 0) {
-				return false;
 			}
-			return true;	// not recognized as inline img
+			else if (value.indexOf('doc:') === 0) {
+				// image is in Briefcase
+				value = [ZCS.session.getSetting(ZCS.constant.SETTING_REST_URL), '/', value.substring(4)].join('');
+				if (value) {
+					el.setAttribute(attr, value);
+				}
+			}
+			else if (pnValue) {
+				// image came as a related part keyed by Content-Location
+				value = msg.getPartUrl('contentLocation', value);
+				if (value) {
+					el.setAttribute(attr, value);
+				}
+			}
+			else if (dfValue) {
+				if (hideExternalImages) {
+					if (attr === 'src') {
+						el.src = '/img/zimbra/1x1-trans.png';
+					}
+					return true;
+				}
+				else {
+					el.src = dfValue;
+				}
+			}
+			else if (value.indexOf('data:') === 0) {
+			}
 		}
 		return false;
+	},
+
+	/**
+	 * Shows a section below the msg header that allows the user to press a button to load
+	 * external images.
+	 */
+	showInfoBar: function() {
+
+		if (!this.infoBar) {
+			this.infoBar = Ext.create('Ext.Container', {
+				layout: {
+					type: 'vbox',
+					align: 'center',
+					pack: 'center'
+				},
+				height: 80,
+				cls: 'zcs-info-bar',
+				items: [
+					{
+						flex: 1,
+						html: ZtMsg.imagesNotLoaded
+					},
+					{
+						xtype: 'button',
+						flex: 1,
+						text: ZtMsg.loadImages,
+						handler: function() {
+							Ext.Logger.info('load images');
+							this.up('msgbody').showExternalImages();
+						}
+					}
+				]
+			});
+			this.insert(0, this.infoBar);
+		}
+		else {
+			this.infoBar.show();
+		}
+	},
+
+	/**
+	 * Shows external images (including background images) by changing the "defanged" attribute
+	 * into the real one.
+	 */
+	showExternalImages: function() {
+
+		Ext.each(this.hiddenImages, function(el) {
+			var attr = (el.nodeName.toLowerCase() === 'img') ? 'src' : 'background';
+			el.setAttribute(attr, el.getAttribute('df' + attr));
+		}, this);
+		var msgId = this.getMsg().getId();
+		ZCS.view.mail.ZtMsgBody.externalImagesShown[msgId] = true;
+		this.infoBar.hide();
 	}
 });

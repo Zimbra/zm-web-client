@@ -22,7 +22,7 @@ Ext.define('ZCS.common.ZtHtmlUtil', {
 
 	singleton: true,
 
-	alternateClassName: 'ZCS.util.html',
+	alternateClassName: 'ZCS.htmlutil',
 
 	/**
 	 * Removes HTML tags from the given string, using a regex.

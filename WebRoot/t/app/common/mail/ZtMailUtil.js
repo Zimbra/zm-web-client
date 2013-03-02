@@ -22,7 +22,7 @@ Ext.define('ZCS.common.mail.ZtMailUtil', {
 
 	singleton: true,
 
-	alternateClassName: 'ZCS.util.mail',
+	alternateClassName: 'ZCS.mailutil',
 
 	/**
 	 * Converts the string to HTML, replacing tabs and returns. Optionally turns blocks of
