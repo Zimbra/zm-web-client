@@ -26,24 +26,26 @@ Ext.define('ZCS.model.mail.ZtMimePart', {
 		'ZCS.common.mail.ZtMimeTable'
 	],
 
-	fields: [
-		{ name: 'parent',               type: 'auto' },     // ZtMimePart
-		{ name: 'children',             type: 'auto' },     // list of child parts
-		{ name: 'node',                 type: 'auto' },     // JSON node from which this was created
-		{ name: 'contentType',          type: 'string' },   // ZCS.mime.*
-		{ name: 'format',               type: 'string' },   // applies only to text/plain, can be 'flowed'
-		{ name: 'name',                 type: 'string' },
-		{ name: 'part',                 type: 'string' },
-		{ name: 'cachekey',             type: 'string' },
-		{ name: 'size',                 type: 'int' },
-		{ name: 'contentDisposition',   type: 'string' },
-		{ name: 'contentId',            type: 'string' },
-		{ name: 'contentLocation',      type: 'string' },
-		{ name: 'fileName',             type: 'string' },
-		{ name: 'isTruncated',          type: 'boolean' },
-		{ name: 'isBody',               type: 'boolean' },  // server tells us if it's viewable content
-		{ name: 'hasContent',           type: 'boolean' }
-	],
+	config: {
+		fields: [
+			{ name: 'parent',               type: 'auto' },     // ZtMimePart
+			{ name: 'children',             type: 'auto' },     // list of child parts
+			{ name: 'node',                 type: 'auto' },     // JSON node from which this was created
+			{ name: 'contentType',          type: 'string' },   // ZCS.mime.*
+			{ name: 'format',               type: 'string' },   // applies only to text/plain, can be 'flowed'
+			{ name: 'name',                 type: 'string' },
+			{ name: 'part',                 type: 'string' },
+			{ name: 'cachekey',             type: 'string' },
+			{ name: 'size',                 type: 'int' },
+			{ name: 'contentDisposition',   type: 'string' },
+			{ name: 'contentId',            type: 'string' },
+			{ name: 'contentLocation',      type: 'string' },
+			{ name: 'fileName',             type: 'string' },
+			{ name: 'isTruncated',          type: 'boolean' },
+			{ name: 'isBody',               type: 'boolean' },  // server tells us if it's viewable content
+			{ name: 'hasContent',           type: 'boolean' }
+		]
+	},
 
 	statics: {
 		/**

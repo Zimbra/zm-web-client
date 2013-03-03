@@ -191,14 +191,6 @@ Ext.define('ZCS.controller.mail.ZtMailItemController', {
 	},
 
 	/**
-	 * Starts a forward session with the active message as the original message.
-	 */
-	doForward: function(msg) {
-		ZCS.app.getComposeController().forward(msg || this.getActiveMsg());
-	},
-
-
-	/**
 	 * Do a delete originating form a button.  This drops the button parameter and
 	 * allows doDelete to be used by both a button and the standard menu behavior.
 	 */

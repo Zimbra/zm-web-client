@@ -100,7 +100,9 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 
 	replyAll: function(msg) {
 
-		this.setAction(ZCS.constant.OP_REPLY_ALL);
+		var action = ZCS.constant.OP_REPLY_ALL;
+
+		this.setAction(action);
 		this.setOrigId(msg.getId());
 
 		var userEmail = ZCS.session.getAccountName(),
@@ -110,9 +112,7 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 			ccAddrs = [],
 			used = {},
 			subject = this.getSubject(msg, 'Re:'),
-			sep = '<br><br>',
-			quoted = this.quoteHtml(msg.getContentAsHtml()),
-			body = sep + '----- ' + ZtMsg.originalMessage + ' -----' + sep + quoted;
+			body = this.quoteOrigMsg(msg, action);
 
 		// Remember emails we don't want to repeat in Cc
 		// TODO: add aliases to used hash
@@ -130,17 +130,15 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 
 	forward: function(msg) {
 
-		this.setAction(ZCS.constant.OP_FORWARD);
+		var action = ZCS.constant.OP_FORWARD;
+
+		this.setAction(action);
 		this.setOrigId(msg.getId());
 
-		var to,
-			cc,
-			subject = this.getSubject(msg, 'Fwd:'),
-			sep = '<br><br>',
-			quoted = msg.getContentAsHtml(),
-			body = sep + '----- ' + ZtMsg.originalMessage + ' -----' + sep + quoted;
+		var	subject = this.getSubject(msg, 'Fwd:'),
+			body = this.quoteOrigMsg(msg, action);
 
-		this.showComposeForm(to, cc, subject, body);
+		this.showComposeForm(null, null, subject, body);
 	},
 
 	/**
@@ -289,8 +287,9 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 		}
 
 		content = headerText + content;
-		var	quoted = usePrefix ? this.quoteHtml(content) : content;
+		var	quoted = usePrefix ? this.quoteHtml(content) : content,
+			divider = isForward ? ZtMsg.forwardedMessage : ZtMsg.originalMessage;
 
-		return sep + '----- ' + ZtMsg.originalMessage + ' -----' + sep + quoted;
+		return sep + '----- ' + divider + ' -----' + sep + quoted;
 	}
 });
