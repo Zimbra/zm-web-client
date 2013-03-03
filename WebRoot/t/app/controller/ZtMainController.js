@@ -23,6 +23,10 @@ Ext.define('ZCS.controller.ZtMainController', {
 
 	extend: 'ZCS.controller.ZtBaseController',
 
+	requires: [
+		'Ext.MessageBox'
+	],
+
 	config: {
 
 		refs: {
@@ -45,6 +49,7 @@ Ext.define('ZCS.controller.ZtMainController', {
 
 		// Initialize the main view
 		Ext.Viewport.add(Ext.create('ZCS.view.ZtMain'));
+		ZCS.app.on('authExpired', this.authExpired, this);
 	},
 
 	/**
@@ -97,5 +102,19 @@ Ext.define('ZCS.controller.ZtMainController', {
 			};
 
 		server.sendSoapRequest(options);
+	},
+
+	/**
+	 * Handles session expiration by putting up an alert box, then logging the user out.
+	 */
+	authExpired: function() {
+
+		if (this.pollId) {
+			clearTimeout(this.pollId);
+		}
+
+		Ext.Msg.alert(ZtMsg.authExpiredTitle, ZtMsg.authExpiredText, function() {
+			this.doLogout();
+		}, this);
 	}
 });

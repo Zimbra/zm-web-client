@@ -90,13 +90,24 @@ Ext.define('ZCS.model.ZtSoapProxy', {
 	 */
 	processResponse: function(success, operation, request, response, callback, scope) {
 
-		var query = operation && operation.config && operation.config.query,
-			search;
+		if (success) {
+			var query = operation && operation.config && operation.config.query,
+				search;
 
-		this.callParent(arguments);
+			this.callParent(arguments);
 
-		this.processHeader(response.soapHeader);
-		ZCS.app.getMainController().schedulePoll();
+			this.processHeader(response.soapHeader);
+			ZCS.app.getMainController().schedulePoll();
+		}
+		else {
+			try {
+				var error = JSON.parse(response.responseText).Body.Fault.Detail.Error.Code;
+			}
+			catch(ex) {}
+			if (error === 'service.AUTH_REQUIRED') {
+				ZCS.app.fireEvent('authExpired');
+			}
+		}
 	},
 
 	processHeader: function(header) {
