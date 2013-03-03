@@ -268,6 +268,8 @@ ZCS.constant.SETTING_MAIL_ENABLED       = 'zimbraFeatureMailEnabled';
 ZCS.constant.SETTING_CONTACTS_ENABLED   = 'zimbraFeatureContactsEnabled';
 ZCS.constant.SETTING_DISPLAY_IMAGES     = 'zimbraPrefDisplayExternalImages';
 ZCS.constant.SETTING_TRUSTED_SENDERS    = 'zimbraPrefMailTrustedSenderList';
+ZCS.constant.SETTING_FROM_ADDRESS       = 'zimbraPrefFromAddress';
+ZCS.constant.SETTING_FROM_NAME          = 'zimbraPrefFromDisplay';
 
 // Names of internal settings
 ZCS.constant.SETTING_CUR_SEARCH                 = 'CUR_SEARCH';

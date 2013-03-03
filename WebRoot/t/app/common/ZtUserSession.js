@@ -53,21 +53,24 @@ Ext.define('ZCS.common.ZtUserSession', {
 		// Load organizers
 		this.loadFolders(data.header.context.refresh);
 
+		// Find default identity, use it for account ID and prefs
+		var gir = data.response.GetInfoResponse[0],
+			identityAttrs;
+
+		Ext.each(gir.identities.identity, function(identity) {
+			if (identity.name === 'DEFAULT') {
+				this.setAccountId(identity.id);
+				identityAttrs = identity._attrs;
+			}
+		}, this);
+
 		// grab the user's settings
-		var gir = data.response.GetInfoResponse[0];
 		this._settings = {};
-		this.createSettings(Ext.apply(Ext.clone(gir.attrs._attrs), gir.prefs._attrs));
+		this.createSettings(Ext.Object.merge({}, gir.attrs._attrs, gir.prefs._attrs, identityAttrs));
 		this.setSetting(ZCS.constant.SETTING_REST_URL, gir.rest);
 
 		// name of logged-in account
 		this.setAccountName(gir.name);
-
-		// ID of logged-in account
-		Ext.each(gir.identities.identity, function(identity) {
-			if (identity.name === 'DEFAULT') {
-				this.setAccountId(identity.id);
-			}
-		}, this);
 
 		// save the JSON results of the user's initial search (usually 'in:inbox')
 		this.setInitialSearchResults(data.response.SearchResponse[0]);

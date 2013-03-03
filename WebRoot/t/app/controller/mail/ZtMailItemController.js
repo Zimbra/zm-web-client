@@ -201,12 +201,13 @@ Ext.define('ZCS.controller.mail.ZtMailItemController', {
 	/**
 	 * Moves the mail item to Trash.
 	 *
-	 * @param {ZtMailMsg}   msg     mail msg (present if delete action triggered by button)
+	 * @param {ZtMailItem}   item     mail item
 	 */
-	doDelete: function(msg) {
-		var item = msg || this.getItem();
+	doDelete: function(item) {
 
-		this.performOp(msg, 'trash', function (item) {
+		item = item || this.getItem();
+
+		this.performOp(item, 'trash', function (item) {
 			//Because a conversation trash can occur when messages are not present in the UI,
 			//our standard notificaiton logic won't work, so manually force a removal.
 			if (item.get('type') === ZCS.constant.ITEM_CONVERSATION) {
@@ -218,24 +219,26 @@ Ext.define('ZCS.controller.mail.ZtMailItemController', {
 	/**
 	 * Moves the mail item to Junk.
 	 *
-	 * @param {ZtMailMsg}   msg     mail msg (present if spam action triggered by button)
+	 * @param {ZtMailItem}   item     mail item
 	 */
-	doSpam: function(msg) {
-		this.performOp(msg, 'spam');
+	doSpam: function(item) {
+		this.performOp(item, 'spam');
 	},
 
 	/**
-	 * Toggles read/unread on the conv.
+	 * Toggles read/unread on the mail item.
+	 *
+	 * @param {ZtMailItem}   item     mail item
 	 */
-	doMarkRead: function(msg) {
-		Ext.Logger.info("mail item controller MARK_READ");
-		var item = msg || this.getItem(),
-			wasUnread = item.get('isUnread');
+	doMarkRead: function(item) {
+
+		item = item || this.getItem();
+		var	wasUnread = item.get('isUnread');
 
 		item.set('op', wasUnread ? 'read' : '!read');
 		item.save({
 			success: function(item, operation) {
-				Ext.Logger.info('mail item saved successfully');
+				Ext.Logger.info('mail item marked read successfully');
 				item.set('op', null);
 			}
 		});

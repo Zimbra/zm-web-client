@@ -52,7 +52,9 @@ Ext.define('ZCS.view.contacts.ZtContactField', {
 
 		remoteFilter: true,
 
-		menuWidth: 300
+		menuWidth: 300,
+
+		addressType: ''
 	},
 
 	configureStore: function (value, store) {
@@ -76,10 +78,11 @@ Ext.define('ZCS.view.contacts.ZtContactField', {
 		//TODO, remove this when what is in the store is the desired ZtEmailAddress.
 		Ext.each(bubbles, function (bubbleModel) {
 			returnBubbles.push(Ext.create('ZCS.model.mail.ZtEmailAddress', {
+				type: this.getAddressType(),
 				name: bubbleModel.get('name'),
 				email: bubbleModel.get('email')
  			}));
-		});
+		}, this);
 
 		return returnBubbles;
 	}

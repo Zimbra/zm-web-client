@@ -83,14 +83,16 @@ Ext.define('ZCS.model.mail.ZtMsgReader', {
 		var data = {},
 			ctxt;
 
-		data.itemId = node.id;
-		data.type = ZCS.constant.ITEM_MESSAGE;
-		data.folderId = node.l;
-		data.fragment = node.fr;
-		data.convId = node.cid;
-		data.subject = node.su;
-		data.date = node.d;
-		data.sentDate = node.sd;
+		data.itemId         = node.id;
+		data.type           = ZCS.constant.ITEM_MESSAGE;
+		data.folderId       = node.l;
+		data.fragment       = node.fr;
+		data.convId         = node.cid;
+		data.subject        = node.su;
+		data.date           = node.d;
+		data.sentDate       = node.sd;
+		data.messageId      = node.mid;
+		data.irtMessageId   = node.irt;
 
 		this.parseFlags(node, data);
 

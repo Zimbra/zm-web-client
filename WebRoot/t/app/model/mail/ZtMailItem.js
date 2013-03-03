@@ -71,25 +71,31 @@ Ext.define('ZCS.model.mail.ZtMailItem', {
 	},
 
 	/**
-	 * Add the given address to this mail item.
+	 * Add the given addresses to this mail item.
 	 *
-	 * @param {ZtEmailAddress}  address     email address
+	 * @param {array}  addresses     list of ZtEmailAddress
 	 */
-	addAddress: function(address) {
+	addAddresses: function(addresses) {
 
-		var addrs = this.getAddresses();
+		addresses = (addresses instanceof Array) ? addresses : [addresses];
+
+		var addrs = this.get('addresses');
 		if (!addrs) {
 			addrs = {};
-			this.setAddresses(addrs);
+			this.set('addresses', addrs);
 		}
 
-		var	addrType = address.get('type'),
-			addrsByType = addrs[addrType];
+		var ln = addresses.length, i;
+		for (i = 0; i < ln; i++) {
+			var address = addresses[i],
+				addrType = address.get('type'),
+				addrsByType = addrs[addrType];
 
-		if (!addrsByType) {
-			addrsByType = addrs[addrType] = [];
+			if (!addrsByType) {
+				addrsByType = addrs[addrType] = [];
+			}
+			addrsByType.push(address);
 		}
-		addrsByType.push(address);
 	},
 
 	/**

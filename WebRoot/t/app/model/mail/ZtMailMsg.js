@@ -38,19 +38,18 @@ Ext.define('ZCS.model.mail.ZtMailMsg', {
 			{ name: 'subject',      type: 'string' },
 			{ name: 'date',         type: 'int' },
 			{ name: 'sentDate',     type: 'int' },
+			{ name: 'messageId',    type: 'string' },
+			{ name: 'irtMessageId', type: 'string' },
 
 			// internal (via parsing), or for composed msgs
 			{ name: 'content',      type: 'string' },
-			{ name: 'from',         type: 'string' },
-			{ name: 'to',           type: 'auto' },
-			{ name: 'cc',           type: 'auto' },
-			{ name: 'bcc',          type: 'auto' },
 			{ name: 'topPart',      type: 'auto' },
 			{ name: 'attachments',  type: 'auto' },
 			{ name: 'bodyParts',    type: 'auto' },
 			{ name: 'contentTypes', type: 'auto' },
 			{ name: 'isLoaded',     type: 'boolean' },
-			{ name: 'isLast',       type: 'boolean' }
+			{ name: 'isLast',       type: 'boolean' },
+			{ name: 'origId',       type: 'string' }    // ID of original if replying or forwarding
 		],
 
 		proxy: {
@@ -65,8 +64,7 @@ Ext.define('ZCS.model.mail.ZtMailMsg', {
 		},
 
 		mime: null,             // root MIME part (used when creating a msg for sending)
-		composeAction: '',      // compose, reply, reply all, or forward
-		origId: null            // ID or original if replying or forwarding
+		composeAction: ''       // compose, reply, reply all, or forward
 	},
 
 	statics: {

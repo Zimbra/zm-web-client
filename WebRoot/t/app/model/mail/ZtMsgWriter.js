@@ -60,25 +60,19 @@ Ext.define('ZCS.model.mail.ZtMsgWriter', {
 
 			var m = methodJson.m = {},
 				e = m.e = [],
-				ln = ZCS.constant.RECIP_TYPES.length,
+				addrTypes = ZCS.constant.RECIP_TYPES.concat(ZCS.constant.FROM),
+				ln = addrTypes.length,
 				i, type, field,
 				action = msg.getComposeAction(),
-				origId = msg.getOrigId(),
+				origId = msg.get('origId'),
+				irtMessageId = msg.get('irtMessageId'),
 				parts = m.mp = [],                  // Note: should only ever be one top-level part
 				mime = msg.getMime();
 
-			// from address
-			e.push({
-				t: ZCS.constant.TO_SOAP_TYPE[ZCS.constant.FROM],
-				a: msg.get('from')
-				// TODO: add name part
-			});
-
 			// recipient addresses
 			for (i = 0; i < ln; i++) {
-				type = ZCS.constant.RECIP_TYPES[i];
-				field = type.toLowerCase();
-				Ext.each(msg.get(field), function(addr) {
+				type = addrTypes[i];
+				Ext.each(msg.getAddressesByType(addrTypes[i]), function(addr) {
 					e.push({
 						t: ZCS.constant.TO_SOAP_TYPE[type],
 						a: addr.get('email'),
@@ -102,10 +96,18 @@ Ext.define('ZCS.model.mail.ZtMsgWriter', {
 
 			// ID or original if this is reply or forward
 			if (origId) {
-				m.origId = origId;
+				m.origid = origId;
 			}
 
-			// TODO: irtMessageId (from Message-ID header)
+			// In-Response-To (message ID of original, for threading)
+			if (irtMessageId) {
+				m.irt = {
+					_content: irtMessageId
+				}
+			}
+
+			// identity
+			m.idnt = ZCS.session.getAccountId();
 
 			this.addMimePart(parts, mime);
 		}

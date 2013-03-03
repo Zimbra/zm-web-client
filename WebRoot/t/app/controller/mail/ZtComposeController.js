@@ -59,7 +59,7 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 		],
 
 		action: null,
-		origId: null
+		origMsg: null
 	},
 
 	showBubbleMenu: function (field, bubble, bubbleModel) {
@@ -88,7 +88,7 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 		var action = ZCS.constant.OP_REPLY;
 
 		this.setAction(action);
-		this.setOrigId(msg.getId());
+		this.setOrigMsg(msg);
 
 		var to = [msg.getReplyAddress()],
 			cc,
@@ -103,7 +103,7 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 		var action = ZCS.constant.OP_REPLY_ALL;
 
 		this.setAction(action);
-		this.setOrigId(msg.getId());
+		this.setOrigMsg(msg);
 
 		var userEmail = ZCS.session.getAccountName(),
 			replyAddr = msg.getReplyAddress(),
@@ -133,7 +133,7 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 		var action = ZCS.constant.OP_FORWARD;
 
 		this.setAction(action);
-		this.setOrigId(msg.getId());
+		this.setOrigMsg(msg);
 
 		var	subject = this.getSubject(msg, 'Fwd:'),
 			body = this.quoteOrigMsg(msg, action);
@@ -214,19 +214,30 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 	doSend: function() {
 
 		var	values = this.getComposeForm().getValues(),
-			editor = this.getComposePanel().down('#body').element.query('.zcs-editable')[0];
+			editor = this.getComposePanel().down('#body').element.query('.zcs-editable')[0],
+			action = this.getAction(),
+			isNewCompose = (action === ZCS.constant.OP_COMPOSE),
+			origMsg = !isNewCompose && this.getOrigMsg();
 
 		Ext.Logger.info('Send message');
 		var msg = Ext.create('ZCS.model.mail.ZtMailMsg', {
-			from: ZCS.session.getAccountName(),
-			to: values.to,
-			cc: values.cc,
-			bcc: values.bcc,
-			subject: values.subject
-		});
-		msg.setComposeAction(this.getAction());
-		msg.setOrigId(this.getOrigId());
-		msg.createMime(editor.innerHTML, this.getAction() !== ZCS.constant.OP_COMPOSE);
+				subject: values.subject
+			}),
+			from = new ZCS.model.mail.ZtEmailAddress({
+				type: ZCS.constant.FROM,
+				email: ZCS.session.getSetting(ZCS.constant.SETTING_FROM_ADDRESS),
+				name: ZCS.session.getSetting(ZCS.constant.SETTING_FROM_NAME)
+			});
+		msg.addAddresses([].concat(from, values.to, values.cc, values.bcc));
+		msg.setComposeAction(action);
+		if (origMsg) {
+			msg.set('origId', origMsg.getId());
+			var irtMessageId = origMsg.get('irtMessageId') || origMsg.get('messageId');
+			if (irtMessageId) {
+				msg.set('irtMessageId', irtMessageId);
+			}
+		}
+		msg.createMime(editor.innerHTML, origMsg && origMsg.hasHtmlPart());
 		msg.save();
 		this.getComposePanel().hide();
 	},

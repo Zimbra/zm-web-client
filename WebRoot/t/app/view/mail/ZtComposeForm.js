@@ -87,7 +87,8 @@ Ext.define('ZCS.view.mail.ZtComposeForm', {
 						name: 'to',
 						labelWidth: 32,
 						flex: 1,
-						label: ZtMsg.toHdr
+						label: ZtMsg.toHdr,
+						addressType: ZCS.constant.TO
 					}, {
 						width: 80,
 						height: 44,
@@ -111,7 +112,8 @@ Ext.define('ZCS.view.mail.ZtComposeForm', {
 					labelWidth: 35,
 					hidden: true,
 					itemId: 'cc',
-					label: ZtMsg.ccHdr
+					label: ZtMsg.ccHdr,
+					addressType: ZCS.constant.CC
 				}, {
 					xtype: 'contactfield',
 					name: 'bcc',
@@ -119,7 +121,8 @@ Ext.define('ZCS.view.mail.ZtComposeForm', {
 					height: 44,
 					labelWidth: 50,
 					hidden: true,
-					label: ZtMsg.bccHdr
+					label: ZtMsg.bccHdr,
+					addressType: ZCS.constant.BCC
 				}, {
 					height: 44,
 					layout: {
