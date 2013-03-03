@@ -36,7 +36,8 @@
  * ***** END LICENSE BLOCK *****
 -->
     <meta charset="UTF-8">
-    <title>ZCS</title>
+    <fmt:setBundle basename="/messages/ZtMsg" scope="request" force="true" />
+    <title><fmt:message key="zimbraTitle"/></title>
     <style type="text/css">
             /**
             * Example of an initial loading indicator.

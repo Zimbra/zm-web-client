@@ -1536,8 +1536,9 @@ if (ext == null) ext = "";
     <!--Touch Client Targets-->
 
     <property name="app.root" value="${zwc.basedir}/WebRoot/t"/>
-    <property name="sass.dir" value="${app.root}/resources/sass" />
-    <property name="compass.dir" value="${app.root}/compass"/>
+    <property name='deploy.server' value='jetty'/>
+    <property name='deploy.dir' value='/opt/zimbra/${deploy.server}/webapps'/>
+    <property name='webapp.dir' value='${deploy.dir}/zimbra'/>
 
     <!-- Include jruby-complete jar -->
     <path id="jruby.classpath">
@@ -1548,6 +1549,8 @@ if (ext == null) ext = "";
 
     <!--Compass compilation-->
     <target name='compile.sass'>
+        <property name="sass.dir" value="${app.root}/resources/sass" />
+        <property name="compass.dir" value="${app.root}/compass"/>
         <java classname="org.jruby.Main" fork="true" failonerror="true"
               classpathref="jruby.classpath">
             <arg line="${compass.dir}/compile.rb ${compass.dir} compile ${sass.dir}"/>
@@ -1555,19 +1558,23 @@ if (ext == null) ext = "";
     </target>
 
     <!--Builds all the dependencies and deploys the touch client-->
-    <target name='deploy-touch' depends='compile.sass,deploy'/>
+    <target name='deploy-touch' depends='compile.sass,deploy,sync-touch-homescreen'/>
 
     <!--Sync touch client specific source files-->
     <target name='sync-touch'>
-        <property name='deploy.server' value='jetty'/>
-        <property name='deploy.dir' value='/opt/zimbra/${deploy.server}/webapps'/>
-        <property name='webapp.dir' value='${deploy.dir}/zimbra'/>
-
         <fileset id="touch.fileset" dir="${app.root}" casesensitive="yes" excludes="touch/**,lib/**,compass/**"/>
 
         <copy todir='${webapp.dir}/t' verbose='true'>
             <fileset refid="touch.fileset"/>
         </copy>
+    </target>
+
+    <!--Copy the icons used to represent touch client when added to the home screen on iPad -->
+    <target name='sync-touch-homescreen'>
+        <property name="icons.dir" value="${app.root}/resources/icons"/>
+        <echo message="Copying home screen icons"/>
+        <copy todir="${webapp.dir}" verbose="true" file="${icons.dir}/apple-touch-icon-72x72.png"/>
+        <copy todir="${webapp.dir}" verbose="true" file="${icons.dir}/apple-touch-icon-144x144.png"/>
     </target>
 
 </project>
