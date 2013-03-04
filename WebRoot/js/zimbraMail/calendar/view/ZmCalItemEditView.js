@@ -583,6 +583,8 @@ function(calItem) {
 ZmCalItemEditView.prototype._setRepeatDesc =
 function(calItem) {
 	if (calItem.isCustomRecurrence()) {
+        //Bug fix # 58493 - Set the classname if for the first time directly custom weekly/monthly/yearly repetition is selected
+        this._repeatDescField.className = "FakeAnchor";
 		this._repeatDescField.innerHTML = calItem.getRecurBlurb();
 	} else {
 		this._repeatDescField.innerHTML = (calItem.getRecurType() != "NON")
