@@ -252,13 +252,14 @@ Ext.define('ZCS.model.mail.ZtMailMsg', {
 	createMime: function(content, isHtml) {
 
 		var top = new ZCS.model.mail.ZtMimePart(),
+			prefix = ZCS.session.getSetting(ZCS.constant.SETTING_REPLY_PREFIX),
 			textPart, htmlPart;
 
 		if (isHtml) {
 			top.set('contentType', ZCS.mime.MULTI_ALT);
 			textPart = new ZCS.model.mail.ZtMimePart();
 			textPart.set('contentType', ZCS.mime.TEXT_PLAIN);
-			textPart.setContent(ZCS.mailutil.htmlToText(content, ZCS.session.getSetting(ZCS.constant.SETTING_REPLY_PREFIX)));
+			textPart.setContent(ZCS.mailutil.htmlToText(content, prefix));
 			top.add(textPart);
 			htmlPart = new ZCS.model.mail.ZtMimePart();
 			htmlPart.set('contentType', ZCS.mime.TEXT_HTML);
@@ -267,7 +268,7 @@ Ext.define('ZCS.model.mail.ZtMailMsg', {
 		}
 		else {
 			top.set('contentType', ZCS.mime.TEXT_PLAIN);
-			top.setContent(content);
+			top.setContent(ZCS.mailutil.htmlToText(content, prefix));
 		}
 
 		this.setMime(top);
