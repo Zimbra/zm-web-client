@@ -1293,7 +1293,7 @@ function() {
 	if (this._viewMgr.needsRefresh()) {
 		this._scheduleMaintenance(ZmCalViewController.MAINT_MINICAL|ZmCalViewController.MAINT_VIEW);
 	}
-    this._app.setOverviewPanelContent();    
+    //this._app.setOverviewPanelContent();
 };
 
 ZmCalViewController.prototype._postHideCallback =
