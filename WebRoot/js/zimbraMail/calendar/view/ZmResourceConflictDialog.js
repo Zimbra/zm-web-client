@@ -24,7 +24,8 @@ ZmResourceConflictDialog = function(parent) {
     var saveButton = new DwtDialog_ButtonDescriptor(ZmResourceConflictDialog.SAVE_BUTTON, ZmMsg.save, DwtDialog.ALIGN_RIGHT, null);
     var cancelButton = new DwtDialog_ButtonDescriptor(ZmResourceConflictDialog.CANCEL_BUTTON, ZmMsg.cancel, DwtDialog.ALIGN_RIGHT, null);
 
-	DwtDialog.call(this, {parent:parent, standardButtons: DwtDialog.NO_BUTTONS, extraButtons: [saveButton, cancelButton]});
+    //Bug fix # 80490 - Added an ID handler to the dialog
+	DwtDialog.call(this, {parent:parent, id:"RESC_CONFLICT_DLG", standardButtons: DwtDialog.NO_BUTTONS, extraButtons: [saveButton, cancelButton]});
 
 	this.setContent(this._contentHtml(selectId));
 	this.setTitle(ZmMsg.resourceConflictLabel);
