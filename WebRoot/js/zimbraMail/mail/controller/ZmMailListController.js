@@ -2077,7 +2077,7 @@ function(parent, num) {
 	parent.setItemVisible(ZmOperation.SPAM, !isDrafts);
 	parent.setItemVisible(ZmOperation.DETACH, !isDrafts);
 
-	parent.enable(ZmOperation.MOVE_MENU, !isDrafts);
+	parent.enable(ZmOperation.MOVE_MENU, !isDrafts && num > 0);
 
 	parent.enable(ZmOperation.DETACH, (appCtxt.get(ZmSetting.DETACH_MAILVIEW_ENABLED) && !isDrafts && num == 1));
 
