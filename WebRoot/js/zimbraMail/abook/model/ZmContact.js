@@ -2037,14 +2037,18 @@ ZmContact.NO_MAX_IMAGE_WIDTH = - 1;
 ZmContact.prototype.getImageUrl =
 function(maxWidth) {
   	var image = this.getAttr(ZmContact.F_image);
-  	if (!image || !image.part) { return null; }
+	var imagePart  = image && image.part || this.getAttr(ZmContact.F_imagepart); //see bug 73146
+
+	if (!imagePart) {
+		return null;
+	}
   	var msgFetchUrl = appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI);
 	var maxWidthStyle = "";
 	if (maxWidth !== ZmContact.NO_MAX_IMAGE_WIDTH) {
 		maxWidth = maxWidth || 48;
 		maxWidthStyle = ["&max_width=", maxWidth].join("");
 	}
-  	return  [msgFetchUrl, "&id=", this.id, "&part=", image.part, maxWidthStyle, "&t=", (new Date()).getTime()].join("");
+  	return  [msgFetchUrl, "&id=", this.id, "&part=", imagePart, maxWidthStyle, "&t=", (new Date()).getTime()].join("");
 };
 
 /**
@@ -2335,7 +2339,7 @@ function(node) {
 	if (node.m) {
 		this.attr[ZmContact.F_groups] = node.m;
 	}
-	
+
 	this.ref = node.ref || this.attr.dn; //bug 78425
 	
 	// for shared contacts, we get these fields outside of the attr part
