@@ -129,7 +129,7 @@ Ext.define('ZCS.controller.mail.ZtConvListController', {
 
 		// regenerate addresses and senders (the possibly truncated string in the list view)
 		if (modify.e) {
-			modify.addresses = ZCS.model.mail.ZtMailItem.convertAddresses(modify.e);
+			modify.addresses = ZCS.model.mail.ZtMailItem.convertAddressJsonToModel(modify.e);
 			modify.senders = ZCS.mailutil.getSenders(modify.addresses);
 		}
 

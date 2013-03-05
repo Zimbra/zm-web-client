@@ -169,5 +169,34 @@ Ext.define('ZCS.common.ZtUtil', {
 		}
 
 		return sortField1 > sortField2 ? 1 : (sortField1 === sortField2 ? 0 : -1);
+	},
+
+	/**
+	 * Converts a date from the Zimbra server format to a Date object.
+	 *
+	 * @param {string}      dateStr     date in Zimbra server format
+	 * @return {Date}
+	 */
+	convertZimbraDate: function(dateStr) {
+
+		if (!dateStr) {
+			return null;
+		}
+
+		var date = new Date();
+
+		date.setFullYear(parseInt(dateStr.substr(0, 4)));
+		date.setMonth(parseInt(dateStr.substr(4, 2) - 1));
+		date.setDate(parseInt(dateStr.substr(6, 2)));
+
+		if (dateStr.charAt(8) == 'T') {
+			var hh = parseInt(serverStr.substr(9, 2)),
+				mm = parseInt(serverStr.substr(11, 2)),
+				ss = parseInt(serverStr.substr(13, 2));
+
+			date.setHours(hh, mm, ss, 0);
+		}
+
+		return date;
 	}
 });

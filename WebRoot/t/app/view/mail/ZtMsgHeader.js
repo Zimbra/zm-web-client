@@ -40,37 +40,12 @@ Ext.define('ZCS.view.mail.ZtMsgHeader', {
 
 	render: function(msg) {
 
-		var data = msg.getData(),
-			tpl,
-			addressTypes = [
-				ZCS.constant.FROM,
-				ZCS.constant.TO,
-				ZCS.constant.CC
-			];
+		var data = msg.getData(), tpl;
 
 		this.setMsg(msg);
 
 		data.expanded = this.up('msgview').getExpanded();
-		data.addrs = {};
-
-		Ext.each(addressTypes, function(type) {
-			var addrs = msg.getAddressesByType(type);
-
-			if (addrs.length > 0) {
-				data.addrs[type.toLowerCase()] = Ext.Array.map(addrs,
-					function (addr) {
-						var viewInfo = {
-							address: Ext.String.htmlEncode(addr.get('email').toString()),
-							displayName: Ext.String.htmlEncode(addr.get('viewName'))
-						};
-
-						viewInfo.displayName = viewInfo.displayName.replace('"', '');
-
-						return viewInfo;
-					}
-				);
-			}
-		}, this);
+		data.addrs = ZCS.model.mail.ZtMailItem.convertAddressModelToObject(msg.get('addresses'));
 
 		if (data.expanded) {
 			tpl = ZCS.view.mail.ZtMsgHeader.expandedTpl;

@@ -23,7 +23,8 @@ Ext.define('ZCS.model.mail.ZtMsgReader', {
 	extend: 'ZCS.model.mail.ZtMailReader',
 
 	requires: [
-		'ZCS.model.mail.ZtMimePart'
+		'ZCS.model.mail.ZtMimePart',
+		'ZCS.model.mail.ZtInvite'
 	],
 
 	alias: 'reader.msgreader',
@@ -96,7 +97,7 @@ Ext.define('ZCS.model.mail.ZtMsgReader', {
 
 		this.parseFlags(node, data);
 
-		data.addresses = ZCS.model.mail.ZtMailItem.convertAddresses(node.e);
+		data.addresses = ZCS.model.mail.ZtMailItem.convertAddressJsonToModel(node.e);
 
 		data.dateStr = ZCS.util.getRelativeDateString(node.d);
 
@@ -114,6 +115,10 @@ Ext.define('ZCS.model.mail.ZtMsgReader', {
 		}
 
 		data.isLast = isLast;
+
+		if (node.inv) {
+			data.invite = ZCS.model.mail.ZtInvite.fromJson(node.inv[0]);
+		}
 
 		return data;
 	}

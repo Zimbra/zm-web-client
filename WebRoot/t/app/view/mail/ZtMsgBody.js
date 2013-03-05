@@ -86,9 +86,10 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 
 		var me = this,
 			html = msg.getContentAsHtml(),
+			isInvite = msg.isInvite(),
 			iframe = this.iframe;
 
-		if (!isLast) {
+		if (!isLast && !isInvite) {
 			html = ZCS.quoted.getOriginalContent(html, false);
 		}
 
@@ -96,7 +97,7 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 		// TODO: truncation
 
 		this.setMsg(msg);
-		this.setUsingIframe(msg.hasHtmlPart());
+		this.setUsingIframe(msg.hasHtmlPart() && !isInvite);
 
 		if (this.getUsingIframe()) {
 			Ext.Logger.conv('Use IFRAME for [' + msg.get('fragment') + ']');

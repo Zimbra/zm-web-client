@@ -444,3 +444,16 @@ ZCS.constant.HDR_KEY[ZCS.constant.HDR_TO]		= ZtMsg.toHdr;
 ZCS.constant.HDR_KEY[ZCS.constant.HDR_CC]		= ZtMsg.ccHdr;
 ZCS.constant.HDR_KEY[ZCS.constant.HDR_DATE]		= ZtMsg.sentHdr;
 ZCS.constant.HDR_KEY[ZCS.constant.HDR_SUBJECT]	= ZtMsg.subjectHdr;
+
+// Invite attendee (calendar user) types
+ZCS.constant.CUTYPE_INDIVIDUAL	= 'IND';
+ZCS.constant.CUTYPE_GROUP		= 'GRO';
+ZCS.constant.CUTYPE_RESOURCE	= 'RES';
+ZCS.constant.CUTYPE_ROOM		= 'ROO';
+ZCS.constant.CUTYPE_UNKNOWN		= 'UNK';
+
+// Attendee roles
+ZCS.constant.ROLE_CHAIR             = 'OPT';
+ZCS.constant.ROLE_REQUIRED          = 'REQ';
+ZCS.constant.ROLE_OPTIONAL          = 'OPT';
+ZCS.constant.ROLE_NON_PARTICIPANT   = 'NON';

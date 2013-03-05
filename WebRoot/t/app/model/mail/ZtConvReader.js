@@ -37,7 +37,7 @@ Ext.define('ZCS.model.mail.ZtConvReader', {
 		this.parseFlags(node, data);
 
 		// process addresses, and create a string showing the senders
-		data.addresses = ZCS.model.mail.ZtMailItem.convertAddresses(node.e);
+		data.addresses = ZCS.model.mail.ZtMailItem.convertAddressJsonToModel(node.e);
 		data.senders = ZCS.mailutil.getSenders(data.addresses);
 		data.dateStr = ZCS.util.getRelativeDateString(node.d, nowMs);
 

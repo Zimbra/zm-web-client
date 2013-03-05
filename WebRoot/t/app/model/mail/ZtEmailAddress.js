@@ -24,10 +24,10 @@ Ext.define('ZCS.model.mail.ZtEmailAddress', {
 	extend: 'Ext.data.Model',
 	config: {
 		fields: [
-			{name: 'type', type: 'string'},
-			{name: 'email', type: 'string'},
-			{name: 'name', type: 'string'},
-			{name: 'displayName', type: 'string'},
+			{ name: 'type',         type: 'string' },
+			{ name: 'email',        type: 'string' },
+			{ name: 'name',         type: 'string' },
+			{ name: 'displayName',  type: 'string' },
 			{
 				name: 'viewName',
 				type: 'string',
@@ -45,7 +45,10 @@ Ext.define('ZCS.model.mail.ZtEmailAddress', {
 	},
 
 	statics: {
+
+		// node is an 'e' object found in a conv or msg node
 		fromAddressNode: function(node) {
+
 			var type = ZCS.constant.FROM_SOAP_TYPE[node.t];
 			return Ext.create('ZCS.model.mail.ZtEmailAddress', {
 				type: type,
@@ -54,6 +57,7 @@ Ext.define('ZCS.model.mail.ZtEmailAddress', {
 				displayName: node.d
 			});
 		},
+
 		fromFullEmail: function(fullEmail) {
 			//Tested against these two formats:
 			//<admin@admin.com>
@@ -66,6 +70,16 @@ Ext.define('ZCS.model.mail.ZtEmailAddress', {
 			return Ext.create('ZCS.model.mail.ZtEmailAddress', {
 				email: email,
 				name: name
+			});
+		},
+
+		// node is an 'at' or 'or' object found inside the 'inv' part of a msg node
+		fromInviteNode: function(node) {
+
+			return Ext.create('ZCS.model.mail.ZtEmailAddress', {
+				type: node.cutype || ZCS.constant.CUTYPE_INDIVIDUAL,
+				email: node.a,
+				name: node.d
 			});
 		}
 	},

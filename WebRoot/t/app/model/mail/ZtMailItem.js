@@ -52,7 +52,7 @@ Ext.define('ZCS.model.mail.ZtMailItem', {
 		 * @param {array}   addrs       list of address nodes
 		 * @return {object}     hash of addresses by type
 		 */
-		convertAddresses: function(addrs) {
+		convertAddressJsonToModel: function(addrs) {
 
 			var	addresses = {};
 
@@ -67,6 +67,41 @@ Ext.define('ZCS.model.mail.ZtMailItem', {
 			});
 
 			return addresses;
+		},
+
+		/**
+		 * Converts ZtEmailAddress models into anonymous objects with 'address' and 'displayName' properties.
+		 *
+		 * @param {array|object|ZtEmailAddress}     addrs   addresses to convert
+		 * @return {array|object|ZtEmailAddress}    the provided data with addresses as anonymous objects
+		 */
+		convertAddressModelToObject: function(addrs) {
+
+			// if we got an array, convert it and return the result
+			if (Array.isArray(addrs)) {
+				if (addrs.length > 0) {
+					return Ext.Array.map(addrs,
+						function (addr) {
+							return {
+								address: Ext.String.htmlEncode(addr.get('email').toString()),
+								displayName: Ext.String.htmlEncode(addr.get('viewName')).replace('"', '')
+							};
+						}
+					);
+				}
+			}
+			// convert a single ZtEmailAddress via an array
+			else if (addrs instanceof ZCS.model.mail.ZtEmailAddress) {
+				return ZCS.model.mail.ZtMailItem.convertAddressModelToObject([addrs])[0];
+			}
+			// handle hash of address array by address type
+			else {
+				var results = {};
+				Ext.Object.each(addrs, function(type) {
+					results[type] = ZCS.model.mail.ZtMailItem.convertAddressModelToObject(addrs[type]);
+				});
+				return results;
+			}
 		}
 	},
 
@@ -77,7 +112,7 @@ Ext.define('ZCS.model.mail.ZtMailItem', {
 	 */
 	addAddresses: function(addresses) {
 
-		addresses = (addresses instanceof Array) ? addresses : [addresses];
+		addresses = Array.isArray(addresses) ? addresses : [addresses];
 
 		var addrs = this.get('addresses');
 		if (!addrs) {

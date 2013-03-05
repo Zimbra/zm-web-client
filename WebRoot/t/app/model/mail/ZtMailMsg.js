@@ -42,14 +42,14 @@ Ext.define('ZCS.model.mail.ZtMailMsg', {
 			{ name: 'irtMessageId', type: 'string' },
 
 			// internal (via parsing), or for composed msgs
-			{ name: 'content',      type: 'string' },
-			{ name: 'topPart',      type: 'auto' },
+			{ name: 'topPart',      type: 'auto' },     // top-level MIME part
 			{ name: 'attachments',  type: 'auto' },
-			{ name: 'bodyParts',    type: 'auto' },
-			{ name: 'contentTypes', type: 'auto' },
+			{ name: 'bodyParts',    type: 'auto' },     // MIME parts the server tells us to display
+			{ name: 'contentTypes', type: 'auto' },     // lookup hash of content types
 			{ name: 'isLoaded',     type: 'boolean' },
 			{ name: 'isLast',       type: 'boolean' },
-			{ name: 'origId',       type: 'string' }    // ID of original if replying or forwarding
+			{ name: 'origId',       type: 'string' },   // ID of original if replying or forwarding
+			{ name: 'invite',       type: 'auto' }      // ZtInvite if msg is an invite
 		],
 
 		proxy: {
@@ -173,6 +173,10 @@ Ext.define('ZCS.model.mail.ZtMailMsg', {
 	 * Converts each body part to HTML and returns the accumulated content.
 	 */
 	getContentAsHtml: function() {
+
+		if (this.isInvite()) {
+			return this.getInviteContent();
+		}
 
 		var bodyParts = this.get('bodyParts'),
 			ln = bodyParts ? bodyParts.length : 0, i,
@@ -390,5 +394,27 @@ Ext.define('ZCS.model.mail.ZtMailMsg', {
 			}
 		}
 		return false;
+	},
+
+	isInvite: function() {
+		return !!this.get('invite');
+	},
+
+	getInviteContent: function() {
+
+		var invite = this.get('invite'),
+			dateFormat = invite.get('isAllDay') ? ZtMsg.dateFormat : ZtMsg.dateTimeFormat,
+			data = {
+				start:      Ext.Date.format(invite.get('start'), dateFormat),
+				end:        Ext.Date.format(invite.get('end'), dateFormat),
+				organizer:  invite.get('organizer'),
+				attendees:  invite.get('attendees')
+			};
+
+		return ZCS.model.mail.ZtMailMsg.inviteTpl.apply(data);
 	}
-});
+},
+	function (thisClass) {
+		thisClass.inviteTpl = Ext.create('Ext.XTemplate', ZCS.template.Invite);
+	}
+);
