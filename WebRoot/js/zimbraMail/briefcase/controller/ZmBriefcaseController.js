@@ -421,7 +421,8 @@ function(items) {
         var view = this._parentView[this._currentViewId];
         view.deleteVersions(items);
     }else if(item.isFolder){
-        var delBatchCmd = new ZmBatchCommand(true), folder;
+        //Bug fix # 80600 force the BatchCommand to use JSON, mimicking the way right click delete behaves
+        var delBatchCmd = new ZmBatchCommand(true, null, true), folder;
         for(var i=0; i< items.length; i++){
             folder = items[i].folder;
             if(folder.isHardDelete()){
