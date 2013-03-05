@@ -44,7 +44,7 @@ Ext.define('ZCS.view.ZtItemPanel', {
 		var toolbar = {
 			xtype: 'titlebar',
 			docked: 'top',
-			ui: 'light',
+		    cls: 'zcs-item-titlebar',
 			items: [
 				{
 					xtype: 'button',

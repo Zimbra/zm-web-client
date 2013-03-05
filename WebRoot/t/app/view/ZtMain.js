@@ -76,7 +76,7 @@ Ext.define("ZCS.view.ZtMain", {
 			},
 			{
 				xtype: 'button',
-				iconCls: 'settings8',
+				iconCls: 'settings9',
 				cls: 'zcs-flat',
 				iconMask: true,
 				handler: function() {

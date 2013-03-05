@@ -12,11 +12,11 @@
 	<div class='zcs-mail-list'>
 		<tpl if='isInvite'>
 		<div class='zcs-mail-invitation'>
-			<img src='/t/resources/icons/invitation<tpl if='isUnread'>_unread</tpl>.png' />
+			<img src='/t/resources/images/invitation<tpl if='isUnread'>_unread</tpl>.png' />
 		</div>
 		<tpl else>
 		<div class='zcs-mail-readState'>
-			<img src='/t/resources/icons/<tpl if='isUnread'>un</tpl>read.png' />
+			<img src='/t/resources/images/<tpl if='isUnread'>un</tpl>read.png' />
 		</div>
 		</tpl>
 		<div class='zcs-mail-senders<tpl if='isUnread'>-unread</tpl>'>
@@ -24,11 +24,11 @@
 		</div>
 		<div class='zcs-mail-date'>{dateStr}</div>
 		<tpl if='hasAttachment'><div class='zcs-mail-attachment'>
-			<img src='/t/resources/icons/attachment.png' /></div></tpl>
+			<img src='/t/resources/images/attachment.png' /></div></tpl>
 		<div class='zcs-mail-subject<tpl if='isUnread'>-unread</tpl>'>{subject}</div>
 		<tpl if='numMsgs &gt; 1'><span class='zcs-numMsgs'>{numMsgs}</span></tpl>
 		<tpl if='isFlagged'><div class='zcs-mail-flag'>
-			<img src='/t/resources/icons/flagged.png' /></div></tpl>
+			<img src='/t/resources/images/flagged.png' /></div></tpl>
 		<div class='zcs-mail-fragment'>{fragment}</div>
 	</div>
 </template>
@@ -38,7 +38,7 @@
 	<tpl>
 		<div class='zcs-mail-msgHdr'>
 			<div class='zcs-msgHdr-person'>
-				<img src='/t/resources/icons/person.png' />
+				<img src='/t/resources/images/person.png' />
 			</div>
 			<tpl if='addrs.from'>
 				<div class='zcs-msgHdr-fromBubble'>
@@ -70,7 +70,7 @@
 	<tpl>
 		<div class='zcs-mail-msgHdr'>
 			<div class='zcs-msgHdr-person'>
-				<img src='/t/resources/icons/person.png' />
+				<img src='/t/resources/images/person.png' />
 			</div>
 			<tpl if='addrs.from'>
 			<div class='zcs-msgHdr-fromBubble'>
@@ -90,7 +90,7 @@
 	<tpl>
 		<div class='zcs-mail-msgHdr'>
 			<div class='zcs-msgHdr-person'>
-				<img src='/t/resources/icons/person.png' />
+				<img src='/t/resources/images/person.png' />
 			</div>
 			<tpl if='addrs.from'>
 				<div class='zcs-msgHdr-fromBubble'>

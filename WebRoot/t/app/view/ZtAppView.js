@@ -47,7 +47,7 @@ Ext.define('ZCS.view.ZtAppView', {
 		var app = this.getApp();
 
 		var overview = {
-			width: '20%',
+			width: '30%',
 			hidden: true,
 
 			xtype: 'overview',

@@ -12,15 +12,23 @@
 	border-bottom: 1px solid $light-grey;
 }
 
+.zcs-side-panel {
+	border-right: 1px solid #303030;  //todo: mixin to create color
+}
+
+$zcs-toolbar-button-size: 1.4em;
+$zcs-titlebar-fontsize: 1.4em;
+$zcs-title-fontsize: 1.2rem; //uses rem so it's not relational to container bar
+
 @mixin zimbra-button() {
 	background-image: none;
 	background-color: transparent;
 	border: none;
 
 	.x-button-icon.x-icon-mask {
-		-webkit-mask-size: 1.4em;
-		width: 1.4em;
-		height: 1.4em;
+		-webkit-mask-size: $zcs-toolbar-button-size;
+		width: $zcs-toolbar-button-size;
+		height: $zcs-toolbar-button-size;
 	}
 }
 
@@ -35,3 +43,60 @@
 	@include zimbra-button;
 }
 
+/* Overview */
+
+.zcs-overview {
+	@extend .zcs-side-panel;
+}
+
+/* List Panel */
+.zcs-list-panel {
+	@extend .zcs-side-panel;
+}
+
+.zcs-list-titlebar {
+	font-size: $zcs-titlebar-fontsize;
+	
+	.x-title {
+		font-size: $zcs-title-fontsize;
+	}
+}
+
+/* List Panel Search */
+
+$searchRadius: 2em;
+$searchMinHeight: 1em;
+
+.zcs-list-search {
+	background-color:#BEBEBE;
+	border-bottom: 1px solid rgba(0,0,0,.25);
+	padding:5px;
+	
+	.x-form-fieldset {
+		margin: 0;
+		
+		.x-form-fieldset-inner {
+			border: 1px solid;
+			border-color: rgba(0,0,0,.6) rgba(0,0,0,.3) rgba(0,0,0,.2) rgba(0,0,0,.5);
+			@include border-radius($searchRadius);
+			
+			.x-field-search {
+				min-height: $searchMinHeight;
+			
+				.x-input-search {
+					min-height: $searchMinHeight;
+				}
+			}
+		}
+	}
+}
+
+/* Item Panel */
+
+.zcs-item-titlebar {
+	font-size: $zcs-titlebar-fontsize;
+	
+	.x-title {
+		font-size: $zcs-title-fontsize;
+	}
+}

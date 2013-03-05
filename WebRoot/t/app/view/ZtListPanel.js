@@ -37,7 +37,7 @@ Ext.define('ZCS.view.ZtListPanel', {
 
 	config: {
 		layout: 'fit',
-		style: 'border-right: 1px solid #303030;',
+		cls: 'zcs-list-panel',
 		app: null,
 		newButtonIcon: null,
 		storeName: null
@@ -52,6 +52,7 @@ Ext.define('ZCS.view.ZtListPanel', {
 		var listToolbar = {
 			docked: 'top',
 			xtype: 'titlebar',
+			cls: 'zcs-list-titlebar',
 			title: '',
 			items: [
 				{
@@ -79,20 +80,26 @@ Ext.define('ZCS.view.ZtListPanel', {
 
 		var searchToolbar = {
 			docked: 'top',
-			xtype: 'toolbar',
+			xtype: 'container',
+			cls: 'zcs-list-search',
 			items: [
 				{
-					xtype: 'searchfield',
-					name: 'searchField',
-					style: 'width:95%;',
-					listeners: {
-						keyup: function(fld, ev) {
-							var keyCode = ev.browserEvent.keyCode;
-							if (keyCode === 13 || keyCode === 3) {
-								this.up('listpanel').fireEvent('search', fld.getValue(), false);
+					xtype: 'fieldset',
+					items: [
+						{
+							xtype: 'searchfield',
+							name: 'searchField',
+							placeHolder: 'Search',
+							listeners: {
+								keyup: function(fld, ev) {
+								var keyCode = ev.browserEvent.keyCode;
+								if (keyCode === 13 || keyCode === 3) {
+									this.up('listpanel').fireEvent('search', fld.getValue(), false);
+									}
+								}
 							}
 						}
-					}
+					]
 				}
 			]
 		};

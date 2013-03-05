@@ -1,6 +1,17 @@
 $base-color: #0095D3; // VMware Serenity Blue
 $base-gradient: 'matte';  // switch to 'flat' for no gradient
 
+$tabs-dark: darken($base-color, 5%);
+//$tabs-bar-gradient: $base-gradient;
+
+$toolbar-base-color: lighten($base-color, 20%);
+
+$list-zebrastripe: true;
+$list-active-color: darken($base-color, 5%);
+//$list-active-gradient: 'flat';
+$list-pressed-color: lighten($base-color, 40%);
+
+
 $light-grey: #E3E3E3;
 $medium-grey: #C3C3C3;
 $dark-grey: #3F3F3F;	 
