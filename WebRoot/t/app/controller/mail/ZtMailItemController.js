@@ -131,6 +131,14 @@ Ext.define('ZCS.controller.mail.ZtMailItemController', {
 	},
 
 	/**
+	 * Disable "Tag" action if user doesn't have any tags.
+	 */
+	enableMenuItems: function() {
+		var tags = ZCS.session.getOrganizerDataByAppAndOrgType(ZCS.constant.APP_MAIL, ZCS.constant.ORG_TAG);
+		this.getMenu().enableItem(ZCS.constant.OP_TAG, tags && tags.length > 0);
+	},
+
+	/**
 	 * Saves the item and tags it.
 	 */
 	saveItemTag: function (tag, item) {

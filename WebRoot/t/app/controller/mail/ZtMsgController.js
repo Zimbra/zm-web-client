@@ -52,7 +52,7 @@ Ext.define('ZCS.controller.mail.ZtMsgController', {
 			{label: ZtMsg.markRead, action: ZCS.constant.OP_MARK_READ, listener: 'doMarkRead'},
 			{label: ZtMsg.move, action: ZCS.constant.OP_MOVE, listener: 'doMove'},
 			{label: ZtMsg.markSpam, action: ZCS.constant.OP_SPAM, listener: 'doSpam'},
-			{label: ZtMsg.tag, action: ZCS.constant.OP_MOVE, listener: 'doTag'}
+			{label: ZtMsg.tag, action: ZCS.constant.OP_TAG, listener: 'doTag'}
 		]
 	},
 

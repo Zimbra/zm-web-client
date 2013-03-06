@@ -345,6 +345,7 @@ ZCS.constant.OP_REPLY       = 'REPLY';
 ZCS.constant.OP_REPLY_ALL   = 'REPLY_ALL';
 ZCS.constant.OP_SPAM        = 'SPAM';
 ZCS.constant.OP_MOVE        = 'MOVE';
+ZCS.constant.OP_TAG         = 'TAG';
 
 // Item flags
 ZCS.constant.FLAG_ATTACH			= 'a';

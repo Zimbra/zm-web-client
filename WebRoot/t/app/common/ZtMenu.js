@@ -29,6 +29,8 @@ Ext.define('ZCS.common.ZtMenu', {
 		'ZCS.model.ZtMenuItem'
 	],
 
+//	xtype: 'menu',
+
 	config: {
 		layout: 'fit',
 		width: 160,     // TODO: would be nicer to have it autosize to width of longest item
@@ -38,8 +40,19 @@ Ext.define('ZCS.common.ZtMenu', {
 		defaultItemHeight: 47,
 		menuItemTpl: '{label}',
 		maxHeight: 350,
-		// the reference component is typically the button that triggered display of this menu
-		referenceComponent: null
+
+		/**
+		 * @required
+		 *
+		 * @cfg {Component} referenceComponent
+		 *
+		 * The reference component is used to position the menu as a dropdown menu. It is typically the
+		 * button that triggered display of the menu.
+		 */
+		referenceComponent: null,
+
+		enableItemsFn: null,
+		enableItemsScope: null
 	},
 
 	initialize: function() {
@@ -75,6 +88,7 @@ Ext.define('ZCS.common.ZtMenu', {
 	 *
 	 * Adjusts the menus height to fit all items, or be the max height
 	 * whichever is smaller.
+	 * TODO: adjust width
 	 */
 	adjustHeight: function () {
 		var menu = this,
@@ -122,10 +136,20 @@ Ext.define('ZCS.common.ZtMenu', {
 	 * Displays the menu.
 	 */
 	popup: function(positioning) {
-		var list = this.down('list');
+
+		var list = this.down('list'),
+			enableItemsFn = this.getEnableItemsFn();
+
 		list.deselect(list.getSelection()); // clear the previous selection
 		this.showBy(this.getReferenceComponent(), positioning || 'tr-br?');
 		this.adjustHeight();
+
+		if (enableItemsFn) {
+			// Not happy with this (timeout of 0 does not work, so kinda racy),
+			// but there's no good event fired when entire list has rendered.
+			// May cause flicker first time menu is displayed.
+			Ext.defer(enableItemsFn, 200, this.getEnableItemsScope() || this);
+		}
 	},
 
 	/**
@@ -133,5 +157,15 @@ Ext.define('ZCS.common.ZtMenu', {
 	 */
 	popdown: function() {
 		this.hide();
+	},
+
+	enableItem: function(action, enabled) {
+		var list = this.down('list'),
+			store = list.getStore(),
+			item = list.getItemAt(store.find('action', action));
+
+		if (item) {
+			item.setCls(enabled ? '' : 'zcs-menuitem-disabled');
+		}
 	}
 });

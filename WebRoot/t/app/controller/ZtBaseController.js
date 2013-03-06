@@ -57,13 +57,21 @@ Ext.define('ZCS.controller.ZtBaseController', {
 		this.setMenuButton(menuButton);
 		var menu = this.getMenu();
 		if (!menu) {
-			menu = Ext.create('ZCS.common.ZtMenu');
+			menu = Ext.create('ZCS.common.ZtMenu', {
+				enableItemsFn: this.enableMenuItems,
+				enableItemsScope: this
+			});
 			this.setMenu(menu);
 			this.setMenuItems();
 		}
 		menu.setReferenceComponent(this.getMenuButton());
 		menu.popup();
 	},
+
+	/**
+	 * Override this function to enable/disable menu items after menu has popped up
+	 */
+	enableMenuItems: function() {},
 
 	/**
 	 * Delete notification: remove item from the store

@@ -30,7 +30,7 @@ Ext.define('ZCS.view.mail.ZtFolderAssignmentView', {
 
 				// get the organizer data for this app
 		var organizerData = {
-				items: ZCS.common.ZtUserSession.getOrganizerDataByAppAndOrgType(ZCS.constant.APP_MAIL, ZCS.constant.ORG_MAIL_FOLDER)
+				items: ZCS.session.getOrganizerDataByAppAndOrgType(ZCS.constant.APP_MAIL, ZCS.constant.ORG_MAIL_FOLDER)
 			};
 
 		// create a store for the organizers

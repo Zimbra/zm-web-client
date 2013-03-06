@@ -44,7 +44,8 @@ Ext.define('ZCS.common.ZtLogger', {
 			'iframe',
 			'conv',
 			'poll',
-			'image'
+			'image',
+			'event'
 		]
 	},
 
