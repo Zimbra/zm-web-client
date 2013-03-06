@@ -1536,9 +1536,6 @@ if (ext == null) ext = "";
     <!--Touch Client Targets-->
 
     <property name="app.root" value="${zwc.basedir}/WebRoot/t"/>
-    <property name='deploy.server' value='jetty'/>
-    <property name='deploy.dir' value='/opt/zimbra/${deploy.server}/webapps'/>
-    <property name='webapp.dir' value='${deploy.dir}/zimbra'/>
 
     <!-- Include jruby-complete jar -->
     <path id="jruby.classpath">
@@ -1563,7 +1560,9 @@ if (ext == null) ext = "";
     <!--Sync touch client specific source files-->
     <target name='sync-touch'>
         <fileset id="touch.fileset" dir="${app.root}" casesensitive="yes" excludes="touch/**,lib/**,compass/**"/>
-
+        <property name='deploy.server' value='jetty'/>
+        <property name='deploy.dir' value='/opt/zimbra/${deploy.server}/webapps'/>
+        <property name='webapp.dir' value='${deploy.dir}/zimbra'/>
         <copy todir='${webapp.dir}/t' verbose='true'>
             <fileset refid="touch.fileset"/>
         </copy>
@@ -1571,6 +1570,9 @@ if (ext == null) ext = "";
 
     <!--Copy the icons used to represent touch client when added to the home screen on iPad -->
     <target name='sync-touch-homescreen'>
+        <property name='deploy.server' value='jetty'/>
+        <property name='deploy.dir' value='/opt/zimbra/${deploy.server}/webapps'/>
+        <property name='webapp.dir' value='${deploy.dir}/zimbra'/>
         <property name="icons.dir" value="${app.root}/resources/icons"/>
         <echo message="Copying home screen icons"/>
         <copy todir="${webapp.dir}" verbose="true" file="${icons.dir}/apple-touch-icon-72x72.png"/>
