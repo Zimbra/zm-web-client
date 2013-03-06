@@ -1715,7 +1715,7 @@ function(urlQueryStr){
 		to: to,
 		subject: AjxStringUtil.htmlEncode(subject),
 		cc: cc,
-		bcc: bcc
+		bcc: bcc,
 		body: AjxStringUtil.htmlEncode(body)
 	};
 };
