@@ -627,6 +627,9 @@ function(msg) {
 			}
 		}
 
+		if (!this.isReadingPaneOn()) {
+			return;
+		}
 		// make sure list view has this msg
 		var lv = this._listView[this._currentViewId];
 		var id = (lv.type == ZmItem.CONV && msg.type == ZmItem.MSG) ? msg.cid : msg.id;

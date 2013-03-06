@@ -521,7 +521,7 @@ function() {
 ZmConvListController.prototype._handleResponseSetSelectedItem =
 function(item) {
 
-	if (item.type == ZmItem.CONV) {
+	if (item.type === ZmItem.CONV && this.isReadingPaneOn()) {
 		// make sure list view has this item
 		var lv = this._listView[this._currentViewId];
 		if (lv.hasItem(item.id)) {
