@@ -103,3 +103,18 @@ $zcs-mail-topline3: 3.5em;
 	top: $zcs-mail-topline3;
 	white-space: normal;
 }
+
+.zcs-swipe-conv-view {
+	background-color: $medium-grey;
+	z-index: 1;
+	display: -webkit-box;
+	-webkit-box-orient: horizontal;
+	-webkit-box-pack: center;
+	-webkit-box-align: center;
+
+	div {
+		width: 100px;
+		background-color: white;
+		text-align: center;
+	}
+}
