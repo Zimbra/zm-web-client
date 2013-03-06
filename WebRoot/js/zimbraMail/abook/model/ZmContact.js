@@ -602,6 +602,18 @@ function(contact, attr) {
 };
 
 /**
+ * returns the prefix of a string in the format "abc123". (would return "abc"). If the string is all number, it's a special case and returns the string itself. e.g. "234" would return "234".
+ */
+ZmContact.getPrefix = function(s) {
+	var trimmed = s.replace(/\d+$/, "");
+	if (trimmed === "") {
+		//number only - don't trim. The number is the prefix.
+		return s;
+	}
+	return trimmed;
+};
+
+/**
  * Normalizes the numbering of the given attribute names and
  * returns a new object with the re-numbered attributes. For
  * example, if the attributes contains a "foo2" but no "foo",
@@ -623,7 +635,7 @@ ZmContact.getNormalizedAttrs = function(attrs, prefix, ignore) {
 		for (var i = 0; i < names.length; i++) {
 			var name = names[i];
 			// get current count
-			var nprefix = name.replace(/\d+$/,"");
+			var nprefix = ZmContact.getPrefix(name);
 			if (prefix && prefix != nprefix) continue;
 			if (AjxUtil.isArray(ignore) && AjxUtil.indexOf(ignore, nprefix)!=-1) {
 				nattrs[name] = attrs[name];
@@ -1043,7 +1055,8 @@ ZmContact.prototype.getAttrs = function(prefix) {
 	if (prefix) {
 		attrs = {};
 		for (var aname in this.attr) {
-			if (aname.replace(/\d+$/,"") == prefix) {
+			var namePrefix = ZmContact.getPrefix(aname);
+			if (namePrefix === prefix) {
 				attrs[aname] = this.attr[aname];
 			}
 		}
@@ -2442,7 +2455,7 @@ ZmContact.prototype.getUnknownFields = function(sortByNameFunc) {
 	var fields = [];
 	var attrs = this.getAttrs();
 	for (var aname in attrs) {
-		var field = aname.replace(/\d+$/,"");
+		var field = ZmContact.getPrefix(aname);
 		if (map[aname]) continue;
 		fields.push(field);
 	}

@@ -738,7 +738,7 @@ function(data) {
 	// find unknown attributes
 	var attrs = {};
 	for (var a in itemListData.attrs) {
-		var aname = a.replace(/\d+$/,"");
+		var aname = ZmContact.getPrefix(a);
 		if (aname in ZmContact.IS_IGNORE) { continue; }
 		attrs[aname] = true;
 	}
