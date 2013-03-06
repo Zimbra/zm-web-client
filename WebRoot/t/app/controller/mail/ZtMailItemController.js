@@ -212,6 +212,7 @@ Ext.define('ZCS.controller.mail.ZtMailItemController', {
 	 * @param {ZtMailItem}   item     mail item
 	 */
 	doDelete: function(item) {
+		this.lastDeletedItem = item;
 
 		item = item || this.getItem();
 
@@ -221,7 +222,13 @@ Ext.define('ZCS.controller.mail.ZtMailItemController', {
 			if (item.get('type') === ZCS.constant.ITEM_CONVERSATION) {
 				ZCS.app.getConvListController().removeConv(item);
 			}
+			//TODO: Where should we get trash from? ZtUserSession in ZtUserOrganizers?
+			ZCS.app.fireEvent('showToast', Ext.String.format(ZtMsg.moveMessage, 'Trash'), this.undoDelete, this);
 		});
+	},
+
+	undoDelete: function () {
+
 	},
 
 	/**
