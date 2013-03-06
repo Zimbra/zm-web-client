@@ -44,7 +44,6 @@ Ext.define('ZCS.view.ux.ZtIframe', {
 
 		Ext.Logger.iframe('IFRAME with name ' + this.getName() + ' has DOM ID: ' + iframe.dom.id);
 
-		this.relayEvents(iframe, '*');
 	},
 
 	getDoc: function() {
@@ -74,7 +73,10 @@ Ext.define('ZCS.view.ux.ZtIframe', {
 
 				for (i = 0; i < numTouches; i += 1) {
 					oldTouch = touches[i];
-					newTouch = window.document.createTouch(window, newTarget, 1 - oldTouch.identifier, oldTouch.screenX, oldTouch.screenY, oldTouch.screenX, oldTouch.screenY);
+					if (oldTouch.pageY !== oldTouch.screenY) {
+						Ext.Logger.iframe("Old touch: screenX: " + screenX + " screen Y: " + screenY + " pageX " + oldTouch.pageX + " pageY " + oldTouch.pageY );
+					}
+					newTouch = window.document.createTouch(window, newTarget, oldTouch.identifier, oldTouch.screenX, oldTouch.screenY, oldTouch.screenX, oldTouch.screenY);
 					newTouches.push(newTouch);
 				}
 
@@ -94,11 +96,34 @@ Ext.define('ZCS.view.ux.ZtIframe', {
 				var cloneEvent = document.createEvent('TouchEvent'),
 					touches,
 					targetTouches,
-					changedTouches;
+					changedTouches,
+					eventScreenX,
+					eventScreenY,
+					eventPageX,
+					eventPageY;
 
 				touches = touchProcessor(ev.touches, component.element.dom);
 				targetTouches = touchProcessor(ev.targetTouches, component.element.dom);
 				changedTouches = touchProcessor(ev.changedTouches, component.element.dom);
+
+				if (ev.touches[0] === undefined) {
+					Ext.Logger.iframe('Touch has no events in touches list');
+				}
+
+
+				if (ev.touches.length > 0) {
+					var lastTouch = ev.touches[ev.touches.length - 1];
+					eventScreenX = lastTouch.screenX;
+					eventPageX = lastTouch.pageX;
+					eventScreenY = lastTouch.screenY;
+					eventPageY = lastTouch.pageY;
+				} else {
+					//touchend events have a changedTouches list, not a touches array.
+					eventScreenX = ev.changedTouches[0].screenX;
+					eventPageX = ev.changedTouches[0].pageX;
+					eventScreenY = ev.changedTouches[0].screenY;
+					eventPageY = ev.changedTouches[0].pageY;
+				}
 
 				cloneEvent.initTouchEvent(
 					ev.type, //type, The type of event that occurred.
@@ -106,10 +131,10 @@ Ext.define('ZCS.view.ux.ZtIframe', {
 					true, //cancelable, Indicates whether an event can have its default action prevented. If true, the default action can be prevented; otherwise, it cannot.
 					window, //view, The view (DOM window) in which the event occurred.
 					ev.detail, //detail Specifies some detail information about the event depending on the type of event.
-					ev.touches[0].screenX, //screenX The x-coordinate of the event’s location in screen coordinates.
-					ev.touches[0].screenY, //screenY The y-coordinate of the event’s location in screen coordinates.
-					ev.touches[0].screenX, //clientX The x-coordinate of the event’s location relative to the window’s viewport.
-					ev.touches[0].screenY, //clientY The y-coordinate of the event’s location relative to the window’s viewport.
+					eventScreenX, //screenX The x-coordinate of the event’s location in screen coordinates.
+					eventScreenY, //screenY The y-coordinate of the event’s location in screen coordinates.
+					eventPageX, //clientX The x-coordinate of the event’s location relative to the window’s viewport.
+					eventPageY, //clientY The y-coordinate of the event’s location relative to the window’s viewport.
 					ev.ctrlKey, //ctrlKey, If true, the control key is pressed; otherwise, it is not.
 					ev.altKey, //altKey If true, the alt key is pressed; otherwise, it is not.
 					ev.shiftKey, //shiftKey If true, the shift key is pressed; otherwise, it is not.
@@ -121,7 +146,7 @@ Ext.define('ZCS.view.ux.ZtIframe', {
 					ev.rotation //rotation The delta rotation since the start of an event, in degrees, where clockwise is positive and counter-clockwise is negative. The initial value is 0.0.
 				);
 
-				component.element.dom.dispatchEvent(cloneEvent);
+					component.element.dom.dispatchEvent(cloneEvent);
 
 				ev.preventDefault();
 
