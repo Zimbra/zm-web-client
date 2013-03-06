@@ -43,7 +43,8 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 		control: {
 			composePanel: {
 				cancel: 'doCancel',
-				send: 'doSend'
+				send: 'doSend',
+				saveDraft: 'doSaveDraft'
 			},
 			contactField: {
 				bubbleHold: 'showBubbleMenu'
@@ -78,9 +79,23 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 		menu.popup();
 	},
 
-	compose: function() {
+	compose: function(msg) {
+		var ccAddresses = null,
+			bccAddresses = null,
+			toAddresses = null,
+			subject = null,
+			body = null;
+
+		if (msg) {
+			toAddresses = msg.getAddressesByType(ZCS.constant.TO);
+			ccAddresses = msg.getAddressesByType(ZCS.constant.CC);
+			bccAddresses = msg.getAddressesByType(ZCS.constant.BCC);
+			subject = this.getSubject(msg, '');
+			body = msg.getContentForInclusion();
+		}
+
 		this.setAction(ZCS.constant.OP_COMPOSE);
-		this.showComposeForm();
+		this.showComposeForm(toAddresses, ccAddresses, subject, body, msg);
 	},
 
 	reply: function(msg) {
@@ -144,7 +159,7 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 	/**
 	 * Show the compose form, prepopulating any parameterized fields
 	 */
-	showComposeForm: function (toFieldAddresses, ccFieldAddresses, subject, body) {
+	showComposeForm: function (toFieldAddresses, ccFieldAddresses, subject, body, existingMsg) {
 
 		var panel = this.getComposePanel(),
 			form = panel.down('formpanel'),
@@ -153,6 +168,8 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 			subjectFld = form.down('field[name=subject]'),
 			bodyFld = form.down('#body'),
 			editor = bodyFld.element.query('.zcs-editable')[0];
+
+		panel.setMsg(existingMsg);
 
 		panel.resetForm();
 
@@ -212,22 +229,42 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 	 * @private
 	 */
 	doSend: function() {
+		var msg = this.getMessageModel();
+		msg.isDraft = false;
+		msg.save();
+		this.getComposePanel().hide();
+	},
 
-		var	values = this.getComposeForm().getValues(),
+	doSaveDraft: function () {
+		var msg = this.getMessageModel();
+		msg.isDraft = true;
+		this.getComposePanel().setMsg(msg);
+		msg.save({
+			success: function () {
+				debugger;
+				ZCS.app.fireEvent('showToast', ZtMsg.draftSaved);
+
+			}
+		});
+	},
+
+	getMessageModel: function () {
+		var	existingMsg = this.getComposePanel().getMsg(),
+			values = this.getComposeForm().getValues(),
 			editor = this.getComposePanel().down('#body').element.query('.zcs-editable')[0],
 			action = this.getAction(),
 			isNewCompose = (action === ZCS.constant.OP_COMPOSE),
 			origMsg = !isNewCompose && this.getOrigMsg();
 
 		Ext.Logger.info('Send message');
-		var msg = Ext.create('ZCS.model.mail.ZtMailMsg', {
-				subject: values.subject
-			}),
+		var msg = existingMsg || Ext.create('ZCS.model.mail.ZtMailMsg'),
 			from = new ZCS.model.mail.ZtEmailAddress({
 				type: ZCS.constant.FROM,
 				email: ZCS.session.getSetting(ZCS.constant.SETTING_FROM_ADDRESS),
 				name: ZCS.session.getSetting(ZCS.constant.SETTING_FROM_NAME)
 			});
+
+		msg.set('subject', values.subject);
 		msg.addAddresses([].concat(from, values.to, values.cc, values.bcc));
 		msg.setComposeAction(action);
 		if (origMsg) {
@@ -238,8 +275,8 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 			}
 		}
 		msg.createMime(editor.innerHTML, origMsg && origMsg.hasHtmlPart());
-		msg.save();
-		this.getComposePanel().hide();
+
+		return msg;
 	},
 
 	/**

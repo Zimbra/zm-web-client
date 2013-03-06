@@ -40,7 +40,8 @@ Ext.define('ZCS.view.mail.ZtComposeForm', {
 		height: '100%',
 		hidden: true,
 		modal: true,
-		cls: 'compose-form'
+		cls: 'compose-form',
+		msg: null
 	},
 
 	initialize: function() {
@@ -57,8 +58,14 @@ Ext.define('ZCS.view.mail.ZtComposeForm', {
 						handler: function() {
 							this.up('composepanel').fireEvent('cancel');
 						}
-					},
-					{
+					}, {
+						xtype: 'button',
+						text: ZtMsg.saveDraft,
+						align: 'right',
+						handler: function() {
+							this.up('composepanel').fireEvent('saveDraft');
+						}
+					}, {
 						xtype: 'button',
 						text: ZtMsg.send,
 						align: 'right',

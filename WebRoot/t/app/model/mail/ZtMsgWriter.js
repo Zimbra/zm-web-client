@@ -49,14 +49,29 @@ Ext.define('ZCS.model.mail.ZtMsgWriter', {
 				query: 'underid:1 AND NOT underid:3 AND NOT underid:4'
 			});
 		}
-		else if (action === 'create') {
+		else if (action === 'create' || data.isDraft) {
 
 			// 'create' operation means we are sending a msg
 			json = this.getSoapEnvelope(request, data, 'SendMsg');
 
 			var	msg = request.getRecords()[0];
 
-			methodJson = json.Body.SendMsgRequest;
+			if (!msg.isDraft) {
+				methodJson = json.Body.SendMsgRequest;
+			} else {
+				json.Body = {
+					SaveDraftRequest: {
+						"_jsns": "urn:zimbraMail"
+					}
+				};
+
+				json.soapMethod = "SaveDraft";
+				json.Header.context["_jsns"] = "urn:zimbra";
+
+				request.setUrl(ZCS.constant.SERVICE_URL_BASE + 'SaveDraftRequest');
+
+				methodJson = json.Body.SaveDraftRequest;
+			}
 
 			var m = methodJson.m = {},
 				e = m.e = [],
