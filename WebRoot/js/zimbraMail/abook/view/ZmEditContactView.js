@@ -550,7 +550,7 @@ ZmEditContactView.prototype.getModifiedAttrs = function() {
 	var listAttrs = this._listAttrs;
 	for (var id in listAttrs) {
 		if (!this.isDirty(id)) continue;
-		var prefixes = AjxUtil.uniq(AjxUtil.map(listAttrs[id], ZmEditContactView.__trimNumber));
+		var prefixes = AjxUtil.uniq(AjxUtil.map(listAttrs[id], ZmContact.getPrefix));
 		for (var i = 0; i < prefixes.length; i++) {
 			// clear fields from original contact from normalized attr names
 			var attrs = AjxUtil.keys(this._contact.getAttrs(prefixes[i]));
@@ -589,13 +589,6 @@ ZmEditContactView.prototype.getModifiedAttrs = function() {
 	}
 
 	return attributes;
-};
-
-/**
- * @private
- */
-ZmEditContactView.__trimNumber = function(s) {
-	return s.replace(/\d+$/,"");
 };
 
 /**
@@ -996,7 +989,7 @@ function(nattrs,id,prefixes,onlyvalue,listAttrs) {
 
 	// add attributes on contact that we don't know about
 	for (var aname in nattrs) {
-		var anameNormalized = aname.replace(/\d+$/,"");
+		var anameNormalized = ZmContact.getPrefix(aname);
 		if (ZmContact.IS_IGNORE[anameNormalized]) continue;
 		if (!(anameNormalized in attributes)) {
 			array.push({type:anameNormalized,value:nattrs[aname]});
