@@ -1,0 +1,35 @@
+/**
+ * Note, the widths in here should be kept in sync with the outer width configured in app/view/ZtToast.js
+ */
+
+.zcs-toast {
+	padding: 0.2em;
+	color: white;
+}
+.zcs-toast-contents{
+	padding-top:0.2em;
+	font-size: 0.8em;
+
+	div {
+		display: inline-block;
+	}
+
+	.zcs-toast-status-icon {
+		width: 20px;
+	}
+
+	.zcs-toast-message-text {
+		@include ellipsis();
+
+		width: 245px;
+	}
+
+	.zcs-toast-undo-action {
+		display:none;
+		/**
+		 * If/when this is enabled, decrement the zcs-toast-message-text width
+		 */
+		width: 40px;
+		color: $base-color;
+	}
+}

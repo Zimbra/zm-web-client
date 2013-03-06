@@ -213,6 +213,7 @@ Ext.define('ZCS.common.ZtUserSession', {
 				name: node.name,
 				path: node.name,
 				color: node.color,
+				rgb: node.rgb,
 				itemCount: node.n,
 				disclosure: hasChildren,
 				type: type1

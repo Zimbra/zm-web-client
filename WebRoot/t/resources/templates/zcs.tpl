@@ -126,6 +126,18 @@
 				</tpl>
 			</div>
 		</tpl>
+		<tpl if='tags'>
+			<div class='zcs-mail-expMsgHdr'>
+				<div class='zcs-msgHdr-label'>{[ZtMsg.tags]}</div>
+				<tpl for='tags'>
+					<span class='vm-area-bubble' tagid='{id}'>
+						<div class="zcs-tag-small zcs-tag-{color}" <tpl if='rgb'>style='background-color: {rgb};'</tpl>>
+						</div>
+						{name}
+					</span>
+				</tpl>
+			</div>
+		</tpl>
 	</tpl>
 </template>
 
@@ -141,7 +153,7 @@
 
 #widgets/_assignmentview.scss
 <template id='TagAssignmentListItem'>
-	<div cls="zcs-tag zcs-tag-{color}" style="color:{color};">{name}</div>
+	<div class="zcs-tag zcs-tag-{color} zcs-tag-large" <tpl if='rgb'>style="background-color: {rgb};"</tpl>></div>{name}
 </template>
 
 <template id="Invite">
@@ -192,4 +204,18 @@
 			</tpl>
 		</table>
 	</tpl>
+</template>
+
+<template id='ConvListSwipeToDelete'>
+	<div class="zcs-swipe-conv-view" style="width:{0}px;height:{1}px;">
+		<div class="zcs-swipe-delete">Delete</div>
+	</div>
+</template>
+
+<template id='Toast'>
+	<div class="zcs-toast-contents">
+		<div class="zcs-toast-status-icon"></div>
+		<div class="zcs-toast-message-text">{0}</div>
+		<div class="zcs-toast-undo-action">Undo</div>
+	</div>
 </template>

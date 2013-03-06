@@ -40,7 +40,9 @@ Ext.define('ZCS.view.mail.ZtMsgHeader', {
 
 	render: function(msg) {
 
-		var data = msg.getData(), tpl;
+		var data = msg.getData(),
+			tpl,
+			tags = msg.get('tags');
 
 		this.setMsg(msg);
 

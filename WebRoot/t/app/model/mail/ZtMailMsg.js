@@ -42,8 +42,8 @@ Ext.define('ZCS.model.mail.ZtMailMsg', {
 			{ name: 'irtMessageId', type: 'string' },
 
 			// internal (via parsing), or for composed msgs
-			{ name: 'topPart',      type: 'auto' },     // top-level MIME part
 			{ name: 'attachments',  type: 'auto' },
+			{ name: 'tags',			type: 'auto' },
 			{ name: 'bodyParts',    type: 'auto' },     // MIME parts the server tells us to display
 			{ name: 'contentTypes', type: 'auto' },     // lookup hash of content types
 			{ name: 'isLoaded',     type: 'boolean' },
