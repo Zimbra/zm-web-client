@@ -45,18 +45,22 @@ Ext.define('ZCS.model.mail.ZtMsgReader', {
 		}
 
 		var records = [],
-			ln = root.length, i, node,
+			ln = root.length, i,
 			lastIndex = -1,
 			firstMsg = root[0],
 			conv = firstMsg && ZCS.cache.get(firstMsg.cid),
-			numMsgs = conv && conv.get('numMsgs');
+			numMsgs = conv && conv.get('numMsgs'),
+			searchFolder = ZCS.session.getCurrentSearchOrganizer(),
+			searchFolderId = searchFolder && searchFolder.get('itemId');
 
 		if (ln === numMsgs) {
 			// Find the last displayable (non-Trash, non-Junk) message (which will not
 			// have quoted content hidden when it is displayed)
 			for (i = ln - 1; i >= 0; i--) {
-				node = root[i];
-				if (node.l && !ZCS.constant.CONV_HIDE[node.l]) {
+				var node = root[i],
+					localId = ZCS.util.parseId(node.l).localId;
+
+				if ((localId === searchFolderId) || !ZCS.constant.CONV_HIDE[localId]) {
 					lastIndex = i;
 					break;
 				}
@@ -65,8 +69,10 @@ Ext.define('ZCS.model.mail.ZtMsgReader', {
 
 		// Process each msg from JSON to data
 		for (i = 0; i < ln; i++) {
-			node = root[i];
-			if (node.l && !ZCS.constant.CONV_HIDE[node.l]) {
+			var node = root[i],
+				localId = ZCS.util.parseId(node.l).localId;
+
+			if ((localId === searchFolderId) || !ZCS.constant.CONV_HIDE[localId]) {
 				records.push({
 					clientId: null,
 					id: node.id,
