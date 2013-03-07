@@ -19,6 +19,8 @@
  * mail message.
  *
  * @author Conrad Damon <cdamon@zimbra.com>
+ *
+ * TODO: Do we want to cache invites? Usually we get them via owning messages.
  */
 Ext.define('ZCS.model.mail.ZtInvite', {
 
@@ -27,8 +29,10 @@ Ext.define('ZCS.model.mail.ZtInvite', {
 	config: {
 
 		fields: [
+			{ name: 'id',               type: 'string' },
 			{ name: 'attendees',        type: 'auto' },
 			{ name: 'optAttendees',     type: 'auto' },
+			{ name: 'subject',          type: 'string' },
 			{ name: 'description',      type: 'string' },
 			{ name: 'htmlDescription',  type: 'string' },
 			{ name: 'start',            type: 'auto' },
@@ -37,7 +41,7 @@ Ext.define('ZCS.model.mail.ZtInvite', {
 			{ name: 'location',         type: 'string' },
 			{ name: 'organizer',        type: 'auto' },
 			{ name: 'isOrganizer',      type: 'boolean' },
-			{ name: 'sentBy',           type: 'auto' },
+			{ name: 'sentBy',           type: 'string' },
 			{ name: 'status',           type: 'string' }
 		],
 
@@ -50,25 +54,28 @@ Ext.define('ZCS.model.mail.ZtInvite', {
 		 * Returns a ZtInvite constructed from the given JSON object.
 		 *
 		 * @param {object}  node    JSON invite node ('inv' within a mail msg)
+		 * @param {string}  msgId   ID of owning message
 		 * @return {ZtInvite}
 		 */
-		fromJson: function(node) {
+		fromJson: function(node, msgId) {
 
 			// assume there's only one invite component
 			var comp = node.comp[0];
 
 			var invite = new ZCS.model.mail.ZtInvite({
-				isOrganizer:        !!comp.isOrg,
-				location:           comp.loc,
-				description:        comp.desc,
-				htmlDescription:    comp.descHtml
+				id:             comp.apptId,
+				subject:        comp.name,
+				isOrganizer:    !!comp.isOrg,
+				location:       comp.loc,
+				isAllDay:       !!comp.allDay
 			});
 
 			var	start = comp.s && comp.s[0],
 				end = comp.e && comp.e[0],
 				organizer = ZCS.model.mail.ZtEmailAddress.fromInviteNode(comp.or);
 
-			invite.set('isAllDay', !!comp.allDay);
+			// Use HTML description if available
+			invite.set('notes', this.getNotes(comp));
 
 			if (start) {
 				invite.set('start', ZCS.model.mail.ZtInvite.getDateFromJson(start));
@@ -78,7 +85,10 @@ Ext.define('ZCS.model.mail.ZtInvite', {
 			}
 
 			if (comp.or) {
-				invite.set('organizer', ZCS.model.mail.ZtMailItem.convertAddressModelToObject(organizer));
+				invite.set('organizer', organizer);
+				if (comp.or.sentBy) {
+					this.set('sentBy', comp.or.sentBy);
+				}
 			}
 
 			if (comp.at && comp.at.length) {
@@ -93,9 +103,11 @@ Ext.define('ZCS.model.mail.ZtInvite', {
 						attList.push(ZCS.model.mail.ZtEmailAddress.fromInviteNode(att));
 					}
 				}
-				invite.set('attendees', ZCS.model.mail.ZtMailItem.convertAddressModelToObject(attendees));
-				invite.set('optAttendees', ZCS.model.mail.ZtMailItem.convertAddressModelToObject(optAttendees));
+				invite.set('attendees', attendees);
+				invite.set('optAttendees', optAttendees);
 			}
+
+			invite.setMsgId(msgId);
 
 			return invite;
 		},
@@ -108,7 +120,7 @@ Ext.define('ZCS.model.mail.ZtInvite', {
 		 * @return {Date}
 		 * @private
 		 */
-		getDateFromJson: function (node) {
+		getDateFromJson: function(node) {
 
 			if (node.u) {
 				return new Date(node.u);
@@ -120,6 +132,99 @@ Ext.define('ZCS.model.mail.ZtInvite', {
 				Ext.Logger.warn('Unsupported date format: ' + JSON.stringify(node));
 				return null;
 			}
+		},
+
+		getNotes: function(comp) {
+
+			var isHtml = false,
+				notes = comp.descHtml && comp.descHtml[0] && comp.descHtml[0]._content,
+				separator = ZCS.constant.INVITE_NOTES_SEPARATOR;
+
+			if (notes) {
+				isHtml = true;
+			}
+			else {
+				notes = comp.desc && comp.desc[0] && comp.desc[0]._content;
+			}
+
+			if (!notes) {
+				return '';
+			}
+
+			var sepIndex = notes.indexOf(separator);
+			if (isHtml) {
+				// For now, handle HTML as string and do replacement. If that's not sufficient, we'll
+				// need to do something like ZmInviteMsgView.truncateBodyContent
+				notes = (sepIndex === -1) ? notes : notes.substring(sepIndex + separator.length + 6);   // 6 is for </div>
+				notes = notes.replace(/<\/body><\/html>/i, '');
+			}
+			else {
+				notes = (sepIndex === -1) ? notes : notes.substring(sepIndex + separator.length);
+				notes = ZCS.mailutil.textToHtml(Ext.String.trim(notes));
+			}
+
+			return notes || '';
 		}
+	},
+
+	/**
+	 * Returns an HTML summary of this invite.
+	 * @return {String} invite summary as HTML
+	 */
+	getSummary: function() {
+
+		var out = [],
+			i = 0,
+			formatStr = "<tr><th align='left'>{0}</th><td>{1}</td></tr>\n",
+			subject = this.get('subject'),
+			subjectStr = !subject ? '' : Ext.String.htmlEncode(subject),
+			organizer = this.get('organizer'),
+			organizerEmail = organizer && organizer.getFullEmail(),
+			organizerStr = !organizerEmail ? '' : Ext.String.htmlEncode(organizerEmail),
+			location = this.get('location'),
+			locationStr = !location ? '' : Ext.String.htmlEncode(location),
+			attendees = this.get('attendees'),
+			hasAttendees = attendees && attendees.length > 0,
+			optAttendees = this.get('optAttendees'),
+			hasOptAttendees = optAttendees && optAttendees.length > 0,
+			attendeesStr = '';
+
+
+		out[i++] = '<p>\n<table border="0">\n';
+		out[i++] = Ext.String.format(formatStr, ZtMsg.invSubjectLabel, subjectStr);
+		if (organizerStr) {
+			out[i++] = Ext.String.format(formatStr, ZtMsg.invOrganizerLabel, organizerStr);
+		}
+		out[i++] = '\n';
+		out[i++] = '</table>';
+		out[i++] = '\n';
+		out[i++] = "<p>\n<table border='0'>\n";
+		if (locationStr) {
+			out[i++] = Ext.String.format(formatStr, ZtMsg.invLocationLabel, locationStr);
+		}
+		if (hasAttendees || hasOptAttendees) {
+			out[i++] = "</table>\n<p>\n<table border='0'>";
+			out[i++] = '\n';
+			if (hasAttendees) {
+				Ext.each(attendees, function(attendee) {
+					attendeesStr = attendee.get('email');
+				}, this);
+				out[i++] = Ext.String.format(formatStr, ZtMsg.invAttendeesLabel, attendeesStr);
+			}
+			if (hasOptAttendees) {
+				attendeesStr = '';
+				Ext.each(optAttendees, function(attendee) {
+					attendeesStr = attendee.get('email');
+				}, this);
+				out[i++] = Ext.String.format(formatStr, ZtMsg.invOptAttendeesLabel, attendeesStr);
+			}
+		}
+		out[i++] = '</table>';
+		out[i++] = '<div>';
+		out[i++] = ZCS.constant.INVITE_NOTES_SEPARATOR;
+		// add <br> after DIV otherwise Outlook lops off 1st char
+		out[i++] = '</div><br>';
+
+		return out.join('');
 	}
 });

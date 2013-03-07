@@ -446,6 +446,20 @@ ZCS.constant.HDR_KEY[ZCS.constant.HDR_CC]		= ZtMsg.ccHdr;
 ZCS.constant.HDR_KEY[ZCS.constant.HDR_DATE]		= ZtMsg.sentHdr;
 ZCS.constant.HDR_KEY[ZCS.constant.HDR_SUBJECT]	= ZtMsg.subjectHdr;
 
+// Invite-related constants
+ZCS.constant.INVITE_NOTES_SEPARATOR = '*~*~*~*~*~*~*~*~*~*';
+
+// Invite response actions
+ZCS.constant.OP_ACCEPT      = 'ACCEPT';
+ZCS.constant.OP_TENTATIVE   = 'TENTATIVE';
+ZCS.constant.OP_DECLINE     = 'DECLINE';
+
+// Canned invite reply text based on response action
+ZCS.constant.INVITE_REPLY_TEXT = {};
+ZCS.constant.INVITE_REPLY_TEXT[ZCS.constant.OP_ACCEPT]      = ZtMsg.invReplyAcceptText;
+ZCS.constant.INVITE_REPLY_TEXT[ZCS.constant.OP_TENTATIVE]   = ZtMsg.invReplyTentativeText;
+ZCS.constant.INVITE_REPLY_TEXT[ZCS.constant.OP_DECLINE]     = ZtMsg.invReplyDeclineText;
+
 // Invite attendee (calendar user) types
 ZCS.constant.CUTYPE_INDIVIDUAL	= 'IND';
 ZCS.constant.CUTYPE_GROUP		= 'GRO';

@@ -119,7 +119,7 @@ Ext.define('ZCS.model.mail.ZtMsgReader', {
 		data.isLast = isLast;
 
 		if (node.inv) {
-			data.invite = ZCS.model.mail.ZtInvite.fromJson(node.inv[0]);
+			data.invite = ZCS.model.mail.ZtInvite.fromJson(node.inv[0], node.id);
 		}
 
 		return data;

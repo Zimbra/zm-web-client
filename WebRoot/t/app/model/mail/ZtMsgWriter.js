@@ -52,26 +52,11 @@ Ext.define('ZCS.model.mail.ZtMsgWriter', {
 		else if (action === 'create' || data.isDraft) {
 
 			// 'create' operation means we are sending a msg
-			json = this.getSoapEnvelope(request, data, 'SendMsg');
+			var	msg = request.getRecords()[0],
+				method = msg.isDraft ? 'SaveDraft' : msg.isInviteReply ? 'SendInviteReply' : 'SendMsg';
 
-			var	msg = request.getRecords()[0];
-
-			if (!msg.isDraft) {
-				methodJson = json.Body.SendMsgRequest;
-			} else {
-				json.Body = {
-					SaveDraftRequest: {
-						"_jsns": "urn:zimbraMail"
-					}
-				};
-
-				json.soapMethod = "SaveDraft";
-				json.Header.context["_jsns"] = "urn:zimbra";
-
-				request.setUrl(ZCS.constant.SERVICE_URL_BASE + 'SaveDraftRequest');
-
-				methodJson = json.Body.SaveDraftRequest;
-			}
+			json = this.getSoapEnvelope(request, data, method);
+			methodJson = json.Body[method + 'Request'];
 
 			var m = methodJson.m = {},
 				e = m.e = [],
@@ -81,6 +66,7 @@ Ext.define('ZCS.model.mail.ZtMsgWriter', {
 				action = msg.getComposeAction(),
 				origId = msg.get('origId'),
 				irtMessageId = msg.get('irtMessageId'),
+				identityId = ZCS.session.getAccountId(),
 				parts = m.mp = [],                  // Note: should only ever be one top-level part
 				mime = msg.getMime();
 
@@ -97,12 +83,7 @@ Ext.define('ZCS.model.mail.ZtMsgWriter', {
 			}
 
 			// reply type
-			if (action === ZCS.constant.OP_REPLY || action === ZCS.constant.OP_REPLY_ALL) {
-				m.rt = 'r';
-			}
-			else if (action === ZCS.constant.OP_FORWARD) {
-				m.rt = 'w';
-			}
+			m.rt = msg.get('replyType');
 
 			// subject
 			m.su = {
@@ -122,7 +103,17 @@ Ext.define('ZCS.model.mail.ZtMsgWriter', {
 			}
 
 			// identity
-			m.idnt = ZCS.session.getAccountId();
+			m.idnt = identityId;
+
+			if (msg.isInviteReply) {
+				Ext.apply(methodJson, {
+					compNum:            0,
+					id:                 origId,
+					idnt:               identityId,
+					updateOrganizer:    'TRUE',
+					verb:               msg.get('inviteAction')
+				});
+			}
 
 			this.addMimePart(parts, mime);
 		}

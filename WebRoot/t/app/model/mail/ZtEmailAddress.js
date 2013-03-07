@@ -46,7 +46,95 @@ Ext.define('ZCS.model.mail.ZtEmailAddress', {
 
 	statics: {
 
-		// node is an 'e' object found in a conv or msg node
+		/**
+		 * The regexes below were adapted from the perl RFC-822 parser at
+		 * <a href="http://search.cpan.org/~cwest/Email-Address-1.2/lib/Email/Address.pm">Email::Address</a>.
+		 * Yeah, they're ugly, but they work and we shouldn't ever need to change them.
+		 */
+		addrAngleRegex:         /(\s*<(((\s*([^\x00-\x1F\x7F()<>\[\]:;@\,."\s]+(\.[^\x00-\x1F\x7F()<>\[\]:;@\,."\s]+)*)\s*)|(\s*"(([^\\"])|(\\([^\x0A\x0D])))+"\s*))\@((\s*([^\x00-\x1F\x7F()<>\[\]:;@\,."\s]+(\.[^\x00-\x1F\x7F()<>\[\]:;@\,."\s]+)*)\s*)|(\s*\[(\s*(([^\[\]\\])|(\\([^\x0A\x0D])))+)*\s*\]\s*)))>\s*)/,
+		addrAngleQuoteRegex:    /(\s*<'(((\s*([^\x00-\x1F\x7F()<>\[\]:;@\,."\s]+(\.[^\x00-\x1F\x7F()<>\[\]:;@\,."\s]+)*)\s*)|(\s*"(([^\\"])|(\\([^\x0A\x0D])))+"\s*))\@((\s*([^\x00-\x1F\x7F()<>\[\]:;@\,."\s]+(\.[^\x00-\x1F\x7F()<>\[\]:;@\,."\s]+)*)\s*)|(\s*\[(\s*(([^\[\]\\])|(\\([^\x0A\x0D])))+)*\s*\]\s*)))'>\s*)/,
+		addrRegex:              /(((\s*([^\x00-\x1F\x7F()<>\[\]:;@\,."\s]+(\.[^\x00-\x1F\x7F()<>\[\]:;@\,."\s]+)*)\s*)|(\s*"(([^\\"])|(\\([^\x0A\x0D])))+"\s*))\@((\s*([^\x00-\x1F\x7F()<>\[\]:;@\,."\s]+(\.[^\x00-\x1F\x7F()<>\[\]:;@\,."\s]+)*)\s*)|(\s*\[(\s*(([^\[\]\\])|(\\([^\x0A\x0D])))+)*\s*\]\s*)))/,
+		addr1Regex:             /(^|"|\s)(((\s*([^\x00-\x1F\x7F()<>\[\]:;@\,."\s]+(\.[^\x00-\x1F\x7F()<>\[\]:;@\,."\s]+)*)\s*)|(\s*"(([^\\"])|(\\([^\x0A\x0D])))+"\s*))\@((\s*([^\x00-\x1F\x7F()<>\[\]:;@\,."\s]+(\.[^\x00-\x1F\x7F()<>\[\]:;@\,."\s]+)*)\s*)|(\s*\[(\s*(([^\[\]\\])|(\\([^\x0A\x0D])))+)*\s*\]\s*)))/,
+		phraseRegex:            /(((\s*[^\x00-\x1F\x7F()<>\[\]:;@\"\s]+\s*)|(\s*"(([^\\"])|(\\([^\x0A\x0D])))+"\s*))+)/,
+
+		/**
+		 * Constructs a ZtEmailAddress from an email string. The given email can be just the
+		 * address, or it can also have the personal part (usually in quotes).
+		 *
+		 * @param {String}  emailStr    email string
+		 * @param {String}  type        address type
+		 *
+		 * @return {ZtEmailAddress}     an email address object, or null if the email string if invalid
+		 * @adapts ZCS.model.mail.ZtEmailAddress.parse
+		 */
+		fromEmail: function(emailStr, type) {
+
+			emailStr = Ext.String.trim(emailStr);
+			
+			var atIndex = emailStr.indexOf('@'),
+				dotIndex = emailStr.lastIndexOf('.'),
+				valid = ((atIndex != -1) && (dotIndex != -1) && (dotIndex > atIndex) && (dotIndex != emailStr.length - 1));
+
+			if (!valid) {
+				return null;
+			}
+
+			// Note: It would be nice if you could get back the matching parenthesized subexpressions from replace,
+			// then we wouldn't have to do both a match and a replace. The parsing works by removing parts after it
+			// finds them.
+
+			// First find the address (and remove it)
+			var addr, name,
+				parts = emailStr.match(ZCS.model.mail.ZtEmailAddress.addrAngleQuoteRegex) ||
+						emailStr.match(ZCS.model.mail.ZtEmailAddress.addrAngleRegex);
+
+			if (parts && parts.length) {
+				addr = parts[2];
+				emailStr = emailStr.replace(ZCS.model.mail.ZtEmailAddress.addrAngleRegex, '');
+			}
+			else {
+				parts = emailStr.match(ZCS.model.mail.ZtEmailAddress.addr1Regex);
+				if (parts && parts.length) {
+					if (parts[1] === '"') {
+						return null;	// unmatched quote
+					}
+					// addrRegex recognizes the email better than using parts[0] from addrRegex1
+					addr = emailStr.match(ZCS.model.mail.ZtEmailAddress.addrRegex);
+					addr = (addr && addr.length && addr[0] != '') ? Ext.String.trim(addr[0]) : parts[0];
+					if (addr && addr.indexOf('..') !== -1) {
+						return null;
+					}
+					emailStr = emailStr.replace(ZCS.model.mail.ZtEmailAddress.addrRegex, '');
+				}
+			}
+			if (!addr) {
+				return null;
+			}
+
+			// what remains is the name
+			parts = emailStr.match(ZCS.model.mail.ZtEmailAddress.phraseRegex);
+			if (parts) {
+				name = Ext.String.trim(parts[0]);
+
+				// Trim off leading and trailing quotes, but leave escaped quotes and unescape them
+				name = name.replace(/\\"/g, '&quot;');
+				name = Ext.String.trim(name.replace(/^"+|"+$/g, ''));
+				name = name.replace(/&quot;/g, '"');
+			}
+
+			return Ext.create('ZCS.model.mail.ZtEmailAddress', {
+				type:   type,
+				email:  addr,
+				name:   name || ''
+			});
+		},
+
+		/**
+		 * Constructs a ZtEmailAddress from an 'e' object found in a conv or msg node.
+		 *
+		 * @param {Object}  node    address node
+		 * @return {ZtEmailAddress}
+		 */
 		fromAddressNode: function(node) {
 
 			var type = ZCS.constant.FROM_SOAP_TYPE[node.t];
@@ -58,22 +146,12 @@ Ext.define('ZCS.model.mail.ZtEmailAddress', {
 			});
 		},
 
-		fromFullEmail: function(fullEmail) {
-			//Tested against these two formats:
-			//<admin@admin.com>
-			//"blah" <admin@admin.com>
-
-			var match = fullEmail.match(/"*([^"<]*)"*\s*<*([^>]*)>*/),
-				name = match[1],
-				email = match[2];
-
-			return Ext.create('ZCS.model.mail.ZtEmailAddress', {
-				email: email,
-				name: name
-			});
-		},
-
-		// node is an 'at' or 'or' object found inside the 'inv' part of a msg node
+		/**
+		 * Constructs a ZtEmailAddress from an 'at' or 'or' object found inside the 'inv' part of a msg node.
+		 *
+		 * @param {Object}  node    attendee or organizer node
+		 * @return {ZtEmailAddress}
+		 */
 		fromInviteNode: function(node) {
 
 			return Ext.create('ZCS.model.mail.ZtEmailAddress', {

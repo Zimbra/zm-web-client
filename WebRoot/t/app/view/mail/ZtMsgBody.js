@@ -85,7 +85,7 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 		Ext.Logger.conv('ZtMsgBody render into element ' + this.element.id);
 
 		var me = this,
-			html = msg.getContentAsHtml(),
+			html = msg.getContentAsHtml(this.getId()),
 			isInvite = msg.isInvite(),
 			iframe = this.iframe;
 

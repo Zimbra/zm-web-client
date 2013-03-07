@@ -25,6 +25,35 @@ Ext.define('ZCS.common.ZtUtil', {
 
 	alternateClassName: 'ZCS.util',
 
+	idSeq: 0,
+
+	idParams: {},
+
+	/**
+	 * Returns a unique DOM ID using a sequence number, eg "zcs-123".
+	 *
+	 * @param {Object}  params  optional params to associate with this ID
+	 * @return {String}
+	 */
+	getUniqueId: function(params) {
+		var me = ZCS.util;
+		me.idSeq = me.idSeq + 1;
+		var id = 'zcs-' + me.idSeq;
+		if (params) {
+			me.idParams[id] = params;
+		}
+		return id;
+	},
+
+	/**
+	 * Returns the params (if any) associated with the given ID when it was created.
+	 * @param id
+	 * @return {Object}     ID params
+	 */
+	getIdParams: function(id) {
+		return ZCS.util.idParams[id];
+	},
+
 	getAppFromObject: function(obj) {
 
 		var path = Ext.getDisplayName(obj),

@@ -56,13 +56,14 @@ Ext.define('ZCS.view.ZtToast', {
 		var me = this,
 			formattedTemplate = Ext.String.format(ZCS.template.Toast, message),
 			viewportBox = Ext.Viewport.element.getBox(),
-			left = (viewportBox.width / 2) - (me.getWidth() / 2);
+			left = (viewportBox.width / 2) - (me.getWidth() / 2),
+			toast = me.down('component');
 
-		me.down('component').element.un('tap', me.handleTap);
+		toast.element.un('tap', me.handleTap);
 
-		me.down('component').update(formattedTemplate);
+		toast.setHtml(formattedTemplate);
 
-		me.down('component').element.on('tap', me.handleTap);
+		toast.element.on('tap', me.handleTap);
 
 		me.element.applyStyles({
 			position: 'absolute'

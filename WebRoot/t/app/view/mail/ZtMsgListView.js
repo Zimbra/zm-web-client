@@ -78,13 +78,27 @@ Ext.define('ZCS.view.mail.ZtMsgListView', {
 					msg = msgHeader.getMsg();
 
 				if (elm.hasCls('vm-area-bubble')) {
-
 					this.preventTap = true;
 					msgHeader.fireEvent('bubbleHold', elm, msg, Ext.String.htmlDecode(elm.getAttribute('address')));
 				}
 			},
 			element: 'element',
 			delegate: '.zcs-msg-header',
+			scope: this
+		});
+
+		this.on({
+			tap: function(e) {
+				var id = e.delegatedTarget.id,
+					idParams = id && ZCS.util.getIdParams(id),
+					msgBody = idParams && this.down('#' + idParams.msgBodyId);
+
+				if (msgBody) {
+					msgBody.fireEvent('inviteReply', idParams.msgId, idParams.action);
+				}
+			},
+			element: 'element',
+			delegate: '.zcs-invite-button',
 			scope: this
 		});
 	},

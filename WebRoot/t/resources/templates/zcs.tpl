@@ -161,22 +161,28 @@
 		<table>
 			<tpl if='start==end'>
 			<tr>
-				<td class='zcs-invite-label'>{[ZtMsg.dateLabel]}</td>
+				<td class='zcs-invite-label'>{[ZtMsg.invDateLabel]}</td>
 				<td>{start}</td>
 			</tr>
 			<tpl else>
 			<tr>
-				<td class='zcs-invite-label'>{[ZtMsg.startLabel]}</td>
+				<td class='zcs-invite-label'>{[ZtMsg.invStartLabel]}</td>
 				<td>{start}</td>
 			</tr>
 			<tr>
-				<td class='zcs-invite-label'>{[ZtMsg.endLabel]}</td>
+				<td class='zcs-invite-label'>{[ZtMsg.invEndLabel]}</td>
 				<td>{end}</td>
+			</tr>
+			</tpl>
+			<tpl if='location'>
+			<tr>
+				<td class='zcs-invite-label'>{[ZtMsg.invLocationLabel]}</td>
+				<td>{location}</td>
 			</tr>
 			</tpl>
 			<tpl if='organizer'>
 			<tr>
-				<td class='zcs-invite-label'>{[ZtMsg.organizerLabel]}</td>
+				<td class='zcs-invite-label'>{[ZtMsg.invOrganizerLabel]}</td>
 				<td>
 					<span class='vm-area-bubble' address='{organizer.address}'>{organizer.displayName}</span>
 				</td>
@@ -184,7 +190,7 @@
 			</tpl>
 			<tpl if='attendees'>
 			<tr>
-				<td class='zcs-invite-label'>{[ZtMsg.attendeesLabel]}</td>
+				<td class='zcs-invite-label'>{[ZtMsg.invAttendeesLabel]}</td>
 				<td>
 				<tpl for='attendees'>
                     <span class='vm-area-bubble' address='{address}'>{displayName}</span>
@@ -194,7 +200,7 @@
 			</tpl>
 			<tpl if='optAttendees'>
 			<tr>
-				<td class='zcs-invite-label'>{[ZtMsg.optionalAttendeesLabel]}</td>
+				<td class='zcs-invite-label'>{[ZtMsg.invOptionalAttendeesLabel]}</td>
 				<td>
 				<tpl for='attendees'>
                     <span class='vm-area-bubble' address='{address}'>{displayName}</span>
@@ -202,7 +208,16 @@
                 </td>
 			</tr>
 			</tpl>
+			<tr>
+				<td class='zcs-invite-label'>{[ZtMsg.invRespondLabel]}</td>
+				<td>
+					<a class='zcs-invite-button' id='{acceptButtonId}'>{[ZtMsg.accept]}</a>
+					<a class='zcs-invite-button' id='{tentativeButtonId}'>{[ZtMsg.tentative]}</a>
+					<a class='zcs-invite-button' id='{declineButtonId}'>{[ZtMsg.decline]}</a>
+				</td>
+			</tr>
 		</table>
+		<div>{notes}</div>
 	</tpl>
 </template>
 

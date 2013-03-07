@@ -518,5 +518,17 @@ Ext.define('ZCS.common.mail.ZtMailUtil', {
 		}
 
 		return senderStr;
+	},
+
+	/**
+	 * Returns an address object for "From: [me]".
+	 * @return {ZCS.model.mail.ZtEmailAddress}
+	 */
+	getFromAddress: function() {
+		return new ZCS.model.mail.ZtEmailAddress({
+			type: ZCS.constant.FROM,
+			email: ZCS.session.getSetting(ZCS.constant.SETTING_FROM_ADDRESS),
+			name: ZCS.session.getSetting(ZCS.constant.SETTING_FROM_NAME)
+		});
 	}
 });

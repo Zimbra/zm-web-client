@@ -30,6 +30,7 @@ Ext.define('ZCS.controller.mail.ZtMsgController', {
 
 		refs: {
 			msgHeader: 'msgheader',
+			msgBody: 'msgbody',
 			msgFooter: 'msgfooter',
 			msgView: 'msgview'
 		},
@@ -37,6 +38,9 @@ Ext.define('ZCS.controller.mail.ZtMsgController', {
 		control: {
 			msgHeader: {
 				toggleView: 'doToggleView'
+			},
+			msgBody: {
+				inviteReply: 'doInviteReply'
 			},
 			msgFooter: {
 				reply: 'doReply',
@@ -85,5 +89,50 @@ Ext.define('ZCS.controller.mail.ZtMsgController', {
 	 */
 	doForward: function(msg) {
 		ZCS.app.getComposeController().forward(msg || this.getActiveMsg());
+	},
+
+	doInviteReply: function(origMsgId, action) {
+
+		var origMsg = ZCS.cache.get(origMsgId),
+			invite = origMsg.get('invite'),
+			msg = Ext.create('ZCS.model.mail.ZtMailMsg');
+
+		msg.set('origId', origMsgId);
+		msg.set('inviteAction', action);
+		msg.set('replyType', 'r');
+
+		msg.set('subject', invite.get('subject'));
+
+		var from = ZCS.mailutil.getFromAddress();
+		msg.addAddresses(from);
+
+		if (!invite.get('isOrganizer')) {
+			var	organizer = invite.get('organizer'),
+				organizerEmail = organizer && organizer.get('email'),
+				toEmail = organizerEmail || invite.get('sentBy'),
+				toAddress;
+
+			if (!toEmail) {
+				var origFrom = origMsg.getAddressByType(ZCS.constant.FROM),
+					origEmail = origFrom && origFrom.get('email');
+
+				if (origEmail !== from.get('email')) {
+					toEmail = origEmail;
+				}
+			}
+			if (toEmail) {
+				msg.addAddresses(ZCS.model.mail.ZtEmailAddress.fromEmail(toEmail, ZCS.constant.TO));
+			}
+		}
+
+		var replyBody = invite.getSummary(true) + ZCS.constant.INVITE_REPLY_TEXT[action] + '<br><br>';
+
+		msg.createMime(replyBody, true);
+		msg.isInviteReply = true;
+		msg.save({
+			success: function () {
+				ZCS.app.fireEvent('showToast', ZtMsg.invReplySent);
+			}
+		});
 	}
 });

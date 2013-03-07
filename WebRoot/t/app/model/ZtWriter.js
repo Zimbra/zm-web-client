@@ -78,13 +78,14 @@ Ext.define('ZCS.model.ZtWriter', {
 			Body: {}
 		};
 
-		json.Body[method + 'Request'] = {
+		var methodName = method + 'Request';
+		json.Body[methodName] = {
 			_jsns: options.namespace || 'urn:zimbraMail'
 		};
 
 		if (request) {
-			// TODO: Is it acceptable in Sencha to add properties to its objects?
 			request.soapMethod = method;
+			request.setUrl(ZCS.constant.SERVICE_URL_BASE + methodName);
 		}
 
 		return json;

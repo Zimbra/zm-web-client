@@ -40,6 +40,7 @@ Ext.define('ZCS.model.mail.ZtMailMsg', {
 			{ name: 'sentDate',     type: 'int' },
 			{ name: 'messageId',    type: 'string' },
 			{ name: 'irtMessageId', type: 'string' },
+			{ name: 'replyType',    type: 'string' },
 
 			// internal (via parsing), or for composed msgs
 			{ name: 'attachments',  type: 'auto' },
@@ -49,7 +50,8 @@ Ext.define('ZCS.model.mail.ZtMailMsg', {
 			{ name: 'isLoaded',     type: 'boolean' },
 			{ name: 'isLast',       type: 'boolean' },
 			{ name: 'origId',       type: 'string' },   // ID of original if replying or forwarding
-			{ name: 'invite',       type: 'auto' }      // ZtInvite if msg is an invite
+			{ name: 'invite',       type: 'auto' },     // ZtInvite if msg is an invite
+			{ name: 'inviteAction', type: 'string' }    // accept/tentative/decline
 		],
 
 		proxy: {
@@ -171,11 +173,13 @@ Ext.define('ZCS.model.mail.ZtMailMsg', {
 
 	/**
 	 * Converts each body part to HTML and returns the accumulated content.
+	 *
+	 * @param {String}  msgBodyId   ID of owning ZtMsgBody
 	 */
-	getContentAsHtml: function() {
+	getContentAsHtml: function(msgBodyId) {
 
 		if (this.isInvite()) {
-			return this.getInviteContent();
+			return this.getInviteContent(msgBodyId);
 		}
 
 		var bodyParts = this.get('bodyParts'),
@@ -400,16 +404,41 @@ Ext.define('ZCS.model.mail.ZtMailMsg', {
 		return !!this.get('invite');
 	},
 
-	getInviteContent: function() {
+	/**
+	 * Returns content of a message that is an invite.
+	 *
+	 * @param {String}  msgBodyId   ID of owning ZtMsgBody
+	 * @return {String}     invite content
+	 */
+	getInviteContent: function(msgBodyId) {
 
 		var invite = this.get('invite'),
-			dateFormat = invite.get('isAllDay') ? ZtMsg.dateFormat : ZtMsg.dateTimeFormat,
+			dateFormat = invite.get('isAllDay') ? ZtMsg.invDateFormat : ZtMsg.invDateTimeFormat,
+			idParams = {
+				msgId:      invite.getMsgId(),
+				msgBodyId:  msgBodyId
+			},
 			data = {
-				start:      Ext.Date.format(invite.get('start'), dateFormat),
-				end:        Ext.Date.format(invite.get('end'), dateFormat),
-				organizer:  invite.get('organizer'),
-				attendees:  invite.get('attendees')
+				start:          Ext.Date.format(invite.get('start'), dateFormat),
+				end:            Ext.Date.format(invite.get('end'), dateFormat),
+				location:       invite.get('location'),
+				organizer:      ZCS.model.mail.ZtMailItem.convertAddressModelToObject(invite.get('organizer')),
+				attendees:      ZCS.model.mail.ZtMailItem.convertAddressModelToObject(invite.get('attendees')),
+				optAttendees:   ZCS.model.mail.ZtMailItem.convertAddressModelToObject(invite.get('optAttendees')),
+				notes:          invite.get('notes'),
+
+				acceptButtonId:     ZCS.util.getUniqueId(Ext.apply({}, {
+										action: ZCS.constant.OP_ACCEPT
+									}, idParams)),
+				tentativeButtonId:  ZCS.util.getUniqueId(Ext.apply({}, {
+										action: ZCS.constant.OP_TENTATIVE
+									}, idParams)),
+				declineButtonId:    ZCS.util.getUniqueId(Ext.apply({}, {
+										action: ZCS.constant.OP_DECLINE
+									}, idParams))
 			};
+
+
 
 		return ZCS.model.mail.ZtMailMsg.inviteTpl.apply(data);
 	}

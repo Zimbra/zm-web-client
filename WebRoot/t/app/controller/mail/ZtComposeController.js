@@ -241,14 +241,13 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 		this.getComposePanel().setMsg(msg);
 		msg.save({
 			success: function () {
-				debugger;
 				ZCS.app.fireEvent('showToast', ZtMsg.draftSaved);
-
 			}
 		});
 	},
 
 	getMessageModel: function () {
+
 		var	existingMsg = this.getComposePanel().getMsg(),
 			values = this.getComposeForm().getValues(),
 			editor = this.getComposePanel().down('#body').element.query('.zcs-editable')[0],
@@ -258,11 +257,7 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 
 		Ext.Logger.info('Send message');
 		var msg = existingMsg || Ext.create('ZCS.model.mail.ZtMailMsg'),
-			from = new ZCS.model.mail.ZtEmailAddress({
-				type: ZCS.constant.FROM,
-				email: ZCS.session.getSetting(ZCS.constant.SETTING_FROM_ADDRESS),
-				name: ZCS.session.getSetting(ZCS.constant.SETTING_FROM_NAME)
-			});
+			from = ZCS.mailutil.getFromAddress();
 
 		msg.set('subject', values.subject);
 		msg.addAddresses([].concat(from, values.to, values.cc, values.bcc));
@@ -273,6 +268,12 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 			if (irtMessageId) {
 				msg.set('irtMessageId', irtMessageId);
 			}
+		}
+		if (action === ZCS.constant.OP_REPLY || action === ZCS.constant.OP_REPLY_ALL) {
+			msg.set('replyType', 'r');
+		}
+		else if (action === ZCS.constant.OP_FORWARD) {
+			msg.set('replyType', 'w');
 		}
 		msg.createMime(editor.innerHTML, origMsg && origMsg.hasHtmlPart());
 

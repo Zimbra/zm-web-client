@@ -27,7 +27,7 @@ Ext.define('ZCS.model.address.ZtAutoCompleteReader', {
 	getDataFromNode: function(node) {
 		//Take the email address that was given by the search, and break it down into a ZtEmailAddress
 		//This may be in the form <email> or "blah" <email>
-		var emailAddress = ZCS.model.mail.ZtEmailAddress.fromFullEmail(node.email);
+		var emailAddress = ZCS.model.mail.ZtEmailAddress.fromEmail(node.email);
 
 		node.name = emailAddress.get('name');
 		node.fullEmail = node.email;
