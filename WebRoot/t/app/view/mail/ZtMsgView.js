@@ -144,5 +144,42 @@ Ext.define('ZCS.view.mail.ZtMsgView', {
 			listRef.updateItemHeights();
 			listRef.refreshScroller(listRef.getScrollable().getScroller());
 		}
-	}
+	},
+
+	/**
+	 * When an iframe, that has a parent which has a translate3d value for its transofrm property, receives a touch event, it
+	 * incorrectly interprets the target of that event.  However, if that same parent element has absolute positioning, then
+	 * the iframe does correctly interpret that event.  So when this list item gets translated to its position, and its expanded,
+	 * give it absolute positoning.
+	 *
+	 */
+	translate: function(x, y, animation) {
+        if (animation) {
+            return this.translateAnimated(x, y, animation);
+        }
+
+        if (this.isAnimating) {
+            this.stopAnimation();
+        }
+
+        if (!isNaN(x) && typeof x == 'number') {
+            this.x = x;
+        }
+
+        if (!isNaN(y) && typeof y == 'number') {
+            this.y = y;
+        }
+
+        if (this.element.forceAbsolutePositioning) {
+            //In case the element was not forced before.
+            this.element.dom.style.webkitTransform = 'translate3d(0px, 0px, 0px)';
+            this.element.dom.style.top = this.y + 'px';
+        } else {
+        	if (this.element.dom.style.top) {
+        		this.element.dom.style.top = '0px';
+        	}
+            this.element.dom.style.webkitTransform = 'translate3d(' + this.x + 'px, ' + this.y + 'px, 0px)';
+        }
+    }
+
 });

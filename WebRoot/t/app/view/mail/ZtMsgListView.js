@@ -101,7 +101,41 @@ Ext.define('ZCS.view.mail.ZtMsgListView', {
 			delegate: '.zcs-invite-button',
 			scope: this
 		});
+		var scroller = this.getScrollable();
+
+		scroller.getScroller().on('scrollend', function () {
+			Ext.Logger.iframe('Scoll end on list');
+			this.doIframeProofPositioning();
+		}, this);
+
+		scroller.getScroller().on('scrollstart', function () {
+			Ext.Logger.iframe('Scroll start on list');
+			this.doIframeProofPositioning();
+		}, this);
 	},
+
+	doIframeProofPositioning: function(forceZero) {
+        var items = this.listItems,
+        	doForceZero = forceZero,
+            offset = 0,
+            i, ln, item, translateY;
+
+        if (items[0].element.dom.parentElement.style["position"] !== "relative") {
+        	items[0].element.dom.parentElement.style["position"] = "relative";
+    	}
+
+    	//Every expanded list item may have links, so force it to have
+    	//absolute positioning, which will prevent a bug where link taps were
+    	//not registered.
+		for (i = 0, ln = items.length; i < ln; i++) {
+            item = items[i];
+            if (item.getExpanded()) {
+		        item.element.forceAbsolutePositioning = true;
+		    } else {
+		    	item.element.forceAbsolutePositioning = false;
+	    	}
+        }
+    },
 
 	setReadOnly: function (isReadOnly) {
 		var listRef = this;

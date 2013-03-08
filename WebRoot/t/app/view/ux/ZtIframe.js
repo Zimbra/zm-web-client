@@ -73,10 +73,21 @@ Ext.define('ZCS.view.ux.ZtIframe', {
 
 				for (i = 0; i < numTouches; i += 1) {
 					oldTouch = touches[i];
-					if (oldTouch.pageY !== oldTouch.screenY) {
-						Ext.Logger.iframe("Old touch: screenX: " + screenX + " screen Y: " + screenY + " pageX " + oldTouch.pageX + " pageY " + oldTouch.pageY );
-					}
-					newTouch = window.document.createTouch(window, newTarget, oldTouch.identifier, oldTouch.screenX, oldTouch.screenY, oldTouch.screenX, oldTouch.screenY);
+
+					//definition of page, client, screen found here: http://www.w3.org/TR/2011/WD-touch-events-20110505/
+					//since we're in an iframe, pageY needs to be the whole scroll of the list, not just the scoll of the iframe.
+
+					newTouch = window.document.createTouch(
+						window,
+						newTarget,
+						oldTouch.identifier,
+						oldTouch.screenX, //pageX
+						oldTouch.screenY, //pageY
+						oldTouch.screenX, //screenX
+						oldTouch.screenY, //screenY
+						oldTouch.screenX, //clientX
+						oldTouch.screenY //clientY
+					);
 					newTouches.push(newTouch);
 				}
 
@@ -133,8 +144,8 @@ Ext.define('ZCS.view.ux.ZtIframe', {
 					ev.detail, //detail Specifies some detail information about the event depending on the type of event.
 					eventScreenX, //screenX The x-coordinate of the event’s location in screen coordinates.
 					eventScreenY, //screenY The y-coordinate of the event’s location in screen coordinates.
-					eventPageX, //clientX The x-coordinate of the event’s location relative to the window’s viewport.
-					eventPageY, //clientY The y-coordinate of the event’s location relative to the window’s viewport.
+					eventScreenX, //clientX The x-coordinate of the event’s location relative to the window’s viewport.
+					eventScreenY, //clientY The y-coordinate of the event’s location relative to the window’s viewport.
 					ev.ctrlKey, //ctrlKey, If true, the control key is pressed; otherwise, it is not.
 					ev.altKey, //altKey If true, the alt key is pressed; otherwise, it is not.
 					ev.shiftKey, //shiftKey If true, the shift key is pressed; otherwise, it is not.
@@ -146,7 +157,7 @@ Ext.define('ZCS.view.ux.ZtIframe', {
 					ev.rotation //rotation The delta rotation since the start of an event, in degrees, where clockwise is positive and counter-clockwise is negative. The initial value is 0.0.
 				);
 
-					component.element.dom.dispatchEvent(cloneEvent);
+				component.element.dom.dispatchEvent(cloneEvent);
 
 				ev.preventDefault();
 
@@ -165,11 +176,11 @@ Ext.define('ZCS.view.ux.ZtIframe', {
 			this.fixSize();
 
 			//Capture these touch events being sent to the iframe.
-			body.addEventListener("touchstart", touchEventListener, true);
-			body.addEventListener("touchend", touchEventListener, true);
-			body.addEventListener("touchcancel", touchEventListener, true);
-			body.addEventListener("touchleave", touchEventListener, true);
-			body.addEventListener("touchmove", touchEventListener, true);
+			body.addEventListener("touchstart", touchEventListener, false);
+			body.addEventListener("touchend", touchEventListener, false);
+			body.addEventListener("touchcancel", touchEventListener, false);
+			body.addEventListener("touchleave", touchEventListener, false);
+			body.addEventListener("touchmove", touchEventListener, false);
 
 		}
 	},
