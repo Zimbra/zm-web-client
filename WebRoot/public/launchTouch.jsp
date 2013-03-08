@@ -40,48 +40,83 @@
     <title><fmt:message key="zimbraTitle"/></title>
     <style type="text/css">
             /**
-            * Example of an initial loading indicator.
             * It is recommended to keep this as minimal as possible to provide instant feedback
             * while other resources are still being loaded for the first time
             */
-        html, body {
-            height: 100%;
-            background-color: #1985D0
+        #SplashScreenImgBanner{
+            background-image: url("/t/resources/images/app_banner.png");
+            background-position: left bottom;
+            background-repeat: no-repeat;
+            height: 60px;
+            width: 200px;
+            float:left;
         }
 
-        #appLoadingIndicator {
+        #SplashScreenAppName  {
+            margin-top:40px;
+            font-size:16px;
+            color:#FFFFFF;
+            float:right;
+            height: 60px;
+            width:300px;
+        }
+
+        .SplashScreen {
+            position:absolute;
+            left:0px;
+            top:0px;
+            width:100%;
+            height:100%;
+            font-family:Arial;
+            font-size:11px;
+            background-color: #DDD;
+        }
+
+        .SplashScreen .contentBox {
+            background-color: #00638D;
+            background-image: -webkit-linear-gradient(top , #0095D3, #00638D);
+            min-height: 265px;
+            padding-top: 10px;
+            width: 500px;
+        }
+        
+        .SplashScreen .center {
+            left: 50%;
+            overflow: visible;
             position: absolute;
-            top: 50%;
-            margin-top: -15px;
-            text-align: center;
-            width: 100%;
-            height: 30px;
-            -webkit-animation-name: appLoadingIndicator;
-            -webkit-animation-duration: 0.5s;
-            -webkit-animation-iteration-count: infinite;
-            -webkit-animation-direction: linear;
+            top: 40%;
+            z-index: 11;
+            width:500px;
+            height:270px;
+            margin-top:-135px;
+            margin-left:-250px;
         }
 
-        #appLoadingIndicator > * {
-            background-color: #FFFFFF;
-            display: inline-block;
-            height: 30px;
-            -webkit-border-radius: 15px;
-            margin: 0 5px;
-            width: 30px;
-            opacity: 0.8;
+        .SplashScreen .content {
+            color:white;
+            text-align:center;
         }
 
-        @-webkit-keyframes appLoadingIndicator{
-            0% {
-                opacity: 0.8
-            }
-            50% {
-                opacity: 0
-            }
-            100% {
-                opacity: 0.8
-            }
+        .SplashScreen .message {
+            color:#FFFFFF;
+            font-size:14px;
+            font-weight:bold;
+            margin: 120px 100px 60px
+        }
+
+        .SplashScreen .footer {
+            bottom:0;
+            position:absolute;
+            text-align:center;
+            width:100%;
+            z-index:10;
+        }
+
+        .SplashScreen .copyright {
+            cursor:default;
+            margin-bottom:5px;
+            font-size: 11px;
+            color: #6B6B6B;
         }
     </style>
 
@@ -112,10 +147,32 @@
 </head>
 <body>
 
-<div id="appLoadingIndicator">
-    <div></div>
-    <div></div>
-    <div></div>
+<!-- BEGIN SPLASH SCREEN -->
+<div id='appLoadingIndicator' class='SplashScreen'>
+    <script language='javascript'>
+        function showCompanyUrl() {
+            window.open(ZtMsg.splashScreenCompanyURL, '_blank');
+        }
+    </script>
+
+    <div class="center">
+        <div class="contentBox">
+            <h1><div id='SplashScreenImgBanner' onclick='showCompanyUrl()'></div></h1>
+            <h2><div id="SplashScreenAppName"><script>document.write(ZtMsg.splashScreenAppName)</script></div></h2>
+            <div class="content">
+                <div class="message"><script>document.write(ZtMsg.splashScreenLoading)</script></div>
+            </div>
+        </div>
+    </div>
+    <div class="footer">
+        <div class="copyright">
+            <script>
+                document.write(ZtMsg.splashScreenCopyright);
+            </script>
+        </div>
+    </div>
+
 </div>
+<!-- END SPLASH SCREEN -->
 </body>
 </html>
