@@ -149,21 +149,6 @@ Ext.define('ZCS.view.mail.ZtComposeForm', {
 							}
 						},
 						label: ZtMsg.subjectHdr
-					}, {
-						width: 80,
-						height: 44,
-						xtype: 'component',
-						html: ZtMsg.attach,
-						itemId: 'attach',
-						cls: 'x-form-label x-form-label-nowrap x-field zcs-toggle-field',
-						listeners: {
-							painted: function () {
-								var comp = this;
-								this.element.on('tap', function () {
-									composeForm.doAttach();
-								});
-							}
-						}
 					}]
 				}, {
 						xtype: 'component',
@@ -179,6 +164,25 @@ Ext.define('ZCS.view.mail.ZtComposeForm', {
 						}
 					}]
 			};
+
+		if (ZCS.constant.IS_ENABLED[ZCS.constant.ADD_ATTACHMENT]) {
+			form.items[3].items.push({
+				width: 80,
+				height: 44,
+				xtype: 'component',
+				html: ZtMsg.attach,
+				itemId: 'attach',
+				cls: 'x-form-label x-form-label-nowrap x-field zcs-toggle-field',
+				listeners: {
+					painted: function () {
+						var comp = this;
+						this.element.on('tap', function () {
+							composeForm.doAttach();
+						});
+					}
+				}
+			});
+		}
 
 		this.add([
 			toolbar,
