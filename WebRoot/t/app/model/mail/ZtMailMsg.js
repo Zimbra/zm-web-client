@@ -178,7 +178,7 @@ Ext.define('ZCS.model.mail.ZtMailMsg', {
 	 */
 	getContentAsHtml: function(msgBodyId) {
 
-		if (this.isInvite()) {
+		if (this.get('isInvite')) {
 			return this.get('invite').getContentAsHtml(msgBodyId);
 		}
 
@@ -398,10 +398,6 @@ Ext.define('ZCS.model.mail.ZtMailMsg', {
 			}
 		}
 		return false;
-	},
-
-	isInvite: function() {
-		return !!this.get('invite');
 	}
 },
 	function (thisClass) {

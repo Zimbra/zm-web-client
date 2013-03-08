@@ -87,14 +87,13 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 
 		var me = this,
 			html = msg.getContentAsHtml(this.getId()),
-			isInvite = msg.isInvite(),
+			isInvite = msg.get('isInvite'),
 			iframe = this.iframe;
 
 		if (!isLast && !isInvite) {
 			html = ZCS.quoted.getOriginalContent(html, false);
 		}
 
-		// TODO: invites
 		// TODO: truncation
 
 		this.setMsg(msg);

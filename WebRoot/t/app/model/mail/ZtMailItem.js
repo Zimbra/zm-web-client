@@ -28,19 +28,20 @@ Ext.define('ZCS.model.mail.ZtMailItem', {
 
 	config: {
 		fields: [
-			{ name: 'addresses', type: 'auto' },
-			{ name: 'subject', type: 'string' },
-			{ name: 'fragment', type: 'string' },
-			{ name: 'dateStr', type: 'string' },
+			{ name: 'addresses',        type: 'auto' },
+			{ name: 'subject',          type: 'string' },
+			{ name: 'fragment',         type: 'string' },
+			{ name: 'dateStr',          type: 'string' },
 
 			// flags
-			{ name: 'hasAttachment', type: 'boolean' },
-			{ name: 'isFlagged', type: 'boolean' },
-			{ name: 'isForwarded', type: 'boolean' },
-			{ name: 'isDraft', type: 'boolean' },
-			{ name: 'isSent', type: 'boolean' },
-			{ name: 'isReplied', type: 'boolean' },
-			{ name: 'isUnread', type: 'boolean' }
+			{ name: 'hasAttachment',    type: 'boolean' },
+			{ name: 'isFlagged',        type: 'boolean' },
+			{ name: 'isForwarded',      type: 'boolean' },
+			{ name: 'isDraft',          type: 'boolean' },
+			{ name: 'isSent',           type: 'boolean' },
+			{ name: 'isReplied',        type: 'boolean' },
+			{ name: 'isUnread',         type: 'boolean' },
+			{ name: 'isInvite',         type: 'boolean' }
 		]
 	},
 
