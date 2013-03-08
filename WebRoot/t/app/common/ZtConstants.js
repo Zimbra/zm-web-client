@@ -85,7 +85,7 @@ ZCS.constant.APPS = [
 
 // Turn features on/off
 ZCS.constant.IS_ENABLED = {};
-ZCS.constant.IS_ENABLED[ZCS.constant.APP_CONTACTS]  = true;
+ZCS.constant.IS_ENABLED[ZCS.constant.APP_CONTACTS]  = false;
 
 // Text for tab bar
 ZCS.constant.TAB_TITLE = {};
