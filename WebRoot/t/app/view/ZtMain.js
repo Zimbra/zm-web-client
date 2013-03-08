@@ -70,9 +70,8 @@ Ext.define("ZCS.view.ZtMain", {
 				xtype: 'spacer'
 			},
 			{
-				xtype: 'label',
-				html: ZtMsg.bannerText,
-				style: 'color:white;'
+				xtype: 'component',
+                cls: 'zcs-banner-image'
 			},
 			{
 				xtype: 'button',
