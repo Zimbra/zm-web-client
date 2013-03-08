@@ -47,18 +47,42 @@ $zcs-title-fontsize: 1.2rem; //uses rem so it's not relational to container bar
 
 .zcs-overview {
 	@extend .zcs-side-panel;
+	
+	.zcs-folder-list {
+		font-size: $zcs-titlebar-fontsize;
+
+		.x-title {
+			font-size: $zcs-title-fontsize;
+		}
+	}
 }
 
 /* List Panel */
+
 .zcs-list-panel {
 	@extend .zcs-side-panel;
-}
-
-.zcs-list-titlebar {
-	font-size: $zcs-titlebar-fontsize;
 	
-	.x-title {
-		font-size: $zcs-title-fontsize;
+	.zcs-list-titlebar {
+		font-size: $zcs-titlebar-fontsize;
+	
+		.x-title {
+			font-size: $zcs-title-fontsize;
+		}
+	}
+	
+	/* Zebra Stripes */
+	.x-list-item {
+		.x-dock-horizontal {
+			border-top: 1px solid transparent;
+        }
+
+        &:nth-child(even) .x-dock-horizontal {
+			background-color: darken($list-bg-color, 5%);
+        }
+
+        &.x-list-footer-wrap:nth-child(odd) .x-dock-horizontal {
+			border-bottom: 1px solid darken($list-bg-color, 5%);
+        }
 	}
 }
 

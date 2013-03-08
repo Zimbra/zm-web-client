@@ -1,15 +1,38 @@
+$msgBkgdColor: $white;
+
+.zcs-item-panel {
+	background-color: darken($msgBkgdColor, 10%);
+
+	.zcs-msgview {
+		background-color: transparent;
+		height: 70px;
+		padding: .5em .5em 0;
+
+		.x-list-item-inner {
+			background-color: $msgBkgdColor;
+			border: 1px solid darken($msgBkgdColor, 25%);
+		}
+	}
+}
+
 /* BEGIN MSG HEADER */
 
 $msgHdrTextSize: 0.9em;
-$msgHdrTextIndent: 46px;
-$msgHdrLabelIndent: 41px;
-$msgHdrTopOffset: 5px;
-$msgHdrLeftOffset: 5px;
-$msgHdrRightOffset: 10px;
-$msgHdrTopOffset2: 2.3em;
+$msgHdrImageSize: 3.2em;
+$msgHdrStdMargin: $msgHdrTextSize;
+$msgHdrLabelIndent: $msgHdrImageSize + $msgHdrStdMargin;
+$msgHdrLeftIndent: $msgHdrImageSize + $msgHdrStdMargin*2;
+
+$msgHdrButtonSize: $msgHdrImageSize/1.5;
+$msgHdrRightIndent: $msgHdrButtonSize + $msgHdrStdMargin*3;
+
+$msgHdrTopOffset: $msgHdrStdMargin;
+$msgHdrTopOffset2: $msgHdrTextSize * 2.3 + $msgHdrTopOffset;
+$msgHdrButtonDelta: $msgHdrImageSize - $msgHdrButtonSize;
+$msgHdrButtonTopOffset: $msgHdrButtonDelta;
 
 .zcs-mail-msgHdr {
-	min-height: 46px;
+	min-height: $msgHdrTextSize*5;
 	position: relative;
 }
 
@@ -19,34 +42,36 @@ $msgHdrTopOffset2: 2.3em;
 
 .zcs-msgHdr-person {
 	@extend .zcs-msgHdr-element;
-	height: 36px;
-	left: $msgHdrLeftOffset;
+	background-image: url('../images/person.png');
+	background-size: 100% auto;
+	height: $msgHdrImageSize;
+	left: $msgHdrStdMargin;
 	top: $msgHdrTopOffset;
-	width: 36px;
+	width: $msgHdrImageSize;
 }
 
 .zcs-msgHdr-fromBubble {
 	@extend .zcs-msgHdr-element;
-	left: $msgHdrTextIndent;
+	left: $msgHdrLeftIndent;
 	top: $msgHdrTopOffset;
 }
 
 .zcs-msgHdr-from {
 	@extend .zcs-msgHdr-element;
 	font-size: $msgHdrTextSize;
-	left: $msgHdrTextIndent;
+	left: $msgHdrLeftIndent+$msgHdrStdMargin;
 	overflow: hidden;
 	text-overflow: ellipsis;
 	top: $msgHdrTopOffset2;
 	white-space: nowrap;
 }
 
-.zcs-colMsgHdr-fragment {
+.zcs-msgHdr-fragment {
 	@extend .zcs-msgHdr-element;
 	@extend .zcs-fragment;
-	left: $msgHdrTextIndent;
+	left: $msgHdrLeftIndent+$msgHdrStdMargin;
 	overflow: hidden;
-	right: $msgHdrRightOffset;
+	right: $msgHdrRightIndent;
 	text-overflow: ellipsis;
 	top: $msgHdrTopOffset2;
 	white-space: nowrap;
@@ -56,15 +81,24 @@ $msgHdrTopOffset2: 2.3em;
 	@extend .zcs-msgHdr-element;
 	@extend .zcs-date;
 	top: $msgHdrTopOffset;
-	right: $msgHdrRightOffset;
+	right: $msgHdrRightIndent;
+}
+
+.zcs-mail-msgHdr.collapsed {
+	.zcs-msgHdr-fragment {
+		right: $msgHdrStdMargin;
+	}
+	.zcs-msgHdr-date {
+		right: $msgHdrStdMargin;
+	}
 }
 
 .zcs-msgHdr-to {
 	@extend .zcs-msgHdr-element;
 	font-size: $msgHdrTextSize;
-	left: $msgHdrTextIndent;
+	left: $msgHdrLeftIndent+$msgHdrStdMargin;
 	overflow: hidden;
-	right: $msgHdrRightOffset;
+	right: $msgHdrRightIndent;
 	text-overflow: ellipsis;
 	top: $msgHdrTopOffset2;
 	white-space: nowrap;
@@ -76,12 +110,13 @@ $msgHdrTopOffset2: 2.3em;
 	font-size: $msgHdrTextSize;
 	text-decoration:underline;
 	top: $msgHdrTopOffset2;
-	right: $msgHdrRightOffset;
+	right: $msgHdrRightIndent;
 }
 
 .zcs-msgHdr-label {
 	display: inline-block;
 	font-size: $msgHdrTextSize;
+	margin-right: $msgHdrStdMargin;
 	text-align: right;
 	width: $msgHdrLabelIndent;
 	@include opacity(.75);
@@ -91,9 +126,23 @@ $msgHdrTopOffset2: 2.3em;
 	margin: .15em 0;
 }
 
+.zcs-msgHdr-menuButton {
+	@extend .zcs-msgHdr-element;
+	background-image: url('../../touch/resources/themes/images/default/pictos/arrow_down.png');
+	background-size: 100% auto;
+	height: $msgHdrButtonSize;
+	right: $msgHdrStdMargin;
+	top: $msgHdrButtonTopOffset;
+	width: $msgHdrButtonSize;
+	@include opacity(.5);
+}
+
 /* END MSG HEADER */
 
 /* BEGIN MSG BODY */
+.zcs-msg-body {
+	margin: $msgHdrStdMargin;
+}
 
 .zcs-info-bar {
   background-color: #FF9;
@@ -114,6 +163,8 @@ $msgHdrTopOffset2: 2.3em;
 	background-image: none;
 	background-color: transparent;
 	border-style: none !important;
+	font-size: 1.6em;
+	margin-bottom: 2em;
 }
 
 

@@ -25,6 +25,7 @@ Ext.define('ZCS.view.ZtOrganizerList', {
 	extend: 'Ext.dataview.NestedList',
 
 	xtype: 'folderlist',
+	cls: 'zcs-folder-list',
 
 	config: {
 

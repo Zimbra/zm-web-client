@@ -28,6 +28,7 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 	],
 
 	xtype: 'msgbody',
+	cls: 'zcs-msg-body',
 
 	config: {
 		padding: 5,

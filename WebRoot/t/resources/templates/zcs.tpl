@@ -38,10 +38,8 @@
 
 <template id='CollapsedMsgHeader'>
 	<tpl>
-		<div class='zcs-mail-msgHdr'>
-			<div class='zcs-msgHdr-person'>
-				<img src='/t/resources/images/person.png' />
-			</div>
+		<div class='zcs-mail-msgHdr collapsed'>
+			<div class='zcs-msgHdr-person'></div>
 			<tpl if='addrs.FROM'>
 			<div class='zcs-msgHdr-fromBubble'>
 				<tpl for='addrs.FROM'>
@@ -49,7 +47,7 @@
 				</tpl>
 			</div>
 			<div class='zcs-msgHdr-date'>{dateStr}</div>
-			<div class='zcs-colMsgHdr-fragment'>{fragment}</div>
+			<div class='zcs-msgHdr-fragment'>{fragment}</div>
 		</div>
 	</tpl>
 </template>
@@ -60,9 +58,7 @@
 <template id='MsgHeader'>
 	<tpl>
 		<div class='zcs-mail-msgHdr'>
-			<div class='zcs-msgHdr-person'>
-				<img src='/t/resources/images/person.png' />
-			</div>
+			<div class='zcs-msgHdr-person'></div>
 			<tpl if='addrs.FROM'>
 				<div class='zcs-msgHdr-fromBubble'>
 					<tpl for='addrs.FROM'>
@@ -84,7 +80,8 @@
 					</tpl>
 				</tpl>
 			</div>
-			<div class='zcs-msgHdr-link'>{[details]}</div>
+			<div class='zcs-msgHdr-link'>{[ZtMsg.details]}</div>
+			<div class='zcs-msgHdr-menuButton'></div>
 		</div>
 	</tpl>
 </template>
@@ -93,10 +90,8 @@
 
 <template id='ExpandedMsgHeader'>
 	<tpl>
-		<div class='zcs-mail-msgHdr'>
-			<div class='zcs-msgHdr-person'>
-				<img src='/t/resources/images/person.png' />
-			</div>
+		<div class='zcs-mail-msgHdr expanded'>
+			<div class='zcs-msgHdr-person'></div>
 			<tpl if='addrs.FROM'>
 				<div class='zcs-msgHdr-fromBubble'>
 					<tpl for='addrs.FROM'>
@@ -109,6 +104,7 @@
 			</tpl>
 			<div class='zcs-msgHdr-date'>{dateStr}</div>
 			<div class='zcs-msgHdr-link'>{[ZtMsg.hide]}</div>
+			<div class='zcs-msgHdr-menuButton'></div>
 		</div>
 		<tpl if='addrs.TO'>
 			<div class='zcs-mail-expMsgHdr'>

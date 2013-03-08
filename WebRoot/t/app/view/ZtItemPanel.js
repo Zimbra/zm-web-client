@@ -29,6 +29,7 @@ Ext.define('ZCS.view.ZtItemPanel', {
 	],
 
 	xtype: 'itempanel',
+	cls: 'zcs-item-panel',
 
 	config: {
 		layout: 'fit',
