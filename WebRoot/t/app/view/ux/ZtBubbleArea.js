@@ -480,11 +480,15 @@ Ext.define('ZCS.view.ux.ZtBubbleArea', {
                             } else {
                                 me.resizeInput(this, isDelete, parentDimensions);
 
-                                if (isDelete && this.getValue() === '') {
+                                if (isDelete && this.getValue() === '' && !this.lastLength) {
                                     me.removeLastBubble();
                                 }
                                 me.fireEvent('inputKeyup', e, el);
                             }
+
+                            //Set this, since we're in keyup, the next keyup needs to know if the input
+                            //was empty before it happened or if the keyup caused it to happen.
+                            this.lastLength = this.getValue().length;
                         });
 
                         inputEl.on('blur', function (e, el) {

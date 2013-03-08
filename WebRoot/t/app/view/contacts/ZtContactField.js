@@ -25,7 +25,6 @@ Ext.define('ZCS.view.contacts.ZtContactField', {
 	alias: 'widget.contactfield',
 	config: {
 
-		//TODO: if a contact model is no longer used, return perhaps an email model.
 		getBubbleModelFromInput: function (input) {
 			var emailObject = Ext.create('ZCS.model.mail.ZtEmailAddress', {
 					email: input
@@ -39,7 +38,7 @@ Ext.define('ZCS.view.contacts.ZtContactField', {
 				return false;
 			}
 		},
-		bubbleDisplayField: 'displayName',
+		bubbleDisplayField: 'viewName',
 
 		menuItemTpl: [
 			'<tpl if="name">',

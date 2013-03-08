@@ -36,7 +36,7 @@ Ext.define('ZCS.model.address.ZtAutoComplete', {
 			{ name: 'email', type: 'string'},
 			{ name: 'name', type: 'string'},
 			{
-				name: 'displayName',
+				name: 'viewName',
 				type: 'string',
 				convert: function (v, record) {
 					return record.get('name') || record.get('email');
