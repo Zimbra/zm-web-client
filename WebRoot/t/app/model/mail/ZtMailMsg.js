@@ -179,7 +179,7 @@ Ext.define('ZCS.model.mail.ZtMailMsg', {
 	getContentAsHtml: function(msgBodyId) {
 
 		if (this.isInvite()) {
-			return this.getInviteContent(msgBodyId);
+			return this.get('invite').getContentAsHtml(msgBodyId);
 		}
 
 		var bodyParts = this.get('bodyParts'),
@@ -402,45 +402,6 @@ Ext.define('ZCS.model.mail.ZtMailMsg', {
 
 	isInvite: function() {
 		return !!this.get('invite');
-	},
-
-	/**
-	 * Returns content of a message that is an invite.
-	 *
-	 * @param {String}  msgBodyId   ID of owning ZtMsgBody
-	 * @return {String}     invite content
-	 */
-	getInviteContent: function(msgBodyId) {
-
-		var invite = this.get('invite'),
-			dateFormat = invite.get('isAllDay') ? ZtMsg.invDateFormat : ZtMsg.invDateTimeFormat,
-			idParams = {
-				msgId:      invite.getMsgId(),
-				msgBodyId:  msgBodyId
-			},
-			data = {
-				start:          Ext.Date.format(invite.get('start'), dateFormat),
-				end:            Ext.Date.format(invite.get('end'), dateFormat),
-				location:       invite.get('location'),
-				organizer:      ZCS.model.mail.ZtMailItem.convertAddressModelToObject(invite.get('organizer')),
-				attendees:      ZCS.model.mail.ZtMailItem.convertAddressModelToObject(invite.get('attendees')),
-				optAttendees:   ZCS.model.mail.ZtMailItem.convertAddressModelToObject(invite.get('optAttendees')),
-				notes:          invite.get('notes'),
-
-				acceptButtonId:     ZCS.util.getUniqueId(Ext.apply({}, {
-										action: ZCS.constant.OP_ACCEPT
-									}, idParams)),
-				tentativeButtonId:  ZCS.util.getUniqueId(Ext.apply({}, {
-										action: ZCS.constant.OP_TENTATIVE
-									}, idParams)),
-				declineButtonId:    ZCS.util.getUniqueId(Ext.apply({}, {
-										action: ZCS.constant.OP_DECLINE
-									}, idParams))
-			};
-
-
-
-		return ZCS.model.mail.ZtMailMsg.inviteTpl.apply(data);
 	}
 },
 	function (thisClass) {

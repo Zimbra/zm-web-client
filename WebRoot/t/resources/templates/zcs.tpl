@@ -208,6 +208,12 @@
                 </td>
 			</tr>
 			</tpl>
+			<tpl if='myResponse'>
+			<tr>
+				<td class='zcs-invite-label'>{[ZtMsg.invStatusLabel]}</td>
+				<td>{myResponse}</td>
+			</tr>
+			</tpl>
 			<tr>
 				<td class='zcs-invite-label'>{[ZtMsg.invRespondLabel]}</td>
 				<td>

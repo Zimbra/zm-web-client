@@ -454,6 +454,17 @@ ZCS.constant.OP_ACCEPT      = 'ACCEPT';
 ZCS.constant.OP_TENTATIVE   = 'TENTATIVE';
 ZCS.constant.OP_DECLINE     = 'DECLINE';
 
+// Participation status (there are others we can add if needed)
+ZCS.constant.PSTATUS_ACCEPTED   = 'AC';
+ZCS.constant.PSTATUS_TENTATIVE  = 'TE';
+ZCS.constant.PSTATUS_DECLINED   = 'DE';
+
+// Text describing participation status
+ZCS.constant.PSTATUS_TEXT = {};
+ZCS.constant.PSTATUS_TEXT[ZCS.constant.PSTATUS_ACCEPTED]    = ZtMsg.inviteAccepted;
+ZCS.constant.PSTATUS_TEXT[ZCS.constant.PSTATUS_TENTATIVE]   = ZtMsg.inviteAcceptedTentatively;
+ZCS.constant.PSTATUS_TEXT[ZCS.constant.PSTATUS_DECLINED]    = ZtMsg.inviteDeclined;
+
 // Canned invite reply text based on response action
 ZCS.constant.INVITE_REPLY_TEXT = {};
 ZCS.constant.INVITE_REPLY_TEXT[ZCS.constant.OP_ACCEPT]      = ZtMsg.invReplyAcceptText;

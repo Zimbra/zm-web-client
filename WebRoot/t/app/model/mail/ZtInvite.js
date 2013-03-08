@@ -42,7 +42,10 @@ Ext.define('ZCS.model.mail.ZtInvite', {
 			{ name: 'organizer',        type: 'auto' },
 			{ name: 'isOrganizer',      type: 'boolean' },
 			{ name: 'sentBy',           type: 'string' },
-			{ name: 'status',           type: 'string' }
+			{ name: 'status',           type: 'string' },
+			{ name: 'method',           type: 'string' },
+			{ name: 'myResponse',       type: 'string' },
+			{ name: 'apptFolderId',     type: 'string' }
 		],
 
 		msgId: ''
@@ -67,7 +70,9 @@ Ext.define('ZCS.model.mail.ZtInvite', {
 				subject:        comp.name,
 				isOrganizer:    !!comp.isOrg,
 				location:       comp.loc,
-				isAllDay:       !!comp.allDay
+				isAllDay:       !!comp.allDay,
+				method:         comp.method,
+				apptFolderId:   comp.ciFolder
 			});
 
 			var	start = comp.s && comp.s[0],
@@ -105,6 +110,11 @@ Ext.define('ZCS.model.mail.ZtInvite', {
 				}
 				invite.set('attendees', attendees);
 				invite.set('optAttendees', optAttendees);
+			}
+
+			var myResponse = node.replies && node.replies[0].reply[0].ptst;
+			if (myResponse) {
+				invite.set('myResponse', myResponse);
 			}
 
 			invite.setMsgId(msgId);
@@ -168,6 +178,47 @@ Ext.define('ZCS.model.mail.ZtInvite', {
 	},
 
 	/**
+	 * Returns content of this invite as HTML.
+	 *
+	 * @param {String}  msgBodyId   ID of owning ZtMsgBody
+	 * @return {String}     invite content
+	 */
+	getContentAsHtml: function(msgBodyId) {
+
+		var	dateFormat = this.get('isAllDay') ? ZtMsg.invDateFormat : ZtMsg.invDateTimeFormat,
+			idParams = {
+				msgId:      this.getMsgId(),
+				msgBodyId:  msgBodyId
+			},
+			data = {
+				start:          Ext.Date.format(this.get('start'), dateFormat),
+				end:            Ext.Date.format(this.get('end'), dateFormat),
+				location:       this.get('location'),
+				organizer:      ZCS.model.mail.ZtMailItem.convertAddressModelToObject(this.get('organizer')),
+				attendees:      ZCS.model.mail.ZtMailItem.convertAddressModelToObject(this.get('attendees')),
+				optAttendees:   ZCS.model.mail.ZtMailItem.convertAddressModelToObject(this.get('optAttendees')),
+				notes:          this.get('notes'),
+
+				acceptButtonId:     ZCS.util.getUniqueId(Ext.apply({}, {
+					action: ZCS.constant.OP_ACCEPT
+				}, idParams)),
+				tentativeButtonId:  ZCS.util.getUniqueId(Ext.apply({}, {
+					action: ZCS.constant.OP_TENTATIVE
+				}, idParams)),
+				declineButtonId:    ZCS.util.getUniqueId(Ext.apply({}, {
+					action: ZCS.constant.OP_DECLINE
+				}, idParams))
+			};
+
+		if (!this.isCanceled() && !this.get('isOrganizer') && this.hasReplyMethod()) {
+			var myResponse = this.get('myResponse');
+			data.myResponse = myResponse ? ZCS.constant.PSTATUS_TEXT[myResponse] : '';
+		}
+
+		return ZCS.model.mail.ZtMailMsg.inviteTpl.apply(data);
+	},
+
+	/**
 	 * Returns an HTML summary of this invite.
 	 * @return {String} invite summary as HTML
 	 */
@@ -226,5 +277,14 @@ Ext.define('ZCS.model.mail.ZtInvite', {
 		out[i++] = '</div><br>';
 
 		return out.join('');
+	},
+
+	hasReplyMethod: function() {
+		var method = this.get('method');
+		return !method || method === 'REQUEST' || method === 'PUBLISH';
+	},
+
+	isCanceled: function() {
+		return this.get('apptFolder') === ZCS.constant.ID_TRASH;
 	}
 });
