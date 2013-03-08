@@ -28,6 +28,7 @@ Ext.define('ZCS.view.ZtListPanel', {
 		'Ext.dataview.List',
 		'Ext.TitleBar',
 		'Ext.field.Search',
+		'Ext.form.FieldSet',
 
 		'ZCS.view.mail.ZtConvListView',
 		'ZCS.view.contacts.ZtContactListView'
