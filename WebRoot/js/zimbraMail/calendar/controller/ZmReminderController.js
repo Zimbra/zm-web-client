@@ -73,7 +73,7 @@ function() {
 ZmReminderController.prototype.refresh =
 function() {
 	this._searchTimeRange = this.getSearchTimeRange();
-	DBG.println(AjxDebug.DBG1, "reminder search time range: " + this._searchTimeRange.start + " to " + this._searchTimeRange.end);
+    AjxDebug.println(AjxDebug.REMINDER, "reminder search time range: " + this._searchTimeRange.start + " to " + this._searchTimeRange.end);
 
 	var params = this.getRefreshParams();
 	this._calController.getApptSummaries(params);
@@ -82,7 +82,7 @@ function() {
 	if (this._refreshActionId) {
 		AjxTimedAction.cancelAction(this._refreshActionId);
 	}
-	DBG.println(AjxDebug.DBG2, "reminder refresh");
+    AjxDebug.println(AjxDebug.REMINDER, "reminder refresh");
 	this._refreshActionId = AjxTimedAction.scheduleAction(this._refreshTimedAction, (AjxDateUtil.MSEC_PER_HOUR * ZmReminderController._CACHE_REFRESH));
 };
 
@@ -172,11 +172,10 @@ function(list) {
 		var appt = list.get(i);
 		var id = appt.id;
         var hasAlarm = appt.recurring ? appt.isAlarmInstance() : appt.hasAlarmData();
-        AjxDebug.println(AjxDebug.REMINDER, "8_0_3 :: " + i + " :: " + appt.name + " :: " + appt.startDate + " :: " + appt.endDate + " :: " + appt.recurring + " :: " +appt.isException);
 		if (hasAlarm) {
             var alarmData = appt.getAlarmData();
             alarmData = (alarmData && alarmData.length > 0) ? alarmData[0] : {};
-            AjxDebug.println(AjxDebug.REMINDER, "8_0_3 :: " + (alarmData.nextAlarm || " NA ") + " / " + (alarmData.alarmInstStart || " NA "));
+            AjxDebug.println(AjxDebug.REMINDER, appt.name + " :: " + appt.startDate + " :: " + appt.endDate + " :: " + appt.recurring + " :: " + appt.isException + " :: " + alarmData.nextAlarm + " :: " + alarmData.alarmInstStart);
 			if (!this._cacheMap[id]) {
 				this._cacheMap[id] = true;
 				newList.add(appt);
@@ -201,7 +200,7 @@ function(list) {
 		this._cachedAppts = new AjxVector();
 	}
 
-	DBG.println(AjxDebug.DBG2, "updating reminder cache...");
+    AjxDebug.println(AjxDebug.REMINDER, "updating reminder cache...");
 	var srchRange = this.getSearchTimeRange();
 	var count = 0;
 
@@ -217,7 +216,7 @@ function(list) {
 		}
 	}
 
-	DBG.println(AjxDebug.DBG2, "new appts added to reminder cache :" + count);
+    AjxDebug.println(AjxDebug.REMINDER, "new appts added to reminder cache :" + count);
 };
 
 ZmReminderController.prototype.isApptSnoozed =
@@ -233,10 +232,10 @@ function(uid) {
  */
 ZmReminderController.prototype._housekeepingAction =
 function() {
-	DBG.println(AjxDebug.DBG2, "reminder house keeping action...");
+    AjxDebug.println(AjxDebug.REMINDER, "reminder house keeping action...");
 	var rd = this.getReminderDialog();
 	if (ZmCsfeCommand.noAuth) {
-		DBG.println(AjxDebug.DBG1, "reminder check: no auth token, bailing");
+        AjxDebug.println(AjxDebug.REMINDER, "reminder check: no auth token, bailing");
 		if (rd && rd.isPoppedUp()) {
 			rd.popdown();
 		}
@@ -247,7 +246,7 @@ function() {
 		var newTimeRange = this.getSearchTimeRange();
 		var diff = newTimeRange.end - this._searchTimeRange.end;
 		if (diff > AjxDateUtil.MSEC_PER_HOUR) {
-			DBG.println(AjxDebug.DBG2, "time elapsed - refreshing reminder cache");
+            AjxDebug.println(AjxDebug.REMINDER, "time elapsed - refreshing reminder cache");
 			this._searchTimeRange = null;
 			this.refresh();
 			return;
@@ -257,7 +256,7 @@ function() {
 	var cachedSize = this._cachedAppts.size();
 	var activeSize = this._activeAppts.size();
 	if (cachedSize == 0 && activeSize == 0) {
-		DBG.println(AjxDebug.DBG2, "no appts - empty cached and active list");
+        AjxDebug.println(AjxDebug.REMINDER, "no appts - empty cached and active list");
 		this._scheduleHouseKeepingAction();
 		return;
 	}
@@ -306,14 +305,16 @@ function() {
 	// if we have any to notify on, do it
 	if (numNotify || rd.isPoppedUp()) {
 		if (this._activeAppts.size() == 0 && rd.isPoppedUp()) {
-			rd.popdown();
+            AjxDebug.println(AjxDebug.REMINDER, "popping down reminder dialog");
+            rd.popdown();
 		} else {
+            AjxDebug.println(AjxDebug.REMINDER, "initializing reminder dialog");
 			rd.initialize(this._activeAppts);
 			if (!rd.isPoppedUp()) rd.popup();
 		}
 	}
 
-	DBG.println(AjxDebug.DBG2, "no of appts active:" + this._activeAppts.size() + ", no of appts cached:" + cachedSize);
+    AjxDebug.println(AjxDebug.REMINDER, "no of appts active:" + this._activeAppts.size() + ", no of appts cached:" + cachedSize);
 
 	if (this._oldAppts.size() > 0) {
 		this.dismissAppt(this._oldAppts, new AjxCallback(this, this._silentDismissCallback));
