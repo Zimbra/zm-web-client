@@ -416,7 +416,7 @@ function(htmlArr, idx, item, field, colIdx, params, classes) {
 		}
 	}
 	else if (field == ZmItem.F_EXPAND) {
-		idx = this._getImageHtml(htmlArr, idx, this._isExpandable(item) ? "NodeCollapsed" : null, this._getFieldId(item, field), classes);
+		idx = this._getImageHtml(htmlArr, idx, this._getCellCollapseExpandImage(item), this._getFieldId(item, field), classes);
 	}
     else if (field == ZmItem.F_READ) {
 		idx = this._getImageHtml(htmlArr, idx, item.getReadIcon(), this._getFieldId(item, field), classes);
