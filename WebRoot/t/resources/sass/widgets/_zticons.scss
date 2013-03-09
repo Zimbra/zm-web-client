@@ -75,3 +75,8 @@
   @include zimbra-icon;
   background-image: url('/img/zimbra/ImgMessageDoc.png');
 }
+
+.ImgCalendarFolder {
+  @include zimbra-icon;
+  background-image: url('/img/zimbra/ImgCalendarFolder.png');
+}

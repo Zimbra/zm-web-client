@@ -36,23 +36,43 @@ Ext.define('ZCS.common.mail.ZtMimeTable', {
 	/**
 	 * Returns true if the type is a renderable image.
 	 *
-	 * @param	{string}	type		the type
-	 * @return	{boolean}	<code>true</code> if the type is a renderable image
+	 * @param	{string}	type		content type
+	 * @return	{boolean}	true if the type is a renderable image
 	 */
 	isRenderableImage: function(type) {
 		return ZCS.mime.IS_RENDERABLE_IMAGE[type];
 	},
 
+	/**
+	 * Returns true if the type is a text type other than text/plain or text/html.
+	 *
+	 * @param	{string}	type		content type
+	 * @return {Boolean}    true if the type is a text type
+	 */
 	isTextType: function(type) {
 		return (ZCS.mime.getType(type) === ZCS.mime.TEXT && type !== ZCS.mime.TEXT_HTML && type !== ZCS.mime.TEXT_CAL);
 	},
 
+	/**
+	 * Returns the name of the CSS class that can be used to show an image for the given type.
+	 *
+	 * @param	{string}	type		content type
+	 * @return {String}     CSS class
+	 */
 	getIconClass: function(type) {
-		return 'Img' + ZCS.mime.table[type].image;
+		var entry = ZCS.mime.table[type];
+		return entry ? 'Img' + entry.image : '';
 	},
 
+	/**
+	 * Returns the URL for an image for the given type.
+	 *
+	 * @param	{string}	type		content type
+	 * @return {String}     image URL
+	 */
 	getIconUrl: function(type) {
-		return ZCS.constant.IMAGE_URL_BASE + ZCS.mime.table[type].image + '.png';
+		var entry = ZCS.mime.table[type];
+		return entry ? ZCS.constant.IMAGE_URL_BASE + entry.image + '.png' : '';
 	}
 });
 
@@ -164,6 +184,7 @@ ZCS.mime.table[ZCS.mime.TEXT_HTML]		    	= { desc: ZtMsg.htmlDocument, image: 'H
 ZCS.mime.table[ZCS.mime.TEXT_JAVA]			    = { desc: ZtMsg.javaSource, image: 'GenericDoc' };
 ZCS.mime.table[ZCS.mime.TEXT_PLAIN]			    = { desc: ZtMsg.textFile, image: 'GenericDoc' };
 ZCS.mime.table[ZCS.mime.TEXT_XML]			    = { desc: ZtMsg.xmlDocument, image: 'GenericDoc' };
+ZCS.mime.table[ZCS.mime.TEXT_CAL]			    = { desc: ZtMsg.calendar, image: 'CalendarFolder' };
 
 ZCS.mime.IS_RENDERABLE_IMAGE = {};
 ZCS.mime.IS_RENDERABLE_IMAGE[ZCS.mime.IMG_JPEG] = true;

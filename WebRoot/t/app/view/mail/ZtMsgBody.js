@@ -88,6 +88,7 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 		var me = this,
 			html = msg.getContentAsHtml(this.getId()),
 			isInvite = msg.get('isInvite'),
+			container = this.htmlContainer,
 			iframe = this.iframe;
 
 		if (!isLast && !isInvite) {
@@ -110,6 +111,10 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 
 		if (this.getUsingIframe()) {
 			Ext.Logger.conv('Use IFRAME for [' + msg.get('fragment') + ']');
+			if (container) {
+				container.setHtml('');
+				container.hide();
+			}
 			if (!iframe) {
 				iframe = this.iframe = new ZCS.view.ux.ZtIframe({
 					name: 'ZCSIframe-' + this.up('msgview').getId()
@@ -121,7 +126,6 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 
 				this.add(iframe);
 			}
-			this.setHtml('');
 			iframe.setContent(html);
 
 			// We hide external images if user wants us to, or this is Spam, and the user hasn't
@@ -142,7 +146,14 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 			if (iframe) {
 				iframe.hide();
 			}
-			this.setHtml(html);
+			if (!container) {
+				container = this.htmlContainer = Ext.create('Ext.Component', {
+					cls: 'zcs-html-container'
+				});
+				this.add(this.htmlContainer);
+			}
+			container.setHtml(html);
+			container.show();
 		}
 
 		var attInfo = msg.getAttachmentInfo();
@@ -260,7 +271,7 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 			}
 			else if (pnValue) {
 				// image came as a related part keyed by Content-Location
-				value = msg.getPartUrlByField('contentLocation', value);
+				value = msg.getPartUrlByField('contentLocation', value, 'foundInMsgBody');
 				if (value) {
 					el.setAttribute(attr, value);
 					imgChanged = true;

@@ -448,12 +448,12 @@ Ext.define('ZCS.model.mail.ZtMailMsg', {
 				contentId = attachment.get('contentId'),
 				contentLocation = attachment.get('contentLocation'),
 				part = attachment.get('part'),
-				isInlineImg = ZCS.mime.getType(type) === ZCS.mime.IMG && contentId && attachment.foundInMsgBody;
+				isInlineImg = (ZCS.mime.getType(type) === ZCS.mime.IMG && contentId && attachment.foundInMsgBody),
+				isInviteCalendar = (type === ZCS.mime.TEXT_CAL && this.get('isInvite'));
 
-			if (!attachment.isIgnoredPart() && !isInlineImg) {
+			if (!attachment.isIgnoredPart() && !isInlineImg && !isInviteCalendar) {
 				var info = {};
 				info.label = attachment.get('name') || attachment.get('fileName') || Ext.String.format(ZtMsg.unknownAttType, type);
-//				info.icon = ZCS.mime.getIconUrl(type);
 				info.icon = ZCS.mime.getIconClass(type);
 				info.size = ZCS.util.formatFileSize(attachment.get('size'));
 				info.url = (!part || ZCS.constant.REGEX_URL.test(contentLocation)) ? contentLocation : this.getPartUrl(part);
