@@ -236,3 +236,8 @@
 		<div class="zcs-toast-undo-action">Undo</div>
 	</div>
 </template>
+
+# show a single attachment
+<template id='Attachment'>
+	<span class="vm-area-bubble"><div class="{icon}"></div><a target="_blank" href="{url}">{label}</a> ({size})</span>
+</template>

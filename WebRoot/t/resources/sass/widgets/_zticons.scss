@@ -1,0 +1,77 @@
+@mixin zimbra-icon() {
+  width: 16px;
+  height: 16px;
+  display: inline-block;
+}
+
+/* Attachment icons */
+
+.ImgImageDoc {
+  @include zimbra-icon;
+  background-image: url('/img/zimbra/ImgImageDoc.png');
+}
+
+.ImgPDFDoc {
+  @include zimbra-icon;
+  background-image: url('/img/zimbra/ImgPDFDoc.png');
+}
+
+.ImgGenericDoc {
+  @include zimbra-icon;
+  background-image: url('/img/zimbra/ImgGenericDoc.png');
+}
+
+.ImgExeDoc {
+  @include zimbra-icon;
+  background-image: url('/img/zimbra/ImgExeDoc.png');
+}
+
+.ImgMSExcelDoc {
+  @include zimbra-icon;
+  background-image: url('/img/zimbra/ImgMSExcelDoc.png');
+}
+
+.ImgMSPowerpointDoc {
+  @include zimbra-icon;
+  background-image: url('/img/zimbra/ImgMSPowerpointDoc.png');
+}
+
+.ImgMSProjectDoc {
+  @include zimbra-icon;
+  background-image: url('/img/zimbra/ImgMSProjectDoc.png');
+}
+
+.ImgMSVisioDoc {
+  @include zimbra-icon;
+  background-image: url('/img/zimbra/ImgMSVisioDoc.png');
+}
+
+.ImgMSWordDoc {
+  @include zimbra-icon;
+  background-image: url('/img/zimbra/ImgMSWordDoc.png');
+}
+
+.ImgUnknownDoc {
+  @include zimbra-icon;
+  background-image: url('/img/zimbra/ImgUnknownDoc.png');
+}
+
+.ImgZipDoc {
+  @include zimbra-icon;
+  background-image: url('/img/zimbra/ImgZipDoc.png');
+}
+
+.ImgAudioDoc {
+  @include zimbra-icon;
+  background-image: url('/img/zimbra/ImgAudioDoc.png');
+}
+
+.ImgVideoDoc {
+  @include zimbra-icon;
+  background-image: url('/img/zimbra/ImgVideoDoc.png');
+}
+
+.ImgMessageDoc {
+  @include zimbra-icon;
+  background-image: url('/img/zimbra/ImgMessageDoc.png');
+}

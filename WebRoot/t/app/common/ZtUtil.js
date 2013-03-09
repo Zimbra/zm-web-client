@@ -227,5 +227,25 @@ Ext.define('ZCS.common.ZtUtil', {
 		}
 
 		return date;
+	},
+
+	/**
+	 * Returns a readable version of a file size, such as "1.8 MB".  Would be nice to
+	 * have Ext.util.Format.fileSize available, but it's not.
+	 *
+	 * @param {int}     size        file size in bytes
+	 * @return {String}     file size string
+	 */
+	formatFileSize: function(size) {
+
+		if (size < 1024) {
+			return size + ' ' + ZtMsg.bytes;
+		}
+		else if (size < (1024 * 1024)) {
+			return (Math.round((size / 1024) * 10) / 10) + ' ' + ZtMsg.kilobytes;
+		}
+		else {
+			return (Math.round((size / (1024 * 1024)) * 10) / 10) + ' ' + ZtMsg.megabytes;
+		}
 	}
 });

@@ -25,6 +25,14 @@ Ext.define('ZCS.common.mail.ZtMimeTable', {
 
 	alternateClassName: 'ZCS.mime',
 
+	getType: function(type) {
+		return (type.split('/'))[0];
+	},
+
+	getSubType: function(type) {
+		return (type.split('/'))[1];
+	},
+
 	/**
 	 * Returns true if the type is a renderable image.
 	 *
@@ -36,7 +44,15 @@ Ext.define('ZCS.common.mail.ZtMimeTable', {
 	},
 
 	isTextType: function(type) {
-		return (/^text\//.test(type) && type !== ZCS.mime.TEXT_HTML && type !== ZCS.mime.TEXT_CAL);
+		return (ZCS.mime.getType(type) === ZCS.mime.TEXT && type !== ZCS.mime.TEXT_HTML && type !== ZCS.mime.TEXT_CAL);
+	},
+
+	getIconClass: function(type) {
+		return 'Img' + ZCS.mime.table[type].image;
+	},
+
+	getIconUrl: function(type) {
+		return ZCS.constant.IMAGE_URL_BASE + ZCS.mime.table[type].image + '.png';
 	}
 });
 
@@ -110,44 +126,44 @@ ZCS.mime.FORMAT_FLOWED			= 'flowed';
 
 ZCS.mime.table = {};
 
-ZCS.mime.table[ZCS.mime.APP]					= {desc: ZtMsg.application, image: 'ExeDoc', imageLarge: 'ExeDoc_48', query: 'application/*'};
-ZCS.mime.table[ZCS.mime.APP_ADOBE_PDF]		    = {desc: ZtMsg.adobePdfDocument, image: 'PDFDoc', imageLarge: 'PDFDoc_48'};
-ZCS.mime.table[ZCS.mime.APP_ADOBE_PS]		    = {desc: ZtMsg.adobePsDocument, image: 'GenericDoc', imageLarge: 'GenericDoc_48'};
-ZCS.mime.table[ZCS.mime.APP_EXE]				= {desc: ZtMsg.application, image: 'ExeDoc', imageLarge: 'ExeDoc_48'};
-ZCS.mime.table[ZCS.mime.APP_MS_DOWNLOAD]		= {desc: ZtMsg.msDownload, image: 'ExeDoc', imageLarge: 'ExeDoc_48'};
-ZCS.mime.table[ZCS.mime.APP_MS_EXCEL]		    = {desc: ZtMsg.msExcelDocument, image: 'MSExcelDoc', imageLarge: 'MSExcelDoc_48', query: 'excel'};
-ZCS.mime.table[ZCS.mime.APP_MS_PPT]			    = {desc: ZtMsg.msPPTDocument, image: 'MSPowerpointDoc', imageLarge: 'MSPowerpointDoc_48'};
-ZCS.mime.table[ZCS.mime.APP_MS_PROJECT]		    = {desc: ZtMsg.msProjectDocument, image: 'MSProjectDoc', imageLarge: 'MSProjectDoc_48'};
-ZCS.mime.table[ZCS.mime.APP_MS_VISIO]		    = {desc: ZtMsg.msVisioDocument, image: 'MSVisioDoc', imageLarge: 'MSVisioDoc_48'};
-ZCS.mime.table[ZCS.mime.APP_MS_WORD]			= {desc: ZtMsg.msWordDocument, image: 'MSWordDoc', imageLarge: 'MSWordDoc_48', query: 'word'};
-ZCS.mime.table[ZCS.mime.APP_OCTET_STREAM]	    = {desc: ZtMsg.unknownBinaryType, image: 'UnknownDoc', imageLarge: 'UnknownDoc_48'};
-ZCS.mime.table[ZCS.mime.APP_OPENXML_DOC]		= {desc: ZtMsg.msWordDocument, image: 'MSWordDoc', imageLarge: 'MSWordDoc_48'};
-ZCS.mime.table[ZCS.mime.APP_OPENXML_EXCEL]	    = {desc: ZtMsg.msExcelDocument, image: 'MSExcelDoc', imageLarge: 'MSExcelDoc_48'};
-ZCS.mime.table[ZCS.mime.APP_OPENXML_PPT]		= {desc: ZtMsg.msPPTDocument, image: 'MSPowerpointDoc', imageLarge: 'MSPowerpointDoc_48'};
-ZCS.mime.table[ZCS.mime.APP_XML]			    = {desc: ZtMsg.xmlDocument, image: 'GenericDoc', imageLarge: 'GenericDoc_48'};
-ZCS.mime.table[ZCS.mime.APP_ZIMBRA_DOC]  	    = {desc: ZtMsg.zimbraDocument, image: 'Doc', imageLarge: 'Doc_48'};
-ZCS.mime.table[ZCS.mime.APP_ZIMBRA_SLIDES]	    = {desc: ZtMsg.zimbraPresentation, image: 'Presentation', imageLarge: 'Presentation_48'};
-ZCS.mime.table[ZCS.mime.APP_ZIMBRA_SPREADSHEET] = {desc: ZtMsg.zimbraSpreadsheet, image: 'ZSpreadSheet', imageLarge: 'ZSpreadSheet_48' };
-ZCS.mime.table[ZCS.mime.APP_ZIP]				= {desc: ZtMsg.zipFile, image: 'ZipDoc', imageLarge: 'ZipDoc_48'};
-ZCS.mime.table[ZCS.mime.APP_ZIP2]   			= {desc: ZtMsg.zipFile, image: 'ZipDoc', imageLarge: 'ZipDoc_48'};
-ZCS.mime.table[ZCS.mime.AUDIO]		    		= {desc: ZtMsg.audio, image: 'AudioDoc', imageLarge: 'Doc_48'};
-ZCS.mime.table[ZCS.mime.AUDIO_WAV]		    	= {desc: ZtMsg.waveAudio, image: 'AudioDoc', imageLarge: 'AudioDoc_48'};
-ZCS.mime.table[ZCS.mime.AUDIO_MP3]			    = {desc: ZtMsg.mp3Audio, image: 'AudioDoc', imageLarge: 'AudioDoc_48'};
-ZCS.mime.table[ZCS.mime.VIDEO]				    = {desc: ZtMsg.video, image: 'VideoDoc', imageLarge: 'VideoDoc_48'};
-ZCS.mime.table[ZCS.mime.VIDEO_WMV]			    = {desc: ZtMsg.msWMV, image: 'VideoDoc', imageLarge: 'VideoDoc_48'};
-ZCS.mime.table[ZCS.mime.IMG]					= {desc: ZtMsg.image, image: 'ImageDoc', imageLarge: 'ImageDoc_48', query: 'image/*'};
-ZCS.mime.table[ZCS.mime.IMG_BMP]				= {desc: ZtMsg.bmpImage, image: 'ImageDoc', imageLarge: 'ImageDoc_48', query: 'bmp'};
-ZCS.mime.table[ZCS.mime.IMG_GIF]				= {desc: ZtMsg.gifImage, image: 'ImageDoc', imageLarge: 'ImageDoc_48', query: 'gif'};
-ZCS.mime.table[ZCS.mime.IMG_JPEG]			    = {desc: ZtMsg.jpegImage, image: 'ImageDoc', imageLarge: 'ImageDoc_48', query: 'jpeg'};
-ZCS.mime.table[ZCS.mime.IMG_PNG]				= {desc: ZtMsg.pngImage, image: 'ImageDoc', imageLarge: 'ImageDoc_48', query: 'png'};
-ZCS.mime.table[ZCS.mime.IMG_TIFF]			    = {desc: ZtMsg.tiffImage, image: 'ImageDoc', imageLarge: 'ImageDoc_48'};
-ZCS.mime.table[ZCS.mime.MSG_RFC822]			    = {desc: ZtMsg.mailMessage, image: 'MessageDoc', imageLarge: 'MessageDoc_48'};
-ZCS.mime.table[ZCS.mime.TEXT]	    			= {desc: ZtMsg.textDocuments, image: 'GenericDoc', imageLarge: 'GenericDoc_48'};
-ZCS.mime.table[ZCS.mime.TEXT_RTF]	    		= {desc: ZtMsg.enrichedText, image: 'GenericDoc', imageLarge: 'GenericDoc_48'};
-ZCS.mime.table[ZCS.mime.TEXT_HTML]		    	= {desc: ZtMsg.htmlDocument, image: 'HtmlDoc', imageLarge: 'HtmlDoc_48'};
-ZCS.mime.table[ZCS.mime.TEXT_JAVA]			    = {desc: ZtMsg.javaSource, image: 'GenericDoc', imageLarge: 'GenericDoc_48'};
-ZCS.mime.table[ZCS.mime.TEXT_PLAIN]			    = {desc: ZtMsg.textFile, image: 'GenericDoc', imageLarge: 'GenericDoc_48', query: 'text'};
-ZCS.mime.table[ZCS.mime.TEXT_XML]			    = {desc: ZtMsg.xmlDocument, image: 'GenericDoc', imageLarge: 'GenericDoc_48'};
+ZCS.mime.table[ZCS.mime.APP]					= { desc: ZtMsg.application, image: 'ExeDoc' };
+ZCS.mime.table[ZCS.mime.APP_ADOBE_PDF]		    = { desc: ZtMsg.adobePdfDocument, image: 'PDFDoc' };
+ZCS.mime.table[ZCS.mime.APP_ADOBE_PS]		    = { desc: ZtMsg.adobePsDocument, image: 'GenericDoc' };
+ZCS.mime.table[ZCS.mime.APP_EXE]				= { desc: ZtMsg.application, image: 'ExeDoc' };
+ZCS.mime.table[ZCS.mime.APP_MS_DOWNLOAD]		= { desc: ZtMsg.msDownload, image: 'ExeDoc' };
+ZCS.mime.table[ZCS.mime.APP_MS_EXCEL]		    = { desc: ZtMsg.msExcelDocument, image: 'MSExcelDoc' };
+ZCS.mime.table[ZCS.mime.APP_MS_PPT]			    = { desc: ZtMsg.msPPTDocument, image: 'MSPowerpointDoc' };
+ZCS.mime.table[ZCS.mime.APP_MS_PROJECT]		    = { desc: ZtMsg.msProjectDocument, image: 'MSProjectDoc' };
+ZCS.mime.table[ZCS.mime.APP_MS_VISIO]		    = { desc: ZtMsg.msVisioDocument, image: 'MSVisioDoc' };
+ZCS.mime.table[ZCS.mime.APP_MS_WORD]			= { desc: ZtMsg.msWordDocument, image: 'MSWordDoc' };
+ZCS.mime.table[ZCS.mime.APP_OCTET_STREAM]	    = { desc: ZtMsg.unknownBinaryType, image: 'UnknownDoc' };
+ZCS.mime.table[ZCS.mime.APP_OPENXML_DOC]		= { desc: ZtMsg.msWordDocument, image: 'MSWordDoc' };
+ZCS.mime.table[ZCS.mime.APP_OPENXML_EXCEL]	    = { desc: ZtMsg.msExcelDocument, image: 'MSExcelDoc' };
+ZCS.mime.table[ZCS.mime.APP_OPENXML_PPT]		= { desc: ZtMsg.msPPTDocument, image: 'MSPowerpointDoc' };
+ZCS.mime.table[ZCS.mime.APP_XML]			    = { desc: ZtMsg.xmlDocument, image: 'GenericDoc' };
+ZCS.mime.table[ZCS.mime.APP_ZIMBRA_DOC]  	    = { desc: ZtMsg.zimbraDocument, image: 'Doc' };
+ZCS.mime.table[ZCS.mime.APP_ZIMBRA_SLIDES]	    = { desc: ZtMsg.zimbraPresentation, image: 'Presentation' };
+ZCS.mime.table[ZCS.mime.APP_ZIMBRA_SPREADSHEET] = { desc: ZtMsg.zimbraSpreadsheet, image: 'ZSpreadSheet' };
+ZCS.mime.table[ZCS.mime.APP_ZIP]				= { desc: ZtMsg.zipFile, image: 'ZipDoc' };
+ZCS.mime.table[ZCS.mime.APP_ZIP2]   			= { desc: ZtMsg.zipFile, image: 'ZipDoc' };
+ZCS.mime.table[ZCS.mime.AUDIO]		    		= { desc: ZtMsg.audio, image: 'AudioDoc' };
+ZCS.mime.table[ZCS.mime.AUDIO_WAV]		    	= { desc: ZtMsg.waveAudio, image: 'AudioDoc' };
+ZCS.mime.table[ZCS.mime.AUDIO_MP3]			    = { desc: ZtMsg.mp3Audio, image: 'AudioDoc' };
+ZCS.mime.table[ZCS.mime.VIDEO]				    = { desc: ZtMsg.video, image: 'VideoDoc' };
+ZCS.mime.table[ZCS.mime.VIDEO_WMV]			    = { desc: ZtMsg.msWMV, image: 'VideoDoc' };
+ZCS.mime.table[ZCS.mime.IMG]					= { desc: ZtMsg.image, image: 'ImageDoc' };
+ZCS.mime.table[ZCS.mime.IMG_BMP]				= { desc: ZtMsg.bmpImage, image: 'ImageDoc' };
+ZCS.mime.table[ZCS.mime.IMG_GIF]				= { desc: ZtMsg.gifImage, image: 'ImageDoc' };
+ZCS.mime.table[ZCS.mime.IMG_JPEG]			    = { desc: ZtMsg.jpegImage, image: 'ImageDoc' };
+ZCS.mime.table[ZCS.mime.IMG_PNG]				= { desc: ZtMsg.pngImage, image: 'ImageDoc' };
+ZCS.mime.table[ZCS.mime.IMG_TIFF]			    = { desc: ZtMsg.tiffImage, image: 'ImageDoc' };
+ZCS.mime.table[ZCS.mime.MSG_RFC822]			    = { desc: ZtMsg.mailMessage, image: 'MessageDoc' };
+ZCS.mime.table[ZCS.mime.TEXT]	    			= { desc: ZtMsg.textDocuments, image: 'GenericDoc' };
+ZCS.mime.table[ZCS.mime.TEXT_RTF]	    		= { desc: ZtMsg.enrichedText, image: 'GenericDoc' };
+ZCS.mime.table[ZCS.mime.TEXT_HTML]		    	= { desc: ZtMsg.htmlDocument, image: 'HtmlDoc' };
+ZCS.mime.table[ZCS.mime.TEXT_JAVA]			    = { desc: ZtMsg.javaSource, image: 'GenericDoc' };
+ZCS.mime.table[ZCS.mime.TEXT_PLAIN]			    = { desc: ZtMsg.textFile, image: 'GenericDoc' };
+ZCS.mime.table[ZCS.mime.TEXT_XML]			    = { desc: ZtMsg.xmlDocument, image: 'GenericDoc' };
 
 ZCS.mime.IS_RENDERABLE_IMAGE = {};
 ZCS.mime.IS_RENDERABLE_IMAGE[ZCS.mime.IMG_JPEG] = true;

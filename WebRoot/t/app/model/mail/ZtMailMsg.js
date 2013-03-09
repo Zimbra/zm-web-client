@@ -225,8 +225,13 @@ Ext.define('ZCS.model.mail.ZtMailMsg', {
 		return html.join('');
 	},
 
-	// fix broken inline images - take one like this: <img dfsrc="http:...part=1.2.2">
-	// and make it look like this: <img dfsrc="cid:DWT123"> by looking up the cid for that part
+	/**
+	 * Fix broken inline images - take one like this: <img dfsrc="http:...part=1.2.2">
+	 * and make it look like this: <img dfsrc="cid:DWT123"> by looking up the cid for that part
+	 *
+	 * @param {String}  content     HTML content to fix
+	 * @return {String}     HTML with images fixed
+	 */
 	fixInlineImages: function(content) {
 
 		var attachments = this.get('attachments'),
@@ -360,7 +365,17 @@ Ext.define('ZCS.model.mail.ZtMailMsg', {
 		return result.join('').replace(/<\/?(html|head|body)[^>]*>/gi, '');
 	},
 
-	getPartUrl: function(field, value) {
+	/**
+	 * Looks for a part where the given field has the given value. If found, returns a URL that can be
+	 * used to fetch that part from the server.
+	 *
+	 * @param {String}  field       body part field name
+	 * @param {String}  value       value to look for
+	 * @param {String}  foundProp   (optional) property to set to true in part if found
+	 *
+	 * @return {String}     URL for fetching body part
+	 */
+	getPartUrlByField: function(field, value, foundProp) {
 
 		var bodyParts = this.get('bodyParts') || [],
 			attachments = this.get('attachments') || [],
@@ -370,19 +385,40 @@ Ext.define('ZCS.model.mail.ZtMailMsg', {
 		for (i = 0; i < ln; i++) {
 			part = allParts[i];
 			if (part.get(field) === value) {
-				return ZCS.htmlutil.buildUrl({
-					path: ZCS.constant.PATH_MSG_FETCH,
-					qsArgs: {
-						id: this.getId(),
-						part: part.get('part')
-					}
-				});
+				if (foundProp) {
+					part[foundProp] = true;
+				}
+				return this.getPartUrl(part.get('part'));
 			}
 		}
 
-		return null;
+		return '';
 	},
 
+	/**
+	 * Returns a URL for fetching the given part, adding locale, msg ID, and part number.
+	 *
+	 * @param {String}  part        part number
+	 * @return {String}     URL to fetch part from server
+	 * @private
+	 */
+	getPartUrl: function(part) {
+
+		return ZCS.htmlutil.buildUrl({
+			path: ZCS.constant.PATH_MSG_FETCH,
+			qsArgs: {
+				loc: ZCS.session.getSetting(ZCS.constant.SETTING_LOCALE),
+				id: this.getId(),
+				part: part
+			}
+		});
+	},
+
+	/**
+	 * Returns true if the sender of this message is trusted.
+	 *
+	 * @return {Boolean}    true if the sender is trusted
+	 */
 	hasTrustedSender: function() {
 
 		var	sender = this.getAddressByType(ZCS.constant.SENDER) || this.getAddressByType(ZCS.constant.FROM),
@@ -398,6 +434,56 @@ Ext.define('ZCS.model.mail.ZtMailMsg', {
 			}
 		}
 		return false;
+	},
+
+	getAttachmentInfo: function() {
+
+		var attachments = this.get('attachments').concat(this.getInlineAttachments()),
+			ln = attachments.length, i, attachment,
+			attInfo = [];
+
+		for (i = 0; i < ln; i++) {
+			attachment = attachments[i];
+			var type = attachment.get('contentType'),
+				contentId = attachment.get('contentId'),
+				contentLocation = attachment.get('contentLocation'),
+				part = attachment.get('part'),
+				isInlineImg = ZCS.mime.getType(type) === ZCS.mime.IMG && contentId && attachment.foundInMsgBody;
+
+			if (!attachment.isIgnoredPart() && !isInlineImg) {
+				var info = {};
+				info.label = attachment.get('name') || attachment.get('fileName') || Ext.String.format(ZtMsg.unknownAttType, type);
+//				info.icon = ZCS.mime.getIconUrl(type);
+				info.icon = ZCS.mime.getIconClass(type);
+				info.size = ZCS.util.formatFileSize(attachment.get('size'));
+				info.url = (!part || ZCS.constant.REGEX_URL.test(contentLocation)) ? contentLocation : this.getPartUrl(part);
+				attInfo.push(info);
+			}
+		}
+
+		return attInfo;
+	},
+
+	/**
+	 * Returns a list of body parts that are inline attachments.
+	 *
+	 * @return {Array}      list of inline attachments
+	 * @private
+	 */
+	getInlineAttachments: function() {
+
+		var bodyParts = this.get('bodyParts') || [],
+			ln = bodyParts.length, i, part,
+			inlineAtts = [];
+
+		for (i = 0; i < ln; i++) {
+			part = bodyParts[i];
+			if (part.fileName && part.contentDisposition === 'inline') {
+				inlineAtts.push(part);
+			}
+		}
+
+		return inlineAtts;
 	}
 },
 	function (thisClass) {
