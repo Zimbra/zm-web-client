@@ -173,10 +173,16 @@ Ext.define('ZCS.common.ZtUtil', {
 
 	compareOrganizers: function(organizer1, organizer2) {
 
+		if (!organizer1 || !organizer2) {
+			return !organizer1 && !organizer2 ? 0 : organizer1 ? 1 : -1;
+		}
+
 		var orgType1 = organizer1.type,
 			orgType2 = organizer2.type,
 			id1 = organizer1.itemId,
 			id2 = organizer2.itemId,
+			name1 = organizer1.name,
+			name2 = organizer2.name,
 			isSystem1 = (orgType1 !== ZCS.constant.ORG_SAVED_SEARCH && orgType1 !== ZCS.constant.ORG_TAG && id1 <= ZCS.constant.MAX_SYSTEM_ID),
 			isSystem2 = (orgType2 !== ZCS.constant.ORG_SAVED_SEARCH && orgType2 !== ZCS.constant.ORG_TAG && id2 <= ZCS.constant.MAX_SYSTEM_ID),
 			sortField1, sortField2;
@@ -193,8 +199,8 @@ Ext.define('ZCS.common.ZtUtil', {
 			sortField2 = ZCS.constant.FOLDER_SORT_VALUE[id2];
 		}
 		else {
-			sortField1 = organizer1.name.toLowerCase();
-			sortField2 = organizer2.name.toLowerCase();
+			sortField1 = name1 ? name1.toLowerCase() : '';
+			sortField2 = name2 ? name2.toLowerCase() : '';
 		}
 
 		return sortField1 > sortField2 ? 1 : (sortField1 === sortField2 ? 0 : -1);
