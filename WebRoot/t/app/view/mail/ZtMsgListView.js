@@ -47,29 +47,11 @@ Ext.define('ZCS.view.mail.ZtMsgListView', {
 
 		this.callParent(arguments);
 
-		this.preventTap = false;
-
 		// Add a delegate here so we can catch a tap on a msg header.
 		// Note: Adding this listener via config does not work.
-		this.on({
-			tap: function(e) {
-				Ext.Logger.verbose('TAP via delegate');
-				var msgHeader = this.down('#' + e.delegatedTarget.id);
-				if (msgHeader && !this.preventTap) {
-					msgHeader.fireEvent('toggleView', msgHeader);
-				}
-
-				if (this.preventTap) {
-					this.preventTap = false;
-				}
-			},
-			element: 'element',
-			delegate: '.zcs-msg-header',
-			scope: this
-		});
 
 		this.on({
-			taphold: function(e, node) {
+			tap: function(e, node) {
 				//This will not prevent tap events by itself, so we have to manually prevent taps for a period of time to prevent collapse
 				//when holding on an address.
 
@@ -77,10 +59,25 @@ Ext.define('ZCS.view.mail.ZtMsgListView', {
 					msgHeader = this.down('#' + e.delegatedTarget.id),
 					msg = msgHeader.getMsg();
 
-				if (elm.hasCls('vm-area-bubble')) {
-					this.preventTap = true;
-					msgHeader.fireEvent('bubbleHold', elm, msg, Ext.String.htmlDecode(elm.getAttribute('address')));
+				if (elm.hasCls('zcs-contact-bubble')) {
+					msgHeader.fireEvent('contactTap', elm, msg, Ext.String.htmlDecode(elm.getAttribute('address')));
+					return false;
 				}
+
+				if (elm.hasCls('zcs-tag-bubble')) {
+					msgHeader.fireEvent('tagTap', elm, msg, Ext.String.htmlDecord(elm.getAttribute('tagName')));
+					return false;
+				}
+
+				if (elm.hasCls('zcs-attachment-bubble')) {
+					msgHeader.fireEvent('attachmentTap', elm, msg);
+					return false;
+				}
+
+				if (msgHeader) {
+					msgHeader.fireEvent('toggleView', msgHeader);
+				}
+
 			},
 			element: 'element',
 			delegate: '.zcs-msg-header',

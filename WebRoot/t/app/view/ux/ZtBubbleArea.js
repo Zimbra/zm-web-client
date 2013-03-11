@@ -323,8 +323,8 @@ Ext.define('ZCS.view.ux.ZtBubbleArea', {
                             });
                         }
 
-                        this.element.on('taphold', function (event, node, options, eOpts) {
-                            me.fireEvent('bubbleHold', me, thisBubble, thisBubble.data);
+                        this.element.on('tap', function (event, node, options, eOpts) {
+                            me.fireEvent('bubbleTap', me, thisBubble, thisBubble.data);
                         });
                     }
                 },

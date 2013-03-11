@@ -14,12 +14,6 @@
 	display: block;
 }
 
-.zcs-editable, .zcs-editable * {
-/**
-	-webkit-user-drag: auto;
-*/
-}
-
 .zcs-fully-editable *, .zcs-fully-editable {
 	-webkit-user-select: auto;
 }

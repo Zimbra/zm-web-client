@@ -34,7 +34,7 @@ Ext.define('ZCS.controller.mail.ZtMsgAddressController', {
 
 		control: {
 			msgHeader: {
-				bubbleHold: 'doAddressMenu'
+				contactTap: 'doAddressMenu'
 			}
 		}
 	},
@@ -51,11 +51,24 @@ Ext.define('ZCS.controller.mail.ZtMsgAddressController', {
 			referenceComponent: element,
 			width: 180
 		});
-			
-		this.itemMenu.setMenuItems([
-			{label: 'Add to Contacts', action: '', listener: Ext.bind(this.doAddToContacts, this, [msg])},
-			{label: 'New Message', action: '', listener: Ext.bind(this.doNewMessage, this, [msg])}
-		]);
+
+		var menuItems = [];
+
+		if (ZCS.constant.IS_ENABLED[ZCS.constant.APP_CONTACTS]) {
+			menuItems.push({
+				label: 'Add to Contacts',
+				action: '',
+				listener: Ext.bind(this.doAddToContacts, this, [msg])
+			});
+		}
+
+		menuItems.push({
+			label: 'New Message',
+			action: '',
+			listener: Ext.bind(this.doNewMessage, this, [msg])
+		});
+
+		this.itemMenu.setMenuItems(menuItems);
 
 		this.itemMenu.popup();
 	},

@@ -47,7 +47,7 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 				saveDraft: 'doSaveDraft'
 			},
 			contactField: {
-				bubbleHold: 'showBubbleMenu'
+				bubbleTap: 'showBubbleMenu'
 			}
 		},
 
