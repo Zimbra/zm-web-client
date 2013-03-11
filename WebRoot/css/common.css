@@ -536,17 +536,18 @@ TD.vSpace {
 
 /* list row TD's (eg: text) */
 
-.Row TD, .RowDouble TD, .Row DIV, .RowDouble DIV		{	@ListItemText-normal@				}
+.Row TD, .RowDouble TD,
+.Row DIV, .RowDouble DIV	{	@ListItemText-normal@				}
 
-.RowOdd TD, .RowOdd DIV					{	@ListItemText-alt@					}
+.RowOdd TD, .RowOdd DIV		{	@ListItemText-alt@	background-color:@ListItemBgColor-alt@;	}
 
-li.RowDouble {list-style: none;}
+LI.RowDouble {list-style: none;}
 
 .selected TD,	/* TODO: used? */
 
-.Row-selected TD,
+.Row-selected TD, .Row-selected DIV,
 .Row-selected-dragProxy TD,
-.Row-selected-disabled TD 	{	@ListItemText-selected@				}
+.Row-selected-disabled TD 	{	@ListItemText-selected@	background-color:@ListItemBgColor-selected@;	}
 
 /* .Row-matched TD			 	{ 	@ListItemText-matched@				} */
 
