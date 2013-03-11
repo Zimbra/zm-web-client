@@ -179,7 +179,11 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 
 		panel.show({
 			type: 'slide',
-			direction: 'up'
+			direction: 'up',
+			onEnd: function () {
+				//Only apply this after layout so it doesn't interfere with Ext layout managers
+				Ext.fly(editor).addCls('zcs-fully-editable');
+			}
 		});
 
 		if (toFieldAddresses) {
@@ -206,6 +210,8 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 		}
 
 		ZCS.htmlutil.resetWindowScroll();
+
+
 	},
 
 	/**
@@ -222,6 +228,14 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 	 * @private
 	 */
 	doCancel: function() {
+		var panel = this.getComposePanel(),
+			form = panel.down('formpanel'),
+			bodyFld = form.down('#body'),
+			editor = bodyFld.element.query('.zcs-editable')[0];
+
+		//Remove this style so it doesn't interfere with the next layout
+		Ext.fly(editor).removeCls('zcs-fully-editable');
+
 		this.getComposePanel().hide();
 	},
 

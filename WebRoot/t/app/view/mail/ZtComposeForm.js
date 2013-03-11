@@ -38,6 +38,7 @@ Ext.define('ZCS.view.mail.ZtComposeForm', {
 		layout: 'fit',
 		width: '80%',
 		height: '100%',
+		scrollable: false,
 		hidden: true,
 		modal: true,
 		cls: 'compose-form',
@@ -77,6 +78,7 @@ Ext.define('ZCS.view.mail.ZtComposeForm', {
 			},
 			form = {
 				xtype: 'formpanel',
+				scrollable: false,
 				defaults: {
 					labelWidth: '100px',
 					inputCls: 'zcs-form-input'
@@ -151,6 +153,14 @@ Ext.define('ZCS.view.mail.ZtComposeForm', {
 						label: ZtMsg.subjectHdr
 					}]
 				}, {
+					xtype: 'container',
+					scrollable: {
+					    direction: 'vertical',
+					    directionLock: true
+					},
+					padding: 0,
+					flex: 1,
+					items: [{
 						xtype: 'component',
 						html: '<div contenteditable="true" class="zcs-editable zcs-body-field"></div>',
 						itemId: 'body',
@@ -160,9 +170,16 @@ Ext.define('ZCS.view.mail.ZtComposeForm', {
 								//Because this panel is floating, and a keystroke may have forced the whole window to scroll,
 								//when we blur, reset the scroll.
 								ZCS.htmlutil.resetWindowScroll();
+							},
+							painted: function () {
+								var heightToSet = Math.max(this.up('container').element.getHeight(), this.element.down('.zcs-body-field').dom.scrollHeight);
+
+								this.setHeight(heightToSet);
+								this.element.down('.zcs-body-field').setHeight(heightToSet);
 							}
 						}
 					}]
+				}]
 			};
 
 		if (ZCS.constant.IS_ENABLED[ZCS.constant.ADD_ATTACHMENT]) {
@@ -193,7 +210,7 @@ Ext.define('ZCS.view.mail.ZtComposeForm', {
 	showCc: function () {
 		this.down('#ccToggle').hide();
 		this.down('#cc').show();
-//		this.down('#bcc').show();
+		this.down('#bcc').show();
 	},
 
 	doAttach: function () {

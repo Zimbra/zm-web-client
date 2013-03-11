@@ -15,12 +15,16 @@
 }
 
 .zcs-editable, .zcs-editable * {
-	-webkit-user-select: auto;
+/**
 	-webkit-user-drag: auto;
+*/
+}
+
+.zcs-fully-editable *, .zcs-fully-editable {
+	-webkit-user-select: auto;
 }
 
 .zcs-body-field {
 	background-color: white;
-	height: 540px;
 	padding: 8px;
 }
