@@ -422,7 +422,7 @@ ZCS.constant.REGEX_SIG = /^(- ?-+)|(__+)\r?$/;
 ZCS.constant.REGEX_HDR = /^\s*\w+:/;
 ZCS.constant.REGEX_COLON = /\S+:$/;
 ZCS.constant.REGEX_IMG_SRC_CID = /<img([^>]*)\ssrc=["']cid:/gi;
-ZCS.constant.REGEX_URL = /((telnet:)|((https?|ftp|gopher|news|file):\/\/)|(www\.[\w\.\_\-]+))[^\s\xA0\(\)\<\>\[\]\{\}\'\"]*/i;
+ZCS.constant.REGEX_URL = /(((https?):\/\/)|(www\.[\w\.\_\-]+))[^\s\xA0\(\)\<\>\[\]\{\}\'\"]*/i;
 
 // URL paths
 ZCS.constant.PATH_MSG_FETCH = '/service/home/~/';

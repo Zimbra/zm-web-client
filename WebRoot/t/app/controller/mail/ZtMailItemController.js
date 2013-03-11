@@ -105,7 +105,12 @@ Ext.define('ZCS.controller.mail.ZtMailItemController', {
 	 */
 	doShowMenu: function(menuButton) {
 
-		this.setActiveMailComponent(menuButton.up('.itempanel'));
+		var itemPanel = menuButton.up('.itempanel');
+		if (!itemPanel) {
+			var itemPanelEl = menuButton.up('.zcs-item-panel');
+			itemPanel = itemPanelEl && Ext.getCmp(itemPanelEl.id);
+		}
+		this.setActiveMailComponent(itemPanel);
 
 		var menu = this.getMenu(),
 			item = this.getItem(),
