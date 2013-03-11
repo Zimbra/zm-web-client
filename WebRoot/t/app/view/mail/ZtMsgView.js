@@ -24,8 +24,7 @@ Ext.define('ZCS.view.mail.ZtMsgView', {
 
 	requires: [
 		'ZCS.view.mail.ZtMsgHeader',
-		'ZCS.view.mail.ZtMsgBody',
-		'ZCS.view.mail.ZtMsgFooter'
+		'ZCS.view.mail.ZtMsgBody'
 	],
 
 	xtype: 'msgview',
@@ -38,8 +37,6 @@ Ext.define('ZCS.view.mail.ZtMsgView', {
 				xtype: 'msgheader'
 			}, {
 				xtype: 'msgbody'
-			}, {
-				xtype: 'msgfooter'
 			}
 		],
 
@@ -118,18 +115,15 @@ Ext.define('ZCS.view.mail.ZtMsgView', {
 	updateExpansion: function() {
 		if (this.getExpanded()) {
 			this.down('msgbody').show();
-			this.down('msgfooter').show();
 		}
 		else {
 			this.down('msgbody').hide();
-			this.down('msgfooter').hide();
 		}
 	},
 
 	setReadOnly: function(isReadOnly) {
 		if (isReadOnly) {
 			//Remove the interactions in the footer if it is in readonly mode.
-			this.down('msgfooter').hide();
 		} else {
 			this.updateExpansion();
 		}

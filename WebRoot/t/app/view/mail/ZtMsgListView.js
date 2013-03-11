@@ -74,6 +74,11 @@ Ext.define('ZCS.view.mail.ZtMsgListView', {
 					return false;
 				}
 
+				if (elm.hasCls('zcs-msgHdr-menuButton')) {
+					msgHeader.fireEvent('menuTap', elm, msg);
+					return false;
+				}
+
 				if (msgHeader) {
 					msgHeader.fireEvent('toggleView', msgHeader);
 				}

@@ -31,22 +31,16 @@ Ext.define('ZCS.controller.mail.ZtMsgController', {
 		refs: {
 			msgHeader: 'msgheader',
 			msgBody: 'msgbody',
-			msgFooter: 'msgfooter',
 			msgView: 'msgview'
 		},
 
 		control: {
 			msgHeader: {
-				toggleView: 'doToggleView'
+				toggleView: 'doToggleView',
+				menuTap: 'doShowMenu'
 			},
 			msgBody: {
 				inviteReply: 'doInviteReply'
-			},
-			msgFooter: {
-				reply: 'doReply',
-				replyAll: 'doReplyAll',
-				delete: 'doDelete',
-				showMenu: 'doShowMenu'
 			}
 		},
 
