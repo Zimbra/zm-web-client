@@ -104,18 +104,25 @@ Ext.define('ZCS.controller.mail.ZtMailItemController', {
 	 * The action will be either Mark Read or Mark Unread.
 	 */
 	doShowMenu: function(menuButton) {
+
 		this.setActiveMailComponent(menuButton.up('.itempanel'));
 
 		var menu = this.getMenu(),
-			label = this.getItem().get('isUnread') ? ZtMsg.markRead : ZtMsg.markUnread;
+			item = this.getItem(),
+			unreadLabel = item.get('isUnread') ? ZtMsg.markRead : ZtMsg.markUnread,
+			flagLabel = item.get('isFlagged') ? ZtMsg.unflag : ZtMsg.flag;
 
 		if (menu) {
 			var list = menu.down('list'),
 				store = list.getStore(),
-				item = list.getItemAt(store.find('action', 'MARK_READ'));
+				unreadAction = list.getItemAt(store.find('action', 'MARK_READ')),
+				flagAction = list.getItemAt(store.find('action', 'FLAG'));
 
-			if (item) {
-				item.getRecord().set('label', label);
+			if (unreadAction) {
+				unreadAction.getRecord().set('label', unreadLabel);
+			}
+			if (flagAction) {
+				flagAction.getRecord().set('label', flagLabel);
 			}
 		}
 		else {
@@ -123,7 +130,10 @@ Ext.define('ZCS.controller.mail.ZtMailItemController', {
 			var menuData = this.getMenuData();
 			Ext.each(menuData, function(menuItem) {
 				if (menuItem.action === 'MARK_READ') {
-					menuItem.label = label;
+					menuItem.label = unreadLabel;
+				}
+				if (menuItem.action === 'FLAG') {
+					menuItem.label = flagLabel;
 				}
 			}, this);
 		}
@@ -140,48 +150,42 @@ Ext.define('ZCS.controller.mail.ZtMailItemController', {
 
 	/**
 	 * Saves the item and tags it.
+	 *
+	 * @param {ZtOrganizer}     tag     tag to apply or remove
+	 * @param {ZtMailitem}      item    item to tag or untag
+	 * @param {Boolean}         remove  if true, remove given tag from the item
 	 */
-	saveItemTag: function (tag, item) {
-		item.set('op', 'tag');
+	saveItemTag: function (tag, item, remove) {
 		item.set('tn', tag.get('name'));
-
-		item.save({
-			success: function(item, operation) {
-				Ext.Logger.info('mail item tagged successfully');
-				item.set('op', null);
-			}
-		});
+		this.performOp(item, remove ? '!tag' : 'tag');
 	},
 
 	/**
 	 * Saves the item and moves it into the selected folder.
+	 *
+	 * @param {ZtOrganizer}     folder      target folder
+	 * @param {ZtMailItem}      item        item to move
 	 */
 	saveItemMove: function (folder, item) {
-		item.set('op', 'move');
+
 		item.set('l', folder.get('id'));
 
-		item.save({
-			success: function(item, operation) {
-				var isConversation = item instanceof ZCS.model.mail.ZtConv,
-					isMessage = item instanceof ZCS.model.mail.ZtMailMsg,
-					conv,
-					convHasOneMessage,
-					listIndex;
+		this.performOp(item, 'move', function(item, operation) {
+			var isConversation = item instanceof ZCS.model.mail.ZtConv,
+				isMessage = item instanceof ZCS.model.mail.ZtMailMsg,
+				conv;
 
-				if (isMessage) {
-					conv = ZCS.cache.get(item.get('convId'));
-				} else {
-					conv = item;
-				}
+			if (isMessage) {
+				conv = ZCS.cache.get(item.get('convId'));
+			} else {
+				conv = item;
+			}
 
-				if (!isMessage || conv.get('numMsgs') === 1) {
-					ZCS.app.getConvListController().removeConv(conv);
-				}
-
-				Ext.Logger.info('mail item moved successfully');
-				item.set('op', null);
+			if (!isMessage || conv.get('numMsgs') === 1) {
+				ZCS.app.getConvListController().removeConv(conv);
 			}
 		});
+
 	},
 
 	/**
@@ -199,7 +203,7 @@ Ext.define('ZCS.controller.mail.ZtMailItemController', {
 	},
 
 	/**
-	 * Do a delete originating form a button.  This drops the button parameter and
+	 * Do a delete originating from a button.  This drops the button parameter and
 	 * allows doDelete to be used by both a button and the standard menu behavior.
 	 */
 	doButtonDelete: function() {
@@ -246,16 +250,17 @@ Ext.define('ZCS.controller.mail.ZtMailItemController', {
 	 * @param {ZtMailItem}   item     mail item
 	 */
 	doMarkRead: function(item) {
-
 		item = item || this.getItem();
-		var	wasUnread = item.get('isUnread');
+		this.performOp(item, item.get('isUnread') ? 'read' : '!read');
+	},
 
-		item.set('op', wasUnread ? 'read' : '!read');
-		item.save({
-			success: function(item, operation) {
-				Ext.Logger.info('mail item marked read successfully');
-				item.set('op', null);
-			}
-		});
+	/**
+	 * Toggles the flagged state of the mail item.
+	 *
+	 * @param {ZtMailItem}   item     mail item
+	 */
+	doFlag: function(item) {
+		item = item || this.getItem();
+		this.performOp(item, item.get('isFlagged') ? '!flag' : 'flag');
 	}
 });

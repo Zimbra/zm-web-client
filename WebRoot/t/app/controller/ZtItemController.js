@@ -90,7 +90,7 @@ Ext.define('ZCS.controller.ZtItemController', {
 			item.set('op', op);
 			item.save({
 				success: function(item, operation) {
-					Ext.Logger.info('item saved successfully');
+					Ext.Logger.info('item op ' + op + ' done');
 					item.set('op', null);
 					if (callback) {
 						callback(item);

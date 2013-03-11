@@ -196,6 +196,13 @@ Ext.define('ZCS.common.ZtMenu', {
 		this.hide();
 	},
 
+	/**
+	 * Enables or disables a menu item. A disabled item will be grey, and tapping it
+	 * does nothing.
+	 *
+	 * @param {String}  action      ID of item to disable
+	 * @param {Boolean} enabled     true to enable, false to disable
+	 */
 	enableItem: function(action, enabled) {
 
 		var list = this.down('list'),
