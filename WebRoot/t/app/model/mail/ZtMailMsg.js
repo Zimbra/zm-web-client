@@ -174,9 +174,12 @@ Ext.define('ZCS.model.mail.ZtMailMsg', {
 	/**
 	 * Converts each body part to HTML and returns the accumulated content.
 	 *
-	 * @param {String}  msgBodyId   ID of owning ZtMsgBody
+	 * @param {String}  msgBodyId           ID of owning ZtMsgBody
+	 * @param {Boolean} trimQuotedContent   if true, trim quoted content
+	 *
+	 * @return {String}     msg content as HTML
 	 */
-	getContentAsHtml: function(msgBodyId) {
+	getContentAsHtml: function(msgBodyId, trimQuotedContent) {
 
 		if (this.get('isInvite')) {
 			return this.get('invite').getContentAsHtml(msgBodyId);
@@ -206,12 +209,14 @@ Ext.define('ZCS.model.mail.ZtMailMsg', {
 				}
 			}
 			else if (contentType === ZCS.mime.TEXT_PLAIN) {
+				content = trimQuotedContent ? ZCS.quoted.getOriginalContent(content, false) : content;
 				html.push('<div>' + ZCS.mailutil.textToHtml(content) + '</div>');
 			}
 			else if (contentType === ZCS.mime.TEXT_HTML) {
 				// TODO: handle invite
 				content = this.fixInlineImages(content);
 				content = ZCS.htmlutil.fixSmileys(content);
+				content = trimQuotedContent ? ZCS.quoted.getOriginalContent(content, true) : content;
 				html.push(content);
 			}
 			else if (contentType === ZCS.mime.TEXT_CAL) {

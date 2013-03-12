@@ -86,14 +86,10 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 		Ext.Logger.conv('ZtMsgBody render into element ' + this.element.id);
 
 		var me = this,
-			html = msg.getContentAsHtml(this.getId()),
 			isInvite = msg.get('isInvite'),
+			html = msg.getContentAsHtml(this.getId(), !isLast && !isInvite),
 			container = this.htmlContainer,
 			iframe = this.iframe;
-
-		if (!isLast && !isInvite) {
-			html = ZCS.quoted.getOriginalContent(html, false);
-		}
 
 		// TODO: truncation
 
