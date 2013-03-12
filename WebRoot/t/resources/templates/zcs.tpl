@@ -55,39 +55,6 @@
 # TODO: remove last comma after To/Cc list.
 
 
-<template id='MsgHeader'>
-	<tpl>
-		<div class='zcs-mail-msgHdr'>
-			<div class='zcs-msgHdr-person'></div>
-			<tpl if='addrs.FROM'>
-				<div class='zcs-msgHdr-fromBubble'>
-					<tpl for='addrs.FROM'>
-						<span class='vm-area-bubble  zcs-contact-bubble' address='{address}'>{displayName}</span>
-					</tpl>
-				</div>
-			</tpl>
-			<div class='zcs-msgHdr-date'>{dateStr}</div>
-			<div class='zcs-msgHdr-to'>
-				<span>{[ZtMsg.to]}</span>
-				<tpl if='addrs.TO'>
-					<tpl for='addrs.TO'>
-						<span>{displayName},</span>
-					</tpl>
-				</tpl>
-				<tpl if='addrs.CC'>
-					<tpl for='addrs.CC'>
-						<span>{displayName},</span>
-					</tpl>
-				</tpl>
-			</div>
-			<div class='zcs-msgHdr-link'>{[ZtMsg.details]}</div>
-			<div class='zcs-msgHdr-menuButton'></div>
-		</div>
-	</tpl>
-</template>
-
-# TODO: Put OBO display into zcs-msgHdr-from element
-
 <template id='ExpandedMsgHeader'>
 	<tpl>
 		<div class='zcs-mail-msgHdr expanded'>
@@ -98,8 +65,32 @@
 						<span class='vm-area-bubble  zcs-contact-bubble' address='{address}'>{displayName}</span>
 					</tpl>
 				</div>
+			</tpl>
+			<div class='zcs-msgHdr-date'>{dateStr}</div>
+			<div class='zcs-msgHdr-to'>
+				<span>{[ZtMsg.toHdr]}</span>
+				<span>{recipients}</span>
+			</div>
+			<div class='zcs-msgHdr-link'>{[ZtMsg.details]}</div>
+			<div class='zcs-msgHdr-menuButton'></div>
+		</div>
+	</tpl>
+</template>
+
+# TODO: Put OBO display into zcs-msgHdr-from element
+
+<template id='DetailedMsgHeader'>
+	<tpl>
+		<div class='zcs-mail-msgHdr detailed'>
+			<div class='zcs-msgHdr-person'></div>
+			<tpl if='addrs.FROM'>
+				<div class='zcs-msgHdr-fromBubble'>
+					<tpl for='addrs.FROM'>
+						<span class='vm-area-bubble  zcs-contact-bubble' address='{address}'>{displayName}</span>
+					</tpl>
+				</div>
 				<tpl for='addrs.FROM'>
-					<div class='zcs-msgHdr-from'>{[ZtMsg.from]} {address}</div>
+					<div class='zcs-msgHdr-from'>{[ZtMsg.fromHdr]} {address}</div>
 				</tpl>
 			</tpl>
 			<div class='zcs-msgHdr-date'>{dateStr}</div>

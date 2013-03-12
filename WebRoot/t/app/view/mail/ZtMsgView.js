@@ -14,7 +14,7 @@
  */
 
 /**
- * This class displays a mail message using three components: a header, a body, and a footer.
+ * This class displays a mail message using two components: a header and a body.
  *
  * @author Conrad Damon <cdamon@zimbra.com>
  */
@@ -40,8 +40,11 @@ Ext.define('ZCS.view.mail.ZtMsgView', {
 			}
 		],
 
-		msg: null,          // ZtMailMsg underlying this view
-		expanded: undefined,    // true if this view is expanded (shows header, body, footer)
+		msg: null,              // ZtMailMsg underlying this view
+
+		expanded: undefined,    // true if this view is expanded (shows header and body)
+
+		state: ZCS.constant.HDR_COLLAPSED,  // Display state of this header: ZCS.constant.HDR_*
 
 		listeners: {
 			updatedata: function(msgView, msgData) {
@@ -99,15 +102,14 @@ Ext.define('ZCS.view.mail.ZtMsgView', {
 	 * Toggles view between expanded and collapsed state.
 	 */
 	toggleView: function() {
-		this.setExpanded(!this.getExpanded());
 		this.updateExpansion();
-		this.down('msgheader').render(this.getMsg());
+		this.down('msgheader').render(this.getMsg(), this.getState());
 		this.updateHeight();
 	},
 
 	/**
 	 * Displays view according to whether it is collapsed or expanded. When the view is
-	 * collapsed, the body and footer are hidden.
+	 * collapsed, the body is hidden.
 	 *
 	 * @param {boolean} doNotRecomputeHeights		True to recompute heights, false to not recompute.
 	 * @private
@@ -122,9 +124,7 @@ Ext.define('ZCS.view.mail.ZtMsgView', {
 	},
 
 	setReadOnly: function(isReadOnly) {
-		if (isReadOnly) {
-			//Remove the interactions in the footer if it is in readonly mode.
-		} else {
+		if (!isReadOnly) {
 			this.updateExpansion();
 		}
 	},
@@ -141,9 +141,9 @@ Ext.define('ZCS.view.mail.ZtMsgView', {
 	},
 
 	/**
-	 * When an iframe, that has a parent which has a translate3d value for its transofrm property, receives a touch event, it
+	 * When an iframe, that has a parent which has a translate3d value for its transform property, receives a touch event, it
 	 * incorrectly interprets the target of that event.  However, if that same parent element has absolute positioning, then
-	 * the iframe does correctly interpret that event.  So when this list item gets translated to its position, and its expanded,
+	 * the iframe does correctly interpret that event.  So when this list item gets translated to its position, and it's expanded,
 	 * give it absolute positoning.
 	 *
 	 */

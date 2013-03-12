@@ -90,8 +90,6 @@ ZCS.constant.IS_ENABLED = {};
 ZCS.constant.IS_ENABLED[ZCS.constant.APP_CONTACTS]  = false;
 ZCS.constant.IS_ENABLED[ZCS.constant.ADD_ATTACHMENT] = false;
 
-
-
 // Text for tab bar
 ZCS.constant.TAB_TITLE = {};
 ZCS.constant.TAB_TITLE[ZCS.constant.APP_MAIL]       = ZtMsg.mail;
@@ -106,6 +104,11 @@ ZCS.constant.OVERVIEW_TITLE[ZCS.constant.APP_CONTACTS]   = ZtMsg.addrbooks;
 ZCS.constant.NEW_ITEM_ICON = {};
 ZCS.constant.NEW_ITEM_ICON[ZCS.constant.APP_MAIL]       = 'compose';
 ZCS.constant.NEW_ITEM_ICON[ZCS.constant.APP_CONTACTS]   = 'plus';
+
+// Display states for a message view header
+ZCS.constant.HDR_COLLAPSED  = 'collapsed';
+ZCS.constant.HDR_EXPANDED   = 'expanded';
+ZCS.constant.HDR_DETAILED   = 'detailed';
 
 // Item types as known by server
 ZCS.constant.ITEM_CONVERSATION      = 'conversation';

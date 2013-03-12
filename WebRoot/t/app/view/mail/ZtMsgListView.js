@@ -80,7 +80,7 @@ Ext.define('ZCS.view.mail.ZtMsgListView', {
 				}
 
 				if (msgHeader) {
-					msgHeader.fireEvent('toggleView', msgHeader);
+					msgHeader.fireEvent('toggleView', msgHeader, elm.hasCls('zcs-msgHdr-link'));
 				}
 
 			},

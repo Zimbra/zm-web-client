@@ -59,12 +59,34 @@ Ext.define('ZCS.controller.mail.ZtMsgController', {
 		return this.getItem();
 	},
 
-	doToggleView: function(msgHeader) {
+	/**
+	 * Figure out what state the msg header should be in. There are three states: collapsed, expanded,
+	 * and detailed. For all but collapsed, we show the msg body. Tapping the header toggles whether it
+	 * is collapsed. A 'details' link toggles between expanded and detailed.
+	 *
+	 * @param {ZtMsgHeader} msgHeader       the message header
+	 * @param {Boolean}     detailsTapped   true if the 'details' (or 'hide') link was tapped
+	 */
+	doToggleView: function(msgHeader, detailsTapped) {
 
 		var msgView = msgHeader.up('msgview'),
-			msg = msgView.getRecord();
+			msg = msgView.getRecord(),
+			curExpanded = msgView.getExpanded(),
+			curState = msgView.getState(),
+			newExpanded, newState;
 
-		if (!msgView.getExpanded() && msg && !msg.get('isLoaded')) {
+		if (!detailsTapped) {
+			newState = curExpanded ? ZCS.constant.HDR_COLLAPSED : ZCS.constant.HDR_EXPANDED;
+		}
+		else {
+			newState = (curState === ZCS.constant.HDR_EXPANDED) ? ZCS.constant.HDR_DETAILED : ZCS.constant.HDR_EXPANDED;
+		}
+		newExpanded = (newState !== ZCS.constant.HDR_COLLAPSED);
+		msgView.setExpanded(newExpanded);
+		msgView.setState(newState);
+		Ext.Logger.info("Header state: " + newState + " (" + newExpanded + ")");
+
+		if (newExpanded && msg && !msg.get('isLoaded')) {
 			msg.set('op', 'load');
 			msg.isExpand = true;
 			msg.save(); // ZtMsgView updated via 'updatedata' event

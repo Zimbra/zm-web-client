@@ -37,27 +37,36 @@ Ext.define('ZCS.view.mail.ZtMsgHeader', {
 		}
 	},
 
+	/**
+	 * Displays the message header in one of three states: collapsed, expanded, or detailed.
+	 *
+	 * @param {ZtMailMsg}   msg     msg being rendered
+	 */
+	render: function(msg, state) {
 
-	render: function(msg) {
+		var msgView = this.up('msgview');
+		if (!state) {
+			state = msgView.getExpanded() ? ZCS.constant.HDR_EXPANDED : ZCS.constant.HDR_COLLAPSED;
+			msgView.setState(state);
+		}
 
 		var data = msg.getData(),
-			tpl,
+			tpl = ZCS.view.mail.ZtMsgHeader.TEMPLATE[state],
 			tags = msg.get('tags');
 
 		this.setMsg(msg);
-
-		data.expanded = this.up('msgview').getExpanded();
 		data.addrs = ZCS.model.mail.ZtMailItem.convertAddressModelToObject(msg.get('addresses'));
-
-		if (data.expanded) {
-			tpl = ZCS.view.mail.ZtMsgHeader.expandedTpl;
-		} else {
-			tpl = ZCS.view.mail.ZtMsgHeader.collapsedTpl;
+		if (state === ZCS.constant.HDR_EXPANDED) {
+			data.recipients = Ext.Array.map(Ext.Array.clean([].concat(data.addrs.TO, data.addrs.CC)), function(addr) {
+				return addr.displayName;
+			}).join(', ');
 		}
 
 		this.setHtml(tpl.apply(data));
 	}
 }, function (thisClass) {
-	thisClass.collapsedTpl = Ext.create('Ext.XTemplate', ZCS.template.CollapsedMsgHeader);
-	thisClass.expandedTpl = Ext.create('Ext.XTemplate', ZCS.template.ExpandedMsgHeader);
+	thisClass.TEMPLATE = {};
+	thisClass.TEMPLATE[ZCS.constant.HDR_COLLAPSED] = Ext.create('Ext.XTemplate', ZCS.template.CollapsedMsgHeader);
+	thisClass.TEMPLATE[ZCS.constant.HDR_EXPANDED] = Ext.create('Ext.XTemplate', ZCS.template.ExpandedMsgHeader);
+	thisClass.TEMPLATE[ZCS.constant.HDR_DETAILED] = Ext.create('Ext.XTemplate', ZCS.template.DetailedMsgHeader);
 });
