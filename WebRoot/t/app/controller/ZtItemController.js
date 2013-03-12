@@ -33,8 +33,8 @@ Ext.define('ZCS.controller.ZtItemController', {
 	config: {
 
 		refs: {
-			// event handlers
-			itemPanelToolbar: ''
+			itemPanelToolbar: '',
+			itemPanel: ''
 		},
 
 		control: {
@@ -56,10 +56,7 @@ Ext.define('ZCS.controller.ZtItemController', {
 	 */
 	clear: function() {
 		this.getItemPanelToolbar().setTitle('');
-		var menuButton = this.getMenuButton();
-		if (menuButton) {
-			menuButton.hide();
-		}
+		this.getItemPanel().hideButtons();
 	},
 
 	/**
@@ -70,10 +67,7 @@ Ext.define('ZCS.controller.ZtItemController', {
 	showItem: function(item) {
 		this.clear();
 		this.setItem(item);
-		var menuButton = this.getMenuButton();
-		if (menuButton) {
-			menuButton.show();
-		}
+		this.getItemPanel().showButtons();
 	},
 
 	/**

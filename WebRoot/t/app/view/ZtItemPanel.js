@@ -40,37 +40,36 @@ Ext.define('ZCS.view.ZtItemPanel', {
 
 		this.callParent(arguments);
 
-		var app = this.getApp();
+		var app = this.getApp(),
+			items = [],
+			buttons = ZCS.constant.ITEM_BUTTONS[app],
+			ln = buttons ? buttons.length : 0,
+			i, button;
+
+		function createHandler(event) {
+			return function() {
+				this.up('titlebar').fireEvent(event, this);
+			}
+		}
+
+		for (i = 0; i < ln; i++) {
+			var button = buttons[i];
+			items.push({
+				xtype:      'button',
+				iconCls:    button.icon,
+				cls:        'zcs-flat',
+				iconMask:   true,
+				align:      'right',
+				handler:    createHandler(button.event),
+				hidden:     true
+			});
+		}
 
 		var toolbar = {
-			xtype: 'titlebar',
+			xtype:  'titlebar',
 			docked: 'top',
-		    cls: 'zcs-item-titlebar',
-			items: [
-				{
-					xtype: 'button',
-					iconCls: 'trash',
-					itemId: 'trashBtn',
-					cls: 'zcs-flat',
-					iconMask: true,
-					align: 'right',
-					handler: function() {
-						this.up('titlebar').fireEvent('delete', this);
-					},
-					hidden: true
-				}, {
-					xtype: 'button',
-					iconCls: 'arrow_down',
-					cls: 'zcs-flat',
-					itemId: 'menuBtn',
-					iconMask: true,
-					align: 'right',
-					handler: function() {
-						this.up('titlebar').fireEvent('showMenu', this);
-					},
-					hidden: true
-				}
-			]
+		    cls:    'zcs-item-titlebar',
+			items:  items
 		};
 
 		var itemView = {
@@ -83,14 +82,16 @@ Ext.define('ZCS.view.ZtItemPanel', {
 		]);
 	},
 
-	showMenuButton: function () {
-		this.down('.titlebar #trashBtn').show();
-		this.down('.titlebar #menuBtn').show();
+	showButtons: function () {
+		Ext.each(this.down('titlebar').query('button'), function(button) {
+			button.show();
+		}, this);
 	},
 
-	hideMenuButton: function () {
-		this.down('.titlebar #trashBtn').hide();
-		this.down('.titlebar #menuBtn').hide();
+	hideButtons: function () {
+		Ext.each(this.down('titlebar').query('button'), function(button) {
+			button.hide();
+		}, this);
 	}
 
 

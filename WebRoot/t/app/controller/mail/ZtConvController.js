@@ -49,13 +49,13 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 				assignment: 'saveItemTag'
 			},
 			itemPanelToolbar: {
-				"delete": 'doButtonDelete'
+				'delete':   'doButtonDelete',
+				reply:      'doReply',
+				replyAll:   'doReplyAll'
 			}
 		},
 
 		menuData: [
-			{label: ZtMsg.reply, action: ZCS.constant.OP_REPLY, listener: 'doReply'},
-			{label: ZtMsg.replyAll, action: ZCS.constant.OP_REPLY_ALL, listener: 'doReplyAll'},
 			{label: ZtMsg.markRead, action: ZCS.constant.OP_MARK_READ, listener: 'doMarkRead'},
 			{label: ZtMsg.move, action: ZCS.constant.OP_MOVE, listener: 'doMove'},
 			{label: ZtMsg.flag, action: ZCS.constant.OP_FLAG, listener: 'doFlag'},
@@ -95,7 +95,7 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 		store.load({
 			convId: conv.getId(),
 			callback: function(records, operation, success) {
-				itemPanel.showMenuButton();
+				itemPanel.showButtons();
 				Ext.Logger.info('Conv load callback');
 			},
 			scope: this

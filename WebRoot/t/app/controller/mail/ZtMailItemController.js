@@ -87,7 +87,7 @@ Ext.define('ZCS.controller.mail.ZtMailItemController', {
 				record: item || this.getItem(),
 				listTitle: listTitle,
 				onAssignmentComplete: function () {
-					activeComp.showMenuButton();
+					activeComp.showButtons();
 					activeList.setReadOnly(false);
 					//undo any filtering we may have done
 					activeStore.clearFilter();
@@ -95,7 +95,7 @@ Ext.define('ZCS.controller.mail.ZtMailItemController', {
 			});
 		}
 
-		activeComp.hideMenuButton();
+		activeComp.hideButtons();
 		this[viewProp].showWithComponent(activeComp, item, contentHeight);
 	},
 
@@ -196,15 +196,15 @@ Ext.define('ZCS.controller.mail.ZtMailItemController', {
 	/**
 	 * Starts a reply session with the active message as the original message.
 	 */
-	doReply: function(msg) {
-		ZCS.app.getComposeController().reply(msg || this.getActiveMsg());
+	doReply: function() {
+		ZCS.app.getComposeController().reply(this.getActiveMsg());
 	},
 
 	/**
 	 * Starts a reply-all session with the active message as the original message.
 	 */
-	doReplyAll: function(msg) {
-		ZCS.app.getComposeController().replyAll(msg || this.getActiveMsg());
+	doReplyAll: function() {
+		ZCS.app.getComposeController().replyAll(this.getActiveMsg());
 	},
 
 	/**
