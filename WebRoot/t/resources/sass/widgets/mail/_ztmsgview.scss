@@ -122,7 +122,7 @@ $msgHdrButtonTopOffset: $msgHdrButtonDelta;
 	@include opacity(.75);
 }
 
-.zcs-mail-expMsgHdr {
+.zcs-mail-dtlMsgHdr {
 	margin: .15em 0;
 }
 
@@ -148,9 +148,12 @@ $info-color: #FF9;
 
 .zcs-info-bar {
 	background-color: $info-color;
-	border: 1px solid darken($info-color, 25%);
+	border: 1px solid darken($info-color, 40%);
 	color: #333;
-	padding-bottom: 25px;
+	margin-bottom: 1.5em;
+	padding: 1em 1.5em;
+	text-align: center;
+	@include border-radius(1em);
 }
 
 .zcs-invite-label {
@@ -243,9 +246,29 @@ $inv-btn-icon-pos: .35em center no-repeat;
 	}
 }
 
+$attach-text-color: #333;
+
 .zcs-attachments {
-  background-color: $light-grey;
-  padding: 5px;
+	line-height: 2.2em;
+	margin-bottom: 1.5em;
+
+	.zcs-attachment-bubble {
+		color: $attach-text-color;
+
+		DIV {
+			margin-right: .5em;
+			vertical-align: -.4em;
+		}
+
+		A:link, A:visited {
+			color: $attach-text-color;
+			text-decoration: none;
+		}
+
+		SPAN {
+			font-weight: normal;
+		}
+	}
 }
 
 /* END MSG BODY */

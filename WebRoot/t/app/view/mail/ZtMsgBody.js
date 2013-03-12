@@ -309,15 +309,14 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 		if (!this.infoBar) {
 			this.infoBar = Ext.create('Ext.Container', {
 				layout: {
-					type: 'vbox',
+					type: 'hbox',
 					align: 'center',
 					pack: 'center'
 				},
-				height: 80,
 				cls: 'zcs-info-bar',
 				items: [
 					{
-						flex: 1,
+						flex: 2,
 						html: ZtMsg.imagesNotLoaded
 					},
 					{

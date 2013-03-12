@@ -68,7 +68,7 @@
 			</tpl>
 			<div class='zcs-msgHdr-date'>{dateStr}</div>
 			<div class='zcs-msgHdr-to'>
-				<span>{[ZtMsg.toHdr]}</span>
+				<span>{[ZtMsg.to]}</span>
 				<span>{recipients}</span>
 			</div>
 			<div class='zcs-msgHdr-link'>{[ZtMsg.details]}</div>
@@ -90,7 +90,7 @@
 					</tpl>
 				</div>
 				<tpl for='addrs.FROM'>
-					<div class='zcs-msgHdr-from'>{[ZtMsg.fromHdr]} {address}</div>
+					<div class='zcs-msgHdr-from'>{[ZtMsg.from]} {address}</div>
 				</tpl>
 			</tpl>
 			<div class='zcs-msgHdr-date'>{dateStr}</div>
@@ -98,7 +98,7 @@
 			<div class='zcs-msgHdr-menuButton'></div>
 		</div>
 		<tpl if='addrs.TO'>
-			<div class='zcs-mail-expMsgHdr'>
+			<div class='zcs-mail-dtlMsgHdr'>
 				<div class='zcs-msgHdr-label'>{[ZtMsg.toHdr]}</div>
 				<tpl for='addrs.TO'>
 					<span class='vm-area-bubble  zcs-contact-bubble' address='{address}'>{displayName}</span>
@@ -106,7 +106,7 @@
 			</div>
 		</tpl>
 		<tpl if='addrs.CC'>
-			<div class='zcs-mail-expMsgHdr'>
+			<div class='zcs-mail-dtlMsgHdr'>
 				<div class='zcs-msgHdr-label'>{[ZtMsg.ccHdr]}</div>
 				<tpl for='addrs.CC'>
 					<span class='vm-area-bubble  zcs-contact-bubble' address='{address}'>{displayName}</span>
@@ -114,7 +114,7 @@
 			</div>
 		</tpl>
 		<tpl if='tags'>
-			<div class='zcs-mail-expMsgHdr'>
+			<div class='zcs-mail-dtlMsgHdr'>
 				<div class='zcs-msgHdr-label'>{[ZtMsg.tags]}</div>
 				<tpl for='tags'>
 					<span class='vm-area-bubble' tagid='{id}'>
@@ -230,5 +230,5 @@
 
 # show a single attachment
 <template id='Attachment'>
-	<span class="vm-area-bubble zcs-attachment-bubble"><div class="{icon}"></div><a target="_blank" href="{url}">{label}</a> ({size})</span>
+	<span class="vm-area-bubble zcs-attachment-bubble"><div class="{icon}"></div><a target="_blank" href="{url}">{label}</a> <span>({size})</span></span>
 </template>
