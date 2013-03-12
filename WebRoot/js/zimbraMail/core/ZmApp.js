@@ -514,12 +514,14 @@ function(reset) {
 	// only set overview panel content if not in full screen mode
 	var avm = appCtxt.getAppViewMgr();
 	if (!avm.isFullScreen()) {
+		Dwt.setLoadingTime(this.toString() + "-overviewPanel");
 		var ov = ((appCtxt.multiAccounts && appCtxt.accountList.size() > 1) || this.getName() == ZmApp.VOICE)
 			? this.getOverviewContainer()
 			: this.getOverviewPanelContent();
 		var components = {};
 		components[ZmAppViewMgr.C_TREE] = ov;
 		avm.setViewComponents(ZmAppViewMgr.APP, components, true, this.getName());
+		Dwt.setLoadedTime(this.toString() + "-overviewPanel");
 	}
 };
 
