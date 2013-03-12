@@ -24,19 +24,24 @@ $bubble-close-icon-margin: 0;
     display: inline-block;
     font-color: $bubble-text-color;
     font-size: $font-size;
-	font-weight: $font-weight;
+    font-weight: $font-weight;
     line-height: $bubble-height;
     padding: $bubble-text-padding;
     @include border-radius($bubble-border-radius);
-	@include background-gradient($bubble-bkgd-color,'glossy');
+    @include background-gradient($bubble-bkgd-color,'glossy');
+
+    &:active {
+        @include background-gradient(darken($bubble-bkgd-color, 25%),'glossy');
+    }
 }
+
 
 .vm-bubblearea {
 
     background-color: $white;
     @include border-radius($default-textarea-radius);
     
-    > div {
+    > DIV {
         .bubble-comp, .input-comp {
             display: inline-block;
             margin-top: $space-between-rows;
@@ -46,7 +51,7 @@ $bubble-close-icon-margin: 0;
 
 
         .bubble-close-icon {
-            display:inline-block;
+            display: inline-block;
             width: $bubble-close-icon-width;
             height: $bubble-close-icon-height;
             margin: $bubble-close-icon-margin;
@@ -58,20 +63,20 @@ $bubble-close-icon-margin: 0;
 
     .bubble-main-contents {
         .x-inner {
-            padding:6px 4px !important;
+            padding: 6px 4px !important;
         }
     }
 
     .input-comp {
         .x-innerhtml {
-            height:$bubble-height;
-            position:relative;
-            display:inline-block;
+            height: $bubble-height;
+            position: relative;
+            display: inline-block;
             input {
                 top: 5px;
-                height:$bubble-height;
+                height: $bubble-height;
                 font-size: $input-font-size;
-                position:absolute;
+                position: absolute;
             }
         }
     }
@@ -82,10 +87,10 @@ $bubble-close-icon-margin: 0;
         font-style: italic;
         top: 6px;
         left: 6px;
-        text-transform:lowercase;
+        text-transform: lowercase;
     }
     
-    input {
+    INPUT {
         line-height: $bubble-height;
         font-color: $font-color;
         padding: $bubble-text-padding;

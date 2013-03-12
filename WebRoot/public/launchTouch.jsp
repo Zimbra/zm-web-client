@@ -44,32 +44,33 @@
             * while other resources are still being loaded for the first time
             */
         #SplashScreenImgBanner{
-            background-image: url("/t/resources/images/app_banner.png");
+            background-image: url("/skins/serenity/logos/LoginBanner.png");
             background-position: left bottom;
             background-repeat: no-repeat;
             height: 60px;
-            width: 200px;
-            float:left;
+            margin: 0 30px;
+            width: 440px;
         }
 
         #SplashScreenAppName  {
-            margin-top:40px;
-            font-size:16px;
-            color:#FFFFFF;
-            float:right;
+            color: white;
+            display: none;
+            float: right;
+            font-size: 16px;
             height: 60px;
-            width:300px;
+            margin-top: 40px;
+            width: 300px;
         }
 
         .SplashScreen {
-            position:absolute;
-            left:0px;
-            top:0px;
-            width:100%;
-            height:100%;
-            font-family:Arial;
-            font-size:11px;
             background-color: #DDD;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 11px;
+            height: 100%;
+            left: 0;
+            position: absolute;
+            top: 0;
+            width: 100%;
         }
 
         .SplashScreen .contentBox {
@@ -81,42 +82,42 @@
         }
         
         .SplashScreen .center {
+            height: 270px;
             left: 50%;
+            margin-top: -135px;
+            margin-left: -250px;
             overflow: visible;
             position: absolute;
             top: 40%;
+            width: 500px;
             z-index: 11;
-            width:500px;
-            height:270px;
-            margin-top:-135px;
-            margin-left:-250px;
         }
 
         .SplashScreen .content {
-            color:white;
-            text-align:center;
+            color: white;
+            text-align: center;
         }
 
         .SplashScreen .message {
-            color:#FFFFFF;
-            font-size:14px;
-            font-weight:bold;
-            margin: 120px 100px 60px
+            color: white;
+            font-size: 14px;
+            font-weight: bold;
+            margin-top: 80px;
         }
 
         .SplashScreen .footer {
-            bottom:0;
-            position:absolute;
-            text-align:center;
-            width:100%;
-            z-index:10;
+            bottom: 0;
+            position: absolute;
+            text-align: center;
+            width: 100%;
+            z-index: 10;
         }
 
         .SplashScreen .copyright {
-            cursor:default;
-            margin-bottom:5px;
-            font-size: 11px;
             color: #6B6B6B;
+            cursor: default;
+            font-size: 11px;
+            margin-bottom: 5px;
         }
     </style>
 

@@ -180,9 +180,9 @@
 				<td class='zcs-invite-label'>{[ZtMsg.invAttendeesLabel]}</td>
 				<td>
 				<tpl for='attendees'>
-                    <span class='vm-area-bubble zcs-contact-bubble' address='{address}'>{displayName}</span>
-                </tpl>
-                </td>
+					<span class='vm-area-bubble zcs-contact-bubble' address='{address}'>{displayName}</span>
+				</tpl>
+				</td>
 			</tr>
 			</tpl>
 			<tpl if='optAttendees'>
@@ -190,9 +190,9 @@
 				<td class='zcs-invite-label'>{[ZtMsg.invOptionalAttendeesLabel]}</td>
 				<td>
 				<tpl for='attendees'>
-                    <span class='vm-area-bubble zcs-contact-bubble' address='{address}'>{displayName}</span>
-                </tpl>
-                </td>
+					<span class='vm-area-bubble zcs-contact-bubble' address='{address}'>{displayName}</span>
+				</tpl>
+				</td>
 			</tr>
 			</tpl>
 			<tpl if='myResponse'>
@@ -201,12 +201,12 @@
 				<td>{myResponse}</td>
 			</tr>
 			</tpl>
-			<tr>
+			<tr class='zcs-invite-buttons'>
 				<td class='zcs-invite-label'>{[ZtMsg.invRespondLabel]}</td>
 				<td>
-					<a class='zcs-invite-button' id='{acceptButtonId}'>{[ZtMsg.accept]}</a>
-					<a class='zcs-invite-button' id='{tentativeButtonId}'>{[ZtMsg.tentative]}</a>
-					<a class='zcs-invite-button' id='{declineButtonId}'>{[ZtMsg.decline]}</a>
+					<span class='zcs-invite-button zcs-invite-accept' id='{acceptButtonId}'>{[ZtMsg.accept]}</span>
+					<span class='zcs-invite-button zcs-invite-tentative' id='{tentativeButtonId}'>{[ZtMsg.tentative]}</span>
+					<span class='zcs-invite-button zcs-invite-decline' id='{declineButtonId}'>{[ZtMsg.decline]}</span>
 				</td>
 			</tr>
 		</table>
