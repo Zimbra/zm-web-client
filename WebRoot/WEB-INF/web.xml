@@ -168,7 +168,7 @@
     </init-param>
     <init-param>
       <param-name>Expires</param-name>
-      <param-value>604800</param-value>
+      <param-value>2595600</param-value>
       <!--
         Expires should be the number of seconds from now when a
         given static resource should expire
