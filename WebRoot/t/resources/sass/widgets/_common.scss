@@ -1,0 +1,12 @@
+$linkTextSize: 0.9em;
+
+.zcs-link {
+  color: #336699;
+  font-size: $linkTextSize;
+  text-decoration: underline;
+}
+
+.zcs-quoted-link {
+  @extend .zcs-link;
+  padding-top: 1em;
+}

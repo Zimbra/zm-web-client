@@ -230,5 +230,9 @@
 
 # show a single attachment
 <template id='Attachment'>
-	<span class="vm-area-bubble zcs-attachment-bubble"><div class="{icon}"></div><a target="_blank" href="{url}">{label}</a> <span>({size})</span></span>
+	<span class="vm-area-bubble zcs-attachment-bubble" id="{id}"><div class="{icon}"></div>{label} <span>({size})</span></span>
+</template>
+
+<template id='QuotedLink'>
+<div class='zcs-quoted-link' id='{id}'>{[ZtMsg.showQuotedText]}</div>
 </template>

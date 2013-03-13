@@ -34,7 +34,8 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 		padding:        5,
 
 		msg:            null,       // msg being displayed
-		usingIframe:    false       // true if msg content is within an IFRAME
+		usingIframe:    false,      // true if msg content is within an IFRAME
+		quotedLinkId:   ''          // ID for show/hide quoted text link
 	},
 
 	statics: {
@@ -106,7 +107,13 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 			this.hiddenImages = null;
 		}
 
-		html = ZCS.htmlutil.trimAndWrapContent(html);
+		var quotedLinkId = ZCS.util.getUniqueId({
+			type:   ZCS.constant.IDTYPE_QUOTED_LINK,
+			msgId:  msg.getId()
+		});
+		this.setQuotedLinkId(quotedLinkId);
+		var quotedLink = ZCS.view.mail.ZtMsgBody.quotedLinkTpl.apply({ id: quotedLinkId });
+		html = ZCS.htmlutil.trimAndWrapContent(html/*, quotedLink*/);
 
 		if (this.getUsingIframe()) {
 			Ext.Logger.conv('Use IFRAME for [' + msg.get('fragment') + ']');
@@ -116,7 +123,8 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 			}
 			if (!iframe) {
 				iframe = this.iframe = new ZCS.view.ux.ZtIframe({
-					name: 'ZCSIframe-' + this.up('msgview').getId()
+					name: 'ZCSIframe-' + this.up('msgview').getId(),
+					css: ZCS.session.msgBodyCss
 				});
 
 				iframe.on('msgContentResize', function () {
@@ -125,11 +133,20 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 
 				this.add(iframe);
 			}
-			else {
-				this.remove(iframe);
-			}
 
 			iframe.setContent(html);
+
+/*
+			var doc = iframe.getDoc(),
+				el = doc && doc.getElementById(this.getQuotedLinkId()),
+				quotedTextEl = el && new Ext.dom.Element(el);
+
+			if (quotedTextEl) {
+				quotedTextEl.on('tap', function() {
+					Ext.Logger.iframe('Quoted text TAP');
+				});
+			}
+*/
 
 			// We hide external images if user wants us to, or this is Spam, and the user hasn't
 			// already pressed the button to display them.
@@ -182,6 +199,10 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 	 * @return {Array}    list of hidden images
 	 */
 	fixImages: function(msg, containerEl, hideExternalImages) {
+
+		if (!containerEl) {
+			return [];
+		}
 
 		var	els = containerEl.getElementsByTagName('*'),
 			ln = els.length,
@@ -402,12 +423,20 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 			ln = attInfo.length, i;
 
 		for (i = 0; i < ln; i++) {
-			html[idx++] = ZCS.view.mail.ZtMsgBody.attachmentTpl.apply(attInfo[i]);
+			var attInfo = attInfo[i],
+				id = ZCS.util.getUniqueId({
+					type:   ZCS.constant.IDTYPE_ATTACHMENT,
+					url:    attInfo.url
+				});
+
+			attInfo.id = id;
+			html[idx++] = ZCS.view.mail.ZtMsgBody.attachmentTpl.apply(attInfo);
 		}
 		area.setHtml(html.join(''));
 	}
 },
 	function (thisClass) {
 		thisClass.attachmentTpl = Ext.create('Ext.XTemplate', ZCS.template.Attachment);
+		thisClass.quotedLinkTpl = Ext.create('Ext.XTemplate', ZCS.template.QuotedLink);
 	}
 );

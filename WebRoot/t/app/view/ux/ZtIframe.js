@@ -27,6 +27,8 @@ Ext.define('ZCS.view.ux.ZtIframe', {
 
 	config: {
 		name: '',       // name for IFRAME provided by caller
+		css: '',        // optional styles for the IFRAME
+
 		iframeEl: null  // the IFRAME Ext.dom.Element
 	},
 
@@ -53,6 +55,11 @@ Ext.define('ZCS.view.ux.ZtIframe', {
 	getBody: function() {
 		var doc = this.getDoc();
 		return doc ? doc.body : null;
+	},
+
+	getHead: function() {
+		var doc = this.getDoc();
+		return doc ? doc.head : null;
 	},
 
 	setContent: function(html, callback) {
@@ -166,12 +173,32 @@ Ext.define('ZCS.view.ux.ZtIframe', {
 		html = ZCS.htmlutil.hideCidImages(html);
 
 		if (doc) {
+
+/*
+			if (!doc.onload) {
+				doc.onload = function () {
+					debugger;
+					alert('iframe loaded');
+				}
+			}
+*/
+
 			doc.open();
 			doc.write(html);
 			doc.close();
-			body = this.getBody();
-			body.style.margin = '0';
-			body.style.height = 'auto';
+
+			var body = this.getBody(),
+				head = this.getHead();
+
+			var css = this.getCss();
+			if (css) {
+				var style = document.createElement('style'),
+					rules = document.createTextNode(css);
+				style.type = 'text/css';
+				style.appendChild(rules);
+				head.appendChild(style);
+			}
+
 			this.fixSize(callback);
 
 			//Capture these touch events being sent to the iframe.

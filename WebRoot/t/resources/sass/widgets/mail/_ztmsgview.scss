@@ -106,9 +106,7 @@ $msgHdrButtonTopOffset: $msgHdrButtonDelta;
 
 .zcs-msgHdr-link {
 	@extend .zcs-msgHdr-element;
-	color: #336699;
-	font-size: $msgHdrTextSize;
-	text-decoration:underline;
+    @extend .zcs-link;
 	top: $msgHdrTopOffset2;
 	right: $msgHdrRightIndent;
 }

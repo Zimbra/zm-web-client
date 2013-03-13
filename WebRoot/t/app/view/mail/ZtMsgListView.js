@@ -50,6 +50,7 @@ Ext.define('ZCS.view.mail.ZtMsgListView', {
 		// Add a delegate here so we can catch a tap on a msg header.
 		// Note: Adding this listener via config does not work.
 
+		// Message header taps
 		this.on({
 			tap: function(e, node) {
 				//This will not prevent tap events by itself, so we have to manually prevent taps for a period of time to prevent collapse
@@ -64,24 +65,14 @@ Ext.define('ZCS.view.mail.ZtMsgListView', {
 					return false;
 				}
 
-				if (elm.hasCls('zcs-tag-bubble')) {
-					msgHeader.fireEvent('tagTap', elm, msg, Ext.String.htmlDecord(elm.getAttribute('tagName')));
-					return false;
-				}
-
-				if (elm.hasCls('zcs-attachment-bubble')) {
-					msgHeader.fireEvent('attachmentTap', elm, msg);
+				// tag bubble is wrapped in a SPAN with a tagid
+				if (elm.getAttribute('tagid')) {
+					msgHeader.fireEvent('tagTap', elm, msg, Ext.String.htmlDecode(elm.getAttribute('tagName')));
 					return false;
 				}
 
 				if (elm.hasCls('zcs-msgHdr-menuButton')) {
 					msgHeader.fireEvent('menuTap', elm, msg);
-					return false;
-				}
-
-				if (elm.hasCls('zcs-show-quoted')) {
-					Ext.Logger.info('Show quoted text');
-					msgHeader.fireEvent('toggleQuotedText', elm, msg);
 					return false;
 				}
 
@@ -95,20 +86,29 @@ Ext.define('ZCS.view.mail.ZtMsgListView', {
 			scope: this
 		});
 
+		// Message body taps
 		this.on({
 			tap: function(e) {
-				var id = e.delegatedTarget.id,
-					idParams = id && ZCS.util.getIdParams(id),
-					msgBody = idParams && this.down('#' + idParams.msgBodyId);
+				var elm = Ext.fly(e.target),
+					msgBody = this.down('#' + e.delegatedTarget.id),
+					msg = msgBody.getMsg();
 
-				if (msgBody) {
+				if (elm.hasCls('zcs-attachment-bubble')) {
+					msgBody.fireEvent('attachmentTap', elm);
+					return false;
+				}
+
+				if (elm.hasCls('zcs-invite-button')) {
+					// Note: elm.getId() hits NPE trying to cache DOM ID
+					var idParams = ZCS.util.getIdParams(elm.dom.id) || {};
 					msgBody.fireEvent('inviteReply', idParams.msgId, idParams.action);
 				}
 			},
 			element: 'element',
-			delegate: '.zcs-invite-button',
+			delegate: '.zcs-msg-body',
 			scope: this
 		});
+
 		var scroller = this.getScrollable();
 
 		scroller.getScroller().on('scrollend', function () {

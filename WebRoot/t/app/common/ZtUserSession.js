@@ -40,6 +40,10 @@ Ext.define('ZCS.common.ZtUserSession', {
 		activeApp: ''
 	},
 
+	statics: {
+		msgBodyCss: ''
+	},
+
 	initSession: function(data) {
 
 		this.setDebugLevel(data.debugLevel);
@@ -77,6 +81,8 @@ Ext.define('ZCS.common.ZtUserSession', {
 
 		// we always start in Mail
 		this.setActiveApp(ZCS.constant.APP_MAIL);
+
+		this.loadCss();
 	},
 
 	/**
@@ -335,5 +341,18 @@ Ext.define('ZCS.common.ZtUserSession', {
 		}
 
 		return orgId ? ZCS.cache.get(orgId) : null;
+	},
+
+	/**
+	 * Loads CSS that we will inject into msg body iframes.
+	 */
+	loadCss: function() {
+		Ext.Ajax.request({
+			url: '/t/resources/css/msgbody.css',
+			async: false,
+			success: function(response) {
+				ZCS.session.msgBodyCss = response.responseText
+			}
+		});
 	}
 });

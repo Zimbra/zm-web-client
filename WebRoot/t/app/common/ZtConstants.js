@@ -520,3 +520,8 @@ ZCS.constant.ROLE_CHAIR             = 'OPT';
 ZCS.constant.ROLE_REQUIRED          = 'REQ';
 ZCS.constant.ROLE_OPTIONAL          = 'OPT';
 ZCS.constant.ROLE_NON_PARTICIPANT   = 'NON';
+
+// Types for IDs we make up
+ZCS.constant.IDTYPE_INVITE_ACTION   = 'invite action';
+ZCS.constant.IDTYPE_QUOTED_LINK     = 'quoted link';
+ZCS.constant.IDTYPE_ATTACHMENT      = 'attachment';

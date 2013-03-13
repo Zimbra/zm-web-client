@@ -187,6 +187,7 @@ Ext.define('ZCS.model.mail.ZtInvite', {
 
 		var	dateFormat = this.get('isAllDay') ? ZtMsg.invDateFormat : ZtMsg.invDateTimeFormat,
 			idParams = {
+				type:       ZCS.constant.IDTYPE_INVITE_ACTION,
 				msgId:      this.getMsgId(),
 				msgBodyId:  msgBodyId
 			},

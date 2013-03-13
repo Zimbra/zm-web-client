@@ -40,7 +40,8 @@ Ext.define('ZCS.controller.mail.ZtMsgController', {
 				menuTap: 'doShowMenu'
 			},
 			msgBody: {
-				inviteReply: 'doInviteReply'
+				inviteReply: 'doInviteReply',
+				attachmentTap: 'doShowAttachment'
 			}
 		},
 
@@ -151,5 +152,15 @@ Ext.define('ZCS.controller.mail.ZtMsgController', {
 				ZCS.app.fireEvent('showToast', ZtMsg.invReplySent);
 			}
 		});
+	},
+
+	doShowAttachment: function(el) {
+
+		var idParams = ZCS.util.getIdParams(el.dom.id),
+			url = idParams && idParams.url;
+
+		if (url) {
+			window.open(url, '_blank');
+		}
 	}
 });
