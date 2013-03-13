@@ -161,9 +161,80 @@ Ext.define('ZCS.common.ZtHtmlUtil', {
 	/**
 	 * Hides any content-ID image by changing its 'src' attribute.
 	 *
-	 * @param {string}  html
+	 * @param {String}  html    HTML to fix
+	 * @return {String} fixed HTML
 	 */
 	hideCidImages: function(html) {
 		return html.replace(ZCS.constant.REGEX_IMG_SRC_CID, '<img pnsrc="cid:');
+	},
+
+	/**
+	 * Removes non-content HTML from the beginning and end. The idea is to remove anything that would
+	 * appear to the user as blank space. This function is an approximation since that's hard to do,
+	 * especially when dealing with HTML as a string.
+	 *
+	 * @param {String}  html    HTML to fix
+	 * @return {String} trimmed HTML
+	 * @adapts AjxStringUtil.trimHtml
+	 */
+	trimHtml: function(html) {
+
+		if (!html) {
+			return '';
+		}
+
+		// remove doc-level tags if they don't have attributes
+		Ext.each(['html', 'head', 'body'], function(node) {
+			var nodeLc = '<' + node + '>',
+				nodeUc = '<' + node.toUpperCase + '>',
+				regex;
+			if (html.indexOf(nodeLc) !== -1 || html.indexOf(nodeUc) !== -1) {
+				regex = new RegExp('<\\/?' + node + '>', 'gi');
+				html = html.replace(regex, '');
+			}
+		});
+
+		// remove empty surrounding <div> containers, and leading/trailing <br>
+		var len = 0;
+		while ((html.length !== len) &&
+			((/^<?div>/i.test(html) && /<\/div>$/i.test(html)) ||
+				/^<br ?\/?>/i.test(html) || /<br ?\/?>$/i.test(html))) {
+
+			len = html.length;	// loop prevention
+			html = html.replace(/^<div>/i, "").replace(/<\/div>$/i, '');
+			html = html.replace(/^<br ?\/?>/i, "").replace(/<br ?\/?>$/i, '');
+		}
+
+		// remove trailing <br> trapped in front of closing tags
+		var m = html && html.match(/((<br ?\/?>)+)((<\/\w+>)+)$/i);
+		if (m && m.length) {
+			var regex = new RegExp(m[1] + m[3] + '$', 'i');
+			html = html.replace(regex, m[3]);
+		}
+
+		// remove empty internal <div> containers
+		html = html.replace(/(<div><\/div>)+/gi, '');
+
+		return Ext.String.trim(html);
+	},
+
+	/**
+	 * Removes empty HTML from the beginning and end, then wraps the result in a DIV>
+	 *
+	 * @param {String}  html        HTML as a string
+	 * @return {String}     trimmed and wrapped HTML
+	 */
+	trimAndWrapContent: function(html) {
+
+		html = ZCS.htmlutil.trimHtml(html);
+		if (/<body/i.test(html)) {
+			html = html.replace(/(<body[^>]*>)/, '$1<div>')
+					   .replace('<\/body>', '</body></div>');
+		}
+		else {
+			html = '<div>' + html + '</div>';
+		}
+
+		return html;
 	}
 });

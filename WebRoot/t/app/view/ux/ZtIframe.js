@@ -43,7 +43,6 @@ Ext.define('ZCS.view.ux.ZtIframe', {
 		this.setIframeEl(iframe);
 
 		Ext.Logger.iframe('IFRAME with name ' + this.getName() + ' has DOM ID: ' + iframe.dom.id);
-
 	},
 
 	getDoc: function() {
@@ -56,7 +55,7 @@ Ext.define('ZCS.view.ux.ZtIframe', {
 		return doc ? doc.body : null;
 	},
 
-	setContent: function(html) {
+	setContent: function(html, callback) {
 
 		var component = this,
 			doc = this.getDoc(),
@@ -173,7 +172,7 @@ Ext.define('ZCS.view.ux.ZtIframe', {
 			body = this.getBody();
 			body.style.margin = '0';
 			body.style.height = 'auto';
-			this.fixSize();
+			this.fixSize(callback);
 
 			//Capture these touch events being sent to the iframe.
 			body.addEventListener("touchstart", touchEventListener, false);
@@ -189,7 +188,7 @@ Ext.define('ZCS.view.ux.ZtIframe', {
 	 * Resizes the IFRAME to match its content. IFRAMEs do not automatically size to their content. By default, they
 	 * are 150px high.
 	 */
-	resizeToContent: function() {
+	resizeToContent: function(callback) {
 
 		var doc = this.getDoc(),
 			body = this.getBody(),
@@ -219,12 +218,17 @@ Ext.define('ZCS.view.ux.ZtIframe', {
 			iframe.setHeight(height);
 			this.fireEvent('msgContentResize');
 		}
+
+		if (callback) {
+			Ext.Logger.iframe('Running iframe content callback');
+			callback();
+		}
 	},
 
 	/**
 	 * Resets the iframe's height via a timer so that the iframe has time to lay itself out.
 	 */
-	fixSize: function() {
-		Ext.defer(this.resizeToContent, 200, this);
+	fixSize: function(callback) {
+		Ext.defer(this.resizeToContent, 200, this, [callback]);
 	}
 });

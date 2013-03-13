@@ -79,6 +79,12 @@ Ext.define('ZCS.view.mail.ZtMsgListView', {
 					return false;
 				}
 
+				if (elm.hasCls('zcs-show-quoted')) {
+					Ext.Logger.info('Show quoted text');
+					msgHeader.fireEvent('toggleQuotedText', elm, msg);
+					return false;
+				}
+
 				if (msgHeader) {
 					msgHeader.fireEvent('toggleView', msgHeader, elm.hasCls('zcs-msgHdr-link'));
 				}
