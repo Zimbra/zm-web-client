@@ -3,33 +3,37 @@
  */
 
 .zcs-toast {
-	padding: 0.2em;
 	color: white;
+	height: 2em;
+	padding: 0.2em;
+//	width: 20em;
+	@include border-radius(.1em);
+	@include box-shadow(rgba(0,0,0,.4) 2px 2px 3px);
 }
 .zcs-toast-contents{
-	padding-top:0.2em;
-	font-size: 0.8em;
+	font-size: 1em;
+	font-weight: bold;
+	text-align: center;
 
-	div {
+	DIV {
 		display: inline-block;
 	}
 
 	.zcs-toast-status-icon {
+		display: none;
 		width: 20px;
 	}
 
 	.zcs-toast-message-text {
+		width: 100%;
 		@include ellipsis();
-
-		width: 245px;
 	}
 
 	.zcs-toast-undo-action {
-		display:none;
+		display: none;
 		/**
 		 * If/when this is enabled, decrement the zcs-toast-message-text width
 		 */
-		width: 40px;
-		color: $base-color;
+		width: 20%;
 	}
 }

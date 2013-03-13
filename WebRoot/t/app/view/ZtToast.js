@@ -22,12 +22,11 @@ Ext.define('ZCS.view.ZtToast', {
 	extend: 'Ext.Sheet',
 	config: {
 		milliSecondsUntilHide: 5000,
-		width: 300,
-		height: 40,
 		hidden: true,
 		floating: true,
 		modal: false,
-		top: 4,
+		width: 350,
+		top: 25,
 		left: 300,
 		padding: 0,
 		cls: 'zcs-toast',
@@ -73,14 +72,14 @@ Ext.define('ZCS.view.ZtToast', {
 			from: {
 				opacity: 0,
 				left: left,
-				top: 4
+				top: 25
 			},
 			to: {
 				opacity: 1,
 				left: left,
-				top: 4
+				top: 25
 			},
-			duration: 200
+			duration: 500
 		});
 
 		Ext.defer(me.hide, me.getMilliSecondsUntilHide(), me);
