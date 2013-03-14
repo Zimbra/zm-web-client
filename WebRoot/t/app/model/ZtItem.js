@@ -29,9 +29,9 @@ Ext.define('ZCS.model.ZtItem', {
 	config: {
 
 		fields: [
-			{ name: 'type', type: 'string' },   // ZCS.constant.ITEM_*
-			{ name: 'itemId', type: 'string' }, // ID on server
-			{ name: 'op', type: 'string' }      // (internal) operation to perform on server
+			{ name: 'type',     type: 'string' },   // ZCS.constant.ITEM_*
+			{ name: 'itemId',   type: 'string' },   // ID on server
+			{ name: 'tags',		type: 'auto' }      // list of tag data objects
 		],
 
 		proxy: {
@@ -54,6 +54,21 @@ Ext.define('ZCS.model.ZtItem', {
 		}
 	},
 
+	statics: {
+
+		/**
+		 * If the node has a list of tag IDs, return a list their ZtOrganizer tag objects.
+		 *
+		 * @param {object}  node        JSON node representing model instance
+		 * @return {Array}  list of ZtOrganizer
+		 */
+		parseTags: function(tagIds) {
+			return !tagIds ? null : Ext.Array.map(tagIds.split(','), function(tagId) {
+				return ZCS.cache.get(tagId).getData();
+			});
+		}
+	},
+
 	constructor: function(data, id) {
 
 		// The Model constructor can return a cached object rather than 'this',
@@ -71,8 +86,12 @@ Ext.define('ZCS.model.ZtItem', {
 	/**
 	 * Processes a notification that this item has been modified.
 	 *
-	 * @param {object}  mod     notification
+	 * @param {object}  modify     notification
 	 */
-	handleModifyNotification: function(mod) {
+	handleModifyNotification: function(modify) {
+
+		if (modify.t) {
+			this.set('tags', ZCS.model.ZtItem.parseTags(modify.t));
+		}
 	}
 });

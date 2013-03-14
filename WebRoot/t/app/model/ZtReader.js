@@ -139,7 +139,4 @@ Ext.define('ZCS.model.ZtReader', {
 	getDataFromNode: function(node) {
 		return node;
 	}
-
-	// TODO: parse tags
-	// TODO: handle notifications?
 });

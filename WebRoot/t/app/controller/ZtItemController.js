@@ -71,8 +71,8 @@ Ext.define('ZCS.controller.ZtItemController', {
 	},
 
 	/**
-	 * Performs a server operation on an item by setting its 'op' field and then saving it.
-	 * The value of 'op' will be used to set the 'op' field in the *ActionRequest SOAP request.
+	 * Performs a simple server operation on an item. Generally that means some sort of
+	 * ActionRequest with an 'op' attribute and possibly other arguments.
 	 *
 	 * @param {ZtItem}          item    item to act on
 	 * @param {Object|String}   data    data to save, or op to perform

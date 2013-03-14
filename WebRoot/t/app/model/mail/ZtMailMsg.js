@@ -44,7 +44,6 @@ Ext.define('ZCS.model.mail.ZtMailMsg', {
 
 			// internal (via parsing), or for composed msgs
 			{ name: 'attachments',  type: 'auto' },
-			{ name: 'tags',			type: 'auto' },
 			{ name: 'bodyParts',    type: 'auto' },     // MIME parts the server tells us to display
 			{ name: 'contentTypes', type: 'auto' },     // lookup hash of content types
 			{ name: 'isLoaded',     type: 'boolean' },

@@ -45,6 +45,7 @@ Ext.define('ZCS.view.mail.ZtMsgHeader', {
 	render: function(msg, state) {
 
 		var msgView = this.up('msgview');
+		state = state || msgView.getState();
 		if (!state) {
 			state = msgView.getExpanded() ? ZCS.constant.HDR_EXPANDED : ZCS.constant.HDR_COLLAPSED;
 			msgView.setState(state);

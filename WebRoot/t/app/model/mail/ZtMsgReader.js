@@ -107,7 +107,7 @@ Ext.define('ZCS.model.mail.ZtMsgReader', {
 
 		data.dateStr = ZCS.util.getRelativeDateString(node.d);
 
-		data.tags = this.parseTags(node);
+		data.tags = ZCS.model.ZtItem.parseTags(node.t);
 
 		if (node.mp) {
 			ctxt = {
@@ -129,36 +129,5 @@ Ext.define('ZCS.model.mail.ZtMsgReader', {
 		}
 
 		return data;
-	},
-
-	parseTags: function(node) {
-		var tagIds = node.t ? node.t.split(',') : [],
-			tagNames = node.tn ? node.tn.split(','): [],
-			allTags = ZCS.common.ZtUserSession.getOrganizerDataByAppAndOrgType(ZCS.constant.APP_MAIL, ZCS.constant.ORG_TAG),
-			tag,
-			tagId,
-			i,
-			tagToAdd,
-			tags = [];
-
-		for (i = 0; i < tagIds.length; i += 1) {
-			tagId = tagIds[i];
-			tagToAdd = null;
-			Ext.Array.each(allTags, function (tag) {
-				if (tag.itemId === tagId) {
-					tagToAdd = tag;
-					return false;
-				}
-			});
-			if (tagToAdd) {
-				tags.push(tagToAdd);
-			}
-		}
-
-		if (tags.length > 0) {
-			return tags;
-		} else {
-			return null;
-		}
 	}
 });

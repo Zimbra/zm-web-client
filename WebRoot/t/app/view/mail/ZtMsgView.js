@@ -53,7 +53,6 @@ Ext.define('ZCS.view.mail.ZtMsgView', {
 					Ext.Logger.info('updatedata for msg ' + msgData.id);
 					var msg = ZCS.cache.get(msgData.id),
 						loaded = !!msgData.isLoaded,
-						op = msg.get('op'),
 						isSingleExpand = msg.isExpand;
 
 					if (msg) {
