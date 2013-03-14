@@ -224,17 +224,16 @@ Ext.define('ZCS.common.ZtHtmlUtil', {
 	 * @param {String}  html        HTML as a string
 	 * @return {String}     trimmed and wrapped HTML
 	 */
-	trimAndWrapContent: function(html, trailingHtml) {
+	trimAndWrapContent: function(html) {
 
 		html = ZCS.htmlutil.trimHtml(html);
-		trailingHtml = trailingHtml || '';
 
 		if (/<body/i.test(html)) {
 			html = html.replace(/(<body[^>]*>)/, '$1<div>')
-					   .replace('<\/body>', '</body>' + trailingHtml + '</div>');
+					   .replace('<\/body>', '</body></div>');
 		}
 		else {
-			html = '<div>' + html + trailingHtml + '</div>';
+			html = '<div>' + html + '</div>';
 		}
 
 		return html;

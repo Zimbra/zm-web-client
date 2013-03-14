@@ -76,19 +76,21 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 	/**
 	 * Renders the given msg.
 	 *
-	 * @param {ZtMailMsg}   msg     a mail message
-	 * @param {boolean}     isLast  true if this is the last msg in the conv to be rendered,
-	 *                              in which case its quoted text will not be trimmed
+	 * @param {ZtMailMsg}   msg             a mail message
+	 * @param {Boolean}     isLast          true if this is the last msg in the conv to be rendered,
+	 *                                      in which case its quoted text will not be trimmed
+	 * @param {Boolean}     showQuotedText  (optional) if passed, show or hide quoted text
 	 *
 	 * @adapts ZmMailMsgView._renderMessageBody1
 	 */
-	render: function(msg, isLast) {
+	render: function(msg, isLast, showQuotedText) {
 
 		Ext.Logger.conv('ZtMsgBody render into element ' + this.element.id);
 
 		var me = this,
 			isInvite = msg.get('isInvite'),
-			trimQuotedText = !isLast && !isInvite,
+			togglingQuotedText = Ext.isBoolean(showQuotedText),
+			trimQuotedText = togglingQuotedText ? !showQuotedText : !isLast && !isInvite,
 			html = msg.getContentAsHtml(this.getId(), trimQuotedText),
 			container = this.htmlContainer,
 			iframe = this.iframe;
@@ -107,13 +109,24 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 			this.hiddenImages = null;
 		}
 
-		var quotedLinkId = ZCS.util.getUniqueId({
-			type:   ZCS.constant.IDTYPE_QUOTED_LINK,
-			msgId:  msg.getId()
-		});
-		this.setQuotedLinkId(quotedLinkId);
-		var quotedLink = ZCS.view.mail.ZtMsgBody.quotedLinkTpl.apply({ id: quotedLinkId });
-		html = ZCS.htmlutil.trimAndWrapContent(html/*, quotedLink*/);
+		this.showingQuotedText = !trimQuotedText;
+
+		// It's easier to destroy and recreate show/hide link than to reuse it
+		if (this.quotedTextComponent) {
+			this.quotedTextComponent.destroy();
+		}
+		if (trimQuotedText || togglingQuotedText) {
+			var quotedLinkId = ZCS.util.getUniqueId({
+				type:   ZCS.constant.IDTYPE_QUOTED_LINK,
+				msgId:  msg.getId()
+			});
+			this.setQuotedLinkId(quotedLinkId);
+			this.quotedTextComponent = new Ext.Component({
+				html: ZCS.view.mail.ZtMsgBody.quotedLinkTpl.apply({ show: trimQuotedText })
+			});
+		}
+
+		html = ZCS.htmlutil.trimAndWrapContent(html);
 
 		if (this.getUsingIframe()) {
 			Ext.Logger.conv('Use IFRAME for [' + msg.get('fragment') + ']');
@@ -135,18 +148,6 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 			}
 
 			iframe.setContent(html);
-
-/*
-			var doc = iframe.getDoc(),
-				el = doc && doc.getElementById(this.getQuotedLinkId()),
-				quotedTextEl = el && new Ext.dom.Element(el);
-
-			if (quotedTextEl) {
-				quotedTextEl.on('tap', function() {
-					Ext.Logger.iframe('Quoted text TAP');
-				});
-			}
-*/
 
 			// We hide external images if user wants us to, or this is Spam, and the user hasn't
 			// already pressed the button to display them.
@@ -174,6 +175,10 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 			}
 			container.setHtml(html);
 			container.show();
+		}
+
+		if (trimQuotedText || togglingQuotedText) {
+			this.add(this.quotedTextComponent);
 		}
 
 		var attInfo = msg.getAttachmentInfo();

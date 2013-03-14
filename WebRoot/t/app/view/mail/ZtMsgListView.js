@@ -107,6 +107,10 @@ Ext.define('ZCS.view.mail.ZtMsgListView', {
 					var idParams = ZCS.util.getIdParams(elm.dom.id) || {};
 					msgBody.fireEvent('inviteReply', idParams.msgId, idParams.action);
 				}
+
+				if (elm.hasCls('zcs-quoted-link')) {
+					msgBody.fireEvent('toggleQuotedText', msgBody);
+				}
 			},
 			element: 'element',
 			delegate: '.zcs-msg-body',

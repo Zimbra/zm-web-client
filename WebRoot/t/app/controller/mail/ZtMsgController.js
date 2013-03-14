@@ -41,8 +41,9 @@ Ext.define('ZCS.controller.mail.ZtMsgController', {
 				tagTap:     'doShowMenu'
 			},
 			msgBody: {
-				inviteReply:    'doInviteReply',
-				attachmentTap:  'doShowAttachment'
+				inviteReply:        'doInviteReply',
+				attachmentTap:      'doShowAttachment',
+				toggleQuotedText:   'doToggleQuotedText'
 			}
 		},
 
@@ -190,5 +191,12 @@ Ext.define('ZCS.controller.mail.ZtMsgController', {
 		if (msg && tagId) {
 			this.tagItem(msg, tagId, true);
 		}
+	},
+
+	doToggleQuotedText: function(msgBody) {
+		var msgView = this.getMsgView(),
+			msg = msgView.getMsg();
+
+		msgView.renderBody(null, !msgBody.showingQuotedText);
 	}
 });

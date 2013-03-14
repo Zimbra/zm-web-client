@@ -234,5 +234,11 @@
 </template>
 
 <template id='QuotedLink'>
-<div class='zcs-quoted-link' id='{id}'>{[ZtMsg.showQuotedText]}</div>
+	<div class='zcs-quoted-link'>
+	<tpl if='show'>
+		{[ZtMsg.showQuotedText]}
+	<tpl else>
+		{[ZtMsg.hideQuotedText]}
+	</tpl>
+	</div>
 </template>
