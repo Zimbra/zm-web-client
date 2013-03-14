@@ -49,7 +49,7 @@ Ext.define('ZCS.model.mail.ZtMailWriter', {
 	 * Fills in the JSON for an action request
 	 *
 	 * @param {Ext.data.Request}    request     request object
-	 * @param {object}              data        record data
+	 * @param {object}              data        item data
 	 * @param {string}              method      action request method
 	 */
 	getActionRequest: function(request, data, method) {
@@ -61,31 +61,19 @@ Ext.define('ZCS.model.mail.ZtMailWriter', {
 
 		Ext.apply(methodJson, {
 			action: {
-				id: item.id,
-				op: item.op
+				id: data.id,
+				op: data.op
 			}
 		});
 
-		if (item.l) {
-			methodJson.action.l = item.l;
+		if (data.l) {
+			methodJson.action.l = data.l;
 		}
 
-		if (item.tn) {
-			methodJson.action.tn = item.tn;
+		if (data.tn) {
+			methodJson.action.tn = data.tn;
 		}
 
 		return json;
-	},
-
-	/**
-	 * The data to pass along when writing by a piece of mail
-	 */
-	getRecordData: function(record) {
-		return {
-			id: record.get('id'),
-			op: record.get('op'),
-			l: record.get('l'),
-			tn: record.get('tn')
-		};
 	}
 });

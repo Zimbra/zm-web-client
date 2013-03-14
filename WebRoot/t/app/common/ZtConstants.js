@@ -111,11 +111,11 @@ ZCS.constant.ITEM_BUTTONS[ZCS.constant.APP_MAIL]        = [
 	{ icon: 'reply',        event: 'reply' },
 	{ icon: 'replytoall',   event: 'replyAll' },
 	{ icon: 'trash',        event: 'delete' },
-	{ icon: 'arrow_down',   event: 'showMenu' }
+	{ icon: 'arrow_down',   event: 'showMenu', menuName: 'convActions' }
 ];
 ZCS.constant.ITEM_BUTTONS[ZCS.constant.APP_CONTACTS]    = [
 	{ icon: 'trash',        event: 'delete' },
-	{ icon: 'arrow_down',   event: 'showMenu' }
+	{ icon: 'arrow_down',   event: 'showMenu', menuName: 'contactActions' }
 ];
 
 // Display states for a message view header
@@ -387,6 +387,7 @@ ZCS.constant.OP_SPAM        = 'SPAM';
 ZCS.constant.OP_MOVE        = 'MOVE';
 ZCS.constant.OP_FLAG        = 'FLAG';
 ZCS.constant.OP_TAG         = 'TAG';
+ZCS.constant.OP_REMOVE_TAG  = 'REMOVE_TAG';
 
 // Item flags
 ZCS.constant.FLAG_ATTACH			= 'a';

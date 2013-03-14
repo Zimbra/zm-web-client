@@ -66,12 +66,16 @@ Ext.define('ZCS.view.mail.ZtMsgListView', {
 				}
 
 				// tag bubble is wrapped in a SPAN with a tagid
-				if (elm.getAttribute('tagid')) {
-					msgHeader.fireEvent('tagTap', elm, msg, Ext.String.htmlDecode(elm.getAttribute('tagName')));
+				var tagId = elm.getAttribute('tagid');
+				if (tagId) {
+					elm.menuName = 'tagActions';
+					var tagName = elm.down('.zcs-tag-small').getAttribute('tagName');
+					msgHeader.fireEvent('tagTap', elm, msg, Ext.String.htmlDecode(tagName));
 					return false;
 				}
 
 				if (elm.hasCls('zcs-msgHdr-menuButton')) {
+					elm.menuName = 'msgActions';
 					msgHeader.fireEvent('menuTap', elm, msg);
 					return false;
 				}

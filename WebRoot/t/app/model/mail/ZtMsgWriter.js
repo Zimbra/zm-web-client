@@ -26,13 +26,16 @@ Ext.define('ZCS.model.mail.ZtMsgWriter', {
 
 	writeRecords: function(request, data) {
 
-		var convId = request.getOperation().getInitialConfig().convId,
+		var operation = request.getOperation(),
+			options = operation.getInitialConfig(),
+			itemData = Ext.merge(data[0] || {}, options),
+			convId = itemData.convId,
 			action = request.getAction(),
 			json, methodJson = {};
 
 		if (action === 'read' && convId) {
 
-			// 'read' operation with convId means we are expanding a conv
+			// 'read' operation with convId means we are loading a conv
 			json = this.getSoapEnvelope(request, data, 'SearchConv', {
 				addHeaders: true,
 				isSearch: true
@@ -120,8 +123,7 @@ Ext.define('ZCS.model.mail.ZtMsgWriter', {
 		else if (action === 'update') {
 			// 'update' operation means we are performing a MsgActionRequest or GetMsgRequest
 
-			var msg = data[0];
-			if (msg.op === 'load') {
+			if (itemData.op === 'load') {
 				// fetch the full content of the message
 				request.setUrl(ZCS.constant.SERVICE_URL_BASE + 'GetMsgRequest');
 				json = this.getSoapEnvelope(request, data, 'GetMsg', {
@@ -130,7 +132,7 @@ Ext.define('ZCS.model.mail.ZtMsgWriter', {
 				methodJson = json.Body.GetMsgRequest;
 				Ext.apply(methodJson, {
 					m: {
-						id: msg.id,
+						id: itemData.id,
 						read: 1,
 						html: 1,
 						needExp: 1,
@@ -139,7 +141,7 @@ Ext.define('ZCS.model.mail.ZtMsgWriter', {
 				});
 			}
 			else {
-				json = this.getActionRequest(request, data, 'MsgAction');
+				json = this.getActionRequest(request, itemData, 'MsgAction');
 			}
 		}
 

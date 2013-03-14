@@ -37,23 +37,33 @@ Ext.define('ZCS.controller.mail.ZtMsgController', {
 		control: {
 			msgHeader: {
 				toggleView: 'doToggleView',
-				menuTap: 'doShowMenu'
+				menuTap:    'doShowMenu',
+				tagTap:     'doShowMenu'
 			},
 			msgBody: {
-				inviteReply: 'doInviteReply',
-				attachmentTap: 'doShowAttachment'
+				inviteReply:    'doInviteReply',
+				attachmentTap:  'doShowAttachment'
 			}
 		},
 
-		menuData: [
-			{label: ZtMsg.forward, action: ZCS.constant.OP_FORWARD, listener: 'doForward'},
-			{label: ZtMsg.del, action: ZCS.constant.OP_DELETE, listener: 'doDelete'},
-			{label: ZtMsg.markRead, action: ZCS.constant.OP_MARK_READ, listener: 'doMarkRead'},
-			{label: ZtMsg.move, action: ZCS.constant.OP_MOVE, listener: 'doMove'},
-			{label: ZtMsg.markSpam, action: ZCS.constant.OP_SPAM, listener: 'doSpam'},
-			{label: ZtMsg.flag, action: ZCS.constant.OP_FLAG, listener: 'doFlag'},
-			{label: ZtMsg.tag, action: ZCS.constant.OP_TAG, listener: 'doTag'}
-		]
+		menuConfigs: {
+
+			msgActions: [
+				{ label: ZtMsg.forward,     action: ZCS.constant.OP_FORWARD,    listener: 'doForward' },
+				{ label: ZtMsg.del,         action: ZCS.constant.OP_DELETE,     listener: 'doDelete' },
+				{ label: ZtMsg.markRead,    action: ZCS.constant.OP_MARK_READ,  listener: 'doMarkRead' },
+				{ label: ZtMsg.move,        action: ZCS.constant.OP_MOVE,       listener: 'doMove' },
+				{ label: ZtMsg.markSpam,    action: ZCS.constant.OP_SPAM,       listener: 'doSpam' },
+				{ label: ZtMsg.flag,        action: ZCS.constant.OP_FLAG,       listener: 'doFlag' },
+				{ label: ZtMsg.tag,         action: ZCS.constant.OP_TAG,        listener: 'doTag' }
+			],
+
+			tagActions: [
+				{ label: ZtMsg.removeTag, action: ZCS.constant.OP_REMOVE_TAG, listener: 'doRemoveTag' }
+			]
+		},
+
+		tagId: ''
 	},
 
 	getActiveMsg: function() {
@@ -90,23 +100,35 @@ Ext.define('ZCS.controller.mail.ZtMsgController', {
 		if (newExpanded && msg && !msg.get('isLoaded')) {
 			msg.set('op', 'load');
 			msg.isExpand = true;
-			msg.save(); // ZtMsgView updated via 'updatedata' event
-		} else {
+			// ZtMsgView updated via 'updatedata' event
+			msg.save({
+				op: 'load',
+				id: msg.getId()
+			});
+		}
+		else {
 			msgView.toggleView();
 		}
 	},
 
-	doShowMenu: function(menuButton, msg) {
+	doShowMenu: function(menuButton, msg, tagName) {
+
 		this.setItem(msg);
 		this.setActiveMailComponent(menuButton.up('.itempanel'));
 		this.callParent(arguments);
+		if (tagName) {
+			var menu = this.getMenu('tagActions');
+			if (menu) {
+				menu.setArgs(ZCS.constant.OP_REMOVE_TAG, [ tagName ]);
+			}
+		}
 	},
 
 	/**
 	 * Starts a forward session with the active message as the original message.
 	 */
-	doForward: function(msg) {
-		ZCS.app.getComposeController().forward(msg || this.getActiveMsg());
+	doForward: function() {
+		ZCS.app.getComposeController().forward(this.getActiveMsg());
 	},
 
 	doInviteReply: function(origMsgId, action) {
@@ -161,6 +183,13 @@ Ext.define('ZCS.controller.mail.ZtMsgController', {
 
 		if (url) {
 			window.open(url, '_blank');
+		}
+	},
+
+	doRemoveTag: function(tagId) {
+		var msg = this.getActiveMsg();
+		if (msg && tagId) {
+			this.tagItem(msg, tagId, true);
 		}
 	}
 });

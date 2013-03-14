@@ -15,8 +15,6 @@
 
 /**
  * A small model to represent an action in an action menu.
- *
- * TODO: Do we want to have an 'args' field?
  */
 Ext.define('ZCS.model.ZtMenuItem', {
 	extend: 'Ext.data.Model',
@@ -24,7 +22,9 @@ Ext.define('ZCS.model.ZtMenuItem', {
 		fields: [
 			{ name: 'label',    type: 'string' },   // user-visible text
 			{ name: 'action',   type: 'string' },   // constant for the operation to perform
-			{ name: 'listener', type: 'auto' }      // function to run when the action is invoked
+			{ name: 'listener', type: 'auto' },     // function to run when the action is invoked
+			{ name: 'scope',    type: 'auto' },
+			{ name: 'args',     type: 'auto' }
 		]
 	}
 });
@@ -49,13 +49,15 @@ Ext.define('ZCS.model.ZtMenuList', {
 		listeners: {
 			itemtap: function(list, index, target, record, e) {
 				var action = record.get('action'),
-					menu = this.up('panel');
+					menu = this.up('panel'),
+					args = record.get('args') || [];
 				Ext.Logger.verbose('Menu click: ' + action);
 				var listener = record.get('listener');
 				if (listener && !target.getDisabled()) {
 					menu.popdown();
-					listener();
+					listener.apply(record.get('scope'), args);
 					e.stopEvent();
+					record.set('args', null);
 				}
 			}
 		}
@@ -97,6 +99,8 @@ Ext.define('ZCS.common.ZtMenu', {
 		defaultItemHeight: 47,
 		menuItemTpl: '{label}',
 		maxHeight: 350,
+
+		name: '',
 
 		/**
 		 * @required
@@ -164,8 +168,10 @@ Ext.define('ZCS.common.ZtMenu', {
 	 * @param {array}   menuItems       list of ZtMenuItem models
 	 */
 	setMenuItems: function(menuItems) {
-		this.down('list').getStore().removeAll();
-		this.down('list').getStore().setData(menuItems);
+		var list = this.down('list'),
+			store = list.getStore();
+		store.removeAll();
+		store.setData(menuItems);
 		this.adjustHeight();
 	},
 
@@ -185,7 +191,7 @@ Ext.define('ZCS.common.ZtMenu', {
 			// Not happy with this (timeout of 0 does not work, so kinda racy),
 			// but there's no good event fired when entire list has rendered.
 			// May cause flicker first time menu is displayed.
-			Ext.defer(enableItemsFn, 200, this.getEnableItemsScope() || this);
+			Ext.defer(enableItemsFn, 200, this.getEnableItemsScope() || this, [this.getName()]);
 		}
 	},
 
@@ -197,6 +203,18 @@ Ext.define('ZCS.common.ZtMenu', {
 	},
 
 	/**
+	 * Returns the menu item associated with the given action.
+	 *
+	 * @param {String}  action      action
+	 * @return {ZtMenuItem}
+	 */
+	getItem: function(action) {
+		var list = this.down('list'),
+			store = list.getStore();
+		return list.getItemAt(store.find('action', action));
+	},
+
+	/**
 	 * Enables or disables a menu item. A disabled item will be grey, and tapping it
 	 * does nothing.
 	 *
@@ -205,13 +223,25 @@ Ext.define('ZCS.common.ZtMenu', {
 	 */
 	enableItem: function(action, enabled) {
 
-		var list = this.down('list'),
-			store = list.getStore(),
-			item = list.getItemAt(store.find('action', action));
-
+		var item = this.getItem(action);
 		if (item) {
 			item.setDisabled(!enabled);
 			item.setCls(enabled ? '' : 'zcs-menuitem-disabled');
+		}
+	},
+
+	/**
+	 * Adds arguments to a listener before it's called.
+	 *
+	 * @param {String}  action      action
+	 * @param {Array}   args        args to add
+	 */
+	setArgs: function(action, args) {
+		var list = this.down('list'),
+			store = list.getStore(),
+			menuItem = store.findRecord('action', action);
+		if (menuItem) {
+			menuItem.set('args', args);
 		}
 	}
 });

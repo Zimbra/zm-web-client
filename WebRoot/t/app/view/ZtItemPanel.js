@@ -61,7 +61,8 @@ Ext.define('ZCS.view.ZtItemPanel', {
 				iconMask:   true,
 				align:      'right',
 				handler:    createHandler(button.event),
-				hidden:     true
+				hidden:     true,
+				menuName:   button.menuName
 			});
 		}
 

@@ -74,23 +74,37 @@ Ext.define('ZCS.controller.ZtItemController', {
 	 * Performs a server operation on an item by setting its 'op' field and then saving it.
 	 * The value of 'op' will be used to set the 'op' field in the *ActionRequest SOAP request.
 	 *
-	 * @param {ZtItem}   item    item to act on
-	 * @param {string}   op      op to perform (eg 'trash' or 'spam')
-	 * @param {Function} success The function to run on succes.
+	 * @param {ZtItem}          item    item to act on
+	 * @param {Object|String}   data    data to save, or op to perform
+	 * @param {Function} success    The function to run on succes.
 	 */
-	performOp: function(item, op, callback) {
+	performOp: function(item, data, callback) {
 		item = item || this.getItem();
 		if (item) {
-			item.set('op', op);
-			item.save({
-				success: function(item, operation) {
-					Ext.Logger.info('item op ' + op + ' done');
-					item.set('op', null);
-					if (callback) {
-						callback(item);
-					}
+			if (Ext.isString(data)) {
+				data = { op: data };
+			}
+			data.success = function(item, operation) {
+				Ext.Logger.info('item op ' + data.op + ' done');
+				if (callback) {
+					callback(item);
 				}
-			});
+			};
+			item.save(data);
 		}
+	},
+
+	/**
+	 * Adds or removes a tag to/from the given item.
+	 *
+	 * @param {ZtMailItem}  item        mail item
+	 * @param {String}      tagName     name of tag to add or remove
+	 * @param {Boolean}     remove      if true, remove the tag
+	 */
+	tagItem: function(item, tagName, remove) {
+		this.performOp(item, {
+			op: remove ? '!tag' : 'tag',
+			tn: tagName
+		});
 	}
 });

@@ -80,7 +80,8 @@ Ext.define("ZCS.view.ZtMain", {
 				iconMask: true,
 				handler: function() {
 					this.up('tabbar').fireEvent('showMenu', this);
-				}
+				},
+				menuName: 'settings'
 			}
 		]);
 	}

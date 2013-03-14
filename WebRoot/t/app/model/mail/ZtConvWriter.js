@@ -26,9 +26,9 @@ Ext.define('ZCS.model.mail.ZtConvWriter', {
 
 	writeRecords: function(request, data) {
 
-		var	action = request.getAction(),
-			offset = request.getOperation().getStart(),
-			query = request.getParams().query,
+		var operation = request.getOperation(),
+			options = operation.getInitialConfig(),
+			action = request.getAction(),
 			json, methodJson;
 
 		if (action === 'read') {
@@ -42,9 +42,9 @@ Ext.define('ZCS.model.mail.ZtConvWriter', {
 
 			Ext.apply(methodJson, {
 				sortBy: 'dateDesc',
-				offset: offset,
+				offset: operation.getStart(),
 				limit: ZCS.constant.DEFAULT_PAGE_SIZE,
-				query: query,
+				query: request.getParams().query,
 				types: 'conversation',
 				fetch: 1
 			});
@@ -52,7 +52,8 @@ Ext.define('ZCS.model.mail.ZtConvWriter', {
 		else if (action === 'update') {
 
 			// 'update' operation means we're performing a ConvActionRequest
-			json = this.getActionRequest(request, data, 'ConvAction');
+			var itemData = Ext.merge(data[0] || {}, options);
+			json = this.getActionRequest(request, itemData, 'ConvAction');
 		}
 
 		request.setJsonData(json);

@@ -53,7 +53,7 @@ Ext.define('ZCS.controller.mail.ZtMailItemController', {
 	/**
 	 * Launches a tag assignment view.
 	 */
-	doTag: function (item) {
+	doTag: function(item) {
 		this.doAssignmentView(item, 'ZCS.view.mail.ZtTagAssignmentView', ZtMsg.tags, 'tagView');
 	},
 
@@ -112,7 +112,8 @@ Ext.define('ZCS.controller.mail.ZtMailItemController', {
 		}
 		this.setActiveMailComponent(itemPanel);
 
-		var menu = this.getMenu(),
+		var menuName = menuButton.menuName,
+			menu = this.getMenu(menuName),
 			item = this.getItem(),
 			unreadLabel = item.get('isUnread') ? ZtMsg.markRead : ZtMsg.markUnread,
 			flagLabel = item.get('isFlagged') ? ZtMsg.unflag : ZtMsg.flag;
@@ -132,7 +133,7 @@ Ext.define('ZCS.controller.mail.ZtMailItemController', {
 		}
 		else {
 			// first time showing menu, change data since menu not ready yet
-			var menuData = this.getMenuData();
+			var menuData = this.getMenuConfig(menuName);
 			Ext.each(menuData, function(menuItem) {
 				if (menuItem.action === 'MARK_READ') {
 					menuItem.label = unreadLabel;
@@ -148,9 +149,12 @@ Ext.define('ZCS.controller.mail.ZtMailItemController', {
 	/**
 	 * Disable "Tag" action if user doesn't have any tags.
 	 */
-	enableMenuItems: function() {
-		var tags = ZCS.session.getOrganizerDataByAppAndOrgType(ZCS.constant.APP_MAIL, ZCS.constant.ORG_TAG);
-		this.getMenu().enableItem(ZCS.constant.OP_TAG, tags && tags.length > 0);
+	enableMenuItems: function(menuName) {
+		var menu = this.getMenu(menuName);
+		if (menu && menu.getItem(ZCS.constant.OP_TAG)) {
+			var tags = ZCS.session.getOrganizerDataByAppAndOrgType(ZCS.constant.APP_MAIL, ZCS.constant.ORG_TAG);
+			menu.enableItem(ZCS.constant.OP_TAG, tags && tags.length > 0);
+		}
 	},
 
 	/**
@@ -161,8 +165,7 @@ Ext.define('ZCS.controller.mail.ZtMailItemController', {
 	 * @param {Boolean}         remove  if true, remove given tag from the item
 	 */
 	saveItemTag: function (tag, item, remove) {
-		item.set('tn', tag.get('name'));
-		this.performOp(item, remove ? '!tag' : 'tag');
+		this.tagItem(item, tag.get('name'), false);
 	},
 
 	/**
@@ -173,9 +176,12 @@ Ext.define('ZCS.controller.mail.ZtMailItemController', {
 	 */
 	saveItemMove: function (folder, item) {
 
-		item.set('l', folder.get('id'));
+		var data = {
+			op: 'move',
+			l:  folder.get('id')
+		};
 
-		this.performOp(item, 'move', function(item, operation) {
+		this.performOp(item, data, function(item, operation) {
 			var isConversation = item instanceof ZCS.model.mail.ZtConv,
 				isMessage = item instanceof ZCS.model.mail.ZtMailMsg,
 				conv;

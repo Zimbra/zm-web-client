@@ -40,9 +40,11 @@ Ext.define('ZCS.controller.ZtMainController', {
 		},
 
 		// settings menu
-		menuData: [
-			{ label: ZtMsg.logout, action: ZCS.constant.LOGOUT, listener: 'doLogout' }
-		]
+		menuConfigs: {
+			settings: [
+				{ label: ZtMsg.logout, action: ZCS.constant.OP_LOGOUT, listener: 'doLogout' }
+			]
+		}
 	},
 
 	launch: function() {

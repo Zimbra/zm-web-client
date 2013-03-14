@@ -23,9 +23,9 @@ Ext.define('ZCS.controller.ZtBaseController', {
 	extend: 'Ext.app.Controller',
 
 	config: {
-		menu: null,
-		menuButton: null,
-		menuData: []
+		menus:          {},
+		menuButtons:    {},
+		menuConfigs:    {}
 	},
 
 	/**
@@ -37,16 +37,40 @@ Ext.define('ZCS.controller.ZtBaseController', {
 		return Ext.getStore(ZCS.util.getStoreShortName(this));
 	},
 
+	getMenu: function(menuName) {
+		return this.getMenus()[menuName];
+	},
+
+	getMenuButton: function(menuName) {
+		return this.getMenuButtons()[menuName];
+	},
+
+	getMenuConfig: function(menuName) {
+		return this.getMenuConfigs()[menuName];
+	},
+
+	setMenu: function(menuName, menu) {
+		this.getMenus()[menuName] = menu;
+	},
+
+	setMenuButton: function(menuName, button) {
+		this.getMenuButtons()[menuName] = button;
+	},
+
+	setMenuConfig: function(menuName, config) {
+		this.getMenuConfigs()[menuName] = config;
+	},
+
 	/**
 	 * Sets up the action menu, creating a listener for each action.
-	 * @protected
 	 */
-	setMenuItems: function() {
-		var menuData = this.getMenuData();
+	setMenuItems: function(menuName) {
+		var menuData = this.getMenuConfig(menuName);
 		Ext.each(menuData, function(menuItem) {
-			menuItem.listener = Ext.bind(this[menuItem.listener], this);
+			menuItem.listener = this[menuItem.listener];
+			menuItem.scope = this;
 		}, this);
-		this.getMenu().setMenuItems(menuData);
+		this.getMenu(menuName).setMenuItems(menuData);
 	},
 
 	/**
@@ -54,24 +78,27 @@ Ext.define('ZCS.controller.ZtBaseController', {
 	 */
 	doShowMenu: function(menuButton) {
 
-		this.setMenuButton(menuButton);
-		var menu = this.getMenu();
+		var menuName = menuButton.menuName,
+			menu = this.getMenu(menuName);
+
 		if (!menu) {
 			menu = Ext.create('ZCS.common.ZtMenu', {
+				name: menuName,
 				enableItemsFn: this.enableMenuItems,
 				enableItemsScope: this
 			});
-			this.setMenu(menu);
-			this.setMenuItems();
+			this.setMenu(menuName, menu);
+			this.setMenuItems(menuName);
 		}
-		menu.setReferenceComponent(this.getMenuButton());
+		this.setMenuButton(menuName, menuButton);
+		menu.setReferenceComponent(menuButton);
 		menu.popup();
 	},
 
 	/**
 	 * Override this function to enable/disable menu items after menu has popped up
 	 */
-	enableMenuItems: function() {},
+	enableMenuItems: function(menuName, items) {},
 
 	/**
 	 * Delete notification: remove item from the store

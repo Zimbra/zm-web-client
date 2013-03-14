@@ -56,6 +56,8 @@ Ext.define('ZCS.model.ZtItem', {
 
 	constructor: function(data, id) {
 
+		// The Model constructor can return a cached object rather than 'this',
+		// so we need to check for that and return it if we get one.
 		var item = this.callParent(arguments) || this,
 			key = (data && data.id) || id;
 
