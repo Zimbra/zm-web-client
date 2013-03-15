@@ -1,10 +1,16 @@
-.compose-form {
+.zcs-compose-form {
 	.x-form-inner{
 		padding: 0px !important;
 	}
 	.x-field {
 		border-bottom: 1px solid $light-grey;
 		min-height: 1.8em;
+	}
+	.vm-bubblearea {
+		@include border-radius(0);
+	}
+	.x-form-label {
+		text-align: right;
 	}
 }
 
