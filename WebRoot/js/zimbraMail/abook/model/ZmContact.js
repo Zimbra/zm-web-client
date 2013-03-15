@@ -1171,7 +1171,8 @@ function(attr, isBatchMode, isAutoCreate, result) {
 			var msg = this.isGroup() ? ZmMsg.groupCreated : ZmMsg.contactCreated;
 			appCtxt.getAppController().setStatusMsg(msg);
 		}
-		appCtxt.getApp(ZmApp.CONTACTS).updateIdHash(cn, false);
+		//update the canonical list. (this includes adding to the _idHash like before (bug 44132) calling updateIdHash. But calling that left the list inconcistant.
+		appCtxt.getApp(ZmApp.CONTACTS).getContactList().add(cn);
 	} else {
 		var msg = this.isGroup() ? ZmMsg.errorCreateGroup : ZmMsg.errorCreateContact;
 		var detail = ZmMsg.errorTryAgain + "\n" + ZmMsg.errorContact;
