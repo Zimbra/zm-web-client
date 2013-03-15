@@ -136,7 +136,8 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 			if (!iframe) {
 				iframe = this.iframe = new ZCS.view.ux.ZtIframe({
 					name: 'ZCSIframe-' + this.up('msgview').getId(),
-					css: ZCS.session.msgBodyCss
+					css: ZCS.session.msgBodyCss,
+					width: this.element.getWidth()
 				});
 
 				iframe.on('msgContentResize', function () {
@@ -172,6 +173,7 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 				});
 				this.add(this.htmlContainer);
 			}
+
 			container.setHtml(html);
 			container.show();
 		}

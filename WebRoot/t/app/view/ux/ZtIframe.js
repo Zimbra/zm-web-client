@@ -36,10 +36,16 @@ Ext.define('ZCS.view.ux.ZtIframe', {
 
 		var iframe = this.element.createChild({
 			tag: 'iframe',
-			scrolling: 'no',
 			frameborder: 0,
-			width: '100%',
+			width: this.getWidth(),
+			scrolling: 'no',
 			name: this.getName()
+		});
+
+		this.element.applyStyles({
+			'overflow-x': 'auto',
+			'overflow-y': 'hidden',
+			'-webkit-overflow-scrolling': 'touch'
 		});
 
 		this.setIframeEl(iframe);
@@ -65,47 +71,66 @@ Ext.define('ZCS.view.ux.ZtIframe', {
 	setContent: function(html, callback) {
 
 		var component = this,
+			position = component.element.getBox(),
 			doc = this.getDoc(),
-
+			frozenY = null,
+			lastPageX = null,
+			lastPageY = null,
+			xDifferential = null,
+			yDifferential = null,
 			//Convert coordinates in the touch objects to be coordinates for this window
 			//and not the iframe
-			touchProcessor = function (touches, newTarget) {
+			touchProcessor = function (touches, newTarget, changeId, freezeY) {
 				var i,
 					oldTouch,
 					numTouches = touches.length,
 					newTouchList,
 					newTouch,
-					newTouches = [];
+					pageX = undefined,
+					pageY = undefined,
+					newTouches = [],
+					pageY,
+					id;
 
 				for (i = 0; i < numTouches; i += 1) {
 					oldTouch = touches[i];
 
+					id = changeId ? -oldTouch.identifier : oldTouch.identifier;
+
+					if (!oldTouch.screenX) {
+						Ext.Logger.iframe('Undefined screenX found.');
+						if (oldTouch.pageX) {
+							Ext.Logger.iframe('PageX found');
+							pageX = oldTouch.pageX + position.left;
+						} else {
+							pageX = undefined;
+						}
+					} else {
+						pageX = oldTouch.screenX;
+					}
+
+					pageY = freezeY ? frozenY : oldTouch.screenY;
+
 					//definition of page, client, screen found here: http://www.w3.org/TR/2011/WD-touch-events-20110505/
 					//since we're in an iframe, pageY needs to be the whole scroll of the list, not just the scoll of the iframe.
-
+					//The main document touch events do not have screenX, screenY, clientX, or clientY properties, so just set those as undefined all the time.
 					newTouch = window.document.createTouch(
 						window,
 						newTarget,
-						oldTouch.identifier,
-						oldTouch.screenX, //pageX
-						oldTouch.screenY, //pageY
-						oldTouch.screenX, //screenX
-						oldTouch.screenY, //screenY
-						oldTouch.screenX, //clientX
-						oldTouch.screenY //clientY
+						id,
+						pageX, //pageX
+						pageY, //pageY
+						undefined, //screenX
+						undefined, //screenY
+						undefined, //clientX
+						undefined //clientY
 					);
 					newTouches.push(newTouch);
 				}
 
 				return window.document.createTouchList.apply(window.document, newTouches);
 			},
-			touchEventListener = function (ev) {
-
-				if (ev.srcElement.nodeName === 'A') {
-					return true;
-				}
-
-				// clone the event for our window / document
+			cloneEvent = function (ev, target, changeId, freezeY) {
 
 				// This function is based on Apple's implementation, it may differ in other touch based browsers.
 				// http://developer.apple.com/library/safari/#documentation/UserExperience/Reference/TouchEventClassReference/TouchEvent/TouchEvent.html
@@ -119,10 +144,6 @@ Ext.define('ZCS.view.ux.ZtIframe', {
 					eventPageX,
 					eventPageY;
 
-				touches = touchProcessor(ev.touches, component.element.dom);
-				targetTouches = touchProcessor(ev.targetTouches, component.element.dom);
-				changedTouches = touchProcessor(ev.changedTouches, component.element.dom);
-
 				if (ev.touches[0] === undefined) {
 					Ext.Logger.iframe('Touch has no events in touches list');
 				}
@@ -130,17 +151,31 @@ Ext.define('ZCS.view.ux.ZtIframe', {
 
 				if (ev.touches.length > 0) {
 					var lastTouch = ev.touches[ev.touches.length - 1];
-					eventScreenX = lastTouch.screenX;
-					eventPageX = lastTouch.pageX;
-					eventScreenY = lastTouch.screenY;
+					eventScreenX = undefined;
+					eventPageX = lastTouch.screenX;
+					eventScreenY = undefined;
 					eventPageY = lastTouch.pageY;
 				} else {
 					//touchend events have a changedTouches list, not a touches array.
-					eventScreenX = ev.changedTouches[0].screenX;
-					eventPageX = ev.changedTouches[0].pageX;
-					eventScreenY = ev.changedTouches[0].screenY;
-					eventPageY = ev.changedTouches[0].pageY;
+					eventScreenX = undefined;
+					eventPageX = ev.changedTouches[0].screenX;
+					eventScreenY = undefined;
+					eventPageY = ev.changedTouches[0].screenY;
 				}
+
+
+				if (freezeY && ev.type === 'touchstart') {
+					frozenY = eventPageY;
+				}
+
+				if (freezeY) {
+					eventScreenY = frozenY;
+					eventPageY = frozenY;
+				}
+
+				touches = touchProcessor(ev.touches, target, changeId, freezeY);
+				targetTouches = touchProcessor(ev.targetTouches, target, changeId, freezeY);
+				changedTouches = touchProcessor(ev.changedTouches, target, changeId, freezeY);
 
 				cloneEvent.initTouchEvent(
 					ev.type, //type, The type of event that occurred.
@@ -163,25 +198,68 @@ Ext.define('ZCS.view.ux.ZtIframe', {
 					ev.rotation //rotation The delta rotation since the start of an event, in degrees, where clockwise is positive and counter-clockwise is negative. The initial value is 0.0.
 				);
 
-				component.element.dom.dispatchEvent(cloneEvent);
+				return cloneEvent;
+			},
+			delegateEvent = function (ev) {
+				if (ev.srcElement.nodeName === 'A') {
+					return true;
+				}
 
-				ev.preventDefault();
+				// clone the event for our window / document
+				var clonedEvent = cloneEvent(ev, component.element.dom);
+				component.element.dom.dispatchEvent(clonedEvent);
+			},
+			touchEventListener = function (ev) {
+				if (!ev.isRefired) {
+					delegateEvent(ev);
 
-				return false;
+					//If we allow this event to bubble normally, inertial horizontal scrolling will occur.
+					//However, if a Y axis scroll is allowed, then we may end up scrolling the whole page.
+					//So do our best to only allow default scroll to occur if it is predominately an x-axis scrolling move.
+
+					xDifferential = ev.pageX - lastPageX;
+					yDifferential = ev.pageY - lastPageY;
+
+					var yDifferentialIsHigh = yDifferential < -4 || yDifferential > 4;
+
+					if (ev.type === 'touchend') {
+						lastPageX = 0;
+						lastPageY = 0;
+					}
+
+					Ext.Logger.iframe('[' + xDifferential + ',' + yDifferential+']');
+
+					if (yDifferentialIsHigh && ev.type === 'touchmove') {
+						//Cache these for the next time the handler is called.
+						lastPageY = ev.pageY;
+						lastPageX = ev.pageX;
+						ev.preventDefault();
+						return false;
+					} else {
+						lastPageY = ev.pageY;
+						lastPageX = ev.pageX;
+					}
+
+				} else {
+					Ext.Logger.iframe('Handling refired event');
+				}
 			};
 
 		html = ZCS.htmlutil.hideCidImages(html);
 
 		if (doc) {
 
-/*
-			if (!doc.onload) {
-				doc.onload = function () {
-					debugger;
-					alert('iframe loaded');
-				}
-			}
-*/
+			//Force the iframe to be the width of its container so that when we compare
+			//the iframe's contentWidth to its container we know if it reflowed or not.
+			//Since this component is reused, the iframe width could have been reset to a non-reflowed
+			//large width.
+			this.getIframeEl().setWidth(this.element.getWidth());
+
+
+			//Buffered handler in case the onload event fires twice (which seems to happen sometimes)
+			this.getIframeEl().dom.onload = Ext.Function.createBuffered(function () {
+				this.resizeToContent(callback);
+			}, 50, this);
 
 			doc.open();
 			doc.write(html);
@@ -198,8 +276,6 @@ Ext.define('ZCS.view.ux.ZtIframe', {
 				style.appendChild(rules);
 				head.appendChild(style);
 			}
-
-			this.fixSize(callback);
 
 			//Capture these touch events being sent to the iframe.
 			body.addEventListener("touchstart", touchEventListener, false);
@@ -225,6 +301,7 @@ Ext.define('ZCS.view.ux.ZtIframe', {
 			iframe = this.getIframeEl(),
 			iframeWidth = iframe.getWidth();
 
+		//
 		if (contentWidth > iframeWidth) {
 			Ext.Logger.iframe('Set iframe width to ' + contentWidth);
 			iframe.setWidth(contentWidth);
@@ -243,6 +320,7 @@ Ext.define('ZCS.view.ux.ZtIframe', {
 		if (iframe.getHeight() !== height) {
 			Ext.Logger.iframe('Set IFRAME height to ' + height);
 			iframe.setHeight(height);
+			this.setHeight(height);
 			this.fireEvent('msgContentResize');
 		}
 
@@ -250,12 +328,5 @@ Ext.define('ZCS.view.ux.ZtIframe', {
 			Ext.Logger.iframe('Running iframe content callback');
 			callback();
 		}
-	},
-
-	/**
-	 * Resets the iframe's height via a timer so that the iframe has time to lay itself out.
-	 */
-	fixSize: function(callback) {
-		Ext.defer(this.resizeToContent, 200, this, [callback]);
 	}
 });

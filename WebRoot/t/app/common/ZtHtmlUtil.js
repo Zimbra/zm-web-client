@@ -108,13 +108,30 @@ Ext.define('ZCS.common.ZtHtmlUtil', {
 	 * @param {Element}     el          an element
 	 * @param {Document}    doc         its owning document
 	 *
-	 * @return {int}    the height of the element
+	 * @return {Number}    the height of the element
 	 */
 	getHeightFromComputedStyle: function(el, doc) {
+		return this.getComputedStyle(el, doc, "height");
+	},
+
+	/**
+	 * Calculates an element's height based on its computed style.
+	 *
+	 * @param {Element}     el          an element
+	 * @param {Document}    doc         its owning document
+	 *
+	 * @return {Number}    the width of the element
+	 */
+	getWidthFromComputedStyle: function(el, doc) {
+		return this.getComputedStyle(el, doc, "width");
+	},
+
+	getComputedStyle: function (el, doc, attr) {
 		doc = doc || window.document;
 		var styleObj = doc.defaultView.getComputedStyle(el);
-		return parseInt(styleObj.height);
+		return parseInt(styleObj[attr]);
 	},
+
 
 	/**
 	 * Calculates an element's height by summing the heights of its child nodes.
