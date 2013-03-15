@@ -85,12 +85,32 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 	 * @param {ZtConv}  conv        conv to show
 	 */
 	showItem: function(conv) {
+
 		Ext.Logger.info("conv controller: show conv " + conv.getId());
+
+		var curFolder = ZCS.session.getCurrentSearchOrganizer(),
+			curFolderId = curFolder && curFolder.getId(),
+			store = this.getStore();
+
+		if (curFolderId === ZCS.constant.ID_DRAFTS) {
+			var itemPanel = this.getItemPanel();
+			itemPanel.suppressRedraw = true;
+			this.clear();
+			this.setItem(conv);
+			store.load({
+				convId: conv.getId(),
+				callback: function() {
+					ZCS.app.getComposeController().compose(conv.getMessages()[0]);
+					itemPanel.suppressRedraw = false;
+				}
+			});
+			return;
+		}
+
 		this.callParent(arguments);
 
 		var toolbar = this.getItemPanelToolbar(),
-			itemPanel = this.getItemPanel(),
-			store = this.getStore();
+			itemPanel = this.getItemPanel();
 
 		toolbar.setTitle(conv.get('subject'));
 

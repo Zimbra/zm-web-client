@@ -168,8 +168,8 @@ Ext.define('ZCS.controller.mail.ZtMsgController', {
 		var replyBody = invite.getSummary(true) + ZCS.constant.INVITE_REPLY_TEXT[action] + '<br><br>';
 
 		msg.createMime(replyBody, true);
-		msg.isInviteReply = true;
 		msg.save({
+			isInviteReply: true,
 			success: function () {
 				ZCS.app.fireEvent('showToast', ZtMsg.invReplySent);
 			}

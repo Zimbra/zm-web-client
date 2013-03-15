@@ -52,11 +52,11 @@ Ext.define('ZCS.model.mail.ZtMsgWriter', {
 				query: 'underid:1 AND NOT underid:3 AND NOT underid:4'
 			});
 		}
-		else if (action === 'create' || data.isDraft) {
+		else if (action === 'create' || itemData.isDraft) {
 
 			// 'create' operation means we are sending a msg
 			var	msg = request.getRecords()[0],
-				method = msg.isDraft ? 'SaveDraft' : msg.isInviteReply ? 'SendInviteReply' : 'SendMsg';
+				method = itemData.isDraft ? 'SaveDraft' : itemData.isInviteReply ? 'SendInviteReply' : 'SendMsg';
 
 			json = this.getSoapEnvelope(request, data, method);
 			methodJson = json.Body[method + 'Request'];

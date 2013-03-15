@@ -158,7 +158,10 @@ Ext.define('ZCS.controller.mail.ZtConvListController', {
 	 */
 	handleCreateNotification: function(create) {
 
-		if (ZCS.session.getCurrentSearchOrganizer().getId() === ZCS.constant.ID_INBOX) {
+		var curFolder = ZCS.session.getCurrentSearchOrganizer(),
+			curFolderId = curFolder && curFolder.getId();
+
+		if (curFolderId === ZCS.constant.ID_INBOX) {
 			var reader = ZCS.model.mail.ZtConv.getProxy().getReader(),
 				data = reader.getDataFromNode(create),
 				store = this.getStore(),
