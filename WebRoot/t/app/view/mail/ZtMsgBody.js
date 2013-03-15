@@ -359,7 +359,9 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 						text: ZtMsg.loadImages,
 						handler: function() {
 							Ext.Logger.info('load images');
-							this.up('msgbody').showExternalImages();
+							if (!this.up('msgview').readOnly) {
+								this.up('msgbody').showExternalImages();
+							}
 						}
 					}
 				]

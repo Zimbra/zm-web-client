@@ -116,13 +116,13 @@ Ext.define('ZCS.view.mail.ZtMsgView', {
 	updateExpansion: function() {
 		if (this.getExpanded()) {
 			this.down('msgbody').show();
-		}
-		else {
+		} else {
 			this.down('msgbody').hide();
 		}
 	},
 
 	setReadOnly: function(isReadOnly) {
+		this.readOnly = isReadOnly;
 		if (!isReadOnly) {
 			this.updateExpansion();
 		}

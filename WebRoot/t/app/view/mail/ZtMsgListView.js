@@ -40,7 +40,8 @@ Ext.define('ZCS.view.mail.ZtMsgListView', {
 		itemCls: 'zcs-msgview',
 
 		//Sets the default list item height, which corresponds to collapsed message height
-		itemHeight: 70
+		itemHeight: 70,
+		allowTaps: true
 	},
 
 	initialize: function() {
@@ -53,6 +54,10 @@ Ext.define('ZCS.view.mail.ZtMsgListView', {
 		// Message header taps
 		this.on({
 			tap: function(e, node) {
+
+				if (!this.getAllowTaps()) {
+					return false;
+				}
 				//This will not prevent tap events by itself, so we have to manually prevent taps for a period of time to prevent collapse
 				//when holding on an address.
 
@@ -93,6 +98,11 @@ Ext.define('ZCS.view.mail.ZtMsgListView', {
 		// Message body taps
 		this.on({
 			tap: function(e) {
+
+				if (!this.getAllowTaps()) {
+					return false;
+				}
+
 				var elm = Ext.fly(e.target),
 					msgBody = this.down('#' + e.delegatedTarget.id),
 					msg = msgBody.getMsg();
@@ -160,6 +170,8 @@ Ext.define('ZCS.view.mail.ZtMsgListView', {
 			view.setReadOnly(isReadOnly);
 			listRef.updatedItems.push(view);
 		});
+
+		this.setAllowTaps(!isReadOnly);
 
 		listRef.updateItemHeights();
 		listRef.refreshScroller(listRef.getScrollable().getScroller());
