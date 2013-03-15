@@ -88,18 +88,18 @@ Ext.define('ZCS.view.mail.ZtAssignmentView', {
 
 		listHasOwnHeader: false,
 
-		border: 0
 	},
 
 	constructor: function (cfg) {
 		var me = this;
 
-		cfg.style = "visibility: hidden; position: absolute; padding: 0.0em";
+		cfg.cls = 'zcs-sheet';
+		cfg.style = "visibility:hidden; position:absolute; padding:0;";
 
 		cfg.items = [{
 			xtype: 'panel',
 			layout: 'fit',
-			width: 250,
+			width: '30%',
 			cls: 'zcs-assignment-panel',
 			items: []
 		}, {
@@ -107,7 +107,7 @@ Ext.define('ZCS.view.mail.ZtAssignmentView', {
 			ui: 'light',
 			cls: 'zcs-preview-panel',
 			flex: 1,
-			padding: '0 15 0 15',
+			padding: '0 1em',
 			layout: {
 				type: 'vbox',
 				align: 'stretch'

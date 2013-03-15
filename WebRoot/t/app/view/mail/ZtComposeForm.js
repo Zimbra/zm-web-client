@@ -41,7 +41,7 @@ Ext.define('ZCS.view.mail.ZtComposeForm', {
 		scrollable: false,
 		hidden: true,
 		modal: true,
-		cls: 'compose-form',
+		cls: 'zcs-compose-form',
 		msg: null
 	},
 
@@ -87,20 +87,20 @@ Ext.define('ZCS.view.mail.ZtComposeForm', {
 					type: 'vbox'
 				},
 				items: [{
-					height: 44,
+					height: '2.5em',
 					layout: {
 						type: 'hbox'
 					},
 					items: [{
 						xtype: 'contactfield',
 						name: 'to',
-						labelWidth: 32,
+						labelWidth: '4.5em',
 						flex: 1,
 						label: ZtMsg.toHdr,
 						addressType: ZCS.constant.TO
 					}, {
-						width: 80,
-						height: 44,
+						width: '4.5em',
+						height: '2.5em',
 						xtype: 'component',
 						html: ZtMsg.ccOrBcc,
 						itemId: 'ccToggle',
@@ -117,8 +117,8 @@ Ext.define('ZCS.view.mail.ZtComposeForm', {
 				}, {
 					xtype: 'contactfield',
 					name: 'cc',
-					height: 44,
-					labelWidth: 35,
+					height: '2.5em',
+					labelWidth: '4.5em',
 					hidden: true,
 					itemId: 'cc',
 					label: ZtMsg.ccHdr,
@@ -127,21 +127,21 @@ Ext.define('ZCS.view.mail.ZtComposeForm', {
 					xtype: 'contactfield',
 					name: 'bcc',
 					itemId: 'bcc',
-					height: 44,
-					labelWidth: 50,
+					height: '2.5em',
+					labelWidth: '4.5em',
 					hidden: true,
 					label: ZtMsg.bccHdr,
 					addressType: ZCS.constant.BCC
 				}, {
-					height: 44,
+					height: '2.5em',
 					layout: {
 						type: 'hbox'
 					},
 					items: [{
 						xtype: 'textfield',
 						name: 'subject',
-						height: 44,
-						labelWidth: 80,
+						height: '2.5em',
+						labelWidth: '4.5em',
 						flex: 1,
 						listeners: {
 							blur: function () {
@@ -185,7 +185,7 @@ Ext.define('ZCS.view.mail.ZtComposeForm', {
 		if (ZCS.constant.IS_ENABLED[ZCS.constant.ADD_ATTACHMENT]) {
 			form.items[3].items.push({
 				width: 80,
-				height: 44,
+				height: '2.5em',
 				xtype: 'component',
 				html: ZtMsg.attach,
 				itemId: 'attach',

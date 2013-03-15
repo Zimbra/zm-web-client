@@ -31,7 +31,6 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 
 	config: {
 		cls:            'zcs-msg-body',
-		padding:        5,
 
 		msg:            null,       // msg being displayed
 		usingIframe:    false,      // true if msg content is within an IFRAME

@@ -10,6 +10,16 @@
 
 .zcs-toggle-field {
 	border-bottom: 1px solid $light-grey;
+
+	.x-innerhtml {
+		font-size: .8em;
+		font-weight: bold;
+		line-height: 2em;
+
+		//TODO: the following should come from a link style
+		color: #336699;
+		text-decoration: underline;
+	}
 }
 
 .zcs-side-panel {
@@ -31,16 +41,23 @@ $zcs-title-fontsize: 1.2rem; //uses rem so it's not relational to container bar
 		height: $zcs-toolbar-button-size;
 	}
 }
+$zimbra-button-active-color: rgba(255,255,255,.3);
 
 /**
  * Make our buttons flat, no border, bigger images.
  */
 .x-toolbar .x-button.zcs-flat {
 	@include zimbra-button;
+	&:active {
+		background-color: $zimbra-button-active-color;
+	}
 }
 
 .x-tabbar .x-button.zcs-flat {
 	@include zimbra-button;
+	&:active {
+		background-color: $zimbra-button-active-color;
+	}
 }
 
 /* Overview */
@@ -113,6 +130,17 @@ $searchMinHeight: 1em;
 			}
 		}
 	}
+}
+
+.zcs-sheet {
+	background-color: rgba(0,0,0,.25);
+	background-image: none;
+}
+
+/* Assignment Panel */
+
+.zcs-assignment-panel {
+	@extend .zcs-side-panel;
 }
 
 /* Item Panel */

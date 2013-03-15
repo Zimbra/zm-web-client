@@ -10,21 +10,26 @@ $tag-purple: #ba86e5;
 $tag-red: #f66666;
 $tag-yellow: #f8fa33;
 
-$small-tag-size: 16px;
-$large-tag-size: 32px;
+$small-tag-size: 1em;
+$large-tag-size: 1.5em;
 
 @mixin zcs-tag($size, $name) {
 	.zcs-tag-#{$name} {
 		background-color: $tag-none;
+		display:inline-block;
 		width: $size;
 		height: $size;
-		-webkit-mask-size: $size;
-		margin-bottom: -4px;
-		display:inline-block;
+		-webkit-mask-size: 100%;
 		/**
 		 * Include the default sencha picto
 		 */
 		-webkit-mask-image: theme_image('default', "pictos/tag.png");
+		@if $name == 'large' {
+			margin-right: .5em;
+			vertical-align: -.4em;
+		} @else {
+			vertical-align: -.2em;
+		}
 	}
 }
 
