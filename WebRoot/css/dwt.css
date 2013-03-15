@@ -563,7 +563,7 @@ UL.DwtListView-Rows {
 	margin: 0;
 }
 
-.TopRow DIV, .BottomRow DIV, .DwtMsgListMultiCol DIV, LI.Row-dragProxy {
+.TopRow DIV, .BottomRow DIV, .DwtMsgListMultiCol DIV {
 #IFNDEF MSIE
 	display: inline-block;
 #ENDIF

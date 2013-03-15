@@ -532,22 +532,25 @@ TD.vSpace {
 .Row-matched-dragProxy 		{	@ListItemContainer-dragProxy@		}
 
 .RowDouble-dragProxy .ZmMsgListFlagsWrapper,
-.RowDouble-dragProxy .ZmMsgListDate	{	@ListItemContainer-dragProxy@	}
+.RowDouble-dragProxy .ZmMsgListDate,
+.Row-dragProxy .ZmMsgListFlagsWrapper,
+.Row-dragProxy .ZmMsgListDate	{	@ListItemContainer-dragProxy@	}
 
 /* list row TD's (eg: text) */
 
 .Row TD, .RowDouble TD,
 .Row DIV, .RowDouble DIV	{	@ListItemText-normal@				}
 
-.RowOdd TD, .RowOdd DIV		{	@ListItemText-alt@	background-color:@ListItemBgColor-alt@;	}
+.RowOdd TD, .RowOdd DIV		{	@ListItemText-alt@	}
+.RowOdd .ZmMsgListDate, .RowOdd .ZmMsgListFlagsWrapper	{	background-color:@ListItemBgColor-alt@;	}
 
 LI.RowDouble {list-style: none;}
 
 .selected TD,	/* TODO: used? */
 
-.Row-selected TD, .Row-selected DIV,
+.Row-selected TD,
 .Row-selected-dragProxy TD,
-.Row-selected-disabled TD 	{	@ListItemText-selected@	background-color:@ListItemBgColor-selected@;	}
+.Row-selected-disabled TD 	{	@ListItemText-selected@	}
 
 /* .Row-matched TD			 	{ 	@ListItemText-matched@				} */
 
