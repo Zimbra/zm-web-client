@@ -253,7 +253,7 @@ Ext.define('ZCS.view.ux.ZtIframe', {
 			//the iframe's contentWidth to its container we know if it reflowed or not.
 			//Since this component is reused, the iframe width could have been reset to a non-reflowed
 			//large width.
-			this.getIframeEl().setWidth(this.element.getWidth());
+			this.getIframeEl().setWidth(this.element.getWidth() || this.getWidth());
 
 
 			//Buffered handler in case the onload event fires twice (which seems to happen sometimes)

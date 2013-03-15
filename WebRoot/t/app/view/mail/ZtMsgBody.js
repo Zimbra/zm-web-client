@@ -92,6 +92,7 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 			trimQuotedText = togglingQuotedText ? !showQuotedText : !isLast && !isInvite,
 			html = msg.getContentAsHtml(this.getId(), trimQuotedText),
 			container = this.htmlContainer,
+			iframeWidth = this.element.getWidth() || (this.parent.getChildWidth() - 22),
 			iframe = this.iframe;
 
 		// TODO: truncation
@@ -137,7 +138,7 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 				iframe = this.iframe = new ZCS.view.ux.ZtIframe({
 					name: 'ZCSIframe-' + this.up('msgview').getId(),
 					css: ZCS.session.msgBodyCss,
-					width: this.element.getWidth()
+					width: iframeWidth
 				});
 
 				iframe.on('msgContentResize', function () {
@@ -145,6 +146,9 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 				}, this);
 
 				this.add(iframe);
+			} else {
+				//We might have to get the width from the parent if this hasn't been shown yet (only msg header has been shown)
+				iframe.setWidth(iframeWidth);
 			}
 
 			iframe.setContent(html);

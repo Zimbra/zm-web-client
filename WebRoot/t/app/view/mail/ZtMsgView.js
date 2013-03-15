@@ -83,6 +83,17 @@ Ext.define('ZCS.view.mail.ZtMsgView', {
 		}
 	},
 
+	/**
+	 * Returns the width of the msg header, as that is the only child guarenteed to be
+	 * rendered.  Other children, like the body, may need to know this information before
+	 * they lay themselves out.
+	 *
+	 * @return {Number} The width of a child in the message view.
+	 */
+	getChildWidth: function () {
+		return this.down('msgheader').element.getWidth();
+	},
+
 	renderHeader: function() {
 		this.down('msgheader').render(this.getMsg());
 	},
@@ -114,10 +125,11 @@ Ext.define('ZCS.view.mail.ZtMsgView', {
 	 * @private
 	 */
 	updateExpansion: function() {
+		var msgBody = this.down('msgbody');
 		if (this.getExpanded()) {
-			this.down('msgbody').show();
+			msgBody.show();
 		} else {
-			this.down('msgbody').hide();
+			msgBody.hide();
 		}
 	},
 
