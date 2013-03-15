@@ -164,18 +164,22 @@ Ext.define('ZCS.view.mail.ZtComposeForm', {
 						xtype: 'component',
 						html: '<div contenteditable="true" class="zcs-editable zcs-body-field"></div>',
 						itemId: 'body',
-						// TODO: listener below doesn't get fired, not sure about blur on editable DIV
 						listeners: {
-							blur: function () {
-								//Because this panel is floating, and a keystroke may have forced the whole window to scroll,
-								//when we blur, reset the scroll.
-								ZCS.htmlutil.resetWindowScroll();
-							},
 							painted: function () {
-								var heightToSet = Math.max(this.up('container').element.getHeight(), this.element.down('.zcs-body-field').dom.scrollHeight);
+								var heightToSet = Math.max(this.up('container').element.getHeight(), this.element.down('.zcs-body-field').dom.scrollHeight),
+									bodyField = this.element.down('.zcs-body-field');
 
 								this.setHeight(heightToSet);
-								this.element.down('.zcs-body-field').setHeight(heightToSet);
+
+								bodyField.setHeight(heightToSet);
+
+								bodyField.dom.addEventListener('blur', function () {
+									ZCS.htmlutil.resetWindowScroll();
+								});
+
+								bodyField.dom.addEventListener('focus', function () {
+									setTimeout(ZCS.htmlutil.resetWindowScroll, 0);
+								});
 							}
 						}
 					}]

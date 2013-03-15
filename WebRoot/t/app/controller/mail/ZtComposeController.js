@@ -191,9 +191,32 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 		panel.show({
 			type: 'slide',
 			direction: 'up',
+			duration: 250,
 			onEnd: function () {
 				//Only apply this after layout so it doesn't interfere with Ext layout managers
 				Ext.fly(editor).addCls('zcs-fully-editable');
+
+				if (!(toFieldAddresses && toFieldAddresses.length)) {
+					toFld.focusInput();
+				} else if (!subject) {
+					subjectFld.focus();
+					range = document.createRange();
+					range.selectNodeContents(subjectFld.element.dom);
+			        range.collapse(true);
+			        var sel = window.getSelection();
+			        sel.removeAllRanges();
+			        sel.addRange(range);
+				} else {
+					editor.focus();
+
+					range = document.createRange();
+					range.selectNodeContents(editor);
+			        range.collapse(true);
+			        var sel = window.getSelection();
+			        sel.removeAllRanges();
+			        sel.addRange(range);
+					// editor.scrollTop = 0
+				}
 			}
 		});
 
@@ -217,7 +240,6 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 			subjectFld.focus();
 		} else {
 			editor.focus();
-			editor.scrollTop = 0
 		}
 
 		ZCS.htmlutil.resetWindowScroll();

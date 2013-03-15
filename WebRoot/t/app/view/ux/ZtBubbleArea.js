@@ -497,11 +497,8 @@ Ext.define('ZCS.view.ux.ZtBubbleArea', {
                                     me.considerBubblingInput(this.dom.value);
                                 }
                             }
-                            me.fireEvent('inputBlur', e, el);
-                        });
-
-                        inputEl.on('focus', function () {
                             this.setWidth(me.getDefaultInputWidth());
+                            me.fireEvent('inputBlur', e, el);
                         });
                     }
                 }
