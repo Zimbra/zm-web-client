@@ -178,8 +178,7 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 			toFld = form.down('contactfield[name=to]'),
 			ccFld = form.down('contactfield[name=cc]'),
 			subjectFld = form.down('field[name=subject]'),
-			bodyFld = form.down('#body'),
-			editor = bodyFld.element.query('.zcs-editable')[0];
+			editor = this.getEditor();
 
 		panel.setMsg(msg);
 
@@ -237,15 +236,56 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 	/**
 	 * @private
 	 */
-	doCancel: function() {
+	getEditor: function() {
 		var panel = this.getComposePanel(),
 			form = panel.down('formpanel'),
 			bodyFld = form.down('#body'),
 			editor = bodyFld.element.query('.zcs-editable')[0];
 
-		//Remove this style so it doesn't interfere with the next layout
-		Ext.fly(editor).removeCls('zcs-fully-editable');
+		return editor;
+	},
 
+	/**
+	 * @private
+	 */
+	doCancel: function() {
+
+		var editor = this.getEditor(),
+			me = this;
+
+		if (editor.innerHTML) {
+			Ext.Msg.show({
+				title: ZtMsg.warning,
+				message: ZtMsg.saveDraftWarning,
+				buttons: [
+					{ text: ZtMsg.yes,      itemId: 'yes',  ui: 'action' },
+					{ text: ZtMsg.no,       itemId: 'no' },
+					{ text: ZtMsg.cancel,   itemId: 'cancel' }
+				],
+				fn: function(buttonId) {
+					Ext.Logger.info('Compose cancel shield button: ' + buttonId);
+					if (buttonId === 'yes') {
+						me.doSaveDraft();
+						me.endComposeSession();
+					}
+					else if (buttonId === 'no') {
+						me.endComposeSession();
+					}
+				}
+			});
+		}
+		else {
+			this.endComposeSession();
+		}
+	},
+
+	/**
+	 * @private
+	 */
+	endComposeSession: function() {
+		var editor = this.getEditor();
+		// Remove this style so it doesn't interfere with the next layout
+		Ext.fly(editor).removeCls('zcs-fully-editable');
 		this.getComposePanel().hide();
 	},
 
@@ -273,7 +313,7 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 
 		var	existingMsg = this.getComposePanel().getMsg(),
 			values = this.getComposeForm().getValues(),
-			editor = this.getComposePanel().down('#body').element.query('.zcs-editable')[0],
+			editor = this.getEditor(),
 			action = this.getAction(),
 			isNewCompose = (action === ZCS.constant.OP_COMPOSE),
 			origMsg = !isNewCompose && this.getOrigMsg();
