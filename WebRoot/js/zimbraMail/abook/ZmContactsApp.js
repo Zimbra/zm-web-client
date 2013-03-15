@@ -388,6 +388,8 @@ function(creates, force) {
 				} else if (name == "link") {
 					this._handleCreateLink(create, ZmOrganizer.ADDRBOOK);
 				} else if (name == "cn") {
+					//note- this is updating the view list. The canonical is upadated
+					// in ZmContact.prototype._handleResponseCreate. See bug 81055
 					var clc = AjxDispatcher.run("GetContactListController");
 					if (clc._folderId == ZmFolder.ID_DLS) {
 						//the simplest solution I could think of to the messy problem that the clcList in this case is GAL and thus
