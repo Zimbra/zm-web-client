@@ -48,7 +48,9 @@ Ext.define('ZCS.model.contacts.ZtContactWriter', {
 						{ n: 'lastName' },
 						{ n: 'email' },
 						{ n: 'company' },
-						{ n: 'fileAs' }
+						{ n: 'fileAs' },
+                        { n: 'image'},
+                        { n: 'imagepart'}
 					]
 				});
 			}

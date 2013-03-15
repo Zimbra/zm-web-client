@@ -37,6 +37,35 @@ Ext.define('ZCS.view.mail.ZtMsgHeader', {
 		}
 	},
 
+    /**
+     * Get the image URL.
+     *
+     * contact {Object} contact details
+     * maxWidth {int} max pixel width (optional - default 48)
+     * @return	{String}	the image URL
+     */
+    getImageUrl: function(contact, maxWidth) {
+        var image = contact && contact.data.image;
+        var imagePart  = (image && image.part) || contact.data.imagepart;
+
+        if (!imagePart) {
+            return null;
+        }
+        maxWidth = maxWidth || 48;
+
+        return ZCS.htmlutil.buildUrl({
+            path: ZCS.constant.PATH_MSG_FETCH,
+            qsArgs: {
+                auth: 'co',
+                id: contact.data.id,
+                part: imagePart,
+                max_width:maxWidth,
+                t:(new Date()).getTime()
+            }
+        });
+    },
+
+
 	/**
 	 * Displays the message header in one of three states: collapsed, expanded, or detailed.
 	 *
@@ -62,6 +91,18 @@ Ext.define('ZCS.view.mail.ZtMsgHeader', {
 				return addr.displayName;
 			}).join(', ');
 		}
+
+        /**
+         * Fetch contactId from the email Vs contact cache.
+         * Use the contactId to fetch the contact record and subsequently the image info.
+         */
+        var contactId = ZCS.cache.get(data.addrs.FROM[0].address, "email"),
+            imageUrl = null;
+        if (contactId) {
+            var contact = ZCS.cache.get(contactId);
+            imageUrl = this.getImageUrl(contact);
+        }
+        data.imageStyle = imageUrl !== null ? 'background-image: url(' + imageUrl + ')' : '';
 
 		this.setHtml(tpl.apply(data));
 	}

@@ -37,6 +37,8 @@ Ext.define('ZCS.model.contacts.ZtContactReader', {
 			'company',
 			'fileAs'
 		]);
+        data.image = node._attrs.image;
+        data.imagepart = node._attrs.imagepart;
 
 		return data;
 	}

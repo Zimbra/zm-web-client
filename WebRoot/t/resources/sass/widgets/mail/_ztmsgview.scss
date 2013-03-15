@@ -44,6 +44,7 @@ $msgHdrButtonTopOffset: $msgHdrButtonDelta;
 	@extend .zcs-msgHdr-element;
 	background-image: url('../images/person.png');
 	background-size: 100% auto;
+	background-repeat: no-repeat;
 	height: $msgHdrImageSize;
 	left: $msgHdrStdMargin;
 	top: $msgHdrTopOffset;
