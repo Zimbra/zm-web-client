@@ -5,8 +5,7 @@ $msgBkgdColor: $white;
 
 	.zcs-msgview {
 		background-color: transparent;
-		height: 70px;
-		padding: .5em .5em 0;
+		padding: .5em;
 
 		.x-list-item-inner {
 			background-color: $msgBkgdColor;
@@ -19,12 +18,12 @@ $msgBkgdColor: $white;
 
 $msgHdrTextSize: 0.9em;
 $msgHdrImageSize: 3.2em;
-$msgHdrStdMargin: $msgHdrTextSize;
+$msgHdrStdMargin: .7em;
 $msgHdrLabelIndent: $msgHdrImageSize + $msgHdrStdMargin;
 $msgHdrLeftIndent: $msgHdrImageSize + $msgHdrStdMargin*2;
 
 $msgHdrButtonSize: $msgHdrImageSize/1.5;
-$msgHdrRightIndent: $msgHdrButtonSize + $msgHdrStdMargin*3;
+$msgHdrRightIndent: $msgHdrButtonSize + $msgHdrStdMargin*4;
 
 $msgHdrTopOffset: $msgHdrStdMargin;
 $msgHdrTopOffset2: $msgHdrTextSize * 2.3 + $msgHdrTopOffset;
@@ -110,6 +109,9 @@ $msgHdrButtonTopOffset: $msgHdrButtonDelta;
     @extend .zcs-link;
 	top: $msgHdrTopOffset2;
 	right: $msgHdrRightIndent;
+	//padded out the size to increase the touch target area
+	margin-top: -.5em;
+	padding: .5em 0 .5em 1em;
 }
 
 .zcs-msgHdr-label {

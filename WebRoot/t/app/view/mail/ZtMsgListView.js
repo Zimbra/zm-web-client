@@ -38,9 +38,6 @@ Ext.define('ZCS.view.mail.ZtMsgListView', {
 		},
 		store: 'ZtMsgStore',
 		itemCls: 'zcs-msgview',
-
-		//Sets the default list item height, which corresponds to collapsed message height
-		itemHeight: 70,
 		allowTaps: true
 	},
 
