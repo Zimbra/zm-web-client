@@ -170,6 +170,12 @@ Ext.define('ZCS.view.mail.ZtMsgView', {
             this.y = y;
         }
 
+		// Sencha hides a list item by scrolling it up 10000. That doesn't work for a very large
+		// message, so move it left as well to make sure it's offscreen.
+		if (this.y === -10000) {
+			this.x = this.y;
+		}
+
         if (this.element.forceAbsolutePositioning) {
             //In case the element was not forced before.
             this.element.dom.style.webkitTransform = 'translate3d(0px, 0px, 0px)';
