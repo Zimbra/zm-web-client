@@ -64,7 +64,12 @@ Ext.define('ZCS.model.ZtItem', {
 		 */
 		parseTags: function(tagIds) {
 			return !tagIds ? null : Ext.Array.map(tagIds.split(','), function(tagId) {
-				return ZCS.cache.get(tagId).getData();
+				var tag = ZCS.cache.get(tagId);
+				if (tag) {
+					return tag.getData();
+				} else {
+					Ext.Logger.warn('Encountered an item with a tag that is not in cache and thus will not display.');
+				}
 			});
 		}
 	},
