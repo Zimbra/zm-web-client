@@ -49,6 +49,8 @@ Ext.define('ZCS.view.ZtOrganizerList', {
 	 */
 	onItemTap: function(list, index, target, folder, e) {
 		this.fireEvent('search', folder.getQuery(), folder);
+
+		this.fireEvent('itemtap', list, index, target, folder, e);
 	},
 
 	/**

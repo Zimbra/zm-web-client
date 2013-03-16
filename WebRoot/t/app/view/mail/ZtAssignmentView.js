@@ -161,7 +161,15 @@ Ext.define('ZCS.view.mail.ZtAssignmentView', {
 
 		this.callParent(arguments);
 
-		this.down('list').on('select', function (list, assignmentRecord) {
+		var tapProducer;
+
+		if (this.down('nestedlist')) {
+			tapProducer = this.down('nestedlist');
+		} else {
+			tapProducer = this.down('list');
+		}
+
+		tapProducer.on('itemtap', function (list, index, target, assignmentRecord, e, eOpts) {
 			me.fireEvent('assignment', assignmentRecord, me.getRecord());
 			me.onClose();
 		});
