@@ -174,7 +174,7 @@ Ext.define('ZCS.model.ZtSoapProxy', {
 				ctlr = ZCS.app.getController(ZCS.constant.LIST_CONTROLLER[itemType]);
 				// TODO: handle this with an event rather than a function call
 				if (ctlr && ctlr.handleCreateNotification) {
-					ctlr.handleCreateNotification(create);
+					ctlr.handleCreateNotification(create, creates);
 				}
 			}, this);
 		}, this);

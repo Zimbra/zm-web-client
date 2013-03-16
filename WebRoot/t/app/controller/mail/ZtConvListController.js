@@ -156,12 +156,23 @@ Ext.define('ZCS.controller.mail.ZtConvListController', {
 	 *
 	 * @param {object}  create      JSON for new conv
 	 */
-	handleCreateNotification: function(create) {
+	handleCreateNotification: function(create, creates) {
 
 		var curFolder = ZCS.session.getCurrentSearchOrganizer(),
-			curFolderId = curFolder && curFolder.getId();
+			curFolderId = curFolder && curFolder.getId(),
+			doAdd = false,
+			ln = creates && creates.m ? creates.m.length : 0,
+			msgCreate, i;
 
-		if (curFolderId === ZCS.constant.ID_INBOX) {
+		for (i = 0; i < ln; i++) {
+			msgCreate = creates.m[i];
+			if (msgCreate.cid === create.id && msgCreate.l === curFolderId) {
+				doAdd = true;
+				break;
+			}
+		}
+
+		if (doAdd) {
 			var reader = ZCS.model.mail.ZtConv.getProxy().getReader(),
 				data = reader.getDataFromNode(create),
 				store = this.getStore(),
