@@ -59,16 +59,11 @@ Ext.define('ZCS.view.mail.ZtMsgView', {
 						if (isSingleExpand && !loaded) {
 							return;
 						}
-						// Note: partial update on msg load results in double-render, so do whole thing
 						this.setMsg(msg);
+						this.setExpanded(isSingleExpand ? true : loaded);
+						this.setState(this.getExpanded() ? ZCS.constant.HDR_EXPANDED : ZCS.constant.HDR_COLLAPSED);
 
-						if (!isSingleExpand) {
-							this.setExpanded(loaded);
-						} else {
-							this.setExpanded(true);
-						}
-
-						msgView.renderHeader();
+						msgView.renderHeader(this.getState());
 						if (loaded) {
 							msgView.renderBody(msg.get('isLast'));
 						}
@@ -94,8 +89,8 @@ Ext.define('ZCS.view.mail.ZtMsgView', {
 		return this.down('msgheader').element.getWidth();
 	},
 
-	renderHeader: function() {
-		this.down('msgheader').render(this.getMsg());
+	renderHeader: function(state) {
+		this.down('msgheader').render(this.getMsg(), state);
 	},
 
 	renderBody: function(isLast, showQuotedText) {

@@ -73,6 +73,9 @@ ZCS.constant.SERVICE_URL_BASE = '/service/soap/';
 // How often to check for notifications, in seconds
 ZCS.constant.POLL_INTERVAL = 120;
 
+// Max amount of message content to get, in K
+ZCS.constant.MAX_MESSAGE_SIZE = 100;
+
 // Apps
 ZCS.constant.APP_MAIL     = 'mail';
 ZCS.constant.APP_CONTACTS = 'contacts';
@@ -105,17 +108,23 @@ ZCS.constant.NEW_ITEM_ICON = {};
 ZCS.constant.NEW_ITEM_ICON[ZCS.constant.APP_MAIL]       = 'compose';
 ZCS.constant.NEW_ITEM_ICON[ZCS.constant.APP_CONTACTS]   = 'plus';
 
+// popup menus
+ZCS.constant.MENU_CONV      = 'CONV';
+ZCS.constant.MENU_MSG       = 'MSG';
+ZCS.constant.MENU_TAG       = 'TAG';
+ZCS.constant.MENU_CONTACT   = 'CONTACT';
+
 // Buttons in toolbar at top of item panel
 ZCS.constant.ITEM_BUTTONS = {};
 ZCS.constant.ITEM_BUTTONS[ZCS.constant.APP_MAIL]        = [
 	{ icon: 'reply',        event: 'reply' },
 	{ icon: 'replytoall',   event: 'replyAll' },
 	{ icon: 'trash',        event: 'delete' },
-	{ icon: 'arrow_down',   event: 'showMenu', menuName: 'convActions' }
+	{ icon: 'arrow_down',   event: 'showMenu', menuName: ZCS.constant.MENU_CONV }
 ];
 ZCS.constant.ITEM_BUTTONS[ZCS.constant.APP_CONTACTS]    = [
 	{ icon: 'trash',        event: 'delete' },
-	{ icon: 'arrow_down',   event: 'showMenu', menuName: 'contactActions' }
+	{ icon: 'arrow_down',   event: 'showMenu', menuName: ZCS.constant.MENU_CONTACT }
 ];
 
 // Display states for a message view header
@@ -388,6 +397,7 @@ ZCS.constant.OP_MOVE        = 'MOVE';
 ZCS.constant.OP_FLAG        = 'FLAG';
 ZCS.constant.OP_TAG         = 'TAG';
 ZCS.constant.OP_REMOVE_TAG  = 'REMOVE_TAG';
+ZCS.constant.OP_ADD_CONTACT = 'ADD_CONTACT';
 
 // Item flags
 ZCS.constant.FLAG_ATTACH			= 'a';
@@ -523,6 +533,7 @@ ZCS.constant.ROLE_OPTIONAL          = 'OPT';
 ZCS.constant.ROLE_NON_PARTICIPANT   = 'NON';
 
 // Types for IDs we make up
-ZCS.constant.IDTYPE_INVITE_ACTION   = 'invite action';
-ZCS.constant.IDTYPE_QUOTED_LINK     = 'quoted link';
-ZCS.constant.IDTYPE_ATTACHMENT      = 'attachment';
+ZCS.constant.IDTYPE_INVITE_ACTION   = 'INVITE_ACTION';
+ZCS.constant.IDTYPE_QUOTED_LINK     = 'QUOTED_TEXT';
+ZCS.constant.IDTYPE_ATTACHMENT      = 'ATTACHMENT';
+ZCS.constant.IDTYPE_TAG             = 'TAG';

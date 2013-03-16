@@ -315,9 +315,16 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 	 * @private
 	 */
 	doSend: function() {
-		var msg = this.getMessageModel();
-		msg.save();
-		this.getComposePanel().hide();
+
+		var msg = this.getMessageModel(),
+			me = this;
+
+		msg.save({
+			success: function() {
+				ZCS.app.fireEvent('showToast', ZtMsg.messageSent);
+				me.getComposePanel().hide();
+			}
+		});
 	},
 
 	doSaveDraft: function () {

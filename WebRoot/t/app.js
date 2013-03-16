@@ -52,7 +52,6 @@ Ext.application({
 		'ZCS.controller.mail.ZtConvListController',
 		'ZCS.controller.mail.ZtConvController',
 		'ZCS.controller.mail.ZtMsgController',
-		'ZCS.controller.mail.ZtMsgAddressController',
 		'ZCS.controller.mail.ZtComposeController',
 		'ZCS.controller.contacts.ZtContactListController',
 		'ZCS.controller.contacts.ZtContactController'

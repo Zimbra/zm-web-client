@@ -75,10 +75,13 @@ Ext.define('ZCS.controller.ZtBaseController', {
 
 	/**
 	 * Displays the action menu after the dropdown button on the toolbar has been tapped.
+	 *
+	 * @param {Button}  menuButton      dropdown button
+	 * @param {Object}  params          additional params
 	 */
-	doShowMenu: function(menuButton) {
+	doShowMenu: function(menuButton, params) {
 
-		var menuName = menuButton.menuName,
+		var menuName = params.menuName,
 			menu = this.getMenu(menuName);
 
 		if (!menu) {

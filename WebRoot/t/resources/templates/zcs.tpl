@@ -43,7 +43,7 @@
 			<tpl if='addrs.FROM'>
 			<div class='zcs-msgHdr-fromBubble'>
 				<tpl for='addrs.FROM'>
-					<span class='vm-area-bubble zcs-contact-bubble' address='{address}'>{displayName}</span>
+					<span class='vm-area-bubble zcs-contact-bubble' id='{id}'>{displayName}</span>
 				</tpl>
 			</div>
 			<div class='zcs-msgHdr-date'>{dateStr}</div>
@@ -52,9 +52,6 @@
 	</tpl>
 </template>
 
-# TODO: remove last comma after To/Cc list.
-
-
 <template id='ExpandedMsgHeader'>
 	<tpl>
 		<div class='zcs-mail-msgHdr expanded'>
@@ -62,7 +59,7 @@
 			<tpl if='addrs.FROM'>
 				<div class='zcs-msgHdr-fromBubble'>
 					<tpl for='addrs.FROM'>
-						<span class='vm-area-bubble  zcs-contact-bubble' address='{address}'>{displayName}</span>
+						<span class='vm-area-bubble  zcs-contact-bubble' id='{id}'>{displayName}</span>
 					</tpl>
 				</div>
 			</tpl>
@@ -86,7 +83,7 @@
 			<tpl if='addrs.FROM'>
 				<div class='zcs-msgHdr-fromBubble'>
 					<tpl for='addrs.FROM'>
-						<span class='vm-area-bubble  zcs-contact-bubble' address='{address}'>{displayName}</span>
+						<span class='vm-area-bubble  zcs-contact-bubble' id='{id}'>{displayName}</span>
 					</tpl>
 				</div>
 				<tpl for='addrs.FROM'>
@@ -101,7 +98,7 @@
 			<div class='zcs-mail-dtlMsgHdr'>
 				<div class='zcs-msgHdr-label'>{[ZtMsg.toHdr]}</div>
 				<tpl for='addrs.TO'>
-					<span class='vm-area-bubble  zcs-contact-bubble' address='{address}'>{displayName}</span>
+					<span class='vm-area-bubble  zcs-contact-bubble' id='{id}'>{displayName}</span>
 				</tpl>
 			</div>
 		</tpl>
@@ -109,7 +106,7 @@
 			<div class='zcs-mail-dtlMsgHdr'>
 				<div class='zcs-msgHdr-label'>{[ZtMsg.ccHdr]}</div>
 				<tpl for='addrs.CC'>
-					<span class='vm-area-bubble  zcs-contact-bubble' address='{address}'>{displayName}</span>
+					<span class='vm-area-bubble zcs-contact-bubble' id='{id}'>{displayName}</span>
 				</tpl>
 			</div>
 		</tpl>
@@ -117,8 +114,8 @@
 			<div class='zcs-mail-dtlMsgHdr'>
 				<div class='zcs-msgHdr-label'>{[ZtMsg.tags]}</div>
 				<tpl for='tags'>
-					<span class='vm-area-bubble' tagid='{id}'>
-						<div class="zcs-tag-small zcs-tag-{color}  zcs-tag-bubble" tagName="{name}" <tpl if='rgb'>style='background-color: {rgb};'</tpl>>
+					<span class='vm-area-bubble zcs-tag-bubble' id='{id}'>
+						<div class="zcs-tag-small zcs-tag-{color}" tagName="{name}" <tpl if='rgb'>style='background-color: {rgb};'</tpl>>
 						</div>
 						{name}
 					</span>
@@ -171,7 +168,7 @@
 			<tr>
 				<td class='zcs-invite-label'>{[ZtMsg.invOrganizerLabel]}</td>
 				<td>
-					<span class='vm-area-bubble zcs-contact-bubble' address='{organizer.address}'>{organizer.displayName}</span>
+					<span class='vm-area-bubble zcs-contact-bubble' id='{organizer.id}'>{organizer.displayName}</span>
 				</td>
 			</tr>
 			</tpl>
@@ -180,7 +177,7 @@
 				<td class='zcs-invite-label'>{[ZtMsg.invAttendeesLabel]}</td>
 				<td>
 				<tpl for='attendees'>
-					<span class='vm-area-bubble zcs-contact-bubble' address='{address}'>{displayName}</span>
+					<span class='vm-area-bubble zcs-contact-bubble' id='{id}'>{displayName}</span>
 				</tpl>
 				</td>
 			</tr>
@@ -190,7 +187,7 @@
 				<td class='zcs-invite-label'>{[ZtMsg.invOptionalAttendeesLabel]}</td>
 				<td>
 				<tpl for='attendees'>
-					<span class='vm-area-bubble zcs-contact-bubble' address='{address}'>{displayName}</span>
+					<span class='vm-area-bubble zcs-contact-bubble' id='{id}'>{displayName}</span>
 				</tpl>
 				</td>
 			</tr>
@@ -230,7 +227,7 @@
 
 # show a single attachment
 <template id='Attachment'>
-	<span class="vm-area-bubble zcs-attachment-bubble" id="{id}"><div class="{icon}"></div>{label} <span>({size})</span></span>
+	<span class='vm-area-bubble zcs-attachment-bubble' id="{id}"><div class='{icon}'></div>{label} <span>({size})</span></span>
 </template>
 
 <template id='QuotedLink'>
@@ -241,4 +238,8 @@
 		{[ZtMsg.hideQuotedText]}
 	</tpl>
 	</div>
+</template>
+
+<template id='Truncated'>
+	<div class='zcs-truncated-message'><span>{[ZtMsg.messageTruncated]}</span> <span class='zcs-truncated-message-link'>{[ZtMsg.messageTruncatedLink]}</span></div>
 </template>

@@ -33,8 +33,7 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 		cls:            'zcs-msg-body',
 
 		msg:            null,       // msg being displayed
-		usingIframe:    false,      // true if msg content is within an IFRAME
-		quotedLinkId:   ''          // ID for show/hide quoted text link
+		usingIframe:    false       // true if msg content is within an IFRAME
 	},
 
 	statics: {
@@ -100,31 +99,9 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 		this.setMsg(msg);
 		this.setUsingIframe(msg.hasHtmlPart() && !isInvite);
 
-		// Sencha Touch reuses list items, so hide any extra components
-		if (this.attachmentsArea) {
-			this.attachmentsArea.hide();
-		}
-		if (this.infoBar) {
-			this.infoBar.hide();
-			this.hiddenImages = null;
-		}
+		this.resetExtraComponents();
 
 		this.showingQuotedText = !trimQuotedText;
-
-		// It's easier to destroy and recreate show/hide link than to reuse it
-		if (this.quotedTextComponent) {
-			this.quotedTextComponent.destroy();
-		}
-		if (trimQuotedText || togglingQuotedText) {
-			var quotedLinkId = ZCS.util.getUniqueId({
-				type:   ZCS.constant.IDTYPE_QUOTED_LINK,
-				msgId:  msg.getId()
-			});
-			this.setQuotedLinkId(quotedLinkId);
-			this.quotedTextComponent = new Ext.Component({
-				html: ZCS.view.mail.ZtMsgBody.quotedLinkTpl.apply({ show: trimQuotedText })
-			});
-		}
 
 		html = ZCS.htmlutil.trimAndWrapContent(html);
 
@@ -182,17 +159,84 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 			container.show();
 		}
 
-		if (trimQuotedText || togglingQuotedText) {
-			this.add(this.quotedTextComponent);
-		}
-
 		var attInfo = msg.getAttachmentInfo();
-		if (attInfo.length > 0) {
-			this.showAttachments(attInfo);
+
+		this.setExtraComponents({
+			attachments:    attInfo.length > 0 ? attInfo : null,
+			images:         this.hiddenImages && this.hiddenImages.length > 0,
+			truncated:      msg.isTruncated(),
+			quoted:         (trimQuotedText || togglingQuotedText) && trimQuotedText ? 'show' : ''
+		});
+	},
+
+	/**
+	 * Destroys any extra components that were created.
+	 * @private
+	 */
+	resetExtraComponents: function() {
+
+		if (this.attachmentsArea) {
+			this.attachmentsArea.destroy();
 		}
 
-		if (this.hiddenImages && this.hiddenImages.length > 0) {
-			this.showInfoBar(this.attachmentsArea ? 1 : 0);
+		this.hiddenImages = null;
+		if (this.infoBar) {
+			this.infoBar.destroy();
+		}
+
+		// Create DIV to show truncated message if needed
+		if (this.truncatedComponent) {
+			this.truncatedComponent.destroy();
+		}
+
+		if (this.quotedTextComponent) {
+			this.quotedTextComponent.destroy();
+		}
+	},
+
+	/**
+	 * Adds any needed extra components. Attachments, the external images info bar, and a warning
+	 * about message truncation come before the message body in that order. A link to show/hide quoted
+	 * text is added after the body if needed.
+	 *
+	 * @private
+	 */
+	setExtraComponents: function(params) {
+
+		var prepend = [];
+
+		// Show attachments
+		if (params.attachments) {
+			this.createAttachmentsArea(params.attachments);
+			prepend.push(this.attachmentsArea);
+		}
+
+		// Tell user that external images have not yet been loaded
+		if (params.images) {
+			this.createInfoBar();
+			prepend.push(this.infoBar);
+		}
+
+		// Tell user they aren't seeing the whole long message
+		if (params.truncated) {
+			this.truncatedComponent = new Ext.Component({
+				html: ZCS.view.mail.ZtMsgBody.truncatedTpl.apply({})
+			});
+			prepend.push(this.truncatedComponent);
+		}
+
+		if (prepend.length > 0) {
+			Ext.each(prepend.reverse(), function(comp) {
+				this.insert(0, comp);
+			}, this);
+		}
+
+		// Let user show/hide quoted text
+		if (params.quoted) {
+			this.quotedTextComponent = new Ext.Component({
+				html: ZCS.view.mail.ZtMsgBody.quotedLinkTpl.apply({ show: params.quoted === 'show' })
+			});
+			this.add(this.quotedTextComponent);
 		}
 	},
 
@@ -336,50 +380,46 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 	},
 
 	/**
-	 * Shows a section below the msg header that allows the user to press a button to load
+	 * Creates a section below the msg header that allows the user to press a button to load
 	 * external images.
 	 *
 	 * @param {int}     index       index at which to insert component if creating it
 	 * @private
 	 */
-	showInfoBar: function(index) {
+	createInfoBar: function() {
 
-		if (!this.infoBar) {
-			this.infoBar = Ext.create('Ext.Container', {
-				layout: {
-					type: 'hbox',
-					align: 'center',
-					pack: 'center'
+		this.infoBar = Ext.create('Ext.Container', {
+			layout: {
+				type: 'hbox',
+				align: 'center',
+				pack: 'center'
+			},
+			cls: 'zcs-info-bar',
+			items: [
+				{
+					flex: 2,
+					html: ZtMsg.imagesNotLoaded
 				},
-				cls: 'zcs-info-bar',
-				items: [
-					{
-						flex: 2,
-						html: ZtMsg.imagesNotLoaded
-					},
-					{
-						xtype: 'button',
-						flex: 1,
-						text: ZtMsg.loadImages,
-						handler: function() {
-							Ext.Logger.info('load images');
-							if (!this.up('msgview').readOnly) {
-								this.up('msgbody').showExternalImages();
-							}
+				{
+					xtype: 'button',
+					flex: 1,
+					text: ZtMsg.loadImages,
+					handler: function() {
+						Ext.Logger.info('load images');
+						if (!this.up('msgview').readOnly) {
+							this.up('msgbody').showExternalImages();
 						}
 					}
-				]
-			});
-			this.insert(index || 0, this.infoBar);
-		}
-		else {
-			this.infoBar.show();
-		}
+				}
+			]
+		});
 	},
 
 	/**
 	 * Shows external images (including background images) by changing the "defanged" attribute
 	 * into the real one.
+	 *
+	 * @private
 	 */
 	showExternalImages: function() {
 
@@ -415,27 +455,22 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 	},
 
 	/**
-	 * Shows a section below the msg header with a bubble for each attachment.
+	 * Creates a section below the msg header with a bubble for each attachment.
+	 *
+	 * @private
 	 */
-	showAttachments: function(attInfo) {
+	createAttachmentsArea: function(attachments) {
 
-		var area = this.attachmentsArea;
-		if (!area) {
-			area = this.attachmentsArea = Ext.create('Ext.Component', {
-				cls: 'zcs-attachments'
-			});
-			this.insert(0, this.attachmentsArea);
-		}
-		else {
-			area.show();
-		}
+		var	area = this.attachmentsArea = Ext.create('Ext.Component', {
+			cls: 'zcs-attachments'
+		});
 
 		var html = [],
 			idx = 0,
-			ln = attInfo.length, i;
+			ln = attachments.length, i;
 
 		for (i = 0; i < ln; i++) {
-			var attInfo = attInfo[i],
+			var attInfo = attachments[i],
 				id = ZCS.util.getUniqueId({
 					type:   ZCS.constant.IDTYPE_ATTACHMENT,
 					url:    attInfo.url
@@ -450,5 +485,6 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 	function (thisClass) {
 		thisClass.attachmentTpl = Ext.create('Ext.XTemplate', ZCS.template.Attachment);
 		thisClass.quotedLinkTpl = Ext.create('Ext.XTemplate', ZCS.template.QuotedLink);
+		thisClass.truncatedTpl = Ext.create('Ext.XTemplate', ZCS.template.Truncated);
 	}
 );

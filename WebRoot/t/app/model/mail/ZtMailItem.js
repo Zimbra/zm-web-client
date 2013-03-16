@@ -73,8 +73,8 @@ Ext.define('ZCS.model.mail.ZtMailItem', {
 		/**
 		 * Converts ZtEmailAddress models into anonymous objects with 'address' and 'displayName' properties.
 		 *
-		 * @param {array|object|ZtEmailAddress}     addrs   addresses to convert
-		 * @return {array|object|ZtEmailAddress}    the provided data with addresses as anonymous objects
+		 * @param {Array|Object|ZtEmailAddress}     addrs   addresses to convert
+		 * @return {Object}    the provided data with addresses as anonymous objects
 		 */
 		convertAddressModelToObject: function(addrs) {
 
@@ -83,10 +83,12 @@ Ext.define('ZCS.model.mail.ZtMailItem', {
 				if (addrs.length > 0) {
 					return Ext.Array.map(addrs,
 						function (addr) {
-							return {
-								address: Ext.String.htmlEncode(addr.get('email').toString()),
-								displayName: Ext.String.htmlEncode(addr.get('viewName')).replace('"', '')
+							var addrData = {
+								address: addr.get('email').toString(),
+								displayName: addr.get('viewName').replace('"', '')
 							};
+							addrData.id = ZCS.util.getUniqueId(addrData);
+							return addrData;
 						}
 					);
 				}

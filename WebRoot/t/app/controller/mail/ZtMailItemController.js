@@ -103,7 +103,7 @@ Ext.define('ZCS.controller.mail.ZtMailItemController', {
 	 * Make sure the action menu shows the appropriate action based on the unread status of this conversation.
 	 * The action will be either Mark Read or Mark Unread.
 	 */
-	doShowMenu: function(menuButton) {
+	doShowMenu: function(menuButton, params) {
 
 		var itemPanel = menuButton.up('.itempanel');
 		if (!itemPanel) {
@@ -112,37 +112,41 @@ Ext.define('ZCS.controller.mail.ZtMailItemController', {
 		}
 		this.setActiveMailComponent(itemPanel);
 
-		var menuName = menuButton.menuName,
-			menu = this.getMenu(menuName),
-			item = this.getItem(),
-			unreadLabel = item.get('isUnread') ? ZtMsg.markRead : ZtMsg.markUnread,
-			flagLabel = item.get('isFlagged') ? ZtMsg.unflag : ZtMsg.flag;
+		var menuName = params.menuName;
 
-		if (menu) {
-			var list = menu.down('list'),
-				store = list.getStore(),
-				unreadAction = list.getItemAt(store.find('action', 'MARK_READ')),
-				flagAction = list.getItemAt(store.find('action', 'FLAG'));
+		if (menuName === ZCS.constant.MENU_CONV || menuName === ZCS.constant.MENU_CONV) {
+			var	menu = this.getMenu(menuName),
+				item = this.getItem(),
+				unreadLabel = item.get('isUnread') ? ZtMsg.markRead : ZtMsg.markUnread,
+				flagLabel = item.get('isFlagged') ? ZtMsg.unflag : ZtMsg.flag;
 
-			if (unreadAction) {
-				unreadAction.getRecord().set('label', unreadLabel);
+			if (menu) {
+				var list = menu.down('list'),
+					store = list.getStore(),
+					unreadAction = list.getItemAt(store.find('action', 'MARK_READ')),
+					flagAction = list.getItemAt(store.find('action', 'FLAG'));
+
+				if (unreadAction) {
+					unreadAction.getRecord().set('label', unreadLabel);
+				}
+				if (flagAction) {
+					flagAction.getRecord().set('label', flagLabel);
+				}
 			}
-			if (flagAction) {
-				flagAction.getRecord().set('label', flagLabel);
+			else {
+				// first time showing menu, change data since menu not ready yet
+				var menuData = this.getMenuConfig(menuName);
+				Ext.each(menuData, function(menuItem) {
+					if (menuItem.action === 'MARK_READ') {
+						menuItem.label = unreadLabel;
+					}
+					if (menuItem.action === 'FLAG') {
+						menuItem.label = flagLabel;
+					}
+				}, this);
 			}
 		}
-		else {
-			// first time showing menu, change data since menu not ready yet
-			var menuData = this.getMenuConfig(menuName);
-			Ext.each(menuData, function(menuItem) {
-				if (menuItem.action === 'MARK_READ') {
-					menuItem.label = unreadLabel;
-				}
-				if (menuItem.action === 'FLAG') {
-					menuItem.label = flagLabel;
-				}
-			}, this);
-		}
+
 		this.callParent(arguments);
 	},
 
@@ -196,7 +200,6 @@ Ext.define('ZCS.controller.mail.ZtMailItemController', {
 				ZCS.app.getConvListController().removeConv(conv);
 			}
 		});
-
 	},
 
 	/**

@@ -43,13 +43,14 @@ Ext.define('ZCS.model.mail.ZtMsgWriter', {
 			methodJson = json.Body.SearchConvRequest;
 
 			Ext.apply(methodJson, {
-				cid: convId,
-				fetch: 'u1',
+				cid:    convId,
+				fetch:  'u1',
 				sortBy: 'dateDesc',
 				offset: 0,
-				limit: 100,
-				recip: '2',
-				query: 'underid:1 AND NOT underid:3 AND NOT underid:4'
+				limit:  100,
+				recip:  '2',
+				max:    itemData.noMax ? 0 : ZCS.constant.MAX_MESSAGE_SIZE * 1000,
+				query:  'underid:1 AND NOT underid:3 AND NOT underid:4'
 			});
 		}
 		else if (action === 'create' || itemData.isDraft) {
@@ -132,11 +133,12 @@ Ext.define('ZCS.model.mail.ZtMsgWriter', {
 				methodJson = json.Body.GetMsgRequest;
 				Ext.apply(methodJson, {
 					m: {
-						id: itemData.id,
-						read: 1,
-						html: 1,
-						needExp: 1,
-						header: ZCS.constant.ADDITIONAL_MAIL_HEADERS
+						id:         itemData.id,
+						read:       1,
+						html:       1,
+						needExp:    1,
+						max:        itemData.noMax ? 0 : ZCS.constant.MAX_MESSAGE_SIZE * 1000,
+						header:     ZCS.constant.ADDITIONAL_MAIL_HEADERS
 					},
 				});
 			}

@@ -165,6 +165,14 @@ $info-color: #FF9;
 	@include opacity(.75);
 }
 
+.zcs-truncated-message {
+  @extend .zcs-info-bar;
+}
+
+.zcs-truncated-message-link {
+  @extend .zcs-link;
+}
+
 //spaces it from upper elements to make the buttons easier to hit
 .zcs-invite-buttons {
 	TD {

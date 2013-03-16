@@ -46,9 +46,9 @@ Ext.define('ZCS.view.ZtItemPanel', {
 			ln = buttons ? buttons.length : 0,
 			i, button;
 
-		function createHandler(event) {
+		function createHandler(event, params) {
 			return function() {
-				this.up('titlebar').fireEvent(event, this);
+				this.up('titlebar').fireEvent(event, this, params);
 			}
 		}
 
@@ -60,9 +60,8 @@ Ext.define('ZCS.view.ZtItemPanel', {
 				cls:        'zcs-flat',
 				iconMask:   true,
 				align:      'right',
-				handler:    createHandler(button.event),
-				hidden:     true,
-				menuName:   button.menuName
+				handler:    createHandler(button.event, { menuName: button.menuName }),
+				hidden:     true
 			});
 		}
 

@@ -488,6 +488,22 @@ Ext.define('ZCS.model.mail.ZtMailMsg', {
 		}
 
 		return inlineAtts;
+	},
+
+	isTruncated: function() {
+		var bodyParts = this.get('bodyParts'),
+			ln = bodyParts.length, i;
+
+		for (i = 0; i < ln; i++) {
+			if (bodyParts[i].get('isTruncated')) {
+				return true;
+			}
+		}
+		return false;
+	},
+
+	getConv: function() {
+		return ZCS.cache.get(this.get('convId'));
 	}
 },
 	function (thisClass) {

@@ -36,14 +36,17 @@ Ext.define('ZCS.controller.mail.ZtMsgController', {
 
 		control: {
 			msgHeader: {
+				contactTap: 'doShowMenu',
 				toggleView: 'doToggleView',
 				menuTap:    'doShowMenu',
 				tagTap:     'doShowMenu'
 			},
 			msgBody: {
+				contactTap:         'doShowMenu',
 				inviteReply:        'doInviteReply',
 				attachmentTap:      'doShowAttachment',
-				toggleQuotedText:   'doToggleQuotedText'
+				toggleQuotedText:   'doToggleQuotedText',
+				loadEntireMessage:  'doLoadEntireMessage'
 			}
 		},
 
@@ -111,16 +114,52 @@ Ext.define('ZCS.controller.mail.ZtMsgController', {
 		}
 	},
 
-	doShowMenu: function(menuButton, msg, tagName) {
+	doShowMenu: function(menuButton, params) {
 
-		this.setItem(msg);
+		this.setItem(params.msg);
 		this.setActiveMailComponent(menuButton.up('.itempanel'));
 		this.callParent(arguments);
-		if (tagName) {
-			var menu = this.getMenu('tagActions');
+		if (params.address) {
+			var menu = this.getMenu(params.menuName);
 			if (menu) {
-				menu.setArgs(ZCS.constant.OP_REMOVE_TAG, [ tagName ]);
+				menu.setArgs(ZCS.constant.OP_COMPOSE, [ params.address ]);
+				if (menu.getItem(ZCS.constant.OP_ADD_CONTACT)) {
+					menu.setArgs(ZCS.constant.OP_ADD_CONTACT, [ params.address ]);
+				}
 			}
+		}
+		if (params.tagName) {
+			var menu = this.getMenu(params.menuName);
+			if (menu) {
+				menu.setArgs(ZCS.constant.OP_REMOVE_TAG, [ params.tagName ]);
+			}
+		}
+	},
+
+	/**
+	 * Override so that we show an "Add to Contacts" item only if the contacts
+	 * app is enabled.
+	 */
+	getMenuConfig: function(menuName) {
+
+		if (menuName === ZCS.constant.MENU_CONTACT) {
+			var menuData = [];
+			if (ZCS.constant.IS_ENABLED[ZCS.constant.APP_CONTACTS]) {
+				menuData.push({
+					label:      ZtMsg.addContact,
+					action:     ZCS.constant.OP_ADD_CONTACT,
+					listener:   'doAddContact'
+				});
+			}
+			menuData.push({
+				label:      ZtMsg.newMessage,
+				action:     ZCS.constant.OP_COMPOSE,
+				listener:   'doCompose'
+			});
+			return menuData;
+		}
+		else {
+			return this.callParent(arguments);
 		}
 	},
 
@@ -128,7 +167,7 @@ Ext.define('ZCS.controller.mail.ZtMsgController', {
 	 * Starts a forward session with the active message as the original message.
 	 */
 	doForward: function() {
-		ZCS.app.getComposeController().forward(this.getActiveMsg());
+		ZCS.app.getComposeController().forward(this.getItem());
 	},
 
 	doInviteReply: function(origMsgId, action) {
@@ -187,7 +226,7 @@ Ext.define('ZCS.controller.mail.ZtMsgController', {
 	},
 
 	doRemoveTag: function(tagId) {
-		var msg = this.getActiveMsg();
+		var msg = this.getItem();
 		if (msg && tagId) {
 			this.tagItem(msg, tagId, true);
 		}
@@ -198,5 +237,24 @@ Ext.define('ZCS.controller.mail.ZtMsgController', {
 			msg = msgView.getMsg();
 
 		msgView.renderBody(null, !msgBody.showingQuotedText);
+	},
+
+	doCompose: function(addr) {
+		var msg = this.getItem(),
+			toAddr = msg.getAddressObject('email', addr);
+
+		ZCS.app.getComposeController().showComposeForm([toAddr]);
+	},
+
+	doAddContact: function(addr) {
+		// TODO
+	},
+
+	doLoadEntireMessage: function(msg) {
+		msg.save({
+			op:     'load',
+			id:     msg.getId(),
+			noMax:  true
+		});
 	}
 });

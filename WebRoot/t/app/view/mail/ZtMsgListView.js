@@ -45,43 +45,51 @@ Ext.define('ZCS.view.mail.ZtMsgListView', {
 
 		this.callParent(arguments);
 
-		// Add a delegate here so we can catch a tap on a msg header.
-		// Note: Adding this listener via config does not work.
-
 		// Message header taps
 		this.on({
 			tap: function(e, node) {
 
+				// see if tap listener has been turned off
 				if (!this.getAllowTaps()) {
 					return false;
 				}
-				//This will not prevent tap events by itself, so we have to manually prevent taps for a period of time to prevent collapse
-				//when holding on an address.
 
 				var elm = Ext.fly(e.target),
 					msgHeader = this.down('#' + e.delegatedTarget.id),
-					msg = msgHeader.getMsg();
+					msg = msgHeader.getMsg(),
+					// Note: elm.getId() hits NPE trying to cache DOM ID, so use elm.dom.id
+					idParams = ZCS.util.getIdParams(elm.dom.id) || {};
 
+				// address bubble
 				if (elm.hasCls('zcs-contact-bubble')) {
-					msgHeader.fireEvent('contactTap', elm, msg, Ext.String.htmlDecode(elm.getAttribute('address')));
+					msgHeader.fireEvent('contactTap', elm, {
+						menuName: ZCS.constant.MENU_CONTACT,
+						msg: msg,
+						address: idParams.address
+					});
 					return false;
 				}
 
-				// tag bubble is wrapped in a SPAN with a tagid
-				var tagId = elm.getAttribute('tagid');
-				if (tagId) {
-					elm.menuName = 'tagActions';
-					var tagName = elm.down('.zcs-tag-small').getAttribute('tagName');
-					msgHeader.fireEvent('tagTap', elm, msg, Ext.String.htmlDecode(tagName));
+				// tag bubble
+				if (elm.hasCls('zcs-tag-bubble')) {
+					msgHeader.fireEvent('tagTap', elm, {
+						menuName: ZCS.constant.MENU_TAG,
+						msg: msg,
+						tagName: idParams.name
+					});
 					return false;
 				}
 
+				// message actions menu
 				if (elm.hasCls('zcs-msgHdr-menuButton')) {
-					elm.menuName = 'msgActions';
-					msgHeader.fireEvent('menuTap', elm, msg);
+					msgHeader.fireEvent('menuTap', elm, {
+						menuName: ZCS.constant.MENU_MSG,
+						msg: msg
+					});
 					return false;
 				}
 
+				// somewhere in the header that is not one of the above
 				if (msgHeader) {
 					msgHeader.fireEvent('toggleView', msgHeader, elm.hasCls('zcs-msgHdr-link'));
 				}
@@ -96,27 +104,45 @@ Ext.define('ZCS.view.mail.ZtMsgListView', {
 		this.on({
 			tap: function(e) {
 
+				// see if tap listener has been turned off
 				if (!this.getAllowTaps()) {
 					return false;
 				}
 
 				var elm = Ext.fly(e.target),
 					msgBody = this.down('#' + e.delegatedTarget.id),
-					msg = msgBody.getMsg();
+					msg = msgBody.getMsg(),
+					idParams = ZCS.util.getIdParams(elm.dom.id) || {};
 
+				// attachment bubble
 				if (elm.hasCls('zcs-attachment-bubble')) {
 					msgBody.fireEvent('attachmentTap', elm);
 					return false;
 				}
 
+				// address bubble
+				if (elm.hasCls('zcs-contact-bubble')) {
+					msgBody.fireEvent('contactTap', elm, {
+						menuName: ZCS.constant.MENU_CONTACT,
+						msg: msg,
+						address: idParams.address
+					});
+					return false;
+				}
+
+				// invite response button (accept/tentative/decline)
 				if (elm.hasCls('zcs-invite-button')) {
-					// Note: elm.getId() hits NPE trying to cache DOM ID
-					var idParams = ZCS.util.getIdParams(elm.dom.id) || {};
 					msgBody.fireEvent('inviteReply', idParams.msgId, idParams.action);
 				}
 
+				// show/hide quoted text link
 				if (elm.hasCls('zcs-quoted-link')) {
 					msgBody.fireEvent('toggleQuotedText', msgBody);
+				}
+
+				// load rest of truncated message
+				if (elm.hasCls('zcs-truncated-message-link')) {
+					msgBody.fireEvent('loadEntireMessage', msg);
 				}
 			},
 			element: 'element',
@@ -147,9 +173,9 @@ Ext.define('ZCS.view.mail.ZtMsgListView', {
         	items[0].element.dom.parentElement.style["position"] = "relative";
     	}
 
-    	//Every expanded list item may have links, so force it to have
-    	//absolute positioning, which will prevent a bug where link taps were
-    	//not registered.
+    	// Every expanded list item may have links, so force it to have
+    	// absolute positioning, which will prevent a bug where link taps were
+    	// not registered.
 		for (i = 0, ln = items.length; i < ln; i++) {
             item = items[i];
             if (item.getExpanded()) {
@@ -172,15 +198,5 @@ Ext.define('ZCS.view.mail.ZtMsgListView', {
 
 		listRef.updateItemHeights();
 		listRef.refreshScroller(listRef.getScrollable().getScroller());
-	},
-
-	forceHeightRecalc: function () {
-		var listRef = this;
-
-		Ext.each(this.query('msgview'), function (view) {
-			listRef.updatedItems.push(view);
-		});
-
-		listRef.updateItemHeights();
 	}
 });
