@@ -180,9 +180,10 @@ Ext.define('ZCS.controller.mail.ZtMailItemController', {
 	 */
 	saveItemMove: function (folder, item) {
 
-		var data = {
+		var folderId = folder.get('id'),
+			data = {
 			op: 'move',
-			l:  folder.get('id')
+			l:  folderId
 		};
 
 		this.performOp(item, data, function(item, operation) {
@@ -199,6 +200,10 @@ Ext.define('ZCS.controller.mail.ZtMailItemController', {
 			if (!isMessage || conv.get('numMsgs') === 1) {
 				ZCS.app.getConvListController().removeConv(conv);
 			}
+
+			var toastMsg = (item.get('type') === ZCS.constant.ITEM_MESSAGE) ? ZtMsg.moveMessage : ZtMsg.moveConversation,
+				folderName = ZCS.cache.get(folderId).get('name');
+			ZCS.app.fireEvent('showToast', Ext.String.format(toastMsg, folderName), this.undoMove, this);
 		});
 	},
 
@@ -240,14 +245,14 @@ Ext.define('ZCS.controller.mail.ZtMailItemController', {
 			if (item.get('type') === ZCS.constant.ITEM_CONVERSATION) {
 				ZCS.app.getConvListController().removeConv(item);
 			}
-			//TODO: Where should we get trash from? ZtUserSession in ZtUserOrganizers?
-			ZCS.app.fireEvent('showToast', Ext.String.format(ZtMsg.moveMessage, 'Trash'), this.undoDelete, this);
+			var toastMsg = (item.get('type') === ZCS.constant.ITEM_MESSAGE) ? ZtMsg.moveMessage : ZtMsg.moveConversation,
+				trash = ZCS.cache.get(ZCS.constant.ID_TRASH).get('name');
+			ZCS.app.fireEvent('showToast', Ext.String.format(toastMsg, trash), this.undoDelete, this);
 		});
 	},
 
-	undoDelete: function () {
-
-	},
+	undoDelete: function () {},
+	undoMove: function () {},
 
 	/**
 	 * Moves the mail item to Junk.

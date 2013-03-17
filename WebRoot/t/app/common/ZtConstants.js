@@ -109,10 +109,10 @@ ZCS.constant.NEW_ITEM_ICON[ZCS.constant.APP_MAIL]       = 'compose';
 ZCS.constant.NEW_ITEM_ICON[ZCS.constant.APP_CONTACTS]   = 'plus';
 
 // popup menus
-ZCS.constant.MENU_CONV      = 'CONV';
-ZCS.constant.MENU_MSG       = 'MSG';
-ZCS.constant.MENU_TAG       = 'TAG';
-ZCS.constant.MENU_CONTACT   = 'CONTACT';
+ZCS.constant.MENU_CONV      = 'convActions';
+ZCS.constant.MENU_MSG       = 'msgActions';
+ZCS.constant.MENU_TAG       = 'tagActions';
+ZCS.constant.MENU_CONTACT   = 'contactActions';
 
 // Buttons in toolbar at top of item panel
 ZCS.constant.ITEM_BUTTONS = {};
