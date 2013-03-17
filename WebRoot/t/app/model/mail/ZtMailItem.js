@@ -83,10 +83,11 @@ Ext.define('ZCS.model.mail.ZtMailItem', {
 				if (addrs.length > 0) {
 					return Ext.Array.map(addrs,
 						function (addr) {
-							var addrData = {
-								address: addr.get('email').toString(),
-								displayName: addr.get('viewName').replace('"', '')
-							};
+							var email = addr.get('email') || '',
+								addrData = {
+									address: email.toString(),
+									displayName: addr.get('viewName').replace('"', '')
+								};
 							addrData.id = ZCS.util.getUniqueId(addrData);
 							return addrData;
 						}

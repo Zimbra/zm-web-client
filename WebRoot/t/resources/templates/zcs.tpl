@@ -64,10 +64,12 @@
 				</div>
 			</tpl>
 			<div class='zcs-msgHdr-date'>{dateStr}</div>
+			<tpl if='recipients'>
 			<div class='zcs-msgHdr-to'>
 				<span>{[ZtMsg.to]}</span>
 				<span>{recipients}</span>
 			</div>
+			</tpl>
 			<div class='zcs-msgHdr-link'>{[ZtMsg.details]}</div>
 			<div class='zcs-msgHdr-menuButton'></div>
 		</div>
@@ -86,8 +88,10 @@
 						<span class='vm-area-bubble  zcs-contact-bubble' id='{id}'>{displayName}</span>
 					</tpl>
 				</div>
-				<tpl for='addrs.FROM'>
-					<div class='zcs-msgHdr-from'>{[ZtMsg.from]} {address}</div>
+				<tpl if='addrs.FROM[0].address'>
+					<tpl for='addrs.FROM'>
+						<div class='zcs-msgHdr-from'>{[ZtMsg.from]} {address}</div>
+					</tpl>
 				</tpl>
 			</tpl>
 			<div class='zcs-msgHdr-date'>{dateStr}</div>

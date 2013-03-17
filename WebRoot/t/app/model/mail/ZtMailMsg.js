@@ -426,7 +426,8 @@ Ext.define('ZCS.model.mail.ZtMailMsg', {
 	hasTrustedSender: function() {
 
 		var	sender = this.getAddressByType(ZCS.constant.SENDER) || this.getAddressByType(ZCS.constant.FROM),
-			addr = sender.get('email').toLowerCase(),
+			email = sender.get('email') || '',
+			addr = email.toLowerCase(),
 			domain = addr.substr(addr.indexOf("@") + 1),
 			trustedSenders = ZCS.session.getSetting(ZCS.constant.SETTING_TRUSTED_SENDERS),
 			ln = trustedSenders ? trustedSenders.length : 0, i, trusted;
