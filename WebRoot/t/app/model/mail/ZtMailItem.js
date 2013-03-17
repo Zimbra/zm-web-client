@@ -97,13 +97,21 @@ Ext.define('ZCS.model.mail.ZtMailItem', {
 			else if (addrs instanceof ZCS.model.mail.ZtEmailAddress) {
 				return ZCS.model.mail.ZtMailItem.convertAddressModelToObject([addrs])[0];
 			}
+			// assume a string is an email
+			else if (Ext.isString(addrs)) {
+				var addr = ZCS.model.mail.ZtEmailAddress.fromEmail(addrs);
+				return addr ? ZCS.model.mail.ZtMailItem.convertAddressModelToObject([addr])[0] : null;
+			}
 			// handle hash of address array by address type
-			else {
+			else if (Ext.isObject(addrs)) {
 				var results = {};
 				Ext.Object.each(addrs, function(type) {
 					results[type] = ZCS.model.mail.ZtMailItem.convertAddressModelToObject(addrs[type]);
 				});
 				return results;
+			}
+			else {
+				return null;
 			}
 		}
 	},
@@ -152,34 +160,30 @@ Ext.define('ZCS.model.mail.ZtMailItem', {
 	/**
 	 * Returns the ZtEmailAddress object that matches the parameterized field
 	 *
-	 * @param {String} email Email address
+	 * @param {String}  field   field in a ZtEmailAddress
+	 * @param {String}  value   value to look for
 	 *
 	 * @return {ZCS.model.mail.ZtEmailAddress}
 	 */
-	getAddressObject: function (field, fieldValue) {
+	getAddressObject: function (field, value) {
+
 		var addrs = this.get('addresses'),
-			found = false,
-			to = addrs[ZCS.constant.TO],
-			cc = addrs[ZCS.constant.CC],
-			from = addrs[ZCS.constant.FROM],
-			sender = addrs[ZCS.constant.SENDER],
-			replyTo = addrs[ZCS.constant.REPLY_TO],
-			bcc = addrs[ZCS.constant.BCC];
+			found = false;
 
 		Ext.Object.each(addrs, function (addrType, addrList) {
 			Ext.each(addrList, function (addr) {
-				if (addr.get(field) === fieldValue) {
+				if (addr.get(field) === value) {
 					found = addr;
 					return false;
 				}
 			});
-
 			if (found) {
 				return false;
 			}
 		});
 
-		return found;
+		// if not found, assume it was an email address
+		return found || ZCS.model.mail.ZtEmailAddress.fromEmail(value);
 	},
 
 	/**

@@ -41,7 +41,7 @@ Ext.define('ZCS.model.mail.ZtInvite', {
 			{ name: 'location',         type: 'string' },
 			{ name: 'organizer',        type: 'auto' },
 			{ name: 'isOrganizer',      type: 'boolean' },
-			{ name: 'sentBy',           type: 'string' },
+			{ name: 'sentBy',           type: 'auto' },
 			{ name: 'status',           type: 'string' },
 			{ name: 'method',           type: 'string' },
 			{ name: 'myResponse',       type: 'string' },
@@ -92,7 +92,7 @@ Ext.define('ZCS.model.mail.ZtInvite', {
 			if (comp.or) {
 				invite.set('organizer', organizer);
 				if (comp.or.sentBy) {
-					this.set('sentBy', comp.or.sentBy);
+					invite.set('sentBy', ZCS.model.mail.ZtEmailAddress.fromEmail(comp.or.sentBy));
 				}
 			}
 
@@ -196,6 +196,7 @@ Ext.define('ZCS.model.mail.ZtInvite', {
 				end:            Ext.Date.format(this.get('end'), dateFormat),
 				location:       this.get('location'),
 				organizer:      ZCS.model.mail.ZtMailItem.convertAddressModelToObject(this.get('organizer')),
+				sentBy:         ZCS.model.mail.ZtMailItem.convertAddressModelToObject(this.get('sentBy')),
 				attendees:      ZCS.model.mail.ZtMailItem.convertAddressModelToObject(this.get('attendees')),
 				optAttendees:   ZCS.model.mail.ZtMailItem.convertAddressModelToObject(this.get('optAttendees')),
 				notes:          this.get('notes'),

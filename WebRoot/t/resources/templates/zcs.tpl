@@ -172,6 +172,14 @@
 				</td>
 			</tr>
 			</tpl>
+			<tpl if='sentBy'>
+			<tr>
+				<td class='zcs-invite-label'>{[ZtMsg.invSentByLabel]}</td>
+				<td>
+					<span class='vm-area-bubble zcs-contact-bubble' id='{sentBy.id}'>{sentBy.displayName}</span>
+				</td>
+			</tr>
+			</tpl>
 			<tpl if='attendees'>
 			<tr>
 				<td class='zcs-invite-label'>{[ZtMsg.invAttendeesLabel]}</td>
