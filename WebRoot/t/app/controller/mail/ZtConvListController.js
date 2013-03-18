@@ -150,9 +150,9 @@ Ext.define('ZCS.controller.mail.ZtConvListController', {
 
 	},
 
-
 	/**
-	 * Handle a newly created conv. Add it to view if user is viewing Inbox.
+	 * Handle a newly created conv. Add it to view if any of its messages (which
+	 * should have also just been created) are in the currently viewed folder.
 	 *
 	 * @param {object}  create      JSON for new conv
 	 */
@@ -172,12 +172,12 @@ Ext.define('ZCS.controller.mail.ZtConvListController', {
 			}
 		}
 
-		if (doAdd) {
-			var reader = ZCS.model.mail.ZtConv.getProxy().getReader(),
-				data = reader.getDataFromNode(create),
-				store = this.getStore(),
-				conv = new ZCS.model.mail.ZtConv(data, create.id);
+		var reader = ZCS.model.mail.ZtConv.getProxy().getReader(),
+			data = reader.getDataFromNode(create),
+			store = this.getStore(),
+			conv = new ZCS.model.mail.ZtConv(data, create.id);
 
+		if (doAdd) {
 			store.insert(0, [conv]);
 		}
 	},
