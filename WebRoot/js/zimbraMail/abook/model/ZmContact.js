@@ -171,6 +171,7 @@ ZmContact.X_firstLast				= "firstLast";
 ZmContact.X_fullName				= "fullName";
 ZmContact.X_vcardXProps             = "vcardXProps";
 ZmContact.X_outlookUserField        = "outlookUserField";
+ZmContact.F_zimletImage				= "zimletImage";
 ZmContact.MC_cardOwner				= "cardOwner";			// My card fields
 ZmContact.MC_workCardMessage		= "workCardMessage";
 ZmContact.MC_homeCardMessage		= "homeCardMessage";
@@ -2054,7 +2055,7 @@ function(maxWidth) {
 	var imagePart  = image && image.part || this.getAttr(ZmContact.F_imagepart); //see bug 73146
 
 	if (!imagePart) {
-		return null;
+		return this.getAttr(ZmContact.F_zimletImage);  //return zimlet populated image only if user-uploaded image is not there.
 	}
   	var msgFetchUrl = appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI);
 	var maxWidthStyle = "";

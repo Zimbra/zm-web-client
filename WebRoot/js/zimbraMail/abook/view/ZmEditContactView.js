@@ -98,6 +98,7 @@ ZmEditContactView.prototype.getFormItems = function() {
 				getter: this._getFullName, notab: true, ignore: true },
 			// contact attribute fields
 			{ id: "IMAGE", type: "ZmEditContactViewImage" },
+			{ id: "ZIMLET_IMAGE", type: "DwtText" },
 			{ id: "PREFIX", type: "DwtInputField", width: 38,  hint: ZmMsg.AB_FIELD_prefix, visible: "get('SHOW_PREFIX')" },
 			{ id: "FIRST", type: "DwtInputField", width: 95, hint: ZmMsg.AB_FIELD_firstName, visible: "get('SHOW_FIRST')", onblur: "this._controller.updateTabTitle()" },
 			{ id: "MIDDLE", type: "DwtInputField", width: 95, hint: ZmMsg.AB_FIELD_middleName, visible: "get('SHOW_MIDDLE')" },
@@ -169,7 +170,7 @@ ZmEditContactView.prototype.getFormItems = function() {
 			},
 			// NOTE: Return false onclick to prevent default action
 			{ id: "VIEW_IMAGE", ignore: true, onclick: "open(get('IMAGE')) && false", visible: "get('IMAGE')" },
-			{ id: "REMOVE_IMAGE", ignore: true, onclick: "set('IMAGE','') && false", visible: "get('IMAGE')" },
+			{ id: "REMOVE_IMAGE", ignore: true, onclick: this._handleRemoveImage, visible: "get('IMAGE')" },
 			// pseudo-items
 			{ id: "JOB", notab: true, ignore:true, visible: "get('SHOW_TITLE') && get('SHOW_DEPARTMENT')" },
 			{ id: "TITLE_DEPARTMENT_SEP", notab: true,
@@ -339,6 +340,7 @@ ZmEditContactView.ATTRS = {
 	FILE_AS: ZmContact.F_fileAs,
 	FOLDER: ZmContact.F_folderId,
 	IMAGE: ZmContact.F_image,
+	ZIMLET_IMAGE: ZmContact.F_zimletImage,
 	PREFIX: ZmContact.F_namePrefix,
 	SUFFIX: ZmContact.F_nameSuffix,
 	MAIDEN: ZmContact.F_maidenName,
@@ -571,6 +573,14 @@ ZmEditContactView.prototype.getModifiedAttrs = function() {
 		attributes[ZmContact.F_folderId] = this.getValue("FOLDER");
 	}
 
+	if (attributes[ZmContact.F_image] && attributes[ZmContact.F_image] === this._contact.getAttr(ZmContact.F_zimletImage)) {
+		// Slightly hacky - 2 cases could lead here:
+		// 1. user had an uploaded image, and deleted it. The field (which we use to show both cases) reverts to show the Zimlet (external) image.
+		// 2. user didn't have an uploaded image. Field was showing the the Zimlet image.
+		// In both cases we need to clear the Zimlet URL from F_image. For case 2 we don't really need to set the field at all since it doesn't change, but
+		// this way it's simpler.
+		attributes[ZmContact.F_image] = "";
+	}
 	// set the value for IMAGE to just the attachment id
 	if (attributes[ZmContact.F_image]) {
 		var value = this.getValue("IMAGE");
@@ -789,6 +799,19 @@ ZmEditContactView.prototype._handleDetailCheck = function(itemId, id) {
 		control.focus();
         control.enableFocusHdlr(); //re-enable
 	}
+};
+
+ZmEditContactView.prototype._handleRemoveImage = function() {
+	var image = this.getValue("IMAGE", ""); //could be user uploaded, or zimlet (e.g. LinkedInImage Zimlet) one since we use both in same field.
+	var zimletImage = this.getValue("ZIMLET_IMAGE", "");
+	if (image !== zimletImage) {
+		//user uploaded image - this is the one we remove. Show the zimlet one instead.
+		this.set("IMAGE", zimletImage);
+		return;
+	}
+	//otherwise it's the Zimlet image we remove
+	this.set("ZIMLET_IMAGE", "");
+	this.set("IMAGE", "");  //show the image field empty. Again we use the same field for regular user uploaded and for zimlet provided.
 };
 
 /**
