@@ -79,9 +79,8 @@ Ext.define("ZCS.view.ZtMain", {
 				cls: 'zcs-flat',
 				iconMask: true,
 				handler: function() {
-					this.up('tabbar').fireEvent('showMenu', this);
-				},
-				menuName: 'settings'
+					this.up('tabbar').fireEvent('showMenu', this, { menuName: 'settings' });
+				}
 			}
 		]);
 	}
