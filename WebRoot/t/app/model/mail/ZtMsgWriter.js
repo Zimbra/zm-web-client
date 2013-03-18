@@ -49,6 +49,7 @@ Ext.define('ZCS.model.mail.ZtMsgWriter', {
 				offset: 0,
 				limit:  100,
 				recip:  '2',
+				read:   '1',
 				max:    itemData.noMax ? 0 : ZCS.constant.MAX_MESSAGE_SIZE * 1000,
 				query:  'underid:1 AND NOT underid:3 AND NOT underid:4'
 			});
@@ -134,9 +135,9 @@ Ext.define('ZCS.model.mail.ZtMsgWriter', {
 				Ext.apply(methodJson, {
 					m: {
 						id:         itemData.id,
-						read:       1,
-						html:       1,
-						needExp:    1,
+						read:       '1',
+						html:       '1',
+						needExp:    '1',
 						max:        itemData.noMax ? 0 : ZCS.constant.MAX_MESSAGE_SIZE * 1000,
 						header:     ZCS.constant.ADDITIONAL_MAIL_HEADERS
 					},
