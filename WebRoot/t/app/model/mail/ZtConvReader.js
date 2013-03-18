@@ -31,9 +31,9 @@ Ext.define('ZCS.model.mail.ZtConvReader', {
 
 		data.itemId = node.id;
 		data.type = ZCS.constant.ITEM_CONVERSATION;
-		data.subject = ZCS.mailutil.stripSubjectPrefixes(node.su);
+		data.subject = Ext.String.htmlEncode(ZCS.mailutil.stripSubjectPrefixes(node.su));
 		data.numMsgs = node.n;
-		data.fragment = node.fr;
+		data.fragment = Ext.String.htmlEncode(node.fr);
 		this.parseFlags(node, data);
 
 		// process addresses, and create a string showing the senders

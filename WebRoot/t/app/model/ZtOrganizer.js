@@ -78,16 +78,10 @@ Ext.define('ZCS.model.ZtOrganizer', {
 		var type = this.get('type');
 
 		if (this.isFolder()) {
-			var path = this.get('name'),
-				parent = ZCS.cache.get(this.get('parentItemId'));
+			var path = this.get('path');
 
 			if (this.isSystem()) {
 				path = path.toLowerCase();
-			}
-
-			while (parent && (parent.get('itemId') !== ZCS.constant.ID_ROOT)) {
-				path = parent.get('name') + '/' + path;
-				parent = ZCS.cache.get(parent.get('parentItemId'));
 			}
 
 			return 'in:"' + path + '"';

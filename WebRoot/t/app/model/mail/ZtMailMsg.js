@@ -359,7 +359,7 @@ Ext.define('ZCS.model.mail.ZtMailMsg', {
 				result.push([crlf, '[', attInfo, ':', (fileName || '...'), ']', crlf].join(''));
 			}
 			else if (contentType === ZCS.mime.TEXT_PLAIN || (part.get('isBody') && ZCS.mime.isTextType(contentType))) {
-				result.push(content);
+				result.push(Ext.String.htmlEncode(content));
 			}
 			else if (contentType === ZCS.mime.TEXT_HTML) {
 				result.push(content);

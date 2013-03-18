@@ -216,7 +216,7 @@ Ext.define('ZCS.common.ZtUserSession', {
 				id: id,
 				itemId: itemId,
 				parentItemId: node.l,
-				name: node.name,
+				name: Ext.String.htmlEncode(node.name),
 				path: node.name,
 				color: node.color,
 				rgb: node.rgb,
