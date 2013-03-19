@@ -98,7 +98,7 @@ Ext.define('ZCS.common.ZtMenu', {
 		padding: 5,
 		defaultItemHeight: 47,
 		menuItemTpl: '{label}',
-		maxHeight: 350,
+		maxHeight: 450,
 
 		name: '',
 
