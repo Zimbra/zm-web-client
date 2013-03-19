@@ -94,7 +94,7 @@
 					</tpl>
 				</tpl>
 			</tpl>
-			<div class='zcs-msgHdr-date'>{dateStr}</div>
+			<div class='zcs-msgHdr-date'>{fullDateStr}</div>
 			<div class='zcs-msgHdr-link'>{[ZtMsg.hide]}</div>
 			<div class='zcs-msgHdr-menuButton'></div>
 		</div>

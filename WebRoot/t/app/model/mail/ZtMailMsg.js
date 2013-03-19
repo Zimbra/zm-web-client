@@ -41,6 +41,7 @@ Ext.define('ZCS.model.mail.ZtMailMsg', {
 			{ name: 'messageId',    type: 'string' },
 			{ name: 'irtMessageId', type: 'string' },
 			{ name: 'replyType',    type: 'string' },
+			{ name: 'fullDateStr',  type: 'string' },
 
 			// internal (via parsing), or for composed msgs
 			{ name: 'attachments',      type: 'auto' },
