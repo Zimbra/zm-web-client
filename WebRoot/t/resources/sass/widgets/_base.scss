@@ -71,6 +71,10 @@ $zimbra-button-active-color: rgba(255,255,255,.3);
 		.x-title {
 			font-size: $zcs-title-fontsize;
 		}
+
+		.x-innerhtml {
+			@include ellipsis();
+		}
 	}
 }
 

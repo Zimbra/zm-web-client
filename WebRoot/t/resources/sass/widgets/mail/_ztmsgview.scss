@@ -24,6 +24,7 @@ $msgHdrLeftIndent: $msgHdrImageSize + $msgHdrStdMargin*2;
 
 $msgHdrButtonSize: $msgHdrImageSize/1.5;
 $msgHdrRightIndent: $msgHdrButtonSize + $msgHdrStdMargin*4;
+$msgHdrDetailToggle: 4em;  /* width set for english text */
 
 $msgHdrTopOffset: $msgHdrStdMargin;
 $msgHdrTopOffset2: $msgHdrTextSize * 2.3 + $msgHdrTopOffset;
@@ -60,21 +61,18 @@ $msgHdrButtonTopOffset: $msgHdrButtonDelta;
 	@extend .zcs-msgHdr-element;
 	font-size: $msgHdrTextSize;
 	left: $msgHdrLeftIndent+$msgHdrStdMargin;
-	overflow: hidden;
-	text-overflow: ellipsis;
+	right: $msgHdrRightIndent+$msgHdrDetailToggle;
 	top: $msgHdrTopOffset2;
-	white-space: nowrap;
+	@include ellipsis();
 }
 
 .zcs-msgHdr-fragment {
 	@extend .zcs-msgHdr-element;
 	@extend .zcs-fragment;
 	left: $msgHdrLeftIndent+$msgHdrStdMargin;
-	overflow: hidden;
 	right: $msgHdrRightIndent;
-	text-overflow: ellipsis;
 	top: $msgHdrTopOffset2;
-	white-space: nowrap;
+	@include ellipsis();
 }
 
 .zcs-msgHdr-date {
@@ -97,11 +95,9 @@ $msgHdrButtonTopOffset: $msgHdrButtonDelta;
 	@extend .zcs-msgHdr-element;
 	font-size: $msgHdrTextSize;
 	left: $msgHdrLeftIndent+$msgHdrStdMargin;
-	overflow: hidden;
-	right: $msgHdrRightIndent;
-	text-overflow: ellipsis;
+	right: $msgHdrRightIndent+$msgHdrDetailToggle;
 	top: $msgHdrTopOffset2;
-	white-space: nowrap;
+	@include ellipsis();
 }
 
 .zcs-msgHdr-link {
