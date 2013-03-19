@@ -105,6 +105,9 @@ Ext.define('ZCS.controller.ZtItemController', {
 		this.performOp(item, {
 			op: remove ? '!tag' : 'tag',
 			tn: tagName
+		}, function() {
+			var toastMsg = remove ? ZtMsg.messageTagRemoved : ZtMsg.messageTagged;
+			ZCS.app.fireEvent('showToast', Ext.String.format(toastMsg, tagName));
 		});
 	}
 });
