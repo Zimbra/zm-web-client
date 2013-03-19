@@ -231,7 +231,7 @@ Ext.define('ZCS.common.ZtUserSession', {
 			}
 
 			// type-specific fields
-			if (type === ZCS.constant.ORG_MAIL_FOLDER) {
+			if (type1 === ZCS.constant.ORG_MAIL_FOLDER) {
 				if (node.u != null) {
 					organizer.unreadCount = node.u;
 				}
