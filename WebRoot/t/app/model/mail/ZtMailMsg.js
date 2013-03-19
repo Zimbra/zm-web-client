@@ -43,14 +43,15 @@ Ext.define('ZCS.model.mail.ZtMailMsg', {
 			{ name: 'replyType',    type: 'string' },
 
 			// internal (via parsing), or for composed msgs
-			{ name: 'attachments',  type: 'auto' },
-			{ name: 'bodyParts',    type: 'auto' },     // MIME parts the server tells us to display
-			{ name: 'contentTypes', type: 'auto' },     // lookup hash of content types
-			{ name: 'isLoaded',     type: 'boolean' },
-			{ name: 'isLast',       type: 'boolean' },
-			{ name: 'origId',       type: 'string' },   // ID of original if replying or forwarding
-			{ name: 'invite',       type: 'auto' },     // ZtInvite if msg is an invite
-			{ name: 'inviteAction', type: 'string' }    // accept/tentative/decline
+			{ name: 'attachments',      type: 'auto' },
+			{ name: 'bodyParts',        type: 'auto' },     // MIME parts the server tells us to display
+			{ name: 'contentTypes',     type: 'auto' },     // lookup hash of content types
+			{ name: 'isLoaded',         type: 'boolean' },
+			{ name: 'isLast',           type: 'boolean' },
+			{ name: 'origId',           type: 'string' },   // ID of original if replying or forwarding
+			{ name: 'invite',           type: 'auto' },     // ZtInvite if msg is an invite
+			{ name: 'inviteAction',     type: 'string' },   // accept/tentative/decline
+			{ name: 'origAttachments',  type: 'auto' }      // attachments to propagate on reply/forward
 		],
 
 		proxy: {
@@ -441,9 +442,31 @@ Ext.define('ZCS.model.mail.ZtMailMsg', {
 		return false;
 	},
 
+	/**
+	 * Returns a list of attachments, plus any inline attachments that came as body parts.
+	 *
+	 * @return {Array}      list of attachments
+	 */
+	getAllAttachments: function() {
+		return this.get('attachments').concat(this.getInlineAttachments());
+	},
+
+	/**
+	 * Returns true if the message has attachments.
+	 * @return {Boolean}    true if the message has attachments
+	 */
+	hasAttachments: function() {
+		return this.getAllAttachments().length > 0;
+	},
+
+	/**
+	 * Returns a list of objects, each of which has info about an attachment such as its name, size, etc.
+	 *
+	 * @return {Array}      list of attachment info objects
+	 */
 	getAttachmentInfo: function() {
 
-		var attachments = this.get('attachments').concat(this.getInlineAttachments()),
+		var attachments = this.getAllAttachments(),
 			ln = attachments.length, i, attachment,
 			attInfo = [];
 
@@ -462,6 +485,7 @@ Ext.define('ZCS.model.mail.ZtMailMsg', {
 				info.icon = ZCS.mime.getIconClass(type);
 				info.size = ZCS.util.formatFileSize(attachment.get('size'));
 				info.url = (!part || ZCS.constant.REGEX_URL.test(contentLocation)) ? contentLocation : this.getPartUrl(part);
+				info.part = attachment.get('part');
 				attInfo.push(info);
 			}
 		}

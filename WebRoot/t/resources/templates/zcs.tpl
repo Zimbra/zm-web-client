@@ -255,3 +255,7 @@
 <template id='Truncated'>
 	<div class='zcs-truncated-message'><span>{[ZtMsg.messageTruncated]}</span> <span class='zcs-truncated-message-link'>{[ZtMsg.messageTruncatedLink]}</span></div>
 </template>
+
+<template id='OriginalAttachments'>
+	<div class='zcs-link'>{[ZtMsg.addOriginalAttachments]}</div>
+</template>

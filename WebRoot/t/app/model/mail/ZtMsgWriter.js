@@ -73,7 +73,8 @@ Ext.define('ZCS.model.mail.ZtMsgWriter', {
 				irtMessageId = msg.get('irtMessageId'),
 				identityId = ZCS.session.getAccountId(),
 				parts = m.mp = [],                  // Note: should only ever be one top-level part
-				mime = msg.getMime();
+				mime = msg.getMime(),
+				origAtt = msg.get('origAttachments');
 
 			// recipient addresses
 			for (i = 0; i < ln; i++) {
@@ -109,6 +110,13 @@ Ext.define('ZCS.model.mail.ZtMsgWriter', {
 
 			// identity
 			m.idnt = identityId;
+
+			// attachments to forward from original message
+			if (origAtt && origAtt.length > 0) {
+				m.attach = {
+					mp: origAtt
+				};
+			}
 
 			if (msg.isInviteReply) {
 				Ext.apply(methodJson, {

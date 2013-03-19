@@ -28,26 +28,33 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 		'ZCS.common.ZtUtil'
 	],
 
+	mixins: {
+		menuable: 'ZCS.common.ZtMenuable'
+	},
+
 	config: {
 
 		refs: {
 			// event handlers
-			composePanel: 'composepanel',
-			contactField: 'composepanel contactfield',
+			composePanel:       'composepanel',
+			contactField:       'composepanel contactfield',
+			attachmentsField:   '#attachments',
 
 			// other
-			mailView: '#' + ZCS.constant.APP_MAIL + 'view',
-			composeForm: 'composepanel formpanel'
+			mailView:       '#' + ZCS.constant.APP_MAIL + 'view',
+			composeForm:    'composepanel formpanel'
 		},
 
 		control: {
 			composePanel: {
-				cancel: 'doCancel',
-				send: 'doSend',
-				saveDraft: 'doSaveDraft'
+				cancel:                     'doCancel',
+				send:                       'doSend',
+				saveDraft:                  'doSaveDraft',
+				showOriginalAttachments:    'doShowOriginalAttachments',
+				originalAttachmentTap:      'doShowMenu'
 			},
 			contactField: {
-				bubbleTap: 'showBubbleMenu'
+				bubbleTap:  'showBubbleMenu'
 			}
 		},
 
@@ -58,6 +65,12 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 		stores: [
 			'ZCS.store.address.ZtAutoCompleteStore'
 		],
+
+		menuConfigs: {
+			originalAttachment: [
+				{ label: ZtMsg.removeAttachment, action: ZCS.constant.OP_REMOVE_ATT, listener: 'doRemoveAttachment' }
+			]
+		},
 
 		action: null,
 		origMsg: null
@@ -186,6 +199,30 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 
 		if (ccFieldAddresses && ccFieldAddresses.length) {
 			panel.showCc();
+		}
+
+		var action = this.getAction(),
+			attachmentsField = this.getAttachmentsField();
+
+		attachmentsField.hide();
+		// see if there are any attachments the user may want to forward
+		if (action === ZCS.constant.OP_REPLY || action === ZCS.constant.OP_REPLY_ALL || action === ZCS.constant.OP_FORWARD) {
+			var isForward = (action === ZCS.constant.OP_FORWARD),
+				which = isForward ? 'FORWARD' : 'REPLY',
+				incWhat = ZCS.session.getSetting(ZCS.constant['SETTING_' + which + '_INCLUDE_WHAT']),
+				origMsg = this.getOrigMsg();
+
+			// if the original msg is being attached, or the user is not including any content, don't
+			// offer to forward attachments
+			if (origMsg.hasAttachments() && incWhat !== ZCS.constant.INC_ATTACH && incWhat !== ZCS.constant.INC_NONE) {
+				if (action === ZCS.constant.OP_FORWARD) {
+					this.doShowOriginalAttachments();
+				}
+				else {
+					attachmentsField.setHtml(ZCS.controller.mail.ZtComposeController.originalAttachmentsTpl.apply({}));
+				}
+				attachmentsField.show();
+			}
 		}
 
 		panel.show({
@@ -360,6 +397,25 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 			if (irtMessageId) {
 				msg.set('irtMessageId', irtMessageId);
 			}
+			var attArea = this.getAttachmentsField(),
+				attBubbles = attArea.element.query('.zcs-attachment-bubble');
+
+			// set up data for forwarded attachments
+			if (attBubbles && attBubbles.length) {
+				var ln = attBubbles ? attBubbles.length : 0, i,
+					origAtt = [],
+					msgId = origMsg.getId(), idParams;
+				for (i = 0; i < ln; i++) {
+					idParams = ZCS.util.getIdParams(attBubbles[i].id);
+					if (idParams) {
+						origAtt.push({
+							mid:    msgId,
+							part:   idParams.part
+						});
+					}
+				}
+				msg.set('origAttachments', origAtt);
+			}
 		}
 		if (action === ZCS.constant.OP_REPLY || action === ZCS.constant.OP_REPLY_ALL) {
 			msg.set('replyType', 'r');
@@ -432,5 +488,62 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 			divider = isForward ? ZtMsg.forwardedMessage : ZtMsg.originalMessage;
 
 		return sep + '----- ' + divider + ' -----' + sep + quoted;
+	},
+
+	/**
+	 * Show original attachments as bubbles.
+	 * @private
+	 */
+	doShowOriginalAttachments: function() {
+
+		var origMsg = this.getOrigMsg(),
+			attachments = origMsg.getAttachmentInfo(),
+			attachmentsField = this.getAttachmentsField();
+
+		var html = [],
+			idx = 0,
+			ln = attachments.length, i;
+
+		for (i = 0; i < ln; i++) {
+			var attInfo = attachments[i],
+				id = ZCS.util.getUniqueId({
+					type:   ZCS.constant.IDTYPE_ATTACHMENT,
+					url:    attInfo.url,
+					part:   attInfo.part
+				});
+
+			attInfo.id = id;
+			html[idx++] = ZCS.controller.mail.ZtComposeController.attachmentTpl.apply(attInfo);
+		}
+		attachmentsField.setHtml(html.join(''));
+	},
+
+	doShowMenu: function(menuButton, params) {
+
+		this.mixins.menuable.doShowMenu.apply(this, arguments);
+		if (params) {
+			var menu = this.getMenu(params.menuName);
+			if (menu) {
+				menu.setArgs(ZCS.constant.OP_REMOVE_ATT, [ params.bubbleId ]);
+			}
+		}
+	},
+
+	/**
+	 * Removes an attachment bubble so that the attachment does not get included in the outbound message.
+	 *
+	 * @param {Stirng}  bubbleId    DOM ID of the attachment bubble
+	 */
+	doRemoveAttachment: function(bubbleId) {
+		Ext.Logger.info('Remove orig att ' + bubbleId);
+		var bubble = Ext.fly(bubbleId);
+		if (bubble) {
+			bubble.destroy();
+		}
 	}
-});
+},
+	function(thisClass) {
+		thisClass.originalAttachmentsTpl = Ext.create('Ext.XTemplate', ZCS.template.OriginalAttachments);
+		thisClass.attachmentTpl = Ext.create('Ext.XTemplate', ZCS.template.Attachment);
+	}
+);

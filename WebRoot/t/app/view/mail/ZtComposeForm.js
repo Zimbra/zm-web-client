@@ -19,6 +19,8 @@
  * message. The toolbar has button to cancel or send the message.
  *
  * @author Conrad Damon <cdamon@zimbra.com>
+ *
+ * TODO: This form sets some hard-coded widths for labels. That won't work when localized.
  */
 Ext.define('ZCS.view.mail.ZtComposeForm', {
 
@@ -107,8 +109,7 @@ Ext.define('ZCS.view.mail.ZtComposeForm', {
 						cls: 'x-form-label x-form-label-nowrap x-field zcs-toggle-field',
 						listeners: {
 							painted: function () {
-								var comp = this;
-								this.element.on('tap', function () {
+								this.element.on('tap', function() {
 									composeForm.showCc();
 								});
 							}
@@ -152,6 +153,29 @@ Ext.define('ZCS.view.mail.ZtComposeForm', {
 						},
 						label: ZtMsg.subjectHdr
 					}]
+				}, {
+					xtype: 'component',
+					height: '2.5em',
+					cls: 'zcs-attachments',
+					hidden: true,
+					itemId: 'attachments',
+					listeners: {
+						painted: function () {
+							this.element.on('tap', function(e) {
+								var el = Ext.fly(e.target);
+								if (el.hasCls('zcs-link')) {
+									composeForm.fireEvent('showOriginalAttachments');
+								}
+								if (el.hasCls('zcs-attachment-bubble')) {
+									var idParams = ZCS.util.getIdParams(el.dom.id) || {};
+									composeForm.fireEvent('originalAttachmentTap', el, {
+										menuName:   ZCS.constant.MENU_ORIG_ATT,
+										bubbleId:   el.dom.id
+									});
+								}
+							});
+						}
+					}
 				}, {
 					xtype: 'container',
 					scrollable: {

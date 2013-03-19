@@ -113,6 +113,7 @@ ZCS.constant.MENU_CONV      = 'convActions';
 ZCS.constant.MENU_MSG       = 'msgActions';
 ZCS.constant.MENU_TAG       = 'tagActions';
 ZCS.constant.MENU_CONTACT   = 'contactActions';
+ZCS.constant.MENU_ORIG_ATT  = 'originalAttachment';
 
 // Buttons in toolbar at top of item panel
 ZCS.constant.ITEM_BUTTONS = {};
@@ -397,6 +398,7 @@ ZCS.constant.OP_MOVE        = 'MOVE';
 ZCS.constant.OP_FLAG        = 'FLAG';
 ZCS.constant.OP_TAG         = 'TAG';
 ZCS.constant.OP_REMOVE_TAG  = 'REMOVE_TAG';
+ZCS.constant.OP_REMOVE_ATT  = 'REMOVE_ATT';
 ZCS.constant.OP_ADD_CONTACT = 'ADD_CONTACT';
 
 // Item flags
