@@ -1,7 +1,7 @@
 //<debug>
 Ext.Loader.setPath({
-    'Ext': '/t/touch/src',
-    'ZCS': '/t/app'
+    'Ext': 't/touch/src',
+    'ZCS': 't/app'
 });
 //</debug>
 
@@ -13,6 +13,11 @@ Ext.require([
 	ZCS.common.ZtTemplate.loadTemplates();
 });
 
+
+//<feature logger>
+Ext.require('ZCS.common.ZtLogger');
+//</feature>
+
 // Define and run the app
 Ext.application({
 
@@ -20,8 +25,6 @@ Ext.application({
 
     requires: [
         'Ext.MessageBox',
-
-	    'ZCS.common.ZtLogger',
 	    'ZCS.common.ZtUtil',
 	    'ZCS.common.ZtHtmlUtil',
 	    'ZCS.common.mail.ZtMailUtil',
@@ -30,7 +33,7 @@ Ext.application({
 	    'ZCS.common.ZtItemCache',
 	    'ZCS.common.ZtUserSession'
     ],
-
+    //<feature logger>
 	logger: {
 		enabled: true,
 		xclass: 'ZCS.common.ZtLogger',
@@ -45,6 +48,7 @@ Ext.application({
 			}
 		}
 	},
+    //</feature>
 
 	controllers: [
 		'ZCS.controller.ZtMainController',
@@ -81,7 +85,9 @@ Ext.application({
         // Destroy the #appLoadingIndicator element
         Ext.fly('appLoadingIndicator').destroy();
 
+		//<feature logger>
 	    Ext.Logger.getWriters().console.getFormatter().setMessageFormat('{message}');
+	    //</feature>
 
 	    // Process the inline data (GetInfoResponse and SearchResponse)
 	    ZCS.common.ZtUserSession.initSession(window.inlineData);

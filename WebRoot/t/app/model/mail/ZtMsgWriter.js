@@ -148,7 +148,7 @@ Ext.define('ZCS.model.mail.ZtMsgWriter', {
 						needExp:    '1',
 						max:        itemData.noMax ? 0 : ZCS.constant.MAX_MESSAGE_SIZE * 1000,
 						header:     ZCS.constant.ADDITIONAL_MAIL_HEADERS
-					},
+					}
 				});
 			}
 			else {

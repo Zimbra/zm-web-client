@@ -37,6 +37,7 @@ Ext.define('ZCS.model.mail.ZtConv', {
 		],
 
 		proxy: {
+			type: 'soapproxy',
 			api: {
 				create  : '',
 				read    : urlBase + 'SearchRequest',

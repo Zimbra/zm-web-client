@@ -36,10 +36,11 @@
      */
     "js": [
         {
-            "path": "/t/touch/sencha-touch-debug.js"
+            "path": "t/touch/sencha-touch-debug.js",
+            "x-bootstrap": true
         },
         {
-            "path": "/t/app.js",
+            "path": "t/app.js",
             "bundle": true,  /* Indicates that all class dependencies are concatenated into this file when build */
             "update": "delta"
         }
@@ -63,7 +64,7 @@
      */
     "css": [
         {
-            "path": "/t/resources/css/app.css",
+            "path": "t/resources/css/app.css",
             "update": "delta"
         }
     ],

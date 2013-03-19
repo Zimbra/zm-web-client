@@ -50,6 +50,7 @@ Ext.define('ZCS.model.address.ZtAutoComplete', {
 		],
 
 		proxy: {
+			type: 'soapproxy',
 			api: {
 				read    : urlBase + 'AutoCompleteRequest'
 			},

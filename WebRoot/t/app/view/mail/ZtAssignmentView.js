@@ -86,7 +86,7 @@ Ext.define('ZCS.view.mail.ZtAssignmentView', {
 		 */
 		onAssignmentComplete: null,
 
-		listHasOwnHeader: false,
+		listHasOwnHeader: false
 
 	},
 

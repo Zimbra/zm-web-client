@@ -1,3 +1,4 @@
+//<feature logger>
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
@@ -35,8 +36,13 @@
 Ext.define('ZCS.common.ZtLogger', {
 
 	extend: 'Ext.log.Logger',
+	requires: [
+		'Ext.log.writer.Console',
+		'Ext.log.formatter.Default'
+	],
 
 	statics: {
+        defaultPriority: 'info',
 		priorities: [
 			'force',        // special priority that means "always log this"
 
@@ -78,3 +84,4 @@ Ext.define('ZCS.common.ZtLogger', {
 		});
 	}, this);
 });
+//</feature>

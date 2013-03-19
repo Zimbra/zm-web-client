@@ -56,6 +56,7 @@ Ext.define('ZCS.model.mail.ZtMailMsg', {
 		],
 
 		proxy: {
+			type: 'soapproxy',
 			api: {
 				create  : urlBase + 'SendMsgRequest',
 				read    : urlBase + 'SearchConvRequest',

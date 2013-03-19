@@ -34,9 +34,9 @@ Ext.define('ZCS.model.contacts.ZtContact', {
 		fields: [
 			{ name: 'firstName', type: 'string' },
 			{ name: 'lastName', type: 'string' },
-			{ 
+			{
 				name: 'displayName',
-				type: 'string', 
+				type: 'string',
 				convert: function (v, record) {
 					if (record.data.firstName && record.data.lastName) {
 						return record.data.firstName + ' ' + record.data.lastName;
@@ -56,6 +56,7 @@ Ext.define('ZCS.model.contacts.ZtContact', {
 		],
 
 		proxy: {
+			type: 'soapproxy',
 			api: {
 				create  : '',
 				read    : urlBase + 'GetContactsRequest',
