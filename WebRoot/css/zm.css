@@ -1577,6 +1577,13 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 	background-color:white;
 }
 
+.contactGroupTableImage {
+	vertical-align:top;
+	text-align:center;
+	padding:1em 5px 0;
+	height:70px;'
+}
+
 .ZmContactInfoView .contactHeaderSection {
 	@WidgetHeaderContainer@
 	@WidgetHeaderContainer-normal@
