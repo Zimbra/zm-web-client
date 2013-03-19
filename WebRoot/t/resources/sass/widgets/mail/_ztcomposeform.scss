@@ -1,39 +1,50 @@
+$compose-padding: .5em;
+
+.zcs-compose-formline {
+	border-bottom: 1px solid $light-grey;
+	min-height: 1.8em;
+}
+
 .zcs-compose-form {
-	.x-form-inner{
-		padding: 0px !important;
-	}
-	.x-field {
-		border-bottom: 1px solid $light-grey;
-		min-height: 1.8em;
-	}
-	.vm-bubblearea {
-		@include border-radius(0);
-	}
-	.x-form-label {
-		text-align: right;
+	background-color: white;
+	background-image: none;
+
+	.x-form-inner {
+
+		.x-field {
+			@extend .zcs-compose-formline;
+		}
+		.vm-bubblearea {
+			@include border-radius(0);
+		}
+		.x-form-label {
+			text-align: right;
+		}
+		.zcs-attachments {
+			@extend .zcs-compose-formline;
+			margin-bottom: 0;
+			padding: 0 $compose-padding;
+		}
+		.zcs-body-field {
+			background-color: white;
+			padding: $compose-padding;
+		}
 	}
 }
 
-.zcs-auto-complete-name, .zcs-auto-complete-email {
-	height: 30px;
-	@include ellipsis();
+.zcs-auto-complete-name {
 	display: block;
+	height: 1.5em;
+	@include ellipsis();
+}
+.zcs-auto-complete-email {
+	@extend .zcs-auto-complete-name;
+	font-size: .85em;
+	@include opacity(.8);
 }
 
-.zcs-fully-editable *, .zcs-fully-editable {
+.zcs-fully-editable *,
+.zcs-fully-editable {
 	-webkit-user-select: auto;
 }
 
-.zcs-body-field {
-	background-color: white;
-	padding: 8px;
-}
-
-.zcs-compose-form .zcs-attachments {
-  background-color: white;
-}
-
-.zcs-compose-form .zcs-attachments .zcs-link {
-  padding-top: .5em;
-  padding-left: .5em;
-}
