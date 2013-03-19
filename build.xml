@@ -1220,7 +1220,7 @@ if (ext == null) ext = "";
       dir='${help.dir}' includes='${help.includes}' excludes='${help.excludes},${help.excludes2}' />
 	</target>
 
-    <target name='deploy' depends='war'>
+    <target name='deploy' depends='war,init-touch'>
         <ant dir="${server.dir}" target="stop-jetty" inheritAll="false"/>
 
         <echo>Deploy ${build.war.file} to ${deploy.dir}</echo>
@@ -1554,8 +1554,8 @@ if (ext == null) ext = "";
         </java>
     </target>
 
-    <!--Builds all the dependencies and deploys the touch client-->
-    <target name='deploy-touch' depends='compile.sass,deploy,sync-touch-homescreen'/>
+    <!--Builds all the dependencies related to the touch client-->
+    <target name='init-touch' depends='compile.sass,sync-touch-homescreen'/>
 
     <!--Sync touch client specific source files-->
     <target name='sync-touch'>
