@@ -1220,7 +1220,7 @@ if (ext == null) ext = "";
       dir='${help.dir}' includes='${help.includes}' excludes='${help.excludes},${help.excludes2}' />
 	</target>
 
-    <target name='deploy' depends='war,init-touch'>
+    <target name='deploy' depends='init-touch,war'>
         <ant dir="${server.dir}" target="stop-jetty" inheritAll="false"/>
 
         <echo>Deploy ${build.war.file} to ${deploy.dir}</echo>
