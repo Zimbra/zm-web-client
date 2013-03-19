@@ -166,6 +166,7 @@ ZmContact.F_workState				= "workState";
 ZmContact.F_workStreet				= "workStreet";
 ZmContact.F_workURL					= "workURL";
 ZmContact.F_imagepart               = "imagepart";          // New field for bug 73146 - Contacts call does not return the image information
+ZmContact.F_zimletImage				= "zimletImage";
 ZmContact.X_fileAs					= "fileAs";				// extra fields
 ZmContact.X_firstLast				= "firstLast";
 ZmContact.X_fullName				= "fullName";
@@ -2045,7 +2046,7 @@ function(maxWidth) {
 	var imagePart  = image && image.part || this.getAttr(ZmContact.F_imagepart); //see bug 73146
 
 	if (!imagePart) {
-		return null;
+		return this.getAttr(ZmContact.F_zimletImage);  //return zimlet populated image only if user-uploaded image is not there.
 	}
   	var msgFetchUrl = appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI);
 	var maxWidthStyle = "";
