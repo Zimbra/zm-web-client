@@ -65,7 +65,6 @@ Ext.define('ZCS.view.mail.ZtMsgHeader', {
         });
     },
 
-
 	/**
 	 * Displays the message header in one of three states: collapsed, expanded, or detailed.
 	 *

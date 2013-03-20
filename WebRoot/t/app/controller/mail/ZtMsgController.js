@@ -238,7 +238,7 @@ Ext.define('ZCS.controller.mail.ZtMsgController', {
 		var msgView = this.getMsgView(),
 			msg = msgView.getMsg();
 
-		msgView.renderBody(null, !msgBody.showingQuotedText);
+		msgView.renderBody(!msgBody.showingQuotedText);
 	},
 
 	doCompose: function(addr) {

@@ -104,7 +104,8 @@ Ext.define('ZCS.model.ZtSoapProxy', {
 				var error = JSON.parse(response.responseText).Body.Fault.Detail.Error.Code;
 			}
 			catch(ex) {}
-			if (error === 'service.AUTH_REQUIRED') {
+			Ext.Logger.error('Error returned from server: ' + error);
+			if (error === 'service.AUTH_REQUIRED' || error === 'service.AUTH_EXPIRED') {
 				ZCS.app.fireEvent('authExpired');
 			}
 		}

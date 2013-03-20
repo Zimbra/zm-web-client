@@ -204,12 +204,8 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 				}
 			}
 
-			// Figure out if the conv should still be displayed in the list panel. If the user is viewing
-			// Trash or Junk, then we leave the conv if it has at least one message in that folder. Otherwise,
-			// we leave it as long as all of its messages aren't in Trash/Junk. We can only figure this out
-			// if the conversation has been loaded (viewed). Otherwise, we have no idea what folders its
-			// messages are in, since we only get message IDs in the conv objects returned by a search that
-			// are shown in the list view.
+			// Handle message move by checking to see if the conv still has at least one message in the folder
+			// currently being viewed. If it doesn't, remove it from the list view.
 			var convId = item.get('convId'),
 				convListCtlr = ZCS.app.getConvListController(),
 				convStore = convListCtlr.getStore();
@@ -217,25 +213,23 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 			if (convStore.getById(convId)) {
 				var	conv = ZCS.cache.get(convId),
 					messages = conv && conv.getMessages(),
-					organizer = ZCS.session.getCurrentSearchOrganizer(),
-					parsedOrgId = organizer && ZCS.util.parseId(organizer.get('itemId')),
-					viewingTrash = parsedOrgId && (parsedOrgId.localId === ZCS.constant.ID_TRASH),
-					viewingJunk = parsedOrgId && (parsedOrgId.localId === ZCS.constant.ID_JUNK),
+					ln = messages ? messages.length : 0, i,
+					curFolder = ZCS.session.getCurrentSearchOrganizer(),
+					curFolderId = curFolder && curFolder.get('itemId'),
 					removeConv = true,
-					folderId, index, convListView, wasSelected;
+					index, convListView, wasSelected;
 
-				Ext.each(messages, function(msg) {
-					parsedId = ZCS.util.parseId(msg.get('folderId'));
-					folderId = parsedId.localId;
-					if ((viewingTrash && (folderId.localId === ZCS.constant.ID_TRASH)) ||
-						(viewingJunk && (folderId.localId === ZCS.constant.ID_JUNK))) {
-						removeConv = false;
+				if (curFolderId) {
+					for (i = 0; i < ln; i++) {
+						if (messages[i].get('folderId') === curFolderId) {
+							removeConv = false;
+							break;
+						}
 					}
-					else if (!ZCS.constant.CONV_HIDE[folderId]) {
-						removeConv = false;
-					}
-					return removeConv;
-				}, this);
+				}
+				else {
+					removeConv = false;
+				}
 
 				if (removeConv) {
 					// before removing conv, note where it was and whether it was selected

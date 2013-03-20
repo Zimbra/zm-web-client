@@ -268,11 +268,13 @@ Ext.define('ZCS.controller.mail.ZtMailItemController', {
 
 		item = item || this.getItem();
 
-		var op = (item.get('folderId') === ZCS.constant.ID_JUNK) ? '!spam' : 'spam',
+		var unspam = (item.get('folderId') === ZCS.constant.ID_JUNK),
+			op = unspam ? '!spam' : 'spam',
+			newFolder = unspam ? ZCS.constant.ID_INBOX : ZCS.constant.ID_JUNK,
 			me = this;
 
 		this.performOp(item, op, function() {
-			me.processMove(item, ZCS.constant.ID_JUNK);
+			me.processMove(item, newFolder);
 		});
 	},
 
