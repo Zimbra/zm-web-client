@@ -65,7 +65,7 @@ Ext.define('ZCS.view.mail.ZtMsgView', {
 
 						msgView.renderHeader(this.getState());
 						if (loaded) {
-							msgView.renderBody(msg.get('isLast'));
+							msgView.renderBody();
 						}
 						this.updateExpansion();
 
@@ -93,14 +93,14 @@ Ext.define('ZCS.view.mail.ZtMsgView', {
 		this.down('msgheader').render(this.getMsg(), state);
 	},
 
-	renderBody: function(isLast, showQuotedText) {
+	renderBody: function(showQuotedText) {
 		this.down('msgbody').on('msgContentResize', function () {
 			this.updateHeight();
 		}, this, {
 			single: true
 		});
 
-		this.down('msgbody').render(this.getMsg(), isLast, showQuotedText);
+		this.down('msgbody').render(this.getMsg(), showQuotedText);
 	},
 
 	/**

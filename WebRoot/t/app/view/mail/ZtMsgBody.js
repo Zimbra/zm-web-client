@@ -75,15 +75,19 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 	 * Renders the given msg.
 	 *
 	 * @param {ZtMailMsg}   msg             a mail message
-	 * @param {Boolean}     isLast          true if this is the last msg in the conv to be rendered,
-	 *                                      in which case its quoted text will not be trimmed
 	 * @param {Boolean}     showQuotedText  (optional) if passed, show or hide quoted text
 	 *
 	 * @adapts ZmMailMsgView._renderMessageBody1
 	 */
-	render: function(msg, isLast, showQuotedText) {
+	render: function(msg, showQuotedText) {
 
 		Ext.Logger.conv('ZtMsgBody render into element ' + this.element.id);
+
+		// if this is the last msg in the conv to be rendered, we don't hide quoted text
+		var store = this.up('mailitemview').getStore(),
+			count = store.getCount(),
+			msgIndex = store.indexOf(msg),
+			isLast = (msgIndex === count - 1);
 
 		var me = this,
 			isInvite = msg.get('isInvite'),
@@ -93,8 +97,6 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 			container = this.htmlContainer,
 			iframeWidth = this.element.getWidth() || (this.parent.getChildWidth() - 22),
 			iframe = this.iframe;
-
-		// TODO: truncation
 
 		this.setMsg(msg);
 		this.setUsingIframe(msg.hasHtmlPart() && !isInvite);

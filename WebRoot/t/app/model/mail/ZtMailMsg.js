@@ -48,7 +48,6 @@ Ext.define('ZCS.model.mail.ZtMailMsg', {
 			{ name: 'bodyParts',        type: 'auto' },     // MIME parts the server tells us to display
 			{ name: 'contentTypes',     type: 'auto' },     // lookup hash of content types
 			{ name: 'isLoaded',         type: 'boolean' },
-			{ name: 'isLast',           type: 'boolean' },
 			{ name: 'origId',           type: 'string' },   // ID of original if replying or forwarding
 			{ name: 'invite',           type: 'auto' },     // ZtInvite if msg is an invite
 			{ name: 'inviteAction',     type: 'string' },   // accept/tentative/decline

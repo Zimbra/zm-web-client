@@ -34,58 +34,7 @@ Ext.define('ZCS.model.mail.ZtMsgReader', {
 		return (data.soapMethod === 'SendMsg') ? null : this.callParent(arguments);
 	},
 
-	/**
-	 * Override so we can figure out which message will be the last one displayed, so we know not
-	 * to hide its quoted content.
-	 */
-	getRecords: function(root) {
-
-		if (!root) {
-			return [];
-		}
-
-		var records = [],
-			ln = root.length, i,
-			lastIndex = -1,
-			firstMsg = root[0],
-			conv = firstMsg && ZCS.cache.get(firstMsg.cid),
-			numMsgs = conv && conv.get('numMsgs'),
-			searchFolder = ZCS.session.getCurrentSearchOrganizer(),
-			searchFolderId = searchFolder && searchFolder.get('itemId');
-
-		if (ln === numMsgs) {
-			// Find the last displayable (non-Trash, non-Junk) message (which will not
-			// have quoted content hidden when it is displayed)
-			for (i = ln - 1; i >= 0; i--) {
-				var node = root[i],
-					localId = ZCS.util.parseId(node.l).localId;
-
-				if ((localId === searchFolderId) || !ZCS.constant.CONV_HIDE[localId]) {
-					lastIndex = i;
-					break;
-				}
-			}
-		}
-
-		// Process each msg from JSON to data
-		for (i = 0; i < ln; i++) {
-			var node = root[i],
-				localId = ZCS.util.parseId(node.l).localId;
-
-			if ((localId === searchFolderId) || !ZCS.constant.CONV_HIDE[localId]) {
-				records.push({
-					clientId: null,
-					id: node.id,
-					data: this.getDataFromNode(node, i === lastIndex),
-					node: node
-				});
-			}
-		}
-
-		return records;
-	},
-
-	getDataFromNode: function(node, isLast) {
+	getDataFromNode: function(node) {
 
 		var data = {},
 			ctxt;
@@ -122,8 +71,6 @@ Ext.define('ZCS.model.mail.ZtMsgReader', {
 			data.contentTypes = ctxt.contentTypes;
 			data.isLoaded = !!(data.bodyParts.length > 0 || data.attachments.length > 0);
 		}
-
-		data.isLast = isLast;
 
 		if (node.inv) {
 			data.invite = ZCS.model.mail.ZtInvite.fromJson(node.inv[0], node.id);
