@@ -10,3 +10,9 @@ $linkTextSize: 0.9em;
   @extend .zcs-link;
   padding-top: 1em;
 }
+
+.notes-list-empty-text {
+	font-style: italic;
+	padding-top: 5em;
+	text-align: center;
+}
