@@ -817,13 +817,14 @@ function(calItem) {
 	calItem.setStartDate(startDate, true);
 	calItem.setEndDate(endDate, true);
 	if (Dwt.getVisibility(this._tzoneSelectStartElement)) {
-        calItem.timezone = this._tzoneSelectStart.getValue();
-        if (Dwt.getVisibility(this._tzoneSelectEndElement)) {
-            calItem.setEndTimezone(this._tzoneSelectEnd.getValue());
-        }else {
-            calItem.setEndTimezone(this._tzoneSelectStart.getValue());
-        }
-    }
+		calItem.timezone = this._tzoneSelectStart.getValue();
+	}
+	if (Dwt.getVisibility(this._tzoneSelectEndElement)) {
+		calItem.setEndTimezone(this._tzoneSelectEnd.getValue());
+	}
+	else {
+		calItem.setEndTimezone(calItem.timezone); //it's not necessarily set correctly before. Might be still set to the original end time zone. I think here is the safeset place to make sure.
+	}
 
     // set attendees
     for (var t = 0; t < this._attTypes.length; t++) {
