@@ -73,6 +73,19 @@
 			<div class='zcs-msgHdr-link'>{[ZtMsg.details]}</div>
 			<div class='zcs-msgHdr-menuButton'></div>
 		</div>
+		<tpl if='tags'>
+			<div class='zcs-mail-dtlMsgHdr'>
+				<div class='zcs-msgHdr-field'>
+				<tpl for='tags'>
+					<span class='vm-area-bubble zcs-tag-bubble' id='{id}'>
+						<div class="zcs-tag-small zcs-tag-{color}" tagName="{name}" <tpl if='rgb'>style='background-color: {rgb};'</tpl>>
+						</div>
+						{name}
+					</span>
+				</tpl>
+				</div>
+			</div>
+		</tpl>
 	</tpl>
 </template>
 
@@ -101,22 +114,27 @@
 		<tpl if='addrs.TO'>
 			<div class='zcs-mail-dtlMsgHdr'>
 				<div class='zcs-msgHdr-label'>{[ZtMsg.toHdr]}</div>
+				<div class='zcs-msgHdr-field'>
 				<tpl for='addrs.TO'>
 					<span class='vm-area-bubble  zcs-contact-bubble' id='{id}'>{displayName}</span>
 				</tpl>
+				</div>
 			</div>
 		</tpl>
 		<tpl if='addrs.CC'>
 			<div class='zcs-mail-dtlMsgHdr'>
 				<div class='zcs-msgHdr-label'>{[ZtMsg.ccHdr]}</div>
+				<div class='zcs-msgHdr-field'>
 				<tpl for='addrs.CC'>
 					<span class='vm-area-bubble zcs-contact-bubble' id='{id}'>{displayName}</span>
 				</tpl>
+				</div>
 			</div>
 		</tpl>
 		<tpl if='tags'>
 			<div class='zcs-mail-dtlMsgHdr'>
-				<div class='zcs-msgHdr-label'>{[ZtMsg.tags]}</div>
+				<div class='zcs-msgHdr-label'>{[ZtMsg.tagsHdr]}</div>
+				<div class='zcs-msgHdr-field'>
 				<tpl for='tags'>
 					<span class='vm-area-bubble zcs-tag-bubble' id='{id}'>
 						<div class="zcs-tag-small zcs-tag-{color}" tagName="{name}" <tpl if='rgb'>style='background-color: {rgb};'</tpl>>
@@ -124,6 +142,7 @@
 						{name}
 					</span>
 				</tpl>
+				</div>
 			</div>
 		</tpl>
 	</tpl>

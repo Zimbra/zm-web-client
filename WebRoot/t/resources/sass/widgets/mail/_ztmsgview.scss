@@ -120,7 +120,19 @@ $msgHdrButtonTopOffset: $msgHdrButtonDelta;
 }
 
 .zcs-mail-dtlMsgHdr {
-	margin: .15em 0;
+	margin-bottom: .3em;
+
+	.zcs-msgHdr-label {
+		line-height: 1.8em;
+		position: absolute;
+	}
+	.zcs-msgHdr-field {
+		margin-left: $msgHdrLeftIndent;
+
+		.vm-area-bubble {
+			margin-bottom: .25em;
+		}
+	}
 }
 
 .zcs-msgHdr-menuButton {
