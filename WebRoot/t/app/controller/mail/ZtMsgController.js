@@ -280,5 +280,22 @@ Ext.define('ZCS.controller.mail.ZtMsgController', {
 		else {
 			this.callParent(arguments);
 		}
+	},
+
+	/**
+	 * Nothing changes in the UI when flagging a message, so show toast.
+	 *
+	 * @param {ZtMailItem}   item     mail item
+	 */
+	doFlag: function(item) {
+
+		item = item || this.getItem();
+
+		var isFlagged = item.get('isFlagged'),
+			toastMsg = isFlagged ? ZtMsg.messageUnflagged : ZtMsg.messageFlagged;
+
+		this.performOp(item, isFlagged ? '!flag' : 'flag', function() {
+			ZCS.app.fireEvent('showToast', toastMsg);
+		});
 	}
 });
