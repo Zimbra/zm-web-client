@@ -170,10 +170,8 @@ Ext.define('ZCS.controller.mail.ZtMailItemController', {
 			var tags = ZCS.session.getOrganizerDataByAppAndOrgType(ZCS.constant.APP_MAIL, ZCS.constant.ORG_TAG);
 			menu.enableItem(ZCS.constant.OP_TAG, tags && tags.length > 0);
 		}
-		if (isFeed) {
-			menu.enableItem(ZCS.constant.OP_REPLY, !isFeed);
-			menu.enableItem(ZCS.constant.OP_REPLY_ALL, !isFeed);
-		}
+		menu.enableItem(ZCS.constant.OP_REPLY, !isFeed);
+		menu.enableItem(ZCS.constant.OP_REPLY_ALL, !isFeed);
 	},
 
 	/**
