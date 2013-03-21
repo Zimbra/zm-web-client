@@ -88,6 +88,9 @@ Ext.define('ZCS.view.ux.ZtBubbleArea', {
         */
         defaultInputWidth: 30,
 
+
+        inputCharacterWidthIncrement: 20,
+
         name: null,
 
 	    listeners: {
@@ -497,7 +500,7 @@ Ext.define('ZCS.view.ux.ZtBubbleArea', {
                                     me.considerBubblingInput(this.dom.value);
                                 }
                             }
-                            this.setWidth(me.getDefaultInputWidth());
+                            this.setWidth(me.getDefaultInputWidth() + this.getValue().length * me.getInputCharacterWidthIncrement());
                             me.fireEvent('inputBlur', e, el);
                         });
                     }
@@ -530,7 +533,7 @@ Ext.define('ZCS.view.ux.ZtBubbleArea', {
         var inputDimensions,
             rightSideWidthBuffer = 10,
             minimumWidth = this.getDefaultInputWidth(),
-            sizeIncrement = 20,
+            sizeIncrement = this.getInputCharacterWidthIncrement(),
             maxSpace = parentDimensions.width - rightSideWidthBuffer,
             consumedSpace,
             newWidth,
