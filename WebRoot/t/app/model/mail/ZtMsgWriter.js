@@ -118,7 +118,7 @@ Ext.define('ZCS.model.mail.ZtMsgWriter', {
 				};
 			}
 
-			if (msg.isInviteReply) {
+			if (itemData.isInviteReply) {
 				Ext.apply(methodJson, {
 					compNum:            0,
 					id:                 origId,
