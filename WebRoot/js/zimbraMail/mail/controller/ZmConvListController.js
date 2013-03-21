@@ -815,6 +815,24 @@ function(omit) {
 	return (lv && lv._selectedMsg) ? null : ZmDoublePaneController.prototype._getNextItemToSelect.apply(this, arguments);
 };
 
+// returns lookup hash of folders (starting with Trash/Junk) whose messages aren't included when
+// viewing a conv; if we're in one of those, we still show its messages
+ZmConvListController.prototype.getFoldersToOmit =
+function() {
+
+	var a = ZmConvListController.FOLDERS_TO_OMIT,
+		omit = [],
+		curSearch = appCtxt.getCurrentSearch(),
+		curFolderId = curSearch && curSearch.folderId;
+
+	for (var i = 0; i < a.length; i++) {
+		if (a[i] != curFolderId) {
+			omit.push(a[i]);
+		}
+	}
+	return AjxUtil.arrayAsHash(omit);
+};
+
 /**
  * Splits the given items into two lists, one of convs and one of msgs, and
  * applies the given method and args to each.
