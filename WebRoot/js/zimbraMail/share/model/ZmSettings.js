@@ -50,6 +50,8 @@ ZmSettings = function(noInit) {
 ZmSettings.prototype = new ZmModel;
 ZmSettings.prototype.constructor = ZmSettings;
 
+ZmSettings.BASE64_TO_NORMAL_RATIO = 1.34;
+
 /**
  * Creates a new setting and adds it to the settings.
  *
@@ -289,9 +291,9 @@ ZmSettings.prototype.setUserSettings = function(params) {
 
     var settings = [
         ZmSetting.ADMIN_DELEGATED,          info.adminDelegated,
-        ZmSetting.ATTACHMENT_SIZE_LIMIT,    info.attSizeLimit,
+        ZmSetting.ATTACHMENT_SIZE_LIMIT,    this._base64toNormalSize(info.attSizeLimit),
         ZmSetting.CHANGE_PASSWORD_URL,      info.changePasswordURL,
-        ZmSetting.DOCUMENT_SIZE_LIMIT,      info.docSizeLimit,
+        ZmSetting.DOCUMENT_SIZE_LIMIT,      this._base64toNormalSize(info.docSizeLimit),
         ZmSetting.LAST_ACCESS,              info.accessed,
         ZmSetting.LICENSE_STATUS,           info.license && info.license.status,
         ZmSetting.PREVIOUS_SESSION,         info.prevSession,
@@ -428,6 +430,16 @@ ZmSettings.prototype.setUserSettings = function(params) {
 
 	this._updateUserFontPrefsRule();
 };
+
+
+ZmSettings.prototype._base64toNormalSize =
+function(base64) {
+	if (!base64 || base64 === -1) { //-1 is unlimited
+		return base64;
+	}
+	return base64 / ZmSettings.BASE64_TO_NORMAL_RATIO;
+};
+
 
 /**
  * @private
