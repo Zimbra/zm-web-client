@@ -165,7 +165,7 @@ Ext.define('ZCS.controller.ZtListController', {
 		}
 
 		// If we got here via tap on a saved search in the overview, remember it so we can show its name
-		var searchId = (folder && folder.get('type') === ZCS.constant.ORG_SAVED_SEARCH) ? folder.getId() : null;
+		var searchId = (folder && folder.get('type') === ZCS.constant.ORG_SAVED_SEARCH) ? folder.get('itemId') : null;
 		ZCS.session.setSetting(ZCS.constant.SETTING_CUR_SEARCH_ID, searchId);
 
 		this.getStore().currentPage = 1;

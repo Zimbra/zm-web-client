@@ -253,8 +253,8 @@
 <template id='Toast'>
 	<div class="zcs-toast-contents">
 		<div class="zcs-toast-status-icon"></div>
-		<div class="zcs-toast-message-text">{0}</div>
-		<div class="zcs-toast-undo-action">Undo</div>
+		<div class="zcs-toast-message-text">{text}</div>
+		<div class="zcs-toast-undo-action">{[ZtMsg.undo]}</div>
 	</div>
 </template>
 

@@ -89,7 +89,7 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 		Ext.Logger.info("conv controller: show conv " + conv.getId());
 
 		var curFolder = ZCS.session.getCurrentSearchOrganizer(),
-			curFolderId = curFolder && curFolder.getId(),
+			curFolderId = curFolder && curFolder.get('itemId'),
 			store = this.getStore();
 
 		if (curFolderId === ZCS.constant.ID_DRAFTS) {
@@ -110,12 +110,20 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 		this.callParent(arguments);
 
 		var toolbar = this.getItemPanelToolbar(),
-			itemPanel = this.getItemPanel();
+			itemPanel = this.getItemPanel(),
+			convQueryTerms = [ 'underid:1' ];
 
 		toolbar.setTitle(conv.get('subject'));
 
+		Ext.each(ZCS.constant.CONV_HIDE, function(id) {
+			if (id !== curFolderId) {
+				convQueryTerms.push('NOT underid:' + id);
+			}
+		}, this);
+
 		store.load({
 			convId: conv.getId(),
+			convQuery: convQueryTerms.join(' AND '),
 			callback: function(records, operation, success) {
 				itemPanel.showButtons();
 				Ext.Logger.info('Conv load callback');
@@ -183,7 +191,7 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 	},
 
 	/**
-	 * Handle message notifications.
+	 * Handle message change notifications.
 	 *
 	 * @param {ZtMailMsg}   item    message
 	 * @param {object}      modify  JSON notification
@@ -198,55 +206,104 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 
 			if (store.getById(item.getId())) {
 				// if the msg was moved to Trash or Junk, remove it from the list in the item panel
-				var parsedId = ZCS.util.parseId(modify.l);
-				if (ZCS.constant.CONV_HIDE[parsedId.localId]) {
+				var parsedId = ZCS.util.parseId(modify.l),
+					omit = ZCS.util.arrayAsLookupHash(ZCS.constant.CONV_HIDE);
+				if (omit[parsedId.localId]) {
 					store.remove(item);
 				}
 			}
 
-			// Handle message move by checking to see if the conv still has at least one message in the folder
-			// currently being viewed. If it doesn't, remove it from the list view.
-			var convId = item.get('convId'),
-				convListCtlr = ZCS.app.getConvListController(),
-				convStore = convListCtlr.getStore();
-
-			if (convStore.getById(convId)) {
-				var	conv = ZCS.cache.get(convId),
-					messages = conv && conv.getMessages(),
-					ln = messages ? messages.length : 0, i,
-					curFolder = ZCS.session.getCurrentSearchOrganizer(),
-					curFolderId = curFolder && curFolder.get('itemId'),
-					removeConv = true,
-					index, convListView, wasSelected;
-
-				if (curFolderId) {
-					for (i = 0; i < ln; i++) {
-						if (messages[i].get('folderId') === curFolderId) {
-							removeConv = false;
-							break;
-						}
-					}
-				}
-				else {
-					removeConv = false;
-				}
-
-				if (removeConv) {
-					// before removing conv, note where it was and whether it was selected
-					convListView = convListCtlr.getListView();
-					wasSelected = (convListView && convListView.isSelected(conv));
-					index = wasSelected && convStore.indexOf(conv);
-					// remove conv
-					convStore.remove(conv);
-					// if we removed selected conv, clear item panel and select next (or last) conv
-					if (wasSelected) {
-						this.clear();
-						convListView.select(Math.min(index, convStore.getCount() - 1));
-					}
-				}
-			}
+			this.checkConv(item, false);
 		}
 
 		item.handleModifyNotification(modify);
+	},
+
+	/**
+	 * Handle message delete notifications.
+	 *
+	 * @param {ZtMailMsg}   msg    msg that was deleted
+	 */
+	handleDeleteNotification: function(msg) {
+		this.checkConv(msg, true);
+		this.callParent(arguments);
+	},
+
+	/**
+	 * Handle message move/delete by checking to see if the conv still has at least one message in the folder
+	 * currently being viewed. If it doesn't, remove it from the list view.
+	 *
+	 * @param {ZtMailMsg}   item        message
+	 * @param {Boolean}     isDelete    if true, this is a (hard) delete; otherwise it's a move
+	 * @private
+	 */
+	checkConv: function(item, isDelete) {
+
+		var convId = item.get('convId'),
+			convListCtlr = ZCS.app.getConvListController(),
+			convStore = convListCtlr.getStore();
+
+		if (convStore.getById(convId)) {
+			var	conv = ZCS.cache.get(convId),
+				messages = conv && conv.getMessages(),
+				ln = messages ? messages.length : 0, i,
+				curFolder = ZCS.session.getCurrentSearchOrganizer(),
+				curFolderId = curFolder && curFolder.get('itemId'),
+				removeConv = true,
+				folderId, isGone, index, convListView, wasSelected;
+
+			if (curFolderId) {
+				for (i = 0; i < ln; i++) {
+					folderId = messages[i].get('folderId');
+					isGone = (isDelete && folderId === ZCS.constant.ID_TRASH);
+					if (folderId === curFolderId && !isGone) {
+						removeConv = false;
+						break;
+					}
+				}
+			}
+			else {
+				removeConv = false;
+			}
+
+			if (removeConv) {
+				// before removing conv, note where it was and whether it was selected
+				convListView = convListCtlr.getListView();
+				wasSelected = (convListView && convListView.isSelected(conv));
+				index = wasSelected && convStore.indexOf(conv);
+				// remove conv
+				convStore.remove(conv);
+				// if we removed selected conv, clear item panel and select next (or last) conv
+				if (wasSelected) {
+					this.clear();
+					convListView.select(Math.min(index, convStore.getCount() - 1));
+				}
+			}
+		}
+	},
+
+	/**
+	 * If deleting a conv while viewing Trash, permanently delete any of its messages that are in Trash.
+	 */
+	doDelete: function() {
+
+		var conv = this.getItem(),
+			curFolder = ZCS.session.getCurrentSearchOrganizer(),
+			curFolderId = curFolder && curFolder.get('itemId'),
+			parsedId = curFolderId && ZCS.util.parseId(curFolderId);
+
+		if (parsedId && parsedId.localId === ZCS.constant.ID_TRASH) {
+			Ext.Msg.confirm(ZtMsg.hardDeleteConvTitle, ZtMsg.hardDeleteConvText, function(buttonId) {
+				if (buttonId === 'yes') {
+					this.performOp(conv, 'delete', function() {
+						ZCS.app.fireEvent('showToast', ZtMsg.convDeleted);
+						ZCS.app.getConvListController().removeConv(conv);
+					});
+				}
+			}, this);
+		}
+		else {
+			this.callParent(arguments);
+		}
 	}
 });

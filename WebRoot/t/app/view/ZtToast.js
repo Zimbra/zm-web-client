@@ -53,7 +53,7 @@ Ext.define('ZCS.view.ZtToast', {
 
 	showMessage: function (message) {
 		var me = this,
-			formattedTemplate = Ext.String.format(ZCS.template.Toast, message),
+			formattedTemplate = ZCS.view.ZtToast.toastTpl.apply({ text: message }),
 			viewportBox = Ext.Viewport.element.getBox(),
 			left = (viewportBox.width / 2) - (me.getWidth() / 2),
 			toast = me.down('component');
@@ -84,4 +84,8 @@ Ext.define('ZCS.view.ZtToast', {
 
 		Ext.defer(me.hide, me.getMilliSecondsUntilHide(), me);
 	}
-});
+},
+	function (thisClass) {
+		thisClass.toastTpl = Ext.create('Ext.XTemplate', ZCS.template.Toast);
+	}
+);

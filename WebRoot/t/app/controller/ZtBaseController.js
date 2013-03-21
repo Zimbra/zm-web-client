@@ -38,13 +38,10 @@ Ext.define('ZCS.controller.ZtBaseController', {
 	/**
 	 * Delete notification: remove item from the store
 	 *
-	 * @param {string}  id      ID of item that was deleted
+	 * @param {ZtItem}  item      item that was deleted
 	 */
-	handleDeleteNotification: function(id) {
-		var item = ZCS.cache.get(id);
-		if (item) {
-			this.getStore().remove(item);
-		}
+	handleDeleteNotification: function(item) {
+		this.getStore().remove(item);
 	},
 
 	/**

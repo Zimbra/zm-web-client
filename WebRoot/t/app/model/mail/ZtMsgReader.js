@@ -77,5 +77,39 @@ Ext.define('ZCS.model.mail.ZtMsgReader', {
 		}
 
 		return data;
+	},
+
+	/**
+	 * Override so we can omit Trash/Junk messages from being displayed as part of the conv, unless
+	 * the user is in one of those folders.
+	 */
+	getRecords: function(root) {
+
+		if (!root) {
+			return [];
+		}
+
+		var records = [],
+			ln = root.length, i,
+			searchFolder = ZCS.session.getCurrentSearchOrganizer(),
+			searchFolderId = searchFolder && searchFolder.get('itemId'),
+			omit = ZCS.util.arrayAsLookupHash(ZCS.constant.CONV_HIDE);
+
+		// Process each msg from JSON to data
+		for (i = 0; i < ln; i++) {
+			var node = root[i],
+				localId = ZCS.util.parseId(node.l).localId;
+
+			if ((localId === searchFolderId) || !omit[localId]) {
+				records.push({
+					clientId:   null,
+					id:         node.id,
+					data:       this.getDataFromNode(node),
+					node:       node
+				});
+			}
+		}
+
+		return records;
 	}
 });

@@ -258,5 +258,27 @@ Ext.define('ZCS.controller.mail.ZtMsgController', {
 			id:     msg.getId(),
 			noMax:  true
 		});
+	},
+
+	/**
+	 * If the msg is already in Trash, permanently delete it.
+	 */
+	doDelete: function() {
+
+		var msg = this.getItem(),
+			parsedId = ZCS.util.parseId(msg.get('folderId'));
+
+		if (parsedId && parsedId.localId === ZCS.constant.ID_TRASH) {
+			Ext.Msg.confirm(ZtMsg.hardDeleteMsgTitle, ZtMsg.hardDeleteMsgText, function(buttonId) {
+				if (buttonId === 'yes') {
+						this.performOp(msg, 'delete', function() {
+						ZCS.app.fireEvent('showToast', ZtMsg.messageDeleted);
+					});
+				}
+			}, this);
+		}
+		else {
+			this.callParent(arguments);
+		}
 	}
 });

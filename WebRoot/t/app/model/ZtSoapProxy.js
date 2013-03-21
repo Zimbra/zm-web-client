@@ -152,9 +152,10 @@ Ext.define('ZCS.model.ZtSoapProxy', {
 	 */
 	handleDeletes: function(deleted) {
 
-		var item, itemType, ctlr;
+		var ids = deleted.id && deleted.id.split(','),
+			item, itemType, ctlr;
 
-		Ext.each(deleted.id, function(id) {
+		Ext.each(ids, function(id) {
 			item = ZCS.cache.get(id);
 			itemType = item && item.get('type');
 			// TODO: handle this with an event rather than a function call

@@ -163,7 +163,7 @@ Ext.define('ZCS.controller.mail.ZtConvListController', {
 	handleCreateNotification: function(create, creates) {
 
 		var curFolder = ZCS.session.getCurrentSearchOrganizer(),
-			curFolderId = curFolder && curFolder.getId(),
+			curFolderId = curFolder && curFolder.get('itemId'),
 			doAdd = false,
 			ln = creates && creates.m ? creates.m.length : 0,
 			msgCreate, i;

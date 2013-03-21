@@ -51,7 +51,7 @@ Ext.define('ZCS.model.mail.ZtMsgWriter', {
 				recip:  '2',
 				read:   '1',
 				max:    itemData.noMax ? 0 : ZCS.constant.MAX_MESSAGE_SIZE * 1000,
-				query:  'underid:1 AND NOT underid:3 AND NOT underid:4'
+				query:  itemData.convQuery
 			});
 		}
 		else if (action === 'create' || itemData.isDraft) {

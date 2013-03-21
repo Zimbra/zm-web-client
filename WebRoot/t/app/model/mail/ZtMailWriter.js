@@ -34,8 +34,8 @@ Ext.define('ZCS.model.mail.ZtMailWriter', {
 		}
 
 		if (options.isSearch) {
-			methodJson.locale = ZCS.session.getSetting(ZCS.constant.SETTING_LOCALE);
-			methodJson.tz = ZCS.session.getSetting(ZCS.constant.SETTING_TIMEZONE);
+			methodJson.locale = { _content: ZCS.session.getSetting(ZCS.constant.SETTING_LOCALE) };
+			methodJson.tz = { id:  ZCS.session.getSetting(ZCS.constant.SETTING_TIMEZONE) };
 			if (ZCS.session.getSetting(ZCS.constant.SETTING_MARK_READ) === 0) {
 				methodJson.read = 1;
 			}

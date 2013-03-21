@@ -59,8 +59,8 @@ Ext.define('ZCS.model.ZtWriter', {
 
 		var json = {
 			Header: {
-				_jsns: 'urn:zimbra',
 				context: {
+					_jsns: 'urn:zimbra',
 					userAgent: {
 						name: Ext.browser.userAgent,
 						version: Ext.browser.version.version
