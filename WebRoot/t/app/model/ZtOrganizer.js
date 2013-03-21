@@ -35,6 +35,7 @@ Ext.define('ZCS.model.ZtOrganizer', {
 			{ name: 'itemCount', type: 'int' },
 			{ name: 'color', type: 'int' },
 			{ name: 'rgb', type: 'string' },
+			{ name: 'url', type: 'string' },        // feeds
 
 			// folder fields
 			{ name: 'disclosure', type: 'boolean' }, // override NestedList button behavior
@@ -66,6 +67,10 @@ Ext.define('ZCS.model.ZtOrganizer', {
 
 	isSystem: function() {
 		return this.isFolder() && (this.get('itemId') <= ZCS.constant.MAX_SYSTEM_ID);
+	},
+
+	isFeed: function() {
+		return !!(this.get('url'));
 	},
 
 	/**

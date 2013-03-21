@@ -162,10 +162,17 @@ Ext.define('ZCS.controller.mail.ZtMailItemController', {
 	 * Disable "Tag" action if user doesn't have any tags.
 	 */
 	enableMenuItems: function(menuName) {
-		var menu = this.getMenu(menuName);
+		var menu = this.getMenu(menuName),
+			curFolder = ZCS.session.getCurrentSearchOrganizer(),
+			isFeed = curFolder && curFolder.isFeed();
+
 		if (menu && menu.getItem(ZCS.constant.OP_TAG)) {
 			var tags = ZCS.session.getOrganizerDataByAppAndOrgType(ZCS.constant.APP_MAIL, ZCS.constant.ORG_TAG);
 			menu.enableItem(ZCS.constant.OP_TAG, tags && tags.length > 0);
+		}
+		if (isFeed) {
+			menu.enableItem(ZCS.constant.OP_REPLY, !isFeed);
+			menu.enableItem(ZCS.constant.OP_REPLY_ALL, !isFeed);
 		}
 	},
 

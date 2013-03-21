@@ -213,16 +213,17 @@ Ext.define('ZCS.common.ZtUserSession', {
 				id = (isTrash || type === ZCS.constant.ORG_TAG) ? [app, type, itemId].join('-') : itemId;
 
 			organizer = {
-				id: id,
-				itemId: itemId,
-				parentItemId: node.l,
-				name: Ext.String.htmlEncode(node.name),
-				path: node.name,
-				color: node.color,
-				rgb: node.rgb,
-				itemCount: node.n,
-				disclosure: hasChildren,
-				type: type1
+				id:             id,
+				itemId:         itemId,
+				parentItemId:   node.l,
+				name:           Ext.String.htmlEncode(node.name),
+				path:           node.name,
+				color:          node.color,
+				rgb:            node.rgb,
+				itemCount:      node.n,
+				disclosure:     hasChildren,
+				type:           type1,
+				url:            node.url
 			};
 			organizer.typeName = ZCS.constant.ORG_NAME[type1];
 

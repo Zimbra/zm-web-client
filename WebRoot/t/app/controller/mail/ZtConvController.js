@@ -282,6 +282,33 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 		}
 	},
 
+	doReply: function() {
+		if (!this.isFeedAction()) {
+			this.callParent(arguments);
+		}
+	},
+
+	doReplyAll: function() {
+		if (!this.isFeedAction()) {
+			this.callParent(arguments);
+		}
+	},
+
+	/**
+	 * Checks if the user is currently in a feed folder, presumably trying to do something
+	 * that's disallowed like replying. If so, put up an alert.
+	 *
+	 * @return {Boolean}    true if the user is in a feed folder
+	 */
+	isFeedAction: function() {
+		var curFolder = ZCS.session.getCurrentSearchOrganizer(),
+			isFeed = curFolder && curFolder.isFeed();
+		if (isFeed) {
+			Ext.Msg.alert(ZtMsg.alertFeedReplyTitle, ZtMsg.alertFeedReplyText);
+		}
+		return isFeed;
+	},
+
 	/**
 	 * If deleting a conv while viewing Trash, permanently delete any of its messages that are in Trash.
 	 */
