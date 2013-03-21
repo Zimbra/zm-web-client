@@ -93,13 +93,11 @@ Ext.define('ZCS.controller.mail.ZtConvListController', {
 	showDelete: function(list, index, convItem, record, e, eOpts) {
 		var convEl = convItem.element,
 			convElBox = convEl.getBox(),
-			swipeDiv = Ext.String.format(
-				ZCS.template.ConvListSwipeToDelete,
-				convElBox.width,
-				convElBox.height
-			),
 			swipeElm = Ext.dom.Element.create({
-				html: swipeDiv
+				html: ZCS.controller.mail.ZtConvListController.swipeToDeleteTpl.apply({
+					width:convElBox.width,
+					height:convElBox.height
+				})
 			}),
 			dockItem = convEl.down('.x-dock'),
 			anim = Ext.create('Ext.Anim');
@@ -112,7 +110,8 @@ Ext.define('ZCS.controller.mail.ZtConvListController', {
 		convEl.insertFirst(swipeElm);
 
 		swipeElm.on('tap', function (event, node, options, eOpts) {
-			if (event.target.className === 'zcs-swipe-delete') {
+			var el = Ext.fly(event.target);
+			if (el.hasCls('zcs-swipe-delete')) {
 				ZCS.app.fireEvent('deleteMailItem', record);
 				anim.run(swipeElm, {
 					from: {
@@ -129,7 +128,7 @@ Ext.define('ZCS.controller.mail.ZtConvListController', {
 				});
 			}
 
-			if (event.target.className === 'zcs-swipe-spam') {
+			if (el.hasCls('zcs-swipe-spam')) {
 				ZCS.app.fireEvent('moveMailItemToSpam', record);
 				anim.run(swipeElm, {
 					from: {
@@ -221,4 +220,8 @@ Ext.define('ZCS.controller.mail.ZtConvListController', {
 		// let the conv itself handle the simple stuff
 		item.handleModifyNotification(modify);
 	}
-});
+},
+	function (thisClass) {
+		thisClass.swipeToDeleteTpl = Ext.create('Ext.XTemplate', ZCS.template.ConvListSwipeToDelete);
+	}
+);

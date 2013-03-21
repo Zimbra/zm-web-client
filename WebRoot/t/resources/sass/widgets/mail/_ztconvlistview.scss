@@ -105,16 +105,18 @@ $zcs-mail-topline3: 3.5em;
 }
 
 .zcs-swipe-conv-view {
-	background-color: $medium-grey;
+	background-color: rgba(0,0,0,.5);
 	z-index: 1;
 	display: -webkit-box;
 	-webkit-box-orient: horizontal;
 	-webkit-box-pack: center;
 	-webkit-box-align: center;
+	@include sencha-button-ui('delete', #993333, 'glossy');
 
-	div {
-		width: 100px;
-		background-color: white;
-		text-align: center;
+	.x-button{
+		padding-left: 4em;
+		padding-right: 4em;
+		font-size: 1.2em;
+		font-weight: bold;
 	}
 }
