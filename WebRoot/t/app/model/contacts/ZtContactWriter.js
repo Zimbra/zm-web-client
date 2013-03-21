@@ -31,6 +31,10 @@ Ext.define('ZCS.model.contacts.ZtContactWriter', {
 			query = request.getParams().query,
 			json, methodJson;
 
+
+		//Do not pass query in query string.
+		request.setParams({});
+
 		if (action === 'read') {
 
 			if (!query) {

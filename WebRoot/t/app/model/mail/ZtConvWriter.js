@@ -48,8 +48,10 @@ Ext.define('ZCS.model.mail.ZtConvWriter', {
 				types: 'conversation',
 				fetch: 1
 			});
-		}
-		else if (action === 'update') {
+
+			//Do not pass query in query string.
+			request.setParams({});
+		} else if (action === 'update') {
 
 			// 'update' operation means we're performing a ConvActionRequest
 			var itemData = Ext.merge(data[0] || {}, options);
