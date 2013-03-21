@@ -237,12 +237,6 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 					toFld.focusInput();
 				} else if (!subject) {
 					subjectFld.focus();
-					range = document.createRange();
-					range.selectNodeContents(subjectFld.element.dom);
-			        range.collapse(true);
-			        var sel = window.getSelection();
-			        sel.removeAllRanges();
-			        sel.addRange(range);
 				} else {
 					editor.focus();
 
