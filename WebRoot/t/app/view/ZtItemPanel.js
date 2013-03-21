@@ -25,7 +25,7 @@ Ext.define('ZCS.view.ZtItemPanel', {
 
 	requires: [
 		'Ext.dataview.List',
-		'Ext.TitleBar'
+		'ZCS.view.ux.ZtLeftTitleBar'
 	],
 
 	xtype: 'itempanel',
@@ -66,9 +66,8 @@ Ext.define('ZCS.view.ZtItemPanel', {
 		}
 
 		var toolbar = {
-			xtype:  'titlebar',
+			xtype:  'lefttitlebar',
 			docked: 'top',
-		    cls:    'zcs-item-titlebar',
 			items:  items
 		};
 
@@ -80,6 +79,10 @@ Ext.define('ZCS.view.ZtItemPanel', {
 			toolbar,
 			itemView
 		]);
+	},
+
+	setTitle: function (title) {
+		this.down('title').setTitle(title);
 	},
 
 	showButtons: function () {
