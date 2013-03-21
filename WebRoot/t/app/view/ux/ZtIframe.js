@@ -313,8 +313,10 @@ Ext.define('ZCS.view.ux.ZtIframe', {
 		Ext.Logger.iframe('IFRAME content heights: ' + [contentHeight, docEl.scrollHeight, computedHeight, childrenHeight].join(' / '));
 
 		// Since IFRAMEs are reused, childrenHeight appears to be the most reliable measure of the height
-		// of the content. The others tend to persist even if we clear the IFRAME's content.
-		var height = childrenHeight || computedHeight || contentHeight;
+		// of the content. The others tend to persist even if we clear the IFRAME's content. An IFRAME has
+		// a height of 150 by default, so prioritize childrenHeight if smaller.
+		var max = Math.max(childrenHeight, computedHeight, contentHeight),
+			height = max > 150 ? max : childrenHeight || computedHeight || contentHeight;
 
 		//Only modify the dom and fire corresponding event if it's needed.
 		if (iframe.getHeight() !== height) {

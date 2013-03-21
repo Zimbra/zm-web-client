@@ -247,8 +247,8 @@ Ext.define('ZCS.common.ZtHtmlUtil', {
 		html = ZCS.htmlutil.trimHtml(html);
 
 		if (/<body/i.test(html)) {
-			html = html.replace(/(<body[^>]*>)/, '$1<div>')
-					   .replace('<\/body>', '</body></div>');
+			html = html.replace(/(<body[^>]*>)/i, '$1<div>')
+					   .replace(/<\/body>/i, '</body></div>');
 		}
 		else {
 			html = '<div>' + html + '</div>';
