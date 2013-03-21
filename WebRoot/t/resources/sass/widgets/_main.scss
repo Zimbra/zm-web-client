@@ -31,6 +31,15 @@
 
 
 .zcs-main-tabs {
-
 	@include tabbar-button(darken($toolbar-base-color, 5%), $toolbar-gradient);
 }
+
+.zcs-no-tabs-showing {
+  .x-tab {
+    /**
+    * Yes this bang important is necessary due to the sencha bang important it is overriding.
+    */
+    display: none !important;
+  }
+}
+

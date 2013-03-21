@@ -49,6 +49,7 @@ Ext.define("ZCS.view.ZtMain", {
     },
 
 	initialize: function() {
+		var numTabs = 0;
 
 		this.callParent(arguments);
 
@@ -60,9 +61,15 @@ Ext.define("ZCS.view.ZtMain", {
 					itemId: app + 'view',
 					app: app
 				};
+				numTabs += 1;
 				this.add(mainView);
 			}
 		}, this);
+
+		//Hide buttons in tab bar if only one button
+		if (numTabs < 2) {
+			this.getTabBar().addCls('zcs-no-tabs-showing');
+		}
 
 		// Place some branding text on the right side of the tab bar
 		this.getTabBar().add([
