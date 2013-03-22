@@ -71,6 +71,9 @@ Ext.define('ZCS.model.mail.ZtMsgReader', {
 			data.contentTypes = ctxt.contentTypes;
 			data.isLoaded = !!(data.bodyParts.length > 0 || data.attachments.length > 0);
 		}
+		else {
+			data.isLoaded = false;
+		}
 
 		if (node.inv) {
 			data.invite = ZCS.model.mail.ZtInvite.fromJson(node.inv[0], node.id);

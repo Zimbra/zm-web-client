@@ -72,10 +72,6 @@ Ext.define('ZCS.controller.mail.ZtMsgController', {
 		tagId: ''
 	},
 
-	getActiveMsg: function() {
-		return this.getItem();
-	},
-
 	/**
 	 * Figure out what state the msg header should be in. There are three states: collapsed, expanded,
 	 * and detailed. For all but collapsed, we show the msg body. Tapping the header toggles whether it
@@ -241,11 +237,24 @@ Ext.define('ZCS.controller.mail.ZtMsgController', {
 		msgView.renderBody(!msgBody.showingQuotedText);
 	},
 
+	/**
+	 * Starts a new compose session.
+	 *
+	 * @param {String}  addr    email address of recipient (To: field)
+	 */
 	doCompose: function(addr) {
 		var msg = this.getItem(),
 			toAddr = msg.getAddressObject('email', addr);
 
 		ZCS.app.getComposeController().showComposeForm([toAddr]);
+	},
+
+	doReply: function() {
+		ZCS.app.getComposeController().reply(this.getItem());
+	},
+
+	doReplyAll: function() {
+		ZCS.app.getComposeController().replyAll(this.getItem());
 	},
 
 	doAddContact: function(addr) {

@@ -246,6 +246,15 @@ ZCS.constant.CONV_HIDE = [
 	ZCS.constant.ID_JUNK
 ];
 
+// When replying to or forwarding a conv, omit these folders when
+// figuring out which message to use for the reply/forward
+ZCS.constant.CONV_REPLY_OMIT = [
+	ZCS.constant.ID_SENT,
+	ZCS.constant.ID_DRAFTS,
+	ZCS.constant.ID_TRASH,
+	ZCS.constant.ID_JUNK
+];
+
 // System folder sort order
 ZCS.constant.FOLDER_SORT_VALUE = {};
 

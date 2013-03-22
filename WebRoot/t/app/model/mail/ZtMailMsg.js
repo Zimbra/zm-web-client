@@ -449,7 +449,8 @@ Ext.define('ZCS.model.mail.ZtMailMsg', {
 	 * @return {Array}      list of attachments
 	 */
 	getAllAttachments: function() {
-		return this.get('attachments').concat(this.getInlineAttachments());
+		var attachments = this.get('attachments') || [];
+		return attachments.concat(this.getInlineAttachments());
 	},
 
 	/**

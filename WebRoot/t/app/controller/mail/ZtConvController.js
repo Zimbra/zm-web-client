@@ -140,15 +140,49 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 	},
 
 	/**
-	 * Returns the message that a conversation-level operation should be applied to.
+	 * Returns the message that a conversation-level reply should use.
+	 * It will be the first msg not in Sent, Drafts, Trash, or Junk (unless the user
+	 * is viewing one of those folders, in which case that one is okay).
+	 *
+	 * @param {Function}    callback    callback to run with result if msg needs to be loaded
+	 * @return {ZtMailMsg}      msg to reply to
 	 */
-	getActiveMsg: function() {
+	getActiveMsg: function(callback) {
+
 		var conv = this.getItem(),
 			msgs = conv.getMessages(),
-			msg = null;
-			msg = (msgs && msgs.length) ? msgs[0] : null;
+			ln = msgs ? msgs.length : 0, i, msg, folderId,
+			curFolder = ZCS.session.getCurrentSearchOrganizer(),
+			curFolderId = curFolder && curFolder.get('itemId'),
+			ignoreFolder = ZCS.util.arrayAsLookupHash(ZCS.constant.CONV_REPLY_OMIT),
+			activeMsg = null;
 
-		return (msgs && msgs[0]) || null;
+		for (i = 0; i < ln; i++) {
+			msg = msgs[i];
+			folderId = msg.get('folderId');
+			if (!ignoreFolder[folderId] || (curFolderId === folderId)) {
+				activeMsg = msg;
+			}
+		}
+		activeMsg = activeMsg || (ln > 0 ? msgs[0] : null);
+
+		if (callback) {
+			if (activeMsg.get('isLoaded')) {
+				callback(activeMsg);
+			}
+			else {
+				activeMsg.save({
+					op: 'load',
+					id: activeMsg.getId(),
+					success: function() {
+						callback(activeMsg);
+					}
+				});
+			}
+		}
+		else {
+			return activeMsg;
+		}
 	},
 
 	/**
@@ -283,15 +317,25 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 	},
 
 	doReply: function() {
-		if (!this.isFeedAction()) {
-			this.callParent(arguments);
+
+		if (this.isFeedAction()) {
+			return;
 		}
+
+		this.getActiveMsg(function(msg) {
+			ZCS.app.getComposeController().reply(msg);
+		});
 	},
 
 	doReplyAll: function() {
-		if (!this.isFeedAction()) {
-			this.callParent(arguments);
+
+		if (this.isFeedAction()) {
+			return;
 		}
+
+		this.getActiveMsg(function(msg) {
+			ZCS.app.getComposeController().replyAll(msg);
+		});
 	},
 
 	/**

@@ -39,11 +39,6 @@ Ext.define('ZCS.controller.mail.ZtMailItemController', {
 	},
 
 	/**
-	 * Returns the message that an operation should be applied to.
-	 */
-	getActiveMsg: function() {},
-
-	/**
 	 * Launches a move assignment view.
 	 */
 	doMove: function(item) {
@@ -209,14 +204,12 @@ Ext.define('ZCS.controller.mail.ZtMailItemController', {
 	 * Starts a reply session with the active message as the original message.
 	 */
 	doReply: function() {
-		ZCS.app.getComposeController().reply(this.getActiveMsg());
 	},
 
 	/**
 	 * Starts a reply-all session with the active message as the original message.
 	 */
 	doReplyAll: function() {
-		ZCS.app.getComposeController().replyAll(this.getActiveMsg());
 	},
 
 	/**
