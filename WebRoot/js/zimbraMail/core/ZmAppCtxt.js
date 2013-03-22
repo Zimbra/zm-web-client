@@ -60,6 +60,11 @@ ZmAppCtxt.MAX_TIMEOUT_VALUE = 2147483647;
 
 ZmAppCtxt._ZIMLETS_EVENT = 'ZIMLETS';
 
+//Regex constants
+//Bug fix # 79986, #81095. Invalid file names are < > , ? | / \ * :
+ZmAppCtxt.INVALID_NAME_CHARS = "[\\|?<>:*\",\\\\\/]";
+ZmAppCtxt.INVALID_NAME_CHARS_RE = new RegExp(ZmAppCtxt.INVALID_NAME_CHARS);
+
 /**
  * Returns a string representation of the application context.
  * 

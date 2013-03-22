@@ -227,7 +227,7 @@ ZmUploadDialog.prototype._upload = function(){
                 var f = element.files;
                 for(var j=0; j<f.length; j++){
                     //Bug fix #79986 Check for invalid filename before upload
-                    if(!ZmBriefcaseBaseView.INVALID_NAME_CHARS_RE.test(f[j].name)) {
+                    if(!ZmAppCtxt.INVALID_NAME_CHARS_RE.test(f[j].name)) {
                         files.push({name:f[j].name, fullname: f[j].name, notes: notes});
                     }
                     else {

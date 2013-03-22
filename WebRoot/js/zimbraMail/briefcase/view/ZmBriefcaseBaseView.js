@@ -39,9 +39,6 @@ ZmBriefcaseBaseView = function(params) {
 
 ZmBriefcaseBaseView.prototype = new ZmListView;
 ZmBriefcaseBaseView.prototype.constructor = ZmBriefcaseBaseView;
-//Bug fix # 79986 - < > , ? | / \ * : are invalid filenames
-ZmBriefcaseBaseView.INVALID_NAME_CHARS = "[\\|?<>:*\",\\\\\/]";
-ZmBriefcaseBaseView.INVALID_NAME_CHARS_RE = new RegExp(ZmBriefcaseBaseView.INVALID_NAME_CHARS);
 
 /**
  * Gets the title.
@@ -301,7 +298,7 @@ function(ev) {
                 this._redrawItem(item);
                 warning.setMessage(AjxMessageFormat.format(ZmMsg.itemWithFileNameExits, fileName), DwtMessageDialog.CRITICAL_STYLE, ZmMsg.briefcase);
                 warning.popup();
-            }else if(ZmBriefcaseBaseView.INVALID_NAME_CHARS_RE.test(fileName)) {
+            }else if(ZmAppCtxt.INVALID_NAME_CHARS_RE.test(fileName)) {
                 //Bug fix # 79986 show warning popup in case of invalid filename
                 warning.setMessage(AjxMessageFormat.format(ZmMsg.errorInvalidName, AjxStringUtil.htmlEncode(fileName)), DwtMessageDialog.WARNING_STYLE, ZmMsg.briefcase);
                 warning.popup();
