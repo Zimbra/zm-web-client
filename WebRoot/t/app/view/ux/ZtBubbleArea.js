@@ -452,7 +452,7 @@ Ext.define('ZCS.view.ux.ZtBubbleArea', {
         return {
             itemId: 'inputField',
             xtype: 'component',
-            html: '<input type="text" autocomplete="false"/>',
+            html: '<input type="text" autocomplete="off" autocorrect="off" autocapitalize="off"/>',
             cls: 'input-comp',
             // Setting isFormField true will make this component be included in the list of fields
             // when the parent form is validating its children .
