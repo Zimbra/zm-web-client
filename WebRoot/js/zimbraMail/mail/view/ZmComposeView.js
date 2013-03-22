@@ -1836,6 +1836,8 @@ function(action, msg, subjOverride) {
 
 	var prefix = "";
 	switch (action) {
+		case ZmOperation.CAL_REPLY:
+		case ZmOperation.CAL_REPLY_ALL:
 		case ZmOperation.REPLY:
 		case ZmOperation.REPLY_ALL: 		prefix = "Re: "; break;
 		case ZmOperation.REPLY_CANCEL: 		prefix = ZmMsg.cancelled + ": "; break;
