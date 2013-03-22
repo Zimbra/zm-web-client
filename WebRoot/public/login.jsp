@@ -22,7 +22,7 @@
 <%-- get useragent --%>
 <zm:getUserAgent var="ua" session="false"/>
 <c:set var="useMobile" value="${ua.isiPhone or ua.isiPod or (ua.isOsAndroid and not ua.isAndroidTablet)}"/>
-<c:set var="useTablet" value="${ua.isiPad or (ua.isOsAndroid and ua.isAndroidTablet)}"/>
+<c:set var="useTablet" value="${ua.isTouchiPad or (ua.isOsAndroid and ua.isAndroidTablet)}"/>
 <c:set var="trimmedUserName" value="${fn:trim(param.username)}"/>
 
 <%--'virtualacctdomain' param is set only for external virtual accounts--%>
