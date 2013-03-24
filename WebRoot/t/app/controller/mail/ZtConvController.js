@@ -363,7 +363,7 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 			curFolderId = curFolder && curFolder.get('itemId'),
 			parsedId = curFolderId && ZCS.util.parseId(curFolderId);
 
-		if (parsedId && parsedId.localId === ZCS.constant.ID_TRASH) {
+		if (parsedId && (parsedId.localId === ZCS.constant.ID_TRASH || parsedId.localId === ZCS.constant.ID_JUNK)) {
 			Ext.Msg.confirm(ZtMsg.hardDeleteConvTitle, ZtMsg.hardDeleteConvText, function(buttonId) {
 				if (buttonId === 'yes') {
 					this.performOp(conv, 'delete', function() {
