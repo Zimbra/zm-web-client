@@ -335,6 +335,11 @@ ZCS.constant.SETTING_DISPLAY_IMAGES     = 'zimbraPrefDisplayExternalImages';
 ZCS.constant.SETTING_TRUSTED_SENDERS    = 'zimbraPrefMailTrustedSenderList';
 ZCS.constant.SETTING_FROM_ADDRESS       = 'zimbraPrefFromAddress';
 ZCS.constant.SETTING_FROM_NAME          = 'zimbraPrefFromDisplay';
+/**
+ * Attrs to handle JS logging to a 3rd party service
+ */
+ZCS.constant.SETTING_JSLOGGING_ENABLED  = 'zimbraTouchJSErrorTrackingEnabled';
+ZCS.constant.SETTING_JSLOGGING_KEY      = 'zimbraTouchJSErrorTrackingKey';
 
 // Names of internal settings
 ZCS.constant.SETTING_CUR_SEARCH                 = 'CUR_SEARCH';
@@ -351,13 +356,17 @@ ZCS.constant.SETTINGS = ZCS.constant.makeList('SETTING_');
 
 // Setting type; defaults to string, so just note exceptions
 ZCS.constant.SETTING_TYPE = {};
-ZCS.constant.SETTING_TYPE[ZCS.constant.SETTING_SHOW_SEARCH]     = ZCS.constant.TYPE_BOOLEAN;
-ZCS.constant.SETTING_TYPE[ZCS.constant.SETTING_DISPLAY_IMAGES]  = ZCS.constant.TYPE_BOOLEAN;
-ZCS.constant.SETTING_TYPE[ZCS.constant.SETTING_TRUSTED_SENDERS] = ZCS.constant.TYPE_ARRAY;
+ZCS.constant.SETTING_TYPE[ZCS.constant.SETTING_SHOW_SEARCH]       = ZCS.constant.TYPE_BOOLEAN;
+ZCS.constant.SETTING_TYPE[ZCS.constant.SETTING_DISPLAY_IMAGES]    = ZCS.constant.TYPE_BOOLEAN;
+ZCS.constant.SETTING_TYPE[ZCS.constant.SETTING_JSLOGGING_ENABLED] = ZCS.constant.TYPE_BOOLEAN;
+ZCS.constant.SETTING_TYPE[ZCS.constant.SETTING_TRUSTED_SENDERS]   = ZCS.constant.TYPE_ARRAY;
 
 // Forced setting values, which override user setting
 ZCS.constant.SETTING_VALUE = {};
 ZCS.constant.SETTING_VALUE[ZCS.constant.SETTING_SHOW_SEARCH] = 'false';
+// For 8.x only, remove this in Zimbra.Next
+ZCS.constant.SETTING_VALUE[ZCS.constant.SETTING_JSLOGGING_ENABLED] = 'true';
+ZCS.constant.SETTING_VALUE[ZCS.constant.SETTING_JSLOGGING_KEY] = '346cfe6ba7c94b78abbd3bf1796e1641';
 
 // Default values for settings
 ZCS.constant.SETTING_DEFAULT = {};

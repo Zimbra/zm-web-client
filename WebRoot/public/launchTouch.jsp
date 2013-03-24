@@ -143,6 +143,15 @@
         };
     </script>
 
+    <script>
+//        var gir = batchInfoResponse.Body.BatchResponse.GetInfoResponse[0];
+//        var loggingEnabled = gir.attrs._attrs['zimbraTouchJSErrorTrackingEnabled'];
+          var loggingEnabled = true; // for 8.x only, uncomment the above two lines for Zimbra.Next
+          if (loggingEnabled) {
+            document.write(unescape("%3Cscript src='//d3nslu0hdya83q.cloudfront.net/dist/1.0/raven.min.js' type='text/javascript'%3E%3C/script%3E"));
+          }
+    </script>
+
     <!-- The line below must be kept intact for Sencha Command to build your application -->
     <script id="microloader" type="text/javascript" src="/t/touch/microloader/development.js"></script>
 </head>

@@ -61,7 +61,7 @@ Ext.define('ZCS.common.ZtUserSession', {
 		var gir = data.response.GetInfoResponse[0],
 			identityAttrs;
 
-		Ext.each(gir.identities.identity, function(identity) {
+        Ext.each(gir.identities.identity, function(identity) {
 			if (identity.name === 'DEFAULT') {
 				this.setAccountId(identity.id);
 				identityAttrs = identity._attrs;
@@ -78,6 +78,14 @@ Ext.define('ZCS.common.ZtUserSession', {
 
 		// save the JSON results of the user's initial search (usually 'in:inbox')
 		this.setInitialSearchResults(data.response.SearchResponse[0]);
+
+        // Enable third party JS error tracking, if zimbraTouchJSErrorTrackingEnabled is set to TRUE
+        var loggingEnabled = this.getSetting(ZCS.constant.SETTING_JSLOGGING_ENABLED);
+        var loggerKey = this.getSetting(ZCS.constant.SETTING_JSLOGGING_KEY);
+        if (loggingEnabled && loggerKey) {
+            var key = "https://" + loggerKey + "@app.getsentry.com/6798";
+            Raven.config(key).install();
+        }
 
 		// we always start in Mail
 		this.setActiveApp(ZCS.constant.APP_MAIL);
