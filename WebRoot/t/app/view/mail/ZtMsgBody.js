@@ -94,12 +94,13 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 			togglingQuotedText = Ext.isBoolean(showQuotedText),
 			trimQuotedText = togglingQuotedText ? !showQuotedText : !isLast && !isInvite,
 			html = msg.getContentAsHtml(this.getId(), trimQuotedText),
+			isHtml = msg.hasHtmlPart(),
 			container = this.htmlContainer,
 			iframeWidth = this.element.getWidth() || (this.parent.getChildWidth() - 22),
 			iframe = this.iframe;
 
 		this.setMsg(msg);
-		this.setUsingIframe(msg.hasHtmlPart() && !isInvite);
+		this.setUsingIframe(isHtml && !isInvite);
 
 		this.resetExtraComponents();
 
@@ -155,6 +156,11 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 					cls: 'zcs-html-container'
 				});
 				this.add(this.htmlContainer);
+			}
+
+			container.removeCls('zcs-msg-body-text');
+			if (!isHtml) {
+				container.addCls('zcs-msg-body-text');
 			}
 
 			container.setHtml(html);

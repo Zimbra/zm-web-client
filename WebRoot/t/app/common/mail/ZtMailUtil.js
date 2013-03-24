@@ -80,6 +80,8 @@ Ext.define('ZCS.common.mail.ZtMailUtil', {
 		}
 
 		str = str
+			.replace(/  /mg, ' &nbsp;')
+			.replace(/^ /mg, '&nbsp;')
 			.replace(/\t/mg, '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;')
 			.replace(/\r?\n/mg, '<br>');
 

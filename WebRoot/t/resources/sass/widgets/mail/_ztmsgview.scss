@@ -170,6 +170,11 @@ $msgHdrButtonTopOffset: $msgHdrButtonDelta;
 	padding: .25em;
 }
 
+.zcs-msg-body-text {
+  font-family: monospace;
+  word-wrap: break-word;
+}
+
 $info-color: #FF9;
 
 .zcs-info-bar {
