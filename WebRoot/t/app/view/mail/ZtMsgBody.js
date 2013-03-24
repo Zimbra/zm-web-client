@@ -93,7 +93,9 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 			isInvite = msg.get('isInvite'),
 			togglingQuotedText = Ext.isBoolean(showQuotedText),
 			trimQuotedText = togglingQuotedText ? !showQuotedText : !isLast && !isInvite,
+			msgId = msg.getId(),
 			html = msg.getContentAsHtml(this.getId(), trimQuotedText),
+			hasQuotedContent = ZCS.model.mail.ZtMailMsg.hasQuotedContent[msgId],
 			isHtml = msg.hasHtmlPart(),
 			container = this.htmlContainer,
 			iframeWidth = this.element.getWidth() || (this.parent.getChildWidth() - 22),
@@ -138,7 +140,7 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 			var parsedId = ZCS.util.parseId(msg.get('folderId')),
 				isSpam = (parsedId && parsedId.localId === ZCS.constant.ID_JUNK),
 				isTrusted = msg.hasTrustedSender(),
-				imagesShown = ZCS.view.mail.ZtMsgBody.externalImagesShown[msg.getId()],
+				imagesShown = ZCS.view.mail.ZtMsgBody.externalImagesShown[msgId],
 				showExternalImages = ZCS.session.getSetting(ZCS.constant.SETTING_DISPLAY_IMAGES),
 				hideExternalImages = (!showExternalImages || isSpam) && !isTrusted && !imagesShown;
 
@@ -173,7 +175,7 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 			attachments:    attInfo.length > 0 ? attInfo : null,
 			images:         this.hiddenImages && this.hiddenImages.length > 0,
 			truncated:      msg.isTruncated(),
-			quoted:         (trimQuotedText || togglingQuotedText) && trimQuotedText ? 'show' : ''
+			quoted:         !hasQuotedContent ? null : (trimQuotedText || togglingQuotedText) && trimQuotedText ? 'show' : 'hide'
 		});
 	},
 

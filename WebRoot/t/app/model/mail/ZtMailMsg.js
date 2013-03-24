@@ -74,6 +74,8 @@ Ext.define('ZCS.model.mail.ZtMailMsg', {
 
 		imgFixRegex: new RegExp("(<img\\s+.*dfsrc\\s*=\\s*)[\"']http[^'\"]+part=([\\d\\.]+)[\"']([^>]*>)", 'gi'),
 
+		hasQuotedContent: {},
+
 		/**
 		 * Extracts and returns the text content out of a text/calendar part. It grabs text from
 		 * the DESCRIPTION and COMMENT sections.
@@ -191,10 +193,10 @@ Ext.define('ZCS.model.mail.ZtMailMsg', {
 			html = [];
 
 		for (i = 0; i < ln; i++) {
-			var part = bodyParts[i],
-				content = part.getContent(),
-				contentType = part.get('contentType'),
-				disposition = part.get('contentDisposition');
+			var bodyPart = bodyParts[i],
+				content = bodyPart.getContent(),
+				contentType = bodyPart.get('contentType'),
+				disposition = bodyPart.get('contentDisposition');
 
 			if (ZCS.mime.isRenderableImage(contentType)) {
 				if (disposition !== 'inline') {
@@ -203,21 +205,20 @@ Ext.define('ZCS.model.mail.ZtMailMsg', {
 						qsArgs: {
 							auth: 'co',
 							id: this.getId(),
-							part: part.get('part')
+							part: bodyPart.get('part')
 						}
 					});
 					html.push("<img zmforced='1' class='InlineImage' src='" + src + "'>");
 				}
 			}
 			else if (contentType === ZCS.mime.TEXT_PLAIN) {
-				content = trimQuotedContent ? ZCS.quoted.getOriginalContent(content, false) : content;
+				content = trimQuotedContent ? this.getOriginalContent(content, bodyPart) : content;
 				html.push('<div>' + ZCS.mailutil.textToHtml(content) + '</div>');
 			}
 			else if (contentType === ZCS.mime.TEXT_HTML) {
-				// TODO: handle invite
 				content = this.fixInlineImages(content);
 				content = ZCS.htmlutil.fixSmileys(content);
-				content = trimQuotedContent ? ZCS.quoted.getOriginalContent(content, true) : content;
+				content = trimQuotedContent ? this.getOriginalContent(content, bodyPart) : content;
 				html.push(content);
 			}
 			else if (contentType === ZCS.mime.TEXT_CAL) {
@@ -229,6 +230,32 @@ Ext.define('ZCS.model.mail.ZtMailMsg', {
 		}
 
 		return html.join('');
+	},
+
+	/**
+	 * Returns the original content of this message, fetching it from the cache if this message
+	 * has already been processed.
+	 *
+	 * @param {String}      content     content
+	 * @param {ZtMimePart}  bodyPart    body part
+	 * @return {String}     original content
+	 */
+	getOriginalContent: function(content, bodyPart) {
+
+		var contentType = bodyPart.get('contentType'),
+			id = this.getId(),
+			cacheKey = [ id, bodyPart.get('part') ].join('|'),
+			origContent = ZCS.cache.get(cacheKey);
+
+		if (!origContent) {
+			origContent = ZCS.quoted.getOriginalContent(content, contentType === ZCS.mime.TEXT_HTML);
+			if (origContent.length !== content.length) {
+				ZCS.cache.set(cacheKey, origContent);
+				ZCS.model.mail.ZtMailMsg.hasQuotedContent[id] = true;
+			}
+		}
+
+		return origContent;
 	},
 
 	/**
