@@ -69,11 +69,23 @@ $zimbra-button-active-color: rgba(255,255,255,.3);
 		font-size: $zcs-titlebar-fontsize;
 
 		.x-title {
-			font-size: $zcs-title-fontsize;
+			.x-innerhtml {
+				font-size: $zcs-title-fontsize;
+			}
 		}
+		.x-dock-body {
+			font-size: .77em;
 
-		.x-innerhtml {
-			@include ellipsis();
+			.x-list-item-inner {
+				font-size: $zcs-titlebar-fontsize;
+
+				.x-innerhtml {
+					@include ellipsis();
+				}
+			}
+			.x-list-disclosure {
+				margin-top: $zcs-titlebar-fontsize*.6;
+			}
 		}
 	}
 }
