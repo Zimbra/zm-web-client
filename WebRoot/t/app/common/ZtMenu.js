@@ -2,12 +2,12 @@
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2013 VMware, Inc.
- * 
+ *
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
@@ -71,7 +71,7 @@ Ext.define('ZCS.model.ZtMenuList', {
 		}
 	},
 	doItemTouchStart: function(me, index, target, record) {
-		if (!me.getItemAt(index).getDisabled()) {
+		if (me.getItemAt(index) && !me.getItemAt(index).getDisabled()) {
 			this.callParent(arguments);
 		}
 	}
@@ -95,7 +95,8 @@ Ext.define('ZCS.common.ZtMenu', {
 		width: 160,     // TODO: would be nicer to have it autosize to width of longest item
 		modal: true,
 		hideOnMaskTap: true,
-		padding: 5,
+		padding: '5 5 6 5',
+		style: 'overflow: hidden;',
 		defaultItemHeight: 47,
 		menuItemTpl: '{label}',
 		maxHeight: 450,
@@ -118,6 +119,10 @@ Ext.define('ZCS.common.ZtMenu', {
 
 	initialize: function() {
 		var me = this;
+
+		Ext.get(this.element.dom.childNodes[0]).applyStyles({
+			"background-color": "transparent"
+		});
 
 		this.add({
 			xtype: 'menulist',
@@ -157,8 +162,10 @@ Ext.define('ZCS.common.ZtMenu', {
         	//The list hasn't actually rendered yet, lets do this again until it has been
         	Ext.defer(this.adjustHeight, 100, menu);
         } else {
-	        menu.setHeight(actualHeight + 12);
-	        list.setHeight(actualHeight);
+        	var heightToUse = Math.min(this.getMaxHeight(), actualHeight);
+	        menu.setHeight(heightToUse + 12);
+	        menu.setMaxHeight(heightToUse + 12);
+	        list.setHeight(heightToUse);
 		}
 	},
 

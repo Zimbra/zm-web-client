@@ -2,12 +2,12 @@
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2013 VMware, Inc.
- * 
+ *
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
@@ -76,7 +76,7 @@ Ext.define('ZCS.view.ux.ZtBubbleDropdown', {
 			},
 			inputBlur: function (e, el) {
 				if (this.menu) {
-					this.menu.hide();
+					// this.menu.hide();
 				}
 			},
 			destroy: function () {
@@ -91,12 +91,37 @@ Ext.define('ZCS.view.ux.ZtBubbleDropdown', {
 				this.menu = Ext.create('ZCS.common.ZtMenu', {
 					referenceComponent: this.getInput(),
 					modal: true,
-					hideOnMaskTap: false,
+					hideOnMaskTap: true,
 					maxHeight: 400,
 					width: this.getMenuWidth()
 				});
 
 				this.showMenu = Ext.Function.createBuffered(function (value) {
+					var ipadLandscapeKeyboardHeight = 352,
+						ipadPortraitKeyboardHeight = 264,
+						prevNextBarHeight = 65,
+						viewportBox = Ext.Viewport.element.getBox(),
+						isLandscape = viewportBox.height < viewportBox.width,
+						availableHeight,
+						keyboardHeight,
+						showElementPositioning = this.getInput().getBox(),
+						startY = showElementPositioning.top + showElementPositioning.height;
+
+
+					//Unfortunately, there does not appear to be a programmatic way to get the height of the
+					//current virtual keyboard so we are left with this, which is not cross-OS and seems a bit
+					//brittle.
+					if (isLandscape) {
+						keyboardHeight = ipadLandscapeKeyboardHeight + prevNextBarHeight;
+					} else {
+						keyboardHeight = ipadPortraitKeyboardHeight + prevNextBarHeight;
+					}
+
+					availableHeight = (viewportBox.height - keyboardHeight) - startY;
+
+					//Let the menu know that it only has the space between the bottom of the input
+					//and the top of the keyboard  to show itself, this will allow it to scroll.
+					this.menu.setMaxHeight(availableHeight);
 
 					//If the value length is greater than 0 and defined.
 					if (value.length) {
