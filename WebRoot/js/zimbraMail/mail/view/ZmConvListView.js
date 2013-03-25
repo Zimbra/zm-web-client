@@ -704,10 +704,12 @@ function(conv, msg, force) {
 	this._resetColWidth();
 	if (lastRow) {
 		this._scrollList(lastRow);
-	}
-	var convHeight = rowIds.length * Dwt.getSize(lastRow).y;
-	if (convHeight > Dwt.getSize(lastRow.parentNode).y) {
-		this._scrollList(this._getElFromItem(item));
+		if (rowIds) {
+			var convHeight = rowIds.length * Dwt.getSize(lastRow).y;
+			if (convHeight > Dwt.getSize(lastRow.parentNode).y) {
+				this._scrollList(this._getElFromItem(item));
+			}
+		}
 	}
 };
 
