@@ -3413,7 +3413,7 @@ function() {
 		// Let the server know that the session is ending.
 		var args = {
 			jsonObj: { EndSessionRequest: { _jsns: "urn:zimbraAccount" } },
-			asyncMode: true,
+			asyncMode: false,
 			emptyResponseOkay:	true
 		};
 		appCtxt.getAppController().sendRequest(args);
