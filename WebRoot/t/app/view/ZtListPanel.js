@@ -62,7 +62,7 @@ Ext.define('ZCS.view.ZtListPanel', {
 					handler: function() {
 						this.up('listpanel').fireEvent('showFolders');
 					},
-					iconCls: 'list',
+					iconCls: 'organizer-list',
 					iconMask: true,
 					align: 'left'
 				},

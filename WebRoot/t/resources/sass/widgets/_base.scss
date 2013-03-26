@@ -97,7 +97,10 @@ $zimbra-button-active-color: rgba(255,255,255,.3);
 	
 	.zcs-list-titlebar {
 		font-size: $zcs-titlebar-fontsize;
-	
+
+		.organizer-list {
+			-webkit-mask-box-image: url('/t/resources/images/pictos/organizer_list.png');
+		}
 		.x-title {
 			font-size: $zcs-title-fontsize;
 		}

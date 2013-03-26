@@ -82,12 +82,12 @@ Ext.define("ZCS.view.ZtMain", {
 			},
 			{
 				xtype: 'button',
-				iconCls: 'settings9',
 				cls: 'zcs-flat',
-				iconMask: true,
 				handler: function() {
 					this.up('tabbar').fireEvent('showMenu', this, { menuName: 'settings' });
-				}
+				},
+				iconCls: 'settings9',
+				iconMask: true
 			}
 		]);
 	}
