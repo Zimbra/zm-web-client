@@ -49,8 +49,7 @@ Ext.define('ZCS.view.mail.ZtMsgHeader', {
         var imagePart  = (image && image.part) || contact.data.imagepart;
 
         if (!imagePart) {
-            var imageUrl = contact.data.zimletImage;  //return zimlet populated image only if user-uploaded image is not there.
-            return imageUrl;
+            return contact.data.zimletImage || null;  //return zimlet populated image only if user-uploaded image is not there.
         }
 
         maxWidth = maxWidth || 48;
