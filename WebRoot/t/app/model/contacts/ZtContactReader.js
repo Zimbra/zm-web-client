@@ -39,6 +39,7 @@ Ext.define('ZCS.model.contacts.ZtContactReader', {
 		]);
         data.image = node._attrs.image;
         data.imagepart = node._attrs.imagepart;
+        data.zimletImage = node._attrs.zimletImage;
 
 		return data;
 	}

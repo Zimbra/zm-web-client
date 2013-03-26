@@ -54,7 +54,8 @@ Ext.define('ZCS.model.contacts.ZtContactWriter', {
 						{ n: 'company' },
 						{ n: 'fileAs' },
                         { n: 'image'},
-                        { n: 'imagepart'}
+                        { n: 'imagepart'},
+                        { n: 'zimletImage'}
 					]
 				});
 			}

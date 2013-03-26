@@ -52,7 +52,8 @@ Ext.define('ZCS.model.contacts.ZtContact', {
              * image and imagepart fields store the image related attributes for a contact.
              */
             { name: 'image', type: 'auto'},
-            { name: 'imagepart', type: 'auto'}
+            { name: 'imagepart', type: 'auto'},
+            { name: 'zimletImage', type: 'auto'}
 		],
 
 		proxy: {
