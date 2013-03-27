@@ -3279,10 +3279,12 @@ function(appt, actionMenu) {
     if (!(appt && actionMenu)) {
         return;
     }
-	var isOrganizer = appt.isOrganizer();
     var isExternalAccount = appCtxt.isExternalAccount();
     var isFolderReadOnly = appt.isFolderReadOnly();
-    var isSharedViewOnly = isFolderReadOnly && appt.isShared();
+	var isShared = appt.isShared();
+
+	//isOrganizer() returns "true" but it's not really true if it's a shared folder, so fix it here. (not sure why the server returns isOrg:true for the shared user)
+	var isOrganizer = appt.isOrganizer() && !isShared;
 
 	// find the checked calendar for this appt
 	var calendar;
@@ -3295,38 +3297,49 @@ function(appt, actionMenu) {
 		}
 	}
     //bug:68452 if its a trash folder then its not present in the calendars array
-    if(!calendar){
+    if (!calendar){
         calendar = appt.getFolder();
     }
 	var share = calendar && calendar.link ? calendar.getMainShare() : null;
 	var workflow = share ? share.isWorkflow() : true;
     var isTrash = calendar && calendar.nId == ZmOrganizer.ID_TRASH;
 	var isPrivate = appt.isPrivate() && calendar.isRemote() && !calendar.hasPrivateAccess();
-	var enabled = !isOrganizer && workflow && !isPrivate && !isExternalAccount && !isSharedViewOnly;
     var isReplyable = !isTrash && appt.otherAttendees;
 	var isForwardable = !isTrash && calendar && !calendar.isReadOnly() && appCtxt.get(ZmSetting.GROUP_CALENDAR_ENABLED);
 
-    actionMenu.setItemVisible(ZmOperation.REPLY_ACCEPT,      !isOrganizer);
-    actionMenu.setItemVisible(ZmOperation.REPLY_DECLINE,     !isOrganizer);
-    actionMenu.setItemVisible(ZmOperation.REPLY_TENTATIVE,   !isOrganizer);
-    actionMenu.setItemVisible(ZmOperation.INVITE_REPLY_MENU, !isOrganizer);
-    actionMenu.setItemVisible(ZmOperation.PROPOSE_NEW_TIME,  !isOrganizer);
+	//don't show for organizer, but also not for a shared calendar, since the appointment might not be one the user can accept/decline/etc.
+	//Just show it for the user's own calendar, where the can still accept/decline/etc if they are invited to this appt).
+	var showAcceptDecline = !isOrganizer && !isShared;
+	actionMenu.setItemVisible(ZmOperation.REPLY_ACCEPT, showAcceptDecline);
+	actionMenu.setItemVisible(ZmOperation.REPLY_DECLINE, showAcceptDecline);
+	actionMenu.setItemVisible(ZmOperation.REPLY_TENTATIVE, showAcceptDecline);
+	actionMenu.setItemVisible(ZmOperation.INVITE_REPLY_MENU, showAcceptDecline);
+	actionMenu.setItemVisible(ZmOperation.PROPOSE_NEW_TIME, showAcceptDecline);
     actionMenu.setItemVisible(ZmOperation.REINVITE_ATTENDEES, isOrganizer && !appt.inviteNeverSent && appt.otherAttendees);
     actionMenu.setItemVisible(ZmOperation.TAG_MENU, appCtxt.get(ZmSetting.TAGGING_ENABLED));
 
     // Initially enabling all the options in the action menu. And then selectively disabling unsupported options for special users.
     actionMenu.enableAll(true);
 
-// reply action menu
-    if (!isOrganizer) {
-        actionMenu.enable(ZmOperation.REPLY_ACCEPT,      enabled && isReplyable && appt.ptst != ZmCalBaseItem.PSTATUS_ACCEPT);
-        actionMenu.enable(ZmOperation.REPLY_DECLINE,     enabled && isReplyable && appt.ptst != ZmCalBaseItem.PSTATUS_DECLINED);
-        actionMenu.enable(ZmOperation.REPLY_TENTATIVE,   enabled && isReplyable && appt.ptst != ZmCalBaseItem.PSTATUS_TENTATIVE);
-        actionMenu.enable(ZmOperation.INVITE_REPLY_MENU, enabled && isReplyable);
-    }
+	//enable/disable specific actions, only if we actually show them. (we don't show for organizer or shared calendar)
+	if (showAcceptDecline) {
+		var enabled = isReplyable && workflow && !isPrivate && !isExternalAccount;
+        actionMenu.enable(ZmOperation.REPLY_ACCEPT, enabled && appt.ptst != ZmCalBaseItem.PSTATUS_ACCEPT);
+        actionMenu.enable(ZmOperation.REPLY_DECLINE, enabled && appt.ptst != ZmCalBaseItem.PSTATUS_DECLINED);
+        actionMenu.enable(ZmOperation.REPLY_TENTATIVE, enabled && appt.ptst != ZmCalBaseItem.PSTATUS_TENTATIVE);
+        actionMenu.enable(ZmOperation.INVITE_REPLY_MENU, enabled);
+		// edit reply menu
+		var mi = enabled && actionMenu.getMenuItem(ZmOperation.INVITE_REPLY_MENU);
+		var replyMenu = mi && mi.getMenu();
+		if (replyMenu) {
+			replyMenu.enable(ZmOperation.EDIT_REPLY_ACCEPT,	appt.ptst != ZmCalBaseItem.PSTATUS_ACCEPT);
+			replyMenu.enable(ZmOperation.EDIT_REPLY_DECLINE, appt.ptst != ZmCalBaseItem.PSTATUS_DECLINED);
+			replyMenu.enable(ZmOperation.EDIT_REPLY_TENTATIVE, appt.ptst != ZmCalBaseItem.PSTATUS_TENTATIVE);
+		}
+	}
 
     actionMenu.enable([ZmOperation.FORWARD_APPT, ZmOperation.FORWARD_APPT_INSTANCE, ZmOperation.FORWARD_APPT_SERIES], isForwardable);
-	actionMenu.enable(ZmOperation.REPLY, (isOrganizer ? false : isReplyable));
+	actionMenu.enable(ZmOperation.REPLY, isReplyable && !isOrganizer); //the organizer can't reply just to himself
 	actionMenu.enable(ZmOperation.REPLY_ALL, isReplyable);
 
     var disabledOps;
@@ -3344,7 +3357,7 @@ function(appt, actionMenu) {
     }
 
     // bug:71007 Disabling unsupported options for shared calendar with view only rights
-    if(isSharedViewOnly) {
+    if (isFolderReadOnly) {
         disabledOps = [ZmOperation.REINVITE_ATTENDEES,
                        ZmOperation.PROPOSE_NEW_TIME,
                        ZmOperation.DELETE,
@@ -3355,19 +3368,6 @@ function(appt, actionMenu) {
                        ZmOperation.MOVE_MENU];
 
 	    actionMenu.enable(disabledOps, false);
-	}
-
-	// edit reply menu
-	if (enabled) {
-		var mi = actionMenu.getMenuItem(ZmOperation.INVITE_REPLY_MENU);
-		if (mi) {
-			var editReply = mi.getMenu();
-			if (editReply) {
-				editReply.enable(ZmOperation.EDIT_REPLY_ACCEPT, appt.ptst != ZmCalBaseItem.PSTATUS_ACCEPT);
-				editReply.enable(ZmOperation.EDIT_REPLY_DECLINE, appt.ptst != ZmCalBaseItem.PSTATUS_DECLINED);
-				editReply.enable(ZmOperation.EDIT_REPLY_TENTATIVE, appt.ptst != ZmCalBaseItem.PSTATUS_TENTATIVE);
-			}
-		}
 	}
 
 	var del = actionMenu.getMenuItem(ZmOperation.DELETE);
