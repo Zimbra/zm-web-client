@@ -62,7 +62,9 @@ Ext.define('ZCS.controller.mail.ZtMailItemController', {
 			activeStore = activeList.getStore(),
 			item = item || this.getItem(),
 			contentHeight,
-			isMessage = item instanceof ZCS.model.mail.ZtMailMsg;
+			isMessage = item instanceof ZCS.model.mail.ZtMailMsg,
+			convCtlr = ZCS.app.getConvController(),
+			quickReply = convCtlr.getQuickReply();
 
 
 		if (isMessage) {
@@ -86,11 +88,17 @@ Ext.define('ZCS.controller.mail.ZtMailItemController', {
 					activeList.setReadOnly(false);
 					//undo any filtering we may have done
 					activeStore.clearFilter();
+					if (quickReply) {
+						quickReply.show();
+					}
 				}
 			});
 		}
 
 		activeComp.hideButtons();
+		if (quickReply) {
+			quickReply.hide();
+		}
 		this[viewProp].showWithComponent(activeComp, item, contentHeight);
 	},
 
