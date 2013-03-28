@@ -104,14 +104,15 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 
 		this.setMsg(msg);
 
-		markupHtml = this.markupEmailsAndLinks(html);
-
 		this.setUsingIframe(isHtml && !isInvite);
 
-		//If we added anchors for emails or links, make sure we're using an iframe
-		if (markupHtml !== html) {
-			this.setUsingIframe(true);
-			html = markupHtml;
+		if (ZCS.constant.IS_ENABLED[ZCS.constant.FEATURE_FIND_OBJECTS]) {
+			markedUpHtml = this.markupEmailsAndLinks(html, isHtml);
+			// If we added anchors for emails or links, make sure we're using an iframe
+			if (markedUpHtml !== html) {
+				this.setUsingIframe(true);
+				html = markedUpHtml;
+			}
 		}
 
 		this.resetExtraComponents();
@@ -119,7 +120,6 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 		this.showingQuotedText = !trimQuotedText;
 
 		html = ZCS.htmlutil.trimAndWrapContent(html);
-
 
 		if (this.getUsingIframe()) {
 			Ext.Logger.conv('Use IFRAME for [' + msg.get('fragment') + ']');
@@ -195,46 +195,33 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 	},
 
 	/**
-	 * Returns a string that wraps any text e-mail address or url in an anchor tag.
-	 * @private
+	 * Makes URLs and email addresses actionable by turning them into links. Tapping an email
+	 * address will take the user to the compose form.
+	 *
+	 * @param {String}  content     text to parse
+	 * @param {Boolean} isHtml      true if the content is HTML
+	 *
+	 * @return {String}     content with actionable URLs and email addresses
 	 */
-	markupEmailsAndLinks: function (html) {
-		var linkRegex = /(((telnet|cid):)|((https?|mailto|notes|smb|ftp|gopher|news|tel|callto|webcal|feed|file):\/\/)|(www\.[\w\.\_\-]+))([^\s\&\xA0\>\[\]\{\}\'\"])*/gi,
-			addrRegex = ZCS.model.mail.ZtEmailAddress.addrRegexGlobal,
-			linkMatches = html.match(linkRegex),
-			addressMatches = html.match(addrRegex);
+	markupEmailsAndLinks: function(content, isHtml) {
 
-		html = this.replaceTokensUsingTemplate(html, linkMatches, "<a href='{0}' target='_blank'>{0}</a>");
-		html = this.replaceTokensUsingTemplate(html, addressMatches, "<a href='#' addr='{0}'>{0}</span>");
-
-		return html;
-	},
-
-	replaceTokensUsingTemplate: function (string, tokens, template) {
-		var alreadyReplaced = false,
-			replacedTokens = [],
-			matchRegex;
-
-		Ext.Array.each(tokens, function (token) {
-			//Make sure the match is not a substring or exact match of
-			//a string that has already been replaced.  This could
-			//occur if the same address or link appears twice in a message.
-			Ext.Array.each(replacedTokens, function (replacedToken) {
-				if (replacedToken.indexOf(token) > -1) {
-					alreadyReplaced = true;
-				}
+		// Look for URLs. Don't look for them in HTML; assume author put them in anchors.
+		if (!isHtml) {
+			content = content.replace(ZCS.constant.REGEX_URL, function(m) {
+				Ext.Logger.info('link regex matched: ' + m);
+				return Ext.String.format("<a href='{0}' target='_blank'>{0}</a>", m);
 			});
+		}
 
-			if (!alreadyReplaced) {
-				matchRegex = new RegExp(token, "g");
-				string = string.replace(matchRegex, Ext.String.format(template, token));
-				replacedTokens.push(token);
+		// Look for email addresses. If parsing HTML, skip email that's part of a mailto: link.
+		content = content.replace(ZCS.constant.REGEX_EMAIL, function(m) {
+			Ext.Logger.info('addr regex matched: ' + m);
+			if (!isHtml || m.toLowerCase().indexOf('mailto:') !== 0) {
+				return Ext.String.format("<a href='#' addr='{0}'>{0}</a>", m);
 			}
-
-			alreadyReplaced = false;
 		});
 
-		return string;
+		return content;
 	},
 
 	/**

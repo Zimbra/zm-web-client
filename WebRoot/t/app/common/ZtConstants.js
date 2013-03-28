@@ -87,13 +87,15 @@ ZCS.constant.APPS = [
 ];
 
 // Turn features on/off
-ZCS.constant.FEATURE_ADD_ATTACHMENT = 'add_attachment';
-ZCS.constant.FEATURE_QUICK_REPLY    = 'quick_reply';
+ZCS.constant.FEATURE_ADD_ATTACHMENT = 'add_attachment'; // attach file when composing
+ZCS.constant.FEATURE_QUICK_REPLY    = 'quick_reply';    // quick reply area for conv panel
+ZCS.constant.FEATURE_FIND_OBJECTS   = 'find_objects';   // look for URLs and email addrs in msg body, make them actionable
 
 ZCS.constant.IS_ENABLED = {};
 ZCS.constant.IS_ENABLED[ZCS.constant.APP_CONTACTS]              = false;
 ZCS.constant.IS_ENABLED[ZCS.constant.FEATURE_ADD_ATTACHMENT]    = false;
 ZCS.constant.IS_ENABLED[ZCS.constant.FEATURE_QUICK_REPLY]       = true;
+ZCS.constant.IS_ENABLED[ZCS.constant.FEATURE_FIND_OBJECTS]      = true;
 
 // Text for tab bar
 ZCS.constant.TAB_TITLE = {};
@@ -469,7 +471,9 @@ ZCS.constant.REGEX_SIG = /^(- ?-+)|(__+)\r?$/;
 ZCS.constant.REGEX_HDR = /^\s*\w+:/;
 ZCS.constant.REGEX_COLON = /\S+:$/;
 ZCS.constant.REGEX_IMG_SRC_CID = /<img([^>]*)\ssrc=["']cid:/gi;
-ZCS.constant.REGEX_URL = /(((https?):\/\/)|(www\.[\w\.\_\-]+))[^\s\xA0\(\)\<\>\[\]\{\}\'\"]*/i;
+ZCS.constant.REGEX_URL = /(((https?):\/\/)|(www\.[\w\.\_\-]+))[^\s\xA0\(\)\<\>\[\]\{\}\'\"]*/gi;
+// simple email regex - see ZtEmailAddress for fancier ones
+ZCS.constant.REGEX_EMAIL = /((mailto:)?\b[A-Z0-9\._%+-]+@[A-Z0-9\.-]+\.[A-Z]{2,5})\b/gi;
 
 // URL paths
 ZCS.constant.PATH_MSG_FETCH = '/service/home/~/';
