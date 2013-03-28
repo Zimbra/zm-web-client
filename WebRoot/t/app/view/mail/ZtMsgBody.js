@@ -2,12 +2,12 @@
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2013 VMware, Inc.
- * 
+ *
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
@@ -87,7 +87,8 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 		var store = this.up('mailitemview').getStore(),
 			count = store.getCount(),
 			msgIndex = store.indexOf(msg),
-			isLast = (msgIndex === count - 1);
+			isLast = (msgIndex === count - 1),
+			markedUpHtml;
 
 		var me = this,
 			isInvite = msg.get('isInvite'),
@@ -102,13 +103,23 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 			iframe = this.iframe;
 
 		this.setMsg(msg);
+
+		markupHtml = this.markupEmailsAndLinks(html);
+
 		this.setUsingIframe(isHtml && !isInvite);
+
+		//If we added anchors for emails or links, make sure we're using an iframe
+		if (markupHtml !== html) {
+			this.setUsingIframe(true);
+			html = markupHtml;
+		}
 
 		this.resetExtraComponents();
 
 		this.showingQuotedText = !trimQuotedText;
 
 		html = ZCS.htmlutil.trimAndWrapContent(html);
+
 
 		if (this.getUsingIframe()) {
 			Ext.Logger.conv('Use IFRAME for [' + msg.get('fragment') + ']');
@@ -125,6 +136,10 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 
 				iframe.on('msgContentResize', function () {
 					me.fireEvent('msgContentResize');
+				}, this);
+
+				iframe.on('addressTouch', function (address) {
+					me.fireEvent('addressTouch', address);
 				}, this);
 
 				this.add(iframe);
@@ -177,6 +192,49 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 			truncated:      msg.isTruncated(),
 			quoted:         !hasQuotedContent ? null : (trimQuotedText || togglingQuotedText) && trimQuotedText ? 'show' : 'hide'
 		});
+	},
+
+	/**
+	 * Returns a string that wraps any text e-mail address or url in an anchor tag.
+	 * @private
+	 */
+	markupEmailsAndLinks: function (html) {
+		var linkRegex = /(((telnet|cid):)|((https?|mailto|notes|smb|ftp|gopher|news|tel|callto|webcal|feed|file):\/\/)|(www\.[\w\.\_\-]+))([^\s\&\xA0\>\[\]\{\}\'\"])*/gi,
+			addrRegex = ZCS.model.mail.ZtEmailAddress.addrRegexGlobal,
+			linkMatches = html.match(linkRegex),
+			addressMatches = html.match(addrRegex);
+
+		html = this.replaceTokensUsingTemplate(html, linkMatches, "<a href='{0}' target='_blank'>{0}</a>");
+		html = this.replaceTokensUsingTemplate(html, addressMatches, "<a href='#' addr='{0}'>{0}</span>");
+
+		return html;
+	},
+
+	replaceTokensUsingTemplate: function (string, tokens, template) {
+		var alreadyReplaced = false,
+			replacedTokens = [],
+			matchRegex;
+
+		Ext.Array.each(tokens, function (token) {
+			//Make sure the match is not a substring or exact match of
+			//a string that has already been replaced.  This could
+			//occur if the same address or link appears twice in a message.
+			Ext.Array.each(replacedTokens, function (replacedToken) {
+				if (replacedToken.indexOf(token) > -1) {
+					alreadyReplaced = true;
+				}
+			});
+
+			if (!alreadyReplaced) {
+				matchRegex = new RegExp(token, "g");
+				string = string.replace(matchRegex, Ext.String.format(template, token));
+				replacedTokens.push(token);
+			}
+
+			alreadyReplaced = false;
+		});
+
+		return string;
 	},
 
 	/**

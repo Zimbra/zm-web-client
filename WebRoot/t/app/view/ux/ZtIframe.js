@@ -2,12 +2,12 @@
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2013 VMware, Inc.
- * 
+ *
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
@@ -201,16 +201,31 @@ Ext.define('ZCS.view.ux.ZtIframe', {
 				return cloneEvent;
 			},
 			delegateEvent = function (ev) {
-				if (ev.srcElement.nodeName === 'A') {
+				var clonedEvent;
+
+				if (ev.srcElement.nodeName === 'A' && !Ext.fly(ev.srcElement).getAttribute("addr")) {
 					return true;
 				}
 
 				// clone the event for our window / document
-				var clonedEvent = cloneEvent(ev, component.element.dom);
+				clonedEvent = cloneEvent(ev, component.element.dom);
 				component.element.dom.dispatchEvent(clonedEvent);
 			},
 			touchEventListener = function (ev) {
 				if (!ev.isRefired) {
+
+					var emailAttribute = Ext.fly(ev.srcElement).getAttribute("addr");
+
+					if (emailAttribute && ev.type !== 'touchend') {
+						ev.preventDefault();
+	                    return false;
+					} else if (emailAttribute && ev.type === 'touchend') {
+						Ext.Logger.iframe('Address touch ' + emailAttribute);
+						component.fireEvent('addressTouch', emailAttribute);
+						ev.preventDefault();
+						return false;
+					}
+
 					delegateEvent(ev);
 
 					//If we allow this event to bubble normally, inertial horizontal scrolling will occur.
