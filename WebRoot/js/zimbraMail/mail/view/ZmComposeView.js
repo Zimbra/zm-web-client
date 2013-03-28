@@ -3224,7 +3224,6 @@ function(fileName) {
 
 ZmComposeView.prototype._submitMyComputerAttachments =
 function(files, node) {
-	var size = 0;
 	var name = "";
 	if (!AjxEnv.supportsHTML5File) {
 		// IE, FF 3.5 and lower
@@ -3235,7 +3234,7 @@ function(files, node) {
 	if (files) {
 		for (var j = 0; j < files.length; j++) {
 			var file = files[j];
-			size += file.size || file.fileSize; /*Safari*/;
+			var size = file.size || file.fileSize; /*Safari*/;
 			if ((-1 /* means unlimited */ != appCtxt.get(ZmSetting.ATTACHMENT_SIZE_LIMIT)) &&
 				(size > appCtxt.get(ZmSetting.ATTACHMENT_SIZE_LIMIT))) {
 				var msgDlg = appCtxt.getMsgDialog();

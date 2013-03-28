@@ -61,7 +61,6 @@ ZmDragAndDrop.isSupported = function() {
  */
 ZmDragAndDrop.isAttachmentSizeExceeded = function(files, showDialog) {
     var j,
-        size,
         filesLength,
         file;
 
@@ -72,7 +71,7 @@ ZmDragAndDrop.isAttachmentSizeExceeded = function(files, showDialog) {
     for (j = 0 , size = 0, filesLength = files.length; j < filesLength; j++) {
         file = files[j];
         if (file) {
-            size += file.size || file.fileSize; /*Safari*/
+            var size = file.size || file.fileSize; /*Safari*/
             //Showing Error dialog if the attachment size is exceeded
             if ((-1 /* means unlimited */ != ZmDragAndDrop.ATTACHMENT_SIZE_LIMIT) &&
                 (size > ZmDragAndDrop.ATTACHMENT_SIZE_LIMIT)) {
