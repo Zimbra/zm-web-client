@@ -32,13 +32,11 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 		stores: ['ZCS.store.mail.ZtMsgStore'],
 
 		refs: {
-			// event handlers
-			itemPanelToolbar: 'appview #' + ZCS.constant.APP_MAIL + 'itempanel titlebar',
-
-			itemPanel: 'appview #' + ZCS.constant.APP_MAIL + 'itempanel',
-
-			// other
-			msgListView: ZCS.constant.APP_MAIL + 'itemview'
+			itemPanelToolbar:   'appview #' + ZCS.constant.APP_MAIL + 'itempanel titlebar',
+			itemPanel:          'appview #' + ZCS.constant.APP_MAIL + 'itempanel',
+			msgListView:        ZCS.constant.APP_MAIL + 'itemview',
+			quickReply:         '#quickReply',
+			quickReplyTextarea: '#quickReply textareafield'
 		},
 
 		control: {
@@ -67,6 +65,22 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 
 	launch: function () {
 		ZCS.app.on('deleteMailItem', this.doDelete, this);
+		ZCS.app.on('sendQuickReply', this.doSendQuickReply, this);
+		var quickReplyTextarea = this.getQuickReplyTextarea();
+		if (quickReplyTextarea) {
+			quickReplyTextarea.on('focus', function() {
+				quickReplyTextarea.setHeight(ZCS.constant.QUICK_REPLY_LARGE);
+				if (!quickReplyTextarea.getValue()) {
+					this.setQuickReplyPlaceholderText('');
+				}
+			}, this);
+			quickReplyTextarea.on('blur', function() {
+				quickReplyTextarea.setHeight(ZCS.constant.QUICK_REPLY_SMALL);
+				if (!quickReplyTextarea.getValue()) {
+					this.setQuickReplyPlaceholderText(this.getQuickReplyPlaceholderText());
+				}
+			}, this);
+		}
 	},
 
 	/**
@@ -77,6 +91,10 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 		this.callParent();
 
 		this.getStore().removeAll();
+		var quickReply = this.getQuickReply();
+		if (quickReply) {
+			quickReply.hide();
+		}
 	},
 
 	/**
@@ -121,12 +139,19 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 			}
 		}, this);
 
+		var quickReply = this.getQuickReply();
+		if (quickReply) {
+			quickReply.show();
+		}
+
 		store.load({
 			convId: conv.getId(),
 			convQuery: convQueryTerms.join(' AND '),
 			callback: function(records, operation, success) {
 				itemPanel.showButtons();
-				Ext.Logger.info('Conv load callback');
+				if (quickReply) {
+					this.setQuickReplyPlaceholderText(this.getQuickReplyPlaceholderText());
+				}
 			},
 			scope: this
 		});
@@ -376,5 +401,59 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 		else {
 			this.callParent(arguments);
 		}
+	},
+
+	// TODO: What if a new message came in?
+	doSendQuickReply: function() {
+
+		var action = ZCS.constant.OP_REPLY_ALL,
+			textarea = this.getQuickReplyTextarea(),
+			text = textarea ? textarea.getValue() : '';
+
+		if (text) {
+			this.getActiveMsg(function(origMsg) {
+
+				var ctlr = ZCS.app.getComposeController(),
+					addrs = ctlr.getReplyAddresses(origMsg, action);
+
+				var values = {
+					subject:    ctlr.getSubject(origMsg, ZtMsg.rePrefix),
+					content:    text + ctlr.quoteOrigMsg(origMsg, action)
+				};
+				Ext.apply(values, addrs);
+
+				var msg = ctlr.setOutboundMessage(null, values, action, origMsg, null);
+				ctlr.sendMessage(msg, function() {
+					textarea.setValue('');
+					textarea.blur();
+				}, this);
+			});
+		}
+	},
+
+	/**
+	 * Returns text to put in the quick reply textarea as a placeholder.
+	 *
+	 * @return {String}     placeholder text
+	 */
+	getQuickReplyPlaceholderText: function() {
+
+		var activeMsg = this.getActiveMsg(),
+			fromAddr = activeMsg && activeMsg.getAddressByType(ZCS.constant.FROM),
+			fromName = fromAddr && fromAddr.get('viewName'),
+			placeholder = fromName && Ext.String.format(ZtMsg.quickReplyPlaceholder, fromName);
+
+		return placeholder || '';
+	},
+
+	/**
+	 * Sets the placeholder text in the quick reply textarea.
+	 */
+	setQuickReplyPlaceholderText: function(text) {
+
+		var quickReplyTextarea = this.getQuickReplyTextarea(),
+			textarea = quickReplyTextarea.element.down('textarea').dom;
+
+		textarea.placeholder = text;
 	}
 });

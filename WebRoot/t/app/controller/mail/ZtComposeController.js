@@ -117,85 +117,125 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 		this.showComposeForm(toAddresses, ccAddresses, subject, body, msg);
 	},
 
+	/**
+	 * Reply to the sender of the given message.
+	 *
+	 * @param {ZtMailMsg}   msg     original message
+	 */
 	reply: function(msg) {
 
-		var action = ZCS.constant.OP_REPLY;
+		var action = ZCS.constant.OP_REPLY,
+			addrs = this.getReplyAddresses(msg, action),
+			subject = this.getSubject(msg, ZtMsg.rePrefix),
+			body = this.quoteOrigMsg(msg, action);
 
 		this.setAction(action);
 		this.setOrigMsg(msg);
 
-		var to = [msg.getReplyAddress()],
-			cc,
-			subject = this.getSubject(msg, 'Re:'),
-			body = this.quoteOrigMsg(msg, action);
-
-		this.showComposeForm(to, cc, subject, body);
+		this.showComposeForm(addrs[ZCS.constant.TO], addrs[ZCS.constant.CC], subject, body);
 	},
 
+	/**
+	 * Reply to the sender and other recipients of the given message.
+	 *
+	 * @param {ZtMailMsg}   msg     original message
+	 */
 	replyAll: function(msg) {
 
-		var action = ZCS.constant.OP_REPLY_ALL;
+		var action = ZCS.constant.OP_REPLY_ALL,
+			addrs = this.getReplyAddresses(msg, action),
+			subject = this.getSubject(msg, ZtMsg.rePrefix),
+			body = this.quoteOrigMsg(msg, action);
 
 		this.setAction(action);
 		this.setOrigMsg(msg);
 
-		var userEmail = ZCS.session.getAccountName(),
-			replyAddr = msg.getReplyAddress(),
-			origToAddrs = msg.getAddressesByType(ZCS.constant.TO),
-			origCcAddrs = msg.getAddressesByType(ZCS.constant.CC),
-			ccAddrs = [],
-			used = {},
-			subject = this.getSubject(msg, 'Re:'),
-			body = this.quoteOrigMsg(msg, action);
-
-		// Remember emails we don't want to repeat in Cc
-		// TODO: add aliases to used hash
-		used[userEmail] = true;
-		used[replyAddr.get('email')] = true;
-
-		Ext.each(origToAddrs.concat(origCcAddrs), function(addr) {
-			if (!used[addr.get('email')]) {
-				ccAddrs.push(addr);
-			}
-		}, this);
-
-		this.showComposeForm([replyAddr], ccAddrs, subject, body);
+		this.showComposeForm(addrs[ZCS.constant.TO], addrs[ZCS.constant.CC], subject, body);
 	},
 
+	/**
+	 * Forward the given message.
+	 *
+	 * @param {ZtMailMsg}   msg     original message
+	 */
 	forward: function(msg) {
 
-		var action = ZCS.constant.OP_FORWARD;
+		var action = ZCS.constant.OP_FORWARD,
+			subject = this.getSubject(msg, ZtMsg.fwdPrefix),
+			body = this.quoteOrigMsg(msg, action);
 
 		this.setAction(action);
 		this.setOrigMsg(msg);
-
-		var	subject = this.getSubject(msg, 'Fwd:'),
-			body = this.quoteOrigMsg(msg, action);
 
 		this.showComposeForm(null, null, subject, body);
 	},
 
 	/**
+	 * Returns TO and CC addresses for the given message and reply action.
+	 *
+	 * @param {ZtMailMsg}   msg     original message
+	 * @param {String}      action  compose action
+	 *
+	 * @return {Object}     recipient addresses
+	 */
+	getReplyAddresses: function(msg, action) {
+
+		var addrs = {},
+			replyAddr = msg.getReplyAddress();
+
+		replyAddr.set('type', ZCS.constant.TO);
+		addrs[ZCS.constant.TO] = replyAddr;
+
+		if (action === ZCS.constant.OP_REPLY_ALL) {
+			var userEmail = ZCS.session.getAccountName(),
+				origToAddrs = msg.getAddressesByType(ZCS.constant.TO),
+				origCcAddrs = msg.getAddressesByType(ZCS.constant.CC),
+				ccAddrs = [],
+				used = {};
+
+			// Remember emails we don't want to repeat in Cc
+			// TODO: add aliases to used hash
+			used[userEmail] = true;
+			used[replyAddr.get('email')] = true;
+
+			Ext.each(origToAddrs.concat(origCcAddrs), function(addr) {
+				if (!used[addr.get('email')]) {
+					addr.set('type', ZCS.constant.CC);
+					ccAddrs.push(addr);
+				}
+			}, this);
+
+			if (ccAddrs.length > 0) {
+				addrs[ZCS.constant.CC] = ccAddrs;
+			}
+		}
+
+		return addrs;
+	},
+
+	/**
 	 * Show the compose form, prepopulating any parameterized fields
 	 *
-	 * @param {Array}       toFieldAddresses    addresses for To: field
-	 * @param {Array}       ccFieldAddresses    addresses for Cc: field
-	 * @param {String}      subject             message subject
-	 * @param {String}      body                message body
-	 * @param {ZtMailMsg}   msg                 (optional) draft message
+	 * @param {Array|String}    toFieldAddresses    addresses for To: field
+	 * @param {Array}           ccFieldAddresses    addresses for Cc: field
+	 * @param {String}          subject             message subject
+	 * @param {String}          body                message body
+	 * @param {ZtMailMsg}       msg                 (optional) draft message
 	 */
 	showComposeForm: function (toFieldAddresses, ccFieldAddresses, subject, body, msg) {
 
 		var panel = this.getComposePanel(),
 			form = panel.down('formpanel'),
-			toFld = form.down('contactfield[name=to]'),
-			ccFld = form.down('contactfield[name=cc]'),
+			toFld = form.down('contactfield[name=TO]'),
+			ccFld = form.down('contactfield[name=CC]'),
 			subjectFld = form.down('field[name=subject]'),
 			editor = this.getEditor();
 
 		panel.setMsg(msg);
 
 		panel.resetForm();
+
+		toFieldAddresses = Array.isArray(toFieldAddresses) ? toFieldAddresses : [toFieldAddresses];
 
 		if (ccFieldAddresses && ccFieldAddresses.length) {
 			panel.showCc();
@@ -343,17 +383,27 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 	},
 
 	/**
-	 * @private
+	 * Sends a message constructed from values in the compose form.
 	 */
 	doSend: function() {
+		this.sendMessage(this.getMessageModel());
+	},
 
-		var msg = this.getMessageModel(),
-			me = this;
+	/**
+	 * Sends a message. Normally constructs a message based on values in the compose form,
+	 * but can also take a message created via quick reply and send that.
+	 */
+	sendMessage: function(msg, callback, scope) {
+
+		var me = this;
 
 		msg.save({
 			success: function() {
 				ZCS.app.fireEvent('showToast', ZtMsg.messageSent);
 				me.getComposePanel().hide();
+				if (callback) {
+					callback.apply(scope);
+				}
 			}
 		});
 	},
@@ -379,18 +429,8 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 			origMsg = !isNewCompose && this.getOrigMsg();
 
 		Ext.Logger.info('Send message');
-		var msg = existingMsg || Ext.create('ZCS.model.mail.ZtMailMsg'),
-			from = ZCS.mailutil.getFromAddress();
 
-		msg.set('subject', values.subject);
-		msg.addAddresses([].concat(from, values.to, values.cc, values.bcc));
-		msg.setComposeAction(action);
 		if (origMsg) {
-			msg.set('origId', origMsg.getId());
-			var irtMessageId = origMsg.get('irtMessageId') || origMsg.get('messageId');
-			if (irtMessageId) {
-				msg.set('irtMessageId', irtMessageId);
-			}
 			var attArea = this.getAttachmentsField(),
 				attBubbles = attArea.element.query('.zcs-attachment-bubble');
 
@@ -408,16 +448,41 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 						});
 					}
 				}
-				msg.set('origAttachments', origAtt);
 			}
 		}
+		values.content = editor.innerHTML;
+
+		return this.setOutboundMessage(existingMsg, values, action, origMsg, origAtt);
+	},
+
+	setOutboundMessage: function(msg, values, action, origMsg, origAtt) {
+
+		msg = msg || Ext.create('ZCS.model.mail.ZtMailMsg');
+
+		var from = ZCS.mailutil.getFromAddress(),
+			addrs = Ext.Array.clean([].concat(from, values[ZCS.constant.TO], values[ZCS.constant.CC], values[ZCS.constant.BCC]));
+
+		msg.set('subject', values.subject);
+		msg.addAddresses(addrs);
+		msg.setComposeAction(action);
+
+		if (origMsg) {
+			msg.set('origId', origMsg.getId());
+			var irtMessageId = origMsg.get('irtMessageId') || origMsg.get('messageId');
+			if (irtMessageId) {
+				msg.set('irtMessageId', irtMessageId);
+			}
+			msg.set('origAttachments', origAtt);
+		}
+
 		if (action === ZCS.constant.OP_REPLY || action === ZCS.constant.OP_REPLY_ALL) {
 			msg.set('replyType', 'r');
 		}
 		else if (action === ZCS.constant.OP_FORWARD) {
 			msg.set('replyType', 'w');
 		}
-		msg.createMime(editor.innerHTML, origMsg && origMsg.hasHtmlPart());
+
+		msg.createMime(values.content, origMsg && origMsg.hasHtmlPart());
 
 		return msg;
 	},

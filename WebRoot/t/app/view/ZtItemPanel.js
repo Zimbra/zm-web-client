@@ -79,23 +79,46 @@ Ext.define('ZCS.view.ZtItemPanel', {
 			toolbar,
 			itemView
 		]);
+
+		if (app === ZCS.constant.APP_MAIL && ZCS.constant.IS_ENABLED[ZCS.constant.FEATURE_QUICK_REPLY]) {
+			var quickReply = {
+				xtype: 'container',
+				itemId: 'quickReply',
+				docked: 'bottom',
+				cls: 'zcs-quick-reply',
+				hidden: true,
+				layout: 'hbox',
+				items: [{
+					flex: 1,
+					xtype: 'textareafield',
+					placeholder: 'Test Placeholder',
+					height: ZCS.constant.QUICK_REPLY_SMALL
+					},{
+					xtype: 'button',
+					text: ZtMsg.send,
+					handler: function() {
+						ZCS.app.fireEvent('sendQuickReply');
+//						this.up('#quickReply').fireEvent('sendQuickReply');
+					}
+				}]
+			}
+			this.add(quickReply);
+		}
 	},
 
-	setTitle: function (title) {
+	setTitle: function(title) {
 		this.down('title').setTitle(title);
 	},
 
-	showButtons: function () {
+	showButtons: function() {
 		Ext.each(this.down('titlebar').query('button'), function(button) {
 			button.show();
 		}, this);
 	},
 
-	hideButtons: function () {
+	hideButtons: function() {
 		Ext.each(this.down('titlebar').query('button'), function(button) {
 			button.hide();
 		}, this);
 	}
-
-
 });
