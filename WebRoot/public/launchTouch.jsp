@@ -150,7 +150,7 @@
           if (loggingEnabled) {
               document.write(unescape("%3Cscript src='//d3nslu0hdya83q.cloudfront.net/dist/1.0/raven.min.js' type='text/javascript'%3E%3C/script%3E"));
           }
-    </script>                    '
+    </script>
 
     <%--for 8.x only, remove the below block in Zimbra.Next. --%>
     <script>
