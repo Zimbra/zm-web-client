@@ -366,9 +366,6 @@ ZCS.constant.SETTING_TYPE[ZCS.constant.SETTING_TRUSTED_SENDERS]   = ZCS.constant
 // Forced setting values, which override user setting
 ZCS.constant.SETTING_VALUE = {};
 ZCS.constant.SETTING_VALUE[ZCS.constant.SETTING_SHOW_SEARCH] = 'false';
-// For 8.x only, remove this in Zimbra.Next
-ZCS.constant.SETTING_VALUE[ZCS.constant.SETTING_JSLOGGING_ENABLED] = 'true';
-ZCS.constant.SETTING_VALUE[ZCS.constant.SETTING_JSLOGGING_KEY] = '346cfe6ba7c94b78abbd3bf1796e1641';
 
 // Default values for settings
 ZCS.constant.SETTING_DEFAULT = {};

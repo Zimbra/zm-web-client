@@ -80,12 +80,14 @@ Ext.define('ZCS.common.ZtUserSession', {
 		this.setInitialSearchResults(data.response.SearchResponse[0]);
 
         // Enable third party JS error tracking, if zimbraTouchJSErrorTrackingEnabled is set to TRUE
+        // Uncomment the below code for Zimbra.Next
+        /*
         var loggingEnabled = this.getSetting(ZCS.constant.SETTING_JSLOGGING_ENABLED);
         var loggerKey = this.getSetting(ZCS.constant.SETTING_JSLOGGING_KEY);
         if (loggingEnabled && loggerKey) {
-            var key = "https://" + loggerKey + "@app.getsentry.com/6798";
-            Raven.config(key).install();
+            Raven.config(loggerKey).install();
         }
+        */
 
 		// we always start in Mail
 		this.setActiveApp(ZCS.constant.APP_MAIL);

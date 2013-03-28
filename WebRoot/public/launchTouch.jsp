@@ -146,10 +146,19 @@
     <script>
 //        var gir = batchInfoResponse.Body.BatchResponse.GetInfoResponse[0];
 //        var loggingEnabled = gir.attrs._attrs['zimbraTouchJSErrorTrackingEnabled'];
-          var loggingEnabled = true; // for 8.x only, uncomment the above two lines for Zimbra.Next
+          var loggingEnabled = false; // for 8.x only, uncomment the above lines for Zimbra.Next
           if (loggingEnabled) {
-            document.write(unescape("%3Cscript src='//d3nslu0hdya83q.cloudfront.net/dist/1.0/raven.min.js' type='text/javascript'%3E%3C/script%3E"));
+              document.write(unescape("%3Cscript src='//d3nslu0hdya83q.cloudfront.net/dist/1.0/raven.min.js' type='text/javascript'%3E%3C/script%3E"));
           }
+    </script>                    '
+
+    <%--for 8.x only, remove the below block in Zimbra.Next. --%>
+    <script>
+        var loggerKey = "https://b89f3cf41d5d45ad90b11da6a645efc1@app.getsentry.com/6798";
+        if (loggingEnabled) {
+            if (Raven)
+                Raven.config(loggerKey).install();
+        }
     </script>
 
     <!-- The line below must be kept intact for Sencha Command to build your application -->
