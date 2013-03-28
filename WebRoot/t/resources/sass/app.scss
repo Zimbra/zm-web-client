@@ -61,3 +61,8 @@
 @include pictos-iconmask('replytoall');
 @include pictos-iconmask('trash');
 @include pictos-iconmask('settings9');
+
+
+// Colored button styles
+@include sencha-button-ui('neutral', $neutral-color, 'glossy');
+@include sencha-button-ui('green', #A3CCA3, 'glossy');

@@ -88,17 +88,26 @@ Ext.define('ZCS.view.ZtItemPanel', {
 				cls: 'zcs-quick-reply',
 				hidden: true,
 				layout: 'hbox',
-				items: [{
-					flex: 1,
-					xtype: 'textareafield',
-					placeholder: 'Test Placeholder',
-					height: ZCS.constant.QUICK_REPLY_SMALL
+				items: [
+					{
+						xtype: 'fieldset',
+						flex: 1,
+						items: [
+							{
+								flex: 1,
+								xtype: 'textareafield',
+								placeholder: 'Test Placeholder',
+								height: ZCS.constant.QUICK_REPLY_SMALL
+							}
+						]
 					},{
-					xtype: 'button',
-					text: ZtMsg.send,
-					handler: function() {
-						ZCS.app.fireEvent('sendQuickReply');
-//						this.up('#quickReply').fireEvent('sendQuickReply');
+						xtype: 'button',
+						text: ZtMsg.send,
+						ui: 'neutral',
+						padding: '0 1em',
+						handler: function() {
+							ZCS.app.fireEvent('sendQuickReply');
+//							this.up('#quickReply').fireEvent('sendQuickReply');
 					}
 				}]
 			}
