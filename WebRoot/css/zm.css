@@ -3733,16 +3733,30 @@ HTML>BODY .appt-selected .appt_allday_body
 }
 
 .ZmPrefZimletListView .Row {
+#IFNDEF GECKO
 	height:20px;
+#ENDIF
+#IFDEF GECKO
+	height:21px;
+#ENDIF
+	overflow:hidden;
+}
+
+.ZmPrefZimletListView .Row-selected {
+	height:auto;
+	overflow:visible;
+}
+
+.ZmPrefZimletListView .Row-selected TD {
+	line-height:1.7em;
+	white-space:normal;
 }
 
 .ZOptionsOfflineAccts {
 	font-size:14px;
 	text-align:center;
 }
-.ZmPrefZimletListView .Row TABLE, .ZmPrefZimletListView .RowDouble TABLE {
-	table-layout:auto;
-}
+
 .ZOptionsAcctName {
 	margin-right:10px;
 	white-space:nowrap;
@@ -3773,7 +3787,7 @@ HTML>BODY .appt-selected .appt_allday_body
 }
 
 #IFDEF MSIE
-* html .ZmFilterRulesView .DwtListView-Rows {
+* HTML .ZmFilterRulesView .DwtListView-Rows {
 	height:185px;
 }
 #ENDIF
