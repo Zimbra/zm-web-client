@@ -2,12 +2,12 @@
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2012, 2013 VMware, Inc.
- * 
+ *
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
@@ -51,7 +51,7 @@ Ext.define('ZCS.controller.mail.ZtConvListController', {
 				newItem: 'doCompose'
 			},
 			listView: {
-				itemswipe: 'showDelete'
+				itemswipe: 'handleSwipe'
 			}
 		},
 
@@ -90,68 +90,73 @@ Ext.define('ZCS.controller.mail.ZtConvListController', {
 		}
 	},
 
-	showDelete: function(list, index, convItem, record, e, eOpts) {
+	handleSwipe: function(list, index, convItem, record, e, eOpts) {
 		var convEl = convItem.element,
 			convElBox = convEl.getBox(),
+			buttonHeight = 30,
+			buttonWidth = 80,
+			buttonTop = convElBox.height / 2 - buttonHeight / 2;
 			swipeElm = Ext.dom.Element.create({
 				html: ZCS.controller.mail.ZtConvListController.swipeToDeleteTpl.apply({
-					width:convElBox.width,
-					height:convElBox.height
-				})
+					width: buttonWidth,
+					height: buttonHeight
+				}),
+				style: "position: absolute; right: 10px; top: " + buttonTop + "px; width: " + buttonWidth + "px; height: " + buttonHeight + "px",
+				"class": 'zcs-outer-swipe-elm'
 			}),
 			dockItem = convEl.down('.x-dock'),
+			existingSwipeButton = convEl.down('.zcs-outer-swipe-elm'),
 			anim = Ext.create('Ext.Anim');
 
+		e.preventDefault();
 
+		if (existingSwipeButton) {
+			existingSwipeButton.destroy();
+		} else {
+			swipeElm.insertAfter(Ext.fly(convEl.dom.children[0]));
 
-		dockItem.hide();
+			swipeElm.on('tap', function (event, node, options, eOpts) {
+				var el = Ext.fly(event.target);
+				if (el.hasCls('zcs-swipe-delete')) {
+					ZCS.app.fireEvent('deleteMailItem', record);
+					anim.run(swipeElm, {
+						from: {
+							opacity: 1
+						},
+						to: {
+							opacity: 0
+						},
+						duration: 500,
+						after: function () {
+							dockItem.show();
+							swipeElm.destroy();
+						}
+					});
+				}
 
+				if (el.hasCls('zcs-swipe-spam')) {
+					ZCS.app.fireEvent('moveMailItemToSpam', record);
+					anim.run(swipeElm, {
+						from: {
+							opacity: 1
+						},
+						to: {
+							opacity: 0
+						},
+						duration: 500,
+						after: function () {
+							dockItem.show();
+							swipeElm.destroy();
+						}
+					});
+				}
+			});
 
-		convEl.insertFirst(swipeElm);
-
-		swipeElm.on('tap', function (event, node, options, eOpts) {
-			var el = Ext.fly(event.target);
-			if (el.hasCls('zcs-swipe-delete')) {
-				ZCS.app.fireEvent('deleteMailItem', record);
-				anim.run(swipeElm, {
-					from: {
-						opacity: 1
-					},
-					to: {
-						opacity: 0
-					},
-					duration: 500,
-					after: function () {
-						dockItem.show();
-						swipeElm.destroy();
-					}
-				});
-			}
-
-			if (el.hasCls('zcs-swipe-spam')) {
-				ZCS.app.fireEvent('moveMailItemToSpam', record);
-				anim.run(swipeElm, {
-					from: {
-						opacity: 1
-					},
-					to: {
-						opacity: 0
-					},
-					duration: 500,
-					after: function () {
-						dockItem.show();
-						swipeElm.destroy();
-					}
-				});
-			}
-		});
-
-		swipeElm.on('swipe', function () {
-			dockItem.show();
-			swipeElm.destroy();
-		});
-
-
+			swipeElm.on('swipe', function () {
+				dockItem.show();
+				swipeElm.destroy();
+			});
+		}
 	},
 
 	/**
