@@ -237,10 +237,11 @@ Ext.define('ZCS.controller.mail.ZtMsgController', {
 	},
 
 	doToggleQuotedText: function(msgBody) {
-		var msgView = this.getMsgView(),
+		var msgView = msgBody.up('msgview'),
 			msg = msgView.getMsg();
 
 		msgView.renderBody(!msgBody.showingQuotedText);
+		msgView.updateHeight();
 	},
 
 	/**
