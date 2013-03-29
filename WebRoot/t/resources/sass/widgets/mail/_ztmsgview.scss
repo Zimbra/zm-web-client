@@ -151,15 +151,22 @@ $msgHdrButtonTopOffset: $msgHdrButtonDelta;
 	}
 }
 
-.zcs-msgHdr-menuButton {
+.x-button.zcs-msgHdr-menuButton {
 	@extend .zcs-msgHdr-element;
-	background-image: url('../../touch/resources/themes/images/default/pictos/arrow_down.png');
-	background-size: 100% auto;
-	height: $msgHdrButtonSize;
-	right: $msgHdrStdMargin;
-	top: $msgHdrButtonTopOffset;
-	width: $msgHdrButtonSize;
-	@include opacity(.5);
+	right: .25em;
+	top: $msgHdrStdMargin;
+	font-size: 1.4em;
+
+	//border-width: 0;
+	//display: block;
+
+	&:active {
+		background-color: rgba(0,0,0,.25);
+	}
+
+	.x-button-icon.x-icon-mask {
+		background-color: #999;
+	}
 }
 
 /* END MSG HEADER */

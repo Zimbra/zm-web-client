@@ -46,14 +46,14 @@ $zimbra-button-active-color: rgba(255,255,255,.3);
 /**
  * Make our buttons flat, no border, bigger images.
  */
-.x-toolbar .x-button.zcs-flat {
-	@include zimbra-button;
-	&:active {
-		background-color: $zimbra-button-active-color;
-	}
-}
+//.x-toolbar .x-button.zcs-flat {
+//	@include zimbra-button;
+//	&:active {
+//		background-color: $zimbra-button-active-color;
+//	}
+//}
 
-.x-tabbar .x-button.zcs-flat {
+/*.x-tabbar*/ .x-button.zcs-flat {
 	@include zimbra-button;
 	&:active {
 		background-color: $zimbra-button-active-color;
