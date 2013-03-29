@@ -1,17 +1,17 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
- * 
+ *
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2013 VMware, Inc.
- * 
+ *
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
+ *
  * ***** END LICENSE BLOCK *****
  */
 # Very simple templates file. Each template has an ID. In JS, it is available as
@@ -88,7 +88,7 @@
 			</tpl>
 			<div class='zcs-msgHdr-link'>{[ZtMsg.details]}</div>
 			<a class='x-button-normal x-button x-iconalign-center x-layout-box-item x-stretched zcs-flat zcs-msgHdr-menuButton' onClick='return false;'>
-				<span class='x-button-icon arrow_down x-icon-mask'></span>
+				<span class='zcs-msgHeader-menuButton-span x-button-icon arrow_down x-icon-mask'></span>
 			</a>
 		</div>
 		<tpl if='tags'>
@@ -128,7 +128,7 @@
 			<div class='zcs-msgHdr-date'>{fullDateStr}</div>
 			<div class='zcs-msgHdr-link'>{[ZtMsg.hide]}</div>
 			<a class='x-button-normal x-button x-iconalign-center x-layout-box-item x-stretched zcs-flat zcs-msgHdr-menuButton' onClick='return false;'>
-				<span class='x-button-icon arrow_down x-icon-mask'></span>
+				<span class='x-button-icon arrow_down x-icon-mask zcs-msgHeader-menuButton-span'></span>
 			</a>
 		</div>
 		<tpl if='addrs.TO'>
