@@ -231,6 +231,7 @@ Ext.define('ZCS.controller.mail.ZtConvListController', {
 				ZCS.cache.remove(modify.id);
 				store.insert(0, newConv);
 				item = newConv;
+
 			}
 		}
 
@@ -242,6 +243,11 @@ Ext.define('ZCS.controller.mail.ZtConvListController', {
 
 		// let the conv itself handle the simple stuff
 		item.handleModifyNotification(modify);
+
+		//If this item is a draft, go ahead and select it, because the normal ext logic unselects it.
+		if (item.data.isDraft) {
+			this.getListView().select(item);
+		}
 	}
 },
 	function (thisClass) {
