@@ -1927,6 +1927,9 @@ function() {
 
 ZmCalViewController.prototype._promptDeleteAppt =
 function(appt, mode) {
+    if(!appt){
+        return;
+    }
 	if (appt instanceof Array) {
 		this._continueDelete(appt, mode);
 	} else {
