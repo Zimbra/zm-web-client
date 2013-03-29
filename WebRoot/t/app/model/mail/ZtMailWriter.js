@@ -57,8 +57,6 @@ Ext.define('ZCS.model.mail.ZtMailWriter', {
 		var json = this.getSoapEnvelope(request, data, method),
 		methodJson = json.Body[method + 'Request'];
 
-		var	item = data[0];
-
 		Ext.apply(methodJson, {
 			action: {
 				id: data.id,
@@ -72,6 +70,10 @@ Ext.define('ZCS.model.mail.ZtMailWriter', {
 
 		if (data.tn) {
 			methodJson.action.tn = data.tn;
+		}
+
+		if (data.tcon) {
+			methodJson.action.tcon = data.tcon;
 		}
 
 		return json;

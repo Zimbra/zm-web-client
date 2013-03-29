@@ -49,8 +49,6 @@ Ext.define('ZCS.model.mail.ZtConvWriter', {
 				fetch: 1
 			});
 
-			//Do not pass query in query string.
-			request.setParams({});
 		} else if (action === 'update') {
 
 			// 'update' operation means we're performing a ConvActionRequest
@@ -58,6 +56,8 @@ Ext.define('ZCS.model.mail.ZtConvWriter', {
 			json = this.getActionRequest(request, itemData, 'ConvAction');
 		}
 
+		// Do not pass query in query string.
+		request.setParams({});
 		request.setJsonData(json);
 
 		return request;

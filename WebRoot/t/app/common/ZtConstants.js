@@ -259,6 +259,14 @@ ZCS.constant.CONV_REPLY_OMIT = [
 	ZCS.constant.ID_JUNK
 ];
 
+// Folder constraint identifiers, used to manage which messages are moved
+// when a conversation is moved.
+ZCS.constant.TCON = {};
+ZCS.constant.TCON[ZCS.constant.ID_TRASH]    = 't';
+ZCS.constant.TCON[ZCS.constant.ID_JUNK]     = 'j';
+ZCS.constant.TCON[ZCS.constant.ID_SENT]     = 's';
+ZCS.constant.TCON[ZCS.constant.ID_DRAFTS]   = 'd';
+
 // System folder sort order
 ZCS.constant.FOLDER_SORT_VALUE = {};
 

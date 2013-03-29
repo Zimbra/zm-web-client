@@ -391,7 +391,11 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 		if (parsedId && (parsedId.localId === ZCS.constant.ID_TRASH || parsedId.localId === ZCS.constant.ID_JUNK)) {
 			Ext.Msg.confirm(ZtMsg.hardDeleteConvTitle, ZtMsg.hardDeleteConvText, function(buttonId) {
 				if (buttonId === 'yes') {
-					this.performOp(conv, 'delete', function() {
+					var data = {
+						op:     'delete',
+						tcon:   parsedId.localId === ZCS.constant.ID_TRASH ? 't' : 'j'
+					};
+					this.performOp(conv, data, function() {
 						ZCS.app.fireEvent('showToast', ZtMsg.convDeleted);
 						ZCS.app.getConvListController().removeConv(conv);
 					});
@@ -455,5 +459,25 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 			textarea = quickReplyTextarea.element.down('textarea').dom;
 
 		textarea.placeholder = text;
+	},
+
+	/**
+	 * Set tcon so that messages in Trash, Junk, Sent, or Drafts are not moved
+	 * unless the user is viewing one of those folders.
+	 */
+	getTcon: function() {
+
+		var curFolder = ZCS.session.getCurrentSearchOrganizer(),
+			curFolderId = curFolder && curFolder.get('itemId'),
+			parsedId = curFolderId && ZCS.util.parseId(curFolderId),
+			tcon = '';
+
+		Ext.each(Object.keys(ZCS.constant.TCON), function(folderId) {
+			if (folderId !== parsedId) {
+				tcon += ZCS.constant.TCON[folderId];
+			}
+		}, this);
+
+		return '-' + tcon;
 	}
 });

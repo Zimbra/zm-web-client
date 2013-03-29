@@ -199,13 +199,23 @@ Ext.define('ZCS.controller.mail.ZtMailItemController', {
 		var folderId = folder.get('id'),
 			me = this,
 			data = {
-				op: 'move',
-				l:  folderId
+				op:     'move',
+				l:      folderId,
+				tcon:   this.getTcon()
 			};
 
 		this.performOp(item, data, function() {
 			me.processMove(item, folderId);
 		});
+	},
+
+	/**
+	 * Returns a "tcon" string, which sets constraints on which messages are moved.
+	 * For example, if you move a conversation with three Inbox messages and one Trash
+	 * message to the folder "Archive", the Trash message does not move.
+	 */
+	getTcon: function() {
+		return '';
 	},
 
 	/**
@@ -239,9 +249,13 @@ Ext.define('ZCS.controller.mail.ZtMailItemController', {
 
 		item = item || this.getItem();
 
-		var me = this;
+		var me = this,
+			data = {
+				op:     'trash',
+				tcon:   this.getTcon()
+			};
 
-		this.performOp(item, 'trash', function() {
+		this.performOp(item, data, function() {
 			me.processMove(item, ZCS.constant.ID_TRASH);
 		});
 	},
@@ -277,7 +291,11 @@ Ext.define('ZCS.controller.mail.ZtMailItemController', {
 		var unspam = (item.get('folderId') === ZCS.constant.ID_JUNK),
 			op = unspam ? '!spam' : 'spam',
 			newFolder = unspam ? ZCS.constant.ID_INBOX : ZCS.constant.ID_JUNK,
-			me = this;
+			me = this,
+			data = {
+				op:     op,
+				tcon:   this.getTcon()
+			};
 
 		this.performOp(item, op, function() {
 			me.processMove(item, newFolder);
