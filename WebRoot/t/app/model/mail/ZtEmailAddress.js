@@ -185,11 +185,10 @@ Ext.define('ZCS.model.mail.ZtEmailAddress', {
 	},
 
 	/**
-	 * TODO: make this a robust email regular expression checker
 	 *
 	 */
 	isValid: function () {
-		return true;
+		return !!this.get('email').match(ZCS.model.mail.ZtEmailAddress.addrRegex);
 	}
 });
 
