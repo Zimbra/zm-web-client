@@ -563,7 +563,7 @@ UL.DwtListView-Rows {
 	margin: 0;
 }
 
-.TopRow DIV, .BottomRow DIV, .DwtMsgListMultiCol DIV {
+.TopRow DIV, .BottomRow DIV, .DwtMsgListMultiCol DIV, .SimpleContact DIV {
 #IFNDEF MSIE
 	display: inline-block;
 #ENDIF

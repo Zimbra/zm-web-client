@@ -517,7 +517,7 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 }
 
 .ZmConvExpanded,
-.ZmConvExpanded .ZmMsgListFlagsWrapper,
+.ZmConvExpanded .ZmListFlagsWrapper,
 .ZmConvExpanded .ZmMsgListDate {
 	@MailConvExpanded@
 }

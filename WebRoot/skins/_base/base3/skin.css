@@ -544,9 +544,13 @@ SELECT						{	@FieldBorder@	}
 #IFDEF MSIE
 .TopRow, .BottomRow                 { width:99%;  }
 #ENDIF
-.ZmMsgListFlagsWrapper              { position:absolute;right:-3px;background-color:@MailMsgBkgdColor@; }
+.ZmListFlagsWrapper					{ position:absolute;right:-3px;@ListItemContainer-normal@ }
+.SimpleContact .ZmListFlagsWrapper	{ right:0px;}
+.SimpleContact .ImgCheckboxUnchecked,
+.SimpleContact .ImgCheckboxChecked,
+.ZmContactIcon						{ margin:0 5px 0 2px;}
 #IFNDEF MSIE
-.ZmMsgListFlagsWrapper div			{ margin:0 2px 0 3px;}
+.ZmListFlagsWrapper div			{ margin:0 2px 0 3px;}
 #ENDIF
 .TopRow .ImgMsgRead, .TopRow .ImgMsgUnread	{ margin: 0 3px 0 3px; }
 .TopRow .ImgCheckboxUnchecked, .TopRow .ImgCheckboxChecked	{ margin: 0 0 0 -3px; }

@@ -1164,6 +1164,11 @@ function() {
 	}
 };
 
+ZmContactSimpleView.prototype.useListElement =
+function() {
+	return true;
+}
+
 /**
  * A contact is normally displayed in a list view with no headers, and shows
  * just an icon and name.
@@ -1174,72 +1179,70 @@ function() {
  * @private
  */
 ZmContactSimpleView.prototype._createItemHtml =
-function(contact, params) {
+function(contact, params, asHtml, count) {
 
 	params = params || {};
 
-	var div = this._getDiv(contact, params);
-	var folder = this._folderId && appCtxt.getById(this._folderId);
-	if (params.isDragProxy) {
-		div.style.width = "175px";
-		div.style.padding = "4px";
-	} else {
-		div.className = this._normalClass + " SimpleContact";
-	}
-
 	var htmlArr = [];
 	var idx = 0;
+	if (!params.isDragProxy) {
+		params.divClass = this._normalClass + " SimpleContact";
+	}
+	if (asHtml) {
+		idx = this._getDivHtml(contact, params, htmlArr, idx, count);
+	} else {
+		var div = this._getDiv(contact, params);
+	}
+	var folder = this._folderId && appCtxt.getById(this._folderId);
+	if (div) {
+		if (params.isDragProxy) {
+			div.style.width = "175px";
+			div.style.padding = "4px";
+		}
+	}
 
-	// table/row
-	idx = this._getTable(htmlArr, idx, params);
 	idx = this._getRow(htmlArr, idx, contact, params);
 
 	// checkbox selection
 	if (appCtxt.get(ZmSetting.SHOW_SELECTION_CHECKBOX)) {
-		htmlArr[idx++] = "<td style='vertical-align:middle;' width=20><center>";
 		idx = this._getImageHtml(htmlArr, idx, "CheckboxUnchecked", this._getFieldId(contact, ZmItem.F_SELECTION));
-		htmlArr[idx++] = "</center></td>";
 	}
 
 	// icon
-	htmlArr[idx++] = "<td style='vertical-align:middle;' width=20><center>";
-	htmlArr[idx++] = AjxImg.getImageHtml(contact.getIcon(folder), null, "id=" + this._getFieldId(contact, "type"));
-	htmlArr[idx++] = "</center></td>";
+	htmlArr[idx++] = AjxImg.getImageHtml(contact.getIcon(folder), null, "id=" + this._getFieldId(contact, "type"),null, null, ["ZmContactIcon"]);
 
 	// file as
-	htmlArr[idx++] = "<td id='" + this._getFieldId(contact, "fileas") + "' style='vertical-align:middle;'>&nbsp;";
+	htmlArr[idx++] = "<div id='" + this._getFieldId(contact, "fileas") + "'>";
 	htmlArr[idx++] = AjxStringUtil.htmlEncode(contact.getFileAs() || contact.getFileAsNoName());
-	htmlArr[idx++] = "</td>";
+	htmlArr[idx++] = "</div>";
+	htmlArr[idx++] = "<div class='ZmListFlagsWrapper'>";
 
 	if (!params.isDragProxy) {
 		// if read only, show lock icon in place of the tag column since we dont
 		// currently support tags for "read-only" contacts (i.e. shares)
 		var isLocked = folder ? folder.link && folder.isReadOnly() : contact.isLocked();
 		if (isLocked) {
-			htmlArr[idx++] = "<td width=16>";
 			htmlArr[idx++] = AjxImg.getImageHtml("ReadOnly");
-			htmlArr[idx++] = "</td>";
 		} else if (!contact.isReadOnly() && appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
 			// otherwise, show tag if there is one
-			htmlArr[idx++] = "<td style='vertical-align:middle;' width=16 class='Tag'>";
-			idx = this._getImageHtml(htmlArr, idx, contact.getTagImageInfo(), this._getFieldId(contact, ZmItem.F_TAG));
-			htmlArr[idx++] = "</td>";
+			idx = this._getImageHtml(htmlArr, idx, contact.getTagImageInfo(), this._getFieldId(contact, ZmItem.F_TAG), ["Tag"]);
 		}
 	}
 
 	if (appCtxt.get(ZmSetting.IM_ENABLED)) {
-		htmlArr[idx++] = "<td style='vertical-align:middle' width=16 class='Presence'>";
 		var presence = contact.getImPresence();
 		var img = presence ? presence.getIcon() : "Blank_16";
-		idx = this._getImageHtml(htmlArr, idx, img, this._getFieldId(contact, ZmItem.F_PRESENCE));
-		htmlArr[idx++] = "</td>";
+		idx = this._getImageHtml(htmlArr, idx, img, this._getFieldId(contact, ZmItem.F_PRESENCE), ["Presence"]);
 	}
 
-	htmlArr[idx++] = "</tr></table>";
+	htmlArr[idx++] = "</div></div></li>";
 
-	div.innerHTML = htmlArr.join("");
-
-	return div;
+	if (div) {
+		div.innerHTML = htmlArr.join("");
+		return div;
+	} else {
+		return htmlArr.join("");
+	}
 };
 
 /**

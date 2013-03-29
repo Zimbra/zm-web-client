@@ -511,12 +511,12 @@ TD.vSpace {
 
 .selected, 	/* TODO: used? */
 .Row-selected,
-.Row-selected .ZmMsgListFlagsWrapper,
+.Row-selected .ZmListFlagsWrapper,
 .Row-selected .ZmMsgListDate,
 .Row-selected-dragProxy,
 .Row-selected-disabled,
 .Row-selected-disabled .ZmMsgListDate,
-.Row-selected-disabled .ZmMsgListFlagsWrapper 		{	@ListItemContainer-selected@		}
+.Row-selected-disabled .ZmListFlagsWrapper 		{	@ListItemContainer-selected@		}
 
 /* .Row-matched, */
 .Row-matched-dragProxy 		{ 	@ListItemContainer-matched@		}
@@ -531,9 +531,9 @@ TD.vSpace {
 .Row-dragProxy,
 .Row-matched-dragProxy 		{	@ListItemContainer-dragProxy@		}
 
-.RowDouble-dragProxy .ZmMsgListFlagsWrapper,
+.RowDouble-dragProxy .ZmListFlagsWrapper,
 .RowDouble-dragProxy .ZmMsgListDate,
-.Row-dragProxy .ZmMsgListFlagsWrapper,
+.Row-dragProxy .ZmListFlagsWrapper,
 .Row-dragProxy .ZmMsgListDate	{	@ListItemContainer-dragProxy@	}
 
 /* list row TD's (eg: text) */
@@ -542,9 +542,9 @@ TD.vSpace {
 .Row DIV, .RowDouble DIV	{	@ListItemText-normal@				}
 
 .RowOdd TD, .RowOdd DIV		{	@ListItemText-alt@	}
-.RowOdd .ZmMsgListDate, .RowOdd .ZmMsgListFlagsWrapper	{	background-color:@ListItemBgColor-alt@;	}
+.RowOdd .ZmMsgListDate, .RowOdd .ZmListFlagsWrapper	{	background-color:@ListItemBgColor-alt@;	}
 
-LI.RowDouble {list-style: none;}
+LI.RowDouble, LI.Row {list-style: none;}
 
 .selected TD,	/* TODO: used? */
 
