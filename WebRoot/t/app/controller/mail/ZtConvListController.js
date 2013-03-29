@@ -94,15 +94,13 @@ Ext.define('ZCS.controller.mail.ZtConvListController', {
 	handleSwipe: function(list, index, convItem, record, e, eOpts) {
 		var convEl = convItem.element,
 			convElBox = convEl.getBox(),
-			buttonHeight = 30,
-			buttonWidth = 80,
-			buttonTop = convElBox.height / 2 - buttonHeight / 2;
+			buttonHeight = convElBox.height,
+			buttonWidth = 120,
 			swipeElm = Ext.dom.Element.create({
 				html: ZCS.controller.mail.ZtConvListController.swipeToDeleteTpl.apply({
 					width: buttonWidth,
 					height: buttonHeight
 				}),
-				style: "position: absolute; right: 10px; top: " + buttonTop + "px; width: " + buttonWidth + "px; height: " + buttonHeight + "px",
 				"class": 'zcs-outer-swipe-elm'
 			}),
 			dockItem = convEl.down('.x-dock'),
