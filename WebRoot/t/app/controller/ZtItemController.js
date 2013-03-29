@@ -47,7 +47,9 @@ Ext.define('ZCS.controller.ZtItemController', {
 	},
 
 	launch: function () {
+        //<debug>
 		Ext.Logger.verbose('STARTUP: item ctlr launch - ' + ZCS.util.getClassName(this));
+        //</debug>
 		this.callParent();
 	},
 
@@ -85,7 +87,9 @@ Ext.define('ZCS.controller.ZtItemController', {
 				data = { op: data };
 			}
 			data.success = function(item, operation) {
+                //<debug>
 				Ext.Logger.info('item op ' + data.op + ' done');
+                //</debug>
 				if (callback) {
 					callback(item);
 				}

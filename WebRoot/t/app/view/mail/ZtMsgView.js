@@ -50,7 +50,9 @@ Ext.define('ZCS.view.mail.ZtMsgView', {
 			updatedata: function(msgView, msgData) {
 
 				if (msgData && !this.up('.itempanel').suppressRedraw) {
+                    //<debug>
 					Ext.Logger.info('updatedata for msg ' + msgData.id);
+                    //</debug>
 					var msg = ZCS.cache.get(msgData.id),
 						loaded = !!msgData.isLoaded,
 						isSingleExpand = msg && msg.isExpand;

@@ -12,7 +12,7 @@
     }
 
     var xhr = new XMLHttpRequest();
-    xhr.open('GET', '/t/app.json', false);
+    xhr.open('GET', 'app.json', false);
     xhr.send(null);
 
     var options = eval("(" + xhr.responseText + ")"),

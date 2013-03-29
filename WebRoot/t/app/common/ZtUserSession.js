@@ -258,7 +258,9 @@ Ext.define('ZCS.common.ZtUserSession', {
 				organizer.leaf = true;
 			}
 
+            //<debug>
 			Ext.Logger.verbose('adding folder ' + organizer.path);
+            //</debug>
 			organizers.push(organizer);
 		}
 

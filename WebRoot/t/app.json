@@ -7,7 +7,7 @@
     /**
      * The file path to this application's front HTML document, relative to this app.json file
      */
-    "indexHtmlPath": "index.html",
+    "indexHtmlPath": "launchTouch",
 
     /**
      * The absolute URL to this application in development environment, i.e: the URL to run this application
@@ -36,11 +36,11 @@
      */
     "js": [
         {
-            "path": "t/touch/sencha-touch-debug.js",
+            "path": "touch/sencha-touch-debug.js",
             "x-bootstrap": true
         },
         {
-            "path": "t/app.js",
+            "path": "app.js",
             "bundle": true,  /* Indicates that all class dependencies are concatenated into this file when build */
             "update": "delta"
         }
@@ -64,9 +64,13 @@
      */
     "css": [
         {
-            "path": "t/resources/css/app.css",
+            "path": "resources/css/app.css",
             "update": "delta"
-        }
+        },
+	{
+	    "path": "resources/css/msgbody.css",
+ 	    "update": "delta"
+	}
     ],
 
     /**
@@ -77,7 +81,7 @@
          * List of items in the CACHE MANIFEST section
          */
         "cache": [
-            "index.html"
+            "launchTouch"
         ],
         /**
          * List of items in the NETWORK section

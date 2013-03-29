@@ -45,7 +45,9 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
 	 * Moves the contact to Trash.
 	 */
 	doDelete: function() {
+        //<debug>
 		Ext.Logger.warn("TODO: contact controller DELETE");
+        //</debug>
 	},
 
 	/**
@@ -54,7 +56,9 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
 	 * @param {ZtContact}   contact     contact to show
 	 */
 	showItem: function(contact) {
+        //<debug>
 		Ext.Logger.info("contact controller: show contact " + contact.getId());
+        //</debug>
 		this.callParent(arguments);
 		this.getItemPanelToolbar().setTitle(contact.get('lastName') + ', ' + contact.get('firstName'));
 		var tpl = this.getContactView().getTpl();

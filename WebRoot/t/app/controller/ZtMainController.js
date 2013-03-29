@@ -86,7 +86,9 @@ Ext.define('ZCS.controller.ZtMainController', {
 		if (this.pollId) {
 			clearTimeout(this.pollId);
 		}
+        //<debug>
 		Ext.Logger.poll('scheduling poll');
+        //</debug>
 		this.pollId = Ext.defer(this.sendPoll, ZCS.constant.POLL_INTERVAL * 1000, this);
 	},
 
@@ -96,7 +98,9 @@ Ext.define('ZCS.controller.ZtMainController', {
 	 */
 	sendPoll: function() {
 
+        //<debug>
 		Ext.Logger.poll('sending poll');
+        //</debug>
 		var server = Ext.getStore('ZtConvStore').getProxy(),
 			options = {
 				url: ZCS.constant.SERVICE_URL_BASE + 'NoOpRequest',

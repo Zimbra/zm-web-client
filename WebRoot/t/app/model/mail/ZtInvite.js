@@ -139,7 +139,9 @@ Ext.define('ZCS.model.mail.ZtInvite', {
 				return ZCS.util.convertZimbraDate(node.d);
 			}
 			else {
-				Ext.Logger.warn('Unsupported date format: ' + JSON.stringify(node));
+				//<debug>
+                Ext.Logger.warn('Unsupported date format: ' + JSON.stringify(node));
+                //</debug>
 				return null;
 			}
 		},

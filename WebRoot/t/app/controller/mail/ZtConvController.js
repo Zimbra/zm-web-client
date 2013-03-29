@@ -104,7 +104,9 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 	 */
 	showItem: function(conv) {
 
+        //<debug>
 		Ext.Logger.info("conv controller: show conv " + conv.getId());
+        //</debug>
 
 		var curFolder = ZCS.session.getCurrentSearchOrganizer(),
 			curFolderId = curFolder && curFolder.get('itemId'),

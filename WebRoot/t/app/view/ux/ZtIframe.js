@@ -49,8 +49,9 @@ Ext.define('ZCS.view.ux.ZtIframe', {
 		});
 
 		this.setIframeEl(iframe);
-
+        //<debug>
 		Ext.Logger.iframe('IFRAME with name ' + this.getName() + ' has DOM ID: ' + iframe.dom.id);
+        //</debug>
 	},
 
 	getDoc: function() {
@@ -98,9 +99,13 @@ Ext.define('ZCS.view.ux.ZtIframe', {
 					id = changeId ? -oldTouch.identifier : oldTouch.identifier;
 
 					if (!oldTouch.screenX) {
+                        //<debug>
 						Ext.Logger.iframe('Undefined screenX found.');
+                        //</debug>
 						if (oldTouch.pageX) {
-							Ext.Logger.iframe('PageX found');
+                            //<debug>
+                            Ext.Logger.iframe('PageX found');
+                            //</debug>
 							pageX = oldTouch.pageX + position.left;
 						} else {
 							pageX = undefined;
@@ -145,7 +150,9 @@ Ext.define('ZCS.view.ux.ZtIframe', {
 					eventPageY;
 
 				if (ev.touches[0] === undefined) {
+                    //<debug>
 					Ext.Logger.iframe('Touch has no events in touches list');
+                    //</debug>
 				}
 
 
@@ -242,7 +249,9 @@ Ext.define('ZCS.view.ux.ZtIframe', {
 						lastPageY = 0;
 					}
 
+                    //<debug>
 					Ext.Logger.iframe('[' + xDifferential + ',' + yDifferential+']');
+                    //</debug>
 
 					if (yDifferentialIsHigh && ev.type === 'touchmove') {
 						//Cache these for the next time the handler is called.
@@ -256,7 +265,9 @@ Ext.define('ZCS.view.ux.ZtIframe', {
 					}
 
 				} else {
+                    //<debug>
 					Ext.Logger.iframe('Handling refired event');
+                    //</debug>
 				}
 			};
 
@@ -316,16 +327,19 @@ Ext.define('ZCS.view.ux.ZtIframe', {
 			iframe = this.getIframeEl(),
 			iframeWidth = iframe.getWidth();
 
-		//
 		if (contentWidth > iframeWidth) {
+            //<debug>
 			Ext.Logger.iframe('Set iframe width to ' + contentWidth);
+            //</debug>
 			iframe.setWidth(contentWidth);
 		}
 
 		var contentHeight = Math.max(docEl.scrollHeight, contentHeight),
 			computedHeight = ZCS.htmlutil.getHeightFromComputedStyle(body, doc),
 			childrenHeight = ZCS.htmlutil.getHeightFromChildren(body, doc);
+        //<debug>
 		Ext.Logger.iframe('IFRAME content heights: ' + [contentHeight, docEl.scrollHeight, computedHeight, childrenHeight].join(' / '));
+        //</debug>
 
 		// Since IFRAMEs are reused, childrenHeight appears to be the most reliable measure of the height
 		// of the content. The others tend to persist even if we clear the IFRAME's content. An IFRAME has
@@ -337,14 +351,18 @@ Ext.define('ZCS.view.ux.ZtIframe', {
 
 		//Only modify the dom and fire corresponding event if it's needed.
 		if (iframe.getHeight() !== height) {
+            //<debug>
 			Ext.Logger.iframe('Set IFRAME height to ' + height);
+            //</debug>
 			iframe.setHeight(height);
 			this.setHeight(height);
 			this.fireEvent('msgContentResize');
 		}
 
 		if (callback) {
+            //<debug>
 			Ext.Logger.iframe('Running iframe content callback');
+            //</debug>
 			callback();
 		}
 	}

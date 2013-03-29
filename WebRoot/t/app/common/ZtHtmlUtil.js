@@ -150,7 +150,9 @@ Ext.define('ZCS.common.ZtHtmlUtil', {
 
 		doc = doc || window.document;
 
+        //<debug>
 		Ext.Logger.iframe(ln + ' child nodes');
+        //</debug>
 		for (i = 0; i < ln; i++) {
 			child = el.childNodes[i];
 			if (child && child.nodeType === Node.ELEMENT_NODE) {

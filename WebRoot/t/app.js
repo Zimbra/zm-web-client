@@ -16,8 +16,8 @@
  */
 //<debug>
 Ext.Loader.setPath({
-    'Ext': 't/touch/src',
-    'ZCS': 't/app'
+    'Ext': 'touch/src',
+    'ZCS': 'app'
 });
 //</debug>
 
@@ -101,15 +101,16 @@ Ext.application({
         // Destroy the #appLoadingIndicator element
         Ext.fly('appLoadingIndicator').destroy();
 
-		//<feature logger>
+		//<debug>
 	    Ext.Logger.getWriters().console.getFormatter().setMessageFormat('{message}');
-	    //</feature>
+	    //</debug>
 
 	    // Process the inline data (GetInfoResponse and SearchResponse)
 	    ZCS.common.ZtUserSession.initSession(window.inlineData);
 
+        //<debug>
 	    Ext.Logger.info('STARTUP: app launch');
-
+        //</debug>
 	    // Note: initial view created by ZtMainController
     },
 

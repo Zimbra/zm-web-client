@@ -51,7 +51,9 @@ Ext.define('ZCS.model.ZtMenuList', {
 				var action = record.get('action'),
 					menu = this.up('panel'),
 					args = record.get('args') || [];
+                //<debug>
 				Ext.Logger.verbose('Menu click: ' + action);
+                //</debug>
 				var listener = record.get('listener');
 				if (listener && !target.getDisabled()) {
 					menu.popdown();

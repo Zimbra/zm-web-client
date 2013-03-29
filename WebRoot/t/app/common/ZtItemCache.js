@@ -57,7 +57,9 @@ Ext.define('ZCS.common.ZtItemCache', {
 	set: function(key, item, altKey) {
 
 		if (!key) {
+            //<debug>
 			Ext.Logger.warn('Trying to add item to item cache without a key');
+            //</debug>
 			return;
 		}
 

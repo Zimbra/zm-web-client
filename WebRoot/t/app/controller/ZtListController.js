@@ -69,8 +69,9 @@ Ext.define('ZCS.controller.ZtListController', {
 	launch: function () {
 
 		var defaultQuery = this.getDefaultQuery();
-
-		Ext.Logger.verbose('STARTUP: list ctlr launch - ' + ZCS.util.getClassName(this));
+        //<debug>
+		Ext.Logger.verbose('STARTUP: list ctlr launch - ' + ZCS.util.getClassName(this))
+        //</debug>
 		this.callParent();
 
 		//Set the proxies params so this parameter persists between paging requests.
@@ -159,7 +160,9 @@ Ext.define('ZCS.controller.ZtListController', {
 		}
 
 		this.getItemController().clear();
+        //<debug>
 		Ext.Logger.info('SearchRequest: ' + query);
+        //</debug>
 		if (folder) {
 			this.getSearchBox().setValue('');
 		}

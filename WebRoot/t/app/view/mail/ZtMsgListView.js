@@ -153,12 +153,16 @@ Ext.define('ZCS.view.mail.ZtMsgListView', {
 		var scroller = this.getScrollable();
 
 		scroller.getScroller().on('scrollend', function () {
-			Ext.Logger.iframe('Scoll end on list');
+			//<debug>
+            Ext.Logger.iframe('Scoll end on list');
+            //</debug>
 			this.doIframeProofPositioning();
 		}, this);
 
 		scroller.getScroller().on('scrollstart', function () {
+            //<debug>
 			Ext.Logger.iframe('Scroll start on list');
+            //</debug>
 			this.doIframeProofPositioning();
 		}, this);
 	},

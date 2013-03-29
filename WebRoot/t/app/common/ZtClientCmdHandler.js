@@ -49,7 +49,9 @@ Ext.define('ZCS.common.ZtClientCmdHandler', {
 			return func.apply(me, args);
 		}
 		else {
+            //<debug>
 			Ext.Logger.warn('Unknown client command: ' + action);
+            //</debug>
 		}
 	},
 

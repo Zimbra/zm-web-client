@@ -356,7 +356,9 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 					{ text: ZtMsg.cancel, itemId: 'cancel', ui: 'neutral' }
 				],
 				fn: function(buttonId) {
+                    //<debug>
 					Ext.Logger.info('Compose cancel shield button: ' + buttonId);
+                    //</debug>
 					if (buttonId === 'yes') {
 						me.doSaveDraft();
 						me.endComposeSession();
@@ -428,7 +430,9 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 			isNewCompose = (action === ZCS.constant.OP_COMPOSE),
 			origMsg = !isNewCompose && this.getOrigMsg();
 
+        //<debug>
 		Ext.Logger.info('Send message');
+        //</debug>
 
 		if (origMsg) {
 			var attArea = this.getAttachmentsField(),
@@ -594,7 +598,9 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 	 * @param {Stirng}  bubbleId    DOM ID of the attachment bubble
 	 */
 	doRemoveAttachment: function(bubbleId) {
-		Ext.Logger.info('Remove orig att ' + bubbleId);
+		//<debug>
+        Ext.Logger.info('Remove orig att ' + bubbleId);
+        //</debug>
 		var bubble = Ext.fly(bubbleId);
 		if (bubble) {
 			bubble.destroy();

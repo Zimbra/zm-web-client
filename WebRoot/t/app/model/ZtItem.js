@@ -68,7 +68,9 @@ Ext.define('ZCS.model.ZtItem', {
 				if (tag) {
 					return tag.getData();
 				} else {
-					Ext.Logger.warn('Encountered an item with a tag that is not in cache and thus will not display.');
+					//<debug>
+                    Ext.Logger.warn('Encountered an item with a tag that is not in cache and thus will not display.');
+                    //</debug>
 				}
 			});
 		}

@@ -62,6 +62,8 @@ Ext.define('ZCS.controller.contacts.ZtContactListController', {
 	},
 
 	doNewContact: function() {
+        //<debug>
 		Ext.Logger.warn('TODO: Create new contact');
+        //</debug>
 	}
 });

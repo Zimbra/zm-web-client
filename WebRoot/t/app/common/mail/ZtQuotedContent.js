@@ -331,9 +331,9 @@ Ext.define('ZCS.common.mail.ZtQuotedContent', {
 		var nodeName = el.nodeName.toLowerCase(),
 			processChildren = true,
 			type, testLine;
-
+        //<debug>
 		Ext.Logger.verbose('html', Ext.String.repeat('&nbsp;&nbsp;&nbsp;&nbsp;', ctxt.level) + nodeName + ((nodeName === '#text' && /\S+/.test(el.nodeValue) ? ' - ' + el.nodeValue.substr(0, 20) : '')));
-
+        //</debug>
 		// Text node: test against our regexes
 		if (nodeName === '#text') {
 			if (!ZCS.constant.REGEX_NON_WHITESPACE.test(el.nodeValue)) {

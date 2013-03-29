@@ -61,10 +61,13 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 			ZCS.view.mail.ZtMsgBody.numImgsLoaded += 1;
 			var toLoad = ZCS.view.mail.ZtMsgBody.numImgsToLoad,
 				loaded = ZCS.view.mail.ZtMsgBody.numImgsLoaded;
-
+            //<debug>
 			Ext.Logger.image('Img onload handler: ' + loaded + ' / ' + toLoad);
+            //</debug>
 			if (toLoad > 0 && loaded === toLoad) {
+                //<debug>
 				Ext.Logger.image('Img onload handler: resize iframe');
+                //</debug>
 				me.iframe.resizeToContent();
 			}
 			img.onload = null;
@@ -81,7 +84,9 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 	 */
 	render: function(msg, showQuotedText) {
 
+        //<debug>
 		Ext.Logger.conv('ZtMsgBody render into element ' + this.element.id);
+        //</debug>
 
 		// if this is the last msg in the conv to be rendered, we don't hide quoted text
 		var store = this.up('mailitemview').getStore(),
@@ -122,7 +127,9 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 		html = ZCS.htmlutil.trimAndWrapContent(html);
 
 		if (this.getUsingIframe()) {
+            //<debug>
 			Ext.Logger.conv('Use IFRAME for [' + msg.get('fragment') + ']');
+            //</debug>
 			if (container) {
 				container.setHtml('');
 				container.hide();
@@ -164,7 +171,9 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 			iframe.show();
 		}
 		else {
+            //<debug>
 			Ext.Logger.conv('No IFRAME for [' + msg.get('fragment') + ']');
+            //</debug>
 			if (iframe) {
 				iframe.hide();
 			}
@@ -345,7 +354,9 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 		}
 
 		if (fixedBackground) {
+            //<debug>
 			Ext.Logger.image('Background handled, resize on timer');
+            //</debug>
 			Ext.defer(this.iframe.resizeToContent, 500, this.iframe);
 		}
 
@@ -379,7 +390,9 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 			pnValue = el.getAttribute(pnAttr);
 		}
 		catch(e) {
+            //<debug>
 			Ext.Logger.warn('ZtMsgBody.restoreImages: exception accessing base attribute ' + attr + ' in ' + el.nodeName);
+            //</debug>
 		}
 
 		value = baseValue || dfValue || pnValue;
@@ -460,7 +473,9 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 					flex: 1,
 					text: ZtMsg.loadImages,
 					handler: function() {
+                        //<debug>
 						Ext.Logger.info('load images');
+                        //</debug>
 						if (!this.up('msgview').readOnly) {
 							this.up('msgbody').showExternalImages();
 						}
@@ -500,7 +515,9 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 		}, this);
 
 		if (fixedBackground) {
+            //<debug>
 			Ext.Logger.image('External background loaded, resize on timer');
+            //</debug>
 			Ext.defer(this.iframe.resizeToContent, 500, this.iframe);
 		}
 
