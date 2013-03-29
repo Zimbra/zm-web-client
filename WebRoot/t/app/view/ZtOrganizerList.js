@@ -2,12 +2,12 @@
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2013 VMware, Inc.
- * 
+ *
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
@@ -48,9 +48,18 @@ Ext.define('ZCS.view.ZtOrganizerList', {
 	 * Runs a search that will show the folder's contents.
 	 */
 	onItemTap: function(list, index, target, folder, e) {
+
+		//Stop the base dom event, which for some reason, on devices, will trigger
+		//a focus on an input which is moved into the coordinates of this event by
+		//this event handler.  The current thought is that this event handler operates on touchstart,
+		//and focus operates on touchend.
+
+		e.preventDefault();
+
 		this.fireEvent('search', folder.getQuery(), folder);
 
 		this.fireEvent('itemtap', list, index, target, folder, e);
+
 	},
 
 	/**
