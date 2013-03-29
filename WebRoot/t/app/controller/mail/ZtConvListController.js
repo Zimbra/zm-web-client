@@ -112,7 +112,7 @@ Ext.define('ZCS.controller.mail.ZtConvListController', {
 
 		e.preventDefault();
 
-		if (sameItemSwipeButton && !sameItemSwipeButton.fading) {
+		if (sameItemSwipeButton) {
 			sameItemSwipeButton.fadeAway();
 		} else {
 
