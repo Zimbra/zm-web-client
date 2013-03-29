@@ -570,6 +570,7 @@
       <url-pattern>/h/mbriefcases</url-pattern>
       <url-pattern>/h/viewimages</url-pattern>
       <url-pattern>/h/autoSaveDraft</url-pattern>
+      <url-pattern>/t/launchTouch</url-pattern>
     </jsp-property-group>
   </jsp-config>
 
