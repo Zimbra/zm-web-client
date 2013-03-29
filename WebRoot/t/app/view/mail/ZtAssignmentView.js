@@ -128,6 +128,7 @@ Ext.define('ZCS.view.mail.ZtAssignmentView', {
 				items: [
 					{xtype: 'spacer'}, {
 					xtype: 'button',
+					ui: 'neutral',
 					text: 'Cancel',
 					handler: function () {
 						this.up('.assignmentview').onClose();

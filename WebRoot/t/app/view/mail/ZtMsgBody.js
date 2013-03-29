@@ -470,6 +470,7 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 				},
 				{
 					xtype: 'button',
+					ui: 'neutral',
 					flex: 1,
 					text: ZtMsg.loadImages,
 					handler: function() {
