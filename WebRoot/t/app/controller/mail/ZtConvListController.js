@@ -51,7 +51,8 @@ Ext.define('ZCS.controller.mail.ZtConvListController', {
 				newItem: 'doCompose'
 			},
 			listView: {
-				itemswipe: 'handleSwipe'
+				itemswipe: 'handleSwipe',
+				initialize: 'setupScrollHandling'
 			}
 		},
 
@@ -105,58 +106,77 @@ Ext.define('ZCS.controller.mail.ZtConvListController', {
 				"class": 'zcs-outer-swipe-elm'
 			}),
 			dockItem = convEl.down('.x-dock'),
-			existingSwipeButton = convEl.down('.zcs-outer-swipe-elm'),
+			sameItemSwipeButton = convEl.down('.zcs-outer-swipe-elm'),
+			anySwipeButton = list.element.down('.zcs-outer-swipe-elm'),
 			anim = Ext.create('Ext.Anim');
 
 		e.preventDefault();
 
-		if (existingSwipeButton) {
-			existingSwipeButton.destroy();
+		if (sameItemSwipeButton && !sameItemSwipeButton.fading) {
+			sameItemSwipeButton.fadeAway();
 		} else {
-			swipeElm.insertAfter(Ext.fly(convEl.dom.children[0]));
+
+			if (anySwipeButton && !anySwipeButton.fading) {
+				anySwipeButton.fadeAway();
+			}
+
+			swipeElm.fadeAway = function () {
+				var fadingButton = swipeElm;
+				fadingButton.fading = true;
+				Ext.Anim.run(fadingButton, 'fade', {
+					after: function() {
+						fadingButton.destroy();
+					},
+					out: true
+				})
+			}
 
 			swipeElm.on('tap', function (event, node, options, eOpts) {
 				var el = Ext.fly(event.target);
 				if (el.hasCls('zcs-swipe-delete')) {
 					ZCS.app.fireEvent('deleteMailItem', record);
-					anim.run(swipeElm, {
-						from: {
-							opacity: 1
-						},
-						to: {
-							opacity: 0
-						},
-						duration: 500,
-						after: function () {
-							dockItem.show();
-							swipeElm.destroy();
-						}
-					});
+					swipeElm.fadeAway();
 				}
 
 				if (el.hasCls('zcs-swipe-spam')) {
 					ZCS.app.fireEvent('moveMailItemToSpam', record);
-					anim.run(swipeElm, {
-						from: {
-							opacity: 1
-						},
-						to: {
-							opacity: 0
-						},
-						duration: 500,
-						after: function () {
-							dockItem.show();
-							swipeElm.destroy();
-						}
-					});
+					swipeElm.fadeAway();
 				}
 			});
 
 			swipeElm.on('swipe', function () {
-				dockItem.show();
-				swipeElm.destroy();
+				swipeElm.fadeAway();
 			});
+
+			//Delay this so any scroll that occurs before a swiper has a chance to complete
+			Ext.defer(function () {
+				swipeElm.insertAfter(Ext.fly(convEl.dom.children[0]));
+			}, 100);
+
 		}
+	},
+
+	setupScrollHandling: function (list) {
+		//Make sure no delete buttons are hanging around after
+		//a data change event or on a scroll
+		var scroller = list.getScrollable().getScroller(),
+			cleanSwipeButtons = function () {
+				var swipeElm = list.element.down('.zcs-outer-swipe-elm');
+				if (swipeElm) {
+					swipeElm.fadeAway();
+				}
+			},
+			nukeSwipeButtons = function () {
+				//Seeing a button fade away from the previous list is weird, destroy is instead.
+				var swipeElm = list.element.down('.zcs-outer-swipe-elm');
+				if (swipeElm) {
+					swipeElm.destroy();
+				}
+			};
+
+		scroller.on('scrollstart', cleanSwipeButtons);
+
+		list.getStore().on('load', nukeSwipeButtons);
 	},
 
 	/**
