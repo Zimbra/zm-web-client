@@ -2633,6 +2633,16 @@ function() {
 
 
 /**
+ * Return the confirmExitMethod that can be used for window.onbeforeunload
+ *
+ */
+ZmZimbraMail.getConfirmExitMethod =
+function(){
+    return this._confirmExitMethod;
+}
+
+
+/**
  * @private
  */
 ZmZimbraMail._onClickLogOff =

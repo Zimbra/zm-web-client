@@ -1121,7 +1121,7 @@ function(ev) {
 ZmSettings.prototype._newSkinYesCallback =
 function(skin, dialog) {
 	dialog.popdown();
-	window.onbeforeunload = null;
+	window.onbeforeunload = ZmZimbraMail.getConfirmExitMethod();
 	var url = AjxUtil.formatUrl({qsArgs:{skin:skin}});
 	DBG.println(AjxDebug.DBG1, "skin change, redirect to: " + url);
 	ZmZimbraMail.sendRedirect(url); // redirect to self to force reload
@@ -1133,7 +1133,7 @@ function(skin, dialog) {
 ZmSettings.prototype._refreshBrowserCallback =
 function(dialog) {
 	dialog.popdown();
-	window.onbeforeunload = null;
+	window.onbeforeunload = ZmZimbraMail.getConfirmExitMethod();
 	var url = AjxUtil.formatUrl({});
 	window.location.replace(url);
 };
