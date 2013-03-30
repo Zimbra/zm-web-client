@@ -465,7 +465,7 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 
 	setOutboundMessage: function(msg, values, action, origMsg, origAtt) {
 
-		msg = msg || Ext.create('ZCS.model.mail.ZtMailMsg');
+		msg = /*msg || */Ext.create('ZCS.model.mail.ZtMailMsg');
 
 		var from = ZCS.mailutil.getFromAddress(),
 			addrs = Ext.Array.clean([].concat(from, values[ZCS.constant.TO], values[ZCS.constant.CC], values[ZCS.constant.BCC]));
