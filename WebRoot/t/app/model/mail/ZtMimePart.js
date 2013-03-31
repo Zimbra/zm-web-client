@@ -117,8 +117,7 @@ Ext.define('ZCS.model.mail.ZtMimePart', {
 			hasContent = (ZCS.mime.isRenderableImage(type) || this.get('hasContent')),
 			hasSize = (this.get('size') > 0),
 
-			addAsAtt = isAtt || (isBody && !hasContent && hasSize && !isIgnored),
-			addAsBodyPart = isBody && hasContent;
+			addAsAtt = isAtt || (isBody && !hasContent && hasSize && !isIgnored);
 
 		if (ctxt.contentTypes) {
 			ctxt.contentTypes[type] = true;
@@ -128,7 +127,7 @@ Ext.define('ZCS.model.mail.ZtMimePart', {
 			ctxt.attachments.push(this);
 		}
 
-		if (addAsBodyPart && ctxt.bodyParts) {
+		if (isBody && ctxt.bodyParts) {
 			ctxt.bodyParts.push(this);
 		}
 
