@@ -54,7 +54,7 @@ Ext.application({
 		writers: {
 			console: {
 				xclass: 'Ext.log.writer.Console',
-				throwOnErrors: true,
+				throwOnErrors: false,
 				formatter: {
 					xclass: 'Ext.log.formatter.Default'
 				}
