@@ -37,7 +37,7 @@ Ext.define('ZCS.common.ZtSearch', {
 
 		var query = this.getQuery(),
 			q = query && Ext.String.trim(query),
-			m = q && q.match(/^(in|tag):["']?([\w \/]+)["']?$/);
+			m = q && q.match(ZCS.constant.REGEX_FOLDER_TAG_SEARCH);
 
 		if (m && m.length) {
 			var	path = m[2],

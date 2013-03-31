@@ -470,18 +470,19 @@ ZCS.constant.ADDITIONAL_MAIL_HEADERS = [
 ];
 
 // Useful regexes
-ZCS.constant.REGEX_NON_WHITESPACE = /\S+/;
-ZCS.constant.REGEX_SPLIT = /\r\n|\r|\n/;
-ZCS.constant.REGEX_SUBJ_PREFIX = new RegExp('^\\s*(Re:|Fw:|Fwd:|' + ZtMsg.rePrefix + '|' + ZtMsg.fwdPrefix + '|' + ZtMsg.fwPrefix + ')' + '\\s*', 'i');
-ZCS.constant.REGEX_SPACE_WORD = new RegExp('\\s*\\S+', 'g');
-ZCS.constant.REGEX_MSG_SEP = new RegExp('^\\s*--+\\s*(' + ZtMsg.originalMessage + '|' + ZtMsg.forwardedMessage + ')\\s*--+', 'i');
-ZCS.constant.REGEX_SIG = /^(- ?-+)|(__+)\r?$/;
-ZCS.constant.REGEX_HDR = /^\s*\w+:/;
-ZCS.constant.REGEX_COLON = /\S+:$/;
-ZCS.constant.REGEX_IMG_SRC_CID = /<img([^>]*)\ssrc=["']cid:/gi;
-ZCS.constant.REGEX_URL = /(((https?):\/\/)|(www\.[\w\.\_\-]+))[^\s\xA0\(\)\<\>\[\]\{\}\'\"]*/gi;
+ZCS.constant.REGEX_NON_WHITESPACE       = /\S+/;
+ZCS.constant.REGEX_SPLIT                = /\r\n|\r|\n/;
+ZCS.constant.REGEX_SUBJ_PREFIX          = new RegExp('^\\s*(Re:|Fw:|Fwd:|' + ZtMsg.rePrefix + '|' + ZtMsg.fwdPrefix + '|' + ZtMsg.fwPrefix + ')' + '\\s*', 'i');
+ZCS.constant.REGEX_SPACE_WORD           = new RegExp('\\s*\\S+', 'g');
+ZCS.constant.REGEX_MSG_SEP              = new RegExp('^\\s*--+\\s*(' + ZtMsg.originalMessage + '|' + ZtMsg.forwardedMessage + ')\\s*--+', 'i');
+ZCS.constant.REGEX_SIG                  = /^(- ?-+)|(__+)\r?$/;
+ZCS.constant.REGEX_HDR                  = /^\s*\w+:/;
+ZCS.constant.REGEX_COLON                = /\S+:$/;
+ZCS.constant.REGEX_IMG_SRC_CID          = /<img([^>]*)\ssrc=["']cid:/gi;
+ZCS.constant.REGEX_URL                  = /(((https?):\/\/)|(www\.[\w\.\_\-]+))[^\s\xA0\(\)\<\>\[\]\{\}\'\"]*/gi;
 // simple email regex - see ZtEmailAddress for fancier ones
-ZCS.constant.REGEX_EMAIL = /((mailto:)?\b[A-Z0-9\._%+-]+@[A-Z0-9\.-]+\.[A-Z]{2,5})\b/gi;
+ZCS.constant.REGEX_EMAIL                = /((mailto:)?\b[A-Z0-9\._%+-]+@[A-Z0-9\.-]+\.[A-Z]{2,5})\b/gi;
+ZCS.constant.REGEX_FOLDER_TAG_SEARCH    = /^(in|tag):["']?([^\x00-\x1F\x7F:\"]+)["']?$/;
 
 // URL paths
 ZCS.constant.PATH_MSG_FETCH = '/service/home/~/';
