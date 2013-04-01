@@ -1,0 +1,34 @@
+<project name="ProdTouch" default="build-prod-touch">
+    <target name="find-senchacmd">
+        <!--
+        Run "which sencha" to find the Sencha Cmd basedir and get "senchacmd.dir" setup.
+        -->
+        <exec executable="which">
+            <arg value="sencha"/>
+            <redirector output=".senchacmdpath" alwayslog="true"/>
+        </exec>
+
+        <loadfile property="senchacmd.dir" srcfile=".senchacmdpath"/>
+        <delete file=".senchacmdpath"/>
+        <echo>Using Sencha Cmd from ${senchacmd.dir}</echo>
+    </target>
+
+    <target name="build-prod-touch" depends="find-senchacmd">
+        <!--
+        Generate prod build for touch client using "sencha app build production"
+        -->
+        <path id="sencha.class.path">
+            <fileset dir="${senchacmd.dir}/../lib" includes="*.jar"/>
+            <fileset dir="${senchacmd.dir}/.." includes="*.jar"/>
+        </path>
+
+        <taskdef resource="com/sencha/ant/antlib.xml" classpathref="sencha.class.path" />
+
+        <x-sencha-command>
+            app
+            build
+            production
+        </x-sencha-command>
+
+    </target>
+</project>
