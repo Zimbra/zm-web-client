@@ -228,6 +228,9 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 			if (!isHtml || m.toLowerCase().indexOf('mailto:') !== 0) {
 				return Ext.String.format("<a href='#' addr='{0}'>{0}</a>", m);
 			}
+			else {
+				return m;
+			}
 		});
 
 		return content;
