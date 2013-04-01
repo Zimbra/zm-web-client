@@ -312,7 +312,7 @@ Ext.define('ZCS.common.ZtUserSession', {
 				}
 			}
 			else if (setting.getType() === ZCS.constant.TYPE_BOOLEAN) {
-				value = !!(value && value.toLowerCase() === 'true') || 'false';
+				value = !!(value && value.toLowerCase() === 'true');
 			}
 
 			setting.setValue(value);
