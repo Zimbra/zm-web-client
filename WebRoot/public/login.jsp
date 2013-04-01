@@ -190,26 +190,18 @@
                     </c:redirect>
                 </c:when>
                 <c:when test="${client eq 'touch'}">
-                    <c:choose>
-                        <c:when test="${(param.loginOp eq 'login') && !(empty param.username) && !(empty param.password)}">
-                            <c:redirect url="/">
-                                <c:forEach var="p" items="${paramValues}">
-                                    <c:forEach var='value' items='${p.value}'>
-                                        <c:if test="${not fn:contains(ignoredQueryParams, p.key)}">
-                                            <c:param name="${p.key}" value='${value}'/>
-                                        </c:if>
-                                    </c:forEach>
-                                </c:forEach>
-                                <c:if test="${param.client eq 'touch'}">
-                                    <c:param name='client' value='touch'/>
+                    <c:redirect url="/t/launchTouch">
+                        <c:forEach var="p" items="${paramValues}">
+                            <c:forEach var='value' items='${p.value}'>
+                                <c:if test="${not fn:contains(ignoredQueryParams, p.key)}">
+                                    <c:param name="${p.key}" value='${value}'/>
                                 </c:if>
-                            </c:redirect>
-                        </c:when>
-                        <c:otherwise>
-                           <%--<jsp:forward page="/public/launchTouch.jsp"/>--%>
-                            <c:redirect url="/t/launchTouch"/>
-                        </c:otherwise>
-                    </c:choose>
+                            </c:forEach>
+                        </c:forEach>
+                        <c:if test="${param.client eq 'touch'}">
+                            <c:param name='client' value='touch'/>
+                        </c:if>
+                    </c:redirect>
                 </c:when>
                 <c:otherwise>
                    <jsp:forward page="/public/launchZCS.jsp"/>
