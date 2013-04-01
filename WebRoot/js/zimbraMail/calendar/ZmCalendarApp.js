@@ -683,7 +683,9 @@ function(op) {
 
 ZmCalendarApp.prototype._handleLoadNewAppt =
 function() {
+	Dwt.setLoadingTime("ZmCalendarApp-newAppt");
 	AjxDispatcher.run("GetCalController").newAppointment(null, null, null, null);
+	Dwt.setLoadedTime("ZmCalendarApp-newAppt");
 };
 
 ZmCalendarApp.prototype._handleLoadNewCalendar =
