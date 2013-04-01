@@ -391,7 +391,9 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 			parsedId = curFolderId && ZCS.util.parseId(curFolderId);
 
 		if (parsedId && (parsedId.localId === ZCS.constant.ID_TRASH || parsedId.localId === ZCS.constant.ID_JUNK)) {
-			Ext.Msg.confirm(ZtMsg.hardDeleteConvTitle, ZtMsg.hardDeleteConvText, function(buttonId) {
+			var folderName = ZCS.cache.get(curFolderId).get('name'),
+				deleteMsg = Ext.String.format(ZtMsg.hardDeleteConvText, folderName);
+			Ext.Msg.confirm(ZtMsg.hardDeleteConvTitle, deleteMsg, function(buttonId) {
 				if (buttonId === 'yes') {
 					var data = {
 						op:     'delete',
