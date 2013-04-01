@@ -1,29 +1,25 @@
 <project name="ProdTouch" default="build-prod-touch">
-    <target name="find-senchacmd">
+
+    <target name="find-cmd" unless="cmd.dir">
         <!--
-        Run "which sencha" to find the Sencha Cmd basedir and get "senchacmd.dir" setup.
+        Run "sencha which" to find the Sencha Cmd basedir and get "cmd.dir" setup.
         -->
-        <exec executable="which">
-            <arg value="sencha"/>
-            <redirector output=".senchacmdpath" alwayslog="true"/>
+        <exec executable="sencha" dir="${basedir}">
+            <arg value="which"/><arg value="-o=$cmddir$"/>
         </exec>
 
-        <loadfile property="senchacmd.dir" srcfile=".senchacmdpath"/>
-        <delete file=".senchacmdpath"/>
-        <echo>Using Sencha Cmd from ${senchacmd.dir}</echo>
+        <!-- Now read the generated properties file and delete it -->
+        <property file="$cmddir$"/>
+        <delete file="$cmddir$"/>
+
+        <echo>Using Sencha Cmd from ${cmd.dir}</echo>
     </target>
 
-    <target name="build-prod-touch" depends="find-senchacmd">
+    <target name="build-prod-touch" depends="find-cmd">
         <!--
         Generate prod build for touch client using "sencha app build production"
         -->
-        <path id="sencha.class.path">
-            <fileset dir="${senchacmd.dir}/../lib" includes="*.jar"/>
-            <fileset dir="${senchacmd.dir}/.." includes="*.jar"/>
-        </path>
-
-        <taskdef resource="com/sencha/ant/antlib.xml" classpathref="sencha.class.path" />
-
+        <taskdef resource="com/sencha/ant/antlib.xml" classpath="${cmd.dir}/sencha.jar"/>
         <x-sencha-command>
             app
             build

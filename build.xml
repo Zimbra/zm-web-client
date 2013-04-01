@@ -1590,6 +1590,7 @@ if (ext == null) ext = "";
             <arg value="build-prod-touch.sh"/>
         </exec>
 
+        <!--Copy the production build dir-->
         <fileset id="prodtouch.fileset" dir="${app.root}/build/t/production" casesensitive="yes"/>
 
         <copy todir="${webapp.dir}/t" verbose="true">
@@ -1597,8 +1598,12 @@ if (ext == null) ext = "";
         </copy>
 
         <!--Copy the templates dir-->
-        <copydir src="${templates.dir}" dest="${webapp.dir}/t/resources/templates"/>
+        <fileset id="templates.fileset" dir="${templates.dir}" casesensitive="yes"/>
 
+        <copy todir="${webapp.dir}/t/resources/templates" verbose="true">
+            <fileset refid="templates.fileset"/>
+        </copy>
+        
         <antcall target="sync-touch-homescreen"/>
     </target>
 
