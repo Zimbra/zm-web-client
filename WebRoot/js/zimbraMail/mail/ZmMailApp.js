@@ -2001,7 +2001,7 @@ function() {
  */
 ZmMailApp.prototype.compose =
 function(params) {
-	
+	Dwt.setLoadingTime("ZmMailApp-compose");
 	params = params || {};
 	if (!params.sessionId) {
 		// see if we already have a compose session for this message
@@ -2022,6 +2022,7 @@ function(params) {
 
     appCtxt.composeCtlrSessionId = controller.getSessionId();	// help new window dispose components
 	controller.doAction(params);
+	Dwt.setLoadedTime("ZmMailApp-compose");
 };
 
 /**
