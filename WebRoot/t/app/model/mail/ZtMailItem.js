@@ -221,7 +221,7 @@ Ext.define('ZCS.model.mail.ZtMailItem', {
 
 		// fragment
 		if (modify.fr) {
-			this.set('fragment', modify.fr);
+			this.set('fragment', Ext.String.htmlEncode(modify.fr));
 		}
 	}
 });
