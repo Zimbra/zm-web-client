@@ -700,7 +700,7 @@ function(params, result) {
 		function() {
 			this.runAppFunction("startup", false, params.result);
 		});
-	this.addPostRenderCallback(callback, 2, 100, true);
+	this.addPostRenderCallback(callback, 2, 0, true);
 
 	callback = new AjxCallback(this,
 		function() {
@@ -2090,7 +2090,7 @@ function(appName, view, isTabView) {
 						function() {
 							app.activate(true);
 						});
-					this.addPostRenderCallback(callback, 1, 100, true);
+					this.addPostRenderCallback(callback, 1, 0, true);
 				} else {
 					app.activate(true);
 				}

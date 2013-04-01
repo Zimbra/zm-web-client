@@ -304,9 +304,11 @@ function() {
         this._refElement = document.getElementById(this._refElementId);
     }
     var container = this._refElement && this._refElement.parentNode;
-    if (container && container.offsetWidth >= 30) {
-        this._refElement.style.maxWidth = this._refElement.style.width =  (container.offsetWidth - 30);
-        this._refElement.style.overflow = "hidden";
+    var offsetWidth;
+    if (container && ((offsetWidth = container.offsetWidth) >= 30)) {
+        var style = this._refElement.style;
+        style.maxWidth = style.width =  (offsetWidth - 30);
+        style.overflow = "hidden";
     }
 }
 /**
