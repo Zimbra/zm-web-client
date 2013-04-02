@@ -217,14 +217,18 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 		// Look for URLs. Don't look for them in HTML; assume author put them in anchors.
 		if (!isHtml) {
 			content = content.replace(ZCS.constant.REGEX_URL, function(m) {
+                //<debug>
 				Ext.Logger.info('link regex matched: ' + m);
+                //</debug>
 				return Ext.String.format("<a href='{0}' target='_blank'>{0}</a>", m);
 			});
 		}
 
 		// Look for email addresses. If parsing HTML, skip email that's part of a mailto: link.
 		content = content.replace(ZCS.constant.REGEX_EMAIL, function(m) {
+            //<debug>
 			Ext.Logger.info('addr regex matched: ' + m);
+            //</debug>
 			if (!isHtml || m.toLowerCase().indexOf('mailto:') !== 0) {
 				return Ext.String.format("<a href='#' addr='{0}'>{0}</a>", m);
 			}
