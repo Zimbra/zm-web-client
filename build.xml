@@ -1584,23 +1584,28 @@ if (ext == null) ext = "";
         <property name='deploy.server' value='jetty'/>
         <property name='deploy.dir' value='/opt/zimbra/${deploy.server}/webapps'/>
         <property name='webapp.dir' value='${deploy.dir}/zimbra'/>
+        <property name='touch.dir' value='${webapp.dir}/t'/>
         <property name='templates.dir' value="${app.root}/resources/templates"/>
 
         <exec executable="/bin/bash">
             <arg value="build-prod-touch.sh"/>
         </exec>
 
+        <delete dir="${touch.dir}"/>
+
+        <mkdir dir='${touch.dir}'/>
+
         <!--Copy the production build dir-->
         <fileset id="prodtouch.fileset" dir="${app.root}/build/t/production" casesensitive="yes"/>
 
-        <copy todir="${webapp.dir}/t" verbose="true">
+        <copy todir="${touch.dir}" verbose="true">
             <fileset refid="prodtouch.fileset"/>
         </copy>
 
         <!--Copy the templates dir-->
         <fileset id="templates.fileset" dir="${templates.dir}" casesensitive="yes"/>
 
-        <copy todir="${webapp.dir}/t/resources/templates" verbose="true">
+        <copy todir="${touch.dir}/resources/templates" verbose="true">
             <fileset refid="templates.fileset"/>
         </copy>
         
