@@ -49,7 +49,7 @@ ZmDragAndDrop.isSupported = function() {
     };
 
     if (isSupported) {
-        ZmDragAndDrop.ATTACHMENT_SIZE_LIMIT = appCtxt.get(ZmSetting.ATTACHMENT_SIZE_LIMIT);
+        ZmDragAndDrop.MESSAGE_SIZE_LIMIT = appCtxt.get(ZmSetting.MESSAGE_SIZE_LIMIT);
         ZmDragAndDrop.ATTACHMENT_URL = appCtxt.get(ZmSetting.CSFE_ATTACHMENT_UPLOAD_URI)+"?fmt=extended,raw";
     }
 
@@ -62,6 +62,7 @@ ZmDragAndDrop.isSupported = function() {
 ZmDragAndDrop.isAttachmentSizeExceeded = function(files, showDialog) {
     var j,
         filesLength,
+		size,
         file;
 
     if (!files) {
@@ -71,13 +72,15 @@ ZmDragAndDrop.isAttachmentSizeExceeded = function(files, showDialog) {
     for (j = 0 , size = 0, filesLength = files.length; j < filesLength; j++) {
         file = files[j];
         if (file) {
-            var size = file.size || file.fileSize; /*Safari*/
+			//Check the total size of the files we upload this time (we don't know the previously uploaded files total size so we do the best we can).
+			//NOTE - we compare to the MTA message size limit since there's no limit on specific attachments.
+            size += file.size || file.fileSize; /*Safari*/
             //Showing Error dialog if the attachment size is exceeded
-            if ((-1 /* means unlimited */ != ZmDragAndDrop.ATTACHMENT_SIZE_LIMIT) &&
-                (size > ZmDragAndDrop.ATTACHMENT_SIZE_LIMIT)) {
+            if ((-1 /* means unlimited */ != ZmDragAndDrop.MESSAGE_SIZE_LIMIT) &&
+                (size > ZmDragAndDrop.MESSAGE_SIZE_LIMIT)) {
                 if (showDialog) {
                     var msgDlg = appCtxt.getMsgDialog();
-                    var errorMsg = AjxMessageFormat.format(ZmMsg.attachmentSizeError, AjxUtil.formatSize(ZmDragAndDrop.ATTACHMENT_SIZE_LIMIT));
+                    var errorMsg = AjxMessageFormat.format(ZmMsg.attachmentSizeError, AjxUtil.formatSize(ZmDragAndDrop.MESSAGE_SIZE_LIMIT));
                     msgDlg.setMessage(errorMsg, DwtMessageDialog.WARNING_STYLE);
                     msgDlg.popup();
                 }

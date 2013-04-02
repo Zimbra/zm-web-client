@@ -3231,14 +3231,17 @@ function(files, node) {
 		return;
 	}
 
+	var size = 0;
 	if (files) {
 		for (var j = 0; j < files.length; j++) {
 			var file = files[j];
-			var size = file.size || file.fileSize; /*Safari*/;
-			if ((-1 /* means unlimited */ != appCtxt.get(ZmSetting.ATTACHMENT_SIZE_LIMIT)) &&
-				(size > appCtxt.get(ZmSetting.ATTACHMENT_SIZE_LIMIT))) {
+			//Check the total size of the files we upload this time (we don't know the previously uploaded files total size so we do the best we can).
+			//NOTE - we compare to the MTA message size limit since there's no limit on specific attachments.
+			size += file.size || file.fileSize; /*Safari*/
+			if ((-1 /* means unlimited */ != appCtxt.get(ZmSetting.MESSAGE_SIZE_LIMIT)) &&
+				(size > appCtxt.get(ZmSetting.MESSAGE_SIZE_LIMIT))) {
 				var msgDlg = appCtxt.getMsgDialog();
-				var errorMsg = AjxMessageFormat.format(ZmMsg.attachmentSizeError, AjxUtil.formatSize(appCtxt.get(ZmSetting.ATTACHMENT_SIZE_LIMIT)));
+				var errorMsg = AjxMessageFormat.format(ZmMsg.attachmentSizeError, AjxUtil.formatSize(appCtxt.get(ZmSetting.MESSAGE_SIZE_LIMIT)));
 				msgDlg.setMessage(errorMsg, DwtMessageDialog.WARNING_STYLE);
 				msgDlg.popup();
 				return false;

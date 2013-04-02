@@ -291,7 +291,7 @@ ZmSettings.prototype.setUserSettings = function(params) {
 
     var settings = [
         ZmSetting.ADMIN_DELEGATED,          info.adminDelegated,
-        ZmSetting.ATTACHMENT_SIZE_LIMIT,    this._base64toNormalSize(info.attSizeLimit),
+        ZmSetting.MESSAGE_SIZE_LIMIT,    this._base64toNormalSize(info.attSizeLimit),
         ZmSetting.CHANGE_PASSWORD_URL,      info.changePasswordURL,
         ZmSetting.DOCUMENT_SIZE_LIMIT,      this._base64toNormalSize(info.docSizeLimit),
         ZmSetting.LAST_ACCESS,              info.accessed,
@@ -908,7 +908,7 @@ function() {
 	this.registerSetting("IS_EXTERNAL",						{name:"zimbraIsExternalVirtualAccount", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue: false});
 	this.registerSetting("IS_DELEGATED_ADMIN",				{name:"zimbraIsDelegatedAdminAccount", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue: false});
 	this.registerSetting("ADMIN_REFERENCE",                 {name:"zimbraWebClientAdminReference", type:ZmSetting.T_COS, dataType:ZmSetting.D_STRING});
-    this.registerSetting("ATTACHMENT_SIZE_LIMIT",           {type:ZmSetting.T_COS, dataType:ZmSetting.D_INT});
+    this.registerSetting("MESSAGE_SIZE_LIMIT",           {type:ZmSetting.T_COS, dataType:ZmSetting.D_INT});
     this.registerSetting("DOCUMENT_SIZE_LIMIT",             {type:ZmSetting.T_COS, dataType:ZmSetting.D_INT});
 
 	// CLIENT SIDE FEATURE SUPPORT
