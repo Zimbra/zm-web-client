@@ -710,6 +710,11 @@ function(newMsg) {
 };
 
 
+ZmConvView2.prototype.isWaitOnMarkRead =
+function() {
+	return this._item && this._item.waitOnMarkRead;
+};
+
 // Following two overrides are a hack to allow this view to pretend it's a list view
 ZmConvView2.prototype.getSelection =
 function() {
@@ -1370,7 +1375,6 @@ function(msg, container, callback) {
 		this._showEntireMsg = false;
 	}
 	else {
-		msg.waitOnMarkRead = this._convView._item.waitOnMarkRead;
 		this._handleResponseLoadMessage(msg, container, callback);
 	}
 };
