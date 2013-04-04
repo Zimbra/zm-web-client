@@ -1227,7 +1227,7 @@ function(ex) {
  * @param {boolean} isAutoSave  true if it is a auto save and toast should not be displayed.
  */
 ZmContact.prototype.modify =
-function(attr, callback, isAutoSave) {
+function(attr, callback, isAutoSave, batchCmd) {
 	if (this.isDistributionList()) {
 		this._modifyDl(attr);
 		return;
@@ -1266,8 +1266,14 @@ function(attr, callback, isAutoSave) {
     }
 
 	if (continueRequest) {
-		var respCallback = new AjxCallback(this, this._handleResponseModify, [attr, callback, isAutoSave]);
-		appCtxt.getAppController().sendRequest({jsonObj:jsonObj, asyncMode:true, callback:respCallback});
+		if (batchCmd) {
+			batchCmd.addRequestParams(jsonObj, null, null); //no need for response callback for current use-case (batch modifying zimlet image)
+		}
+		else {
+			var respCallback = this._handleResponseModify.bind(this, attr, callback, isAutoSave);
+			appCtxt.getAppController().sendRequest({jsonObj: jsonObj, asyncMode: true, callback: respCallback});
+		}
+
 	} else {
 		if (attr[ZmContact.F_folderId]) {
 			this._setFolder(attr[ZmContact.F_folderId]);
@@ -2064,6 +2070,16 @@ function(maxWidth) {
 		maxWidthStyle = ["&max_width=", maxWidth].join("");
 	}
   	return  [msgFetchUrl, "&id=", this.id, "&part=", imagePart, maxWidthStyle, "&t=", (new Date()).getTime()].join("");
+};
+
+ZmContact.prototype.addModifyZimletImageToBatch =
+function(batchCmd, image) {
+	var attr = {};
+	if (this.getAttr(ZmContact.F_zimletImage) === image) {
+		return; //no need to update if same
+	}
+	attr[ZmContact.F_zimletImage] = image;
+	batchCmd.add(this.modify.bind(this, attr, null, true));
 };
 
 /**
