@@ -70,6 +70,7 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 		ZCS.app.on('notifyMessageDelete', this.handleDeleteNotification, this);
 		ZCS.app.on('notifyMessageCreate', this.handleCreateNotification, this);
 		ZCS.app.on('notifyMessageChange', this.handleModifyNotification, this);
+		ZCS.app.on('notifyConversationChange', this.handleConvChange, this);
 
 		var quickReplyTextarea = this.getQuickReplyTextarea();
 		if (quickReplyTextarea) {
@@ -233,8 +234,10 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 
 		// Move the conv to the top since it got a new msg and we always sort date descending.
 		// Also propagate some fields from the message that don't appear in the conv's modified
-		// notification.
-		if (convStore.getById(convId)) {
+		// notification. We only do this for a real conv (more than two messages). If a conv has
+		// just been promoted from virtual to real, then ZtConvListController::handleModifyNotification
+		// handles moving it to the top.
+		if (convStore.getById(convId) && conv.get('numMsgs') > 2) {
 			conv.handleModifyNotification({
 				d: create.d,
 				fr: create.fr
@@ -278,6 +281,23 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 		}
 
 		item.handleModifyNotification(modify);
+	},
+
+	/**
+	 * If a virtual conversation has been promoted and it's the one we're viewing,
+	 * make sure that we use the real conversation.
+	 */
+	handleConvChange: function(item, modify) {
+
+		if (modify.newId) {
+			var newConv = ZCS.cache.get(modify.newId),
+				curId = item.getId();
+
+			if (newConv && curId === modify.id) {
+				this.setItem(newConv);
+				ZCS.cache.remove(curId);
+			}
+		}
 	},
 
 	/**

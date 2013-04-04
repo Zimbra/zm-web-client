@@ -275,11 +275,11 @@ Ext.define('ZCS.model.ZtSoapProxy', {
 		for (name in creates) {
 			Ext.each(creates[name], function(create) {
 				id = create.id;
-				if (name === 'm') {
+				if (name === ZCS.constant.NODE_MESSAGE) {
 					createdMsgs[id] = create;
 					fragments[create.cid] = create.fr;
 				}
-				else if (name === 'c' && (create.n > 1)) {
+				else if (name === ZCS.constant.NODE_CONVERSATION && (create.n > 1)) {
 					// this is *probably* a create for a real conv from a virtual conv
 					createdConvs[id] = create;
 					gotNewConv = true;
@@ -340,23 +340,19 @@ Ext.define('ZCS.model.ZtSoapProxy', {
 			delete notifications.created.c;
 		}
 
-		// create modified notifs for the virtual convs that have been promoted, using
-		// the create notif for the conv as a base
-		var newMods = [],
-			cid, node;
+		// Create modified notifs for the virtual convs that have been promoted, using
+		// the create notif for the conv as a base. Notify now so that their IDs can
+		// be updated, which makes it easier to handle subsequent notifications such
+		// as the message create.
+		var	cid, notification, conv;
 
 		for (cid in newToOldCid) {
-			node = createdConvs[cid];
-			node.id = newToOldCid[cid];
-			node.newId = cid;
-			newMods.push(node);
-		}
-
-		if (!modifies.c) {
-			modifies.c = newMods;
-		}
-		else {
-			modifies.c = modifies.c.concat(newMods);
+			notification = createdConvs[cid];
+			notification.id = newToOldCid[cid];
+			notification.newId = cid;
+			notification.type = ZCS.constant.NOTIFY_CHANGE;
+			notification.nodeType = ZCS.constant.NODE_CONVERSATION;
+			ZCS.app.fireEvent('notify', notification);
 		}
 	},
 

@@ -234,10 +234,8 @@ Ext.define('ZCS.controller.mail.ZtConvListController', {
 
 			if (newConv) {
 				store.remove(oldConv);
-				ZCS.cache.remove(modify.id);
-				store.insert(0, newConv);
+				store.insert(0, newConv);   // moves conv to top
 				item = newConv;
-
 			}
 		}
 
