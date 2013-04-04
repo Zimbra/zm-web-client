@@ -59,11 +59,12 @@ Ext.define('ZCS.model.ZtItem', {
 		/**
 		 * If the node has a list of tag IDs, return a list their ZtOrganizer tag objects.
 		 *
-		 * @param {object}  node        JSON node representing model instance
+		 * @param {Array}  tagIds   comma-separated list of tag IDs
 		 * @return {Array}  list of ZtOrganizer
 		 */
 		parseTags: function(tagIds) {
-			return !tagIds ? null : Ext.Array.map(tagIds.split(','), function(tagId) {
+
+			return !tagIds ? [] : Ext.Array.map(tagIds.split(','), function(tagId) {
 				var tag = ZCS.cache.get(tagId);
 				if (tag) {
 					return tag.getData();
@@ -97,7 +98,7 @@ Ext.define('ZCS.model.ZtItem', {
 	 */
 	handleModifyNotification: function(modify) {
 
-		if (modify.t) {
+		if (modify.t != null) {
 			this.set('tags', ZCS.model.ZtItem.parseTags(modify.t));
 		}
 	}

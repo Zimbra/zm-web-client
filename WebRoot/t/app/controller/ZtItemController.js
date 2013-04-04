@@ -81,6 +81,7 @@ Ext.define('ZCS.controller.ZtItemController', {
 	 * @param {Function} success    The function to run on succes.
 	 */
 	performOp: function(item, data, callback) {
+
 		item = item || this.getItem();
 		if (item) {
 			if (Ext.isString(data)) {
@@ -101,16 +102,17 @@ Ext.define('ZCS.controller.ZtItemController', {
 	/**
 	 * Adds or removes a tag to/from the given item.
 	 *
-	 * @param {ZtMailItem}  item        mail item
+	 * @param {ZtMailItem}  item        item
 	 * @param {String}      tagName     name of tag to add or remove
 	 * @param {Boolean}     remove      if true, remove the tag
 	 */
 	tagItem: function(item, tagName, remove) {
+
 		this.performOp(item, {
 			op: remove ? '!tag' : 'tag',
 			tn: tagName
 		}, function() {
-			var toastMsg = remove ? ZtMsg.messageTagRemoved : ZtMsg.messageTagged;
+			var toastMsg = remove ? ZtMsg.tagRemoved : ZtMsg.tagAdded;
 			ZCS.app.fireEvent('showToast', Ext.String.format(toastMsg, tagName));
 		});
 	}
