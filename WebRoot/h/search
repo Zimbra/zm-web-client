@@ -225,6 +225,7 @@
     <c:set var="refreshSkin" value="${true}" scope="request"/>
     <c:remove var="skin" scope="session"/>
     <app:status style="info" html="true">
+    <fmt:setBundle basename="/messages/ZhMsg" scope='request' force="true"/>
         <fmt:message key="htmlWelcomeMesg"/>
     </app:status>
 </c:if>
