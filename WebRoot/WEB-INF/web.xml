@@ -119,7 +119,7 @@
     <filter-class>org.eclipse.jetty.servlets.IncludableGzipFilter</filter-class>
     <init-param>
       <param-name>mimeTypes</param-name>
-      <param-value>application/x-javascript,text/html,text/plain,text/css,application/soap+xml</param-value>
+      <param-value>text/html,text/plain,text/css,application/soap+xml</param-value>
     </init-param>
     <init-param>
       <param-name>userAgent</param-name>
@@ -168,7 +168,7 @@
     </init-param>
     <init-param>
       <param-name>Expires</param-name>
-      <param-value>2595600</param-value>
+      <param-value>604800</param-value>
       <!--
         Expires should be the number of seconds from now when a
         given static resource should expire
@@ -570,7 +570,6 @@
       <url-pattern>/h/mbriefcases</url-pattern>
       <url-pattern>/h/viewimages</url-pattern>
       <url-pattern>/h/autoSaveDraft</url-pattern>
-      <url-pattern>/t/launchTouch</url-pattern>
     </jsp-property-group>
   </jsp-config>
 

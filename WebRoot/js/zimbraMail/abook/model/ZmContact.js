@@ -186,7 +186,7 @@ ZmContact.GAL_CAL_RES_TYPE			= "zimbraCalResType";
 ZmContact.GAL_CAL_RES_LOC_NAME		= "zimbraCalResLocationDisplayName";
 
 // file as
-i = 1;
+var i = 1;
 ZmContact.FA_LAST_C_FIRST			= i++;
 ZmContact.FA_FIRST_LAST 			= i++;
 ZmContact.FA_COMPANY 				= i++;
@@ -195,8 +195,7 @@ ZmContact.FA_FIRST_LAST_COMPANY		= i++;
 ZmContact.FA_COMPANY_LAST_C_FIRST	= i++;
 ZmContact.FA_COMPANY_FIRST_LAST		= i++;
 ZmContact.FA_CUSTOM					= i++;
-delete i;
-	
+
 // Field information
 
 ZmContact.ADDRESS_FIELDS = [
@@ -328,10 +327,9 @@ ZmContact.IS_DATE[ZmContact.F_birthday] = true;
 ZmContact.IS_DATE[ZmContact.F_anniversary] = true;
 
 ZmContact.IS_IGNORE = {};
-for (i = 0; i < ZmContact.IGNORE_FIELDS.length; i++) {
+for (var i = 0; i < ZmContact.IGNORE_FIELDS.length; i++) {
 	ZmContact.IS_IGNORE[ZmContact.IGNORE_FIELDS[i]] = true;
 }
-delete i;
 
 // number of distribution list members to fetch at a time
 ZmContact.DL_PAGE_SIZE = 100;
@@ -954,9 +952,9 @@ function() {
 	if (this.isDistributionList()) {
 		return "Group_48";
 	}
-	//todo - get a big version of ImgGalContact.png
-//	if (this.isGal) {
-//	}
+	if (this.isGal) {
+		//todo - get a big version of ImgGalContact.png 
+	}
 	return "Person_48";
 };
 
@@ -1094,10 +1092,9 @@ ZmContact.prototype.getNormalizedAttrs = function(prefix) {
 *
 * @param {Hash}	attr			the attribute/value pairs for this contact
 * @param {ZmBatchCommand}	batchCmd	the batch command that contains this request
-* @param {boolean} isAutoCreate true if this is a auto create and toast message should not be shown
 */
 ZmContact.prototype.create =
-function(attr, batchCmd, isAutoCreate) {
+function(attr, batchCmd) {
 
 	if (this.isDistributionList()) {
 		this._createDl(attr);
@@ -1132,7 +1129,7 @@ function(attr, batchCmd, isAutoCreate) {
 		}
 	}
 
-	var respCallback = new AjxCallback(this, this._handleResponseCreate, [attr, batchCmd != null, isAutoCreate]);
+	var respCallback = new AjxCallback(this, this._handleResponseCreate, [attr, batchCmd != null]);
 
 	if (batchCmd) {
 		batchCmd.addRequestParams(jsonObj, respCallback);
@@ -1145,7 +1142,7 @@ function(attr, batchCmd, isAutoCreate) {
  * @private
  */
 ZmContact.prototype._handleResponseCreate =
-function(attr, isBatchMode, isAutoCreate, result) {
+function(attr, isBatchMode, result) {
 	// dont bother processing creates when in batch mode (just let create
 	// notifications handle them)
 	if (isBatchMode) { return; }
@@ -1168,12 +1165,9 @@ function(attr, isBatchMode, isAutoCreate, result) {
 			this.attr[ZmContact.F_groups] = groupMembers;
 			cn._attrs[ZmContact.F_groups] = groupMembers;
 		}
-		if (!isAutoCreate) {
-			var msg = this.isGroup() ? ZmMsg.groupCreated : ZmMsg.contactCreated;
-			appCtxt.getAppController().setStatusMsg(msg);
-		}
-		//update the canonical list. (this includes adding to the _idHash like before (bug 44132) calling updateIdHash. But calling that left the list inconcistant.
-		appCtxt.getApp(ZmApp.CONTACTS).getContactList().add(cn);
+		var msg = this.isGroup() ? ZmMsg.groupCreated : ZmMsg.contactCreated;
+		appCtxt.getAppController().setStatusMsg(msg);
+		appCtxt.getApp(ZmApp.CONTACTS).updateIdHash(cn, false);
 	} else {
 		var msg = this.isGroup() ? ZmMsg.errorCreateGroup : ZmMsg.errorCreateContact;
 		var detail = ZmMsg.errorTryAgain + "\n" + ZmMsg.errorContact;
@@ -1224,10 +1218,9 @@ function(ex) {
  *
  * @param {Hash}	attr		a set of attributes and new values
  * @param {AjxCallback}	callback	the callback
- * @param {boolean} isAutoSave  true if it is a auto save and toast should not be displayed.
  */
 ZmContact.prototype.modify =
-function(attr, callback, isAutoSave) {
+function(attr, callback) {
 	if (this.isDistributionList()) {
 		this._modifyDl(attr);
 		return;
@@ -1266,7 +1259,7 @@ function(attr, callback, isAutoSave) {
     }
 
 	if (continueRequest) {
-		var respCallback = new AjxCallback(this, this._handleResponseModify, [attr, callback, isAutoSave]);
+		var respCallback = new AjxCallback(this, this._handleResponseModify, [attr, callback]);
 		appCtxt.getAppController().sendRequest({jsonObj:jsonObj, asyncMode:true, callback:respCallback});
 	} else {
 		if (attr[ZmContact.F_folderId]) {
@@ -1596,7 +1589,7 @@ function () {
  * @private
  */
 ZmContact.prototype._handleResponseModify =
-function(attr, callback, isAutoSave, result) {
+function(attr, callback, result) {
 	var resp = result.getResponse().ModifyContactResponse;
 	var cn = resp ? resp.cn[0] : null;
 	var id = cn ? cn.id : null;
@@ -1607,9 +1600,7 @@ function(attr, callback, isAutoSave, result) {
 	}
 
 	if (id && id == this.id) {
-		if (!isAutoSave) {
-			appCtxt.setStatusMsg(this.isGroup() ? ZmMsg.groupSaved : ZmMsg.contactSaved);
-		}
+		appCtxt.setStatusMsg(this.isGroup() ? ZmMsg.groupSaved : ZmMsg.contactSaved);
 		// was this contact moved to another folder?
 		if (attr[ZmContact.F_folderId] && this.folderId != attr[ZmContact.F_folderId]) {
 			this._setFolder(attr[ZmContact.F_folderId]);
