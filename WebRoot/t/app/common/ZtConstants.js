@@ -141,6 +141,7 @@ ZCS.constant.HDR_DETAILED   = 'detailed';
 ZCS.constant.ITEM_CONVERSATION      = 'conversation';
 ZCS.constant.ITEM_MESSAGE           = 'message';
 ZCS.constant.ITEM_CONTACT           = 'contact';
+ZCS.constant.ITEM_FOLDER            = 'folder';
 ZCS.constant.ADDRESS_AUTOCOMPLETE   = 'match';
 
 // App to which each item type belongs
@@ -164,20 +165,27 @@ ZCS.constant.NODE_CONVERSATION  = 'c';
 ZCS.constant.NODE_MESSAGE       = 'm';
 ZCS.constant.NODE_CONTACT       = 'cn';
 ZCS.constant.NODE_MATCH         = 'match';
+ZCS.constant.NODE_FOLDER        = 'folder';
 
 // Order in which to handle notifications
 ZCS.constant.NODES = [
 	ZCS.constant.NODE_CONVERSATION,
 	ZCS.constant.NODE_MESSAGE,
-	ZCS.constant.NODE_CONTACT
+	ZCS.constant.NODE_CONTACT,
+	ZCS.constant.NODE_FOLDER
 ];
+
+// Notification types
+ZCS.constant.NOTIFY_DELETE  = 'Delete';
+ZCS.constant.NOTIFY_CREATE  = 'Create';
+ZCS.constant.NOTIFY_CHANGE  = 'Change';
 
 // JSON node name for each item type
 ZCS.constant.ITEM_NODE = {};
-ZCS.constant.ITEM_NODE[ZCS.constant.ITEM_CONVERSATION] = ZCS.constant.NODE_CONVERSATION;
-ZCS.constant.ITEM_NODE[ZCS.constant.ITEM_MESSAGE]      = ZCS.constant.NODE_MESSAGE;
-ZCS.constant.ITEM_NODE[ZCS.constant.ITEM_CONTACT]      = ZCS.constant.NODE_CONTACT;
-ZCS.constant.ITEM_NODE[ZCS.constant.ADDRESS_AUTOCOMPLETE]      = ZCS.constant.NODE_MATCH;
+ZCS.constant.ITEM_NODE[ZCS.constant.ITEM_CONVERSATION]      = ZCS.constant.NODE_CONVERSATION;
+ZCS.constant.ITEM_NODE[ZCS.constant.ITEM_MESSAGE]           = ZCS.constant.NODE_MESSAGE;
+ZCS.constant.ITEM_NODE[ZCS.constant.ITEM_CONTACT]           = ZCS.constant.NODE_CONTACT;
+ZCS.constant.ITEM_NODE[ZCS.constant.ADDRESS_AUTOCOMPLETE]   = ZCS.constant.NODE_MATCH;
 
 // Item type based on JSON node name
 ZCS.constant.NODE_ITEM = ZCS.constant.getBackMap(ZCS.constant.ITEM_NODE);

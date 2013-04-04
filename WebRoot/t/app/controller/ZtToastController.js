@@ -19,7 +19,8 @@
  * @author Macy Abbey
  */
 Ext.define('ZCS.controller.ZtToastController', {
-	extend: 'ZCS.controller.ZtBaseController',
+
+	extend: 'Ext.app.Controller',
 
 	requires: [
 		'ZCS.view.ZtToast'

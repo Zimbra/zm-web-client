@@ -64,8 +64,13 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 	},
 
 	launch: function () {
+
 		ZCS.app.on('deleteMailItem', this.doDelete, this);
 		ZCS.app.on('sendQuickReply', this.doSendQuickReply, this);
+		ZCS.app.on('notifyMessageDelete', this.handleDeleteNotification, this);
+		ZCS.app.on('notifyMessageCreate', this.handleCreateNotification, this);
+		ZCS.app.on('notifyMessageChange', this.handleModifyNotification, this);
+
 		var quickReplyTextarea = this.getQuickReplyTextarea();
 		if (quickReplyTextarea) {
 			quickReplyTextarea.on('focus', function() {
@@ -216,10 +221,8 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 	 * Handle arrival of a new message. First, find its owning conversation. If we're currently
 	 * showing that conv in the item pane, add the message to the top of the list. If the conv
 	 * is in the conv list view, move it to the top.
-	 *
-	 * @param {object}  create      JSON notification object
 	 */
-	handleCreateNotification: function(create) {
+	handleCreateNotification: function(item, create) {
 
 		var item = this.getItem(),
 			curId = item && item.getId(),
@@ -253,9 +256,6 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 
 	/**
 	 * Handle message change notifications.
-	 *
-	 * @param {ZtMailMsg}   item    message
-	 * @param {object}      modify  JSON notification
 	 */
 	handleModifyNotification: function(item, modify) {
 

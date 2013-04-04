@@ -152,57 +152,52 @@ Ext.define('ZCS.model.ZtSoapProxy', {
 	 * the server. Moving an item to Trash is a 'soft delete', and will generate a 'modified'
 	 * notification indicating a move into the Trash folder.
 	 *
-	 * @param {object}   deleted        list of deleted IDs by node type
+	 * @param {String}   deleted        comma-separated list of deleted IDs
 	 */
 	handleDeletes: function(deleted) {
 
 		var ids = deleted.id && deleted.id.split(','),
-			item, itemType, ctlr;
+			notification;
 
 		Ext.each(ids, function(id) {
-			item = ZCS.cache.get(id);
-			itemType = item && item.get('type');
-			// TODO: handle this with an event rather than a function call
-			ctlr = ZCS.app.getController(ZCS.constant.LIST_CONTROLLER[itemType]);
-			if (ctlr && ctlr.handleDeleteNotification) {
-				ctlr.handleDeleteNotification(item);
-			}
+			notification = {
+				id:     id,
+				type:   ZCS.constant.NOTIFY_DELETE
+			};
+			ZCS.app.fireEvent('notify', notification);
 		}, this);
 	},
 
+	/**
+	 * A create notification hands us the JSON node representing the item that was created.
+	 *
+	 * @param {Array}   creates     list of created item nodes
+	 */
 	handleCreates: function(creates) {
 
-		var itemType, ctlr;
-
 		Ext.each(ZCS.constant.NODES, function(nodeType) {
-			Ext.each(creates[nodeType], function(create) {
-				itemType = ZCS.constant.NODE_ITEM[nodeType];
-				ctlr = ZCS.app.getController(ZCS.constant.LIST_CONTROLLER[itemType]);
-				// TODO: handle this with an event rather than a function call
-				if (ctlr && ctlr.handleCreateNotification) {
-					ctlr.handleCreateNotification(create, creates);
-				}
+			Ext.each(creates[nodeType], function(notification) {
+				notification.type = ZCS.constant.NOTIFY_CREATE;
+				notification.nodeType = nodeType;
+				notification.creates = creates; // conv needs to know about msg creates
+				ZCS.app.fireEvent('notify', notification);
 			}, this);
 		}, this);
 	},
 
+	/**
+	 * A modify notification will have properties only for the attributes that have changed
+	 * for the item.
+	 *
+	 * @param {Array}   modifies        list of modified item nodes
+	 */
 	handleModifies: function(modifies) {
 
-		var item, itemType, ctlr;
-
 		Ext.each(ZCS.constant.NODES, function(nodeType) {
-			Ext.each(modifies[nodeType], function(modify) {
-				item = ZCS.cache.get(modify.id);
-				// TODO: handle this with an event rather than a function call
-				itemType = item && item.get('type');
-				ctlr = ZCS.app.getController(ZCS.constant.LIST_CONTROLLER[itemType]);
-				if (ctlr && ctlr.handleModifyNotification) {
-					ctlr.handleModifyNotification(item, modify);
-				} else {
-					//<debug>
-                    Ext.Logger.warn('Could not find modified item ' + modify.id);
-                    //</debug>
-				}
+			Ext.each(modifies[nodeType], function(notification) {
+				notification.type = ZCS.constant.NOTIFY_CHANGE;
+				notification.nodeType = nodeType;
+				ZCS.app.fireEvent('notify', notification);
 			}, this);
 		}, this);
 	},

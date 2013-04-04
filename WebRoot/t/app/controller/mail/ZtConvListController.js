@@ -59,6 +59,16 @@ Ext.define('ZCS.controller.mail.ZtConvListController', {
 		app: ZCS.constant.APP_MAIL
 	},
 
+	launch: function() {
+
+		this.callParent();
+
+		ZCS.app.on('notifyConversationDelete', this.handleDeleteNotification, this);
+		ZCS.app.on('notifyConversationCreate', this.handleCreateNotification, this);
+		ZCS.app.on('notifyConversationChange', this.handleModifyNotification, this);
+		ZCS.app.on('notifyMailFolderChange', this.handleFolderChange, this);
+	},
+
 	doDelete: function (list, item, target, record) {
 		ZCS.app.fireEvent('deleteMailItem', record);
 	},
@@ -180,14 +190,13 @@ Ext.define('ZCS.controller.mail.ZtConvListController', {
 	/**
 	 * Handle a newly created conv. Add it to view if any of its messages (which
 	 * should have also just been created) are in the currently viewed folder.
-	 *
-	 * @param {object}  create      JSON for new conv
 	 */
-	handleCreateNotification: function(create, creates) {
+	handleCreateNotification: function(item, create) {
 
 		var curFolder = ZCS.session.getCurrentSearchOrganizer(),
 			curFolderId = curFolder && curFolder.get('itemId'),
 			doAdd = false,
+			creates = create.creates,
 			ln = creates && creates.m ? creates.m.length : 0,
 			msgCreate, i;
 
@@ -212,9 +221,6 @@ Ext.define('ZCS.controller.mail.ZtConvListController', {
 	/**
 	 * Handle promotion of virtual convs here since we need to interact with the store. Also handle anything
 	 * we need a reader for, since we can get at it here.
-	 *
-	 * @param {ZtConv}  item    conversation
-	 * @param {object}  modify  JSON notification
 	 */
 	handleModifyNotification: function(item, modify) {
 
@@ -247,6 +253,18 @@ Ext.define('ZCS.controller.mail.ZtConvListController', {
 		//If this item is a draft, go ahead and select it, because the normal ext logic unselects it.
 		if (item.data.isDraft) {
 			this.getListView().select(item);
+		}
+	},
+
+	/**
+	 * Update list panel title if unread count of current folder changed.
+	 */
+	handleFolderChange: function(folder, notification) {
+
+		this.callParent(arguments);
+		var	curOrganizer = ZCS.session.getCurrentSearchOrganizer();
+		if (curOrganizer && curOrganizer.get('itemId') === folder.get('itemId')) {
+			this.updateTitlebar();
 		}
 	}
 },

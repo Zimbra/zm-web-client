@@ -66,6 +66,7 @@ Ext.application({
 	controllers: [
 		'ZCS.controller.ZtMainController',
 		'ZCS.controller.ZtToastController',
+		'ZCS.controller.ZtNotificationController',
 		'ZCS.controller.mail.ZtConvListController',
 		'ZCS.controller.mail.ZtConvController',
 		'ZCS.controller.mail.ZtMsgController',

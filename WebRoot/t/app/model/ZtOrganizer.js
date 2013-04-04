@@ -99,5 +99,10 @@ Ext.define('ZCS.model.ZtOrganizer', {
 		}
 	},
 
-	handleModifyNotification: function(mod) {}
+	handleModifyNotification: function(modify) {
+
+		if (modify.u) {
+			this.set('unreadCount', modify.u);
+		}
+	}
 });

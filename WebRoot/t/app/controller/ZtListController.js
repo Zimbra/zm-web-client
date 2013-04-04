@@ -200,13 +200,15 @@ Ext.define('ZCS.controller.ZtListController', {
 
 		query = query || operation.config.query;
 
-		if (query && success) {
-			var search = Ext.create('ZCS.common.ZtSearch', {
-				query: query
-			});
-			ZCS.session.setSetting(ZCS.constant.SETTING_CUR_SEARCH, search);
-			if (ZCS.session.getSetting(ZCS.constant.SETTING_SHOW_SEARCH)) {
-				ZCS.session.getCurrentSearchField().setValue(query);
+		if (success) {
+			if (query) {
+				var search = Ext.create('ZCS.common.ZtSearch', {
+					query: query
+				});
+				ZCS.session.setSetting(ZCS.constant.SETTING_CUR_SEARCH, search);
+				if (ZCS.session.getSetting(ZCS.constant.SETTING_SHOW_SEARCH)) {
+					ZCS.session.getCurrentSearchField().setValue(query);
+				}
 			}
 			this.updateTitlebar();
 			if (folder && records.length) {

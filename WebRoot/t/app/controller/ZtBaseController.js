@@ -36,27 +36,41 @@ Ext.define('ZCS.controller.ZtBaseController', {
 	},
 
 	/**
-	 * Delete notification: remove item from the store
+	 * Delete notification: remove item from the store.
 	 *
-	 * @param {ZtItem}  item      item that was deleted
+	 * @param {ZtItem}  item            item that was deleted
+	 * @param {Object}  notification    notification object
 	 */
-	handleDeleteNotification: function(item) {
+	handleDeleteNotification: function(item, notification) {
 		this.getStore().remove(item);
 	},
 
 	/**
 	 * Create notification: convert item JSON to data, then use that
 	 * to instantiate a new model and add it to the store.
+	 *
+	 * @param {ZtItem}  item            existing item (not provided, will be undefined)
+	 * @param {Object}  notification    JSON for new item
 	 */
-	handleCreateNotification: function(create) {},
+	handleCreateNotification: function(item, notification) {},
 
 	/**
-	 * Modify notification: let the item handle it
+	 * Modify notification: let the item handle it.
 	 *
-	 * @param {ZtItem}  item        item that was changed
-	 * @param {object}  modify      JSON detailing the changes (each changed field and its new value)
+	 * @param {ZtItem}  item           item that was changed
+	 * @param {Object}  notification   JSON detailing the changes (each changed field and its new value)
 	 */
-	handleModifyNotification: function(item, modify) {
-		item.handleModifyNotification(modify);
+	handleModifyNotification: function(item, notification) {
+		item.handleModifyNotification(notification);
+	},
+
+	/**
+	 * Folder change notification: let the folder handle it.
+	 *
+	 * @param {ZtOrganizer} folder         folder that was changed
+	 * @param {Object}      notification   JSON detailing the changes (each changed field and its new value)
+	 */
+	handleFolderChange: function(folder, notification) {
+		folder.handleModifyNotification(notification);
 	}
 });
