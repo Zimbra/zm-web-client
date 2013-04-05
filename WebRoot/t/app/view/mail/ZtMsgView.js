@@ -47,6 +47,9 @@ Ext.define('ZCS.view.mail.ZtMsgView', {
 		state: ZCS.constant.HDR_COLLAPSED,  // Display state of this header: ZCS.constant.HDR_*
 
 		listeners: {
+
+			// TODO: updatedata is not a great way to trigger a render, since it is fired whenever
+			// TODO: anything in the msg changes
 			updatedata: function(msgView, msgData) {
 
 				if (msgData && !this.up('.itempanel').suppressRedraw) {

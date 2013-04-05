@@ -98,7 +98,7 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 		var me = this,
 			isInvite = msg.get('isInvite'),
 			togglingQuotedText = Ext.isBoolean(showQuotedText),
-			trimQuotedText = togglingQuotedText ? !showQuotedText : !isLast && !isInvite,
+			trimQuotedText = togglingQuotedText ? !showQuotedText : !isLast && !isInvite && !this.showingQuotedText,
 			msgId = msg.getId(),
 			html = msg.getContentAsHtml(this.getId(), trimQuotedText),
 			hasQuotedContent = ZCS.model.mail.ZtMailMsg.hasQuotedContent[msgId],
