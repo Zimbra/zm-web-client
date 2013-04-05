@@ -19,7 +19,9 @@
             <fmt:setLocale value='${pageContext.request.locale}' scope='request' />
         </c:otherwise>
     </c:choose>
-    <fmt:setBundle basename="/messages/ZhMsg" scope='request' />
+    <c:remove var="skin" scope="session"/>
+    <c:set var="skin" value="${not empty param.skin ? param.skin : mailbox.prefs.skin}"/>
+    <fmt:setBundle basename="/messages/ZhMsg" scope='request'/>
     <fmt:message var="dateFormat" key="CAL_APPT_EDIT_DATE_FORMAT"/>
 
     <c:choose>

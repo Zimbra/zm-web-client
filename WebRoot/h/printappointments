@@ -18,6 +18,8 @@
             <fmt:setLocale value='${pageContext.request.locale}' scope='request' />
         </c:otherwise>
     </c:choose>
+    <c:remove var="skin" scope="session"/>
+    <app:skin mailbox="${mailbox}"/>
     <fmt:setBundle basename="/messages/ZhMsg" scope='request' />
     <fmt:setBundle basename='/messages/AjxMsg' var='AjxMsg' scope='request' />
 
