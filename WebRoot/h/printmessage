@@ -8,8 +8,8 @@
 <app:handleError>
 <zm:getMailbox var="mailbox"/>
 ${zm:refreshPrefs(mailbox)}
-
-<c:set var="skin" value="${not empty param.skin ? param.skin : (not empty sessionScope.skin ? sessionScope.skin : mailbox.prefs.skin)}"/>
+<c:remove var="skin" scope="session"/>
+<app:skin mailbox="${mailbox}"/>
 <c:choose>
 	<c:when test="${not empty mailbox.prefs.locale}">
 		<fmt:setLocale value='${mailbox.prefs.locale}' scope='request' />

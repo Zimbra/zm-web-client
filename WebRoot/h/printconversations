@@ -16,6 +16,8 @@
         <fmt:setLocale value='${pageContext.request.locale}' scope='request' />
     </c:otherwise>
     </c:choose>
+    <c:remove var="skin" scope="session"/>
+    <app:skin mailbox="${mailbox}"/>
     <fmt:setBundle basename="/messages/ZhMsg" scope="request"/>
     <c:set var="convIds" value="${fn:join(paramValues.id, ',')}"/>
     <zm:computeSearchContext var="context" usecache="true" types="conversation" query="*"/>
