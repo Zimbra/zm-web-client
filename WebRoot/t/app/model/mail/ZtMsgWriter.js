@@ -33,6 +33,7 @@ Ext.define('ZCS.model.mail.ZtMsgWriter', {
 			action = request.getAction(),
 			json, methodJson = {};
 
+		ZCS.session.getCurrentSearchOrganizer().get('itemId')
 		if (action === 'read' && convId) {
 
 			// 'read' operation with convId means we are loading a conv
@@ -42,9 +43,13 @@ Ext.define('ZCS.model.mail.ZtMsgWriter', {
 			});
 			methodJson = json.Body.SearchConvRequest;
 
+			var curFolder = ZCS.session.getCurrentSearchOrganizer(),
+				curFolderId = curFolder && curFolder.get('itemId'),
+				fetch = (curFolderId === ZCS.constant.ID_DRAFTS) ? 'all' : 'u1';
+
 			Ext.apply(methodJson, {
 				cid:    convId,
-				fetch:  'u1',
+				fetch:  fetch,
 				sortBy: 'dateDesc',
 				offset: 0,
 				limit:  100,

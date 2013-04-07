@@ -202,5 +202,15 @@ Ext.define('ZCS.view.mail.ZtMsgListView', {
 
 		listRef.updateItemHeights();
 		listRef.refreshScroller(listRef.getScrollable().getScroller());
+	},
+
+	doRefresh: function(list) {
+
+		var curFolder = ZCS.session.getCurrentSearchOrganizer(),
+			curFolderId = curFolder && curFolder.get('itemId');
+
+		if (curFolderId !== ZCS.constant.ID_DRAFTS) {
+			this.callParent(arguments);
+		}
 	}
 });
