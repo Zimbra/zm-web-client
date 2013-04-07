@@ -582,3 +582,21 @@ ZCS.constant.IDTYPE_TAG             = 'TAG';
 // Quick reply textarea - height in pixels
 ZCS.constant.QUICK_REPLY_SMALL  = 20;
 ZCS.constant.QUICK_REPLY_LARGE  = 80;
+
+// Contact attributes we care about
+ZCS.constant.CONTACT_ATTRS = [
+	'firstName',
+	'lastName',
+	'email',
+	'company',
+	'fileAs',
+	'image',
+	'imagepart',
+	'zimletImage'
+];
+// email2 - email16
+(function() {
+	for (var i = 2; i <= 16; i++) {
+		ZCS.constant.CONTACT_ATTRS.push('email' + i);
+	}
+})();

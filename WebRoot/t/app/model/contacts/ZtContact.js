@@ -72,16 +72,17 @@ Ext.define('ZCS.model.contacts.ZtContact', {
     constructor: function(data, id) {
 
         var contact = this.callParent(arguments) || this,
-            altKey = data && data.email;
+            altKey = data && data.email, i;
 
-        /**
-         * Create a mapping of contact email address against contact Id. This helps in fetching
-         * contact record from email address.
-         * Usage : This cache is used in fetching image data for a contact based on email id.
-         */
+		// Cache the contact by each of its email addresses.
         if (altKey) {
-            // store only the contact id against email, we can fetch the whole contact using the id.
-            ZCS.cache.set(altKey, data.id, 'email');
+            ZCS.cache.set('email', this, 'email');
+        }
+        for (var i = 2; i <= 16; i++) {
+	        altKey = data && data['email' + i];
+	        if (altKey) {
+		        ZCS.cache.set(altKey, this, 'email');
+	        }
         }
         return contact;
     }

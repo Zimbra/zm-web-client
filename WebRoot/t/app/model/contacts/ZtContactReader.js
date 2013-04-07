@@ -30,16 +30,7 @@ Ext.define('ZCS.model.contacts.ZtContactReader', {
 			attrs = node._attrs;
 
 		data.type = ZCS.constant.ITEM_CONTACT;
-		Ext.copyTo(data, attrs, [
-			'firstName',
-			'lastName',
-			'email',
-			'company',
-			'fileAs'
-		]);
-        data.image = node._attrs.image;
-        data.imagepart = node._attrs.imagepart;
-        data.zimletImage = node._attrs.zimletImage;
+		Ext.copyTo(data, attrs, ZCS.constant.CONTACT_ATTRS);
 
 		return data;
 	}

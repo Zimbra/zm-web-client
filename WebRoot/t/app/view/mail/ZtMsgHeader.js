@@ -100,17 +100,11 @@ Ext.define('ZCS.view.mail.ZtMsgHeader', {
 			}).join(', ');
 		}
 
-        /**
-         * Fetch contactId from the email Vs contact cache.
-         * Use the contactId to fetch the contact record and subsequently the image info.
-         */
-        var contactId = ZCS.cache.get(data.addrs.FROM[0].address, "email"),
-            imageUrl = null;
-        if (contactId) {
-            var contact = ZCS.cache.get(contactId);
-            imageUrl = this.getImageUrl(contact);
-        }
-        data.imageStyle = imageUrl !== null ? 'background-image: url(' + imageUrl + ')' : '';
+		// Get contact image if it has one
+        var contact = ZCS.cache.get(data.addrs.FROM[0].address, 'email'),
+            imageUrl = contact && this.getImageUrl(contact);
+
+        data.imageStyle = imageUrl ? 'background-image: url(' + imageUrl + ')' : '';
 
 		this.setHtml(tpl.apply(data));
 	}

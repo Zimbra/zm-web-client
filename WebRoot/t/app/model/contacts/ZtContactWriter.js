@@ -29,10 +29,12 @@ Ext.define('ZCS.model.contacts.ZtContactWriter', {
 		var	action = request.getAction(),
 			offset = request.getOperation().getStart(),
 			query = request.getParams().query,
+			attrs = Ext.Array.map(ZCS.constant.CONTACT_ATTRS, function(attr) {
+				return { n: attr };
+			}),
 			json, methodJson;
 
-
-		//Do not pass query in query string.
+		// Do not pass query in query string.
 		request.setParams({});
 
 		if (action === 'read') {
@@ -47,16 +49,7 @@ Ext.define('ZCS.model.contacts.ZtContactWriter', {
 					offset: offset,
 					limit: ZCS.constant.DEFAULT_PAGE_SIZE,
 					// ask server only for the fields we need
-					a: [
-						{ n: 'firstName' },
-						{ n: 'lastName' },
-						{ n: 'email' },
-						{ n: 'company' },
-						{ n: 'fileAs' },
-                        { n: 'image'},
-                        { n: 'imagepart'},
-                        { n: 'zimletImage'}
-					]
+					a: attrs
 				});
 			}
 			else {
