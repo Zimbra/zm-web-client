@@ -76,7 +76,7 @@ Ext.define('ZCS.model.contacts.ZtContact', {
 
 		// Cache the contact by each of its email addresses.
         if (altKey) {
-            ZCS.cache.set('email', this, 'email');
+            ZCS.cache.set(altKey, this, 'email');
         }
         for (var i = 2; i <= 16; i++) {
 	        altKey = data && data['email' + i];
