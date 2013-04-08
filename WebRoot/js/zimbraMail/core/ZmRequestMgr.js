@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011, 2012 VMware, Inc.
+ * Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -67,6 +67,7 @@ ZmRequestMgr._nextReqId = 1;
 
 ZmRequestMgr.OFFLINE_HEAP_DUMP          = "heapdump_upload";
 ZmRequestMgr.OFFLINE_MUST_RESYNC        = "resync";
+ZmRequestMgr.OFFLINE_MUST_GAL_RESYNC        = "gal_resync";
 ZmRequestMgr.OFFLINE_FOLDER_MOVE_FAILED = "foldermove_failed";
 /**
  * Returns a string representation of the object.
@@ -231,7 +232,6 @@ function(params, result) {
 	
 		if (!params.noBusyOverlay) {
 			this._shell.setBusy(false, params.reqId); // remove busy overlay
-		} else if (params.timeout) {
 		}
 	}
 
@@ -439,17 +439,17 @@ function(dlg, acct) {
             cont = AjxMessageFormat.format(ZmMsg.offlineMustReSync, acct.name);
             break;
         }
+		case ZmRequestMgr.OFFLINE_MUST_GAL_RESYNC: {
+			cont = AjxMessageFormat.format(ZmMsg.offlineMustGalReSync, acct.name);
+			break;
+		}
         case ZmRequestMgr.OFFLINE_FOLDER_MOVE_FAILED: {
             appCtxt.setStatusMsg(ZmMsg.offlineMoveFolderError);
-            cont = "";
             break;
         }
-        default: {
-            cont = "";
-            break;
-        }
+        default:
     }
-    if(!cont || cont == "") {
+    if (!cont) {
         return;
     }
     var dialog = appCtxt.getOkCancelMsgDialog();

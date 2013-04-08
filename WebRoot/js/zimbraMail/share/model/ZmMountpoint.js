@@ -38,7 +38,7 @@ ZmMountpoint.prototype = new ZmOrganizer;
 ZmMountpoint.prototype.constructor = ZmMountpoint;
 
 // Constants
-ZmMountpoint.__CREATE_PARAMS = { "l":1, "name":1, "zid":1, "rid":1, "owner":1, "path":1, "view":1, "color":1, "f":1 };
+ZmMountpoint.__CREATE_PARAMS = AjxUtil.arrayAsHash(["l", "name", "zid", "rid", "owner", "path", "view", "color", "rgb", "f"]);
 
 
 // Public Methods

@@ -40,7 +40,7 @@ ZmApptQuickAddDialog = function(parent) {
 	DBG.timePt("ZmQuickAddDialog constructor", true);
 
 	AjxDispatcher.run("GetResources");
-    AjxDispatcher.require("CalendarCore");
+    AjxDispatcher.require(["MailCore", "CalendarCore"]);
 
     var app = appCtxt.getApp(ZmApp.CALENDAR);
     this._fbCache = new ZmFreeBusyCache(app);

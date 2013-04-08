@@ -73,7 +73,7 @@ ZmApptEditView = function(parent, attendees, controller, dateInfo) {
     // Free busy info that excludes the current appointment.  So the cache information cannot
     // be shared across appointments.
     //this._fbCache = app.getFreeBusyCache();
-    AjxDispatcher.require("CalendarCore");
+    AjxDispatcher.require(["MailCore", "CalendarCore"]);
     this._fbCache = new ZmFreeBusyCache(app);
 
     this._customRecurDialogCallback = this._recurChangeForLocationConflict.bind(this);

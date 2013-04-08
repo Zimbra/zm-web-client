@@ -24,8 +24,8 @@
 <c:forEach var="part" items="${message.attachments}">
     <c:if test="${part.isImage}">
        <hr/>
-       <c:set var="previewUrl" value="/service/home/~/?id=${message.id}&amp;part=${part.partName}&amp;auth=co&amp;max_width=800"/>
-       <c:set var="url" value="/service/home/~/?id=${message.id}&amp;part=${part.partName}&amp;auth=co"/>
+       <c:set var="previewUrl" value="/service/home/~/?id=${message.id}&part=${part.partName}&auth=co&max_width=800"/>
+       <c:set var="url" value="/service/home/~/?id=${message.id}&part=${part.partName}&auth=co"/>
        <span class="ShowAllImageName"><a href="${url}">${fn:escapeXml(part.displayName)}</a></span>
        <br/><br/><img class="ShowAllImageItem" src="${previewUrl}" alt="${fn:escapeXml(part.displayName)}" border="0"/><br/><br/>
     </c:if>

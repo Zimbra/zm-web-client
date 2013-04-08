@@ -69,6 +69,7 @@ ZmSearchResultsFilterPanel.ID_UNREAD		= "UNREAD";
 ZmSearchResultsFilterPanel.ID_TO			= "TO";
 ZmSearchResultsFilterPanel.ID_FROM			= "FROM";
 ZmSearchResultsFilterPanel.ID_DATE			= "DATE";
+ZmSearchResultsFilterPanel.ID_DATE_BRIEFCASE = "DATE_BRIEFCASE";
 ZmSearchResultsFilterPanel.ID_DATE_SENT		= "DATE_SENT";
 ZmSearchResultsFilterPanel.ID_SIZE			= "SIZE";
 ZmSearchResultsFilterPanel.ID_STATUS		= "STATUS";
@@ -90,6 +91,7 @@ ZmSearchResultsFilterPanel.ADVANCED_FILTER_LIST = [
 	ZmSearchResultsFilterPanel.ID_FROM,
 	ZmSearchResultsFilterPanel.ID_TO,
 	ZmSearchResultsFilterPanel.ID_DATE,
+	ZmSearchResultsFilterPanel.ID_DATE_BRIEFCASE,
 	ZmSearchResultsFilterPanel.ID_DATE_SENT,
 	ZmSearchResultsFilterPanel.ID_ATTACHMENT,
 	ZmSearchResultsFilterPanel.ID_SIZE,
@@ -138,6 +140,11 @@ function() {
 		text: 		ZmMsg.filterDateSent,
 		handler:	"ZmDateSearchFilter"
 	};
+	ZmSearchResultsFilterPanel.ADVANCED_FILTER[ZmSearchResultsFilterPanel.ID_DATE_BRIEFCASE] = {
+		text: 		ZmMsg.filterDate,
+		handler:	"ZmDateSearchFilter",
+		apps:       [ZmApp.BRIEFCASE]
+	};
 	ZmSearchResultsFilterPanel.ADVANCED_FILTER[ZmSearchResultsFilterPanel.ID_ATTACHMENT] = {
 		text: 		ZmMsg.filterAttachments,
 		handler:	"ZmAttachmentSearchFilter",
@@ -146,7 +153,8 @@ function() {
 	};
 	ZmSearchResultsFilterPanel.ADVANCED_FILTER[ZmSearchResultsFilterPanel.ID_SIZE] = {
 		text: 		ZmMsg.filterSize,
-		handler:	"ZmSizeSearchFilter"
+		handler:	"ZmSizeSearchFilter",
+		apps:       [ZmApp.MAIL, ZmApp.BRIEFCASE]
 	};
 	ZmSearchResultsFilterPanel.ADVANCED_FILTER[ZmSearchResultsFilterPanel.ID_STATUS] = {
 		text: 		ZmMsg.filterStatus,

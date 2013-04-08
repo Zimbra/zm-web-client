@@ -596,57 +596,6 @@ function(expanded) {
 	this._searchField.getInputElement().className = expanded ? "search_input-expanded" : "search_input";
 };
 
-/**
- * Initializes people autocomplete and search autocomplete.
- */
-ZmMainSearchToolBar.prototype.initAutocomplete =
-function() {
-
-	ZmSearchToolBar.prototype.initAutocomplete.apply(this, arguments);
-	
-	var id = this.getSearchType();
-	var needPeople = (id == ZmItem.CONTACT || id == ZmId.SEARCH_GAL);
-
-	if (false && !this._peopleAutocomplete) {
-		var params = {
-			parent:			appCtxt.getShell(),
-			dataClass:		(new ZmPeopleSearchAutocomplete()),
-			matchValue:		ZmAutocomplete.AC_VALUE_EMAIL,
-			options:		{type:ZmAutocomplete.AC_TYPE_GAL},
-			separator:		""
-		};
-		this._peopleAutocomplete = new ZmPeopleAutocompleteListView(params);
-		if (needPeople) {
-			this._peopleAutocomplete.handle(this.getSearchField());
-		}
-	}
-};
-
-/**
- * Enables or disables people autocomplete depending on what user is searching for.
- * 
- * @param {string}	id		ID of menu item selected in "search for" menu
- */
-ZmMainSearchToolBar.prototype.setPeopleAutocomplete =
-function(id) {
-	
-	return;
-
-	//no change required when checking/unchecking the "include shared items" checkbox
-	if (id == ZmId.SEARCH_SHARED || !this._peopleAutocomplete) { return; }
-	
-	var needPeople = (id == ZmItem.CONTACT || id == ZmId.SEARCH_GAL);
-	if (this._peopleAutocomplete.isActive != needPeople) {
-		var input = this.getSearchField();
-		if (needPeople) {
-			this._peopleAutocomplete.handle(input);
-		}
-		else {
-			this._peopleAutocomplete.unhandle(input);
-		}
-	}
-};
-
 ZmMainSearchToolBar.prototype._checkSharedMenuItem =
 function() {
 	var mi = this._searchMenu && this._searchMenu.getItemById(ZmSearchToolBar.MENUITEM_ID, ZmId.SEARCH_SHARED);

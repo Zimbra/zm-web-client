@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2009, 2010, 2011, 2012 VMware, Inc.
+ * Copyright (C) 2009, 2010, 2011, 2012, 2013 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -292,12 +292,18 @@ function(ev) {
     if(key == DwtKeyEvent.KEY_ENTER){
         var fileName = this._renameField.getValue();
         if(fileName != '' && fileName != item.name){
+            var warning = appCtxt.getMsgDialog();
+
             if(this._checkDuplicate(fileName)){
                 this._redrawItem(item);
-                var warning = appCtxt.getMsgDialog();
                 warning.setMessage(AjxMessageFormat.format(ZmMsg.itemWithFileNameExits, fileName), DwtMessageDialog.CRITICAL_STYLE, ZmMsg.briefcase);
                 warning.popup();
-            }else{
+            }else if(ZmAppCtxt.INVALID_NAME_CHARS_RE.test(fileName)) {
+                //Bug fix # 79986 show warning popup in case of invalid filename
+                warning.setMessage(AjxMessageFormat.format(ZmMsg.errorInvalidName, AjxStringUtil.htmlEncode(fileName)), DwtMessageDialog.WARNING_STYLE, ZmMsg.briefcase);
+                warning.popup();
+            }
+            else {
                 item.rename(fileName, new AjxCallback(this, this.resetRenameFile));
             }
         }else{

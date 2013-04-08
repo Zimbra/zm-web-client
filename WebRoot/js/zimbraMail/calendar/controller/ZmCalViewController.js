@@ -184,7 +184,7 @@ function(viewId) {
 
 ZmCalViewController.prototype.show =
 function(viewId, startDate, skipMaintenance) {
-	AjxDispatcher.require(["CalendarCore", "Calendar"]);
+	AjxDispatcher.require(["MailCore", "CalendarCore", "Calendar"]);
 	if (!viewId || viewId == ZmId.VIEW_CAL) {
 		viewId = this.getCurrentViewType() || this.getDefaultViewType();
 	}
@@ -1118,7 +1118,7 @@ function(mailItem, date) {
 	if (mailItem instanceof ZmConv) {
 		mailItem = mailItem.getFirstHotMsg();
 	}
-	mailItem.load({getHtml:false, markRead: true, forceLoad: true,
+	mailItem.load({getHtml:false, markRead: true, forceLoad: true, noTruncate: true,
 	               callback:new AjxCallback(this, this._msgLoadedCallback, [mailItem, date, subject])});
 };
 
@@ -1244,7 +1244,7 @@ function(ev) {
 	}
 
 	var loadCallback = new AjxCallback(this, this._handleLoadNewApptAction, [d, calendarId]);
-	AjxDispatcher.require(["CalendarCore", "Calendar"], false, loadCallback, null, true);
+	AjxDispatcher.require(["MailCore", "CalendarCore", "Calendar"], false, loadCallback, null, true);
 };
 
 ZmCalViewController.prototype._handleLoadNewApptAction =
@@ -1277,7 +1277,7 @@ function(ev) {
 	}
 
 	var loadCallback = new AjxCallback(this, this._handleLoadNewAllDayApptAction, [d, calendarId]);
-	AjxDispatcher.require(["CalendarCore", "Calendar"], false, loadCallback, null, true);
+	AjxDispatcher.require(["MailCore", "CalendarCore", "Calendar"], false, loadCallback, null, true);
 };
 
 ZmCalViewController.prototype._handleLoadNewAllDayApptAction =
@@ -1338,7 +1338,7 @@ function(viewId, forward) {
  */
 ZmCalViewController.prototype.setDate =
 function(date, duration, roll) {
-	AjxDispatcher.require(["CalendarCore", "Calendar"]);
+	AjxDispatcher.require(["MailCore", "CalendarCore", "Calendar"]);
 	// set mini-cal first so it will cache appts we might need
 	if (this._miniCalendar.getDate() == null ||
 		this._miniCalendar.getDate().getTime() != date.getTime())
@@ -1377,7 +1377,7 @@ ZmCalViewController.prototype._miniCalSelectionListener =
 function(ev) {
 	if (ev.item instanceof DwtCalendar) {
 		var loadCallback = new AjxCallback(this, this._handleLoadMiniCalSelection, [ev]);
-		AjxDispatcher.require(["CalendarCore", "Calendar"], false, loadCallback, null, true);
+		AjxDispatcher.require(["MailCore", "CalendarCore", "Calendar"], false, loadCallback, null, true);
 	}
 };
 
@@ -1927,6 +1927,9 @@ function() {
 
 ZmCalViewController.prototype._promptDeleteAppt =
 function(appt, mode) {
+    if(!appt){
+        return;
+    }
 	if (appt instanceof Array) {
 		this._continueDelete(appt, mode);
 	} else {
@@ -2207,7 +2210,7 @@ function(num) {
 ZmCalViewController.prototype._showTypeDialog =
 function(appt, mode) {
 	if (this._typeDialog == null) {
-		AjxDispatcher.require(["CalendarCore", "Calendar", "CalendarAppt"]);		
+		AjxDispatcher.require(["MailCore", "CalendarCore", "Calendar", "CalendarAppt"]);
 		this._typeDialog = new ZmCalItemTypeDialog(this._shell);
 		this._typeDialog.addSelectionListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._typeOkListener));
 		this._typeDialog.addSelectionListener(DwtDialog.CANCEL_BUTTON, new AjxListener(this, this._typeCancelListener));
@@ -2251,7 +2254,7 @@ function(appt, shiftKey) {
 ZmCalViewController.prototype._showQuickAddDialogContinue =
 function(appt, shiftKey) {
 	if (this._quickAddDialog == null) {
-		AjxDispatcher.require(["CalendarCore", "Calendar", "CalendarAppt"]);
+		AjxDispatcher.require(["MailCore", "CalendarCore", "Calendar", "CalendarAppt"]);
 		this._quickAddDialog = new ZmApptQuickAddDialog(this._shell);
 		this._quickAddDialog.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._quickAddOkListener));
 		this._quickAddDialog.addSelectionListener(ZmApptQuickAddDialog.MORE_DETAILS_BUTTON, new AjxListener(this, this._quickAddMoreListener));
@@ -2279,7 +2282,7 @@ function(startDate, endDate, folderId, shiftKey) {
 
 ZmCalViewController.prototype.newAppointment =
 function(newAppt, mode, isDirty, startDate) {
-	AjxDispatcher.require(["CalendarCore", "Calendar"]);
+	AjxDispatcher.require(["MailCore", "CalendarCore", "Calendar"]);
 	var sd = startDate || (this._viewVisible ? this._viewMgr.getDate() : new Date());
 	var appt = newAppt || this._newApptObject(sd, (appCtxt.get(ZmSetting.CAL_DEFAULT_APPT_DURATION) * 1000));  //bug:50121 added appt duration as configurable from preference
 
@@ -2354,7 +2357,7 @@ function() {
  */
 ZmCalViewController.prototype.editAppointment =
 function(appt, mode) {
-	AjxDispatcher.require(["CalendarCore", "Calendar"]);
+	AjxDispatcher.require(["MailCore", "CalendarCore", "Calendar"]);
 	if (mode != ZmCalItem.MODE_NEW) {
 		var clone = ZmAppt.quickClone(appt);
 		clone.getDetails(mode, new AjxCallback(this, this._showApptComposeView, [clone, mode]));
@@ -2440,7 +2443,7 @@ function(appt, all, result) {
 
 ZmCalViewController.prototype._forwardAppointment =
 function(appt, mode) {
-	AjxDispatcher.require(["CalendarCore", "Calendar"]);
+	AjxDispatcher.require(["MailCore", "CalendarCore", "Calendar"]);
 	if (mode != ZmCalItem.MODE_NEW) {
 		var clone = ZmAppt.quickClone(appt);
 		clone.getDetails(mode, new AjxCallback(this, this._showApptForwardComposeView, [clone, mode]));
@@ -3279,10 +3282,12 @@ function(appt, actionMenu) {
     if (!(appt && actionMenu)) {
         return;
     }
-	var isOrganizer = appt.isOrganizer();
     var isExternalAccount = appCtxt.isExternalAccount();
     var isFolderReadOnly = appt.isFolderReadOnly();
-    var isSharedViewOnly = isFolderReadOnly && appt.isShared();
+	var isShared = appt.isShared();
+
+	//isOrganizer() returns "true" but it's not really true if it's a shared folder, so fix it here. (not sure why the server returns isOrg:true for the shared user)
+	var isOrganizer = appt.isOrganizer() && !isShared;
 
 	// find the checked calendar for this appt
 	var calendar;
@@ -3295,38 +3300,49 @@ function(appt, actionMenu) {
 		}
 	}
     //bug:68452 if its a trash folder then its not present in the calendars array
-    if(!calendar){
+    if (!calendar){
         calendar = appt.getFolder();
     }
 	var share = calendar && calendar.link ? calendar.getMainShare() : null;
 	var workflow = share ? share.isWorkflow() : true;
     var isTrash = calendar && calendar.nId == ZmOrganizer.ID_TRASH;
 	var isPrivate = appt.isPrivate() && calendar.isRemote() && !calendar.hasPrivateAccess();
-	var enabled = !isOrganizer && workflow && !isPrivate && !isExternalAccount && !isSharedViewOnly;
     var isReplyable = !isTrash && appt.otherAttendees;
 	var isForwardable = !isTrash && calendar && !calendar.isReadOnly() && appCtxt.get(ZmSetting.GROUP_CALENDAR_ENABLED);
 
-    actionMenu.setItemVisible(ZmOperation.REPLY_ACCEPT,      !isOrganizer);
-    actionMenu.setItemVisible(ZmOperation.REPLY_DECLINE,     !isOrganizer);
-    actionMenu.setItemVisible(ZmOperation.REPLY_TENTATIVE,   !isOrganizer);
-    actionMenu.setItemVisible(ZmOperation.INVITE_REPLY_MENU, !isOrganizer);
-    actionMenu.setItemVisible(ZmOperation.PROPOSE_NEW_TIME,  !isOrganizer);
+	//don't show for organizer, but also not for a shared calendar, since the appointment might not be one the user can accept/decline/etc.
+	//Just show it for the user's own calendar, where the can still accept/decline/etc if they are invited to this appt).
+	var showAcceptDecline = !isOrganizer && !isShared;
+	actionMenu.setItemVisible(ZmOperation.REPLY_ACCEPT, showAcceptDecline);
+	actionMenu.setItemVisible(ZmOperation.REPLY_DECLINE, showAcceptDecline);
+	actionMenu.setItemVisible(ZmOperation.REPLY_TENTATIVE, showAcceptDecline);
+	actionMenu.setItemVisible(ZmOperation.INVITE_REPLY_MENU, showAcceptDecline);
+	actionMenu.setItemVisible(ZmOperation.PROPOSE_NEW_TIME, showAcceptDecline);
     actionMenu.setItemVisible(ZmOperation.REINVITE_ATTENDEES, isOrganizer && !appt.inviteNeverSent && appt.otherAttendees);
     actionMenu.setItemVisible(ZmOperation.TAG_MENU, appCtxt.get(ZmSetting.TAGGING_ENABLED));
 
     // Initially enabling all the options in the action menu. And then selectively disabling unsupported options for special users.
     actionMenu.enableAll(true);
 
-// reply action menu
-    if (!isOrganizer) {
-        actionMenu.enable(ZmOperation.REPLY_ACCEPT,      enabled && isReplyable && appt.ptst != ZmCalBaseItem.PSTATUS_ACCEPT);
-        actionMenu.enable(ZmOperation.REPLY_DECLINE,     enabled && isReplyable && appt.ptst != ZmCalBaseItem.PSTATUS_DECLINED);
-        actionMenu.enable(ZmOperation.REPLY_TENTATIVE,   enabled && isReplyable && appt.ptst != ZmCalBaseItem.PSTATUS_TENTATIVE);
-        actionMenu.enable(ZmOperation.INVITE_REPLY_MENU, enabled && isReplyable);
-    }
+	//enable/disable specific actions, only if we actually show them. (we don't show for organizer or shared calendar)
+	if (showAcceptDecline) {
+		var enabled = isReplyable && workflow && !isPrivate && !isExternalAccount;
+        actionMenu.enable(ZmOperation.REPLY_ACCEPT, enabled && appt.ptst != ZmCalBaseItem.PSTATUS_ACCEPT);
+        actionMenu.enable(ZmOperation.REPLY_DECLINE, enabled && appt.ptst != ZmCalBaseItem.PSTATUS_DECLINED);
+        actionMenu.enable(ZmOperation.REPLY_TENTATIVE, enabled && appt.ptst != ZmCalBaseItem.PSTATUS_TENTATIVE);
+        actionMenu.enable(ZmOperation.INVITE_REPLY_MENU, enabled);
+		// edit reply menu
+		var mi = enabled && actionMenu.getMenuItem(ZmOperation.INVITE_REPLY_MENU);
+		var replyMenu = mi && mi.getMenu();
+		if (replyMenu) {
+			replyMenu.enable(ZmOperation.EDIT_REPLY_ACCEPT,	appt.ptst != ZmCalBaseItem.PSTATUS_ACCEPT);
+			replyMenu.enable(ZmOperation.EDIT_REPLY_DECLINE, appt.ptst != ZmCalBaseItem.PSTATUS_DECLINED);
+			replyMenu.enable(ZmOperation.EDIT_REPLY_TENTATIVE, appt.ptst != ZmCalBaseItem.PSTATUS_TENTATIVE);
+		}
+	}
 
     actionMenu.enable([ZmOperation.FORWARD_APPT, ZmOperation.FORWARD_APPT_INSTANCE, ZmOperation.FORWARD_APPT_SERIES], isForwardable);
-	actionMenu.enable(ZmOperation.REPLY, (isOrganizer ? false : isReplyable));
+	actionMenu.enable(ZmOperation.REPLY, isReplyable && !isOrganizer); //the organizer can't reply just to himself
 	actionMenu.enable(ZmOperation.REPLY_ALL, isReplyable);
 
     var disabledOps;
@@ -3344,7 +3360,7 @@ function(appt, actionMenu) {
     }
 
     // bug:71007 Disabling unsupported options for shared calendar with view only rights
-    if(isSharedViewOnly) {
+    if (isFolderReadOnly) {
         disabledOps = [ZmOperation.REINVITE_ATTENDEES,
                        ZmOperation.PROPOSE_NEW_TIME,
                        ZmOperation.DELETE,
@@ -3355,19 +3371,6 @@ function(appt, actionMenu) {
                        ZmOperation.MOVE_MENU];
 
 	    actionMenu.enable(disabledOps, false);
-	}
-
-	// edit reply menu
-	if (enabled) {
-		var mi = actionMenu.getMenuItem(ZmOperation.INVITE_REPLY_MENU);
-		if (mi) {
-			var editReply = mi.getMenu();
-			if (editReply) {
-				editReply.enable(ZmOperation.EDIT_REPLY_ACCEPT, appt.ptst != ZmCalBaseItem.PSTATUS_ACCEPT);
-				editReply.enable(ZmOperation.EDIT_REPLY_DECLINE, appt.ptst != ZmCalBaseItem.PSTATUS_DECLINED);
-				editReply.enable(ZmOperation.EDIT_REPLY_TENTATIVE, appt.ptst != ZmCalBaseItem.PSTATUS_TENTATIVE);
-			}
-		}
 	}
 
 	var del = actionMenu.getMenuItem(ZmOperation.DELETE);
@@ -3505,7 +3508,7 @@ function(params) {
 
 ZmCalViewController.prototype.handleUserSearch =
 function(params, callback) {
-	AjxDispatcher.require(["CalendarCore", "Calendar"]);
+	AjxDispatcher.require(["MailCore", "CalendarCore", "Calendar"]);
 	this.show(null, null, true);
 
 	this.apptCache.clearCache();

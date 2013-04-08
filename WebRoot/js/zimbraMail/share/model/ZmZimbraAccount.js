@@ -55,7 +55,7 @@ ZmZimbraAccount = function(id, name, visible) {
 ZmZimbraAccount.prototype = new ZmAccount;
 ZmZimbraAccount.prototype.constructor = ZmZimbraAccount;
 
-ZmZimbraAccount.prototype.isZmZimbraAccount;
+ZmZimbraAccount.prototype.isZmZimbraAccount = true;
 ZmZimbraAccount.prototype.toString = function() { return "ZmZimbraAccount"; };
 
 

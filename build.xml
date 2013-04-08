@@ -107,7 +107,10 @@
     <property name="tinymce.version" value="3.5.4.1"/>
     <property name='tinymce.dir' value='${js.dir}/ajax/3rdparty/tinymce'/>
     <property name="tinymce.zplugins.dir" value="${web.dir}/tiny_mce_plugins"/>
-        
+
+    <!-- jQuery INTEGRATION -->
+    <property name="jquery.version" value="1.8.1"/>
+
     <!-- Tasks -->
 
     <taskdef resource="net/sf/antcontrib/antlib.xml">
@@ -203,7 +206,7 @@
         <property name='skins.dir' value='${web.dir}/skins'/>
         <property name='help.dir' value='${web.dir}/help'/>
         <property name='build.help.dir' value='${build.web.dir}/help'/>
-        <property name='web.includes' value='${common.web.includes},h/**,m/**,portals/**,sounds/**,test/**,yui/**,tiny_mce/**,qunit/**'/>
+        <property name='web.includes' value='${common.web.includes},h/**,m/**,t/**,portals/**,sounds/**,test/**,yui/**,tiny_mce/**,qunit/**'/>
         <property name='web.excludes' value='${common.web.excludes},js/zimbraAdmin/**'/>
         <property name='jsp.includes' value='${common.jsp.includes}'/>
         <property name='jsp.excludes' value='${common.jsp.excludes},admin.jsp'/>
@@ -320,7 +323,7 @@
         </war>
     </target>
 
-    <target name='sync' depends='tinymce,templates'>
+    <target name='sync' depends='jquery,tinymce,templates'>
         <!-- NOTE: Keep order in sync with list of war filesets. -->
         <copy todir='${webapp.dir}/WEB-INF' verbose='${sync.verbose}'>
             <fileset refid="webinf.fileset" />
@@ -978,7 +981,7 @@
         </if>
     </target>
 
-    <target name='jam-files' depends='tinymce,templates,timezones'>
+    <target name='jam-files' depends='jquery,tinymce,templates,timezones'>
         <property name='jam.jsp.dir' value='${build.web.dir}/public/jsp'/>
 
         <mkdir dir='${build.js.dir}'/>
@@ -1525,4 +1528,89 @@ if (ext == null) ext = "";
             </fileset>
         </copy>
     </target>
+
+    <target name="jquery">
+        <copy todir='${js.dir}/ajax/3rdparty/jquery' file='${web.dir}/jquery/${jquery.version}/jquery.js' verbose='${sync.verbose}'/>
+    </target>
+    
+    <!--Touch Client Targets-->
+
+    <property name="app.root" value="${zwc.basedir}/WebRoot/t"/>
+
+    <!-- Include jruby-complete jar -->
+    <path id="jruby.classpath">
+        <fileset dir="${common.dir}/jars-internal/jars">
+            <include name="jruby*.jar"/>
+        </fileset>
+    </path>
+
+    <!--Compass compilation-->
+    <target name='compile.sass'>
+        <property name="sass.dir" value="${app.root}/resources/sass" />
+        <property name="compass.dir" value="${app.root}/compass"/>
+        <java classname="org.jruby.Main" fork="true" failonerror="true"
+              classpathref="jruby.classpath">
+            <arg line="${compass.dir}/compile.rb ${compass.dir} compile ${sass.dir}"/>
+        </java>
+    </target>
+
+    <!--Builds all the dependencies and deploys the touch client-->
+    <target name='deploy-touch' depends='compile.sass,deploy,sync-touch-homescreen'/>
+
+    <!--Sync touch client specific source files-->
+    <target name='sync-touch'>
+        <fileset id="touch.fileset" dir="${app.root}" casesensitive="yes" excludes="touch/**,lib/**,compass/**"/>
+        <property name='deploy.server' value='jetty'/>
+        <property name='deploy.dir' value='/opt/zimbra/${deploy.server}/webapps'/>
+        <property name='webapp.dir' value='${deploy.dir}/zimbra'/>
+        <copy todir='${webapp.dir}/t' verbose='true'>
+            <fileset refid="touch.fileset"/>
+        </copy>
+    </target>
+
+    <!--Copy the icons used to represent touch client when added to the home screen on iPad -->
+    <target name='sync-touch-homescreen'>
+        <property name='deploy.server' value='jetty'/>
+        <property name='deploy.dir' value='/opt/zimbra/${deploy.server}/webapps'/>
+        <property name='webapp.dir' value='${deploy.dir}/zimbra'/>
+        <property name="icons.dir" value="${app.root}/resources/icons"/>
+        <echo message="Copying home screen icons"/>
+        <copy todir="${webapp.dir}" verbose="true" file="${icons.dir}/apple-touch-icon-72x72.png"/>
+        <copy todir="${webapp.dir}" verbose="true" file="${icons.dir}/apple-touch-icon-144x144.png"/>
+    </target>
+
+    <!-- Runs the touch client production build shell script -->
+    <target name="prod-touch">
+        <property name='deploy.server' value='jetty'/>
+        <property name='deploy.dir' value='/opt/zimbra/${deploy.server}/webapps'/>
+        <property name='webapp.dir' value='${deploy.dir}/zimbra'/>
+        <property name='touch.dir' value='${webapp.dir}/t'/>
+        <property name='templates.dir' value="${app.root}/resources/templates"/>
+
+        <exec executable="/bin/bash">
+            <arg value="build-prod-touch.sh"/>
+        </exec>
+
+        <delete dir="${touch.dir}"/>
+
+        <mkdir dir='${touch.dir}'/>
+
+        <!--Copy the production build dir-->
+        <fileset id="prodtouch.fileset" dir="${app.root}/build/t/production" casesensitive="yes"/>
+
+        <copy todir="${touch.dir}" verbose="true">
+            <fileset refid="prodtouch.fileset"/>
+        </copy>
+
+        <!--Copy the templates dir-->
+        <fileset id="templates.fileset" dir="${templates.dir}" casesensitive="yes"/>
+
+        <copy todir="${touch.dir}/resources/templates" verbose="true">
+            <fileset refid="templates.fileset"/>
+        </copy>
+        
+        <antcall target="sync-touch-homescreen"/>
+    </target>
+
+
 </project>
