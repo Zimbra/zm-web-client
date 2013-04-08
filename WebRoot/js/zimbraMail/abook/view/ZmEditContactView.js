@@ -835,6 +835,10 @@ ZmEditContactView.prototype._handleDetailCheck = function(itemId, id) {
         control.disableFocusHdlr(); //disable focus handler so hint is displayed
 		control.focus();
         control.enableFocusHdlr(); //re-enable
+        //Bug fix # 80423 - attach a onKeyDown handler for Firefox.
+        if (AjxEnv.isFirefox) {
+            control.enableKeyDownHdlr();
+        }
 	}
 };
 
