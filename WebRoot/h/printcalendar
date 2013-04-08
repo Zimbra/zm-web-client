@@ -20,7 +20,7 @@
         </c:otherwise>
     </c:choose>
     <c:remove var="skin" scope="session"/>
-    <c:set var="skin" value="${not empty param.skin ? param.skin : mailbox.prefs.skin}"/>
+    <app:skin mailbox="${mailbox}"/>
     <fmt:setBundle basename="/messages/ZhMsg" scope='request'/>
     <fmt:message var="dateFormat" key="CAL_APPT_EDIT_DATE_FORMAT"/>
 
