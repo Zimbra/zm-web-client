@@ -109,7 +109,7 @@ function(title, message, sticky) {
     // It's a little ugly though.
     // change for bug#67359: Broken notification image in chrome browser
     // //var icon = window.favIconUrl;
-    var icon = [appContextPath, "/img/logo/ImgZimbraLogo_48.gif"].join("");
+	var icon = skin.hints.notificationBanner;
     var popup = window.webkitNotifications.createNotification(icon, title, message);
     popup.show();
 	popup.onclick = function() {popup.cancel();};
