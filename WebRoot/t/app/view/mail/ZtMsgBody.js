@@ -447,7 +447,7 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 		}
 
 		if (imgChanged && onloadHandler) {
-			el.onload = onloadHandler.bind(null, me, el);
+			el.onload = Ext.Function.bind(onloadHandler, me, [el]);
 			ZCS.view.mail.ZtMsgBody.numImgsToLoad += 1;
 		}
 
@@ -515,7 +515,7 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 			el.setAttribute(attr, el.getAttribute('df' + attr));
 			if (isImg) {
 				ZCS.view.mail.ZtMsgBody.numImgsToLoad += 1;
-				el.onload = onloadHandler.bind(null, me, el);
+				el.onload = Ext.Fuction.bind(onloadHandler, me, [el]);
 			}
 			else {
 				fixedBackground = true;

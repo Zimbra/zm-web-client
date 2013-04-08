@@ -70,7 +70,7 @@ Ext.define('ZCS.controller.ZtListController', {
 
 		var defaultQuery = this.getDefaultQuery();
         //<debug>
-		Ext.Logger.verbose('STARTUP: list ctlr launch - ' + ZCS.util.getClassName(this))
+		Ext.Logger.verbose('STARTUP: list ctlr launch - ' + ZCS.util.getClassName(this));
         //</debug>
 		this.callParent();
 
@@ -81,7 +81,7 @@ Ext.define('ZCS.controller.ZtListController', {
 
 		this.getStore().load({
 			query: defaultQuery,
-			callback: this.storeLoaded.bind(this, null, null)
+			callback: Ext.Function.bind(this.storeLoaded, this, [defaultQuery, null], 0)
 		});
 	},
 
@@ -182,7 +182,7 @@ Ext.define('ZCS.controller.ZtListController', {
 
 		this.getStore().load({
 			query: query,
-			callback: this.storeLoaded.bind(this, query, folder)
+			callback: Ext.Function.bind(this.storeLoaded, this, [query, folder], 0)
 		});
 	},
 
@@ -216,6 +216,10 @@ Ext.define('ZCS.controller.ZtListController', {
 				//make sure this element doesn't get focus due to an errant touch
 				this.getSearchBox().blur();
 			}
+		} else {
+			//<debug>
+			Ext.Logger.info('Parameters not present in storeLoaded');
+	        //</debug>
 		}
 	},
 
@@ -223,11 +227,16 @@ Ext.define('ZCS.controller.ZtListController', {
 	 * Updates the text on the list panel's titlebar to reflect the current search results.
 	 */
 	updateTitlebar: function() {
+		//<debug>
+		Ext.Logger.info('Updating titlebar');
+        //</debug>
 
 		var titlebar = this.getTitlebar();  // might not be available during startup
 		if (!titlebar) {
+			Ext.Logger.info('Titlebar not found');
 			return;
 		}
+
 
 		var	organizer = ZCS.session.getCurrentSearchOrganizer(),
 			organizerName = organizer && organizer.get('name'),
@@ -237,6 +246,10 @@ Ext.define('ZCS.controller.ZtListController', {
 		if (organizerName) {
 			title = (unread > 0) ? '<b>' + organizerName + ' (' + unread + ')</b>' : organizerName;
 		}
+
+		//<debug>
+		Ext.Logger.info('Titlebar being set.');
+        //</debug>
 
 		titlebar.setTitle(title);
 	}

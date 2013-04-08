@@ -227,7 +227,10 @@ Ext.define('ZCS.view.ux.ZtIframe', {
 						ev.preventDefault();
 	                    return false;
 					} else if (emailAttribute && ev.type === 'touchend') {
+						//<debug>
 						Ext.Logger.iframe('Address touch ' + emailAttribute);
+						//</debug>
+
 						component.fireEvent('addressTouch', emailAttribute);
 						ev.preventDefault();
 						return false;

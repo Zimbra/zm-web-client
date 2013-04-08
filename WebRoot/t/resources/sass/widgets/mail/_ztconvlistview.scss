@@ -26,6 +26,13 @@ $zcs-mail-topline3: 3.5em;
 	position: relative;
 }
 
+/**
+ * Hack to get ios5 to use hardware acceleration and not render improperly.
+ */
+.zcs-mail-list * {
+	-webkit-transform: translate3d(0,0,0);
+}
+
 .zcs-mail-list-item {
 	position: absolute;
 }
