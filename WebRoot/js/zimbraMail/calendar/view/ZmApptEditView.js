@@ -149,7 +149,7 @@ function() {
 
     Dwt.setVisible(this._attendeeStatus, false);
     Dwt.setVisible(this._suggestTime, !this._isForward);
-    Dwt.setVisible(this._suggestLocation, !this._isForward && !this._isProposeTime);
+    Dwt.setVisible(this._suggestLocation, !this._isForward && !this._isProposeTime && appCtxt.get(ZmSetting.GAL_ENABLED));
     this._scheduleAssistant.close();
 
     if(!this.GROUP_CALENDAR_ENABLED) {
@@ -1404,7 +1404,7 @@ ZmApptEditView.prototype._onSuggestionClose =
 function() {
     // Make the trigger links visible and resize now that the suggestion panel is hidden
     Dwt.setVisible(this._suggestTime, !this._isForward);
-    Dwt.setVisible(this._suggestLocation, !this._isForward && !this._isProposeTime);
+    Dwt.setVisible(this._suggestLocation, !this._isForward && !this._isProposeTime && appCtxt.get(ZmSetting.GAL_ENABLED));
     this.resize();
 }
 
@@ -1413,7 +1413,7 @@ function() {
     // Display the time suggestion panel.
     Dwt.setVisible(this._suggestions, true);
     Dwt.setVisible(this._suggestTime, false);
-    Dwt.setVisible(this._suggestLocation, !this._isProposeTime);
+    Dwt.setVisible(this._suggestLocation, !this._isProposeTime && appCtxt.get(ZmSetting.GAL_ENABLED));
     this._scheduleAssistant.show(true);
     // Resize horizontally
     this._resizeNotes();

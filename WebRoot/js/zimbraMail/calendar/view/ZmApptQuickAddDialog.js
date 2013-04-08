@@ -233,7 +233,7 @@ function(loc) {
 	this._privacySelect.setSelectedValue((defaultPrivacyOption == ZmSetting.CAL_VISIBILITY_PRIV) ?  "PRI" : "PUB");
 
     Dwt.setVisible(this._suggestions, false);
-    Dwt.setVisible(this._suggestLocation, true);
+    Dwt.setVisible(this._suggestLocation, appCtxt.get(ZmSetting.GAL_ENABLED));
 
 	DBG.timePt("ZmQuickAddDialog#popup", true);
 };

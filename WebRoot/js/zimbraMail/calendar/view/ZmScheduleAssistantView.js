@@ -137,7 +137,7 @@ function(focusOnSuggestion, showAllSuggestions) {
     };
 
     this._currentSuggestions.setLoadingHtml();
-    if(this._resources.length == 0) {
+    if(this._resources.length == 0 && !this._suggestTime) {
         this.searchCalendarResources(new AjxCallback(this, this._findFreeBusyInfo, [params]));
     } else {
         this._findFreeBusyInfo(params);
@@ -547,7 +547,10 @@ function(params) {
 
 ZmScheduleAssistantView.prototype.isSuggestionsEnabled =
 function() {
-    if(!appCtxt.get(ZmSetting.GROUP_CALENDAR_ENABLED) || !appCtxt.get(ZmSetting.GAL_ENABLED)) return false;
+    if(!this._suggestTime && (!appCtxt.get(ZmSetting.GROUP_CALENDAR_ENABLED) || !appCtxt.get(ZmSetting.GAL_ENABLED))) {
+		//disable suggest locations when GAL is disabled.
+		return false;
+	}
     // Enabled when visible
     return this._enabled;
 };
