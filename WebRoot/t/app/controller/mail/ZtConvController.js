@@ -138,7 +138,7 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 			itemPanel = this.getItemPanel(),
 			convQueryTerms = [ 'underid:1' ];
 
-		toolbar.setTitle(conv.get('subject'));
+		toolbar.setTitle(conv.get('subject') || ZtMsg.noSubject);
 
 		Ext.each(ZCS.constant.CONV_HIDE, function(id) {
 			if (id !== curFolderId) {
