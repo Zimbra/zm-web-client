@@ -94,16 +94,14 @@ Ext.define('ZCS.model.mail.ZtMsgReader', {
 
 		var records = [],
 			ln = root.length, i,
-			searchFolder = ZCS.session.getCurrentSearchOrganizer(),
-			searchFolderId = searchFolder && searchFolder.get('itemId'),
+			curFolder = ZCS.session.getCurrentSearchOrganizer(),
+			curFolderId = curFolder ? curFolder.get('itemId') : '',
 			omit = ZCS.util.arrayAsLookupHash(ZCS.constant.CONV_HIDE);
 
 		// Process each msg from JSON to data
 		for (i = 0; i < ln; i++) {
-			var node = root[i],
-				localId = ZCS.util.parseId(node.l).localId;
-
-			if ((localId === searchFolderId) || !omit[localId]) {
+			var node = root[i];
+			if ((node.l === curFolderId) || !omit[node.l]) {
 				records.push({
 					clientId:   null,
 					id:         node.id,

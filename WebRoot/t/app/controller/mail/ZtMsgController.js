@@ -283,9 +283,9 @@ Ext.define('ZCS.controller.mail.ZtMsgController', {
 	doDelete: function() {
 
 		var msg = this.getItem(),
-			parsedId = ZCS.util.parseId(msg.get('folderId'));
+			localFolderId = msg ? ZCS.util.localId(msg.get('folderId')) : '';
 
-		if (parsedId && (parsedId.localId === ZCS.constant.ID_TRASH || parsedId.localId === ZCS.constant.ID_JUNK)) {
+		if (localFolderId === ZCS.constant.ID_TRASH || localFolderId === ZCS.constant.ID_JUNK) {
 			Ext.Msg.confirm(ZtMsg.hardDeleteMsgTitle, ZtMsg.hardDeleteMsgText, function(buttonId) {
 				if (buttonId === 'yes') {
 						this.performOp(msg, 'delete', function() {

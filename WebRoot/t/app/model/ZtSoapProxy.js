@@ -249,11 +249,11 @@ Ext.define('ZCS.model.ZtSoapProxy', {
 			deletedIds = deletes.id && deletes.id.split(','),
 			virtConv = {},
 			newDeletedIds = [],
-			parsedId, id;
+			localId;
 
 		Ext.each(deletedIds, function(id) {
-			parsedId = ZCS.util.parseId(id);
-			if (parsedId.localId < 0) {
+			localId = ZCS.util.localId(id);
+			if (localId < 0) {
 				virtConv[id] = true;
 				virtConvDeleted = true;
 			} else {
@@ -298,9 +298,8 @@ Ext.define('ZCS.model.ZtSoapProxy', {
 			virtCid, msg, createdConv;
 
 		Ext.each(list, function(mod) {
-			id = mod.id;
-			parsedId = ZCS.util.parseId(id);
-			virtCid = '-' + parsedId.localId;
+			localId = ZCS.util.localId(mod.id);
+			virtCid = '-' + localId;
 			createdConv = createdConvs[mod.cid];
 			if (virtConv[virtCid] && createdConv) {
 				msgMoved = true;

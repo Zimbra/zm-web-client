@@ -130,7 +130,6 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 					itemPanel.suppressRedraw = false;
 				}
 			});
-			return;
 		}
 
 		this.callParent(arguments);
@@ -270,9 +269,10 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 
 			if (store.getById(item.getId())) {
 				// if the msg was moved to Trash or Junk, remove it from the list in the item panel
-				var parsedId = ZCS.util.parseId(modify.l),
+				var localId = ZCS.util.localId(modify.l),
 					omit = ZCS.util.arrayAsLookupHash(ZCS.constant.CONV_HIDE);
-				if (omit[parsedId.localId]) {
+
+				if (omit[localId]) {
 					store.remove(item);
 				}
 			}
@@ -406,18 +406,18 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 	doDelete: function() {
 
 		var conv = this.getItem(),
-			curFolder = ZCS.session.getCurrentSearchOrganizer(),
-			curFolderId = curFolder && curFolder.get('itemId'),
-			parsedId = curFolderId && ZCS.util.parseId(curFolderId);
+			inTrash = ZCS.util.curFolderIs(ZCS.constant.ID_TRASH),
+			inJunk = ZCS.util.curFolderIs(ZCS.constant.ID_JUNK);
 
-		if (parsedId && (parsedId.localId === ZCS.constant.ID_TRASH || parsedId.localId === ZCS.constant.ID_JUNK)) {
-			var folderName = ZCS.cache.get(curFolderId).get('name'),
+		if (inTrash || inJunk) {
+			var folderName = ZCS.session.getCurrentSearchOrganizer().get('name'),
 				deleteMsg = Ext.String.format(ZtMsg.hardDeleteConvText, folderName);
+
 			Ext.Msg.confirm(ZtMsg.hardDeleteConvTitle, deleteMsg, function(buttonId) {
 				if (buttonId === 'yes') {
 					var data = {
 						op:     'delete',
-						tcon:   parsedId.localId === ZCS.constant.ID_TRASH ? 't' : 'j'
+						tcon:   inTrash ? 't' : 'j'
 					};
 					this.performOp(conv, data, function() {
 						ZCS.app.fireEvent('showToast', ZtMsg.convDeleted);
@@ -491,13 +491,11 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 	 */
 	getTcon: function() {
 
-		var curFolder = ZCS.session.getCurrentSearchOrganizer(),
-			curFolderId = curFolder && curFolder.get('itemId'),
-			parsedId = curFolderId && ZCS.util.parseId(curFolderId),
+		var	curLocalId = ZCS.util.curFolderLocalId(),
 			tcon = '';
 
 		Ext.each(Object.keys(ZCS.constant.TCON), function(folderId) {
-			if (folderId !== parsedId) {
+			if (folderId !== curLocalId) {
 				tcon += ZCS.constant.TCON[folderId];
 			}
 		}, this);

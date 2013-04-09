@@ -159,8 +159,7 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 
 			// We hide external images if user wants us to, or this is Spam, and the user hasn't
 			// already pressed the button to display them.
-			var parsedId = ZCS.util.parseId(msg.get('folderId')),
-				isSpam = (parsedId && parsedId.localId === ZCS.constant.ID_JUNK),
+			var	isSpam = ZCS.util.folderIs(msg.get('folderId'), ZCS.constant.ID_JUNK),
 				isTrusted = msg.hasTrustedSender(),
 				imagesShown = ZCS.view.mail.ZtMsgBody.externalImagesShown[msgId],
 				showExternalImages = ZCS.session.getSetting(ZCS.constant.SETTING_DISPLAY_IMAGES),

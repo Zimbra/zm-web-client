@@ -113,8 +113,13 @@ Ext.define('ZCS.common.ZtUtil', {
 	parseId: function(id) {
 
 		var result = {
-			isRemote: false
+			accountId:  '',
+			localId:    '',
+			isRemote:   false
 		};
+		if (!id) {
+			return result;
+		}
 
 		if (id.indexOf(':') > 0) {
 			var parts = id.split(':');
@@ -128,6 +133,50 @@ Ext.define('ZCS.common.ZtUtil', {
 		}
 
 		return result;
+	},
+
+	/**
+	 * Returns the local (unqualified) part of the given ID.
+	 *
+	 * @param {String}  id      an item or organizer ID
+	 * @return {String}     local ID
+	 */
+	localId: function(id) {
+		return id ? this.parseId(id).localId : '';
+	},
+
+	/**
+	 * Returns true if the given folder (or folder ID) matches the given local ID.
+	 * Intended use is to check to see if a folder is a particular type of system
+	 * folder such as Trash.
+	 *
+	 * @param {ZtOrganizer|String}      folder      folder to check (or folder ID)
+	 * @param {String}                  folderId    ID to check against
+	 * @return {Boolean}    true if folder matches given folder ID
+	 */
+	folderIs: function(folder, folderId) {
+		folder = Ext.isString(folder) ? ZCS.cache.get(folder) : folder;
+		return folder ? this.localId(folder.get('itemId')) === folderId : false;
+	},
+
+	/**
+	 * Returns the local ID of the folder currently being viewed, if any.
+	 *
+	 * @return {String}     local ID of current folder
+	 */
+	curFolderLocalId: function() {
+		var curFolder = ZCS.session.getCurrentSearchOrganizer();
+		return curFolder ? this.localId(curFolder.get('itemId')) : '';
+	},
+
+	/**
+	 * Returns true if the current folder matches the given ID.
+	 *
+	 * @param {String}      folderId        folder ID to match against
+	 * @return {Boolean}        true if the current folder matches the given ID
+	 */
+	curFolderIs: function(folderId) {
+		return this.curFolderLocalId() === folderId;
 	},
 
 	/**
