@@ -91,7 +91,7 @@
 				<span class='zcs-msgHeader-menuButton-span x-button-icon arrow_down x-icon-mask'></span>
 			</a>
 		</div>
-		<tpl if='tags'>
+		<tpl if='tags && tags.length'>
 			<div class='zcs-mail-dtlMsgHdr'>
 				<div class='zcs-msgHdr-field'>
 				<tpl for='tags'>
@@ -151,7 +151,7 @@
 				</div>
 			</div>
 		</tpl>
-		<tpl if='tags'>
+		<tpl if='tags && tags.length'>
 			<div class='zcs-mail-dtlMsgHdr'>
 				<div class='zcs-msgHdr-label'>{[ZtMsg.tagsHdr]}</div>
 				<div class='zcs-msgHdr-field'>
