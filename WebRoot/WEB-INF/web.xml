@@ -187,7 +187,7 @@
     <init-param>
       <param-name>noCachePatternList</param-name>
       <param-value>
-                %%zimbraMailURL%%/,%%zimbraMailURL%%/mail,%%zimbraMailURL%%/auth/,.jsp,%%zimbraAdminURL%%/,%%zimbraMailURL%%/h/,%%zimbraMailURL%%/h/.*,/h/.*,%%zimbraMailURL%%/m/.*,/m/.*,%%zimbraMailURL%%/y/.*,/y/.*
+                %%zimbraMailURL%%/,%%zimbraMailURL%%/mail,%%zimbraMailURL%%/auth/,.jsp,%%zimbraAdminURL%%/,%%zimbraMailURL%%/h/,%%zimbraMailURL%%/h/.*,/h/.*,%%zimbraMailURL%%/m/.*,/m/.*,%%zimbraMailURL%%/t/.*,/t/.*
       </param-value>
       <!--
         List of patterns for which no-cache headers will be returned.
