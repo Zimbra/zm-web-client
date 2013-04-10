@@ -244,7 +244,14 @@ function() {
 				control = this._setupColor(id, setup, value);
 			}
 			else if (type == ZmPref.TYPE_LOCALES) {
-				control = this._setupLocales(id, setup, value);
+                //Fix for bug# 80762 - Based on multiple locale availability set the view as dropdown or label
+                if(ZmLocale.hasChoices()) {
+                    control = this._setupLocales(id, setup, value);
+                }
+                else {
+                    //Part of bug# 80762. Sets view for a single locale and displays as a label
+                    control = this._setupLocaleLabel(id, setup, value);
+                }
 			}
 			else if (type == ZmPref.TYPE_FONT) {
 				control = this._setupFonts(id, setup, value);
@@ -866,6 +873,15 @@ function(id, setup, value) {
 	return button;
 };
 
+//Part of bug# 80762 - Display the single locale item as a read-only label
+ZmPreferencesPage.prototype._setupLocaleLabel =
+function(id, setup, value) {
+    var label = new DwtLabel({parent:this});
+    label.setSize(60, Dwt.DEFAULT);
+    this._showLocale(value, label);
+    this._dwtObjects[id] = label;
+    return label;
+};
 
 ZmPreferencesPage.prototype._setupFonts =
 function(id, setup, value) {

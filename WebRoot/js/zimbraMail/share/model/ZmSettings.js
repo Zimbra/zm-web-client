@@ -579,7 +579,13 @@ function(response) {
 			locale.id = locale.id.replace(/^in/,"id");
 			ZmLocale.create(locale.id, locale.name, ZmMsg["localeName_" + locale.id]);
 		}
-		this.getSetting(ZmSetting.LOCALE_CHANGE_ENABLED).setValue(ZmLocale.hasChoices());
+        if(locales.length === 1) {
+            //Fix for bug# 80762 - Set the value to always true in case of only one language/locale present
+            this.getSetting(ZmSetting.LOCALE_CHANGE_ENABLED).setValue(true);
+        }
+        else {
+            this.getSetting(ZmSetting.LOCALE_CHANGE_ENABLED).setValue(ZmLocale.hasChoices());
+        }
 	}
 };
 
