@@ -51,12 +51,12 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 		 * resize, since there is no 'onload' event fired when a background image has loaded. (One way
 		 * to get around that is by 'image preloading', but I don't think it's worth it.)
 		 *
-		 * @param {ZtMsgBody}   me      the msg body object
-		 * @param {Element}     img     the IMG whose onload handler was invoked
+		 * @param {ZtMsgBody}   msgBody     the msg body object
+		 * @param {Element}     img         the IMG whose onload handler was invoked
 		 *
 		 * @private
 		 */
-		imgOnloadHandler: function(me, img) {
+		imgOnloadHandler: function(msgBody, img) {
 
 			ZCS.view.mail.ZtMsgBody.numImgsLoaded += 1;
 			var toLoad = ZCS.view.mail.ZtMsgBody.numImgsToLoad,
@@ -68,7 +68,7 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
                 //<debug>
 				Ext.Logger.image('Img onload handler: resize iframe');
                 //</debug>
-				me.iframe.resizeToContent();
+				msgBody.iframe.resizeToContent();
 			}
 			img.onload = null;
 		}
@@ -446,7 +446,7 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 		}
 
 		if (imgChanged && onloadHandler) {
-			el.onload = Ext.Function.bind(onloadHandler, me, [el]);
+			el.onload = Ext.Function.bind(onloadHandler, null, [me, el]);
 			ZCS.view.mail.ZtMsgBody.numImgsToLoad += 1;
 		}
 
@@ -514,7 +514,7 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 			el.setAttribute(attr, el.getAttribute('df' + attr));
 			if (isImg) {
 				ZCS.view.mail.ZtMsgBody.numImgsToLoad += 1;
-				el.onload = Ext.Fuction.bind(onloadHandler, me, [el]);
+				el.onload = Ext.Fuction.bind(onloadHandler, null, [me, el]);
 			}
 			else {
 				fixedBackground = true;

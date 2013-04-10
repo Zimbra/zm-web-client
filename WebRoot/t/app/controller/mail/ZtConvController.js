@@ -120,14 +120,12 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 
 		if (curFolderId === ZCS.constant.ID_DRAFTS) {
 			var itemPanel = this.getItemPanel();
-			itemPanel.suppressRedraw = true;
 			this.clear();
 			this.setItem(conv);
 			store.load({
 				convId: conv.getId(),
 				callback: function() {
 					ZCS.app.getComposeController().compose(conv.getMessages()[0]);
-					itemPanel.suppressRedraw = false;
 				}
 			});
 		}
@@ -155,9 +153,19 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 			convId: conv.getId(),
 			convQuery: convQueryTerms.join(' AND '),
 			callback: function(records, operation, success) {
-				itemPanel.showButtons();
-				if (quickReply) {
-					this.setQuickReplyPlaceholderText(this.getQuickReplyPlaceholderText());
+				if (success) {
+					var msgViews = this.getMsgListView().query('msgview');
+					Ext.each(records, function(msg, index) {
+						var msgView = msgViews && msgViews[index];
+						if (msgView) {
+							msgView.render(msg);
+						}
+					}, this);
+					itemPanel.showButtons();
+					if (quickReply) {
+						this.setQuickReplyPlaceholderText(this.getQuickReplyPlaceholderText());
+					}
+					this.adjustItemHeights(msgViews);
 				}
 			},
 			scope: this
@@ -261,13 +269,15 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 	 */
 	handleModifyNotification: function(item, modify) {
 
-		var store = this.getStore();
+		var store = this.getStore(),
+			itemPresent = store.getById(item.getId());
 
+		// msg has been moved
 		if (modify.l) {
 
 			item.set('folderId', modify.l);
 
-			if (store.getById(item.getId())) {
+			if (itemPresent) {
 				// if the msg was moved to Trash or Junk, remove it from the list in the item panel
 				var localId = ZCS.util.localId(modify.l),
 					omit = ZCS.util.arrayAsLookupHash(ZCS.constant.CONV_HIDE);
@@ -278,6 +288,20 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 			}
 
 			this.checkConv(item, false);
+		}
+
+		// tag has been added or removed
+		if (modify.t != null) {
+			item.set('tags', ZCS.model.ZtItem.parseTags(modify.t))
+			if (itemPresent) {
+				var msgViews = this.getMsgListView().query('msgview'),
+					itemIndex = store.indexOf(item),
+					msgView = msgViews && (itemIndex != null) && msgViews[itemIndex];
+
+				if (msgView) {
+					msgView.renderHeader();
+				}
+			}
 		}
 
 		item.handleModifyNotification(modify);

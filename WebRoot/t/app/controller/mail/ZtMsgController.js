@@ -102,15 +102,17 @@ Ext.define('ZCS.controller.mail.ZtMsgController', {
         Ext.Logger.info("Header state: " + newState + " (" + newExpanded + ")");
         //</debug>
 		if (newExpanded && msg && !msg.get('isLoaded')) {
-			msg.isExpand = true;
-			// ZtMsgView updated via 'updatedata' event
 			msg.save({
 				op: 'load',
-				id: msg.getId()
+				id: msg.getId(),
+				success: function() {
+					msgView.render(msg);
+					msgView.updateHeight();
+				}
 			});
 		}
 		else {
-			msgView.toggleView();
+			msgView.refreshView();
 		}
 	},
 

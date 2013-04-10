@@ -44,60 +44,45 @@ Ext.define('ZCS.view.mail.ZtMsgView', {
 
 		expanded: undefined,    // true if this view is expanded (shows header and body)
 
-		state: ZCS.constant.HDR_COLLAPSED,  // Display state of this header: ZCS.constant.HDR_*
+		state: ZCS.constant.HDR_COLLAPSED  // Display state of this header: ZCS.constant.HDR_*
+	},
 
-		listeners: {
+	/**
+	 * Renders the given message.
+	 *
+	 * @param {ZtMailMsg}   msg     mail message
+	 */
+	render: function(msg) {
 
-			// TODO: updatedata is not a great way to trigger a render, since it is fired whenever
-			// TODO: anything in the msg changes
-			updatedata: function(msgView, msgData) {
+		var loaded = !!msg.get('isLoaded');
 
-				if (msgData && !this.up('.itempanel').suppressRedraw) {
-                    //<debug>
-					Ext.Logger.info('updatedata for msg ' + msgData.id);
-                    //</debug>
-					var msg = ZCS.cache.get(msgData.id),
-						loaded = !!msgData.isLoaded,
-						isSingleExpand = msg && msg.isExpand;
+		if (msg) {
+			this.setMsg(msg);
+			this.setExpanded(loaded);
+			this.setState(this.getExpanded() ? ZCS.constant.HDR_EXPANDED : ZCS.constant.HDR_COLLAPSED);
 
-					if (msg) {
-						if (isSingleExpand && !loaded) {
-							return;
-						}
-						this.setMsg(msg);
-						this.setExpanded(isSingleExpand ? true : loaded);
-						this.setState(this.getExpanded() ? ZCS.constant.HDR_EXPANDED : ZCS.constant.HDR_COLLAPSED);
-
-						msgView.renderHeader(this.getState());
-						if (loaded) {
-							msgView.renderBody();
-						}
-						this.updateExpansion();
-
-						if (isSingleExpand) {
-							msg.isExpand = false;
-						}
-					}
-				}
+			this.renderHeader();
+			if (loaded) {
+				this.renderBody();
 			}
+			this.updateExpansion();
 		}
 	},
 
 	/**
-	 * Returns the width of the msg header, as that is the only child guarenteed to be
-	 * rendered.  Other children, like the body, may need to know this information before
-	 * they lay themselves out.
+	 * Renders the header, which can be expanded or collapsed.
 	 *
-	 * @return {Number} The width of a child in the message view.
+	 * @param {String}  state       ZCS.constant.HDR_*
 	 */
-	getChildWidth: function () {
-		return this.down('msgheader').element.getWidth();
-	},
-
 	renderHeader: function(state) {
-		this.down('msgheader').render(this.getMsg(), state);
+		this.down('msgheader').render(this.getMsg(), state || this.getState());
 	},
 
+	/**
+	 * Renders the message body.
+	 *
+	 * @param {Boolean} showQuotedText  if true, show quoted text
+	 */
 	renderBody: function(showQuotedText) {
 		this.down('msgbody').on('msgContentResize', function () {
 			this.updateHeight();
@@ -109,11 +94,11 @@ Ext.define('ZCS.view.mail.ZtMsgView', {
 	},
 
 	/**
-	 * Toggles view between expanded and collapsed state.
+	 * Makes sure components are rendered correctly as expanded or collapsed.
 	 */
-	toggleView: function() {
+	refreshView: function() {
 		this.updateExpansion();
-		this.down('msgheader').render(this.getMsg(), this.getState());
+		this.renderHeader();
 		this.updateHeight();
 	},
 
@@ -138,6 +123,17 @@ Ext.define('ZCS.view.mail.ZtMsgView', {
 		if (!isReadOnly) {
 			this.updateExpansion();
 		}
+	},
+
+	/**
+	 * Returns the width of the msg header, as that is the only child guarenteed to be
+	 * rendered.  Other children, like the body, may need to know this information before
+	 * they lay themselves out.
+	 *
+	 * @return {Number} The width of a child in the message view.
+	 */
+	getChildWidth: function () {
+		return this.down('msgheader').element.getWidth();
 	},
 
 	updateHeight: function (doNotRecomputeHeights) {

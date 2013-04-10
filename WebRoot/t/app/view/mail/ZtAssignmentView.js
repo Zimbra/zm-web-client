@@ -198,8 +198,6 @@ Ext.define('ZCS.view.mail.ZtAssignmentView', {
 
 		var sheet = this;
 
-		component.suppressRedraw = true;
-
 		this.popComponentOutOfContainer(component);
 		var fromBox = component.element.getPageBox();
 		this.setupThisSheet();
@@ -300,7 +298,6 @@ Ext.define('ZCS.view.mail.ZtAssignmentView', {
 	},
 
 	onClose: function () {
-		this.shiftedComponent.suppressRedraw = false;
 		this.shiftedComponent.floating = false;
 		this.updateComponentBox(this.shiftedComponent, this.originalDimensions);
 
