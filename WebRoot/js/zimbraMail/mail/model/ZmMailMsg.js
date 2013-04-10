@@ -2467,15 +2467,6 @@ function(addrNodes, parentNode, isDraft, accountName) {
 		if (identity && identity.isFromDataSource) {
 			var dataSource = ac.getDataSourceCollection().getById(identity.id);
 			if (dataSource) {
-				var provider = ZmDataSource.getProviderForAccount(dataSource);
-				var doNotAddSender = provider && provider._nosender;
-				// main account is "sender"
-				if (!doNotAddSender) {
-					addrNode.t = "s";
-					addrNode.p = ac.get(ZmSetting.DISPLAY_NAME) || "";
-					addrNode = {};
-					addrNodes.push(addrNode);
-				}
 				// mail is "from" external account
 				addrNode.t = "f";
 				addrNode.a = dataSource.getEmail();
