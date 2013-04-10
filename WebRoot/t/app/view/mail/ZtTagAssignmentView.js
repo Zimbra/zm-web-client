@@ -22,7 +22,7 @@ Ext.define('ZCS.view.mail.ZtTagAssignmentView', {
 	extend: 'ZCS.view.mail.ZtAssignmentView',
 	alias: 'widget.tagview',
 	constructor: function (config) {
-		cfg = config || {};
+		var cfg = config || {};
 
 		cfg.listItemTpl = ZCS.template.TagAssignmentListItem;
 		cfg.listData = ZCS.session.getOrganizerDataByAppAndOrgType(ZCS.constant.APP_MAIL, ZCS.constant.ORG_TAG);

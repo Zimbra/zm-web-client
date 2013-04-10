@@ -180,7 +180,7 @@
 
 #widgets/_assignmentview.scss
 <template id='TagAssignmentListItem'>
-	<div class="zcs-tag zcs-tag-{color} zcs-tag-large" <tpl if='rgb'>style="background-color: {rgb};"</tpl>></div>{name}
+	<div class="zcs-tag zcs-tag-{color} zcs-tag-large" <tpl if='rgb'>style="background-color: {rgb};"</tpl>></div>{displayName}
 </template>
 
 <template id="Invite">
