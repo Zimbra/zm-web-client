@@ -1155,8 +1155,8 @@ function(ev){
 	}
 	else if (ev && ev.target && this._groupMembersListView.quickAddButtons[ev.target.id]) {
 		if (AjxUtil.isArray(selection)) {
-			var value = selection[0].value || selection[0];
-			this.quickAddContact(value);
+			var address = selection[0].address || selection[0];
+			this.quickAddContact(address);
 		}
 	}
 		
