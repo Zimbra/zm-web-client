@@ -98,7 +98,7 @@
 					<span class='vm-area-bubble zcs-tag-bubble' id='{id}'>
 						<div class="zcs-tag-small zcs-tag-{color}" tagName="{name}" <tpl if='rgb'>style='background-color: {rgb};'</tpl>>
 						</div>
-						{name}
+						{displayName}
 					</span>
 				</tpl>
 				</div>
@@ -159,7 +159,7 @@
 					<span class='vm-area-bubble zcs-tag-bubble' id='{id}'>
 						<div class="zcs-tag-small zcs-tag-{color}" tagName="{name}" <tpl if='rgb'>style='background-color: {rgb};'</tpl>>
 						</div>
-						{name}
+						{displayName}
 					</span>
 				</tpl>
 				</div>

@@ -271,7 +271,7 @@ Ext.define('ZCS.controller.mail.ZtMailItemController', {
 
 		var isConv = (item.get('type') === ZCS.constant.ITEM_CONVERSATION),
 			toastMsg = isConv ? ZtMsg.moveConversation : ZtMsg.moveMessage,
-			folderName = ZCS.cache.get(folderId).get('name');
+			folderName = ZCS.cache.get(folderId).get('displayName');
 
 		if (isConv) {
 			ZCS.app.getConvListController().removeConv(item);

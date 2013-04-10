@@ -239,7 +239,7 @@ Ext.define('ZCS.controller.ZtListController', {
 
 
 		var	organizer = ZCS.session.getCurrentSearchOrganizer(),
-			organizerName = organizer && organizer.get('name'),
+			organizerName = organizer && organizer.get('displayName'),
 			unread = organizer && organizer.get('unreadCount'),
 			title = ZtMsg.searchResults;
 

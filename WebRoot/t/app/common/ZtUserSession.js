@@ -31,13 +31,13 @@ Ext.define('ZCS.common.ZtUserSession', {
 	],
 
 	config: {
-		sessionId: 0,
-		accountName: '',
-		accountId: '',
-		initialSearchResults: null,
-		debugLevel: '',
-		organizerData: null,
-		activeApp: ''
+		sessionId:              0,
+		accountName:            '',
+		accountId:              '',
+		initialSearchResults:   null,
+		debugLevel:             '',
+		organizerData:          null,
+		activeApp:              ''
 	},
 
 	statics: {
@@ -226,7 +226,8 @@ Ext.define('ZCS.common.ZtUserSession', {
 				id:             id,
 				itemId:         itemId,
 				parentItemId:   node.l,
-				name:           Ext.String.htmlEncode(node.name),
+				name:           node.name,
+				displayName:    Ext.String.htmlEncode(node.name),
 				path:           node.name,
 				color:          node.color,
 				rgb:            node.rgb,

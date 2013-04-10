@@ -70,10 +70,10 @@ Ext.define('ZCS.view.ZtOverview', {
 
 		// create the nested list that contains the grouped organizers
 		var organizerList = Ext.create('ZCS.view.ZtOrganizerList', {
-			title: userName,
-			displayField: 'name',
-			store: organizerStore,
-			grouped: true
+			title:          userName,
+			displayField:   'displayName',
+			store:          organizerStore,
+			grouped:        true
 		});
 
 		this.add(organizerList);

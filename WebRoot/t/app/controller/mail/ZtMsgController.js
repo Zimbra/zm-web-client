@@ -230,10 +230,10 @@ Ext.define('ZCS.controller.mail.ZtMsgController', {
 		}
 	},
 
-	doRemoveTag: function(tagId) {
+	doRemoveTag: function(tagName) {
 		var msg = this.getItem();
-		if (msg && tagId) {
-			this.tagItem(msg, tagId, true);
+		if (msg && tagName) {
+			this.tagItem(msg, tagName, true);
 		}
 	},
 

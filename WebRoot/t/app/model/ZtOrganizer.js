@@ -26,25 +26,26 @@ Ext.define('ZCS.model.ZtOrganizer', {
 	config: {
 		fields: [
 			// global fields
-			{ name: 'type', type: 'string' },       // ZCS.constant.ORG_*
-			{ name: 'typeName', type: 'string' },   // display name of group
-			{ name: 'itemId', type: 'string' },     // ID on ZCS server
-			{ name: 'parentItemId', type: 'string' },
-			{ name: 'name', type: 'string' },
-			{ name: 'path', type: 'string' },
-			{ name: 'itemCount', type: 'int' },
-			{ name: 'color', type: 'int' },
-			{ name: 'rgb', type: 'string' },
-			{ name: 'url', type: 'string' },        // feeds
+			{ name: 'type', type: 'string' },           // ZCS.constant.ORG_*
+			{ name: 'typeName', type: 'string' },       // display name of group
+			{ name: 'itemId', type: 'string' },         // ID on ZCS server
+			{ name: 'parentItemId', type: 'string' },   // ID of parent organizer
+			{ name: 'name', type: 'string' },           // not encoded, should not be displayed
+			{ name: 'displayName', type: 'string' },    // HTML-encoded
+			{ name: 'path', type: 'string' },           // full path with / separators
+			{ name: 'itemCount', type: 'int' },         // number of items contained by this organizer
+			{ name: 'color', type: 'int' },             // standard color
+			{ name: 'rgb', type: 'string' },            // extended RGB color
+			{ name: 'url', type: 'string' },            // feeds
 
 			// folder fields
-			{ name: 'disclosure', type: 'boolean' }, // override NestedList button behavior
+			{ name: 'disclosure', type: 'boolean' },    // override NestedList button behavior
 
 			// mail folder fields
-			{ name: 'unreadCount', type: 'int' },
+			{ name: 'unreadCount', type: 'int' },       // number of unread messages in this folder
 
 			// saved search fields
-			{ name: 'query', type: 'string' }
+			{ name: 'query', type: 'string' }           // search query
 		]
 	},
 
