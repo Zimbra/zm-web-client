@@ -102,7 +102,7 @@ Ext.define('ZCS.model.ZtOrganizer', {
 
 	handleModifyNotification: function(modify) {
 
-		if (modify.u) {
+		if (modify.u != null) {
 			this.set('unreadCount', modify.u);
 		}
 	}
