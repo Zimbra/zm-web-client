@@ -7,16 +7,6 @@
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%--<%!--%>
-    <%--ZAuthResult authResult = (ZAuthResult) request.getAttribute("authResult");--%>
-
-    <%--java.util.List<String> localePref = authResult.getPrefs().get("zimbraPrefLocale");--%>
-    <%--if (localePref != null && localePref.size() > 0) {--%>
-        <%--request.setAttribute("localeId", localePref.get(0));--%>
-    <%--}--%>
-
-	<%--String debug = request.getParameter("debug");--%>
-<%--%>--%>
 
 <!DOCTYPE HTML>
 <html manifest="" lang="en-US">
@@ -126,28 +116,29 @@
 		<jsp:param name="res" value="ZtMsg"/>
 	</jsp:include>
 
-    <%--<c:set var="initialMailSearch" value="${requestScope.authResult.prefs.zimbraPrefMailInitialSearch[0]}"/>--%>
-    <%--<c:if test="${fn:startsWith(initialMailSearch, 'in:')}">--%>
-        <%--<c:set var="path" value="${fn:substring(initialMailSearch, 3, -1)}"/>--%>
-    <%--</c:if>--%>
-
-    <%--<c:set var="numItems" value="${requestScope.authResult.prefs.zimbraPrefItemsPerVirtualPage[0]}"/>--%>
+    <zm:getMailbox var="mailbox"/>
+    <c:set var="initialMailSearch" value="${mailbox.accountInfo.prefs.mailInitialSearch}"/>
+    <c:if test="${fn:startsWith(initialMailSearch, 'in:')}">
+        <c:set var="path" value="${fn:substring(initialMailSearch, 3, -1)}"/>
+    </c:if>
 
     <c:set var="authcookie" value="${cookie.ZM_AUTH_TOKEN.value}"/>
     <%
+         String debug = request.getParameter("debug");
+
          java.lang.String authCookie = (String) pageContext.getAttribute("authcookie"); 
          ZAuthToken auth = new ZAuthToken(null, authCookie , null);
     %>
 
-    <zm:getInfoJSON var="getInfoJSON" authtoken="<%= auth %>" dosearch="true" itemsperpage="20" types="conversation" folderpath="inbox" sortby="dateDesc"/>
+    <zm:getInfoJSON var="getInfoJSON" authtoken="<%= auth %>" dosearch="true" itemsperpage="20" types="conversation" folderpath="${path}" sortby="dateDesc"/>
     <script type="text/javascript">
 
         var batchInfoResponse = ${getInfoJSON};
-        <%--var debugLevel = "<%= (debug != null) ? debug : "" %>";--%>
+        var debugLevel = "<%= (debug != null) ? debug : "" %>";
         window.inlineData = {
             header:batchInfoResponse.Header,
-            response:batchInfoResponse.Body.BatchResponse
-//	        debugLevel:debugLevel
+            response:batchInfoResponse.Body.BatchResponse,
+	        debugLevel:debugLevel
         };
     </script>
 
