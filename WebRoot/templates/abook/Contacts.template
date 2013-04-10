@@ -1009,7 +1009,7 @@
 <!------------------------------ Quick Add Group ------------------------------>
 <!----------------------------------------------------------------------------->
 <template id="abook.Contacts#QuickAddPrompt">
-	<table> 
+	<table class="ZPropertySheet" cellpadding="6">
 		<tr>
 			<td class='ZmFieldLabelRight'><$=ZmMsg.firstNameLabel$></td>
 			<td><div id='${id}_FIRST_NAME'></div></td>
