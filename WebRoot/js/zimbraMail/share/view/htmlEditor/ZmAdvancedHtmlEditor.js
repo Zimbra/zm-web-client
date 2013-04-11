@@ -816,10 +816,10 @@ ZmAdvancedHtmlEditor.prototype.onInit = function(ed, ev) {
     (ed.windowManager) && ed.windowManager.onOpen.add(ZmAdvancedHtmlEditor.onPopupOpen);
     if (view && view.toString() === "ZmComposeView" && ZmDragAndDrop.isSupported()) {
         var dnd = view._dnd;
-        tinymceEvent.add(doc, 'dragenter', this._onDragEnter.bind(this, ed, dnd));
-        tinymceEvent.add(doc, 'dragleave', this._onDragLeave.bind(this, ed, dnd));
-        tinymceEvent.add(doc, 'dragover', this._onDragOver.bind(this, ed, dnd));
-        tinymceEvent.add(doc, 'drop', this._onDrop.bind(this, ed, dnd));
+        tinymceEvent.add(doc, 'dragenter', this._onDragEnter.bind(this));
+        tinymceEvent.add(doc, 'dragleave', this._onDragLeave.bind(this));
+        tinymceEvent.add(doc, 'dragover', this._onDragOver.bind(this, dnd));
+        tinymceEvent.add(doc, 'drop', this._onDrop.bind(this, dnd));
     }
 
     obj._editorInitialized = true;
@@ -872,21 +872,19 @@ ZmAdvancedHtmlEditor.prototype.onBeforeRepaint = function(ed, cmd, ui, val, o) {
     }
 };
 
-ZmAdvancedHtmlEditor.prototype._onDragEnter = function(ed, dnd, ev) {
-    dnd._onDragEnter(ev);
+ZmAdvancedHtmlEditor.prototype._onDragEnter = function() {
     Dwt.addClass(Dwt.getElement(this._iFrameId), "DropTarget");
 };
 
-ZmAdvancedHtmlEditor.prototype._onDragLeave = function(ed, dnd, ev) {
-    dnd._onDragLeave(ev);
+ZmAdvancedHtmlEditor.prototype._onDragLeave = function() {
     Dwt.delClass(Dwt.getElement(this._iFrameId), "DropTarget");
 };
 
-ZmAdvancedHtmlEditor.prototype._onDragOver = function(ed, dnd, ev) {
+ZmAdvancedHtmlEditor.prototype._onDragOver = function(dnd, ev) {
     dnd._onDragOver(ev);
 };
 
-ZmAdvancedHtmlEditor.prototype._onDrop = function(ed, dnd, ev) {
+ZmAdvancedHtmlEditor.prototype._onDrop = function(dnd, ev) {
     dnd._onDrop(ev, true);
     Dwt.delClass(Dwt.getElement(this._iFrameId), "DropTarget");
 };
