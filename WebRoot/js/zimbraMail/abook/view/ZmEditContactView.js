@@ -1121,6 +1121,7 @@ ZmEditContactViewImage.prototype.setValue = function(value) {
         this.setToolTipContent(ZmMsg.editImg);
 	}
 	this.parent.setDirty("IMAGE", true);
+    this._imgEl.onerror = this._handleCorruptImageError.bind(this);
 };
 
 /**
@@ -1183,6 +1184,39 @@ ZmEditContactViewImage.prototype._handleImageSaved = function(folder, filenames,
  */
 ZmEditContactViewImage.prototype._createElement = function() {
 	return document.createElement("FIELDSET");
+};
+
+/**
+ * @private
+ */
+ZmEditContactViewImage.prototype._handleCorruptImageError = function() {
+    this.setValue();    // setting default contact image
+    this._popupCorruptImageErrorDialog();
+};
+
+/**
+ * @private
+ */
+ZmEditContactViewImage.prototype._popupCorruptImageErrorDialog = function() {
+    var dlg = this.corruptImageErrorDlg;
+    if(dlg){
+       dlg.popup();
+    }
+    else{
+        dlg = appCtxt.getMsgDialog();
+        this.corruptImageErrorDlg = dlg;
+	    dlg.setMessage(ZmMsg.errorCorruptImageFile, DwtMessageDialog.CRITICAL_STYLE, ZmMsg.corruptFile);
+        dlg.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._corruptImageErrorDialogOkListener));
+        dlg.popup();
+    }
+};
+
+/**
+ * @private
+ */
+ZmEditContactViewImage.prototype._corruptImageErrorDialogOkListener = function() {
+    this.corruptImageErrorDlg.popdown();
+    this._chooseImage();
 };
 
 //
