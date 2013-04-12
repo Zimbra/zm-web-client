@@ -133,13 +133,13 @@
 <script type="text/javascript">
 	AjxEnv.DEFAULT_LOCALE = "${zm:javaLocaleId(locale)}";
 
-	window.appContextPath		= "${contextPath}";
-	window.appCurrentSkin		= "${zm:cook(skin)}";
-    window.appRequestLocaleId	= "${locale}";
+	appContextPath = "${contextPath}";
+	appCurrentSkin = "${zm:cook(skin)}";
+    appRequestLocaleId = "${locale}";
 	// NOTE: Force zimlets to load individually to avoid aggregation!
-	window.appExtension			= "${zm:jsEncode(ext)}";
-	window.appDevMode			= ${isDevMode};
-    window.appCoverageMode		= ${isCoverage};
+	appExtension   = "${zm:jsEncode(ext)}";
+	window.appDevMode     = ${isDevMode};
+    window.appCoverageMode = ${isCoverage};
 </script>
 
 <%@ include file="loadImgData.jsp" %>
@@ -187,26 +187,24 @@
 </script>
 <script>
 // compile locale specific templates
-for (pkg in window.AjxTemplateMsg) {
-	text = AjxTemplateMsg[pkg];
+for (var pkg in window.AjxTemplateMsg) {
+	var text = AjxTemplateMsg[pkg];
 	AjxTemplate.compile(pkg, true, false, text);
 }
-delete pkg;
-delete text;
 </script>
 
-<script type="text/javascript" language="JavaScript">
-	window.cacheKillerVersion = "${vers}";
-	function launch() {
-		if (window.opener && window.opener.DBG) {
-			// use main window's debug object
-			window.DBG = window.opener.DBG;
+    <script type="text/javascript" language="JavaScript">
+		var cacheKillerVersion = "${vers}";
+		function launch() {
+			if (window.opener && window.opener.DBG) {
+				// use main window's debug object
+				window.DBG = window.opener.DBG;
+			}
+			ZmNewWindow.run();
 		}
-		ZmNewWindow.run();
-	}
-	AjxCore.addOnloadListener(launch);
-	AjxCore.addOnunloadListener(ZmNewWindow.unload);
-</script>
+		AjxCore.addOnloadListener(launch);
+		AjxCore.addOnunloadListener(ZmNewWindow.unload);
+	</script>
 </head>
 <body/>
 </html>
