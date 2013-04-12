@@ -220,15 +220,15 @@
                                             <legend><fmt:message key="details"/></legend>
                                             <table class="ZPropertySheet" cellspacing="6">
                                                 <tr>
-                                                    <td width="1%" align="right"><label for="subject"><fmt:message key="subject"/>:</label></td>
+                                                    <td class="editViewLabel"><label for="subject"><fmt:message key="subject"/>:</label></td>
                                                     <td><input style="width:99%" type="text" size="100" id="subject" name="subject" value="${fn:escapeXml(compose.subject)}"></td>
                                                 </tr>
                                                 <tr>
-                                                    <td width="1%" align="right"><label for="location"><fmt:message key="location"/>:</label></td>
+                                                    <td class="editViewLabel"><label for="location"><fmt:message key="location"/>:</label></td>
                                                     <td><input style="width:99%" id="location" type="text" size="100" name="location" value="${fn:escapeXml(compose.location)}"></td>
                                                 </tr>
                                                 <tr>
-                                                    <td width="1%" align="right"><label for="showAs"><fmt:message key="showAs"/>:</label></td>
+                                                    <td class="editViewLabel"><label for="showAs"><fmt:message key="showAs"/>:</label></td>
                                                     <td>
                                                         <table>
                                                             <tr>
@@ -262,7 +262,7 @@
                                                 <c:choose>
                                                     <c:when test="${numCalendars gt 1}">
                                                         <tr>
-                                                            <td width="1%" align="right"><label for="apptFolderId"><fmt:message key="calendar"/>:</label></td>
+                                                            <td class="editViewLabel"><label for="apptFolderId"><fmt:message key="calendar"/>:</label></td>
                                                             <td>
                                                                 <select name='apptFolderId' id="apptFolderId">
                                                                     <zm:forEachFolder var="folder">
@@ -304,7 +304,7 @@
                                                 </td>
                                             </tr>
                                             <tr>
-                                                <td width="1%" align="right"><label for="start"><fmt:message key="start"/>:</label></td>
+                                                <td class="editViewLabel"><label for="start"><fmt:message key="start"/>:</label></td>
                                                 <td>
                                                     <table>
                                                         <tr>
@@ -350,7 +350,7 @@
                                                 </td>
                                             </tr>
                                             <tr>
-                                                <td width="1%" align="right"><label for="end"><fmt:message key="end"/>:</label></td>
+                                                <td class="editViewLabel"><label for="end"><fmt:message key="end"/>:</label></td>
                                                 <td>
                                                     <table>
                                                         <tr>

@@ -177,15 +177,15 @@
                                             <legend><fmt:message key="details"/></legend>
                                             <table class="ZPropertySheet" cellspacing="6">
                                                 <tr>
-                                                    <td width="1%" align="right"><label for="subject"><fmt:message key="subject"/>:</label></td>
+                                                    <td class="editViewLabel"><label for="subject"><fmt:message key="subject"/>:</label></td>
                                                     <td><input style="width:99%" type="text" size="100" id="subject" name="subject" value="${fn:escapeXml(compose.subject)}"></td>
                                                 </tr>
                                                 <tr>
-                                                    <td width="1%" align="right"><label for="location"><fmt:message key="location"/>:</label></td>
+                                                    <td class="editViewLabel"><label for="location"><fmt:message key="location"/>:</label></td>
                                                     <td><input style="width:99%" id="location" type="text" size="100" name="location" value="${fn:escapeXml(compose.location)}"></td>
                                                 </tr>
                                                 <tr>
-                                                    <td width="1%" align="right"><label for="priority"><fmt:message key="priority"/>:</label></td>
+                                                    <td class="editViewLabel"><label for="priority"><fmt:message key="priority"/>:</label></td>
                                                     <td>
                                                         <table>
                                                             <tr>
