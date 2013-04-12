@@ -143,15 +143,15 @@
                                             <legend><fmt:message key="details"/></legend>
 	                                        <table cellpadding="5" cellspacing="0">
 		                                        <tr>
-			                                        <td width="1%" align="right"><label for="subject"><fmt:message key="subject"/>:</label></td>
+			                                        <td class="editViewLabel"><label for="subject"><fmt:message key="subject"/>:</label></td>
 			                                        <td>${fn:escapeXml(compose.subject)}</td>
 		                                        </tr>
 		                                        <tr>
-			                                        <td width="1%" align="right"><label for="location"><fmt:message key="location"/>:</label></td>
+			                                        <td class="editViewLabel"><label for="location"><fmt:message key="location"/>:</label></td>
 			                                        <td>${fn:escapeXml(compose.location)}</td>
 		                                        </tr>
 		                                        <tr>
-			                                        <td width="1%" align="right"><label for="priority"><fmt:message key="priority"/>:</label></td>
+			                                        <td class="editViewLabel"><label for="priority"><fmt:message key="priority"/>:</label></td>
 			                                        <td>
 				                                        <table cellpadding="0" cellspacing="0">
 					                                        <tr>

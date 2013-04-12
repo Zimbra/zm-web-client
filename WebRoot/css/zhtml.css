@@ -1053,6 +1053,13 @@ padding: 0 @BoxPaddingSize@ 0 @BoxPaddingSize@;
 	height:28px;
 }
 
+/* used for labels in tables in eappt, etask, task, addattendees */
+.editViewLabel {
+    width: 1%;
+    @Text@ white-space: nowrap;
+    text-align: right;
+}
+
 .apptHeader {
 	font-size:18px;
 	font-weight:bold;

@@ -134,7 +134,7 @@ if (k == 13) { document.getElementById("doSearch").click();return false;} else {
                                                             </td>
                                                         </tr>
                                                         <tr>
-                                                            <td width="1%" align="right"><label for="start"><fmt:message key="start"/>:</label></td>
+                                                            <td class="editViewLabel"><label for="start"><fmt:message key="start"/>:</label></td>
                                                             <td>
                                                                 <table>
                                                                     <tr>
@@ -180,7 +180,7 @@ if (k == 13) { document.getElementById("doSearch").click();return false;} else {
                                                             </td>
                                                         </tr>
                                                         <tr>
-                                                            <td width="1%" align="right"><label for="end"><fmt:message key="end"/>:</label></td>
+                                                            <td class="editViewLabel"><label for="end"><fmt:message key="end"/>:</label></td>
                                                             <td>
                                                                 <table>
                                                                     <tr>
