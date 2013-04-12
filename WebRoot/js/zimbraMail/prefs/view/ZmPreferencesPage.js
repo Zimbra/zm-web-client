@@ -1037,7 +1037,7 @@ function(format, formatSelectObj, ev) {
 					  appName:			ZmApp.CONTACTS,
 					  description:		ZmMsg.chooseAddrBookToExport});
 	} else {
-		AjxDispatcher.require(["MailCore", "CalendarCore", "Calendar", "CalendarAppt"]);
+		AjxDispatcher.require(["CalendarCore", "Calendar", "CalendarAppt"]);
 		dialog.popup({treeIds:			[ZmOrganizer.CALENDAR],
 					  overviewId:		overviewId,
 					  omit:				omit,
@@ -1069,7 +1069,7 @@ function(ev) {
 			dialog.popup({treeIds:[ZmOrganizer.ADDRBOOK], title:ZmMsg.chooseAddrBook, overviewId: overviewId,
 						  description:ZmMsg.chooseAddrBookToImport, skipReadOnly:true, hideNewButton:noNew, omit:omit});
 		} else {
-			AjxDispatcher.require(["MailCore", "CalendarCore", "Calendar"]);
+			AjxDispatcher.require(["CalendarCore", "Calendar"]);
 			dialog.popup({treeIds:[ZmOrganizer.CALENDAR], title:ZmMsg.chooseCalendar, overviewId: overviewId, description:ZmMsg.chooseCalendarToImport, skipReadOnly:true});
 		}
 	}

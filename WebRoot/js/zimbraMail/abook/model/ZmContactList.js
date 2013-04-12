@@ -196,9 +196,7 @@ function(callback, result) {
 					}
 				}
 			}
-			if (attrs[ZmContact.F_type] === "group") { //set only for group.
-				attrs[ZmContact.F_groups] = groupMembers;
-			}
+			attrs[ZmContact.F_groups] = groupMembers;
 			if (foundDeref) {
 				//batch group members for deref loading
 				var dummy = new ZmContact(contact["id"], this);

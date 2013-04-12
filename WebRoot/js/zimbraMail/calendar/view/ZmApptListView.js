@@ -2,7 +2,7 @@
  * ***** BEGIN LICENSE BLOCK *****
  * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2010, 2011, 2012, 2013 VMware, Inc.
+ * Copyright (C) 2010, 2011, 2012 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -262,13 +262,13 @@ ZmApptListView.prototype._getCellContents = function(htmlArr, idx, appt, field, 
 //
 
 ZmApptListView._sortSubject = function(a, b) {
-    // Bug fix # 80458 - Convert the subject line to lower case and compare
-    var aVal = a.getName().toLowerCase();
-    var bVal = b.getName().toLowerCase();
+	var aVal = a.getName();
+	var bVal = b.getName();
 
 	if (aVal < bVal)		{ return ZmApptListView.sortByAsc ? -1 : 1; }
 	else if (aVal > bVal)	{ return ZmApptListView.sortByAsc ? 1 : -1; }
 	else 					{ return 0; }
+
 };
 
 ZmApptListView._sortStatus = function(a, b) {
