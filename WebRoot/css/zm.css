@@ -3552,10 +3552,8 @@ HTML>BODY .appt-selected .appt_allday_body
 	width:100%;
 }
 
-/* ??? USE? */
-.ZmFilterRuleDialog .paddedTableCell {
+.ZmFilterRuleDialog .ZPropertySheet>TBODY>TR>TD {
 	vertical-align:middle;
-	@TextPadding@
 }
 
 /* ??? USE? */
@@ -3869,12 +3867,40 @@ HTML>BODY .appt-selected .appt_allday_body
 	vertical-align:middle;
 }
 
-.ZmFilterRuleDialog .FilterRuleSection {
-	margin-left:2em;
-#IFDEF GECKO
-	border:1px dotted #555;
-#ENDIF
+.ZmFilterRuleDialog .FilterRuleSection,
+.ZmFilterRuleDialog .FilterActionSection {
+	background-color:rgba(255,255,255,.5);
+	border:1px solid rgba(0,0,0,.25);
+	margin:.25em 1em 1em;
 	padding:0;
+#IFDEF MSIE
+	/* IE sucks at rgba backgrounds, so using gradient hack */
+	filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#80FFFFFF',endColorstr='#80FFFFFF');
+#ENDIF
+}
+
+.ZmFilterRuleDialog .FilterRuleSection>DIV,
+.ZmFilterRuleDialog .FilterActionSection>DIV {
+	padding:.5em 1.5em .5em .5em;
+}
+
+.FilterActions>TBODY>TR>TD {
+	padding-right:6px;
+}
+
+#IFDEF MSIE
+	/* IE won't pick up padding on the table cell elements unless the collapse is turned off */
+.FilterAddRemoveButtons {
+	border-collapse:separate;
+}
+#ENDIF
+
+.FilterAddRemoveButtons>TBODY>TR>TD {
+	padding:0 3px;
+}
+
+.FilterAddRemoveButtons .ZButtonTable .ZLeftIcon DIV {
+	margin:1px 4px;
 }
 
 .infoBox {

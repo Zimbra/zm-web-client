@@ -850,7 +850,7 @@ and the container element is replaced with that control.
 					<$ } $>
 
 					<$ var autocompleteLabelled = false; $>
-					<$ var autocompleteLabel = ZmMsg.autocomplete  + ":"; $>
+					<$ var autocompleteLabel = ZmMsg.autocomplete + ":"; $>
 					<$ if (!appCtxt.multiAccounts || (appCtxt.isFamilyMbox && data.activeAccount.isMain) || !data.activeAccount.isMain) {$>
 						<$ if (appCtxt.isOffline && !data.activeAccount.isMain) { $>
 							<tr>
@@ -916,20 +916,20 @@ and the container element is replaced with that control.
 						</td>
 					</tr>
 					<tr>
-                    <td colspan="10">
-                        <table class="ZPropertySheet" cellspacing='6' width=100%>
-                            <tr>
-                                <$ if (!appCtxt.isOffline && (data.isEnabled(ZmSetting.POP_ACCOUNTS_ENABLED) || data.isEnabled(ZmSetting.IMAP_ACCOUNTS_ENABLED))) { $>
-                                    <td><button id='${id}_ADD_EXTERNAL' tabindex='40'><$=ZmMsg.addExternalAccount$></button> </td>
-                                <$ } $>
-                                <$ if (data.isEnabled(ZmSetting.IDENTITIES_ENABLED)) { $>
-                                    <td><button id='${id}_ADD_PERSONA' tabindex='50'><$=ZmMsg.addPersona$></button> </td>
-                                <$ } $>
-                                <td><button id='${id}_DELETE' tabindex='30'><$=ZmMsg.del$></button></td>
-                                <td width="100%"></td>
-                            </tr>
-                        </table>
-                    </td>
+						<td colspan="10">
+							<table class="ZPropertySheet" cellspacing='6' width=100%>
+								<tr>
+									<$ if (!appCtxt.isOffline && (data.isEnabled(ZmSetting.POP_ACCOUNTS_ENABLED) || data.isEnabled(ZmSetting.IMAP_ACCOUNTS_ENABLED))) { $>
+										<td><button id='${id}_ADD_EXTERNAL' tabindex='40'><$=ZmMsg.addExternalAccount$></button> </td>
+									<$ } $>
+									<$ if (data.isEnabled(ZmSetting.IDENTITIES_ENABLED)) { $>
+										<td><button id='${id}_ADD_PERSONA' tabindex='50'><$=ZmMsg.addPersona$></button> </td>
+									<$ } $>
+									<td><button id='${id}_DELETE' tabindex='30'><$=ZmMsg.del$></button></td>
+									<td width="100%"></td>
+								</tr>
+							</table>
+						</td>
 					</tr>
 				</table>
 			</td>
@@ -1032,25 +1032,23 @@ and the container element is replaced with that control.
 								<tr>
 									<td colspan='4'><div id='${id}_DELEGATE_RIGHTS'></div></td>
 								</tr>
-
-
 							</table>
 						</td>
 					</tr>
-                    <tr>
-                        <td colspan=2>
-                            <table class="ZPropertySheet" width="100%" cellspacing="6">
-                                <tbody>
-                                    <tr>
-                                        <td><button id='${id}_ADD_DELEGATE' tabindex='70'><$=ZmMsg.addDelegate$></button></td>
-                                        <td><button id='${id}_EDIT_DELEGATE' tabindex='80'><$=ZmMsg.editPermissions$></button></td>
-                                        <td><button id='${id}_REMOVE_DELEGATE' tabindex='100'><$=ZmMsg.remove$></button></td>
-                                        <td width='100%'></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </td>
-                    </tr>
+					<tr>
+						<td colspan=2>
+							<table class="ZPropertySheet" width="100%" cellspacing="6">
+								<tbody>
+									<tr>
+										<td><button id='${id}_ADD_DELEGATE' tabindex='70'><$=ZmMsg.addDelegate$></button></td>
+										<td><button id='${id}_EDIT_DELEGATE' tabindex='80'><$=ZmMsg.editPermissions$></button></td>
+										<td><button id='${id}_REMOVE_DELEGATE' tabindex='100'><$=ZmMsg.remove$></button></td>
+										<td width='100%'></td>
+									</tr>
+								</tbody>
+							</table>
+						</td>
+					</tr>
 				</table>
 			</td>
 		</tr>
@@ -1353,34 +1351,31 @@ and the container element is replaced with that control.
 NOTE: The tables inside of the filter rule sections MUST contain a tbody element!
 -->
 <template id='prefs.Pages#MailFilterRule'>
-	<table width='100%'>
-		<tr>
-			<td width='1%' nowrap><$=ZmMsg.filterNameLabel$></td>
-			<td><input id='${id}_name' type='text' width=100 tabindex='10'></td>
-			<td width='1%' style='text-align:right; white-space:nowrap;'>
-				<input id='${id}_active' type='checkbox' name='cbActive' checked tabindex='20'>
-				<label for='${id}_active'> <$=ZmMsg.active$> </label>
-			</td>
-		</tr>
-	</table>
 
-	<br>
+	<table width='100%' style='margin-bottom:.75em; min-width:450px;'><tr>
+		<td><table width='100%' class='ZPropertySheet' cellspacing='6'><tr>
+			<td width='1%' style='white-space:nowrap;'> <$=ZmMsg.filterNameLabel$> </td>
+			<td width='99%'> <input id='${id}_name' type='text' tabindex='10' style='width:100%;'> </td>
+		</tr></table></td>
+		<td width='1%'><table class='ZCheckboxTable' style='margin-left:1em;'><tr>
+			<td> <input id='${id}_active' type='checkbox' name='cbActive' checked tabindex='20'> </td>
+			<td><label for='${id}_active'> <$=ZmMsg.active$> </label></td>
+		</tr></table></td>
+	</tr></table>
 
-	<div style='color:#555555'><div id='${id}_condition' tabindex='30'></div></div>
+	<div id='${id}_condition' tabindex='30'></div>
 	<fieldset class='FilterRuleSection'>
 		<div style='overflow-x:hidden;overflow-y:auto;height:145px;'>
-			<table id='${id}_conditions' width='100%' tabindex='40' class='ZPropertySheet'>
+			<table id='${id}_conditions' width='100%' tabindex='40' class='ZPropertySheet' cellspacing='6'>
 				<tbody></tbody>
 			</table>
 		</div>
 	</fieldset>
 
-	<br>
-
-	<div style='color:#555555'><$=ZmMsg.filterActions$></div>
-	<fieldset class='FilterRuleSection'>
+	<div><$=ZmMsg.filterActions$></div>
+	<fieldset class='FilterActionSection'>
 		<div style='overflow-x:hidden;overflow-y:auto;height:82px'>
-			<table id='${id}_actions' width='100%' tabindex='50' class='ZPropertySheet'>
+			<table id='${id}_actions' width='100%' tabindex='50' class='ZPropertySheet' cellspacing='6'>
 				<tbody></tbody>
 			</table>
 		</div>
@@ -1465,7 +1460,7 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 						<tr>
 							<td class='ZOptionsLabel'>&nbsp;</td>
 							<td class='ZOptionsField'>
-								<table  ><tr>
+								<table><tr>
 									<td><div id='${id}_CAL_REMINDER_NOTIFY_TOASTER' tabindex='69'></div></td>
 									<td class='Text'>&nbsp;<$=ZmDesktopAlert.getInstance().getLinkText() $></td>
 								</tr></table>
@@ -1474,7 +1469,7 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 						<tr><td colspan=2><hr></td></tr>
 						<tr>
 							<td class='ZOptionsLabel'><$=ZmMsg.defaultApptDuration$></td>
-							<td class='ZOptionsField'><table  ><tr><td><select id='${id}_CAL_DEFAULT_APPT_DURATION' tabindex='70'></select></td><td style="padding-left:4px;"><$=ZmMsg.minutes$></td></tr></table></td>
+							<td class='ZOptionsField'><table><tr><td><select id='${id}_CAL_DEFAULT_APPT_DURATION' tabindex='70'></select></td><td style="padding-left:4px;"><$=ZmMsg.minutes$></td></tr></table></td>
 						</tr>
 					</table>
 				</td>
@@ -2294,7 +2289,7 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 		</tr>
 	</table>
 	<div class='ZOptionsSectionMain' style="width:100%;padding:0px;">
-		<table class='ZOptionsSectionTable'  >
+		<table class='ZOptionsSectionTable'>
 			<tr><td class='ZOptionsSectionMain'>
 				<table width=100%>
 					<tr><td class='ZOptionsLabel'><$=ZmMsg.deviceEmailNotificationsRegionLabel$></td>
@@ -2474,12 +2469,12 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 		<div id='${id}_DL_SUBSCRIBED'></div>
 		<div id='${id}_MASS_MARKETING'></div>
 		<table><tr>
-	                <td><div id='${id}_NOT_TO_ME'></div></td>
-	                <td><div id='${id}_SELECT_FIELD' style='margin:0 .5em;'></div></td>
-	                <td><div id='${id}_NOT_TO_ME_CONT'><$=ZmMsg.field$></div></td>
-                </tr></table>
-                <div id='${id}_NOT_IN_ADDR'></div>
-	</ul>
+			<td><div id='${id}_NOT_TO_ME'></div></td>
+			<td><div id='${id}_SELECT_FIELD' style='margin:0 .5em;'></div></td>
+			<td><div id='${id}_NOT_TO_ME_CONT'><$=ZmMsg.field$></div></td>
+		</tr></table>
+		<div id='${id}_NOT_IN_ADDR'></div>
+	</div>
 </template>
 
 <template id='prefs.Pages#PriorityMessageRunNowPrompt'>
@@ -2564,7 +2559,7 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 													<td class="miniCalendarButton" id='${id}_endMiniCal'></td>
 												</tr></table>
 											</td>
-											<td colspan="2" class='ZmOOODuration'  id='${id}_VACATION_UNTIL_TIME'></td>
+											<td colspan="2" class='ZmOOODuration' id='${id}_VACATION_UNTIL_TIME'></td>
 										</tr>
 										<tr>
 											<td colspan="3">
