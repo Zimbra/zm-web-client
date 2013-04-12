@@ -54,7 +54,7 @@
         <c:when test="${chit.isDraft}">
             <zm:currentResultUrl var="convUrl" value="${context_url}" index="${status.index}"
                                  context="${context}" usecache="true" id="${fn:substringAfter(chit.id,'-')}"
-                                 action="compose"/>
+                                 action="view"/>
         </c:when>
         <c:otherwise>
             <zm:currentResultUrl var="convUrl" value="${context_url}" cid="${chit.id}" action='view'
