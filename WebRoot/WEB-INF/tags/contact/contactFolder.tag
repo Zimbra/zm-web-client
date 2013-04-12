@@ -28,8 +28,8 @@
 <fmt:message var="colorGray" key="colorGray"/>
 <c:set var="color" value="${zm:lightenColor(not empty folder.rgb ? folder.rgb : (not empty folder.rgbColor ? folder.rgbColor : colorGray))}"/>
 <tr>
-    <td nowrap colspan="3" bgcolor="${color}" class='Folder<c:if test="${folder.hasUnread}"> Unread</c:if>'
-        style='padding-left: ${padFudge + folder.depth*8}px'>
+    <td colspan="3" class='Folder<c:if test="${folder.hasUnread}"> Unread</c:if>'
+        style='padding-left: ${padFudge + folder.depth*8}px; background-color: ${color}; white-space: nowrap'>
         <c:url var="url" value="/h/search">
             <c:param name="sfi" value="${folder.id}"/>
             <c:param name="st" value="contact"/>
