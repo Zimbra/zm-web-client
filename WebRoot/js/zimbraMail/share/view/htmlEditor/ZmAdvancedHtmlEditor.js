@@ -2129,13 +2129,37 @@ function(menu) {
  */
 ZmAdvancedHtmlEditor.pastePostProcess =
 function(pl, o) {
+    if (!pl || !o || !o.node) {
+        return;
+    }
     //Finding all tables in the pasted content and set the border as 1 if it is 0
     var editor = pl.editor,
-        tableArray = editor.dom.select("table", o.node),
-        table;
-    while ((table = tableArray.shift()) && table.border === "0") {
-        table.border = 1;
+        dom = editor.dom,
+        tableArray = dom.select("table", o.node),
+        i = 0,
+        length = tableArray.length,
+        table,
+        children = o.node.children,
+        lastChildren = children[children.length - 1];
+
+    for (; i < length; i++) {
+        table = tableArray[i];
+        //set the table border as 1 if it is 0
+        if (table && table.border === "0") {
+            table.border = 1;
+        }
     }
+
+    //If the pasted content's last children is table then append "<div><br></div>" so that focus can be set outside the table
+    if (lastChildren && lastChildren.nodeName.toLowerCase() === "table") {
+        var doc = editor.getDoc(),
+            div = doc.createElement("div");
+        div.appendChild(doc.createElement("br"));
+        lastChildren.parentNode.appendChild(div);
+    }
+
+    //Finding all paragraphs in the pasted content and set the margin as 0
+    dom.setStyle(dom.select("p", o.node), "margin", "0");
 
     //Bug fix for 71074
     if (editor.undoManager) {
