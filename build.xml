@@ -61,6 +61,8 @@
     <property name='template.dir' value='${web.dir}/templates'/>
     <property name='docs.dir' value='${zwc.basedir}/docs'/>
     <property name='img.dir' value='${web.dir}/img'/>
+    <property name='touch.dir' value='${web.dir}/t'/>
+    <property name='touch.prod.dir' value='${web.dir}/t/build/t/production'/>
 
     <property name='webinf.dir' value='${web.dir}/WEB-INF'/>
     <property name='webinf.lib.dir' value='${webinf.dir}/lib'/>
@@ -76,6 +78,7 @@
     <property name='build.help.dir' value='${build.web.dir}/help'/>
     <property name='build.adminhelp.dir' value='${build.web.dir}/adminhelp'/>
     <property name='build.dist.dir' value='${build.dir}/dist'/>
+    <property name='build.touch.dir' value='${build.web.dir}/t'/>
 
 	<property name='build.docs.dir' value='${build.dir}/docs'/>
 	<property name='build.jsapi-zimbra-doc.dir' value='${build.docs.dir}/jsapi-zimbra-doc'/>
@@ -150,7 +153,8 @@
 	<fileset id='customer.skins.img.fileset' dir='${build.dir}' excludes='**' />
 	<fileset id='customer.webinf.fileset' dir='${build.dir}' excludes='**'/>
     <fileset id='customer.package.fileset' dir='${build.dir}' excludes='**' />
-    <fileset id='customer.jsp.fileset' dir='${build.dir}' excludes='**' />    
+    <fileset id='customer.jsp.fileset' dir='${build.dir}' excludes='**' />
+    <fileset id='homescreen.fileset' dir="${build.dir}" excludes="**"/>
 
     <!-- Targets -->
 
@@ -206,7 +210,7 @@
         <property name='skins.dir' value='${web.dir}/skins'/>
         <property name='help.dir' value='${web.dir}/help'/>
         <property name='build.help.dir' value='${build.web.dir}/help'/>
-        <property name='web.includes' value='${common.web.includes},h/**,m/**,t/**,portals/**,sounds/**,test/**,yui/**,tiny_mce/**,qunit/**'/>
+        <property name='web.includes' value='${common.web.includes},h/**,m/**,portals/**,sounds/**,test/**,yui/**,tiny_mce/**,qunit/**'/>
         <property name='web.excludes' value='${common.web.excludes},js/zimbraAdmin/**'/>
         <property name='jsp.includes' value='${common.jsp.includes}'/>
         <property name='jsp.excludes' value='${common.jsp.excludes},admin.jsp'/>
@@ -222,10 +226,21 @@
         <property name='build.web.excludes' value='${common.build.web.excludes}'/>
         <property name='webinf.includes' value='${common.webinf.includes}'/>
         <property name='webinf.excludes' value='${common.webinf.excludes}'/>
+        <property name='touch.includes' value='app/**,app.json,app.js,resources/**,touch/**,launchTouch'/>
+        <property name='touch.excludes' value='compass/**,lib/**,install.txt,*.xml,build/**,archive/**'/>
 
         <fileset id='help.fileset'
                  dir='${help.dir}' includes='${help.includes}' excludes='${help.excludes}'
                 />
+        <if>
+            <not>
+                <isset property="build.admin"/>
+            </not>
+            <then>
+                <fileset id='homescreen.fileset' dir="${touch.dir}/resources/icons/" includes="apple-touch-icon*"/>
+            </then>
+        </if>
+
     </target>
 
     <target name='admin' depends='common'>
@@ -265,7 +280,7 @@
     </target>
 
     <target name="war"
-            depends="templates,timezones,images,styles,settings,jam-files,compress,help,assemble-war"
+            depends="templates,timezones,images,styles,settings,jam-files,compress,help,touch,assemble-war"
             description="Builds all dependencies and assembles the war file.">
     </target>
 
@@ -320,6 +335,8 @@
 
             <zipfileset refid='help.fileset' prefix='help' />
 			      <zipfileset refid='network.help.fileset' prefix='help' />
+
+            <fileset refid="homescreen.fileset"/>
         </war>
     </target>
 
@@ -1220,6 +1237,42 @@ if (ext == null) ext = "";
       dir='${help.dir}' includes='${help.includes}' excludes='${help.excludes},${help.excludes2}' />
 	</target>
 
+    <target name='touch' depends='init' unless="build.admin">
+        <mkdir dir='${build.touch.dir}'/>
+        <if>
+            <not>
+               <isset property='build.prod'/>
+            </not>
+            <then>
+                <antcall target="compile.sass"/>
+
+                <copy todir='${build.touch.dir}'>
+                    <fileset dir='${touch.dir}' includes="${touch.includes}" excludes="${touch.excludes}"/>
+                </copy>
+
+            </then>
+            <else>
+                <!--Execute the prod build command-->
+                <exec executable="/bin/bash">
+                    <arg value="${this.zwc.basedir}/build-prod-touch.sh"/>
+                </exec>
+
+                <!--Copy the production dir-->
+                <copy todir='${build.touch.dir}'>
+                    <fileset dir='${touch.prod.dir}'/>
+                </copy>
+
+                <!--Copy the templates dir-->
+                <fileset id="templates.fileset" dir="${touch.dir}/resources/templates" casesensitive="yes"/>
+
+                <copy todir="${build.touch.dir}/resources/templates" verbose="true">
+                    <fileset refid="templates.fileset"/>
+                </copy>
+
+            </else>
+        </if>
+    </target>
+    
     <target name='deploy' depends='war'>
         <ant dir="${server.dir}" target="stop-jetty" inheritAll="false"/>
 
@@ -1554,9 +1607,6 @@ if (ext == null) ext = "";
         </java>
     </target>
 
-    <!--Builds all the dependencies and deploys the touch client-->
-    <target name='deploy-touch' depends='compile.sass,deploy,sync-touch-homescreen'/>
-
     <!--Sync touch client specific source files-->
     <target name='sync-touch'>
         <fileset id="touch.fileset" dir="${app.root}" casesensitive="yes" excludes="touch/**,lib/**,compass/**"/>
@@ -1567,50 +1617,5 @@ if (ext == null) ext = "";
             <fileset refid="touch.fileset"/>
         </copy>
     </target>
-
-    <!--Copy the icons used to represent touch client when added to the home screen on iPad -->
-    <target name='sync-touch-homescreen'>
-        <property name='deploy.server' value='jetty'/>
-        <property name='deploy.dir' value='/opt/zimbra/${deploy.server}/webapps'/>
-        <property name='webapp.dir' value='${deploy.dir}/zimbra'/>
-        <property name="icons.dir" value="${app.root}/resources/icons"/>
-        <echo message="Copying home screen icons"/>
-        <copy todir="${webapp.dir}" verbose="true" file="${icons.dir}/apple-touch-icon-72x72.png"/>
-        <copy todir="${webapp.dir}" verbose="true" file="${icons.dir}/apple-touch-icon-144x144.png"/>
-    </target>
-
-    <!-- Runs the touch client production build shell script -->
-    <target name="prod-touch">
-        <property name='deploy.server' value='jetty'/>
-        <property name='deploy.dir' value='/opt/zimbra/${deploy.server}/webapps'/>
-        <property name='webapp.dir' value='${deploy.dir}/zimbra'/>
-        <property name='touch.dir' value='${webapp.dir}/t'/>
-        <property name='templates.dir' value="${app.root}/resources/templates"/>
-
-        <exec executable="/bin/bash">
-            <arg value="build-prod-touch.sh"/>
-        </exec>
-
-        <delete dir="${touch.dir}"/>
-
-        <mkdir dir='${touch.dir}'/>
-
-        <!--Copy the production build dir-->
-        <fileset id="prodtouch.fileset" dir="${app.root}/build/t/production" casesensitive="yes"/>
-
-        <copy todir="${touch.dir}" verbose="true">
-            <fileset refid="prodtouch.fileset"/>
-        </copy>
-
-        <!--Copy the templates dir-->
-        <fileset id="templates.fileset" dir="${templates.dir}" casesensitive="yes"/>
-
-        <copy todir="${touch.dir}/resources/templates" verbose="true">
-            <fileset refid="templates.fileset"/>
-        </copy>
-        
-        <antcall target="sync-touch-homescreen"/>
-    </target>
-
 
 </project>
