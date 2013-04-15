@@ -22,7 +22,8 @@
 <zm:getMailbox var="mailbox"/>
 <c:set var="folder" value="${zm:getFolder(pageContext, contact.folderId)}"/>
 <fmt:message var="colorGray" key="colorGray"/>
-<c:set var="color" value="${zm:lightenColor(not empty folder.rgb ? folder.rgb : (not empty folder.rgbColor ? folder.rgbColor : colorGray))}"/>
+<fmt:message var="colorMsg" key="${folder.rgbColorMsg}"/>
+<c:set var="color" value="${zm:lightenColor(not empty folder.rgb ? folder.rgb : (not empty colorMsg ? colorMsg : colorGray))}"/>
 <table width="100%" cellspacing="0" cellpadding="0">
 <tr bgcolor="${color}">
     <td class='ZhBottomSep'>

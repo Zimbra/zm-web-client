@@ -106,8 +106,9 @@
                                 <table width="100%" cellpadding="2" cellspacing="0">
                                     <c:set var="index" value="${0}"/>
                                     <zm:forEachFolder var="folder">
+                                        <fmt:message var="colorMsg" key="${folder.rgbColorMsg}"/>
                                         <c:if test="${folder.isAppointmentView}">
-                                            <c:set var="rowColor" value="${zm:lightenColor(not empty folder.rgb ? folder.rgb : folder.rgbColor)}"/>
+                                            <c:set var="rowColor" value="${zm:lightenColor(not empty folder.rgb ? folder.rgb : colorMsg)}"/>
                                             <c:set var="selected" value="${selectedFolder.id eq folder.id and not newCalendar}"/>
                                             <c:if test="${selected}"><c:set var="selectedRow" value="${index}"/></c:if>                                            
                                             <tr>

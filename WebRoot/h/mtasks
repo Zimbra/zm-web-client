@@ -82,15 +82,16 @@
                                 <table width="100%" cellpadding="2" cellspacing="0">
                                     <c:set var="index" value="${0}"/>
                                     <zm:forEachFolder var="folder">
+                                        <fmt:message var="colorMsg" key="${folder.rgbColorMsg}"/>
                                         <c:if test="${folder.isTaskView}">
-                                            <c:set var="rowColor" value="${zm:lightenColor(not empty folder.rgb ? folder.rgb : folder.rgbColor)}"/>
+                                            <c:set var="rowColor" value="${zm:lightenColor(not empty folder.rgb ? folder.rgb : colorMsg)}"/>
                                             <c:set var="selected" value="${selectedFolder.id eq folder.id and not newTaskList}"/>
                                             <c:if test="${selected}"><c:set var="selectedRow" value="${index}"/></c:if>
                                             <tr>
-                                                <td class='${rowColor}' width="1%">
+                                                <td style='background-color:${rowColor}' width="1%">
                                                     &nbsp;
                                                 </td>
-                                                <td class='${rowColor}'>
+                                                <td style='background-color:${rowColor}'>
                                                     <c:set var="label" value="${zm:getFolderName(pageContext, folder.id)}"/>
                                                     <c:url var="selectUrl" value="">
                                                         <c:param name="id" value="${folder.id}"/>
