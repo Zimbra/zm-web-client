@@ -1,0 +1,182 @@
+.zcs-form-input {
+    border-bottom: 1px solid #F7F7F7;
+}
+
+.zcs-offscreen {
+	position: absolute;
+	top: -10000;
+	left: -10000;
+}
+
+.zcs-toggle-field {
+	border-bottom: 1px solid $light-grey;
+
+	.x-innerhtml {
+		font-size: .8em;
+		font-weight: bold;
+		line-height: 2em;
+
+		//TODO: the following should come from a link style
+		color: #336699;
+		text-decoration: underline;
+	}
+}
+
+.zcs-side-panel {
+	border-right: 1px solid #303030;  //todo: mixin to create color
+}
+
+$zcs-toolbar-button-size: 1.4em;
+$zcs-titlebar-fontsize: 1.4em;
+$zcs-title-fontsize: 1.2rem; //uses rem so it's not relational to container bar
+
+@mixin zimbra-button() {
+	background-image: none;
+	background-color: transparent;
+	border: none;
+
+	.x-button-icon.x-icon-mask {
+		-webkit-mask-size: $zcs-toolbar-button-size;
+		width: $zcs-toolbar-button-size;
+		height: $zcs-toolbar-button-size;
+	}
+}
+$zimbra-button-active-color: rgba(255,255,255,.3);
+
+/**
+ * Make our buttons flat, no border, bigger images.
+ */
+//.x-toolbar .x-button.zcs-flat {
+//	@include zimbra-button;
+//	&:active {
+//		background-color: $zimbra-button-active-color;
+//	}
+//}
+
+/*.x-tabbar*/ .x-button.zcs-flat {
+	@include zimbra-button;
+	&:active {
+		background-color: $zimbra-button-active-color;
+	}
+}
+
+/* Overview */
+
+.zcs-overview {
+	@extend .zcs-side-panel;
+	
+	.zcs-folder-list {
+		font-size: $zcs-titlebar-fontsize;
+
+		.x-title {
+			.x-innerhtml {
+				font-size: $zcs-title-fontsize;
+			}
+		}
+		.x-dock-body {
+			font-size: .77em;
+
+			.x-list-item-inner {
+				font-size: $zcs-titlebar-fontsize;
+
+				.x-innerhtml {
+					@include ellipsis();
+				}
+			}
+			.x-list-disclosure {
+				margin-top: $zcs-titlebar-fontsize*.6;
+			}
+		}
+	}
+}
+
+/* List Panel */
+
+.zcs-list-panel {
+	@extend .zcs-side-panel;
+	
+	.zcs-list-titlebar {
+		font-size: $zcs-titlebar-fontsize;
+
+		.organizer-list {
+			-webkit-mask-box-image: url('/t/resources/images/pictos/organizer_list.png');
+		}
+		.x-title {
+			font-size: $zcs-title-fontsize;
+		}
+	}
+	
+	/* Zebra Stripes */
+	.x-list-item {
+		.x-dock-horizontal {
+			border-top: 1px solid transparent;
+        }
+
+        &:nth-child(even) .x-dock-horizontal {
+			background-color: darken($list-bg-color, 5%);
+        }
+
+        &.x-list-footer-wrap:nth-child(odd) .x-dock-horizontal {
+			border-bottom: 1px solid darken($list-bg-color, 5%);
+        }
+	}
+}
+
+/* List Panel Search */
+
+$searchRadius: 2em;
+$searchMinHeight: 1em;
+
+.zcs-list-search {
+	background-color:#BEBEBE;
+	border-bottom: 1px solid rgba(0,0,0,.25);
+	padding:5px;
+	
+	.x-form-fieldset {
+		margin: 0;
+		
+		.x-form-fieldset-inner {
+			border: 1px solid;
+			border-color: rgba(0,0,0,.6) rgba(0,0,0,.3) rgba(0,0,0,.2) rgba(0,0,0,.5);
+			@include border-radius($searchRadius);
+			
+			.x-field-search {
+				min-height: $searchMinHeight;
+			
+				.x-input-search {
+					min-height: $searchMinHeight;
+				}
+			}
+		}
+	}
+}
+
+.zcs-sheet {
+	background-color: rgba(0,0,0,.25);
+	background-image: none;
+}
+
+/* Assignment Panel */
+
+.zcs-assignment-panel {
+	@extend .zcs-side-panel;
+}
+
+/* Item Panel */
+
+.zcs-item-titlebar {
+	font-size: $zcs-titlebar-fontsize;
+	
+	.x-title {
+		font-size: $zcs-title-fontsize;
+	}
+}
+
+/* Banner Image */
+
+.zcs-banner-image {
+    background-image: url("/t/resources/images/app_banner.png");
+   	border: none;
+    width:200px;
+    height:30px;
+}

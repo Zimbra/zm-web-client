@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2008, 2009, 2010, 2011, 2012 VMware, Inc.
+ * Copyright (C) 2008, 2009, 2010, 2011, 2012, 2013 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -508,8 +508,7 @@ ZmWorkHours.prototype.reset =
 function() {
     if (!this.isDirty()) { return; }
     var i,
-        workHours = this._workHours,
-        startTime = new Date();
+        workHours = this._workHours;
 
     this._startTimeSelect.set(this._startTime);
     this._endTimeSelect.set(this._endTime);
@@ -517,6 +516,8 @@ function() {
     for (i=0;i<AjxDateUtil.WEEKDAY_MEDIUM.length; i++) {
         this._workDaysCheckBox[i].setSelected(workHours[i].isWorkingDay);
     }
+
+	this._radioGroup.setSelectedId(this._isCustom ? this._radioCustomId : this._radioNormalId);
 };
 
 ZmWorkHours.prototype.isDirty =
@@ -745,17 +746,22 @@ function(templateId) {
 
     radioNormal = new DwtRadioButton({parent:this, name:radioName, parentElement:(this._htmlElId + "_CAL_WORKING_HOURS_NORMAL")});
     radioNormal.setSelected(!isCustom);
-    radioIds[radioNormal.getInputElement().id] = radioNormal;
+	var radioNormalId = radioNormal.getInputElement().id;
+	radioIds[radioNormalId] = radioNormal;
     
     radioCustom = new DwtRadioButton({parent:this, name:radioName, parentElement:(this._htmlElId + "_CAL_WORKING_HOURS_CUSTOM")});
     radioCustom.setSelected(isCustom);
-    radioIds[radioCustom.getInputElement().id] = radioCustom;
+	var radioCustomId = radioCustom.getInputElement().id;
+	radioIds[radioCustomId] = radioCustom;
 
-    radioGroup = new DwtRadioButtonGroup(radioIds, isCustom ? radioCustom.getInputElement().id : radioNormal.getInputElement().id );
+	radioGroup = new DwtRadioButtonGroup(radioIds, isCustom ? radioCustomId : radioNormalId);
     
     radioGroup.addSelectionListener(new AjxListener(this, this._toggleNormalCustom));
     this._radioCustom = radioCustom;
     this._radioNormal = radioNormal;
+	this._radioGroup = radioGroup;
+	this._radioCustomId = radioCustomId;
+	this._radioNormalId = radioNormalId;
     for (i=0;i<AjxDateUtil.WEEKDAY_MEDIUM.length; i++) {
         checkbox = new DwtCheckbox({parent:this, parentElement:(this._htmlElId + "_CAL_WORKING_DAY_" + i)});
         checkbox.setText(AjxDateUtil.WEEKDAY_MEDIUM[i]);

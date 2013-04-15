@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012 VMware, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -1237,7 +1237,9 @@ function() {
 ZmMailListController.prototype._handleMarkRead =
 function(item, check) {
 
-	if (item && item.isUnread && !item.waitOnMarkRead) {
+	var convView = this._convView;
+	var waitOnMarkRead = convView && convView.isWaitOnMarkRead();
+	if (item && item.isUnread && !waitOnMarkRead) {
 		if (!item.isReadOnly() && !appCtxt.isExternalAccount()) {
 			var markRead = appCtxt.get(ZmSetting.MARK_MSG_READ);
 			if (markRead == ZmSetting.MARK_READ_NOW) {
@@ -1769,7 +1771,7 @@ function(origMsg) {
 ZmMailListController.prototype._sendInviteReply =
 function(type, componentId, instanceDate, accountName, ignoreNotify, origMsg, acceptFolderId, callback) {
 	var msg = new ZmMailMsg();
-	AjxDispatcher.require("CalendarCore");
+	AjxDispatcher.require(["MailCore", "CalendarCore"]);
 
 	msg._origMsg = origMsg || this.getMsg();
 	msg.inviteMode = type;
@@ -2077,6 +2079,7 @@ function(parent, num) {
 	parent.setItemVisible(ZmOperation.SPAM, !isDrafts);
 	parent.setItemVisible(ZmOperation.DETACH, !isDrafts);
 
+	parent.enable(ZmOperation.MOVE_MENU, !isDrafts && num > 0);
 
 	parent.enable(ZmOperation.DETACH, (appCtxt.get(ZmSetting.DETACH_MAILVIEW_ENABLED) && !isDrafts && num == 1));
 

@@ -88,7 +88,7 @@ function(calItem, prevView, mode) {
 	                              viewMgr.getCurrentViewName() : this._prevView);
 
 	this.reset();
-	this._calItem = calItem;
+	this._calItem = this._item = calItem;
 	this._mode = mode;
 	this._renderCalItem(calItem, true);
 };
@@ -96,7 +96,7 @@ function(calItem, prevView, mode) {
 ZmCalItemView.prototype.reset =
 function() {
 	ZmMailMsgView.prototype.reset.call(this);
-	this._calItem = null;    
+	this._calItem = this._item = null;
 };
 
 ZmCalItemView.prototype.close = function() {}; // override
@@ -438,7 +438,7 @@ function(calItem) {
 ZmApptView.prototype.set =
 function(appt, mode) {
 	this.reset();
-	this._calItem = appt;
+	this._calItem = this._item = appt;
 	this._mode = mode;
 	this._renderCalItem(appt, false);
 };

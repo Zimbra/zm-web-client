@@ -434,6 +434,29 @@ function() {
 	return toolbarOps;
 };
 
+ZmTaskListController.prototype._getButtonOverrides =
+function(buttons) {
+
+	if (!(buttons && buttons.length)) { return; }
+
+	var overrides = {};
+	var idParams = {
+		skinComponent:  ZmId.SKIN_APP_TOP_TOOLBAR,
+		componentType:  ZmId.WIDGET_BUTTON,
+		app:            ZmId.APP_TASKS,
+		containingView: ZmId.VIEW_TASKLIST
+	};
+	for (var i = 0; i < buttons.length; i++) {
+		var buttonId = buttons[i];
+		overrides[buttonId] = {};
+		idParams.componentName = buttonId;
+		var item = (buttonId === ZmOperation.SEP) ? "Separator" : buttonId + " button";
+		var description = item + " on top toolbar for task list view";
+		overrides[buttonId].domId = ZmId.create(idParams, description);
+	}
+	return overrides;
+};
+
 ZmTaskListController.prototype._getRightSideToolBarOps =
 function(noViewMenu) {
 	return [ZmOperation.VIEW_MENU];

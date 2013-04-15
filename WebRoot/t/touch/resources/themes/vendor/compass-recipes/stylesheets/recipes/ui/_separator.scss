@@ -1,0 +1,53 @@
+/*
+ * ***** BEGIN LICENSE BLOCK *****
+ * 
+ * Zimbra Collaboration Suite Web Client
+ * Copyright (C) 2013 VMware, Inc.
+ * 
+ * The contents of this file are subject to the Zimbra Public License
+ * Version 1.3 ("License"); you may not use this file except in
+ * compliance with the License.  You may obtain a copy of the License at
+ * http://www.zimbra.com/license.
+ * 
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
+ * ***** END LICENSE BLOCK *****
+ */
+/**
+ * <hr /> separator style
+ *
+ * @author Chris Coyier @chriscoyier
+ * @link http://jsfiddle.net/chriscoyier/GaEzp/35/
+ *
+ * @author Maxime Thirouin @MoOx maxime.thirouin@gmail.com
+ */
+
+@mixin ui-separator-gradient($color: rgba(#000, .75), $color-alt: rgba(#000, 0), $height: 1px)
+{
+    border: 0; //cancel default <hr> style
+    height: $height;
+    background: opacify($color, 1); // fallback
+    @include background(linear-gradient(left, $color-alt, $color, $color-alt));
+}
+
+@mixin ui-separator-dashed($color: #999, $color-alt: #ccc, $height: 1px)
+{
+    border: 0; //cancel default <hr> style
+    border-bottom: $height dashed $color-alt;
+    background: $color;
+}
+
+@mixin ui-separator-dropshadow($color: #000, $height: 6px)
+{
+    border: 0; //cancel default <hr> style
+    height: $height;
+    box-shadow: inset 0 $height $height -#{$height} $color;
+}
+
+@mixin ui-separator-shadow($color: #000, $height: 10px, $spread: 1px)
+{
+    border: 0; //cancel default <hr> style
+    height: 0;
+    box-shadow: 0 0 $height $spread $color;
+}

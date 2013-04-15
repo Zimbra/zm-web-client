@@ -31,9 +31,9 @@
             <div style="text-align:center;margin-top:3px;">
                 <$ if (data.quota) { $>
                     <$
-                        var tooltipMsg = AjxMessageFormat.format(ZmMsg.quotaDescLimited, [data.size, data.limit]);
+                        var tooltipMsg = AjxMessageFormat.format(ZmMsg.usingDescLimited, [data.size, '(' + data.percent + '%)', data.limit]);
                     $>
-                    <$= ZmMsg.quotaLabel $> ${percent}% (<$= tooltipMsg $>)
+                    <$= tooltipMsg $>
                 <$ } else { $>
                     ${desc}
                 <$ } $>

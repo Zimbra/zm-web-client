@@ -728,8 +728,6 @@ function(){
 			    }
 		    }
 	    }
-	    
-	    this._iframePreview
     }
 };
 

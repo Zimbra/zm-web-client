@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012 VMware, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -115,7 +115,7 @@ function(item, force) {
 	if (changed && itemView && itemView._replyView) {
 		itemView._replyView.reset();
 	}
-	this._itemView.setVisible(true);
+	this._itemView.setVisible(true,null,item);
 	if (changed) {
 		this.setReadingPane(true);	// so that second view gets positioned
 	}
@@ -232,7 +232,8 @@ ZmConvListView.prototype.markUIAsRead =
 function(item) {
 	ZmMailListView.prototype.markUIAsRead.apply(this, arguments);
 	if (item.type == ZmItem.MSG) {
-		this._setImage(item, ZmItem.F_STATUS, item.getStatusIcon());
+		var classes = this._getClasses(ZmItem.F_STATUS, !this.isMultiColumn() ? ["ZmMsgListBottomRowIcon"]:null);
+		this._setImage(item, ZmItem.F_STATUS, item.getStatusIcon(), classes);
 	}
 };
 
@@ -286,9 +287,9 @@ ZmConvListView.prototype._initHeaders =
 function() {
 	if (!this._headerInit) {
 		ZmMailListView.prototype._initHeaders.call(this);
-		this._headerInit[ZmItem.F_EXPAND]	= {icon:"NodeCollapsed", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.expand, tooltip: ZmMsg.expandCollapse};
+		this._headerInit[ZmItem.F_EXPAND]	= {icon:"NodeCollapsed", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.expand, tooltip: ZmMsg.expandCollapse, cssClass:"ZmMsgListColExpand"};
         //bug:45171 removed sorted from converstaion for FROM field
-        this._headerInit[ZmItem.F_FROM]		= {text:ZmMsg.from, width:ZmMsg.COLUMN_WIDTH_FROM_CLV, resizeable:true};
+        this._headerInit[ZmItem.F_FROM]		= {text:ZmMsg.from, width:ZmMsg.COLUMN_WIDTH_FROM_CLV, resizeable:true, cssClass:"ZmMsgListColFrom"};
 	}
 };
 
@@ -380,16 +381,6 @@ function(field, item) {
 	return "";
 };
 
-ZmConvListView.prototype._getCell =
-function(htmlArr, idx, item, field, colIdx, params) {
-	if (field == ZmItem.F_SORTED_BY && item.type == ZmItem.MSG) {
-		htmlArr[idx++] = "<td width=16>";
-		idx = this._getCellContents(htmlArr, idx, item, ZmItem.F_EXPAND, colIdx, params);
-		htmlArr[idx++] = "</td>";
-	}
-	return ZmMailListView.prototype._getCell.apply(this, arguments);
-};
-
 ZmConvListView.prototype._getCellId =
 function(item, field) {
 	return ((field == ZmItem.F_FROM || field == ZmItem.F_SUBJECT) && item.type == ZmItem.CONV)
@@ -400,21 +391,35 @@ function(item, field) {
 ZmConvListView.prototype._getCellClass =
 function(item, field, params) {
 	return (item.type == ZmItem.CONV && field == ZmItem.F_SIZE)
-		? "Count"
+		? "Count ZmMsgListColSize"
 		: (ZmMailListView.prototype._getCellClass.apply(this, arguments));
 };
 
-ZmConvListView.prototype._getCellContents =
-function(htmlArr, idx, item, field, colIdx, params) {
 
+ZmConvListView.prototype._getCellCollapseExpandImage =
+function(item) {
+	if (!this._isExpandable(item)) {
+		return null;
+	}
+	return this._expanded[item.id] ? "NodeExpanded" : "NodeCollapsed";
+};
+
+
+ZmConvListView.prototype._getCellContents =
+function(htmlArr, idx, item, field, colIdx, params, classes) {
+
+	var classes = classes || [];
 	if (field == ZmItem.F_SELECTION) {
-		idx = ZmMailListView.prototype._getCellContents.apply(this, arguments);
+		if (this.isMultiColumn()) {
+			//add the checkbox only for multicolumn layout. The checkbox for single column layout is added in _getAbridgedContent
+			idx = ZmMailListView.prototype._getCellContents.apply(this, arguments);
+		}
 	}
 	else if (field == ZmItem.F_EXPAND) {
-		idx = this._getImageHtml(htmlArr, idx, this._isExpandable(item) ? "NodeCollapsed" : null, this._getFieldId(item, field));
+		idx = this._getImageHtml(htmlArr, idx, this._getCellCollapseExpandImage(item), this._getFieldId(item, field), classes);
 	}
     else if (field == ZmItem.F_READ) {
-		idx = this._getImageHtml(htmlArr, idx, item.getReadIcon(), this._getFieldId(item, field));
+		idx = this._getImageHtml(htmlArr, idx, item.getReadIcon(), this._getFieldId(item, field), classes);
 	}
 	else if (item.type == ZmItem.MSG) {
 		idx = ZmMailMsgListView.prototype._getCellContents.apply(this, arguments);
@@ -422,48 +427,54 @@ function(htmlArr, idx, item, field, colIdx, params) {
 	else {
 		if (field == ZmItem.F_STATUS) {
 			if (item.type == ZmItem.CONV && item.numMsgs == 1 && item.isScheduled) {
-				idx = this._getImageHtml(htmlArr, idx, "SendLater", this._getFieldId(item, field));
+				idx = this._getImageHtml(htmlArr, idx, "SendLater", this._getFieldId(item, field), classes);
 			} else {
-				htmlArr[idx++] = "&nbsp;";
+				htmlArr[idx++] = "<div " + AjxUtil.getClassAttr(classes) + "></div>";
 			}
 		}
 		else if (field == ZmItem.F_FROM) {
+			htmlArr[idx++] = "<div id='" + this._getFieldId(item, field) + "' " + AjxUtil.getClassAttr(classes) + ">";
 			htmlArr[idx++] = this._getParticipantHtml(item, this._getFieldId(item, ZmItem.F_PARTICIPANT));
 			if (item.type == ZmItem.CONV && (item.numMsgs > 1) && !this.isMultiColumn()) {
 				htmlArr[idx++] = " - <span class='ZmConvListNumMsgs'>";
 				htmlArr[idx++] = item.numMsgs;
 				htmlArr[idx++] = "</span>";
 			}
+			htmlArr[idx++] = "</div>";
 		}
 		else if (field == ZmItem.F_SUBJECT) {
 			var subj = ZmMailMsg.stripSubjectPrefixes(item.subject || ZmMsg.noSubject);
-			htmlArr[idx++] = "<span style='white-space: nowrap' >";
+			htmlArr[idx++] = "<div id='" + this._getFieldId(item, field) + "' " + AjxUtil.getClassAttr(classes) + ">";
+			htmlArr[idx++] = "<span>";
 			htmlArr[idx++] = AjxStringUtil.htmlEncode(subj, true) + "</span>";
 			if (appCtxt.get(ZmSetting.SHOW_FRAGMENTS) && item.fragment) {
 				htmlArr[idx++] = this._getFragmentSpan(item);
 			}
+			htmlArr[idx++] = "</div>";
 		}
 		else if (field == ZmItem.F_FOLDER) {
-			if (item.folderId) {
-				htmlArr[idx++] = "<span style='white-space:nowrap' id='";
+				htmlArr[idx++] = "<div " + AjxUtil.getClassAttr(classes) + " id='";
 				htmlArr[idx++] = this._getFieldId(item, field);
 				htmlArr[idx++] = "'>"; // required for IE bug
-				var folder = appCtxt.getById(item.folderId);
-				if (folder) {
-					htmlArr[idx++] = folder.getName();
+				if (item.folderId) {
+					var folder = appCtxt.getById(item.folderId);
+					if (folder) {
+						htmlArr[idx++] = folder.getName();
+					}
 				}
-				htmlArr[idx++] = "</span>";
-			}
+				htmlArr[idx++] = "</div>";
 		}
 		else if (field == ZmItem.F_SIZE) {
 			if (item.type == ZmItem.CONV && item.numMsgs > 1) {
+				htmlArr[idx++] = "<div id='" + this._getFieldId(item, field) + "' " + AjxUtil.getClassAttr(classes) + ">";
 				htmlArr[idx++] = "(";
 				htmlArr[idx++] = item.numMsgs;
 				htmlArr[idx++] = ")";
+				htmlArr[idx++] = "</div>";
 			} else if (item.size) {
-				htmlArr[idx++] = "<span style='white-space:nowrap'>";
+				htmlArr[idx++] =  "<div id='" + this._getFieldId(item, field) + "' " + AjxUtil.getClassAttr(classes) + ">";
 				htmlArr[idx++] = AjxUtil.formatSize(item.size);
-				htmlArr[idx++] = "</span>";
+				htmlArr[idx++] = "</div>";
 			}
 		}
 		else if (field == ZmItem.F_SORTED_BY) {
@@ -486,14 +497,23 @@ function(item, colIdx) {
 
 	var isMsg = (item.type == ZmItem.MSG);
 	var isConv = (item.type == ZmItem.CONV && item.numMsgs > 1);
-	
-	// first row
-	htmlArr[idx++] = "<table class='TopRow' style='width:100%;'>";
-	htmlArr[idx++] = (item.isUnread && !item.isMute) ? "<tr class='Unread' " : "<tr ";
+	var selectionCssClass = '';
+	for (var i = 0; i < this._headerList.length; i++) {
+		if (this._headerList[i]._field == ZmItem.F_SELECTION) {
+			selectionCssClass = "ZmMsgListSelection";
+			break;
+		}
+	}
+	htmlArr[idx++] = "<div class='TopRow " + selectionCssClass + "' ";
 	htmlArr[idx++] = "id='";
 	htmlArr[idx++] = DwtId.getListViewItemId(DwtId.WIDGET_ITEM_FIELD, this._view, item.id, ZmItem.F_ITEM_ROW_3PANE);
 	htmlArr[idx++] = "'>";
-	
+	if (selectionCssClass) {
+		idx = ZmMailListView.prototype._getCellContents.apply(this, [htmlArr, idx, item, ZmItem.F_SELECTION, colIdx]);
+	}
+	if (isMsg) {
+		idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_EXPAND, colIdx);
+	}
 	idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_READ, colIdx, width);
 	if (isConv) {
 		idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_EXPAND, colIdx, "16", "style='padding:0'");
@@ -504,33 +524,36 @@ function(item, colIdx) {
 		idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_ACCOUNT, colIdx, "16", "align=right");
 	}
 	idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_FROM, colIdx);
-	idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_DATE, colIdx, ZmMsg.COLUMN_WIDTH_DATE, "align=right");
-	htmlArr[idx++] = "</tr></table>";
+	idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_DATE, colIdx, ZmMsg.COLUMN_WIDTH_DATE, "align=right", ["ZmMsgListDate"]);
+	htmlArr[idx++] = "</div>";
 
 	// second row
-	htmlArr[idx++] = "<table class='BottomRow' style='width:100%;'><tr>";
-	htmlArr[idx++] = "<td width=";
-	htmlArr[idx++] = width;
-	htmlArr[idx++] = "></td>";
-	
+	htmlArr[idx++] = "<div class='BottomRow " + selectionCssClass + "'>";
+	var bottomRowMargin = ["ZmMsgListBottomRowIcon"];
 	if (isMsg) {
-		idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_STATUS, colIdx, width);
+		idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_STATUS, colIdx, width, null, bottomRowMargin);
+		bottomRowMargin = null;
 	}
 	if (item.isHighPriority || item.isLowPriority) {
-		idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_PRIORITY, colIdx, "10", "align=right");
+		idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_PRIORITY, colIdx, "10", null, bottomRowMargin);
+		bottomRowMargin = null;
 	}
-	idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_SUBJECT, colIdx);
+	idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_SUBJECT, colIdx, null, null, bottomRowMargin);
+
+	//add the attach, flag and tags in a wrapping div
+	htmlArr[idx++] = "<div class='ZmListFlagsWrapper'>";
+
 	if (item.hasAttach) {
 		idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_ATTACHMENT, colIdx, width, "valign=top");
 	}
 	var tags = item.getVisibleTags();
 	if (tags && tags.length) {
-		idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_TAG, colIdx, width);
+		idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_TAG, colIdx, width, null, ["ZmMsgListColTag"]);
 	}
 	if (appCtxt.get(ZmSetting.FLAGGING_ENABLED)) {
 		idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_FLAG, colIdx, width);
 	}
-	htmlArr[idx++] = "</tr></table>";
+	htmlArr[idx++] = "</div></div>";
 	
 	return htmlArr.join("");
 };
@@ -572,7 +595,7 @@ function(conv, fieldId) {
 			}
 			var p2 = (part2 && part2[j] && (part2[j].index != null)) ? part2[j].index : "";
 			var spanId = [fieldId, p2].join(DwtId.SEP);
-			html[idx++] = "<span style='white-space: nowrap' id='";
+			html[idx++] = "<span id='";
 			html[idx++] = spanId;
 			html[idx++] = "'>";
 			html[idx++] = (part2 && part2[j]) ? AjxStringUtil.htmlEncode(part2[j].name) : "";
@@ -654,7 +677,7 @@ function(conv, msg, force) {
 			index--;	// for ascending, we want to expand upward (add above expandable msg row)
 		}
 		var offset = this._msgOffset[item.id] || 0;
-		var a = conv.getMsgList(offset, ascending);
+		var a = conv.getMsgList(offset, ascending, this._controller.getFoldersToOmit());
 		for (var i = 0; i < a.length; i++) {
 			var msg = a[i];
 			var div = this._createItemHtml(msg);
@@ -669,7 +692,7 @@ function(conv, msg, force) {
 		}
 	}
 
-	this._setImage(item, ZmItem.F_EXPAND, "NodeExpanded");
+	this._setImage(item, ZmItem.F_EXPAND, "NodeExpanded", this._getClasses(ZmItem.F_EXPAND));
 	this._expanded[item.id] = true;
 	
 	var cid = isConv ? item.id : item.cid;
@@ -681,10 +704,12 @@ function(conv, msg, force) {
 	this._resetColWidth();
 	if (lastRow) {
 		this._scrollList(lastRow);
-	}
-	var convHeight = rowIds.length * Dwt.getSize(lastRow).y;
-	if (convHeight > Dwt.getSize(lastRow.parentNode).y) {
-		this._scrollList(this._getElFromItem(item));
+		if (rowIds) {
+			var convHeight = rowIds.length * Dwt.getSize(lastRow).y;
+			if (convHeight > Dwt.getSize(lastRow.parentNode).y) {
+				this._scrollList(this._getElFromItem(item));
+			}
+		}
 	}
 };
 
@@ -717,7 +742,7 @@ function(item) {
 	if (rowIds && rowIds.length) {
 		this._showMsgs(rowIds, false);
 	}
-	this._setImage(item, ZmItem.F_EXPAND, "NodeCollapsed");
+	this._setImage(item, ZmItem.F_EXPAND, "NodeCollapsed", this._getClasses(ZmItem.F_EXPAND));
 	this._expanded[item.id] = false;
 };
 
@@ -910,7 +935,7 @@ function(ev) {
 					this.removeItem(item, true, ev.batchMode);	// remove msg row
 					var rowIds = this._msgRowIdList[conv.id];
 					if (this._expanded[conv.id] && rowIds && rowIds.length <= 1) {
-						this._setImage(conv, ZmItem.F_EXPAND, null);
+						this._setImage(conv, ZmItem.F_EXPAND, null, this._getClasses(ZmItem.F_EXPAND));
 						this._collapse(conv);
 					}
 					this._controller._app._checkReplenishListView = this;

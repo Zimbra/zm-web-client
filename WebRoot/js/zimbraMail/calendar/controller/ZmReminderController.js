@@ -138,6 +138,12 @@ function() {
 	}
 };
 
+ZmReminderController.prototype._scheduleHouseKeepingAction =
+function() {
+	this._cancelHousekeepingAction(); //cancel to be on safe side against race condition when 2 will be runing instead of one.
+	this._housekeepingActionId = AjxTimedAction.scheduleAction(this._housekeepingTimedAction, 60 * 1000);
+};
+
 /**
  * called after we get upcoming appts from server. Save list,
  * and call housekeeping.
@@ -251,7 +257,7 @@ function() {
 	var activeSize = this._activeAppts.size();
 	if (cachedSize == 0 && activeSize == 0) {
         AjxDebug.println(AjxDebug.REMINDER, "no appts - empty cached and active list");
-		this._housekeepingActionId = AjxTimedAction.scheduleAction(this._housekeepingTimedAction, 60*1000);
+		this._scheduleHouseKeepingAction();
 		return;
 	}
 
@@ -316,7 +322,7 @@ function() {
 
 	// need to schedule housekeeping callback, ideally right before next _cachedAppt start time - lead,
 	// for now just check once a minute...
-	this._housekeepingActionId = AjxTimedAction.scheduleAction(this._housekeepingTimedAction, 60*1000);
+	this._scheduleHouseKeepingAction();
 };
 
 ZmReminderController.prototype._silentDismissCallback =
@@ -346,7 +352,6 @@ function(list) {
  */
 ZmReminderController.prototype.dismissAppt =
 function(list, callback) {
-	var appt;
 	if (!(list instanceof AjxVector)) {
 		list = AjxVector.fromArray((list instanceof Array)? list: [list]);
 	}
@@ -363,16 +368,18 @@ function(list, callback) {
 /**
  * Snoozes the appointments.
  * 
- * @param	{AjxVector}	list	a list of {@link ZmAppt} objects
+ * @param	{AjxVector}	appts	a list of {@link ZmAppt} objects
  * @return	{Array}	an array of snoozed apt ids
  */
 ZmReminderController.prototype.snoozeAppt =
-function(list) {
+function(appts) {
+	appts = AjxUtil.toArray(appts);
+
 	var snoozedIds = [];
 	var appt;
 	var uid;
-	for (var i = 0; i < list.size(); i++) {
-		appt = list.get(i);
+	for (var i = 0; i < appts.length; i++) {
+		appt = appts[i];
 		uid = appt.getUniqueId(true);
 		this._apptState[uid] = ZmReminderController._STATE_SNOOZED;
 		snoozedIds.push(uid);
@@ -453,7 +460,7 @@ function(apptList, responseAppts) {
             }
         }
     }
-}
+};
 
 /**
  * Gets the reminder dialog.
@@ -470,8 +477,11 @@ function() {
 
 
 ZmReminderController.prototype._snoozeApptAction =
-function(apptList, snoozeMinutes, beforeAppt) {
-    var chosenSnoozeMilliseconds = snoozeMinutes*60*1000;
+function(apptArray, snoozeMinutes, beforeAppt) {
+
+	var apptList = AjxVector.fromArray(apptArray);
+
+    var chosenSnoozeMilliseconds = snoozeMinutes * 60 * 1000;
     var added = false;
 
     var soapDoc = AjxSoapDoc.create("SnoozeCalendarItemAlarmRequest", "urn:zimbraMail");
@@ -522,8 +532,10 @@ function(apptList, snoozeMinutes, result) {
 
     if (snoozeMinutes == 1) {
 	    // cancel outstanding timed action and update now...
-	    this._cancelHousekeepingAction();
-	    this._housekeepingAction();
+		// I'm not sure why this is here but I suspect to prevent some race condition.
+		this._cancelHousekeepingAction();
+		//however calling _housekeepingAction immediately caused some other race condition issues. so I just schedule it again.
+		this._scheduleHouseKeepingAction();
     }
 };
 ZmReminderController.prototype._handleErrorResponseSnoozeAction =
