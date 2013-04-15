@@ -248,7 +248,7 @@ action="compose" paction="view" id="${msg.id}"/>
 </td>
 </tr>
 <tr>
-    <td id="iframeBody_${id}" style="padding:10px;" >
+    <td id="iframeBody_apptContent" style="padding:10px;" >
         <c:choose>
             <c:when test="${body.isTextHtml}">
                 <c:url var="iframeUrl" value="/h/imessage">
