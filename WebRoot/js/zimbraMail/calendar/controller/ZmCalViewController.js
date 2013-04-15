@@ -3286,8 +3286,9 @@ function(appt, actionMenu) {
     var isFolderReadOnly = appt.isFolderReadOnly();
 	var isShared = appt.isShared();
 
-	//isOrganizer() returns "true" but it's not really true if it's a shared folder, so fix it here. (not sure why the server returns isOrg:true for the shared user)
-	var isOrganizer = appt.isOrganizer() && !isShared;
+	//Note - isOrganizer means the Calendar is the organizer of the appt. i.e. the appointment was created on this calendar.
+	//This could be "true" even if the current user is just a sharee of the calendar.
+	var isTheCalendarOrganizer = appt.isOrganizer();
 
 	// find the checked calendar for this appt
 	var calendar;
@@ -3310,15 +3311,14 @@ function(appt, actionMenu) {
     var isReplyable = !isTrash && appt.otherAttendees;
 	var isForwardable = !isTrash && calendar && !calendar.isReadOnly() && appCtxt.get(ZmSetting.GROUP_CALENDAR_ENABLED);
 
-	//don't show for organizer, but also not for a shared calendar, since the appointment might not be one the user can accept/decline/etc.
-	//Just show it for the user's own calendar, where the can still accept/decline/etc if they are invited to this appt).
-	var showAcceptDecline = !isOrganizer && !isShared;
+	//don't show for organizer calendar, or readOnly attendee calendar.
+	var showAcceptDecline = !isTheCalendarOrganizer && !isFolderReadOnly;
 	actionMenu.setItemVisible(ZmOperation.REPLY_ACCEPT, showAcceptDecline);
 	actionMenu.setItemVisible(ZmOperation.REPLY_DECLINE, showAcceptDecline);
 	actionMenu.setItemVisible(ZmOperation.REPLY_TENTATIVE, showAcceptDecline);
 	actionMenu.setItemVisible(ZmOperation.INVITE_REPLY_MENU, showAcceptDecline);
 	actionMenu.setItemVisible(ZmOperation.PROPOSE_NEW_TIME, showAcceptDecline);
-    actionMenu.setItemVisible(ZmOperation.REINVITE_ATTENDEES, isOrganizer && !appt.inviteNeverSent && appt.otherAttendees);
+    actionMenu.setItemVisible(ZmOperation.REINVITE_ATTENDEES, isTheCalendarOrganizer && !isFolderReadOnly && !appt.inviteNeverSent && appt.otherAttendees);
     actionMenu.setItemVisible(ZmOperation.TAG_MENU, appCtxt.get(ZmSetting.TAGGING_ENABLED));
 
     // Initially enabling all the options in the action menu. And then selectively disabling unsupported options for special users.
@@ -3342,7 +3342,9 @@ function(appt, actionMenu) {
 	}
 
     actionMenu.enable([ZmOperation.FORWARD_APPT, ZmOperation.FORWARD_APPT_INSTANCE, ZmOperation.FORWARD_APPT_SERIES], isForwardable);
-	actionMenu.enable(ZmOperation.REPLY, isReplyable && !isOrganizer); //the organizer can't reply just to himself
+	var myEmail = appt.getFolder().getAccount().getEmail();
+	//the last condition in the following is for the somewhat corner case user1 invites user2, and user1 is looking at user2's calendar as a share.
+	actionMenu.enable(ZmOperation.REPLY, isReplyable && !isTheCalendarOrganizer && myEmail !== appt.organizer); //the organizer can't reply just to himself
 	actionMenu.enable(ZmOperation.REPLY_ALL, isReplyable);
 
     var disabledOps;
@@ -3375,7 +3377,7 @@ function(appt, actionMenu) {
 
 	var del = actionMenu.getMenuItem(ZmOperation.DELETE);
 	if (del && !isTrash) {
-		del.setText((isOrganizer && appt.otherAttendees) ? ZmMsg.cancel : ZmMsg.del);
+		del.setText((isTheCalendarOrganizer && appt.otherAttendees) ? ZmMsg.cancel : ZmMsg.del);
 		var isSynced = Boolean(calendar.url);
 		del.setEnabled(!calendar.isReadOnly() && !isSynced && !isPrivate);
 	}
