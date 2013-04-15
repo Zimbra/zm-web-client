@@ -185,7 +185,8 @@
                             </td>
                         </tr>
                     </c:if>
-                        <tr style='background-color:${zm:lightenColor(not empty folder.rgb ? folder.rgb : folder.rgbColor)}'>
+                    <fmt:message var="colorMsg" key="${folder.rgbColorMsg}"/>
+                        <tr style='background-color:${zm:lightenColor(not empty folder.rgb ? folder.rgb : colorMsg)}'>
                             <td colspan=2 class='ZhBottomSep'>
                                 <table width="100%">
                                     <tr class='apptHeaderRow'>

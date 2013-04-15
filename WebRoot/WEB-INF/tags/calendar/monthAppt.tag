@@ -29,8 +29,9 @@
 <app:calendarUrl appt="${appt}" var="apptUrl"/>
 
 <fmt:setTimeZone value="${timezone}"/>
-<c:set var="folder" value="${zm:getFolder(pageContext, appt.folderId)}"/> 
-<c:if test="${empty color}"><c:set var="color" value="${zm:lightenColor(not empty folder.rgb ? folder.rgb : folder.rgbColor)}"/></c:if>
+<c:set var="folder" value="${zm:getFolder(pageContext, appt.folderId)}"/>
+<fmt:message var="colorMsg" key="${folder.rgbColorMsg}"/>
+<c:if test="${empty color}"><c:set var="color" value="${zm:lightenColor(not empty folder.rgb ? folder.rgb : colorMsg)}"/></c:if>
 <c:set var="needsAction" value="${appt.partStatusNeedsAction}"/>
 <c:set var="fbashowAsColor" value="${'ZmScheduler-U'}"/>
 <c:choose>

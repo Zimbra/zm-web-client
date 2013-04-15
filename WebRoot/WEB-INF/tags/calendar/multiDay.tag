@@ -165,7 +165,8 @@
                     </c:choose>
                 </td>
                 <td nowrap width="10%">
-                        <div style="background-color:${zm:lightenColor(not empty folder.rgb ? folder.rgb : (not empty folder.rgbColor ? folder.rgbColor : colorOrange))};width:16px;height:16px;display:inline;margin-right:4px;">
+                        <fmt:message var="colorMsg" key="${folder.rgbColorMsg}"/>
+                        <div style="background-color:${zm:lightenColor(not empty folder.rgb ? folder.rgb : ((fn:startsWith(colorMsg,'???') ? colorGray : colorMsg)))};width:16px;height:16px;display:inline;margin-right:4px;">
                             &nbsp;
                         </div>
                         ${zm:getFolderName(pageContext,folder.id)}

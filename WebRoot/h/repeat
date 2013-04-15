@@ -73,7 +73,8 @@
         <tr>
             <td class='ZhAppContent'>
                 <table cellpadding="2" cellspacing="0" width=100%>
-                <tr style='background-color:${zm:lightenColor(not empty folder.rgb ? folder.rgb : folder.rgbColor)}'>
+                <fmt:message var="colorMsg" key="${folder.rgbColorMsg}"/>
+                <tr style='background-color:${zm:lightenColor(not empty folder.rgb ? folder.rgb : colorMsg)}'>
                             <td colspan=1 class='ZhBottomSep'>
                                 <table width=100% cellpadding=0 cellspacing=0>
                                     <tr class='apptHeaderRow'>

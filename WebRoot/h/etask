@@ -142,10 +142,12 @@
             <tr>
                 <td class='ZhAppContent'>
                     <table width="100%" class='Compose'>
-                        <tr  class='${zm:getFolder(pageContext, empty compose ? 10 : compose.apptFolderId).styleColor}Bg'>
+                    <c:set var="folder" value="${zm:getFolder(pageContext, empty compose ? 15 : compose.apptFolderId)}"/>
+                    <fmt:message var="colorMsg" key="${folder.rgbColorMsg}"/>
+                        <tr  class='${folder.styleColor}Bg'>
                             <td colspan="2" class='ZhBottomSep'>
                                 <table width="100%">
-                                    <tr class='apptHeaderRow'>
+                                    <tr class='apptHeaderRow' style="background-color:${zm:lightenColor(not empty folder.rgb ? folder.rgb : colorMsg)}">
                                         <td width="24"><center><app:img src="${apptImage}" altkey="${apptImageAlt}"/></center></td>
                                         <td class='apptHeader'>
                                             ${fn:escapeXml(apptSubject)}

@@ -86,7 +86,8 @@
                 <c:forEach items="${checkedCalendars}" var="checkedcal" >
                         <c:set var="folder" value="${zm:getFolder(pageContext,checkedcal)}"/>
                         <fmt:message var="colorOrange" key="colorOrange"/>
-                        <td width="10px" height="10px" style="background-color:${zm:lightenColor(not empty folder.rgb ? folder.rgb : (not empty folder.rgbColor ? folder.rgbColor : colorOrange))}">
+                        <fmt:message var="colorMsg" key="${folder.rgbColorMsg}"/>
+                        <td width="10px" height="10px" style="background-color:${zm:lightenColor(not empty folder.rgb ? folder.rgb : (fn:startsWith(colorMsg,"???") ? colorOrange : colorMsg))}">
                             &nbsp;
                         </td>
                         <td>

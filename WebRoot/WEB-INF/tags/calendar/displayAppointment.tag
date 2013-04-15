@@ -53,7 +53,8 @@
 
 <c:set var="isPart" value="${!empty message.partName}"/>
 <c:set var="folder" value="${zm:getFolder(pageContext, message.folderId)}"/>
-<c:set var="color" value="${zm:lightenColor(not empty folder.rgb ? folder.rgb : folder.rgbColor)}"/>
+<fmt:message var="colorMsg" key="${folder.rgbColorMsg}"/>
+<c:set var="color" value="${zm:lightenColor(not empty folder.rgb ? folder.rgb : colorMsg)}"/>
 
 <table cellpadding="0" cellspacing="0" width="100%" class='Compose'>
 <tr style="background-color:${color}">
