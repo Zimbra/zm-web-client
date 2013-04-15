@@ -96,11 +96,10 @@
         </mo:status>
     </c:when>
     <c:when test="${zm:actionSet(param, 'actionAttachToCompose') || (zm:actionSet(param,'moreActions') && fn:startsWith(anAction,'actionAttachToCompose'))}">
-        <c:forEach var="id" items="${ids}">
-            <zm:getDocument var="doc" id="${id}"/>
-            <c:set var="documentAttachments" value="${doc.id}:${fn:escapeXml(fn:replace(doc.name,':','_$'))},${documentAttachments}"/>
-        </c:forEach>
-        <c:redirect url="/m/zmain?st=newmail&documentAttachments=${documentAttachments}&ajax=${param.ajax}"/>
+        <%--
+        Send the selected document ids as is in the url, fetch the document and retrieve the subject in the compose window itself.
+        --%>
+        <c:redirect url="/m/zmain?st=newmail&documentAttachments=${ids}&ajax=${param.ajax}"/>
     </c:when>
     <c:when test="${zm:actionSet(param, 'actionMove') || zm:actionSet(param,'moreActions')}">
         <c:choose>
