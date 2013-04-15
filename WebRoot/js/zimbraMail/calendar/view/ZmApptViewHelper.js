@@ -366,6 +366,10 @@ function(item, type, strictText, strictEmail, checkForAvailability) {
 	if (!item || !type) return null;
 
 	if (type == ZmCalBaseItem.LOCATION && !ZmApptViewHelper._locations) {
+		if (!appCtxt.get(ZmSetting.GAL_ENABLED)) {
+			//if GAL is disabled then user does not have permission to load locations.
+			return null;
+		}
 		var locations = ZmApptViewHelper._locations = appCtxt.getApp(ZmApp.CALENDAR).getLocations();
         if(!locations.isLoaded) {
             locations.load();

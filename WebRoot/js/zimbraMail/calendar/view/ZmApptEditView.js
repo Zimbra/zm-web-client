@@ -1193,7 +1193,7 @@ function(width) {
 	}
 
     // add location input field
-	this._locationInputField = this._createInputField("_location", ZmCalBaseItem.LOCATION, {strictMode:false});
+	this._locationInputField = this._createInputField("_location", ZmCalBaseItem.LOCATION, {strictMode:false, noAddrBubbles:!appCtxt.get(ZmSetting.GAL_ENABLED)});
 
     this._mainTableId = this._htmlElId + "_table";
     this._mainTable   = document.getElementById(this._mainTableId);
@@ -1305,7 +1305,10 @@ function(width) {
         this._createContactPicker(this._htmlElId + "_picker", new AjxListener(this, this._addressButtonListener), ZmCalBaseItem.PERSON, true);
         this._createContactPicker(this._htmlElId + "_req_att_picker", new AjxListener(this, this._attendeesButtonListener, ZmCalBaseItem.PERSON), ZmCalBaseItem.PERSON);
         this._createContactPicker(this._htmlElId + "_opt_att_picker", new AjxListener(this, this._attendeesButtonListener, ZmCalBaseItem.OPTIONAL_PERSON), ZmCalBaseItem.OPTIONAL_PERSON);
-        this._createContactPicker(this._htmlElId + "_loc_picker", new AjxListener(this, this._locationButtonListener, ZmCalBaseItem.LOCATION), ZmCalBaseItem.LOCATION);
+        if (appCtxt.get(ZmSetting.GAL_ENABLED)) {
+			//do not create picker if GAL is disabled.
+			this._createContactPicker(this._htmlElId + "_loc_picker", new AjxListener(this, this._locationButtonListener, ZmCalBaseItem.LOCATION), ZmCalBaseItem.LOCATION);
+		}
         this._createContactPicker(this._htmlElId + "_res_btn", new AjxListener(this, this._locationButtonListener, ZmCalBaseItem.EQUIPMENT), ZmCalBaseItem.EQUIPMENT);
     }
 
@@ -1332,7 +1335,7 @@ function(width) {
 
     this._inviteMsgContainer = document.getElementById(this._htmlElId + "_invitemsg_container");
     this._inviteMsg = document.getElementById(this._htmlElId + "_invitemsg");
-    
+
 };
 
 ZmApptEditView.prototype._createInputField =
@@ -1346,7 +1349,7 @@ function(idTag, attType, params) {
 	var inputId = this.parent._htmlElId + idTag + "_input";
 	var cellId = this._htmlElId + idTag;
 	var input;
-	if (this._useAcAddrBubbles) {
+	if (!params.noAddrBubbles && this._useAcAddrBubbles) {
 		var aifParams = {
 			autocompleteListView:	this._acAddrSelectList,
 			inputId:				inputId,
