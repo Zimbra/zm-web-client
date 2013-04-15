@@ -45,7 +45,6 @@ AjxPackage.require("ajax.dwt.widgets.DwtForm");
 AjxPackage.require("ajax.dwt.widgets.DwtCalendar");
 
 AjxPackage.require("ajax.util.AjxDateUtil");
-AjxPackage.require("ajax.util.AjxPluginDetector");
 
 AjxPackage.require("zimbra.csfe.ZmBatchCommand");
 AjxPackage.require("zimbra.csfe.ZmCsfeCommand");
@@ -138,7 +137,6 @@ AjxPackage.require("zimbraMail.abook.model.ZmContact");
 AjxPackage.require("zimbraMail.briefcase.ZmBriefcaseApp");
 
 AjxPackage.require("zimbraMail.calendar.model.ZmCalBaseItem");
-AjxPackage.require("zimbraMail.calendar.model.ZmCalItem");
 AjxPackage.require("zimbraMail.calendar.model.ZmMiniCalCache");
 AjxPackage.require("zimbraMail.calendar.model.ZmCalMgr");
 

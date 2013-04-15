@@ -186,7 +186,7 @@ ZmContact.GAL_CAL_RES_TYPE			= "zimbraCalResType";
 ZmContact.GAL_CAL_RES_LOC_NAME		= "zimbraCalResLocationDisplayName";
 
 // file as
-i = 1;
+var i = 1;
 ZmContact.FA_LAST_C_FIRST			= i++;
 ZmContact.FA_FIRST_LAST 			= i++;
 ZmContact.FA_COMPANY 				= i++;
@@ -195,8 +195,7 @@ ZmContact.FA_FIRST_LAST_COMPANY		= i++;
 ZmContact.FA_COMPANY_LAST_C_FIRST	= i++;
 ZmContact.FA_COMPANY_FIRST_LAST		= i++;
 ZmContact.FA_CUSTOM					= i++;
-delete i;
-	
+
 // Field information
 
 ZmContact.ADDRESS_FIELDS = [
@@ -328,10 +327,9 @@ ZmContact.IS_DATE[ZmContact.F_birthday] = true;
 ZmContact.IS_DATE[ZmContact.F_anniversary] = true;
 
 ZmContact.IS_IGNORE = {};
-for (i = 0; i < ZmContact.IGNORE_FIELDS.length; i++) {
+for (var i = 0; i < ZmContact.IGNORE_FIELDS.length; i++) {
 	ZmContact.IS_IGNORE[ZmContact.IGNORE_FIELDS[i]] = true;
 }
-delete i;
 
 // number of distribution list members to fetch at a time
 ZmContact.DL_PAGE_SIZE = 100;
@@ -954,9 +952,9 @@ function() {
 	if (this.isDistributionList()) {
 		return "Group_48";
 	}
-	//todo - get a big version of ImgGalContact.png
-//	if (this.isGal) {
-//	}
+	if (this.isGal) {
+		//todo - get a big version of ImgGalContact.png 
+	}
 	return "Person_48";
 };
 
@@ -1172,8 +1170,7 @@ function(attr, isBatchMode, isAutoCreate, result) {
 			var msg = this.isGroup() ? ZmMsg.groupCreated : ZmMsg.contactCreated;
 			appCtxt.getAppController().setStatusMsg(msg);
 		}
-		//update the canonical list. (this includes adding to the _idHash like before (bug 44132) calling updateIdHash. But calling that left the list inconcistant.
-		appCtxt.getApp(ZmApp.CONTACTS).getContactList().add(cn);
+		appCtxt.getApp(ZmApp.CONTACTS).updateIdHash(cn, false);
 	} else {
 		var msg = this.isGroup() ? ZmMsg.errorCreateGroup : ZmMsg.errorCreateContact;
 		var detail = ZmMsg.errorTryAgain + "\n" + ZmMsg.errorContact;

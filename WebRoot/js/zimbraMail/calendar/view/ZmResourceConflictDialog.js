@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2009, 2010, 2011, 2012, 2013 VMware, Inc.
+ * Copyright (C) 2009, 2010, 2011, 2012 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -24,8 +24,7 @@ ZmResourceConflictDialog = function(parent) {
     var saveButton = new DwtDialog_ButtonDescriptor(ZmResourceConflictDialog.SAVE_BUTTON, ZmMsg.save, DwtDialog.ALIGN_RIGHT, null);
     var cancelButton = new DwtDialog_ButtonDescriptor(ZmResourceConflictDialog.CANCEL_BUTTON, ZmMsg.cancel, DwtDialog.ALIGN_RIGHT, null);
 
-    //Bug fix # 80490 - Added an ID handler to the dialog
-	DwtDialog.call(this, {parent:parent, id:"RESC_CONFLICT_DLG", standardButtons: DwtDialog.NO_BUTTONS, extraButtons: [saveButton, cancelButton]});
+	DwtDialog.call(this, {parent:parent, standardButtons: DwtDialog.NO_BUTTONS, extraButtons: [saveButton, cancelButton]});
 
 	this.setContent(this._contentHtml(selectId));
 	this.setTitle(ZmMsg.resourceConflictLabel);

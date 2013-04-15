@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2011, 2012, 2013 VMware, Inc.
+ * Copyright (C) 2011, 2012 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -56,14 +56,14 @@ function() {
         this._dialog.setButtonVisible(ZmFolderPropsDialog.ADD_SHARE_BUTTON, true);
     }
 
-	this.setSize(Dwt.DEFAULT, "100");
+	this.setSize(Dwt.DEFAULT, "200");
     if (Dwt.getVisible(this._nameInputEl)) {
         this._nameInputEl.focus();
     }
 };
 
 
-/**  doSave will be invoked for each tab view.
+/*  doSave will be invoked for each tab view.
  *
  * @param	{BatchCommand}	batchCommand	Accumulates updates from all tabs
  * @param	{Object}	    saveState		Accumulates error messages and indication of any update

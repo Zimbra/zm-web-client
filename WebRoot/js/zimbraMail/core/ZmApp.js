@@ -1180,10 +1180,7 @@ function(appName, date) {
 		div.innerHTML = date.getTime();
 		div.style.display = "none";
 		document.body.appendChild(div);
-	}
-	if (window.appDevMode) {
-		console.profile(id);
-	}
+	}	
 };
 
 /**
@@ -1207,8 +1204,5 @@ function(appName, date) {
 		div.innerHTML = date.getTime();
 		div.style.display = "none";
 		document.body.appendChild(div);
-	}
-	if (window.appDevMode) {
-		console.profileEnd();
 	}
 };
