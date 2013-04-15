@@ -33,15 +33,7 @@ ZmTaskEditView = function(parent, controller) {
     this._view = controller.getCurrentViewId();
 	this._sessionId = controller.getSessionId();
 
-	var idParams = {
-		skinComponent:  ZmId.SKIN_APP_MAIN,
-		app:            ZmId.APP_TASKS,
-		componentType:  ZmId.WIDGET_VIEW,
-		componentName:  ZmId.VIEW_TASKEDIT
-	};
-
-	var domId = ZmId.create(idParams, "A task editing view");
-    ZmCalItemEditView.call(this, parent, null, controller, null, DwtControl.ABSOLUTE_STYLE, "ZmTaskEditView", domId);
+    ZmCalItemEditView.call(this, parent, null, controller, null, DwtControl.ABSOLUTE_STYLE, "ZmTaskEditView", ZmId.getViewId(this._view));
 };
 
 ZmTaskEditView.prototype = new ZmCalItemEditView;

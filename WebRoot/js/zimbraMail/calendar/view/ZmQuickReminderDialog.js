@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2010, 2012, 2013 VMware, Inc.
+ * Copyright (C) 2010, 2012 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -65,7 +65,7 @@ function(list) {
 		var appt = list.get(i);
 		var uid = appt.getUniqueId(true);
 		var data = this._apptData[uid] = {appt:appt};
-		idx = this._addAppt(html, idx, appt, data, (i === size - 1));
+		idx = this._addAppt(html, idx, appt, data, (i > 0));
 	}
     if(size == 0) {
         html[idx++] = '<tr name="rdsep">';
@@ -92,8 +92,9 @@ function(list) {
 		var data = this._apptData[uid];
 
 		// open button
-		var openBtn = this._openButtons[data.openBtnId] = new DwtLinkButton({id: "openBtn_" + id, parent: this, parentElement: data.openLinkId, noDropDown: true});
-		openBtn.setText(appt.getName());
+		var openBtn = this._openButtons[data.openBtnId] = new DwtButton({parent:this, className:"DwtToolbarButton", parentElement:data.openBtnId});
+		openBtn.setImage(appt.otherAttendees ? "ApptMeeting" : "Appointment");
+		openBtn.setText(ZmMsg.viewAppointment);
 		openBtn.addSelectionListener(openListener);
 		openBtn.apptUid = uid;
 
@@ -122,9 +123,9 @@ function(data) {
 };
 
 ZmQuickReminderDialog.prototype._addAppt =
-function(html, idx, appt, data, noSep) {
+function(html, idx, appt, data, needSep) {
 
-	data.openLinkId = Dwt.getNextId();
+	data.openBtnId = Dwt.getNextId();
 	data.deltaId = Dwt.getNextId();
 	data.rowId = Dwt.getNextId();
 
@@ -136,7 +137,7 @@ function(html, idx, appt, data, noSep) {
     var apptLabel = appt.isUpcomingEvent ? " (" + ZmMsg.upcoming + ")" : ""
 
 	var params = {
-		noSep: noSep,
+		needSep: needSep,
 		rowId: data.rowId,
 		calName: calName,
 		accountName: (appCtxt.multiAccounts && calendar && calendar.getAccount().getDisplayName()),
@@ -146,7 +147,7 @@ function(html, idx, appt, data, noSep) {
 		reminderName: (AjxStringUtil.htmlEncode(appt.name + apptLabel)),
 		durationText: (AjxStringUtil.trim(this._getDurationText(appt))),
 		deltaId: data.deltaId,
-		openLinkId: data.openLinkId
+		openBtnId: data.openBtnId
 	};
 	html[idx++] = AjxTemplate.expand("calendar.Calendar#ReminderDialogRow", params);
 	return idx;
@@ -159,7 +160,7 @@ function(ev) {
 	var data = this._apptData[obj.apptUid];
 	var appt = data ? data.appt : null;
 	if (appt) {
-		AjxDispatcher.require(["MailCore", "CalendarCore", "Calendar"]);
+		AjxDispatcher.require(["CalendarCore", "Calendar"]);
 
 		var cc = AjxDispatcher.run("GetCalController");
 

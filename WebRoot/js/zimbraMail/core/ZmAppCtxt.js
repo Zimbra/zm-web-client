@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013 VMware, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -59,11 +59,6 @@ ZmAppCtxt.ONE_MINUTE = 60 * 1000;
 ZmAppCtxt.MAX_TIMEOUT_VALUE = 2147483647;
 
 ZmAppCtxt._ZIMLETS_EVENT = 'ZIMLETS';
-
-//Regex constants
-//Bug fix # 79986, #81095. Invalid file names are < > , ? | / \ * :
-ZmAppCtxt.INVALID_NAME_CHARS = "[\\|?<>:*\",\\\\\/]";
-ZmAppCtxt.INVALID_NAME_CHARS_RE = new RegExp(ZmAppCtxt.INVALID_NAME_CHARS);
 
 /**
  * Returns a string representation of the application context.
@@ -402,19 +397,6 @@ function() {
 };
 
 /**
- * Gets the message dialog with a help button.
- *
- * @return	{DwtMessageDialog}	the message dialog
- */
-ZmAppCtxt.prototype.getHelpMsgDialog =
-	function() {
-		if (!this._helpMsgDialog) {
-			this._helpMsgDialog = new DwtMessageDialog({parent:this._shell, helpText:ZmMsg.help, id: "ZmHelpMsgDialog"});
-		}
-		return this._helpMsgDialog;
-	};
-
-/**
  * Gets the yes/no message dialog.
  * 
  * @return	{DwtMessageDialog}	the message dialog
@@ -571,7 +553,7 @@ function() {
 ZmAppCtxt.prototype.getNewCalendarDialog =
 function() {
 	if (!this._newCalendarDialog) {
-		AjxDispatcher.require(["MailCore", "CalendarCore", "Calendar", "CalendarAppt"]);
+		AjxDispatcher.require(["CalendarCore", "Calendar", "CalendarAppt"]);
 		this._newCalendarDialog = new ZmNewCalendarDialog(this._shell);
 	}
 	return this._newCalendarDialog;
@@ -599,7 +581,7 @@ function() {
 ZmAppCtxt.prototype.getSuggestionPreferenceDialog =
 function() {
 	if (!this._suggestionPrefDialog) {
-		AjxDispatcher.require(["MailCore", "CalendarCore", "Calendar"]);
+		AjxDispatcher.require(["CalendarCore", "Calendar"]);
         this._suggestionPrefDialog = new ZmTimeSuggestionPrefDialog(this._shell);
     }
     return this._suggestionPrefDialog;
