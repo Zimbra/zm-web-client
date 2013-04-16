@@ -380,8 +380,10 @@ function() {
 	var closeCallback = this._onSuggestionClose.bind(this);
 	var dialogContentEl = document.getElementById(this._htmlElId + "_content");
 	this._containerSize = Dwt.getSize(dialogContentEl);
-	this._locationAssistant = new ZmLocationAssistantView(this, appCtxt.getCurrentController(), this, closeCallback);
-	this._locationAssistant.reparentHtmlElement(this._suggestions);
+	if (appCtxt.get(ZmSetting.GAL_ENABLED)) {
+		this._locationAssistant = new ZmLocationAssistantView(this, appCtxt.getCurrentController(), this, closeCallback);
+		this._locationAssistant.reparentHtmlElement(this._suggestions);
+	}
 	AjxTimedAction.scheduleAction(new AjxTimedAction(this, this.loadPreference), 300);
 };
 
@@ -395,8 +397,10 @@ function() {
 ZmApptQuickAddDialog.prototype._prefChangeListener =
 function() {
     // Preference Dialog is only displayed when the suggestions panel is visible - so update suggestions
-    this._locationAssistant.clearResources();
-    this._locationAssistant.suggestAction();
+    if (this._locationAssistant) {
+		this._locationAssistant.clearResources();
+		this._locationAssistant.suggestAction();
+	}
 };
 
 ZmApptQuickAddDialog.prototype._handleConfigureClick = function() {
@@ -626,7 +630,7 @@ function(ev, id) {
     if (!this._appt.isAllDayEvent()) {
         ZmApptViewHelper.getDateInfo(this, this._dateInfo);
     }
-    this._locationAssistant.updateTime();
+	this._locationAssistant && this._locationAssistant.updateTime();
 };
 
 ZmApptQuickAddDialog.prototype._dateChangeListener =
@@ -634,7 +638,7 @@ function(ev, id) {
     if (!this._appt.isAllDayEvent()) {
         ZmApptViewHelper.getDateInfo(this, this._dateInfo);
     }
-    this._locationAssistant.updateTime();
+	this._locationAssistant && this._locationAssistant.updateTime();
 };
 
 ZmApptQuickAddDialog.prototype.getDurationInfo =
