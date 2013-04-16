@@ -822,6 +822,9 @@ ZmAdvancedHtmlEditor.prototype.onInit = function(ed, ev) {
         tinymceEvent.add(doc, 'drop', this._onDrop.bind(this, dnd));
     }
 
+    if (ed.plugins && ed.plugins.paste) {
+        ed.plugins.paste.onPreProcess.addToTop(ZmAdvancedHtmlEditor.pastePreProcess);
+    }
     obj._editorInitialized = true;
 
     if (obj._onTinyMCEEditorInitcallback) {
@@ -2121,6 +2124,27 @@ function(menu) {
         };
         appCtxt.getOutsideMouseEventMgr().stopListening(omemParams);
         delete ZmAdvancedHtmlEditor.isListening;
+    }
+};
+
+/*
+ * TinyMCE paste preprocess Callback function which will be executed first before the default preprocess function
+ */
+ZmAdvancedHtmlEditor.pastePreProcess =
+function(pl, o) {
+    if (!pl || !o) {
+        return;
+    }
+    // Detect Word content and process it more aggressive
+    // copied from plugins/paste/editor_plugin_src.js 393
+    if (/class="?Mso|style="[^"]*\bmso-|w:WordDocument/i.test(o.content) || o.wordContent) {
+        var dom = pl.editor.dom;
+        if (!o.node) {
+            // Create DOM structure
+            o.node = dom.create('div', 0, o.content);
+        }
+        dom.remove(dom.select("style", o.node));//Remove the style tags in the pasted content if it is copied from word
+        o.content = o.node.innerHTML;
     }
 };
 
