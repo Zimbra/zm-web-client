@@ -586,4 +586,19 @@
     </security-constraint>
 REDIRECTEND -->
 
+  <security-constraint>
+    <web-resource-collection>
+      <web-resource-name>Zimbra Downloads</web-resource-name>
+      <url-pattern>/downloads/*</url-pattern>
+    </web-resource-collection>
+    <auth-constraint>
+      <role-name>user</role-name>
+    </auth-constraint>
+  </security-constraint>
+ 
+  <login-config>
+    <auth-method>ZimbraAuth</auth-method>
+    <realm-name>Zimbra</realm-name>
+  </login-config>
+
 </web-app>
