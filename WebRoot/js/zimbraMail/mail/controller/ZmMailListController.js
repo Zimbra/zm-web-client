@@ -1648,13 +1648,11 @@ function(params, callback) {
 	if (!msg) {
 		callback.run();
 	}
-    var forceLoad = params.forceLoad || msg.isInvite();
-	if (msg._loaded && !forceLoad) {
+	if (msg._loaded && !params.forceLoad) {
 		callback.run(msg);
 	} else {
 		if (msg.id == this._pendingMsg) { return; }
 		msg._loadPending = true;
-        msg._loaded = false;
 		this._pendingMsg = msg.id;
 		params.markRead = (params.markRead != null) ? params.markRead : this._handleMarkRead(msg, true);
 		// use prototype in callback because these functions are overridden by ZmConvListController
