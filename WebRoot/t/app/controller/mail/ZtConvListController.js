@@ -35,15 +35,15 @@ Ext.define('ZCS.controller.mail.ZtConvListController', {
 
 		refs: {
 			// event handlers
-			listPanel: 'appview #' + ZCS.constant.APP_MAIL + 'listpanel',
+			listPanel: 'sheet #' + ZCS.constant.APP_MAIL + 'listpanel',
 			listView: ZCS.constant.APP_MAIL + 'listview',
-			folderList: 'appview #' + ZCS.constant.APP_MAIL + 'overview nestedlist',
+			folderList: 'sheet #' + ZCS.constant.APP_MAIL + 'overview nestedlist',
 			itemPanel: 'appview #' + ZCS.constant.APP_MAIL + 'itempanel',
 
 			// other
-			overview: 'appview #' + ZCS.constant.APP_MAIL + 'overview',
-			titlebar: 'appview #' + ZCS.constant.APP_MAIL + 'listpanel titlebar',
-			searchBox: 'appview #' + ZCS.constant.APP_MAIL + 'listpanel searchfield'
+			overview: '#' + ZCS.constant.APP_MAIL + 'overview',
+			titlebar: 'sheet #' + ZCS.constant.APP_MAIL + 'listpanel titlebar',
+			searchBox: 'sheet #' + ZCS.constant.APP_MAIL + 'listpanel searchfield'
 		},
 
 		control: {
@@ -263,6 +263,7 @@ Ext.define('ZCS.controller.mail.ZtConvListController', {
 		var	curOrganizer = ZCS.session.getCurrentSearchOrganizer();
 		if (curOrganizer && curOrganizer.get('itemId') === folder.get('itemId')) {
 			this.updateTitlebar();
+			ZCS.app.fireEvent('updatelistpanelToggle', this.getOrganizerTitle(), ZCS.session.getActiveApp());
 		}
 	}
 },

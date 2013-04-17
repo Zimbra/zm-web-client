@@ -42,6 +42,8 @@ Ext.define('ZCS.view.ux.ZtLeftTitleBar', {
 
         //Do not do any positioning of the title in javascript.
 
+        titleElement.setLeft(spacerBox.left - leftBox.element.getPageBox().left);
+
         titleElement.repaint();
     }
 });

@@ -2,12 +2,12 @@
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2013 VMware, Inc.
- * 
+ *
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
@@ -37,7 +37,37 @@ Ext.define('ZCS.view.ZtAppView', {
 	config: {
 		layout: 'hbox',
 		padding: 0,
-		app: null
+		app: null,
+		positioningConfig: {
+		    tablet: {
+			    landscape: {
+		            itemNavigationReservesSpace: true,
+		            itemNavigationAlwaysShown: true,
+		            hasOverviewNavigation: true,
+		            navigationWidth: 0.3
+			    },
+			    portrait: {
+			        itemNavigationReservesSpace: false,
+		            itemNavigationAlwaysShown: false,
+			        hasOverviewNavigation: true,
+		            navigationWidth: 0.3
+			    }
+			},
+			phone: {
+			    landscape: {
+		            itemNavigationReservesSpace: false,
+		            itemNavigationAlwaysShown: false,
+		            hasOverviewNavigation: true,
+		            navigationWidth: 1.0
+			    },
+			    portrait: {
+			        itemNavigationReservesSpace: false,
+		            itemNavigationAlwaysShown: false,
+			        hasOverviewNavigation: true,
+		            navigationWidth: 1.0
+			    }
+			}
+		}
 	},
 
 	initialize: function() {
@@ -46,41 +76,38 @@ Ext.define('ZCS.view.ZtAppView', {
 
 		var app = this.getApp();
 
-		var overview = {
-			width: '30%',
-			hidden: true,
-
+		this.registerOverviewPanel({
 			xtype: 'overview',
 			itemId: app + 'overview',
-
 			app: app,
 			title: ZCS.constant.OVERVIEW_TITLE[app]
-		};
+		});
 
-		var listPanel = {
-			width: '30%',
-
+		this.registerListPanel({
 			xtype: 'listpanel',
 			itemId: app + 'listpanel',
-
 			app: app,
 			newButtonIcon: ZCS.constant.NEW_ITEM_ICON[app],
 			storeName: ZCS.constant.STORE[app]
-		};
+		});
 
-		var itemPanel = {
-			width: '70%',
-
+		this.registerItemPanel({
 			xtype: 'itempanel',
 			itemId: app + 'itempanel',
-
 			app: app
-		};
+		});
 
-		this.add([
-			overview,
-			listPanel,
-			itemPanel
-		]);
+	},
+
+	registerOverviewPanel: function (overviewPanelConfig) {
+		this.fireEvent('registerOverviewPanel', overviewPanelConfig, this, this.getPositioningConfig());
+	},
+
+	registerListPanel: function (listPanelConfig) {
+		this.fireEvent('registerListPanel', listPanelConfig, this, this.getPositioningConfig());
+	},
+
+	registerItemPanel: function (itemPanelConfig) {
+		this.fireEvent('registerItemPanel', itemPanelConfig, this, this.getPositioningConfig());
 	}
 });

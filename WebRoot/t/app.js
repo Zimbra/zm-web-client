@@ -64,6 +64,7 @@ Ext.application({
     //</feature>
 
 	controllers: [
+		'ZCS.controller.ZtAppViewController',
 		'ZCS.controller.ZtMainController',
 		'ZCS.controller.ZtToastController',
 		'ZCS.controller.ZtNotificationController',

@@ -105,31 +105,9 @@ Ext.define('ZCS.controller.ZtListController', {
 	 * @param {boolean}     show        if true, show the overview
 	 */
 	doShowFolders: function(show) {
-
-		var overview = this.getOverview(),
-			itemPanel = this.getItemPanel();
-
-		show = (show === true || show === false) ? show : overview.isHidden();
-
-		if (show) {
-			itemPanel.setWidth('50%');
-			// animation clears space then slides in (not great)
-			overview.show({
-				type: 'slide',
-				direction: 'right',
-				duration: 500
-			});
-//			overview.show();
-		}
-		else {
-			// animation starts overview at far right (flex) or doesn't work at all (%) :(
-//			overview.hide({
-//				type: 'slide',
-//				direction: 'left'
-//			});
-			itemPanel.setWidth('70%');
-			overview.hide();
-		}
+		//TODO: consider removing control of this to the app view controller...
+		//      only downside is not being able to differentiate between apps at that point
+		ZCS.app.fireEvent('showOverviewPanel');
 	},
 
 	/**
@@ -184,6 +162,8 @@ Ext.define('ZCS.controller.ZtListController', {
 			query: query,
 			callback: Ext.Function.bind(this.storeLoaded, this, [query, folder], 0)
 		});
+
+		ZCS.app.fireEvent('hideOverviewPanel');
 	},
 
 	/**
@@ -210,9 +190,9 @@ Ext.define('ZCS.controller.ZtListController', {
 					ZCS.session.getCurrentSearchField().setValue(query);
 				}
 			}
-			this.updateTitlebar();
+			this.updateTitlebar(folder, records);
+			ZCS.app.fireEvent('updatelistpanelToggle', this.getOrganizerTitle(folder, records), this.getApp());
 			if (folder && records.length) {
-				this.doShowFolders(false);
 				//make sure this element doesn't get focus due to an errant touch
 				this.getSearchBox().blur();
 			}
@@ -226,7 +206,7 @@ Ext.define('ZCS.controller.ZtListController', {
 	/**
 	 * Updates the text on the list panel's titlebar to reflect the current search results.
 	 */
-	updateTitlebar: function() {
+	updateTitlebar: function(folder, records) {
 		//<debug>
 		Ext.Logger.info('Updating titlebar');
         //</debug>
@@ -237,15 +217,7 @@ Ext.define('ZCS.controller.ZtListController', {
 			return;
 		}
 
-
-		var	organizer = ZCS.session.getCurrentSearchOrganizer(),
-			organizerName = organizer && organizer.get('displayName'),
-			unread = organizer && organizer.get('unreadCount'),
-			title = ZtMsg.searchResults;
-
-		if (organizerName) {
-			title = (unread > 0) ? '<b>' + organizerName + ' (' + unread + ')</b>' : organizerName;
-		}
+		title = this.getOrganizerTitle(folder, records);
 
 		//<debug>
 		Ext.Logger.info('Titlebar being set.');

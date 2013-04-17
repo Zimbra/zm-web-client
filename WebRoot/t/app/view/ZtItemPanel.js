@@ -2,12 +2,12 @@
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2013 VMware, Inc.
- * 
+ *
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
@@ -65,6 +65,13 @@ Ext.define('ZCS.view.ZtItemPanel', {
 			});
 		}
 
+		items.push({
+			xtype: 'button',
+			align: 'left',
+			itemId: 'listpanelToggle',
+			hidden: true
+		});
+
 		var toolbar = {
 			xtype:  'lefttitlebar',
 			docked: 'top',
@@ -88,25 +95,24 @@ Ext.define('ZCS.view.ZtItemPanel', {
 				cls: 'zcs-quick-reply',
 				hidden: true,
 				layout: 'hbox',
-				items: [
-					{
-						xtype: 'fieldset',
-						flex: 1,
-						items: [
-							{
-								flex: 1,
-								xtype: 'textareafield',
-								placeholder: 'Test Placeholder',
-								height: ZCS.constant.QUICK_REPLY_SMALL
-							}
-						]
-					},{
-						xtype: 'button',
-						text: ZtMsg.send,
-						ui: 'neutral',
-						padding: '0 1em',
-						handler: function() {
-							ZCS.app.fireEvent('sendQuickReply');
+				items: [{
+					xtype: 'fieldset',
+					flex: 1,
+					items: [
+						{
+							flex: 1,
+							xtype: 'textareafield',
+							placeholder: 'Test Placeholder',
+							height: ZCS.constant.QUICK_REPLY_SMALL
+						}
+					]
+				},{
+					xtype: 'button',
+					text: ZtMsg.send,
+					ui: 'neutral',
+					padding: '0 1em',
+					handler: function() {
+						ZCS.app.fireEvent('sendQuickReply');
 //							this.up('#quickReply').fireEvent('sendQuickReply');
 					}
 				}]
@@ -121,8 +127,23 @@ Ext.define('ZCS.view.ZtItemPanel', {
 
 	showButtons: function() {
 		Ext.each(this.down('titlebar').query('button'), function(button) {
-			button.show();
+			//The list panel toggle is a special button that is hidden/shown based on
+			//other factors.
+			if (button.getItemId() !== 'listpanelToggle') {
+				button.show();
+			}
 		}, this);
+	},
+
+	updatelistpanelToggle: function (title) {
+		var listpanelToggle = this.down('#listpanelToggle');
+
+		if (title) {
+			listpanelToggle.show();
+			listpanelToggle.setText(title);
+		} else {
+			listpanelToggle.hide();
+		}
 	},
 
 	hideButtons: function() {

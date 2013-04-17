@@ -2,12 +2,12 @@
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2013 VMware, Inc.
- * 
+ *
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
@@ -35,15 +35,15 @@ Ext.define('ZCS.controller.contacts.ZtContactListController', {
 
 		refs: {
 			// event handlers
-			listPanel: 'appview #' + ZCS.constant.APP_CONTACTS + 'listpanel',
+			listPanel: 'sheet #' + ZCS.constant.APP_CONTACTS + 'listpanel',
 			listView: ZCS.constant.APP_CONTACTS + 'listview',
-			folderList: 'appview #' + ZCS.constant.APP_CONTACTS + 'overview nestedlist',
+			folderList: 'sheet #' + ZCS.constant.APP_CONTACTS + 'overview nestedlist',
 			itemPanel: 'appview #' + ZCS.constant.APP_CONTACTS + 'itempanel',
 
 			// other
-			overview: 'appview #' + ZCS.constant.APP_CONTACTS + 'overview',
-			titlebar: 'appview #' + ZCS.constant.APP_CONTACTS + 'listpanel titlebar',
-			searchBox: 'appview #' + ZCS.constant.APP_MAIL + 'listpanel searchfield'
+			overview: 'sheet #' + ZCS.constant.APP_CONTACTS + 'overview',
+			titlebar: 'sheet #' + ZCS.constant.APP_CONTACTS + 'listpanel titlebar',
+			searchBox: 'sheet #' + ZCS.constant.APP_MAIL + 'listpanel searchfield'
 		},
 
 		control: {
@@ -65,5 +65,19 @@ Ext.define('ZCS.controller.contacts.ZtContactListController', {
         //<debug>
 		Ext.Logger.warn('TODO: Create new contact');
         //</debug>
-	}
+	},
+
+	/**
+	 * Retrieve the current contact organizer item.
+	 */
+	getOrganizerTitle: function (folder, records) {
+		var	organizerName = folder ? folder.get('name') : ZtMsg.contacts,
+			contactCount = folder ? folder.get('itemCount') : records.length;
+
+		if (organizerName) {
+			title = (contactCount > 0) ? '<b>' + organizerName + ' (' + contactCount + ')</b>' : organizerName;
+		}
+
+		return title;
+	},
 });

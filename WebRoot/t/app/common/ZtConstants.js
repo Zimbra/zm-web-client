@@ -2,12 +2,12 @@
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2013 VMware, Inc.
- * 
+ *
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
@@ -92,7 +92,7 @@ ZCS.constant.FEATURE_QUICK_REPLY    = 'quick_reply';    // quick reply area for 
 ZCS.constant.FEATURE_FIND_OBJECTS   = 'find_objects';   // look for URLs and email addrs in msg body, make them actionable
 
 ZCS.constant.IS_ENABLED = {};
-ZCS.constant.IS_ENABLED[ZCS.constant.APP_CONTACTS]              = false;
+ZCS.constant.IS_ENABLED[ZCS.constant.APP_CONTACTS]              = true;
 ZCS.constant.IS_ENABLED[ZCS.constant.FEATURE_ADD_ATTACHMENT]    = false;
 ZCS.constant.IS_ENABLED[ZCS.constant.FEATURE_QUICK_REPLY]       = true;
 ZCS.constant.IS_ENABLED[ZCS.constant.FEATURE_FIND_OBJECTS]      = true;
