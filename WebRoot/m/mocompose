@@ -72,7 +72,8 @@
         </c:when>
         <c:when test="${uploader.isUpload and !empty message}">
             <zm:fixupMessageCompose message="${message}" compose="${compose}"
-                                    newattachments="${uploader.compose.hasFileItems or !empty uploader.compose.uploadedAttachment}"/>
+                                    newattachments="${uploader.compose.hasFileItems or not empty uploader.compose.uploadedAttachment
+                                                        or uploader.isDraft}"/>
         </c:when>
     </c:choose>
     <c:set var="subject" value="${compose.subject}"/>
