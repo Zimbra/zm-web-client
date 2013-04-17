@@ -1216,7 +1216,8 @@ function(reminderString) {
 	for (var pattern in  reminderFormats) {
 		var formattedContent = ZmCalendarApp.__formatLabel(pattern, reminderValue);
 		if(formattedContent != "" && formattedContent.toLowerCase() == reminderString.toLowerCase()) {
-			return  {reminderValue: reminderValue, reminderUnits: reminderFormats[pattern]};
+            //Fix for bug: 80651 - set and return object to determine before snooze
+			return  {reminderValue: reminderValue, reminderUnits: reminderFormats[pattern], before: true};
 		}
 	}
 

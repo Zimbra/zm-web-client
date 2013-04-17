@@ -641,8 +641,8 @@ function(ev, all) {
                  errorMsg.push(ZmMsg.reminderSnoozeClickUnknownUnit);
             } else {
                 // Detect 'before'
-                //Fix for Bug: 80651 - Always fetch the word 'before' from property file to get localized content
-                beforeAppt = (snoozeString.indexOf(ZmMsg.before.toLowerCase()) >= 0);
+                //Fix for Bug: 80651 - Check for snooze before object
+                beforeAppt = snoozeInfo.before;
             }
         }
     }
