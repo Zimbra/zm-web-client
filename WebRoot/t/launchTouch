@@ -9,7 +9,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <!DOCTYPE HTML>
-<html manifest="" lang="en-US">
+<html lang="en-US">
 <head>
 <!--
  launchTouch.jsp
@@ -71,7 +71,7 @@
             padding-top: 10px;
             width: 500px;
         }
-        
+
         .SplashScreen .center {
             height: 270px;
             left: 50%;
@@ -126,7 +126,7 @@
     <%
          String debug = request.getParameter("debug");
 
-         java.lang.String authCookie = (String) pageContext.getAttribute("authcookie"); 
+         java.lang.String authCookie = (String) pageContext.getAttribute("authcookie");
          ZAuthToken auth = new ZAuthToken(null, authCookie , null);
     %>
 
