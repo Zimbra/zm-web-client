@@ -4,8 +4,8 @@
 
 .zcs-offscreen {
 	position: absolute;
-	top: -10000;
-	left: -10000;
+	top: -10000px;
+	left: -10000px;
 }
 
 .zcs-toggle-field {
@@ -64,7 +64,7 @@ $zimbra-button-active-color: rgba(255,255,255,.3);
 
 .zcs-overview {
 	@extend .zcs-side-panel;
-	
+
 	.zcs-folder-list {
 		font-size: $zcs-titlebar-fontsize;
 
@@ -94,7 +94,7 @@ $zimbra-button-active-color: rgba(255,255,255,.3);
 
 .zcs-list-panel {
 	@extend .zcs-side-panel;
-	
+
 	.zcs-list-titlebar {
 		font-size: $zcs-titlebar-fontsize;
 
@@ -105,7 +105,7 @@ $zimbra-button-active-color: rgba(255,255,255,.3);
 			font-size: $zcs-title-fontsize;
 		}
 	}
-	
+
 	/* Zebra Stripes */
 	.x-list-item {
 		.x-dock-horizontal {
@@ -131,18 +131,18 @@ $searchMinHeight: 1em;
 	background-color:#BEBEBE;
 	border-bottom: 1px solid rgba(0,0,0,.25);
 	padding:5px;
-	
+
 	.x-form-fieldset {
 		margin: 0;
-		
+
 		.x-form-fieldset-inner {
 			border: 1px solid;
 			border-color: rgba(0,0,0,.6) rgba(0,0,0,.3) rgba(0,0,0,.2) rgba(0,0,0,.5);
 			@include border-radius($searchRadius);
-			
+
 			.x-field-search {
 				min-height: $searchMinHeight;
-			
+
 				.x-input-search {
 					min-height: $searchMinHeight;
 				}
@@ -166,7 +166,7 @@ $searchMinHeight: 1em;
 
 .zcs-item-titlebar {
 	font-size: $zcs-titlebar-fontsize;
-	
+
 	.x-title {
 		font-size: $zcs-title-fontsize;
 	}
