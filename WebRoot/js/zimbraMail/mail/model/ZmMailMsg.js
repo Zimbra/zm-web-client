@@ -718,6 +718,7 @@ function(params) {
 		params.getHtml = params.getHtml || this.isDraft || appCtxt.get(ZmSetting.VIEW_AS_HTML);
 		params.sender = appCtxt.getAppController();
 		params.msgId = this.id;
+		params.partId = this.partId;
 		params.callback = respCallback;
 		var errorCallback = this._handleResponseLoadFail.bind(this, params, params.errorCallback);
 		params.errorCallback = errorCallback;
@@ -2032,6 +2033,7 @@ function(msgNode) {
 	// this method could potentially be called twice (SearchConvResponse and
 	// GetMsgResponse) so always check param before setting!
 	if (msgNode.id)		{ this.id = msgNode.id; }
+	if (msgNode.part)	{ this.partId = msgNode.part; }
 	if (msgNode.cid) 	{ this.cid = msgNode.cid; }
 	if (msgNode.s) 		{ this.size = msgNode.s; }
 	if (msgNode.d) 		{ this.date = msgNode.d; }
@@ -2510,7 +2512,7 @@ function(attach) {
 
 ZmMailMsg.prototype._onChange =
 function(what, a, b, c) {
-	if (this.onChange && this.onChange instanceof AjxCallback) {
+	if (this.onChange) {
 		this.onChange.run(what, a, b, c);
 	}
 };
@@ -2562,7 +2564,12 @@ function() {
 	if (this.isUnread)		{ status.push(ZmMsg.unread); }
 	if (this.isReplied)		{ status.push(ZmMsg.replied); }
 	if (this.isForwarded)	{ status.push(ZmMsg.forwarded); }
-	if (this.isSent && !this.isDraft) { status.push(ZmMsg.sentAt); }
+	if (this.isDraft) {
+		status.push(ZmMsg.draft);
+	}
+	else if (this.isSent) {
+		status.push(ZmMsg.sentAt); //sentAt is for some reason "sent", which is what we need.
+	}
 	if (status.length == 0) {
 		status = [ZmMsg.read];
 	}

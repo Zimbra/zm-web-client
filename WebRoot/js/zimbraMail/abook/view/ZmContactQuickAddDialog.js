@@ -35,12 +35,6 @@ function() {
 
 ZmContactQuickAddDialog.prototype._initialize = 
 function() {
-	//get address books
-	var addrBooks = this._getAddressBooks();
-	var options = [];
-	for (var i=0; i<addrBooks.length; i++) {
-		options.push({id: "ADDRBOOK_" + addrBooks[i].nId, value: addrBooks[i].nId, label: addrBooks[i].name});
-	}
 	var params = {};
 	params.parent = this;
 	params.template = "abook.Contacts#QuickAddPrompt";
@@ -50,7 +44,7 @@ function() {
 			{ id: "FIRST_NAME", type: "DwtInputField", label: "First Name", value: "", cols: 35},
 			{ id: "LAST_NAME", type: "DwtInputField", label: "Last Name", value: "", cols: 35},
 			{ id: "EMAIL", type: "DwtInputField", label: "Email", value: "", cols: 35},
-			{ id: "ADDR_BOOK", type: "DwtSelect", items: options}
+			{ id: "ADDR_BOOK", type: "DwtSelect", items: []}
 		]
 	};
 	this._quickAddForm = new DwtForm(params);

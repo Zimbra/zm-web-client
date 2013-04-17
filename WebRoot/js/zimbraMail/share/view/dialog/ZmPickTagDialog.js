@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012 VMware, Inc.
+ * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -99,6 +99,8 @@ function(params) {
 	if (tags.length == 1) {
 		this._tagTreeView.setSelected(tags[0], true, true);
 	}
+	this.setButtonEnabled(DwtDialog.OK_BUTTON, this._tagTreeView.getSelected());
+
 	ZmDialog.prototype.popup.apply(this, arguments);
 };
 
@@ -158,7 +160,11 @@ function(ev) {
 
 ZmPickTagDialog.prototype._okButtonListener = 
 function(ev) {
-	DwtDialog.prototype._buttonListener.call(this, ev, [this._tagTreeView.getSelected()]);
+	var selectedTag = this._tagTreeView.getSelected();
+	if (!selectedTag) {
+		return;
+	}
+	DwtDialog.prototype._buttonListener.call(this, ev, [selectedTag]);
 };
 
 ZmPickTagDialog.prototype._handleKeyUp =
@@ -190,6 +196,11 @@ function(ev) {
 	if (firstMatch) {
 		this._tagTreeView.setSelected(appCtxt.getById(firstMatch), true, true);
 	}
+	else {
+		this._tagTreeView.deselectAll();
+	}
+	this.setButtonEnabled(DwtDialog.OK_BUTTON, firstMatch);
+
 	this._lastVal = value;
 };
 
@@ -213,6 +224,7 @@ function(ev) {
 
 	var tag = ev.item.getData(Dwt.KEY_OBJECT);
 	if (tag) {
+		this.setButtonEnabled(DwtDialog.OK_BUTTON, true);
 		var value = tag.getName(false, null, true, true);
 		this._lastVal = value.toLowerCase();
 		this._inputField.setValue(value);

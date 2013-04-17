@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012 VMware, Inc.
+ * Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012, 2013 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -502,7 +502,7 @@ function(identity, table, signatures, index) {
 	var row = table.insertRow(index);
 	row.id = identity.id + "_row";
 	var name = identity.getField(ZmIdentity.NAME);
-	if (name == ZmMsg.defaultIdentityName) {
+	if (name === ZmIdentity.DEFAULT_NAME) {
 		name = ZmMsg.accountDefault;
 	}
 	var cell = row.insertCell(-1);

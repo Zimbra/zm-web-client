@@ -468,7 +468,10 @@ function() {
 		endSortVals:	ZmContactAlphabetBar._parseSortVal(ZmMsg.alphabetEndSortValue)
 	};
 
-	this.getHtmlElement().innerHTML = AjxTemplate.expand("abook.Contacts#ZmAlphabetBar", subs);
+	var element = this.getHtmlElement();
+	element.innerHTML = AjxTemplate.expand("abook.Contacts#ZmAlphabetBar", subs);
+	Dwt.setHandler(element, DwtEvent.ONMOUSEOUT, ZmContactAlphabetBar._onMouseOut);
+	Dwt.setHandler(element, DwtEvent.ONMOUSEOVER, ZmContactAlphabetBar._onMouseOver);
 };
 
 ZmContactAlphabetBar._parseSortVal =
@@ -491,7 +494,11 @@ function(sortVal) {
  * @private
  */
 ZmContactAlphabetBar._onMouseOver =
-function(cell) {
+function(event) {
+	var cell = DwtUiEvent.getTarget(event);
+	if (cell.nodeName.toLowerCase() !== "td") {
+		return;
+	}
 	// get reference to alphabet bar - ugh
 	var alphabetBar = AjxDispatcher.run("GetContactListController").getCurrentView().getAlphabetBar();
 	if (alphabetBar.enabled()) {
@@ -503,7 +510,11 @@ function(cell) {
  * @private
  */
 ZmContactAlphabetBar._onMouseOut =
-function(cell) {
+function(event) {
+	var cell = DwtUiEvent.getTarget(event);
+	if (cell.nodeName.toLowerCase() !== "td") {
+		return;
+	}
 	// get reference to alphabet bar - ugh
 	var alphabetBar = AjxDispatcher.run("GetContactListController").getCurrentView().getAlphabetBar();
 	if (alphabetBar.enabled()) {

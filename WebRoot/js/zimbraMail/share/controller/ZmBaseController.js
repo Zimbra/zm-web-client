@@ -295,8 +295,8 @@ function(view, className) {
 	if (this._toolbar[view]) { return; }
 
 	var buttons = this._getToolBarOps();
-	var secondaryButtons = this._getSecondaryToolBarOps();
-	var rightSideButtons = this._getRightSideToolBarOps();
+	var secondaryButtons = this._getSecondaryToolBarOps() || [];
+	var rightSideButtons = this._getRightSideToolBarOps() || [];
 	if (!(buttons || secondaryButtons)) { return; }
 
 	var tbParams = {
@@ -304,6 +304,7 @@ function(view, className) {
 		buttons:			buttons,
 		secondaryButtons:	secondaryButtons,
 		rightSideButtons: 	rightSideButtons,
+		overrides:          this._getButtonOverrides(buttons.concat(secondaryButtons).concat(rightSideButtons)),
 		context:			view,
 		controller:			this,
 		refElementId:		ZmId.SKIN_APP_TOP_TOOLBAR,
@@ -346,6 +347,8 @@ function(view, className) {
 
 	appCtxt.notifyZimlets("initializeToolbar", [this._app, tb, this, view], {waitUntilLoaded:true});
 };
+
+ZmBaseController.prototype._getButtonOverrides = function(buttons) {};
 
 /**
  * Initializes the view and its listeners.

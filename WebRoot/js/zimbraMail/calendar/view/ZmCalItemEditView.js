@@ -321,8 +321,8 @@ function(inputEl, sizeEl){
     for(var i=0; i<files.length;i++){
         var file = files[i];
         var size = file.size || file.fileSize /*Safari*/;
-        if ((-1 /* means unlimited */ != appCtxt.get(ZmSetting.ATTACHMENT_SIZE_LIMIT)) &&
-            (size > appCtxt.get(ZmSetting.ATTACHMENT_SIZE_LIMIT))) {
+        if ((-1 /* means unlimited */ != appCtxt.get(ZmSetting.MESSAGE_SIZE_LIMIT)) &&
+            (size > appCtxt.get(ZmSetting.MESSAGE_SIZE_LIMIT))) {
             className = "RedC";
         }
         totalSize += size;
@@ -583,6 +583,8 @@ function(calItem) {
 ZmCalItemEditView.prototype._setRepeatDesc =
 function(calItem) {
 	if (calItem.isCustomRecurrence()) {
+        //Bug fix # 58493 - Set the classname if for the first time directly custom weekly/monthly/yearly repetition is selected
+        this._repeatDescField.className = "FakeAnchor";
 		this._repeatDescField.innerHTML = calItem.getRecurBlurb();
 	} else {
 		this._repeatDescField.innerHTML = (calItem.getRecurType() != "NON")
@@ -639,9 +641,11 @@ function(body, composingHtml) {
     var includePref = appCtxt.get(ZmSetting.FORWARD_INCLUDE_ORIG);
     if (includePref == ZmSetting.INCLUDE_PREFIX || includePref == ZmSetting.INCLUDE_PREFIX_FULL) {
         var preface = (composingHtml ? '<br>' : '\n');
-		var wrapParams = ZmHtmlEditor.getWrapParams(composingHtml);
-		wrapParams.text = body;
-		wrapParams.preserveReturns = true;
+		var wrapParams = {
+			text:				body,
+			htmlMode:			composingHtml,
+			preserveReturns:	true
+		}
         body = preface + AjxStringUtil.wordWrap(wrapParams);
     }
     return body;

@@ -260,6 +260,14 @@ function(actionCode, ev) {
 			}
 			break;
 
+		// Esc pops search results tab
+		case ZmKeyMap.CANCEL:
+			var ctlr = this.isSearchResults && this.searchResultsController;
+			if (ctlr) {
+				ctlr._closeListener();
+			}
+			break;
+
 		default:
 			return ZmBaseController.prototype.handleKeyAction.apply(this, arguments);
 	}
@@ -642,13 +650,17 @@ function(ev) {
 
 /**
  * Sets text to "add" or "edit" based on whether a participant is a contact or not.
- * 
+ * isContact - basically true if not a GAL item, I think.
+ * isGroup - true if this is a group (and it is passed here...)
+ *
  * @private
  */
 ZmListController.prototype._setContactText =
-function(isContact) {
-	var newOp = isContact ? ZmOperation.EDIT_CONTACT : ZmOperation.NEW_CONTACT;
-	var newText = isContact ? null : ZmMsg.AB_ADD_CONTACT;
+function(isContact, isGroup) {
+	var newOp = (isContact || isGroup) ? ZmOperation.EDIT_CONTACT : ZmOperation.NEW_CONTACT;
+	var newText = isGroup ? ZmMsg.AB_EDIT_GROUP :
+				isContact ? null :
+				ZmMsg.AB_ADD_CONTACT;
 	ZmOperation.setOperation(this.getCurrentToolbar(), ZmOperation.CONTACT, newOp, ZmMsg.AB_ADD_CONTACT);
 	ZmOperation.setOperation(this.getActionMenu(), ZmOperation.CONTACT, newOp, newText);
 };

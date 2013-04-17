@@ -40,13 +40,13 @@ ZmFilterRuleDialog = function() {
 	this._createTabGroup();
 
 	// create these listeners just once
-	this._rowChangeLstnr	= new AjxListener(this, this._rowChangeListener);
-	this._opsChangeLstnr	= new AjxListener(this, this._opsChangeListener);
-	this._dateLstnr			= new AjxListener(this, this._dateListener);
-	this._plusMinusLstnr	= new AjxListener(this, this._plusMinusListener);
-	this._browseLstnr		= new AjxListener(this, this._browseListener);
-	this._addrBookChangeLstnr = new AjxListener(this, this._addrBookChangeListener);
-	this._importanceChangeLstnr = new AjxListener(this, this._importanceChangeListener);
+	this._rowChangeLstnr			= new AjxListener(this, this._rowChangeListener);
+	this._opsChangeLstnr			= new AjxListener(this, this._opsChangeListener);
+	this._dateLstnr					= new AjxListener(this, this._dateListener);
+	this._plusMinusLstnr			= new AjxListener(this, this._plusMinusListener);
+	this._browseLstnr				= new AjxListener(this, this._browseListener);
+	this._addrBookChangeLstnr		= new AjxListener(this, this._addrBookChangeListener);
+	this._importanceChangeLstnr		= new AjxListener(this, this._importanceChangeListener);
 		
 	this.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._okButtonListener));
 	this.setButtonListener(DwtDialog.CANCEL_BUTTON, new AjxListener(this, this._cancelButtonListener));
@@ -247,10 +247,10 @@ function() {
  * Draws a table of conditions or actions. Returns the ID of the last row added.
  *
  * @param {ZmFilterRule}	rule			the source rule
- * @param {Boolean}	isCondition		if <code>true</code>, we're drawing conditions (as opposed to actions)
- * @param {String}	tableId		the DWT id representing the parent table
- * @param {Object}	rowData		the meta data used to figure out which DWT widget to create
- * @param {DwtTabGroup}	tabGroup		tab group for focus
+ * @param {Boolean}			isCondition		if <code>true</code>, we're drawing conditions (as opposed to actions)
+ * @param {String}			tableId			the DWT id representing the parent table
+ * @param {Object}			rowData			the meta data used to figure out which DWT widget to create
+ * @param {DwtTabGroup}		tabGroup		tab group for focus
  * 
  * @private
  */
@@ -296,7 +296,7 @@ function(rule, isCondition, tableId, rowData, tabGroup) {
  * @param {Object}	data			an object containing meta info about the filter rule condition or action
  * @param {String}	test			the type of test condition (headerTest, sizeTest, bodyTest, etc)
  * @param {Boolean}	isCondition		if <code>true</code>, we're rendering a condition row
- * @param {String}	rowId		the unique ID representing this row
+ * @param {String}	rowId			the unique ID representing this row
  * 
  * @private
  */
@@ -335,7 +335,7 @@ function(data, test, isCondition, rowId) {
 			stopField.checked = true;
 			return;
 		}
-		html[i++] = "<td><table><tr>";
+		html[i++] = "<td><table class='filterActions'><tr>";
 		if (conf) {
 			var options = this._outgoing ? ZmFilterRule.ACTIONS_OUTGOING_LIST : ZmFilterRule.ACTIONS_LIST;
 			html[i++] = this._createRowComponent(false, "name", options, data, test, rowId);
@@ -387,18 +387,18 @@ function(test, data) {
 		case ZmFilterRule.TEST_MIME_HEADER:		condition = ZmFilterRule.C_MIME_HEADER; break;
 		case ZmFilterRule.TEST_ADDRBOOK:		condition = ZmFilterRule.C_ADDRBOOK; break;
 		case ZmFilterRule.TEST_INVITE:			condition = ZmFilterRule.C_INVITE; break;
-		case ZmFilterRule.TEST_CONVERSATIONS:   condition = ZmFilterRule.C_CONV; break;
-		case ZmFilterRule.TEST_SOCIAL:          condition = ZmFilterRule.C_SOCIAL; break;
-		case ZmFilterRule.TEST_FACEBOOK:        condition = ZmFilterRule.C_SOCIAL; break;
-		case ZmFilterRule.TEST_SOCIALCAST:      condition = ZmFilterRule.C_SOCIAL; break;
-		case ZmFilterRule.TEST_TWITTER:         condition = ZmFilterRule.C_SOCIAL; break;
-		case ZmFilterRule.TEST_LINKEDIN:        condition = ZmFilterRule.C_SOCIAL; break;
-		case ZmFilterRule.TEST_LIST:            condition = ZmFilterRule.C_CONV; break;
-		case ZmFilterRule.TEST_BULK:            condition = ZmFilterRule.C_CONV; break;
-		case ZmFilterRule.TEST_ME:              condition = ZmFilterRule.C_ADDRBOOK; break;
-		case ZmFilterRule.TEST_RANKING:         condition = ZmFilterRule.C_ADDRBOOK; break;
-		case ZmFilterRule.TEST_IMPORTANCE:      condition = ZmFilterRule.C_CONV; break;
-		case ZmFilterRule.TEST_FLAGGED:         condition = ZmFilterRule.C_CONV; break;
+		case ZmFilterRule.TEST_CONVERSATIONS:	condition = ZmFilterRule.C_CONV; break;
+		case ZmFilterRule.TEST_SOCIAL:			condition = ZmFilterRule.C_SOCIAL; break;
+		case ZmFilterRule.TEST_FACEBOOK:		condition = ZmFilterRule.C_SOCIAL; break;
+		case ZmFilterRule.TEST_SOCIALCAST:		condition = ZmFilterRule.C_SOCIAL; break;
+		case ZmFilterRule.TEST_TWITTER:			condition = ZmFilterRule.C_SOCIAL; break;
+		case ZmFilterRule.TEST_LINKEDIN:		condition = ZmFilterRule.C_SOCIAL; break;
+		case ZmFilterRule.TEST_LIST:			condition = ZmFilterRule.C_CONV; break;
+		case ZmFilterRule.TEST_BULK:			condition = ZmFilterRule.C_CONV; break;
+		case ZmFilterRule.TEST_ME:				condition = ZmFilterRule.C_ADDRBOOK; break;
+		case ZmFilterRule.TEST_RANKING:			condition = ZmFilterRule.C_ADDRBOOK; break;
+		case ZmFilterRule.TEST_IMPORTANCE:		condition = ZmFilterRule.C_CONV; break;
+		case ZmFilterRule.TEST_FLAGGED:			condition = ZmFilterRule.C_CONV; break;
 		case ZmFilterRule.TEST_HEADER:
 			condition = ZmFilterRule.C_HEADER_MAP[data.header];
 			if (!condition) { // means custom header
@@ -497,11 +497,11 @@ function(rowId, isCondition) {
  *
  * @param {Hash|Boolean}	conf		the config for this subject or action; boolean if rendering
  *										the actual subject or action (means "isCondition")
- * @param {String}	field		the name of the input field
- * @param {Array}	options		if the field type is a select, its options
- * @param {Object}	rowData	the current value of the field, if any
- * @param {String}	testType	the type of test condition (i.e. headerTest, attachmentTest, bodyTest, etc)
- * @param {String}	rowId		the ID of the containing row
+ * @param {String}			field		the name of the input field
+ * @param {Array}			options		if the field type is a select, its options
+ * @param {Object}			rowData		the current value of the field, if any
+ * @param {String}			testType	the type of test condition (i.e. headerTest, attachmentTest, bodyTest, etc)
+ * @param {String}			rowId		the ID of the containing row
  * 
  * @private
  */
@@ -658,7 +658,7 @@ function(conf, field, options, rowData, testType, rowId) {
 		tabGroup.addMember(button.getTabGroupMember());
 	}
 
-	return "<td id='" + id + "' valign='center' class='paddedTableCell'></td>";
+	return "<td id='" + id + "'></td>";
 };
 
 ZmFilterRuleDialog.prototype._getDataValue =
@@ -669,7 +669,7 @@ function(isMainSelect, testType, field, rowData) {
 		case ZmFilterRule.TEST_HEADER:
 			dataValue = ZmFilterRule.C_HEADER_MAP[rowData.header];
 			if (!dataValue) { // means custom header
-			        dataValue = ZmFilterRule.C_HEADER;
+				dataValue = ZmFilterRule.C_HEADER;
 			}
 			break;
 			case ZmFilterRule.TEST_HEADER_EXISTS:	dataValue = ZmFilterRule.C_HEADER; break;
@@ -680,24 +680,24 @@ function(isMainSelect, testType, field, rowData) {
 			case ZmFilterRule.TEST_MIME_HEADER:		dataValue = ZmFilterRule.C_MIME_HEADER; break;
 			case ZmFilterRule.TEST_ADDRBOOK:		dataValue = ZmFilterRule.C_ADDRBOOK; break;
 			case ZmFilterRule.TEST_INVITE:			dataValue = ZmFilterRule.C_INVITE; break;
-			case ZmFilterRule.TEST_CONVERSATIONS:   dataValue = ZmFilterRule.C_CONV; break;
-			case ZmFilterRule.TEST_SOCIAL:          dataValue = ZmFilterRule.C_SOCIAL; break;
-			case ZmFilterRule.TEST_FACEBOOK:        dataValue = ZmFilterRule.C_SOCIAL; break;
-			case ZmFilterRule.TEST_SOCIALCAST:      dataValue = ZmFilterRule.C_SOCIAL; break;
-			case ZmFilterRule.TEST_TWITTER:         dataValue = ZmFilterRule.C_SOCIAL; break;
-			case ZmFilterRule.TEST_LINKEDIN:        dataValue = ZmFilterRule.C_SOCIAL; break;
+			case ZmFilterRule.TEST_CONVERSATIONS:	dataValue = ZmFilterRule.C_CONV; break;
+			case ZmFilterRule.TEST_SOCIAL:			dataValue = ZmFilterRule.C_SOCIAL; break;
+			case ZmFilterRule.TEST_FACEBOOK:		dataValue = ZmFilterRule.C_SOCIAL; break;
+			case ZmFilterRule.TEST_SOCIALCAST:		dataValue = ZmFilterRule.C_SOCIAL; break;
+			case ZmFilterRule.TEST_TWITTER:			dataValue = ZmFilterRule.C_SOCIAL; break;
+			case ZmFilterRule.TEST_LINKEDIN:		dataValue = ZmFilterRule.C_SOCIAL; break;
 			case ZmFilterRule.TEST_ADDRESS:
 				dataValue = ZmFilterRule.C_ADDRESS_MAP[rowData.header];
 				if (!dataValue) { 
 					dataValue = ZmFilterRule.C_ADDRESS;
 				}
 				break;
-			case ZmFilterRule.TEST_LIST:            dataValue = ZmFilterRule.C_CONV; break;
-			case ZmFilterRule.TEST_BULK:            dataValue = ZmFilterRule.C_CONV; break;
-			case ZmFilterRule.TEST_ME:              dataValue = ZmFilterRule.C_ADDRBOOK; break;
-			case ZmFilterRule.TEST_RANKING:         dataValue = ZmFilterRule.C_ADDRBOOK; break;
-			case ZmFilterRule.TEST_IMPORTANCE:      dataValue = ZmFilterRule.C_CONV; break;
-			case ZmFilterRule.TEST_FLAGGED:         dataValue = ZmFilterRule.C_CONV; break;
+			case ZmFilterRule.TEST_LIST:			dataValue = ZmFilterRule.C_CONV; break;
+			case ZmFilterRule.TEST_BULK:			dataValue = ZmFilterRule.C_CONV; break;
+			case ZmFilterRule.TEST_ME:				dataValue = ZmFilterRule.C_ADDRBOOK; break;
+			case ZmFilterRule.TEST_RANKING:			dataValue = ZmFilterRule.C_ADDRBOOK; break;
+			case ZmFilterRule.TEST_IMPORTANCE:		dataValue = ZmFilterRule.C_CONV; break;
+			case ZmFilterRule.TEST_FLAGGED:			dataValue = ZmFilterRule.C_CONV; break;
 			// default returns action type
 			default:								return ZmFilterRule.A_VALUE_MAP[testType];
 		}
@@ -964,8 +964,7 @@ function(rowId, isCondition) {
 	var tabGroup = this._getCurrentTabScope();
 	var html = [];
 	var j = 0;
-	html[j++] = "<td style='align:right;'><table border=0 cellpadding=0 cellspacing=0><tr>";
-	html[j++] = "<td width='100%' style=''></td>"; // right-justify the plus/minus buttons
+	html[j++] = "<td width='1%'><table class='FilterAddRemoveButtons'><tr>";
 	var buttons = ["Plus", "Minus"];
 	for (var i = 0; i < buttons.length; i++) {
 		var b = buttons[i];
@@ -979,7 +978,7 @@ function(rowId, isCondition) {
 		this._inputs[rowId][b] = {id: id, dwtObj: button};
 		html[j++] = "<td id='";
 		html[j++] = id;
-		html[j++] = "' valign='center' class='paddedTableCell'></td>";
+		html[j++] = "'></td>";
 		tabGroup.addMember(button);
 	}
 	html[j++] = "</tr></table></td>";
@@ -1378,7 +1377,7 @@ function(ev) {
 			rule.addAction(action.actionType, action.value);
 		}
 	}
-	    
+
 	if (msg) {
 		// bug #35912 - restore values from cached rule
 		if (cachedRule) {
@@ -1398,7 +1397,7 @@ function(ev) {
 	if (stopAction) {
 		rule.addAction(ZmFilterRule.A_STOP);
 	}
-	    
+
 	var respCallback = new AjxCallback(this, this._handleResponseOkButtonListener);
 	if (this._editMode) {
 		this._rules._saveRules(this._rules.getIndexOfRule(rule), true, respCallback);

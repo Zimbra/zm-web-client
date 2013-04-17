@@ -87,6 +87,11 @@ function(timeRange) {
     this._search();
 };
 
+ZmCalListView.prototype.createHeaderHtml =
+function(defaultColumnSort) {
+	DwtListView.prototype.createHeaderHtml.call(this, defaultColumnSort, true);
+};
+
 ZmCalListView.prototype.getDate =
 function() {
 	return this._date;
@@ -504,6 +509,10 @@ function(itemArray) {
                 filterV.add(appt);
             }
 		}
+
+        //Bug fix# 80459. Since ZmCalListView inherits from ZmApptListView, make use of the sorting function and use the sorted list to render
+        //By default the list is sorted on date and thereafter we use the changed sort field if any
+        this._sortList(filterV, this._defaultSortField);
 
 		this._renderList(filterV, this._list.size() != 0, true);
 		this._list.addList(filterV.getArray());

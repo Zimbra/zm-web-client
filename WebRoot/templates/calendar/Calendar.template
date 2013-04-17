@@ -1,3 +1,19 @@
+/*
+ * ***** BEGIN LICENSE BLOCK *****
+ * 
+ * Zimbra Collaboration Suite Web Client
+ * Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013 VMware, Inc.
+ * 
+ * The contents of this file are subject to the Zimbra Public License
+ * Version 1.3 ("License"); you may not use this file except in
+ * compliance with the License.  You may obtain a copy of the License at
+ * http://www.zimbra.com/license.
+ * 
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
+ * ***** END LICENSE BLOCK *****
+ */
 <template id='calendar.Calendar#calendar_appt' width='10' height='7'>
 	<div id='${id}_body' class='appt_body ${bodyColor} ${boxBorder}'>
 		<table id='${id}_tableBody' style="width:100%; height:100%;${bodyStyle}">
@@ -366,17 +382,12 @@
 </template>
 
 <template id='calendar.Calendar#ReminderDialogRow'>
-	<$ if (data.needSep) { $>
-		<tr name="rdsep">
-			<td colspan=3><div class="horizSep"></div></td>
-		</tr>
-	<$ } $>
 	<tr id='${rowId}'>
-		<td width=100% valign=top>
-			<span id='${reminderNameContainerId}'><b>${reminderName}</b></span><br>
-			<span id='${reminderDescContainerId}'>
+		<td style="max-width:350px;" valign=top>
+			<div id='${openLinkId}' class='ZmApptOpenLink'></div>
+			<div id='${reminderDescContainerId}'>
 			<$ if (data.durationText != "") { $>
-			    <$= ZmMsg.whenLabel $> ${durationText}<br>
+			    ${durationText}<br>
             <$ } $>
 
 			<$ if (data.organizer) { $>
@@ -398,15 +409,17 @@
 			<$ if (data.location) { $>
 				<$= ZmMsg.locationLabel $> ${location}<br>
 			<$ } $>
-			</span>
+			</div>
 		</td>
 		<td valign=top align=right>
-			<table>
-				<tr>
+			<table style="margin-left:15px;">
+				<tr id='${actionsRowId}'>
 					<td valign=top align=right>
 						<table class='ZPropertySheet' cellspacing='6'>
 							<tr>
-								<td valign=top id='${openBtnId}'></td>
+								<td valign=top id='${snoozeSelectInputId}' style="padding-right:0;"></td>
+								<td valign=top id='${snoozeSelectBtnId}' style="padding-left:0" width="1%"></td>
+								<td valign=top id='${snoozeBtnId}'></td>
 								<td valign=top id='${dismissBtnId}'></td>
 							</tr>
 						</table>
@@ -418,7 +431,29 @@
 			</table>
 		</td>
 	</tr>
+	<$ if (!data.noSep) { /* used only from ZmQuickReminderDialog */ $>
+		<tr name="rdsep">
+			<td colspan=3><div class="horizSep"></div></td>
+		</tr>
+	<$ } $>
+
 </template>
+
+<template id='calendar.Calendar#ReminderDialogAllSection'>
+	<table class='ZPropertySheet' cellspacing='6' cellpadding=0 border=0 width="100%">
+		<tr>
+			<td width=100% valign=middle align=right>
+				<span id='${snoozeAllLabelId}'></span>
+			</td>
+			<td valign=top id='${snoozeSelectInputId}' style="padding-right:0"></td>
+			<td valign=top id='${snoozeSelectBtnId}' style="padding-left:0"></td>
+			<td valign=top id='${snoozeBtnId}' class="DwtDialogButtonBar"></td>
+			<td valign=top id='${dismissBtnId}' class="DwtDialogButtonBar"></td>
+		</tr>
+	</table>
+</template>
+
+
 
 
 <template id='calendar.Appointment#DnDProxy'>
