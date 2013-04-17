@@ -222,6 +222,11 @@ function(callback, result) {
  */
 ZmContactList.addDlFolder =
 function() {
+
+	if (!appCtxt.get(ZmSetting.DLS_FOLDER_ENABLED)) {
+		return;
+	}
+
 	var dlsFolder = appCtxt.getById(ZmOrganizer.ID_DLS);
 
 	var root = appCtxt.getById(ZmOrganizer.ID_ROOT);
