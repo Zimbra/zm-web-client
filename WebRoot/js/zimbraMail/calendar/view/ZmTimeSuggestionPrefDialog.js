@@ -146,11 +146,14 @@ function(text) {
 
     this._dlgId = AjxCore.assignId(this);
 
-    var suffix, id;
+    var element, id;
     for(var i=0; i<ZmTimeSuggestionPrefDialog.PREF_FIELDS.length; i++) {
         id = ZmTimeSuggestionPrefDialog.PREF_FIELDS[i];
-        this._prefFields[id] = document.getElementById(this.getHTMLElId() + "_" + id);
-        this._prefs[id] = this.getPreferenceFieldValue(id);
+        element = document.getElementById(this.getHTMLElId() + "_" + id);
+        if (element) {
+            this._prefFields[id] = element;
+            this._prefs[id] = this.getPreferenceFieldValue(id);
+        }
     }
 };
 

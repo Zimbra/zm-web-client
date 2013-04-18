@@ -1163,6 +1163,7 @@
         </tbody>
     </table>
 
+    <$ if (appCtxt.get(ZmSetting.GAL_ENABLED)) { $>
     <table id="${id}_locationpref" class="ZPropertySheet" cellspacing="6">
         <tbody>
         <tr>
@@ -1188,6 +1189,7 @@
         </tr>
         </tbody>
     </table>
+    <$ } $>
 
 </template>
 
