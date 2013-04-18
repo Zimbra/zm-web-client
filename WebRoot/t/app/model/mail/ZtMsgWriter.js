@@ -33,7 +33,6 @@ Ext.define('ZCS.model.mail.ZtMsgWriter', {
 			action = request.getAction(),
 			json, methodJson = {};
 
-		ZCS.session.getCurrentSearchOrganizer().get('itemId')
 		if (action === 'read' && convId) {
 
 			// 'read' operation with convId means we are loading a conv
