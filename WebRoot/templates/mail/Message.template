@@ -108,7 +108,7 @@
 
 		
 <template id='mail.Message#MailAttachmentBubble'>
-		<span class="AttachmentLoading attachmentBubble AttachmentSpan" name="mailAttUploadingSpan" style="max-width:235px; position:static; overflow:visible;padding:0 2px 4px">
+		<span id="${id}" class="AttachmentLoading attachmentBubble AttachmentSpan" name="mailAttUploadingSpan" style="max-width:235px; position:static; overflow:visible;padding:0 2px 4px">
 			<span class="AttProgressSpan1">${fileName}</span>
 			<span class="AttProgressSpan2">${fileName}</span>
 			<span onclick="window.appCtxt.getCurrentView()._abortUploadFile()" class="ImgBubbleDelete AttachmentClose"></span>

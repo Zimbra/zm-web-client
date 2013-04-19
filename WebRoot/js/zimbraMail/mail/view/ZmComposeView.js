@@ -3057,8 +3057,9 @@ ZmComposeView.prototype._createAttachMenuItem =
 function(menu, text, listner) {
 	var item = DwtMenuItem.create({parent:menu, text:text});
 	item.value = text;
-	if (listner)
-	item.addSelectionListener(listner);
+	if (listner) {
+		item.addSelectionListener(listner);
+	}
 	return item;
 };
 ZmComposeView.prototype._createPriorityMenuItem =
@@ -3223,7 +3224,7 @@ function(fileName) {
 
 
 ZmComposeView.prototype._submitMyComputerAttachments =
-function(files, node) {
+function(files, node, isInline) {
 	var name = "";
 	if (!AjxEnv.supportsHTML5File) {
 		// IE, FF 3.5 and lower
@@ -3248,8 +3249,13 @@ function(files, node) {
 			}
 		}
 	}
-	this._uploadElementForm = node.parentNode;
-	this._setAttInline(node.isInline);
+	if (node) {  //call from ZmDragAndDrop doesn't provide node.
+		this._uploadElementForm = node.parentNode;
+		this._setAttInline(node.isInline);
+	}
+	else {
+		this._setAttInline(isInline); //we get this param from the DND case.
+	}
 	this._initProgressSpan(files[0].name);
 
 	this._controller._uploadMyComputerFile(files);

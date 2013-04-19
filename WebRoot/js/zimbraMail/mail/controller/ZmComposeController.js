@@ -644,6 +644,7 @@ function(draftType, msg, ex) {
 	
         var msg = null;
         var showMsg = false;
+		var style = null;
         if (ex.code == ZmCsfeException.MAIL_SEND_ABORTED_ADDRESS_FAILURE) {
             var invalid = ex.getData ? ex.getData(ZmCsfeException.MAIL_SEND_ADDRESS_FAILURE_INVALID) : null;
             var invalidMsg = (invalid && invalid.length)
@@ -684,11 +685,17 @@ function(draftType, msg, ex) {
         if (this._uploadingProgress){
             this._initAutoSave();
 		    this._composeView._resetUpload(true);
-		    msg = ZmMsg.attachingFilesError + (ex.msg || "");
-            showMsg = true;
+			if (ex.code === ZmCsfeException.MAIL_MESSAGE_TOO_BIG) {
+				msg = AjxMessageFormat.format(ZmMsg.attachmentSizeError, AjxUtil.formatSize(appCtxt.get(ZmSetting.MESSAGE_SIZE_LIMIT)));
+				style = DwtMessageDialog.WARNING_STYLE;
+			}
+			else {
+				msg = msg || ZmMsg.attachingFilesError + "<br>" + (ex.msg || "");
+			}
+			showMsg = true;
         }
         if (msg && showMsg) {
-			this._showMsgDialog(ZmComposeController.MSG_DIALOG_1, msg, DwtMessageDialog.CRITICAL_STYLE, null, true);
+			this._showMsgDialog(ZmComposeController.MSG_DIALOG_1, msg, style || DwtMessageDialog.CRITICAL_STYLE, null, true);
             retVal = true;
         }
     }
@@ -2295,17 +2302,13 @@ function(files, prevData, start) {
         }
 
         this.upLoadC = this.upLoadC + 1;
-        var controller = this;
 
         if (!prevData){
             prevData = [];
-            start = 1;
-        } else {
-            start++;
+            start = 0;
         }
 
-
-        var file = files[start-1];
+        var file = files[start];
 
         var fileName = file.name || file.fileName;
 
@@ -2319,11 +2322,12 @@ function(files, prevData, start) {
 	    curView._startUploadAttachment();
         DBG.println(AjxDebug.DBG1,"Uploading file: "  + fileName + " file type" + (file.type || "application/octet-stream") );
         this._uploadAttReq = req;
-	    if (AjxEnv.supportsHTML5File){
+	    if (AjxEnv.supportsHTML5File) {
         	req.upload.addEventListener("progress", function(evt){
                    curView._uploadFileProgress(evt)
             }, false);
-	    }else{
+	    }
+		else {
             var progress = function (obj) {
                 var viewObj = obj;
 		        viewObj.si = window.setInterval (function(){viewObj._progress();}, 500);
@@ -2350,27 +2354,30 @@ function(files, prevData, start) {
 ZmComposeController.prototype._handleUploadResponse =
 function(req, prevData, start, files, fileName){
     var curView = this._composeView;
-    this._initAutoSave();
-    if(req.readyState === 4) {
+    if (req.readyState === 4) {
         var resp = (req.status === 200) && eval("["+req.responseText+"]");
         var response = (req.status === 200 ) && resp.length && resp[2];
-        if (response || this._uploadAttReq.aborted){
+        if (response || this._uploadAttReq.aborted) {
             prevData.push((response && response[0]) || null);
-            if (start < files.length){
-                curView.updateAttachFileNode(files, start, (response && response[0] && response[0].aid));
-                if (response && response.length){
-                     DBG.println(AjxDebug.DBG1,"Uploaded file: "  + fileName + "Successfully.");
-                }
-                this._uploadMyComputerFile(files, prevData, start );
-            }else {
+			if (response && response.length){
+		    	DBG.println(AjxDebug.DBG1,"Uploaded file: "  + fileName + "Successfully.");
+			}
+            if (start < files.length - 1) {
+                curView.updateAttachFileNode(files, start + 1, (response && response[0] && response[0].aid));
+                this._uploadMyComputerFile(files, prevData, start + 1);
+            }
+			else {
                 var callback = curView._resetUpload.bind(curView);
                 this.saveDraft(ZmComposeController.DRAFT_TYPE_AUTO, this._syncPrevData(prevData), null, callback);
+				this._initAutoSave();
             }
-        }else {
+        }
+		else {
             DBG.println("Error while uploading file: "  + fileName + " response is null.");
             var callback = curView._resetUpload.bind(curView);
             this.saveDraft(ZmComposeController.DRAFT_TYPE_AUTO, this._syncPrevData(prevData), null, callback);
-            var msgDlg = appCtxt.getMsgDialog()
+			this._initAutoSave();
+            var msgDlg = appCtxt.getMsgDialog();
             this.upLoadC = this.upLoadC - 1;
             msgDlg.setMessage(ZmMsg.importErrorUpload, DwtMessageDialog.CRITICAL_STYLE);
             msgDlg.popup();
