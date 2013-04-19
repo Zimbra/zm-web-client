@@ -349,7 +349,7 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 }
 
 .ZmSearchResultsToolBar .label {
-	text-align:right;
+	@Label-right@
 	width:200px;
 	margin-right:5px;
 }
@@ -395,8 +395,8 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 }
 
 .ZmSearchResultText {
+	@AlignRight@
 	width:175px;
-	text-align:right;
 	vertical-align:middle;
 }
 .ZmSearchResultInputField {
@@ -702,10 +702,10 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 
 
 .BrowseAttachBtn {
+	@AlignRight@
 	position:relative;
 	height:15px;
 	opacity:0;
-	text-align:right;
 	z-index:300;
 	overflow:hidden;
 }
@@ -739,10 +739,9 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 .ZmMailMsgView .LabelColName, 
 .ZmMailMsgCapsuleView .LabelColName {
 	@MailMsgHeaderLabel@
+	@Label-right@
 	line-height:1.6em;
-	text-align:right;
 	vertical-align:top;
-	white-space:nowrap;
 	width:1%;
 }
 
@@ -785,9 +784,8 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 
 .InvHeaderTable .LabelColName {
 	@MailMsgHeaderLabel@
+	@Label-right@
 	vertical-align:top;
-	white-space:nowrap;
-	text-align:right;
 }
 
 .InvHeaderTable .LabelColValue {
@@ -1189,7 +1187,7 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 /* ??? USE? */
 .ZmComposeView .attachText {
 	width:60px;			/* ??? SIZE */
-	text-align:right;
+	@AlignRight@
 	@NoWrap@
 }
 
@@ -1568,9 +1566,13 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 	border-bottom:2px solid #AAA;
 }
 
+.ZmEditContactView .contactHeaderRow,
 .ZmContactView .contactHeaderTable,
 .ZmContactInfoView .contactHeaderTable {
 	background-color:@darken(AppC,5)@;
+}
+.ZmContactView .contactHeaderTable,
+.ZmContactInfoView .contactHeaderTable {
 	border-bottom:1px solid @darken(AppC,50)@;
 }
 
@@ -1592,6 +1594,22 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 	text-align:center;
 	padding:1em 5px 0;
 	height:70px;
+}
+
+.contactGroupTableContent {
+	padding-right:.5em;
+}
+.contactGroupTableContent SPAN {
+	@NoWrap@
+}
+.contactGroupTableContent .ImgPlus {
+	display:inline-block;
+	margin-left:.5em;
+#IFDEF MSIE
+	display:inline;
+	height:16px;
+	width:16px;
+#ENDIF
 }
 
 .ZmContactInfoView .contactHeaderSection {
@@ -1625,14 +1643,17 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 	@OverflowEllipsis@
 }
 
-.ZmContactView .companyName,
-.ZmContactInfoView .companyName {
+.ZmContactView .contactHeader2,
+.ZmContactInfoView .contactHeader2,
+.ZmEditContactView .contactHeader2 {
 	@FontSize-bigger@
+	@Text@
 }
 
-.ZmContactView .companyName .Text {
-	height:25px;
+.ZmContactView .contactHeader2 .Text,
+.ZmEditContactView .contactHeader2 .Text {
 	@FontSize-bigger@
+	height:25px;
 }
 
 .ZmContactView .companyFolder,
@@ -1642,6 +1663,10 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 	width:1%;
 }
 
+.ZmContactInfoView .companyFolder DIV {
+	display: inline-block;
+	vertical-align: bottom;
+}
 
 .ZmContactInfoView .contactOutput {
 	@Text@
@@ -1649,9 +1674,8 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 }
 
 .ZmContactEditTabViewPage .contactLabel {
-	@Label@
+	@Label-right@
 	width:1%;
-	text-align:right;
 }
 
 .ZmContactInfoView .contactFirstCell {
@@ -1660,18 +1684,15 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 }
 
 .ZmContactInfoView .contactLabel {
-	@Label-light@
+	@Label-right@
 	width:125px;
-	text-align:right;
 	vertical-align:top;
 }
 
 .ZmContactView .contactLocation,
 .ZmContactInfoView .contactLocation {
-	@Label-light@
-	text-align:right;
-	vertical-align:top;
 	@FontSize-big@
+	@Label-right@
 }
 
 .ZmContactInfoView .groupBody {
@@ -1692,13 +1713,11 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 
 /* ??? -> ZmFieldLabelRight */
 .ZmTaskEditView .editLabel {
-	@Label@
-	text-align:right;
+	@Label-right@
 }
 
 .ZmContactView .hintLabel {
-	@Label@
-	text-align:right;
+	@Label-right@
 	color:#5A5A5A;
 }
 
@@ -1723,10 +1742,9 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 
 /* ??? USED? */
 .contactEditLabel {
-	text-align:right;
+	@Label-right@
 	padding-left:@BoxPaddingSize@;
 	padding-right:@BoxPaddingSize@;
-	overflow:hidden;
 }
 
 
@@ -1805,8 +1823,8 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 /* Display of a field in the contact card */
 .ZmContactField {
 	@Text@
-	@OverflowElipsis@
 	@NoWrap@
+	@OverflowElipsis@
 }
 
 
@@ -1981,7 +1999,6 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 .calendar_heading_day_today-selected {
 	@Label@
 	@FullSize@
-	@NoWrap@
 	padding-top:@TextPaddingSize@;
 	text-align:center;
 	vertical-align:middle;
@@ -2655,7 +2672,6 @@ HTML>BODY .appt-selected .appt_allday_body
 
 /* ??? USE?  Label or field value */
 .ZmReminderField {
-	@NoWrap@
 	@Label@
 	text-align:right;
 }
@@ -2680,9 +2696,7 @@ HTML>BODY .appt-selected .appt_allday_body
 /* Label for appt edit form */
 /* ??? RENAME TO ZmFieldLabelRight ? */
 .ZmApptTabViewPageField {
-	@Label@
-	@NoWrap@
-	text-align:right;
+	@Label-right@
 	width:1%;
 }
 
@@ -2753,7 +2767,6 @@ HTML>BODY .appt-selected .appt_allday_body
 }
 
 .ZmSchedulerGridHeaderCell {
-	@NoWrap@
 	@Label@
 }
 
@@ -2850,10 +2863,9 @@ HTML>BODY .appt-selected .appt_allday_body
 	@FreeBusyViewGridWidth@;
 	@RightSeparator@
 	@BottomSeparator@
-	border-right-color:black;
-	@NoWrap@
 	@Label@
 	@TextCursor@
+	border-right-color:black;
 	vertical-align:middle;
 }
 
@@ -3827,18 +3839,17 @@ HTML>BODY .appt-selected .appt_allday_body
 	width:auto;
 }
 
-/* label for pereferences */
+/* label for preferences */
 .prefLabel {
-	@Label@
-	width:300px;		/* ??? SIZE */
-	text-align:right;
-	vertical-align:top;
+	@Label-right@
 	padding-top:2px;
+	vertical-align:top;
+	width:300px;		/* ??? SIZE */
 }
 .prefContent {
+	@NoWrap@
 	width:420px;		/* ??? SIZE */
 	vertical-align:top;
-	white-space:nowrap;
 }
 
 /* button sizing */
@@ -3858,8 +3869,8 @@ HTML>BODY .appt-selected .appt_allday_body
 
 /* ??? USE? */
 .ZmShortcutsPage .paddedTableCell {
-	vertical-align:middle;
 	@TextPadding@
+	vertical-align:middle;
 }
 
 .Row .ZmFilterDetailsView TD {
@@ -4112,9 +4123,7 @@ HTML>BODY .appt-selected .appt_allday_body
 /* Label for assist dialog */
 /* ??? RENAME TO ZmFieldLabelRight ? */
 .ZmAsstFieldLabel {
-	@Label@
-	@NoWrap@
-	text-align:right;
+	@Label-right@
 	width:1%;
 }
 
@@ -5243,6 +5252,8 @@ If you feel compelled to have a background color, please do so on a per skin lev
 	background-color:#FFC;
 }
 
+/* contact edit view */
+
 .ZmEditContactViewDetailsButton {
 	@ActiveCursor@
 	border:1px solid @darken(AppC,40)@;
@@ -5259,6 +5270,14 @@ If you feel compelled to have a background color, please do so on a per skin lev
 	@PanelBg@;
 }
 
+.ZmEditContactView .inputTable {
+	margin-bottom:.25em;
+}
+
+.ZmEditContactView .inputElement {
+	padding-right:.25em;
+}
+
 .ZmEditContactViewAddress {
 	/* TODO:mimic input border on other browsers/platforms */
 	border-left:solid 1px #3B3935;
@@ -5266,16 +5285,34 @@ If you feel compelled to have a background color, please do so on a per skin lev
 	border-right:solid 1px #D7CFBE;
 	border-bottom:solid 1px #D7CFBE;
 	@ZFieldBg-normal@
+#IFDEF MSIE
+	margin-bottom:.25em;
+#ENDIF
 }
+
+.ZmEditContactViewAddress .addressTable {
+	left:-3px;
+	positon:relative;
+#IFDEF MSIE
+	left:0;
+	margin-right:.5em;
+#ENDIF
+}
+
 .ZmEditContactViewAddress .DwtInputField TEXTAREA,
 .ZmEditContactViewAddress .DwtInputField INPUT,
 .ZmEditContactViewAddress .DwtInputField-hint TEXTAREA,
 .ZmEditContactViewAddress .DwtInputField-hint INPUT{
+	@FontSize-normal@
 	border:none !important;
 }
 .ZmEditContactViewAddress .DwtInputField-hint TEXTAREA,
 .ZmEditContactViewAddress .DwtInputField TEXTAREA {
 	overflow-y:auto;
+}
+
+.ZmEditContactView>TBODY>TR>TD {
+	vertical-align:top;
 }
 
 .ZmEditContactView .contactHeaderTable {
@@ -5286,26 +5323,66 @@ If you feel compelled to have a background color, please do so on a per skin lev
 	border-bottom:solid 1px @darken(AppC,40)@;
 }
 
+.ZmEditContactView .contactHeaderCellRow {
+	padding-bottom:4px;
+}
+
+.ZmEditContactView .contactHeaderCellRow .inlineInput {
+	padding-right:4px;
+}
+
+.ZmEditContactView .contactHeaderCellRow .inlineInputWrapper {
+	@FontSize-big@
+	padding:0 2px;
+}
+
 .ZmEditContactView .rowLabel, .ZmEditContactView .rowType, 
 .ZmContactSplitView .rowLabel, .ZmContactSplitView .rowType,
 .ZmContactSplitView .rowValue, .ZmContactSplitView .rowValue[colspan] {
-	padding:.7em .5em .25em;
+	padding:.75em .5em .4em;
+	vertical-align:top;
 }
+/* cells with inputs generally need less top padding,
+ * but there are variations for checkboxes and radiobuttons
+ */
 .ZmEditContactView .rowValue {
-	padding:.25em .5em;
+	padding:.4em .5em;
 }
+
+.ZmEditContactView .rowCheckGroup {
+	padding-top:.65em;
+}
+
+.ZmEditContactView .rowRadioGroup {
+	padding-top:.55em;
+}
+
 .ZmEditContactView .rowLabel, .ZmContactSplitView .rowLabel {
 	text-align:right;
 	font-weight:bold;
 }
+
 .ZmEditContactView .rowValue, .ZmContactSplitView .rowValue {
-	width:150px;
 	max-width:800px;
 	word-wrap:break-word;
+#IFNDEF MSIE
+	width:150px;
+#ENDIF
 }
+
 .ZmEditContactView .rowValue, .ZmContactSplitView .rowValue[colspan] {
 	width:auto;
 }
+
+.ZmContactSplitView .rowValue SPAN,
+.ZmContactSplitView .rowValue A {
+	@NoWrap@
+}
+
+.ZmContactSplitView .rowType {
+	color:gray;
+}
+
 .ZmContactSplitView .Object {
 	@Anchor@ 
 }

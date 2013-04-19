@@ -14,240 +14,255 @@
  */
 <!-- NOTE: sync with field order in ZmContact -->
 <!-- NOTE: The tab indexes need to go sequentially across all #ZmEditContactView_* templates -->
-<template id="abook.Contacts#ZmEditContactView">
-	<div id="${id}_DEBUG"></div>
-    <table valign=top width='100%'>
-        <$= AjxTemplate.expand("#ZmEditContactView_header", data) $>
-        <$= AjxTemplate.expand("#ZmEditContactView_body", data) $>
-    </table>
+<template id='abook.Contacts#ZmEditContactView'>
+	<div id='${id}_DEBUG'></div>
+	<table valign='top' width='100%'>
+		<$= AjxTemplate.expand("#ZmEditContactView_header", data) $>
+		<$= AjxTemplate.expand("#ZmEditContactView_body", data) $>
+	</table>
 </template>
 
-<template id="abook.Contacts#ZmEditContactView_header">
-    <tr valign=top class=contactHeaderTable>
-        <td class=contactHeaderCell>
-            <div id="${id}_IMAGE" tabindex="100"></div>
-            <div id="${id}_REMOVE_IMAGE_row" style='padding-left:7px;font-size:.8em'>
-                <nobr>
-                    <a id="${id}_VIEW_IMAGE" href="#view" tabindex="101"><$=ZmMsg.view$></a>
-                    |
-                    <a id="${id}_REMOVE_IMAGE" href="#remove" tabindex="102"><$=ZmMsg.remove$></a>
-                </nobr>
-            </div>
-        </td>
-        <td class="contactHeaderCell" valign="bottom">
-            <div style='padding:.125em'>
-                <div id="${id}_FULLNAME"></div>
-            </div>
-            <$ if (appCtxt.get(ZmSetting.TAGGING_ENABLED)) { $>
-            <div id="${id}_TAG"></div>
-            <$ } $>
-            <$= AjxTemplate.expand("#ZmEditContactView_headerName", data) $>
-            <$= AjxTemplate.expand("#ZmEditContactView_headerJobInfo", data) $>
-        </td>
-        <td class=contactHeaderCell>
-            <table class="ZPropertySheet" cellspacing="6">
-            <tr><td><$=ZmMsg.fileAsLabel$></td><td><div id="${id}_FILE_AS" tabindex="400"></div></td></tr>
-            <tr><td><$=ZmMsg.locationLabel$></td><td><div id="${id}_FOLDER" tabindex="401"></div></td></tr>
-            <$ if (appCtxt.multiAccounts) { $>
-                <tr><td><$=ZmMsg.accountLabel$></td><td><div id="${id}_ACCOUNT" tabindex="402"></div></td></tr>
-            <$ } $>
-            </table>
-        </td>
-    </tr>
+<template id='abook.Contacts#ZmEditContactView_header'>
+	<tr valign='top' class='contactHeaderRow'>
+		<td class='contactHeaderCell' align='center'>
+			<div id='${id}_IMAGE' tabindex='100'></div>
+			<div id='${id}_REMOVE_IMAGE_row' style='padding-left:7px;font-size:.8em;white-space:nowrap;'>
+					<a id='${id}_VIEW_IMAGE' href='#view' tabindex='101'><$=ZmMsg.view$></a>
+					|
+					<a id='${id}_REMOVE_IMAGE' href='#remove' tabindex='102'><$=ZmMsg.remove$></a>
+			</div>
+		</td>
+		<td class='contactHeaderCell' valign='bottom'>
+			<div style='padding:.125em;'>
+				<div id='${id}_FULLNAME'></div>
+			</div>
+			<$ if (appCtxt.get(ZmSetting.TAGGING_ENABLED)) { $>
+			<div id='${id}_TAG' class='contactHeaderCellRow'></div>
+			<$ } $>
+			<$= AjxTemplate.expand("#ZmEditContactView_headerName", data) $>
+			<$= AjxTemplate.expand("#ZmEditContactView_headerJobInfo", data) $>
+		</td>
+		<td class='contactHeaderCell' width='1%'>
+			<table class='ZPropertySheet' cellspacing='6'>
+			<tr>
+				<td style='text-align:right;'><$=ZmMsg.fileAsLabel$></td>
+				<td><div id='${id}_FILE_AS' tabindex='400'></div></td>
+			</tr>
+			<tr>
+				<td style='text-align:right;'><$=ZmMsg.locationLabel$></td>
+				<td><div id='${id}_FOLDER' tabindex='401'></div></td>
+			</tr>
+			<$ if (appCtxt.multiAccounts) { $>
+				<tr>
+					<td style='text-align:right;'><$=ZmMsg.accountLabel$></td>
+					<td><div id='${id}_ACCOUNT' tabindex='402'></div></td>
+				</tr>
+			<$ } $>
+			</table>
+		</td>
+	</tr>
 </template>
 
 <!-- NOTE: The tab indexes need to go sequentially across all #ZmEditContactView_* templates -->
-<template id="abook.Contacts#ZmEditContactView_headerName">
-    <div id="${id}_NAME_row" style='padding-bottom:4;'>
-        <table>
-            <$ if (appCtxt.get(ZmSetting.PHONETIC_CONTACT_FIELDS)) { $>
-            <tr id="${id}_PHONETIC_row">
-                <td id="${id}_PHONETIC_PREFIX"></td>
-                <td id="${id}_PHONETIC_FIRST_row"><div id="${id}_PHONETIC_FIRST" tabindex="190"></div></td>
-                <td id="${id}_PHONETIC_MIDDLE"></td>
-                <td id="${id}_PHONETIC_MAIDEN"></td>
-                <td id="${id}_PHONETIC_LAST_row"><div id="${id}_PHONETIC_LAST" tabindex="191"></div></td>
-                <td id="${id}_PHONETIC_SUFFIX"></td>
-            </tr>
-            <$ } $>
-            <tr><td id="${id}_PREFIX_row" style='padding-right:4;'>
-                    <div id="${id}_PREFIX" tabindex="200"></div>
-                </td>
-                <td style='padding-right:4;'>
-                    <div id="${id}_FIRST" tabindex="201"></div>
-                </td>
-                <td id="${id}_MIDDLE_row" style='padding-right:4;'>
-                    <div id="${id}_MIDDLE" tabindex="202"></div>
-                </td>
-                <td id="${id}_MAIDEN_row" style='padding-right:4;'>
-                    <table><tr>
-                        <td style='padding:0 2;'>(</td>
-                        <td><div id="${id}_MAIDEN" tabindex="203"></div></td>
-                        <td style='padding:0 2;'>)</td>
-                    </tr></table>
-                </td>
-                <td style='padding-right:4;'>
-                    <div id="${id}_LAST" tabindex="204"></div>
-                </td>
-                <td id="${id}_SUFFIX_row" style='padding-right:4;'>
-                    <table><tr>
-                        <td style='padding-right:4;'>,</td>
-                        <td><div id="${id}_SUFFIX" tabindex="205"></div></td>
-                    </tr></table>
-                </td>
-                <td><div id="${id}_DETAILS" tabindex="206"></div></td>
-           </tr>
-        </table>
-    </div>
-    <div id="${id}_NICKNAME_row" style='padding-bottom:4;'>
-        <table><tr>
-            <td>&ldquo;</td>
-            <td><div id="${id}_NICKNAME" tabindex="250"></div></td>
-            <td>&rdquo;</td>
-        </tr></table>
-    </div>
+<template id='abook.Contacts#ZmEditContactView_headerName'>
+	<div id='${id}_NAME_row' class='contactHeaderCellRow'>
+		<table>
+			<$ if (appCtxt.get(ZmSetting.PHONETIC_CONTACT_FIELDS)) { $>
+			<tr id='${id}_PHONETIC_row'>
+				<td id='${id}_PHONETIC_PREFIX' class='inlineInput'></td>
+				<td id='${id}_PHONETIC_FIRST_row' class='inlineInput'>
+					<div id='${id}_PHONETIC_FIRST' tabindex='190'></div>
+				</td>
+				<td id='${id}_PHONETIC_MIDDLE' class='inlineInput'></td>
+				<td id='${id}_PHONETIC_MAIDEN' class='inlineInput'></td>
+				<td id='${id}_PHONETIC_LAST_row' class='inlineInput'>
+					<div id='${id}_PHONETIC_LAST' tabindex='191'></div>
+				</td>
+				<td id='${id}_PHONETIC_SUFFIX' class='inlineInput'></td>
+			</tr>
+			<$ } $>
+			<tr><td id='${id}_PREFIX_row' class='inlineInput'>
+					<div id='${id}_PREFIX' tabindex='200'></div>
+				</td>
+				<td class='inlineInput'>
+					<div id='${id}_FIRST' tabindex='201'></div>
+				</td>
+				<td id='${id}_MIDDLE_row' class='inlineInput'>
+					<div id='${id}_MIDDLE' tabindex='202'></div>
+				</td>
+				<td id='${id}_MAIDEN_row' class='inlineInput'>
+					<table><tr>
+						<td class='inlineInputWrapper'>(</td>
+						<td><div id='${id}_MAIDEN' tabindex='203'></div></td>
+						<td class='inlineInputWrapper'>)</td>
+					</tr></table>
+				</td>
+				<td class='inlineInput'>
+					<div id='${id}_LAST' tabindex='204'></div>
+				</td>
+				<td id='${id}_SUFFIX_row' class='inlineInput'>
+					<table><tr>
+						<td class='inlineInputWrapper'>,</td>
+						<td><div id='${id}_SUFFIX' tabindex='205'></div></td>
+					</tr></table>
+				</td>
+				<td><div id='${id}_DETAILS' tabindex='206'></div></td>
+			</tr>
+		</table>
+	</div>
+	<div id='${id}_NICKNAME_row' class='contactHeaderCellRow'>
+		<table><tr>
+			<td class='inlineInputWrapper'>&ldquo;</td>
+			<td><div id='${id}_NICKNAME' tabindex='250'></div></td>
+			<td class='inlineInputWrapper'>&rdquo;</td>
+		</tr></table>
+	</div>
 </template>
 
 <!-- NOTE: The tab indexes need to go sequentially across all #ZmEditContactView_* templates -->
-<template id="abook.Contacts#ZmEditContactView_headerJobInfo">
-    <div id="${id}_JOB_row" style='padding-bottom:4;'>
-        <table><tr>
-            <td id="${id}_TITLE_row"><div id="${id}_TITLE" tabindex="301"></div></td>
-            <td id="${id}_TITLE_DEPARTMENT_SEP">&nbsp;-&nbsp;</td>
-            <td id="${id}_DEPARTMENT_row"><div id="${id}_DEPARTMENT" tabindex="302"></div></td>
-        </tr></table>
-    </div>
-    <div id="${id}_COMPANY_row" style='padding-bottom:4;'>
-        <table>
-            <$ if (appCtxt.get(ZmSetting.PHONETIC_CONTACT_FIELDS)) { $>
-            <tr id="${id}_PHONETIC_COMPANY_row">
-                <td><div id="${id}_PHONETIC_COMPANY" tabindex="304"></div></td>
-            </tr>
-            <$ } $>
-            <tr><td><div id="${id}_COMPANY" tabindex="305"></div></td></tr>
-        </table>
-    </div>
+<template id='abook.Contacts#ZmEditContactView_headerJobInfo'>
+	<div id='${id}_JOB_row' class='contactHeaderCellRow'>
+		<table><tr>
+			<td id='${id}_TITLE_row' class='inlineInput'><div id='${id}_TITLE' tabindex='301'></div></td>
+			<td id='${id}_TITLE_DEPARTMENT_SEP' class='inlineInputWrapper'>&ndash;</td>
+			<td id='${id}_DEPARTMENT_row' class='inlineInput'><div id='${id}_DEPARTMENT' tabindex='302'></div></td>
+		</tr></table>
+	</div>
+	<div id='${id}_COMPANY_row' class='contactHeaderCellRow'>
+		<table>
+			<$ if (appCtxt.get(ZmSetting.PHONETIC_CONTACT_FIELDS)) { $>
+			<tr id='${id}_PHONETIC_COMPANY_row'>
+				<td><div id='${id}_PHONETIC_COMPANY' tabindex='304'></div></td>
+			</tr>
+			<$ } $>
+			<tr><td><div id='${id}_COMPANY' tabindex='305'></div></td></tr>
+		</table>
+	</div>
 </template>
 
 <!-- NOTE: The tab indexes need to go sequentially across all #ZmEditContactView_* templates -->
-<template id="abook.Contacts#ZmEditContactView_body">
-    <tr valign=top>
-        <td class=rowLabel><$=ZmMsg.emailLabel$></td>
-        <td class=rowValue><div id="${id}_EMAIL" tabindex="500"></div></td>
-    </tr>
-    <tr valign=top>
-        <td class=rowLabel><$=ZmMsg.phoneLabel$></td>
-        <td class=rowValue><div id="${id}_PHONE" tabindex="600"></div></td>
-    </tr>
-    <tr valign=top>
-        <td class=rowLabel><$=ZmMsg.imLabel$></td>
-        <td class=rowValue><div id="${id}_IM" tabindex="700"></div></td>
-    </tr>
-    <tr valign=top>
-        <td class=rowLabel><$=ZmMsg.addressLabel$></td>
-        <td class=rowValue><div id="${id}_ADDRESS" tabindex="800"></div></td>
-    </tr>
-    <tr valign=top>
-        <td class=rowLabel><$=ZmMsg.urlLabel$></td>
-        <td class=rowValue><div id="${id}_URL" tabindex="900"></div></td>
-    </tr>
-    <tr valign=top>
-        <td class=rowLabel><$=ZmMsg.otherLabel$></td>
-        <td class=rowValue><div id="${id}_OTHER" tabindex="1000"></div></td>
-    </tr>
-    <tr valign=top>
-        <td class=rowLabel><$=ZmMsg.notesLabel$></td>
-        <td class=rowValue><div id="${id}_NOTES" tabindex="1100"></div></td>
-    </tr>
+<template id='abook.Contacts#ZmEditContactView_body'>
+	<tr>
+		<td class=rowLabel><$=ZmMsg.emailLabel$></td>
+		<td class=rowValue><div id='${id}_EMAIL' tabindex='500'></div></td>
+	</tr>
+	<tr>
+		<td class=rowLabel><$=ZmMsg.phoneLabel$></td>
+		<td class=rowValue><div id='${id}_PHONE' tabindex='600'></div></td>
+	</tr>
+	<tr>
+		<td class=rowLabel><$=ZmMsg.imLabel$></td>
+		<td class=rowValue><div id='${id}_IM' tabindex='700'></div></td>
+	</tr>
+	<tr>
+		<td class=rowLabel><$=ZmMsg.addressLabel$></td>
+		<td class=rowValue><div id='${id}_ADDRESS' tabindex='800'></div></td>
+	</tr>
+	<tr>
+		<td class=rowLabel><$=ZmMsg.urlLabel$></td>
+		<td class=rowValue><div id='${id}_URL' tabindex='900'></div></td>
+	</tr>
+	<tr>
+		<td class=rowLabel><$=ZmMsg.otherLabel$></td>
+		<td class=rowValue><div id='${id}_OTHER' tabindex='1000'></div></td>
+	</tr>
+	<tr>
+		<td class=rowLabel><$=ZmMsg.notesLabel$></td>
+		<td class=rowValue><div id='${id}_NOTES' tabindex='1100'></div></td>
+	</tr>
 </template>
 
-<template id="abook.Contacts#ZmEditContactViewRows">
+<template id='abook.Contacts#ZmEditContactViewRows'>
 	<table>
-		<tbody id="${id}_rows" tabindex="100"></tbody>
+		<tbody id='${id}_rows' tabindex='100'></tbody>
 	</table>
 </template>
 
-<template id="abook.Contacts#ZmEditContactViewDetailsButton">
-	<span id="${id}_title" class="ZButtonBorder ZWidgetTitle"></span>
+<template id='abook.Contacts#ZmEditContactViewDetailsButton'>
+	<span id='${id}_title' class='ZButtonBorder ZWidgetTitle'></span>
 </template>
 
-<template id="abook.Contacts#ZmEditContactViewInputSelect">
-	<table>
-		<tr><td style='padding-right:3'><div id='${id}_input' tabindex="100"></div></td>
-			<td><div id='${id}_select' tabindex="200"></div></td>
+<template id='abook.Contacts#ZmEditContactViewInputSelect'>
+	<table class='inputTable'>
+		<tr><td class='inputElement'><div id='${id}_input' tabindex='100'></div></td>
+			<td><div id='${id}_select' tabindex='200'></div></td>
 		</tr>
 	</table>
 </template>
 
-<template id="abook.Contacts#ZmEditContactViewInputDoubleSelect">
-	<table>
-		<tr><td style='padding-right:3'><div id='${id}_input' tabindex="100"></div></td>
-			<td><div id='${id}_select' tabindex="200"></div></td>
-			<td><div id='${id}_select2' tabindex="300"></div></td>
+<template id='abook.Contacts#ZmEditContactViewInputDoubleSelect'>
+	<table class='inputTable'>
+		<tr><td class='inputElement'><div id='${id}_input' tabindex='100'></div></td>
+			<td><div id='${id}_select' tabindex='200'></div></td>
+			<td><div id='${id}_select2' tabindex='300'></div></td>
 		</tr>
 	</table>
 </template>
 
-<template id="abook.Contacts#ZmEditContactViewOther">
-	<table>
-		<tr><td style='padding-right:3'><div id='${id}_input' tabindex="100"></div></td>
-			<td style='padding-right:3;width:47px'><div id='${id}_picker' tabindex="200"></div></td>
-			<td><div id='${id}_select' tabindex="300"></div></td>
+<template id='abook.Contacts#ZmEditContactViewOther'>
+	<table class='inputTable'>
+		<tr>
+			<td class='inputElement'><div id='${id}_input' tabindex='100'></div></td>
+			<td class='inputElement' style='width:47px;'><div id='${id}_picker' tabindex='200'></div></td>
+			<td><div id='${id}_select' tabindex='300'></div></td>
 		</tr>
 	</table>
 </template>
 
-<template id="abook.Contacts#ZmEditContactViewAddressRow">
-	<table>
-		<tr id="${id}_row" class="DwtFormRow" valign=top>
-			<td><div id="${id}" tabindex="100"></div></td>
-			<td><div id="${id}_add" class="DwtFormRowAdd" tabindex="200"></div></td>
-			<td><div id="${id}_remove" class="DwtFormRowRemove" tabindex="300"></div></td>
+<template id='abook.Contacts#ZmEditContactViewAddressRow'>
+	<table class='inputTable'>
+		<tr id='${id}_row' class='DwtFormRow' valign='top'>
+			<td><div id='${id}' tabindex='100'></div></td>
+			<td><div id='${id}_add' class='DwtFormRowAdd' tabindex='200'></div></td>
+			<td><div id='${id}_remove' class='DwtFormRowRemove' tabindex='300'></div></td>
 		</tr>
 	</table>
 </template>
 
-<template id="abook.Contacts#ZmEditContactViewAddressSelect">
-	<table>
-		<tr valign=top>
-			<td style='padding-right:3'><div id='${id}_input' tabindex="100"></div></td>
-			<td><div id='${id}_select' tabindex="200"></div></td>
+<template id='abook.Contacts#ZmEditContactViewAddressSelect'>
+	<table class='inputTable'>
+		<tr valign='top'>
+			<td class='inputElement'>
+				<div id='${id}_input' tabindex='100' style="padding:1px 3px;"></div>
+			</td>
+			<td><div id='${id}_select' tabindex='200'></div></td>
 		</tr>
 	</table>
 </template>
 
-<template id="abook.Contacts#ZmEditContactViewAddress" class="DwtForm ZmEditContactViewAddress">
-	<table style='position:relative;left:-3'>
-		<tr><td><div id="${id}_STREET" tabindex="100"></div></td></tr>
+<template id='abook.Contacts#ZmEditContactViewAddress' class='DwtForm ZmEditContactViewAddress'>
+	<table class='addressTable' width='100%'>
+		<tr><td><div id='${id}_STREET' tabindex='100'></div></td></tr>
 	</table>
-	<table style='position:relative;left:-3'>
-		<tr><td><div id="${id}_CITY" tabindex="200"></div></td>
+	<table class='addressTable' width='100%' style='margin-bottom:3px;'>
+		<tr>
+			<td><div id='${id}_CITY' tabindex='200'></div></td>
 			<td>,&nbsp;</td>
-			<td><div id="${id}_STATE" tabindex="300"></div></td>
+			<td><div id='${id}_STATE' tabindex='300'></div></td>
 			<td>&nbsp;&nbsp;</td>
-			<td><div id="${id}_ZIP" tabindex="400"></div></td>
+			<td><div id='${id}_ZIP' tabindex='400'></div></td>
 		</tr>
 	</table>
-	<table style='position:relative;left:-3'>
-		<tr><td><div id="${id}_COUNTRY" tabindex="500"></div></td></tr>
+	<table class='addressTable' width='100%'>
+		<tr><td><div id='${id}_COUNTRY' tabindex='500'></div></td></tr>
 	</table>
 </template>
 
 <!----------------------------------------------------------------------------->
 <!---------------------------- ZmContactSplitView ----------------------------->
 <!----------------------------------------------------------------------------->
-<template id="abook.Contacts#SplitView">
-	<table width=100% height=100% class='ZPropertySheet' cellspacing='6'>
-		<col width=230></col>
+<template id='abook.Contacts#SplitView'>
+	<table width='100%' height='100%' class='ZPropertySheet' cellspacing='6'>
+		<col width='230'></col>
 		<tr>
 			<td id='${id}_alphabetbar'></td>
 		</tr>
-		<tr height=100%>
-			<td valign=top>
-				<div id='${id}_splitview' style='position:relative;width:100%;height:100%'>
-					<div id='${id}_listview' style='position:absolute;width:230px;height:100%;left:0px'></div>
-					<div id='${id}_sash' style='position:absolute;width:8px;height:100%;left:230px'></div>
-					<div id='${id}_contentCell' style='position:absolute;height:100%;left:238px'>
+		<tr height='100%'>
+			<td valign='top'>
+				<div id='${id}_splitview' style='position:relative;width:100%;height:100%;'>
+					<div id='${id}_listview' style='position:absolute;width:230px;height:100%;left:0;'></div>
+					<div id='${id}_sash' style='position:absolute;width:8px;height:100%;left:230px;'></div>
+					<div id='${id}_contentCell' style='position:absolute;height:100%;left:238px;'>
 						<div class='ZmContactInfoView' id='${id}_content'></div>
 					</div>
 				</div>
@@ -256,9 +271,9 @@
 	</table>
 </template>
 
-<template id="abook.Contacts#SplitView_content">
+<template id='abook.Contacts#SplitView_content'>
 	<$= AjxTemplate.expand("abook.Contacts#SplitView_header", data) $>
-	<table id='${id}_details'>
+	<table id='${id}_details' class='contactContentTable'>
 	<$= ZmContactSplitView.showContactEmails(data) $>
 	<$= ZmContactSplitView.showContactPhones(data) $>
 	<$= ZmContactSplitView.showContactIMs(data) $>
@@ -270,7 +285,7 @@
 	</table>
 </template>
 
-<template id="abook.Contacts#SplitView_group">
+<template id='abook.Contacts#SplitView_group'>
 	<$
 		var imageUrl = data.imageUrl;
 		var email = data.email;
@@ -286,27 +301,27 @@
 	<table class='contactGroupTable'>
 		<tr>
 		<$ if (imageUrl) { $>
-			<td class='contactGroupTableImage' width=48><img src="<$= imageUrl $>"
+			<td class='contactGroupTableImage' width='48'><img src='<$= imageUrl $>'
 			<$ if (AjxEnv.isIE) { $>
-				height=48
+				height='48'
 			<$ } else { $>
-				style="max-width:48px;max-height:48px;"
+				style='max-width:48px;max-height:48px;'
 			<$ } $>
-			border=0></td>
+			border='0'></td>
 		<$ } else { $>
-			<td class='contactGroupTableImage' width=48><$= AjxImg.getImageHtml(imgClassName) $></td>
+			<td class='contactGroupTableImage' width='48'><$= AjxImg.getImageHtml(imgClassName) $></td>
 		<$ } $>
-			<td>
+			<td class='contactGroupTableContent'>
 				<$ if (fullName) {$>
-					<div><b><$=fullName$></b></div>
+					<div><strong><$=fullName$></strong></div>
 				<$ } $>
 				<$ if (title) { $>
-					<div><$=title$></div>
+					<div><span><$=title$></span></div>
 				<$}$>
 				<$ if (email) {$>
 					<div>
-						<div style='float:left; padding-right:5px;'><$=email$></div>
-						<$ if (data.isInline) {$><$=AjxImg.getImageHtml("Plus", "float:left;", quickAdd)$><$ }$>
+						<$=email$>
+						<$ if (data.isInline) {$><$=AjxImg.getImageHtml("Plus", "", quickAdd)$><$ }$>
 					</div>
 				<$}$>
 				<$ if (phone) {$>
@@ -323,33 +338,28 @@
 	</table>
 </template>
 
-<template id="abook.Contacts#SplitView_header">
+<template id='abook.Contacts#SplitView_header'>
 	<$
 		var contact = data.contact;
 		var imageUrl = contact.getImageUrl();
 		var accountName = appCtxt.multiAccounts && contact.account && contact.account.getDisplayName();
-		var tagsId = data.id + (contact.isGroup() ? "_tags_group" : "_tags_contact"); 
-		var imgClassName = contact.isDistributionList() ? "Group_48" : contact.isGroup() ? "GroupPerson_48" : "Person_48";
+		var tagsId = data.id + (contact.isGroup() ? '_tags_group' : '_tags_contact'); 
+		var imgClassName = contact.isDistributionList() ? 'Group_48' : contact.isGroup() ? 'GroupPerson_48' : 'Person_48';
 		var isEdit = data.isEdit;
 	$>
 	<table width=100% class='contactHeaderTable <$= data.contactHdrClass $> ZPropertySheet' cellspacing='6'>
 		<tr>
 			<$ if (imageUrl) { $>
-				<td width=48 rowspan=2><img src="<$= imageUrl $>"
+				<td width='48' rowspan='2' style='vertical-align:top;'><img src='<$= imageUrl $>'
 				<$ if (AjxEnv.isIE) { $>
-					height=48
+					height='48'
 				<$ } else { $>
-					style="max-width:48px;max-height:48px"
+					style='max-width:48px;max-height:48px;'
 				<$ } $>
 				 border=0></td>
 			<$ } else { $>
-				<td width=48 rowspan=2><$= AjxImg.getImageHtml(imgClassName) $></td>
+				<td width='48' rowspan='2' style='vertical-align:top;'><$= AjxImg.getImageHtml(imgClassName) $></td>
 			<$ } $>
-			<$ if (!isEdit) {$>
-			    <td id='<$= tagsId $>' align='right' colspan=2></td>
-			<$ } $>
-		</tr>
-		<tr>
 			<td>
 				<$= AjxTemplate.expand("#SplitView_headerName", data) $>
 				<$= AjxTemplate.expand("#SplitView_headerJobInfo", data) $>
@@ -357,39 +367,42 @@
 					<div><$= AjxStringUtil.htmlEncode(data.dlInfo.description) $></div>
 				<$ } $>
 			</td>
-			<td valign=bottom align='right' width='1%'>
+			<td valign='top' align='right' width='1%'>
 				<$ if (accountName) { $>
-					<table>
+					<table class='ZPropertySheet' cellspacing='6'>
 						<tr>
-							<td class='contactLocation' nowrap="nowrap"><$= ZmMsg.accountLabel $>&nbsp;</td>
-							<td class='companyFolder' colspan=10><$= AjxStringUtil.htmlEncode(accountName) $></td>
+							<td class='contactLocation'><$= ZmMsg.accountLabel $></td>
+							<td class='companyFolder'><$= AjxStringUtil.htmlEncode(accountName) $></td>
 						</tr>
 					</table>
 				<$ } $>
-				<table>
+				<table class='ZPropertySheet' cellspacing='6'>
 					<tr>
 						<$ if (data.addrbook && !isEdit) { $>
-							<td class='contactLocation' nowrap="nowrap"><$= ZmMsg.locationLabel $>&nbsp;</td>
-							<td width=20><$= AjxImg.getImageHtml(data.addrbook.getIcon()) $></td>
-							<td>&nbsp;</td>
-							<td class='companyFolder'><$= data.addrbook.getName() $></td>
+							<td class='contactLocation'><$= ZmMsg.locationLabel $></td>
+							<td class='companyFolder'>
+								<$= AjxImg.getImageHtml(data.addrbook.getIcon()) $>&nbsp;
+								<$= data.addrbook.getName() $>
+							</td>
 						<$ } else if (isEdit) { $>
-						<td nowrap="nowrap"><$= ZmMsg.locationLabel $>&nbsp;</td>
+							<td class='contactLocation'><$= ZmMsg.locationLabel $></td>
 							<td id='${id}_LOCATION_FOLDER'></td>
 						<$ } else if (data.isGal) { $>
-							<td class='contactLocation' nowrap="nowrap"><$= ZmMsg.locationLabel $>&nbsp;</td>
-							<td width=20><$= AjxImg.getImageHtml("GAL") $></td>
-							<td>&nbsp;</td>
+							<td class='contactLocation'><$= ZmMsg.locationLabel $></td>
+							<td width='16'><$= AjxImg.getImageHtml('GAL') $></td>
 							<td class='companyFolder'><$= ZmMsg.GAL $></td>
 						<$ } $>
 					</tr>
 				</table>
 			</td>
 		</tr>
+		<$ if (!isEdit) {$>
+			<tr><td id='<$= tagsId $>' colspan='2'></td></tr>
+		<$ } $>
 	</table>
 </template>
 
-<template id="abook.Contacts#SplitView_headerName">
+<template id='abook.Contacts#SplitView_headerName'>
 	<$
 		var contact = data.contact;
 		var isPhonetic = appCtxt.get(ZmSetting.PHONETIC_CONTACT_FIELDS);
@@ -400,20 +413,20 @@
 		var nickname = contact.getAttr(ZmContact.F_nickname);
 		var isEdit = data.isEdit;
 		if (isEdit && data.contact.isDistributionList()) {
-			fullnameHtml = "";
+			fullnameHtml = '';
 		}
 	$>
 	<div class='contactHeader <$= data.isInTrash ? "Trash" : "" $>'><$= fullnameHtml $></div>
 	<$ if (nickname && !isEdit) { $>
-		<div class='companyName'>&ldquo;<$= AjxStringUtil.htmlEncode(nickname) $>&rdquo;</div>
+		<div class='contactHeader'>&ldquo;<$= AjxStringUtil.htmlEncode(nickname) $>&rdquo;</div>
 	<$ } $>
 	<$ else if (isEdit) {$>
-		<div class='companyName'>
+		<div class='contactHeader2'>
 			<$	if (data.contact.isDistributionList()) {
 			$>
 			<table>
 				<tr>
-					<td class='companyName'>
+					<td class='contactHeader2'>
 			<$
 					if (data.usernameEditable) { $>
 						<div id='${id}_groupNameParent'></div>
@@ -422,10 +435,10 @@
 			<$		}
 			$>
 					</td>
-					<td class='companyName'>&nbsp;@
+					<td class='contactHeader2'>&nbsp;@
 			<$
 					if (data.domainEditable) { $>
-						<input type='text' autocomplete='off' size=20 id='${id}_groupNameDomain' class="Text">
+						<input type='text' autocomplete='off' size='20' id='${id}_groupNameDomain' class='Text'>
 			<$		} else { $>
 						<$= AjxStringUtil.htmlEncode(data.domain)$>
 			<$		} $>
@@ -436,12 +449,11 @@
 					<div id='${id}_groupNameParent'></div>
 			<$ } $>
 		</div>
-		<div id='${id}_tags' style='padding-top: 5px'></div>
+		<div id='${id}_tags' style='padding-top:5px;'></div>
 	<$ } $>
-
 </template>
 
-<template id="abook.Contacts#SplitView_headerJobInfo">
+<template id='abook.Contacts#SplitView_headerJobInfo'>
 	<$
 		var contact = data.contact;
 		var isPhonetic = appCtxt.get(ZmSetting.PHONETIC_CONTACT_FIELDS);
@@ -450,13 +462,13 @@
 		var department = contact.getAttr(ZmContact.F_department);
 	$>
 	<$ if (title || department) { $>
-		<div class='companyName'>
+		<div class='contactHeader2'>
 		<$ if (title) { $>
 			<span><$= AjxStringUtil.htmlEncode(title) $></span>
 		<$ } $>
 		<$ if (department) { $>
 			<$ if (title) { $>
-				&nbsp;-&nbsp;
+				&nbsp;&ndash;&nbsp;
 			<$ } $>
 			<span><$= AjxStringUtil.htmlEncode(department) $></span>
 		<$ } $>
@@ -466,31 +478,30 @@
 		var phoneticCompany = isPhonetic && contact.getAttr(ZmContact.F_phoneticCompany);
 		var companyHtml = AjxStringUtil.htmlRubyEncode(company, phoneticCompany);
 		$>
-		<div class='companyName'><$= companyHtml$></div>
+		<div class='contactHeader2'><$= companyHtml$></div>
 	<$ } $>
 </template>
 
-<template id="abook.Contacts#SplitView_dlmember-collapsed">
+<template id='abook.Contacts#SplitView_dlmember-collapsed'>
 	<td <$= data.expandTdText $>><$= data.html.join("") $></td>
 	<td class=rowLabel><$= data.contact.canExpand ? ZmMsg.membersLabel : "" $></td>
-	<td colspan=2 class=rowValue>
+	<td colspan='2' class='rowValue'>
 		<$= data.value $>
 	</td>
 </template>
 
-<template id="abook.Contacts#SplitView_dlmember-expanded">
+<template id='abook.Contacts#SplitView_dlmember-expanded'>
 	<td <$= data.seenone ? "" : data.expandTdText $>><$= data.html.join("") $></td>
 	<td class='rowLabel'><$= data.seenone ? "" : ZmMsg.membersLabel $></td>
-	<td colspan=2 class='rowValue'>
+	<td colspan='2' class='rowValue'>
 		<$= data.value $>
 	</td>
 </template>
 
-
-<template id="abook.Contacts#SplitView_address_value">
-	<tr valign=top>
-		<td class=rowLabel><$= data.seenone ? "" : data.label $></td>
-		<td id='${id}_<$=data.name$>' class=rowValue>
+<template id='abook.Contacts#SplitView_address_value'>
+	<tr valign='top'>
+		<td class='rowLabel' width='1%'><$= data.seenone ? "" : data.label $></td>
+		<td id='${id}_<$=data.name$>' class='rowValue' width='1%'>
 			<$ var address = data.address;
 			if (address.Street) { $>
 				<div><$=address.Street$></div>
@@ -508,211 +519,243 @@
 				<div><$=address.Country$></div>
 			<$ } $>
 		</td>
-		<td style='color:gray' class='rowType'>&nbsp;<$= data.type $></td>
+		<td class='rowType'>&nbsp;<$= data.type $></td>
 	</tr>
 </template>
 
-
-<template id="abook.Contacts#SplitView_list_item">
-<tr valign=top>
+<template id='abook.Contacts#SplitView_list_item'>
+<tr valign='top'>
 	<$ if (data.isDL) { $>
-	<td><div class ="ImgBlank_16"></div></td>
+	<td><div class='ImgBlank_16'></div></td>
 	<$ } $>
-	<td class='rowLabel'><$= data.seenone ? "" : data.label $></td>
-	<td id='${id}_<$=data.name1.replace(/['"]/g,'')$>' <$= data.type ? "" : "colspan=2" $> class='rowValue'>
+	<td class='rowLabel' width='1%'><$= data.seenone ? "" : data.label $></td>
+	<td id='${id}_<$=data.name1.replace(/['"]/g,"")$>' <$= data.type ? " width='1%'" : "colspan='2'" $> class='rowValue'>
 		<$= data.value $>
 	</td>
 	<$ if (data.type) { $>
-		<td style='color:gray' class='rowType'>&nbsp;<$= data.type $></td>
+		<td class='rowType'>&nbsp;<$= data.type $></td>
 	<$ } $>
 </tr>
 </template>
 
-
-<template id="abook.Contacts#SplitViewGroup">
+<template id='abook.Contacts#SplitViewGroup'>
 	<$= AjxTemplate.expand("abook.Contacts#SplitView_header", data) $>
 	<$ if (data.dlInfo) { $>
-		<table class="contactHeaderSubTable NoneBg ZPropertySheet" width="100%" cellspacing="6">
+	<table class='contactHeaderSubTable NoneBg ZPropertySheet' width='100%' cellspacing='6'>
 		<tr>
 			<td><ul id='${id}_subscriptionMsg' style='margin:.5em 0;padding-left:53px;'></ul></td>
-			<td id='${id}_subscriptionButton' width="1%"></td>
+			<td id='${id}_subscriptionButton' width='1%'></td>
 		</tr>
-		</table>
+	</table>
 	<$ } $>
 	<div class='contactGroupList' style='overflow:auto;'>
 		<$= ZmContactSplitView.showContactGroup(data) $>
 	</div>
 </template>
 
-
-
 <!----------------------------------------------------------------------------->
 <!-------------------------------- ZmContactSimpleView ------------------------>
 <!----------------------------------------------------------------------------->
-<template id="abook.Contacts#SimpleView-NoResults">
+<template id='abook.Contacts#SimpleView-NoResults'>
 	<table width='100%'>
 		<tr>
-			<td class='NoResults' valign='top' >
-				<br/><br/><$= AjxMsg.noResults $>
+			<td class='NoResults' style='padding-top:2em;vertical-align:top;' >
+				<$= AjxMsg.noResults $>
 			</td>
 		</tr>
 	</table>
 </template>
 
-
 <!----------------------------------------------------------------------------->
 <!-------------------------------- ZmGroupView -------------------------------->
 <!----------------------------------------------------------------------------->
-<template id="abook.Contacts#GroupView">
+<template id='abook.Contacts#GroupView'>
 	<$= AjxTemplate.expand("abook.Contacts#SplitView_header", data) $>
 	<$= AjxTemplate.expand("abook.Contacts#GroupViewMembers", data) $>
 </template>
 
-<template id="abook.Contacts#DlView">
-	<$= AjxTemplate.expand("abook.Contacts#SplitView_header", data) $>
-	<div id='${id}_tabViewContainer"'></div>
+<template id='abook.Contacts#DlView'>
+	<$= AjxTemplate.expand('abook.Contacts#SplitView_header', data) $>
+	<div id='${id}_tabViewContainer'></div>
 </template>
 
-<template id="abook.Contacts#DlPropertiesView">
+<template id='abook.Contacts#DlPropertiesView'>
 	<$ if (data.contact.isDistributionList()) { $>
-		<table valign="top" width="100%" class="ZmEditContactView">
-			<tr valign="top">
+		<table width='100%' class='ZmEditContactView'>
+			<tr>
 				<td class='rowLabel'><$= ZmMsg.displayNameLabel $></td>
-				<td class='rowValue'><input type='text' autocomplete='off' size=40 id='${id}_dlDisplayName' class="Text"></td>
+				<td class='rowValue'><div class='DwtInputField'>
+					<input type='text' autocomplete='off' id='${id}_dlDisplayName' class='Text' style='width:45em;'>
+				</div></td>
 			</tr>
-			<tr valign="top">
+			<tr>
 				<td class='rowLabel'><$= ZmMsg.descriptionLabel $></td>
-				<td class='rowValue'><textarea rows='4' cols='65' id='${id}_dlDesc'></textarea></td>
+				<td class='rowValue'><div class='DwtInputField'>
+					<textarea rows='4' id='${id}_dlDesc' style='width:45em;'></textarea>
+				</div></td>
 			</tr>
-			<tr valign="top">
+			<tr>
 				<td class='rowLabel'><$= ZmMsg.directoryLabel $></td>
-				<td class='rowValue'><input type="checkbox" id='${id}_dlHideInGal'><label for="${id}_dlHideInGal"><$= ZmMsg.hiddenInGlobal $></label></td>
+				<td class='rowValue rowCheckGroup'>
+					<input type='checkbox' id='${id}_dlHideInGal'>
+					<label for='${id}_dlHideInGal'><$= ZmMsg.hiddenInGlobal $></label>
+				</td>
 			</tr>
-
-			<tr valign="top">
+			<tr>
 				<td class='rowLabel'><$= ZmMsg.mailLabel $></td>
-				<td class='rowValue'><input type="radio" name="mailPolicy" id='${id}_dlMailPolicyANYONE'><label for="${id}_dlMailPolicyANYONE"><$= ZmMsg.mailAnyone $></label></td>
+				<td class='rowValue rowRadioGroup'>
+					<input type='radio' name='mailPolicy' id='${id}_dlMailPolicyANYONE'>
+					<label for='${id}_dlMailPolicyANYONE'><$= ZmMsg.mailAnyone $></label>
+				</td>
 			</tr>
-			<tr valign="top">
+			<tr>
 				<td class='rowLabel'></td>
-				<td class='rowValue'><input type="radio" name="mailPolicy" id='${id}_dlMailPolicyMEMBERS'><label for="${id}_dlMailPolicyMEMBERS"><$= ZmMsg.mailOnlyMembers $></label></td>
+				<td class='rowValue'>
+					<input type='radio' name='mailPolicy' id='${id}_dlMailPolicyMEMBERS'>
+					<label for='${id}_dlMailPolicyMEMBERS'><$= ZmMsg.mailOnlyMembers $></label>
+				</td>
 			</tr>
-			<tr valign="top">
+			<tr>
 				<td class='rowLabel'></td>
-				<td class='rowValue'><input type="radio" name="mailPolicy" id='${id}_dlMailPolicyINTERNAL'><label for="${id}_dlMailPolicyINTERNAL"><$= ZmMsg.mailOnlyInternal $></label></td>
+				<td class='rowValue'>
+					<input type='radio' name='mailPolicy' id='${id}_dlMailPolicyINTERNAL'>
+					<label for='${id}_dlMailPolicyINTERNAL'><$= ZmMsg.mailOnlyInternal $></label>
+				</td>
 			</tr>
-			<tr valign="top">
+			<tr>
 				<td class='rowLabel'></td>
-				<td class='rowValue'><input type="radio" name="mailPolicy" id='${id}_dlMailPolicySPECIFIC'><label for="${id}_dlMailPolicySPECIFIC"><$= ZmMsg.mailOnlySpecific $></label></td>
+				<td class='rowValue'>
+					<input type='radio' name='mailPolicy' id='${id}_dlMailPolicySPECIFIC'>
+					<label for='${id}_dlMailPolicySPECIFIC'><$= ZmMsg.mailOnlySpecific $></label>
+				</td>
 			</tr>
-			<tr valign="top">
+			<tr>
 				<td class='rowLabel'></td>
-				<td class='rowValue'><input type='text' autocomplete='off' size=80 id='${id}_dlListSpecificMailers' class="Text"></td>
+				<td class='rowValue'><div class='DwtInputField'>
+					<input type='text' autocomplete='off' id='${id}_dlListSpecificMailers' class='Text' style='margin-left:2em;width:43em;'>
+				</div></td>
 			</tr>
-			
-			<tr valign="top">
+			<tr>
 				<td class='rowLabel'><$= ZmMsg.newSubscriptionsLabel $></td>
-				<td class='rowValue'><input type="radio" name="subscriptionPolicy" id='${id}_dlSubscriptionPolicyACCEPT'><label for="${id}_dlSubscriptionPolicyACCEPT"><$= ZmMsg.policyAccept $></label></td>
+				<td class='rowValue rowRadioGroup'>
+					<input type='radio' name='subscriptionPolicy' id='${id}_dlSubscriptionPolicyACCEPT'>
+					<label for='${id}_dlSubscriptionPolicyACCEPT'><$= ZmMsg.policyAccept $></label>
+				</td>
 			</tr>
-			<tr valign="top">
+			<tr>
 				<td class='rowLabel'></td>
-				<td class='rowValue'><input type="radio" name="subscriptionPolicy" id='${id}_dlSubscriptionPolicyAPPROVAL'><label for="${id}_dlSubscriptionPolicyAPPROVAL"><$= ZmMsg.policyApproval $></label></td>
+				<td class='rowValue'>
+					<input type='radio' name='subscriptionPolicy' id='${id}_dlSubscriptionPolicyAPPROVAL'>
+					<label for='${id}_dlSubscriptionPolicyAPPROVAL'><$= ZmMsg.policyApproval $></label>
+				</td>
 			</tr>
-			<tr valign="top">
+			<tr>
 				<td class='rowLabel'></td>
-				<td class='rowValue'><input type="radio" name="subscriptionPolicy" id='${id}_dlSubscriptionPolicyREJECT'><label for="${id}_dlSubscriptionPolicyREJECT"><$= ZmMsg.policyReject $></label></td>
+				<td class='rowValue'>
+					<input type='radio' name='subscriptionPolicy' id='${id}_dlSubscriptionPolicyREJECT'>
+					<label for='${id}_dlSubscriptionPolicyREJECT'><$= ZmMsg.policyReject $></label>
+				</td>
 			</tr>
-
-			<tr valign="top">
+			<tr>
 				<td class='rowLabel'><$= ZmMsg.unsubscriptionsRequestLabel $></td>
-				<td class='rowValue'><input type="radio" name="unsubscriptionPolicy" id='${id}_dlUnsubscriptionPolicyACCEPT'><label for="${id}_dlUnsubscriptionPolicyACCEPT"><$= ZmMsg.policyAccept $></label></td>
+				<td class='rowValue rowRadioGroup' >
+					<input type='radio' name='unsubscriptionPolicy' id='${id}_dlUnsubscriptionPolicyACCEPT'>
+					<label for='${id}_dlUnsubscriptionPolicyACCEPT'><$= ZmMsg.policyAccept $></label>
+				</td>
 			</tr>
-			<tr valign="top">
+			<tr>
 				<td class='rowLabel'></td>
-				<td class='rowValue'><input type="radio" name="unsubscriptionPolicy" id='${id}_dlUnsubscriptionPolicyAPPROVAL'><label for="${id}_dlUnsubscriptionPolicyAPPROVAL"><$= ZmMsg.policyApproval $></label></td>
+				<td class='rowValue'>
+					<input type='radio' name='unsubscriptionPolicy' id='${id}_dlUnsubscriptionPolicyAPPROVAL'>
+					<label for='${id}_dlUnsubscriptionPolicyAPPROVAL'><$= ZmMsg.policyApproval $></label>
+				</td>
 			</tr>
-			<tr valign="top">
+			<tr>
 				<td class='rowLabel'></td>
-				<td class='rowValue'><input type="radio" name="unsubscriptionPolicy" id='${id}_dlUnsubscriptionPolicyREJECT'><label for="${id}_dlUnsubscriptionPolicyREJECT"><$= ZmMsg.policyReject $></label></td>
+				<td class='rowValue'>
+					<input type='radio' name='unsubscriptionPolicy' id='${id}_dlUnsubscriptionPolicyREJECT'>
+					<label for='${id}_dlUnsubscriptionPolicyREJECT'><$= ZmMsg.policyReject $></label>
+				</td>
 			</tr>
-
-			<tr valign="top">
+			<tr>
 				<td class='rowLabel'><$= ZmMsg.listOwnersLabel $></td>
-				<td class='rowValue'><input type='text' autocomplete='off' size=80 id='${id}_dlListOwners' class="Text"></td>
+				<td class='rowValue'><div class='DwtInputField'>
+					<input type='text' autocomplete='off' id='${id}_dlListOwners' class='Text' style='width:45em;'>
+				</div></td>
 			</tr>
-
-			<tr valign="top">
+			<tr>
 				<td class='rowLabel'><$= ZmMsg.notesLabel $></td>
-				<td class='rowValue'><textarea rows='4' cols='65' id='${id}_dlNotes'></textarea></td>
+				<td class='rowValue'><div class='DwtInputField'>
+					<textarea rows='4' id='${id}_dlNotes' style='width:45em;'></textarea>
+				</div></td>
 			</tr>
 		</table>
 	<$ } $>
 </template>
 
-
-<template id="abook.Contacts#GroupViewMembers">
-	<table width=98% height=100% class='ZPropertySheet' cellspacing='6'>
+<template id='abook.Contacts#GroupViewMembers'>
+	<table width='100%' height='100%' class='ZPropertySheet' cellspacing='6'>
 		<tr>
 			<!-- content: left pane -->
-			<td width=50% valign=top>
-				<div class='groupMembers'  id='${id}_groupMembers'></div>
+			<td width='50%' valign='top'>
+				<div class='groupMembers' id='${id}_groupMembers'></div>
 			</td>
 			<!-- content: right pane -->
-			<td width=50% valign=top>
-				<table width=100%>
+			<td width='50%' valign='top'>
+				<table width='100%'>
 				<tr>
-					<td width=50>&nbsp;</td>
+					<td width='50'>&nbsp;</td>
 					<td>
-					<table class='ZPropertySheet' cellspacing='6'>
-						<$ if (data.detailed) { $>
-						<tr id='${id}_searchNameRow'>
-							<td align=right><$= ZmMsg.nameLabel $></td>
-							<td><input type='text' id='${id}_searchNameField'></td>
-							<td id='${id}_searchButton' valign=top rowspan=3></td>
-						</tr>
-						<$ if (appCtxt.get(ZmSetting.PHONETIC_CONTACT_FIELDS)) { $>
-						<tr id='${id}_searchPhoneticRow'>
-							<td align=right><$= ZmMsg.phoneticNameLabel $></td>
-							<td><input type='text' id='${id}_searchPhoneticField'></td>
-						</tr>
-						<$ } $>
-						<tr id='${id}_searchEmailRow'>
-							<td align=right><$= ZmMsg.emailAddrLabel $></td>
-							<td><input type='text' id='${id}_searchEmailField'></td>
-						</tr>
-						<tr id='${id}_searchDepartmentRow'>
-							<td align=right><$= ZmMsg.departmentLabel $></td>
-							<td><input type='text' id='${id}_searchDepartmentField'></td>
-						</tr>
-						<$ } else { $>
-						<tr id='${id}_searchRow'>
-							<td align=right><$= ZmMsg.findLabel $></td>
-							<td><input type='text' id='${id}_searchField'></td>
-							<td id='${id}_searchButton'></td>
-						</tr>
-						<$ } $>
-						
-						<$ if (data.showSearchIn) { $>
-						<tr>
-							<td align=right><$= ZmMsg.searchIn $></td>
-							<td colspan=2 id='${id}_listSelect'></td>
-						</tr>
-						<$ } $>
-					</table>
+						<table class='ZPropertySheet' cellspacing='6'>
+							<$ if (data.detailed) { $>
+							<tr id='${id}_searchNameRow'>
+								<td align='right'><$= ZmMsg.nameLabel $></td>
+								<td><input type='text' id='${id}_searchNameField'></td>
+								<td id='${id}_searchButton' valign='top' rowspan='3'></td>
+							</tr>
+							<$ if (appCtxt.get(ZmSetting.PHONETIC_CONTACT_FIELDS)) { $>
+							<tr id='${id}_searchPhoneticRow'>
+								<td align='right'><$= ZmMsg.phoneticNameLabel $></td>
+								<td><input type='text' id='${id}_searchPhoneticField'></td>
+							</tr>
+							<$ } $>
+							<tr id='${id}_searchEmailRow'>
+								<td align='right'><$= ZmMsg.emailAddrLabel $></td>
+								<td><input type='text' id='${id}_searchEmailField'></td>
+							</tr>
+							<tr id='${id}_searchDepartmentRow'>
+								<td align='right'><$= ZmMsg.departmentLabel $></td>
+								<td><input type='text' id='${id}_searchDepartmentField'></td>
+							</tr>
+							<$ } else { $>
+							<tr id='${id}_searchRow'>
+								<td align='right'><$= ZmMsg.findLabel $></td>
+								<td><input type='text' id='${id}_searchField'></td>
+								<td id='${id}_searchButton'></td>
+							</tr>
+							<$ } $>
+
+							<$ if (data.showSearchIn) { $>
+							<tr>
+								<td align='right'><$= ZmMsg.searchIn $></td>
+								<td colspan='2' id='${id}_listSelect'></td>
+							</tr>
+							<$ } $>
+						</table>
 					</td>
 				</tr>
 				<tr>
-					<td width=50>
-					<table width=100% class='ZPropertySheet' cellspacing='6'>
+					<td width='50'>
+					<table width='100%' class='ZPropertySheet' cellspacing='6'>
 						<tr><td id='${id}_addButton'></td></tr>
 						<tr><td id='${id}_addAllButton'></td></tr>
 					</table>
 					</td>
 					<td>
 					<div class='groupMembers' id='${id}_listView'></div>
-					<table width=100% class='ZPropertySheet' cellspacing='6'>
+					<table width='100%' class='ZPropertySheet' cellspacing='6'>
 						<tr>
-							<td width=100%></td>
+							<td width='100%'></td>
 							<td id='${id}_prevButton'></td>
 							<td id='${id}_nextButton'></td>
 						</tr>
@@ -720,13 +763,13 @@
 					</td>
 					</tr>
 					<tr>
-					<td width=50>
-					<table width=100% class='ZPropertySheet' cellspacing='6'>
+					<td width='50'>
+					<table width='100%' class='ZPropertySheet' cellspacing='6'>
 						<tr><td id='${id}_addNewButton'></td></tr>
 					</table>
 					</td>
 					<td>
-						<table width=100% class='ZPropertySheet' cellspacing='6'>
+						<table width='100%' class='ZPropertySheet' cellspacing='6'>
 							<tr>
 								<td><$=ZmMsg.enterAddrBelow$></td>
 							</tr>
@@ -747,21 +790,21 @@
 <!----------------------------------------------------------------------------->
 <!------------------------------- ZmAlphabetBar ------------------------------->
 <!----------------------------------------------------------------------------->
-<template id="abook.Contacts#ZmAlphabetBar">
+<template id='abook.Contacts#ZmAlphabetBar'>
 	<center>
-		<table id='${id}_alphabet' width=80% class='AlphabetBarTable' cellspacing='0'>
+		<table id='${id}_alphabet' width='80%' class='AlphabetBarTable'' cellspacing='0'>
 			<tr>
 				<$ for (var i = 0; i < data.numLetters; i++) { $>
-					<td _idx='<$= i $>' onclick='ZmContactAlphabetBar.alphabetClicked(this
+					<td _idx="<$= i $>" onclick="ZmContactAlphabetBar.alphabetClicked(this
 						<$ if (i > 0) { $>
-							, "<$= data.sortVals[data.alphabet[i]] || data.alphabet[i] $>"
+							, '<$= data.sortVals[data.alphabet[i]] || data.alphabet[i] $>'
 							<$ if (i+1 < data.numLetters) { $>
-								, "<$= data.endSortVals[data.alphabet[i]] || data.alphabet[i+1] $>"
+								, '<$= data.endSortVals[data.alphabet[i]] || data.alphabet[i+1] $>'
 							<$ } $>
 						<$ } $>
-						); return false;'
+						); return false;"
 						<$ if (data.alphabet[i].length > 1) { $> colspan='<$= data.alphabet[i].length/2 + 1 $>' <$ } $>
-						class='DwtButton AlphabetBarCell'  <$= (i>0) ? " style='border-left-width:0;'>" : ">" $>
+						class='DwtButton AlphabetBarCell' <$= (i>0) ? " style='border-left-width:0;'>" : ">" $>
 						<$= data.alphabet[i] $>
 					</td>
 				<$ } $>
@@ -770,18 +813,17 @@
 	</center>
 </template>
 
-
 <!----------------------------------------------------------------------------->
 <!------------------------------ Contact Tooltip ------------------------------>
 <!----------------------------------------------------------------------------->
-<template id="abook.Contacts#Tooltip">
-	<table width=250>
+<template id='abook.Contacts#Tooltip'>
+	<table width='250'>
 		<tr>
-			<td colspan=2 valign=top>
-				<div style='border-bottom:1px solid black; margin-bottom:2px'>
-					<table width=100%>
+			<td colspan='2' valign='top'>
+				<div style='border-bottom:1px solid black;margin-bottom:2px;'>
+					<table width='100%'>
 						<tr valign='bottom'>
-							<td style='font-weight:bold'><$= AjxStringUtil.htmlEncode(data.entryTitle); $></td>
+							<td style='font-weight:bold;'><$= AjxStringUtil.htmlEncode(data.entryTitle); $></td>
 							<td align='right'><$= AjxImg.getImageHtml(data.contact.getIcon()); $></td>
 						</tr>
 					</table>
@@ -819,8 +861,8 @@
 
 		<$ if (data.buddy) { $>
 			<tr>
-				<td colspan="2">
-					<table align="center">
+				<td colspan='2'>
+					<table align='center'>
 						<tr>
 							<td><$= AjxImg.getImageHtml(data.buddy.getPresence().getIcon()) $></td>
 							<td><$= AjxStringUtil.htmlEncode(data.buddy.getPresence().getShowText()) $></td>
@@ -832,7 +874,7 @@
 
 		<$ if (data.hint) { $>
 			<tr>
-				<td colspan="2">
+				<td colspan='2'>
 					<div class='TooltipHint'>
 						<hr color=black size=1>
 						<$= data.hint $>
@@ -843,43 +885,43 @@
 	</table>
 </template>
 
-<template id="abook.Contacts#TooltipNotInAddrBook">
+<template id='abook.Contacts#TooltipNotInAddrBook'>
 	<$ if (data.hint) { $>
-	<table width=250>
+	<table width='250'>
 		<tr>
-			<td valign=top>
+			<td valign='top'>
 				<$ if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) { $>
 					<div style='border-bottom:1px solid black;'>
-						<table width=100%>
+						<table width='100%'>
 							<tr valign='bottom'>
-								<td style='font-weight:bold'><$= ZmMsg.newContact $></td>
+								<td style='font-weight:bold;'><$= ZmMsg.newContact $></td>
 								<td align='right'><$= AjxImg.getImageHtml("NewContact"); $></td>
 							</tr>
 						</table>
 					</div>
 				<$ } $>
-				<div class="TooltipNotInAddrBook">
+				<div class='TooltipNotInAddrBook'>
 					<$= AjxStringUtil.htmlEncode(data.addrstr) $>
 				</div>
-				<hr color=black size=1>
+				<hr color='black' size='1'>
 				<div class='TooltipHint'><$= data.hint $></div>
 			</td>
 		</tr>
 	</table>
 	<$ } else { $>
-		<span style='font-weight:bold'><$= ZmMsg.emailLabel $> </span>
+		<span style='font-weight:bold;'> <$= ZmMsg.emailLabel $> </span>
 		<$= AjxStringUtil.htmlEncode(data.addrstr) $>
 	<$ } $>
 </template>
 
-<template id="abook.Contacts#AddTooltipEntry">
+<template id='abook.Contacts#AddTooltipEntry'>
 	<$ if (data.val == null) {
 		var isPhonetic = appCtxt.get(ZmSetting.PHONETIC_CONTACT_FIELDS);
 		data.val = data.field == "fullName" ? data.data.contact.getFullNameForDisplay(isPhonetic) : data.data.contact.getAttr(data.field);
 	} $>
 
 	<$ if (data.val != null && data.val != "") { $>
-		<tr valign=top>
+		<tr valign='top'>
 			<td class='ZmTooltipLabel'>
 				<$= AjxMessageFormat.format(ZmMsg.makeLabel,
 											 AjxStringUtil.htmlEncode(ZmContact._AB_FIELD[data.field])) $>
@@ -902,54 +944,52 @@
 	<$ } $>
 </template>
 
-
-
 <!----------------------------------------------------------------------------->
 <!------------------------------ ZmContactPicker ------------------------------>
 <!----------------------------------------------------------------------------->
-<template id="abook.Contacts#ZmContactPicker">
+<template id='abook.Contacts#ZmContactPicker'>
 	<div class='ZmContactPicker'>
-		<table width=100%>
+		<table width='100%'>
 			<tr>
-				<td width=600>
-					<table>
+				<td width='600'>
+					<table class='ZPropertySheet' cellspacing='6'>
 						<$ if (data.detailed) { $>
 						<tr>
-							<td valign=middle colspan=3 width=400><div id='${id}_searchIcon' class="ImgSearch"></div></td>
+							<td valign='middle' colspan='3' width='400'><div id='${id}_searchIcon' class='ImgSearch'></div></td>
 						</tr>
 						<tr id='${id}_searchNameRow'>
-							<td align=right><$= ZmMsg.nameLabel $></td>
-							<td>&nbsp;<input type='text' autocomplete='off' size=30 nowrap id='${id}_searchNameField'>&nbsp;</td>
-							<td id='${id}_searchButton' rowspan=3 valign=top></td>
+							<td align='right'><$= ZmMsg.nameLabel $></td>
+							<td><input type='text' autocomplete='off' size='30' nowrap id='${id}_searchNameField'></td>
+							<td id='${id}_searchButton' rowspan='3' valign='top'></td>
 						</tr>
 						<$ if (appCtxt.get(ZmSetting.PHONETIC_CONTACT_FIELDS)) { $>
 						<tr id='${id}_searchPhoneticRow'>
-							<td align=right><$= ZmMsg.phoneticNameLabel $></td>
-							<td>&nbsp;<input type='text' autocomplete='off' size=30 nowrap id='${id}_searchPhoneticField'>&nbsp;</td>
+							<td align='right'><$= ZmMsg.phoneticNameLabel $></td>
+							<td><input type='text' autocomplete='off' size='30' nowrap id='${id}_searchPhoneticField'></td>
 						</tr>
 						<$ } $>
 						<tr id='${id}_searchEmailRow'>
-							<td align=right><$= ZmMsg.emailAddrLabel $></td>
-							<td>&nbsp;<input type='text' autocomplete='off' size=30 nowrap id='${id}_searchEmailField'>&nbsp;</td>
+							<td align='right'><$= ZmMsg.emailAddrLabel $></td>
+							<td><input type='text' autocomplete='off' size='30' nowrap id='${id}_searchEmailField'></td>
 						</tr>
 						<tr id='${id}_searchDepartmentRow'>
-							<td align=right><$= ZmMsg.departmentLabel $></td>
-							<td>&nbsp;<input type='text' autocomplete='off' size=30 nowrap id='${id}_searchDepartmentField'>&nbsp;</td>
+							<td align='right'><$= ZmMsg.departmentLabel $></td>
+							<td><input type='text' autocomplete='off' size='30' nowrap id='${id}_searchDepartmentField'></td>
 						</tr>
 						<$ } else { $>
 						<tr id='${id}_searchRow'>
-							<td width=20 valign=middle><div id='${id}_searchIcon' class="ImgSearch"></div></td>
-							<td><input type='text' autocomplete='off' size=30 nowrap id='${id}_searchField'>&nbsp;</td>
+							<td width='20' valign='middle'><div id='${id}_searchIcon' class='ImgSearch'></div></td>
+							<td><input type='text' autocomplete='off' nowrap id='${id}_searchField' style='padding:.35em;width:25em;'></td>
 							<td id='${id}_searchButton'></td>
 						</tr>
 						<$ } $>
 					</table>
 				</td>
-				<td align=right valign=bottom>
+				<td align='right' valign='bottom'>
 					<$ if (data.showSelect) { $>
-						<table>
+						<table class='ZPropertySheet' cellspacing='6'>
 							<tr>
-								<td class='Label nobreak'><$= ZmMsg.showNames $>&nbsp;</td>
+								<td class='Label nobreak'><$= ZmMsg.showNames $></td>
 								<td id='${id}_listSelect'></td>
 							</tr>
 						</table>
@@ -958,39 +998,34 @@
 			</tr>
 		</table>
 		<div id='${id}_chooser'></div>
-		<div id='${id}_paging'>
-			<center>
-				<table width=100%>
-					<tr>
-						<td>&nbsp;&nbsp;&nbsp;</td>
-						<td id='${id}_pageLeft'></td>
-						<td width=100%></td>
-						<td id='${id}_pageRight' align=right></td>
-					</tr>
-				</table>
-			</center>
+		<div id='${id}_paging' style='margin-left:5px;'>
+			<table width='100%'>
+				<tr>
+					<td id='${id}_pageLeft'></td>
+					<td id='${id}_pageRight' align='right'></td>
+				</tr>
+			</table>
 		</div>
 	</div>
 </template>
 
-
 <!----------------------------------------------------------------------------->
 <!------------------------------ ZmContactSearch ------------------------------>
 <!----------------------------------------------------------------------------->
-<template id="abook.Contacts#ZmContactSearch">
+<template id='abook.Contacts#ZmContactSearch'>
 	<div id='${id}_preamble'></div>
-	<table width=100%>
+	<table width='100%'>
 		<tr>
 			<td>
 				<table>
 					<tr>
-						<td width=20 valign=middle><div id='${id}_searchIcon' class="ImgSearch"></div></td>
-						<td><input type='text' autocomplete='off' size=30 nowrap id='${id}_searchField'>&nbsp;</td>
+						<td width='20' valign='middle'><div id='${id}_searchIcon' class='ImgSearch'></div></td>
+						<td><input type='text' autocomplete='off' size='30' nowrap id='${id}_searchField'>&nbsp;</td>
 						<td id='${id}_searchButton'></td>
 					</tr>
 				</table>
 			</td>
-			<td align=right>
+			<td align='right'>
 				<$ if (data.showSelect) { $>
 					<table>
 						<tr>
@@ -1008,8 +1043,8 @@
 <!----------------------------------------------------------------------------->
 <!------------------------------ Quick Add Group ------------------------------>
 <!----------------------------------------------------------------------------->
-<template id="abook.Contacts#QuickAddPrompt">
-	<table class="ZPropertySheet" cellpadding="6">
+<template id='abook.Contacts#QuickAddPrompt'>
+	<table class='ZPropertySheet' cellspacing='6'>
 		<tr>
 			<td class='ZmFieldLabelRight'><$=ZmMsg.firstNameLabel$></td>
 			<td><div id='${id}_FIRST_NAME'></div></td>
