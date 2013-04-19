@@ -166,6 +166,7 @@
                 </td>
                 <td nowrap width="10%">
                         <fmt:message var="colorMsg" key="${folder.rgbColorMsg}"/>
+                        <%-- colorMsg can be set to "colorNone" in case a custom color is set for the folder. "colorNone" is not defined in ZhMsg.properties, hence the check for "???". TODO: clean up logic--%>
                         <div style="background-color:${zm:lightenColor(not empty folder.rgb ? folder.rgb : ((fn:startsWith(colorMsg,'???') ? colorGray : colorMsg)))};width:16px;height:16px;display:inline;margin-right:4px;">
                             &nbsp;
                         </div>
