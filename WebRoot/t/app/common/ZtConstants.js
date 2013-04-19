@@ -355,9 +355,7 @@ ZCS.constant.SETTING_DISPLAY_IMAGES     = 'zimbraPrefDisplayExternalImages';
 ZCS.constant.SETTING_TRUSTED_SENDERS    = 'zimbraPrefMailTrustedSenderList';
 ZCS.constant.SETTING_FROM_ADDRESS       = 'zimbraPrefFromAddress';
 ZCS.constant.SETTING_FROM_NAME          = 'zimbraPrefFromDisplay';
-/**
- * Attrs to handle JS logging to a 3rd party service
- */
+// Attrs to handle JS logging to a 3rd party service
 ZCS.constant.SETTING_JSLOGGING_ENABLED  = 'zimbraTouchJSErrorTrackingEnabled';
 ZCS.constant.SETTING_JSLOGGING_KEY      = 'zimbraTouchJSErrorTrackingKey';
 
@@ -371,15 +369,17 @@ ZCS.constant.SETTING_FORWARD_INCLUDE_WHAT       = 'FORWARD_INCLUDE_WHAT';
 ZCS.constant.SETTING_FORWARD_USE_PREFIX         = 'FORWARD_USE_PREFIX';
 ZCS.constant.SETTING_FORWARD_INCLUDE_HEADERS    = 'FORWARD_INCLUDE_HEADERS';
 ZCS.constant.SETTING_REST_URL                   = 'REST_URL';
+ZCS.constant.SETTING_GET_SENDER_FROM_CONTACTS   = 'GET_SENDER_FROM_CONTACTS';
 
 ZCS.constant.SETTINGS = ZCS.constant.makeList('SETTING_');
 
 // Setting type; defaults to string, so just note exceptions
 ZCS.constant.SETTING_TYPE = {};
-ZCS.constant.SETTING_TYPE[ZCS.constant.SETTING_SHOW_SEARCH]       = ZCS.constant.TYPE_BOOLEAN;
-ZCS.constant.SETTING_TYPE[ZCS.constant.SETTING_DISPLAY_IMAGES]    = ZCS.constant.TYPE_BOOLEAN;
-ZCS.constant.SETTING_TYPE[ZCS.constant.SETTING_JSLOGGING_ENABLED] = ZCS.constant.TYPE_BOOLEAN;
-ZCS.constant.SETTING_TYPE[ZCS.constant.SETTING_TRUSTED_SENDERS]   = ZCS.constant.TYPE_ARRAY;
+ZCS.constant.SETTING_TYPE[ZCS.constant.SETTING_SHOW_SEARCH]                 = ZCS.constant.TYPE_BOOLEAN;
+ZCS.constant.SETTING_TYPE[ZCS.constant.SETTING_DISPLAY_IMAGES]              = ZCS.constant.TYPE_BOOLEAN;
+ZCS.constant.SETTING_TYPE[ZCS.constant.SETTING_JSLOGGING_ENABLED]           = ZCS.constant.TYPE_BOOLEAN;
+ZCS.constant.SETTING_TYPE[ZCS.constant.SETTING_TRUSTED_SENDERS]             = ZCS.constant.TYPE_ARRAY;
+ZCS.constant.SETTING_TYPE[ZCS.constant.SETTING_GET_SENDER_FROM_CONTACTS]    = ZCS.constant.TYPE_BOOLEAN;
 
 // Forced setting values, which override user setting
 ZCS.constant.SETTING_VALUE = {};
@@ -388,6 +388,7 @@ ZCS.constant.SETTING_VALUE[ZCS.constant.SETTING_SHOW_SEARCH] = 'false';
 // Default values for settings
 ZCS.constant.SETTING_DEFAULT = {};
 ZCS.constant.SETTING_DEFAULT[ZCS.constant.SETTING_LOCALE] = 'en_US';
+ZCS.constant.SETTING_DEFAULT[ZCS.constant.SETTING_GET_SENDER_FROM_CONTACTS] = true; // KDDI feature request, bug 81656
 
 // Setting that tells us if an app is enabled
 ZCS.constant.APP_SETTING = {};

@@ -58,9 +58,7 @@
 		 	<div class='zcs-msgHdr-person' style='{imageStyle}'></div>
 			<tpl if='addrs.FROM'>
 			<div class='zcs-msgHdr-fromBubble'>
-				<tpl for='addrs.FROM'>
-					<span class='vm-area-bubble zcs-contact-bubble' id='{id}'>{displayName}</span>
-				</tpl>
+				<span class='vm-area-bubble zcs-contact-bubble' id='{id}'>{from}</span>
 			</div>
 			<div class='zcs-msgHdr-date'>{dateStr}</div>
 			<div class='zcs-msgHdr-fragment'>{fragment}</div>
@@ -74,9 +72,7 @@
 		 	<div class='zcs-msgHdr-person' style='{imageStyle}'></div>
 			<tpl if='addrs.FROM'>
 				<div class='zcs-msgHdr-fromBubble'>
-					<tpl for='addrs.FROM'>
-						<span class='vm-area-bubble  zcs-contact-bubble' id='{id}'>{displayName}</span>
-					</tpl>
+					<span class='vm-area-bubble  zcs-contact-bubble' id='{id}'>{from}</span>
 				</div>
 			</tpl>
 			<div class='zcs-msgHdr-date'>{dateStr}</div>
@@ -115,9 +111,7 @@
 		 	<div class='zcs-msgHdr-person' style='{imageStyle}'></div>
 			<tpl if='addrs.FROM'>
 				<div class='zcs-msgHdr-fromBubble'>
-					<tpl for='addrs.FROM'>
-						<span class='vm-area-bubble  zcs-contact-bubble' id='{id}'>{displayName}</span>
-					</tpl>
+					<span class='vm-area-bubble  zcs-contact-bubble' id='{id}'>{from}</span>
 				</div>
 				<tpl if='addrs.FROM[0].address'>
 					<tpl for='addrs.FROM'>

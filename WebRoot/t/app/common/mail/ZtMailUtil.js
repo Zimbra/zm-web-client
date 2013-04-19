@@ -509,8 +509,8 @@ Ext.define('ZCS.common.mail.ZtMailUtil', {
 
 		if (addresses && addresses[ZCS.constant.FROM]) {
 			senders = Ext.Array.map(addresses[ZCS.constant.FROM], function(addr) {
-				return addr.get('displayName') || addr.get('name') || addr.get('email');
-			});
+				return this.getDisplayName(addr);
+			}, this);
 			numSenders = numSenders || ZCS.constant.NUM_CONV_SENDERS;
 			if (senders.length > numSenders) {
 				senders = senders.slice(0, numSenders);
@@ -520,6 +520,31 @@ Ext.define('ZCS.common.mail.ZtMailUtil', {
 		}
 
 		return senderStr;
+	},
+
+	/**
+	 * Returns a displayable form of the given address. An option may be set to get the display
+	 * name from the user's contacts instead of using the "friendly" portion of the address.
+	 *
+	 * @param {ZtEmailAddress}  addr    an email address
+	 * @return {String}     display name
+	 */
+	getDisplayName: function(addr) {
+
+		if (!addr) {
+			return '';
+		}
+
+		var sender = '',
+			email = addr.get('email');
+
+		if (ZCS.session.getSetting(ZCS.constant.SETTING_GET_SENDER_FROM_CONTACTS)) {
+			var contact = ZCS.cache.get(email, 'email');
+			if (contact) {
+				sender = contact.get('displayName');
+			}
+		}
+		return sender || addr.get('displayName') || addr.get('name') || email;
 	},
 
 	/**

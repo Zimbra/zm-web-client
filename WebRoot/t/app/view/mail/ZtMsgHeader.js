@@ -93,7 +93,13 @@ Ext.define('ZCS.view.mail.ZtMsgHeader', {
 		}
 
 		this.setMsg(msg);
-		data.addrs = ZCS.model.mail.ZtMailItem.convertAddressModelToObject(msg.get('addresses'));
+
+		var addrObjs = msg.get('addresses'),
+			fromAddrs = addrObjs[ZCS.constant.FROM],
+			fromAddr = fromAddrs && fromAddrs[0];
+
+		data.addrs = ZCS.model.mail.ZtMailItem.convertAddressModelToObject(addrObjs);
+		data.from = ZCS.mailutil.getDisplayName(fromAddr);
 		if (state === ZCS.constant.HDR_EXPANDED) {
 			data.recipients = Ext.Array.map(Ext.Array.clean([].concat(data.addrs.TO, data.addrs.CC)), function(addr) {
 				return addr.displayName;
@@ -101,7 +107,7 @@ Ext.define('ZCS.view.mail.ZtMsgHeader', {
 		}
 
 		// Get contact image if it has one
-        var contact = ZCS.cache.get(data.addrs.FROM[0].address, 'email'),
+        var contact = ZCS.cache.get(fromAddr && fromAddr.get('email'), 'email'),
             imageUrl = contact && this.getImageUrl(contact);
 
         data.imageStyle = imageUrl ? 'background-image: url(' + imageUrl + ')' : '';
