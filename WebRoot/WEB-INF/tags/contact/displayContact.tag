@@ -23,7 +23,8 @@
 <c:set var="folder" value="${zm:getFolder(pageContext, contact.folderId)}"/>
 <fmt:message var="colorGray" key="colorGray"/>
 <fmt:message var="colorMsg" key="${folder.rgbColorMsg}"/>
-<c:set var="color" value="${zm:lightenColor(not empty folder.rgb ? folder.rgb : (not empty colorMsg ? colorMsg : colorGray))}"/>
+<%-- colorMsg can be set to "colorNone" in case a custom color is set for the folder. "colorNone" is not defined in ZhMsg.properties, hence the check for "???". TODO: clean up logic--%>
+<c:set var="color" value="${zm:lightenColor(not empty folder.rgb ? folder.rgb : ((fn:startsWith(colorMsg,'???') ? colorGray : colorMsg)))}"/>
 <table width="100%" cellspacing="0" cellpadding="0">
 <tr bgcolor="${color}">
     <td class='ZhBottomSep'>

@@ -33,7 +33,8 @@
         <fmt:message var="createLabel" key="createCalendar"/>
         <c:set var="icon" value="${link ? 'calendar/ImgSharedCalendarFolder.png' : 'calendar/ImgCalendarFolder.png'}"/>
         <c:set var="newFolderColor" value="${empty param.newFolderColor ? 'blue' : param.newFolderColor}"/>
-        <c:set var="newFolderStyleColor" value="${zm:getFolderRgbColor(newFolderColor,'appointment')}"/>
+        <c:set var="newFolderStyleMsg" value="${zm:getFolderRgbColorMsg(newFolderColor,'appointment')}"/>
+        <fmt:message var="newFolderStyleColor" key="${newFolderStyleMsg}"/>
         <c:set var="newFolderExcludeFlag" value="${empty param.newFolderExcludeFlag ? '' : param.newFolderExcludeFlag}"/>
         <c:set var="newFolderCheckedFlag" value="${empty param.newFolderCheckedFlag ? '#' : param.newFolderCheckedFlag}"/>
         <fmt:message var="folderType" key="${url ? 'calendarSubscribed' : (link ? 'calendarShared' : 'calendarUser')}"/>
@@ -44,14 +45,16 @@
         <c:set var="icon" value="${link ? 'contacts/ImgSharedContactsFolder.png' : 'contacts/ImgContactsFolder.png'}"/>
         <fmt:message var="folderType" key="${link ? 'addressBookShared' : 'addressBookUser'}"/>
         <c:set var="newFolderColor" value="${empty param.newFolderColor ? 'blue' : param.newFolderColor}"/>
-        <c:set var="newFolderStyleColor" value="${zm:getFolderRgbColor(newFolderColor,'appointment')}"/>
+        <c:set var="newFolderStyleMsg" value="${zm:getFolderRgbColorMsg(newFolderColor,'contact')}"/>
+        <fmt:message var="newFolderStyleColor" key="${newFolderStyleMsg}"/>
     </c:when>
     <c:when test="${tasklist}">
         <fmt:message var="label" key="taskListNew"/>
         <fmt:message var="createLabel" key="createTaskList"/>
         <c:set var="icon" value="${link ? 'zimbra/ImgSharedTaskList.png' : 'startup/ImgTaskList.png'}"/>
         <c:set var="newFolderColor" value="${empty param.newFolderColor ? 'gray' : param.newFolderColor}"/>
-        <c:set var="newFolderStyleColor" value="${zm:getFolderRgbColor(newFolderColor,'task')}"/>
+        <c:set var="newFolderStyleMsg" value="${zm:getFolderRgbColorMsg(newFolderColor,'task')}"/>
+        <fmt:message var="newFolderStyleColor" key="${newFolderStyleMsg}"/>
         <fmt:message var="folderType" key="${link ? 'taskListShared' : 'taskListUser'}"/>
     </c:when>
     <c:when test="${briefcase}">
@@ -59,7 +62,8 @@
         <fmt:message var="createLabel" key="createBriefcase"/>
         <c:set var="icon" value="${link ? 'startup/ImgFolder.png' : 'startup/ImgFolder.png'}"/>
         <c:set var="newFolderColor" value="${empty param.newFolderColor ? 'gray' : param.newFolderColor}"/>
-        <c:set var="newFolderStyleColor" value="${zm:getFolderRgbColor(newFolderColor,'task')}"/>
+        <c:set var="newFolderStyleMsg" value="${zm:getFolderRgbColorMsg(newFolderColor,'task')}"/>
+        <fmt:message var="newFolderStyleColor" key="${newFolderStyleMsg}"/>
         <fmt:message var="folderType" key="${link ? 'briefcaseShared' : 'briefcaseUser'}"/>
     </c:when>
     <c:otherwise>
