@@ -37,7 +37,8 @@ Ext.define('ZCS.common.ZtUserSession', {
 		initialSearchResults:   null,
 		debugLevel:             '',
 		organizerData:          null,
-		activeApp:              ''
+		activeApp:              '',
+		version:                '[unknown]'
 	},
 
 	statics: {
@@ -60,6 +61,8 @@ Ext.define('ZCS.common.ZtUserSession', {
 		// Find default identity, use it for account ID and prefs
 		var gir = data.response.GetInfoResponse[0],
 			identityAttrs;
+
+		this.setVersion(gir.version);
 
         Ext.each(gir.identities.identity, function(identity) {
 			if (identity.name === 'DEFAULT') {

@@ -66,9 +66,15 @@ Ext.define('ZCS.common.ZtClientCmdHandler', {
 	 * @private
 	 */
 	handle_refresh: function(server) {
-
 		ZCS.session.setSessionId(null);
 		this.handle_poll(server);
+	},
+
+	/**
+	 * @private
+	 */
+	handle_version: function(server) {
+		Ext.Msg.alert(ZtMsg.version, ZCS.session.getVersion());
 	}
 });
 
