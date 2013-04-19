@@ -206,6 +206,7 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 			folderId = msg.get('folderId');
 			if (!ignoreFolder[folderId] || (curFolderId === folderId)) {
 				activeMsg = msg;
+				break;
 			}
 		}
 		activeMsg = activeMsg || (ln > 0 ? msgs[0] : null);
