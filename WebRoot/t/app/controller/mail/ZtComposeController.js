@@ -72,8 +72,9 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 			]
 		},
 
-		action: null,
-		origMsg: null
+		action:     '',
+		origMsg:    null,
+		formHash:   ''      // used to perform dirty check
 	},
 
 	showBubbleMenu: function (field, bubble, bubbleModel) {
@@ -317,6 +318,8 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 			editor.focus();
 		}
 
+		this.setFormHash(this.calculateFormHash());
+
 		ZCS.htmlutil.resetWindowScroll();
 	},
 
@@ -350,7 +353,7 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 		var editor = this.getEditor(),
 			me = this;
 
-		if (editor.innerHTML) {
+		if (this.isDirty()) {
 			Ext.Msg.show({
 				title: ZtMsg.warning,
 				message: ZtMsg.saveDraftWarning,
@@ -401,17 +404,16 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 	 */
 	sendMessage: function(msg, callback, scope) {
 
-		var me = this;
-
 		msg.save({
 			success: function() {
 				ZCS.app.fireEvent('showToast', ZtMsg.messageSent);
-				me.getComposePanel().hide();
+				this.getComposePanel().hide();
 				if (callback) {
 					callback.apply(scope);
 				}
+				this.setFormHash('');
 			}
-		});
+		}, this);
 	},
 
 	doSaveDraft: function () {
@@ -421,8 +423,9 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 			isDraft: true,
 			success: function () {
 				ZCS.app.fireEvent('showToast', ZtMsg.draftSaved);
+				this.setFormHash(this.calculateFormHash());
 			}
-		});
+		}, this);
 	},
 
 	getMessageModel: function () {
@@ -609,6 +612,38 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 		if (bubble) {
 			bubble.destroy();
 		}
+	},
+
+	/**
+	 * Returns true if the contents of the form have changed since it was shown.
+	 *
+	 * @return {Boolean}    true if the contents of the form have changed since it was shown
+	 */
+	isDirty: function() {
+		return this.getFormHash() != this.calculateFormHash();
+	},
+
+	/**
+	 * Creates a hash that represents the form contents. For now we just use the length of the content
+	 * since content can be huge and we don't want to copy it. An MD5 hash would be better, but ST doesn't
+	 * support that out of the box.
+	 *
+	 * @return {String}     hash of form contents
+	 */
+	calculateFormHash: function() {
+
+		var values = this.getComposeForm().getValues(),
+			editor = this.getEditor();
+
+		var parts = Ext.Array.map(ZCS.constant.RECIP_TYPES, function(type) {
+			return Ext.Array.map(values[type], function(addr) {
+				return addr.get('email');
+			}).join('\u001E');
+		});
+
+		parts.push(values.subject, editor ? editor.innerHTML.length : 0);  // MD5 of content would be better
+
+		return parts.join('\u001D');
 	}
 },
 	function(thisClass) {
