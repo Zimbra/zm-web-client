@@ -115,7 +115,7 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 		}
 
 		this.setAction(ZCS.constant.OP_COMPOSE);
-		this.showComposeForm(toAddresses, ccAddresses, subject, body, msg);
+		this.showComposeForm(toAddresses, ccAddresses, subject, body);
 	},
 
 	/**
@@ -221,9 +221,8 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 	 * @param {Array}           ccFieldAddresses    addresses for Cc: field
 	 * @param {String}          subject             message subject
 	 * @param {String}          body                message body
-	 * @param {ZtMailMsg}       msg                 (optional) draft message
 	 */
-	showComposeForm: function (toFieldAddresses, ccFieldAddresses, subject, body, msg) {
+	showComposeForm: function (toFieldAddresses, ccFieldAddresses, subject, body) {
 
 		var panel = this.getComposePanel(),
 			form = panel.down('formpanel'),
@@ -231,8 +230,6 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 			ccFld = form.down('contactfield[name=CC]'),
 			subjectFld = form.down('field[name=subject]'),
 			editor = this.getEditor();
-
-		panel.setMsg(msg);
 
 		panel.resetForm();
 
@@ -285,7 +282,7 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 				} else {
 					editor.focus();
 
-					range = document.createRange();
+					var range = document.createRange();
 					range.selectNodeContents(editor);
 			        range.collapse(true);
 			        var sel = window.getSelection();
@@ -418,7 +415,6 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 
 	doSaveDraft: function () {
 		var msg = this.getMessageModel();
-		this.getComposePanel().setMsg(msg);
 		msg.save({
 			isDraft: true,
 			success: function () {
@@ -430,8 +426,7 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 
 	getMessageModel: function () {
 
-		var	existingMsg = this.getComposePanel().getMsg(),
-			values = this.getComposeForm().getValues(),
+		var	values = this.getComposeForm().getValues(),
 			editor = this.getEditor(),
 			action = this.getAction(),
 			isNewCompose = (action === ZCS.constant.OP_COMPOSE),
@@ -463,14 +458,13 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 		}
 		values.content = editor.innerHTML;
 
-		return this.setOutboundMessage(existingMsg, values, action, origMsg, origAtt);
+		return this.setOutboundMessage(values, action, origMsg, origAtt);
 	},
 
-	setOutboundMessage: function(msg, values, action, origMsg, origAtt) {
+	setOutboundMessage: function(values, action, origMsg, origAtt) {
 
-		msg = /*msg || */Ext.create('ZCS.model.mail.ZtMailMsg');
-
-		var from = ZCS.mailutil.getFromAddress(),
+		var msg = Ext.create('ZCS.model.mail.ZtMailMsg'),
+			from = ZCS.mailutil.getFromAddress(),
 			addrs = Ext.Array.clean([].concat(from, values[ZCS.constant.TO], values[ZCS.constant.CC], values[ZCS.constant.BCC]));
 
 		msg.set('subject', values.subject);

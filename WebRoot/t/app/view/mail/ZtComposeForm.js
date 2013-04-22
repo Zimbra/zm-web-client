@@ -43,8 +43,7 @@ Ext.define('ZCS.view.mail.ZtComposeForm', {
 		scrollable: false,
 		hidden: true,
 		modal: true,
-		cls: 'zcs-compose-form',
-		msg: null
+		cls: 'zcs-compose-form'
 	},
 
 	initialize: function() {
