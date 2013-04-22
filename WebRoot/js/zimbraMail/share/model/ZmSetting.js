@@ -247,8 +247,6 @@ ZmSetting.VOICE_UPSELL_ENABLED		= "VOICE_UPSELL_ENABLED";
 
 ZmSetting.MAIL_SEND_LATER_ENABLED	= "MAIL_SEND_LATER_ENABLED";
 
-ZmSetting.DLS_FOLDER_ENABLED	= "DLS_FOLDER_ENABLED";
-
 //user selected font
 ZmSetting.FONT_CLASSIC	= "classic";
 ZmSetting.FONT_MODERN	= "modern";
