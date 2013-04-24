@@ -92,8 +92,8 @@
                                             <c:set var="selected" value="${selectedFolder.id eq folder.id and not newAddressBook}"/>
                                             <c:if test="${selected}"><c:set var="selectedRow" value="${index}"/></c:if>
                                             <tr>
-                                                <td class='${rowColor}' width="1%">&nbsp;</td>
-                                                <td class='${rowColor}' style='padding-left: ${folder.depth*8}px'>
+                                                <td style='background-color:${rowColor}' width="1%">&nbsp;</td>
+                                                <td style='padding-left:${folder.depth*8}px; background-color:${rowColor}'>
                                                     <c:set var="label" value="${zm:getFolderName(pageContext, folder.id)}"/>
                                                     <c:url var="selectUrl" value="">
                                                         <c:param name="id" value="${folder.id}"/>
