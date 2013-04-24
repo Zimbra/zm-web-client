@@ -218,13 +218,8 @@
     window.isScriptErrorOn		= ${isScriptErrorOn};
     window.isPerfMetric			= ${isPerfMetric};
 
-<%
-	long expires = authResult.getExpires();
-	long timeLeftInMillis = expires - System.currentTimeMillis();
-	%>
-		window.authTokenTimeLeftInMillis = <%= timeLeftInMillis%>;
-	<%
-%>
+	window.authTokenExpires = <%= authResult.getExpires()%>;
+
 
 </script>
 <noscript>
