@@ -1028,7 +1028,7 @@ function(ev) {
     var emailStr = '', contact, email;
     for (var i = 0; i < selection.length; i++){
         contact = selection[i];
-		if (contact.isGroup()) {
+		if (contact.isGroup() && !contact.isDistributionList()) {
 			var members = contact.getGroupMembers().good;
 			if (members.size()) {
 				emailStr += members.toString(AjxEmailAddress.SEPARATOR) + AjxEmailAddress.SEPARATOR;
