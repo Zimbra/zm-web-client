@@ -29,16 +29,19 @@ Ext.define('ZCS.view.mail.ZtMsgListView', {
 	xtype: ZCS.constant.APP_MAIL + 'itemview',
 
 	config: {
-		useComponents: true,
-		defaultType: 'msgview',
-		disableSelection: true,
-		variableHeights: true,
+		useComponents:      true,
+		defaultType:        'msgview',
+		disableSelection:   true,
+		variableHeights:    true,
+		store:              'ZtMsgStore',
+		itemCls:            'zcs-msgview',
+		allowTaps:          true,
+		emptyText:          ZtMsg.selectConv,
+		deferEmptyText:     false,
+
 		scrollable: {
 			direction: 'vertical'
-		},
-		store: 'ZtMsgStore',
-		itemCls: 'zcs-msgview',
-		allowTaps: true
+		}
 	},
 
 	initialize: function() {

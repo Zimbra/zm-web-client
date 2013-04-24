@@ -25,10 +25,10 @@ Ext.define('ZCS.view.mail.ZtConvListView', {
 	xtype: ZCS.constant.APP_MAIL + 'listview',
 
 	config: {
-		loadingText: ZtMsg.loadingConvs,
-		emptyText: "<div class=\"notes-list-empty-text\">" + ZtMsg.noConvs + "</div>",
-		scrollToTopOnRefresh: true,
-		itemTpl: ZCS.template.ConvListItem,
-		cls: 'zcs-conv-list'
+		loadingText:            ZtMsg.loadingConvs,
+		emptyText:              ZtMsg.noConvs,
+		scrollToTopOnRefresh:   true,
+		itemTpl:                ZCS.template.ConvListItem,
+		cls:                    'zcs-conv-list'
 	}
 });

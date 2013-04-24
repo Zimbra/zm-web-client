@@ -25,8 +25,8 @@ Ext.define('ZCS.view.contacts.ZtContactListView', {
 	xtype: ZCS.constant.APP_CONTACTS + 'listview',
 
 	config: {
-		loadingText: ZtMsg.loadingContacts,
-		emptyText: "<div class=\"notes-list-empty-text\">" + ZtMsg.noContacts + "</div>",
-		itemTpl: ZCS.template.ContactListItem
+		loadingText:    ZtMsg.loadingContacts,
+		emptyText:      ZtMsg.noContacts,
+		itemTpl:        ZCS.template.ContactListItem
 	}
 });
