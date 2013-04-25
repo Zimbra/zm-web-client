@@ -294,3 +294,7 @@
 <template id='OriginalAttachments'>
 	<div class='zcs-link'>{[ZtMsg.addOriginalAttachments]}</div>
 </template>
+
+<template id='Folder'>
+	<tpl if='unreadCount'><b></tpl>{name}<tpl if='unreadCount'> ({unreadCount})</b></tpl>
+</template>
