@@ -35,17 +35,18 @@ Ext.define('ZCS.controller.ZtBaseController', {
 		return Ext.getStore(ZCS.util.getStoreShortName(this));
 	},
 
-	getOrganizerTitle: function () {
-		var	organizer = ZCS.session.getCurrentSearchOrganizer(),
-			organizerName = organizer && organizer.get('name'),
-			unread = organizer && organizer.get('unreadCount'),
-			title = ZtMsg.searchResults;
+	/**
+	 * Returns a string that represents he name of the current organizer.
+	 *
+	 * @param {String}      defaultText     text to use if there is no name
+	 * @param {Boolean}     showCount       if true, show number of items
+	 * @return {String} organizer title
+	 */
+	getOrganizerTitle: function(defaultText, showCount) {
 
-		if (organizerName) {
-			title = (unread > 0) ? '<b>' + organizerName + ' (' + unread + ')</b>' : organizerName;
-		}
-
-		return title;
+		defaultText = defaultText || ZtMsg.searchResults;
+		var	organizer = ZCS.session.getCurrentSearchOrganizer();
+		return organizer ? organizer.getTitle(defaultText, showCount !== false) : defaultText;
 	},
 
 

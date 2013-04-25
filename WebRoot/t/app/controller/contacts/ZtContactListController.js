@@ -65,19 +65,5 @@ Ext.define('ZCS.controller.contacts.ZtContactListController', {
         //<debug>
 		Ext.Logger.warn('TODO: Create new contact');
         //</debug>
-	},
-
-	/**
-	 * Retrieve the current contact organizer item.
-	 */
-	getOrganizerTitle: function (folder, records) {
-		var	organizerName = folder ? folder.get('name') : ZtMsg.contacts,
-			contactCount = folder ? folder.get('itemCount') : records.length;
-
-		if (organizerName) {
-			title = (contactCount > 0) ? '<b>' + organizerName + ' (' + contactCount + ')</b>' : organizerName;
-		}
-
-		return title;
-	},
+	}
 });

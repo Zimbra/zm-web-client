@@ -190,8 +190,8 @@ Ext.define('ZCS.controller.ZtListController', {
 					ZCS.session.getCurrentSearchField().setValue(query);
 				}
 			}
-			this.updateTitlebar(folder, records);
-			ZCS.app.fireEvent('updatelistpanelToggle', this.getOrganizerTitle(folder, records), this.getApp());
+			this.updateTitlebar();
+			ZCS.app.fireEvent('updatelistpanelToggle', this.getOrganizerTitle(), this.getApp());
 			if (folder && records.length) {
 				//make sure this element doesn't get focus due to an errant touch
 				this.getSearchBox().blur();
@@ -206,7 +206,7 @@ Ext.define('ZCS.controller.ZtListController', {
 	/**
 	 * Updates the text on the list panel's titlebar to reflect the current search results.
 	 */
-	updateTitlebar: function(folder, records) {
+	updateTitlebar: function() {
 		//<debug>
 		Ext.Logger.info('Updating titlebar');
         //</debug>
@@ -217,12 +217,10 @@ Ext.define('ZCS.controller.ZtListController', {
 			return;
 		}
 
-		title = this.getOrganizerTitle(folder, records);
-
 		//<debug>
 		Ext.Logger.info('Titlebar being set.');
         //</debug>
 
-		titlebar.setTitle(title);
+		titlebar.setTitle(this.getOrganizerTitle());
 	}
 });

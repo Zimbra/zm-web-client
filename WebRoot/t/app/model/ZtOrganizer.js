@@ -100,6 +100,33 @@ Ext.define('ZCS.model.ZtOrganizer', {
 		}
 	},
 
+	/**
+	 * Returns a string that represents this organizer.
+	 *
+	 * @param {String}      defaultText     text to use if there is no name
+	 * @param {Boolean}     showCount       if true, show number of items
+	 * @return {String} organizer title
+	 */
+	getTitle: function(defaultText, showCount) {
+
+		var	organizerName = this.get('name'),
+			type = this.get('type'),
+			title = organizerName || defaultText || '';
+
+		if (organizerName) {
+			if (type === ZCS.constant.ORG_MAIL_FOLDER) {
+				var unread = showCount ? this.get('unreadCount') : 0;
+				title = (unread > 0) ? '<b>' + organizerName + ' (' + unread + ')</b>' : organizerName;
+			}
+			else if (type === ZCS.constant.ORG_ADDRESS_BOOK) {
+				var contactCount = showCount ? folder.get('itemCount') : 0;
+				title = (contactCount > 0) ? '<b>' + organizerName + ' (' + contactCount + ')</b>' : organizerName;
+			}
+		}
+
+		return title;
+	},
+
 	handleModifyNotification: function(modify) {
 
 		if (modify.u != null) {

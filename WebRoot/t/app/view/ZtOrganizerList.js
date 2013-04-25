@@ -84,5 +84,20 @@ Ext.define('ZCS.view.ZtOrganizerList', {
 		list.store.setGrouper(this.getStore().config.grouper);
 
 		return list;
+	},
+
+	/**
+	 * Returns a template to use for showing the organizer in the overview. Note that it does not
+	 * return display text for the given organizer, just the template.
+	 *
+	 * @param node
+	 * @return {String}
+	 */
+	getItemTextTpl: function(node) {
+		return ZCS.template.Folder;
+	},
+
+	getTitleTextTpl: function(node) {
+		return this.getItemTextTpl(node);
 	}
 });
