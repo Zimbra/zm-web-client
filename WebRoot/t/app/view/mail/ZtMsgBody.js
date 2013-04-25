@@ -514,7 +514,7 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 			el.setAttribute(attr, el.getAttribute('df' + attr));
 			if (isImg) {
 				ZCS.view.mail.ZtMsgBody.numImgsToLoad += 1;
-				el.onload = Ext.Fuction.bind(onloadHandler, null, [me, el]);
+				el.onload = Ext.Function.bind(onloadHandler, null, [me, el]);
 			}
 			else {
 				fixedBackground = true;
