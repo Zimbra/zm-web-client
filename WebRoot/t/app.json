@@ -74,28 +74,6 @@
     ],
 
     /**
-     * Used to automatically generate cache.manifest (HTML 5 application cache manifest) file when you build
-     */
-    "appCache": {
-        /**
-         * List of items in the CACHE MANIFEST section
-         */
-        "cache": [
-            "launchTouch"
-        ],
-        /**
-         * List of items in the NETWORK section
-         */
-        "network": [
-            "*"
-        ],
-        /**
-         * List of items in the FALLBACK section
-         */
-        "fallback": []
-    },
-
-    /**
      * Extra resources to be copied along when build
      */
     "resources": [
