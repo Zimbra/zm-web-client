@@ -72,6 +72,8 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 		ZCS.app.on('notifyMessageChange', this.handleModifyNotification, this);
 		ZCS.app.on('notifyConversationChange', this.handleConvChange, this);
 
+		this.getStore().on('addrecords', this.onAddRecords, this);
+
 		var quickReplyTextarea = this.getQuickReplyTextarea();
 		if (quickReplyTextarea) {
 			quickReplyTextarea.on('focus', function() {
@@ -158,22 +160,39 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 			convQuery: convQueryTerms.join(' AND '),
 			callback: function(records, operation, success) {
 				if (success) {
-					var msgViews = this.getMsgListView().query('msgview');
-					Ext.each(records, function(msg, index) {
-						var msgView = msgViews && msgViews[index];
-						if (msgView) {
-							msgView.render(msg);
-						}
-					}, this);
+					this.renderMessages();
 					itemPanel.showButtons();
 					if (quickReply) {
 						this.setQuickReplyPlaceholderText(this.getQuickReplyPlaceholderText());
 					}
-					this.adjustItemHeights(msgViews);
 				}
 			},
 			scope: this
 		});
+	},
+
+	/**
+	 * This is inefficient due to the limitations of component-based lists. The number of
+	 * msgviews (each one is a ListItem) created initially is based on some minimal height.
+	 * We're unlikely to display that many msgs that the user can see.
+	 *
+	 * @private
+	 */
+	renderMessages: function() {
+
+		var store = this.getStore(),
+			msgViews = this.getMsgListView().query('msgview'),
+			ln = msgViews.length, i, msgView, record;
+
+		for (i = 0; i < ln; i++) {
+			msgView = msgViews[i];
+			record = store.getAt(i);
+			if (msgView && record) {
+				msgView.render(record);
+			}
+		}
+
+		this.adjustItemHeights(msgViews);
 	},
 
 	adjustItemHeights: function(msgViews) {
@@ -211,7 +230,7 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 		}
 		activeMsg = activeMsg || (ln > 0 ? msgs[0] : null);
 
-		if (callback) {
+		if (callback && activeMsg) {
 			if (activeMsg.get('isLoaded')) {
 				callback(activeMsg);
 			}
@@ -267,6 +286,14 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 
 			store.insert(0, [msg]);
 		}
+	},
+
+	/**
+	 * New msg came into conv, re-render its msgs.
+	 */
+	onAddRecords: function(store, records, eOpts) {
+//		this.getMsgListView().refresh();    // doesn't work for component-based list :(
+		this.renderMessages();
 	},
 
 	/**
@@ -473,13 +500,14 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 				var ctlr = ZCS.app.getComposeController(),
 					addrs = ctlr.getReplyAddresses(origMsg, action);
 
+				// compose ctlr expects HTML (composer uses editable DIV), so convert text
 				var values = {
 					subject:    ctlr.getSubject(origMsg, ZtMsg.rePrefix),
-					content:    text + ctlr.quoteOrigMsg(origMsg, action)
+					content:    ZCS.mailutil.textToHtml(text) + ctlr.quoteOrigMsg(origMsg, action)
 				};
 				Ext.apply(values, addrs);
 
-				var msg = ctlr.setOutboundMessage(null, values, action, origMsg, null);
+				var msg = ctlr.setOutboundMessage(values, action, origMsg, null);
 				ctlr.sendMessage(msg, function() {
 					textarea.setValue('');
 					textarea.blur();

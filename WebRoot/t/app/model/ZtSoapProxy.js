@@ -209,6 +209,9 @@ Ext.define('ZCS.model.ZtSoapProxy', {
 	 * @param {object}  refresh     JSON folder data
 	 */
 	handleRefresh: function(refresh) {
+		//<debug>
+		Ext.Logger.info('Handling refresh block');
+		//</debug>
 		ZCS.session.loadFolders(refresh);
 		ZCS.session.setNotifySeq(0, true);
 	},
