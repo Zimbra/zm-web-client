@@ -271,12 +271,19 @@ Ext.define('ZCS.controller.mail.ZtMsgController', {
 		// TODO
 	},
 
-	doLoadEntireMessage: function(msg) {
+	doLoadEntireMessage: function(msg, msgBody) {
+
+		var msgView = msgBody.up('msgview');
+
 		msg.save({
 			op:     'load',
 			id:     msg.getId(),
-			noMax:  true
-		});
+			noMax:  true,
+			success: function() {
+				msgView.render(msg);
+				msgView.updateHeight();
+			}
+		}, this);
 	},
 
 	/**

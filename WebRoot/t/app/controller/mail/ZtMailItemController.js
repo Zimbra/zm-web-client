@@ -56,7 +56,7 @@ Ext.define('ZCS.controller.mail.ZtMailItemController', {
 	 * Launches an assignment view
 	 */
 	doAssignmentView: function (item, view, listTitle, viewProp) {
-		var targetComp = Ext.Viewport.down('tabpanel'),
+		var targetComp = Ext.Viewport.down('tabpanel'), // TODO: relies on Mail being first app, need to get tabpanel for current app
 			activeComp = this.getActiveMailComponent(),
 			activeList = activeComp.down('list'),
 			activeStore = activeList.getStore(),
@@ -78,6 +78,8 @@ Ext.define('ZCS.controller.mail.ZtMailItemController', {
 		//To account for the panel header
 		contentHeight += 20;
 
+		// TODO: if we're caching assignment views, we will need to update overview
+		// TODO: when we get notified of organizer changes
 		if (!this[viewProp]) {
 			this[viewProp] = Ext.create(view, {
 				targetElement: targetComp.bodyElement,

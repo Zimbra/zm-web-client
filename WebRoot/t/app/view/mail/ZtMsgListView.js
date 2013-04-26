@@ -145,7 +145,7 @@ Ext.define('ZCS.view.mail.ZtMsgListView', {
 
 				// load rest of truncated message
 				if (elm.hasCls('zcs-truncated-message-link')) {
-					msgBody.fireEvent('loadEntireMessage', msg);
+					msgBody.fireEvent('loadEntireMessage', msg, msgBody);
 				}
 			},
 			element: 'element',
