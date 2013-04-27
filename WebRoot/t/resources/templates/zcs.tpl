@@ -41,11 +41,11 @@
 		<div class='zcs-mail-date'>{dateStr}</div>
 		<tpl if='hasAttachment'><div class='zcs-mail-attachment'>
 			<img src='/t/resources/images/attachment.png' /></div></tpl>
-		<div class='zcs-mail-subject<tpl if='isUnread'>-unread</tpl>'>{subject}</div>
+		<div class='zcs-mail-subject<tpl if='isUnread'>-unread</tpl>'>{[Ext.String.htmlEncode(values.subject)]}</div>
 		<tpl if='numMsgs &gt; 1'><span class='zcs-numMsgs'>{numMsgs}</span></tpl>
 		<tpl if='isFlagged'><div class='zcs-mail-flag'>
 			<img src='/t/resources/images/flagged.png' /></div></tpl>
-		<div class='zcs-mail-fragment'>{fragment}</div>
+		<div class='zcs-mail-fragment'>{[Ext.String.htmlEncode(values.fragment)]}</div>
 	</div>
 </template>
 
@@ -61,7 +61,7 @@
 				<span class='vm-area-bubble zcs-contact-bubble' id='{id}'>{from}</span>
 			</div>
 			<div class='zcs-msgHdr-date'>{dateStr}</div>
-			<div class='zcs-msgHdr-fragment'>{fragment}</div>
+			<div class='zcs-msgHdr-fragment'>{[Ext.String.htmlEncode(values.fragment)]}</div>
 		</div>
 	</tpl>
 </template>

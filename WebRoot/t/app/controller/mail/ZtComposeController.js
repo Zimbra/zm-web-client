@@ -548,6 +548,11 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 		}
 
 		content = headerText + content;
+
+		if (!ZCS.htmlutil.trimHtml(content)) {
+			return '';
+		}
+
 		var	quoted = usePrefix ? this.quoteHtml(content) : content,
 			divider = isForward ? ZtMsg.forwardedMessage : ZtMsg.originalMessage;
 

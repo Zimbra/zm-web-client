@@ -42,9 +42,9 @@ Ext.define('ZCS.model.mail.ZtMsgReader', {
 		data.itemId         = node.id;
 		data.type           = ZCS.constant.ITEM_MESSAGE;
 		data.folderId       = node.l;
-		data.fragment       = Ext.String.htmlEncode(node.fr);
+		data.fragment       = node.fr;
 		data.convId         = node.cid;
-		data.subject        = Ext.String.htmlEncode(node.su);
+		data.subject        = node.su;
 		data.date           = node.d;
 		data.sentDate       = node.sd;
 		data.messageId      = node.mid;

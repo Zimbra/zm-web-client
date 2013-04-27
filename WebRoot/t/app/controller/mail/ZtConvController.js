@@ -137,7 +137,7 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 		var toolbar = this.getItemPanelToolbar(),
 			itemPanel = this.getItemPanel(),
 			convQueryTerms = [ 'underid:1' ],
-			title = conv.get('subject') || ZtMsg.noSubject;
+			title = Ext.String.htmlEncode(conv.get('subject') || ZtMsg.noSubject);
 
 		//Make sure the organizer button stays.
 		ZCS.app.fireEvent('updatelistpanelToggle', this.getOrganizerTitle(), ZCS.session.getActiveApp());
