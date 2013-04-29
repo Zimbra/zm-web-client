@@ -2088,7 +2088,13 @@ function(ev) {
 ZmComposeController.prototype.resetSignatureToolbar =
 function(selected, account) {
 	var button = this._getSignatureButton();
-	var menu = button && this._createSignatureMenu(null, account);
+	if (!button) {
+		return;
+	}
+	var previousMenu = button.getMenu();
+	previousMenu &&	previousMenu.dispose();
+
+	var menu = this._createSignatureMenu(null, account);
 	if (menu) {
 		button.setMenu(menu);
 		this.setSelectedSignature(selected || "");
