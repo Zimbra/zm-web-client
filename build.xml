@@ -64,7 +64,7 @@
     <property name='docs.dir' value='${zwc.basedir}/docs'/>
     <property name='img.dir' value='${web.dir}/img'/>
     <property name='touch.dir' value='${web.dir}/t'/>
-    <property name='touch.prod.dir' value='${web.dir}/t/build/t/production'/>
+    <property name='touch.prod.dir' value='${web.dir}/t/build/t'/>
 
     <property name='webinf.dir' value='${web.dir}/WEB-INF'/>
     <property name='webinf.lib.dir' value='${webinf.dir}/lib'/>
@@ -1254,14 +1254,24 @@ if (ext == null) ext = "";
 
             </then>
             <else>
+                <if>
+                    <not>
+                        <isset property='touch.prod.build.mode'/>
+                    </not>
+                    <then>
+                        <property name="touch.prod.build.mode" value="production"/>
+                    </then>
+                </if>
+
                 <!--Execute the prod build command-->
                 <exec executable="/bin/bash">
                     <arg value="${this.zwc.basedir}/build-prod-touch.sh"/>
+                    <arg value="${touch.prod.build.mode}"/>
                 </exec>
 
                 <!--Copy the production dir-->
                 <copy todir='${build.touch.dir}'>
-                    <fileset dir='${touch.prod.dir}'/>
+                    <fileset dir='${touch.prod.dir}/${touch.prod.build.mode}'/>
                 </copy>
 
                 <!--Copy the templates dir-->
@@ -1618,6 +1628,12 @@ if (ext == null) ext = "";
         <copy todir='${webapp.dir}/t' verbose='true'>
             <fileset refid="touch.fileset"/>
         </copy>
+    </target>
+
+    <target name="prod-deploy-debug-touch">
+        <antcall target="prod-deploy">
+            <param name="touch.prod.build.mode" value="testing"/>
+        </antcall>
     </target>
 
 </project>

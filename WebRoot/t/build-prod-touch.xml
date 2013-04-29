@@ -17,13 +17,13 @@
 
     <target name="build-prod-touch" depends="find-cmd">
         <!--
-        Generate prod build for touch client using "sencha app build production"
+        Generate prod build for touch client using "sencha app build production/testing"
         -->
         <taskdef resource="com/sencha/ant/antlib.xml" classpath="${cmd.dir}/sencha.jar"/>
         <x-sencha-command>
             app
             build
-            production
+            ${build.mode}
         </x-sencha-command>
 
     </target>
