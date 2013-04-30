@@ -438,6 +438,7 @@
     <welcome-file>login</welcome-file>
     <welcome-file>public/login.jsp</welcome-file>
     <welcome-file>public/admin.jsp</welcome-file>
+    <welcome-file>launchTouch.jsp</welcome-file>
   </welcome-file-list>
   
     <env-entry>
@@ -570,7 +571,6 @@
       <url-pattern>/h/mbriefcases</url-pattern>
       <url-pattern>/h/viewimages</url-pattern>
       <url-pattern>/h/autoSaveDraft</url-pattern>
-      <url-pattern>/t/launchTouch</url-pattern>
     </jsp-property-group>
   </jsp-config>
 

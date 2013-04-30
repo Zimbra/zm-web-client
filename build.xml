@@ -228,7 +228,7 @@
         <property name='build.web.excludes' value='${common.build.web.excludes}'/>
         <property name='webinf.includes' value='${common.webinf.includes}'/>
         <property name='webinf.excludes' value='${common.webinf.excludes}'/>
-        <property name='touch.includes' value='app/**,app.json,app.js,resources/**,touch/**,launchTouch'/>
+        <property name='touch.includes' value='app/**,app.json,app.js,resources/**,touch/**,launchTouch.jsp'/>
         <property name='touch.excludes' value='compass/**,lib/**,install.txt,*.xml,build/**,archive/**'/>
 
         <fileset id='help.fileset'

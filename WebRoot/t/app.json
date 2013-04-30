@@ -7,7 +7,7 @@
     /**
      * The file path to this application's front HTML document, relative to this app.json file
      */
-    "indexHtmlPath": "launchTouch",
+    "indexHtmlPath": "launchTouch.jsp",
 
     /**
      * The absolute URL to this application in development environment, i.e: the URL to run this application

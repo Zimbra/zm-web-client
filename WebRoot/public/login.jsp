@@ -190,7 +190,7 @@
                     </c:redirect>
                 </c:when>
                 <c:when test="${client eq 'touch'}">
-                    <c:redirect url="/t/launchTouch">
+                    <c:redirect url="/t">
                         <c:forEach var="p" items="${paramValues}">
                             <c:forEach var='value' items='${p.value}'>
                                 <c:if test="${not fn:contains(ignoredQueryParams, p.key)}">
@@ -198,9 +198,6 @@
                                 </c:if>
                             </c:forEach>
                         </c:forEach>
-                        <c:if test="${param.client eq 'touch'}">
-                            <c:param name='client' value='touch'/>
-                        </c:if>
                     </c:redirect>
                 </c:when>
                 <c:otherwise>
