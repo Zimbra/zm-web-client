@@ -1312,6 +1312,7 @@ if (ext == null) ext = "";
         <ant dir="${taglib.dir}" target="clean" inheritAll="false"/>
         <delete dir='${build.dir}'/>
         <delete dir='${customer.build.dir}' />
+        <delete dir="${touch.prod.dir}"/>
     </target>
 
 	<!-- JavaScript API Documentation Tasks -->
