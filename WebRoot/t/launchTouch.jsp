@@ -34,6 +34,10 @@
             * It is recommended to keep this as minimal as possible to provide instant feedback
             * while other resources are still being loaded for the first time
             */
+        html, body {
+            height: 100% !important;
+        }
+
         #SplashScreenImgBanner{
             background-image: url("/skins/serenity/logos/LoginBanner.png");
             background-position: left bottom;
