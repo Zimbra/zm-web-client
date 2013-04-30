@@ -156,7 +156,6 @@
 	<fileset id='customer.webinf.fileset' dir='${build.dir}' excludes='**'/>
     <fileset id='customer.package.fileset' dir='${build.dir}' excludes='**' />
     <fileset id='customer.jsp.fileset' dir='${build.dir}' excludes='**' />
-    <fileset id='homescreen.fileset' dir="${build.dir}" excludes="**"/>
 
     <!-- Targets -->
 
@@ -234,15 +233,6 @@
         <fileset id='help.fileset'
                  dir='${help.dir}' includes='${help.includes}' excludes='${help.excludes}'
                 />
-        <if>
-            <not>
-                <isset property="build.admin"/>
-            </not>
-            <then>
-                <fileset id='homescreen.fileset' dir="${touch.dir}/resources/icons/" includes="apple-touch-icon*"/>
-            </then>
-        </if>
-
     </target>
 
     <target name='admin' depends='common'>
@@ -337,8 +327,6 @@
 
             <zipfileset refid='help.fileset' prefix='help' />
 			      <zipfileset refid='network.help.fileset' prefix='help' />
-
-            <fileset refid="homescreen.fileset"/>
         </war>
     </target>
 
