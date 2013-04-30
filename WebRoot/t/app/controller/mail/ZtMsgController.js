@@ -47,22 +47,22 @@ Ext.define('ZCS.controller.mail.ZtMsgController', {
 				attachmentTap:      'doShowAttachment',
 				toggleQuotedText:   'doToggleQuotedText',
 				loadEntireMessage:  'doLoadEntireMessage',
-				addressTouch: 'doComposeToAddress'
+				addressTouch:       'doComposeToAddress'
 			}
 		},
 
 		menuConfigs: {
 
 			msgActions: [
+				{ label: ZtMsg.markRead,    action: ZCS.constant.OP_MARK_READ,  listener: 'doMarkRead' },
+				{ label: ZtMsg.flag,        action: ZCS.constant.OP_FLAG,       listener: 'doFlag' },
 				{ label: ZtMsg.reply,       action: ZCS.constant.OP_REPLY,      listener: 'doReply' },
 				{ label: ZtMsg.replyAll,    action: ZCS.constant.OP_REPLY_ALL,  listener: 'doReplyAll' },
 				{ label: ZtMsg.forward,     action: ZCS.constant.OP_FORWARD,    listener: 'doForward' },
-				{ label: ZtMsg.del,         action: ZCS.constant.OP_DELETE,     listener: 'doDelete' },
-				{ label: ZtMsg.markRead,    action: ZCS.constant.OP_MARK_READ,  listener: 'doMarkRead' },
 				{ label: ZtMsg.move,        action: ZCS.constant.OP_MOVE,       listener: 'doMove' },
+				{ label: ZtMsg.tag,         action: ZCS.constant.OP_TAG,        listener: 'doTag' },
 				{ label: ZtMsg.markSpam,    action: ZCS.constant.OP_SPAM,       listener: 'doSpam' },
-				{ label: ZtMsg.flag,        action: ZCS.constant.OP_FLAG,       listener: 'doFlag' },
-				{ label: ZtMsg.tag,         action: ZCS.constant.OP_TAG,        listener: 'doTag' }
+				{ label: ZtMsg.del,         action: ZCS.constant.OP_DELETE,     listener: 'doDelete' }
 			],
 
 			tagActions: [

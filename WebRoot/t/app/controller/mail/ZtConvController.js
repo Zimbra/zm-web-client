@@ -55,10 +55,10 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 
 		menuConfigs: {
 			convActions: [
-				{ label: ZtMsg.markRead,    action: ZCS.constant.OP_MARK_READ,  listener: 'doMarkRead' },
-				{ label: ZtMsg.move,        action: ZCS.constant.OP_MOVE,       listener: 'doMove' },
-				{ label: ZtMsg.flag,        action: ZCS.constant.OP_FLAG,       listener: 'doFlag' },
-				{ label: ZtMsg.tag,         action: ZCS.constant.OP_TAG,        listener: 'doTag' }
+				{ label: ZtMsg.convMarkRead,    action: ZCS.constant.OP_MARK_READ,  listener: 'doMarkRead' },
+				{ label: ZtMsg.convFlag,        action: ZCS.constant.OP_FLAG,       listener: 'doFlag' },
+				{ label: ZtMsg.convMove,        action: ZCS.constant.OP_MOVE,       listener: 'doMove' },
+				{ label: ZtMsg.convTag,         action: ZCS.constant.OP_TAG,        listener: 'doTag' }
 			]
 		}
 	},
