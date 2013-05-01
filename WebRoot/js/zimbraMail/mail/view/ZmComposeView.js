@@ -2443,7 +2443,7 @@ function() {
 		if (this.hasComponent(ZmComposeView.BC_TEXT_PRE)) {
 			userText = this.getComponentContent(ZmComposeView.BC_TEXT_PRE);
 		}
-		else {
+		else if (this._compList.length > 0) {
 			var idx = content.indexOf(this._getMarker(this._composeMode, this._compList[0]));
 			if (idx !== -1) {
 				userText = content.substring(0, idx);
