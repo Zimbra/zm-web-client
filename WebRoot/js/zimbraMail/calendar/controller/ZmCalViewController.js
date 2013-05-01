@@ -1066,8 +1066,8 @@ function(ev) {
 			}
 
 			// If dealing with a contact, make sure it has a valid email address
-			if (!shiftKey && (data instanceof ZmContact)) {
-				if (data.isGroup()) {
+			if (!shiftKey && data.isZmContact) {
+				if (data.isGroup() && !data.isDistributionList()) {
 					ev.doIt = (data.getGroupMembers().good.size() > 0);
 				} else {
 					var email = data.getEmail();
@@ -1163,20 +1163,24 @@ function(newAppt) {
 ZmCalViewController.prototype.newApptFromContact =
 function(contact, date) {
 	var emails = [];
-	var list = (contact instanceof ZmContact) ? [contact] : contact;
+	var list = AjxUtil.toArray(contact);
 	for (var i = 0; i < list.length; i++) {
-		if (list[i].isGroup()) {
-			var members = list[i].getGroupMembers().good.getArray();
+		var item = list[i];
+		if (item.isGroup() && !item.isDistributionList()) {
+			var members = item.getGroupMembers().good.getArray();
 			for (var j = 0; j < members.length; j++) {
 				var e = members[j].address;
-				if (e && e != "")
+				if (e && e !== "") {
 					emails.push(e);
+				}
 			}
-		} else {
+		}
+		else {
 			// grab the first valid email address for this contact
-			var e = list[i].getEmail();
-			if (e && e != "")
+			var e = item.getEmail();
+			if (e && e !== "") {
 				emails.push(e);
+			}
 		}
 	}
 

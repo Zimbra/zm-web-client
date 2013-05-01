@@ -69,6 +69,7 @@ ZmContact = function(id, list, type, newDl) {
 
 ZmContact.prototype = new ZmItem;
 ZmContact.prototype.constructor = ZmContact;
+ZmContact.prototype.isZmContact = true;
 
 // fields
 ZmContact.F_anniversary				= "anniversary";

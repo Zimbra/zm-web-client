@@ -147,13 +147,6 @@ function(searchResult, isGalSearch, folderId) {
 	}
 };
 
-ZmContactListController.prototype._dragListener =
-function(ev) {
-	ZmListController.prototype._dragListener.call(this, ev);
-	if (ev.srcControl && ev.srcControl && ev.srcControl._folderId && ev.srcControl._folderId == ZmFolder.ID_DLS) {
-		return;
-	}
-};
 
 
 /**
