@@ -1083,6 +1083,15 @@ function(ev) {
 
 	if (!handled) {
 		if (isConv) {
+			if (ev.event == ZmEvent.E_MODIFY && item.msgs) {
+				//bug 79256 - in some cases the listeners gets removed when Conv is moved around.
+				//so add the listeners again. If they are already present than this will be a no-op.
+				var cv = this.getController()._convView;
+				if (cv) {
+					item.msgs.addChangeListener(cv._listChangeListener);
+				}
+				item.msgs.addChangeListener(this._listChangeListener);
+			}
 			ZmMailListView.prototype._changeListener.apply(this, arguments);
 		} else {
 			ZmMailMsgListView.prototype._changeListener.apply(this, arguments);
