@@ -127,10 +127,19 @@ Ext.define('ZCS.controller.mail.ZtMailItemController', {
 
 		if (menuName === ZCS.constant.MENU_CONV || menuName === ZCS.constant.MENU_MSG) {
 			var	menu = this.getMenu(menuName),
+				isConvMenu = (menuName === ZCS.constant.MENU_CONV),
 				item = this.getItem(),
-				unreadLabel = item.get('isUnread') ? ZtMsg.markRead : ZtMsg.markUnread,
-				flagLabel = item.get('isFlagged') ? ZtMsg.unflag : ZtMsg.flag,
+				unreadLabel, flagLabel,
 				spamLabel = (item.get('folderId') === ZCS.constant.ID_JUNK) ? ZtMsg.markNotSpam : ZtMsg.markSpam;
+
+			if (isConvMenu) {
+				unreadLabel = item.get('isUnread') ? ZtMsg.convMarkRead : ZtMsg.convMarkUnread;
+				flagLabel = item.get('isFlagged') ? ZtMsg.convUnflag : ZtMsg.convFlag;
+			}
+			else {
+				unreadLabel = item.get('isUnread') ? ZtMsg.markRead : ZtMsg.markUnread;
+				flagLabel = item.get('isFlagged') ? ZtMsg.unflag : ZtMsg.flag;
+			}
 
 			if (menu) {
 				var list = menu.down('list'),
