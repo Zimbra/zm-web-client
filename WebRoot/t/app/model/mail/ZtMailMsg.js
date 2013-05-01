@@ -51,7 +51,8 @@ Ext.define('ZCS.model.mail.ZtMailMsg', {
 			{ name: 'origId',           type: 'string' },   // ID of original if replying or forwarding
 			{ name: 'invite',           type: 'auto' },     // ZtInvite if msg is an invite
 			{ name: 'inviteAction',     type: 'string' },   // accept/tentative/decline
-			{ name: 'origAttachments',  type: 'auto' }      // attachments to propagate on reply/forward
+			{ name: 'origAttachments',  type: 'auto' },     // attachments to propagate on reply/forward
+			{ name: 'draftId',          type: 'string' }    // ID of draft msg that should be deleted
 		],
 
 		proxy: {

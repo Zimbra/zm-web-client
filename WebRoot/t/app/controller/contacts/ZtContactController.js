@@ -61,12 +61,32 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
 		Ext.Logger.info("contact controller: show contact " + contact.getId());
         //</debug>
 		this.callParent(arguments);
-		this.getItemPanelToolbar().setTitle(contact.get('lastName') + ', ' + contact.get('firstName'));
+
+		this.updateToolbar({
+			title:  contact.get('lastName') + ', ' + contact.get('firstName')
+		});
 
 		//Make sure the organizer button stays...
 		ZCS.app.fireEvent('updatelistpanelToggle', this.getOrganizerTitle(), ZCS.session.getActiveApp());
 
 		var tpl = this.getContactView().getTpl();
 		this.getContactView().setHtml(tpl.apply(contact.getData()));
+	},
+
+	updateToolbar: function(params) {
+
+		this.callParent(arguments);
+
+		params = params || {};
+		var app = ZCS.util.getAppFromObject(this),
+			hideAll = !this.getItem() || params.isAssignmentView;
+
+		Ext.each(ZCS.constant.ITEM_BUTTONS[app], function(button) {
+			this.showButton(button.op, !hideAll);
+		}, this);
+
+		if (hideAll) {
+			return;
+		}
 	}
 });

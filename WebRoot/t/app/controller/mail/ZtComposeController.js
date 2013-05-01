@@ -73,7 +73,8 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 		},
 
 		action:     '',
-		origMsg:    null,
+		origMsg:    null,   // reply/forward
+		draftId:    null,   // ID of existing draft to delete when edited version is sent
 		formHash:   ''      // used to perform dirty check
 	},
 
@@ -115,6 +116,7 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 		}
 
 		this.setAction(ZCS.constant.OP_COMPOSE);
+		this.setDraftId(msg ? msg.get('itemId') : null);
 		this.showComposeForm(toAddresses, ccAddresses, subject, body);
 	},
 
@@ -132,6 +134,7 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 
 		this.setAction(action);
 		this.setOrigMsg(msg);
+		this.setDraftId(null);
 
 		this.showComposeForm(addrs[ZCS.constant.TO], addrs[ZCS.constant.CC], subject, body);
 	},
@@ -150,6 +153,7 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 
 		this.setAction(action);
 		this.setOrigMsg(msg);
+		this.setDraftId(null);
 
 		this.showComposeForm(addrs[ZCS.constant.TO], addrs[ZCS.constant.CC], subject, body);
 	},
@@ -167,6 +171,7 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 
 		this.setAction(action);
 		this.setOrigMsg(msg);
+		this.setDraftId(null);
 
 		this.showComposeForm(null, null, subject, body);
 	},
@@ -420,6 +425,7 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 			success: function () {
 				ZCS.app.fireEvent('showToast', ZtMsg.draftSaved);
 				this.setFormHash(this.calculateFormHash());
+				this.setDraftId(msg.get('itemId'));
 			}
 		}, this);
 	},
@@ -470,6 +476,7 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 		msg.set('subject', values.subject);
 		msg.addAddresses(addrs);
 		msg.setComposeAction(action);
+		msg.set('draftId', this.getDraftId());
 
 		if (origMsg) {
 			msg.set('origId', origMsg.getId());

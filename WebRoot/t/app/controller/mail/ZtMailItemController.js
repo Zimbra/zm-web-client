@@ -56,6 +56,7 @@ Ext.define('ZCS.controller.mail.ZtMailItemController', {
 	 * Launches an assignment view
 	 */
 	doAssignmentView: function (item, view, listTitle, viewProp) {
+
 		var targetComp = Ext.Viewport.down('tabpanel'), // TODO: relies on Mail being first app, need to get tabpanel for current app
 			activeComp = this.getActiveMailComponent(),
 			activeList = activeComp.down('list'),
@@ -64,7 +65,8 @@ Ext.define('ZCS.controller.mail.ZtMailItemController', {
 			contentHeight,
 			isMessage = item instanceof ZCS.model.mail.ZtMailMsg,
 			convCtlr = ZCS.app.getConvController(),
-			quickReply = convCtlr.getQuickReply();
+			quickReply = convCtlr.getQuickReply()
+			me = this;
 
 
 		if (isMessage) {
@@ -78,7 +80,7 @@ Ext.define('ZCS.controller.mail.ZtMailItemController', {
 		//To account for the panel header
 		contentHeight += 20;
 
-		// TODO: if we're caching assignment views, we will need to update overview
+		// TODO: if we're caching assignment views, we will need to update its overview
 		// TODO: when we get notified of organizer changes
 		if (!this[viewProp]) {
 			this[viewProp] = Ext.create(view, {
@@ -86,7 +88,9 @@ Ext.define('ZCS.controller.mail.ZtMailItemController', {
 				record: item || this.getItem(),
 				listTitle: listTitle,
 				onAssignmentComplete: function () {
-					activeComp.showButtons();
+					me.updateToolbar({
+						hideAll: false
+					});
 					activeList.setReadOnly(false);
 					//undo any filtering we may have done
 					activeStore.clearFilter();
@@ -97,7 +101,9 @@ Ext.define('ZCS.controller.mail.ZtMailItemController', {
 			});
 		}
 
-		activeComp.hideButtons();
+		this.updateToolbar({
+			hideAll: true
+		});
 		if (quickReply) {
 			quickReply.hide();
 		}

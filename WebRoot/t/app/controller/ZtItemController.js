@@ -54,11 +54,13 @@ Ext.define('ZCS.controller.ZtItemController', {
 	},
 
 	/**
-	 * Clears the content of the toolbar and hides the dropdown button.
+	 * Clears the content of the toolbar.
 	 */
 	clear: function() {
-		this.getItemPanelToolbar().setTitle('');
-		this.getItemPanel().hideButtons();
+		this.updateToolbar({
+			title:      '',
+			hideAll:    true
+		});
 	},
 
 	/**
@@ -69,7 +71,6 @@ Ext.define('ZCS.controller.ZtItemController', {
 	showItem: function(item) {
 		this.clear();
 		this.setItem(item);
-		this.getItemPanel().showButtons();
 	},
 
 	/**
@@ -96,6 +97,65 @@ Ext.define('ZCS.controller.ZtItemController', {
 				}
 			};
 			item.save(data);
+		}
+	},
+
+	/**
+	 * Returns the toolbar button for the given operation.
+	 *
+	 * @param {String}      op      operation constant
+	 *
+	 * @return {Ext.Button} button
+	 */
+	getItemButton: function(op) {
+
+		var app = ZCS.util.getAppFromObject(this),
+			buttonConfig = ZCS.constant.ITEM_BUTTONS[app],
+			toolbar = this.getItemPanelToolbar(),
+			ln = buttonConfig.length, i;
+
+		for (i = 0; i < ln; i++) {
+			if (op === buttonConfig[i].op) {
+				return toolbar.down('#' + buttonConfig[i].itemId);
+			}
+		}
+
+		return null;
+	},
+
+	/**
+	 * Shows or hides a button.
+	 *
+	 * @param {String}      op      operation constant
+	 * @param {Boolean}     show    if true, show the button; otherwise, hide it
+	 *
+	 * @return {Ext.Button} button
+	 */
+	showButton: function(op, show) {
+
+		var button = this.getItemButton(op);
+		if (button) {
+			if (show) {
+				button.show();
+			}
+			else {
+				button.hide();
+			}
+			button.setHidden(!show);
+		}
+	},
+
+	/**
+	 * Sets the title of the toolbar and shows or hides buttons as appropriate.
+	 *
+	 * @param {Object}      params      parameters:
+	 *                                      title       toolbar title
+	 *                                      hideAll     if true, hide all buttons
+	 *                                      isDraft     if true, draft is being displayed
+	 */
+	updateToolbar: function(params) {
+		if (params && params.title != null) {
+			this.getItemPanelToolbar().setTitle(params.title);
 		}
 	},
 

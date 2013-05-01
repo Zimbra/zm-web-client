@@ -49,7 +49,8 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 			itemPanelToolbar: {
 				'delete':   'doButtonDelete',
 				reply:      'doReply',
-				replyAll:   'doReplyAll'
+				replyAll:   'doReplyAll',
+				edit:       'doEdit'
 			}
 		},
 
@@ -120,29 +121,16 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 			curFolderId = curFolder && curFolder.get('itemId'),
 			store = this.getStore();
 
-		if (curFolderId === ZCS.constant.ID_DRAFTS) {
-			var itemPanel = this.getItemPanel();
-			this.clear();
-			this.setItem(conv);
-			store.load({
-				convId: conv.getId(),
-				callback: function() {
-					ZCS.app.getComposeController().compose(conv.getMessages()[0]);
-				}
-			});
-		}
-
 		this.callParent(arguments);
 
 		var toolbar = this.getItemPanelToolbar(),
 			itemPanel = this.getItemPanel(),
+			isDraft = (curFolderId === ZCS.constant.ID_DRAFTS),
 			convQueryTerms = [ 'underid:1' ],
 			title = Ext.String.htmlEncode(conv.get('subject') || ZtMsg.noSubject);
 
 		//Make sure the organizer button stays.
 		ZCS.app.fireEvent('updatelistpanelToggle', this.getOrganizerTitle(), ZCS.session.getActiveApp());
-
-		toolbar.setTitle(title);
 
 		Ext.each(ZCS.constant.CONV_HIDE, function(id) {
 			if (id !== curFolderId) {
@@ -160,8 +148,11 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 			convQuery: convQueryTerms.join(' AND '),
 			callback: function(records, operation, success) {
 				if (success) {
+					this.updateToolbar({
+						title:      title,
+						isDraft:    isDraft
+					});
 					this.renderMessages();
-					itemPanel.showButtons();
 					if (quickReply) {
 						this.setQuickReplyPlaceholderText(this.getQuickReplyPlaceholderText());
 					}
@@ -213,7 +204,7 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 	getActiveMsg: function(callback) {
 
 		var conv = this.getItem(),
-			msgs = conv.getMessages(),
+			msgs = conv && conv.getMessages(),
 			ln = msgs ? msgs.length : 0, i, msg, folderId,
 			curFolder = ZCS.session.getCurrentSearchOrganizer(),
 			curFolderId = curFolder && curFolder.get('itemId'),
@@ -441,6 +432,12 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 		});
 	},
 
+	doEdit: function() {
+		this.getActiveMsg(function(msg) {
+			ZCS.app.getComposeController().compose(msg);
+		});
+	},
+
 	/**
 	 * Checks if the user is currently in a feed folder, presumably trying to do something
 	 * that's disallowed like replying. If so, put up an alert.
@@ -558,5 +555,31 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 		}, this);
 
 		return '-' + tcon;
+	},
+
+	updateToolbar: function(params) {
+
+		this.callParent(arguments);
+
+		params = params || {};
+		var app = ZCS.util.getAppFromObject(this),
+			hideAll = !this.getItem() || params.hideAll;
+
+		Ext.each(ZCS.constant.ITEM_BUTTONS[app], function(button) {
+			this.showButton(button.op, !hideAll);
+		}, this);
+
+		if (hideAll) {
+			return;
+		}
+
+		if (params.isDraft) {
+			this.showButton(ZCS.constant.OP_REPLY, false);
+			this.showButton(ZCS.constant.OP_REPLY_ALL, false);
+		}
+		else {
+			this.showButton(ZCS.constant.OP_EDIT, false);
+
+		}
 	}
 });

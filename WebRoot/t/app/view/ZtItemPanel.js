@@ -52,25 +52,32 @@ Ext.define('ZCS.view.ZtItemPanel', {
 			}
 		}
 
-		for (i = 0; i < ln; i++) {
-			var button = buttons[i];
-			items.push({
-				xtype:      'button',
-				iconCls:    button.icon,
-				cls:        'zcs-flat',
-				iconMask:   true,
-				align:      'right',
-				handler:    createHandler(button.event, { menuName: button.menuName }),
-				hidden:     true
-			});
-		}
-
 		items.push({
 			xtype: 'button',
 			align: 'left',
 			itemId: 'listpanelToggle',
 			hidden: true
 		});
+
+		for (i = 0; i < ln; i++) {
+			var button = buttons[i],
+				itemId = button.itemId = button.itemId || ZCS.util.getUniqueId({
+					parent: 'toolbar',
+					app:    app,
+					op:     button.op
+				});
+
+			items.push({
+				xtype:      'button',
+				iconCls:    button.icon,
+				cls:        'zcs-flat',
+				iconMask:   true,
+				align:      button.align || 'right',
+				handler:    createHandler(button.event, { menuName: button.menuName }),
+				hidden:     !!button.hidden,
+				itemId:     itemId
+			});
+		}
 
 		var toolbar = {
 			xtype:  'lefttitlebar',
@@ -113,26 +120,11 @@ Ext.define('ZCS.view.ZtItemPanel', {
 					padding: '0 1em',
 					handler: function() {
 						ZCS.app.fireEvent('sendQuickReply');
-//							this.up('#quickReply').fireEvent('sendQuickReply');
 					}
 				}]
 			}
 			this.add(quickReply);
 		}
-	},
-
-	setTitle: function(title) {
-		this.down('title').setTitle(title);
-	},
-
-	showButtons: function() {
-		Ext.each(this.down('titlebar').query('button'), function(button) {
-			//The list panel toggle is a special button that is hidden/shown based on
-			//other factors.
-			if (button.getItemId() !== 'listpanelToggle') {
-				button.show();
-			}
-		}, this);
 	},
 
 	updatelistpanelToggle: function (title) {
@@ -144,11 +136,5 @@ Ext.define('ZCS.view.ZtItemPanel', {
 		} else {
 			listpanelToggle.hide();
 		}
-	},
-
-	hideButtons: function() {
-		Ext.each(this.down('titlebar').query('button'), function(button) {
-			button.hide();
-		}, this);
 	}
 });

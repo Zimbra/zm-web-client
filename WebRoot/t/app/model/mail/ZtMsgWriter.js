@@ -78,7 +78,8 @@ Ext.define('ZCS.model.mail.ZtMsgWriter', {
 				identityId = ZCS.session.getAccountId(),
 				parts = m.mp = [],                  // Note: should only ever be one top-level part
 				mime = msg.getMime(),
-				origAtt = msg.get('origAttachments');
+				origAtt = msg.get('origAttachments'),
+				draftId = msg.get('draftId');
 
 			// recipient addresses
 			for (i = 0; i < ln; i++) {
@@ -130,6 +131,15 @@ Ext.define('ZCS.model.mail.ZtMsgWriter', {
 					updateOrganizer:    'TRUE',
 					verb:               msg.get('inviteAction')
 				});
+			}
+
+			if (draftId) {
+				if (itemData.isDraft) {
+					m.id = draftId;
+				}
+				else {
+					m.did = draftId;
+				}
 			}
 
 			this.addMimePart(parts, mime);

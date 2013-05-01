@@ -119,7 +119,7 @@ Ext.define('ZCS.model.ZtOrganizer', {
 				title = (unread > 0) ? '<b>' + organizerName + ' (' + unread + ')</b>' : organizerName;
 			}
 			else if (type === ZCS.constant.ORG_ADDRESS_BOOK) {
-				var contactCount = showCount ? folder.get('itemCount') : 0;
+				var contactCount = showCount ? this.get('itemCount') : 0;
 				title = (contactCount > 0) ? '<b>' + organizerName + ' (' + contactCount + ')</b>' : organizerName;
 			}
 		}

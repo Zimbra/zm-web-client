@@ -119,17 +119,36 @@ ZCS.constant.MENU_TAG       = 'tagActions';
 ZCS.constant.MENU_CONTACT   = 'contactActions';
 ZCS.constant.MENU_ORIG_ATT  = 'originalAttachment';
 
+// Operations (generally tied to dropdown menu items)
+ZCS.constant.OP_COMPOSE     = 'COMPOSE';
+ZCS.constant.OP_DELETE      = 'DELETE';
+ZCS.constant.OP_FORWARD     = 'FORWARD';
+ZCS.constant.OP_LOGOUT      = 'LOGOUT';
+ZCS.constant.OP_MARK_READ   = 'MARK_READ';
+ZCS.constant.OP_REPLY       = 'REPLY';
+ZCS.constant.OP_REPLY_ALL   = 'REPLY_ALL';
+ZCS.constant.OP_SPAM        = 'SPAM';
+ZCS.constant.OP_MOVE        = 'MOVE';
+ZCS.constant.OP_FLAG        = 'FLAG';
+ZCS.constant.OP_TAG         = 'TAG';
+ZCS.constant.OP_REMOVE_TAG  = 'REMOVE_TAG';
+ZCS.constant.OP_REMOVE_ATT  = 'REMOVE_ATT';
+ZCS.constant.OP_ADD_CONTACT = 'ADD_CONTACT';
+ZCS.constant.OP_EDIT        = 'EDIT';
+ZCS.constant.OP_MENU        = 'MENU';
+
 // Buttons in toolbar at top of item panel
 ZCS.constant.ITEM_BUTTONS = {};
 ZCS.constant.ITEM_BUTTONS[ZCS.constant.APP_MAIL]        = [
-	{ icon: 'reply',        event: 'reply' },
-	{ icon: 'replytoall',   event: 'replyAll' },
-	{ icon: 'trash',        event: 'delete' },
-	{ icon: 'arrow_down',   event: 'showMenu', menuName: ZCS.constant.MENU_CONV }
+	{ op: ZCS.constant.OP_EDIT,         icon: 'compose1',     event: 'edit', hidden: true },
+	{ op: ZCS.constant.OP_REPLY,        icon: 'reply',        event: 'reply' },
+	{ op: ZCS.constant.OP_REPLY_ALL,    icon: 'replytoall',   event: 'replyAll' },
+	{ op: ZCS.constant.OP_DELETE,       icon: 'trash',        event: 'delete' },
+	{ op: ZCS.constant.OP_MENU,         icon: 'arrow_down',   event: 'showMenu', menuName: ZCS.constant.MENU_CONV }
 ];
 ZCS.constant.ITEM_BUTTONS[ZCS.constant.APP_CONTACTS]    = [
-	{ icon: 'trash',        event: 'delete' },
-	{ icon: 'arrow_down',   event: 'showMenu', menuName: ZCS.constant.MENU_CONTACT }
+	{ op: ZCS.constant.OP_DELETE,   icon: 'trash',        event: 'delete' },
+	{ op: ZCS.constant.OP_MENU,     icon: 'arrow_down',   event: 'showMenu', menuName: ZCS.constant.MENU_CONTACT }
 ];
 
 // Display states for a message view header
@@ -421,22 +440,6 @@ ZCS.constant.INC_MAP[ZCS.constant.INC_SMART]			= [ZCS.constant.INC_SMART, false,
 ZCS.constant.INC_MAP[ZCS.constant.INC_SMART_PRE]		= [ZCS.constant.INC_SMART, true, false];
 ZCS.constant.INC_MAP[ZCS.constant.INC_SMART_HDR]		= [ZCS.constant.INC_SMART, false, true];
 ZCS.constant.INC_MAP[ZCS.constant.INC_SMART_PRE_HDR]	= [ZCS.constant.INC_SMART, true, true];
-
-// Operations (generally tied to dropdown menu items)
-ZCS.constant.OP_COMPOSE     = 'COMPOSE';
-ZCS.constant.OP_DELETE      = 'DELETE';
-ZCS.constant.OP_FORWARD     = 'FORWARD';
-ZCS.constant.OP_LOGOUT      = 'LOGOUT';
-ZCS.constant.OP_MARK_READ   = 'MARK_READ';
-ZCS.constant.OP_REPLY       = 'REPLY';
-ZCS.constant.OP_REPLY_ALL   = 'REPLY_ALL';
-ZCS.constant.OP_SPAM        = 'SPAM';
-ZCS.constant.OP_MOVE        = 'MOVE';
-ZCS.constant.OP_FLAG        = 'FLAG';
-ZCS.constant.OP_TAG         = 'TAG';
-ZCS.constant.OP_REMOVE_TAG  = 'REMOVE_TAG';
-ZCS.constant.OP_REMOVE_ATT  = 'REMOVE_ATT';
-ZCS.constant.OP_ADD_CONTACT = 'ADD_CONTACT';
 
 // Item flags
 ZCS.constant.FLAG_ATTACH			= 'a';
