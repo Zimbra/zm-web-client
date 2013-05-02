@@ -116,25 +116,36 @@
         }
     </style>
 
-	<jsp:include page="../public/Resources.jsp">
-		<jsp:param name="res" value="ZtMsg"/>
-	</jsp:include>
+    <%
+        String debug = request.getParameter("debug");
+    %>
+    <c:catch var="exception">
+        <jsp:include page="../public/Resources.jsp">
+            <jsp:param name="res" value="ZtMsg"/>
+        </jsp:include>
 
-    <zm:getMailbox var="mailbox"/>
-    <c:set var="initialMailSearch" value="${mailbox.accountInfo.prefs.mailInitialSearch}"/>
-    <c:if test="${fn:startsWith(initialMailSearch, 'in:')}">
-        <c:set var="path" value="${fn:substring(initialMailSearch, 3, -1)}"/>
+        <zm:getMailbox var="mailbox"/>
+        <c:set var="initialMailSearch" value="${mailbox.accountInfo.prefs.mailInitialSearch}"/>
+        <c:if test="${fn:startsWith(initialMailSearch, 'in:')}">
+            <c:set var="path" value="${fn:substring(initialMailSearch, 3, -1)}"/>
+        </c:if>
+
+        <c:set var="authcookie" value="${cookie.ZM_AUTH_TOKEN.value}"/>
+        <%
+            java.lang.String authCookie = (String) pageContext.getAttribute("authcookie");
+            ZAuthToken auth = new ZAuthToken(null, authCookie, null);
+        %>
+
+        <zm:getInfoJSON var="getInfoJSON" authtoken="<%= auth %>" dosearch="true" itemsperpage="20" types="conversation"
+                        folderpath="${path}" sortby="dateDesc"/>
+    </c:catch>
+    <c:if test="${not empty exception}">
+        <zm:getException var="error" exception="${exception}"/>
+        <c:if test="${error.code eq 'service.AUTH_EXPIRED' or error.code eq 'service.AUTH_REQUIRED'}">
+            <c:redirect url="/"/>
+        </c:if>
     </c:if>
 
-    <c:set var="authcookie" value="${cookie.ZM_AUTH_TOKEN.value}"/>
-    <%
-         String debug = request.getParameter("debug");
-
-         java.lang.String authCookie = (String) pageContext.getAttribute("authcookie");
-         ZAuthToken auth = new ZAuthToken(null, authCookie , null);
-    %>
-
-    <zm:getInfoJSON var="getInfoJSON" authtoken="<%= auth %>" dosearch="true" itemsperpage="20" types="conversation" folderpath="${path}" sortby="dateDesc"/>
     <script type="text/javascript">
 
         var batchInfoResponse = ${getInfoJSON};
