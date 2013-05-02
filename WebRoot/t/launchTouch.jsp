@@ -142,7 +142,7 @@
     <c:if test="${not empty exception}">
         <zm:getException var="error" exception="${exception}"/>
         <c:if test="${error.code eq 'service.AUTH_EXPIRED' or error.code eq 'service.AUTH_REQUIRED'}">
-            <c:redirect url="/"/>
+            <c:redirect url="/?loginOp=relogin&loginErrorCode=${error.code}"/>
         </c:if>
     </c:if>
 
