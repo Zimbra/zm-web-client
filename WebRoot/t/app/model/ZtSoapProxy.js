@@ -328,10 +328,11 @@ Ext.define('ZCS.model.ZtSoapProxy', {
 		}
 
 		// get rid of creates for promoted virtual convs, since they aren't really creates
-		var tmp = [];
+		var tmp = [], createdConv;
 
 		Ext.each(creates.c, function(create) {
-			if (!createdConvs[create.id]._wasVirtConv) {
+			createdConv = createdConvs[create.id];
+			if (createdConv && !createdConv._wasVirtConv) {
 				tmp.push(create);
 			}
 		}, this);
