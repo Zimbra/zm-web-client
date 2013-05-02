@@ -124,7 +124,7 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 
 		this.showingQuotedText = !trimQuotedText;
 
-		html = ZCS.htmlutil.trimAndWrapContent(html);
+		html = ZCS.htmlutil.trimAndWrapContent(html, !isHtml ? 'zcs-msg-body-text' : null);
 
 		if (this.getUsingIframe()) {
             //<debug>
@@ -228,11 +228,11 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
             //<debug>
 			Ext.Logger.info('addr regex matched: ' + m);
             //</debug>
-			if (!isHtml || m.toLowerCase().indexOf('mailto:') !== 0) {
-				return Ext.String.format("<a href='#' addr='{0}'>{0}</a>", m);
+			if (isHtml && m.toLowerCase().indexOf('mailto:') === 0) {
+				return m;
 			}
 			else {
-				return m;
+				return Ext.String.format("<a href='#' addr='{0}'>{0}</a>", m);
 			}
 		});
 

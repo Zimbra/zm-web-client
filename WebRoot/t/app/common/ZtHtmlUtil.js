@@ -239,21 +239,26 @@ Ext.define('ZCS.common.ZtHtmlUtil', {
 	},
 
 	/**
-	 * Removes empty HTML from the beginning and end, then wraps the result in a DIV>
+	 * Removes empty HTML from the beginning and end, then wraps the result in a DIV.
 	 *
 	 * @param {String}  html        HTML as a string
+	 * @param {String}  className   (optional) class for wrapping DIV
+	 *
 	 * @return {String}     trimmed and wrapped HTML
 	 */
-	trimAndWrapContent: function(html) {
+	trimAndWrapContent: function(html, className) {
 
 		html = ZCS.htmlutil.trimHtml(html);
 
+		var startTag = className ? '<div class="' + className + '">' : '<div>',
+			endTag = '</div>';
+
 		if (/<body/i.test(html)) {
-			html = html.replace(/(<body[^>]*>)/i, '$1<div>')
-					   .replace(/<\/body>/i, '</body></div>');
+			html = html.replace(/(<body[^>]*>)/i, '$1' + startTag)
+					   .replace(/<\/body>/i, '</body>' + endTag);
 		}
 		else {
-			html = '<div>' + html + '</div>';
+			html = startTag + html + endTag;
 		}
 
 		return html;
