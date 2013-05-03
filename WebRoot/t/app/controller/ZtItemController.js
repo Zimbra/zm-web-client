@@ -114,9 +114,11 @@ Ext.define('ZCS.controller.ZtItemController', {
 			toolbar = this.getItemPanelToolbar(),
 			ln = buttonConfig.length, i;
 
-		for (i = 0; i < ln; i++) {
-			if (op === buttonConfig[i].op) {
-				return toolbar.down('#' + buttonConfig[i].itemId);
+		if (toolbar) {
+			for (i = 0; i < ln; i++) {
+				if (op === buttonConfig[i].op) {
+					return toolbar.down('#' + buttonConfig[i].itemId);
+				}
 			}
 		}
 
@@ -154,8 +156,9 @@ Ext.define('ZCS.controller.ZtItemController', {
 	 *                                      isDraft     if true, draft is being displayed
 	 */
 	updateToolbar: function(params) {
-		if (params && params.title != null) {
-			this.getItemPanelToolbar().setTitle(params.title);
+		var toolbar = this.getItemPanelToolbar();
+		if (toolbar && params && params.title != null) {
+			toolbar.setTitle(params.title);
 		}
 	},
 

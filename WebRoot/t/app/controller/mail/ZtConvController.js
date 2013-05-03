@@ -123,9 +123,7 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 
 		this.callParent(arguments);
 
-		var toolbar = this.getItemPanelToolbar(),
-			itemPanel = this.getItemPanel(),
-			isDraft = (curFolderId === ZCS.constant.ID_DRAFTS),
+		var	isDraft = (curFolderId === ZCS.constant.ID_DRAFTS),
 			convQueryTerms = [ 'underid:1' ],
 			title = Ext.String.htmlEncode(conv.get('subject') || ZtMsg.noSubject);
 
