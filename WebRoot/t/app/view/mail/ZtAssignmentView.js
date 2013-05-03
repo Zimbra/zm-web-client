@@ -22,7 +22,7 @@
  */
 Ext.define('ZCS.view.mail.ZtAssignmentView', {
 	extend: 'Ext.Sheet',
-	requies: [
+	requires: [
 		'Ext.Anim'
 	],
 	alias: 'widget.assignmentview',
