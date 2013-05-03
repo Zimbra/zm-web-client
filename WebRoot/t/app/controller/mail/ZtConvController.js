@@ -95,11 +95,12 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 	/**
 	 * Clears messages from the store, so they're removed from the view as well.
 	 */
-	clear: function() {
-
-		this.callParent();
+	clear: function(noItemsFound) {
 
 		this.getStore().removeAll();
+
+		this.callParent(arguments);
+
 		var quickReply = this.getQuickReply();
 		if (quickReply) {
 			quickReply.hide();

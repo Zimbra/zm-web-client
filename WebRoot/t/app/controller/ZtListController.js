@@ -190,7 +190,7 @@ Ext.define('ZCS.controller.ZtListController', {
 				}
 			}
 			this.updateTitlebar();
-			this.getItemController().clear();
+			this.getItemController().clear(records.length === 0);
 			ZCS.app.fireEvent('updatelistpanelToggle', this.getOrganizerTitle(), this.getApp());
 			if (folder && records.length) {
 				//make sure this element doesn't get focus due to an errant touch

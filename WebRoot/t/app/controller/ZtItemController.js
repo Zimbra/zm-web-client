@@ -54,13 +54,29 @@ Ext.define('ZCS.controller.ZtItemController', {
 	},
 
 	/**
-	 * Clears the content of the toolbar.
+	 * Clears the content of the toolbar. Hides placeholder text if appropriate.
+	 *
+	 * @param {Boolean}     noItemsFound        if true, list panel
 	 */
-	clear: function() {
+	clear: function(noItemsFound) {
+
 		this.updateToolbar({
 			title:      '',
 			hideAll:    true
 		});
+
+		// Don't show placeholder text if there is nothing to select
+		var itemListView = this.getItemPanel().down('list'),
+			placeholderText = itemListView && itemListView.emptyTextCmp;
+
+		if (placeholderText) {
+			if (noItemsFound) {
+				placeholderText.hide();
+			}
+			else {
+				placeholderText.show();
+			}
+		}
 	},
 
 	/**
