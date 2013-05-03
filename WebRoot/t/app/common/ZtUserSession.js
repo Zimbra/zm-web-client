@@ -152,6 +152,10 @@ Ext.define('ZCS.common.ZtUserSession', {
 	},
 
 	setNotifySeq: function(seq, force) {
+		//<debug>
+		Ext.Logger.info('set notify seq to ' + seq + ' (current is ' + this.notifySeq + ')');
+		//</debug>
+
 		if (force || (seq > this.notifySeq)) {
 			this.notifySeq = seq;
 		}

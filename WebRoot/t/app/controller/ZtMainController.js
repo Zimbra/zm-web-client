@@ -93,7 +93,7 @@ Ext.define('ZCS.controller.ZtMainController', {
 		if (this.pollId) {
 			clearTimeout(this.pollId);
 		}
-        //<debug>
+		//<debug>
 		Ext.Logger.poll('scheduling poll');
         //</debug>
 		this.pollId = Ext.defer(this.sendPoll, ZCS.constant.POLL_INTERVAL * 1000, this);
@@ -124,6 +124,7 @@ Ext.define('ZCS.controller.ZtMainController', {
 
 		if (this.pollId) {
 			clearTimeout(this.pollId);
+			this.pollId = null;
 		}
 
 		Ext.Msg.alert(ZtMsg.authExpiredTitle, ZtMsg.authExpiredText, function() {
