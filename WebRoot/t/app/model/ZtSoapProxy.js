@@ -85,23 +85,27 @@ Ext.define('ZCS.model.ZtSoapProxy', {
 	},
 
 	/**
-	 * When we get the response to a search request, set the text in the search field to the
-	 * search query if the user wants to see it.
+	 * Process notifications and look for a refresh block. Continue polling.
 	 */
 	processResponse: function(success, operation, request, response, callback, scope) {
 
 		if (success) {
-			var query = operation && operation.config && operation.config.query,
-				search;
-
 			this.callParent(arguments);
+		}
+		this.processResponse1(success, response);
+	},
 
-			this.processHeader(response.soapHeader);
+	processResponse1: function(success, response) {
+
+		var data = this.getReader().getResponseData(response);
+
+		if (success) {
+			this.processHeader(data.Header);
 			ZCS.app.getMainController().schedulePoll();
 		}
 		else {
 			try {
-				var error = JSON.parse(response.responseText).Body.Fault.Detail.Error.Code;
+				var error = data.Body.Fault.Detail.Error.Code;
 			}
 			catch(ex) {}
 			if (error === 'service.AUTH_REQUIRED' || error === 'service.AUTH_EXPIRED') {
@@ -380,9 +384,6 @@ Ext.define('ZCS.model.ZtSoapProxy', {
 	},
 
 	processSoapResponse: function(options, success, response) {
-
-		var data = this.getReader().getResponseData(response);
-		this.processHeader(data.Header);
-		ZCS.app.getMainController().schedulePoll();
+		this.processResponse1(success, response);
 	}
 });

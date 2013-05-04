@@ -90,6 +90,10 @@ Ext.define('ZCS.controller.ZtMainController', {
 	 */
 	schedulePoll: function() {
 
+		if (!ZCS.session.getSessionId()) {
+			return;
+		}
+
 		if (this.pollId) {
 			clearTimeout(this.pollId);
 		}
@@ -126,6 +130,7 @@ Ext.define('ZCS.controller.ZtMainController', {
 			clearTimeout(this.pollId);
 			this.pollId = null;
 		}
+		ZCS.session.setSessionId(null);
 
 		Ext.Msg.alert(ZtMsg.authExpiredTitle, ZtMsg.authExpiredText, function() {
 			this.doLogout();

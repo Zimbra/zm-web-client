@@ -42,9 +42,6 @@ Ext.define('ZCS.model.ZtReader', {
 			data.soapMethod = soapMethod;
 		}
 
-		// copy header to response object so ZtSoapProxy can check for notifications, etc
-		response.soapHeader = data.Header;
-
 		return data;
 	},
 

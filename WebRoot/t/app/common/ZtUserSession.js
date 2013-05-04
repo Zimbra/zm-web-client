@@ -31,7 +31,7 @@ Ext.define('ZCS.common.ZtUserSession', {
 	],
 
 	config: {
-		sessionId:              0,
+		sessionId:              null,
 		accountName:            '',
 		accountId:              '',
 		initialSearchResults:   null,
