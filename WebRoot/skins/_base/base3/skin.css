@@ -189,7 +189,7 @@ BODY						{	margin:0px; 	}
 #skin_td_sidebar_ad						{	width:@SidebarAdWidth@;		}
 /*#skin_td_new_button					{	padding:2px; 	}*/
 
-/** LoginPanel and Splash screen **/
+/** Login, Splash and Error screen **/
 #skin_container_splash_screen			{	@SkinOuter@	@FullWindow@ z-index:90000000;		}
 
 #ZLoginBodyContainer					{	@LoginPanelInnerBorder@	}
@@ -197,7 +197,8 @@ BODY						{	margin:0px; 	}
 #ZSplashBodyContainer					{	@SplashInnerBorder@		}
 
 .LoginScreen,
-.SplashScreen {
+.SplashScreen,
+.ErrorScreen {
 	position:absolute;
 	left:0px;
 	top:0px;
@@ -209,20 +210,23 @@ BODY						{	margin:0px; 	}
 	@LoginScreen@
 }
 .LoginScreen .center,
-.SplashScreen .center {
+.SplashScreen .center,
+.ErrorScreen .center {
 	margin-top:-160px;
 	margin-left:-250px;
 }
 
 .LoginScreen .center-small,
-.SplashScreen .center-small {
+.SplashScreen .center-small,
+.ErrorScreen .center-small {
 	height:270px;
 	margin-top:-135px;
 	margin-left:-126px;
 	width:250px;
 }
 .LoginScreen .center, .LoginScreen .center-small,
-.SplashScreen .center, .SplashScreen .center-small {
+.SplashScreen .center, .SplashScreen .center-small,
+.ErrorScreen .center, .ErrorScreen .center-small {
 	left:50%;
 	overflow:visible;
 	position:absolute;
@@ -230,50 +234,49 @@ BODY						{	margin:0px; 	}
 	z-index:11;
 }
 .LoginScreen .contentBox,
-.SplashScreen .contentBox {	
-	min-height:265px;
+.SplashScreen .contentBox,
+.ErrorScreen .contentBox {
+	@LoginContentBox@
 	width:500px;
+}
+.LoginScreen .contentBox,
+.SplashScreen .contentBox {
+	min-height:265px;
 #IFDEF MSIE_LOWER_THAN_7
 	height:265px;
 #ENDIF
-	@LoginContentBox@ 	
 }
-
 .LoginScreen .center-small .contentBox,
-.SplashScreen .center-small .contentBox{ width: auto; }
+.SplashScreen .center-small .contentBox,
+.ErrorScreen .center-small .contentBox { width:auto; }
 
-.center-small .form .submittd{ text-align: left; }
+.center-small .form .submittd{ text-align:left; }
  
 .LoginScreen H1,
-.SplashScreen H1 	{	@LoginH1@ 		}
-#ZLoginAppName 		{	@LoginAppName@ 	}
-.LoginScreen .ImgLoginBanner, 
+.SplashScreen H1			{	@LoginH1@ 		}
+
+#ZLoginAppName				{	@LoginAppName@ 	}
+
+.LoginScreen .ImgLoginBanner,
 .LoginScreen .ImgAppBanner, 
 .SplashScreen .ImgLoginBanner {
 	cursor:pointer;
 	display:block;
 }
 .LoginScreen .ImgAltBanner,
-.SplashScreen .ImgAltBanner {
-	@AltBanner@
+.SplashScreen .ImgAltBanner		{ @AltBanner@ }
+
+.LoginScreen #ZLoginErrorPanel,
+.ErrorScreen .InlineErrorPanel {
+	border:0px;
+	left:auto;
+	margin:10px 10%;
+	position:relative;
+	@InlineErrorPanel@
 }
-.LoginScreen .ZLoginField {
-	@roundCorners(5px)@
-}
-.LoginScreen INPUT[disabled] {
-	background-color:white;
-}
-.LoginScreen .decor1 {
-	@Decor1L@ 
-}
-.LoginScreen .decor2 {
-	@Decor2L@ 
-}
-.SplashScreen .decor1 {
-	@Decor1S@
-}
-.SplashScreen .decor2 {
-	@Decor2S@
+.LoginScreen #ZLoginErrorIcon,
+.ErrorScreen #ZErrorIcon {
+	margin:auto 10px auto auto;
 }
 .LoginScreen .Footer,
 .SplashScreen .Footer,
@@ -285,7 +288,6 @@ BODY						{	margin:0px; 	}
 	width:100%;
 	z-index:10;
 }
-
 .LoginScreen .copyright,
 .LoginScreen #ZLoginNotice,
 .SplashScreen .copyright {
@@ -294,10 +296,20 @@ BODY						{	margin:0px; 	}
 	@FontSize-normal@
 	@LoginFooterColor@
 }
-.LoginScreen #ZLoginNotice A {
-	@LoginFooterColor@
+/* Login Screen Only Items */
+.LoginScreen .ZLoginField {
+@roundCorners(5px)@
 }
-/*Splash Screen Only Items*/
+.LoginScreen INPUT[disabled] {
+	background-color:white;
+}
+.LoginScreen .decor1			{ @Decor1L@ }
+.LoginScreen .decor2			{ @Decor2L@ }
+.LoginScreen #ZLoginNotice A {
+@LoginFooterColor@
+}
+
+/* Splash Screen Only Items */
 .SplashScreen .content {
 	color:@LoginLabelColor@;
 	text-align:center;
@@ -319,6 +331,24 @@ BODY						{	margin:0px; 	}
 	text-decoration:underline;
 	@FontSize-normal@
 }
+.SplashScreen .decor1			{ @Decor1S@ }
+.SplashScreen .decor2			{ @Decor2S@ }
+
+/* Error Screen Only Items */
+.ErrorScreen .contentBox		{ padding-bottom:1em; }
+.ErrorScreen .ZErrorPanel		{ margin-top:30px; }
+#IFDEF MSIE
+.ErrorScreen .InlineErrorPanel	{ width:400px; }
+#ENDIF
+.ErrorScreen H2					{ margin:0; }
+.ErrorScreen A:link,
+.ErrorScreen A:visited			{ @Anchor@ }
+.ErrorScreen A:hover			{ @Anchor-hover@ }
+.ErrorScreen A:active			{ @Anchor-active@ }
+
+.ErrorScreen .decor1			{ @Decor1@ }
+.ErrorScreen .decor2			{ @Decor2@ }
+
 /** Logo Images **/
 .center-small .ImgLoginBanner,
 .ImgAppBanner			{	background-repeat:no-repeat; @AppBanner@   }
