@@ -71,7 +71,6 @@ Ext.define('ZCS.view.ZtListPanel', {
 					cls: 'zcs-flat',
 					handler: function() {
 						this.up('listpanel').fireEvent('newItem');
-						ZCS.app.fireEvent('hideListPanel');
 					},
 					iconCls: this.getNewButtonIcon(),
 					iconMask: true,
