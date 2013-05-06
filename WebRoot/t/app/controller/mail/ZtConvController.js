@@ -72,6 +72,7 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 		ZCS.app.on('notifyMessageCreate', this.handleCreateNotification, this);
 		ZCS.app.on('notifyMessageChange', this.handleModifyNotification, this);
 		ZCS.app.on('notifyConversationChange', this.handleConvChange, this);
+		ZCS.app.on('rerenderMessages', this.renderMessages, this);
 
 		this.getStore().on('addrecords', this.onAddRecords, this);
 
