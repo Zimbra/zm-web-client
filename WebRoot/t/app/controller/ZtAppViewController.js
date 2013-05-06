@@ -157,7 +157,7 @@ Ext.define('ZCS.controller.ZtAppViewController', {
 		this.appViews[appview.getApp()].placeHolder = appview.add({
 			xtype: 'container',
 			width: this.getNavigationWidth(positioningConfig),
-			hidden: !this.showPlaceholder(positioningConfig),
+			hidden: !this.showPlaceholder(positioningConfig)
 		});
 
 		config.width = width;
