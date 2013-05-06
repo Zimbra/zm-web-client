@@ -70,7 +70,7 @@ Ext.define('ZCS.view.mail.ZtMsgListView', {
 						msg: msg,
 						address: idParams.address
 					});
-					return false;
+					// return false;
 				}
 
 				// tag bubble
@@ -80,7 +80,7 @@ Ext.define('ZCS.view.mail.ZtMsgListView', {
 						msg: msg,
 						tagName: idParams.name
 					});
-					return false;
+					// return false;
 				}
 
 				// message actions menu
@@ -89,7 +89,7 @@ Ext.define('ZCS.view.mail.ZtMsgListView', {
 						menuName: ZCS.constant.MENU_MSG,
 						msg: msg
 					});
-					return false;
+					// return false;
 				}
 
 				// somewhere in the header that is not one of the above
