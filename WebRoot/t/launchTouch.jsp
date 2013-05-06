@@ -8,6 +8,39 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
+
+<c:catch var="exception">
+    <zm:getMailbox var="mailbox"/>
+    <fmt:setLocale value='${mailbox.prefs.locale}' scope='request'/>
+    <fmt:setBundle basename="/messages/ZtMsg" scope="request" force="true"/>
+    <c:set var='localeId' value="${mailbox.prefs.locale}" scope="request"/>
+    <c:set var="initialMailSearch" value="${mailbox.accountInfo.prefs.mailInitialSearch}"/>
+    <c:if test="${fn:startsWith(initialMailSearch, 'in:')}">
+        <c:set var="path" value="${fn:substring(initialMailSearch, 3, -1)}"/>
+    </c:if>
+
+    <c:set var="authcookie" value="${cookie.ZM_AUTH_TOKEN.value}"/>
+    <%
+        java.lang.String authCookie = (String) pageContext.getAttribute("authcookie");
+        ZAuthToken auth = new ZAuthToken(null, authCookie, null);
+    %>
+
+    <zm:getInfoJSON var="getInfoJSON" authtoken="<%= auth %>" dosearch="true" itemsperpage="20" types="conversation"
+                    folderpath="${path}" sortby="dateDesc"/>
+</c:catch>
+<c:if test="${not empty exception}">
+    <zm:getException var="error" exception="${exception}"/>
+    <c:choose>
+        <c:when test="${error.code eq 'service.AUTH_EXPIRED' or error.code eq 'service.AUTH_REQUIRED'}">
+            <c:redirect url="/?loginOp=relogin&client=touch&loginErrorCode=${error.code}"/>
+        </c:when>
+        <%-- Handle other errors here. For unhandled errors, login error code will appear in the url --%>
+        <c:otherwise>
+            <c:redirect url="/?client=touch&loginErrorCode=${error.code}"/>
+        </c:otherwise>
+    </c:choose>
+</c:if>
+
 <!DOCTYPE HTML>
 <html lang="en-US">
 <head>
@@ -27,7 +60,6 @@
  * ***** END LICENSE BLOCK *****
 -->
     <meta charset="UTF-8">
-    <fmt:setBundle basename="/messages/ZtMsg" scope="request" force="true" />
     <title><fmt:message key="zimbraTitle"/></title>
     <style type="text/css">
             /**
@@ -116,35 +148,12 @@
         }
     </style>
 
+    <jsp:include page="../public/Resources.jsp">
+        <jsp:param name="res" value="ZtMsg"/>
+    </jsp:include>
     <%
         String debug = request.getParameter("debug");
     %>
-    <c:catch var="exception">
-        <jsp:include page="../public/Resources.jsp">
-            <jsp:param name="res" value="ZtMsg"/>
-        </jsp:include>
-
-        <zm:getMailbox var="mailbox"/>
-        <c:set var="initialMailSearch" value="${mailbox.accountInfo.prefs.mailInitialSearch}"/>
-        <c:if test="${fn:startsWith(initialMailSearch, 'in:')}">
-            <c:set var="path" value="${fn:substring(initialMailSearch, 3, -1)}"/>
-        </c:if>
-
-        <c:set var="authcookie" value="${cookie.ZM_AUTH_TOKEN.value}"/>
-        <%
-            java.lang.String authCookie = (String) pageContext.getAttribute("authcookie");
-            ZAuthToken auth = new ZAuthToken(null, authCookie, null);
-        %>
-
-        <zm:getInfoJSON var="getInfoJSON" authtoken="<%= auth %>" dosearch="true" itemsperpage="20" types="conversation"
-                        folderpath="${path}" sortby="dateDesc"/>
-    </c:catch>
-    <c:if test="${not empty exception}">
-        <zm:getException var="error" exception="${exception}"/>
-        <c:if test="${error.code eq 'service.AUTH_EXPIRED' or error.code eq 'service.AUTH_REQUIRED'}">
-            <c:redirect url="/?loginOp=relogin&loginErrorCode=${error.code}"/>
-        </c:if>
-    </c:if>
 
     <script type="text/javascript">
 
