@@ -405,11 +405,10 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 	 * but can also take a message created via quick reply and send that.
 	 */
 	sendMessage: function(msg, callback, scope) {
-
+		this.getComposePanel().hide();
 		msg.save({
 			success: function() {
 				ZCS.app.fireEvent('showToast', ZtMsg.messageSent);
-				this.getComposePanel().hide();
 				if (callback) {
 					callback.apply(scope);
 				}
