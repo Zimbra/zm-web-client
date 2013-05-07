@@ -692,13 +692,13 @@ function(ev) {
 			index:			index
 		}
 		this._renderMessage(msg, params);
-		var msgView = this._msgViews[msg.id];
+		var msgView = this._msgViews && this._msgViews[msg.id];
 		if (msgView) {
 			msgView._scheduleResize();
 		}
 	}
 	else {
-		var msgView = this._msgViews[msg.id];
+		var msgView = this._msgViews && this._msgViews[msg.id];
 		if (msgView) {
 			return msgView._handleChange(ev);
 		}
