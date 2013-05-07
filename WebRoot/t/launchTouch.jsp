@@ -11,7 +11,14 @@
 
 <c:catch var="exception">
     <zm:getMailbox var="mailbox"/>
-    <fmt:setLocale value='${mailbox.prefs.locale}' scope='request'/>
+    <c:choose>
+        <c:when test="${not empty mailbox.prefs.locale}">
+            <fmt:setLocale value='${mailbox.prefs.locale}' scope='request' />
+        </c:when>
+        <c:otherwise>
+            <fmt:setLocale value='${pageContext.request.locale}' scope='request' />
+        </c:otherwise>
+    </c:choose>
     <fmt:setBundle basename="/messages/ZtMsg" scope="request" force="true"/>
     <c:set var='localeId' value="${mailbox.prefs.locale}" scope="request"/>
     <c:set var="initialMailSearch" value="${mailbox.accountInfo.prefs.mailInitialSearch}"/>
@@ -30,15 +37,7 @@
 </c:catch>
 <c:if test="${not empty exception}">
     <zm:getException var="error" exception="${exception}"/>
-    <c:choose>
-        <c:when test="${error.code eq 'service.AUTH_EXPIRED' or error.code eq 'service.AUTH_REQUIRED'}">
-            <c:redirect url="/?loginOp=relogin&client=touch&loginErrorCode=${error.code}"/>
-        </c:when>
-        <%-- Handle other errors here. For unhandled errors, login error code will appear in the url --%>
-        <c:otherwise>
-            <c:redirect url="/?client=touch&loginErrorCode=${error.code}"/>
-        </c:otherwise>
-    </c:choose>
+    <c:redirect url="/?loginOp=relogin&client=touch&loginErrorCode=${error.code}"/>
 </c:if>
 
 <!DOCTYPE HTML>
