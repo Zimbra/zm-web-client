@@ -183,7 +183,7 @@
 		<c:param name="customerDomain"	value="${param.customerDomain}" />
 	</c:if>		
 </c:url>" rel="stylesheet" type="text/css" />
-<c:if test="${ua.isIE9up}">
+<c:if test="${ua.isIE7up}">
     <link href="<c:url value="/css/ie-custom-icons.css">
     <c:param name="v" value="${vers}" />
     <c:param name="debug" value='${isDebug?"1":""}' />
