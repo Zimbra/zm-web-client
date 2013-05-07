@@ -2178,7 +2178,6 @@ function(pl, o) {
     if (lastChildren && lastChildren.nodeName.toLowerCase() === "table") {
         var doc = editor.getDoc(),
             div = doc.createElement("div");
-        div.appendChild(doc.createElement("br"));
         lastChildren.parentNode.appendChild(div);
     }
 
