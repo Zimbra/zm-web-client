@@ -30,7 +30,7 @@ Ext.define('ZCS.common.ZtUtil', {
 	idParams: {},
 
 	/**
-	 * Returns a unique DOM ID using a sequence number, eg "zcs-123".
+	 * Returns a unique ID using a sequence number, eg "zcs-123".
 	 *
 	 * @param {Object}  params  optional params to associate with this ID
 	 * @return {String}
@@ -53,6 +53,43 @@ Ext.define('ZCS.common.ZtUtil', {
 	getIdParams: function(id) {
 		return ZCS.util.idParams[id];
 	},
+
+	/**
+	 * Returns the ID that matches the given set of params. If more than one ID matches, a list is returned.
+	 * A partial set of params may be provided. The more params provided, the better the chance of finding just one ID.
+	 * The best approach is to provide the minimal set of params that will uniquely differentiate the element. If no
+	 * params are provided, returns all IDs.
+	 *
+	 * @param {Object}  params    set of fields describing the ID(s) being sought
+	 */
+/*
+	lookupId: function(params) {
+
+		var me = ZCS.util,
+			allIds = Object.keys(me.idParams),
+			len = ids.length, i, idParams, add, param,
+			ids = [];
+
+		if (!params) {
+			return allIds;
+		}
+
+		for (i = 0; i < len; i++) {
+			idParams = me.idParams[allIds[i]];
+			add = true;
+			for (param in params) {
+				if (idParams[param] && params[param] !== idParams[param]) {
+					add = false;
+					continue;
+				}
+			}
+			if (add) {
+				ids.push(idParams.id);
+			}
+		}
+		return (ids.length === 0) ? null : (ids.length === 1) ? ids[0] : ids;
+	},
+*/
 
 	getAppFromObject: function(obj) {
 
@@ -302,5 +339,29 @@ Ext.define('ZCS.common.ZtUtil', {
 		else {
 			return (Math.round((size / (1024 * 1024)) * 10) / 10) + ' ' + ZtMsg.megabytes;
 		}
+	},
+
+	/**
+	 * Shortens a potentially long file name for display by eliding the middle part of the name
+	 * and retaining the extension.
+	 *
+	 * ZCS.util.trimFileName('abcdefghijklmnopqrstuvwxyz.pdf', 15) => 'abcd...wxyz.pdf'
+	 *
+	 * @param {String}  fileName    name of file
+	 * @param {Number}  max         maximum length of string to return
+	 *
+	 * @return {String}     possibly truncated file name
+	 */
+	trimFileName: function(fileName, max) {
+
+		var parts = fileName.split('.');
+		if (!parts || parts.length !== 2 || fileName.length <= max || max < 10) {
+			return fileName;
+		}
+
+		var name = parts[0], ext = parts[1],
+			len = (max - (ext.length + 4)) / 2;
+
+		return name.substr(0, len) + '...' + name.substr(-len) + '.' + ext;
 	}
 });
