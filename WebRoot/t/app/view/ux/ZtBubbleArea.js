@@ -348,7 +348,7 @@ Ext.define('ZCS.view.ux.ZtBubbleArea', {
 
         me.fireEvent('bubbleAdded', bubbleModel);
         if (me.inputField) {
-            me.inputField.validate();
+//            me.inputField.validate();
         }
     },
 
@@ -421,7 +421,7 @@ Ext.define('ZCS.view.ux.ZtBubbleArea', {
 
         me.fireEvent('bubbleRemoved', bubble.bubbleModel);
         if (me.inputField) {
-            me.inputField.validate();
+//            me.inputField.validate();
         }
     },
 
