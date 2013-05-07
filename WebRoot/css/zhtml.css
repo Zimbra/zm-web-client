@@ -237,7 +237,7 @@ SUBMIT,
 	padding-right: 6px;    
 }
 
-A:visited { @Text-link@ }
+A:visited { color: blue; }
 
 
 

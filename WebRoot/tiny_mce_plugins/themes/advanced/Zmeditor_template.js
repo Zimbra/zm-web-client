@@ -249,10 +249,10 @@ Zmeditor_template.getFontSize = function(value){
                 }
                 fn = fn || body.style.fontFamily;
                 if(fn){
-                    fn = fn.replace(/[\"\']+/g, '').replace(/^([^,]+).*/, '$1').toLowerCase();
+                    fn = fn .replace(/[\"\']+/g, '').replace(/^([^,]+).*/, '$1').toLowerCase();
                 }
                 c.select(function(v) {
-                    return v.replace(/[\"\']+/g, '').replace(/^([^,]+).*/, '$1').toLowerCase() == fn;
+                    return v.replace(/^([^,]+).*/, '$1').toLowerCase() == fn;
                 });
             }
 

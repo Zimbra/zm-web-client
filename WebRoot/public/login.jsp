@@ -21,8 +21,7 @@
 
 <%-- get useragent --%>
 <zm:getUserAgent var="ua" session="false"/>
-<c:set var="useMobile" value="${ua.isiPhone or ua.isiPod or (ua.isOsAndroid and not ua.isAndroidTablet)}"/>
-<c:set var="useTablet" value="${ua.isTouchiPad or (ua.isOsAndroid and ua.isAndroidTablet)}"/>
+<c:set var="useMobile" value="${ua.isiPhone or ua.isiPod or ua.isOsAndroid}"/>
 <c:set var="trimmedUserName" value="${fn:trim(param.username)}"/>
 
 <%--'virtualacctdomain' param is set only for external virtual accounts--%>
@@ -135,7 +134,6 @@
         <c:otherwise>
             <c:set var="client" value="${param.client}"/>
             <c:if test="${empty client and useMobile}"><c:set var="client" value="mobile"/></c:if>
-            <c:if test="${empty client and useTablet}"><c:set var="client" value="touch"/></c:if>
             <c:if test="${empty client or client eq 'preferred'}">
                 <c:set var="client" value="${requestScope.authResult.prefs.zimbraPrefClientType[0]}"/>
             </c:if>
@@ -187,17 +185,6 @@
                                     </c:if>
                                 </c:forEach>
                             </c:forEach>
-                    </c:redirect>
-                </c:when>
-                <c:when test="${client eq 'touch'}">
-                    <c:redirect url="/t">
-                        <c:forEach var="p" items="${paramValues}">
-                            <c:forEach var='value' items='${p.value}'>
-                                <c:if test="${not fn:contains(ignoredQueryParams, p.key)}">
-                                    <c:param name="${p.key}" value='${value}'/>
-                                </c:if>
-                            </c:forEach>
-                        </c:forEach>
                     </c:redirect>
                 </c:when>
                 <c:otherwise>
@@ -288,7 +275,7 @@ if (application.getInitParameter("offlineMode") != null)  {
  login.jsp
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012, 2013 VMware, Inc.
+ * Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -303,21 +290,28 @@ if (application.getInitParameter("offlineMode") != null)  {
     <c:set var="useStandard" value="${not (ua.isFirefox3up or ua.isGecko1_9up or ua.isIE7up or ua.isSafari4Up or ua.isChrome)}"/>
     <c:if test="${empty client}">
         <%-- set client select default based on user agent. --%>
-        <c:set var="client" value="${useTablet ? 'touch' : useMobile ? 'mobile' : useStandard ? 'standard' : 'preferred' }"/>
+        <c:set var="client" value="${useMobile ? 'mobile' : useStandard ? 'standard' : 'preferred' }"/>
     </c:if>
     <c:set var="smallScreen" value="${client eq 'mobile'}"/>
     <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE9" />
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
     <title><fmt:message key="zimbraLoginTitle"/></title>
     <c:set var="version" value="${initParam.zimbraCacheBusterVersion}"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=1">
+    <meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=1;">
     <meta name="description" content="<fmt:message key="zimbraLoginMetaDesc"/>">
-    <link  rel="stylesheet" type="text/css" href="<c:url value='/css/common,login,zhtml,skin.css'>
+    <link  rel="stylesheet" type="text/css" href="<c:url value='/css/common,login,zhtml.css'>
 		<c:param name="skin"	value="${skin}" />
 		<c:param name="v"		value="${version}" />
 		<c:if test="${not empty param.debug}">
 		    <c:param name="debug" value="${param.debug}" />
 		</c:if>
+		<c:if test="${not empty param.customerDomain}">
+			<c:param name="customerDomain"	value="${param.customerDomain}" />
+		</c:if>	
+	</c:url>">
+	<link  rel="stylesheet" type="text/css" href="<c:url value='/css/skin.css'>
+		<c:param name="skin"	value="${skin}" />
+		<c:param name="v"		value="${version}" />
 		<c:if test="${not empty param.customerDomain}">
 			<c:param name="customerDomain"	value="${param.customerDomain}" />
 		</c:if>	
@@ -382,7 +376,7 @@ if (application.getInitParameter("offlineMode") != null)  {
                                                 <%--Internal user login - username & password input fields--%>
                                                 <tr>
                                                     <td><label for="username"><fmt:message key="username"/>:</label></td>
-                                                    <td><input id="username" class="zLoginField" name="username" type="text" value="${fn:escapeXml(param.username)}" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}" autocapitalize="off" autocorrect="off"/></td>
+                                                    <td><input id="username" class="zLoginField" name="username" type="text" value="${fn:escapeXml(param.username)}" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}"/></td>
                                                 </tr>
                                             </c:otherwise>
                                         </c:choose>
@@ -425,8 +419,6 @@ if (application.getInitParameter("offlineMode") != null)  {
 									<option value="advanced"  <c:if test="${client eq 'advanced'}">selected</c:if>> <fmt:message key="clientAdvanced"/></option>
 									<option value="standard"  <c:if test="${client eq 'standard'}">selected</c:if>> <fmt:message key="clientStandard"/></option>
 									<option value="mobile"  <c:if test="${client eq 'mobile'}">selected</c:if>> <fmt:message key="clientMobile"/></option>
-                                    <option value="touch"  <c:if test="${client eq 'touch'}">selected</c:if>> <fmt:message key="clientTouch"/></option>
-
 								</select>
 <script TYPE="text/javascript">
 	document.write("<a href='#' onclick='showWhatsThis()' id='ZLoginWhatsThisAnchor'><fmt:message key="whatsThis"/><"+"/a>");
@@ -472,7 +464,7 @@ if (application.getInitParameter("offlineMode") != null)  {
   if (link) {
     link.href = skin.hints.banner.url;
   }
-
+  
 <c:if test="${smallScreen && ua.isIE}">       /*HACK FOR IE*/
   var resizeLoginPanel = function(){
       var panelElem = document.getElementById('ZLoginPanel');

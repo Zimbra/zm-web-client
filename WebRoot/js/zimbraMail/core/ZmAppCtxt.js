@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013 VMware, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -60,11 +60,6 @@ ZmAppCtxt.MAX_TIMEOUT_VALUE = 2147483647;
 
 ZmAppCtxt._ZIMLETS_EVENT = 'ZIMLETS';
 
-//Regex constants
-//Bug fix # 79986, #81095. Invalid file names are < > , ? | / \ * :
-ZmAppCtxt.INVALID_NAME_CHARS = "[\\|?<>:*\",\\\\\/]";
-ZmAppCtxt.INVALID_NAME_CHARS_RE = new RegExp(ZmAppCtxt.INVALID_NAME_CHARS);
-
 /**
  * Returns a string representation of the application context.
  * 
@@ -76,29 +71,44 @@ function() {
 };
 
 ZmAppCtxt.prototype._setAuthTokenWarning =
-function() {
-	window.setInterval(this._authTokenWarningTimeout.bind(this), ZmAppCtxt.ONE_MINUTE);
+function(timeLeftInMillis) {
+	var millisToLive = timeLeftInMillis || window.authTokenTimeLeftInMillis;
+	var wholeMinutesToLive = Math.floor(millisToLive / ZmAppCtxt.ONE_MINUTE);
+	var minutesToWarnBeforeLogout = Math.min(5, wholeMinutesToLive - 1); 
+
+	if (minutesToWarnBeforeLogout == 0) {
+		return; //before they know it, they will be logged out anyway. Rare case.
+	}
+
+	var millisToWarning = millisToLive - ZmAppCtxt.ONE_MINUTE * minutesToWarnBeforeLogout;
+	if (millisToWarning > 0) {
+		if (millisToWarning <= ZmAppCtxt.MAX_TIMEOUT_VALUE) {
+			window.setTimeout(this._authTokenWarningTimeout.bind(this, minutesToWarnBeforeLogout), millisToWarning);
+		} else {
+			//2147483647 is the max int value for which the timeout will work in most browsers. If the value exceeds the max
+			//then call this function again after the max time.
+			window.setTimeout(this._setAuthTokenWarning.bind(this, millisToLive - ZmAppCtxt.MAX_TIMEOUT_VALUE), ZmAppCtxt.MAX_TIMEOUT_VALUE);
+		}
+
+	}
 };
 
 
 ZmAppCtxt.prototype._authTokenWarningTimeout =
-function () {
+function (minutesLeft) {
 
-	var now = new Date().getTime();
-	var millisToLive = window.authTokenExpires - now;
-	var minutesToLive = Math.floor(millisToLive / ZmAppCtxt.ONE_MINUTE);
-
-	if (minutesToLive > 5 || minutesToLive <= 0) {
-		return;
-	}
-
-	var msg = AjxMessageFormat.format(ZmMsg.authTokenExpirationWarning, [minutesToLive, minutesToLive  > 1 ? ZmMsg.minutes : ZmMsg.minute]);
+	var msg = AjxMessageFormat.format(ZmMsg.authTokenExpirationWarning, [minutesLeft, minutesLeft  > 1 ? ZmMsg.minutes : ZmMsg.minute]);
 	var params = {
 		msg: msg,
 		level: ZmStatusView.LEVEL_WARNING,
 		transitions: [{type: "fade-in", duration: 500}, {type: "pause", duration: ZmAppCtxt.ONE_MINUTE / 4}, {type: "fade-out", duration: 500} ]
 	};
 	this.setStatusMsg(params);
+	//call again in a minute
+	if (minutesLeft > 1) {
+		window.setTimeout(this._authTokenWarningTimeout.bind(this, minutesLeft - 1), ZmAppCtxt.ONE_MINUTE);
+	}
+
 };
 
 /**
@@ -387,19 +397,6 @@ function() {
 };
 
 /**
- * Gets the message dialog with a help button.
- *
- * @return	{DwtMessageDialog}	the message dialog
- */
-ZmAppCtxt.prototype.getHelpMsgDialog =
-	function() {
-		if (!this._helpMsgDialog) {
-			this._helpMsgDialog = new DwtMessageDialog({parent:this._shell, helpText:ZmMsg.help, id: "ZmHelpMsgDialog"});
-		}
-		return this._helpMsgDialog;
-	};
-
-/**
  * Gets the yes/no message dialog.
  * 
  * @return	{DwtMessageDialog}	the message dialog
@@ -556,7 +553,7 @@ function() {
 ZmAppCtxt.prototype.getNewCalendarDialog =
 function() {
 	if (!this._newCalendarDialog) {
-		AjxDispatcher.require(["MailCore", "CalendarCore", "Calendar", "CalendarAppt"]);
+		AjxDispatcher.require(["CalendarCore", "Calendar", "CalendarAppt"]);
 		this._newCalendarDialog = new ZmNewCalendarDialog(this._shell);
 	}
 	return this._newCalendarDialog;
@@ -584,7 +581,7 @@ function() {
 ZmAppCtxt.prototype.getSuggestionPreferenceDialog =
 function() {
 	if (!this._suggestionPrefDialog) {
-		AjxDispatcher.require(["MailCore", "CalendarCore", "Calendar"]);
+		AjxDispatcher.require(["CalendarCore", "Calendar"]);
         this._suggestionPrefDialog = new ZmTimeSuggestionPrefDialog(this._shell);
     }
     return this._suggestionPrefDialog;

@@ -103,6 +103,16 @@ FORM {
 	border-color:transparent transparent @LoginLabelColor@; 
 	height:0;
 }
+.LoginScreen #ZLoginErrorPanel {
+	border:0px;
+	left:auto;
+	margin:10px 10%;
+	position:relative;
+	@LoginErrorPanel@
+}
+.LoginScreen #ZLoginErrorIcon {
+	margin:auto 10px auto auto;
+}
 .LoginScreen .postioning{
 	position:relative;
 	z-index:20;

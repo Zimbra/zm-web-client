@@ -209,17 +209,22 @@
 </c:if>
 <link rel="SHORTCUT ICON" href="<c:url value='${favIconUrl}'/>">
 <script>
-	window.appContextPath		= "${zm:jsEncode(contextPath)}";
-	window.appCurrentSkin		= "${zm:jsEncode(skin)}";
-	window.appExtension			= "${zm:jsEncode(ext)}";
-	window.appRequestLocaleId	= "${locale}";
-	window.appDevMode			= ${isDevMode};
-    window.appCoverageMode		= ${isCoverage};
-    window.isScriptErrorOn		= ${isScriptErrorOn};
-    window.isPerfMetric			= ${isPerfMetric};
+	appContextPath = "${zm:jsEncode(contextPath)}";
+	appCurrentSkin = "${zm:jsEncode(skin)}";
+	appExtension   = "${zm:jsEncode(ext)}";
+	appRequestLocaleId = "${locale}";
+	window.appDevMode     = ${isDevMode};
+    window.appCoverageMode = ${isCoverage};
+    window.isScriptErrorOn   = ${isScriptErrorOn};
+    window.isPerfMetric = ${isPerfMetric};
 
-	window.authTokenExpires = <%= authResult.getExpires()%>;
-
+<%
+	long expires = authResult.getExpires();
+	long timeLeftInMillis = expires - System.currentTimeMillis();
+	%>
+		authTokenTimeLeftInMillis = <%= timeLeftInMillis%>;
+	<%
+%>
 
 </script>
 <noscript>
@@ -298,7 +303,7 @@
 <jsp:include page="Boot.jsp"/>
 <script>
 	AjxEnv.DEFAULT_LOCALE = "${zm:javaLocaleId(locale)}";
-    virtualAcctDomain = "<%= (virtualAcctDomain != null) ? virtualAcctDomain : "" %>";
+    var virtualAcctDomain = "<%= (virtualAcctDomain != null) ? virtualAcctDomain : "" %>";
     function killSplashScreenSwitch() {
         if (!virtualAcctDomain) {
             return false;
@@ -309,18 +314,16 @@
         }
     }
 	function switchToStandardClient() {
-		document.location = window.appContextPath + "/?client=standard";
+		document.location = appContextPath + "/?client=standard";
 	}
     killSplashScreenSwitch();
 	<c:set var="enforceMinDisplay" value="${requestScope.authResult.prefs.zimbraPrefAdvancedClientEnforceMinDisplay[0]}"/>
 	<c:if test="${param.client ne 'advanced'}">
-		enforceMinDisplay = ${enforceMinDisplay ne 'FALSE'};
-		unsupported = (screen && (screen.width <= 800 && screen.height <= 600) && !${isOfflineMode}) || (AjxEnv.isSafari && !AjxEnv.isSafari4up);
+		var enforceMinDisplay = ${enforceMinDisplay ne 'FALSE'};
+		var unsupported = (screen && (screen.width <= 800 && screen.height <= 600) && !${isOfflineMode}) || (AjxEnv.isSafari && !AjxEnv.isSafari4up);
 		if (enforceMinDisplay && unsupported) {
 			switchToStandardClient();
 		}
-		delete enforceMinDisplay;
-		delete unsupported;
 	</c:if>
 </script>
 <%@ include file="loadImgData.jsp" %>
@@ -332,7 +335,7 @@
 	String allPackages = "Startup1_1,Startup1_2";
     if (extraPackages != null) {
     	if (extraPackages.equals("dev")) {
-            extraPackages = "Startup2,MailCore,Mail,ContactsCore,CalendarCore,Calendar,CalendarAppt,Contacts,BriefcaseCore,Briefcase,PreferencesCore,Preferences,TasksCore,Tasks,Extras,Share,Zimlet,ZimletApp,Alert,ImportExport,BrowserPlus,Voicemail";
+            extraPackages = "Startup2,CalendarCore,Calendar,CalendarAppt,ContactsCore,Contacts,MailCore,Mail,BriefcaseCore,Briefcase,PreferencesCore,Preferences,TasksCore,Tasks,Extras,Share,Zimlet,ZimletApp,Alert,ImportExport,BrowserPlus,Voicemail";
     	}
     	allPackages += "," + BeanUtils.cook(extraPackages);;
     }
@@ -382,16 +385,14 @@
 </c:if>
 <script>
 // compile locale specific templates
-for (pkg in window.AjxTemplateMsg) {
-	text = AjxTemplateMsg[pkg];
+for (var pkg in window.AjxTemplateMsg) {
+	var text = AjxTemplateMsg[pkg];
 	AjxTemplate.compile(pkg, true, false, text);
 }
-delete pkg;
-delete text;
 </script>
 
 <script>
-	window.cacheKillerVersion = "${zm:jsEncode(vers)}";
+	var cacheKillerVersion = "${zm:jsEncode(vers)}";
 	function launch() {
 		// quit if this function has already been called
 		if (arguments.callee.done) {return;}
@@ -400,9 +401,9 @@ delete text;
 		arguments.callee.done = true;
 
 		// kill the timer
-		if (window._timer) {
-			clearInterval(window._timer);
-			delete _timer;
+		if (_timer) {
+			clearInterval(_timer);
+			_timer = null;
 		}
 
 		var prodMode = ${isProdMode};
@@ -476,8 +477,6 @@ delete text;
 			noSplashScreen:noSplashScreen, unitTest:"${unitTest}", preset:"${preset}", virtualAcctDomain : virtualAcctDomain
 		};
 		ZmZimbraMail.run(params);
-		
-		delete virtualAcctDomain;
 	}
 
     //	START DOMContentLoaded
@@ -499,7 +498,7 @@ delete text;
     }
 
     if (/(WebKit|khtml)/i.test(navigator.userAgent)) { // sniff
-        window._timer = setInterval(function() {
+        var _timer = setInterval(function() {
             if (/loaded|complete/.test(document.readyState)) {
                 launch();
                 // call the onload handler

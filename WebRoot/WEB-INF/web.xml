@@ -119,7 +119,7 @@
     <filter-class>org.eclipse.jetty.servlets.IncludableGzipFilter</filter-class>
     <init-param>
       <param-name>mimeTypes</param-name>
-      <param-value>application/x-javascript,text/html,text/plain,text/css,application/soap+xml</param-value>
+      <param-value>text/html,text/plain,text/css,application/soap+xml</param-value>
     </init-param>
     <init-param>
       <param-name>userAgent</param-name>
@@ -168,7 +168,7 @@
     </init-param>
     <init-param>
       <param-name>Expires</param-name>
-      <param-value>2595600</param-value>
+      <param-value>604800</param-value>
       <!--
         Expires should be the number of seconds from now when a
         given static resource should expire
@@ -187,7 +187,7 @@
     <init-param>
       <param-name>noCachePatternList</param-name>
       <param-value>
-                %%zimbraMailURL%%/,%%zimbraMailURL%%/mail,%%zimbraMailURL%%/auth/,.jsp,%%zimbraAdminURL%%/,%%zimbraMailURL%%/h/,%%zimbraMailURL%%/h/.*,/h/.*,%%zimbraMailURL%%/m/.*,/m/.*,%%zimbraMailURL%%/t/.*,/t/.*
+                %%zimbraMailURL%%/,%%zimbraMailURL%%/mail,%%zimbraMailURL%%/auth/,.jsp,%%zimbraAdminURL%%/,%%zimbraMailURL%%/h/,%%zimbraMailURL%%/h/.*,/h/.*,%%zimbraMailURL%%/m/.*,/m/.*,%%zimbraMailURL%%/y/.*,/y/.*
       </param-value>
       <!--
         List of patterns for which no-cache headers will be returned.
@@ -438,7 +438,6 @@
     <welcome-file>login</welcome-file>
     <welcome-file>public/login.jsp</welcome-file>
     <welcome-file>public/admin.jsp</welcome-file>
-    <welcome-file>launchTouch.jsp</welcome-file>
   </welcome-file-list>
   
     <env-entry>
@@ -585,20 +584,5 @@
         </user-data-constraint>
     </security-constraint>
 REDIRECTEND -->
-
-  <security-constraint>
-    <web-resource-collection>
-      <web-resource-name>Zimbra Downloads</web-resource-name>
-      <url-pattern>/downloads/*</url-pattern>
-    </web-resource-collection>
-    <auth-constraint>
-      <role-name>user</role-name>
-    </auth-constraint>
-  </security-constraint>
- 
-  <login-config>
-    <auth-method>ZimbraAuth</auth-method>
-    <realm-name>Zimbra</realm-name>
-  </login-config>
 
 </web-app>
