@@ -348,7 +348,7 @@ Ext.define('ZCS.view.ux.ZtBubbleArea', {
 
         me.fireEvent('bubbleAdded', bubbleModel);
         if (me.inputField) {
-//            me.inputField.validate();
+           me.inputField.validate();
         }
     },
 
@@ -421,7 +421,7 @@ Ext.define('ZCS.view.ux.ZtBubbleArea', {
 
         me.fireEvent('bubbleRemoved', bubble.bubbleModel);
         if (me.inputField) {
-//            me.inputField.validate();
+           me.inputField.validate();
         }
     },
 
@@ -459,6 +459,26 @@ Ext.define('ZCS.view.ux.ZtBubbleArea', {
             isFormField: true,
             width: 30,
             listeners: {
+                initialize: function () {
+                    this.validate = function () {
+                        var result = this.isValid();
+                        return result;
+                    };
+
+                    this.isValid = function () {
+                        var  bubbles = me.getBubbles();
+                        if (!me.allowBlank && bubbles.length === 0) {
+                            return false;
+                        }
+                        return true;
+                    };
+
+                    this.isDirty = function () {
+                        // This function is required because of the setting isFormField: true
+                        // We are not using the dirty feature yet, so for now the function is just a placeholder
+                        return false;
+                    };
+                },
                 painted: function () {
                     var inputEl = this.element.down('input');
 
@@ -511,22 +531,6 @@ Ext.define('ZCS.view.ux.ZtBubbleArea', {
                         });
                     }
                 }
-            },
-            validate: function () {
-                var result = this.isValid();
-                return result;
-            },
-            isValid: function () {
-                var  bubbles = me.getBubbles();
-                if (!me.allowBlank && bubbles.length === 0) {
-                    return false;
-                }
-                return true;
-            },
-            isDirty: function () {
-                // This function is required because of the setting isFormField: true
-                // We are not using the dirty feature yet, so for now the function is just a placeholder
-                return false;
             }
         };
     },
