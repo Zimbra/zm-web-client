@@ -2469,8 +2469,8 @@ function(op, okCallback, cancelCallback, switchToText) {
 
 ZmComposeController.prototype._showMsgDialog =
 function(dlgType, msg, style, callbacks) {
-	
-	var ac = window.parentAppCtxt || window.appCtxt;
+
+	var ac = window.appCtxt;
 	var dlg = this._currentDlg = (dlgType === ZmComposeController.MSG_DIALOG_1) ? ac.getMsgDialog() :
 								 (dlgType === ZmComposeController.MSG_DIALOG_2) ? ac.getOkCancelMsgDialog() : ac.getYesNoCancelMsgDialog();
 	dlg.reset();
