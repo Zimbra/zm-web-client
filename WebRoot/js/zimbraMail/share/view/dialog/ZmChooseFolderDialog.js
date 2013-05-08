@@ -408,14 +408,16 @@ function() {
 			var items = treeView.getTreeItemList();
 			for (var i = 0, len = items.length; i < len; i++) {
 				var ti = items[i];
-				if (ti.getData) {
-					var folder = items[i].getData(Dwt.KEY_OBJECT);
-					if (folder && (folder.nId != ZmOrganizer.ID_ROOT)) {
-						var name = folder.getName(false, null, true, true).toLowerCase();
-						var path = "/" + folder.getPath(false, false, null, true).toLowerCase();
-						this._folders.push({id:folder.id, type:type, name:name, path:path, accountId:accountId});
-					}
+				if (!ti.getData) {  //not sure if this could happen but it was here before my refactoring.
+					continue;
 				}
+				var folder = items[i].getData(Dwt.KEY_OBJECT);
+				if (!folder || folder.nId === ZmOrganizer.ID_ROOT) {
+					continue;
+				}
+				var name = folder.getName(false, null, true, true).toLowerCase();
+				var path = "/" + folder.getPath(false, false, null, true).toLowerCase();
+				this._folders.push({id: folder.id, type: type, name: name, path: path, accountId: accountId});
 			}
 		}
 	}
