@@ -54,7 +54,7 @@ Ext.define('ZCS.view.mail.ZtMsgListView', {
 
 				// see if tap listener has been turned off
 				if (!this.getAllowTaps()) {
-					return false;
+					return true;
 				}
 
 				var elm = Ext.fly(e.target),
@@ -70,7 +70,7 @@ Ext.define('ZCS.view.mail.ZtMsgListView', {
 						msg: msg,
 						address: idParams.address
 					});
-					// return false;
+					return true;
 				}
 
 				// tag bubble
@@ -80,7 +80,7 @@ Ext.define('ZCS.view.mail.ZtMsgListView', {
 						msg: msg,
 						tagName: idParams.name
 					});
-					// return false;
+					return true;
 				}
 
 				// message actions menu
@@ -89,7 +89,7 @@ Ext.define('ZCS.view.mail.ZtMsgListView', {
 						menuName: ZCS.constant.MENU_MSG,
 						msg: msg
 					});
-					// return false;
+					return true;
 				}
 
 				// somewhere in the header that is not one of the above
