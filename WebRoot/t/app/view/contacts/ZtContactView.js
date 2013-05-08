@@ -22,6 +22,11 @@ Ext.define('ZCS.view.contacts.ZtContactView', {
 	extend: 'Ext.Container',
 	xtype: ZCS.constant.APP_CONTACTS + 'itemview',
 	config: {
-		tpl: Ext.create('Ext.XTemplate', ZCS.template.Contact)
+		tpl: Ext.create('Ext.XTemplate', ZCS.template.Contact),
+        cls: 'zcs-contactview',
+        scrollable: {
+            direction: 'vertical',
+            directionLock: true
+        }
 	}
 });

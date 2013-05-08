@@ -110,7 +110,7 @@ ZCS.constant.OVERVIEW_TITLE[ZCS.constant.APP_CONTACTS]   = ZtMsg.addrbooks;
 // Icon for button that creates a new item
 ZCS.constant.NEW_ITEM_ICON = {};
 ZCS.constant.NEW_ITEM_ICON[ZCS.constant.APP_MAIL]       = 'compose';
-ZCS.constant.NEW_ITEM_ICON[ZCS.constant.APP_CONTACTS]   = 'plus';
+ZCS.constant.NEW_ITEM_ICON[ZCS.constant.APP_CONTACTS]   = 'add';
 
 // popup menus
 ZCS.constant.MENU_CONV      = 'convActions';
@@ -593,10 +593,30 @@ ZCS.constant.CONTACT_ATTRS = [
 	'lastName',
 	'email',
 	'company',
+    'jobTitle',
 	'fileAs',
+
 	'image',
 	'imagepart',
-	'zimletImage'
+	'zimletImage',
+
+    'workCity',
+    'workStreet',
+    'workPostalCode',
+    'workState',
+    'workCountry',
+
+    'otherCity',
+    'otherStreet',
+    'otherPostalCode',
+    'otherState',
+    'otherCountry',
+
+    'homeCity',
+    'homePostalCode',
+    'homeStreet',
+    'homeState',
+    'homeCountry'
 ];
 // email2 - email16
 (function() {

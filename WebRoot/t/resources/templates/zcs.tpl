@@ -163,12 +163,108 @@
 </template>
 
 <template id='ContactListItem'>
-	<span style='font-weight:bold'>{lastName}, {firstName}</span>
+<div>
+	<div class='zcs-contactList-person' <tpl if='imageUrl'>style='background-image: url({imageUrl})'</tpl>></div>
+	<div class='zcs-contactList-name' style='font-weight:bold;'>{lastName}<tpl if='lastName && firstName'> , </tpl>{firstName}</div>
+</div>
 </template>
 
 <template id='Contact'>
 	<tpl>
-		<div>{firstName} {lastName}</div>
+        <div class='zcs-floatLeft'>
+            <div class='zcs-floatLeft zcs-contactview-image' style='{imageStyle}'></div>
+            <div class='zcs-floatLeft zcs-contactview-personalinfo'>
+                <span name="contactname" style='font-weight:bold;'>{lastName}<tpl if='lastName && firstName'> , </tpl>{firstName}</span>
+                <span>{jobTitle}</span>
+                <span>{company}</span>
+            </div>
+        </div>
+        <div class='zcs-newLine' style='position: relative; top: 1.6em;'>
+            <tpl if='emailFields'>
+            <div class='zcs-floatLeft'>
+                <div class='zcs-floatLeft zcs-contactview-labels'>{[ZtMsg.email]}</div>
+                <div class='zcs-floatLeft'>
+                    <tpl for='emailFields'>
+                        <div class='zcs-newLine zcs-contactview-fields'>{.}</div>
+   				    </tpl>
+                </div>
+            </div>
+            </tpl>
+            <div class='zcs-fieldSpacer'></div>
+            <tpl if='mobilePhoneFields || workPhoneFields || otherPhoneFields'>
+            <div class='zcs-newLine'>
+                <div class='zcs-floatLeft zcs-contactview-labels'>{[ZtMsg.phone]}</div>
+                <div class='zcs-floatLeft'>
+                        <tpl for='mobilePhoneFields'>
+                             <div class='zcs-newLine zcs-contactview-fields'>{.}</div>
+                             <div class='zcs-floatLeft' style='color: #C0C0C0;'>{[ZtMsg.mobile]}</div>
+                       	</tpl>
+                       	<tpl for='workPhoneFields'>
+                             <div class='zcs-newLine zcs-contactview-fields'>{.}</div>
+                             <div class='zcs-floatLeft' style='color: #C0C0C0;'>{[ZtMsg.work]}</div>
+                        </tpl>
+                        <tpl for='otherPhoneFields'>
+                             <div class='zcs-newLine zcs-contactview-fields'>{.}</div>
+                             <div class='zcs-floatLeft' style='color: #C0C0C0;'>{[ZtMsg.other]}</div>
+                        </tpl>
+                </div>
+            </div>
+            </tpl>
+            <div class='zcs-fieldSpacer'></div>
+            <tpl if='isHomeAddressExists || isWorkAddressExists || isOtherAddressExists'>
+            <div class='zcs-newLine'>
+                <div class='zcs-floatLeft zcs-contactview-labels'>{[ZtMsg.address]}</div>
+                <div class='zcs-floatLeft'>
+                    <tpl if='isHomeAddressExists'>
+                    <div class='zcs-floatLeft zcs-contactview-fields'>
+                        <span class='zcs-newLine'>{homeStreet}</span>
+                        <span class='zcs-newLine'>{homeCity} {homeState} {homePostalCode}</span>
+                        <span class='zcs-newLine'>{homeCountry}</span>
+                    </div>
+                    <div class='zcs-floatLeft' style='color: #C0C0C0;'>{[ZtMsg.home]}</div>
+                    <div class='zcs-fieldSpacer'></div>
+                    </tpl>
+                    <tpl if='isWorkAddressExists'>
+                    <div class='zcs-newLine zcs-contactview-fields'>
+                        <span class='zcs-newLine'>{workStreet}</span>
+                        <span class='zcs-newLine'>{workCity} {workState} {workPostalCode}</span>
+                        <span class='zcs-newLine'>{workCountry}</span>
+                    </div>
+                    <div class='zcs-floatLeft' style='color: #C0C0C0;'>{[ZtMsg.work]}</div>
+                    <div class='zcs-fieldSpacer'></div>
+                    </tpl>
+                    <tpl if='isOtherAddressExists'>
+                    <div class='zcs-newLine zcs-contactview-fields'>
+                        <span class='zcs-newLine'>{otherStreet}</span>
+                        <span class='zcs-newLine'>{otherCity} {otherState} {otherPostalCode}</span>
+                        <span class='zcs-newLine'>{otherCountry}</span>
+                    </div>
+                    <div class='zcs-floatLeft' style='color: #C0C0C0;'>{[ZtMsg.other]}</div>
+                    </tpl>
+                </div>
+            </div>
+            </tpl>
+            <div class='zcs-fieldSpacer'></div>
+            <tpl if='homeUrlFields || workUrlFields || otherUrlFields'>
+            <div class='zcs-newLine'>
+                <div class='zcs-floatLeft zcs-contactview-labels'>{[ZtMsg.url]}</div>
+                <div class='zcs-floatLeft'>
+                        <tpl for='homeUrlFields'>
+                             <div class='zcs-newLine zcs-contactview-fields'>{.}</div>
+                             <div class='zcs-floatLeft' style='color: #C0C0C0;'>{[ZtMsg.home]}</div>
+                        </tpl>
+                        <tpl for='workUrlFields'>
+                             <div class='zcs-newLine zcs-contactview-fields'>{.}</div>
+                             <div class='zcs-floatLeft' style='color: #C0C0C0;'>{[ZtMsg.work]}</div>
+                        </tpl>
+                        <tpl for='otherUrlFields'>
+                             <div class='zcs-newLine zcs-contactview-fields'>{.}</div>
+                             <div class='zcs-floatLeft' style='color: #C0C0C0;'>{[ZtMsg.other]}</div>
+                        </tpl>
+                </div>
+            </div>
+            </tpl>
+        </div>
 	</tpl>
 </template>
 

@@ -63,14 +63,18 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
 		this.callParent(arguments);
 
 		this.updateToolbar({
-			title:  contact.get('lastName') + ', ' + contact.get('firstName')
+			title:  contact.get('displayName')
 		});
 
 		//Make sure the organizer button stays...
 		ZCS.app.fireEvent('updatelistpanelToggle', this.getOrganizerTitle(), ZCS.session.getActiveApp());
 
 		var tpl = this.getContactView().getTpl();
-		this.getContactView().setHtml(tpl.apply(contact.getData()));
+        var data = contact.getData();
+        var imageUrl = ZCS.common.ZtUtil.getImageUrl(contact, 125);
+
+        data.imageStyle = imageUrl ? 'background-image: url(' + imageUrl + ')' : '';
+        this.getContactView().setHtml(tpl.apply(data));
 	},
 
 	updateToolbar: function(params) {

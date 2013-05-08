@@ -37,35 +37,6 @@ Ext.define('ZCS.view.mail.ZtMsgHeader', {
 		}
 	},
 
-    /**
-     * Get the image URL.
-     *
-     * contact {Object} contact details
-     * maxWidth {int} max pixel width (optional - default 48)
-     * @return	{String}	the image URL
-     */
-    getImageUrl: function(contact, maxWidth) {
-        var image = contact && contact.data.image;
-        var imagePart  = (image && image.part) || contact.data.imagepart;
-
-        if (!imagePart) {
-            return contact.data.zimletImage || null;  //return zimlet populated image only if user-uploaded image is not there.
-        }
-
-        maxWidth = maxWidth || 48;
-
-        return ZCS.htmlutil.buildUrl({
-            path: ZCS.constant.PATH_MSG_FETCH,
-            qsArgs: {
-                auth: 'co',
-                id: contact.data.id,
-                part: imagePart,
-                max_width:maxWidth,
-                t:(new Date()).getTime()
-            }
-        });
-    },
-
 	/**
 	 * Displays the message header in one of three states: collapsed, expanded, or detailed.
 	 *
@@ -108,7 +79,7 @@ Ext.define('ZCS.view.mail.ZtMsgHeader', {
 
 		// Get contact image if it has one
         var contact = ZCS.cache.get(fromAddr && fromAddr.get('email'), 'email'),
-            imageUrl = contact && this.getImageUrl(contact);
+            imageUrl = contact && ZCS.common.ZtUtil.getImageUrl(contact);
 
         data.imageStyle = imageUrl ? 'background-image: url(' + imageUrl + ')' : '';
 

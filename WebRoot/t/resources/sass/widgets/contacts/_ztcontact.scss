@@ -1,0 +1,123 @@
+/*
+ * ***** BEGIN LICENSE BLOCK *****
+ *
+ * Zimbra Collaboration Suite Web Client
+ * Copyright (C) 2013 VMware, Inc.
+ *
+ * The contents of this file are subject to the Zimbra Public License
+ * Version 1.3 ("License"); you may not use this file except in
+ * compliance with the License.  You may obtain a copy of the License at
+ * http://www.zimbra.com/license.
+ *
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ *
+ * ***** END LICENSE BLOCK *****
+ */
+$contactBkgdColor: $white;
+
+.zcs-item-panel {
+	background-color: darken($contactBkgdColor, 10%);
+
+	.zcs-contactview {
+		padding: .5em;
+	    background-color: $contactBkgdColor;
+	}
+
+	.zcs-contactview .x-innerhtml {
+	    padding: 2em 0 0 2em;
+	}
+}
+
+$contactListImageSize: 2.2em;
+$contactImageSize: 7.2em;
+$contactStdMargin: 0.7em;
+$contactTopOffset: 0.4em;
+$contactLeftIndent: $contactStdMargin;
+$contactButtonSize: $contactImageSize/1.5;
+$contactRightIndent: $contactButtonSize + $contactStdMargin*4;
+
+/*Generic Classes*/
+.zcs-floatLeft {
+    float: left;
+}
+
+.zcs-floatRight {
+    float: right;
+}
+
+.zcs-newLine {
+    float: left;
+    clear: left;
+}
+
+.zcs-fieldSpacer {
+    width: 100%;
+    height: 0.9em;
+    @extend .zcs-newLine;
+}
+
+/*Contact List Classes*/
+.zcs-contactList-person {
+	background-image: url('../images/person.png');
+	background-size: 100% auto;
+	background-repeat: no-repeat;
+	height: $contactListImageSize;
+	left: $contactStdMargin;
+	top: $contactTopOffset;
+	width: $contactListImageSize;
+	float:left;
+}
+
+.zcs-contactList-name {
+	position:relative;
+	left: $contactLeftIndent;
+	top: $contactTopOffset;
+	float: left;
+}
+
+/*Contact View classes*/
+.zcs-contactview-image {
+	background-image: url('../images/person.png');
+	background-size: 100% auto;
+	background-repeat: no-repeat;
+	height: $contactImageSize;
+	width: $contactImageSize;
+	float:left;
+}
+
+.zcs-contactview-personalinfo span[name=contactname] {
+    font-size: 1.3em;
+}
+
+.zcs-contactview-personalinfo span {
+	font-size: 0.9em;
+	padding: 5px 0 0 30px;
+	float:left;
+	clear: left;
+	top: $contactTopOffset;*/
+}
+
+.zcs-contactview-labels {
+    width: 7.2em;
+    text-align: right;
+    font-weight: bold
+}
+
+.zcs-contactview-fields {
+    width: 18em;
+    padding: 0 0 0 30px;
+}
+
+/*Create Contact Classes*/
+.zcs-contact-image {
+	background-image: url('../images/person.png');
+	background-size: 110px 110px;
+	background-repeat: no-repeat;
+	background-position: 30px 30px;
+	height: 125px;
+}
+
+.zcs-contact-personalinfo {
+    width:80%;
+}

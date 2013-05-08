@@ -45,7 +45,39 @@ Ext.define('ZCS.model.contacts.ZtContact', {
 					}
 				}
 			},
-			{ name: 'email', type: 'string' },
+            {
+                name: 'emailFields',
+                type: 'auto'
+            },
+            {
+                name: 'mobilePhoneFields',
+                type: 'auto'
+            },
+            {
+                name: 'workPhoneFields',
+                type: 'auto'
+            },
+            {
+                name: 'otherPhoneFields',
+                type: 'auto'
+            },
+            {
+                name: 'homeUrlFields',
+                type: 'auto'
+            },
+            {
+                name: 'workUrlFields',
+                type: 'auto'
+            },
+            {
+                name: 'otherUrlFields',
+                type: 'auto'
+            },
+			{
+                name: 'email',
+                type: 'string'
+            },
+            { name: 'jobTitle', type: 'string'},
 			{ name: 'company', type: 'string' },
 			{ name: 'fileAs', type: 'int' } ,
             /**
@@ -53,8 +85,72 @@ Ext.define('ZCS.model.contacts.ZtContact', {
              */
             { name: 'image', type: 'auto'},
             { name: 'imagepart', type: 'auto'},
-            { name: 'zimletImage', type: 'auto'}
-		],
+            { name: 'zimletImage', type: 'auto'},
+            { name: 'homeStreet', type: 'string'},
+            { name: 'homeCity', type: 'string'},
+            { name: 'homeState', type: 'string'},
+            { name: 'homePostalCode', type: 'int'},
+            { name: 'workStreet', type: 'string'},
+            { name: 'workCity', type: 'string'},
+            { name: 'workState', type: 'string'},
+            { name: 'workPostalCode', type: 'int'},
+            { name: 'otherStreet', type: 'string'},
+            { name: 'otherCity', type: 'string'},
+            { name: 'otherState', type: 'string'},
+            { name: 'otherPostalCode', type: 'int'},
+            { name: 'isHomeAddressExists', type: 'boolean',
+                convert:function(v, record) {
+                    if (record.data.homeStreet || record.data.homeCity || record.data.homeState
+                        || record.data.homePostalCode || record.data.homeCountry) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
+            },
+            { name: 'isWorkAddressExists', type: 'boolean',
+                convert:function(v, record) {
+                    if (record.data.workStreet || record.data.workCity || record.data.workState
+                        || record.data.workPostalCode || record.data.workCountry) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
+            },
+            { name: 'isOtherAddressExists', type: 'boolean',
+                convert:function(v, record) {
+                    if (record.data.otherStreet || record.data.otherCity || record.data.otherState
+                        || record.data.otherPostalCode || record.data.otherCountry) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
+            },
+            { name: 'imageUrl', type:'auto',
+                convert: function(v, record) {
+                    var image = record.data.image;
+                    var imagePart  = (image && image.part) || record.data.imagepart;
+
+                    if (!imagePart) {
+                        return record.data.zimletImage || null;  //return zimlet populated image only if user-uploaded image is not there.
+                    }
+
+                    return ZCS.htmlutil.buildUrl({
+                        path: ZCS.constant.PATH_MSG_FETCH,
+                        qsArgs: {
+                            auth: 'co',
+                            id: record.data.id,
+                            part: imagePart,
+                            max_width:48,
+                            t:(new Date()).getTime()
+                        }
+                    });
+                }
+            }
+
+        ],
 
 		proxy: {
 			type: 'soapproxy',
