@@ -395,9 +395,16 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 
 	/**
 	 * Sends a message constructed from values in the compose form.
+	 *
+	 * @param {Object}                  eOpts       Sencha event options
+	 * @param {Ext.event.Controller}    controller  Sencha event controller
+	 * @param {Boolean}                 force       if true, skip error checks and send msg
 	 */
-	doSend: function() {
-		this.sendMessage(this.getMessageModel());
+	doSend: function(eOpts, controller, force) {
+		var msg = this.getMessageModel(force);
+		if (msg) {
+			this.sendMessage(msg);
+		}
 	},
 
 	/**
@@ -429,13 +436,27 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 		}, this);
 	},
 
-	getMessageModel: function () {
+	getMessageModel: function (force) {
 
 		var	values = this.getComposeForm().getValues(),
 			editor = this.getEditor(),
 			action = this.getAction(),
 			isNewCompose = (action === ZCS.constant.OP_COMPOSE),
 			origMsg = !isNewCompose && this.getOrigMsg();
+
+		if (values[ZCS.constant.TO].length === 0 && values[ZCS.constant.CC].length === 0 && values[ZCS.constant.BCC].length === 0) {
+			Ext.Msg.alert(ZtMsg.error, ZtMsg.errorNoAddresses);
+			return null;
+		}
+
+		if (!values.subject && !force) {
+			Ext.Msg.confirm(ZtMsg.warning, ZtMsg.errorNoSubject, function(buttonId) {
+				if (buttonId === 'yes') {
+					this.doSend(null, null, true);
+				}
+			}, this);
+			return null;
+		}
 
         //<debug>
 		Ext.Logger.info('Send message');
