@@ -1227,7 +1227,16 @@ if (ext == null) ext = "";
       dir='${help.dir}' includes='${help.includes}' excludes='${help.excludes},${help.excludes2}' />
 	</target>
 
-    <target name='touch' depends='init' unless="build.admin">
+    <target name="touch-init" depends="init">
+        <condition property="no.touch">
+            <or>
+                <istrue value="${build.admin}"/>
+                <istrue value="${no.touch}"/>
+            </or>
+        </condition>
+    </target>
+
+    <target name='touch' depends='touch-init' unless="no.touch">
         <mkdir dir='${build.touch.dir}'/>
         <if>
             <not>
