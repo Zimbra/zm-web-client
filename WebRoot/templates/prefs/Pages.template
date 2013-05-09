@@ -153,7 +153,7 @@ and the container element is replaced with that control.
 						<td class='ZOptionsField'><table><tr><td><div id='${id}_PAGE_SIZE' tabindex='90'></div></td><td style="padding-left:4px;"><$=ZmMsg.pageSizeDesc$></td></tr></table></td>
 					</tr>
 					<tr>
-						<td class='ZOptionsLabel'><$=ZmMsg.settingsLabel$></td>
+						<td class='ZOptionsLabel'><$=ZmMsg.selectionLabel$></td>
 						<td class='ZOptionsField'><div id='${id}_SHOW_SELECTION_CHECKBOX' tabindex='95'></div></td>
 					</tr>
 					<$ if (appCtxt.isOffline && appCtxt.accountList.size() > 2) { $>
