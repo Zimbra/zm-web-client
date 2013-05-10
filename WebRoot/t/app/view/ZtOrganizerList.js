@@ -41,7 +41,9 @@ Ext.define('ZCS.view.ZtOrganizerList', {
 				nestedList = this.up('nestedlist');
 
 			nestedList.goToNode(node);
-		}
+		},
+
+		grouped: true
 	},
 
 	/**
@@ -80,7 +82,7 @@ Ext.define('ZCS.view.ZtOrganizerList', {
 
 		var list = this.callParent(arguments);
 
-		list.grouped = this.grouped;
+		list.grouped = this.getGrouped();
 		list.store.setGrouper(this.getStore().config.grouper);
 
 		return list;
