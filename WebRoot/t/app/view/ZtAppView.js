@@ -50,7 +50,7 @@ Ext.define('ZCS.view.ZtAppView', {
 			        itemNavigationReservesSpace: false,
 		            itemNavigationAlwaysShown: false,
 			        hasOverviewNavigation: true,
-		            navigationWidth: 0.3
+		            navigationWidth: 0.4
 			    }
 			},
 			phone: {
@@ -58,7 +58,7 @@ Ext.define('ZCS.view.ZtAppView', {
 		            itemNavigationReservesSpace: false,
 		            itemNavigationAlwaysShown: false,
 		            hasOverviewNavigation: true,
-		            navigationWidth: 1.0
+		            navigationWidth: 0.8
 			    },
 			    portrait: {
 			        itemNavigationReservesSpace: false,

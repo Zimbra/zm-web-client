@@ -18,6 +18,7 @@ $zcs-mail-indent: 22px;
 $zcs-mail-topline1: .1em;
 $zcs-mail-topline2: 1.8em;
 $zcs-mail-topline3: 3.5em;
+$zcs-mail-dateWidth: 5.5em;
 
 .zcs-mail-list {
 	min-height: 5.75em;
@@ -60,7 +61,7 @@ $zcs-mail-topline3: 3.5em;
 	@include ellipsis();
 	font-size: 1.2em;
 	left: $zcs-mail-indent;
-	right: 3em;
+	right: $zcs-mail-dateWidth+.5em;
 	top: $zcs-mail-topline1;
 }
 
@@ -72,9 +73,11 @@ $zcs-mail-topline3: 3.5em;
 .zcs-mail-date {
 	@extend .zcs-mail-list-item;
 	@extend .zcs-date;
+	@include ellipsis();
 	right: .5em;
 	top: .4em;
 	white-space: nowrap;
+	width: $zcs-mail-dateWidth;
 }
 
 .zcs-mail-attachment {
