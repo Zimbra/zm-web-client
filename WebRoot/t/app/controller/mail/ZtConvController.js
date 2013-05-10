@@ -61,7 +61,10 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 				{ label: ZtMsg.convMove,        action: ZCS.constant.OP_MOVE,       listener: 'doMove' },
 				{ label: ZtMsg.convTag,         action: ZCS.constant.OP_TAG,        listener: 'doTag' }
 			]
-		}
+		},
+
+		// Flag to turn handling of 'updatedata' event within ZtMsgView on and off
+		handleUpdateDataEvent: false
 	},
 
 	launch: function () {
@@ -106,6 +109,8 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 		if (quickReply) {
 			quickReply.hide();
 		}
+
+		this.msgViewById = {};
 	},
 
 	/**
@@ -173,17 +178,50 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 
 		var store = this.getStore(),
 			msgViews = this.getMsgListView().query('msgview'),
-			ln = msgViews.length, i, msgView, record;
+			ln = msgViews.length, i, msgView, msgId, record;
+
+		this.msgViewById = {};
 
 		for (i = 0; i < ln; i++) {
 			msgView = msgViews[i];
 			record = store.getAt(i);
 			if (msgView && record) {
 				msgView.render(record);
+				msgId = record.get('itemId');
+				this.msgViewById[msgId] = msgView;
 			}
 		}
 
 		this.adjustItemHeights(msgViews);
+	},
+
+	/**
+	 * Returns the msg view that is currently displaying the msg with the given ID.
+	 *
+	 * @param {String}  msgId       a msg ID
+	 * @return {ZtMsgView}
+	 */
+	getMsgViewById: function(msgId) {
+		return this.msgViewById ? this.msgViewById[msgId] : null;
+	},
+
+	/**
+	 * Establishes a mapping between a msg with the given ID and a msg view.
+	 * If no msg view is provided, removes the mapping for the given ID.
+	 *
+	 * @param {String}      msgId       a msg ID
+	 * @param {ZtMsgView}   msgView     a msg view
+	 */
+	setMsgViewById: function(msgId, msgView) {
+
+		var msgViewById = this.msgViewById = this.msgViewById || {};
+		if (!msgView) {
+			msgViewById[msgId] = null;
+			delete msgViewById[msgId];
+		}
+		else {
+			msgViewById[msgId] = msgView;
+		}
 	},
 
 	adjustItemHeights: function(msgViews) {
@@ -306,7 +344,9 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 					omit = ZCS.util.arrayAsLookupHash(ZCS.constant.CONV_HIDE);
 
 				if (omit[localId]) {
+					this.setHandleUpdateDataEvent(true);
 					store.remove(item);
+					this.setHandleUpdateDataEvent(false);
 				}
 			}
 

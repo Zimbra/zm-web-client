@@ -44,7 +44,43 @@ Ext.define('ZCS.view.mail.ZtMsgView', {
 
 		expanded: undefined,    // true if this view is expanded (shows header and body)
 
-		state: ZCS.constant.HDR_COLLAPSED  // Display state of this header: ZCS.constant.HDR_*
+		state: ZCS.constant.HDR_COLLAPSED, // Display state of this header: ZCS.constant.HDR_*
+
+		listeners: {
+
+			// In general, we manually render a msg view as needed, without using this event. Sometimes,
+			// we need to catch this event and do some rendering (eg when the store removes a record),
+			// since the support for a component-based List within Sencha Touch isn't great. Template-based
+			// Lists do a much better job of keeping the view sync'ed with the store.
+			//
+			// Since the 'updatedata' event is triggered a lot by Sencha core code, we whitelist when we
+			// want to handle it using a flag in the controller.
+
+			updatedata: function(msgView, msgData) {
+
+				var controller = ZCS.app.getConvController();
+
+				if (msgView && msgData && controller.getHandleUpdateDataEvent()) {
+
+					var msgId = msgData.id,
+						msg = ZCS.cache.get(msgId),
+						oldMsgView = controller.getMsgViewById(msgId);
+
+					//<debug>
+					Ext.Logger.info('updatedata for msg ' + msgId + ' ("' + msg.get('fragment') + '") from msg view ' + oldMsgView.getId() + ' into msg view ' + msgView.getId());
+					//</debug>
+
+					// maintain the msg's display state - it's just getting moved to a different msg view
+					if (msg) {
+						msgView.setMsg(msg);
+						msgView.setExpanded(oldMsgView.getExpanded());
+						msgView.setState(oldMsgView.getState());
+						msgView.refreshView();
+						controller.setMsgViewById(msgId, msgView);
+					}
+				}
+			}
+		}
 	},
 
 	/**
@@ -84,13 +120,15 @@ Ext.define('ZCS.view.mail.ZtMsgView', {
 	 * @param {Boolean} showQuotedText  if true, show quoted text
 	 */
 	renderBody: function(showQuotedText) {
-		this.down('msgbody').on('msgContentResize', function () {
+
+		var msgBody = this.down('msgbody');
+		msgBody.on('msgContentResize', function () {
 			this.updateHeight();
 		}, this, {
 			single: true
 		});
 
-		this.down('msgbody').render(this.getMsg(), showQuotedText);
+		msgBody.render(this.getMsg(), showQuotedText);
 	},
 
 	/**
