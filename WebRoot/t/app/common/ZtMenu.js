@@ -116,7 +116,8 @@ Ext.define('ZCS.common.ZtMenu', {
 		referenceComponent: null,
 
 		enableItemsFn: null,
-		enableItemsScope: null
+		enableItemsScope: null,
+		positioning: null
 	},
 
 	initialize: function() {
@@ -130,6 +131,12 @@ Ext.define('ZCS.common.ZtMenu', {
 			xtype: 'menulist',
 			itemTpl: this.getMenuItemTpl()
 		});
+
+		ZCS.app.on('orientationChange', function () {
+			if (!this.isHidden()) {
+				this.rePosition();
+			}
+		}, this);
 	},
 
 	/**
@@ -192,6 +199,8 @@ Ext.define('ZCS.common.ZtMenu', {
 		var list = this.down('list'),
 			enableItemsFn = this.getEnableItemsFn();
 
+		this.setPositioning(positioning);
+
 		list.deselect(list.getSelection()); // clear the previous selection
 		this.showBy(this.getReferenceComponent(), positioning || 'tr-br?');
 		this.adjustHeight();
@@ -202,6 +211,10 @@ Ext.define('ZCS.common.ZtMenu', {
 			// May cause flicker first time menu is displayed.
 			Ext.defer(enableItemsFn, 200, this.getEnableItemsScope() || this, [this.getName()]);
 		}
+	},
+
+	rePosition: function () {
+		this.showBy(this.getReferenceComponent(), this.getPositioning() || 'tr-br?');
 	},
 
 	/**

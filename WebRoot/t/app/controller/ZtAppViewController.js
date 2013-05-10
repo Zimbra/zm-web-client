@@ -68,6 +68,7 @@ Ext.define('ZCS.controller.ZtAppViewController', {
 			this.resetPanelSize(width, height);
 			this.updateModalnessOfOverlays();
 			this.updatelistpanelToggle(this.overviewTitle);
+			ZCS.app.fireEvent('orientationChange');
 		}, this);
 
 		//Handle show overview panel events.
@@ -331,7 +332,6 @@ Ext.define('ZCS.controller.ZtAppViewController', {
 		return {
 			xtype: 'sheet',
 			layout: 'fit',
-			floating: true,
 			items: [
 				config
 			],
