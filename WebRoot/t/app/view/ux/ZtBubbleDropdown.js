@@ -67,8 +67,6 @@ Ext.define('ZCS.view.ux.ZtBubbleDropdown', {
 		 */
 		menuWidth: 250,
 
-		maxResults: 5,
-
 		listeners: {
 			inputKeyup: function (e, el) {
 				var value = el.value;
@@ -202,7 +200,7 @@ Ext.define('ZCS.view.ux.ZtBubbleDropdown', {
 		});
 
 		//Only return the number specified in the config and no more.
-		return Ext.Array.slice(menuRecords, 0, this.getMaxResults() - 1);
+		return menuRecords;
 	},
 
 	/**
