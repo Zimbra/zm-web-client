@@ -125,10 +125,10 @@ Ext.define('ZCS.view.ux.ZtIframe', {
 						id,
 						pageX, //pageX
 						pageY, //pageY
-						undefined, //screenX
-						undefined, //screenY
-						undefined, //clientX
-						undefined //clientY
+						oldTouch.screenX, //screenX
+						oldTouch.screenX, //screenY
+						oldTouch.clientX, //clientX
+						oldTouch.clientY //clientY
 					);
 					newTouches.push(newTouch);
 				}
@@ -140,7 +140,7 @@ Ext.define('ZCS.view.ux.ZtIframe', {
 				// This function is based on Apple's implementation, it may differ in other touch based browsers.
 				// http://developer.apple.com/library/safari/#documentation/UserExperience/Reference/TouchEventClassReference/TouchEvent/TouchEvent.html
 				// Notes here: http://lists.w3.org/Archives/Public/public-webevents/2012AprJun/0004.html
-				var cloneEvent = document.createEvent('TouchEvent'),
+				var clonedEvent = document.createEvent('TouchEvent'),
 					touches,
 					targetTouches,
 					changedTouches,
@@ -184,7 +184,7 @@ Ext.define('ZCS.view.ux.ZtIframe', {
 				targetTouches = touchProcessor(ev.targetTouches, target, changeId, freezeY);
 				changedTouches = touchProcessor(ev.changedTouches, target, changeId, freezeY);
 
-				cloneEvent.initTouchEvent(
+				clonedEvent.initTouchEvent(
 					ev.type, //type, The type of event that occurred.
 					true, //canBubble, Indicates whether an event can bubble. If true, the event can bubble; otherwise, it cannot.
 					true, //cancelable, Indicates whether an event can have its default action prevented. If true, the default action can be prevented; otherwise, it cannot.
@@ -205,7 +205,7 @@ Ext.define('ZCS.view.ux.ZtIframe', {
 					ev.rotation //rotation The delta rotation since the start of an event, in degrees, where clockwise is positive and counter-clockwise is negative. The initial value is 0.0.
 				);
 
-				return cloneEvent;
+				return clonedEvent;
 			},
 			delegateEvent = function (ev) {
 				var clonedEvent;
@@ -349,7 +349,7 @@ Ext.define('ZCS.view.ux.ZtIframe', {
 		// a height of 150 by default, so prioritize childrenHeight if smaller.
 		var height = childrenHeight;
 		if (childrenHeight > 150 && computedHeight > 150 && contentHeight > 150) {
-			height = Math.max(childrenHeight, computedHeight, contentHeight);
+			height = childrenHeight;
 		}
 
 		//Only modify the dom and fire corresponding event if it's needed.
