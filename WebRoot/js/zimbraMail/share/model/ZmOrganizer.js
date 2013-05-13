@@ -1429,9 +1429,9 @@ function(obj, details) {
 		doNotify = true;
 	}
 	if ((obj.rgb != null || obj.color != null) && !obj._isRemote) {
-		this.isColorCustom = obj.rgb != null;
         var color = obj.color || obj.rgb;
 		if (this.isColorChanged(color)) {
+			this.isColorCustom = obj.rgb != null;
 			this.color = obj.color;
             this.rgb = obj.rgb || ZmOrganizer.COLOR_VALUES[color];
 			fields[ZmOrganizer.F_COLOR] = true;
