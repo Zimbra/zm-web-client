@@ -54,7 +54,13 @@ function() {
 	this.setVisible(true);
 	
 	this.hasRendered = true;
-}
+};
+
+ZmFilterPage.prototype.reset =
+function() {
+	ZmPreferencesPage.prototype.reset.apply(this, arguments);
+	this._controller._stateChangeListener();
+};
 
 ZmFilterPage.prototype.getTabView =
 function () {
