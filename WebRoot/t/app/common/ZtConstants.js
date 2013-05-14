@@ -624,3 +624,10 @@ ZCS.constant.CONTACT_ATTRS = [
 		ZCS.constant.CONTACT_ATTRS.push('email' + i);
 	}
 })();
+
+ZCS.constant.IS_FATAL_ERROR = {
+	'account.MAINTENANCE_MODE'  : true,
+	'mail.MAINTENANCE'          : true,
+	'service.AUTH_REQUIRED'     : true,
+	'service.AUTH_EXPIRED'      : true
+};

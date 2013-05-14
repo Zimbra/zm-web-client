@@ -197,6 +197,10 @@ $info-color: #FF9;
 	@include border-radius(1em);
 }
 
+.zcs-invite {
+  font-family: sans-serif;
+}
+
 .zcs-invite-label {
 	width: 1%;
 	font-size: $msgHdrTextSize;

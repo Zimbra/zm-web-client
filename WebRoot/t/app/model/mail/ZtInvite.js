@@ -29,23 +29,24 @@ Ext.define('ZCS.model.mail.ZtInvite', {
 	config: {
 
 		fields: [
-			{ name: 'id',               type: 'string' },
-			{ name: 'attendees',        type: 'auto' },
-			{ name: 'optAttendees',     type: 'auto' },
-			{ name: 'subject',          type: 'string' },
-			{ name: 'description',      type: 'string' },
-			{ name: 'htmlDescription',  type: 'string' },
-			{ name: 'start',            type: 'auto' },
-			{ name: 'end',              type: 'auto' },
-			{ name: 'isAllDay',         type: 'boolean' },
-			{ name: 'location',         type: 'string' },
-			{ name: 'organizer',        type: 'auto' },
-			{ name: 'isOrganizer',      type: 'boolean' },
-			{ name: 'sentBy',           type: 'auto' },
-			{ name: 'status',           type: 'string' },
-			{ name: 'method',           type: 'string' },
-			{ name: 'myResponse',       type: 'string' },
-			{ name: 'apptFolderId',     type: 'string' }
+			{ name: 'id',                   type: 'string' },
+			{ name: 'attendees',            type: 'auto' },
+			{ name: 'optAttendees',         type: 'auto' },
+			{ name: 'subject',              type: 'string' },
+			{ name: 'description',          type: 'string' },
+			{ name: 'htmlDescription',      type: 'string' },
+			{ name: 'start',                type: 'auto' },
+			{ name: 'end',                  type: 'auto' },
+			{ name: 'isAllDay',             type: 'boolean' },
+			{ name: 'location',             type: 'string' },
+			{ name: 'organizer',            type: 'auto' },
+			{ name: 'isOrganizer',          type: 'boolean' },
+			{ name: 'sentBy',               type: 'auto' },
+			{ name: 'status',               type: 'string' },
+			{ name: 'method',               type: 'string' },
+			{ name: 'myResponse',           type: 'string' },
+			{ name: 'apptFolderId',         type: 'string' },
+			{ name: 'calendarIntendedFor',  type: 'string' }
 		],
 
 		msgId: ''
@@ -202,6 +203,7 @@ Ext.define('ZCS.model.mail.ZtInvite', {
 				attendees:      ZCS.model.mail.ZtMailItem.convertAddressModelToObject(this.get('attendees')),
 				optAttendees:   ZCS.model.mail.ZtMailItem.convertAddressModelToObject(this.get('optAttendees')),
 				notes:          this.get('notes'),
+				intendedFor:    this.get('calendarIntendedFor'),
 
 				acceptButtonId:     ZCS.util.getUniqueId(Ext.apply({}, {
 					action: ZCS.constant.OP_ACCEPT

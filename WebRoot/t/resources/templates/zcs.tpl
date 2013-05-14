@@ -275,7 +275,7 @@
 
 <template id="Invite">
 	<tpl>
-		<table>
+		<table class='zcs-invite'>
 			<tpl if='start==end'>
 			<tr>
 				<td class='zcs-invite-label'>{[ZtMsg.invDateLabel]}</td>
@@ -347,6 +347,14 @@
 					<span class='zcs-invite-button zcs-invite-decline' id='{declineButtonId}'>{[ZtMsg.decline]}</span>
 				</td>
 			</tr>
+			<tpl if='intendedFor'>
+			<tr>
+				<td class='zcs-invite-label'>{[ZtMsg.invIntendedFor]}</td>
+				<td>
+					<span class='vm-area-bubble zcs-contact-bubble'>{intendedFor}</span>
+				</td>
+			</tr>
+			</tpl>
 		</table>
 		<div>{notes}</div>
 	</tpl>

@@ -58,7 +58,7 @@ Ext.define('ZCS.controller.ZtMainController', {
 
 		// Initialize the main view
 		Ext.Viewport.add(Ext.create('ZCS.view.ZtMain'));
-		ZCS.app.on('authExpired', this.authExpired, this);
+		ZCS.app.on('serverError', this.handleError, this);
 	},
 
 	/**
@@ -122,18 +122,39 @@ Ext.define('ZCS.controller.ZtMainController', {
 	},
 
 	/**
-	 * Handles session expiration by putting up an alert box, then logging the user out.
+	 * Generic handling for server errors. We log the user out if it is a fatal error.
+	 * See ZtMsg for error codes.
+	 *
+	 * @param {Object}  fault       fault object from server
 	 */
-	authExpired: function() {
+	handleError: function(fault) {
 
-		if (this.pollId) {
-			clearTimeout(this.pollId);
-			this.pollId = null;
+		var error = fault && fault.Detail && fault.Detail.Error && fault.Detail.Error.Code,
+			msg = ZtMsg[error] || ZtMsg.unknownError,
+			title = ZtMsg[error + '.title'] || ZtMsg.error,
+			args;
+
+		if (error === 'mail.SEND_ABORTED_ADDRESS_FAILURE') {
+			args = Ext.Array.map(fault.Detail.Error.a, function(node) {
+				return node._content;
+			});
 		}
-		ZCS.session.setSessionId(null);
 
-		Ext.Msg.alert(ZtMsg.authExpiredTitle, ZtMsg.authExpiredText, function() {
-			this.doLogout();
-		}, this);
+		var text = Ext.String.format(msg, args);
+
+		if (ZCS.constant.IS_FATAL_ERROR[error]) {
+			if (this.pollId) {
+				clearTimeout(this.pollId);
+				this.pollId = null;
+			}
+			ZCS.session.setSessionId(null);
+
+			Ext.Msg.alert(title, text, function() {
+				this.doLogout();
+			}, this);
+		}
+		else {
+			Ext.Msg.alert(title, text);
+		}
 	}
 });

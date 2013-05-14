@@ -104,18 +104,7 @@ Ext.define('ZCS.model.ZtSoapProxy', {
 			ZCS.app.getMainController().schedulePoll();
 		}
 		else {
-			try {
-				var error = data.Body.Fault.Detail.Error.Code;
-			}
-			catch(ex) {}
-			if (error === 'service.AUTH_REQUIRED' || error === 'service.AUTH_EXPIRED') {
-				ZCS.app.fireEvent('authExpired');
-			}
-			else {
-				//<debug>
-				Ext.Logger.error('Error returned from server: ' + error);
-				//</debug>
-			}
+			ZCS.app.fireEvent('serverError', data.Body.Fault);
 		}
 	},
 
