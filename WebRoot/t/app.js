@@ -21,11 +21,11 @@ Ext.Loader.setPath({
 });
 //</debug>
 
-// Load templates
+// Load utils and templates
 Ext.require([
+	'ZCS.common.ZtUtil',
 	'ZCS.common.ZtTemplate'
 ]);
-
 
 //<feature logger>
 Ext.require('ZCS.common.ZtLogger');
@@ -38,7 +38,6 @@ Ext.application({
 
     requires: [
         'Ext.MessageBox',
-	    'ZCS.common.ZtUtil',
 	    'ZCS.common.ZtHtmlUtil',
 	    'ZCS.common.mail.ZtMailUtil',
 	    'ZCS.common.ZtConstants',

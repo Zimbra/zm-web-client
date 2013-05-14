@@ -30,21 +30,6 @@ Ext.define('ZCS.common.ZtConstants', {
 	alternateClassName: 'ZCS.constant',
 
 	/**
-	 * Returns a "reversed" map, with the keys and values switched.
-	 *
-	 * @param {Object}  map     hash map
-	 * @return {Object} reversed map
-	 * @private
-	 */
-	getBackMap: function(map) {
-		var backMap = {}, key;
-		for (key in map) {
-			backMap[map[key]] = key;
-		}
-		return backMap;
-	},
-
-	/**
 	 * Creates a list of the constants whose property name starts with the given prefix.
 	 *
 	 * @param {String}  prefix      prefix to look for
@@ -177,7 +162,7 @@ ZCS.constant.CLASS_FOR_TYPE[ZCS.constant.ITEM_CONTACT]         = 'ZCS.model.cont
 ZCS.constant.CLASS_FOR_TYPE[ZCS.constant.ADDRESS_AUTOCOMPLETE] = 'ZCS.model.address.ZtAutoComplete';
 
 // Item type for model class
-ZCS.constant.TYPE_FOR_CLASS = ZCS.constant.getBackMap(ZCS.constant.CLASS_FOR_TYPE);
+ZCS.constant.TYPE_FOR_CLASS = ZCS.util.getBackMap(ZCS.constant.CLASS_FOR_TYPE);
 
 // JSON node names for items
 ZCS.constant.NODE_CONVERSATION  = 'c';
@@ -207,7 +192,7 @@ ZCS.constant.ITEM_NODE[ZCS.constant.ITEM_CONTACT]           = ZCS.constant.NODE_
 ZCS.constant.ITEM_NODE[ZCS.constant.ADDRESS_AUTOCOMPLETE]   = ZCS.constant.NODE_MATCH;
 
 // Item type based on JSON node name
-ZCS.constant.NODE_ITEM = ZCS.constant.getBackMap(ZCS.constant.ITEM_NODE);
+ZCS.constant.NODE_ITEM = ZCS.util.getBackMap(ZCS.constant.ITEM_NODE);
 
 // Controller that handles create for each item type
 ZCS.constant.LIST_CONTROLLER = {};
@@ -272,19 +257,20 @@ ZCS.constant.ID_CHATS     = '14';
 ZCS.constant.MAX_SYSTEM_ID = 255;
 
 // When showing a conv, don't show messages in these folders
-ZCS.constant.CONV_HIDE = [
+ZCS.constant.CONV_HIDE = ZCS.util.arrayAsLookupHash([
 	ZCS.constant.ID_TRASH,
-	ZCS.constant.ID_JUNK
-];
+	ZCS.constant.ID_JUNK,
+	ZCS.constant.ID_DRAFTS
+]);
 
 // When replying to or forwarding a conv, omit these folders when
-// figuring out which message to use for the reply/forward
-ZCS.constant.CONV_REPLY_OMIT = [
+// figuring out which message to use as the original for the reply/forward
+ZCS.constant.CONV_REPLY_OMIT = ZCS.util.arrayAsLookupHash([
 	ZCS.constant.ID_SENT,
 	ZCS.constant.ID_DRAFTS,
 	ZCS.constant.ID_TRASH,
 	ZCS.constant.ID_JUNK
-];
+]);
 
 // Folder constraint identifiers, used to manage which messages are moved
 // when a conversation is moved.
@@ -319,7 +305,7 @@ ZCS.constant.FOLDER_SYSTEM_NAME[ZCS.constant.ID_JUNK]    = 'junk';
 ZCS.constant.FOLDER_SYSTEM_NAME[ZCS.constant.ID_CONTACTS]    = 'contacts';
 ZCS.constant.FOLDER_SYSTEM_NAME[ZCS.constant.ID_EMAILED]     = 'emailedContacts';
 
-ZCS.constant.FOLDER_SYSTEM_ID = ZCS.constant.getBackMap(ZCS.constant.FOLDER_SYSTEM_NAME);
+ZCS.constant.FOLDER_SYSTEM_ID = ZCS.util.getBackMap(ZCS.constant.FOLDER_SYSTEM_NAME);
 
 // Folders we don't want to show in overview
 ZCS.constant.FOLDER_HIDE = {};
@@ -350,7 +336,7 @@ ZCS.constant.FROM_SOAP_TYPE['r']  = ZCS.constant.REPLY_TO;
 ZCS.constant.FROM_SOAP_TYPE['s']  = ZCS.constant.SENDER;
 
 // and the other way too
-ZCS.constant.TO_SOAP_TYPE = ZCS.constant.getBackMap(ZCS.constant.FROM_SOAP_TYPE);
+ZCS.constant.TO_SOAP_TYPE = ZCS.util.getBackMap(ZCS.constant.FROM_SOAP_TYPE);
 
 // Data types
 ZCS.constant.TYPE_STRING    = 'string';
@@ -464,7 +450,7 @@ ZCS.constant.FLAG_PROP[ZCS.constant.FLAG_REPLIED]			= 'isReplied';
 ZCS.constant.FLAG_PROP[ZCS.constant.FLAG_UNREAD]			= 'isUnread';
 ZCS.constant.FLAG_PROP[ZCS.constant.FLAG_INVITE]			= 'isInvite';
 
-//ZCS.constant.PROP_FLAG = ZCS.constant.getBackMap(ZCS.constant.FLAG_PROP);
+//ZCS.constant.PROP_FLAG = ZCS.util.getBackMap(ZCS.constant.FLAG_PROP);
 
 // Date/time constants
 ZCS.constant.MSEC_PER_MINUTE = 60000;
@@ -625,9 +611,10 @@ ZCS.constant.CONTACT_ATTRS = [
 	}
 })();
 
-ZCS.constant.IS_FATAL_ERROR = {
-	'account.MAINTENANCE_MODE'  : true,
-	'mail.MAINTENANCE'          : true,
-	'service.AUTH_REQUIRED'     : true,
-	'service.AUTH_EXPIRED'      : true
-};
+// Server errors that should force a logout
+ZCS.constant.IS_FATAL_ERROR = ZCS.util.arrayAsLookupHash([
+	'account.MAINTENANCE_MODE',
+	'mail.MAINTENANCE',
+	'service.AUTH_REQUIRED',
+	'service.AUTH_EXPIRED'
+]);

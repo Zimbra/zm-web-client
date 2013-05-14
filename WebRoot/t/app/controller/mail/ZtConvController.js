@@ -137,7 +137,7 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 		//Make sure the organizer button stays.
 		ZCS.app.fireEvent('updatelistpanelToggle', this.getOrganizerTitle(), ZCS.session.getActiveApp());
 
-		Ext.each(ZCS.constant.CONV_HIDE, function(id) {
+		Ext.each(Object.keys(ZCS.constant.CONV_HIDE), function(id) {
 			if (id !== curFolderId) {
 				convQueryTerms.push('NOT underid:' + id);
 			}
@@ -246,7 +246,7 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 			ln = msgs ? msgs.length : 0, i, msg, folderId,
 			curFolder = ZCS.session.getCurrentSearchOrganizer(),
 			curFolderId = curFolder && curFolder.get('itemId'),
-			ignoreFolder = ZCS.util.arrayAsLookupHash(ZCS.constant.CONV_REPLY_OMIT),
+			ignoreFolder = ZCS.constant.CONV_REPLY_OMIT,
 			activeMsg = null;
 
 		for (i = 0; i < ln; i++) {
@@ -290,7 +290,15 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 			convId = create.cid,
 			conv = ZCS.cache.get(convId),
 			convListCtlr = ZCS.app.getConvListController(),
-			convStore = convListCtlr.getStore();
+			convStore = convListCtlr.getStore(),
+			curFolder = ZCS.session.getCurrentSearchOrganizer(),
+			curFolderId = curFolder ? curFolder.get('itemId') : '',
+			createFolderId = ZCS.util.localId(create.l);
+
+		// Ignore new msg in Trash/Junk/Drafts
+		if (ZCS.constant.CONV_HIDE[createFolderId] && curFolderId !== create.l) {
+			return;
+		}
 
 		// Move the conv to the top since it got a new msg and we always sort date descending.
 		// Also propagate some fields from the message that don't appear in the conv's modified
@@ -340,10 +348,9 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 
 			if (itemPresent) {
 				// if the msg was moved to Trash or Junk, remove it from the list in the item panel
-				var localId = ZCS.util.localId(modify.l),
-					omit = ZCS.util.arrayAsLookupHash(ZCS.constant.CONV_HIDE);
+				var localId = ZCS.util.localId(modify.l);
 
-				if (omit[localId]) {
+				if (ZCS.constant.CONV_HIDE[localId]) {
 					this.setHandleUpdateDataEvent(true);
 					store.remove(item);
 					this.setHandleUpdateDataEvent(false);

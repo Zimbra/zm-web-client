@@ -30,6 +30,21 @@ Ext.define('ZCS.common.ZtUtil', {
 	idParams: {},
 
 	/**
+	 * Returns a "reversed" map, with the keys and values switched.
+	 *
+	 * @param {Object}  map     hash map
+	 * @return {Object} reversed map
+	 * @private
+	 */
+	getBackMap: function(map) {
+		var backMap = {}, key;
+		for (key in map) {
+			backMap[map[key]] = key;
+		}
+		return backMap;
+	},
+
+	/**
 	 * Returns a unique ID using a sequence number, eg "zcs-123".
 	 *
 	 * @param {Object}  params  optional params to associate with this ID

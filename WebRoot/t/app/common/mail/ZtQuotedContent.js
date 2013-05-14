@@ -619,8 +619,12 @@ ZCS.quoted.REGEX_SCRIPT = /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi;
 ZCS.quoted.HTML_SEP_ID = 'zwchr';   // inserted by ZCS HTML composer
 
 // nodes to ignore; they won't have anything we're interested in
-ZCS.quoted.IGNORE_NODE_LIST = ['#comment', 'script', 'select', 'style'];
-ZCS.quoted.IGNORE_NODE = ZCS.util.arrayAsLookupHash(ZCS.quoted.IGNORE_NODE_LIST);
+ZCS.quoted.IGNORE_NODE = ZCS.util.arrayAsLookupHash([
+	'#comment',
+	'script',
+	'select',
+	'style'
+]);
 
 // Give up after processing this many nodes
 ZCS.quoted.MAX_NODES       = 200;
