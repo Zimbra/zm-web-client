@@ -95,3 +95,20 @@ ZmCalItemTypeDialog.prototype.isInstance =
 function() {
 	return this._defaultRadio.checked;
 };
+
+// Override since we need to do more than popdown().
+ZmCalItemTypeDialog.prototype.handleKeyAction =
+function(actionCode, ev) {
+	switch (actionCode) {
+		case DwtKeyMap.CANCEL:
+			this.popdown();
+			var ctlr = appCtxt.getCurrentController();
+			if (ctlr && ctlr._typeCancelListener) {
+				ctlr._typeCancelListener();
+			}
+			break;
+		default:
+			return DwtDialog.prototype.handleKeyAction.apply(this, arguments);
+	}
+	return true;
+};
