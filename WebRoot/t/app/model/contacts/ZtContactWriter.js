@@ -44,7 +44,7 @@ Ext.define('ZCS.model.contacts.ZtContactWriter', {
 				Ext.apply(methodJson, {
 					sortBy: 'nameDesc',
 					offset: offset,
-					limit: ZCS.constant.DEFAULT_PAGE_SIZE,
+					limit: ZCS.constant.DEFAULT_PAGE_SIZE
 				});
 			}
 			else {
