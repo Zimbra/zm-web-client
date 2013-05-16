@@ -2018,14 +2018,10 @@ function() {
  */
 ZmAppCtxt.handleWindowOpener = 
 function() {
-	var aCtxt = appCtxt;
-	if (window.opener) {
-		try {
-			aCtxt = window.opener.appCtxt;
-		}
-		catch (ex) {
-			aCtxt = appCtxt;
-		}
+	try {
+		return window.opener && window.opener.appCtxt || appCtxt;
 	}
-	return aCtxt;
+	catch (ex) {
+		return appCtxt;
+	}
 };
