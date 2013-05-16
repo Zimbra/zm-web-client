@@ -288,12 +288,15 @@ function() {
 ZmGroupView.prototype._getGroupName =
 function() {
 	if (this.isDistributionList()) {
-		var username = this._usernameEditable 
-				? AjxStringUtil.trim(this._groupNameInput.getValue())
-				: this._emailUsername;
+		var username = this._getDlAddressLocalPart();
 		return username + "@" + this._getGroupDomainName();
 	}
 	return AjxStringUtil.trim(this._groupNameInput.getValue());
+};
+
+ZmGroupView.prototype._getDlAddressLocalPart =
+function() {
+	return this._usernameEditable ? AjxStringUtil.trim(this._groupNameInput.getValue()) : this._emailUsername;
 };
 
 ZmGroupView.prototype._getDlDisplayName =
@@ -385,8 +388,8 @@ function() {
 	if (!this._usernameEditable) {
 		return true; //to be on the safe and clear side. no need to check.
 	}
-	var groupName = this._getGroupName();
-	return AjxEmailAddress.isValid(groupName);
+	var account = this._getDlAddressLocalPart();
+	return AjxEmailAddress.accountPat.test(account);
 };
 
 ZmGroupView.prototype.isValidDlDomainName =

@@ -1352,7 +1352,9 @@ function(attr) {
 
 	var newEmail = attr[ZmContact.F_email];
 
+	var emailChanged = false;
 	if (newEmail !== undefined) {
+		emailChanged = true;
 		reqs.push(this._getRenameDlReq(newEmail));
 		this.setAttr(ZmContact.F_email, newEmail);
 	}
@@ -1376,6 +1378,7 @@ function(attr) {
 	this._addMailPolicyAndOwnersReqs(reqs, attr);
 
 	if (reqs.length == 0) {
+		this._modifyDlResponseHandler(false, null); //pretend it was saved
 		return;
 	}
 	var jsonObj = {
@@ -1384,7 +1387,7 @@ function(attr) {
 			DistributionListActionRequest: reqs
 		}
 	};
-	var respCallback = this._modifyDlResponseHandler.bind(this, fileAsChanged);
+	var respCallback = this._modifyDlResponseHandler.bind(this, fileAsChanged || emailChanged); //there's some issue with fileAsChanged so adding the emailChanged to be on safe side
 	appCtxt.getAppController().sendRequest({jsonObj: jsonObj, asyncMode: true, callback: respCallback});
 
 };
@@ -1546,7 +1549,10 @@ function(attr) {
 };
 
 ZmContact.prototype._modifyDlResponseHandler =
-function(ev, fileAsChanged) {
+function(fileAsChanged, result) {
+	if (this._handleErrorDl(result)) {
+		return;
+	}
 	appCtxt.setStatusMsg(ZmMsg.dlSaved);
 
 	//for DLs we reload from the server since the server does not send notifications.
@@ -1556,36 +1562,49 @@ function(ev, fileAsChanged) {
 		fileAsChanged: fileAsChanged
 	};
 
+	this._popView(fileAsChanged);
+
 	this._notify(ZmEvent.E_MODIFY, details);
 };
 
 ZmContact.prototype._createDlResponseHandler =
 function(result) {
-	var batchResp = result.getResponse().BatchResponse;
-	if (this._handleErrorCreateDl(batchResp)) {
+	if (this._handleErrorDl(result, true)) {
+		this.attr = {}; //since above in _createDl, we set it to new values prematurely. which would affect next gathering of modified attributes.
 		return;
 	}
 	appCtxt.setStatusMsg(ZmMsg.distributionListCreated);
 
-	if (!ZmAddrBookTreeController) {
+	this._popView(true);
+};
+
+ZmContact.prototype._popView =
+function(updateDlList) {
+	var controller = AjxDispatcher.run("GetContactController");
+	controller.popView(true);
+	if (!updateDlList) {
 		return;
 	}
 	var clc = AjxDispatcher.run("GetContactListController");
 	if (clc.getFolderId() != ZmFolder.ID_DLS) {
 		return;
 	}
-	ZmAddrBookTreeController.dlFolderClicked();
+	ZmAddrBookTreeController.dlFolderClicked(); //This is important in case of new DL created OR a renamed DL, so it would reflect in the list.
 };
 
-ZmContact.prototype._handleErrorCreateDl =
-function(batchResp) {
+ZmContact.prototype._handleErrorDl =
+function(result, creation) {
+	if (!result) {
+		return false;
+	}
+	var batchResp = result.getResponse().BatchResponse;
 	var faults = batchResp.Fault;
 	if (!faults) {
 		return false;
 	}
 	var ex = ZmCsfeCommand.faultToEx(faults[0]);
 	var controller = AjxDispatcher.run("GetContactController");
-	controller.popupErrorDialog(ZmMsg.dlCreateFailed, ex);
+	controller.popupErrorDialog(creation ? ZmMsg.dlCreateFailed : ZmMsg.dlModifyFailed, ex);
 	return true;
 
 };

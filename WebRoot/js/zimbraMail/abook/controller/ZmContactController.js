@@ -348,8 +348,8 @@ function(ev, bIsPopCallback) {
 	var mods = view.getModifiedAttrs();
 	view.enableInputs(false);
 
+	var contact = view.getContact();
 	if (mods && AjxUtil.arraySize(mods) > 0) {
-		var contact = view.getContact();
 
 		// bug fix #22041 - when moving betw. shared/local folders, dont modify
 		// the contact since it will be created/deleted into the new folder
@@ -426,15 +426,27 @@ function(ev, bIsPopCallback) {
 		}
 	}
 
-	if (!bIsPopCallback) {
-		this._app.popView(true);
-		view.cleanup();
+	if (!bIsPopCallback && !contact.isDistributionList()) {
+		//in the DL case it might fail so wait to pop the view when we receive success from server.
+		this.popView();
+	}
+	else {
+		view.enableInputs(true);
 	}
 	if (fileAsChanged) // bug fix #45069 - if the contact is new, change the search to "all" instead of displaying contacts beginning with a specific letter
 		ZmContactAlphabetBar.alphabetClicked(null);
 
     return true;
 };
+
+ZmContactController.prototype.popView =
+function() {
+	this._app.popView(true);
+	if (this._contactView) { //not sure why _contactView is undefined sometimes. Maybe it's a different instance of ZmContactController.
+		this._contactView.cleanup();
+	}
+};
+
 
 /**
  * @private
