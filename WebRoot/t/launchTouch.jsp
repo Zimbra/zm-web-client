@@ -58,6 +58,10 @@
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
 -->
+    <!-- Detect browser support for javascript, if not redirect to /t/noscript.jsp page -->
+   	<noscript>
+   		<meta http-equiv="Refresh" content="0;url=/t/noscript.jsp" >
+   	</noscript>
     <meta charset="UTF-8">
     <title><fmt:message key="zimbraTitle"/></title>
     <style type="text/css">
