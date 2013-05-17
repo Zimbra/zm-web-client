@@ -163,7 +163,7 @@ Ext.define('ZCS.common.ZtMenu', {
             itemIndex = item.dataIndex;
             // itemIndex may not be set yet if the store is still being loaded
             if (itemIndex !== null) {
-                actualHeight += item.element.getFirstChild().getHeight();
+                actualHeight += item.element.getHeight();
             }
         }
 
@@ -248,7 +248,7 @@ Ext.define('ZCS.common.ZtMenu', {
 		var item = this.getItem(action);
 		if (item) {
 			item.setDisabled(!enabled);
-			item.setCls(enabled ? '' : 'zcs-menuitem-disabled');
+			item.setCls(enabled ? 'x-list-item-relative' : 'zcs-menuitem-disabled x-list-item-relative');
 		}
 	},
 

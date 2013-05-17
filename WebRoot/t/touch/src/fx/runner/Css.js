@@ -1,19 +1,3 @@
-/*
- * ***** BEGIN LICENSE BLOCK *****
- * 
- * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2013 VMware, Inc.
- * 
- * The contents of this file are subject to the Zimbra Public License
- * Version 1.3 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
- * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
- * ***** END LICENSE BLOCK *****
- */
 /**
  * @private
  */
@@ -173,7 +157,6 @@ Ext.define('Ext.fx.runner.Css', {
 
                 if (ruleStyleCache[name] !== value) {
                     ruleStyleCache[name] = value;
-//                    console.log(name + " " + value);
 
                     if (value === null) {
                         ruleStyle.removeProperty(name);
@@ -192,28 +175,28 @@ Ext.define('Ext.fx.runner.Css', {
         var id, element, elementStyle, properties, name, value;
 
         for (id in styles) {
-//            console.log("-> ["+id+"]", "APPLY======================");
-            element = document.getElementById(id);
+            if (styles.hasOwnProperty(id)) {
+                element = document.getElementById(id);
 
-            if (!element) {
-                return this;
-            }
-
-            elementStyle = element.style;
-
-            properties = styles[id];
-
-            for (name in properties) {
-                value = this.formatValue(properties[name], name);
-                name = this.formatName(name);
-
-//                console.log("->-> ["+id+"]", name, value);
-
-                if (value === null) {
-                    elementStyle.removeProperty(name);
+                if (!element) {
+                    return this;
                 }
-                else {
-                    elementStyle.setProperty(name, value, 'important');
+
+                elementStyle = element.style;
+
+                properties = styles[id];
+                for (name in properties) {
+                    if (properties.hasOwnProperty(name)) {
+                        value = this.formatValue(properties[name], name);
+                        name = this.formatName(name);
+
+                        if (value === null) {
+                            elementStyle.removeProperty(name);
+                        }
+                        else {
+                            elementStyle.setProperty(name, value, 'important');
+                        }
+                    }
                 }
             }
         }
@@ -226,7 +209,7 @@ Ext.define('Ext.fx.runner.Css', {
             formattedName = cache[name];
 
         if (!formattedName) {
-            if (this.prefixedProperties[name]) {
+            if (this.prefixedProperties[name] && Ext.browser.is.WebKit) {
                 formattedName = this.vendorPrefix + name;
             }
             else {
@@ -245,6 +228,10 @@ Ext.define('Ext.fx.runner.Css', {
             transformMethods,
             method, i, ln,
             transformValues, values, unit;
+
+        if (value === null) {
+            return '';
+        }
 
         if (type == 'string') {
             if (this.lengthProperties[name]) {

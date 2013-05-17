@@ -1,19 +1,3 @@
-/*
- * ***** BEGIN LICENSE BLOCK *****
- * 
- * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2013 VMware, Inc.
- * 
- * The contents of this file are subject to the Zimbra Public License
- * Version 1.3 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
- * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
- * ***** END LICENSE BLOCK *****
- */
 /**
  * This class acts as a factory for environment-specific viewport implementations.
  *
@@ -23,7 +7,8 @@
 Ext.define('Ext.viewport.Viewport', {
     requires: [
         'Ext.viewport.Ios',
-        'Ext.viewport.Android'
+        'Ext.viewport.Android',
+        'Ext.viewport.WindowsPhone'
     ],
 
     constructor: function(config) {
@@ -34,11 +19,22 @@ Ext.define('Ext.viewport.Viewport', {
             case 'Android':
                 viewportName = (Ext.browser.name == 'ChromeMobile') ? 'Default' : 'Android';
                 break;
+
             case 'iOS':
                 viewportName = 'Ios';
                 break;
+
+            case 'Windows':
+                viewportName = (Ext.browser.name == 'IE') ? 'WindowsPhone' : 'Default';
+                break;
+
+            case 'WindowsPhone':
+                viewportName = 'WindowsPhone';
+                break;
+
             default:
                 viewportName = 'Default';
+                break;
         }
 
         viewport = Ext.create('Ext.viewport.' + viewportName, config);

@@ -1,19 +1,3 @@
-/*
- * ***** BEGIN LICENSE BLOCK *****
- * 
- * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2013 VMware, Inc.
- * 
- * The contents of this file are subject to the Zimbra Public License
- * Version 1.3 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
- * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
- * ***** END LICENSE BLOCK *****
- */
 /**
  * @class Ext.data.NodeInterface
  * This class is meant to be used as a set of methods that are applied to the prototype of a
@@ -424,7 +408,7 @@ Ext.define('Ext.data.NodeInterface', {
                     // if passed an array or multiple args do them one by one
                     if (Ext.isArray(node)) {
                         for (i = 0, ln = node.length; i < ln; i++) {
-                            me.appendChild(node[i]);
+                            me.appendChild(node[i], suppressEvents, suppressNodeUpdate);
                         }
                     } else {
                         // Make sure it is a record
@@ -552,8 +536,8 @@ Ext.define('Ext.data.NodeInterface', {
 
                 /**
                  * Creates a copy (clone) of this Node.
-                 * @param {String} id (optional) A new id, defaults to this Node's id.
-                 * @param {Boolean} deep (optional) If passed as `true`, all child Nodes are recursively copied into the new Node.
+                 * @param {String} [newId] A new id, defaults to this Node's id.
+                 * @param {Boolean} [deep] If passed as `true`, all child Nodes are recursively copied into the new Node.
                  * If omitted or `false`, the copy will have no child Nodes.
                  * @return {Ext.data.NodeInterface} A copy of this Node.
                  */
@@ -767,7 +751,7 @@ Ext.define('Ext.data.NodeInterface', {
 
                 /**
                  * Returns the index of a child node.
-                 * @param {Ext.data.NodeInterface} node
+                 * @param {Ext.data.NodeInterface} child
                  * @return {Number} The index of the node or -1 if it was not found.
                  */
                 indexOf : function(child) {

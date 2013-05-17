@@ -70,6 +70,7 @@ Ext.define('Ext.draw.engine.SvgContext', {
         obj.matrix = this.matrix.clone();
         this.status.push(obj);
         this.group = group;
+        return group;
     },
 
     /**
@@ -332,6 +333,10 @@ Ext.define('Ext.draw.engine.SvgContext', {
             if (tspan.dom.firstChild) {
                 tspan.dom.removeChild(tspan.dom.firstChild);
             }
+            this.surface.setElementAttributes(tspan, {
+                "alignment-baseline": "middle",
+                "baseline-shift": "-50%"
+            });
             tspan.appendChild(document.createTextNode(Ext.String.htmlDecode(text)));
         }
     },
@@ -541,7 +546,7 @@ Ext.define('Ext.draw.engine.SvgContext', {
             "r": r1,
             "gradientUnits": "userSpaceOnUse"
         });
-        return new Ext.draw.engine.SvgContext.Gradient(this, this.surface, element, r1 / r0);
+        return new Ext.draw.engine.SvgContext.Gradient(this, this.surface, element, r0 / r1);
     }
 });
 
@@ -567,7 +572,8 @@ Ext.define("Ext.draw.engine.SvgContext.Gradient", {
             compression = this.compression;
         this.surface.setElementAttributes(stop, {
             "offset": (((1 - compression) * offset + compression) * 100).toFixed(2) + '%',
-            "stop-color": color
+            "stop-color": color,
+            "stop-opacity": Ext.draw.Color.fly(color).a.toFixed(15)
         });
     },
 

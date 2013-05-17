@@ -1,7 +1,7 @@
 /**
  * @class Ext.chart.interactions.Rotate
  * @extends Ext.chart.interactions.Abstract
- * 
+ *
  * The Rotate interaction allows the user to rotate a polar chart about its central point.
  *
  *     @example preview
@@ -54,7 +54,7 @@ Ext.define('Ext.chart.interactions.Rotate', {
         gestures.rotateend = 'onRotate';
         gestures.dragstart = 'onGestureStart';
         gestures.drag = 'onGesture';
-        gestures.dragend = 'onGesture';
+        gestures.dragend = 'onGestureEnd';
         return gestures;
     },
 
@@ -67,9 +67,27 @@ Ext.define('Ext.chart.interactions.Rotate', {
             xy[0] - center[0]);
     },
 
+    getEventRadius: function (e) {
+        var me = this,
+            chart = me.getChart(),
+            xy = chart.getEventXY(e),
+            center = chart.getCenter(),
+            dx = xy[0] - center[0],
+            dy = xy[1] - center[1];
+        return Math.sqrt(dx * dx + dy * dy);
+    },
+
     onGestureStart: function (e) {
-        this.angle = this.getAngle(e);
-        this.oldRotations = {};
+        var me = this,
+            chart = me.getChart(),
+            radius = chart.getRadius(),
+            eventRadius = me.getEventRadius(e);
+        if (radius >= eventRadius) {
+            me.lockEvents('drag');
+            me.angle = me.getAngle(e);
+            me.oldRotations = {};
+            return false;
+        }
     },
 
     onGesture: function (e) {
@@ -78,21 +96,34 @@ Ext.define('Ext.chart.interactions.Rotate', {
             angle = this.getAngle(e) - this.angle,
             axes = chart.getAxes(), axis,
             series = chart.getSeries(), seriesItem,
-            center = chart.getCenter(),
             oldRotations = this.oldRotations,
             oldRotation, i, ln;
-        for (i = 0, ln = axes.length; i < ln; i++) {
-            axis = axes[i];
-            oldRotation = oldRotations[axis.getId()] || (oldRotations[axis.getId()] = axis.getRotation());
-            axis.setRotation(angle + oldRotation);
-        }
+        if (me.getLocks().drag === me) {
+            chart.suspendAnimation();
+            for (i = 0, ln = axes.length; i < ln; i++) {
+                axis = axes[i];
+                oldRotation = oldRotations[axis.getId()] || (oldRotations[axis.getId()] = axis.getRotation());
+                axis.setRotation(angle + oldRotation);
+            }
 
-        for (i = 0, ln = series.length; i < ln; i++) {
-            seriesItem = series[i];
-            oldRotation = oldRotations[seriesItem.getId()] || (oldRotations[seriesItem.getId()] = seriesItem.getRotation());
-            seriesItem.setRotation(angle + oldRotation);
+            for (i = 0, ln = series.length; i < ln; i++) {
+                seriesItem = series[i];
+                oldRotation = oldRotations[seriesItem.getId()] || (oldRotations[seriesItem.getId()] = seriesItem.getRotation());
+                seriesItem.setRotation(angle + oldRotation);
+            }
+            me.sync();
+            chart.resumeAnimation();
+            return false;
         }
-        me.sync();
+    },
+
+    onGestureEnd: function (e) {
+        var me = this;
+        if (me.getLocks().drag === me) {
+            me.onGesture(e);
+            me.unlockEvents('drag');
+            return false;
+        }
     },
 
     onRotate: function (e) {

@@ -77,6 +77,8 @@ Ext.define('Ext.dataview.component.DataItem', {
          */
         dataview: null,
 
+        width: '100%',
+
         items: [{
             xtype: 'component'
         }]
@@ -105,7 +107,7 @@ Ext.define('Ext.dataview.component.DataItem', {
             component = this[componentName]();
             if (component) {
                 for (setterName in setterMap) {
-                    if (data && component[setterName] && data[setterMap[setterName]]) {
+                    if (data && component[setterName] && data[setterMap[setterName]] !== undefined && data[setterMap[setterName]] !== null) {
                         component[setterName](data[setterMap[setterName]]);
                     }
                 }

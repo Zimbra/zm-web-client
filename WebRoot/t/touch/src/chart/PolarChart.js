@@ -86,6 +86,7 @@ Ext.define('Ext.chart.PolarChart', {
     performLayout: function () {
         try {
             this.resizing++;
+            this.callSuper();
             var me = this,
                 size = me.element.getSize(),
                 fullRegion = [0, 0, size.width, size.height],

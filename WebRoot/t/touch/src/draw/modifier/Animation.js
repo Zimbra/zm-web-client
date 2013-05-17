@@ -1,14 +1,11 @@
 /**
- * @class Ext.draw.modifier.Animation
- * @extends Ext.draw.modifier.Modifier
- *
  * The Animation modifier.
  * 
  * Sencha Touch allows users to use transitional animation on sprites. Simply set the duration
  * and easing in the animation modifier, then all the changes to the sprites will be animated.
  * 
  * Also, you can use different durations and easing functions on different attributes by using
- * {@link customDuration} and {@link customEasings}.
+ * {@link #customDuration} and {@link #customEasings}.
  * 
  * By default, an animation modifier will be created during the initialization of a sprite.
  * You can get the modifier of `sprite` by `sprite.fx`.

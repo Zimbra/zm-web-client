@@ -130,7 +130,10 @@ Ext.define('Ext.chart.axis.Axis', {
 
         /**
          * @cfg {Number} titleMargin
-         * The margin between axis title and axis.
+         * The margin around the axis title. Unlike CSS where the margin is added on all 4
+         * sides of an element, the `titleMargin` is the total space that is added horizontally
+         * for a vertical title and vertically for an horizontal title, with half the `titleMargin`
+         * being added on either side.
          */
         titleMargin: 4,
 
@@ -280,8 +283,9 @@ Ext.define('Ext.chart.axis.Axis', {
         visibleRange: [0, 1],
 
         /**
-         * @private
          * @cfg {Boolean} needHighPrecision
+         * Indicates that the axis needs high precision surface implementation.
+         * See {@link Ext.draw.engine.Canvas#highPrecision}
          */
         needHighPrecision: false
     },
@@ -403,7 +407,7 @@ Ext.define('Ext.chart.axis.Axis', {
                 return null;
             }
             var surface = this.surface = chart.getSurface(this.getId(), 'axis'),
-                gridSurface = this.gridSurface = chart.getSurface("grid-" + this.getId(), 'grid'),
+                gridSurface = this.gridSurface = chart.getSurface('main'),
                 sprites = this.getSprites(),
                 sprite = sprites[0],
                 grid = this.getGrid(),
@@ -494,15 +498,6 @@ Ext.define('Ext.chart.axis.Axis', {
     showLabels: function () {
         this.getSprites()[0].setDirty(true);
         this.setLabel({hidden: false});
-    },
-
-    /**
-     * @private
-     * Reset the axis to its original state, before any user interaction.
-     *
-     */
-    reset: function () {
-        // TODO: finish this
     },
 
     /**
@@ -663,7 +658,7 @@ Ext.define('Ext.chart.axis.Axis', {
             min = me.prevMin;
         }
 
-        if (this.getLabelInSpan()) {
+        if (this.getLabelInSpan() || min === max) {
             max += this.getIncrement();
             min -= this.getIncrement();
         }
@@ -810,7 +805,7 @@ Ext.define('Ext.chart.axis.Axis', {
                 case 'bottom':
                     title.setAttributes({
                         x: anchor,
-                        y: thickness + titleMargin,
+                        y: thickness + titleMargin / 2,
                         textBaseline: 'top',
                         textAlign: 'center'
                     }, true, true);
@@ -832,11 +827,11 @@ Ext.define('Ext.chart.axis.Axis', {
                     break;
                 case 'right':
                     title.setAttributes({
-                        x: thickness - titleMargin / 2,
+                        x: thickness + titleMargin / 2,
                         y: anchor,
                         textBaseline: 'bottom',
                         textAlign: 'center',
-                        rotationCenterX: thickness,
+                        rotationCenterX: thickness + titleMargin / 2,
                         rotationCenterY: anchor,
                         rotationRads: Math.PI / 2
                     }, true, true);

@@ -1,19 +1,3 @@
-/*
- * ***** BEGIN LICENSE BLOCK *****
- * 
- * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2013 VMware, Inc.
- * 
- * The contents of this file are subject to the Zimbra Public License
- * Version 1.3 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
- * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
- * ***** END LICENSE BLOCK *****
- */
 /**
  * @private
  */
@@ -42,7 +26,7 @@ Ext.define('Ext.fx.layout.card.ScrollReveal', {
 
             outTranslate = outItem.setTranslatable(true).getTranslatable();
             inTranslate = inItem.setTranslatable(true).getTranslatable();
-            outTranslate.getWrapper().dom.style.setProperty('z-index', '100', '!important');
+            outTranslate.getWrapper().dom.style.setProperty('z-index', '100', 'important');
             outTranslate.translate({ x: 0, y: 0});
             inTranslate.translate({ x: 0, y: 0});
 

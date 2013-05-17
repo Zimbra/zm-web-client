@@ -46,7 +46,7 @@ Ext.define("Ext.chart.axis.layout.Layout", {
         var me = this,
             attr = context.attr,
             range = attr.max - attr.min,
-            zoom = range / attr.length * (attr.visibleMax - attr.visibleMin),
+            zoom = range / Math.max(1, attr.length) * (attr.visibleMax - attr.visibleMin),
             viewMin = attr.min + range * attr.visibleMin,
             viewMax = attr.min + range * attr.visibleMax,
             estStepSize = attr.estStepSize * zoom,

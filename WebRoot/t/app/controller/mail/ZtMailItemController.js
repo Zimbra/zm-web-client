@@ -75,10 +75,13 @@ Ext.define('ZCS.controller.mail.ZtMailItemController', {
 
 		activeList.setReadOnly(true);
 
-		contentHeight = activeList.getItemMap().getTotalHeight();
+		//TODO, determine why total height calc is failing in position maps now.
+		contentHeight = 400; //activeList.getItemMap().getTotalHeight();
 
 		//To account for the panel header
 		contentHeight += 20;
+
+		activeComp.hideListPanelToggle();
 
 		// TODO: if we're caching assignment views, we will need to update its overview
 		// TODO: when we get notified of organizer changes
@@ -91,12 +94,16 @@ Ext.define('ZCS.controller.mail.ZtMailItemController', {
 					me.updateToolbar({
 						hideAll: false
 					});
+
+					activeComp.showListPanelToggle();
+
 					activeList.setReadOnly(false);
 					//undo any filtering we may have done
 					activeStore.clearFilter();
 					if (quickReply) {
 						quickReply.show();
 					}
+
 
 					ZCS.app.fireEvent('rerenderMessages');
 				}

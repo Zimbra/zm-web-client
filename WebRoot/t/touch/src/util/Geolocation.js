@@ -1,19 +1,3 @@
-/*
- * ***** BEGIN LICENSE BLOCK *****
- * 
- * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2013 VMware, Inc.
- * 
- * The contents of this file are subject to the Zimbra Public License
- * Version 1.3 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
- * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
- * ***** END LICENSE BLOCK *****
- */
 /**
  * Provides a cross browser class for retrieving location information.
  *
@@ -323,16 +307,18 @@ Ext.define('Ext.util.Geolocation', {
      *
      * Will be called on both success and failure.
      *
-     * The method will be passed one parameter, {@link Ext.util.Geolocation} (**this** reference),
-     * set to `null` on failure.
+     * The method will be passed one parameter, {@link Ext.util.Geolocation}
+     * (**this** reference), set to `null` on failure.
      *
      *     geo.updateLocation(function (geo) {
      *         alert('Latitude: ' + (geo !== null ? geo.latitude : 'failed'));
      *     });
      *
-     * @param {Object} scope (optional) The scope (**this** reference) in which the handler function is executed.
+     * @param {Object} [scope]
+     * The scope (**this** reference) in which the handler function is executed.
      *
      * **If omitted, defaults to the object which fired the event.**
+     *
      * <!--positonOptions undocumented param, see W3C spec-->
      */
     updateLocation: function(callback, scope, positionOptions) {

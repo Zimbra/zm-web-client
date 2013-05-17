@@ -227,7 +227,7 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 	adjustItemHeights: function(msgViews) {
 		var msgListView = this.getMsgListView();
 		msgListView.updatedItems = msgViews;
-		msgListView.updateItemHeights();
+		msgListView.handleItemHeights();
 		msgListView.refreshScroller(msgListView.getScrollable().getScroller());
 	},
 

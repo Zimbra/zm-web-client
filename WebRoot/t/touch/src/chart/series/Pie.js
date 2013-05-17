@@ -104,14 +104,17 @@ Ext.define('Ext.chart.series.Pie', {
             items = store.getData().items,
             sprites = me.getSprites(),
             labelField = me.getLabelField(),
-            i, ln, labels;
+            hidden = me.getHidden(),
+            i, ln, labels, sprite;
         if (sprites.length > 0 && labelField) {
             labels = [];
             for (i = 0, ln = items.length; i < ln; i++) {
                 labels.push(items[i].get(labelField));
             }
             for (i = 0, ln = sprites.length; i < ln; i++) {
-                sprites[i].setAttributes({label: labels[i]});
+                sprite = sprites[i];
+                sprite.setAttributes({label: labels[i]});
+                sprite.putMarker('labels', {hidden:hidden[i]}, sprite.attr.attributeId);
             }
         }
     },
@@ -144,14 +147,13 @@ Ext.define('Ext.chart.series.Pie', {
             }
         }
 
-        if (sum === 0) {
-            return;
+        if (sum !== 0) {
+            sum = totalAngle / sum;
         }
-        sum = totalAngle / sum;
         for (i = 0; i < length; i++) {
             sprites[i].setAttributes({
                 startAngle: lastAngle,
-                endAngle: lastAngle = summation[i] * sum,
+                endAngle: lastAngle = (sum ? summation[i] * sum : 0),
                 globalAlpha: 1
             });
         }
@@ -237,7 +239,6 @@ Ext.define('Ext.chart.series.Pie', {
                 sprite.setAttributes(this.getStyleByIndex(i));
                 spriteCreated = true;
             }
-            sprite.fx.setConfig(animation);
         }
         if (spriteCreated) {
             me.doUpdateStyles();
@@ -273,23 +274,27 @@ Ext.define('Ext.chart.series.Pie', {
                 donutLimit = Math.sqrt(originalX * originalX + originalY * originalY),
                 endRadius = me.getRadius(),
                 startRadius = donut / 100 * endRadius,
+                hidden = me.getHidden(),
                 i, ln, attr;
 
             for (i = 0, ln = items.length; i < ln; i++) {
-                // Fortunately, the id of items equals the index of it in instances list.
-                attr = sprites[i].attr;
-                if (startRadius + attr.margin <= donutLimit && donutLimit + attr.margin <= endRadius) {
-                    if (this.betweenAngle(direction, attr.startAngle, attr.endAngle)) {
-                        return {
-                            series: this,
-                            sprite: sprites[i],
-                            index: i,
-                            record: items[i],
-                            field: this.getXField()
-                        };
+                if(!hidden[i]) {
+                    // Fortunately, the id of items equals the index of it in instances list.
+                    attr = sprites[i].attr;
+                    if (startRadius + attr.margin <= donutLimit && donutLimit + attr.margin <= endRadius) {
+                        if (this.betweenAngle(direction, attr.startAngle, attr.endAngle)) {
+                            return {
+                                series: this,
+                                sprite: sprites[i],
+                                index: i,
+                                record: items[i],
+                                field: this.getXField()
+                            };
+                        }
                     }
                 }
             }
+            return null;
         }
     },
 

@@ -347,6 +347,19 @@
         },
 
         /**
+         * Returns 'true' if the passed value is a String that matches the MS Date JSON encoding format
+         * @param value {String} The string to test
+         * @return {Boolean}
+         */
+        isMSDate: function(value) {
+            if (!Ext.isString(value)) {
+                return false;
+            } else {
+                return value.match("\\\\?/Date\\(([-+])?(\\d+)(?:[+-]\\d{4})?\\)\\\\?/") !== null;
+            }
+        },
+
+        /**
          * Returns `true` if the passed value is a JavaScript Object, `false` otherwise.
          * @param {Object} value The value to test.
          * @return {Boolean}

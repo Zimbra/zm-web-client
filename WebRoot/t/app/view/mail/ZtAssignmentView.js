@@ -233,6 +233,8 @@ Ext.define('ZCS.view.mail.ZtAssignmentView', {
 
 		component.setHidden(true);
 
+		component._hidden = true;
+
 		//Pertinent doc, Ext.fx.animation.Abstract
 		component.show({
 			from: {
@@ -368,25 +370,28 @@ Ext.define('ZCS.view.mail.ZtAssignmentView', {
 	 * @adapts Ext.Component.showBy
 	 */
 	showBy: function (component, alignment) {
-	    var args = Ext.Array.from(arguments);
 
-        var viewport = Ext.Viewport,
-            parent = this.getParent();
+        var me = this,
+            viewport = Ext.Viewport,
+            parent = me.getParent();
 
-        this.setVisibility(false);
+        me.setVisibility(false);
 
         if (parent !== viewport) {
-            viewport.add(this);
+            viewport.add(me);
         }
 
-        this.show();
+        me.show();
 
-        this.on('erased', 'onShowByErased', this, { single: true });
-        viewport.on('resize', 'refreshShowBy', this, { args: [component, alignment] });
+        me.on({
+            hide: 'onShowByErased',
+            destroy: 'onShowByErased',
+            single: true,
+            scope: me
+        });
+        viewport.on('resize', 'alignTo', me, { args: [component, alignment] });
 
-        this.currentShowByArgs = args;
-
-        this.alignTo(component, alignment);
+        me.alignTo(component, alignment);
 
         ZCS.htmlutil.resetWindowScroll();
     }

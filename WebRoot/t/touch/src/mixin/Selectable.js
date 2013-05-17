@@ -1,19 +1,3 @@
-/*
- * ***** BEGIN LICENSE BLOCK *****
- * 
- * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2013 VMware, Inc.
- * 
- * The contents of this file are subject to the Zimbra Public License
- * Version 1.3 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
- * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
- * ***** END LICENSE BLOCK *****
- */
 /**
  * Tracks what records are currently selected in a databound widget. This class is mixed in to {@link Ext.dataview.DataView} and
  * all subclasses.
@@ -132,7 +116,9 @@ Ext.define('Ext.mixin.Selectable', {
             }
             else {
                 oldStore.un(bindEvents);
-                newStore.un('clear', 'onSelectionStoreClear', this);
+                if(newStore) {
+                    newStore.un('clear', 'onSelectionStoreClear', this);
+                }
             }
         }
 
@@ -200,10 +186,10 @@ Ext.define('Ext.mixin.Selectable', {
 
     /**
      * Selects a range of rows if the selection model {@link Ext.mixin.Selectable#getDisableSelection} is not locked.
-     * All rows in between `startRow` and `endRow` are also selected.
-     * @param {Number} startRow The index of the first row in the range.
-     * @param {Number} endRow The index of the last row in the range.
-     * @param {Boolean} keepExisting (optional) `true` to retain existing selections.
+     * All rows in between `startRecord` and `endRecord` are also selected.
+     * @param {Number} startRecord The index of the first row in the range.
+     * @param {Number} endRecord The index of the last row in the range.
+     * @param {Boolean} [keepExisting] `true` to retain existing selections.
      */
     selectRange: function(startRecord, endRecord, keepExisting) {
         var me = this,

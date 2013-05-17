@@ -1,19 +1,3 @@
-/*
- * ***** BEGIN LICENSE BLOCK *****
- * 
- * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2013 VMware, Inc.
- * 
- * The contents of this file are subject to the Zimbra Public License
- * Version 1.3 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
- * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
- * ***** END LICENSE BLOCK *****
- */
 /**
  * @class Ext.draw.engine.Svg
  * @extends Ext.draw.Surface
@@ -26,6 +10,13 @@ Ext.define('Ext.draw.engine.Svg', {
 
     statics: {
         BBoxTextCache: {}
+    },
+    
+    config: {
+        /**
+         * Nothing needs to be done in high precision mode.
+         */
+        highPrecision: false
     },
 
     getElementConfig: function () {
@@ -165,10 +156,10 @@ Ext.define('Ext.draw.engine.Svg', {
             return;
         }
         try {
-            ctx.save();
+            sprite.element = ctx.save();
             sprite.preRender(this);
             sprite.applyTransformations();
-            sprite.useAttributes(ctx);
+            sprite.useAttributes(ctx, region);
             if (false === sprite.render(this, ctx, [0, 0, region[2], region[3]])) {
                 return false;
             }
@@ -188,5 +179,14 @@ Ext.define('Ext.draw.engine.Svg', {
         delete me.mainGroup;
         delete me.ctx;
         me.callSuper(arguments);
+    },
+    
+    remove: function (sprite, destroySprite) {
+        if (sprite && sprite.element) {
+          //if sprite has an associated svg element remove it from the surface
+          sprite.element.destroy();
+          sprite.element = null;
+        }
+        this.callSuper(arguments);
     }
 });

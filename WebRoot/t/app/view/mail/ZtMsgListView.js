@@ -38,7 +38,7 @@ Ext.define('ZCS.view.mail.ZtMsgListView', {
 		allowTaps:          true,
 		emptyText:          ZtMsg.selectConv,
 		deferEmptyText:     false,
-
+		infinite: 			true,
 		scrollable: {
 			direction: 'vertical'
 		}
@@ -203,7 +203,7 @@ Ext.define('ZCS.view.mail.ZtMsgListView', {
 
 		this.setAllowTaps(!isReadOnly);
 
-		listRef.updateItemHeights();
+		listRef.handleItemHeights();
 		listRef.refreshScroller(listRef.getScrollable().getScroller());
 	}
 });

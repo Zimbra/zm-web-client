@@ -275,6 +275,12 @@ Ext.define('Ext.dataview.DataView', {
         store: null,
 
         /**
+         * @cfg {Object[]} data
+         * @inheritdoc
+         */
+        data: null,
+
+        /**
          * @cfg baseCls
          * @inheritdoc
          */
@@ -530,7 +536,7 @@ Ext.define('Ext.dataview.DataView', {
      * Function which can be overridden to provide custom formatting for each Record that is used by this
      * DataView's {@link #tpl template} to render each node.
      * @param {Object/Object[]} data The raw data object that was used to create the Record.
-     * @param {Number} recordIndex the index number of the Record being prepared for rendering.
+     * @param {Number} index the index number of the Record being prepared for rendering.
      * @param {Ext.data.Model} record The Record being prepared for rendering.
      * @return {Array/Object} The formatted data in a format expected by the internal {@link #tpl template}'s `overwrite()` method.
      * (either an array if your params are numeric (i.e. `{0}`) or an object (i.e. `{foo: 'bar'}`))
@@ -562,7 +568,11 @@ Ext.define('Ext.dataview.DataView', {
             item = Ext.get(item);
         }
         if (item) {
-            item.addCls(me.getPressedCls());
+            if (item.isComponent) {
+                item.renderElement.addCls(me.getPressedCls());
+            } else {
+                item.addCls(me.getPressedCls());
+            }
         }
     },
 
@@ -598,7 +608,11 @@ Ext.define('Ext.dataview.DataView', {
         }
 
         if (record && target) {
-            target.removeCls(me.getPressedCls());
+            if (target.isComponent) {
+                target.renderElement.removeCls(me.getPressedCls());
+            } else {
+                target.removeCls(me.getPressedCls());
+            }
         }
 
         me.fireEvent('itemtouchend', me, index, target, record, e);
@@ -615,7 +629,11 @@ Ext.define('Ext.dataview.DataView', {
         }
 
         if (record && target) {
-            target.removeCls(me.getPressedCls());
+            if (target.isComponent) {
+                target.renderElement.removeCls(me.getPressedCls());
+            } else {
+                target.removeCls(me.getPressedCls());
+            }
         }
         me.fireEvent('itemtouchmove', me, index, target, record, e);
     },
@@ -678,8 +696,13 @@ Ext.define('Ext.dataview.DataView', {
                 item = Ext.get(item);
             }
             if (item) {
-                item.removeCls(me.getPressedCls());
-                item.addCls(me.getSelectedCls());
+                if (item.isComponent) {
+                    item.renderElement.removeCls(me.getPressedCls());
+                    item.renderElement.addCls(me.getSelectedCls());
+                } else {
+                    item.removeCls(me.getPressedCls());
+                    item.addCls(me.getSelectedCls());
+                }
             }
         }
     },
@@ -705,7 +728,11 @@ Ext.define('Ext.dataview.DataView', {
         }
 
         if (item) {
-            item.removeCls([me.getPressedCls(), me.getSelectedCls()]);
+            if (item.isComponent) {
+                item.renderElement.removeCls([me.getPressedCls(), me.getSelectedCls()]);
+            } else {
+                item.removeCls([me.getPressedCls(), me.getSelectedCls()]);
+            }
         }
     },
 
@@ -713,7 +740,8 @@ Ext.define('Ext.dataview.DataView', {
         var store = this.getStore();
         if (!store) {
             this.setStore(Ext.create('Ext.data.Store', {
-                data: data
+                data: data,
+                autoDestroy: true
             }));
         } else {
             store.add(data);
@@ -761,12 +789,16 @@ Ext.define('Ext.dataview.DataView', {
             proxy, reader;
 
         if (oldStore && Ext.isObject(oldStore) && oldStore.isStore) {
-            me.onStoreClear();
+            oldStore.un(bindEvents);
+
+            if (!me.isDestroyed) {
+                me.onStoreClear();
+            }
+
             if (oldStore.getAutoDestroy()) {
                 oldStore.destroy();
             }
             else {
-                oldStore.un(bindEvents);
                 proxy = oldStore.getProxy();
                 if (proxy) {
                     reader = proxy.getReader();
@@ -931,10 +963,20 @@ Ext.define('Ext.dataview.DataView', {
             item = items[i];
             container.updateListItem(records[i], item);
         }
+
+        if (this.hasSelection()) {
+            var selection = this.getSelection(),
+                selectionLn = this.getSelectionCount(),
+                record;
+            for (i = 0; i < selectionLn; i++) {
+                record = selection[i];
+                this.doItemSelect(this, record);
+            }
+        }
     },
 
     showEmptyText: function() {
-        if (this.getEmptyText() && (this.hasLoadedStore || !this.getDeferEmptyText()) ) {
+        if (this.getEmptyText() && (this.hasLoadedStore || !this.getDeferEmptyText())) {
             this.emptyTextCmp.show();
         }
     },
@@ -946,11 +988,19 @@ Ext.define('Ext.dataview.DataView', {
     },
 
     destroy: function() {
-        var store = this.getStore();
-        if (store && store.getAutoDestroy()) {
-            store.destroy();
+        var store = this.getStore(),
+            proxy = (store && store.getProxy()),
+            reader = (proxy && proxy.getReader());
+
+        if (reader) {
+            // TODO: Use un() instead of clearListeners() when TOUCH-2723 is fixed.
+//          reader.un('exception', 'handleException', this);
+            reader.clearListeners();
         }
+
         this.callParent(arguments);
+
+        this.setStore(null);
     },
 
     onStoreClear: function() {

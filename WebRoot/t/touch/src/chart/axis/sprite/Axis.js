@@ -127,7 +127,7 @@ Ext.define("Ext.chart.axis.sprite.Axis", {
                 centerX: 'number',
 
                 /**
-                 * @cfg {Number} centerX The central point of the angular axis on the y-axis.
+                 * @cfg {Number} centerY The central point of the angular axis on the y-axis.
                  */
                 centerY: 'number',
 

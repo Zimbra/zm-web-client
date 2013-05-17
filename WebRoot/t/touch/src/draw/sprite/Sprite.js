@@ -216,7 +216,9 @@ Ext.define('Ext.draw.sprite.Sprite', {
                 /**
                  * @cfg {Number} [scalingCenterY=null] The central coordinate of the sprite's scale operation on the y-axis.
                  */
-                scalingCenterY: "number"
+                scalingCenterY: "number",
+                
+                constrainGradients: "bool"
             },
 
             aliases: {
@@ -270,7 +272,9 @@ Ext.define('Ext.draw.sprite.Sprite', {
                 scalingX: 1,
                 scalingY: 1,
                 scalingCenterX: null,
-                scalingCenterY: null
+                scalingCenterY: null,
+                
+                constrainGradients: false
             },
 
             dirtyTriggers: {
@@ -304,7 +308,9 @@ Ext.define('Ext.draw.sprite.Sprite', {
                 scalingX: "transform",
                 scalingY: "transform",
                 scalingCenterX: "transform",
-                scalingCenterY: "transform"
+                scalingCenterY: "transform",
+                
+                constrainGradients: "canvas"
             },
 
             updaters: {
@@ -334,6 +340,12 @@ Ext.define('Ext.draw.sprite.Sprite', {
             }
         }
     },
+
+    /**
+     * @property {Object} attr
+     * The visual attributes of the sprite, e.g. strokeStyle, fillStyle, lineWidth...
+     */
+    attr: {},
 
     config: {
         parent: null
@@ -522,7 +534,6 @@ Ext.define('Ext.draw.sprite.Sprite', {
 
     /**
      * @protected
-     * @function
      * Subclass will fill the plain object with `x`, `y`, `width`, `height` information of the plain bounding box of
      * this sprite.
      *
@@ -536,7 +547,7 @@ Ext.define('Ext.draw.sprite.Sprite', {
      * bounding box of this sprite.
      *
      * @param {Object} transform Target object.
-     * @param {Object} plain Auxilary object providing information of plain object.
+     * @param {Object} plain Auxiliary object providing information of plain object.
      */
     updateTransformedBBox: function (transform, plain) {
         this.attr.matrix.transformBBox(plain, 0, transform);
@@ -581,7 +592,7 @@ Ext.define('Ext.draw.sprite.Sprite', {
         return this;
     },
 
-    useAttributes: function (ctx) {
+    useAttributes: function (ctx, region) {
         this.applyTransformations();
         var attrs = this.attr,
             canvasAttributes = attrs.canvasAttributes,
@@ -613,7 +624,11 @@ Ext.define('Ext.draw.sprite.Sprite', {
             }
         }
 
-        ctx.setGradientBBox(this.getBBox(this.attr.transformFillStroke));
+        if(attrs.constrainGradients) {
+            ctx.setGradientBBox({x: region[0], y: region[1], width: region[2], height: region[3]});
+        } else {
+            ctx.setGradientBBox(this.getBBox(attrs.transformFillStroke));
+        }
     },
 
     // @private

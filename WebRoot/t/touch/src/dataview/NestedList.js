@@ -88,7 +88,7 @@ Ext.define('Ext.dataview.NestedList', {
     extend: 'Ext.Container',
     xtype: 'nestedlist',
     requires: [
-        'Ext.List',
+        'Ext.dataview.List',
         'Ext.TitleBar',
         'Ext.Button',
         'Ext.XTemplate',
@@ -102,7 +102,7 @@ Ext.define('Ext.dataview.NestedList', {
          * @cfg
          * @inheritdoc
          */
-        cls: Ext.baseCSSPrefix + 'nested-list',
+        baseCls: Ext.baseCSSPrefix + 'nested-list',
 
         /**
          * @cfg {String/Object/Boolean} cardSwitchAnimation
@@ -214,12 +214,46 @@ Ext.define('Ext.dataview.NestedList', {
 
         /**
          * @cfg {Ext.Container} detailContainer The container of the `detailCard`.
+         * A detailContainer is a reference to the container where a detail card
+         * displays.  
+         *
+         * See http://docs.sencha.com/touch/2-2/#!/guide/nested_list-section-4
+         * and http://en.wikipedia.org/wiki/Miller_columns
+         * 
+         * The two possible values for a detailContainer are undefined (default), 
+         * which indicates that a detailCard appear in the same container, or you 
+         * can specify a new container location. The default condition uses the
+         * current List container.
+         * 
+         * The following example shows creating a location for a detailContainer:
+         *
+         * var detailContainer = Ext.create('Ext.Container', {
+         *     layout: 'card'
+         * });
+         *
+         * var nestedList = Ext.create('Ext.NestedList', {
+         *     store: treeStore,
+         *     detailCard: true,
+         *     detailContainer: detailContainer
+         * });
+         * 
+         * The default value is typically used for phone devices in portrait mode 
+         * where the small screen size dictates that the detailCard replace the 
+         * current container.
          * @accessor
          */
         detailContainer: undefined,
 
         /**
-         * @cfg {Ext.Component} detailCard to provide a final card for leaf nodes.
+         * @cfg {Ext.Component} detailCard provides the information for a leaf 
+         * in a Miller column list. In a Miller column, users follow a 
+         * hierarchial tree structure to a leaf, which provides information 
+         * about the item in the list. The detailCard lists the information at 
+         * the leaf.
+         * 
+         * See http://docs.sencha.com/touch/2-2/#!/guide/nested_list-section-3
+         * and http://en.wikipedia.org/wiki/Miller_columns
+         * 
          * @accessor
          */
         detailCard: null,
@@ -238,12 +272,41 @@ Ext.define('Ext.dataview.NestedList', {
          */
         listConfig: null,
 
+        /**
+         * @cfg {Boolean} useSimpleItems
+         * Set this to false if you want the lists in this NestedList to create complex container list items.
+         */
+        useSimpleItems: true,
+
+        /**
+         * @cfg {Number} itemHeight
+         * This allows you to set the default item height and is used to roughly calculate the amount
+         * of items needed to fill the list. By default items are around 50px high. If you set this
+         * configuration in combination with setting the {@link #variableHeights} to false you
+         * can improve the scrolling speed
+         */
+        itemHeight: 47,
+
+        /**
+         * @cfg {Boolean} variableHeights
+         * This configuration allows you optimize the picker by not having it read the DOM heights of list items.
+         * Instead it will assume (and set) the height to be the {@link #itemHeight}.
+         */
+        variableHeights: false,
+
         // @private
         lastNode: null,
 
         // @private
-        lastActiveList: null
+        lastActiveList: null,
+
+        ui: null
     },
+
+    platformConfig: [{
+        theme: ['Windows'],
+        itemHeight: 42
+    }],
 
     /**
      * @event itemtap
@@ -671,18 +734,20 @@ Ext.define('Ext.dataview.NestedList', {
             me.setActiveItem(list);
         }
         else {
+            if (animation) {
+                animation.setReverse(reverse);
+            }
+
             if (firstList && secondList) {
                 //firstList and secondList have both been created
                 activeItem = me.getActiveItem();
 
                 me.setLastActiveList(activeItem);
                 list = (activeItem == firstList) ? secondList : firstList;
+
                 list.getStore().setNode(node);
                 node.expand();
 
-                if (animation) {
-                    animation.setReverse(reverse);
-                }
                 me.setActiveItem(list);
                 list.deselectAll();
             }
@@ -804,12 +869,14 @@ Ext.define('Ext.dataview.NestedList', {
 
         return Ext.Object.merge({
             xtype: 'list',
+            useSimpleItems: me.getUseSimpleItems(),
             pressedDelay: 250,
             autoDestroy: true,
             store: nodeStore,
             onItemDisclosure: me.getOnItemDisclosure(),
             allowDeselect: me.getAllowDeselect(),
-            variableHeights: false,
+            itemHeight: me.getItemHeight(),
+            variableHeights: me.getVariableHeights(),
             listeners: [
                 { event: 'itemdoubletap', fn: 'onItemDoubleTap', scope: me },
                 { event: 'itemtap', fn: 'onItemInteraction', scope: me, order: 'before'},
