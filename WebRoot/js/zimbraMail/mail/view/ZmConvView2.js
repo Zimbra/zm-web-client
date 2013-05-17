@@ -802,7 +802,7 @@ function(view, content, htmlEncode) {
 ZmConvView2Header = function(params) {
 
 	params.className = params.className || "Conv2Header";
-	DwtControl.call(this, params);
+	DwtComposite.call(this, params);
 
 	this._setEventHdlrs([DwtEvent.ONMOUSEDOWN, DwtEvent.ONMOUSEUP, DwtEvent.ONDBLCLICK]);
 	
