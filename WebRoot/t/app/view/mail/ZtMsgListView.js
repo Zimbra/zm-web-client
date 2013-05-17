@@ -155,24 +155,25 @@ Ext.define('ZCS.view.mail.ZtMsgListView', {
 
 		var scroller = this.getScrollable();
 
+
+		//Start the list scroll off by not using absolute positioning.
+		scroller.getScroller().on('scrollstart', function () {
+            //<debug>
+			Ext.Logger.iframe('Scroll start on list');
+            //</debug>
+		 	this.doIframeProofPositioning(true);
+		}, this);
+
 		scroller.getScroller().on('scrollend', function () {
 			//<debug>
             Ext.Logger.iframe('Scoll end on list');
             //</debug>
 			this.doIframeProofPositioning();
 		}, this);
-
-		scroller.getScroller().on('scrollstart', function () {
-            //<debug>
-			Ext.Logger.iframe('Scroll start on list');
-            //</debug>
-			this.doIframeProofPositioning();
-		}, this);
 	},
 
-	doIframeProofPositioning: function(forceZero) {
+	doIframeProofPositioning: function(noAbsolute) {
         var items = this.listItems,
-        	doForceZero = forceZero,
             offset = 0,
             i, ln, item, translateY;
 
@@ -185,8 +186,9 @@ Ext.define('ZCS.view.mail.ZtMsgListView', {
     	// not registered.
 		for (i = 0, ln = items.length; i < ln; i++) {
             item = items[i];
-            if (item.getExpanded()) {
+            if (!noAbsolute) {
 		        item.element.forceAbsolutePositioning = true;
+		        item.translate(item.x, item.y);
 		    } else {
 		    	item.element.forceAbsolutePositioning = false;
 	    	}

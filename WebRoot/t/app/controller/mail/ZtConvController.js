@@ -148,6 +148,8 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 			quickReply.show();
 		}
 
+		// this.setHandleUpdateDataEvent(true);
+
 		store.load({
 			convId: conv.getId(),
 			convQuery: convQueryTerms.join(' AND '),
@@ -161,6 +163,8 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 					if (quickReply) {
 						this.setQuickReplyPlaceholderText(this.getQuickReplyPlaceholderText());
 					}
+
+					this.setHandleUpdateDataEvent(false);
 				}
 			},
 			scope: this
@@ -228,7 +232,7 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 		var msgListView = this.getMsgListView();
 		msgListView.updatedItems = msgViews;
 		msgListView.handleItemHeights();
-		msgListView.refreshScroller(msgListView.getScrollable().getScroller());
+		msgListView.refreshScroller();
 	},
 
 	/**

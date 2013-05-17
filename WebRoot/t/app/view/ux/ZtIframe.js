@@ -49,6 +49,8 @@ Ext.define('ZCS.view.ux.ZtIframe', {
 		});
 
 		this.setIframeEl(iframe);
+
+		this.list = this.up('list');
         //<debug>
 		Ext.Logger.iframe('IFRAME with name ' + this.getName() + ' has DOM ID: ' + iframe.dom.id);
         //</debug>
@@ -125,10 +127,10 @@ Ext.define('ZCS.view.ux.ZtIframe', {
 						id,
 						pageX, //pageX
 						pageY, //pageY
-						oldTouch.screenX, //screenX
-						oldTouch.screenX, //screenY
-						oldTouch.clientX, //clientX
-						oldTouch.clientY //clientY
+						pageX, //oldTouch.screenX, //screenX
+						pageY, //oldTouch.screenX, //screenY
+						pageX, //oldTouch.clientX, //clientX
+						pageY //oldTouch.clientY //clientY
 					);
 					newTouches.push(newTouch);
 				}
@@ -190,10 +192,10 @@ Ext.define('ZCS.view.ux.ZtIframe', {
 					true, //cancelable, Indicates whether an event can have its default action prevented. If true, the default action can be prevented; otherwise, it cannot.
 					window, //view, The view (DOM window) in which the event occurred.
 					ev.detail, //detail Specifies some detail information about the event depending on the type of event.
-					eventScreenX, //screenX The x-coordinate of the event’s location in screen coordinates.
-					eventScreenY, //screenY The y-coordinate of the event’s location in screen coordinates.
-					eventScreenX, //clientX The x-coordinate of the event’s location relative to the window’s viewport.
-					eventScreenY, //clientY The y-coordinate of the event’s location relative to the window’s viewport.
+					eventPageX, //screenX The x-coordinate of the event’s location in screen coordinates.
+					eventPageY, //screenY The y-coordinate of the event’s location in screen coordinates.
+					eventPageX, //clientX The x-coordinate of the event’s location relative to the window’s viewport.
+					eventPageY, //clientY The y-coordinate of the event’s location relative to the window’s viewport.
 					ev.ctrlKey, //ctrlKey, If true, the control key is pressed; otherwise, it is not.
 					ev.altKey, //altKey If true, the alt key is pressed; otherwise, it is not.
 					ev.shiftKey, //shiftKey If true, the shift key is pressed; otherwise, it is not.
@@ -211,12 +213,19 @@ Ext.define('ZCS.view.ux.ZtIframe', {
 				var clonedEvent;
 
 				if (ev.srcElement.nodeName === 'A' && !Ext.fly(ev.srcElement).getAttribute("addr")) {
-					return true;
+					return false;
+				}
+
+				if (!component.list) {
+					component.list = component.up('list');
 				}
 
 				// clone the event for our window / document
 				clonedEvent = cloneEvent(ev, component.element.dom);
+
 				component.element.dom.dispatchEvent(clonedEvent);
+
+				return true;
 			},
 			touchEventListener = function (ev) {
 				if (!ev.isRefired) {
@@ -236,35 +245,42 @@ Ext.define('ZCS.view.ux.ZtIframe', {
 						return false;
 					}
 
-					delegateEvent(ev);
+					//If the delegation occurred succesfully, do the rest of the processing.
+					//It might fail if an anchor is encountered.
+					if (delegateEvent(ev)) {
 
-					//If we allow this event to bubble normally, inertial horizontal scrolling will occur.
-					//However, if a Y axis scroll is allowed, then we may end up scrolling the whole page.
-					//So do our best to only allow default scroll to occur if it is predominately an x-axis scrolling move.
+						//If we allow this event to bubble normally, inertial horizontal scrolling will occur.
+						//However, if a Y axis scroll is allowed, then we may end up scrolling the whole page.
+						//So do our best to only allow default scroll to occur if it is predominately an x-axis scrolling move.
 
-					xDifferential = ev.pageX - lastPageX;
-					yDifferential = ev.pageY - lastPageY;
+						xDifferential = ev.pageX - lastPageX;
+						yDifferential = ev.pageY - lastPageY;
 
-					var yDifferentialIsHigh = yDifferential < -4 || yDifferential > 4;
+						var yDifferentialIsHigh = yDifferential < -4 || yDifferential > 4;
 
-					if (ev.type === 'touchend') {
-						lastPageX = 0;
-						lastPageY = 0;
-					}
+						if (ev.type === 'touchend') {
+							lastPageX = 0;
+							lastPageY = 0;
+							Ext.Logger.iframe("Touch end");
+						} else {
+							Ext.Logger.iframe('[' + xDifferential + ',' + yDifferential+']');
+						}
 
-                    //<debug>
-					Ext.Logger.iframe('[' + xDifferential + ',' + yDifferential+']');
-                    //</debug>
+	                    //<debug>
 
-					if (yDifferentialIsHigh && ev.type === 'touchmove') {
-						//Cache these for the next time the handler is called.
-						lastPageY = ev.pageY;
-						lastPageX = ev.pageX;
-						ev.preventDefault();
-						return false;
-					} else {
-						lastPageY = ev.pageY;
-						lastPageX = ev.pageX;
+	                    //</debug>
+
+						if (yDifferentialIsHigh && ev.type === 'touchmove') {
+							//Cache these for the next time the handler is called.
+							lastPageY = ev.pageY;
+							lastPageX = ev.pageX;
+							ev.preventDefault();
+							return false;
+						} else {
+							lastPageY = ev.pageY;
+							lastPageX = ev.pageX;
+						}
+
 					}
 
 				} else {
@@ -312,7 +328,6 @@ Ext.define('ZCS.view.ux.ZtIframe', {
 			body.addEventListener("touchcancel", touchEventListener, false);
 			body.addEventListener("touchleave", touchEventListener, false);
 			body.addEventListener("touchmove", touchEventListener, false);
-
 		}
 	},
 

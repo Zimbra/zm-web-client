@@ -34,6 +34,10 @@ Ext.define('ZCS.common.ZtPullRefresh', {
             oldRecords = store.getData(),
             newRecords = operation.getRecords(),
             length     = newRecords.length,
+            list       = this.getList(),
+            scroller   = list.getScrollable().getScroller(),
+            scrollerOffsetX = scroller.position.x,
+            scrollerOffsetY = scroller.position.y,
             recordToInsert,
             toInsert   = [],
             newRecordCollection = new Ext.util.MixedCollection(),
@@ -70,6 +74,15 @@ Ext.define('ZCS.common.ZtPullRefresh', {
         for (i = 0; i < toInsert.length; i += 1) {
         	recordToInsert = toInsert[i];
         	store.insert(recordToInsert.properIndex, recordToInsert);
+        }
+
+        scroller.scrollTo(scrollerOffsetX, scrollerOffsetY);
+
+
+        this.setViewState('loaded');
+        this.fireEvent('latestfetched');
+        if (this.getAutoSnapBack()) {
+            this.snapBack();
         }
     }
 })

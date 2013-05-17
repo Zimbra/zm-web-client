@@ -64,17 +64,22 @@ Ext.define('ZCS.view.mail.ZtMsgView', {
 
 					var msgId = msgData.id,
 						msg = ZCS.cache.get(msgId),
-						oldMsgView = controller.getMsgViewById(msgId);
+						oldMsgView = controller.getMsgViewById(msgId),
+						modelExpanded = !!msg.get('isLoaded'),
+						modelState = modelExpanded ? ZCS.constant.HDR_EXPANDED : ZCS.constant.HDR_COLLAPSED;
+
 
 					//<debug>
-					Ext.Logger.info('updatedata for msg ' + msgId + ' ("' + msg.get('fragment') + '") from msg view ' + oldMsgView.getId() + ' into msg view ' + msgView.getId());
+					if (oldMsgView) {
+						Ext.Logger.info('updatedata for msg ' + msgId + ' ("' + msg.get('fragment') + '") from msg view ' + oldMsgView.getId() + ' into msg view ' + msgView.getId());
+					}
 					//</debug>
 
 					// maintain the msg's display state - it's just getting moved to a different msg view
 					if (msg) {
 						msgView.setMsg(msg);
-						msgView.setExpanded(oldMsgView.getExpanded());
-						msgView.setState(oldMsgView.getState());
+						msgView.setExpanded(oldMsgView ? oldMsgView.getExpanded() : modelExpanded);
+						msgView.setState(oldMsgView ? oldMsgView.getState() : modelState);
 						msgView.refreshView();
 						controller.setMsgViewById(msgId, msgView);
 					}
@@ -192,14 +197,8 @@ Ext.define('ZCS.view.mail.ZtMsgView', {
 	 * give it absolute positoning.
 	 *
 	 */
-	translate: function(x, y, animation) {
-        if (animation) {
-            return this.translateAnimated(x, y, animation);
-        }
+	translate: function(x, y) {
 
-        if (this.isAnimating) {
-            this.stopAnimation();
-        }
 
         if (!isNaN(x) && typeof x == 'number') {
             this.x = x;
@@ -217,13 +216,14 @@ Ext.define('ZCS.view.mail.ZtMsgView', {
 
         if (this.element.forceAbsolutePositioning) {
             //In case the element was not forced before.
+            this.element.dom.style.position = "absolute";
             this.element.dom.style.webkitTransform = 'translate3d(0px, 0px, 0px)';
             this.element.dom.style.top = this.y + 'px';
         } else {
         	if (this.element.dom.style.top) {
         		this.element.dom.style.top = '0px';
         	}
-            this.element.dom.style.webkitTransform = 'translate3d(' + this.x + 'px, ' + this.y + 'px, 0px)';
+        	this.element.translate(x, y);
         }
     }
 

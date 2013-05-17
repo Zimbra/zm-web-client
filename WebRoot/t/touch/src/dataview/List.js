@@ -497,7 +497,7 @@ Ext.define('Ext.dataview.List', {
             itemIndex = item.$dataIndex;
 
             // itemIndex may not be set yet if the store is still being loaded
-            if (itemIndex !== null) {
+            if (itemIndex !== null && itemIndex !== undefined) {
                 if (variableHeights) {
                     height = useSimpleItems ? item.element.getHeight() : item.element.getFirstChild().getHeight();
                     height = Math.max(height, minimumHeight);
