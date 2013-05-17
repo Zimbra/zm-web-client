@@ -81,6 +81,7 @@
     <property name='build.adminhelp.dir' value='${build.web.dir}/adminhelp'/>
     <property name='build.dist.dir' value='${build.dir}/dist'/>
     <property name='build.touch.dir' value='${build.web.dir}/t'/>
+    <property name='build.touch.debug.dir' value='${build.web.dir}/tdebug'/>
 
 	<property name='build.docs.dir' value='${build.dir}/docs'/>
 	<property name='build.jsapi-zimbra-doc.dir' value='${build.docs.dir}/jsapi-zimbra-doc'/>
@@ -1237,49 +1238,53 @@ if (ext == null) ext = "";
     </target>
 
     <target name='touch' depends='touch-init' unless="no.touch">
-        <mkdir dir='${build.touch.dir}'/>
         <if>
             <not>
                <isset property='build.prod'/>
             </not>
             <then>
+                <mkdir dir='${build.touch.dir}'/>
+
                 <antcall target="compile.sass"/>
 
                 <copy todir='${build.touch.dir}'>
                     <fileset dir='${touch.dir}' includes="${touch.includes}" excludes="${touch.excludes}"/>
                 </copy>
-
             </then>
             <else>
-                <if>
-                    <not>
-                        <isset property='touch.prod.build.mode'/>
-                    </not>
-                    <then>
-                        <property name="touch.prod.build.mode" value="production"/>
-                    </then>
-                </if>
+                <!--First run sencha build in production mode for the main touch app-->
+                <antcall target="touch-prod">
+                    <param name="touch.prod.build.mode" value="production"/>
+                </antcall>
 
-                <!--Execute the prod build command-->
-                <exec executable="/bin/bash">
-                    <arg value="${this.zwc.basedir}/build-prod-touch.sh"/>
-                    <arg value="${touch.prod.build.mode}"/>
-                </exec>
-
-                <!--Copy the production dir-->
-                <copy todir='${build.touch.dir}'>
-                    <fileset dir='${touch.prod.dir}/${touch.prod.build.mode}'/>
-                </copy>
-
-                <!--Copy the templates dir-->
-                <fileset id="templates.fileset" dir="${touch.dir}/resources/templates" casesensitive="yes"/>
-
-                <copy todir="${build.touch.dir}/resources/templates" verbose="true">
-                    <fileset refid="templates.fileset"/>
-                </copy>
-
+                <!--Now run sencha build in testing mode to create debugging app-->
+                <antcall target="touch-prod">
+                    <param name="touch.prod.build.mode" value="testing"/>
+                    <param name="build.touch.dir" value="${build.touch.debug.dir}"/>
+                </antcall>
             </else>
         </if>
+    </target>
+
+    <target name="touch-prod">
+        <mkdir dir='${build.touch.dir}'/>
+
+        <exec executable="/bin/bash">
+            <arg value="${this.zwc.basedir}/build-prod-touch.sh"/>
+            <arg value="${touch.prod.build.mode}"/>
+        </exec>
+
+        <!--Copy the production dir-->
+        <copy todir='${build.touch.dir}'>
+            <fileset dir='${touch.prod.dir}/${touch.prod.build.mode}'/>
+        </copy>
+
+        <!--Copy the templates dir-->
+        <fileset id="templates.fileset" dir="${touch.dir}/resources/templates" casesensitive="yes"/>
+
+        <copy todir="${build.touch.dir}/resources/templates" verbose="true">
+            <fileset refid="templates.fileset"/>
+        </copy>
     </target>
     
     <target name='deploy' depends='war'>
@@ -1626,12 +1631,6 @@ if (ext == null) ext = "";
         <copy todir='${webapp.dir}/t' verbose='true'>
             <fileset refid="touch.fileset"/>
         </copy>
-    </target>
-
-    <target name="prod-deploy-debug-touch">
-        <antcall target="prod-deploy">
-            <param name="touch.prod.build.mode" value="testing"/>
-        </antcall>
     </target>
 
 </project>
