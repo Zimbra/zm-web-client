@@ -330,8 +330,7 @@ Ext.define('ZCS.view.ux.ZtBubbleArea', {
                             me.fireEvent('bubbleTap', me, thisBubble, thisBubble.data);
                         });
                     }
-                },
-                bubbleModel: bubbleModel
+                }
             };
 
         if (me.bubbleElements.getCount() === 0) {
@@ -341,6 +340,7 @@ Ext.define('ZCS.view.ux.ZtBubbleArea', {
         bubbleElement = me.down('#mainContents').insert(numberOfBubbles, newBubble);
 
         bubbleElement.data = bubbleModel;
+        bubbleElement.bubbleModel = bubbleModel;
 
         me.bubbles.add(bubbleModel);
 
