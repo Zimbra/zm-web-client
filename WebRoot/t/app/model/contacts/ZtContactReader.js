@@ -29,109 +29,36 @@ Ext.define('ZCS.model.contacts.ZtContactReader', {
 		var data = {},
 			attrs = node._attrs;
 
+        data = this.populateContactFields(attrs);
+
 		data.type = ZCS.constant.ITEM_CONTACT;
 
-		Ext.copyTo(data, attrs, ZCS.constant.CONTACT_ATTRS);
+        return data;
+	},
 
-        // Build email array
-        var emails= [];
-        if ('email' in attrs) {
-        emails.push(attrs.email);
-        for(var index = 2; ;index++)
-        {
-            if(('email' + index) in attrs)
-                emails.push(attrs['email' + index]);
-            else
-                break;
-        }
-        data.emailFields = emails;
-        }
 
-        // Build mobilePhone array
-        var mobPhones= [];
-        if ('mobilePhone' in attrs) {
-        mobPhones.push(attrs.mobilePhone);
-        for(var index = 2; ;index++)
-        {
-            if(('mobilePhone' + index) in attrs)
-                mobPhones.push(attrs['mobilePhone' + index]);
-            else
-                break;
-        }
-        data.mobilePhoneFields = mobPhones;
-        }
+    populateContactFields: function(attrs) {
+        var data = {};
 
-        //Build workPhone array
-        var workPhones= [];
-        if ('workPhone' in attrs) {
-            workPhones.push(attrs.workPhone);
-            for(var index = 2; ;index++)
-            {
-                if(('workPhone' + index) in attrs)
-                    workPhones.push(attrs['workPhone' + index]);
-                else
-                    break;
+        Ext.copyTo(data, attrs, ZCS.constant.CONTACT_ATTRS);
+
+        Ext.each(ZCS.constant.CONTACT_MULTI_ATTRS, function(field) {
+            var fieldValue = [],
+                dataFieldName = field+'Fields';
+            if (field in attrs) {
+                fieldValue.push(attrs[field]);
+                for(var index = 2; ;index++)
+                {
+                    if((field + index) in attrs)
+                        fieldValue.push(attrs[field + index]);
+                    else
+                        break;
+                }
+                data[dataFieldName] = fieldValue;
             }
-            data.workPhoneFields = workPhones;
-        }
+        });
 
-        //Build otherPhone array
-        var otherPhones= [];
-        if ('otherPhone' in attrs) {
-            otherPhones.push(attrs.otherPhone);
-            for(var index = 2; ;index++)
-            {
-                if(('otherPhone' + index) in attrs)
-                    otherPhones.push(attrs['otherPhone' + index]);
-                else
-                    break;
-            }
-            data.otherPhoneFields = otherPhones;
-        }
+        return data;
+    }
 
-        // Build homeURL array
-        var homeUrls = [];
-        if ('homeURL' in attrs) {
-            homeUrls.push(attrs.homeURL);
-            for(var index = 2; ;index++)
-            {
-                if(('homeURL' + index) in attrs)
-                    homeUrls.push(attrs['homeURL' + index]);
-                else
-                    break;
-            }
-            data.homeUrlFields = homeUrls;
-        }
-
-        // Build workURL array
-        var workUrls = [];
-        if ('workURL' in attrs) {
-            workUrls.push(attrs.workURL);
-            for(var index = 2; ;index++)
-            {
-                if(('workURL' + index) in attrs)
-                    workUrls.push(attrs['workURL' + index]);
-                else
-                    break;
-            }
-            data.workUrlFields = workUrls;
-        }
-
-        // Build otherURL array
-        var otherUrls = [];
-        if ('otherURL' in attrs) {
-            otherUrls.push(attrs.otherURL);
-            for(var index = 2; ;index++)
-            {
-                if(('otherURL' + index) in attrs)
-                    otherUrls.push(attrs['otherURL' + index]);
-                else
-                    break;
-            }
-            data.otherUrlFields = otherUrls;
-        }
-
-
-		return data;
-	}
 });

@@ -573,43 +573,55 @@ ZCS.constant.IDTYPE_TAG             = 'TAG';
 ZCS.constant.QUICK_REPLY_SMALL  = 20;
 ZCS.constant.QUICK_REPLY_LARGE  = 80;
 
-// Contact attributes we care about
+//Contact field types
+ZCS.constant.MOBILE = 'mobile';
+ZCS.constant.WORK = 'work';
+ZCS.constant.OTHER = 'other';
+ZCS.constant.HOME = 'home';
+
+// Contact attributes having single value
 ZCS.constant.CONTACT_ATTRS = [
-	'firstName',
-	'lastName',
-	'email',
-	'company',
+    'firstName',
+    'lastName',
+    'namePrefix',
+    'nameSuffix',
+    'maidenName',
+    'middleName',
+    'company',
     'jobTitle',
-	'fileAs',
+    'department',
+    'fileAs',
 
-	'image',
-	'imagepart',
-	'zimletImage',
-
-    'workCity',
-    'workStreet',
-    'workPostalCode',
-    'workState',
-    'workCountry',
-
-    'otherCity',
-    'otherStreet',
-    'otherPostalCode',
-    'otherState',
-    'otherCountry',
-
-    'homeCity',
-    'homePostalCode',
-    'homeStreet',
-    'homeState',
-    'homeCountry'
+    'image',
+    'imagepart',
+    'zimletImage'
 ];
-// email2 - email16
-(function() {
-	for (var i = 2; i <= 16; i++) {
-		ZCS.constant.CONTACT_ATTRS.push('email' + i);
-	}
-})();
+
+//Contact attributes that can have multiple values
+ZCS.constant.CONTACT_MULTI_ATTRS = [
+    'email',
+    'mobilePhone',
+    'workPhone',
+    'otherPhone',
+    'homeUrl',
+    'workUrl',
+    'otherUrl',
+    'homeStreet',
+    'homeCity',
+    'homeState',
+    'homePostalCode',
+    'homeCountry',
+    'workStreet',
+    'workCity',
+    'workState',
+    'workPostalCode',
+    'workCountry',
+    'otherStreet',
+    'otherCity',
+    'otherState',
+    'otherPostalCode',
+    'otherCountry'
+];
 
 // Server errors that should force a logout
 ZCS.constant.IS_FATAL_ERROR = ZCS.util.arrayAsLookupHash([

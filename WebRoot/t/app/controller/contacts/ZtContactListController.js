@@ -25,8 +25,9 @@ Ext.define('ZCS.controller.contacts.ZtContactListController', {
 	// slight hack to load some needed files early, rather than dynamically loading as needed via an
 	// asynchronous request (which introduces timing problems)
 	requires: [
-		'ZCS.view.contacts.ZtContactView'
-	],
+		'ZCS.view.contacts.ZtContactView',
+        'ZCS.view.contacts.ZtContactForm'
+    ],
 
 	config: {
 
@@ -49,8 +50,8 @@ Ext.define('ZCS.controller.contacts.ZtContactListController', {
 		control: {
 			listPanel: {
 				newItem: 'doNewContact'
-			}
-		},
+		    }
+    	},
 
 		app: ZCS.constant.APP_CONTACTS
 	},
@@ -58,12 +59,11 @@ Ext.define('ZCS.controller.contacts.ZtContactListController', {
 	// TODO: launch happens on startup; delay load until Contacts tab shown
 
 	getItemController: function() {
-		return ZCS.app.getContactController();
+        return ZCS.app.getContactController();
 	},
 
 	doNewContact: function() {
-        //<debug>
-		Ext.Logger.warn('TODO: Create new contact');
-        //</debug>
+        this.getItemController().showContactForm();
 	}
+
 });

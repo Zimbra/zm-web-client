@@ -69,7 +69,8 @@
 @include pictos-iconmask('trash');
 @include pictos-iconmask('settings9');
 @include pictos-iconmask('compose1');
-
+@include pictos-iconmask('add1');
+@include pictos-iconmask('minus2');
 
 // Colored button styles
 @include sencha-button-ui('neutral', $neutral-color, 'glossy');

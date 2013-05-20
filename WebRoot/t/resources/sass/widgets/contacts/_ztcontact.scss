@@ -166,13 +166,47 @@ $contactFieldWidth: 18em;
 
 /*Create Contact Classes*/
 .zcs-contact-image {
-	background-image: url('../images/person.png');
-	background-size: 110px 110px;
-	background-repeat: no-repeat;
-	background-position: 30px 30px;
-	height: 125px;
+    @extend .zcs-contact-person;
+	height: $contactImageSize;
+    width: $contactImageSize;
 }
 
 .zcs-contact-personalinfo {
 	width:80%;
+}
+
+.zcs-contact-formline {
+	border-bottom: 1px solid $light-grey;
+	min-height: 1.8em;
+}
+
+.zcs-contact-form {
+	background-color: white;
+	background-image: none;
+
+	.x-form-inner {
+
+		.x-field {
+			@extend .zcs-contact-formline;
+		}
+		.x-form-label {
+			text-align: right;
+		}
+	}
+}
+
+.zcs-contact-imgborder {
+    border: solid #E3E3E3;
+    border-width: 0 1px 1px 0;
+}
+
+.zcs-contact-spacer {
+    border: solid #E3E3E3;
+    border-width: 0 0 1px 0;
+}
+
+.zcs-contact-addremove {
+    border: solid #E3E3E3 !important;
+    border-width: 0 0 1px 0 !important;
+    border-radius: 0;
 }

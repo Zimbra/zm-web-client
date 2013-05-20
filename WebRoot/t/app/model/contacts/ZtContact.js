@@ -45,6 +45,10 @@ Ext.define('ZCS.model.contacts.ZtContact', {
 					}
 				}
 			},
+            { name: 'namePrefix', type: 'string' },
+            { name: 'middleName', type: 'string' },
+            { name: 'maidenName', type: 'string' },
+            { name: 'nameSuffix', type: 'string' },
             {
                 name: 'emailFields',
                 type: 'auto'
@@ -73,12 +77,9 @@ Ext.define('ZCS.model.contacts.ZtContact', {
                 name: 'otherUrlFields',
                 type: 'auto'
             },
-			{
-                name: 'email',
-                type: 'string'
-            },
             { name: 'jobTitle', type: 'string'},
-			{ name: 'company', type: 'string' },
+            { name: 'department', type: 'string'},
+            { name: 'company', type: 'string' },
 			{ name: 'fileAs', type: 'int' } ,
             /**
              * image and imagepart fields store the image related attributes for a contact.
@@ -86,22 +87,29 @@ Ext.define('ZCS.model.contacts.ZtContact', {
             { name: 'image', type: 'auto'},
             { name: 'imagepart', type: 'auto'},
             { name: 'zimletImage', type: 'auto'},
-            { name: 'homeStreet', type: 'string'},
-            { name: 'homeCity', type: 'string'},
-            { name: 'homeState', type: 'string'},
-            { name: 'homePostalCode', type: 'int'},
-            { name: 'workStreet', type: 'string'},
-            { name: 'workCity', type: 'string'},
-            { name: 'workState', type: 'string'},
-            { name: 'workPostalCode', type: 'int'},
-            { name: 'otherStreet', type: 'string'},
-            { name: 'otherCity', type: 'string'},
-            { name: 'otherState', type: 'string'},
-            { name: 'otherPostalCode', type: 'int'},
+            //Home Address Fields
+            { name: 'homeStreetFields', type: 'auto'},
+            { name: 'homeCityFields', type: 'auto'},
+            { name: 'homeStateFields', type: 'auto'},
+            { name: 'homePostalCodeFields', type: 'auto'},
+            { name: 'homeCountryFields', type: 'auto'},
+            //Work Address Fields
+            { name: 'workStreetFields', type: 'auto'},
+            { name: 'workCityFields', type: 'auto'},
+            { name: 'workStateFields', type: 'auto'},
+            { name: 'workPostalCodeFields', type: 'auto'},
+            { name: 'workCountryFields', type: 'auto'},
+            //Other Address Fields
+            { name: 'otherStreetFields', type: 'auto'},
+            { name: 'otherCityFields', type: 'auto'},
+            { name: 'otherStateFields', type: 'auto'},
+            { name: 'otherPostalCodeFields', type: 'auto'},
+            { name: 'otherCountryFields', type: 'auto'},
+
             { name: 'isHomeAddressExists', type: 'boolean',
                 convert:function(v, record) {
-                    if (record.data.homeStreet || record.data.homeCity || record.data.homeState
-                        || record.data.homePostalCode || record.data.homeCountry) {
+                    if (record.data.homeStreetFields || record.data.homeCityFields || record.data.homeStateFields
+                        || record.data.homePostalCodeFields || record.data.homeCountryFields) {
                         return true;
                     } else {
                         return false;
@@ -110,8 +118,8 @@ Ext.define('ZCS.model.contacts.ZtContact', {
             },
             { name: 'isWorkAddressExists', type: 'boolean',
                 convert:function(v, record) {
-                    if (record.data.workStreet || record.data.workCity || record.data.workState
-                        || record.data.workPostalCode || record.data.workCountry) {
+                    if (record.data.workStreetFields || record.data.workCityFields || record.data.workStateFields
+                        || record.data.workPostalCodeFields || record.data.workCountryFields) {
                         return true;
                     } else {
                         return false;
@@ -120,8 +128,8 @@ Ext.define('ZCS.model.contacts.ZtContact', {
             },
             { name: 'isOtherAddressExists', type: 'boolean',
                 convert:function(v, record) {
-                    if (record.data.otherStreet || record.data.otherCity || record.data.otherState
-                        || record.data.otherPostalCode || record.data.otherCountry) {
+                    if (record.data.otherStreetFields || record.data.otherCityFields || record.data.otherStateFields
+                        || record.data.otherPostalCodeFields || record.data.otherCountryFields) {
                         return true;
                     } else {
                         return false;
@@ -155,7 +163,7 @@ Ext.define('ZCS.model.contacts.ZtContact', {
 		proxy: {
 			type: 'soapproxy',
 			api: {
-				create  : '',
+				create  : urlBase + 'CreateContactRequest',
 				read    : urlBase + 'GetContactsRequest',
 				update  : urlBase + 'ContactActionRequest',
 				destroy : urlBase + 'ContactActionRequest'
@@ -166,19 +174,18 @@ Ext.define('ZCS.model.contacts.ZtContact', {
 	},
 
     constructor: function(data, id) {
-
         var contact = this.callParent(arguments) || this,
-            altKey = data && data.email, i;
+            emails = data && data.emailFields,
+            altKey;
 
-		// Cache the contact by each of its email addresses.
-        if (altKey) {
-            ZCS.cache.set(altKey, this, 'email');
-        }
-        for (var i = 2; i <= 16; i++) {
-	        altKey = data && data['email' + i];
-	        if (altKey) {
-		        ZCS.cache.set(altKey, this, 'email');
-	        }
+        //All the emails for a contact are stored in the emailFields array
+        if (emails) {
+            for (var i = 0, len = emails.length; i < len; i++) {
+	            altKey = emails[i];
+	            if (altKey) {
+		            ZCS.cache.set(altKey, this, 'email');
+	            }
+            }
         }
         return contact;
     }

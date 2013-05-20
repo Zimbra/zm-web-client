@@ -220,25 +220,31 @@
 				<div class='zcs-contactview-fields'>
 					<tpl if='isHomeAddressExists'>
 					<div class='zcs-contactview-field'>
-						<span class='zcs-newLine'>{homeStreet}</span>
-						<span class='zcs-newLine'>{homeCity} {homeState} {homePostalCode}</span>
-						<span class='zcs-newLine'>{homeCountry}</span>
+						<tpl for='homeStreetFields'>{% if (xindex > 1) break; %}<span class='zcs-newLine'>{.}</span></tpl>
+						<tpl for='homeCityFields'>{% if (xindex > 1) break; %}<span class='zcs-newLine'>{.}</span></tpl>
+					    <tpl for='homeStateFields'>{% if (xindex > 1) break; %}<span class='zcs-newLine'>{.}</span></tpl>
+						<tpl for='homePostalCodeFields'>{% if (xindex > 1) break; %}<span class='zcs-newLine'>{.}</span></tpl>
+						<tpl for='homeCountryFields'>{% if (xindex > 1) break; %}<span class='zcs-newLine'>{.}</span></tpl>
 					</div>
 					<div class='zcs-contactview-subLabel'>{[ZtMsg.home]}</div>
 					</tpl>
 					<tpl if='isWorkAddressExists'>
 					<div class='zcs-contactview-field'>
-						<span class='zcs-newLine'>{workStreet}</span>
-						<span class='zcs-newLine'>{workCity} {workState} {workPostalCode}</span>
-						<span class='zcs-newLine'>{workCountry}</span>
+						<tpl for='workStreetFields'>{% if (xindex > 1) break; %}<span class='zcs-newLine'>{.}</span></tpl>
+						<tpl for='workCityFields'>{% if (xindex > 1) break; %}<span class='zcs-newLine'>{.}</span></tpl>
+						<tpl for='workStateFields'>{% if (xindex > 1) break; %}<span class='zcs-newLine'>{.}</span></tpl>
+						<tpl for='workPostalCodeFields'>{% if (xindex > 1) break; %}<span class='zcs-newLine'>{.}</span></tpl>
+						<tpl for='workCountryFields'>{% if (xindex > 1) break; %}<span class='zcs-newLine'>{.}</span></tpl>
 					</div>
 					<div class='zcs-contactview-subLabel'>{[ZtMsg.work]}</div>
 					</tpl>
 					<tpl if='isOtherAddressExists'>
 					<div class='zcs-contactview-field'>
-						<span class='zcs-newLine'>{otherStreet}</span>
-						<span class='zcs-newLine'>{otherCity} {otherState} {otherPostalCode}</span>
-						<span class='zcs-newLine'>{otherCountry}</span>
+						<tpl for='otherStreetFields'>{% if (xindex > 1) break; %}<span class='zcs-newLine'>{.}</span></tpl>
+						<tpl for='otherCityFields'>{% if (xindex > 1) break; %}<span class='zcs-newLine'>{.}</span></tpl>
+						<tpl for='otherStateFields'>{% if (xindex > 1) break; %}<span class='zcs-newLine'>{.}</span></tpl>
+						<tpl for='otherPostalCodeFields'>{% if (xindex > 1) break; %}<span class='zcs-newLine'>{.}</span></tpl>
+						<tpl for='otherCountryFields'>{% if (xindex > 1) break; %}<span class='zcs-newLine'>{.}</span></tpl>
 					</div>
 					<div class='zcs-contactview-subLabel'>{[ZtMsg.other]}</div>
 					</tpl>
