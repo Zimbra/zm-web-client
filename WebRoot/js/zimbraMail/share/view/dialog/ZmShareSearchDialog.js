@@ -113,28 +113,31 @@ ZmShareSearchDialog.prototype._filterResults = function() {
 };
 
 ZmShareSearchDialog.prototype._filterNode = function(treeView, node, text) {
+	var nodeItem = treeView.getTreeItemById(node.id);
+	if (!nodeItem) {
+		return false;
+	}
     // process children
     var count = node.children.size();
     var app = this._form.getValue("APP") || "";
+	var matches = false;
     if (count > 0) {
-        var filtered = 0;
+		//this node has children.
         for (var i = 0; i < count; i++) {
             var child = node.children.get(i);
-            filtered += this._filterNode(treeView, child, text) ? 1 : 0;
+            matches = this._filterNode(treeView, child, text) || matches; //order is important! (need to call _filterNode always
         }
-        var parentItem = treeView.getTreeItemById(node.id);
-        parentItem.setVisible(node.id == ZmOrganizer.ID_ROOT || filtered > 0);
-        return parentItem.getVisible();
     }
-
-    // filter child node
-    var isInfoNode = String(node.id).match(/^-/);
-    var textMatches = !text || (node.name.toLowerCase().indexOf(text) != -1);
-    var appMatches = !app || (node.shareInfo && node.shareInfo.view == app);
-    var matches = !isInfoNode && textMatches && appMatches;
-    var childItem = treeView.getTreeItemById(node.id);
-    childItem.setVisible(matches);
-    return matches;
+	else {
+		//this is a leaf node
+		var isInfoNode = String(node.id).match(/^-/);
+		var textMatches = !text || node.name.toLowerCase().indexOf(text) !== -1;
+		var appMatches = !app || node.shareInfo && node.shareInfo.view === app;
+		matches = !isInfoNode && textMatches && appMatches;
+	}
+	matches = matches || node.id === ZmOrganizer.ID_ROOT;
+	nodeItem.setVisible(matches);
+	return matches;
 };
 
 ZmShareSearchDialog.prototype._createOrganizer = function(parent, id, name) {
