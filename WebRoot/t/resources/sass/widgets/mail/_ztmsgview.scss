@@ -216,10 +216,24 @@ $info-color: #FF9;
   @extend .zcs-link;
 }
 
+//spaces the labels and buttons while assignment view
+.zcs-invite {
+  TD {
+    padding-top: 0.5em;
+    padding-right: 1em;
+  }
+}
+
+//space for notes section while assignment view
+.zcs-invite-notes {
+  padding: 1em 0 0 0;
+}
+
 //spaces it from upper elements to make the buttons easier to hit
 .zcs-invite-buttons {
 	TD {
 		padding-top: 1em;
+        padding-right: 1em;
 	}
 }
 
