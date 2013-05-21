@@ -238,6 +238,7 @@ Ext.define('ZCS.view.mail.ZtComposeForm', {
 		]);
 	},
 
+	// TODO: Separate toggles for CC and BCC
 	showCc: function () {
 		this.down('#ccToggle').hide();
 		this.down('#cc').show();

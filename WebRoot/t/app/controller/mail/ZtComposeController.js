@@ -101,23 +101,21 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 	 */
 	compose: function(msg) {
 
-		var ccAddresses = null,
-			bccAddresses = null,
-			toAddresses = null,
+		var addresses = {},
 			subject = null,
 			body = null;
 
 		if (msg) {
-			toAddresses = msg.getAddressesByType(ZCS.constant.TO);
-			ccAddresses = msg.getAddressesByType(ZCS.constant.CC);
-			bccAddresses = msg.getAddressesByType(ZCS.constant.BCC);
+			Ext.each(ZCS.constant.RECIP_TYPES, function(type) {
+				addresses[type] = msg.getAddressesByType(type);
+			}, this);
 			subject = this.getSubject(msg, '');
 			body = msg.getContentForInclusion();
 		}
 
 		this.setAction(ZCS.constant.OP_COMPOSE);
 		this.setDraftId(msg ? msg.get('itemId') : null);
-		this.showComposeForm(toAddresses, ccAddresses, subject, body);
+		this.showComposeForm(addresses, subject, body);
 	},
 
 	/**
@@ -136,7 +134,7 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 		this.setOrigMsg(msg);
 		this.setDraftId(null);
 
-		this.showComposeForm(addrs[ZCS.constant.TO], addrs[ZCS.constant.CC], subject, body);
+		this.showComposeForm(addrs, subject, body);
 	},
 
 	/**
@@ -155,7 +153,7 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 		this.setOrigMsg(msg);
 		this.setDraftId(null);
 
-		this.showComposeForm(addrs[ZCS.constant.TO], addrs[ZCS.constant.CC], subject, body);
+		this.showComposeForm(addrs, subject, body);
 	},
 
 	/**
@@ -173,7 +171,7 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 		this.setOrigMsg(msg);
 		this.setDraftId(null);
 
-		this.showComposeForm(null, null, subject, body);
+		this.showComposeForm(null, subject, body);
 	},
 
 	/**
@@ -222,31 +220,35 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 	/**
 	 * Show the compose form, prepopulating any parameterized fields
 	 *
-	 * @param {Array|String}    toFieldAddresses    addresses for To: field
-	 * @param {Array}           ccFieldAddresses    addresses for Cc: field
-	 * @param {String}          subject             message subject
-	 * @param {String}          body                message body
+	 * @param {Object|Array|String} addresses    addresses (hash by type, list of To:, or a single To:)
+	 * @param {String}              subject      message subject
+	 * @param {String}              body         message body
 	 */
-	showComposeForm: function (toFieldAddresses, ccFieldAddresses, subject, body) {
+	showComposeForm: function(addresses, subject, body) {
 
 		var panel = this.getComposePanel(),
 			form = panel.down('formpanel'),
-			toFld = form.down('contactfield[name=TO]'),
-			ccFld = form.down('contactfield[name=CC]'),
+			formField = {},
 			subjectFld = form.down('field[name=subject]'),
 			editor = this.getEditor();
 
 		panel.resetForm();
 
-		if (!toFieldAddresses) {
-			toFieldAddresses = [];
-		} else {
-			toFieldAddresses = Array.isArray(toFieldAddresses) ? toFieldAddresses : [toFieldAddresses];
+		// make sure addresses is a hash of arrays by address type; array is list of ZtEmailAddress
+		if (!Ext.isObject(addresses)) {
+			addresses = Ext.isString(addresses) ? [ ZCS.model.mail.ZtEmailAddress.fromEmail(addresses) ] : addresses;
+			var addrs = {};
+			addrs[ZCS.constant.TO] = Array.isArray(addresses) ? addresses : [];
+			addresses = addrs;
 		}
 
-		if (ccFieldAddresses && ccFieldAddresses.length) {
-			panel.showCc();
-		}
+		// get the form fields; show CC/BCC if we have any of those addresses
+		Ext.each(ZCS.constant.RECIP_TYPES, function(type) {
+			formField[type] = form.down('contactfield[name=' + type + ']');
+			if (type !== ZCS.constant.TO && addresses[type] && addresses[type].length) {
+				panel.showCc();
+			}
+		}, this);
 
 		var action = this.getAction(),
 			attachmentsField = this.getAttachmentsField();
@@ -280,8 +282,8 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 				//Only apply this after layout so it doesn't interfere with Ext layout managers
 				Ext.fly(editor).addCls('zcs-fully-editable');
 
-				if (!(toFieldAddresses && toFieldAddresses.length)) {
-					toFld.focusInput();
+				if (!(addresses[ZCS.constant.TO] && addresses[ZCS.constant.TO].length)) {
+					formField[ZCS.constant.TO].focusInput();
 				} else if (!subject) {
 					subjectFld.focus();
 				} else {
@@ -298,27 +300,15 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 			}
 		});
 
-		if (toFieldAddresses && toFieldAddresses.length) {
-			toFld.addBubbles(toFieldAddresses);
-		}
-
-		if (ccFieldAddresses && ccFieldAddresses.length) {
-			ccFld.addBubbles(ccFieldAddresses);
-		}
+		Ext.each(ZCS.constant.RECIP_TYPES, function(type) {
+			formField[type].addBubbles(addresses[type]);
+		}, this);
 
 		if (subject) {
 			subjectFld.setValue(subject);
 		}
 
 		editor.innerHTML = body || '';
-
-		if (!(toFieldAddresses && toFieldAddresses.length)) {
-			toFld.focusInput();
-		} else if (!subject) {
-			subjectFld.focus();
-		} else {
-			editor.focus();
-		}
 
 		this.setFormHash(this.calculateFormHash());
 
