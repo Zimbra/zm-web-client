@@ -100,6 +100,12 @@ Ext.define('ZCS.controller.ZtAppViewController', {
 				newAppView.itemPanel.show();
 			}
 		}, this);
+
+        //Keep timezone rules ready when the application launches
+        if(ZCS.timezone) {
+            ZCS.constant.DEFAULT_TZ_RULE = ZCS.timezone.guessMachineTimezone();
+            ZCS.constant.DEFAULT_TZ = ZCS.timezone.getClientId(ZCS.constant.DEFAULT_TZ_RULE.serverId);
+        }
 	},
 
 	/**

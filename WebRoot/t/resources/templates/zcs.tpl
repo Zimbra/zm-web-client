@@ -290,11 +290,11 @@
 			<tpl else>
 			<tr>
 				<td class='zcs-invite-label'>{[ZtMsg.invStartLabel]}</td>
-				<td>{start}</td>
+				<td>{start}&nbsp;<span style='font-size: 0.75em;'>({timezone})</span></td>
 			</tr>
 			<tr>
 				<td class='zcs-invite-label'>{[ZtMsg.invEndLabel]}</td>
-				<td>{end}</td>
+				<td>{end}&nbsp;<span style='font-size: 0.75em;'>({timezone})</span></td>
 			</tr>
 			</tpl>
 			<tpl if='location'>

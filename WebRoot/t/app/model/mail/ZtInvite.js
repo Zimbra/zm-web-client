@@ -46,7 +46,8 @@ Ext.define('ZCS.model.mail.ZtInvite', {
 			{ name: 'method',               type: 'string' },
 			{ name: 'myResponse',           type: 'string' },
 			{ name: 'apptFolderId',         type: 'string' },
-			{ name: 'calendarIntendedFor',  type: 'string' }
+			{ name: 'calendarIntendedFor',  type: 'string' },
+            { name: 'timezone',             type: 'string' }
 		],
 
 		msgId: ''
@@ -78,7 +79,9 @@ Ext.define('ZCS.model.mail.ZtInvite', {
 
 			var	start = comp.s && comp.s[0],
 				end = comp.e && comp.e[0],
-				organizer = ZCS.model.mail.ZtEmailAddress.fromInviteNode(comp.or);
+				organizer = ZCS.model.mail.ZtEmailAddress.fromInviteNode(comp.or),
+                defaultTz = ZCS.timezone.getServerId(ZCS.constant.DEFAULT_TZ),
+                timezone = ZCS.timezone.getMediumName(defaultTz);
 
 			// Use HTML description if available
 			invite.set('notes', this.getNotes(comp));
@@ -89,6 +92,10 @@ Ext.define('ZCS.model.mail.ZtInvite', {
 			if (end) {
 				invite.set('end', ZCS.model.mail.ZtInvite.getDateFromJson(end));
 			}
+
+            if (timezone) {
+                invite.set('timezone', timezone);
+            }
 
 			if (comp.or) {
 				invite.set('organizer', organizer);
@@ -204,6 +211,7 @@ Ext.define('ZCS.model.mail.ZtInvite', {
 				optAttendees:   ZCS.model.mail.ZtMailItem.convertAddressModelToObject(this.get('optAttendees')),
 				notes:          this.get('notes'),
 				intendedFor:    this.get('calendarIntendedFor'),
+                timezone:       this.get('timezone'),
 
 				acceptButtonId:     ZCS.util.getUniqueId(Ext.apply({}, {
 					action: ZCS.constant.OP_ACCEPT

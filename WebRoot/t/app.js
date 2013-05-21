@@ -43,7 +43,8 @@ Ext.application({
 	    'ZCS.common.ZtConstants',
 	    'ZCS.common.ZtTemplate',
 	    'ZCS.common.ZtItemCache',
-	    'ZCS.common.ZtUserSession'
+	    'ZCS.common.ZtUserSession',
+        'ZCS.common.ZtTimezone'
     ],
     //<feature logger>
 	logger: {
