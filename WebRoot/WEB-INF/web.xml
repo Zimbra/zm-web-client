@@ -462,11 +462,11 @@
 
   <env-entry>
     <description>
-	Memcached Servers in SERVER:PORT format seperated by a comma
+	Memcached Servers in SERVER:PORT format seperated by space
     </description>
     <env-entry-name>memcachedServers</env-entry-name>
     <env-entry-type>java.lang.String</env-entry-type>
-    <env-entry-value>%%getMemcachedServers%%</env-entry-value>
+    <env-entry-value>%%getAllMemcachedServers%%</env-entry-value>
   </env-entry>
 
   <env-entry>
@@ -495,11 +495,11 @@
 
  <env-entry>
     <description>
-        Nginx Lookup Extension Handlers in SERVER:PORT format seperated by a comma
+        Nginx Lookup Extension Handlers in SERVER:PORT format seperated by space
     </description>
     <env-entry-name>nginxLookUpHandlers</env-entry-name>
     <env-entry-type>java.lang.String</env-entry-type>
-    <env-entry-value>%%getNLELookUpHandlers%%</env-entry-value>
+    <env-entry-value>%%getAllReverseProxyURLs%%</env-entry-value>
   </env-entry>
 
   <env-entry>
@@ -516,11 +516,11 @@
 
  <env-entry>
     <description>
-        UpStream Mail Servers in SERVER:PORT format seperated by a comma
+        UpStream Mail Servers in SERVER:PORT format seperated by space
     </description>
     <env-entry-name>upstreamMailServers</env-entry-name>
     <env-entry-type>java.lang.String</env-entry-type>
-    <env-entry-value>%%getUpstreamMailServers%%</env-entry-value>
+    <env-entry-value>%%getAllReverseProxyBackends%%</env-entry-value>
   </env-entry>
 
  <env-entry>
