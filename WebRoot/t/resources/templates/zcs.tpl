@@ -345,16 +345,14 @@
 				<td>{myResponse}</td>
 			</tr>
 			</tpl>
-			<tpl if='!myResponse'>
-                <tr class='zcs-invite-buttons'>
-                    <td class='zcs-invite-label'>{[ZtMsg.invRespondLabel]}</td>
-                    <td>
-                        <span class='zcs-invite-button zcs-invite-accept' id='{acceptButtonId}'>{[ZtMsg.accept]}</span>
-                        <span class='zcs-invite-button zcs-invite-tentative' id='{tentativeButtonId}'>{[ZtMsg.tentative]}</span>
-                        <span class='zcs-invite-button zcs-invite-decline' id='{declineButtonId}'>{[ZtMsg.decline]}</span>
-                    </td>
-                </tr>
-			</tpl>
+            <tr class='zcs-invite-buttons'>
+                <td class='zcs-invite-label'>{[ZtMsg.invRespondLabel]}</td>
+                <td>
+                    <span class='zcs-invite-button zcs-invite-accept' id='{acceptButtonId}'>{[ZtMsg.accept]}</span>
+                    <span class='zcs-invite-button zcs-invite-tentative' id='{tentativeButtonId}'>{[ZtMsg.tentative]}</span>
+                    <span class='zcs-invite-button zcs-invite-decline' id='{declineButtonId}'>{[ZtMsg.decline]}</span>
+                </td>
+            </tr>
 			<tpl if='intendedFor'>
 			<tr>
 				<td class='zcs-invite-label'>{[ZtMsg.invIntendedFor]}</td>
