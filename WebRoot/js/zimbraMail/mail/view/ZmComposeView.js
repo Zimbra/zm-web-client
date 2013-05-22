@@ -959,9 +959,9 @@ function(composeMode, initOnly) {
 	if (htmlMode && !appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED)) { return; }
 		
 	var previousMode = this._composeMode;
-	var modeSwitch = (!initOnly && previousMode && composeMode && previousMode !== composeMode);
-	var userText = modeSwitch && this.getUserText();
-	var quotedText = modeSwitch && this._getQuotedText();
+	this.modeSwitch = (!initOnly && previousMode && composeMode && previousMode !== composeMode);
+	var userText = this.modeSwitch && this.getUserText();
+	var quotedText = this.modeSwitch && this._getQuotedText();
 	this._composeMode = composeMode;
 	this._setReturns();
 	var curMember = htmlMode ? this._htmlEditor.getEditorContainer() : this._bodyField;
@@ -970,10 +970,10 @@ function(composeMode, initOnly) {
 	this._htmlEditor.setContent("");
 	this._htmlEditor.setMode(composeMode);
 		
-	if (modeSwitch) {
+	if (this.modeSwitch) {
 		userText = htmlMode ? AjxStringUtil.convertToHtml(userText) : AjxStringUtil.trim(this._htmlToText(userText)) + this._crlf;
 		var op = htmlMode ? ZmOperation.FORMAT_HTML : ZmOperation.FORMAT_TEXT;
-		this.resetBody({ extraBodyText:userText, quotedText:quotedText, op:op });
+		this.resetBody({ extraBodyText:userText, quotedText:quotedText, op:op, keepAttachments:true });
 	}
 
 	// reset the body field Id and object ref
@@ -1004,6 +1004,7 @@ function(composeMode, initOnly) {
 	if (this._msg && this._isInline() && composeMode === DwtHtmlEditor.TEXT) {
 		this._showForwardField(this._msg, this._action, null, true);
 	}
+	this.modeSwitch = false; //reset the mode switch option
 };
 
 ZmComposeView.prototype._retryHtmlEditorFocus =
@@ -1997,7 +1998,10 @@ function(action, msg, extraBodyText, noEditorUpdate) {
 
 	var ac = window.parentAppCtxt || window.appCtxt;
 	var hasInlineImages = (bodyInfo.hasInlineImages) || !ac.get(ZmSetting.VIEW_AS_HTML);
-	this._showForwardField(msg || this._msg, action, incOptions, hasInlineImages, bodyInfo.hasInlineAtts);
+	if (!this.modeSwitch) {
+		//do not call this when switching between text and html editor.
+		this._showForwardField(msg || this._msg, action, incOptions, hasInlineImages, bodyInfo.hasInlineAtts);
+	}
 
 	var sigId = this._controller.getSelectedSignature();
 	if (sigId && !isDraft) {
@@ -2722,6 +2726,7 @@ function(tagStart, tagEnd, text) {
  * @param {ZmMailMsg}		msg					original msg (in case of reply)
  * @param {string}			extraBodyText		canned text to include
  * @param {hash}			incOptions			include options
+ * @param {boolean}			keepAttachments		do not cleanup the attachments
  * @param {boolean}			noEditorUpdate		if true, do not change content of HTML editor
  */
 ZmComposeView.prototype.resetBody =
@@ -2738,7 +2743,9 @@ function(params, noEditorUpdate) {
 	this._components = {};
 	
 	this._preserveQuotedText(params.op, params.quotedText);
-	this.cleanupAttachments(true);
+	if (!params.keepAttachments) {
+		this.cleanupAttachments(true);
+	}
 	this._isDirty = this._isDirty || this.isDirty();
 	this._setBody(action, msg, params.extraBodyText, noEditorUpdate);
 	this._setFormValue();
