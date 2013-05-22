@@ -388,7 +388,7 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 	 *
 	 * @param {Object}                  eOpts       Sencha event options
 	 * @param {Ext.event.Controller}    controller  Sencha event controller
-	 * @param {Boolean}                 force       if true, skip error checks and send msg
+	 * @param {Boolean}                 force       if true, skip error checks and send (or save) msg
 	 */
 	doSend: function(eOpts, controller, force) {
 		var msg = this.getMessageModel(force);
@@ -415,7 +415,7 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 	},
 
 	doSaveDraft: function () {
-		var msg = this.getMessageModel();
+		var msg = this.getMessageModel(true);
 		msg.save({
 			isDraft: true,
 			success: function () {
@@ -426,20 +426,21 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 		}, this);
 	},
 
-	getMessageModel: function (force) {
+	getMessageModel: function(force) {
 
 		var	values = this.getComposeForm().getValues(),
+			numAddresses = values[ZCS.constant.TO].length + values[ZCS.constant.CC].length + values[ZCS.constant.BCC].length,
 			editor = this.getEditor(),
 			action = this.getAction(),
 			isNewCompose = (action === ZCS.constant.OP_COMPOSE),
 			origMsg = !isNewCompose && this.getOrigMsg();
 
-		if (values[ZCS.constant.TO].length === 0 && values[ZCS.constant.CC].length === 0 && values[ZCS.constant.BCC].length === 0) {
+		if (!force && numAddresses === 0) {
 			Ext.Msg.alert(ZtMsg.error, ZtMsg.errorNoAddresses);
 			return null;
 		}
 
-		if (!values.subject && !force) {
+		if (!force && !values.subject) {
 			Ext.Msg.confirm(ZtMsg.warning, ZtMsg.errorNoSubject, function(buttonId) {
 				if (buttonId === 'yes') {
 					this.doSend(null, null, true);
