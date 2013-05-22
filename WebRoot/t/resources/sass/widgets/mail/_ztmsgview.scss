@@ -145,7 +145,7 @@ $msgHdrButtonTopOffset: $msgHdrButtonDelta;
 	.zcs-msgHdr-field {
 		margin-left: $msgHdrLeftIndent;
 
-		.vm-area-bubble {
+		.zcs-area-bubble {
 			margin-bottom: .25em;
 		}
 	}
@@ -185,27 +185,16 @@ $msgHdrButtonTopOffset: $msgHdrButtonDelta;
 	-webkit-user-select: text;
 }
 
-$info-color: #FF9;
+$infoColor: #FF9;
 
 .zcs-info-bar {
-	background-color: $info-color;
-	border: 1px solid darken($info-color, 40%);
+	background-color: $infoColor;
+	border: 1px solid darken($infoColor, 40%);
 	color: #333;
 	margin-bottom: 1.5em;
 	padding: 1em 1.5em;
 	text-align: center;
 	@include border-radius(1em);
-}
-
-.zcs-invite {
-  font-family: sans-serif;
-}
-
-.zcs-invite-label {
-	width: 1%;
-	font-size: $msgHdrTextSize;
-	text-align: right;
-	@include opacity(.75);
 }
 
 .zcs-truncated-message {
@@ -237,90 +226,14 @@ $info-color: #FF9;
 	}
 }
 
-$inv-btn-color: #CCC;
-$default-inv-type: accept !default;
-$default-inv-state: normal !default;
-$inv-btn-gradient: glossy-gradient($inv-btn-color);
-$inv-btn-active-gradient: glossy-gradient(darken($inv-btn-color, 25%));
-$inv-btn-icon-pos: .35em center no-repeat;
-
-// Mixin to return the proper backgrounds and borders per invite type (accept, tentative, decline) and state (normal and active)
-@mixin invite-button($type: $default-inv-type, $state: $default-inv-state) {
-	background-image: none;
-	background-repeat: no-repeat;
-	padding-left: 1.8em;
-
-	@if $type != null {
-		@if $state == active {
-			background-color: darken($inv-btn-color, 25%);
-			border: 1px solid darken($inv-btn-color, 55%);
-			border-top-color: darken($inv-btn-color, 45%);
-
-			@if $type == accept {
-				@include background(url('/img/zimbra/ImgCheck.png') $inv-btn-icon-pos, $inv-btn-active-gradient);
-			} @else if $type == tentative {
-				@include background(url('/img/zimbra/ImgQuestionMark.png') $inv-btn-icon-pos, $inv-btn-active-gradient);
-			} @else if $type == decline {
-				@include background(url('/img/zimbra/ImgCancel.png') $inv-btn-icon-pos, $inv-btn-active-gradient);
-			}
-		} @else {
-			background-color: $inv-btn-color;
-			border: 1px solid darken($inv-btn-color, 35%);
-			border-top-color: darken($inv-btn-color, 25%);
-
-			@if $type == accept {
-				@include background(url('/img/zimbra/ImgCheck.png') $inv-btn-icon-pos, $inv-btn-gradient);
-			} @else if $type == tentative {
-				@include background(url('/img/zimbra/ImgQuestionMark.png') $inv-btn-icon-pos, $inv-btn-gradient);
-			} @else if $type == decline {
-				@include background(url('/img/zimbra/ImgCancel.png') $inv-btn-icon-pos, $inv-btn-gradient);
-			}
-		}
-	}
-}
-
-.zcs-invite-button {
-	box-align: center;
-	min-height: 1.8em;
-	padding: .3em .6em;
-	position: relative;
-	overflow: hidden;
-	-webkit-user-select: none;
-	@include border-radius(.4em);
-
-	&.zcs-invite-accept {
-		@include invite-button('accept');
-
-		&:active {
-			@include invite-button('accept','active');
-		}
-	}
-
-	&.zcs-invite-tentative {
-		@include invite-button('tentative');
-
-		&:active {
-			@include invite-button('tentative','active');
-		}
-	}
-
-	&.zcs-invite-decline {
-	   @include invite-button('decline');
-
-		&:active {
-			@include invite-button('decline','active');
-		}
-	}
-}
-
-$attach-text-color: #333;
+$attachTextColor: #333;
 
 .zcs-attachments {
 	line-height: 2.2em;
 	margin-bottom: 1.5em;
 
 	.zcs-attachment-bubble {
-		color: $attach-text-color;
+		color: $attachTextColor;
 
 		DIV {
 			margin-right: .5em;
@@ -328,7 +241,7 @@ $attach-text-color: #333;
 		}
 
 		A:link, A:visited {
-			color: $attach-text-color;
+			color: $attachTextColor;
 			text-decoration: none;
 		}
 
@@ -338,23 +251,12 @@ $attach-text-color: #333;
 	}
 }
 
+@import 'widgets/mail/ztinvite';
+
 /* END MSG BODY */
-
-/* BEGIN MSG FOOTER */
-
-.zcs-msg-footer {
-	background-image: none;
-	background-color: transparent;
-	border-style: none !important;
-	font-size: 1.6em;
-	margin-bottom: 2em;
-}
-
 
 // Work around Sencha bug TOUCH-3894, where a 46-pixel empty DIV gets added between msg body and footer
 // http://www.sencha.com/forum/showthread.php?253388-List-with-useComponents-true-dosen-t-fire-the-itemtap-event
 .zcs-msgview .x-list-item-body {
 	display: none;
 }
-
-/* END MSG FOOTER*/

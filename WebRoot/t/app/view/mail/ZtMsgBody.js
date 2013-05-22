@@ -109,12 +109,12 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 
 		this.setMsg(msg);
 
-		this.setUsingIframe(isHtml && !isInvite);
+		this.setUsingIframe(isHtml);
 
 		if (ZCS.constant.IS_ENABLED[ZCS.constant.FEATURE_FIND_OBJECTS]) {
 			markedUpHtml = this.markupEmailsAndLinks(html, isHtml);
 			// If we added anchors for emails or links, make sure we're using an iframe
-			if (markedUpHtml.length !== html.length && !isInvite) {
+			if (markedUpHtml.length !== html.length) {
 				this.setUsingIframe(true);
 				html = markedUpHtml;
 			}
@@ -181,11 +181,6 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 					cls: 'zcs-html-container'
 				});
 				this.add(this.htmlContainer);
-			}
-
-			container.removeCls('zcs-msg-body-text');
-			if (!isHtml) {
-				container.addCls('zcs-msg-body-text');
 			}
 
 			container.setHtml(html);

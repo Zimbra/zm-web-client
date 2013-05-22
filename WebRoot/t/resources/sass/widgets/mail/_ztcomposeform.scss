@@ -14,7 +14,7 @@ $compose-padding: .5em;
 		.x-field {
 			@extend .zcs-compose-formline;
 		}
-		.vm-bubblearea {
+		.zcs-bubblearea {
 			@include border-radius(0);
 		}
 		.x-form-label {

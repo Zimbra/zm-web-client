@@ -14,6 +14,11 @@
  *
  * ***** END LICENSE BLOCK *****
  */
+
+@import 'variables/base';
+@import 'compass/css3/border-radius';
+@import 'recipes/background/gradients';
+
 $font-color: $dark-grey;
 $font-size: 11px;
 $font-weight: bold;
@@ -28,14 +33,12 @@ $bubble-text-padding: 0 8px;
 $space-between-bubbles: 6px;
 $space-between-rows: 2px;
 
-
 //Disabling close icon for now.
 $bubble-close-icon-width: 0;
 $bubble-close-icon-height: 0;
 $bubble-close-icon-margin: 0;
 
-
-.vm-area-bubble {
+.zcs-area-bubble {
     border: 1px solid $bubble-text-color;
     display: inline-block;
     font-color: $bubble-text-color;
@@ -51,10 +54,9 @@ $bubble-close-icon-margin: 0;
     }
 }
 
+.zcs-bubblearea {
 
-.vm-bubblearea {
-
-    .vm-area-bubble {
+    .zcs-area-bubble {
         margin-right: $space-between-bubbles;
     }
 
@@ -67,8 +69,6 @@ $bubble-close-icon-margin: 0;
             margin-top: $space-between-rows;
         }
 
-
-
         .bubble-close-icon {
             display: inline-block;
             width: $bubble-close-icon-width;
@@ -77,7 +77,6 @@ $bubble-close-icon-margin: 0;
             cursor: pointer;
             cursor: hand;
         }
-
     }
 
     .bubble-main-contents {
@@ -120,7 +119,7 @@ $bubble-close-icon-margin: 0;
         display: inline-block;
     }
 
-    &[class~=vm-read-only] {
+    &[class~=zcs-read-only] {
          background: $default-readonly-color !important;
          border-color: $default-border-disabled;
         .bubble-close-icon{
@@ -129,6 +128,6 @@ $bubble-close-icon-margin: 0;
     }
 }
 
-.x-form-invalid .vm-bubblearea {
+.x-form-invalid .zcs-bubblearea {
     background-position: bottom;
 }

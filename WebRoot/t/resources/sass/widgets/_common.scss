@@ -1,7 +1,11 @@
+@import 'widgets/ux/ztbubblearea';
+@import 'widgets/mail/ztinvite';
+
+$linkColor: #336699;
 $linkTextSize: 0.9em;
 
 .zcs-link {
-  color: #336699;
+  color: $linkColor;
   font-size: $linkTextSize;
   text-decoration: underline;
 }
@@ -21,4 +25,5 @@ $linkTextSize: 0.9em;
   font-size: 1.1em;
   font-family: monospace;
   word-wrap: break-word;
+  -webkit-user-select: text;
 }

@@ -58,7 +58,7 @@
 		 	<div class='zcs-msgHdr-person' style='{imageStyle}'></div>
 			<tpl if='addrs.FROM'>
 			<div class='zcs-msgHdr-fromBubble'>
-				<span class='vm-area-bubble zcs-contact-bubble' id='{id}'>{from}</span>
+				<span class='zcs-area-bubble zcs-contact-bubble' id='{id}'>{from}</span>
 			</div>
 			<div class='zcs-msgHdr-date'>{dateStr}</div>
 			<div class='zcs-msgHdr-fragment'>{[Ext.String.htmlEncode(values.fragment)]}</div>
@@ -72,7 +72,7 @@
 		 	<div class='zcs-msgHdr-person' style='{imageStyle}'></div>
 			<tpl if='addrs.FROM'>
 				<div class='zcs-msgHdr-fromBubble'>
-					<span class='vm-area-bubble  zcs-contact-bubble' id='{id}'>{from}</span>
+					<span class='zcs-area-bubble zcs-contact-bubble' id='{id}'>{from}</span>
 				</div>
 			</tpl>
 			<div class='zcs-msgHdr-date'>{dateStr}</div>
@@ -91,7 +91,7 @@
 			<div class='zcs-mail-dtlMsgHdr'>
 				<div class='zcs-msgHdr-field'>
 				<tpl for='tags'>
-					<span class='vm-area-bubble zcs-tag-bubble' id='{id}'>
+					<span class='zcs-area-bubble zcs-tag-bubble' id='{id}'>
 						<div class="zcs-tag-small zcs-tag-{color}" tagName="{name}" <tpl if='rgb'>style='background-color: {rgb};'</tpl>>
 						</div>
 						{displayName}
@@ -111,7 +111,7 @@
 		 	<div class='zcs-msgHdr-person' style='{imageStyle}'></div>
 			<tpl if='addrs.FROM'>
 				<div class='zcs-msgHdr-fromBubble'>
-					<span class='vm-area-bubble  zcs-contact-bubble' id='{id}'>{from}</span>
+					<span class='zcs-area-bubble zcs-contact-bubble' id='{id}'>{from}</span>
 				</div>
 				<tpl if='addrs.FROM[0].address'>
 					<tpl for='addrs.FROM'>
@@ -130,7 +130,7 @@
 				<div class='zcs-msgHdr-label'>{[ZtMsg.toHdr]}</div>
 				<div class='zcs-msgHdr-field'>
 				<tpl for='addrs.TO'>
-					<span class='vm-area-bubble  zcs-contact-bubble' id='{id}'>{displayName}</span>
+					<span class='zcs-area-bubble zcs-contact-bubble' id='{id}'>{displayName}</span>
 				</tpl>
 				</div>
 			</div>
@@ -140,7 +140,7 @@
 				<div class='zcs-msgHdr-label'>{[ZtMsg.ccHdr]}</div>
 				<div class='zcs-msgHdr-field'>
 				<tpl for='addrs.CC'>
-					<span class='vm-area-bubble zcs-contact-bubble' id='{id}'>{displayName}</span>
+					<span class='zcs-area-bubble zcs-contact-bubble' id='{id}'>{displayName}</span>
 				</tpl>
 				</div>
 			</div>
@@ -150,7 +150,7 @@
 				<div class='zcs-msgHdr-label'>{[ZtMsg.tagsHdr]}</div>
 				<div class='zcs-msgHdr-field'>
 				<tpl for='tags'>
-					<span class='vm-area-bubble zcs-tag-bubble' id='{id}'>
+					<span class='zcs-area-bubble zcs-tag-bubble' id='{id}'>
 						<div class="zcs-tag-small zcs-tag-{color}" tagName="{name}" <tpl if='rgb'>style='background-color: {rgb};'</tpl>>
 						</div>
 						{displayName}
@@ -307,7 +307,7 @@
 			<tr>
 				<td class='zcs-invite-label'>{[ZtMsg.invOrganizerLabel]}</td>
 				<td>
-					<span class='vm-area-bubble zcs-contact-bubble' id='{organizer.id}'>{organizer.displayName}</span>
+					<span class='zcs-area-bubble zcs-contact-bubble' id='{organizer.id}'>{organizer.displayName}</span>
 				</td>
 			</tr>
 			</tpl>
@@ -315,7 +315,7 @@
 			<tr>
 				<td class='zcs-invite-label'>{[ZtMsg.invSentByLabel]}</td>
 				<td>
-					<span class='vm-area-bubble zcs-contact-bubble' id='{sentBy.id}'>{sentBy.displayName}</span>
+					<span class='zcs-area-bubble zcs-contact-bubble' id='{sentBy.id}'>{sentBy.displayName}</span>
 				</td>
 			</tr>
 			</tpl>
@@ -324,7 +324,7 @@
 				<td class='zcs-invite-label'>{[ZtMsg.invAttendeesLabel]}</td>
 				<td>
 				<tpl for='attendees'>
-					<span class='vm-area-bubble zcs-contact-bubble' id='{id}'>{displayName}</span>
+					<span class='zcs-area-bubble zcs-contact-bubble' id='{id}'>{displayName}</span>
 				</tpl>
 				</td>
 			</tr>
@@ -334,7 +334,7 @@
 				<td class='zcs-invite-label'>{[ZtMsg.invOptionalAttendeesLabel]}</td>
 				<td>
 				<tpl for='attendees'>
-					<span class='vm-area-bubble zcs-contact-bubble' id='{id}'>{displayName}</span>
+					<span class='zcs-area-bubble zcs-contact-bubble' id='{id}'>{displayName}</span>
 				</tpl>
 				</td>
 			</tr>
@@ -357,7 +357,7 @@
 			<tr>
 				<td class='zcs-invite-label'>{[ZtMsg.invIntendedFor]}</td>
 				<td>
-					<span class='vm-area-bubble zcs-contact-bubble'>{intendedFor}</span>
+					<span class='zcs-area-bubble zcs-contact-bubble'>{intendedFor}</span>
 				</td>
 			</tr>
 			</tpl>
@@ -384,7 +384,7 @@
 
 # show a single attachment
 <template id='Attachment'>
-	<span class='vm-area-bubble zcs-attachment-bubble' id="{id}"><div class='{icon}'></div>{label} <span>({size})</span></span>
+	<span class='zcs-area-bubble zcs-attachment-bubble' id="{id}"><div class='{icon}'></div>{label} <span>({size})</span></span>
 </template>
 
 <template id='QuotedLink'>

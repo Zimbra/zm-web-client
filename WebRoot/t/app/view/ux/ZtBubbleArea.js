@@ -36,7 +36,7 @@ Ext.define('ZCS.view.ux.ZtBubbleArea', {
     config: {
         cls: [
             'x-field',
-            'vm-bubblearea'
+            'zcs-bubblearea'
         ],
 
         /**
@@ -119,7 +119,7 @@ Ext.define('ZCS.view.ux.ZtBubbleArea', {
      * @cfg The tpl to use for bubbles.
      */
     bubbleTpl: [
-        '<div class="vm-area-bubble {bubbleCls}">',
+        '<div class="zcs-area-bubble {bubbleCls}">',
             '{bubbleName}',
             '<div class="bubble-close-icon delete-mini-icon"></div>',
         '</div>'
@@ -191,7 +191,7 @@ Ext.define('ZCS.view.ux.ZtBubbleArea', {
             inputField = this.getInputField();
 
         if (cfg.readOnly) {
-            me.fieldBodyCls += ' vm-read-only';
+            me.fieldBodyCls += ' zcs-read-only';
         }
 
         me.bubbles = new Ext.util.MixedCollection();
