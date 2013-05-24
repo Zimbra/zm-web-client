@@ -303,7 +303,7 @@ ZCS.constant.FOLDER_SYSTEM_NAME[ZCS.constant.ID_DRAFTS]  = 'drafts';
 ZCS.constant.FOLDER_SYSTEM_NAME[ZCS.constant.ID_JUNK]    = 'junk';
 
 ZCS.constant.FOLDER_SYSTEM_NAME[ZCS.constant.ID_CONTACTS]    = 'contacts';
-ZCS.constant.FOLDER_SYSTEM_NAME[ZCS.constant.ID_EMAILED]     = 'emailedContacts';
+ZCS.constant.FOLDER_SYSTEM_NAME[ZCS.constant.ID_EMAILED]     = 'emailed contacts';
 
 ZCS.constant.FOLDER_SYSTEM_ID = ZCS.util.getBackMap(ZCS.constant.FOLDER_SYSTEM_NAME);
 
@@ -343,6 +343,7 @@ ZCS.constant.TYPE_STRING    = 'string';
 ZCS.constant.TYPE_NUMBER    = 'number';
 ZCS.constant.TYPE_BOOLEAN   = 'boolean';
 ZCS.constant.TYPE_ARRAY     = 'array';
+ZCS.constant.TYPE_HASH      = 'hash';
 
 // Names of user settings (LDAP attribute names)
 ZCS.constant.SETTING_ALIASES            = 'zimbraMailAlias';
@@ -385,6 +386,8 @@ ZCS.constant.SETTING_TYPE[ZCS.constant.SETTING_DISPLAY_IMAGES]              = ZC
 ZCS.constant.SETTING_TYPE[ZCS.constant.SETTING_JSLOGGING_ENABLED]           = ZCS.constant.TYPE_BOOLEAN;
 ZCS.constant.SETTING_TYPE[ZCS.constant.SETTING_TRUSTED_SENDERS]             = ZCS.constant.TYPE_ARRAY;
 ZCS.constant.SETTING_TYPE[ZCS.constant.SETTING_GET_SENDER_FROM_CONTACTS]    = ZCS.constant.TYPE_BOOLEAN;
+ZCS.constant.SETTING_TYPE[ZCS.constant.SETTING_CUR_SEARCH]                  = ZCS.constant.TYPE_HASH;
+ZCS.constant.SETTING_TYPE[ZCS.constant.SETTING_CUR_SEARCH_ID]               = ZCS.constant.TYPE_HASH;
 
 // Forced setting values, which override user setting
 ZCS.constant.SETTING_VALUE = {};

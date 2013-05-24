@@ -26,6 +26,10 @@ Ext.define('ZCS.controller.ZtBaseController', {
 		menuable: 'ZCS.common.ZtMenuable'
 	},
 
+	config: {
+		app: null       // the app this controller is part of
+	},
+
 	/**
 	 * Returns the store that holds the data this controller is managing.
 	 *
@@ -40,13 +44,15 @@ Ext.define('ZCS.controller.ZtBaseController', {
 	 *
 	 * @param {String}      defaultText     text to use if there is no name
 	 * @param {Boolean}     showCount       if true, show number of items
+	 * @param {String}      app             app
+	 *
 	 * @return {String} organizer title
 	 */
-	getOrganizerTitle: function(defaultText, showCount) {
+	getOrganizerTitle: function(defaultText, showCount, app) {
 
 		defaultText = defaultText || ZtMsg.searchResults;
-		var	organizer = ZCS.session.getCurrentSearchOrganizer();
-		return organizer ? organizer.getTitle(defaultText, showCount !== false) : defaultText;
+		var	organizer = ZCS.session.getCurrentSearchOrganizer(app);
+		return organizer ? organizer.getTitle(defaultText, showCount) : defaultText;
 	},
 
 

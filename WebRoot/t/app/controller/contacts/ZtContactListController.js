@@ -62,6 +62,10 @@ Ext.define('ZCS.controller.contacts.ZtContactListController', {
         return ZCS.app.getContactController();
 	},
 
+	getDefaultQuery: function() {
+		return "in:contacts";
+	},
+
 	doNewContact: function() {
         this.getItemController().showContactForm();
 	}

@@ -125,24 +125,38 @@ Ext.define('ZCS.common.ZtUserSession', {
 	/**
 	 * Returns the value of the setting with the given name.
 	 *
-	 * @param {string}  settingName     setting's name (LDAP attr name)
+	 * @param {string}  settingName     setting's name
+	 * @param {String}  key             the setting's key (hash type settings only)
+	 *
 	 * @return {mixed}  the setting's value
 	 */
-	getSetting: function(settingName) {
+	getSetting: function(settingName, key) {
+
 		var setting = this._settings[settingName];
-		return setting ? setting.getValue() : null
+		if (setting) {
+			var value = setting.getValue();
+			return (key && value && setting.getType() === ZCS.constant.TYPE_HASH) ? value[key] : value;
+		}
+		return null;
 	},
 
 	/**
 	 * Sets the value of the setting with the given name. The given value will not be
 	 * converted based on the type (eg a value of "TRUE" is a string and not a boolean).
 	 *
-	 * @param {string}  settingName     setting's name (LDAP attr name)
-	 * @param {mixed}  the setting's new value
+	 * @param {String}  settingName     setting's name
+	 * @param {mixed}   value           the setting's new value
+	 * @param {String}  key             the setting's key (hash type settings only)
 	 */
-	setSetting: function(settingName, value) {
+	setSetting: function(settingName, value, key) {
+
 		var setting = this._settings[settingName];
 		if (setting) {
+			if (key && setting.getType() === ZCS.constant.TYPE_HASH) {
+				var hash = setting.getValue() || {};
+				hash[key] = value;
+				value = hash;
+			}
 			setting.setValue(value);
 		}
 	},
@@ -348,16 +362,20 @@ Ext.define('ZCS.common.ZtUserSession', {
 	 * Returns the organizer corresponding to the current search, which must be a result
 	 * of a tap in the overview, or a simple search using either 'in:' or 'tag:'.
 	 *
+	 * @param {String}  app     app (defaults to active app)
+	 *
 	 * @return {ZtOrganizer}    organizer whose contents are being displayed
 	 */
-	getCurrentSearchOrganizer: function() {
+	getCurrentSearchOrganizer: function(app) {
+
+		app = app || this.getActiveApp();
 
 		// see if user tapped on a saved search
-		var orgId = ZCS.session.getSetting(ZCS.constant.SETTING_CUR_SEARCH_ID);
+		var orgId = ZCS.session.getSetting(ZCS.constant.SETTING_CUR_SEARCH_ID, app);
 
 		// now see if current search was for folder or tag
 		if (!orgId) {
-			var search = ZCS.session.getSetting(ZCS.constant.SETTING_CUR_SEARCH),
+			var search = ZCS.session.getSetting(ZCS.constant.SETTING_CUR_SEARCH, app),
 				orgId = search && search.getOrganizerId();
 		}
 

@@ -62,7 +62,6 @@ Ext.define('ZCS.controller.ZtListController', {
 		}
 	},
 
-
 	/**
 	 * On launch, populate the list with items
 	 */
@@ -83,6 +82,12 @@ Ext.define('ZCS.controller.ZtListController', {
 			query: defaultQuery,
 			callback: Ext.Function.bind(this.storeLoaded, this, [defaultQuery, null], 0)
 		});
+
+		ZCS.app.on('applicationSwitch', function (newApp) {
+			if (this.getApp() === newApp) {
+				this.updateTitlebar(newApp);
+			}
+		}, this);
 	},
 
 	/**
@@ -144,13 +149,9 @@ Ext.define('ZCS.controller.ZtListController', {
 			this.getSearchBox().setValue('');
 		}
 
-		// If we got here via tap on a saved search in the overview, remember it so we can show its name
-		var searchId = (folder && folder.get('type') === ZCS.constant.ORG_SAVED_SEARCH) ? folder.get('itemId') : null;
-		ZCS.session.setSetting(ZCS.constant.SETTING_CUR_SEARCH_ID, searchId);
-
 		this.getStore().currentPage = 1;
 
-		//Set the proxies params so this parameter persists between paging requests.
+		//Set the proxy's params so this parameter persists between paging requests.
 		this.getStore().getProxy().setExtraParams({
 			query: query
 		});
@@ -179,19 +180,28 @@ Ext.define('ZCS.controller.ZtListController', {
 
 		query = query || operation.config.query;
 
+		var app = this.getApp();
+
 		if (success) {
 			if (query) {
 				var search = Ext.create('ZCS.common.ZtSearch', {
 					query: query
 				});
-				ZCS.session.setSetting(ZCS.constant.SETTING_CUR_SEARCH, search);
+				ZCS.session.setSetting(ZCS.constant.SETTING_CUR_SEARCH, search, app);
 				if (ZCS.session.getSetting(ZCS.constant.SETTING_SHOW_SEARCH)) {
 					ZCS.session.getCurrentSearchField().setValue(query);
 				}
 			}
+
+			// If we got here via tap on a saved search in the overview, remember it so we can show its name
+			if (folder) {
+				var searchId = (folder.get('type') === ZCS.constant.ORG_SAVED_SEARCH) ? folder.get('itemId') : null;
+				ZCS.session.setSetting(ZCS.constant.SETTING_CUR_SEARCH_ID, searchId, app);
+			}
+
 			this.updateTitlebar();
 			this.getItemController().clear(records.length === 0);
-			ZCS.app.fireEvent('updatelistpanelToggle', this.getOrganizerTitle(), this.getApp());
+			ZCS.app.fireEvent('updatelistpanelToggle', this.getOrganizerTitle(), app);
 			if (folder && records.length) {
 				//make sure this element doesn't get focus due to an errant touch
 				this.getSearchBox().blur();
@@ -205,8 +215,10 @@ Ext.define('ZCS.controller.ZtListController', {
 
 	/**
 	 * Updates the text on the list panel's titlebar to reflect the current search results.
+	 *
+	 * @param {String}  app     app
 	 */
-	updateTitlebar: function() {
+	updateTitlebar: function(app) {
 
 		var titlebar = this.getTitlebar();  // might not be available during startup
 		if (!titlebar) {
@@ -214,6 +226,6 @@ Ext.define('ZCS.controller.ZtListController', {
 			return;
 		}
 
-		titlebar.setTitle(this.getOrganizerTitle());
+		titlebar.setTitle(this.getOrganizerTitle(null, true, app));
 	}
 });

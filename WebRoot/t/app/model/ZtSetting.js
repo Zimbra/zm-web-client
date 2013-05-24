@@ -14,7 +14,9 @@
  */
 
 /**
- * This class represents a setting, which usually maps to a user preference.
+ * This class represents a setting, which usually maps to a user preference. Though
+ * settings can be of different types, the value is opaque - no processing or
+ * validation is done based on the type.
  *
  * @author Conrad Damon <cdamon@zimbra.com>
  * @adapts ZmSetting
