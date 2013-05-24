@@ -480,7 +480,7 @@ function(parent, num) {
 
 ZmDoublePaneController.prototype._resetOperation = 
 function(parent, op, num) {
-	if (op == ZmOperation.KEEP_READING) {
+	if (parent && op == ZmOperation.KEEP_READING) {
 		parent.enable(ZmOperation.KEEP_READING, this._keepReading(true));
 	}
 };
