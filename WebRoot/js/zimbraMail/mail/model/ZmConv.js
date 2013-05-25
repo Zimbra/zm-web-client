@@ -604,7 +604,7 @@ function(params, callback) {
 	params = params || {};
 
 	if (this.msgs && this.msgs.size()) {
-		msg = this.msgs.getFirstHit(params.offset, params.limit);
+		msg = this.msgs.getFirstHit(params.offset, params.limit, params.foldersToOmit);
 	}
 
 	if (callback) {

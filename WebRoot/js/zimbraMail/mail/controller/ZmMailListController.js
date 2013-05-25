@@ -154,6 +154,9 @@ ZmMailListController.ACTION_CODE_WHICH[ZmKeyMap.PREV_UNREAD]	= DwtKeyMap.SELECT_
 
 ZmMailListController.viewToTab = {};
 
+ZmMailListController.REPLY_FOLDERS_TO_OMIT = [ZmFolder.ID_DRAFTS, ZmFolder.ID_SENT, ZmFolder.ID_TRASH, ZmFolder.ID_SPAM];
+
+ZmMailListController.FOLDERS_TO_OMIT = [ZmFolder.ID_TRASH, ZmFolder.ID_SPAM];
 
 // Public methods
 
@@ -417,6 +420,24 @@ function(listView, item) {
 ZmMailListController.prototype.mapSupported =
 function(map) {
 	return (map == "list");
+};
+
+// returns lookup hash of folders (starting with Trash/Junk) whose messages aren't included when
+// viewing or replying a conv; if we're in one of those, we still show its messages
+ZmMailListController.prototype.getFoldersToOmit =
+function(folders) {
+
+	var a = folders || ZmMailListController.FOLDERS_TO_OMIT,
+		omit = [],
+		curSearch = appCtxt.getCurrentSearch(),
+		curFolderId = curSearch && curSearch.folderId;
+
+	for (var i = 0; i < a.length; i++) {
+		if (a[i] != curFolderId) {
+			omit.push(a[i]);
+		}
+	}
+	return AjxUtil.arrayAsHash(omit);
 };
 
 /**
@@ -997,13 +1018,13 @@ function(ev) {
 		action = ZmOperation.REPLY;
 	}
 
-	this._doAction({ev:ev, action:action});
+	this._doAction({ev:ev, action:action, foldersToOmit:this.getFoldersToOmit(ZmMailListController.REPLY_FOLDERS_TO_OMIT)});
 };
 
 ZmMailListController.prototype._forwardListener =
 function(ev) {
 	var action = ev.item.getData(ZmOperation.KEY_ID);
-	this._doAction({ev:ev, action:action});
+	this._doAction({ev:ev, action:action, foldersToOmit:this.getFoldersToOmit(ZmMailListController.REPLY_FOLDERS_TO_OMIT)});
 };
 
 // This method may be called with a null ev parameter

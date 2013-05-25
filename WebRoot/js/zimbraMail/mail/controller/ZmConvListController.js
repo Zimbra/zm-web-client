@@ -54,8 +54,6 @@ ZmMailListController.GROUP_BY_MSG_KEY[ZmId.VIEW_CONVLIST]	= "byConversation";
 ZmMailListController.GROUP_BY_SHORTCUT[ZmId.VIEW_CONVLIST]	= ZmKeyMap.VIEW_BY_CONV;
 ZmMailListController.GROUP_BY_VIEWS.push(ZmId.VIEW_CONVLIST);
 
-ZmConvListController.FOLDERS_TO_OMIT = [ZmFolder.ID_TRASH, ZmFolder.ID_SPAM];
-
 // Public methods
 
 ZmConvListController.getDefaultViewType =
@@ -495,7 +493,7 @@ function() {
 				var terms = ["underid:" + rootFolderId];
 				var search = this._currentSearch;
 				if (search) {
-					var foldersToExclude = ZmConvListController.FOLDERS_TO_OMIT;
+					var foldersToExclude = ZmMailListController.FOLDERS_TO_OMIT;
 					for (var i = 0; i < foldersToExclude.length; i++) {
 						var folderId = foldersToExclude[i];
 						if (acctId) {
@@ -813,24 +811,6 @@ ZmConvListController.prototype._getNextItemToSelect =
 function(omit) {
 	var lv = this._listView[this._currentViewId];
 	return (lv && lv._selectedMsg) ? null : ZmDoublePaneController.prototype._getNextItemToSelect.apply(this, arguments);
-};
-
-// returns lookup hash of folders (starting with Trash/Junk) whose messages aren't included when
-// viewing a conv; if we're in one of those, we still show its messages
-ZmConvListController.prototype.getFoldersToOmit =
-function() {
-
-	var a = ZmConvListController.FOLDERS_TO_OMIT,
-		omit = [],
-		curSearch = appCtxt.getCurrentSearch(),
-		curFolderId = curSearch && curSearch.folderId;
-
-	for (var i = 0; i < a.length; i++) {
-		if (a[i] != curFolderId) {
-			omit.push(a[i]);
-		}
-	}
-	return AjxUtil.arrayAsHash(omit);
 };
 
 /**

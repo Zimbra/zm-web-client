@@ -838,9 +838,9 @@ function(text) {
 ZmComposeView.prototype._setMessageFlags =
 function(msg) {
 		
-	if (this._action !== ZmOperation.NEW_MESSAGE && this._msg) {
+	if (this._msg) {
 		var isInviteReply = ZmComposeController.IS_INVITE_REPLY[this._action];
-		if (this._action === ZmOperation.DRAFT) {
+		if (this._action === ZmOperation.DRAFT || this._msg.isDraft) {
 			msg.isReplied = (this._msg.rt === "r");
 			msg.isForwarded = (this._msg.rt === "w");
 			msg.isDraft = this._msg.isDraft;
@@ -1079,6 +1079,13 @@ function(msgDraft) {
 	}
 	this.reEnableDesignMode();
 //	this._action = ZmOperation.DRAFT;
+	if (this._msg) {
+		this._msg.nId = msgDraft.id;
+		this._msg.id = msgDraft.id;
+		this._msg.isDraft = true;
+	} else {
+		this._msg = msgDraft;
+	}
 	this._msgAttId = null;
 	// always redo att links since user couldve removed att before saving draft
 	this.cleanupAttachments(true);

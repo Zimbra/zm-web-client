@@ -664,10 +664,11 @@ function() {
  * 
  * @param {int}	offset	the starting point within list
  * @param {int}	limit		the ending point within list
+ * @param {foldersToOmit}	A hash of folders to omit
  * @return	{ZmMailMsg}		the message
  */
 ZmMailList.prototype.getFirstHit =
-function(offset, limit) {
+function(offset, limit, foldersToOmit) {
 	if (this.type != ZmItem.MSG) { return null; }
 
 	var msg = null;	
@@ -679,7 +680,7 @@ function(offset, limit) {
 		var end = (offset + limit > numMsgs) ? numMsgs : offset + limit;
 		var list = this.getArray();
 		for (var i = offset; i < end; i++) {
-			if (list[i].inHitList) {
+			if (!(foldersToOmit && list[i].folderId && foldersToOmit[list[i].folderId]) && list[i].inHitList) {
 				msg = list[i];
 				break;
 			}
