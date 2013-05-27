@@ -83,6 +83,9 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
             },
             addrFieldRemove: {
                 'tap' :  'removeAddr'
+            },
+            itemPanelToolbar: {
+                delete: 'doDelete'
             }
         },
 
@@ -110,10 +113,32 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
 	 * Moves the contact to Trash.
 	 */
 	doDelete: function() {
-        //<debug>
-		Ext.Logger.warn("TODO: contact controller DELETE");
-        //</debug>
-	},
+        
+        var contact = this.getItem(),
+                         folderId = contact.data.folderId,
+                         l,toastMsg,
+                         op;
+                     if (folderId == ZCS.constant.ID_TRASH) {
+                        op = 'delete';
+                        toastMsg = ZtMsg.contactDeleted;
+                     } else {
+                         op = 'move';
+                         l = '3';
+                         toastMsg = ZtMsg.contactMovedToTrash;
+                     }
+                     var me = this,
+                         data = {
+                             op:     op
+                         };
+                     if (l) {
+                         data.l = l;
+                     }
+                     this.performOp(contact, data, function() {
+                         ZCS.app.fireEvent('showToast', toastMsg);
+                     });
+                contact.destroy();
+    },
+
 
     /**
      * Hides the contact form
