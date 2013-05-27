@@ -30,6 +30,7 @@ Ext.define('ZCS.view.contacts.ZtContactForm', {
             'Ext.field.Email',
             'Ext.field.Url',
             'Ext.field.Select',
+            'Ext.field.Hidden',
             'Ext.Label',
             'ZCS.view.contacts.ZtEmailField',
             'ZCS.view.contacts.ZtPhoneField',
@@ -77,7 +78,7 @@ Ext.define('ZCS.view.contacts.ZtContactForm', {
             }, form = {
                 xtype: 'formpanel',
                 itemId: 'formPanel',
-                scrollable: false,
+                scrollable: true,
                 defaults: {
                     labelWidth: '100px',
                     inputCls: 'zcs-form-input'
@@ -297,6 +298,10 @@ Ext.define('ZCS.view.contacts.ZtContactForm', {
                         xtype:'urlcontainer',
                         docked: '',
                         labelName: ZtMsg.url
+                    },
+                    {
+                        xtype: 'hiddenfield',
+                        name: 'contactItemId'
                     }
                 ]
             };

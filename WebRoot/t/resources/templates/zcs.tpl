@@ -262,19 +262,19 @@
 				</div>
 			</div>
 			</tpl>
-			<tpl if='homeUrlFields || workUrlFields || otherUrlFields'>
+			<tpl if='homeURLFields || workURLFields || otherURLFields'>
 			<div class='zcs-contactview-fieldSet'>
 				<div class='zcs-contactview-label'>{[ZtMsg.url]}</div>
 				<div class='zcs-contactview-fields'>
-						<tpl for='homeUrlFields'>
+						<tpl for='homeURLFields'>
 							 <div class='zcs-contactview-field'>{.}</div>
 							 <div class='zcs-contactview-subLabel'>{[ZtMsg.home]}</div>
 						</tpl>
-						<tpl for='workUrlFields'>
+						<tpl for='workURLFields'>
 							 <div class='zcs-contactview-field'>{.}</div>
 							 <div class='zcs-contactview-subLabel'>{[ZtMsg.work]}</div>
 						</tpl>
-						<tpl for='otherUrlFields'>
+						<tpl for='otherURLFields'>
 							 <div class='zcs-contactview-field'>{.}</div>
 							 <div class='zcs-contactview-subLabel'>{[ZtMsg.other]}</div>
 						</tpl>

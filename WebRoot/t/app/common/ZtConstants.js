@@ -132,6 +132,7 @@ ZCS.constant.ITEM_BUTTONS[ZCS.constant.APP_MAIL]        = [
 	{ op: ZCS.constant.OP_MENU,         icon: 'arrow_down',   event: 'showMenu', menuName: ZCS.constant.MENU_CONV }
 ];
 ZCS.constant.ITEM_BUTTONS[ZCS.constant.APP_CONTACTS]    = [
+    { op: ZCS.constant.OP_EDIT,     icon: 'compose1',     event: 'edit' },
 	{ op: ZCS.constant.OP_DELETE,   icon: 'trash',        event: 'delete' },
 	{ op: ZCS.constant.OP_MENU,     icon: 'arrow_down',   event: 'showMenu', menuName: ZCS.constant.MENU_CONTACT }
 ];
@@ -614,9 +615,9 @@ ZCS.constant.CONTACT_MULTI_ATTRS = [
     'mobilePhone',
     'workPhone',
     'otherPhone',
-    'homeUrl',
-    'workUrl',
-    'otherUrl',
+    'homeURL',
+    'workURL',
+    'otherURL',
     'homeStreet',
     'homeCity',
     'homeState',

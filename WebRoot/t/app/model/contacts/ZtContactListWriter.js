@@ -73,11 +73,58 @@ Ext.define('ZCS.model.contacts.ZtContactListWriter', {
                     methodJson.action.l = itemData.l;
                 }
             }
+            else if (itemData.op === 'modify') {
+                var	contact = request.getRecords()[0],
+                    cn;
+
+                json = this.getSoapEnvelope(request, data, 'ModifyContact');
+                methodJson = json.Body.ModifyContactRequest;
+
+                cn = methodJson.cn = {id: itemData.id};
+
+                cn.l = contact.data.folderId;
+                cn.m = [];
+                cn.a = this.populateAttrs(itemData.newContact);
+
+                Ext.apply(methodJson, {
+                    cn: cn
+                });
+            }
         }
 
         request.setJsonData(json);
 
         return request;
+    },
+    populateAttrs : function(contact) {
+
+        var attrs=[];
+
+        Ext.each(ZCS.constant.CONTACT_ATTRS, function(field) {
+            var attr_value = contact.get(field);
+            if (attr_value) {
+                var node = {};
+                node.n = field;
+                node._content = attr_value;
+                attrs.push(node);
+            }
+        });
+
+        Ext.each(ZCS.constant.CONTACT_MULTI_ATTRS, function(field) {
+            var dataFieldName = field+'Fields',
+                attr_value = contact.get(dataFieldName);
+            if (attr_value && attr_value.length > 0) {
+                attrs.push({n:field, _content:attr_value[0]});
+                for (var i= 1,len=attr_value.length; i<len; i++) {
+                    var node={};
+                    node.n = field + (i+1);
+                    node._content = attr_value[i];
+                    attrs.push(node);
+                }
+            }
+        });
+
+        return attrs;
     }
 });
 

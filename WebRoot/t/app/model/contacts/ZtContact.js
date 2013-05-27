@@ -70,15 +70,15 @@ Ext.define('ZCS.model.contacts.ZtContact', {
                 type: 'auto'
             },
             {
-                name: 'homeUrlFields',
+                name: 'homeURLFields',
                 type: 'auto'
             },
             {
-                name: 'workUrlFields',
+                name: 'workURLFields',
                 type: 'auto'
             },
             {
-                name: 'otherUrlFields',
+                name: 'otherURLFields',
                 type: 'auto'
             },
             { name: 'jobTitle', type: 'string'},
