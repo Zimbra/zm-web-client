@@ -37,6 +37,7 @@ Ext.define('ZCS.model.contacts.ZtContactList', {
             { name: 'nickname', type: 'string' }, //for displaying group name
             { name: 'jobTitle', type: 'string'},
             { name: 'company', type: 'string' },
+            { name: 'folderId', type: 'int' },  //folderId
             /**
              * image and imagepart fields store the image related attributes for a contact.
              */

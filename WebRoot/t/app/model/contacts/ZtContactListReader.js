@@ -32,6 +32,8 @@ Ext.define('ZCS.model.contacts.ZtContactListReader', {
         Ext.copyTo(data, attrs, ZCS.constant.CONTACT_ATTRS);
 
         data.type = attrs.type;
+        //folderId of the folder the contact resides in
+        data.folderId = node.l;
 
         return data;
     }
