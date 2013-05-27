@@ -27,10 +27,10 @@ Ext.define('ZCS.model.contacts.ZtContactListWriter', {
     writeRecords: function(request, data) {
 
         var	action = request.getAction(),
-            operation = request.getOperation();
-        var offset = operation.getStart(),
+            offset = request.getOperation().getStart(),
+            operation = request.getOperation(),
             options = operation.getInitialConfig(),
-            itemData = Ext.merge(((data && data[0]) || {}), options),
+            itemData =  Ext.merge(((data && data[0]) || {}), options),
             query = request.getParams().query,
             json, methodJson;
 
@@ -57,27 +57,23 @@ Ext.define('ZCS.model.contacts.ZtContactListWriter', {
                 query: query,
                 types: 'contact'
             });
-        }
-
-        else if (action === 'update'){
-
+        } else if (action === 'update') {
             if (itemData.op == 'delete' || itemData.op == 'move') {
-
-                json = this.getSoapEnvelope(request, data, 'ContactAction');
+                json = this.getSoapEnvelope(request, itemData, 'ContactAction');
                 methodJson = json.Body.ContactActionRequest;
 
-                var action = methodJson.action = {};
-                action.id = data[0].id;
-                action.op = itemData.op;
-                if(itemData.l){
-                    action.l = itemData.l;
-                }
                 Ext.apply(methodJson, {
-                    action: action
+                    action: {
+                        id: itemData.id,
+                        op: itemData.op
+                    }
                 });
+
+                if (itemData.l) {
+                    methodJson.action.l = itemData.l;
+                }
             }
         }
-
 
         request.setJsonData(json);
 
