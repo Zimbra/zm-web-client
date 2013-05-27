@@ -14,7 +14,8 @@
  */
 
 /**
- * This class represents a contact, which is typically a person.
+ * This class represents a contact, which is typically a person, but also could
+ * be a distribution list.
  *
  * @author Conrad Damon <cdamon@zimbra.com>
  */
@@ -109,7 +110,27 @@ Ext.define('ZCS.model.contacts.ZtContact', {
             { name: 'otherPostalCodeFields', type: 'auto'},
             { name: 'otherCountryFields', type: 'auto'},
 
-            { name: 'isHomeAddressExists', type: 'boolean',
+			// long name, eg "Johnathan Smith"
+			{
+				name: 'longName',
+				type: 'string',
+				convert: function (v, record) {
+					var d = record.data;
+					return (d.firstName && d.lastName) ? d.firstName && d.lastName : d.firstName || d.email || '';
+				}
+			},
+
+			// short name or nickname, eg "John"
+			{
+				name: 'shortName',
+				type: 'string',
+				convert: function (v, record) {
+					var d = record.data;
+					return d.firstName || d.email || d.lastName || '';
+				}
+			},
+
+			{ name: 'isHomeAddressExists', type: 'boolean',
                 convert:function(v, record) {
                     if (record.data.homeStreetFields || record.data.homeCityFields || record.data.homeStateFields
                         || record.data.homePostalCodeFields || record.data.homeCountryFields) {
@@ -180,11 +201,12 @@ Ext.define('ZCS.model.contacts.ZtContact', {
 	},
 
     constructor: function(data, id) {
+
         var contact = this.callParent(arguments) || this,
             emails = data && data.emailFields,
             altKey;
 
-        //All the emails for a contact are stored in the emailFields array
+        // All the emails for a contact are stored in the emailFields array
         if (emails) {
             for (var i = 0, len = emails.length; i < len; i++) {
 	            altKey = emails[i];

@@ -379,7 +379,7 @@ ZCS.constant.SETTING_FORWARD_INCLUDE_WHAT       = 'FORWARD_INCLUDE_WHAT';
 ZCS.constant.SETTING_FORWARD_USE_PREFIX         = 'FORWARD_USE_PREFIX';
 ZCS.constant.SETTING_FORWARD_INCLUDE_HEADERS    = 'FORWARD_INCLUDE_HEADERS';
 ZCS.constant.SETTING_REST_URL                   = 'REST_URL';
-ZCS.constant.SETTING_GET_SENDER_FROM_CONTACTS   = 'GET_SENDER_FROM_CONTACTS';
+ZCS.constant.SETTING_GET_NAME_FROM_CONTACTS     = 'GET_NAME_FROM_CONTACTS';
 
 ZCS.constant.SETTINGS = ZCS.constant.makeList('SETTING_');
 
@@ -389,7 +389,7 @@ ZCS.constant.SETTING_TYPE[ZCS.constant.SETTING_SHOW_SEARCH]                 = ZC
 ZCS.constant.SETTING_TYPE[ZCS.constant.SETTING_DISPLAY_IMAGES]              = ZCS.constant.TYPE_BOOLEAN;
 ZCS.constant.SETTING_TYPE[ZCS.constant.SETTING_JSLOGGING_ENABLED]           = ZCS.constant.TYPE_BOOLEAN;
 ZCS.constant.SETTING_TYPE[ZCS.constant.SETTING_TRUSTED_SENDERS]             = ZCS.constant.TYPE_ARRAY;
-ZCS.constant.SETTING_TYPE[ZCS.constant.SETTING_GET_SENDER_FROM_CONTACTS]    = ZCS.constant.TYPE_BOOLEAN;
+ZCS.constant.SETTING_TYPE[ZCS.constant.SETTING_GET_NAME_FROM_CONTACTS]      = ZCS.constant.TYPE_BOOLEAN;
 ZCS.constant.SETTING_TYPE[ZCS.constant.SETTING_CUR_SEARCH]                  = ZCS.constant.TYPE_HASH;
 ZCS.constant.SETTING_TYPE[ZCS.constant.SETTING_CUR_SEARCH_ID]               = ZCS.constant.TYPE_HASH;
 
@@ -399,8 +399,8 @@ ZCS.constant.SETTING_VALUE[ZCS.constant.SETTING_SHOW_SEARCH] = 'false';
 
 // Default values for settings
 ZCS.constant.SETTING_DEFAULT = {};
-ZCS.constant.SETTING_DEFAULT[ZCS.constant.SETTING_LOCALE] = 'en_US';
-ZCS.constant.SETTING_DEFAULT[ZCS.constant.SETTING_GET_SENDER_FROM_CONTACTS] = true; // KDDI feature request, bug 81656
+ZCS.constant.SETTING_DEFAULT[ZCS.constant.SETTING_LOCALE]                   = 'en_US';
+ZCS.constant.SETTING_DEFAULT[ZCS.constant.SETTING_GET_NAME_FROM_CONTACTS]   = true; // KDDI feature request, bug 81656
 
 // Setting that tells us if an app is enabled
 ZCS.constant.APP_SETTING = {};
@@ -532,6 +532,9 @@ ZCS.constant.HDR_KEY[ZCS.constant.HDR_CC]		= ZtMsg.ccHdr;
 ZCS.constant.HDR_KEY[ZCS.constant.HDR_DATE]		= ZtMsg.sentHdr;
 ZCS.constant.HDR_KEY[ZCS.constant.HDR_SUBJECT]	= ZtMsg.subjectHdr;
 
+// Autocomplete
+ZCS.constant.NUM_AUTOCOMPLETE_MATCHES = 20;
+
 // Invite-related constants
 ZCS.constant.INVITE_NOTES_SEPARATOR = '*~*~*~*~*~*~*~*~*~*';
 
@@ -580,7 +583,7 @@ ZCS.constant.IDTYPE_TAG             = 'TAG';
 ZCS.constant.QUICK_REPLY_SMALL  = 20;
 ZCS.constant.QUICK_REPLY_LARGE  = 80;
 
-//Contact field types
+// Contact field types
 ZCS.constant.MOBILE = 'mobile';
 ZCS.constant.WORK = 'work';
 ZCS.constant.OTHER = 'other';

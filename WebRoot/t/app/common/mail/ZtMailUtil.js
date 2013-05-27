@@ -509,7 +509,7 @@ Ext.define('ZCS.common.mail.ZtMailUtil', {
 
 		if (addresses && addresses[ZCS.constant.FROM]) {
 			senders = Ext.Array.map(addresses[ZCS.constant.FROM], function(addr) {
-				return this.getDisplayName(addr);
+				return this.getDisplayName(addr, true);
 			}, this);
 			numSenders = numSenders || ZCS.constant.NUM_CONV_SENDERS;
 			if (senders.length > numSenders) {
@@ -526,25 +526,27 @@ Ext.define('ZCS.common.mail.ZtMailUtil', {
 	 * Returns a displayable form of the given address. An option may be set to get the display
 	 * name from the user's contacts instead of using the "friendly" portion of the address.
 	 *
-	 * @param {ZtEmailAddress}  addr    an email address
+	 * @param {ZtEmailAddress}  addr            an email address
+	 * @param {Boolean}         useShortName    if true, get short (first) name only
+	 *
 	 * @return {String}     display name
 	 */
-	getDisplayName: function(addr) {
+	getDisplayName: function(addr, useShortName) {
 
 		if (!addr) {
 			return '';
 		}
 
-		var sender = '',
+		var contactName = '',
 			email = addr.get('email');
 
-		if (ZCS.session.getSetting(ZCS.constant.SETTING_GET_SENDER_FROM_CONTACTS)) {
+		if (ZCS.session.getSetting(ZCS.constant.SETTING_GET_NAME_FROM_CONTACTS)) {
 			var contact = ZCS.cache.get(email, 'email');
 			if (contact) {
-				sender = contact.get('displayName');
+				contactName = contact.get(useShortName ? 'shortName' : 'longName');
 			}
 		}
-		return sender || addr.get('displayName') || addr.get('name') || email;
+		return contactName || addr.get(useShortName ? 'shortName' : 'longName');
 	},
 
 	/**

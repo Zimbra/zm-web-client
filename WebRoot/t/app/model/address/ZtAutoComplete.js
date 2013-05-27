@@ -22,9 +22,10 @@ var urlBase = ZCS.constant.SERVICE_URL_BASE;
 
 Ext.define('ZCS.model.address.ZtAutoComplete', {
 
-	extend: 'ZCS.model.ZtItem',
+	extend: 'ZCS.model.mail.ZtEmailAddress',
 
 	requires: [
+		'ZCS.model.ZtSoapProxy',
 		'ZCS.model.address.ZtAutoCompleteReader',
 		'ZCS.model.address.ZtAutoCompleteWriter'
 	],
@@ -32,30 +33,36 @@ Ext.define('ZCS.model.address.ZtAutoComplete', {
 	config: {
 
 		fields: [
-			{ name: 'ranking', type: 'string'},
-			{ name: 'email', type: 'string'},
-			{ name: 'name', type: 'string'},
-			{
-				name: 'viewName',
-				type: 'string',
-				convert: function (v, record) {
-					return record.get('name') || record.get('email');
-				}
-			},
-			{ name: 'fullEmail', type: 'string'},
-			{ name: 'type', type: 'string' },
-			{ name: 'isGroup', type: 'int' },
-			{ name: 'exp', type: 'int' },
-			{ name: 'display', type: 'string' }
+
+			// all matches have these server fields
+			{ name: 'isGroup',      type: 'boolean' },  // true for distribution list
+			{ name: 'ranking',      type: 'int'},       // # times sent to
+			{ name: 'matchType',    type: 'string' },   // gal|contact|rankingTable
+//			{ name: 'canExpand',    type: 'boolean' },
+
+			// local contacts will have item and folder IDs
+			{ name: 'contactId',    type: 'string' },
+			{ name: 'folderId',     type: 'string' }
 		],
 
 		proxy: {
 			type: 'soapproxy',
+			actionMethods: {
+				read    : 'POST'
+			},
 			api: {
 				read    : urlBase + 'AutoCompleteRequest'
 			},
+			headers: {
+				'Content-Type': "application/soap+xml; charset=utf-8"
+			},
 			reader: 'autocompletereader',
-			writer: 'autocompletewriter'
+			writer: 'autocompletewriter',
+			// prevent Sencha from adding junk to the URL
+			pageParam: false,
+			startParam: false,
+			limitParam: false,
+			noCache: false
 		}
 	}
 });

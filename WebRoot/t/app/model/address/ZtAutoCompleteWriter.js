@@ -31,16 +31,12 @@ Ext.define('ZCS.model.address.ZtAutoCompleteWriter', {
 			json, methodJson;
 
 		if (action === 'read') {
-
-			// doing a search - replace the configured 'read' operation URL
-			request.setUrl(ZCS.constant.SERVICE_URL_BASE + 'AutoCompleteRequest');
-
 			json = this.getSoapEnvelope(request, data, 'AutoComplete');
 			methodJson = json.Body.AutoCompleteRequest;
 
 			Ext.apply(methodJson, {
 				offset: 0,
-				limit: 25,
+				limit: ZCS.constant.NUM_AUTOCOMPLETE_MATCHES,
 				name: name
 			});
 

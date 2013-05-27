@@ -14,7 +14,7 @@
  */
 
 /**
- * This class respresents a store of contacts.
+ * This class respresents a store of autocomplete matches.
  *
  * @author Conrad Damon <cdamon@zimbra.com>
  */

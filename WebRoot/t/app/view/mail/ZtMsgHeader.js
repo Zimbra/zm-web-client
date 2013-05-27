@@ -70,10 +70,9 @@ Ext.define('ZCS.view.mail.ZtMsgHeader', {
 			fromAddr = fromAddrs && fromAddrs[0];
 
 		data.addrs = ZCS.model.mail.ZtMailItem.convertAddressModelToObject(addrObjs);
-		data.from = ZCS.mailutil.getDisplayName(fromAddr);
 		if (state === ZCS.constant.HDR_EXPANDED) {
 			data.recipients = Ext.Array.map(Ext.Array.clean([].concat(data.addrs.TO, data.addrs.CC)), function(addr) {
-				return addr.displayName;
+				return addr.name;
 			}).join(', ');
 		}
 

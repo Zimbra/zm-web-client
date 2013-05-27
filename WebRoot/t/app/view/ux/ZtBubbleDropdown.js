@@ -183,7 +183,11 @@ Ext.define('ZCS.view.ux.ZtBubbleDropdown', {
 
 		this.getMenuStore().each(function (record) {
 			if (tpl) {
-				label = tpl.apply(record.raw);
+				var data = {
+					name:   record.get('longName'),
+					email:  record.get('email')
+				};
+				label = tpl.apply(data);
 			} else {
 				label = record.get(me.getDropdownDisplayField());
 			}

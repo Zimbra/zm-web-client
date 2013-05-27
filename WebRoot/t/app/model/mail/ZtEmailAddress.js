@@ -24,16 +24,29 @@ Ext.define('ZCS.model.mail.ZtEmailAddress', {
 	extend: 'Ext.data.Model',
 	config: {
 		fields: [
-			{ name: 'type',         type: 'string' },
-			{ name: 'email',        type: 'string' },
-			{ name: 'name',         type: 'string' },
-			{ name: 'displayName',  type: 'string' },
+			// from server address node <e>
+			{ name: 'type',         type: 'string' },   // to|from|cc, etc
+			{ name: 'email',        type: 'string' },   // just the address part
+			{ name: 'name',         type: 'string' },   // full name
+			{ name: 'displayName',  type: 'string' },   // usually the first name
+
+			// long name, eg "Johnathan Smith"
 			{
-				name: 'viewName',
+				name: 'longName',
 				type: 'string',
 				convert: function (v, record) {
 					var d = record.data;
 					return d.name || d.displayName || d.email || '';
+				}
+			},
+
+			// short name or nickname, eg "John"
+			{
+				name: 'shortName',
+				type: 'string',
+				convert: function (v, record) {
+					var d = record.data;
+					return d.displayName || d.name || d.email || '';
 				}
 			}
 		]

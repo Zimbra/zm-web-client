@@ -24,16 +24,27 @@ Ext.define('ZCS.model.address.ZtAutoCompleteReader', {
 
 	alias: 'reader.autocompletereader',
 
+	/**
+	 * The response always has: 'email', 'type', 'isGroup', and 'ranking'. If it is a local
+	 * contact, it will also have 'id' and 'l'. The email address is a full email string, so
+	 * we parse it into components.
+	 */
 	getDataFromNode: function(node) {
-		//Take the email address that was given by the search, and break it down into a ZtEmailAddress
-		//This may be in the form <email> or "blah" <email>
-		var emailAddress = ZCS.model.mail.ZtEmailAddress.fromEmail(node.email);
 
-		node.name = emailAddress.get('name');
-		node.fullEmail = node.email;
-		node.email = emailAddress.get('email');
+		var data = {},
+			emailAddressObj = ZCS.model.mail.ZtEmailAddress.fromEmail(node.email);
 
-		return node;
+		data.email = emailAddressObj.get('email');
+		data.name = emailAddressObj.get('name');
+		data.displayName = node.display || emailAddressObj.get('displayName');
+		data.matchType = node.type;
+		data.isGroup = (node.isGroup === '1');
+		data.ranking = node.ranking;
+
+		data.contactId = node.id;
+		data.folderId = node.l;
+
+		return data;
 	},
 
 	/**

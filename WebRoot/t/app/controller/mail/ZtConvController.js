@@ -573,7 +573,7 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 
 		var activeMsg = this.getActiveMsg(),
 			fromAddr = activeMsg && activeMsg.getAddressByType(ZCS.constant.FROM),
-			fromName = fromAddr && fromAddr.get('viewName'),
+			fromName = fromAddr && fromAddr.get('longName'),
 			placeholder = fromName && Ext.String.format(ZtMsg.quickReplyPlaceholder, fromName);
 
 		return placeholder || '';
