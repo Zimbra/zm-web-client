@@ -145,6 +145,8 @@ ZCS.constant.HDR_DETAILED   = 'detailed';
 ZCS.constant.ITEM_CONVERSATION      = 'conversation';
 ZCS.constant.ITEM_MESSAGE           = 'message';
 ZCS.constant.ITEM_CONTACT           = 'contact';
+ZCS.constant.ITEM_CONTACT_GROUP     = 'group';
+ZCS.constant.ITEM_CONTACT_LIST      = 'contactlist';
 ZCS.constant.ITEM_FOLDER            = 'folder';
 ZCS.constant.ADDRESS_AUTOCOMPLETE   = 'match';
 
@@ -159,6 +161,7 @@ ZCS.constant.CLASS_FOR_TYPE = {};
 ZCS.constant.CLASS_FOR_TYPE[ZCS.constant.ITEM_CONVERSATION]    = 'ZCS.model.mail.ZtConv';
 ZCS.constant.CLASS_FOR_TYPE[ZCS.constant.ITEM_MESSAGE]         = 'ZCS.model.mail.ZtMailMsg';
 ZCS.constant.CLASS_FOR_TYPE[ZCS.constant.ITEM_CONTACT]         = 'ZCS.model.contacts.ZtContact';
+ZCS.constant.CLASS_FOR_TYPE[ZCS.constant.ITEM_CONTACT_LIST]    = 'ZCS.model.contacts.ZtContactList';
 ZCS.constant.CLASS_FOR_TYPE[ZCS.constant.ADDRESS_AUTOCOMPLETE] = 'ZCS.model.address.ZtAutoComplete';
 
 // Item type for model class
@@ -189,6 +192,7 @@ ZCS.constant.ITEM_NODE = {};
 ZCS.constant.ITEM_NODE[ZCS.constant.ITEM_CONVERSATION]      = ZCS.constant.NODE_CONVERSATION;
 ZCS.constant.ITEM_NODE[ZCS.constant.ITEM_MESSAGE]           = ZCS.constant.NODE_MESSAGE;
 ZCS.constant.ITEM_NODE[ZCS.constant.ITEM_CONTACT]           = ZCS.constant.NODE_CONTACT;
+ZCS.constant.ITEM_NODE[ZCS.constant.ITEM_CONTACT_LIST]      = ZCS.constant.NODE_CONTACT;
 ZCS.constant.ITEM_NODE[ZCS.constant.ADDRESS_AUTOCOMPLETE]   = ZCS.constant.NODE_MATCH;
 
 // Item type based on JSON node name
@@ -203,7 +207,7 @@ ZCS.constant.LIST_CONTROLLER[ZCS.constant.ITEM_CONTACT]         = 'ZCS.controlle
 // Store that holds items for list view
 ZCS.constant.STORE = {};
 ZCS.constant.STORE[ZCS.constant.APP_MAIL]       = 'ZtConvStore';
-ZCS.constant.STORE[ZCS.constant.APP_CONTACTS]   = 'ZtContactStore';
+ZCS.constant.STORE[ZCS.constant.APP_CONTACTS]   = 'ZtContactListStore';
 
 // Organizer types
 ZCS.constant.ORG_FOLDER         = 'folder';
@@ -586,6 +590,7 @@ ZCS.constant.HOME = 'home';
 ZCS.constant.CONTACT_ATTRS = [
     'firstName',
     'lastName',
+    'nickname',
     'namePrefix',
     'nameSuffix',
     'maidenName',

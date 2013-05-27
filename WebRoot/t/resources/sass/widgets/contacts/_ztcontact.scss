@@ -36,6 +36,13 @@ $contactFieldWidth: 18em;
 	background-repeat: no-repeat;
 }
 
+.zcs-contactgroup-person {
+	background-image: url('../images/group.png');
+	background-position: center;
+	background-size: 100% auto;
+	background-repeat: no-repeat;
+}
+
 /*Generic Classes*/
 .zcs-floatLeft {
 	float: left;
@@ -210,3 +217,59 @@ $contactFieldWidth: 18em;
     border-width: 0 0 1px 0 !important;
     border-radius: 0;
 }
+
+/*Contact group classes*/
+.zcs-contactgroupview-header {
+
+	.zcs-contactgroupview-image {
+		@extend .zcs-floatLeft;
+		@extend .zcs-contactgroup-person;
+		height: $contactImageSize;
+		width: $contactImageSize;
+	}
+
+	.zcs-contactgroupview-personalInfo {
+		@extend .zcs-floatLeft;
+		margin-left: $contactGutter;
+
+		SPAN {
+			@extend .zcs-newLine;
+			@include ellipsis();
+			margin-bottom:.25em;
+			max-width: $contactFieldWidth*1.5;
+			min-width: $contactFieldWidth;
+		}
+
+		SPAN[name=contactname] {
+			font-size: 1.4em;
+			font-weight: bold;
+			margin: .5em 0;
+		}
+	}
+}
+
+.zcs-contact-grpitem {
+width: 12em;
+padding: 0.5em 0 0 0.5em;
+font-size: 0.8em;
+}
+
+.zcs-contact-grpitem span {
+@extend .zcs-newLine;
+word-wrap: break-word;
+padding: 0 0 0.3em 0;
+}
+
+.zcs-contact-groups {
+border: 1px solid #777;
+width: 16em;
+margin: 0.8em;
+padding: 0.5em;
+height: 7em;
+}
+
+.zcs-contact-groups div.zcs-contact-image {
+width: 4.5em;
+height: 5em;
+}
+

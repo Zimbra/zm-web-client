@@ -29,9 +29,15 @@ Ext.define('ZCS.model.contacts.ZtContactReader', {
 		var data = {},
 			attrs = node._attrs;
 
-        data = this.populateContactFields(attrs);
 
-		data.type = ZCS.constant.ITEM_CONTACT;
+        if (attrs.type && (attrs.type == ZCS.constant.ITEM_CONTACT_GROUP)) {
+            data.groupMembers = this.populateContactGroupFields(node.m);
+            data.type = ZCS.constant.ITEM_CONTACT_GROUP;
+            data.nickname = attrs.nickname;
+        } else {
+            data = this.populateContactFields(attrs);
+            data.type = ZCS.constant.ITEM_CONTACT;
+        }
 
         return data;
 	},
@@ -59,6 +65,25 @@ Ext.define('ZCS.model.contacts.ZtContactReader', {
         });
 
         return data;
+    },
+
+    populateContactGroupFields: function(members) {
+        var m = [];
+        for (var i = 0, len = members.length; i < len; i++) {
+            var member = members[i];
+                cn = member.cn;
+            if (cn) {
+                //deferenced group members
+                var attrs = cn[0]._attrs,
+                    memberData = {};
+                memberData = this.populateContactFields(attrs);
+                m.push(memberData)
+            } else {
+                //in case the group members are not deferenced, push the member id
+                m.push(member.value);
+            }
+        }
+        return m;
     }
 
 });

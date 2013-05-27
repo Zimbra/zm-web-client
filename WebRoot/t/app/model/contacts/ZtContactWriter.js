@@ -28,40 +28,35 @@ Ext.define('ZCS.model.contacts.ZtContactWriter', {
 
 		var	action = request.getAction(),
 			offset = request.getOperation().getStart(),
-			query = request.getParams().query,
+            operation = request.getOperation(),
+            options = operation.getInitialConfig(),
+            itemData = Ext.merge(((data && data[0]) || {}), options),
+            contactId = itemData ? itemData.contactId : '',
+            type = itemData ? itemData.type : '',
 			json, methodJson;
 
 		// Do not pass query in query string.
 		request.setParams({});
 
 		if (action === 'read') {
-
-			if (!query) {
-				// if there's no query, this is the initial load so get all contacts
-				json = this.getSoapEnvelope(request, data, 'GetContacts');
-				methodJson = json.Body.GetContactsRequest;
-
-				Ext.apply(methodJson, {
-					sortBy: 'nameDesc',
-					offset: offset,
-					limit: ZCS.constant.DEFAULT_PAGE_SIZE
-				});
-			}
-			else {
-				// doing a search - replace the configured 'read' operation URL
-				request.setUrl(ZCS.constant.SERVICE_URL_BASE + 'SearchRequest');
-
-				json = this.getSoapEnvelope(request, data, 'Search');
-				methodJson = json.Body.SearchRequest;
-
-				Ext.apply(methodJson, {
-					sortBy: "dateDesc",
-					offset: 0,
-					limit: 20,
-					query: query,
-					types: 'contact'
-				});
-			}
+            json = this.getSoapEnvelope(request, data, 'GetContacts');
+            methodJson = json.Body.GetContactsRequest;
+            //Fetch the specific contact/group
+            if (contactId) {
+                var cn = methodJson.cn = {};
+                cn.id = contactId;
+            }
+            if (type == ZCS.constant.ITEM_CONTACT_GROUP) {
+                //In case of contact groups, deference the group members
+                Ext.apply(methodJson, {
+                    cn: cn,
+                    derefGroupMember:1
+                });
+            } else {
+                Ext.apply(methodJson, {
+                    cn: cn
+                });
+            }
 		} else if (action === 'create') {
             var	contact = request.getRecords()[0];
 

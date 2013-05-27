@@ -297,7 +297,8 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
     },
 
     /**
-	 * Displays the given contact. Changes the toolbar text to the full name of the contact.
+	 * Fires a GetContactsRequest for the given contact/group.
+     * Displays the given contact/group. Changes the toolbar text to the full name of the contact/group.
 	 *
 	 * @param {ZtContact}   contact     contact to show
 	 */
@@ -305,21 +306,31 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
         //<debug>
 		Ext.Logger.info("contact controller: show contact " + contact.getId());
         //</debug>
-		this.callParent(arguments);
-
-		this.updateToolbar({
-			title:  contact.get('displayName')
-		});
+        this.callParent(arguments);
 
 		//Make sure the organizer button stays...
 		ZCS.app.fireEvent('updatelistpanelToggle', this.getOrganizerTitle(), ZCS.session.getActiveApp());
 
-		var tpl = this.getContactView().getTpl();
-        var data = contact.getData();
-        var imageUrl = ZCS.common.ZtUtil.getImageUrl(contact, 125);
+        //Fetch the ZtContactStore
+        var store = this.getStore();
+        store.load({
+            contactId: contact.data.id,
+            type: contact.data.type,
+            callback: function(records, operation, success) {
+                if (success) {
+                    var data = records[0].data,
+                        tpl = this.getContactView().getTpl(),
+                        imageUrl = ZCS.common.ZtUtil.getImageUrl(records[0], 125);
+                    data.imageStyle = imageUrl ? 'background-image: url(' + imageUrl + ')' : '';
+                    this.updateToolbar({
+                        title: records[0].data['displayName']
+                    });
+                    this.getContactView().setHtml(tpl.apply(data));
+                }
+            },
+            scope: this
+        });
 
-        data.imageStyle = imageUrl ? 'background-image: url(' + imageUrl + ')' : '';
-        this.getContactView().setHtml(tpl.apply(data));
 	},
 
 	updateToolbar: function(params) {

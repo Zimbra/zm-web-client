@@ -40,11 +40,14 @@ Ext.define('ZCS.model.contacts.ZtContact', {
 				convert: function (v, record) {
 					if (record.data.firstName && record.data.lastName) {
 						return record.data.firstName + ' ' + record.data.lastName;
+					} else if (record.data.emailFields) {
+						return record.data.emailFields[0];
 					} else {
-						return record.data.email;
-					}
+                        return record.data.nickname;
+                    }
 				}
 			},
+            { name: 'nickname', type: 'string' },
             { name: 'namePrefix', type: 'string' },
             { name: 'middleName', type: 'string' },
             { name: 'maidenName', type: 'string' },
@@ -156,8 +159,11 @@ Ext.define('ZCS.model.contacts.ZtContact', {
                         }
                     });
                 }
+            },
+            {
+                name: 'groupMembers',
+                type: 'auto'
             }
-
         ],
 
 		proxy: {
