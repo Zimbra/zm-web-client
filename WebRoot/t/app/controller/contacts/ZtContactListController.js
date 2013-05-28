@@ -59,6 +59,7 @@ Ext.define('ZCS.controller.contacts.ZtContactListController', {
     launch: function() {
         this.callParent(arguments);
         ZCS.app.on('notifyContactlistCreate', this.handleCreateNotification, this);
+        ZCS.app.on('notifyContactChange', this.handleModifyNotification, this);
     },
 
     /**
@@ -87,6 +88,18 @@ Ext.define('ZCS.controller.contacts.ZtContactListController', {
 
         if (doAdd) {
             store.insert(0, [contact]);
+        }
+    },
+
+    handleModifyNotification: function(item, modify) {
+
+        var store = this.getStore(),
+            itemPresent = store.getById(item.getId()),
+            contactListView = this.getListView();
+
+        if (itemPresent) {
+            contactListView.refresh();
+            contactListView.select(ZCS.app.getContactController().getItem());
         }
     },
 

@@ -91,10 +91,6 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
         }
 	},
 
-    launch: function() {
-        ZCS.app.on('notifyContactChange', this.handleModifyNotification, this);
-    },
-
     /**
      * Pops the contact form
      */
@@ -172,7 +168,9 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
     doEdit: function() {
         //Gets the current selected contact and provision it for editing
         var contact = this.getStore().getById(this.getItem().data.id).data;
-        this.editContact(contact);
+        if (contact.type !== ZCS.constant.ITEM_CONTACT_GROUP) {
+            this.editContact(contact);
+        }
     },
 
     /**
@@ -185,21 +183,6 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
         }
 
         return this.contactPanel;
-    },
-
-    handleModifyNotification: function(item, modify) {
-
-        var store = this.getStore(),
-            itemPresent = store.getById(item.getId()),
-            contactListCtlr = ZCS.app.getContactListController(),
-            contactListView = contactListCtlr.getListView();
-
-        if (itemPresent) {
-            contactListView.refresh();
-            contactListView.select(item);
-        }
-
-        item.handleModifyNotification(modify);
     },
 
     modifyContact: function() {
