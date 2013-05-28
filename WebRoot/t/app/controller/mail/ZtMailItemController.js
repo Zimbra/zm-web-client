@@ -193,9 +193,11 @@ Ext.define('ZCS.controller.mail.ZtMailItemController', {
 	 * Disable "Tag" action if user doesn't have any tags.
 	 */
 	enableMenuItems: function(menuName) {
+
 		var menu = this.getMenu(menuName),
 			curFolder = ZCS.session.getCurrentSearchOrganizer(),
-			isFeed = curFolder && curFolder.isFeed();
+			isFeed = curFolder && curFolder.isFeed(),
+			isDrafts = ZCS.util.folderIs(curFolder, ZCS.constant.ID_DRAFTS);
 
 		if (menu && menu.getItem(ZCS.constant.OP_TAG)) {
 			var tags = ZCS.session.getOrganizerDataByAppAndOrgType(ZCS.constant.APP_MAIL, ZCS.constant.ORG_TAG);
@@ -203,6 +205,7 @@ Ext.define('ZCS.controller.mail.ZtMailItemController', {
 		}
 		menu.enableItem(ZCS.constant.OP_REPLY, !isFeed);
 		menu.enableItem(ZCS.constant.OP_REPLY_ALL, !isFeed);
+		menu.enableItem(ZCS.constant.OP_SPAM, !isDrafts);
 	},
 
 	/**
