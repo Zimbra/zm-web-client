@@ -2356,7 +2356,7 @@ ZmMailApp.prototype._checkVacationReplyEnabled = function(){
 		return;
 	}
 
-	var ynDialog = appCtxt.getYesNoMsgDialog();
+	var ynDialog = new DwtMessageDialog({parent:appCtxt.getShell(), buttons:[DwtDialog.YES_BUTTON, DwtDialog.NO_BUTTON], id: "VacationDialog"});
 	var content = AjxTemplate.expand("mail.Message#VacationRemindDialog", {id:ynDialog._htmlElId});
 	ynDialog.setTitle(ZmMsg.OOORemindDialogTitle);
 	ynDialog.setContent(content);
