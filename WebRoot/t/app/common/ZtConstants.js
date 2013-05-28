@@ -125,7 +125,7 @@ ZCS.constant.OP_MENU        = 'MENU';
 // Buttons in toolbar at top of item panel
 ZCS.constant.ITEM_BUTTONS = {};
 ZCS.constant.ITEM_BUTTONS[ZCS.constant.APP_MAIL]        = [
-	{ op: ZCS.constant.OP_EDIT,         icon: 'compose1',     event: 'edit', hidden: true },
+	{ op: ZCS.constant.OP_EDIT,         icon: 'edit',         event: 'edit', hidden: true },
 	{ op: ZCS.constant.OP_REPLY,        icon: 'reply',        event: 'reply' },
 	{ op: ZCS.constant.OP_REPLY_ALL,    icon: 'replytoall',   event: 'replyAll' },
 	{ op: ZCS.constant.OP_DELETE,       icon: 'trash',        event: 'delete' },

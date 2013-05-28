@@ -62,7 +62,7 @@ Ext.define('ZCS.view.ZtListPanel', {
 					handler: function() {
 						this.up('listpanel').fireEvent('showFolders');
 					},
-					iconCls: 'organizer-list',
+					iconCls: 'organizer',
 					iconMask: true,
 					align: 'left'
 				},
@@ -91,9 +91,9 @@ Ext.define('ZCS.view.ZtListPanel', {
 							xtype: 'searchfield',
 							name: 'searchField',
 							placeHolder: 'Search',
-                            autoComplete: false,
-                            autoCorrect: false,
-                            autoCapitalize: false,
+							autoComplete: false,
+							autoCorrect: false,
+							autoCapitalize: false,
 							listeners: {
 								keyup: function(fld, ev) {
 									var keyCode = ev.browserEvent.keyCode;

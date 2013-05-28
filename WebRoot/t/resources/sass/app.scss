@@ -64,13 +64,23 @@
 @import 'widgets/contacts/ztcontact';
 
 // Your custom code goes here...
-//@include pictos-iconmask('list');
-//@include pictos-iconmask('replytoall');
-//@include pictos-iconmask('trash');
-//@include pictos-iconmask('settings9');
-//@include pictos-iconmask('compose1');
-//@include pictos-iconmask('add1');
-//@include pictos-iconmask('minus2');
+// Import custom icon font
+@include icon-font('ZimbraTouch', inline-font-files('../../../../resources/images/pictos/ZimbraTouch.woff', woff, '../../../../resources/images/pictos/ZimbraTouch.ttf', truetype,'../../../../resources/images/pictos/ZimbraTouch.svg', svg));
+// Bind font letters to class names
+@include icon('trash', 'T', 'ZimbraTouch');
+@include icon('minus', 'd', 'ZimbraTouch');
+@include icon('plus', 'a', 'ZimbraTouch');
+@include icon('add', 'a', 'ZimbraTouch');
+@include icon('compose', 'C', 'ZimbraTouch');
+@include icon('edit', 'E', 'ZimbraTouch');
+@include icon('organizer', 'O', 'ZimbraTouch');
+@include icon('arrow_down', 'M', 'ZimbraTouch');
+@include icon('settings', 'S', 'ZimbraTouch');
+@include icon('reply', 'R', 'ZimbraTouch');
+@include icon('replytoall', 'A', 'ZimbraTouch');
+//@include icon('forward', 'F', 'ZimbraTouch');
+//@include icon('expand', 'x', 'ZimbraTouch');
+//@include icon('tag', 't', 'ZimbraTouch');
 
 // Colored button styles
 @include sencha-button-ui('neutral', $neutral-color, 'glossy');

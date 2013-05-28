@@ -26,33 +26,33 @@
 
 <template id='ConvListItem'>
 	<div class='zcs-mail-list'>
-	  <tpl if='isInvite'>
+		<tpl if='isInvite'>
 		<div class='zcs-mail-invitation'>
-		  <img src='/t/resources/images/invitation<tpl if='isUnread'>_unread</tpl>.png' />
+			<img src='/t/resources/images/invitation<tpl if='isUnread'>_unread</tpl>.png' />
 		</div>
-	  <tpl else>
+		<tpl else>
 		<div class='zcs-mail-readState'>
-		  <img src='/t/resources/images/<tpl if='isUnread'>un</tpl>read.png' />
+			<img src='/t/resources/images/<tpl if='isUnread'>un</tpl>read.png' />
 		</div>
-	  </tpl>
+		</tpl>
 		<div class='zcs-mail-senders<tpl if='isUnread'>-unread</tpl>'>
-		  {senders}
+			{senders}
 		</div>
 		<div class='zcs-mail-date'>{dateStr}</div>
-	  <tpl if='hasAttachment'>
-	    <div class='zcs-mail-attachment'>
-		  <img src='/t/resources/images/attachment.png' />
+		<tpl if='hasAttachment'>
+			<div class='zcs-mail-attachment'>
+			<img src='/t/resources/images/attachment.png' />
 		</div>
-	  </tpl>
+		</tpl>
 		<div class='zcs-mail-subject<tpl if='isUnread'>-unread</tpl>'>{[Ext.String.htmlEncode(values.subject)]}</div>
-	  <tpl if='numMsgs &gt; 1'>
-	    <span class='zcs-numMsgs'>{numMsgs}</span>
-	  </tpl>
-	  <tpl if='isFlagged'>
-	    <div class='zcs-mail-flag'>
-		  <img src='/t/resources/images/flagged.png' />
+		<tpl if='numMsgs &gt; 1'>
+			<span class='zcs-numMsgs'>{numMsgs}</span>
+		</tpl>
+		<tpl if='isFlagged'>
+			<div class='zcs-mail-flag'>
+			<img src='/t/resources/images/flagged.png' />
 		</div>
-	  </tpl>
+		</tpl>
 		<div class='zcs-mail-fragment'>{[Ext.String.htmlEncode(values.fragment)]}</div>
 	</div>
 </template>
@@ -61,126 +61,126 @@
 # from ZCS.constants. It is unlikely that they will change, but that's where they're defined.
 
 <template id='CollapsedMsgHeader'>
-  <tpl>
+	<tpl>
 	<div class='zcs-mail-msgHdr collapsed'>
-	  <div class='zcs-msgHdr-person' style='{imageStyle}'></div>
-	  <tpl for='addrs.FROM'>
+		<div class='zcs-msgHdr-person' style='{imageStyle}'></div>
+		<tpl for='addrs.FROM'>
 		<div class='zcs-msgHdr-fromBubble'>
-		  <span class='zcs-area-bubble zcs-contact-bubble' id='{id}'>{name}</span>
+			<span class='zcs-area-bubble zcs-contact-bubble' id='{id}'>{name}</span>
 		</div>
-	  </tpl>
-	  <div class='zcs-msgHdr-date'>{dateStr}</div>
-	  <div class='zcs-msgHdr-fragment'>{[Ext.String.htmlEncode(values.fragment)]}</div>
+		</tpl>
+		<div class='zcs-msgHdr-date'>{dateStr}</div>
+		<div class='zcs-msgHdr-fragment'>{[Ext.String.htmlEncode(values.fragment)]}</div>
 	</div>
-  </tpl>
+	</tpl>
 </template>
 
 <template id='ExpandedMsgHeader'>
-  <tpl>
+	<tpl>
 	<div class='zcs-mail-msgHdr expanded'>
-	  <div class='zcs-msgHdr-person' style='{imageStyle}'></div>
-	  <tpl for='addrs.FROM'>
-	    <div class='zcs-msgHdr-fromBubble'>
-		  <span class='zcs-area-bubble zcs-contact-bubble' id='{id}'>{name}</span>
+		<div class='zcs-msgHdr-person' style='{imageStyle}'></div>
+		<tpl for='addrs.FROM'>
+		<div class='zcs-msgHdr-fromBubble'>
+			<span class='zcs-area-bubble zcs-contact-bubble' id='{id}'>{name}</span>
 		</div>
-	  </tpl>
-	  <div class='zcs-msgHdr-date'>{dateStr}</div>
-	  <tpl if='recipients'>
+		</tpl>
+		<div class='zcs-msgHdr-date'>{dateStr}</div>
+		<tpl if='recipients'>
 		<div class='zcs-msgHdr-to'>
-		  <span>{[ZtMsg.to]}</span>
-		  <span>{recipients}</span>
+			<span>{[ZtMsg.to]}</span>
+			<span>{recipients}</span>
 		</div>
-	  </tpl>
-	  <div class='zcs-msgHdr-link'>{[ZtMsg.details]}</div>
+		</tpl>
+		<div class='zcs-msgHdr-link'>{[ZtMsg.details]}</div>
 		<a class='x-button-normal x-button x-iconalign-center x-layout-box-item x-stretched zcs-flat zcs-msgHdr-menuButton' onClick='return false;'>
-		  <span class='zcs-msgHeader-menuButton-span x-button-icon arrow_down x-icon-mask'></span>
+			<span class='x-button-icon x-shown arrow_down'></span>
 		</a>
-	  </div>
-	  <tpl if='tags && tags.length'>
-		<div class='zcs-mail-dtlMsgHdr'>
-		  <div class='zcs-msgHdr-field'>
-		    <tpl for='tags'>
-			  <span class='zcs-area-bubble zcs-tag-bubble' id='{id}'>
-			    <div class="zcs-tag-small zcs-tag-{color}" tagName="{name}" <tpl if='rgb'>style='background-color: {rgb};'</tpl>></div>
-			    {displayName}
-			  </span>
-			</tpl>
-		  </div>
 		</div>
-	  </tpl>
+		<tpl if='tags && tags.length'>
+		<div class='zcs-mail-dtlMsgHdr'>
+			<div class='zcs-msgHdr-field'>
+				<tpl for='tags'>
+				<span class='zcs-area-bubble zcs-tag-bubble' id='{id}'>
+					<div class="zcs-tag-small zcs-tag-{color}" tagName="{name}" <tpl if='rgb'>style='background-color: {rgb};'</tpl>></div>
+					{displayName}
+				</span>
+				</tpl>
+			</div>
+		</div>
+		</tpl>
 	</div>
-  </tpl>
+	</tpl>
 </template>
 
 # TODO: Put OBO display into zcs-msgHdr-from element
 
 <template id='DetailedMsgHeader'>
-  <tpl>
+	<tpl>
 	<div class='zcs-mail-msgHdr detailed'>
-	  <div class='zcs-msgHdr-person' style='{imageStyle}'></div>
-	  <tpl for='addrs.FROM'>
-		<div class='zcs-msgHdr-fromBubble'>
-		  <span class='zcs-area-bubble zcs-contact-bubble' id='{id}'>{name}</span>
-		</div>
-	  </tpl>
-	  <tpl for='addrs.FROM'>
-		<div class='zcs-msgHdr-from'>{[ZtMsg.from]} {address}</div>
-	  </tpl>
-	  <div class='zcs-msgHdr-date'>{fullDateStr}</div>
-	  <div class='zcs-msgHdr-link'>{[ZtMsg.hide]}</div>
-	  <a class='x-button-normal x-button x-iconalign-center x-layout-box-item x-stretched zcs-flat zcs-msgHdr-menuButton' onClick='return false;'>
-		<span class='x-button-icon arrow_down x-icon-mask zcs-msgHeader-menuButton-span'></span>
-	  </a>
+		<div class='zcs-msgHdr-person' style='{imageStyle}'></div>
+		<tpl for='addrs.FROM'>
+			<div class='zcs-msgHdr-fromBubble'>
+				<span class='zcs-area-bubble zcs-contact-bubble' id='{id}'>{name}</span>
+			</div>
+		</tpl>
+		<tpl for='addrs.FROM'>
+			<div class='zcs-msgHdr-from'>{[ZtMsg.from]} {address}</div>
+		</tpl>
+		<div class='zcs-msgHdr-date'>{fullDateStr}</div>
+		<div class='zcs-msgHdr-link'>{[ZtMsg.hide]}</div>
+		<a class='x-button-normal x-button x-iconalign-center zcs-flat x-layout-box-item x-stretched zcs-msgHdr-menuButton' onClick='return false;'>
+			<span class='x-button-icon x-shown arrow_down'></span>
+		</a>
 	</div>
 	<tpl if='addrs.TO'>
-	  <div class='zcs-mail-dtlMsgHdr'>
-		<div class='zcs-msgHdr-label'>{[ZtMsg.toHdr]}</div>
-		<div class='zcs-msgHdr-field'>
-		  <tpl for='addrs.TO'>
-	        <span class='zcs-area-bubble zcs-contact-bubble' id='{id}'>{name}</span>
-		  </tpl>
-        </div>
-	  </div>
+		<div class='zcs-mail-dtlMsgHdr'>
+			<div class='zcs-msgHdr-label'>{[ZtMsg.toHdr]}</div>
+			<div class='zcs-msgHdr-field'>
+				<tpl for='addrs.TO'>
+				<span class='zcs-area-bubble zcs-contact-bubble' id='{id}'>{name}</span>
+				</tpl>
+			</div>
+		</div>
 	</tpl>
 	<tpl if='addrs.CC'>
-	  <div class='zcs-mail-dtlMsgHdr'>
-		<div class='zcs-msgHdr-label'>{[ZtMsg.ccHdr]}</div>
-		<div class='zcs-msgHdr-field'>
-		  <tpl for='addrs.CC'>
-		    <span class='zcs-area-bubble zcs-contact-bubble' id='{id}'>{name}</span>
-		  </tpl>
+		<div class='zcs-mail-dtlMsgHdr'>
+			<div class='zcs-msgHdr-label'>{[ZtMsg.ccHdr]}</div>
+			<div class='zcs-msgHdr-field'>
+				<tpl for='addrs.CC'>
+				<span class='zcs-area-bubble zcs-contact-bubble' id='{id}'>{name}</span>
+				</tpl>
+			</div>
 		</div>
-	  </div>
 	</tpl>
 	<tpl if='tags && tags.length'>
-	  <div class='zcs-mail-dtlMsgHdr'>
-		<div class='zcs-msgHdr-label'>{[ZtMsg.tagsHdr]}</div>
-		<div class='zcs-msgHdr-field'>
-	  	  <tpl for='tags'>
-			<span class='zcs-area-bubble zcs-tag-bubble' id='{id}'>
-			  <div class="zcs-tag-small zcs-tag-{color}" tagName="{name}" <tpl if='rgb'>style='background-color: {rgb};'</tpl>></div>
-			  {displayName}
-			</span>
-		  </tpl>
+		<div class='zcs-mail-dtlMsgHdr'>
+			<div class='zcs-msgHdr-label'>{[ZtMsg.tagsHdr]}</div>
+			<div class='zcs-msgHdr-field'>
+				<tpl for='tags'>
+				<span class='zcs-area-bubble zcs-tag-bubble' id='{id}'>
+					<div class="zcs-tag-small zcs-tag-{color}" tagName="{name}" <tpl if='rgb'>style='background-color: {rgb};'</tpl>></div>
+					{displayName}
+				</span>
+			</tpl>
 		</div>
-	  </div>
+		</div>
 	</tpl>
-  </tpl>
+	</tpl>
 </template>
 
 <template id='ContactListItem'>
 	<div class='zcs-contactListItem'>
 		<div class='zcs-contactList-person' <tpl if='imageUrl'>style='background-image:url({imageUrl})'</tpl>></div>
 		<div class='zcs-contactList-text'>
-            <tpl if='lastName || firstName'>
-			    <div class='zcs-contactList-name'>{lastName}<tpl if='lastName && firstName'>, </tpl>{firstName}</div>
-            </tpl>
-            <tpl if='nickname'>
-                <div class='zcs-contactList-name'>{nickname}</div>
-            </tpl>
-			<tpl if='jobTitle || company'>
-				<div class='zcs-contactList-title'>{jobTitle}<tpl if='jobTitle && company'>, </tpl>{company}</div>
-			</tpl>
+		<tpl if='lastName || firstName'>
+		<div class='zcs-contactList-name'>{lastName}<tpl if='lastName && firstName'>, </tpl>{firstName}</div>
+		</tpl>
+		<tpl if='nickname'>
+		<div class='zcs-contactList-name'>{nickname}</div>
+		</tpl>
+		<tpl if='jobTitle || company'>
+		<div class='zcs-contactList-title'>{jobTitle}<tpl if='jobTitle && company'>, </tpl>{company}</div>
+		</tpl>
 		</div>
 	</div>
 </template>
@@ -210,18 +210,18 @@
 			<div class='zcs-contactview-fieldSet'>
 				<div class='zcs-contactview-label'>{[ZtMsg.phone]}</div>
 				<div class='zcs-contactview-fields'>
-						<tpl for='mobilePhoneFields'>
-							 <div class='zcs-contactview-field'>{.}</div>
-							 <div class='zcs-contactview-subLabel'>{[ZtMsg.mobile]}</div>
-						</tpl>
-						<tpl for='workPhoneFields'>
-							 <div class='zcs-contactview-field'>{.}</div>
-							 <div class='zcs-contactview-subLabel'>{[ZtMsg.work]}</div>
-						</tpl>
-						<tpl for='otherPhoneFields'>
-							 <div class='zcs-contactview-field'>{.}</div>
-							 <div class='zcs-contactview-subLabel'>{[ZtMsg.other]}</div>
-						</tpl>
+					<tpl for='mobilePhoneFields'>
+					<div class='zcs-contactview-field'>{.}</div>
+					 <div class='zcs-contactview-subLabel'>{[ZtMsg.mobile]}</div>
+					</tpl>
+					<tpl for='workPhoneFields'>
+					<div class='zcs-contactview-field'>{.}</div>
+					<div class='zcs-contactview-subLabel'>{[ZtMsg.work]}</div>
+					</tpl>
+					<tpl for='otherPhoneFields'>
+					 <div class='zcs-contactview-field'>{.}</div>
+					 <div class='zcs-contactview-subLabel'>{[ZtMsg.other]}</div>
+					</tpl>
 				</div>
 			</div>
 			</tpl>
@@ -233,7 +233,7 @@
 					<div class='zcs-contactview-field'>
 						<tpl for='homeStreetFields'>{% if (xindex > 1) break; %}<span class='zcs-newLine'>{.}</span></tpl>
 						<tpl for='homeCityFields'>{% if (xindex > 1) break; %}<span class='zcs-newLine'>{.}</span></tpl>
-					    <tpl for='homeStateFields'>{% if (xindex > 1) break; %}<span class='zcs-newLine'>{.}</span></tpl>
+						<tpl for='homeStateFields'>{% if (xindex > 1) break; %}<span class='zcs-newLine'>{.}</span></tpl>
 						<tpl for='homePostalCodeFields'>{% if (xindex > 1) break; %}<span class='zcs-newLine'>{.}</span></tpl>
 						<tpl for='homeCountryFields'>{% if (xindex > 1) break; %}<span class='zcs-newLine'>{.}</span></tpl>
 					</div>
@@ -266,43 +266,43 @@
 			<div class='zcs-contactview-fieldSet'>
 				<div class='zcs-contactview-label'>{[ZtMsg.url]}</div>
 				<div class='zcs-contactview-fields'>
-						<tpl for='homeURLFields'>
-							 <div class='zcs-contactview-field'>{.}</div>
-							 <div class='zcs-contactview-subLabel'>{[ZtMsg.home]}</div>
-						</tpl>
-						<tpl for='workURLFields'>
-							 <div class='zcs-contactview-field'>{.}</div>
-							 <div class='zcs-contactview-subLabel'>{[ZtMsg.work]}</div>
-						</tpl>
-						<tpl for='otherURLFields'>
-							 <div class='zcs-contactview-field'>{.}</div>
-							 <div class='zcs-contactview-subLabel'>{[ZtMsg.other]}</div>
-						</tpl>
+					<tpl for='homeURLFields'>
+					<div class='zcs-contactview-field'>{.}</div>
+					<div class='zcs-contactview-subLabel'>{[ZtMsg.home]}</div>
+					</tpl>
+					<tpl for='workURLFields'>
+					<div class='zcs-contactview-field'>{.}</div>
+					<div class='zcs-contactview-subLabel'>{[ZtMsg.work]}</div>
+					</tpl>
+					<tpl for='otherURLFields'>
+					<div class='zcs-contactview-field'>{.}</div>
+					<div class='zcs-contactview-subLabel'>{[ZtMsg.other]}</div>
+					</tpl>
 				</div>
 			</div>
 			</tpl>
 		</div>
-    <tpl else>
-        <div class='zcs-contactgroupview-header'>
-            <div class='zcs-contactgroupview-image' style='{imageStyle}'></div>
-            <div class='zcs-contactgroupview-personalInfo'>
-                <span name="contactname">{displayName}</span>
-            </div>
-        </div>
-        <div class='zcs-floatLeft' style='width: 100%'>
-        <tpl for='groupMembers'>
-            <div class='zcs-floatLeft zcs-contact-groups'>
-                <div class='zcs-floatLeft zcs-contact-image' <tpl if='imageUrl'>style='background-image:url({imageUrl})'</tpl>></div>
-                <div class='zcs-floatLeft zcs-contact-grpitem'>
-                    <span name="contactname"><tpl if='fullName'>{fullName}<tpl else>{lastName}</tpl><tpl if='lastName && firstName'>, {firstName}</tpl></span>
-                    <span>{jobTitle}</span>
-                    <tpl for='emailFields'>{% if (xindex > 1) break; %}<span class='zcs-newLine'>{.}</span></tpl>
-                    <tpl for='workPhoneFields'>{% if (xindex > 1) break; %}<span class='zcs-newLine'>{.}</span></tpl>
-                </div>
-            </div>
-        </tpl>
-        </div>
-    </tpl>
+		<tpl else>
+			<div class='zcs-contactgroupview-header'>
+				<div class='zcs-contactgroupview-image' style='{imageStyle}'></div>
+				<div class='zcs-contactgroupview-personalInfo'>
+					<span name="contactname">{displayName}</span>
+				</div>
+			</div>
+			<div class='zcs-floatLeft' style='width: 100%'>
+				<tpl for='groupMembers'>
+				<div class='zcs-floatLeft zcs-contact-groups'>
+					<div class='zcs-floatLeft zcs-contact-image' <tpl if='imageUrl'>style='background-image:url({imageUrl})'</tpl>></div>
+					<div class='zcs-floatLeft zcs-contact-grpitem'>
+						<span name="contactname"><tpl if='fullName'>{fullName}<tpl else>{lastName}</tpl><tpl if='lastName && firstName'>, {firstName}</tpl></span>
+						<span>{jobTitle}</span>
+						<tpl for='emailFields'>{% if (xindex > 1) break; %}<span class='zcs-newLine'>{.}</span></tpl>
+						<tpl for='workPhoneFields'>{% if (xindex > 1) break; %}<span class='zcs-newLine'>{.}</span></tpl>
+					</div>
+				</div>
+				</tpl>
+			</div>
+		</tpl>
 </template>
 
 #widgets/_assignmentview.scss
@@ -376,14 +376,14 @@
 				<td>{myResponse}</td>
 			</tr>
 			</tpl>
-            <tr class='zcs-invite-buttons'>
-                <td class='zcs-invite-label'>{[ZtMsg.invRespondLabel]}</td>
-                <td>
-                    <span class='zcs-invite-button zcs-invite-accept' id='{acceptButtonId}'>{[ZtMsg.accept]}</span>
-                    <span class='zcs-invite-button zcs-invite-tentative' id='{tentativeButtonId}'>{[ZtMsg.tentative]}</span>
-                    <span class='zcs-invite-button zcs-invite-decline' id='{declineButtonId}'>{[ZtMsg.decline]}</span>
-                </td>
-            </tr>
+			<tr class='zcs-invite-buttons'>
+				<td class='zcs-invite-label'>{[ZtMsg.invRespondLabel]}</td>
+				<td>
+					<span class='zcs-invite-button zcs-invite-accept' id='{acceptButtonId}'>{[ZtMsg.accept]}</span>
+					<span class='zcs-invite-button zcs-invite-tentative' id='{tentativeButtonId}'>{[ZtMsg.tentative]}</span>
+					<span class='zcs-invite-button zcs-invite-decline' id='{declineButtonId}'>{[ZtMsg.decline]}</span>
+				</td>
+			</tr>
 			<tpl if='intendedFor'>
 			<tr>
 				<td class='zcs-invite-label'>{[ZtMsg.invIntendedFor]}</td>

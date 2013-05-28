@@ -18,7 +18,7 @@ $contactBkgdColor: $white;
 
 $contactListHeight: 3.6em;  /* estimated */
 $contactListImageSize: 2.2em;
-$contactImageSize: 7.2em;
+$contactImageSize: 7.0em;
 $contactStdMargin: 0.7em;
 $contactTopOffset: 0.5em;
 $contactListImageTopOffset: $contactListHeight/2 - $contactListImageSize/2;
@@ -172,14 +172,18 @@ $contactFieldWidth: 18em;
 }
 
 /*Create Contact Classes*/
+
+$contactBorderColor: #E3E3E3;
+
 .zcs-contact-image {
     @extend .zcs-contact-person;
 	height: $contactImageSize;
+	margin: 3px auto auto;
     width: $contactImageSize;
 }
 
 .zcs-contact-personalinfo {
-	width:80%;
+	width: 80%;
 }
 
 .zcs-contact-formline {
@@ -192,30 +196,42 @@ $contactFieldWidth: 18em;
 	background-image: none;
 
 	.x-form-inner {
+	@extend .zcs-contact-formline;
 
-		.x-field {
-			@extend .zcs-contact-formline;
-		}
-		.x-form-label {
+		.zcs-contact-label {
+			background-color: #F7F7F7;
+			padding: 12px;  /*.65em*/
 			text-align: right;
+		}
+		.x-button.zcs-contact-addremove {
+			background-color: white;
+			color: $linkColor;
+			font-size: .7em;
+
+			&:active {
+				background-color: $light-grey;
+			}
 		}
 	}
 }
 
-.zcs-contact-imgborder {
-    border: solid #E3E3E3;
-    border-width: 0 1px 1px 0;
+.zcsContactField {
+	border: solid $contactBorderColor;
+	border-width: 0 0 1px;
 }
 
-.zcs-contact-spacer {
-    border: solid #E3E3E3;
-    border-width: 0 0 1px 0;
-}
-
+.zcs-contact-imgborder,
+.zcs-contact-spacer,
 .zcs-contact-addremove {
-    border: solid #E3E3E3 !important;
-    border-width: 0 0 1px 0 !important;
-    border-radius: 0;
+	@extend .zcsContactField;
+}
+
+.x-webkit .x-layout-box.x-vertical>.x-layout-box-item.x-flexed.zcs-contact-spacer {
+	height: 15px !important;
+	width: 100% !important;
+}
+.zcs-contact-addremove {
+	@include border-radius(0);
 }
 
 /*Contact group classes*/

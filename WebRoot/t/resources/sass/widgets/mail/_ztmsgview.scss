@@ -118,7 +118,7 @@ $msgHdrButtonTopOffset: $msgHdrButtonDelta;
 
 .zcs-msgHdr-link {
 	@extend .zcs-msgHdr-element;
-    @extend .zcs-link;
+	@extend .zcs-link;
 	top: $msgHdrTopOffset2;
 	right: $msgHdrRightIndent;
 	//padded out the size to increase the touch target area
@@ -153,20 +153,16 @@ $msgHdrButtonTopOffset: $msgHdrButtonDelta;
 
 .x-button.zcs-msgHdr-menuButton {
 	@extend .zcs-msgHdr-element;
+	color: rgba(0,0,0,.25);;
+	font-size: 1.2em;
 	right: .25em;
 	top: $msgHdrStdMargin;
-	font-size: 1.4em;
-
-	//border-width: 0;
-	//display: block;
 
 	&:active {
-		background-color: rgba(0,0,0,.25);
+		background-color: (0,0,0,.15);
+		color: rgba(0,0,0,.5);
 	}
 
-	.x-button-icon.x-icon-mask {
-		background-color: #999;
-	}
 }
 
 /* END MSG HEADER */
@@ -180,7 +176,7 @@ $msgHdrButtonTopOffset: $msgHdrButtonDelta;
 
 .zcs-msg-body-text {
 	font-size: 1.1em;
-    font-family: monospace;
+	font-family: monospace;
 	word-wrap: break-word;
 	-webkit-user-select: text;
 }
@@ -207,22 +203,23 @@ $infoColor: #FF9;
 
 //spaces the labels and buttons while assignment view
 .zcs-invite {
-  TD {
-    padding-top: 0.5em;
-    padding-right: 1em;
-  }
+
+	TD {
+	padding-top: 0.5em;
+	padding-right: 1em;
+	}
 }
 
 //space for notes section while assignment view
 .zcs-invite-notes {
-  padding: 1em 0 0 0;
+	padding: 1em 0 0 0;
 }
 
 //spaces it from upper elements to make the buttons easier to hit
 .zcs-invite-buttons {
 	TD {
 		padding-top: 1em;
-        padding-right: 1em;
+		padding-right: 1em;
 	}
 }
 

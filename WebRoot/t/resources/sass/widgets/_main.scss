@@ -33,9 +33,8 @@
 .zcs-main-tabs {
 	@include tabbar-button(darken($toolbar-base-color, 5%), $toolbar-gradient);
 
-	.x-button-icon.x-icon-mask {
-		background-color: #E5E5E5;
-		background-image: none;
+	.settings {
+		color: #E5E5E5;
 	}
 }
 

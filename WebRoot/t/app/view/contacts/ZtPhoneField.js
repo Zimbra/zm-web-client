@@ -30,11 +30,7 @@ Ext.define('ZCS.view.contacts.ZtPhoneField', {
         {
             xtype: 'label',
             html: '',
-            style: {
-                'text-align': 'right',
-                'padding': '12px',
-                'background-color': '#f7f7f7'
-            },
+            cls: 'zcs-contact-label',
             width: '20%'
         },
         {
@@ -63,7 +59,7 @@ Ext.define('ZCS.view.contacts.ZtPhoneField', {
                             },
                             {
                                 xtype: 'button',
-                                iconCls: 'add1',
+                                iconCls: 'plus',
                                 itemId: 'btnAddPhone',
                                 width: '7%',
                                 iconMask: true,
@@ -72,7 +68,7 @@ Ext.define('ZCS.view.contacts.ZtPhoneField', {
                             },
                             {
                                 xtype: 'button',
-                                iconCls: 'minus2',
+                                iconCls: 'minus',
                                 itemId: 'btnRemovePhone',
                                 width: '7%',
                                 iconMask: true,

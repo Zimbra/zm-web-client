@@ -29,11 +29,7 @@ Ext.define('ZCS.view.contacts.ZtUrlField', {
         items:[
             {
                 xtype: 'label',
-                style: {
-                    'text-align': 'right',
-                    'padding': '12px',
-                    'background-color': '#f7f7f7'
-                },
+                cls: 'zcs-contact-label',
                 width: '20%'
             },
             {
@@ -61,7 +57,7 @@ Ext.define('ZCS.view.contacts.ZtUrlField', {
                             },
                             {
                                 xtype: 'button',
-                                iconCls: 'add1',
+                                iconCls: 'plus',
                                 itemId: 'btnAddUrl',
                                 width: '7%',
                                 iconMask: true,
@@ -70,7 +66,7 @@ Ext.define('ZCS.view.contacts.ZtUrlField', {
                             },
                             {
                                 xtype: 'button',
-                                iconCls: 'minus2',
+                                iconCls: 'minus',
                                 itemId: 'btnRemoveUrl',
                                 width: '7%',
                                 iconMask: true,

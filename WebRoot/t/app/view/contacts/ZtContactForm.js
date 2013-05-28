@@ -254,8 +254,6 @@ Ext.define('ZCS.view.contacts.ZtContactForm', {
                     },
                     {
                         xtype:'spacer',
-                        height: 15,
-                        width: '100%',
                         cls: 'zcs-contact-spacer'
                     },
                     {
@@ -266,8 +264,6 @@ Ext.define('ZCS.view.contacts.ZtContactForm', {
                     },
                     {
                         xtype:'spacer',
-                        height: 15,
-                        width: '100%',
                         cls: 'zcs-contact-spacer'
                     },
                     {
@@ -278,8 +274,6 @@ Ext.define('ZCS.view.contacts.ZtContactForm', {
                     },
                     {
                         xtype:'spacer',
-                        height: 15,
-                        width: '100%',
                         cls: 'zcs-contact-spacer'
                     },
                     {
@@ -289,9 +283,7 @@ Ext.define('ZCS.view.contacts.ZtContactForm', {
                     },
                     {
                         xtype:'spacer',
-                        height: 15,
-                        width: '100%',
-                       cls: 'zcs-contact-spacer'
+                        cls: 'zcs-contact-spacer'
                     },
                     {
                         //url

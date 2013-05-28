@@ -28,11 +28,7 @@ Ext.define('ZCS.view.contacts.ZtAddrField', {
             {
                 xtype: 'label',
                 html: ZtMsg.address,
-                style: {
-                    'text-align': 'right',
-                    'padding-right': '12px',
-                    'background-color': '#f7f7f7'
-                },
+                cls: 'zcs-contact-label',
                 width: '20%'
             },
             {
@@ -61,7 +57,7 @@ Ext.define('ZCS.view.contacts.ZtAddrField', {
                             },
                             {
                                 xtype: 'button',
-                                iconCls: 'add1',
+                                iconCls: 'plus',
                                 itemId: 'btnAddAddr',
                                 width: '7%',
                                 iconMask: true,
@@ -70,7 +66,7 @@ Ext.define('ZCS.view.contacts.ZtAddrField', {
                             },
                             {
                                 xtype: 'button',
-                                iconCls: 'minus2',
+                                iconCls: 'minus',
                                 itemId: 'btnRemoveAddr',
                                 width: '7%',
                                 iconMask: true,
