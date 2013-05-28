@@ -572,9 +572,9 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
                 otherUrl.push(urlValue);
             }
         }
-        contact.set('homeUrlFields', homeUrl);
-        contact.set('workUrlFields', workUrl);
-        contact.set('otherUrlFields', otherUrl);
+        contact.set('homeURLFields', homeUrl);
+        contact.set('workURLFields', workUrl);
+        contact.set('otherURLFields', otherUrl);
 
         //Addresses
         addrs = this.populateAddressFields(values);
