@@ -133,8 +133,7 @@ ZCS.constant.ITEM_BUTTONS[ZCS.constant.APP_MAIL]        = [
 ];
 ZCS.constant.ITEM_BUTTONS[ZCS.constant.APP_CONTACTS]    = [
     { op: ZCS.constant.OP_EDIT,     icon: 'compose1',     event: 'edit' },
-	{ op: ZCS.constant.OP_DELETE,   icon: 'trash',        event: 'delete' },
-	{ op: ZCS.constant.OP_MENU,     icon: 'arrow_down',   event: 'showMenu', menuName: ZCS.constant.MENU_CONTACT }
+	{ op: ZCS.constant.OP_DELETE,   icon: 'trash',        event: 'delete' }
 ];
 
 // Display states for a message view header

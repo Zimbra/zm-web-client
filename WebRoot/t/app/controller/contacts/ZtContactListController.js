@@ -56,7 +56,39 @@ Ext.define('ZCS.controller.contacts.ZtContactListController', {
 		app: ZCS.constant.APP_CONTACTS
 	},
 
-	// TODO: launch happens on startup; delay load until Contacts tab shown
+    launch: function() {
+        this.callParent(arguments);
+        ZCS.app.on('notifyContactlistCreate', this.handleCreateNotification, this);
+    },
+
+    /**
+     * Handle a newly created contact. Add it to view if is is in the currently viewed folder.
+     */
+    handleCreateNotification: function(item, create) {
+        var curFolder = ZCS.session.getCurrentSearchOrganizer(),
+            curFolderId = curFolder && curFolder.get('itemId'),
+            doAdd = false,
+            creates = create.creates,
+            ln = creates && creates.cn ? creates.cn.length : 0,
+            contactCreate, i;
+
+        for (i = 0; i < ln; i++) {
+            contactCreate = creates.cn[i];
+            if (contactCreate.id === create.id && contactCreate.l === curFolderId) {
+                doAdd = true;
+                break;
+            }
+        }
+
+        var reader = ZCS.model.contacts.ZtContactList.getProxy().getReader(),
+            data = reader.getDataFromNode(create),
+            store = this.getStore(),
+            contact= new ZCS.model.contacts.ZtContactList(data, create.id);
+
+        if (doAdd) {
+            store.insert(0, [contact]);
+        }
+    },
 
 	getItemController: function() {
         return ZCS.app.getContactController();
@@ -68,6 +100,25 @@ Ext.define('ZCS.controller.contacts.ZtContactListController', {
 
 	doNewContact: function() {
         this.getItemController().showContactForm();
-	}
+	},
+
+    /**
+     * Removes the contact from the store and updates the list view
+     */
+    removeContact: function(contact) {
+        var list = this.getListView(),
+            contactStore = list.getStore(),
+            currentIndex = contactStore.indexOf(contact),
+            toSelect;
+
+        contactStore.remove(contact);
+        toSelect = contactStore.getAt(currentIndex);
+        if (toSelect) {
+            list.select(toSelect, false);
+        }
+        else {
+            this.getItemController().clear();
+        }
+    }
 
 });
