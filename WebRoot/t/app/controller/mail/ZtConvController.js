@@ -77,6 +77,12 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 		ZCS.app.on('notifyConversationChange', this.handleConvChange, this);
 		ZCS.app.on('rerenderMessages', this.renderMessages, this);
 
+		ZCS.app.on('messageSent', function(isDraft) {
+			if (isDraft) {
+				this.clear();
+			}
+		}, this);
+
 		this.getStore().on('addrecords', this.onAddRecords, this);
 
 		var quickReplyTextarea = this.getQuickReplyTextarea();

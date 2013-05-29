@@ -406,6 +406,7 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 		msg.save({
 			success: function() {
 				ZCS.app.fireEvent('showToast', ZtMsg.messageSent);
+				ZCS.app.fireEvent('messageSent', this.getDraftId() != null);
 				if (callback) {
 					callback.apply(scope);
 				}
