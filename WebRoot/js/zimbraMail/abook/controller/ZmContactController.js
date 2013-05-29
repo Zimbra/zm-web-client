@@ -304,10 +304,18 @@ function(view, bPageForward) {
 ZmContactController.prototype._resetOperations =
 function(parent, num) {
 	if (!parent) return;
-	if (this._contact.id == undefined || this._contact.isGal) {
+	if (!this._contact.id) {
 		// disble all buttons except SAVE and CANCEL
 		parent.enableAll(false);
 		parent.enable([ZmOperation.SAVE, ZmOperation.CANCEL], true);
+	}
+	else if (this._contact.isGal) {
+		//GAL item or DL.
+		parent.enableAll(false);
+		parent.enable([ZmOperation.SAVE, ZmOperation.CANCEL], true);
+		//for editing a GAL contact - need to check special case for DLs that are owned by current user and if current user has permission to delete on this domain.
+		var deleteAllowed = ZmContactList.deleteGalItemsAllowed([this._contact]);
+		parent.enable(ZmOperation.DELETE, deleteAllowed);
 	} else if (this._contact.isReadOnly()) {
 		parent.enableAll(true);
 		parent.enable(ZmOperation.TAG_MENU, false);
@@ -475,6 +483,10 @@ function(ev) {
 ZmContactController.prototype._doDelete =
 function(items, hardDelete, attrs, skipPostProcessing) {
 	ZmListController.prototype._doDelete.call(this, items, hardDelete, attrs);
+	if (items.isDistributionList()) { //items === this._contact here
+		//do not pop the view as we are not sure the user will confirm the hard delete
+		return;
+	}
 	appCtxt.getApp(ZmApp.CONTACTS).updateIdHash(items, true);
 
 	if (!skipPostProcessing) {

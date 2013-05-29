@@ -664,6 +664,12 @@ function(items, confirmDelete) {
 
 ZmContactList.prototype._deleteDlsResponseHandler =
 function(items) {
+	if (appCtxt.getCurrentView().isZmGroupView) {
+		//this is the case we were editing the DL (different than viewing it in the DL list, in which case it's the contactListController).
+		//so we now need to pop up the view.
+		this.controller.popView();
+	}
+
 	appCtxt.setStatusMsg(items.length == 1 ? ZmMsg.dlDeleted : ZmMsg.dlsDeleted);
 
 	for (var i = 0; i < items.length; i++) {

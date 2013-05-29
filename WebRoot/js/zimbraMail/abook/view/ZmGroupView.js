@@ -58,6 +58,8 @@ ZmGroupView = function(parent, controller) {
 
 ZmGroupView.prototype = new DwtComposite;
 ZmGroupView.prototype.constructor = ZmGroupView;
+ZmGroupView.prototype.isZmGroupView = true;
+
 
 /**
  * Returns a string representation of the object.
