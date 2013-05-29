@@ -80,7 +80,7 @@ Ext.define('ZCS.model.mail.ZtInvite', {
 			var	start = comp.s && comp.s[0],
 				end = comp.e && comp.e[0],
 				organizer = ZCS.model.mail.ZtEmailAddress.fromInviteNode(comp.or),
-                defaultTz = ZCS.timezone.getServerId(ZCS.constant.DEFAULT_TZ),
+                defaultTz = ZCS.timezone.getServerId(ZCS.timezone.DEFAULT_TZ),
                 timezone = ZCS.timezone.getMediumName(defaultTz);
 
 			// Use HTML description if available

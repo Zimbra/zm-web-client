@@ -325,7 +325,7 @@
 			</tr>
 			<tr>
 				<td class='zcs-invite-label'>{[ZtMsg.invEndLabel]}</td>
-				<td>{end}&nbsp;<span style='font-size: 0.75em;'>({timezone})</span></td>
+				<td>{end}&nbsp;</td>
 			</tr>
 			</tpl>
 			<tpl if='location'>
@@ -338,7 +338,7 @@
 			<tr>
 				<td class='zcs-invite-label'>{[ZtMsg.invOrganizerLabel]}</td>
 				<td>
-					<span class='zcs-area-bubble zcs-contact-bubble' id='{organizer.id}'>{organizer.displayName}</span>
+					<span class='zcs-area-bubble zcs-contact-bubble' id='{organizer.id}'>{organizer.name}</span>
 				</td>
 			</tr>
 			</tpl>
@@ -346,7 +346,7 @@
 			<tr>
 				<td class='zcs-invite-label'>{[ZtMsg.invSentByLabel]}</td>
 				<td>
-					<span class='zcs-area-bubble zcs-contact-bubble' id='{sentBy.id}'>{sentBy.displayName}</span>
+					<span class='zcs-area-bubble zcs-contact-bubble' id='{sentBy.id}'>{sentBy.name}</span>
 				</td>
 			</tr>
 			</tpl>
@@ -355,7 +355,7 @@
 				<td class='zcs-invite-label'>{[ZtMsg.invAttendeesLabel]}</td>
 				<td>
 				<tpl for='attendees'>
-					<span class='zcs-area-bubble zcs-contact-bubble' id='{id}'>{displayName}</span>
+					<span class='zcs-area-bubble zcs-contact-bubble' id='{id}'>{name}</span>
 				</tpl>
 				</td>
 			</tr>
@@ -365,7 +365,7 @@
 				<td class='zcs-invite-label'>{[ZtMsg.invOptionalAttendeesLabel]}</td>
 				<td>
 				<tpl for='attendees'>
-					<span class='zcs-area-bubble zcs-contact-bubble' id='{id}'>{displayName}</span>
+					<span class='zcs-area-bubble zcs-contact-bubble' id='{id}'>{name}</span>
 				</tpl>
 				</td>
 			</tr>

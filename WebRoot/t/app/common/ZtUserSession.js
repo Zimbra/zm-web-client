@@ -41,10 +41,6 @@ Ext.define('ZCS.common.ZtUserSession', {
 		version:                '[unknown]'
 	},
 
-	statics: {
-		msgBodyCss: ''
-	},
-
 	initSession: function(data) {
 
 		this.setDebugLevel(data.debugLevel);

@@ -26,10 +26,6 @@ Ext.define('ZCS.common.ZtTimezone', {
 
     alternateClassName: 'ZCS.timezone',
 
-    statics: {
-        AUTO_DETECTED: "Auto-Detected"
-    },
-
     /**
      * @adapts AjxTimezone.addWkDayTransition
      */
@@ -61,14 +57,14 @@ Ext.define('ZCS.common.ZtTimezone', {
      * @adapts AjxTimezone.getServerId
      */
     getServerId: function(clientId) {
-        return ZCS.constant.CLIENT_2_SERVER[clientId] || clientId;
+        return ZCS.timezone.SERVER_RULE[clientId] || clientId;
     },
 
     /**
      * @adapts AjxTimezone.getClientId
      */
     getClientId: function(serverId) {
-        return ZCS.constant.SERVER_2_CLIENT[serverId] || serverId;
+        return ZCS.timezone.CLIENT_RULE[serverId] || serverId;
     },
 
     /**
@@ -81,7 +77,7 @@ Ext.define('ZCS.common.ZtTimezone', {
             return rule.shortName;
         }
 
-        var generatedShortName = ["GMT", ZCS.constant.SHORT_NAMES[clientId]].join("");
+        var generatedShortName = ["GMT", ZCS.timezone.SHORT_NAMES[clientId]].join("");
 
         if (rule) {
             rule.shortName = generatedShortName;
@@ -116,15 +112,15 @@ Ext.define('ZCS.common.ZtTimezone', {
         var serverId = rule.serverId,
             clientId = rule.clientId;
 
-        ZCS.constant.CLIENT_2_SERVER[clientId] = serverId;
+        ZCS.timezone.SERVER_RULE[clientId] = serverId;
 
-        ZCS.constant.SERVER_2_CLIENT[serverId] = clientId;
+        ZCS.timezone.CLIENT_RULE[serverId] = clientId;
 
-        ZCS.constant.SHORT_NAMES[clientId] = this.generateShortName(rule.standard.offset);
+        ZCS.timezone.SHORT_NAMES[clientId] = this.generateShortName(rule.standard.offset);
 
-        ZCS.constant.CLIENT_2_RULE[clientId] = rule;
+        ZCS.timezone.RULE[clientId] = rule;
 
-        var array = rule.daylight ? ZCS.constant.DAYLIGHT_RULES : ZCS.constant.STANDARD_RULES;
+        var array = rule.daylight ? ZCS.timezone.DAYLIGHT_RULES : ZCS.timezone.STANDARD_RULES;
 
         array.push(rule);
     },
@@ -133,18 +129,19 @@ Ext.define('ZCS.common.ZtTimezone', {
      * @adapts AjxTimezone.getRule
      */
     getRule: function(clientId, tz) {
-        var rule = ZCS.constant.CLIENT_2_RULE[clientId];
+
+        var rule = ZCS.timezone.RULE[clientId];
 
         if (!rule) {
             // try to find the rule treating the clientId as the serverId
-            clientId = ZCS.constant.SERVER_2_CLIENT[clientId];
+            clientId = ZCS.timezone.CLIENT_RULE[clientId];
 
-            rule = ZCS.constant.CLIENT_2_RULE[clientId];
+            rule = ZCS.timezone.RULE[clientId];
         }
 
         if (!rule && tz) {
             var names = [ "standard", "daylight" ],
-                rules = tz.daylight ? ZCS.constant.DAYLIGHT_RULES : ZCS.constant.STANDARD_RULES,
+                rules = tz.daylight ? ZCS.timezone.DAYLIGHT_RULES : ZCS.timezone.STANDARD_RULES,
                 i, j;
 
             for (i = 0; i < rules.length; i++) {
@@ -209,10 +206,10 @@ Ext.define('ZCS.common.ZtTimezone', {
      * @adapts AjxTimezone._guessMachineTimezone
      */
     guessMachineTimezone: function(timezonePreference) {
-        var dec1 = new Date(ZCSTimezoneData.TRANSITION_YEAR, 11, 1, 0, 0, 0),
-            jun1 = new Date(ZCSTimezoneData.TRANSITION_YEAR, 5, 1, 0, 0, 0),
+        var dec1 = new Date(ZCS.constant.TZ_TRANSITION_YEAR, 11, 1, 0, 0, 0),
+            jun1 = new Date(ZCS.constant.TZ_TRANSITION_YEAR, 5, 1, 0, 0, 0),
             dec1offset = -dec1.getTimezoneOffset(),
-            jun1offset = -jun1.getTimezoneOffset();
+            jun1offset = -jun1.getTimezoneOffset(),
             matchingRules = [],
             matchingRulesMap = {},
             offsetMatchingRules = [],
@@ -224,7 +221,7 @@ Ext.define('ZCS.common.ZtTimezone', {
         // if the offset for jun is the same as the offset in december,
         // then we have a timezone that doesn't deal with daylight savings.
         if (jun1offset == dec1offset) {
-            var rules = ZCS.constant.STANDARD_RULES;
+            var rules = ZCS.timezone.STANDARD_RULES;
 
             for (var i = 0, ruleLen = rules.length; i < rules.length ; ++i ) {
                 var rule = rules[i];
@@ -242,7 +239,7 @@ Ext.define('ZCS.common.ZtTimezone', {
 
         // we need to find a rule that matches both offsets
         else {
-            var rules = ZCS.constant.DAYLIGHT_RULES,
+            var rules = ZCS.timezone.DAYLIGHT_RULES,
                 dst = Math.max(dec1offset, jun1offset),
                 std = Math.min(dec1offset, jun1offset),
                 now = new Date(),
@@ -483,18 +480,15 @@ Ext.define('ZCS.common.ZtTimezone', {
         return [sign, hours, period ? "." : "", minutes].join("");
     }
 },
-    function() {
-        //Timezone data object and the data
-        //TODO: Get this data from servlet as per Conrad's suggestion
+    function(thisClass) {
+
+        // Timezone data object and the data
+        // TODO: Get this data from servlet as per Conrad's suggestion
 
         /*
          * @adapts AjxTimezoneData
          */
-        ZCSTimezoneData = {};
-
-        ZCSTimezoneData.TRANSITION_YEAR = 2011;
-
-        ZCSTimezoneData.TIMEZONE_RULES = [
+        var rules = [
             { serverId: "Etc/GMT+12", clientId: "Etc/GMT+12", score: 100,  standard: { offset: -720, tzname: "GMT+12" } },
             { serverId: "Pacific/Midway", clientId: "Pacific/Midway", score: 100,  standard: { offset: -660, tzname: "SST" } },
             { serverId: "Pacific/Honolulu", clientId: "Pacific/Honolulu", score: 200,  standard: { offset: -600, tzname: "HST" } },
@@ -736,21 +730,24 @@ Ext.define('ZCS.common.ZtTimezone', {
             { serverId: "Pacific/Tongatapu", clientId: "Pacific/Tongatapu", score: 100,  standard: { offset: 780 } }
         ];
 
-        for (var i = 0; i < ZCSTimezoneData.TIMEZONE_RULES.length; i++) {
-            var rule = ZCSTimezoneData.TIMEZONE_RULES[i],
-                array = rule.daylight ? ZCS.constant.DAYLIGHT_RULES : ZCS.constant.STANDARD_RULES;
+	    thisClass.STANDARD_RULES = [];
+	    thisClass.DAYLIGHT_RULES = [];
 
-            if(array) {
-                array.push(rule);
-            }
-        }
+	    thisClass.SERVER_RULE = {};     // server ID from client ID
+	    thisClass.CLIENT_RULE = {};     // client ID from server ID
 
-        ZCSTimezoneData.TIMEZONE_RULES.sort(ZCS.timezone.byOffset);
+	    thisClass.RULE = {};            // rule from client ID
 
-        for (var j = 0; j < ZCSTimezoneData.TIMEZONE_RULES.length; j++) {
-            var rule = ZCSTimezoneData.TIMEZONE_RULES[j];
+	    thisClass.SHORT_NAMES = {};
 
-            this.addRule(rule);
-        }
+	    thisClass.AUTO_DETECTED = 'Auto-Detected';
+
+	    rules.sort(thisClass.byOffset);
+	    Ext.each(rules, function(rule) {
+	        this.addRule(rule);
+        }, this);
+
+	    var defaultRule = thisClass.guessMachineTimezone();
+	    thisClass.DEFAULT_TZ = ZCS.timezone.getClientId(defaultRule.serverId);
     }
 );

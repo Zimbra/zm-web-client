@@ -642,22 +642,5 @@ ZCS.constant.IS_FATAL_ERROR = ZCS.util.arrayAsLookupHash([
 	'service.AUTH_EXPIRED'
 ]);
 
-//Timezone constants
-
-ZCS.constant.AUTO_DETECTED = "Auto-Detected";
-
-ZCS.constant.CLIENT_2_SERVER = {};
-
-ZCS.constant.SERVER_2_CLIENT = {};
-
-ZCS.constant.SHORT_NAMES = {};
-
-ZCS.constant.CLIENT_2_RULE = {};
-
-ZCS.constant.STANDARD_RULES = [];
-
-ZCS.constant.DAYLIGHT_RULES = [];
-
-ZCS.constant.DEFAULT_TZ_RULE;
-
-ZCS.constant.DEFAULT_TZ;
+// Timezone
+ZCS.constant.TZ_TRANSITION_YEAR = 2011;
