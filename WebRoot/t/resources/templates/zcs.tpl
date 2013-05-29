@@ -289,15 +289,15 @@
 					<span name="contactname">{displayName}</span>
 				</div>
 			</div>
-			<div class='zcs-floatLeft' style='width: 100%'>
+			<div class='zcs-contactgroupview-members'>
 				<tpl for='groupMembers'>
-				<div class='zcs-floatLeft zcs-contact-groups'>
-					<div class='zcs-floatLeft zcs-contact-image' <tpl if='imageUrl'>style='background-image:url({imageUrl})'</tpl>></div>
-					<div class='zcs-floatLeft zcs-contact-grpitem'>
+				<div class='zcs-contactgroupview-member'>
+					<div class='zcs-contact-image' <tpl if='imageUrl'>style='background-image:url({imageUrl})'</tpl>></div>
+					<div class='zcs-contact-info'>
 						<span name="contactname"><tpl if='fullName'>{fullName}<tpl else>{lastName}</tpl><tpl if='lastName && firstName'>, {firstName}</tpl></span>
-						<span>{jobTitle}</span>
-						<tpl for='emailFields'>{% if (xindex > 1) break; %}<span class='zcs-newLine'>{.}</span></tpl>
-						<tpl for='workPhoneFields'>{% if (xindex > 1) break; %}<span class='zcs-newLine'>{.}</span></tpl>
+						<tpl if='jobTitle'><span>{jobTitle}</span></tpl>
+						<tpl for='emailFields'>{% if (xindex > 1) break; %}<span>{.}</span></tpl>
+						<tpl for='workPhoneFields'>{% if (xindex > 1) break; %}<span>{.}</span></tpl>
 					</div>
 				</div>
 				</tpl>

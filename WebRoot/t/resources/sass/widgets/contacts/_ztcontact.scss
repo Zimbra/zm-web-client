@@ -29,18 +29,21 @@ $contactGutter: 2em;
 $contactFieldTopOffset: $contactImageSize + $contactStdMargin*3;
 $contactFieldWidth: 18em;
 
-.zcs-contact-person {
-	background-image: url('../images/person.png');
+.zcs-contact {
 	background-position: center;
 	background-size: 100% auto;
 	background-repeat: no-repeat;
 }
 
-.zcs-contactgroup-person {
+
+.zcs-contact-person {
+	@extend .zcs-contact;
+	background-image: url('../images/person.png');
+}
+
+.zcs-contact-group {
+	@extend .zcs-contact;
 	background-image: url('../images/group.png');
-	background-position: center;
-	background-size: 100% auto;
-	background-repeat: no-repeat;
 }
 
 /*Generic Classes*/
@@ -63,13 +66,22 @@ $contactFieldWidth: 18em;
 	position: absolute;
 }
 
-.zcs-contactList-person {
+.zcs-contactlist-image {
 	@extend .zcs-contactlist-item;
-	@extend .zcs-contact-person;
 	height: $contactListImageSize;
 	left: $contactStdMargin;
 	top: $contactListImageTopOffset;
 	width: $contactListImageSize;
+}
+
+.zcs-contactList-person {
+	@extend .zcs-contactlist-image;
+	@extend .zcs-contact-person;
+}
+
+.zcs-contactList-group {
+	@extend .zcs-contactlist-image;
+	@extend .zcs-contact-group;
 }
 
 .zcs-contactList-text {
@@ -239,7 +251,7 @@ $contactBorderColor: #E3E3E3;
 
 	.zcs-contactgroupview-image {
 		@extend .zcs-floatLeft;
-		@extend .zcs-contactgroup-person;
+		@extend .zcs-contact-group;
 		height: $contactImageSize;
 		width: $contactImageSize;
 	}
@@ -254,38 +266,65 @@ $contactBorderColor: #E3E3E3;
 			margin-bottom:.25em;
 			max-width: $contactFieldWidth*1.5;
 			min-width: $contactFieldWidth;
-		}
 
-		SPAN[name=contactname] {
-			font-size: 1.4em;
-			font-weight: bold;
-			margin: .5em 0;
+			&[name=contactname] {
+				font-size: 1.4em;
+				font-weight: bold;
+				margin: .5em 0;
+			}
 		}
 	}
 }
 
-.zcs-contact-grpitem {
-width: 12em;
-padding: 0.5em 0 0 0.5em;
-font-size: 0.8em;
-}
+$zcsMemberWidth: 17em;
+$zcsMemberHeight: 6.5em;
+$zcsMemberPadding: .5em;
+$zcsMemberImageSize: 4em;
 
-.zcs-contact-grpitem span {
-@extend .zcs-newLine;
-word-wrap: break-word;
-padding: 0 0 0.3em 0;
-}
+.zcs-contactgroupview-members {
+	@extend .zcs-floatLeft;
+	margin-top: 1em;
+	width: 100%;
 
-.zcs-contact-groups {
-border: 1px solid #777;
-width: 16em;
-margin: 0.8em;
-padding: 0.5em;
-height: 7em;
-}
+	.zcs-contactgroupview-member {
+		@extend .zcs-floatLeft;
+		border: 1px solid rgba(0,0,0,.4);
+		min-height: $zcsMemberHeight;
+		margin: 0 1.5em 1em 0;
+		overflow: hidden;
+		padding: $zcsMemberPadding;
+		position: relative;
+		width: $zcsMemberWidth;
 
-.zcs-contact-groups div.zcs-contact-image {
-width: 4.5em;
-height: 5em;
-}
+		.zcs-contact-image {
+			height: $zcsMemberImageSize;
+			left: $zcsMemberPadding;
+			position:absolute;
+			top: .4em;
+			width: $zcsMemberImageSize;
+		}
 
+		.zcs-contact-info {
+			left: $zcsMemberImageSize+$zcsMemberPadding*2;
+			position: absolute;
+			right: 0;
+			top: $zcsMemberPadding;
+
+			SPAN {
+				@extend .zcs-newLine;
+				font-size: .9em;
+				line-height: 1.4em;
+				width: 100%;
+				word-wrap: break-word;
+				@include ellipsis();
+
+				&[name=contactname] {
+					font-size: 1em;
+					font-weight: bold;
+					line-height: 1.5em;
+				}
+			}
+		}
+	}
+
+}
