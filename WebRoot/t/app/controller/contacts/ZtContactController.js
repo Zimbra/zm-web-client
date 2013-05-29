@@ -57,8 +57,8 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
 
         control: {
             contactPanel: {
-                cancel:                     'doCancel',
-                create:                     'doCreate'
+                'cancel' : 'doCancel',
+                'create' : 'doCreate'
             },
             emailFieldAdd: {
                 'tap' : 'addEmail'
@@ -85,8 +85,8 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
                 'tap' :  'removeAddr'
             },
             itemPanelToolbar: {
-                delete: 'doDelete',
-                edit: 'doEdit'
+                'delete' : 'doDelete',
+                'edit' : 'doEdit'
             }
         }
 	},

@@ -85,4 +85,4 @@ Ext.define('ZCS.view.contacts.ZtContactField', {
 
 		return returnBubbles;
 	}
-})
+});

@@ -84,4 +84,4 @@ Ext.define('ZCS.view.contacts.ZtPhoneField', {
     initialize: function() {
         this.getItems().items[0].setHtml(this.getLabelName());
     }
-})
+});

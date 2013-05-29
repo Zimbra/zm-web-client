@@ -82,4 +82,4 @@ Ext.define('ZCS.view.contacts.ZtUrlField', {
     initialize: function() {
         this.getItems().items[0].setHtml(this.getLabelName());
     }
-})
+});
