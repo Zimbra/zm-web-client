@@ -107,11 +107,13 @@ function(parent, type, id) {
             isShareVisible = !folder.getAccount().isMain && folder.getAccount().isZimbraAccount;
         }
 		parent.enableAll(true);
+		var isSubFolderOfReadOnly = folder.parent && folder.parent.isReadOnly();
+		parent.enable([ZmOperation.DELETE_WITHOUT_SHORTCUT, ZmOperation.MOVE, ZmOperation.EDIT_PROPS], !isSubFolderOfReadOnly);
 		parent.enable(ZmOperation.SYNC, folder.isFeed()/* || folder.hasFeeds()*/);
 		parent.enable(ZmOperation.SYNC_ALL, folder.isFeed() || folder.hasFeeds());
 		parent.enable(ZmOperation.SHARE_FOLDER, isShareVisible);
 		parent.enable(ZmOperation.EMPTY_FOLDER, ((hasContent || folder.link) && isEmptyFolderAllowed && !appCtxt.isExternalAccount()));	// numTotal is not set for shared folders
-		parent.enable(ZmOperation.RENAME_FOLDER, !(folder.isDataSource() || appCtxt.isExternalAccount()));		// dont allow datasource'd folder to be renamed via overview
+		parent.enable(ZmOperation.RENAME_FOLDER, !(isSubFolderOfReadOnly || folder.isDataSource() || appCtxt.isExternalAccount()));		// dont allow datasource'd folder to be renamed via overview
 		parent.enable(ZmOperation.NEW_FOLDER, !(folder.disallowSubFolder || appCtxt.isExternalAccount()));
 
 		if (folder.isRemote() && folder.isReadOnly()) {
