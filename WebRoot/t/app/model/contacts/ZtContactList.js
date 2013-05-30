@@ -38,6 +38,10 @@ Ext.define('ZCS.model.contacts.ZtContactList', {
             { name: 'jobTitle', type: 'string'},
             { name: 'company', type: 'string' },
             { name: 'folderId', type: 'int' },  //folderId
+            {
+                name: 'emailFields',
+                type: 'auto'
+            },
             /**
              * image and imagepart fields store the image related attributes for a contact.
              */
@@ -78,5 +82,23 @@ Ext.define('ZCS.model.contacts.ZtContactList', {
             reader: 'contactlistreader',
             writer: 'contactlistwriter'
         }
+    },
+
+    constructor: function(data, id) {
+
+        var contact = this.callParent(arguments) || this,
+            emails = data && data.emailFields,
+            altKey;
+
+        // All the emails for a contact are stored in the emailFields array
+        if (emails) {
+            for (var i = 0, len = emails.length; i < len; i++) {
+                altKey = emails[i];
+                if (altKey) {
+                    ZCS.cache.set(altKey, this, 'email');
+                }
+            }
+        }
+        return contact;
     }
 });

@@ -198,23 +198,5 @@ Ext.define('ZCS.model.contacts.ZtContact', {
 			reader: 'contactreader',
 			writer: 'contactwriter'
 		}
-	},
-
-    constructor: function(data, id) {
-
-        var contact = this.callParent(arguments) || this,
-            emails = data && data.emailFields,
-            altKey;
-
-        // All the emails for a contact are stored in the emailFields array
-        if (emails) {
-            for (var i = 0, len = emails.length; i < len; i++) {
-	            altKey = emails[i];
-	            if (altKey) {
-		            ZCS.cache.set(altKey, this, 'email');
-	            }
-            }
-        }
-        return contact;
-    }
+	}
 });

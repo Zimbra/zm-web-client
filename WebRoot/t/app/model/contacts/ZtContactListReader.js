@@ -27,9 +27,23 @@ Ext.define('ZCS.model.contacts.ZtContactListReader', {
     getDataFromNode: function(node) {
 
         var data = {},
+            emails = [],
             attrs = node._attrs;
 
         Ext.copyTo(data, attrs, ZCS.constant.CONTACT_ATTRS);
+
+        //copy the email fields
+        if ('email' in attrs) {
+            emails.push(attrs['email']);
+            for(var index = 2; ;index++)
+            {
+                if(('email' + index) in attrs)
+                    emails.push(attrs['email' + index]);
+                else
+                    break;
+            }
+            data['emailFields'] = emails;
+        }
 
         data.type = attrs.type;
         //folderId of the folder the contact resides in
