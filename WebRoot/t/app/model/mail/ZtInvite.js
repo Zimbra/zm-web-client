@@ -47,7 +47,9 @@ Ext.define('ZCS.model.mail.ZtInvite', {
 			{ name: 'myResponse',           type: 'string' },
 			{ name: 'apptFolderId',         type: 'string' },
 			{ name: 'calendarIntendedFor',  type: 'string' },
-            { name: 'timezone',             type: 'string' }
+            { name: 'timezone',             type: 'string' },
+            { name: 'attendeeResponse',     type: 'string' },
+            { name: 'attendeeResponseMsg',         type: 'string' }
 		],
 
 		msgId: ''
@@ -118,6 +120,27 @@ Ext.define('ZCS.model.mail.ZtInvite', {
 				}
 				invite.set('attendees', attendees);
 				invite.set('optAttendees', optAttendees);
+
+
+                if (comp.method == "REPLY" && invite.get('isOrganizer')) {
+                    var attendeeResponse = comp.at[0].ptst,
+                        inviteMsg;
+
+                    invite.set('attendeeResponse', attendeeResponse);
+
+                    switch (attendeeResponse){
+                        case ZCS.constant.PSTATUS_ACCEPTED:
+                            inviteMsg = ZtMsg.inviteMsgAccepted;
+                            break;
+                        case ZCS.constant.PSTATUS_TENTATIVE:
+                            inviteMsg = ZtMsg.inviteMsgTentative;
+                            break;
+                        case ZCS.constant.PSTATUS_DECLINED:
+                            inviteMsg = ZtMsg.inviteMsgDeclined;
+                    }
+
+                    invite.set('attendeeResponseMsg', Ext.String.format(inviteMsg, comp.at[0].d));
+                }
 			}
 
 			var myResponse = node.replies && node.replies[0].reply[0].ptst;
@@ -212,6 +235,9 @@ Ext.define('ZCS.model.mail.ZtInvite', {
 				notes:          this.get('notes'),
 				intendedFor:    this.get('calendarIntendedFor'),
                 timezone:       this.get('timezone'),
+                isOrganizer:    this.get('isOrganizer'),
+                attendeeResponse: this.get('attendeeResponse'),
+                attendeeResponseMsg: this.get('attendeeResponseMsg'),
 
 				acceptButtonId:     ZCS.util.getUniqueId(Ext.apply({}, {
 					action: ZCS.constant.OP_ACCEPT
@@ -228,7 +254,9 @@ Ext.define('ZCS.model.mail.ZtInvite', {
 			var myResponse = this.get('myResponse');
 			data.myResponse = myResponse ? ZCS.constant.PSTATUS_TEXT[myResponse] : '';
 		}
-
+        if (!this.get('isOrganizer') && this.get('method') == "REQUEST") {
+            data.showButtons = true;
+        }
 		return ZCS.model.mail.ZtMailMsg.inviteTpl.apply(data);
 	},
 

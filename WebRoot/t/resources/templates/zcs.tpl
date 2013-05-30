@@ -359,40 +359,79 @@
 				</tpl>
 				</td>
 			</tr>
-			</tpl>
-			<tpl if='optAttendees'>
-			<tr>
-				<td class='zcs-invite-label'>{[ZtMsg.invOptionalAttendeesLabel]}</td>
-				<td>
-				<tpl for='attendees'>
-					<span class='zcs-area-bubble zcs-contact-bubble' id='{id}'>{name}</span>
-				</tpl>
-				</td>
-			</tr>
+
+            </tpl>
+            <tpl if='attendeeResponse && attendeeResponseMsg'>
+                <tr>
+                    <tpl if="attendeeResponse == [ZCS.constant.PSTATUS_ACCEPTED]">
+                        <td colspan="2" class="zcs-invite-status-accept">
+                            <span> {attendeeResponseMsg} </span>
+                        </td>
+                    </tpl>
+                    <tpl if="attendeeResponse == [ZCS.constant.PSTATUS_DECLINED]">
+                        <td colspan="2" class="zcs-invite-status-decline">
+                            <span> {attendeeResponseMsg} </span>
+                        </td>
+                    </tpl>
+                    <tpl if="attendeeResponse == [ZCS.constant.PSTATUS_TENTATIVE]">
+                        <td colspan="2" class="zcs-invite-status-tentative">
+                            <span> {attendeeResponseMsg} </span>
+                        </td>
+                    </tpl>
+                </tr>
+            </tpl>
+            <tpl if='optAttendees'>
+                <tr>
+				    <td class='zcs-invite-label'>{[ZtMsg.invOptionalAttendeesLabel]}</td>
+				    <td>
+                        <tpl for='attendees'>
+                            <span class='zcs-area-bubble zcs-contact-bubble' id='{id}'>{displayName}</span>
+                        </tpl>
+				    </td>
+			    </tr>
 			</tpl>
 			<tpl if='myResponse'>
-			<tr>
-				<td class='zcs-invite-label'>{[ZtMsg.invStatusLabel]}</td>
-				<td>{myResponse}</td>
-			</tr>
+			    <tr>
+				    <td class='zcs-invite-label'>{[ZtMsg.invStatusLabel]}</td>
+				    <td>{myResponse}</td>
+			    </tr>
 			</tpl>
-			<tr class='zcs-invite-buttons'>
-				<td class='zcs-invite-label'>{[ZtMsg.invRespondLabel]}</td>
-				<td>
-					<span class='zcs-invite-button zcs-invite-accept' id='{acceptButtonId}'>{[ZtMsg.accept]}</span>
-					<span class='zcs-invite-button zcs-invite-tentative' id='{tentativeButtonId}'>{[ZtMsg.tentative]}</span>
-					<span class='zcs-invite-button zcs-invite-decline' id='{declineButtonId}'>{[ZtMsg.decline]}</span>
-				</td>
-			</tr>
+
+            <tpl if='showButtons'>
+                <tr class='zcs-invite-buttons'>
+                    <td class='zcs-invite-label'>{[ZtMsg.invRespondLabel]}</td>
+                    <td>
+                        <tpl if='myResponse == [ZCS.constant.PSTATUS_TEXT[ZCS.constant.PSTATUS_ACCEPTED]]'>
+                            <span class='zcs-invite-button zcs-accept-inactive'>{[ZtMsg.accept]}</span>
+                        <tpl else>
+                            <span class='zcs-invite-button zcs-invite-accept' id='{acceptButtonId}'>{[ZtMsg.accept]}</span>
+                        </tpl>
+
+                        <tpl if='myResponse == [ZCS.constant.PSTATUS_TEXT[ZCS.constant.PSTATUS_TENTATIVE]]'>
+                            <span class='zcs-invite-button zcs-tentative-inactive'>{[ZtMsg.tentative]}</span>
+                        <tpl else>
+                            <span class='zcs-invite-button zcs-invite-tentative' id='{tentativeButtonId}'>{[ZtMsg.tentative]}</span>
+                        </tpl>
+
+                        <tpl if='myResponse == [ZCS.constant.PSTATUS_TEXT[ZCS.constant.PSTATUS_DECLINED]]'>
+                            <span class='zcs-invite-button zcs-decline-inactive'>{[ZtMsg.decline]}</span>
+                        <tpl else>
+                            <span class='zcs-invite-button zcs-invite-decline' id='{declineButtonId}'>{[ZtMsg.decline]}</span>
+                        </tpl>
+                    </td>
+                </tr>
+            </tpl>
+
 			<tpl if='intendedFor'>
-			<tr>
-				<td class='zcs-invite-label'>{[ZtMsg.invIntendedFor]}</td>
-				<td>
-					<span class='zcs-area-bubble zcs-contact-bubble'>{intendedFor}</span>
-				</td>
-			</tr>
+                <tr>
+                    <td class='zcs-invite-label'>{[ZtMsg.invIntendedFor]}</td>
+                    <td>
+                        <span class='zcs-area-bubble zcs-contact-bubble'>{intendedFor}</span>
+                    </td>
+                </tr>
 			</tpl>
 		</table>
+        <hr>
 		<div class='zcs-invite-notes'>{notes}</div>
 	</tpl>
 </template>

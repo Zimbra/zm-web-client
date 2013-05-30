@@ -76,7 +76,9 @@ Ext.define('ZCS.model.mail.ZtMsgReader', {
 		}
 
 		if (node.inv) {
-			data.invite = ZCS.model.mail.ZtInvite.fromJson(node.inv[0], node.id);
+
+            var invite = ZCS.model.mail.ZtInvite.fromJson(node.inv[0], node.id);
+ 			data.invite = Ext.Object.merge({}, invite, {});
 			if (node.cif) {
 				data.invite.set('calendarIntendedFor', node.cif);
 			}
