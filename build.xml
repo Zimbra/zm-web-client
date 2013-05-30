@@ -1252,6 +1252,8 @@ if (ext == null) ext = "";
                 </copy>
             </then>
             <else>
+                <mkdir dir='${touch.prod.dir}'/>
+
                 <!--First run sencha build in production mode for the main touch app-->
                 <antcall target="touch-prod">
                     <param name="touch.prod.build.mode" value="production"/>
