@@ -45,7 +45,11 @@ Ext.define('ZCS.model.contacts.ZtContactListReader', {
             data['emailFields'] = emails;
         }
 
-        data.type = attrs.type;
+        if (attrs.type && (attrs.type == ZCS.constant.ITEM_CONTACT_GROUP)) {
+            data.type = ZCS.constant.ITEM_CONTACT_GROUP;
+        } else {
+            data.type = ZCS.constant.ITEM_CONTACT;
+        }
         //folderId of the folder the contact resides in
         data.folderId = node.l;
 

@@ -170,7 +170,11 @@
 
 <template id='ContactListItem'>
 	<div class='zcs-contactListItem'>
-		<div class='zcs-contactList-person' <tpl if='imageUrl'>style='background-image:url({imageUrl})'</tpl>></div>
+        <tpl if="type == 'contact'">
+            <div class='zcs-contactList-person' <tpl if='imageUrl'>style='background-image:url({imageUrl})'</tpl>></div>
+        <tpl else>
+		    <div class='zcs-contactList-group' <tpl if='imageUrl'>style='background-image:url({imageUrl})'</tpl>></div>
+        </tpl>
 		<div class='zcs-contactList-text'>
 		<tpl if='lastName || firstName'>
 		<div class='zcs-contactList-name'>{lastName}<tpl if='lastName && firstName'>, </tpl>{firstName}</div>
