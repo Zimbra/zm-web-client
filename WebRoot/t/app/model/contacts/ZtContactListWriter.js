@@ -79,6 +79,8 @@ Ext.define('ZCS.model.contacts.ZtContactListWriter', {
 
                 json = this.getSoapEnvelope(request, data, 'ModifyContact');
                 methodJson = json.Body.ModifyContactRequest;
+                //Replaces all the attrs and group members in the existing contact
+                methodJson.replace = 1;
 
                 cn = methodJson.cn = {id: itemData.id};
 
