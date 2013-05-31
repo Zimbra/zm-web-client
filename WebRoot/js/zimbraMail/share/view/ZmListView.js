@@ -657,9 +657,9 @@ function(ev, div) {
 		return true;
 	}
 
-	if (field == ZmItem.F_FLAG) {
+	if (field === ZmItem.F_FLAG) {
 		var item = this.getItemFromElement(div);
-		if (!item.isFlagged) {
+		if (!item.isReadOnly() && !item.isFlagged) {
 			AjxImg.setDisabledImage(ev.target, this._getFlagIcon(item.isFlagged, true), true, this._getClasses(field));
 		}
 	}

@@ -828,10 +828,15 @@ function(ev) {
 		this._list.moveItems({items:[ev.item], folder:folder});
 		return false;
 	}
-	if (ev.field == ZmItem.F_READ) {
-		var folderId = ev.item.folderId || (search && search.folderId);
-		var folder = folderId && appCtxt.getById(folderId);
-		if (!(folder && folder.isReadOnly())) {
+	var folderId = ev.item.folderId || (search && search.folderId);
+	var folder = folderId && appCtxt.getById(folderId);
+	var readOnly = folder && folder.isReadOnly();
+
+	if (ev.field === ZmItem.F_FLAG && readOnly) {
+		return true;
+	}
+	if (ev.field === ZmItem.F_READ) {
+		if (!readOnly) {
 			this._doMarkRead([ev.item], ev.item.isUnread);
 		}
 		return true;
