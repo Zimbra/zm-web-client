@@ -70,18 +70,21 @@ Ext.define('ZCS.model.contacts.ZtContactReader', {
     populateContactGroupFields: function(members) {
         var m = [];
         for (var i = 0, len = members.length; i < len; i++) {
-            var member = members[i];
+            var member = members[i],
+                memberData = {},
                 cn = member.cn;
             if (cn) {
-                //deferenced group members
-                var attrs = cn[0]._attrs,
-                    memberData = {};
+                //deferenced group members of type "C"(local) and "G"(Gal)
+                var attrs = cn[0]._attrs;
                 memberData = this.populateContactFields(attrs);
-                m.push(memberData)
             } else {
-                //in case the group members are not deferenced, push the member id
-                m.push(member.value);
+                /**
+                 * in case the group members are of type "I"(direct email addresses),
+                 * store the same in the emailFields array.
+                 */
+                memberData['emailFields'] = member.value;
             }
+            m.push(memberData);
         }
         return m;
     }
