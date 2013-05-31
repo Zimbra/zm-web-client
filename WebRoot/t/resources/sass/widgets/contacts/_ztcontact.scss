@@ -173,6 +173,16 @@ $contactFieldWidth: 18em;
 				max-width: $contactFieldWidth*2;
 				min-width: $contactFieldWidth;
 			}
+
+			.zcs-contactview-street,
+			.zcs-contactview-city,
+			.zcs-contactview-country {
+				@extend .zcs-newLine;
+			}
+			.zcs-contactview-state,
+			.zcs-contactview-postalcode {
+				@extend .zcs-floatLeft;
+			}
 		}
 
 		.zcs-contactview-subLabel {
