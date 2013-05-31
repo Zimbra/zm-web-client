@@ -153,14 +153,15 @@ Ext.define('ZCS.controller.ZtListController', {
 
 		//Set the proxy's params so this parameter persists between paging requests.
 		this.getStore().getProxy().setExtraParams({
-			query: query
+			query:  query
 		});
 
 		this.getListView().getScrollable().getScroller().scrollToTop();
 
 		this.getStore().load({
-			query: query,
-			callback: Ext.Function.bind(this.storeLoaded, this, [query, folder], 0)
+			query:      query,
+			folder:     folder,
+			callback:   Ext.Function.bind(this.storeLoaded, this, [query, folder], 0)
 		});
 
 		ZCS.app.fireEvent('hideOverviewPanel');
@@ -183,15 +184,6 @@ Ext.define('ZCS.controller.ZtListController', {
 		var app = this.getApp();
 
 		if (success) {
-			if (query) {
-				var search = Ext.create('ZCS.common.ZtSearch', {
-					query: query
-				});
-				ZCS.session.setSetting(ZCS.constant.SETTING_CUR_SEARCH, search, app);
-				if (ZCS.session.getSetting(ZCS.constant.SETTING_SHOW_SEARCH)) {
-					ZCS.session.getCurrentSearchField().setValue(query);
-				}
-			}
 
 			// If we got here via tap on a saved search in the overview, remember it so we can show its name
 			if (folder) {

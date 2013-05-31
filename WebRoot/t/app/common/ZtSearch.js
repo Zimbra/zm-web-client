@@ -21,31 +21,37 @@
 Ext.define('ZCS.common.ZtSearch', {
 
 	config: {
-		query: null,
-		organizerId: null
+		query:          null,
+		organizerId:    null
 	},
 
-	/**
-	 * Parses the given query so we can save some useful fields.
-	 *
-	 * @param config
-	 * @adapts ZmParsedQuery
-	 */
-	constructor: function(config) {
+	statics: {
+		/**
+		 * Parses the given query and returns an organizer ID if it's a folder or tag query.
+		 *
+		 * @param {String}      query
+		 *
+		 * @return {String}     organizer ID
+		 */
+		parseQuery: function(query) {
 
-		this.initConfig(config);
+			var	q = query && Ext.String.trim(query),
+				m = q && q.match(ZCS.constant.REGEX_FOLDER_TAG_SEARCH);
 
-		var query = this.getQuery(),
-			q = query && Ext.String.trim(query),
-			m = q && q.match(ZCS.constant.REGEX_FOLDER_TAG_SEARCH);
+			if (m && m.length) {
+				var	path = m[2],
+					organizer = ZCS.cache.get(path, 'path') || (path && ZCS.cache.get(path.toLowerCase(), 'path'));
 
-		if (m && m.length) {
-			var	path = m[2],
-				organizer = ZCS.cache.get(path, 'path') || (path && ZCS.cache.get(path.toLowerCase(), 'path'));
-
-			if (organizer) {
-				this.setOrganizerId(organizer.get('itemId'));
+				if (organizer) {
+					return organizer.get('itemId');
+				}
 			}
+			return null;
 		}
+	},
+
+	constructor: function(config) {
+		this.initConfig(config);
+		this.setOrganizerId(ZCS.common.ZtSearch.parseQuery(this.getQuery()));
 	}
 });

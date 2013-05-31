@@ -40,13 +40,18 @@ Ext.define('ZCS.model.mail.ZtConvWriter', {
 			});
 			methodJson = json.Body.SearchRequest;
 
+			var	query = request.getParams().query,
+				folderId = ZCS.util.localId(ZCS.common.ZtSearch.parseQuery(query)),
+				isOutbound = (folderId === ZCS.constant.ID_SENT || folderId === ZCS.constant.ID_DRAFTS);
+
 			Ext.apply(methodJson, {
 				sortBy: 'dateDesc',
 				offset: operation.getStart(),
-				limit: ZCS.constant.DEFAULT_PAGE_SIZE,
-				query: request.getParams().query,
-				types: 'conversation',
-				fetch: 1
+				limit:  ZCS.constant.DEFAULT_PAGE_SIZE,
+				query:  query,
+				types:  'conversation',
+				fetch:  1,
+				recip:  isOutbound ? 1 : 0
 			});
 
 		} else if (action === 'update') {

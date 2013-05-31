@@ -504,11 +504,14 @@ Ext.define('ZCS.common.mail.ZtMailUtil', {
 	 */
 	getSenders: function(addresses, numSenders) {
 
-		var senderStr = '',
+		var	curFolderId = ZCS.util.curFolderLocalId(),
+			isOutbound = (curFolderId === ZCS.constant.ID_SENT || curFolderId === ZCS.constant.ID_DRAFTS),
+			addrType = isOutbound ? ZCS.constant.TO : ZCS.constant.FROM,
+			senderStr = '',
 			senders;
 
-		if (addresses && addresses[ZCS.constant.FROM]) {
-			senders = Ext.Array.map(addresses[ZCS.constant.FROM], function(addr) {
+		if (addresses && addresses[addrType]) {
+			senders = Ext.Array.map(addresses[addrType], function(addr) {
 				return this.getDisplayName(addr, true);
 			}, this);
 			numSenders = numSenders || ZCS.constant.NUM_CONV_SENDERS;

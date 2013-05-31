@@ -89,6 +89,17 @@ Ext.define('ZCS.model.ZtSoapProxy', {
 	 */
 	processResponse: function(success, operation, request, response, callback, scope) {
 
+		var query = operation.config.query;
+
+		if (query) {
+			var search = Ext.create('ZCS.common.ZtSearch', {
+				query: query
+			});
+			ZCS.session.setSetting(ZCS.constant.SETTING_CUR_SEARCH, search, ZCS.session.getActiveApp());
+			if (ZCS.session.getSetting(ZCS.constant.SETTING_SHOW_SEARCH)) {
+				ZCS.session.getCurrentSearchField().setValue(query);
+			}
+		}
 		if (success) {
 			this.callParent(arguments);
 		}
