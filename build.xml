@@ -1252,7 +1252,6 @@ if (ext == null) ext = "";
                 </copy>
             </then>
             <else>
-                <mkdir dir='${touch.prod.dir}'/>
 
                 <!--First run sencha build in production mode for the main touch app-->
                 <antcall target="touch-prod">
@@ -1270,6 +1269,7 @@ if (ext == null) ext = "";
 
     <target name="touch-prod">
         <mkdir dir='${build.touch.dir}'/>
+        <mkdir dir='${touch.prod.dir}/${touch.prod.build.mode}'/>
 
         <exec executable="/bin/bash">
             <arg value="${this.zwc.basedir}/build-prod-touch.sh"/>
