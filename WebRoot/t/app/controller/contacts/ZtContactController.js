@@ -91,6 +91,10 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
         }
 	},
 
+    launch: function() {
+        ZCS.app.on('deleteContactItem', this.doDelete, this);
+    },
+
     /**
      * Pops the contact form
      */
@@ -110,8 +114,8 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
 	 * Moves the contact to Trash.
 	 */
 	doDelete: function() {
-        
-        var contact = this.getItem(),
+
+        var contact = arguments[0].data ? arguments[0] : this.getItem(),
             folderId = contact.data.folderId,
             l,toastMsg,
             op;
