@@ -528,9 +528,9 @@
     <description>
         Zimbra Services Installed on the server.
     </description>
-    <env-entry-name>zimbraServicesInstalled</env-entry-name>
+    <env-entry-name>zimbraServicesEnabled</env-entry-name>
     <env-entry-type>java.lang.String</env-entry-type>
-    <env-entry-value>%%getZimbraServicesInstalled%%</env-entry-value>
+    <env-entry-value>%%getZimbraServiceEnabled%%</env-entry-value>
   </env-entry>
 
   <env-entry>
