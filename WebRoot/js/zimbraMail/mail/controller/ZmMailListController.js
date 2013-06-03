@@ -89,7 +89,7 @@ ZmMailListController = function(container, mailApp, type, sessionId, searchResul
 	this._listeners[ZmOperation.ADD_FILTER_RULE]	= this._filterListener.bind(this);
 	this._listeners[ZmOperation.CREATE_APPT]		= this._createApptListener.bind(this);
 	this._listeners[ZmOperation.CREATE_TASK]		= this._createTaskListener.bind(this);
-	
+
 };
 
 ZmMailListController.prototype = new ZmListController;
@@ -168,7 +168,9 @@ ZmMailListController.FOLDERS_TO_OMIT = [ZmFolder.ID_TRASH, ZmFolder.ID_SPAM];
  */
 ZmMailListController.prototype.switchView =
 function(view, force) {
-
+    if (!appCtxt.isOfflineMode()){
+        localStorage.setItem("MAILVIEW",view || ZmId.VIEW_TRAD);
+    }
 	if ((view == ZmId.VIEW_TRAD || view == ZmId.VIEW_CONVLIST) && view != this.getCurrentViewType()) {
 		if (appCtxt.multiAccounts) {
 			delete this._showingAccountColumn;
@@ -907,7 +909,11 @@ function(ev) {
 			ZmImApp.updateImMenuItemByAddress(imItem, address, true);
 			this._participantActionMenu.popup(0, ev.docX, ev.docY);
 		}
-	} else {
+	}
+    else if (this.isOutboxFolder()) {
+        // show drafts menu
+        //this._initializeOutboxsActionMenu();
+    } else {
 		var actionMenu = this.getActionMenu();
 		this._setupSpamButton(actionMenu);
 		this._enableFlags(actionMenu);
@@ -1065,7 +1071,9 @@ function(params) {
 	if (action == ZmOperation.DRAFT) {
 		params.listController = this;
 		//always reload the draft msg
-		params.forceLoad = true;
+        if (msg.folderId !== ZmFolder.ID_OUTBOX) {//Dont force load for outbox items
+            params.forceLoad = true;
+        }
 	}
 
 	// bug: 38928 - if user viewed entire truncated message, fetch the whole
@@ -2092,20 +2100,20 @@ function(parent, num) {
 	var isDrafts = (item && item.isDraft && item.type != ZmId.ITEM_CONV) || this.isDraftsFolder();
 	var isFeed = (folder && folder.isFeed());
 	var isReadOnly = (folder && folder.isReadOnly());
+    var isOutboxFolder = this.isOutboxFolder();
+	parent.setItemVisible(ZmOperation.EDIT, (isDrafts || isOutboxFolder) && (!folder || !folder.isReadOnly()));
+	parent.setItemVisible(ZmOperation.EDIT_AS_NEW, !(isDrafts || isOutboxFolder));
 
-	parent.setItemVisible(ZmOperation.EDIT, isDrafts && (!folder || !folder.isReadOnly()));
-	parent.setItemVisible(ZmOperation.EDIT_AS_NEW, !isDrafts);
+	parent.setItemVisible(ZmOperation.REDIRECT, !(isDrafts || isOutboxFolder));
 
-	parent.setItemVisible(ZmOperation.REDIRECT, !isDrafts);
+	parent.setItemVisible(ZmOperation.MARK_READ, !(isDrafts || isOutboxFolder));
+	parent.setItemVisible(ZmOperation.MARK_UNREAD, !(isDrafts || isOutboxFolder));
+	parent.setItemVisible(ZmOperation.SPAM, !(isDrafts || isOutboxFolder));
+	parent.setItemVisible(ZmOperation.DETACH, !(isDrafts || isOutboxFolder));
 
-	parent.setItemVisible(ZmOperation.MARK_READ, !isDrafts);
-	parent.setItemVisible(ZmOperation.MARK_UNREAD, !isDrafts);
-	parent.setItemVisible(ZmOperation.SPAM, !isDrafts);
-	parent.setItemVisible(ZmOperation.DETACH, !isDrafts);
+	parent.enable(ZmOperation.MOVE_MENU, !(isDrafts || isOutboxFolder) && num > 0);
 
-	parent.enable(ZmOperation.MOVE_MENU, !isDrafts && num > 0);
-
-	parent.enable(ZmOperation.DETACH, (appCtxt.get(ZmSetting.DETACH_MAILVIEW_ENABLED) && !isDrafts && num == 1));
+	parent.enable(ZmOperation.DETACH, (appCtxt.get(ZmSetting.DETACH_MAILVIEW_ENABLED) && !(isDrafts || isOutboxFolder) && num == 1));
 
 	/*if (parent.isZmActionMenu) {
 		parent.setItemVisible(ZmOperation.QUICK_COMMANDS, !isDrafts && parent._hasQuickCommands);
@@ -2113,18 +2121,19 @@ function(parent, num) {
 		parent.setItemVisible(ZmOperation.QUICK_COMMANDS, !isDrafts);
 	} */
 
-	parent.setItemVisible(ZmOperation.ADD_FILTER_RULE, !isDrafts);
-	parent.setItemVisible(ZmOperation.CREATE_APPT, !isDrafts);
-	parent.setItemVisible(ZmOperation.CREATE_TASK, !isDrafts);
+	parent.setItemVisible(ZmOperation.ADD_FILTER_RULE, !(isDrafts || isOutboxFolder));
+	parent.setItemVisible(ZmOperation.CREATE_APPT, !(isDrafts || isOutboxFolder));
+	parent.setItemVisible(ZmOperation.CREATE_TASK, !(isDrafts || isOutboxFolder));
+    parent.setItemVisible(ZmOperation.ACTIONS_MENU, !isOutboxFolder);
 
 	// bug fix #37154 - disable non-applicable buttons if rfc/822 message
 	var isRfc822 = appCtxt.isChildWindow && window.newWindowParams && window.newWindowParams.isRfc822;
 	if (isRfc822 || (isReadOnly && num > 0)) {
 		parent.enable([ZmOperation.DELETE, ZmOperation.MOVE, ZmOperation.MOVE_MENU, ZmOperation.SPAM, ZmOperation.TAG_MENU], false);
 	} else {
-		parent.enable([ZmOperation.REPLY, ZmOperation.REPLY_ALL], (!isDrafts && !isFeed && num == 1));
+		parent.enable([ZmOperation.REPLY, ZmOperation.REPLY_ALL], (!(isDrafts || isOutboxFolder) && !isFeed && num == 1));
 		parent.enable([ZmOperation.VIEW_MENU], true);
-		parent.enable([ZmOperation.FORWARD, ZmOperation.SPAM], (!isDrafts && num > 0));
+		parent.enable([ZmOperation.FORWARD, ZmOperation.SPAM], (!(isDrafts || isOutboxFolder) && num > 0));
 	}
 
 	if (this._draftsActionMenu) {
@@ -2164,6 +2173,16 @@ function(parent, num) {
                         false
                     );
         parent.setItemVisible(ZmOperation.TAG_MENU, false);
+    }
+
+    if (appCtxt.isOfflineMode()) {
+        parent.enable(
+                        [
+                            ZmOperation.ACTIONS_MENU,
+                            ZmOperation.VIEW_MENU
+                        ],
+                        false
+                    );
     }
 
 	this._cleanupToolbar(parent);
@@ -2231,6 +2250,10 @@ function(menu) {
 	if (!status.hasRead) {
 		menu.enable(ZmOperation.MARK_UNREAD, false);
 	}
+
+    if (appCtxt.isOfflineMode()){
+        menu.enable([ZmOperation.ADD_FILTER_RULE,ZmOperation.CREATE_APPT, ZmOperation.CREATE_TASK], false);
+    }
 };
 
 // Enable mark read/unread as appropriate.
@@ -2609,6 +2632,8 @@ ZmMailListController.prototype._handleRetentionWarningOK =
 function(dialog, callback) {
     dialog.popdown();
     callback.run();
-}
+};
+
+
 
 

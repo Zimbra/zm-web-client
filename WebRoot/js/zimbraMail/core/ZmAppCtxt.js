@@ -53,6 +53,8 @@ ZmAppCtxt = function() {
 	this._isExpandableDL	= {};	// distribution lists
 
 	this._setAuthTokenWarning();
+    this._supportsOffline = AjxEnv.supported.localstorage &&  AjxEnv.supported.applicationcache && window.isWeboffline
+    this._offlineHandler = (this._supportsOffline) ? new ZmOffline() : null;
 };
 
 ZmAppCtxt.ONE_MINUTE = 60 * 1000;
@@ -2024,4 +2026,36 @@ function() {
 	catch (ex) {
 		return appCtxt;
 	}
+};
+
+ZmAppCtxt.prototype.isOfflineMode =
+function() {
+    return !navigator.onLine;
+};
+
+ZmAppCtxt.prototype.initWebOffline =
+function(callback) {
+    $( window ).bind("online offline",
+        function(){
+            appCtxt.setStatusMsg(appCtxt.isOfflineMode() ?  ZmMsg.networkChangeOffline : ZmMsg.networkChangeOnline);
+            if (!appCtxt.isOfflineMode()){
+                ZmOffline.syncData();
+            }
+        });
+     if (this._supportsOffline){
+         this._offlineHandler.init(callback);
+     }
+};
+
+/**
+ * Gets the offline settings dialog.
+ *
+ * @return	{ZmOfflineSettingsDialog}	offline settings dialog
+ */
+ZmAppCtxt.prototype.getOfflineSettingsDialog =
+function() {
+    if (!this._offlineSettingsDialog) {
+        this._offlineSettingsDialog = new ZmOfflineSettingsDialog();
+    }
+    return this._offlineSettingsDialog;
 };

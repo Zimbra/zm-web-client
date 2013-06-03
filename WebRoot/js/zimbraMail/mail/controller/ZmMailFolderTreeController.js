@@ -42,6 +42,10 @@ function(parentNode, node, fields, organizer, treeView) {
 		if (ovc)
 			ovc.updateLabel(organizer);
 	}
+
+    if (organizer.getAccount().isMain && appCtxt._offlineHandler && ($.inArray(organizer.nId, ZmOffline.offlineFolderIds) !== -1)){
+        appCtxt._offlineHandler.storeFolderMetaData(organizer.nId, organizer);
+    }
 };
 
 ZmMailFolderTreeController.prototype._deleteListener =

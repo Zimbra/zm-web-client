@@ -422,6 +422,7 @@
   <servlet-mapping>
     <servlet-name>SkinResources</servlet-name>
     <url-pattern>/css/*</url-pattern>
+    <url-pattern>/appcache/*</url-pattern>
     <url-pattern>/html/*</url-pattern>
     <url-pattern>/js/skin.js</url-pattern>
   </servlet-mapping>

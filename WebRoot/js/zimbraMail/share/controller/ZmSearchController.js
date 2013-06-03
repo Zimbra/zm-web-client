@@ -561,6 +561,10 @@ function(params, noRender, callback, errorCallback) {
 	}
 
 	var respCallback = this._handleResponseDoSearch.bind(this, search, noRender, callback, params.noUpdateOverview);
+    if (search.hasFolderTerm('outbox')) {
+        var offlineCallback = this._handleOfflineDoSearch.bind(this, search, noRender, callback, params.noUpdateOverview);
+        var offlineRequest = true;
+    }
 	if (!errorCallback) {
 		errorCallback = this._handleErrorDoSearch.bind(this, search);
 	}
@@ -578,10 +582,10 @@ function(params, noRender, callback, errorCallback) {
 			search.calController = controller;
 			controller.handleUserSearch(params, respCallback);
 		} else {
-            search.execute({callback:respCallback, errorCallback:errorCallback});            
+            search.execute({offlineCache:params && params.offlineCache, callback:respCallback, errorCallback:errorCallback, offlineCallback:offlineCallback, offlineRequest:offlineRequest});
         }
 	} else {
-		search.execute({callback:respCallback, errorCallback:errorCallback});
+		search.execute({offlineCache:params && params.offlineCache, callback:respCallback, errorCallback:errorCallback, offlineCallback:offlineCallback, offlineRequest:offlineRequest});
 	}
 };
 
@@ -615,6 +619,16 @@ function(search, noRender, callback, noUpdateOverview, result) {
 	if (callback) {
 		callback.run(result);
 	}
+};
+
+/**
+ * Takes the search result and hands it to the appropriate controller for display.
+ *
+ * @param {ZmSearch}	search			contains search info used to run search against server
+ */
+ZmSearchController.prototype._handleOfflineDoSearch =
+function(search, ex, params, result) {
+    this._doIndexedDBSearch(search, ex, params);
 };
 
 /**
@@ -670,14 +684,13 @@ function(results, search, noUpdateOverview) {
  * folder, no such tag, and bad query. If it's a "no such folder" error caused
  * by the deletion of a folder backing a mountpoint, we pass it along for
  * special handling by ZmZimbraMail.
- * 
+ *
  * @private
  */
 ZmSearchController.prototype._handleErrorDoSearch =
 function(search, ex) {
 	DBG.println(AjxDebug.DBG1, "Search exception: " + ex.code);
-
-	if (ex.code == ZmCsfeException.MAIL_NO_SUCH_TAG ||
+    if (ex.code == ZmCsfeException.MAIL_NO_SUCH_TAG ||
 		ex.code == ZmCsfeException.MAIL_QUERY_PARSE_ERROR ||
 		ex.code == ZmCsfeException.MAIL_TOO_MANY_TERMS ||
 		(ex.code == ZmCsfeException.MAIL_NO_SUCH_FOLDER && !(ex.data.itemId && ex.data.itemId.length)))
@@ -918,4 +931,97 @@ function(id) {
 	}
 
 	return nid;
+};
+
+/**
+ * Performs the IndexedDB search.
+ *
+ * @param {ZmSearch}	search		the search object
+ *
+ * @private
+ */
+ZmSearchController.prototype._doIndexedDBSearch =
+function(search) {
+    var respCallback = this._handleResponseDoIndexedDBSearch.bind(this, search);
+    var errorCallback = this._handleErrorDoIndexedDBSearch.bind(this, search);
+    var indexObj = { methodName : "SendMsgRequest" };
+    ZmOfflineDB.indexedDB.actionsInRequestQueueUsingIndex(indexObj, respCallback, errorCallback);
+};
+
+/**
+ * Takes the search result and hands it to the appropriate controller for display.
+ *
+ * @param {ZmSearch}	search			contains search info used to run search against server
+ * @param {Object}	    result			the object stored in indexedDB
+ *
+ * @private
+ */
+ZmSearchController.prototype._handleResponseDoIndexedDBSearch =
+function(search, result) {
+
+    var respEl = [],
+        obj,
+        msgNode,
+        messagePart;
+
+    for (var i = result.length - 1; i > -1; i--) {
+        obj = result[i];
+        if (obj) {
+            msgNode = obj[obj.methodName]["m"];
+            if (msgNode) {
+                msgNode.su = msgNode.su._content;
+                msgNode.l = ZmFolder.ID_OUTBOX;
+                msgNode.f = "s";
+                messagePart = msgNode.mp[0];
+                if (messagePart) {
+                    if (messagePart.ct === ZmMimeTable.TEXT_PLAIN) {
+                        messagePart.content = msgNode.fr = (messagePart.content) ? messagePart.content._content : "";
+                        messagePart.body = true;
+                    }
+                    else if (messagePart.ct === ZmMimeTable.MULTI_ALT) {
+                        var partsArray = messagePart.mp,
+                            partsArrayLength = partsArray.length,
+                            part;
+
+                        for (var j = 0; j < partsArrayLength; j++) {
+                            part = partsArray[j];
+                            part.part = j + 1;
+                            if (part.ct === ZmMimeTable.TEXT_PLAIN) {
+                                part.content = msgNode.fr = (part.content) ? part.content._content : "";
+                            }
+                            else if (part.ct === ZmMimeTable.TEXT_HTML) {
+                                part.content = (part.content) ? part.content._content : "";
+                                part.body = true;
+                            }
+                        }
+                    }
+                }
+                respEl.push(msgNode);
+            }
+        }
+    }
+
+    var results = new ZmSearchResult(search);
+    results.type = search.types ? search.types.get(0) : null;
+
+    if (search.types.get(0) === ZmId.ITEM_CONV) {//conversation mode
+        results.set({ "c" : respEl });
+    }
+    else {
+        results.set({ "m" : respEl });
+    }
+
+    this._showResults(results, search);
+};
+
+/**
+ * Handle a few minor errors where we show an empty result set.
+ *
+ * @private
+ */
+ZmSearchController.prototype._handleErrorDoIndexedDBSearch =
+function(search, result) {
+    var results = new ZmSearchResult(search);
+    results.type = search.types ? search.types.get(0) : null;
+    this._showResults(results, search);
 };

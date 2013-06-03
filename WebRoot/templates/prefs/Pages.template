@@ -2602,3 +2602,26 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 		</tr>
 	</table>
 </template>
+
+<template id='prefs.Pages#OfflineSettings'>
+    <div style="width:500px;">
+        <div>
+            Would you like to enable offline support to manage and compose mail, contacts and appointments when you're not connected to the Internet?
+        </div>
+        <div>
+            <$ var offlineEnabled = appCtxt.get(ZmSetting.WEBCLIENT_OFFLINE_ENABLED); $>
+            <input id='${id}_ENABLE_OFFLINE_RADIO' type=radio name='${id}_OFFLINE_SETTING'
+                <$ if (offlineEnabled) { $>
+                    checked
+                <$ } $>
+            ><label for='${id}_ENABLE_OFFLINE_RADIO'> Allow offline support. Copies of recent items will be synchronized and saved to this computer. If you're using a shared or public computer, this is not recommended. See Folder Properties to manage individual folder offline settings.</label>
+        </div>
+        <div>
+            <input id='${id}_DISABLE_OFFLINE_RADIO' type=radio name='${id}_OFFLINE_SETTING'
+                <$ if (!offlineEnabled) { $>
+                    checked
+                <$ } $>
+            ><label for='${id}_DISABLE_OFFLINE_RADIO'> Don't allow offline support. You can read and compose new mail, edit and create contacts, and edit and create appointments only when you're connected to the Internet. Recent items will not be saved on this computer.</label>
+        </div>
+    </div>
+</template>

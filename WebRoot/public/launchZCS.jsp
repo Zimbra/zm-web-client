@@ -42,6 +42,8 @@
     String skin = authResult.getSkin();
 %>
 <app:skinAndRedirect defaultSkin="${skin}" />
+
+<% if (!("true".equals(request.getParameter("weboffline")))) { %>
 <%
 	// Set to expire far in the past.
 	response.setHeader("Expires", "Tue, 24 Jan 2000 17:46:50 GMT");
@@ -52,27 +54,10 @@
 	// Set standard HTTP/1.0 no-cache header.
 	response.setHeader("Pragma", "no-cache");
 %>
+<% } %>
 
 <zm:getUserAgent var="ua" session="false"/>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<meta http-equiv="X-UA-Compatible" content="IE=EmulateIE9" />
-<html>
-<head>
-<!--
- launchZCS.jsp
- * ***** BEGIN LICENSE BLOCK *****
- * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012 VMware, Inc.
- * 
- * The contents of this file are subject to the Zimbra Public License
- * Version 1.3 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
- * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * ***** END LICENSE BLOCK *****
--->
 <%	java.util.List<String> localePref = authResult.getPrefs().get("zimbraPrefLocale");
 	if (localePref != null && localePref.size() > 0) {
 		request.setAttribute("localeId", localePref.get(0));
@@ -122,7 +107,7 @@
 
 	String ext = getAttribute(request, "fileExtension", null);
 	if (ext == null || isDevMode || isCoverage) ext = "";
-	
+
 	String offlineMode = getParameter(request, "offline", application.getInitParameter("offlineMode"));
 
 	Locale locale = request.getLocale();
@@ -160,10 +145,44 @@
         pageContext.setAttribute("isCoverage", isCoverage);
         pageContext.setAttribute("isPerfMetric", isPerfMetric);
         pageContext.setAttribute("isLocaleId", localeId != null);
+    pageContext.setAttribute("weboffline", "TRUE".equals(authResult.getPrefs().get("zimbraPrefWebClientOfflineAccessEnabled").get(0)));
 %>
+<html
+<c:if test="${weboffline}">
+        manifest="<c:url value="/appcache/images,common,dwt,msgview,login,zm,spellcheck,skin.appcache">
+        <c:param name="v" value="${vers}" />
+        <c:param name="debug" value='${isDebug?"1":""}' />
+        <c:param name="skin" value="${skin}" />
+        <c:param name="locale" value="${locale}" />
+        <c:param name="compress" value="${not isDebug}" />
+        <c:param name="templates" value="only" />
+        <c:if test="${not empty param.customerDomain}">
+            <c:param name="customerDomain"	value="${param.customerDomain}" />
+        </c:if>
+     </c:url>"
+</c:if>>
+<head>
+<!--
+ launchZCS.jsp
+ * ***** BEGIN LICENSE BLOCK *****
+ * Zimbra Collaboration Suite Web Client
+ * Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012 VMware, Inc.
+ * 
+ * The contents of this file are subject to the Zimbra Public License
+ * Version 1.3 ("License"); you may not use this file except in
+ * compliance with the License.  You may obtain a copy of the License at
+ * http://www.zimbra.com/license.
+ * 
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * ***** END LICENSE BLOCK *****
+-->
+
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+<% if (!("true".equals(request.getParameter("weboffline")))) { %>
 <meta http-equiv="cache-control" content="no-cache"/>
 <meta http-equiv="Pragma" content="no-cache"/>
+<% } %>
 <fmt:setLocale value='${locale}' scope='request' />
 <c:if test="${not isLocaleId}">
 <zm:getValidLocale locale='${locale}' var='validLocale'/>
@@ -217,6 +236,7 @@
     window.appCoverageMode		= ${isCoverage};
     window.isScriptErrorOn		= ${isScriptErrorOn};
     window.isPerfMetric			= ${isPerfMetric};
+    window.isWeboffline			= ${weboffline}
 
 	window.authTokenExpires = <%= authResult.getExpires()%>;
 

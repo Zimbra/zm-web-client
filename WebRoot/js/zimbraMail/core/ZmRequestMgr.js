@@ -94,6 +94,7 @@ function() {
  * @param {AjxCallback}	callback			the next callback in chain for async request
  * @param {AjxCallback}	errorCallback		the callback to run if there is an exception
  * @param {AjxCallback}	continueCallback	the callback to run after user re-auths
+ * @param {AjxCallback}	offlineCallback	    the callback to run if the user is offline
  * @param {int}			timeout				the timeout value (in seconds)
  * @param {Boolean}		noBusyOverlay		if <code>true</code>, don't use the busy overlay
  * @param {String}		accountName			the name of account to execute on behalf of
@@ -104,11 +105,29 @@ function() {
  * @param {Boolean}		noSession			if <code>true</code>, no session info is included
  * @param {String}		restUri				the REST URI to send the request to
  * @param {boolean}		emptyResponseOkay	if true, empty or no response from server is not an erro
+ * @param {boolean}		offlineRequest	    if true, request will not be send to server
  */
 ZmRequestMgr.prototype.sendRequest =
 function(params) {
-
 	var response = params.response;
+
+    if (params.offlineRequest) {
+        if (params.offlineCallback) {
+            params.offlineCallback(params);
+        }
+        return;
+    }
+
+    if (!response && appCtxt._supportsOffline && appCtxt.isOfflineMode()) {
+        if (params.offlineCallback) {
+            params.offlineCallback(params);
+        }
+        else {
+            this.__getItemCacheOffline(params, this.sendRequest.bind(this));
+        }
+        return;
+    }
+
 	if (response) {
 		if (params.reqId) {
 			params = this._pendingRequests[params.reqId] || params;
@@ -218,7 +237,7 @@ ZmRequestMgr.prototype._handleResponseSendRequest =
 function(params, result) {
 	DBG.println("req", "ZmRequestMgr.handleResponseSendRequest for req: " + params.reqId);
 	var isCannedResponse = (params.response != null);
-	if (!isCannedResponse) {
+	if (!isCannedResponse && !appCtxt.isOfflineMode()) {
 		if (!this._pendingRequests[params.reqId]) {
 			DBG.println("req", "ZmRequestMgr.handleResponseSendRequest no pending request for " + params.reqId);
 			return;
@@ -254,7 +273,7 @@ function(params, result) {
 		DBG.println("req", "Request " + params.reqId + " got an exception");
 		var ecb = params.errorCallback;
 		if (ecb) {
-			var handled = ecb.isAjxCallback ? ecb.run(ex) : ecb(ex);
+            var handled = ecb.isAjxCallback ? ecb.run(ex, params) : ecb(ex, params);
 			if (!handled) {
 				this._handleException(ex, params);
 			}
@@ -270,7 +289,11 @@ function(params, result) {
 				}
 				return false;
 			}(params.ignoreErrs, ex.code)
-			
+
+            if (ex.code === ZmCsfeException.EMPTY_RESPONSE && params.offlineCallback) {
+                params.offlineCallback(params);
+                ignore = true;
+            }
 			if (!ignore)
 				this._handleException(ex, params);
 		}
@@ -283,9 +306,15 @@ function(params, result) {
 		return;
 	}
 
-	if (params.asyncMode && !params.restUri) {
-		result.set(response.Body);
+    if (params.asyncMode && !params.restUri) {
+	    result.set(response.Body);
 	}
+
+    if (appCtxt._supportsOffline && !appCtxt.isOfflineMode()){
+        this.__setItemCacheOffline(params, response);
+    }
+
+
 
     // if we didn't get an exception, then we should make sure that the
     // poll timer is running (just in case it got an exception and stopped)
@@ -678,6 +707,10 @@ function(notify) {
 	if (notify.modified) {
 		this._handleModifies(notify.modified);
 	}
+
+    if (window.isWeboffline && !appCtxt.isOfflineMode() && (notify.deleted || notify.created || notify.modified)){
+        appCtxt._offlineHandler.sendSyncRequest();
+    }
 	this._controller.runAppFunction("postNotify", false, notify);
 };
 
@@ -882,4 +915,65 @@ function(params, reqId) {
 	// submit form
 	var form = iframeDoc.getElementById(iframe.id+"-form");
 	form.submit();
+};
+
+
+ZmRequestMgr.prototype.__getItemCacheOffline =
+function(params, callback){
+var id = this._generateKey(params);
+var store = (function (params){
+            if (params.jsonObj){
+                var folder = null;
+                if (params.jsonObj.SearchRequest){
+                    folder = params.jsonObj.SearchRequest.query || "";
+                    return folder && folder.replace && folder.replace(/in:|\"/g, "") + (params.jsonObj.SearchRequest.types) || "";
+                }
+                folder = appCtxt._offlineHandler._getFolder(appCtxt.getCurrentSearch().folderId);
+                if (params.jsonObj.SearchConvRequest){
+                    return  folder + "conversation";
+                } else if (params.jsonObj.GetMsgRequest){
+                    return folder + "message";
+                }
+
+            }
+            return "ZmOfflineStore";
+        })(params);
+
+    if (appCtxt._supportsOffline && appCtxt.isOfflineMode() && !params.offlineRequestDone){
+         appCtxt._offlineHandler.getItem(id, callback, params, store);
+    }
+
+};
+
+ZmRequestMgr.prototype.__setItemCacheOffline =
+function(params,response ){
+    var id = this._generateKey(params);
+    if (id == "GetMailboxMetadataRequest" || id == "DiscoverRightsRequest" ){
+       params.offlineCache = true;
+    }
+    if (appCtxt._supportsOffline && !appCtxt.isOfflineMode() && params.offlineCache === true){
+        appCtxt._offlineHandler.setItem(id, response, params.store || "ZmOfflineStore");
+    }
+};
+
+ZmRequestMgr.prototype._generateKey =
+function(params){
+    if (params.jsonObj && params.jsonObj.SearchConvRequest) return params.jsonObj.SearchConvRequest.cid;
+    if (params.jsonObj && params.jsonObj.GetMsgRequest && params.jsonObj.GetMsgRequest.m)   return params.jsonObj.GetMsgRequest.m.id;
+
+    var obj = (params.restUri) ? params.restUri : ((params.jsonObj) ? params.jsonObj : ((params.soapDoc && params.soapDoc.getXml()) || "").replace(/\"/g, ""));
+    var requestStr = obj && JSON.stringify1(obj);
+
+    if (!requestStr) return null;
+    if (requestStr.indexOf("GetMailboxMetadataRequest ") != -1) return "GetMailboxMetadataRequest";
+    if (requestStr.indexOf("DiscoverRightsRequest") != -1) return "DiscoverRightsRequest";
+
+    var key = requestStr.replace(/\"/g, "") ;
+    key = key.replace(/read\:1\,/g, "") ; // workaround
+    var index = key.indexOf('account');
+    if (index != -1){
+       key = key.substring(index)
+    }
+
+    return key;
 };

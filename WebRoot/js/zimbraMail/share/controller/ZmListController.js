@@ -699,6 +699,18 @@ function() {
 };
 
 /**
+ * returns true if the search folder is drafts
+ */
+ZmListController.prototype.isOutboxFolder =
+function() {
+    var folder = this._getSearchFolder();
+    if (!folder) {
+        return false;
+    }
+    return folder.nId == ZmFolder.ID_OUTBOX;
+};
+
+/**
  * returns true if the search folder is sync failures
  */
 ZmListController.prototype.isSyncFailuresFolder =

@@ -951,6 +951,7 @@ function() {
     this.registerSetting("COMPOSE_INIT_DIRECTION",			{name:"zimbraPrefComposeDirection", type:ZmSetting.T_PREF, defaultValue:ZmSetting.LTR, isGlobal:true});
     this.registerSetting("SHOW_COMPOSE_DIRECTION_BUTTONS",	{name:"zimbraPrefShowComposeDirection", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false, isGlobal:true});
 	this.registerSetting("DEFAULT_TIMEZONE",				{name:"zimbraPrefTimeZoneId", type:ZmSetting.T_PREF, dataType:ZmSetting.D_STRING, defaultValue:AjxTimezone.getServerId(AjxTimezone.DEFAULT), isGlobal:true});
+    this.registerSetting("WEBCLIENT_OFFLINE_ENABLED",		{name:"zimbraPrefWebClientOfflineAccessEnabled", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false, isImplicit:true});
     this.registerSetting("DEFAULT_PRINTFONTSIZE",	    	{name:"zimbraPrefDefaultPrintFontSize", type:ZmSetting.T_PREF, dataType:ZmSetting.D_STRING, defaultValue:ZmSetting.PRINT_FONT_SIZE, isGlobal:true});    
 	this.registerSetting("GROUPBY_HASH",                    {type: ZmSetting.T_PREF, dataType:ZmSetting.D_HASH});
 	this.registerSetting("GROUPBY_LIST",                    {name:"zimbraPrefGroupByList", type:ZmSetting.T_METADATA, dataType:ZmSetting.D_HASH, isImplicit:true, section:ZmSetting.M_IMPLICIT});
@@ -1119,7 +1120,10 @@ function(ev) {
 		return;
 	}
 	if (ZmSetting.IS_IMPLICIT[id] && setting) {
-		this.save([setting], null, null, appCtxt.getActiveAccount(), true);
+        if (id === ZmSetting.WEBCLIENT_OFFLINE_ENABLED) {
+            var callback = this._offlineSettingsSaveCallback.bind(this, setting.getValue());
+        }
+		this.save([setting], callback, null, appCtxt.getActiveAccount(), true);
 	}
 };
 
@@ -1193,4 +1197,21 @@ ZmSettings.prototype._hasVoiceFeature = function() {
     }
 
     return false;
+};
+
+/**
+ * @private
+ */
+ZmSettings.prototype._offlineSettingsSaveCallback =
+function(offlineEnabled) {
+    if (offlineEnabled) {
+        var cd = appCtxt.getYesNoMsgDialog();
+        cd.reset();
+        cd.registerCallback(DwtDialog.YES_BUTTON, this._refreshBrowserCallback, this, [cd]);
+        cd.setMessage(ZmMsg.offlineChangeRestart, DwtMessageDialog.WARNING_STYLE);
+        cd.popup();
+    }
+    else {
+        ZmOffline.deleteAllOfflineData();
+    }
 };

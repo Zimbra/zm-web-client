@@ -148,6 +148,7 @@ function(parent, obj, tree, elementType, path, account) {
 			if (pkg) {
 				AjxDispatcher.require(pkg);
 			}
+            ZmFolderTree.addOutboxFolder(obj);
 			folder = ZmFolderTree.createFolder(type, parent, obj, tree, path, elementType, account);
             if (appCtxt.isExternalAccount() && folder.isSystem() && folder.id != ZmOrganizer.ID_ROOT) { return; }
 			ZmFolderTree._traverse(folder, obj, tree, (path || []), elementType, account);
@@ -541,4 +542,47 @@ function(folder) {
 		for (var i = 0; i < children.length; i++)
 			this._sortFolder(children[i]);
 	}
+};
+
+/**
+ * For ZWC offline, adds outbox folder object in the folder object which is coming from the server
+ *
+ * @param {object}	obj	object containing folder information
+ *
+ */
+ZmFolderTree.addOutboxFolder =
+function(obj) {
+
+    if (!appCtxt._supportsOffline) {
+        return;
+    }
+
+    if (obj && obj.folder && obj.id == ZmFolder.ID_ROOT) {
+
+        var outboxFolderObj = {
+            /*
+             absFolderPath: "/Trash"
+             activesyncdisabled: false
+             i4ms: 1
+             i4next: 4
+             id: "3"
+             l: "1"
+             luuid: "920b8aa4-925d-449d-b427-a8cd629bd89c"
+             ms: 1
+             n: 0  // Number to indicate unread messages next to Trash
+             name: "Trash"
+             rev: 1
+             s: 0
+             uuid: "30310a91-7486-4780-9c20-f0e36c75a753",
+             f: "u" //flag to indicate unread
+             */
+
+            id: ZmFolder.ID_OUTBOX,
+            absFolderPath: "/Outbox",
+            activesyncdisabled: false,
+            name: "Outbox"
+        };
+
+        obj.folder.push(outboxFolderObj);
+    }
 };

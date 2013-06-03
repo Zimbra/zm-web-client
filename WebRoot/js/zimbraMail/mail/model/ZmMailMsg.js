@@ -177,6 +177,7 @@ function(params) {
 		var newParams = {
 			jsonObj:		jsonObj,
 			asyncMode:		true,
+            offlineCache:   true,
 			callback:		ZmMailMsg._handleResponseFetchMsg.bind(null, params.callback),
 			errorCallback:	params.errorCallback,
 			noBusyOverlay:	params.noBusyOverlay,
@@ -743,7 +744,14 @@ function(params, callback, result) {
 
 	this._loadFromDom(response.m[0]);
 	if (!this.isReadOnly() && params.markRead) {
-		this._markReadLocal(true);
+        //For offline mode keep isUnread property as true so that additional MsgActionRequest gets fired.
+        //MsgActionRequest also gets stored in outbox queue and it also sends notify header for reducing the folder unread count.
+        if (appCtxt.isOfflineMode()) {
+            this._markReadLocal(false);
+        }
+        else {
+            this._markReadLocal(true);
+        }
 	}
 	this.findAttsFoundInMsgBody();
 
@@ -761,10 +769,34 @@ function(params, callback, result) {
 
 ZmMailMsg.prototype._handleResponseLoadFail =
 function(params, callback, result) {
-	this._loading = false;
+    this._loading = false;
 	if (callback) {
 		return callback.run(result);
 	}
+};
+
+ZmMailMsg.prototype._handleIndexedDBResponse =
+function(params, requestParams, result) {
+
+    var obj = result[0],
+        msgNode,
+        data = {},
+        methodName = requestParams.methodName;
+
+    if (obj) {
+        msgNode = obj[obj.methodName]["m"];
+        if (msgNode) {
+            msgNode.su = msgNode.su._content;
+            msgNode.fr = msgNode.mp[0].content._content;
+            msgNode.mp[0].content = msgNode.fr;
+            if (msgNode.fr) {
+                msgNode.mp[0].body = true;
+            }
+            data[methodName.replace("Request", "Response")] = { "m" : [msgNode] };
+            var csfeResult = new ZmCsfeResult(data);
+            this._handleResponseLoad(params, params.callback, csfeResult);
+        }
+    }
 };
 
 ZmMailMsg.prototype.isLoaded =
@@ -1364,9 +1396,10 @@ function(nfolder, resp) {
  * @param {ZmBatchCommand} batchCmd		if set, request gets added to this batch command
  * @param {Date} sendTime				if set, tell server that this message should be sent at the specified time
  * @param {Boolean} isAutoSave          if <code>true</code>, this an auto-save draft
+ * @param {AjxCallback}	offlineCallback	the offline callback to trigger if the user is offline
  */
 ZmMailMsg.prototype.send =
-function(isDraft, callback, errorCallback, accountName, noSave, requestReadReceipt, batchCmd, sendTime, isAutoSave) {
+function(isDraft, callback, errorCallback, accountName, noSave, requestReadReceipt, batchCmd, sendTime, isAutoSave, offlineCallback) {
 
 	var aName = accountName;
 	if (!aName) {
@@ -1405,10 +1438,12 @@ function(isDraft, callback, errorCallback, accountName, noSave, requestReadRecei
 			accountName: aName,
 			callback: (new AjxCallback(this, this._handleResponseSend, [isDraft, callback])),
 			errorCallback: errorCallback,
-			batchCmd: batchCmd
+			batchCmd: batchCmd,
+            offlineCallback: offlineCallback,
+            skipOfflineCheck: true
 		};
         this._sendMessage(params);
-	}
+    }
 };
 
 ZmMailMsg.prototype._handleResponseSend =
@@ -1673,6 +1708,7 @@ function(request, isDraft, accountName, requestReadReceipt, sendTime) {
  *        isDraft				[boolean]		true if this message is a draft
  *        callback				[AjxCallback]	async callback
  *        errorCallback			[AjxCallback]	async error callback
+ *        offlineCallback       [AjxCallback]	async offline callback
  *        batchCmd				[ZmBatchCommand]	if set, request gets added to this batch command
  *
  * @private
@@ -1712,6 +1748,7 @@ function(params) {
 												noBusyOverlay:params.isDraft && params.isAutoSave,
 												callback:respCallback,
 												errorCallback:params.errorCallback,
+                                                offlineCallback:params.offlineCallback,
 												accountName:params.accountName,
                                                 timeout: ( ( params.isDraft && this.attId ) ? 0 : null )
                                                 });

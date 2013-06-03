@@ -107,7 +107,7 @@
  * 
  * Return		If the input contains an email address, turn it into a bubble
  * Tab		Go to the next field
- * Esc		If requests are pending (it will say "Autocompleting…"), cancel them. If not, cancel compose.
+ * Esc		If requests are pending (it will say "Autocompleting"), cancel them. If not, cancel compose.
  * 
  * 
  * 
@@ -815,6 +815,9 @@ function(on, str) {
  */
 ZmAutocompleteListView.prototype._autocompleteAction =
 function(ev) {
+    if (appCtxt.isOfflineMode()){
+        return; // To be removed
+    }
 	var aclv = ev.aclv;
 	aclv._acActionId[ev.element.id] = -1; // so we don't try to cancel
 	aclv.autocomplete(ev.element);

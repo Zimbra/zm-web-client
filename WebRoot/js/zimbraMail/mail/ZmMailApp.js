@@ -1622,7 +1622,7 @@ function(params, callback) {
 ZmMailApp.prototype._handleLoadLaunch =
 function(params, callback) {
 	// set type for initial search
-	this._groupBy = appCtxt.get(ZmSetting.GROUP_MAIL_BY);
+	this._groupBy = (appCtxt.isOfflineMode()) ? ZmItem.MSG : appCtxt.get(ZmSetting.GROUP_MAIL_BY);
 
 	var query;
 	params = params || {};
@@ -1730,8 +1730,9 @@ function(query, callback, response, type) {
 	}
 	else if(appCtxt.isExternalAccount()) {
         query = "inid:" + this.getDefaultFolderId();
-    }
-    else {
+    } else if (appCtxt.isOfflineMode()){
+        query = query || "in:inbox";
+    } else {
 		query = query || appCtxt.get(ZmSetting.INITIAL_SEARCH, null, account);
 	}
 
@@ -1747,6 +1748,7 @@ function(query, callback, response, type) {
 		limit:				this.getLimit(),
 		getHtml:			appCtxt.get(ZmSetting.VIEW_AS_HTML, null, account),
 		noUpdateOverview:	noUpdateOverview,
+        offlineCache:       true,
 		accountName:		(account && account.name),
 		callback:			callback,
 		response:			response,
@@ -1977,7 +1979,7 @@ function(sessionId) {
  */
 ZmMailApp.prototype.getMailListController =
 function() {
-	var groupMailBy = appCtxt.get(ZmSetting.GROUP_MAIL_BY);
+	var groupMailBy = appCtxt.get(ZmSetting.GROUP_MAIL_BY) ;
 	return (groupMailBy == ZmSetting.GROUP_BY_CONV) ? AjxDispatcher.run("GetConvListController") :
 													  AjxDispatcher.run("GetTradController");
 };

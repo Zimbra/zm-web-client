@@ -593,7 +593,8 @@ function(attId, docIds, draftType, callback, contactId) {
 
 	var respCallback = this._handleResponseSendMsg.bind(this, draftType, msg, callback);
 	var errorCallback = this._handleErrorSendMsg.bind(this, draftType, msg);
-	msg.send(isDraft, respCallback, errorCallback, acctName, null, requestReadReceipt, null, this._sendTime, isAutoSave);
+    var offlineCallback = this._handleOfflineSendMsg.bind(this, draftType, msg);
+	msg.send(isDraft, respCallback, errorCallback, acctName, null, requestReadReceipt, null, this._sendTime, isAutoSave, offlineCallback);
 	this._resetDelayTime();
 };
 
@@ -632,7 +633,7 @@ function() {
 };
 
 ZmComposeController.prototype._handleErrorSendMsg =
-function(draftType, msg, ex) {
+function(draftType, msg, ex, params) {
     var retVal = false;
 	if (!this.isHidden) {
 		this.resetToolbarOperations();
@@ -642,19 +643,19 @@ function(draftType, msg, ex) {
     appCtxt.notifyZimlets("onSendMsgFailure", [this, ex, msg]);//notify Zimlets on failure
     if (ex && ex.code) {
 	
-        var msg = null;
+        var errorMsg = null;
         var showMsg = false;
 		var style = null;
         if (ex.code == ZmCsfeException.MAIL_SEND_ABORTED_ADDRESS_FAILURE) {
             var invalid = ex.getData ? ex.getData(ZmCsfeException.MAIL_SEND_ADDRESS_FAILURE_INVALID) : null;
             var invalidMsg = (invalid && invalid.length)
                 ? AjxMessageFormat.format(ZmMsg.sendErrorInvalidAddresses, invalid.join(", ")) : null;
-            msg = ZmMsg.sendErrorAbort + "<br/>" +  AjxStringUtil.htmlEncode(invalidMsg);
-            this.popupErrorDialog(msg, ex, true, true, false, true);
+            errorMsg = ZmMsg.sendErrorAbort + "<br/>" +  AjxStringUtil.htmlEncode(invalidMsg);
+            this.popupErrorDialog(errorMsg, ex, true, true, false, true);
             retVal = true;
         } else if (ex.code == ZmCsfeException.MAIL_SEND_PARTIAL_ADDRESS_FAILURE) {
             var invalid = ex.getData ? ex.getData(ZmCsfeException.MAIL_SEND_ADDRESS_FAILURE_INVALID) : null;
-            msg = (invalid && invalid.length)
+            errorMsg = (invalid && invalid.length)
                 ? AjxMessageFormat.format(ZmMsg.sendErrorPartial, AjxStringUtil.htmlEncode(invalid.join(", ")))
                 : ZmMsg.sendErrorAbort;
             showMsg = true;
@@ -675,26 +676,29 @@ function(draftType, msg, ex) {
                     }
                 }
             }
-            msg = ZmMsg.cancelSendMsgWarning;
+            errorMsg = ZmMsg.cancelSendMsgWarning;
             this._composeView.setBackupForm();
             retVal = true;
         } else if (ex.code == ZmCsfeException.MAIL_QUOTA_EXCEEDED) {
-		    msg = ZmMsg.errorQuotaExceeded;
-	    }
+            errorMsg = ZmMsg.errorQuotaExceeded;
+	    } else if (ex.code === ZmCsfeException.EMPTY_RESPONSE) { //If server is down
+            retVal = this._handleOfflineSendMsg(draftType, msg, params);
+            return retVal;
+        }
 
         if (this._uploadingProgress){
             this._initAutoSave();
 		    this._composeView._resetUpload(true);
 			if (ex.code === ZmCsfeException.MAIL_MESSAGE_TOO_BIG) {
-				msg = AjxMessageFormat.format(ZmMsg.attachmentSizeError, AjxUtil.formatSize(appCtxt.get(ZmSetting.MESSAGE_SIZE_LIMIT)));
+				errorMsg = AjxMessageFormat.format(ZmMsg.attachmentSizeError, AjxUtil.formatSize(appCtxt.get(ZmSetting.MESSAGE_SIZE_LIMIT)));
 				style = DwtMessageDialog.WARNING_STYLE;
 			}
 			else {
-				msg = msg || ZmMsg.attachingFilesError + "<br>" + (ex.msg || "");
+				errorMsg = errorMsg || ZmMsg.attachingFilesError + "<br>" + (ex.msg || "");
 			}
 			showMsg = true;
         }
-        if (msg && showMsg) {
+        if (errorMsg && showMsg) {
 			this._showMsgDialog(ZmComposeController.MSG_DIALOG_1, msg, style || DwtMessageDialog.CRITICAL_STYLE, null, true);
             retVal = true;
         }
@@ -705,6 +709,7 @@ function(draftType, msg, ex) {
     this._initAutoSave();
     return retVal;
 };
+
 
 /**
  * Creates a new ZmComposeView if one does not already exist
@@ -1790,7 +1795,7 @@ function(draftType, attId, docIds, callback, contactId) {
 };
 
 ZmComposeController.prototype._handleResponseSaveDraftListener =
-function(draftType, callback) {
+function(draftType, callback, result) {
 	if (draftType == ZmComposeController.DRAFT_TYPE_AUTO &&
 		this._draftType == ZmComposeController.DRAFT_TYPE_NONE) {
 		this._draftType = ZmComposeController.DRAFT_TYPE_AUTO;
@@ -1802,7 +1807,7 @@ function(draftType, callback) {
 	this._composeView._isDirty = false;
 
 	if (callback) {
-		callback.run();
+		callback.run(result);
 	}
 };
 
@@ -2298,7 +2303,11 @@ ZmComposeController.prototype._processDataURIImages = function(imgArray, length,
 };
 
 ZmComposeController.prototype._uploadMyComputerFile =
-function(files, prevData, start) {
+    function(files, prevData, start){
+        if (!navigator.online) {
+            return this._handleOfflineUpload(files);
+        }
+
     try {
         var req = new XMLHttpRequest(); // we do not call this function in IE
         var curView = this._composeView;
@@ -2488,4 +2497,155 @@ function(dlgType, msg, style, callbacks) {
 		}
 	}
 	dlg.popup();
+};
+
+ZmComposeController.prototype._handleOfflineSendMsg =
+function(draftType, msg, params) {
+
+    var jsonObj = params.jsonObj;
+    if (!jsonObj) {
+        return;
+    }
+
+    var methodName = Object.keys(jsonObj)[0];
+    var msgNode = jsonObj[methodName].m;
+    if (!msgNode) {
+        return;
+    }
+
+    var currentTime = new Date().getTime();
+    jsonObj.methodName = methodName;
+    msgNode.d = currentTime; //for displaying date and time in the outbox/Drafts folder
+    var callback = this._handleSetItemInRequestQueueResponse.bind(this, draftType, msg);
+    if (msgNode.id) { //Already existing message
+        jsonObj.id = msgNode.id;
+        var indexObj = { operation : "add",
+            methodName : params.methodName,
+            id : msgNode.id,
+            value : jsonObj
+        };
+        ZmOfflineDB.indexedDB.actionsInRequestQueueUsingIndex(indexObj, callback);
+    }
+    else {
+        jsonObj.id = msgNode.id = currentTime.toString(); //Id should be string
+        jsonObj.offlineCreated = true;
+        ZmOfflineDB.indexedDB.setItemInRequestQueue(jsonObj, callback);
+    }
+    return true;
+};
+
+ZmComposeController.prototype._handleSetItemInRequestQueueResponse =
+function(draftType, msg) {
+
+    if (draftType === ZmComposeController.DRAFT_TYPE_NONE) {//"SendMsgRequest"
+        appCtxt.setStatusMsg(ZmMsg.messageScheduledSent);
+        this._app.popView(true, this._currentView);
+        var indexObj = { operation : "delete",
+                         methodName : "SaveDraftRequest",
+                         id : msg.id
+                       };
+        ZmOfflineDB.indexedDB.actionsInRequestQueueUsingIndex(indexObj);//Delete any drafts for this message id
+    }
+    else if (draftType === ZmComposeController.DRAFT_TYPE_MANUAL) {//"SaveDraftRequest"
+        var transitions = [ ZmToast.FADE_IN, ZmToast.IDLE, ZmToast.PAUSE, ZmToast.FADE_OUT ];
+        appCtxt.setStatusMsg(ZmMsg.draftSaved + "in indexedDB", ZmStatusView.LEVEL_INFO, null, transitions);
+    }
+
+    /*
+    var response = {};
+    var responseKey = params.methodName.replace("Request", "Response");
+    params.jsonObj.SaveDraftRequest.m["l"] = "6";
+    response[responseKey] = { "m" : [params.jsonObj.SaveDraftRequest.m] };
+    var header = { "context" : {} };
+    header["context"]["notify"] = [ {"created" : { "m" : [params.jsonObj.SaveDraftRequest.m] } , "seq" : 2 } ];
+    header["context"]["refresh"] = {};
+    header["context"]["refresh"]["folder"] = [ { id: "1",
+        l: "11",
+        luuid: "4aa4df9e-d21e-47f7-ab5d-868fb7169d05" } ];
+    result._header = header;
+    oldCallback.run(new ZmCsfeResult(response, false, header));
+    */
+};
+
+ZmComposeController.prototype._handleOfflineUpload = function(files) {
+    var callback = this._storeFilesInWebStorage.bind(this);
+    var saveDraftCallback = ZmComposeController.readFilesAsDataURL.bind(null, files, callback, null);
+    this.saveDraft(null, null, null, saveDraftCallback);
+};
+
+/**
+ * Read files in DataURL Format and execute the callback with param dataURLArray.
+ *
+ * dataURLArray is an array of objects, with each object containing name, type, size and data in data-url format for an file.
+ *
+ * @param {FileList} files                  Object containing one or more files
+ * @param {AjxCallback/Bound} callback	    the success callback
+ * @param {AjxCallback/Bound} errorCallback the error callback
+ * @param {Object} result                   Additional Object passed to the callback function
+ *
+ * @public
+ */
+ZmComposeController.readFilesAsDataURL = function(files, callback, errorCallback, result) {
+    var i = 0,
+        filesLength = files.length,
+        dataURLArray = [],
+        fileReadErrorCount = 0;
+
+    if (!window.FileReader || filesLength === 0) {
+        if (errorCallback) {
+            errorCallback.run(dataURLArray, fileReadErrorCount, result);
+        }
+        return;
+    }
+
+    for (; i < filesLength; i++) {
+
+        var file = files[i],
+            reader = new FileReader();
+
+        reader.onload = function(file, ev) {
+            dataURLArray.push(
+                {
+                    name : file.name,
+                    type : file.type,
+                    size : file.size,
+                    data : ev.target.result
+                }
+            );
+        }.bind(null, file);
+
+        reader.onerror = function() {
+            fileReadErrorCount++;
+        };
+
+        //Called when the read is completed, whether successful or not. This is called after either onload or onerror.
+        reader.onloadend = function() {
+            if ((dataURLArray.length + fileReadErrorCount) === filesLength) {
+                if (fileReadErrorCount > 0 && errorCallback) {
+                    errorCallback.run(dataURLArray, fileReadErrorCount, result);
+                }
+                if (callback) {
+                    callback.run(dataURLArray, fileReadErrorCount, result);
+                }
+            }
+        };
+
+        reader.readAsDataURL(file);
+    }
+};
+
+ZmComposeController.prototype._storeFilesInWebStorage = function(attachmentsArray, result) {
+    console.log("_saveAttachmentsOffline");
+    console.log(result);
+    if (result) {
+        var data = localStorage.getItem(result);
+        if (data) {
+            data = JSON.parse(data);
+            data = data[data.length-1];
+            if (!data.attachments) {
+                data.attachments = attachmentsArray;
+            }
+        }
+    }
+
 };

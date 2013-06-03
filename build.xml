@@ -102,6 +102,7 @@
     <property name='nodebug.ext' value='.nodebug'/>
     <property name="jsmin.ext" value='.min'/>
     <property name="compress.ext" value='.zgz'/>
+    <property name='compresserror.ext' value='.err'/>
 
     <!-- ZIMBRA FIREFOX EXTENSION -->
     <property name="ffext.jarfile" value="zimbradnd.jar"/>
@@ -113,6 +114,9 @@
     <property name="tinymce.version" value="3.5.4.1"/>
     <property name='tinymce.dir' value='${js.dir}/ajax/3rdparty/tinymce'/>
     <property name="tinymce.zplugins.dir" value="${web.dir}/tiny_mce_plugins"/>
+
+    <!-- MODERNIZR INTEGRATION -->
+    <property name="modernizr.version" value="2.6.1"/>
 
     <!-- jQuery INTEGRATION -->
     <property name="jquery.version" value="1.8.1"/>
@@ -331,7 +335,7 @@
         </war>
     </target>
 
-    <target name='sync' depends='jquery,tinymce,templates'>
+    <target name='sync' depends='jquery,modernizr,tinymce,templates'>
         <!-- NOTE: Keep order in sync with list of war filesets. -->
         <copy todir='${webapp.dir}/WEB-INF' verbose='${sync.verbose}'>
             <fileset refid="webinf.fileset" />
@@ -989,7 +993,7 @@
         </if>
     </target>
 
-    <target name='jam-files' depends='jquery,tinymce,templates,timezones'>
+    <target name='jam-files' depends='jquery,modernizr,tinymce,templates,timezones'>
         <property name='jam.jsp.dir' value='${build.web.dir}/public/jsp'/>
 
         <mkdir dir='${build.js.dir}'/>
@@ -1010,7 +1014,7 @@
                  classpath="${build.classes.dir}"
                 />
 
-        <fileset id='jam-files.fileset' dir='${build.js.dir}' includes='*.js' excludes='*_all.js'/>
+        <fileset id='jam-files.fileset' dir='${build.js.dir}' includes='*.js' excludes='*_all.js,*_appcache.js'/>
         <pathconvert property="jam-files.list" refid="jam-files.fileset" pathsep=','>
             <chainedmapper>
                 <flattenmapper/>
@@ -1028,6 +1032,7 @@
 
         <property name='jam.file' value='${build.js.dir}/${arg}_all.js'/>
         <property name='jsp.file' value='${build.web.dir}/public/jsp/${arg}.jsp'/>
+        <property name='appcache.file' value='${build.js.dir}/${arg}_appcache.js'/>
         <property name='depends.file' value='${jam.file}${depends.ext}'/>
 
         <packagedependset>
@@ -1082,7 +1087,7 @@
                     </else>
                 </if>
 
-                <jammer jsDestFile='${jam.file}' htmlDestFile='${jsp.file}'
+                <jammer jsDestFile='${jam.file}' htmlDestFile='${jsp.file}' appCacheDestFile='${appcache.file}'
                         dependsFile='${depends.file}' output='all'
                         basepath='&lt;%=contextPath%>/js/'
                         extension='.js?v=&lt;%=vers%>'>
@@ -1151,7 +1156,7 @@ if (ext == null) ext = "";
 	                    <try>
 	                        <block>
 		                        <java jar="${common.lib.dir}/yuicompressor-2.4.2-zimbra.jar" fork="true" failonerror="true"
-		                              output="${build.dir}/yui-compress.out">
+		                              output="${build.dir}/yui-compress.out" error="@{var}${compresserror.ext}">
 		                            <arg value="--line-break"/>
 		                            <arg value="0"/>
 		                            <arg value="--type"/>
@@ -1159,6 +1164,7 @@ if (ext == null) ext = "";
 		                            <arg value="-o"/>
 		                            <arg value="@{var}${jsmin.ext}"/>
 		                            <arg value="@{var}${nodebug.ext}"/>
+                                    <arg value="--verbose"/>
 		                        </java>
 	                        </block>
 		                    <catch>
@@ -1595,6 +1601,10 @@ if (ext == null) ext = "";
                 <different targetdir="${tinymce.dir}"/>
             </fileset>
         </copy>
+    </target>
+
+    <target name="modernizr">
+        <copy todir='${js.dir}/ajax/3rdparty/modernizr' file='${web.dir}/modernizr/${modernizr.version}/modernizr.js' verbose='${sync.verbose}'/>
     </target>
 
     <target name="jquery">

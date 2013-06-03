@@ -987,16 +987,21 @@ function(params) {
 	var more = Boolean(params.ids.length && !params.cancelled);
 
 	var respCallback = new AjxCallback(this, this._handleResponseDoAction, [params]);
+    var isOutboxFolder = this.controller && this.controller.isOutboxFolder();
+    var offlineCallback = this._handleOfflineResponseDoAction.bind(this, params, isOutboxFolder);
 
 	if (params.batchCmd) {
 		params.batchCmd.addRequestParams(params.request, respCallback, params.errorCallback);
 	} else {
-		var reqParams = {asyncMode:true, callback:respCallback, errorCallback: params.errorCallback, accountName:params.accountName, more:more};
+		var reqParams = {asyncMode:true, callback:respCallback, errorCallback: params.errorCallback, offlineCallback: offlineCallback, accountName:params.accountName, more:more};
 		if (useJson) {
 			reqParams.jsonObj = params.request;
 		} else {
 			reqParams.soapDoc = params.request;
 		}
+        if (isOutboxFolder) {
+            reqParams.offlineRequest = true;
+        }
 		DBG.println("sa", "*** do action: " + list.length + " items");
 		params.reqId = appCtxt.getAppController().sendRequest(reqParams);
 	}
@@ -1053,6 +1058,212 @@ function(params, result) {
 			ZmBaseController.showSummary(params.actionSummary, params.actionLogItem, params.closeChildWin);
 		}
 	}
+};
+
+/**
+ * @private
+ */
+ZmList.prototype._handleOfflineResponseDoAction =
+function(params, isOutboxFolder, requestParams) {
+
+    var action = params.action,
+        callback = this._handleOfflineResponseDoActionCallback.bind(this, params, isOutboxFolder),
+        obj;
+
+    if (isOutboxFolder && action.op === "trash") {
+        obj = {
+            methodName : "SendMsgRequest", //Outbox folder only contains offline sent emails
+            operation : "delete",
+            id : action.id
+        };
+        ZmOfflineDB.indexedDB.actionsInRequestQueueUsingIndex(obj, callback);
+    }
+    else {
+        obj = requestParams.jsonObj;
+        obj.methodName = ZmItem.SOAP_CMD[params.type] + "Request";
+        obj.id = action.id;
+        ZmOfflineDB.indexedDB.setItemInRequestQueue(obj, callback);
+        /*
+        jsonObj = $.extend(true, {}, requestParams.jsonObj);//Always clone the object
+        jsonObj.methodName = indexObj.methodName = requestName;
+        indexObj.operation = "add";
+        indexObj.onBeforeAddCallback = function(oldValue, newValue) {
+            newValue[requestName].action.op = oldValue[requestName].action.op + "," + newValue[requestName].action.op;
+        };
+        ids = id.split(",");
+        for (var i = 0, idsLength = ids.length; i < idsLength; i++) {
+            jsonObj[requestName].action.id = jsonObj.id = indexObj.id = ids[i];
+            indexObj.value = jsonObj;
+            if (i === idsLength - 1) {
+                ZmOfflineDB.indexedDB.actionsInRequestQueueUsingIndex(indexObj, callback);
+            }
+            else {
+                ZmOfflineDB.indexedDB.actionsInRequestQueueUsingIndex(indexObj);
+            }
+        }
+        */
+    }
+};
+
+/**
+ * @private
+ */
+ZmList.prototype._handleOfflineResponseDoActionCallback =
+function(params, isOutboxFolder) {
+
+    var data = {},
+        header = this._generateOfflineHeader(params),
+        result,
+        hdr,
+        notify;
+
+    data[ZmItem.SOAP_CMD[params.type] + "Response"] = params.request[ZmItem.SOAP_CMD[params.type] + "Request"];
+    result = new ZmCsfeResult(data, false, header);
+    hdr = result.getHeader();
+    this._handleResponseDoAction(params, result);
+    if (hdr) {
+        notify = hdr.context.notify[0];
+        if (notify) {
+            appCtxt._requestMgr._notifyHandler(notify);
+            this._updateOfflineData(params, isOutboxFolder, notify);
+        }
+    }
+};
+
+/**
+ * @private
+ */
+ZmList.prototype._generateOfflineHeader =
+function(params) {
+
+    var action = params.action,
+        op = action.op,
+        ids = action.id.split(","),
+        idsLength = ids.length,
+        id,
+        msg,
+        flags,
+        folderId,
+        folder,
+        targetFolder,
+        mObj,
+        cObj,
+        folderObj,
+        m = [],
+        c = [],
+        folderArray = [],
+        header;
+
+    for (var i = 0; i < idsLength; i++) {
+
+        id = ids[i];
+        msg = this.getById(id);
+        flags =  msg.flags || "";
+        folderId = msg.getFolderId();
+        folder = appCtxt.getById(folderId);
+        mObj = {
+            id : id
+        };
+        cObj = {
+            id : "-" + mObj.id
+        };
+        folderObj = {
+            id : folderId
+        };
+
+        switch (op)
+        {
+            case "flag":
+                mObj.f = flags + "f";
+                break;
+            case "!flag":
+                mObj.f = flags.replace("f", "");
+                break;
+            case "read":
+                mObj.f = flags.replace("u", "");
+                folderObj.u = folder.numUnread - 1;
+                break;
+            case "!read":
+                mObj.f = flags + "u";
+                folderObj.u = folder.numUnread + 1;
+                break;
+            case "trash":
+                mObj.l = ZmFolder.ID_TRASH;
+                folderObj.n = folder.numTotal - 1;
+                if (msg.isUnread) {
+                    folderObj.u = folder.numUnread - 1;
+                }
+                targetFolder = appCtxt.getById(ZmFolder.ID_TRASH);
+                folderArray.push({
+                    id : targetFolder.id,
+                    n : targetFolder.numTotal + 1,
+                    u : (msg.isUnread ? targetFolder.numUnread + 1 : targetFolder.numUnread)
+                });
+                break;
+            case "spam":
+                mObj.l = ZmFolder.ID_SPAM;
+                folderObj.n = folder.numTotal - 1;
+                if (msg.isUnread) {
+                    folderObj.u = folder.numUnread - 1;
+                }
+                targetFolder = appCtxt.getById(ZmFolder.ID_SPAM);
+                folderArray.push({
+                    id : targetFolder.id,
+                    n : targetFolder.numTotal + 1,
+                    u : (msg.isUnread ? targetFolder.numUnread + 1 : targetFolder.numUnread)
+                });
+                break;
+            case "!spam":
+                mObj.l = ZmFolder.ID_SPAM;
+                folderObj.n = folder.numTotal + 1;
+                if (msg.isUnread) {
+                    folderObj.u = folder.numUnread - 1;
+                }
+                targetFolder = appCtxt.getById(ZmFolder.ID_SPAM);
+                folderArray.push({
+                    id : targetFolder.id,
+                    n : targetFolder.numTotal - 1,
+                    u : (msg.isUnread ? targetFolder.numUnread - 1 : targetFolder.numUnread)
+                });
+                break;
+        }
+        m.push(mObj);
+        c.push(cObj);
+        folderArray.push(folderObj);
+    }
+
+    header = {
+        context : {
+            notify : [{
+                modified : {
+                    m : m,
+                    c : c,
+                    folder : folderArray
+                }
+            }]
+        }
+    };
+
+    return header;
+};
+
+ZmList.prototype._updateOfflineData =
+function(params, isOutboxFolder, notify) {
+
+    var modified = notify.modified;
+    if (!modified) {
+        return;
+    }
+
+    var m = modified.m;
+    if (!m) {
+        return;
+    }
+
+    for (var i = 0, msg; i < m.length; i++) {
+        msg = m[i];
+        appCtxt._offlineHandler.modifyItem(msg.id, msg, ZmOffline.MESSAGE);
+    }
 };
 
 ZmList.getActionSummary =

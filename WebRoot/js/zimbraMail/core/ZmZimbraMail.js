@@ -123,7 +123,12 @@ ZmZimbraMail = function(params) {
 	this._shell.addGlobalSelectionListener(new AjxListener(this, this._globalSelectionListener));
 
     /// go!
-    this.startup(params);
+    if (appCtxt._supportsOffline){
+        var callback = this.startup.bind(this, params);
+        appCtxt.initWebOffline(callback);
+    } else {
+            this.startup(params);
+    }
 };
 
 ZmZimbraMail.prototype = new ZmController;
@@ -352,12 +357,27 @@ function(params) {
     // NOTE: We must go through the request mgr for default handling
     var getInfoResponse = AjxUtil.get(params, "getInfoResponse");
     if (getInfoResponse) {
-        this._requestMgr.sendRequest({response:getInfoResponse});
+        this._requestMgr.sendRequest({response:getInfoResponse, offlineCache:true});
     }
 
+    if (appCtxt.isOfflineMode()){
+        var respCallback = new AjxCallback(this, this._handleResponseGetMetaData, params);
+        var callback = appCtxt.accountList.mainAccount.loadMetaData.bind(appCtxt.accountList.mainAccount, respCallback);
+        //var store = "inbox" + (appCtxt.get(ZmSetting.GROUP_MAIL_BY) || "message");
+        var store = "inboxmessage";
+        params._skipResponse = true;
+        appCtxt._offlineHandler._syncSearchRequest(callback, store, params);
+        appCtxt._offlineHandler.syncFoldersMetaData();
+
+    } else {
+        var respCallback = new AjxCallback(this, this._handleResponseGetMetaData, params);
+        appCtxt.accountList.mainAccount.loadMetaData(respCallback);
+        if (appCtxt._offlineHandler){
+            appCtxt._offlineHandler.storeFoldersMetaData();
+        }
+    }
 	// fetch meta data for the main account
-	var respCallback = new AjxCallback(this, this._handleResponseGetMetaData, params);
-	appCtxt.accountList.mainAccount.loadMetaData(respCallback);
+
     this._initDelegatedSenderAddrs();
     if(appCtxt.isOffline) {
         var updatePref = appCtxt.get(ZmSetting.OFFLINE_UPDATE_NOTIFY);
@@ -688,6 +708,16 @@ function(params, result) {
 	// startup and packages have been optimized for quick mail display
 	if (this._doingPostRenderStartup) {
 		this.addAppListener(params.startApp, ZmAppEvent.POST_RENDER, new AjxListener(this, this._postRenderStartup));
+        if (appCtxt.isOfflineMode()){
+            params.searchResponse.Body.SearchResponse.m = appCtxt._msgSearchResponse;
+            /*
+            if (params.searchResponse.Body.SearchResponse.m){
+                 params.searchResponse.Body.SearchResponse.m = appCtxt._msgSearchResponse;
+            } else {
+                 params.searchResponse.Body.SearchResponse.c = appCtxt._msgSearchResponse;
+            } */
+
+        }
 		this._searchResponse = params.searchResponse;
 	} else {
 		AjxDispatcher.require("Startup2");
@@ -2248,6 +2278,9 @@ function(parent, parentElement, adminUrl) {
 
     menu.createSeparator();
 
+    mi = menu.createMenuItem("offlineSettings", {text: ZmMsg.offlineSettings});
+    mi.addSelectionListener(new AjxListener(this, this._offlineSettingsListener));
+
 	if (appCtxt.get(ZmSetting.CHANGE_PASSWORD_ENABLED)) {
         mi = menu.createMenuItem("changePassword", {text: ZmMsg.changePassword});
         mi.addSelectionListener(new AjxListener(this, this._changePasswordListener));
@@ -2286,6 +2319,8 @@ function() {
 
 	return newButton;
 };
+
+
 
 /**
  * Creates the New menu's drop down menu the first time the drop down arrow is used,
@@ -2451,6 +2486,11 @@ function(ev) {
 
 };
 
+ZmZimbraMail.prototype._offlineSettingsListener =
+function(ev) {
+    var dialog = appCtxt.getOfflineSettingsDialog();
+    dialog.popup();
+};
 
 ZmZimbraMail.prototype._initOfflineUserInfo =
 function() {
@@ -2840,6 +2880,9 @@ function(ex, continuation) {
 			}
 		}
 	}
+    else if (ex.code === ZmCsfeException.EMPTY_RESPONSE) {
+        handled = true;
+    }
 	if (!handled) {
 		ZmController.prototype._handleException.apply(this, arguments);
 	}
@@ -2882,6 +2925,9 @@ function() {
 	}
     if (window.ZmDesktopAlert) {
         ZmDesktopAlert.closeNotification();
+    }
+    if (appCtxt._offlineHandler){
+            ZmOffline.closeDB();
     }
 	ZmZimbraMail._endSessionDone = true;
 };

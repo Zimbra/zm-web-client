@@ -164,6 +164,9 @@ ZmContactList.prototype._handleResponseLoad =
 function(callback, result) {
 	DBG.timePt("got contact list");
 	var text = result.getResponse();
+    if (text && typeof text !== 'string'){
+        text = text._data;
+    }
 	var derefList = [];
 	if (text) {
 		var contacts = text.split(ZmContactList.CONTACT_SPLIT_CHAR);
