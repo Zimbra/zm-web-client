@@ -254,7 +254,10 @@ function() {
                 }
 			}
 			else if (type == ZmPref.TYPE_FONT) {
-				control = this._setupFonts(id, setup, value);
+				control = this._setupMenuButton(id, value, ZmPreferencesPage.fontMap);
+			}
+			else if (type == ZmPref.TYPE_FONT_SIZE) {
+				control = this._setupMenuButton(id, value, ZmPreferencesPage.fontSizeMap);
 			}
 			else if (type == ZmPref.TYPE_PASSWORD) {
 				this._addButton(elem, setup.displayName, 50, new AjxListener(this, this._changePasswordListener), "CHANGE_PASSWORD");
@@ -367,8 +370,8 @@ function(id, setup, control) {
 			else if (type == ZmPref.TYPE_LOCALES) {
 				value = object._localeId;
 			}
-			else if (type == ZmPref.TYPE_FONT) {
-				value = object._fontId;
+			else if (type === ZmPref.TYPE_FONT || type === ZmPref.TYPE_FONT_SIZE) {
+				value = object._itemId;
 			}
 			else if (type == ZmPref.TYPE_COMBOBOX) {
 				value = object.getValue() || object.getText();
@@ -460,7 +463,11 @@ function(id, value, setup, control) {
 	} else if (type == ZmPref.TYPE_FONT) {
 		var object = this._dwtObjects[ZmSetting.FONT_NAME];
 		if (!object) { return value; }
-		this._showFont(value, object);
+		this._showItem(value, ZmPreferencesPage.fontMap, object);
+	} else if (type == ZmPref.TYPE_FONT_SIZE) {
+		var object = this._dwtObjects[ZmSetting.FONT_SIZE];
+		if (!object) { return value; }
+		this._showItem(value, ZmPreferencesPage.fontSizeMap, object);
 	} else {
 		var prefId = [this._htmlElId, id].join("_");
 		var element = control || document.getElementById(prefId);
@@ -883,12 +890,12 @@ function(id, setup, value) {
     return label;
 };
 
-ZmPreferencesPage.prototype._setupFonts =
-function(id, setup, value) {
+ZmPreferencesPage.prototype._setupMenuButton =
+function(id, value, itemMap) {
 	var button = new DwtButton({parent:this});
 	button.setSize(60, Dwt.DEFAULT);
-	button.setMenu(new AjxListener(this, this._createFontsMenu, [setup]));
-	this._showFont(value, button);
+	button.setMenu(new AjxListener(this, this._createMenu, [button, itemMap]));
+	this._showItem(value, itemMap, button);
 
 	this._dwtObjects[id] = button;
 
@@ -903,17 +910,16 @@ function(localeId, button) {
 	button._localeId = localeId;
 };
 
-ZmPreferencesPage.prototype._createFontsMenu =
-function(setup) {
+ZmPreferencesPage.prototype._createMenu =
+function(button, itemMap) {
 
-	var button = this._dwtObjects[ZmSetting.FONT_NAME];
 	var menu = new DwtMenu({parent:button});
 
-	var listener = new AjxListener(this, this._fontSelectionListener);
+	var listener = this._itemSelectionListener.bind(this, button, itemMap);
 
-	for (var id in ZmFont.fontMap) {
-		var font = ZmFont.fontMap[id];
-		this._createFontItem(menu, font, listener);
+	for (var id in itemMap) {
+		var item = itemMap[id];
+		this._createMenuItem(menu, item.id, item.name, listener);
 	}
 	return menu;
 };
@@ -945,11 +951,11 @@ function(setup) {
 	return result;
 };
 
-ZmPreferencesPage.prototype._createFontItem =
-function(parent, font, listener) {
+ZmPreferencesPage.prototype._createMenuItem =
+function(parent, id, text, listener) {
 	var item = new DwtMenuItem({parent:parent});
-	item.setText(font.name);
-	item._fontId = font.id;
+	item.setText(text);
+	item._itemId = id;
 	item.addSelectionListener(listener);
 	return item;
 };
@@ -966,19 +972,18 @@ function(parent, locale, listener) {
 	return result;
 };
 
-ZmPreferencesPage.prototype._showFont =
-function(fontId, button) {
-	var font = ZmFont.fontMap[fontId];
-	button.setImage(font ? font.image : null);
-	button.setText(font ? font.name : "");
-	button._fontId = fontId;
+ZmPreferencesPage.prototype._showItem =
+function(itemId, itemMap, button) {
+	var item = itemMap[itemId];
+	button.setImage(item && item.image || null);
+	button.setText(item && item.name || "");
+	button._itemId = itemId;
 };
 
-ZmPreferencesPage.prototype._fontSelectionListener =
-function(ev) {
+ZmPreferencesPage.prototype._itemSelectionListener =
+function(button, itemMap, ev) {
 	var item = ev.dwtObj;
-	var button = this._dwtObjects[ZmSetting.FONT_NAME];
-	this._showFont(item._fontId, button);
+	this._showItem(item._itemId, itemMap, button);
 };
 
 ZmPreferencesPage.prototype._localeSelectionListener =
@@ -1264,35 +1269,20 @@ function(prefLabel, prefValue) {
 	return prefLabel.match(/\{/) ? AjxMessageFormat.format(prefLabel, prefValue) : prefLabel;
 };
 
-/**
- * @class
- * This class represents a Font (family).
- *
- * @param {String} id the id
- * @param {String} name the name
- * @param {String} image the image
- *
- */
-ZmFont = function(id, name, image) {
-	this.id = id;
-	this.name = name;
-	this.image = image;
+ZmPreferencesPage.fontMap = {};
+
+ZmPreferencesPage._createMenuItem =
+function(id, name, itemMap) {
+	return itemMap[id] = {id: id, name: name};
 };
 
-ZmFont.fontMap = {};
+ZmPreferencesPage._createMenuItem(ZmSetting.FONT_SYSTEM, ZmMsg.fontSystem, ZmPreferencesPage.fontMap);
+ZmPreferencesPage._createMenuItem(ZmSetting.FONT_MODERN, ZmMsg.fontModern, ZmPreferencesPage.fontMap);
+ZmPreferencesPage._createMenuItem(ZmSetting.FONT_CLASSIC, ZmMsg.fontClassic, ZmPreferencesPage.fontMap);
+ZmPreferencesPage._createMenuItem(ZmSetting.FONT_WIDE, ZmMsg.fontWide, ZmPreferencesPage.fontMap);
 
-/**
- * Creates the font.
- *
- * @param {String} id the locale id (for example, <code>en_US</code>)
- * @param {String} name the locale name
- */
-ZmFont.create =
-function(id, name) {
-	return ZmFont.fontMap[id] = new ZmFont(id, name);
-};
+ZmPreferencesPage.fontSizeMap = {};
 
-ZmFont.create(ZmSetting.FONT_SYSTEM, ZmMsg.fontSystem);
-ZmFont.create(ZmSetting.FONT_MODERN, ZmMsg.fontModern);
-ZmFont.create(ZmSetting.FONT_CLASSIC, ZmMsg.fontClassic);
-ZmFont.create(ZmSetting.FONT_WIDE, ZmMsg.fontWide);
+ZmPreferencesPage._createMenuItem(ZmSetting.FONT_SIZE_NORMAL, ZmMsg.fontSizeNormal, ZmPreferencesPage.fontSizeMap);
+ZmPreferencesPage._createMenuItem(ZmSetting.FONT_SIZE_LARGE, ZmMsg.fontSizeLarge, ZmPreferencesPage.fontSizeMap);
+ZmPreferencesPage._createMenuItem(ZmSetting.FONT_SIZE_LARGER, ZmMsg.fontSizeExtraLarge, ZmPreferencesPage.fontSizeMap);

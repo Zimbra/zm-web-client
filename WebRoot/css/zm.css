@@ -1239,8 +1239,7 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 .attachmentBubble {
 	color:black;
 	border:1px solid #999;
-	font-size:11px;
-	line-height:14px;
+	line-height: 1.27rem;
 	padding:1px 5px 2px;
 	position:relative !important;
 	margin:0 2px 2px 1px;

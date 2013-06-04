@@ -52,7 +52,7 @@ BODY						{	margin:0px; 	}
 /** Search box **/	
 #skin_spacing_search,
 #skin_spacing_people_search 			{	height:42px; width:@cssValue(HSashContainer,width)@; 	}
-#skin_container_search					{	height:20px; }
+#skin_container_search					{	height:1.7rem; }
 
 #skin_container_search .ZmSearchToolbar {	@SkinSearchToolbar@ 		}
 #skin_container_search .ZButton			{	height:auto;	}

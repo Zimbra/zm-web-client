@@ -282,7 +282,9 @@ if (application.getInitParameter("offlineMode") != null)  {
 %>
 
 
-<html>
+<!-- set this class so CSS definitions that now use REM size, would work relative to this.
+	Since now almost everything is relative to one of the 2 absolute font size classese -->
+<html class="user_font_size_normal">
 <head>
 <!--
  login.jsp

@@ -39,6 +39,16 @@
 	@FontFamily-system@
 }
 
+.user_font_size_normal {
+	font-size:@UserFontSize-normal@
+}
+.user_font_size_large {
+	font-size:@UserFontSize-large@
+}
+.user_font_size_larger {
+	font-size:@UserFontSize-larger@
+}
+
 /*
 * HTML elements - use for global declarations
 */

@@ -147,7 +147,7 @@
         pageContext.setAttribute("isLocaleId", localeId != null);
     pageContext.setAttribute("weboffline", "TRUE".equals(authResult.getPrefs().get("zimbraPrefWebClientOfflineAccessEnabled").get(0)));
 %>
-<html
+<html class="user_font_size_normal" 
 <c:if test="${weboffline}">
         manifest="<c:url value="/appcache/images,common,dwt,msgview,login,zm,spellcheck,skin.appcache">
         <c:param name="v" value="${vers}" />
