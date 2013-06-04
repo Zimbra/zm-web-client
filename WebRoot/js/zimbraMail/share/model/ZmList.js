@@ -1187,44 +1187,40 @@ function(params) {
                 mObj.f = flags + "u";
                 folderObj.u = folder.numUnread + 1;
                 break;
-            case "trash":
+            case "trash"://No break statement
                 mObj.l = ZmFolder.ID_TRASH;
+            case "spam"://No break statement
+                mObj.l = ZmFolder.ID_SPAM;
+            case "!spam"://No break statement
+                mObj.l = ZmFolder.ID_INBOX;// Have to set the old folder id. Currently point to inbox
+            case "move":
+                if (action.l) {
+                    mObj.l = action.l;
+                }
                 folderObj.n = folder.numTotal - 1;
-                if (msg.isUnread) {
+                if (msg.isUnread && folder.numUnread > 1) {
                     folderObj.u = folder.numUnread - 1;
                 }
-                targetFolder = appCtxt.getById(ZmFolder.ID_TRASH);
+                targetFolder = appCtxt.getById(mObj.l);
                 folderArray.push({
                     id : targetFolder.id,
                     n : targetFolder.numTotal + 1,
                     u : (msg.isUnread ? targetFolder.numUnread + 1 : targetFolder.numUnread)
                 });
                 break;
-            case "spam":
-                mObj.l = ZmFolder.ID_SPAM;
-                folderObj.n = folder.numTotal - 1;
-                if (msg.isUnread) {
-                    folderObj.u = folder.numUnread - 1;
-                }
-                targetFolder = appCtxt.getById(ZmFolder.ID_SPAM);
-                folderArray.push({
-                    id : targetFolder.id,
-                    n : targetFolder.numTotal + 1,
-                    u : (msg.isUnread ? targetFolder.numUnread + 1 : targetFolder.numUnread)
-                });
+            case "tag":
+                msg.tags.push(action.tn);
+                mObj.tn = msg.tags.join();
                 break;
-            case "!spam":
-                mObj.l = ZmFolder.ID_SPAM;
-                folderObj.n = folder.numTotal + 1;
-                if (msg.isUnread) {
-                    folderObj.u = folder.numUnread - 1;
+            case "!tag":
+                AjxUtil.arrayRemove(msg.tags, action.tn);
+                mObj.tn = msg.tags.join();
+                break;
+            case "update":
+                if (action.t === "") {//Removing all tag names for a msg
+                    mObj.tn = "";
+                    mObj.t = "";
                 }
-                targetFolder = appCtxt.getById(ZmFolder.ID_SPAM);
-                folderArray.push({
-                    id : targetFolder.id,
-                    n : targetFolder.numTotal - 1,
-                    u : (msg.isUnread ? targetFolder.numUnread - 1 : targetFolder.numUnread)
-                });
                 break;
         }
         m.push(mObj);
