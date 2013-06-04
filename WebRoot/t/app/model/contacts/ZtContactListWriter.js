@@ -27,8 +27,8 @@ Ext.define('ZCS.model.contacts.ZtContactListWriter', {
     writeRecords: function(request, data) {
 
         var	action = request.getAction(),
-            offset = request.getOperation().getStart(),
             operation = request.getOperation(),
+            offset = operation.getStart(),
             options = operation.getInitialConfig(),
             itemData =  Ext.merge(((data && data[0]) || {}), options),
             query = request.getParams().query,
@@ -51,9 +51,9 @@ Ext.define('ZCS.model.contacts.ZtContactListWriter', {
             methodJson = json.Body.SearchRequest;
 
             Ext.apply(methodJson, {
-                sortBy: "dateDesc",
-                offset: 0,
-                limit: 20,
+                sortBy: "nameAsc",
+                offset: offset,
+                limit: ZCS.constant.DEFAULT_PAGE_SIZE,
                 query: query,
                 types: 'contact'
             });
