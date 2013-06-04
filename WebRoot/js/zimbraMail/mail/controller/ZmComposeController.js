@@ -2304,7 +2304,7 @@ ZmComposeController.prototype._processDataURIImages = function(imgArray, length,
 
 ZmComposeController.prototype._uploadMyComputerFile =
     function(files, prevData, start){
-        if (!navigator.online) {
+        if (appCtxt._supportsOffline && appCtxt.isOfflineMode()) {
             return this._handleOfflineUpload(files);
         }
 
