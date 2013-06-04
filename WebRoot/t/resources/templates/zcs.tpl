@@ -93,7 +93,7 @@
 		</tpl>
 		<div class='zcs-msgHdr-link'>{[ZtMsg.details]}</div>
 		<a class='x-button-normal x-button x-iconalign-center x-layout-box-item x-stretched zcs-flat zcs-msgHdr-menuButton' onClick='return false;'>
-			<span class='x-button-icon x-shown arrow_down'></span>
+			<span class='zcs-msgHeader-menuButton-span x-button-icon x-shown arrow_down'></span>
 		</a>
 		</div>
 		<tpl if='tags && tags.length'>
