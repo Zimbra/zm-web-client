@@ -82,6 +82,8 @@ Ext.define('ZCS.controller.ZtMainController', {
         }  else {
             logoutUrl = "/?loginOp=logout";
         }
+        //Append client=touch param to the logout url
+        logoutUrl += "&client=touch";
 		window.location.href = logoutUrl;
 	},
 
