@@ -534,6 +534,10 @@ ZmEditContactView.prototype.getModifiedAttrs = function() {
 					if (!v) continue;
 					var list = ZmEditContactView.LISTS[id];
 					var a = onlyvalue ? list.attrs[0] : item.type;
+					if (id === "OTHER" && AjxUtil.arrayContains(AjxUtil.values(ZmEditContactView.ATTRS), a)) {
+						//ignore attributes named the same as one of our basic attributes.
+						continue;
+					}
 					if (!counts[a]) counts[a] = 0;
 					var count = ++counts[a];
 					a = ZmContact.getAttributeName(a, count);
