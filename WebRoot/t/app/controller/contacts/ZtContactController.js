@@ -165,7 +165,10 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
             this.modifyContact();
         }
         else {
-            this.createContactModel(this.getContactModel());
+            var contact = this.getContactModel();
+            if (contact) {
+                this.createContactModel(contact);
+            }
         }
     },
 
@@ -504,6 +507,15 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
             otherUrl = [],
             addrs = {},
             i;
+
+        //Throw an error if user tries to save an empty contact
+        if (values.firstName == "" && values.lastName == "" && values.namePrefix == "" && values.middleName == ""
+            && values.maidenName == "" && values.nameSuffix == "" && values.company == "" && values.jobTitle == ""
+            && values.department == "" && values.email == "" && values.phonenumber == "" && values.url == ""
+            && values.street == "" && values.city == "" && values.state == "" && values.postalcode == "" && values.country == "") {
+            Ext.Msg.alert(ZtMsg.error, ZtMsg.errorNoFields);
+            return null;
+        }
 
         //Personal Info
         contact.set('firstName', values.firstName);
