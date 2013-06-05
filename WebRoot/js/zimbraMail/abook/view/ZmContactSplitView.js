@@ -604,7 +604,7 @@ function(data, label, objectType) {
 };
 
 ZmContactSplitView._showContactList =
-function(data, names, typeFunc) {
+function(data, names, typeFunc, hideType) {
 
 	data.names = names;
 	var html = [];
@@ -612,6 +612,7 @@ function(data, names, typeFunc) {
 		var name = names[i];
 		data.name = name;
 		data.type = (typeFunc && typeFunc(data, name)) || ZmMsg["AB_FIELD_" + name];
+		data.type = hideType ? "" : data.type;
 		html.push(ZmContactSplitView._showContactListItem(data));
 	}
 
@@ -665,7 +666,7 @@ ZmContactSplitView.showContactEmails =
 function(data) {
 	var itemListData = ZmContactSplitView._getListData(data, ZmMsg.emailLabel, ZmObjectManager.EMAIL);
 	var typeFunc = function(data, name) { return data.isDL && ZmMsg.distributionList; };
-	return ZmContactSplitView._showContactList(itemListData, ZmEditContactView.LISTS.EMAIL.attrs, typeFunc);
+	return ZmContactSplitView._showContactList(itemListData, ZmEditContactView.LISTS.EMAIL.attrs, typeFunc, !data.isDL);
 };
 
 ZmContactSplitView.showContactPhones =
