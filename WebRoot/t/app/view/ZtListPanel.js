@@ -90,7 +90,7 @@ Ext.define('ZCS.view.ZtListPanel', {
 						{
 							xtype: 'searchfield',
 							name: 'searchField',
-							placeHolder: 'Search',
+							placeHolder: ZtMsg.search,
 							autoComplete: false,
 							autoCorrect: false,
 							autoCapitalize: false,

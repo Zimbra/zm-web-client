@@ -61,20 +61,20 @@ Ext.define('ZCS.model.ZtReader', {
 			className = Ext.getClassName(Model),
 			type = ZCS.constant.TYPE_FOR_CLASS[className],
 			nodeName = ZCS.constant.ITEM_NODE[type],
-			total,
+			count = 0,
+			total = 0,
 			root = this.getRoot(data, nodeName),
 			body = this.getResponseBody(data);
 
-		//If the server gives us feedback in regards to paging, lets compute
-		//the total intelligently.
+		// If the server gives us feedback in regards to paging, let's compute
+		// the total intelligently.
 		if (body.more && body.offset !== undefined && root) {
-			//Since ext wants to know the total, and all the server tells us is that there is more, we
-			//Need to set a fake total.
+			// Since ext wants to know the total, and all the server tells us is that there is more, we
+			// need to set a fake total.
 			total = body.more ? body.offset + (root.length * 3) : body.offset + root.length;
 			count = root.length;
-		} else {
-			total = root ? root.length : 0;
-			count = root ? root.length : 0;
+		} else if (root) {
+			total = count = root.length;
 		}
 
 

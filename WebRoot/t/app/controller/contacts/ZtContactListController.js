@@ -31,8 +31,8 @@ Ext.define('ZCS.controller.contacts.ZtContactListController', {
 
 	config: {
 
-		models: ['ZCS.model.contacts.ZtContactList'],
-		stores: ['ZCS.store.contacts.ZtContactListStore'],
+		models: ['ZCS.model.contacts.ZtContact'],
+		stores: ['ZCS.store.contacts.ZtContactStore'],
 
 		refs: {
 			// event handlers

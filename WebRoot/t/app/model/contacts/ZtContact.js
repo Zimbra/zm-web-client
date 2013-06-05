@@ -181,10 +181,8 @@ Ext.define('ZCS.model.contacts.ZtContact', {
                     });
                 }
             },
-            {
-                name: 'groupMembers',
-                type: 'auto'
-            }
+			{ name: 'isGroup', type: 'boolean' },
+            { name: 'groupMembers', type: 'auto' }
         ],
 
 		proxy: {

@@ -30,9 +30,9 @@ Ext.define('ZCS.model.contacts.ZtContactReader', {
 			attrs = node._attrs;
 
 
-        if (attrs.type && (attrs.type == ZCS.constant.ITEM_CONTACT_GROUP)) {
+        if (attrs.type === 'group') {
             data.groupMembers = this.populateContactGroupFields(node.m);
-            data.type = ZCS.constant.ITEM_CONTACT_GROUP;
+	        data.isGroup = true;
             data.nickname = attrs.nickname;
         } else {
             data = this.populateContactFields(attrs);
@@ -67,26 +67,26 @@ Ext.define('ZCS.model.contacts.ZtContactReader', {
         return data;
     },
 
+	// TODO: not sure why we're storing this data
     populateContactGroupFields: function(members) {
-        var m = [];
-        for (var i = 0, len = members.length; i < len; i++) {
-            var member = members[i],
-                memberData = {},
-                cn = member.cn;
-            if (cn) {
-                //deferenced group members of type "C"(local) and "G"(Gal)
-                var attrs = cn[0]._attrs;
-                memberData = this.populateContactFields(attrs);
-            } else {
-                /**
-                 * in case the group members are of type "I"(direct email addresses),
-                 * store the same in the emailFields array.
-                 */
-                memberData['emailFields'] = member.value;
-            }
-            m.push(memberData);
-        }
-        return m;
+
+        var group = [], data;
+
+	    Ext.each(members, function(member) {
+		    data = {};
+		    if (member.cn) {
+			    data = this.populateContactFields(member.cn[0]._attrs);
+		    }
+		    else if (member.type === 'I') {
+			    data['emailFields'] = member.value;
+		    }
+		    else if (member.type === 'C' || member.type === 'G') {
+			    data['itemId'] = member.value;
+		    }
+		    group.push(data);
+		}, this);
+
+	    return group;
     }
 
 });

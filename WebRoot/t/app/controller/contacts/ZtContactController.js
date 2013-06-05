@@ -26,7 +26,7 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
 	config: {
 
 		models: ['ZCS.model.contacts.ZtContact'],
-		stores: ['ZCS.store.contacts.ZtContactStore'],
+		stores: ['ZCS.store.contacts.ZtContactDetailStore'],
 
 		refs: {
 			// event handlers
@@ -656,14 +656,13 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
         //</debug>
         this.callParent(arguments);
 
-		//Make sure the organizer button stays...
+		// Make sure the organizer button stays...
 		ZCS.app.fireEvent('updatelistpanelToggle', this.getOrganizerTitle(), ZCS.session.getActiveApp());
 
-        //Fetch the ZtContactStore
         var store = this.getStore();
         store.load({
-            contactId: contact.data.id,
-            type: contact.data.type,
+            contactId: contact.getId(),
+	        isGroup: contact.get('isGroup'),
             callback: function(records, operation, success) {
                 if (success) {
                     var data = records[0].data,

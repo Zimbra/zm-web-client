@@ -14,16 +14,18 @@
  */
 
 /**
- * This class represents a store of contacts used to display the contacts in the list panel.
+ * This class respresents a store of contacts. It is used by the item panel.
+ * The contacts in here will be fully populated. The store will contain either
+ * a single contact, or the members of a contact group.
  *
- * @author Komal Kakani <kkakani@zimbra.com>
+ * @author Conrad Damon <cdamon@zimbra.com>
  */
-Ext.define('ZCS.store.contacts.ZtContactListStore', {
+Ext.define('ZCS.store.contacts.ZtContactDetailStore', {
 
-    extend: 'ZCS.store.ZtStore',
+	extend: 'ZCS.store.ZtStore',
 
-    config: {
-        model: 'ZCS.model.contacts.ZtContactList',
-        remoteSort: true
-    }
+	config: {
+		model: 'ZCS.model.contacts.ZtContact',
+		remoteSort: true
+	}
 });

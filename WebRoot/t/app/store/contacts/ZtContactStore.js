@@ -14,13 +14,15 @@
  */
 
 /**
- * This class respresents a store of contacts.
+ * This class respresents a store of contacts. It is used by the list panel.
+ * The contacts in here will have only a few attributes populated. Contact
+ * groups are included.
  *
  * @author Conrad Damon <cdamon@zimbra.com>
  */
 Ext.define('ZCS.store.contacts.ZtContactStore', {
 
-	extend: 'Ext.data.Store',
+	extend: 'ZCS.store.ZtStore',
 
 	config: {
 		model: 'ZCS.model.contacts.ZtContact',
