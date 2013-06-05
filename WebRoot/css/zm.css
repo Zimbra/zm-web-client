@@ -3576,6 +3576,20 @@ HTML>BODY .appt-selected .appt_allday_body
 	width:20px;
 }
 
+/* Offline Settings */
+.ZmOfflineItem {
+	margin:1.5em;
+}
+
+.ZmOfflineItem LABEL {
+	font-weight:bold;
+}
+
+.ZmOfflineDetails {
+	color:#666;
+	margin-left:2em;
+}
+
 /*
 * Print View
 */
