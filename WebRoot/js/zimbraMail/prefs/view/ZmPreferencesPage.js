@@ -349,7 +349,7 @@ function(id, setup, control) {
 		type == ZmPref.TYPE_CHECKBOX ||
 		type == ZmPref.TYPE_RADIO_GROUP || type == ZmPref.TYPE_COLOR ||
 		type == ZmPref.TYPE_INPUT || type == ZmPref.TYPE_LOCALES ||
-		type == ZmPref.TYPE_FONT) {
+		type === ZmPref.TYPE_FONT || type === ZmPref.TYPE_FONT_SIZE) {
 		var object = control || this.getFormObject(id);
 		if (object) {
 			if (type == ZmPref.TYPE_COLOR) {
