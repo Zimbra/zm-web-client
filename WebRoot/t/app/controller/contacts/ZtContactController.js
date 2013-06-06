@@ -156,17 +156,15 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
      * Creates a contact constructed from the values in the contact form
      */
     doCreate: function() {
-        this.getContactPanel().hide();
-
         // Get the contact's item id from the hidden field. If present it means contact is edited else new created
         var contactItemId = this.getContactForm().down('field[name=contactItemId]').getValue();
+        var contact = this.getContactModel();
 
-        if (contactItemId) {
-            this.modifyContact();
-        }
-        else {
-            var contact = this.getContactModel();
-            if (contact) {
+        if (contact) {
+            if (contactItemId) {
+                this.modifyContact(contact);
+            }
+            else {
                 this.createContactModel(contact);
             }
         }
@@ -192,15 +190,16 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
         return this.contactPanel;
     },
 
-    modifyContact: function() {
+    modifyContact: function(modifiedContact) {
 
         var contact = this.getItem(),
-            modifiedContact = this.getContactModel(),
             me = this,
             data = {
                 op: 'modify',
                 newContact: modifiedContact
             };
+
+        this.getContactPanel().hide();
 
         this.performOp(contact, data, function() {
             ZCS.app.fireEvent('showToast', ZtMsg.contactEdited);
@@ -482,6 +481,7 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
     },
 
     createContactModel: function(contact, callback, scope) {
+        this.getContactPanel().hide();
         contact.save({
             success: function() {
                 ZCS.app.fireEvent('showToast', ZtMsg.contactCreated);
