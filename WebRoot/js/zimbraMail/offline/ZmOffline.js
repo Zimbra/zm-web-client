@@ -654,7 +654,7 @@ function(result) {
             params = {
                 noBusyOverlay : true,
                 asyncMode : true,
-                callback : this._handleResponseSendOfflineRequest.bind(this, obj.oid),
+                callback : this._handleResponseSendOfflineRequest.bind(this, obj),
                 jsonObj : {}
             };
             params.jsonObj[methodName] = obj[methodName];
@@ -673,9 +673,16 @@ function(result) {
 };
 
 ZmOffline.prototype._handleResponseSendOfflineRequest =
-function(id) {
+function(obj) {
     var callback = ZmOfflineDB.indexedDB.getAllItemsInRequestQueue.bind(this, this._checkOutboxQueue.bind(this));
-    ZmOfflineDB.indexedDB.deleteItemInRequestQueue(id, callback);
+    ZmOfflineDB.indexedDB.deleteItemInRequestQueue(obj.oid, callback);
+    ZmFolderTree.updateOutboxFolderCount();
+    var notify = {
+        deleted : {
+            id : obj.id.toString()
+        }
+    };
+    appCtxt.getRequestMgr()._notifyHandler(notify);
 };
 
 /**
@@ -821,4 +828,53 @@ function(){
     DBG.println(AjxDebug.DBG1, "Closing offline databases");
 
     ZmOfflineDB.indexedDB.close();
+};
+
+ZmOffline.generateMsgResponse =
+function(result) {
+    var resp = [],
+        obj,
+        msgNode,
+        messagePart,
+        i,
+        length;
+
+    result = [].concat(result);
+    for (i = 0, length = result.length; i < length; i++) {
+        obj = result[i];
+        if (obj) {
+            msgNode = obj[obj.methodName]["m"];
+            if (msgNode) {
+                msgNode.su = msgNode.su._content;
+                msgNode.l = ZmFolder.ID_OUTBOX;
+                msgNode.f = "s";
+                messagePart = msgNode.mp[0];
+                if (messagePart) {
+                    if (messagePart.ct === ZmMimeTable.TEXT_PLAIN) {
+                        messagePart.content = msgNode.fr = (messagePart.content) ? messagePart.content._content : "";
+                        messagePart.body = true;
+                    }
+                    else if (messagePart.ct === ZmMimeTable.MULTI_ALT) {
+                        var partsArray = messagePart.mp,
+                            partsArrayLength = partsArray.length,
+                            part;
+
+                        for (var j = 0; j < partsArrayLength; j++) {
+                            part = partsArray[j];
+                            part.part = j + 1;
+                            if (part.ct === ZmMimeTable.TEXT_PLAIN) {
+                                part.content = msgNode.fr = (part.content) ? part.content._content : "";
+                            }
+                            else if (part.ct === ZmMimeTable.TEXT_HTML) {
+                                part.content = (part.content) ? part.content._content : "";
+                                part.body = true;
+                            }
+                        }
+                    }
+                }
+                resp.push(msgNode);
+            }
+        }
+    }
+    return resp;
 };

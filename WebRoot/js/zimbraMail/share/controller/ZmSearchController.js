@@ -959,49 +959,13 @@ function(search) {
 ZmSearchController.prototype._handleResponseDoIndexedDBSearch =
 function(search, result) {
 
-    var respEl = [],
-        obj,
-        msgNode,
-        messagePart;
-
-    for (var i = result.length - 1; i > -1; i--) {
-        obj = result[i];
-        if (obj) {
-            msgNode = obj[obj.methodName]["m"];
-            if (msgNode) {
-                msgNode.su = msgNode.su._content;
-                msgNode.l = ZmFolder.ID_OUTBOX;
-                msgNode.f = "s";
-                messagePart = msgNode.mp[0];
-                if (messagePart) {
-                    if (messagePart.ct === ZmMimeTable.TEXT_PLAIN) {
-                        messagePart.content = msgNode.fr = (messagePart.content) ? messagePart.content._content : "";
-                        messagePart.body = true;
-                    }
-                    else if (messagePart.ct === ZmMimeTable.MULTI_ALT) {
-                        var partsArray = messagePart.mp,
-                            partsArrayLength = partsArray.length,
-                            part;
-
-                        for (var j = 0; j < partsArrayLength; j++) {
-                            part = partsArray[j];
-                            part.part = j + 1;
-                            if (part.ct === ZmMimeTable.TEXT_PLAIN) {
-                                part.content = msgNode.fr = (part.content) ? part.content._content : "";
-                            }
-                            else if (part.ct === ZmMimeTable.TEXT_HTML) {
-                                part.content = (part.content) ? part.content._content : "";
-                                part.body = true;
-                            }
-                        }
-                    }
-                }
-                respEl.push(msgNode);
-            }
-        }
+    if (search.sortBy === ZmSearch.DATE_DESC) {
+        result.reverse();
     }
 
-    var results = new ZmSearchResult(search);
+    var respEl = ZmOffline.generateMsgResponse(result),
+        results = new ZmSearchResult(search);
+
     results.type = search.types ? search.types.get(0) : null;
 
     if (search.types.get(0) === ZmId.ITEM_CONV) {//conversation mode

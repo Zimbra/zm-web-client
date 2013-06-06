@@ -584,5 +584,26 @@ function(obj) {
         };
 
         obj.folder.push(outboxFolderObj);
+        ZmFolderTree.updateOutboxFolderCount();
     }
+};
+
+ZmFolderTree.updateOutboxFolderCount =
+function() {
+    var indexObj = {methodName : "SendMsgRequest"};
+    ZmOfflineDB.indexedDB.actionsInRequestQueueUsingIndex(indexObj, ZmFolderTree.updateOutboxFolderCountCallback);
+};
+
+ZmFolderTree.updateOutboxFolderCountCallback =
+function(result) {
+    var length = result ? result.length : 0;
+    var notify = {
+            modified : {
+                folder : [{
+                    id : ZmFolder.ID_OUTBOX,
+                    n : length
+                }]
+            }
+        };
+    appCtxt.getRequestMgr()._notifyHandler(notify);
 };

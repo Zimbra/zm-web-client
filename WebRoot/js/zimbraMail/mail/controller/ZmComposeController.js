@@ -2516,7 +2516,7 @@ function(draftType, msg, params) {
     var currentTime = new Date().getTime();
     jsonObj.methodName = methodName;
     msgNode.d = currentTime; //for displaying date and time in the outbox/Drafts folder
-    var callback = this._handleSetItemInRequestQueueResponse.bind(this, draftType, msg);
+    var callback = this._handleSetItemInRequestQueueResponse.bind(this, draftType, msg, jsonObj);
     if (msgNode.id) { //Already existing message
         jsonObj.id = msgNode.id;
         var indexObj = { operation : "add",
@@ -2535,7 +2535,7 @@ function(draftType, msg, params) {
 };
 
 ZmComposeController.prototype._handleSetItemInRequestQueueResponse =
-function(draftType, msg) {
+function(draftType, msg, jsonObj) {
 
     if (draftType === ZmComposeController.DRAFT_TYPE_NONE) {//"SendMsgRequest"
         appCtxt.setStatusMsg(ZmMsg.messageScheduledSent);
@@ -2545,26 +2545,50 @@ function(draftType, msg) {
                          id : msg.id
                        };
         ZmOfflineDB.indexedDB.actionsInRequestQueueUsingIndex(indexObj);//Delete any drafts for this message id
+        var header = this._generateOfflineHeader(draftType, msg, jsonObj),
+            notify;
+        if (header) {
+            notify = header.context.notify[0];
+            if (notify) {
+                appCtxt.getRequestMgr()._notifyHandler(notify);
+            }
+        }
     }
     else if (draftType === ZmComposeController.DRAFT_TYPE_MANUAL) {//"SaveDraftRequest"
         var transitions = [ ZmToast.FADE_IN, ZmToast.IDLE, ZmToast.PAUSE, ZmToast.FADE_OUT ];
         appCtxt.setStatusMsg(ZmMsg.draftSaved + "in indexedDB", ZmStatusView.LEVEL_INFO, null, transitions);
     }
+};
 
-    /*
-    var response = {};
-    var responseKey = params.methodName.replace("Request", "Response");
-    params.jsonObj.SaveDraftRequest.m["l"] = "6";
-    response[responseKey] = { "m" : [params.jsonObj.SaveDraftRequest.m] };
-    var header = { "context" : {} };
-    header["context"]["notify"] = [ {"created" : { "m" : [params.jsonObj.SaveDraftRequest.m] } , "seq" : 2 } ];
-    header["context"]["refresh"] = {};
-    header["context"]["refresh"]["folder"] = [ { id: "1",
-        l: "11",
-        luuid: "4aa4df9e-d21e-47f7-ab5d-868fb7169d05" } ];
-    result._header = header;
-    oldCallback.run(new ZmCsfeResult(response, false, header));
-    */
+/**
+ * @private
+ */
+ZmComposeController.prototype._generateOfflineHeader =
+function(draftType, msg, jsonObj) {
+    var header,
+        m = ZmOffline.generateMsgResponse(jsonObj),
+        c = [],
+        folderArray = [];
+
+    folderArray.push({
+        id : ZmFolder.ID_OUTBOX,
+        n : appCtxt.getById(ZmFolder.ID_OUTBOX).numTotal + 1
+    });
+
+    header = {
+        context : {
+            notify : [{
+                created : {
+                    m : m,
+                    c : c
+                },
+                modified : {
+                    folder : folderArray
+                }
+            }]
+        }
+    };
+    return header;
 };
 
 ZmComposeController.prototype._handleOfflineUpload = function(files) {
