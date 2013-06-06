@@ -1043,6 +1043,9 @@ function(params) {
 			}
 		}
 
+		//update root html elment class to reflect user selected font size - so that if we use our relative font size properties in CSS inside (stuff from msgview.css) it would be relative to this and not to the browser default.
+		Dwt.addClass(idoc.documentElement, "user_font_size_" + appCtxt.get(ZmSetting.FONT_SIZE));
+
 		// assign the right class name to the iframe body
 		idoc.body.className = this._getBodyClass() + (params.isTextMsg ? " MsgBody-text" : " MsgBody-html");
 

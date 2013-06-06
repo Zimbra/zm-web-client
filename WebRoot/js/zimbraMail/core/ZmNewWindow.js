@@ -42,7 +42,7 @@ ZmNewWindow = function() {
 	//update body class to reflect user selected font
 	document.body.className = "user_font_" + appCtxt.get(ZmSetting.FONT_NAME);
 	//update root html elment class to reflect user selected font size
-	document.documentElement.className = "user_font_size_" + appCtxt.get(ZmSetting.FONT_SIZE);
+	Dwt.addClass(document.documentElement, "user_font_size_" + appCtxt.get(ZmSetting.FONT_SIZE));
 
 
 	this._settings = appCtxt.getSettings();
