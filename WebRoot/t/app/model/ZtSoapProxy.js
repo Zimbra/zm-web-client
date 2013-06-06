@@ -93,9 +93,13 @@ Ext.define('ZCS.model.ZtSoapProxy', {
 
 		if (query) {
 			var search = Ext.create('ZCS.common.ZtSearch', {
-				query: query
-			});
-			ZCS.session.setSetting(ZCS.constant.SETTING_CUR_SEARCH, search, ZCS.session.getActiveApp());
+					query: query
+				}),
+				orgId = search.getOrganizerId(),
+				org = orgId && ZCS.cache.get(orgId),
+				app = (org && ZCS.constant.ORG_APP[org.get('type')]) || ZCS.session.getActiveApp();
+
+			ZCS.session.setSetting(ZCS.constant.SETTING_CUR_SEARCH, search, app);
 			if (ZCS.session.getSetting(ZCS.constant.SETTING_SHOW_SEARCH)) {
 				ZCS.session.getCurrentSearchField().setValue(query);
 			}

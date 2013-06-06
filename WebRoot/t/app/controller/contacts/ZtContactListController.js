@@ -61,7 +61,7 @@ Ext.define('ZCS.controller.contacts.ZtContactListController', {
 
     launch: function() {
         this.callParent(arguments);
-        ZCS.app.on('notifyContactlistCreate', this.handleCreateNotification, this);
+        ZCS.app.on('notifyContactCreate', this.handleCreateNotification, this);
         ZCS.app.on('notifyContactChange', this.handleModifyNotification, this);
     },
 
@@ -69,6 +69,7 @@ Ext.define('ZCS.controller.contacts.ZtContactListController', {
      * Handle a newly created contact. Add it to view if is is in the currently viewed folder.
      */
     handleCreateNotification: function(item, create) {
+
         var curFolder = ZCS.session.getCurrentSearchOrganizer(),
             curFolderId = curFolder && curFolder.get('itemId'),
             doAdd = false,
@@ -84,10 +85,10 @@ Ext.define('ZCS.controller.contacts.ZtContactListController', {
             }
         }
 
-        var reader = ZCS.model.contacts.ZtContactList.getProxy().getReader(),
+        var reader = ZCS.model.contacts.ZtContact.getProxy().getReader(),
             data = reader.getDataFromNode(create),
             store = this.getStore(),
-            contact= new ZCS.model.contacts.ZtContactList(data, create.id);
+            contact = new ZCS.model.contacts.ZtContact(data, create.id);
 
         if (doAdd) {
             store.insert(0, [contact]);

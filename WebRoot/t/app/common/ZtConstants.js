@@ -189,7 +189,6 @@ ZCS.constant.ITEM_NODE = {};
 ZCS.constant.ITEM_NODE[ZCS.constant.ITEM_CONVERSATION]      = ZCS.constant.NODE_CONVERSATION;
 ZCS.constant.ITEM_NODE[ZCS.constant.ITEM_MESSAGE]           = ZCS.constant.NODE_MESSAGE;
 ZCS.constant.ITEM_NODE[ZCS.constant.ITEM_CONTACT]           = ZCS.constant.NODE_CONTACT;
-ZCS.constant.ITEM_NODE[ZCS.constant.ITEM_CONTACT_LIST]      = ZCS.constant.NODE_CONTACT;
 ZCS.constant.ITEM_NODE[ZCS.constant.ADDRESS_AUTOCOMPLETE]   = ZCS.constant.NODE_MATCH;
 
 // Item type based on JSON node name
@@ -212,6 +211,11 @@ ZCS.constant.ORG_MAIL_FOLDER    = 'mailFolder';
 ZCS.constant.ORG_ADDRESS_BOOK   = 'addressBook';
 ZCS.constant.ORG_SAVED_SEARCH   = 'search';
 ZCS.constant.ORG_TAG            = 'tag';
+
+// App based on organizer type
+ZCS.constant.ORG_APP = {};
+ZCS.constant.ORG_APP[ZCS.constant.ORG_MAIL_FOLDER]  = ZCS.constant.APP_MAIL;
+ZCS.constant.ORG_APP[ZCS.constant.ORG_ADDRESS_BOOK] = ZCS.constant.APP_CONTACTS;
 
 // View (from JSON folder data) that determines which app a folder belongs to
 ZCS.constant.FOLDER_VIEW = {};
