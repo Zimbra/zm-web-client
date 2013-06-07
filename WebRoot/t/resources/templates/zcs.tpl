@@ -314,7 +314,7 @@
 	<div class="zcs-tag zcs-tag-{color} zcs-tag-large" <tpl if='rgb'>style="background-color: {rgb};"</tpl>></div>{displayName}
 </template>
 
-<template id="Invite">
+<template id="InviteDesc">
 	<tpl>
 		<table class='zcs-invite'>
 			<tpl if='start==end'>
@@ -435,9 +435,15 @@
                 </tr>
 			</tpl>
 		</table>
-        <hr>
-		<div class='zcs-invite-notes'>{notes}</div>
+
 	</tpl>
+</template>
+
+<template id='InviteNotes'>
+	<tpl>
+      <hr>
+      <div class='zcs-invite-notes'>{notes}</div>
+    </tpl>
 </template>
 
 <template id='ConvListSwipeToDelete'>

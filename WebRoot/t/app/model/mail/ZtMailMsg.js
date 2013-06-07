@@ -181,7 +181,7 @@ Ext.define('ZCS.model.mail.ZtMailMsg', {
 	 * @param {String}  msgBodyId           ID of owning ZtMsgBody
 	 * @param {Boolean} trimQuotedContent   if true, trim quoted content
 	 *
-	 * @return {String}     msg content as HTML
+	 * @return {object}     content to have msg content as HTML
 	 */
 	getContentAsHtml: function(msgBodyId, trimQuotedContent) {
 
@@ -230,7 +230,7 @@ Ext.define('ZCS.model.mail.ZtMailMsg', {
 			}
 		}
 
-		return html.join('');
+		return {content: html.join('')};
 	},
 
 	/**
@@ -564,6 +564,7 @@ Ext.define('ZCS.model.mail.ZtMailMsg', {
 	}
 },
 	function (thisClass) {
-		thisClass.inviteTpl = Ext.create('Ext.XTemplate', ZCS.template.Invite);
+		thisClass.inviteDescTpl = Ext.create('Ext.XTemplate', ZCS.template.InviteDesc);
+		thisClass.inviteNotesTpl = Ext.create('Ext.XTemplate', ZCS.template.InviteNotes);
 	}
 );

@@ -214,7 +214,7 @@ Ext.define('ZCS.model.mail.ZtInvite', {
 	 * Returns content of this invite as HTML.
 	 *
 	 * @param {String}  msgBodyId   ID of owning ZtMsgBody
-	 * @return {String}     invite content
+	 * @return {object}     inviteDesc to have invite description, content to have notes.
 	 */
 	getContentAsHtml: function(msgBodyId) {
 
@@ -232,7 +232,6 @@ Ext.define('ZCS.model.mail.ZtInvite', {
 				sentBy:         ZCS.model.mail.ZtMailItem.convertAddressModelToObject(this.get('sentBy')),
 				attendees:      ZCS.model.mail.ZtMailItem.convertAddressModelToObject(this.get('attendees')),
 				optAttendees:   ZCS.model.mail.ZtMailItem.convertAddressModelToObject(this.get('optAttendees')),
-				notes:          this.get('notes'),
 				intendedFor:    this.get('calendarIntendedFor'),
                 timezone:       this.get('timezone'),
                 isOrganizer:    this.get('isOrganizer'),
@@ -248,7 +247,8 @@ Ext.define('ZCS.model.mail.ZtInvite', {
 				declineButtonId:    ZCS.util.getUniqueId(Ext.apply({}, {
 					action: ZCS.constant.OP_DECLINE
 				}, idParams))
-			};
+            },
+            invite = {};
 
 		if (!this.isCanceled() && !this.get('isOrganizer') && this.hasReplyMethod()) {
 			var myResponse = this.get('myResponse');
@@ -257,7 +257,9 @@ Ext.define('ZCS.model.mail.ZtInvite', {
         if (!this.get('isOrganizer') && this.get('method') == "REQUEST") {
             data.showButtons = true;
         }
-		return ZCS.model.mail.ZtMailMsg.inviteTpl.apply(data);
+		invite.inviteDesc = ZCS.model.mail.ZtMailMsg.inviteDescTpl.apply(data);
+        invite.content = ZCS.model.mail.ZtMailMsg.inviteNotesTpl.apply({notes: this.get('notes')});
+        return invite;
 	},
 
 	/**

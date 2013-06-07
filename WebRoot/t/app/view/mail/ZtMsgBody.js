@@ -112,7 +112,11 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 		this.setUsingIframe(isHtml);
 
 		if (ZCS.constant.IS_ENABLED[ZCS.constant.FEATURE_FIND_OBJECTS]) {
-			markedUpHtml = this.markupEmailsAndLinks(html, isHtml);
+			markedUpHtml = this.markupEmailsAndLinks(html.content, isHtml);
+
+            if (isInvite && html.inviteDesc) {
+                markedUpHtml = html.inviteDesc + markedUpHtml;
+            }
 			// If we added anchors for emails or links, make sure we're using an iframe
 			if (markedUpHtml.length !== html.length) {
 				this.setUsingIframe(true);
