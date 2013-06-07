@@ -139,7 +139,7 @@ Ext.define('ZCS.model.mail.ZtInvite', {
                             inviteMsg = ZtMsg.inviteMsgDeclined;
                     }
 
-                    invite.set('attendeeResponseMsg', Ext.String.format(inviteMsg, comp.at[0].d));
+                    invite.set('attendeeResponseMsg', Ext.String.format(inviteMsg, comp.at[0].d || comp.at[0].a)); // show address if display name is unavailable
                 }
 			}
 
