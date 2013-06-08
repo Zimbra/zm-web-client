@@ -168,11 +168,6 @@ function(actionCode, ev) {
 
 	switch (actionCode) {
 
-		case ZmKeyMap.FLAG:
-            if (isExternalAccount) { break; }
-			this._doFlag(this.getItems());
-			break;
-
 		case ZmKeyMap.MOVE:
             if (isExternalAccount) { break; }
 			if (!appCtxt.isChildWindow) {

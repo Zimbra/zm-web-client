@@ -330,17 +330,24 @@ function(actionCode, ev) {
 			break;
 
         case ZmKeyMap.MARK_READ:
-            if (isExternalAccount) { break; }
-			if (num && (!folder || (folder && !folder.isReadOnly()))) {
-				this._markReadListener();
+			if (this._isPermissionDenied(folder)) {
+				break;
 			}
+			this._markReadListener();
 			break;
 
 		case ZmKeyMap.MARK_UNREAD:
-            if (isExternalAccount) { break; }
-			if (num && (!folder || (folder && !folder.isReadOnly()))) {
-				this._markUnreadListener();
+			if (this._isPermissionDenied(folder)) {
+				break;
 			}
+			this._markUnreadListener();
+			break;
+
+		case ZmKeyMap.FLAG:
+			if (this._isPermissionDenied(folder)) {
+				break;
+			}
+			this._doFlag(this.getItems());
 			break;
 
 		case ZmKeyMap.VIEW_BY_CONV:
@@ -407,6 +414,17 @@ function(actionCode, ev) {
 			return ZmListController.prototype.handleKeyAction.apply(this, arguments);
 	}
 	return true;
+};
+
+ZmMailListController.prototype._isPermissionDenied =
+function(folder) {
+	var isExternalAccount = appCtxt.isExternalAccount();
+
+	if (isExternalAccount || (folder && folder.isReadOnly())) {
+		appCtxt.setStatusMsg(ZmMsg.errorPermission);
+		return true;
+	}
+	return false;
 };
 
 ZmMailListController.prototype._selectItem =
@@ -832,13 +850,12 @@ function(ev) {
 	}
 	var folderId = ev.item.folderId || (search && search.folderId);
 	var folder = folderId && appCtxt.getById(folderId);
-	var readOnly = folder && folder.isReadOnly();
 
-	if (ev.field === ZmItem.F_FLAG && readOnly) {
+	if (ev.field === ZmItem.F_FLAG && this._isPermissionDenied(folder)) {
 		return true;
 	}
 	if (ev.field === ZmItem.F_READ) {
-		if (!readOnly) {
+		if (!this._isPermissionDenied(folder)) {
 			this._doMarkRead([ev.item], ev.item.isUnread);
 		}
 		return true;
