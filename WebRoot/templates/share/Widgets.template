@@ -10,7 +10,7 @@
 
 <template id='share.Widgets#ZmAppChooser' class='ZWidget'>
 	<table class='ZToolbarTable'>
-		<tr valign='bottom' id='${id}_items'>
+		<tr valign='middle' id='${id}_items'>
 			<td id='${id}_suffix' valign=bottom>
 				<div class='ZAppTabSpacer'></div>
 			</td>
