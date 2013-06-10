@@ -2369,3 +2369,8 @@ ZmMailApp.prototype._checkVacationReplyEnabled = function(){
 	ynDialog.registerCallback(DwtDialog.NO_BUTTON, ZmMailApp._handleOOORemindResponse, null, [ynDialog, false]);
 	ynDialog.popup();
 };
+
+ZmMailApp.prototype._createVirtualFolders =
+function() {
+    ZmOffline.addOutboxFolder();
+};

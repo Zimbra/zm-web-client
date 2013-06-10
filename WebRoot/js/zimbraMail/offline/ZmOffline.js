@@ -676,10 +676,15 @@ ZmOffline.prototype._handleResponseSendOfflineRequest =
 function(obj) {
     var callback = ZmOfflineDB.indexedDB.getAllItemsInRequestQueue.bind(this, this._checkOutboxQueue.bind(this));
     ZmOfflineDB.indexedDB.deleteItemInRequestQueue(obj.oid, callback);
-    ZmFolderTree.updateOutboxFolderCount();
     var notify = {
         deleted : {
             id : obj.id.toString()
+        },
+        modified : {
+            folder : [{
+                id : ZmFolder.ID_OUTBOX,
+                n : appCtxt.getById(ZmFolder.ID_OUTBOX).numTotal - 1
+            }]
         }
     };
     appCtxt.getRequestMgr()._notifyHandler(notify);
@@ -877,4 +882,40 @@ function(result) {
         }
     }
     return resp;
+};
+
+/**
+ * For ZWC offline, adds outbox folder
+ */
+ZmOffline.addOutboxFolder =
+function() {
+    if (!appCtxt._supportsOffline) {
+        return;
+    }
+    var folderTree = appCtxt.getFolderTree(),
+        root = folderTree.root,
+        folderObj = {
+            id: ZmFolder.ID_OUTBOX,
+            absFolderPath: "/Outbox",
+            activesyncdisabled: false,
+            name: "Outbox"
+        };
+    var folder = ZmFolderTree.createFolder(ZmOrganizer.FOLDER, root, folderObj, folderTree, null, "folder");
+    root.children.add(folder);
+    ZmOffline.updateOutboxFolderCount();
+};
+
+ZmOffline.updateOutboxFolderCount =
+function() {
+    var indexObj = {methodName : "SendMsgRequest"};
+    ZmOfflineDB.indexedDB.actionsInRequestQueueUsingIndex(indexObj, ZmOffline.updateOutboxFolderCountCallback);
+};
+
+ZmOffline.updateOutboxFolderCountCallback =
+function(result) {
+    var outboxFolder = appCtxt.getById(ZmFolder.ID_OUTBOX),
+        length = result ? result.length : 0;
+    if (outboxFolder) {
+        outboxFolder.notifyModify({n : length});
+    }
 };
