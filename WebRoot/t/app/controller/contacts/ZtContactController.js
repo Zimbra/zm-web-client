@@ -173,7 +173,7 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
     doEdit: function() {
         //Gets the current selected contact and provision it for editing
         var contact = this.getStore().getById(this.getItem().data.id).data;
-        if (contact.type !== ZCS.constant.ITEM_CONTACT_GROUP) {
+        if (!contact.isGroup) {
             this.editContact(contact);
         }
     },
