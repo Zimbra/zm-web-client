@@ -45,28 +45,28 @@
             "update": "full"
         },
         {
-            "path": "/t/app/view/ux/Ext.ux.TouchCalendar.js"
+            "path": "app/view/ux/Ext.ux.TouchCalendar.js"
         },
         {
-            "path": "/t/app/view/ux/Ext.ux.TouchCalendarView.js"
+            "path": "app/view/ux/Ext.ux.TouchCalendarView.js"
         },
         {
-            "path": "/t/app/view/ux/Ext.ux.TouchCalendarEventsBase.js"
+            "path": "app/view/ux/Ext.ux.TouchCalendarEventsBase.js"
         },
         {
-            "path": "/t/app/view/ux/Ext.ux.TouchCalendarEvents.js"
+            "path": "app/view/ux/Ext.ux.TouchCalendarEvents.js"
         },
         {
-            "path": "/t/app/view/ux/Ext.ux.TouchCalendarSimpleEvents.js"
+            "path": "app/view/ux/Ext.ux.TouchCalendarSimpleEvents.js"
         },
         {
-            "path": "/t/app/view/ux/Ext.ux.TouchCalendarDayEvents.js"
+            "path": "app/view/ux/Ext.ux.TouchCalendarDayEvents.js"
         },
         {
-            "path": "/t/app/view/ux/Ext.ux.TouchCalendarMonthEvents.js"
+            "path": "app/view/ux/Ext.ux.TouchCalendarMonthEvents.js"
         },
         {
-            "path": "/t/app/view/ux/Ext.ux.TouchCalendarWeekEvents.js"
+            "path": "app/view/ux/Ext.ux.TouchCalendarWeekEvents.js"
         }
     ],
 
