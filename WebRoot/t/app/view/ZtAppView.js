@@ -83,13 +83,15 @@ Ext.define('ZCS.view.ZtAppView', {
 			title: ZCS.constant.OVERVIEW_TITLE[app]
 		});
 
-		this.registerListPanel({
-			xtype: 'listpanel',
-			itemId: app + 'listpanel',
-			app: app,
-			newButtonIcon: ZCS.constant.NEW_ITEM_ICON[app],
-			storeName: ZCS.constant.STORE[app]
-		});
+        if (app !== ZCS.constant.APP_CALENDAR) {
+            this.registerListPanel({
+                xtype: 'listpanel',
+                itemId: app + 'listpanel',
+                app: app,
+                newButtonIcon: ZCS.constant.NEW_ITEM_ICON[app],
+                storeName: ZCS.constant.STORE[app]
+            });
+        }
 
 		this.registerItemPanel({
 			xtype: 'itempanel',

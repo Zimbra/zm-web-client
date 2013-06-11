@@ -73,7 +73,8 @@ Ext.application({
 		'ZCS.controller.mail.ZtMsgController',
 		'ZCS.controller.mail.ZtComposeController',
 		'ZCS.controller.contacts.ZtContactListController',
-		'ZCS.controller.contacts.ZtContactController'
+		'ZCS.controller.contacts.ZtContactController',
+        'ZCS.controller.calendar.ZtCalendarController'
 	],
 
     views: ['ZtMain'],
@@ -153,5 +154,9 @@ Ext.application({
 
 	getContactController: function() {
 		return this.getController('ZCS.controller.contacts.ZtContactController');
-	}
+	},
+
+    getCalendarController: function() {
+        return this.getController('ZCS.controller.calendar.ZtCalendarController');
+    }
 });

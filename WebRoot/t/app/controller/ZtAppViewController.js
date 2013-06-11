@@ -44,12 +44,21 @@ Ext.define('ZCS.controller.ZtAppViewController', {
 		Ext.each(ZCS.constant.APPS, function(app) {
 			if (ZCS.session.getSetting(ZCS.constant.APP_SETTING[app])) {
 				//Init our bookkeeping object.
-				this.appViews[app] = {
-					itemPanel: null,
-					overviewPanel: null,
-					listPanel: null,
-					positioningConfig: null
-				};
+                if (app !== ZCS.constant.APP_CALENDAR) {
+                    this.appViews[app] = {
+                        itemPanel: null,
+                        overviewPanel: null,
+                        listPanel: null,
+                        positioningConfig: null
+                    };
+                }
+                else {
+                    this.appViews[app] = {
+                        itemPanel: null,
+                        overviewPanel: null,
+                        positioningConfig: null
+                    };
+                }
 			}
 		}, this);
 
@@ -92,13 +101,18 @@ Ext.define('ZCS.controller.ZtAppViewController', {
 				oldAppView = this.appViews[oldApp],
 				newAppView = this.appViews[newApp];
 
-			oldAppView.listPanel.hide();
+            if (oldApp !== ZCS.constant.APP_CALENDAR) {
+			    oldAppView.listPanel.hide();
+            }
 			oldAppView.overviewPanel.hide();
 
-			if (this.showListPanelAtStart) {
-				newAppView.listPanel.show();
-				newAppView.itemPanel.show();
-			}
+            if (newApp !== ZCS.constant.APP_CALENDAR) {
+                if (this.showListPanelAtStart) {
+                    newAppView.listPanel.show();
+                }
+            }
+
+            newAppView.itemPanel.show();
 		}, this);
 	},
 
@@ -152,14 +166,21 @@ Ext.define('ZCS.controller.ZtAppViewController', {
 	 * Register an item panel for the app view.
 	 */
 	doItemPanelRegistration: function (config, appview, positioningConfig) {
-		var width = this.getItemPanelWidth(positioningConfig);
+        var width = '100%',
+            navigationWidth;
 
-		//If the item navigation is supposed to displace the item panel, make it so.
-		this.appViews[appview.getApp()].placeHolder = appview.add({
-			xtype: 'container',
-			width: this.getNavigationWidth(positioningConfig),
-			hidden: !this.showPlaceholder(positioningConfig)
-		});
+        if (appview.getApp() !== ZCS.constant.APP_CALENDAR) {
+
+            width = this.getItemPanelWidth(positioningConfig);
+            navigationWidth = this.getNavigationWidth(positioningConfig);
+
+            //If the item navigation is supposed to displace the item panel, make it so.
+            this.appViews[appview.getApp()].placeHolder = appview.add({
+                xtype: 'container',
+                width: navigationWidth,
+                hidden: !this.showPlaceholder(positioningConfig)
+            });
+        }
 
 		config.width = width;
 

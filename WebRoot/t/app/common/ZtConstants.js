@@ -64,11 +64,13 @@ ZCS.constant.MAX_MESSAGE_SIZE = 100;
 // Apps
 ZCS.constant.APP_MAIL     = 'mail';
 ZCS.constant.APP_CONTACTS = 'contacts';
+ZCS.constant.APP_CALENDAR = 'calendar';
 
 // Order of app tabs
 ZCS.constant.APPS = [
 	ZCS.constant.APP_MAIL,
-	ZCS.constant.APP_CONTACTS
+	ZCS.constant.APP_CONTACTS,
+    ZCS.constant.APP_CALENDAR
 ];
 
 // Turn features on/off
@@ -81,16 +83,19 @@ ZCS.constant.IS_ENABLED[ZCS.constant.APP_CONTACTS]              = true;
 ZCS.constant.IS_ENABLED[ZCS.constant.FEATURE_ADD_ATTACHMENT]    = false;
 ZCS.constant.IS_ENABLED[ZCS.constant.FEATURE_QUICK_REPLY]       = true;
 ZCS.constant.IS_ENABLED[ZCS.constant.FEATURE_FIND_OBJECTS]      = true;
+ZCS.constant.IS_ENABLED[ZCS.constant.APP_CALENDAR]  = true;
 
 // Text for tab bar
 ZCS.constant.TAB_TITLE = {};
 ZCS.constant.TAB_TITLE[ZCS.constant.APP_MAIL]       = ZtMsg.mail;
 ZCS.constant.TAB_TITLE[ZCS.constant.APP_CONTACTS]   = ZtMsg.contacts;
+ZCS.constant.TAB_TITLE[ZCS.constant.APP_CALENDAR]   = ZtMsg.calendar;
 
 // Title to show in overview
 ZCS.constant.OVERVIEW_TITLE = {};
 ZCS.constant.OVERVIEW_TITLE[ZCS.constant.APP_MAIL]       = ZtMsg.folders;
 ZCS.constant.OVERVIEW_TITLE[ZCS.constant.APP_CONTACTS]   = ZtMsg.addrbooks;
+ZCS.constant.OVERVIEW_TITLE[ZCS.constant.APP_CALENDAR]   = ZtMsg.calendar;
 
 // Icon for button that creates a new item
 ZCS.constant.NEW_ITEM_ICON = {};
@@ -147,12 +152,14 @@ ZCS.constant.ITEM_MESSAGE           = 'message';
 ZCS.constant.ITEM_CONTACT           = 'contact';
 ZCS.constant.ITEM_FOLDER            = 'folder';
 ZCS.constant.ADDRESS_AUTOCOMPLETE   = 'match';
+ZCS.constant.ITEM_CALENDAR          = 'calendar';
 
 // App to which each item type belongs
 ZCS.constant.APP_FOR_TYPE = {};
 ZCS.constant.APP_FOR_TYPE[ZCS.constant.ITEM_CONVERSATION]  = ZCS.constant.APP_MAIL;
 ZCS.constant.APP_FOR_TYPE[ZCS.constant.ITEM_MESSAGE]       = ZCS.constant.APP_MAIL;
 ZCS.constant.APP_FOR_TYPE[ZCS.constant.ITEM_CONTACT]       = ZCS.constant.APP_CONTACTS;
+ZCS.constant.APP_FOR_TYPE[ZCS.constant.ITEM_CALENDAR]      = ZCS.constant.APP_CALENDAR;
 
 // Model class for each item type
 ZCS.constant.CLASS_FOR_TYPE = {};
@@ -160,6 +167,7 @@ ZCS.constant.CLASS_FOR_TYPE[ZCS.constant.ITEM_CONVERSATION]    = 'ZCS.model.mail
 ZCS.constant.CLASS_FOR_TYPE[ZCS.constant.ITEM_MESSAGE]         = 'ZCS.model.mail.ZtMailMsg';
 ZCS.constant.CLASS_FOR_TYPE[ZCS.constant.ITEM_CONTACT]         = 'ZCS.model.contacts.ZtContact';
 ZCS.constant.CLASS_FOR_TYPE[ZCS.constant.ADDRESS_AUTOCOMPLETE] = 'ZCS.model.address.ZtAutoComplete';
+ZCS.constant.CLASS_FOR_TYPE[ZCS.constant.ITEM_CALENDAR]        = 'ZCS.model.calendar.ZtCalendar';
 
 // Item type for model class
 ZCS.constant.TYPE_FOR_CLASS = ZCS.util.getBackMap(ZCS.constant.CLASS_FOR_TYPE);
@@ -170,6 +178,7 @@ ZCS.constant.NODE_MESSAGE       = 'm';
 ZCS.constant.NODE_CONTACT       = 'cn';
 ZCS.constant.NODE_MATCH         = 'match';
 ZCS.constant.NODE_FOLDER        = 'folder';
+ZCS.constant.NODE_CALENDAR      = 'appt';
 
 // Order in which to handle notifications
 ZCS.constant.NODES = [
@@ -190,6 +199,7 @@ ZCS.constant.ITEM_NODE[ZCS.constant.ITEM_CONVERSATION]      = ZCS.constant.NODE_
 ZCS.constant.ITEM_NODE[ZCS.constant.ITEM_MESSAGE]           = ZCS.constant.NODE_MESSAGE;
 ZCS.constant.ITEM_NODE[ZCS.constant.ITEM_CONTACT]           = ZCS.constant.NODE_CONTACT;
 ZCS.constant.ITEM_NODE[ZCS.constant.ADDRESS_AUTOCOMPLETE]   = ZCS.constant.NODE_MATCH;
+ZCS.constant.ITEM_NODE[ZCS.constant.ITEM_CALENDAR]          = ZCS.constant.NODE_CALENDAR;
 
 // Item type based on JSON node name
 ZCS.constant.NODE_ITEM = ZCS.util.getBackMap(ZCS.constant.ITEM_NODE);
@@ -204,6 +214,7 @@ ZCS.constant.LIST_CONTROLLER[ZCS.constant.ITEM_CONTACT]         = 'ZCS.controlle
 ZCS.constant.STORE = {};
 ZCS.constant.STORE[ZCS.constant.APP_MAIL]       = 'ZtConvStore';
 ZCS.constant.STORE[ZCS.constant.APP_CONTACTS]   = 'ZtContactStore';
+ZCS.constant.STORE[ZCS.constant.APP_CALENDAR]   = 'ZtCalendarStore';
 
 // Organizer types
 ZCS.constant.ORG_FOLDER         = 'folder';
@@ -211,6 +222,7 @@ ZCS.constant.ORG_MAIL_FOLDER    = 'mailFolder';
 ZCS.constant.ORG_ADDRESS_BOOK   = 'addressBook';
 ZCS.constant.ORG_SAVED_SEARCH   = 'search';
 ZCS.constant.ORG_TAG            = 'tag';
+ZCS.constant.ORG_CALENDAR_FOLDER    = 'calendar';
 
 // App based on organizer type
 ZCS.constant.ORG_APP = {};
@@ -221,11 +233,13 @@ ZCS.constant.ORG_APP[ZCS.constant.ORG_ADDRESS_BOOK] = ZCS.constant.APP_CONTACTS;
 ZCS.constant.FOLDER_VIEW = {};
 ZCS.constant.FOLDER_VIEW[ZCS.constant.APP_MAIL]     = 'message';
 ZCS.constant.FOLDER_VIEW[ZCS.constant.APP_CONTACTS] = 'contact';
+ZCS.constant.FOLDER_VIEW[ZCS.constant.APP_CALENDAR] = 'calendar';
 
 // Folder type by app
 ZCS.constant.FOLDER_TYPE = {};
 ZCS.constant.FOLDER_TYPE[ZCS.constant.APP_MAIL]     = ZCS.constant.ORG_MAIL_FOLDER;
 ZCS.constant.FOLDER_TYPE[ZCS.constant.APP_CONTACTS] = ZCS.constant.ORG_ADDRESS_BOOK;
+ZCS.constant.FOLDER_TYPE[ZCS.constant.APP_CALENDAR] = ZCS.constant.ORG_CALENDAR_FOLDER;
 
 // Organizer names (appear in overview groups)
 ZCS.constant.ORG_NAME = {};
@@ -233,6 +247,7 @@ ZCS.constant.ORG_NAME[ZCS.constant.ORG_MAIL_FOLDER]   = ZtMsg.folders;
 ZCS.constant.ORG_NAME[ZCS.constant.ORG_ADDRESS_BOOK]  = ZtMsg.addressBooks;
 ZCS.constant.ORG_NAME[ZCS.constant.ORG_SAVED_SEARCH]  = ZtMsg.searches;
 ZCS.constant.ORG_NAME[ZCS.constant.ORG_TAG]           = ZtMsg.tags;
+ZCS.constant.ORG_NAME[ZCS.constant.ORG_CALENDAR_FOLDER] = ZtMsg.calendar;
 
 // Organizer nodes (in JSON within a refresh block from the server)
 ZCS.constant.ORG_NODE = {};
@@ -246,6 +261,7 @@ ZCS.constant.ORG_SORT_VALUE[ZCS.constant.ORG_MAIL_FOLDER]   = 1;
 ZCS.constant.ORG_SORT_VALUE[ZCS.constant.ORG_ADDRESS_BOOK]  = 1;
 ZCS.constant.ORG_SORT_VALUE[ZCS.constant.ORG_SAVED_SEARCH]  = 2;
 ZCS.constant.ORG_SORT_VALUE[ZCS.constant.ORG_TAG]           = 3;
+ZCS.constant.ORG_SORT_VALUE[ZCS.constant.ORG_CALENDAR_FOLDER]   = 1;
 
 // System folder IDs
 ZCS.constant.ID_ROOT      = '1';
@@ -369,6 +385,7 @@ ZCS.constant.SETTING_FROM_NAME          = 'zimbraPrefFromDisplay';
 // Attrs to handle JS logging to a 3rd party service
 ZCS.constant.SETTING_JSLOGGING_ENABLED  = 'zimbraTouchJSErrorTrackingEnabled';
 ZCS.constant.SETTING_JSLOGGING_KEY      = 'zimbraTouchJSErrorTrackingKey';
+ZCS.constant.SETTING_CALENDAR_ENABLED   = 'zimbraFeatureCalendarEnabled';
 
 // Names of internal settings
 ZCS.constant.SETTING_CUR_SEARCH                 = 'CUR_SEARCH';
@@ -407,6 +424,7 @@ ZCS.constant.SETTING_DEFAULT[ZCS.constant.SETTING_GET_NAME_FROM_CONTACTS]   = tr
 ZCS.constant.APP_SETTING = {};
 ZCS.constant.APP_SETTING[ZCS.constant.APP_MAIL]     = ZCS.constant.SETTING_MAIL_ENABLED;
 ZCS.constant.APP_SETTING[ZCS.constant.APP_CONTACTS] = ZCS.constant.SETTING_CONTACTS_ENABLED;
+ZCS.constant.APP_SETTING[ZCS.constant.APP_CALENDAR] = ZCS.constant.SETTING_CALENDAR_ENABLED;
 
 // Values for what is included on reply/forward - server bundles several options into a single value
 ZCS.constant.INC_NONE				= "includeNone";
