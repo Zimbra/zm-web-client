@@ -670,7 +670,8 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
                         imageUrl = ZCS.common.ZtUtil.getImageUrl(records[0], 125);
                     data.imageStyle = imageUrl ? 'background-image: url(' + imageUrl + ')' : '';
                     this.updateToolbar({
-                        title: records[0].data['displayName']
+                        title: records[0].data['displayName'],
+                        isGroup: records[0].data['isGroup']
                     });
                     this.getContactView().setHtml(tpl.apply(data));
                 }
@@ -689,8 +690,13 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
 			hideAll = !this.getItem() || params.isAssignmentView;
 
 		Ext.each(ZCS.constant.ITEM_BUTTONS[app], function(button) {
-			this.showButton(button.op, !hideAll);
+            this.showButton(button.op, !hideAll);
 		}, this);
+
+        if (params.isGroup) {
+            //Do not display the edit icon in case of contact groups
+            this.showButton(ZCS.constant.OP_EDIT, false)
+        }
 
 		if (hideAll) {
 			return;
