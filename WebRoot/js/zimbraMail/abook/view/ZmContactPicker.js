@@ -210,6 +210,8 @@ function(colItem, ascending, firstTime, lastId, lastSortVal, offset) {
 	
 	var query;
 	var queryHint = [];
+	var emailQueryTerm = "";
+	var phoneticQueryTerms = [];  // Should be ORed with nameQuery if both are present
 	var conds = [];
 	if (this._detailedSearch) {
 		var nameQuery = this.getSearchFieldValue(ZmContactPicker.SEARCH_NAME);
@@ -238,20 +240,18 @@ function(colItem, ascending, firstTime, lastId, lastSortVal, offset) {
 				{attr:ZmContact.F_email16, op:"has", value: emailQuery}
 				]);
 			} else {
-				queryHint.push("to:"+emailQuery+"*");
+				emailQueryTerm = "to:"+emailQuery+"*";
 			}
 		}
 		if (deptQuery && isGal) {
 			conds.push({attr:ZmContact.F_department, op:"has", value: deptQuery});
 		}
 		if (phoneticQuery && !isGal) {
-			var condArr = [];
 			var phoneticQueryPieces = phoneticQuery.split(/\s+/);
 			for (var i=0; i<phoneticQueryPieces.length; i++) {
-				condArr.push("#"+ZmContact.F_phoneticFirstName + ":" + phoneticQueryPieces[i]);
-				condArr.push("#"+ZmContact.F_phoneticLastName + ":" + phoneticQueryPieces[i]);
+				phoneticQueryTerms.push("#"+ZmContact.F_phoneticFirstName + ":" + phoneticQueryPieces[i]);
+				phoneticQueryTerms.push("#"+ZmContact.F_phoneticLastName + ":" + phoneticQueryPieces[i]);
 			}
-			queryHint.push(condArr.join(" || "));
 		}
 	} else {
 		query = this.getSearchFieldValue(ZmContactPicker.SEARCH_BASIC);
@@ -280,7 +280,7 @@ function(colItem, ascending, firstTime, lastId, lastSortVal, offset) {
 			queryHint.push("is:local");
 		}
 	}
-    
+
     if (!query.length && this._contactSource == ZmId.SEARCH_GAL) {
 		query = this._defaultQuery;
 	}
@@ -289,6 +289,16 @@ function(colItem, ascending, firstTime, lastId, lastSortVal, offset) {
         query = query.replace(/\"/g, '\\"');
         query = "\"" + query + "\"";
     }
+	if (phoneticQueryTerms.length) {
+		// OR any phonetic query terms with the main (name) query
+		if (query.length) {
+			phoneticQueryTerms.unshift(query);
+		}
+		query = "(" + phoneticQueryTerms.join(" OR ") + ")";
+	}
+	if (emailQueryTerm.length) {
+		query = query + " " + emailQueryTerm;  // MUST match email term, hence AND rather than OR
+	}
 
 	if (this._searchIcon) { //does not exist in ZmGroupView case
 		this._searchIcon.className = "DwtWait16Icon";
