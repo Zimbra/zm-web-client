@@ -176,12 +176,15 @@
 		    <div class='zcs-contactList-group' <tpl if='imageUrl'>style='background-image:url({imageUrl})'</tpl>></div>
         </tpl>
 		<div class='zcs-contactList-text'>
-		<tpl if='lastName || firstName'>
-		<div class='zcs-contactList-name'>{lastName}<tpl if='lastName && firstName'>, </tpl>{firstName}</div>
-		</tpl>
-		<tpl if='nickname'>
-		<div class='zcs-contactList-name'>{nickname}</div>
-		</tpl>
+        <tpl if="type == 'contact'">
+            <tpl if='lastName || firstName'>
+		        <div class='zcs-contactList-name'>{lastName}<tpl if='lastName && firstName'>, </tpl>{firstName}</div>
+		    </tpl>
+        <tpl else>
+            <tpl if="nickname">
+                <div class='zcs-contactList-name'>{nickname}</div>
+            </tpl>
+        </tpl>
 		<tpl if='jobTitle || company'>
 		<div class='zcs-contactList-title'>{jobTitle}<tpl if='jobTitle && company'>, </tpl>{company}</div>
 		</tpl>
@@ -194,7 +197,9 @@
 		<div class='zcs-contactview-header'>
 			<div class='zcs-contactview-image' style='{imageStyle}'></div>
 			<div class='zcs-contactview-personalInfo'>
-				<span name="contactname">{lastName}<tpl if='lastName && firstName'>, </tpl>{firstName}</span>
+                <span name="contactname"><tpl if='namePrefix'>{namePrefix}</tpl> {firstName}<tpl if='middleName'> {middleName}</tpl><tpl if='maidenName'> ({maidenName})</tpl>
+                    {lastName}<tpl if='lastName && nameSuffix'>, </tpl>{nameSuffix}</span>
+                <tpl if='nickname'><span name="contactname">"{nickname}"</span></tpl>
 				<tpl if='jobTitle'><span>{jobTitle}</span></tpl>
 				<tpl if='company'><span>{company}</span></tpl>
 			</div>
