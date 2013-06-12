@@ -1,75 +1,16 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!-- Created with Inkscape (http://www.inkscape.org/) -->
-
-<svg
-   xmlns:dc="http://purl.org/dc/elements/1.1/"
-   xmlns:cc="http://creativecommons.org/ns#"
-   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-   xmlns:svg="http://www.w3.org/2000/svg"
-   xmlns="http://www.w3.org/2000/svg"
-   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="256"
-   height="256"
-   id="svg2"
-   version="1.1"
-   inkscape:version="0.48.2 r9819"
-   sodipodi:docname="trash.svg">
-  <defs
-     id="defs4" />
-  <sodipodi:namedview
-     id="base"
-     pagecolor="#ffffff"
-     bordercolor="#666666"
-     borderopacity="1.0"
-     inkscape:pageopacity="0.0"
-     inkscape:pageshadow="2"
-     inkscape:zoom="2.3091456"
-     inkscape:cx="31.415912"
-     inkscape:cy="128.09441"
-     inkscape:document-units="px"
-     inkscape:current-layer="layer1"
-     showgrid="true"
-     inkscape:window-width="1852"
-     inkscape:window-height="1156"
-     inkscape:window-x="68"
-     inkscape:window-y="0"
-     inkscape:window-maximized="0"
-     inkscape:snap-global="false">
-    <inkscape:grid
-       type="xygrid"
-       id="grid2985"
-       empspacing="16"
-       visible="true"
-       enabled="true"
-       snapvisiblegridlinesonly="true"
-       spacingx="1px"
-       spacingy="1px"
-       dotted="false" />
-  </sodipodi:namedview>
-  <metadata
-     id="metadata7">
-    <rdf:RDF>
-      <cc:Work
-         rdf:about="">
-        <dc:format>image/svg+xml</dc:format>
-        <dc:type
-           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
-      </cc:Work>
-    </rdf:RDF>
-  </metadata>
-  <g
-     inkscape:label="Layer 1"
-     inkscape:groupmode="layer"
-     id="layer1"
-     transform="translate(0,-796.36217)">
-    <path
-       style="fill:#000000;fill-opacity:1;stroke:none"
-       d="M 37.625,32.75 C 34.512536,32.75 32,37.262536 32,40.375 32,43.487464 34.512536,48 37.625,48 l 6.375,0 16,178 136,0 16,-178 6.375,0 c 3.11246,0 5.625,-4.512536 5.625,-7.625 0,-3.112464 -2.51254,-7.625 -5.625,-7.625 z M 76,48 116,48 96,68 z m 67.875,0 40,0 -20,20 z m -81.8125,8.6875 22.625,22.625 -22.625,22.625 -0.28125,-0.28125 L 58.4375,60.3125 z m 67.875,0 22.625,22.625 -22.625,22.625 -22.625,-22.625 z m 67.875,0 0.0312,0.03125 -3.375,41.875 L 175.1875,79.3125 z M 96,90.625 118.625,113.25 96,135.875 73.375,113.25 z m 67.875,0 22.625,22.625 -22.625,22.625 -22.625,-22.625 z m -33.9375,33.9375 22.625,22.625 -22.625,22.625 -22.625,-22.625 z m -66.15625,1.71875 20.90625,20.90625 -17.75,17.75 z M 191.875,130.5 l -2.5,30.875 -14.1875,-14.1875 z M 96,158.5 118.625,181.125 96,203.75 73.375,181.125 z m 67.875,0 22.625,22.625 -22.625,22.625 -22.625,-22.625 z m -33.9375,33.9375 21.53125,21.5625 -43.0625,0 z M 69.78125,200.15625 83.59375,214 70.90625,214 z M 185.875,204.375 185.09375,214 l -8.8125,0 z"
-       transform="translate(0,796.36217)"
-       id="path2984"
-       inkscape:connector-curvature="0"
-       sodipodi:nodetypes="sssccccssssccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc" />
-  </g>
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 15.0.2, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 width="48px" height="48px" viewBox="0 0 48 48" enable-background="new 0 0 48 48" xml:space="preserve">
+<path fill-rule="evenodd" clip-rule="evenodd" fill="#010101" d="M20.88,10.005L21,9.895v-1.58c0.141-1.04,0.68-1.31,1.96-1.31h2.08
+	c1.28,0,1.819,0.27,1.96,1.31v1.21v0.48h2v-0.84c0-2.36-0.88-3.75-3.15-4.16h-3.31c-2.511,0.2-3.54,1.32-3.54,3.84v1.16H20.88z"/>
+<path fill-rule="evenodd" clip-rule="evenodd" fill="#010101" d="M13.62,15.005l2.319,0.38c0.621,0,1.121,0.5,1.121,1.12L18,39.944
+	c0,0.621-1.25,0.871-1.88,0.871c-0.62,0-1.74-0.881-1.74-1.5l-1.88-23.19C12.5,15.505,13,15.005,13.62,15.005z M11.64,41.146
+	c0.69,2.229,6.01,4.119,12.36,4.229c6.35-0.11,11.67-2,12.359-4.229h0.201l3.129-29.701c0.15-0.32,1.19-2.43,1.19-2.77
+	c0-3.34-7.351-6.05-16.88-6.05S7.12,5.335,7.12,8.675c0,0.34,1.17,2.45,1.32,2.77l3.12,29.701H11.64z M23.58,42.005
+	c-0.67-0.1-1.58-0.43-1.58-0.939v-23.94c0-0.62,0.5-1.12,1.12-1.12H24h0.88c0.62,0,1.12,0.5,1.12,1.12v23.94
+	c0,0.51-0.91,0.84-1.58,0.939H23.58z M24,12.625c-8.52,0-15.06-1.94-15.06-4.45c0-2.51,6.541-4.54,15.06-4.54
+	s15.061,2.03,15.061,4.54C39.061,10.685,32.52,12.625,24,12.625z M34.5,15.005c0.62,0,1.12,0.5,1.12,1.12l-1.87,23.19
+	c0,0.619-1.13,1.5-1.75,1.5s-1.88-0.25-1.88-0.871l0.94-23.439c0-0.62,0.51-1.12,1.129-1.12L34.5,15.005z"/>
 </svg>
