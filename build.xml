@@ -1014,7 +1014,7 @@
                  classpath="${build.classes.dir}"
                 />
 
-        <fileset id='jam-files.fileset' dir='${build.js.dir}' includes='*.js' excludes='*_all.js,*_appcache.js'/>
+        <fileset id='jam-files.fileset' dir='${build.js.dir}' includes='*.js' excludes='*_all.js'/>
         <pathconvert property="jam-files.list" refid="jam-files.fileset" pathsep=','>
             <chainedmapper>
                 <flattenmapper/>
@@ -1032,7 +1032,7 @@
 
         <property name='jam.file' value='${build.js.dir}/${arg}_all.js'/>
         <property name='jsp.file' value='${build.web.dir}/public/jsp/${arg}.jsp'/>
-        <property name='appcache.file' value='${build.js.dir}/${arg}_appcache.js'/>
+        <property name='appcache.file' value='${build.js.dir}/${arg}.appcache'/>
         <property name='depends.file' value='${jam.file}${depends.ext}'/>
 
         <packagedependset>
