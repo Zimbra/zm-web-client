@@ -47,15 +47,16 @@ Ext.define('ZCS.model.calendar.ZtCalendar', {
         }, {
             name: 'css',
             type: 'string'
-        }]
-    },
+        }],
 
-    proxy: {
-        api: {
-            read: urlBase + 'SearchRequest'
-        },
+        proxy: {
+            type: 'soapproxy',
+            api: {
+                read: urlBase + 'SearchRequest'
+            },
 
-        reader: 'calendarreader',
-        writer: 'calendarwriter'
+            reader: 'calendarreader',
+            writer: 'calendarwriter'
+        }
     }
 });
