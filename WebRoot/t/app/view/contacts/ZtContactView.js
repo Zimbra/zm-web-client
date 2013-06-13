@@ -19,8 +19,11 @@
  * @author Conrad Damon <cdamon@zimbra.com>
  */
 Ext.define('ZCS.view.contacts.ZtContactView', {
+
 	extend: 'Ext.Container',
+
 	xtype: ZCS.constant.APP_CONTACTS + 'itemview',
+
 	config: {
 		tpl: Ext.create('Ext.XTemplate', ZCS.template.Contact),
         cls: 'zcs-contactview',
@@ -28,5 +31,14 @@ Ext.define('ZCS.view.contacts.ZtContactView', {
             direction: 'vertical',
             directionLock: true
         }
+	},
+
+	showItem: function(contact) {
+
+		var data = ZCS.util.copyFields(contact, ZCS.constant.ATTRS),
+			imageUrl = ZCS.common.ZtUtil.getImageUrl(contact, 125);
+
+		data.imageStyle = imageUrl ? 'background-image: url(' + imageUrl + ')' : '';
+		this.setHtml(this.getTpl().apply(data));
 	}
 });

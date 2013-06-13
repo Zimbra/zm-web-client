@@ -507,6 +507,7 @@ ZCS.constant.REGEX_URL                  = /(((https?):\/\/)|(www\.[\w\.\_\-]+))[
 // simple email regex - see ZtEmailAddress for fancier ones
 ZCS.constant.REGEX_EMAIL                = /((mailto:)?\b[A-Z0-9\._%+-]+@[A-Z0-9\.-]+\.[A-Z]{2,5})\b/gi;
 ZCS.constant.REGEX_FOLDER_TAG_SEARCH    = /^(in|tag):["']?([^\x00-\x1F\x7F:\"]+)["']?$/;
+ZCS.constant.REGEX_CONTACT_ATTR         = /^([a-z]+)([A-Z][a-z]+)(\d*)$/;
 
 // URL paths
 ZCS.constant.PATH_MSG_FETCH = '/service/home/~/';
@@ -601,6 +602,29 @@ ZCS.constant.IDTYPE_TAG             = 'TAG';
 // Quick reply textarea - height in pixels
 ZCS.constant.QUICK_REPLY_SMALL  = 20;
 ZCS.constant.QUICK_REPLY_LARGE  = 80;
+
+// Contact attributes used directly by the contact template
+ZCS.constant.ATTRS = [
+	'isGroup', 'nameLastFirst', /*'jobTitle', 'company',*/ 'email', 'phone',
+	'address', 'url', 'fax', 'groupMembers'/*, 'nickname'*/
+];
+
+// Contact attributes that make up an address
+ZCS.constant.IS_ADDRESS_FIELD = ZCS.util.arrayAsLookupHash([
+	'street', 'city', 'state', 'postalCode', 'country'
+]);
+
+// Contact attributes that have variable type (home, work, etc)
+ZCS.constant.IS_PARSED_ATTR_FIELD = ZCS.util.arrayAsLookupHash([
+	'email', 'phone', 'fax', 'url'
+]);
+
+// Ordering for display of attribute types
+ZCS.constant.ATTR_TYPE_SORT_VALUE = {
+	home:   1,
+	work:   2,
+	other:  3
+};
 
 // Contact field types
 ZCS.constant.MOBILE = 'mobile';

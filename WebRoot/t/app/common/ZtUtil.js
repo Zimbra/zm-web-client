@@ -142,7 +142,7 @@ Ext.define('ZCS.common.ZtUtil', {
 	/**
 	 * Converts an array of scalar values into a lookup hash where each value is a key.
 	 *
-	 * @param {array}       array to convert
+	 * @param {Array}       array to convert
 	 * @return {object}     lookup hash
 	 */
 	arrayAsLookupHash: function(array) {
@@ -407,5 +407,25 @@ Ext.define('ZCS.common.ZtUtil', {
                 t:(new Date()).getTime()
             }
         });
-    }
+    },
+
+	/**
+	 * Copies fields from a model instance into a data hash suitable for passing
+	 * to a template.
+	 *
+	 * @param {Model}   model       source model
+	 * @param {Array}   fields      list of fields to copy
+	 *
+	 * @return {Object}     hash of data
+	 */
+	copyFields: function(model, fields) {
+
+		var data = {};
+
+		Ext.each(fields, function(field) {
+			data[field] = model.get(field);
+		}, this);
+
+		return data;
+	}
 });

@@ -33,22 +33,9 @@ Ext.define('ZCS.model.contacts.ZtContact', {
 	config: {
 
 		fields: [
+/*
 			{ name: 'firstName', type: 'string' },
 			{ name: 'lastName', type: 'string' },
-			{
-				name: 'displayName',
-				type: 'string',
-				convert: function (v, record) {
-					if (record.data.firstName && record.data.lastName) {
-						return record.data.firstName + ' ' + record.data.lastName;
-					} else if (record.data.emailFields) {
-						return record.data.emailFields[0];
-					} else {
-                        return record.data.nickname;
-                    }
-				}
-			},
-            { name: 'nickname', type: 'string' },
             { name: 'namePrefix', type: 'string' },
             { name: 'middleName', type: 'string' },
             { name: 'maidenName', type: 'string' },
@@ -85,9 +72,6 @@ Ext.define('ZCS.model.contacts.ZtContact', {
             { name: 'department', type: 'string'},
             { name: 'company', type: 'string' },
 			{ name: 'fileAs', type: 'int' } ,
-            /**
-             * image and imagepart fields store the image related attributes for a contact.
-             */
             { name: 'image', type: 'auto'},
             { name: 'imagepart', type: 'auto'},
             { name: 'zimletImage', type: 'auto'},
@@ -109,14 +93,52 @@ Ext.define('ZCS.model.contacts.ZtContact', {
             { name: 'otherStateFields', type: 'auto'},
             { name: 'otherPostalCodeFields', type: 'auto'},
             { name: 'otherCountryFields', type: 'auto'},
+*/
+
+			{ name: 'attrs', type: 'auto' },
+
+//			{ name: 'nickname', type: 'string' },
+//			{ name: 'jobTitle', type: 'string' },
+//			{ name: 'company', type: 'string' },
+
+			{ name: 'email', type: 'auto' },
+			{ name: 'phone', type: 'auto' },
+			{ name: 'address', type: 'auto' },
+			{ name: 'fax', type: 'auto' },
+			{ name: 'url', type: 'auto' },
+
+			// groups I think
+			{
+				name: 'displayName',
+				type: 'string',
+				convert: function (v, record) {
+					if (record.data.firstName && record.data.lastName) {
+						return record.data.firstName + ' ' + record.data.lastName;
+					} else if (record.data.emailFields) {
+						return record.data.emailFields[0];
+					} else {
+						return record.data.nickname;
+					}
+				}
+			},
 
 			// long name, eg "Johnathan Smith"
 			{
 				name: 'longName',
 				type: 'string',
 				convert: function (v, record) {
-					var d = record.data;
-					return (d.firstName && d.lastName) ? d.firstName && d.lastName : d.firstName || d.email || '';
+					var d = record.data.attrs || {};
+					return (d.firstName && d.lastName) ? [d.firstName, d.lastName].join(' ') : d.firstName || d.email || '';
+				}
+			},
+
+			// last name first, eg "Smith, Johnathan"
+			{
+				name: 'nameLastFirst',
+				type: 'string',
+				convert: function (v, record) {
+					var d = record.data.attrs || {};
+					return (d.firstName && d.lastName) ? [d.firstName, d.lastName].join(' ') : d.firstName || d.email || '';
 				}
 			},
 
@@ -125,11 +147,21 @@ Ext.define('ZCS.model.contacts.ZtContact', {
 				name: 'shortName',
 				type: 'string',
 				convert: function (v, record) {
-					var d = record.data;
-					return d.firstName || d.email || d.lastName || '';
+					var d = record.data.attrs || {};
+					return d.nickname || d.firstName || d.email || d.lastName || '';
 				}
 			},
 
+			{
+				name: 'job',
+				type: 'string',
+				convert: function(v, record) {
+					var d = record.data.attrs || {};
+					return Ext.Array.clean([d.jobTitle, d.company]).join(', ');
+				}
+			},
+
+/*
 			{ name: 'isHomeAddressExists', type: 'boolean',
                 convert:function(v, record) {
                     if (record.data.homeStreetFields || record.data.homeCityFields || record.data.homeStateFields
@@ -160,6 +192,7 @@ Ext.define('ZCS.model.contacts.ZtContact', {
                     }
                 }
             },
+*/
             { name: 'imageUrl', type:'auto',
                 convert: function(v, record) {
                     var image = record.data.image;
@@ -181,8 +214,12 @@ Ext.define('ZCS.model.contacts.ZtContact', {
                     });
                 }
             },
+
+			// Contact group
 			{ name: 'isGroup', type: 'boolean' },
-            { name: 'groupMembers', type: 'auto' }
+            { name: 'groupMembers', type: 'auto' },
+			{ name: 'memberEmail', type: 'string' },
+			{ name: 'memberPhone', type: 'string' }
         ],
 
 		proxy: {

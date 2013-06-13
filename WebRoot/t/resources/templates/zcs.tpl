@@ -170,147 +170,119 @@
 
 <template id='ContactListItem'>
 	<div class='zcs-contactListItem'>
-        <tpl if="type == 'contact'">
-            <div class='zcs-contactList-person' <tpl if='imageUrl'>style='background-image:url({imageUrl})'</tpl>></div>
-        <tpl else>
+        <tpl if='isGroup'>
 		    <div class='zcs-contactList-group' <tpl if='imageUrl'>style='background-image:url({imageUrl})'</tpl>></div>
+        <tpl else>
+            <div class='zcs-contactList-person' <tpl if='imageUrl'>style='background-image:url({imageUrl})'</tpl>></div>
         </tpl>
 		<div class='zcs-contactList-text'>
-        <tpl if="type == 'contact'">
-            <tpl if='lastName || firstName'>
-		        <div class='zcs-contactList-name'>{lastName}<tpl if='lastName && firstName'>, </tpl>{firstName}</div>
-		    </tpl>
-        <tpl else>
-            <tpl if="nickname">
-                <div class='zcs-contactList-name'>{nickname}</div>
-            </tpl>
-        </tpl>
-		<tpl if='jobTitle || company'>
-		<div class='zcs-contactList-title'>{jobTitle}<tpl if='jobTitle && company'>, </tpl>{company}</div>
-		</tpl>
+			<tpl if='isGroup'>
+				<div class='zcs-contactList-name'>{attrs.nickname}</div>
+			<tpl else>
+				<div class='zcs-contactList-name'>{nameLastFirst}</div>
+				<div class='zcs-contactList-title'>{job}</div>
+			</tpl>
 		</div>
 	</div>
 </template>
 
 <template id='Contact'>
-	<tpl if="type == 'contact'">
+	<tpl if='isGroup'>
+		<div class='zcs-contactgroupview-header'>
+			<div class='zcs-contactgroupview-image' style='{imageStyle}'></div>
+			<div class='zcs-contactgroupview-personalInfo'>
+				<span name="contactname">{attrs.nickname}</span>
+			</div>
+		</div>
+		<div class='zcs-contactgroupview-members'>
+			<tpl for='groupMembers'>
+				<div class='zcs-contactgroupview-member'>
+					<div class='zcs-contact-image' <tpl if='imageUrl'>style='background-image:url({imageUrl})'</tpl>></div>
+					<div class='zcs-contact-info'>
+						<span name="contactname">{longName}</span>
+						<tpl if='attrs.jobTitle'><span>{attrs.jobTitle}</span></tpl>
+						<span>{memberEmail}</span>
+						<span>{memberPhone}</span>
+					</div>
+				</div>
+			</tpl>
+		</div>
+	<tpl else>
 		<div class='zcs-contactview-header'>
 			<div class='zcs-contactview-image' style='{imageStyle}'></div>
 			<div class='zcs-contactview-personalInfo'>
                 <span name="contactname"><tpl if='namePrefix'>{namePrefix}</tpl> {firstName}<tpl if='middleName'> {middleName}</tpl><tpl if='maidenName'> ({maidenName})</tpl>
                     {lastName}<tpl if='lastName && nameSuffix'>, </tpl>{nameSuffix}</span>
-                <tpl if='nickname'><span name="contactname">"{nickname}"</span></tpl>
-				<tpl if='jobTitle'><span>{jobTitle}</span></tpl>
-				<tpl if='company'><span>{company}</span></tpl>
+                <tpl if='attrs.nickname'><span name="contactname">"{attrs.nickname}"</span></tpl>
+				<tpl if='attrs.jobTitle'><span>{attrs.jobTitle}</span></tpl>
+				<tpl if='attrs.company'><span>{attrs.company}</span></tpl>
 			</div>
 		</div>
 		<div class='zcs-contactview-fieldSets'>
-			<tpl if='emailFields'>
-			<div class='zcs-contactview-fieldSet'>
-				<div class='zcs-contactview-label'>{[ZtMsg.email]}</div>
-				<div class='zcs-contactview-fields'>
-					<tpl for='emailFields'>
-						<div class='zcs-contactview-field'>{.}</div>
-					</tpl>
-				</div>
-			</div>
-			</tpl>
-			<tpl if='mobilePhoneFields || workPhoneFields || otherPhoneFields'>
-			<div class='zcs-contactview-fieldSet'>
-				<div class='zcs-contactview-label'>{[ZtMsg.phone]}</div>
-				<div class='zcs-contactview-fields'>
-					<tpl for='mobilePhoneFields'>
-					<div class='zcs-contactview-field'>{.}</div>
-					 <div class='zcs-contactview-subLabel'>{[ZtMsg.mobile]}</div>
-					</tpl>
-					<tpl for='workPhoneFields'>
-					<div class='zcs-contactview-field'>{.}</div>
-					<div class='zcs-contactview-subLabel'>{[ZtMsg.work]}</div>
-					</tpl>
-					<tpl for='otherPhoneFields'>
-					 <div class='zcs-contactview-field'>{.}</div>
-					 <div class='zcs-contactview-subLabel'>{[ZtMsg.other]}</div>
-					</tpl>
-				</div>
-			</div>
-			</tpl>
-			<tpl if='isHomeAddressExists || isWorkAddressExists || isOtherAddressExists'>
-			<div class='zcs-contactview-fieldSet'>
-				<div class='zcs-contactview-label'>{[ZtMsg.address]}</div>
-				<div class='zcs-contactview-fields'>
-					<tpl if='isHomeAddressExists'>
-					<div class='zcs-contactview-field'>
-						<tpl for='homeStreetFields'>{% if (xindex > 1) break; %}<span class='zcs-contactview-street'>{.}</span></tpl>
-						<tpl for='homeCityFields'>{% if (xindex > 1) break; %}<span class='zcs-contactview-city'>{.},&nbsp</span></tpl>
-						<tpl for='homeStateFields'>{% if (xindex > 1) break; %}<span class='zcs-contactview-state'>{.}&nbsp</span></tpl>
-						<tpl for='homePostalCodeFields'>{% if (xindex > 1) break; %}<span class='zcs-contactview-postalcode'>{.}</span></tpl>
-						<tpl for='homeCountryFields'>{% if (xindex > 1) break; %}<span class='zcs-contactview-country'>{.}</span></tpl>
+			<tpl if='email'>
+				<div class='zcs-contactview-fieldSet'>
+					<div class='zcs-contactview-label'>{[ZtMsg.email]}</div>
+					<div class='zcs-contactview-fields'>
+						<tpl for='email'>
+							<div class='zcs-contactview-field'>{value}</div>
+							<div class='zcs-contactview-subLabel'>{typeStr}</div>
+						</tpl>
 					</div>
-					<div class='zcs-contactview-subLabel'>{[ZtMsg.home]}</div>
-					</tpl>
-					<tpl if='isWorkAddressExists'>
-					<div class='zcs-contactview-field'>
-						<tpl for='workStreetFields'>{% if (xindex > 1) break; %}<span class='zcs-contactview-street'>{.}</span></tpl>
-						<tpl for='workCityFields'>{% if (xindex > 1) break; %}<span class='zcs-contactview-city'>{.},&nbsp</span></tpl>
-						<tpl for='workStateFields'>{% if (xindex > 1) break; %}<span class='zcs-contactview-state'>{.}&nbsp</span></tpl>
-						<tpl for='workPostalCodeFields'>{% if (xindex > 1) break; %}<span class='zcs-contactview-postalcode'>{.}</span></tpl>
-						<tpl for='workCountryFields'>{% if (xindex > 1) break; %}<span class='zcs-contactview-country'>{.}</span></tpl>
-					</div>
-					<div class='zcs-contactview-subLabel'>{[ZtMsg.work]}</div>
-					</tpl>
-					<tpl if='isOtherAddressExists'>
-					<div class='zcs-contactview-field'>
-						<tpl for='otherStreetFields'>{% if (xindex > 1) break; %}<span class='zcs-contactview-street'>{.}</span></tpl>
-						<tpl for='otherCityFields'>{% if (xindex > 1) break; %}<span class='zcs-contactview-city'>{.},&nbsp</span></tpl>
-						<tpl for='otherStateFields'>{% if (xindex > 1) break; %}<span class='zcs-contactview-state'>{.}&nbsp</span></tpl>
-						<tpl for='otherPostalCodeFields'>{% if (xindex > 1) break; %}<span class='zcs-contactview-postalcode'>{.}</span></tpl>
-						<tpl for='otherCountryFields'>{% if (xindex > 1) break; %}<span class='zcs-contactview-country'>{.}</span></tpl>
-					</div>
-					<div class='zcs-contactview-subLabel'>{[ZtMsg.other]}</div>
-					</tpl>
 				</div>
-			</div>
 			</tpl>
-			<tpl if='homeURLFields || workURLFields || otherURLFields'>
-			<div class='zcs-contactview-fieldSet'>
-				<div class='zcs-contactview-label'>{[ZtMsg.url]}</div>
-				<div class='zcs-contactview-fields'>
-					<tpl for='homeURLFields'>
-					<div class='zcs-contactview-field'>{.}</div>
-					<div class='zcs-contactview-subLabel'>{[ZtMsg.home]}</div>
-					</tpl>
-					<tpl for='workURLFields'>
-					<div class='zcs-contactview-field'>{.}</div>
-					<div class='zcs-contactview-subLabel'>{[ZtMsg.work]}</div>
-					</tpl>
-					<tpl for='otherURLFields'>
-					<div class='zcs-contactview-field'>{.}</div>
-					<div class='zcs-contactview-subLabel'>{[ZtMsg.other]}</div>
-					</tpl>
+			<tpl if='phone'>
+				<div class='zcs-contactview-fieldSet'>
+					<div class='zcs-contactview-label'>{[ZtMsg.phone]}</div>
+					<div class='zcs-contactview-fields'>
+						<tpl for='phone'>
+							<div class='zcs-contactview-field'>{value}</div>
+							<div class='zcs-contactview-subLabel'>{typeStr}</div>
+						</tpl>
+					</div>
 				</div>
-			</div>
+			</tpl>
+			<tpl if='address.length'>
+				<div class='zcs-contactview-fieldSet'>
+					<div class='zcs-contactview-label'>{[ZtMsg.address]}</div>
+					<div class='zcs-contactview-fields'>
+						<tpl for='address'>
+							<div class='zcs-contactview-field'>
+								<span class='zcs-contactview-street'>{street}</span>
+								<tpl if='city'>
+									<span class='zcs-contactview-city'>{city},&nbsp</span>
+								</tpl>
+								<span class='zcs-contactview-state'>{state}&nbsp</span>
+								<span class='zcs-contactview-postalcode'>{postalCode}</span>
+								<span class='zcs-contactview-country'>{country}</span>
+							</div>
+							<div class='zcs-contactview-subLabel'>{typeStr}</div>
+						</tpl>
+					</div>
+				</div>
+			</tpl>
+			<tpl if='url'>
+				<div class='zcs-contactview-fieldSet'>
+					<div class='zcs-contactview-label'>{[ZtMsg.url]}</div>
+					<div class='zcs-contactview-fields'>
+						<tpl for='url'>
+							<div class='zcs-contactview-field'>{value}</div>
+							<div class='zcs-contactview-subLabel'>{typeStr}</div>
+						</tpl>
+					</div>
+				</div>
+			</tpl>
+			<tpl if='fax'>
+				<div class='zcs-contactview-fieldSet'>
+					<div class='zcs-contactview-label'>{[ZtMsg.fax]}</div>
+					<div class='zcs-contactview-fields'>
+						<tpl for='fax'>
+							<div class='zcs-contactview-field'>{value}</div>
+							<div class='zcs-contactview-subLabel'>{typeStr}</div>
+						</tpl>
+					</div>
+				</div>
 			</tpl>
 		</div>
-		<tpl else>
-			<div class='zcs-contactgroupview-header'>
-				<div class='zcs-contactgroupview-image' style='{imageStyle}'></div>
-				<div class='zcs-contactgroupview-personalInfo'>
-					<span name="contactname">{displayName}</span>
-				</div>
-			</div>
-			<div class='zcs-contactgroupview-members'>
-				<tpl for='groupMembers'>
-				<div class='zcs-contactgroupview-member'>
-					<div class='zcs-contact-image' <tpl if='imageUrl'>style='background-image:url({imageUrl})'</tpl>></div>
-					<div class='zcs-contact-info'>
-						<span name="contactname"><tpl if='fullName'>{fullName}<tpl else>{lastName}</tpl><tpl if='lastName && firstName'>, {firstName}</tpl></span>
-						<tpl if='jobTitle'><span>{jobTitle}</span></tpl>
-						<tpl for='emailFields'>{% if (xindex > 1) break; %}<span>{.}</span></tpl>
-						<tpl for='workPhoneFields'>{% if (xindex > 1) break; %}<span>{.}</span></tpl>
-					</div>
-				</div>
-				</tpl>
-			</div>
 		</tpl>
 </template>
 
