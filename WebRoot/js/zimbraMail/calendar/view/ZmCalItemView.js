@@ -287,6 +287,8 @@ function(calItem) {
 	var el = this.getHtmlElement();
 	el.innerHTML = AjxTemplate.expand("calendar.Appointment#ReadOnlyView", subs);
 
+	//do this so EmailTooltipZimlet.prototype._createBubbles is called and the bubbles actually get created. (in ZmApptView.prototype._getSubs they are not created in the calls to findObjects).
+	appCtxt.notifyZimlets("onApptView", [calItem, this]); //really not sure we need this but I am consistent here with other cases.
 
     var selParams = {parent: this};
     var statusSelect = new DwtSelect(selParams);
@@ -344,35 +346,45 @@ function(calItem) {
 	var isException = calItem._orig.isException;
 	var dateStr = this._getTimeString(calItem);
 	//var attendees = calItem.getAttendeesText(ZmCalBaseItem.PERSON);
-    var isAttendees = false;
     var reqAttendees = calItem.getAttendeesTextByRole(ZmCalBaseItem.PERSON, ZmCalItem.ROLE_REQUIRED, true, this._objectManager, this._htmlElId);
     var optAttendees = calItem.getAttendeesTextByRole(ZmCalBaseItem.PERSON, ZmCalItem.ROLE_OPTIONAL, true, this._objectManager, this._htmlElId);
-    if(reqAttendees || optAttendees) isAttendees = true;
-	var org, obo;
+	var hasAttendees = reqAttendees || optAttendees;
+
+	var organizer, obo;
 	var recurStr = calItem.isRecurring() ? calItem.getRecurBlurb() : null;
 	var attachStr = ZmCalItemView._getAttachString(calItem);
 
-	if (isAttendees) {
-		var organizer = org = calItem.getOrganizer();
+	if (hasAttendees) { // I really don't know why this check here but it's the way it was before so keeping it. (I just renamed the var)
+		organizer = new AjxEmailAddress(calItem.getOrganizer(), null, calItem.getOrganizerName());
+
 		var sender = calItem.message.getAddress(AjxEmailAddress.SENDER);
 		var from = calItem.message.getAddress(AjxEmailAddress.FROM);
 		var address = sender || from;
-        if(!org && address)	org = address.toString();
-		if (sender && organizer)
-			obo = from ? from.toString() : organizer;
+		if (!organizer && address)	{
+			organizer = address.toString();
+		}
+		if (sender && organizer) {
+			obo = from ? new AjxEmailAddress(from.toString()) : organizer;
+		}
 	}
 
-	if (this._objectManager) {
-		this._objectManager.setHandlerAttr(ZmObjectManager.DATE,
+	var om = this._objectManager;
+	if (om) {
+		var options = {};
+		options.addrBubbles = appCtxt.get(ZmSetting.USE_ADDR_BUBBLES);
+		options.shortAddress = appCtxt.get(ZmSetting.SHORT_ADDRESS);
+
+		om.setHandlerAttr(ZmObjectManager.DATE,
 											ZmObjectManager.ATTR_CURRENT_DATE,
 											calItem.startDate);
 
-		subject = this._objectManager.findObjects(subject, true);
-		location = this._objectManager.findObjects(location, true);
-		equipment = this._objectManager.findObjects(equipment, true);
-		dateStr = this._objectManager.findObjects(dateStr, true);
-		if (org) org = this._objectManager.findObjects(org, true, ZmObjectManager.EMAIL);
-		if (obo) obo = this._objectManager.findObjects(obo, true, ZmObjectManager.EMAIL);
+		subject = om.findObjects(subject, true);
+		location = om.findObjects(location, true);
+		equipment = om.findObjects(equipment, true);
+		dateStr = om.findObjects(dateStr, true);
+
+		organizer = organizer && this._objectManager.findObjects(organizer, true, ZmObjectManager.EMAIL, false, options);
+		obo = obo && this._objectManager.findObjects(obo, true, ZmObjectManager.EMAIL, false, options);
 	}
 
 	return {
@@ -382,10 +394,10 @@ function(calItem) {
 		equipment: equipment,
 		isException: isException,
 		dateStr: dateStr,
-        isAttendees: isAttendees,
+        isAttendees: hasAttendees,
         reqAttendees: reqAttendees,
 		optAttendees: optAttendees,
-		org: org,
+		org: organizer,
 		obo: obo,
 		recurStr: recurStr,
 		attachStr: attachStr,
