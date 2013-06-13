@@ -173,7 +173,7 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
     doEdit: function() {
         //Gets the current selected contact and provision it for editing
         var contact = this.getStore().getById(this.getItem().data.id).data;
-        if (!contact.isGroup) {
+        if (!contact.get('isGroup')) {
             this.editContact(contact);
         }
     },
@@ -664,16 +664,13 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
             contactId: contact.getId(),
 	        isGroup: contact.get('isGroup'),
             callback: function(records, operation, success) {
+	            var contact = records[0];
                 if (success) {
-                    var data = records[0].data,
-                        tpl = this.getContactView().getTpl(),
-                        imageUrl = ZCS.common.ZtUtil.getImageUrl(records[0], 125);
-                    data.imageStyle = imageUrl ? 'background-image: url(' + imageUrl + ')' : '';
+ 	                this.getContactView().showItem(contact);
                     this.updateToolbar({
-                        title: records[0].data['displayName'],
-                        isGroup: records[0].data['isGroup']
+                        title:      contact.get('displayName'),
+	                    isGroup:    contact.get('isGroup')
                     });
-                    this.getContactView().setHtml(tpl.apply(data));
                 }
             },
             scope: this
@@ -693,14 +690,7 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
             this.showButton(button.op, !hideAll);
 		}, this);
 
-        if (params.isGroup) {
-            //Do not display the edit icon in case of contact groups
-            this.showButton(ZCS.constant.OP_EDIT, false)
-        }
-
-		if (hideAll) {
-			return;
-		}
+        this.showButton(ZCS.constant.OP_EDIT, !params.isGroup)
 	},
 
     addEmail: function() {
