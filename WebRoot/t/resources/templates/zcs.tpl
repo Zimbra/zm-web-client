@@ -211,9 +211,7 @@
 		<div class='zcs-contactview-header'>
 			<div class='zcs-contactview-image' style='{imageStyle}'></div>
 			<div class='zcs-contactview-personalInfo'>
-                <span name="contactname"><tpl if='namePrefix'>{namePrefix}</tpl> {firstName}<tpl if='middleName'> {middleName}</tpl><tpl if='maidenName'> ({maidenName})</tpl>
-                    {lastName}<tpl if='lastName && nameSuffix'>, </tpl>{nameSuffix}</span>
-                <tpl if='attrs.nickname'><span name="contactname">"{attrs.nickname}"</span></tpl>
+                <span name="contactname">{fullName}</span>
 				<tpl if='attrs.jobTitle'><span>{attrs.jobTitle}</span></tpl>
 				<tpl if='attrs.company'><span>{attrs.company}</span></tpl>
 			</div>

@@ -33,101 +33,23 @@ Ext.define('ZCS.model.contacts.ZtContact', {
 	config: {
 
 		fields: [
-/*
-			{ name: 'firstName', type: 'string' },
-			{ name: 'lastName', type: 'string' },
-            { name: 'namePrefix', type: 'string' },
-            { name: 'middleName', type: 'string' },
-            { name: 'maidenName', type: 'string' },
-            { name: 'nameSuffix', type: 'string' },
-            {
-                name: 'emailFields',
-                type: 'auto'
-            },
-            {
-                name: 'mobilePhoneFields',
-                type: 'auto'
-            },
-            {
-                name: 'workPhoneFields',
-                type: 'auto'
-            },
-            {
-                name: 'otherPhoneFields',
-                type: 'auto'
-            },
-            {
-                name: 'homeURLFields',
-                type: 'auto'
-            },
-            {
-                name: 'workURLFields',
-                type: 'auto'
-            },
-            {
-                name: 'otherURLFields',
-                type: 'auto'
-            },
-            { name: 'jobTitle', type: 'string'},
-            { name: 'department', type: 'string'},
-            { name: 'company', type: 'string' },
-			{ name: 'fileAs', type: 'int' } ,
-            { name: 'image', type: 'auto'},
-            { name: 'imagepart', type: 'auto'},
-            { name: 'zimletImage', type: 'auto'},
-            //Home Address Fields
-            { name: 'homeStreetFields', type: 'auto'},
-            { name: 'homeCityFields', type: 'auto'},
-            { name: 'homeStateFields', type: 'auto'},
-            { name: 'homePostalCodeFields', type: 'auto'},
-            { name: 'homeCountryFields', type: 'auto'},
-            //Work Address Fields
-            { name: 'workStreetFields', type: 'auto'},
-            { name: 'workCityFields', type: 'auto'},
-            { name: 'workStateFields', type: 'auto'},
-            { name: 'workPostalCodeFields', type: 'auto'},
-            { name: 'workCountryFields', type: 'auto'},
-            //Other Address Fields
-            { name: 'otherStreetFields', type: 'auto'},
-            { name: 'otherCityFields', type: 'auto'},
-            { name: 'otherStateFields', type: 'auto'},
-            { name: 'otherPostalCodeFields', type: 'auto'},
-            { name: 'otherCountryFields', type: 'auto'},
-*/
 
+			// raw attrs in case they're needed
 			{ name: 'attrs', type: 'auto' },
 
-//			{ name: 'nickname', type: 'string' },
-//			{ name: 'jobTitle', type: 'string' },
-//			{ name: 'company', type: 'string' },
-
+			// fields that can have multiple instances
 			{ name: 'email', type: 'auto' },
 			{ name: 'phone', type: 'auto' },
 			{ name: 'address', type: 'auto' },
 			{ name: 'fax', type: 'auto' },
 			{ name: 'url', type: 'auto' },
 
-			// groups I think
-			{
-				name: 'displayName',
-				type: 'string',
-				convert: function (v, record) {
-					if (record.data.firstName && record.data.lastName) {
-						return record.data.firstName + ' ' + record.data.lastName;
-					} else if (record.data.emailFields) {
-						return record.data.emailFields[0];
-					} else {
-						return record.data.nickname;
-					}
-				}
-			},
-
 			// long name, eg "Johnathan Smith"
 			{
 				name: 'longName',
 				type: 'string',
 				convert: function (v, record) {
-					var d = record.data.attrs || {};
+					var d = record.get('attrs') || {};
 					return (d.firstName && d.lastName) ? [d.firstName, d.lastName].join(' ') : d.firstName || d.email || '';
 				}
 			},
@@ -137,8 +59,8 @@ Ext.define('ZCS.model.contacts.ZtContact', {
 				name: 'nameLastFirst',
 				type: 'string',
 				convert: function (v, record) {
-					var d = record.data.attrs || {};
-					return (d.firstName && d.lastName) ? [d.firstName, d.lastName].join(' ') : d.firstName || d.email || '';
+					var d = record.get('attrs') || {};
+					return (d.firstName && d.lastName) ? [d.lastName, d.firstName].join(', ') : d.firstName || d.email || '';
 				}
 			},
 
@@ -147,53 +69,51 @@ Ext.define('ZCS.model.contacts.ZtContact', {
 				name: 'shortName',
 				type: 'string',
 				convert: function (v, record) {
-					var d = record.data.attrs || {};
+					var d = record.get('attrs') || {};
 					return d.nickname || d.firstName || d.email || d.lastName || '';
 				}
 			},
 
+			// full name with all the parts, eg: Mr Fred Barnaby (Delacroix) Flintstone, Esquire “Knuckles”
+			{
+				name: 'fullName',
+				type: 'string',
+				convert: function (v, record) {
+					var d = record.get('attrs') || {},
+						nameParts = [
+							d.namePrefix,
+							d.firstName,
+							d.middleName,
+							d.maidenName ? '(' + d.maidenName + ')' : null,
+							d.lastName
+						],
+						fullName = Ext.Array.clean(nameParts).join(' ');
+
+					if (d.nameSuffix) {
+						fullName += ', ' + d.nameSuffix;
+					}
+					if (d.nickname) {
+						fullName += ' "' + d.nickname + '"';
+					}
+
+					return fullName;
+				}
+			},
+
+			// combo of job title and company, eg "Waiter, Denny's"
 			{
 				name: 'job',
 				type: 'string',
 				convert: function(v, record) {
-					var d = record.data.attrs || {};
+					var d = record.get('attrs') || {};
 					return Ext.Array.clean([d.jobTitle, d.company]).join(', ');
 				}
 			},
 
-/*
-			{ name: 'isHomeAddressExists', type: 'boolean',
-                convert:function(v, record) {
-                    if (record.data.homeStreetFields || record.data.homeCityFields || record.data.homeStateFields
-                        || record.data.homePostalCodeFields || record.data.homeCountryFields) {
-                        return true;
-                    } else {
-                        return false;
-                    }
-                }
-            },
-            { name: 'isWorkAddressExists', type: 'boolean',
-                convert:function(v, record) {
-                    if (record.data.workStreetFields || record.data.workCityFields || record.data.workStateFields
-                        || record.data.workPostalCodeFields || record.data.workCountryFields) {
-                        return true;
-                    } else {
-                        return false;
-                    }
-                }
-            },
-            { name: 'isOtherAddressExists', type: 'boolean',
-                convert:function(v, record) {
-                    if (record.data.otherStreetFields || record.data.otherCityFields || record.data.otherStateFields
-                        || record.data.otherPostalCodeFields || record.data.otherCountryFields) {
-                        return true;
-                    } else {
-                        return false;
-                    }
-                }
-            },
-*/
-            { name: 'imageUrl', type:'auto',
+			// URL to thumbnail picture of contact
+            {
+	            name: 'imageUrl',
+	            type: 'auto',
                 convert: function(v, record) {
                     var image = record.data.image;
                     var imagePart  = (image && image.part) || record.data.imagepart;
@@ -215,9 +135,10 @@ Ext.define('ZCS.model.contacts.ZtContact', {
                 }
             },
 
-			// Contact group
-			{ name: 'isGroup', type: 'boolean' },
-            { name: 'groupMembers', type: 'auto' },
+			// Fields related to contact groups
+			{ name: 'isGroup', type: 'boolean' },       // true for groups
+            { name: 'groupMembers', type: 'auto' },     // list of small member objects
+			// group member fields
 			{ name: 'memberEmail', type: 'string' },
 			{ name: 'memberPhone', type: 'string' }
         ],

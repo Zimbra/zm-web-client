@@ -605,8 +605,8 @@ ZCS.constant.QUICK_REPLY_LARGE  = 80;
 
 // Contact attributes used directly by the contact template
 ZCS.constant.ATTRS = [
-	'isGroup', 'nameLastFirst', /*'jobTitle', 'company',*/ 'email', 'phone',
-	'address', 'url', 'fax', 'groupMembers'/*, 'nickname'*/
+	'attrs', 'isGroup', 'nameLastFirst', 'fullName', 'email', 'phone',
+	'address', 'url', 'fax', 'groupMembers'
 ];
 
 // Contact attributes that make up an address

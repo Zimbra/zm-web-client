@@ -147,7 +147,7 @@ Ext.define('ZCS.model.contacts.ZtContactReader', {
 	    Ext.each(members, function(member) {
 		    data = {};
 		    if (member.cn) {
-			    var attrs = member.cn[0]._attrs;
+			    var attrs = data.attrs = member.cn[0]._attrs;
 			    Ext.copyTo(data, attrs, ['jobTitle', 'company']);
 			    data.longName = (attrs.firstName && attrs.lastName) ? [attrs.firstName, attrs.lastName].join(' ') : attrs.firstName || attrs.lastName || '';
 			    data.memberEmail = attrs.email || '';
