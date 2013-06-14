@@ -74,7 +74,7 @@ Ext.define('ZCS.view.mail.ZtComposeForm', {
 						text: ZtMsg.send,
 						align: 'right',
 						ui: 'green',
-						padding: '0 2em',
+						minWidth: '6em',
 						handler: function() {
 							this.up('composepanel').fireEvent('send');
 						}
@@ -84,9 +84,10 @@ Ext.define('ZCS.view.mail.ZtComposeForm', {
 			form = {
 				xtype: 'formpanel',
 				scrollable: false,
+				scrollable: false,
 				defaults: {
-					labelWidth: '100px',
-					inputCls: 'zcs-form-input'
+					inputCls: 'zcs-form-input',
+					labelWidth: '4.5em'
 				},
 				layout: {
 					type: 'vbox'
@@ -99,17 +100,17 @@ Ext.define('ZCS.view.mail.ZtComposeForm', {
 					items: [{
 						xtype: 'contactfield',
 						name: ZCS.constant.TO,
-						labelWidth: '4.5em',
+						addressType: ZCS.constant.TO,
 						flex: 1,
 						label: ZtMsg.toHdr,
-						addressType: ZCS.constant.TO
+						labelWidth: '4.5em'
 					}, {
-						width: '4.5em',
-						height: '2.5em',
 						xtype: 'component',
-						html: ZtMsg.ccOrBcc,
-						itemId: 'ccToggle',
 						cls: 'x-form-label x-form-label-nowrap x-field zcs-toggle-field',
+						itemId: 'ccToggle',
+						html: ZtMsg.ccOrBcc,
+						height: '2.5em',
+						width: '4.5em',
 						listeners: {
 							painted: function () {
 								this.element.on('tap', function() {
@@ -121,47 +122,49 @@ Ext.define('ZCS.view.mail.ZtComposeForm', {
 				}, {
 					xtype: 'contactfield',
 					name: ZCS.constant.CC,
-					height: '2.5em',
-					labelWidth: '4.5em',
-					hidden: true,
 					itemId: 'cc',
+					addressType: ZCS.constant.CC,
+					height: '2.5em',
+					hidden: true,
 					label: ZtMsg.ccHdr,
-					addressType: ZCS.constant.CC
+					labelWidth: '4.5em'
 				}, {
 					xtype: 'contactfield',
 					name: ZCS.constant.BCC,
 					itemId: 'bcc',
+					addressType: ZCS.constant.BCC,
 					height: '2.5em',
-					labelWidth: '4.5em',
 					hidden: true,
 					label: ZtMsg.bccHdr,
-					addressType: ZCS.constant.BCC
+					labelWidth: '4.5em'
 				}, {
+					cls: 'zcs-subjectline',
 					height: '2.5em',
 					layout: {
 						type: 'hbox'
 					},
 					items: [{
 						xtype: 'textfield',
+						cls: 'zcs-subject',
 						name: 'subject',
-						height: '2.5em',
-						labelWidth: '4.5em',
 						flex: 1,
+						height: '2.5em',
+						label: ZtMsg.subjectHdr,
+						labelWidth: '4.5em',
 						listeners: {
 							blur: function () {
 								//Because this panel is floating, and a keystroke may have forced the whole window to scroll,
 								//when we blur, reset the scroll.
 								ZCS.htmlutil.resetWindowScroll();
 							}
-						},
-						label: ZtMsg.subjectHdr
+						}
 					}]
 				}, {
 					xtype: 'component',
-					height: '2.5em',
 					cls: 'zcs-attachments',
-					hidden: true,
 					itemId: 'attachments',
+					height: '2.5em',
+					hidden: true,
 					listeners: {
 						painted: function () {
 							this.element.on('tap', function(e) {
@@ -189,8 +192,8 @@ Ext.define('ZCS.view.mail.ZtComposeForm', {
 					flex: 1,
 					items: [{
 						xtype: 'component',
-						html: '<div contenteditable="true" class="zcs-editable zcs-body-field"></div>',
 						itemId: 'body',
+						html: '<div contenteditable="true" class="zcs-editable zcs-body-field"></div>',
 						listeners: {
 							painted: function () {
 								var heightToSet = Math.max(this.up('container').element.getHeight(), this.element.down('.zcs-body-field').dom.scrollHeight),
@@ -215,12 +218,11 @@ Ext.define('ZCS.view.mail.ZtComposeForm', {
 
 		if (ZCS.constant.IS_ENABLED[ZCS.constant.FEATURE_ADD_ATTACHMENT]) {
 			form.items[3].items.push({
-				width: 80,
-				height: '2.5em',
 				xtype: 'component',
-				html: ZtMsg.attach,
-				itemId: 'attach',
 				cls: 'x-form-label x-form-label-nowrap x-field zcs-toggle-field',
+				itemId: 'attach',
+				html: ZtMsg.attach,
+				width: 80,
 				listeners: {
 					painted: function () {
 						var comp = this;

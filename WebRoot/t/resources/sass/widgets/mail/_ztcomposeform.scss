@@ -20,6 +20,11 @@ $compose-padding: .5em;
 		.x-form-label {
 			text-align: right;
 		}
+		.zcs-subject {
+			.x-field-input {
+				font-size:.97em;  //fixes oveflowing input and hiding the bottom border
+			}
+		}
 		.zcs-attachments {
 			@extend .zcs-compose-formline;
 			margin-bottom: 0;
