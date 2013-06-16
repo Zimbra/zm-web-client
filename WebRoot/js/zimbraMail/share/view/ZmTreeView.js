@@ -684,7 +684,7 @@ ZmTreeView.prototype._handleAddShare = function() {
     var requests = [];
     for (var i = 0; i < shares.length; i++) {
         var share = shares[i];
-        var name = share.folderPath.substr(1).replace(/\//g," ");
+        var name = share.folderPath.substr(1); //no need to replace the "/" here anymore since I do that in ZmShare.getDefaultMountpointName for the entire name.
         var ownerName = (share.normalizedOwnerName.indexOf('@') >1) ? share.normalizedOwnerName.substr(0, share.normalizedOwnerName.indexOf('@')) : share.normalizedOwnerName;
         requests.push({
             _jsns: "urn:zimbraMail",
