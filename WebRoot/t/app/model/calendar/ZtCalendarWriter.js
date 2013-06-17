@@ -28,8 +28,13 @@ Ext.define('ZCS.model.calendar.ZtCalendarWriter', {
     writeRecords: function(request, data) {
 
         var	action = request.getAction(),
-            offset = request.getOperation().getStart(),
+            operation = request.getOperation(),
+            offset = operation.getStart(),
             query = request.getParams().query,
+            options = operation.getInitialConfig(),
+            itemData = data && data.length ? Ext.merge(data[0], options) : options,
+            start = itemData.calStart,
+            end = itemData.calEnd,
             json, methodJson;
 
         if (action === 'read') {
@@ -44,8 +49,8 @@ Ext.define('ZCS.model.calendar.ZtCalendarWriter', {
                 Ext.apply(methodJson, {
                     sortBy: 'none',
                     offset: offset,
-                    calExpandInstEnd: 1373135400000,
-                    calExpandInstStart: 1369506600000,
+                    calExpandInstEnd: end,
+                    calExpandInstStart: start,
                     limit: "500",
                     query: {
                         _content: 'inid:10'

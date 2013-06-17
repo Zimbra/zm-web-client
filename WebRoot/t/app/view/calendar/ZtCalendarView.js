@@ -14,91 +14,96 @@
  */
 
 /**
- * This class displays calendar.
+ * This class renders calendar views.
  *
  * @author Ajinkya Chhatre <achhatre@zimbra.com>
  */
 
 Ext.define('ZCS.view.calendar.ZtCalendarView', {
 
-    extend: 'Ext.TabPanel',
+    extend: 'Ext.Container',
 
     xtype: ZCS.constant.APP_CALENDAR + 'itemview',
 
     config: {
-        loadingText: 'Loading Calendar'
+        loadingText: ZtMsg.loadingCalendar
     },
 
     initialize: function() {
 
         this.callParent(arguments);
 
-        /*
-         * Following is a temporary code.
-         *
-         * TODO:
-         * 1.) Create a calendar base view class and extend Ext.ux.TouchCalendar
-         * 2.) Current class would make a provision to add Month, Week and Day views
-         *
-         */
+        var monthView = {
+            xtype: 'calendar',
+            width: '100%',
+            height: '100%',
+            viewMode: 'month',
+            itemId: 'calMonthView',
+            value: new Date(),
+            enableEventBars: {
+                eventHeight: 'auto',
+                eventBarTpl: '<div>{title}</div>'
+            },
+            viewConfig: {
+                weekStart: 0,
+                eventStore: Ext.getStore('ZtCalendarStore'),
+                plugins: [Ext.create('Ext.ux.TouchCalendarEvents', {
+                    eventHeight: 'auto',
+                    eventBarTpl: '<div>{title}</div>'
+                })]
+            }
 
-        this.setItems(
-            [
-                {
-                    xtype: 'calendar',
-                    title: 'Month',
-                    viewMode: 'month',
-                    value: new Date(),
-                    enableEventBars: {
-                        eventHeight: 'auto',
-                        eventBarTpl: '<div>{title}</div>'
-                    },
-                    viewConfig: {
-                        weekStart: 0,
-                        eventStore: Ext.getStore('ZtCalendarStore'),
-                        plugins: [Ext.create('Ext.ux.TouchCalendarEvents', {
-                            eventHeight: 'auto',
-                            eventBarTpl: '<div>{title}</div>'
-                        })]
-                    }
-                },
-                {
-                    xtype: 'calendar',
-                    title: 'Week',
-                    viewMode: 'week',
-                    value: new Date(),
-                    enableEventBars: {
-                        eventHeight: 'auto',
-                        eventBarTpl: '<div>{title}</div>'
-                    },
-                    viewConfig: {
-                        weekStart: 0,
-                        eventStore: Ext.getStore('ZtCalendarStore'),
-                        plugins: [Ext.create('Ext.ux.TouchCalendarEvents', {
-                            eventHeight: 'auto',
-                            eventBarTpl: '<div>{title}</div>'
-                        })]
-                    }
-                },
-                {
-                    xtype: 'calendar',
-                    title: 'Day',
-                    viewMode: 'day',
-                    value: new Date(),
-                    enableEventBars: {
-                        eventHeight: 'auto',
-                        eventBarTpl: '<div>{title}&nbsp;&nbsp;&nbsp;<i>{event}</i></div>'
-                    },
-                    viewConfig: {
-                        weekStart: 0,
-                        eventStore: Ext.getStore('ZtCalendarStore'),
-                        plugins: [Ext.create('Ext.ux.TouchCalendarEvents', {
-                            eventHeight: 'auto',
-                            eventBarTpl: '<div>{title}&nbsp;&nbsp;&nbsp;<i>{event}</i></div>'
-                        })]
-                    }
-                }
-            ]
-        );
+        }
+
+        var weekView = {
+            xtype: 'calendar',
+            width: '100%',
+            height: '100%',
+            viewMode: 'week',
+            itemId: 'calWeekView',
+            hidden: true,
+            value: new Date(),
+            enableEventBars: {
+                eventHeight: 'auto',
+                eventBarTpl: '<div>{title}</div>'
+            },
+            viewConfig: {
+                weekStart: 0,
+                eventStore: Ext.getStore('ZtCalendarStore'),
+                plugins: [Ext.create('Ext.ux.TouchCalendarEvents', {
+                    eventHeight: 'auto',
+                    eventBarTpl: '<div>{title}</div>'
+                })]
+            }
+
+        }
+
+        var dayView = {
+            xtype: 'calendar',
+            width: '100%',
+            height: '100%',
+            viewMode: 'day',
+            itemId: 'calDayView',
+            hidden: true,
+            value: new Date(),
+            enableEventBars: {
+                eventHeight: 'auto',
+                eventBarTpl: '<div>{title}&nbsp;&nbsp;&nbsp;<i>{event}</i></div>'
+            },
+            viewConfig: {
+                weekStart: 0, //TODO: This will be set as per User Preferences
+                eventStore: Ext.getStore('ZtCalendarStore'),
+                plugins: [Ext.create('Ext.ux.TouchCalendarEvents', {
+                    eventHeight: 'auto',
+                    eventBarTpl: '<div>{title}&nbsp;&nbsp;&nbsp;<i>{event}</i></div>'
+                })]
+            }
+        }
+
+        this.add([
+            monthView,
+            weekView,
+            dayView
+        ]);
     }
 });
