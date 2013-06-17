@@ -23,7 +23,7 @@
 }
 
 .zcs-side-panel {
-	border-right: 1px solid #303030;  //todo: mixin to create color
+	border-right: 1px solid #303030;  //TODO: mixin to create color
 }
 
 $zcs-toolbar-button-size: 1.4em;
@@ -34,26 +34,19 @@ $zcs-title-fontsize: 1.2rem; //uses rem so it's not relational to container bar
 	background-image: none;
 	background-color: transparent;
 	border: none;
-
-	.x-button-icon.x-icon-mask {
-		-webkit-mask-size: $zcs-toolbar-button-size;
-		width: $zcs-toolbar-button-size;
-		height: $zcs-toolbar-button-size;
-	}
 }
+
 $zimbra-button-active-color: rgba(255,255,255,.3);
 
 /**
  * Make our buttons flat, no border, bigger images.
+ * Extra selectors are for increased specificity to override default classes (don't remove)
  */
-//.x-toolbar .x-button.zcs-flat {
-//	@include zimbra-button;
-//	&:active {
-//		background-color: $zimbra-button-active-color;
-//	}
-//}
 
-/*.x-tabbar*/ .x-button.zcs-flat {
+.x-button.zcs-flat,
+.x-toolbar .x-button.zcs-flat,
+.x-toolbar-dark .x-button.zcs-flat,
+.x-tabbar .x-button.zcs-flat {
 	@include zimbra-button;
 	&:active {
 		background-color: $zimbra-button-active-color;
@@ -98,9 +91,6 @@ $zimbra-button-active-color: rgba(255,255,255,.3);
 	.zcs-list-titlebar {
 		font-size: $zcs-titlebar-fontsize;
 
-		.organizer-list {
-			-webkit-mask-box-image: url('/t/resources/images/pictos/organizer_list.png');
-		}
 		.x-title {
 			font-size: $zcs-title-fontsize;
 		}
