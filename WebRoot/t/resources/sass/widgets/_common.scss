@@ -1,5 +1,6 @@
 @import 'widgets/ux/ztbubblearea';
 @import 'widgets/mail/ztinvite';
+@import 'compass/css3/box';
 
 $linkColor: #336699;
 $linkTextSize: 0.9em;
@@ -14,13 +15,13 @@ $linkTextSize: 0.9em;
   @extend .zcs-link;
   padding-top: 1em;
 }
-
-.x-list-emptytext {
-	font-style: italic;
-	padding-top: 5em;
-	text-align: center;
+.x-list {
+	.x-list-emptytext {
+		@include box-pack(start);
+		font-style: italic;
+		padding-top: 5em;
+	}
 }
-
 .zcs-msg-body-text {
   font-size: 1.1em;
   font-family: monospace;
