@@ -230,7 +230,9 @@ Ext.define('ZCS.view.ux.ZtIframe', {
 			touchEventListener = function (ev) {
 				if (!ev.isRefired) {
 
-					var emailAttribute = Ext.fly(ev.srcElement).getAttribute("addr");
+                    var elm = Ext.fly(ev.target),
+                        idParams = ZCS.util.getIdParams(elm.dom.id) || {},
+					    emailAttribute = elm.getAttribute("addr");
 
 					if (emailAttribute && ev.type !== 'touchend') {
 						ev.preventDefault();
@@ -244,6 +246,11 @@ Ext.define('ZCS.view.ux.ZtIframe', {
 						ev.preventDefault();
 						return false;
 					}
+
+                    // Invite response buttons accept/decline/tentative
+                    if (elm.hasCls('zcs-invite-button') && ev.type === "touchend") {
+                        component.fireEvent('inviteReply', idParams.msgId, idParams.action);
+                    }
 
 					//If the delegation occurred succesfully, do the rest of the processing.
 					//It might fail if an anchor is encountered.

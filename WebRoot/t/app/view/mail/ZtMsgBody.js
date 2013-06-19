@@ -153,6 +153,10 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 					me.fireEvent('addressTouch', address);
 				}, this);
 
+                iframe.on('inviteReply', function (msgId, action) {
+                    me.fireEvent('inviteReply', msgId, action);
+                }, this);
+
 				this.add(iframe);
 			} else {
 				//We might have to get the width from the parent if this hasn't been shown yet (only msg header has been shown)
