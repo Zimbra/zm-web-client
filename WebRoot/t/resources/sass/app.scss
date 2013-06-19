@@ -89,3 +89,4 @@
 // Colored button styles
 @include sencha-button-ui('neutral', $neutral-color, 'glossy');
 @include sencha-button-ui('green', #A3CCA3, 'glossy');
+@include sencha-button-ui('back', lighten($zcs-overview-base-color, 10%), 'glossy');
