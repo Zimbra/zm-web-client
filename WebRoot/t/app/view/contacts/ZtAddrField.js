@@ -19,100 +19,89 @@
  * @author Komal Kakani <kkakani@zimbra.com>
  */
 Ext.define('ZCS.view.contacts.ZtAddrField', {
-    extend: 'Ext.Container',
-    xtype: 'addrcontainer',
-    config: {
-        layout:{type: 'hbox'},
-        docked: 'bottom',
-        items: [
-            {
-                xtype: 'label',
-                html: ZtMsg.address,
-                cls: 'zcs-contact-label',
-                width: '20%'
-            },
-            {
-                layout: {type:'vbox'},
-                width: '80%',
-                items: [
-                    {
-                        layout: {type:'hbox'},
-                        items:[
-                            {
-                                xtype:'textfield',
-                                placeHolder: ZtMsg.streetAdd,
-                                name: 'street',
-                                flex: 1,
-                                width: '71%'
-                            },
-                            {
-                                xtype: 'selectfield',
-                                name: 'addresstype',
-                                options: [
-                                    {text: ZtMsg.home,  value: 'home'},
-                                    {text: ZtMsg.work, value: 'work'},
-                                    {text: ZtMsg.other,  value: 'other'}
-                                ],
-                                width: '15%'
-                            },
-                            {
-                                xtype: 'button',
-                                iconCls: 'plus',
-                                itemId: 'btnAddAddr',
-                                width: '7%',
-                                iconMask: true,
-                                align: 'right',
-                                cls: 'zcs-flat zcs-contact-addremove'
-                            },
-                            {
-                                xtype: 'button',
-                                iconCls: 'minus',
-                                itemId: 'btnRemoveAddr',
-                                width: '7%',
-                                iconMask: true,
-                                align: 'right',
-                                cls: 'zcs-flat zcs-contact-addremove'
-                            }
-                        ]
-                    },
-                    {
-                        layout: {type: 'hbox'},
-                        items: [
-                            {
-                                xtype: 'textfield',
-                                name: 'city',
-                                placeHolder: ZtMsg.city,
-                                flex:1
-                            },
-                            {
-                                xtype: 'textfield',
-                                name: 'state',
-                                placeHolder: ZtMsg.state,
-                                flex:1
-                            },
-                            {
-                                xtype: 'textfield',
-                                name: 'postalcode',
-                                placeHolder: ZtMsg.postalcode,
-                                flex:1
-                            }
-                        ]
-                    },
-                    {
-                        layout: {type:'hbox'},
-                        items:[
-                            {
-                                xtype: 'textfield',
-                                name: 'country',
-                                placeHolder: ZtMsg.country,
-                                flex:1
-                            }
-                        ]
-                    }
-                ]
 
+	extend: 'ZCS.view.contacts.ZtMultiField',
 
-            }
-        ]
-    }
+    xtype: 'addresscontainer',
+
+	config: {
+		type: 'address'
+	},
+
+	statics: {
+		seq: 0
+	},
+
+	getFieldConfig: function(fieldId) {
+
+		var thisClass = Ext.getClass(this),
+			seq = thisClass.seq++;
+
+		return {
+			layout: 'vbox',
+			width:  '80%',
+			items:  [
+				{
+					layout: 'hbox',
+					items:  [
+						{
+							xtype:          'textfield',
+							placeHolder:    ZtMsg.streetAdd,
+							name:           'street' + seq,
+							flex:           1
+						},
+						{
+							xtype:      'selectfield',
+							name:       'addressType' + seq,
+							flex:       0,
+							options:    [
+								{text: ZtMsg.home,  value: 'home'},
+								{text: ZtMsg.work,  value: 'work'},
+								{text: ZtMsg.other, value: 'other'}
+							]
+						}
+					].concat(this.getAddRemoveConfig(fieldId))
+				},
+				{
+					layout: 'hbox',
+					items: [
+						{
+							xtype:          'textfield',
+							name:           'city' + seq,
+							placeHolder:    ZtMsg.city,
+							flex:           1
+						},
+						{
+							xtype:          'textfield',
+							name:           'state' + seq,
+							placeHolder:    ZtMsg.state,
+							flex:           1
+						},
+						{
+							xtype:          'textfield',
+							name:           'postalCode' + seq,
+							placeHolder:    ZtMsg.postalcode,
+							flex:           1
+						}
+					]
+				},
+				{
+					layout: 'hbox',
+					items: [
+						{
+							xtype:          'textfield',
+							name:           'country' + seq,
+							placeHolder:    ZtMsg.country,
+							flex:           1
+						}
+					]
+				}
+			]
+		};
+	},
+
+	reset: function() {
+		Ext.getClass(this).seq = 0;
+		this.callParent(arguments);
+	}
 });

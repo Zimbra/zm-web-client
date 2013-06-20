@@ -19,52 +19,28 @@
  * @author Komal Kakani <kkakani@zimbra.com>
  */
 Ext.define('ZCS.view.contacts.ZtEmailField', {
-    extend: 'Ext.Container',
+
+    extend: 'ZCS.view.contacts.ZtMultiField',
+
     xtype: 'emailcontainer',
-    config: {
-        layout: {type:'hbox'},
-        labelName: '',
-        docked: 'bottom',
-        items: [
-            {
-                xtype: 'label',
-                html: '',
-                cls: 'zcs-contact-label',
-                width: '20%'
-            },
-            {
-                layout: {type:'hbox'},
-                width: '80%',
-                items: [
-                    {
-                        xtype: 'emailfield',
-                        placeHolder: ZtMsg.email,
-                        name: 'email',
-                        width: '86%'
-                    },
-                    {
-                        xtype: 'button',
-                        iconCls: 'plus',
-                        itemId: 'btnAddEmail',
-                        width: '7%',
-                        iconMask: true,
-                        align: 'right',
-                        cls: 'zcs-flat zcs-contact-addremove'
-                    },
-                    {
-                        xtype: 'button',
-                        iconCls: 'minus',
-                        itemId: 'btnRemoveEmail',
-                        width: '7%',
-                        iconMask: true,
-                        align: 'right',
-                        cls: 'zcs-flat zcs-contact-addremove'
-                    }
-                ]
-            }
-        ]
-    },
-    initialize: function() {
-        this.getItems().items[0].setHtml(this.getLabelName());
-    }
+
+	config: {
+		type: 'email'
+	},
+
+	getFieldConfig: function(fieldId) {
+
+		return {
+			layout: 'hbox',
+			width: '80%',
+			items: [
+				{
+					xtype:          'emailfield',
+					placeHolder:    ZtMsg.email,
+					name:           'email',
+					flex:           1
+				}
+			].concat(this.getAddRemoveConfig(fieldId))
+		};
+	}
 });

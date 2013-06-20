@@ -19,69 +19,39 @@
  * @author Komal Kakani <kkakani@zimbra.com>
  */
 Ext.define('ZCS.view.contacts.ZtPhoneField', {
-    extend: 'Ext.Container',
-    xtype: 'phonecontainer',
-    //phone
-    config: {
-        layout: { type:'hbox'},
-        docked: 'bottom',
-        labelName: '',
-        items:[
-        {
-            xtype: 'label',
-            html: '',
-            cls: 'zcs-contact-label',
-            width: '20%'
-        },
-        {
-            layout: {type:'vbox'},
-            width: '80%',
-            items: [
-                {
-                    layout: {type:'hbox'},
-                    items: [
-                            {
-                                xtype: 'textfield',
-                                component:{type: 'tel'},
-                                placeHolder: ZtMsg.phone,
-                                name: 'phonenumber',
-                                width: '71%'
-                            },
-                            {
-                                xtype: 'selectfield',
-                                name: 'phonetype',
-                                options: [
-                                    {text: ZtMsg.mobile,  value: 'mobile'},
-                                    {text: ZtMsg.work, value: 'work'},
-                                    {text: ZtMsg.other,  value: 'other'}
-                                ],
-                                width: '15%'
-                            },
-                            {
-                                xtype: 'button',
-                                iconCls: 'plus',
-                                itemId: 'btnAddPhone',
-                                width: '7%',
-                                iconMask: true,
-                                align: 'right',
-                                cls: 'zcs-flat zcs-contact-addremove'
-                            },
-                            {
-                                xtype: 'button',
-                                iconCls: 'minus',
-                                itemId: 'btnRemovePhone',
-                                width: '7%',
-                                iconMask: true,
-                                align: 'right',
-                                cls: 'zcs-flat zcs-contact-addremove'
-                            }
-                    ]
-                }
-            ]
-        }
-    ]
-    },
-    initialize: function() {
-        this.getItems().items[0].setHtml(this.getLabelName());
-    }
+
+	extend: 'ZCS.view.contacts.ZtMultiField',
+
+	xtype: 'phonecontainer',
+
+	config: {
+		type: 'phone'
+	},
+
+	getFieldConfig: function(fieldId) {
+
+		return {
+			layout: 'hbox',
+			width: '80%',
+			items: [
+				{
+					xtype:          'textfield',
+					component:      { type: 'tel' },
+					placeHolder:    ZtMsg.phone,
+					name:           'phone',
+					flex:           1
+				},
+				{
+					xtype:      'selectfield',
+					name:       'phoneType',
+					flex:       0,
+					options:    [
+						{text: ZtMsg.mobile,    value: 'mobile'},
+						{text: ZtMsg.work,      value: 'work'},
+						{text: ZtMsg.other,     value: 'other'}
+					]
+				}
+			].concat(this.getAddRemoveConfig(fieldId))
+		};
+	}
 });

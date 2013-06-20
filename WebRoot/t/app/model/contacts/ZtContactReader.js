@@ -30,13 +30,13 @@ Ext.define('ZCS.model.contacts.ZtContactReader', {
 			attrs = node._attrs;
 
 		data.type = ZCS.constant.ITEM_CONTACT;
-		data.attrs = attrs;
 		if (attrs.type === 'group') {
 			data.groupMembers = this.getGroupMembers(node.m);
 	        data.isGroup = true;
             data.nickname = attrs.nickname;
         }
 		else {
+			data.folderId = node.l;
 			data = this.parseAttributes(attrs, data);
 		}
 
@@ -66,7 +66,7 @@ Ext.define('ZCS.model.contacts.ZtContactReader', {
 			parsedAttrs = {};
 
 		// attributes that don't require any parsing
-		Ext.copyTo(data, attrs, ['jobTitle', 'company']);
+		Ext.copyTo(data, attrs, ZCS.constant.CONTACT_FIELDS);
 
 		// attributes that have different types or which can appear multiply
 		Ext.each(Object.keys(attrs).sort(), function(attr) {
@@ -80,28 +80,24 @@ Ext.define('ZCS.model.contacts.ZtContactReader', {
 						addressesByType = addresses[type] = addresses[type] || [],
 						address = addressesByType[idx] = addressesByType[idx] || {};
 					address[field] = value;
-					address.type = type;
+					address.addressType = type;
 					address.typeStr = ZtMsg[type] || '';
 				}
 				// phone, fax, url (and workEmail)
 				else if (ZCS.constant.IS_PARSED_ATTR_FIELD[field]) {
-					var list = parsedAttrs[field] = parsedAttrs[field] || [];
-					list.push({
-						value:      value,
-						type:       type,
-						typeStr:    ZtMsg[type] || ''
-					});
+					var list = parsedAttrs[field] = parsedAttrs[field] || [],
+						dataObj = {};
+					dataObj[field] = value;
+					dataObj[field + 'Type'] = type;
+					dataObj.typeStr = ZtMsg[type] || '';
+					list.push(dataObj);
 				}
 			}
 			// 'email' has no type but can be multiple
 			else if (attr.indexOf('email') === 0) {
 				var field = 'email',
 					list = parsedAttrs[field] = parsedAttrs[field] || [];
-				list.push({
-					value:      value,
-					type:       '',
-					typeStr:    ZtMsg[type] || ''
-				});
+				list.push({ email: value });
 			}
 		}, this);
 

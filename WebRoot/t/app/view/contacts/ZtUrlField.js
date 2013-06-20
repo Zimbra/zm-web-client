@@ -19,67 +19,38 @@
  * @author Komal Kakani <kkakani@zimbra.com>
  */
 Ext.define('ZCS.view.contacts.ZtUrlField', {
-    extend: 'Ext.Container',
-    xtype: 'urlcontainer',
 
-    config: {
-        layout: { type:'hbox'},
-        docked: 'bottom',
-        labelName: '',
-        items:[
-            {
-                xtype: 'label',
-                cls: 'zcs-contact-label',
-                width: '20%'
-            },
-            {
-                layout: {type:'vbox'},
-                width: '80%',
-                items: [
-                    {
-                        layout: {type:'hbox'},
-                        items: [
-                            {
-                                xtype: 'urlfield',
-                                placeHolder: ZtMsg.url,
-                                name: 'url',
-                                width: '71%'
-                            },
-                            {
-                                xtype: 'selectfield',
-                                name: 'urltype',
-                                options: [
-                                    {text: ZtMsg.home,  value: 'home'},
-                                    {text: ZtMsg.work, value: 'work'},
-                                    {text: ZtMsg.other,  value: 'other'}
-                                ],
-                                width: '15%'
-                            },
-                            {
-                                xtype: 'button',
-                                iconCls: 'plus',
-                                itemId: 'btnAddUrl',
-                                width: '7%',
-                                iconMask: true,
-                                align: 'right',
-                                cls: 'zcs-flat zcs-contact-addremove'
-                            },
-                            {
-                                xtype: 'button',
-                                iconCls: 'minus',
-                                itemId: 'btnRemoveUrl',
-                                width: '7%',
-                                iconMask: true,
-                                align: 'right',
-                                cls: 'zcs-flat zcs-contact-addremove'
-                            }
-                        ]
-                    }
-                ]
-            }
-        ]
-    },
-    initialize: function() {
-        this.getItems().items[0].setHtml(this.getLabelName());
-    }
+	extend: 'ZCS.view.contacts.ZtMultiField',
+
+	xtype: 'urlcontainer',
+
+	config: {
+		type: 'url'
+	},
+
+	getFieldConfig: function(fieldId) {
+
+		return {
+			layout: 'hbox',
+			width: '80%',
+			items: [
+				{
+					xtype:          'urlfield',
+					placeHolder:    ZtMsg.url,
+					name:           'url',
+					flex:           1
+				},
+				{
+					xtype:      'selectfield',
+					name:       'urlType',
+					flex:       0,
+					options:    [
+						{text: ZtMsg.home,  value: 'home'},
+						{text: ZtMsg.work,  value: 'work'},
+						{text: ZtMsg.other, value: 'other'}
+					]
+				}
+			].concat(this.getAddRemoveConfig(fieldId))
+		};
+	}
 });

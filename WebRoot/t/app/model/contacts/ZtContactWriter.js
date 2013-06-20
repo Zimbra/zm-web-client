@@ -99,15 +99,10 @@ Ext.define('ZCS.model.contacts.ZtContactWriter', {
 
 				json = this.getSoapEnvelope(request, data, 'ModifyContact');
 				methodJson = json.Body.ModifyContactRequest;
-				// Replaces all the attrs and group members in the existing contact
-				// TODO: Probably shouldn't be doing full replace; just update changed attrs
-				methodJson.replace = 1;
 
-				cn = methodJson.cn = {id: itemData.id};
-
-				cn.l = contact.data.folderId;
+				cn = methodJson.cn = { id: itemData.id };
 				cn.m = [];
-				cn.a = this.populateAttrs(itemData.newContact);
+				cn.a = this.populateAttrs(itemData.newContact, itemData.attrs);
 
 				Ext.apply(methodJson, {
 					cn: cn
@@ -122,34 +117,28 @@ Ext.define('ZCS.model.contacts.ZtContactWriter', {
 		return request;
 	},
 
-    populateAttrs : function(contact) {
+	/**
+	 * Converts contact fields to the JSON attributes our server expects.
+	 *
+	 * @param {ZtContact}   contact     a contact
+	 *
+	 * @return {Array}  array of JSON attr objects
+	 */
+    populateAttrs : function(contact, attrs) {
 
-        var attrs=[];
+		var contactAttrs = contact.fieldsToAttrs(),
+			attrsToReturn = attrs && ZCS.util.arrayAsLookupHash(attrs),
+			jsonAttrs = [];
 
-        Ext.each(ZCS.constant.CONTACT_ATTRS, function(field) {
-            var attr_value = contact.get(field);
-            if (attr_value) {
-                var node = {};
-                node.n = field;
-                node._content = attr_value;
-                attrs.push(node);
-            }
-        });
+		Ext.Object.each(contactAttrs, function(attr) {
+			if (!attrsToReturn || attrsToReturn[attr]) {
+				jsonAttrs.push({
+					n:          attr,
+					_content:   contactAttrs[attr]
+				});
+			}
+		}, this);
 
-        Ext.each(ZCS.constant.CONTACT_MULTI_ATTRS, function(field) {
-            var dataFieldName = field+'Fields',
-                attr_value = contact.get(dataFieldName);
-            if (attr_value.length > 0) {
-                attrs.push({n:field, _content:attr_value[0]});
-                for (var i= 1,len=attr_value.length; i<len; i++) {
-                    var node={};
-                    node.n = field + (i+1);
-                    node._content = attr_value[i];
-                    attrs.push(node);
-                }
-            }
-        });
-
-        return attrs;
+		return jsonAttrs;
     }
 });

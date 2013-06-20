@@ -206,8 +206,8 @@ Ext.define('ZCS.common.ZtTimezone', {
      * @adapts AjxTimezone._guessMachineTimezone
      */
     guessMachineTimezone: function(timezonePreference) {
-        var dec1 = new Date(ZCS.constant.TZ_TRANSITION_YEAR, 11, 1, 0, 0, 0),
-            jun1 = new Date(ZCS.constant.TZ_TRANSITION_YEAR, 5, 1, 0, 0, 0),
+        var dec1 = new Date(ZCS.timezone.TZ_TRANSITION_YEAR, 11, 1, 0, 0, 0),
+            jun1 = new Date(ZCS.timezone.TZ_TRANSITION_YEAR, 5, 1, 0, 0, 0),
             dec1offset = -dec1.getTimezoneOffset(),
             jun1offset = -jun1.getTimezoneOffset(),
             matchingRules = [],
@@ -326,6 +326,7 @@ Ext.define('ZCS.common.ZtTimezone', {
      * @adapts AjxTimezone._generateDefaultRule
      */
     generateDefaultRule: function() {
+
         var byMonth = 0,
             byDate = 1,
             byHour = 2,
@@ -336,7 +337,7 @@ Ext.define('ZCS.common.ZtTimezone', {
         // Iterate the range by "by" unit.  When a transition is detected,
         // sweep the range between before/after dates by increasingly
         // smaller unit, month then date then hour then minute then finally second.
-        function sweepRange(d1, d2, by, rule) {
+        function sweepRange(me, d1, d2, by, rule) {
             var upperBound = d2.getTime(),
                 d = new Date(),
                 prevD = new Date(),
@@ -382,7 +383,7 @@ Ext.define('ZCS.common.ZtTimezone', {
                 if (offset != prevOffset) {
                     if (by < bySecond) {
                         // Drill down.
-                        rule = sweepRange(prevD, d, by + 1, rule);
+                        rule = sweepRange(me, prevD, d, by + 1, rule);
                     }
                     else {
                         // Tricky:
@@ -404,7 +405,7 @@ Ext.define('ZCS.common.ZtTimezone', {
                             ]
                         };
 
-                        this.addWkDayTransition(onset);
+                        me.addWkDayTransition(onset);
 
                         return rule;
                     }
@@ -421,7 +422,8 @@ Ext.define('ZCS.common.ZtTimezone', {
         // We can detect transition on/around 12/31 and 01/01.  Assume no one will
         // transition on/around 6/30 and 07/01.
         var d1 = new Date(),
-            d2 = new Date();
+            d2 = new Date(),
+	        me = this;
 
         // set sweep start to yesterday
         var year = d1.getFullYear();
@@ -436,7 +438,7 @@ Ext.define('ZCS.common.ZtTimezone', {
         // case 2: two onsets returned -> TZ uses DST
         // case 3: only one onset returned -> mid-year policy change -> simplify and assume it's non-DST
         // case 4: three or more onsets returned -> shouldn't happen
-        var rule = sweepRange(d1, d2, byMonth);
+        var rule = sweepRange(me, d1, d2, byMonth);
 
         // handle case 1 and 3
         if (!rule.daylight || !rule.standard) {
@@ -751,3 +753,5 @@ Ext.define('ZCS.common.ZtTimezone', {
 	    thisClass.DEFAULT_TZ = ZCS.timezone.getClientId(defaultRule.serverId);
     }
 );
+
+ZCS.timezone.TZ_TRANSITION_YEAR = 2011;

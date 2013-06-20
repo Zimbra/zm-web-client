@@ -116,7 +116,7 @@ Ext.define('ZCS.controller.contacts.ZtContactListController', {
 	},
 
 	doNewContact: function() {
-        this.getItemController().showContactForm();
+        this.getItemController().showContactForm(true);
 	},
 
     /**

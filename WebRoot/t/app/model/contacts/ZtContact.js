@@ -34,23 +34,36 @@ Ext.define('ZCS.model.contacts.ZtContact', {
 
 		fields: [
 
-			// raw attrs in case they're needed
-			{ name: 'attrs', type: 'auto' },
+			{ name: 'folderId',     type: 'string' },
 
-			// fields that can have multiple instances
-			{ name: 'email', type: 'auto' },
-			{ name: 'phone', type: 'auto' },
-			{ name: 'address', type: 'auto' },
-			{ name: 'fax', type: 'auto' },
-			{ name: 'url', type: 'auto' },
+			// simple fields (not composite, not multiple) - see ZCS.constant.CONTACT_FIELDS
+			{ name: 'firstName',    type: 'string' },
+			{ name: 'lastName',     type: 'string' },
+			{ name: 'namePrefix',   type: 'string' },
+			{ name: 'nameSuffix',   type: 'string' },
+			{ name: 'nickname',     type: 'string' },
+			{ name: 'maidenName',   type: 'string' },
+			{ name: 'middleName',   type: 'string' },
+			{ name: 'company',      type: 'string' },
+			{ name: 'jobTitle',     type: 'string' },
+			{ name: 'department',   type: 'string' },
+
+			// fields that can have multiple instances - see ZCS.constant.CONTACT_MULTI_FIELDS
+			{ name: 'email',        type: 'auto' },
+			{ name: 'phone',        type: 'auto' },
+			{ name: 'address',      type: 'auto' },
+			{ name: 'url',          type: 'auto' },
+
+			// Below are fields created out of the simple fields above
 
 			// long name, eg "Johnathan Smith"
 			{
 				name: 'longName',
 				type: 'string',
 				convert: function (v, record) {
-					var d = record.get('attrs') || {};
-					return (d.firstName && d.lastName) ? [d.firstName, d.lastName].join(' ') : d.firstName || d.email || '';
+					var firstName = record.get('firstName'),
+						lastName = record.get('lastName');
+					return (firstName && lastName) ? [firstName, lastName].join(' ') : firstName || record.get('email') || '';
 				}
 			},
 
@@ -59,18 +72,18 @@ Ext.define('ZCS.model.contacts.ZtContact', {
 				name: 'nameLastFirst',
 				type: 'string',
 				convert: function (v, record) {
-					var d = record.get('attrs') || {};
-					return (d.firstName && d.lastName) ? [d.lastName, d.firstName].join(', ') : d.firstName || d.email || '';
+					var firstName = record.get('firstName'),
+						lastName = record.get('lastName');
+					return (firstName && lastName) ? [lastName, firstName].join(', ') : firstName || record.get('email') || '';
 				}
 			},
 
-			// short name or nickname, eg "John"
+			// short name or nickname, eg "Johnathan" or "John"
 			{
 				name: 'shortName',
 				type: 'string',
 				convert: function (v, record) {
-					var d = record.get('attrs') || {};
-					return d.nickname || d.firstName || d.email || d.lastName || '';
+					return record.get('nickname') || record.get('firstName') || record.get('email') || record.get('lastName') || '';
 				}
 			},
 
@@ -79,21 +92,20 @@ Ext.define('ZCS.model.contacts.ZtContact', {
 				name: 'fullName',
 				type: 'string',
 				convert: function (v, record) {
-					var d = record.get('attrs') || {},
-						nameParts = [
-							d.namePrefix,
-							d.firstName,
-							d.middleName,
-							d.maidenName ? '(' + d.maidenName + ')' : null,
-							d.lastName
+					var nameParts = [
+							record.get('namePrefix'),
+							record.get('firstName'),
+							record.get('middleName'),
+							record.get('maidenName') ? '(' + record.get('maidenName') + ')' : null,
+							record.get('lastName')
 						],
 						fullName = Ext.Array.clean(nameParts).join(' ');
 
-					if (d.nameSuffix) {
-						fullName += ', ' + d.nameSuffix;
+					if (record.get('nameSuffix')) {
+						fullName += ', ' + record.get('nameSuffix');
 					}
-					if (d.nickname) {
-						fullName += ' "' + d.nickname + '"';
+					if (record.get('nickname')) {
+						fullName += ' "' + record.get('nickname') + '"';
 					}
 
 					return fullName;
@@ -105,8 +117,7 @@ Ext.define('ZCS.model.contacts.ZtContact', {
 				name: 'job',
 				type: 'string',
 				convert: function(v, record) {
-					var d = record.get('attrs') || {};
-					return Ext.Array.clean([d.jobTitle, d.company]).join(', ');
+					return Ext.Array.clean([record.get('jobTitle'), record.get('company')]).join(', ');
 				}
 			},
 
@@ -125,11 +136,11 @@ Ext.define('ZCS.model.contacts.ZtContact', {
                     return ZCS.htmlutil.buildUrl({
                         path: ZCS.constant.PATH_MSG_FETCH,
                         qsArgs: {
-                            auth: 'co',
-                            id: record.data.id,
-                            part: imagePart,
-                            max_width:48,
-                            t:(new Date()).getTime()
+                            auth:       'co',
+                            id:         record.getId(),
+                            part:       imagePart,
+                            max_width:  48,
+                            t:          (new Date()).getTime()
                         }
                     });
                 }
@@ -138,6 +149,7 @@ Ext.define('ZCS.model.contacts.ZtContact', {
 			// Fields related to contact groups
 			{ name: 'isGroup', type: 'boolean' },       // true for groups
             { name: 'groupMembers', type: 'auto' },     // list of small member objects
+
 			// group member fields
 			{ name: 'memberEmail', type: 'string' },
 			{ name: 'memberPhone', type: 'string' }
@@ -154,5 +166,51 @@ Ext.define('ZCS.model.contacts.ZtContact', {
 			reader: 'contactreader',
 			writer: 'contactwriter'
 		}
+	},
+
+	/**
+	 * Returns a hash of JSON attribute keys and values based on this contact's fields.
+	 *
+	 * @return {Object}     JSON attributes
+	 */
+	fieldsToAttrs: function() {
+
+		// Simple attrs with equivalent contact fields
+		var attrs = {};
+		Ext.each(ZCS.constant.CONTACT_FIELDS, function(attr) {
+			attrs[attr] = this.get(attr);
+		}, this);
+
+		// First, set up a list of values for each multiply-appearing type-qualified attr, eg 'homeCity'
+		var attrList = {}, type, key;
+		Ext.each(ZCS.constant.CONTACT_MULTI_FIELDS, function(multiField) {
+			Ext.each(this.get(multiField), function(field) {
+				type = field[multiField + 'Type'] || '';
+				if (multiField === 'address') {
+					Ext.each(ZCS.constant.ADDRESS_FIELDS, function(addrField) {
+						if (field[addrField]) {
+							key = type ? type + Ext.String.capitalize(addrField) : addrField;
+							attrList[key] = attrList[key] || [];
+							attrList[key].push(field[addrField]);
+						}
+					}, this);
+				}
+				else {
+					key = type ? type + Ext.String.capitalize(multiField) : multiField;
+					attrList[key] = attrList[key] || [];
+					attrList[key].push(field[multiField]);
+				}
+			}, this);
+		}, this);
+
+		// Now, translate the index of each multiple attr into 'homeCity', 'homeCity2', etc
+		Ext.Object.each(attrList, function(attr) {
+			Ext.each(attrList[attr], function(value, index) {
+				var attrName = attr + (index > 0 ? index + 1 : '');
+				attrs[attrName] = value;
+			}, this);
+		}, this);
+
+		return attrs;
 	}
 });

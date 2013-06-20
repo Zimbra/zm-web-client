@@ -177,7 +177,7 @@
         </tpl>
 		<div class='zcs-contactList-text'>
 			<tpl if='isGroup'>
-				<div class='zcs-contactList-name'>{attrs.nickname}</div>
+				<div class='zcs-contactList-name'>{nickname}</div>
 			<tpl else>
 				<div class='zcs-contactList-name'>{nameLastFirst}</div>
 				<div class='zcs-contactList-title'>{job}</div>
@@ -191,7 +191,7 @@
 		<div class='zcs-contactgroupview-header'>
 			<div class='zcs-contactgroupview-image' style='{imageStyle}'></div>
 			<div class='zcs-contactgroupview-personalInfo'>
-				<span name="contactname">{attrs.nickname}</span>
+				<span name="contactname">{nickname}</span>
 			</div>
 		</div>
 		<div class='zcs-contactgroupview-members'>
@@ -200,7 +200,7 @@
 					<div class='zcs-contact-image' <tpl if='imageUrl'>style='background-image:url({imageUrl})'</tpl>></div>
 					<div class='zcs-contact-info'>
 						<span name="contactname">{longName}</span>
-						<tpl if='attrs.jobTitle'><span>{attrs.jobTitle}</span></tpl>
+						<tpl if='jobTitle'><span>{jobTitle}</span></tpl>
 						<span>{memberEmail}</span>
 						<span>{memberPhone}</span>
 					</div>
@@ -212,8 +212,8 @@
 			<div class='zcs-contactview-image' style='{imageStyle}'></div>
 			<div class='zcs-contactview-personalInfo'>
                 <span name="contactname">{fullName}</span>
-				<tpl if='attrs.jobTitle'><span>{attrs.jobTitle}</span></tpl>
-				<tpl if='attrs.company'><span>{attrs.company}</span></tpl>
+				<tpl if='jobTitle'><span>{jobTitle}</span></tpl>
+				<tpl if='company'><span>{company}</span></tpl>
 			</div>
 		</div>
 		<div class='zcs-contactview-fieldSets'>
@@ -222,7 +222,7 @@
 					<div class='zcs-contactview-label'>{[ZtMsg.email]}</div>
 					<div class='zcs-contactview-fields'>
 						<tpl for='email'>
-							<div class='zcs-contactview-field'>{value}</div>
+							<div class='zcs-contactview-field'>{email}</div>
 							<div class='zcs-contactview-subLabel'>{typeStr}</div>
 						</tpl>
 					</div>
@@ -233,7 +233,7 @@
 					<div class='zcs-contactview-label'>{[ZtMsg.phone]}</div>
 					<div class='zcs-contactview-fields'>
 						<tpl for='phone'>
-							<div class='zcs-contactview-field'>{value}</div>
+							<div class='zcs-contactview-field'>{phone}</div>
 							<div class='zcs-contactview-subLabel'>{typeStr}</div>
 						</tpl>
 					</div>
@@ -263,18 +263,7 @@
 					<div class='zcs-contactview-label'>{[ZtMsg.url]}</div>
 					<div class='zcs-contactview-fields'>
 						<tpl for='url'>
-							<div class='zcs-contactview-field'>{value}</div>
-							<div class='zcs-contactview-subLabel'>{typeStr}</div>
-						</tpl>
-					</div>
-				</div>
-			</tpl>
-			<tpl if='fax'>
-				<div class='zcs-contactview-fieldSet'>
-					<div class='zcs-contactview-label'>{[ZtMsg.fax]}</div>
-					<div class='zcs-contactview-fields'>
-						<tpl for='fax'>
-							<div class='zcs-contactview-field'>{value}</div>
+							<div class='zcs-contactview-field'>{url}</div>
 							<div class='zcs-contactview-subLabel'>{typeStr}</div>
 						</tpl>
 					</div>

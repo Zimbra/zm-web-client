@@ -508,6 +508,7 @@ ZCS.constant.REGEX_URL                  = /(((https?):\/\/)|(www\.[\w\.\_\-]+))[
 ZCS.constant.REGEX_EMAIL                = /((mailto:)?\b[A-Z0-9\._%+-]+@[A-Z0-9\.-]+\.[A-Z]{2,5})\b/gi;
 ZCS.constant.REGEX_FOLDER_TAG_SEARCH    = /^(in|tag):["']?([^\x00-\x1F\x7F:\"]+)["']?$/;
 ZCS.constant.REGEX_CONTACT_ATTR         = /^([a-z]+)([A-Z][a-z]+)(\d*)$/;
+ZCS.constant.REGEX_CONTACT_FIELD        = /^([a-z]+)(\d*)$/;
 
 // URL paths
 ZCS.constant.PATH_MSG_FETCH = '/service/home/~/';
@@ -603,16 +604,22 @@ ZCS.constant.IDTYPE_TAG             = 'TAG';
 ZCS.constant.QUICK_REPLY_SMALL  = 20;
 ZCS.constant.QUICK_REPLY_LARGE  = 80;
 
-// Contact attributes used directly by the contact template
-ZCS.constant.ATTRS = [
-	'attrs', 'isGroup', 'nameLastFirst', 'fullName', 'email', 'phone',
-	'address', 'url', 'fax', 'groupMembers'
+// Contact fields used by the contact template
+ZCS.constant.CONTACT_TEMPLATE_FIELDS = [
+	'isGroup', 'nameLastFirst', 'fullName', 'nickname', 'email', 'phone',
+	'address', 'url', 'groupMembers', 'jobTitle', 'company'
+];
+
+// Contact fields that can have multiple values
+ZCS.constant.CONTACT_MULTI_FIELDS = [
+	'email', 'phone', 'address', 'url'
 ];
 
 // Contact attributes that make up an address
-ZCS.constant.IS_ADDRESS_FIELD = ZCS.util.arrayAsLookupHash([
+ZCS.constant.ADDRESS_FIELDS = [
 	'street', 'city', 'state', 'postalCode', 'country'
-]);
+];
+ZCS.constant.IS_ADDRESS_FIELD = ZCS.util.arrayAsLookupHash(ZCS.constant.ADDRESS_FIELDS);
 
 // Contact attributes that have variable type (home, work, etc)
 ZCS.constant.IS_PARSED_ATTR_FIELD = ZCS.util.arrayAsLookupHash([
@@ -626,14 +633,8 @@ ZCS.constant.ATTR_TYPE_SORT_VALUE = {
 	other:  3
 };
 
-// Contact field types
-ZCS.constant.MOBILE = 'mobile';
-ZCS.constant.WORK = 'work';
-ZCS.constant.OTHER = 'other';
-ZCS.constant.HOME = 'home';
-
-// Contact attributes having single value
-ZCS.constant.CONTACT_ATTRS = [
+// Contact attributes that can be copied directly from form to contact fields
+ZCS.constant.CONTACT_FIELDS = [
     'firstName',
     'lastName',
     'nickname',
@@ -643,39 +644,18 @@ ZCS.constant.CONTACT_ATTRS = [
     'middleName',
     'company',
     'jobTitle',
-    'department',
-    'fileAs',
-
-    'image',
-    'imagepart',
-    'zimletImage'
+    'department'
 ];
 
-//Contact attributes that can have multiple values
-ZCS.constant.CONTACT_MULTI_ATTRS = [
-    'email',
-    'mobilePhone',
-    'workPhone',
-    'otherPhone',
-    'homeURL',
-    'workURL',
-    'otherURL',
-    'homeStreet',
-    'homeCity',
-    'homeState',
-    'homePostalCode',
-    'homeCountry',
-    'workStreet',
-    'workCity',
-    'workState',
-    'workPostalCode',
-    'workCountry',
-    'otherStreet',
-    'otherCity',
-    'otherState',
-    'otherPostalCode',
-    'otherCountry'
+ZCS.constant.EXTRA_NAME_FIELDS = [
+	'namePrefix', 'middleName', 'maidenName', 'nameSuffix', 'nickname'
 ];
+ZCS.constant.IS_EXTRA_NAME_FIELD = ZCS.util.arrayAsLookupHash(ZCS.constant.EXTRA_NAME_FIELDS);
+
+ZCS.constant.EXTRA_JOB_FIELDS = [
+	'jobTitle', 'department'
+];
+ZCS.constant.IS_EXTRA_JOB_FIELD = ZCS.util.arrayAsLookupHash(ZCS.constant.EXTRA_JOB_FIELDS);
 
 // Server errors that should force a logout
 ZCS.constant.IS_FATAL_ERROR = ZCS.util.arrayAsLookupHash([
@@ -684,6 +664,3 @@ ZCS.constant.IS_FATAL_ERROR = ZCS.util.arrayAsLookupHash([
 	'service.AUTH_REQUIRED',
 	'service.AUTH_EXPIRED'
 ]);
-
-// Timezone
-ZCS.constant.TZ_TRANSITION_YEAR = 2011;

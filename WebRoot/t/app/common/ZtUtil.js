@@ -418,7 +418,7 @@ Ext.define('ZCS.common.ZtUtil', {
 	 *
 	 * @return {Object}     hash of data
 	 */
-	copyFields: function(model, fields) {
+	getFields: function(model, fields) {
 
 		var data = {};
 
@@ -427,5 +427,19 @@ Ext.define('ZCS.common.ZtUtil', {
 		}, this);
 
 		return data;
+	},
+
+	/**
+	 * Copies fields from a hash of data into a model instance.
+	 *
+	 * @param {Object}  data        hash of data
+	 * @param {Model}   model       target model
+	 * @param {Array}   fields      list of fields to copy
+	 */
+	setFields: function(data, model, fields) {
+
+		Ext.each(fields, function(field) {
+			model.set(field, data[field]);
+		}, this);
 	}
 });

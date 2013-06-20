@@ -93,9 +93,9 @@ Ext.define('ZCS.controller.ZtItemController', {
 	 * Performs a simple server operation on an item. Generally that means some sort of
 	 * ActionRequest with an 'op' attribute and possibly other arguments.
 	 *
-	 * @param {ZtItem}          item    item to act on
-	 * @param {Object|String}   data    data to save, or op to perform
-	 * @param {Function} success    The function to run on succes.
+	 * @param {ZtItem}          item        item to act on
+	 * @param {Object|String}   data        data to save, or op to perform
+	 * @param {Function}        callback    function to run on succes.
 	 */
 	performOp: function(item, data, callback) {
 

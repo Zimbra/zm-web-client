@@ -14,7 +14,7 @@
  */
 
 /**
- * This class represents a contact form that can be used to create a contact. It has a toolbar
+ * This class represents a contact form that can be used to create or edit a contact. It has a toolbar
  * on top and the actual form below. The form has fields for entering various fields of the
  * contact. The toolbar has button to cancel or save the contact.
  *
@@ -22,130 +22,131 @@
  */
 
 Ext.define('ZCS.view.contacts.ZtContactForm', {
+
     extend: 'Ext.Sheet',
 
-    requires:
-        [
-            'Ext.form.Panel',
-            'Ext.field.Email',
-            'Ext.field.Url',
-            'Ext.field.Select',
-            'Ext.field.Hidden',
-            'Ext.Label',
-            'ZCS.view.contacts.ZtEmailField',
-            'ZCS.view.contacts.ZtPhoneField',
-            'ZCS.view.contacts.ZtAddrField',
-            'ZCS.view.contacts.ZtUrlField'
-        ],
+    requires: [
+        'Ext.form.Panel',
+        'Ext.field.Email',
+        'Ext.field.Url',
+        'Ext.field.Select',
+        'Ext.field.Hidden',
+        'Ext.Label',
+        'ZCS.view.contacts.ZtMultiField',
+        'ZCS.view.contacts.ZtEmailField',
+        'ZCS.view.contacts.ZtPhoneField',
+        'ZCS.view.contacts.ZtAddrField',
+        'ZCS.view.contacts.ZtUrlField'
+    ],
+
     xtype: 'contactpanel',
 
     config: {
-        layout: 'fit',
-        width: '80%',
-        height: '100%',
+        layout:     'fit',
+        width:      '80%',
+        height:     '100%',
         scrollable: true,
-        hidden: true,
-        modal: true,
-        cls: 'zcs-contact-form'
+        hidden:     true,
+        modal:      true,
+        cls:        'zcs-contact-form'
     },
 
     initialize: function() {
+
         var contactForm = this,
+
             toolbar = {
                 xtype: 'titlebar',
                 docked: 'top',
-                title: 'Create Contact',
+                title: ZtMsg.createContact,
                 items: [
                     {
-                        xtype: 'button',
-                        text: ZtMsg.cancel,
-                        ui: 'neutral',
+                        xtype:  'button',
+                        text:   ZtMsg.cancel,
+                        ui:     'neutral',
+
                         handler: function() {
                             this.up('contactpanel').fireEvent('cancel');
                         }
                     },
                     {
-                        xtype: 'button',
-                        text: ZtMsg.save,
-                        align: 'right',
-                        ui: 'green',
-                        padding: '0 2em',
+                        xtype:      'button',
+                        text:       ZtMsg.save,
+                        align:      'right',
+                        ui:         'green',
+                        padding:    '0 2em',
+
                         handler: function() {
-                            this.up('contactpanel').fireEvent('create');
+                            this.up('contactpanel').fireEvent('save');
                         }
                     }
                 ]
-            }, form = {
-                xtype: 'formpanel',
-                itemId: 'formPanel',
+            },
+
+	        spacer = {
+		        xtype:  'spacer',
+		        cls:    'zcs-contact-spacer'
+	        },
+
+	        form = {
+                xtype:      'formpanel',
+		        layout:     'vbox',
+		        itemId:     'formPanel',
                 scrollable: true,
                 defaults: {
                     labelWidth: '100px',
-                    inputCls: 'zcs-form-input'
-                },
-                layout: {
-                    type: 'vbox'
+                    inputCls:   'zcs-form-input'
                 },
                 items: [
                     {
-                        //Personal info container
-                        layout: {
-                            type: 'hbox'
-                        },
+                        layout: 'hbox',
                         items: [
                             {
-                                xtype: 'container',
-                                width: '20%',
-                                cls: 'zcs-contact-imgborder',
+                                xtype:  'container',
+                                width:  '20%',
+                                cls:    'zcs-contact-imgborder',
                                 items:[
                                     {
-                                        xtype: 'component',
+                                        xtype:  'component',
                                         itemId: 'photofield',
-                                        cls: 'zcs-contact-image'
+                                        cls:    'zcs-contact-image'
                                     }
                                 ]
 
                             },
                             {
-                                xtype: 'container',
-                                cls: 'zcs-contact-personalinfo',
-                                layout: {
-                                    type: 'vbox'
-                                },
-
+                                xtype:  'container',
+                                cls:    'zcs-contact-personalinfo',
+                                layout: 'vbox',
                                 items:[
                                     {
-                                        xtype:'container',
-                                        layout: {
-                                            type:'hbox'
-                                        },
+                                        xtype:  'container',
+                                        layout: 'hbox',
                                         items:[
                                             {
-                                                xtype:'textfield',
-                                                placeHolder: 'Prefix',
-                                                hidden:true,
-                                                flex:1,
-                                                name:'namePrefix',
-                                                itemId: 'prefix'
+                                                xtype:          'textfield',
+                                                placeHolder:    ZtMsg.placeholderPrefix,
+                                                hidden:         true,
+                                                flex:           1,
+                                                name:           'namePrefix'
                                             },
                                             {
-                                                xtype:'textfield',
-                                                placeHolder: 'First Name',
-                                                hidden:false,
-                                                flex:2,
-                                                name:'firstName'
+                                                xtype:          'textfield',
+                                                placeHolder:    ZtMsg.placeholderFirstName,
+                                                flex:           2,
+                                                name:           'firstName'
                                             },
                                             {
                                                 width: '4.5em',
                                                 height: '2.5em',
                                                 xtype: 'component',
-                                                html: 'More',
-                                                itemId: 'more1Toggle',
+                                                html: ZtMsg.more,
+                                                itemId: 'nameFieldsToggle',
                                                 cls: 'x-form-label x-form-label-nowrap x-field zcs-toggle-field',
                                                 listeners: {
                                                     painted: function () {
                                                         this.element.on('tap', function() {
-                                                            contactForm.showPersonalDetails();
+	                                                        contactForm.showNameFields();
                                                         });
                                                     }
                                                 }
@@ -153,94 +154,94 @@ Ext.define('ZCS.view.contacts.ZtContactForm', {
                                         ]
                                     },
                                     {
-                                        xtype: 'container',
-                                        layout: {type:'hbox'},
-                                        items:[
+                                        xtype:  'container',
+                                        layout: 'hbox',
+                                        items: [
                                             {
-                                                xtype:'textfield',
-                                                placeHolder: 'Middle',
-                                                hidden:true,
-                                                flex:1,
-                                                name:'middleName',
-                                                itemId: 'middle'
+                                                xtype:          'textfield',
+                                                placeHolder:    ZtMsg.placeholderMiddleName,
+                                                hidden:         true,
+                                                flex:           1,
+                                                name:           'middleName'
                                             },
                                             {
-                                                xtype:'textfield',
-                                                placeHolder: 'Maiden',
-                                                hidden:true,
-                                                flex:1,
-                                                name:'maidenName',
-                                                itemId: 'maiden'
+                                                xtype:          'textfield',
+                                                placeHolder:    ZtMsg.placeholderMaidenName,
+                                                hidden:         true,
+                                                flex:           1,
+                                                name:           'maidenName'
                                             }
 
                                         ]
                                     },
                                     {
-                                        xtype: 'container',
-                                        layout: {type:'hbox'},
+                                        xtype:  'container',
+                                        layout: 'hbox',
                                         items:[
                                             {
-                                                xtype:'textfield',
-                                                placeHolder: 'Last Name',
-                                                hidden:false,
-                                                flex:2,
-                                                name:'lastName'
+                                                xtype:          'textfield',
+                                                placeHolder:    ZtMsg.placeholderLastName,
+                                                flex:           2,
+                                                name:           'lastName'
                                             },
                                             {
-                                                xtype:'textfield',
-                                                placeHolder: 'Suffix',
-                                                hidden:true,
-                                                flex:1,
-                                                name:'nameSuffix',
-                                                itemId: 'suffix'
+                                                xtype:          'textfield',
+                                                placeHolder:    ZtMsg.placeholderSuffix,
+                                                hidden:         true,
+                                                flex:           1,
+                                                name:           'nameSuffix'
+                                            },
+                                            {
+                                                xtype:          'textfield',
+                                                placeHolder:    ZtMsg.placeholderNickname,
+                                                hidden:         true,
+                                                flex:           2,
+                                                name:           'nickname'
                                             }
                                         ]
                                     },
                                     {
-                                        xtype: 'container',
-                                        layout:{type:'hbox'},
+                                        xtype:  'container',
+                                        layout: 'hbox',
                                         items:[
                                             {
-                                                xtype:'textfield',
-                                                placeHolder: 'Job Title',
-                                                hidden:true,
-                                                flex:1,
-                                                name:'jobTitle',
-                                                itemId: 'jtitle'
+                                                xtype:          'textfield',
+                                                placeHolder:    ZtMsg.placeholderJobTitle,
+                                                hidden:         true,
+                                                flex:           1,
+                                                name:           'jobTitle'
                                             },
                                             {
-                                                xtype:'textfield',
-                                                placeHolder: 'Department',
-                                                hidden:true,
-                                                flex:1,
-                                                name:'department',
-                                                itemId: 'dept'
+                                                xtype:          'textfield',
+                                                placeHolder:    ZtMsg.placeholderDepartment,
+                                                hidden:         true,
+                                                flex:           1,
+                                                name:           'department'
                                             }
                                         ]
 
                                     },
                                     {
-                                        xtype:'container',
-                                        layout: {type:'hbox'},
+                                        xtype:  'container',
+                                        layout: 'hbox',
                                         items:[
                                             {
-                                                xtype:'textfield',
-                                                placeHolder: 'Company',
-                                                hidden:false,
-                                                flex:1,
-                                                name:'company'
+                                                xtype:          'textfield',
+                                                placeHolder:    ZtMsg.placeholderCompany,
+                                                flex:           1,
+                                                name:           'company'
                                             },
                                             {
-                                                width: '4.5em',
-                                                height: '2.5em',
-                                                xtype: 'component',
-                                                html: 'More',
-                                                itemId: 'more2Toggle',
-                                                cls: 'x-form-label x-form-label-nowrap x-field zcs-toggle-field',
+                                                width:      '4.5em',
+                                                height:     '2.5em',
+                                                xtype:      'component',
+                                                html:       ZtMsg.more,
+                                                itemId:     'jobFieldsToggle',
+                                                cls:        'x-form-label x-form-label-nowrap x-field zcs-toggle-field',
                                                 listeners: {
                                                     painted: function () {
                                                         this.element.on('tap', function() {
-                                                            contactForm.showJobDetails();
+	                                                        contactForm.showJobFields();
                                                         });
                                                     }
                                                 }
@@ -252,104 +253,70 @@ Ext.define('ZCS.view.contacts.ZtContactForm', {
                         ]
 
                     },
+	                spacer,
                     {
-                        xtype:'spacer',
-                        cls: 'zcs-contact-spacer'
+                        xtype:      'emailcontainer',
+                        labelName:  ZtMsg.email
                     },
+	                spacer,
                     {
-                        //email
-                        xtype:'emailcontainer',
-                        docked: '',
-                        labelName: ZtMsg.email
+                        xtype:      'phonecontainer',
+                        labelName:  ZtMsg.phone
                     },
+	                spacer,
                     {
-                        xtype:'spacer',
-                        cls: 'zcs-contact-spacer'
+                        xtype:      'addresscontainer',
+	                    labelName:  ZtMsg.address
                     },
+	                spacer,
                     {
-                        //phone
-                        xtype:'phonecontainer',
-                        docked: '',
-                        labelName: ZtMsg.phone
-                    },
-                    {
-                        xtype:'spacer',
-                        cls: 'zcs-contact-spacer'
-                    },
-                    {
-                        //Address
-                        xtype: 'addrcontainer',
-                        docked: ''
-                    },
-                    {
-                        xtype:'spacer',
-                        cls: 'zcs-contact-spacer'
-                    },
-                    {
-                        //url
-                        xtype:'urlcontainer',
-                        docked: '',
-                        labelName: ZtMsg.url
-                    },
-                    {
-                        xtype: 'hiddenfield',
-                        name: 'contactItemId'
+                        xtype:      'urlcontainer',
+                        labelName:  ZtMsg.url
                     }
                 ]
             };
+
         this.add([
             toolbar,
             form
         ]);
     },
 
-    showPersonalDetails: function() {
-        this.down('#more1Toggle').hide();
-        this.down('#prefix').show();
-        this.down('#middle').show();
-        this.down('#maiden').show();
-        this.down('#suffix').show();
-    },
+	/**
+	 * Displays a set of optional fields, and hides the toggle.
+	 *
+	 * @param {String}  toggleId        DOM ID of toggle
+	 * @param {Array}   extraFields     list of fields to show
+	 */
+	showExtraFields: function(toggleId, extraFields) {
+		this.down('#' + toggleId).hide();
+		Ext.each(extraFields, function(field) {
+			this.down('field[name=' + field + ']').show();
+		}, this);
+	},
 
-    showJobDetails: function() {
-        this.down('#more2Toggle').hide();
-        this.down('#jtitle').show();
-        this.down('#dept').show();
-    },
+	// Shows the optional name fields
+	showNameFields: function() {
+		this.showExtraFields('nameFieldsToggle', ZCS.constant.EXTRA_NAME_FIELDS)
+	},
 
-    resetForm: function () {
+	// Shows the optional job fields
+	showJobFields: function() {
+		this.showExtraFields('jobFieldsToggle', ZCS.constant.EXTRA_JOB_FIELDS)
+	},
+
+	// Resets the form back to its initial state
+	resetForm: function () {
+
         this.down('.formpanel').reset();
-        this.down('#more1Toggle').show();
-        this.down('#more2Toggle').show();
-        this.down('#prefix').hide();
-        this.down('#middle').hide();
-        this.down('#maiden').hide();
-        this.down('#suffix').hide();
-        this.down('#jtitle').hide();
-        this.down('#dept').hide();
+        this.down('#nameFieldsToggle').show();
+        this.down('#jobFieldsToggle').show();
+	    Ext.each(ZCS.constant.EXTRA_NAME_FIELDS.concat(ZCS.constant.EXTRA_JOB_FIELDS), function(field) {
+		    this.down('field[name=' + field + ']').hide();
+	    }, this);
 
-        var numEmails = this.down('.emailcontainer').getItems().length - 1;
-        while (numEmails > 1) {
-            this.down('.emailcontainer').getItems().items[numEmails].destroy();
-            numEmails--;
-        }
-
-        var numPhones = this.down('.phonecontainer').getItems().length - 1;
-        while (numPhones > 1) {
-            this.down('.phonecontainer').getItems().items[numPhones].destroy();
-            numPhones--;
-        }
-
-        var numAddrs = this.down('.addrcontainer').getItems().length - 1;
-        while (numAddrs > 1) {
-            this.down('.addrcontainer').getItems().items[numAddrs].destroy();
-            numAddrs--;
-        }
-
-        var numUrls = this.down('.urlcontainer').getItems().length - 1;
-        while (numUrls > 1) {
-            this.down('.urlcontainer').getItems().items[numUrls].destroy();
-            numUrls--;
-        }
+	    Ext.each(ZCS.constant.CONTACT_MULTI_FIELDS, function(type) {
+		    this.down(type + 'container').reset();
+	    }, this);
     }
 });

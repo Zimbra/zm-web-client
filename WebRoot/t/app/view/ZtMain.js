@@ -81,8 +81,7 @@ Ext.define("ZCS.view.ZtMain", {
 				handler: function() {
 					this.up('tabbar').fireEvent('showMenu', this, { menuName: 'settings' });
 				},
-				iconCls: 'settings',
-				iconMask: true
+				iconCls: 'settings'
 			}
 		]);
 	}
