@@ -108,7 +108,7 @@
 </template>
 
 <template id='dwt.Widgets#DwtToolTip' width='5' height='5'>
-	<div id='${id}Contents' class='DwtToolTipBody'></div>
+	<div id='tooltipContents' class='DwtToolTipBody'></div>
 </template>
 
 

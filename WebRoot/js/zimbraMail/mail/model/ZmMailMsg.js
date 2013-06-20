@@ -1987,7 +1987,8 @@ function(findHits, includeInlineImages, includeInlineAtts) {
 					}
 					else {
 						// set the objectify flag
-						props.objectify = attach.contentType && attach.contentType.match(/^image/);
+						var contentType = attach.contentType;
+						props.objectify = contentType && contentType.match(/^image/) && !contentType.match(/tif/); //see bug 82807 - Tiffs are not really supported by browsers, so don't objectify.
 					}
 				} else {
 					props.url = url;
