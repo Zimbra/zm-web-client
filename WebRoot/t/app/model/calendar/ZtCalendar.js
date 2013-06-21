@@ -30,24 +30,26 @@ Ext.define('ZCS.model.calendar.ZtCalendar', {
     ],
 
     config: {
-        fields: [{
-            name: 'event',
-            type: 'string'
-        }, {
-            name: 'title',
-            type: 'string'
-        }, {
-            name: 'start',
-            type: 'date',
-            dateFormat: 'c'
-        }, {
-            name: 'end',
-            type: 'date',
-            dateFormat: 'c'
-        }, {
-            name: 'css',
-            type: 'string'
-        }],
+        fields: [
+            {
+                name: 'event',
+                type: 'string'
+            },
+            {
+                name: 'title',
+                type: 'string'
+            },
+            {
+                name: 'start',
+                type: 'date',
+                dateFormat: 'c'
+            },
+            {
+                name: 'end',
+                type: 'date',
+                dateFormat: 'c'
+            }
+        ],
 
         proxy: {
             type: 'soapproxy',
