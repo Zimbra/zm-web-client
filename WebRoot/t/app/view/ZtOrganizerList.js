@@ -41,6 +41,9 @@ Ext.define('ZCS.view.ZtOrganizerList', {
 				nestedList = this.up('nestedlist');
 
 			nestedList.goToNode(node);
+			if (node.parentNode) {
+				node.parentNode.set('expanded', true);
+			}
 		},
 
 		grouped: true
