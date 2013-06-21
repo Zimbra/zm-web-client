@@ -508,7 +508,7 @@ ZCS.constant.REGEX_URL                  = /(((https?):\/\/)|(www\.[\w\.\_\-]+))[
 ZCS.constant.REGEX_EMAIL                = /((mailto:)?\b[A-Z0-9\._%+-]+@[A-Z0-9\.-]+\.[A-Z]{2,5})\b/gi;
 ZCS.constant.REGEX_FOLDER_TAG_SEARCH    = /^(in|tag):["']?([^\x00-\x1F\x7F:\"]+)["']?$/;
 ZCS.constant.REGEX_CONTACT_ATTR         = /^([a-z]+)([A-Z][a-z]+)(\d*)$/;
-ZCS.constant.REGEX_CONTACT_FIELD        = /^([a-z]+)(\d*)$/;
+ZCS.constant.REGEX_CONTACT_FIELD        = /^([a-z][a-zA-Z]+)(\d*)$/;
 
 // URL paths
 ZCS.constant.PATH_MSG_FETCH = '/service/home/~/';
@@ -628,9 +628,10 @@ ZCS.constant.IS_PARSED_ATTR_FIELD = ZCS.util.arrayAsLookupHash([
 
 // Ordering for display of attribute types
 ZCS.constant.ATTR_TYPE_SORT_VALUE = {
-	home:   1,
-	work:   2,
-	other:  3
+	mobile: 1,
+	home:   2,
+	work:   3,
+	other:  4
 };
 
 // Contact attributes that can be copied directly from form to contact fields

@@ -47,6 +47,7 @@ Ext.define('ZCS.view.contacts.ZtPhoneField', {
 					flex:       0,
 					options:    [
 						{text: ZtMsg.mobile,    value: 'mobile'},
+						{text: ZtMsg.home,      value: 'home'},
 						{text: ZtMsg.work,      value: 'work'},
 						{text: ZtMsg.other,     value: 'other'}
 					]

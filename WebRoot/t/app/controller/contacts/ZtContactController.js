@@ -372,9 +372,9 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
 			m = field.match(ZCS.constant.REGEX_CONTACT_FIELD);
 			if (m && m.length > 0) {
 				attr = m[1], seq = m[2];
-				if (attr === 'addresstype') {
-					values.addresstype = values.addresstype || [];
-					values.addresstype.push(values[field]);
+				if (attr === 'addressType') {
+					values.addressType = values.addressType || [];
+					values.addressType.push(values[field]);
 					Ext.each(ZCS.constant.ADDRESS_FIELDS, function(addrField) {
 						values[addrField] = values[addrField] || [];
 						values[addrField].push(values[addrField + seq] || '');
@@ -385,20 +385,20 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
 
 	    // Use name-based form value arrays to set the contact's multi fields.
 		var typeField, attrs, fieldValues;
-	    Ext.each(ZCS.constant.CONTACT_MULTI_FIELDS, function(type) {
-		    typeField = type + 'type';
-		    attrs = [ type, typeField ];
+	    Ext.each(ZCS.constant.CONTACT_MULTI_FIELDS, function(multiField) {
+		    typeField = multiField + 'Type';
+		    attrs = [ multiField, typeField ];
 			fieldValues = [];
-		    if (type === 'address') {
+		    if (multiField === 'address') {
 			    attrs = attrs.concat(ZCS.constant.ADDRESS_FIELDS);
 		    }
 		    Ext.each(attrs, function(attr) {
 			    Ext.each(values[attr], function(value, index) {
 				    fieldValues[index] = fieldValues[index] || {};
-				    fieldValues[index][attr === typeField ? 'type' : attr] = value || '';
+				    fieldValues[index][attr] = value || '';
 			    }, this);
 		    }, this);
-		    contact.set(type, fieldValues);
+		    contact.set(multiField, fieldValues);
 	    }, this);
 
         return contact;

@@ -74,7 +74,12 @@ Ext.define('ZCS.model.contacts.ZtContactReader', {
 				value = attrs[attr];
 			if (m && m.length > 0) {
 				var type = m[1], field = m[2].toLowerCase(), num = m[3];
-				// address is a composite field composed of several attributes
+				type = ZCS.constant.ATTR_TYPE_SORT_VALUE[type] ? type : 'other';
+				if (field === 'fax') {
+					field = 'phone';
+					type = 'other';
+				}
+				// address is a composite field
 				if (ZCS.constant.IS_ADDRESS_FIELD[field]) {
 					var idx = num ? num - 1 : 0,
 						addressesByType = addresses[type] = addresses[type] || [],
@@ -110,8 +115,8 @@ Ext.define('ZCS.model.contacts.ZtContactReader', {
 		// sort each list based on type
 		Ext.Object.each(parsedAttrs, function(field) {
 			parsedAttrs[field].sort(function(a, b) {
-				var typeA = a.type,
-					typeB = b.type;
+				var typeA = a[field + 'Type'],
+					typeB = b[field + 'Type'];
 				if (!typeA || !typeB) {
 					return !typeA ? -1 : 1;
 				}

@@ -106,6 +106,10 @@ Ext.define('ZCS.view.contacts.ZtMultiField', {
 				field.destroy();
 			}
 		}
+		else {
+			// If trying to remove last field, just clear it.
+			this.reset();
+		}
 	},
 
 	reset: function() {
