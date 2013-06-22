@@ -85,8 +85,8 @@ Ext.define('ZCS.model.contacts.ZtContactReader', {
 						addressesByType = addresses[type] = addresses[type] || [],
 						address = addressesByType[idx] = addressesByType[idx] || {};
 					address[field] = value;
-					address.addressType = type;
-					address.typeStr = ZtMsg[type] || '';
+					address.addressType = address.addressType || type;
+					address.typeStr = address.typeStr || ZtMsg[type] || '';
 				}
 				// phone, fax, url (and workEmail)
 				else if (ZCS.constant.IS_PARSED_ATTR_FIELD[field]) {
@@ -110,6 +110,10 @@ Ext.define('ZCS.model.contacts.ZtContactReader', {
 		parsedAttrs.address = [];
 		Ext.Object.each(addresses, function(type) {
 			parsedAttrs.address = parsedAttrs.address.concat(addresses[type]);
+		}, this);
+
+		Ext.each(parsedAttrs.address, function(addr) {
+			addr.mapAddr = addr.street || addr.city ? Ext.Array.clean([addr.street, addr.city, addr.state, addr.country]).join(', ').replace(' ', '+') : '';
 		}, this);
 
 		// sort each list based on type

@@ -245,13 +245,15 @@
 					<div class='zcs-contactview-fields'>
 						<tpl for='address'>
 							<div class='zcs-contactview-field'>
-								<span class='zcs-contactview-street'>{street}</span>
-								<tpl if='city'>
-									<span class='zcs-contactview-city'>{city},&nbsp</span>
-								</tpl>
-								<span class='zcs-contactview-state'>{state}&nbsp</span>
-								<span class='zcs-contactview-postalcode'>{postalCode}</span>
-								<span class='zcs-contactview-country'>{country}</span>
+								<tpl if='mapAddr'><a href='http://maps.apple.com/?q={mapAddr}'></tpl>
+									<span class='zcs-contactview-street'>{street}</span>
+									<tpl if='city'>
+										<span class='zcs-contactview-city'>{city},&nbsp</span>
+									</tpl>
+									<span class='zcs-contactview-state'>{state}&nbsp</span>
+									<span class='zcs-contactview-postalcode'>{postalCode}</span>
+									<span class='zcs-contactview-country'>{country}</span>
+								<tpl if='mapAddr'></a></tpl>
 							</div>
 							<div class='zcs-contactview-subLabel'>{typeStr}</div>
 						</tpl>
