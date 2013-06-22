@@ -699,7 +699,7 @@ function(draftType, msg, ex, params) {
 			showMsg = true;
         }
         if (errorMsg && showMsg) {
-			this._showMsgDialog(ZmComposeController.MSG_DIALOG_1, msg, style || DwtMessageDialog.CRITICAL_STYLE, null, true);
+			this._showMsgDialog(ZmComposeController.MSG_DIALOG_1, errorMsg, style || DwtMessageDialog.CRITICAL_STYLE, null, true);
             retVal = true;
         }
     }
