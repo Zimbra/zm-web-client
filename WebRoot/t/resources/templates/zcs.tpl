@@ -233,7 +233,7 @@
 					<div class='zcs-contactview-label'>{[ZtMsg.phone]}</div>
 					<div class='zcs-contactview-fields'>
 						<tpl for='phone'>
-							<div class='zcs-contactview-field'>{phone}</div>
+							<div class='zcs-contactview-field'><a href="tel:{phone}">{phone}</a></div>
 							<div class='zcs-contactview-subLabel'>{typeStr}</div>
 						</tpl>
 					</div>
