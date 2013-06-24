@@ -40,5 +40,9 @@ Ext.define('ZCS.view.contacts.ZtContactView', {
 
 		data.imageStyle = imageUrl ? 'background-image: url(' + imageUrl + ')' : '';
 		this.setHtml(this.getTpl().apply(data));
+	},
+
+	clearItem: function() {
+		this.setHtml('');
 	}
 });

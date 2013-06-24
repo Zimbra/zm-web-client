@@ -90,6 +90,16 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
 
 	},
 
+	/**
+	 * Clears contact from the item panel and clears out the toolbar.
+	 */
+	clear: function() {
+		this.getStore().removeAll();
+		this.getContactView().clearItem();
+		this.setItem(null);
+		this.callParent(arguments);
+	},
+
 	updateToolbar: function(params) {
 
 		this.callParent(arguments);
@@ -102,7 +112,7 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
 			this.showButton(button.op, !hideAll);
 		}, this);
 
-		this.showButton(ZCS.constant.OP_EDIT, !params.isGroup)
+		this.showButton(ZCS.constant.OP_EDIT, !hideAll && !params.isGroup)
 	},
 
 	/**

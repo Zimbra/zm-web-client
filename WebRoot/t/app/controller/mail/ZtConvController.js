@@ -120,6 +120,15 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 	},
 
 	/**
+	 * Returns the component that holds placeholder text.
+	 * @return {Component}
+	 */
+	getPlaceholder: function() {
+		var itemListView = this.getItemPanel().down('list');
+		return itemListView ? itemListView.emptyTextCmp : null;
+	},
+
+	/**
 	 * Displays the given conv as a list of messages. Sets toolbar text to the conv subject.
 	 *
 	 * @param {ZtConv}  conv        conv to show

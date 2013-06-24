@@ -66,17 +66,19 @@ Ext.define('ZCS.controller.ZtItemController', {
 		});
 
 		// Don't show placeholder text if there is nothing to select
-		var itemListView = this.getItemPanel().down('list'),
-			placeholderText = itemListView && itemListView.emptyTextCmp;
-
-		if (placeholderText) {
+		var placeholder = this.getPlaceholder();
+		if (placeholder) {
 			if (noItemsFound) {
-				placeholderText.hide();
+				placeholder.hide();
 			}
 			else {
-				placeholderText.show();
+				placeholder.show();
 			}
 		}
+	},
+
+	getPlaceholder: function() {
+		return null;
 	},
 
 	/**
