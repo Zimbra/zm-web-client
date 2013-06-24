@@ -342,8 +342,11 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
 
     createContact: function(contact, callback, scope) {
 
-	    var me = this;
+	    var me = this,
+		    folder = ZCS.session.getCurrentSearchOrganizer();
+
         contact.save({
+	        folderId: folder ? folder.get('itemId') : null,
             success: function() {
 	            me.hideContactForm();
                 ZCS.app.fireEvent('showToast', ZtMsg.contactCreated);

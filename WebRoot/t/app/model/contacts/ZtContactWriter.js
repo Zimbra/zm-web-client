@@ -68,7 +68,7 @@ Ext.define('ZCS.model.contacts.ZtContactWriter', {
 
             var cn = methodJson.cn = {};
 
-            cn.l = '7';     // always create in Contacts folder for now
+			cn.l = itemData.folderId || ZCS.constant.ID_CONTACTS;
             cn.m = [];
             cn.a = this.populateAttrs(contact);
 
