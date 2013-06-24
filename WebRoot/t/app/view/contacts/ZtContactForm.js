@@ -308,6 +308,7 @@ Ext.define('ZCS.view.contacts.ZtContactForm', {
 	// Resets the form back to its initial state
 	resetForm: function () {
 
+        this.down('titlebar').setTitle(ZtMsg.createContact);
         this.down('.formpanel').reset();
         this.down('#nameFieldsToggle').show();
         this.down('#jobFieldsToggle').show();
