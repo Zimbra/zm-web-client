@@ -71,7 +71,7 @@ Ext.define('ZCS.model.mail.ZtMailItem', {
 		},
 
 		/**
-		 * Converts ZtEmailAddress models into anonymous objects with 'address' and 'displayName' properties.
+		 * Converts ZtEmailAddress models into anonymous objects with useful address-related properties.
 		 *
 		 * @param {Array|Object|ZtEmailAddress}     addrs   addresses to convert
 		 * @return {Object}    the provided data with addresses as anonymous objects
@@ -84,8 +84,9 @@ Ext.define('ZCS.model.mail.ZtMailItem', {
 					return Ext.Array.map(addrs,
 						function (addr) {
 							var	addrData = {
-									address: addr.get('email'),
-									name: ZCS.mailutil.getDisplayName(addr)
+									address:    addr.get('email'),
+									name:       ZCS.mailutil.getDisplayName(addr),
+									addrObj:    addr
 								};
 							addrData.id = ZCS.util.getUniqueId(addrData);
 							return addrData;

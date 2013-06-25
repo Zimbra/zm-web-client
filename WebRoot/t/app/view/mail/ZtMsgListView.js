@@ -66,9 +66,11 @@ Ext.define('ZCS.view.mail.ZtMsgListView', {
 				// address bubble
 				if (elm.hasCls('zcs-contact-bubble')) {
 					msgHeader.fireEvent('contactTap', elm, {
-						menuName: ZCS.constant.MENU_CONTACT,
-						msg: msg,
-						address: idParams.address
+						menuName:   ZCS.constant.MENU_CONTACT,
+						msg:        msg,
+						address:    idParams.address,
+						name:       idParams.name,
+						addrObj:    idParams.addrObj
 					});
 					return true;
 				}
@@ -76,9 +78,9 @@ Ext.define('ZCS.view.mail.ZtMsgListView', {
 				// tag bubble
 				if (elm.hasCls('zcs-tag-bubble')) {
 					msgHeader.fireEvent('tagTap', elm, {
-						menuName: ZCS.constant.MENU_TAG,
-						msg: msg,
-						tagName: idParams.name
+						menuName:   ZCS.constant.MENU_TAG,
+						msg:        msg,
+						tagName:    idParams.name
 					});
 					return true;
 				}
@@ -86,8 +88,8 @@ Ext.define('ZCS.view.mail.ZtMsgListView', {
 				// message actions menu
 				if (elm.hasCls('zcs-msgHdr-menuButton') || elm.hasCls('zcs-msgHeader-menuButton-span')) {
 					msgHeader.fireEvent('menuTap', elm, {
-						menuName: ZCS.constant.MENU_MSG,
-						msg: msg
+						menuName:   ZCS.constant.MENU_MSG,
+						msg:        msg
 					});
 					return true;
 				}
@@ -98,9 +100,9 @@ Ext.define('ZCS.view.mail.ZtMsgListView', {
 				}
 
 			},
-			element: 'element',
-			delegate: '.zcs-msg-header',
-			scope: this
+			element:    'element',
+			delegate:   '.zcs-msg-header',
+			scope:      this
 		});
 
 		// Message body taps
@@ -126,9 +128,9 @@ Ext.define('ZCS.view.mail.ZtMsgListView', {
 				// address bubble
 				if (elm.hasCls('zcs-contact-bubble')) {
 					msgBody.fireEvent('contactTap', elm, {
-						menuName: ZCS.constant.MENU_CONTACT,
-						msg: msg,
-						address: idParams.address
+						menuName:   ZCS.constant.MENU_CONTACT,
+						msg:        msg,
+						address:    idParams.address
 					});
 					return false;
 				}
@@ -148,9 +150,9 @@ Ext.define('ZCS.view.mail.ZtMsgListView', {
 					msgBody.fireEvent('loadEntireMessage', msg, msgBody);
 				}
 			},
-			element: 'element',
-			delegate: '.zcs-msg-body',
-			scope: this
+			element:    'element',
+			delegate:   '.zcs-msg-body',
+			scope:      this
 		});
 
 		var scroller = this.getScrollable();

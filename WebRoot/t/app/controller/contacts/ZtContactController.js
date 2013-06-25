@@ -118,15 +118,27 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
 	/**
      * Displays the contact form to either create a new contact or edit an existing one.
 	 *
-	 * @param {String}     mode     ZCS.constant.OP_COMPOSE or ZCS.constant.OP_EDIT
+	 * @param {String}      mode        ZCS.constant.OP_COMPOSE or ZCS.constant.OP_EDIT
+	 * @param {ZtContact}   contact     contact used to fill in form fields (optional)
      */
-    showContactForm: function(mode) {
+    showContactForm: function(mode, contact) {
 
-        var panel = this.getContactPanel();
+		var me = this,
+			panel = this.getContactPanel(),
+			form = panel.down('formpanel'),
+			isEdit = (mode === ZCS.constant.OP_EDIT);
+
 		this.setComposeMode(mode);
-		if (mode === ZCS.constant.OP_COMPOSE) {
-            panel.resetForm();
+		panel.resetForm();
+
+		// Set the title of the form
+		panel.down('titlebar').setTitle(isEdit ? ZtMsg.editContact : ZtMsg.createContact);
+
+		// Fill in form fields if we're handed a contact
+		if (contact) {
+			this.populateForm(contact);
 		}
+
         panel.show({
             type:       'slide',
             direction:  'up',
@@ -217,8 +229,11 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
 	 */
     doEdit: function() {
         var contact = this.getItem();
-        if (!contact.get('isGroup')) {
-            this.editContact(contact);
+        if (contact.get('isGroup')) {
+	        Ext.Msg.alert(ZtMsg.error, ZtMsg.errorEditContactGroup);
+        }
+        else {
+            this.showContactForm(ZCS.constant.OP_EDIT, contact);
         }
     },
 
@@ -272,18 +287,11 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
         });
     },
 
-    editContact: function(contact) {
+    populateForm: function(contact) {
 
-        var me = this,
-            panel = this.getContactPanel(),
-            form = panel.down('formpanel');
-
-        panel.resetForm();
-
-        // Set the title of the form
-        panel.down('titlebar').setTitle(ZtMsg.editContact);
-
-		var	value, formField,
+		var	panel = this.getContactPanel(),
+			form = panel.down('formpanel'),
+			value, formField,
 			extraNameFieldsShown = false,
 			extraJobFieldsShown = false;
 
@@ -346,8 +354,6 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
 			    }, this);
 		    }
 	    }, this);
-
-	    this.showContactForm(ZCS.constant.OP_EDIT);
     },
 
     createContact: function(contact, callback, scope) {

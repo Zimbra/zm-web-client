@@ -168,6 +168,51 @@ Ext.define('ZCS.model.contacts.ZtContact', {
 		}
 	},
 
+	statics: {
+
+		/**
+		 * Creates a ZtContact from a ZtEmailAddress. The name portion of the address is parsed into
+		 * first, middle, and last names. There will be some misses since the parsing is fairly simple.
+		 *
+		 * @param {ZtEmailAddress}  addr        email address object
+		 *
+		 * @return {ZtContact}  a contact
+		 */
+		fromEmailObj: function(addr) {
+
+			var data = {},
+				fullName = addr.get('name') || '',
+				parts = fullName.split(','),
+				firstName, middleName, lastName;
+
+			// Handle "Last, First" by moving Last to the end
+			fullName = (parts.length === 2) ? [ parts[1], parts[0] ].join(' ') : fullName;
+			parts = fullName.split(/\s+/);
+			// "Charo"
+			if (parts.length === 1) {
+				lastName = parts[0];
+			}
+			// "Ryan Gosling"
+			else if (parts.length === 2) {
+				firstName = parts[0];
+				lastName = parts[1];
+			}
+			// "David Ogden Stiers"
+			else if (parts.length > 2) {
+				firstName = parts[0];
+				middleName = parts[1];
+				lastName = parts.slice(2).join(' ');
+			}
+
+			return new ZCS.model.contacts.ZtContact({
+				firstName:  firstName,
+				middleName: middleName,
+				lastName:   lastName,
+				email:      [ { email: addr.get('email') } ]
+			});
+		}
+	},
+
 	/**
 	 * Returns a hash of JSON attribute keys and values based on this contact's fields.
 	 *

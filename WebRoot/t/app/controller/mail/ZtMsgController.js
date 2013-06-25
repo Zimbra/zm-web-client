@@ -121,20 +121,18 @@ Ext.define('ZCS.controller.mail.ZtMsgController', {
 		this.setItem(params.msg);
 		this.setActiveMailComponent(menuButton.up('.itempanel'));
 		this.callParent(arguments);
-		if (params.address) {
-			var menu = this.getMenu(params.menuName);
-			if (menu) {
+
+		var menu = this.getMenu(params.menuName);
+		if (menu) {
+			if (params.address) {
 				menu.setArgs(ZCS.constant.OP_COMPOSE, [ params.address ]);
-				if (menu.getItem(ZCS.constant.OP_ADD_CONTACT)) {
-					menu.setArgs(ZCS.constant.OP_ADD_CONTACT, [ params.address ]);
-				}
+			}
+			if (params.addrObj && menu.getItem(ZCS.constant.OP_ADD_CONTACT)) {
+				menu.setArgs(ZCS.constant.OP_ADD_CONTACT, [ params.addrObj ]);
 			}
 		}
-		if (params.tagName) {
-			var menu = this.getMenu(params.menuName);
-			if (menu) {
-				menu.setArgs(ZCS.constant.OP_REMOVE_TAG, [ params.tagName ]);
-			}
+		if (menu && params.tagName) {
+			menu.setArgs(ZCS.constant.OP_REMOVE_TAG, [ params.tagName ]);
 		}
 	},
 
@@ -268,7 +266,7 @@ Ext.define('ZCS.controller.mail.ZtMsgController', {
 	},
 
 	doAddContact: function(addr) {
-		// TODO
+		ZCS.app.getContactController().showContactForm(ZCS.constant.OP_COMPOSE, ZCS.model.contacts.ZtContact.fromEmailObj(addr));
 	},
 
 	doLoadEntireMessage: function(msg, msgBody) {
