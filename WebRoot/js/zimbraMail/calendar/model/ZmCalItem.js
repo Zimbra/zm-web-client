@@ -2614,6 +2614,9 @@ function(ex) {
                 status.errorMessage=ZmMsg.errorQuotaExceededTask;
             }
     }
+	else if (ex.code === ZmCsfeException.MUST_BE_ORGANIZER) {
+		status.errorMessage = ZmMsg.mustBeOrganizer;
+	}
 
     return status;
 };
