@@ -46,14 +46,9 @@ Ext.define('ZCS.view.calendar.ZtCalendarView', {
             },
             viewConfig: {
                 weekStart: 0,
-                eventStore: Ext.getStore('ZtCalendarStore'),
-                plugins: [Ext.create('Ext.ux.TouchCalendarEvents', {
-                    eventHeight: 'auto',
-                    eventBarTpl: '<div>{title}</div>'
-                })]
+                eventStore: Ext.getStore('ZtCalendarStore')
             }
-
-        }
+        };
 
         var weekView = {
             xtype: 'calendar',
@@ -69,14 +64,9 @@ Ext.define('ZCS.view.calendar.ZtCalendarView', {
             },
             viewConfig: {
                 weekStart: 0,
-                eventStore: Ext.getStore('ZtCalendarStore'),
-                plugins: [Ext.create('Ext.ux.TouchCalendarEvents', {
-                    eventHeight: 'auto',
-                    eventBarTpl: '<div>{title}</div>'
-                })]
+                eventStore: Ext.getStore('ZtCalendarStore')
             }
-
-        }
+        };
 
         var dayView = {
             xtype: 'calendar',
@@ -92,13 +82,9 @@ Ext.define('ZCS.view.calendar.ZtCalendarView', {
             },
             viewConfig: {
                 weekStart: 0, //TODO: This will be set as per User Preferences
-                eventStore: Ext.getStore('ZtCalendarStore'),
-                plugins: [Ext.create('Ext.ux.TouchCalendarEvents', {
-                    eventHeight: 'auto',
-                    eventBarTpl: '<div>{title}&nbsp;&nbsp;&nbsp;<i>{event}</i></div>'
-                })]
+                eventStore: Ext.getStore('ZtCalendarStore')
             }
-        }
+        };
 
         this.add([
             monthView,
