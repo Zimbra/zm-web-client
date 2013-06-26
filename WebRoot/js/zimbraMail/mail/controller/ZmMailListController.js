@@ -1087,8 +1087,8 @@ function(params) {
 	params.getHtml = (htmlEnabled && (action == ZmOperation.DRAFT || (prefersHtml || (!msg._loaded && sameFormat))));
 	if (action == ZmOperation.DRAFT) {
 		params.listController = this;
-		//always reload the draft msg
-        if (msg.folderId !== ZmFolder.ID_OUTBOX) {//Dont force load for outbox items
+		//always reload the draft msg except offline created msg
+        if (!msg.isOfflineCreated) {
             params.forceLoad = true;
         }
 	}

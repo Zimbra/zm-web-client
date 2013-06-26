@@ -976,6 +976,8 @@ function(search, result) {
     }
 
     this._showResults(results, search);
+
+    ZmOffline.updateOutboxFolderCountCallback(result);
 };
 
 /**

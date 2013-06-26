@@ -856,6 +856,7 @@ function(msg) {
 			msg.isForwarded = ZmComposeController.IS_FORWARD[this._action];
 			msg.origId = this._msg.id;
 		}
+        msg.isOfflineCreated = this._msg.isOfflineCreated;
 		msg.isInviteReply = isInviteReply;
 		msg.acceptFolderId = this._acceptFolderId;
 		var notifyActionMap = ZmComposeView.NOTIFY_ACTION_MAP || {};

@@ -593,8 +593,7 @@ function(attId, docIds, draftType, callback, contactId) {
 
 	var respCallback = this._handleResponseSendMsg.bind(this, draftType, msg, callback);
 	var errorCallback = this._handleErrorSendMsg.bind(this, draftType, msg);
-    var offlineCallback = this._handleOfflineSendMsg.bind(this, draftType, msg);
-	msg.send(isDraft, respCallback, errorCallback, acctName, null, requestReadReceipt, null, this._sendTime, isAutoSave, offlineCallback);
+	msg.send(isDraft, respCallback, errorCallback, acctName, null, requestReadReceipt, null, this._sendTime, isAutoSave);
 	this._resetDelayTime();
 };
 
@@ -681,9 +680,6 @@ function(draftType, msg, ex, params) {
             retVal = true;
         } else if (ex.code == ZmCsfeException.MAIL_QUOTA_EXCEEDED) {
             errorMsg = ZmMsg.errorQuotaExceeded;
-	    } else if (ex.code === ZmCsfeException.EMPTY_RESPONSE) { //If server is down
-            retVal = this._handleOfflineSendMsg(draftType, msg, params);
-            return retVal;
         }
 
         if (this._uploadingProgress){
@@ -2497,98 +2493,6 @@ function(dlgType, msg, style, callbacks) {
 		}
 	}
 	dlg.popup();
-};
-
-ZmComposeController.prototype._handleOfflineSendMsg =
-function(draftType, msg, params) {
-
-    var jsonObj = params.jsonObj;
-    if (!jsonObj) {
-        return;
-    }
-
-    var methodName = Object.keys(jsonObj)[0];
-    var msgNode = jsonObj[methodName].m;
-    if (!msgNode) {
-        return;
-    }
-
-    var currentTime = new Date().getTime();
-    jsonObj.methodName = methodName;
-    msgNode.d = currentTime; //for displaying date and time in the outbox/Drafts folder
-    var callback = this._handleSetItemInRequestQueueResponse.bind(this, draftType, msg, jsonObj);
-    if (msgNode.id) { //Already existing message
-        jsonObj.id = msgNode.id;
-        var indexObj = { operation : "add",
-            methodName : params.methodName,
-            id : msgNode.id,
-            value : jsonObj
-        };
-        ZmOfflineDB.indexedDB.actionsInRequestQueueUsingIndex(indexObj, callback);
-    }
-    else {
-        jsonObj.id = msgNode.id = currentTime.toString(); //Id should be string
-        jsonObj.offlineCreated = true;
-        ZmOfflineDB.indexedDB.setItemInRequestQueue(jsonObj, callback);
-    }
-    return true;
-};
-
-ZmComposeController.prototype._handleSetItemInRequestQueueResponse =
-function(draftType, msg, jsonObj) {
-
-    if (draftType === ZmComposeController.DRAFT_TYPE_NONE) {//"SendMsgRequest"
-        appCtxt.setStatusMsg(ZmMsg.messageScheduledSent);
-        this._app.popView(true, this._currentView);
-        var indexObj = { operation : "delete",
-                         methodName : "SaveDraftRequest",
-                         id : msg.id
-                       };
-        ZmOfflineDB.indexedDB.actionsInRequestQueueUsingIndex(indexObj);//Delete any drafts for this message id
-        var header = this._generateOfflineHeader(draftType, msg, jsonObj),
-            notify;
-        if (header) {
-            notify = header.context.notify[0];
-            if (notify) {
-                appCtxt.getRequestMgr()._notifyHandler(notify);
-            }
-        }
-    }
-    else if (draftType === ZmComposeController.DRAFT_TYPE_MANUAL) {//"SaveDraftRequest"
-        var transitions = [ ZmToast.FADE_IN, ZmToast.IDLE, ZmToast.PAUSE, ZmToast.FADE_OUT ];
-        appCtxt.setStatusMsg(ZmMsg.draftSaved + "in indexedDB", ZmStatusView.LEVEL_INFO, null, transitions);
-    }
-};
-
-/**
- * @private
- */
-ZmComposeController.prototype._generateOfflineHeader =
-function(draftType, msg, jsonObj) {
-    var header,
-        m = ZmOffline.generateMsgResponse(jsonObj),
-        c = [],
-        folderArray = [];
-
-    folderArray.push({
-        id : ZmFolder.ID_OUTBOX,
-        n : appCtxt.getById(ZmFolder.ID_OUTBOX).numTotal + 1
-    });
-
-    header = {
-        context : {
-            notify : [{
-                created : {
-                    m : m,
-                    c : c
-                },
-                modified : {
-                    folder : folderArray
-                }
-            }]
-        }
-    };
-    return header;
 };
 
 ZmComposeController.prototype._handleOfflineUpload = function(files) {

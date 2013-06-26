@@ -1396,10 +1396,9 @@ function(nfolder, resp) {
  * @param {ZmBatchCommand} batchCmd		if set, request gets added to this batch command
  * @param {Date} sendTime				if set, tell server that this message should be sent at the specified time
  * @param {Boolean} isAutoSave          if <code>true</code>, this an auto-save draft
- * @param {AjxCallback}	offlineCallback	the offline callback to trigger if the user is offline
  */
 ZmMailMsg.prototype.send =
-function(isDraft, callback, errorCallback, accountName, noSave, requestReadReceipt, batchCmd, sendTime, isAutoSave, offlineCallback) {
+function(isDraft, callback, errorCallback, accountName, noSave, requestReadReceipt, batchCmd, sendTime, isAutoSave) {
 
 	var aName = accountName;
 	if (!aName) {
@@ -1439,7 +1438,6 @@ function(isDraft, callback, errorCallback, accountName, noSave, requestReadRecei
 			callback: (new AjxCallback(this, this._handleResponseSend, [isDraft, callback])),
 			errorCallback: errorCallback,
 			batchCmd: batchCmd,
-            offlineCallback: offlineCallback,
             skipOfflineCheck: true
 		};
         this._sendMessage(params);
@@ -1538,6 +1536,13 @@ function(request, isDraft, accountName, requestReadReceipt, sendTime) {
 	if (this.isPriority) {
 	    msgNode.f = ZmItem.FLAG_PRIORITY;			
 	}
+
+    if (this.isOfflineCreated) {
+        msgNode.f = msgNode.f || "";
+        if (msgNode.f.indexOf(ZmItem.FLAG_OFFLINE_CREATED) === -1) {
+            msgNode.f = msgNode.f + ZmItem.FLAG_OFFLINE_CREATED;
+        }
+    }
 	
 	var addrNodes = msgNode.e = [];
 	for (var i = 0; i < ZmMailMsg.COMPOSE_ADDRS.length; i++) {
@@ -1708,14 +1713,14 @@ function(request, isDraft, accountName, requestReadReceipt, sendTime) {
  *        isDraft				[boolean]		true if this message is a draft
  *        callback				[AjxCallback]	async callback
  *        errorCallback			[AjxCallback]	async error callback
- *        offlineCallback       [AjxCallback]	async offline callback
  *        batchCmd				[ZmBatchCommand]	if set, request gets added to this batch command
  *
  * @private
  */
 ZmMailMsg.prototype._sendMessage =
 function(params) {
-	var respCallback = new AjxCallback(this, this._handleResponseSendMessage, [params]);
+	var respCallback = new AjxCallback(this, this._handleResponseSendMessage, [params]),
+        offlineCallback = this._handleOfflineResponseSendMessage.bind(this, params);
     /* bug fix 63798 removing sync request and making it async
 	// bug fix #4325 - its safer to make sync request when dealing w/ new window
 	if (window.parentController) {
@@ -1748,7 +1753,7 @@ function(params) {
 												noBusyOverlay:params.isDraft && params.isAutoSave,
 												callback:respCallback,
 												errorCallback:params.errorCallback,
-                                                offlineCallback:params.offlineCallback,
+                                                offlineCallback:offlineCallback,
 												accountName:params.accountName,
                                                 timeout: ( ( params.isDraft && this.attId ) ? 0 : null )
                                                 });
@@ -1768,6 +1773,100 @@ function(params, result) {
 	if (params.callback) {
 		params.callback.run(result);
 	}
+};
+
+ZmMailMsg.prototype._handleOfflineResponseSendMessage =
+function(params) {
+
+    var jsonObj = $.extend(true, {}, params.jsonObj),//Always clone the object
+        methodName = Object.keys(jsonObj)[0],
+        msgNode = jsonObj[methodName].m,
+        currentTime = new Date().getTime(),
+        callback;
+
+    jsonObj.methodName = methodName;
+    msgNode.d = currentTime; //for displaying date and time in the outbox/Drafts folder
+
+    if (!msgNode.id && this._origMsg && this._origMsg.id) {
+        msgNode.id = this._origMsg.id;
+    }
+    callback = this._handleOfflineResponseSendMessageCallback.bind(this, params, jsonObj, !!msgNode.id)
+
+    if (msgNode.id) { //Existing drafts created online or offline
+        jsonObj.id = msgNode.id;
+        var indexObj = {
+            operation : "add",
+            methodName : methodName,
+            id : msgNode.id,
+            value : jsonObj
+        };
+        ZmOfflineDB.indexedDB.actionsInRequestQueueUsingIndex(indexObj, callback);
+    }
+    else {
+        jsonObj.id = msgNode.id = currentTime.toString(); //Id should be string
+        msgNode.f = msgNode.f || "";
+        if (msgNode.f.indexOf(ZmItem.FLAG_OFFLINE_CREATED) === -1) {
+            msgNode.f = msgNode.f + ZmItem.FLAG_OFFLINE_CREATED;
+        }
+        ZmOfflineDB.indexedDB.setItemInRequestQueue(jsonObj, callback);
+    }
+};
+
+ZmMailMsg.prototype._handleOfflineResponseSendMessageCallback =
+function(params, jsonObj, isExistingMsg) {
+
+    var data = {},
+        header = this._generateOfflineHeader(params, jsonObj, isExistingMsg),
+        notify = header.context.notify[0],
+        result;
+
+    data[jsonObj.methodName.replace("Request", "Response")] = isExistingMsg ? notify.modified : notify.created;
+    result = new ZmCsfeResult(data, false, header);
+    this._handleResponseSendMessage(params, result);
+    appCtxt.getRequestMgr()._notifyHandler(notify);
+
+    if (!params.isDraft && !params.isInvite) {
+        var indexObj = {
+            operation : "delete",
+            methodName : "SaveDraftRequest",
+            id : jsonObj[jsonObj.methodName].m.id
+        };
+        ZmOfflineDB.indexedDB.actionsInRequestQueueUsingIndex(indexObj);//Delete any drafts for this message id
+    }
+};
+
+ZmMailMsg.prototype._generateOfflineHeader =
+function(params, jsonObj, isExistingMsg) {
+
+    var m = ZmOffline.generateMsgResponse(jsonObj),
+        folderArray = [],
+        header = {
+            context : {
+                notify : [{
+                    created : {
+                        m : isExistingMsg ? [] : m
+                    },
+                    modified : {
+                        folder : folderArray,
+                        m : isExistingMsg ? m : []
+                    }
+                }]
+            }
+        };
+
+    if (params.isDraft) {
+        folderArray.push({
+            id : ZmFolder.ID_DRAFTS,
+            n : appCtxt.getById(ZmFolder.ID_DRAFTS).numTotal + (isExistingMsg ? 0 : 1)
+        });
+    }
+    else {
+        folderArray.push({
+            id : ZmFolder.ID_OUTBOX,
+            n : appCtxt.getById(ZmFolder.ID_OUTBOX).numTotal + (isExistingMsg ? 0 : 1)
+        });
+    }
+    return header;
 };
 
 ZmMailMsg.prototype._notifySendListeners =

@@ -76,7 +76,12 @@ function(key, callback, params, objStore) {
     }
     var searchRequest = params && params.jsonObj && params.jsonObj.SearchRequest;
     if (searchRequest && searchRequest._jsns === "urn:zimbraMail" ){
-        this._syncSearchRequest(callback, objStore, params)
+        if (searchRequest.query === 'in:"drafts"') {
+            this._syncSearchRequest(ZmOffline.addOfflineDrafts.bind(null, callback), objStore, params);
+        }
+        else {
+            this._syncSearchRequest(callback, objStore, params);
+        }
         return;
     }
 
@@ -640,15 +645,21 @@ function(result) {
         requestMgr = appCtxt.getRequestMgr(),
         obj,
         params,
-        methodName;
+        methodName,
+        msg,
+        flags;
 
     for (var i = 0, length = result.length; i < length; i++) {
         obj = result[i];
         methodName = obj.methodName;
         if (methodName) {
-            if (methodName === "SendMsgRequest") {
-                if (obj.offlineCreated) {// Newly created offline messages
-                    delete obj[methodName].m.id;//Removing the temporary id
+            if (methodName === "SendMsgRequest" || methodName === "SaveDraftRequest") {
+                msg = obj[methodName].m;
+                flags = msg.f;
+                if (flags && flags.indexOf(ZmItem.FLAG_OFFLINE_CREATED) !== -1) {
+                    msg.f = flags.replace(ZmItem.FLAG_OFFLINE_CREATED, "");//Removing the offline created flag
+                    delete msg.id;//Removing the temporary id
+                    delete msg.did;//Removing the temporary draft id
                 }
             }
             params = {
@@ -851,8 +862,14 @@ function(result) {
             msgNode = obj[obj.methodName]["m"];
             if (msgNode) {
                 msgNode.su = msgNode.su._content;
-                msgNode.l = ZmFolder.ID_OUTBOX;
-                msgNode.f = "s";
+                msgNode.f = (msgNode.f || "").replace(ZmItem.FLAG_ISSENT, "").concat(ZmItem.FLAG_ISSENT);
+                if (obj.methodName === "SendMsgRequest") {
+                    msgNode.l = ZmFolder.ID_OUTBOX;
+                }
+                else if (obj.methodName === "SaveDraftRequest") {
+                    msgNode.l = ZmFolder.ID_DRAFTS;
+                    msgNode.f = msgNode.f.replace(ZmItem.FLAG_ISDRAFT, "").concat(ZmItem.FLAG_ISDRAFT);
+                }
                 messagePart = msgNode.mp[0];
                 if (messagePart) {
                     if (messagePart.ct === ZmMimeTable.TEXT_PLAIN) {
@@ -917,5 +934,34 @@ function(result) {
         length = result ? result.length : 0;
     if (outboxFolder) {
         outboxFolder.notifyModify({n : length});
+    }
+};
+
+ZmOffline.addOfflineDrafts =
+function(callback, params) {
+    var indexObj = {
+        methodName : "SaveDraftRequest"
+    };
+    ZmOfflineDB.indexedDB.actionsInRequestQueueUsingIndex(indexObj, ZmOffline.addOfflineDraftsCallback.bind(null, callback, params), ZmOffline.addOfflineDraftsErrorCallback.bind(null, callback, params));
+};
+
+ZmOffline.addOfflineDraftsCallback =
+function(callback, params, result) {
+    var responseElement = ZmOffline.generateMsgResponse(result);
+    if (callback) {
+        if (responseElement && params.response && params.response.Body) {
+            var searchResponse = params.response.Body.SearchResponse;
+            if (searchResponse && searchResponse.m) {
+                searchResponse.m = responseElement.concat(searchResponse.m);
+            }
+        }
+        callback(params);
+    }
+};
+
+ZmOffline.addOfflineDraftsErrorCallback =
+function(callback, params) {
+    if (callback) {
+        callback(params);
     }
 };
