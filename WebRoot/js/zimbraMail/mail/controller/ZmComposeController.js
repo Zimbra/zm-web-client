@@ -1091,6 +1091,12 @@ function(params) {
 		}
 	}
 
+
+    if (params && params.isEditAsNew){ // bug: 79175 - edit as new should clear "in reply to" field
+        cv._msg = null; //clear _msg in cv so during send we don't use it for "in reply to"
+    }
+
+
     cv.checkAttachments();
     this.sendMsgCallback = params.sendMsgCallback;
 
