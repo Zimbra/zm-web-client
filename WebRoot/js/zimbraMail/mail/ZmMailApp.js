@@ -1622,7 +1622,7 @@ function(params, callback) {
 ZmMailApp.prototype._handleLoadLaunch =
 function(params, callback) {
 	// set type for initial search
-	this._groupBy = (appCtxt.isOfflineMode()) ? ZmItem.MSG : appCtxt.get(ZmSetting.GROUP_MAIL_BY);
+	this._groupBy = (appCtxt.isOfflineMode()) ? ZmSetting.GROUP_BY_MESSAGE : appCtxt.get(ZmSetting.GROUP_MAIL_BY);
 
 	var query;
 	params = params || {};

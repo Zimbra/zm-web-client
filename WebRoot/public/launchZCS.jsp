@@ -147,20 +147,7 @@
         pageContext.setAttribute("isLocaleId", localeId != null);
     pageContext.setAttribute("weboffline", "TRUE".equals(authResult.getPrefs().get("zimbraPrefWebClientOfflineAccessEnabled").get(0)));
 %>
-<html class="user_font_size_normal" 
-<c:if test="${weboffline}">
-        manifest="<c:url value="/appcache/images,common,dwt,msgview,login,zm,spellcheck,skin.appcache">
-        <c:param name="v" value="${vers}" />
-        <c:param name="debug" value='${isDebug?"1":""}' />
-        <c:param name="skin" value="${skin}" />
-        <c:param name="locale" value="${locale}" />
-        <c:param name="compress" value="${not isDebug}" />
-        <c:param name="templates" value="only" />
-        <c:if test="${not empty param.customerDomain}">
-            <c:param name="customerDomain"	value="${param.customerDomain}" />
-        </c:if>
-     </c:url>"
-</c:if>>
+<html class="user_font_size_normal">
 <head>
 <!--
  launchZCS.jsp
@@ -247,6 +234,10 @@
 </noscript>
 </head>
 <body>
+
+<iframe id="offlineIframe" style="display: none">
+</iframe>
+
 <c:if test="${ua.isChrome or ua.isSafari}">
     <%
         /*preloading splash screen images to avoid latency*/

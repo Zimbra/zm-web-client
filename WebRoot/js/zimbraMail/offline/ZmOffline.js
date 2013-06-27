@@ -542,9 +542,13 @@ function(){
 ZmOffline.prototype.setFolderMetaData =
 function(id, data){
     var folderData = JSON.parse(data);
-    appCtxt.getById(id).numUnread = folderData.numUnread;
-    appCtxt.getById(id).numTotal = folderData.numTotal;
-    appCtxt.getById(id).sizeTotal = folderData.sizeTotal;
+    var folder = appCtxt.getById(id);
+    if (folder && folderData){
+        folder.numUnread = folderData.numUnread;
+        folder.numTotal = folderData.numTotal;
+        folder.sizeTotal = folderData.sizeTotal;
+    }
+
 };
 
 

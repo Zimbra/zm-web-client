@@ -1066,6 +1066,7 @@ function(ev) {
 		var cd = appCtxt.getYesNoMsgDialog();
 		cd.reset();
 		var skin = ev.source.getValue();
+        appCtxt.reloadOfflineAppCache(appCtxt.get(ZmSetting.LOCALE_NAME),skin);
 		cd.registerCallback(DwtDialog.YES_BUTTON, this._newSkinYesCallback, this, [skin, cd]);
 		cd.setMessage(ZmMsg.skinChangeRestart, DwtMessageDialog.WARNING_STYLE);
 		cd.popup();
@@ -1093,6 +1094,7 @@ function(ev) {
 		var cd = appCtxt.getYesNoMsgDialog();
 		cd.reset();
 		var skin = ev.source.getValue();
+        appCtxt.reloadOfflineAppCache(appCtxt.get(ZmSetting.LOCALE_NAME), appCtxt.get(ZmSetting.SKIN_NAME));
 		cd.registerCallback(DwtDialog.YES_BUTTON, this._refreshBrowserCallback, this, [cd]);
 		cd.setMessage(ZmMsg.localeChangeRestart, DwtMessageDialog.WARNING_STYLE);
 		cd.popup();
@@ -1206,14 +1208,13 @@ ZmSettings.prototype._hasVoiceFeature = function() {
  */
 ZmSettings.prototype._offlineSettingsSaveCallback =
 function(offlineEnabled) {
-    if (offlineEnabled) {
-        var cd = appCtxt.getYesNoMsgDialog();
-        cd.reset();
-        cd.registerCallback(DwtDialog.YES_BUTTON, this._refreshBrowserCallback, this, [cd]);
-        cd.setMessage(ZmMsg.offlineChangeRestart, DwtMessageDialog.WARNING_STYLE);
-        cd.popup();
-    }
-    else {
+    if (!offlineEnabled){
         ZmOffline.deleteAllOfflineData();
     }
+    var cd = appCtxt.getYesNoMsgDialog();
+    localStorage.setItem("syncPrefRequired", true);
+    cd.reset();
+    cd.registerCallback(DwtDialog.YES_BUTTON, this._refreshBrowserCallback, this, [cd]);
+    cd.setMessage(ZmMsg.offlineChangeRestart, DwtMessageDialog.WARNING_STYLE);
+    cd.popup();
 };

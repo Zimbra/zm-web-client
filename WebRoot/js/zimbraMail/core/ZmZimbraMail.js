@@ -79,6 +79,14 @@ ZmZimbraMail = function(params) {
 	this._shell = appCtxt.getShell();
     this._userShell = params.userShell;
 
+    var offlineSetting = appCtxt.getSettings().getSetting("WEBCLIENT_OFFLINE_ENABLED");
+    window.isWeboffline = offlineSetting && offlineSetting.value;
+    appCtxt._supportsOffline = window.isWeboffline && AjxEnv.supported.localstorage &&  AjxEnv.supported.applicationcache
+
+    if (appCtxt._supportsOffline && !appCtxt.isOfflineMode()){
+        appCtxt._offlineHandler = new ZmOffline();
+    }
+
     this._requestMgr = new ZmRequestMgr(this); // NOTE: requires settings to be initialized
 
 	this._upsellView = {};
@@ -199,8 +207,36 @@ function(params) {
 	var shell = new DwtShell({userShell:userShell, docBodyScrollable:false, id:ZmId.SHELL});
 	appCtxt.setShell(shell);
 
-	// Go!
-	new ZmZimbraMail(params);
+    if (appCtxt._supportsOffline && window.applicationCache && (window.applicationCache.status !== window.applicationCache.UPDATEREADY) && !appCtxt.isOfflineMode()){
+        var soapDoc = AjxSoapDoc.create("GetInfoRequest", "urn:zimbraAccount");
+        var hdr = soapDoc.createHeaderElement();
+        var context = soapDoc.set("context", null, hdr, "urn:zimbra");
+        soapDoc.set("nosession", null, hdr);
+        soapDoc.set("rights", "createDistList");
+        var node = soapDoc.set("format",null,context, "urn:zimbra");
+        node.setAttribute("type", "js");
+        var requestStr = soapDoc.getXml();
+        var ctxt = this;
+        $.ajax({url: '/service/soap/GetInfoRequest', data: requestStr, type: 'POST', context: ctxt}).complete(function(response){
+            $.extend(params.batchInfoResponse.Body.BatchResponse.GetInfoResponse[0], JSON.parse(response.responseText).Body.GetInfoResponse);
+            var response = params.batchInfoResponse.Body.BatchResponse.GetInfoResponse[0];
+            var newLocale = response.attrs._attrs['zimbraLocale'];
+            var newSkin = response.prefs._attrs['zimbraPrefSkin'];
+            var change = false;
+            if (newLocale != window.appRequestLocaleId){
+                change = true;
+            } else if (newSkin != window.appCurrentSkin){
+                change = true;
+            }
+            appCtxt.reloadOfflineAppCache(newLocale, newSkin, change);
+            if (!change){
+                new ZmZimbraMail(params);
+            }
+        });
+    } else {
+            new ZmZimbraMail(params);
+    }
+
 };
 
 /**
@@ -3467,14 +3503,15 @@ function(sash) {
  */
 ZmZimbraMail._endSession =
 function() {
-	if (!AjxEnv.isPrism) {
+	if (!AjxEnv.isPrism && navigator.onLine) {
 		// Let the server know that the session is ending.
 		var args = {
 			jsonObj: { EndSessionRequest: { _jsns: "urn:zimbraAccount" } },
 			asyncMode: !appCtxt.get("FORCE_CLEAR_COOKIES"),
 			emptyResponseOkay:	true
 		};
-		appCtxt.getAppController().sendRequest(args);
+        var controller = appCtxt.getAppController();
+		controller && controller.sendRequest(args);
 	}
 };
 

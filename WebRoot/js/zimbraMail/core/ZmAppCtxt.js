@@ -54,7 +54,10 @@ ZmAppCtxt = function() {
 
 	this._setAuthTokenWarning();
     this._supportsOffline = AjxEnv.supported.localstorage &&  AjxEnv.supported.applicationcache && window.isWeboffline
-    this._offlineHandler = (this._supportsOffline) ? new ZmOffline() : null;
+    if (this._supportsOffline && this.isOfflineMode()){
+        this._offlineHandler = new ZmOffline();
+
+    }
 };
 
 ZmAppCtxt.ONE_MINUTE = 60 * 1000;
@@ -1276,6 +1279,20 @@ function() {
 		this._uploadManagerIframeId = iframeId;
 	}
 	return this._uploadManagerIframeId;
+};
+
+ZmAppCtxt.prototype.reloadOfflineAppCache =
+function(locale, skin, reload){
+    var appCacheManifest= appContextPath + "/appcache/images,common,dwt,msgview,login,zm,spellcheck,skin.appcache?";
+    var urlParams = [];
+    window.cacheKillerVersion && urlParams.push("v=" + window.cacheKillerVersion);
+    window.appDevMode && urlParams.push("debug=1");
+    urlParams.push("compress=" + !(window.appDevMode === true));
+    urlParams.push("templates=only");
+    var manifestUrl = encodeURIComponent(appCacheManifest + urlParams.join('&'));
+    document.cookie = "ZM_CACHE_NEW_LANG = " + locale ;
+    document.cookie = "ZM_CACHE_NEW_SKIN = " + skin ;
+    $("#offlineIframe").attr('src', 'public/Offline.jsp/?url=' + manifestUrl + '&reload=' + reload);
 };
 
 /**

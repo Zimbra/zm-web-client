@@ -91,7 +91,7 @@ function() {
 ZmZimletMgr.prototype.loadZimlets =
 function(zimletArray, userProps, target, callback, sync) {
 	var href = window.location.href.toLowerCase();
-	if(href.indexOf("zimlets=none") > 0) {
+	if(href.indexOf("zimlets=none") > 0 || appCtxt.isOfflineMode()) {
 		return;
 	} else if(href.indexOf("zimlets=core") > 0) {
 		zimletArray = this._getCoreZimlets(zimletArray);
