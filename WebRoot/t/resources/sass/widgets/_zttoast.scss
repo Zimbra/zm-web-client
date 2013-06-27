@@ -2,38 +2,36 @@
  * Note, the widths in here should be kept in sync with the outer width configured in app/view/ZtToast.js
  */
 
-.zcs-toast {
+.x-sheet.zcs-toast {
 	color: white;
 	height: 2em;
 	padding: 0.2em;
 //	width: 20em;
 	@include border-radius(.1em);
 	@include box-shadow(rgba(0,0,0,.4) 2px 2px 3px);
-}
-.zcs-toast-contents{
-	font-size: 1em;
-	font-weight: bold;
-	text-align: center;
 
-	DIV {
-		display: inline-block;
-	}
+	.zcs-toast-contents{
+		font-size: 1em;
+		font-weight: bold;
+		text-align: center;
 
-	.zcs-toast-status-icon {
-		display: none;
-		width: 20px;
-	}
+		.zcs-toast-status-icon {
+			display: none;
+			width: 20px;
+		}
 
-	.zcs-toast-message-text {
-		width: 100%;
-		@include ellipsis();
-	}
+		.zcs-toast-message-text {
+			display: inline-block;
+			width: 100%;
+			@include ellipsis();
+		}
 
-	.zcs-toast-undo-action {
-		display: none;
-		/**
-		 * If/when this is enabled, decrement the zcs-toast-message-text width
-		 */
-		width: 20%;
+		.zcs-toast-undo-action {
+			display: none;
+			/**
+			 * If/when this is enabled, decrement the zcs-toast-message-text width
+			 */
+			width: 20%;
+		}
 	}
 }
