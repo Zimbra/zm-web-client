@@ -20,10 +20,12 @@
  */
 Ext.define('ZCS.store.mail.ZtMsgStore', {
 
-	extend: 'ZCS.store.mail.ZtMailStore',
+	extend: 'ZCS.store.ZtItemStore',
 
 	config: {
 		model: 'ZCS.model.mail.ZtMailMsg',
+
+		remoteSort: true,
 
 		listeners: {
 

@@ -26,7 +26,8 @@ Ext.define('ZCS.view.ZtOverview', {
 	requires: [
 		'Ext.dataview.NestedList',
 		'ZCS.view.ZtOrganizerList',
-		'ZCS.model.ZtOrganizer'
+		'ZCS.model.ZtOrganizer',
+		'ZCS.store.ZtOrganizerStore'
 	],
 
 	xtype: 'overview',
@@ -54,15 +55,8 @@ Ext.define('ZCS.view.ZtOverview', {
 			};
 
 		// create a store for the organizers
-		var organizerStore = Ext.create('Ext.data.TreeStore', {
-			model: 'ZCS.model.ZtOrganizer',
-			defaultRootProperty: 'items',
-			root: organizerData,
-			storeId: 'organizerStore',
-			grouper: function(record) {
-				return record.get('typeName');
-			}
-		});
+		var organizerStore = Ext.create('ZCS.store.ZtOrganizerStore');
+		organizerStore.setRoot(organizerData);
 
 		// show the account name at the top of the overview
 		var accountName = ZCS.session.getAccountName(),

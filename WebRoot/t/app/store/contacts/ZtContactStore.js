@@ -22,7 +22,7 @@
  */
 Ext.define('ZCS.store.contacts.ZtContactStore', {
 
-	extend: 'ZCS.store.ZtStore',
+	extend: 'ZCS.store.ZtItemStore',
 
 	config: {
 		model: 'ZCS.model.contacts.ZtContact',

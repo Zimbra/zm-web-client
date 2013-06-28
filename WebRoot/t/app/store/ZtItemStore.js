@@ -18,11 +18,14 @@
  *
  * @author Macy Abbey
  */
-Ext.define('ZCS.store.ZtStore', {
+Ext.define('ZCS.store.ZtItemStore', {
+
 	extend: 'Ext.data.Store',
+
 	requires: [
 		'ZCS.common.ZtConstants'
 	],
+
 	constructor: function (cfg) {
 		if (!cfg.pageSize) {
 			cfg.pageSize = ZCS.constant.DEFAULT_PAGE_SIZE;

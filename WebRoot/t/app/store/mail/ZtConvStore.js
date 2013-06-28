@@ -20,7 +20,7 @@
  */
 Ext.define('ZCS.store.mail.ZtConvStore', {
 
-	extend: 'ZCS.store.ZtStore',
+	extend: 'ZCS.store.ZtItemStore',
 
 	config: {
 		model: 'ZCS.model.mail.ZtConv'
