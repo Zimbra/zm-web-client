@@ -1510,6 +1510,20 @@ function(msg, notifyZimlets) {
 		if ((type == AjxEmailAddress.FROM) || (type == AjxEmailAddress.SENDER) || (type == AjxEmailAddress.RESENT_FROM)) { continue; }
 
 		var addrs = AjxEmailAddress.dedup(msg.getAddresses(type).getArray());
+
+        if (type == AjxEmailAddress.REPLY_TO){  // bug: 79175 - Reply To shouldn't be shown when it matches From
+            var k = addrs.length;
+            for (var j = 0; j < k;){
+                if (addrs[j].address === fromAddr.address){
+                    addrs.splice(j,1);
+                    k--;
+                }
+                else {
+                    j++;
+                }
+            }
+        }
+
 		if (addrs.length > 0) {
 			var prefix = AjxStringUtil.htmlEncode(ZmMsg[AjxEmailAddress.TYPE_STRING[type]]);
 			var addressInfo = this.getAddressesFieldInfo(addrs, options, type);
