@@ -53,7 +53,7 @@ ZmAppCtxt = function() {
 	this._isExpandableDL	= {};	// distribution lists
 
 	this._setAuthTokenWarning();
-    this._supportsOffline = AjxEnv.supported.localstorage &&  AjxEnv.supported.applicationcache && window.isWeboffline
+    this._supportsOffline = this.isOfflineSupported();
     if (this._supportsOffline && this.isOfflineMode()){
         this._offlineHandler = new ZmOffline();
 
@@ -2075,4 +2075,9 @@ function() {
         this._offlineSettingsDialog = new ZmOfflineSettingsDialog();
     }
     return this._offlineSettingsDialog;
+};
+
+ZmAppCtxt.prototype.isOfflineSupported =
+function(){
+    return window.isWeboffline && AjxEnv.supported.localstorage &&  AjxEnv.supported.applicationcache && AjxEnv.supported.indexeddb;
 };

@@ -81,7 +81,7 @@ ZmZimbraMail = function(params) {
 
     var offlineSetting = appCtxt.getSettings().getSetting("WEBCLIENT_OFFLINE_ENABLED");
     window.isWeboffline = offlineSetting && offlineSetting.value;
-    appCtxt._supportsOffline = window.isWeboffline && AjxEnv.supported.localstorage &&  AjxEnv.supported.applicationcache
+    appCtxt._supportsOffline = appCtxt.isOfflineSupported();
 
     if (appCtxt._supportsOffline && !appCtxt.isOfflineMode()){
         appCtxt._offlineHandler = new ZmOffline();
