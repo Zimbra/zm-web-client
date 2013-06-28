@@ -31,7 +31,8 @@ Ext.define('ZCS.controller.calendar.ZtCalendarController', {
         'Ext.ux.TouchCalendarEvents',
         'Ext.ux.TouchCalendarSimpleEvents',
         'Ext.ux.TouchCalendarView',
-        'Ext.ux.TouchCalendar'
+        'Ext.ux.TouchCalendar',
+        'ZCS.view.calendar.ZtCalendarToolbar'
     ],
 
     config: {
@@ -45,6 +46,7 @@ Ext.define('ZCS.controller.calendar.ZtCalendarController', {
         ],
 
         refs: {
+            overview: '#' + ZCS.constant.APP_CALENDAR + 'overview',
             itemPanel: 'appview #' + ZCS.constant.APP_CALENDAR + 'itempanel',
             calendarView: 'appview #' + ZCS.constant.APP_CALENDAR + 'itempanel calendar',
             calMonthView: 'appview #' + ZCS.constant.APP_CALENDAR + 'itempanel #calMonthView',
@@ -121,47 +123,9 @@ Ext.define('ZCS.controller.calendar.ZtCalendarController', {
     },
 
     createToolbar: function() {
-        /* TODO:
-         * 1. Yet to enable Week, Workweek, Day and Today buttons
-         * 2. Create a panel view which would hold the below buttons
-         * 3. Match up the styling with that given in mock ups
-         */
-
-        var me = this;
-
-        this.getItemPanelTitleBar().add(
-            {
-                xtype: 'button',
-                text: ZtMsg.calTodayLabel,
-                disabled: true
-            },
-            {
-                xtype: 'button',
-                text: ZtMsg.calDayLabel,
-                handler: function() {
-                    me.toggleCalView('day');
-                }
-            },
-            {
-                xtype: 'button',
-                text: ZtMsg.calWorkWeekLabel,
-                disabled: true
-            },
-            {
-                xtype: 'button',
-                text: ZtMsg.calWeekLabel,
-                handler: function() {
-                    me.toggleCalView('week');
-                }
-            },
-            {
-                xtype: 'button',
-                text: ZtMsg.calMonthLabel,
-                handler: function() {
-                    me.toggleCalView('month');
-                }
-            }
-        );
+        this.getItemPanelTitleBar().add(Ext.create('ZCS.view.calendar.ZtCalendarToolbar', {
+            newButtonIcon: ZCS.constant.NEW_ITEM_ICON[ZCS.constant.APP_CALENDAR]
+        }));
     },
 
     getMonthStartTime: function() {
