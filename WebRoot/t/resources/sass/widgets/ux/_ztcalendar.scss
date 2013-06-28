@@ -21,3 +21,21 @@ div.event-bar {
     background-color: #57ACF2;
   }
 }
+
+div.more-events {
+  background-color: transparent;
+  border: none;
+  text-decoration: underline;
+  color: #0000ff;
+  cursor: pointer;
+  text-align: left;
+  font-size: 11px;
+  font-weight: normal;
+  height: 20px;
+  overflow: hidden;
+  padding: 0 0 0 8px;
+  position: absolute;
+  -webkit-border-radius: 4px;
+  z-index: 100;
+  text-shadow: none;
+}

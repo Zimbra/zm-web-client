@@ -48,11 +48,12 @@ Ext.define('ZCS.controller.calendar.ZtCalendarController', {
         refs: {
             overview: '#' + ZCS.constant.APP_CALENDAR + 'overview',
             itemPanel: 'appview #' + ZCS.constant.APP_CALENDAR + 'itempanel',
-            calendarView: 'appview #' + ZCS.constant.APP_CALENDAR + 'itempanel calendar',
+            calendarView: ZCS.constant.APP_CALENDAR + 'itemview',
             calMonthView: 'appview #' + ZCS.constant.APP_CALENDAR + 'itempanel #calMonthView',
             calWeekView: 'appview #' + ZCS.constant.APP_CALENDAR + 'itempanel #calWeekView',
             calDayView: 'appview #' + ZCS.constant.APP_CALENDAR + 'itempanel #calDayView',
-            itemPanelTitleBar: 'appview #' + ZCS.constant.APP_CALENDAR + 'itempanel titlebar'
+            itemPanelTitleBar: 'appview #' + ZCS.constant.APP_CALENDAR + 'itempanel titlebar',
+            calToolbar: 'appview #' + ZCS.constant.APP_CALENDAR + 'itempanel caltoolbar'
         },
 
         control: {
@@ -161,29 +162,63 @@ Ext.define('ZCS.controller.calendar.ZtCalendarController', {
         ).getTime();
     },
 
-    toggleCalView: function(viewToShow) {
+    toggleCalView: function(viewToShow, date) {
         var monthView = this.getCalMonthView(),
             weekView = this.getCalWeekView(),
             dayView = this.getCalDayView();
 
-        switch(viewToShow) {
-            case 'month':
-                monthView.show();
-                weekView.hide();
-                dayView.hide();
-                break;
+        if (!date) {
+            switch(viewToShow) {
+                case 'month':
+                    monthView.show();
+                    this.getCalToolbar().down('#monthBtn').setCls('x-button-pressed');
+                    weekView.hide();
+                    this.getCalToolbar().down('#weekBtn').removeCls('x-button-pressed');
+                    dayView.hide();
+                    this.getCalToolbar().down('#dayBtn').removeCls('x-button-pressed');
+                    break;
 
-            case 'week':
-                weekView.show();
-                monthView.hide();
-                dayView.hide();
-                break;
+                case 'week':
+                    weekView.show();
+                    this.getCalToolbar().down('#weekBtn').setCls('x-button-pressed');
+                    monthView.hide();
+                    this.getCalToolbar().down('#monthBtn').removeCls('x-button-pressed');
+                    dayView.hide();
+                    this.getCalToolbar().down('#dayBtn').removeCls('x-button-pressed');
+                    break;
 
-            case 'day':
-                dayView.show();
-                monthView.hide();
-                weekView.hide();
-                break;
+                case 'day':
+                    dayView.show();
+                    this.getCalToolbar().down('#dayBtn').setCls('x-button-pressed');
+                    monthView.hide();
+                    this.getCalToolbar().down('#monthBtn').removeCls('x-button-pressed');
+                    weekView.hide();
+                    this.getCalToolbar().down('#weekBtn').removeCls('x-button-pressed');
+                    this.setDayViewConfig(new Date().getTime());
+                    break;
+            }
         }
+        else {
+            dayView.show();
+            this.getCalToolbar().down('#dayBtn').setCls('x-button-pressed');
+            monthView.hide();
+            this.getCalToolbar().down('#monthBtn').removeCls('x-button-pressed');
+            weekView.hide();
+            this.getCalToolbar().down('#weekBtn').removeCls('x-button-pressed');
+            this.setDayViewConfig(date);
+        }
+    },
+
+    setDayViewConfig: function(date) {
+        this.getCalDayView().setCustomView({
+            weekStart: 0,
+            currentDate: new Date(date),
+            viewMode: 'day',
+            eventStore: Ext.getStore('ZtCalendarStore'),
+            plugins: [Ext.create('Ext.ux.TouchCalendarEvents', {
+                eventHeight: 'auto',
+                eventBarTpl: '<div>{title}&nbsp;&nbsp;&nbsp;<i>{event}</i></div>'
+            })]
+        });
     }
 });
