@@ -195,7 +195,30 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
      * Hides the contact form
      */
     doCancel : function() {
-        this.hideContactForm();
+
+		var me = this;
+
+	    if (this.isDirty()) {
+		    Ext.Msg.show({
+			    title: ZtMsg.warning,
+			    message: ZtMsg.saveChangesWarning,
+			    buttons: ZCS.constant.CANCEL_SHIELD_BUTTONS,
+			    fn: function(buttonId) {
+				    //<debug>
+				    Ext.Logger.info('Cancel contact edit/create shield button: ' + buttonId);
+				    //</debug>
+				    if (buttonId === 'yes') {
+					    me.doSave();
+				    }
+				    else if (buttonId === 'no') {
+					    me.hideContactForm();
+				    }
+			    }
+		    });
+	    }
+	    else {
+		    this.hideContactForm();
+	    }
     },
 
     /**
@@ -213,7 +236,7 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
                 this.modifyContact(newContact, changedAttrs);
             }
             else {
-	            changedAttrs = this.getChangedAttrs(newContact, null);
+	            changedAttrs = this.getChangedAttrs(null, newContact);
 	            if (changedAttrs.length) {
 	                this.createContact(newContact);
 	            }
@@ -446,5 +469,19 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
 		}, this);
 
 		return changedAttrs;
+	},
+
+	/**
+	 * Returns true if the user has made changes to the contact form.
+	 *
+	 * @return {Boolean}    true if changes have been made
+	 */
+	isDirty: function() {
+
+		var curContact = (this.getComposeMode() === ZCS.constant.OP_EDIT) ? this.getItem() : null,
+			newContact = this.getContactModel(),
+			changedAttrs = this.getChangedAttrs(curContact, newContact);
+
+		return changedAttrs && changedAttrs.length > 0;
 	}
 });

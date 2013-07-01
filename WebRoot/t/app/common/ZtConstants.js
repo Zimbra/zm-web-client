@@ -102,6 +102,13 @@ ZCS.constant.NEW_ITEM_ICON = {};
 ZCS.constant.NEW_ITEM_ICON[ZCS.constant.APP_MAIL]       = 'compose';
 ZCS.constant.NEW_ITEM_ICON[ZCS.constant.APP_CONTACTS]   = 'add';
 
+// Buttons for a cancel shield ("Save changes?")
+ZCS.constant.CANCEL_SHIELD_BUTTONS = [
+	{ text: ZtMsg.yes,    itemId: 'yes',    ui: 'neutral' },
+	{ text: ZtMsg.no,     itemId: 'no',     ui: 'neutral' },
+	{ text: ZtMsg.cancel, itemId: 'cancel', ui: 'neutral' }
+];
+
 // popup menus
 ZCS.constant.MENU_CONV      = 'convActions';
 ZCS.constant.MENU_MSG       = 'msgActions';

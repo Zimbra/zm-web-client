@@ -349,11 +349,7 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 			Ext.Msg.show({
 				title: ZtMsg.warning,
 				message: ZtMsg.saveDraftWarning,
-				buttons: [
-					{ text: ZtMsg.yes,    itemId: 'yes',    ui: 'neutral' },
-					{ text: ZtMsg.no,     itemId: 'no',     ui: 'neutral' },
-					{ text: ZtMsg.cancel, itemId: 'cancel', ui: 'neutral' }
-				],
+				buttons: ZCS.constant.CANCEL_SHIELD_BUTTONS,
 				fn: function(buttonId) {
                     //<debug>
 					Ext.Logger.info('Compose cancel shield button: ' + buttonId);

@@ -372,21 +372,21 @@
                     <td class='zcs-invite-label'>{[ZtMsg.invRespondLabel]}</td>
                     <td>
                         <tpl if='myResponse == [ZCS.constant.PSTATUS_TEXT[ZCS.constant.PSTATUS_ACCEPTED]]'>
-                            <span class='zcs-invite-button zcs-accept-inactive'>{[ZtMsg.accept]}</span>
+                            <span class='zcs-invite-button zcs-accept-inactive'>{[ZtMsg.acceptAction]}</span>
                         <tpl else>
-                            <span class='zcs-invite-button zcs-invite-accept' id='{acceptButtonId}'>{[ZtMsg.accept]}</span>
+                            <span class='zcs-invite-button zcs-invite-accept' id='{acceptButtonId}'>{[ZtMsg.acceptAction]}</span>
                         </tpl>
 
                         <tpl if='myResponse == [ZCS.constant.PSTATUS_TEXT[ZCS.constant.PSTATUS_TENTATIVE]]'>
-                            <span class='zcs-invite-button zcs-tentative-inactive'>{[ZtMsg.tentative]}</span>
+                            <span class='zcs-invite-button zcs-tentative-inactive'>{[ZtMsg.tentativeAction]}</span>
                         <tpl else>
-                            <span class='zcs-invite-button zcs-invite-tentative' id='{tentativeButtonId}'>{[ZtMsg.tentative]}</span>
+                            <span class='zcs-invite-button zcs-invite-tentative' id='{tentativeButtonId}'>{[ZtMsg.tentativeAction]}</span>
                         </tpl>
 
                         <tpl if='myResponse == [ZCS.constant.PSTATUS_TEXT[ZCS.constant.PSTATUS_DECLINED]]'>
-                            <span class='zcs-invite-button zcs-decline-inactive'>{[ZtMsg.decline]}</span>
+                            <span class='zcs-invite-button zcs-decline-inactive'>{[ZtMsg.declineAction]}</span>
                         <tpl else>
-                            <span class='zcs-invite-button zcs-invite-decline' id='{declineButtonId}'>{[ZtMsg.decline]}</span>
+                            <span class='zcs-invite-button zcs-invite-decline' id='{declineButtonId}'>{[ZtMsg.declineAction]}</span>
                         </tpl>
                     </td>
                 </tr>
