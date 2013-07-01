@@ -91,7 +91,7 @@
 			<span>{recipients}</span>
 		</div>
 		</tpl>
-		<div class='zcs-msgHdr-link'>{[ZtMsg.details]}</div>
+		<div class='zcs-msgHdr-link'>{[ZtMsg.detailsLinkText]}</div>
 		<a class='x-button-normal x-button x-iconalign-center x-layout-box-item x-stretched zcs-flat zcs-msgHdr-menuButton' onClick='return false;'>
 			<span class='zcs-msgHeader-menuButton-span x-button-icon x-shown arrow_down'></span>
 		</a>
@@ -454,3 +454,96 @@
 <template id='Folder'>
 	<tpl if='unreadCount'><b></tpl>{name}<tpl if='unreadCount'> ({unreadCount})</b></tpl>
 </template>
+
+<template id="ApptViewAttendeeList">
+
+    <span style="float: left;width: 60%">{attendee.name}</span>
+
+    <tpl if='isOrganizer'>
+        <tpl if='attendee.ptst == [ZCS.constant.PSTATUS_ACCEPTED]'>
+            <span class="view-appt-accepted">{[ZtMsg.accepted]}</span>
+        </tpl>
+
+        <tpl if='attendee.ptst == [ZCS.constant.PSTATUS_DECLINED]'>
+            <span class="view-appt-declined">{[ZtMsg.declined]}</span>
+        </tpl>
+
+        <tpl if='attendee.ptst == [ZCS.constant.PSTATUS_TENTATIVE]'>
+            <span class="view-appt-tentative"> {[ZtMsg.tentative]} </span>
+        </tpl>
+
+        <tpl if='attendee.ptst == [ZCS.constant.PSTATUS_UNKNOWN]'>
+            <span class="view-appt-unknown"> {[ZtMsg.unknown]} </span>
+        </tpl>
+    </tpl>
+
+</template>
+
+
+
+<template id="ApptViewDesc">
+	<tpl>
+        <tpl if='start'>
+            <div class="view-appt-header">{start}</div>
+        </tpl>
+
+
+        <table class='zcs-invite' style="padding: 15px; text-align: left">
+
+			<tpl if='location'>
+			<tr>
+				<td class='zcs-invite-label'>{[ZtMsg.invLocationLabel]}</td>
+				<td>{location}</td>
+			</tr>
+			</tpl>
+
+			<tpl if='organizer'>
+			<tr>
+				<td class='zcs-invite-label'>{[ZtMsg.invOrganizerLabel]}</td>
+				<td>
+					<span>{organizer}</span>
+				</td>
+			</tr>
+            </tpl>
+
+
+			<tpl if='attendees'>
+			<tr>
+				<td class='zcs-invite-label'>{[ZtMsg.invAttendeesLabel]}</td>
+				<td>
+					<span>{attendees} <span id="showAttendees" class='showAttendees' style="text-decoration: underline; color: #0000ff; cursor: pointer"> {[ZtMsg.details]} </span></span>
+				</td>
+			</tr>
+            </tpl>
+
+
+            <tpl if='calendar'>
+                <tr>
+                    <td class='zcs-invite-label'>Calendar</td>
+                    <td>
+                       <span>{calendar}</span>
+                    </td>
+                </tr>
+            </tpl>
+
+
+			<tpl if='reminder'>
+			    <tr>
+				    <td class='zcs-invite-label'>{[ZtMsg.invReminderLabel]}</td>
+				    <td>{reminder}</td>
+			    </tr>
+			</tpl>
+
+        </table>
+
+        <tpl if='notes'>
+            <div class="view-appt-notes">
+                <hr>
+                <br>
+                {notes}
+
+            </div>
+        </tpl>
+	</tpl>
+</template>
+

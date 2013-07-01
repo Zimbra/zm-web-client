@@ -48,6 +48,10 @@ Ext.define('ZCS.model.calendar.ZtCalendar', {
                 name: 'end',
                 type: 'date',
                 dateFormat: 'c'
+            },
+            {
+                name: 'invId',
+                type: 'string'
             }
         ],
 

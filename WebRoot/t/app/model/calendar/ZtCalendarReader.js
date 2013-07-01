@@ -77,7 +77,8 @@ Ext.define('ZCS.model.calendar.ZtCalendarReader', {
                 event: shour + ':' + this.getPaddedDigits(sminutes) + ' - ' + ehour + ':' + this.getPaddedDigits(eminutes),
                 title: node.name,
                 start: new Date(syear, smonth, sday, shour, sminutes),
-                end: node.allDay ? new Date(new Date(syear, smonth, sday).setHours(23,59,59,999)) : new Date(eyear, emonth, eday, ehour, eminutes)
+                end: node.allDay ? new Date(new Date(syear, smonth, sday).setHours(23,59,59,999)) : new Date(eyear, emonth, eday, ehour, eminutes),
+                invId: node.invId
             };
 
         return data;

@@ -58,7 +58,7 @@ Ext.define('ZCS.model.mail.ZtMsgWriter', {
 				query:  itemData.convQuery
 			});
 		}
-		else if (action === 'create' || itemData.isDraft) {
+		else if ((action === 'create' && !itemData.apptView) || itemData.isDraft) {
 
 			// 'create' operation means we are sending a msg
 			var	msg = request.getRecords()[0],
@@ -144,7 +144,7 @@ Ext.define('ZCS.model.mail.ZtMsgWriter', {
 
 			this.addMimePart(parts, mime);
 		}
-		else if (action === 'update') {
+		else if (action === 'update' || itemData.apptView) {
 			// 'update' operation means we are performing a MsgActionRequest or GetMsgRequest
 
 			if (itemData.op === 'load') {

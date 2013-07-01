@@ -568,6 +568,7 @@ ZCS.constant.OP_DECLINE     = 'DECLINE';
 ZCS.constant.PSTATUS_ACCEPTED   = 'AC';
 ZCS.constant.PSTATUS_TENTATIVE  = 'TE';
 ZCS.constant.PSTATUS_DECLINED   = 'DE';
+ZCS.constant.PSTATUS_UNKNOWN    = 'NE';
 
 // Text describing participation status
 ZCS.constant.PSTATUS_TEXT = {};

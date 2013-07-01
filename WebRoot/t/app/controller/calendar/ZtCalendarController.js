@@ -32,7 +32,8 @@ Ext.define('ZCS.controller.calendar.ZtCalendarController', {
         'Ext.ux.TouchCalendarSimpleEvents',
         'Ext.ux.TouchCalendarView',
         'Ext.ux.TouchCalendar',
-        'ZCS.view.calendar.ZtCalendarToolbar'
+        'ZCS.view.calendar.ZtCalendarToolbar',
+        'ZCS.view.calendar.ZtAppointmentView'
     ],
 
     config: {
@@ -93,11 +94,47 @@ Ext.define('ZCS.controller.calendar.ZtCalendarController', {
      * @param {ZCS.model.calendar.ZtCalendar} event The Event record that was tapped
      */
     onEventTap: function(event) {
-        Ext.Msg.alert(
-            event.get('event'),
-            event.get('title')
-        );
+        var msg = Ext.create('ZCS.model.mail.ZtMailMsg'),
+            inviteId = event.get('invId'),
+            me = this;
+
+        msg.save({
+            op: 'load',
+            id: inviteId,
+            apptView: true,
+            success: function(records) {
+                me.showItem(records);
+            }
+        });
     },
+
+    /**
+     * Show appoinment view panel, by sliding it up on an overlay
+     * @param {ZCS.model.calendar.ZtCalendar} event The Event record that was tapped
+     */
+
+    showItem: function(msg) {
+        var panel = this.getApptViewPanel();
+        panel.setPanel(msg);
+        panel.show({
+            type:       'slide',
+            direction:  'up',
+            duration:   250
+        });
+    },
+
+    /**
+     * Creates a ZtAppointmentView panel which can be used to view the appointment details
+     * @returns {ZCS.view.calendar.ZtAppointmentView}
+     */
+    getApptViewPanel: function() {
+        if (!this.apptViewPanel) {
+            this.apptViewPanel = Ext.create('ZCS.view.calendar.ZtAppointmentView');
+            Ext.Viewport.add(this.apptViewPanel);
+        }
+        return this.apptViewPanel;
+    },
+
 
     /**
      * Handler for the calendar's periodchange event.

@@ -49,7 +49,8 @@ Ext.define('ZCS.model.mail.ZtInvite', {
 			{ name: 'calendarIntendedFor',  type: 'string' },
             { name: 'timezone',             type: 'string' },
             { name: 'attendeeResponse',     type: 'string' },
-            { name: 'attendeeResponseMsg',         type: 'string' }
+            { name: 'attendeeResponseMsg',  type: 'string' },
+            { name: 'reminderAlert',        type: 'string'}
 		],
 
 		msgId: ''
@@ -107,20 +108,23 @@ Ext.define('ZCS.model.mail.ZtInvite', {
 			}
 
 			if (comp.at && comp.at.length) {
-				var attendees = [],
+                var attendees = [],
 					optAttendees = [],
-					ln = comp.at.length, i, att, attList;
+					ln = comp.at.length, i, att, attList, email;
 
 				for (i = 0; i < ln; i++) {
 					att = comp.at[i];
 					if (!att.cutype || att.cutype === ZCS.constant.CUTYPE_INDIVIDUAL) {
 						attList = (att.role === ZCS.constant.ROLE_OPTIONAL) ? optAttendees : attendees;
-						attList.push(ZCS.model.mail.ZtEmailAddress.fromInviteNode(att));
+						email = ZCS.model.mail.ZtEmailAddress.fromInviteNode(att);
+                        email.ptst = att.ptst;
+                        attList.push(email);
 					}
 				}
 				invite.set('attendees', attendees);
 				invite.set('optAttendees', optAttendees);
 
+                invite.set('reminderAlert',comp.alarm && comp.alarm[0] && comp.alarm[0].trigger[0].rel[0].m);
 
                 if (comp.method == "REPLY" && invite.get('isOrganizer')) {
                     var attendeeResponse = comp.at[0].ptst,

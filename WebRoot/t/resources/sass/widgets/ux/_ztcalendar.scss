@@ -39,3 +39,40 @@ div.more-events {
   z-index: 100;
   text-shadow: none;
 }
+
+.view-appt-header {
+  padding: 10px 10px 0px 10px;
+  font-weight:bold;
+}
+
+.view-appt-notes {
+  padding-left: 10px;
+  padding-right: 10px;
+  padding-bottom: 40px;
+}
+
+.view-appt-ptst {
+  float:right;
+  width: 30%;
+  padding-left: 30px;
+}
+
+.view-appt-accepted {
+  @extend .view-appt-ptst;
+  @include background(url('/img/zimbra/ImgCheck.png') $invBtnIconPos);
+}
+
+.view-appt-declined {
+  @extend .view-appt-ptst;
+  @include background(url('/img/zimbra/ImgCancel.png') $invBtnIconPos);
+}
+
+.view-appt-tentative {
+  @extend .view-appt-ptst;
+  @include background(url('/img/zimbra/ImgQuestionMark.png') $invBtnIconPos);
+}
+
+.view-appt-unknown {
+  @extend .view-appt-ptst;
+  @include background(url('/img/zimbra/ImgNeedsAction.png') $invBtnIconPos);
+}
