@@ -47,6 +47,9 @@ Ext.define('ZCS.model.contacts.ZtContact', {
 			{ name: 'company',      type: 'string' },
 			{ name: 'jobTitle',     type: 'string' },
 			{ name: 'department',   type: 'string' },
+            { name: 'image', type: 'auto'},
+            { name: 'imagepart', type: 'auto'},
+            { name: 'zimletImage', type: 'auto'},
 
 			// fields that can have multiple instances - see ZCS.constant.CONTACT_MULTI_FIELDS
 			{ name: 'email',        type: 'auto' },
@@ -62,8 +65,11 @@ Ext.define('ZCS.model.contacts.ZtContact', {
 				type: 'string',
 				convert: function (v, record) {
 					var firstName = record.get('firstName'),
-						lastName = record.get('lastName');
-					return (firstName && lastName) ? [firstName, lastName].join(' ') : firstName || record.get('email') || '';
+						lastName = record.get('lastName'),
+                        emails = record.get('email'),
+                        addrObj = emails && emails.length > 0 ? emails[0] : null,
+                        email = addrObj ? addrObj.email : '';
+                    return (firstName && lastName) ? [firstName, lastName].join(' ') : firstName || lastName || email || '';
 				}
 			},
 
@@ -73,8 +79,12 @@ Ext.define('ZCS.model.contacts.ZtContact', {
 				type: 'string',
 				convert: function (v, record) {
 					var firstName = record.get('firstName'),
-						lastName = record.get('lastName');
-					return (firstName && lastName) ? [lastName, firstName].join(', ') : firstName || record.get('email') || '';
+						lastName = record.get('lastName'),
+                        emails = record.get('email'),
+                        addrObj = emails && emails.length > 0 ? emails[0] : null,
+                        email = addrObj ? addrObj.email : '';
+
+                    return (firstName && lastName) ? [lastName, firstName].join(', ') : firstName || lastName || email || '';
 				}
 			},
 
@@ -83,7 +93,10 @@ Ext.define('ZCS.model.contacts.ZtContact', {
 				name: 'shortName',
 				type: 'string',
 				convert: function (v, record) {
-					return record.get('nickname') || record.get('firstName') || record.get('email') || record.get('lastName') || '';
+                    var emails = record.get('email'),
+                        addrObj = emails && emails.length > 0 ? emails[0] : null,
+                        email = addrObj ? addrObj.email : '';
+                    return record.get('nickname') || record.get('firstName') || email || record.get('lastName') || '';
 				}
 			},
 
@@ -167,6 +180,22 @@ Ext.define('ZCS.model.contacts.ZtContact', {
 			writer: 'contactwriter'
 		}
 	},
+
+    constructor: function(data, id) {
+        var contact = this.callParent(arguments) || this,
+            emails = data && data.email,
+            altKey;
+
+        if (emails) {
+            for (var i = 0, len = emails.length; i < len; i++) {
+                altKey = emails[i].email;
+                if (altKey) {
+                    ZCS.cache.set(altKey, this, 'email');
+                }
+            }
+        }
+        return contact;
+    },
 
 	statics: {
 

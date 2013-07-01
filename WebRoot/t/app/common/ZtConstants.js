@@ -645,7 +645,10 @@ ZCS.constant.CONTACT_FIELDS = [
     'middleName',
     'company',
     'jobTitle',
-    'department'
+    'department',
+    'image',
+    'imagepart',
+    'zimletImage'
 ];
 
 ZCS.constant.EXTRA_NAME_FIELDS = [
