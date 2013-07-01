@@ -239,6 +239,22 @@ Ext.define('ZCS.model.contacts.ZtContact', {
 				lastName:   lastName,
 				email:      [ { email: addr.get('email') } ]
 			});
+		},
+
+		// Compares two contacts. Primary key is last name (or nickname for a group). Secondary key is first name.
+		compare: function(contact1, contact2) {
+
+			var lastName1 = contact1.get('isGroup') ? contact1.get('nickname') : contact1.get('lastName'),
+				lastName2 = contact2.get('isGroup') ? contact2.get('nickname') : contact2.get('lastName'),
+				firstName1 = contact1.get('firstName'),
+				firstName2 = contact2.get('firstName');
+
+			if (lastName1 === lastName2) {
+				return firstName1 > firstName2 ? 1 : (firstName1 === firstName2 ? 0 : -1);
+			}
+			else {
+				return lastName1 > lastName2 ? 1 : (lastName1 === lastName2 ? 0 : -1);
+			}
 		}
 	},
 

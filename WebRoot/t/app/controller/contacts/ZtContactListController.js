@@ -85,13 +85,20 @@ Ext.define('ZCS.controller.contacts.ZtContactListController', {
             }
         }
 
-        var reader = ZCS.model.contacts.ZtContact.getProxy().getReader(),
-            data = reader.getDataFromNode(create),
-            store = this.getStore(),
-            contact = new ZCS.model.contacts.ZtContact(data, create.id);
-
         if (doAdd) {
-            store.insert(0, [contact]);
+	        var reader = ZCS.model.contacts.ZtContact.getProxy().getReader(),
+		        data = reader.getDataFromNode(create),
+		        store = this.getStore(),
+		        contact = new ZCS.model.contacts.ZtContact(data, create.id),
+	            insertIndex = store.getCount();
+
+	        store.each(function(record, index) {
+		        if (ZCS.model.contacts.ZtContact.compare(contact, record) === -1) {
+			        insertIndex = index;
+			        return false;
+		        }
+	        });
+            store.insert(insertIndex, [contact]);
         }
     },
 

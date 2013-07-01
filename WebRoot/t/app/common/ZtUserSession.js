@@ -113,7 +113,7 @@ Ext.define('ZCS.common.ZtUserSession', {
 			this.addOrganizer(folderRoot, organizers, app, ZCS.constant.ORG_FOLDER, []);
 			this.addOrganizer(folderRoot, organizers, app, ZCS.constant.ORG_SAVED_SEARCH, []);
 			this.addOrganizer(tagRoot, organizers, app, ZCS.constant.ORG_TAG, []);
-			organizers.sort(ZCS.util.compareOrganizers);
+			organizers.sort(ZCS.model.ZtOrganizer.compare);
 		}, this);
 		this.setOrganizerData(organizerData);
 	},

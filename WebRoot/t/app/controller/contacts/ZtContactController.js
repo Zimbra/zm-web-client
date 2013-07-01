@@ -46,7 +46,7 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
 	            multiAddRemove: 'doMultiAddRemove'
             },
             itemPanelToolbar: {
-                'delete':   'doDelete',
+                'delete':   'doButtonDelete',
                 edit:       'doEdit'
             }
         },
@@ -156,38 +156,35 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
 		this.setComposeMode(null);
     },
 
-    /**
-	 * Moves the contact to Trash.
+	/**
+	 * Moves the contact to Trash, or deletes it if it's already in Trash.
 	 */
-	doDelete: function() {
+	doDelete: function(contact) {
 
-        var contact = arguments[0].data ? arguments[0] : this.getItem(),
-            folderId = contact.data.folderId,
-            l,toastMsg,
-            op;
+        contact = contact || this.getItem();
+        var folderId, toastMsg, op;
 
-        if (folderId == ZCS.constant.ID_TRASH) {
+        if (contact.get('folderId') === ZCS.constant.ID_TRASH) {
             op = 'delete';
             toastMsg = ZtMsg.contactDeleted;
         }
         else {
             op = 'move';
-            l = '3';
+	        folderId = ZCS.constant.ID_TRASH;
             toastMsg = ZtMsg.contactMovedToTrash;
         }
 
         var me = this,
             data = {
-                op: op
+                op:         op,
+	            folderId:   folderId
             };
 
-        if (l) {
-            data.l = l;
-        }
         this.performOp(contact, data, function() {
             ZCS.app.fireEvent('showToast', toastMsg);
             ZCS.app.getContactListController().removeContact(contact);
         });
+
         contact.destroy();
     },
 

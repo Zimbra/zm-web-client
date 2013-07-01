@@ -262,14 +262,6 @@ Ext.define('ZCS.controller.mail.ZtMailItemController', {
 	},
 
 	/**
-	 * Do a delete originating from a button.  This drops the button parameter and
-	 * allows doDelete to be used by both a button and the standard menu behavior.
-	 */
-	doButtonDelete: function() {
-		this.doDelete();
-	},
-
-	/**
 	 * Moves the mail item to Trash.
 	 *
 	 * @param {ZtMailItem}   item     mail item

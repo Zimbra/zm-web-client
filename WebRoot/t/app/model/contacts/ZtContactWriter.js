@@ -89,8 +89,8 @@ Ext.define('ZCS.model.contacts.ZtContactWriter', {
 					}
 				});
 
-				if (itemData.l) {
-					methodJson.action.l = itemData.l;
+				if (itemData.folderId) {
+					methodJson.action.l = itemData.folderId;
 				}
 			}
 			else if (itemData.op === 'modify') {
