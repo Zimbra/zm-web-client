@@ -24,7 +24,8 @@ Ext.define('ZCS.view.calendar.ZtCalendarToolbar', {
     xtype: 'caltoolbar',
 
     requires: [
-        'Ext.TitleBar'
+        'Ext.TitleBar',
+        'Ext.Button'
     ],
 
     config: {
@@ -69,6 +70,7 @@ Ext.define('ZCS.view.calendar.ZtCalendarToolbar', {
                     },
                     {
                         xtype: 'button',
+                        itemId: 'dayBtn',
                         text: ZtMsg.calDayLabel,
                         handler: function() {
                             ZCS.app.getCalendarController().toggleCalView('day');
@@ -81,6 +83,7 @@ Ext.define('ZCS.view.calendar.ZtCalendarToolbar', {
                     },
                     {
                         xtype: 'button',
+                        itemId: 'weekBtn',
                         text: ZtMsg.calWeekLabel,
                         handler: function() {
                             ZCS.app.getCalendarController().toggleCalView('week');
@@ -88,6 +91,8 @@ Ext.define('ZCS.view.calendar.ZtCalendarToolbar', {
                     },
                     {
                         xtype: 'button',
+                        itemId: 'monthBtn',
+                        cls: 'x-button-pressed',
                         text: ZtMsg.calMonthLabel,
                         handler: function() {
                             ZCS.app.getCalendarController().toggleCalView('month');
