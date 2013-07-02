@@ -183,9 +183,8 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
         this.performOp(contact, data, function() {
             ZCS.app.fireEvent('showToast', toastMsg);
             ZCS.app.getContactListController().removeContact(contact);
+	        contact.destroy();
         });
-
-        contact.destroy();
     },
 
     /**
