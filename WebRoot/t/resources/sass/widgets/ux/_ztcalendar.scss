@@ -41,20 +41,18 @@ div.more-events {
 }
 
 .view-appt-header {
-  padding: 10px 10px 0px 10px;
+  padding: 0.7em 0.7em 0em 0.7em;
   font-weight:bold;
 }
 
 .view-appt-notes {
-  padding-left: 10px;
-  padding-right: 10px;
-  padding-bottom: 40px;
+  padding: 0em 0.7em 2.5em 0.7em;
 }
 
 .view-appt-ptst {
   float:right;
   width: 30%;
-  padding-left: 30px;
+  padding-left: 1.8em;
 }
 
 .view-appt-accepted {
@@ -75,4 +73,10 @@ div.more-events {
 .view-appt-unknown {
   @extend .view-appt-ptst;
   @include background(url('/img/zimbra/ImgNeedsAction.png') $invBtnIconPos);
+}
+
+.view-appt-showDetails {
+  @extend .zcs-link;
+  padding-left: 0.5em;
+  padding-right: 0.5em;
 }

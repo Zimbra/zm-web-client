@@ -511,7 +511,7 @@
 			<tr>
 				<td class='zcs-invite-label'>{[ZtMsg.invAttendeesLabel]}</td>
 				<td>
-					<span>{attendees} <span id="showAttendees" class='showAttendees' style="text-decoration: underline; color: #0000ff; cursor: pointer"> {[ZtMsg.details]} </span></span>
+					<span>{attendees} <span id="showAttendees" class='view-appt-showDetails'> {[ZtMsg.detailsLinkText]} </span></span>
 				</td>
 			</tr>
             </tpl>
