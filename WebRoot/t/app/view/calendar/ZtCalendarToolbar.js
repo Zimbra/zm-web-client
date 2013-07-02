@@ -85,6 +85,7 @@ Ext.define('ZCS.view.calendar.ZtCalendarToolbar', {
                         xtype: 'button',
                         itemId: 'weekBtn',
                         text: ZtMsg.calWeekLabel,
+                        disabled: true,
                         handler: function() {
                             ZCS.app.getCalendarController().toggleCalView('week');
                         }
