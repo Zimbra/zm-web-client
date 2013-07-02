@@ -94,13 +94,10 @@ Ext.define('ZCS.model.contacts.ZtContactWriter', {
 				}
 			}
 			else if (itemData.op === 'modify') {
-				var	contact = request.getRecords()[0],
-					cn;
-
 				json = this.getSoapEnvelope(request, data, 'ModifyContact');
 				methodJson = json.Body.ModifyContactRequest;
 
-				cn = methodJson.cn = { id: itemData.id };
+				var cn = methodJson.cn = { id: itemData.id };
 				cn.m = [];
 				cn.a = this.populateAttrs(itemData.newContact, itemData.attrs);
 
@@ -121,22 +118,21 @@ Ext.define('ZCS.model.contacts.ZtContactWriter', {
 	 * Converts contact fields to the JSON attributes our server expects.
 	 *
 	 * @param {ZtContact}   contact     a contact
+	 * @param {Array}       attrs       list of attributes that changed (if editing)
 	 *
 	 * @return {Array}  array of JSON attr objects
 	 */
     populateAttrs : function(contact, attrs) {
 
-		var contactAttrs = contact.fieldsToAttrs(),
-			attrsToReturn = attrs && ZCS.util.arrayAsLookupHash(attrs),
+		var attrHash = contact.fieldsToAttrs(),
+			attrList = attrs && attrs.length > 0 ? attrs : Ext.Object.keys(attrHash),
 			jsonAttrs = [];
 
-		Ext.Object.each(contactAttrs, function(attr) {
-			if (!attrsToReturn || attrsToReturn[attr]) {
-				jsonAttrs.push({
-					n:          attr,
-					_content:   contactAttrs[attr]
-				});
-			}
+		Ext.each(attrList, function(attr) {
+			jsonAttrs.push({
+				n:          attr,
+				_content:   attrHash[attr] || ''
+			});
 		}, this);
 
 		return jsonAttrs;
