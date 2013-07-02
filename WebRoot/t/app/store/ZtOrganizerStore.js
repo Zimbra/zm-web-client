@@ -38,8 +38,9 @@ Ext.define('ZCS.store.ZtOrganizerStore', {
 
 		sorters: [
 			{
-				sorterFn:   ZCS.util.compareOrganizers,
-				direction:  'ASC'
+				sorterFn: function(organizer1, organizer2) {
+					return ZCS.model.ZtOrganizer.compare(organizer1, organizer2);
+				}
 			}
 		]
 	},

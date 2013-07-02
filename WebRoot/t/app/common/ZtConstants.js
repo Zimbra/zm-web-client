@@ -294,7 +294,7 @@ ZCS.constant.CONV_HIDE = ZCS.util.arrayAsLookupHash([
 // When replying to or forwarding a conv, omit these folders when
 // figuring out which message to use as the original for the reply/forward
 ZCS.constant.CONV_REPLY_OMIT = ZCS.util.arrayAsLookupHash([
-	ZCS.constant.ID_SENT,
+//	ZCS.constant.ID_SENT,
 	ZCS.constant.ID_DRAFTS,
 	ZCS.constant.ID_TRASH,
 	ZCS.constant.ID_JUNK
