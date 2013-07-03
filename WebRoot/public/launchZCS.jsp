@@ -55,9 +55,25 @@
 	response.setHeader("Pragma", "no-cache");
 %>
 <% } %>
-
+<!DOCTYPE html>
 <zm:getUserAgent var="ua" session="false"/>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<!--
+ launchZCS.jsp
+ * ***** BEGIN LICENSE BLOCK *****
+ * Zimbra Collaboration Suite Web Client
+ * Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012 VMware, Inc.
+ * 
+ * The contents of this file are subject to the Zimbra Public License
+ * Version 1.3 ("License"); you may not use this file except in
+ * compliance with the License.  You may obtain a copy of the License at
+ * http://www.zimbra.com/license.
+ * 
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * ***** END LICENSE BLOCK *****
+-->
 <%	java.util.List<String> localePref = authResult.getPrefs().get("zimbraPrefLocale");
 	if (localePref != null && localePref.size() > 0) {
 		request.setAttribute("localeId", localePref.get(0));
@@ -107,7 +123,7 @@
 
 	String ext = getAttribute(request, "fileExtension", null);
 	if (ext == null || isDevMode || isCoverage) ext = "";
-
+	
 	String offlineMode = getParameter(request, "offline", application.getInitParameter("offlineMode"));
 
 	Locale locale = request.getLocale();
@@ -277,13 +293,9 @@
 </jsp:include>
 
 <!--
-  --
-  --
-  --
-  	BEGIN SKIN
-  --
-  --
-  --
+    ################
+    #  BEGIN SKIN  #
+    ################
   -->
 
 <%-- NOTE: servlet path is needed because the servlet sees it as /public/launchZCS.jsp --%>
@@ -297,13 +309,9 @@
 </jsp:include>
 
 <!--
-  --
-  --
-  --
-  	END SKIN
-  --
-  --
-  --
+    ##############
+    #  END SKIN  #
+    ##############
   -->
 <div style='display:none;'>
 <jsp:include page="Boot.jsp"/>

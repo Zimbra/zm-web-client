@@ -1212,9 +1212,6 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 .addrBubbleHolder, .attBubbleHolder {
 	padding:2px 0;
 	margin-top:2px;
-#IFDEF MSIE
-	height:expression(this.scrollHeight > 105 ? "106px" :"auto");
-#ENDIF
 	max-height:98px;
 	overflow:auto;
 }
@@ -3315,19 +3312,13 @@ HTML>BODY .appt-selected .appt_allday_body
 }
 
 .ZmChatGwIcon-offline {
-	opacity:0.3;
-#IFDEF MSIE
-	filter:alpha(opacity=30);
-#ENDIF
+	@opacity(30)@
 }
 
 .ZmChatGwIcon-hover {
-	opacity:0.8;
+	@opacity(80)@
 	border:1px solid #AAA; padding:0;
 	background-color:white;
-#IFDEF MSIE
-	filter:alpha(opacity=80);
-#ENDIF
 }
 
 .ZmImToastText {
@@ -5012,8 +5003,8 @@ HTML>BODY .appt-selected .appt_allday_body
 
 .ZToast {
 	position:absolute;
-	top:-10000;
-	left:-10000;
+	top:-10000px;
+	left:-10000px;
 	overflow:visible;
 
 	/* change the following to set the top of the toaster
@@ -5610,7 +5601,7 @@ DIV .SuggestBtn {
 
 .ZmUnitTestPanel {
 	width:100%;
-	height:300;
+	height:300px;
 	border-top:2px solid black;
 	background-color:white;
 }
@@ -5674,11 +5665,8 @@ DIV .SuggestBtn {
 }
 
 .ZmDialogTabViewBusy {
-	opacity:0.5;
+	@opacity(50)@
 	background-color:#E0E0E0;
-#IFDEF MSIE
-	filter:alpha(opacity=50);
-#ENDIF
 }
 
 .ZmFolderPropertiesDialog-container {

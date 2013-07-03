@@ -173,7 +173,7 @@ ZmSkin.prototype = {
 	
 	showSidebarAd : function(width) {
 		var id = "skin_td_sidebar_ad";
-		if (width != null) skin._setSize(id, width);
+		if (width != null) Dwt.setSize(id, width);
 		if (skin._showEl(id)) {
 			skin._reflowApp();
 		}
@@ -241,17 +241,10 @@ ZmSkin.prototype = {
 		}
 	},
 	
-	_setSize : function(id, width, height) {
-		var el = this._getEl(id);
-		if (!el) return;
-		if (width != null) el.style.width = width;
-		if (height != null) el.style.height = height;
-	},
-	
 	_setContainerSizes : function(containerName, width, height) {
 		var containers = this.hints[containerName].resizeContainers || this.hints[containerName].containers;
 		for (var i = 0; i < containers.length; i++) {
-			this._setSize(containers[i], width, null);
+			Dwt.setSize(containers[i], width, null);
 		}
 	},
 	

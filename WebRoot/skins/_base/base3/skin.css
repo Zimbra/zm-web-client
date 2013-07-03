@@ -14,10 +14,15 @@
  */
 BODY						{	margin:0px; 	}
 
+.skin_layout_row { width: 100%; clear: both; }
+.skin_layout_cell { height: 100%; float: left; }
+.skin_layout { display: block; clear: both; width: 100%; height: 100% }
+
 #skin_outer *				{	@FixBoxModel@	}
 /** generics **/
 .skin_table					{	width:100%; height:100%; border-collapse:collapse; border-width:0; 	}
 .skin_table>TBODY>TR>TD		{	padding:0; 															}
+.skin_table>.skin_table_row>.skin_table_cell		{	padding:0;									}
 .skin_container				{	width:100%; height:100%; }
 .skin_container_ad			{	width:100%; height:100%; }
 .skin_td_flex				{	width:100%; 	}
@@ -26,13 +31,15 @@ BODY						{	margin:0px; 	}
 /* hide search results toolbar initially */
 #skin_tr_search_results_toolbar			{	display:none; height:40px; width:100%; 	}
 
+#skin_tr_main { height: 100% }
+
 /* hide all ads initially */
 .skin_outer_ad				{	display:none; 	}
 
 /** Outer container of the entire skin **/
-#skin_outer 							{	@SkinOuter@		}
-#skin_table_outer						{	padding:0;		}
-#skin_outer_td_main						{	height:100%; 	}
+#skin_outer 							{	height: 100%; @SkinOuter@		}
+#skin_layout_outer						{	width: 100%; height: 100%; padding:0;		}
+#skin_outer_td_main						{	height: 100%; width: 100%;	}
 
 /** Top row contains header and app tabs **/
 #skin_spacing_top_row					{	@SkinTopRow@ 	}
@@ -114,7 +121,7 @@ BODY						{	margin:0px; 	}
 	background-image:none;  
 	border:0;
 	@cssShadow@:0px 0px 0px transparent;
-	#IFDEF MSIE
+	#IFDEF MSIE_LOWER_THAN_9
 	-ms-filter: progid:DXImageTransform.Microsoft.gradient(enabled=false);
 	filter:progid:DXImageTransform.Microsoft.gradient(enabled=false);
 	#ENDIF
@@ -139,10 +146,10 @@ BODY						{	margin:0px; 	}
 
 
 /** App Toolbar **/
-#skin_tr_toolbar>TD						{	border-top:1px solid #999; 	}
+#skin_tr_toolbar>.skin_layout_cell		{	border-top:1px solid #999; 	}
 #skin_spacing_app_top_toolbar			{	height:35px; 	}
-#skin_container_app_top_toolbar			{	@SkinBorderAppToolbar@ width:auto;	}
-#skin_container_app_new_button			{	@SkinBorderAppToolbar@ width:auto; padding-left:5px; padding-right:5px; padding-bottom:2px;}			
+#skin_container_app_top_toolbar			{	@SkinBorderAppToolbar@ width:auto; padding-top: 5px; padding-left: @SashSize@; 	}
+#skin_container_app_new_button			{	@SkinBorderAppToolbar@ width:@TreeStartWidth@; padding:5px; }
 #skin_spacing_app_row					{	border-top:1px solid; border-spacing:0; padding:0px 7px; @AppTab@ 	}
 #skin_spacing_app_row					{	
 	background-color:transparent; 
@@ -151,7 +158,7 @@ BODY						{	margin:0px; 	}
 #IFDEF WEBKIT
 	border-color:rgba(@SkinAppRowColorRGB@,.1);
 #ENDIF
-#IFDEF MSIE
+#IFDEF MSIE_LOWER_THAN_9
 	zoom:1;
 	@SkinAppRowBorderColorIE@
 	-ms-filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=#19@SkinAppRowColorHex@, endColorstr=#19@SkinAppRowColorHex@);
@@ -183,7 +190,7 @@ BODY						{	margin:0px; 	}
 #skin_container_bottom_ad				{	@AdStyle@ height:@BottomAdHeight@;		}
 
 /*** HACKS: this makes the tables work properly -- rationalize this!  **/
-#skin_td_tree							{	width:@TreeStartWidth@;		}
+#skin_td_tree							{	width:@TreeStartWidth@;	height: 100%;	}
 #skin_td_tree_app_sash 					{	width:@SashSize@;			}
 #skin_td_main							{	width:auto;	height:100%; 	}
 #skin_td_sidebar_ad						{	width:@SidebarAdWidth@;		}
@@ -240,7 +247,7 @@ BODY						{	margin:0px; 	}
 	width:500px;
 }
 .LoginScreen .contentBox,
-.SplashScreen .contentBox {
+.SplashScreen .contentBox {	
 	min-height:265px;
 #IFDEF MSIE_LOWER_THAN_7
 	height:265px;
@@ -250,14 +257,14 @@ BODY						{	margin:0px; 	}
 .SplashScreen .center-small .contentBox,
 .ErrorScreen .center-small .contentBox { width:auto; }
 
-.center-small .form .submittd{ text-align:left; }
+.center-small .form .submittd{ text-align: left; }
  
 .LoginScreen H1,
-.SplashScreen H1			{	@LoginH1@ 		}
+.SplashScreen H1 	{	@LoginH1@ 		}
 
-#ZLoginAppName				{	@LoginAppName@ 	}
+#ZLoginAppName 		{	@LoginAppName@ 	}
 
-.LoginScreen .ImgLoginBanner,
+.LoginScreen .ImgLoginBanner, 
 .LoginScreen .ImgAppBanner, 
 .SplashScreen .ImgLoginBanner {
 	cursor:pointer;
@@ -297,7 +304,7 @@ BODY						{	margin:0px; 	}
 	@LoginFooterColor@
 }
 /* Login Screen Only Items */
-.LoginScreen .ZLoginField {
+.LoginScreen .zLoginField {
 @roundCorners(5px)@
 }
 .LoginScreen INPUT[disabled] {
@@ -306,10 +313,10 @@ BODY						{	margin:0px; 	}
 .LoginScreen .decor1			{ @Decor1L@ }
 .LoginScreen .decor2			{ @Decor2L@ }
 .LoginScreen #ZLoginNotice A {
-@LoginFooterColor@
+	@LoginFooterColor@
 }
 
-/* Splash Screen Only Items */
+/*Splash Screen Only Items*/
 .SplashScreen .content {
 	color:@LoginLabelColor@;
 	text-align:center;
@@ -323,6 +330,9 @@ BODY						{	margin:0px; 	}
 .SplashScreen .switch {
 	margin:70px 100px 30px;
 #IFDEF WEBKIT
+	margin-bottom:0;
+#ENDIF
+#IFDEF MSIE_9_OR_HIGHER
 	margin-bottom:0;
 #ENDIF
 }
@@ -587,7 +597,7 @@ SELECT						{	@FieldBorder@	}
 .TopRow .ImgNodeCollapsed, .TopRow .ImgNodeExpanded	{ padding: 0; }
 .ZmMsgListColTag 					{ padding:0 2px 0 3px; vertical-align: middle; }
 .BottomRow .ZmMsgListColTag 		{ margin-right: 3px; }
-.ZmMsgListDate                      { position: absolute;right:0px;background-color:@MailMsgBkgdColor@;width:75px;text-align: right;}
+.ZmMsgListDate                      { position: absolute;right:0px;width:75px;text-align: right;}
 .ZmMsgListColSelection, .ZmMsgListColFlag, .ZmMsgListColTag, .ZmMsgListColAccount,
 .ZmMsgListColStatus, .ZmMsgListColMute, .ZmMsgListColRead, .ZmMsgListColAttachment, .ZmMsgListColExpand
 {

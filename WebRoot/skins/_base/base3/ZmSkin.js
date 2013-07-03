@@ -37,7 +37,7 @@ ZmSkin.hints = {
 	newButton:		{ containers: ["skin_td_new_button"] },
 	tree:			{ minWidth:parseInt("@TreeMinWidth@"), maxWidth:parseInt("@TreeMaxWidth@"), 
 					  containers: ["skin_td_tree","skin_td_tree_app_sash"],
-					  resizeContainers : ["skin_td_tree"]
+					  resizeContainers : ["skin_td_tree", "skin_container_app_new_button"]
 					},
 	
 	topToolbar:	 	{ containers: "skin_spacing_app_top_toolbar" },
@@ -179,7 +179,7 @@ ZmSkin.prototype = {
 	
 	showSidebarAd : function(width) {
 		var id = "skin_td_sidebar_ad";
-		if (width != null) skin._setSize(id, width);
+		if (width != null) Dwt.setSize(id, width);
 		if (skin._showEl(id)) {
 			skin._reflowApp();
 		}
@@ -222,8 +222,8 @@ ZmSkin.prototype = {
 		}
 		else {
 			var tagName = el.tagName;
-			if (tagName == "TD" && !document.all)		value = "table-cell";
-			else if (tagName == "TR" && !document.all) 	value = "table-row";
+			if (tagName == "TD")		value = "table-cell";
+			else if (tagName == "TR") 	value = "table-row";
 			else value = "block";
 		}
 		if (value != el.style.display) {
@@ -247,17 +247,10 @@ ZmSkin.prototype = {
 		}
 	},
 	
-	_setSize : function(id, width, height) {
-		var el = this._getEl(id);
-		if (!el) return;
-		if (width != null) el.style.width = width;
-		if (height != null) el.style.height = height;
-	},
-	
 	_setContainerSizes : function(containerName, width, height) {
 		var containers = this.hints[containerName].resizeContainers || this.hints[containerName].containers;
 		for (var i = 0; i < containers.length; i++) {
-			this._setSize(containers[i], width, null);
+			Dwt.setSize(containers[i], width, null);
 		}
 	},
 	

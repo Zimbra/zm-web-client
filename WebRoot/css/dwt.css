@@ -564,12 +564,7 @@ UL.DwtListView-Rows {
 }
 
 .TopRow DIV, .BottomRow DIV, .DwtMsgListMultiCol DIV, .SimpleContact DIV {
-#IFNDEF MSIE
 	display: inline-block;
-#ENDIF
-#IFDEF MSIE
-	display: inline;
-#ENDIF
 }
 
 .DwtListHeaderItem-label {
@@ -828,7 +823,9 @@ UL.DwtListView-Rows {
 }
 
 /* Container for the actual text of the alert */
-.DwtAlertContent {}
+.DwtAlertContent {
+	font-weight: normal;
+}
 
 
 /* ??? USE? */
@@ -1024,10 +1021,6 @@ UL.DwtListView-Rows {
 
 .menuOverview {
 	max-height:200px;
-	#IFDEF MSIE
-		height:expression(this.scrollHeight > 199 ? "200px" : "auto");
-	#ENDIF
-
 }
 
 /*

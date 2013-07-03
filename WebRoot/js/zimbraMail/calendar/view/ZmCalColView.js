@@ -977,16 +977,13 @@ ZmCalColView.prototype.updateTimeIndicator=function(force){
     var min = curDate.getMinutes();
     var curHourDiv = document.getElementById(this._hourColDivId+"_"+hr);
     var curTimeHourIndicator = document.getElementById(this._curTimeIndicatorHourDivId);
-    curTimeHourIndicator.style.left=curHourDiv.offsetParent.offsetLeft;
     var currentTopPosition = Math.round((ZmCalColView._HOUR_HEIGHT/60)*min)+parseInt(curHourDiv.offsetParent.offsetTop);
-    curTimeHourIndicator.style.top=(currentTopPosition+3)+"px";
+    Dwt.setLocation(curTimeHourIndicator, curHourDiv.offsetParent.offsetLeft, currentTopPosition+3);
     var calendarStrip = document.getElementById(this._curTimeIndicatorGridDivId);
     Dwt.setVisibility(calendarStrip,true);
     var todayColDiv = document.getElementById(this._calendarTodayHeaderDivId);
     if (todayColDiv && (force || this._isValidIndicatorDuration)){
-     calendarStrip.style.left=todayColDiv.offsetLeft;
-     calendarStrip.style.top=currentTopPosition+"px";
-     calendarStrip.style.width=todayColDiv.offsetWidth;
+        Dwt.setBounds(calendarStrip, todayColDiv.offsetLeft, currentTopPosition, todayColDiv.offsetWidth, null);
     }
     else{Dwt.setVisibility(calendarStrip,false);}
     return this.setTimer(1);

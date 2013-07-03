@@ -342,6 +342,8 @@ function(params) {
 	}
 
 	skin.show("skin", true);
+	appCtxt.getShell().relayout();
+
 	if (!this._components) {
 		this._components = {};
 		this._components[ZmAppViewMgr.C_SASH] = new DwtSash({parent:this._shell, style:DwtSash.HORIZONTAL_STYLE,
@@ -3050,6 +3052,7 @@ function() {
 	var logoUrl = appCtxt.getSkinHint("banner", "url") || appCtxt.get(ZmSetting.LOGO_URI);
 	var data = {url:logoUrl, isOffline:appCtxt.isOffline};
 	banner.getHtmlElement().innerHTML  = AjxTemplate.expand('share.App#Banner', data);
+	banner.getHtmlElement().style.height = '100%';
 	return banner;
 };
 

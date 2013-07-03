@@ -9,8 +9,7 @@
 <%-- this checks and redirects to admin if need be --%>
 <zm:adminRedirect/>
 <app:skinAndRedirect />
-
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<!DOCTYPE html>
 <fmt:setLocale value='${pageContext.request.locale}' scope='request' />
 <fmt:setBundle basename="/messages/ZmMsg" scope="request"/>
 <fmt:setBundle basename="/messages/ZhMsg" var="zhmsg" scope="request"/>
@@ -308,7 +307,6 @@ if (application.getInitParameter("offlineMode") != null)  {
         <c:set var="client" value="${useTablet ? 'touch' : useMobile ? 'mobile' : useStandard ? 'standard' : 'preferred' }"/>
     </c:if>
     <c:set var="smallScreen" value="${client eq 'mobile'}"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE9" />
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
     <title><fmt:message key="zimbraLoginTitle"/></title>
     <c:set var="version" value="${initParam.zimbraCacheBusterVersion}"/>
@@ -444,6 +442,7 @@ if (application.getInitParameter("offlineMode") != null)  {
                     </c:if>
 					</table>
 				<div class="offline"><fmt:message key="switchToOfflineClientEx"/></div>
+			</form>
 			</div>
 			<div class="decor1"></div>
 		</div>
