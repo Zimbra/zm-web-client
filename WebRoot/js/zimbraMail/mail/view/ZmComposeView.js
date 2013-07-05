@@ -862,9 +862,11 @@ function(msg) {
 		var notifyActionMap = ZmComposeView.NOTIFY_ACTION_MAP || {};
 		var inviteMode = notifyActionMap[this._action] ? notifyActionMap[this._action] : this._action;
 		msg.inviteMode = isInviteReply ? inviteMode : null;
-		msg.irtMessageId = this._msg.irtMessageId || this._msg.messageId;
-		msg.folderId = this._msg.folderId;
-	}
+        if (this._action !== ZmOperation.NEW_MESSAGE){  //Bug: 82942 - in-reply-to shouldn't be added to new messages.
+            msg.irtMessageId = this._msg.messageId;
+        }
+        msg.folderId = this._msg.folderId;
+    }
 };
 
 ZmComposeView.prototype._zimletCheck =
