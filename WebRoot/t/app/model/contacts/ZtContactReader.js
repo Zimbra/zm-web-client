@@ -163,9 +163,7 @@ Ext.define('ZCS.model.contacts.ZtContactReader', {
 			    }
 		    }
 		    else if (member.type === 'I') {
-			    data.memberEmail = {
-				    value: member.value
-			    }
+			    data.memberEmail = member.value;
 		    }
 			group.push(data);
 		}, this);
