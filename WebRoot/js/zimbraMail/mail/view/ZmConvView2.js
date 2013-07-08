@@ -1415,7 +1415,7 @@ function(isTextMsg, html, isTruncated) {
 	// Code below attempts to determine if we can display an HTML msg in a DIV. If there are
 	// issues with the msg DOM being part of the window DOM, we may want to just always return
 	// true from this function.
-	var result = AjxStringUtil.checkForCleanHtml(html, ZmMailMsgView.TRUSTED_TAGS, ZmMailMsgView.UNTRUSTED_ATTRS, ZmMailMsgView.BAD_STYLES);
+	var result = AjxStringUtil.checkForCleanHtml(html, ZmMailMsgView.TRUSTED_TAGS, ZmMailMsgView.UNTRUSTED_ATTRS);
 	if (result.html) {
 		this._cleanedHtml = result.html;
 		this._contentWidth = result.width;
