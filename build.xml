@@ -63,6 +63,8 @@
     <property name='template.dir' value='${web.dir}/templates'/>
     <property name='docs.dir' value='${zwc.basedir}/docs'/>
     <property name='img.dir' value='${web.dir}/img'/>
+    <property name='touch.dir' value='${web.dir}/t'/>
+    <property name='touch.prod.dir' value='${web.dir}/t/build/t'/>
 
     <property name='webinf.dir' value='${web.dir}/WEB-INF'/>
     <property name='webinf.lib.dir' value='${webinf.dir}/lib'/>
@@ -78,6 +80,8 @@
     <property name='build.help.dir' value='${build.web.dir}/help'/>
     <property name='build.adminhelp.dir' value='${build.web.dir}/adminhelp'/>
     <property name='build.dist.dir' value='${build.dir}/dist'/>
+    <property name='build.touch.dir' value='${build.web.dir}/t'/>
+    <property name='build.touch.debug.dir' value='${build.web.dir}/tdebug'/>
 
 	<property name='build.docs.dir' value='${build.dir}/docs'/>
 	<property name='build.jsapi-zimbra-doc.dir' value='${build.docs.dir}/jsapi-zimbra-doc'/>
@@ -149,7 +153,7 @@
 	<fileset id='customer.skins.img.fileset' dir='${build.dir}' excludes='**' />
 	<fileset id='customer.webinf.fileset' dir='${build.dir}' excludes='**'/>
     <fileset id='customer.package.fileset' dir='${build.dir}' excludes='**' />
-    <fileset id='customer.jsp.fileset' dir='${build.dir}' excludes='**' />    
+    <fileset id='customer.jsp.fileset' dir='${build.dir}' excludes='**' />
 
     <!-- Targets -->
 
@@ -221,6 +225,8 @@
         <property name='build.web.excludes' value='${common.build.web.excludes}'/>
         <property name='webinf.includes' value='${common.webinf.includes}'/>
         <property name='webinf.excludes' value='${common.webinf.excludes}'/>
+        <property name='touch.includes' value='app/**,app.json,app.js,resources/**,touch/**,launchTouch.jsp,noscript.jsp'/>
+        <property name='touch.excludes' value='compass/**,lib/**,install.txt,*.xml,build/**,archive/**'/>
 
         <fileset id='help.fileset'
                  dir='${help.dir}' includes='${help.includes}' excludes='${help.excludes}'
@@ -264,7 +270,7 @@
     </target>
 
     <target name="war"
-            depends="templates,timezones,images,styles,settings,jam-files,compress,help,assemble-war"
+            depends="templates,timezones,images,styles,settings,jam-files,compress,help,touch,assemble-war"
             description="Builds all dependencies and assembles the war file.">
     </target>
 
@@ -1219,6 +1225,68 @@ if (ext == null) ext = "";
       dir='${help.dir}' includes='${help.includes}' excludes='${help.excludes},${help.excludes2}' />
 	</target>
 
+    <target name="touch-init" depends="init">
+        <condition property="no.touch">
+            <or>
+                <istrue value="${build.admin}"/>
+                <istrue value="${no.touch}"/>
+            </or>
+        </condition>
+    </target>
+
+    <target name='touch' depends='touch-init' unless="no.touch">
+        <if>
+            <not>
+               <isset property='build.prod'/>
+            </not>
+            <then>
+                <mkdir dir='${build.touch.dir}'/>
+
+                <antcall target="compile.sass"/>
+
+                <copy todir='${build.touch.dir}'>
+                    <fileset dir='${touch.dir}' includes="${touch.includes}" excludes="${touch.excludes}"/>
+                </copy>
+            </then>
+            <else>
+                <!--First run sencha build in production mode for the main touch app-->
+                <antcall target="touch-prod">
+                    <param name="touch.prod.build.mode" value="production"/>
+                </antcall>
+
+                <!--Now run sencha build in testing mode to create debugging app-->
+                <antcall target="touch-prod">
+                    <param name="touch.prod.build.mode" value="testing"/>
+                    <param name="build.touch.dir" value="${build.touch.debug.dir}"/>
+                </antcall>
+
+                <!-- noscript.jsp copied into production dir-->
+                <copy todir="${build.touch.dir}" file="${touch.dir}/noscript.jsp"/>
+            </else>
+        </if>
+    </target>
+
+    <target name="touch-prod">
+        <mkdir dir='${build.touch.dir}'/>
+
+        <exec executable="/bin/bash">
+            <arg value="${this.zwc.basedir}/build-prod-touch.sh"/>
+            <arg value="${touch.prod.build.mode}"/>
+        </exec>
+
+        <!--Copy the production dir-->
+        <copy todir='${build.touch.dir}'>
+            <fileset dir='${touch.prod.dir}/${touch.prod.build.mode}'/>
+        </copy>
+
+        <!--Copy the templates dir-->
+        <fileset id="templates.fileset" dir="${touch.dir}/resources/templates" casesensitive="yes"/>
+
+        <copy todir="${build.touch.dir}/resources/templates" verbose="true">
+            <fileset refid="templates.fileset"/>
+        </copy>
+    </target>
+    
     <target name='deploy' depends='war'>
         <ant dir="${server.dir}" target="stop-jetty" inheritAll="false"/>
 
@@ -1258,6 +1326,7 @@ if (ext == null) ext = "";
         <ant dir="${taglib.dir}" target="clean" inheritAll="false"/>
         <delete dir='${build.dir}'/>
         <delete dir='${customer.build.dir}' />
+        <delete dir="${touch.prod.dir}"/>
     </target>
 
 	<!-- JavaScript API Documentation Tasks -->
@@ -1527,4 +1596,37 @@ if (ext == null) ext = "";
             </fileset>
         </copy>
     </target>
+    
+    <!--Touch Client Targets-->
+
+    <property name="app.root" value="${zwc.basedir}/WebRoot/t"/>
+
+    <!-- Include jruby-complete jar -->
+    <path id="jruby.classpath">
+        <fileset dir="${common.dir}/jars-internal/jars">
+            <include name="jruby*.jar"/>
+        </fileset>
+    </path>
+
+    <!--Compass compilation-->
+    <target name='compile.sass'>
+        <property name="sass.dir" value="${app.root}/resources/sass" />
+        <property name="compass.dir" value="${app.root}/compass"/>
+        <java classname="org.jruby.Main" fork="true" failonerror="true"
+              classpathref="jruby.classpath">
+            <arg line="${compass.dir}/compile.rb ${compass.dir} compile ${sass.dir}"/>
+        </java>
+    </target>
+
+    <!--Sync touch client specific source files-->
+    <target name='sync-touch'>
+        <fileset id="touch.fileset" dir="${app.root}" casesensitive="yes" excludes="touch/**,lib/**,compass/**"/>
+        <property name='deploy.server' value='jetty'/>
+        <property name='deploy.dir' value='/opt/zimbra/${deploy.server}/webapps'/>
+        <property name='webapp.dir' value='${deploy.dir}/zimbra'/>
+        <copy todir='${webapp.dir}/t' verbose='true'>
+            <fileset refid="touch.fileset"/>
+        </copy>
+    </target>
+
 </project>

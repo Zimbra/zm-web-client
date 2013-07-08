@@ -1,0 +1,10 @@
+.zcs-fragment {
+	font-size: 0.9em;
+	@include opacity(.6);
+}
+
+.zcs-date {
+	font-size: 0.9em;
+	text-align: right;
+	white-space: nowrap;
+}

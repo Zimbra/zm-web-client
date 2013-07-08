@@ -1,0 +1,37 @@
+@import 'widgets/ux/ztbubblearea';
+@import 'widgets/mail/ztinvite';
+@import 'compass/css3/box';
+
+$linkColor: #336699;
+$linkColorActive: red;
+$linkTextSize: 0.9em;
+
+.zcs-link {
+	color: $linkColor;
+	font-size: $linkTextSize;
+	text-decoration: underline;
+}
+
+.zcs-quoted-link {
+	@extend .zcs-link;
+	padding-top: 1em;
+
+	&:active {
+		color: $linkColorActive;
+	}
+}
+
+.x-list {
+	.x-list-emptytext {
+		@include box-pack(start);
+		font-style: italic;
+		padding-top: 5em;
+	}
+}
+
+.zcs-msg-body-text {
+	font-size: 1.1em;
+	font-family: monospace;
+	word-wrap: break-word;
+	-webkit-user-select: text;
+}
