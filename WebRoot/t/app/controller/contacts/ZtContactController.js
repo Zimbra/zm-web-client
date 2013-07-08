@@ -474,6 +474,10 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
 	 */
 	isDirty: function() {
 
+		if (this.getContactPanel().isHidden()) {
+			return false;
+		}
+
 		var curContact = (this.getComposeMode() === ZCS.constant.OP_EDIT) ? this.getItem() : null,
 			newContact = this.getContactModel(),
 			changedAttrs = this.getChangedAttrs(curContact, newContact);

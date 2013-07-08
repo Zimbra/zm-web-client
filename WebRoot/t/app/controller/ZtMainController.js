@@ -59,6 +59,7 @@ Ext.define('ZCS.controller.ZtMainController', {
 		// Initialize the main view
 		Ext.Viewport.add(Ext.create('ZCS.view.ZtMain'));
 		ZCS.app.on('serverError', this.handleError, this);
+		window.onbeforeunload = this.unloadHandler;
 	},
 
 	/**
@@ -157,6 +158,23 @@ Ext.define('ZCS.controller.ZtMainController', {
 		}
 		else {
 			Ext.Msg.alert(title, text);
+		}
+	},
+
+	/**
+	 * Note: Mobile Safari doesn't support onbeforeunload, so this is semi-useless (should work on
+	 * Android). See http://stackoverflow.com/questions/3239834/window-onbeforeunload-not-working-on-the-ipad.
+	 *
+	 * @return {String|false}   a string if there are unsaved changes
+	 */
+	unloadHandler: function() {
+
+		var composeCtlr = ZCS.app.getComposeController(),
+			contactCtlr = ZCS.app.getContactController(),
+			isDirty = (composeCtlr && composeCtlr.isDirty()) || (contactCtlr && contactCtlr.isDirty());
+
+		if (isDirty) {
+			return ZtMsg.appExitWarning;
 		}
 	}
 });
