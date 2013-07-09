@@ -60,6 +60,8 @@
 	}
 	skin = skin.replaceAll("['\"<>&]", "");
 
+    String authTokenExpires = request.getParameter("authTokenExpires");
+
 	boolean isDev = getParameter(request, "dev", "0").equals("1");
 	if (isDev) {
 		request.setAttribute("dev", "1");
@@ -111,6 +113,7 @@
 	// make variables available in page context (e.g. ${foo})
 	pageContext.setAttribute("contextPath", contextPath);
 	pageContext.setAttribute("skin", skin);
+    pageContext.setAttribute("authTokenExpires", authTokenExpires);
 	pageContext.setAttribute("ext", ext);
 	pageContext.setAttribute("vers", vers);
 	pageContext.setAttribute("locale", locale);
@@ -137,6 +140,7 @@
 	window.appExtension			= "${zm:jsEncode(ext)}";
 	window.appDevMode			= ${isDevMode};
     window.appCoverageMode		= ${isCoverage};
+    window.authTokenExpires     = ${authTokenExpires};
 </script>
 
 <%@ include file="loadImgData.jsp" %>
