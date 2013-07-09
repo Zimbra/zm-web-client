@@ -226,14 +226,6 @@ ZmCalItem.prototype.getFolder			= function() { };						// override if necessary
 ZmCalItem.prototype.getOrganizer 		= function() { return this.organizer || ""; };
 
 /**
- * Gets the organizer name.
- *
- * @return	{String}	the organizer name
- */
-ZmCalItem.prototype.getOrganizerName 	= function() { return this.organizerName; };
-
-
-/**
  * Gets the sent by.
  * 
  * @return	{String}	the sent by
@@ -1090,7 +1082,6 @@ function(message, viewMode) {
 	if (message.invite) {
 		this.isOrg = message.invite.isOrganizer();
 		this.organizer = message.invite.getOrganizerEmail();
-		this.organizerName = message.invite.getOrganizerName();
 		this.sentBy = message.invite.getSentBy();
 		this.name = message.invite.getName() || message.subject;
 		this.isException = message.invite.isException();
@@ -2614,9 +2605,6 @@ function(ex) {
                 status.errorMessage=ZmMsg.errorQuotaExceededTask;
             }
     }
-	else if (ex.code === ZmCsfeException.MUST_BE_ORGANIZER) {
-		status.errorMessage = ZmMsg.mustBeOrganizer;
-	}
 
     return status;
 };

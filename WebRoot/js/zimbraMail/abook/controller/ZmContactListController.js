@@ -147,6 +147,13 @@ function(searchResult, isGalSearch, folderId) {
 	}
 };
 
+ZmContactListController.prototype._dragListener =
+function(ev) {
+	ZmListController.prototype._dragListener.call(this, ev);
+	if (ev.srcControl && ev.srcControl && ev.srcControl._folderId && ev.srcControl._folderId == ZmFolder.ID_DLS) {
+		return;
+	}
+};
 
 
 /**
@@ -869,17 +876,27 @@ function(parent, num) {
 
 	var selection = this._listView[this._currentViewId].getSelection();
 	var contact = (selection.length == 1) ? selection[0] : null;
+	parent.enable([ZmOperation.SEARCH_MENU, ZmOperation.BROWSE], num == 1 && !appCtxt.isExternalAccount());
 
-	var searchEnabled = num === 1 && !appCtxt.isExternalAccount() && !contact.isGroup() && contact.getEmail(); //contact.getEmail() comes from bug 72446. I had to refactor but want to keep reference to bug in this comment
-	parent.enable([ZmOperation.SEARCH_MENU, ZmOperation.BROWSE], searchEnabled);
-
-	if (parent instanceof ZmPopupMenu) {
-		this._setContactText(!this.isGalSearch(), contact && contact.isGroup());
-		if (appCtxt.get(ZmSetting.IM_ENABLED)) {
-			var imItem = parent.getOp(ZmOperation.IM);
-			ZmImApp.updateImMenuItemByContact(imItem, contact);
+	if (num == 1 && contact.isGroup()) {
+		parent.enable([ZmOperation.SEARCH_MENU, ZmOperation.BROWSE], false);
+		if (parent instanceof ZmPopupMenu) {
+			ZmOperation.setOperation(parent, ZmOperation.CONTACT, ZmOperation.EDIT_CONTACT, ZmMsg.AB_EDIT_GROUP);
 		}
-
+	}
+	else if (num == 1 && !contact.getEmail()) {
+		parent.enable([ZmOperation.SEARCH_MENU], false);	
+	}
+	else {
+		if (parent instanceof ZmPopupMenu) {
+			this._setContactText(!this.isGalSearch());
+			if (appCtxt.get(ZmSetting.IM_ENABLED)) {
+				var imItem = parent.getOp(ZmOperation.IM);
+				ZmImApp.updateImMenuItemByContact(imItem, contact);
+			}
+		}
+	}
+	if (parent instanceof ZmPopupMenu) {
 		var tagMenu = parent.getMenuItem(ZmOperation.TAG_MENU);
 		if (tagMenu) {
 			tagMenu.setText(contact && contact.isGroup() ? ZmMsg.AB_TAG_GROUP : ZmMsg.AB_TAG_CONTACT);
@@ -1021,7 +1038,7 @@ function(ev) {
     var emailStr = '', contact, email;
     for (var i = 0; i < selection.length; i++){
         contact = selection[i];
-		if (contact.isGroup() && !contact.isDistributionList()) {
+		if (contact.isGroup()) {
 			var members = contact.getGroupMembers().good;
 			if (members.size()) {
 				emailStr += members.toString(AjxEmailAddress.SEPARATOR) + AjxEmailAddress.SEPARATOR;

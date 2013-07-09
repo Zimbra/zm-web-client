@@ -474,7 +474,7 @@ input.admin_xform_name_input_disabled {
 	height:8px; 
 	background-color:green;
 	margin:1px 0;
-#IFDEF MSIE_LOWER_THAN_9
+#IFDEF MSIE
     font-size: 0px;
 #ENDIF
 }
@@ -483,7 +483,7 @@ input.admin_xform_name_input_disabled {
 	height:8px; 
 	background-color:orange;
 	margin:1px 0;
-#IFDEF MSIE_LOWER_THAN_9
+#IFDEF MSIE
     font-size: 0px;
 #ENDIF
 }
@@ -492,7 +492,7 @@ input.admin_xform_name_input_disabled {
 	height:8px; 
 	background-color:red;
 	margin:1px 0;
-#IFDEF MSIE_LOWER_THAN_9
+#IFDEF MSIE
     font-size: 0px;
 #ENDIF
 }
@@ -502,7 +502,7 @@ input.admin_xform_name_input_disabled {
 	width:100px; 
 	height:10px;
 	background-color:white;
-#IFDEF MSIE_LOWER_THAN_9
+#IFDEF MSIE
     font-size: 0px;
 #ENDIF
 }
@@ -728,7 +728,7 @@ DIV.ZaSearchBuilderOptionRemoveAll TABLE  {
 }
 
 .ZaSearchResultCountLabel {
-	#IFDEF MSIE_LOWER_THAN_9
+	#IFDEF MSIE
 		margin-top:5px;
 	#ENDIF
 }
@@ -872,7 +872,7 @@ DIV.ZaSearchBuilderOptionRemoveAll TABLE  {
  * here we set to fixed width to get layout 	
  *
  ************/ 
-#IFDEF MSIE_LOWER_THAN_9
+#IFDEF MSIE
 	width:400px; 
 #ENDIF
 	word-wrap:break-word;
@@ -886,7 +886,7 @@ DIV.ZaSearchBuilderOptionRemoveAll TABLE  {
 
 .ZaToastBG {	@ToastContainer@	}
 
-#IFNDEF MSIE_LOWER_THAN_9
+#IFNDEF  MSIE
 TABLE {	border-collapse:separate;	}
 #ENDIF
 

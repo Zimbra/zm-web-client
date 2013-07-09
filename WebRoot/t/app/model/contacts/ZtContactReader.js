@@ -73,10 +73,7 @@ Ext.define('ZCS.model.contacts.ZtContactReader', {
 			var m = attr.match(ZCS.constant.REGEX_CONTACT_ATTR),
 				value = attrs[attr];
 			if (m && m.length > 0) {
-				var type = m[1],
-					f = m[2],
-					field = f.charAt(0).toLowerCase() + f.slice(1),     // uncapitalize first letter
-					num = m[3];
+				var type = m[1], field = m[2].toLowerCase(), num = m[3];
 				type = ZCS.constant.ATTR_TYPE_SORT_VALUE[type] ? type : 'other';
 				if (field === 'fax') {
 					field = 'phone';

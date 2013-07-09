@@ -561,10 +561,6 @@ function(params, noRender, callback, errorCallback) {
 	}
 
 	var respCallback = this._handleResponseDoSearch.bind(this, search, noRender, callback, params.noUpdateOverview);
-    if (search.hasFolderTerm('outbox')) {
-        var offlineCallback = this._handleOfflineDoSearch.bind(this, search, noRender, callback, params.noUpdateOverview);
-        var offlineRequest = true;
-    }
 	if (!errorCallback) {
 		errorCallback = this._handleErrorDoSearch.bind(this, search);
 	}
@@ -582,10 +578,10 @@ function(params, noRender, callback, errorCallback) {
 			search.calController = controller;
 			controller.handleUserSearch(params, respCallback);
 		} else {
-            search.execute({offlineCache:params && params.offlineCache, callback:respCallback, errorCallback:errorCallback, offlineCallback:offlineCallback, offlineRequest:offlineRequest});
+            search.execute({callback:respCallback, errorCallback:errorCallback});            
         }
 	} else {
-		search.execute({offlineCache:params && params.offlineCache, callback:respCallback, errorCallback:errorCallback, offlineCallback:offlineCallback, offlineRequest:offlineRequest});
+		search.execute({callback:respCallback, errorCallback:errorCallback});
 	}
 };
 
@@ -619,16 +615,6 @@ function(search, noRender, callback, noUpdateOverview, result) {
 	if (callback) {
 		callback.run(result);
 	}
-};
-
-/**
- * Takes the search result and hands it to the appropriate controller for display.
- *
- * @param {ZmSearch}	search			contains search info used to run search against server
- */
-ZmSearchController.prototype._handleOfflineDoSearch =
-function(search, ex, params, result) {
-    this._doIndexedDBSearch(search, ex, params);
 };
 
 /**
@@ -684,13 +670,14 @@ function(results, search, noUpdateOverview) {
  * folder, no such tag, and bad query. If it's a "no such folder" error caused
  * by the deletion of a folder backing a mountpoint, we pass it along for
  * special handling by ZmZimbraMail.
- *
+ * 
  * @private
  */
 ZmSearchController.prototype._handleErrorDoSearch =
 function(search, ex) {
 	DBG.println(AjxDebug.DBG1, "Search exception: " + ex.code);
-    if (ex.code == ZmCsfeException.MAIL_NO_SUCH_TAG ||
+
+	if (ex.code == ZmCsfeException.MAIL_NO_SUCH_TAG ||
 		ex.code == ZmCsfeException.MAIL_QUERY_PARSE_ERROR ||
 		ex.code == ZmCsfeException.MAIL_TOO_MANY_TERMS ||
 		(ex.code == ZmCsfeException.MAIL_NO_SUCH_FOLDER && !(ex.data.itemId && ex.data.itemId.length)))
@@ -830,6 +817,8 @@ function(ev, id, noFocus) {
 	var selItem = menu.getSelectedItem();
 	var sharedMI = menu.getItemById(ZmSearchToolBar.MENUITEM_ID, ZmId.SEARCH_SHARED);
 
+	this._searchToolBar.setPeopleAutocomplete(id);
+
 	// enable shared menu item if not a gal search
 	if (id == ZmId.SEARCH_GAL) {
 		this._contactSource = ZmId.SEARCH_GAL;
@@ -931,63 +920,4 @@ function(id) {
 	}
 
 	return nid;
-};
-
-/**
- * Performs the IndexedDB search.
- *
- * @param {ZmSearch}	search		the search object
- *
- * @private
- */
-ZmSearchController.prototype._doIndexedDBSearch =
-function(search) {
-    var respCallback = this._handleResponseDoIndexedDBSearch.bind(this, search);
-    var errorCallback = this._handleErrorDoIndexedDBSearch.bind(this, search);
-    var indexObj = { methodName : "SendMsgRequest" };
-    ZmOfflineDB.indexedDB.actionsInRequestQueueUsingIndex(indexObj, respCallback, errorCallback);
-};
-
-/**
- * Takes the search result and hands it to the appropriate controller for display.
- *
- * @param {ZmSearch}	search			contains search info used to run search against server
- * @param {Object}	    result			the object stored in indexedDB
- *
- * @private
- */
-ZmSearchController.prototype._handleResponseDoIndexedDBSearch =
-function(search, result) {
-
-    if (search.sortBy === ZmSearch.DATE_DESC) {
-        result.reverse();
-    }
-
-    var respEl = ZmOffline.generateMsgResponse(result),
-        results = new ZmSearchResult(search);
-
-    results.type = search.types ? search.types.get(0) : null;
-
-    if (search.types.get(0) === ZmId.ITEM_CONV) {//conversation mode
-        results.set({ "c" : respEl });
-    }
-    else {
-        results.set({ "m" : respEl });
-    }
-
-    this._showResults(results, search);
-
-    ZmOffline.updateOutboxFolderCountCallback(result);
-};
-
-/**
- * Handle a few minor errors where we show an empty result set.
- *
- * @private
- */
-ZmSearchController.prototype._handleErrorDoIndexedDBSearch =
-function(search, result) {
-    var results = new ZmSearchResult(search);
-    results.type = search.types ? search.types.get(0) : null;
-    this._showResults(results, search);
 };

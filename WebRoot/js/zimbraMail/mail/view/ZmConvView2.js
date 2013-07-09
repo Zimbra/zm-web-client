@@ -174,7 +174,7 @@ function(conv, container) {
 
 	this._msgViews = {};
 	this._msgViewList = [];
-	var msgs = conv.getMsgList(0, false, this._controller.getFoldersToOmit());
+	var msgs = conv.getMsgList();
 	
 	// base the ordering off a list of msg IDs
 	var idList = [], idHash = {};
@@ -710,11 +710,6 @@ function(newMsg) {
 };
 
 
-ZmConvView2.prototype.isWaitOnMarkRead =
-function() {
-	return this._item && this._item.waitOnMarkRead;
-};
-
 // Following two overrides are a hack to allow this view to pretend it's a list view
 ZmConvView2.prototype.getSelection =
 function() {
@@ -802,7 +797,7 @@ function(view, content, htmlEncode) {
 ZmConvView2Header = function(params) {
 
 	params.className = params.className || "Conv2Header";
-	DwtComposite.call(this, params);
+	DwtControl.call(this, params);
 
 	this._setEventHdlrs([DwtEvent.ONMOUSEDOWN, DwtEvent.ONMOUSEUP, DwtEvent.ONDBLCLICK]);
 	
@@ -1186,6 +1181,7 @@ ZmMailMsgCapsuleView = function(params) {
 	// cache text and HTML versions of original content
 	this._origContent = {};
 
+	this.addListener(ZmMailMsgView._TAG_CLICK, this._msgTagClicked.bind(this));
 	this.addListener(ZmInviteMsgView.REPLY_INVITE_EVENT, this._convView._inviteReplyListener);
 	this.addListener(ZmMailMsgView.SHARE_EVENT, this._convView._shareListener);
 	this.addListener(ZmMailMsgView.SUBSCRIBE_EVENT, this._convView._subscribeListener);
@@ -1375,6 +1371,7 @@ function(msg, container, callback) {
 		this._showEntireMsg = false;
 	}
 	else {
+		msg.waitOnMarkRead = this._convView._item.waitOnMarkRead;
 		this._handleResponseLoadMessage(msg, container, callback);
 	}
 };
@@ -1415,7 +1412,7 @@ function(isTextMsg, html, isTruncated) {
 	// Code below attempts to determine if we can display an HTML msg in a DIV. If there are
 	// issues with the msg DOM being part of the window DOM, we may want to just always return
 	// true from this function.
-	var result = AjxStringUtil.checkForCleanHtml(html, ZmMailMsgView.TRUSTED_TAGS, ZmMailMsgView.UNTRUSTED_ATTRS);
+	var result = AjxStringUtil.checkForCleanHtml(html, ZmMailMsgView.TRUSTED_TAGS, ZmMailMsgView.UNTRUSTED_ATTRS, ZmMailMsgView.BAD_STYLES);
 	if (result.html) {
 		this._cleanedHtml = result.html;
 		this._contentWidth = result.width;
@@ -1535,7 +1532,7 @@ function(bodyPart) {
 	var content = (this._showingQuotedText || this._forceOriginal || this._isMatchingMsg || !origContent) ? bodyPart.getContent() : origContent;
 	content = content || "";
 	// remove trailing blank lines
-	content = isHtml ? AjxStringUtil.trimHtml(content) : AjxStringUtil.trim(content);
+	content = isHtml ? AjxStringUtil.removeTrailingBR(content) : AjxStringUtil.trim(content);
 	return content;
 };
 
@@ -1850,6 +1847,11 @@ function(table, tagCellId) {
 	cell.innerHTML = "&nbsp;";
 	
 	return tagCell;
+};
+
+ZmMailMsgCapsuleView.prototype._getTagAttrHtml =
+function(tag) {
+	return "notoggle=1";
 };
 
 // Msg view header has been left-clicked

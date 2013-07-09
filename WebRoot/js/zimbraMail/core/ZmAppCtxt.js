@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013 VMware, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -53,22 +53,12 @@ ZmAppCtxt = function() {
 	this._isExpandableDL	= {};	// distribution lists
 
 	this._setAuthTokenWarning();
-    this._supportsOffline = this.isOfflineSupported();
-    if (this._supportsOffline && this.isOfflineMode()){
-        this._offlineHandler = new ZmOffline();
-
-    }
 };
 
 ZmAppCtxt.ONE_MINUTE = 60 * 1000;
 ZmAppCtxt.MAX_TIMEOUT_VALUE = 2147483647;
 
 ZmAppCtxt._ZIMLETS_EVENT = 'ZIMLETS';
-
-//Regex constants
-//Bug fix # 79986, #81095. Invalid file names are < > , ? | / \ * :
-ZmAppCtxt.INVALID_NAME_CHARS = "[\\|?<>:*\",\\\\\/]";
-ZmAppCtxt.INVALID_NAME_CHARS_RE = new RegExp(ZmAppCtxt.INVALID_NAME_CHARS);
 
 /**
  * Returns a string representation of the application context.
@@ -392,19 +382,6 @@ function() {
 };
 
 /**
- * Gets the message dialog with a help button.
- *
- * @return	{DwtMessageDialog}	the message dialog
- */
-ZmAppCtxt.prototype.getHelpMsgDialog =
-	function() {
-		if (!this._helpMsgDialog) {
-			this._helpMsgDialog = new DwtMessageDialog({parent:this._shell, helpText:ZmMsg.help, id: "ZmHelpMsgDialog"});
-		}
-		return this._helpMsgDialog;
-	};
-
-/**
  * Gets the yes/no message dialog.
  * 
  * @return	{DwtMessageDialog}	the message dialog
@@ -561,7 +538,7 @@ function() {
 ZmAppCtxt.prototype.getNewCalendarDialog =
 function() {
 	if (!this._newCalendarDialog) {
-		AjxDispatcher.require(["MailCore", "CalendarCore", "Calendar", "CalendarAppt"]);
+		AjxDispatcher.require(["CalendarCore", "Calendar", "CalendarAppt"]);
 		this._newCalendarDialog = new ZmNewCalendarDialog(this._shell);
 	}
 	return this._newCalendarDialog;
@@ -589,7 +566,7 @@ function() {
 ZmAppCtxt.prototype.getSuggestionPreferenceDialog =
 function() {
 	if (!this._suggestionPrefDialog) {
-		AjxDispatcher.require(["MailCore", "CalendarCore", "Calendar"]);
+		AjxDispatcher.require(["CalendarCore", "Calendar"]);
         this._suggestionPrefDialog = new ZmTimeSuggestionPrefDialog(this._shell);
     }
     return this._suggestionPrefDialog;
@@ -1279,20 +1256,6 @@ function() {
 		this._uploadManagerIframeId = iframeId;
 	}
 	return this._uploadManagerIframeId;
-};
-
-ZmAppCtxt.prototype.reloadOfflineAppCache =
-function(locale, skin, reload){
-    var appCacheManifest= appContextPath + "/appcache/images,common,dwt,msgview,login,zm,spellcheck,skin.appcache?";
-    var urlParams = [];
-    window.cacheKillerVersion && urlParams.push("v=" + window.cacheKillerVersion);
-    window.appDevMode && urlParams.push("debug=1");
-    urlParams.push("compress=" + !(window.appDevMode === true));
-    urlParams.push("templates=only");
-    var manifestUrl = encodeURIComponent(appCacheManifest + urlParams.join('&'));
-    document.cookie = "ZM_CACHE_NEW_LANG = " + locale ;
-    document.cookie = "ZM_CACHE_NEW_SKIN = " + skin ;
-    $("#offlineIframe").attr('src', 'public/Offline.jsp/?url=' + manifestUrl + '&reload=' + reload);
 };
 
 /**
@@ -2039,47 +2002,14 @@ function() {
  */
 ZmAppCtxt.handleWindowOpener = 
 function() {
-	try {
-		return window.opener && window.opener.appCtxt || appCtxt;
+	var aCtxt = appCtxt;
+	if (window.opener) {
+		try {
+			aCtxt = window.opener.appCtxt;
+		}
+		catch (ex) {
+			aCtxt = appCtxt;
+		}
 	}
-	catch (ex) {
-		return appCtxt;
-	}
-};
-
-ZmAppCtxt.prototype.isOfflineMode =
-function() {
-    return !navigator.onLine;
-};
-
-ZmAppCtxt.prototype.initWebOffline =
-function(callback) {
-    $( window ).bind("online offline",
-        function(){
-            appCtxt.setStatusMsg(appCtxt.isOfflineMode() ?  ZmMsg.networkChangeOffline : ZmMsg.networkChangeOnline);
-            if (!appCtxt.isOfflineMode()){
-                ZmOffline.syncData();
-            }
-        });
-     if (this._supportsOffline){
-         this._offlineHandler.init(callback);
-     }
-};
-
-/**
- * Gets the offline settings dialog.
- *
- * @return	{ZmOfflineSettingsDialog}	offline settings dialog
- */
-ZmAppCtxt.prototype.getOfflineSettingsDialog =
-function() {
-    if (!this._offlineSettingsDialog) {
-        this._offlineSettingsDialog = new ZmOfflineSettingsDialog();
-    }
-    return this._offlineSettingsDialog;
-};
-
-ZmAppCtxt.prototype.isOfflineSupported =
-function(){
-    return window.isWeboffline && AjxEnv.supported.localstorage &&  AjxEnv.supported.applicationcache && AjxEnv.supported.indexeddb;
+	return aCtxt;
 };

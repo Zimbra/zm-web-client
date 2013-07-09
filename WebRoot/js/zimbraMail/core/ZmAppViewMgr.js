@@ -917,7 +917,6 @@ function(show) {
  */
 ZmAppViewMgr.prototype.fitAll =
 function() {
-	this._shell.relayout();
 	this._fitToContainer(ZmAppViewMgr.ALL_COMPONENTS);
 };
 

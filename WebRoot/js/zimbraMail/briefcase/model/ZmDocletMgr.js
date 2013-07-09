@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2008, 2009, 2010, 2011, 2013 VMware, Inc.
+ * Copyright (C) 2008, 2009, 2010, 2011, 2012 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -318,6 +318,10 @@ function(themePath)
     return docContent;
 };
 
+
+ZmDocletMgr.INVALID_DOC_NAME_CHARS = "[\\|]";
+ZmDocletMgr.INVALID_DOC_NAME_RE = new RegExp(ZmDocletMgr.INVALID_DOC_NAME_CHARS);
+
 ZmDocletMgr.prototype.checkInvalidDocName = function(fileName) {
 
     var message;
@@ -325,8 +329,7 @@ ZmDocletMgr.prototype.checkInvalidDocName = function(fileName) {
 
     if(fileName == ""){
         message = ZmMsg.emptyDocName;
-    }else if (!ZmOrganizer.VALID_NAME_RE.test(fileName) || ZmAppCtxt.INVALID_NAME_CHARS_RE.test(fileName)) {
-        //Bug fix # 79986 - < > , ? | / \ * : are invalid filenames
+    }else if (!ZmOrganizer.VALID_NAME_RE.test(fileName) || ZmDocletMgr.INVALID_DOC_NAME_RE.test(fileName)) {
         message = AjxMessageFormat.format(ZmMsg.errorInvalidName, AjxStringUtil.htmlEncode(fileName));
     } else if ( fileName.length > ZmOrganizer.MAX_NAME_LENGTH){
         message = AjxMessageFormat.format(ZmMsg.nameTooLong, ZmOrganizer.MAX_NAME_LENGTH);

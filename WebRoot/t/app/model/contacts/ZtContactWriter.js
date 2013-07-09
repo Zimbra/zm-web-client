@@ -125,7 +125,7 @@ Ext.define('ZCS.model.contacts.ZtContactWriter', {
     populateAttrs : function(contact, attrs) {
 
 		var attrHash = contact.fieldsToAttrs(),
-			attrList = attrs && attrs.length > 0 ? attrs : Object.keys(attrHash),
+			attrList = attrs && attrs.length > 0 ? attrs : Ext.Object.keys(attrHash),
 			jsonAttrs = [];
 
 		Ext.each(attrList, function(attr) {
