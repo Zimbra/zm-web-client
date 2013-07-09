@@ -50,7 +50,6 @@ ZmExternalCalendarDialog.THIRD_VIEW_ID = "_shareCalendarView3";
 ZmExternalCalendarDialog.SYNC_TYPE_ICAL = "EXT_CAL_SYNCTYPE_DIALOG_ical";
 ZmExternalCalendarDialog.SYNC_TYPE_CALDAV = "EXT_CAL_DIALOG_SYNCTYPE_caldav";
 
-ZmExternalCalendarDialog.TYPE_GOOGLE = "Google";
 ZmExternalCalendarDialog.TYPE_YAHOO = "Yahoo";
 ZmExternalCalendarDialog.TYPE_OTHER = "Other";
 
@@ -73,7 +72,7 @@ function() {
 
 ZmExternalCalendarDialog.prototype.popup =
 function() {
-    this.showView(ZmExternalCalendarDialog.FIRST_VIEW, ZmExternalCalendarDialog.TYPE_GOOGLE);
+    this.showView(ZmExternalCalendarDialog.FIRST_VIEW, ZmExternalCalendarDialog.TYPE_YAHOO);
     ZmDialog.prototype.popup.call(this);
 };
 
@@ -92,13 +91,9 @@ function(ev) {
             if(_shareRadioPublic && _shareRadioPublic.checked) {
                 this._showSharePublicView();
             }*/
-            var shareRadioGoogle = document.getElementById(id + '_shareRadioGoogle'),
-                shareRadioYahoo = document.getElementById(id + '_shareRadioYahoo'),
+            var shareRadioYahoo = document.getElementById(id + '_shareRadioYahoo'),
                 shareRadioOther = document.getElementById(id + '_shareRadioOther');
 
-            if(shareRadioGoogle && shareRadioGoogle.checked) {
-                this.showView(ZmExternalCalendarDialog.SECOND_VIEW, ZmExternalCalendarDialog.TYPE_GOOGLE);
-            }
             if(shareRadioYahoo && shareRadioYahoo.checked) {
                 this.showView(ZmExternalCalendarDialog.SECOND_VIEW, ZmExternalCalendarDialog.TYPE_YAHOO);
             }
@@ -168,11 +163,7 @@ function(syncType) {
             hostUrl = AjxStringUtil.trim(this._urlInput.getValue()),
             url;
         if(userName.indexOf('@') === -1) {
-            if (hostUrl.indexOf(ZmMsg.sharedCalCalDAVServerGoogle) !== -1) {
-                //google selected
-                userName += "@gmail.com";
-            }
-            else if (hostUrl.indexOf(ZmMsg.sharedCalCalDAVServerYahoo) !== -1){
+            if (hostUrl.indexOf(ZmMsg.sharedCalCalDAVServerYahoo) !== -1){
                 //yahoo selected
                 userName += "@yahoo.com";
             }
@@ -265,24 +256,13 @@ function(viewId, type) {
 
     switch(viewId) {
         case ZmExternalCalendarDialog.FIRST_VIEW :
-            if(type && type == ZmExternalCalendarDialog.TYPE_GOOGLE) {
-                var shareRadioGoogle = document.getElementById(this._htmlElId + '_shareRadioGoogle');
-                shareRadioGoogle.checked = true;
-            }
             this.getButton(ZmExternalCalendarDialog.BACK_BUTTON).setVisibility(false);
             this.setTitle(ZmMsg.addExternalCalendar);
         break;
 
         case ZmExternalCalendarDialog.SECOND_VIEW :
             this.getButton(ZmExternalCalendarDialog.BACK_BUTTON).setVisibility(true);
-            if(type == ZmExternalCalendarDialog.TYPE_GOOGLE) {
-                this._userNameInput.setHint(ZmMsg.sharedCalUserNameGoogleHint);
-                this._urlInput._hideHint(ZmMsg.sharedCalCalDAVServerGoogle);
-                this._urlInput.setEnabled(false);
-                this._syncMsg.innerHTML = ZmMsg.sharedCalSyncMsgGoogle;
-                this.setTitle(ZmMsg.sharedCalTitleGoogle);
-            }
-            else if(type == ZmExternalCalendarDialog.TYPE_YAHOO) {
+            if(type == ZmExternalCalendarDialog.TYPE_YAHOO) {
                 this._userNameInput.setHint(ZmMsg.sharedCalUserNameYahooHint);
                 this._urlInput._hideHint(ZmMsg.sharedCalCalDAVServerYahoo);
                 this._urlInput.setEnabled(false);
