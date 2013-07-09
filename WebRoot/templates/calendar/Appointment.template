@@ -48,7 +48,7 @@
                 <tr id="${id}_attendeesContainer">
                     <td class='ZmFieldLabelRight'><div id='${id}_req_att_picker'><$= ZmMsg.attendeesLabel $></div></td>
                     <td colspan='3' id='${id}_person'></td>
-                    <td id='${id}_show_optional' class='fakeAnchor'><$= ZmMsg.showOptional $></td>
+                    <td id='${id}_show_optional' class='FakeAnchor'><$= ZmMsg.showOptional $></td>
                 </tr>
                 <tr id='${id}_optionalContainer'>
                     <td class='ZmFieldLabelRight'><div id='${id}_opt_att_picker'><$= ZmMsg.optionalLabel $></div></td>
@@ -59,7 +59,7 @@
                     <td colspan='4'>
                         <div id='${id}_attendee_status' class='ZmLocationStatusConflict' style="float:left;" x-display='inline-block'>
                             <$= AjxImg.getImageHtml("Warning_12", "display:inline-block;padding-right:4px;float:left;") + ZmMsg.attendeeConflict $></div>
-                        <div id='${id}_suggest_time' class='fakeAnchor ZmSuggestLink' x-display='inline-block'> <$= ZmMsg.suggestATime $></div>
+                        <div id='${id}_suggest_time' class='FakeAnchor ZmSuggestLink' x-display='inline-block'> <$= ZmMsg.suggestATime $></div>
                     </td>
                 </tr>
                 <$ } $>
@@ -67,7 +67,7 @@
                     <td class='ZmFieldLabelRight'><div id='${id}_loc_picker'><$= ZmMsg.locationLabel $></div></td>
                     <$ if (data.isGalEnabled && data.isGroupCalEnabled) { $>
                     <td colspan='3' id='${id}_location'></td>
-                    <td id='${id}_show_resources' class='fakeAnchor'><$= ZmMsg.showEquipment $></td>
+                    <td id='${id}_show_resources' class='FakeAnchor'><$= ZmMsg.showEquipment $></td>
                     <$ }else { $>
                     <td colspan='4' id='${id}_location'></td>
                     <$ } $>
@@ -76,8 +76,9 @@
                     <td></td>
                     <td colspan='4'>
                         <div id='${id}_location_status'  class='ZmLocationStatusConflict' x-display='inline-block'></div>
-                        <div id='${id}_location_status_action' class='fakeAnchor ZmSuggestLink' x-display='inline-block'></div>
-                        <div id='${id}_suggest_location' class='fakeAnchor ZmSuggestLink' x-display='inline-block'><$= ZmMsg.suggestALocation $></div>
+                        <div id='${id}_location_status_action' class='FakeAnchor ZmSuggestLink'
+                        x-display='inline-block'></div>
+                        <div id='${id}_suggest_location' class='FakeAnchor ZmSuggestLink' x-display='inline-block'><$= ZmMsg.suggestALocation $></div>
                     </td>
                 </tr>
                 <$ if (data.isGalEnabled && data.isGroupCalEnabled) { $>
@@ -171,7 +172,8 @@
                 <tr>
                     <td colspan='5' id='${id}_scheduler_option' style='padding:7px;'>
                         <div style="float:left;" class="calendar_edit_field"><$= ZmMsg.scheduler $></div>
-                        <div style="float:left; padding-left:5px;" id="${id}_scheduleButton" class="fakeAnchor"><$= ZmMsg.show $></div>
+                        <div style="float:left; padding-left:5px;" id="${id}_scheduleButton" class="FakeAnchor"><$=
+                        ZmMsg.show $></div>
                         <div id="${id}_scheduleImage" class="ImgSelectPullDownArrow" style="float:left;"></div>
                     </td>
                 </tr>
@@ -452,7 +454,7 @@
                 </tr>
                 <tr>
                     <td></td>
-                    <td colspan='2'><div id='${id}_suggest_location' style="height:1.4em;" class='fakeAnchor'><$= ZmMsg.suggestALocation $></div></td>
+                    <td colspan='2'><div id='${id}_suggest_location' style="height:1.4em;" class='FakeAnchor'><$= ZmMsg.suggestALocation $></div></td>
                 </tr>
                 <tr>
                     <td class='ZmApptTabViewPageField'><$= ZmMsg.displayLabel $></td>
@@ -740,7 +742,7 @@
 		<table class='ZPropertySheet' cellspacing='6'>
 			<tr>
 				<td id='${id}_graphKeySpacer'>
-					<span id='${id}_showMoreLink' class="fakeAnchor" style='display:none;'><$= ZmMsg.showMore $></span>
+					<span id='${id}_showMoreLink' class="FakeAnchor" style='display:none;'><$= ZmMsg.showMore $></span>
 				</td>
 				<td><div class='ZmGraphKeyColorBox ZmScheduler-working'></div></td>
 				<td class='ZmGraphKeyColorText' style='padding-right:1em;'><$= ZmMsg.free $></td>
@@ -1061,7 +1063,8 @@
 			<td width="16" ><$= AjxImg.getImageHtml(data.attendeeImage) $></td>
 			<td><$= data.timeLabel $></td>
 		<$ if (data.totalLocations > 0) { $>
-			<td align="right" width="20" id='${id}_loc'><span class="fakeAnchor"><$= data.locationCountStr $></span></td>
+			<td align="right" width="20" id='${id}_loc'><span class="FakeAnchor"><$= data.locationCountStr
+			$></span></td>
 			<td width="16"><$= AjxImg.getImageHtml(data.locationImage) $></td>
 		<$ } $>
 		</tr>
@@ -1100,7 +1103,7 @@
 <template id='calendar.Appointment#TimeSuggestion-NoSuggestions'>
 	<div class='NoSuggestions'>
 		<div style='margin-bottom:2em;'>${message}</div>
-		<span class="fakeanchor" id="${id}_showall"><$= ZmMsg.showTimesAnyway $></span>
+		<span class="Fakeanchor" id="${id}_showall"><$= ZmMsg.showTimesAnyway $></span>
 	</div>
 </template>
 

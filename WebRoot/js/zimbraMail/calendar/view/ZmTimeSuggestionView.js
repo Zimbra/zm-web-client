@@ -93,7 +93,7 @@ function(itemDiv, ev) {
     if(item) {
         this._editView.setDate(new Date(item.startTime), new Date(item.endTime));
         //user clicked the link directly
-        if (ev.target && (ev.target.className == "fakeAnchor" || ev.target.className == "ImgLocationGreen" || ev.target.className == "ImgLocationRed")) {
+        if (ev.target && (ev.target.className == "FakeAnchor" || ev.target.className == "ImgLocationGreen" || ev.target.className == "ImgLocationRed")) {
             var menu = this._createLocationsMenu(item);
             menu.popup(0, ev.docX, ev.docY);
         }
@@ -206,7 +206,7 @@ function(item, id, ev) {
     }
 
     //user clicked the link directly
-    if (ev.target && (ev.target.className == "fakeAnchor")) {
+    if (ev.target && (ev.target.className == "FakeAnchor")) {
         this._locSelect.popup();        
     }
 
@@ -279,7 +279,7 @@ function() {
     var prevItem = prevItemDiv ? this.getItemFromElement(prevItemDiv) : null;
     if(prevItem) {
         var prevLoc = document.getElementById(prevId + '_loc');
-        prevLoc.innerHTML = '<span class="fakeAnchor">' + AjxMessageFormat.format(ZmMsg.availableRoomsCount, [prevItem.availableLocations]) + '</span>';
+        prevLoc.innerHTML = '<span class="FakeAnchor">' + AjxMessageFormat.format(ZmMsg.availableRoomsCount, [prevItem.availableLocations]) + '</span>';
     }
 };
 
@@ -338,7 +338,7 @@ function(date) {
     this.removeAll();
 	var	div = document.createElement("div");
     var params = [
-        '<span class="fakeanchor" id="' + this.getHTMLElId() + '_showsuggestions">',
+        '<span class="FakeAnchor" id="' + this.getHTMLElId() + '_showsuggestions">',
         '</span>',
         date
     ];
