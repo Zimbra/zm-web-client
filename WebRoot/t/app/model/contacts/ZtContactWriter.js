@@ -31,6 +31,7 @@ Ext.define('ZCS.model.contacts.ZtContactWriter', {
 			action = request.getAction(),
 			itemData = data && data.length ? Ext.merge(data[0], options) : options,
 			contactId = itemData.contactId,
+            query = itemData.query,
 			json, methodJson;
 
 		if (action === 'read') {
@@ -42,8 +43,10 @@ Ext.define('ZCS.model.contacts.ZtContactWriter', {
 					id: contactId
 				};
 				methodJson.derefGroupMember = itemData.isGroup ? 1 : 0;
-			}
-			else {
+			} else if (query == '*') {
+                //Fire a GetContactsRequest to load all the contacts
+                json = this.getSoapEnvelope(request, data, 'GetContacts');
+            } else {
 				var query = request.getParams().query || 'in:contacts';
 				request.setUrl(ZCS.constant.SERVICE_URL_BASE + 'SearchRequest');    // replace configured 'read' URL
 				json = this.getSoapEnvelope(request, data, 'Search');

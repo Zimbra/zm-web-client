@@ -108,6 +108,13 @@ Ext.define('ZCS.controller.ZtAppViewController', {
 
             if (newApp !== ZCS.constant.APP_CALENDAR) {
                 if (this.showListPanelAtStart) {
+                    if (newApp === ZCS.constant.APP_CONTACTS) {
+                        /**
+                         * On startup, contacts from all the folders are being fetched. When user
+                         * taps on the 'Contacts' tab, load contacts from the system Contacts folder only.
+                         */
+                        ZCS.app.getContactListController().loadContacts();
+                    }
                     newAppView.listPanel.show();
                 }
             }

@@ -66,6 +66,19 @@ Ext.define('ZCS.controller.contacts.ZtContactListController', {
     },
 
     /**
+     * Load contacts from the system Contacts folder.
+     */
+    loadContacts: function() {
+        this.getStore().getProxy().setExtraParams({
+            query: 'in:contacts'
+        });
+
+        this.getStore().load({
+            query: 'in:contacts'
+        })
+    },
+
+    /**
      * Handle a newly created contact. Add it to view if is is in the currently viewed folder.
      */
     handleCreateNotification: function(item, create) {
@@ -119,7 +132,7 @@ Ext.define('ZCS.controller.contacts.ZtContactListController', {
 	},
 
 	getDefaultQuery: function() {
-		return "in:contacts";
+		return "*";
 	},
 
 	doNewContact: function() {
