@@ -1009,7 +1009,7 @@ function(params) {
 			className:				this._getBodyClass(),
 			id:						this._msgBodyDivId,
 			hidden:					true,
-			html:					html,
+			html:					this._cleanedHtml || html,
 			styles:					inner_styles,
 			noscroll:				!this._scrollWithIframe,
 			posStyle:				DwtControl.STATIC_STYLE,

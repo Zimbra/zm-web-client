@@ -1416,12 +1416,13 @@ function(isTextMsg, html, isTruncated) {
 	// issues with the msg DOM being part of the window DOM, we may want to just always return
 	// true from this function.
 	var result = AjxStringUtil.checkForCleanHtml(html, ZmMailMsgView.TRUSTED_TAGS, ZmMailMsgView.UNTRUSTED_ATTRS);
-	if (result.html) {
+	if (!result.useIframe) {
 		this._cleanedHtml = result.html;
 		this._contentWidth = result.width;
 		return false;
 	}
 	else {
+        this._cleanedHtml = result.html;
 		return true;
 	}
 };
