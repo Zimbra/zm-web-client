@@ -1338,9 +1338,10 @@ function(message) {
 	if (htmlContent) {
 		// create a temp iframe to create a proper DOM tree
 		var params = {parent:appCtxt.getShell(), hidden:true, html:htmlContent};
-		var dwtIframe = new DwtIframe(params);
-		if (dwtIframe) {
-			var textContent = this._getCleanHtml2Text(dwtIframe);
+		var textContent = message.getInviteDescriptionContentValue(ZmMimeTable.TEXT_PLAIN);
+		if (!textContent) { //only go through this pain if textContent is somehow not available from getInviteDescriptionContentValue (no idea if this could happen).
+			var dwtIframe = new DwtIframe(params);
+			textContent = this._getCleanHtml2Text(dwtIframe);
 			// bug: 23034 this hidden iframe under shell is adding more space
 			// which breaks calendar column view
 			var iframe = dwtIframe.getIframe();
