@@ -164,6 +164,7 @@ Ext.define('ZCS.model.contacts.ZtContactReader', {
 				    // TODO: what should we do here? will this happen?
 				    data.itemId = member.value;
 			    }
+                data.memberImageUrl = ZCS.common.ZtUtil.getImageUrl(attrs, member.value);
 		    }
 		    else if (member.type === 'I') {
 			    data.memberEmail = member.value;

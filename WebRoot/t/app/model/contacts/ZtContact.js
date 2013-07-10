@@ -139,23 +139,7 @@ Ext.define('ZCS.model.contacts.ZtContact', {
 	            name: 'imageUrl',
 	            type: 'auto',
                 convert: function(v, record) {
-                    var image = record.data.image;
-                    var imagePart  = (image && image.part) || record.data.imagepart;
-
-                    if (!imagePart) {
-                        return record.data.zimletImage || null;  //return zimlet populated image only if user-uploaded image is not there.
-                    }
-
-                    return ZCS.htmlutil.buildUrl({
-                        path: ZCS.constant.PATH_MSG_FETCH,
-                        qsArgs: {
-                            auth:       'co',
-                            id:         record.getId(),
-                            part:       imagePart,
-                            max_width:  48,
-                            t:          (new Date()).getTime()
-                        }
-                    });
+                    return ZCS.common.ZtUtil.getImageUrl(record.data, record.getId());
                 }
             },
 
@@ -165,7 +149,8 @@ Ext.define('ZCS.model.contacts.ZtContact', {
 
 			// group member fields
 			{ name: 'memberEmail', type: 'string' },
-			{ name: 'memberPhone', type: 'string' }
+			{ name: 'memberPhone', type: 'string' },
+            { name: 'memberImageUrl', type: 'auto'}
         ],
 
 		proxy: {

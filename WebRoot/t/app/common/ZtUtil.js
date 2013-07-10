@@ -352,12 +352,11 @@ Ext.define('ZCS.common.ZtUtil', {
      * maxWidth {int} max pixel width (optional - default 48)
      * @return	{String}	the image URL
      */
-    getImageUrl: function(contact, maxWidth) {
-        var image = contact && contact.data.image;
-        var imagePart  = (image && image.part) || contact.data.imagepart;
+    getImageUrl: function(contactAttrs, contactId, maxWidth) {
+        var imagePart  = (contactAttrs.image && contactAttrs.image.part) || contactAttrs.imagepart;
 
         if (!imagePart) {
-            return contact.data.zimletImage || null;  //return zimlet populated image only if user-uploaded image is not there.
+            return contactAttrs.zimletImage || null;  //return zimlet populated image only if user-uploaded image is not there.
         }
 
         maxWidth = maxWidth || 48;
@@ -366,7 +365,7 @@ Ext.define('ZCS.common.ZtUtil', {
             path: ZCS.constant.PATH_MSG_FETCH,
             qsArgs: {
                 auth: 'co',
-                id: contact.data.id,
+                id: contactId,
                 part: imagePart,
                 max_width:maxWidth,
                 t:(new Date()).getTime()

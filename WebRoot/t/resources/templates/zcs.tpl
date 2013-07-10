@@ -189,7 +189,7 @@
 <template id='Contact'>
 	<tpl if='isGroup'>
 		<div class='zcs-contactgroupview-header'>
-			<div class='zcs-contactgroupview-image' style='{imageStyle}'></div>
+			<div class='zcs-contactgroupview-image'></div>
 			<div class='zcs-contactgroupview-personalInfo'>
 				<span name="contactname">{nickname}</span>
 			</div>
@@ -197,7 +197,7 @@
 		<div class='zcs-contactgroupview-members'>
 			<tpl for='groupMembers'>
 				<div class='zcs-contactgroupview-member'>
-					<div class='zcs-contact-image' <tpl if='imageUrl'>style='background-image:url({imageUrl})'</tpl>></div>
+					<div class='zcs-contact-image' <tpl if='memberImageUrl'>style='background-image:url({memberImageUrl})'</tpl>></div>
 					<div class='zcs-contact-info'>
 						<span name="contactname">{longName}</span>
 						<tpl if='jobTitle'><span>{jobTitle}</span></tpl>
