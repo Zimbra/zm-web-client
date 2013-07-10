@@ -703,11 +703,12 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 
 .BrowseAttachBtn {
 	@AlignRight@
-	position:relative;
+	@MailAttachButton@
 	height:15px;
 	opacity:0;
-	z-index:300;
 	overflow:hidden;
+	position:relative;
+	z-index:300;
 }
 
 .ComposeAttachBtn {
@@ -1118,9 +1119,11 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 
 .zdnd_tooltip {
 	display:none;
-	color:#666666;
-	padding-left:2px;
-	margin-left:20px;
+	background-color:white;
+	border:1px inset #F0F0F0;
+	color:#666;
+	height:16px;
+	padding:3px 2px 1px;
 }
 
 .attach_text {

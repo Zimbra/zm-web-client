@@ -398,20 +398,21 @@
 
 <template id="mail.Message#To_Recipient">
 	<tr id='${toRowId}'>
-		<td align=right valign=top style='${labelStyle}'>
+		<td width='1%' align=right valign=top style='${labelStyle}'>
 			<div id='${toPickerId}'><$=ZmMsg.toLabel$></div>
 		</td>
-		<td width='96%' colspan=2 id='${toCellId}'>
+		<td id='${toCellId}'>
 			<$ if (!data.acAddrBubbles) { $>
 				<textarea id='${toInputId}' class='addresses' style='${inputStyle}' rows=1></textarea>
 			<$ } $>
 		</td>
+		<td width='1%'></td>
 	</tr>
 </template>
 
 <template id="mail.Message#CC_Recipient">
 	<tr id='${ccRowId}' style='display:none;'>
-		<td align=right valign=top style='${labelStyle}'>
+		<td width='1%' align=right valign=top style='${labelStyle}'>
 			<div id='${ccPickerId}'><$=ZmMsg.ccLabel$></div>
 		</td>
 		<td id='${ccCellId}'>
@@ -419,7 +420,7 @@
 				<textarea id='${ccInputId}' class='addresses' style='${inputStyle}' rows=1></textarea>
 			<$ } $>
 		</td>
-		<td width='5%' style='white-space:nowrap;'>
+		<td width='1%' style='white-space:nowrap;'>
 			<a href='#' id='${bccToggleId}'><$=ZmMsg.showBCC$></a>
 		</td>
 	</tr>
@@ -427,14 +428,15 @@
 
 <template id="mail.Message#BCC_Recipient">
 	<tr id='${bccRowId}' style='display:none;'>
-		<td align=right valign=top style='${labelStyle}'>
+		<td width='1%' align=right valign=top style='${labelStyle}'>
 			<div id='${bccPickerId}'><$=ZmMsg.bccLabel$></div>
 		</td>
-		<td colspan='2' id='${bccCellId}'>
+		<td id='${bccCellId}'>
 			<$ if (!data.acAddrBubbles) { $>
 				<textarea id='${bccInputId}' class='addresses' style='${inputStyle}' rows=1></textarea>
 			<$ } $>
 		</td>
+		<td width='1%'></td>
 	</tr>
 </template>
 
@@ -446,68 +448,65 @@
 	<table id='${headerId}' width=100% class='ZPropertySheet' cellspacing='6'>
 		<$ if (appCtxt.multiAccounts) { $>
 			<tr>
-				<td align=right valign=top style='<$=labelStyle$>'>
+				<td width='1%' align=right valign=top style='<$=labelStyle$>'>
 					<$=ZmMsg.fromLabel$>
 				</td>
-				<td width='96%' colspan=2>
+				<td>
 					<div id='${fromSelectId}'></div>
 				</td>
+				<td width='1%'></td>
 			</tr>
 		<$ } else {$>
 			<tr id='${identityRowId}' style='display:none;'>
-				<td align=right style='<$=labelStyle$>'>
+				<td width='1%' align=right style='<$=labelStyle$>'>
 					<$=ZmMsg.fromLabel$>
 				</td>
-				<td width="96%" colspan=2>
+				<td>
 					<div id='${identitySelectId}'></div>
 				</td>
+				<td width='1%'></td>
 			</tr>
 		<$ } $>
 		<$= AjxTemplate.expand("#To_Recipient", data) $>
 		<$= AjxTemplate.expand("#CC_Recipient", data) $>
 		<$= AjxTemplate.expand("#BCC_Recipient", data) $>
 		<tr id='${subjectRowId}'>
-			<td align=right style='<$=labelStyle$>'><$=ZmMsg.subjectLabel$></td>
-			<td colspan='2'>
+			<td width='1%' align=right style='<$=labelStyle$>'><$=ZmMsg.subjectLabel$></td>
+			<td>
 				<table width='100%'>
 				<tr>
 					<td style='padding-right:4px;'>
 						<input id='${subjectInputId}' class='subjectField' autocomplete=off>
 					</td>
-					<$ if (appCtxt.get(ZmSetting.MAIL_PRIORITY_ENABLED)) { $>
-					<td nowrap width='1%'>
-						<table>
-							<tr>
-								<td align=right style='<$=labelStyle$>' nowrap="nowrap"><$=ZmMsg.priorityLabel$>&nbsp;</td>
-								<td id="${priorityId}"></td>
-							</tr>
-						</table>
-					</td>
-					<$ } $>
 				</tr>
 				</table>
 			</td>
+			<td nowrap width='1%'>
+			<$ if (appCtxt.get(ZmSetting.MAIL_PRIORITY_ENABLED)) { $>
+				<table>
+					<tr>
+						<td align=right style='<$=labelStyle$>' nowrap="nowrap"><$=ZmMsg.priorityLabel$>&nbsp;</td>
+						<td id="${priorityId}"></td>
+					</tr>
+				</table>
+			<$ } $>
+			</td>
 		</tr>
-		<tr>
-			<td colspan='10'>
+		<tr id='${attRowId}'>
+			<td width='1%' style='vertical-align:top; <$=labelStyle$>'>
 				<table width='100%'>
-					<tr id='${attRowId}'>
-						<td style='vertical-align:top; <$=labelStyle$>'>
-							<table width='100%'>
-								<tr>
-									<td align=right id='${attBtnId}'></td>
-								</tr>
-							</table>
-						</td>
-						<td colspan=2>
-							<span id='${zdndToolTipId}' class='zdnd_tooltip'>
-								<$=ZmMsg.dndTooltip$>
-							</span>
-							<span id='${attDivId}'></span>
-						</td>
+					<tr>
+						<td align=right id='${attBtnId}'></td>
 					</tr>
 				</table>
 			</td>
+			<td>
+				<span id='${zdndToolTipId}' class='zdnd_tooltip'>
+					<$=ZmMsg.dndTooltip$>
+				</span>
+				<span id='${attDivId}'></span>
+			</td>
+			<td width='1%'></td>
 		</tr>
 		<tr id='${replyAttRowId}' style='display:none;'>
 			<td></td>
