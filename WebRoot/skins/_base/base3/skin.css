@@ -42,7 +42,7 @@ BODY						{	margin:0px; 	}
 #skin_outer_td_main						{	height: 100%; width: 100%;	}
 
 /** Top row contains header and app tabs **/
-#skin_spacing_top_row					{	@SkinTopRow@ 	}
+#skin_spacing_top_row					{	width:100%; @SkinTopRow@	}  /* width specified for bug 83004 */
 #skin_spacing_top_row .divider			{	border-left:1px solid @SkinTopRowDividerColor@;
 											height:60%;
 											margin:auto 10px;  /*auto to appease IE*/
