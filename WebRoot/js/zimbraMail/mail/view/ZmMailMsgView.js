@@ -1824,11 +1824,10 @@ function(msg) {
 
 	var table = document.getElementById(this._hdrTableId);
 	if (!table) { return; }
-	var tagRow = document.getElementById(this._tagRowId);
-	var tagCell = document.getElementById(this._tagCellId);
+	var tagRow = $(table).find('#' + this._tagRowId);
 	
-	if (tagRow && tagCell) {
-		table.deleteRow(tagRow.rowIndex);
+	if (tagRow.length) {
+		tagRow.remove();
 	}
 	if (tagsHtml.length > 0) {
 		var cell =  this._insertTagRow(table, this._tagCellId);
