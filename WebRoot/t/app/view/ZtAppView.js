@@ -76,29 +76,31 @@ Ext.define('ZCS.view.ZtAppView', {
 
 		var app = this.getApp();
 
-		this.registerOverviewPanel({
-			xtype: 'overview',
-			itemId: app + 'overview',
-			app: app,
-			title: ZCS.constant.OVERVIEW_TITLE[app]
-		});
-
-        if (app !== ZCS.constant.APP_CALENDAR) {
-            this.registerListPanel({
-                xtype: 'listpanel',
-                itemId: app + 'listpanel',
+        // Register the views only if given app is enabled
+        if (ZCS.session.getSetting(ZCS.constant.APP_SETTING[app])) {
+            this.registerOverviewPanel({
+                xtype: 'overview',
+                itemId: app + 'overview',
                 app: app,
-                newButtonIcon: ZCS.constant.NEW_ITEM_ICON[app],
-                storeName: ZCS.constant.STORE[app]
+                title: ZCS.constant.OVERVIEW_TITLE[app]
+            });
+
+            if (app !== ZCS.constant.APP_CALENDAR) {
+                this.registerListPanel({
+                    xtype: 'listpanel',
+                    itemId: app + 'listpanel',
+                    app: app,
+                    newButtonIcon: ZCS.constant.NEW_ITEM_ICON[app],
+                    storeName: ZCS.constant.STORE[app]
+                });
+            }
+
+            this.registerItemPanel({
+                xtype: 'itempanel',
+                itemId: app + 'itempanel',
+                app: app
             });
         }
-
-		this.registerItemPanel({
-			xtype: 'itempanel',
-			itemId: app + 'itempanel',
-			app: app
-		});
-
 	},
 
 	registerOverviewPanel: function (overviewPanelConfig) {
