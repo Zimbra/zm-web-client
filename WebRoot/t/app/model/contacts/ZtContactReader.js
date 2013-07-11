@@ -70,42 +70,48 @@ Ext.define('ZCS.model.contacts.ZtContactReader', {
 
 		// attributes that have different types or which can appear multiply
 		Ext.each(Object.keys(attrs).sort(), function(attr) {
-			var m = attr.match(ZCS.constant.REGEX_CONTACT_ATTR),
-				value = attrs[attr];
-			if (m && m.length > 0) {
-				var type = m[1],
-					f = m[2],
-					field = f.charAt(0).toLowerCase() + f.slice(1),     // uncapitalize first letter
-					num = m[3];
-				type = ZCS.constant.ATTR_TYPE_SORT_VALUE[type] ? type : 'other';
-				if (field === 'fax') {
-					field = 'phone';
-					type = 'other';
-				}
-				// address is a composite field
-				if (ZCS.constant.IS_ADDRESS_FIELD[field]) {
-					var idx = num ? num - 1 : 0,
-						addressesByType = addresses[type] = addresses[type] || [],
-						address = addressesByType[idx] = addressesByType[idx] || {};
-					address[field] = value;
-					address.addressType = address.addressType || type;
-					address.typeStr = address.typeStr || ZtMsg[type] || '';
-				}
-				// phone, fax, url (and workEmail)
-				else if (ZCS.constant.IS_PARSED_ATTR_FIELD[field]) {
-					var list = parsedAttrs[field] = parsedAttrs[field] || [],
-						dataObj = {};
-					dataObj[field] = value;
-					dataObj[field + 'Type'] = type;
-					dataObj.typeStr = ZtMsg[type] || '';
-					list.push(dataObj);
-				}
-			}
+
+			var	value = attrs[attr];
+
 			// 'email' has no type but can be multiple
-			else if (attr.indexOf('email') === 0) {
+			if (attr.indexOf('email') === 0) {
 				var field = 'email',
 					list = parsedAttrs[field] = parsedAttrs[field] || [];
+
 				list.push({ email: value });
+			}
+			else {
+				// see if attr is typed (eg 'homePhone')
+				var m = attr.match(ZCS.constant.REGEX_CONTACT_ATTR);
+				if (m && m.length > 0) {
+					var type = m[1],
+						f = m[2],
+						field = f.charAt(0).toLowerCase() + f.slice(1),     // uncapitalize first letter
+						num = m[3];
+					type = ZCS.constant.ATTR_TYPE_SORT_VALUE[type] ? type : 'other';
+					if (field === 'fax') {
+						field = 'phone';
+						type = 'other';
+					}
+					// address is a composite field
+					if (ZCS.constant.IS_ADDRESS_FIELD[field]) {
+						var idx = num ? num - 1 : 0,
+							addressesByType = addresses[type] = addresses[type] || [],
+							address = addressesByType[idx] = addressesByType[idx] || {};
+						address[field] = value;
+						address.addressType = address.addressType || type;
+						address.typeStr = address.typeStr || ZtMsg[type] || '';
+					}
+					// phone, fax, url (and workEmail)
+					else if (ZCS.constant.IS_PARSED_ATTR_FIELD[field]) {
+						var list = parsedAttrs[field] = parsedAttrs[field] || [],
+							dataObj = {};
+						dataObj[field] = value;
+						dataObj[field + 'Type'] = type;
+						dataObj.typeStr = ZtMsg[type] || '';
+						list.push(dataObj);
+					}
+				}
 			}
 		}, this);
 

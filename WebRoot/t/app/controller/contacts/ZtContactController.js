@@ -56,6 +56,7 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
 
     launch: function() {
         ZCS.app.on('deleteContactItem', this.doDelete, this);
+	    ZCS.app.on('notifyContactChange', this.handleModifyNotification, this);
     },
 
 	/**
@@ -228,11 +229,11 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
 
         if (newContact) {
             if (mode === ZCS.constant.OP_EDIT) {
-	            changedAttrs = this.getChangedAttrs(this.getItem(), newContact);
+	            changedAttrs = ZCS.model.contacts.ZtContact.getChangedAttrs(this.getItem(), newContact);
                 this.modifyContact(newContact, changedAttrs);
             }
             else {
-	            changedAttrs = this.getChangedAttrs(null, newContact);
+	            changedAttrs = ZCS.model.contacts.ZtContact.getChangedAttrs(null, newContact);
 	            if (changedAttrs.length) {
 	                this.createContact(newContact);
 	            }
@@ -443,31 +444,6 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
     },
 
 	/**
-	 * Returns a list of JSON attributes whose values differ between the two contacts.
-	 *
-	 * @param {ZtContact}   contactA        contact
-	 * @param {ZtContact}   contactB        other contact
-	 *
-	 * @return {Array}  list of JSON attributes
-	 */
-	getChangedAttrs: function(contactA, contactB) {
-
-		var attrsA = contactA ? contactA.fieldsToAttrs() : {},
-			attrsB = contactB ? contactB.fieldsToAttrs() : {},
-			changedAttrs = [], valueA, valueB;
-
-		Ext.each(Ext.Array.unique(Object.keys(attrsA).concat(Object.keys(attrsB))), function(attr) {
-			valueA = attrsA[attr] || '';
-			valueB = attrsB[attr] || '';
-			if (valueA !== valueB) {
-				changedAttrs.push(attr);
-			}
-		}, this);
-
-		return changedAttrs;
-	},
-
-	/**
 	 * Returns true if the user has made changes to the contact form.
 	 *
 	 * @return {Boolean}    true if changes have been made
@@ -480,8 +456,17 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
 
 		var curContact = (this.getComposeMode() === ZCS.constant.OP_EDIT) ? this.getItem() : null,
 			newContact = this.getContactModel(),
-			changedAttrs = this.getChangedAttrs(curContact, newContact);
+			changedAttrs = ZCS.model.contacts.ZtContact.getChangedAttrs(curContact, newContact);
 
 		return changedAttrs && changedAttrs.length > 0;
+	},
+
+	/**
+	 * Contact was modified, so re-display it.
+	 */
+	handleModifyNotification: function(item, modify) {
+		if (this.getItem() === item) {
+			this.getContactView().showItem(item);
+		}
 	}
 });

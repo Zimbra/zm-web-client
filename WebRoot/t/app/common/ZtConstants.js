@@ -622,6 +622,7 @@ ZCS.constant.CONTACT_TEMPLATE_FIELDS = [
 ZCS.constant.CONTACT_MULTI_FIELDS = [
 	'email', 'phone', 'address', 'url'
 ];
+ZCS.constant.IS_CONTACT_MULTI_FIELD = ZCS.util.arrayAsLookupHash(ZCS.constant.CONTACT_MULTI_FIELDS);
 
 // Contact attributes that make up an address
 ZCS.constant.ADDRESS_FIELDS = [
@@ -631,7 +632,7 @@ ZCS.constant.IS_ADDRESS_FIELD = ZCS.util.arrayAsLookupHash(ZCS.constant.ADDRESS_
 
 // Contact attributes that have variable type (home, work, etc)
 ZCS.constant.IS_PARSED_ATTR_FIELD = ZCS.util.arrayAsLookupHash([
-	'email', 'phone', 'fax', 'url'
+	'email', 'phone', 'url'
 ]);
 
 // Ordering for display of attribute types

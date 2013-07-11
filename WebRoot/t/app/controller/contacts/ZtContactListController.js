@@ -115,16 +115,14 @@ Ext.define('ZCS.controller.contacts.ZtContactListController', {
         }
     },
 
-    handleModifyNotification: function(item, modify) {
-
-        var store = this.getStore(),
-            itemPresent = store.getById(item.getId()),
-            contactListView = this.getListView();
-
-        if (itemPresent) {
-            contactListView.refresh();
-            contactListView.select(ZCS.app.getContactController().getItem());
-        }
+	/**
+	 * If the modified contact is in this list's store, update its model.
+	 */
+	handleModifyNotification: function(item, modify) {
+	    var store = this.getStore();
+	    if (store.getById(item.getId())) {
+		    item.handleModifyNotification(modify);
+	    }
     },
 
 	getItemController: function() {
