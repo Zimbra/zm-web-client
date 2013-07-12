@@ -85,6 +85,7 @@
             </c:choose>
         </c:when>
         <c:otherwise>
+            <zm:search var="search" limit="100"  query="*" types="contact" field="contact:" start="${0}" end="${0}" timezone="${mailbox.prefs.timeZone}" folderid=""/>
             <c:set var="query" value=""/>
         </c:otherwise>
     </c:choose>
