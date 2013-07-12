@@ -209,5 +209,14 @@ Ext.define('ZCS.view.mail.ZtMsgListView', {
 
 		listRef.handleItemHeights();
 		listRef.refreshScroller(listRef.getScrollable().getScroller());
+	},
+
+	/**
+	 * Bug 83170 - container sized to zero on app switch, don't re-display items
+	 */
+	onContainerResize: function(container, size) {
+		if (size.height > 0 && size.width > 0) {
+			this.callParent(arguments);
+		}
 	}
 });
