@@ -532,8 +532,14 @@
 	<tr>
 		<td class='ZmFieldLabelRight' id='${id}_statusLabel'><$= ZmMsg.statusLabel $></td>
 		<td width=175 id='${id}_status'></td>
-		<td id='${id}_pCompleteSelectInput' width='30'></td>
-		<td id='${id}_pCompleteSelect'></td>
+		<td>
+			<table class='ZmCompletionSelector'>
+				<tr>
+					<td id='${id}_pCompleteSelectInput'></td>
+					<td id='${id}_pCompleteSelect'></td>
+				<tr>
+			</table>
+		</td>
 	</tr>
 	<tr>
 		<td></td>
