@@ -139,7 +139,7 @@ Ext.define('ZCS.model.contacts.ZtContact', {
 	            name: 'imageUrl',
 	            type: 'auto',
                 convert: function(value, record) {
-                    return ZCS.common.ZtUtil.getImageUrl(record.data, record.getId());
+                    return ZCS.model.contacts.ZtContact.getImageUrl(record, record.getId());
                 }
             },
 
@@ -334,6 +334,38 @@ Ext.define('ZCS.model.contacts.ZtContact', {
 			}, this);
 
 			return changedFields;
+		},
+
+		/**
+		 * Returns a URL that can be used to fetch the image for the given contact.
+		 * @param {ZtContact|Object}    contact     contact or attr hash
+		 * @param {String}              contactId   contact ID
+		 * @param {int}                 maxWidth    max image width in pixels (defaults to 48)
+		 *
+		 * @return {String}     image URL
+		 */
+		getImageUrl: function(contact, contactId, maxWidth) {
+
+			var attrs = contact instanceof ZCS.model.contacts.ZtContact ? contact.getData() : contact;
+
+			var imagePart  = (attrs.image && attrs.image.part) || attrs.imagepart;
+
+			if (!imagePart) {
+				return attrs.zimletImage || null;  // return zimlet populated image only if user-uploaded image is not there
+			}
+
+			maxWidth = maxWidth || 48;
+
+			return ZCS.htmlutil.buildUrl({
+				path: ZCS.constant.PATH_MSG_FETCH,
+				qsArgs: {
+					auth:       'co',
+					id:         contactId,
+					part:       imagePart,
+					max_width:  maxWidth,
+					t:          (new Date()).getTime()
+				}
+			});
 		}
 	},
 

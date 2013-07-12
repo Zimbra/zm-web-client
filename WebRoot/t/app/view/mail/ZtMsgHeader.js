@@ -78,7 +78,7 @@ Ext.define('ZCS.view.mail.ZtMsgHeader', {
 
 		// Get contact image if it has one
         var contact = ZCS.cache.get(fromAddr && fromAddr.get('email'), 'email'),
-            imageUrl = contact && ZCS.common.ZtUtil.getImageUrl(contact.data, contact.getId());
+            imageUrl = contact && ZCS.model.contacts.ZtContact.getImageUrl(contact, contact.getId());
 
         data.imageStyle = imageUrl ? 'background-image: url(' + imageUrl + ')' : '';
 

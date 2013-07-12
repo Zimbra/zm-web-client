@@ -345,34 +345,6 @@ Ext.define('ZCS.common.ZtUtil', {
 		return name.substr(0, len) + '...' + name.substr(-len) + '.' + ext;
 	},
 
-    /**
-     * Get the image URL.
-     *
-     * contact {Object} contact details
-     * maxWidth {int} max pixel width (optional - default 48)
-     * @return	{String}	the image URL
-     */
-    getImageUrl: function(contactAttrs, contactId, maxWidth) {
-        var imagePart  = (contactAttrs.image && contactAttrs.image.part) || contactAttrs.imagepart;
-
-        if (!imagePart) {
-            return contactAttrs.zimletImage || null;  //return zimlet populated image only if user-uploaded image is not there.
-        }
-
-        maxWidth = maxWidth || 48;
-
-        return ZCS.htmlutil.buildUrl({
-            path: ZCS.constant.PATH_MSG_FETCH,
-            qsArgs: {
-                auth: 'co',
-                id: contactId,
-                part: imagePart,
-                max_width:maxWidth,
-                t:(new Date()).getTime()
-            }
-        });
-    },
-
 	/**
 	 * Copies fields from a model instance into a data hash suitable for passing
 	 * to a template.
