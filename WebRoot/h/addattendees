@@ -66,6 +66,20 @@
                      <zm:searchGal var="searchGal" query="${query}" dept="${deptQuery}" email="${emailQuery}" type="resource"/>
                 </c:when>
                 <c:otherwise>
+                    <c:if test="${not empty phoneticQuery}">
+                        <c:set var="phoneticQueryString" value="#phoneticFirstName:${phoneticQuery} OR #phoneticLastName:${phoneticQuery}"/>
+                        <c:choose>
+                            <c:when test="${not empty query}">
+                                <c:set var="query" value="(${query} OR ${phoneticQueryString})"/>
+                            </c:when>
+                            <c:otherwise>
+                                <c:set var="query" value="(${phoneticQueryString})"/>
+                            </c:otherwise>
+                        </c:choose>
+                    </c:if>
+                    <c:if test="${not empty emailQuery}">
+                        <c:set var="query" value="${query} to:${emailQuery}*"/>
+                    </c:if>
                     <zm:search var="search" query="${query}" sort="nameAsc" types="contact" field="contact:" start="${0}" end="${0}" timezone="${mailbox.prefs.timeZone}" folderid=""/>
                 </c:otherwise>
             </c:choose>
