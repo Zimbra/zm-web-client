@@ -673,6 +673,7 @@ ZmId.CMP_ATT_ROW			= "_attachments_row";
 ZmId.CMP_ATT_DIV			= "_attachments_div";
 ZmId.CMP_ATT_BTN			= "_attachments_btn";
 ZmId.CMP_ATT_INP			= "_file_input";
+ZmId.CMP_ATT_COMPUTER_INP	= "_file_input_computer";
 ZmId.CMP_ATT_INLINE_INP		= "_file_input_inline";
 ZmId.CMP_ATT_INCL_ORIG_LINK	= "_show_orig";
 ZmId.CMP_DND_TOOLTIP        = "_zdnd_tooltip";

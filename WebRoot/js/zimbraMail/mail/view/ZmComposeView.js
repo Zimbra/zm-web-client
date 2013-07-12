@@ -3289,19 +3289,31 @@ function() {
 	if (!AjxEnv.supportsHTML5File) {
 		mi = this._createAttachMenuItem(menu, ZmMsg.myComputer, new AjxListener(this, this.showAttachmentDialog,[ZmMsg.myComputer]) );
 	} else {
-		var mi = this._createAttachMenuItem(menu, ZmMsg.myComputer);
-		div.innerHTML = AjxTemplate.expand("mail.Message#MailAttachmentMyComputer");
+		var data = {
+			inlineFileInputId : ZmId.getViewId(this._view, ZmId.CMP_ATT_COMPUTER_INP)
+		};
+		var listener = new AjxListener(this, function(inputid) {
+			Dwt.byId(inputid).click();
+		}, [data.inlineFileInputId]);
+		var mi = this._createAttachMenuItem(menu, ZmMsg.myComputer, listener);
+
+		div.innerHTML = AjxTemplate.expand("mail.Message#MailAttachmentMyComputer", data);
 		mi.getHtmlElement().appendChild(div.firstChild);
+
 	}
 
 
 	if (AjxEnv.supportsHTML5File) {
 		div = document.createElement("DIV");
-		var mi = this._createAttachMenuItem(menu, ZmMsg.attachInline);
 		var data = {
 			inlineFileInputId : ZmId.getViewId(this._view, ZmId.CMP_ATT_INLINE_INP)
 		};
+		var listener = new AjxListener(this, function(inputid) {
+			Dwt.byId(inputid).click();
+		}, [data.inlineFileInputId]);
+		var mi = this._createAttachMenuItem(menu, ZmMsg.attachInline, listener);
 		this._attcBtnInlineFileInpId = data.inlineFileInputId;
+
 		div.innerHTML = AjxTemplate.expand("mail.Message#MailAttachmentMyComputer", data);
 		var fromElement = div.firstChild;
 		fromElement.firstChild.style.top = "22px";
