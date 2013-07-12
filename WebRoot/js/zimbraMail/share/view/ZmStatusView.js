@@ -555,24 +555,22 @@ function() {
     var opacity = this._state.value;
     var step = this._state.step;
 
-    // NOTE: IE is slow re-rendering when adjusting opacity. So we try
-    //       to do it in an IE-optimized way.
-    if (AjxEnv.isIE) {
-        if (AjxEnv.isIE5_5up) {
-            try {
-                var el = this.getHtmlElement();
-                el.style.visibility = step > 0 ? "hidden" : "visible";
-                
-                var duration = this._state.duration / 1000;
-                el.style.filter = "progid:DXImageTransform.Microsoft.Fade(duration="+duration+",overlap=1.0)";
+    // NOTE: IE8 and earlier are slow re-rendering when adjusting
+    //       opacity. So we try to do it using filters.
+    if (AjxEnv.isIE && !AjxEnv.isIE9up) {
+        try {
+            var el = this.getHtmlElement();
+            el.style.visibility = step > 0 ? "hidden" : "visible";
 
-                el.filters[0].Apply();
-                el.style.visibility = step > 0 ? "visible" : "hidden";
-                el.filters[0].Play();
-            }
-            catch (e) {
-                DBG.println("error: "+e);
-            }
+            var duration = this._state.duration / 1000;
+            el.style.filter = "progid:DXImageTransform.Microsoft.Fade(duration="+duration+",overlap=1.0)";
+
+            el.filters[0].Apply();
+            el.style.visibility = step > 0 ? "visible" : "hidden";
+            el.filters[0].Play();
+        }
+        catch (e) {
+            DBG.println("error: "+e);
         }
         setTimeout(this._funcs["next"], 0);
         return;
