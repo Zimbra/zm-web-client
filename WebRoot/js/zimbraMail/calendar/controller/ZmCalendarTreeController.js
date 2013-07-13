@@ -702,6 +702,11 @@ function(ev, account) {
 	}
 
 	ZmController.showDialog(newDialog, this._newCb, this._pendingActionData, account);
+
+    // Clear the external calendar data once dialog is rendered
+    // Fix for bug: 82811
+    this.setExternalCalendarData(null);
+
 	newDialog.registerCallback(DwtDialog.CANCEL_BUTTON, this._clearDialog, this, newDialog);
 };
 
