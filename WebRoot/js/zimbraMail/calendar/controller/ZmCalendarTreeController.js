@@ -340,7 +340,9 @@ function(organizer) {
             return;
         }
 
-        if (organizer.id == ZmOrganizer.ID_TRASH) return;
+        if (Number(organizer.nId) === ZmOrganizer.ID_TRASH) { //nId is String so change to Number so I can do === to compare to number. A bit messy but I prefer that over keeping ==.
+			return;
+		}
 
 		var appId = ZmOrganizer.APP[organizer.type];
 		var app = appId && appCtxt.getApp(appId);
