@@ -44,7 +44,7 @@ Ext.define('ZCS.controller.contacts.ZtContactListController', {
 			// other
 			overview: 'sheet #' + ZCS.constant.APP_CONTACTS + 'overview',
 			titlebar: 'sheet #' + ZCS.constant.APP_CONTACTS + 'listpanel titlebar',
-			searchBox: 'sheet #' + ZCS.constant.APP_MAIL + 'listpanel searchfield'
+			searchBox: 'sheet #' + ZCS.constant.APP_CONTACTS + 'listpanel searchfield'
 		},
 
 		control: {
