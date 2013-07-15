@@ -2807,18 +2807,10 @@ HTML>BODY .appt-selected .appt_allday_body
 }
 
 /* "All attendees" label */
-.ZmSchedulerAllTd {
-	@SeparatorBorder@
-	@NoWrap@
-	@Text-disabled@
-	font-weight:bold;
-	text-align:center;
-	@InactiveCursor@
-}
-
-/* "All attendees" label */
 .ZmSchedulerAllLabel {
+	@FreeBusyViewGridHeight@
 	@NoWrap@
+	@SeparatorBorder@
 	@Text-disabled@
 	font-weight:bold;
 	text-align:center;
