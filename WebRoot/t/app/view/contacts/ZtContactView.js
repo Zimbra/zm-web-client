@@ -36,7 +36,7 @@ Ext.define('ZCS.view.contacts.ZtContactView', {
 	showItem: function(contact) {
 
 		var data = ZCS.util.getFields(contact, ZCS.constant.CONTACT_TEMPLATE_FIELDS),
-			imageUrl = ZCS.model.contacts.ZtContact.getImageUrl(contact, contact.getId(), 125);
+			imageUrl = ZCS.common.ZtUtil.getImageUrl(contact, 125);
 
 		data.imageStyle = imageUrl ? 'background-image: url(' + imageUrl + ')' : '';
 		this.setHtml(this.getTpl().apply(data));

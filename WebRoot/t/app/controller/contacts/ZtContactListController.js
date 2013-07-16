@@ -44,7 +44,7 @@ Ext.define('ZCS.controller.contacts.ZtContactListController', {
 			// other
 			overview: 'sheet #' + ZCS.constant.APP_CONTACTS + 'overview',
 			titlebar: 'sheet #' + ZCS.constant.APP_CONTACTS + 'listpanel titlebar',
-			searchBox: 'sheet #' + ZCS.constant.APP_CONTACTS + 'listpanel searchfield'
+			searchBox: 'sheet #' + ZCS.constant.APP_MAIL + 'listpanel searchfield'
 		},
 
 		control: {
@@ -63,44 +63,6 @@ Ext.define('ZCS.controller.contacts.ZtContactListController', {
         this.callParent(arguments);
         ZCS.app.on('notifyContactCreate', this.handleCreateNotification, this);
         ZCS.app.on('notifyContactChange', this.handleModifyNotification, this);
-	    this.loadAllContacts();
-    },
-
-    /**
-     * Load local contacts via REST call so we can cache them.
-     */
-    loadAllContacts: function() {
-
-	    var restUri = ZCS.htmlutil.buildUrl({
-		    path: '/home/' + ZCS.session.getAccountName() + '/Contacts',
-		    qsArgs: {
-			    fmt:    'cf',
-			    t:      2,
-			    all:    'all'
-		    }
-	    });
-
-	    Ext.Ajax.request({
-			url: restUri,
-		    success: function(response, options) {
-			    var text = response.responseText,
-				    contacts = text.split('\u001E'),
-				    reader = ZCS.model.contacts.ZtContact.getProxy().getReader(),
-				    ln = contacts.length, i, fields, data, attrs, j, field, value;
-
-			    for (i = 0; i < ln; i++) {
-				    fields = contacts[i].split('\u001D');
-				    attrs = {};
-				    for (j = 0; j < fields.length; j += 2) {
-					    attrs[fields[j]] = fields[j + 1];
-				    }
-				    if (!ZCS.cache.get(attrs.id)) {
-					    data = reader.getDataFromNode({ _attrs: attrs });
-				        new ZCS.model.contacts.ZtContact(data, attrs.id);
-				    }
-			    }
-		    }
-	    });
     },
 
     /**
@@ -140,14 +102,16 @@ Ext.define('ZCS.controller.contacts.ZtContactListController', {
         }
     },
 
-	/**
-	 * If the modified contact is in this list's store, update its model.
-	 */
-	handleModifyNotification: function(item, modify) {
-	    var store = this.getStore();
-	    if (store.getById(item.getId())) {
-		    item.handleModifyNotification(modify);
-	    }
+    handleModifyNotification: function(item, modify) {
+
+        var store = this.getStore(),
+            itemPresent = store.getById(item.getId()),
+            contactListView = this.getListView();
+
+        if (itemPresent) {
+            contactListView.refresh();
+            contactListView.select(ZCS.app.getContactController().getItem());
+        }
     },
 
 	getItemController: function() {
@@ -155,7 +119,7 @@ Ext.define('ZCS.controller.contacts.ZtContactListController', {
 	},
 
 	getDefaultQuery: function() {
-		return 'in:contacts';
+		return "in:contacts";
 	},
 
 	doNewContact: function() {

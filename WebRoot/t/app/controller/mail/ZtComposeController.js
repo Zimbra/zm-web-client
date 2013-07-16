@@ -634,13 +634,7 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 	 * @return {Boolean}    true if the contents of the form have changed since it was shown
 	 */
 	isDirty: function() {
-
-		if (this.getComposePanel().isHidden()) {
-			return false;
-		}
-		else {
-		    return this.getFormHash() != this.calculateFormHash();
-		}
+		return this.getFormHash() != this.calculateFormHash();
 	},
 
 	/**

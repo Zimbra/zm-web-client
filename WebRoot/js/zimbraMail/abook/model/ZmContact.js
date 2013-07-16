@@ -69,7 +69,6 @@ ZmContact = function(id, list, type, newDl) {
 
 ZmContact.prototype = new ZmItem;
 ZmContact.prototype.constructor = ZmContact;
-ZmContact.prototype.isZmContact = true;
 
 // fields
 ZmContact.F_anniversary				= "anniversary";
@@ -187,7 +186,7 @@ ZmContact.GAL_CAL_RES_TYPE			= "zimbraCalResType";
 ZmContact.GAL_CAL_RES_LOC_NAME		= "zimbraCalResLocationDisplayName";
 
 // file as
-i = 1;
+var i = 1;
 ZmContact.FA_LAST_C_FIRST			= i++;
 ZmContact.FA_FIRST_LAST 			= i++;
 ZmContact.FA_COMPANY 				= i++;
@@ -196,8 +195,7 @@ ZmContact.FA_FIRST_LAST_COMPANY		= i++;
 ZmContact.FA_COMPANY_LAST_C_FIRST	= i++;
 ZmContact.FA_COMPANY_FIRST_LAST		= i++;
 ZmContact.FA_CUSTOM					= i++;
-delete i;
-	
+
 // Field information
 
 ZmContact.ADDRESS_FIELDS = [
@@ -329,10 +327,9 @@ ZmContact.IS_DATE[ZmContact.F_birthday] = true;
 ZmContact.IS_DATE[ZmContact.F_anniversary] = true;
 
 ZmContact.IS_IGNORE = {};
-for (i = 0; i < ZmContact.IGNORE_FIELDS.length; i++) {
+for (var i = 0; i < ZmContact.IGNORE_FIELDS.length; i++) {
 	ZmContact.IS_IGNORE[ZmContact.IGNORE_FIELDS[i]] = true;
 }
-delete i;
 
 // number of distribution list members to fetch at a time
 ZmContact.DL_PAGE_SIZE = 100;
@@ -955,9 +952,9 @@ function() {
 	if (this.isDistributionList()) {
 		return "Group_48";
 	}
-	//todo - get a big version of ImgGalContact.png
-//	if (this.isGal) {
-//	}
+	if (this.isGal) {
+		//todo - get a big version of ImgGalContact.png 
+	}
 	return "Person_48";
 };
 
@@ -1173,8 +1170,7 @@ function(attr, isBatchMode, isAutoCreate, result) {
 			var msg = this.isGroup() ? ZmMsg.groupCreated : ZmMsg.contactCreated;
 			appCtxt.getAppController().setStatusMsg(msg);
 		}
-		//update the canonical list. (this includes adding to the _idHash like before (bug 44132) calling updateIdHash. But calling that left the list inconcistant.
-		appCtxt.getApp(ZmApp.CONTACTS).getContactList().add(cn);
+		appCtxt.getApp(ZmApp.CONTACTS).updateIdHash(cn, false);
 	} else {
 		var msg = this.isGroup() ? ZmMsg.errorCreateGroup : ZmMsg.errorCreateContact;
 		var detail = ZmMsg.errorTryAgain + "\n" + ZmMsg.errorContact;
@@ -1352,9 +1348,7 @@ function(attr) {
 
 	var newEmail = attr[ZmContact.F_email];
 
-	var emailChanged = false;
 	if (newEmail !== undefined) {
-		emailChanged = true;
 		reqs.push(this._getRenameDlReq(newEmail));
 		this.setAttr(ZmContact.F_email, newEmail);
 	}
@@ -1378,7 +1372,6 @@ function(attr) {
 	this._addMailPolicyAndOwnersReqs(reqs, attr);
 
 	if (reqs.length == 0) {
-		this._modifyDlResponseHandler(false, null); //pretend it was saved
 		return;
 	}
 	var jsonObj = {
@@ -1387,7 +1380,7 @@ function(attr) {
 			DistributionListActionRequest: reqs
 		}
 	};
-	var respCallback = this._modifyDlResponseHandler.bind(this, fileAsChanged || emailChanged); //there's some issue with fileAsChanged so adding the emailChanged to be on safe side
+	var respCallback = this._modifyDlResponseHandler.bind(this, fileAsChanged);
 	appCtxt.getAppController().sendRequest({jsonObj: jsonObj, asyncMode: true, callback: respCallback});
 
 };
@@ -1549,10 +1542,7 @@ function(attr) {
 };
 
 ZmContact.prototype._modifyDlResponseHandler =
-function(fileAsChanged, result) {
-	if (this._handleErrorDl(result)) {
-		return;
-	}
+function(ev, fileAsChanged) {
 	appCtxt.setStatusMsg(ZmMsg.dlSaved);
 
 	//for DLs we reload from the server since the server does not send notifications.
@@ -1562,49 +1552,36 @@ function(fileAsChanged, result) {
 		fileAsChanged: fileAsChanged
 	};
 
-	this._popView(fileAsChanged);
-
 	this._notify(ZmEvent.E_MODIFY, details);
 };
 
 ZmContact.prototype._createDlResponseHandler =
 function(result) {
-	if (this._handleErrorDl(result, true)) {
-		this.attr = {}; //since above in _createDl, we set it to new values prematurely. which would affect next gathering of modified attributes.
+	var batchResp = result.getResponse().BatchResponse;
+	if (this._handleErrorCreateDl(batchResp)) {
 		return;
 	}
 	appCtxt.setStatusMsg(ZmMsg.distributionListCreated);
 
-	this._popView(true);
-};
-
-ZmContact.prototype._popView =
-function(updateDlList) {
-	var controller = AjxDispatcher.run("GetContactController");
-	controller.popView(true);
-	if (!updateDlList) {
+	if (!ZmAddrBookTreeController) {
 		return;
 	}
 	var clc = AjxDispatcher.run("GetContactListController");
 	if (clc.getFolderId() != ZmFolder.ID_DLS) {
 		return;
 	}
-	ZmAddrBookTreeController.dlFolderClicked(); //This is important in case of new DL created OR a renamed DL, so it would reflect in the list.
+	ZmAddrBookTreeController.dlFolderClicked();
 };
 
-ZmContact.prototype._handleErrorDl =
-function(result, creation) {
-	if (!result) {
-		return false;
-	}
-	var batchResp = result.getResponse().BatchResponse;
+ZmContact.prototype._handleErrorCreateDl =
+function(batchResp) {
 	var faults = batchResp.Fault;
 	if (!faults) {
 		return false;
 	}
 	var ex = ZmCsfeCommand.faultToEx(faults[0]);
 	var controller = AjxDispatcher.run("GetContactController");
-	controller.popupErrorDialog(creation ? ZmMsg.dlCreateFailed : ZmMsg.dlModifyFailed, ex);
+	controller.popupErrorDialog(ZmMsg.dlCreateFailed, ex);
 	return true;
 
 };

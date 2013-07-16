@@ -10,15 +10,15 @@ $linkTextSize: 0.9em;
 	color: $linkColor;
 	font-size: $linkTextSize;
 	text-decoration: underline;
-
-	&:active {
-		color: $linkColorActive;
-	}
 }
 
 .zcs-quoted-link {
 	@extend .zcs-link;
 	padding-top: 1em;
+
+	&:active {
+		color: $linkColorActive;
+	}
 }
 
 .x-list {

@@ -115,7 +115,7 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
     pageContext.setAttribute("isDebug", isDevMode);
     pageContext.setAttribute("isCoverage", isCoverage);
 %>
-<!DOCTYPE html>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
     <title>Zimbra Docs</title>
