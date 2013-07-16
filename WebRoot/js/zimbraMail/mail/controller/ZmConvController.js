@@ -172,7 +172,7 @@ function(view) {
 			parent:		this._container,
 			id:			ZmId.getViewId(ZmId.VIEW_CONV2, null, view),
 			posStyle:	Dwt.ABSOLUTE_STYLE,
-			mode:		ZmId.VIEW_CONV2,
+			mode:		view,
 			standalone:	true, //double-clicked stand-alone view of the conv (not within the double pane)
 			controller:	this._getConvListController()
 		};

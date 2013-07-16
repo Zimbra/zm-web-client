@@ -31,7 +31,7 @@ ZmConvView2 = function(params) {
 	params.className = params.className || "ZmConvView2";
 	ZmMailItemView.call(this, params);
 
-	this._mode = ZmId.VIEW_CONV2;
+	this._mode = params.mode;
 	this._controller = params.controller;
 	this._convChangeHandler = this._convChangeListener.bind(this);
 	this._listChangeListener = this._msgListChangeListener.bind(this);
