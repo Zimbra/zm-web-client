@@ -2114,7 +2114,7 @@ function(parent, num) {
 		folder = folderId && appCtxt.getById(folderId);
 	}
 
-	var isDrafts = (item && item.isDraft && item.type != ZmId.ITEM_CONV) || this.isDraftsFolder();
+	var isDrafts = (item && item.isDraft && (item.type != ZmId.ITEM_CONV || item.numMsgs == 1)) || this.isDraftsFolder();
 	var isFeed = (folder && folder.isFeed());
 	var isReadOnly = (folder && folder.isReadOnly());
     var isOutboxFolder = this.isOutboxFolder();
