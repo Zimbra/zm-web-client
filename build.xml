@@ -1529,11 +1529,10 @@ if (ext == null) ext = "";
         <fileset dir="${client.build.dir}" includes="zimbraclient.jar"/>
         <fileset dir="${server.dist.dir}/jetty/common/lib" includes="zimbracommon.jar"/>
         <fileset dir="${server.build.dir}" includes="zimbrastore.jar"/>
-        <fileset dir="${common.lib.dir}" includes="servlet-api-3.0.jar,javamail-1.4.5.jar,json.jar,yuicompressor-2.4.2-zimbra.jar,guava-13.0.1.jar,commons-httpclient-3.1.jar"/>
+        <fileset dir="${common.lib.dir}" includes="servlet-api-3.0.jar,javamail-1.4.5.jar,json.jar,yuicompressor-2.4.2-zimbra.jar,guava-13.0.1.jar,commons-httpclient-3.1.jar,commons-codec-1.7.jar"/>
     </path>
 
     <target name="jspc">
-        <echo>Pre-compiling ${param.jspfiles}</echo>
         <java classname="org.apache.jasper.JspC" fork="true" classpathref="jspc.class.path">
             <arg value="-l" />
             <arg value="-s" />
@@ -1552,15 +1551,10 @@ if (ext == null) ext = "";
         <copy todir="${jspc.src.dir}">
             <fileset dir='${web.dir}' includes="${custom.web.jsp.includes},h/**,m/**,public/*.jsp,WEB-INF/**"/>
         </copy>
-        <fileset id='jspc.fileset1' dir='${jspc.src.dir}' includes="${custom.web.jsp.includes},h/**/*.jsp"/>
+        <fileset id='jspc.fileset1' dir='${jspc.src.dir}' includes="${custom.web.jsp.includes},h/**,m/**,public/*.jsp"/>
         <pathconvert property='jspc.files1' refid='jspc.fileset1' pathsep=' ' />
         <antcall target="jspc">
             <param name="param.jspfiles" value="${jspc.files1}" />
-        </antcall>
-        <fileset id='jspc.fileset2' dir='${jspc.src.dir}' includes="m/**/*.jsp,public/*.jsp"/>
-        <pathconvert property='jspc.files2' refid='jspc.fileset2' pathsep=' ' />
-        <antcall target="jspc">
-            <param name="param.jspfiles" value="${jspc.files2}" />
         </antcall>
     </target>
 
