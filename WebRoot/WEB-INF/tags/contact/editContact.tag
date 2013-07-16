@@ -196,6 +196,14 @@
 
         <tr><td><br></td></tr>
 
+        <tr><td colspan="4" class="sectionLabel" valign="top"><fmt:message key="im"/></td></tr>
+
+        <tr><app:contactEditIMField contact="${contact}" field="imAddress1" tabindex="250" /></tr>
+        <tr><app:contactEditIMField contact="${contact}" field="imAddress2" tabindex="251" /></tr>
+        <tr><app:contactEditIMField contact="${contact}" field="imAddress3" tabindex="252" /></tr>
+
+        <tr><td><br></td></tr>
+
         <tr><td colspan="4" class="sectionLabel" valign="top"><fmt:message key="work"/></td></tr>
 
         <tr><app:contactEditField contact="${contact}" field="workStreet" address="true" tabindex="300" />

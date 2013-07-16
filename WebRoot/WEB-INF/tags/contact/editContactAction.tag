@@ -34,6 +34,12 @@
 <c:if test="${zm:isFileAsExplicit(param.fileAs)}">
     <c:set var="groupName" value="8:${param.nickname}"/>
 </c:if>
+
+<c:if test="${not empty param.imAddress1 and not empty param.imAddress1_type}"><c:set var="im1" value="${param.imAddress1_type}://${param.imAddress1}"/></c:if>
+<c:if test="${not empty param.imAddress2 and not empty param.imAddress2_type}"><c:set var="im2" value="${param.imAddress2_type}://${param.imAddress2}"/></c:if>
+<c:if test="${not empty param.imAddress3 and not empty param.imAddress3_type}"><c:set var="im3" value="${param.imAddress3_type}://${param.imAddress3}"/></c:if>
+
+
 <zm:modifyContact var="id" id="${id}" folderid="${param.folderid}" replace="${!empty id and param.isgroup ? true : false}">
     <zm:field name="firstName" value="${param.firstName}"/>
     <zm:field name="phoneticFirstName" value="${param.phoneticFirstName}"/>
@@ -52,6 +58,10 @@
     <zm:field name="email" value="${fn:replace(param.email,'\"','')}"/>
     <zm:field name="email2" value="${fn:replace(param.email2,'\"','')}"/>
     <zm:field name="email3" value="${fn:replace(param.email3,'\"','')}"/>
+
+    <zm:field name="imAddress1" value="${im1}"/>
+    <zm:field name="imAddress2" value="${im2}"/>
+    <zm:field name="imAddress3" value="${im3}"/>
 
     <zm:field name="workStreet" value="${param.workStreet}"/>
     <zm:field name="workCity" value="${param.workCity}"/>
