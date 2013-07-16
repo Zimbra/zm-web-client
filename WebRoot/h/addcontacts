@@ -62,7 +62,7 @@
             <zm:search var="search" query="${empty query ? 'is:local' : query}" offset="${uploader.isContactSearchMore ? uploader.nextSearchOffset : uploader.prevSearchOffset}" sort="nameAsc" types="contact" field="contact:" start="${0}" end="${0}" timezone="${mailbox.prefs.timeZone}" folderid=""/>
         </c:when>
         <c:otherwise>
-            <zm:search var="search" query="is:local" sort="nameAsc" types="contact" field="contact:" start="${0}" end="${0}" timezone="${mailbox.prefs.timeZone}" folderid=""/>
+            <zm:search var="search" query="is:local" limit="100" sort="nameAsc" types="contact" field="contact:" start="${0}" end="${0}" timezone="${mailbox.prefs.timeZone}" folderid=""/>
             <c:set var="query" value=""/>
         </c:otherwise>
     </c:choose>
