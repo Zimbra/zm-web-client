@@ -61,6 +61,8 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
     //  Support for TinyMCE suspended.
     boolean isTinyMce = false;
 
+    String authTokenExpires = request.getParameter("authTokenExpires");
+
     final String SKIN_COOKIE_NAME = "ZM_SKIN";
     String skin = application.getInitParameter("zimbraDefaultSkin");
     Cookie[] cookies = request.getCookies();
@@ -114,6 +116,7 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
     pageContext.setAttribute("isProdMode", !prodMode.equals(""));
     pageContext.setAttribute("isDebug", isDevMode);
     pageContext.setAttribute("isCoverage", isCoverage);
+    pageContext.setAttribute("authTokenExpires", authTokenExpires);
 %>
 <!DOCTYPE html>
 <html>
@@ -174,6 +177,7 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
     window.appDevMode     = ${isDevMode};
     window.appCoverageMode = ${isCoverage};
     window.DBG = new AjxDebug(AjxDebug.NONE, null, false);
+    window.authTokenExpires     = ${authTokenExpires};
 
     if(!ZmCsfeCommand.noAuth){
         ZmDocsEditApp.setFile('${fileId}', '${fileName}', '${folderId}');
