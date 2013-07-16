@@ -388,6 +388,11 @@
     </tag-file>
 
     <tag-file>
+        <name>contactEditIMField</name>
+        <path>/WEB-INF/tags/contact/contactEditIMField.tag</path>
+    </tag-file>
+
+    <tag-file>
         <name>contactLine</name>
         <path>/WEB-INF/tags/contact/contactLine.tag</path>
     </tag-file>
