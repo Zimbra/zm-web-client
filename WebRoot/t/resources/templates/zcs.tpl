@@ -91,7 +91,7 @@
 			<span>{recipients}</span>
 		</div>
 		</tpl>
-		<div class='zcs-msgHdr-link'>{[ZtMsg.detailsLinkText]}</div>
+		<a class='zcs-msgHdr-link' onClick='return false;'>{[ZtMsg.showDetails]}</a>
 		<a class='x-button-normal x-button x-iconalign-center x-layout-box-item x-stretched zcs-flat zcs-msgHdr-menuButton' onClick='return false;'>
 			<span class='zcs-msgHeader-menuButton-span x-button-icon x-shown arrow_down'></span>
 		</a>
@@ -127,7 +127,7 @@
 			<div class='zcs-msgHdr-from'>{[ZtMsg.from]} {address}</div>
 		</tpl>
 		<div class='zcs-msgHdr-date'>{fullDateStr}</div>
-		<div class='zcs-msgHdr-link'>{[ZtMsg.hide]}</div>
+		<a class='zcs-msgHdr-link' onClick='return false;'>{[ZtMsg.hideDetails]}</a>
 		<a class='x-button-normal x-button x-iconalign-center zcs-flat x-layout-box-item x-stretched zcs-msgHdr-menuButton' onClick='return false;'>
 			<span class='x-button-icon x-shown arrow_down'></span>
 		</a>
@@ -170,11 +170,11 @@
 
 <template id='ContactListItem'>
 	<div class='zcs-contactListItem'>
-        <tpl if='isGroup'>
-		    <div class='zcs-contactList-group' <tpl if='imageUrl'>style='background-image:url({imageUrl})'</tpl>></div>
-        <tpl else>
-            <div class='zcs-contactList-person' <tpl if='imageUrl'>style='background-image:url({imageUrl})'</tpl>></div>
-        </tpl>
+		<tpl if='isGroup'>
+			<div class='zcs-contactList-group' <tpl if='imageUrl'>style='background-image:url({imageUrl})'</tpl>></div>
+		<tpl else>
+			<div class='zcs-contactList-person' <tpl if='imageUrl'>style='background-image:url({imageUrl})'</tpl>></div>
+		</tpl>
 		<div class='zcs-contactList-text'>
 			<tpl if='isGroup'>
 				<div class='zcs-contactList-name'>{nickname}</div>
@@ -189,7 +189,7 @@
 <template id='Contact'>
 	<tpl if='isGroup'>
 		<div class='zcs-contactgroupview-header'>
-			<div class='zcs-contactgroupview-image' style='{imageStyle}'></div>
+			<div class='zcs-contactgroupview-image'></div>
 			<div class='zcs-contactgroupview-personalInfo'>
 				<span name="contactname">{nickname}</span>
 			</div>
@@ -197,7 +197,7 @@
 		<div class='zcs-contactgroupview-members'>
 			<tpl for='groupMembers'>
 				<div class='zcs-contactgroupview-member'>
-					<div class='zcs-contact-image' <tpl if='imageUrl'>style='background-image:url({imageUrl})'</tpl>></div>
+					<div class='zcs-contact-image' <tpl if='memberImageUrl'>style='background-image:url({memberImageUrl})'</tpl>></div>
 					<div class='zcs-contact-info'>
 						<span name="contactname">{longName}</span>
 						<tpl if='jobTitle'><span>{jobTitle}</span></tpl>
@@ -211,7 +211,7 @@
 		<div class='zcs-contactview-header'>
 			<div class='zcs-contactview-image' style='{imageStyle}'></div>
 			<div class='zcs-contactview-personalInfo'>
-                <span name="contactname">{fullName}</span>
+				<span name="contactname">{fullName}</span>
 				<tpl if='jobTitle'><span>{jobTitle}</span></tpl>
 				<tpl if='company'><span>{company}</span></tpl>
 			</div>
@@ -330,75 +330,75 @@
 				</td>
 			</tr>
 
-            </tpl>
-            <tpl if='attendeeResponse && attendeeResponseMsg'>
-                <tr>
-                    <tpl if="attendeeResponse == [ZCS.constant.PSTATUS_ACCEPTED]">
-                        <td colspan="2" class="zcs-invite-status-accept">
-                            <span> {attendeeResponseMsg} </span>
-                        </td>
-                    </tpl>
-                    <tpl if="attendeeResponse == [ZCS.constant.PSTATUS_DECLINED]">
-                        <td colspan="2" class="zcs-invite-status-decline">
-                            <span> {attendeeResponseMsg} </span>
-                        </td>
-                    </tpl>
-                    <tpl if="attendeeResponse == [ZCS.constant.PSTATUS_TENTATIVE]">
-                        <td colspan="2" class="zcs-invite-status-tentative">
-                            <span> {attendeeResponseMsg} </span>
-                        </td>
-                    </tpl>
-                </tr>
-            </tpl>
-            <tpl if='optAttendees'>
-                <tr>
-				    <td class='zcs-invite-label'>{[ZtMsg.invOptionalAttendeesLabel]}</td>
-				    <td>
-                        <tpl for='attendees'>
-                            <span class='zcs-area-bubble zcs-contact-bubble' id='{id}'>{displayName}</span>
-                        </tpl>
-				    </td>
-			    </tr>
+			</tpl>
+			<tpl if='attendeeResponse && attendeeResponseMsg'>
+				<tr>
+					<tpl if="attendeeResponse == [ZCS.constant.PSTATUS_ACCEPTED]">
+						<td colspan="2" class="zcs-invite-status-accept">
+							<span> {attendeeResponseMsg} </span>
+						</td>
+					</tpl>
+					<tpl if="attendeeResponse == [ZCS.constant.PSTATUS_DECLINED]">
+						<td colspan="2" class="zcs-invite-status-decline">
+							<span> {attendeeResponseMsg} </span>
+						</td>
+					</tpl>
+					<tpl if="attendeeResponse == [ZCS.constant.PSTATUS_TENTATIVE]">
+						<td colspan="2" class="zcs-invite-status-tentative">
+							<span> {attendeeResponseMsg} </span>
+						</td>
+					</tpl>
+				</tr>
+			</tpl>
+			<tpl if='optAttendees'>
+				<tr>
+					<td class='zcs-invite-label'>{[ZtMsg.invOptionalAttendeesLabel]}</td>
+					<td>
+						<tpl for='attendees'>
+							<span class='zcs-area-bubble zcs-contact-bubble' id='{id}'>{displayName}</span>
+						</tpl>
+					</td>
+				</tr>
 			</tpl>
 			<tpl if='myResponse'>
-			    <tr>
-				    <td class='zcs-invite-label'>{[ZtMsg.invStatusLabel]}</td>
-				    <td>{myResponse}</td>
-			    </tr>
+				<tr>
+					<td class='zcs-invite-label'>{[ZtMsg.invStatusLabel]}</td>
+					<td>{myResponse}</td>
+				</tr>
 			</tpl>
 
-            <tpl if='showButtons'>
-                <tr class='zcs-invite-buttons'>
-                    <td class='zcs-invite-label'>{[ZtMsg.invRespondLabel]}</td>
-                    <td>
-                        <tpl if='myResponse == [ZCS.constant.PSTATUS_TEXT[ZCS.constant.PSTATUS_ACCEPTED]]'>
-                            <span class='zcs-invite-button zcs-accept-inactive'>{[ZtMsg.acceptAction]}</span>
-                        <tpl else>
-                            <span class='zcs-invite-button zcs-invite-accept' id='{acceptButtonId}'>{[ZtMsg.acceptAction]}</span>
-                        </tpl>
+			<tpl if='showButtons'>
+				<tr class='zcs-invite-buttons'>
+					<td class='zcs-invite-label'>{[ZtMsg.invRespondLabel]}</td>
+					<td>
+						<tpl if='myResponse == [ZCS.constant.PSTATUS_TEXT[ZCS.constant.PSTATUS_ACCEPTED]]'>
+							<span class='zcs-invite-button zcs-accept-inactive'>{[ZtMsg.acceptAction]}</span>
+						<tpl else>
+							<span class='zcs-invite-button zcs-invite-accept' id='{acceptButtonId}'>{[ZtMsg.acceptAction]}</span>
+						</tpl>
 
-                        <tpl if='myResponse == [ZCS.constant.PSTATUS_TEXT[ZCS.constant.PSTATUS_TENTATIVE]]'>
-                            <span class='zcs-invite-button zcs-tentative-inactive'>{[ZtMsg.tentativeAction]}</span>
-                        <tpl else>
-                            <span class='zcs-invite-button zcs-invite-tentative' id='{tentativeButtonId}'>{[ZtMsg.tentativeAction]}</span>
-                        </tpl>
+						<tpl if='myResponse == [ZCS.constant.PSTATUS_TEXT[ZCS.constant.PSTATUS_TENTATIVE]]'>
+							<span class='zcs-invite-button zcs-tentative-inactive'>{[ZtMsg.tentativeAction]}</span>
+						<tpl else>
+							<span class='zcs-invite-button zcs-invite-tentative' id='{tentativeButtonId}'>{[ZtMsg.tentativeAction]}</span>
+						</tpl>
 
-                        <tpl if='myResponse == [ZCS.constant.PSTATUS_TEXT[ZCS.constant.PSTATUS_DECLINED]]'>
-                            <span class='zcs-invite-button zcs-decline-inactive'>{[ZtMsg.declineAction]}</span>
-                        <tpl else>
-                            <span class='zcs-invite-button zcs-invite-decline' id='{declineButtonId}'>{[ZtMsg.declineAction]}</span>
-                        </tpl>
-                    </td>
-                </tr>
-            </tpl>
+						<tpl if='myResponse == [ZCS.constant.PSTATUS_TEXT[ZCS.constant.PSTATUS_DECLINED]]'>
+							<span class='zcs-invite-button zcs-decline-inactive'>{[ZtMsg.declineAction]}</span>
+						<tpl else>
+							<span class='zcs-invite-button zcs-invite-decline' id='{declineButtonId}'>{[ZtMsg.declineAction]}</span>
+						</tpl>
+					</td>
+				</tr>
+			</tpl>
 
 			<tpl if='intendedFor'>
-                <tr>
-                    <td class='zcs-invite-label'>{[ZtMsg.invIntendedFor]}</td>
-                    <td>
-                        <span class='zcs-area-bubble zcs-contact-bubble'>{intendedFor}</span>
-                    </td>
-                </tr>
+				<tr>
+					<td class='zcs-invite-label'>{[ZtMsg.invIntendedFor]}</td>
+					<td>
+						<span class='zcs-area-bubble zcs-contact-bubble'>{intendedFor}</span>
+					</td>
+				</tr>
 			</tpl>
 		</table>
 
@@ -407,9 +407,9 @@
 
 <template id='InviteNotes'>
 	<tpl>
-      <hr>
-      <div class='zcs-invite-notes'>{notes}</div>
-    </tpl>
+		<hr>
+		<div class='zcs-invite-notes'>{notes}</div>
+	</tpl>
 </template>
 
 <template id='ConvListSwipeToDelete'>
@@ -456,39 +456,37 @@
 </template>
 
 <template id="ApptViewAttendeeList">
+	<span style="float: left;width: 60%">{attendee.name}</span>
 
-    <span style="float: left;width: 60%">{attendee.name}</span>
+	<tpl if='isOrganizer'>
+		<tpl if='attendee.ptst == [ZCS.constant.PSTATUS_ACCEPTED]'>
+			<span class="view-appt-accepted">{[ZtMsg.accepted]}</span>
+		</tpl>
 
-    <tpl if='isOrganizer'>
-        <tpl if='attendee.ptst == [ZCS.constant.PSTATUS_ACCEPTED]'>
-            <span class="view-appt-accepted">{[ZtMsg.accepted]}</span>
-        </tpl>
+		<tpl if='attendee.ptst == [ZCS.constant.PSTATUS_DECLINED]'>
+			<span class="view-appt-declined">{[ZtMsg.declined]}</span>
+		</tpl>
 
-        <tpl if='attendee.ptst == [ZCS.constant.PSTATUS_DECLINED]'>
-            <span class="view-appt-declined">{[ZtMsg.declined]}</span>
-        </tpl>
+		<tpl if='attendee.ptst == [ZCS.constant.PSTATUS_TENTATIVE]'>
+			<span class="view-appt-tentative"> {[ZtMsg.tentative]} </span>
+		</tpl>
 
-        <tpl if='attendee.ptst == [ZCS.constant.PSTATUS_TENTATIVE]'>
-            <span class="view-appt-tentative"> {[ZtMsg.tentative]} </span>
-        </tpl>
-
-        <tpl if='attendee.ptst == [ZCS.constant.PSTATUS_UNKNOWN]'>
-            <span class="view-appt-unknown"> {[ZtMsg.unknown]} </span>
-        </tpl>
-    </tpl>
-
+		<tpl if='attendee.ptst == [ZCS.constant.PSTATUS_UNKNOWN]'>
+			<span class="view-appt-unknown"> {[ZtMsg.unknown]} </span>
+		</tpl>
+	</tpl>
 </template>
 
 
 
 <template id="ApptViewDesc">
 	<tpl>
-        <tpl if='start'>
-            <div class="view-appt-header">{start}</div>
-        </tpl>
+		<tpl if='start'>
+			<div class="view-appt-header">{start}</div>
+		</tpl>
 
 
-        <table class='zcs-invite' style="padding: 15px; text-align: left">
+		<table class='zcs-invite' style="padding: 15px; text-align: left">
 
 			<tpl if='location'>
 			<tr>
@@ -504,46 +502,46 @@
 					<span>{organizer}</span>
 				</td>
 			</tr>
-            </tpl>
+			</tpl>
 
 
 			<tpl if='attendees'>
 			<tr>
 				<td class='zcs-invite-label'>{[ZtMsg.invAttendeesLabel]}</td>
 				<td>
-					<span>{attendees} <span id="showAttendees" class='view-appt-showDetails'> {[ZtMsg.detailsLinkText]} </span></span>
+					<span>{attendees} <span id="showAttendees" class='view-appt-showDetails'> {[ZtMsg.showDetails]} </span></span>
 				</td>
 			</tr>
-            </tpl>
+			</tpl>
 
 
-            <tpl if='calendar'>
-                <tr>
-                    <td class='zcs-invite-label'>Calendar</td>
-                    <td>
-                       <span>{calendar}</span>
-                    </td>
-                </tr>
-            </tpl>
+			<tpl if='calendar'>
+				<tr>
+					<td class='zcs-invite-label'>Calendar</td>
+					<td>
+					   <span>{calendar}</span>
+					</td>
+				</tr>
+			</tpl>
 
 
 			<tpl if='reminder'>
-			    <tr>
-				    <td class='zcs-invite-label'>{[ZtMsg.invReminderLabel]}</td>
-				    <td>{reminder}</td>
-			    </tr>
+				<tr>
+					<td class='zcs-invite-label'>{[ZtMsg.invReminderLabel]}</td>
+					<td>{reminder}</td>
+				</tr>
 			</tpl>
 
-        </table>
+		</table>
 
-        <tpl if='notes'>
-            <div class="view-appt-notes">
-                <hr>
-                <br>
-                {notes}
+		<tpl if='notes'>
+			<div class="view-appt-notes">
+				<hr>
+				<br>
+				{notes}
 
-            </div>
-        </tpl>
+			</div>
+		</tpl>
 	</tpl>
 </template>
 

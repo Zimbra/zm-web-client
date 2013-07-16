@@ -116,7 +116,8 @@ $msgHdrButtonTopOffset: $msgHdrButtonDelta;
 	@include ellipsis();
 }
 
-.zcs-msgHdr-link {
+// Has to be more specific than ".x-html A"
+.x-html A.zcs-msgHdr-link {
 	@extend .zcs-msgHdr-element;
 	@extend .zcs-link;
 	top: $msgHdrTopOffset2;
@@ -194,11 +195,11 @@ $infoColor: #FF9;
 }
 
 .zcs-truncated-message {
-  @extend .zcs-info-bar;
+	@extend .zcs-info-bar;
 }
 
 .zcs-truncated-message-link {
-  @extend .zcs-link;
+	@extend .zcs-link;
 }
 
 //spaces the labels and buttons while assignment view

@@ -515,7 +515,7 @@ ZCS.constant.REGEX_URL                  = /(((https?):\/\/)|(www\.[\w\.\_\-]+))[
 // simple email regex - see ZtEmailAddress for fancier ones
 ZCS.constant.REGEX_EMAIL                = /((mailto:)?\b[A-Z0-9\._%+-]+@[A-Z0-9\.-]+\.[A-Z]{2,5})\b/gi;
 ZCS.constant.REGEX_FOLDER_TAG_SEARCH    = /^(in|tag):["']?([^\x00-\x1F\x7F:\"]+)["']?$/;
-ZCS.constant.REGEX_CONTACT_ATTR         = /^([a-z]+)([A-Z][a-z]+)(\d*)$/;
+ZCS.constant.REGEX_CONTACT_ATTR         = /^([a-z]+)([a-zA-Z]+)(\d*)$/;
 ZCS.constant.REGEX_CONTACT_FIELD        = /^([a-z][a-zA-Z]+)(\d*)$/;
 
 // URL paths
@@ -623,6 +623,7 @@ ZCS.constant.CONTACT_TEMPLATE_FIELDS = [
 ZCS.constant.CONTACT_MULTI_FIELDS = [
 	'email', 'phone', 'address', 'url'
 ];
+ZCS.constant.IS_CONTACT_MULTI_FIELD = ZCS.util.arrayAsLookupHash(ZCS.constant.CONTACT_MULTI_FIELDS);
 
 // Contact attributes that make up an address
 ZCS.constant.ADDRESS_FIELDS = [
@@ -632,7 +633,7 @@ ZCS.constant.IS_ADDRESS_FIELD = ZCS.util.arrayAsLookupHash(ZCS.constant.ADDRESS_
 
 // Contact attributes that have variable type (home, work, etc)
 ZCS.constant.IS_PARSED_ATTR_FIELD = ZCS.util.arrayAsLookupHash([
-	'email', 'phone', 'fax', 'url'
+	'email', 'phone', 'url'
 ]);
 
 // Ordering for display of attribute types
