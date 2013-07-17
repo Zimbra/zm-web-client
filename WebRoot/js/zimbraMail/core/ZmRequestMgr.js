@@ -160,7 +160,7 @@ function(params) {
 	}
 
 	var command = new ZmCsfeCommand();
-	// bug fix #10652 - dont set change token if accountName is specified
+	// bug fix #10652, 82704 - dont set change token if accountName is not main account or is not specified
 	// (since we're executing on someone else's mbox)
 	var accountName = params.accountName;
 	if (!accountName) {
@@ -179,7 +179,7 @@ function(params) {
 						soapDoc:			params.soapDoc,
 						accountName:		accountName,
 						useXml:				this._useXml,
-						changeToken:		(accountName ? null : this._changeToken),
+						changeToken:		(accountName && (accountName !== appCtxt.accountList.mainAccount.name)? null : this._changeToken),
 						asyncMode:			params.asyncMode,
 						callback:			asyncCallback,
 						logRequest:			this._logRequest,
