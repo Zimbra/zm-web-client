@@ -742,12 +742,14 @@ UL.DwtListView-Rows {
 /* Outer container for the message dialog */
 .DwtMsgDialog {
 	width:400px;
+	max-height:400px;
 	overflow:auto;
 }
 
 /* For the error dialog when displaying a request */
 .DwtMsgDialog-wide {
 	width:600px;
+	max-height:400px;
 	overflow:auto;
 }
 
