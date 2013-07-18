@@ -1302,7 +1302,10 @@ line-height:normal;
 
 /* ??? SHOTGUN   NECESSARY?  */
 .calendar_view TABLE {
-	@CompactTable@
+	/* @CompactTable@ */
+    /* Fix for Bug: 79057 */
+    border-collapse: separate;
+    border-spacing: 0px;
 }
 
 /* ??? SHOTGUN   NECESSARY?  */
@@ -2060,8 +2063,9 @@ HTML>BODY .appt-selected .appt_allday_body
 	@NoWrap@
 	@RightSeparator@
 	@BottomSeparator@
-    border-top: 1px solid #000000;
-    border-left: 1px solid #000000;
+	/* Fix for Bug: 79057 */
+    /* border-top: 1px solid #000000; */
+    /* border-left: 1px solid #000000; */
     background-color: #FFFFFF;
 	vertical-align: middle;
 	@TextCursor@
@@ -2107,6 +2111,8 @@ HTML>BODY .appt-selected .appt_allday_body
 .ZmSchedulerInputDisabledTd {
 	@RightSeparator@
     @FreeBusyViewGridHeight@
+    /* Fix for Bug: 79057 */
+    @BottomSeparator@
 }
 
 .ZmSchedulerInputDisabled {
