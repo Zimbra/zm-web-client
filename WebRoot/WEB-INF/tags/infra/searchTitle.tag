@@ -20,14 +20,18 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
-<c:choose>
+<c:set var="folderName" value="${zm:getFolderName(pageContext, context.folder.id)}"/>
+<c:if test="${empty folderName}">
+    <c:set var="folderName" value="${context.title}"/>
+</c:if>
+<c:choose>    
     <c:when test="${context.isFolderSearch and context.folder.hasUnread}">
-        <c:set var="title" value="${context.title} (${context.folder.unreadCount})"/>
+        <c:set var="title" value="${folderName} (${context.folder.unreadCount})"/>
     </c:when>
     <c:when test="${context.isTagSearch and context.tag.hasUnread}">
-        <c:set var="title" value="${context.title} (${context.tag.unreadCount})"/>
+        <c:set var="title" value="${folderName} (${context.tag.unreadCount})"/>
     </c:when>
     <c:otherwise>
-        <c:set var="title" value="${context.title}"/>
+        <c:set var="title" value="${folderName}"/>
     </c:otherwise>
 </c:choose>
