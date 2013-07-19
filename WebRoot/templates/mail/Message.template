@@ -748,7 +748,7 @@
 
 <template id='mail.Message#Conv2MsgHeader-expanded'>
 	<div class='info'>
-		<table id='${hdrTableId}' class='ZPropertySheet' cellspacing='3'>
+		<table id='${hdrTableId}' class='ZPropertySheet' cellspacing='6'>
 			<tr>
 			<td class='LabelColName'><$= ZmMsg.fromLabel $></td>
 			<td class='LabelColValue' style='white-space:nowrap'>
