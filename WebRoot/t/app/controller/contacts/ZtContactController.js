@@ -337,12 +337,7 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
 	    }, this);
 
         // Fix for bug: 82478. Set or unset contact image
-        if (imageUrl) {
-            contactImgField.setStyle({backgroundImage: 'url("' + imageUrl + '")'});
-        }
-        else {
-            contactImgField.setStyle({backgroundImage: ''});
-        }
+        contactImgField.setStyle({backgroundImage: imageUrl ? 'url("' + imageUrl + '")' : ''});
 
 	    // Create as many fields as we need for each multiple-occurring attribute (at least one will be added)
 	    var container;
