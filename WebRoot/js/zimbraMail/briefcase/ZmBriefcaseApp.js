@@ -303,6 +303,7 @@ function(contentType, name, winName) {
 
     if (AjxDispatcher.run("GetBriefcaseController").chkFolderPermission(folderId)) {
         var url = this.getEditURLForContentType(contentType) + "?" + (name ?"name=" + name + "&" : "") + "l="+folderId + "&skin=" + appCurrentSkin + "&localeId=" + AjxEnv.DEFAULT_LOCALE;
+		url += 	"&authTokenExpires=" + window.authTokenExpires;
         if (window.appCoverageMode)
             url = url + "&coverage=1";
         var winname = winName || name || (new Date()).getTime().toString();
