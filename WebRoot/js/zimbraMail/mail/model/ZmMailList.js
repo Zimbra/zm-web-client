@@ -123,7 +123,8 @@ function(params) {
 	if (this._handleDeleteFromSharedFolder(params, params1)) {
 		return;
 	}
-	
+
+	params1.safeMove = true; //Move only items currently seen by the client
 	this._itemAction(params1);
 };
 

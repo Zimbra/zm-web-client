@@ -106,6 +106,7 @@ function() {
  * @param {String}		restUri				the REST URI to send the request to
  * @param {boolean}		emptyResponseOkay	if true, empty or no response from server is not an erro
  * @param {boolean}		offlineRequest	    if true, request will not be send to server
+ * @param {boolean}		useChangeToken	    if true, request will try to use change token in header
  */
 ZmRequestMgr.prototype.sendRequest =
 function(params) {
@@ -167,6 +168,10 @@ function(params) {
 		var acct = appCtxt.getActiveAccount();
 		accountName = (acct && acct.id != ZmAccountList.DEFAULT_ID) ? acct.name : null;
 	}
+	var changeToken = null;
+	if (params.useChangeToken && (!accountName || (accountName === appCtxt.accountList.mainAccount.name))) {
+		changeToken = this._changeToken;
+	}
 	var cmdParams, methodName;
 
 	if (params.restUri) {
@@ -179,7 +184,7 @@ function(params) {
 						soapDoc:			params.soapDoc,
 						accountName:		accountName,
 						useXml:				this._useXml,
-						changeToken:		(accountName && (accountName !== appCtxt.accountList.mainAccount.name)? null : this._changeToken),
+						changeToken:		changeToken,
 						asyncMode:			params.asyncMode,
 						callback:			asyncCallback,
 						logRequest:			this._logRequest,
