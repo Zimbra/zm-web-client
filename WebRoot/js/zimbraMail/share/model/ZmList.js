@@ -866,6 +866,7 @@ function(items, folderId) {
  * @param	{int}				params.count			the starting count for number of items processed
  * @param	{ZmBatchCommand}	batchCmd				if set, request data is added to batch request
  * @param	{boolean}			params.noUndo			true if the action is performed as an undo (not undoable)
+ * @param	{boolean}			params.safeMove			true if the action wants to resolve any conflicts before completion
  */
 ZmList.prototype._itemAction =
 function(params, batchCmd) {
@@ -940,7 +941,8 @@ function(params, batchCmd) {
 		actionArg:		params.actionArg,
 		actionLogItem:	actionLogItem,
 		childWin:		params.childWin,
-		closeChildWin: 	params.closeChildWin
+		closeChildWin: 	params.closeChildWin,
+		safeMove:		params.safeMove
 	};
 
 	if (idList.length >= ZmList.CHUNK_SIZE) {
@@ -996,6 +998,9 @@ function(params) {
 			reqParams.jsonObj = params.request;
 		} else {
 			reqParams.soapDoc = params.request;
+		}
+		if (params.safeMove) {
+			reqParams.useChangeToken = true;
 		}
 		DBG.println("sa", "*** do action: " + list.length + " items");
 		params.reqId = appCtxt.getAppController().sendRequest(reqParams);
