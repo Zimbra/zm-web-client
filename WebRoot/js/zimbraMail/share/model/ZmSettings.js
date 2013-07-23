@@ -265,7 +265,7 @@ ZmSettings.prototype.setUserSettings = function(params) {
 
 	appCtxt.createDistListAllowed = false;
 	appCtxt.createDistListAllowedDomains = [];
-	appCtxt.createDistListAllowedDomainsMap = [];
+	appCtxt.createDistListAllowedDomainsMap = {};
 	var rightTargets = info.rights && info.rights.targets;
 	if (rightTargets) {
 		for (var i = 0; i < rightTargets.length; i++) {

@@ -712,9 +712,9 @@ function() {
 
 ZmGroupView.prototype._addWidgets =
 function() {
-	this._groupNameInput = new DwtInputField({parent:this, size: this.isDistributionList() ? 20: 40, inputId: this._htmlElId + "_groupName"});
-	this._groupNameInput.setHint(this.isDistributionList() ? ZmMsg.distributionList : ZmMsg.groupNameLabel);
-	if (document.getElementById(this._htmlElId + "_groupNameParent")) {
+	if (!this.isDistributionList() || this._usernameEditable) {
+		this._groupNameInput = new DwtInputField({parent:this, size: this.isDistributionList() ? 20: 40, inputId: this._htmlElId + "_groupName"});
+		this._groupNameInput.setHint(this.isDistributionList() ? ZmMsg.distributionList : ZmMsg.groupNameLabel);
 		this._groupNameInput.reparentHtmlElement(this._htmlElId + "_groupNameParent");
 	}
 	
