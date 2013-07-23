@@ -2323,6 +2323,7 @@ ZmEditContactViewOther.prototype._createHtmlFromTemplate = function(templateId, 
 
         var checkbox = new DwtCheckbox({parent:container});
         checkbox.setText(ZmMsg.includeYear);
+		checkbox.addSelectionListener(new AjxListener(this, this._handleDateSelection,[calendar]));
         this._calendarIncludeYear = checkbox;
 	}                                                        
 };
@@ -2398,15 +2399,17 @@ ZmEditContactViewOther._getDateFormatter = function() {
 
 ZmEditContactViewOther.prototype._handleDropDown = function(evt) {
     var value = this.getValue().value;
-    var date = ZmEditContactViewOther.parseDate(value) || new Date;
-    var includeYear = date.getFullYear() != 0;
+    var date = ZmEditContactViewOther.parseDate(value) || new Date();
+    var includeYear = date.getFullYear() !== 0;
     // NOTE: Temporarilly set the year to the current year in the
     // NOTE: case of a date without a year set (i.e. full year == 0).
     // NOTE: This is done so that the calendar doesn't show the
     // NOTE: wrong year.
-    if (!includeYear) date.setFullYear(new Date().getFullYear());
+	if (!includeYear) {
+		date.setFullYear(new Date().getFullYear());
+	}
+	this._calendarIncludeYear.setSelected(includeYear); //see bug 46952 and bug 83177
     this._calendar.setDate(date);
-    this._calendarIncludeYear.setSelected(includeYear);
     this._picker.popup();
 };
 
