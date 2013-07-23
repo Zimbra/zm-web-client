@@ -2166,7 +2166,7 @@ ZmMailMsgView.prototype._getAttachmentLinkId =
 function(part, type) {
 	if (!part)
 		return;
-	return [this._viewId, part, type].join("_");
+	return [this._attLinksId, part, type].join("_");
 };
 
 // Adds an onclick handler to the link with the given part and type. I couldn't find an easy
