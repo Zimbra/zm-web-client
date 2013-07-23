@@ -76,9 +76,8 @@ Ext.define('ZCS.view.calendar.ZtAppointmentView', {
             organizer = invite.get('organizer') && invite.get('organizer').get('name'),
             location = invite.get('location'),
             attendees = invite.get('attendees'),
-            stats = this.getAttendeeStats(invite),
             isOrganizer = invite.get('isOrganizer'),
-
+            stats = attendees && this.getAttendeeStats(attendees, isOrganizer),
             data = {
                 start:  startTime + (invite.get('isAllDay') ? "" : " - " + endTime),
                 location: invite.get('location'),
@@ -100,33 +99,35 @@ Ext.define('ZCS.view.calendar.ZtAppointmentView', {
 
         navView.down('#apptDetails').setHtml(html);
         navView.getNavigationBar().setTitle(invite.get('subject'));
-        Ext.get("showAttendees").clearListeners();
+        if (attendees) {
+            Ext.get("showAttendees").clearListeners();
 
-        me = this;
-        Ext.get("showAttendees").on({
-            tap: function (ev) {
-                var listData = me.getListDataAsHtml(stats,isOrganizer),
-                    navView = me.down('navigationview'), list;
+            me = this;
+            Ext.get("showAttendees").on({
+                tap: function (ev) {
+                    var listData = me.getListDataAsHtml(stats,isOrganizer),
+                        navView = me.down('navigationview'), list;
 
-                if(navView.getInnerItems().length > 1) {
-                    list = navView.getInnerItems()[1];
-                    list.setData(listData);
-                    navView.setActiveItem(navView.getInnerItems()[1]);
+                    if(navView.getInnerItems().length > 1) {
+                        list = navView.getInnerItems()[1];
+                        list.setData(listData);
+                        navView.setActiveItem(navView.getInnerItems()[1]);
+                    }
+                    else {
+                        navView.push({
+                            title: ZtMsg.attendeesTitle,
+                            xtype: 'list',
+                            striped: true,
+                            itemId: 'attendeeList',
+                            fullscreen: true,
+                            striped: true,
+                            itemTpl: '{title}',
+                            data: listData
+                        })
+                    }
                 }
-                else {
-                    navView.push({
-                        title: ZtMsg.attendeesTitle,
-                        xtype: 'list',
-                        striped: true,
-                        itemId: 'attendeeList',
-                        fullscreen: true,
-                        striped: true,
-                        itemTpl: '{title}',
-                        data: listData
-                    })
-                }
-            }
-        })
+            })
+        }
 
     },
 
@@ -147,10 +148,9 @@ Ext.define('ZCS.view.calendar.ZtAppointmentView', {
 
 
 
-    getAttendeeStats: function(invite) {
+    getAttendeeStats: function(attendees, isOrganizer) {
 
-        var attendees = invite.get('attendees'),
-            accepted = 0, declined = 0, tentative = 0, unknown = 0, stats=[], attendeeList = "", i, name;
+        var accepted = 0, declined = 0, tentative = 0, unknown = 0, stats=[], attendeeList = "", i, name;
 
         for (i=0 ; i < attendees.length; i++) {
             name = attendees[i].get('name') || attendees[i].get('email');
@@ -179,7 +179,7 @@ Ext.define('ZCS.view.calendar.ZtAppointmentView', {
                     break;
             }
         }
-        if (invite.get('isOrganizer')) {
+        if (isOrganizer) {
             stats.summary = ((accepted ? accepted + " " + ZtMsg.accepted : "") + (declined ? ", " + declined + " " + ZtMsg.declined: "") + (tentative ? ", " + tentative + " " + ZtMsg.tentative : "") + (unknown ? ", " + unknown + " " + ZtMsg.unknown : "")).replace(/(^,)|(,$)/g, "");
         }
         else {
