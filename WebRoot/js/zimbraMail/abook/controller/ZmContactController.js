@@ -388,8 +388,9 @@ function(ev, bIsPopCallback) {
 					var contactFileAsBefore = ZmContact.computeFileAs(contact);
 					var contactFileAsAfter = ZmContact.computeFileAs(AjxUtil.hashUpdate(AjxUtil.hashCopy(contact.getAttrs()), mods, true));
 					this._doModify(contact, mods);
-					if (contactFileAsBefore.toLowerCase()[0] != contactFileAsAfter.toLowerCase()[0])
-						fileAsChanged=true;
+					if (contactFileAsBefore.toLowerCase()[0] !== contactFileAsAfter.toLowerCase()[0]) {
+						fileAsChanged = true;
+					}
 				}
 			} else {
 				var isEmpty = true;
@@ -419,6 +420,10 @@ function(ev, bIsPopCallback) {
 			}
 		}
 	} else {
+		if (contact.isDistributionList()) {
+			//in this case, we need to pop the view since we did not call the server to modify the DL.
+			this.popView();
+		}
 		// bug fix #5829 - differentiate betw. an empty contact and saving
 		//                 an existing contact w/o editing
 		if (view.isEmpty()) {
@@ -427,7 +432,9 @@ function(ev, bIsPopCallback) {
 				: ZmMsg.emptyContact;
 			appCtxt.setStatusMsg(msg, ZmStatusView.LEVEL_WARNING);
 		} else {
-			var msg = this._isGroup()
+			var msg = contact.isDistributionList()
+				? ZmMsg.dlSaved
+				: this._isGroup()
 				? ZmMsg.groupSaved
 				: ZmMsg.contactSaved;
 			appCtxt.setStatusMsg(msg, ZmStatusView.LEVEL_INFO);
