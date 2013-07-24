@@ -112,7 +112,7 @@ function(view, force) {
 // Internally we manage two maps, one for CLV and one for CV2 (if applicable)
 ZmConvListController.prototype.getKeyMapName =
 function() {
-	if (this._convView.isActiveQuickReply()) { //if user is quick replying, don't use the mapping of conv/mail list - so Ctrl+Z works
+	if (this._convView && this._convView.isActiveQuickReply()) { //if user is quick replying, don't use the mapping of conv/mail list - so Ctrl+Z works
 		return ZmKeyMap.MAP_QUICK_REPLY;
 	}
 	return ZmKeyMap.MAP_CONVERSATION_LIST;
@@ -208,6 +208,10 @@ function(actionCode, ev) {
 				itemView._cancelListener();
 				break;
 			}
+            else{
+                this._backListener();  //Bug: 83244 - need to close conv window after pressing 'Esc' key.
+                break;
+            }
 
 		default:
 			return ZmDoublePaneController.prototype.handleKeyAction.apply(this, arguments);
