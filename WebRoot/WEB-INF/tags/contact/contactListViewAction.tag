@@ -162,7 +162,15 @@
                             <c:forEach var="member" items="${contact.groupMembers}">
                                 <c:if test="${not empty emailIds}"><c:set var="grpsep" value=", " /></c:if>
                                 <c:set var="memberContact" value="${zm:groupMemberById(contact, member)}"/>
-                                <c:set var="memberContactFullAddress" value="${memberContact.fullAddress}"/>
+                                <%--check for inline contact--%>
+                                <c:choose>
+                                    <c:when test="${memberContact.isTypeI}">
+                                        <c:set var="memberContactFullAddress" value="${memberContact.id}"/>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <c:set var="memberContactFullAddress" value="${memberContact.fullAddress}"/>
+                                    </c:otherwise>
+                                </c:choose>
                                 <c:set var="emailIds" value="${emailIds}${grpsep}${memberContactFullAddress}" />
                                 </tr>
                             </c:forEach>
