@@ -1957,7 +1957,7 @@ function(file) {
     var dfsrc = file.docpath;
     if (dfsrc && dfsrc.indexOf("doc:") == 0) {
         var url = [path, dfsrc.substring(4)].join('');
-        src = AjxStringUtil.fixCrossDomainReference(url);
+        src = AjxStringUtil.fixCrossDomainReference(url, false, true);
     }
     this.insertImage(src, null, null, null, dfsrc);
 };

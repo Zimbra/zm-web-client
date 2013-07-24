@@ -1166,7 +1166,8 @@ function(msg, idoc, account) {
 					images[i].setAttribute("dfsrc", dfsrc);
 				}
 			} else if (dfsrc.substring(0,4) === "doc:") {
-				images[i].src = [appCtxt.get(ZmSetting.REST_URL, null, account), ZmFolder.SEP, dfsrc.substring(4)].join('');
+                var src = [appCtxt.get(ZmSetting.REST_URL, null, account), ZmFolder.SEP, dfsrc.substring(4)].join('');
+				images[i].src = AjxStringUtil.fixCrossDomainReference(src, false, true);;
 			} else if (dfsrc.indexOf("//") === -1) { // check for content-location verison
 				var src = msg && msg.getContentPartAttachUrl(ZmMailMsg.CONTENT_PART_LOCATION, dfsrc);
 				if (src) {
