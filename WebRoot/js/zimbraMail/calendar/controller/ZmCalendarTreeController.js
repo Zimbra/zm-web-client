@@ -340,9 +340,7 @@ function(organizer) {
             return;
         }
 
-        if (Number(organizer.nId) === ZmOrganizer.ID_TRASH) { //nId is String so change to Number so I can do === to compare to number. A bit messy but I prefer that over keeping ==.
-			return;
-		}
+        if (organizer.id == ZmOrganizer.ID_TRASH) return;
 
 		var appId = ZmOrganizer.APP[organizer.type];
 		var app = appId && appCtxt.getApp(appId);
@@ -463,7 +461,7 @@ function() {
 ZmCalendarTreeController.prototype.getExternalCalendarDialog =
 function() {
     if(!this._externalCalendarDialog) {
-        AjxDispatcher.require(["MailCore", "CalendarCore", "Calendar", "CalendarAppt"]);
+        AjxDispatcher.require(["CalendarCore", "Calendar", "CalendarAppt"]);
 	    this._externalCalendarDialog = new ZmExternalCalendarDialog({parent: this._shell, controller: this});
     }
     return this._externalCalendarDialog;

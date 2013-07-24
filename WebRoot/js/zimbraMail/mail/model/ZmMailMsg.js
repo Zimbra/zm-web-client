@@ -177,7 +177,6 @@ function(params) {
 		var newParams = {
 			jsonObj:		jsonObj,
 			asyncMode:		true,
-            offlineCache:   true,
 			callback:		ZmMailMsg._handleResponseFetchMsg.bind(null, params.callback),
 			errorCallback:	params.errorCallback,
 			noBusyOverlay:	params.noBusyOverlay,
@@ -719,7 +718,6 @@ function(params) {
 		params.getHtml = params.getHtml || this.isDraft || appCtxt.get(ZmSetting.VIEW_AS_HTML);
 		params.sender = appCtxt.getAppController();
 		params.msgId = this.id;
-		params.partId = this.partId;
 		params.callback = respCallback;
 		var errorCallback = this._handleResponseLoadFail.bind(this, params, params.errorCallback);
 		params.errorCallback = errorCallback;
@@ -744,14 +742,7 @@ function(params, callback, result) {
 
 	this._loadFromDom(response.m[0]);
 	if (!this.isReadOnly() && params.markRead) {
-        //For offline mode keep isUnread property as true so that additional MsgActionRequest gets fired.
-        //MsgActionRequest also gets stored in outbox queue and it also sends notify header for reducing the folder unread count.
-        if (appCtxt.isOfflineMode()) {
-            this._markReadLocal(false);
-        }
-        else {
-            this._markReadLocal(true);
-        }
+		this._markReadLocal(true);
 	}
 	this.findAttsFoundInMsgBody();
 
@@ -769,34 +760,10 @@ function(params, callback, result) {
 
 ZmMailMsg.prototype._handleResponseLoadFail =
 function(params, callback, result) {
-    this._loading = false;
+	this._loading = false;
 	if (callback) {
 		return callback.run(result);
 	}
-};
-
-ZmMailMsg.prototype._handleIndexedDBResponse =
-function(params, requestParams, result) {
-
-    var obj = result[0],
-        msgNode,
-        data = {},
-        methodName = requestParams.methodName;
-
-    if (obj) {
-        msgNode = obj[obj.methodName]["m"];
-        if (msgNode) {
-            msgNode.su = msgNode.su._content;
-            msgNode.fr = msgNode.mp[0].content._content;
-            msgNode.mp[0].content = msgNode.fr;
-            if (msgNode.fr) {
-                msgNode.mp[0].body = true;
-            }
-            data[methodName.replace("Request", "Response")] = { "m" : [msgNode] };
-            var csfeResult = new ZmCsfeResult(data);
-            this._handleResponseLoad(params, params.callback, csfeResult);
-        }
-    }
 };
 
 ZmMailMsg.prototype.isLoaded =
@@ -1437,11 +1404,10 @@ function(isDraft, callback, errorCallback, accountName, noSave, requestReadRecei
 			accountName: aName,
 			callback: (new AjxCallback(this, this._handleResponseSend, [isDraft, callback])),
 			errorCallback: errorCallback,
-			batchCmd: batchCmd,
-            skipOfflineCheck: true
+			batchCmd: batchCmd
 		};
         this._sendMessage(params);
-    }
+	}
 };
 
 ZmMailMsg.prototype._handleResponseSend =
@@ -1536,13 +1502,6 @@ function(request, isDraft, accountName, requestReadReceipt, sendTime) {
 	if (this.isPriority) {
 	    msgNode.f = ZmItem.FLAG_PRIORITY;			
 	}
-
-    if (this.isOfflineCreated) {
-        msgNode.f = msgNode.f || "";
-        if (msgNode.f.indexOf(ZmItem.FLAG_OFFLINE_CREATED) === -1) {
-            msgNode.f = msgNode.f + ZmItem.FLAG_OFFLINE_CREATED;
-        }
-    }
 	
 	var addrNodes = msgNode.e = [];
 	for (var i = 0; i < ZmMailMsg.COMPOSE_ADDRS.length; i++) {
@@ -1719,8 +1678,7 @@ function(request, isDraft, accountName, requestReadReceipt, sendTime) {
  */
 ZmMailMsg.prototype._sendMessage =
 function(params) {
-	var respCallback = new AjxCallback(this, this._handleResponseSendMessage, [params]),
-        offlineCallback = this._handleOfflineResponseSendMessage.bind(this, params);
+	var respCallback = new AjxCallback(this, this._handleResponseSendMessage, [params]);
     /* bug fix 63798 removing sync request and making it async
 	// bug fix #4325 - its safer to make sync request when dealing w/ new window
 	if (window.parentController) {
@@ -1753,7 +1711,6 @@ function(params) {
 												noBusyOverlay:params.isDraft && params.isAutoSave,
 												callback:respCallback,
 												errorCallback:params.errorCallback,
-                                                offlineCallback:offlineCallback,
 												accountName:params.accountName,
                                                 timeout: ( ( params.isDraft && this.attId ) ? 0 : null )
                                                 });
@@ -1773,100 +1730,6 @@ function(params, result) {
 	if (params.callback) {
 		params.callback.run(result);
 	}
-};
-
-ZmMailMsg.prototype._handleOfflineResponseSendMessage =
-function(params) {
-
-    var jsonObj = $.extend(true, {}, params.jsonObj),//Always clone the object
-        methodName = Object.keys(jsonObj)[0],
-        msgNode = jsonObj[methodName].m,
-        currentTime = new Date().getTime(),
-        callback;
-
-    jsonObj.methodName = methodName;
-    msgNode.d = currentTime; //for displaying date and time in the outbox/Drafts folder
-
-    if (!msgNode.id && this._origMsg && this._origMsg.id) {
-        msgNode.id = this._origMsg.id;
-    }
-    callback = this._handleOfflineResponseSendMessageCallback.bind(this, params, jsonObj, !!msgNode.id)
-
-    if (msgNode.id) { //Existing drafts created online or offline
-        jsonObj.id = msgNode.id;
-        var indexObj = {
-            operation : "add",
-            methodName : methodName,
-            id : msgNode.id,
-            value : jsonObj
-        };
-        ZmOfflineDB.indexedDB.actionsInRequestQueueUsingIndex(indexObj, callback);
-    }
-    else {
-        jsonObj.id = msgNode.id = currentTime.toString(); //Id should be string
-        msgNode.f = msgNode.f || "";
-        if (msgNode.f.indexOf(ZmItem.FLAG_OFFLINE_CREATED) === -1) {
-            msgNode.f = msgNode.f + ZmItem.FLAG_OFFLINE_CREATED;
-        }
-        ZmOfflineDB.indexedDB.setItemInRequestQueue(jsonObj, callback);
-    }
-};
-
-ZmMailMsg.prototype._handleOfflineResponseSendMessageCallback =
-function(params, jsonObj, isExistingMsg) {
-
-    var data = {},
-        header = this._generateOfflineHeader(params, jsonObj, isExistingMsg),
-        notify = header.context.notify[0],
-        result;
-
-    data[jsonObj.methodName.replace("Request", "Response")] = isExistingMsg ? notify.modified : notify.created;
-    result = new ZmCsfeResult(data, false, header);
-    this._handleResponseSendMessage(params, result);
-    appCtxt.getRequestMgr()._notifyHandler(notify);
-
-    if (!params.isDraft && !params.isInvite) {
-        var indexObj = {
-            operation : "delete",
-            methodName : "SaveDraftRequest",
-            id : jsonObj[jsonObj.methodName].m.id
-        };
-        ZmOfflineDB.indexedDB.actionsInRequestQueueUsingIndex(indexObj);//Delete any drafts for this message id
-    }
-};
-
-ZmMailMsg.prototype._generateOfflineHeader =
-function(params, jsonObj, isExistingMsg) {
-
-    var m = ZmOffline.generateMsgResponse(jsonObj),
-        folderArray = [],
-        header = {
-            context : {
-                notify : [{
-                    created : {
-                        m : isExistingMsg ? [] : m
-                    },
-                    modified : {
-                        folder : folderArray,
-                        m : isExistingMsg ? m : []
-                    }
-                }]
-            }
-        };
-
-    if (params.isDraft) {
-        folderArray.push({
-            id : ZmFolder.ID_DRAFTS,
-            n : appCtxt.getById(ZmFolder.ID_DRAFTS).numTotal + (isExistingMsg ? 0 : 1)
-        });
-    }
-    else {
-        folderArray.push({
-            id : ZmFolder.ID_OUTBOX,
-            n : appCtxt.getById(ZmFolder.ID_OUTBOX).numTotal + (isExistingMsg ? 0 : 1)
-        });
-    }
-    return header;
 };
 
 ZmMailMsg.prototype._notifySendListeners =
@@ -2086,8 +1949,7 @@ function(findHits, includeInlineImages, includeInlineAtts) {
 					}
 					else {
 						// set the objectify flag
-						var contentType = attach.contentType;
-						props.objectify = contentType && contentType.match(/^image/) && !contentType.match(/tif/); //see bug 82807 - Tiffs are not really supported by browsers, so don't objectify.
+						props.objectify = attach.contentType && attach.contentType.match(/^image/);
 					}
 				} else {
 					props.url = url;
@@ -2170,7 +2032,6 @@ function(msgNode) {
 	// this method could potentially be called twice (SearchConvResponse and
 	// GetMsgResponse) so always check param before setting!
 	if (msgNode.id)		{ this.id = msgNode.id; }
-	if (msgNode.part)	{ this.partId = msgNode.part; }
 	if (msgNode.cid) 	{ this.cid = msgNode.cid; }
 	if (msgNode.s) 		{ this.size = msgNode.s; }
 	if (msgNode.d) 		{ this.date = msgNode.d; }
@@ -2649,7 +2510,7 @@ function(attach) {
 
 ZmMailMsg.prototype._onChange =
 function(what, a, b, c) {
-	if (this.onChange) {
+	if (this.onChange && this.onChange instanceof AjxCallback) {
 		this.onChange.run(what, a, b, c);
 	}
 };
@@ -2701,12 +2562,7 @@ function() {
 	if (this.isUnread)		{ status.push(ZmMsg.unread); }
 	if (this.isReplied)		{ status.push(ZmMsg.replied); }
 	if (this.isForwarded)	{ status.push(ZmMsg.forwarded); }
-	if (this.isDraft) {
-		status.push(ZmMsg.draft);
-	}
-	else if (this.isSent) {
-		status.push(ZmMsg.sentAt); //sentAt is for some reason "sent", which is what we need.
-	}
+	if (this.isSent && !this.isDraft) { status.push(ZmMsg.sentAt); }
 	if (status.length == 0) {
 		status = [ZmMsg.read];
 	}

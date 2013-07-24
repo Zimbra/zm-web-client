@@ -313,9 +313,7 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
 			form = panel.down('formpanel'),
 			value, formField,
 			extraNameFieldsShown = false,
-			extraJobFieldsShown = false,
-            contactImgField = form.down('#photofield'),
-            imageUrl = contact.get('imageUrl');
+			extraJobFieldsShown = false;
 
 	    // Create and populate the simple attrs
 	    Ext.each(ZCS.constant.CONTACT_FIELDS, function(attr) {
@@ -335,9 +333,6 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
 			    }
 		    }
 	    }, this);
-
-        // Fix for bug: 82478. Set or unset contact image
-        contactImgField.setStyle({backgroundImage: imageUrl ? 'url("' + imageUrl + '")' : ''});
 
 	    // Create as many fields as we need for each multiple-occurring attribute (at least one will be added)
 	    var container;

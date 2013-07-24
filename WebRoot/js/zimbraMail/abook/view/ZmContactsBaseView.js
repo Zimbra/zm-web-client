@@ -119,6 +119,21 @@ function() {
 };
 
 /**
+ * overriding in order to prevent distribution lists from being draggable.
+ */
+ZmContactsBaseView.prototype._getDragProxy =
+function(dragOp) {
+	var dndSelection = this.getDnDSelection();
+	dndSelection = AjxUtil.toArray(dndSelection); // it might be array or just a scalar ZmContact. So this will always get array.
+	for (var i = 0; i < dndSelection.length; i++) { //if any is a DL - don't allow the drag. There could be a mix in search results.
+		if (dndSelection[i].isDistributionList()) { //don't allow dragging a DL
+			return null;
+		}
+	}
+	return ZmListView.prototype._getDragProxy.call(this, dragOp);
+};
+
+/**
  * @private
  */
 ZmContactsBaseView.prototype._changeListener =
@@ -453,10 +468,7 @@ function() {
 		endSortVals:	ZmContactAlphabetBar._parseSortVal(ZmMsg.alphabetEndSortValue)
 	};
 
-	var element = this.getHtmlElement();
-	element.innerHTML = AjxTemplate.expand("abook.Contacts#ZmAlphabetBar", subs);
-	Dwt.setHandler(element, DwtEvent.ONMOUSEOUT, ZmContactAlphabetBar._onMouseOut);
-	Dwt.setHandler(element, DwtEvent.ONMOUSEOVER, ZmContactAlphabetBar._onMouseOver);
+	this.getHtmlElement().innerHTML = AjxTemplate.expand("abook.Contacts#ZmAlphabetBar", subs);
 };
 
 ZmContactAlphabetBar._parseSortVal =
@@ -479,11 +491,7 @@ function(sortVal) {
  * @private
  */
 ZmContactAlphabetBar._onMouseOver =
-function(event) {
-	var cell = DwtUiEvent.getTarget(event);
-	if (cell.nodeName.toLowerCase() !== "td") {
-		return;
-	}
+function(cell) {
 	// get reference to alphabet bar - ugh
 	var alphabetBar = AjxDispatcher.run("GetContactListController").getCurrentView().getAlphabetBar();
 	if (alphabetBar.enabled()) {
@@ -495,11 +503,7 @@ function(event) {
  * @private
  */
 ZmContactAlphabetBar._onMouseOut =
-function(event) {
-	var cell = DwtUiEvent.getTarget(event);
-	if (cell.nodeName.toLowerCase() !== "td") {
-		return;
-	}
+function(cell) {
 	// get reference to alphabet bar - ugh
 	var alphabetBar = AjxDispatcher.run("GetContactListController").getCurrentView().getAlphabetBar();
 	if (alphabetBar.enabled()) {

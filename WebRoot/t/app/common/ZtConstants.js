@@ -83,7 +83,8 @@ ZCS.constant.IS_ENABLED[ZCS.constant.APP_CONTACTS]              = true;
 ZCS.constant.IS_ENABLED[ZCS.constant.FEATURE_ADD_ATTACHMENT]    = false;
 ZCS.constant.IS_ENABLED[ZCS.constant.FEATURE_QUICK_REPLY]       = true;
 ZCS.constant.IS_ENABLED[ZCS.constant.FEATURE_FIND_OBJECTS]      = true;
-ZCS.constant.IS_ENABLED[ZCS.constant.APP_CALENDAR]  = true;
+// Keep calendar disabled by default ref Bug: 83049
+ZCS.constant.IS_ENABLED[ZCS.constant.APP_CALENDAR]  = false;
 
 // Text for tab bar
 ZCS.constant.TAB_TITLE = {};

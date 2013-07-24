@@ -9,7 +9,8 @@
 <%-- this checks and redirects to admin if need be --%>
 <zm:adminRedirect/>
 <app:skinAndRedirect />
-<!DOCTYPE html>
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <fmt:setLocale value='${pageContext.request.locale}' scope='request' />
 <fmt:setBundle basename="/messages/ZmMsg" scope="request"/>
 <fmt:setBundle basename="/messages/ZhMsg" var="zhmsg" scope="request"/>
@@ -281,15 +282,13 @@ if (application.getInitParameter("offlineMode") != null)  {
 %>
 
 
-<!-- set this class so CSS definitions that now use REM size, would work relative to this.
-	Since now almost everything is relative to one of the 2 absolute font size classese -->
-<html class="user_font_size_normal">
+<html>
 <head>
 <!--
  login.jsp
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012, 2013 VMware, Inc.
+ * Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -307,6 +306,7 @@ if (application.getInitParameter("offlineMode") != null)  {
         <c:set var="client" value="${useTablet ? 'touch' : useMobile ? 'mobile' : useStandard ? 'standard' : 'preferred' }"/>
     </c:if>
     <c:set var="smallScreen" value="${client eq 'mobile'}"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE9" />
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
     <title><fmt:message key="zimbraLoginTitle"/></title>
     <c:set var="version" value="${initParam.zimbraCacheBusterVersion}"/>
@@ -442,7 +442,6 @@ if (application.getInitParameter("offlineMode") != null)  {
                     </c:if>
 					</table>
 				<div class="offline"><fmt:message key="switchToOfflineClientEx"/></div>
-			</form>
 			</div>
 			<div class="decor1"></div>
 		</div>

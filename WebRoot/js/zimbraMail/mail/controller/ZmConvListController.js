@@ -54,6 +54,7 @@ ZmMailListController.GROUP_BY_MSG_KEY[ZmId.VIEW_CONVLIST]	= "byConversation";
 ZmMailListController.GROUP_BY_SHORTCUT[ZmId.VIEW_CONVLIST]	= ZmKeyMap.VIEW_BY_CONV;
 ZmMailListController.GROUP_BY_VIEWS.push(ZmId.VIEW_CONVLIST);
 
+
 // Public methods
 
 ZmConvListController.getDefaultViewType =
@@ -194,21 +195,20 @@ function(actionCode, ev) {
 			return DwtListView.prototype.handleKeyAction.apply(mlv, arguments);
 
 		// these are for quick reply
+		case ZmKeyMap.CANCEL:
+			var itemView = this.getItemView();
+			if (itemView && itemView._cancelListener) {
+				itemView._cancelListener();
+			}
+			break;
+		
 		case ZmKeyMap.SEND:
 			var itemView = this.getItemView();
 			if (itemView && itemView._sendListener) {
 				itemView._sendListener();
 			}
 			break;
-
-		// do this last since we want CANCEL to bubble up if not handled
-		case ZmKeyMap.CANCEL:
-			var itemView = this.getItemView();
-			if (itemView && itemView._cancelListener && itemView._replyView && itemView._replyView.getVisible()) {
-				itemView._cancelListener();
-				break;
-			}
-
+			
 		default:
 			return ZmDoublePaneController.prototype.handleKeyAction.apply(this, arguments);
 	}
@@ -493,7 +493,7 @@ function() {
 				var terms = ["underid:" + rootFolderId];
 				var search = this._currentSearch;
 				if (search) {
-					var foldersToExclude = ZmMailListController.FOLDERS_TO_OMIT;
+					var foldersToExclude = [ZmFolder.ID_TRASH, ZmFolder.ID_SPAM];
 					for (var i = 0; i < foldersToExclude.length; i++) {
 						var folderId = foldersToExclude[i];
 						if (acctId) {

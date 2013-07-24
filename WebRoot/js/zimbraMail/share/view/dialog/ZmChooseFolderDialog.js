@@ -174,7 +174,7 @@ function(params) {
 	// TODO: I opened bug 34447 for this performance enhancement.
 	var pkg = [];
 	if (treeIdMap[ZmOrganizer.BRIEFCASE]) pkg.push("BriefcaseCore","Briefcase");
-	if (treeIdMap[ZmOrganizer.CALENDAR]) pkg.push("MailCore","CalendarCore","Calendar");
+	if (treeIdMap[ZmOrganizer.CALENDAR]) pkg.push("CalendarCore","Calendar");
 	if (treeIdMap[ZmOrganizer.ADDRBOOK]) pkg.push("ContactsCore","Contacts");
 	if (treeIdMap[ZmOrganizer.FOLDER]) pkg.push("MailCore","Mail");
 	if (treeIdMap[ZmOrganizer.TASKS]) pkg.push("TasksCore","Tasks");
@@ -408,16 +408,14 @@ function() {
 			var items = treeView.getTreeItemList();
 			for (var i = 0, len = items.length; i < len; i++) {
 				var ti = items[i];
-				if (!ti.getData) {  //not sure if this could happen but it was here before my refactoring.
-					continue;
+				if (ti.getData) {
+					var folder = items[i].getData(Dwt.KEY_OBJECT);
+					if (folder && (folder.nId != ZmOrganizer.ID_ROOT)) {
+						var name = folder.getName(false, null, true, true).toLowerCase();
+						var path = "/" + folder.getPath(false, false, null, true).toLowerCase();
+						this._folders.push({id:folder.id, type:type, name:name, path:path, accountId:accountId});
+					}
 				}
-				var folder = items[i].getData(Dwt.KEY_OBJECT);
-				if (!folder || folder.nId === ZmOrganizer.ID_ROOT) {
-					continue;
-				}
-				var name = folder.getName(false, null, true, true).toLowerCase();
-				var path = "/" + folder.getPath(false, false, null, true).toLowerCase();
-				this._folders.push({id: folder.id, type: type, name: name, path: path, accountId: accountId});
 			}
 		}
 	}

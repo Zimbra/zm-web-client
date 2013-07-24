@@ -222,9 +222,7 @@ function(params) {
 		this._treeViewCreated = true;
 		this._postSetup(id, params.account);
 	}
-    if (appCtxt.isOfflineMode()){
-        appCtxt._offlineHandler._enableMailFeatures(false);
-    }
+
 	return this._treeView[id];
 };
 
