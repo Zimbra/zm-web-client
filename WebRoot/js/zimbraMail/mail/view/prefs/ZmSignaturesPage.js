@@ -837,7 +837,7 @@ function() {
 			var dfsrc = img.getAttribute("dfsrc");
 			if (dfsrc && dfsrc.indexOf("doc:") == 0) {
 				var url = [path, dfsrc.substring(4)].join('');
-				img.src = AjxStringUtil.fixCrossDomainReference(url);
+				img.src = AjxStringUtil.fixCrossDomainReference(url, false, true);
 			}
 		}
 	}
