@@ -1004,7 +1004,9 @@ and the container element is replaced with that control.
 						<td class='ZOptionsField'>
 							<table>
 								<tr>
-									<td style='padding-right:.5em;'><input id='${id}_PRIMARY_FROM_NAME' tabindex='1030' size=30></td>
+                                    <$ if (appCtxt.get(ZmSetting.FROM_DISPLAY_ENABLED)) { $>
+    									<td style='padding-right:.5em;'><input id='${id}_PRIMARY_FROM_NAME' tabindex='1030' size=30></td>
+                                    <$ } $>
 									<td><select id='${id}_PRIMARY_FROM_EMAIL' tabindex='1035' size=40></select></td>
 								</tr>
 							</table>

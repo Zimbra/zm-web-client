@@ -250,6 +250,7 @@ function(settings) {
 	settings.registerSetting("PREF_SECTIONS",				{type:ZmSetting.T_PSEUDO, dataType:ZmSetting.D_HASH, isGlobal:true});
 	settings.registerSetting("SIGNATURE_MAX_LENGTH",		{name:"zimbraMailSignatureMaxLength", type:ZmSetting.T_COS, dataType:ZmSetting.D_INT, defaultValue:1024});
 	settings.registerSetting("DISCARD_IN_FILTER_ENABLED",	{name:"zimbraFeatureDiscardInFiltersEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
+	settings.registerSetting("FROM_DISPLAY_ENABLED",		{name: "zimbraFeatureFromDisplayEnabled", type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: true});
     //settings.registerSetting("QUICK_COMMAND_LIST",			{name:"zimbraPrefQuickCommand", type: ZmSetting.T_COS, dataType: ZmSetting.D_LIST});
 };
 
