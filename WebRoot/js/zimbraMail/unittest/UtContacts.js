@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2011, 2013 VMware, Inc.
+ * Copyright (C) 2011, 2012 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -40,21 +40,4 @@ UT.test("Add new contact",
         var zmContactsApp = appCtxt.getApp(ZmApp.CONTACTS)
         zmContactsApp._handleLoadNewItem();
     }
-);
-
-UT.test("Wrap Inline Contact",
-  	function() {
-		UT.expect(3);
-		var inline1 = "jwagner@vmware.com";
-		var obj = ZmContactsHelper._wrapInlineContact(inline1);
-		UT.equal(obj.address, inline1);
-		  
-		var inline2 = "Jeff Wagner <jwagner@vmware.com>";
-		var obj2 = ZmContactsHelper._wrapInlineContact(inline2);
-		UT.equal(obj2.address, "jwagner@vmware.com");
-		  
-		var inline3 = "\"John Doe\" <x@x.com>";
-		var obj3 = ZmContactsHelper._wrapInlineContact(inline3);
-		UT.equal(obj3.address, "x@x.com");
-	  }
 );

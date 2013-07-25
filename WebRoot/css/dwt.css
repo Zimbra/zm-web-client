@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013 VMware, Inc.
+ * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -483,10 +483,6 @@
 	@ListColHeaderContainer-normal@
 }
 
-.FixedColumnHeaderTables .DwtListView-Column table {
-	table-layout:fixed
-}
-
 /* ??? SHOTGUN */
 
 .DwtListView-Column td {
@@ -551,20 +547,10 @@
 }
 
 /* ??? SHOTGUN */
-.DwtListView-Rows TD, .ZmRowDoubleHeader, .ZmRowDoubleHeader DIV, .DwtMsgListMultiCol DIV {
+.DwtListView-Rows td {
 	padding-left:@TextPaddingSize@;
 	padding-right:2px;
 	overflow:hidden;
-}
-
-UL.DwtListView-Rows {
-	list-style: none;
-	padding: 0;
-	margin: 0;
-}
-
-.TopRow DIV, .BottomRow DIV, .DwtMsgListMultiCol DIV, .SimpleContact DIV {
-	display: inline-block;
 }
 
 .DwtListHeaderItem-label {
@@ -742,14 +728,12 @@ UL.DwtListView-Rows {
 /* Outer container for the message dialog */
 .DwtMsgDialog {
 	width:400px;
-	max-height:400px;
 	overflow:auto;
 }
 
 /* For the error dialog when displaying a request */
 .DwtMsgDialog-wide {
 	width:600px;
-	max-height:400px;
 	overflow:auto;
 }
 
@@ -825,9 +809,7 @@ UL.DwtListView-Rows {
 }
 
 /* Container for the actual text of the alert */
-.DwtAlertContent {
-	font-weight: normal;
-}
+.DwtAlertContent {}
 
 
 /* ??? USE? */
@@ -1023,6 +1005,10 @@ UL.DwtListView-Rows {
 
 .menuOverview {
 	max-height:200px;
+	#IFDEF MSIE
+		height:expression(this.scrollHeight > 199 ? "200px" : "auto");
+	#ENDIF
+
 }
 
 /*
@@ -1805,12 +1791,12 @@ input.xform_field {
 .ZWidgetIcon					{	width:0px;	height:@SmallIconHeight@; overflow:hidden;}
 .ZDisabled .ZWidgetIcon DIV		{ 	@Icon-disabled@	}
 
-.ZWidgetTitle					{ 	height:@SmallIconHeight@;	width:100%;	white-space:nowrap;	overflow: hidden; }
+.ZWidgetTitle					{ 	height:@SmallIconHeight@;	width:100%;	white-space:nowrap;		}
 .ZDisabled .ZWidgetTitle		{ 	@Text-disabled@	}
 
 .ZCenterTitle .ZWidgetTitle		{	text-align:center;  vertical-align:middle;	}
 
-.ZDisabled .ZDropDown           { @Text-disabled@ }
+
 
 .ZWidgetTable DIV				{	}
 .ZHasText .ZWidgetTitle			{	padding:0px 4px;	}

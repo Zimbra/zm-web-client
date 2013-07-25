@@ -454,13 +454,10 @@ function(params) {
 			asyncMode:true,
 			callback:respCallback,
 			errorCallback:params.errorCallback,
-            offlineCallback:params.offlineCallback,
 			timeout:params.timeout,
-            offlineCache:params.offlineCache,
 			noBusyOverlay:params.noBusyOverlay,
 			response:this.response,
-			accountName:this.accountName,
-            offlineRequest:params.offlineRequest
+			accountName:this.accountName
 		};
 		return appCtxt.getAppController().sendRequest(searchParams);
 	}

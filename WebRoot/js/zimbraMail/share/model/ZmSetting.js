@@ -226,7 +226,6 @@ ZmSetting.LOCALE_NAME			= "LOCALE_NAME";
 ZmSetting.COMPOSE_INIT_DIRECTION= "COMPOSE_INIT_DIRECTION";
 ZmSetting.SHOW_COMPOSE_DIRECTION_BUTTONS = "SHOW_COMPOSE_DIRECTION_BUTTONS";
 ZmSetting.FONT_NAME				= "FONT_NAME";
-ZmSetting.FONT_SIZE				= "FONT_SIZE";
 ZmSetting.SKIN_NAME				= "SKIN_NAME";
 
 ZmSetting.BRIEFCASE_ENABLED		= "BRIEFCASE_ENABLED";
@@ -246,17 +245,13 @@ ZmSetting.CONTACTS_UPSELL_ENABLED	= "CONTACTS_UPSELL_ENABLED";
 ZmSetting.MAIL_UPSELL_ENABLED		= "MAIL_UPSELL_ENABLED";
 ZmSetting.VOICE_UPSELL_ENABLED		= "VOICE_UPSELL_ENABLED";
 
+ZmSetting.MAIL_SEND_LATER_ENABLED	= "MAIL_SEND_LATER_ENABLED";
+
 //user selected font
 ZmSetting.FONT_CLASSIC	= "classic";
 ZmSetting.FONT_MODERN	= "modern";
 ZmSetting.FONT_WIDE		= "wide";
 ZmSetting.FONT_SYSTEM	= "system";
-
-//user selected font size
-ZmSetting.FONT_SIZE_NORMAL = "normal";
-ZmSetting.FONT_SIZE_LARGE = "large";
-ZmSetting.FONT_SIZE_LARGER = "larger";
-
 
 // name for dynamic CSS class created from user font prefs
 ZmSetting.USER_FONT_CLASS = "userFontPrefs";

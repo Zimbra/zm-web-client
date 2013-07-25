@@ -69,23 +69,26 @@ Ext.define('ZCS.controller.calendar.ZtCalendarController', {
 
     launch: function() {
 
-        var defaultQuery = this.getDefaultQuery();
+        // Create toolbar and load store only if calendar app is enabled
+        if (ZCS.session.getSetting(ZCS.constant.APP_SETTING[this.getApp()])) {
+            var defaultQuery = this.getDefaultQuery();
 
-        this.callParent();
+            this.callParent();
 
-        //Create a toolbar with calendar view buttons - Month, Week, Day, Workweek and Today
-        this.createToolbar();
+            //Create a toolbar with calendar view buttons - Month, Week, Day, Workweek and Today
+            this.createToolbar();
 
-        //Set the proxies params so this parameter persists between paging requests.
-        this.getStore().getProxy().setExtraParams({
-            query: defaultQuery
-        });
+            //Set the proxies params so this parameter persists between paging requests.
+            this.getStore().getProxy().setExtraParams({
+                query: defaultQuery
+            });
 
-        this.getStore().load({
-            calStart: this.getMonthStartTime(),
-            calEnd: this.getMonthEndTime(),
-            query: defaultQuery
-        });
+            this.getStore().load({
+                calStart: this.getMonthStartTime(),
+                calEnd: this.getMonthEndTime(),
+                query: defaultQuery
+            });
+        }
     },
 
     /*

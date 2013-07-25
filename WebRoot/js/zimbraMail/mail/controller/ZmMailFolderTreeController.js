@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2008, 2009, 2010, 2011 VMware, Inc.
+ * Copyright (C) 2008, 2009, 2010, 2011, 2012 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -42,10 +42,6 @@ function(parentNode, node, fields, organizer, treeView) {
 		if (ovc)
 			ovc.updateLabel(organizer);
 	}
-
-    if (organizer.getAccount().isMain && appCtxt._offlineHandler && ($.inArray(organizer.nId, ZmOffline.offlineFolderIds) !== -1)){
-        appCtxt._offlineHandler.storeFolderMetaData(organizer.nId, organizer);
-    }
 };
 
 ZmMailFolderTreeController.prototype._deleteListener =

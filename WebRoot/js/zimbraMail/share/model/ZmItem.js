@@ -145,7 +145,6 @@ ZmItem.FLAG_LOW_PRIORITY		= "?";
 ZmItem.FLAG_HIGH_PRIORITY		= "!";
 ZmItem.FLAG_PRIORITY            = "+"; //msg prioritization
 ZmItem.FLAG_NOTE                = "t"; //specially for notes
-ZmItem.FLAG_OFFLINE_CREATED     = "o";
 
 ZmItem.ALL_FLAGS = [
 	ZmItem.FLAG_FLAGGED,
@@ -161,8 +160,7 @@ ZmItem.ALL_FLAGS = [
 	ZmItem.FLAG_HIGH_PRIORITY,
 	ZmItem.FLAG_LOW_PRIORITY,
 	ZmItem.FLAG_PRIORITY,
-    ZmItem.FLAG_NOTE,
-    ZmItem.FLAG_OFFLINE_CREATED
+    ZmItem.FLAG_NOTE
 ];
 
 // Map flag to item property
@@ -181,7 +179,6 @@ ZmItem.FLAG_PROP[ZmItem.FLAG_LOW_PRIORITY]		= "isLowPriority";
 ZmItem.FLAG_PROP[ZmItem.FLAG_HIGH_PRIORITY]		= "isHighPriority";
 ZmItem.FLAG_PROP[ZmItem.FLAG_PRIORITY]          = "isPriority";
 ZmItem.FLAG_PROP[ZmItem.FLAG_NOTE]              = "isNote";
-ZmItem.FLAG_PROP[ZmItem.FLAG_OFFLINE_CREATED]   = "isOfflineCreated";
 
 // DnD actions this item is allowed
 
