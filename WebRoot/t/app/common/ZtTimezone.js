@@ -77,7 +77,7 @@ Ext.define('ZCS.common.ZtTimezone', {
             return rule.shortName;
         }
 
-        var generatedShortName = ["GMT", ZCS.timezone.SHORT_NAMES[clientId]].join("");
+        var generatedShortName = ZCS.timezone.SHORT_NAMES[clientId];
 
         if (rule) {
             rule.shortName = generatedShortName;
@@ -96,7 +96,11 @@ Ext.define('ZCS.common.ZtTimezone', {
             return rule.mediumName;
         }
 
-        var generatedMediumName = ZtMsg[clientId] || ['(', this.getShortName(clientId),') ', clientId].join("");
+        if (clientId.indexOf('(') !== -1 && clientId.indexOf(')') !== -1) {
+            clientId = clientId.replace('(', '').replace(')', '');
+        }
+
+        var generatedMediumName = ZtMsg[clientId] || [this.getShortName(clientId), clientId].join("");
 
         if (rule) {
             rule.mediumName = generatedMediumName;
