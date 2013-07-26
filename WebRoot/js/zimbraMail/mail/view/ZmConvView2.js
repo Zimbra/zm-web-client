@@ -1788,12 +1788,14 @@ function(expanded) {
 	}
 	else {
 		// hide or show everything below the header
-		var children = this.getHtmlElement().childNodes;
-		for (var i = 1; i < children.length; i++) {
-			var child = children[i];
-			var show = (child && (child.id == this._displayImagesId)) ? this._expanded && this._needToShowInfoBar : this._expanded;
-			Dwt.setVisible(child, show);
-		}
+        var children = this.getHtmlElement().childNodes;
+        for (var i = 0; i < children.length; i++) {
+                if (children[i].className !== 'Conv2MsgHeader'){
+                var child = children[i];
+                var show = (child && (child.id == this._displayImagesId)) ? this._expanded && this._needToShowInfoBar : this._expanded;
+                Dwt.setVisible(child, show);
+      	    }
+        }
 		this._header.set(this._expanded ? ZmMailMsgCapsuleViewHeader.EXPANDED : ZmMailMsgCapsuleViewHeader.COLLAPSED);
 		if (this._expanded) {
 			this._setTags(this._msg);
