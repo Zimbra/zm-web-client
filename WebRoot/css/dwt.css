@@ -129,7 +129,7 @@
 .DwtLinkButtonDropDownArrowTd 		{	padding-left:1px; 		}
 .DwtLinkButtonTable:hover .DwtLinkButtonDropDownArrowTd, /* this selector doesn't work on IE and FF (works on Chrome). I prefer this so I keep it, since it would work for any instance of a LinkButton (if we have more than just the help one in the future) and the border stays when the user clicks on the drow-down arrow */
 .ZHover .DwtLinkButtonDropDownArrowTd /* this works for all browsers but the border disappears when the arrow is clicked since ZHover class is removed */
-								{	padding-left:0; border-left:solid 1px @LinkButtonArrowColor@; 	}
+								{	padding-left:0px; border-left:solid 1px @LinkButtonArrowColor@; 	}
 
 /* One row of the DwtLinkButton drop-down arrow -- used to do arrows without images */
 .DwtLinkButtonDropDownArrowRow 	{	font-size:1px; height:1px; overflow:hidden; position:relative; 
@@ -558,13 +558,13 @@
 }
 
 UL.DwtListView-Rows {
-	list-style: none;
-	padding: 0;
-	margin: 0;
+	list-style:none;
+	padding:0px;
+	margin:0px;
 }
 
 .TopRow DIV, .BottomRow DIV, .DwtMsgListMultiCol DIV, .SimpleContact DIV {
-	display: inline-block;
+	display:inline-block;
 }
 
 .DwtListHeaderItem-label {
@@ -654,7 +654,7 @@ UL.DwtListView-Rows {
 */
   @WindowContainer@
 /*  @VeilOpacity@ */
-  padding:0;
+  padding:0px;
   border-width:2px;
   @roundCorners(2px)@
 }
@@ -665,7 +665,7 @@ UL.DwtListView-Rows {
   background-color:#9db2d4; z-index:1000;
 */
   @ToolbarContainer@
-  padding:0;
+  padding:0px;
   border-width:2px;
   @roundCorners(2px)@
 }
@@ -675,7 +675,7 @@ UL.DwtListView-Rows {
 .DwtResizableWindow { cursor:default; }
 
 .DwtResizableWindow-topcont { position:relative !important; height:100% !important; width:100% !important; }
-.DwtResizableWindow-handles { position:absolute; left:0; top:0; width:100%; height:100%; border-collapse:collapse; }
+.DwtResizableWindow-handles { position:absolute; left:0px; top:0px; width:100%; height:100%; border-collapse:collapse; }
 .DwtResizableWindow-cont { position:absolute; left:3px; top:3px; right:3px; bottom:3px; }
 
 .DwtResizableWindow-handles td { font-size:1px !important; line-height:1px !important; }
@@ -707,11 +707,11 @@ UL.DwtListView-Rows {
 
 .DwtWindowManager {
 	position:absolute;
-	top:0; left:0;
+	top:0px; left:0px;
 	width:100%;
 	height:100%;
-	padding:0;
-	margin:0;
+	padding:0px;
+	margin:0px;
 	border:none;
 	overflow:visible;
 	visibility:hidden;
@@ -877,7 +877,7 @@ UL.DwtListView-Rows {
 
 .DwtColorPicker .Text {
     clear:both;
-    margin:4px 0;
+    margin:4px 0px;
 }
 
 .DwtColorPickerButton .Color {
@@ -1338,7 +1338,7 @@ input.xform_field {
 	@CompactTable@
 }
 .xform_button_grid_small_table td {
-	padding:0;
+	padding:0px;
 }
 
 .xform_button_grid_small_button {
@@ -1407,8 +1407,8 @@ input.xform_field {
 	border-right:none;
 	border-bottom:none;
 	margin-top:20px;
-	margin-bottom:0;
-	padding-bottom:0;
+	margin-bottom:0px;
+	padding-bottom:0px;
 }
 
 .LowPaddedTopGrouperBorder {
@@ -1417,7 +1417,7 @@ input.xform_field {
 	border-right:none;
 	border-bottom:none;
 	margin-top:20px;
-	margin-bottom:0;
+	margin-bottom:0px;
 	padding-bottom:10px;
 }
 .SmallRadioGrouperLabel,
@@ -1433,7 +1433,7 @@ input.xform_field {
 
 .GrouperLabel,
 .RadioGrouperLabel {
-	left:0; 			/* insets label equal to GrouperBorder left-padding */
+	left:0px; 			/* insets label equal to GrouperBorder left-padding */
 }
 .GrouperLabel {
 	@FontSize-big@
@@ -1507,7 +1507,7 @@ input.xform_field {
 .oselect TD,
 .oselect_table TD,
 .oselect_check_table TD {
-	padding:0;
+	padding:0px;
 }
 
 .oselect_table_disabled {
@@ -1682,7 +1682,7 @@ input.xform_field {
 	@InactiveCursor@
 }
 .DwtGridSizePicker table tr.info td {
-	text-align:center; padding:1px 0;
+	text-align:center; padding:1px 0px;
 }
 .DwtGridSizePicker table tr.grid td {
 	@SeparatorBorder@
@@ -1690,7 +1690,7 @@ input.xform_field {
 	height:16px;
 	font-size:16px;
 	line-height:16px;
-	padding:0;
+	padding:0px;
 	@AppBg@
 }
 .DwtGridSizePicker table tr.grid td.Hovered {
@@ -1701,13 +1701,13 @@ input.xform_field {
 
 .DwtSpinner { border:1px solid black;
 	@InputField@
-	padding:0; margin:0;
+	padding:0px; margin:0px;
 	background-color:white;
 }
-.DwtSpinner td { padding:0; margin:0; }
+.DwtSpinner td { padding:0px; margin:0px; }
 .DwtSpinner-inputCell input[type='text'],
 .DwtSpinner-inputCell input[type='text'] {
-	margin:0; border:none; padding:1px 2px; text-align:right;
+	margin:0px; border:none; padding:1px 2px; text-align:right;
 }
 
 .DwtSpinner-UpBtn, .DwtSpinner-DownBtn {
@@ -1768,8 +1768,8 @@ input.xform_field {
 
 .ZPanelTitlebar		{	position:absolute; width:100%; height:20px; top:-1px;}
 .ZPanelIcon			{	width:0px;	 }
-.ZPanelTitle		{	width:100%;	padding:1 0 0 4;  }
-.ZPanelToolbar		{	width:0px;	padding:1 10 0 6; 	}
+.ZPanelTitle		{	width:100%;	padding:1px 0px 0px 4px;  }
+.ZPanelToolbar		{	width:0px;	padding:1px 10px 0px 6px; 	}
 
 .ZPanelIcon  DIV	{	margin-left:5px;}
 
@@ -1824,9 +1824,9 @@ input.xform_field {
 }
 #ENDIF
 
-.ZWidgetTable .ZLeftIcon DIV, .ZWidgetTable .ZLeftIcon IMG	    {	margin:1px 0;			}
-.ZWidgetTable .ZRightIcon DIV, .ZWidgetTable .ZRightIcon IMG	{	margin:1px 0;			}
-.ZWidgetTable .ZDropDown DIV, .ZWidgetTable .ZDropDown IMG		{	margin:1px 0;			}
+.ZWidgetTable .ZLeftIcon DIV, .ZWidgetTable .ZLeftIcon IMG	    {	margin:1px 0px;			}
+.ZWidgetTable .ZRightIcon DIV, .ZWidgetTable .ZRightIcon IMG	{	margin:1px 0px;			}
+.ZWidgetTable .ZDropDown DIV, .ZWidgetTable .ZDropDown IMG		{	margin:1px 0px;			}
 
 #IFDEF MSIE
 .ZWidgetTable .ZLeftIcon DIV, .ZWidgetTable .ZLeftIcon IMG	    {	margin-left:4px;		}
@@ -1865,9 +1865,9 @@ input.xform_field {
 .ZActive	.ZButtonTable .ZWidgetTitle		{					@ButtonText-active@		}
 .ZSelected	.ZButtonTable .ZWidgetTitle		{					@ButtonText-selected@	}
 
-.ZButtonTable .ZLeftIcon DIV, .ZButtonTable .ZLeftIcon IMG	    {	margin:1px 0 1px 4px;	}
-.ZButtonTable .ZRightIcon DIV, .ZButtonTable .ZRightIcon IMG	{	margin:1px 4px 1px 0;	}
-.ZButtonTable .ZDropDown DIV, .ZButtonTable .ZDropDown IMG	    {	margin:1px 4px 1px 0;	}
+.ZButtonTable .ZLeftIcon DIV, .ZButtonTable .ZLeftIcon IMG	    {	margin:1px 0px 1px 4px;	}
+.ZButtonTable .ZRightIcon DIV, .ZButtonTable .ZRightIcon IMG	{	margin:1px 4px 1px 0px;	}
+.ZButtonTable .ZDropDown DIV, .ZButtonTable .ZDropDown IMG	    {	margin:1px 4px 1px 0px;	}
 
 #skin_container_help .ZButtonLink  {cursor:pointer}
 
@@ -1948,7 +1948,7 @@ input.xform_field {
 
 
 
-.ZSelectPseudoItem							{	padding:0 17px 6px; visibility:hidden;	}
+.ZSelectPseudoItem							{	padding:0px 17px 6px; visibility:hidden;	}
 
 
 /***************
@@ -1961,7 +1961,7 @@ input.xform_field {
 .ZTabBar								{	@TabBar@				}
 .ZTabBarPrefix							{ 	@TabBarPrefix@ 			}
 .ZTabBarSuffix							{ 	@TabBarSuffix@ 			}
-.ZTabBarTable            				{ 	width:auto; 			}
+.ZTabBarTable							{ 	width:auto; 			}
 
 .ZTab									{	@Tab@	@TabSpacing@	}
 
@@ -1981,8 +1981,8 @@ input.xform_field {
 
 
 #IFDEF MSIE
-.ZTabBar	.ZSelected	{@PanelBg@}
-.ZTabBar	.ZHover		{background:@Darken(TabColor,20)@;}
+.ZTabBar	.ZSelected					{	@PanelBg@	}
+.ZTabBar	.ZHover						{	background:@Darken(TabColor,20)@;	}
 #ENDIF
 
 /***************
@@ -2057,8 +2057,8 @@ input.xform_field {
 .ZListViewer TH.ZFirstItem	{	border-left-width:0px;	}
 
 .ZListViewerCell			{
-								height:20;
-								padding:0 1 2 4;
+								height:20px;
+								padding:0px 1px 2px 4px;
 							}
 
 .ZListViewerCell DIV		{	width:100%; overflow:hidden; white-space:nowrap;	}
@@ -2088,8 +2088,8 @@ input.xform_field {
 
 .ZPanelTitlebar		{	position:absolute; width:100%; height:20px; top:-1px;}
 .ZPanelIcon			{	width:0px;	 }
-.ZPanelTitle		{	width:100%;	padding:1 0 0 4;  }
-.ZPanelToolbar		{	width:0px;	padding:1 10 0 6; 	}
+.ZPanelTitle		{	width:100%;	padding:1px 0px 0px 4px;  }
+.ZPanelToolbar		{	width:0px;	padding:1px 10px 0px 6px; 	}
 
 .ZPanelIcon  DIV	{	margin-left:5px;}
 
@@ -2265,8 +2265,8 @@ input.xform_field {
 .ZWizardPageTitle {
 	position:relative;
 	@ToolbarBg@
-	left:0;
-	right:0;
+	left:0px;
+	right:0px;
 	padding:5px 10px 5px 10px;
 	margin:-20px -20px 10px -20px;
 	@FontSize-bigger@
@@ -2344,5 +2344,5 @@ input.xform_field {
 	background-color:transparent;
 	background-image:none;
 	@cssShadow@:0 0 0 transparent;
-	@roundCorners(0)@
+	@roundCorners(0px)@
 }

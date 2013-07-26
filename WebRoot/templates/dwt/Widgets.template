@@ -251,13 +251,33 @@
 </template>
 
 <template id='dwt.Widgets#ZTabBar' class='ZWidget'>
-	<table>
+	<table width='100%'>
 		<tr valign='bottom' id='${id}_items'>
 			<$= AjxTemplate.expand("#ZTabBarPrefix", data) $>
 			<$= AjxTemplate.expand("#ZTabBarSuffix", data) $>
 		</tr>
 	</table>
 </template>
+
+<template id='dwt.Widgets#ZTabBarPrefix'>
+	<td id='${id}_prefix'><div class='ZTabBarPrefix'></div></td>
+</template>
+
+<template id='dwt.Widgets#ZTabBarSuffix'>
+	<td id='${id}_suffix' width='100%'><div class='ZTabBarSuffix'></div></td>
+</template>
+
+<template id='dwt.Widgets#ZTab' class='ZWidget'>
+	<$ var buttonClass = data.buttonClass || "Tab" $>
+	<table id='${id}_select' class='Z<$=buttonClass$>Table Z<$=buttonClass$>Border ZWidgetTable ZWidgetBorder'>
+		<tr>
+			<td id='${id}_left_icon' class='ZLeftIcon ZWidgetIcon'></td>
+			<td id='${id}_title' class='ZWidgetTitle'></td>
+			<td id='${id}_right_icon' class='ZRightIcon ZWidgetIcon'></td>
+		</tr>
+	</table>
+</template>
+
 
 <template id='dwt.Widgets#ZTabBarFloat' class='ZWidget'>
 	<div id='${id}_items'>
@@ -272,25 +292,6 @@
 
 <template id='dwt.Widgets#ZTabBarSuffixFloat'>
 	<div id='${id}_suffix' class='ZTabBarSuffix'>&nbsp;</div>
-</template>
-
-<template id='dwt.Widgets#ZTabBarPrefix'>
-	<td id='${id}_prefix' class='ZTabBarPrefix'>&nbsp;</td>
-</template>
-
-<template id='dwt.Widgets#ZTabBarSuffix'>
-	<td id='${id}_suffix' class='ZTabBarSuffix'>&nbsp;</td>
-</template>
-
-<template id='dwt.Widgets#ZTab' class='ZWidget'>
-	<$ var buttonClass = data.buttonClass || "Tab" $>
-	<table id='${id}_select' class='Z<$=buttonClass$>Table Z<$=buttonClass$>Border ZWidgetTable ZWidgetBorder'>
-		<tr>
-			<td id='${id}_left_icon' class='ZLeftIcon ZWidgetIcon'></td>
-			<td id='${id}_title' class='ZWidgetTitle'></td>
-			<td id='${id}_right_icon' class='ZRightIcon ZWidgetIcon'></td>
-		</tr>
-	</table>
 </template>
 
 <template id='dwt.Widgets#ZTabFloat' class='ZWidget'>
