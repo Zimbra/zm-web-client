@@ -263,12 +263,21 @@ ZmMailListController.prototype.handleKeyAction =
 function(actionCode, ev) {
 	DBG.println(AjxDebug.DBG3, "ZmMailListController.handleKeyAction");
 
-	var folder = this._getSearchFolder();
+    var lv = this._listView[this._currentViewId];
+    var num = lv.getSelectionCount();
+
+    var item;
+    if (num == 1 && !this.isDraftsFolder()) {
+        var sel = this._listView[this._currentViewId].getSelection();
+        if (sel && sel.length) {
+            item = sel[0];
+        }
+    }
+
+    var folder = this._getSearchFolder();
 	var isSyncFailures = this.isSyncFailuresFolder();
-	var isDrafts = this.isDraftsFolder();
+	var isDrafts = (item && item.isDraft && (item.type != ZmId.ITEM_CONV || item.numMsgs == 1)) || this.isDraftsFolder();
 	var isFeed = (folder && folder.isFeed());
-	var lv = this._listView[this._currentViewId];
-	var num = lv.getSelectionCount();
     var isExternalAccount = appCtxt.isExternalAccount();
 
 	switch (actionCode) {
