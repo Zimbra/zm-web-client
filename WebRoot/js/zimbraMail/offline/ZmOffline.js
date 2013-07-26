@@ -4,28 +4,41 @@ ZmOffline = function(){
     ZmOffline.MESSAGE = "message";
     ZmOffline.appCacheDone = false;
     ZmOffline.messageNotShowed = true;
-    ZmOffline.cacheMessageLimit = 500;
+    ZmOffline.cacheMessageLimit = 1000;
     ZmOffline.cacheProgress = [];
-    ZmOffline.cacheConversationLimit = 500;
-    ZmOffline.folders = ["inbox", "sent", "drafts"]; // Should be configured
-    ZmOffline.offlineFolderIds = ["2", "5", "6"];
-    ZmOffline.ZmOfflineStore = "ZmOfflineStore";
+    ZmOffline.cacheConversationLimit = 1000;
+    ZmOffline.ZmOfflineStore = "zmofflinestore";
+    ZmOffline.ZmOfflineAttachmentStore = "zmofflineattachmentstore";
     ZmOffline.syncStarted = false;
     ZmOffline._syncInProgress = false;
-
     ZmOffline.store = [];
-    for (var i=0, length = ZmOffline.folders.length;i<length;i++){
-        ZmOffline.store.push(ZmOffline.folders[i] + ZmOffline.MESSAGE);
-        //ZmOffline.store.push(ZmOffline.folders[i] + ZmOffline.CONVERSATION);
-    }
+    ZmOffline.folders = [];
+
 };
 
 ZmOffline._checkCacheDone =
 function (){
-    if (ZmOffline.appCacheDone && ZmOffline.cacheProgress.length === 0 && ZmOffline.syncStarted && ZmOffline.messageNotShowed){
+    if (appCtxt.isOfflineSupported() && ZmOffline.appCacheDone && ZmOffline.cacheProgress.length === 0 && ZmOffline.syncStarted && ZmOffline.messageNotShowed){
         appCtxt.setStatusMsg(ZmMsg.offlineCachingDone, ZmStatusView.LEVEL_INFO);
         ZmOffline.messageNotShowed = false;
     }
+};
+
+ZmOffline._getOfflineFolders =
+function(){
+    var folderTree = appCtxt.getFolderTree(appCtxt.accountList.mainAccount);
+    var folders = folderTree && folderTree.getByType("FOLDER");
+    if (!folders || !folders.length){
+        return;
+    }
+    var offlineFolders = [];
+    for (var i=0,length = folders.length; i < length; i++){
+        if (folders[i].webOfflineSyncDays && folders[i].webOfflineSyncDays != "0"){
+          offlineFolders.push({name:(folders[i].name).toLowerCase(), id:folders[i].nId, webOfflineSyncDays:folders[i].webOfflineSyncDays});
+        }
+
+    }
+    return offlineFolders;
 };
 
 ZmOffline._checkAppCacheDone =
@@ -46,7 +59,7 @@ function(cb){
         }, false);
     }
 
-    var callback = (appCtxt.isOfflineMode()) ? this.setOffline.bind(this, cb) : this._cacheData.bind(this, cb);
+    var callback = (appCtxt.isOfflineMode()) ? this.setOffline.bind(this, cb) : cb;
     ZmOfflineDB.indexedDB.open(callback);
     this._addListeners();
 };
@@ -59,6 +72,12 @@ function(callback){
 
 ZmOffline.prototype.setItem =
 function(key, value, objStore) {
+    if (!objStore){
+        return;
+    }
+
+    objStore = objStore.toLowerCase();
+
     try{
         if (key){
             ZmOfflineDB.indexedDB.setItem(key, value, objStore);
@@ -71,7 +90,13 @@ function(key, value, objStore) {
 ZmOffline.prototype.getItem =
 function(key, callback, params, objStore) {
 
-    if ($.inArray(objStore, ZmOffline.store) === -1 && objStore !== ZmOffline.ZmOfflineStore){
+    if (!objStore){
+        return;
+    }
+
+    objStore = objStore.toLowerCase();
+
+    if ($.inArray(objStore, ZmOfflineDB.indexedDB.db.objectStoreNames) === -1){
         return;
     }
     var searchRequest = params && params.jsonObj && params.jsonObj.SearchRequest;
@@ -91,7 +116,7 @@ function(key, callback, params, objStore) {
 };
 ZmOffline.prototype._addListeners =
 function(){
-    $( window ).bind("online offline",this._setNetwork.bind(this));
+    $(window).bind("online offline",this._setNetwork.bind(this));
     $(window).bind("online", this._replayOfflineRequest.bind(this));
 };
 
@@ -138,16 +163,24 @@ function(opt){
     this._enableMailFeatures(opt);
 };
 
-ZmOffline.prototype._cacheData =
-function(callback){
-    callback();
-    this._fixLazyCSSLoadIssues(); // To be addressed in different way
-    window.setTimeout(this._cacheMailData.bind(this), localStorage.getItem("syncToken") ? 0 : 5000);
-};
-
 // Mail
 
 ZmOffline.prototype._cacheMailData =
+function(){
+    if (ZmOffline.folders.length === 0){
+        ZmOffline.folders = ZmOffline._getOfflineFolders(); // Should be configured
+        for (var i=0, length = ZmOffline.folders.length;i<length;i++){
+            ZmOffline.store.push((ZmOffline.folders[i].name).toLowerCase() + ZmOffline.MESSAGE);
+            //ZmOffline.store.push(ZmOffline.folders[i] + ZmOffline.CONVERSATION);
+        }
+        this.storeFoldersMetaData();
+        ZmOfflineDB.indexedDB.addObjectStores(this._cacheMailMessages.bind(this));
+        return;
+    }
+    this._cacheMailMessages();
+};
+
+ZmOffline.prototype._cacheMailMessages =
 function(){
     appCtxt.setStatusMsg(ZmMsg.offlineCachingSync, ZmStatusView.LEVEL_INFO);
     if (!localStorage.getItem("syncToken")){
@@ -158,31 +191,27 @@ function(){
     } else{
         this.sendSyncRequest();
     }
-};
 
-
-
-ZmOffline.prototype._fixLazyCSSLoadIssues =
-function(){
-		if (!ZmMailMsgView._CSS) {
-			var cssUrl = appContextPath + "/css/msgview.css?v=" + cacheKillerVersion;
-			var result = AjxRpc.invoke(null, cssUrl, null, null, true);
-			ZmMailMsgView._CSS = result && result.text;
-		}
 };
 
 ZmOffline.prototype._downloadMessages =
 function(folder, offset, limit, type, fetch, html, callback){
+if (!folder.webOfflineSyncDays || folder.webOfflineSyncDays == "0"){
+    return;
+}
+
+var date = new Date();
+var offsetDate = AjxDateFormat.getDateInstance(AjxDateFormat.SHORT).format(AjxDateUtil.roll(date, AjxDateUtil.DAY, -(parseInt(folder.webOfflineSyncDays))))
 var jsonObj = {SearchRequest:{_jsns:"urn:zimbraMail"}};
 var request = jsonObj.SearchRequest;
-    ZmOffline.cacheProgress.push(folder + type);
+    ZmOffline.cacheProgress.push(folder.name.toLowerCase() + type);
     ZmMailMsg.addRequestHeaders(request);
     request.offset = offset;
     request.limit = limit;
     request.types = type;
     request.fetch = fetch;
     request.html = html;
-    request.query = "in:\"" + folder +"\""
+    request.query = "after:" + offsetDate + " in:\"" + folder.name +"\""
 	var respCallback = this._handleResponseLoadMsgs.bind(this, folder, type, callback || null);
 	appCtxt.getRequestMgr().sendRequest({jsonObj:jsonObj, asyncMode:true, callback:respCallback});
 };
@@ -190,24 +219,26 @@ var request = jsonObj.SearchRequest;
 
 ZmOffline.prototype._handleResponseLoadMsgs =
 function(folder, type, callback, result){
-    DBG.println(AjxDebug.DBG1, "_handleResponseLoadMsgs folder: " + folder + "  type: " + type);
 
     var searchResponse = result._data && result._data.SearchResponse;
     var isConv = (type === ZmOffline.CONVERSATION);
     var messages =  (isConv) ? searchResponse.c : searchResponse.m;
+    var folderName = folder.name.toLowerCase();
+    DBG.println(AjxDebug.DBG1, "_handleResponseLoadMsgs folder: " + folderName + "  type: " + type);
+
     if (!messages || (messages.length === 0) ){
-        this._updateCacheProgress(folder + type);
+        this._updateCacheProgress(folderName + type);
         return;
     }
     for(var i=0, length = messages.length; i < length ; i++){
         if (isConv){
             this._convIds.push(messages[i].id)
         } else {
-            this.addItem( messages[i], type, (folder + type));
+            this.addItem( messages[i], type, (folderName + type));
         }
     }
     if (type === ZmOffline.MESSAGE){
-        this._updateCacheProgress(folder + type);
+        this._updateCacheProgress(folderName + type);
     }
     if (callback){
         callback.run();
@@ -265,7 +296,7 @@ function(folder, result){
     if (!convs  || convs.length === 0){
         return;
     }
-    var objStore = folder + ZmOffline.CONVERSATION;
+    var objStore = folder.toLowercase() + ZmOffline.CONVERSATION;
     for (var i=0, length = convs.length || 0; i<length; i++){
         this.addItem(convs[i].c[0], ZmOffline.CONVERSATION, objStore);
     }
@@ -456,15 +487,21 @@ ZmOffline.prototype._updateItem =
 function(type, modifiedItem, result){
     var store = null, callback = null;
     var folder =  this._getFolder(modifiedItem.l);
+    if (!folder){
+        return;
+    }
+    folder = folder.toLowerCase();
     var offlineItem = result && result.response && result.response.Body && result.response.Body.GetMsgResponse.m[0];
 
     DBG.println(AjxDebug.DBG1, "ZmOffline.prototype.modifyItem : offlineItem " + JSON.stringify(offlineItem));
 
     if (offlineItem){
         var prevFolder = offlineItem && this._getFolder(offlineItem.l);
+        prevFolder = prevFolder && prevFolder.toLowerCase();
         var prevKey = offlineItem && offlineItem.id;
         $.extend(offlineItem, modifiedItem);
         folder = this._getFolder(offlineItem.l);
+        folder = folder && folder.toLowerCase();
         if (folder){
             callback = this.addItem.bind(this, offlineItem, type, (folder + type));
         }
@@ -517,14 +554,14 @@ function(items){
     var key = null, value = null, msg = null;
     for (var i=0, length = items.length; i<length; i++){
         msg = items[i].m[0];
-        if (msg.l === "2" || msg.l === "5" || msg.l === "6"){  // Only inbox for now
-            this.addItem(msg, ZmOffline.MESSAGE, this._getFolder(msg.l) + ZmOffline.MESSAGE );
+        folder = this._getFolder(msg.l);
+        if (folder){  // Only inbox for now
+            this.addItem(msg, ZmOffline.MESSAGE,  + ZmOffline.MESSAGE );
         } else { // Message is moved
             ZmOfflineDB.indexedDB.deleteItemById(msg.id);
         }
     }
 };
-
 
 ZmOffline.prototype._syncSearchRequest =
 function(callback, store, params){
@@ -533,8 +570,8 @@ function(callback, store, params){
 
 ZmOffline.prototype.syncFoldersMetaData =
 function(){
-    for (var i=0, length = ZmOffline.offlineFolderIds.length;i<length;i++){
-        this.setFolderMetaData(ZmOffline.offlineFolderIds[i], localStorage.getItem(ZmOffline.offlineFolderIds[i]));
+    for (var i=0, length = ZmOffline.folders.length;i<length;i++){
+        this.setFolderMetaData(ZmOffline.folders[i].id, localStorage.getItem(ZmOffline.folders[i].id));
     }
 
 };
@@ -563,8 +600,8 @@ function(id, data){
 
 ZmOffline.prototype.storeFoldersMetaData =
 function(){
-    for (var i=0, length = ZmOffline.offlineFolderIds.length;i<length;i++){
-        this.storeFolderMetaData(ZmOffline.offlineFolderIds[i], appCtxt.getById(ZmOffline.offlineFolderIds[i]));
+    for (var i=0, length = ZmOffline.folders.length;i<length;i++){
+        this.storeFolderMetaData(ZmOffline.folders[i].id, appCtxt.getById(ZmOffline.folders[i].id));
     }
 };
 
@@ -721,8 +758,12 @@ function(item, type, store){
 
 ZmOffline.prototype._getFolder =
 function(index){
-    var mapping = {"2":"inbox", "5":"sent", "6":"drafts"};
-    return mapping[index];
+    for (var i=0, length = ZmOffline.folders.length; i< length; i++){
+        if (ZmOffline.folders[i].id == index){
+            return ZmOffline.folders[i].name;
+        }
+    }
+    return null;
 };
 
 /**
@@ -810,26 +851,37 @@ function(online) {
     if (online){
         for (var i=0,length = children.length; i<length; i++){
             children[i].setVisible(true);
-            if (children[i].type === "FOLDER"){
-                selector = "#" + children[i].getHTMLElId() + " .DwtTreeItemLevel1ChildDiv > div";
-                $(selector).each(function(index, value){
-                   $(value).show();
-                });
-            }
-
+        }
+        $("[id$='_addshare_link']").show();
+        var folderTree = appCtxt.getFolderTree(appCtxt.accountList.mainAccount);
+        var folders = folderTree && folderTree.getByType("FOLDER");
+        var treeItem = null;
+        for (var i=1, length = folders.length; i<length;i++){
+                treeItem = overview.getTreeItemById(folders[i].id);
+                if (treeItem){
+                    treeItem.setVisible(true);
+                }
         }
     } else {
         for (var i=0,length = children.length; i<length; i++){
             selector = "#" + children[i].getHTMLElId() + " .DwtTreeItemLevel1ChildDiv > div";
-            if (children[i].type === "FOLDER"){
-                $(selector).each(function(index, value){
-                    if (index > 2 && index !== 4){
-                        $(value).hide();
-                    }
-                });
-            }else{
+            if (children[i].type !== "FOLDER"){
                children[i].setVisible(false);
-
+            }
+        }
+        $("[id$='_addshare_link']").hide()
+        var folderTree = appCtxt.getFolderTree(appCtxt.accountList.mainAccount);
+        var folders = folderTree && folderTree.getByType("FOLDER");
+        var treeItem = null;
+        for (var i=1, length = folders.length; i<length;i++){
+            if (folders[i].name == "Outbox"){
+                continue;
+            }
+            if (folders[i].webOfflineSyncDays == "0"){
+                treeItem = overview.getTreeItemById(folders[i].id);
+                if (treeItem){
+                    treeItem.setVisible(false);
+                }
             }
         }
 
@@ -968,4 +1020,18 @@ function(callback, params) {
     if (callback) {
         callback(params);
     }
+};
+
+ZmOffline.prototype._modifyWebOfflineSyncDays =
+function(folderId){
+    var folderInfo = appCtxt.getById(folderId);
+    var storeName = (folderInfo.name).toLowerCase() + ZmOffline.MESSAGE;
+    var callback = this._downloadMessages.bind(this, folderInfo, 0, ZmOffline.cacheMessageLimit, ZmOffline.MESSAGE, "all", 1, null);
+    if ($.inArray(storeName, ZmOfflineDB.indexedDB.db.objectStoreNames) !== -1) {
+        ZmOfflineDB.indexedDB.clearObjStore(storeName, callback);
+    } else {
+        ZmOffline.store.push(storeName);
+        ZmOfflineDB.indexedDB.addObjectStores(callback);
+    }
+
 };

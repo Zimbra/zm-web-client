@@ -79,6 +79,7 @@ ZmOrganizer = function(params) {
 	this.noSuchFolder = params.broken; // Is this a link to some folder that ain't there.
 	this._isAdmin = this._isReadOnly = this._hasPrivateAccess = null;
     this.retentionPolicy = params.retentionPolicy;
+    this.webOfflineSyncDays = params.webOfflineSyncDays || 0;
 
 	this.color =
         params.color ||
@@ -542,6 +543,22 @@ function(callback, batchCmd) {
 ZmOrganizer.getViewName =
 function(organizerType) {
 	return ZmOrganizer.VIEWS[organizerType][0];
+};
+
+/**
+ * Checks an organizer (folder or tag) offlineSyncInterval for validity.
+ *
+ * @param {String}	value		offlineSyncInterval
+ * @return	{String}	<code>null</code> if the offlineSyncInterval is valid or an error message if the name is invalid
+ */
+ZmOrganizer.checkWebOfflineSyncDays =
+function(value) {
+    if (isNaN(value)) {	return ZmMsg.invalidFolderSyncInterval; }
+    var interval = parseInt(value);
+	if (interval < 0 ||  interval > 30) {
+		return ZmMsg.invalidFolderSyncInterval;
+	}
+	return null;
 };
 
 /**
@@ -1021,6 +1038,22 @@ function(name, callback, errorCallback, batchCmd) {
 };
 
 /**
+ * Sets the web offline sync interval.
+ *
+ * @param	{String}	        interval		the web offline sync interval
+ * @param	{AjxCallback}	    callback		the callback
+ * @param	{AjxCallback}	    errorCallback   the error callback
+ * @param   {ZmBatchCommand}    batchCmd        optional batch command
+ */
+ZmOrganizer.prototype.setOfflineSyncInterval =
+function(interval, callback, errorCallback, batchCmd) {
+	if (this.webOfflineSyncDays == interval) { return; }
+
+	this._organizerAction({action: "webofflinesyncdays", attrs: {numDays: interval}, callback: callback,
+                           errorCallback: errorCallback, batchCmd: batchCmd});
+};
+
+/**
  * Sets the color.
  * 
  * @param	{String}	        color		    the color
@@ -1481,6 +1514,7 @@ function(obj, details) {
             this.retentionPolicy = null;
         }
     }
+    this.webOfflineSyncDays = obj.webOfflineSyncDays || 0;
 
 	// Send out composite MODIFY change event
 	if (doNotify) {

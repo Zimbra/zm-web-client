@@ -412,9 +412,6 @@ function(params) {
     } else {
         var respCallback = new AjxCallback(this, this._handleResponseGetMetaData, params);
         appCtxt.accountList.mainAccount.loadMetaData(respCallback);
-        if (appCtxt._offlineHandler){
-            appCtxt._offlineHandler.storeFoldersMetaData();
-        }
     }
 	// fetch meta data for the main account
 
@@ -852,6 +849,14 @@ function(params, result) {
 			AjxTimedAction.scheduleAction(action, 10000);  //kick off check in 10 seconds
 		}
 	}
+
+    if (appCtxt.isOfflineSupported() && navigator.onLine && appCtxt._offlineHandler){
+        callback = new AjxCallback(this,
+		function() {
+			appCtxt._offlineHandler._cacheMailData();
+		});
+        this.addPostRenderCallback(callback, 7, 100);
+    }
 
 };
 

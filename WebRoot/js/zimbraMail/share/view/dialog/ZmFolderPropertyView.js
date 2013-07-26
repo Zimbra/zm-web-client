@@ -92,6 +92,21 @@ function(batchCommand, saveState) {
 		}
 	}
 
+    if (!organizer.isDataSource() && appCtxt.isOfflineSupported()) {
+        var webOfflineSyncDays = $('#folderOfflineLblId').val() || 0;
+		if (organizer.webOfflineSyncDays != webOfflineSyncDays) {
+			var error = ZmOrganizer.checkWebOfflineSyncDays(webOfflineSyncDays);
+			if (error) {
+                saveState.errorMessage.push(error);
+                // Only error checking for now.  If additional, should not return here
+				return;
+			}
+            var cb = appCtxt._offlineHandler && appCtxt._offlineHandler._modifyWebOfflineSyncDays.bind(appCtxt._offlineHandler, organizer.nId);
+            batchCommand.add(new AjxCallback(organizer, organizer.setOfflineSyncInterval, [webOfflineSyncDays, cb, this._handleErrorCallback]));
+            saveState.commandCount++;
+		}
+	}
+
 	var color = this._color.getValue() || ZmOrganizer.DEFAULT_COLOR[organizer.type];
 	if (organizer.isColorChanged(color, organizer.color, organizer.rgb)) {
 		if (ZmOrganizer.getStandardColorNumber(color) === -1) {
@@ -189,6 +204,7 @@ function(event) {
 
 	this._props.setPropertyVisible(this._urlId, organizer.url);
 	this._props.setPropertyVisible(this._permId, showPerm);
+    $('#folderOfflineLblId').val(organizer.webOfflineSyncDays || 0)
 
 	Dwt.setVisible(this._excludeFbEl, !organizer.link && (organizer.type == ZmOrganizer.CALENDAR));
 	// TODO: False until server handling of the flag is added
@@ -250,6 +266,11 @@ function() {
 	this._urlId   = this._props.addProperty(ZmMsg.urlLabel,    this._urlEl);
 	this._permId  = this._props.addProperty(ZmMsg.permissions, this._permEl);
 	this._colorId = this._props.addProperty(ZmMsg.colorLabel,  this._color);
+    if (appCtxt.isOfflineSupported()){
+        this._offlineEl = document.createElement("DIV");
+        this._offlineId = this._props.addProperty(ZmMsg.offlineFolderSyncInterval,  this._offlineEl);
+        $(this._offlineEl).closest("tr").find(">:first-child").attr("colSpan", 2);
+    }
 
     var container = this.getHtmlElement();
 	container.appendChild(this._props.getHtmlElement());

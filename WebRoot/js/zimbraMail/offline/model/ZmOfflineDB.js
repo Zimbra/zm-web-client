@@ -4,7 +4,7 @@ ZmOfflineDB.indexedDB.db = null;
 ZmOfflineDB.indexedDB.callbackQueue = [];
 ZmOfflineDB.indexedDB.initDone = false;
 window.indexedDB = window.indexedDB || window.webkitIndexedDB || window.mozIndexedDB;
-ZmOfflineDB.indexedDB.idxStore = "ZmOfflineIdxStore";
+ZmOfflineDB.indexedDB.idxStore = "zmofflineidxstore";
 
 
 if ('webkitIndexedDB' in window) {
@@ -16,10 +16,10 @@ ZmOfflineDB.indexedDB.onerror = function(e) {
     DBG.println(AjxDebug.DBG1, e);
 };
 
-ZmOfflineDB.indexedDB.open = function(callback) {
+ZmOfflineDB.indexedDB.open = function(callback, version) {
     var createObjectStore = function(){
         var db = ZmOfflineDB.indexedDB.db;
-        var stores = ZmOffline.store.concat([ZmOffline.ZmOfflineStore, ZmOfflineDB.indexedDB.idxStore]);
+        var stores = ZmOffline.store.concat([ZmOffline.ZmOfflineStore, ZmOffline.ZmOfflineAttachmentStore, ZmOfflineDB.indexedDB.idxStore]);
         for (var i=0, length=stores.length; i<length;i++){
             if(!db.objectStoreNames.contains(stores[i])) {
                 DBG.println(AjxDebug.DBG1, "Creating objectstore : " + stores[i]);
@@ -30,7 +30,7 @@ ZmOfflineDB.indexedDB.open = function(callback) {
     };
 
     try {
-        var request = indexedDB.open("ZmOfflineDB");
+        var request = (version) ? indexedDB.open("ZmOfflineDB", version) : indexedDB.open("ZmOfflineDB");
         request.onerror = ZmOfflineDB.indexedDB.onerror;
 
         if (callback){
@@ -71,6 +71,13 @@ ZmOfflineDB.indexedDB.open = function(callback) {
     } catch(ex){
         DBG.println(AjxDebug.DBG1, "Error while opening indexedDB");
     }
+};
+
+ZmOfflineDB.indexedDB.addObjectStores =
+function(callback){
+    ZmOfflineDB.indexedDB.db.close();
+    var version = ZmOfflineDB.indexedDB.db.version + 1;
+    ZmOfflineDB.indexedDB.open(callback, version);
 };
 
 ZmOfflineDB.indexedDB.runCallBackQueue = function(){
@@ -506,5 +513,21 @@ function(){
     }
     if (ZmOfflineDB.indexedDB.offlineLogDB){
         ZmOfflineDB.indexedDB.offlineLogDB.close();
+    }
+};
+
+ZmOfflineDB.indexedDB.clearObjStore =
+function(storeName, callback){
+    var db = ZmOfflineDB.indexedDB.db;
+    if (db.objectStoreNames.contains(storeName)){
+        try{
+            var clearTransaction = db.transaction([storeName], "readwrite");
+            var clearRequest = clearTransaction.objectStore(storeName).clear();
+            clearRequest.onsuccess = function(event){
+                callback.run();
+            }
+        } catch(ex){
+
+        }
     }
 };

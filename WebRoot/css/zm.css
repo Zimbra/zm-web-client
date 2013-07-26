@@ -3581,6 +3581,12 @@ HTML>BODY .appt-selected .appt_allday_body
 	margin-left:2em;
 }
 
+.ZmOfflineSyncInterval {
+	width: 35px;
+    text-align: center;
+	margin-top:-2px;
+}
+
 /*
 * Print View
 */
