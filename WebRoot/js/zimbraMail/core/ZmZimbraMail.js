@@ -850,10 +850,15 @@ function(params, result) {
 		}
 	}
 
-    if (appCtxt.isOfflineSupported() && navigator.onLine && appCtxt._offlineHandler){
+    if (appCtxt.isOfflineSupported() && appCtxt._offlineHandler){
         callback = new AjxCallback(this,
 		function() {
-			appCtxt._offlineHandler._cacheMailData();
+            if (navigator.onLine){
+                appCtxt._offlineHandler.cacheMailData();
+            } else {
+                appCtxt._offlineHandler.initOfflineFolders();
+            }
+
 		});
         this.addPostRenderCallback(callback, 7, 100);
     }

@@ -165,19 +165,24 @@ function(opt){
 
 // Mail
 
-ZmOffline.prototype._cacheMailData =
+ZmOffline.prototype.cacheMailData =
 function(){
     if (ZmOffline.folders.length === 0){
-        ZmOffline.folders = ZmOffline._getOfflineFolders(); // Should be configured
-        for (var i=0, length = ZmOffline.folders.length;i<length;i++){
-            ZmOffline.store.push((ZmOffline.folders[i].name).toLowerCase() + ZmOffline.MESSAGE);
-            //ZmOffline.store.push(ZmOffline.folders[i] + ZmOffline.CONVERSATION);
-        }
+        this.initOfflineFolders();
         this.storeFoldersMetaData();
         ZmOfflineDB.indexedDB.addObjectStores(this._cacheMailMessages.bind(this));
         return;
     }
     this._cacheMailMessages();
+};
+
+ZmOffline.prototype.initOfflineFolders =
+function(){
+    ZmOffline.folders = ZmOffline._getOfflineFolders();
+    for (var i=0, length = ZmOffline.folders.length;i<length;i++){
+        ZmOffline.store.push((ZmOffline.folders[i].name).toLowerCase() + ZmOffline.MESSAGE);
+        //ZmOffline.store.push(ZmOffline.folders[i] + ZmOffline.CONVERSATION);
+    }
 };
 
 ZmOffline.prototype._cacheMailMessages =
