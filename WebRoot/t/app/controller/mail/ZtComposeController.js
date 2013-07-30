@@ -271,7 +271,9 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 					attachmentsField.setHtml(ZCS.controller.mail.ZtComposeController.originalAttachmentsTpl.apply({}));
 				}
                 // Bug: 82698. Attachment info will only be present in case of valid attachments, for invite msg message.ics is ignored as attachment
-                origMsg.getAttachmentInfo().length && attachmentsField.show();
+                if (origMsg.getAttachmentInfo().length) {
+                    attachmentsField.show();
+                }
 			}
 		}
 
