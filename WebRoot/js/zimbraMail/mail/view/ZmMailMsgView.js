@@ -877,9 +877,9 @@ function(origText) {
 		div.innerHTML = ZmMsg.pleaseWaitHilitingObjects;
 		setTimeout(function() {
 			self.highlightObjects(origText);
-			Dwt.setVisible(div, false);
-			ZmMailMsgView._resetIframeHeight(self);
-		}, 3);
+            div.parentNode.removeChild(div);
+            ZmMailMsgView._resetIframeHeight(self);
+        }, 3);
 		return false;
 	}
 	// avoid closure memory leaks
