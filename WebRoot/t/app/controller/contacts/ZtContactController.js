@@ -231,7 +231,9 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
             if (mode === ZCS.constant.OP_EDIT) {
                 // Bug fix: 83280. Copy the image object from original contact to new contact
                 var imageObj = this.getItem().get('image');
-                imageObj && newContact.set('image', imageObj);
+                if (imageObj) {
+                    newContact.set('image', imageObj);
+                }
 
 	            changedAttrs = ZCS.model.contacts.ZtContact.getChangedAttrs(this.getItem(), newContact);
                 this.modifyContact(newContact, changedAttrs);
