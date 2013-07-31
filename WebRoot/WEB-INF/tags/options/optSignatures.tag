@@ -310,6 +310,11 @@
                 ed.onBeforeRenderUI.add(function() {
                     tinymce.ScriptLoader.loadScripts(['../js/ajax/3rdparty/tinymce/themes/advanced/Zmeditor_template.js']);
                 });
+                ed.onSaveContent.add(function(ed, o) {
+                    if (!ed.isDirty() && ed.getContent() == "<div></div>") {
+                        o.content = "";
+                    }
+                });
                 ed.onBeforeSetContent.add(function(ed, o) {
                     // Replaces all double br elements for avoiding enter issue
                     o.content = o.content.replace(/<br><br>/ig, '<br><div><br></div>');
