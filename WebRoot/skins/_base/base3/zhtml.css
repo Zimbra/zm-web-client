@@ -19,7 +19,7 @@
 HTML, BODY					{	 }
 
 INPUT[type="text"],
-INPUT[type="password"]		{	@FieldBorder@	}
+INPUT[type="password"]		{	@FieldBorder@ @InputPadding@	}
 SELECT						{	@FieldBorder@	}
 INPUT[type="search"]		{	border:none !important;	} /* Overriding UA style sheet to remove the 2px inset border*/
 .SearchBar INPUT,

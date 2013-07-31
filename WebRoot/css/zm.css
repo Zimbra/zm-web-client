@@ -1122,7 +1122,8 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 	background-color:white;
 	border:1px inset #F0F0F0;
 	color:#666;
-	height:16px;
+	height:1.8rem;
+	line-height:1.8rem;
 	padding:3px 2px 1px;
 }
 
@@ -1164,6 +1165,10 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 
 .ZmComposeView .subjectField {
 	@FullWidth@
+	border:1px inset #F0F0F0;
+	color:@TxtC@;
+	font-size:1rem;
+	height:1.8rem;
 /* MOW:why is this here ?  Use normal field defaults instead:
 	border:1px solid rgb(206,209,201);
 	padding:3px 6px 0px;
@@ -1205,6 +1210,7 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 	@TextCursor@
 	background-color:white;
 	border:1px inset #F0F0F0;
+	height:2rem;
 }
 
 .addrBubbleHolder-empty {
@@ -1221,11 +1227,13 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 
 .addrBubbleContainer INPUT, 
 .attBubbleContainer INPUT {
+	background-color:transparent;
 	border-width:0px !important;
+	font-size:1rem;
+	height:1.4rem;
 	outline:none !important;
 	margin-left:3px;
 	margin-bottom:3px;
-	background-color:transparent;
 }
 
 .addrBubbleContainer INPUT:first-child, 
@@ -1256,6 +1264,10 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 }
 #ENDIF
 
+.addrBubble .ImgBubbleExpand,
+.addrBubble .ImgBubbleDelete {
+	top:.25rem !important;
+}
 
 .addrBubble, 
 .attachmentBubble {
@@ -1390,7 +1402,7 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 	padding-right:3px;
 }
 .ZmHEDialog TD.col2 { width:7em; }
-.ZmHEDialog label { @DisableSelection@ }
+.ZmHEDialog LABEL { @DisableSelection@ }
 .ZmHEDialog .ShowPickedColor {
 	@DisableSelection@
 	@InactiveCursor@
@@ -1405,7 +1417,7 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 
 /* ??? USED? */
 #IFDEF MSIE
-.ZmComposeTBButton {filter:progid:DXImageTransform.Microsoft.Gradient(startColorStr=#FFFFFFFF,endColorStr=#20808080);}
+.ZmComposeTBButton { filter:progid:DXImageTransform.Microsoft.Gradient(startColorStr=#FFFFFFFF,endColorStr=#20808080); }
 #ENDIF
 /* ??? USED? */
 #IFDEF MSIE
@@ -1566,13 +1578,12 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 	border-bottom:2px solid #AAA;
 }
 
-.ZmEditContactView .contactHeaderRow,
-.ZmContactView .contactHeaderTable,
-.ZmContactInfoView .contactHeaderTable {
-	background-color:@darken(AppC,5)@;
+.ZmEditContactView .contactHeaderRow {
+	@PageBg@
 }
 .ZmContactView .contactHeaderTable,
 .ZmContactInfoView .contactHeaderTable {
+	background-color:@darken(AppC,5)@;
 	border-bottom:1px solid @darken(AppC,50)@;
 }
 
@@ -1664,8 +1675,8 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 }
 
 .ZmContactInfoView .companyFolder DIV {
-	display: inline-block;
-	vertical-align: bottom;
+	display:inline-block;
+	vertical-align:bottom;
 }
 
 .ZmContactInfoView .contactOutput {
@@ -1845,6 +1856,22 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 	overflow:hidden;
 }
 
+.ZmTaskEditView {
+	@PageBg@
+}
+
+.ZmTaskProgress {
+	background-color:white;
+	border:1px solid #C5C5C5;
+	height:.9rem;
+	width:80px;
+}
+
+.ZmTaskProgress DIV {
+	display:block;
+	height:100%;
+}
+
 .ZmCompletedtask TD {
 	text-decoration:line-through;
 	color:#999;
@@ -1860,6 +1887,7 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 }
 
 .ZmCompletionSelector INPUT {
+	height:2rem;
 	width:30px;
 }
 
@@ -1981,7 +2009,7 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 .calendar_heading {
 	@WidgetHeaderContainer@
 	@WidgetHeaderContainer-normal@
-	height:20px;			/* ??? SIZE */
+	height:1.8rem;			/* ??? SIZE */
 	overflow:hidden;
 }
 
@@ -2338,10 +2366,11 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 	padding:3px;
 }
 
+/* Used ???*/
 .calendar_date_search {
-	height:32px;
-	margin-right:5px;
 	@DateSearchBackground@;
+	height:2.9rem;
+	margin-right:5px;
 	border-bottom:1px solid @darken(AppC,30)@;
 }
 
@@ -2392,10 +2421,10 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 .appt_allday_new_name 			{	@SmallBoxPadding@; padding-top:1px; @NoWrap@	}
 
 
-.appt_time						{	@SmallBoxPadding@;  }
+.appt_time						{	@SmallBoxPadding@;	}
 .appt_new_time					{	@SmallBoxPadding@;	}
 .appt_end_time					{	@SmallBoxPadding@; color:#666; @NoWrap@	}
-.appt_location						{	@SmallBoxPadding@; color:#666; font-weight:normal;	}
+.appt_location					{	@SmallBoxPadding@; color:#666; font-weight:normal;	}
 .appt_icon						{ 	position:relative; float:right;		}
 
 .appt_top_sash,
@@ -2832,6 +2861,10 @@ HTML>BODY .appt-selected .appt_allday_body
 	color:@TxtC@;
 }
 
+.ZAttRole {
+	height:2rem;
+}
+
 .ZmSchedulerInputDisabledTd {
 	@RightSeparator@
 	@FreeBusyViewGridHeight@
@@ -2914,21 +2947,23 @@ HTML>BODY .appt-selected .appt_allday_body
 /* grid marker for hours */
 .ZmSchedulerGrid-hour {
 	@RightSeparator@
+	@SchedulerGridHeight@
 	width:10px;			/* ??? SIZE */
 	height:21px;
 }
 
 .ZmSchedulerGrid-halfHour {
 	@RightSeparator-light@
+	@SchedulerGridHeight@
 	width:10px;			/* ??? SIZE */
 	height:21px;
 }
 
 /* marker cell in the grid (showing currently selected time) */
 .ZmSchedulerGrid-start {
+	@SchedulerGridHeight@
 	border-right:3px solid green;
 	width:8px;			/* ??? SIZE */
-	height:21px;
 }
 .ZmSchedulerGridDiv-leftStart {
 	border-left:3px solid green;
@@ -2936,9 +2971,9 @@ HTML>BODY .appt-selected .appt_allday_body
 
 /* marker cell in the grid (showing currently selected time) */
 .ZmSchedulerGrid-end {
+	@SchedulerGridHeight@
 	border-right:3px solid darkred;
 	width:8px;			/* ??? SIZE */
-	height:21px;
 }
 
 .ZmSchedulerBottomBorder {
@@ -2967,8 +3002,8 @@ HTML>BODY .appt-selected .appt_allday_body
 
 .ZmTaskbar .ZToolbarButton,
 .ZmTaskbar .ZmStatusImageButton {
-	height:23px;
-	margin-top:-2px
+	height:1.7rem;
+	margin-top:-2px;
 }
 
 .ZAlert .ZmTaskbarButtonParent .ZToolbarButton {
@@ -3740,26 +3775,32 @@ HTML>BODY .appt-selected .appt_allday_body
 
 .ZmPrefZimletListView .Row {
 #IFNDEF GECKO
-	height:20px;
+	height:1.5rem;
 #ENDIF
 #IFDEF GECKO
-	height:21px;
+	height:1.6rem;
 #ENDIF
 	overflow:hidden;
 }
 
 .ZmPrefZimletListView .Row-selected {
 	height:auto;
+#IFNDEF GECKO
+	min-height:1.5rem;
+#ENDIF
+#IFDEF GECKO
+	min-height:1.6rem;
+#ENDIF
 	overflow:visible;
 }
 
 .ZmPrefZimletListView .Row-selected TD {
-	line-height:1.7em;
+	line-height:1.7rem;
 	white-space:normal;
 }
 
 .ZOptionsOfflineAccts {
-	font-size:14px;
+	font-size:1.1rem;
 	text-align:center;
 }
 
@@ -3780,7 +3821,12 @@ HTML>BODY .appt-selected .appt_allday_body
 
 .ZmFilterRulesView .DwtListView-Rows {
 	/*overflow:visible;*/
+#IFNDEF MSIE
 	height:auto;
+#ENDIF
+#IFDEF MSIE
+	height:185px;
+#ENDIF
 	min-height:185px;
 }
 
@@ -3791,12 +3837,6 @@ HTML>BODY .appt-selected .appt_allday_body
 .ZmFilterRulesView .DwtListView-Rows INPUT {
 	margin:1px;
 }
-
-#IFDEF MSIE
-* HTML .ZmFilterRulesView .DwtListView-Rows {
-	height:185px;
-}
-#ENDIF
 
 /* Container for the set of preference pages (including tabs) */
 .ZmPrefView {
@@ -3861,6 +3901,10 @@ HTML>BODY .appt-selected .appt_allday_body
 
 .ZmWhiteBlackList .Row {
 	padding-left:3px;
+}
+
+#Prefs_Pages_Sharing_mountedShares .DwtListView {
+	min-height:6rem;
 }
 
 /* ??? USE? */
@@ -5642,6 +5686,7 @@ DIV .SuggestBtn {
 }
 
 .ZmFolderPolicyAmountInput {
+	height:1.6rem;
 	margin-left:20px;
 	width:60px;
 }
@@ -5723,6 +5768,7 @@ DIV .SuggestBtn {
 	overflow:hidden;
 	right:40px;
 	text-align:left;
+	white-space:nowrap;
 }
 
 .ZmSuggestOptionsButton {
@@ -5851,6 +5897,10 @@ DIV.ZmSuggestLink {
 
 .FakeAnchor, a:link, a:visited {
 	@Anchor@
+}
+
+.ZmDateFieldInput {
+	height:1.8rem;
 }
 
 /* for displaying a msg without using an iframe (bug 66466) */

@@ -765,7 +765,7 @@ function() {
 
     this._timeSelectInput = new DwtInputField(params);
     var timeInputEl = this._timeSelectInput.getInputElement();
-    Dwt.setSize(timeInputEl, "80px", "22px");
+    Dwt.setSize(timeInputEl, "80px", "2rem");
     timeInputEl.typeId = this.id;
     //listeners
     var buttonListener = new AjxListener(this, this._timeButtonListener);

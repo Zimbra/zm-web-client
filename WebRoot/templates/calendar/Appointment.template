@@ -14,11 +14,11 @@
 <template id='calendar.Appointment#ComposeView'>
     <$ var labelStyle = "width:"+(AjxEnv.isIE ? 30 : 32)+"px; overflow:visible; white-space:nowrap"; $>
     <$ var inputStyle = AjxEnv.isSafari && !AjxEnv.isSafariNightly ? "height:52px;" : "height:21px; overflow:hidden" $>
-	<div id='${id}_top'>
+    <div id='${id}_top'>
         <table width=100% style='table-layout:fixed;' class='calendar_edit_view_separator'>
             <tr>
             <td valign='top'>
-              <table width=100% style='table-layout:fixed;margin-top:5px;' id='${id}_table' class='ZPropertySheet' cellspacing='6'>
+              <table width=100% style='margin-top:5px;' id='${id}_table' class='ZPropertySheet' cellspacing='6'>
                 <$= AjxTemplate.expand("#ComposeViewColumns") $>
                 <tr id='${id}_invitemsg_container' style='display:none;'>
                     <td class='ZmFieldLabelRight'>&nbsp;</td>
@@ -48,7 +48,7 @@
                 <tr id="${id}_attendeesContainer">
                     <td class='ZmFieldLabelRight'><div id='${id}_req_att_picker'><$= ZmMsg.attendeesLabel $></div></td>
                     <td colspan='3' id='${id}_person'></td>
-                    <td id='${id}_show_optional' class='FakeAnchor'><$= ZmMsg.showOptional $></td>
+                    <td id='${id}_show_optional' class='FakeAnchor' style='white-space:nowrap;'><$= ZmMsg.showOptional $></td>
                 </tr>
                 <tr id='${id}_optionalContainer'>
                     <td class='ZmFieldLabelRight'><div id='${id}_opt_att_picker'><$= ZmMsg.optionalLabel $></div></td>
@@ -67,7 +67,7 @@
                     <td class='ZmFieldLabelRight'><div id='${id}_loc_picker'><$= ZmMsg.locationLabel $></div></td>
                     <$ if (data.isGalEnabled && data.isGroupCalEnabled) { $>
                     <td colspan='3' id='${id}_location'></td>
-                    <td id='${id}_show_resources' class='FakeAnchor'><$= ZmMsg.showEquipment $></td>
+                    <td id='${id}_show_resources' class='FakeAnchor' style='white-space:nowrap;'><$= ZmMsg.showEquipment $></td>
                     <$ }else { $>
                     <td colspan='4' id='${id}_location'></td>
                     <$ } $>
@@ -183,8 +183,8 @@
                 </tr>
 
                 <tr><td id='${id}_notes_container' colspan='5'>
-	                <!-- appointment notes -->
-	                <div id='${id}_notes' style='padding:5px;' class='calendar_edit_notes_separator'></div>
+                    <!-- appointment notes -->
+                    <div id='${id}_notes' style='padding:5px;' class='calendar_edit_notes_separator'></div>
                 </td></tr>
 
                 </table>
@@ -197,7 +197,7 @@
             </tr>
 
         </table>
-	</div>
+    </div>
 </template>
 
 
@@ -334,7 +334,7 @@
 										<td>&nbsp;</td>
 										<td colspan="3">
 											<table><tr>
-												<td style="padding:0 0 0 8px;"><div id='${id}_reminderConfigure'></div></td>
+												<td style="padding:0px 0px 0px 8px;"><div id='${id}_reminderConfigure'></div></td>
 											</tr></table>
 										</td>
 									</tr>
@@ -345,7 +345,7 @@
 								<$ } $>
 								<$ if(data.isAppt) { $>
 									<tr id='${id}_repeat_options'>
-										<td valign=top class='ZmFieldLabelRight' style='line-height:22px' id='${id}_repeatLabel'><$= ZmMsg.repeatLabel $></td>
+										<td valign=top class='ZmFieldLabelRight' style='line-height:1.8rem' id='${id}_repeatLabel'><$= ZmMsg.repeatLabel $></td>
 										<td valign=top colspan=10>
 											<table width=100%>
 												<tr>
@@ -356,14 +356,14 @@
 										</td>
 									</tr>
 									<tr id='${id}_reminder_options'>
-										<td valign=top class='ZmFieldLabelRight' style='line-height:22px' id='${id}_repeatLabel'><$= ZmMsg.reminderLabel $></td>
+										<td valign=top class='ZmFieldLabelRight' style='line-height:1.8rem' id='${id}_repeatLabel'><$= ZmMsg.reminderLabel $></td>
 										<td valign=top colspan=9 align='left' id='${id}_reminderSelectContainer'>
 											<table><tr>
 												<td id='${id}_reminderSelectInput'></td>
 												<td id='${id}_reminderSelect'> </td>
 											</tr></table>
 										</td>
-										<td style="padding:0 0 0 8px;"><div id='${id}_reminderConfigure'></div></td>
+										<td style="padding:0px 0px 0px 8px;"><div id='${id}_reminderConfigure'></div></td>
 									</tr>
 									<tr><td><div id='${id}_reminderEmailCheckbox'></div></td></tr>
 									<$ if (appCtxt.get(ZmSetting.CAL_DEVICE_EMAIL_REMINDERS_ENABLED)) { $>
@@ -650,7 +650,7 @@
 </template>
 
 <template id='calendar.Appointment#DateField'>
-	<input autocomplete='off' style='height:22px;' type='text' size=14 id='${id}' value='${value}'>
+	<input autocomplete='off' class='ZmDateFieldInput' type='text' size=14 id='${id}' value='${value}'>
 </template>
 
 <template id='calendar.Appointment#ScheduleView'>
@@ -985,7 +985,7 @@
 </template>
 
 <template id='calendar.Appointment#ReadOnlyView'>
-	<div class='ApptHeaderDiv'>
+    <div class='ApptHeaderDiv'>
         <$ if (!data.isTask){ $>
         <div class='InvResponseBar'>
             <table class='ZPropertySheet' cellspacing='6'>
@@ -1033,7 +1033,7 @@
                 <$ if (data.attachStr) { $><$= AjxTemplate.expand("calendar.Appointment#AddEntry", {lbl:ZmMsg.attachments, val:data.attachStr}) $><$ } $>
             </table>
         </div>
-	</div>
+    </div>
     <div id='${_infoBarId}'></div>
 </template>
 

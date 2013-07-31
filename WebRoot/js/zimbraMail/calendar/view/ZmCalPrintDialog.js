@@ -535,7 +535,7 @@ function(id) {
 
     this._dateInputField = new DwtInputField(params);
     var timeInputEl = this._dateInputField.getInputElement();
-    Dwt.setSize(timeInputEl, "80px", "22px");
+    Dwt.setSize(timeInputEl, "80px", "2rem");
     timeInputEl.typeId = this.id;
 };
 

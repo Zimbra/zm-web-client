@@ -388,7 +388,7 @@ function(width) {
 	// add location
 	var params = {parent: this, type: DwtInputField.STRING};
 	this._location = new DwtInputField(params);
-	Dwt.setSize(this._location.getInputElement(), width, "22px");
+	Dwt.setSize(this._location.getInputElement(), width, "2rem");
 	this._location.reparentHtmlElement(this._htmlElId + "_location");
 
 	// add priority DwtButton
@@ -416,7 +416,7 @@ function(width) {
     };
     this._pCompleteSelectInput = new DwtInputField(params);
     var pCompleteInputEl = this._pCompleteSelectInput.getInputElement();
-    Dwt.setSize(pCompleteInputEl, Dwt.DEFAULT, "22px");
+    Dwt.setSize(pCompleteInputEl, Dwt.DEFAULT, "2rem");
     pCompleteInputEl.onblur = AjxCallback.simpleClosure(this._handleCompleteOnBlur, this, pCompleteInputEl);
 
     var pCompleteButtonListener = new AjxListener(this, this._pCompleteButtonListener);

@@ -466,7 +466,7 @@ function(isAllAttendees, organizer, drawBorder, index, updateTabGroup, setFocus)
 			var dwtInputField = new DwtInputField({parent: this, type: DwtInputField.STRING, maxLen: 256});
 			dwtInputField.setDisplay(Dwt.DISPLAY_INLINE);
 			var inputEl = dwtInputField.getInputElement();
-            Dwt.setSize(inputEl, Dwt.DEFAULT, "22px")
+            Dwt.setSize(inputEl, Dwt.DEFAULT, "2rem")
 			inputEl.className = "ZmSchedulerInput";
 			inputEl.id = sched.dwtInputId;
             inputEl.style.border = "0px";

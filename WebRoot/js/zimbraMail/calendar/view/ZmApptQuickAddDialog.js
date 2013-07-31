@@ -257,7 +257,7 @@ function() {
 											validationStyle:DwtInputField.CONTINUAL_VALIDATION,
 											parentElement:(this._htmlElId + "_subject")});
 	this._subjectField.setRequired();
-	Dwt.setSize(this._subjectField.getInputElement(), "100%", "22px");
+	Dwt.setSize(this._subjectField.getInputElement(), "100%", "2rem");
 
 
     this._locationField = new DwtInputField({parent:this, type:DwtInputField.STRING,
@@ -265,7 +265,7 @@ function() {
 											errorIconStyle:DwtInputField.ERROR_ICON_NONE,
 											validationStyle:DwtInputField.ONEXIT_VALIDATION,
 											parentElement:(this._htmlElId + "_location")});
-	Dwt.setSize(this._locationField.getInputElement(), "100%", "22px");
+	Dwt.setSize(this._locationField.getInputElement(), "100%", "2rem");
 
     // create DwtSelects
 	this._showAsSelect = new DwtSelect({parent:this, parentElement:(this._htmlElId + "_showAs")});

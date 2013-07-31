@@ -563,7 +563,9 @@ UL.DwtListView-Rows {
 	margin:0px;
 }
 
-.TopRow DIV, .BottomRow DIV, .DwtMsgListMultiCol DIV, .SimpleContact DIV {
+.TopRow DIV, .BottomRow DIV,
+.DwtMsgListMultiCol DIV,
+.SimpleContact DIV DIV {
 	display:inline-block;
 }
 
@@ -1668,8 +1670,9 @@ input.xform_field {
 .DwtShellBusyDialog table td.MsgText {
 	@FontSize-big@
 	@BoxPadding@
-	white-space:normal;
+	min-width:20rem;
 	vertical-align:top;
+	white-space:normal;
 }
 
 
@@ -1865,9 +1868,9 @@ input.xform_field {
 .ZActive	.ZButtonTable .ZWidgetTitle		{					@ButtonText-active@		}
 .ZSelected	.ZButtonTable .ZWidgetTitle		{					@ButtonText-selected@	}
 
-.ZButtonTable .ZLeftIcon DIV, .ZButtonTable .ZLeftIcon IMG	    {	margin:1px 0px 1px 4px;	}
-.ZButtonTable .ZRightIcon DIV, .ZButtonTable .ZRightIcon IMG	{	margin:1px 4px 1px 0px;	}
-.ZButtonTable .ZDropDown DIV, .ZButtonTable .ZDropDown IMG	    {	margin:1px 4px 1px 0px;	}
+.ZButtonTable .ZLeftIcon DIV, .ZButtonTable .ZLeftIcon IMG	    {	margin:.2rem 0px .1rem 4px;	}
+.ZButtonTable .ZRightIcon DIV, .ZButtonTable .ZRightIcon IMG	{	margin:.2rem 4px .1rem 0px;	}
+.ZButtonTable .ZDropDown DIV, .ZButtonTable .ZDropDown IMG	    {	margin:.2rem 4px .1rem 0px;	}
 
 #skin_container_help .ZButtonLink  {cursor:pointer}
 
@@ -1927,7 +1930,7 @@ input.xform_field {
  *
  ***************/
 
-.ZSelectAutoSizingContainer					{	height:22px; width:auto;				}		/* TODO: SIZE ASSUMPTION! */
+.ZSelectAutoSizingContainer					{	height:2rem; width:auto;				}		/* TODO: SIZE ASSUMPTION! */
 
 .ZSelect									{	@Select@		@SelectSpacing@			}
 .ZSelect .ZWidgetTitle						{	padding-left:5px; text-align:left;		}

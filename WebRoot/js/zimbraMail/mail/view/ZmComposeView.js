@@ -3317,7 +3317,7 @@ function() {
 
 		div.innerHTML = AjxTemplate.expand("mail.Message#MailAttachmentMyComputer", data);
 		var fromElement = div.firstChild;
-		fromElement.firstChild.style.top = "22px";
+		fromElement.firstChild.style.top = "2rem";
 		fromElement.firstChild.isInline = true;
 		mi.getHtmlElement().appendChild(div.firstChild);
 		menu.addPopupListener(new AjxListener(this, this._checkMenuItems,[mi]));

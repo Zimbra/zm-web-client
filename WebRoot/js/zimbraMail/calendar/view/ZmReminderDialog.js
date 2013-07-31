@@ -202,7 +202,7 @@ function(uid, id, dismissListener, openListener, snoozeListener, snoozeSelectBut
 	};
 	var snoozeSelectInput = this._snoozeSelectInputs[uid] = new DwtInputField(params);
 	var snoozeSelectInputEl = snoozeSelectInput.getInputElement();
-	Dwt.setSize(snoozeSelectInputEl, "120px", "22px");
+	Dwt.setSize(snoozeSelectInputEl, "120px", "2rem");
 
 	var appt = data.appt;
 	this._createSnoozeMenu(snoozeSelectBtn, snoozeSelectInput, snoozeSelectMenuListener, uid === this.ALL_APPTS ? this._list : appt);

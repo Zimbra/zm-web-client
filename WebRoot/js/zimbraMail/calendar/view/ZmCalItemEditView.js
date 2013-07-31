@@ -712,7 +712,7 @@ function(width) {
 	};
 	this._subjectField = new DwtInputField(params);
 	this._subjectField.setRequired();
-	Dwt.setSize(this._subjectField.getInputElement(), "100%", "22px");
+	Dwt.setSize(this._subjectField.getInputElement(), "100%", "2rem");
 
 	// CalItem folder DwtSelect
 	this._folderSelect = new DwtSelect({parent:this, parentElement:(this._htmlElId + "_folderSelect")});
@@ -747,11 +747,11 @@ function(width) {
 			type: DwtInputField.STRING,
 			errorIconStyle: DwtInputField.ERROR_ICON_NONE,
 			validationStyle: DwtInputField.CONTINUAL_VALIDATION,
-            className: "DwtInputField ReminderInput"
+			className: "DwtInputField ReminderInput"
 		};
 		this._reminderSelectInput = new DwtInputField(params);
 		var reminderInputEl = this._reminderSelectInput.getInputElement();
-		Dwt.setSize(reminderInputEl, Dwt.DEFAULT, "22px");
+		Dwt.setSize(reminderInputEl, Dwt.DEFAULT, "2rem");
 		reminderInputEl.onblur = AjxCallback.simpleClosure(this._handleReminderOnBlur, this, reminderInputEl);
 
 		var reminderButtonListener = new AjxListener(this, this._reminderButtonListener);
