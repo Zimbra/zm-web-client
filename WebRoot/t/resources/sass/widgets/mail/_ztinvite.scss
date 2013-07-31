@@ -42,6 +42,7 @@ $defaultInvState: normal !default;
 $invBtnGradient: glossy-gradient($invBtnColor);
 $invBtnActiveGradient: glossy-gradient(darken($invBtnColor, 25%));
 $invBtnIconPos: .35em center no-repeat;
+$invWarningIconPos: 3px -9.1em no-repeat #FFC;
 
 // Mixin to return the proper backgrounds and borders per invite type (accept, tentative, decline) and state (normal and active)
 @mixin invite-button($type: $defaultInvType, $state: $defaultInvState) {
@@ -152,4 +153,9 @@ $invBtnIconPos: .35em center no-repeat;
   @extend .zcs-invite-status;
   @include background(url('/img/zimbra/ImgQuestionMark.png') $invBtnIconPos);
   background-color: #FFC;
+}
+
+.zcs-invite-outdated {
+  padding: 0 0 0 1.5em;
+  @include background(url('/img/dwt.png?v=130725100351') $invWarningIconPos);
 }

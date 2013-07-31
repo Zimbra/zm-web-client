@@ -75,7 +75,8 @@ Ext.define('ZCS.model.mail.ZtMsgReader', {
 			data.isLoaded = false;
 		}
 
-		if (node.inv) {
+        // Fix for bug: 83398. Checking if invite is empty
+		if (node.inv && (Object.keys(node.inv[0]).length !== 0)) {
 
             var invite = ZCS.model.mail.ZtInvite.fromJson(node.inv[0], node.id);
  			data.invite = Ext.Object.merge({}, invite, {});

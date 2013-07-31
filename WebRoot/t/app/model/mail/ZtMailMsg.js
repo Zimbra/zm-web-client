@@ -184,20 +184,25 @@ Ext.define('ZCS.model.mail.ZtMailMsg', {
 	 * @return {object}     content to have msg content as HTML
 	 */
 	getContentAsHtml: function(msgBodyId, trimQuotedContent) {
-
-		if (this.get('isInvite')) {
+		if (this.get('isInvite') && this.get('invite')) {
 			return this.get('invite').getContentAsHtml(msgBodyId);
 		}
 
 		var bodyParts = this.get('bodyParts'),
 			ln = bodyParts ? bodyParts.length : 0, i,
-			html = [];
+			html = [],
+            isOutDatedInv = this.get('isInvite') && (this.get('invite') === undefined);
 
 		for (i = 0; i < ln; i++) {
 			var bodyPart = bodyParts[i],
 				content = bodyPart.getContent(),
 				contentType = bodyPart.get('contentType'),
 				disposition = bodyPart.get('contentDisposition');
+
+            // Fix for bug: 83398. Adding invite not current message.
+            if (isOutDatedInv) {
+                html.push("<div class='zcs-invite-outdated'>" + ZtMsg.inviteNotCurrent + "</div>");
+            }
 
 			if (ZCS.mime.isRenderableImage(contentType)) {
 				if (disposition !== 'inline') {
