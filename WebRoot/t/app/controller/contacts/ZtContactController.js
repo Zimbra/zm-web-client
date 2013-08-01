@@ -81,7 +81,7 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
 				if (success) {
 					this.getContactView().showItem(contact);
 					this.updateToolbar({
-						title:      contact.get('longName'),
+						title:      Ext.String.htmlEncode(contact.get('longName')),
 						isGroup:    contact.get('isGroup')
 					});
 				}

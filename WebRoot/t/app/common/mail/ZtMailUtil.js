@@ -549,7 +549,9 @@ Ext.define('ZCS.common.mail.ZtMailUtil', {
 				contactName = contact.get(useShortName ? 'shortName' : 'longName');
 			}
 		}
-		return contactName || addr.get(useShortName ? 'shortName' : 'longName');
+		contactName = contactName || addr.get(useShortName ? 'shortName' : 'longName');
+
+		return Ext.String.htmlEncode(contactName);
 	},
 
 	/**

@@ -44,7 +44,7 @@
 			<img src='/t/resources/images/attachment.png' />
 		</div>
 		</tpl>
-		<div class='zcs-mail-subject<tpl if='isUnread'>-unread</tpl>'>{[Ext.String.htmlEncode(values.subject)]}</div>
+		<div class='zcs-mail-subject<tpl if='isUnread'>-unread</tpl>'>{subject:htmlEncode}</div>
 		<tpl if='numMsgs &gt; 1'>
 			<span class='zcs-numMsgs'>{numMsgs}</span>
 		</tpl>
@@ -53,7 +53,7 @@
 			<img src='/t/resources/images/flagged.png' />
 		</div>
 		</tpl>
-		<div class='zcs-mail-fragment'>{[Ext.String.htmlEncode(values.fragment)]}</div>
+		<div class='zcs-mail-fragment'>{fragment:htmlEncode}</div>
 	</div>
 </template>
 
@@ -70,7 +70,7 @@
 		</div>
 		</tpl>
 		<div class='zcs-msgHdr-date'>{dateStr}</div>
-		<div class='zcs-msgHdr-fragment'>{[Ext.String.htmlEncode(values.fragment)]}</div>
+		<div class='zcs-msgHdr-fragment'>{fragment:htmlEncode}</div>
 	</div>
 	</tpl>
 </template>
@@ -177,10 +177,10 @@
 		</tpl>
 		<div class='zcs-contactList-text'>
 			<tpl if='isGroup'>
-				<div class='zcs-contactList-name'>{nickname}</div>
+				<div class='zcs-contactList-name'>{nickname:htmlEncode}</div>
 			<tpl else>
-				<div class='zcs-contactList-name'>{nameLastFirst}</div>
-				<div class='zcs-contactList-title'>{job}</div>
+				<div class='zcs-contactList-name'>{nameLastFirst:htmlEncode}</div>
+				<div class='zcs-contactList-title'>{job:htmlEncode}</div>
 			</tpl>
 		</div>
 	</div>
@@ -191,7 +191,7 @@
 		<div class='zcs-contactgroupview-header'>
 			<div class='zcs-contactgroupview-image'></div>
 			<div class='zcs-contactgroupview-personalInfo'>
-				<span name="contactname">{nickname}</span>
+				<span name="contactname">{nickname:htmlEncode}</span>
 			</div>
 		</div>
 		<div class='zcs-contactgroupview-members'>
@@ -199,10 +199,10 @@
 				<div class='zcs-contactgroupview-member'>
 					<div class='zcs-contact-image' <tpl if='memberImageUrl'>style='background-image:url({memberImageUrl})'</tpl>></div>
 					<div class='zcs-contact-info'>
-						<span name="contactname">{longName}</span>
-						<tpl if='jobTitle'><span>{jobTitle}</span></tpl>
-						<span>{memberEmail}</span>
-						<span>{memberPhone}</span>
+						<span name="contactname">{longName:htmlEncode}</span>
+						<tpl if='jobTitle'><span>{jobTitle:htmlEncode}</span></tpl>
+						<span>{memberEmail:htmlEncode}</span>
+						<span>{memberPhone:htmlEncode}</span>
 					</div>
 				</div>
 			</tpl>
@@ -211,9 +211,9 @@
 		<div class='zcs-contactview-header'>
 			<div class='zcs-contactview-image' style='{imageStyle}'></div>
 			<div class='zcs-contactview-personalInfo'>
-				<span name="contactname">{fullName}</span>
-				<tpl if='jobTitle'><span>{jobTitle}</span></tpl>
-				<tpl if='company'><span>{company}</span></tpl>
+				<span name="contactname">{fullName:htmlEncode}</span>
+				<tpl if='jobTitle'><span>{jobTitle:htmlEncode}</span></tpl>
+				<tpl if='company'><span>{company:htmlEncode}</span></tpl>
 			</div>
 		</div>
 		<div class='zcs-contactview-fieldSets'>
@@ -222,7 +222,7 @@
 					<div class='zcs-contactview-label'>{[ZtMsg.email]}</div>
 					<div class='zcs-contactview-fields'>
 						<tpl for='email'>
-							<div class='zcs-contactview-field'>{email}</div>
+							<div class='zcs-contactview-field'>{email:htmlEncode}</div>
 							<div class='zcs-contactview-subLabel'>{typeStr}</div>
 						</tpl>
 					</div>
@@ -233,7 +233,7 @@
 					<div class='zcs-contactview-label'>{[ZtMsg.phone]}</div>
 					<div class='zcs-contactview-fields'>
 						<tpl for='phone'>
-							<div class='zcs-contactview-field'><a href="tel:{phone}">{phone}</a></div>
+							<div class='zcs-contactview-field'><a href="tel:{phone:htmlEncode}">{phone:htmlEncode}</a></div>
 							<div class='zcs-contactview-subLabel'>{typeStr}</div>
 						</tpl>
 					</div>
@@ -246,13 +246,13 @@
 						<tpl for='address'>
 							<div class='zcs-contactview-field'>
 								<tpl if='mapAddr'><a href='http://maps.apple.com/?q={mapAddr}'></tpl>
-									<span class='zcs-contactview-street'>{street}</span>
+									<span class='zcs-contactview-street'>{street:htmlEncode}</span>
 									<tpl if='city'>
-										<span class='zcs-contactview-city'>{city},&nbsp</span>
+										<span class='zcs-contactview-city'>{city:htmlEncode},&nbsp</span>
 									</tpl>
-									<span class='zcs-contactview-state'>{state}&nbsp</span>
-									<span class='zcs-contactview-postalcode'>{postalCode}</span>
-									<span class='zcs-contactview-country'>{country}</span>
+									<span class='zcs-contactview-state'>{state:htmlEncode}&nbsp</span>
+									<span class='zcs-contactview-postalcode'>{postalCode:htmlEncode}</span>
+									<span class='zcs-contactview-country'>{country:htmlEncode}</span>
 								<tpl if='mapAddr'></a></tpl>
 							</div>
 							<div class='zcs-contactview-subLabel'>{typeStr}</div>
@@ -265,7 +265,7 @@
 					<div class='zcs-contactview-label'>{[ZtMsg.url]}</div>
 					<div class='zcs-contactview-fields'>
 						<tpl for='url'>
-							<div class='zcs-contactview-field'>{url}</div>
+							<div class='zcs-contactview-field'>{url:htmlEncode}</div>
 							<div class='zcs-contactview-subLabel'>{typeStr}</div>
 						</tpl>
 					</div>
