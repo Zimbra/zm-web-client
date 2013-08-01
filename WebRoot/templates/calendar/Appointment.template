@@ -15,7 +15,7 @@
     <$ var labelStyle = "width:"+(AjxEnv.isIE ? 30 : 32)+"px; overflow:visible; white-space:nowrap"; $>
     <$ var inputStyle = AjxEnv.isSafari && !AjxEnv.isSafariNightly ? "height:52px;" : "height:21px; overflow:hidden" $>
     <div id='${id}_top'>
-        <table width=100% style='table-layout:fixed;' class='calendar_edit_view_separator'>
+        <table width='100%' class='calendar_edit_view_separator'>
             <tr>
             <td valign='top'>
               <table width=100% style='margin-top:5px;' id='${id}_table' class='ZPropertySheet' cellspacing='6'>
