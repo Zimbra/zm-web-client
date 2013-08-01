@@ -1290,7 +1290,7 @@ function() {
 			} else if (t.op == "tag") {
 				tagId = this._getTagId(t.arg, true);
 				if (tagId) {
-					func.push("item.hasTag('" + tagId + "')");
+					func.push("item.hasTag('" + t.arg + "')");
 				}
 			} else if (t.op == "is") {
 				var test = ZmParsedQuery.FLAG[t.arg];

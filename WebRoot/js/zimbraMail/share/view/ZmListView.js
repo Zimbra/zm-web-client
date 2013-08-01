@@ -279,7 +279,7 @@ function(ev) {
 	}
 
 	// move/delete support batch notification mode
-	if (ev.event == ZmEvent.E_DELETE || ev.event == ZmEvent.E_MOVE) {
+	if (ev.event == ZmEvent.E_DELETE || ev.event == ZmEvent.E_MOVE || ev.event == ZmEvent.E_TAGS) {
 		var items = ev.batchMode ? this._getItemsFromBatchEvent(ev) : [item];
 		var needsSort = false;
 		for (var i = 0, len = items.length; i < len; i++) {
@@ -293,11 +293,8 @@ function(ev) {
 					needsSort = true;
 				}
 			} else {
-				// remove the item if the user is working in this view, 
-				// if we know the item no longer matches the search, or if the item was hard-deleted
-				if ((ev.event == ZmEvent.E_DELETE) || (this.view == appCtxt.getCurrentViewId()) ||
-						(this._controller._currentSearch.matches(item) === false)) {
-
+				// remove the item if we know the item no longer matches the search, or if the item was hard-deleted
+                if ((ev.event == ZmEvent.E_DELETE) || (this._controller._currentSearch.matches(item) === false)) {
 					this.removeItem(item, true, ev.batchMode);
 					// if we've removed it from the view, we should remove it from the reference
 					// list as well so it doesn't get resurrected via replenishment *unless*
