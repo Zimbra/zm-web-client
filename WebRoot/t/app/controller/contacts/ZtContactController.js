@@ -390,7 +390,8 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
     createContact: function(contact, callback, scope) {
 
 	    var me = this,
-		    folder = ZCS.session.getCurrentSearchOrganizer();
+		    curApp = ZCS.session.getActiveApp(),
+		    folder = (curApp === ZCS.constant.APP_CONTACTS) ? ZCS.session.getCurrentSearchOrganizer() : null;
 
         contact.save({
 	        folderId: folder ? folder.get('itemId') : null,
