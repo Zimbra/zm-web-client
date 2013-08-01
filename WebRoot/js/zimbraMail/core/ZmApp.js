@@ -550,12 +550,14 @@ function(overviewId) {
 		for (var i = 0; i < len; i++) {
 			var treeId = treeIds[i];
 			var treeView = overview.getTreeView(treeId);
-			var items = treeView.getTreeItemList();
-			var len1 = items.length;
-			for (var j = 0; j < len1; j++) {
-				var treeItem = items[j];
-				if (treeItem._expanded) {
-					expIds.push(treeItem._htmlElId);
+			if (treeView) {
+				var items = treeView.getTreeItemList();
+				var len1 = items.length;
+				for (var j = 0; j < len1; j++) {
+					var treeItem = items[j];
+					if (treeItem._expanded) {
+						expIds.push(treeItem._htmlElId);
+					}
 				}
 			}
 		}
