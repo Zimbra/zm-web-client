@@ -540,7 +540,7 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 					};
 					this.performOp(conv, data, function() {
 						ZCS.app.fireEvent('showToast', ZtMsg.convDeleted);
-						ZCS.app.getConvListController().removeConv(conv);
+						ZCS.app.getConvListController().removeItem(conv);
 					});
 				}
 			}, this);

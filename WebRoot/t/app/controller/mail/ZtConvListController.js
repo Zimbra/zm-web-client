@@ -85,22 +85,6 @@ Ext.define('ZCS.controller.mail.ZtConvListController', {
 		ZCS.app.getComposeController().compose();
 	},
 
-	removeConv: function(conv) {
-		var list = this.getListView(),
-			conversationStore = list.getStore(),
-			currentIndex = conversationStore.indexOf(conv),
-			toSelect;
-
-		conversationStore.remove(conv);
-		toSelect = conversationStore.getAt(currentIndex);
-		if (toSelect) {
-			list.select(toSelect, false);
-		}
-		else {
-			this.getItemController().clear();
-		}
-	},
-
 	handleSwipe: function(list, index, convItem, record, e, eOpts) {
 		var convEl = convItem.element,
 			convElBox = convEl.getBox(),

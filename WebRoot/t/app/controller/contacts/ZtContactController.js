@@ -240,6 +240,7 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
 				targetElement: targetComp.bodyElement,
 				record: item,
 				listTitle: listTitle,
+				folderTree: ZCS.session.getOrganizerDataByAppAndOrgType(ZCS.constant.APP_CONTACTS, ZCS.constant.ORG_ADDRESS_BOOK),
 				onAssignmentComplete: function () {
 					me.updateToolbar({
 						hideAll: false
@@ -546,9 +547,38 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
 	 * Contact was modified, so re-display it.
 	 */
 	handleModifyNotification: function(item, modify) {
-		if (this.getItem() === item) {
+
+		if (modify._attrs && !modify.l && this.getItem() === item) {
 			this.getContactView().showItem(item);
 		}
+	},
+
+	/**
+	 * Moves the contact to an address book.
+	 *
+	 * @param {ZtOrganizer}     folder      target folder
+	 * @param {ZtMailItem}      item        item to move
+	 */
+	saveItemMove: function (folder, item) {
+
+		var folderId = folder.get('id'),
+			me = this,
+			data = {
+				op:         'move',
+				folderId:   folderId
+			};
+
+		this.performOp(item, data, function() {
+			me.processMove(item, folderId);
+		});
+	},
+
+	processMove: function(item, folderId) {
+
+		var contactName = Ext.String.htmlEncode(item.get('longName')),
+			addressBook = ZCS.cache.get(folderId).get('displayName');
+
+		ZCS.app.fireEvent('showToast', Ext.String.format(ZtMsg.moveContact, contactName, addressBook));
 	},
 
 	/**

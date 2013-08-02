@@ -24,14 +24,22 @@ Ext.define('ZCS.view.mail.ZtFolderAssignmentView', {
 		'ZCS.model.ZtFolder'
 	],
 	alias: 'widget.moveview',
+
+	config: {
+		/**
+		 * @cfg {Object} Folder tree with which to populate the store
+		 */
+		folderTree: null
+	},
+
 	constructor: function (config) {
 
-		cfg = config || {};
+		var cfg = config || {};
 
-				// get the organizer data for this app
+		// get the organizer data for this app
 		var organizerData = {
-				items: ZCS.session.getOrganizerDataByAppAndOrgType(ZCS.constant.APP_MAIL, ZCS.constant.ORG_MAIL_FOLDER)
-			};
+			items: cfg.folderTree
+		};
 
 		// create a store for the organizers
 		var organizerStore = Ext.create('Ext.data.TreeStore', {

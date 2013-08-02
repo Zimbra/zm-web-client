@@ -219,5 +219,22 @@ Ext.define('ZCS.controller.ZtListController', {
 		}
 
 		titlebar.setTitle(this.getOrganizerTitle(null, true, app));
+	},
+
+	removeItem: function(item) {
+
+		var list = this.getListView(),
+			store = list.getStore(),
+			currentIndex = store.indexOf(item),
+			toSelect;
+
+		store.remove(item);
+		toSelect = store.getAt(currentIndex);
+		if (toSelect) {
+			list.select(toSelect, false);
+		}
+		else {
+			this.getItemController().clear();
+		}
 	}
 });

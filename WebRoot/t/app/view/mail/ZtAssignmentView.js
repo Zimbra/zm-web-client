@@ -148,7 +148,7 @@ Ext.define('ZCS.view.mail.ZtAssignmentView', {
 			});
 		}
 
-		//Add either a fully configured list or a list using config options
+		//Add either a fully configured list or a list using default config options
 		cfg.items[0].items.push(cfg.list || {
 			xtype: 'list',
 			ui: 'dark',
@@ -164,13 +164,8 @@ Ext.define('ZCS.view.mail.ZtAssignmentView', {
 
 		this.callParent(arguments);
 
-		var tapProducer, item, eventName;
-
-		if (this.down('nestedlist')) {
-			tapProducer = this.down('nestedlist');
-		} else {
-			tapProducer = this.down('list');
-		}
+		var tapProducer = this.down('nestedlist') || this.down('list'),
+			item, eventName;
 
 		tapProducer.on('itemtap', function (list, index, target, assignmentRecord, e, eOpts) {
 			item = me.getRecord();

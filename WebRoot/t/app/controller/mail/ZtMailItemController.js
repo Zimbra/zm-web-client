@@ -89,6 +89,7 @@ Ext.define('ZCS.controller.mail.ZtMailItemController', {
 				targetElement: targetComp.bodyElement,
 				record: item,
 				listTitle: listTitle,
+				folderTree: ZCS.session.getOrganizerDataByAppAndOrgType(ZCS.constant.APP_MAIL, ZCS.constant.ORG_MAIL_FOLDER),
 				onAssignmentComplete: function () {
 					me.updateToolbar({
 						hideAll: false
@@ -295,7 +296,7 @@ Ext.define('ZCS.controller.mail.ZtMailItemController', {
 			folderName = ZCS.cache.get(folderId).get('displayName');
 
 		if (isConv) {
-			ZCS.app.getConvListController().removeConv(item);
+			ZCS.app.getConvListController().removeItem(item);
 		}
 		ZCS.app.fireEvent('showToast', Ext.String.format(toastMsg, folderName));
 	},
