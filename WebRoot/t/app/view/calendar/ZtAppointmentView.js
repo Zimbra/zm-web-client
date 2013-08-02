@@ -22,53 +22,34 @@
 
 Ext.define('ZCS.view.calendar.ZtAppointmentView', {
 
-    extend: 'Ext.Panel',
+    extend: 'Ext.navigation.View',
 
     xtype: ZCS.constant.APP_CALENDAR + 'appointmentview',
 
-    requires: [
-        'Ext.NavigationView'
-    ],
-
     config: {
-        width:      '50%',
-        height:     '80%',
-        hidden:     true,
-        modal      : true,
-        centered   : true,
-        hideOnMaskTap: true
-    },
+        fullscreen: true,
+        width: '50%',
+        height: '80%',
+        hidden: true,
+        modal: true,
+        centered: true,
+        hideOnMaskTap: true,
 
-    initialize: function() {
-        this.callParent(arguments);
-
-        var view = Ext.create('Ext.NavigationView', {
-            fullscreen: true,
-
-            items: [
-                {
-                    xtype: 'container',
-                    height: '100%',
-                    scrollable: true,
-                    itemId: 'apptDetails'
-                }
-            ]
-        });
-
-        var container = Ext.create('Ext.Container', {
-            layout: 'card',
-            width: '100%',
-            height: '100%',
-            items: [
-                view
-            ]
-        });
-
-        this.add([container]);
+        items: [
+            {
+                xtype: 'panel',
+                itemId: 'apptDetails'
+            }
+        ],
+        listeners: {
+            back: function (){
+                this.getNavigationBar().setTitle(this.getTitle());
+            }
+        },
+        title: null
     },
 
     setPanel: function(msg) {
-
         var invite = msg.get('invite'),
             dateFormat = invite.get('isAllDay') ? ZtMsg.invDateFormat : ZtMsg.invDateTimeOnlyFormat,
             startTime = Ext.Date.format(invite.get('start'), dateFormat),
@@ -87,18 +68,17 @@ Ext.define('ZCS.view.calendar.ZtAppointmentView', {
                 reminder: invite.get('reminderAlert') + " minutes before", /* TODO: Get strings similar to Ajax Client */
                 notes: invite.get('notes')
             },
-            tpl,html,navView,me;
+            apptTitle = invite.get('subject'),
+            tpl,html,me;
 
         tpl = Ext.create('Ext.XTemplate', ZCS.template.ApptViewDesc);
         html = tpl.apply(data);
-        navView = this.down('navigationview');
 
-        if(navView.getInnerItems().length > 1){
-            navView.removeInnerAt(1);
-        }
+        this.setTitle(apptTitle);
 
-        navView.down('#apptDetails').setHtml(html);
-        navView.getNavigationBar().setTitle(invite.get('subject'));
+        this.down('#apptDetails').setHtml(html);
+        this.getNavigationBar().setTitle(apptTitle);
+
         if (attendees) {
             Ext.get("showAttendees").clearListeners();
 
@@ -106,25 +86,17 @@ Ext.define('ZCS.view.calendar.ZtAppointmentView', {
             Ext.get("showAttendees").on({
                 tap: function (ev) {
                     var listData = me.getListDataAsHtml(stats,isOrganizer),
-                        navView = me.down('navigationview'), list;
-
-                    if(navView.getInnerItems().length > 1) {
-                        list = navView.getInnerItems()[1];
-                        list.setData(listData);
-                        navView.setActiveItem(navView.getInnerItems()[1]);
-                    }
-                    else {
-                        navView.push({
+                        list;
+                    me.push({
                             title: ZtMsg.attendeesTitle,
                             xtype: 'list',
                             striped: true,
                             itemId: 'attendeeList',
                             fullscreen: true,
-                            striped: true,
                             itemTpl: '{title}',
                             data: listData
-                        })
-                    }
+                        });
+
                 }
             })
         }
