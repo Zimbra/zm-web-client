@@ -57,7 +57,7 @@ Ext.define('ZCS.controller.mail.ZtMailItemController', {
 	 */
 	doAssignmentView: function (item, view, listTitle, viewProp) {
 
-		var targetComp = Ext.Viewport.down('tabpanel'), // TODO: relies on Mail being first app, need to get tabpanel for current app
+		var targetComp = Ext.Viewport.down('tabpanel'),
 			activeComp = this.getActiveMailComponent(),
 			activeList = activeComp.down('list'),
 			activeStore = activeList.getStore(),
@@ -65,9 +65,8 @@ Ext.define('ZCS.controller.mail.ZtMailItemController', {
 			contentHeight,
 			isMessage = item instanceof ZCS.model.mail.ZtMailMsg,
 			convCtlr = ZCS.app.getConvController(),
-			quickReply = convCtlr.getQuickReply()
+			quickReply = convCtlr.getQuickReply(),
 			me = this;
-
 
 		if (isMessage) {
 			activeStore.filter('id', item.get('id'));
@@ -88,7 +87,7 @@ Ext.define('ZCS.controller.mail.ZtMailItemController', {
 		if (!this[viewProp]) {
 			this[viewProp] = Ext.create(view, {
 				targetElement: targetComp.bodyElement,
-				record: item || this.getItem(),
+				record: item,
 				listTitle: listTitle,
 				onAssignmentComplete: function () {
 					me.updateToolbar({
@@ -209,13 +208,12 @@ Ext.define('ZCS.controller.mail.ZtMailItemController', {
 	},
 
 	/**
-	 * Saves the item and tags it.
+	 * Applies the given tag to the given mail item.
 	 *
 	 * @param {ZtOrganizer}     tag     tag to apply or remove
 	 * @param {ZtMailitem}      item    item to tag or untag
-	 * @param {Boolean}         remove  if true, remove given tag from the item
 	 */
-	saveItemTag: function (tag, item, remove) {
+	saveItemTag: function (tag, item) {
 		this.tagItem(item, tag.get('name'), false);
 	},
 

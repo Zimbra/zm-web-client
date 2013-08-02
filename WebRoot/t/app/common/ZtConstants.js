@@ -113,6 +113,7 @@ ZCS.constant.CANCEL_SHIELD_BUTTONS = [
 ZCS.constant.MENU_CONV      = 'convActions';
 ZCS.constant.MENU_MSG       = 'msgActions';
 ZCS.constant.MENU_TAG       = 'tagActions';
+ZCS.constant.MENU_ADDRESS   = 'addressActions';
 ZCS.constant.MENU_CONTACT   = 'contactActions';
 ZCS.constant.MENU_ORIG_ATT  = 'originalAttachment';
 
@@ -144,8 +145,8 @@ ZCS.constant.ITEM_BUTTONS[ZCS.constant.APP_MAIL]        = [
 	{ op: ZCS.constant.OP_MENU,         icon: 'arrow_down',   event: 'showMenu', menuName: ZCS.constant.MENU_CONV }
 ];
 ZCS.constant.ITEM_BUTTONS[ZCS.constant.APP_CONTACTS]    = [
-    { op: ZCS.constant.OP_EDIT,     icon: 'edit',     event: 'edit' },
-	{ op: ZCS.constant.OP_DELETE,   icon: 'trash',        event: 'delete' }
+    { op: ZCS.constant.OP_EDIT,     icon: 'edit',       event: 'edit' },
+	{ op: ZCS.constant.OP_MENU,     icon: 'arrow_down', event: 'showMenu', menuName: ZCS.constant.MENU_CONTACT }
 ];
 
 // Display states for a message view header
@@ -615,7 +616,7 @@ ZCS.constant.QUICK_REPLY_LARGE  = 80;
 // Contact fields used by the contact template
 ZCS.constant.CONTACT_TEMPLATE_FIELDS = [
 	'isGroup', 'nameLastFirst', 'fullName', 'nickname', 'email', 'phone',
-	'address', 'url', 'groupMembers', 'jobTitle', 'company'
+	'address', 'url', 'groupMembers', 'jobTitle', 'company', 'tags'
 ];
 
 // Contact fields that can have multiple values

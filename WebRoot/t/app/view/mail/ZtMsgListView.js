@@ -66,7 +66,7 @@ Ext.define('ZCS.view.mail.ZtMsgListView', {
 				// address bubble
 				if (elm.hasCls('zcs-contact-bubble')) {
 					msgHeader.fireEvent('contactTap', elm, {
-						menuName:   ZCS.constant.MENU_CONTACT,
+						menuName:   ZCS.constant.MENU_ADDRESS,
 						msg:        msg,
 						address:    idParams.address,
 						name:       idParams.name,
@@ -128,7 +128,7 @@ Ext.define('ZCS.view.mail.ZtMsgListView', {
 				// address bubble
 				if (elm.hasCls('zcs-contact-bubble')) {
 					msgBody.fireEvent('contactTap', elm, {
-						menuName:   ZCS.constant.MENU_CONTACT,
+						menuName:   ZCS.constant.MENU_ADDRESS,
 						msg:        msg,
 						address:    idParams.address
 					});

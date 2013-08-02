@@ -164,7 +164,7 @@ Ext.define('ZCS.view.mail.ZtAssignmentView', {
 
 		this.callParent(arguments);
 
-		var tapProducer;
+		var tapProducer, item, eventName;
 
 		if (this.down('nestedlist')) {
 			tapProducer = this.down('nestedlist');
@@ -173,7 +173,9 @@ Ext.define('ZCS.view.mail.ZtAssignmentView', {
 		}
 
 		tapProducer.on('itemtap', function (list, index, target, assignmentRecord, e, eOpts) {
-			me.fireEvent('assignment', assignmentRecord, me.getRecord());
+			item = me.getRecord();
+			eventName = item.get('type') + 'Assignment';
+			me.fireEvent(eventName, assignmentRecord, item);
 			e.preventDefault();
 			me.onClose();
 		});

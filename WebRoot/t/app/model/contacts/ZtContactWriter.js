@@ -78,7 +78,7 @@ Ext.define('ZCS.model.contacts.ZtContactWriter', {
 		}
 		else if (action === 'update') {
 
-			if (itemData.op === 'delete' || itemData.op === 'move') {
+			if (itemData.op === 'delete' || itemData.op === 'move' || itemData.op === 'tag') {
 				json = this.getSoapEnvelope(request, itemData, 'ContactAction');
 				methodJson = json.Body.ContactActionRequest;
 
@@ -91,6 +91,10 @@ Ext.define('ZCS.model.contacts.ZtContactWriter', {
 
 				if (itemData.folderId) {
 					methodJson.action.l = itemData.folderId;
+				}
+
+				if (itemData.tn) {
+					methodJson.action.tn = itemData.tn;
 				}
 			}
 			else if (itemData.op === 'modify') {

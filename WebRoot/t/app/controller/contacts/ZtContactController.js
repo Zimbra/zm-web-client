@@ -46,10 +46,23 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
 	            multiAddRemove: 'doMultiAddRemove'
             },
             itemPanelToolbar: {
-                'delete':   'doButtonDelete',
                 edit:       'doEdit'
-            }
+            },
+	        '.moveview': {
+		        contactAssignment: 'saveItemMove'
+	        },
+	        '.tagview': {
+		        contactAssignment: 'saveItemTag'
+	        }
         },
+
+		menuConfigs: {
+			contactActions: [
+				{ label: ZtMsg.move,        action: ZCS.constant.OP_MOVE,       listener: 'doMove' },
+				{ label: ZtMsg.tag,         action: ZCS.constant.OP_TAG,        listener: 'doTag' },
+				{ label: ZtMsg.del,         action: ZCS.constant.OP_DELETE,     listener: 'doDelete' }
+			]
+		},
 
 		composeMode: null
 	},
@@ -88,7 +101,6 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
 			},
 			scope: this
 		});
-
 	},
 
 	/**
@@ -188,7 +200,64 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
         });
     },
 
-    /**
+	/**
+	 * Launches a move assignment view.
+	 */
+	doMove: function(item) {
+		this.doAssignmentView(item, 'ZCS.view.mail.ZtFolderAssignmentView', ZtMsg.folders, 'folderView');
+	},
+
+	/**
+	 * Launches a tag assignment view.
+	 */
+	doTag: function(item) {
+		this.doAssignmentView(item, 'ZCS.view.mail.ZtTagAssignmentView', ZtMsg.tags, 'tagView');
+	},
+
+	/**
+	 * Launches an assignment view
+	 */
+	doAssignmentView: function (item, view, listTitle, viewProp) {
+
+		var targetComp = Ext.Viewport.down('tabpanel'),
+			activeComp = this.getItemPanel(),
+			item = item || this.getItem(),
+			contentHeight,
+			me = this;
+
+		// TODO: determine why total height calc is failing in position maps now.
+		contentHeight = 400;
+
+		// To account for the panel header
+		contentHeight += 20;
+
+		activeComp.hideListPanelToggle();
+
+		// TODO: if we're caching assignment views, we will need to update its overview
+		// TODO: when we get notified of organizer changes
+		if (!this[viewProp]) {
+			this[viewProp] = Ext.create(view, {
+				targetElement: targetComp.bodyElement,
+				record: item,
+				listTitle: listTitle,
+				onAssignmentComplete: function () {
+					me.updateToolbar({
+						hideAll: false
+					});
+
+					activeComp.showListPanelToggle();
+				}
+			});
+		}
+
+		this.updateToolbar({
+			hideAll: true
+		});
+
+		this[viewProp].showWithComponent(activeComp, item, contentHeight);
+	},
+
+	/**
      * Hides the contact form
      */
     doCancel : function() {
@@ -480,5 +549,15 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
 		if (this.getItem() === item) {
 			this.getContactView().showItem(item);
 		}
+	},
+
+	/**
+	 * Applies the given tag to the given contact.
+	 *
+	 * @param {ZtOrganizer}     tag     tag to apply or remove
+	 * @param {ZtMailitem}      item    item to tag or untag
+	 */
+	saveItemTag: function (tag, item) {
+		this.tagItem(item, tag.get('name'), false);
 	}
 });

@@ -40,17 +40,17 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 		},
 
 		control: {
-			'.moveview': {
-				assignment: 'saveItemMove'
-			},
-			'.tagview': {
-				assignment: 'saveItemTag'
-			},
 			itemPanelToolbar: {
 				'delete':   'doButtonDelete',
 				reply:      'doReply',
 				replyAll:   'doReplyAll',
 				edit:       'doEdit'
+			},
+			'.moveview': {
+				convAssignment: 'saveItemMove'
+			},
+			'.tagview': {
+				convAssignment: 'saveItemTag'
 			}
 		},
 

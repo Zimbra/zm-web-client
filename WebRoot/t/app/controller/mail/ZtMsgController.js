@@ -48,6 +48,12 @@ Ext.define('ZCS.controller.mail.ZtMsgController', {
 				toggleQuotedText:   'doToggleQuotedText',
 				loadEntireMessage:  'doLoadEntireMessage',
 				addressTouch:       'doComposeToAddress'
+			},
+			'.moveview': {
+				messageAssignment: 'saveItemMove'
+			},
+			'.tagview': {
+				messageAssignment: 'saveItemTag'
 			}
 		},
 
@@ -142,7 +148,7 @@ Ext.define('ZCS.controller.mail.ZtMsgController', {
 	 */
 	getMenuConfig: function(menuName) {
 
-		if (menuName === ZCS.constant.MENU_CONTACT) {
+		if (menuName === ZCS.constant.MENU_ADDRESS) {
 			var menuData = [];
 			if (ZCS.constant.IS_ENABLED[ZCS.constant.APP_CONTACTS]) {
 				menuData.push({

@@ -40,6 +40,8 @@ Ext.define('ZCS.model.contacts.ZtContactReader', {
 			data = this.parseAttributes(attrs, data);
 		}
 
+		data.tags = ZCS.model.ZtItem.parseTags(node.t);
+
         return data;
 	},
 
