@@ -122,27 +122,6 @@ FORM {
 	background-repeat:no-repeat;
 }
 
-#IFNDEF MSIE_6
-.LoginScreen .ImgAltBanner {
-	margin:20px 0px 0px 20px;
-	width:71px;
-	height:11px;
-	background-image:url("@LogoImgDir@/AltBanner.png");		
-	background-repeat:no-repeat;
-}
-
-#ENDIF
-
-#IFDEF MSIE_6
-.LoginScreen .ImgAltBanner {
-	margin:20px 0px 0px 20px;
-	width:71px;
-	height:11px;
-	filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(enabled=true, sizingMethod=scale, src='@LogoImgDir@/AltBanner.png');		
-	background-repeat:no-repeat;
-}
-#ENDIF
-
 .LoginScreen h1 {margin:22px 20px 32px 20px;}
 
 .LoginScreen form {text-align:center;}  /* fixes IE centering of form */
@@ -343,15 +322,6 @@ FORM {
 }
 .center-small H1 {
     margin-bottom:20px;
-}
-.center-small .ImgAltBanner,
-.center-small .ImgAppBanner {
-    background-position:center center;
-    background-repeat:no-repeat;
-    width:200px;
-}
-.center-small .ImgAltBanner {
-    margin:10px auto;
 }
 .center-small .form {
 	color: @darken(AppC,50)@;

@@ -310,7 +310,6 @@ if (application.getInitParameter("offlineMode") != null)  {
 
 	<div class="LoginScreen">
 		<div class="${smallScreen?'center-small':'center'}">
-			<div class="ImgAltBanner"></div>
 			<h1><a href="http://www.zimbra.com/" id="bannerLink" target="_new">
 				<span class="Img${smallScreen?'App':'Login'}Banner"></span>
 			</a></h1>

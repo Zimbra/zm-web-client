@@ -247,13 +247,6 @@ BODY						{	margin:0px; 				}
 .SplashScreen .ImgLoginBanner {
     cursor:pointer;
 }
-.SplashScreen .ImgAltBanner {
-    background-image:url("@LogoImgDir@/AltBanner.png");
-    background-repeat:repeat-x;
-    height:11px;
-    margin:20px 0px 0px 20px;
-    width:71px;
-}
 .SplashScreen .content {
     color: @darken(AppC,50)@;
     font-size:10px;

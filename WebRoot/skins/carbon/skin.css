@@ -250,10 +250,6 @@ BODY						{	margin:0px; 				}
 .LoginScreen .center-small {
     position:relative;
 }
-.LoginScreen .center-small .ImgAltBanner{
-    background-position:left center;
-    margin:20px 0 0 20px;
-}
 .LoginScreen .center-small .ImgAppBanner {
     background-position:left center;
 }
@@ -263,24 +259,6 @@ BODY						{	margin:0px; 				}
 .LoginScreen A:link,
 .LoginScreen A:visited {
     color:white;
-}
-.LoginScreen .decor1, .SplashScreen .decor1 {
-    background-image:url("@SkinImgDir@/vmwarePeel.png");
-    background-repeat:no-repeat;
-    border-top-right-radius: 15px;
-    height:102px;
-    overflow:hidden;
-    position:absolute;
-    right:0;
-    top:0;
-    width:103px;
-    -moz-border-radius-topright:15px;
-    -webkit-border-top-right-radius:15px;
-}
-.LoginScreen .center-small .decor1 {
-    background-image:url("@SkinImgDir@/vmwarePeel_small.png");
-    height:50px;
-    width:50px;
 }
 .SplashScreen { 
     font-family:@font-default@;
@@ -346,13 +324,6 @@ BODY						{	margin:0px; 				}
 .LoginScreen .ImgLoginBanner,
 .SplashScreen .ImgLoginBanner {
     cursor:pointer;
-}
-.SplashScreen .ImgAltBanner {
-    background-image:url("@LogoImgDir@/AltBanner.png");
-    background-repeat:repeat-x;
-    height:11px;
-    margin:20px 0px 0px 20px;
-    width:71px;
 }
 .SplashScreen .content {
     color:@lighten(LoginColor,36)@; 
@@ -680,7 +651,3 @@ SELECT						{	@FieldBorder@	}
 }
 
 /* Mobile Client*/
-
-.center-small .ImgAltBanner{
-	background-image: none;
-}
