@@ -253,10 +253,6 @@ BODY						{	margin:0px; 	}
     cursor:pointer;
 	display:block;
 }
-.LoginScreen .ImgAltBanner,
-.SplashScreen .ImgAltBanner {
-    @AltBanner@
-}
 .LoginScreen .ZLoginField {
 	@roundCorners(5px)@
 }

@@ -243,10 +243,6 @@
     <%--preloading the splash screen images to avoid latency --%>
     <div style="display:none;">
       <img src="<%=contextPath%>/skins/<%=splashLocation%>/logos/LoginBanner.png?v=${vers}" alt=""/>
-      <%if(splashLocation.equals("carbon")){%>
-        <img src="<%=contextPath%>/skins/<%=splashLocation%>/img/vmwarePeel.png?v=${vers}" alt=""/>
-        <img src="<%=contextPath%>/skins/<%=splashLocation%>/logos/AltBanner.png?v=${vers}" alt=""/>
-      <%}%>
       <%if(splashLocation.equals("lemongrass")){%>
         <img src="<%=contextPath%>/skins/<%=splashLocation%>/img/bg_lemongrass.png?v=${vers}" alt=""/>
       <%}%>

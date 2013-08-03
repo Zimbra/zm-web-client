@@ -16,12 +16,6 @@
 
 /** LoginPanel and Splash screen **/
 
-.LoginScreen .center-small .decor1 {
-    background-image:url("@SkinImgDir@/vmwarePeel_small.png?v=@jsVersion@");
-    height:50px;
-    width:50px;
-}
-
 .SplashScreen .switch{
     margin:80px 100px 30px;
 #IFDEF WEBKIT
@@ -30,7 +24,3 @@
 }
 
 /* Mobile Client*/
-
-/*.center-small .ImgAltBanner{
-	background-image:none;
-}*/
