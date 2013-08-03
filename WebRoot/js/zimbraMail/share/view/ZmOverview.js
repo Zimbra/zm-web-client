@@ -330,9 +330,10 @@ function() {
 		}
 	}
 
-	if (item) {
-		item.focus();
-	}
+    if (item) {
+        item.focus();
+        item._tree.setSelection(item, false, true);
+    }
 };
 
 /**
