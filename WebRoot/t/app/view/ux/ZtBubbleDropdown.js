@@ -191,13 +191,33 @@ Ext.define('ZCS.view.ux.ZtBubbleDropdown', {
 			} else {
 				label = record.get(me.getDropdownDisplayField());
 			}
-
+            //Add email addresses of individual members in case of a contact group autocomplete
+            var isGroup = record.get('isGroup');
+            if (isGroup) {
+                var contactGroup = ZCS.cache.get(record.get('contactId'));
+                if (contactGroup) {
+                   var members = contactGroup.get('groupMembers'),
+                       groupMembers = [];
+                   for (var i=0; i < members.length; i++) {
+                       var m = members[i],
+                           memberEmail = ZCS.model.mail.ZtEmailAddress.fromEmail(m.memberEmail);
+                       if (memberEmail) {
+                           //Push only valid emails
+                          groupMembers.push(memberEmail);
+                       }
+                   }
+                }
+            }
 			menuRecords.push({
 				label: label,
 				listener: function () {
 					me.clearInput();
-					me.addBubble(record);
-					me.getInput().dom.value = '';
+                    if (isGroup && groupMembers) {
+                        me.addBubbles(groupMembers);
+                    } else {
+                        me.addBubble(record);
+                    }
+                    me.getInput().dom.value = '';
 					me.focusInput();
 				}
 			});

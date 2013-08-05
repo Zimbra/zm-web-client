@@ -31,7 +31,16 @@ Ext.define('ZCS.model.contacts.ZtContactReader', {
 
 		data.type = ZCS.constant.ITEM_CONTACT;
 		if (attrs.type === 'group') {
-			data.groupMembers = this.getGroupMembers(node.m);
+            //Check if the group has already been cached and the group members exists.
+            //Use the same, else fetch it from the node.
+            var cachedGroup = ZCS.cache.get(node.id),
+                cachedGroupMembers = cachedGroup && cachedGroup.get('groupMembers');
+
+            if (!cachedGroupMembers || (cachedGroupMembers.length == 0)) {
+                data.groupMembers = this.getGroupMembers(node.m);
+            } else {
+                data.groupMembers = cachedGroupMembers;
+            }
 	        data.isGroup = true;
             data.nickname = attrs.nickname;
         }

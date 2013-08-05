@@ -60,16 +60,34 @@ Ext.define('ZCS.controller.contacts.ZtContactListController', {
 	},
 
     launch: function() {
-        this.callParent(arguments);
         ZCS.app.on('notifyContactCreate', this.handleCreateNotification, this);
         ZCS.app.on('notifyContactChange', this.handleModifyNotification, this);
 	    this.loadAllContacts();
     },
 
     /**
+     * Load contacts from the system Contacts folder.
+     */
+    loadContacts: function() {
+
+        var defaultQuery = this.getDefaultQuery();
+
+        this.getStore().getProxy().setExtraParams({
+            query: defaultQuery
+        });
+
+        this.getStore().load({
+            query: defaultQuery,
+            callback: Ext.Function.bind(this.storeLoaded, this, [defaultQuery, null], 0)
+        })
+    },
+
+    /**
      * Load local contacts via REST call so we can cache them.
      */
     loadAllContacts: function() {
+
+        var store = this.getStore();
 
 	    var restUri = ZCS.htmlutil.buildUrl({
 		    path: '/home/' + ZCS.session.getAccountName() + '/Contacts',
@@ -88,7 +106,7 @@ Ext.define('ZCS.controller.contacts.ZtContactListController', {
 				    reader = ZCS.model.contacts.ZtContact.getProxy().getReader(),
 				    ln = contacts.length, i, fields, data, attrs, j, field, value;
 
-			    for (i = 0; i < ln; i++) {
+                for (i = 0; i < ln; i++) {
 				    fields = contacts[i].split('\u001D');
 				    attrs = {};
 				    for (j = 0; j < fields.length; j += 2) {
@@ -97,8 +115,18 @@ Ext.define('ZCS.controller.contacts.ZtContactListController', {
 				    if (!ZCS.cache.get(attrs.id)) {
 					    data = reader.getDataFromNode({ _attrs: attrs });
 				        new ZCS.model.contacts.ZtContact(data, attrs.id);
-				    }
-			    }
+                    }
+                    //Fire a GetContactsRequest for each group and cache them, the
+                    //member information is needed for contact group autocomplete.
+                    if (attrs.type === 'group') {
+                        store.load({
+                            contactId: attrs.id,
+                            isGroup: true,
+                            scope: this
+                        });
+                    }
+                }
+
 		    }
 	    });
     },
