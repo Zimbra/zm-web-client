@@ -69,7 +69,7 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 
 	launch: function () {
 
-		ZCS.app.on('deleteMailItem', this.doDelete, this);
+		ZCS.app.on('swipeDeleteMailItem', this.swipeDelete, this);
 		ZCS.app.on('sendQuickReply', this.doSendQuickReply, this);
 		ZCS.app.on('notifyMessageDelete', this.handleDeleteNotification, this);
 		ZCS.app.on('notifyMessageCreate', this.handleCreateNotification, this);
@@ -522,9 +522,9 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 	/**
 	 * If deleting a conv while viewing Trash, permanently delete any of its messages that are in Trash.
 	 */
-	doDelete: function() {
+	doDelete: function(item, isSwipeDelete) {
 
-		var conv = this.getItem(),
+		var conv = item || this.getItem(),
 			inTrash = ZCS.util.curFolderIs(ZCS.constant.ID_TRASH),
 			inJunk = ZCS.util.curFolderIs(ZCS.constant.ID_JUNK);
 
@@ -548,6 +548,10 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 		else {
 			this.callParent(arguments);
 		}
+	},
+
+	swipeDelete: function(record) {
+		this.doDelete(record, true);
 	},
 
 	// TODO: What if a new message came in?

@@ -221,7 +221,7 @@ Ext.define('ZCS.controller.ZtListController', {
 		titlebar.setTitle(this.getOrganizerTitle(null, true, app));
 	},
 
-	removeItem: function(item) {
+	removeItem: function(item, isSwipeDelete) {
 
 		var list = this.getListView(),
 			store = list.getStore(),
@@ -229,12 +229,14 @@ Ext.define('ZCS.controller.ZtListController', {
 			toSelect;
 
 		store.remove(item);
-		toSelect = store.getAt(currentIndex);
-		if (toSelect) {
-			list.select(toSelect, false);
-		}
-		else {
-			this.getItemController().clear();
+		if (!isSwipeDelete) {
+			toSelect = store.getAt(currentIndex);
+			if (toSelect) {
+				list.select(toSelect, false);
+			}
+			else {
+				this.getItemController().clear();
+			}
 		}
 	}
 });

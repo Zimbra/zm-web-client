@@ -126,12 +126,7 @@ Ext.define('ZCS.controller.mail.ZtConvListController', {
 			swipeElm.on('tap', function (event, node, options, eOpts) {
 				var el = Ext.fly(event.target);
 				if (el.hasCls('zcs-swipe-delete')) {
-					ZCS.app.fireEvent('deleteMailItem', record);
-					swipeElm.fadeAway();
-				}
-
-				if (el.hasCls('zcs-swipe-spam')) {
-					ZCS.app.fireEvent('moveMailItemToSpam', record);
+					ZCS.app.fireEvent('swipeDeleteMailItem', record);
 					swipeElm.fadeAway();
 				}
 			});

@@ -265,9 +265,7 @@ Ext.define('ZCS.controller.mail.ZtMailItemController', {
 	 *
 	 * @param {ZtMailItem}   item     mail item
 	 */
-	doDelete: function(item) {
-
-		this.lastDeletedItem = item;
+	doDelete: function(item, isSwipeDelete) {
 
 		item = item || this.getItem();
 
@@ -278,7 +276,7 @@ Ext.define('ZCS.controller.mail.ZtMailItemController', {
 			};
 
 		this.performOp(item, data, function() {
-			me.processMove(item, ZCS.constant.ID_TRASH);
+			me.processMove(item, ZCS.constant.ID_TRASH, isSwipeDelete);
 		});
 	},
 
@@ -289,14 +287,14 @@ Ext.define('ZCS.controller.mail.ZtMailItemController', {
 	 *
 	 * @private
 	 */
-	processMove: function(item, folderId) {
+	processMove: function(item, folderId, isSwipeDelete) {
 
 		var isConv = (item.get('type') === ZCS.constant.ITEM_CONVERSATION),
 			toastMsg = isConv ? ZtMsg.moveConversation : ZtMsg.moveMessage,
 			folderName = ZCS.cache.get(folderId).get('displayName');
 
 		if (isConv) {
-			ZCS.app.getConvListController().removeItem(item);
+			ZCS.app.getConvListController().removeItem(item, isSwipeDelete);
 		}
 		ZCS.app.fireEvent('showToast', Ext.String.format(toastMsg, folderName));
 	},
