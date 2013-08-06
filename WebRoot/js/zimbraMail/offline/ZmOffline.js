@@ -568,6 +568,31 @@ function(items){
     }
 };
 
+
+ZmOffline.prototype._cacheAttachments =
+function(msg){
+    var mailMsg = ZmMailMsg.createFromDom(msg, {'list':[]});
+    var attachInfo = mailMsg.getAttachmentInfo();
+    if (!attachInfo || !attachInfo.length){
+        return;
+    }
+    var attachUrls = []
+    for (var i=0, length=attachInfo.length; i< length;i++){
+        $.ajax({url: attachInfo[i].url,
+                headers: {'X-Zimbra-Encoding':'x-base64'}
+        }).done(this._cacheAttachmentData.bind(this,attachInfo[i]));
+
+        attachUrls.push(attachInfo[i].url)
+    }
+};
+
+ZmOffline.prototype._cacheAttachmentData =
+function(attachInfo, content){
+    var attachObj = {type:attachInfo.ct, content:content};
+    this.setItem(attachInfo.url, attachObj, ZmOffline.ZmOfflineAttachmentStore)
+
+};
+
 ZmOffline.prototype._syncSearchRequest =
 function(callback, store, params){
     ZmOfflineDB.indexedDB.getAll(store, this._generateMsgSearchResponse.bind(this, callback, params, store), ZmOffline.cacheMessageLimit);
@@ -758,6 +783,7 @@ function(item, type, store){
     var isConv = (type === ZmOffline.CONVERSATION);
     var value = this._getValue(item, isConv);
     store = store || ((item.l) ? this._getFolder(item.l) + type : ZmOffline.ZmOfflineStore);
+    this._cacheAttachments(item);
     this.setItem(item.id, value, store);
 };
 

@@ -2003,7 +2003,7 @@ function() {
 				linkCount++;
 			}
 			// remove attachment from msg
-			if (att.links.remove) {
+			if (att.links.remove && !appCtxt.isOfflineMode()) {
 				htmlArr[idx++] = linkCount ? " | " : "";
 				var params = {
 					id:				this._getAttachmentLinkId(att.part, ZmMailMsgView.ATT_LINK_REMOVE),
@@ -2099,6 +2099,50 @@ function() {
 			removeAllLink.onclick = allAttParams.removeAllCallback;
 		}
 	}
+
+    if (appCtxt.isOfflineMode()){
+        $("#" + this._attLinksId + " a[id$='_main']").each(function(index, node){
+            var cb = ZmMailMsgView.getAttachmentBlobHtml.bind(this, node)
+            appCtxt._offlineHandler.getItem(node.href, cb, {}, "zmofflineattachmentstore");
+        });
+    }
+};
+
+ZmMailMsgView.getAttachmentBlobHtml =
+function(node, data){
+    if (!data || !data.response){
+        return;
+    }
+    var byteString = "";
+    try {
+        byteString = window.atob( data.response.content.replace(/\s/g, '') );
+    } catch(e){
+        return;
+    }
+    if( !byteString ){
+        return;
+    }
+     // write the bytes of the string to an ArrayBuffer
+    var byteStringLength = byteString.length;
+    var ab = new ArrayBuffer( byteStringLength );
+    var ia = new Uint8Array(ab)
+    for (var i = 0; i < byteStringLength; i++) {
+        ia[i] = byteString.charCodeAt(i);
+    }
+    var blob;
+    // write the ArrayBuffer to a blob, and you're done
+    if (typeof window.Blob === "function") {
+        blob = new Blob([ab], {"type" : data.response.type});
+    } else {
+        var blobbuilder = new BlobBuilder();
+        blobbuilder.append(ab)
+        blob = blobbuilder.getBlob(data.response.type);
+        blob.type = data.response.type;
+        blob.name = blob.name || new Date().getTime();
+    }
+    var blobUrl = (window.URL || window.webkitURL).createObjectURL(blob);
+    $(node).attr("href", blobUrl);
+    $(node).closest("td").find("a:nth-child(2)").attr({href: blobUrl,target: '_blank'});
 };
 
 /**
@@ -2187,6 +2231,10 @@ function (part, type, func, obj, arg1, arg2, arg3) {
 
 ZmMailMsgView.prototype._addAllAttachmentsLinks =
 function(attachments, viewAllImages, filename) {
+
+    if (appCtxt.isOfflineMode()){
+        return;
+    }
 
 	var itemId = this._msg.id;
 	if (AjxUtil.isString(filename)) {
