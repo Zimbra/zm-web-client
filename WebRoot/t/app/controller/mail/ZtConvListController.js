@@ -209,9 +209,10 @@ Ext.define('ZCS.controller.mail.ZtConvListController', {
 		// field since that breaks the connection to the list item in the UI
 		if (modify.newId) {
 			var oldConv = ZCS.cache.get(modify.id),
-				newConv = oldConv && oldConv.copy(modify.newId);
+				newConv;
 
-			if (newConv) {
+			if (store.getById(oldConv.getId())) {
+				newConv = oldConv && oldConv.copy(modify.newId);
 				store.remove(oldConv);
 				store.insert(0, newConv);   // moves conv to top
 				item = newConv;
