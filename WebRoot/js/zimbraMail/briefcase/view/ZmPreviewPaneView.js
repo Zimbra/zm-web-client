@@ -513,6 +513,7 @@ function(){
 
     this._headerEl = document.getElementById(htmlElId+"_header");
     this._bodyEl   = document.getElementById(htmlElId+"_body");
+    this._containerEl   = document.getElementById(htmlElId+"_container");
 
     //Create DWT IFrame
     var params = {
@@ -554,6 +555,9 @@ function(){
     Dwt.setHandler(this._headerExpand, DwtEvent.ONCLICK, AjxCallback.simpleClosure(this._toggleExpand, this));
 
     this._iframePreview.getIframe().onload = AjxCallback.simpleClosure(this._updatePreview, this);
+
+    DwtShell.getShell(window).addControlListener(new AjxListener(this, function() { return this._onResize.apply(this, arguments); }));
+    this.addControlListener(new AjxListener(this, function() { return this._onResize.apply(this, arguments); }));
 };
 
 ZmPreviewView._errorCallback =
@@ -804,6 +808,8 @@ function(item){
     }
 
     this.setNotes(item);
+
+    this._onResize();
 };
 
 ZmPreviewView.prototype.setNotes =
@@ -865,5 +871,14 @@ function(enabled){
     }
 };
 
+ZmPreviewView.prototype._onResize =
+function() {
+    if (this._containerEl && this._bodyEl) {
+        // in order to adapt to decreasing sizes in IE, make the body
+        // very small before getting its parent's size
+        Dwt.setSize(this._bodyEl, 1, 1);
 
-
+        var size = Dwt.getSize(this._containerEl);
+        Dwt.setSize(this._bodyEl, size.x, size.y);
+    }
+};

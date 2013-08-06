@@ -187,7 +187,7 @@
                 </td>
             </tr>
             <tr>
-                <td align="center">
+                <td align="center" id="${id}_container">
                     <div id="${id}_body" style="width:100%;height:100%;" class="PreviewViewBody">
                         <!-- Body Iframe -->
                     </div>
