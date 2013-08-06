@@ -595,8 +595,8 @@ function(zimletArray, zimletNames, isJS) {
 
     // add cache killer to each url
     var query = [
-        "?v=",
-        window.appDevMode ? new Date().getTime() : window.cacheKillerVersion
+        "?v=", window.cacheKillerVersion
+//        window.appDevMode ? new Date().getTime() : window.cacheKillerVersion
     ].join("");
 
     // add messages for all zimlets
