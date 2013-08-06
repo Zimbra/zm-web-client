@@ -1635,8 +1635,12 @@ function(msg, container, callback, index) {
 		var len = bodyParts.length;
 		var html = [];
 		var hasHtmlPart = (htmlMode && msg.hasContentType(ZmMimeTable.TEXT_HTML)) || msg.hasInlineImage();
+        var isTruncated = false;
 		for (var i = 0; i < len; i++) {
 			var bp = bodyParts[i];
+            if (bp.isTruncated){
+                isTruncated = true;
+            }
 			var content = this._getBodyContent(bp);
 			if (ZmMimeTable.isRenderableImage(bp.contentType)) {
 				if (bp.contentDisposition == "inline") {
@@ -1681,7 +1685,7 @@ function(msg, container, callback, index) {
 		this._displayContent({	container:		el,
 								html:			html.join(""),
 								isTextMsg:		!hasHtmlPart,
-								isTruncated:	false,
+								isTruncated:	isTruncated,
 								index:			index,
 								origText:		origText
 							});
