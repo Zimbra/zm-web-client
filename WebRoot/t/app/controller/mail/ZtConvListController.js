@@ -174,15 +174,21 @@ Ext.define('ZCS.controller.mail.ZtConvListController', {
 
 		var curFolder = ZCS.session.getCurrentSearchOrganizer(),
 			curFolderId = curFolder && curFolder.get('itemId'),
+			isOutbound = ZCS.util.isOutboundFolderId(curFolderId),
 			doAdd = false,
 			creates = create.creates,
 			ln = creates && creates.m ? creates.m.length : 0,
-			msgCreate, i;
+			msgCreate, i, addresses, recips, fragment;
 
 		for (i = 0; i < ln; i++) {
 			msgCreate = creates.m[i];
 			if (msgCreate.cid === create.id && msgCreate.l === curFolderId) {
 				doAdd = true;
+				if (isOutbound) {
+					addresses = ZCS.model.mail.ZtMailItem.convertAddressJsonToModel(msgCreate.e);
+					recips = ZCS.mailutil.getSenders(addresses);
+					fragment = msgCreate.fr;
+				}
 				break;
 			}
 		}
@@ -191,6 +197,11 @@ Ext.define('ZCS.controller.mail.ZtConvListController', {
 			data = reader.getDataFromNode(create),
 			store = this.getStore(),
 			conv = new ZCS.model.mail.ZtConv(data, create.id);
+
+		if (recips) {
+			conv.set('senders', recips);
+		}
+		conv.set('fragment', conv.get('fragment') || fragment);
 
 		if (doAdd) {
 			store.insert(0, [conv]);

@@ -232,6 +232,18 @@ Ext.define('ZCS.common.ZtUtil', {
 	},
 
 	/**
+	 * Returns true if the given folder ID is for a folder that typically stores
+	 * outbound messages.
+	 *
+	 * @param {String}      folderId        folder ID to check
+	 * @return {Boolean}    true if folder is outbound
+	 */
+	isOutboundFolderId: function(folderId) {
+		var localId = this.localId(folderId);
+		return localId === ZCS.constant.ID_SENT || localId === ZCS.constant.ID_DRAFTS;
+	},
+
+	/**
 	 * Returns a summary relative date string (eg '5 minutes ago') for the date in the given JSON node, relative
 	 * to the given time, or the current time if no time is provided. The string indicates how many minutes ago,
 	 * how many hours ago, or if the difference is more than a day, a short version of the month and day.
