@@ -4151,7 +4151,14 @@ function() {
 
 	msg.setTopPart(top);
 	msg.setSubject(subject);
-		
+
+    //contactId not passed in, but vcard signature may be set
+    if (this._msg && this._msg._contactAttIds) {
+        contactId = this._msg._contactAttIds;
+        this._msg.setContactAttIds([]);
+    }
+    msg.setContactAttIds(contactId);
+
 	for (var i = 0; i < ZmMailMsg.COMPOSE_ADDRS.length; i++) {
 		var type = ZmMailMsg.COMPOSE_ADDRS[i];
 		var a = addrs[type];
