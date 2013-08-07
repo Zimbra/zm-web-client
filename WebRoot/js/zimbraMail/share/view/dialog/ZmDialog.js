@@ -208,6 +208,10 @@ function(params, forceSingle) {
 		this._renderOverview(overview, params.treeIds, params.omit, params.noRootSelect);
 		document.getElementById(params.fieldId).appendChild(overview.getHtmlElement());
 	}
+	else {
+		//this might change between clients so have to update this.
+		this._setRootSelection(overview, params.treeIds, params.noRootSelect);
+	}
 
 	this._makeOverviewVisible(overviewId);
 
@@ -238,14 +242,20 @@ function(overviewId) {
 ZmDialog.prototype._renderOverview =
 function(overview, treeIds, omit, noRootSelect) {
 	overview.set(treeIds, omit);
-	if (!noRootSelect) {
-		for (var i = 0; i < treeIds.length; i++) {
-			var treeView = overview.getTreeView(treeIds[i]);
-			var hi = treeView && treeView.getHeaderItem();
-			if (hi) hi.enableSelection(true);
+	this._setRootSelection(overview, treeIds, noRootSelect);
+};
+
+ZmDialog.prototype._setRootSelection =
+function(overview, treeIds, noRootSelect) {
+	for (var i = 0; i < treeIds.length; i++) {
+		var treeView = overview.getTreeView(treeIds[i]);
+		var hi = treeView && treeView.getHeaderItem();
+		if (hi) {
+			hi.enableSelection(!noRootSelect);
 		}
 	}
 };
+
 
 /**
  * @private

@@ -632,6 +632,7 @@ function(dlg) {
 		title:			this._getMoveDialogTitle(this._pendingActionData.length, this._pendingActionData),
 		description:	ZmMsg.targetFolder,
 		treeStyle:		DwtTree.SINGLE_STYLE,
+		noRootSelect: 	true, //I don't think you can ever use the "move" dialog to move anything to a root folder... am I wrong?
 		appName:		this._app._name
 	};
 };
