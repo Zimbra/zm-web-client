@@ -1828,7 +1828,7 @@ function(msg) {
 
 	var table = document.getElementById(this._hdrTableId);
 	if (!table) { return; }
-	var tagRow = $(table).find('#' + this._tagRowId);
+	var tagRow = $(table).find(document.getElementById(this._tagRowId));
 	
 	if (tagRow.length) {
 		tagRow.remove();
