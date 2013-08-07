@@ -226,16 +226,14 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 			});
 		}
 
-		// Look for email addresses. If parsing HTML, skip email that's part of a mailto: link.
-		content = content.replace(ZCS.constant.REGEX_EMAIL, function(m) {
-            //<debug>
-			Ext.Logger.info('addr regex matched: ' + m);
-            //</debug>
-			if (isHtml && m.toLowerCase().indexOf('mailto:') === 0) {
-				return m;
+		// Look for email addresses (whether they're part of a mailto: link or not),
+		// and convert them so that tapping them takes the user to compose.
+		content = content.replace(ZCS.constant.REGEX_EMAIL, function(m, mailto, addr) {
+			if (mailto) {
+				return Ext.String.format(" href='#' addr='{0}'", addr);
 			}
 			else {
-				return Ext.String.format("<a href='#' addr='{0}'>{0}</a>", m);
+				return Ext.String.format("<a href='#' addr='{0}'>{0}</a>", addr);
 			}
 		});
 
