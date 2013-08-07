@@ -2049,7 +2049,18 @@ function() {
 
 ZmAppCtxt.prototype.isOfflineMode =
 function() {
-    return !navigator.onLine;
+    if (!navigator.onLine) {
+        return true;
+    }
+    var resp = $.ajax({
+        type: "GET",
+        cache: false,
+        url: "/public/blank.html",
+        async: false,
+        timeout: 5000
+    }).responseText
+
+    return !(resp);
 };
 
 ZmAppCtxt.prototype.initWebOffline =

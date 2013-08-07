@@ -853,10 +853,10 @@ function(params, result) {
     if (appCtxt.isOfflineSupported() && appCtxt._offlineHandler){
         callback = new AjxCallback(this,
 		function() {
-            if (navigator.onLine){
-                appCtxt._offlineHandler.cacheMailData();
-            } else {
+            if (appCtxt.isOfflineMode()){
                 appCtxt._offlineHandler.initOfflineFolders();
+            } else {
+                appCtxt._offlineHandler.cacheMailData();
             }
 
 		});
