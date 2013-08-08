@@ -277,7 +277,7 @@ if (application.getInitParameter("offlineMode") != null)  {
         <c:set var="client" value="${useMobile ? 'mobile' : useStandard ? 'standard' : 'preferred' }"/>
     </c:if>
     <c:set var="smallScreen" value="${client eq 'mobile'}"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE9" />    
+    <meta http-equiv="X-UA-Compatible" content="IE=9" />
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
     <title><fmt:message key="zimbraLoginTitle"/></title>
     <c:set var="version" value="${initParam.zimbraCacheBusterVersion}"/>
