@@ -126,19 +126,30 @@ Ext.define('ZCS.controller.mail.ZtMsgController', {
 
 		this.setItem(params.msg);
 		this.setActiveMailComponent(menuButton.up('.itempanel'));
-		this.callParent(arguments);
+        this.callParent(arguments);
 
-		var menu = this.getMenu(params.menuName);
+		var menuName = params.menuName,
+            menu = this.getMenu(menuName);
+
+        if (menu && menuName === ZCS.constant.MENU_ADDRESS) {
+            //The menu config(Add/Edit contact) depends on whether or not the contact already exists.
+            //Set the menu items every time the user taps on the address.
+            this.setMenuItems(menuName);
+        }
+
 		if (menu) {
-			if (params.address) {
+            if (params.address) {
 				menu.setArgs(ZCS.constant.OP_COMPOSE, [ params.address ]);
 			}
 			if (params.addrObj && menu.getItem(ZCS.constant.OP_ADD_CONTACT)) {
 				menu.setArgs(ZCS.constant.OP_ADD_CONTACT, [ params.addrObj ]);
 			}
-		}
-		if (menu && params.tagName) {
-			menu.setArgs(ZCS.constant.OP_REMOVE_TAG, [ params.tagName ]);
+            if (params.addrObj && menu.getItem(ZCS.constant.OP_EDIT)) {
+                menu.setArgs(ZCS.constant.OP_EDIT, [ params.addrObj ]);
+            }
+            if (params.tagName) {
+                menu.setArgs(ZCS.constant.OP_REMOVE_TAG, [ params.tagName ]);
+            }
 		}
 	},
 
@@ -151,11 +162,22 @@ Ext.define('ZCS.controller.mail.ZtMsgController', {
 		if (menuName === ZCS.constant.MENU_ADDRESS) {
 			var menuData = [];
 			if (ZCS.constant.IS_ENABLED[ZCS.constant.APP_CONTACTS]) {
-				menuData.push({
-					label:      ZtMsg.addContact,
-					action:     ZCS.constant.OP_ADD_CONTACT,
-					listener:   'doAddContact'
-				});
+                var msg = this.getItem(),
+                    fromAddr = msg.getAddressByType(ZCS.constant.FROM),
+                    cachedAddr = ZCS.cache.get(fromAddr && fromAddr.get('email'), 'email');
+                if (cachedAddr) {
+                    menuData.push({
+                        label:      ZtMsg.editContact,
+                        action:     ZCS.constant.OP_EDIT,
+                        listener:   'doEditContact'
+                    });
+                } else {
+                    menuData.push({
+                        label:      ZtMsg.addContact,
+                        action:     ZCS.constant.OP_ADD_CONTACT,
+                        listener:   'doAddContact'
+                    });
+                }
 			}
 			menuData.push({
 				label:      ZtMsg.newMessage,
@@ -274,6 +296,13 @@ Ext.define('ZCS.controller.mail.ZtMsgController', {
 	doAddContact: function(addr) {
 		ZCS.app.getContactController().showContactForm(ZCS.constant.OP_COMPOSE, ZCS.model.contacts.ZtContact.fromEmailObj(addr));
 	},
+
+    doEditContact: function(addr) {
+        var contact = ZCS.cache.get(addr.get('email'), 'email'),
+            contactCtrl = ZCS.app.getContactController();
+        contactCtrl.setItem(contact);
+        contactCtrl.showContactForm(ZCS.constant.OP_EDIT, contact);
+    },
 
 	doLoadEntireMessage: function(msg, msgBody) {
 
