@@ -534,11 +534,10 @@
 				</tr>
 			</tpl>
 
-
 			<tpl if='reminder'>
 				<tr>
 					<td class='zcs-invite-label'>{[ZtMsg.invReminderLabel]}</td>
-					<td>{reminder}</td>
+					<td>{reminder} {[ZtMsg.invReminderText]}</td>
 				</tr>
 			</tpl>
 

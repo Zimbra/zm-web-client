@@ -59,13 +59,14 @@ Ext.define('ZCS.view.calendar.ZtAppointmentView', {
             attendees = invite.get('attendees'),
             isOrganizer = invite.get('isOrganizer'),
             stats = attendees && this.getAttendeeStats(attendees, isOrganizer),
+            reminder = invite.get('reminderAlert'),
             data = {
                 start:  startTime + (invite.get('isAllDay') ? "" : " - " + endTime),
                 location: invite.get('location'),
                 organizer: organizer,
                 attendees: stats && stats.summary,
                 calendar: null /* TODO: After other calendar folders are shown in touch client */,
-                reminder: invite.get('reminderAlert') + " minutes before", /* TODO: Get strings similar to Ajax Client */
+                reminder: reminder ? reminder : "", /* TODO: Get strings similar to Ajax Client */
                 notes: invite.get('notes')
             },
             apptTitle = invite.get('subject'),
