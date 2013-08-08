@@ -436,12 +436,8 @@ if (application.getInitParameter("offlineMode") != null)  {
 								</div>
 							</td>
 						</tr>
-						<tr>
-							<td colspan="2"><hr/></td>
-						</tr>
                     </c:if>
 					</table>
-				<div class="offline"><fmt:message key="switchToOfflineClientEx"/></div>
 			</form>
 			</div>
 			<div class="decor1"></div>

@@ -73,15 +73,6 @@ FORM {
 	border-collapse:collapse;
 	text-align:left;
 }
-.offline {
-	color:@LoginLabelColor@;
-	text-align:center;
-	padding:10px 0;  
-}
-.offline A:link, 
-.offline A:visited {
-	color:@LoginLabelColor@;
-}
 .form TD:first-child LABEL 			{ margin-right:20px; 						}
 .form TD 							{ padding-bottom:10px; 						}
 .form INPUT[type='text'], 
