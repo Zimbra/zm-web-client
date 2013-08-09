@@ -335,13 +335,22 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 	padding:0px;
 }
 .ZmSearchToolbarDiv {
+	height:1.4rem;
 	position:relative;
+}
+.ZmSearchInput {
+	margin-right:20px
 }
 .ZmSearchToolbarDiv INPUT {
 	border:none;
 	border-color:transparent;
 	outline:none;
 	@transition@:width .25s ease;
+}
+.ZmSearchButton {
+	position:absolute;
+	right:4px;
+	top:-1px;
 }
 
 .ZmSearchResultsToolBar {

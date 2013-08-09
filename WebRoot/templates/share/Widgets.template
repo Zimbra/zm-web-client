@@ -58,8 +58,8 @@
 			<td id='${id}_searchMenuButton' class='ZmSearchToolbarCell'></td>
 			<td>
                 <div class='ZmSearchToolbarDiv'>
-				    <div id='${id}_inputField' style='margin-right:20px'></div>
-				    <div id='${id}_searchButton' hint='icon' style='position:absolute;right:4px;top:1px;'></div>
+				    <div id='${id}_inputField' class='ZmSearchInput'></div>
+				    <div id='${id}_searchButton' class='ZmSearchButton' hint='icon'></div>
 				</div>
 			</td>
 			<!-- UNCOMMENT THIS IF YOU WANT CUSTOM SEARCH TO APPEAR AS A SEPARATE BUTTON ON SEARCH TOOLBAR
