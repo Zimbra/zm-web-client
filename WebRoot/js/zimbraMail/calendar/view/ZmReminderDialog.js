@@ -213,7 +213,7 @@ function(uid, id, dismissListener, openListener, snoozeListener, snoozeSelectBut
 
 	// open button
 	var openBtn = this._openButtons[uid] = new DwtLinkButton({id: "openBtn_" + id, parent: this, parentElement: data.openLinkId, noDropDown: true});
-	openBtn.setText(appt.getReminderName());
+	openBtn.setText(AjxStringUtil.htmlEncode(appt.getReminderName()));
 	openBtn.addSelectionListener(openListener);
 	openBtn.apptUid = uid;
 };
