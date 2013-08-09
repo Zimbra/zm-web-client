@@ -2142,7 +2142,8 @@ function(node, data){
     }
     var blobUrl = (window.URL || window.webkitURL).createObjectURL(blob);
     $(node).attr("href", blobUrl);
-    $(node).closest("td").find("a:nth-child(2)").attr({href: blobUrl,target: '_blank'});
+    var downloadElementId = node.id.replace(new RegExp(ZmMailMsgView.ATT_LINK_MAIN + '$'), ZmMailMsgView.ATT_LINK_DOWNLOAD);
+    $("#" + downloadElementId ).attr({href: blobUrl,target: '_blank'});;
 };
 
 /**
