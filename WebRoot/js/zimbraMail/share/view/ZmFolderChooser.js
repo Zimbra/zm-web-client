@@ -173,6 +173,15 @@ function() {
 };
 
 /**
+ * delegate to ZmDialog.
+ */
+ZmFolderChooser.prototype._setRootSelection =
+function() {
+	ZmDialog.prototype._setRootSelection.apply(this, arguments); //reuse code from ZmDialog
+};
+
+
+/**
  * delegate to ZmDialog. called from ZmDialog.prototype._setOverview (which we delegate to from ZmFolderChooser.prototype._setOverview)
  */
 ZmFolderChooser.prototype._makeOverviewVisible =
