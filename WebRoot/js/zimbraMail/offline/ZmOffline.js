@@ -50,6 +50,7 @@ function (){
 ZmOffline.prototype.init =
 function(cb){
     if (!appCtxt.isOfflineMode()){
+        this._fixLazyCSSLoadIssues();
         window.applicationCache.addEventListener('cached', function(e) {
             ZmOffline._checkAppCacheDone();
         }, false);
@@ -62,6 +63,15 @@ function(cb){
     var callback = (appCtxt.isOfflineMode()) ? this.setOffline.bind(this, cb) : cb;
     ZmOfflineDB.indexedDB.open(callback);
     this._addListeners();
+};
+
+ZmOffline.prototype._fixLazyCSSLoadIssues =
+function(){
+		if (!ZmMailMsgView._CSS) {
+			var cssUrl = appContextPath + "/css/msgview.css?v=" + cacheKillerVersion;
+			var result = AjxRpc.invoke(null, cssUrl, null, null, true);
+			ZmMailMsgView._CSS = result && result.text;
+		}
 };
 
 ZmOffline.prototype.setOffline =
