@@ -167,7 +167,7 @@ Ext.define('ZCS.view.ux.ZtBubbleDropdown', {
 	 * on the drop down.
 	 */
 	shouldAutoBubble: function () {
-		return this.menu.isHidden();
+		return this.menu.isHidden() !== true;
 	},
 
 	/**
