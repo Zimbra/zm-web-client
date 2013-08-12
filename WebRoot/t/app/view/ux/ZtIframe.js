@@ -76,6 +76,7 @@ Ext.define('ZCS.view.ux.ZtIframe', {
 		var component = this,
 			position = component.element.getBox(),
 			doc = this.getDoc(),
+			theWin = window,
 			frozenY = null,
 			lastPageX = null,
 			lastPageY = null,
@@ -121,6 +122,11 @@ Ext.define('ZCS.view.ux.ZtIframe', {
 					//definition of page, client, screen found here: http://www.w3.org/TR/2011/WD-touch-events-20110505/
 					//since we're in an iframe, pageY needs to be the whole scroll of the list, not just the scoll of the iframe.
 					//The main document touch events do not have screenX, screenY, clientX, or clientY properties, so just set those as undefined all the time.
+			
+                    //<debug>
+                    Ext.Logger.iframe('PageY' + pageY);
+                    //</debug>
+
 					newTouch = window.document.createTouch(
 						window,
 						newTarget,
@@ -139,6 +145,7 @@ Ext.define('ZCS.view.ux.ZtIframe', {
 			},
 			cloneEvent = function (ev, target, changeId, freezeY) {
 
+				position = component.element.getBox();
 				// This function is based on Apple's implementation, it may differ in other touch based browsers.
 				// http://developer.apple.com/library/safari/#documentation/UserExperience/Reference/TouchEventClassReference/TouchEvent/TouchEvent.html
 				// Notes here: http://lists.w3.org/Archives/Public/public-webevents/2012AprJun/0004.html
@@ -161,16 +168,21 @@ Ext.define('ZCS.view.ux.ZtIframe', {
 				if (ev.touches.length > 0) {
 					var lastTouch = ev.touches[ev.touches.length - 1];
 					eventScreenX = undefined;
-					eventPageX = lastTouch.screenX;
+					eventPageX = lastTouch.screenX + position.left;
 					eventScreenY = undefined;
-					eventPageY = lastTouch.pageY;
+					eventPageY = lastTouch.screenY;
 				} else {
 					//touchend events have a changedTouches list, not a touches array.
 					eventScreenX = undefined;
-					eventPageX = ev.changedTouches[0].screenX;
 					eventScreenY = undefined;
-					eventPageY = ev.changedTouches[0].screenY;
+					eventPageX = 0;
+					eventPageY = 0;
 				}
+
+
+	                    //<debug>
+                Ext.Logger.iframe('PageY' + eventPageY);
+                //</debug>
 
 
 				if (freezeY && ev.type === 'touchstart') {
@@ -190,7 +202,7 @@ Ext.define('ZCS.view.ux.ZtIframe', {
 					ev.type, //type, The type of event that occurred.
 					true, //canBubble, Indicates whether an event can bubble. If true, the event can bubble; otherwise, it cannot.
 					true, //cancelable, Indicates whether an event can have its default action prevented. If true, the default action can be prevented; otherwise, it cannot.
-					window, //view, The view (DOM window) in which the event occurred.
+					theWin, //view, The view (DOM window) in which the event occurred.
 					ev.detail, //detail Specifies some detail information about the event depending on the type of event.
 					eventPageX, //screenX The x-coordinate of the event’s location in screen coordinates.
 					eventPageY, //screenY The y-coordinate of the event’s location in screen coordinates.
@@ -234,7 +246,7 @@ Ext.define('ZCS.view.ux.ZtIframe', {
                         idParams = ZCS.util.getIdParams(elm.dom.id) || {},
 					    emailAttribute = elm.getAttribute("addr");
 
-					if (emailAttribute && ev.type !== 'touchend') {
+					if (emailAttribute && ev.type !== 'touchend' && ev.type !== 'touchmove') {
 						ev.preventDefault();
 	                    return false;
 					} else if (emailAttribute && ev.type === 'touchend') {
@@ -268,9 +280,13 @@ Ext.define('ZCS.view.ux.ZtIframe', {
 						if (ev.type === 'touchend') {
 							lastPageX = 0;
 							lastPageY = 0;
+							//<debug>
 							Ext.Logger.iframe("Touch end");
+							//</debug>
 						} else {
+							//<debug>
 							Ext.Logger.iframe('[' + xDifferential + ',' + yDifferential+']');
+							//</debug>
 						}
 
 	                    //<debug>
@@ -286,6 +302,8 @@ Ext.define('ZCS.view.ux.ZtIframe', {
 						} else {
 							lastPageY = ev.pageY;
 							lastPageX = ev.pageX;
+							ev.preventDefault();
+							return false;
 						}
 
 					}
@@ -375,14 +393,14 @@ Ext.define('ZCS.view.ux.ZtIframe', {
 		}
 
 		//Only modify the dom and fire corresponding event if it's needed.
-		if (iframe.getHeight() !== height) {
+		// if (iframe.getHeight() !== height) {
             //<debug>
 			Ext.Logger.iframe('Set IFRAME height to ' + height);
             //</debug>
 			iframe.setHeight(height);
 			this.setHeight(height);
 			this.fireEvent('msgContentResize');
-		}
+		// }
 
 		if (callback) {
             //<debug>

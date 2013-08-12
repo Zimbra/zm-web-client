@@ -32,6 +32,7 @@ Ext.define('ZCS.view.mail.ZtMsgListView', {
 		useComponents:      true,
 		defaultType:        'msgview',
 		disableSelection:   true,
+		scrollToTopOnRefresh:   true,		
 		variableHeights:    true,
 		store:              'ZtMsgStore',
 		itemCls:            'zcs-msgview',

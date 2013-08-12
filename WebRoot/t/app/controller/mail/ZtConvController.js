@@ -163,7 +163,16 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 			quickReply.show();
 		}
 
-		// this.setHandleUpdateDataEvent(true);
+
+		//Reset the translation on this list -- in the touch world, scrolling is done
+		//by using translate3d.  In Sencha's implementation, there is a scroller object (Ext.scroll.Scroller)
+		//and an underlying translation provider.  There appears to be a bug with the list 
+		//in that if you fire a refresh event on the list, and you have its scrollToTopOnRefresh
+		//property set to true, it will tell the Scroller object to scroll, but if the translation
+		//object has an old y value, that never gets reset by the scroller.
+		//So manually reset it here.
+		this.getMsgListView().topItemIndex = 0;
+		this.getMsgListView().getScrollable().getScroller().getTranslatable().y = 0;
 
 		store.load({
 			convId: conv.getId(),
@@ -174,7 +183,7 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 						title:      title,
 						isDraft:    isDraft
 					});
-					this.renderMessages();
+
 					if (quickReply) {
 						this.setQuickReplyPlaceholderText(this.getQuickReplyPlaceholderText());
 					}
@@ -247,7 +256,9 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 		var msgListView = this.getMsgListView();
 		msgListView.updatedItems = msgViews;
 		msgListView.handleItemHeights();
+		msgListView.handleItemTransforms();
 		msgListView.refreshScroller();
+
 	},
 
 	/**

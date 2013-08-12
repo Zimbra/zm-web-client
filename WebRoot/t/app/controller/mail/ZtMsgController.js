@@ -90,7 +90,7 @@ Ext.define('ZCS.controller.mail.ZtMsgController', {
 	doToggleView: function(msgHeader, detailsTapped) {
 
 		var msgView = msgHeader.up('msgview'),
-			msg = msgView.getRecord(),
+			msg = msgView.getMsg(),
 			curExpanded = msgView.getExpanded(),
 			curState = msgView.getState(),
 			newExpanded, newState;
@@ -101,24 +101,46 @@ Ext.define('ZCS.controller.mail.ZtMsgController', {
 		else {
 			newState = (curState === ZCS.constant.HDR_EXPANDED) ? ZCS.constant.HDR_DETAILED : ZCS.constant.HDR_EXPANDED;
 		}
+		
 		newExpanded = (newState !== ZCS.constant.HDR_COLLAPSED);
-		msgView.setExpanded(newExpanded);
+
+		msgView.setExpanded(newState === ZCS.constant.HDR_EXPANDED || newState === ZCS.constant.HDR_DETAILED);
+		
 		msgView.setState(newState);
+
 		//<debug>
         Ext.Logger.info("Header state: " + newState + " (" + newExpanded + ")");
         //</debug>
-		if (newExpanded && msg && !msg.get('isLoaded')) {
+
+        msgView.updateExpansion();
+    	msgView.renderHeader();
+
+		if (newExpanded && msg && !msg.get('isLoaded')) {	
 			msg.save({
 				op: 'load',
 				id: msg.getId(),
 				success: function() {
-					msgView.render(msg);
-					msgView.updateHeight();
+					if (newExpanded) {
+						msgView.renderBody();
+						if (!msgView.usingIframe()) {
+							msgView.updateHeight();
+						} 
+					} else {
+						msgView.updateHeight();				
+					}
 				}
 			});
-		}
+		}	
 		else {
-			msgView.refreshView();
+			//The body might not be rendered if we are going to expanded from not expanded.
+			if (newExpanded) {
+				msgView.renderBody();
+				if (!msgView.usingIframe()) {
+					msgView.updateHeight();
+				} 
+			} else {
+				msgView.updateHeight();				
+			}
 		}
 	},
 

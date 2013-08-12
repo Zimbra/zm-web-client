@@ -48,7 +48,7 @@ Ext.define('ZCS.view.mail.ZtMsgView', {
 
 		listeners: {
 
-			// In general, we manually render a msg view as needed, without using this event. Sometimes,
+			// In general, we manually render a msg view when a record is bound to it. Sometimes,
 			// we need to catch this event and do some rendering (eg when the store removes a record),
 			// since the support for a component-based List within Sencha Touch isn't great. Template-based
 			// Lists do a much better job of keeping the view sync'ed with the store.
@@ -62,29 +62,73 @@ Ext.define('ZCS.view.mail.ZtMsgView', {
 
 				if (msgView && msgData && controller.getHandleUpdateDataEvent()) {
 
-					var msgId = msgData.id,
-						msg = ZCS.cache.get(msgId),
-						oldMsgView = controller.getMsgViewById(msgId),
-						modelExpanded = !!msg.get('isLoaded'),
-						modelState = modelExpanded ? ZCS.constant.HDR_EXPANDED : ZCS.constant.HDR_COLLAPSED;
+					var msgId = msgData.id;
 
-
-					//<debug>
-					if (oldMsgView) {
-						Ext.Logger.info('updatedata for msg ' + msgId + ' ("' + msg.get('fragment') + '") from msg view ' + oldMsgView.getId() + ' into msg view ' + msgView.getId());
-					}
-					//</debug>
-
-					// maintain the msg's display state - it's just getting moved to a different msg view
-					if (msg) {
-						msgView.setMsg(msg);
-						msgView.setExpanded(oldMsgView ? oldMsgView.getExpanded() : modelExpanded);
-						msgView.setState(oldMsgView ? oldMsgView.getState() : modelState);
-						msgView.refreshView();
-						controller.setMsgViewById(msgId, msgView);
-					}
+					this.doMsgViewUpdate(msgView, msgId, false);	
 				}
 			}
+		}
+	},
+
+	/**
+	 * Instead of doing a full message render for every message, or when the message is brought into view,
+	 * only do a full render when the record is assigned to the view.
+	 *
+	 */
+	applyRecord: function (record, oldRecord) {
+		if (record) {
+			var msgId = record.get('id');
+			this.doMsgViewUpdate(this, msgId, true);
+		}
+
+		return this.callParent(arguments);
+	},
+
+	//We cache the current view state in the record.  We can't cache it in the component because that component
+	//might get used by ore than one record before making it back to the record that is doing the caching.
+	applyExpanded: function (value, oldValue) {
+		if (this.getMsg()) {
+			this.getMsg().viewExpansionState = value;
+		}
+
+		return value;
+	},
+
+	applyState: function (value, oldValue) {
+		if (this.getMsg()) {
+			this.getMsg().viewState = value;
+		}
+
+		return value;
+	},
+
+	doMsgViewUpdate: function (msgView, msgId, renderBody) {
+		var controller = ZCS.app.getConvController(),
+			msg = ZCS.cache.get(msgId),
+			oldMsgView = controller.getMsgViewById(msgId),
+			shouldBeExpanded,
+			modelState;
+
+		//<debug>
+		if (oldMsgView) {
+			Ext.Logger.info('updatedata for msg ' + msgId + ' ("' + msg.get('fragment') + '") from msg view ' + oldMsgView.getId() + ' into msg view ' + msgView.getId());
+		}
+		//</debug>
+
+		// don't force any full list height recalcs.  Let individual iframe events do this if necessary,
+		// otherwise we should receive the proper height during the lists rendering phase.
+		if (msg) {
+			msgView.setMsg(msg);
+			shouldBeExpanded = this.shouldBeExpanded();
+			modelState = shouldBeExpanded ? ZCS.constant.HDR_EXPANDED : ZCS.constant.HDR_COLLAPSED;
+			msgView.setExpanded(shouldBeExpanded);
+			msgView.setState(msg.viewState || modelState);
+			this.updateExpansion();
+			this.renderHeader();
+			if (renderBody && msgView.getExpanded()) {
+				msgView.renderBody();
+			}
+			controller.setMsgViewById(msgId, msgView);
 		}
 	},
 
@@ -101,7 +145,6 @@ Ext.define('ZCS.view.mail.ZtMsgView', {
 			this.setMsg(msg);
 			this.setExpanded(loaded);
 			this.setState(this.getExpanded() ? ZCS.constant.HDR_EXPANDED : ZCS.constant.HDR_COLLAPSED);
-
 			this.renderHeader();
 			if (loaded) {
 				this.renderBody();
@@ -137,12 +180,10 @@ Ext.define('ZCS.view.mail.ZtMsgView', {
 	},
 
 	/**
-	 * Makes sure components are rendered correctly as expanded or collapsed.
+	 * @returns {boolean} If the message body is using an iframe or not.
 	 */
-	refreshView: function() {
-		this.updateExpansion();
-		this.renderHeader();
-		this.updateHeight();
+	usingIframe: function () {
+		return this.down('msgbody').getUsingIframe();
 	},
 
 	/**
@@ -187,6 +228,27 @@ Ext.define('ZCS.view.mail.ZtMsgView', {
 			listRef.updatedItems.push(this);
 			listRef.handleItemHeights();
 			listRef.refreshScroller(listRef.getScrollable().getScroller());
+		}
+	},
+
+	/**
+	 * The view property gets precendence because it is set by user taps.
+	 * Then the model property saved on the server gets precendence.
+	 * Notice that we check for strict equality on the view properties because
+	 * they might be undefined.
+	 *
+	 */
+	shouldBeExpanded: function () {
+		var msg = this.getMsg();
+
+		if (msg.viewExpansionState === false) {
+			return false;
+		} else if (msg.viewExpansionState === true) {
+			return true;
+		} else if (!!msg.get('isLoaded')) {
+			return true;
+		} else {
+			return false;
 		}
 	},
 

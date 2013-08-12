@@ -526,7 +526,7 @@ Ext.define('ZCS.model.mail.ZtMailMsg', {
 				attInfo.push(info);
 			}
 		}
-
+	
 		return attInfo;
 	},
 
@@ -554,7 +554,7 @@ Ext.define('ZCS.model.mail.ZtMailMsg', {
 
 	isTruncated: function() {
 		var bodyParts = this.get('bodyParts'),
-			ln = bodyParts.length, i;
+			ln = bodyParts ? bodyParts.length : 0, i;
 
 		for (i = 0; i < ln; i++) {
 			if (bodyParts[i].get('isTruncated')) {
