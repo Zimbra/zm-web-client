@@ -1331,6 +1331,9 @@ if (ext == null) ext = "";
         <replace file="${webapp.dir}/WEB-INF/web.xml" token="%%zimbraMailSSLPort%%" value="${webxml.zimbraMailSSLPort}"/>
     	<replace file="${webapp.dir}/WEB-INF/web.xml" token="%%zimbraMailTrustedIP%%" value="${webxml.zimbraMailTrustedIP}"/>
     	<replace file="${webapp.dir}/WEB-INF/web.xml" token="%%zimbraHttpDosFilterMaxRequestsPerSec%%" value="${webxml.zimbraHttpDosFilterMaxRequestsPerSec}"/>
+    	<replace file="${webapp.dir}/WEB-INF/web.xml" token="zimbraHttpCompressionEnabled,-->%%" value="-->" />
+    	<replace file="${webapp.dir}/WEB-INF/web.xml" token="%%comment VAR:zimbraHttpCompressionEnabled," value="" />
+    	<replace file="${webapp.dir}/WEB-INF/web.xml" token="%%zimbraWebGzipEnabled%%" value="true"/>
     </target>
 
     <target name='clean' depends='customer-init'>
