@@ -81,7 +81,8 @@ Ext.define('Ext.ux.TouchCalendarDayEvents', {
 			var timeSlotHeight  = timeSlotEl.getHeight(),
 				minutesPerPixel = timeSlotHeight / 30;
 
-			heightPixels    = minutesLength * minutesPerPixel;
+            // ZCS - Minimum height of any appointment set to 15 minutes
+			heightPixels    = minutesLength <= 15 ? 15 :(minutesLength * minutesPerPixel);
 		}
 
 		return heightPixels;
