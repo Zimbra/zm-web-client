@@ -74,10 +74,10 @@ Ext.define('ZCS.controller.ZtAppViewController', {
 		//of the list panel and overview panels.
 		Ext.Viewport.on('orientationchange', function (viewport, newOrientation, width, height) {
 			this.orientation = Ext.Viewport.getOrientation();
-			this.resetPanelSize(width, height);
-			this.updateModalnessOfOverlays();
+			var newDimensions = this.resetPanelSize(width, height);
+			this.updateModalnessOfOverlays(newDimensions);
 			this.updatelistpanelToggle(this.overviewTitle);
-			ZCS.app.fireEvent('orientationChange');
+			ZCS.app.fireEvent('orientationChange', newDimensions);
 		}, this);
 
 		//Handle show overview panel events.
@@ -128,7 +128,7 @@ Ext.define('ZCS.controller.ZtAppViewController', {
 	 */
 	doOverviewRegistration: function (config, appview, positioningConfig) {
 		var width = this.getNavigationWidth(positioningConfig),
-			sheetConfig = this.getNavigationSheetConfig(config, positioningConfig);
+			sheetConfig = this.getOverviewSheetConfig(config, positioningConfig);
 
 		sheetConfig.hidden = true;
 		//The overview should always be modal and hide on tap, the list panel varies by orientation and device.
@@ -137,7 +137,8 @@ Ext.define('ZCS.controller.ZtAppViewController', {
 
 
 		sheetConfig.width = width;
-		sheetConfig.height = this.getAppViewPanelHeight();
+		sheetConfig.height = this.getOverviewPanelHeight();
+
 
 		var overviewPanel = Ext.Viewport.add(sheetConfig);
 
@@ -201,6 +202,7 @@ Ext.define('ZCS.controller.ZtAppViewController', {
 	 * Shows the list panel for the currently active app view.
 	 */
 	showListPanel: function () {
+
 		var activeApp = ZCS.session.getActiveApp(),
 			appViewConfig = this.appViews[activeApp];
 
@@ -265,10 +267,13 @@ Ext.define('ZCS.controller.ZtAppViewController', {
 	 * than landscape.
 	 */
 	resetPanelSize: function (width, height) {
+		var newDimensions = {};
+
 		Ext.Object.each(this.appViews, function (app, appViewConfig) {
 			var overlayModalness = !this.showPlaceholder(appViewConfig.positioningConfig),
 				overlayWidth = this.getNavigationWidth(appViewConfig.positioningConfig, width),
 				height = this.getAppViewPanelHeight(height),
+				overviewHeight = this.getOverviewPanelHeight(),
 				itemPanelWidth = this.getItemPanelWidth(appViewConfig.positioningConfig, width);
 
 			appViewConfig.itemPanel.setWidth(itemPanelWidth);
@@ -276,12 +281,38 @@ Ext.define('ZCS.controller.ZtAppViewController', {
 			//Resize the height and width of these panels because
 			//they are not controlled by a layout manager.
 			appViewConfig.overviewPanel.setWidth(overlayWidth);
-			appViewConfig.placeHolder.setWidth(overlayWidth);
-			appViewConfig.overviewPanel.setHeight(height);
-			appViewConfig.listPanel.setWidth(overlayWidth);
-			appViewConfig.listPanel.setHeight(height);
+			if (appViewConfig.placeHolder) {
+				appViewConfig.placeHolder.setWidth(overlayWidth);
+			}
+
+			appViewConfig.overviewPanel.setHeight(overviewHeight);
+
+			if (appViewConfig.listPanel) {			
+				appViewConfig.listPanel.setWidth(overlayWidth);
+				appViewConfig.listPanel.setHeight(height);
+			}
+
+			newDimensions[app] = {
+				listPanel: {
+					width: overlayWidth,
+					height: height
+				},
+				itemPanel: {
+					width: itemPanelWidth,
+					height: height
+				},	
+				placeHolder: {
+					width: overlayWidth
+				},
+				overviewPanel: {
+					width: overlayWidth,
+					height: overviewHeight
+				}
+			};
 
 		}, this);
+	
+		return newDimensions;
 	},
 
 	/**
@@ -292,27 +323,49 @@ Ext.define('ZCS.controller.ZtAppViewController', {
 	 * then our overview panel would become modal, and the placeholder would be removed.
 	 *
 	 */
-	updateModalnessOfOverlays: function () {
+	updateModalnessOfOverlays: function (newDimensions) {
 		Ext.Object.each(this.appViews, function (app, appViewConfig) {
 			var overlayModalness = this.makeOverlaysModal(appViewConfig.positioningConfig),
 				showPlaceholder = this.showPlaceholder(appViewConfig.positioningConfig),
-				alwaysShowListPanel = this.alwaysShowListPanel(appViewConfig.positioningConfig);
+				alwaysShowListPanel = this.alwaysShowListPanel(appViewConfig.positioningConfig),
+				listPanelPosition,
+				placeHolderPosition,
+				overviewPanelPosition;
 
 			appViewConfig.overviewPanel.setModal(true);
 			appViewConfig.overviewPanel.setHideOnMaskTap(true);
 
-			appViewConfig.listPanel.setModal(overlayModalness);
-			appViewConfig.listPanel.setHideOnMaskTap(overlayModalness);
-
-			if (showPlaceholder) {
-				appViewConfig.placeHolder.show();
-			} else {
-				appViewConfig.placeHolder.hide();
+			if (appViewConfig.listPanel) {
+				appViewConfig.listPanel.setModal(overlayModalness);
+				appViewConfig.listPanel.setHideOnMaskTap(overlayModalness);
+			}
+			
+			if (appViewConfig.placeHolder) {
+				if (showPlaceholder) {
+					appViewConfig.placeHolder.show();
+				} else {
+					appViewConfig.placeHolder.hide();
+				}
 			}
 
 			if (alwaysShowListPanel && app === ZCS.session.getActiveApp()) {
 				appViewConfig.listPanel.show();
 			}
+
+
+			if (appViewConfig.listPanel && appViewConfig.listPanel.getPosition) {
+				var listPanelPosition = appViewConfig.listPanel.getPosition();
+				newDimensions[app].listPanel.top = listPanelPosition.top;
+				newDimensions[app].listPanel.left = listPanelPosition.left;
+			}
+
+			if (appViewConfig.placeHolder && appViewConfig.placeHolder.getPosition) {
+				var placeHolderPosition = appViewConfig.placeHolder.getPosition();
+				newDimensions[app].placeHolder.top = placeHolderPosition.top;
+				newDimensions[app].placeHolder.left = placeHolderPosition.left;
+			}
+
+
 
 		}, this);
 	},
@@ -357,6 +410,24 @@ Ext.define('ZCS.controller.ZtAppViewController', {
 	},
 
 	getNavigationSheetConfig: function (config, positioningConfig) {
+		return this.getSheetConfig(
+			config,
+			positioningConfig,
+			this.getNavigationTopPosition()
+		);
+	},
+
+
+	getOverviewSheetConfig: function (config, positioningConfig) {
+		return this.getSheetConfig(
+			config,
+			positioningConfig,
+			0
+		);
+	},
+
+
+	getSheetConfig: function (config, positioningConfig, top) {
 		return {
 			xtype: 'sheet',
 			layout: 'fit',
@@ -371,7 +442,7 @@ Ext.define('ZCS.controller.ZtAppViewController', {
 			hideOnMaskTap: this.makeOverlaysModal(positioningConfig),
 			style: 'padding: 0; position: absolute;font-size:81%;',
 			padding: 0,
-			top: this.getNavigationTopPosition()
+			top: top
 		};
 	},
 
@@ -381,6 +452,10 @@ Ext.define('ZCS.controller.ZtAppViewController', {
 
 	getAppViewPanelHeight: function (height) {
 		return (height || Ext.Viewport.element.getHeight()) - 51;
+	},
+
+	getOverviewPanelHeight: function (height) {
+		return (height || Ext.Viewport.element.getHeight());
 	},
 
 	getDeviceType: function () {

@@ -133,7 +133,7 @@ Ext.define('ZCS.common.ZtMenu', {
 		});
 
 		ZCS.app.on('orientationChange', function () {
-			if (!this.isHidden()) {
+			if (this.isHidden() !== null && !this.isHidden()) {
 				this.rePosition();
 			}
 		}, this);

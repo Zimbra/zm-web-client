@@ -46,7 +46,11 @@ Ext.define('ZCS.view.ZtToast', {
 			if (event.target.className === 'zcs-toast-undo-action') {
 				me.fireEvent('undo');
 			}
-		}
+		};
+
+		ZCS.app.on('orientationChange', function () {
+			me.reposition();
+		});
 
 		this.callParent(arguments);
 	},
@@ -54,19 +58,25 @@ Ext.define('ZCS.view.ZtToast', {
 	showMessage: function (message) {
 		var me = this,
 			formattedTemplate = ZCS.view.ZtToast.toastTpl.apply({ text: message }),
-			viewportBox = Ext.Viewport.element.getBox(),
-			left = (viewportBox.width / 2) - (me.getWidth() / 2),
 			toast = me.down('component');
-
-		toast.element.un('tap', me.handleTap);
 
 		toast.setHtml(formattedTemplate);
 
 		toast.element.on('tap', me.handleTap);
 
+		me.doShow();
+
+		Ext.defer(me.hide, me.getMilliSecondsUntilHide(), me);
+	},
+
+	doShow: function () {
+		var me = this,
+			viewportBox = Ext.Viewport.element.getBox(),
+			left = (viewportBox.width / 2) - (me.getWidth() / 2);
+
 		me.element.applyStyles({
 			position: 'absolute',
-			"z-index": 1000
+			"z-index": 10000	
 		});
 
 		me.show({
@@ -82,11 +92,16 @@ Ext.define('ZCS.view.ZtToast', {
 			},
 			duration: 500
 		});
+	},
 
-		Ext.defer(me.hide, me.getMilliSecondsUntilHide(), me);
+	reposition: function () {
+		var me = this,
+			viewportBox = Ext.Viewport.element.getBox(),
+			left = (viewportBox.width / 2) - (me.getWidth() / 2);
+
+		me.setLeft(left);
 	}
-},
-	function (thisClass) {
+}, function (thisClass) {
 		thisClass.toastTpl = Ext.create('Ext.XTemplate', ZCS.template.Toast);
 	}
 );
