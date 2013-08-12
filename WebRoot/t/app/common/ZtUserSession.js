@@ -179,7 +179,7 @@ Ext.define('ZCS.common.ZtUserSession', {
 	 */
 	getOrganizerDataByApp: function(app) {
 		var organizerData = this.getOrganizerData();
-		return organizerData ? organizerData[app] : null;
+		return organizerData ? Ext.clone(organizerData[app]) : null;
 	},
 
 	getOrganizerDataByAppAndOrgType: function (app, type) {
