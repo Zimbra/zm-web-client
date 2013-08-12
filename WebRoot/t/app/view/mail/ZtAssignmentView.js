@@ -17,7 +17,7 @@
  * This class is a sheet which present a view to the user that allows them
  * to assign some model on the left to the configured message on the right.
  * It takes the display of the message component and highlights it on the right.
- *
+ *	
  * @author Macy Abbey
  */
 Ext.define('ZCS.view.mail.ZtAssignmentView', {
@@ -175,9 +175,9 @@ Ext.define('ZCS.view.mail.ZtAssignmentView', {
 			me.onClose();
 		});
 
-		ZCS.app.on('orientationChange', function () {
-			if (!this.isHidden()) {
-				Ext.defer(this.rePosition, 200, this);
+		ZCS.app.on('orientationChange', function (newDimensions) {
+			if (this.isHidden() !== null && !this.isHidden()) {
+				Ext.defer(this.rePosition, 100, this, [newDimensions]);
 			}
 		}, this);
 	},
@@ -185,13 +185,18 @@ Ext.define('ZCS.view.mail.ZtAssignmentView', {
 	/**
 	 * Repositions the assignment view
 	 */
-	rePosition: function () {
+	rePosition: function (newDimensions) {
 		this.resizeSheet();
 		this.positionSheet();
 		this.show();
 
 		var fromBox = this.getAnimatedComponent().element.getPageBox(),
-			targetBox = this.down('#animationTarget').element.getPageBox();
+			targetBox = this.down('#animationTarget').element.getPageBox(),	
+			appDimensions = newDimensions[ZCS.session.getActiveApp()];
+
+		//TODO - determine how to make the dimensions to use generic.
+
+		this.originalDimensions = appDimensions.itemPanel;
 
 		this.getAnimatedComponent().setWidth(targetBox.width);
 		this.getAnimatedComponent().setHeight(targetBox.height);
