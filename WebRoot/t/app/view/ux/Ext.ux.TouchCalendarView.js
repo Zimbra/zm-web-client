@@ -732,6 +732,7 @@ Ext.define('Ext.ux.TouchCalendarView', {
 	 * @return {Date}
 	 */
 	getCellDate: function(dateCell) {
+        // ZCS: Fix for JS error while tapping on the timeslot
 		var date = dateCell.dom.getAttribute('datetime') || dateCell.up('tr').down('td').getAttribute('datetime');
 		return this.stringToDate(date);
 	},
