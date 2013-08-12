@@ -1,10 +1,10 @@
 <%--
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012 VMware, Inc.
+ * Copyright (C) 2007, 2008, 2009, 2010, 2011, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
- * Version 1.3 ("License"); you may not use this file except in
+ * Version 1.4 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
  * 
@@ -55,8 +55,7 @@
                                 <b>${fn:escapeXml(pname)}</b>(${zm:displaySize(pageContext,part.size)})
                             </c:when>
                             <c:otherwise>
-                                <%-- bug: 72600 -- target="_blank" needed for iOS 5.1 to preserve session. Keeping this behavior consistent for all platforms --%>
-                                <a target="_blank" href="${fn:escapeXml(url)}&amp;disp=a"><b>${fn:escapeXml(pname)}</b></a> (${zm:displaySize(pageContext,part.size)})
+                                <a href="${fn:escapeXml(url)}&amp;disp=a"><b>${fn:escapeXml(pname)}</b></a> (${zm:displaySize(pageContext,part.size)})
                             </c:otherwise>
                             </c:choose>
                         </span>
@@ -83,7 +82,7 @@
                 <c:set var="count" value="0"/>
                 <zm:forEachFolder var="folder" skiproot="${false}" skipsystem="${false}" skiptrash="${true}">
                         <c:if test="${folder.isDocumentView and count lt sessionScope.F_LIMIT}">
-                <option value="${folder.id}">${zm:getFolderPath(pageContext,folder.id)}</option><c:set var="count" value="${count+1}"/>
+                <option value="${folder.id}">${fn:escapeXml(zm:getFolderPath(pageContext,folder.id))}</option><c:set var="count" value="${count+1}"/>
                         </c:if>
                 </zm:forEachFolder>
             </select>

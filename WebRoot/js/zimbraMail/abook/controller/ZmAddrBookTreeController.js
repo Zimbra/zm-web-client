@@ -1,10 +1,10 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011, 2012 VMware, Inc.
+ * Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
- * Version 1.3 ("License"); you may not use this file except in
+ * Version 1.4 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
  * 
@@ -33,8 +33,9 @@ ZmAddrBookTreeController = function() {
 
 	ZmFolderTreeController.call(this, ZmOrganizer.ADDRBOOK);
 
-	this._listeners[ZmOperation.NEW_ADDRBOOK]	= this._newListener.bind(this);
-	this._listeners[ZmOperation.SHARE_ADDRBOOK]	= this._shareAddrBookListener.bind(this);
+	this._listeners[ZmOperation.NEW_ADDRBOOK] = new AjxListener(this, this._newListener);
+	this._listeners[ZmOperation.SHARE_ADDRBOOK] = new AjxListener(this, this._shareAddrBookListener);
+    this._listeners[ZmOperation.BROWSE] = new AjxListener(this, function(){ appCtxt.getSearchController().fromBrowse(""); });
 
 	this._app = appCtxt.getApp(ZmApp.CONTACTS);
 };
@@ -42,10 +43,18 @@ ZmAddrBookTreeController = function() {
 ZmAddrBookTreeController.prototype = new ZmFolderTreeController;
 ZmAddrBookTreeController.prototype.constructor = ZmAddrBookTreeController;
 
-ZmAddrBookTreeController.prototype.isZmAddrBookTreeController = true;
-ZmAddrBookTreeController.prototype.toString = function() { return "ZmAddrBookTreeController"; };
 
 // Public methods
+
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
+ZmAddrBookTreeController.prototype.toString =
+function() {
+	return "ZmAddrBookTreeController";
+};
 
 /**
  * Shows the controller and returns the resulting tree view.
@@ -107,28 +116,19 @@ function(parent, type, id) {
 	var nId = addrBook ? addrBook.nId : ZmOrganizer.normalizeId(id);
 	var isTrash = (nId == ZmFolder.ID_TRASH);
 
-	var isDLs = (nId == ZmFolder.ID_DLS);
-
 	this.setVisibleIfExists(parent, ZmOperation.EMPTY_FOLDER, nId == ZmFolder.ID_TRASH);
 
 	if (isTrash) {
 		parent.enableAll(false);
-		parent.enable(ZmOperation.DELETE_WITHOUT_SHORTCUT, false);
+		parent.enable(ZmOperation.DELETE, false);
 		var hasContent = ((addrBook.numTotal > 0) || (addrBook.children && (addrBook.children.size() > 0)));
 		parent.enable(ZmOperation.EMPTY_FOLDER,hasContent);
-		parent.getOp(ZmOperation.EMPTY_FOLDER).setText(ZmMsg.emptyTrash);
-	}
-	else if (isDLs) {
-		parent.enableAll(false);
-	}
-	else {
+		parent.getOp(ZmOperation.EMPTY_FOLDER).setText(ZmMsg.emptyTrash);        
+	} else {
 		parent.enableAll(true);        
 		if (addrBook) {
-
-			parent.enable([ZmOperation.NEW_ADDRBOOK], !addrBook.isReadOnly());
-
-			if (addrBook.isSystem() || appCtxt.isExternalAccount()) {
-				parent.enable([ZmOperation.DELETE_WITHOUT_SHORTCUT, ZmOperation.RENAME_FOLDER], false);
+			if (addrBook.isSystem()) {
+				parent.enable([ZmOperation.DELETE, ZmOperation.RENAME_FOLDER], false);
 			} else if (addrBook.link) {
 				parent.enable([ZmOperation.SHARE_ADDRBOOK], !addrBook.link || addrBook.isAdmin());
 			}
@@ -143,7 +143,7 @@ function(parent, type, id) {
 		parent.enable(ZmOperation.EXPAND_ALL, (addrBook.size() > 0));
 	}
 
-	var op = parent.getOp(ZmOperation.DELETE_WITHOUT_SHORTCUT);
+	var op = parent.getOp(ZmOperation.DELETE);
 	if (op) {
 		op.setText(deleteText);
 	}
@@ -151,28 +151,6 @@ function(parent, type, id) {
 
 	// we always enable sharing in case we're in multi-mbox mode
 	this._resetButtonPerSetting(parent, ZmOperation.SHARE_ADDRBOOK, appCtxt.get(ZmSetting.SHARING_ENABLED));
-};
-
-/**
- * override to take care of not allowing dropping DLs do folders
- * @param ev
- * @private
- */
-ZmAddrBookTreeController.prototype._dropListener =
-function(ev) {
-	var items = AjxUtil.toArray(ev.srcData.data);
-	for (var i = 0; i < items.length; i++) {
-		var item = items[i];
-		if (!item.isZmContact) {
-			continue;
-		}
-		if (item.isDistributionList()) {
-			ev.doIt = false;
-			return;
-		}
-	}
-	// perform default action
-	ZmFolderTreeController.prototype._dropListener.apply(this, arguments);
 };
 
 
@@ -191,7 +169,7 @@ function() {
 
 ZmAddrBookTreeController.prototype._getSearchTypes =
 function(ev) {
-	return [ZmItem.CONTACT];
+	return [ZmItem.CONTACT, ZmItem.GROUP];
 };
 
 /**
@@ -201,9 +179,9 @@ function(ev) {
  */
 ZmAddrBookTreeController.prototype._getHeaderActionMenuOps =
 function() {
-	var ops = null;
+	var ops = [];
 	if (appCtxt.get(ZmSetting.NEW_ADDR_BOOK_ENABLED)) {
-		ops = [ZmOperation.NEW_ADDRBOOK];
+		ops.push(ZmOperation.NEW_ADDRBOOK);
 	}
 	return ops;
 };
@@ -220,7 +198,7 @@ function() {
 		ops.push(ZmOperation.NEW_ADDRBOOK);
 	}
 	ops.push(ZmOperation.SHARE_ADDRBOOK,
-			ZmOperation.DELETE_WITHOUT_SHORTCUT,
+			ZmOperation.DELETE,
 			ZmOperation.RENAME_FOLDER,
 			ZmOperation.EDIT_PROPS,
 			ZmOperation.EXPAND_ALL,
@@ -258,21 +236,12 @@ function() {
  */
 ZmAddrBookTreeController.prototype._shareAddrBookListener = 
 function(ev) {
+	if (!this._sharingPossible()) {
+		return;
+	}
+
 	this._pendingActionData = this._getActionedOrganizer(ev);
 	appCtxt.getSharePropsDialog().popup(ZmSharePropsDialog.NEW, this._pendingActionData);
-};
-
-ZmAddrBookTreeController.dlFolderClicked =
-function() {
-	var request = {
-		_jsns: "urn:zimbraAccount",
-		"ownerOf": 1,
-		attrs: "zimbraDistributionListUnsubscriptionPolicy,zimbraDistributionListSubscriptionPolicy,zimbraHideInGal"
-	};
-
-	var jsonObj = {GetAccountDistributionListsRequest: request};
-	var respCallback = ZmAddrBookTreeController._handleAccountDistributionListResponse;
-	appCtxt.getAppController().sendRequest({jsonObj: jsonObj, asyncMode: true, callback: respCallback});
 };
 
 /**
@@ -286,16 +255,12 @@ function() {
  */
 ZmAddrBookTreeController.prototype._itemClicked =
 function(folder) {
-	if (folder.id == ZmFolder.ID_DLS) {
-		ZmAddrBookTreeController.dlFolderClicked();
-	}
-	else if (folder.type == ZmOrganizer.SEARCH) {
+	if (folder.type == ZmOrganizer.SEARCH) {
 		// if the clicked item is a search (within the folder tree), hand
 		// it off to the search tree controller
 		var stc = this._opc.getTreeController(ZmOrganizer.SEARCH);
 		stc._itemClicked(folder);
-	}
-	else {
+	} else {
 		var capp = appCtxt.getApp(ZmApp.CONTACTS);
 		capp.currentSearch = null;
 		var query = capp.currentQuery = folder.createQuery();
@@ -314,7 +279,7 @@ function(folder) {
 
 		if (folder.id != ZmFolder.ID_TRASH) {
 			var clc = AjxDispatcher.run("GetContactListController");
-			var view = clc.getCurrentView();
+			var view = clc.getParentView();
 			if (view) {
 				view.getAlphabetBar().reset();
 			}
@@ -330,29 +295,6 @@ function(folder, result) {
 	// bug fix #19307 - Trash is special when in Contacts app since it
 	// is a FOLDER type in ADDRBOOK tree. So reset selection if clicked
 	if (folder.nId == ZmFolder.ID_TRASH) {
-		this._treeView[this._app.getOverviewId()].setSelected(folder, true);
+		this._treeView[this._app.getOverviewId()].setSelected(ZmFolder.ID_TRASH, true);
 	}
-};
-
-/**
- * @private
- */
-ZmAddrBookTreeController._handleAccountDistributionListResponse =
-function(result) {
-
-	var contactList = new ZmContactList(null, true, ZmItem.CONTACT);
-	var dls = result._data.GetAccountDistributionListsResponse.dl;
-	if (dls) {
-		for (var i = 0; i < dls.length; i++) {
-			var dl = dls[i];
-			var attrs = dl._attrs;
-			attrs.email = dl.name; // in this case the email comes in the "name" property.
-			attrs.type = "group";
-			
-			attrs[ZmContact.F_dlDisplayName] = dl.d || dl.name;
-			contactList.addFromDom(dl);
-		}
-	}
-	var clc = AjxDispatcher.run("GetContactListController");
-	clc.show(contactList, true, ZmFolder.ID_DLS);
 };

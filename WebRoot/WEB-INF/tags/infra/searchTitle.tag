@@ -1,10 +1,10 @@
 <%--
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2008, 2009, 2010 VMware, Inc.
+ * Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
- * Version 1.3 ("License"); you may not use this file except in
+ * Version 1.4 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
  * 
@@ -20,18 +20,14 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
-<c:set var="folderName" value="${zm:getFolderName(pageContext, context.folder.id)}"/>
-<c:if test="${empty folderName}">
-    <c:set var="folderName" value="${context.title}"/>
-</c:if>
-<c:choose>    
+<c:choose>
     <c:when test="${context.isFolderSearch and context.folder.hasUnread}">
-        <c:set var="title" value="${folderName} (${context.folder.unreadCount})"/>
+        <c:set var="title" value="${context.title} (${context.folder.unreadCount})"/>
     </c:when>
     <c:when test="${context.isTagSearch and context.tag.hasUnread}">
-        <c:set var="title" value="${folderName} (${context.tag.unreadCount})"/>
+        <c:set var="title" value="${context.title} (${context.tag.unreadCount})"/>
     </c:when>
     <c:otherwise>
-        <c:set var="title" value="${folderName}"/>
+        <c:set var="title" value="${context.title}"/>
     </c:otherwise>
 </c:choose>

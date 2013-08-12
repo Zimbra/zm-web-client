@@ -1,10 +1,10 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2012 VMware, Inc.
+ * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
- * Version 1.3 ("License"); you may not use this file except in
+ * Version 1.4 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
  * 
@@ -61,23 +61,15 @@ function(share) {
 	this._share = share;
 
 	var isPubShare = share.isPublic();
-	var isGuestShare = share.isGuest();
 	var isAllShare = share.grantee && (share.grantee.type == ZmShare.TYPE_ALL);
 
-	var params = isPubShare ? ZmMsg.shareWithPublic : isGuestShare ? share.grantee.id : isAllShare ? ZmMsg.shareWithAll :
+	var params = isPubShare ? ZmMsg.shareWithPublic : isAllShare ? ZmMsg.shareWithAll :
 					(share.grantee.name || ZmMsg.userUnknown);
 	this._confirmMsgEl.innerHTML = this._formatter.format(params);
 
 	this._reply.setReplyType(ZmShareReply.STANDARD);
 	this._reply.setReplyNote("");
 	this._reply.setVisible(!isPubShare && !isAllShare);
-
-    if (isGuestShare) {
-        this._reply.setReplyOptions(ZmShareReply.EXTERNAL_USER_OPTIONS);
-    }
-    else {
-        this._reply.setReplyOptions(ZmShareReply.DEFAULT_OPTIONS);
-    }
 
 	DwtDialog.prototype.popup.call(this);
 	this.setButtonEnabled(DwtDialog.YES_BUTTON, true);
@@ -108,7 +100,11 @@ function() {
 
 		share.notes = (replyType == ZmShareReply.QUICK) ? this._reply.getReplyNote() : "";
 	
-		share.sendMessage(ZmShare.DELETE);
+		if (replyType == ZmShareReply.COMPOSE) {
+			share.composeMessage(ZmShare.DELETE);
+		} else {
+			share.sendMessage(ZmShare.DELETE);
+		}
 	}
 
 	this.popdown();

@@ -1,10 +1,10 @@
 <%--
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012 VMware, Inc.
+ * Copyright (C) 2007, 2008, 2009, 2010, 2011, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
- * Version 1.3 ("License"); you may not use this file except in
+ * Version 1.4 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
  * 
@@ -22,9 +22,7 @@
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 
 <c:set var="label" value="${zm:getFolderName(pageContext, folder.id)}"/>
-<c:set var="truncatedLabel" value="${zm:getTruncatedFolderName(pageContext, folder.id, 17, true)}"/>
-<fmt:message var="colorMsg" key="${folder.rgbColorMsg}"/>
-<c:set var="color" value="${zm:lightenColor(not empty folder.rgb ? folder.rgb : colorMsg)}"/>
+<c:set var="color" value="${zm:lightenColor(not empty folder.rgb ? folder.rgb : folder.rgbColor)}"/>
 <tr style="background-color:${color}">
     <td nowrap colspan="2" class='Folder<c:if test="${folder.hasUnread}"> Unread</c:if><c:if test="${folder.id eq requestScope.context.selectedId}"> Selected</c:if>'
         style='padding-left: ${folder.depth*8}px'>
@@ -42,12 +40,12 @@
                     <app:img altkey="unchecked" src="startup/ImgCheckboxUnchecked.png"/>
                 </c:otherwise>
             </c:choose>
-            <app:img src="${folder.image}" alt='${label}'/>
+            <app:img src="${folder.image}" alt='${fn:escapeXml(label)}'/>
             <c:choose>
                 <c:when test="${folder.isMountPoint and folder.effectivePerm == null}">
-                    <del>${truncatedLabel}</del>
+                    <del>${fn:escapeXml(zm:truncate(label,17,true))}</del>
                 </c:when>
-                <c:otherwise>${truncatedLabel}</c:otherwise>
+                <c:otherwise>${fn:escapeXml(zm:truncate(label,17,true))}</c:otherwise>
             </c:choose>
         </a>
 

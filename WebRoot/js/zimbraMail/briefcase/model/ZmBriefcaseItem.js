@@ -1,10 +1,10 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012 VMware, Inc.
+ * Copyright (C) 2007, 2008, 2009, 2010, 2011, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
- * Version 1.3 ("License"); you may not use this file except in
+ * Version 1.4 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
  * 
@@ -360,16 +360,14 @@ function(node) {
 	if (node.name)	{ this.name = node.name; }
 	if (node.cr)	{ this.creator = node.cr; }
 	if (node.d)		{ this.createDate = new Date(Number(node.d)); }
-	if (node.md)	{ //node.md is seconds since epoch
-        var mdMilliSecs = Number(node.md)*1000;
-        this.modifyDate = new Date(mdMilliSecs);
-    }
+	if (node.md)	{ this.modifyDate = new Date(Number(node.md)); }
 	if (node.leb)	{ this.modifier = node.leb; }
 	if (node.s || node.s == 0) //size can be 0
                     { this.size = Number(node.s); }
 	if (node.ver)	{ this.version = Number(node.ver) || 0; }
 	if (node.ct)	{ this.contentType = node.ct.split(";")[0]; }
-	if (node.tn)	{ this._parseTagNames(node.tn);	}
+	if (node.t)		{ this._parseTags(node.t); }
+
     this.locked = false;
     if (node.loid)    {
         this.locked = true;
@@ -380,8 +378,6 @@ function(node) {
 
     if (node.desc){  this.notes = AjxStringUtil.htmlEncode(node.desc); }
     this.subject = this.getNotes();
-
-    this._parseFlags(node.f);
 
 };
 
@@ -530,15 +526,12 @@ function(data) {
 	if (data.name) this.name = data.name;
 	if (data.cr) this.creator = data.cr;
 	if (data.d) this.createDate = new Date(Number(data.d));
-	if (data.md)	{ //node.md is seconds since epoch
-		var mdMilliSecs = Number(data.md)*1000;
-		this.modifyDate = new Date(mdMilliSecs);
-	}
+	if (data.md) this.modifyDate = new Date(Number(data.md));
 	if (data.leb) this.modifier = data.leb;
 	if (data.s) this.size = Number(data.s);
 	if (data.ver) this.version = Number(data.ver);
 	if (data.ct) this.contentType = data.ct.split(";")[0];
-    if (data.tn) { this._parseTagNames(data.tn); }
+    if (data.t) this._parseTags(data.t);
     if (data.loid)    {
         this.locked = true;
         this.lockId = data.loid;
@@ -644,14 +637,11 @@ function(data){
     if (data.cr)    this.creator = data.cr;
     if (data.cd)    this.createDate = new Date(Number(data.cd));
     if (data.leb)   this.modifier = data.leb;
-	if (data.md)	{ //node.md is seconds since epoch
-		var mdMilliSecs = Number(data.md)*1000;
-		this.modifyDate = new Date(mdMilliSecs);
-	}
+    if (data.md)    this.modifyDate = new Date(Number(data.md));
 	if (data.desc)  this.notes = AjxStringUtil.htmlEncode(data.desc);
 
     this.subject = this.getNotes();
-	if (data.tn) { this._parseTagNames(data.tn); }
+    this._parseTags(data.t);
 
 };
 
@@ -674,15 +664,3 @@ function(){
    return null; 
 };
 
-/**
- * Rename the item.
- *
- * @param	{String}	newName
- * @param	{AjxCallback}	callback		the callback
- * @param	{AjxCallback}	errorCallback	the callback on error
- * @return	{Object}		the result of the move
- */
-ZmRevisionItem.prototype.rename =
-function(newName, callback, errorCallback) {
-	return ZmItem.rename(this.parent.id, newName, callback, errorCallback);
-};

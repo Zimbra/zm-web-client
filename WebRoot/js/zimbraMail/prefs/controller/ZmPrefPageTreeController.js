@@ -1,10 +1,10 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2009, 2010, 2011 VMware, Inc.
+ * Copyright (C) 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
- * Version 1.3 ("License"); you may not use this file except in
+ * Version 1.4 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
  * 
@@ -103,7 +103,8 @@ function(params) {
 			hi.setExpanded(true, true);
 		}
 	}
-	treeView.addSelectionListener(new AjxListener(this, this._handleTreeItemSelection, view));
+	treeView.addSelectionListener(this._handleTreeItemSelection.bind(this, view));
+	treeView.addPreSelectionListener(this._handleTreeItemPreSelection.bind(this, view));
 
 	return treeView;
 };
@@ -178,6 +179,29 @@ function(tabView, ev) {
 	var organizer = ev.item.getData(Dwt.KEY_OBJECT);
 	tabView.switchToTab(organizer && organizer.pageId);
 };
+
+ZmPrefPageTreeController.prototype._handleTreeItemPreSelection =
+function(tabView, ev) {
+
+	var organizer = ev.item.getData(Dwt.KEY_OBJECT);
+
+	if (organizer.nId != "PREF_PAGE_FILTERS") {
+		return true;
+	}
+
+	var serverVersion = appCtxt.get(ZmSetting.OFFLINE_REMOTE_SERVER_VERSION, null, organizer.account);
+	if (serverVersion && serverVersion.substr(0, 1) > 7) {
+		var dlg = appCtxt.getMsgDialog();
+		dlg.reset();
+		dlg.setMessage(ZmMsg.filtersDisabled, DwtMessageDialog.INFO_STYLE);
+		dlg.popup();
+		return false;
+	}
+
+	return true;
+
+};
+
 
 ZmPrefPageTreeController.prototype._handleMultiAccountItemSelection =
 function(ev, overview, treeItem, item) {

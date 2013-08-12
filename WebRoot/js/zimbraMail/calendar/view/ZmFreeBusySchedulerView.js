@@ -1,10 +1,10 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2010, 2011, 2012 VMware, Inc.
+ * Copyright (C) 2010, 2011, 2012, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
- * Version 1.3 ("License"); you may not use this file except in
+ * Version 1.4 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
  * 
@@ -27,15 +27,13 @@
  * @param controller		[ZmApptComposeController]	the appt compose controller
  * @param dateInfo			[object]					hash of date info
  */
-ZmFreeBusySchedulerView = function(parent, attendees, controller, dateInfo, appt, fbParentCallback) {
+ZmFreeBusySchedulerView = function(parent, attendees, controller, dateInfo) {
 
 	DwtComposite.call(this, {parent: parent, posStyle: DwtControl.RELATIVE_STYLE});
 
-	this._attendees  = attendees;
+	this._attendees = attendees;
 	this._controller = controller;
-	this._dateInfo   = dateInfo;
-	this._appt       = appt;
-	this._fbParentCallback = fbParentCallback;
+	this._dateInfo = dateInfo;
 
 	this._editView = parent;
 
@@ -65,17 +63,11 @@ ZmFreeBusySchedulerView = function(parent, attendees, controller, dateInfo, appt
     this._resultsPaginated = true;
     this._isPageless = false;
 
-    this._fbConflict = {};
-
-    //this._fbCache = controller.getApp().getFreeBusyCache();
-    this._fbCache = parent.getFreeBusyCache();
+    this._fbCache = controller.getApp().getFreeBusyCache();
 };
 
 ZmFreeBusySchedulerView.prototype = new DwtComposite;
 ZmFreeBusySchedulerView.prototype.constructor = ZmFreeBusySchedulerView;
-
-ZmFreeBusySchedulerView.prototype.isZmFreeBusySchedulerView = true;
-ZmFreeBusySchedulerView.prototype.toString = function() { return "ZmFreeBusySchedulerView"; };
 
 
 // Consts
@@ -125,7 +117,7 @@ ZmFreeBusySchedulerView.ROLE_OPTIONS = {};
 ZmFreeBusySchedulerView.ROLE_OPTIONS[ZmCalBaseItem.PERSON]          = { label: ZmMsg.requiredAttendee, 			value: ZmCalBaseItem.PERSON, 	        image: "AttendeesRequired" };
 ZmFreeBusySchedulerView.ROLE_OPTIONS[ZmCalItem.ROLE_OPTIONAL]       = { label: ZmMsg.optionalAttendee, 			value: ZmCalItem.ROLE_OPTIONAL, 	image: "AttendeesOptional" };
 ZmFreeBusySchedulerView.ROLE_OPTIONS[ZmCalBaseItem.LOCATION]        = { label: ZmMsg.location, 			        value: ZmCalBaseItem.LOCATION, 	        image: "Location" };
-ZmFreeBusySchedulerView.ROLE_OPTIONS[ZmCalBaseItem.EQUIPMENT]       = { label: ZmMsg.equipmentAttendee, 			value: ZmCalBaseItem.EQUIPMENT, 	    image: "Resource" };
+ZmFreeBusySchedulerView.ROLE_OPTIONS[ZmCalBaseItem.EQUIPMENT]       = { label: ZmMsg.resourceAttendee, 			value: ZmCalBaseItem.EQUIPMENT, 	    image: "Resource" };
 
 // Hold on to this one separately because we use it often
 ZmFreeBusySchedulerView.FREE_CLASS = ZmFreeBusySchedulerView.STATUS_CLASSES[ZmFreeBusySchedulerView.STATUS_FREE];
@@ -137,6 +129,11 @@ ZmFreeBusySchedulerView._VALUE = "value";
 
 // Public methods
 
+ZmFreeBusySchedulerView.prototype.toString =
+function() {
+	return "ZmFreeBusySchedulerView";
+};
+
 ZmFreeBusySchedulerView.prototype.setComposeMode =
 function(isComposeMode) {
 	this.isComposeMode = isComposeMode;
@@ -147,7 +144,7 @@ function() {
 
     if(this.composeMode) ZmApptViewHelper.getDateInfo(this._editView, this._dateInfo);
 
-	this._dateBorder = this._getBordersFromDateInfo();
+	this._dateBorder = this._getBordersFromDateInfo(this._dateInfo);
 
 	if (!this._rendered) {
 		this._initialize();
@@ -232,8 +229,6 @@ function() {
     this._emailAliasMap = {};
     this._emptyRowIndex = null;
     this._autoCompleteHandled = {}
-
-    this._fbConflict = {};
 };
 
 // Private / protected methods
@@ -271,33 +266,30 @@ function() {
 ZmFreeBusySchedulerView.prototype._initAutocomplete =
 function() {
 
-	var acCallback = this._autocompleteCallback.bind(this);
-	var keyUpCallback = this._autocompleteKeyUpCallback.bind(this);
+	var acCallback = new AjxCallback(this, this._autocompleteCallback);
+	var keyUpCallback = new AjxCallback(this, this._autocompleteKeyUpCallback);
 	this._acList = {};
 
 	// autocomplete for attendees
 	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED) || appCtxt.get(ZmSetting.GAL_ENABLED)) {
 		var params = {
-			dataClass:		appCtxt.getAutocompleter(),
-			separator:		"",
-			options:		{needItem: true},
-			matchValue:		[ZmAutocomplete.AC_VALUE_NAME, ZmAutocomplete.AC_VALUE_EMAIL],
-			keyUpCallback:	keyUpCallback,
-			compCallback:	acCallback
+			dataClass: appCtxt.getAutocompleter(),
+			separator: "",
+			options: {needItem: true},
+			matchValue: [ZmAutocomplete.AC_VALUE_NAME, ZmAutocomplete.AC_VALUE_EMAIL],
+			keyUpCallback: keyUpCallback,
+			compCallback: acCallback
 		};
-		params.contextId = [this._controller.getCurrentViewId(), this.toString(), ZmCalBaseItem.PERSON].join("-");
 		this._acContactsList = new ZmAutocompleteListView(params);
 		this._acList[ZmCalBaseItem.PERSON] = this._acContactsList;
 
 		// autocomplete for locations/equipment
 		if (appCtxt.get(ZmSetting.GAL_ENABLED)) {
 			params.options = {type:ZmAutocomplete.AC_TYPE_LOCATION};
-			params.contextId = [this._controller.getCurrentViewId(), this.toString(), ZmCalBaseItem.LOCATION].join("-");
 			this._acLocationsList = new ZmAutocompleteListView(params);
 			this._acList[ZmCalBaseItem.LOCATION] = this._acLocationsList;
 
 			params.options = {type:ZmAutocomplete.AC_TYPE_EQUIPMENT};
-			params.contextId = [this._controller.getCurrentViewId(), this.toString(), ZmCalBaseItem.EQUIPMENT].join("-");
 			this._acEquipmentList = new ZmAutocompleteListView(params);
 			this._acList[ZmCalBaseItem.EQUIPMENT] = this._acEquipmentList;
 		}
@@ -307,7 +299,7 @@ function() {
 // Add the attendee, then create a new empty slot since we've now filled one.
 ZmFreeBusySchedulerView.prototype._autocompleteCallback =
 function(text, el, match) {
-    if(match && match.fullAddress) {
+    if(match.fullAddress) {
         el.value = match.fullAddress;
     }
 	if (match && match.item) {
@@ -319,7 +311,6 @@ function(text, el, match) {
                 if(el._acHandlerInProgress) { return; }
                 el._acHandlerInProgress = true;
 				var index = this._handleAttendeeField(el);
-                this._editView.showConflicts();
                 el._acHandlerInProgress = false;
 
 				if (index && ((i+1) < members.length)) {
@@ -330,7 +321,6 @@ function(text, el, match) {
             if(el._acHandlerInProgress) { return; }
             el._acHandlerInProgress = true;
 			this._handleAttendeeField(el, match.item);
-            this._editView.showConflicts();
             el._acHandlerInProgress = false;
 		}
 	}
@@ -346,7 +336,6 @@ function(ev, aclv, result) {
         if(el._acHandlerInProgress) { return; }
         el._acHandlerInProgress = true;
         this._handleAttendeeField(el);
-        this._editView.showConflicts();
         el._acHandlerInProgress = false;
 	}
 };
@@ -414,7 +403,7 @@ function(isAllAttendees, organizer, drawBorder, index, updateTabGroup, setFocus)
 	sched._coloredCells = [];
 	this._schedTable[index] = sched;
 
-	this._dateBorder = this._getBordersFromDateInfo();
+    this._dateBorder = this._getBordersFromDateInfo(this._dateInfo);
 
 	var data = {
 		id: dwtId,
@@ -466,7 +455,7 @@ function(isAllAttendees, organizer, drawBorder, index, updateTabGroup, setFocus)
 			var dwtInputField = new DwtInputField({parent: this, type: DwtInputField.STRING, maxLen: 256});
 			dwtInputField.setDisplay(Dwt.DISPLAY_INLINE);
 			var inputEl = dwtInputField.getInputElement();
-            Dwt.setSize(inputEl, Dwt.DEFAULT, "2rem")
+            Dwt.setSize(inputEl, Dwt.DEFAULT, AjxEnv.isIE ? "21px" : '22px');
 			inputEl.className = "ZmSchedulerInput";
 			inputEl.id = sched.dwtInputId;
             inputEl.style.border = "0px";
@@ -684,6 +673,7 @@ function(inputEl, attendee, useException) {
             this._editView.removeAttendees(curAttendee, type);
             this._editView._setAttendees();
         }
+
 		// user erased an attendee
 		this._resetRow(sched, false, type);
         // bug:43660 removing row (splicing array) causes index mismatch.
@@ -746,8 +736,8 @@ function() {
 };
 
 ZmFreeBusySchedulerView.prototype.updateFreeBusy =
-function(onlyUpdateTable) {
-    this._updateFreeBusy();
+function() {
+    this._updateFreeBusy();    
 };
 
 ZmFreeBusySchedulerView.prototype._updateFreeBusy =
@@ -756,9 +746,12 @@ function() {
 	this._resetFullDateField();
 
 	// clear the schedules for existing attendees
+	var uids = [];
 	for (var i = 0; i < this._schedTable.length; i++) {
 		var sched = this._schedTable[i];
 		if (!sched) continue;
+		if (sched.uid)
+			uids.push(sched.uid);
 		while (sched._coloredCells && sched._coloredCells.length > 0) {
 			sched._coloredCells[0].className = ZmFreeBusySchedulerView.FREE_CLASS;
 			sched._coloredCells.shift();
@@ -768,10 +761,9 @@ function() {
 
 	this._resetAttendeeCount();
 
-    // Set in updateAttendees
-	if (this._allAttendeeEmails && this._allAttendeeEmails.length) {
+	if (uids.length) {
         //all attendees status need to be update even for unshown attendees
-		var emails = this._allAttendeeEmails.join(",");
+		var emails = uids.join(",");
 		this._getFreeBusyInfo(this._getStartTime(), emails);
 	}
 };
@@ -956,7 +948,6 @@ function(organizer, attendees) {
             var idx = this._emailToIdx[id];
             if(this._organizerIndex == idx) continue;
             var sched = this._schedTable[idx];
-            if(!sched) continue;
             this._resetRow(sched, false, sched.attType, false, true);
             this._hideRow(idx);
             this._schedTable[idx] = null;
@@ -970,11 +961,9 @@ function(organizer, attendees) {
 	    this._emptyRowIndex = this._addAttendeeRow(false, null, false, null, true, false);
     }
 
-    // Update the attendee list
-    this._allAttendeeEmails = this.getAllAttendeeEmails(attendees, organizer);
 	if (emails.length) {
         //all attendees status need to be update even for unshown attendees
-        var allAttendeeEmails =  this._allAttendeeEmails;
+        var allAttendeeEmails =  this._allAttendeeEmails = this.getAllAttendeeEmails(attendees, organizer);
 		this._getFreeBusyInfo(this._getStartTime(), allAttendeeEmails.join(","));
 	}else {
         this.postUpdateHandler();
@@ -995,7 +984,7 @@ function(index, attendee, type, isOrganizer) {
 	sched.attType = type;
 	var input = sched.inputObj;
 	if (input) {
-		input.setValue(ZmApptViewHelper.getAttendeesText(attendee, type, false), true);
+		input.setValue(ZmApptViewHelper.getAttendeesText(attendee, type, true), true);
 		this._setAttendeeToolTip(sched, attendee, type);
 	}
 
@@ -1113,7 +1102,6 @@ function(sched, resetRole, type, noClear, noUpdate) {
 		}
 
         var email = this.getEmail(sched.attendee);
-        delete this._fbConflict[email];
 
         if (email instanceof Array) {
             for (var i in email) {
@@ -1252,7 +1240,7 @@ function(ev, id) {
 ZmFreeBusySchedulerView.prototype.handleTimeChange =
 function() {
     if(this.isComposeMode) ZmApptViewHelper.getDateInfo(this._editView, this._dateInfo);
-	this._dateBorder = this._getBordersFromDateInfo();
+	this._dateBorder = this._getBordersFromDateInfo(this._dateInfo);
 	this._outlineAppt();
     this._updateFreeBusy();
 };
@@ -1281,8 +1269,6 @@ function(sched, type, svp) {
 
         var email = this.getEmail(attendee);
         delete this._emailToIdx[email];
-        delete this._fbConflict[email];
-        this._editView.showConflicts();
 
 		if(this.isComposeMode) {
             this._editView.parent.updateAttendees(attendee, sched.attType, ZmApptComposeView.MODE_REMOVE);
@@ -1439,7 +1425,7 @@ ZmFreeBusySchedulerView.prototype._updateBorders =
 function(sched, isAllAttendees) {
 	if (!sched) { return; }
 
-	var td, div, curClass, newClass;
+	var div, curClass, newClass;
 
 	// mark right borders of appropriate f/b table cells
 	var normalClassName = "ZmSchedulerGridDiv";
@@ -1451,7 +1437,7 @@ function(sched, isAllAttendees) {
 	var row = table.rows[0];
 	if (row) {
 		for (var i = 0; i < ZmFreeBusySchedulerView.FREEBUSY_NUM_CELLS; i++) {
-		    td = row.cells[i];
+			var td = row.cells[i];
 			div = td ? td.getElementsByTagName("*")[0] : null;
 			if (div) {
 				curClass = div.className;
@@ -1467,11 +1453,6 @@ function(sched, isAllAttendees) {
 					div.className = newClass;
 				}
 			}
-		}
-		td = row.cells[0];
-		div = td ? td.getElementsByTagName("*")[0] : null;
-		if (div && (this._dateBorder.start == -1)) {
-		    div.className += " " + normalClassName + "-leftStart";
 		}
 	}
 };
@@ -1523,37 +1504,23 @@ function(time, isEnd, adjust) {
 };
 
 ZmFreeBusySchedulerView.prototype._getBordersFromDateInfo =
-function() {
-	// Setup the start/end for an all day appt
-	var index = {start: -1, end: ZmFreeBusySchedulerView.FREEBUSY_NUM_CELLS-1};
-	if (this._dateInfo.showTime) {
-		// Not an all day appt, determine the appts start and end
+function(dateInfo) {
+	var index = {start: -99, end: -99};
+	if (dateInfo.showTime) {
 		var idx = AjxDateUtil.isLocale24Hour() ? 0 : 1;
-		this._processDateInfo(this._dateInfo);
+        var startDate = ZmTimeInput.getDateFromFields(dateInfo.startTimeStr,
+													   AjxDateUtil.simpleParseDateStr(dateInfo.startDate));
+		var endDate = ZmTimeInput.getDateFromFields(dateInfo.endTimeStr,
+													 AjxDateUtil.simpleParseDateStr(dateInfo.endDate));
 
-		// subtract 1 from index since we're marking right borders
-		index.start = this._getIndexFromTime(this._startDate, null, false) - 1;
-		if (this._dateInfo.endDate == this._dateInfo.startDate) {
-			index.end = this._getIndexFromTime(this._endDate, true, false);
+        // subtract 1 from index since we're marking right borders
+		index.start = this._getIndexFromTime(startDate, null, false) - 1;
+		if (dateInfo.endDate == dateInfo.startDate) {
+			index.end = this._getIndexFromTime(endDate, true, false);
 		}
 	}
 	return index;
 };
-
-ZmFreeBusySchedulerView.prototype._processDateInfo =
-function(dateInfo) {
-    var startDate = AjxDateUtil.simpleParseDateStr(dateInfo.startDate);
-    var endDate   = AjxDateUtil.simpleParseDateStr(dateInfo.endDate);
-    if (dateInfo.isAllDay) {
-        startDate.setHours(0,0,0,0);
-        this._startDate = startDate;
-        endDate.setHours(23,59,59,999);
-        this._endDate   = endDate;
-    } else {
-        this._startDate = ZmTimeInput.getDateFromFields(dateInfo.startTimeStr,startDate);
-        this._endDate   = ZmTimeInput.getDateFromFields(dateInfo.endTimeStr,  endDate);
-    }
-}
 
 ZmFreeBusySchedulerView.prototype._getClassForStatus =
 function(status) {
@@ -1583,7 +1550,6 @@ function(startTime, emailList, callback) {
     var acct = (appCtxt.multiAccounts)
         ? this._editView.getCalendarAccount() : null;
 
-
     var params = {
         startTime: startTime,
         endTime: endTime,
@@ -1594,11 +1560,6 @@ function(startTime, emailList, callback) {
         account: acct
     };
 
-    var appt = this._editView.parent.getAppt ? this._editView.parent.getAppt(true) : null;
-    if (appt) {
-        params.excludedId = appt.uid;
-
-    }
     this._freeBusyRequest = this._fbCache.getFreeBusyInfo(params);
 };
 
@@ -1608,43 +1569,13 @@ ZmFreeBusySchedulerView.prototype._handleResponseFreeBusy =
 function(params, result) {
 
     this._freeBusyRequest = null;
-    var dateInfo = this._dateInfo;
-    this._processDateInfo(dateInfo);
-    // Adjust start and end time by 1 msec, to avoid fencepost problems when detecting conflicts
-    var apptStartTime = this._startDate.getTime(),
-        apptEndTime = this._endDate.getTime(),
-        apptConflictStartTime = apptStartTime+ 1,
-        apptConflictEndTime   = apptEndTime-1,
-        appt = this._appt,
-        orgEmail = appt && !appt.inviteNeverSent ? appt.organizer : null,
-        apptOrigStartTime = appt ? appt.getOrigStartTime() : null,
-        apptOrigEndTime = appt ? (dateInfo.isAllDay ? appt.getOrigEndTime() - 1 : appt.getOrigEndTime()) : null,
-        apptTimeChanged = appt ? !(apptOrigStartTime == apptStartTime && apptOrigEndTime == apptEndTime) : false;
 
     for (var i = 0; i < params.emails.length; i++) {
 		var email = params.emails[i];
-
-		this._detectConflict(email, apptConflictStartTime, apptConflictEndTime);
-
 		// first clear out the whole row for this email id
-		var sched = this._schedTable[this._emailToIdx[email]],
-            attendee = sched ? sched.attendee : null,
-            ptst = attendee ? attendee.getParticipantStatus() : null,
-            usr = this._fbCache.getFreeBusySlot(params.startTime, params.endTime, email),
-            table = sched ? document.getElementById(sched.dwtTableId) : null;
-
-        if (usr && (ptst == ZmCalBaseItem.PSTATUS_ACCEPT || email == orgEmail)) {
-            if (!usr.b) {
-                usr.b = [];
-            }
-            if (apptTimeChanged) {
-                usr.b.push({s:apptOrigStartTime, e: apptOrigEndTime});
-            }
-            else {
-                usr.b.push({s:apptStartTime, e: apptEndTime});
-            }
-        }
-
+		var sched = this._schedTable[this._emailToIdx[email]];
+		var table = sched ? document.getElementById(sched.dwtTableId) : null;
+        var usr = this._fbCache.getFreeBusySlot(params.startTime, params.endTime, email);
 		if (table) {
 			table.rows[0].className = "ZmSchedulerNormalRow";
 			this._clearColoredCells(sched);
@@ -1670,10 +1601,6 @@ function(params, result) {
         }
 	}
 
-    if (this._fbParentCallback) {
-        this._fbParentCallback.run();
-    }
-
     var acct = (appCtxt.multiAccounts)
         ? this._editView.getCalendarAccount() : null;
     
@@ -1698,24 +1625,6 @@ function(params, result) {
 
     this._workingHoursRequest = this._fbCache.getWorkingHours(whrsParams);
 };
-
-ZmFreeBusySchedulerView.prototype._detectConflict =
-function(email, startTime, endTime) {
-    var sched = this._fbCache.getFreeBusySlot(startTime, endTime, email);
-    var isFree = true;
-    if(sched.b) isFree = isFree && ZmApptAssistantView.isBooked(sched.b, startTime, endTime);
-    if(sched.t) isFree = isFree && ZmApptAssistantView.isBooked(sched.t, startTime, endTime);
-    if(sched.u) isFree = isFree && ZmApptAssistantView.isBooked(sched.u, startTime, endTime);
-
-    this._fbConflict[email] = isFree;
-}
-
-ZmFreeBusySchedulerView.prototype.getConflicts =
-function() {
-    return this._fbConflict;
-}
-
-
 
 ZmFreeBusySchedulerView.prototype._handleResponseWorking =
 function(params, result) {
@@ -1940,11 +1849,9 @@ function(params) {
 ZmFreeBusySchedulerView.prototype.getUserSharedCalIds =
 function(email) {
     var organizer = this._schedTable[this._organizerIndex] ? this._schedTable[this._organizerIndex].attendee : null,
-        organizerEmail = organizer ? this.getEmail(organizer) : "",
-        activeAcct = appCtxt.getActiveAccount(),
-        acctEmail = activeAcct ? activeAcct.getEmail() : "";
+        organizerEmail = organizer ? this.getEmail(organizer) : "";
 
-    if(!email || email == organizerEmail || email == acctEmail) {
+    if(!email || email == organizerEmail || email == appCtxt.getUsername()) {
         return [];
     }
     if(this._sharedCalIds && this._sharedCalIds[email]) {
@@ -1954,11 +1861,12 @@ function(email) {
 	var request = jsonObj.GetShareInfoRequest;
 	if (email) {
 		request.owner = {by:"name", _content:email};
-	}
+    }
+
 	var result = appCtxt.getAppController().sendRequest({jsonObj:	jsonObj});
 
     //parse the response
-    var resp = result && result.GetShareInfoResponse;
+    var resp = result.GetShareInfoResponse;
     var share = (resp && resp.share) ? resp.share : null;
     var ids = [];
     if(share) {
@@ -2055,7 +1963,6 @@ function(ev) {
     el._acHandlerInProgress = true;
     svp._handleAttendeeField(el);
     el._acHandlerInProgress = false;
-    if (svp._editView) { svp._editView.showConflicts(); }
 };
 
 ZmFreeBusySchedulerView._onPTSTMouseOver =
@@ -2132,7 +2039,7 @@ function(ev) {
 	ev = DwtUiEvent.getEvent(ev);
 
 	var el = DwtUiEvent.getTarget(ev);
-	var svp = el && el._schedViewPageId ? AjxCore.objectWithId(el._schedViewPageId) : null;
+	var svp = AjxCore.objectWithId(el._schedViewPageId);
 	if (!svp) { return; }
 
 	svp._fbToolTipInfo = null;

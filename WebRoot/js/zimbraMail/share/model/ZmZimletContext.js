@@ -1,10 +1,10 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012 VMware, Inc.
+ * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
- * Version 1.3 ("License"); you may not use this file except in
+ * Version 1.4 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
  * 
@@ -169,6 +169,12 @@ function(obj){
     return (!AjxUtil.isUndefined(obj) && appCtxt.isChildWindow && obj.length && AjxUtil.isFunction(obj.sort) && AjxUtil.isFunction(obj.unshift) );
 };
 
+ZmZimletContext._isArrayIE =
+function(obj){
+    //Default Array when borrowed from parent window looses
+    return (AjxEnv.isIE && !AjxUtil.isUndefined(obj) && appCtxt.isChildWindow && obj.length && obj.length>0 && obj[0]);
+}
+
 /**
  * This function creates a 'sane' JSON object, given one returned by the
  * Zimbra server.
@@ -195,7 +201,7 @@ function(obj, tag, wantarray_re) {
 		if (obj instanceof DwtControl) { //Don't recurse into DwtControls, causes too much recursion
 			return obj;
 		}
-		else if (obj instanceof Array || ZmZimletContext._isArray(obj)) {
+		else if (obj instanceof Array || ZmZimletContext._isArray(obj) || ZmZimletContext._isArrayIE(obj)) {
 			if (obj.length == 1 && !(wantarray_re && wantarray_re.test(tag))) {
 				cool_json = doit(obj[0], tag);
 			} else {
@@ -328,12 +334,8 @@ function() {
  */
 ZmZimletContext.prototype.getVal =
 function(key) {
-	var ret = this.json.zimlet;
-	var keyParts = key.split('.');
-	for (var i = 0; i < keyParts.length; i++) {
-		ret = ret[keyParts[i]];
-	}
-	return ret;
+	var zim = this.json.zimlet;
+	return eval("zim." + key);
 };
 
 /**
@@ -909,15 +911,19 @@ function(xslt, canvas, result) {
 ZmZimletContext._getMsgBody =
 function(o) {
 	//If message is not loaded let developer take care of it
-	if (!o._loaded) {
+	var content = "";
+	if(!o._loaded) {
 		return "";
 	}
 	var part = o.getBodyPart(ZmMimeTable.TEXT_PLAIN) || o.getBodyPart(ZmMimeTable.TEXT_HTML);
-	var content = part && part.getContent();
-	if (content && (part.contentType == ZmMimeTable.TEXT_HTML)) {
-		var div = document.createElement("div");
-		div.innerHTML = content;
-		content = AjxStringUtil.convertHtml2Text(div);
+	if(part && part.content) {
+		if(part.ct == ZmMimeTable.TEXT_PLAIN) {
+			content = part.content;
+		} else if(part.ct == ZmMimeTable.TEXT_HTML) {
+			var div = document.createElement("div");
+			div.innerHTML = part.content;
+			content = AjxStringUtil.convertHtml2Text(div);
+		}
 	}
-	return content || "";
+	return content;
 };

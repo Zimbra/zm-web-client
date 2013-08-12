@@ -1,10 +1,10 @@
 <%--
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2008, 2009, 2010, 2012 VMware, Inc.
+ * Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
- * Version 1.3 ("License"); you may not use this file except in
+ * Version 1.4 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
  * 
@@ -24,5 +24,5 @@
 <c:set var="tags" value="${zm:getTags(pageContext, ids)}"/>
 <c:set var="tagNames" value="${fn:escapeXml(zm:getTagNames(pageContext, ids))}"/>
 <c:if test="${fn:length(tags) eq 0}">&nbsp;</c:if>
-<c:if test="${fn:length(tags) eq 1}"><app:img src="${tags[0].miniImage}" alt="${tagNames}" rawtitle="true" title="${tagNames}"/></c:if>
-<c:if test="${fn:length(tags) gt 1}"><app:img src="startup/ImgTagStack.png" alt="${tagNames}" rawtitle="true" title="${tagNames}"/></c:if>
+<c:if test="${fn:length(tags) eq 1}"><app:img src="${tags[0].miniImage}" alt="${fn:escapeXml(tagNames)}" rawtitle="true" title="${fn:escapeXml(tagNames)}"/></c:if>
+<c:if test="${fn:length(tags) gt 1}"><app:img src="startup/ImgTagStack.png" alt="${fn:escapeXml(tagNames)}" rawtitle="true" title="${fn:escapeXml(tagNames)}"/></c:if>

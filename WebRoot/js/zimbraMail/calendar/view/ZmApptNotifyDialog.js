@@ -1,10 +1,10 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013 VMware, Inc.
+ * Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
- * Version 1.3 ("License"); you may not use this file except in
+ * Version 1.4 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
  * 
@@ -27,7 +27,7 @@
 */
 ZmApptNotifyDialog = function(parent) {
 
-	DwtDialog.call(this, {parent:parent, id:"SEND_NOTIFY_DIALOG"});
+	DwtDialog.call(this, {parent:parent});
 
 	this.setTitle(ZmMsg.sendUpdateTitle);
 	this.setContent(this._setHtml());
@@ -52,7 +52,7 @@ function(appt, attId, addedAttendees, removedAttendees) {
 
     var aCount = addedAttendees.length;
     var rCount = removedAttendees.length;    
-    Dwt.setSize(Dwt.byId(this._containerId), 275, Dwt.CLEAR);
+    Dwt.setSize(Dwt.byId(this._containerId), 275, (aCount + rCount > 10) ? 300 : Dwt.CLEAR );
 
 	this._addedList.innerHTML = this._getAttedeeHtml(addedAttendees, ZmMsg.added);
 	this._removedList.innerHTML = this._getAttedeeHtml(removedAttendees, ZmMsg.removed);
@@ -109,16 +109,12 @@ function() {
 	html[i++] = "' name='";
 	html[i++] = this._notifyChoiceName;
 	html[i++] = "'></td><td style='white-space:nowrap'>";
-	html[i++] = "<label for='" + this._defaultRadioId + "'>";
 	html[i++] = ZmMsg.sendUpdatesNew;
-	html[i++] = "</label>";
 	html[i++] = "</td></tr>";
 	html[i++] = "<tr><td width=1%><input value='2' type='radio' name='";
 	html[i++] = this._notifyChoiceName;
 	html[i++] = "'></td><td style='white-space:nowrap'>";
-	html[i++] = "<label for='" + this._notifyChoiceName + "'>";
 	html[i++] = ZmMsg.sendUpdatesAll;
-	html[i++] = "</label>";
 	html[i++] = "</td></tr>";
 	html[i++] = "</table>";
 

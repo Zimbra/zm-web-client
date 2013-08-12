@@ -1,10 +1,10 @@
 <%--
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2008, 2009, 2010, 2012 VMware, Inc.
+ * Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
- * Version 1.3 ("License"); you may not use this file except in
+ * Version 1.4 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
  * 
@@ -45,22 +45,6 @@
             <fmt:message var="errorMsg" key="${error.code}"/>
             <c:set var="statusMessage" scope="request" value="${errorMsg}"/>
             <jsp:forward page="/h/compose"/>
-        </c:when>
-        <%-- TODO: handle voice errors in a separate tag like handleVoiceError --%>
-        <c:when test="${error.code eq 'voice.UNABLE_TO_AUTH'}">
-            <app:status style="Critical">
-                <fmt:message key="voiceErrorUnableToAuth"/>
-            </app:status>
-        </c:when>
-        <c:when test="${error.code eq 'voice.UNSUPPPORTED'}">
-            <app:status style="Critical">
-                <fmt:message key="voiceErrorUnsupported"/>
-            </app:status>
-        </c:when>
-        <c:when test="${(error.code eq 'cisco.CISCO_ERROR') or (error.code eq 'mitel.MITEL_ERROR')}">
-            <app:status style="Critical">
-                <fmt:message key="voiceErrorGeneric"/>
-            </app:status>
         </c:when>
         <c:otherwise>
             <app:status style="Critical">

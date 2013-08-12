@@ -1,10 +1,10 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012 VMware, Inc.
+ * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
- * Version 1.3 ("License"); you may not use this file except in
+ * Version 1.4 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
  * 
@@ -24,9 +24,6 @@ ZmPref = function(id, name, dataType) {
 ZmPref.prototype = new ZmSetting;
 ZmPref.prototype.constructor = ZmPref;
 
-ZmPref.prototype.isZmPref = true;
-ZmPref.prototype.toString = function() { return "ZmPref"; };
-
 ZmPref.KEY_ID				= "prefId_";
 
 ZmPref.TYPE_STATIC			= "STATIC"; // static text
@@ -43,8 +40,6 @@ ZmPref.TYPE_EXPORT			= "EXPORT";
 ZmPref.TYPE_SHORTCUTS		= "SHORTCUTS";
 ZmPref.TYPE_CUSTOM			= "CUSTOM";
 ZmPref.TYPE_LOCALES			= "LOCALES";
-ZmPref.TYPE_FONT			= "FONT";
-ZmPref.TYPE_FONT_SIZE		= "FONT_SIZE";
 
 ZmPref.ORIENT_VERTICAL		= "vertical";
 ZmPref.ORIENT_HORIZONTAL	= "horizontal";
@@ -127,8 +122,8 @@ function(emailStrArray) {
 ZmPref.downloadSinceDisplay =
 function(dateStr) {
 	if (dateStr == "") return 0;
-	if (dateStr == appCtxt.get(ZmSetting.POP_DOWNLOAD_SINCE)) return 2;
-	return 1;
+	if (dateStr == appCtxt.get(ZmSetting.POP_DOWNLOAD_SINCE)) return 1;
+	return 2;
 };
 ZmPref.downloadSinceValue =
 function(value) {
@@ -167,6 +162,66 @@ function(minutes) {
 	    return minutes * 60;
 };
 
+ZmPref.dateLocal2GMT =
+function(value) {
+	if (!value) { return ""; }
+
+	var yr, mo, da, hr, mi, se; // really smart parsing.
+	yr = parseInt(value.substr(0,  4), 10);
+	mo = parseInt(value.substr(4,  2), 10);
+	da = parseInt(value.substr(6,  2), 10);
+	hr = parseInt(value.substr(8,  2), 10);
+	mi = parseInt(value.substr(10, 2), 10);
+	se = parseInt(value.substr(12, 2), 10);
+	var date = new Date(yr, mo - 1, da, hr, mi, se, 0);
+	yr = date.getUTCFullYear();
+	mo = date.getUTCMonth() + 1;
+	da = date.getUTCDate();
+	hr = date.getUTCHours();
+	mi = date.getUTCMinutes();
+	se = date.getUTCSeconds();
+	var a = [ yr, mo, da, hr, mi, se ];
+	for (var i = a.length; --i > 0;) {
+		var n = a[i];
+		if (n < 10)
+			a[i] = "0" + n;
+	}
+	return (a.join("") + "Z");
+};
+
+ZmPref.dateGMT2Local =
+function(value) {
+	if (!value) { return ""; }
+
+	var yr, mo, da, hr, mi, se; // really smart parsing.
+	yr = parseInt(value.substr(0,  4), 10);
+	mo = parseInt(value.substr(4,  2), 10);
+	da = parseInt(value.substr(6,  2), 10);
+	hr = parseInt(value.substr(8,  2), 10);
+	mi = parseInt(value.substr(10, 2), 10);
+	se = parseInt(value.substr(12, 2), 10);
+	var date = new Date();
+	date.setUTCMilliseconds(0);
+	date.setUTCSeconds(se);
+	date.setUTCMinutes(mi);
+	date.setUTCHours(hr);
+	date.setUTCDate(da);
+	date.setUTCMonth(mo - 1);
+	date.setUTCFullYear(yr);
+	yr = date.getFullYear();
+	mo = date.getMonth() + 1;
+	da = date.getDate();
+	hr = date.getHours();
+	mi = date.getMinutes();
+	se = date.getSeconds();
+	var a = [yr, mo, da, hr, mi, se];
+	for (var i = a.length; --i > 0;) {
+		var n = a[i];
+		if (n < 10)
+			a[i] = "0" + n;
+	}
+	return (a.join("") + "Z");
+};
 
 ZmPref.int2DurationDay =
 function(intValue) {
@@ -310,11 +365,8 @@ function(value) {
 ZmPref.markMsgReadValue =
 function(value) {
 	if (value == ZmSetting.MARK_READ_TIME) {
-		var input = Dwt.byId(DwtId.makeId(ZmId.WIDGET_INPUT, ZmId.OP_MARK_READ));
+		var input = Dwt.byId(DwtId._makeId(ZmId.WIDGET_INPUT, ZmId.OP_MARK_READ));
 		if (input) {
-			if(input.value === ''){
-				return ZmSetting.MARK_READ_NOW;
-			}
 			return input.value;
 		}
 	}
@@ -645,44 +697,4 @@ ZmPref.clearPrefSections();
 ZmPref.__BY_PRIORITY =
 function(a, b) {
 	return Number(a.priority) - Number(b.priority);
-};
-
-ZmPref.regenerateSignatureEditor =
-function( control ) {
-    if( appCtxt.isTinyMCEEnabled() ){
-        var signaturePage = control.parent;
-        var valueEl = document.getElementById(signaturePage._htmlElId + "_SIG_EDITOR");
-        signaturePage.isSignatureEditor = true;
-        var htmlEditor = new ZmAdvancedHtmlEditor(signaturePage, null, null, null, null, valueEl.parentNode, "TEXTAREA_SIGNATURE");
-        valueEl.parentNode.removeChild(valueEl);
-        delete signaturePage.isSignatureEditor;
-        signaturePage._sigEditor = htmlEditor;
-        signaturePage._populateSignatures();
-    }
-};
-
-/**
- * Bubbles are currently only available if the com_zimbra_email zimlet is enabled.  Show a warning 
- * to the user if the zimlet is not enabled and they try to enable bubbles.
- * @param useBubbles
- */
-ZmPref.validateBubbles =
-function(useBubbles) {
-	
-	if (useBubbles) {
-		var emailZimlet = appCtxt.getZimletMgr().getZimletByName("com_zimbra_email");
-		var canUseBubbles = emailZimlet && emailZimlet.handlerObject;
-		if (canUseBubbles && canUseBubbles.getEnabled()) {
-			return true;
-		}
-		else if (!canUseBubbles) {
-			//did user just check on email zimlet?  Check the DOM
-			emailZimlet = document.getElementById("com_zimbra_email_zimletCheckbox");
-			canUseBubbles = emailZimlet && emailZimlet.checked;
-			if (canUseBubbles) { return true;}
-		}
-		ZmPref.SETUP[ZmSetting.USE_ADDR_BUBBLES].errorMessage = AjxMessageFormat.format(ZmMsg.invalidBubblePrefs, ZmMsg.emailZimletLabel);
-		return false;
-	}
-	return true;
 };

@@ -1,10 +1,10 @@
 <%--
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010, 2012 VMware, Inc.
+ * Copyright (C) 2007, 2008, 2009, 2010, 2011, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
- * Version 1.3 ("License"); you may not use this file except in
+ * Version 1.4 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
  * 
@@ -56,7 +56,6 @@
         <!-- ${fn:escapeXml(error.stackStrace)} -->
     </c:if>
     <c:set var="isZoom" value="${param.zoom eq true}" />
-    <c:set var="isShowDeclined" value="${mailbox.prefs.calendarShowDeclinedMeetings}"/>
 </app:handleError>
 
 <app:view mailbox="${mailbox}" title="${title}" context="${null}" selected='calendar' calendars="true" minical="true" keys="true" date="${date}" tags="true">
@@ -140,9 +139,7 @@
                                                 <c:set var="dayStart" value="${currentDay.timeInMillis}"/>
                                                 <c:set var="dayEnd" value="${zm:addDay(currentDay, 1).timeInMillis}"/>
                                                 <zm:forEachAppoinment var="appt" appointments="${appts}" start="${dayStart}" end="${dayEnd}">
-                                                    <c:if test="${not appt.partStatusDeclined or (appt.partStatusDeclined and isShowDeclined)}">
                                                     <tr><td><app:monthAppt appt="${appt}" start="${dayStart}" end="${dayEnd}" timezone="${timezone}"/></td></tr>
-                                                    </c:if>
                                                     <c:set var="count" value="${count+1}"/>
                                                 </zm:forEachAppoinment>
                                                 <c:if test="${dowStatus.first and count lt 4}">

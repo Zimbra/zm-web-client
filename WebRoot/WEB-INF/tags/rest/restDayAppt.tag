@@ -1,10 +1,10 @@
 <%--
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012 VMware, Inc.
+ * Copyright (C) 2007, 2008, 2009, 2010, 2011, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
- * Version 1.3 ("License"); you may not use this file except in
+ * Version 1.4 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
  * 
@@ -13,7 +13,7 @@
  * ***** END LICENSE BLOCK *****
 --%>
 <%@ tag body-content="empty" %>
-<%@ attribute name="appt" rtexprvalue="true" required="true" type="com.zimbra.client.ZAppointmentHit" %>
+<%@ attribute name="appt" rtexprvalue="true" required="true" type="com.zimbra.cs.zclient.ZAppointmentHit" %>
 <%@ attribute name="start" rtexprvalue="true" required="true"%>
 <%@ attribute name="end" rtexprvalue="true" required="true"%>
 <%@ attribute name="selected" rtexprvalue="true" required="false"%>
@@ -115,8 +115,8 @@
                         <table border="0" cellspacing="0" cellpadding="0">
                             <tr>
                                 <c:if test="${appt.exception}">
-                                    <td valign='top' class='ImgApptExceptionIndicator'>
-
+                                    <td valign='top'>
+                                        <app:img src="calendar/ImgApptException.png" alt="exception"/>
                                     </td>
                                 </c:if>
                                 <c:if test="${not empty appt.isFlagged}">
@@ -160,8 +160,8 @@
                         <table border="0" cellspacing="0" cellpadding="0">
                             <tr>
                                 <c:if test="${appt.exception}">
-                                    <td valign='top' class='ImgApptExceptionIndicator'>
-
+                                    <td valign='top'>
+                                        <app:img src="calendar/ImgApptException.png" alt="exception"/>
                                     </td>
                                 </c:if>
                                 <c:if test="${not empty appt.isFlagged}">

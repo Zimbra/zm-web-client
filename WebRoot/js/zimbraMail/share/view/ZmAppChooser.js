@@ -1,10 +1,10 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012 VMware, Inc.
+ * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
- * Version 1.3 ("License"); you may not use this file except in
+ * Version 1.4 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
  * 
@@ -41,7 +41,7 @@ ZmAppChooser = function(params) {
 	this.setScrollStyle(Dwt.CLIP);
 
 	this._buttonListener = new AjxListener(this, this._handleButton);
-    this._initOverFlowTabs();
+
 	var buttons = params.buttons;
 	for (var i = 0; i < buttons.length; i++) {
 		var id = buttons[i];
@@ -58,145 +58,6 @@ ZmAppChooser = function(params) {
 
 ZmAppChooser.prototype = new ZmToolBar;
 ZmAppChooser.prototype.constructor = ZmAppChooser;
-
-ZmAppChooser.prototype._initOverFlowTabs =
-function(){
-    this._leftOverflow = document.getElementById("moreTabsLeftContainer");
-    this._rightOverflow = document.getElementById("moreTabsRightContainer");
-    if (this._leftOverflow) {
-		this._leftOverflow.onclick = this._showLeftTab.bind(this);
-	}
-	if (this._rightOverFlow) {
-    	this._rightOverflow.onclick = this._showRightTab.bind(this);
-	}
-    this._leftBtnIndex = -1;
-    this._deletedButtons = [];
-};
-
-ZmAppChooser.prototype._showLeftTab =
-function(){
-    var items = this.getItems();
-    if(this._leftBtnIndex > -1){
-        items[this._leftBtnIndex].setVisible(true);
-        this._leftBtnIndex--;
-    }
-    this._checkArrowVisibility();
-};
-
-ZmAppChooser.prototype._showRightTab =
-function(){
-    var items = this.getItems();
-    this._leftBtnIndex++;
-    items[this._leftBtnIndex].setVisible(false);
-    this._checkArrowVisibility();
-};
-
-ZmAppChooser.prototype._showTab =
-function(id, ev){
-    var button = this._buttons[id];
-    this._moreTabsBtn.getMenu().popdown();
-    if (!button) return;
-    if (!button.getVisible()){ // Left side
-        var found = false;
-        for (var index in this._buttons){
-            if (!found && this._buttons[index].getHTMLElId() == button.getHTMLElId())
-              found = true;
-            else if (this._buttons[index].getVisible())
-                break;
-            if (found){
-                this._buttons[index].setVisible(true)
-                this._leftBtnIndex--;
-            }
-        }
-    }else { // Right side
-        while(this._isTabOverflow(button.getHtmlElement())){
-            this._showRightTab();
-        }
-    }
-    this._checkArrowVisibility();
-    appCtxt.getAppController()._appButtonListener(ev);
-
-
-};
-
-ZmAppChooser.prototype._attachMoreTabMenuItems =
-function(menu){
-
-    for (var deletedIndex=0; deletedIndex < this._deletedButtons.length; deletedIndex++){
-        var mi = menu.getItemById("_menuItemId", this._deletedButtons[deletedIndex] + "_menu");
-        if (mi) {
-            menu.removeChild(mi);
-            mi.dispose();
-        }
-    }
-
-    this._deletedButtons = [];
-    for(var index in this._buttons){
-        var item = menu.getItemById("_menuItemId", index + "_menu");
-        if (item){
-            if (item.getText() != this._buttons[index].getText()){
-                item.setText(this._buttons[index].getText());
-            }
-        } else {
-            var mi = new DwtMenuItem({parent:menu, style:DwtMenuItem.CASCADE_STYLE, id: index + "_menu"});
-            mi.setData("_menuItemId", index + "_menu" );
-            mi.setData(Dwt.KEY_ID, index);
-            mi.addSelectionListener(this._showTab.bind(this, index));
-            mi.setText(this._buttons[index].getText());
-        }
-    }
-
-    if(menu.getHtmlElement().style.width == "0px"){
-        this._moreTabsBtn.popup();
-    }
-};
-
-ZmAppChooser.prototype._showOverflowTabsMenu =
-function(){
-    var menu = new DwtMenu({parent:this._moreTabsBtn});
-    menu.addPopupListener(new AjxListener(this, this._attachMoreTabMenuItems,[menu]));
-    return menu;
-};
-
-
-ZmAppChooser.prototype._checkArrowVisibility =
-function(){
-    var items = this.getItems();
-    if (this._leftBtnIndex < 0)
-        this._setArrowVisibility(this._leftOverflow, "none");
-    else
-        this._setArrowVisibility(this._leftOverflow, "");
-
-    if (!this._isTabOverflow(items[items.length -1].getHtmlElement())){
-        this._setArrowVisibility(this._rightOverflow, "none");
-    }else{
-        this._setArrowVisibility(this._rightOverflow, "");
-    }
-    this._adjustWidth();
-};
-
-
-
-ZmAppChooser.prototype._setArrowVisibility =
-function(element, option){
-		if (!element) return;
-    element.style.display = option|| "";
-    var display = ((this._leftOverflow && this._leftOverflow.style.display == "none") && 
-					(this._rightOverflow && this._rightOverflow.style.display == "none")) ? "none" : "";
-	var moreTabsMenu = document.getElementById("moreTabsMenu");
-	if (moreTabsMenu) {
-    	moreTabsMenu.style.display = display;
-	}
-    if (display != "none" && !this._moreTabsBtn && moreTabsMenu ){
-        var containerEl = moreTabsMenu;
-        var button = new DwtToolBarButton({parent:DwtShell.getShell(window), id: "moreTabsMenuBtn", style:"background:none no-repeat scroll 0 0 transparent; border: none"});
-        button.setToolTipContent(ZmMsg.more, true);
-        button.setText("");
-        button.reparentHtmlElement(moreTabsMenu);
-        button.setMenu(new AjxListener(this, this._showOverflowTabsMenu));
-        this._moreTabsBtn =  button;
-    }
-};
 
 /**
  * Returns a string representation of the object.
@@ -249,49 +110,6 @@ function(listener) {
 	this.addListener(DwtEvent.SELECTION, listener);
 };
 
-ZmAppChooser.prototype._checkTabOverflowAdd =
-function(button) {
-    var display = "none";
-    if (this._isTabOverflow(button)){
-        display = "";
-    }
-    this._setArrowVisibility(this._rightOverflow, display);
-    this._adjustWidth();
-};
-
-ZmAppChooser.prototype._isTabOverflow =
-function(tab){
-        var tabPos = tab.offsetLeft + tab.clientWidth + 30;
-        if (!this._refElement){
-            this._refElement = document.getElementById(this._refElementId);
-        }
-        var container = this._refElement && this._refElement.parentNode;
-
-        if (!container) return false;
-        var offsetWidth = container.offsetWidth;
-        return (offsetWidth < tabPos);
-};
-
-ZmAppChooser.prototype._adjustWidth =
-function(){
-    var container = this._refElement && this._refElement.parentNode;
-	if (container && container.offsetWidth >= 30) {
-    	this._refElement.style.maxWidth = this._refElement.style.width =  (container.offsetWidth - 30);
-    	this._refElement.style.overflow = "hidden";
-	}
-
-};
-
-ZmAppChooser.prototype._checkTabOverflowDelete =
-function(index){
-    var items = this.getItems();
-    if(this._isTabOverflow(items[items.length - 1])){
-      return;
-    }
-    this._showLeftTab();
-}
-
-
 /**
  * Adds a button to the toolbar.
  * 
@@ -311,15 +129,19 @@ function(id, params) {
 
 	var buttonParams = {parent:this, id:ZmId.getButtonId(ZmId.APP, id), text:params.text,
 						image:params.image, index:params.index};
-    buttonParams.style = params.style ? params.style : DwtLabel.IMAGE_LEFT;
     var button = new ZmAppButton(buttonParams);
-	button.setToolTipContent(params.tooltip, true);
+	button.setToolTipContent(params.tooltip);
 	button.textPrecedence = params.textPrecedence;
 	button.imagePrecedence = params.imagePrecedence;
 	button.setData(Dwt.KEY_ID, id);
 	button.addSelectionListener(this._buttonListener);
 	this._buttons[id] = button;
-    this._checkTabOverflowAdd(button.getHtmlElement());
+
+	if (button.textPrecedence || button.imagePrecedence) {
+		this._createPrecedenceList();
+	}
+	this.adjustSize();
+
 	return button;
 };
 
@@ -332,19 +154,13 @@ ZmAppChooser.prototype.removeButton =
 function(id) {
 	var button = this._buttons[id];
 	if (button) {
-        var index = this.__getButtonIndex(id);
+		var index = this.__getButtonIndex(id);
 		button.dispose();
 		this._buttons[id] = null;
 		delete this._buttons[id];
 		if (index != null) {
 			this._removeItem(this._items[index]);
 		}
-        if (this._moreTabsBtn &&
-            this._moreTabsBtn.getMenu() &&
-            this._moreTabsBtn.getMenu().getItemCount() > 0){
-            this._deletedButtons.push(id);
-        }
-        this._checkTabOverflowDelete(index);
 	}
 };
 
@@ -365,7 +181,7 @@ function(id) {
  */
 ZmAppChooser.prototype.replaceButton =
 function(oldId, newId, params) {
-	if (!this._buttons[oldId]) { return null; }
+	if (!this._buttons[oldId]) { return; }
 	params.index = this.__getButtonIndex(oldId);
 	this.removeButton(oldId);
 	return this.addButton(newId, params);
@@ -418,7 +234,7 @@ function(id) {
  */
 ZmAppChooser.prototype._createButton =
 function(id) {
-	this.addButton(id, {text:ZmMsg[ZmApp.NAME[id]] || ZmApp.NAME[id], image:ZmApp.ICON[id], tooltip:ZmMsg[ZmApp.CHOOSER_TOOLTIP[id]],
+	this.addButton(id, {text:ZmMsg[ZmApp.NAME[id]], image:ZmApp.ICON[id], tooltip:ZmMsg[ZmApp.CHOOSER_TOOLTIP[id]],
 						textPrecedence:ZmApp.TEXT_PRECEDENCE[id], imagePrecedence:ZmApp.IMAGE_PRECEDENCE[id]});
 };
 

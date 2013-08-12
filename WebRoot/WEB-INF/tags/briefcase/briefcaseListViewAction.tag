@@ -1,10 +1,10 @@
 <%--
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2008, 2009, 2010, 2012 VMware, Inc.
+ * Copyright (C) 2008, 2009, 2010, 2011, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
- * Version 1.3 ("License"); you may not use this file except in
+ * Version 1.4 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
  * 
@@ -49,7 +49,7 @@
         </c:choose>
     </c:when>
     <c:when test="${empty ids}">
-        <app:status style="Warning"><fmt:message key="actionNoItemSelected"/></app:status>
+        <app:status style="Warning">No files selected</app:status>
     </c:when>
     <c:otherwise>
         <c:choose>

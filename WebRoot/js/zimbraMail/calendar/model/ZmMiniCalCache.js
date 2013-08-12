@@ -1,10 +1,10 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2008, 2009, 2010, 2011 VMware, Inc.
+ * Copyright (C) 2008, 2009, 2010, 2011, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
- * Version 1.3 ("License"); you may not use this file except in
+ * Version 1.4 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
  * 
@@ -63,7 +63,6 @@ function(params) {
 	appCtxt.getAppController().sendRequest({
 		jsonObj: jsonObj,
 		asyncMode: true,
-        offlineCache: true,
 		callback: (new AjxCallback(this, this._getMiniCalResponse, [params])),
 		errorCallback: (new AjxCallback(this, this._handleMiniCalResponseError, [params])),
 		noBusyOverlay: params.noBusyOverlay,
@@ -203,7 +202,7 @@ function(errors) {
 
 ZmMiniCalCache.prototype.highlightMiniCal =
 function(dateArr) {
-	var highlight = {};
+	var highlight = [];
 	for (var i = 0; i < dateArr.length; i++) {
 		if (dateArr[i]) {
 			highlight[dateArr[i]] = AjxDateFormat.parse("yyyyMMdd", dateArr[i]);

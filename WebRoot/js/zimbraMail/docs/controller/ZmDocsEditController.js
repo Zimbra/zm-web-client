@@ -1,10 +1,10 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2008, 2009, 2010, 2011, 2012, 2013 VMware, Inc.
+ * Copyright (C) 2008, 2009, 2010, 2011, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
- * Version 1.3 ("License"); you may not use this file except in
+ * Version 1.4 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
  * 
@@ -29,8 +29,9 @@ ZmDocsEditController.prototype = new ZmController();
 ZmDocsEditController.prototype.constructor = ZmDocsEditController;
 ZmDocsEditController.savedDoc = null;
 
-ZmDocsEditController.prototype.isZmDocsEditController = true;
-ZmDocsEditController.prototype.toString = function() { return "ZmDocsEditController"; };
+ZmDocsEditController.prototype.toString = function() {
+    return "ZmDocsEditController";
+};
 
 ZmDocsEditController.prototype._initDocsEdit = function(){
     if(this._docsEdit) return;
@@ -69,6 +70,10 @@ ZmDocsEditController.prototype.resize = function(ev){
 
 };
 
+ZmDocsEditController.prototype.setCurrentView = function(view) {
+    this._currentView = view;
+};
+
 ZmDocsEditController.prototype.loadData =
 function(id) {
     return this._docMgr.getItemInfo({id:id});
@@ -80,8 +85,6 @@ ZmDocsEditController.prototype.loadDocument = function(item) {
     //        if(window.isTinyMCE) {
     //            this._docsEdit.setPendingContent(content);
     //        }else {
-	content = content.replace(/<img\s+.*dfsrc="http:\/\//gi, '<img src="http:\/\/');
-	content = content.replace(/<img\s+.*dfsrc="https:\/\//gi, '<img src="https:\/\/');
             this._docsEdit._editor.setContent(content);
     //        }
         ZmDocsEditController.savedDoc = content;
@@ -150,21 +153,6 @@ ZmDocsEditController.prototype.checkForChanges = function() {
         return ZmMsg.exitDocUnSavedChanges;
    } 
 };
-/**
-* return boolean  - Check if document has any changes to be saved
-* */
-ZmDocsEditController.prototype._isDirty = function() {
-   var curDoc = null;
-   var controller = ZmDocsEditApp._controller;
-   curDoc = controller._docsEdit._editor.getContent();
-   if(  ZmDocsEditController.savedDoc == null &&
-       (curDoc == '<html><body></body></html>' ||
-       !curDoc)) {
-        return false;
-   } else if(curDoc != ZmDocsEditController.savedDoc) {
-        return true;
-   }
-}
 
 ZmDocsEditController.prototype.exit = function(){
     if(ZmDocsEditApp.fileInfo.locked){

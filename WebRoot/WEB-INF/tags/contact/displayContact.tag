@@ -1,10 +1,10 @@
 <%--
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011, 2012 VMware, Inc.
+ * Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
- * Version 1.3 ("License"); you may not use this file except in
+ * Version 1.4 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
  * 
@@ -22,21 +22,17 @@
 <zm:getMailbox var="mailbox"/>
 <c:set var="folder" value="${zm:getFolder(pageContext, contact.folderId)}"/>
 <fmt:message var="colorGray" key="colorGray"/>
-<fmt:message var="colorMsg" key="${folder.rgbColorMsg}"/>
-<%-- colorMsg can be set to "colorNone" in case a custom color is set for the folder. "colorNone" is not defined in ZhMsg.properties, hence the check for "???". TODO: clean up logic--%>
-<c:set var="color" value="${zm:lightenColor(not empty folder.rgb ? folder.rgb : ((fn:startsWith(colorMsg,'???') ? colorGray : colorMsg)))}"/>
+<c:set var="color" value="${zm:lightenColor(not empty folder.rgb ? folder.rgb : (not empty folder.rgbColor ? folder.rgbColor : colorGray))}"/>
 <table width="100%" cellspacing="0" cellpadding="0">
 <tr bgcolor="${color}">
     <td class='ZhBottomSep'>
         <table width="100%" cellspacing="0" cellpadding="0" style="padding:3px;">
         <tr>
         <td rowspan="2" width="20" align="center" valign="bottom" style="padding-right:3px;">
-            <c:set var="contactImage" value="${contact.imagePart != null ? contact.imagePart : ''}"/>
-            <c:set var="imageUrl" value="/service/home/~/?id=${contact.id}&amp;part=${contactImage}&amp;auth=co"/>
-            <app:img clazz="${not ua.isIE ? 'contactImage':'contactImage IEcontactImage' }" src="${not empty contactImage ? imageUrl : (contact.isGroup ? 'large/ImgGroupPerson_48.png' : 'large/ImgPerson_48.png')}" altkey="${contact.imageAltKey}" />
+            <c:set var="imageUrl" value="/service/home/~/?id=${contact.id}&amp;part=${contact.imagePart}&amp;auth=co"/>
+            <app:img clazz="contactImage" src="${contact.imagePart != null ? imageUrl : (contact.isGroup ? 'large/ImgGroup_48.png' : 'large/ImgPerson_48.png')}" altkey="${contact.imageAltKey}" />
         </td>
         <td>
-            <c:if test="${not contact.isGroup}">
             <c:choose>
                 <c:when test="${empty contact.displayFileAs}">
                     <div class='contactHeader' style='padding:0;'>
@@ -50,7 +46,6 @@
                     </div>
                 </c:otherwise>
             </c:choose>
-            </c:if>
             <c:if test="${not empty contact.nickname}">
                 <div class='companyName'>"${fn:escapeXml(contact.nickname)}"</div>
             </c:if>
@@ -76,7 +71,7 @@
             </c:if>
         </c:if>
         </td>
-        <td class="companyFolder">${not empty folder ? zm:getFolderName(pageContext, folder.id) : ''}</td>
+        <td class="companyFolder">${not empty folder ? zm:cook(zm:getFolderName(pageContext, folder.id)) : ''}</td>
         </tr>
         </table>
     </td>
@@ -88,43 +83,9 @@
 
 <c:if test="${contact.isGroup}">
     <c:forEach var="member" items="${contact.groupMembers}">
-        <c:set var="memberContact" value="${zm:groupMemberById(contact, member)}"/>
-        <c:choose>
-        <c:when test="${memberContact.isTypeI}">
-            <tr>
-                <td width="20" valign="top" align="left" style="padding-right:3px;" rowspan="1">
-                    <app:img clazz="contactImage" src="large/ImgPersonInline_48.png"/>
-                </td>
-                <td>
-                    <b>${fn:escapeXml(memberContact.id)}</b>
-                </td>
-            </tr>
-        </c:when>
-        <c:otherwise>
-            <c:set var="memberContactImage" value="${memberContact.imagePart != null ? memberContact.imagePart : ''}"/>
-            <c:set var="imageUrl" value="/service/home/~/?id=${memberContact.id}&amp;part=${memberContactImage}&amp;auth=co"/>
-            <tr>
-                <td width="20" valign="bottom" align="left" style="padding-right:3px;" rowspan="4">
-                    <app:img clazz="contactImage" src="${not empty memberContactImage ? imageUrl : (memberContact.isGroup ? 'large/ImgGroupPerson_48.png' : 'large/ImgPerson_48.png')}" altkey="${memberContact.imageAltKey}" />
-                </td>
-                <td>
-                    <b><app:contactDisplayName contact="${memberContact}" /></b>
-                </td>
-            </tr>
-            <tr>
-                <td width="100%">
-                    <app:contactJobInfo contact="${memberContact}" />
-                </td>
-                <td width="20" class="contactOutput">
-                    <app:contactEmail email="${memberContact.email}"/>
-                </td>
-                <c:set var="memberContactAttrs" value="${memberContact.attrs}"/>
-                <td width="20" class="contactOutput" nowrap="nowrap"><c:if test="${zm:anySet(memberContact,'mobilePhone')}">${fn:escapeXml(memberContactAttrs['mobilePhone'])}</c:if></td>
-            </tr>
-        </c:otherwise> 
-        </c:choose>
         <tr>
-            <td colspan="2"><br/></td>
+            <td width='20px'><app:img altkey='ALT_CONTACT_GROUP_EMAIL' src="startup/ImgMessage.png"/></td>
+            <td><nobr>${fn:escapeXml(member)}</nobr></td>            
         </tr>
     </c:forEach>
     <tr><td><br></td></tr>

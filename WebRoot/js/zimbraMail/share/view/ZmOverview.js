@@ -1,10 +1,10 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012 VMware, Inc.
+ * Copyright (C) 2007, 2008, 2009, 2010, 2011, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
- * Version 1.3 ("License"); you may not use this file except in
+ * Version 1.4 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
  * 
@@ -45,7 +45,6 @@
  * @param	{constant}	params.treeStyle			the default display style for tree views
  * @param	{Boolean}	params.isCheckedByDefault	the default state for "checked" display style
  * @param	{Boolean}	params.noTooltips			if <code>true</code>, do not show toolt ips for tree items
- * @param	{Boolean}	params.skipImplicit			if <code>true</code>, do not save implicit prefs of expanded/collapsed node status for this overview (see ZmDialog.prototype._setOverview)
  * @param {ZmOverviewController}	controller			the overview controller
  * 
  * @extends	DwtComposite
@@ -73,7 +72,6 @@ ZmOverview = function(params, controller) {
 	this.isCheckedByDefault = params.isCheckedByDefault;
 	this.noTooltips			= params.noTooltips;
 	this.isAppOverview		= params.isAppOverview;
-	this.skipImplicit 		= params.skipImplicit;
 
 	this._treeIds			= [];
 	this._treeHash			= {};
@@ -330,10 +328,9 @@ function() {
 		}
 	}
 
-    if (item) {
-        item.focus();
-        item._tree.setSelection(item, false, true);
-    }
+	if (item) {
+		item.focus();
+	}
 };
 
 /**

@@ -1,10 +1,10 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013 VMware, Inc.
+ * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
- * Version 1.3 ("License"); you may not use this file except in
+ * Version 1.4 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
  * 
@@ -31,7 +31,7 @@
 ZmPickTagDialog = function(parent, className) {
 
 	var newButton = new DwtDialog_ButtonDescriptor(ZmPickTagDialog.NEW_BUTTON, ZmMsg._new, DwtDialog.ALIGN_LEFT);
-	var params = {parent:parent, className:className, title:ZmMsg.pickATag, extraButtons:[newButton], id: "ZmPickTagDialog"};
+	var params = {parent:parent, className:className, title:ZmMsg.pickATag, extraButtons:[newButton]};
 	ZmDialog.call(this, params);
 
 	this._createControls();
@@ -99,8 +99,6 @@ function(params) {
 	if (tags.length == 1) {
 		this._tagTreeView.setSelected(tags[0], true, true);
 	}
-	this.setButtonEnabled(DwtDialog.OK_BUTTON, this._tagTreeView.getSelected());
-
 	ZmDialog.prototype.popup.apply(this, arguments);
 };
 
@@ -160,11 +158,7 @@ function(ev) {
 
 ZmPickTagDialog.prototype._okButtonListener = 
 function(ev) {
-	var selectedTag = this._tagTreeView.getSelected();
-	if (!selectedTag) {
-		return;
-	}
-	DwtDialog.prototype._buttonListener.call(this, ev, [selectedTag]);
+	DwtDialog.prototype._buttonListener.call(this, ev, [this._tagTreeView.getSelected()]);
 };
 
 ZmPickTagDialog.prototype._handleKeyUp =
@@ -196,11 +190,6 @@ function(ev) {
 	if (firstMatch) {
 		this._tagTreeView.setSelected(appCtxt.getById(firstMatch), true, true);
 	}
-	else {
-		this._tagTreeView.deselectAll();
-	}
-	this.setButtonEnabled(DwtDialog.OK_BUTTON, firstMatch);
-
 	this._lastVal = value;
 };
 
@@ -224,11 +213,10 @@ function(ev) {
 
 	var tag = ev.item.getData(Dwt.KEY_OBJECT);
 	if (tag) {
-		this.setButtonEnabled(DwtDialog.OK_BUTTON, true);
 		var value = tag.getName(false, null, true, true);
 		this._lastVal = value.toLowerCase();
 		this._inputField.setValue(value);
-		if (ev.detail == DwtTree.ITEM_DBL_CLICKED || ev.enter) {
+		if (ev.detail == DwtTree.ITEM_DBL_CLICKED) {
 			this._okButtonListener();
 		}
 	}

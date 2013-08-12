@@ -1,10 +1,10 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012 VMware, Inc.
+ * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
- * Version 1.3 ("License"); you may not use this file except in
+ * Version 1.4 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
  * 
@@ -65,19 +65,13 @@ ZmDeclineShareDialog.prototype.constructor = ZmDeclineShareDialog;
 ZmDeclineShareDialog.prototype.popup =
 function(share, fromAddr) {
 	this._share = share;
-    var isGuestShare = share.isGuest();
 	this._fromAddr = fromAddr;
 	var message = this._formatter.format([share.grantor.name, share.link.name]);
 	this._confirmMsgEl.innerHTML = AjxStringUtil.htmlEncode(message);
 
 	this._reply.setReplyType(ZmShareReply.STANDARD);
 	this._reply.setReplyNote("");
-    if (isGuestShare) {
-        this._reply.setReplyOptions(ZmShareReply.EXTERNAL_USER_OPTIONS);
-    }
-    else {
-        this._reply.setReplyOptions(ZmShareReply.DEFAULT_OPTIONS);
-    }
+
 	DwtDialog.prototype.popup.call(this);
 };
 
@@ -104,7 +98,11 @@ function(event) {
 	if (replyType != ZmShareReply.NONE) {
 		this._share.notes = (replyType == ZmShareReply.QUICK) ? this._reply.getReplyNote(): "";
 
-		this._share.sendMessage(ZmShare.DECLINE, null, this._fromAddr);
+		if (replyType == ZmShareReply.COMPOSE) {
+			this._share.composeMessage(ZmShare.DECLINE, null, this._fromAddr);
+		} else {
+			this._share.sendMessage(ZmShare.DECLINE, null, this._fromAddr);
+		}
 	}
 	
 	// notify decline listener and clear

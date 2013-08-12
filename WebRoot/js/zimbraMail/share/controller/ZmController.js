@@ -1,10 +1,10 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012 VMware, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
- * Version 1.3 ("License"); you may not use this file except in
+ * Version 1.4 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
  * 
@@ -25,133 +25,42 @@
  * @class
  * This class represents an application controller.
  * 
- * @param	{DwtShell}		container		the application container
- * @param	{ZmApp}			app				the application
- * @param	{constant}		type			type of controller (typically a view type)				
- * @param	{string}		sessionId		the session id
+ * @param	{ZmComposite}	container		the application container
+ * @param	{ZmApp}		app				the application
  */
-ZmController = function(container, app, type, sessionId) {
+ZmController = function(container, app) {
 
 	if (arguments.length == 0) { return; }
 
-	this.setCurrentViewType(this.getDefaultViewType());
-	this.setCurrentViewId(this.getDefaultViewType());
-	if (sessionId) {
-		this.setSessionId(sessionId, type);
-	}
-	
 	this._container = container;
 	this._app = app;
-		
+	
 	this._shell = appCtxt.getShell();
 	this._appViews = {};
+	this._currentView = null;
 	
 	this._authenticating = false;
-	this.isHidden = (sessionId == ZmApp.HIDDEN_SESSION);
-	this._elementsToHide = null;
 };
-
-ZmController.prototype.isZmController = true;
-ZmController.prototype.toString = function() { return "ZmController"; };
-
-
-ZmController.SESSION_ID_SEP = "-";
 
 // Abstract methods
 
-ZmController.prototype._setView = function() {};
-
 /**
- * Returns the default view type
+ * @private
  */
-ZmController.getDefaultViewType	= function() {};	// needed by ZmApp::getSessionController
-ZmController.prototype.getDefaultViewType	= function() {};
-
-// _defaultView is DEPRECATED in 8.0
-ZmController.prototype._defaultView = ZmController.prototype.getDefaultViewType;
-
-
+ZmController.prototype._setView =
+function() {
+};
 
 // Public methods
 
 /**
- * Gets the session ID.
+ * Returns a string representation of the object.
  * 
- * @return	{string}	the session ID
+ * @return		{String}		a string representation of the object
  */
-ZmController.prototype.getSessionId =
+ZmController.prototype.toString = 
 function() {
-	return this._sessionId;
-};
-
-/**
- * Sets the session id, view id, and tab id (using the type and session id).
- * Controller for a view that shows up in a tab within the app chooser bar.
- * Examples include compose, send confirmation, and msg view.
- *
- * @param {string}						sessionId					the session id
- * @param {string}						type						the type
- * @param {ZmSearchResultsController}	searchResultsController		owning controller
- */
-ZmController.prototype.setSessionId =
-function(sessionId, type) {
-
-	this._sessionId = sessionId;
-	if (type) {
-		this.setCurrentViewType(type);
-		this.setCurrentViewId(sessionId ? [type, sessionId].join(ZmController.SESSION_ID_SEP) : type);
-		this.tabId = sessionId ? ["tab", this.getCurrentViewId()].join("_") : "";
-	}
-	
-	// this.sessionId and this.viewId are DEPRECATED in 8.0;
-	// use getSessionId() and getCurrentViewId() instead
-	this.sessionId = this._sessionId;
-	this.viewId = this.getCurrentViewId();
-};
-
-/**
- * Gets the current view type.
- * 
- * @return	{constant}			the view type
- */
-ZmController.prototype.getCurrentViewType =
-function(viewType) {
-	return this._currentViewType;
-};
-// _getViewType is DEPRECATED in 8.0
-ZmController.prototype._getViewType = ZmController.prototype.getCurrentViewType;
-
-/**
- * Sets the current view type.
- * 
- * @param	{constant}	viewType		the view type
- */
-ZmController.prototype.setCurrentViewType =
-function(viewType) {
-	this._currentViewType = viewType;
-};
-
-/**
- * Gets the current view ID.
- * 
- * @return	{DwtComposite}	the view Id
- */
-ZmController.prototype.getCurrentViewId =
-function() {
-	return this._currentViewIdOverride || this._currentViewId;
-};
-
-/**
- * Sets the current view ID.
- * 
- * @param	{string}	viewId		the view ID
- */
-ZmController.prototype.setCurrentViewId =
-function(viewId) {
-	this._currentViewId = viewId;
-	
-	// this._currentView is DEPRECATED in 8.0; use getCurrentViewId() instead
-	this._currentView = this._currentViewId;
+	return "ZmController";
 };
 
 /**
@@ -161,24 +70,6 @@ function(viewId) {
  */
 ZmController.prototype.getApp = function() {
 	return this._app;
-};
-
-/**
- * return the view elements. Currently a toolbar, app content, and "new" button.
- * 
- * @param view (optional if provided toolbar)
- * @param appContentView
- * @param toolbar (used only if view param is null)
- *
- */
-ZmController.prototype.getViewElements =
-function(view, appContentView, toolbar) {
-	var elements = {};
-	toolbar = toolbar || this._toolbar[view];
-	elements[ZmAppViewMgr.C_TOOLBAR_TOP] = toolbar;
-	elements[ZmAppViewMgr.C_APP_CONTENT] = appContentView;
-
-	return elements;
 };
 
 /**
@@ -253,13 +144,33 @@ function(ex) {
 };
 
 /**
+ * Sets the current view.
+ * 
+ * @param	{DwtComposite}	view		the view
+ */
+ZmController.prototype.setCurrentView =
+function(view) {
+	this._currentView = view;
+};
+
+/**
+ * Gets the current view.
+ * 
+ * @return	{DwtComposite}	the view
+ */
+ZmController.prototype.getCurrentView =
+function() {
+	return this._currentView;
+};
+
+/**
  * Gets the key map name.
  * 
  * @return	{String}	the key map name
  */
 ZmController.prototype.getKeyMapName =
 function() {
-	return ZmKeyMap.MAP_GLOBAL;
+	return "Global";
 };
 
 /**
@@ -272,7 +183,7 @@ function() {
  * @see		ZmKeyMap
  */
 ZmController.prototype.handleKeyAction =
-function(actionCode, ev) {
+function(actionCode) {
 	DBG.println(AjxDebug.DBG3, "ZmController.handleKeyAction");
 	
 	// tab navigation shortcut
@@ -282,21 +193,18 @@ function(actionCode, ev) {
 	}
 
 	// shortcuts tied directly to operations
-    var isExternalAccount = appCtxt.isExternalAccount();
 	var app = ZmApp.ACTION_CODES_R[actionCode];
 	if (app) {
 		var op = ZmApp.ACTION_CODES[actionCode];
 		if (op) {
-            if (isExternalAccount) { return true; }
 			appCtxt.getApp(app).handleOp(op);
 			return true;
 		}
 	}
 
-    switch (actionCode) {
+	switch (actionCode) {
 
 		case ZmKeyMap.NEW: {
-            if (isExternalAccount) { break; }
 			// find default "New" action code for current app
 			app = appCtxt.getCurrentAppName();
 			var newActionCode = ZmApp.NEW_ACTION_CODE[app];
@@ -312,7 +220,6 @@ function(actionCode, ev) {
 
 		case ZmKeyMap.NEW_FOLDER:
 		case ZmKeyMap.NEW_TAG:
-            if (isExternalAccount) { break; }
 			var op = ZmApp.ACTION_CODES[actionCode];
 			if (op) {
 				this._newListener(null, op);
@@ -320,7 +227,6 @@ function(actionCode, ev) {
 			break;
 
 		case ZmKeyMap.SAVED_SEARCH:
-            if (isExternalAccount) { break; }
 			var searches = appCtxt.getFolderTree().getByType(ZmOrganizer.SEARCH);
 			if (searches && searches.length > 0) {
 				var dlg = appCtxt.getChooseFolderDialog();
@@ -399,10 +305,10 @@ function(ev, op) {
 	switch (op) {
 		// new organizers
 		case ZmOperation.NEW_FOLDER: {
-			// note that this shortcut only happens if mail app is around - it means "new mail folder"
-			var treeCtlr = appCtxt.getOverviewController().getTreeController(ZmOrganizer.FOLDER);
-			var treeView = treeCtlr && treeCtlr.getTreeView(appCtxt.getApp(ZmApp.MAIL).getOverviewId());
-			var currentFolder = treeView && treeView.getSelected();
+			var currentView = appCtxt.getCurrentView();
+			var mailListView = currentView.getMailListView ? currentView.getMailListView() : null;
+			var currentFolder = mailListView && mailListView.getFolder ? mailListView.getFolder() : null;
+
 			ZmController.showDialog(appCtxt.getNewFolderDialog(), this.getNewFolderCallback(), currentFolder);
 			break;
 		}
@@ -534,12 +440,9 @@ function() {
 	return myTg ? myTg.getFirstMember(true) : null;
 };
 
-// Callbacks to run on changes in view state
-ZmController.prototype._preUnloadCallback	= function() { return true; };
-ZmController.prototype._postHideCallback	= function() { return true; };
-ZmController.prototype._preShowCallback		= function() { return true; };
-
-// preserve focus state
+/**
+ * @private
+ */
 ZmController.prototype._preHideCallback = 
 function() {
 	DBG.println(AjxDebug.DBG2, "ZmController.prototype._preHideCallback");
@@ -547,7 +450,9 @@ function() {
 	return true;
 };
 
-// restore focus state
+/**
+ * @private
+ */
 ZmController.prototype._postShowCallback = 
 function() {
 	DBG.println(AjxDebug.DBG2, "ZmController.prototype._postShowCallback");
@@ -587,11 +492,42 @@ function(ex, continuation) {
 	
 	if (ex.code == ZmCsfeException.SVC_AUTH_EXPIRED || 
 		ex.code == ZmCsfeException.SVC_AUTH_REQUIRED || 
-		ex.code == ZmCsfeException.NO_AUTH_TOKEN)
+		ex.code == ZmCsfeException.NO_AUTH_TOKEN ||
+		ex.code == ZmCsfeException.AUTH_TOKEN_CHANGED)
 	{
 		ZmCsfeCommand.noAuth = true;
-        DBG.println(AjxDebug.DBG1, "ZmController.prototype._handleException ex.code : " + ex.code + ". Invoking logout.");
+		DBG.println(AjxDebug.DBG1, "Got auth exception " + ex.code + ", logging out");
 		ZmZimbraMail.logOff(null, true);
+		return;
+		
+//		var reloginMode = false;
+//		var loginDialog = appCtxt.getLoginDialog();
+//		if (ex.code == ZmCsfeException.SVC_AUTH_EXPIRED) {
+//			loginDialog.setError(ZmMsg.sessionExpired);
+//			reloginMode = true;
+//		} else if (ex.code == ZmCsfeException.SVC_AUTH_REQUIRED) {
+//			// bug fix #413 - always logoff if we get auth required
+//			DBG.println(AjxDebug.DBG1, "ZmController.prototype._handleException ex.code : ZmCsfeException.SVC_AUTH_REQUIRED. Invoking logout.");
+//			ZmZimbraMail.logOff();
+//			return;
+//		} else {
+//			// NO_AUTH_TOKEN
+//			reloginMode = true;
+//			loginDialog.setError(null);
+//		}
+//		loginDialog.setReloginMode(reloginMode);
+//		this._handleLogin(reloginMode, continuation);
+//		return;
+	}
+
+	if (ex.code == ZmCsfeException.AUTH_TOKEN_CHANGED) {
+		var soapDoc = AjxSoapDoc.create("GetInfoRequest", "urn:zimbraAccount");
+		var method = soapDoc.getMethod();
+		method.setAttribute("sections", "mbox");
+		var respCallback = new AjxCallback(this, this._handleResponseGetInfo);
+		var params = {soapDoc:soapDoc, asyncMode:true, callback:respCallback, skipAuthCheck:true};
+		ZmCsfeCommand._oldSessionId = ZmCsfeCommand._sessionId;	// offline hack (research bug 24842)
+		appCtxt.getAppController().sendRequest(params);
 		return;
 	}
 
@@ -633,6 +569,153 @@ ZmController.prototype._handleMailSearch =
 function(app) {
 	if (appCtxt.get(ZmSetting.OFFLINE_SHOW_ALL_MAILBOXES)) {
 		app.getOverviewContainer().highlightAllMboxes();
+	}
+};
+
+/**
+ * Takes the user to a login form.
+ * 
+ * @param {Boolean}		reloginMode		if <code>true</code>, user is re-authenticating
+ * @param {Hash}	continuation		the original request params
+ * 
+ * @private
+ */
+ZmController.prototype._handleLogin =
+function(reloginMode, continuation) {
+	var url = appCtxt.get(ZmSetting.LOGIN_URL);
+	if (url) {
+		// NOTE: If user is sent to external login URL to re-auth, we can't
+		// continue the request they made when auth expired. Would probably
+		// need to provide a continuation entry point to make that happen.
+		ZmZimbraMail.sendRedirect(url);
+		return;
+	}
+	
+	var username = appCtxt.getUsername();
+	if (!username || appCtxt.isOffline) {
+		DBG.println(AjxDebug.DBG1, "ZmController.prototype._handleLogin " + (!username) ? "username is null" : "appCtxt.isOffline is " + appCtxt.isOffline + ". Invoking logout.");
+		ZmZimbraMail.logOff();
+		return;
+	}
+	this._authenticating = true;
+	var loginDialog = appCtxt.getLoginDialog();
+	loginDialog.registerCallback(this._loginCallback, this, [continuation]);
+	loginDialog.setVisible(true, false);
+	try {
+		loginDialog.setFocus(username, reloginMode);
+	} catch (ex) {}
+};
+
+/**
+ * @private
+ */
+ZmController.prototype._loginCallback =
+function(continuation, username, password, rememberMe) {
+	this._doAuth(continuation, username, password, rememberMe);
+};
+
+/**
+ * User is logging in after an auth exception. If it was AUTH_EXPIRED, we try to complete what the
+ * user was doing at the time (if the caller passed us the data we need to resume it). The continuation
+ * is the original request params. For an async request, we just call sendRequest() and pass it the
+ * original params. For a sync request, we run a callback (which generally is the function containing
+ * the sendRequest), so that state is not lost.
+ *
+ * @param continuation		[object]*		original request params
+ * @param username			[string]		user name
+ * @param password			[string]		user password
+ * @param rememberMe		[boolean]*		if true, preserve user's auth token
+ * 
+ * @private
+ */
+ZmController.prototype._doAuth = 
+function(continuation, username, password, rememberMe) {
+	var auth = new ZmAuthenticate();
+	var respCallback = new AjxCallback(this, this._handleResponseDoAuth, [continuation, rememberMe]);
+	auth.execute(username, password, respCallback);
+};
+
+/**
+ * @private
+ */
+ZmController.prototype._handleResponseDoAuth =
+function(continuation, rememberMe, result) {
+	try {
+		var result = result.getResponse();
+		this._authenticating = false;
+		appCtxt.rememberMe = rememberMe;
+		if (continuation) {
+			if (continuation.continueCallback) {
+				// sync request
+				continuation.continueCallback.run();
+			} else {
+				// async request
+				continuation.resend = ZmCsfeCommand.REAUTH;
+				appCtxt.getRequestMgr().sendRequest(continuation);
+			}
+			this._hideLoginDialog();
+		} else {
+			// if no continuation context, start over
+			window.onbeforeunload = null;
+			var url = AjxUtil.formatUrl();
+			ZmZimbraMail.sendRedirect(url); // redirect to self to force reload
+		}
+	} catch (ex) {
+		var loginDialog = appCtxt.getLoginDialog();
+		if (ex.code == ZmCsfeException.ACCT_AUTH_FAILED || ex.code == ZmCsfeException.SVC_INVALID_REQUEST) {
+			loginDialog.setError(ZmMsg.loginError);
+		} else if (ex.code == ZmCsfeException.ACCT_MAINTENANCE_MODE) {
+			loginDialog.setError(ZmMsg.errorMaintenanceMode + " " + ZmMsg.errorContact);
+		} else {
+			this.popupErrorDialog(ZmMsg.errorGeneric, ex); 
+		}
+	}	
+};
+
+/**
+ * @private
+ */
+ZmController.prototype._hideLoginDialog =
+function() {
+	var loginDialog = appCtxt.getLoginDialog();
+	loginDialog.setVisible(false);
+	loginDialog.setError(null);
+	loginDialog.clearPassword();
+};
+
+/**
+ * Check GetInfoResponse to see if the user for the new auth token is the same as the
+ * user for this session. If the user has changed, show the login dialog but don't
+ * remove the auth cookie (that way, if the current user doesn't relogin, the other
+ * user can continue with the new auth token). If the user hasn't changed, do nothing -
+ * we can just continue to use the new auth token.
+ * 
+ * @private
+ */
+ZmController.prototype._handleResponseGetInfo =
+function(result) {
+	var response = result.getResponse();
+	var obj = response.GetInfoResponse;
+	if (appCtxt.isOffline) {
+		// ignore token change for offline; maybe put out diagnostic info (bug 24842)
+		if (location.search.indexOf("offlineHack") != -1) {
+			var text = "old user: " + appCtxt.getUsername() + "\n" +
+					   "old session ID: " + ZmCsfeCommand._oldSessionId + "\n" +
+					   "\n" +
+					   "new user: " + obj.name + "\n" +
+					   "new session ID: " + ZmCsfeCommand._sessionId + "\n";
+			alert(text);
+		}
+	} else if (obj.name != appCtxt.getUsername()) {
+		DBG.println(AjxDebug.DBG1, "AUTH TOKEN CHANGED, NEW USER: " + obj.name + " (old user: " + appCtxt.getUsername() + ")");
+		ZmCsfeCommand.noAuth = true;
+		var loginDialog = appCtxt.getLoginDialog();
+		loginDialog.setError(ZmMsg.authChanged);
+		var reloginMode = false;
+		loginDialog.setReloginMode(reloginMode);
+		this._handleLogin(reloginMode);
+	} else {
+		DBG.println(AjxDebug.DBG1, "AUTH TOKEN CHANGED, SAME USER: " + obj.name);
 	}
 };
 
@@ -698,6 +781,21 @@ function(dialog) {
 ZmController.prototype._menuPopdownActionListener = function() {};
 
 /**
+ * Sets the session id, view id, and tab id (using the type and session id).
+ * Controller for a view that shows up in a tab within the app chooser bar.
+ * Currently only mail views exist: compose, send confirmation, and msg view.
+ *
+ * @param {String}		type		the type
+ * @param {String}	sessionId		the sesion id
+ */
+ZmController.prototype.setSessionId =
+function(type, sessionId) {
+	this.sessionId = sessionId;
+	this.viewId = [type, this.sessionId].join("");
+	this.tabId = ["tab", this.viewId].join("_");
+};
+
+/**
  * Checks if the view is transient.
  * 
  * @param	{Object}	oldView		the old view
@@ -707,5 +805,32 @@ ZmController.prototype._menuPopdownActionListener = function() {};
 ZmController.prototype.isTransient =
 function(oldView, newView) {
 	return false;
+};
+
+/**
+ * If the skin asks (via hint) to not display the search toolbar in compose view (also compose appt view), we hide or display it based on the visible param.
+ *
+ * @param	{Boolean}	visible		should it be visible now?
+ */
+ZmController.prototype._setSearchToolbarVisibilityPerSkin =
+function(visible) {
+
+	if (!appCtxt.getSkinHint("hideSearchInCompose")) {
+		return;
+	}
+
+	//hide advanced search if open
+	if (!visible) {
+		appCtxt.getSearchController().showBrowseView(false, null, true);
+	}
+
+	var tb = document.getElementById(ZmId.SEARCH_TOOLBAR);
+
+	if (!tb) {
+		return;
+	}
+
+	tb.style.display = visible ? "block" : "none";
+
 };
 

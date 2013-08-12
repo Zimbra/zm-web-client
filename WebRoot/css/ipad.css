@@ -1,17 +1,15 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
- * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2010, 2011 VMware, Inc.
+ * Copyright (C) 2010, 2011, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
- * Version 1.3 ("License"); you may not use this file except in
+ * Version 1.4 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
  * ***** END LICENSE BLOCK *****
  */
 /* CSS document for iPad */
@@ -252,7 +250,7 @@ html, body{
 /* Topbar Styles */
 
 .topbar {
- /*	background: #dbd0b5 url("@AppContextPath@/img/mobile/ipad/topbar-bg.gif?v=@jsVersion@") repeat-x top left; */
+ /*	background: #dbd0b5 url("@AppContextPath@/img/mobile/ipad/topbar-bg.gif") repeat-x top left; */
 	background-color: #f7ecd2;
 	background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#4a4a4a), to(#2A2A2A));  /*from(#f7ecd2), to(#c8bc9e)) from: e8ddc3 to: a49479*/
 	background-image: -moz-linear-gradient(100% 100% 90deg, #f7ecd2, #c8bc9e);
@@ -269,7 +267,7 @@ html, body{
 
 
 .logo{
-	background: transparent url("@AppContextPath@/img/mobile/ipad/logo.png?v=@jsVersion@") no-repeat top left;
+	background: transparent url("@AppContextPath@/img/mobile/ipad/logo.png") no-repeat top left;
 	width: 80px;
 	height: 20px;
 	float: left;
@@ -278,7 +276,7 @@ html, body{
 }
 
 .searchBar {
- /*	background: #dbd0b5 url("@AppContextPath@/img/mobile/ipad/topbar-bg.gif?v=@jsVersion@") repeat-x top left; */
+ /*	background: #dbd0b5 url("@AppContextPath@/img/mobile/ipad/topbar-bg.gif") repeat-x top left; */
 	background-color: #fcfdfc;
 	background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#fcfdfc), to(#c5c4c9));  /*from(#f7ecd2), to(#c8bc9e)) from: e8ddc3 to: a49479*/
 	background-image: -moz-linear-gradient(100% 100% 90deg, #fcfdfc, #c5c4c9);
@@ -314,7 +312,7 @@ html, body{
 		ul.ul li a{ color: #d5d5d5; }
 
 	ul.ul li.sel, ul.ul li:active{
-	/*	background: #7f7b6e url("@AppContextPath@/img/mobile/ipad/tab-selected.gif?v=@jsVersion@") repeat-x top left; */
+	/*	background: #7f7b6e url("@AppContextPath@/img/mobile/ipad/tab-selected.gif") repeat-x top left; */
 		background-color: #9a8d6e;
 		background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#f5f5f5), to(#E5E5E5));
 		background-image: -moz-linear-gradient(100% 100% 90deg, #9a8d6e, #564e3c);
@@ -330,7 +328,7 @@ html, body{
 /* Toolbar Style */
 
 .toolbar{
- /*	background: #7f7b6f url("@AppContextPath@/img/mobile/ipad/toolbar-bg.gif?v=@jsVersion@") repeat-x bottom left;
+ /*	background: #7f7b6f url("@AppContextPath@/img/mobile/ipad/toolbar-bg.gif") repeat-x bottom left;
 	background-color: #E5E5E5;
 	background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#E5E5E5), to(#A0A0A0));
 	background-image: -moz-linear-gradient(100% 100% 90deg, #564e3c, #A0A0A0); */
@@ -354,7 +352,7 @@ html, body{
 
 
 .button{
- /*	background: #dbd0b5 url("@AppContextPath@/img/mobile/ipad/button-bg.gif?v=@jsVersion@") repeat-x bottom left;
+ /*	background: #dbd0b5 url("@AppContextPath@/img/mobile/ipad/button-bg.gif") repeat-x bottom left;
 	background-color: #f6f6f6;
 	background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#f6f6f6), to(#CCCCCC));
 	background-image: -moz-linear-gradient(100% 100% 90deg, #f6f6f6, #CCCCCC);*/
@@ -374,7 +372,7 @@ html, body{
 }
 
 	.button:active{
-	 /* background: #7b7769 url("@AppContextPath@/img/mobile/ipad/button-selected-bg.gif?v=@jsVersion@") repeat-x top left; */
+	 /* background: #7b7769 url("@AppContextPath@/img/mobile/ipad/button-selected-bg.gif") repeat-x top left; */
 		background-color: #868c98;
 		background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#868c98), to(#bfc3c8));
 		background-image: -moz-linear-gradient(100% 100% 90deg, #868c98, #bfc3c8);
@@ -768,7 +766,7 @@ ul.list li{
 }
 
 	.emptyBody h2{
-		background: url("@AppContextPath@/img/mobile/ipad/animgrad.png?v=@jsVersion@") repeat, white;
+		background: url("@AppContextPath@/img/mobile/ipad/animgrad.png") repeat, white;
 		-webkit-text-fill-color: transparent;	
 		-webkit-background-clip: text;	
 		-webkit-animation-name: masked-animation;	
@@ -793,7 +791,7 @@ ul.list li{
 	
 }
 a.accept,a.tentative,a.decline{
- /*	background: #dbd0b5 url("@AppContextPath@/img/mobile/ipad/button-bg.gif?v=@jsVersion@") repeat-x bottom left; */
+ /*	background: #dbd0b5 url("@AppContextPath@/img/mobile/ipad/button-bg.gif") repeat-x bottom left; */
 	background-color: #eee;
 	background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#eeeeee), to(#c5c5c5));
 	background-image: -moz-linear-gradient(100% 100% 90deg, #eeeeee, #c5c5c5);
@@ -809,7 +807,7 @@ a.accept,a.tentative,a.decline{
 }
 
 	a.accept:active, a.tentative:active,a.decline:active{
-	 /* background: #7b7769 url("@AppContextPath@/img/mobile/ipad/button-selected-bg.gif?v=@jsVersion@") repeat-x top left; */
+	 /* background: #7b7769 url("@AppContextPath@/img/mobile/ipad/button-selected-bg.gif") repeat-x top left; */
 		background-color: #666;
 		background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#666), to(#999));
 		background-image: -moz-linear-gradient(100% 100% 90deg, #666, #999);
@@ -817,7 +815,7 @@ a.accept,a.tentative,a.decline{
 	}
 
 .buttonBg{
-	/* background: #c5bba3 url("@AppContextPath@/img/mobile/ipad/button-bg.gif?v=@jsVersion@") repeat-x bottom left; */
+	/* background: #c5bba3 url("@AppContextPath@/img/mobile/ipad/button-bg.gif") repeat-x bottom left; */
 	background-color: #d8bf9c;
 	background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#d8bf9c), to(#928068));
 	background-image: -moz-linear-gradient(100% 100% 90deg, #d8bf9c, #928068);	
@@ -890,7 +888,7 @@ a.accept,a.tentative,a.decline{
 }
 
 .list-row-sel{
-	background: #d9ceb2 url("@AppContextPath@/img/mobile/ipad/listview-sel-bg.gif?v=@jsVersion@") repeat-x top left;
+	background: #d9ceb2 url("@AppContextPath@/img/mobile/ipad/listview-sel-bg.gif") repeat-x top left;
 }
 
 .small-gray-text {
@@ -976,23 +974,23 @@ a.accept,a.tentative,a.decline{
     height: 16px;
     display: inline-block;
     vertical-align:middle;
-    background: url("@AppContextPath@/img/mobile/iphone-ext/common.png?v=@jsVersion@") no-repeat top left;
+    background: url("@AppContextPath@/img/mobile/iphone-ext/common.png") no-repeat top left;
 }
 
 .Msg {
-    /*background: transparent url("@AppContextPath@/img/im/Img_ImSmallAvailable.gif?v=@jsVersion@") no-repeat center center;*/
+    /*background: transparent url("@AppContextPath@/img/im/Img_ImSmallAvailable.gif") no-repeat center center;*/
 }
 
 .Attachment{
-	background: transparent url("@AppContextPath@/img/zimbra/ImgAttachment.png?v=@jsVersion@") no-repeat top left;
+	background: transparent url("@AppContextPath@/img/zimbra/ImgAttachment.png") no-repeat top left;
 }
 
 .Flag{
-	background: transparent url("@AppContextPath@/img/zimbra/ImgFlagRed.png?v=@jsVersion@") no-repeat top left;
+	background: transparent url("@AppContextPath@/img/zimbra/ImgFlagRed.png") no-repeat top left;
 }
 
 .Edit{
-	background: transparent url("@AppContextPath@/img/zimbra/ImgEdit.png?v=@jsVersion@") no-repeat top left;
+	background: transparent url("@AppContextPath@/img/zimbra/ImgEdit.png") no-repeat top left;
 }
 
 .Msg {
@@ -1017,7 +1015,7 @@ a.accept,a.tentative,a.decline{
 /** Style for Contacts **/
 
 .person {
-    background: url("@AppContextPath@/img/mobile/ipad/person.png?v=@jsVersion@") 90% 50% no-repeat;
+    background: url("@AppContextPath@/img/mobile/ipad/person.png") 90% 50% no-repeat;
     height: 50px;
     width: 50px;
     padding: 2px;
@@ -1175,7 +1173,7 @@ span.aleft > div:first-child, .contactHeader {
 	width: 1px;
 	height: 1px;
 	border-width: 3px;
-/*	-webkit-border-image: url(images/scrollbar.png?v=@jsVersion@) 3;  */
+/*	-webkit-border-image: url(images/scrollbar.png) 3;  */
 
 }
 
@@ -1216,7 +1214,7 @@ span.aleft > div:first-child, .contactHeader {
 }
 
 .composeToolbar{
- /* background: #e7decb url("@AppContextPath@/img/mobile/ipad/topbar-bg.gif?v=@jsVersion@") repeat-x bottom left; */
+ /* background: #e7decb url("@AppContextPath@/img/mobile/ipad/topbar-bg.gif") repeat-x bottom left; */
 	background-color: #E5E5E5;
 	background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#E5E5E5), to(#A0A0A0));
 	background-image: -moz-linear-gradient(100% 100% 90deg, #E5E5E5, #A0A0A0);

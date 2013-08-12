@@ -1,10 +1,10 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2008, 2009, 2010, 2011, 2012 VMware, Inc.
+ * Copyright (C) 2008, 2009, 2010, 2011, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
- * Version 1.3 ("License"); you may not use this file except in
+ * Version 1.4 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
  * 
@@ -223,6 +223,7 @@ function() {
 
 ZmSlideEditController.prototype.__popupUploadDialog =
 function(callback) {
+    //AjxDispatcher.require(["NotebookCore", "Notebook"]);
     var restUrl = this.getRestUrl();
     var uploadFolder = {
         id: window.fileInfo.folderId,
@@ -263,7 +264,7 @@ function(ev) {
 
 ZmSlideEditController.prototype.getKeyMapName =
 function() {
-	return ZmKeyMap.MAP_GLOBAL;
+	return "Global";
 };
 
 ZmSlideEditController.prototype.setStatusMsg =

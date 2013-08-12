@@ -1,10 +1,10 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2009, 2010, 2011, 2012 VMware, Inc.
+ * Copyright (C) 2009, 2010, 2011, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
- * Version 1.3 ("License"); you may not use this file except in
+ * Version 1.4 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
  * 
@@ -22,7 +22,7 @@
     @PageBg@
 }
 
-.defaultSkin iframe {display:block; background:#FFF; width:100%;}
+.defaultSkin iframe {display:block; background:#FFF}
 .defaultSkin .mceToolbar {height:26px}
 .defaultSkin .mceLeft {text-align:left}
 .defaultSkin .mceRight {text-align:right}
@@ -30,10 +30,10 @@
 /* External */
 .defaultSkin .mceExternalToolbar {position:absolute; border:1px solid #CCC; border-bottom:0; display:none;}
 .defaultSkin .mceExternalToolbar td.mceToolbar {padding-right:13px;}
-.defaultSkin .mceExternalClose {position:absolute; top:3px; right:3px; width:7px; height:7px; background:url("../js/ajax/3rdparty/tinymce/themes/advanced/img/icons.gif?v=@jsVersion@") -820px 0}
+.defaultSkin .mceExternalClose {position:absolute; top:3px; right:3px; width:7px; height:7px; background:url(../tiny_mce/3.2.6/themes/advanced/img/icons.gif) -820px 0}
 
 /* Layout */
-.defaultSkin table.mceLayout {border:0; border-left:1px solid #CCC; border-right:1px solid #CCC; width:100%;}
+.defaultSkin table.mceLayout {border:0; border-left:1px solid #CCC; border-right:1px solid #CCC}
 .defaultSkin table.mceLayout tr.mceFirst td {border-top:1px solid #CCC}
 .defaultSkin table.mceLayout tr.mceLast td {border-bottom:1px solid #CCC}
 .defaultSkin table.mceToolbar, .defaultSkin tr.mceFirst .mceToolbar tr td, .defaultSkin tr.mceLast .mceToolbar tr td {border:0; margin:0; padding:0;}
@@ -41,11 +41,11 @@
 .defaultSkin .mceIframeContainer {border-top:1px solid #CCC; border-bottom:1px solid #CCC}
 .defaultSkin .mceStatusbar {font-family:'MS Sans Serif',sans-serif,Verdana,Arial; font-size:9pt; line-height:16px; overflow:visible; color:#000; display:block; height:20px}
 .defaultSkin .mceStatusbar div {float:left; margin:2px}
-.defaultSkin .mceStatusbar a.mceResize {display:block; float:right; background:url("../js/ajax/3rdparty/tinymce/themes/advanced/img/icons.gif?v=@jsVersion@") -800px 0; width:20px; height:20px; cursor:se-resize}
+.defaultSkin .mceStatusbar a.mceResize {display:block; float:right; background:url(../tiny_mce/3.2.6/themes/advanced/img/icons.gif) -800px 0; width:20px; height:20px; cursor:se-resize}
 .defaultSkin .mceStatusbar a:hover {text-decoration:underline}
 .defaultSkin table.mceToolbar {margin-left:3px}
 .defaultSkin span.mceIcon, .defaultSkin img.mceIcon {display:block; width:20px; height:20px}
-.defaultSkin .mceIcon {background:url("../js/ajax/3rdparty/tinymce/themes/advanced/img/icons.gif?v=@jsVersion@") no-repeat 20px 20px}
+.defaultSkin .mceIcon {background:url(../tiny_mce/3.2.6/themes/advanced/img/icons.gif) no-repeat 20px 20px}
 .defaultSkin td.mceCenter {text-align:center;}
 .defaultSkin td.mceCenter table {margin:0 auto; text-align:left;}
 .defaultSkin td.mceRight table {margin:0 0 0 auto;}
@@ -61,13 +61,13 @@
 .defaultSkin .mceButtonDisabled .mceButtonLabel {color:#888}
 
 /* Separator */
-.defaultSkin .mceSeparator {display:block; background:url("../js/ajax/3rdparty/tinymce/themes/advanced/img/icons.gif?v=@jsVersion@") -180px 0; width:2px; height:20px; margin:2px 2px 0 4px}
+.defaultSkin .mceSeparator {display:block; background:url(../tiny_mce/3.2.6/themes/advanced/img/icons.gif) -180px 0; width:2px; height:20px; margin:2px 2px 0 4px}
 
 /* ListBox */
 .defaultSkin .mceListBox {direction:ltr}
 .defaultSkin .mceListBox, .defaultSkin .mceListBox a {display:block}
 .defaultSkin .mceListBox .mceText {padding-left:4px; width:70px; text-align:left; border:1px solid #CCC; border-right:0; background:#FFF; font-family:Tahoma,Verdana,Arial,Helvetica; font-size:11px; height:20px; line-height:20px; overflow:hidden}
-.defaultSkin .mceListBox .mceOpen {width:9px; height:20px; background:url("../js/ajax/3rdparty/tinymce/themes/advanced/img/icons.gif?v=@jsVersion@") -741px 0; margin-right:2px; border:1px solid #CCC;}
+.defaultSkin .mceListBox .mceOpen {width:9px; height:20px; background:url(../tiny_mce/3.2.6/themes/advanced/img/icons.gif) -741px 0; margin-right:2px; border:1px solid #CCC;}
 .defaultSkin table.mceListBoxEnabled:hover .mceText, .defaultSkin .mceListBoxHover .mceText, .defaultSkin .mceListBoxSelected .mceText {border:1px solid #A2ABC0; border-right:0; background:#FFF}
 .defaultSkin table.mceListBoxEnabled:hover .mceOpen, .defaultSkin .mceListBoxHover .mceOpen, .defaultSkin .mceListBoxSelected .mceOpen {background-color:#FFF; border:1px solid #A2ABC0}
 .defaultSkin .mceListBoxDisabled a.mceText {color:gray; background-color:transparent;}
@@ -80,8 +80,8 @@
 .defaultSkin .mceSplitButton {width:32px; height:20px; direction:ltr}
 .defaultSkin .mceSplitButton a, .defaultSkin .mceSplitButton span {height:20px; display:block}
 .defaultSkin .mceSplitButton a.mceAction {width:20px; border:1px solid #F0F0EE; border-right:0;}
-.defaultSkin .mceSplitButton span.mceAction {width:20px; background:url("../js/ajax/3rdparty/tinymce/themes/advanced/img/icons.gif?v=@jsVersion@") 20px 20px;}
-.defaultSkin .mceSplitButton a.mceOpen {width:9px; background:url("../js/ajax/3rdparty/tinymce/themes/advanced/img/icons.gif?v=@jsVersion@") -741px 0; border:1px solid #F0F0EE;}
+.defaultSkin .mceSplitButton span.mceAction {width:20px; background:url(../tiny_mce/3.2.6/themes/advanced/img/icons.gif) 20px 20px;}
+.defaultSkin .mceSplitButton a.mceOpen {width:9px; background:url(../tiny_mce/3.2.6/themes/advanced/img/icons.gif) -741px 0; border:1px solid #F0F0EE;}
 .defaultSkin .mceSplitButton span.mceOpen {display:none}
 .defaultSkin table.mceSplitButtonEnabled:hover a.mceAction, .defaultSkin .mceSplitButtonHover a.mceAction, .defaultSkin .mceSplitButtonSelected a.mceAction {border:1px solid #0A246A; border-right:0; background-color:#B2BBD0}
 .defaultSkin table.mceSplitButtonEnabled:hover a.mceOpen, .defaultSkin .mceSplitButtonHover a.mceOpen, .defaultSkin .mceSplitButtonSelected a.mceOpen {background-color:#B2BBD0; border:1px solid #0A246A;}
@@ -117,14 +117,14 @@
 .defaultSkin .mceMenuItemTitle a {border:0; background:#EEE; border-bottom:1px solid #DDD}
 .defaultSkin .mceMenuItemTitle span.mceText {color:#000; font-weight:bold; padding-left:4px}
 .defaultSkin .mceMenuItemDisabled .mceText {color:#888}
-.defaultSkin .mceMenuItemSelected .mceIcon {background:url("../js/ajax/3rdparty/tinymce/themes/advanced/skins/default/img/menu_check.gif?v=@jsVersion@")}
-.defaultSkin .mceNoIcons .mceMenuItemSelected a {background:url("../js/ajax/3rdparty/tinymce/themes/advanced/skins/default/img/menu_arrow.gif?v=@jsVersion@") no-repeat -6px center}
+.defaultSkin .mceMenuItemSelected .mceIcon {background:url(../tiny_mce/3.2.6/themes/advanced/skins/default/img/menu_check.gif)}
+.defaultSkin .mceNoIcons .mceMenuItemSelected a {background:url(../tiny_mce/3.2.6/themes/advanced/skins/default/img/menu_arrow.gif) no-repeat -6px center}
 .defaultSkin .mceMenu span.mceMenuLine {display:none}
-.defaultSkin .mceMenuItemSub a {background:url("../js/ajax/3rdparty/tinymce/themes/advanced/skins/default/img/menu_arrow.gif?v=@jsVersion@") no-repeat top right;}
+.defaultSkin .mceMenuItemSub a {background:url(../tiny_mce/3.2.6/themes/advanced/skins/default/img/menu_arrow.gif) no-repeat top right;}
 
 /* Progress,Resize */
 .defaultSkin .mceBlocker {position:absolute; left:0; top:0; z-index:1000; opacity:0.5; -ms-filter:'alpha(opacity=50)'; filter:alpha(opacity=50); background:#FFF}
-.defaultSkin .mceProgress {position:absolute; left:0; top:0; z-index:1001; background:url("../js/ajax/3rdparty/tinymce/themes/advanced/skins/default/img/progress.gif?v=@jsVersion@") no-repeat; width:32px; height:32px; margin:-16px 0 0 -16px}
+.defaultSkin .mceProgress {position:absolute; left:0; top:0; z-index:1001; background:url(../tiny_mce/3.2.6/themes/advanced/skins/default/img/progress.gif) no-repeat; width:32px; height:32px; margin:-16px 0 0 -16px}
 .defaultSkin .mcePlaceHolder {border:1px dotted gray}
 
 /* Formats */
@@ -147,6 +147,8 @@
 .defaultSkin span.mce_undo {background-position:-160px 0}
 .defaultSkin span.mce_redo {background-position:-100px 0}
 .defaultSkin span.mce_cleanup {background-position:-40px 0}
+.defaultSkin span.mce_bullist {background-position:-20px 0}
+.defaultSkin span.mce_numlist {background-position:-80px 0}
 .defaultSkin span.mce_justifyleft {background-position:-460px 0}
 .defaultSkin span.mce_justifyright {background-position:-480px 0}
 .defaultSkin span.mce_justifycenter {background-position:-420px 0}
@@ -170,10 +172,6 @@
 .defaultSkin span.mce_copy {background-position:-700px 0}
 .defaultSkin span.mce_cut {background-position:-680px 0}
 .defaultSkin span.mce_blockquote {background-position:-220px 0}
-.defaultSkin a.mce_toggle {width: auto;}
-.defaultSkin span.mce_toggle {color: #0000EE; cursor: pointer; padding: 2px; text-decoration: underline; width: auto;}
-.defaultSkin .mce_bullist span.mceAction {background-position:-20px 0}
-.defaultSkin .mce_numlist span.mceAction {background-position:-80px 0}
 .defaultSkin .mce_forecolor span.mceAction {background-position:-720px 0}
 .defaultSkin .mce_backcolor span.mceAction {background-position:-760px 0}
 .defaultSkin span.mce_forecolorpicker {background-position:-720px 0}

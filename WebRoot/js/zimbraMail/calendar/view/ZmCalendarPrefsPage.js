@@ -1,10 +1,10 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2008, 2009, 2010, 2011, 2012, 2013 VMware, Inc.
+ * Copyright (C) 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
- * Version 1.3 ("License"); you may not use this file except in
+ * Version 1.4 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
  * 
@@ -42,13 +42,17 @@ ZmCalendarPrefsPage = function(parent, section, controller) {
 
 	this._currentSelection = {};
 	this._initAutocomplete();
+
+
 };
 
 ZmCalendarPrefsPage.prototype = new ZmPreferencesPage;
 ZmCalendarPrefsPage.prototype.constructor = ZmCalendarPrefsPage;
 
-ZmCalendarPrefsPage.prototype.isZmCalendarPrefsPage = true;
-ZmCalendarPrefsPage.prototype.toString = function() { return "ZmCalendarPrefsPage"; };
+ZmCalendarPrefsPage.prototype.toString =
+function() {
+	return "ZmCalendarPrefsPage";
+};
 
 ZmCalendarPrefsPage.prototype.reset =
 function(useDefaults) {
@@ -129,16 +133,9 @@ function(setting, right) {
 
 	appCtxt.set(setting, gt);
 	var list = this._acl.getGrantees(right);
-	var textDisplay = list.join("\n");
-	appCtxt.set(ZmCalendarPrefsPage.TEXTAREA[setting], textDisplay);
+	appCtxt.set(ZmCalendarPrefsPage.TEXTAREA[setting], list.join("\n"));
 
 	this._acl.getGranteeType(right);
-	// Set up the preference initial value (derived from ACL data) so that the
-	// pref is not incorrectly detected as dirty in the _checkSection call.
-	var pref = appCtxt.getSettings().getSetting(setting);
-	pref.origValue = this._currentSelection[setting];
-	pref = appCtxt.getSettings().getSetting(ZmCalendarPrefsPage.TEXTAREA[setting]);
-	pref.origValue = textDisplay;
 };
 
 /**
@@ -197,7 +194,7 @@ function(callback) {
 	if (this._workHoursControl) {
 		this._workHoursControl.reloadWorkHours(this._workHoursControl.getValue());
 	}
-    if (callback instanceof AjxCallback) {
+    if (callback) {
 		callback.run();
 	}
 };
@@ -435,11 +432,10 @@ function() {
 		var contactsClass = appCtxt.getApp(ZmApp.CONTACTS);
 		var contactsLoader = contactsClass.getContactList;
 		var params = {
-			dataClass:	appCtxt.getAutocompleter(),
-			separator:	"",
-			matchValue:	ZmAutocomplete.AC_VALUE_EMAIL,
-			options:	{galOnly:true},
-			contextId:	this.toString()
+			dataClass:appCtxt.getAutocompleter(),
+			separator:"",
+			matchValue:ZmAutocomplete.AC_VALUE_EMAIL,
+			options:{galOnly:true}
 		};
 		this._acList = new ZmAutocompleteListView(params);
 	}
@@ -508,7 +504,8 @@ ZmWorkHours.prototype.reset =
 function() {
     if (!this.isDirty()) { return; }
     var i,
-        workHours = this._workHours;
+        workHours = this._workHours,
+        startTime = new Date();
 
     this._startTimeSelect.set(this._startTime);
     this._endTimeSelect.set(this._endTime);
@@ -516,8 +513,6 @@ function() {
     for (i=0;i<AjxDateUtil.WEEKDAY_MEDIUM.length; i++) {
         this._workDaysCheckBox[i].setSelected(workHours[i].isWorkingDay);
     }
-
-	this._radioGroup.setSelectedId(this._isCustom ? this._radioCustomId : this._radioNormalId);
 };
 
 ZmWorkHours.prototype.isDirty =
@@ -746,22 +741,17 @@ function(templateId) {
 
     radioNormal = new DwtRadioButton({parent:this, name:radioName, parentElement:(this._htmlElId + "_CAL_WORKING_HOURS_NORMAL")});
     radioNormal.setSelected(!isCustom);
-	var radioNormalId = radioNormal.getInputElement().id;
-	radioIds[radioNormalId] = radioNormal;
+    radioIds[radioNormal.getInputElement().id] = radioNormal;
     
     radioCustom = new DwtRadioButton({parent:this, name:radioName, parentElement:(this._htmlElId + "_CAL_WORKING_HOURS_CUSTOM")});
     radioCustom.setSelected(isCustom);
-	var radioCustomId = radioCustom.getInputElement().id;
-	radioIds[radioCustomId] = radioCustom;
+    radioIds[radioCustom.getInputElement().id] = radioCustom;
 
-	radioGroup = new DwtRadioButtonGroup(radioIds, isCustom ? radioCustomId : radioNormalId);
+    radioGroup = new DwtRadioButtonGroup(radioIds, isCustom ? radioCustom.getInputElement().id : radioNormal.getInputElement().id );
     
     radioGroup.addSelectionListener(new AjxListener(this, this._toggleNormalCustom));
     this._radioCustom = radioCustom;
     this._radioNormal = radioNormal;
-	this._radioGroup = radioGroup;
-	this._radioCustomId = radioCustomId;
-	this._radioNormalId = radioNormalId;
     for (i=0;i<AjxDateUtil.WEEKDAY_MEDIUM.length; i++) {
         checkbox = new DwtCheckbox({parent:this, parentElement:(this._htmlElId + "_CAL_WORKING_DAY_" + i)});
         checkbox.setText(AjxDateUtil.WEEKDAY_MEDIUM[i]);

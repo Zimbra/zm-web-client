@@ -1,5 +1,5 @@
 <%@ page buffer="8kb" session="false" autoFlush="true" pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
-<%@ page import="java.util.*,javax.naming.*,com.zimbra.client.ZAuthResult" %>
+<%@ page import="java.util.*,javax.naming.*,com.zimbra.cs.zclient.ZAuthResult" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
@@ -23,10 +23,10 @@
  noscript.jsp
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012 VMware, Inc.
+ * Copyright (C) 2007, 2008, 2009, 2010, 2011, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
- * Version 1.3 ("License"); you may not use this file except in
+ * Version 1.4 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
  * 
@@ -34,43 +34,48 @@
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
 -->
-	<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
-	<title><fmt:message key="zimbraTitle"/></title>
-	<link rel="stylesheet" type="text/css" href="<c:url value='/css/images,common,dwt,msgview,login,zm,spellcheck,skin' />">
-	<fmt:message key="favIconUrl" var="favIconUrl"/>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+<title><fmt:message key="zimbraTitle"/></title>
+<link rel="stylesheet" type="text/css" href="<c:url value='/css/images,common,dwt,msgview,login,zm,spellcheck,wiki,skin' />">
+<fmt:message key="favIconUrl" var="favIconUrl"/>
 </head>
 <body>
 
 <!-- BEGIN ERROR SCREEN -->
-<div id="skin_container_error_screen" class="ErrorScreen">
+<div class="LoginScreen">
+<div id='skin_container_splash_screen' class='SplashScreen'>
+	<script language='javascript'>
+		function showCompanyUrl() {
+			window.open(ZmMsg.splashScreenCompanyURL, '_blank');
+		}
+	</script>
+	
 
-	<div id="ZErrorPanel" class="center">
-		<div class="contentBox">
-			<div class="InlineErrorPanel">
-				<table width="100%" style="margin-bottom:2em;">
-					<tr>
-						<td width="1%" valign="top">
-							<img src="<c:url value="/img/dwt/ImgWarning_32.png?v=${version}" />"
-								 title="<fmt:message key='error'/>" alt="<fmt:message key='error'/>" id="ZErrorIcon">
-						</td>
-						<td style="padding-top:.3em;">
-							<fmt:message key='errorJavaScriptRequired'>
-								<fmt:param>
-									<c:url value='/'></c:url>
-								</fmt:param>
-								<fmt:param>
-									<c:url value='/h/'></c:url>
-								</fmt:param>
-							</fmt:message>
-						</td>
-					</tr>
-				</table>
+<div class="center">
+        <div class="ImgAltBanner"></div>    
+		<h1><div id='ZLoginBannerImage' class='ImgLoginBanner' onclick='showCompanyUrl()'></div></h1>
+		<h2><script>document.write(ZmMsg.splashScreenAppName)</script></h2>
+
+		<div id="#ZSplashBodyContainer" class="content">
+			<div class="offline" id='ZLoginLoadingPanel'>
+			 <div class="spacer">	
+				<fmt:message key="errorJavaScriptRequired">
+					<fmt:param>
+						<c:url value='/'></c:url>
+					</fmt:param>
+					<fmt:param>
+						<c:url value='/h/'></c:url>
+					</fmt:param>
+				</fmt:message>
+			 </div>
 			</div>
-		</div>
+			<div class="switch"></div>
+			<div class="copyright" id='ZLoginLicenseContainer'><fmt:message key="splashScreenCopyright" /></div>
+		<div> 
 		<div class="decor1"></div>
 	</div>
-	<div class="decor2"></div>
-
+	
+  </div>
 </div>
 
 </body>

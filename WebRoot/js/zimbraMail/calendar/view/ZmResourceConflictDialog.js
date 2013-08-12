@@ -1,10 +1,10 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2009, 2010, 2011, 2012, 2013 VMware, Inc.
+ * Copyright (C) 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
- * Version 1.3 ("License"); you may not use this file except in
+ * Version 1.4 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
  * 
@@ -24,8 +24,7 @@ ZmResourceConflictDialog = function(parent) {
     var saveButton = new DwtDialog_ButtonDescriptor(ZmResourceConflictDialog.SAVE_BUTTON, ZmMsg.save, DwtDialog.ALIGN_RIGHT, null);
     var cancelButton = new DwtDialog_ButtonDescriptor(ZmResourceConflictDialog.CANCEL_BUTTON, ZmMsg.cancel, DwtDialog.ALIGN_RIGHT, null);
 
-    //Bug fix # 80490 - Added an ID handler to the dialog
-	DwtDialog.call(this, {parent:parent, id:"RESC_CONFLICT_DLG", standardButtons: DwtDialog.NO_BUTTONS, extraButtons: [saveButton, cancelButton]});
+	DwtDialog.call(this, {parent:parent, standardButtons: DwtDialog.NO_BUTTONS, extraButtons: [saveButton, cancelButton]});
 
 	this.setContent(this._contentHtml(selectId));
 	this.setTitle(ZmMsg.resourceConflictLabel);
@@ -117,7 +116,7 @@ function(html, inst, data, attendeeMap, needSep) {
         if(!(usr instanceof Array)) {
             usr = [usr];
         }
-        for(var i = 0; i < usr.length; i++) {
+        for(var i in usr) {
 			var fbStatusStr = "";
 
             var name = usr[i].name;			
@@ -186,16 +185,16 @@ function(list, appt, callback, cancelCallback) {
 	this._list = list;
 	this._appt = appt;
 	this._instData = {};
-    this._callback = callback;
+	this._callback = callback;
     this._cancelCallback = cancelCallback;
 	this._canceledInstanceCount = 0;
 	
 	var attendeeMap = {};
 	var types = [ZmCalBaseItem.PERSON, ZmCalBaseItem.LOCATION, ZmCalBaseItem.EQUIPMENT];
 	
-	for(var i = 0; i < types.length; i++) {
+	for(var i in types) {
 		var attendees = appt.getAttendees(types[i]);
-		for(var j = 0; j < attendees.length; j++) {
+		for(var j in attendees) {
 			var at = attendees[j];
 			var email = at ? at.getEmail() : null;
 			if(email) {

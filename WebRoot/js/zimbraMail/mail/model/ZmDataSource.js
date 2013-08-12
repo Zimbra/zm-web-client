@@ -1,10 +1,10 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012 VMware, Inc.
+ * Copyright (C) 2007, 2008, 2009, 2010, 2011, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
- * Version 1.3 ("License"); you may not use this file except in
+ * Version 1.4 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
  * 
@@ -73,6 +73,7 @@ ZmDataSource.DATASOURCE_ATTRS = {
 ZmDataSource.IDENTITY_ATTRS = {
 	// SOAP attr:					JS property
 	"fromDisplay":					"sendFromDisplay",
+	"fromAddress":					"sendFromAddress",
 	"useAddressForForwardReply":	"setReplyTo",
 	"replyToAddress":				"setReplyToAddress",
 	"replyToDisplay":				"setReplyToDisplay",
@@ -101,6 +102,7 @@ ZmDataSource.prototype.folderId = ZmOrganizer.ID_INBOX;
 
 ZmDataSource.prototype.leaveOnServer = true;
 ZmDataSource.prototype.connectionType = ZmDataSource.CONNECT_DEFAULT;
+ZmDataSource.prototype.pollingInterval;
 
 //
 // Public methods
@@ -176,14 +178,12 @@ function(callback, errorCallback, batchCommand) {
 	if (batchCommand) {
 		batchCommand.addNewRequestParams(soapDoc, respCallback, errorCallback);
 		batchCommand.setSensitive(Boolean(this.password));
-		batchCommand.setNoAuthToken(Boolean(this.password));
 		return;
 	}
 
 	var params = {
 		soapDoc: soapDoc,
 		sensitive: Boolean(this.password),
-        noAuthToken: Boolean(this.password),
 		asyncMode: Boolean(callback),
 		callback: respCallback,
 		errorCallback: errorCallback
@@ -220,14 +220,12 @@ function(callback, errorCallback, batchCommand) {
 	if (batchCommand) {
 		batchCommand.addNewRequestParams(soapDoc, respCallback, errorCallback);
 		batchCommand.setSensitive(Boolean(this.password));
-        batchCommand.setNoAuthToken(Boolean(this.password));
 		return;
 	}
 
 	var params = {
 		soapDoc: soapDoc,
 		sensitive: Boolean(this.password),
-        noAuthToken: Boolean(this.password),
 		asyncMode: Boolean(callback),
 		callback: respCallback,
 		errorCallback: errorCallback
@@ -280,14 +278,12 @@ function(callback, errorCallback, batchCommand, noBusyOverlay) {
 	if (batchCommand) {
 		batchCommand.addNewRequestParams(soapDoc, callback, errorCallback);
 		batchCommand.setSensitive(true);
-        batchCommand.setNoAuthToken(true);
 		return;
 	}
 
 	var params = {
 		soapDoc: soapDoc,
 		sensitive: true,
-        noAuthToken: true,
 		asyncMode: Boolean(callback),
 		noBusyOverlay: noBusyOverlay,
 		callback: callback,

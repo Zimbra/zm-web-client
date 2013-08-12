@@ -5,7 +5,7 @@
     version="2.4">
 
   <context-param>
-    <param-name>org.eclipse.jetty.servlet.SessionPath</param-name>
+    <param-name>org.mortbay.jetty.servlet.SessionPath</param-name>
     <param-value>/</param-value>
   </context-param>
 
@@ -48,12 +48,12 @@
 
   <context-param>
     <param-name>zimbraDefaultSkin</param-name>
-    <param-value>serenity</param-value>
+    <param-value>carbon</param-value>
   </context-param>
 
   <context-param>
     <param-name>zimbraDefaultAdminSkin</param-name>
-    <param-value>%%zimbraDefaultAdminSkin%%</param-value>
+    <param-value>carbon</param-value>
   </context-param>
 
   <context-param>
@@ -77,32 +77,6 @@
     <url-pattern>/</url-pattern>
     <url-pattern>/m/*</url-pattern>
   </filter-mapping>
-  
-  <filter>
-    <filter-name>DoSFilter</filter-name>
-    <filter-class>com.zimbra.cs.servlet.DoSFilter</filter-class>
-
-    <init-param>
-     <param-name>maxRequestsPerSec</param-name>
-     <param-value>%%zimbraHttpDosFilterMaxRequestsPerSec%%</param-value>
-    </init-param>
-
-    <init-param>
-     <param-name>remotePort</param-name>
-     <param-value>true</param-value>
-    </init-param>
-    
-    <init-param>
-     <param-name>maxRequestMs</param-name>
-     <param-value>9223372036854775807</param-value>
-    </init-param>
-    
-  </filter>
-    
-  <filter-mapping>
-    <filter-name>DoSFilter</filter-name>
-    <url-pattern>/*</url-pattern>
-  </filter-mapping>
 
   <!-- <filter>
     <filter-name>ThrottlingFilter</filter-name>
@@ -118,10 +92,10 @@
   <!-- HTTPCOMPRESSIONBEGIN %%comment VAR:zimbraHttpCompressionEnabled,-->%%
   <filter>
     <filter-name>GzipFilter</filter-name>
-    <filter-class>org.eclipse.jetty.servlets.IncludableGzipFilter</filter-class>
+    <filter-class>org.mortbay.servlet.jetty.IncludableGzipFilter</filter-class>
     <init-param>
       <param-name>mimeTypes</param-name>
-      <param-value>application/x-javascript,text/html,text/plain,text/css,application/soap+xml</param-value>
+      <param-value>text/html,text/plain,text/css,application/soap+xml</param-value>
     </init-param>
     <init-param>
       <param-name>userAgent</param-name>
@@ -170,7 +144,7 @@
     </init-param>
     <init-param>
       <param-name>Expires</param-name>
-      <param-value>2595600</param-value>
+      <param-value>604800</param-value>
       <!--
         Expires should be the number of seconds from now when a
         given static resource should expire
@@ -189,7 +163,7 @@
     <init-param>
       <param-name>noCachePatternList</param-name>
       <param-value>
-                %%zimbraMailURL%%/,%%zimbraMailURL%%/mail,%%zimbraMailURL%%/auth/,.jsp,%%zimbraAdminURL%%/,%%zimbraMailURL%%/h/,%%zimbraMailURL%%/h/.*,/h/.*,%%zimbraMailURL%%/m/.*,/m/.*,%%zimbraMailURL%%/t/.*,/t/.*
+                %%zimbraMailURL%%/,%%zimbraMailURL%%/mail,%%zimbraMailURL%%/auth/,.jsp,%%zimbraAdminURL%%/,%%zimbraMailURL%%/h/,%%zimbraMailURL%%/h/.*,/h/.*,%%zimbraMailURL%%/m/.*,/m/.*,%%zimbraMailURL%%/y/.*,/y/.*
       </param-value>
       <!--
         List of patterns for which no-cache headers will be returned.
@@ -289,24 +263,6 @@
     <url-pattern>/*</url-pattern>
   </filter-mapping>
 
- <filter>
-    <filter-name>RestFilter</filter-name>
-    <filter-class>com.zimbra.webClient.filters.RestFilter</filter-class>
-  </filter>
-  <filter-mapping>
-    <filter-name>RestFilter</filter-name>
-    <url-pattern>/h/*</url-pattern>
-  </filter-mapping>
-
-  <filter>
-    <filter-name>RequestStringFilter</filter-name>
-    <filter-class>com.zimbra.cs.servlet.RequestStringFilter</filter-class>
-  </filter>
-  <filter-mapping>
-    <filter-name>RequestStringFilter</filter-name>
-    <url-pattern>/*</url-pattern>
-  </filter-mapping>
-
   <error-page>
     <error-code>404</error-code>
     <location>/public/error.jsp</location>
@@ -349,10 +305,6 @@
     </init-param>
     <init-param>
       <param-name>trimSpaces</param-name>
-      <param-value>true</param-value>
-    </init-param>
-    <init-param>
-      <param-name>saveBytecode</param-name>
       <param-value>true</param-value>
     </init-param>
     <!--
@@ -428,7 +380,6 @@
   <servlet-mapping>
     <servlet-name>SkinResources</servlet-name>
     <url-pattern>/css/*</url-pattern>
-    <url-pattern>/appcache/*</url-pattern>
     <url-pattern>/html/*</url-pattern>
     <url-pattern>/js/skin.js</url-pattern>
   </servlet-mapping>
@@ -454,10 +405,9 @@
     <welcome-file>login</welcome-file>
     <welcome-file>public/login.jsp</welcome-file>
     <welcome-file>public/admin.jsp</welcome-file>
-    <welcome-file>launchTouch.jsp</welcome-file>
   </welcome-file-list>
-  
-    <env-entry>
+
+  <env-entry>
     <description>
       The protocol mode can be one of three modes - mixed, http,
       or https.
@@ -465,78 +415,6 @@
     <env-entry-name>protocolMode</env-entry-name>
     <env-entry-type>java.lang.String</env-entry-type>
     <env-entry-value>%%zimbraMailMode%%</env-entry-value><!-- PROTOCOL MODE -->
-  </env-entry>
-
-  <env-entry>
-    <description>
-	Memcached Servers in SERVER:PORT format seperated by space
-    </description>
-    <env-entry-name>memcachedServers</env-entry-name>
-    <env-entry-type>java.lang.String</env-entry-type>
-    <env-entry-value>%%getAllMemcachedServers%%</env-entry-value>
-  </env-entry>
-
-  <env-entry>
-    <env-entry-name>memcachedClientBinaryProtocolEnabled</env-entry-name>
-    <env-entry-type>java.lang.Boolean</env-entry-type>
-    <env-entry-value>%%zimbraMemcachedClientBinaryProtocolEnabled%%</env-entry-value>
-  </env-entry>
-
-  <env-entry>
-    <env-entry-name>memcachedClientHashAlgorithm</env-entry-name>
-    <env-entry-type>java.lang.String</env-entry-type>
-    <env-entry-value>%%zimbraMemcachedClientHashAlgorithm%%</env-entry-value>
-  </env-entry>
-
-  <env-entry>
-    <env-entry-name>memcachedClientExpiry</env-entry-name>
-    <env-entry-type>java.lang.Integer</env-entry-type>
-    <env-entry-value>%%zimbraMemcachedClientExpirySeconds%%</env-entry-value>
-  </env-entry>
-
-  <env-entry>
-    <env-entry-name>memcachedClientTimeout</env-entry-name>
-    <env-entry-type>java.lang.Integer</env-entry-type>
-    <env-entry-value>%%zimbraMemcachedClientTimeoutMillis%%</env-entry-value>
-  </env-entry>
-
- <env-entry>
-    <description>
-        Nginx Lookup Extension Handlers in SERVER:PORT format seperated by space
-    </description>
-    <env-entry-name>nginxLookUpHandlers</env-entry-name>
-    <env-entry-type>java.lang.String</env-entry-type>
-    <env-entry-value>%%getAllReverseProxyURLs%%</env-entry-value>
-  </env-entry>
-
-  <env-entry>
-    <env-entry-name>reverseProxyRouteLookupTimeout</env-entry-name>
-    <env-entry-type>java.lang.Integer</env-entry-type>
-    <env-entry-value>%%zimbraReverseProxyRouteLookupTimeout%%</env-entry-value>
-  </env-entry>
-
-  <env-entry>
-    <env-entry-name>reverseProxyRouteLookupTimeoutCache</env-entry-name>
-    <env-entry-type>java.lang.Integer</env-entry-type>
-    <env-entry-value>%%zimbraReverseProxyRouteLookupTimeoutCache%%</env-entry-value>
-  </env-entry>
-
- <env-entry>
-    <description>
-        UpStream Mail Servers in SERVER:PORT format seperated by space
-    </description>
-    <env-entry-name>upstreamMailServers</env-entry-name>
-    <env-entry-type>java.lang.String</env-entry-type>
-    <env-entry-value>%%getAllReverseProxyBackends%%</env-entry-value>
-  </env-entry>
-
- <env-entry>
-    <description>
-        Zimbra Services Installed on the server.
-    </description>
-    <env-entry-name>zimbraServicesEnabled</env-entry-name>
-    <env-entry-type>java.lang.String</env-entry-type>
-    <env-entry-value>%%getZimbraServiceEnabled%%</env-entry-value>
   </env-entry>
 
   <env-entry>
@@ -573,13 +451,7 @@
     <env-entry-type>java.lang.String</env-entry-type>
     <env-entry-value>%%zimbraMailTrustedIP%%</env-entry-value>
   </env-entry>
-  
-  <env-entry>
-    <env-entry-name>httpLocalBind</env-entry-name>
-    <env-entry-type>java.lang.String</env-entry-type>
-    <env-entry-value>%%zimbraMailLocalBind%%</env-entry-value>
-  </env-entry>
-  
+
   <jsp-config>
     <jsp-property-group>
       <url-pattern>/h/ac</url-pattern>
@@ -597,7 +469,6 @@
       <url-pattern>/h/econtact</url-pattern>
       <url-pattern>/h/egroup</url-pattern>
       <url-pattern>/h/etask</url-pattern>
-      <url-pattern>/h/grpcontacts</url-pattern>
       <url-pattern>/h/task</url-pattern>
       <url-pattern>/h/home</url-pattern>
       <url-pattern>/h/homevoice</url-pattern>
@@ -673,20 +544,5 @@
         </user-data-constraint>
     </security-constraint>
 REDIRECTEND -->
-
-  <security-constraint>
-    <web-resource-collection>
-      <web-resource-name>Zimbra Downloads</web-resource-name>
-      <url-pattern>/downloads/*</url-pattern>
-    </web-resource-collection>
-    <auth-constraint>
-      <role-name>user</role-name>
-    </auth-constraint>
-  </security-constraint>
- 
-  <login-config>
-    <auth-method>ZimbraAuth</auth-method>
-    <realm-name>Zimbra</realm-name>
-  </login-config>
 
 </web-app>

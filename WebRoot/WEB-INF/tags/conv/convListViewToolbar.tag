@@ -1,10 +1,10 @@
 <%--
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011, 2012 VMware, Inc.
+ * Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
- * Version 1.3 ("License"); you may not use this file except in
+ * Version 1.4 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
  * 
@@ -86,13 +86,12 @@
 								<optgroup label=<fmt:message key="actionOptSep"/>>
 								<zm:forEachFolder var="folder">
 									<c:if test="${folder.isConversationMoveTarget and !folder.isTrash and !folder.isSpam}">
-										<option <c:if test="${keys}">id="OPFLDR${folder.id}"</c:if> value="m:${folder.id}">${zm:getTruncatedFolderPath(pageContext, folder.id, 10, true)}</option>
+										<option <c:if test="${keys}">id="OPFLDR${folder.id}"</c:if> value="m:${folder.id}">${zm:truncate(fn:escapeXml(zm:getFolderPath(pageContext, folder.id)),10,true)}</option>
 									</c:if>
 								</zm:forEachFolder>
 								</optgroup>
 							</select>
 						</td>
-                        <td class='vSpace'></td>
 						<app:button id="${keys ? 'OPMOVE' : ''}" name="actionMove" text="actionMove" tooltip="actionMoveTT"/>
 						<td><div class='vertSep'></div></td>
 					</c:if>
@@ -116,7 +115,6 @@
 								<app:tagOptions mailbox="${mailbox}" keys="${keys}"/>
 						</select>
 					</td>
-                    <td class='vSpace'></td>
 					<app:button id="${keys ? 'OPGO' : ''}" name="action" tooltip="actionConvGoTT" text="actionGo"/>
 					<%--
 					<c:if test="${mailbox.features.spam}">

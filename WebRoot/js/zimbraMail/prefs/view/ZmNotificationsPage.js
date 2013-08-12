@@ -1,10 +1,10 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2010, 2011, 2012 VMware, Inc.
+ * Copyright (C) 2010, 2011, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
- * Version 1.3 ("License"); you may not use this file except in
+ * Version 1.4 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
  * 
@@ -148,7 +148,7 @@ ZmNotificationsPage.prototype._createPageTemplate = function() {
 
 ZmNotificationsPage.prototype._cleanup =
 		function() {
-			this.setContent("");
+			this.setContent("<div>&nbsp;</div>");
 		}
 
 ZmNotificationsPage.prototype._createControls = function() {
@@ -208,12 +208,6 @@ ZmNotificationsPageForm = function(params) {
 	if (arguments.length == 0) return;
 	params.form = this._getFormParams(params.sectionTemplate);
 	DwtForm.apply(this, arguments);
-
-    // hide DwtSelect options which overflow the container
-	var select = this.getControl("DEVICE_EMAIL_CARRIER");
-	if (select) {
-		select.dynamicButtonWidth();
-	}
 
 	this._regionSelectionListener = new AjxListener(this, this._handleRegionSelection);
 

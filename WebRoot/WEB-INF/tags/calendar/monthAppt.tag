@@ -1,10 +1,10 @@
 <%--
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010, 2011 VMware, Inc.
+ * Copyright (C) 2007, 2008, 2009, 2010, 2011, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
- * Version 1.3 ("License"); you may not use this file except in
+ * Version 1.4 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
  * 
@@ -13,7 +13,7 @@
  * ***** END LICENSE BLOCK *****
 --%>
 <%@ tag body-content="empty" %>
-<%@ attribute name="appt" rtexprvalue="true" required="true" type="com.zimbra.client.ZAppointmentHit" %>
+<%@ attribute name="appt" rtexprvalue="true" required="true" type="com.zimbra.cs.zclient.ZAppointmentHit" %>
 <%@ attribute name="start" rtexprvalue="true" required="true"%>
 <%@ attribute name="end" rtexprvalue="true" required="true"%>
 <%@ attribute name="color" rtexprvalue="true" required="false"%>
@@ -29,9 +29,8 @@
 <app:calendarUrl appt="${appt}" var="apptUrl"/>
 
 <fmt:setTimeZone value="${timezone}"/>
-<c:set var="folder" value="${zm:getFolder(pageContext, appt.folderId)}"/>
-<fmt:message var="colorMsg" key="${folder.rgbColorMsg}"/>
-<c:if test="${empty color}"><c:set var="color" value="${zm:lightenColor(not empty folder.rgb ? folder.rgb : colorMsg)}"/></c:if>
+<c:set var="folder" value="${zm:getFolder(pageContext, appt.folderId)}"/> 
+<c:if test="${empty color}"><c:set var="color" value="${zm:lightenColor(not empty folder.rgb ? folder.rgb : folder.rgbColor)}"/></c:if>
 <c:set var="needsAction" value="${appt.partStatusNeedsAction}"/>
 <c:set var="fbashowAsColor" value="${'ZmScheduler-U'}"/>
 <c:choose>

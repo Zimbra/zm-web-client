@@ -1,10 +1,10 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013 VMware, Inc.
+ * Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
- * Version 1.3 ("License"); you may not use this file except in
+ * Version 1.4 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
  * 
@@ -42,17 +42,19 @@ ZmChooseFolderDialog = function(parent, className) {
 	this._treeViewListener = new AjxListener(this, this._treeViewSelectionListener);
 
 	this._multiAcctOverviews = {};
-    this._showRemainingFolders = AjxMessageFormat.format(ZmMsg.showRemainingFolders, "folders");
+	this._lastVal = "";
+    this._selected = "";
 };
 
 ZmChooseFolderDialog.prototype = new ZmDialog;
 ZmChooseFolderDialog.prototype.constructor = ZmChooseFolderDialog;
 
-ZmChooseFolderDialog.prototype.isZmChooseFolderDialog = true;
-ZmChooseFolderDialog.prototype.toString = function() { return "ZmChooseFolderDialog"; };
-
 ZmChooseFolderDialog.NEW_BUTTON = ++DwtDialog.LAST_BUTTON;
 
+ZmChooseFolderDialog.prototype.toString =
+function() {
+	return "ZmChooseFolderDialog";
+};
 
 /**
  * Since this dialog is intended for use in a variety of situations, we need to be
@@ -96,7 +98,6 @@ function(params) {
 		omit[ZmFolder.ID_DRAFTS] = !params.showDrafts;
 		omit[ZmFolder.ID_OUTBOX] = true;
 		omit[ZmFolder.ID_SYNC_FAILURES] = true;
-		omit[ZmFolder.ID_DLS] = true;
 
 		var folderTree = appCtxt.getFolderTree(acct);
 
@@ -120,23 +121,18 @@ function(params) {
 		}
 	}
 
-	if (this.setTitle) {
-		this.setTitle(params.title || ZmMsg.chooseFolder);
-	}
+	this.setTitle(params.title || ZmMsg.chooseFolder);
+
 	var descCell = document.getElementById(this._folderDescDivId);
-	if (descCell) {
-		descCell.innerHTML = params.description || "";
-	}
+	descCell.innerHTML = params.description || "";
 
 	var treeIds = this._treeIds = (params.treeIds && params.treeIds.length)
 		? params.treeIds : [ZmOrganizer.FOLDER];
 
 	// New button doesn't make sense if we're only showing saved searches
 	var searchOnly = (treeIds.length == 1 && treeIds[0] == ZmOrganizer.SEARCH);
-	var newButton = this._getNewButton();
-	if (newButton) {
-		newButton.setVisible(!searchOnly && !params.hideNewButton && !appCtxt.isExternalAccount());
-	}
+	var newButton = this.getButton(ZmChooseFolderDialog.NEW_BUTTON);
+	newButton.setVisible(!searchOnly && !params.hideNewButton);
 
 	this._data = params.data;
 
@@ -174,17 +170,13 @@ function(params) {
 	// TODO: I opened bug 34447 for this performance enhancement.
 	var pkg = [];
 	if (treeIdMap[ZmOrganizer.BRIEFCASE]) pkg.push("BriefcaseCore","Briefcase");
-	if (treeIdMap[ZmOrganizer.CALENDAR]) pkg.push("MailCore","CalendarCore","Calendar");
+	if (treeIdMap[ZmOrganizer.CALENDAR]) pkg.push("CalendarCore","Calendar");
 	if (treeIdMap[ZmOrganizer.ADDRBOOK]) pkg.push("ContactsCore","Contacts");
 	if (treeIdMap[ZmOrganizer.FOLDER]) pkg.push("MailCore","Mail");
+	if (treeIdMap[ZmOrganizer.NOTEBOOK]) pkg.push("NotebookCore","Notebook");
 	if (treeIdMap[ZmOrganizer.TASKS]) pkg.push("TasksCore","Tasks");
 	
 	AjxDispatcher.require(pkg, true, new AjxCallback(this, this._doPopup, [popupParams]));
-};
-
-ZmChooseFolderDialog.prototype._getNewButton =
-function () {
-	return this.getButton(ZmChooseFolderDialog.NEW_BUTTON);
 };
 
 ZmChooseFolderDialog.prototype._doPopup =
@@ -214,13 +206,10 @@ function(params) {
 		this._resetTree(params.treeIds, ov);
 	}
 
-	if (this.isZmDialog) {
-		this._focusElement = this._inputField;
-		this._inputField.setValue("");
-		ZmDialog.prototype.popup.call(this);
-	}
+	this._focusElement = this._inputField;
+	this._inputField.setValue("");
+	ZmDialog.prototype.popup.call(this);
 };
-
 
 ZmChooseFolderDialog.prototype.getOverviewId =
 function(part) {
@@ -240,16 +229,7 @@ function(treeIds, overview) {
 		if (!treeView) { continue; }
 
 		// bug #18533 - always make sure header item is visible in "MoveTo" dialog
-		var headerItem = treeView.getHeaderItem();
-		if (treeIds.length > 1) {
-			if (treeId == ZmId.ORG_FOLDER) {
-				headerItem.setText(ZmMsg.mailFolders);
-			}
-			else if (treeId == ZmId.ORG_BRIEFCASE) {
-				headerItem.setText(ZmMsg.briefcaseFolders);
-			}
-		}
-		headerItem.setVisible(true, true);
+		treeView.getHeaderItem().setVisible(true, true);
 
 		// expand root item
 		var ti = treeView.getTreeItemById(folderTree.root.id);
@@ -306,8 +286,8 @@ function() {
 
 ZmChooseFolderDialog.prototype._showNewDialog =
 function() {
-	var itemType = this._getOverview().getSelected(true);
-	var newType = itemType || this._treeIds[0];
+	var item = this._getOverview().getSelected(true);
+	var newType = (item && item.type) || this._treeIds[0];
 	var ftc = this._opc.getTreeController(newType);
 	var dialog = ftc._getNewDialog();
 	dialog.reset();
@@ -322,19 +302,13 @@ function(ftc, dialog, params) {
 	this._creatingFolder = true;
 };
 
-// After the user creates a folder, select it and optionally move items to it.
 ZmChooseFolderDialog.prototype._folderTreeChangeListener =
 function(ev) {
 	if (ev.event == ZmEvent.E_CREATE && this._creatingFolder) {
 		var organizers = ev.getDetail("organizers") || (ev.source && [ev.source]);
 		var org = organizers[0];
-		if (org) {
-			var tv = this._treeView[org.getAccount().id][org.type];
-			tv.setSelected(org, true);
-			if (this._moveOnFolderCreate && !ev.shiftKey && !ev.ctrlKey) {
-				tv._itemClicked(tv.getTreeItemById(org.id), ev);
-			}
-		}
+		var tv = this._treeView[org.getAccount().id][org.type];
+		tv.setSelected(organizers[0], true);
 		this._creatingFolder = false;
 	}
 	this._loadFolders();
@@ -343,6 +317,9 @@ function(ev) {
 ZmChooseFolderDialog.prototype._okButtonListener =
 function(ev) {
     var tgtFolder = this._getOverview().getSelected();
+    if  (!tgtFolder) {
+        tgtFolder = appCtxt.getById(this._selected);
+    }
 	var folderList = (tgtFolder && (!(tgtFolder instanceof Array)))
 		? [tgtFolder] : tgtFolder;
 
@@ -354,7 +331,7 @@ function(ev) {
 		for (var i = 0; i < folderList.length; i++) {
 			var folder = folderList[i];
 			if (folder.mayContain && !folder.mayContain(this._data, null, this._acceptFolderMatch)) {
-				if (this._data.isZmFolder) {
+				if(this._data instanceof ZmFolder) {
 					msg = ZmMsg.badTargetFolder; 
 				} else {
 					var items = AjxUtil.toArray(this._data);
@@ -408,16 +385,14 @@ function() {
 			var items = treeView.getTreeItemList();
 			for (var i = 0, len = items.length; i < len; i++) {
 				var ti = items[i];
-				if (!ti.getData) {  //not sure if this could happen but it was here before my refactoring.
-					continue;
+				if (ti.getData) {
+					var folder = items[i].getData(Dwt.KEY_OBJECT);
+					if (folder && (folder.nId != ZmOrganizer.ID_ROOT)) {
+						var name = folder.getName(false, null, true, true).toLowerCase();
+						var path = "/" + folder.getPath(false, false, null, true).toLowerCase();
+						this._folders.push({id:folder.id, type:type, name:name, path:path, accountId:accountId});
+					}
 				}
-				var folder = items[i].getData(Dwt.KEY_OBJECT);
-				if (!folder || folder.nId === ZmOrganizer.ID_ROOT) {
-					continue;
-				}
-				var name = folder.getName(false, null, true, true).toLowerCase();
-				var path = "/" + folder.getPath(false, false, null, true).toLowerCase();
-				this._folders.push({id: folder.id, type: type, name: name, path: path, accountId: accountId});
 			}
 		}
 	}
@@ -443,6 +418,7 @@ function(ev) {
 		return;
 	}
 
+
 	var key = DwtKeyEvent.getCharCode(ev);
 	if (key == 9) {
 		return;
@@ -453,6 +429,7 @@ function(ev) {
 
 	var num = 0, firstMatch, matches = [];
 	var value = this._inputField.getValue().toLowerCase();
+	if (value == this._lastVal) { return; }
 	for (var i = 0, len = this._folders.length; i < len; i++) {
 		var folderInfo = this._folders[i];
 		var treeView = this._treeView[folderInfo.accountId][folderInfo.type];
@@ -477,7 +454,6 @@ function(ev) {
 	// now that we know which folders match, hide all items and then show
 	// the matches, expanding their parent chains as needed
 	this._resetTreeView(false);
-
 	for (var i = 0, len = matches.length; i < len; i++) {
 		var ti = matches[i];
 		ti._tree._expandUp(ti);
@@ -491,17 +467,19 @@ function(ev) {
 			ov.deselectAllTreeViews();
 		}
 		tv.setSelected(appCtxt.getById(firstMatch.id), true, true);
-		if (appCtxt.multiAccounts) {
-		    var ov = this._getOverview();
-		    for (var h in ov._headerItems) {
-			ov._headerItems[h].setExpanded((h == firstMatch.accountId), false, false);
-		    }
-		}
-	}
+        this._selected = firstMatch.id;
+        if (appCtxt.multiAccounts) {
+            var ov = this._getOverview();
+            for (var h in ov._headerItems) {
+                ov._headerItems[h].setExpanded((h == firstMatch.accountId), false, false);
+            }
+        }
+    }
+	this._lastVal = value;
 };
 
 ZmChooseFolderDialog.prototype._resetTreeView =
-    function(visible) {
+function(visible) {
 	for (var i = 0, len = this._folders.length; i < len; i++) {
 		var folderInfo = this._folders[i];
 		var tv = this._treeView[folderInfo.accountId][folderInfo.type];
@@ -547,9 +525,9 @@ function(ev) {
 
 	var organizer = ev.item && ev.item.getData(Dwt.KEY_OBJECT);
 	var value = organizer ? organizer.getName(null, null, true) : ev.item.getText();
-    if (this._showRemainingFolders == organizer.getName(null, null, true) ) value = "";
 	this._inputField.setValue(value);
-	if (ev.detail == DwtTree.ITEM_DBL_CLICKED || ev.enter) {
+	this._lastVal = value.toLowerCase();
+	if (ev.detail == DwtTree.ITEM_DBL_CLICKED) {
 		this._okButtonListener();
 	}
 };

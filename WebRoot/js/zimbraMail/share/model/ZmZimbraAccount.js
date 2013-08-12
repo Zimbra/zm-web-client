@@ -1,10 +1,10 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012 VMware, Inc.
+ * Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
- * Version 1.3 ("License"); you may not use this file except in
+ * Version 1.4 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
  * 
@@ -55,8 +55,15 @@ ZmZimbraAccount = function(id, name, visible) {
 ZmZimbraAccount.prototype = new ZmAccount;
 ZmZimbraAccount.prototype.constructor = ZmZimbraAccount;
 
-ZmZimbraAccount.prototype.isZmZimbraAccount = true;
-ZmZimbraAccount.prototype.toString = function() { return "ZmZimbraAccount"; };
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
+ZmZimbraAccount.prototype.toString =
+function() {
+	return "ZmZimbraAccount";
+};
 
 
 //
@@ -589,10 +596,7 @@ function(callback, errorCallback, batchCmd) {
  */
 ZmZimbraAccount.prototype.saveImplicitPrefs =
 function() {
-    var isExternal = this.settings ? this.settings.get(ZmSetting.IS_EXTERNAL) : false;
-    if (isExternal) {
-        return;
-    }
+
 	var list = [];
 	for (var id in ZmSetting.CHANGED_IMPLICIT) {
 		var setting = this.settings ? this.settings.getSetting(id) : null;
@@ -621,6 +625,7 @@ function(appName) {
 		case ZmApp.CONTACTS:	return appCtxt.get(ZmSetting.CONTACTS_ENABLED, 	null, this);
 		case ZmApp.IM:			return appCtxt.get(ZmSetting.IM_ENABLED, 		null, this);
 		case ZmApp.MAIL:		return appCtxt.get(ZmSetting.MAIL_ENABLED, 		null, this);
+		case ZmApp.NOTEBOOK:	return appCtxt.get(ZmSetting.NOTEBOOK_ENABLED, 	null, this);
 		case ZmApp.PREFERENCES:	return appCtxt.get(ZmSetting.OPTIONS_ENABLED, 	null, this);
 		case ZmApp.TASKS:		return appCtxt.get(ZmSetting.TASKS_ENABLED, 	null, this);
 	}

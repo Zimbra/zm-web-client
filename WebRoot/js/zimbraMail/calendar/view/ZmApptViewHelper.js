@@ -1,10 +1,10 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013 VMware, Inc.
+ * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
- * Version 1.3 ("License"); you may not use this file except in
+ * Version 1.4 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
  * 
@@ -213,21 +213,13 @@ function(date, list, controller, noheader, emptyMsg, isMinical) {
 	html.append("<table cellpadding='0' cellspacing='0' border='0'>");
 	if (!noheader) html.append("<tr><td><div class='calendar_tooltip_month_day_label'>", title, "</div></td></tr>");
 	html.append("<tr><td>");
-	html.append("<table cellpadding='1' cellspacing='0' border='0'>");
+	html.append("<table cellpadding='1' cellspacing='0' border='0' width=100%>");
 	
 	var size = list ? list.size() : 0;
 
-	var dateTime = date.getTime();
 	for (var i = 0; i < size; i++) {
 		var ao = list.get(i);
-
 		if (ao.isAllDayEvent()) {
-            // Multi-day all day appts will be broken up into one sub-appt per day, so only show
-       		// the one that matches the selected date
-            var apptDate = new Date(ao.startDate.getTime());
-            apptDate.setHours(0,0,0,0);
-            if (apptDate.getTime() != dateTime) continue;
-
             if(!isMinical && ao.toString() == "ZmAppt") {
                 html.append("<tr><td><div class=appt>");
                 html.append(ZmApptViewHelper.getApptToolTipText(ao, controller));
@@ -235,9 +227,12 @@ function(date, list, controller, noheader, emptyMsg, isMinical) {
             }
             else {
                 //DBG.println("AO    "+ao);
-                var widthField = AjxEnv.isIE ? "width:500px;" : "min-width:300px;";
-                html.append("<tr><td><div style='" + widthField + "' class=appt>");
-                html.append(ZmApptViewHelper._allDayItemHtml(ao, Dwt.getNextId(), controller, true, true));
+                var bs = "";
+                if (!ao._fanoutFirst) bs = "border-left:none;";
+                if (!ao._fanoutLast) bs += "border-right:none;";
+                var body_style = (bs != "") ? "style='"+bs+"'" : "";
+                html.append("<tr><td><div class=appt>");
+                html.append(ZmApptViewHelper._allDayItemHtml(ao, Dwt.getNextId(), body_style, controller));
                 html.append("</div></td></tr>");
             }
 		}
@@ -319,7 +314,7 @@ function(folderSelect, folderRow, calendarOrgs, calItem) {
 		var cal = data[i];
 		var acct = cal.getAccount();
 
-		if (cal.noSuchFolder || cal.isFeed() || (cal.link && cal.isReadOnly()) || cal.isInTrash()) { continue; }
+		if (cal.noSuchFolder || cal.isFeed() || (cal.link && cal.isReadOnly())) { continue; }
 
 		if (appCtxt.multiAccounts &&
 			cal.nId == ZmOrganizer.ID_CALENDAR &&
@@ -328,7 +323,7 @@ function(folderSelect, folderRow, calendarOrgs, calItem) {
 			continue;
 		}
 
-        var id = cal.link ? cal.getRemoteId() : cal.id;
+		var id = cal.link ? cal.getRemoteId() : cal.id;
 		calendarOrgs[id] = cal.owner;
 
 		// bug: 28363 - owner attribute is not available for shared sub folders
@@ -345,11 +340,11 @@ function(folderSelect, folderRow, calendarOrgs, calItem) {
 		folderSelect.addOption(option, selected);
 	}
 
-    ZmApptViewHelper.folderSelectResize(folderSelect);
+
     //todo: new ui hide folder select if there is only one folder
 };
 
-/**
+/*
  * Takes a string, AjxEmailAddress, or contact/resource and returns
  * a ZmContact or a ZmResource. If the attendee cannot be found in
  * contacts, locations, or equipment, a new contact or
@@ -366,10 +361,6 @@ function(item, type, strictText, strictEmail, checkForAvailability) {
 	if (!item || !type) return null;
 
 	if (type == ZmCalBaseItem.LOCATION && !ZmApptViewHelper._locations) {
-		if (!appCtxt.get(ZmSetting.GAL_ENABLED)) {
-			//if GAL is disabled then user does not have permission to load locations.
-			return null;
-		}
 		var locations = ZmApptViewHelper._locations = appCtxt.getApp(ZmApp.CALENDAR).getLocations();
         if(!locations.isLoaded) {
             locations.load();
@@ -408,9 +399,8 @@ function(item, type, strictText, strictEmail, checkForAvailability) {
 													new ZmResource(type);
 			attendee.initFromEmail(item, true);
 		}
-		if(item.isGroup) {
-		    attendee.isGroup = item.isGroup;
-        }
+		
+		attendee.isGroup = item.isGroup;
 		attendee.canExpand = item.canExpand;
 		var ac = window.parentAppCtxt || window.appCtxt;
 		ac.setIsExpandableDL(addr, attendee.canExpand);
@@ -481,8 +471,7 @@ function(email, isIdentity) {
         orgName = appCtxt.get(ZmSetting.DISPLAY_NAME);
     }else{
         //Identity
-        var iCol = appCtxt.getIdentityCollection(),
-            identity = iCol ? iCol.getIdentityBySendAddress(orgAddress) : "";
+        var identity = appCtxt.getIdentityCollection().getIdentityBySendAddress(orgAddress);
         if(identity){
             orgName = identity.sendFromDisplay;
         }
@@ -555,11 +544,9 @@ function(list, type, role, objectManager, htmlElId) {
 	}
 
 	var options = {};
-	options.addrBubbles = appCtxt.get(ZmSetting.USE_ADDR_BUBBLES);
+	options.addrBubbles = false; //todo - do we really want false here? why not use bubbles?
 	options.shortAddress = appCtxt.get(ZmSetting.SHORT_ADDRESS);
-	var addressInfo = ZmMailMsgView.getAddressesFieldHtmlHelper(emails, options,
-		role, objectManager, htmlElId);
-	return addressInfo.html;
+	return ZmMailMsgView.getAddressesFieldHtmlHelper(emails, options, role, objectManager, htmlElId);
 };
 
 
@@ -617,63 +604,43 @@ function(list, type, role, count) {
 };
 
 ZmApptViewHelper._allDayItemHtml =
-function(appt, id, controller, first, last) {
+function(appt, id, bodyStyle, controller) {
 	var isNew = appt.ptst == ZmCalBaseItem.PSTATUS_NEEDS_ACTION;
 	var isAccepted = appt.ptst == ZmCalBaseItem.PSTATUS_ACCEPT;
 	var calendar = appt.getFolder();
-    AjxDispatcher.require(["MailCore", "CalendarCore", "Calendar"]);
-
-    var tagNames  = appt.getVisibleTags();
-    var tagIcon = last ? appt.getTagImageFromNames(tagNames) : null;
-
+    AjxDispatcher.require(["CalendarCore", "Calendar"]);
+	var colors = ZmCalBaseView._getColors(calendar.rgb || ZmOrganizer.COLOR_VALUES[calendar.color]);
+	var headerStyle = ZmCalBaseView._toColorsCss(isNew ? colors.deeper.header : colors.standard.header);
     var fba = isNew ? ZmCalBaseItem.PSTATUS_NEEDS_ACTION : appt.fba;
-    var headerColors = ZmApptViewHelper.getApptColor(isNew, calendar, tagNames, "header");
-    var headerStyle  = ZmCalBaseView._toColorsCss(headerColors.appt);
-    var bodyColors   = ZmApptViewHelper.getApptColor(isNew, calendar, tagNames, "body");
-    var bodyStyle    = ZmCalBaseView._toColorsCss(bodyColors.appt);
-
-    var borderLeft  = first ? "" : "border-left:0;";
-    var borderRight = last  ? "" : "border-right:0;";
-
-    var newState = isNew ? "_new" : "";
+	bodyStyle += ZmCalBaseView._toColorsCss(isNew ? colors.deeper.body : colors.standard.body);
 	var subs = {
-		id:           id,
-		headerStyle:  headerStyle,
-		bodyStyle:    bodyStyle,
-		newState:     newState,
-		name:         first ? AjxStringUtil.htmlEncode(appt.getName()) : "&nbsp;",
+		id: id,
+		headerStyle: headerStyle,
+		bodyStyle: bodyStyle,
+		newState: isNew ? "_new" : "",
+		name: AjxStringUtil.htmlEncode(appt.getName()),
 //		tag: isNew ? "NEW" : "",		//  HACK: i18n
-		starttime:    appt.getDurationText(true, true),
-		endtime:      (!appt._fanoutLast && (appt._fanoutFirst || (appt._fanoutNum > 0))) ? "" : ZmCalBaseItem._getTTHour(appt.endDate),
-		location:     AjxStringUtil.htmlEncode(appt.getLocation()),
-		status:       appt.isOrganizer() ? "" : appt.getParticipantStatusStr(),
-		icon:         first && appt.isPrivate() ? "ReadOnly" : null,
-        showAsColor:  first ? ZmApptViewHelper._getShowAsColorFromId(fba) : "",
-        showAsClass:  first ? "" : "appt_allday" + newState + "_name",
-        boxBorder:    ZmApptViewHelper.getBoxBorderFromId(fba),
-        borderLeft:   borderLeft,
-        borderRight:  borderRight,
-        tagIcon:      tagIcon
+		starttime: appt.getDurationText(true, true),
+		endtime: (!appt._fanoutLast && (appt._fanoutFirst || (appt._fanoutNum > 0))) ? "" : ZmCalBaseItem._getTTHour(appt.endDate),
+		location: AjxStringUtil.htmlEncode(appt.getLocation()),
+		status: appt.isOrganizer() ? "" : appt.getParticipantStatusStr(),
+		icon: appt.isPrivate() ? "ReadOnly" : null,
+		showAsColor : ZmApptViewHelper._getShowAsColorFromId(fba),
+        boxBorder: ZmApptViewHelper.getBoxBorderFromId(fba)
 	};
-    ZmApptViewHelper.setupCalendarColor(last, headerColors, tagNames, subs, "headerStyle", null, 1, 1);
     return AjxTemplate.expand("calendar.Calendar#calendar_appt_allday", subs);
 };
 
 ZmApptViewHelper._getShowAsColorFromId =
 function(id) {
-    var color = "#4AA6F1";
 	switch(id) {
-        case ZmCalBaseItem.PSTATUS_NEEDS_ACTION: color = "#FF3300"; break;
-		case "F": color = "#FFFFFF"; break;
-		case "B": color = "#4AA6F1"; break;
-		case "T": color = "#BAE0E3"; break;
-		case "O": color = "#7B5BAC"; break;
+        case ZmCalBaseItem.PSTATUS_NEEDS_ACTION: return "ZmAppt-no-response";
+		case "F": return "ZmAppt-free freeBusyBar_free";
+		case "B": return "ZmAppt-busy";
+		case "T": return "ZmAppt-tentative freeBusyBar_tentative";
+		case "O": return "ZmAppt-ooo freeBusyBar_ooo";
 	}
-    var colorCss = Dwt.createLinearGradientCss("#FFFFFF", color, "v");
-    if (!colorCss) {
-        colorCss = "background-color: " + color + ";";
-    }
-    return colorCss;
+	return "ZmAppt-busy";
 };
 
 ZmApptViewHelper.getBoxBorderFromId =
@@ -708,163 +675,4 @@ function(list, role) {
 		}
 	}
 	return result;
-};
-
-ZmApptViewHelper.getApptColor =
-function(deeper, calendar, tagNames, segment) {
-    var colors = ZmCalBaseView._getColors(calendar.rgb || ZmOrganizer.COLOR_VALUES[calendar.color]);
-    var calColor = deeper ? colors.deeper[segment] : colors.standard[segment];
-    var apptColor = calColor;
-    if (tagNames && (tagNames.length == 1)) {
-		var tagList = appCtxt.getAccountTagList(calendar);
-
-        var tag = tagList.getByNameOrRemote(tagNames[0]);
-        if(tag){apptColor = { bgcolor: tag.getColor() };}
-    }
-    return {calendar:calColor, appt:apptColor};
-};
-
-ZmApptViewHelper.setupCalendarColor =
-function(last, colors, tagNames, templateData, colorParam, clearParam, peelTopOffset, peelRightOffset, div) {
-    var colorCss = Dwt.createLinearGradientCss("#FFFFFF", colors.appt.bgcolor, "v");
-    if (colorCss) {
-        templateData[colorParam] = colorCss;
-        if (clearParam) {
-            templateData[clearParam] = null;
-        }
-    }
-    if (last && tagNames && (tagNames.length == 1)) {
-        if (!colorCss) {
-            // Can't use the gradient color.  IE masking doesn't work properly for tags on appts;
-            // Since the color is already set in the background, just print the overlay image
-            var match = templateData.tagIcon.match(AjxImg.RE_COLOR);
-            if (match) {
-                templateData.tagIcon = (match && match[1]) + "Overlay";
-            }
-        }
-        // Tag color has been applied to the appt.  Add the calendar peel image
-        templateData.peelIcon  = "Peel,color=" + colors.calendar.bgcolor;
-        templateData.peelTop   = peelTopOffset;
-        templateData.peelRight = peelRightOffset;
-    }
-};
-
-/**
- * Gets the attach list as HTML.
- * 
- * @param {ZmCalItem}	calItem			calendar item
- * @param {Object}		attach			a generic Object contain meta info about the attachment
- * @param {Boolean}		hasCheckbox		<code>true</code> to insert a checkbox prior to the attachment
- * @return	{String}	the HTML
- * 
- * TODO: replace string onclick handlers with funcs
- */
-ZmApptViewHelper.getAttachListHtml =
-function(calItem, attach, hasCheckbox) {
-	var msgFetchUrl = appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI);
-
-	// gather meta data for this attachment
-	var mimeInfo = ZmMimeTable.getInfo(attach.ct);
-	var icon = mimeInfo ? mimeInfo.image : "GenericDoc";
-	var size = attach.s;
-	var sizeText;
-	if (size != null) {
-		if (size < 1024)		sizeText = size + " B";
-		else if (size < 1024^2)	sizeText = Math.round((size/1024) * 10) / 10 + " KB";
-		else 					sizeText = Math.round((size / (1024*1024)) * 10) / 10 + " MB";
-	}
-
-	var html = [];
-	var i = 0;
-
-	// start building html for this attachment
-	html[i++] = "<table border=0 cellpadding=0 cellspacing=0><tr>";
-	if (hasCheckbox) {
-		html[i++] = "<td width=1%><input type='checkbox' checked value='";
-		html[i++] = attach.part;
-		html[i++] = "' name='";
-		html[i++] = ZmCalItem.ATTACHMENT_CHECKBOX_NAME;
-		html[i++] = "'></td>";
-	}
-
-	var hrefRoot = ["href='", msgFetchUrl, "&id=", calItem.invId, "&amp;part="].join("");
-	html[i++] = "<td width=20><a target='_blank' class='AttLink' ";
-	html[i++] = hrefRoot;
-	html[i++] = attach.part;
-	html[i++] = "'>";
-	html[i++] = AjxImg.getImageHtml(icon);
-	html[i++] = "</a></td><td><a target='_blank' class='AttLink' ";
-	if (appCtxt.get(ZmSetting.MAIL_ENABLED) && attach.ct == ZmMimeTable.MSG_RFC822) {
-		html[i++] = " href='javascript:;' onclick='ZmCalItemView.rfc822Callback(";
-		html[i++] = '"';
-		html[i++] = calItem.invId;
-		html[i++] = '"';
-		html[i++] = ",\"";
-		html[i++] = attach.part;
-		html[i++] = "\"); return false;'";
-	} else {
-		html[i++] = hrefRoot;
-		html[i++] = attach.part;
-		html[i++] = "'";
-	}
-	html[i++] = ">";
-	html[i++] = attach.filename;
-	html[i++] = "</a>";
-
-	var addHtmlLink = (appCtxt.get(ZmSetting.VIEW_ATTACHMENT_AS_HTML) &&
-					   attach.body == null && ZmMimeTable.hasHtmlVersion(attach.ct));
-
-	if (sizeText || addHtmlLink) {
-		html[i++] = "&nbsp;(";
-		if (sizeText) {
-			html[i++] = sizeText;
-			html[i++] = ") ";
-		}
-		if (addHtmlLink) {
-			html[i++] = "<a style='text-decoration:underline' target='_blank' class='AttLink' ";
-			html[i++] = hrefRoot;
-			html[i++] = attach.part;
-			html[i++] = "&view=html'>";
-			html[i++] = ZmMsg.preview;
-			html[i++] = "</a>&nbsp;";
-		}
-		if (attach.ct != ZmMimeTable.MSG_RFC822) {
-			html[i++] = "<a style='text-decoration:underline' class='AttLink' onclick='ZmZimbraMail.unloadHackCallback();' ";
-			html[i++] = hrefRoot;
-			html[i++] = attach.part;
-			html[i++] = "&disp=a'>";
-			html[i++] = ZmMsg.download;
-			html[i++] = "</a>";
-		}
-	}
-
-	html[i++] = "</td></tr></table>";
-
-	return html.join("");
-};
-
-/**
- * @param {DwtSelect} folderSelect
- *
- * TODO: set the width for folderSelect once the image icon gets loaded if any
- */
-ZmApptViewHelper.folderSelectResize =
-function(folderSelect) {
-
-    var divEl = folderSelect._containerEl,
-        childNodes,
-        img;
-
-    if (divEl) {
-        childNodes = divEl.childNodes[0];
-        if (childNodes) {
-            img = childNodes.getElementsByTagName("img")[0];
-            if (img) {
-                img.onload = function() {
-                    divEl.style.width = childNodes.offsetWidth || "auto";// offsetWidth doesn't work in IE if the element or one of its parents has display:none
-                    img.onload = "";
-                }
-            }
-        }
-    }
 };

@@ -1,10 +1,10 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012 VMware, Inc.
+ * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
- * Version 1.3 ("License"); you may not use this file except in
+ * Version 1.4 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
  * 
@@ -57,7 +57,7 @@ function() {
 ZmFilterRules.prototype.addRule = 
 function(rule, referenceRule, callback) {
 	DBG.println(AjxDebug.DBG3, "FILTER RULES: add rule '" + rule.name + "'");
-	var index = referenceRule ? this._vector.indexOf(referenceRule) : 0;
+	var index = referenceRule ? this._vector.indexOf(referenceRule) : null;
 	this._insertRule(rule, index);
 	this._saveRules(index, true, callback);
 };
@@ -75,8 +75,7 @@ function(rule) {
 	this._vector.removeAt(index);
 	delete this._ruleIdHash[rule.id];
 	delete this._ruleNameHash[rule.name];
-	this._deleteMode = true;
-    this._saveRules(index, true);
+	this._saveRules(index, true);
 };
 
 /**
@@ -111,27 +110,6 @@ function(rule) {
 	var nextRule = this._vector.removeAt(index + 1);
 	this._insertRule(nextRule, index);
 	this._saveRules(index + 1, true);
-};
-
-/**
- * Moves a rule to the bottom of the list.  If the rule is the last in the list, it isn't moved.
- * @param rule  {ZmFilterRule}  rule    the rule to be moved
- * @param skipSave  {boolean}   true to not save
- */
-ZmFilterRules.prototype.moveToBottom = 
-function(rule, skipSave) {
-	if (!rule) { return; }
-	var index = this.getIndexOfRule(rule);
-	if (index >= (this._vector.size() - 1)) { return; }
-	
-	while (index < this._vector.size() -1) {
-		var nextRule = this._vector.removeAt(index+1);
-		this._insertRule(nextRule, index);
-		index++;
-	}
-	if (!skipSave) {
-		this._saveRules(index, true);
-	}
 };
 
 /**
@@ -275,20 +253,6 @@ function(callback, result) {
 };
 
 /**
- * Public method to save the rules to the server.
- *
- * @param {int}	index			the index of rule to select in list after save
- * @param {Boolean}	notify			if <code>true</code>, notify listeners of change event
- * @param {AjxCallback}	callback		the callback
- * 
- * @public
- */
-ZmFilterRules.prototype.saveRules = 
-function(index, notify, callback) {
-	this._saveRules(index, notify, callback);	
-};
-
-/**
  * Saves the rules to the server.
  *
  * @param {int}	index			the index of rule to select in list after save
@@ -341,18 +305,8 @@ function(index, notify, callback, result) {
 	if (notify) {
 		this._notify(ZmEvent.E_MODIFY, {index: index});
 	}
-
-    if(this._deleteMode){
-        appCtxt.setStatusMsg(ZmMsg.filtersDeleted);
-        this._deleteMode = false;
-    }
-
-    else if(appCtxt.getFilterRuleDialog().isEditMode()){
-	    appCtxt.setStatusMsg(ZmMsg.filtersEdited);
-    }
-    else{
-        appCtxt.setStatusMsg(ZmMsg.filtersSaved);
-    }
+	AjxDebug.println(AjxDebug.FILTER, "_handleResponseSaveRules: notify == " + notify);
+	appCtxt.setStatusMsg(ZmMsg.filtersSaved);
 
 	if (callback) {
 		callback.run(result);
@@ -414,15 +368,3 @@ function(rule, index) {
 	this._ruleNameHash[rule.name] = rule;
 };
 
-/**
- * Public method to insert rule into internval vectors.  Adds to the end if no index is given.
- * 
- * @param {ZmFilterRule}	rule		the rule to insert
- * @param {int}	index		the index at which to insert
- * 
- * @public
- */
-ZmFilterRules.prototype.insertRule =
-function(rule, index) {
-	this._insertRule(rule, index);	
-};

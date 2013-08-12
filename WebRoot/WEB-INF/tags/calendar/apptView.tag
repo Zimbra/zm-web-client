@@ -1,10 +1,10 @@
 <%--
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010, 2012 VMware, Inc.
+ * Copyright (C) 2007, 2008, 2009, 2010, 2011, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
- * Version 1.3 ("License"); you may not use this file except in
+ * Version 1.4 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
  * 
@@ -45,7 +45,7 @@
     </app:keyboard>
     <form action="" method="post">
 
-        <table width="100%">
+        <table width="100%" cellpadding="0" cellspacing="0">
             <tr>
                 <td class='TbTop'>
                     <app:apptViewToolbar isReadOnly="${readOnly}" isInstance="${isInstance}" keys="true"/>
@@ -53,11 +53,11 @@
             </tr>
             <tr>
                 <td class='ZhAppContent'>
-                    <table width="100%">
+                    <table cellpadding="0" cellspacing="0" width="100%">
                         <c:if test="${isInstance}">
                             <tr>
                                 <td>
-                                    <table width="100%">
+                                    <table width="100%" cellpadding="0" cellspacing="0">
                                         <tr>
                                             <td class='ZhApptRecurrInfo' style='padding-left:5px' width="24"><app:img src="dwt/ImgInformation.png" alt="info"/></td>
                                             <td class='ZhApptRecurrInfo'>

@@ -64,7 +64,7 @@
 			<c:redirect url="/h/search?st=voicemail" />
 		  </c:when>
 		  <c:when test="${param.app eq 'options' and mailbox.features.options}">
-			  <c:redirect url="/h/options?selected=${param.section}" />
+			  <c:redirect url="/h/options" />
 		  </c:when>
 		  <c:when test="${param.app eq 'contacts' and mailbox.features.contacts}">
 			  <c:redirect url="/h/search?st=contact" />
@@ -225,7 +225,6 @@
     <c:set var="refreshSkin" value="${true}" scope="request"/>
     <c:remove var="skin" scope="session"/>
     <app:status style="info" html="true">
-    <fmt:setBundle basename="/messages/ZhMsg" scope='request' force="true"/>
         <fmt:message key="htmlWelcomeMesg"/>
     </app:status>
 </c:if>

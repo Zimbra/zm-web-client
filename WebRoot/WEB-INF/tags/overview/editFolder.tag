@@ -1,10 +1,10 @@
 <%--
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012 VMware, Inc.
+ * Copyright (C) 2007, 2008, 2009, 2010, 2011, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
- * Version 1.3 ("License"); you may not use this file except in
+ * Version 1.4 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
  * 
@@ -25,8 +25,7 @@
 <c:set var="folderRelativePath" value="${zm:getFolderPath(pageContext, folder.id)}"/> 
 <c:choose>
     <c:when test="${folder.isAppointmentView or folder.isContactView or folder.isTaskView or folder.isDocumentView}">
-        <fmt:message var="colorMsg" key="${folder.rgbColorMsg}"/>
-        <c:set var="color" value="${zm:lightenColor(not empty folder.rgb ? folder.rgb : colorMsg)}"/>
+        <c:set var="color" value="${zm:lightenColor(not empty folder.rgb ? folder.rgb : folder.rgbColor)}"/>
     </c:when>
     <c:otherwise>
         <c:set var="colorGray"><fmt:message key="colorGray"/></c:set>
@@ -41,15 +40,15 @@
         <table width="100%" cellspacing="0" cellpadding="1">
             <tr valign="middle" style="background-color:${color}">
                 <td valign="middle" width=20 style='padding-left:5px'>
-                    <app:img src="${folder.image}" alt='${label}'/>
+                    <app:img src="${folder.image}" alt='${fn:escapeXml(label)}'/>
                 </td>
                 <td>
                     <span class='ZhFolderHeader' style='vertical-align:middle;'>
-                        ${label}
+                        ${fn:escapeXml(label)}
                     </span>
                     <c:if test="${folder.depth gt 0}">
                         <span class='ZhFolderType' style='vertical-align:middle;'>
-                            &nbsp;(${folderRelativePath})
+                            &nbsp;(${fn:escapeXml(folderRelativePath)})
                         </span>
                     </c:if>
                 </td>
@@ -209,7 +208,7 @@
                             <option
                                     <c:if test="${parent.id eq folder.parentId}">selected</c:if> value="${parent.id}"/>
                             <c:set var="label" value="${zm:getFolderPath(pageContext, parent.id)}"/>
-                            ${label}
+                            ${fn:escapeXml(label)}
                         </c:if>
                     </c:if>
                 </zm:forEachFolder>

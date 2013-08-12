@@ -1,10 +1,10 @@
 <%--
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010, 2012 VMware, Inc.
+ * Copyright (C) 2007, 2008, 2009, 2010, 2011, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
- * Version 1.3 ("License"); you may not use this file except in
+ * Version 1.4 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
  * 
@@ -141,7 +141,7 @@
 			var zheard = function() { zclick("SOPHEARD"); }
 			var zunheard = function() { zclick("SOPUNHEARD"); }
 			var zprint = function() { var e = document.getElementById("OPPRINT"); window.open(e.href, e.target); }
-			/*var zcallManager = function() { var e = document.getElementById("OPCALLMANAGER"); window.location = e.href; }*/
+			var zcallManager = function() { var e = document.getElementById("OPCALLMANAGER"); window.location = e.href; }
 			function zSelectRow(ev,id) {var t = ev.target || ev.srcElement;if (t&&t.nodeName != 'INPUT'){ var a = document.getElementById(id); if (a) window.location = a.href; } }
 			var zlisten = function() {if (zrc == 0) return; var e = document.getElementById("A"+zsr); if (e && e.href) window.location = e.href;}
 			//-->
@@ -154,7 +154,7 @@
 			<zm:bindKey message="voicemail.MarkHeard" func="zheard"/>
 			<zm:bindKey message="voicemail.MarkUnheard" func="zunheard"/>
 			<zm:bindKey message="voicemail.Print" func="zprint"/>
-			<%--zm:bindKey message="voicemail.CallManager" func="zcallManager"/--%>
+			<zm:bindKey message="voicemail.CallManager" func="zcallManager"/>
 			<zm:bindKey message="voicemail.Listen" func="zlisten"/>
 			<zm:bindKey message="global.PreviousItem" func="zsp"/>
 			<zm:bindKey message="global.NextItem" func="zsn"/>

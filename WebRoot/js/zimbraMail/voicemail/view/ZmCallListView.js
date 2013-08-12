@@ -1,10 +1,10 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010, 2012 VMware, Inc.
+ * Copyright (C) 2007, 2008, 2009, 2010, 2011, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
- * Version 1.3 ("License"); you may not use this file except in
+ * Version 1.4 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
  * 
@@ -35,7 +35,7 @@ function(defaultColumnSort) {
 	ZmVoiceListView.prototype.createHeaderHtml.call(this, defaultColumnSort);
 	var isPlaced = this._getCallType() == ZmVoiceFolder.PLACED_CALL;
 	this._setColumnHeader(ZmVoiceListView.F_CALLER, isPlaced ? ZmMsg.to : ZmMsg.from);
-	this._setColumnHeader(ZmVoiceListView.F_DATE, isPlaced ? ZmMsg.timePlaced : ZmMsg.received);
+	this._setColumnHeader(ZmVoiceListView.F_DATE, isPlaced ? ZmMsg.placed : ZmMsg.received);
 };
 
 ZmCallListView.prototype._setColumnHeader = 
@@ -79,7 +79,7 @@ function(prefix) {
 	} else if (prefix == ZmVoiceListView.F_DURATION) {
 		return ZmMsg.sortByDuration;
 	} else if (prefix == ZmVoiceListView.F_DATE) {
-		return this._getCallType() == ZmVoiceFolder.PLACED_CALL ? ZmMsg.sortByTimePlaced : ZmMsg.sortByReceived;
+		return ZmMsg.sortByReceived;
 	}
 	return null;
 };

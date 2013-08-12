@@ -1,10 +1,10 @@
 <%--
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012 VMware, Inc.
+ * Copyright (C) 2007, 2008, 2009, 2010, 2011, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
- * Version 1.3 ("License"); you may not use this file except in
+ * Version 1.4 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
  * 
@@ -33,8 +33,7 @@
         <fmt:message var="createLabel" key="createCalendar"/>
         <c:set var="icon" value="${link ? 'calendar/ImgSharedCalendarFolder.png' : 'calendar/ImgCalendarFolder.png'}"/>
         <c:set var="newFolderColor" value="${empty param.newFolderColor ? 'blue' : param.newFolderColor}"/>
-        <c:set var="newFolderStyleMsg" value="${zm:getFolderRgbColorMsg(newFolderColor,'appointment')}"/>
-        <fmt:message var="newFolderStyleColor" key="${newFolderStyleMsg}"/>
+        <c:set var="newFolderStyleColor" value="${zm:getFolderRgbColor(newFolderColor,'appointment')}"/>
         <c:set var="newFolderExcludeFlag" value="${empty param.newFolderExcludeFlag ? '' : param.newFolderExcludeFlag}"/>
         <c:set var="newFolderCheckedFlag" value="${empty param.newFolderCheckedFlag ? '#' : param.newFolderCheckedFlag}"/>
         <fmt:message var="folderType" key="${url ? 'calendarSubscribed' : (link ? 'calendarShared' : 'calendarUser')}"/>
@@ -45,16 +44,14 @@
         <c:set var="icon" value="${link ? 'contacts/ImgSharedContactsFolder.png' : 'contacts/ImgContactsFolder.png'}"/>
         <fmt:message var="folderType" key="${link ? 'addressBookShared' : 'addressBookUser'}"/>
         <c:set var="newFolderColor" value="${empty param.newFolderColor ? 'blue' : param.newFolderColor}"/>
-        <c:set var="newFolderStyleMsg" value="${zm:getFolderRgbColorMsg(newFolderColor,'contact')}"/>
-        <fmt:message var="newFolderStyleColor" key="${newFolderStyleMsg}"/>
+        <c:set var="newFolderStyleColor" value="${zm:getFolderRgbColor(newFolderColor,'appointment')}"/>
     </c:when>
     <c:when test="${tasklist}">
         <fmt:message var="label" key="taskListNew"/>
         <fmt:message var="createLabel" key="createTaskList"/>
         <c:set var="icon" value="${link ? 'zimbra/ImgSharedTaskList.png' : 'startup/ImgTaskList.png'}"/>
         <c:set var="newFolderColor" value="${empty param.newFolderColor ? 'gray' : param.newFolderColor}"/>
-        <c:set var="newFolderStyleMsg" value="${zm:getFolderRgbColorMsg(newFolderColor,'task')}"/>
-        <fmt:message var="newFolderStyleColor" key="${newFolderStyleMsg}"/>
+        <c:set var="newFolderStyleColor" value="${zm:getFolderRgbColor(newFolderColor,'task')}"/>
         <fmt:message var="folderType" key="${link ? 'taskListShared' : 'taskListUser'}"/>
     </c:when>
     <c:when test="${briefcase}">
@@ -62,8 +59,7 @@
         <fmt:message var="createLabel" key="createBriefcase"/>
         <c:set var="icon" value="${link ? 'startup/ImgFolder.png' : 'startup/ImgFolder.png'}"/>
         <c:set var="newFolderColor" value="${empty param.newFolderColor ? 'gray' : param.newFolderColor}"/>
-        <c:set var="newFolderStyleMsg" value="${zm:getFolderRgbColorMsg(newFolderColor,'task')}"/>
-        <fmt:message var="newFolderStyleColor" key="${newFolderStyleMsg}"/>
+        <c:set var="newFolderStyleColor" value="${zm:getFolderRgbColor(newFolderColor,'task')}"/>
         <fmt:message var="folderType" key="${link ? 'briefcaseShared' : 'briefcaseUser'}"/>
     </c:when>
     <c:otherwise>
@@ -133,7 +129,7 @@
                     <c:if test="${(parent.isMessageMoveTarget and !parent.isSpam) or parent.isTrash}">
                         <option value="${parent.id}"/>
                         <c:set var="label" value="${zm:getFolderPath(pageContext, parent.id)}"/>
-                        ${label}
+                        ${fn:escapeXml(label)}
                     </c:if>
                 </zm:forEachFolder>
             </select>
@@ -155,7 +151,7 @@
                     <c:if test="${parent.isDocumentMoveTarget and !parent.isTrash and !parent.isSpam}">
                         <option value="${parent.id}"/>
                         <c:set var="label" value="${zm:getFolderPath(pageContext, parent.id)}"/>
-                        ${label}
+                        ${fn:escapeXml(label)}
                     </c:if>
                 </zm:forEachFolder>
             </select>

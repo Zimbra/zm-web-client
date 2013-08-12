@@ -1,10 +1,10 @@
 <%--
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010, 2011 VMware, Inc.
+ * Copyright (C) 2007, 2008, 2009, 2010, 2011, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
- * Version 1.3 ("License"); you may not use this file except in
+ * Version 1.4 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
  * 
@@ -20,7 +20,7 @@
 <%@ attribute name="rawdate" rtexprvalue="true" required="false" type="java.util.Calendar"%>
 <%@ attribute name="timezone" rtexprvalue="true" required="false" type="java.util.TimeZone"%>
 <%@ attribute name="date" rtexprvalue="true" required="false" %>
-<%@ attribute name="appt" rtexprvalue="true" required="false" type="com.zimbra.client.ZAppointmentHit" %>
+<%@ attribute name="appt" rtexprvalue="true" required="false" type="com.zimbra.cs.zclient.ZAppointmentHit" %>
 <%@ attribute name="nodate" rtexprvalue="true" required="false" %>
 <%@ attribute name="toggleInstance" rtexprvalue="true" required="false" %>
 <%@ attribute name="apptFromParam" rtexprvalue="true" required="false" %>

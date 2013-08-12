@@ -1,10 +1,10 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2008, 2009, 2010, 2011 VMware, Inc.
+ * Copyright (C) 2008, 2009, 2010, 2011, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
- * Version 1.3 ("License"); you may not use this file except in
+ * Version 1.4 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
  * 
@@ -26,15 +26,17 @@
  * 
  * @see			Dwt.STATIC_STYLE
  */
-ZmBriefcaseTabView = function(parent,className,posStyle){
+ZmBriefcaseTabView = function(parent,className,posStyle) {
+
 	this._app = appCtxt.getApp(ZmApp.BRIEFCASE);
 	this.view = ZmId.VIEW_BRIEFCASE_ICON;
-	DwtComposite.call(this,parent,className,Dwt.STATIC_STYLE);
-    this._createHtml();
-    this.showMe();
+
+    DwtTabViewPage.call(this,parent,className,Dwt.STATIC_STYLE);
+
+    this.setScrollStyle(Dwt.SCROLL);
 };
 
-ZmBriefcaseTabView.prototype = new DwtComposite;
+ZmBriefcaseTabView.prototype = new DwtTabViewPage;
 ZmBriefcaseTabView.prototype.constructor = ZmBriefcaseTabView;
 
 /**
@@ -52,7 +54,9 @@ ZmBriefcaseTabView.prototype.toString = function(){
  */
 ZmBriefcaseTabView.prototype.showMe =
 function() {
-    this.setSize(500, 295);
+    DwtTabViewPage.prototype.showMe.call(this);
+    this.setSize(Dwt.DEFAULT, 235);
+	this._itemCountText.setVisible(true);
     this.showFolder(this._folderId || ZmOrganizer.ID_BRIEFCASE);
 };
 
@@ -62,6 +66,7 @@ function() {
  */
 ZmBriefcaseTabView.prototype.hideMe =
 function() {
+    DwtTabViewPage.prototype.hideMe.call(this);
 	this._itemCountText.setVisible(false);
 };
 
@@ -69,6 +74,7 @@ function() {
 ZmBriefcaseTabView.prototype._createHtml =
 function() {
 
+    this._contentEl =  this.getContentHtmlElement();
     this._tableID = Dwt.getNextId();
     this._folderTreeCellId = Dwt.getNextId();
     this._folderListId = Dwt.getNextId();
@@ -76,13 +82,13 @@ function() {
     var idx = 0;
     html[idx++] = ['<table class="ZmBriefcaseTabView_Table" id="', this._tableID, '" cellspacing="0" cellpadding="0" border="0">'].join("");
     html[idx++] = '<tr>';
-    html[idx++] = ['<td width="30%" valign="top"  id="', this._folderTreeCellId, '">'].join("");
+    html[idx++] = ['<td width="30%" valign="top" id="', this._folderTreeCellId, '">'].join("");
     html[idx++] = '</td>';
     html[idx++] = ['<td width="70%" valign="top" id="', this._folderListId, '">'].join("");
     html[idx++] = '</td>';
     html[idx++] = '</tr>';
     html[idx++] = '</table>';
-    this.setContent(html.join(""));
+    this._contentEl.innerHTML = html.join("");
     
     this.showBriefcaseTreeView();
 
@@ -101,17 +107,29 @@ function() {
     var lv = this._listView = this._controller._listView[this.view] = new ZmBriefcaseIconView(params);
     lv.reparentHtmlElement(this._folderListId);
     Dwt.setPosition(lv.getHtmlElement(),Dwt.RELATIVE_STYLE);
+
+	var tb = this.parent._tabBar;
+	var el = tb._suffixEl;
+	if (el) {
+		var b = new DwtText({parent:tb, className:"itemCountText", id:this.view + "Text"});
+		this._itemCountText = bc._itemCountText[this.view] = b;
+		b.reparentHtmlElement(el.id);
+		b.getHtmlElement().style.textAlign = "right";
+	}
 };
 
 ZmBriefcaseTabView.prototype.setSize =
 function(width, height) {
 
-    var treeWidth = width * 0.40;
-    var listWidth = width - treeWidth;
+    DwtTabViewPage.prototype.setSize.call(this, width, height);
+
+    var size = this.getSize();
+    var treeWidth = size.x * 0.40;
+    var listWidth = size.x - treeWidth;
     var newHeight = height - 15;
 	if (this._overview) {
 		this._overview.setSize(treeWidth, newHeight);
-		this._listView.setSize(listWidth - 11, newHeight);
+		this._listView.setSize(listWidth - 5, newHeight);
 	}
 	
     return this;

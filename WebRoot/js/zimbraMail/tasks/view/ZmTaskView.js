@@ -1,10 +1,10 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2010, 2011, 2012 VMware, Inc.
+ * Copyright (C) 2010, 2011, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
- * Version 1.3 ("License"); you may not use this file except in
+ * Version 1.4 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
  * 
@@ -34,7 +34,6 @@ ZmTaskView = function(parent, posStyle, controller) {
 
 ZmTaskView.prototype = new ZmCalItemView;
 ZmTaskView.prototype.constructor = ZmTaskView;
-ZmTaskView.prototype.isZmTaskView = true;
 
 // Public methods
 
@@ -98,9 +97,7 @@ function(calItem) {
         remindTime: remindTime,
         alarm: alarm,
 		folder: appCtxt.getTree(ZmOrganizer.TASKS).getById(calItem.folderId),
-		folderLabel: ZmMsg.folder,
-        isTask:true,
-        _infoBarId:this._infoBarId
+		folderLabel: ZmMsg.folder
 	};
 };
 
@@ -109,7 +106,7 @@ function(calItem) {
 ZmTaskView.prototype._renderCalItem =
 function(calItem) {
 
-   if(this._controller.isReadingPaneOn() && !this._newTab) {
+   if(this._controller.isReadingPaneOn()) {
 	this._lazyCreateObjectManager();
 
 	var subs = this._getSubs(calItem);
@@ -118,7 +115,6 @@ function(calItem) {
 
     var el = this.getHtmlElement();
 	el.innerHTML = AjxTemplate.expand("tasks.Tasks#ReadOnlyView", subs);
-    this._setTags(calItem);
 
 	// content/body
 	var hasHtmlPart = (calItem.notesTopPart && calItem.notesTopPart.getContentType() == ZmMimeTable.MULTI_ALT);
@@ -126,30 +122,12 @@ function(calItem) {
 		? ZmMimeTable.TEXT_HTML : ZmMimeTable.TEXT_PLAIN;
 
 	var bodyPart = calItem.getNotesPart(mode);
-
-    if (!bodyPart && calItem.message){
-        bodyPart = calItem.message.getInviteDescriptionContentValue(ZmMimeTable.TEXT_PLAIN);
-    }
-
 	if (bodyPart) {
 		this._msg = this._msg || this._calItem._currentlyLoaded;
-        if (mode === ZmMimeTable.TEXT_PLAIN) {
-            bodyPart = AjxStringUtil.convertToHtml(bodyPart);
-        }
-        this._makeIframeProxy({container: el, html:bodyPart, isTextMsg:(mode == ZmMimeTable.TEXT_PLAIN)});
+		this._makeIframeProxy(el, bodyPart, mode == ZmMimeTable.TEXT_PLAIN);
 	}
    } else {
      ZmCalItemView.prototype._renderCalItem.call(this, calItem);
    }
-   Dwt.setLoadedTime("ZmTaskItem");
-   calItem.addChangeListener(this._taskChangeListener.bind(this));
-
+   Dwt.setLoadedTime("ZmTaskItem", new Date());
 };
-
-ZmTaskView.prototype._taskChangeListener =
-function(ev){
-    if(ev.event == ZmEvent.E_TAGS || ev.type == ZmEvent.S_TAG) {
-        this._setTags(this._calItem);
-    }
-};
-

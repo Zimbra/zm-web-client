@@ -1,5 +1,5 @@
 <%@ page buffer="8kb" autoFlush="true" %>
-<%@ page import="java.util.*,javax.naming.*,com.zimbra.client.ZAuthResult" %>
+<%@ page import="java.util.*,javax.naming.*,com.zimbra.cs.zclient.ZAuthResult" %>
 <%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
 <%@ page session="false" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
@@ -15,7 +15,7 @@
 <%-- query params to ignore when constructing form port url or redirect url --%>
 <c:set var="ignoredQueryParams" value="loginOp,loginNewPassword,loginConfirmNewPassword,loginErrorCode,username,password,zrememberme,zlastserver,client,customerDomain"/>
 <c:set var="prefsToFetch" value="zimbraPrefSkin,zimbraPrefClientType,zimbraPrefLocale,zimbraPrefMailItemsPerPage,zimbraPrefGroupMailBy,zimbraPrefAdvancedClientEnforceMinDisplay"/>
-<c:set var="attrsToFetch" value="zimbraFeatureMailEnabled,zimbraFeatureCalendarEnabled,zimbraFeatureContactsEnabled,zimbraFeatureIMEnabled,zimbraFeatureOptionsEnabled,zimbraFeaturePortalEnabled,zimbraFeatureTasksEnabled,zimbraFeatureVoiceEnabled,zimbraFeatureBriefcasesEnabled,zimbraFeatureMailUpsellEnabled,zimbraFeatureContactsUpsellEnabled,zimbraFeatureCalendarUpsellEnabled,zimbraFeatureVoiceUpsellEnabled,zimbraFeatureConversationsEnabled"/>
+<c:set var="attrsToFetch" value="zimbraFeatureMailEnabled,zimbraFeatureCalendarEnabled,zimbraFeatureContactsEnabled,zimbraFeatureIMEnabled,zimbraFeatureNotebookEnabled,zimbraFeatureOptionsEnabled,zimbraFeaturePortalEnabled,zimbraFeatureTasksEnabled,zimbraFeatureVoiceEnabled,zimbraFeatureBriefcasesEnabled,zimbraFeatureMailUpsellEnabled,zimbraFeatureContactsUpsellEnabled,zimbraFeatureCalendarUpsellEnabled,zimbraFeatureVoiceUpsellEnabled,zimbraFeatureConversationsEnabled"/>
 
 <%-- this checks and redirects to admin if need be --%>
 <zm:adminRedirect/>
@@ -50,7 +50,7 @@
 		    <c:choose>
 	        	<c:when test="${!empty cookie.ZM_TEST}">
 		            <zm:login username="${fullUserName}" password="${param.password}" varRedirectUrl="postLoginUrl" varAuthResult="authResult"
-		                      newpassword="${param.loginNewPassword}" rememberme="${param.zrememberme == '1'}"
+		                      varNeedRefer="needRefer" newpassword="${param.loginNewPassword}" rememberme="${param.zrememberme == '1'}"
 		                      prefs="${prefsToFetch}" attrs="${attrsToFetch}"
 							  requestedSkin="${param.skin}"/>
 		            <%-- continue on at not empty authResult test --%>
@@ -66,7 +66,7 @@
 	        <c:set var="authtoken" value="${not empty param.zauthtoken ? param.zauthtoken : cookie.ZM_AUTH_TOKEN.value}"/>
 	        <c:if test="${not empty authtoken}">
 	            <zm:login authtoken="${authtoken}" authtokenInUrl="${not empty param.zauthtoken}"
-	                      varRedirectUrl="postLoginUrl" varAuthResult="authResult"
+	                      varRedirectUrl="postLoginUrl" varAuthResult="authResult" varNeedRefer="needRefer"
 	                      rememberme="${param.zrememberme == '1'}"
                           prefs="${prefsToFetch}" attrs="${attrsToFetch}"
 						  requestedSkin="${param.skin}"/>
@@ -141,10 +141,10 @@ if (application.getInitParameter("offlineMode") != null)  {
  login.jsp
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2009, 2010, 2011 VMware, Inc.
+ * Copyright (C) 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
- * Version 1.3 ("License"); you may not use this file except in
+ * Version 1.4 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
  * 
@@ -201,7 +201,7 @@ if (application.getInitParameter("offlineMode") != null)  {
                                     <table width="100%">
                                         <tr>
                                             <td valign="top" width="40">
-                                                <img alt='<fmt:message key="ALT_ERROR"/>' src="<app:imgurl value='dwt/ImgCritical_32.png?v=${version}'/>"/>
+                                                <img alt='<fmt:message key="ALT_ERROR"/>' src="<app:imgurl value='dwt/ImgCritical_32.png'/>"/>
                                             </td>
                                             <td class="errorText">
                                                 <c:out value="${errorMessage}"/>

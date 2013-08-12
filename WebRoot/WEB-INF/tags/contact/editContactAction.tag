@@ -1,10 +1,10 @@
 <%--
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011, 2012 VMware, Inc.
+ * Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
- * Version 1.3 ("License"); you may not use this file except in
+ * Version 1.4 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
  * 
@@ -31,22 +31,18 @@
         fullName="${param.fullName}" nickname="${param.nickname}"
     />
 </c:set>
-<c:if test="${zm:isFileAsExplicit(param.fileAs)}">
-    <c:set var="groupName" value="8:${param.nickname}"/>
-</c:if>
 
 <c:if test="${not empty param.imAddress1 and not empty param.imAddress1_type}"><c:set var="im1" value="${param.imAddress1_type}://${param.imAddress1}"/></c:if>
 <c:if test="${not empty param.imAddress2 and not empty param.imAddress2_type}"><c:set var="im2" value="${param.imAddress2_type}://${param.imAddress2}"/></c:if>
 <c:if test="${not empty param.imAddress3 and not empty param.imAddress3_type}"><c:set var="im3" value="${param.imAddress3_type}://${param.imAddress3}"/></c:if>
 
-
-<zm:modifyContact var="id" id="${id}" folderid="${param.folderid}" replace="${!empty id and param.isgroup ? true : false}">
+<zm:modifyContact var="id" id="${id}" folderid="${param.folderid}">
     <zm:field name="firstName" value="${param.firstName}"/>
     <zm:field name="phoneticFirstName" value="${param.phoneticFirstName}"/>
     <zm:field name="lastName" value="${param.lastName}"/>
     <zm:field name="phoneticLastName" value="${param.phoneticLastName}"/>
     <zm:field name="middleName" value="${param.middleName}"/>
-    <zm:field name="fileAs" value="${zm:isFileAsExplicit(param.fileAs) ?  groupName : param.fileAs}"/>
+    <zm:field name="fileAs" value="${param.fileAs}"/>
     <zm:field name="company" value="${param.company}"/>
     <zm:field name="phoneticCompany" value="${param.phoneticCompany}"/>
     <zm:field name="jobTitle" value="${param.jobTitle}"/>
@@ -103,14 +99,10 @@
     <zm:field name="otherFax" value="${param.otherFax}"/>
     <zm:field name="notes" value="${param.notes}"/>
 
-    <c:if test="${(not empty param.dlist or not empty param.dlist1) and param.isgroup}">
+    <c:if test="${not empty param.dlist and param.isgroup}">
+        <zm:field name="fileAs" value="8:${param.nickname}"/>
+        <zm:field name="dlist" value="${fn:join(paramValues.dlist,', ')}"/>
         <zm:field name="type" value="group"/>
-        <c:forEach var="mem" items="${paramValues.dlist}" varStatus="status">
-            <zm:member name="${paramValues.dlistType[status.index]}" value="${paramValues.dlistId[status.index]}"/>
-        </c:forEach>
-        <c:forEach var="mem" items="${paramValues.dlist1}" varStatus="status">
-            <zm:member name="${paramValues.dlistType1[status.index]}" value="${paramValues.dlistId1[status.index]}"/>
-        </c:forEach>
     </c:if>
-
+    
 </zm:modifyContact>

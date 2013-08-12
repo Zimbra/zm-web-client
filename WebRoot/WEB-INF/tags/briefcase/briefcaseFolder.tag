@@ -1,10 +1,10 @@
 <%--
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2008, 2009, 2010, 2011, 2012 VMware, Inc.
+ * Copyright (C) 2008, 2009, 2010, 2011, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
- * Version 1.3 ("License"); you may not use this file except in
+ * Version 1.4 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
  * 
@@ -24,10 +24,8 @@
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 
 <c:set var="label" value="${zm:getFolderName(pageContext, folder.id)}"/>
-<c:set var="truncatedLabel" value="${zm:getTruncatedFolderName(pageContext, folder.id, 15, true)}"/>
 <c:set var="padFudge" value="${folder.hasChildren ? 0 : 20}"/>
-<fmt:message var="colorMsg" key="${folder.rgbColorMsg}"/>
-<c:set var="color" value="${zm:lightenColor(not empty folder.rgb ? folder.rgb : colorMsg)}"/>
+<c:set var="color" value="${zm:lightenColor(not empty folder.rgb ? folder.rgb : folder.rgbColor)}"/>
 <tr>
     <td nowrap colspan="3" style="background-color:${color}" class='Folder<c:if test="${folder.hasUnread}"> Unread</c:if>'
         style="padding-left: ${padFudge+folder.depth*8}px">
@@ -49,9 +47,9 @@
         </c:if>
         <%--<span style='width:20px'><c:if test="${folder.hasChildren}"><app:img src="startup/ImgNodeExpanded.gif"/></c:if></span>--%>
         <a href='${fn:escapeXml(url)}' id="FLDR${folder.id}">
-            <app:img src="${folder.image}" alt='${label}'/>
+            <app:img src="${folder.image}" alt='${fn:escapeXml(label)}'/>
             <span <c:if test="${folder.id eq requestScope.context.selectedId}"> class='ZhTISelected'</c:if>>
-                ${truncatedLabel}
+                ${fn:escapeXml(zm:truncate(label,15,true))}
                 <c:if test="${folder.hasUnread}">(${folder.unreadCount}) </c:if>
             </span>
         </a>

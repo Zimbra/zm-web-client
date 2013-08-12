@@ -1,17 +1,15 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
- * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2010, 2011, 2012, 2013 VMware, Inc.
+ * Copyright (C) 2010, 2011, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
- * Version 1.3 ("License"); you may not use this file except in
+ * Version 1.4 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
  * ***** END LICENSE BLOCK *****
  */
 /**
@@ -21,7 +19,7 @@ ZmApptListView = function(parent, posStyle, controller, dropTgt) {
     if (arguments.length == 0) return;
     var params = Dwt.getParams(arguments, ZmApptListView.PARAMS);
     params.headerList = this._getHeaderList();
-    params.view = params.view || ZmId.VIEW_CAL_TRASH;
+    params.view = ZmId.VIEW_CAL_LIST;
     ZmListView.call(this, params);
     this._bSortAsc = true;
     this._defaultSortField = ZmItem.F_DATE;
@@ -82,18 +80,6 @@ ZmApptListView.prototype.getAtttendees = function() {
     return null;
 };
 
-ZmApptListView.prototype.updateTimeIndicator=function(force){
-    //override
-};
-
-ZmApptListView.prototype.startIndicatorTimer=function(force){
-    //override
-};
-
-ZmApptListView.prototype.checkIndicatorNeed=function(viewId,startDate){
-    //override
-};
-
 //
 // Protected methods
 //
@@ -123,12 +109,9 @@ ZmApptListView.prototype._sortList = function(list, column) {
 ZmApptListView.prototype._sortColumn = function(columnItem, bSortAsc) {
 	this._defaultSortField = columnItem._field;
 
-	var list = this.getList();
-	list = list && list.clone();
-	if (list) {
-		this._sortList(list, columnItem._field);
-		this.set(list, null, true);
-	}
+	var list = this.getList().clone();
+	this._sortList(list, columnItem._field);
+	this.set(list, null, true);
 };
 
 ZmApptListView.prototype._getHeaderToolTip = function(field, itemIdx) {
@@ -181,9 +164,11 @@ ZmApptListView.prototype.set = function(apptList, skipMiniCalUpdate, skipSort) {
 	}
 	ZmListView.prototype.set.call(this, apptList, this._defaultSortField);
     this._resetColWidth();
-    //Does not make sense but required to make the scrollbar appear
-    var size = this.getSize();
-    this._listDiv.style.height = (size.y - DwtListView.HEADERITEM_HEIGHT)+"px";
+    if(AjxEnv.isIE) {
+        //Does not make sense but required to make the scrollbar appear
+        var size = this.getSize();
+        this._listDiv.style.height = (size.y - DwtListView.HEADERITEM_HEIGHT)+"px";
+    }
 };
 
 ZmApptListView.prototype._getItemId = function(item) {
@@ -197,7 +182,7 @@ ZmApptListView.prototype._getFieldId = function(item, field) {
 };
 
 ZmApptListView.prototype._getCellId = function(item, field) {
-	if (field == ZmItem.F_SUBJECT || field == ZmItem.F_DATE || field == ZmItem.F_LOCATION || field == ZmItem.F_STATUS || field == ZmItem.F_FOLDER) {
+	if (field == ZmItem.F_SUBJECT || field == ZmItem.F_DATE) {
 		return this._getFieldId(item, field);
 	}
 };
@@ -214,8 +199,17 @@ ZmApptListView.prototype._getCellContents = function(htmlArr, idx, appt, field, 
 		idx = this._getImageHtml(htmlArr, idx, icon, this._getFieldId(appt, field));
 
 	}
+    else if (field == ZmItem.F_FROM) { // for mixed view
+		htmlArr[idx++] = appt.getOrganizer();
+
+	}
     else if (field == ZmItem.F_SUBJECT) {
-		htmlArr[idx++] = AjxStringUtil.htmlEncode(appt.getName(), true);
+		if (params.isMixedView) {
+			htmlArr[idx++] = appt.name ? AjxStringUtil.htmlEncode(appt.name, true) : AjxStringUtil.htmlEncode(ZmMsg.noSubject);
+		}
+        else {
+			htmlArr[idx++] = AjxStringUtil.htmlEncode(appt.getName(), true);
+		}
 		if (appCtxt.get(ZmSetting.SHOW_FRAGMENTS) && appt.fragment) {
 			htmlArr[idx++] = this._getFragmentSpan(appt);
 		}
@@ -238,8 +232,7 @@ ZmApptListView.prototype._getCellContents = function(htmlArr, idx, appt, field, 
 		var subs = {
             folder: calendar,
 			folderColor: colors.standard.header.bgcolor,
-			folderName: calendar.getName(),
-            id: Dwt.getNextId()
+			folderName: calendar.getName()
 		};
 		htmlArr[idx++] = AjxTemplate.expand("calendar.Calendar#ListViewFolder", subs);
 
@@ -262,13 +255,13 @@ ZmApptListView.prototype._getCellContents = function(htmlArr, idx, appt, field, 
 //
 
 ZmApptListView._sortSubject = function(a, b) {
-    // Bug fix # 80458 - Convert the subject line to lower case and compare
-    var aVal = a.getName().toLowerCase();
-    var bVal = b.getName().toLowerCase();
+	var aVal = a.getName();
+	var bVal = b.getName();
 
 	if (aVal < bVal)		{ return ZmApptListView.sortByAsc ? -1 : 1; }
 	else if (aVal > bVal)	{ return ZmApptListView.sortByAsc ? 1 : -1; }
 	else 					{ return 0; }
+
 };
 
 ZmApptListView._sortStatus = function(a, b) {

@@ -88,13 +88,13 @@
      onload="var e=document.getElementById('subject'); if (e) e.focus();">
 
     <form action="" name="taskForm" method="post" enctype="multipart/form-data" accept-charset="utf-8">
-        <table width="100%" style='height:100%;'>
+        <table width="100%" style='height:100%;' cellpadding="0" cellspacing="0">
             <tr>
                 <td class='TbTop'>
-                    <table width="100%" class='Tb'>
+                    <table width="100%" cellspacing="0" cellpadding="0" class='Tb'>
                         <tr valign='middle'>
                             <td align="left" class="TbBt">
-                                <table class='Tb'>
+                                <table cellspacing="0" cellpadding="0" class='Tb'>
                                     <tr>
                                         <app:button id="OPSAVE" name="actionSave" src="common/ImgSave.png" tooltip="save" text="save"/>
                                         <td><div class='vertSep'></div></td>
@@ -141,13 +141,11 @@
             </tr>
             <tr>
                 <td class='ZhAppContent'>
-                    <table width="100%" class='Compose'>
-                    <c:set var="folder" value="${zm:getFolder(pageContext, empty compose ? 15 : compose.apptFolderId)}"/>
-                    <fmt:message var="colorMsg" key="${folder.rgbColorMsg}"/>
-                        <tr  class='${folder.styleColor}Bg'>
+                    <table cellpadding="2" cellspacing="0" width="100%" class='Compose'>
+                        <tr  class='${zm:getFolder(pageContext, empty compose ? 10 : compose.apptFolderId).styleColor}Bg'>
                             <td colspan="2" class='ZhBottomSep'>
-                                <table width="100%">
-                                    <tr class='apptHeaderRow' style="background-color:${zm:lightenColor(not empty folder.rgb ? folder.rgb : colorMsg)}">
+                                <table width="100%" cellpadding="0" cellspacing="0">
+                                    <tr class='apptHeaderRow'>
                                         <td width="24"><center><app:img src="${apptImage}" altkey="${apptImageAlt}"/></center></td>
                                         <td class='apptHeader'>
                                             ${fn:escapeXml(apptSubject)}
@@ -172,24 +170,24 @@
                         </tr>
                         <tr>
                         <td colspan="2">
-                            <table width="100%">
+                            <table cellpadding="2" cellspacing="0" width="100%">
                                 <tr>
                                     <td valign='top' width="50%">
                                         <fieldset>
                                             <legend><fmt:message key="details"/></legend>
-                                            <table class="ZPropertySheet" cellspacing="6">
+                                            <table cellpadding="5" cellspacing="0">
                                                 <tr>
-                                                    <td class="editViewLabel"><label for="subject"><fmt:message key="subject"/>:</label></td>
+                                                    <td width="1%" align="right"><label for="subject"><fmt:message key="subject"/>:</label></td>
                                                     <td><input style="width:99%" type="text" size="100" id="subject" name="subject" value="${fn:escapeXml(compose.subject)}"></td>
                                                 </tr>
                                                 <tr>
-                                                    <td class="editViewLabel"><label for="location"><fmt:message key="location"/>:</label></td>
+                                                    <td width="1%" align="right"><label for="location"><fmt:message key="location"/>:</label></td>
                                                     <td><input style="width:99%" id="location" type="text" size="100" name="location" value="${fn:escapeXml(compose.location)}"></td>
                                                 </tr>
                                                 <tr>
-                                                    <td class="editViewLabel"><label for="priority"><fmt:message key="priority"/>:</label></td>
+                                                    <td width="1%" align="right"><label for="priority"><fmt:message key="priority"/>:</label></td>
                                                     <td>
-                                                        <table>
+                                                        <table cellpadding="0" cellspacing="0">
                                                             <tr>
                                                                 <td>
                                                                     <select name="taskPriority" id="priority">
@@ -218,7 +216,7 @@
                                                                     <zm:forEachFolder var="folder">
                                                                         <c:if test="${folder.isTaskView and folder.isTaskMoveTarget}">
                                                                             <option value="${folder.id}" <c:if test="${compose.apptFolderId eq folder.id}">selected </c:if>/>
-                                                                            ${zm:getFolderName(pageContext, folder.id)}
+                                                                            ${fn:escapeXml(zm:getFolderName(pageContext, folder.id))}
                                                                         </c:if>
                                                                     </zm:forEachFolder>
                                                                 </select>
@@ -237,13 +235,13 @@
                                     <td valign='top' width="50%">
                                         <fieldset>
                                             <legend><fmt:message key="date"/></legend>
-                                            <table class="ZPropertySheet" cellspacing="6">
+                                            <table cellpadding="5" cellspacing="0">
                                             <tr>
                                                 <td align="right">
                                                     <input id="completed" type=checkbox onclick="completedCheckbox(this)" name="completed" <c:if test="${compose.taskStatus eq 'COMP'}">checked</c:if> value="1">
                                                 </td>
                                                 <td>
-                                                    <table>
+                                                    <table cellpadding="0" cellspacing="0">
                                                         <tr>
                                                             <td>
                                                                 <select name="taskStatus" id="status" onchange="statusChanged(this.options[this.selectedIndex].value)">
@@ -277,10 +275,13 @@
                                             <tr>
                                                 <td width="1%" align="right" nowrap><label for="start"><fmt:message key="startDate"/>:</label></td>
                                                 <td>
-                                                    <table>
+                                                    <table cellpadding="0" cellspacing="0">
                                                         <tr>
                                                             <td>
                                                                 <input id="start" type=text size="12" maxlength="20" name="startDate" value="${fn:escapeXml(compose.startDate)}">
+                                                            </td>
+                                                            <td class='ZhDateHint'>
+                                                                <fmt:message key="CAL_APPT_EDIT_DATE_FORMAT_HINT"/>
                                                             </td>
                                                         </tr>
                                                     </table>
@@ -289,10 +290,13 @@
                                             <tr>
                                                 <td width="1%" align="right" nowrap><label for="end"><fmt:message key="taskDueDate"/>:</label></td>
                                                 <td>
-                                                    <table>
+                                                    <table cellpadding="0" cellspacing="0">
                                                         <tr>
                                                             <td>
                                                                 <input id="end" type=text size="12" maxlength="20" name="endDate" value="${fn:escapeXml(compose.endDate)}">
+                                                            </td>
+                                                            <td class='ZhDateHint'>
+                                                                <fmt:message key="CAL_APPT_EDIT_DATE_FORMAT_HINT"/>
                                                             </td>
                                                         </tr>
                                                     </table>
@@ -344,7 +348,7 @@
                                             </fmt:message>
                                         </c:if>
                                         <td>
-                                            <table>
+                                            <table cellpadding=0 cellspacing=0 border="0">
                                                 <tr valign="middle">
                                                     <td>
                                                         <input <c:if test="${compose.checkedAttachmentNames[part.partName]}">checked </c:if>type=checkbox name="originalAttachment" value="${part.partName}">

@@ -1,10 +1,10 @@
 <%--
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010, 2012 VMware, Inc.
+ * Copyright (C) 2007, 2008, 2009, 2010, 2011, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
- * Version 1.3 ("License"); you may not use this file except in
+ * Version 1.4 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
  * 
@@ -24,7 +24,6 @@
 <script type="text/javascript" src="<c:url value='/yui/2.7.0/yahoo-dom-event/yahoo-dom-event.js'/>"></script>
 <script type="text/javascript" src="<c:url value='/yui/2.7.0/connection/connection-min.js'/>"></script>
 <script type="text/javascript" src="<c:url value='/yui/2.7.0/datasource/datasource-min.js'/>"></script>
-<script type="text/javascript" src="<c:url value='/yui/2.7.0/json/json-min.js'/>"></script>
 <script type="text/javascript" src="<c:url value='/yui/2.7.0/autocomplete/autocomplete-debug.js'/>"></script>
 
 <script type="text/javascript">
@@ -56,7 +55,7 @@
             var id = aResultItem[i++];
             var l  = aResultItem[i++];
 
-            if (e || d) {
+            if (e) {
 				var imgsrc = 
 				   t == 'gal' ? "<app:imgurl value='startup/ImgGALContact.png' />"
 	             : t == 'group' ? "<app:imgurl value='contacts/ImgGroup.png' />"
@@ -75,13 +74,7 @@
         myDataSource.responseType = YAHOO.util.XHRDataSource.TYPE_JSON;
         myDataSource.responseSchema = {
             resultsList : "Result", // String pointer to result data
-            fields : ["email","ranking","display","type","id","l","isGroup"]
-        };
-
-        var expandGroup = {
-        	sendRequest : function(params) {
-        	   YAHOO.util.Connect.asyncRequest('GET', "<c:url value='/h/grpcontacts' />"+"?id="+params.query, params.callback);
-        	}
+            fields : ["email","ranking","display","type","id","l"]
         };
 
         var initAuto = function(field,container) {
@@ -92,7 +85,6 @@
             ac.queryMatchContains = true;
             ac.maxResultsDisplayed = 20;
             ac.allowBrowserAutocomplete = false;
-            ac.expandGroup = expandGroup;
         };
     <jsp:doBody/>
     }();

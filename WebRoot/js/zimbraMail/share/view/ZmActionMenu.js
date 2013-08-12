@@ -1,10 +1,10 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011 VMware, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
- * Version 1.3 ("License"); you may not use this file except in
+ * Version 1.4 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
  * 
@@ -39,7 +39,7 @@
  */
 ZmActionMenu = function(params) {
 
-    var id = params.id || (params.context ? ZmId.getMenuId(params.context, params.menuType) : null);
+    var id = params.context ? ZmId.getMenuId(params.context, params.menuType) : null;
 	ZmPopupMenu.call(this, params.parent, null, id, params.controller);
 
 	// standard menu items default to Tag/Print/Delete
@@ -60,12 +60,17 @@ ZmActionMenu = function(params) {
 ZmActionMenu.prototype = new ZmPopupMenu;
 ZmActionMenu.prototype.constructor = ZmActionMenu;
 
-ZmActionMenu.prototype.isZmActionMenu = true;
-ZmActionMenu.prototype.toString = function() { return "ZmActionMenu"; };
-
-
 // Public methods
 
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{string}		a string representation of the object
+ */
+ZmActionMenu.prototype.toString = 
+function() {
+	return "ZmActionMenu";
+};
 
 /**
  * Creates a menu item and adds its operation ID as data.
@@ -83,9 +88,9 @@ ZmActionMenu.prototype.toString = function() { return "ZmActionMenu"; };
  * @private
  */
 ZmActionMenu.prototype.createOp =
-function(id, params, elementId) {
-	params.id = params.id || (this._context ? ZmId.getMenuItemId(this._context, id, this._menuType) : null);
-	var mi = this.createMenuItem(id, params, elementId);
+function(id, params) {
+	params.id = this._context ? ZmId.getMenuItemId(this._context, id, this._menuType) : null;
+	var mi = this.createMenuItem(id, params);
 	mi.setData(ZmOperation.KEY_ID, id);
 
 	return mi;
@@ -126,6 +131,18 @@ function() {
 	}
 };
 
+/**
+ * Gets the menu search sub-menu (if any).
+ *
+ * @return {DwtMenu}        the menu
+ */
+ZmActionMenu.prototype.getSearchMenu =
+function() {
+    var menuItem = this.getMenuItem(ZmOperation.SEARCH_MENU);
+    if (menuItem) {
+        return menuItem.getMenu();
+    }
+};
 
 // Private methods
 
@@ -134,17 +151,3 @@ ZmActionMenu.prototype._menuItemId =
 function(menuItem) {
 	return menuItem.getData(ZmOperation.KEY_ID);
 };
-
-ZmActionMenu.prototype.removeMenuItemById =
-function(menuItemId) {
-    var mi = this.getMenuItem(menuItemId);
-    this.removeMenuItem(mi);
-};
-
-ZmActionMenu.prototype.removeMenuItem =
-function(menuItem) {
-    if (!menuItem) {return};
-    this.removeChild(menuItem);
-    menuItem.dispose();
-};
-

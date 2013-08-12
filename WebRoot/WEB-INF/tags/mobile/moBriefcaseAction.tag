@@ -1,10 +1,10 @@
 <%--
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2008, 2009, 2010, 2011 VMware, Inc.
+ * Copyright (C) 2008, 2009, 2010, 2011, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
- * Version 1.3 ("License"); you may not use this file except in
+ * Version 1.4 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
  * 
@@ -96,10 +96,11 @@
         </mo:status>
     </c:when>
     <c:when test="${zm:actionSet(param, 'actionAttachToCompose') || (zm:actionSet(param,'moreActions') && fn:startsWith(anAction,'actionAttachToCompose'))}">
-        <%--
-        Send the selected document ids as is in the url, fetch the document and retrieve the subject in the compose window itself.
-        --%>
-        <c:redirect url="/m/zmain?st=newmail&documentAttachments=${ids}&ajax=${param.ajax}"/>
+        <c:forEach var="id" items="${ids}">
+            <zm:getDocument var="doc" id="${id}"/>
+            <c:set var="documentAttachments" value="${doc.id}:${fn:escapeXml(fn:replace(doc.name,':','_$'))},${documentAttachments}"/>
+        </c:forEach>
+        <c:redirect url="/m/zmain?st=newmail&documentAttachments=${documentAttachments}&ajax=${param.ajax}"/>
     </c:when>
     <c:when test="${zm:actionSet(param, 'actionMove') || zm:actionSet(param,'moreActions')}">
         <c:choose>

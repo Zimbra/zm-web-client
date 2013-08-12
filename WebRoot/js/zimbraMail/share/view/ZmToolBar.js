@@ -1,10 +1,10 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012 VMware, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
- * Version 1.3 ("License"); you may not use this file except in
+ * Version 1.4 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
  * 
@@ -45,7 +45,7 @@ ZmToolBar = function(params) {
 	var controller = params.controller || appCtxt.getCurrentController();
 	if (controller) {
 		this._controller = controller;
-		this._keyMap = this._controller.getKeyMapName();
+		this._keyMap = ZmKeyMap.MAP_NAME_R[this._controller.getKeyMapName()];
 	}
 
 	this._refElementId = params.refElementId;
@@ -55,8 +55,15 @@ ZmToolBar = function(params) {
 ZmToolBar.prototype = new DwtToolBar;
 ZmToolBar.prototype.constructor = ZmToolBar;
 
-ZmToolBar.prototype.isZmToolBar = true;
-ZmToolBar.prototype.toString = function() { return "ZmToolBar"; };
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
+ZmToolBar.prototype.toString = 
+function() {
+	return "ZmToolBar";
+};
 
 /**
  * Adds a selection listener.
@@ -98,22 +105,6 @@ function(buttonId) {
 };
 
 /**
- * sets an item visibility. finds the button by id. 
- *
- * @param	{String}	buttonId	the button id
- * @param	{Boolean}	visible
- */
-ZmToolBar.prototype.setItemVisible =
-function(buttonId, visible) {
-	var button = this.getButton(buttonId);
-	if (!button) {
-		return;
-	}
-	button.setVisible(visible);
-};
-
-
-/**
  * Sets the data.
  * 
  * @param	{String}	buttonId	the button id
@@ -141,25 +132,9 @@ function(ids, enabled) {
 	}
 };
 
-ZmToolBar.prototype.setSelected =
-function(id) {
-    var oldButton = this._selectedId ? this._buttons[this._selectedId] : null;
-    var newButton = id ? this._buttons[id] : null;
-    if (oldButton) {
-        oldButton.setSelected(false);
-        oldButton._noFocus = false;
-    }
-    if (newButton) {
-        newButton.setSelected(true);
-        newButton._noFocus = true;
-
-        this._selectedId = id;
-    }
-};
-
 /**
  * Enables or disables all buttons.
- *
+ * 
  * @param {Boolean}	enabled			if <code>true</code>, enable the buttons
  */
 ZmToolBar.prototype.enableAll =
@@ -187,11 +162,6 @@ function(enabled) {
  * @param {constant}	params.shortcut		the shortcut id (from {@link ZmKeyMap}) for showing hint
  * @param {AjxCallback|DwtMenu}	params.menu				the menu creation callback (recommended) or menu
  * @param {Boolean}	params.menuAbove	if <code>true</code>, popup menu above the button.
- *
- * @param {Object}	params.whatToShow		if exists, determines what to show as follows: (for usage, see ZmToolBar.prototype._createButton and DwtButton.prototype.setImage and DwtButton.prototype.setText
- * @param {Boolean}	params.whatToShow.showImage		if <code>true</code>, display image
- * @param {Boolean}	params.whatToShow.showText		if <code>true</code>, display text
- *
  */
 ZmToolBar.prototype.createButton =
 function(id, params) {
@@ -203,7 +173,7 @@ function(id, params) {
 		b.setText(params.text);
 	}
 	if (params.tooltip) {
-		b.setToolTipContent(ZmOperation.getToolTip(id, this._keyMap) || params.tooltip, true);
+		b.setToolTipContent(ZmOperation.getToolTip(id, this._keyMap) || params.tooltip);
 	}
 	b.setEnabled(params.enabled !== false);
 	b.setData("_buttonId", id);
@@ -240,7 +210,6 @@ function(params, className) {
 	});
 	button.textPrecedence = params.textPrecedence;
 	button.imagePrecedence = params.imagePrecedence;
-	button.whatToShow = params.whatToShow;
 
 	return button;
 };
@@ -278,6 +247,73 @@ function() {
 	});
 };
 
+/**
+ * Adjusts the toolbar size. Checks the toolbar width and compares the width of the container to see if it fits.
+ * If it does not, we remove text and/or images in the specified order until the toolbar fits.
+ * 
+ */
+ZmToolBar.prototype.adjustSize =
+function() {
+
+	if (!this._refElementId || !this._inited) { return; }
+	
+	var el = this.getHtmlElement();
+	if (!this._refElement) {
+		this._refElement = document.getElementById(this._refElementId);
+	}
+	if (!el || !this._refElement) { return; }
+
+	var offset1 = this._refElement.offsetWidth;
+	var offset2 = el.firstChild ? el.firstChild.offsetWidth : offset1;
+
+	DBG.println("tb", "-------------- checking width -------------");
+	DBG.println("tb", "tb width: " + offset2 + ", container width: " + offset1);
+
+	// restore all button text and images first
+	for (var i = 0; i < this._precedenceList.length; i++) {
+		var p = this._precedenceList[i];
+		var b = this._buttons[p.id];
+		if (!b) { continue; }
+		if (p.type == "text" && b._toggleText) {
+			b.setText(b._toggleText);
+			b._toggleText = null;
+		} else if (p.type == "image" && b._toggleimage) {
+			b.setImage(b._toggleimage);
+			b._toggleimage = null;
+		}
+	}
+	offset2 = el.firstChild ? el.firstChild.offsetWidth : offset1;
+
+	if (offset1 > 0 && offset2 > offset1) {
+
+		 // now remove button labels as needed
+		for (var i = 0; i < this._precedenceList.length; i++) {
+
+			var p = this._precedenceList[i];
+			var b = this._buttons[p.id];
+			if (!b || !b.getVisible()) { continue; }
+
+			var text = b.getText();
+			var image = b.getImage();
+			var hasText = Boolean(text || b._toggleText);
+			var hasimage = Boolean(image || b._toggleimage);
+			if (hasText && hasimage && (offset2 > offset1)) {
+				if (p.type == "text") {
+					b._toggleText = text;
+					DBG.println("tb", "removed text: " + text);
+					b.setText("");
+				} else if (p.type == "image") {
+					b._toggleimage = image;
+					DBG.println("tb", "removed image: " + image);
+					b.setImage("");
+				}
+			}
+
+			offset2 = el.firstChild ? el.firstChild.offsetWidth : offset1;
+		}
+	}
+};
+
 // The following overrides are so that we check our width after a call to a function that
 // may affect our size.
 
@@ -292,31 +328,19 @@ ZmToolBar.prototype.setSize =
 function(width, height) {
 	DBG.println("tb", "------ setSize " + width + " x " + height);
 	var sz = this.getSize();
-	if (sz && (width != sz.x || height != sz.y)) {
+	if (width != sz.x || height != sz.y) {
 		DwtToolBar.prototype.setSize.apply(this, arguments);
+		this.adjustSize();
 	}
 };
 
-ZmToolBar.prototype.adjustSize =
-function() {
-	if (!this._refElementId || !this._inited) { return; }
-    if (!this._refElement) {
-        this._refElement = document.getElementById(this._refElementId);
-    }
-    var container = this._refElement && this._refElement.parentNode;
-    var offsetWidth;
-    if (container && ((offsetWidth = container.offsetWidth) >= 30)) {
-        var style = this._refElement.style;
-        style.maxWidth = style.width =  (offsetWidth - 30);
-        style.overflow = "hidden";
-    }
-}
 /**
  * @private
  */
 ZmToolBar.prototype._addItem =
 function(type, element, index) {
 	DwtToolBar.prototype._addItem.apply(this, arguments);
+	this.adjustSize();
 };
 
 /**
@@ -325,52 +349,5 @@ function(type, element, index) {
 ZmToolBar.prototype._removeItem =
 function(type, element, index) {
 	DwtToolBar.prototype._removeItem.apply(this, arguments);
-};
-
-/**
- * Adds a button to the element with the given ID. Designed to handle non-ZmToolBar toolbars.
- * 
- * @param params	[hash]			hash of params:
- * 		  parent	[DwtControl]	parent control
- *        setting	[const]			setting that must be true for this button to be added
- *        tdId		[string]		ID of TD that is to contain this button
- *        buttonId	[string]*		ID of the button
- *        style		[const]*		button style
- *        type		[string]*		used to differentiate between regular and toolbar buttons
- *        lbl		[string]*		button text
- *        icon		[string]*		button icon
- *        tooltip	[string]*		button tooltip
- */
-ZmToolBar.addButton =
-function(params) {
-
-	if (params.setting && !appCtxt.get(params.setting)) { return; }
-
-	var button;
-	var tdId = params.parent._htmlElId + (params.tdId || params.buttonId);
-	var buttonEl = document.getElementById(tdId);
-	if (buttonEl) {
-		var btnParams = {parent:params.parent, style:params.style, id:params.buttonId, template: params.template, className: params.className};
-		button = (params.type && params.type == "toolbar") ? (new DwtToolBarButton(btnParams)) : (new DwtButton(btnParams));
-		var hint = Dwt.getAttr(buttonEl, "hint");
-		ZmToolBar._setButtonStyle(button, hint, params.lbl, params.icon);
-		if (params.tooltip) {
-			button.setToolTipContent(params.tooltip, true);
-		}
-		button.reparentHtmlElement(tdId);
-	}
-
-	return button;
-};
-
-ZmToolBar._setButtonStyle =
-function(button, hint, text, image) {
-	if (hint == "text") {
-		button.setText(text);
-	} else if (hint == "icon") {
-		button.setImage(image);
-	} else { // add icon and text if no hint (or unsupported hint) provided
-		button.setText(text);
-		button.setImage(image);
-	}
+	this.adjustSize();
 };

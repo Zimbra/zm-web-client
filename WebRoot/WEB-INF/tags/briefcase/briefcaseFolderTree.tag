@@ -1,10 +1,10 @@
 <%--
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2008, 2009, 2010, 2011 VMware, Inc.
+ * Copyright (C) 2008, 2009, 2010, 2011, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
- * Version 1.3 ("License"); you may not use this file except in
+ * Version 1.4 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
  * 
@@ -45,22 +45,8 @@
             </th>
         </tr>
         <c:if test="${expanded}">
-            <app:briefcaseFolder folder="${mailbox.briefcase}"/>
-
-            <%--
-                Display the children of Briefcase folder, if any. Folders with unknown view also get listed.
-            --%>
-            <zm:forEachFolder var="folder" parentid="${mailbox.briefcase.id}" skiproot="${true}" skipsystem="${false}" expanded="${sessionScope.expanded}" skiptrash="${true}">
-                <c:if test="${not folder.isSearchFolder and not folder.isSystemFolder and (folder.isNullView or folder.isUnknownView or folder.isDocumentView)}">
-                    <app:briefcaseFolder folder="${folder}" keys="${keys}"/>
-                </c:if>
-            </zm:forEachFolder>
-
-            <%--
-                Rest of the briefcase folders, do not display folders with unknown view here.
-            --%>
-            <zm:forEachFolder var="folder" skiproot="${true}" skipsystem="${true}" expanded="${sessionScope.expanded}" skiptrash="${true}">
-                <c:if test="${!folder.isSearchFolder and folder.isDocumentView}">
+            <zm:forEachFolder var="folder" skiproot="${false}" skipsystem="${false}" expanded="${sessionScope.expanded}" skiptrash="${true}">
+                <c:if test="${folder.isDocumentView}">
                     <app:briefcaseFolder folder="${folder}" keys="${keys}"/>
                 </c:if>
             </zm:forEachFolder>

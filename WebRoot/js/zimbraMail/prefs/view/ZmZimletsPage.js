@@ -1,10 +1,10 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2008, 2009, 2010, 2011, 2012 VMware, Inc.
+ * Copyright (C) 2008, 2009, 2010, 2011, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
- * Version 1.3 ("License"); you may not use this file except in
+ * Version 1.4 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
  * 
@@ -74,14 +74,8 @@ function(){
 };
 
 ZmZimletsPage.prototype.showMe =
-function(deferred){
-	ZmPreferencesPage.prototype.showMe.call(this);	
-	if (!appCtxt.getZimletMgr().getZimlets().length) {
-		if (!deferred) {
-			appCtxt.getAppController().addListener(ZmAppEvent.POST_STARTUP, new AjxListener(this, this.showMe, [true]));
-		}
-		return;
-	}
+function(){
+	ZmPreferencesPage.prototype.showMe.call(this);
 	if (this._listView) {
 		var s = this._listView.getSelection();
 		this._listView.set(this.getZimlets()._vector.clone());
@@ -398,28 +392,15 @@ function(name) {
 ZmZimletsPage.prototype.isDirty =
 function() {
 	var allZimlets = this.getZimlets();
-	var dirty = false;
+	var r = false;
 	var arr = allZimlets._vector.getArray();
-	var dirtyZimlets = [];
-
-	var printZimlet = function(zimlet) {
-		if (AjxUtil.isArray(zimlet)) {
-			return AjxUtil.map(zimlet, printZimlet).join("\n");
-		}
-		return [zimlet.name," (from ",zimlet._origStatus," to ",zimlet.active,")"].join("");
-	}
-
 	for (var i = 0; i < arr.length; i++) {
 		if (arr[i]._origStatus != arr[i].active) {
-			dirty = true;
-			dirtyZimlets.push(arr[i]);
+			r = true;
+			break;
 		}
 	}
-
-	if (dirty) {
-		AjxDebug.println(AjxDebug.PREFS, "Dirty preferences:\n" + "Dirty zimlets:\n" + printZimlet(dirtyZimlets));
-	}
-	return dirty;
+	return r;
 };
 
 /**
@@ -460,21 +441,6 @@ function() {
 	return zimlets;
 };
 
-ZmZimletsPage.prototype.validate  =
-function() {
-	var emailZimlet = document.getElementById("com_zimbra_email_zimletCheckbox");
-	if (emailZimlet && !emailZimlet.checked) {
-		if (appCtxt.get(ZmSetting.USE_ADDR_BUBBLES)) {
-			return false;
-		}
-	}
-	return true;
-};
-
-ZmZimletsPage.prototype.getErrorMessage = 
-function() {
-	return AjxMessageFormat.format(ZmMsg.invalidBubblePrefs, ZmMsg.emailZimletLabel);	
-};
 
 /**
  * ZmPrefZimletListView

@@ -1,10 +1,10 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2009, 2010, 2011 VMware, Inc.
+ * Copyright (C) 2005, 2006, 2007, 2009, 2010, 2011, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
- * Version 1.3 ("License"); you may not use this file except in
+ * Version 1.4 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
  * 
@@ -36,10 +36,8 @@ function(html, idx, obj, context) {
 ZmImageAttachmentObjectHandler.prototype.getToolTipText =
 function(url, context) {
 	var image = this._imageHash[context.url];
-	if (!image) {
+	if (!image || !image.el || (image.el.src != context.url)) {
 		image = {id:Dwt.getNextId()};
-	}
-	if (!image.el || (image.el.src !== context.url)) {
 		this._imageHash[context.url] = image;
 		this._preload(context.url, image.id);	
 	}
@@ -64,7 +62,7 @@ function(url, id) {
 	var tmpImage = new Image();
 	tmpImage.onload = AjxCallback.simpleClosure(this._setSize, this, id, tmpImage);
 	tmpImage.src = url;
-};
+}
 
 ZmImageAttachmentObjectHandler.prototype._setSize =
 function(id, tmpImage) {
@@ -85,4 +83,4 @@ function(id, tmpImage) {
 	}
 	tmpImage.onload = null;
 	tmpImage = null;
-};
+}
