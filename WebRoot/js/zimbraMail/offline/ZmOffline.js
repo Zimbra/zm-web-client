@@ -67,11 +67,15 @@ function(cb){
 
 ZmOffline.prototype._fixLazyCSSLoadIssues =
 function(){
-		if (!ZmMailMsgView._CSS) {
-			var cssUrl = appContextPath + "/css/msgview.css?v=" + cacheKillerVersion;
-			var result = AjxRpc.invoke(null, cssUrl, null, null, true);
-			ZmMailMsgView._CSS = result && result.text;
-		}
+    var cssUrl = appContextPath + "/css/msgview.css?v=" + cacheKillerVersion;
+    var cssFile = localStorage[cssUrl];
+    if (!cssFile){
+        var result = AjxRpc.invoke(null, cssUrl, null, null, true);
+        cssFile = localStorage[cssUrl] = result && result.text;
+    }
+    if (ZmMailMsgView){
+        ZmMailMsgView._CSS = cssFile;
+    }
 };
 
 ZmOffline.prototype.setOffline =

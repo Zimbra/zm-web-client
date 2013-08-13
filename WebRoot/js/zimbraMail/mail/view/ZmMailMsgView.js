@@ -1056,10 +1056,13 @@ function(params) {
 		}
 	
 		if (!ZmMailMsgView._CSS) {
-			// Make a synchronous request for the CSS. Should we do this earlier?
-			var cssUrl = appContextPath + "/css/msgview.css?v=" + cacheKillerVersion;
-			var result = AjxRpc.invoke(null, cssUrl, null, null, true);
-			ZmMailMsgView._CSS = result && result.text;
+                // Make a synchronous request for the CSS. Should we do this earlier?
+			    var cssUrl = appContextPath + "/css/msgview.css?v=" + cacheKillerVersion;
+                ZmMailMsgView._CSS = localStorage[cssUrl];
+                if (!ZmMailMsgView._CSS){
+                    var result = AjxRpc.invoke(null, cssUrl, null, null, true);
+                    ZmMailMsgView._CSS = result && result.text;
+                }
 		}
 		var style = document.createElement('style');
 		var rules = document.createTextNode(ZmMailMsgView._CSS);
