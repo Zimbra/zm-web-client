@@ -820,9 +820,9 @@ function(parent, num) {
 	if (contactGroupMenu) {
 		contactGroupMenu.setNewDisabled(folder && folder.isReadOnly());
 	}
+	appCtxt.notifyZimlets("resetToolbarOperations",[parent, num]);
 	if (!this.isGalSearch()) {
 		parent.enable([ZmOperation.SEARCH_MENU, ZmOperation.BROWSE, ZmOperation.NEW_MENU, ZmOperation.VIEW_MENU], true);
-        appCtxt.notifyZimlets("resetToolbarOperations",[parent, num]);
 
 		// a valid folderId means user clicked on an addrbook
 		if (folder) {
