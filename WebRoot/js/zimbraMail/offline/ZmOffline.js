@@ -73,9 +73,6 @@ function(){
         var result = AjxRpc.invoke(null, cssUrl, null, null, true);
         cssFile = localStorage[cssUrl] = result && result.text;
     }
-    if (ZmMailMsgView){
-        ZmMailMsgView._CSS = cssFile;
-    }
 };
 
 ZmOffline.prototype.setOffline =
