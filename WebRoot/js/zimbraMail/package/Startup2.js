@@ -72,6 +72,7 @@ AjxPackage.require("zimbraMail.share.view.dialog.ZmNewOrganizerDialog");
 AjxPackage.require("zimbraMail.share.view.dialog.ZmNewSearchDialog");
 AjxPackage.require("zimbraMail.share.view.dialog.ZmNewTagDialog");
 AjxPackage.require("zimbraMail.share.view.dialog.ZmOfflineSettingsDialog");
+AjxPackage.require("zimbraMail.socialfox.ZmSocialfoxActivationDialog");
 AjxPackage.require("zimbraMail.share.view.dialog.ZmFolderDialogTabView");
 AjxPackage.require("zimbraMail.share.view.dialog.ZmFolderPropertyView");
 AjxPackage.require("zimbraMail.share.view.dialog.ZmFolderRetentionView");

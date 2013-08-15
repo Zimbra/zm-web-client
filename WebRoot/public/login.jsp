@@ -139,6 +139,18 @@
                 <c:set var="client" value="${requestScope.authResult.prefs.zimbraPrefClientType[0]}"/>
             </c:if>
             <c:choose>
+                <c:when test="${client eq 'socialfox'}">
+                        <c:set var="sbURL" value="/public/launchSidebar.jsp"/>
+                        <c:redirect url="${sbURL}">
+                            <c:forEach var="p" items="${paramValues}">
+                                <c:forEach var='value' items='${p.value}'>
+                                    <c:if test="${not fn:contains(ignoredQueryParams, p.key)}">
+                                        <c:param name="${p.key}" value='${value}'/>
+                                    </c:if>
+                                </c:forEach>
+                            </c:forEach>
+                    </c:redirect>
+                </c:when>
         		<c:when test="${client eq 'advanced'}">
                     <c:choose>
                         <c:when test="${(param.loginOp eq 'login') && !(empty param.username) && !(empty param.password)}">
@@ -306,7 +318,7 @@ if (application.getInitParameter("offlineMode") != null)  {
         <%-- set client select default based on user agent. --%>
         <c:set var="client" value="${useTablet ? 'touch' : useMobile ? 'mobile' : useStandard ? 'standard' : 'preferred' }"/>
     </c:if>
-    <c:set var="smallScreen" value="${client eq 'mobile'}"/>
+    <c:set var="smallScreen" value="${client eq 'mobile' or client eq 'socialfox'}"/>
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
     <title><fmt:message key="zimbraLoginTitle"/></title>
     <c:set var="version" value="${initParam.zimbraCacheBusterVersion}"/>
@@ -411,23 +423,30 @@ if (application.getInitParameter("offlineMode") != null)  {
                         </c:otherwise>
                     </c:choose>
                     <c:if test="${empty param.virtualacctdomain}">
-					<tr>
+					<tr <c:if test="${client eq 'socialfox'}">style='display:none;'</c:if>>
 						<td colspan="2"><hr/></td>
 					</tr>
-					<tr>
+					<tr <c:if test="${client eq 'socialfox'}">style='display:none;'</c:if>>
 						<td>
 							<label for="client"><fmt:message key="versionLabel"/></label>
 						</td>
 						<td>
 							<div class="postioning">
-								<select id="client" name="client" onchange="clientChange(this.options[this.selectedIndex].value)">
-									<option value="preferred" <c:if test="${client eq 'preferred'}">selected</c:if> > <fmt:message key="clientPreferred"/></option>
-									<option value="advanced"  <c:if test="${client eq 'advanced'}">selected</c:if>> <fmt:message key="clientAdvanced"/></option>
-									<option value="standard"  <c:if test="${client eq 'standard'}">selected</c:if>> <fmt:message key="clientStandard"/></option>
-									<option value="mobile"  <c:if test="${client eq 'mobile'}">selected</c:if>> <fmt:message key="clientMobile"/></option>
-                                    <option value="touch"  <c:if test="${client eq 'touch'}">selected</c:if>> <fmt:message key="clientTouch"/></option>
+                                <c:choose>
+                                    <c:when test="${client eq 'socialfox'}">
+                                        <input type="hidden" name="client" value="socialfox"/>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <select id="client" name="client" onchange="clientChange(this.options[this.selectedIndex].value)">
+                                            <option value="preferred" <c:if test="${client eq 'preferred'}">selected</c:if> > <fmt:message key="clientPreferred"/></option>
+                                            <option value="advanced"  <c:if test="${client eq 'advanced'}">selected</c:if>> <fmt:message key="clientAdvanced"/></option>
+                                            <option value="standard"  <c:if test="${client eq 'standard'}">selected</c:if>> <fmt:message key="clientStandard"/></option>
+                                            <option value="mobile"  <c:if test="${client eq 'mobile'}">selected</c:if>> <fmt:message key="clientMobile"/></option>
+                                            <option value="touch"  <c:if test="${client eq 'touch'}">selected</c:if>> <fmt:message key="clientTouch"/></option>
 
-								</select>
+                                        </select>
+                                    </c:otherwise>
+                                </c:choose>
 <script TYPE="text/javascript">
 	document.write("<a href='#' onclick='showWhatsThis()' id='ZLoginWhatsThisAnchor'><fmt:message key="whatsThis"/><"+"/a>");
 </script>
