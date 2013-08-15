@@ -119,7 +119,7 @@ function(params) {
         return;
     }
 
-    if (!response && appCtxt._supportsOffline && appCtxt.isOfflineMode()) {
+    if (!response && appCtxt._supportsOffline && appCtxt.isOfflineMode(true)) {
         if (params.offlineCallback) {
             params.offlineCallback(params);
         }

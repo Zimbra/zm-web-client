@@ -83,7 +83,7 @@ ZmZimbraMail = function(params) {
     window.isWeboffline = offlineSetting && offlineSetting.value;
     appCtxt._supportsOffline = appCtxt.isOfflineSupported();
 
-    if (appCtxt._supportsOffline && !appCtxt.isOfflineMode()){
+    if (appCtxt._supportsOffline && !appCtxt.isOfflineMode(true)){
         appCtxt._offlineHandler = new ZmOffline();
     }
 
@@ -400,7 +400,7 @@ function(params) {
         this._requestMgr.sendRequest({response:getInfoResponse, offlineCache:true});
     }
 
-    if (appCtxt.isOfflineMode()){
+    if (appCtxt.isOfflineMode(true)){
         var respCallback = new AjxCallback(this, this._handleResponseGetMetaData, params);
         var callback = appCtxt.accountList.mainAccount.loadMetaData.bind(appCtxt.accountList.mainAccount, respCallback);
         //var store = "inbox" + (appCtxt.get(ZmSetting.GROUP_MAIL_BY) || "message");
@@ -745,7 +745,7 @@ function(params, result) {
 	// startup and packages have been optimized for quick mail display
 	if (this._doingPostRenderStartup) {
 		this.addAppListener(params.startApp, ZmAppEvent.POST_RENDER, new AjxListener(this, this._postRenderStartup));
-        if (appCtxt.isOfflineMode()){
+        if (appCtxt.isOfflineMode(true)){
             params.searchResponse.Body.SearchResponse.m = appCtxt._msgSearchResponse;
             /*
             if (params.searchResponse.Body.SearchResponse.m){
@@ -853,7 +853,7 @@ function(params, result) {
     if (appCtxt.isOfflineSupported() && appCtxt._offlineHandler){
         callback = new AjxCallback(this,
 		function() {
-            if (appCtxt.isOfflineMode()){
+            if (appCtxt.isOfflineMode(true)){
                 appCtxt._offlineHandler.initOfflineFolders();
             } else {
                 appCtxt._offlineHandler.cacheMailData();

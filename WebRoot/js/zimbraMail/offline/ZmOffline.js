@@ -141,7 +141,7 @@ function() {
 	if (!containerEl) {
 		return;
 	}
-    var isOffline = appCtxt.isOfflineMode();
+    var isOffline = appCtxt.isOfflineMode(true);
     if (isOffline){
         this._enableApps(false);
     }

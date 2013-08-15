@@ -2048,19 +2048,23 @@ function() {
 };
 
 ZmAppCtxt.prototype.isOfflineMode =
-function() {
+function(isStrict) {
     if (!navigator.onLine) {
         return true;
     }
-    var resp = $.ajax({
-        type: "GET",
-        cache: false,
-        url: "/public/blank.html",
-        async: false,
-        timeout: 5000
-    }).responseText
 
-    return !(resp);
+    if (isStrict && appCtxt._supportsOffline){
+        var resp = $.ajax({
+            type: "GET",
+            cache: false,
+            url: "/public/blank.html",
+            async: false,
+            timeout: 5000
+        }).responseText;
+        return !(resp);
+    }
+
+    return false;
 };
 
 ZmAppCtxt.prototype.initWebOffline =
