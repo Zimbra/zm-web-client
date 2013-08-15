@@ -187,15 +187,6 @@ FORM {
 .center-small H1 {
 	margin:10px 20px 20px;
 }
-.center-small .ImgAltBanner,
-.center-small .ImgAppBanner {
-	background-position:center center;
-	background-repeat:no-repeat;
-	width:200px;
-}
-.center-small .ImgAltBanner {
-	margin:10px auto;
-}
 .center-small .decor1 {
 	@Decor1-mobile@
 }

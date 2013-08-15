@@ -832,13 +832,6 @@ DIV.ZaSearchBuilderOptionRemoveAll TABLE  {
 	display:block;
 	background-repeat:no-repeat;
 }
-.AboutScreen .ImgAltBanner {
-	margin:20px 0 0 20px;
-	width:71px;
-	height:11px;
-	background-image:url("@LogoImgDir@/AltBanner.png?v=@jsVersion@");
-	background-repeat:repeat-x;
-}
 
 
 /***************

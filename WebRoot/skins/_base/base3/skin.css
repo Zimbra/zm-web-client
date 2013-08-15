@@ -14,9 +14,9 @@
  */
 BODY									{	margin:0px; 	}
 
-.skin_layout_row						{ width: 100%; clear: both; }
-.skin_layout_cell						{ height: 100%; float: left; margin-bottom: auto; }
-.skin_layout							{ display: block; clear: both; width: 100%; height: 100% }
+.skin_layout_row						{ width:100%; clear:both; }
+.skin_layout_cell						{ height:100%; float:left; margin-bottom:auto; }
+.skin_layout							{ display:block; clear:both; width:100%; height:100% }
 
 #skin_outer *							{	@FixBoxModel@	}
 /** generics **/
@@ -31,15 +31,15 @@ BODY									{	margin:0px; 	}
 /* hide search results toolbar initially */
 #skin_tr_search_results_toolbar			{	display:none; height:40px; width:100%; 	}
 
-#skin_tr_main							{ height: 100% }
+#skin_tr_main							{ height:100%; }
 
 /* hide all ads initially */
 .skin_outer_ad							{	display:none; 	}
 
 /** Outer container of the entire skin **/
-#skin_outer 							{	height: 100%; @SkinOuter@		}
-#skin_layout_outer						{	width: 100%; height: 100%; padding:0px;		}
-#skin_outer_td_main						{	height: 100%; width: 100%;	}
+#skin_outer 							{	height:100%; @SkinOuter@		}
+#skin_layout_outer						{	width:100%; height:100%; padding:0px;		}
+#skin_outer_td_main						{	height:100%; width:100%;	}
 
 /** Top row contains header and app tabs **/
 #skin_spacing_top_row					{	width:100%; @SkinTopRow@	}  /* width specified for bug 83004 */
@@ -109,7 +109,7 @@ BODY									{	margin:0px; 	}
 	margin-right:100px; /* space to not overlap app row toolbar buttons */
 	position:absolute;
 	width:auto;
-	height: auto;
+	height:auto;
 	z-index:1;
 	@AppTabChooser@
 }
@@ -119,7 +119,7 @@ BODY									{	margin:0px; 	}
 #skin_container_global_buttons .ZToolbarButton,
 #skin_container_global_buttons .ZToolbarButtonTable { 
 	background-color:transparent;
-	background-image:none;  
+	background-image:none;
 	border:0px;
 	@cssShadow@:0px 0px 0px transparent;
 	#IFDEF MSIE_LOWER_THAN_9
@@ -149,7 +149,7 @@ BODY									{	margin:0px; 	}
 /** App Toolbar **/
 #skin_tr_toolbar>.skin_layout_cell		{	@PageBg@ border-top:1px solid #999; 	}
 #skin_spacing_app_top_toolbar			{	height:3.0rem; 	}
-#skin_container_app_top_toolbar			{	@SkinBorderAppToolbar@ width:auto; padding-top: 5px; padding-left: @SashSize@; 	}
+#skin_container_app_top_toolbar			{	@SkinBorderAppToolbar@ width:auto; padding-top:5px; padding-left:@SashSize@; 	}
 #skin_container_app_new_button			{	@SkinBorderAppToolbar@ width:@TreeStartWidth@; padding:5px; }
 #skin_spacing_app_row					{	border-top:1px solid; border-spacing:0; padding:0px 7px; @AppTab@ 	}
 #skin_spacing_app_row					{	
@@ -191,7 +191,7 @@ BODY									{	margin:0px; 	}
 #skin_container_bottom_ad				{	@AdStyle@ height:@BottomAdHeight@;		}
 
 /*** HACKS: this makes the tables work properly -- rationalize this!  **/
-#skin_td_tree							{	width:@TreeStartWidth@;	height: 100%;	}
+#skin_td_tree							{	width:@TreeStartWidth@;	height:100%;	}
 #skin_td_tree_app_sash 					{	width:@SashSize@;			}
 #skin_td_main							{	width:auto;	height:100%; 	}
 #skin_td_sidebar_ad						{	width:@SidebarAdWidth@;		}
@@ -258,7 +258,7 @@ BODY									{	margin:0px; 	}
 .SplashScreen .center-small .contentBox,
 .ErrorScreen .center-small .contentBox { width:auto; }
 
-.center-small .form .submittd{ text-align: left; }
+.center-small .form .submittd{ text-align:left; }
  
 .LoginScreen H1,
 .SplashScreen H1 	{	@LoginH1@ 		}
@@ -271,9 +271,6 @@ BODY									{	margin:0px; 	}
 	cursor:pointer;
 	display:block;
 }
-.LoginScreen .ImgAltBanner,
-.SplashScreen .ImgAltBanner		{ @AltBanner@ }
-
 .LoginScreen #ZLoginErrorPanel,
 .ErrorScreen .InlineErrorPanel {
 	border:0px;
@@ -583,7 +580,7 @@ SELECT						{	@FieldBorder@	}
 .Row-matched, .RowDouble-matched	{ background-color:@SearchResultColor@;		}
 .TopRow, .BottomRow					{ height:1.6rem; position:relative;	}
 #IFDEF MSIE_LESS_THAN_9
-.TopRow, .BottomRow					{ width:99%;  }
+.TopRow, .BottomRow					{ width:99%;	}
 #ENDIF
 .ZmListFlagsWrapper					{ position:absolute; right:-3px; @ListItemContainer-normal@ }
 .SimpleContact .ZmListFlagsWrapper	{ padding:.08rem 0px; right:0px;}
@@ -599,9 +596,9 @@ SELECT						{	@FieldBorder@	}
 .TopRow .ImgCheckboxChecked			{ margin:0px 0px 0px -3px; }
 .TopRow .ImgNodeCollapsed,
 .TopRow .ImgNodeExpanded			{ padding:0px; }
-.ZmMsgListColTag 					{ padding:0px 2px 0px 3px; vertical-align: middle; }
+.ZmMsgListColTag 					{ padding:0px 2px 0px 3px; vertical-align:middle; }
 .BottomRow .ZmMsgListColTag 		{ margin-right:3px; }
-.ZmMsgListDate						{ position: absolute; right:0px; text-align:right; width:6.8rem;}
+.ZmMsgListDate						{ position:absolute; right:0px; text-align:right; width:6.8rem;}
 .ZmMsgListColSelection, .ZmMsgListColFlag, .ZmMsgListColTag, .ZmMsgListColAccount,
 .ZmMsgListColStatus, .ZmMsgListColMute, .ZmMsgListColRead, .ZmMsgListColAttachment, .ZmMsgListColExpand
 {
@@ -618,7 +615,7 @@ SELECT						{	@FieldBorder@	}
 	width:8px;
 	margin-left:3px;
 }
-.ZmMsgListColFolder, .ZmMsgListColSize, .ZmMsgListColDate	{ text-align: center; }
+.ZmMsgListColFolder, .ZmMsgListColSize, .ZmMsgListColDate	{ text-align:center; }
 /*The width for below styles are generated by program. Add any additional styles should be added here.
 .ZmMsgListColFrom { }
 .ZmMsgListColFolder { }
@@ -630,7 +627,7 @@ SELECT						{	@FieldBorder@	}
 .ZmMsgListColFolder,
 .ZmMsgListColSize,
 .ZmMsgListColDate,
-.ZmMsgListColSubject				{ margin: 0px 3px 0px 2px;	}
+.ZmMsgListColSubject				{ margin:0px 3px 0px 2px;	}
 #ENDIF
 .ZToolbarTable .vertSep				{ border-color:@ToolbarSeparatorColor@;		}
 #IFDEF MSIE

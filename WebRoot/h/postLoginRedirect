@@ -31,7 +31,6 @@
         <div class="LoginScreen">
         <div id='skin_container_splash_screen' class='SplashScreen'>
         <div class="center">
-        <div class="ImgAltBanner"></div>
             <h1><div id='ZLoginBannerImage' class='ImgLoginBanner' onclick='showCompanyUrl()'></div></h1>
             <div id="#ZSplashBodyContainer" class="content">
                 <div class="offline" id='ZLoginLoadingPanel'>

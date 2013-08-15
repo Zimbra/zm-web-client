@@ -9,8 +9,8 @@
 
 <app:handleError>
     <zm:getMailbox var="mailbox"/>
-	<app:skin mailbox="${mailbox}" />
-	<c:choose>
+    <app:skin mailbox="${mailbox}" />
+    <c:choose>
     <c:when test="${not empty mailbox.prefs.locale}">
         <fmt:setLocale value='${mailbox.prefs.locale}' scope='request' />
     </c:when>
@@ -63,10 +63,10 @@
     <meta http-equiv="cache-control" content="no-cache"/>
     <meta http-equiv="Pragma" content="no-cache"/>
     <title><fmt:message key="changePassword"/></title>
-	<c:url var='cssurl' value='/css/common,login,zhtml,${skin},skin.css'>
-		<c:param name="skin" value="${skin}" />
-	</c:url>
-	<link rel="stylesheet" type="text/css" href="${cssurl}">
+    <c:url var='cssurl' value='/css/common,login,zhtml,${skin},skin.css'>
+        <c:param name="skin" value="${skin}" />
+    </c:url>
+    <link rel="stylesheet" type="text/css" href="${cssurl}">
     <fmt:message key="favIconUrl" var="favIconUrl"/>
     <link rel="SHORTCUT ICON" href="<c:url value='${favIconUrl}'/>">
 </head>
@@ -76,7 +76,6 @@
     <div class="LoginScreen">
         <div class="center">
             <div class="contentBox">
-            <div class="ImgAltBanner"></div>
             <h1>
                 <a href="http://www.zimbra.com/" target="_new">
                     <div class='ImgLoginBanner' style="margin: 20px 0 0 20px;"></div>
