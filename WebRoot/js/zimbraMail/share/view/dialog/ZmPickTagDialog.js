@@ -220,7 +220,19 @@ function() {
 ZmPickTagDialog.prototype._treeViewSelectionListener =
 function(ev) {
 
-	if (ev.detail != DwtTree.ITEM_SELECTED && ev.detail != DwtTree.ITEM_DBL_CLICKED)	{ return; }
+	if (ev.detail === DwtTree.ITEM_DESELECTED) {
+		this._inputField.setValue("");
+		this.setButtonEnabled(DwtDialog.OK_BUTTON, false);
+		return;
+	}
+
+	if (ev.detail !== DwtTree.ITEM_SELECTED && ev.detail !== DwtTree.ITEM_DBL_CLICKED){
+		return;
+	}
+
+	if (!ev.item.isSelectionEnabled()) {
+		return;
+	}
 
 	var tag = ev.item.getData(Dwt.KEY_OBJECT);
 	if (tag) {
