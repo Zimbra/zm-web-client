@@ -523,7 +523,7 @@
 }
 
 /* Header of the currently selected column */
-.DwtListView-ColumnActive {
+TD.DwtListView-ColumnActive {
 	@ListColHeaderContainer-selected@
 }
 
