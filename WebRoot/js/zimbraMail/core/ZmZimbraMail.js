@@ -2335,7 +2335,7 @@ function(parent, parentElement, adminUrl) {
 		menu.createSeparator();
 
 		mi = menu.createMenuItem("socialfoxSettings", {text: ZmMsg.socialfoxEnableSidebar});
-		mi.addSelectionListener(new AjxListener(this, this._socialfoxSettingsListener));
+		mi.addSelectionListener(this._socialfoxSettingsListener.bind(this));
 	}
 
 	if (appCtxt.get(ZmSetting.CHANGE_PASSWORD_ENABLED)) {
