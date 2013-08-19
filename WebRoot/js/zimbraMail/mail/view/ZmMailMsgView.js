@@ -599,7 +599,12 @@ function() {
 
 ZmMailMsgView.prototype._checkImgInAttachments =
 function(img) {
-	if (!this._msg || img.getAttribute("zmforced")) { return; }
+    if (!this._msg) { return; }
+
+    if (img.getAttribute("zmforced")){
+        img.className = "InlineImage";
+        return;
+    }
 
 	var attachments = this._msg.attachments;
 	var csfeMsgFetch = appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI);
@@ -1744,7 +1749,7 @@ function(msg, container, callback, index) {
 									});
 			} else if (ZmMimeTable.isRenderableImage(bodyPart.contentType)) {
 				var html = [
-					"<img zmforced='1' class='InlineImage' src='",
+					"<img zmforced='1' src='",
 					appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI),
 					"&id=", msg.id,
 					"&part=", bodyPart.part, "'>"
