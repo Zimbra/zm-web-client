@@ -197,27 +197,92 @@ Ext.define('ZCS.view.ux.ZtIframe', {
 				touches = touchProcessor(ev.touches, target, changeId, freezeY);
 				targetTouches = touchProcessor(ev.targetTouches, target, changeId, freezeY);
 				changedTouches = touchProcessor(ev.changedTouches, target, changeId, freezeY);
+				
+				/*
+                    The arguments are different for IOS and Android for the initTouchEvent function	
 
-				clonedEvent.initTouchEvent(
-					ev.type, //type, The type of event that occurred.
-					true, //canBubble, Indicates whether an event can bubble. If true, the event can bubble; otherwise, it cannot.
-					true, //cancelable, Indicates whether an event can have its default action prevented. If true, the default action can be prevented; otherwise, it cannot.
-					theWin, //view, The view (DOM window) in which the event occurred.
-					ev.detail, //detail Specifies some detail information about the event depending on the type of event.
-					eventPageX, //screenX The x-coordinate of the event’s location in screen coordinates.
-					eventPageY, //screenY The y-coordinate of the event’s location in screen coordinates.
-					eventPageX, //clientX The x-coordinate of the event’s location relative to the window’s viewport.
-					eventPageY, //clientY The y-coordinate of the event’s location relative to the window’s viewport.
-					ev.ctrlKey, //ctrlKey, If true, the control key is pressed; otherwise, it is not.
-					ev.altKey, //altKey If true, the alt key is pressed; otherwise, it is not.
-					ev.shiftKey, //shiftKey If true, the shift key is pressed; otherwise, it is not.
-					ev.metaKey, //metaKey If true, the meta key is pressed; otherwise, it is not.
-					touches, //touches, A collection of Touch objects representing all touches associated with this event.
-					targetTouches, //targetTouches, A collection of Touch objects representing all touches associated with this target.
-					changedTouches, //changedTouches, A collection of Touch objects representing all touches that changed in this event.
-					ev.scale, //scale The distance between two fingers since the start of an event as a multiplier of the initial distance. The initial value is 1.0. If less than 1.0, the gesture is pinch close (to zoom out). If greater than 1.0, the gesture is pinch open (to zoom in).
-					ev.rotation //rotation The delta rotation since the start of an event, in degrees, where clockwise is positive and counter-clockwise is negative. The initial value is 0.0.
-				);
+                 // IOS initTouchEvent
+                 //https://developer.apple.com/library/safari/documentation/UserExperience/Reference/TouchEventClassReference/TouchEvent/TouchEvent.html#//apple_ref/javascript/instm/TouchEvent/initTouchEvent
+                 event.initTouchEvent (
+                 type,
+                 canBubble,
+                 cancelable,
+                 view,
+                 detail,
+                 screenX,
+                 screenY,
+                 clientX,
+                 clientY,
+                 ctrlKey,
+                 altKey,
+                 shiftKey,
+                 metaKey,
+                 touches,
+                 targetTouches,
+                 changedTouches,
+                 scale,
+                 rotation
+                 );
+
+
+                 // Android initTouchEvent
+                 // http://tech.kayac.com/archive/javascript_inittouchevent.html
+                 event.initTouchEvent (
+                 touches,
+                 targetTouches,
+                 changedTouches,
+                 eventType,
+                 view,
+                 screenX,
+                 screenY,
+                 clientX,
+                 clientY,
+                 ctrlKey,
+                 altKey,
+                 shiftKey,
+                 metaKey
+                 );
+                 */
+
+                if(Ext.os.is.Android){
+                    clonedEvent.initTouchEvent(
+                        touches, //touches, A collection of Touch objects representing all touches associated with this event.
+                        targetTouches, //targetTouches, A collection of Touch objects representing all touches associated with this target.
+                        changedTouches, //changedTouches, A collection of Touch objects representing all touches that changed in this event.
+                        ev.type, //type, The type of event that occurred.
+                        theWin, //view, The view (DOM window) in which the event occurred.
+                        eventPageX, //screenX The x-coordinate of the event’s location in screen coordinates.
+                        eventPageY, //screenY The y-coordinate of the event’s location in screen coordinates.
+                        eventPageX, //clientX The x-coordinate of the event’s location relative to the window’s viewport.
+                        eventPageY, //clientY The y-coordinate of the event’s location relative to the window’s viewport.
+                        ev.ctrlKey, //ctrlKey, If true, the control key is pressed; otherwise, it is not.
+                        ev.altKey, //altKey If true, the alt key is pressed; otherwise, it is not.
+                        ev.shiftKey, //shiftKey If true, the shift key is pressed; otherwise, it is not.
+                        ev.metaKey //metaKey If true, the meta key is pressed; otherwise, it is not.
+                    );
+                }
+                else{
+                    clonedEvent.initTouchEvent(
+                        ev.type, //type, The type of event that occurred.
+                        true, //canBubble, Indicates whether an event can bubble. If true, the event can bubble; otherwise, it cannot.
+                        true, //cancelable, Indicates whether an event can have its default action prevented. If true, the default action can be prevented; otherwise, it cannot.
+                        theWin, //view, The view (DOM window) in which the event occurred.
+                        ev.detail, //detail Specifies some detail information about the event depending on the type of event.
+                        eventPageX, //screenX The x-coordinate of the event’s location in screen coordinates.
+                        eventPageY, //screenY The y-coordinate of the event’s location in screen coordinates.
+                        eventPageX, //clientX The x-coordinate of the event’s location relative to the window’s viewport.
+                        eventPageY, //clientY The y-coordinate of the event’s location relative to the window’s viewport.
+                        ev.ctrlKey, //ctrlKey, If true, the control key is pressed; otherwise, it is not.
+                        ev.altKey, //altKey If true, the alt key is pressed; otherwise, it is not.
+                        ev.shiftKey, //shiftKey If true, the shift key is pressed; otherwise, it is not.
+                        ev.metaKey, //metaKey If true, the meta key is pressed; otherwise, it is not.
+                        touches, //touches, A collection of Touch objects representing all touches associated with this event.
+                        targetTouches, //targetTouches, A collection of Touch objects representing all touches associated with this target.
+                        changedTouches, //changedTouches, A collection of Touch objects representing all touches that changed in this event.
+                        ev.scale, //scale The distance between two fingers since the start of an event as a multiplier of the initial distance. The initial value is 1.0. If less than 1.0, the gesture is pinch close (to zoom out). If greater than 1.0, the gesture is pinch open (to zoom in).
+                        ev.rotation //rotation The delta rotation since the start of an event, in degrees, where clockwise is positive and counter-clockwise is negative. The initial value is 0.0.
+                    );
+                }
 
 				return clonedEvent;
 			},
