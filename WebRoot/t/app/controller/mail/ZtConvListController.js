@@ -128,6 +128,7 @@ Ext.define('ZCS.controller.mail.ZtConvListController', {
 				if (el.hasCls('zcs-swipe-delete')) {
 					ZCS.app.fireEvent('swipeDeleteMailItem', record);
 					swipeElm.fadeAway();
+					event.stopEvent();
 				}
 			});
 

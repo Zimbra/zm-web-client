@@ -51,6 +51,10 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 			},
 			'.tagview': {
 				convAssignment: 'saveItemTag'
+			},
+			msgListView: {
+				messageSwipeRight:   'doGoBackOneConversation',
+				messageSwipeLeft:   'doGoForwardOneConversation'
 			}
 		},
 
@@ -128,12 +132,37 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 		return itemListView ? itemListView.emptyTextCmp : null;
 	},
 
+	doGoBackOneConversation: function (e) {
+		if (e.pageX - e.distance < 50) {
+			//this is actually an edge swipe.
+			ZCS.app.fireEvent('showListPanel');
+		} else {
+			this.navigateToAdjacentConversation(-1);
+		}
+	},
+
+	doGoForwardOneConversation: function () {
+		this.navigateToAdjacentConversation(1)
+	},
+
+	navigateToAdjacentConversation: function (indexIncrement) {
+		var conversationStore = ZCS.app.getConvListController().getStore(),
+			conversationIndex = conversationStore.indexOf(this.currentConversation),
+			adjacentConversation = conversationStore.getAt(conversationIndex + indexIncrement);
+		
+		if (adjacentConversation) {
+			this.showItem(adjacentConversation);
+		}
+	},
+
 	/**
 	 * Displays the given conv as a list of messages. Sets toolbar text to the conv subject.
 	 *
 	 * @param {ZtConv}  conv        conv to show
 	 */
 	showItem: function(conv) {
+
+		this.currentConversation = conv;
 
         //<debug>
 		Ext.Logger.info("conv controller: show conv " + conv.getId());
