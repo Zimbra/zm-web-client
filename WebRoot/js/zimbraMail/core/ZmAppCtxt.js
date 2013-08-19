@@ -2096,5 +2096,5 @@ function() {
 
 ZmAppCtxt.prototype.isOfflineSupported =
 function(){
-    return window.isWeboffline && AjxEnv.supported.localstorage &&  AjxEnv.supported.applicationcache && AjxEnv.supported.indexeddb;
+    return AjxEnv.isChrome && window.isWeboffline && AjxEnv.supported.localstorage &&  AjxEnv.supported.applicationcache && AjxEnv.supported.indexeddb;
 };
