@@ -76,7 +76,7 @@ Ext.define('ZCS.view.ZtToast', {
 
 		me.element.applyStyles({
 			position: 'absolute',
-			"z-index": 10000	
+			"zIndex": 10000	
 		});
 
 		me.show({
