@@ -156,6 +156,19 @@ Ext.define('ZCS.view.mail.ZtMsgListView', {
 			scope:      this
 		});
 
+		this.element.on({
+			swipe: function(e) { 
+				if (e.direction === "left") {
+					this.fireEvent('messageSwipeLeft', e);
+				} 
+
+				if (e.direction === "right") {
+					this.fireEvent('messageSwipeRight', e);
+				}
+			},
+			scope: this
+		});
+
 		var scroller = this.getScrollable();
 
 
