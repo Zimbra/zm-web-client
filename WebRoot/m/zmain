@@ -24,31 +24,6 @@
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 
-<%!
-
-	// Trims down whitespace in the given string, EXCEPT within <textarea> and <pre> tags
-	private String trimWhitespace(String str) {
-		try {
-			String crlf = "__ZCRLF__"; // This exact text should not be used anywhere else on the page we're processing. In case of problems, change this text to something else
-			String tab = "__ZTAB__";
-			String pstr = str;
-			Matcher m = Pattern.compile("(<textarea.*>.*</textarea>)|(<pre.*>.*</pre>)", Pattern.DOTALL | Pattern.CASE_INSENSITIVE).matcher(pstr);
-			while (m.find()) {
-				String oldpart = m.group();
-				String newpart = oldpart.replaceAll("\t", tab).replaceAll("\n", crlf);
-				newpart = newpart.replaceAll("\\$","\\\\\\$");
-				pstr = pstr.replaceAll(Pattern.quote(oldpart), newpart);
-			}
-			pstr = pstr.replaceAll("[\t ]+", " ").replaceAll(tab,"\t");
-			pstr = pstr.replaceAll("\n\\s*\n", "\n").replaceAll(crlf,"\n");
-			return pstr;
-		} catch (Exception e) { // If anything goes awry, return the original string
-			return str;
-		}
-	}                                                                       
-
-%>
-
 <c:set var="F_LIMIT" value="${not empty sessionScope.F_LIMIT ? sessionScope.F_LIMIT : 100}" scope="session"/>
 <c:if test="${empty param.ajax}"><?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -266,11 +241,7 @@
             <span class="td"><input type="submit" class="searchButton zo_button" name="actionSaveSearch" value="<fmt:message key="save"/>"/></span>
         </form>
     </div><mo:handleError>
-        <c:import url="/m/zmview" var="response" scope="page"/></mo:handleError><%  //!TODO may be should be done through filter? but minimization of html is essential to reduce response size
-        String respText = (String)pageContext.getAttribute("response");
-        respText = this.trimWhitespace(respText);
-        pageContext.setAttribute("response",respText);
-    %><div class="container" id="body">${response}</div>
+        <c:import url="/m/zmview" var="response" scope="page"/></mo:handleError><div class="container" id="body">${response}</div>
 </div></div></div>
 <script type="text/javascript"><c:set var="js">
 //This code runs from the ajax response
