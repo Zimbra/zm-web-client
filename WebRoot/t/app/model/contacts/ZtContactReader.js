@@ -49,7 +49,7 @@ Ext.define('ZCS.model.contacts.ZtContactReader', {
 			data = this.parseAttributes(attrs, data);
 		}
 
-		data.tags = ZCS.model.ZtItem.parseTags(node.t);
+		data.tags = ZCS.model.ZtItem.parseTags(node.t, ZCS.constant.APP_CONTACTS);
 
         return data;
 	},

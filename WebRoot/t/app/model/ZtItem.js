@@ -62,18 +62,38 @@ Ext.define('ZCS.model.ZtItem', {
 		 * @param {Array}  tagIds   comma-separated list of tag IDs
 		 * @return {Array}  list of ZtOrganizer
 		 */
-		parseTags: function(tagIds) {
+		parseTags: function(tagIds, app) {
 
 			return !tagIds ? [] : Ext.Array.map(tagIds.split(','), function(tagId) {
-				var tag = ZCS.cache.get(tagId);
+				var id = ZCS.model.ZtOrganizer.getOrganizerId(tagId, ZCS.constant.ORG_TAG, app),
+					tag = ZCS.cache.get(id);
+
 				if (tag) {
 					return tag.getData();
 				} else {
 					//<debug>
-                    Ext.Logger.warn('Encountered an item with a tag that is not in cache and thus will not display.');
+                    Ext.Logger.warn('Could not find tag with ID ' + id + ' in the item cache');
                     //</debug>
 				}
 			});
+		},
+
+		/**
+		 * Sets up tags with just the data we need, and an associated DOM ID.
+		 *
+		 * @param {Array}   tags        list of tags
+		 * @return {Array}  list of tag data objects
+		 */
+		getTagData: function(tags) {
+			var tagDataList;
+			if (tags && tags.length) {
+				tagDataList = Ext.Array.map(Ext.Array.clean(tags), function(tag) {
+					var tagData = Ext.copyTo({}, tag, 'itemId,color,name,displayName');
+					tagData.id = ZCS.util.getUniqueId(tagData);
+					return tagData;
+				});
+			}
+			return tagDataList;
 		}
 	},
 
@@ -99,7 +119,10 @@ Ext.define('ZCS.model.ZtItem', {
 	handleModifyNotification: function(modify) {
 
 		if (modify.t != null) {
-			this.set('tags', ZCS.model.ZtItem.parseTags(modify.t));
+			var type = this.get('type'),
+				app = ZCS.constant.APP_FOR_TYPE[type];
+
+			this.set('tags', ZCS.model.ZtItem.parseTags(modify.t, app));
 		}
 	}
 });

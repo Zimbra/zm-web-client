@@ -421,7 +421,7 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 
 		// tag has been added or removed
 		if (modify.t != null) {
-			item.set('tags', ZCS.model.ZtItem.parseTags(modify.t))
+			item.set('tags', ZCS.model.ZtItem.parseTags(modify.t, ZCS.constant.APP_MAIL));
 			if (itemPresent) {
 				var msgViews = this.getMsgListView().query('msgview'),
 					itemIndex = store.indexOf(item),

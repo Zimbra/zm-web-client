@@ -53,6 +53,9 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
 	        },
 	        '.tagview': {
 		        contactAssignment: 'saveItemTag'
+	        },
+	        contactView: {
+		        tagTap:     'doShowMenu'
 	        }
         },
 
@@ -61,6 +64,10 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
 				{ label: ZtMsg.move,        action: ZCS.constant.OP_MOVE,       listener: 'doMove' },
 				{ label: ZtMsg.tag,         action: ZCS.constant.OP_TAG,        listener: 'doTag' },
 				{ label: ZtMsg.del,         action: ZCS.constant.OP_DELETE,     listener: 'doDelete' }
+			],
+
+			tagActions: [
+				{ label: ZtMsg.removeTag, action: ZCS.constant.OP_REMOVE_TAG, listener: 'doRemoveTag' }
 			]
 		},
 
@@ -548,7 +555,10 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
 	 */
 	handleModifyNotification: function(item, modify) {
 
-		if (modify._attrs && !modify.l && this.getItem() === item) {
+		if (this.getItem() !== item) {
+			return;
+		}
+		if (modify._attrs != null || modify.t != null) {
 			this.getContactView().showItem(item);
 		}
 	},
@@ -589,5 +599,17 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
 	 */
 	saveItemTag: function (tag, item) {
 		this.tagItem(item, tag.get('name'), false);
+	},
+
+	doShowMenu: function(menuButton, params) {
+
+		this.callParent(arguments);
+
+		var menuName = params.menuName,
+			menu = this.getMenu(menuName);
+
+		if (menu && params.tagName) {
+			menu.setArgs(ZCS.constant.OP_REMOVE_TAG, [ params.tagName ]);
+		}
 	}
 });

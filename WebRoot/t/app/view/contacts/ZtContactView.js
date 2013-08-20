@@ -30,14 +30,44 @@ Ext.define('ZCS.view.contacts.ZtContactView', {
         scrollable: {
             direction: 'vertical',
             directionLock: true
-        }
+        },
+		contact: null
+	},
+
+	initialize: function() {
+
+		this.callParent(arguments);
+
+		this.on({
+			// So far we only handle taps on tags.
+			tap: function(e, node) {
+
+				var elm = Ext.fly(e.target),
+					idParams = ZCS.util.getIdParams(elm.dom.id) || {};
+
+				if (elm.hasCls('zcs-tag-bubble')) {
+					this.fireEvent('tagTap', elm, {
+						menuName:   ZCS.constant.MENU_TAG,
+						contact:    this.getContact(),
+						tagName:    idParams.name
+					});
+					return true;
+				}
+			},
+			element:    'element',
+			delegate:   '.zcs-tag-bubble',
+			scope:      this
+		});
 	},
 
 	showItem: function(contact) {
 
+		this.setContact(contact);
+
 		var data = ZCS.util.getFields(contact, ZCS.constant.CONTACT_TEMPLATE_FIELDS),
 			imageUrl = ZCS.model.contacts.ZtContact.getImageUrl(contact, contact.getId(), 125);
 
+		data.tags = ZCS.model.ZtItem.getTagData(contact.get('tags'));
 		data.imageStyle = imageUrl ? 'background-image: url(' + imageUrl + ')' : '';
 		this.setHtml(this.getTpl().apply(data));
 	},

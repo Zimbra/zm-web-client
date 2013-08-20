@@ -280,13 +280,6 @@ Ext.define('ZCS.controller.mail.ZtMsgController', {
 		}
 	},
 
-	doRemoveTag: function(tagName) {
-		var msg = this.getItem();
-		if (msg && tagName) {
-			this.tagItem(msg, tagName, true);
-		}
-	},
-
 	doToggleQuotedText: function(msgBody) {
 		var msgView = msgBody.up('msgview'),
 			msg = msgView.getMsg();

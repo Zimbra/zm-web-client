@@ -52,6 +52,29 @@ Ext.define('ZCS.model.ZtOrganizer', {
 
 	statics: {
 
+		/**
+		 * Returns a DOM ID for an organizer which should be unique. Since the same tag can be used by multiple apps
+		 * (appearing in multiple overviews), we need to qualify its ID to be unique; otherwise ST gets confused.
+		 *
+		 * @param {String}      itemId      organizer ID
+		 * @param {String}      type        ZCS.constant.ORG_*
+		 * @param {String}      app         ZCS.constant.APP_*
+		 *
+		 * @return {String}     suitable DOM ID for organizer
+		 */
+		getOrganizerId: function(itemId, type, app) {
+			return (itemId === ZCS.constant.ID_TRASH || type === ZCS.constant.ORG_TAG) ? [app, type, itemId].join('-') : itemId;
+		},
+
+		/**
+		 * Compares two organizers to see which should come first in an overview. Primary key is organizer type:
+		 * folders, then searches, then tags. Secondary key within folders is to put system folders first.
+		 *
+		 * @param {ZtOrganizer} organizer1
+		 * @param {ZtOrganizer} organizer2
+		 *
+		 * @return {Number}
+		 */
 		compare: function(organizer1, organizer2) {
 
 			if (!organizer1 || !organizer2) {
