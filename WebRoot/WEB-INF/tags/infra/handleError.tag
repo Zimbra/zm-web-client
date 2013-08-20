@@ -46,6 +46,7 @@
             <c:set var="statusMessage" scope="request" value="${errorMsg}"/>
             <jsp:forward page="/h/compose"/>
         </c:when>
+
         <%-- TODO: handle voice errors in a separate tag like handleVoiceError --%>
         <c:when test="${error.code eq 'voice.UNABLE_TO_AUTH'}">
             <app:status style="Critical">
