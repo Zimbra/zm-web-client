@@ -18,8 +18,8 @@
  *
  * @author Macy Abbey
  */
-Ext.define('ZCS.view.mail.ZtFolderAssignmentView', {
-	extend: 'ZCS.view.mail.ZtAssignmentView',
+Ext.define('ZCS.view.ux.ZtFolderAssignmentView', {
+	extend: 'ZCS.view.ux.ZtAssignmentView',
 	requires: [
 		'ZCS.model.ZtFolder'
 	],

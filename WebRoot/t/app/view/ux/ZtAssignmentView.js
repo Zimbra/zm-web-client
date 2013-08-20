@@ -20,7 +20,7 @@
  *	
  * @author Macy Abbey
  */
-Ext.define('ZCS.view.mail.ZtAssignmentView', {
+Ext.define('ZCS.view.ux.ZtAssignmentView', {
 	extend: 'Ext.Sheet',
 	requires: [
 		'Ext.Anim'

@@ -211,14 +211,14 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
 	 * Launches a move assignment view.
 	 */
 	doMove: function(item) {
-		this.doAssignmentView(item, 'ZCS.view.mail.ZtFolderAssignmentView', ZtMsg.folders, 'folderView');
+		this.doAssignmentView(item, 'ZCS.view.ux.ZtFolderAssignmentView', ZtMsg.folders, 'folderView');
 	},
 
 	/**
 	 * Launches a tag assignment view.
 	 */
 	doTag: function(item) {
-		this.doAssignmentView(item, 'ZCS.view.mail.ZtTagAssignmentView', ZtMsg.tags, 'tagView');
+		this.doAssignmentView(item, 'ZCS.view.ux.ZtTagAssignmentView', ZtMsg.tags, 'tagView');
 	},
 
 	/**

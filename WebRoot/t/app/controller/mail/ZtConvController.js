@@ -47,10 +47,10 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 				edit:       'doEdit'
 			},
 			'.moveview': {
-				convAssignment: 'saveItemMove'
+				conversationAssignment: 'saveItemMove'
 			},
 			'.tagview': {
-				convAssignment: 'saveItemTag'
+				conversationAssignment: 'saveItemTag'
 			},
 			msgListView: {
 				messageSwipeRight:   'doGoBackOneConversation',

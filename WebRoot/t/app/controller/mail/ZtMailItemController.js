@@ -25,8 +25,8 @@ Ext.define('ZCS.controller.mail.ZtMailItemController', {
 	extend: 'ZCS.controller.ZtItemController',
 
 	requires: [
-		'ZCS.view.mail.ZtFolderAssignmentView',
-		'ZCS.view.mail.ZtTagAssignmentView'
+		'ZCS.view.ux.ZtFolderAssignmentView',
+		'ZCS.view.ux.ZtTagAssignmentView'
 	],
 
 	config: {
@@ -42,14 +42,14 @@ Ext.define('ZCS.controller.mail.ZtMailItemController', {
 	 * Launches a move assignment view.
 	 */
 	doMove: function(item) {
-		this.doAssignmentView(item, 'ZCS.view.mail.ZtFolderAssignmentView', ZtMsg.folders, 'folderView');
+		this.doAssignmentView(item, 'ZCS.view.ux.ZtFolderAssignmentView', ZtMsg.folders, 'folderView');
 	},
 
 	/**
 	 * Launches a tag assignment view.
 	 */
 	doTag: function(item) {
-		this.doAssignmentView(item, 'ZCS.view.mail.ZtTagAssignmentView', ZtMsg.tags, 'tagView');
+		this.doAssignmentView(item, 'ZCS.view.ux.ZtTagAssignmentView', ZtMsg.tags, 'tagView');
 	},
 
 	/**

@@ -18,8 +18,8 @@
  *
  * @author Macy Abbey
  */
-Ext.define('ZCS.view.mail.ZtTagAssignmentView', {
-	extend: 'ZCS.view.mail.ZtAssignmentView',
+Ext.define('ZCS.view.ux.ZtTagAssignmentView', {
+	extend: 'ZCS.view.ux.ZtAssignmentView',
 	alias: 'widget.tagview',
 	constructor: function (config) {
 		var cfg = config || {};
