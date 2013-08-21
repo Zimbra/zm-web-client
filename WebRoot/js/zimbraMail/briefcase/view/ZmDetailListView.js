@@ -133,7 +133,7 @@ function(parent) {
                 name:ZmMsg.tag}));
         }
         headers.push(
-                new DwtListHeaderItem({field:ZmItem.F_LOCK, icon: "PadLock", width:ZmDetailListView.COLWIDTH_ICON, name:ZmMsg.lock}),
+                new DwtListHeaderItem({field:ZmItem.F_LOCK, icon: "Padlock", width:ZmDetailListView.COLWIDTH_ICON, name:ZmMsg.lock}),
                 new DwtListHeaderItem({field:ZmItem.F_TYPE, icon:"GenericDoc", width:ZmDetailListView.COLWIDTH_ICON, name:ZmMsg.icon}),
                 new DwtListHeaderItem({field:ZmItem.F_NAME, text:ZmMsg._name, sortable:ZmItem.F_NAME}),
                 new DwtListHeaderItem({field:ZmItem.F_FILE_TYPE, text:ZmMsg.type, width:ZmMsg.COLUMN_WIDTH_TYPE_DLV}),
@@ -216,7 +216,7 @@ function(htmlArr, idx, item, field, colIdx, params) {
 	} else if (field == ZmItem.F_TYPE) {
 		htmlArr[idx++] = AjxImg.getImageHtml(item.getIcon());
 	} else if (field == ZmItem.F_LOCK) {
-		idx = this._getImageHtml(htmlArr, idx, (item.locked ? "PadLock" : "Blank_16") , this._getFieldId(item, field)); //AjxImg.getImageHtml(item.locked ? "PadLock" : "Blank_16");
+		idx = this._getImageHtml(htmlArr, idx, (item.locked ? "Padlock" : "Blank_16") , this._getFieldId(item, field)); //AjxImg.getImageHtml(item.locked ? "Padlock" : "Blank_16");
 	} else if (field == ZmItem.F_VERSION) {
 		htmlArr[idx++] = item.version;
 	} else if (field == ZmItem.F_NAME || field == ZmItem.F_SUBJECT) {
@@ -311,7 +311,7 @@ function(item, colIdx) {
     idx = this._getCellContents(html, idx, item, ZmItem.F_DATE, colIdx);
     html[idx++] = "</td>";
     html[idx++] = "<td style='text-align:center;' width=" + width + " id='" + this._getFieldId(item, ZmItem.F_LOCK)+"'> ";
-    idx =   this._getImageHtml(html, idx, (item.locked ? "PadLock" : "Blank_16") , this._getFieldId(item, ZmItem.F_LOCK));
+    idx =   this._getImageHtml(html, idx, (item.locked ? "Padlock" : "Blank_16") , this._getFieldId(item, ZmItem.F_LOCK));
 	html[idx++] = "</td>";
     html[idx++] = "</tr></table>";
 

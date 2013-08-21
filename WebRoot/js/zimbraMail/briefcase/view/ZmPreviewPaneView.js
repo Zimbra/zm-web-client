@@ -792,7 +792,7 @@ function(item){
         this._headerCreator.innerHTML = item.creator;
 
     if(this._lockStatus)
-        this._lockStatus.innerHTML = AjxImg.getImageHtml(item.locked ? "PadLock" : "Blank_16");
+        this._lockStatus.innerHTML = AjxImg.getImageHtml(item.locked ? "Padlock" : "Blank_16");
 
     if(this._headerLockTime){
         if(item.locked){
