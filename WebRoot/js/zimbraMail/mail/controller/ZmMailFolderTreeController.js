@@ -55,7 +55,7 @@ function(ev) {
 		var organizer = this._getActionedOrganizer(ev);
 		if (organizer.isDataSource()) {
 			var accounts = appCtxt.getDataSourceCollection().getPopAccountsFor(organizer.id);
-			var args = [ organizer.getName(), accounts[0].getName() ];
+			var args = [ organizer.getName(), AjxStringUtil.htmlEncode(accounts[0].getName(), true)];
 			var message = AjxMessageFormat.format(ZmMsg.errorDeletePopFolder, args);
 
 			var dialog = appCtxt.getMsgDialog();
