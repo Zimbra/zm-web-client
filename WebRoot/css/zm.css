@@ -1489,7 +1489,9 @@ line-height:normal;
 /* outer table for the month view */
 .calendar_month_table {
 	@FullSize@
-	@CompactTable@
+	/* @CompactTable@ */
+    border-collapse: collapse !important;
+    padding: 0;
 	table-layout:fixed;
 }
 
