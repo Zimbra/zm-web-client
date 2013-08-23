@@ -181,7 +181,9 @@
 <title><fmt:message key="zimbraTitle"/></title>
 <link href="<c:url value="/css/images,common,dwt,msgview,login,zm,spellcheck,skin.css">
 	<c:param name="v" value="${vers}" />
-	<c:param name="debug" value='${isDebug?"1":""}' />
+	<c:if test="${isDebug}">
+		<c:param name="debug" value="1" />
+	</c:if>
 	<c:param name="skin" value="${skin}" />
 	<c:param name="locale" value="${locale}" />
 	<c:if test="${not empty param.customerDomain}">
@@ -191,7 +193,9 @@
 <c:if test="${ua.isIE7up}">
     <link href="<c:url value="/css/ie-custom-icons.css">
     <c:param name="v" value="${vers}" />
-    <c:param name="debug" value='${isDebug?"1":""}' />
+    <c:if test="${isDebug}">
+		<c:param name="debug" value="1" />
+	</c:if>
     <c:param name="skin" value="${skin}" />
     <c:param name="locale" value="${locale}" />
     <c:if test="${not empty param.customerDomain}">
