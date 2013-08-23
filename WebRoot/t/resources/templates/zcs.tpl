@@ -339,6 +339,12 @@
 			</tr>
 
 			</tpl>
+			<tpl if='recurrence'>
+			    <tr>
+			        <td class='zcs-invite-label'>{[ZtMsg.invRecurLabel]}</td>
+			        <td>{recurrence}</td>
+			    </tr>
+			</tpl>
 			<tpl if='attendeeResponse && attendeeResponseMsg'>
 				<tr>
 					<tpl if="attendeeResponse == [ZCS.constant.PSTATUS_ACCEPTED]">

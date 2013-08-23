@@ -50,7 +50,8 @@ Ext.define('ZCS.model.mail.ZtInvite', {
             { name: 'timezone',             type: 'string' },
             { name: 'attendeeResponse',     type: 'string' },
             { name: 'attendeeResponseMsg',  type: 'string' },
-            { name: 'reminderAlert',        type: 'string'}
+            { name: 'reminderAlert',        type: 'string'},
+            { name: 'recurrence',           type: 'string' }
 		],
 
 		msgId: ''
@@ -72,7 +73,7 @@ Ext.define('ZCS.model.mail.ZtInvite', {
 
 			var invite = new ZCS.model.mail.ZtInvite({
 				id:             comp.apptId,
-				subject:        comp.name,
+				subject:        Ext.String.htmlEncode(comp.name), //Fix for bug: 83580. Prevents XSS attacks.
 				isOrganizer:    !!comp.isOrg,
 				location:       comp.loc,
 				isAllDay:       !!comp.allDay,
@@ -98,6 +99,11 @@ Ext.define('ZCS.model.mail.ZtInvite', {
 
             if (timezone) {
                 invite.set('timezone', timezone);
+            }
+
+            if (comp.recur) {
+                //Fix for bug: 82159
+                invite.set('recurrence', ZCS.recur.getBlurb(comp));
             }
 
 			if (comp.or) {
@@ -238,6 +244,7 @@ Ext.define('ZCS.model.mail.ZtInvite', {
 				optAttendees:   ZCS.model.mail.ZtMailItem.convertAddressModelToObject(this.get('optAttendees')),
 				intendedFor:    this.get('calendarIntendedFor'),
                 timezone:       this.get('timezone'),
+                recurrence:     this.get('recurrence'),
                 isOrganizer:    this.get('isOrganizer'),
                 attendeeResponse: this.get('attendeeResponse'),
                 attendeeResponseMsg: this.get('attendeeResponseMsg'),
