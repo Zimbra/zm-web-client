@@ -52,7 +52,7 @@ Ext.define('ZCS.model.ZtMenuList', {
 					menu = this.up('panel'),
 					args = record.get('args') || [];
                 //<debug>
-				Ext.Logger.verbose('Menu click: ' + action);
+				Ext.Logger.verbose('Menu tap: ' + action);
                 //</debug>
 				var listener = record.get('listener');
 				if (listener && !target.getDisabled()) {
@@ -72,6 +72,7 @@ Ext.define('ZCS.model.ZtMenuList', {
 			this.callParent(arguments);
 		}
 	},
+
 	doItemTouchStart: function(me, index, target, record) {
 		if (me.getItemAt(index) && !me.getItemAt(index).getDisabled()) {
 			this.callParent(arguments);
@@ -237,18 +238,15 @@ Ext.define('ZCS.common.ZtMenu', {
 	},
 
 	/**
-	 * Enables or disables a menu item. A disabled item will be grey, and tapping it
-	 * does nothing.
+	 * Enables or disables a menu item. A disabled item does not react to tap.
 	 *
 	 * @param {String}  action      ID of item to disable
 	 * @param {Boolean} enabled     true to enable, false to disable
 	 */
 	enableItem: function(action, enabled) {
-
 		var item = this.getItem(action);
 		if (item) {
 			item.setDisabled(!enabled);
-			item.setCls(enabled ? 'x-list-item-relative' : 'zcs-menuitem-disabled x-list-item-relative');
 		}
 	},
 

@@ -212,3 +212,9 @@ $searchMinHeight: 1em;
 	width:200px;
 	height:30px;
 }
+
+/* Some list items can be disabled */
+
+.x-list-item.x-item-disabled {
+    opacity: 0.4;
+}

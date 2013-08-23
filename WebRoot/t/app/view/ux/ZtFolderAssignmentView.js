@@ -43,10 +43,10 @@ Ext.define('ZCS.view.ux.ZtFolderAssignmentView', {
 
 		// create a store for the organizers
 		var organizerStore = Ext.create('Ext.data.TreeStore', {
-			model: 'ZCS.model.ZtFolder',
-			defaultRootProperty: 'items',
-			root: organizerData,
-			storeId: 'organizerStore',
+			model:                  'ZCS.model.ZtFolder',
+			defaultRootProperty:    'items',
+			root:                   organizerData,
+			storeId:                'organizerStore',
 			proxy: {
 				type: 'memory',
 				model: 'ZCS.model.ZtFolder'
@@ -54,11 +54,12 @@ Ext.define('ZCS.view.ux.ZtFolderAssignmentView', {
 		});
 
 		cfg.list = {
-			xtype: 'folderlist',
-			displayField: 'name',
-			title: cfg.listTitle,
-			store: organizerStore,
-			grouped: false
+			xtype:              'folderlist',
+			displayField:       'name',
+			title:              cfg.listTitle,
+			store:              organizerStore,
+			grouped:            false,
+			canDisableItems:    true
 		};
 
 		cfg.listHasOwnHeader = true;

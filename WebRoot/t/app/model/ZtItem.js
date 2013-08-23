@@ -57,7 +57,7 @@ Ext.define('ZCS.model.ZtItem', {
 	statics: {
 
 		/**
-		 * If the node has a list of tag IDs, return a list their ZtOrganizer tag objects.
+		 * If the node has a list of tag IDs, return a list of their ZtOrganizer tag objects.
 		 *
 		 * @param {Array}  tagIds   comma-separated list of tag IDs
 		 * @return {Array}  list of ZtOrganizer
@@ -124,5 +124,29 @@ Ext.define('ZCS.model.ZtItem', {
 
 			this.set('tags', ZCS.model.ZtItem.parseTags(modify.t, app));
 		}
+	},
+
+	/**
+	 * Returns true if this item has the given tag.
+	 *
+	 * @param {ZtOrganizer}     tag     a tag
+	 * @return {Boolean}
+	 */
+	hasTag: function(tag) {
+
+		var targetName = tag.get('name'),
+			tags = this.get('tags'),
+			ln = tags ? tags.length : 0,
+			i, tag, tagName;
+
+		for (i = 0; i < ln; i++) {
+			tag = tags[i];
+			tagName = tag instanceof ZCS.model.ZtOrganizer ? tag.get('name') : tag.name;
+			if (tagName === targetName) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 });

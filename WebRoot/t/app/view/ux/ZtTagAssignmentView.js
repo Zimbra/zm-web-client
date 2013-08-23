@@ -19,14 +19,34 @@
  * @author Macy Abbey
  */
 Ext.define('ZCS.view.ux.ZtTagAssignmentView', {
-	extend: 'ZCS.view.ux.ZtAssignmentView',
-	alias: 'widget.tagview',
-	constructor: function (config) {
-		var cfg = config || {};
 
-		cfg.listItemTpl = ZCS.template.TagAssignmentListItem;
-		cfg.listData = ZCS.session.getOrganizerDataByAppAndOrgType(ZCS.constant.APP_MAIL, ZCS.constant.ORG_TAG);
-		cfg.listDataModel = 'ZCS.model.ZtOrganizer';
+	extend: 'ZCS.view.ux.ZtAssignmentView',
+
+	alias: 'widget.tagview',
+
+	constructor: function (config) {
+
+		var cfg = config || {},
+			tagData = ZCS.session.getOrganizerDataByAppAndOrgType(ZCS.constant.APP_MAIL, ZCS.constant.ORG_TAG);
+
+		// It would be nicer to create actual ZtOrganizer instances to populate the store, but doing that
+		// messes up the store for some reason - it ends up with one unusable record.
+		var tagStore = Ext.create('Ext.data.Store', {
+//			model:  'ZCS.model.ZtOrganizer',
+			data:   tagData,
+			proxy: {
+				type: 'memory',
+				model: 'ZCS.model.ZtOrganizer'
+			}
+		});
+
+		cfg.list = {
+			xtype:              'foldersublist',
+			ui:                 'dark',
+			store:              tagStore,
+			canDisableItems:    true,
+			itemTpl:            ZCS.template.TagAssignmentListItem
+		};
 
 		this.callParent([cfg]);
 	}

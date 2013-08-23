@@ -173,8 +173,15 @@ Ext.define('ZCS.common.ZtUtil', {
 			return result;
 		}
 
+		// handle ID that was made unique to satisfy ST, eg "mail-folder-3"
+		var parts;
+		if (id.indexOf('-') > 0) {
+			parts = id.split('-');
+			id = parts[parts.length - 1];
+		}
+
 		if (id.indexOf(':') > 0) {
-			var parts = id.split(':');
+			parts = id.split(':');
 			result.accountId = parts[0];
 			result.localId = parts[1];
 			result.isRemote = true;

@@ -167,12 +167,14 @@ Ext.define('ZCS.view.ux.ZtAssignmentView', {
 		var tapProducer = this.down('nestedlist') || this.down('list'),
 			item, eventName;
 
-		tapProducer.on('itemtap', function (list, index, target, assignmentRecord, e, eOpts) {
-			item = me.getRecord();
-			eventName = item.get('type') + 'Assignment';
-			me.fireEvent(eventName, assignmentRecord, item);
-			e.preventDefault();
-			me.onClose();
+		tapProducer.on('itemtap', function (list, index, target, organizer, e, eOpts) {
+			if (!target.getDisabled()) {
+				item = me.getRecord();
+				eventName = item.get('type') + 'Assignment';
+				me.fireEvent(eventName, organizer, item);
+				e.preventDefault();
+				me.onClose();
+			}
 		});
 
 		ZCS.app.on('orientationChange', function (newDimensions) {

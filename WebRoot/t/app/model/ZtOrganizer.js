@@ -40,7 +40,6 @@ Ext.define('ZCS.model.ZtOrganizer', {
 
 			// folder fields
 			{ name: 'disclosure', type: 'boolean' },    // override NestedList button behavior
-			{ name: 'leaf', type: 'boolean' },    //whether this is a leaf node or not.
 
 			// mail folder fields
 			{ name: 'unreadCount', type: 'int' },       // number of unread messages in this folder
@@ -53,7 +52,7 @@ Ext.define('ZCS.model.ZtOrganizer', {
 	statics: {
 
 		/**
-		 * Returns a DOM ID for an organizer which should be unique. Since the same tag can be used by multiple apps
+		 * Returns an ID for an organizer which should be unique. Since the same tag can be used by multiple apps
 		 * (appearing in multiple overviews), we need to qualify its ID to be unique; otherwise ST gets confused.
 		 *
 		 * @param {String}      itemId      organizer ID
@@ -191,9 +190,69 @@ Ext.define('ZCS.model.ZtOrganizer', {
 	},
 
 	handleModifyNotification: function(modify) {
-
 		if (modify.u != null) {
 			this.set('unreadCount', modify.u);
 		}
+	},
+
+	/**
+	 * Returns true if this organizer is a valid assignment target for the given item (ie, the item
+	 * is getting moved to this folder or is getting this tag).
+	 *
+	 * @param {ZtItem}      item        item
+	 * @return {Boolean}
+	 */
+	isValidAssignmentTarget: function(item) {
+
+		var	type = this.get('type');
+
+		if (type === ZCS.constant.ORG_MAIL_FOLDER) {
+			return this.mayContain(item);
+		}
+		else if (type === ZCS.constant.ORG_TAG) {
+			return !item.hasTag(this);
+		}
+	},
+
+	/**
+	 * Returns true if the given item can be moved to this folder.
+	 *
+	 * @param {ZtItem}      item        item
+	 * @return {Boolean}
+	 */
+	mayContain: function(item) {
+
+		if (!item) {
+			return true;
+		}
+		if (this.isFeed()) {
+			return false;
+		}
+
+		var	myId = this.get('itemId'),
+			itemFolderId = item.get('folderId'),
+			curFolder = ZCS.session.getCurrentSearchOrganizer(),
+			curFolderId = curFolder ? curFolder.get('itemId') : null,
+			isDraftsFolder = ZCS.util.folderIs(this, ZCS.constant.ID_DRAFTS),
+			isTrashFolder = ZCS.util.folderIs(this, ZCS.constant.ID_TRASH),
+			isDraft = item.get('isDraft');
+
+		// Can't move an item to its current folder. Also, assume that there's no reason to
+		// move something to the folder the user is viewing.
+		if (myId === itemFolderId || myId === curFolderId) {
+			return false;
+		}
+
+		// can move drafts into Trash or Drafts
+		if (isDraft && !isDraftsFolder && !isTrashFolder) {
+			return false;
+		}
+
+		// only drafts can be moved into Drafts
+		if (isDraftsFolder && !isDraft) {
+			return false;
+		}
+
+		return true;
 	}
 });
