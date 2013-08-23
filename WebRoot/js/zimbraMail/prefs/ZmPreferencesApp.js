@@ -993,7 +993,7 @@ function() {
 	var params = ZmApp.prototype._getOverviewParams.call(this);
 	params.omit = {};
 	params.omit[ZmOrganizer.ID_ZIMLET] = true;
-
+	params.actionSupported = false;
 	return params;
 };
 

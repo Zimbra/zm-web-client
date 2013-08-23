@@ -58,6 +58,12 @@ function(overviewId, listener) {
 	this._eventMgrs[overviewId].addListener(DwtEvent.SELECTION, listener);
 };
 
+ZmZimletTreeController.prototype._createTreeView =
+function(params) {
+	params.actionSupported = false;
+	return new ZmTreeView(params);
+};
+
 /**
  * Removes the selection listener.
  * 

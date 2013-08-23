@@ -37,6 +37,7 @@
  * @param {Boolean}	params.isCheckedByDefault	sets the default state of "checked" tree style
  * @param {Hash}	params.allowedTypes			a hash of org types this tree may display
  * @param {Hash}	params.allowedSubTypes		a hash of org types this tree may display below top level
+ * @param {boolean}    params.actionSupported     (default to value from Overview if not passed)
  *
  * @extends		DwtTree
  */
@@ -64,6 +65,10 @@ ZmTreeView = function(params) {
 	
 	this._dragSrc = params.dragSrc;
 	this._dropTgt = params.dropTgt;
+
+	this.actionSupported = params.actionSupported !== undefined
+							? params.actionSupported
+							: this._overview.actionSupported;
 
 	this._dataTree = null;
 	this._treeItemHash = {};	// map organizer to its corresponding tree item by ID
@@ -214,6 +219,7 @@ function(params) {
 
         var item = new DwtTreeItem({
             parent: parentNode,
+			arrowDisabled: true,
             deferred:false // NOTE: Needed so we can grab link element
         });
         item.setImage("Blank_16");
@@ -455,7 +461,7 @@ function(parentNode, organizer, index, noTooltips, omit) {
 	if (ds && ds.type == ZmAccount.TYPE_IMAP) {
 		var cname = appCtxt.isFamilyMbox ? null : this._headerClass;
 		var icon =  "Folder";
-		ti = new DwtTreeItem({parent:this, text:organizer.getName(), className:cname, imageInfo:icon, selectable: false});
+		ti = new DwtHeaderTreeItem({parent:this, text:organizer.getName(), className:cname, imageInfo:icon, selectable: false});
 	} else {
 		// create parent chain
 		if (!parentNode) {
@@ -474,6 +480,7 @@ function(parentNode, organizer, index, noTooltips, omit) {
 					text:					parentOrganizer.getName(),
 					imageInfo:				parentOrganizer.getIconWithColor(),
 					forceNotifySelection:	true,
+					arrowDisabled:			!this.actionSupported,
 					dndScrollCallback:		this._overview && this._overview._dndScrollCallback,
 					dndScrollId:			this._overview && this._overview._scrollableContainerId,
 					id:						ZmId.getTreeItemId(this.overviewId, parentOrganizer.id)
@@ -494,6 +501,7 @@ function(parentNode, organizer, index, noTooltips, omit) {
 			parent:				parentNode,
 			index:				index,
 			text:				organizer.getName(this._showUnread),
+			arrowDisabled:		!this.actionSupported,
 			dndScrollCallback:	this._overview && this._overview._dndScrollCallback,
 			dndScrollId:		this._overview && this._overview._scrollableContainerId,
 			imageInfo:			organizer.getIconWithColor(),
