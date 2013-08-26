@@ -486,7 +486,7 @@
 		</tpl>
 
 		<tpl if='attendee.ptst == [ZCS.constant.PSTATUS_UNKNOWN]'>
-			<span class="view-appt-unknown"> {[ZtMsg.unknown]} </span>
+			<span class="view-appt-noresponse"> {[ZtMsg.noresponse]} </span>
 		</tpl>
 	</tpl>
 </template>

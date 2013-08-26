@@ -153,9 +153,11 @@ Ext.define('ZCS.view.calendar.ZtAppointmentView', {
             }
         }
         if (isOrganizer) {
-            stats.summary = ((accepted ? accepted + " " + ZtMsg.accepted : "") + (declined ? ", " + declined + " " + ZtMsg.declined: "") + (tentative ? ", " + tentative + " " + ZtMsg.tentative : "") + (unknown ? ", " + unknown + " " + ZtMsg.unknown : "")).replace(/(^,)|(,$)/g, "");
-        }
-        else {
+            stats.summary = ((accepted ? accepted + " " + ZtMsg.accepted : "")
+                + (declined ? ", " + declined + " " + ZtMsg.declined: "")
+                + (tentative ? ", " + tentative + " " + ZtMsg.tentative : "")
+                + (unknown ? ", " + unknown + " " + ZtMsg.noresponse : "")).replace(/(^,)|(,$)/g, "");
+        } else {
 
             // TODO: Show only upto 4 attendees.
             stats.summary = attendeeList.replace(/(^,)|(,$)/g, "");
