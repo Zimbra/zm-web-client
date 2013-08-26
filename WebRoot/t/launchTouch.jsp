@@ -74,7 +74,7 @@
         }
 
         #SplashScreenImgBanner{
-            background-image: url("/skins/serenity/logos/LoginBanner.png");
+            background-image: url("/skins/_base/logos/LoginBanner_white.png");
             background-position: left bottom;
             background-repeat: no-repeat;
             height: 60px;
