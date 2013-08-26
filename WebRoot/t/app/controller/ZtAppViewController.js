@@ -118,6 +118,10 @@ Ext.define('ZCS.controller.ZtAppViewController', {
                     newAppView.listPanel.show();
                 }
             }
+            else {
+                // Fix for bug: 83607 - Loads read/unread appointments
+                ZCS.app.getCalendarController().loadCalendar();
+            }
 
             newAppView.itemPanel.show();
 		}, this);

@@ -69,12 +69,18 @@ Ext.define('ZCS.controller.calendar.ZtCalendarController', {
 
     launch: function() {
 
-        var defaultQuery = this.getDefaultQuery();
-
         this.callParent();
 
         //Create a toolbar with calendar view buttons - Month, Week, Day, Workweek and Today
         this.createToolbar();
+    },
+
+    /*
+     * Loads the appointments on application switch
+     */
+    loadCalendar: function() {
+
+        var defaultQuery = this.getDefaultQuery();
 
         //Set the proxies params so this parameter persists between paging requests.
         this.getStore().getProxy().setExtraParams({
