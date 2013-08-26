@@ -2965,27 +2965,32 @@ function(templateId, data) {
 	var attButtonId = ZmId.getButtonId(this._view, ZmId.CMP_ATT_BTN);
 	this._attButton = new DwtButton({parent:this, id:attButtonId});
 	this._attButton.setText(ZmMsg.attach);
-	this._attButton.addSelectionListener(function() {});
-	if (AjxEnv.supportsHTML5File) {
-		var styleStr = "";
-		var node = this._attButton.getHtmlElement().getElementsByClassName("ZWidgetTitle")[0];
 
-		var newData = {
-			fileInputId : ZmId.getViewId(this._view, ZmId.CMP_ATT_INP)
-		};
-		node.innerHTML = AjxTemplate.expand("mail.Message#MailAttachmentAttachBtn", newData);
-		var fileInputNode = node.getElementsByClassName("BrowseAttachBtn")[0];
-		var attachTextWidth = node.getElementsByClassName("attach_text")[0].clientWidth;
-		if (fileInputNode && attachTextWidth) {
-			if (AjxEnv.isFirefox) {
-				fileInputNode.style.right = (fileInputNode.clientWidth - attachTextWidth) + "px";
-				if (fileInputNode.parentNode){
-					fileInputNode.parentNode.style.maxWidth = attachTextWidth + "px";
-				}
-			}
-			fileInputNode.style.maxWidth = attachTextWidth;
+	if (AjxEnv.supportsHTML5File) {
+		var normalid = ZmId.getViewId(this._view, ZmId.CMP_ATT_COMPUTER_INP);
+		var inlineid = ZmId.getViewId(this._view, ZmId.CMP_ATT_INLINE_INP);
+		var inputs = [{id: normalid, isinline: false},
+		              {id: inlineid, isinline: true}];
+		var hiddendiv = document.createElement('div');
+
+		hiddendiv.innerHTML =
+			AjxTemplate.expand("mail.Message#MailAttachmentInputForm",
+			                   {inputs: inputs});
+		hiddendiv.style.display = 'none';
+		this.getHtmlElement().appendChild(hiddendiv);
+
+		for (var i = 0; i < inputs.length; i++) {
+			var inputelem = Dwt.byId(inputs[i].id);
+			inputelem.onchange =
+				AjxCallback.simpleClosure(this._submitMyComputerAttachments,
+				                          this, null, inputelem,
+				                          inputs[i].isinline);
 		}
-		this._attcBtnFileInpId = newData.fileInputId;
+
+		this._attButton.addSelectionListener(AjxCallback.simpleClosure(
+			this.__clickElementID, this, normalid
+		));
+
 	} else {
 			this._attButton.addSelectionListener(function(event) {
 				var curView = appCtxt.getAppViewMgr().getCurrentView();
@@ -3240,11 +3245,15 @@ function(fileName) {
 ZmComposeView.prototype._submitMyComputerAttachments =
 function(files, node, isInline) {
 	var name = "";
+
 	if (!AjxEnv.supportsHTML5File) {
 		// IE, FF 3.5 and lower
 		this.showAttachmentDialog(ZmMsg.myComputer);
 		return;
 	}
+
+	if (!files)
+		files = node.files;
 
 	var size = 0;
 	if (files) {
@@ -3263,13 +3272,8 @@ function(files, node, isInline) {
 			}
 		}
 	}
-	if (node) {  //call from ZmDragAndDrop doesn't provide node.
-		this._uploadElementForm = node.parentNode;
-		this._setAttInline(node.isInline);
-	}
-	else {
-		this._setAttInline(isInline); //we get this param from the DND case.
-	}
+
+	this._setAttInline(isInline);
 	this._initProgressSpan(files[0].name);
 
 	this._controller._uploadMyComputerFile(files);
@@ -3280,46 +3284,27 @@ ZmComposeView.prototype._checkMenuItems =
 function(menuItem) {
 	var isHTML = (this._composeMode === DwtHtmlEditor.HTML);
 	menuItem.setEnabled(isHTML);
-	document.getElementById(this._attcBtnInlineFileInpId).disabled = !isHTML;
+};
+
+ZmComposeView.prototype.__clickElementID = function(elementid) {
+	Dwt.byId(elementid).click();
 };
 
 ZmComposeView.prototype._attachButtonMenuCallback =
 function() {
 	var menu = new DwtMenu({parent:this._attButton});
-	var div = document.createElement("DIV");
 	if (!AjxEnv.supportsHTML5File) {
 		mi = this._createAttachMenuItem(menu, ZmMsg.myComputer, new AjxListener(this, this.showAttachmentDialog,[ZmMsg.myComputer]) );
 	} else {
-		var data = {
-			inlineFileInputId : ZmId.getViewId(this._view, ZmId.CMP_ATT_COMPUTER_INP)
-		};
-		var listener = new AjxListener(this, function(inputid) {
-			Dwt.byId(inputid).click();
-		}, [data.inlineFileInputId]);
-		var mi = this._createAttachMenuItem(menu, ZmMsg.myComputer, listener);
+		// create the item for making regular attachments
+		var listener = new AjxListener(this, this.__clickElementID,
+		                               [ZmId.getViewId(this._view, ZmId.CMP_ATT_COMPUTER_INP)]);
+		this._createAttachMenuItem(menu, ZmMsg.myComputer, listener);
 
-		div.innerHTML = AjxTemplate.expand("mail.Message#MailAttachmentMyComputer", data);
-		mi.getHtmlElement().appendChild(div.firstChild);
-
-	}
-
-
-	if (AjxEnv.supportsHTML5File) {
-		div = document.createElement("DIV");
-		var data = {
-			inlineFileInputId : ZmId.getViewId(this._view, ZmId.CMP_ATT_INLINE_INP)
-		};
-		var listener = new AjxListener(this, function(inputid) {
-			Dwt.byId(inputid).click();
-		}, [data.inlineFileInputId]);
+		// create the item for making inline attachments
+		var listener = new AjxListener(this, this.__clickElementID,
+		                               [ZmId.getViewId(this._view, ZmId.CMP_ATT_INLINE_INP)]);
 		var mi = this._createAttachMenuItem(menu, ZmMsg.attachInline, listener);
-		this._attcBtnInlineFileInpId = data.inlineFileInputId;
-
-		div.innerHTML = AjxTemplate.expand("mail.Message#MailAttachmentMyComputer", data);
-		var fromElement = div.firstChild;
-		fromElement.firstChild.style.top = "2rem";
-		fromElement.firstChild.isInline = true;
-		mi.getHtmlElement().appendChild(div.firstChild);
 		menu.addPopupListener(new AjxListener(this, this._checkMenuItems,[mi]));
 	}
 

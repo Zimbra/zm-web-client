@@ -690,21 +690,6 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 	background-color:@darken(AppC,30)@;
 }
 
-.BrowseMyComputerMenuItem {
-	@ActiveCursor@
-	bottom:0px;
-	height:25px;
-	display:block;
-	left:0px;
-	margin:0px;
-	opacity:0;
-	padding:0px;
-	position:absolute;
-	right:0px;
-	top:0px;
-	z-index:300;
-}
-
 ::-webkit-file-upload-button {
 	@ActiveCursor@
 }
