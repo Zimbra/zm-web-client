@@ -58,25 +58,7 @@ ZmApptEditView = function(parent, attendees, controller, dateInfo) {
 
     // Store Appt form values.
     this._apptFormValue = {};
-    this._showAsValueChanged  = false;
-
-    this._locationExceptions  = null;
-    this._alteredLocations    = null;
-    this._enableResolveDialog = true;
-
-    this._locationConflict    = false;
-    this._locationStatusMode = ZmApptEditView.LOCATION_STATUS_NONE;
-
-    var app = appCtxt.getApp(ZmApp.CALENDAR);
-    // Each ApptEditView must now have its own copy of the FreeBusyCache.  The cache will
-    // now hold FreeBusy info that is unique to an appointment, in that the Server provides
-    // Free busy info that excludes the current appointment.  So the cache information cannot
-    // be shared across appointments.
-    //this._fbCache = app.getFreeBusyCache();
-    AjxDispatcher.require(["MailCore", "CalendarCore"]);
-    this._fbCache = new ZmFreeBusyCache(app);
-
-    this._customRecurDialogCallback = this._recurChangeForLocationConflict.bind(this);
+    this._showAsValueChanged = false;
 };
 
 ZmApptEditView.prototype = new ZmCalItemEditView;
@@ -107,13 +89,6 @@ ZmApptEditView.TIMEZONE_TYPE = "TZ_TYPE";
 ZmApptEditView.START_TIMEZONE = 1;
 ZmApptEditView.END_TIMEZONE = 2;
 
-ZmApptEditView.LOCATION_STATUS_UNDEFINED  = -1;
-ZmApptEditView.LOCATION_STATUS_NONE       =  0;
-ZmApptEditView.LOCATION_STATUS_VALIDATING =  1;
-ZmApptEditView.LOCATION_STATUS_CONFLICT   =  2;
-ZmApptEditView.LOCATION_STATUS_RESOLVED   =  3;
-
-
 // Public Methods
 
 ZmApptEditView.prototype.toString =
@@ -121,36 +96,11 @@ function() {
 	return "ZmApptEditView";
 };
 
-ZmApptEditView.prototype.isLocationConflictEnabled =
-function() {
-    return ((this._mode != ZmCalItem.MODE_EDIT_SINGLE_INSTANCE) &&
-            !this._isForward && !this._isProposeTime &&
-             this.getRepeatType() != "NON");
-}
-
-ZmApptEditView.prototype.getFreeBusyCache =
-function() {
-    return this._fbCache;
-}
-
-
-ZmLocationAppt = function() { };
-ZmLocationRecurrence = function() { };
 
 ZmApptEditView.prototype.show =
 function() {
 	ZmCalItemEditView.prototype.show.call(this);
 	this._setAttendees();
-
-    if (this.parent.setLocationConflictCallback) {
-        var appt = this.parent.getAppt();
-        this.initializeLocationConflictCheck(appt);
-    }
-
-    Dwt.setVisible(this._attendeeStatus, false);
-    Dwt.setVisible(this._suggestTime, !this._isForward);
-    Dwt.setVisible(this._suggestLocation, !this._isForward && !this._isProposeTime && appCtxt.get(ZmSetting.GAL_ENABLED));
-    this._scheduleAssistant.close();
 
     if(!this.GROUP_CALENDAR_ENABLED) {
         this.setSchedulerVisibility(false);
@@ -169,285 +119,9 @@ function() {
     this._editViewInitialized = true;
     if(this._expandInlineScheduler) {
         this._pickAttendeesInfo(ZmCalBaseItem.PERSON);
-        this._pickAttendeesInfo(ZmCalBaseItem.LOCATION);
     }
+
 };
-
-ZmApptEditView.prototype.initializeLocationConflictCheck =
-function(appt) {
-    // Create a 'Location-only' clone of the appt, for use with the
-    // resource conflict calls
-    ZmLocationAppt.prototype = appt;
-    ZmLocationRecurrence.prototype = appt.getRecurrence();
-    this._locationConflictAppt = new ZmLocationAppt();
-    this._locationConflictAppt._recurrence = new ZmLocationRecurrence();
-    this._locationConflictAppt._attendees[ZmCalBaseItem.LOCATION] =
-        appt._attendees[ZmCalBaseItem.LOCATION];
-    this._locationConflictAppt._attendees[ZmCalBaseItem.PERSON]	  = [];
-    this._locationConflictAppt._attendees[ZmCalBaseItem.EQUIPMENT]= [];
-
-    this._processLocationCallback = this.processLocationConflicts.bind(this);
-    this._noLocationCallback =
-        this.setLocationStatus.bind(this, ZmApptEditView.LOCATION_STATUS_NONE);
-    this.parent.setLocationConflictCallback(this.updatedLocationsConflictChecker.bind(this));
-
-    this._getRecurrenceSearchResponseCallback =
-        this._getExceptionSearchResponse.bind(this, this._locationConflictAppt);
-    this._getRecurrenceSearchErrorCallback =
-        this._getExceptionSearchError.bind(this, this._locationConflictAppt);
-
-    if (!this._pendingLocationRequest &&
-         this._scheduleAssistant && this._scheduleAssistant.isInitialized()) {
-        // Trigger an initial location check - the appt may have been saved
-        // with a location that has conflicts.  Only do it if no pending
-        // request and the assistant is initialized (location preferences
-        // are loaded). If !initialized, the locationConflictChecker will
-        // be run when preferences are loaded.
-        this.locationConflictChecker();
-    }
-}
-
-ZmApptEditView.prototype.cancelLocationRequest =
-function() {
-    if (this._pendingLocationRequest) {
-        appCtxt.getRequestMgr().cancelRequest(this._pendingLocationRequest, null, true);
-        this._pendingLocationRequest = null;
-    }
-}
-
-ZmApptEditView.prototype.locationConflictChecker =
-function() {
-    // Cancel any pending requests
-    this.cancelLocationRequest();
-    if (this.isLocationConflictEnabled() &&
-        this._locationConflictAppt.hasAttendeeForType(ZmCalBaseItem.LOCATION)) {
-        // Send a request to the server to get location conflicts
-
-        // DISABLED until Bug 56464 completed - server side CreateAppointment/ModifyAppointment
-        // SOAP API changes.  When done, add code in ZmCalItemComposeController to add the
-        // altered locations as a list of exceptions to the SOAP call.
-        //if (this._apptExceptionList) {
-        //    this._runLocationConflictChecker();
-        //} else {
-        //    // Get the existing exceptions, then runLocationConflictChecker
-        //    this._doExceptionSearchRequest();
-        //}
-
-        // Once bug 56464 completed, remove the following and enable the disabled code above
-        this._runLocationConflictChecker();
-
-    } else {
-        if (this._noLocationCallback) {
-            // Restore the 'Suggest Location' line to its default
-            this._noLocationCallback.run();
-        }
-    }
-}
-
-ZmApptEditView.prototype.updatedLocationsConflictChecker =
-function(locations){
-    // Update locations in the appt clone, then run the conflict checker
-    this._locationConflictAppt.setAttendees(locations.getArray(), ZmCalBaseItem.LOCATION);
-    this.locationConflictChecker();
-}
-
-ZmApptEditView.prototype.getNumLocationConflictRecurrence =
-function() {
-    var numRecurrence = ZmTimeSuggestionPrefDialog.DEFAULT_NUM_RECURRENCE;
-    if (this._scheduleAssistant) {
-        numRecurrence = this._scheduleAssistant.getLocationConflictNumRecurrence();
-    }
-    return numRecurrence;
-}
-
-ZmApptEditView.prototype._runLocationConflictChecker =
-function() {
-    var numRecurrence = this.getNumLocationConflictRecurrence();
-    var locationCallback = this._controller.getCheckResourceConflicts(
-        this._locationConflictAppt, numRecurrence, this._processLocationCallback, false);
-    this.setLocationStatus(ZmApptEditView.LOCATION_STATUS_VALIDATING);
-    this._pendingLocationRequest = locationCallback.run();
-}
-
-
-ZmApptEditView.prototype._doExceptionSearchRequest =
-function() {
-    var numRecurrence = this.getNumLocationConflictRecurrence();
-    var startDate = new Date(this._calItem.startDate);
-    var endTime = ZmApptComposeController.getCheckResourceConflictEndTime(
-        this._locationConflictAppt, startDate, numRecurrence);
-
-    var jsonObj = {SearchRequest:{_jsns:"urn:zimbraMail"}};
-    var request = jsonObj.SearchRequest;
-
-    request.sortBy = "dateasc";
-    request.limit = numRecurrence.toString();
-    // AjxEnv.DEFAULT_LOCALE is set to the browser's locale setting in the case
-    // when the user's (or their COS) locale is not set.
-    request.locale = { _content: AjxEnv.DEFAULT_LOCALE };
-    request.calExpandInstStart = startDate.getTime();
-    request.calExpandInstEnd   = endTime;
-    request.types = ZmSearch.TYPE[ZmItem.APPT];
-    request.query = {_content:'item:"' + this._calItem.id.toString() + '"'};
-    var accountName = appCtxt.multiAccounts ? appCtxt.accountList.mainAccount.name : null;
-
-    var params = {
-        jsonObj:       jsonObj,
-        asyncMode:     true,
-        callback:      this._getExceptionSearchResponse.bind(this),
-        errorCallback: this._getExceptionSearchError.bind(this),
-        noBusyOverlay: true,
-        accountName:   accountName
-    };
-    appCtxt.getAppController().sendRequest(params);
-}
-
-ZmApptEditView.prototype._getExceptionSearchResponse =
-function(result) {
-	if (!result) { return; }
-
-	var resp;
-    var appt;
-	try {
-		resp = result.getResponse();
-	} catch (ex) {
-		return;
-	}
-
-    // See ZmApptCache.prototype.processSearchResponse
-    var rawAppts = resp.SearchResponse.appt;
-    this._apptExceptionList = new ZmApptList();
-    this._apptExceptionList.loadFromSummaryJs(rawAppts);
-    this._apptExceptionLookup = {};
-
-    this._locationExceptions = {}
-    for (var i = 0; i < this._apptExceptionList.size(); i++) {
-        appt = this._apptExceptionList.get(i);
-        this._apptExceptionLookup[appt.startDate.getTime()] = appt;
-        if (appt.isException) {
-            // Found an exception, store its location info, using its start date as the key
-            var location = appt._attendees[ZmCalBaseItem.LOCATION];
-            if (!location || (location.length == 0)) {
-                location = this.getAttendeesFromString(ZmCalBaseItem.LOCATION, appt.location, false);
-                location = location.getArray();
-            }
-            this._locationExceptions[appt.startDate.getTime()] = location;
-        }
-    }
-    this._enableResolveDialog = true;
-
-    // Now find the conflicts
-    this._runLocationConflictChecker();
-};
-
-ZmApptEditView.prototype._getExceptionSearchError =
-function(ex) {
-    // Disallow use of the resolve dialog if can't read the exceptions
-    this._enableResolveDialog = false;
-}
-
-// Callback executed when the CheckResourceConflictRequest completes.
-// Store the conflict instances (if any) and update the status field
-ZmApptEditView.prototype.processLocationConflicts =
-function(inst) {
-    this._inst = inst;
-    var len = inst ? inst.length : 0,
-    locationStatus = ZmApptEditView.LOCATION_STATUS_NONE;
-    for (var i = 0; i < len; i++) {
-        if (this._inst[i].usr) {
-            // Conflict exists for this instance
-            if (this._locationExceptions && this._locationExceptions[this._inst[i].s]) {
-                // Assume that an existing exception (either persisted to the DB, or set via
-                // the current use of the resolve dialog) means that the instance conflict is resolved
-                locationStatus = ZmApptEditView.LOCATION_STATUS_RESOLVED;
-            } else {
-                // No exception for the instance, using default location which has a conflict
-                locationStatus = ZmApptEditView.LOCATION_STATUS_CONFLICT;
-                break;
-            }
-        }
-    }
-
-    this.setLocationStatus(locationStatus);
-}
-
-ZmApptEditView.prototype.setLocationStatus =
-function(locationStatus, currentLocationConflict) {
-    var className = "";
-    var statusMessage = "";
-    var linkMessage = "";
-    var msgVisible = false;
-    var linkVisible = false;
-    var statusText = "";
-
-    if (locationStatus != ZmApptEditView.LOCATION_STATUS_UNDEFINED) {
-        this._locationStatusMode = locationStatus;
-    }
-    if (currentLocationConflict !== undefined) {
-        this._locationConflict  = currentLocationConflict;
-    }
-
-    // Manage the location suggestion line beneath the location field.
-    switch (this._locationStatusMode) {
-        case ZmApptEditView.LOCATION_STATUS_NONE:
-             // No recurrence conflicts or nothing to check - display based on current conflict flag
-             if (this._locationConflict) {
-                 statusMessage = AjxImg.getImageHtml("Warning_12", "display:inline-block;padding-right:4px;") +
-                                 ZmMsg.locationCurrentConflicts;
-                 className     = "ZmLocationStatusConflict";
-                 msgVisible    = true;
-             } else {
-                 msgVisible    = false;
-             }
-             break;
-        case ZmApptEditView.LOCATION_STATUS_VALIDATING:
-             // The conflict resource check is in progress, show a busy spinner
-             className     = "ZmLocationStatusValidating";
-             // Don't incorporate currentConflict flag - just show validating; It will update upon completion
-             statusMessage = AjxImg.getImageHtml("Wait_16", "display:inline-block;padding-right:4px;") +
-                             ZmMsg.validateLocation;
-             msgVisible    = true;
-             linkVisible   = false;
-             break;
-        case ZmApptEditView.LOCATION_STATUS_CONFLICT:
-             // Unresolved recurrence conflicts - show the 'Resolve Conflicts' link
-             className     = "ZmLocationStatusConflict";
-             statusText    = this._locationConflict ? ZmMsg.locationCurrentAndRecurrenceConflicts :
-                                                      ZmMsg.locationRecurrenceConflicts;
-             statusMessage = AjxImg.getImageHtml("Warning_12", "display:inline-block;padding-right:4px;") +
-                             statusText;
-             linkMessage   = ZmMsg.resolveConflicts;
-             msgVisible    = true;
-             linkVisible   = true;
-             break;
-        case ZmApptEditView.LOCATION_STATUS_RESOLVED:
-             // Resolved conflicts - show the 'View Resolutions' link
-             className     = "ZmLocationStatusResolved";
-             statusMessage = this._locationConflict ? ZmMsg.locationRecurrenceResolvedButCurrentConflict :
-                             ZmMsg.locationRecurrenceConflictsResolved;
-             linkMessage   = ZmMsg.viewResolutions;
-             msgVisible    = true;
-             linkVisible   = true;
-             break;
-        default: break;
-    }
-
-    Dwt.setVisible(this._locationStatus, msgVisible);
-    if (!this._enableResolveDialog) {
-        // Unable to read the exeptions, prevent the use of the resolve dialog
-        linkVisible = false;
-    }
-
-    // NOTE: Once CreateAppt/ModifyAppt SOAP API changes are completed (Bug 56464), enable
-    //       the display of the resolve links and the use of the resolve dialog
-    // *** NOT DONE ***
-    linkVisible = false;
-
-    Dwt.setVisible(this._locationStatusAction, linkVisible);
-    Dwt.setInnerHtml(this._locationStatus, statusMessage);
-    Dwt.setInnerHtml(this._locationStatusAction, linkMessage);
-    this._locationStatus.className = className;
-}
 
 ZmApptEditView.prototype.blur =
 function(useException) {
@@ -500,17 +174,10 @@ function() {
     this._attendeesHashMap = {};
     this._showAsValueChanged = false;
 
-    Dwt.setVisible(this._attendeeStatus, false);
-    this.setLocationStatus(ZmApptEditView.LOCATION_STATUS_NONE, false);
-
     //Default Persona
     this.setIdentity();
+
     if(this._scheduleAssistant) this._scheduleAssistant.cleanup();
-
-    this._apptExceptionList  = null;
-    this._locationExceptions = null;
-    this._alteredLocations   = null;
-
 };
 
 // Acceptable hack needed to prevent cursor from bleeding thru higher z-index'd views
@@ -585,26 +252,14 @@ function() {
 // called by schedule tab view when user changes start date field
 ZmApptEditView.prototype.updateDateField =
 function(newStartDate, newEndDate) {
-	var oldTimeInfo = this._getDateTimeText();
-
 	this._startDateField.value = newStartDate;
 	this._endDateField.value = newEndDate;
-
-	this._dateTimeChangeForLocationConflict(oldTimeInfo);
 };
 
 ZmApptEditView.prototype.updateAllDayField =
 function(isAllDay) {
-	var oldAllDay = this._allDayCheckbox.checked;
 	this._allDayCheckbox.checked = isAllDay;
 	this._showTimeFields(!isAllDay);
-	if (oldAllDay != isAllDay) {
-		var durationInfo = this.getDurationInfo();
-		this._locationConflictAppt.startDate = new Date(durationInfo.startTime);
-		this._locationConflictAppt.endDate = new Date(durationInfo.endTime);
-		this._locationConflictAppt.allDayEvent = isAllDay ? "1" : "0";
-		this.locationConflictChecker();
-	}
 };
 
 ZmApptEditView.prototype.toggleAllDayField =
@@ -638,7 +293,6 @@ function(dateInfo) {
 
 ZmApptEditView.prototype.setDate =
 function(startDate, endDate, ignoreTimeUpdate) {
-    var oldTimeInfo = this._getDateTimeText();
     this._startDateField.value = AjxDateUtil.simpleComputeDateStr(startDate);
     this._endDateField.value = AjxDateUtil.simpleComputeDateStr(endDate);
     if(!ignoreTimeUpdate) {
@@ -650,12 +304,8 @@ function(startDate, endDate, ignoreTimeUpdate) {
         this._scheduleView.handleTimeChange();
     }
     appCtxt.notifyZimlets("onEditAppt_updateTime", [this, {startDate:startDate, endDate:endDate}]);//notify Zimlets    
-
-    this._dateTimeChangeForLocationConflict(oldTimeInfo);
 };
 
-// ?? Not used - and not setting this._dateInfo.  If used,
-// need to check change in timezone in caller and then update location conflict
 ZmApptEditView.prototype.updateTimezone =
 function(dateInfo) {
 	this._tzoneSelectStart.setSelectedValue(dateInfo.timezone);
@@ -753,21 +403,6 @@ function() {
 	return ZmAppt.quickClone(this._calItem);
 };
 
-ZmApptEditView.prototype.getDurationInfo =
-function() {
-    var startDate = AjxDateUtil.simpleParseDateStr(this._startDateField.value);
-	var endDate   = AjxDateUtil.simpleParseDateStr(this._endDateField.value);
-	if (!this._allDayCheckbox.checked) {
-		startDate = this._startTimeSelect.getValue(startDate);
-		endDate   = this._endTimeSelect.getValue(endDate);
-	}
-    var durationInfo = {};
-    durationInfo.startTime = startDate.getTime();
-    durationInfo.endTime   = endDate.getTime();
-    durationInfo.duration  = durationInfo.endTime - durationInfo.startTime;
-    return durationInfo;
-};
-
 ZmApptEditView.prototype.getDuration =
 function() {
     var startDate = AjxDateUtil.simpleParseDateStr(this._startDateField.value);
@@ -776,7 +411,7 @@ function() {
 	if (!this._allDayCheckbox.checked) {
 		startDate = this._startTimeSelect.getValue(startDate);
 		endDate = this._endTimeSelect.getValue(endDate);
-        duration = endDate.getTime() - startDate.getTime();
+        duration = endDate.getTime() - startDate.getTime();        
 	}
     return duration;
 };
@@ -789,6 +424,8 @@ function(calItem) {
     }
 
     ZmCalItemEditView.prototype._populateForSave.call(this, calItem);
+
+    if(this.isOrganizer() && this.isKeyInfoChanged()) this.resetParticipantStatus();
 
     //Handle Persona's
     var identity = this.getIdentity();
@@ -817,14 +454,13 @@ function(calItem) {
 	calItem.setStartDate(startDate, true);
 	calItem.setEndDate(endDate, true);
 	if (Dwt.getVisibility(this._tzoneSelectStartElement)) {
-		calItem.timezone = this._tzoneSelectStart.getValue();
-	}
-	if (Dwt.getVisibility(this._tzoneSelectEndElement)) {
-		calItem.setEndTimezone(this._tzoneSelectEnd.getValue());
-	}
-	else {
-		calItem.setEndTimezone(calItem.timezone); //it's not necessarily set correctly before. Might be still set to the original end time zone. I think here is the safeset place to make sure.
-	}
+        calItem.timezone = this._tzoneSelectStart.getValue();
+        if (Dwt.getVisibility(this._tzoneSelectEndElement)) {
+            calItem.setEndTimezone(this._tzoneSelectEnd.getValue());
+        }else {
+            calItem.setEndTimezone(this._tzoneSelectStart.getValue());
+        }
+    }
 
     // set attendees
     for (var t = 0; t < this._attTypes.length; t++) {
@@ -850,9 +486,6 @@ function(calItem) {
         }        
         calItem.setForwardAddress(a[AjxEmailAddress.TO]);
     }
-
-    // Only used for the save
-    calItem.alteredLocations   = this._alteredLocations;
 
 	return calItem;
 };
@@ -971,16 +604,11 @@ function(calItem, mode) {
             this._optAttendeesInputField.clear();
         }
         this._attendees[ZmCalBaseItem.PERSON] = new AjxVector();
+        this._attInputField[ZmCalBaseItem.PERSON] = this._isForward ? this._forwardToField : this._attendeesInputField;        
     }
 
 	// set the location attendee(s)
 	var locations = calItem.getAttendees(ZmCalBaseItem.LOCATION);
-    if (!locations || !locations.length) {
-        locations = this.getAttendeesFromString(ZmCalBaseItem.LOCATION, calItem.getLocation(), false);
-        if (locations) {
-            locations = locations.getArray();
-        }
-    }
 	if (locations && locations.length) {
         this.updateAttendeesCache(ZmCalBaseItem.LOCATION, locations);
 		this._attendees[ZmCalBaseItem.LOCATION] = AjxVector.fromArray(locations);
@@ -1057,26 +685,19 @@ function(calItem, mode) {
         var sentBy = calItem.sentBy;
         sentBy = sentBy || (calItem.organizer != calItem.getFolder().getOwner() ? calItem.organizer : null);
         if(sentBy){
-            var ic = appCtxt.getIdentityCollection();
-            if (ic) {
-                this.setIdentity(ic.getIdentityBySendAddress(sentBy));
-            }
+            this.setIdentity(appCtxt.getIdentityCollection().getIdentityBySendAddress(sentBy));
         }
     }
 
+    if(this._scheduleAssistant) {
+        this._scheduleAssistant.updateTime(true);
+        if(this.isSuggestionsNeeded()) this._scheduleAssistant.showSuggestActionLinks();
+    }
+    
     this.setApptMessage(this._getMeetingStatusMsg(calItem));
 
     this.updateToolbarOps();
-    if(this._isProposeTime) {
-        this._controller.setRequestResponses(false);
-    }
-    else if (this._isForward) {
-        this._controller.setRequestResponses(calItem.rsvp);
-        this._controller.setRequestResponsesEnabled(false);
-    }
-    else {
-        this._controller.setRequestResponses(calItem && calItem.hasAttendees() ? calItem.shouldRsvp() : true);
-    }
+    this._controller.setRequestResponses(calItem && calItem.hasAttendees() ? calItem.shouldRsvp() : true);
 
     showScheduleView = showScheduleView && !this._isForward;
 
@@ -1088,7 +709,6 @@ function(calItem, mode) {
     }
 
     this._expandInlineScheduler = (showScheduleView && !isNew);
-
 };
 
 ZmApptEditView.prototype.getFreeBusyExcludeInfo =
@@ -1108,14 +728,10 @@ function(locations, startTime, endTime){
 ZmApptEditView.prototype.addFreeBusyExcludeInfo =
 function(emailAddr, startTime, endTime){
     if(!this._fbExcludeInfo) this._fbExcludeInfo = {};
-    // DISABLE client side exclude info usage.  Now using the GetFreeBusyInfo
-    // call with ExcludeId, where the server performs the exclusion of the
-    // current appt.
-    //
-    //this._fbExcludeInfo[emailAddr] = {
-    //    s: startTime,
-    //    e: endTime
-    //};
+    this._fbExcludeInfo[emailAddr] = {
+        s: startTime,
+        e: endTime
+    };
 };
 
 ZmApptEditView.prototype._getMeetingStatusMsg =
@@ -1193,10 +809,7 @@ function(width) {
 	}
 
     // add location input field
-	this._locationInputField = this._createInputField("_location", ZmCalBaseItem.LOCATION, {strictMode:false, noAddrBubbles:!appCtxt.get(ZmSetting.GAL_ENABLED)});
-
-    this._mainTableId = this._htmlElId + "_table";
-    this._mainTable   = document.getElementById(this._mainTableId);
+	this._locationInputField = this._createInputField("_location", ZmCalBaseItem.LOCATION, {strictMode:false});
 
     var edvId = AjxCore.assignId(this);
     this._schButtonId = this._htmlElId + "_scheduleButton";
@@ -1216,33 +829,7 @@ function(width) {
 	this._resourcesContainer = document.getElementById(this._htmlElId + "_resourcesContainer");
 
 	this._resourcesData = document.getElementById(this._htmlElId + "_resourcesData");
-    this._schedulerContainer = document.getElementById(this._htmlElId + "_scheduler");
-    this._suggestions = document.getElementById(this._htmlElId + "_suggestions");
-    Dwt.setVisible(this._suggestions, false);
-
-    this._attendeeStatusId = this._htmlElId + "_attendee_status";
-    this._attendeeStatus   = document.getElementById(this._attendeeStatusId);
-    Dwt.setVisible(this._attendeeStatus, false);
-
-    this._suggestTimeId = this._htmlElId + "_suggest_time";
-    this._suggestTime = document.getElementById(this._suggestTimeId);
-    Dwt.setVisible(this._suggestTime, !this._isForward);
-    this._suggestLocationId = this._htmlElId + "_suggest_location";
-    this._suggestLocation   = document.getElementById(this._suggestLocationId);
-    Dwt.setVisible(this._suggestLocation, !this._isForward && !this._isProposeTime);
-
-    this._locationStatusId = this._htmlElId + "_location_status";
-    this._locationStatus   = document.getElementById(this._locationStatusId);
-    Dwt.setVisible(this._locationStatus, false);
-    this._locationStatusMode = ZmApptEditView.LOCATION_STATUS_NONE;
-
-    this._locationStatusActionId = this._htmlElId + "_location_status_action";
-    this._locationStatusAction   = document.getElementById(this._locationStatusActionId);
-    Dwt.setVisible(this._locationStatusAction, false);
-
-    this._notesContainerId = this._htmlElId + "_notes_container";
-    this._notesContainer = document.getElementById(this._notesContainerId);
-
+	this._schedulerContainer = document.getElementById(this._htmlElId + "_scheduler");
 	this._schedulerOptions = document.getElementById(this._htmlElId + "_scheduler_option");
 
 	// show-as DwtSelect
@@ -1305,10 +892,7 @@ function(width) {
         this._createContactPicker(this._htmlElId + "_picker", new AjxListener(this, this._addressButtonListener), ZmCalBaseItem.PERSON, true);
         this._createContactPicker(this._htmlElId + "_req_att_picker", new AjxListener(this, this._attendeesButtonListener, ZmCalBaseItem.PERSON), ZmCalBaseItem.PERSON);
         this._createContactPicker(this._htmlElId + "_opt_att_picker", new AjxListener(this, this._attendeesButtonListener, ZmCalBaseItem.OPTIONAL_PERSON), ZmCalBaseItem.OPTIONAL_PERSON);
-        if (appCtxt.get(ZmSetting.GAL_ENABLED)) {
-			//do not create picker if GAL is disabled.
-			this._createContactPicker(this._htmlElId + "_loc_picker", new AjxListener(this, this._locationButtonListener, ZmCalBaseItem.LOCATION), ZmCalBaseItem.LOCATION);
-		}
+        this._createContactPicker(this._htmlElId + "_loc_picker", new AjxListener(this, this._locationButtonListener, ZmCalBaseItem.LOCATION), ZmCalBaseItem.LOCATION);
         this._createContactPicker(this._htmlElId + "_res_btn", new AjxListener(this, this._locationButtonListener, ZmCalBaseItem.EQUIPMENT), ZmCalBaseItem.EQUIPMENT);
     }
 
@@ -1330,12 +914,12 @@ function(width) {
     if(this.GROUP_CALENDAR_ENABLED) {
         Dwt.setVisible(this._optionalAttendeesContainer, false);
         Dwt.setVisible(this._optAttendeesInputField.getInputElement(), false);
-        if(this._resourceInputField) { Dwt.setVisible(this._resourceInputField.getInputElement(), false); }
+        if(this._resourceInputField) Dwt.setVisible(this._resourceInputField.getInputElement(), false);
     }
 
     this._inviteMsgContainer = document.getElementById(this._htmlElId + "_invitemsg_container");
     this._inviteMsg = document.getElementById(this._htmlElId + "_invitemsg");
-
+    
 };
 
 ZmApptEditView.prototype._createInputField =
@@ -1346,10 +930,10 @@ function(idTag, attType, params) {
     var height = AjxEnv.isSafari && !AjxEnv.isSafariNightly ? "52px;" : "21px";
     var overflow = AjxEnv.isSafari && !AjxEnv.isSafariNightly ? false : true;
     
-	var inputId = this.parent._htmlElId + idTag + "_input";
+	var inputId = this._htmlElId + idTag + "_input";
 	var cellId = this._htmlElId + idTag;
 	var input;
-	if (!params.noAddrBubbles && this._useAcAddrBubbles) {
+	if (this._useAcAddrBubbles) {
 		var aifParams = {
 			autocompleteListView:	this._acAddrSelectList,
 			inputId:				inputId,
@@ -1402,61 +986,6 @@ function(pickerId, listener, addrType, isForwardPicker) {
     }
 };
 
-
-ZmApptEditView.prototype._onSuggestionClose =
-function() {
-    // Make the trigger links visible and resize now that the suggestion panel is hidden
-    Dwt.setVisible(this._suggestTime, !this._isForward);
-    Dwt.setVisible(this._suggestLocation, !this._isForward && !this._isProposeTime && appCtxt.get(ZmSetting.GAL_ENABLED));
-    this.resize();
-}
-
-ZmApptEditView.prototype._showTimeSuggestions =
-function() {
-    // Display the time suggestion panel.
-    Dwt.setVisible(this._suggestions, true);
-    Dwt.setVisible(this._suggestTime, false);
-    Dwt.setVisible(this._suggestLocation, !this._isProposeTime && appCtxt.get(ZmSetting.GAL_ENABLED));
-    this._scheduleAssistant.show(true);
-    // Resize horizontally
-    this._resizeNotes();
-    this._scheduleAssistant.suggestAction(true, false);
-};
-
-ZmApptEditView.prototype._showLocationSuggestions =
-function() {
-    // Display the location suggestion panel
-    Dwt.setVisible(this._suggestions, true);
-    Dwt.setVisible(this._suggestLocation, false);
-    Dwt.setVisible(this._suggestTime, true);
-    this._scheduleAssistant.show(false);
-    // Resize horizontally
-    this._resizeNotes();
-    this._scheduleAssistant.suggestAction(true, false);
-};
-
-ZmApptEditView.prototype._showLocationStatusAction =
-function() {
-    if (!this._resolveLocationDialog) {
-        this._resolveLocationDialog = new ZmResolveLocationConflictDialog(
-            this._controller, this,
-            this._locationConflictOKCallback.bind(this),
-            this._scheduleAssistant);
-    } else {
-        this._resolveLocationDialog.cleanup();
-    }
-
-    this._resolveLocationDialog.popup(this._calItem, this._inst, this._locationExceptions);
-};
-
-// Invoked from 'OK' button of location conflict resolve dialog
-ZmApptEditView.prototype._locationConflictOKCallback =
-function(locationExceptions, alteredLocations) {
-    this._locationExceptions = locationExceptions;
-    this._alteredLocations   = alteredLocations;
-    this.locationConflictChecker();
-};
-
 ZmApptEditView.prototype._toggleOptionalAttendees =
 function(forceShow) {
     this._optionalAttendeesShown = ! this._optionalAttendeesShown || forceShow;
@@ -1478,7 +1007,7 @@ function(forceShow) {
 
 ZmApptEditView.prototype.showResourceField =
 function(show){
-    this._showResources.innerHTML = show ? ZmMsg.hideEquipment : ZmMsg.showEquipment;
+    this._showResources.innerHTML = show ? ZmMsg.hideResources : ZmMsg.showResources;
     Dwt.setVisible(this._resourcesContainer, Boolean(show))
 };
 
@@ -1494,7 +1023,7 @@ function() {
     this._schImage.className = "ImgSelectPullDownArrow";
     if(this._scheduleView) {
         this._scheduleView.setVisible(false);
-        this.autoSize();
+        this.autoSize();        
     }
 };
 
@@ -1518,22 +1047,14 @@ function(forceShow) {
     scheduleView.setVisible(true);
     scheduleView.resetPagelessMode(false);
     scheduleView.showMe();
-
     this.autoSize();
 };
 
 ZmApptEditView.prototype.getScheduleView =
 function() {
     if(!this._scheduleView) {
-        var appt = this.parent.getAppt();
-        this._scheduleView = new ZmFreeBusySchedulerView(this, this._attendees, this._controller,
-            this._dateInfo, appt, this.showConflicts.bind(this));
+        this._scheduleView = new ZmFreeBusySchedulerView(this, this._attendees, this._controller, this._dateInfo);
         this._scheduleView.reparentHtmlElement(this._schedulerContainer);
-
-        var closeCallback = this._onSuggestionClose.bind(this);
-        this._scheduleAssistant = new ZmScheduleAssistantView(this, this._controller, this, closeCallback);
-        this._scheduleAssistant.reparentHtmlElement(this._suggestions);
-        AjxTimedAction.scheduleAction(new AjxTimedAction(this, this.loadPreference), 300);
     }
     return this._scheduleView;    
 };
@@ -1579,7 +1100,7 @@ function() {
 	var div = document.getElementById(this._htmlElId + "_identityContainer");
 	if (!div) return;
 
-	var visible = this.identitySelect ? this.identitySelect.getOptionCount() > 1 : false;
+	var visible = appCtxt.getIdentityCollection().getSize() > 1;
     Dwt.setVisible(div, visible);
 };
 
@@ -1764,7 +1285,7 @@ function(addrInput, addrs, type, shortForm) {
 						email = addr.getEmail(true);
                         //bug: 57858 - give preference to lookup email address if its present
                         //bug:60427 to show display name format the lookupemail
-                        addrStr = addr.getLookupEmail() ? (new AjxEmailAddress(addr.getLookupEmail(),null,addr.getFullNameForDisplay())).toString() : ZmApptViewHelper.getAttendeesText(addr, type);
+						addrStr = addr.getLookupEmail() ? (new AjxEmailAddress(addr.getLookupEmail(),null,addr.getFullNameForDisplay())).toString() : ZmApptViewHelper.getAttendeesText(addr, type);
                         match = {isDL: addr.isGroup && addr.canExpand, email: addrStr};
 					}
 					addrInput.addBubble({address:addrStr, match:match, skipNotify:true});
@@ -1896,7 +1417,6 @@ function(addrStr) {
 
 ZmApptEditView.prototype.initialize =
 function(calItem, mode, isDirty, apptComposeMode) {
-    this._fbCache.clearCache();
     this._editViewInitialized = false;
     this._isForward = (apptComposeMode == ZmApptComposeView.FORWARD);
     this._isProposeTime = (apptComposeMode == ZmApptComposeView.PROPOSE_TIME);
@@ -2000,8 +1520,8 @@ function(folder) {
 ZmApptEditView.prototype._initAutocomplete =
 function() {
 
-	var acCallback = this._autocompleteCallback.bind(this);
-	var keyPressCallback = this._onAttendeesChange.bind(this);
+	var acCallback = new AjxCallback(this, this._autocompleteCallback);
+	var keyPressCallback = new AjxCallback(this, this._onAttendeesChange);
 	this._acList = {};
 
 	var params = {
@@ -2014,7 +1534,6 @@ function() {
 
 	// autocomplete for attendees (required and optional) and forward recipients
 	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED) && this.GROUP_CALENDAR_ENABLED)	{
-		params.contextId = [this._controller.getCurrentViewId(), ZmCalBaseItem.PERSON].join("-");
 		var aclv = this._acContactsList = new ZmAutocompleteListView(params);
 		this._setAutocompleteHandler(aclv, ZmCalBaseItem.PERSON);
 		this._setAutocompleteHandler(aclv, ZmCalBaseItem.OPTIONAL_PERSON);
@@ -2025,14 +1544,13 @@ function() {
 
 	if (appCtxt.get(ZmSetting.GAL_ENABLED)) {
 		// autocomplete for locations		
-		params.keyUpCallback = this._handleLocationChange.bind(this);
+		params.keyUpCallback = new AjxCallback(this, this._handleLocationChange);
         //params.matchValue = ZmAutocomplete.AC_VALUE_NAME;
 		params.options = {addrBubbles:	this._useAcAddrBubbles,
 						  type:			ZmAutocomplete.AC_TYPE_LOCATION};
 		if (AjxEnv.isIE) {
-			params.keyDownCallback = this._resetKnownLocation.bind(this);
+			params.keyDownCallback = new AjxCallback(this, this._resetKnownLocation);
 		}
-		params.contextId = [this._controller.getCurrentViewId(), ZmCalBaseItem.LOCATION].join("-");
 		var aclv = this._acLocationsList = new ZmAutocompleteListView(params);
 		this._setAutocompleteHandler(aclv, ZmCalBaseItem.LOCATION);
 	}
@@ -2040,11 +1558,10 @@ function() {
     if (appCtxt.get(ZmSetting.GAL_ENABLED) && this.GROUP_CALENDAR_ENABLED) {
 		// autocomplete for locations
 		var app = appCtxt.getApp(ZmApp.CALENDAR);
-        params.keyUpCallback = this._handleResourceChange.bind(this);
+        params.keyUpCallback = new AjxCallback(this, this._handleResourceChange);
         //params.matchValue = ZmAutocomplete.AC_VALUE_NAME;
         params.options = {addrBubbles:	this._useAcAddrBubbles,
                           type:ZmAutocomplete.AC_TYPE_EQUIPMENT};		
-		params.contextId = [this._controller.getCurrentViewId(), ZmCalBaseItem.EQUIPMENT].join("-");
 		var aclv = this._acResourcesList = new ZmAutocompleteListView(params);
         this._setAutocompleteHandler(aclv, ZmCalBaseItem.EQUIPMENT);
 	}
@@ -2103,7 +1620,7 @@ function(text, el, match) {
 			}
 			var locations = text.split(/[\n,;]/);
 			var newAttendees = [];
-			for(var i = 0; i < locations.length; i++) {
+			for(var i in locations) {
 				var l = AjxStringUtil.trim(locations[i]);
 				if(this._locationTextMap[l]) {
 					newAttendees.push(this._locationTextMap[l]);
@@ -2164,21 +1681,11 @@ function() {
 	Dwt.setHandler(this._endDateField, DwtEvent.ONCHANGE, ZmCalItemEditView._onChange);
 	Dwt.setHandler(this._startDateField, DwtEvent.ONFOCUS, ZmCalItemEditView._onFocus);
 	Dwt.setHandler(this._endDateField, DwtEvent.ONFOCUS, ZmCalItemEditView._onFocus);
-    if (this.GROUP_CALENDAR_ENABLED) {
-        Dwt.setHandler(this._suggestTime, DwtEvent.ONCLICK, ZmCalItemEditView._onClick);
-    }
-    Dwt.setHandler(this._suggestLocation, DwtEvent.ONCLICK, ZmCalItemEditView._onClick);
-    Dwt.setHandler(this._locationStatusAction, DwtEvent.ONCLICK, ZmCalItemEditView._onClick);
 
 	this._allDayCheckbox._editViewId = this._repeatDescField._editViewId = edvId;
 	this._startDateField._editViewId = this._endDateField._editViewId = edvId;
     if(this._showOptional) this._showOptional._editViewId = edvId;
     if(this._showResources) this._showResources._editViewId = edvId;
-    if (this.GROUP_CALENDAR_ENABLED) {
-        this._suggestTime._editViewId = edvId;
-    }
-    this._suggestLocation._editViewId = edvId;
-    this._locationStatusAction._editViewId = edvId;
 
 	var inputFields = [this._attendeesInputField, this._optAttendeesInputField,
 					   this._locationInputField, this._forwardToField, this._resourceInputField];
@@ -2356,58 +1863,26 @@ function() {
 
 // Listeners
 
-ZmApptEditView.prototype._getDateTimeText =
-function() {
-    return this._dateInfo.startDate + "-" + this._dateInfo.startTimeStr + "_" +
-           this._dateInfo.endDate   + "_" + this._dateInfo.endTimeStr;
-
-}
-
 ZmApptEditView.prototype._timeChangeListener =
 function(ev, id) {
 	ZmTimeInput.adjustStartEnd(ev, this._startTimeSelect, this._endTimeSelect, this._startDateField, this._endDateField, this._dateInfo, id);
-	var oldTimeInfo = this._getDateTimeText();
+	ZmApptViewHelper.getDateInfo(this, this._dateInfo);
+    this._dateInfo.isTimeModified = true;
 
-    ZmApptViewHelper.getDateInfo(this, this._dateInfo);
-    var newTimeInfo = this._getDateTimeText();
-    if (oldTimeInfo != newTimeInfo) {
-
-        this._dateInfo.isTimeModified = true;
-
-        if(this._schedulerOpened) {
-            this._scheduleView._timeChangeListener(ev, id);
-        }
-
-        if(this._scheduleAssistant) this._scheduleAssistant.updateTime(true, true);
-
-        var durationInfo = this.getDurationInfo();
-        this._locationConflictAppt.startDate = new Date(durationInfo.startTime);
-        this._locationConflictAppt.endDate   = new Date(durationInfo.endTime);
-        this.locationConflictChecker();
+    if(this._schedulerOpened) {
+        this._scheduleView._timeChangeListener(ev, id);
     }
+
+    if(this._scheduleAssistant) this._scheduleAssistant.updateTime(true, true);
 };
 
-ZmApptEditView.prototype._recurChangeForLocationConflict =
-function() {
-    this._getRecurrence(this._locationConflictAppt);
-    this.locationConflictChecker();
-}
-
-ZmApptEditView.prototype._dateTimeChangeForLocationConflict =
-function(oldTimeInfo) {
-    var newTimeInfo = this._getDateTimeText();
-    if (oldTimeInfo != newTimeInfo) {
-        var durationInfo = this.getDurationInfo();
-        this._locationConflictAppt.startDate = new Date(durationInfo.startTime);
-        this._locationConflictAppt.endDate   = new Date(durationInfo.endTime);
-        this.locationConflictChecker();
-    }
-}
+ZmApptEditView.prototype.setScheduleAssistant =
+function(scheduleAssistant) {
+    this._scheduleAssistant = scheduleAssistant;        
+};
 
 ZmApptEditView.prototype._dateCalSelectionListener =
 function(ev) {
-    var oldTimeInfo = this._getDateTimeText();
-
     ZmCalItemEditView.prototype._dateCalSelectionListener.call(this, ev);
     if(this._schedulerOpened) {
         ZmApptViewHelper.getDateInfo(this, this._dateInfo);
@@ -2415,8 +1890,6 @@ function(ev) {
     }
     
     if(this._scheduleAssistant) this._scheduleAssistant.updateTime(true, true);
-
-    this._dateTimeChangeForLocationConflict(oldTimeInfo);
 };
 
 
@@ -2441,7 +1914,6 @@ function() {
 
 ZmApptEditView.prototype._timezoneListener =
 function(ev) {
-    var oldTZ = this._dateInfo.timezone;
     var dwtSelect = ev.item.parent.parent;
     var type = dwtSelect ? dwtSelect.getData(ZmApptEditView.TIMEZONE_TYPE) : ZmApptEditView.START_TIMEZONE;
     //bug: 55256 - Changing start timezone should auto-change end timezone
@@ -2455,11 +1927,6 @@ function(ev) {
         //this._controller.getApp().getFreeBusyCache().clearCache();
         this._scheduleView._timeChangeListener(ev, id);
     }
-
-    if (oldTZ != this._dateInfo.timezone) {
-        this._locationConflictAppt.timezone = this._dateInfo.timezone;
-        this.locationConflictChecker();
-    }
 };
 
 
@@ -2467,12 +1934,6 @@ ZmApptEditView.prototype._repeatChangeListener =
 function(ev) {
     ZmCalItemEditView.prototype._repeatChangeListener.call(this, ev);
     this._setTimezoneVisible(this._dateInfo);
-    var newSelectVal = ev._args.newValue;
-    if (newSelectVal != "CUS") {
-        // CUS (Custom) launches a dialog. Otherwise act upon the change here
-        this._locationConflictAppt.setRecurType(newSelectVal);
-        this.locationConflictChecker();
-    }
 };
 
 /**
@@ -2483,7 +1944,7 @@ ZmApptEditView.prototype._setAttendees =
 function() {
 
     for (var t = 0; t < this._attTypes.length; t++) {
-		var type = this._attTypes[t];
+        var type = this._attTypes[t];
 		var attendees = this._attendees[type].getArray();
 		var numAttendees = attendees.length;
 		var addrInput = this._attInputField[type];
@@ -2543,19 +2004,11 @@ function(type) {
     return this.getAttendeesFromString(type, this._attInputField[type].getValue());
 };
 
-ZmApptEditView.prototype.getMode =
-function(type) {
-    return this._mode;
-};
-
 ZmApptEditView.prototype.getRequiredAttendeeEmails =
 function() {
-    var attendees = [];
-    var inputField = this._attInputField[ZmCalBaseItem.PERSON];
-    if(!inputField) { return attendees; } // input field can be null if zimbraFeatureGroupCalendarEnabled is FALSE
-
-    var requiredEmails = inputField.getValue();
+    var requiredEmails = this._attInputField[ZmCalBaseItem.PERSON].getValue();
     var items = AjxEmailAddress.split(requiredEmails);
+    var attendees = [];
     for (var i = 0; i < items.length; i++) {
 
         var item = AjxStringUtil.trim(items[i]);
@@ -2594,7 +2047,7 @@ function(type, useException) {
 
 ZmApptEditView.prototype._pickAttendeesInfo =
 function(type, useException) {
-    var attendees = new AjxVector();
+    var attendees;
 
     if(type == ZmCalBaseItem.OPTIONAL_PERSON || type == ZmCalBaseItem.PERSON || type == ZmCalBaseItem.FORWARD) {
         attendees = this.getAttendeesFromString(ZmCalBaseItem.PERSON, this._attInputField[ZmCalBaseItem.PERSON].getValue());
@@ -2614,6 +2067,7 @@ function(type, useException) {
         var value = this._attInputField[type].getValue();        
         attendees = this.getAttendeesFromString(type, value);
     }
+
     return this._updateAttendeeFieldValues(type, attendees);
 };
 
@@ -2631,12 +2085,10 @@ function(attendees, role) {
 
 ZmApptEditView.prototype.resetParticipantStatus =
 function() {
-    if (this.isOrganizer() && this.isKeyInfoChanged()) {
-        var personalAttendees = this._attendees[ZmCalBaseItem.PERSON].getArray();
-        for (var i = 0; i < personalAttendees.length; i++) {
-            var attendee = personalAttendees[i];
-            if(attendee) attendee.setParticipantStatus(ZmCalBaseItem.PSTATUS_NEEDS_ACTION);
-        }
+    var personalAttendees = this._attendees[ZmCalBaseItem.PERSON].getArray();
+    for (var i = 0; i < personalAttendees.length; i++) {
+        var attendee = personalAttendees[i];
+        if(attendee) attendee.setParticipantStatus(ZmCalBaseItem.PSTATUS_NEEDS_ACTION);
     }
 };
 
@@ -2693,18 +2145,14 @@ function(type, attendees) {
         this._scheduleView.setUpdateCallback(new AjxCallback(this, this.updateScheduleAssistant, [attendees, type]))
     }
 
-    var organizer = this._isProposeTime ? this.getCalItemOrganizer() : this.getOrganizer();
     if(this._schedulerOpened) {
+        var organizer = this._isProposeTime ? this.getCalItemOrganizer() : this.getOrganizer();
         this._scheduleView.update(this._dateInfo, organizer, this._attendees);
         this.autoSize();
     }else {
         if(this._schedulerOpened == null && attendees.length > 0 && !this._isForward) {
             this._toggleInlineScheduler(true);
         }else {
-            // Update the schedule view even if it won't be visible - it generates
-            // Free/Busy info for other components
-            this._scheduleView.showMe();
-            this._scheduleView.update(this._dateInfo, organizer, this._attendees);
             this.updateScheduleAssistant(attendees, type)
         }
     };
@@ -2775,26 +2223,12 @@ function(el) {
 		}
         this._scheduleView.handleTimeChange();
         if(this._scheduleAssistant) this._scheduleAssistant.updateTime(true, true);
-
-        var durationInfo = this.getDurationInfo();
-        this._locationConflictAppt.startDate = new Date(durationInfo.startTime);
-        this._locationConflictAppt.endDate = new Date(durationInfo.startTime +
-            AjxDateUtil.MSEC_PER_DAY);
-        this._locationConflictAppt.allDayEvent = el.checked ? "1" : "0";
-        this.locationConflictChecker();
-
 	} else if(el.id == this._schButtonId || el.id == this._htmlElId + "_scheduleImage") {
         this._toggleInlineScheduler();
 	} else if(el.id == this._showOptionalId) {
         this._toggleOptionalAttendees();
     }else if(el.id == this._showResourcesId){
         this._toggleResourcesField();
-    }else if(el.id == this._suggestTimeId){
-        this._showTimeSuggestions();
-    }else if(el.id == this._suggestLocationId){
-        this._showLocationSuggestions();
-    }else if(el.id == this._locationStatusActionId){
-        this._showLocationStatusAction();
     }else{
 		ZmCalItemEditView.prototype._handleOnClick.call(this, el);
 	}
@@ -2828,7 +2262,7 @@ function(inputEl) {
 	var subject = AjxStringUtil.trim(this._subjectField.getValue());
     if(subject) {
         var buttonText = subject.substr(0, ZmAppViewMgr.TAB_BUTTON_MAX_TEXT);
-        appCtxt.getAppViewMgr().setTabTitle(this._controller.getCurrentViewId(), buttonText);
+        appCtxt.getAppViewMgr().setTabTitle(this._controller.viewId, buttonText);
     }
 };
 
@@ -2871,37 +2305,26 @@ function() {
 		this._bodyField = document.getElementById(this._bodyFieldId);
 	}
 
-    var node = this.getHtmlElement();
-    if (node && node.parentNode)
-        node.style.height = node.parentNode.style.height;
+	var size = this.getSize();
+	if (size.x <= 0 || size.y <= 0) { return; }
 
-    var size = this.getSize();
-    // Size x by the containing table (excluding the suggestion panel)
-    var mainTableSize = Dwt.getSize(this._mainTable);
-    if (mainTableSize.x <= 0 || size.y <= 0) { return; }
-
-    var topDiv = document.getElementById(this._htmlElId + "_top");
-    var topDivSize = Dwt.getSize(topDiv);
+	var topDiv = document.getElementById(this._htmlElId + "_top");
     var topSizeHeight = this._getComponentsHeight(true);
-    var notesEditorHeight = (this._notesHtmlEditor && this._notesHtmlEditor.getHtmlElement()) ? this._notesHtmlEditor.getHtmlElement().clientHeight:0;
-	var rowHeight = (size.y - topSizeHeight) + notesEditorHeight ;
-    var rowWidth = mainTableSize.x;
+	//var topHeight = topSize.y;
+	var rowHeight = size.y - topSizeHeight;
+    var rowWidth = size.x;
     if(AjxEnv.isIE)
         rowHeight = rowHeight - 10;
-    else {
-        var adj = (appCtxt.isTinyMCEEnabled()) ? 12 : 38;
-        rowHeight = rowHeight + adj;
-    }
 
     if(rowHeight < 350){
         rowHeight = 350;
     }
 
-    if( appCtxt.isTinyMCEEnabled() ) {
-        this._notesHtmlEditor.setSize(rowWidth-5, rowHeight);
-    }else {
+    //	if(window.isTinyMCE) {
+    //        this._notesHtmlEditor.setSize(rowWidth-5, rowHeight)
+    //    }else {
         this._notesHtmlEditor.setSize(rowWidth-10, rowHeight-25);
-    }
+    //    }
 };
 
 ZmApptEditView.prototype._getComponentsHeight =
@@ -2923,30 +2346,31 @@ function(excludeNotes) {
 ZmApptEditView.prototype.autoSize =
 function() {
     var size = Dwt.getSize(this.getHtmlElement());
-    mainTableSize = Dwt.getSize(this._mainTable);
-    this.resize(mainTableSize.x, size.y);
+    this.resize(size.x, size.y);
 };
 
 ZmApptEditView.prototype.resize =
 function(newWidth, newHeight) {
 	if (!this._rendered) { return; }
 
+	if (newWidth) {
+		this.setSize(newWidth);
+		Dwt.setSize(this.getHtmlElement().firstChild, newWidth);
+	}
+
 	if (newHeight) {
 		this.setSize(Dwt.DEFAULT, newHeight);
 	}
 
     this._resizeNotes();
-    //this._scheduleAssistant.resizeTimeSuggestions();
 
     //If scrollbar handle it
-    // Sizing based on the internal table now.  Scrolling bar will be external and accounted for already
     var size = Dwt.getSize(this.getHtmlElement());
-    var mainTableSize = Dwt.getSize(this._mainTable);
     var compHeight= this._getComponentsHeight();
     if(compHeight > ( size.y + 5 )) {
-        Dwt.setSize(this.getHtmlElement().firstChild, size.x-15);
-
-        this._notesHtmlEditor.setSize(mainTableSize.x - 10);
+        newWidth = size.x  - 15;
+        Dwt.setSize(this.getHtmlElement().firstChild, newWidth);
+        this._notesHtmlEditor.setSize(newWidth - 10);
         if(!this._scrollHandled){
             Dwt.setScrollStyle(this.getHtmlElement(), Dwt.SCROLL_Y);
             this._scrollHandled = true;
@@ -2954,8 +2378,9 @@ function(newWidth, newHeight) {
     }else{
         if(this._scrollHandled){
             Dwt.setScrollStyle(this.getHtmlElement(), Dwt.CLIP);
-            Dwt.setSize(this.getHtmlElement().firstChild, size.x);
-            this._notesHtmlEditor.setSize(mainTableSize.x - 10);
+            newWidth = size.x;
+            Dwt.setSize(this.getHtmlElement().firstChild, newWidth);
+            this._notesHtmlEditor.setSize(newWidth - 10);
         }
         this._scrollHandled = false;
     }
@@ -2963,9 +2388,9 @@ function(newWidth, newHeight) {
 
 ZmApptEditView.prototype._initAttachContainer =
 function() {
-
-	this._attachmentRow = document.getElementById(this._htmlElId + "_attachment_container");
-    this._attachmentRow.style.display="";
+	// create new table row which will contain parent fieldset
+	var table = document.getElementById(this._htmlElId + "_table");
+	this._attachmentRow = table.insertRow(-1);
 	var cell = this._attachmentRow.insertCell(-1);
 	cell.colSpan = 5;
 
@@ -3009,10 +2434,7 @@ function(ev) {
 
 ZmApptEditView.prototype.handleAttendeeChange =
 function(ev) {
-    if (this._schedActionId) {
-        AjxTimedAction.cancelAction(this._schedActionId);
-    }
-    this._schedActionId = AjxTimedAction.scheduleAction(new AjxTimedAction(this, this._handleAttendeeField, ZmCalBaseItem.PERSON), 300);
+    AjxTimedAction.scheduleAction(new AjxTimedAction(this, this._handleAttendeeField, ZmCalBaseItem.PERSON), 300);
 };
 
 ZmApptEditView.prototype._adjustAddrHeight =
@@ -3056,70 +2478,4 @@ function(textarea) {
 		}
 	}
 };
-
-ZmApptEditView.prototype.loadPreference =
-function() {
-    var prefDlg = appCtxt.getSuggestionPreferenceDialog();
-    prefDlg.setCallback(new AjxCallback(this, this._prefChangeListener));
-    // Trigger an initial location check - the appt may have been saved
-    // with a location that has conflicts.  Need to do from here, so that
-    // the user's numRecurrence preference is loaded
-    var locationConflictCheckCallback = this.locationConflictChecker.bind(this);
-    prefDlg.getSearchPreference(appCtxt.getActiveAccount(),
-        locationConflictCheckCallback);
-};
-
-ZmApptEditView.prototype._prefChangeListener =
-function() {
-    // Preference Dialog is only displayed when the suggestions panel is visible - so update suggestions
-    this._scheduleAssistant.clearResources();
-    this._scheduleAssistant.suggestAction(true);
-
-    var newNumRecurrence = this.getNumLocationConflictRecurrence();
-    if (newNumRecurrence != this._scheduleAssistant.numRecurrence) {
-        // Trigger Location Conflict test if enabled
-        this.locationConflictChecker();
-    }
-};
-
-// Show/Hide the conflict warning beneath the attendee and location input fields, and
-// color any attendee or location that conflicts with the current appointment time.  If
-// the appointment is recurring, the conflict status and coloration only apply for the
-// current instance of the series.
-ZmApptEditView.prototype.showConflicts =
-function() {
-    var conflictColor = "#F08080";
-    var color, isFree, type, addressElId, addressEl;
-    var attendeeConflict = false;
-    var locationConflict = false;
-    var conflictEmails = this._scheduleView.getConflicts();
-    var orgEmail = this.getOrganizerEmail();
-    for (var email in conflictEmails) {
-        type = this.parent.getAttendeeType(email);
-        if ((type == ZmCalBaseItem.PERSON) || (type == ZmCalBaseItem.LOCATION)) {
-            isFree = orgEmail == email ? true : conflictEmails[email];
-            if (!isFree) {
-                // Record attendee or location conflict
-                if (type == ZmCalBaseItem.PERSON) {
-                    attendeeConflict = true
-                } else {
-                    locationConflict = true;
-                }
-            }
-
-            if (!this._useAcAddrBubbles) { continue; }
-            // Color the address bubble or reset to default
-            color = isFree ? "" : conflictColor;
-            addressElId = this._attInputField[type].getAddressBubble(email);
-            if (addressElId) {
-                addressEl = document.getElementById(addressElId);
-                if (addressEl) {
-                    addressEl.style.backgroundColor = color;
-                }
-            }
-        }
-    }
-    Dwt.setVisible(this._attendeeStatus, attendeeConflict);
-    this.setLocationStatus(ZmApptEditView.LOCATION_STATUS_UNDEFINED, locationConflict);
-}
 

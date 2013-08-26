@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
@@ -279,7 +279,7 @@ function(params) {
 		});
 	}
 	else {
-		var response = appCtxt.getAppController().sendRequest({jsonObj: jsonObj, accountName: accountName, ignoreErrs: ["mail.NO_SUCH_MOUNTPOINT"]});
+		var response = appCtxt.getAppController().sendRequest({jsonObj: jsonObj, accountName: accountName});
 		var result = new ZmCsfeResult(response, false);
 		return this._getApptSummariesResponse(params, result);
 	}
@@ -384,10 +384,6 @@ function(searchParams, miniCalParams, reminderSearchParams) {
 	}
 
 	if ((searchParams && searchParams.callback) || miniCalParams.callback) {
-        //re-init the account search list to avoid the duplication
-        if (searchParams && request.SearchRequest) {
-            this._accountsSearchList = new AjxVector();
-        }
 		var accountName = (appCtxt.multiAccounts && searchParams.folderIds && (searchParams.folderIds.length > 0))
 			? appCtxt.getById(searchParams.folderIds[0]).getAccount().name : null;
 
@@ -571,7 +567,7 @@ ZmApptCache.prototype.markAllInvalidAccounts =
 function(zidsMap) {
 	if (this._calViewController) {
 		var folderIds = this._calViewController.getCheckedCalendarFolderIds();
-		for (var i = 0; i < folderIds.length; i++) {
+		for (var i in folderIds) {
 			var folder = appCtxt.getById(folderIds[i]);
 			if (folder) {
 				if (folder.zid && zidsMap[folder.zid]) {
@@ -694,7 +690,7 @@ function(params, ex) {
 	// check for deleted remote mount point or account
 	var itemIds = (ex.data && ex.data.itemId && ex.data.itemId.length) ? ex.data.itemId : [];
 	if (code == ZmCsfeException.ACCT_NO_SUCH_ACCOUNT || code == ZmCsfeException.MAIL_NO_SUCH_MOUNTPOINT) {
-		for(var j = 0; j < itemIds.length; j++) {
+		for(var j in itemIds) {
 			var id = itemIds[j];
 			ids[id] = true;
 			if (code == ZmCsfeException.ACCT_NO_SUCH_ACCOUNT) {
@@ -709,7 +705,7 @@ function(params, ex) {
 		var newFolderIds = [];
 
 		// filter out invalid folder ids
-		for (var i = 0; i < params.folderIds.length; i++) {
+		for (var i in params.folderIds) {
 			var folderId = params.folderIds[i];
 			var isDeleted = (folderId && ids[folderId]);
 			if (!isDeleted) {

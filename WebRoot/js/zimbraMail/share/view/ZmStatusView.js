@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
@@ -555,22 +555,24 @@ function() {
     var opacity = this._state.value;
     var step = this._state.step;
 
-    // NOTE: IE8 and earlier are slow re-rendering when adjusting
-    //       opacity. So we try to do it using filters.
-    if (AjxEnv.isIE && !AjxEnv.isIE9up) {
-        try {
-            var el = this.getHtmlElement();
-            el.style.visibility = step > 0 ? "hidden" : "visible";
+    // NOTE: IE is slow re-rendering when adjusting opacity. So we try
+    //       to do it in an IE-optimized way.
+    if (AjxEnv.isIE) {
+        if (AjxEnv.isIE5_5up) {
+            try {
+                var el = this.getHtmlElement();
+                el.style.visibility = step > 0 ? "hidden" : "visible";
+                
+                var duration = this._state.duration / 1000;
+                el.style.filter = "progid:DXImageTransform.Microsoft.Fade(duration="+duration+",overlap=1.0)";
 
-            var duration = this._state.duration / 1000;
-            el.style.filter = "progid:DXImageTransform.Microsoft.Fade(duration="+duration+",overlap=1.0)";
-
-            el.filters[0].Apply();
-            el.style.visibility = step > 0 ? "visible" : "hidden";
-            el.filters[0].Play();
-        }
-        catch (e) {
-            DBG.println("error: "+e);
+                el.filters[0].Apply();
+                el.style.visibility = step > 0 ? "visible" : "hidden";
+                el.filters[0].Play();
+            }
+            catch (e) {
+                DBG.println("error: "+e);
+            }
         }
         setTimeout(this._funcs["next"], 0);
         return;

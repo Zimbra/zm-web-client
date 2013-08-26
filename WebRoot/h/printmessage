@@ -8,8 +8,8 @@
 <app:handleError>
 <zm:getMailbox var="mailbox"/>
 ${zm:refreshPrefs(mailbox)}
-<c:remove var="skin" scope="session"/>
-<app:skin mailbox="${mailbox}"/>
+
+<c:set var="skin" value="${not empty param.skin ? param.skin : (not empty sessionScope.skin ? sessionScope.skin : mailbox.prefs.skin)}"/>
 <c:choose>
 	<c:when test="${not empty mailbox.prefs.locale}">
 		<fmt:setLocale value='${mailbox.prefs.locale}' scope='request' />
@@ -21,15 +21,6 @@ ${zm:refreshPrefs(mailbox)}
 <fmt:setBundle basename="/messages/ZhMsg" scope="request"/>
 <c:set var="messageIds" value="${fn:join(paramValues.id, ',')}"/>
 ${zm:clearMessageCache(mailbox)}
-
-<c:choose>
-    <c:when test="${not empty param.tz}">
-        <fmt:setTimeZone var="tz" value="${param.tz}" scope="request"/>
-    </c:when>
-    <c:otherwise>
-        <c:set var="tz" value="${mailbox.prefs.timeZone}" scope="request"/>
-    </c:otherwise>
-</c:choose>
 
 </app:handleError>
 <html>
@@ -65,7 +56,7 @@ ${zm:clearMessageCache(mailbox)}
                         <c:param name="id" value="${param.id}"/>
                         <c:param name="xim" value="1"/>
                     </c:url>
-                    <app:messagePrintView mailbox="${mailbox}" externalImageUrl="${extImageUrl}" message="${message}" timezone="${tz}"/>
+                    <app:messagePrintView mailbox="${mailbox}" externalImageUrl="${extImageUrl}" message="${message}" />
                 </c:forEach>
             </td>
         </tr>
@@ -85,7 +76,7 @@ ${zm:clearMessageCache(mailbox)}
                 <c:param name="id" value="${param.id}"/>
                 <c:param name="xim" value="1"/>
             </c:url>
-			<app:messagePrintView mailbox="${mailbox}" externalImageUrl="${extImageUrl}" message="${message}" timezone="${tz}"/>
+			<app:messagePrintView mailbox="${mailbox}" externalImageUrl="${extImageUrl}" message="${message}" />
 		</td>
 	</tr>
     </table>    
@@ -98,7 +89,7 @@ ${zm:clearMessageCache(mailbox)}
 <style type="text/css">
     .ZhCallListPrintView td, .zPrintMsgs *{
         font-family:Tahoma,Arial,Helvetica,sans-serif;
-        font-size:${mailbox.prefs.defaultPrintFontSize};
+        font-size:${mailbox.prefs.defaultPrintFontSize} !important;
     }
     .ZhPrintSubject {
         padding: 10px;

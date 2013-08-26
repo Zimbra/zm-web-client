@@ -1,7 +1,7 @@
     <%--
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2007, 2008, 2009, 2010, 2011, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
@@ -20,10 +20,10 @@
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <fmt:setBundle basename='/messages/AjxMsg' var='AjxMsg' scope='request' />
-<table width="100%">
+<table width="100%" cellpadding="10" cellspacing="10">
 <tr>
 <td>
-<table class="ZOptionsSectionTable" width="100%">
+<table class="ZOptionsSectionTable" border="0" cellpadding="0" cellspacing="0" width="100%">
     <tr class="ZOptionsHeaderRow">
         <td class="ImgPrefsHeader_L">
             &nbsp;
@@ -36,13 +36,13 @@
         </td>
     </tr>
 </table>
-<table width="100%" class="ZOptionsSectionMain" cellspacing="6">
+<table cellpadding="3" border="0" class="ZOptionsSectionMain" cellspacing="0" width="100%">
     <tr>
         <td class='ZOptionsTableLabel'>
-            <label><fmt:message key="optionsClientType"/>:</label> <!-- ${mailbox.prefs.clientType} -->
+            <fmt:message key="optionsClientType"/>: <!-- ${mailbox.prefs.clientType} -->
         </td>
         <td>
-            <table>
+            <table border="0" cellpadding="0" cellspacing="3">
                 <tr>
                     <td>
                         <input id="clientA" type="radio" name="zimbraPrefClientType" value="advanced" <c:if test="${mailbox.prefs.isAdvancedClient}">checked</c:if>/>
@@ -63,7 +63,8 @@
     <c:if test="${mailbox.features.skinChange}">
     <tr>
         <td class='ZOptionsTableLabel'>
-            <label for="skinPref"><fmt:message key="SKIN_uiTheme"/>:</label>
+            <label for="skinPref"><fmt:message key="SKIN_uiTheme"/>
+                :</label>
         </td>
         <td>
             <select name="zimbraPrefSkin" id="skinPref">
@@ -80,7 +81,8 @@
     </c:if>
     <tr>
         <td class='ZOptionsTableLabel'>
-            <label for="timeZone"><fmt:message key="timeZonePref"/>:</label>
+            <label for="timeZone"><fmt:message key="timeZonePref"/>
+                :</label>
         </td>
         <td>
             <select name="zimbraPrefTimeZoneId" id="timeZone">
@@ -99,7 +101,8 @@
         <app:optSeparator/>
         <tr>
             <td class='ZOptionsTableLabel'>
-                <label><fmt:message key="changePassword"/>:</label>
+                <fmt:message key="changePassword"/>
+                :
             </td>
             <td>
                 <c:choose>
@@ -121,20 +124,25 @@
     </tr>
 </table>
 <br/>
-<table class="ZOptionsSectionTable" width="100%">
+<table class="ZOptionsSectionTable" border="0" cellpadding="0" cellspacing="0" width="100%">
     <tr class="ZOptionsHeaderRow">
-        <td class="ImgPrefsHeader_L">&nbsp;</td>
+        <td class="ImgPrefsHeader_L">
+            &nbsp;
+        </td>
         <td class='ZOptionsHeader ImgPrefsHeader'>
             <fmt:message key="optionsSearches"/>
         </td>
-        <td class="ImgPrefsHeader_R">&nbsp;</td>
+        <td class="ImgPrefsHeader_R">
+            &nbsp;
+        </td>
     </tr>
 </table>
-<table width="100%" class="ZOptionsSectionMain" cellspacing="6">
+<table cellpadding="3" width="100%" class="ZOptionsSectionMain">
 	<c:if test="${zm:isMailEnabled(mailbox)}">
 	<tr>
         <td class='ZOptionsTableLabel'>
-            <label><fmt:message key="optionsSearchFolders"/>:</label>
+            <fmt:message key="optionsSearchFolders"/>
+            :
         </td>
         <c:if test="${mailbox.features.spam}">
         <td>
@@ -154,31 +162,38 @@
 	</c:if>
 	<tr>
         <td class='ZOptionsTableLabel'>
-			<fmt:message key="optionsSearchLanguage"/>:
-		</td>
+            <fmt:message key="optionsSearchLanguage"/>:
+        </td>
         <td>
             <app:optCheckbox boxfirst="true" label="showSearchString" pref="zimbraPrefShowSearchString"
                              checked="${mailbox.prefs.showSearchString}"/>
         </td>
     </tr>
     <tr>
-        <td colspan="2">&nbsp;</td>
+        <td colspan="2">
+            &nbsp;
+        </td>
     </tr>
 </table>
 <br/>
-<table class="ZOptionsSectionTable" width="100%">
+<table class="ZOptionsSectionTable" border="0" cellpadding="0" cellspacing="0" width="100%">
     <tr class="ZOptionsHeaderRow">
-        <td class="ImgPrefsHeader_L">&nbsp;</td>
+        <td class="ImgPrefsHeader_L">
+            &nbsp;
+        </td>
         <td class='ZOptionsHeader ImgPrefsHeader'>
             <fmt:message key="other"/>
         </td>
-        <td class="ImgPrefsHeader_R">&nbsp;</td>
+        <td class="ImgPrefsHeader_R">
+            &nbsp;
+        </td>
     </tr>
 </table>
-<table width="100%" class="ZOptionsSectionMain" cellspacing="6">
+<table cellpadding="3" width="100%" class="ZOptionsSectionMain">
     <tr>
     <td class='ZOptionsTableLabel'>
-        <label for="printFont"><fmt:message key="printFontSizePref"/>:</label>
+        <label for="printFont"><fmt:message key="printFontSizePref"/>
+            :</label>
     </td>
     <td>
         <select name="zimbraPrefDefaultPrintFontSize" id="printFont">

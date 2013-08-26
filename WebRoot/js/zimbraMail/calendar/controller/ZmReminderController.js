@@ -28,9 +28,8 @@
  * @param	{ZmCalViewController}		calController		the controller
  * 
  */
-ZmReminderController = function(calController, apptType) {
+ZmReminderController = function(calController) {
 	this._calController = calController;
-    this._apptType = apptType;
 	this._apptState = {};	// keyed on appt.getUniqueId(true)
     this._cacheMap = {};    
 	this._cachedAppts = new AjxVector(); // set of appts in cache from refresh
@@ -73,7 +72,7 @@ function() {
 ZmReminderController.prototype.refresh =
 function() {
 	this._searchTimeRange = this.getSearchTimeRange();
-    AjxDebug.println(AjxDebug.REMINDER, "reminder search time range: " + this._searchTimeRange.start + " to " + this._searchTimeRange.end);
+	DBG.println(AjxDebug.DBG1, "reminder search time range: " + this._searchTimeRange.start + " to " + this._searchTimeRange.end);
 
 	var params = this.getRefreshParams();
 	this._calController.getApptSummaries(params);
@@ -82,7 +81,7 @@ function() {
 	if (this._refreshActionId) {
 		AjxTimedAction.cancelAction(this._refreshActionId);
 	}
-    AjxDebug.println(AjxDebug.REMINDER, "reminder refresh");
+	DBG.println(AjxDebug.DBG2, "reminder refresh");
 	this._refreshActionId = AjxTimedAction.scheduleAction(this._refreshTimedAction, (AjxDateUtil.MSEC_PER_HOUR * ZmReminderController._CACHE_REFRESH));
 };
 
@@ -114,9 +113,7 @@ function() {
 		start: timeRange.start,
 		end: timeRange.end,
 		fanoutAllDay: false,
-		folderIds: this._apptType ==
-            "appt" ? this._calController.getReminderCalendarFolderIds() :
-                     this._calController.getCheckedCalendarFolderIds(true),
+		folderIds: this._calController.getCheckedCalendarFolderIds(true),
 		callback: (new AjxCallback(this, this._refreshCallback)),
 		includeReminders: true
 	};
@@ -138,16 +135,10 @@ function() {
 	}
 };
 
-ZmReminderController.prototype._scheduleHouseKeepingAction =
-function() {
-	this._cancelHousekeepingAction(); //cancel to be on safe side against race condition when 2 will be runing instead of one.
-	this._housekeepingActionId = AjxTimedAction.scheduleAction(this._housekeepingTimedAction, 60 * 1000);
-};
-
 /**
  * called after we get upcoming appts from server. Save list,
  * and call housekeeping.
- *
+ * 
  * @private
  */
 ZmReminderController.prototype._refreshCallback =
@@ -171,11 +162,8 @@ function(list) {
 	for (var i = 0; i < size; i++) {
 		var appt = list.get(i);
 		var id = appt.id;
-        var hasAlarm = appt.recurring ? appt.isAlarmInstance() : appt.hasAlarmData();
-		if (hasAlarm) {
-            var alarmData = appt.getAlarmData();
-            alarmData = (alarmData && alarmData.length > 0) ? alarmData[0] : {};
-            AjxDebug.println(AjxDebug.REMINDER, appt.name + " :: " + appt.startDate + " :: " + appt.endDate + " :: " + appt.recurring + " :: " + appt.isException + " :: " + alarmData.nextAlarm + " :: " + alarmData.alarmInstStart);
+
+		if (appt.hasAlarmData()) {
 			if (!this._cacheMap[id]) {
 				this._cacheMap[id] = true;
 				newList.add(appt);
@@ -200,7 +188,7 @@ function(list) {
 		this._cachedAppts = new AjxVector();
 	}
 
-    AjxDebug.println(AjxDebug.REMINDER, "updating reminder cache...");
+	DBG.println(AjxDebug.DBG2, "updating reminder cache...");
 	var srchRange = this.getSearchTimeRange();
 	var count = 0;
 
@@ -216,7 +204,7 @@ function(list) {
 		}
 	}
 
-    AjxDebug.println(AjxDebug.REMINDER, "new appts added to reminder cache :" + count);
+	DBG.println(AjxDebug.DBG2, "new appts added to reminder cache :" + count);
 };
 
 ZmReminderController.prototype.isApptSnoozed =
@@ -232,10 +220,10 @@ function(uid) {
  */
 ZmReminderController.prototype._housekeepingAction =
 function() {
-    AjxDebug.println(AjxDebug.REMINDER, "reminder house keeping action...");
+	DBG.println(AjxDebug.DBG2, "reminder house keeping action...");
 	var rd = this.getReminderDialog();
 	if (ZmCsfeCommand.noAuth) {
-        AjxDebug.println(AjxDebug.REMINDER, "reminder check: no auth token, bailing");
+		DBG.println(AjxDebug.DBG1, "reminder check: no auth token, bailing");
 		if (rd && rd.isPoppedUp()) {
 			rd.popdown();
 		}
@@ -246,7 +234,7 @@ function() {
 		var newTimeRange = this.getSearchTimeRange();
 		var diff = newTimeRange.end - this._searchTimeRange.end;
 		if (diff > AjxDateUtil.MSEC_PER_HOUR) {
-            AjxDebug.println(AjxDebug.REMINDER, "time elapsed - refreshing reminder cache");
+			DBG.println(AjxDebug.DBG2, "time elapsed - refreshing reminder cache");
 			this._searchTimeRange = null;
 			this.refresh();
 			return;
@@ -256,8 +244,8 @@ function() {
 	var cachedSize = this._cachedAppts.size();
 	var activeSize = this._activeAppts.size();
 	if (cachedSize == 0 && activeSize == 0) {
-        AjxDebug.println(AjxDebug.REMINDER, "no appts - empty cached and active list");
-		this._scheduleHouseKeepingAction();
+		DBG.println(AjxDebug.DBG2, "no appts - empty cached and active list");
+		this._housekeepingActionId = AjxTimedAction.scheduleAction(this._housekeepingTimedAction, 60*1000);
 		return;
 	}
 
@@ -266,6 +254,17 @@ function() {
 
 	for (var i=0; i < cachedSize; i++) {
 		var appt = this._cachedAppts.get(i);
+		if (appt && this._snoozedAppt) {
+			var uid = appt.getUniqueId(true);
+			if (this._snoozedAppt[uid]) {
+				this._apptState[uid] = ZmReminderController._STATE_ACTIVE;
+				toRemove.push(appt);
+				numNotify++;
+				this._activeAppts.add(appt);
+				delete this._snoozedAppt[uid];
+				continue;
+			}
+		}
 
 		if (!appt || appt.ptst == ZmCalBaseItem.PSTATUS_DECLINED) {
 			toRemove.push(appt);
@@ -277,7 +276,7 @@ function() {
 				// just remove themn
 			} else if (state == ZmReminderController._STATE_ACTIVE) {
 				addToActiveList = true;
-			} else {
+			} else if (state != ZmReminderController._STATE_SNOOZED) {
 				// we need to notify on this one
 				numNotify++;
 				addToActiveList = true;
@@ -298,23 +297,21 @@ function() {
 
 	// remove any appts in cachedAppts that are no longer supposed to be in there	
 	// need to do this here so we don't screw up iteration above
-	for (var i = 0; i < toRemove.length; i++) {
+	for (var i in toRemove) {
 		this._cachedAppts.remove(toRemove[i]);
 	}
 
 	// if we have any to notify on, do it
 	if (numNotify || rd.isPoppedUp()) {
 		if (this._activeAppts.size() == 0 && rd.isPoppedUp()) {
-            AjxDebug.println(AjxDebug.REMINDER, "popping down reminder dialog");
-            rd.popdown();
+			rd.popdown();
 		} else {
-            AjxDebug.println(AjxDebug.REMINDER, "initializing reminder dialog");
 			rd.initialize(this._activeAppts);
 			if (!rd.isPoppedUp()) rd.popup();
 		}
 	}
 
-    AjxDebug.println(AjxDebug.REMINDER, "no of appts active:" + this._activeAppts.size() + ", no of appts cached:" + cachedSize);
+	DBG.println(AjxDebug.DBG2, "no of appts active:" + this._activeAppts.size() + ", no of appts cached:" + cachedSize);
 
 	if (this._oldAppts.size() > 0) {
 		this.dismissAppt(this._oldAppts, new AjxCallback(this, this._silentDismissCallback));
@@ -322,7 +319,7 @@ function() {
 
 	// need to schedule housekeeping callback, ideally right before next _cachedAppt start time - lead,
 	// for now just check once a minute...
-	this._scheduleHouseKeepingAction();
+	this._housekeepingActionId = AjxTimedAction.scheduleAction(this._housekeepingTimedAction, 60*1000);
 };
 
 ZmReminderController.prototype._silentDismissCallback =
@@ -352,6 +349,7 @@ function(list) {
  */
 ZmReminderController.prototype.dismissAppt =
 function(list, callback) {
+	var appt;
 	if (!(list instanceof AjxVector)) {
 		list = AjxVector.fromArray((list instanceof Array)? list: [list]);
 	}
@@ -368,18 +366,16 @@ function(list, callback) {
 /**
  * Snoozes the appointments.
  * 
- * @param	{AjxVector}	appts	a list of {@link ZmAppt} objects
+ * @param	{AjxVector}	list	a list of {@link ZmAppt} objects
  * @return	{Array}	an array of snoozed apt ids
  */
 ZmReminderController.prototype.snoozeAppt =
-function(appts) {
-	appts = AjxUtil.toArray(appts);
-
+function(list) {
 	var snoozedIds = [];
 	var appt;
 	var uid;
-	for (var i = 0; i < appts.length; i++) {
-		appt = appts[i];
+	for (var i = 0; i < list.size(); i++) {
+		appt = list.get(i);
 		uid = appt.getUniqueId(true);
 		this._apptState[uid] = ZmReminderController._STATE_SNOOZED;
 		snoozedIds.push(uid);
@@ -387,6 +383,31 @@ function(appts) {
 		this._cachedAppts.add(appt);
 	}
 	return snoozedIds;
+};
+
+ZmReminderController.prototype.activateSnoozedAppts =
+function(list) {
+	var rd = this.getReminderDialog();
+	if (rd && rd.isPoppedUp()) {
+		rd.popdown();
+	}
+
+	if (this._snoozedAppt == null) {
+		this._snoozedAppt = {};
+	}
+
+	var appt;
+	var uid;
+	for (var i = 0; i < list.size(); i++) {
+		appt = list.get(i);
+		if (appt) {
+			uid = appt.getUniqueId(true);
+			this._snoozedAppt[uid] = true;
+		}
+	}
+
+	this._cancelHousekeepingAction();
+	this._housekeepingAction();
 };
 
 ZmReminderController.prototype.dismissApptRequest = 
@@ -429,7 +450,23 @@ function(list, callback, result) {
 	var appts = dismissResponse ? dismissResponse.appt : null;
 	if (!appts) { return; }
 
-    this._updateApptAlarmData(list, appts);
+	var updateData = {};
+	for (var i in appts) {
+		var appt = appts[i];
+		if (appt && appt.calItemId) {
+			updateData[appt.calItemId] = appt.alarmData ? appt.alarmData : {};
+		}
+	}
+
+	var size = list.size();
+	for (var i = 0; i < size; i++) {
+		var appt = list.get(i);
+		if (appt) {
+			if (updateData[appt.id]) {
+				appt.alarmData = (updateData[appt.id] != {}) ? updateData[appt.id] : null;
+			}
+		}
+	}
 
 	if (callback) {
 		callback.run(list);
@@ -440,28 +477,6 @@ ZmReminderController.prototype._handleErrorDismissAppt =
 function(list, callback, response) {
 };
 
-
-ZmReminderController.prototype._updateApptAlarmData =
-function(apptList, responseAppts) {
-    var updateData = {};
-    for (var i = 0; i < responseAppts.length; i++) {
-        var appt = responseAppts[i];
-        if (appt && appt.calItemId) {
-            updateData[appt.calItemId] = appt.alarmData ? appt.alarmData : {};
-        }
-    }
-
-    var size = apptList.size();
-    for (var i = 0; i < size; i++) {
-        var appt = apptList.get(i);
-        if (appt) {
-            if (updateData[appt.id]) {
-                appt.alarmData = (updateData[appt.id] != {}) ? updateData[appt.id] : null;
-            }
-        }
-    }
-};
-
 /**
  * Gets the reminder dialog.
  * 
@@ -470,75 +485,7 @@ function(apptList, responseAppts) {
 ZmReminderController.prototype.getReminderDialog =
 function() {
 	if (this._reminderDialog == null) {
-		this._reminderDialog = new ZmReminderDialog(appCtxt.getShell(), this, this._calController, this._apptType);
+		this._reminderDialog = new ZmReminderDialog(appCtxt.getShell(), this, this._calController);
 	}
 	return this._reminderDialog;
-};
-
-
-ZmReminderController.prototype._snoozeApptAction =
-function(apptArray, snoozeMinutes, beforeAppt) {
-
-	var apptList = AjxVector.fromArray(apptArray);
-
-    var chosenSnoozeMilliseconds = snoozeMinutes * 60 * 1000;
-    var added = false;
-
-    var soapDoc = AjxSoapDoc.create("SnoozeCalendarItemAlarmRequest", "urn:zimbraMail");
-    if (beforeAppt) {
-        // Using a before time, relative to the start of each appointment
-        if (!this._beforeProcessor) {
-            this._beforeProcessor = new ZmSnoozeBeforeProcessor(this._apptType);
-        }
-        added = this._beforeProcessor.execute(apptList, chosenSnoozeMilliseconds, soapDoc);
-    } else {
-        // using a fixed untilTime for all appts
-        added = apptList.size() > 0;
-        var untilTime = (new Date()).getTime() + chosenSnoozeMilliseconds;
-        for (var i = 0; i < apptList.size(); i++) {
-            var appt = apptList.get(i);
-            var actionNode = soapDoc.set(this._apptType);
-            actionNode.setAttribute("id", appt.id);
-            actionNode.setAttribute("until", untilTime);
-        }
-    }
-
-
-    if (added) {
-        var respCallback = this._handleResponseSnoozeAction.bind(this, apptList, snoozeMinutes);
-        var errorCallback = this._handleErrorResponseSnoozeAction.bind(this);
-        var acct = appCtxt.multiAccounts && appCtxt.accountList.mainAccount;
-        appCtxt.getAppController().sendRequest({
-            soapDoc:       soapDoc,
-            asyncMode:     true,
-            accountName:   acct,
-            callback:      respCallback,
-            errorCallback: errorCallback
-        });
-    }
-};
-
-
-ZmReminderController.prototype._handleResponseSnoozeAction =
-function(apptList, snoozeMinutes, result) {
-    if (result.isException()) { return; }
-
-	var response = result.getResponse();
-	var snoozeResponse = response.SnoozeCalendarItemAlarmResponse;
-	var appts = snoozeResponse ? snoozeResponse[this._apptType] : null;
-	if (!appts) { return; }
-
-    this._updateApptAlarmData(apptList, appts);
-
-    if (snoozeMinutes == 1) {
-	    // cancel outstanding timed action and update now...
-		// I'm not sure why this is here but I suspect to prevent some race condition.
-		this._cancelHousekeepingAction();
-		//however calling _housekeepingAction immediately caused some other race condition issues. so I just schedule it again.
-		this._scheduleHouseKeepingAction();
-    }
-};
-ZmReminderController.prototype._handleErrorResponseSnoozeAction =
-function(result) {
-    //appCtxt.getAppController().popupErrorDialog(ZmMsg.reminderSnoozeError, result.msg, null, true);
 };

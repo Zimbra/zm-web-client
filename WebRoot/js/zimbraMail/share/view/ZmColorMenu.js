@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2010, 2011, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
@@ -53,8 +53,7 @@ ZmColorMenu.prototype.setImage = function(image) {
         for (var i = 0; i < children.length; i++) {
             var child = children[i];
             var color = child.getData(ZmColorMenu.__KEY_COLOR);
-			var displayColor = color || ZmOrganizer.COLOR_VALUES[ZmOrganizer.ORG_DEFAULT_COLOR]; //default to gray
-            var icon = [image, displayColor].join(",color=");
+            var icon = image && color ?[image,color].join(",color=") : image;
             child.setImage(icon);
         }
     }
@@ -129,18 +128,16 @@ ZmColorMenu.prototype._populateMenu = function() {
     for (var id = 0; id < list.length; id++) {
         var color = ZmOrganizer.COLOR_VALUES[id];
         if (!color && this._hideNone) continue;
-		var displayColor = color || ZmOrganizer.COLOR_VALUES[ZmOrganizer.ORG_DEFAULT_COLOR]; //default to gray
-        var image = this._image ? [this._image, displayColor].join(",color=") : null;
+        var image = this._image && color ? [this._image,color].join(",color=") : this._image;
         var text = ZmOrganizer.COLOR_TEXT[id];
-        var menuItemId = "COLOR_" + id;
-        var menuItem = new DwtMenuItem({parent:this, id:menuItemId});
+        var menuItem = new DwtMenuItem({parent:this});
         menuItem.setImage(image);
         menuItem.setText(text);
         menuItem.setData(ZmOperation.MENUITEM_ID, id);
         menuItem.setData(ZmColorMenu.__KEY_COLOR, color);
     }
     var callback = new AjxCallback(this, this.showMoreColors); 
-    var showMoreItem = new ZmColorMenuItem({parent:this,callback:callback, id:"SHOW_MORE_ITEMS"});
+    var showMoreItem = new ZmColorMenuItem({parent:this,callback:callback});
     showMoreItem.setText(ZmMsg.colorsShowMore);
 };
 

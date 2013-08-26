@@ -60,7 +60,7 @@
 		<table width="100%" cellpadding="0" cellspacing="0">
 			<tr>
 				<td class='TbTop'>
-					<app:voiceMailViewToolbar context="${context}" keys="true" heard="${heard}" isPrivate="${message.isPrivate}" saveAsUrl="/service/extension/voice/~/voicemail?phone=${param.phone}&id=${message.id}&disp=a"/>
+					<app:voiceMailViewToolbar context="${context}" keys="true" heard="${heard}" isPrivate="${message.isPrivate}" saveAsUrl="/service/extension/velodrome/voice/~/voicemail?phone=${param.phone}&id=${message.id}&disp=a"/>
 				</td>
 			</tr>
 			<tr>
@@ -78,7 +78,7 @@
 										<div class="ZhVoiceMailData"><span class="ZhVoiceMailLabel"><fmt:message key="duration"/>: </span> ${fn:escapeXml(zm:displayDuration(pageContext, message.voiceMailItemHit.duration))}</div>
 									</td>
 									<td class="ZhVoiceMailCellRight">
-										<c:set var="path">/service/extension/voice/~/voicemail?phone=${param.phone}&id=${message.id}</c:set>
+										<c:set var="path">/service/extension/velodrome/voice/~/voicemail?phone=${param.phone}&id=${message.id}</c:set>
 										<object CLASSID="CLSID:6BF52A52-394A-11d3-B153-00C04F79FAA6" type="audio/wav">
 											<param name="url" value="${path}">
 											<param name="autostart" value="${autostart}">

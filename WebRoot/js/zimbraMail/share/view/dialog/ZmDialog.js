@@ -60,9 +60,6 @@ ZmDialog = function(params) {
 ZmDialog.prototype = new DwtDialog;
 ZmDialog.prototype.constructor = ZmDialog;
 
-ZmDialog.prototype.isZmDialog = true;
-ZmDialog.prototype.toString = function() { return "ZmDialog"; };
-
 /**
  * @private
  */
@@ -196,21 +193,16 @@ function(params, forceSingle) {
 	if (!overview) {
 		var ovParams = {
 			overviewId:		overviewId,
-			overviewClass:	params.overviewClass || "dialogOverview",
+			overviewClass:	"dialogOverview",
 			headerClass:	"DwtTreeItem",
 			noTooltips:		true,
 			treeStyle:		params.treeStyle,
 			treeIds:		params.treeIds,
-			account:		((appCtxt.multiAccounts && params.forceSingle) ? appCtxt.getActiveAccount() : (params.account || appCtxt.getActiveAccount())),
-			skipImplicit: 	true
+			account:		((appCtxt.multiAccounts && params.forceSingle) ? appCtxt.getActiveAccount() : (params.account || appCtxt.getActiveAccount()) )
 		};
 		overview = this._overview[overviewId] = this._opc.createOverview(ovParams);
 		this._renderOverview(overview, params.treeIds, params.omit, params.noRootSelect);
 		document.getElementById(params.fieldId).appendChild(overview.getHtmlElement());
-	}
-	else {
-		//this might change between clients so have to update this.
-		this._setRootSelection(overview, params.treeIds, params.noRootSelect);
 	}
 
 	this._makeOverviewVisible(overviewId);
@@ -242,20 +234,14 @@ function(overviewId) {
 ZmDialog.prototype._renderOverview =
 function(overview, treeIds, omit, noRootSelect) {
 	overview.set(treeIds, omit);
-	this._setRootSelection(overview, treeIds, noRootSelect);
-};
-
-ZmDialog.prototype._setRootSelection =
-function(overview, treeIds, noRootSelect) {
-	for (var i = 0; i < treeIds.length; i++) {
-		var treeView = overview.getTreeView(treeIds[i]);
-		var hi = treeView && treeView.getHeaderItem();
-		if (hi) {
-			hi.enableSelection(!noRootSelect);
+	if (!noRootSelect) {
+		for (var i = 0; i < treeIds.length; i++) {
+			var treeView = overview.getTreeView(treeIds[i]);
+			var hi = treeView && treeView.getHeaderItem();
+			if (hi) hi.enableSelection(true);
 		}
 	}
 };
-
 
 /**
  * @private

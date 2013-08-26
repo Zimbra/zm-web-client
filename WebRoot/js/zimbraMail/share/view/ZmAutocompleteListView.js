@@ -27,89 +27,23 @@
  * on keystroke events, and displaying/managing the list of matches. This class is theoretically
  * neutral concerning the data that gets matched (as long as its class has an <code>autocompleteMatch()</code>
  * method), and the field that it's being called from.
- * 
+ * <p>
  * The data class's <code>autocompleteMatch()</code> method should returns a list of matches, where each match is
- * an object with the following properties:
+ * an object with the following properties:</p>
  * <table border="1" width="50%">
  * <tr><td width="15%">data</td><td>the object being matched</td></tr>
  * <tr><td>text</td><td>the text to display for this object in the list</td></tr>
  * <tr><td>[key1]</td><td>a string that may be used to replace the typed text</td></tr>
  * <tr><td>[keyN]</td><td>a string that may be used to replace the typed text</td></tr>
  * </table>
- * 
+ * </p><p>
  * The calling client also specifies the key in the match result for the string that will be used
  * to replace the typed text (also called the "completion string"). For example, the completion 
  * string for matching contacts could be a full address, or just the email.
- * 
+ * </p><p>
  * The client may provide additional key event handlers in the form of callbacks. If the callback
  * explicitly returns true or false, that's what the event handler will return.
- * 
- * A single autocomplete list view may handle several related input fields. With the "quick complete" feature, there
- * may be multiple outstanding autocomplete requests to the server. Each request is managed through a context which
- * has all the information needed to make the request and handle its results.
- * 
- * 
- * 
- * Using Autocomplete
- * 
- * Autocomplete kicks in after there is a pause in the typing (that pause has to be at least 300ms by default). Let's say that
- * you are entering addresses into the To: field while composing an email. You type a few characters and then pause:
- * 
- * 	dav
- * 
- * ZCS will ask the user for people whose name or email address matches "dav", and display the matches in a list that pops up.
- * The matches will be sorted with the people you email the most at the top. When you select a match, that person's address
- * will replace the search string ("dav") in the To: field. Typically the address will be in a bubble.
- * 
- * 	Davey Jones x
- * 
- * Quick Complete
- * 
- * Many times you will know which address you're looking for, and you will type enough characters so that they will appear at
- * the top of the matches, and then you type semicolon or a return to select them once the list has come up. If you know that
- * the address you want will appear at the top of the matches based on what you've typed, then there's a way to select it 
- * without waiting for the list to come up: just type a semicolon. For example, let's assume that I email Davey Jones a lot,
- * and I know that if I type "dav" he will be the first match. I can just type
- * 
- * 	dav;
- * 
- * and continue, whether that's adding more addresses, or moving on to the subject and body (done easily via the Tab key).
- * Autocompletion will happen in the background, and will automatically replace "dav;" with the first match from the list. If 
- * no matches are found, nothing changes. One way to think of the Quick Complete feature is as the autocomplete version of 
- * Google's "I'm Feeling Lucky", though in this case you have a much better idea of what the results are going to be. You 
- * don't have to wait for the list to appear in order to add the bubble. It gets added for you.
- * 
- * You can type in multiple Quick Complete strings, and they will all be handled. For example, I could type
- * 
- * 	dav;pb;ann;x;
- * 
- * and see bubbles pop up for Davey Jones, Phil Bates, Ann Miller, and Xavier Gold without any more action on my part. I could
- * even type "dav;" into the To: field, hit Tab to go to the Cc: field, type "pb;" there, and then Tab to the Subject: field,
- * and start writing my message.
- * 
- * One small limitation of Quick Complete is that the bubbles will pop up within a field in the order that the results come 
- * back, which may not match the order of the strings you typed in. You can drag the bubbles to rearrange them if you want.
- * 
- * Special Keys
- * 
- * There are a number of keys that have special meanings when you are working with an input field that supports autocomplete. 
- * Most of them apply while the list of matches is showing, and are used to control selection of the match you want:
- * 
- * Return		Adds the selected address
- * Tab		Adds the selected address
- * ;		Adds the selected address
- * ,		Adds the selected address (if enabled in Preferences/Address Book/Autocomplete)
- * DownArrow	Selects the next address (hold to repeat)
- * UpArrow		Selects the previous address (hold to repeat)
- * Esc		Hides the list
- * 
- * A few keys have special meanings while the list is not showing:
- * 
- * Return		If the input contains an email address, turn it into a bubble
- * Tab		Go to the next field
- * Esc		If requests are pending (it will say "Autocompleting"), cancel them. If not, cancel compose.
- * 
- * 
+ * </p>
  * 
  * @author Conrad Damon
  *
@@ -123,13 +57,11 @@
  * @param	{Array}			delimCodes			the list of delimiter key codes
  * @param	{String}		separator			the separator (gets added to the end of a match)
  * @param	{AjxCallback}	compCallback		the callback into client to notify it that completion happened
- * @param	{AjxCallback}	selectionCallback	the callback into client to notify it that selection from extended DL happened (passed from email.js, and accessed from ZmDLAutocompleteListView.prototype._doUpdate)
  * @param	{AjxCallback}	keyDownCallback		the additional client ONKEYDOWN handler
  * @param	{AjxCallback}	keyPressCallback	the additional client ONKEYPRESS handler
  * @param	{AjxCallback}	keyUpCallback		the additional client ONKEYUP handler
- * @param	{string}		contextId			ID from parent
+ * @param	{AjxCallback}	enterCallback		the client handler for Enter key
  * @param	{Hash}			options				the additional options for the data class
- * @param	{function}		locationCallback	used to customize list location (optional)
  * 
  * @extends		DwtComposite
  */
@@ -137,22 +69,15 @@ ZmAutocompleteListView = function(params) {
 
 	if (arguments.length == 0) { return; }
 
-	params.parent = params.parent || appCtxt.getShell();
-	params.className = params.className || "ZmAutocompleteListView";
-	params.posStyle = DwtControl.ABSOLUTE_STYLE;
-	params.id = params.contextId ? DwtId.makeId(ZmId.WIDGET_AUTOCOMPLETE, params.contextId) :
-								   this._htmlElId || Dwt.getNextId("ZmAutocompleteListView_");
-	DBG.println("acid", "ID: " + params.id);
-	DwtComposite.call(this, params);
+	var className = params.className ? params.className : "ZmAutocompleteListView";
+	DwtComposite.call(this, params.parent || appCtxt.getShell(), className, DwtControl.ABSOLUTE_STYLE);
 
 	this._dataClass = this._dataAPI = params.dataClass;
 	this._dataLoader = params.dataLoader;
 	this._dataLoaded = false;
 	this._matchValue = params.matchValue;
-	this._selectionCallback = params.selectionCallback;
 	this._separator = (params.separator != null) ? params.separator : AjxEmailAddress.SEPARATOR;
     this._options = params.options || {};
-	this._locationCallback = params.locationCallback;
 
 	this._callbacks = {};
 	for (var i = 0; i < ZmAutocompleteListView.CALLBACKS.length; i++) {
@@ -179,7 +104,8 @@ ZmAutocompleteListView = function(params) {
 
 	// only trigger matching after a sufficient pause
 	this._acInterval = appCtxt.get(ZmSetting.AC_TIMER_INTERVAL);
-	this._acActionId = {};	// per element
+	this._acAction = new AjxTimedAction(null, this._autocompleteAction);
+	this._acActionId = -1;
 
 	// for managing focus on Tab in Firefox
 	if (AjxEnv.isGeckoBased) {
@@ -192,9 +118,7 @@ ZmAutocompleteListView = function(params) {
 	this._hideLinkTextClass = "LinkText-hide";
 	this._hideSelLinkTextClass = "LinkText-hide-selected";
 
-	this._contexts 			= {};	// key is element ID
-	this._inputValue		= {};	// key is element ID
-	
+	this._done = {};
 	this.setVisible(false);
 	this.setScrollStyle(Dwt.SCROLL);
 	this.reset();
@@ -202,24 +126,25 @@ ZmAutocompleteListView = function(params) {
 
 ZmAutocompleteListView.prototype = new DwtComposite;
 ZmAutocompleteListView.prototype.constructor = ZmAutocompleteListView;
-ZmAutocompleteListView.prototype.toString = function() { return "ZmAutocompleteListView"; };
 
-ZmAutocompleteListView.CB_ADDR_FOUND	= "addrFound";
 ZmAutocompleteListView.CB_COMPLETION	= "comp";
 ZmAutocompleteListView.CB_KEYDOWN		= "keyDown";
 ZmAutocompleteListView.CB_KEYPRESS		= "keyPress";
 ZmAutocompleteListView.CB_KEYUP			= "keyUp";
+ZmAutocompleteListView.CB_ENTER			= "enter";
+ZmAutocompleteListView.CB_ADDR_FOUND	= "addrFound";
 ZmAutocompleteListView.CALLBACKS = [
-		ZmAutocompleteListView.CB_ADDR_FOUND,
 		ZmAutocompleteListView.CB_COMPLETION,
 		ZmAutocompleteListView.CB_KEYDOWN,
 		ZmAutocompleteListView.CB_KEYPRESS,
-		ZmAutocompleteListView.CB_KEYUP
+		ZmAutocompleteListView.CB_KEYUP,
+		ZmAutocompleteListView.CB_ENTER,
+		ZmAutocompleteListView.CB_ADDR_FOUND
 ];
 
 // map of characters that are completion characters
-ZmAutocompleteListView.DELIMS			= [',', ';', '\n', '\r', '\t'];	// used when list is not showing
-ZmAutocompleteListView.DELIM_CODES		= [188, 59, 186, 3, 13, 9];		// used when list is showing
+ZmAutocompleteListView.DELIMS		= [',', ';', '\n', '\r', '\t'];	// used when list is not showing
+ZmAutocompleteListView.DELIM_CODES	= [188, 59, 186, 3, 13, 9];		// used when list is showing
 
 ZmAutocompleteListView.WAIT_ID = "wait";
 
@@ -227,14 +152,7 @@ ZmAutocompleteListView.WAIT_ID = "wait";
 ZmAutocompleteListView.NEXT = -1;
 ZmAutocompleteListView.PREV = -2;
 
-// possible states of an autocomplete context
-ZmAutocompleteListView.STATE_NEW		= "NEW";
-ZmAutocompleteListView.STATE_REQUEST	= "REQUEST";
-ZmAutocompleteListView.STATE_RESPONSE	= "RESPONSE";
-ZmAutocompleteListView.STATE_DONE		= "DONE";
-
-
-
+// Public static methods
 
 /**
  * Handles the on key down event.
@@ -243,43 +161,29 @@ ZmAutocompleteListView.STATE_DONE		= "DONE";
  */
 ZmAutocompleteListView.onKeyDown =
 function(ev) {
-
 	ev = DwtUiEvent.getEvent(ev);
+	var result = null;
 	var key = DwtKeyEvent.getCharCode(ev);
-	var result = true;
+	DBG.println("ac", ev.type + ": " + key);
+	if (key == 38 || key == 40) {
+		ZmAutocompleteListView.__geckoKeyCode = null;
+		result = ZmAutocompleteListView._onKeyUp(ev);
+	} else {
+		result = ZmAutocompleteListView._onKeyDown(ev);
+	}
 	var element = DwtUiEvent.getTargetWithProp(ev, "_aclvId");
-	DBG.println("ac", ev.type.toUpperCase() + " in " + element.id + ": " + key);
 	var aclv = element && DwtControl.ALL_BY_ID[element._aclvId];
 	if (aclv) {
-		// if the user types a single delimiting character with the list showing, do completion
-		var isDelim = (!ev.shiftKey && aclv._isDelimCode[key]);
-		var visible = aclv.getVisible();
-		aclv._actionHandled = false;
-		// DBG.println("ac", "key = " + key + ", isDelim: " + isDelim);
-		if ((isDelim && visible) || (key == 27 || (visible && (key == 38 || key == 40)))) {
-			DBG.println("ac", "handle action for key " + key);
-			if (aclv.handleAction(key, isDelim, element)) {
-				aclv._actionHandled = true;
-//				return ZmAutocompleteListView._echoKey(false, ev);
-				result = false;
-			}
-		}
-		else if ((key == 9) && aclv._complete(element)) {
-			// a Tab following an address turns it into a bubble
-			result = true;
-		}
-		
-		aclv._inputValue[element.id] = element.value;
+		aclv._inputValue = element.value;
 		var cbResult = aclv._runCallbacks(ZmAutocompleteListView.CB_KEYDOWN, element && element.id, [ev, aclv, result, element]);
-		// DBG.println("ac", ev.type.toUpperCase() + " cbResult: " + cbResult);
 		result = (cbResult === true || cbResult === false) ? cbResult : result;
 	}
-	if (AjxEnv.isFirefox){
-		ZmAutocompleteListView.clearTimer();
-		ZmAutocompleteListView.timer =  new AjxTimedAction(this, ZmAutocompleteListView.onKeyUp, [ev]);
-		AjxTimedAction.scheduleAction(ZmAutocompleteListView.timer, 300)
-	}
-	return ZmAutocompleteListView._echoKey(result, ev);
+    if (AjxEnv.isFirefox){
+       ZmAutocompleteListView.clearTimer();
+       ZmAutocompleteListView.timer =  new AjxTimedAction(this, ZmAutocompleteListView.onKeyUp, [ev]);
+       AjxTimedAction.scheduleAction(ZmAutocompleteListView.timer, 300)
+    }
+	return result;
 };
 
 /**
@@ -291,21 +195,25 @@ ZmAutocompleteListView.onKeyPress =
 function(ev) {
 	ev = DwtUiEvent.getEvent(ev);
 	DwtKeyEvent.geckoCheck(ev);
-	var result = true;
+	var result = null;
 	var key = DwtKeyEvent.getCharCode(ev);
-	var element = DwtUiEvent.getTargetWithProp(ev, "_aclvId");
-	DBG.println("ac", ev.type.toUpperCase() + " in " + element.id + ": " + key);
-	var aclv = element && DwtControl.ALL_BY_ID[element._aclvId];
-	if (aclv) {
-		if (aclv._actionHandled) {
-			result = false;
+	DBG.println("ac", ev.type + ": " + key);
+	if (AjxEnv.isGeckoBased && (key == 38 || key == 40)) {
+		if (ZmAutocompleteListView.__geckoKeyCode) {
+			result = ZmAutocompleteListView._onKeyUp(ev);
+		} else {
+			ZmAutocompleteListView.__geckoKeyCode = key;
 		}
+	}
+	var element = DwtUiEvent.getTargetWithProp(ev, "_aclvId");
+	var aclv = element && DwtControl.ALL_BY_ID[element._aclvId];
+
+	if (aclv) {
 		var cbResult = aclv._runCallbacks(ZmAutocompleteListView.CB_KEYPRESS, element && element.id, [ev, aclv, result, element]);
-		DBG.println("ac", ev.type.toUpperCase() + " cbResult: " + cbResult);
-		result = (cbResult === true || cbResult === false) ? cbResult : true;
+		result = (cbResult === true || cbResult === false) ? cbResult : result;
 	}
 
-	return ZmAutocompleteListView._echoKey(result, ev);
+	return (result != null) ? result : ZmAutocompleteListView._echoKey(true, ev);
 };
 
 /**
@@ -316,31 +224,60 @@ function(ev) {
 ZmAutocompleteListView.onKeyUp =
 function(ev) {
 	ev = DwtUiEvent.getEvent(ev);
-	var result = true;
 	var key = DwtKeyEvent.getCharCode(ev);
+	DBG.println("ac", ev.type + ": " + key);
+	if (key == 38 || key == 40) {
+		ZmAutocompleteListView.__geckoKeyCode = null;
+		return true;
+	}
+	var result = ZmAutocompleteListView._onKeyUp(ev);
 	var element = DwtUiEvent.getTargetWithProp(ev, "_aclvId");
-	DBG.println("ac", ev.type.toUpperCase() + " in " + element.id + ": " + key);
 	var aclv = element && DwtControl.ALL_BY_ID[element._aclvId];
 	if (aclv) {
-		if (aclv._actionHandled) {
-			result = false;
-		}
-		var result = ZmAutocompleteListView._onKeyUp(ev);
 		var cbResult = aclv._runCallbacks(ZmAutocompleteListView.CB_KEYUP, element && element.id, [ev, aclv, result, element]);
-		DBG.println("ac", ev.type.toUpperCase() + " cbResult: " + cbResult);
 		result = (cbResult === true || cbResult === false) ? cbResult : result;
 	}
-	return ZmAutocompleteListView._echoKey(result, ev);
+	return result;
 };
 
 /**
- * "onkeyup" handler for performing autocompletion. The reason it's an "onkeyup" handler is that it's the only one
- * that arrives after the input has been updated.
- *
- * @param ev		the key event
- * 
- * @private
- */
+* "onkeydown" handler for catching Tab and Esc keys. We don't want to let the browser
+* handle this event for those (which it will do before we get the keyup event).
+*
+* @param ev		the key event
+* 
+* @private
+*/
+ZmAutocompleteListView._onKeyDown =
+function(ev) {
+	var key = DwtKeyEvent.getCharCode(ev);
+	// don't echo enter key if list view is visible, since in that case it's
+	// just a selection mechanism
+	if (key == 3 || key == 13) {
+		var element = DwtUiEvent.getTargetWithProp(ev, "_aclvId");
+		if (!element) {
+			return ZmAutocompleteListView._echoKey(true, ev);
+		}
+		var aclv = DwtControl.ALL_BY_ID[element._aclvId];
+		if (aclv && aclv.getVisible()) {
+			return ZmAutocompleteListView._echoKey(false, ev);
+		}
+	}
+	if (key == 9 || key == 27) {
+		return ZmAutocompleteListView._onKeyUp(ev);
+	} else {
+		return ZmAutocompleteListView._echoKey(true, ev);
+	}
+};
+
+/**
+* "onkeyup" handler for performing autocompletion. The reason it's an "onkeyup" handler is that neither 
+* "onkeydown" nor "onkeypress" arrives after the form field has been updated.
+*
+* @param ev		the key event
+* 
+* @private
+*/
 ZmAutocompleteListView._onKeyUp =
 function(ev) {
 
@@ -351,56 +288,103 @@ function(ev) {
 
 	var aclv = DwtControl.ALL_BY_ID[element._aclvId];
 	var key = DwtKeyEvent.getCharCode(ev);
+	aclv._hasCompleted = false;
+
+	// Tab/Esc handled in keydown for IE
+	if (AjxEnv.isIE && ev.type == "keyup" && (key == 9 || key == 27)) {
+		return ZmAutocompleteListView._echoKey(true, ev);
+	}
+
 	var value = element.value;
-	var elId = element.id;
-	DBG.println("ac", ev.type + " event, key = " + key + ", value = " + value);
-	ev.inputChanged = (value != aclv._inputValue[elId]);
+	DBG.println(AjxDebug.DBG3, ev.type + " event, key = " + key + ", value = " + value);
+	ev.inputChanged = (value != aclv._inputValue);
 
 	// reset timer on any address field key activity
-	if (aclv._acActionId[elId] != -1 && !DwtKeyMap.IS_MODIFIER[key] && key != 9) {
-		DBG.println("ac", "canceling autocomplete");
-		AjxTimedAction.cancelAction(aclv._acActionId[elId]);
-		aclv._acActionId[elId] = -1;
+	if (aclv._acActionId != -1 && !DwtKeyMap.IS_MODIFIER[key]) {
+		AjxTimedAction.cancelAction(aclv._acActionId);
+		aclv._acActionId = -1;
 	}
+	
+	// Figure out what this handler should return. If it returns true, the browser will
+	// handle the key event. That usually means it just echoes the typed character, but
+	// it could do something like change focus (eg tab). We let the browser handle input
+	// characters, and anything weird that we don't want to deal with. The only keys we
+	// don't let the browser handle are ones that control the features of the autocomplete
+	// list.
 
-	// ignore modifier keys (including Shift), or a key with a modifier that makes it nonprintable
 	if (DwtKeyMap.IS_MODIFIER[key] || DwtKeyMapMgr.hasModifier(ev)) {
-		return true;
+		return ZmAutocompleteListView._echoKey(true, ev);
+	}
+	// if the field is empty, clear the list
+	if (!value) {
+		aclv.reset();
+		if (key != 13 && key != 3) { // If the key is ENTER, we want to continue and eventually call the enter-listeners
+			return ZmAutocompleteListView._echoKey(true, ev);
+		}
+	}
+	if (key == 37 || key == 39) { // left/right arrow key
+		return ZmAutocompleteListView._echoKey(true, ev);
+	}
+	// Pass tab/esc through if there's no list
+	if ((key == 9 || key == 27) && !aclv.size()) {
+		return ZmAutocompleteListView._echoKey(true, ev);
 	}
 
-	// if the input is empty, clear the list (if it's for this input)
-	if (!value && aclv._currentContext && element == aclv._currentContext.element) {
-		aclv.reset(element);
-		return true;
+	// if the user types a single delimiting character with the list showing, do completion
+	var isDelim = (aclv.getVisible() && (!ev.shiftKey && aclv._isDelimCode[key]));
+
+	DBG.println(AjxDebug.DBG3, "key = " + key + ", isDelim: " + isDelim);
+	if (isDelim || (key == 27 || (aclv.getVisible() && (key == 38 || key == 40)))) {
+		aclv.handleAction(key, isDelim);
+		// In Firefox, focus shifts on Tab even if we return false (and stop propagation and prevent default),
+		// so make sure the focus stays in this element.
+		if (AjxEnv.isGeckoBased && key == 9) {
+			aclv._focusAction.args = [ element ];
+			AjxTimedAction.scheduleAction(aclv._focusAction, 0);
+		}
+		if (key == 13 || key == 3) {
+			var result = aclv._runCallbacks(ZmAutocompleteListView.CB_ENTER, element && element.id, [ev]);
+			return (result != null) ? result : ZmAutocompleteListView._echoKey(true, ev);
+		}
+		return ZmAutocompleteListView._echoKey(false, ev);
 	}
 
-	// a Return following an address turns it into a bubble
-	if ((key == 13 || key == 3) && aclv._complete(element)) {
-		return false;
+	// skip if it's some weird character
+	if (!ev.inputChanged && (key != 3 && key != 13 && key != 9 && key != 8 && key != 46)) {
+		return ZmAutocompleteListView._echoKey(true, ev);
 	}
-
-	// skip if input value is not changed
-	if (!ev.inputChanged) {
-		return true;
+    ZmAutocompleteListView.clearTimer();
+	if (key == 13 || key == 3) {
+		if (aclv._options.addrBubbles && aclv._dataAPI.isComplete && aclv._dataAPI.isComplete(value)) {
+				DBG.println(AjxDebug.DBG3, "got a Return, found an addr: " + value);
+				aclv._runCallbacks(ZmAutocompleteListView.CB_ADDR_FOUND, element.id, [aclv, value, "\n"]);
+		} else {
+			// Treat as regular selection
+			var selEv = DwtShell.selectionEvent;
+			DwtUiEvent.copy(selEv, ev);
+			selEv.detail = 0;
+			aclv.notifyListeners(DwtEvent.SELECTION, selEv);
+		}
+		aclv.reset();
+		var result = aclv._runCallbacks(ZmAutocompleteListView.CB_ENTER, element && element.id, [ev]);
+		return (result != null) ? result : ZmAutocompleteListView._echoKey(true, ev);
 	}
-
-	ZmAutocompleteListView.clearTimer();
 
 	// regular input, schedule autocomplete
 	var ev1 = new DwtKeyEvent();
 	DwtKeyEvent.copy(ev1, ev);
 	ev1.aclv = aclv;
 	ev1.element = element;
-	DBG.println("ac", "scheduling autocomplete for: " + elId);
+	aclv._acAction.obj = aclv;
+	aclv._acAction.args = [ ev1 ];
+	DBG.println(AjxDebug.DBG2, "scheduling autocomplete");
+	aclv._autocompleting = true;
 
-	var aif = DwtControl.ALL_BY_ID[element._aifId];
-	if (aif && aif._editMode) { return false; }
+	aclv._acActionId = AjxTimedAction.scheduleAction(aclv._acAction, aclv._acInterval);
 	
-	var acAction = new AjxTimedAction(aclv, aclv._autocompleteAction, [ev1]);
-	aclv._acActionId[elId] = AjxTimedAction.scheduleAction(acAction, aclv._acInterval);
-	
-	return true;
+	return ZmAutocompleteListView._echoKey(true, ev);
 };
+
 
 ZmAutocompleteListView.clearTimer =
 function(ev){
@@ -439,6 +423,18 @@ function(ev, context) {
 	}
 };
 
+// Public methods
+
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
+ZmAutocompleteListView.prototype.toString = 
+function() {
+	return "ZmAutocompleteListView";
+};
+
 /**
  * Sets the active account.
  * 
@@ -459,211 +455,57 @@ function(account) {
  */
 ZmAutocompleteListView.prototype.handle =
 function(element, addrInputId) {
-	
-	var elId = element.id = element.id || Dwt.getNextId();
-	DBG.println("ac", "HANDLE " + elId);
-	// TODO: use el id instead of expando
 	element._aclvId = this._htmlElId;
 	if (addrInputId) {
 		element._aifId = addrInputId;
 	}
-	this._contexts[elId] = {};
-	this._acActionId[elId] = -1;
 	Dwt.setHandler(element, DwtEvent.ONKEYDOWN, ZmAutocompleteListView.onKeyDown);
 	Dwt.setHandler(element, DwtEvent.ONKEYPRESS, ZmAutocompleteListView.onKeyPress);
 	Dwt.setHandler(element, DwtEvent.ONKEYUP, ZmAutocompleteListView.onKeyUp);
-	if (AjxEnv.isFirefox){
-		Dwt.setHandler(element, DwtEvent.ONBLUR, ZmAutocompleteListView.clearTimer);
-	}
-	this.isActive = true;
+    if (AjxEnv.isFirefox){
+        Dwt.setHandler(element, DwtEvent.ONBLUR, ZmAutocompleteListView.clearTimer);
+    }
 };
 
-ZmAutocompleteListView.prototype.unhandle =
-function(element) {
-	DBG.println("ac", "UNHANDLE " + element.id);
-	Dwt.clearHandler(element, DwtEvent.ONKEYDOWN);
-	Dwt.clearHandler(element, DwtEvent.ONKEYPRESS);
-	Dwt.clearHandler(element, DwtEvent.ONKEYUP);
-	this.isActive = false;
-};
-
-// Kicks off an autocomplete cycle, which scans the content of the given input and then
-// handles the strings it finds, possible making requests to the data provider.
+/**
+ * Autocomplete typed text. Should be called by a handler for a keyboard event.
+ *
+ * @param {Element}	element	the element (some sort of text field) doing autocomplete
+ * @param {Object}	loc		where to popup the list, if appropriate
+ * 
+ * @private
+ */
 ZmAutocompleteListView.prototype.autocomplete =
-function(element) {
-
+function(info) {
+	DBG.println(AjxDebug.DBG3, "ZmAutocompleteListView: autocomplete");
+	if (!info || (info.text == "undefined")) { return; }
 	if (this._dataLoader && !this._dataLoaded) {
 		this._data = this._dataLoader.call(this._dataClass);
 		this._dataAPI = this._data;
 		this._dataLoaded = true;
 	}
 
-	var results = this._parseInput(element);
-	this._process(results, element);
+	// The callback into ourself emulates a while loop, and is here to support
+	// async calls into _autocomplete(), which may result in a server request
+	// (for example, when matching against the GAL)
+	var callback = new AjxCallback(this, this.autocomplete);
+	if (info.start < info.text.length) {
+		var chunk = this._nextChunk(info.text, info.start);
+		this._autocomplete(chunk, callback);
+	} else if (info.change) {
+		// quick completion was done
+		this._autocompleting = false;
+		DBG.println(AjxDebug.DBG2, "autocomplete, new text: " + info.text + "; element: " + this._element.value);
+		this._updateField(info.text, info.match);
+	}
 };
 
 /**
- * See if the text in the input is an address. If it is, complete it.
- * 
- * @param {Element}		element
- * @return {boolean}	true if the value in the input was completed
- */
-ZmAutocompleteListView.prototype._complete =
-function(element) {
-
-	var value = element.value;
-	if (this._dataAPI.isComplete && this._dataAPI.isComplete(value)) {
-		DBG.println("ac", "got a Return or Tab, found an addr: " + value);
-		var result = this._parseInput(element)[0];
-		var context = {
-			element:	element,
-			str:		result.str,
-			isAddress:	true,
-			isComplete:	result.isComplete,
-			key:		this._getKey(result)
-		}
-		this._update(context);
-		this.reset(element);
-		return true;
-	}
-	return false;
-};
-
-// Parses the content of the given input by splitting the text at delimiters. Returns a list of
-// objects with information about each string it found.
-ZmAutocompleteListView.prototype._parseInput =
-function(element) {
-
-	DBG.println("ac", "parse input for element: " + element.id); 
-	var results = [];
-	var text = element && element.value;
-	if (!text) {
-		return results;
-	}
-	DBG.println("ac", "PARSE: " + text);
-	var str = "";
-	for (var i = 0; i < text.length; i++) {
-		var c = text.charAt(i);
-		if (c == ' ' && !str) { continue; }	// ignore leading space
-		var isDelim = this._isDelim[c];
-		if (isDelim || (this._options.addrBubbles && c == ' ')) {
-			// space counts as delim if bubbles are on and the space follows an address
-			var str1 = (this._dataAPI.isComplete && this._dataAPI.isComplete(str, true));
-			if (str1) {
-				DBG.println("ac", "parse input found address: " + str);
-				str1 = (str1 === true) ? str : str1;
-				results.push({element:element, str:str1, isComplete:true, isAddress:true});
-				str = "";
-			}
-			else if (c == ";") {
-				// semicolon triggers Quick Complete
-				results.push({element:element, str:str, isComplete:true});
-				str = "";
-			}
-			else {
-				// space typed, but not after an address so no special meaning
-				str += c;
-			}
-		}
-		else {
-			str += c;
-		}
-	}
-	if (str) {
-		results.push({str:str, isComplete:false});
-	}
-
-	return results;
-};
-
-/**
- * Look through the parsed contents of the input and make any needed autocomplete requests. If there is a 
- * delimited email address, go ahead and handle it now. Also, make sure to cancel any requests that no
- * longer match the contents of the input. This function will run only after a pause in the user's typing
- * (via a setTimeout call), so existing contexts will be in either the REQUEST state or the DONE state.
- */
-ZmAutocompleteListView.prototype._process =
-function(results, element) {
-
-	// for convenience, create a hash of current keys for this input
-	var resultsHash = {};
-	for (var i = 0; i < results.length; i++) {
-		var key = this._getKey(results[i]);
-		resultsHash[key] = true;
-	}
-	
-	// cancel any outstanding requests for strings that are no longer in the input
-	var pendingContextHash = {};
-	var oldContexts = this._contexts[element.id];
-	if (oldContexts && oldContexts.length) {
-		for (var i = 0; i < oldContexts.length; i++) {
-			var context = oldContexts[i];
-			var key = context.key;
-			if (key && context.reqId && context.state == ZmAutocompleteListView.STATE_REQUEST && !resultsHash[key]) {
-				DBG.println("ac", "request for '" + context.str + "' no longer current, canceling req " + context.reqId);
-				appCtxt.getAppController().cancelRequest(context.reqId);
-				context.state = ZmAutocompleteListView.STATE_DONE;
-				if (context.str == this._waitingStr) {
-					this.setWaiting(false);
-				}
-			}
-			else if (context.state == ZmAutocompleteListView.STATE_REQUEST) {
-				pendingContextHash[context.key] = context;
-			}
-		}
-	}
-	
-	// process the parsed content
-	var newContexts = [];
-	for (var i = 0; i < results.length; i++) {
-		var result = results[i];
-		var str = result.str;
-		var key = this._getKey(result);
-		var pendingContext = pendingContextHash[key];
-		// see if we already have a pending request for this result; if so, leave it alone
-		if (pendingContext) {
-			DBG.println("ac", "PROCESS: propagate pending context for '" + str + "'");
-			newContexts.push(pendingContext);
-		}
-		else {
-			// add a new context
-			DBG.println("ac", "PROCESS: add new context for '" + str + "', isComplete: " + result.isComplete);
-			var context = {
-				element:	element,
-				str:		str,
-				isComplete:	result.isComplete,
-				key:		key,
-				isAddress:	result.isAddress,
-				state:		ZmAutocompleteListView.STATE_NEW
-			}
-			newContexts.push(context);
-			if (result.isAddress && this._options.addrBubbles) {
-				// handle a completed email address now
-				this._update(context);
-			}
-			else {
-				// go get autocomplete results from the data provider
-				this._autocomplete(context);
-			}
-		}
-	}
-	this._contexts[element.id] = newContexts;
-};
-
-// Returns a key that combines the string with whether it's subject to Quick Complete
-ZmAutocompleteListView.prototype._getKey =
-function(context) {
-	return context.str + (context.isComplete ? this._separator : "");
-};
-
-/**
- * Resets the visible state of the autocomplete list. The state-related properties are not
- * per-element because there can only be one visible autocomplete list.
+ * Resets the state of the autocomplete list.
  */
 ZmAutocompleteListView.prototype.reset =
-function(element) {
+function() {
 
-	DBG.println("ac", "RESET");
 	this._matches = null;
 	this._selected = null;
 
@@ -676,39 +518,34 @@ function(element) {
 		this._memberListView.show(false);
 	}
 	this.setWaiting(false);
-	
-	if (element) {
-		this._removeDoneRequests(element);
-	}
 };
 
 /**
- * Checks the given key to see if it's used to control the autocomplete list in some way.
- * If it does, the action is taken and the key won't be echoed into the input area.
- *
- * The following keys are action keys:
- *	38 40		up/down arrows (list selection)
- *	27			escape (hide list)
- *
- * The following keys are delimiters (trigger completion when list is up):
- *	3 13		return
- *	9			tab
- *	59 186		semicolon
- *	188			comma (depends on user pref)
- *
- * @param {int}		key			a numeric key code
- * @param {boolean}	isDelim		true if a single delimiter key was typed
- * @param {Element}	element		element key event happened in 
- * 
- * @private
- */
+* Checks the given key to see if it's used to control the autocomplete list in some way.
+* If it does, the action is taken and the key won't be echoed into the input area.
+*
+* The following keys are action keys:
+*	38 40		up/down arrows (list selection)
+*	27			escape (hide list)
+*
+* The following keys are delimiters (trigger completion):
+*	3 13		return
+*	9			tab
+*	59 186		semicolon
+*	188			comma
+*
+* @param key		a numeric key code
+* @param isDelim	true if a single delimiter key was typed
+* 
+* @private
+*/
 ZmAutocompleteListView.prototype.handleAction =
-function(key, isDelim, element) {
+function(key, isDelim) {
 
-	DBG.println("ac", "autocomplete handleAction for key " + key + " / " + isDelim);
+	DBG.println(AjxDebug.DBG2, "autocomplete handleAction for key " + key + " / " + isDelim);
 
 	if (isDelim) {
-		this._update();
+		this._update(true);
 	} else if (key == 38 || key == 40) {
 		// handle up and down arrow keys
 		if (this.size() <= 1) { return; }
@@ -718,64 +555,18 @@ function(key, isDelim, element) {
 			this._setSelected(ZmAutocompleteListView.PREV);
 		}
 	} else if (key == 27) {
-		if (this.getVisible()) {
-			this.reset(element); // ESC hides the list
-		}
-		else if (!this._cancelPendingRequests(element)) {
-			return false;
-		}
+		this.reset(); // ESC hides the list
 	}
-	return true;
-};
-
-// Cancels the XHR of any context in the REQUEST state.
-ZmAutocompleteListView.prototype._cancelPendingRequests =
-function(element) {
-
-	var foundOne = false;
-	var contexts = this._contexts[element.id];
-	if (contexts && contexts.length) {
-		for (var i = 0; i < contexts.length; i++) {
-			var context = contexts[i];
-			if (context.state == ZmAutocompleteListView.STATE_REQUEST) {
-				DBG.println("ac", "user-initiated cancel of request for '" + context.str + "', " + context.reqId);
-				appCtxt.getAppController().cancelRequest(context.reqId);
-				context.state = ZmAutocompleteListView.STATE_DONE;
-				foundOne = true;
-			}
-		}
-	}
-	this.setWaiting(false);
-	
-	return foundOne;
-};
-
-// Clean up contexts we are done with
-ZmAutocompleteListView.prototype._removeDoneRequests =
-function(element) {
-
-	var contexts = this._contexts[element.id];
-	var newContexts = [];
-	if (contexts && contexts.length) {
-		for (var i = 0; i < contexts.length; i++) {
-			var context = contexts[i];
-			if (context.state == ZmAutocompleteListView.STATE_DONE) {
-				newContexts.push(context);
-			}
-		}
-	}
-	this._contexts[element.id] = newContexts;
 };
 
 /**
  * Sets the waiting status.
  * 
  * @param	{Boolean}	on		if <code>true</code>, turn waiting "on"
- * @param	{string}	str		string that pending request is for
  * 
  */
 ZmAutocompleteListView.prototype.setWaiting =
-function(on, str) {
+function(on) {
 
 	if (!on && !this._waitingDiv) { return; }
 
@@ -796,11 +587,9 @@ function(on, str) {
 	}
 
 	if (on) {
-		this._popdown();
 		var loc = this._getDefaultLoc();
 		Dwt.setLocation(div, loc.x, loc.y);
 	}
-	this._waitingStr = on ? str : "";
 
 	Dwt.setZIndex(div, on ? Dwt.Z_DIALOG_MENU : Dwt.Z_HIDDEN);
 	Dwt.setVisible(div, on);
@@ -815,12 +604,17 @@ function(on, str) {
  */
 ZmAutocompleteListView.prototype._autocompleteAction =
 function(ev) {
-    if (appCtxt.isOfflineMode()){
-        return; // To be removed
-    }
+	DBG.println(AjxDebug.DBG2, "performing autocomplete");
+	var element = ev.element;
 	var aclv = ev.aclv;
-	aclv._acActionId[ev.element.id] = -1; // so we don't try to cancel
-	aclv.autocomplete(ev.element);
+	aclv._acActionId = -1; // so we don't try to cancel
+
+	aclv.reset();				// start fresh
+	aclv._element = element;	// for updating element later
+	
+	var info = {text: element.value, start: 0};
+	
+	aclv.autocomplete(info);
 };
 
 /**
@@ -832,55 +626,175 @@ function(ev) {
  */
 ZmAutocompleteListView.prototype.show =
 function(show, loc) {
-
+	DBG.println(AjxDebug.DBG3, "autocomplete show: " + show);
 	if (show) {
 		this.setWaiting(false);
 		this._popup(loc);
 	} else {
+		this._hasCompleted = false;
 		this._popdown();
 	}
 };
 
-// Makes an autocomplete request to the data provider.
-ZmAutocompleteListView.prototype._autocomplete =
-function(context) {
+// Private methods
 
-	var str = AjxStringUtil.trim(context.str);
-	if (!str || !(this._dataAPI && this._dataAPI.autocompleteMatch)) { return; }
-	DBG.println("ac", "autocomplete: " + context.str);
-	
-	this._currentContext = context;	// so we can figure out where to pop up the "waiting" indicator
-	var respCallback = this._handleResponseAutocomplete.bind(this, context);
-	context.state = ZmAutocompleteListView.STATE_REQUEST;
-	context.reqId = this._dataAPI.autocompleteMatch(str, respCallback, this, this._options, this._activeAccount);
-	DBG.println("ac", "Request ID for " + context.element.id + " / '" + context.str + "': " + context.reqId);
+/*
+ * Finds the next chunk of text in a string that we should try to autocomplete, by reading
+ * until it hits some sort of address delimiter (or runs out of text). If the chunk is a
+ * valid email address, it's skipped since there's no point in trying to autocomplete it.
+ * 
+ * @param text	[string]	text to scan
+ * @param start	[int]		index to start at
+ */
+ZmAutocompleteListView.prototype._nextChunk =
+function(text, start) {
+
+	while (text.charAt(start) == ' ') {	// ignore leading space
+		start++;
+	}
+	var insideQuotes = false;
+	for (var i = start; i < text.length; i++) {
+		var c = text.charAt(i);
+		if (c == '"') {
+			// skip text and delimiters that are quoted
+			c = text.charAt(++i);
+			while (i < text.length && c != '"') {
+				c = text.charAt(++i);
+			}
+		}
+		var isDelim = this._isDelim[c];
+		if (isDelim || (this._options.addrBubbles && c == ' ')) {
+			var chunk = text.substring(start, i);
+			if (this._dataAPI.isComplete && this._dataAPI.isComplete(chunk)) {
+				DBG.println(AjxDebug.DBG3, "skipping completed chunk: " + chunk);
+				if (this._runCallbacks(ZmAutocompleteListView.CB_ADDR_FOUND, this._element && this._element.id, [this, chunk, c])) {
+					return null;
+				}
+				if (isDelim) {
+					start = i + 1;
+				}
+				while (text.charAt(start) == ' ') {	// ignore leading space
+					start++;
+				}
+			} else if (isDelim) {
+				return {text: text, str: chunk, start: start, end: i, delim: isDelim};
+			}
+		}
+	}
+	var chunk = text.substring(start, i);
+
+	return {text: text, str: chunk, start: start, end: i, delim: false};
+};
+
+// Looks for matches for a string and either displays them in a list, or does the completion
+// immediately (if the string was followed by a delimiter). The chunk object that we get has
+// information that allows us to do the replacement if we are performing completion.
+ZmAutocompleteListView.prototype._autocomplete =
+function(chunk, callback) {
+	DBG.println(AjxDebug.DBG3, "ZmAutocompleteListView: _autocomplete");
+
+	if (!chunk || !(this._dataAPI && this._dataAPI.autocompleteMatch)) { return; }
+	var str = AjxStringUtil.trim(chunk.str);
+
+	// if string is empty or already a delimited address, no reason to look for matches
+	if (!(str && str.length) || (this._done[str])) {
+		if (callback) {
+			callback.run({text: chunk.text, start: chunk.end + 1});
+			return;
+		} else {
+			return {text: chunk.text, start: chunk.end + 1};
+		}
+	}
+
+	//start and end of the chunk we are autocompleting, i.e. the range we might replace.
+	this._start = chunk.start;
+	this._end = chunk.end;
+
+	var text = chunk.text;
+	var start = chunk.end; // move beyond the current chunk
+
+	this._removeAll();
+
+	var respCallback = new AjxCallback(this, this._handleResponseAutocomplete, [str, chunk, text, start, callback]);
+	this._dataAPI.autocompleteMatch(str, respCallback, this, this._options, this._activeAccount);
 };
 
 ZmAutocompleteListView.prototype._handleResponseAutocomplete =
-function(context, list) {
+function(str, chunk, text, start, callback, list) {
 
-	context.state = ZmAutocompleteListView.STATE_RESPONSE;
+	var retValue;
+	var change = false;
+	this._autocompleting = false;
 
-	if (list && list.length) {
-		DBG.println("ac", "matches found for '" + context.str + "': " + list.length);
-		context.list = list;
-		if (context.isComplete) {
-			// doing Quick Complete, go ahead and update with the first match
-			DBG.println("ac", "performing quick completion for: " + context.str);
-			this._update(context, list[0]);
+	if (!retValue) {
+		if (list && list.length) {
+			DBG.println(AjxDebug.DBG2, "matches found: " + list.length);
+			// done now in case of quick complete
+			this._set(list); // populate the list view
 		} else {
-			// pop up the list of matches
-			this._set(list, context);
-			this._currentContext = context;
-			this.show(true);
+			this._showNoResults();
 		}
-	} else if (!context.isComplete) {
-		this._popdown();
-		this._showNoResults();
+
+		// if text ends in a delimiter, complete immediately without showing the list
+		var match;
+		if (chunk && chunk.delim && (chunk.end == chunk.text.length - 1)) {
+			DBG.println(AjxDebug.DBG2, "performing quick completion");
+			var result = this._complete(text, str, true);
+			if (result) {
+				text = result.text;
+				start = result.start;
+				match = result.match;
+				change = true;
+			}
+		} else if (list && list.length) {
+			// show the list, unless this is not the first time we're displaying results for
+			// this autocomplete string (eg GAL), and the user selected a result from the
+			// first time we showed the list (bug 28886)
+			if (!this._hasCompleted) {
+				this.show(true);
+			}
+		}
+	
+		retValue = {text: text, start: start, match: match, change: change};
+	}
+	
+	if (callback) {
+		callback.run(retValue);
 	}
 };
 
-// Returns the field in the match that we show the user.
+/**
+ * Replaces the current chunk of text with the selected match (even if the list
+ * is not visible), or with replacement text returned by the data class. If the
+ * given text ends with a delimiter, "quick complete" is triggered, which does
+ * the replacement without showing the list.
+ * 
+ * @param text		[string]		current input text
+ * @param str		[string]*		current chunk
+ * @param hasDelim	[boolean]*		current chunk ends with a delimiter
+ * @param match		[object]*		forced match object
+ */
+ZmAutocompleteListView.prototype._complete =
+function(text, str, hasDelim, match) {
+
+	DBG.println(AjxDebug.DBG3, "ZmAutocompleteListView: _complete: selected is " + this._selected);
+	match = match || this._matchHash[this._selected];
+	if (!match)	{ return; }
+
+	var start = this._start;
+	var end = hasDelim ? this._end + 1 : this._end;
+	DBG.println(AjxDebug.DBG2, "update replace range: " + start + " - " + end);
+	var value = this._getCompletionValue(match);
+	var newText = this._options.addrBubbles ? value :
+				  [text.substring(0, start), value, this._separator, text.substring(end, text.length)].join("");
+	this._start = this._end = newText.length; //update in case this is called multiple times from ZmDLAutocompleteListView for selecitng all items from a DL
+	if (value) {
+		this._done[value] = true;
+	}
+	DBG.display(AjxDebug.DBG2, newText);
+	return {text: newText, start: start + value.length + this._separator.length, match: match};
+};
+
 ZmAutocompleteListView.prototype._getCompletionValue =
 function(match) {
 	var value = "";
@@ -897,105 +811,47 @@ function(match) {
 	return value;
 };
 
-// Updates the content of the input with the given match. If bubbles are enabled, adds a bubble, otherwise just
-// adds the text version of the address.
-ZmAutocompleteListView.prototype._update =
-function(context, match) {
+// Resets the value of an element to the given text.
+ZmAutocompleteListView.prototype._updateField =
+function(text, match, ev) {
 
-	context = context || this._currentContext;
-	if (!context) { return; }
-	match = match || this._matchHash[this._selected];
-	
-	if (match && match.needDerefGroup) {
-		var contact = new ZmContact(match.groupId, {});
-		var continuationCb = new AjxCallback(this, this._updateContinuation, [context, match]);
-		var derefCallback = new AjxCallback(match, match.setContactGroupMembers, [match.groupId, continuationCb]);
-		contact.load(derefCallback, null, null, true);
-	}
-	else {
-		this._updateContinuation(context, match);
-	}
-};
-
-// continuation of _update
-ZmAutocompleteListView.prototype._updateContinuation = 
-function(context, match) {
-	var newText = "";
-	var address = context.address = context.address || (context.isAddress && context.str) || (match && this._getCompletionValue(match));
-	DBG.println("ac", "UPDATE: result for '" + context.str + "' is " + AjxStringUtil.htmlEncode(address));
-
-	// add bubble now if appropriate
+	var el = this._element;
 	if (this._options.addrBubbles) {
-		this._addBubble(context, match, context.isComplete);
-	}
-	else {
-		newText = address + this._separator;
-	}
-
-	// figure out what the content of the input should now be
-	var el = context.element;
-	if (el) {
-		// context.add means don't change the content (used by DL selection)
-		if (!context.add) {
-			// Parse the input again so we know what to replace. There is a race condition here, since the user
-			// may have altered the content during the request. In that case, the altered content will not match
-			// and get replaced, which is fine. Reparsing the input seems like a better option than trying to use
-			// regexes.
-			var results = this._parseInput(el);
-			var newValue = "";
-			for (var i = 0; i < results.length; i++) {
-				var result = results[i];
-				var key = this._getKey(result);
-				if (context.key == key) {
-					newValue += newText;
-				}
-				else {
-					newValue += key;
-				}
+		var addrInput = el && el._aifId && DwtControl.ALL_BY_ID[el._aifId];
+		if (addrInput) {
+			if (match && match.multipleAddresses) {
+				addrInput.setValue(text);
 			}
-			el.value = newValue;
-		}
-		
-		if (!context.isComplete) {
-			// match was selected from visible list, refocus the input and clear the list
-			el.focus();
-			this.reset(el);
+			else {
+				addrInput.addBubble({address:text, match:match});
+			}
+			el = addrInput._input;
+			if (AjxEnv.isIE) // Input field loses focus along the way. Restore it when the stack is finished
+				AjxTimedAction.scheduleAction(new AjxTimedAction(addrInput, addrInput.focus), 0);
 		}
 	}
-	context.state = ZmAutocompleteListView.STATE_DONE;
+	else if (el) {
+		el.value = text;
+		el.focus();
+		Dwt.setSelectionRange(el, text.length, text.length);
+	}
 
-	this._runCallbacks(ZmAutocompleteListView.CB_COMPLETION, el && el.id, [address, el, match]);
+	this.reset();
+	this._hasCompleted = true;
+	this._runCallbacks(ZmAutocompleteListView.CB_COMPLETION, el && el.id, [text, el, match, ev]);
 };
 
-// Adds a bubble. If we are adding it via Quick Complete, we don't want the input field to set
-// focus since the user may have tabbed into another input field.
-ZmAutocompleteListView.prototype._addBubble =
-function(context, match, noFocus) {
-
-	var el = context.element;
-	var addrInput = el && el._aifId && DwtControl.ALL_BY_ID[el._aifId];
-	if (addrInput) {
-		if (match && match.multipleAddresses) {
-			// mass complete (add all) from a DL
-			addrInput.addValue(context.address);
-		}
-		else {
-			var addedClass = this._dataAPI && this._dataAPI.getAddedBubbleClass && this._dataAPI.getAddedBubbleClass(context.str);
-			var bubbleParams = {
-				address:	context.address,
-				match:		match,
-				noFocus:	noFocus,
-				addClass:	addedClass,
-				noParse:	this._options.noBubbleParse
-			}
-			addrInput.addBubble(bubbleParams);
-		}
-		el = addrInput._input;
-		// Input field loses focus along the way. Restore it when the stack is finished
-		if (AjxEnv.isIE) {
-			AjxTimedAction.scheduleAction(new AjxTimedAction(addrInput, addrInput.focus), 0);
+// Updates the element with the currently selected match.
+ZmAutocompleteListView.prototype._update =
+function(hasDelim, match, ev) {
+	if (!this._autocompleting) { // Trying to update while autocomplete is busy usually results in undesired results
+		var value = this._element ? this._element.value : "";
+		var result = this._complete(value, null, hasDelim, match);
+		if (result) {
+			this._updateField(result.text, result.match, ev);
 		}
 	}
+	this._popdown();
 };
 
 // Listeners
@@ -1038,7 +894,7 @@ function(listener) {
 
 ZmAutocompleteListView.prototype._listSelectionListener = 
 function(ev) {
-	this._update();
+	this._update(true, null, ev);
 };
 
 // Layout
@@ -1063,9 +919,8 @@ function() {
 // Creates the list and its member elements based on the matches we have. Each match becomes a
 // row. The first match is automatically selected.
 ZmAutocompleteListView.prototype._set =
-function(list, context) {
+function(list) {
 
-	this._removeAll();
 	var table = this._getTable();
 	this._matches = list;
 	var forgetEnabled = (this._options.supportForget !== false);
@@ -1100,11 +955,11 @@ function(list, context) {
 	}
 	if (forgetEnabled) {
 		this._forgetText = {};
-		this._addLinks(this._forgetText, "Forget", ZmMsg.forget, ZmMsg.forgetTooltip, this._handleForgetLink, context);
+		this._addLinks(this._forgetText, "Forget", ZmMsg.forget, ZmMsg.forgetTooltip, this._handleForgetLink);
 	}
 	if (expandEnabled) {
 		this._expandText = {};
-		this._addLinks(this._expandText, "Expand", ZmMsg.expand, ZmMsg.expandTooltip, this.expandDL, context);
+		this._addLinks(this._expandText, "Expand", ZmMsg.expand, ZmMsg.expandTooltip, this.expandDL);
 	}
 
 	AjxTimedAction.scheduleAction(new AjxTimedAction(this,
@@ -1133,7 +988,7 @@ function(type, num) {
 
 // Add a DwtText to the link so it can have a tooltip.
 ZmAutocompleteListView.prototype._addLinks =
-function(textHash, idLabel, label, tooltip, handler, context) {
+function(textHash, idLabel, label, tooltip, handler) {
 
 	var len = this._matches.length;
 	for (var i = 0; i < len; i++) {
@@ -1148,7 +1003,7 @@ function(textHash, idLabel, label, tooltip, handler, context) {
 			text.isLinkText = true;
 			text.setText(label);
 			text.setToolTipContent(tooltip);
-			var listener = handler.bind(this, {email:match.email, textId:textId, rowId:rowId, element:context.element});
+			var listener = new AjxListener(this, handler, [match.email, textId, rowId]);
 			text.addListener(DwtEvent.ONMOUSEDOWN, listener);
 			text.reparentHtmlElement(link);
 		}
@@ -1199,7 +1054,7 @@ function(loc) {
 
 	var newX = (x + curSize.x >= windowSize.x) ? windowSize.x - curSize.x : x;
 
-	DBG.println("ac", this.toString() + " popup at: " + newX + "," + y);
+	DBG.println(AjxDebug.DBG1, this.toString() + " popup at: " + newX + "," + y);
     this.setLocation(newX, y);
 	this.setVisible(true);
 	this.setZIndex(Dwt.Z_DIALOG_MENU);
@@ -1208,8 +1063,7 @@ function(loc) {
 	var omemParams = {
 		id:					"ZmAutocompleteListView",
 		obj:				this,
-		outsideListener:	this._outsideListener,
-		noWindowBlur:		appCtxt.get(ZmSetting.IS_DEV_SERVER)
+		outsideListener:	this._outsideListener
 	}
 	omem.startListening(omemParams);
 };
@@ -1218,15 +1072,8 @@ function(loc) {
 ZmAutocompleteListView.prototype._getDefaultLoc = 
 function() {
 
-	if (this._locationCallback) {
-		return this._locationCallback();
-	}
-	
-	var el = this._currentContext && this._currentContext.element;
-	if (!el) { return {}; }
-	
-	var elLoc = Dwt.getLocation(el);
-	var elSize = Dwt.getSize(el);
+	var elLoc = Dwt.getLocation(this._element);
+	var elSize = Dwt.getSize(this._element);
 	var x = elLoc.x;
 	var y = elLoc.y + elSize.y;
 	if (this._options.addrBubbles) {
@@ -1250,7 +1097,6 @@ function() {
 	this.setZIndex(Dwt.Z_HIDDEN);
 	this.setVisible(false);
 	this._removeAll();
-	this._selected = null;
 
 	var omem = appCtxt.getOutsideMouseEventMgr();
 	omem.stopListening({id:"ZmAutocompleteListView", obj:this});
@@ -1275,30 +1121,18 @@ function(id) {
 
 	if (id == this._selected) { return; }
 
-	DBG.println("ac", "setting selected id to " + id);
+	DBG.println(AjxDebug.DBG3, "setting selected id to " + id);
 	var table = document.getElementById(this._tableId);
 	var rows = table && table.rows;
 	if (!(rows && rows.length)) { return; }
 
 	var len = rows.length;
 
-	// handle selection of next/prev via arrow keys
 	if (id == ZmAutocompleteListView.NEXT || id == ZmAutocompleteListView.PREV) {
 		id = this._getRowId(rows, id, len);
 		if (!id) { return; }
 	}
 
-	// make sure the ID matches one of our rows
-	var found = false;
-	for (var i = 0; i < len; i++) {
-		if (rows[i].id == id) {
-			found = true;
-			break;
-		}
-	}
-	if (!found) { return; }
-	
-	// select one row, deselect the rest
 	for (var i = 0; i < len; i++) {
 		var row = rows[i];
 		var curStyle = row.className;
@@ -1309,7 +1143,6 @@ function(id) {
 		}
 	}
 
-	// links only shown for selected row
 	this._showLink(this._forgetLink, this._forgetText, this._selected, false);
 	this._showLink(this._forgetLink, this._forgetText, id, true);
 
@@ -1321,7 +1154,6 @@ function(id) {
 
 ZmAutocompleteListView.prototype._getRowId =
 function(rows, id, len) {
-
 	if (len <= 1) { return; }
 
 	var idx = -1;
@@ -1332,15 +1164,9 @@ function(rows, id, len) {
 		}
 	}
 	var newIdx = (id == ZmAutocompleteListView.PREV) ? idx - 1 : idx + 1;
-	if (newIdx == -1) {
-		newIdx = len - 1;
-	}
-	if (newIdx == len) {
-		newIdx = 0;
-	}
-	
-	if (newIdx >= 0 && newIdx < len) {
-		Dwt.scrollIntoView(rows[newIdx], this.getHtmlElement());
+
+	if (!(newIdx < 0 || newIdx >= len)) {
+		DwtControl._scrollIntoView(rows[newIdx], this.getHtmlElement());
 		return rows[newIdx].id;
 	}
 	return null;
@@ -1418,9 +1244,9 @@ function(ev) {
 };
 
 ZmAutocompleteListView.prototype._handleForgetLink =
-function(params) {
+function(email, textId, rowId) {
 	if (this._dataAPI.forget) {
-		this._dataAPI.forget(params.email, this._handleResponseForget.bind(this, params.email, params.rowId));
+		this._dataAPI.forget(email, new AjxCallback(this, this._handleResponseForget, [email, rowId]));
 	}
 };
 
@@ -1438,25 +1264,24 @@ function(email, rowId) {
 /**
  * Displays a second popup list with the members of the given distribution list.
  *
- * @param {hash}			params				hash of params:
- * @param {string}			params.email		address of a distribution list
- * @param {string}			params.textId		ID of link text
- * @param {string}			params.rowId		ID or list view row
- * @param {DwtMouseEvent}	params.ev			mouse event
- * @param {DwtPoint}		params.loc			location to popup at; default is right of parent ACLV
- * @param {Element}			params.element		input element
+ * @param {string}			email		address of a distribution list
+ * @param {string}			textId		ID of link text
+ * @param {string}			rowId		ID or list view row
+ * @param {DwtMouseEvent}	ev			mouse event
+ * @param {DwtPoint}		loc			location to popup at; default is right of parent ACLV
+ * @param {Element}			element		input element
  */
 ZmAutocompleteListView.prototype.expandDL =
-function(params) {
+function(email, textId, rowId, ev, loc, element) {
 
 	if (!this._dataAPI.expandDL) { return; }
 
 	var mlv = this._memberListView;
-	if (mlv && mlv.getVisible() && params.textId && this._curExpanded == params.textId) {
+	if (mlv && mlv.getVisible() && textId && this._curExpanded == textId) {
 		// User has clicked "Collapse" link
 		mlv.show(false);
 		this._curExpanded = null;
-		this._setExpandText(params.textId, false);
+		this._setExpandText(textId, false);
 	} else {
 		// User has clicked "Expand" link
 		if (mlv && mlv.getVisible()) {
@@ -1465,36 +1290,38 @@ function(params) {
 			mlv.show(false);
 		}
 		var contactsApp = appCtxt.getApp(ZmApp.CONTACTS);
-		var contact = contactsApp.getContactByEmail(params.email);
+		var contact = contactsApp.getContactByEmail(email);
 		if (!contact) {
 			contact = new ZmContact(null);
-			contact.initFromEmail(params.email);	// don't cache, since it's not a real contact (no ID)
+			contact.initFromEmail(email);	// don't cache, since it's not a real contact (no ID)
 		}
 		contact.isDL = true;
-		if (params.textId && params.rowId) {
-			this._curExpanded = params.textId;
-			this._setExpandText(params.textId, true);
+		if (textId && rowId) {
+			this._curExpanded = textId;
+			this._setExpandText(textId, true);
 		}
-		this._dataAPI.expandDL(contact, 0, this._handleResponseExpandDL.bind(this, contact, params));
+		this._dataAPI.expandDL(contact, 0, new AjxCallback(this, this._handleResponseExpandDL, [contact, loc, textId]));
 	}
-	if (params.element) {
-		params.element.focus();
+	this._element = element || this._element;
+	if (this._element) {
+		this._element.focus();
 	}
 };
 
 ZmAutocompleteListView.prototype._handleResponseExpandDL =
-function(contact, params, matches) {
+function(contact, loc, textId, matches) {
 
 	var mlv = this._memberListView;
 	if (!mlv) {
-		mlv = this._memberListView = new ZmDLAutocompleteListView({parent:appCtxt.getShell(), parentAclv:this, selectionCallback: this._selectionCallback});
+		mlv = this._memberListView = new ZmDLAutocompleteListView({parent:appCtxt.getShell(), parentAclv:this});
 	}
+	mlv._element = this._element;
 	mlv._dlContact = contact;
-	mlv._dlBubbleId = params.textId;
+	mlv._dlBubbleId = textId;
+	mlv._removeAll();
 	mlv._set(matches, contact);
 
 	// default position is just to right of parent ac list
-	var loc = params.loc;
 	if (this.getVisible()) {
 		loc = this.getLocation();
 		loc.x += this.getSize().x;
@@ -1531,9 +1358,9 @@ function(type, params) {
  * Adds a callback of the given type. In an input ID is provided, then the callback
  * will only be run if the event happened in that input.
  *
- * @param {constant}				type		autocomplete callback type (ZmAutocompleteListView.CB_*)
- * @param {AjxCallback|function}	callback	callback to add
- * @param {string}					inputId		DOM ID of an input element (optional)
+ * @param {constant}	type		autocomplete callback type (ZmAutocompleteListView.CB_*)
+ * @param {AjxCallback}	callback	callback to add
+ * @param {string}		inputId		DOM ID of an input element (optional)
  */
 ZmAutocompleteListView.prototype.addCallback =
 function(type, callback, inputId) {
@@ -1549,14 +1376,7 @@ function(type, inputId, args) {
 		for (var i = 0; i < list.length; i++) {
 			var cbObj = list[i];
 			if (inputId && cbObj.inputId && (inputId != cbObj.inputId)) { continue; }
-			var callback = cbObj.callback;
-			var r;
-			if (typeof(callback) == "function") {
-				r = callback.apply(callback, args);
-			}
-			else if (callback && callback.isAjxCallback) {
-				r = AjxCallback.prototype.run.apply(cbObj.callback, args);
-			}
+			var r = AjxCallback.prototype.run.apply(cbObj.callback, args);
 			if (r === true || r === false) {
 				result = (result == null) ? r : result && r;
 			}

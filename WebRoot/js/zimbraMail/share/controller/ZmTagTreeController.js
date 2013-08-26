@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
@@ -30,18 +30,26 @@ ZmTagTreeController = function() {
 
 	ZmTreeController.call(this, ZmOrganizer.TAG);
 
-	this._listeners[ZmOperation.NEW_TAG]		= this._newListener.bind(this);
-	this._listeners[ZmOperation.RENAME_TAG]		= this._renameListener.bind(this);
-	this._listeners[ZmOperation.TAG_COLOR_MENU]	= this._colorListener.bind(this);
+	this._listeners[ZmOperation.NEW_TAG] = new AjxListener(this, this._newListener);
+	this._listeners[ZmOperation.RENAME_TAG] = new AjxListener(this, this._renameListener);
+	this._listeners[ZmOperation.TAG_COLOR_MENU] = new AjxListener(this, this._colorListener);
+	this._listeners[ZmOperation.BROWSE] = new AjxListener(this, this._browseListener);
 };
 
 ZmTagTreeController.prototype = new ZmTreeController;
 ZmTagTreeController.prototype.constructor = ZmTagTreeController;
 
-ZmTagTreeController.prototype.isZmTagTreeController = true;
-ZmTagTreeController.prototype.toString = function() { return "ZmTagTreeController"; };
-
 // Public methods
+
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
+ZmTagTreeController.prototype.toString = 
+function() {
+	return "ZmTagTreeController";
+};
 
 /**
  * Adds listeners for the color change menu items.
@@ -75,7 +83,7 @@ function(parent, type, id) {
 	parent.enableAll(true);
 	if (tag.isSystem()) {
 		parent.enable([ZmOperation.RENAME_TAG, 
-					   ZmOperation.TAG_COLOR_MENU, ZmOperation.DELETE_WITHOUT_SHORTCUT], false);
+					   ZmOperation.TAG_COLOR_MENU, ZmOperation.DELETE], false);
 	}
 	parent.enable(ZmOperation.MARK_ALL_READ, (tag && (tag.numUnread > 0)));
 //	this._resetOperation(parent, ZmOperation.EXPORT_FOLDER, ZmMsg.exportTag);
@@ -90,7 +98,7 @@ function(parent, type, id) {
  */
 ZmTagTreeController.prototype._getHeaderActionMenuOps =
 function() {
-	return [ZmOperation.NEW_TAG];
+	return [ZmOperation.NEW_TAG, ZmOperation.BROWSE];
 };
 
 /**
@@ -104,7 +112,7 @@ function() {
 		ZmOperation.NEW_TAG,
 		ZmOperation.MARK_ALL_READ,
 		ZmOperation.RENAME_TAG,
-		ZmOperation.DELETE_WITHOUT_SHORTCUT,
+		ZmOperation.DELETE,
 		ZmOperation.TAG_COLOR_MENU
 	];
 };
@@ -144,6 +152,7 @@ function(tag) {
 	var searchFor;
 	switch (appCtxt.getCurrentAppName()) {
 		case ZmApp.CONTACTS:    searchFor = ZmItem.CONTACT; break;
+		case ZmApp.NOTEBOOK:    searchFor = ZmItem.PAGE; break;
 		case ZmApp.CALENDAR:    searchFor = ZmItem.APPT; break;
 		case ZmApp.BRIEFCASE:   searchFor = ZmItem.BRIEFCASE_ITEM; break;
 		case ZmApp.TASKS:       searchFor = ZmItem.TASK; break;
@@ -153,8 +162,6 @@ function(tag) {
 	var params = {
 		query: tag.createQuery(),
 		searchFor: searchFor,
-		noGal: true,
-		inclSharedItems: true,
 		getHtml: appCtxt.get(ZmSetting.VIEW_AS_HTML),
 		accountName: (appCtxt.multiAccounts ? tag.getAccount().name : null)
 	};
@@ -177,7 +184,7 @@ function(tag) {
 ZmTagTreeController.prototype._deleteListener = 
 function(ev) {
 	var organizer = this._pendingActionData = this._getActionedOrganizer(ev);
-	var ds = this._deleteShield = appCtxt.getYesNoMsgDialog();
+	var ds = this._deleteShield = appCtxt.getYesNoCancelMsgDialog();
 	ds.reset();
 	ds.registerCallback(DwtDialog.NO_BUTTON, this._clearDialog, this, this._deleteShield);
 	ds.registerCallback(DwtDialog.YES_BUTTON, this._deleteShieldYesCallback, this, organizer);
@@ -208,6 +215,18 @@ function(ev) {
 };
 
 /**
+ * @private
+ */
+ZmTagTreeController.prototype._browseListener =
+function(ev){
+	var folder = this._getActionedOrganizer(ev);
+	if (folder) {
+		AjxDispatcher.require("Browse");
+		appCtxt.getSearchController().showBrowsePickers([ZmPicker.TAG]);
+	}
+};
+
+/**
  * Handles the potential drop of something onto a tag. Only items may be dropped.
  * The source data is not the items themselves, but an object with the items (data)
  * and their controller, so they can be moved appropriately. Dropping an item onto
@@ -225,7 +244,9 @@ function(ev) {
 		var tag = ev.targetControl.getData(Dwt.KEY_OBJECT);
 		if (tag.id == ZmOrganizer.ID_ROOT) {
 			ev.doIt = false;
-		} else if (sample instanceof ZmItem && sample.isReadOnly()) {
+		} else if (sample instanceof ZmContact && (sample.isGal || sample.isShared())) {
+			ev.doIt = false;
+		} else if (sample && (sample instanceof ZmItem) && sample.isShared()) {
 			ev.doIt = false;
 		} else if (appCtxt.multiAccounts && tag.getAccount() != sample.account) {
 			ev.doIt = false;

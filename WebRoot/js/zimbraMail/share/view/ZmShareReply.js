@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
@@ -52,19 +52,20 @@ ZmShareReply.STANDARD	= 1;
  * Defines the "quick" reply type.
  */
 ZmShareReply.QUICK		= 2;
+/**
+ * Defines the "compose" reply type.
+ */
+ZmShareReply.COMPOSE	= 3;
 
 ZmShareReply.DEFAULT_OPTIONS = [
-	ZmShareReply.NONE, ZmShareReply.STANDARD, ZmShareReply.QUICK
-];
-
-ZmShareReply.EXTERNAL_USER_OPTIONS = [
-	ZmShareReply.STANDARD, ZmShareReply.QUICK
+	ZmShareReply.NONE, ZmShareReply.STANDARD, ZmShareReply.QUICK, ZmShareReply.COMPOSE
 ];
 
 ZmShareReply._LABELS = {};
 ZmShareReply._LABELS[ZmShareReply.NONE]		= ZmMsg.sendNoMailAboutShare;
 ZmShareReply._LABELS[ZmShareReply.STANDARD] = ZmMsg.sendStandardMailAboutShare;
 ZmShareReply._LABELS[ZmShareReply.QUICK]	= ZmMsg.sendStandardMailAboutSharePlusNote;
+ZmShareReply._LABELS[ZmShareReply.COMPOSE]	= ZmMsg.sendComposedMailAboutShare;
 
 // Public methods
 
@@ -155,7 +156,7 @@ function(options) {
 	
 	var doc = document;
 	this._replyTypeEl = doc.createElement("DIV");
-	this._replyTypeEl.style.paddingBottom = "0.5em";
+	this._replyTypeEl.style.paddingBottom = "0.125em";
 	this._replyTypeEl.appendChild(this._replyType.getHtmlElement());
 	
 	this._replyStandardMailNoteEl = doc.createElement("DIV");

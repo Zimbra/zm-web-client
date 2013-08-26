@@ -32,18 +32,26 @@ ZmSearchTreeController = function() {
 
 	ZmFolderTreeController.call(this, ZmOrganizer.SEARCH);
 
-	this._listeners[ZmOperation.RENAME_SEARCH] = this._renameListener.bind(this);
+	this._listeners[ZmOperation.RENAME_SEARCH] = new AjxListener(this, this._renameListener);
+    this._listeners[ZmOperation.BROWSE] = new AjxListener(this, this._browseListener);
 };
 
 ZmSearchTreeController.prototype = new ZmFolderTreeController;
 ZmSearchTreeController.prototype.constructor = ZmSearchTreeController;
 
-ZmSearchTreeController.prototype.isZmSearchTreeController = true;
-ZmSearchTreeController.prototype.toString = function() { return "ZmSearchTreeController"; };
-
 ZmSearchTreeController.APP_JOIN_CHAR = "-";
 
 // Public methods
+
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
+ZmSearchTreeController.prototype.toString = 
+function() {
+	return "ZmSearchTreeController";
+};
 
 /**
  * Shows the tree of this type.
@@ -62,6 +70,7 @@ function(params) {
 	if (!this._treeView[id] || params.forceCreate) {
 		this._treeView[id] = this._setup(id);
 	}
+	// mixed app should be filtered based on the previous app!
     var dataTree = this.getDataTree(params.account);
     if (dataTree) {
 		params.dataTree = dataTree;
@@ -69,11 +78,9 @@ function(params) {
 		params.omit = params.omit || {};
 		params.omit[ZmFolder.ID_TRASH] = true;
 		params.omitParents = true;
-		var setting = ZmOrganizer.OPEN_SETTING[this.type];
-		params.collapsed = !(!setting || (appCtxt.get(setting, null, params.account) !== false));
-		var overview = this._opc.getOverview(id);
-		if (overview && overview.showNewButtons)
-			this._setupOptButton(params);
+        var setting = ZmOrganizer.OPEN_SETTING[this.type];
+        params.collapsed = !(!setting || (appCtxt.get(setting, null, params.account) !== false));
+		this._setupNewOp(params);
 		this._treeView[id].set(params);
 		this._checkTreeView(id);
 	}
@@ -105,6 +112,26 @@ function(parent, type, id) {
 	parent.enable(ZmOperation.EXPAND_ALL, (search.size() > 0));
 };
 
+/**
+ * @private
+ */
+ZmSearchTreeController.prototype._newListener =
+function(ev){
+	AjxDispatcher.require("Browse");
+	appCtxt.getSearchController().showBrowseView();
+};
+
+/**
+ * @private
+ */
+ZmSearchTreeController.prototype._browseListener =
+function(ev){
+    var search = this._getActionedOrganizer(ev);
+    if (search) {
+        AjxDispatcher.require("Browse");
+        appCtxt.getSearchController().showBrowsePickers([ZmPicker.SEARCH]);
+    }
+};
 
 
 // Private methods
@@ -116,7 +143,8 @@ function(parent, type, id) {
  */
 ZmSearchTreeController.prototype._getHeaderActionMenuOps =
 function() {
-	return [ZmOperation.EXPAND_ALL];
+	return [ZmOperation.EXPAND_ALL,
+            ZmOperation.BROWSE];
 };
 
 /**
@@ -126,9 +154,8 @@ function() {
  */
 ZmSearchTreeController.prototype._getActionMenuOps =
 function() {
-	return [ZmOperation.DELETE_WITHOUT_SHORTCUT,
+	return [ZmOperation.DELETE,
 			ZmOperation.RENAME_SEARCH,
-			ZmOperation.EDIT_PROPS,
 			ZmOperation.MOVE,
 			ZmOperation.EXPAND_ALL];
 };

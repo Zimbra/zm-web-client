@@ -26,8 +26,7 @@
             <c:set var="tz" value="${mailbox.prefs.timeZone}" scope="request"/>
         </c:otherwise>
     </c:choose>
-    <c:remove var="skin" scope="session"/>
-    <app:skin mailbox="${mailbox}"/>
+    
     <fmt:setBundle basename="/messages/ZhMsg" scope="request"/>
 
     <fmt:message var="title" key="zimbra"/>
@@ -48,7 +47,7 @@
         }
         .ZhCallListPrintView td, .zPrintMsgs *{
             font-family:Tahoma,Arial,Helvetica,sans-serif;
-            font-size:${mailbox.prefs.defaultPrintFontSize};
+            font-size:${mailbox.prefs.defaultPrintFontSize} !important;
         }
         .companyName{
              color: #555555 !important;
@@ -114,7 +113,7 @@
                                         <tr>
                                             <td class="companyName" width="100%">
                                                 <c:set var="folderImage" value="${zm:getFolder(pageContext, message.folderId).image}"/>
-                                                <c:set var="folderName" value="${zm:getFolderName(pageContext, message.folderId)}"/>
+                                                <c:set var="folderName" value="${fn:escapeXml(zm:getFolderName(pageContext, message.folderId))}"/>
                                                 <app:img alt='${folderName}' src="${folderImage}"/>
                                             </td>
                                             <td class="companyFolder">${folderName}</td>
@@ -156,7 +155,8 @@
                         <td class="MsgHdrName"><fmt:message key="startDate"/>:</td>
                         <td class="MsgHdrValue">
                                 <fmt:formatDate var="sDate" pattern="${tdtPattern}" value="${taskObj.start.date}"/>
-                                ${fn:escapeXml(sDate)}
+                                ${fn:escapeXml(sDate)}<span class="smalltext" >&nbsp;&nbsp;&nbsp;<fmt:message key="CAL_APPT_EDIT_DATE_FORMAT_HINT"/> </span>
+
                         </td>
 
                     </tr>
@@ -166,7 +166,7 @@
                         <td class="MsgHdrName"><fmt:message key="taskDueDate"/>:</td>
                         <td class="MsgHdrValue">
                                 <fmt:formatDate var="eDate" pattern="${tdtPattern}" value="${taskObj.end.date}"/>
-                                ${fn:escapeXml(eDate)}
+                                ${fn:escapeXml(eDate)}<span class="smalltext" >&nbsp;&nbsp;&nbsp;<fmt:message key="CAL_APPT_EDIT_DATE_FORMAT_HINT"/></span>
                         </td>
                     </tr>
                     </c:if>
@@ -250,7 +250,7 @@
                                                      <app:img alt='${folderName}' src="${folderImage}"/>
                                                 </c:if>
                                             </td>
-                                            <td class="companyFolder">${not empty folder ? zm:getFolderName(pageContext,folder.id) : ''}</td>
+                                            <td class="companyFolder">${not empty folder ? zm:cook(folder.name) : ''}</td>
                                         </tr>
                                     </table>
                                 </td>
@@ -289,7 +289,8 @@
                         <td class="MsgHdrName"><fmt:message key="startDate"/>:</td>
                         <td class="MsgHdrValue">
                                 <fmt:formatDate var="sDate" pattern="${tdtPattern}" value="${taskObj.start.date}"/>
-                                ${fn:escapeXml(sDate)}
+                                ${fn:escapeXml(sDate)}<span class="smalltext" >&nbsp;&nbsp;&nbsp;<fmt:message key="CAL_APPT_EDIT_DATE_FORMAT_HINT"/> </span>
+
                         </td>
 
                     </tr>
@@ -299,7 +300,7 @@
                         <td class="MsgHdrName"><fmt:message key="taskDueDate"/>:</td>
                         <td class="MsgHdrValue">
                                 <fmt:formatDate var="eDate" pattern="${tdtPattern}" value="${taskObj.end.date}"/>
-                                ${fn:escapeXml(eDate)}
+                                ${fn:escapeXml(eDate)}<span class="smalltext" >&nbsp;&nbsp;&nbsp;<fmt:message key="CAL_APPT_EDIT_DATE_FORMAT_HINT"/></span>
                         </td>
                     </tr>
                     </c:if>

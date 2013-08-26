@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2007, 2008, 2009, 2010, 2011, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
@@ -23,9 +23,6 @@ ZmImNewChatDlg = function() {
 ZmImNewChatDlg.prototype = new DwtDialog;
 ZmImNewChatDlg.prototype.constructor = ZmImNewChatDlg;
 
-ZmImNewChatDlg.prototype.isZmImNewChatDlg = true;
-ZmImNewChatDlg.prototype.toString = function() { return "ZmImNewChatDlg"; };
-
 ZmImNewChatDlg.prototype._init = function() {
 	var field = new DwtInputField({ parent : this,
 					size   : 25,
@@ -41,6 +38,7 @@ ZmImNewChatDlg.prototype._init = function() {
 	this.setButtonListener(DwtDialog.CANCEL_BUTTON, new AjxListener(this, this._cancelButtonListener));
 
 	var list = new ZmImOverview(this, { posStyle	: Dwt.STATIC_STYLE,
+		noAssistant : true,
 		expanded	: true
 	});
 	list.reparentHtmlElement(id + "_buddyListCont");
@@ -72,12 +70,11 @@ ZmImNewChatDlg.prototype.reset = function() {
 ZmImNewChatDlg.prototype._initAutocomplete =
 function() {
 	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED) || appCtxt.get(ZmSetting.GAL_ENABLED)) {
-		var acCallback = this._autocompleteCallback.bind(this);
+		var acCallback = new AjxCallback(this, this._autocompleteCallback);
 		var params = {
-			dataClass:		appCtxt.getAutocompleter(),
-			matchValue:		ZmAutocomplete.AC_VALUE_FULL,
-			compCallback:	acCallback,
-			contextId:		this.toString()
+			dataClass: appCtxt.getAutocompleter(),
+			matchValue: ZmAutocomplete.AC_VALUE_FULL,
+			compCallback : acCallback
 		};
 		this._acContactsList = new ZmAutocompleteListView(params);
 		this._acContactsList.handle(this._contactField.getInputElement());

@@ -36,10 +36,8 @@ function(html, idx, obj, context) {
 ZmImageAttachmentObjectHandler.prototype.getToolTipText =
 function(url, context) {
 	var image = this._imageHash[context.url];
-	if (!image) {
+	if (!image || !image.el || (image.el.src != context.url)) {
 		image = {id:Dwt.getNextId()};
-	}
-	if (!image.el || (image.el.src !== context.url)) {
 		this._imageHash[context.url] = image;
 		this._preload(context.url, image.id);	
 	}
@@ -64,7 +62,7 @@ function(url, id) {
 	var tmpImage = new Image();
 	tmpImage.onload = AjxCallback.simpleClosure(this._setSize, this, id, tmpImage);
 	tmpImage.src = url;
-};
+}
 
 ZmImageAttachmentObjectHandler.prototype._setSize =
 function(id, tmpImage) {
@@ -85,4 +83,4 @@ function(id, tmpImage) {
 	}
 	tmpImage.onload = null;
 	tmpImage = null;
-};
+}

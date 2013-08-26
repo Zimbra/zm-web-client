@@ -1,7 +1,7 @@
 <%--
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2011, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
@@ -14,7 +14,6 @@
 --%>
 <%@ tag body-content="empty" %>
 <%@ tag import="java.text.*,java.util.*" %>
-<%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <%@ tag import="com.zimbra.cs.taglib.bean.BeanUtils,com.zimbra.cs.taglib.bean.ZContactBean" %>
 <%@ attribute name="ruby" rtexprvalue="true" required="false" type="java.lang.Boolean" %>
 <%@ attribute name="contact" rtexprvalue="true" required="false" type="com.zimbra.cs.taglib.bean.ZContactBean" %>
@@ -32,17 +31,17 @@
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <c:set var="fileAs" value="${not empty contact ? contact.fileAs : fileAs}" />
-<c:set var="firstName" value="${not empty contact ? contact.firstName : firstName}" />
-<c:set var="lastName" value="${not empty contact ? contact.lastName : lastName}" />
-<c:set var="company" value="${not empty contact ? contact.company : company}" />
-<c:set var="fullName" value="${not empty contact ? contact.fullName : fullName}" />
-<c:set var="nickname" value="${not empty contact ? contact.nickname : nickname}" />
-<c:set var="phoneticFirstName" value="${not empty contact ? contact.phoneticFirstName : phoneticFirstName}" />
-<c:set var="phoneticLastName" value="${not empty contact ? contact.phoneticLastName : phoneticLastName}" />
-<c:set var="phoneticCompany" value="${not empty contact ? contact.phoneticCompany : phoneticCompany}" />
+<c:set var="firstName" value="${fn:escapeXml(not empty contact ? contact.firstName : firstName)}" />
+<c:set var="lastName" value="${fn:escapeXml(not empty contact ? contact.lastName : lastName)}" />
+<c:set var="company" value="${fn:escapeXml(not empty contact ? contact.company : company)}" />
+<c:set var="fullName" value="${fn:escapeXml(not empty contact ? contact.fullName : fullName)}" />
+<c:set var="nickname" value="${fn:escapeXml(not empty contact ? contact.nickname : nickname)}" />
+<c:set var="phoneticFirstName" value="${fn:escapeXml(not empty contact ? contact.phoneticFirstName : phoneticFirstName)}" />
+<c:set var="phoneticLastName" value="${fn:escapeXml(not empty contact ? contact.phoneticLastName : phoneticLastName)}" />
+<c:set var="phoneticCompany" value="${fn:escapeXml(not empty contact ? contact.phoneticCompany : phoneticCompany)}" />
 <c:if test="${ruby}">
     <c:set var="firstName"><app:ruby base="${firstName}" text="${phoneticFirstName}" /></c:set>
-    <c:set var="lastName"><app:ruby base="${lastName}" text="${phoneticLastName}" /></c:set>
+    <c:set var="lastName"><app:ruby base="${lastName}" text="${phoneticLastName}" /></c:set> 
     <c:set var="company"><app:ruby base="${company}" text="${phoneticCompany}" /></c:set>
 </c:if>
 <%

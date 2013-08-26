@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
@@ -91,7 +91,7 @@ function() {
 ZmZimletMgr.prototype.loadZimlets =
 function(zimletArray, userProps, target, callback, sync) {
 	var href = window.location.href.toLowerCase();
-	if(href.indexOf("zimlets=none") > 0 || appCtxt.isOfflineMode()) {
+	if(href.indexOf("zimlets=none") > 0) {
 		return;
 	} else if(href.indexOf("zimlets=core") > 0) {
 		zimletArray = this._getCoreZimlets(zimletArray);
@@ -416,21 +416,13 @@ function(event, args) {
 	for (var i = 0; i < this._ZIMLETS.length; ++i) {
 		var z = this._ZIMLETS[i].handlerObject;
 		if (z && (z instanceof ZmZimletBase) && z.getEnabled() && (typeof z[event] == "function")) {
-			var result = args ? z[event].apply(z, args) : z[event].apply(z);	// IE cannot handle empty args
-			handled = handled || result;
+			if (z[event].apply(z, args)) {
+				handled = true;
+			}
 		}
 	}
 	
 	return handled;
-};
-
-ZmZimletMgr.prototype.notifyZimlet =
-function(zimletName, event, args) {
-	var zimlet = this.getZimletByName(zimletName);
-	var z = zimlet && zimlet.handlerObject;
-	if (z && (z instanceof ZmZimletBase) && z.getEnabled() && (typeof z[event] == "function")) {
-		return (args ? z[event].apply(z, args) : z[event].apply(z));	// IE cannot handle empty args
-	}
 };
 
 /**

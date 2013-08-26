@@ -1,7 +1,7 @@
 <%--
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2007, 2008, 2009, 2010, 2011, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
@@ -22,7 +22,6 @@
 <%@ taglib prefix="mo" uri="com.zimbra.mobileclient" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <c:set var="label" value="${zm:getFolderPath(pageContext, folder.id)}"/>
-<c:set var="truncatedLabel" value="${zm:getTruncatedFolderPath(pageContext, folder.id, 20, true)}"/>
 <c:choose>
     <c:when test="${ua.isiPad == true}">
         <c:set var="baseUrl" value="zipad"/>
@@ -49,7 +48,15 @@
     <span class='td left' onclick='return zClickLink("FLDR${folder.id}")' width="94%">
         <a id="FLDR${folder.id}" href="${fn:escapeXml(url)}">
             <c:if test="${ua.isiPad eq false}"><span class="Img Img${folder.type}">&nbsp;</span></c:if>
-            ${truncatedLabel} <c:if test="${folder.hasUnread}">&nbsp;(${folder.unreadCount})</c:if>
+            <c:choose>
+                <c:when test="${folder.hasUnread}">
+                    <c:set var="folderName" value="${label} (${folder.unreadCount})"/>
+                </c:when>
+                <c:otherwise>
+                    <c:set var="folderName" value="${label}"/>
+                </c:otherwise>
+            </c:choose>
+            ${fn:escapeXml(zm:truncateFixed(folderName,20,true))}
         </a>
     </span>
     <c:if test="${!folder.isSystemFolder}">

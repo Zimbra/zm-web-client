@@ -1,7 +1,7 @@
 <%--
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2007, 2008, 2009, 2010, 2011, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
@@ -25,7 +25,7 @@
 
 <zm:getUserAgent var="ua" session="true"/>
 <c:choose>
-    <c:when test="${ua.isiPhone or ua.isiPod or ua.isiPad or ua.isOsAndroid}">
+    <c:when test="${ua.isiPhone or ua.isiPod or ua.isiPad}">
         <c:choose>
             <c:when test="${body.isTextHtml}">
         <script type="text/javascript">
@@ -35,6 +35,8 @@
                 var iframe = document.createElement("iframe");
                 iframe.style.width = "100%";
                 iframe.style.height = "100px";
+                /*iframe.style.overflowX = "auto";*/
+                /*iframe.scrolling = "no";*/
                 iframe.marginWidth = 0;
                 iframe.marginHeight = 0;
                 iframe.border = 0;

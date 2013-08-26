@@ -37,6 +37,7 @@ function ZmSkin(hints) {
         // skin regions
         skin:           { containers: "skin_outer" },
         tree:			{ minWidth:150, maxWidth:300, containers: ["skin_td_outer_tree", "skin_outer_tree", "skin_col_tree_inner", "skin_col_tree"] },
+        searchBuilder:  { containers: [ "skin_container_search_builder_outer", "skin_td_search_builder" ] },
         topToolbar:     { containers: [ "skin_tr_top_toolbar", "!skin_tr_top_toolbar_shim" ] },
         bottomToolbar:  { containers: [ "skin_tr_bottom_toolbar", "!skin_tr_bottom_toolbar_shim" ] },
         treeFooter:     { containers: [ "skin_tr_tree_footer_sep", "skin_tr_tree_footer"] },
@@ -152,7 +153,7 @@ ZmSkin.prototype = {
 	
 	showSidebarAd : function(width) {
 		var id = "skin_td_sidebar_ad";
-		if (width != null) Dwt.setSize(id, width);
+		if (width != null) skin._setSize(id, width);
 		skin._showEl(id);
 		skin._reflowApp();
 	},
@@ -204,10 +205,18 @@ ZmSkin.prototype = {
 		}
 	},
 	
+	_setSize : function(id, width, height) {
+		var el = this._getEl(id);
+		if (!el) return;
+	
+		if (width != null) el.style.width = width;
+		if (height != null) el.style.height = height;
+	},
+	
 	_setContainerSizes : function(containerName, width, height) {
 		var containers = this.hints[containerName].containers;
 		for (var i = 0; i < containers.length; i++) {
-			Dwt.setSize(containers[i], width, null);
+			this._setSize(containers[i], width, null);
 		}
 	},
 	

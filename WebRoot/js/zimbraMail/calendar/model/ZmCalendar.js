@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
@@ -20,36 +20,39 @@
  *
  * @author Andy Clark
  *
- * @param {Hash}		params			a hash of parameters:
- * @param {int}			params.id		the numeric ID
- * @param {String}		params.name		the name
- * @param {ZmOrganizer}	params.parent	the parent organizer
- * @param {ZmTree}		params.tree		the tree model that contains this organizer
- * @param {constant}	params.color	the color for this calendar
- * @param {String}		params.url		the URL for this organizer's feed
- * @param {String}		params.owner	the owner of this calendar
- * @param {String}		params.zid		the Zimbra id of owner, if remote share
- * @param {String}		params.rid		the remote id of organizer, if remote share
- * @param {String}		params.restUrl	the REST URL of this organizer
+ * @param	{Hash}	params		a hash of parameters
+ * @param {int}	params.id			the numeric ID
+ * @param {String}	params.name		the name
+ * @param {ZmOrganizer}	params.parent		the parent organizer
+ * @param {ZmTree}	params.tree		the tree model that contains this organizer
+ * @param {constant}	params.color		the color for this calendar
+ * @param {String}	params.url		the URL for this organizer's feed
+ * @param {String}	params.owner		the owner of this calendar
+ * @param {String}	params.zid		the Zimbra id of owner, if remote share
+ * @param {String}	params.rid		the remote id of organizer, if remote share
+ * @param {String}	params.restUrl	the REST URL of this organizer
  * 
- * @extends		ZmFolder
+ * @extends		ZmOrganizer
  */
 ZmCalendar = function(params) {
 	params.type = ZmOrganizer.CALENDAR;
-	ZmFolder.call(this, params);
+	ZmOrganizer.call(this, params);
 };
 
-ZmCalendar.prototype = new ZmFolder;
+ZmCalendar.prototype = new ZmOrganizer;
 ZmCalendar.prototype.constructor = ZmCalendar;
 
-ZmCalendar.prototype.isZmCalendar = true;
-ZmCalendar.prototype.toString = function() { return "ZmCalendar"; };
 
 // Consts
 
 ZmCalendar.ID_CALENDAR = ZmOrganizer.ID_CALENDAR;
 
 // Public methods
+
+ZmCalendar.prototype.toString = 
+function() {
+	return "ZmCalendar";
+};
 
 /**
  * Creates a new calendar. The color and flags will be set later in response
@@ -89,18 +92,16 @@ function() {
 /**
  * Sets the free/busy.
  * 
- * @param	{Boolean}	        exclude		    if <code>true</code>, exclude free busy
- * @param	{AjxCallback}	    callback		the callback
- * @param	{AjxCallback}	    errorCallback	the error callback
- * @param   {ZmBatchCommand}    batchCmd        optional batch command
+ * @param	{Boolean}	exclude		if <code>true</code>, exclude free busy
+ * @param	{AjxCallback}	callback		the callback
+ * @param	{AjxCallback}	errorCallback		the error callback
  */
 ZmCalendar.prototype.setFreeBusy = 
-function(exclude, callback, errorCallback, batchCmd) {
+function(exclude, callback, errorCallback) {
 	if (this.excludeFreeBusy == exclude) { return; }
 	// NOTE: Don't need to store the value since the response will
 	//       report that the object was modified.
-	this._organizerAction({action: "fb", attrs: {excludeFreeBusy: exclude ? "1" : "0"},
-                           callback: callback, errorCallback: errorCallback, batchCmd: batchCmd});
+	this._organizerAction({action: "fb", attrs: {excludeFreeBusy: exclude ? "1" : "0"}, callback: callback, errorCallback: errorCallback});
 };
 
 ZmCalendar.prototype.setChecked = 
@@ -131,26 +132,16 @@ function(checked, result) {
 /**
  * Checks if the given object(s) may be placed in this folder.
  *
- * For calendars being dragged, the current target cannot:
- *   - Be the parent of the dragged calendar
- *   - Be the dragged calendar
- *   - Be an ancestor of the dragged calendar
- *   - Contain a calendar with the same name as the dragged calendar
- *   - Be a shared calendar
- *
  * @param {Object}	what		the object(s) to possibly move into this folder (item or organizer)
  * @return	{Boolean}	<code>true</code> if the object may be placed in this folder
  */
 ZmCalendar.prototype.mayContain =
 function(what) {
-    if (!what) { return true; }
+	if (!what) { return true; }
 
-    var invalid = false;
-    if (what instanceof ZmCalendar) {
-        // Calendar DnD, possibly nesting calendars
-        invalid = ((what.parent == this) ||  (what.id == this.id)  || this.isChildOf(what) ||
-                   (!this.isInTrash() && this.hasChild(what.name)) || this.link);
-    } else {
+	if (!(what instanceof ZmCalendar)) {
+		var invalid = false;
+
         //exclude the deleted folders
         if(this.noSuchFolder) return invalid;
 
@@ -169,26 +160,28 @@ function(what) {
 
 			// can't move items to folder they're already in; we're okay if
 			// we have one item from another folder
-            if (item && item.folderId) {
-                invalid = true;
-                for (var i = 0; i < items.length; i++) {
+			if (item.folderId) {
+				invalid = true;
+				for (var i = 0; i < items.length; i++) {
                     var folder = appCtxt.getById(items[i].folderId);
                     if(items[i].isReadOnly() && folder.owner != this.owner) {
                         invalid = true;
                         break;
                     }
-                    if (item.viewMode == ZmCalItem.MODE_NEW || folder != this) {
-                        invalid = false;
-                        break;
-                    }
+					if (item.viewMode == ZmCalItem.MODE_NEW || folder != this) {
+						invalid = false;
+						break;
+					}
 
-                }
-            }
+				}
+			}
 		}
 
+		return !invalid;
 	}
 
-	return !invalid;
+	// sub-folders are not allowed in calendars
+	return false;
 };
 
 
@@ -204,7 +197,7 @@ function(obj) {
 
 ZmCalendar.prototype.notifyModify =
 function(obj) {
-	ZmFolder.prototype.notifyModify.call(this, obj);
+	ZmOrganizer.prototype.notifyModify.call(this, obj);
 
 	var doNotify = false;
 	var fields = {};
@@ -230,20 +223,18 @@ function(obj) {
         var overviewController = appCtxt.getOverviewController();
         var treeController = overviewController.getTreeController(this.type);
         var overviewId = appCtxt.getCurrentApp().getOverviewId();
-        var treeView = treeController && treeController.getTreeView(overviewId);
-        var node = treeView && treeView.getTreeItemById(this.id);
+        var treeView = treeController.getTreeView(overviewId);
+        var node = treeView.getTreeItemById(this.id);        
         this.noSuchFolder = true;
-        if(node) {
-            node.setText(this.getName(true));
-        }
+        node.setText(this.getName(true));
     }else{
-        ZmFolder.prototype.notifyDelete.call(this, obj);
+        ZmOrganizer.prototype.notifyDelete.call(this, obj);
     }
 };
 
 ZmCalendar.prototype._delete = function(){
     this._deleteAction = true;
-    ZmFolder.prototype._delete.call(this);
+    ZmOrganizer.prototype._delete.call(this);
 };
 
 // Static methods
@@ -282,18 +273,11 @@ function() {
 	return true;
 };
 
-// overriding ZmFolder.prototype.supportsPublicAccess
-ZmCalendar.prototype.supportsPublicAccess =
-function() {
-	// calendars can be accessed outside of ZCS
-	return true;
-};
-
 ZmCalendar.prototype.getRestUrl =
 function(acct, noRemote) {
 
     if(!appCtxt.multiAccounts){
-        return ZmFolder.prototype.getRestUrl.call(this, noRemote);
+        return ZmOrganizer.prototype.getRestUrl.call(this, noRemote);
     }
 
 	// return REST URL as seen by server
@@ -341,17 +325,6 @@ function() {
 	if (this.isFeed()) {
 		return true; //feed calendar is read-only
 	}
-	return ZmFolder.prototype.isReadOnly.call(this);
+	return ZmOrganizer.prototype.isReadOnly.call(this);
 };
 
-
-/**
- * Checks if the calendar supports public access.
- *
- * @return	{Boolean}	always returns <code>true</code>
- */
-ZmCalendar.prototype.supportsPublicAccess =
-function() {
-	// Overridden to allow sharing of calendar outside of ZCS
-	return true;
-};

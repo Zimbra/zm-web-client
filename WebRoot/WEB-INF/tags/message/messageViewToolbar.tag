@@ -1,7 +1,7 @@
 <%--
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
@@ -44,7 +44,7 @@
                             <optgroup label=<fmt:message key="actionOptSep"/>>
                             <zm:forEachFolder var="folder">
                                 <c:if test="${folder.isMessageMoveTarget and !folder.isTrash and !folder.isSpam}">
-                                    <option <c:if test="${keys}">id="OPFLDR${folder.id}"</c:if> value="m:${folder.id}">${zm:getTruncatedFolderPath(pageContext, folder.id, 10, true)}</option>
+                                    <option <c:if test="${keys}">id="OPFLDR${folder.id}"</c:if> value="m:${folder.id}">${zm:truncate(fn:escapeXml(zm:getFolderPath(pageContext, folder.id)),10,true)}</option>
                                 </c:if>
                             </zm:forEachFolder>
                         </select>

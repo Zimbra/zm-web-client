@@ -159,16 +159,14 @@ function() {
 	for (var identityId in usage) {
 		var u1 = this._origUsage[identityId];
 		var u2 = usage[identityId];
-        if (u1 && u2){
-		    for (var j = 0; j < ZmSignaturesPage.SIG_FIELDS.length; j++) {
-			    var field = ZmSignaturesPage.SIG_FIELDS[j];
-			    var savedSigId = (u1[field]) || ((field == ZmIdentity.REPLY_SIGNATURE) ? ZmIdentity.SIG_ID_NONE : u1[field]);
-			    var curSigId = this._newSigId[u2[field]] || u2[field];
-			    if (savedSigId != curSigId) {
-				    list.push({identity:identityId, sig:field, value:curSigId});
-		        }
-		    }
-        }
+		for (var j = 0; j < ZmSignaturesPage.SIG_FIELDS.length; j++) {
+			var field = ZmSignaturesPage.SIG_FIELDS[j];
+			var savedSigId = u1[field];
+			var curSigId = this._newSigId[u2[field]] || u2[field];
+			if (savedSigId != curSigId) {
+				list.push({identity:identityId, sig:field, value:curSigId});
+			}
+		}
 	}
 	return list;
 };
@@ -192,36 +190,10 @@ function() {
 
 	this._updateSignature();
 
-	var printSigs = function(sig) {
-		if (AjxUtil.isArray(sig)) {
-			return AjxUtil.map(sig, printSigs).join("\n");
-		}
-		return [sig.name, " (", ((sig._orig && sig._orig.value != sig.value) ? (sig._orig.value+" changed to ") : ""), sig.value, ")"].join("");
-	}
-
-	var printUsages = function(usage) {
-		if (AjxUtil.isArray(usage)) {
-			return AjxUtil.map(usage, printUsages).join("\n");
-		}
-		return ["identityId: ", usage.identity, ", type: ", usage.sig, ", signatureId: ", usage.value].join("");
-	}
-
-	if (this.getNewSignatures(false).length > 0) {
-		AjxDebug.println(AjxDebug.PREFS, "Dirty preferences:\nNew signatures:\n" + printSigs(this.getNewSignatures(false)));
-		return true;
-	}
-	if (this.getDeletedSignatures().length > 0) {
-		AjxDebug.println(AjxDebug.PREFS, "Dirty preferences:\nDeleted signatures:\n" + printSigs(this.getDeletedSignatures()));
-		return true;
-	}
-	if (this.getModifiedSignatures().length > 0) {
-		AjxDebug.println(AjxDebug.PREFS, "Dirty preferences:\nModified signatures:\n" + printSigs(this.getModifiedSignatures()));
-		return true;
-	}
-	if (this.getChangedUsage().length > 0) {
-		AjxDebug.println(AjxDebug.PREFS, "Dirty preferences:\nSignature usage changed:\n" + printUsages(this.getChangedUsage()));
-		return true;
-	}
+	return this.getNewSignatures(false).length > 0 || // Let invalid new signatures count as dirtiness, so validation kicks in
+		   this.getDeletedSignatures().length > 0 ||
+		   this.getModifiedSignatures().length > 0 ||
+		   this.getChangedUsage().length > 0;
 };
 
 ZmSignaturesPage.prototype.validate =
@@ -266,7 +238,7 @@ function(signature, strict) {
 	}
 	var sigValue = signature.value;
 	var maxLength = appCtxt.get(ZmSetting.SIGNATURE_MAX_LENGTH);
-	if (maxLength > 0 && sigValue.length > maxLength) {
+	if (sigValue.length > maxLength) {
 		return AjxMessageFormat.format((signature.contentType == ZmMimeTable.TEXT_HTML)
 			? ZmMsg.errorHtmlSignatureTooLong
 			: ZmMsg.errorSignatureTooLong, maxLength);
@@ -359,7 +331,7 @@ function(contact) {
 	if (this._selSignature) {
 		this._selSignature.contactId = contact.id;
 	}
-	this._vcardField.value = contact.getFileAs() || contact.getFileAsNoName();
+	this._vcardField.value = contact.getFileAs();
 };
 
 //
@@ -441,10 +413,8 @@ function(container) {
 
 	// Signature CONTENT
 	var valueEl = document.getElementById(this._htmlElId + "_SIG_EDITOR");
-    if( !appCtxt.isTinyMCEEnabled() ){
-        var htmlEditor = new ZmSignatureEditor(this);
-        this._replaceControlElement(valueEl, htmlEditor);
-    }
+	var htmlEditor = new ZmSignatureEditor(this);
+	this._replaceControlElement(valueEl, htmlEditor);
 	this._sigEditor = htmlEditor;
 
 	// Signature use by identity
@@ -502,7 +472,7 @@ function(identity, table, signatures, index) {
 	var row = table.insertRow(index);
 	row.id = identity.id + "_row";
 	var name = identity.getField(ZmIdentity.NAME);
-	if (name === ZmIdentity.DEFAULT_NAME) {
+	if (name == ZmMsg.defaultIdentityName) {
 		name = ZmMsg.accountDefault;
 	}
 	var cell = row.insertCell(-1);
@@ -653,9 +623,7 @@ function(id, setup, value) {
 		this._defaultRadioGroup = new DwtRadioButtonGroup();
 
 		this._initialize(container);
-        if( !appCtxt.isTinyMCEEnabled() ){
-            this._populateSignatures();
-        }
+		this._populateSignatures();
 
 		return container;
 	}
@@ -690,7 +658,7 @@ function(select) {
 	var isText = this._sigFormat ? this._sigFormat.getValue() : true;
 	sig.setContentType(isText ? ZmMimeTable.TEXT_PLAIN : ZmMimeTable.TEXT_HTML);
 
-	if (!isText && !appCtxt.isTinyMCEEnabled()) {
+	if (!isText) {
 		this._restoreSignatureInlineImages();
 	}
 	sig.value = this._sigEditor.getContent(false, true);
@@ -724,7 +692,8 @@ function(reset) {
 	}
 	this._calcAutoSignatureNames(signatures);
 	for (var i = count; i < this._minEntries; i++) {
-		this._addNewSignature(true, true); //autoAdded
+        this._autoAddedSig = true;
+		this._addNewSignature(true);
 	}
 
 	var selectSig = this._sigList.getList().get(0);
@@ -771,10 +740,9 @@ function() {
 };
 
 ZmSignaturesPage.prototype._addNewSignature =
-function(skipControls, autoAdded) {
+function(skipControls) {
 	// add new signature
 	var signature = this._getNewSignature();
-	signature._autoAdded = autoAdded;
 	signature = this._addSignature(signature, skipControls);
 
 	return signature;
@@ -837,7 +805,7 @@ function() {
 			var dfsrc = img.getAttribute("dfsrc");
 			if (dfsrc && dfsrc.indexOf("doc:") == 0) {
 				var url = [path, dfsrc.substring(4)].join('');
-				img.src = AjxStringUtil.fixCrossDomainReference(url, false, true);
+				img.src = AjxStringUtil.fixCrossDomainReference(url);
 			}
 		}
 	}
@@ -874,12 +842,11 @@ function(signature, clear) {
 		var contactsApp = appCtxt.getApp(ZmApp.CONTACTS);
 		var contact = contactsApp && contactsApp.getContactList().getById(signature.contactId);
 		if (contact) {
-			vcardName = contact.getFileAs() || contact.getFileAsNoName();
+			vcardName = contact.getFileAs();
 		}
 	}
 	this._vcardField.value = vcardName;
 
-    this._sigEditor.clear();
 	var editorMode = (appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED) && signature.getContentType() == ZmMimeTable.TEXT_HTML)
 		? DwtHtmlEditor.HTML : DwtHtmlEditor.TEXT;
 	var htmlModeInited = this._sigEditor.isHtmlModeInited();
@@ -933,14 +900,15 @@ function(ev) {
 	var content = this._sigEditor.getContent();
 	var contentIsEmpty = content == "<html><body><br></body></html>" || content == "";
 
-	if (!contentIsEmpty && isText) {
+	if (!contentIsEmpty) {
 		if (!this._formatWarningDialog) {
 			this._formatWarningDialog = new DwtMessageDialog({parent : appCtxt.getShell(), buttons : [DwtDialog.OK_BUTTON, DwtDialog.CANCEL_BUTTON]});
 		}
 		var dialog = this._formatWarningDialog;
 		dialog.registerCallback(DwtDialog.OK_BUTTON, this._formatOkCallback, this, [isText]);
 		dialog.registerCallback(DwtDialog.CANCEL_BUTTON, this._formatCancelCallback, this, [isText]);
-		dialog.setMessage(ZmMsg.switchToText, DwtMessageDialog.WARNING_STYLE);
+		var msg  = isText ? ZmMsg.switchToText : ZmMsg.switchToHtml;
+		dialog.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
 		dialog.popup();
 		return;
 	}
@@ -984,7 +952,7 @@ function(evt) {
 	}
 	else {
 		for (var i = 0; i < this._minEntries; i++) {
-			this._addNewSignature(false, true); //autoAdded
+			this._addNewSignature();
 		}
 	}
 	this._resetOperations();
@@ -1184,9 +1152,9 @@ function() {
 		this._createUrlButton(tb);
 		this._createUrlImageButton(tb);
 
-        //if (appCtxt.get(ZmSetting.BRIEFCASE_ENABLED)) {
+        if (appCtxt.get(ZmSetting.BRIEFCASE_ENABLED)) {
             this._createImageButton(tb);
-        //}
+        }
 
 		this._resetFormatControls();
 	}
@@ -1215,8 +1183,9 @@ function(ev) {
 
 ZmSignatureEditor.prototype._insertImagesListener =
 function(ev) {
-	AjxDispatcher.require("BriefcaseCore");
-    appCtxt.getApp(ZmApp.BRIEFCASE)._createDeferredFolders();
+	AjxDispatcher.require("BriefcaseCore");    
+	appCtxt.getApp(ZmApp.BRIEFCASE)._createDeferredFolders();
+
 	var callback = new AjxCallback(this, this._imageUploaded);
 	var cFolder = appCtxt.getById(ZmOrganizer.ID_BRIEFCASE);
 	var dialog = appCtxt.getUploadDialog();
@@ -1387,5 +1356,9 @@ function(ev) {
  */
 ZmSignaturesPage.prototype._isAutoAddedAndBlank =
 function(signature) {
-	return signature._autoAdded && !AjxStringUtil._NON_WHITESPACE.test(signature.getValue());
+  if (this._autoAddedSig) {
+    var hasValue = AjxStringUtil._NON_WHITESPACE.test(signature.getValue());
+    return !hasValue;
+  }
+  return false;
 };

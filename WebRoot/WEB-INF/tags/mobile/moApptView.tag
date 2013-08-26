@@ -1,7 +1,7 @@
 <%--
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2007, 2008, 2009, 2010, 2011, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
@@ -39,14 +39,8 @@
 
     <c:set var="apptFolder" value="${zm:getFolder(pageContext, msg.folderId)}"/>
     <c:set var="readOnly" value="${apptFolder.isMountPoint or apptFolder.isFeed}"/>
-    <c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:'zmain'}"/>
-    <zm:currentResultUrl var="currentUrl" value="${context_url}" context="${context}"/>
 
 </mo:handleError>
-<form action="${currentUrl}" method="post" accept-charset="utf-8" onsubmit="return submitForm(this);">
-    <input type="hidden" name="doApptAction" value="1"/>
-    <input type="hidden" name="crumb" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
-    <input type="hidden" name="invId" value="${param.invId}"/>
     <c:set var="title" scope="request" value="${requestScope.title} : ${zm:truncate(msg.subject,10,true)}"/>
     <c:choose>
     <c:when test="${ua.isiPad eq true}">
@@ -68,7 +62,7 @@
                 <c:if test="${empty sessionScope.calendar}">
                 <div class="roundness View ${apptFolder.styleColor}Bg" style="padding: 5px;">
                 <span class="label"><fmt:message
-                        key="calendarLabel"/></span> ${zm:getFolderName(pageContext,apptFolder.id)}
+                        key="calendarLabel"/></span> ${fn:escapeXml(zm:getFolderName(pageContext,apptFolder.id))}
                 </div><br>
                 </c:if>    
                 <mo:displayAppointment mailbox="${mailbox}" message="${msg}" invite="${invite}"
@@ -86,4 +80,3 @@
 <c:if test="${ua.isiPad eq false}">
     <mo:calendarViewToolbar invId="${invite.component.isOrganizer ? id : ''}" urlTarget="${urlTarget}" date="${date}" timezone="${timezone}" view="appt" isTop="${false}"/>
 </c:if>
-</form>

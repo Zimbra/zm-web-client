@@ -28,6 +28,7 @@
 ZmZimletTreeController = function() {
 
 	ZmTreeController.call(this, ZmOrganizer.ZIMLET);
+    this._listeners[ZmOperation.BROWSE] = new AjxListener(this, this._browseListener);
 
     this._eventMgrs = {};
 }
@@ -35,10 +36,41 @@ ZmZimletTreeController = function() {
 ZmZimletTreeController.prototype = new ZmTreeController;
 ZmZimletTreeController.prototype.constructor = ZmZimletTreeController;
 
-ZmZimletTreeController.prototype.isZmZimletTreeController = true;
-ZmZimletTreeController.prototype.toString = function() { return "ZmZimletTreeController"; };
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
+ZmZimletTreeController.prototype.toString = function() {
+	return "ZmZimletTreeController";
+};
+
+/**
+ * @private
+ */
+ZmZimletTreeController.prototype._browseListener =
+function(ev){
+    var folder = this._getActionedOrganizer(ev);
+    if (folder) {
+        AjxDispatcher.require("Browse");
+        appCtxt.getSearchController().showBrowsePickers([ZmPicker.ZIMLET]);
+        //appCtxt.getSearchController()._browseViewController.addPicker(ZmPicker.FOLDER);
+    }
+}
 
 // Public methods
+
+/**
+ * Resets and enables/disables operations based on context.
+ *
+ * @param {Object}	parent		the widget that contains the operations
+ * @param {constant}	type	the type
+ * @param {Objct}	id			the currently selected/activated organizer
+ */
+ZmZimletTreeController.prototype.resetOperations =
+function(parent, type, id) {
+	parent.enable(ZmOperation.BROWSE, true);
+};
 
 /**
  * Adds a selection listener.
@@ -56,12 +88,6 @@ function(overviewId, listener) {
 		this._eventMgrs[overviewId]._selEv = new DwtSelectionEvent(true);
 	}
 	this._eventMgrs[overviewId].addListener(DwtEvent.SELECTION, listener);
-};
-
-ZmZimletTreeController.prototype._createTreeView =
-function(params) {
-	params.actionSupported = false;
-	return new ZmTreeView(params);
 };
 
 /**
@@ -140,7 +166,7 @@ function() {
  * @private
  */
 ZmZimletTreeController.prototype._getHeaderActionMenuOps = function() {
-	return null;
+	return [ZmOperation.BROWSE];
 };
 
 /**

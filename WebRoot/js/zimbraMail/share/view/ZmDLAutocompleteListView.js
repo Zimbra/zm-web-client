@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2010, 2011, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
@@ -27,7 +27,6 @@
  *
  * @param {Hash}	params			a hash of parameters:
  * @param	{ZmAutocompleteListView}		parent autocomplete list view
- * @param	{AjxCallback}	selectionCallback	the callback into client to notify it that selection from extended DL happened (passed from email.js, and accessed from ZmDLAutocompleteListView.prototype._doUpdate)
  *
  * @extends		ZmAutocompleteListView
  */
@@ -35,7 +34,6 @@ ZmDLAutocompleteListView = function(params) {
 	ZmAutocompleteListView.call(this, params);
 	this._parentAclv = params.parentAclv;
 	this._dlScrollDiv = this.getHtmlElement();
-	this._selectionCallback = params.selectionCallback;
 	Dwt.setHandler(this._dlScrollDiv, DwtEvent.ONSCROLL, ZmDLAutocompleteListView.handleDLScroll);
 };
 
@@ -50,7 +48,6 @@ function() {
 ZmDLAutocompleteListView.prototype._set =
 function(list, contact) {
 
-	this._removeAll();
 	this._matches = [];
 	this._addMembers(list);
 
@@ -112,21 +109,21 @@ function(table, match, rowId) {
 };
 
 ZmDLAutocompleteListView.prototype._update =
-function(context, match, ev) {
-	
+function(hasDelim, match, ev) {
+
 	if (this._selected == this._selectAllRowId) {
 		if (!this._matchHash[this._selectAllRowId]) {
-			var callback = this._handleResponseGetAllDLMembers.bind(this, ev);
+			var callback = new AjxCallback(this, this._handleResponseGetAllDLMembers, [hasDelim, ev]);
 			this._dlContact.getAllDLMembers(callback);
 		}
 	} else {
-		this._doUpdate();
+		this._doUpdate(hasDelim, ev);
 		this.reset(true);
 	}
 };
 
 ZmDLAutocompleteListView.prototype._handleResponseGetAllDLMembers =
-function(ev, result) {
+function(hasDelim, ev, result) {
 
 	var mv = this._parentAclv._matchValue;
 	var field = (mv instanceof Array) ? mv[0] : mv;
@@ -136,13 +133,13 @@ function(ev, result) {
 			var match = this._matchHash[this._selectAllRowId] = new ZmAutocompleteMatch();
 			match[field] = result.list.join(this._parentAclv._separator);
 			match.multipleAddresses = true;
-			this._doUpdate();
+			this._doUpdate(hasDelim, ev);
 		}
 		else {
-			var match = new ZmAutocompleteMatch();
 			for (var i = 0, len = result.list.length; i < len; i++) {
+				var match = this._matchHash[this._selectAllRowId] = new ZmAutocompleteMatch();
 				match[field] = result.list[i];
-				this._doUpdate(match);
+				this._doUpdate(hasDelim, ev);
 			}
 		}
 	}
@@ -150,43 +147,9 @@ function(ev, result) {
 };
 
 ZmDLAutocompleteListView.prototype._doUpdate =
-function(match) {
-
-	var context = null;
-	// so that address will be taken from match
-	if (this._parentAclv && this._parentAclv._currentContext) {
-		context = this._parentAclv._currentContext;
-		context.address = null;
-	}
-	match = match || this._matchHash[this._selected];
-	if (!match) {
-		return;
-	}
-
-	if (this._selectionCallback) {
-		this._selectionCallback(match.fullAddress);
-		return;
-	}
-
-	var dlBubble = document.getElementById(this._dlBubbleId);
-	if (dlBubble && dlBubble._aifId && (!context || context.element._aifId != dlBubble._aifId)) {
-		//this is the special case the DL was pre-created with the view. In this case we might have no context.
-		// Another possible bug this fixes is if the current context is not in the same input field as the DL we are selecting from.
-		var addrInputFld = DwtControl.ALL_BY_ID[dlBubble._aifId];
-		if (addrInputFld){ 
-			var bubbleParams = {
-				address:	match.fullAddress,
-				match:		match,
-				noFocus:	false,
-				addClass:	null,
-				noParse:	false
-			};
-			addrInputFld.addBubble(bubbleParams);
-			return;
-		}
-	}
-
-	this._parentAclv._update(null, match);
+function(hasDelim, ev) {
+	var sel = this._matchHash[this._selected];
+	this._parentAclv._update(hasDelim, sel, ev);
 };
 
 ZmDLAutocompleteListView.handleDLScroll =
@@ -208,7 +171,7 @@ function(ev) {
 		DBG.println("dl", "scroll, items needed: " + needed);
 		if (needed) {
 			DBG.println("dl", "new offset: " + listSize);
-			var respCallback = ZmDLAutocompleteListView._handleResponseDLScroll.bind(null, view);
+			var respCallback = new AjxCallback(null, ZmDLAutocompleteListView._handleResponseDLScroll, [view]);
 			view._parentAclv._dataAPI.expandDL(view._dlContact, listSize, respCallback);
 		}
 	}

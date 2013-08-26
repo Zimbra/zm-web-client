@@ -41,12 +41,11 @@ ZmAppButton = function(params) {
 
 	if (arguments.length == 0) { return; }
 
-    params.style = params.style ? params.style : DwtLabel.IMAGE_LEFT;
+    params.style = DwtLabel.IMAGE_LEFT;
 	params.posStyle = DwtControl.RELATIVE_STYLE;
     DwtButton.call(this, params);
 
     this.setImage(params.image);
-    this.setHoverImage(params.hoverImage);
     this.setText(params.text);
 };
 

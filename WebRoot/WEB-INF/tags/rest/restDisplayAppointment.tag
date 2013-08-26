@@ -1,7 +1,7 @@
 <%--
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2007, 2008, 2009, 2010, 2011, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
@@ -14,7 +14,7 @@
 --%>
 <%@ tag body-content="empty" %>
 <%@ attribute name="message" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.bean.ZMessageBean" %>
-<%@ attribute name="invite" rtexprvalue="true" required="true" type="com.zimbra.client.ZInvite" %>
+<%@ attribute name="invite" rtexprvalue="true" required="true" type="com.zimbra.cs.zclient.ZInvite" %>
 <%@ attribute name="mailbox" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.bean.ZMailboxBean" %>
 <%@ attribute name="hideops" rtexprvalue="true" required="false" %>
 <%@ attribute name="showInviteReply" rtexprvalue="true" required="false" %>
@@ -44,7 +44,7 @@
         <c:set var="theBody" value="${appt.descriptionHtml}"/>
     </c:if>
     <c:if test="${empty appt.descriptionHtml}">
-        <c:set var="theBody" value="${zm:cook(appt.description)}"/>
+        <c:set var="theBody" value="${appt.description}"/>
     </c:if>
 </c:if>
 <fmt:message var="noSubject" key="noSubject"/>

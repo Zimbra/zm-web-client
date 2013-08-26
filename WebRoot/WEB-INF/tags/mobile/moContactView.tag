@@ -1,7 +1,7 @@
 <%--
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2007, 2008, 2009, 2010, 2011, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
@@ -44,7 +44,7 @@
                     <div id="dcontent-view" style="padding-bottom:5px;">
         <div class="Stripes header">
             <div>
-                <div style="overflow: hidden;">
+                <div>
                     <span class="${contact.isGroup ? 'ImgGroupPerson_48' : 'ImgPerson_48'}" style="float:left;">&nbsp;</span>
                     <div class="td aleft">
                         <strong>
@@ -86,58 +86,10 @@
         </div>
 
         <div class="msgBody">
-            <c:choose>
-            <c:when test="${contact.isGroup}">
-                <table border="0" cellspacing="3" cellpadding="1" width="100%">
-                <tbody>
-                <c:forEach var="member" items="${contact.groupMembers}">
-                    <c:set var="memberContact" value="${zm:groupMemberById(contact, member)}"/>
-                    <c:choose>
-                        <c:when test="${memberContact.isTypeI}">
-                            <tr>
-                                <td width="20" valign="top" align="left" style="padding-right:3px;" rowspan="1">
-                                    <app:img clazz="contactImage" src="large/ImgPersonInline_48.png"/>
-                                </td>
-                                <td>
-                                    <b>${fn:escapeXml(memberContact.id)}</b>
-                                </td>
-                            </tr>
-                        </c:when>
-                        <c:otherwise>
-                            <c:set var="memberContactImage" value="${memberContact.imagePart != null ? memberContact.imagePart : ''}"/>
-                            <c:set var="imageUrl" value="/service/home/~/?id=${memberContact.id}&amp;part=${memberContactImage}&amp;auth=co"/>
-                            <tr>
-                                <td width="20" valign="bottom" align="left" style="padding-right:3px;" rowspan="4">
-                                    <app:img clazz="contactImage" src="${not empty memberContactImage ? imageUrl : (memberContact.isGroup ? 'large/ImgGroupPerson_48.png' : 'large/ImgPerson_48.png')}" altkey="${memberContact.imageAltKey}" />
-                                </td>
-                                <td>
-                                    <b><app:contactDisplayName contact="${memberContact}"/></b>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td width="100%">
-                                    <app:contactJobInfo contact="${memberContact}" />
-                                </td>
-                                <td width="20" class="contactOutput">
-                                    <app:contactEmail email="${memberContact.email}"/>
-                                </td>
-                                <c:set var="memberContactAttrs" value="${memberContact.attrs}"/>
-                                <td width="20" class="contactOutput" nowrap="nowrap"><c:if test="${zm:anySet(memberContact,'mobilePhone')}">${fn:escapeXml(memberContactAttrs['mobilePhone'])}</c:if></td>
-                            </tr>
-                        </c:otherwise>
-                    </c:choose>
-                    <tr>
-                        <td colspan="2"><br/></td>
-                    </tr>
-                </c:forEach>
-                </tbody></table> 
-            </c:when>
-            <c:otherwise>
-                <mo:displayContact contact="${contact}"/>
-            </c:otherwise>
-            </c:choose>
-        </div>
-        </div>
+
+                    <mo:displayContact contact="${contact}"/>
+                </div>    
+            </div>
         </div>    
     <c:if test="${ua.isiPad == false}">
         <mo:contactToolbar contact="${contact}" urlTarget="${context_url}" context="${context}" keys="false" isTop="false" mailbox="${mailbox}"/>

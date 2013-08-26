@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
@@ -19,45 +19,35 @@
  * @class
  * This class represents the mail confirmation controller.
  * 
- * @param {DwtShell}	container	the containing shell
- * @param {ZmApp}		mailApp		the containing app
- * @param {constant}	type		controller type
- * @param {string}		sessionId	the session id
+ * @param {ZmComposite}		container		the containing shell
+ * @param {ZmMailApp}		mailApp			the containing app
  * 
  * @extends		ZmController
  */
-ZmMailConfirmController = function(container, mailApp, type, sessionId) {
+ZmMailConfirmController = function(container, mailApp) {
 
-	ZmController.apply(this, arguments);
-	this._elementsToHide = ZmAppViewMgr.LEFT_NAV;
+	ZmController.call(this, container, mailApp);
 };
 
 ZmMailConfirmController.prototype = new ZmController();
 ZmMailConfirmController.prototype.constructor = ZmMailConfirmController;
 
-ZmMailConfirmController.prototype.isZmMailConfirmController = true;
-ZmMailConfirmController.prototype.toString = function() { return "ZmMailConfirmController"; };
-
-ZmMailConfirmController.getDefaultViewType =
+ZmMailConfirmController.prototype.toString =
 function() {
-	return ZmId.VIEW_MAIL_CONFIRM;
+	return "ZmMailConfirmController";
 };
-ZmMailConfirmController.prototype.getDefaultViewType = ZmMailConfirmController.getDefaultViewType;
 
 /**
  * Shows the confirmation that the message was sent.
  *
- * @param	{ZmMailMsg}				msg					the message that was sent
- * @param	{constant}				composeViewId		the compose view id
- * @param	{constant}				composeTabId		the compose tab id
- * @param	{ZmComposeController}	controller			compose controller
+ * @param {ZmMailMsg}	msg			the message that was sent
+ * @param	{constant}	composeViewId		the compose view id
+ * @param	{constant}	composeTabId		the compose tab id
  */
 ZmMailConfirmController.prototype.showConfirmation =
-function(msg, composeViewId, composeTabId, controller) {
-
+function(msg, composeViewId, composeTabId) {
 	this._composeViewId = composeViewId;
 	this._composeTabId = composeTabId;
-	this._composeController = controller;
 
 	if (!this._view) {
 		this._initView();
@@ -71,8 +61,7 @@ function(msg, composeViewId, composeTabId, controller) {
 		appCtxt.getAppViewMgr()._setViewVisible(ZmId.VIEW_LOADING, false);
 	}
 
-	var avm = appCtxt.getAppViewMgr();
-	avm.pushView(this._currentViewId);
+	appCtxt.getAppViewMgr().replaceView(this._composeViewId, this.viewId);
 };
 
 ZmMailConfirmController.prototype.resetToolbarOperations =
@@ -82,7 +71,7 @@ function() {
 
 ZmMailConfirmController.prototype.getKeyMapName =
 function() {
-	return ZmKeyMap.MAP_GLOBAL;
+	return "Global";
 };
 
 ZmMailConfirmController.prototype.handleKeyAction =
@@ -109,19 +98,15 @@ function() {
 	tg.newParent(rootTg);
 	tg.addMember(this._view.getTabGroupMember());
 
+	var elements = {};
 	this._initializeToolBar();
-	var elements = this.getViewElements(null, this._view, this._toolbar);
-
+	elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar;
+	elements[ZmAppViewMgr.C_APP_CONTENT] = this._view;
 	var callbacks = {};
-	callbacks[ZmAppViewMgr.CB_PRE_HIDE] = this._preHideCallback.bind(this);
-	callbacks[ZmAppViewMgr.CB_POST_SHOW] = this._postShowCallback.bind(this);
-    this._app.createView({	viewId:		this._currentViewId,
-							viewType:	this._currentViewType,
-							elements:	elements,
-							hide:		this._elementsToHide,
-							controller:	this,
-							callbacks:	callbacks,
-							tabParams:	{ id:this._composeTabId }});
+	callbacks[ZmAppViewMgr.CB_PRE_HIDE] = new AjxCallback(this, this._preHideCallback);
+	callbacks[ZmAppViewMgr.CB_POST_SHOW] = new AjxCallback(this, this._postShowCallback);
+    this._app.createView({viewId:this.viewId, elements:elements, callbacks:callbacks,
+						  tabParams: { id:this._composeTabId }});
 };
 
 ZmMailConfirmController.prototype._initializeToolBar =

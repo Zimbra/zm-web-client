@@ -20,7 +20,7 @@
  * @class
  * @constructor
  */
-ZmHtmlEditor = function(parent, posStyle, content, mode, withAce) {
+ZmHtmlEditor = function(parent, posStyle, content, mode, withAce, enablePaste) {
 	if (arguments.length == 0) return;
 	this._toolbars = [];
 
@@ -30,6 +30,10 @@ ZmHtmlEditor = function(parent, posStyle, content, mode, withAce) {
 
 	if (this.ACE_ENABLED) {
 		this._ace_componentsLoading = 0;
+	}
+
+    if(enablePaste){
+        this._isPasteEnabled = enablePaste;
     }
 
 	DwtHtmlEditor.call(this, {parent:parent, className:"ZmHtmlEditor", posStyle:posStyle,
@@ -362,7 +366,6 @@ ZmHtmlEditor.prototype._setFontStyles =
 function() {
 	var doc = this._getIframeDoc();
 	var style = doc.body && doc.body.style;
-
 	if (style) {
 		style.fontFamily = DwtHtmlEditor._normalizeFontValue(appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_FAMILY));
 		style.fontSize = appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_SIZE);
@@ -448,7 +451,7 @@ function(words, keepModeDiv) {
 	rec = function(node) {
 		switch (node.nodeType) {
 			case 1: /* ELEMENT */
-				for (var i = node.firstChild; i; i = rec(i)) {}
+				for (var i = node.firstChild; i; i = rec(i));
 				node = node.nextSibling;
 				break;
 			case 3: /* TEXT */
@@ -1497,7 +1500,6 @@ function(ev) {
 
 		}
 	}
-
 	return rv;
 };
 
@@ -1835,12 +1837,6 @@ ZmHtmlEditor._spellCheckResumeEditing =
 function() {
 	var editor = Dwt.getObjectFromElement(this);
 	editor.discardMisspelledWords();
-
-    if (AjxEnv.isIE && editor._currInsPtBm && editor._getRange().type=="None") {
-        var range = editor._getRange().createRange();
-        range.moveToBookmark(editor._currInsPtBm);
-        range.collapse(false);
-    }
 };
 
 ZmHtmlEditor._spellCheckAgain =
@@ -1910,9 +1906,9 @@ function(ev) {
 		case "ignore":
 			val = orig;
 			this._ignoreWords[val] = true;
-//			if (fixall) {
+			if (fixall) {
 				// TODO: visually "correct" all of them
-//			}
+			}
 			break;
 		case "add":
 			val = orig;

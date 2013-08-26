@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
@@ -176,7 +176,7 @@ function() {
  * in the panel. This method is only called for the valid types that the
  * Zimlet accepts as defined by the <code>&lt;dragSource&gt;</code> Zimlet Definition File XML.
  *
- * @param	{ZmAppt|ZmConv|ZmContact|ZmFolder|ZmMailMsg|ZmTask}	zmObject		the dragged object
+ * @param	{ZmAppt|ZmConv|ZmContact|ZmFolder|ZmMailMsg|ZmNotebook|ZmTask}	zmObject		the dragged object
  * @return	{boolean}	<code>true</code> if the drag should be allowed; otherwise, <code>false</code>
  */
 ZmZimletBase.prototype.doDrag =
@@ -187,7 +187,7 @@ function(zmObject) {
 /**
  * This method is called when an item is dropped on the Zimlet in the panel.
  * 
- * @param	{ZmAppt|ZmConv|ZmContact|ZmFolder|ZmMailMsg|ZmTask}	zmObject		the dropped object
+ * @param	{ZmAppt|ZmConv|ZmContact|ZmFolder|ZmMailMsg|ZmNotebook|ZmTask}	zmObject		the dropped object
  */
 ZmZimletBase.prototype.doDrop =
 function(zmObject) {};
@@ -852,10 +852,10 @@ function(icon) {
         var container = appCtxt.getCurrentApp().getOverviewContainer();
         var overviewId = appCtxt.getOverviewId([container.containerId, ZmOrganizer.LABEL[ZmOrganizer.ZIMLET]], null);
         var ov = container.getOverview(overviewId);
-        treeItem = ov && ov.getTreeItemById && ov.getTreeItemById(this.xmlObj().getOrganizer().id);
+        treeItem = ov && ov.getTreeItemById(this.xmlObj().getOrganizer().id);
     } else {
-        var treeView = appCtxt.getAppViewMgr().getViewComponent(ZmAppViewMgr.C_TREE);
-        treeItem = treeView && treeView.getTreeItemById && treeView.getTreeItemById(this.xmlObj().getOrganizer().id);
+        var treeView = appCtxt.getAppViewMgr().getCurrentViewComponent(ZmAppViewMgr.C_TREE);
+        treeItem = treeView && treeView.getTreeItemById(this.xmlObj().getOrganizer().id);
     }
 
 	if (treeItem) {
@@ -1192,11 +1192,10 @@ function(xsltUrl, doc) {
  * @param	{string}	image	the image (style class) to use on the application tab
  * @param	{string}	tooltip	the tool tip to display when hover-over the application tab
  * @param	{number}		[index]	the index to insert the tab (must be > 0). 0 is first location. Default is last location.
- * @param	{constant}	style	the button positioning style (see {@link DwtControl})
  * @return	{string}	the name of the newly created application
  */
 ZmZimletBase.prototype.createApp =
-function(label, image, tooltip, index, style) {
+function(label, image, tooltip, index) {
 
 	AjxDispatcher.require("ZimletApp");
 
@@ -1206,8 +1205,7 @@ function(label, image, tooltip, index, style) {
 	var params = {
 			text:label,
 			image:image,
-			tooltip:tooltip,
-			style: style
+			tooltip:tooltip
 		};
 	
 	if (index != null && index >= 0)

@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2009, 2010, 2011, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
@@ -122,7 +122,7 @@ function(tb) {
     }
 
     this._fontFamilyButton.setMenu(menu);
-    var aCtxt = ZmAppCtxt.handleWindowOpener();
+    var aCtxt = window.opener && window.opener.appCtxt || appCtxt;
     this._fontFamilyButton.setText(DwtHtmlEditor._normalizeFontName(aCtxt.get(ZmSetting.COMPOSE_INIT_FONT_FAMILY)));
 };
 
@@ -494,7 +494,7 @@ ZmDocsEditor.prototype._setFontStyles =
 function() {
 	var doc = this._getIframeDoc();
 	var style = doc.body && doc.body.style;
-	var aCtxt = ZmAppCtxt.handleWindowOpener();
+	var aCtxt = window.opener && window.opener.appCtxt || appCtxt;
 
 	if (style) {
 		style.fontFamily = DwtHtmlEditor._normalizeFontValue(aCtxt.get(ZmSetting.COMPOSE_INIT_FONT_FAMILY));

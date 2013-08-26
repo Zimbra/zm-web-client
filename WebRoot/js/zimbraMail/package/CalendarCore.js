@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2008, 2009, 2010, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
@@ -23,7 +23,13 @@
  * 	- If search for resources returns data
  */
 
+// base classes for ZmResource and ZmResourceList
+AjxPackage.require("zimbraMail.abook.model.ZmContact");
+AjxPackage.require("zimbraMail.abook.model.ZmContactList");
+
 AjxPackage.require("zimbraMail.calendar.model.ZmCalendar");
+AjxPackage.require("zimbraMail.calendar.model.ZmRecurrence");
+AjxPackage.require("zimbraMail.calendar.model.ZmCalItem");
 AjxPackage.require("zimbraMail.calendar.model.ZmAppt");
 AjxPackage.require("zimbraMail.calendar.model.ZmApptList");
 AjxPackage.require("zimbraMail.calendar.model.ZmApptCache");
@@ -31,7 +37,7 @@ AjxPackage.require("zimbraMail.calendar.model.ZmFreeBusyCache");
 AjxPackage.require("zimbraMail.calendar.model.ZmResource");
 AjxPackage.require("zimbraMail.calendar.model.ZmResourceList");
 AjxPackage.require("zimbraMail.calendar.view.ZmApptViewHelper");
+
 AjxPackage.require("zimbraMail.calendar.controller.ZmCalItemComposeController");
-AjxPackage.require("zimbraMail.calendar.controller.ZmApptComposeController");
 AjxPackage.require("zimbraMail.calendar.controller.ZmCalViewController");
 

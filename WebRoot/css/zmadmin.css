@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
@@ -54,6 +54,7 @@
 .DwtShell, .MainShell {
     @FullSize@
 }
+.MainShell {}
 
 
 /*
@@ -68,34 +69,32 @@
 	position:absolute;
 }
 
+
 .Text {
 	font-size:11px;
 }
 
-.ZaStatusView {background-color:#EEE; }
-
-.DwtMsgDialog {
-	padding:10px;
-}
+.ZaStatusView {background-color: #EEEEEE; }
 
 .ZaNewAccountDialog {
-	width:500px;
+	width: 500px;
 }
 
 .ZaNewDomainDialog {
-	width:500px;
+	width: 500px;
 }
 
 .ZaNewCosDialog {
-	width:500px;
+	width: 500px;
 }
+
 
 
 /* other UI pieces */
 
 .currentAppLabel {
-	margin-top:3px;
-	margin-left:6px;
+	margin-top: 3px  ;
+	margin-left: 6px ;	
 }
 
 .currentAppLabel td {
@@ -104,114 +103,70 @@
 	line-height:18px;
 }
 
+/* Account */
+.ZaAccountView {
+	background-color: rgb(245, 245, 245);
+}
+
 .AdminTitleBar {
-	@FontSize-big@
-	font-weight:bold;
-	padding:5px 10px;
+	background-color: rgb(215, 215, 215);
+	@FontSize-normal@
+	padding: 3px;
 }
 
 .AdminSubtitleBar {
+	background-color: rgb(215, 215, 215);
 	@FontSize-smaller@
-	padding:3px;
+	padding: 3px;
 }
 
 .ZaChngPwdDlg {
-	width:500px;
-}
-
-/* Monitoring Statistics */
-.StatsHeader {
-	padding:3px 10px 10px;
-}
-
-.StatsDiv {
-	padding:0 10px;
+	width: 500px;
 }
 
 .StatsImageTitle {
-	@FontSize-biggest@
-	padding:3px 0;
-}
-
-.StatsImage {
-	padding:3px 0 18px;
-}
-
-.ChartSettings {
-	background-color:#F5F5F5;	/* TODO: Make colors functions of AppC */
-	border:1px solid #D7D7D7;
-	padding:8px;
-	width:100%;
-	@roundCorners(4px)@
-}
-
-.LinkButton {
-	@FontSize-normal@
-	border:1px solid #D7D7D7;
-	line-height:2.5em;
-	margin-right:5px;
-	padding:3px 15px;
-	text-decoration:none;
-	@roundCorners(4px)@
-}
-/* TODO: Abstract colors out to skin properties */
-.LinkButton:link, 
-.LinkButton:visited {
-	@Text@
-	background-color:#DFE2E2;
-	text-decoration:none;
-	@grad(white,#DFE2E2)@
-	
-}
-.LinkButton:hover {
-	background-color:#B8DEF3;
-	color:black;
-	@grad(white,#B8DEF3)@
-}
-.LinkButton:active {
-	background-color:#74B6DD;
-	color:black;
-	@grad(#E3F4FC,#74B6DD)@
+	font: bold 16pt Arial, Helvetica, sans-serif;
+	padding: 3px;
 }
 
 .serverPickList {
-	width:180px;
-	height:200px;
-	border:1px solid black;
-	margin:10px 10px 0;
-	background-color:transparent;
+	width: 180px;
+	height: 200px;
+	border: 1px solid black;
+	margin: 10px 10px 0 10px;
+	background-color: transparent;
 	overflow:auto;
 }
 
 .ZaToolBar {
+	width: 100%;
+	height: 100%;
+	border-style: solid;
+	border-width: 0px 0px 1px 0px;
+	border-color: @darken(AppC,55)@;
 	@ToolbarBg@
-	width:100%;
-	height:100%;
-	border-style:solid;
-	border-width:0 0 1px;
-	border-color:@darken(AppC,55)@;
 }
 
 .ZaLeftBracket {
 	@LeftSeparator@
-	@TopSeparator@
-	@BottomSeparator@
+    @TopSeparator@
+    @BottomSeparator@
 	margin-left:3px;
 	padding-right:4px;
-	height:16px;
+	height: 16px;
 }
 
 .ZaRightBracket {
 	@RightSeparator@
-	@TopSeparator@
-	@BottomSeparator@
+    @TopSeparator@
+    @BottomSeparator@
 	margin-left:3px;
 	padding-right:4px;
-	height:16px;
+	height: 16px;
 }
 
 .ZaUpdatedLabel {
-	margin-left:5px;
+	margin-left: 5px;
 }
 
 .ZaAutoCompleteListRow {
@@ -219,30 +174,30 @@
 }
 
 .userquotaused {
-	height:6px; 
-	font-size:6px; /* WEIRD IE QUIRK */
-	background-color:#6C3;
+	height: 6px; 
+	font-size: 6px; /* WEIRD IE QUIRK */
+	background-color: #66cc33;
 }
 
 .userquotabar {
-	width:100px;
-	border:1px solid white;
-	background-color:white;
+	width: 100px;
+	border: 1px solid white;
+	background-color: white;
 }
 
 .adminfootnote {
-	font-size:8pt;
-	font-family:Tahoma, Arial, Helvetica, sans-serif;
-	font-weight:bold;
-	color:black;
+	font-size: 8pt;
+	font-family: Tahoma, Arial, Helvetica, sans-serif;
+	font-weight: bold;
+	color: black;
 }
 
 .ZaStatusServicesPage {
-	background-color:rgb(255, 255, 255);
+	background-color: rgb(255, 255, 255);
 }
 
 .ZaStatusServicesPage .DwtButton { 
-	width:60px;
+  width: 60px;
 }
 
 
@@ -264,11 +219,11 @@ input.admin_xform_name_input_disabled {
 }
 
 .ZaGlobalAttachExt {
-	height:200px;
+	height: 200px;
 }
 
 .ZaCosServerPool {
-	height:200px;
+	height: 200px;
 }
 
 
@@ -277,11 +232,10 @@ input.admin_xform_name_input_disabled {
 .HeaderPanel {
 	width:100%;
 	@ChromeBg@
-	border-style:solid;
-	border-width:0 0 2px;
-	border-bottom-color:#777;	
+	border-style: solid;
+	border-width: 0px 0px 2px 0px;
+	border-bottom-color: #777777;	
 }
-
 
 /* Search bar */
 
@@ -291,11 +245,11 @@ input.admin_xform_name_input_disabled {
 
 .SearchToolBar {
 	width:100%;
-	top:2px;
+	top: 2px;
 }
 
 .SearchToolBar .ZToolbarTable {
-	width:100%	
+	width: 100%	
 }
 
 .SearchTBSearchField {
@@ -303,51 +257,53 @@ input.admin_xform_name_input_disabled {
 }
 
 .LogoContainer {
-	left:10px;
-	top:6px;
+	left: 10px;
+	top: 6px;
 }
 
 .DwtTabViewPage .DwtButton { 
-	width:60px;
+  width: 60px;
 }
+
 
 /* Override so first level of the tree does not indent */
 .DwtTreeItemLevel1ChildDiv {
-	padding-left:0;
+	padding-left:0px;
 }
-
 
 /** distribution list stuff **/
 .ZaDLView {
-	background-color:#EEE;
-	overflow:auto;
+  background-color:#EEEEEE;
+  overflow:auto;
 }
 
-.DLSource, .DLTarget { 
-	@ListBg@
-	border:2px solid;
-	border-color:#848484 #FAFAFA #FAFAFA #848484;
-	width:auto;
+.DLSource, .DLTarget, .MBXList { 
+  border-top: 2px solid #848484;
+  border-left: 2px solid #848484;
+  border-bottom: 2px solid #FAFAFA;
+  border-right: 2px solid #FAFAFA;
+  width: auto;	
+  @ListBg@
 }
 
 .DLTarget { 
-	height:270px;
+  height:270px;
 }
 
 .DLSource { 
-	height:200px;
+  height:200px;
 }
 
 .MBXList{
-	height:100%;	
+  height: 100%;	
 }
 
 .ZaFullPageXFormListView {
-	border-left:none;
-	border-right:none;
-	height:100%;	
-	width:auto;
-	@ListBg@
+  border-left: none;
+  border-right: none;
+  height: 100%;	
+  width: auto;	
+  @ListBg@
 }
 
 .DLSource .DwtListView-Rows {
@@ -360,155 +316,141 @@ input.admin_xform_name_input_disabled {
 
 
 .inputBorder { 
-	border:2px solid;
-	border-color:#848484 #FAFAFA #FAFAFA #848484;
+  border-top: 2px solid #848484;
+  border-left: 2px solid #848484;
+  border-bottom: 2px solid #FAFAFA;
+  border-right: 2px solid #FAFAFA;
 }
 
 .DLOptionalAddBox { 
-	width:195px;
-	height:70px;
-	border:1px solid #CCC;
+  width:195px;
+  height:70px;
+  border: 1px solid #CCCCCC;
 }
 
 .DlSourceRow, .DLTargetRow {
-	padding-left:.25em;
-	padding-top:3px;
-	padding-bottom:3px;
+  padding-left: .25em;
+  padding-top:3px;
+  padding-bottom:3px;
 }
 /** END distribution list stuff **/
 
-
 .ZaServicesListView,
 .ZaClusterServicesListView { 
-	width:100%;
- 	background-color:rgb(255,255,255)
+  width:100%;
+  background-color:rgb(255,255,255)
 }
 
 .ZaServicesListView_table , .ZaServicesListView_server_table,
 .ZaClusterServicesListView_table , .ZaClusterServicesListView_server_table{
-	border-spacing:0;
-	border:none;
-	width:100%;
+  border-spacing:0px;
+  border:none;
+  width:100%;
 }
 
 .Row TABLE.ZaServicesListView_table, .Row TABLE.ZaServicesListView_server_table{
-	table-layout:fixed;
+	table-layout: fixed;
 	height:auto;
 }
 
 .ZaServicesListView_table TD, .ZaServicesListView_server_table TD,
 .ZaClusterServicesListView_table TD, .ZaClusterServicesListView_server_table TD {  
-	padding:2px;
+  padding:2px;
 }
 
 .ZaClusterServicesListView_server_table { 
-	background-color:#DDD;
+  background-color:#dddddd;
 }
 
 .ZaClusterServicesListView .Row-selected { 
-	background-color:#C8E4E4;
+  background-color:#c8e4e4;
 }
 
 .Row-selected .ZaClusterServicesListView_server_table { 
-	background-color:#91C8C8;
+  background-color:#91c8c8;
 }
 
 .ZaStatusFailoverDialog { 
-	width:200px;
-	height:200px;
+  width: 200px;
+  height:200px;
 }
 
 .ZaStatusFailoverDialog .DwtButton, 
 .ZaStatusFailoverDialog .DwtButton-hover,
 .ZaStatusFailoverDialog .DwtButton-active{ 
-	width:60px;
+  width:60px;
 }
 
 .ZaClusterServicesListView .DwtListView-Rows{ 
-	height:100%;
-	border-bottom:1px solid #999;
+  height:100%;
+  border-bottom: 1px solid #999999;  
 }
 .ZaClusterServicesListView .Row, .ZaClusterServicesListView .Row-selected {
-	border-bottom:none;
-	border-top:1px solid #999;
+  border-bottom:none;
+  border-top: 1px solid #999999;
 }
 
 .helpSeparator { 
-	border-bottom:4px Ridge #CCC;
+  border-bottom:4px Ridge #CCCCCC;
 }
-
 
 /* Tab button grid */
 .ZaTabBar {
-	background-color:transparent;
+	@InsetBg@
 	overflow-x:hidden;
 	overflow-y:hidden;
 }
 
 .AdminTitle {
 	@FontSize-biggest@
-	line-height:2em;
-	margin-left:.5em;
 }
 
 .progressbar {
-	width:200px;
-	border:1px solid white;
-	background-color:white;
+	width: 200px;
+	border: 1px solid white;
+	background-color: white;
 }
 
 .progressused {
-	height:20px;
-	font-size:20px; /* WEIRD IE QUIRK */
-	background-color:#6C3;
+	height: 20px;
+	font-size: 20px; /* WEIRD IE QUIRK */
+	background-color:#66cc33;
 }
 
 .mtaprogressbar {
-	width:200px;
-	border:1px solid #CCC;
-	background-color:#CCC;
+	width: 200px;
+	border: 1px solid #CCCCCC;
+	background-color: #CCCCCC;
 }
 
 
 .mbxprogressused {
-	height:8px; 
-	background-color:green;
-	margin:1px 0;
-#IFDEF MSIE_LOWER_THAN_9
-    font-size: 0px;
-#ENDIF
+	height: 8px; 
+	background-color: green;
+	margin: 1 0 1 0;
 }
 
 .mbxprogressusedWarning {
-	height:8px; 
-	background-color:orange;
-	margin:1px 0;
-#IFDEF MSIE_LOWER_THAN_9
-    font-size: 0px;
-#ENDIF
+	height: 8px; 
+	background-color: orange;
+	margin: 1 0 1 0;
 }
 
 .mbxprogressusedCritical {
-	height:8px; 
-	background-color:red;
-	margin:1px 0;
-#IFDEF MSIE_LOWER_THAN_9
-    font-size: 0px;
-#ENDIF
+	height: 8px; 
+	background-color: red;
+	margin: 1 0 1 0;
 }
 
 .mbxprogressbar {
-	border:1px solid grey;
-	width:100px; 
-	height:10px;
-	background-color:white;
-#IFDEF MSIE_LOWER_THAN_9
-    font-size: 0px;
-#ENDIF
+	border: 1px solid grey; 
+	width: 100px; 
+	height: 10px;
+	background-color: white;	
 }
 
 .ImgAppBanner {
-	background-position:17px 0;
+    background-position:17px 0px;
 	cursor:pointer;
 }
 
@@ -519,7 +461,6 @@ input.admin_xform_name_input_disabled {
 .container_table {
 	margin:10px;
 }
-
 .FFcontainer {
 	margin-left:3px;
 	padding-right:5px;
@@ -543,20 +484,14 @@ input.admin_xform_name_input_disabled {
 }
 
 .qsearch_field_bar {
+	padding-left:10px;
+	padding-right:10px;
 	margin-bottom:5px;
 }
 
 .autoCompleteList {
-	background-color:white;
-	border:outset 1px #91c8c8;
-}
-
-.ZaPropertySheet {
-	border-collapse:collapse;
-	border-spacing:0;
-}
-.ZaPropertySheet>TBODY>TR>TD {
-	padding:3px;
+	background-color: white;
+	border: outset 1px #91c8c8;
 }
 
 .XFormDwtListView {
@@ -577,16 +512,14 @@ input.admin_xform_name_input_disabled {
 }
 
 .DwtListView-Rows TD {
-	padding-top:.2em;
 	vertical-align:top;
 }
 
-
 /* Search builder toolbar (buttons only) */
 .ZaSearchBuilderToolBar {
-	margin-top:3px;
-	width:100%;
-	height:100%;
+	margin-top: 3px;
+	width: 100%;
+	height: 100%;
 }
 
 .ZaSearchOptionView {
@@ -594,9 +527,8 @@ input.admin_xform_name_input_disabled {
 }
 
 .ZaSearchOptionView .DwtTree {
-	@PageBg@
+	@PageBg@;
 }
-
 
 /* Header for each Option */
 .ZaSearchOptionView .DwtToolBar {
@@ -605,38 +537,48 @@ input.admin_xform_name_input_disabled {
 }
 
 .ZaSearchOptionOverview {
-	overflow:hidden;
+	overflow: hidden;
 }
 
 .OverviewTree {
 	@FullWidth@
+	@AppBg@
 }
 
 .LeftGrouperBorder {
 	@FieldSet@
+	padding-left:10px;	/* ??? SIZE */
+	padding-right:10px;
+	padding-bottom:10px;
 	margin-left:20px;
 	margin-right:10px;
 }
 
 .RightGrouperBorder {
 	@FieldSet@
+	padding-left:10px;	/* ??? SIZE */
+	padding-right:10px;
+	padding-bottom:10px;
 	margin-left:10px;
 	margin-right:20px;
 }
 
 .CenterGrouperBorder {
 	@FieldSet@
-	padding-top:7px;
-	padding-left:5px;
+    padding-top:7px;
+	padding-left:5px;	
+	padding-right:10px;
+	padding-bottom:10px;
 	margin-left:3px;
 	margin-right:3px;
 }
 
 .AllScreenGrouperBorder {
 	@FieldSet@
-	padding-top:7px;
+    padding-top:7px;
 	padding-left:5px;	
 	padding-right:5px;
+	padding-bottom:10px;
 	margin-left:7px;
 	margin-right:7px;
 }
@@ -650,12 +592,12 @@ input.admin_xform_name_input_disabled {
 }
 
 .ZaHighlightedText {
-	@NoticeText@
+ @NoticeText@
 }
 
 .ZaStaleData {
-	@Text-disabled@
 	font-style:italic;
+	@Text-disabled@
 }
 
 .ZaNowrapTitle {
@@ -663,14 +605,14 @@ input.admin_xform_name_input_disabled {
 }
 
 
+
 /* normal buttons, like in a dialog */
-.ZaAppTabButton {	}
+.ZaAppTabButton 							{				}
+
+/*.ZAppTabBorder { margin-top: 2px; }*/
 
 
-/*.ZAppTabBorder { margin-top:2px; }*/
-
-
-.ZAppTab 									{	@AppTab@		@AppTabSpacing@			}
+.ZAppTab 									{	@AppTab@	@AppTabSpacing@				}
 
 .ZAppTabBorder								{	@AppTabBorder@	@AppTabBorder-normal@ 	}
 .ZHover		.ZAppTabBorder					{					@AppTabBorder-hover@	@ActiveCursor@ }
@@ -687,26 +629,28 @@ input.admin_xform_name_input_disabled {
 .ZSelected	.ZAppTabTable .ZWidgetTitle		{					@AppTabText-selected@	}
 
 
-.DwtTabButton .ZButtonBorder { border:none; background-color:transparent; }
+
+
+.DwtTabButton .ZButtonBorder { border: none; background-color: transparent; }
 
 .ZaShowSavedSearchArrowButton ,
 .ZaShowSavedSearchArrowButton .ZWidget ,
 .ZaShowSavedSearchArrowButton .ZButtonBorder{
-	border:none;
+	border: none ;		
 }
 
 .ZaShowSavedSearchArrowButton .ZWidgetTitle {
-	padding:0;
+	padding: 0px ;	
 }
 
 .ZaShowSavedSearchArrowButton .ZWidgetTable .ZLeftIcon DIV, .ZaShowSavedSearchArrowButton .ZWidgetTable .ZLeftIcon IMG {
-	margin-left:3px;
+	margin-left: 3px ;	
 }
 
 .ZaSearchOptionViewSubHeader {
 	background-color:#F9F6F0;
 	border:thin solid;
-	margin:0 0 2px 2px;
+	margin:0px 0px 2px 2px;
 	text-align:center;
 }
 
@@ -719,26 +663,26 @@ input.admin_xform_name_input_disabled {
 }
 
 /* Set the height of the advanced search button arbitrary */
-DIV.ZaAdvancedSearchButton TABLE, 
-DIV.ZaSearchBuilderOptionRemoveAll TABLE  {
-	height:22px ;	
+div.ZaAdvancedSearchButton table, 
+div.ZaSearchBuilderOptionRemoveAll table  {
+	height: 22px ;	
 #IFDEF MSIE
-	height:20px ;
+	height: 20px ;
 #ENDIF
 }
 
 .ZaSearchResultCountLabel {
-	#IFDEF MSIE_LOWER_THAN_9
-		margin-top:5px;
+	#IFDEF MSIE
+		margin-top: 5px ;
 	#ENDIF
 }
 
 
 /* Search builder outer container */
 .ZaXMbxSearchBuilder {
-	height:225px;		/* ??? SIZE */
-	width:100%;
-	overflow:hidden;
+	height: 225px;		/* ??? SIZE */
+	width: 100%;
+	overflow: hidden;
 }
 
 .ZaXMBxPickerGrid {
@@ -759,7 +703,7 @@ DIV.ZaSearchBuilderOptionRemoveAll TABLE  {
 }
 
 .XFormTableContainer {
-	background-color:@ListItemBgColor-normal@;
+ background-color:@ListItemBgColor-normal@
 }
 
 .XFormCase .ZaFullPageXFormListView .DwtListView-Rows {
@@ -767,24 +711,18 @@ DIV.ZaSearchBuilderOptionRemoveAll TABLE  {
 }
 
 .licenseExpired, .licenseNotYetValid {
-	background-color:#FF241B;
+	background-color: #FF241B ;
 }
 
 .licenseWillExpire {
-	background-color:#FFBB20;
+	background-color: #FFBB20 ;
 }
 
 /* container (div) for each item in the tree */
-.AdminTreeItem,
-.AdminTreeItem-selected,
-.AdminTreeItem-selected-focused {
+.AdminTreeItem {
 	@TreeItem@
 	@ImagePadding@
-	padding-top:2px;
-}
-
-.AdminTreeItem {
-	white-space:nowrap; /* ??? */
+	white-space: nowrap;	/* ??? */
 }
 
 /* text style for name of a normal tree item */
@@ -793,21 +731,24 @@ DIV.ZaSearchBuilderOptionRemoveAll TABLE  {
 	padding-left:2px;
 }
 .AdminTreeItem-selected {
+	@TreeItem@
+	@ImagePadding@	
 	@TreeItemSpacing-selected@
 	@SelectedBg-blurred@
 }
 
 /* text style for name of a selected and focused tree item */
 .AdminTreeItem-selected-focused {
-	@SelectedBg@
+    @TreeItem@
+    @SelectedBg@
+	@ImagePadding@
 }
 
 /* text style for a right-clicked tree item */
 .AdminTreeItem-actioned {
-	@TreeItem@
+    @TreeItem@
 	@RightClickBg@
 	@ImagePadding@
-	padding-top:2px;
 }
 
 /* text style for a tree item when dragged over */
@@ -820,73 +761,16 @@ DIV.ZaSearchBuilderOptionRemoveAll TABLE  {
 /* text style for tree item that performs action on single click */
 .AdminTreeItem-hover {
 	@ImagePadding@
-	text-decoration:underline;
+	text-decoration: underline;
 }
-.AboutScreen {}
-.AboutScreen H1 {	
-	margin:0 20px;
+.AboutScreen {
 }
+.AboutScreen h1 {margin:22px 20px 32px 20px;}
+
+
 .AboutScreen .ImgLoginBanner, 
 .AboutScreen .ImgAppBanner {
-	cursor:pointer;
-	display:block;
-	background-repeat:no-repeat;
-}
-
-
-/***************
- *
- *	Toast -- popup info panel
- *
- ***************/
-
-.ZaToast {
-	position:absolute;
-	top:-10000; left:-10000;
-	overflow:visible;
-
-	/* change the following to set the top of the toaster
-	margin-top:10px;  */
-}
-.ZaToastContent {
-	@ToastContent@
-}
-
-.ZaToastIcon {
-	float:left;
-	position :relative;
-}
-
-.ZaToastText {
-	max-width:500px;
-/************
- *
- * in IE, break-word can take effort when element has layout
- * here we set to fixed width to get layout 	
- *
- ************/ 
-#IFDEF MSIE_LOWER_THAN_9
-	width:400px; 
-#ENDIF
-	word-wrap:break-word;
-	@ToastText@
-}
-
-.ZaToastText a.undo {
-	font-size:0.75em;
-	margin-left:20px;
-}
-
-.ZaToastBG {	@ToastContainer@	}
-
-#IFNDEF MSIE_LOWER_THAN_9
-TABLE {	border-collapse:separate;	}
-#ENDIF
-
-.oselect_display {
-	white-space:normal;
-}
-
-.oselect_display_disabled {
-	white-space:normal;
+    cursor:pointer;
+    display:block;
+    background-repeat:no-repeat;
 }

@@ -1,7 +1,7 @@
 <!--
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2011, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
@@ -21,15 +21,12 @@ I tested on my Jetty and it does recognize included files and recompiles the fil
 <jsp:include page="/img/images.css.js" />
 <jsp:include page="/skins/${skin}/img/images.css.js" />
 document.write("<DIV style='display:none'>");
-for (id in AjxImgData) {
-	data = AjxImgData[id];
+for (var id in AjxImgData) {
+	var data = AjxImgData[id];
 	if (data.f) data.f = data.f.replace(/@AppContextPath@/,appContextPath);
 	if (data.ief) data.ief = data.ief.replace(/@AppContextPath@/,appContextPath);
-	f = AjxEnv.isIE ? data.ief : data.f;
+	var f = AjxEnv.isIE ? data.ief : data.f;
 	document.write("<IMG id='",id,"' src='",data.d||f,"?v=${vers}'>");
 }
 document.write("</DIV>");
-delete id;
-delete data;
-delete f;
 </script>

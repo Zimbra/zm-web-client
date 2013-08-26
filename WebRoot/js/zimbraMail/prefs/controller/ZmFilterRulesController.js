@@ -42,6 +42,9 @@ ZmFilterRulesController = function(container, prefsApp, prefsView, parent, outgo
 	this._buttonListeners[ZmOperation.EDIT_FILTER_RULE] = new AjxListener(this, this._editListener);
 	this._buttonListeners[ZmOperation.REMOVE_FILTER_RULE] = new AjxListener(this, this._removeListener);
 	this._buttonListeners[ZmOperation.RUN_FILTER_RULE] = new AjxListener(this, this._runListener);
+	this._buttonListeners[ZmOperation.MOVE_UP_FILTER_RULE] = new AjxListener(this, this._moveUpListener);
+	this._buttonListeners[ZmOperation.MOVE_DOWN_FILTER_RULE] = new AjxListener(this, this._moveDownListener);
+
 	this._progressController = new ZmProgressController(container, prefsApp);
 };
 
@@ -72,11 +75,10 @@ function() {
  * Initializes the controller.
  * 
  * @param	{ZmToolBar}	toolbar		the toolbar
- * @param	{ZmListView}	listView		active list view
- * @param   {ZmListView}    listView        not active list view
+ * @param	{ZmListView}	listView		the list view
  */
 ZmFilterRulesController.prototype.initialize =
-function(toolbar, listView, notActiveListView) {
+function(toolbar, listView) {
 	// always reset the the rules to make sure we get the right one for the *active* account
 	this._rules = AjxDispatcher.run(this._outgoing ? "GetOutgoingFilterRules" : "GetFilterRules");
 
@@ -91,20 +93,15 @@ function(toolbar, listView, notActiveListView) {
 		this._resetOperations(toolbar, 0);
 	}
 
-	if (notActiveListView) {
-		this._notActiveListView = notActiveListView;
-		notActiveListView.addSelectionListener(new AjxListener(this, this._listSelectionListener));
-		notActiveListView.addActionListener(new AjxListener(this, this._listActionListener));
-		this.resetListView(0);
-	}
-	
 	if (listView) {
 		this._listView = listView;
 		listView.addSelectionListener(new AjxListener(this, this._listSelectionListener));
 		listView.addActionListener(new AjxListener(this, this._listActionListener));
-		this.resetListView(0);
+		this.resetListView();
 	}
-	
+	else {
+		AjxDebug.println(AjxDebug.FILTER, "FILTER RULES CONTROLLER: initialize has no listview");
+	}
 };
 
 ZmFilterRulesController.prototype.getRules =
@@ -129,6 +126,12 @@ function() {
 		ops.push(ZmOperation.SEP, ZmOperation.RUN_FILTER_RULE);
 	}
 
+	ops.push(ZmOperation.FILLER,
+			ZmOperation.MOVE_UP_FILTER_RULE,
+			ZmOperation.SEP,
+			ZmOperation.MOVE_DOWN_FILTER_RULE
+	);
+
 	return ops;
 };
 
@@ -143,13 +146,10 @@ function(selectedIndex) {
 ZmFilterRulesController.prototype._handleResponseSetListView =
 function(selectedIndex, result) {
 	this._listView.set(result.getResponse().clone());
-	this._notActiveListView.set(result.getResponse().clone());
+
 	var rule = this._rules.getRuleByIndex(selectedIndex || 0);
-	if (rule && rule.active) {
+	if (rule) {
 		this._listView.setSelection(rule);
-	}
-	else if (rule) {
-		this._notActiveListView.setSelection(rule);
 	}
 };
 
@@ -162,20 +162,18 @@ function(selectedIndex, result) {
  */
 ZmFilterRulesController.prototype._listSelectionListener =
 function(ev) {
-	var listView = this.getListView();
 	if (ev.detail == DwtListView.ITEM_DBL_CLICKED) {
 		this._editListener(ev);
 	} else {
 		var tb = this._filterRulesView.getToolbar();
-		this._resetOperations(tb, listView.getSelectionCount(), listView.getSelection());
+		this._resetOperations(tb, this._listView.getSelectionCount(), this._listView.getSelection());
 	}
 };
 
 ZmFilterRulesController.prototype._listActionListener =
 function(ev) {
-	var listView = this.getListView();
 	var actionMenu = this.getActionMenu();
-	this._resetOperations(actionMenu, listView.getSelectionCount(), listView.getSelection());
+	this._resetOperations(actionMenu, this._listView.getSelectionCount(), this._listView.getSelection());
 	actionMenu.popup(0, ev.docX, ev.docY);
 };
 
@@ -188,8 +186,7 @@ ZmFilterRulesController.prototype.getActionMenu =
 function() {
 	if (!this._actionMenu) {
 		this._initializeActionMenu();
-		var listView = this.getListView();
-		this._resetOperations(this._actionMenu, 0, listView.getSelection());
+		this._resetOperations(this._actionMenu, 0, this._listView.getSelection());
 	}
 	return this._actionMenu;
 };
@@ -260,8 +257,7 @@ function(menu) {
 */
 ZmFilterRulesController.prototype._addListener =
 function(ev) {
-	var listView = this.getListView();
-	if (!listView) { return; }
+	if (!this._listView) { return; }
 	this.handleBeforeFilterChange(new AjxCallback(this, this._popUpAdd));
 };
 
@@ -312,8 +308,7 @@ function(callback) {
 
 ZmFilterRulesController.prototype._popUpAdd =
 function() {
-	var listView = this.getListView();
-	var sel = listView.getSelection();
+	var sel = this._listView.getSelection();
 	var refRule = sel.length ? sel[sel.length - 1] : null;
 	appCtxt.getFilterRuleDialog().popup(null, false, refRule, null, this._outgoing);
 };
@@ -325,10 +320,9 @@ function() {
 */
 ZmFilterRulesController.prototype._editListener =
 function(ev) {
-	var listView = this.getListView();
-	if (!listView) { return; }
+	if (!this._listView) { return; }
 
-	var sel = listView.getSelection();
+	var sel = this._listView.getSelection();
 	appCtxt.getFilterRuleDialog().popup(sel[0], true, null, null, this._outgoing);
 };
 
@@ -339,9 +333,10 @@ function(ev) {
 */
 ZmFilterRulesController.prototype._removeListener =
 function(ev) {
-	var listView = this.getListView();
-	if (!listView) { return; }
-	var sel = listView.getSelection();
+	if (!this._listView) { return; }
+
+	var sel = this._listView.getSelection();
+
 	var rule = sel[0];
 	//bug:16053 changed getYesNoCancelMsgDialog to getYesNoMsgDialog
 	var ds = this._deleteShield = appCtxt.getYesNoMsgDialog();
@@ -388,8 +383,7 @@ function(ev) {
 	this._chooseFolderDialog.popup(params);
 
 	var foundForwardAction;
-	var listView = this.getListView();
-	var sel = listView && listView.getSelection();
+	var sel = this._listView && this._listView.getSelection();
 	for (var i = 0; i < sel.length; i++) {
 		if (sel[i].actions[ZmFilterRule.A_NAME_FORWARD]) {
 			foundForwardAction = true;
@@ -407,8 +401,8 @@ function(ev) {
 ZmFilterRulesController.prototype._runFilterOkCallback =
 function(dialog, folderList) {
 	dialog.popdown();
-	var listView = this.getListView();
-	var filterSel = listView && listView.getSelection();
+
+	var filterSel = this._listView && this._listView.getSelection();
 	if (!(filterSel && filterSel.length)) {
 		return;
 	}
@@ -417,19 +411,6 @@ function(dialog, folderList) {
 
 	this._progressController.start(folderList, work);
 
-};
-
-/**
- * runs a specified list of filters
- * 
- * @param container     {DwtControl} container reference
- * @param filterSel     {Array} array of ZmFilterRule
- * @param isOutgoing    {Boolean} 
- */
-ZmFilterRulesController.prototype.runFilter = 
-function(container, filterSel, isOutgoing) {
-	var work = new ZmFilterWork(filterSel, isOutgoing);
-	this._progressController.start(container, work);
 };
 
 /**
@@ -449,12 +430,11 @@ function(rule) {
 *
 * @param	ev		[DwtEvent]		the click event
 */
-ZmFilterRulesController.prototype.moveUpListener =
+ZmFilterRulesController.prototype._moveUpListener =
 function(ev) {
-	var listView = this.getListView();
-	if (!listView) { return; }
+	if (!this._listView) { return; }
 
-	var sel = listView.getSelection();
+	var sel = this._listView.getSelection();
 	this._rules.moveUp(sel[0]);
 };
 
@@ -463,12 +443,11 @@ function(ev) {
 *
 * @ev		[DwtEvent]		the click event
 */
-ZmFilterRulesController.prototype.moveDownListener =
+ZmFilterRulesController.prototype._moveDownListener =
 function(ev) {
-	var listView = this.getListView();
-	if (!listView) { return; }
+	if (!this._listView) { return; }
 
-	var sel = listView.getSelection();
+	var sel = this._listView.getSelection();
 	this._rules.moveDown(sel[0]);
 };
 
@@ -487,6 +466,13 @@ function(parent, numSel, sel) {
 	var numRules = this._rules.getNumberOfRules();
 	if (numSel == 1) {
 		parent.enableAll(true);
+		var index = this._rules.getIndexOfRule(sel[0]);
+		if (index == 0) {
+			parent.enable(ZmOperation.MOVE_UP_FILTER_RULE, false);
+		}
+		if (index == (numRules - 1)) {
+			parent.enable(ZmOperation.MOVE_DOWN_FILTER_RULE, false);
+		}
 	} else {
 		parent.enableAll(false);
 		parent.enable(ZmOperation.ADD_FILTER_RULE, true);
@@ -495,7 +481,10 @@ function(parent, numSel, sel) {
 		}
 	}
 
-	if (numRules == 0) {
+	if (numRules <= 1) {
+		parent.enable(ZmOperation.MOVE_UP_FILTER_RULE, false);
+		parent.enable(ZmOperation.MOVE_DOWN_FILTER_RULE, false);
+	} else if (numRules == 0) {
 		parent.enable(ZmOperation.EDIT_FILTER_RULE, false);
 		parent.enable(ZmOperation.REMOVE_FILTER_RULE, false);
 	}
@@ -503,16 +492,6 @@ function(parent, numSel, sel) {
 
 ZmFilterRulesController.prototype.getListView =
 function(){
-	if (this._listView && this._notActiveListView) {
-		var activeSel = this._listView.getSelection();
-		var notActiveSel = this._notActiveListView.getSelection();
-		if (!AjxUtil.isEmpty(activeSel)) {
-			return this._listView;
-		}
-		else if (!AjxUtil.isEmpty(notActiveSel)) {
-			return this._notActiveListView;
-		}
-	}
     return this._listView;
 };
 
@@ -536,12 +515,7 @@ ZmFilterWork = function(filterSel, outgoing) {
  */
 ZmFilterWork.prototype.getFinishedMessage =
 function(messagesProcessed) {
-	if (messagesProcessed) {
-		return AjxMessageFormat.format(ZmMsg.filterRuleApplied, [messagesProcessed, this._totalNumMessagesAffected]);
-	}
-	else {
-		return AjxMessageFormat.format(ZmMsg.filterRuleAppliedBackground, [this._totalNumMessagesAffected]);
-	}
+	return AjxMessageFormat.format(ZmMsg.filterRuleApplied, [messagesProcessed, this._totalNumMessagesAffected]);
 };
 
 /**
@@ -570,13 +544,12 @@ function(messagesProcessed) {
 
 
 /**
- * do the work. (in this case apply filters). Either msgIds or query should be set but not both.
- * @param msgIds {String} chunk of message ids to do the work on.
- * @param query {String} query to run filter against
+ * do the work. (in this case apply filters).
+ * @param msgIds - chunk of message ids to do the work on.
  * @param callback
  */
 ZmFilterWork.prototype.doWork =
-function(msgIds, query, callback) {
+function(msgIds, callback) {
 	var filterSel = this._filterSel;
 	var soapDoc = AjxSoapDoc.create(this._outgoing ? "ApplyOutgoingFilterRulesRequest" : "ApplyFilterRulesRequest", "urn:zimbraMail");
 	var filterRules = soapDoc.set("filterRules", null);
@@ -584,20 +557,13 @@ function(msgIds, query, callback) {
 		var rule = soapDoc.set("filterRule", null, filterRules);
 		rule.setAttribute("name", filterSel[i].name);
 	}
-	var noBusyOverlay = false;
-	if (msgIds) {
-		var m = soapDoc.set("m");
-		m.setAttribute("ids", msgIds.join(","));
-	}
-	else {
-		soapDoc.set("query", query);
-		noBusyOverlay = true;
-	}
+
+	var m = soapDoc.set("m");
+	m.setAttribute("ids", msgIds.join(","));
 
 	var params = {
 		soapDoc: soapDoc,
 		asyncMode: true,
-		noBusyOverlay: noBusyOverlay,
 		callback: (new AjxCallback(this, this._handleRunFilter, [callback]))
 	};
 	appCtxt.getAppController().sendRequest(params);

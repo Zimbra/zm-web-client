@@ -9,8 +9,8 @@
 
 <app:handleError>
     <zm:getMailbox var="mailbox"/>
-    <app:skin mailbox="${mailbox}" />
-    <c:choose>
+	<app:skin mailbox="${mailbox}" />
+	<c:choose>
     <c:when test="${not empty mailbox.prefs.locale}">
         <fmt:setLocale value='${mailbox.prefs.locale}' scope='request' />
     </c:when>
@@ -54,7 +54,7 @@
         </c:when>
 
     </c:choose>
-    <zm:getDomainInfo var="domainInfo" by="virtualHostname" value="${zm:getServerName(pageContext)}"/>
+
 </app:handleError>
 
 <html>
@@ -63,10 +63,10 @@
     <meta http-equiv="cache-control" content="no-cache"/>
     <meta http-equiv="Pragma" content="no-cache"/>
     <title><fmt:message key="changePassword"/></title>
-    <c:url var='cssurl' value='/css/common,login,zhtml,${skin},skin.css'>
-        <c:param name="skin" value="${skin}" />
-    </c:url>
-    <link rel="stylesheet" type="text/css" href="${cssurl}">
+	<c:url var='cssurl' value='/css/common,login,zhtml,${skin},skin.css'>
+		<c:param name="skin" value="${skin}" />
+	</c:url>
+	<link rel="stylesheet" type="text/css" href="${cssurl}">
     <fmt:message key="favIconUrl" var="favIconUrl"/>
     <link rel="SHORTCUT ICON" href="<c:url value='${favIconUrl}'/>">
 </head>
@@ -75,7 +75,7 @@
         </c:if>>
     <div class="LoginScreen">
         <div class="center">
-            <div class="contentBox">
+            <div class="ImgAltBanner"></div>					                                    
             <h1>
                 <a href="http://www.zimbra.com/" target="_new">
                     <div class='ImgLoginBanner' style="margin: 20px 0 0 20px;"></div>
@@ -104,19 +104,19 @@
                             <tr>
                                 <td class='zLoginLabelContainer'><label for="oldPassword"><fmt:message key="oldPassword"/>:</label></td>
                                 <td class='zLoginFieldContainer'>
-                                    <input id="oldPassword" autocomplete="off" class='zLoginField' name='password' type='password' value="" maxlength="${domainInfo.webClientMaxInputBufferLength}"/>
+                                    <input id="oldPassword" autocomplete="off" class='zLoginField' name='password' type='password' value="${fn:escapeXml(param.password)}"/>
                                 </td>
                             </tr>
                             <tr>
                                 <td class='zLoginLabelContainer'><label for="newPassword"><fmt:message key="newPassword"/>:</label></td>
                                 <td class='zLoginFieldContainer'>
-                                    <input id="newPassword" autocomplete="off" class='zLoginField' name='loginNewPassword' type='password' value="" maxlength="${domainInfo.webClientMaxInputBufferLength}"/>
+                                    <input id="newPassword" autocomplete="off" class='zLoginField' name='loginNewPassword' type='password' value="${fn:escapeXml(param.loginNewPassword)}"/>
                                 </td>
                             </tr>
                             <tr>
                                 <td class='zLoginLabelContainer'><label for="confirm"><fmt:message key="confirm"/>:</label></td>
                                 <td class='zLoginFieldContainer'>
-                                    <input id="confirm" autocomplete="off" class='zLoginField' name='loginConfirmNewPassword' type='password' value="" maxlength="${domainInfo.webClientMaxInputBufferLength}"/>
+                                    <input id="confirm" autocomplete="off" class='zLoginField' name='loginConfirmNewPassword' type='password' value="${fn:escapeXml(param.loginConfirmNewPassword)}"/>
                                 </td>
                             </tr>
                             <tr>
@@ -125,11 +125,10 @@
                                                      value="<fmt:message key="changePassword"/>"/></td>
                             </tr>
                         </table>
+                        <div class="decor1"></div>
                     </form>
                 </div>
             </c:if>
-            </div>
-            <div class="decor1"></div>
         </div>
     </div> 
 </body>

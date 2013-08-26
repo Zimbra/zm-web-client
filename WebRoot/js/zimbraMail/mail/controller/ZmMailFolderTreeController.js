@@ -42,10 +42,6 @@ function(parentNode, node, fields, organizer, treeView) {
 		if (ovc)
 			ovc.updateLabel(organizer);
 	}
-
-    if (organizer.getAccount().isMain && appCtxt._offlineHandler && organizer.webofflinesyncdays && (organizer.webofflinesyncdays != "0")){
-        appCtxt._offlineHandler.storeFolderMetaData(organizer.nId, organizer);
-    }
 };
 
 ZmMailFolderTreeController.prototype._deleteListener =
@@ -55,7 +51,7 @@ function(ev) {
 		var organizer = this._getActionedOrganizer(ev);
 		if (organizer.isDataSource()) {
 			var accounts = appCtxt.getDataSourceCollection().getPopAccountsFor(organizer.id);
-			var args = [ organizer.getName(), AjxStringUtil.htmlEncode(accounts[0].getName(), true)];
+			var args = [ organizer.getName(), accounts[0].getName() ];
 			var message = AjxMessageFormat.format(ZmMsg.errorDeletePopFolder, args);
 
 			var dialog = appCtxt.getMsgDialog();
@@ -106,7 +102,6 @@ function(parent, type, id) {
 		var organizer = appCtxt.getById(id);
 		if (organizer.isDataSource()) {
 			parent.enable(ZmOperation.MOVE, false);
-			parent.enable(ZmOperation.MOVE_MENU, false)
 		}
 	}
 };

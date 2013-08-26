@@ -41,9 +41,10 @@ ZmSelectAddrDialog = function(parent) {
     // create auto-completer
     if (appCtxt.get(ZmSetting.CONTACTS_ENABLED) || appCtxt.get(ZmSetting.GAL_ENABLED)) {
         var params = {
-            dataClass:		appCtxt.getAutocompleter(),
-            matchValue:		ZmAutocomplete.AC_VALUE_EMAIL,
-			contextId:		this.toString()
+            dataClass: appCtxt.getAutocompleter(),
+            matchValue: ZmAutocomplete.AC_VALUE_EMAIL,
+            compCallback: (new AjxCallback(this, this._handleCompletionData, [this])),
+            keyUpCallback: (new AjxCallback(this, this._acKeyUpListener))
         };
         this._acAddrSelectList = new ZmAutocompleteListView(params);
     }
@@ -57,8 +58,10 @@ ZmSelectAddrDialog = function(parent) {
 ZmSelectAddrDialog.prototype = new DwtDialog;
 ZmSelectAddrDialog.prototype.constructor = ZmQuickAddDialog;
 
-ZmSelectAddrDialog.prototype.isZmSelectAddrDialog = true;
-ZmSelectAddrDialog.prototype.toString = function() { return "ZmSelectAddrDialog"; };
+ZmSelectAddrDialog.prototype.toString =
+function() {
+	return "ZmSelectAddrDialog";
+};
 
 ZmSelectAddrDialog.prototype._contentHtml =
 function() {

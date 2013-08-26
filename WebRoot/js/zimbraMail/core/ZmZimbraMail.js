@@ -34,9 +34,6 @@
  * @extends	ZmController
  */
 ZmZimbraMail = function(params) {
-
-    if (arguments.length == 0) { return; }
-
 	ZmController.call(this, null);
 
     appCtxt.setAppController(this);
@@ -70,22 +67,9 @@ ZmZimbraMail = function(params) {
     this._initializeSettings(params);
 	this._postInitializeSettings();
 
-	//update body class to reflect user selected font
-	document.body.className = "user_font_" + appCtxt.get(ZmSetting.FONT_NAME);
-	//update root html elment class to reflect user selected font size (remove the "normal" size that was set by default).
-	Dwt.delClass(document.documentElement, "user_font_size_normal", "user_font_size_" + appCtxt.get(ZmSetting.FONT_SIZE));
-
     // set internal state
 	this._shell = appCtxt.getShell();
     this._userShell = params.userShell;
-
-    var offlineSetting = appCtxt.getSettings().getSetting("WEBCLIENT_OFFLINE_ENABLED");
-    window.isWeboffline = offlineSetting && offlineSetting.value;
-    appCtxt._supportsOffline = appCtxt.isOfflineSupported();
-
-    if (appCtxt._supportsOffline && !appCtxt.isOfflineMode(true)){
-        appCtxt._offlineHandler = new ZmOffline();
-    }
 
     this._requestMgr = new ZmRequestMgr(this); // NOTE: requires settings to be initialized
 
@@ -108,11 +92,6 @@ ZmZimbraMail = function(params) {
 
     // create app view manager
     this._appViewMgr = new ZmAppViewMgr(this._shell, this, false, true);
-	var hidden = [ ZmAppViewMgr.C_SEARCH_RESULTS_TOOLBAR, ZmAppViewMgr.C_TASKBAR ];
-	if (!appCtxt.get(ZmSetting.CAL_ALWAYS_SHOW_MINI_CAL)) {
-		hidden.push(ZmAppViewMgr.C_TREE_FOOTER);
-	}
-	this._appViewMgr.setHiddenComponents(ZmAppViewMgr.GLOBAL, hidden, true);
 
     // register handlers
 	AjxDispatcher.setPackageLoadFunction("Zimlet", new AjxCallback(this, this._postLoadZimlet));
@@ -121,9 +100,7 @@ ZmZimbraMail = function(params) {
 		this._appViewMgr.pushView(ZmId.VIEW_LOADING);
 	}));
 	AjxDispatcher.setPostLoadFunction(new AjxCallback(this, function() {
-		if (!AjxUtil.arrayContains(this._appViewMgr._toRemove, ZmId.VIEW_LOADING)) {
-			this._appViewMgr._toRemove.push(ZmId.VIEW_LOADING);
-		}
+		this._appViewMgr._toRemove.push(ZmId.VIEW_LOADING);
 	}));
 
 	for (var i in ZmApp.QS_ARG) {
@@ -133,19 +110,11 @@ ZmZimbraMail = function(params) {
 	this._shell.addGlobalSelectionListener(new AjxListener(this, this._globalSelectionListener));
 
     /// go!
-    if (appCtxt._supportsOffline){
-        var callback = this.startup.bind(this, params);
-        appCtxt.initWebOffline(callback);
-    } else {
-            this.startup(params);
-    }
+    this.startup(params);
 };
 
 ZmZimbraMail.prototype = new ZmController;
 ZmZimbraMail.prototype.constructor = ZmZimbraMail;
-
-ZmZimbraMail.prototype.isZmZimbraMail = true;
-ZmZimbraMail.prototype.toString = function() { return "ZmZimbraMail"; };
 
 // REVISIT: This is done so that we when we switch from being "beta"
 //          to production, we don't have to ensure that all of the
@@ -169,6 +138,15 @@ ZmZimbraMail.UI_NETWORK_DOWN	= "network_down";
 
 // Public methods
 
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
+ZmZimbraMail.prototype.toString =
+function() {
+	return "ZmZimbraMail";
+};
 
 /**
  * Sets up ZimbraMail, and then starts it by calling its constructor. It is assumed that the
@@ -207,36 +185,8 @@ function(params) {
 	var shell = new DwtShell({userShell:userShell, docBodyScrollable:false, id:ZmId.SHELL});
 	appCtxt.setShell(shell);
 
-    if (appCtxt._supportsOffline && window.applicationCache && (window.applicationCache.status !== window.applicationCache.UPDATEREADY) && !appCtxt.isOfflineMode()){
-        var soapDoc = AjxSoapDoc.create("GetInfoRequest", "urn:zimbraAccount");
-        var hdr = soapDoc.createHeaderElement();
-        var context = soapDoc.set("context", null, hdr, "urn:zimbra");
-        soapDoc.set("nosession", null, hdr);
-        soapDoc.set("rights", "createDistList");
-        var node = soapDoc.set("format",null,context, "urn:zimbra");
-        node.setAttribute("type", "js");
-        var requestStr = soapDoc.getXml();
-        var ctxt = this;
-        $.ajax({url: '/service/soap/GetInfoRequest', data: requestStr, type: 'POST', context: ctxt}).complete(function(response){
-            $.extend(params.batchInfoResponse.Body.BatchResponse.GetInfoResponse[0], JSON.parse(response.responseText).Body.GetInfoResponse);
-            var response = params.batchInfoResponse.Body.BatchResponse.GetInfoResponse[0];
-            var newLocale = response.attrs._attrs['zimbraLocale'];
-            var newSkin = response.prefs._attrs['zimbraPrefSkin'];
-            var change = false;
-            if (newLocale != window.appRequestLocaleId){
-                change = true;
-            } else if (newSkin != window.appCurrentSkin){
-                change = true;
-            }
-            appCtxt.reloadOfflineAppCache(newLocale, newSkin, change);
-            if (!change){
-                new ZmZimbraMail(params);
-            }
-        });
-    } else {
-            new ZmZimbraMail(params);
-    }
-
+	// Go!
+	new ZmZimbraMail(params);
 };
 
 /**
@@ -261,19 +211,7 @@ function() {
 		ZmCsfeCommand.noAuth = true;
 	}
 
-	ZmZimbraMail.closeChildWindows();
-	
-	ZmZimbraMail.stayOnPagePrompt = false;
-	ZmZimbraMail.setExitTimer(false);
-	ZmZimbraMail.sessionTimerInvoked = false;
-	window._zimbraMail = window.onload = window.onunload = window.onresize = window.document.onkeypress = null;
-	delete _zimbraMail;
-};
-
-ZmZimbraMail.closeChildWindows =
-function() {
-	
-	var childWinList = window._zimbraMail && window._zimbraMail._childWinList;
+	var childWinList = window._zimbraMail ? window._zimbraMail._childWinList : null;
 	if (childWinList) {
 		// close all child windows
 		for (var i = 0; i < childWinList.size(); i++) {
@@ -283,6 +221,11 @@ function() {
 			childWin.win.close();
 		}
 	}
+	
+	ZmZimbraMail.stayOnPagePrompt = false;
+	ZmZimbraMail.setExitTimer(false);
+	ZmZimbraMail.sessionTimerInvoked = false;
+	window._zimbraMail = window.onload = window.onunload = window.onresize = window.document.onkeypress = null;
 };
 
 /**
@@ -342,26 +285,21 @@ function(params) {
 	}
 
 	skin.show("skin", true);
-	appCtxt.getShell().relayout();
-
 	if (!this._components) {
 		this._components = {};
 		this._components[ZmAppViewMgr.C_SASH] = new DwtSash({parent:this._shell, style:DwtSash.HORIZONTAL_STYLE,
 															 className:"console_inset_app_l", threshold:20, id:ZmId.MAIN_SASH});
-		this._components[ZmAppViewMgr.C_SASH].addListener(DwtEvent.ONMOUSEUP, ZmZimbraMail._folderTreeSashRelease);
 		this._components[ZmAppViewMgr.C_BANNER] = this._createBanner();
 		this._components[ZmAppViewMgr.C_USER_INFO] = this._userNameField =
 			this._createUserInfo("BannerTextUser", ZmAppViewMgr.C_USER_INFO, ZmId.USER_NAME);
 		this._components[ZmAppViewMgr.C_QUOTA_INFO] = this._usedQuotaField =
 			this._createUserInfo("BannerTextQuota", ZmAppViewMgr.C_QUOTA_INFO, ZmId.USER_QUOTA);
+		this._components[ZmAppViewMgr.C_STATUS] = this.statusView =
+			new ZmStatusView(this._shell, "ZmStatus", Dwt.ABSOLUTE_STYLE, ZmId.STATUS_VIEW);
 
 		if (appCtxt.isOffline) {
 			this._initOfflineUserInfo();
 		}
-	}
-
-	if (!this.statusView) {
-		this.statusView = new ZmStatusView(this._shell, "ZmStatus", Dwt.ABSOLUTE_STYLE, ZmId.STATUS_VIEW);
 	}
 
 	this._registerOrganizers();
@@ -373,7 +311,6 @@ function(params) {
 	ZmZimbraMail.registerViewsToTypeMap();
 
 	this._getStartApp(params);
-	appCtxt.startApp = params.startApp;
 
 	this._postRenderCallbacks = [];
 	this._postRenderLast = 0;
@@ -386,10 +323,14 @@ function(params) {
 				if (appCtxt.get(ZmSetting.CALENDAR_ENABLED, null, account)) {
 					this.handleCalendarComponents();
 				}
-				if (appCtxt.get(ZmSetting.TASKS_ENABLED, null, account)) {
+                if (appCtxt.get(ZmSetting.TASKS_ENABLED, null, account)) {
 					this.handleTaskComponents();
 				}
-				this._appViewMgr.loadingView.setVisible(false);
+				var sc = appCtxt.getSearchController();
+				sc.getSearchToolbar().initAutocomplete();
+				if (!appCtxt.isChildWindow) {
+					sc.peopleSearchToolBar.initAutocomplete();
+				}
 			});
 		this.addPostRenderCallback(callback, 0, 0, true);
 	}
@@ -397,74 +338,18 @@ function(params) {
     // NOTE: We must go through the request mgr for default handling
     var getInfoResponse = AjxUtil.get(params, "getInfoResponse");
     if (getInfoResponse) {
-        this._requestMgr.sendRequest({response:getInfoResponse, offlineCache:true});
+        this._requestMgr.sendRequest({response:getInfoResponse});
     }
 
-    if (appCtxt.isOfflineMode(true)){
-        var respCallback = new AjxCallback(this, this._handleResponseGetMetaData, params);
-        var callback = appCtxt.accountList.mainAccount.loadMetaData.bind(appCtxt.accountList.mainAccount, respCallback);
-        //var store = "inbox" + (appCtxt.get(ZmSetting.GROUP_MAIL_BY) || "message");
-        var store = "inboxmessage";
-        params._skipResponse = true;
-        appCtxt._offlineHandler._syncSearchRequest(callback, store, params);
-        appCtxt._offlineHandler.syncFoldersMetaData();
-
-    } else {
-        var respCallback = new AjxCallback(this, this._handleResponseGetMetaData, params);
-        appCtxt.accountList.mainAccount.loadMetaData(respCallback);
-    }
 	// fetch meta data for the main account
+	var respCallback = new AjxCallback(this, this._handleResponseGetMetaData, params);
+	appCtxt.accountList.mainAccount.loadMetaData(respCallback);
 
-    this._initDelegatedSenderAddrs();
     if(appCtxt.isOffline) {
         var updatePref = appCtxt.get(ZmSetting.OFFLINE_UPDATE_NOTIFY);
         this._offlineUpdateChannelPref(updatePref)
     }
 };
-
-
-ZmZimbraMail.prototype._initDelegatedSenderAddrs =
-function() {
-    var soapDoc = AjxSoapDoc.create("DiscoverRightsRequest", "urn:zimbraAccount");
-    soapDoc.set("right","sendAs" );
-    soapDoc.set("right","sendOnBehalfOf");
-    soapDoc.set("right","sendAsDistList");
-    soapDoc.set("right","sendOnBehalfOfDistList");
-    var batchCmd = new ZmBatchCommand(null, appCtxt.accountList.mainAccount.name);
-    var callback = this._initDelegatedSenderEmails.bind(this);
-	batchCmd.addNewRequestParams(soapDoc, callback, callback);
-    batchCmd.run();
-};
-
-ZmZimbraMail.prototype._getDelegatedSenderEmails =
-function(sendRights, sendRight) {
-    var emails = [];
-        if (sendRights && sendRights.length){
-            for (var i=0;i<sendRights.length; i++){
-                var target = sendRights[i].target;
-                var right =  sendRights[i].right;
-                if (right == sendRight || right == (sendRight + "DistList")){
-                    for (var j=0;j < target.length; j++){
-                        var emailList = target[j].email;
-                        for (var k=0; k < emailList.length; k++){
-                            var email = emailList[k].addr;
-                            emails.push(email);
-                        }
-                    }
-                }
-
-            }
-        }
-    return emails;
-};
-
-ZmZimbraMail.prototype._initDelegatedSenderEmails =
-function(result){
-    var response = result.getResponse().DiscoverRightsResponse;
-    var sendRights = response && response.targets;
-    appCtxt.sendAsEmails = this._getDelegatedSenderEmails(sendRights, 'sendAs');
-    appCtxt.sendOboEmails = this._getDelegatedSenderEmails(sendRights, 'sendOnBehalfOf');
-}
 
 ZmZimbraMail.registerViewsToTypeMap = function() {
 	// organizer types based on view
@@ -534,6 +419,20 @@ ZmZimbraMail.prototype._initializeSettings = function(params) {
         DBG.setTitle("Debug (" + branch + ")");
     }
 
+    // Note: removing cookie support will affect zdesktop when connecting 4.x remote server
+    if (params.offlineMode) {
+        var apps = AjxCookie.getCookie(document, ZmSetting.APPS_COOKIE);
+        DBG.println(AjxDebug.DBG1, "apps: " + apps);
+        if (apps) {
+            for (var appsetting in ZmSetting.APP_LETTER) {
+                var letter = ZmSetting.APP_LETTER[appsetting];
+                if (apps.indexOf(letter) != -1) {
+                    settings.getSetting(appsetting).setValue(true);
+                }
+            }
+        }
+    }
+
     // setting overrides
     if (params.settings) {
         for (var name in params.settings) {
@@ -553,6 +452,7 @@ ZmZimbraMail.prototype._initializeSettings = function(params) {
     if (params.devMode == "1") {
         DBG.println(AjxDebug.DBG1, "DEV MODE");
         appCtxt.set(ZmSetting.DEV, true);
+        appCtxt.set(ZmSetting.POLLING_INTERVAL, 0);
     }
 
     // Handle protocol mode - standardize on trailing :
@@ -618,7 +518,7 @@ ZmZimbraMail.prototype.showMiniCalendar =
 function() {
 	var calMgr = appCtxt.getCalManager();
 	calMgr.getMiniCalendar();
-	appCtxt.getAppViewMgr().displayComponent(ZmAppViewMgr.C_TREE_FOOTER, true);
+	appCtxt.getAppViewMgr().showTreeFooter(true);
     calMgr.highlightMiniCal();
     calMgr.startDayRollTimer();
 };
@@ -653,15 +553,6 @@ function(params, ex) {
 	return false;
 };
 
-ZmZimbraMail.prototype._isProtocolHandlerAccessed =
-function() {
-    if (AjxEnv.isFirefox){
-      if (!localStorage || localStorage['zimbra_mailto_init']) return true;
-      localStorage['zimbra_mailto_init'] = true;
-    }
-    return false;
-};
-
 /**
  * @private
  */
@@ -690,23 +581,12 @@ function(params, result) {
 ZmZimbraMail.prototype._handleResponseStartup =
 function(params, result) {
 
-	params = params || {};
-	if (params.settingOverrides) {
+	if (params && params.settingOverrides) {
 		this._needOverviewLayout = true;
 		for (var id in params.settingOverrides) {
 			var setting = appCtxt.getSetting(id);
 			if (setting) {
 				setting.setValue(params.settingOverrides[id]);
-			}
-		}
-	}
-	if (params.preset) {
-		var presets = params.preset.split(",");
-		for (var i = 0; i < presets.length; i++) {
-			var fields = presets[i].split(":");
-			var setting = appCtxt.getSettings().getSetting(fields[0]);
-			if (setting && setting.canPreset) {
-				setting.setValue(fields[1]);
 			}
 		}
 	}
@@ -737,7 +617,7 @@ function(params, result) {
         AjxTimezone.DEFAULT = AjxTimezone.getClientId(AjxTimezone.DEFAULT_RULE.serverId);
     }
 
-	this.notify(ZmAppEvent.PRE_STARTUP);
+	this._evtMgr.notifyListeners(ZmAppEvent.PRE_STARTUP, this._evt);
 
 	params.result = result;
 	var respCallback = new AjxCallback(this, this._handleResponseStartup1, params);
@@ -745,16 +625,6 @@ function(params, result) {
 	// startup and packages have been optimized for quick mail display
 	if (this._doingPostRenderStartup) {
 		this.addAppListener(params.startApp, ZmAppEvent.POST_RENDER, new AjxListener(this, this._postRenderStartup));
-        if (appCtxt.isOfflineMode(true)){
-            params.searchResponse.Body.SearchResponse.m = appCtxt._msgSearchResponse;
-            /*
-            if (params.searchResponse.Body.SearchResponse.m){
-                 params.searchResponse.Body.SearchResponse.m = appCtxt._msgSearchResponse;
-            } else {
-                 params.searchResponse.Body.SearchResponse.c = appCtxt._msgSearchResponse;
-            } */
-
-        }
 		this._searchResponse = params.searchResponse;
 	} else {
 		AjxDispatcher.require("Startup2");
@@ -767,7 +637,7 @@ function(params, result) {
 		function() {
 			this.runAppFunction("startup", false, params.result);
 		});
-	this.addPostRenderCallback(callback, 2, 0, true);
+	this.addPostRenderCallback(callback, 2, 100, true);
 
 	callback = new AjxCallback(this,
 		function() {
@@ -781,35 +651,21 @@ function(params, result) {
 		function() {
 			AjxDispatcher.enableLoadFunctions(true);
 			appCtxt.inStartup = false;
-			this.notify(ZmAppEvent.POST_STARTUP);
-
-			var sc = appCtxt.getSearchController();
-			sc.getSearchToolbar().initAutocomplete();
+			this._evtMgr.notifyListeners(ZmAppEvent.POST_STARTUP, this._evt);
 
 			// bug fix #31996
 			if (appCtxt.isOffline) {
-				sc.resetSearchToolbar();
+				appCtxt.getSearchController().resetSearchToolbar();
 			}
 
-			if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
-				AjxDispatcher.run(appCtxt.multiAccounts ? "GetContactsForAllAccounts" : "GetContacts");
-			}
+			var contactListPkg = appCtxt.multiAccounts ? "GetContactsForAllAccounts" : "GetContacts";
+			AjxDispatcher.run(contactListPkg);
 	
 			if (appCtxt.get(ZmSetting.OFFLINE_SUPPORTS_MAILTO) && appCtxt.isOffline) {
 				this.handleOfflineMailTo(location.search);
 			}
 		});
 	this.addPostRenderCallback(callback, 5, 100);
-
-    if (appCtxt.get(ZmSetting.MAIL_ENABLED) && !appCtxt.isExternalAccount() && navigator.registerProtocolHandler && !this._isProtocolHandlerAccessed()){
-        callback = new AjxCallback(this,
-            function() {
-                try {
-                    navigator.registerProtocolHandler("mailto",AjxUtil.formatUrl({qsArgs:{view:'compose',to:'%s'}, qsReset:true}) ,ZmMsg.zimbraTitle);
-                } catch (err){};
-        });
-        this.addPostRenderCallback(callback, 6, 100);
-    }
 
 	this.activateApp(params.startApp, false, respCallback, this._errorCallback, params);
 
@@ -820,7 +676,7 @@ function(params, result) {
 	{
 		this.handleCalendarComponents();
 	}
-	if (appCtxt.get(ZmSetting.TASKS_ENABLED, null, account) &&
+    if (appCtxt.get(ZmSetting.TASKS_ENABLED, null, account) &&
 		!this._doingPostRenderStartup &&
 		(params.startApp != ZmApp.TASKS))
 	{
@@ -840,29 +696,15 @@ function(params, result) {
 		}
 		if (imapAccounts) {
 			for (var i=0; i<imapAccounts.length; i++) {
-				sourceMap[imapAccounts[i].id] = imapAccounts[i];	
+				sourceMap[imapAccounts[i].id] = imapAccounts[i];
 			}
 		}
-		
+
 		if (pop3Accounts || imapAccounts) {
 			var action = new AjxTimedAction(ds, ds.checkStatus, [sourceMap, 2000]);
 			AjxTimedAction.scheduleAction(action, 10000);  //kick off check in 10 seconds
 		}
 	}
-
-    if (appCtxt.isOfflineSupported() && appCtxt._offlineHandler){
-        callback = new AjxCallback(this,
-		function() {
-            if (appCtxt.isOfflineMode(true)){
-                appCtxt._offlineHandler.initOfflineFolders();
-            } else {
-                appCtxt._offlineHandler.cacheMailData();
-            }
-
-		});
-        this.addPostRenderCallback(callback, 7, 100);
-    }
-
 };
 
 /**
@@ -872,9 +714,10 @@ function(params, result) {
  */
 ZmZimbraMail.prototype.handleTaskComponents =
 function() {
-	var reminderAction = new AjxTimedAction(this, this.showTaskReminder);
-	var delay = appCtxt.isOffline ? 0 : ZmTasksApp.REMINDER_START_DELAY;
-	AjxTimedAction.scheduleAction(reminderAction, delay);
+    // reminder controlled by calendar preferences setting
+    var reminderAction = new AjxTimedAction(this, this.showTaskReminder);
+    var delay = appCtxt.isOffline ? 0 : ZmTasksApp.REMINDER_START_DELAY;
+    AjxTimedAction.scheduleAction(reminderAction, delay);
 };
 
 /**
@@ -890,10 +733,11 @@ function() {
         AjxTimedAction.scheduleAction(miniCalAction, delay);
 	}
 
-	AjxDispatcher.require(["ContactsCore", "MailCore", "CalendarCore", "Calendar"]);
-	var reminderAction = new AjxTimedAction(this, this.showReminder);
-	var delay = appCtxt.isOffline ? 0 : ZmCalendarApp.REMINDER_START_DELAY;
-	AjxTimedAction.scheduleAction(reminderAction, delay);
+	// reminder controlled by calendar preferences setting
+    var reminderAction = new AjxTimedAction(this, this.showReminder);
+    var delay = appCtxt.isOffline ? 0 : ZmCalendarApp.REMINDER_START_DELAY;
+    AjxTimedAction.scheduleAction(reminderAction, delay);
+
 };
 
 /**
@@ -915,29 +759,20 @@ function(params) {
 
 	this._setExternalLinks();
 	this.setUserInfo();
-	this._setRefresh();
 
 	if (appCtxt.get(ZmSetting.SEARCH_ENABLED)) {
-		this._components[ZmAppViewMgr.C_SEARCH] = appCtxt.getSearchController().getSearchToolbar();
+		this._components[ZmAppViewMgr.C_SEARCH] = appCtxt.getSearchController().searchPanel;
+	}
+
+	if (appCtxt.get(ZmSetting.PEOPLE_SEARCH_ENABLED) &&
+		(appCtxt.get(ZmSetting.CONTACTS_ENABLED) ||
+		appCtxt.get(ZmSetting.GAL_ENABLED) ||
+		appCtxt.isOffline))
+	{
+		this._components[ZmAppViewMgr.C_PEOPLE_SEARCH] = appCtxt.getSearchController().peopleSearchToolBar;
 	}
 	else {
-		Dwt.hide(ZmId.SKIN_SEARCH);
-	}
-	
-	var newButton = this.getNewButton();
-	var tbParams = {
-		parent:				this._shell,
-		buttons:			ZmOperation.NONE,
-		controller:			this,
-		refElementId:		ZmId.SKIN_APP_NEW_BUTTON
-	};
-	var tb = this._newToolbar = new ZmButtonToolBar(tbParams);
-	newButton.reparent(tb);
-	this._components[ZmAppViewMgr.C_NEW_BUTTON] = tb;
-	
-	if (params.unitTest) {
-		var utm = window.unitTestManager;
-		appCtxt.addZimletsLoadedListener(utm.runTests.bind(utm), 0);
+		Dwt.hide(ZmId.SKIN_PEOPLE_SEARCH);
 	}
 
 	this.getKeyMapMgr();	// make sure keyboard handling is initialized
@@ -945,49 +780,25 @@ function(params) {
 	this.setSessionTimer(true);
 	ZmZimbraMail.killSplash();
 
-	// Give apps a chance to add their own UI components.
+	// Give apps a chance to add their own ui components.
 	this.runAppFunction("addComponents", false, this._components);
 
-	// make the UI appear
-	this._appViewMgr.setViewComponents(ZmAppViewMgr.GLOBAL, this._components, true);
+	// next line makes the UI appear
+	var viewComponents = this._appViewMgr._components;
+	this._appViewMgr.addComponents(this._components, true);
+	if (viewComponents) {
+		// While adding the basic components we need to make sure the already
+		// set view components are again fitted to perfection.
+		this._appViewMgr.addComponents(viewComponents, true);
+	}
 
 	this._checkLicense();
 
 	if (!this._doingPostRenderStartup) {
 		this._postRenderStartup();
 	}
-};
-
-/**
- * set the refresh button at the masthead.
- */
-ZmZimbraMail.prototype._setRefresh =
-function() {
-	var containerEl = document.getElementById(ZmId.SKIN_REFRESH);
-	if (!containerEl) {
-		return;
-	}
-	var button = this._refreshButton = new DwtToolBarButton({parent:DwtShell.getShell(window), id: ZmId.OP_CHECK_MAIL}); //use ToolbarButton just for the style, for now it looks ok.
-	button.setImage("RefreshAll");
-	button.setToolTipContent(ZmMsg.checkMailPrefUpdate, true);
-
-	button.reparentHtmlElement(ZmId.SKIN_REFRESH);
-
-	var refreshListener = this._refreshListener.bind(this);
-	button.addSelectionListener(refreshListener);
 
 };
-
-
-/**
- * refresh button listener. call runRefresh() of all the enabled apps that have this method defined.
- */
-ZmZimbraMail.prototype._refreshListener =
-function() {
-	this.runAppFunction("runRefresh");
-};
-
-
 
 // popup a warning dialog if there is a problem with the license
 ZmZimbraMail.prototype._checkLicense =
@@ -1086,7 +897,7 @@ function(online) {
         this.sendClientEventNotify(this._currentNetworkStatus);
 	}
 
-	this._networkStatusIcon.setToolTipContent(online ? ZmMsg.networkStatusOffline : ZmMsg.networkStatusOnline, true);
+	this._networkStatusIcon.setToolTipContent(online ? ZmMsg.networkStatusOffline : ZmMsg.networkStatusOnline);
 	this._networkStatusIcon.getHtmlElement().innerHTML = AjxImg.getImageHtml(online ? "Connect" : "Disconnect");
 	var netStatus = online ? ZmMsg.imStatusOnline : ZmMsg.imStatusOffline;
 	this._networkStatusText.getHtmlElement().innerHTML = netStatus.substr(0, 1).toUpperCase() + netStatus.substr(1);
@@ -1181,6 +992,41 @@ function(account) {
 			return app;
 		}
 	}
+}
+
+/**
+ * Performs a 'running restart' of the app by clearing state and calling the startup method.
+ * This method is run after a logoff, or a change in what's supported.
+ * 
+ * @private
+ */
+ZmZimbraMail.prototype.restart =
+function(settings) {
+	// need to decide what to clean up, what to have startup load lazily
+	// could have each app do shutdown()
+	DBG.println(AjxDebug.DBG1, "RESTARTING APP");
+	this.reset();
+	this.startup({settingOverrides:settings});
+};
+
+/**
+ * Resets the controller.
+ * 
+ */
+ZmZimbraMail.prototype.reset =
+function() {
+
+	ZmCsfeCommand.clearSessionId();	// so we get a refresh block
+	appCtxt.accountList.resetTrees();
+
+	if (!appCtxt.rememberMe()) {
+		appCtxt.getLoginDialog().clearAll();
+	}
+	for (var app in this._apps) {
+		this._apps[app] = null;
+	}
+	this._activeApp = null;
+	this._appViewMgr.reset();
 };
 
 /**
@@ -1231,7 +1077,6 @@ function(funcName, force) {
 			}
 		}
 	}
-	appCtxt.notifyZimlets("runAppFunction", [funcName]);
 };
 
 /**
@@ -1262,11 +1107,9 @@ function(apps) {
 		var app = ZmApp.APPS[i];
 		var account = appCtxt.multiAccounts && appCtxt.accountList.mainAccount;
 		var appEnabled = ZmApp.SETTING[app] && appCtxt.get(ZmApp.SETTING[app], null, account);
-        var forceEnabled = app == ZmApp.BRIEFCASE;
 		var upsellEnabled = ZmApp.UPSELL_SETTING[app] && appCtxt.get(ZmApp.UPSELL_SETTING[app]);
-		if (appEnabled || upsellEnabled || forceEnabled) {
-			ZmApp.ENABLED_APPS[app] = appEnabled || upsellEnabled;
-
+		if (appEnabled || upsellEnabled) {
+			ZmApp.ENABLED_APPS[app] = true;
 			this._createApp(app);
 			this._apps[app].isUpsell = (!appEnabled && upsellEnabled);
 		}
@@ -1565,7 +1408,7 @@ function(attachment, controller) {
         req.setRequestHeader("Cache-Control", "no-cache");
         req.setRequestHeader("X-Requested-With", "XMLHttpRequest");
         req.setRequestHeader("Content-Type",  (contentType || "application/octet-stream") );
-        req.setRequestHeader("Content-Disposition", 'attachment; filename="'+ AjxUtil.convertToEntities(filename) + '"');
+        req.setRequestHeader("Content-Disposition", 'attachment; filename="'+ filename + '"');
 
         var reqObj = req;
         req.onreadystatechange = AjxCallback.simpleClosure(this._handleUploadResponse, this, reqObj, controller);
@@ -1627,7 +1470,7 @@ ZmZimbraMail.prototype._handleUploadResponse = function(req, controller) {
                     }
                     var callback = new AjxCallback (controller,controller._handleResponseSaveDraftListener);
         		    controller.sendMsg(attachment_list, ZmComposeController.DRAFT_TYPE_MANUAL,callback);
-                    this.getAppViewMgr().pushView(controller.getCurrentViewId());
+                    this.getAppViewMgr().pushView(controller.viewId);
                 }
             }
         }
@@ -1752,11 +1595,13 @@ function() {
 	try {
         if (this._pollInstantNotifications) {
             var method = soapDoc.getMethod();
-			var sessionId = ZmCsfeCommand.getSessionId();
-			if (sessionId) {
-            	method.setAttribute("wait", 1);
-            	method.setAttribute("limitToOneBlocked", 1);
-			}
+            method.setAttribute("wait", 1);
+            method.setAttribute("limitToOneBlocked", 1);
+            if (window.isNotifyDebugOn) {
+                var str = appCtxt.getNotifyDebug();
+                soapDoc.set("DEBUG", str);
+                appCtxt.clearNotifyDebug();
+            }
         }
 		var params = {
 			soapDoc: soapDoc,
@@ -1927,11 +1772,7 @@ function() {
 							 orgClass:			"ZmSearchFolder",
 							 treeController:	"ZmSearchTreeController",
 							 labelKey:			"searches",
-							 hasColor:			true,
-							 defaultColor:		ZmOrganizer.C_NONE,
 							 treeType:			ZmOrganizer.FOLDER,
-							 folderKey:			"search",
-							 disableShare:		true,
  							 dropTargets:		[ZmOrganizer.FOLDER, ZmOrganizer.SEARCH],
 							 createFunc:		"ZmSearchFolder.create",
 							 compareFunc:		"ZmFolder.sortCompare",
@@ -2080,11 +1921,11 @@ function(appName, force, callback, errorCallback, params) {
 			var respCallback = new AjxCallback(this, this._handleResponseActivateApp, [callback, appName]);
 			var eventType = [appName, ZmAppEvent.PRE_LAUNCH].join("_");
 			this._evt.item = this._apps[appName];
-			this.notify(eventType);
+			this._evtMgr.notifyListeners(eventType, this._evt);
 			params = params || {};
 			params.searchResponse = this._searchResponse;
 			this._apps[appName].launch(params, respCallback);
-			delete this._searchResponse;
+			delete this.searchResponse;
 		}
 	}
 };
@@ -2104,7 +1945,7 @@ function(callback, appName) {
 
 	var eventType = [appName, ZmAppEvent.POST_LAUNCH].join("_");
 	this._evt.item = this._apps[appName];
-	this.notify(eventType);
+	this._evtMgr.notifyListeners(eventType, this._evt);
 };
 
 /**
@@ -2146,7 +1987,7 @@ function(appName, view, isTabView) {
 		if (appEnabled) {
 			var app = this._apps[this._activeApp];
 
-			if (appCtxt.get(ZmSetting.SEARCH_ENABLED) && appName != ZmApp.SEARCH) {
+			if (appCtxt.get(ZmSetting.SEARCH_ENABLED)) {
 				var searchType = app ? app.getInitialSearchType() : null;
 				if (!searchType) {
 					searchType = ZmApp.DEFAULT_SEARCH[appName];
@@ -2170,14 +2011,14 @@ function(appName, view, isTabView) {
 						function() {
 							app.activate(true);
 						});
-					this.addPostRenderCallback(callback, 1, 0, true);
+					this.addPostRenderCallback(callback, 1, 100, true);
 				} else {
 					app.activate(true);
 				}
 			}
 		}
 		this._evt.item = this._apps[appName];
-		this.notify(ZmAppEvent.ACTIVATE);
+		this._evtMgr.notifyListeners(ZmAppEvent.ACTIVATE, this._evt);
 	}
 	else if (this._activeApp && this._apps[this._activeApp]) {
 		this._apps[this._activeApp].stopAlert();
@@ -2192,8 +2033,7 @@ function(appName, view, isTabView) {
  */
 ZmZimbraMail.prototype.getAppChooserButton =
 function(id) {
-	var chooser = this._components[ZmAppViewMgr.C_APP_CHOOSER];
-	return chooser && chooser.getButton(id);
+	return this._components[ZmAppViewMgr.C_APP_CHOOSER].getButton(id);
 };
 
 /**
@@ -2205,7 +2045,7 @@ function(id) {
 ZmZimbraMail.prototype.appRendered =
 function(appName) {
 	var eventType = [appName, ZmAppEvent.POST_RENDER].join("_");
-	this.notify(eventType);
+	this._evtMgr.notifyListeners(eventType, this._evt);
 
 	if (window._facadeCleanup) {
 		window._facadeCleanup();
@@ -2244,19 +2084,20 @@ function(appName) {
  */
 ZmZimbraMail.prototype._setExternalLinks =
 function() {
-    // bug: 41313 - admin console link
-    var adminUrl;
-    if (!appCtxt.isOffline &&
-        (appCtxt.get(ZmSetting.IS_ADMIN) ||
-         appCtxt.get(ZmSetting.IS_DELEGATED_ADMIN))) {
-
-        adminUrl = appCtxt.get(ZmSetting.ADMIN_REFERENCE);
-        if (!adminUrl) {
-            adminUrl = ["https://", location.hostname, ":7071"].join("");
-        }
-    }
 	var el = document.getElementById("skin_container_links");
 	if (el) {
+		// bug: 41313 - admin console link
+		var adminUrl;
+		if (!appCtxt.isOffline &&
+			(appCtxt.get(ZmSetting.IS_ADMIN) ||
+			 appCtxt.get(ZmSetting.IS_DELEGATED_ADMIN)))
+		{
+			adminUrl = appCtxt.get(ZmSetting.ADMIN_REFERENCE);
+			if (!adminUrl) {
+				adminUrl = ["https://", location.hostname, ":7071"].join("");
+			}
+		}
+
 		var data = {
 			showOfflineLink: (!appCtxt.isOffline && appCtxt.get(ZmSetting.SHOW_OFFLINE_LINK)),
 			helpIcon: (appCtxt.getSkinHint("helpButton", "hideIcon") ? null : "Help"),
@@ -2272,186 +2113,11 @@ function() {
 		this._helpButton = this.getHelpButton(DwtShell.getShell(window));
 		this._helpButton.reparentHtmlElement("skin_container_help_button");
 	}
-
-    el = document.getElementById("skin_dropMenu");
-    if (el) {
-		this._helpButton = this.getDropMenuOptions(DwtShell.getShell(window), el, adminUrl);
-		//this._helpButton.reparentHtmlElement("skin_dropMenu");
-	}
 };
 
 
 ZmZimbraMail.ONLINE_HELP_URL = "http://help.zimbra.com/?";
-ZmZimbraMail.NEW_FEATURES_URL = "http://www.zimbra.com/products/whats_new.html?";
-
-/**
-* Adds a "help" submenu.
-*
-* @param {DwtComposite}		parent		the parent widget
-* @return {ZmActionMenu}	the menu
-*/
-ZmZimbraMail.prototype.getDropMenuOptions =
-function(parent, parentElement, adminUrl) {
-
-	var button = new DwtLinkButton({parent: parent, className: DwtButton.LINK_BUTTON_CLASS, parentElement: parentElement});
-	button.dontStealFocus();
-	button.setSize(Dwt.DEFAULT);
-	button.setAlign(DwtLabel.ALIGN_LEFT);
-	button.setText("");
-	var menu = new ZmPopupMenu(button);
-
-	var helpListener = new AjxListener(this, this._helpListener);
-	button.addSelectionListener(helpListener);
-
-    var mi;
-    if(adminUrl) {
-	    mi = menu.createMenuItem("adminLink", {text: ZmMsg.adminLinkLabel});
-	    mi.addSelectionListener(new AjxListener(null, ZmZimbraMail.adminLinkCallback, adminUrl));
-
-        menu.createSeparator();
-    }
-
-    mi = menu.createMenuItem("documentation", {text: ZmMsg.productHelp});
-	mi.addSelectionListener(helpListener);
-
-	var mi = menu.createMenuItem("onlinehelp", {text: ZmMsg.onlineHelp});
-	mi.addSelectionListener(new AjxListener(this, this._onlineHelpListener));
-
-
-	mi = menu.createMenuItem("newFeatures", {text: ZmMsg.newFeatures});
-	mi.addSelectionListener(new AjxListener(this, this._newFeaturesListener));
-
-	menu.createSeparator();
-
-	mi = menu.createMenuItem("about", {text: ZmMsg.about});
-	mi.addSelectionListener(new AjxListener(this, this._aboutListener));
-
-    menu.createSeparator();
-
-    mi = menu.createMenuItem("offlineSettings", {text: ZmMsg.offlineSettings});
-    mi.addSelectionListener(new AjxListener(this, this._offlineSettingsListener));
-
-	if (AjxEnv.isFirefox && AjxEnv.browserVersion >= 23.0) {
-		menu.createSeparator();
-
-		mi = menu.createMenuItem("socialfoxSettings", {text: ZmMsg.socialfoxEnableSidebar});
-		mi.addSelectionListener(this._socialfoxSettingsListener.bind(this));
-	}
-
-	if (appCtxt.get(ZmSetting.CHANGE_PASSWORD_ENABLED)) {
-        mi = menu.createMenuItem("changePassword", {text: ZmMsg.changePassword});
-        mi.addSelectionListener(new AjxListener(this, this._changePasswordListener));
-	}
-
-    mi = menu.createMenuItem("logOff", {text: ZmMsg.logOff});
-	mi.addSelectionListener(new AjxListener(null, ZmZimbraMail.logOff));
-
-	button.setMenu(menu);
-	return button;
-};
-
-ZmZimbraMail.prototype.getNewButton =
-function() {
-
-	var newButton = this._newButton;
-	if (!newButton) {
-		var buttonId = ZmId.getButtonId(null, ZmOperation.NEW_MENU);
-		var buttonParams = {
-			parent:		appCtxt.getShell(),
-			id:			buttonId,
-			posStyle:	DwtControl.ABSOLUTE_STYLE,
-			className:	"ZToolbarButton ZNewButton"
-		};
-		newButton = this._newButton = new DwtToolBarButton(buttonParams);
-		newButton.setText(ZmMsg._new);
-
-		ZmOperation.addNewMenu(newButton);
-
-		var selectionListener = this._newButtonListener.bind(this);
-		var listener = this._newDropDownListener.bind(this, selectionListener);
-		this._newDropDownListener = listener;
-		newButton.addSelectionListener(selectionListener);
-		newButton.addDropDownSelectionListener(listener);
-	}
-
-	return newButton;
-};
-
-
-
-/**
- * Creates the New menu's drop down menu the first time the drop down arrow is used,
- * then removes itself as a listener.
- *
- * @private
- */
-ZmZimbraMail.prototype._newDropDownListener =
-function(selectionListener, event) {
-
-	var newButton = this.getNewButton();
-	var menu = newButton.getMenu();
-	var items = menu.getItems();
-	for (var i = 0; i < menu.getItemCount(); i++) {
-		items[i].addSelectionListener(selectionListener);
-	}
-
-	var listener = this._newDropDownListener;
-	newButton.removeDropDownSelectionListener(listener);
-	//Called explicitly as its a selection listener. Refer DwtButton._dropDownCellMouseDownHdlr()
-	newButton.popup();
-
-	delete this._newDropDownListener;
-};
-
-/**
- * Create some new thing, via a dialog. If just the button has been pressed (rather than
- * a menu item), the action taken depends on the app.
- *
- * @param {DwtUiEvent}	ev		the ui event
- * @param {constant}	op		the operation ID
- * @param {Boolean}		newWin	<code>true</code> if in a separate window
- *
- * @private
- */
-ZmZimbraMail.prototype._newButtonListener =
-function(ev, op, params) {
-
-	if (!ev && !op) { return; }
-
-	op = op || ev.item.getData(ZmOperation.KEY_ID);
-	if (!op || op == ZmOperation.NEW_MENU) {
-		op = ZmController._defaultNewId;
-	}
-
-	var app = ZmApp.OPS_R[op];
-	if (app) {
-		params = params || {};
-		params.ev = ev;
-		appCtxt.getApp(app).handleOp(op, params);
-	} else {
-		var ctlr = appCtxt.getCurrentController();
-		if (ctlr) {
-			ctlr._newListener(ev, op);
-		}
-	}
-};
-
-/**
- * Set up the New button based on the current app.
- */
-ZmZimbraMail.prototype.setNewButtonProps =
-function(params) {
-	var newButton = this.getNewButton();
-	if (newButton) {
-		newButton.setText(params.text);
-		newButton.setToolTipContent(params.tooltip);
-		newButton.setImage(params.icon);
-		newButton.setEnabled(!params.disabled);
-		ZmController._defaultNewId = params.defaultId;
-		params.hidden ? newButton.setVisibility(false) : newButton.setVisibility(true);
-	}
-};
-
+ZmZimbraMail.NEW_FEATURES_URL = "http://www.zimbra.com/docs/whats-new/?";
 
 /**
 * Adds a "help" submenu.
@@ -2526,11 +2192,6 @@ function(ev) {
 	window.open(url);
 };
 
-ZmZimbraMail.prototype._changePasswordListener =
-function(ev) {
-    appCtxt.getChangePasswordWindow(ev);
-}
-
 ZmZimbraMail.prototype._aboutListener =
 function(ev) {
 	var dialog = appCtxt.getMsgDialog();
@@ -2541,18 +2202,6 @@ function(ev) {
 	dialog.setMessage(AjxMessageFormat.format(aboutMsg, [version, release]), DwtMessageDialog.INFO_STYLE, ZmMsg.about);
 	dialog.popup();
 
-};
-
-ZmZimbraMail.prototype._offlineSettingsListener =
-function(ev) {
-    var dialog = appCtxt.getOfflineSettingsDialog();
-    dialog.popup();
-};
-
-ZmZimbraMail.prototype._socialfoxSettingsListener =
-function(ev) {
-    var dialog = new ZmSocialfoxActivationDialog();
-    dialog.popup();
 };
 
 
@@ -2606,7 +2255,7 @@ function() {
 	var login = appCtxt.getLoggedInUsername();
 	var username = (appCtxt.get(ZmSetting.DISPLAY_NAME)) || login;
 	if (username) {
-        this._userNameField.getHtmlElement().innerHTML =  AjxStringUtil.htmlEncode(AjxStringUtil.clipByLength(username, 24));
+		this._userNameField.getHtmlElement().innerHTML =  AjxStringUtil.htmlEncode(AjxStringUtil.clipByLength(username, 24));
 		if (AjxEnv.isLinux) {	// bug fix #3355
 			this._userNameField.getHtmlElement().style.lineHeight = "13px";
 		}
@@ -2633,10 +2282,10 @@ function(login, username) {
 		quotaTemplateId = 'UsedLimited';
 		data.limit = AjxUtil.formatSize(data.quota, false, 1);
 		data.percent = Math.min(Math.round((data.usedQuota / data.quota) * 100), 100);
-		data.desc = AjxMessageFormat.format(ZmMsg.usingDescLimited, [data.size, '(' + data.percent + '%)', data.limit]);
+		data.desc = AjxMessageFormat.format(ZmMsg.quotaDescLimited, [data.percent+'%', data.limit]);
 	}
     else {
-		data.desc = AjxMessageFormat.format(ZmMsg.usingDescUnlimited, [data.size]);
+		data.desc = AjxMessageFormat.format(ZmMsg.quotaDescUnlimited, [data.size]);
 		quotaTemplateId = 'UsedUnlimited';
 	}
     this._usedQuotaField.getHtmlElement().innerHTML = AjxTemplate.expand('share.Quota#'+quotaTemplateId, data);
@@ -2682,11 +2331,6 @@ function(startTimer) {
  */
 ZmZimbraMail.logOff =
 function(ev, relogin) {
-	if (appCtxt.isChildWindow) {
-		window.close();
-		return;
-	}
-
 	ZmZimbraMail._isLogOff = true;
 
 	// bug fix #36791 - reset the systray icon when returning to Account Setup
@@ -2696,19 +2340,17 @@ function(ev, relogin) {
 		window.platform.icon().imageSpec = "resource://webapp/icons/default/launcher.ico";
 		window.platform.icon().title = null;
 	}
-    var urlParams = {
-                path:appContextPath,
-                qsArgs: {
-                        loginOp: relogin ? 'relogin' : 'logout'
-                    }
-                };
+
+	var urlParams = {
+		path: appContextPath,
+		qsArgs: {
+			loginOp: relogin ? 'relogin' : 'logout'
+		}
+	};
 	if (relogin) {
 		urlParams.qsArgs.username = appCtxt.getLoggedInUsername();
 	}
-    if(appCtxt.isExternalAccount()) {
-        var vAcctDomain = appCtxt.getUserDomain();
-        urlParams.qsArgs.virtualacctdomain = vAcctDomain ? vAcctDomain : "";
-    }
+
 	var url = AjxUtil.formatUrl(urlParams);
 	ZmZimbraMail.sendRedirect(url);	// will trigger onbeforeunload
 	if (AjxEnv.isFirefox) {
@@ -2737,16 +2379,6 @@ function() {
 
 
 /**
- * Return the confirmExitMethod that can be used for window.onbeforeunload
- *
- */
-ZmZimbraMail.getConfirmExitMethod =
-function(){
-    return this._confirmExitMethod;
-}
-
-
-/**
  * @private
  */
 ZmZimbraMail._onClickLogOff =
@@ -2757,30 +2389,21 @@ function() {
 		var ev = DwtUiEvent.getEvent();
 		ev.returnValue = false;
 	}
+	DBG.println(AjxDebug.DBG1, "ZmZimbraMail._onClickLogOff : invoking logout");
 	ZmZimbraMail.logOff();
 };
 
 /**
  * @private
  */
-ZmZimbraMail.adminLinkCallback =
-function(url) {
-	ZmZimbraMail.unloadHackCallback();
-	var ac = window.parentAppCtxt || window.appCtxt;
-	window.open(url);
-};
-
-/**
- * @private
- */
 ZmZimbraMail.helpLinkCallback =
-function(helpurl) {
+function() {
 	ZmZimbraMail.unloadHackCallback();
 
 	var ac = window.parentAppCtxt || window.appCtxt;
 	var url;
 	if (!ac.isOffline) {
-		try { url = helpurl || skin.hints.helpButton.url; } catch (e) { /* ignore */ }
+		try { url = skin.hints.helpButton.url; } catch (e) { /* ignore */ }
 		url = url || ac.get(ZmSetting.HELP_URI);
 		var sep = url.match(/\?/) ? "&" : "?";
 		url = [url, sep, "locid=", AjxEnv.DEFAULT_LOCALE].join("");
@@ -2845,12 +2468,11 @@ function(bStartTimer) {
 
 		DwtEventManager.addListener(DwtEvent.ONMOUSEUP, ZmZimbraMail._userEventHdlr);
 		this._shell.setHandler(DwtEvent.ONMOUSEUP, ZmZimbraMail._userEventHdlr);
-		if (AjxEnv.isIE)  {
-			document.attachEvent("onkeydown", ZmZimbraMail._userEventHdlr);
-		}
-		window.onkeydown = ZmZimbraMail._userEventHdlr;		
-	}
-	else {
+		if (AjxEnv.isIE)
+			this._shell.setHandler(DwtEvent.ONMOUSEDOWN, ZmZimbraMail._userEventHdlr);
+		else
+			window.onkeydown = ZmZimbraMail._userEventHdlr;
+	} else {
 		DBG.println(AjxDebug.DBG3, "INACTIVITY TIMER CANCELED (" + (new Date()).toLocaleString() + ")");
 
 		AjxTimedAction.cancelAction(this._sessionTimerId);
@@ -2858,10 +2480,10 @@ function(bStartTimer) {
 
 		DwtEventManager.removeListener(DwtEvent.ONMOUSEUP, ZmZimbraMail._userEventHdlr);
 		this._shell.clearHandler(DwtEvent.ONMOUSEUP);
-		if (AjxEnv.isIE) {
-			document.detachEvent("onkeydown", ZmZimbraMail._userEventHdlr);
-		}	
-		window.onkeydown = null;
+		if (AjxEnv.isIE)
+			this._shell.clearHandler(DwtEvent.ONMOUSEDOWN);
+		else
+			window.onkeydown = null;
 	}
 };
 
@@ -2932,7 +2554,7 @@ function(ex, continuation) {
 	var handled = false;
 	if (ex.code == ZmCsfeException.MAIL_NO_SUCH_FOLDER) {
 		// check for fault when getting folder perms
-		var organizerTypes = [ZmOrganizer.CALENDAR, ZmOrganizer.ADDRBOOK];
+		var organizerTypes = [ZmOrganizer.CALENDAR, ZmOrganizer.NOTEBOOK, ZmOrganizer.ADDRBOOK];
 		if (ex.data.itemId && ex.data.itemId.length) {
 			var itemId = ex.data.itemId[0];
 			var index = itemId.lastIndexOf(':');
@@ -2944,9 +2566,6 @@ function(ex, continuation) {
 			}
 		}
 	}
-    else if (ex.code === ZmCsfeException.EMPTY_RESPONSE) {
-        handled = true;
-    }
 	if (!handled) {
 		ZmController.prototype._handleException.apply(this, arguments);
 	}
@@ -2987,12 +2606,7 @@ function() {
 
 		ZmZimbraMail._endSession();
 	}
-    if (window.ZmDesktopAlert) {
-        ZmDesktopAlert.closeNotification();
-    }
-    if (appCtxt._offlineHandler){
-            ZmOffline.closeDB();
-    }
+	
 	ZmZimbraMail._endSessionDone = true;
 };
 
@@ -3020,7 +2634,7 @@ function() {
 	if (childWinList) {
 		for (var i = 0; i < childWinList.size(); i++) {
 			var childWin = childWinList.get(i);
-			if (childWin.win.ZmNewWindow && childWin.win.ZmNewWindow._confirmExitMethod()) {
+			if (childWin.win.ZmNewWindow._confirmExitMethod()) {
 				return false;
 			}
 		}
@@ -3076,7 +2690,6 @@ function() {
 	var logoUrl = appCtxt.getSkinHint("banner", "url") || appCtxt.get(ZmSetting.LOGO_URI);
 	var data = {url:logoUrl, isOffline:appCtxt.isOffline};
 	banner.getHtmlElement().innerHTML  = AjxTemplate.expand('share.App#Banner', data);
-	banner.getHtmlElement().style.height = '100%';
 	return banner;
 };
 
@@ -3134,6 +2747,7 @@ function(ev) {
 		if (id == ZmAppChooser.B_HELP) {
 			window.open(appCtxt.get(ZmSetting.HELP_URI));
 		} else if (id == ZmAppChooser.B_LOGOUT) {
+			DBG.println(AjxDebug.DBG1, "ZmZimbraMail : invoking logout.")
 			ZmZimbraMail.logOff();
 		} else if (id && ZmApp.ENABLED_APPS[id] && (id != this._activeTabId)) {
 			this.activateApp(id);
@@ -3141,12 +2755,11 @@ function(ev) {
 				appCtxt.getZimletMgr().notifyZimlets("onSelectApp", id);
 			}
 		} else {
-			var isCloseButton = (DwtUiEvent.getTargetWithProp(ev, "id") == ev.item._getIconEl());
-			if (isCloseButton) {
-				this._appViewMgr.popView(false, id);
-			}
-			else if (id != this._activeTabId) {
+			if (id != this._activeTabId) {
 				this._appViewMgr.pushView(id);
+			}
+			if (ev.target && (ev.target.className == "ImgClose")) {
+				this._appViewMgr.popView();
 			}
 		}
 	} catch (ex) {
@@ -3214,7 +2827,7 @@ function() {
 	if (ctlr && ctlr.getKeyMapName) {
 		return ctlr.getKeyMapName();
 	}
-	return ZmKeyMap.MAP_GLOBAL;
+	return "Global";
 };
 
 /**
@@ -3272,6 +2885,17 @@ function(actionCode, ev) {
 			break;
 		}
 
+		case ZmKeyMap.ASSISTANT: {
+			if (appCtxt.get(ZmSetting.ASSISTANT_ENABLED)) {
+				if (!this._assistantDialog) {
+					AjxDispatcher.require("Assistant");
+					this._assistantDialog = new ZmAssistantDialog();
+				}
+				this._assistantDialog.popup();
+			}
+			break;
+		}
+
 		case ZmKeyMap.QUICK_REMINDER: {
             var account = appCtxt.multiAccounts && appCtxt.accountList.mainAccount;
             if (appCtxt.get(ZmSetting.CALENDAR_ENABLED, null, account)) {
@@ -3282,7 +2906,7 @@ function(actionCode, ev) {
 		}
 
 		case ZmKeyMap.LOGOFF: {
-            DBG.println(AjxDebug.DBG1, "ZmZimbraMail.prototype.handleKeyAction:matched ZmKeyMap.LOGOFF, invoking logout");
+			DBG.println(AjxDebug.DBG1, "ZmZimbraMail.prototype.handleKeyAction:matched ZmKeyMap.LOGOFF, invoking logout");
 			ZmZimbraMail.logOff();
 			break;
 		}
@@ -3326,17 +2950,20 @@ function(actionCode, ev) {
 			var maps = km.getAncestors(curMap);
 			var inherits = (maps && maps.length > 0);
 			maps.unshift(curMap);
-			var maps2 = [];
+			var maps1 = [], maps2 = [];
 			if (inherits) {
-				if (maps.length > 1 && maps[maps.length - 1] == ZmKeyMap.MAP_GLOBAL) {
+				if (maps.length > 1 && maps[maps.length - 1] == "Global") {
 					maps.pop();
-					maps2.push(ZmKeyMap.MAP_GLOBAL);
+					maps2.push("global");
 				}
+			}
+			for (var i = 0; i < maps.length; i++) {
+				maps1.push(ZmKeyMap.MAP_NAME_R[maps[i]] || DwtKeyMap.MAP_NAME_R[maps[i]]);
 			}
 
 			var col1 = {}, col2 = {};
 			col1.type = ZmShortcutList.TYPE_APP;
-			col1.maps = maps;
+			col1.maps = maps1;
 			var colList = [col1];
 			if (maps2.length) {
 				col2.type = ZmShortcutList.TYPE_APP;
@@ -3395,7 +3022,7 @@ function() {
 	// list view in the content pane, nothing happens. The list view will be
 	// found in the root tab group hierarchy.
 	var ctlr = appCtxt.getCurrentController();
-	var content = ctlr && ctlr._getDefaultFocusItem();
+	var content = ctlr ? ctlr.getCurrentView() : null;
 	if (content) {
 		appCtxt.getKeyboardMgr().grabFocus(content);
 	}
@@ -3438,19 +3065,10 @@ function(appName) {
 		htmlArr[idx++] = "'>";
 		el.innerHTML = htmlArr.join("");
 		var elements = {};
-		elements[ZmAppViewMgr.C_APP_CONTENT] = upsellView;
-		var callbacks = {};
-		callbacks[ZmAppViewMgr.CB_POST_SHOW] = this._displayUpsellView.bind(this);
-		var hide = [ ZmAppViewMgr.C_TREE, ZmAppViewMgr.C_TREE_FOOTER, ZmAppViewMgr.C_TOOLBAR_TOP,
-					 ZmAppViewMgr.C_NEW_BUTTON, ZmAppViewMgr.C_SASH ];
-		this._appViewMgr.createView({	viewId:			viewName,
-										appName:		appName,
-										controller:		this,
-										elements:		elements,
-										hide:			hide,
-										isTransient:	true,
-										isFullScreen:	true,
-										callbacks:		callbacks});
+		elements[ZmAppViewMgr.C_APP_CONTENT_FULL] = upsellView;
+		var callbacks = {}
+		callbacks[ZmAppViewMgr.CB_POST_SHOW] = new AjxCallback(this, this._displayUpsellView);
+		this._appViewMgr.createView({viewId:viewName, appName:appName, elements:elements, isTransient:true, callbacks:callbacks});
 	}
 	this._appViewMgr.pushView(viewName);
 };
@@ -3517,34 +3135,21 @@ function(ev) {
 	}
 };
 
-ZmZimbraMail._folderTreeSashRelease =
-function(sash) {
-	var currentWidth = skin.getTreeWidth();
-	if (currentWidth) {
-		appCtxt.set(ZmSetting.FOLDER_TREE_SASH_WIDTH, currentWidth);
-	}
-};
-
 /**
  * @private
  */
 ZmZimbraMail._endSession =
 function() {
-	if (!AjxEnv.isPrism && navigator.onLine) {
+	if (!AjxEnv.isPrism) {
 		// Let the server know that the session is ending.
+		var errorCallback = new AjxCallback(null, function() { return true; } ); // Ignores any error.
 		var args = {
 			jsonObj: { EndSessionRequest: { _jsns: "urn:zimbraAccount" } },
-			asyncMode: !appCtxt.get("FORCE_CLEAR_COOKIES"),
-			emptyResponseOkay:	true
+			asyncMode: true,
+			errorCallback: errorCallback
 		};
-        var controller = appCtxt.getAppController();
-		controller && controller.sendRequest(args);
+		appCtxt.getAppController().sendRequest(args);
 	}
-};
-
-ZmZimbraMail.prototype.notify =
-function(eventType) {
-	this._evtMgr.notifyListeners(eventType, this._evt);
 };
 
 // YUCK:

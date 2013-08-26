@@ -1,7 +1,7 @@
 <%--
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2008, 2009, 2010, 2011, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
@@ -14,10 +14,6 @@
 --%>
 <%@ tag body-content="empty" %>
 <%@ attribute name="date" rtexprvalue="true" required="true" type="java.util.Calendar" %>
-<%@ attribute name="endDate" rtexprvalue="true" required="false" type="java.util.Calendar" %>
-<%@ attribute name="ft" rtexprvalue="true" required="false" type="java.lang.String" %>
-<%@ attribute name="tt" rtexprvalue="true" required="false" type="java.lang.String" %>
-<%@ attribute name="wdays" rtexprvalue="true" required="false" type="java.lang.String" %>
 <%@ attribute name="numdays" rtexprvalue="true" required="true" %>
 <%@ attribute name="view" rtexprvalue="true" required="true" %>
 <%@ attribute name="timezone" rtexprvalue="true" required="true" type="java.util.TimeZone"%>
@@ -34,11 +30,10 @@
 
     <app:skin mailbox="${mailbox}" />
     <c:set var="multiDay">
-        <app:multiDay date="${date}" endDate="${not empty endDate ? endDate : ''}" ft="${ft}" tt="${tt}" print="${true}" numdays="${numdays}" wdays="${not empty wdays ? wdays : ''}" view="${view}" timezone="${timezone}" checkedCalendars="${checkedCalendars}" query="${requestScope.calendarQuery}"/>
+        <app:multiDay date="${date}" print="${true}" numdays="${numdays}" view="${view}" timezone="${timezone}" checkedCalendars="${checkedCalendars}" query="${requestScope.calendarQuery}"/>
     </c:set>
 
 </app:handleError>
-<c:if test="${param.imc eq 'true'}">
 <table cellpadding="0" cellspacing="0" border="0" style="margin-left: 1%;">
     <tr>
         <td width="180">
@@ -52,7 +47,6 @@
         </td>
     </tr>
 </table>
-</c:if>
 <br>
 <table width="98%" align="center" cellpadding="0" cellspacing="0" border="0" class="zPrintMsgs" >
     <tr>
@@ -64,7 +58,7 @@
 
 <style type="text/css">
     .zPrintMsgs *{
-        font-size:${mailbox.prefs.defaultPrintFontSize};
+        font-size:${mailbox.prefs.defaultPrintFontSize} !important;
     }
 </style>
 <SCRIPT TYPE="text/javascript">

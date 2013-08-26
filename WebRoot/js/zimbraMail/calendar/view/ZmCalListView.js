@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2008, 2009, 2010, 2011, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
@@ -41,7 +41,7 @@ ZmCalListView.prototype.constructor = ZmCalListView;
 
 // Consts
 ZmCalListView.DEFAULT_CALENDAR_PERIOD	= AjxDateUtil.MSEC_PER_DAY * 14;			// 2 weeks
-ZmCalListView.DEFAULT_SEARCH_PERIOD		= AjxDateUtil.MSEC_PER_DAY * 400;			// 400 days (maximum supported by the server)
+ZmCalListView.DEFAULT_SEARCH_PERIOD		= AjxDateUtil.MSEC_PER_DAY * 31;			// 1 month
 
 
 // Public methods
@@ -85,11 +85,6 @@ function(timeRange) {
     this._segmentDates(timeRange.start, timeRange.end);
     this.set((new AjxVector()), null, true); // clear the current list
     this._search();
-};
-
-ZmCalListView.prototype.createHeaderHtml =
-function(defaultColumnSort) {
-	DwtListView.prototype.createHeaderHtml.call(this, defaultColumnSort, true);
 };
 
 ZmCalListView.prototype.getDate =
@@ -227,9 +222,7 @@ function(ev, div) {
 	if (type && type == DwtListView.TYPE_HEADER_ITEM) {
 		var itemIdx = data.index;
 		var field = this._headerList[itemIdx]._field;
-        // Bug: 76489 - Added <span> as workaround to show tooltip as HTML
-        // The ideal fix should add a method in DwtControl to remove the tooltip
-		this.setToolTipContent('<span>'+this._getHeaderToolTip(field, itemIdx)+'</span>');
+		this.setToolTipContent(this._getHeaderToolTip(field, itemIdx));
 	} else {
 		var item = this.getItemFromElement(div);
 		if (item) {
@@ -405,7 +398,7 @@ function(isStartDate) {
 };
 
 /**
- * Chunks the date range into intervals per the default search period. We do
+ * Chunks the date range into intervals per the default calendar period. We do
  * this to avoid taxing the server with a large date range.
  *
  * @param startTime		[String]	start time in ms
@@ -415,7 +408,7 @@ function(isStartDate) {
 ZmCalListView.prototype._segmentDates =
 function(startTime, endTime) {
 	var startPeriod = startTime;
-	var endPeriod = startTime + ZmCalListView.DEFAULT_SEARCH_PERIOD;
+	var endPeriod = startTime + ZmCalListView.DEFAULT_CALENDAR_PERIOD;
 
 	// reset back to end time if we're search less than next block (e.g. two weeks)
 	if (endPeriod > endTime) {
@@ -425,9 +418,9 @@ function(startTime, endTime) {
 	do {
 		this._segmentedDates.push({startTime: startPeriod, endTime: endPeriod});
 
-		startPeriod += ZmCalListView.DEFAULT_SEARCH_PERIOD;
+		startPeriod += ZmCalListView.DEFAULT_CALENDAR_PERIOD;
 
-		var newEndPeriod = endPeriod + ZmCalListView.DEFAULT_SEARCH_PERIOD;
+		var newEndPeriod = endPeriod + ZmCalListView.DEFAULT_CALENDAR_PERIOD;
 		endPeriod = (newEndPeriod > endTime) ? endTime : newEndPeriod;
 	}
 	while (startPeriod < endTime);
@@ -472,17 +465,6 @@ function(list) {
 };
 
 /**
- * Method overridden to hnadle action popdown - left it blank coz DwtListView.prototype.handleActionPopdown is clearing
- * the this._rightSelItem.
- *
- * @param	{array}		itemArray		an array of items
- */
-ZmCalListView.prototype.handleActionPopdown =
-function(ev) {
-    //kept empty to avoid clearing of this._rightSelItem.
-};
-
-/**
  * Adds the items.
  * The function is overridden to not to show the "No results found" if anything is present in the list.
  *
@@ -499,27 +481,14 @@ function(itemArray) {
 		if (this._list.size() == 0) {
 			this._resetList();
 		}
-
-		// Prune the appts before passing to the underlying ListView
-		var showDeclined = appCtxt.get(ZmSetting.CAL_SHOW_DECLINED_MEETINGS);
-		var filterV = new AjxVector();
-		for (var i = 0; i < itemArray.length; i++) {
-            var appt = itemArray[i];
-            if (showDeclined || (appt.ptst != ZmCalBaseItem.PSTATUS_DECLINED)) {
-                filterV.add(appt);
-            }
-		}
-
-        //Bug fix# 80459. Since ZmCalListView inherits from ZmApptListView, make use of the sorting function and use the sorted list to render
-        //By default the list is sorted on date and thereafter we use the changed sort field if any
-        this._sortList(filterV, this._defaultSortField);
-
-		this._renderList(filterV, this._list.size() != 0, true);
-		this._list.addList(filterV.getArray());
+		this._renderList(AjxVector.fromArray(itemArray), this._list.size() != 0, true);
+		this._list.addList(itemArray);
         this._resetColWidth();
-        //Does not make sense but required to make the scrollbar appear
-        var size = this.getSize();
-        this._listDiv.style.height = (size.y - DwtListView.HEADERITEM_HEIGHT)+"px";
+        if(AjxEnv.isIE) {
+            //Does not make sense but required to make the scrollbar appear
+            var size = this.getSize();
+            this._listDiv.style.height = (size.y - DwtListView.HEADERITEM_HEIGHT)+"px";
+        }
 	}
 };
 

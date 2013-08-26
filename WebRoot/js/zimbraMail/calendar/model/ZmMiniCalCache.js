@@ -63,7 +63,6 @@ function(params) {
 	appCtxt.getAppController().sendRequest({
 		jsonObj: jsonObj,
 		asyncMode: true,
-        offlineCache: true,
 		callback: (new AjxCallback(this, this._getMiniCalResponse, [params])),
 		errorCallback: (new AjxCallback(this, this._handleMiniCalResponseError, [params])),
 		noBusyOverlay: params.noBusyOverlay,
@@ -203,7 +202,7 @@ function(errors) {
 
 ZmMiniCalCache.prototype.highlightMiniCal =
 function(dateArr) {
-	var highlight = {};
+	var highlight = [];
 	for (var i = 0; i < dateArr.length; i++) {
 		if (dateArr[i]) {
 			highlight[dateArr[i]] = AjxDateFormat.parse("yyyyMMdd", dateArr[i]);

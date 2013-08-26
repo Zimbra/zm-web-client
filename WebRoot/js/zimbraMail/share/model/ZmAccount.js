@@ -83,10 +83,6 @@ ZmAccount.TYPE_YMP		= "YMP";    // Y! mail
  * Defines the "Zimbra" account type.
  */
 ZmAccount.TYPE_ZIMBRA	= "Zimbra";
-/**
- * Defines the "Zimbra" account type.
- */
-ZmAccount.TYPE_CALDAV	= "CalDAV";
 
 
 ZmAccount.LOCAL_ACCOUNT_ID = "ffffffff-ffff-ffff-ffff-ffffffffffff";

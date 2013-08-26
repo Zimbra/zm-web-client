@@ -375,22 +375,18 @@ function() {
  *
  * @private
 */
-ZmTimeInput = function(parent, id, parentElement, interval) {
+ZmTimeInput = function(parent, id, parentElement) {
     var params = {parent:parent, id: "ZmTimeInput"};
     if(parentElement) {
         params.parentElement = parentElement;
     }
 	DwtComposite.call(this, params);
 
-    this._interval = interval || ZmTimeInput.FIFTEEN_MIN_INTERVAL;
 	this.id = id;
 	this._isLocale24Hour = true;
 	this._createSelects();
     this._useTextInput = true;
 };
-
-ZmTimeInput.THIRTY_MIN_INTERVAL = 30;
-ZmTimeInput.FIFTEEN_MIN_INTERVAL = 15;
 
 // IDs for types of time selects
 ZmTimeInput.START	= 1;
@@ -657,7 +653,6 @@ function(ev) {
             mi,
             smi,
             text,
-            maxMinutesItem,
             minutesSelectMenu,
             now = new Date(),
             timeSelectButton = this._timeSelectBtn,
@@ -686,12 +681,11 @@ function(ev) {
             minutesSelectMenu = new DwtMenu({parent:mi, style:DwtMenu.DROPDOWN_STYLE, layout:DwtMenu.LAYOUT_CASCADE, maxRows:1, congruent: true});
             mi.setMenu(minutesSelectMenu, true);
             mi.setSelectableWithSubmenu(true);
-            maxMinutesItem = 60/this._interval;
-            for (k = 1; k < maxMinutesItem; k++) {
-                now.setMinutes(k*this._interval);
+            for (k = 1; k < 4; k++) {
+                now.setMinutes(k*15);
                 smi = new DwtMenuItem({parent: minutesSelectMenu, style: DwtMenuItem.NO_STYLE});
                 smi.setText(timeFormatter.format(now));
-                smi.setData("value", j*60 + k*this._interval);
+                smi.setData("value", j*60 + k*15);
                 if (menuSelectionListener) smi.addSelectionListener(menuSelectionListener);
             }
         }
@@ -765,7 +759,7 @@ function() {
 
     this._timeSelectInput = new DwtInputField(params);
     var timeInputEl = this._timeSelectInput.getInputElement();
-    Dwt.setSize(timeInputEl, "80px", "2rem");
+    Dwt.setSize(timeInputEl, "80px", "22px");
     timeInputEl.typeId = this.id;
     //listeners
     var buttonListener = new AjxListener(this, this._timeButtonListener);

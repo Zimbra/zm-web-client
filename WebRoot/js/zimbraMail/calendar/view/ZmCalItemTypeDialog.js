@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
@@ -27,7 +27,7 @@
  */
 ZmCalItemTypeDialog = function(parent) {
 
-	DwtDialog.call(this, {parent:parent, id: "CAL_ITEM_TYPE_DIALOG"});
+	DwtDialog.call(this, {parent:parent});
 
 	var content = AjxTemplate.expand("calendar.Calendar#TypeDialog", {id:this._htmlElId});
 	this.setContent(content);
@@ -94,21 +94,4 @@ function(buttonId, listener) {
 ZmCalItemTypeDialog.prototype.isInstance =
 function() {
 	return this._defaultRadio.checked;
-};
-
-// Override since we need to do more than popdown().
-ZmCalItemTypeDialog.prototype.handleKeyAction =
-function(actionCode, ev) {
-	switch (actionCode) {
-		case DwtKeyMap.CANCEL:
-			this.popdown();
-			var ctlr = appCtxt.getCurrentController();
-			if (ctlr && ctlr._typeCancelListener) {
-				ctlr._typeCancelListener();
-			}
-			break;
-		default:
-			return DwtDialog.prototype.handleKeyAction.apply(this, arguments);
-	}
-	return true;
 };

@@ -45,22 +45,8 @@
             </th>
         </tr>
         <c:if test="${expanded}">
-            <app:briefcaseFolder folder="${mailbox.briefcase}"/>
-
-            <%--
-                Display the children of Briefcase folder, if any. Folders with unknown view also get listed.
-            --%>
-            <zm:forEachFolder var="folder" parentid="${mailbox.briefcase.id}" skiproot="${true}" skipsystem="${false}" expanded="${sessionScope.expanded}" skiptrash="${true}">
-                <c:if test="${not folder.isSearchFolder and not folder.isSystemFolder and (folder.isNullView or folder.isUnknownView or folder.isDocumentView)}">
-                    <app:briefcaseFolder folder="${folder}" keys="${keys}"/>
-                </c:if>
-            </zm:forEachFolder>
-
-            <%--
-                Rest of the briefcase folders, do not display folders with unknown view here.
-            --%>
-            <zm:forEachFolder var="folder" skiproot="${true}" skipsystem="${true}" expanded="${sessionScope.expanded}" skiptrash="${true}">
-                <c:if test="${!folder.isSearchFolder and folder.isDocumentView}">
+            <zm:forEachFolder var="folder" skiproot="${false}" skipsystem="${false}" expanded="${sessionScope.expanded}" skiptrash="${true}">
+                <c:if test="${folder.isDocumentView}">
                     <app:briefcaseFolder folder="${folder}" keys="${keys}"/>
                 </c:if>
             </zm:forEachFolder>

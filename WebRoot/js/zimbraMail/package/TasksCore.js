@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2007, 2009, 2010, 2011, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
@@ -21,7 +21,10 @@
  *  - If a task folder arrives in a <refresh> block
  *  - If a search for tasks returns results
  */
+AjxPackage.require("zimbraMail.calendar.model.ZmCalItem");
+AjxPackage.require("zimbraMail.calendar.model.ZmRecurrence");
 AjxPackage.require("zimbraMail.tasks.model.ZmTaskFolder");
+AjxPackage.require("zimbraMail.tasks.model.ZmTask");
 
 AjxPackage.require("zimbraMail.tasks.controller.ZmTaskListController");
 

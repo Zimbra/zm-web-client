@@ -1,7 +1,7 @@
 <%--
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
@@ -24,12 +24,12 @@
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 
-<table>
-    <tr class='AppTabs'>
+<table cellpadding=0 border=0 cellspacing=0>
+    <tr class='Tabs'>
         <td class='TabSpacer'/>
         <c:if test="${mailbox.features.portalEnabled}">
             <td></td>
-            <td class='Tab ${selected=='home' ? 'AppTabSelected' :'AppTabNormal'}'>
+            <td class='Tab ${selected=='home' ? 'TabSelected' :'TabNormal'}'>
                 <a id='TAB_HOME' href="<c:url value="/h/home"/>" <c:if test="${keys}">accesskey="v"</c:if>>
                     <span id='tab_ikon_home'><app:img src="common/ImgGlobe.png" altkey='ALT_APP_HOME'/></span>
                     <span><fmt:message key="home"/></span>
@@ -38,7 +38,7 @@
             <td class='TabSpacerR'/>
         </c:if>
         <c:if test="${zm:isMailEnabled(mailbox)}">
-        <td class='Tab ${selected=='mail' ? 'AppTabSelected' :'AppTabNormal'}'>
+        <td class='Tab ${selected=='mail' ? 'TabSelected' :'TabNormal'}'>
             <a id='TAB_MAIL' href="<c:url value="/h/search"/>">
               <span id='tab_ikon_mail'><app:img src="startup/ImgMailApp.png" altkey='ALT_APP_MAIL'/>
               </span>
@@ -47,9 +47,9 @@
         </td>
         </c:if>
         <td class='TabSpacerR'/>
-        <c:if test="${mailbox.licenses.voice}">
+        <c:if test="${mailbox.features.voice}">
             <td class='TabSpacer'/>
-            <td class='Tab ${selected=='voice' ? 'AppTabSelected' :'AppTabNormal'}'>
+            <td class='Tab ${selected=='voice' ? 'TabSelected' :'TabNormal'}'>
                 <a id='TAB_VOICE' href="<c:url value="/h/search?st=voicemail"/>" <c:if test="${keys}">accesskey="v"</c:if>><span id='tab_ikon_voice'><app:img src="voicemail/ImgVoicemailApp.png" altkey='ALT_APP_CONTACTS'/></span><span><fmt:message
                         key="voice"/></span></a>
             </td>
@@ -57,7 +57,7 @@
         </c:if>
         <c:if test="${mailbox.features.contacts}">
             <td class='TabSpacer'/>
-            <td class='Tab ${selected=='contacts' ? 'AppTabSelected' :'AppTabNormal'}'>
+            <td class='Tab ${selected=='contacts' ? 'TabSelected' :'TabNormal'}'>
                 <a id='TAB_ADDRESSBOOK' href="<c:url value="/h/search?st=contact"/>">
                    <span id='tab_ikon_contacts'><app:img src="contacts/ImgContact.png" altkey='ALT_APP_CONTACTS'/></span><span><fmt:message
                         key="addressBook"/></span></a>
@@ -66,7 +66,7 @@
         </c:if>
         <c:if test="${mailbox.features.calendar or mailbox.features.calendarUpsell}">
             <td class='TabSpacer'/>
-            <td class='Tab ${selected=='calendar' ? 'AppTabSelected' :'AppTabNormal'}'>
+            <td class='Tab ${selected=='calendar' ? 'TabSelected' :'TabNormal'}'>
                 <a id='TAB_CALENDAR' href="<c:url value="/h/calendar"/>">
                     <span id='tab_ikon_calendar'><app:img src="startup/ImgCalendarApp.png" altkey='ALT_APP_CALENDAR'/></span><span><fmt:message
                         key="calendar"/></span></a>
@@ -75,7 +75,7 @@
         </c:if>
         <c:if test="${mailbox.features.tasks}">
             <td class='TabSpacer'/>
-            <td class='Tab ${selected=='tasks' ? 'AppTabSelected' :'AppTabNormal'}'>
+            <td class='Tab ${selected=='tasks' ? 'TabSelected' :'TabNormal'}'>
                 <a id='TAB_TASKS' href="<c:url value="/h/search?st=task"/>">
                     <span id='tab_ikon_tasks'><app:img src="zimbra/ImgTask.png" altkey='ALT_APP_TASK'/></span><span><fmt:message
                         key="tasks"/></span></a>
@@ -84,7 +84,7 @@
         </c:if>
         <c:if test="${mailbox.features.notebook}">
             <td class='TabSpacer'/>
-            <td class='Tab ${selected=='wiki' ? 'AppTabSelected' :'AppTabNormal'}'>
+            <td class='Tab ${selected=='wiki' ? 'TabSelected' :'TabNormal'}'>
                 <a id='TAB_NOTEBOOK' href="<c:url value="/h/search?st=wiki"/>">
                     <span id='tab_ikon_notebook'><app:img src="startup/ImgNoteApp.png" altkey='ALT_APP_NOTEBOOK'/></span><span><fmt:message
                         key="notebook"/></span></a>
@@ -93,7 +93,7 @@
         </c:if>
         <c:if test="${mailbox.features.briefcases}">
             <td class='TabSpacer'/>
-            <td class='Tab ${selected=='briefcase' ? 'AppTabSelected' :'AppTabNormal'}'>
+            <td class='Tab ${selected=='briefcase' ? 'TabSelected' :'TabNormal'}'>
                 <a id='TAB_BRIEFCASES' href="<c:url value="/h/search?st=briefcase"/>">
                     <span id='tab_ikon_briefcases'><app:img src="startup/ImgFolder.png" altkey='ALT_APP_BRIEFCASE'/></span><span><fmt:message
                         key="briefcase"/></span></a>
@@ -102,7 +102,7 @@
         </c:if>
         <c:if test="${mailbox.features.options}">
 	        <td class='TabSpacer'/>
-	        <td class='Tab ${selected=='options' ? 'AppTabSelected' :'AppTabNormal'}'>
+	        <td class='Tab ${selected=='options' ? 'TabSelected' :'TabNormal'}'>
                 <a id='TAB_OPTIONS' href="<c:url value="/h/options?prev=${zm:cook(selected)}"/>">
 	                <span id='tab_ikon_options'><app:img src="startup/ImgPreferences.png" altkey='ALT_APP_OPTIONS'/></span><span><fmt:message
 	                    key="options"/></span></a>
@@ -111,7 +111,7 @@
         </c:if>
         <c:if test="${zm:isMailEnabled(mailbox)}">
         <td class='TabSpacer'/>
-        <td class='Tab ${selected=='compose' ? 'AppTabSelected' :'AppTabNormal'}'>
+        <td class='Tab ${selected=='compose' ? 'TabSelected' :'TabNormal'}'>
             <c:choose>
                 <c:when test="${not empty context}">
                     <c:choose>

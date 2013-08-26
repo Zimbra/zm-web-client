@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
@@ -37,7 +37,6 @@
  * @param {Boolean}	params.isCheckedByDefault	sets the default state of "checked" tree style
  * @param {Hash}	params.allowedTypes			a hash of org types this tree may display
  * @param {Hash}	params.allowedSubTypes		a hash of org types this tree may display below top level
- * @param {boolean}    params.actionSupported     (default to value from Overview if not passed)
  *
  * @extends		DwtTree
  */
@@ -65,10 +64,6 @@ ZmTreeView = function(params) {
 	
 	this._dragSrc = params.dragSrc;
 	this._dropTgt = params.dropTgt;
-
-	this.actionSupported = params.actionSupported !== undefined
-							? params.actionSupported
-							: this._overview.actionSupported;
 
 	this._dataTree = null;
 	this._treeItemHash = {};	// map organizer to its corresponding tree item by ID
@@ -142,14 +137,13 @@ ZmTreeView.prototype.SHARE_LINK_TEMPLATE = "share.Widgets#ZmAddShareLink";
  * @param	{Boolean}	params.omitParents	if <code>true</code>, do NOT insert parent nodes as needed
  * @param	{Hash}	params.searchTypes	the types of saved searches to show
  * @param	{Boolean}	params.noTooltips	if <code>true</code>, don't show tooltips for tree items
- * @param	{Boolean}	params.collapsed		if <code>true</code>, initially leave the root collapsed 
- * @param 	{Hash}          params.optButton        a hash of data for showing a options button in the item: image, tooltip, callback
+ * @param	{Boolean}	params.collapsed		if <code>true</code>, initially leave the root collapsed
  */
 ZmTreeView.prototype.set =
 function(params) {
 	this._showUnread = params.showUnread;
 	this._dataTree = params.dataTree;
-	this._optButton = params.optButton;
+    this._newButton = params.newButton;
 
 	this.clearItems();
 
@@ -162,7 +156,7 @@ function(params) {
 		className:			isMultiAcctSubHeader ? "DwtTreeItem" : this._headerClass,
 		imageInfo:			imageInfo,
 		id:					ZmId.getTreeItemId(this.overviewId, null, this.type),
-		optButton:			params.optButton,
+		button:				isMultiAcctSubHeader ? null : params.newButton,
 		dndScrollCallback:	this._overview && this._overview._dndScrollCallback,
 		dndScrollId:		this._overview && this._overview._scrollableContainerId,
 		selectable:			(appCtxt.multiAccounts && this.type != ZmOrganizer.SEARCH && this.type != ZmOrganizer.TAG)
@@ -180,7 +174,7 @@ function(params) {
 		ti.setDropTarget(this._dropTgt);
 	}
 	this._treeItemHash[root.id] = ti;
-	ti.getHtmlElement().style.overflow = "hidden";
+	
 	// render the root item's children (ie everything else)
 	params.treeNode = ti;
 	params.organizer = root;
@@ -219,7 +213,6 @@ function(params) {
 
         var item = new DwtTreeItem({
             parent: parentNode,
-			arrowDisabled: true,
             deferred:false // NOTE: Needed so we can grab link element
         });
         item.setImage("Blank_16");
@@ -355,15 +348,6 @@ function(params) {
 	var addSep = true;
 	var numItems = 0;
 	var len = children.length;
-    if (params.startPos === undefined && params.lastRenderedFolder ){
-        for (var i = 0, len = children.length; i < len; i++) {
-            if (params.lastRenderedFolder == children[i] ){
-               params.startPos = i + 1; // Next to lastRenderedFolder
-               break;
-            }
-        }
-        DBG.println(AjxDebug.DBG1, "load remaining folders: " + params.startPos);
-    }
 	for (var i = params.startPos || 0; i < len; i++) {
 		var child = children[i];
 		if (!child || (params.omit && params.omit[child.nId])) { continue; }
@@ -422,7 +406,7 @@ function(params) {
 				if (this.isCheckedStyle) {
 					ti.showCheckBox(false);
 				}
-                params.lastRenderedFolder  = children[i-1];
+				params.startPos = i;
 				params.showRemainingFoldersNode = ti;
 				child._showFoldersCallback = new AjxCallback(this, this._showRemainingFolders, [params]);
 				return;
@@ -460,8 +444,9 @@ function(parentNode, organizer, index, noTooltips, omit) {
 
 	if (ds && ds.type == ZmAccount.TYPE_IMAP) {
 		var cname = appCtxt.isFamilyMbox ? null : this._headerClass;
-		var icon =  "Folder";
-		ti = new DwtHeaderTreeItem({parent:this, text:organizer.getName(), className:cname, imageInfo:icon, selectable: false});
+		var icon = appCtxt.isFamilyMbox ? "AccountIMAP" : null;
+		ti = new DwtTreeItem({parent:this, text:organizer.getName(), className:cname, imageInfo:icon});
+		ti.enableSelection(false);
 	} else {
 		// create parent chain
 		if (!parentNode) {
@@ -480,7 +465,6 @@ function(parentNode, organizer, index, noTooltips, omit) {
 					text:					parentOrganizer.getName(),
 					imageInfo:				parentOrganizer.getIconWithColor(),
 					forceNotifySelection:	true,
-					arrowDisabled:			!this.actionSupported,
 					dndScrollCallback:		this._overview && this._overview._dndScrollCallback,
 					dndScrollId:			this._overview && this._overview._scrollableContainerId,
 					id:						ZmId.getTreeItemId(this.overviewId, parentOrganizer.id)
@@ -501,7 +485,6 @@ function(parentNode, organizer, index, noTooltips, omit) {
 			parent:				parentNode,
 			index:				index,
 			text:				organizer.getName(this._showUnread),
-			arrowDisabled:		!this.actionSupported,
 			dndScrollCallback:	this._overview && this._overview._dndScrollCallback,
 			dndScrollId:		this._overview && this._overview._scrollableContainerId,
 			imageInfo:			organizer.getIconWithColor(),
@@ -620,11 +603,10 @@ function(treeItem, treeItems, i) {
  */
 ZmTreeView.prototype._showRemainingFolders =
 function(params) {
-
-	if (params.showRemainingFoldersNode){
+	if (params.showRemainingFoldersNode) {
 		params.showRemainingFoldersNode.dispose();
 	}
-
+	DBG.println(AjxDebug.DBG1, "load remaining folders: " + params.startPos);
 	AjxTimedAction.scheduleAction(new AjxTimedAction(this,
 		function() {
 			this._render(params);
@@ -649,6 +631,7 @@ function() {
 			 this.type == ZmOrganizer.ADDRBOOK ||
 			 this.type == ZmOrganizer.CALENDAR ||
 			 this.type == ZmOrganizer.TASKS ||
+			 this.type == ZmOrganizer.NOTEBOOK ||
 			 this.type == ZmOrganizer.BRIEFCASE ||
 			 this.type == ZmOrganizer.PREF_PAGE ||
 			 this.type == ZmOrganizer.ZIMLET));
@@ -692,7 +675,7 @@ ZmTreeView.prototype._handleAddShare = function() {
     var requests = [];
     for (var i = 0; i < shares.length; i++) {
         var share = shares[i];
-        var name = share.folderPath.substr(1); //no need to replace the "/" here anymore since I do that in ZmShare.getDefaultMountpointName for the entire name.
+        var name = share.folderPath.substr(1).replace(/\//g," ");
         var ownerName = (share.normalizedOwnerName.indexOf('@') >1) ? share.normalizedOwnerName.substr(0, share.normalizedOwnerName.indexOf('@')) : share.normalizedOwnerName;
         requests.push({
             _jsns: "urn:zimbraMail",

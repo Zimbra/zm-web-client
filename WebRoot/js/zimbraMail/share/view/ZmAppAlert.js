@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2008, 2009, 2010, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2008, 2009, 2010, 2011, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
@@ -25,23 +25,27 @@ ZmAppAlert = function(app) {
 	this.app = app;
 };
 
-ZmAppAlert.prototype.isZmAppAlert = true;
-ZmAppAlert.prototype.toString = function() { return "ZmAppAlert"; };
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
+ZmAppAlert.prototype.toString =
+function() {
+	return "ZmAppAlert";
+};
 
 /**
  * Starts the alert.
  */
 ZmAppAlert.prototype.start =
 function() {
-	var appButton = this._getAppButton();
-	if (!appButton) { return; }
-	
-    if (!appButton.isSelected) {
-		appButton.showAlert(true);
+    if (!this._getAppButton().isSelected) {
+		this._getAppButton().showAlert(true);
         //add a stop alert listener
         if (!this._stopAlertListenerObj) {
            this._stopAlertListenerObj = new AjxListener(this, this.stop);
-           appButton.addSelectionListener(this._stopAlertListenerObj);
+           this._getAppButton().addSelectionListener(this._stopAlertListenerObj);
         }
     }
 };
@@ -51,10 +55,8 @@ function() {
  */
 ZmAppAlert.prototype.stop =
 function() {
-	var appButton = this._getAppButton();
-	if (!appButton) { return; }
-    if (appButton.isSelected) {
-        appButton.showAlert(false);
+    if (this._getAppButton().isSelected) {
+        this._getAppButton().showAlert(false);
     }
 };
 

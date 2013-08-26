@@ -306,7 +306,7 @@ var getFormValues = function(obj) {
         var control = inp[i];//obj.getElementsByTagName("input")[i];
         var type = control.type ;
         if (type == "button" || (type == "submit" && control._wasClicked) || type == "hidden" || type == "password") {
-            getstr += control.name + "=" + encodeURIComponent(control.value) + "&";
+            getstr += control.name + "=" + escape(control.value) + "&";
         }
         if (type == "checkbox" || type == "radio") {
             if (control.checked) {

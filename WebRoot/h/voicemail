@@ -20,4 +20,4 @@
     
     <zm:markVoiceMailHeard var="ignored" id="${param.id}" phone="${param.phone}" heard="true"/>
 </app:handleError>
-<zm:redirect url="/service/extension/voice/~/voicemail?phone=${param.phone}&id=${param.id}"/>
+<zm:redirect url="/service/extension/velodrome/voice/~/voicemail?phone=${param.phone}&id=${param.id}"/>

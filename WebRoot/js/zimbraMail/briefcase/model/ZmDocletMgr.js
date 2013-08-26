@@ -318,6 +318,10 @@ function(themePath)
     return docContent;
 };
 
+
+ZmDocletMgr.INVALID_DOC_NAME_CHARS = "[\\|]";
+ZmDocletMgr.INVALID_DOC_NAME_RE = new RegExp(ZmDocletMgr.INVALID_DOC_NAME_CHARS);
+
 ZmDocletMgr.prototype.checkInvalidDocName = function(fileName) {
 
     var message;
@@ -325,8 +329,7 @@ ZmDocletMgr.prototype.checkInvalidDocName = function(fileName) {
 
     if(fileName == ""){
         message = ZmMsg.emptyDocName;
-    }else if (!ZmOrganizer.VALID_NAME_RE.test(fileName) || ZmAppCtxt.INVALID_NAME_CHARS_RE.test(fileName)) {
-        //Bug fix # 79986 - < > , ? | / \ * : are invalid filenames
+    }else if (!ZmOrganizer.VALID_NAME_RE.test(fileName) || ZmDocletMgr.INVALID_DOC_NAME_RE.test(fileName)) {
         message = AjxMessageFormat.format(ZmMsg.errorInvalidName, AjxStringUtil.htmlEncode(fileName));
     } else if ( fileName.length > ZmOrganizer.MAX_NAME_LENGTH){
         message = AjxMessageFormat.format(ZmMsg.nameTooLong, ZmOrganizer.MAX_NAME_LENGTH);

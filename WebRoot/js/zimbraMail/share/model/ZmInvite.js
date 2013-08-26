@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
@@ -39,7 +39,6 @@ ZmInvite.CHANGES_LOCATION	= "location";
 ZmInvite.CHANGES_SUBJECT	= "subject";
 ZmInvite.CHANGES_RECURRENCE	= "recurrence";
 ZmInvite.CHANGES_TIME		= "time";
-ZmInvite.TASK		= "task";
 
 
 /**
@@ -412,18 +411,6 @@ function(compNum) {
 };
 
 /**
- * Gets the transparency.
- *
- * @param	{int}	compNum		the component number
- * @return {String}	the transparent value
- */
-ZmInvite.prototype.getTransparency = 
-function(compNum) {
-	var cn = compNum || 0;
-	return this.components[cn].transp;
-};
-
-/**
  * Checks if the invite is empty.
  * 
  * @return	{Boolean}	<code>true</code> if the invite is empty
@@ -503,16 +490,11 @@ function(compNum) {
 	var content = desc && desc[0]._content || null;
 	if (!content) {
 		var txtContent = comp.desc;
-        txtContent = (txtContent && txtContent[0]._content) || null;
-        content = txtContent ? AjxStringUtil.convertToHtml(txtContent) : null;
-		if (!content) {
+		txtContent = (txtContent && txtContent[0]._content) || null;
+		if (!txtContent) {
 			content = this.getApptSummary(true);
 		}
 	}
-    if (!content) {
-        var comment = this.getComponentComment();
-        content = comment && AjxStringUtil.convertToHtml(comment);
-    }
 	return content;
 };
 
@@ -531,32 +513,13 @@ function(compNum) {
 	var desc = comp.desc;
 	var content = desc && desc[0]._content || null;
 	if (!content) {
-		content = this.getComponentComment();
-	}
-	if (!content) {
 		var htmlContent = comp.descHtml;
 		htmlContent = (htmlContent && htmlContent[0]._content) || null;
-		if (!htmlContent && this.type != ZmInvite.TASK) {
+		if (!htmlContent) {
 			content = this.getApptSummary();
 		}
 	}
 	return content;
-};
-
-/**
- * Gets the comment.
- * 
- * @param	{int}	compNum		the component number
- * @return	{String}	the comment or <code>null</code> for none
- */
-ZmInvite.prototype.getComponentComment =
-function(compNum) {
-	var cn = compNum || 0;
-	var comp = this.components[cn];
-	if (comp == null) { return; }
-
-	var comment = comp.comment;
-	return comment && comment[0]._content || null;
 };
 
 /**
@@ -881,7 +844,7 @@ function() {
 	idx = this._addEntryRow(ZmMsg.when, when, html, idx, false, null, true);
 	if (this.isRecurring(compNum)) {
 		if (!this._recurBlurb) {
-			AjxDispatcher.require(["MailCore", "CalendarCore"]);
+			AjxDispatcher.require("CalendarCore");
 			var recur = new ZmRecurrence();
 			recur.parse(this.getRecurrenceRules(compNum));
 			this._recurBlurb = recur.getBlurb();
@@ -908,7 +871,7 @@ function(isHtml) {
 	var appt;
 
 	if (msg) {
-		AjxDispatcher.require(["MailCore", "CalendarCore"]);
+		AjxDispatcher.require("CalendarCore");
 		appt = new ZmAppt();
 		appt.setFromMessage(msg);
 	}
@@ -926,7 +889,7 @@ ZmInvite.prototype.getSummary =
 function(isHtml) {
 	if (this.isRecurring()) {
 		if (!this._recurBlurb) {
-			AjxDispatcher.require(["MailCore", "CalendarCore"]);
+			AjxDispatcher.require("CalendarCore");
 			var recur = new ZmRecurrence();
 			recur.setRecurrenceRules(this.getRecurrenceRules(), this.getServerStartDate());
 			this._recurBlurb = recur.getBlurb();

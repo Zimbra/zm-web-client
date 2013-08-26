@@ -148,9 +148,7 @@ function(reset) {
 	// only set overview panel content if not in full screen mode
 	var avm = appCtxt.getAppViewMgr();
 	if (!avm.isFullScreen()) {
-		var components = {};
-		components[ZmAppViewMgr.C_TREE] = this.getOverviewPanelContent();
-		avm.setViewComponents(ZmAppViewMgr.APP, components, true, this.getName());
+		avm.setComponent(ZmAppViewMgr.C_TREE, this.getOverviewPanelContent());
 	}
 };
 

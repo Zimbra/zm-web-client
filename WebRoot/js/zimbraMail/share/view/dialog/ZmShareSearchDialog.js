@@ -25,10 +25,10 @@ ZmShareSearchDialog = function(params) {
     // NOTE: that it is available when we initialize the email
     // NOTE: input field.
     var acparams = {
-        dataClass:		appCtxt.getAutocompleter(),
-        matchValue:		ZmAutocomplete.AC_VALUE_EMAIL,
-        keyUpCallback:	this._acKeyUpListener.bind(this),
-		contextId:		this.toString()
+        dataClass: appCtxt.getAutocompleter(),
+        matchValue: ZmAutocomplete.AC_VALUE_EMAIL,
+        compCallback: (new AjxCallback(this, this._handleCompletionData)),
+        keyUpCallback: (new AjxCallback(this, this._acKeyUpListener))
     };
     this._acAddrSelectList = new ZmAutocompleteListView(acparams);
     
@@ -45,8 +45,9 @@ ZmShareSearchDialog = function(params) {
 ZmShareSearchDialog.prototype = new DwtDialog;
 ZmShareSearchDialog.prototype.constructor = ZmShareSearchDialog;
 
-ZmShareSearchDialog.prototype.isZmShareSearchDialog = true;
-ZmShareSearchDialog.prototype.toString = function() { return "ZmShareSearchDialog"; };
+ZmShareSearchDialog.prototype.toString = function() {
+    return "ZmShareSearchDialog";
+};
 
 //
 // Constants
@@ -113,31 +114,28 @@ ZmShareSearchDialog.prototype._filterResults = function() {
 };
 
 ZmShareSearchDialog.prototype._filterNode = function(treeView, node, text) {
-	var nodeItem = treeView.getTreeItemById(node.id);
-	if (!nodeItem) {
-		return false;
-	}
     // process children
     var count = node.children.size();
     var app = this._form.getValue("APP") || "";
-	var matches = false;
     if (count > 0) {
-		//this node has children.
+        var filtered = 0;
         for (var i = 0; i < count; i++) {
             var child = node.children.get(i);
-            matches = this._filterNode(treeView, child, text) || matches; //order is important! (need to call _filterNode always
+            filtered += this._filterNode(treeView, child, text) ? 1 : 0;
         }
+        var parentItem = treeView.getTreeItemById(node.id);
+        parentItem.setVisible(node.id == ZmOrganizer.ID_ROOT || filtered > 0);
+        return parentItem.getVisible();
     }
-	else {
-		//this is a leaf node
-		var isInfoNode = String(node.id).match(/^-/);
-		var textMatches = !text || node.name.toLowerCase().indexOf(text) !== -1;
-		var appMatches = !app || node.shareInfo && node.shareInfo.view === app;
-		matches = !isInfoNode && textMatches && appMatches;
-	}
-	matches = matches || node.id === ZmOrganizer.ID_ROOT;
-	nodeItem.setVisible(matches);
-	return matches;
+
+    // filter child node
+    var isInfoNode = String(node.id).match(/^-/);
+    var textMatches = !text || (node.name.toLowerCase().indexOf(text) != -1);
+    var appMatches = !app || (node.shareInfo && node.shareInfo.view == app);
+    var matches = !isInfoNode && textMatches && appMatches;
+    var childItem = treeView.getTreeItemById(node.id);
+    childItem.setVisible(matches);
+    return matches;
 };
 
 ZmShareSearchDialog.prototype._createOrganizer = function(parent, id, name) {
@@ -448,6 +446,24 @@ ZmShareSearchDialog.prototype._acKeyUpListener = function(event, aclv, result) {
 	// TODO: Does anything need to be done here?
 };
 
+ZmShareSearchDialog.prototype._handleCompletionData = function(text, element) {
+    element.value = text;
+//    this._form.update();
+    try {
+        if (element.fireEvent) {
+            element.fireEvent("onchange");
+        }
+        else if (document.createEvent) {
+            var ev = document.createEvent("UIEvents");
+            ev.initUIEvent("change", false, window, 1);
+            element.dispatchEvent(ev);
+        }
+    }
+    catch (ex) {
+        // ignore -- TODO: what to do with this error?
+    }
+};
+
 //
 // DwtDialog methods
 //
@@ -513,7 +529,6 @@ ZmShareSearchDialog.prototype._createHtmlFromTemplate = function(templateId, dat
 	    id: "ZmShareSearchView"
     };
     this._form = new DwtForm(params);
-	this._form.setScrollStyle(DwtControl.CLIP);
     this.setView(this._form);
 
     var inputEl = this._form.getControl("EMAIL").getInputElement();

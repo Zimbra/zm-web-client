@@ -1,0 +1,131 @@
+/*
+ * ***** BEGIN LICENSE BLOCK *****
+ * Zimbra Collaboration Suite Web Client
+ * Copyright (C) 2009, 2010, 2011, 2013 Zimbra Software, LLC.
+ * 
+ * The contents of this file are subject to the Zimbra Public License
+ * Version 1.4 ("License"); you may not use this file except in
+ * compliance with the License.  You may obtain a copy of the License at
+ * http://www.zimbra.com/license.
+ * 
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * ***** END LICENSE BLOCK *****
+ */
+body, #skin_container_splash_screen { @ChromeBg@ }
+
+#skin_container_links a {
+	color: #ffffff;
+}
+
+#skin_container_links a:hover{
+	color: #ffffff;
+	text-decoration: underline;
+}
+
+#skin_container_tree_top {
+	background-color: #ad8a4c;
+	text-align:center;
+}
+
+
+#skin_spacing_tree, #skin_spacing_tree_top {
+	background-color: #5a5a43;
+}
+
+#skin_td_tree	{	
+	border: 0;
+	background-color: #fcfef4;
+}
+
+#skin_container_tree {
+	background-color: #fcfcfc;
+}
+
+#skin_container_search {	
+	background-color: transparent;
+	color: #d5d5d3;
+	border: 0;
+}
+
+#skin_border_app_chooser				{	@SkinBorderAppChooser@ 		}
+
+#skin_container_app_top_toolbar { background: #59461e url("@SkinImgDir@/app_panel_bg.png") top left repeat-x; border:0; border-bottom: 1px solid #59461e; }
+
+
+.Row {	background-color: #fff; border-color: #c6c6c7; border-top-width: 0px;}
+
+.RowOdd {	background-color: #fff; border-color: #c6c6c7; border-top-width: 0px;}
+
+.Row-selected, 
+.Row-selected-dragProxy, 
+.Row-selected-disabled {
+	background-color: #e3da93 !important; 
+}
+
+.Row-selected-actioned .DwtListView-Rows td {
+	color: #ffffff;
+}
+
+.ZmTaskbar {
+	height:30px; 
+	background: #634d1e url("@SkinImgDir@/app_header_bg.png") repeat-x top left;
+	border: 0;
+	color: #fff;
+}
+
+.ZmTaskbarButtonParent .ZToolbarButtonTable .ZWidgetTitle {
+	color: #fff;
+}
+
+.ZButtonBorder, .ZHover .ZButtonBorder,.ZActive	.ZButtonBorder,.ZSelected .ZButtonBorder {
+  border: 1px solid #654f1e;
+}
+
+.LightWindowOuterContainer .DwtDialogTitle {
+	@WindowTitleText@
+	@WindowTitleText-normal@
+}
+
+.ZOptionsSectionMain {
+	background: #ffffff;
+	padding: 1em;
+}
+
+.ZOptionsHeader{
+	color: #ffffff;
+}
+
+.DwtTreeItem-selected-focused {
+	@TreeItemSelectedBg@
+}
+
+.DwtTreeItem-actioned .DwtTreeItem-Text {
+	color: #ffffff;
+}
+
+.ZDisabled .ZToolbarButtonTable .ZWidgetTitle {
+	color: #cccccc;
+}
+
+.ZOptionsSectionTable .ZToolbarButtonTable .ZWidgetTitle {
+	color: #333333;
+}
+
+.ZmPickerOverview .DwtCalendarTitle {
+	 color: #ffffff;
+}
+
+.ZOptionsSectionTabView .ZTab.ZSelected .ZTabBorder {
+	background-color: #fff;
+	border-bottom-color: #fff;
+}
+
+#skin_spacing_filler				{	
+	height:12px; 
+	background-color: #aa915f;
+	background-image: -moz-linear-gradient(top, #aa915f, #5a5a43); /* FF3.6 */
+ 	background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0, #aa915f),color-stop(1, #5a5a43));                /* Saf4+, Chrome */
+    filter:  progid:DXImageTransform.Microsoft.gradient(startColorStr='#aa915f', EndColorStr='#5a5a43');                          /* IE6,IE7 */
+    -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='#aa915f', EndColorStr='#5a5a43')";                     /* IE8 */
+ }

@@ -1,7 +1,7 @@
 <%--
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2007, 2008, 2009, 2010, 2011, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
@@ -42,14 +42,14 @@
 						</c:otherwise>
 					</c:choose>
                 </td>
-                <%--<td><div class='vertSep'></div></td>
+                <td><div class='vertSep'></div></td>
                 <td nowrap>
                     <c:url var="optionsUrl" value="/h/options">
                         <c:param name="selected" value="voice"/>
                         <c:param name="phone" value="${zm:getPhoneFromVoiceQuery(context.query)}"/>
                     </c:url>
                     <a id="OPCALLMANAGER" href="${optionsUrl}"><app:img src="voicemail/ImgCallManager.png" altkey="callManager"/><span><fmt:message key="actionCallManager"/></span></a>
-                </td>--%>
+                </td>
             </table>
         </td>
         <td nowrap align=right>

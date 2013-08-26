@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2006, 2007, 2009, 2010, 2011, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
@@ -12,11 +12,9 @@
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
  */
-
-.LoginScreen P, .LoginScreen TH, .LoginScreen TD, 
-.LoginScreen DIV, .LoginScreen SPAN, .LoginScreen SELECT, 
-.LoginScreen INPUT, .LoginScreen TEXTAREA, .LoginScreen BUTTON, 
-.LoginScreen A {
+ 
+ 
+P, TH, TD, DIV, SPAN, SELECT, INPUT, TEXTAREA, BUTTON, A {
 	@FontFamily-default@
 }
 
@@ -64,161 +62,298 @@ FORM {
 
 
 /*
- * major login zones
+ * major zones
  */
-.LoginScreen FORM 	{ text-align:center; 	}  /* fixes IE centering of form */
+.LoginScreen {
+	position:absolute;
+	left:0px;
+	top:0px;
+	width:100%;
+	height:100%;
+	font-size:11px;
+	background-color: @AltC@;
+	background-image: -moz-linear-gradient(top, @AltC@, @darken(AltC,19)@); /* FF3.6 */
+	background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0, @AltC@),color-stop(1, @darken(AltC,19)@)); /* Saf4+, Chrome */
+ 	filter:  progid:DXImageTransform.Microsoft.gradient(startColorStr='@AltC@', EndColorStr='@darken(AltC,19)@'); /* IE6,IE7 */
+	-ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='@AltC@', EndColorStr='@darken(AltC,19)@')"; /* IE8 */
+
+}
+.LoginScreen .center {
+	width:500px;
+	min-height:300px;
+	margin-top:-150px;
+	margin-left:-250px;
+}
+
+.LoginScreen .center {
+	position:absolute;
+	top:50%;
+	left:50%;
+	overflow:visible;
+	z-index:11;
+	
+	/*Linear gradient backgrounds*/
+	background-color: @darken(AppC,10)@;
+	background-image: -moz-linear-gradient(top, @AppC@, @darken(AppC,10)@); /* FF3.6 */
+	background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0, @AppC@),color-stop(1, @darken(AppC,10)@)); /* Saf4+, Chrome */
+/*	filter:  progid:DXImageTransform.Microsoft.gradient(startColorStr='@AppC@', EndColorStr='@darken(AppC,10)@'); */ /* IE6,IE7 */
+/*	-ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='@AppC@', EndColorStr='@darken(AppC,10)@')";*/ /* IE8 */
+
+	/*Radial gradient backgrounds*/
+	background-image: -moz-radial-gradient(50% 0, circle farthest-corner, @AppC@ 0%, @darken(AppC,10)@ 100%); /* FF3.6 */
+	background-image: -webkit-gradient( radial, 50% 0%, 0, 50% 0%, 390, from(@AppC@), to(@darken(AppC,10)@) ); /* Saf4+, Chrome */
+
+	-moz-border-radius: 15px; /* FF1+ */
+	-webkit-border-radius: 15px; /* Saf3-4 */
+	border-radius: 15px; /* Opera 10.5, IE 9, Saf5, Chrome */
+	
+	-moz-box-shadow: 0px 0px 10px @darken(AltC,50)@; /* FF3.5+ */
+	-webkit-box-shadow: 0px 0px 10px @darken(AltC,50)@; /* Saf3.0+, Chrome */
+	box-shadow: 0px 0px 10px #000000; /* Opera 10.5, IE 9.0 */
+	#IFDEF MSIE
+	border: 1px solid @darken(AltC,50)@; /* Plain border for IE */
+	#ENDIF
+}
+
+.LoginScreen .ImgLoginBanner, 
+.LoginScreen .ImgAppBanner {
+	cursor:pointer;
+	display:block;
+	background-repeat:no-repeat;
+}
+
+.LoginScreen h1 {margin:22px 20px 32px 20px;}
+
+.LoginScreen form {text-align:center;}  /* fixes IE centering of form */
 .form {
-	color:@LoginLabelColor@;
-	margin:0px auto;
+	color: @darken(AppC,50)@;
+	margin: 0px auto;
 	border-collapse:collapse;
 	text-align:left;
 }
-.form TD:first-child LABEL 			{ margin-right:20px; 						}
-.form TD 							{ padding-bottom:10px; 						}
-.form INPUT[type='text'], 
-.form INPUT[type='password'] 		{ 
-	border:1px solid @AppC@; 
-	height:22px;
-	width:235px;
-#IFDEF MSIE
-	height:18px;
-	padding:0;
-#ENDIF 
+.offline {
+	color: @darken(AppC,50)@;
+	text-align: center;
+    padding: 10px 0;  
 }
-.form INPUT[type='text']:focus, 
-.form INPUT[type='password']:focus 	{ border:1px solid @SelC@; 					}
-.form SELECT 						{ height:22px; width:165px; 				}
-.form .submitTD 					{ text-align:left; 							}
-.form .ZLoginButton					{ @LoginButton@ float:right; font-size:11px;}
-.form HR { 
-	border-color:transparent transparent @LoginLabelColor@; 
-	height:0;
+
+.offline a:link, .offline a:visited {
+	color: @darken(AppC,50)@;
+}
+
+.form td:first-child label {margin-right:20px;}
+.form td {padding-bottom:10px;}
+.form input[type='text'], 
+.form input[type='password'] {
+	width:225px;
+	border:1px solid @AltC@;
+}
+.form input[type='text']:focus, 
+.form input[type='password']:focus{
+	border:1px solid @SelC@;
+}
+.form select {
+	width:165px;
+}
+.LoginScreen #ZLoginErrorPanel {
+	margin:10px 10%;
+	padding:5px;
+	background-color:#FF9;
+	-moz-border-radius:10px;
+	-webkit-border-radius:10px;
+	border-width:0px;
+	border-radius:10px;
+	-moz-box-shadow:0px 0px 10px #FF9;
+	-webkit-box-shadow:0px 0px 10px #FF9;
+	box-shadow:0px 0px 10px #FF9;
+	position:relative;
+	left:auto;
+}
+.LoginScreen #ZLoginErrorIcon {
+    margin:auto 10px auto auto;
 }
 .LoginScreen .postioning{
-	position:relative;
-	z-index:20;
+    position: relative;
+    z-index: 20;
 }
 .LoginScreen #ZLoginWhatsThisAnchor {
-	color:@LoginLabelColor@;
+	color: @darken(AppC,50)@;
 	font-size:10px;
 	margin-left:5px;
+	-moz-border-radius: 10px;
+	-webkit-border-radius: 10px;
+	border-radius: 10px;
 }
 .LoginScreen #ZLoginWhatsThis {
 	margin-left:-10em;
 	position:absolute;
 	width:40em;
-	top:25px;
-	left:0;
-	z-index:30; 
+	top: 25px;
+	left: 0;
+	z-index: 30; 
 }
 .LoginScreen .ZLoginInfoMessage {
-	background-color:@AppC@;	
-	border:1px solid @darken(AltC,25)@;
-	color:@TxtC@;
-	padding:3px 7px;
+	background-color: @lighten(AltC,53)@;	
+	border:1px solid @lighten(AltC,25)@;
+	padding:3px;
 	text-align:left;
-	@cssShadow@:0 0 2px black;
+}
+.LoginScreen .Footer{
+	position: absolute;
+	bottom: 0;
+	z-index: 10;
+	width: 100%;
+	text-align: center;
+}
+
+.LoginScreen #ZLoginNotice {
+	color:@darken(AppC,50)@;
+	font-size:11px;
+    margin-bottom: 10px;
+}
+.LoginScreen #ZLoginNotice A {
+	color:@darken(AppC,50)@;
+}
+.LoginScreen #login {  /*Is this used?*/
+	float:right;
+}
+.LoginScreen .copyright {
+    color: @darken(AppC,50)@;
+ 	font-size:11px;
+ 	margin-bottom:5px;
+	text-align:center;
+}
+.LoginScreen .center-small .copyright {
+	/* padding:13px 20px 3px; */
 }
 
 
-/*DWT Buttons*/
-.DwtButton					{	@Button@ @ButtonBorder-normal@ 		}
-.DwtButton-hover			{	@Button@ @ButtonBorder-hover@ 		}
-.DwtButton-active			{	@Button@ @ButtonBorder-active@ 		}	
-.DwtButton-selected			{	@Button@ @ButtonBorder-selected@ 	}	
-.DwtButton-disabled			{	@Button@ @ButtonBorder-disabled@ 	}	
-.DwtButton-active			{	@Button@ @ButtonBorder-default@ 	}	
-.DwtButton-focused			{	@Button@ @ButtonBorder-focused@ 	}	
+.DwtButton 								{	@Button@ @ButtonBorder-normal@		}
+.DwtButton-hover 						{	@Button@ @ButtonBorder-hover@			}
+.DwtButton-active						{	@Button@ @ButtonBorder-active@		}	
+.DwtButton-selected						{	@Button@ @ButtonBorder-selected@		}	
+.DwtButton-disabled						{	@Button@ @ButtonBorder-disabled@		}	
+.DwtButton-active						{	@Button@ @ButtonBorder-default@		}	
+.DwtButton-focused						{	@Button@ @ButtonBorder-focused@		}	
 		
-.DwtButton .Text			{	@ButtonText@ @ButtonText-normal@ 	}
-.DwtButton-hover .Text		{	@ButtonText@ @ButtonText-hover@ 	}
-.DwtButton-active .Text		{	@ButtonText@ @ButtonText-active@ 	}	
-.DwtButton-selected .Text	{	@ButtonText@ @ButtonText-active@ 	}	
-.DwtButton-disabled .Text	{	@ButtonText@ @ButtonText-disabled@ 	}	
-.DwtButton-active .Text		{	@ButtonText@ @ButtonText-default@ 	}	
-.DwtButton-focused .Text	{	@ButtonText@ @ButtonText-focused@ 	}
+.DwtButton .Text 						{	@ButtonText@ @ButtonText-normal@	}
+.DwtButton-hover .Text					{	@ButtonText@ @ButtonText-hover@		}
+.DwtButton-active .Text					{	@ButtonText@ @ButtonText-active@	}	
+.DwtButton-selected .Text				{	@ButtonText@ @ButtonText-active@	}	
+.DwtButton-disabled .Text				{	@ButtonText@ @ButtonText-disabled@	}	
+.DwtButton-active .Text					{	@ButtonText@ @ButtonText-default@	}	
+.DwtButton-focused .Text				{	@ButtonText@ @ButtonText-focused@	}
 
 /*Launch Button*/
+
 .LaunchButton {
-	padding:10px;
-	text-align:center;
+    text-align:center;
+    padding:10px;
 }
-.LaunchButton INPUT {
-	background-color:#DCF9FE;
-	border:1px solid #6CF;
-	color:black;
-	cursor:pointer;
-	display:inline-block;
-	height:35px;
-	text-align:center;
-	width:250px;
-	@cssShadow@:0px 0px 3px black;
-	@FontSize-bigger@
-	@grad(#DCF9FE,#9FF0FF,linear-vertical)@
-	@roundCorners(26px)@
+
+.LaunchButton input{
+	border: 1px solid #66ccff;
+	@borderRadius@: 26px;
+	height: 35px;
+	font-weight: bold;
+	width: 250px;
+	font-size: 15px;
+    color:#000000;
+    display:inline-block;
+    text-align:center;
+    cursor:pointer;
+	background-color: #dcf9fe;
+	background-image: -moz-linear-gradient(top, #dcf9fe, #9ff0ff); /* FF3.6 */
+	background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0, #dcf9fe),color-stop(1, #9ff0ff)); /* Saf4+, Chrome */
+	filter:  progid:DXImageTransform.Microsoft.gradient(startColorStr='#dcf9fe', EndColorStr='#9ff0ff');
+	-moz-box-shadow: 0px 0px 3px #000; /* FF3.5+ */
+	-webkit-box-shadow: 0px 0px 3px #000; /* Saf3.0+, Chrome */
+	box-shadow: 0px 0px 3px #000; /* Opera 10.5, IE 9.0 */
+
 }
-.LaunchButton INPUT:hover {
-	@cssShadow@:0px 0px 1px black;
-	@grad(#9FF0FF,#DCF9FE,linear-vertical)@	
+	.LaunchButton input:hover{
+		background-image: -moz-linear-gradient(top, #9ff0ff, #dcf9fe); /* FF3.6 */
+		background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0, #9ff0ff),color-stop(1, #dcf9fe)); /* Saf4+, Chrome */
+		filter:  progid:DXImageTransform.Microsoft.gradient(startColorStr='#9ff0ff', EndColorStr='#dcf9fe');
+		-moz-box-shadow: 0px 0px 3px #000; /* FF3.5+ */
+		-webkit-box-shadow: 0px 0px 1px #000; /* Saf3.0+, Chrome */
+		box-shadow: 0px 0px 1px #000; /* Opera 10.5, IE 9.0 */
+	}
+
+.spacer{
+	padding: 5px;
+	font-size: 1.2em;
+	line-height: 1.3em;
 }
-.spacer {
-	font-size:1.2em;
-	line-height:1.3em;
-	padding:5px;
-}
+
+
 
 
 /* Mobile */
+
 .LoginScreen .center-small {
-	background-color:@darken(AltC,10)@;
-	margin:10px auto;
+	width:240px;
+/*	height:305px; */
 	overflow:visible;
-	padding-top:5px; 
-	width:250px;
-	@grad(LoginCenterTop,LoginCenterBottom,linear-vertical)@
-}
+	margin: 10px auto;
+	padding-top: 5px; 
+	
+	/*Linear gradient backgrounds*/
+	background-color: @darken(AppC,10)@;
+	background-image: -moz-linear-gradient(top, @AppC@, @darken(AppC,10)@); /* FF3.6 */
+	background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0, @AppC@),color-stop(1, @darken(AppC,10)@)); /* Saf4+, Chrome */
+/*	filter:  progid:DXImageTransform.Microsoft.gradient(startColorStr='@AppC@', EndColorStr='@darken(AppC,10)@'); */ /* IE6,IE7 */
+/*	-ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='@AppC@', EndColorStr='@darken(AppC,10)@')";*/ /* IE8 */
 
-/* limiting the error message on mobile screen to 40px (approx 3 lines)*/
-.LoginScreen .center-small #ZLoginErrorPanel {
-    max-height: 40px;
-    overflow: auto;
-}
+	/*Radial gradient backgrounds*/
+	background-image: -moz-radial-gradient(50% 0, circle farthest-corner, @AppC@ 0%, @darken(AppC,10)@ 100%); /* FF3.6 */
+	background-image: -webkit-gradient( radial, 50% 0%, 0, 50% 0%, 390, from(@AppC@), to(@darken(AppC,10)@) ); /* Saf4+, Chrome */
 
+	-moz-border-radius: 15px; /* FF1+ */
+	-webkit-border-radius: 15px; /* Saf3-4 */
+	border-radius: 15px; /* Opera 10.5, IE 9, Saf5, Chrome */
+	
+	-moz-box-shadow: 0px 0px 10px @darken(AltC,50)@; /* FF3.5+ */
+	-webkit-box-shadow: 0px 0px 10px @darken(AltC,50)@; /* Saf3.0+, Chrome */
+	box-shadow: 0px 0px 10px #000000; /* Opera 10.5, IE 9.0 */
+	#IFDEF MSIE
+	border: 1px solid @darken(AltC,50)@; /* Plain border for IE */
+	#ENDIF
+}
 .center-small H1 {
-	margin:10px 20px 20px;
-}
-.center-small .decor1 {
-	@Decor1-mobile@
+    margin-bottom:20px;
 }
 .center-small .form {
+	color: @darken(AppC,50)@;
+	margin: 0px 10px;
 	border-collapse:collapse;
-	color:@LoginLabelColor@;
-	margin:0px 10px;
 	text-align:left;
 }
-.center-small .form td:first-child LABEL {
-	margin-right:5px;
+.center-small .form td:first-child label {
+    margin-right:5px;
 }
-.center-small .form INPUT[type='text'], 
-.center-small .form INPUT[type='password'] {
-	border:1px solid @AltC@;
+.center-small .form input[type='text'], 
+.center-small .form input[type='password'] {
 	width:155px;
+	border:1px solid @AltC@;
 }
-.center-small .form SELECT {
+.center-small .form select {
 	width:140px;
 }
 .center-small #ZloginWhatsThisAnchor,
 .center-small .offline {
-	display:none;
+	display: none;
 }
-.Footer-small {
-	position:relative;
-	text-align:center;
-	width:100%;
+
+.Footer-small{
+	width: 100%;
+	text-align: center;
+	position: relative !important;
 }
-.Footer-small .copyright {
-	font-size:9px !important;
+.Footer-small .copyright{
+	font-size: 9px !important;
 }
-.Footer-small #ZLoginNotice {
-	display:none;
+
+.Footer-small #ZLoginNotice{
+	display: none;
 }

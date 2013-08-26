@@ -49,7 +49,6 @@ ZmSetting = function(id, params) {
 	this.type = params.type;
 	this.dataType = params.dataType || ZmSetting.D_STRING;
 	this.defaultValue = params.defaultValue;
-	this.canPreset = params.canPreset;
 	if (this.type == ZmSetting.T_METADATA) {
 		this.section = params.section;
 	}
@@ -153,6 +152,7 @@ ZmSetting.CAL_LIST				= "list";
 ZmSetting.CAL_MONTH				= "month";
 ZmSetting.CAL_WEEK				= "week";
 ZmSetting.CAL_WORK_WEEK			= "workWeek";
+ZmSetting.CAL_SCHEDULE			= "schedule";
 ZmSetting.CAL_VISIBILITY_PRIV	= "private";
 ZmSetting.CAL_VISIBILITY_PUB	= "public";
 ZmSetting.CLIENT_ADVANCED		= "advanced";				// zimbraPrefClientType
@@ -160,8 +160,6 @@ ZmSetting.CLIENT_STANDARD		= "standard";
 ZmSetting.COMPOSE_FONT_COLOR	= "#000000";	 			// zimbraPrefHtmlEditorDefaultFontColor
 ZmSetting.COMPOSE_FONT_FAM 		= "arial,helvetica,sans-serif";		// zimbraPrefHtmlEditorDefaultFontFamily
 ZmSetting.COMPOSE_FONT_SIZE 	= AjxMessageFormat.format(ZmMsg.pt,"12"); 			// zimbraPrefHtmlEditorDefaultFontSize
-ZmSetting.LTR                   = "LTR";
-ZmSetting.RTL                   = "RTL";
 ZmSetting.COMPOSE_TEXT 			= "text";					// zimbraPrefComposeFormat
 ZmSetting.COMPOSE_HTML 			= "html";
 ZmSetting.CV_CARDS				= "cards"; 					// zimbraPrefContactsInitialView
@@ -173,6 +171,8 @@ ZmSetting.DEDUPE_ALL			= "dedupeAll";
 ZmSetting.DELETE_SELECT_NEXT	= "next";					// zimbraPrefMailSelectAfterDelete
 ZmSetting.DELETE_SELECT_PREV	= "previous";
 ZmSetting.DELETE_SELECT_ADAPT	= "adaptive";
+ZmSetting.GETMAIL_ACTION_DEFAULT= "default";				// zimbraPrefGetMailAction
+ZmSetting.GETMAIL_ACTION_UPDATE = "update";
 ZmSetting.GROUP_BY_CONV			= "conversation";			// zimbraPrefGroupMailBy
 ZmSetting.GROUP_BY_MESSAGE		= "message";
 ZmSetting.HTTP_DEFAULT_PORT		= 80;
@@ -223,10 +223,6 @@ ZmSetting.LICENSE_MSG[ZmSetting.LICENSE_BAD]			= ZmMsg.licenseExpired;
 
 // we need these IDs available when the app classes are parsed
 ZmSetting.LOCALE_NAME			= "LOCALE_NAME";
-ZmSetting.COMPOSE_INIT_DIRECTION= "COMPOSE_INIT_DIRECTION";
-ZmSetting.SHOW_COMPOSE_DIRECTION_BUTTONS = "SHOW_COMPOSE_DIRECTION_BUTTONS";
-ZmSetting.FONT_NAME				= "FONT_NAME";
-ZmSetting.FONT_SIZE				= "FONT_SIZE";
 ZmSetting.SKIN_NAME				= "SKIN_NAME";
 
 ZmSetting.BRIEFCASE_ENABLED		= "BRIEFCASE_ENABLED";
@@ -234,41 +230,35 @@ ZmSetting.CALENDAR_ENABLED		= "CALENDAR_ENABLED";
 ZmSetting.CONTACTS_ENABLED		= "CONTACTS_ENABLED";
 ZmSetting.IM_ENABLED			= "IM_ENABLED";
 ZmSetting.MAIL_ENABLED			= "MAIL_ENABLED";
+ZmSetting.MIXED_VIEW_ENABLED	= "MIXED_VIEW_ENABLED";
+ZmSetting.NOTEBOOK_ENABLED		= "NOTEBOOK_ENABLED";
 ZmSetting.OPTIONS_ENABLED		= "OPTIONS_ENABLED";
 ZmSetting.PORTAL_ENABLED		= "PORTAL_ENABLED";
-ZmSetting.SEARCH_ENABLED		= "SEARCH_ENABLED";
 ZmSetting.TASKS_ENABLED			= "TASKS_ENABLED";
 ZmSetting.VOICE_ENABLED			= "VOICE_ENABLED";
-ZmSetting.TAGGING_ENABLED		= "TAGGING_ENABLED";
+ZmSetting.TAGGING_ENABLED       = "TAGGING_ENABLED";
 
 ZmSetting.CALENDAR_UPSELL_ENABLED	= "CALENDAR_UPSELL_ENABLED";
 ZmSetting.CONTACTS_UPSELL_ENABLED	= "CONTACTS_UPSELL_ENABLED";
 ZmSetting.MAIL_UPSELL_ENABLED		= "MAIL_UPSELL_ENABLED";
 ZmSetting.VOICE_UPSELL_ENABLED		= "VOICE_UPSELL_ENABLED";
 
-//user selected font
-ZmSetting.FONT_CLASSIC	= "classic";
-ZmSetting.FONT_MODERN	= "modern";
-ZmSetting.FONT_WIDE		= "wide";
-ZmSetting.FONT_SYSTEM	= "system";
+ZmSetting.MAIL_SEND_LATER_ENABLED	= "MAIL_SEND_LATER_ENABLED";
 
-//user selected font size
-ZmSetting.FONT_SIZE_NORMAL = "normal";
-ZmSetting.FONT_SIZE_LARGE = "large";
-ZmSetting.FONT_SIZE_LARGER = "larger";
-
-
-// name for dynamic CSS class created from user font prefs
-ZmSetting.USER_FONT_CLASS = "userFontPrefs";
-
-//task filterby setting
-ZmSetting.TASK_FILTER_ALL = "";
-ZmSetting.TASK_FILTER_TODO = "TODO";
-ZmSetting.TASK_FILTER_COMPLETED = "COMPLETED";
-ZmSetting.TASK_FILTER_WAITING = "WAITING";
-ZmSetting.TASK_FILTER_DEFERRED = "DEFERRED";
-ZmSetting.TASK_FILTER_INPROGRESS = "INPROGRESS";
-ZmSetting.TASK_FILTER_NOTSTARTED = "NOTSTARTED";
+// remove this block when offline.jsp upgrades
+ZmSetting.APPS_COOKIE			= "ZM_APPS";
+ZmSetting.APP_LETTER = {};
+ZmSetting.APP_LETTER[ZmSetting.PORTAL_ENABLED]		= "p";
+ZmSetting.APP_LETTER[ZmSetting.MAIL_ENABLED]		= "m";
+ZmSetting.APP_LETTER[ZmSetting.CALENDAR_ENABLED]	= "c";
+ZmSetting.APP_LETTER[ZmSetting.CONTACTS_ENABLED]	= "a";
+ZmSetting.APP_LETTER[ZmSetting.OPTIONS_ENABLED]	    = "o";
+ZmSetting.APP_LETTER[ZmSetting.IM_ENABLED]			= "i";
+ZmSetting.APP_LETTER[ZmSetting.NOTEBOOK_ENABLED]	= "n";
+ZmSetting.APP_LETTER[ZmSetting.BRIEFCASE_ENABLED]	= "b";
+ZmSetting.APP_LETTER[ZmSetting.TASKS_ENABLED]		= "t";
+ZmSetting.APP_LETTER[ZmSetting.MIXED_VIEW_ENABLED]	= "x";
+ZmSetting.APP_LETTER[ZmSetting.VOICE_ENABLED]		= "v";
 
 // hash of global settings
 ZmSetting.IS_GLOBAL = {};
@@ -278,15 +268,6 @@ ZmSetting.IS_IMPLICIT = {};
 
 // hash of implicit settings that have been changed during the current session
 ZmSetting.CHANGED_IMPLICIT = {};
-
-// Send As and Send On Behalf Of settings
-ZmSetting.GRANT_RIGHTS_REQUEST = "GrantRightsRequest";
-ZmSetting.REVOKE_RIGHTS_REQUEST = "RevokeRightsRequest";
-ZmSetting.SEND_AS = "sendAs";
-ZmSetting.SEND_ON_BEHALF_OF = "sendOnBehalfOf";
-ZmSetting.ZM_GRANT_RIGHTS_DIALOG = "ZmGrantRightsDialog"
-
-
 
 /**
  * Returns a string representation of the object.

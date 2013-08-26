@@ -2,7 +2,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2009, 2010, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2009, 2010, 2011, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
@@ -19,6 +19,7 @@ ZmBuddyListPopup = function(params) {
 	var overviewArgs = {
 //		parentElement: parentElement,
 		posStyle: Dwt.STATIC_STYLE,
+		noAssistant: true,
 		expanded: true,
 		singleClick: true,
 		noHeaderNodeCell: true
