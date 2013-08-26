@@ -362,7 +362,7 @@
 				</td>
 			</tr>
 		<$}$>
-		<$ if (!appCtxt.get(ZmSetting.ATTACHMENTS_BLOCKED)) { $>
+		<$ if (!appCtxt.get(ZmSetting.ATTACHMENTS_BLOCKED) && !appCtxt.get(ZmSetting.ATTACHMENTS_VIEW_IN_HTML_ONLY)) { $>
 		<tr>
 			<td width='1%' style='padding-right:3px;'>
 				<$= AjxImg.getImageHtml(ZmMimeTable.getInfo(ZmMimeTable.APP_ZIP).image, "position:relative;") $>
