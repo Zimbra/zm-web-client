@@ -79,8 +79,8 @@ Ext.define('ZCS.controller.calendar.ZtCalendarController', {
      * Loads the appointments on application switch
      */
     loadCalendar: function() {
-
-        var defaultQuery = this.getDefaultQuery();
+        var defaultQuery = this.getDefaultQuery(),
+            me = this;
 
         //Set the proxies params so this parameter persists between paging requests.
         this.getStore().getProxy().setExtraParams({
@@ -90,7 +90,13 @@ Ext.define('ZCS.controller.calendar.ZtCalendarController', {
         this.getStore().load({
             calStart: this.getMonthStartTime(),
             calEnd: this.getMonthEndTime(),
-            query: defaultQuery
+            query: defaultQuery,
+            callback: function(records, operation, success) {
+                if (success) {
+                    // Fix for bug: 83607
+                    me.getCalMonthView().view.refreshDelta(0);
+                }
+            }
         });
     },
 
