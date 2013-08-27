@@ -90,7 +90,7 @@ Ext.define('Ext.ux.TouchCalendarDayEvents', {
 			roundedStartDate    = this.getRoundedTime(startDate),
 			minutesLength       = (endDate.getTime() - startDate.getTime()) / 1000 / 60,
 			timeSlotEl          = this.getCalendar().getDateCell(roundedStartDate),
-			timeSlotRowEl       = timeSlotEl.parent('tr', false),
+			timeSlotRowEl       = timeSlotEl && timeSlotEl.parent('tr', false), // ZCS - Fix for JS error. Occurs in case of all day appointments.
 			heightPixels        = 0;
 
 		if(timeSlotRowEl){

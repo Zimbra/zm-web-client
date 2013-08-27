@@ -55,7 +55,8 @@
                     &.time-block
                     {
                         background-color: #fafafa;
-                        height: 20px;
+                        // ZCS - Removed to make the day view time slots evenly distributed
+                        //height: 20px;
                         border-top: 1px solid #e0e0e0;
 
                         &.selected

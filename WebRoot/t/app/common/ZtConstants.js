@@ -101,6 +101,7 @@ ZCS.constant.OVERVIEW_TITLE[ZCS.constant.APP_CALENDAR]   = ZtMsg.calendar;
 ZCS.constant.NEW_ITEM_ICON = {};
 ZCS.constant.NEW_ITEM_ICON[ZCS.constant.APP_MAIL]       = 'compose';
 ZCS.constant.NEW_ITEM_ICON[ZCS.constant.APP_CONTACTS]   = 'add';
+ZCS.constant.NEW_ITEM_ICON[ZCS.constant.APP_CALENDAR]   = 'add';
 
 // Buttons for a cancel shield ("Save changes?")
 ZCS.constant.CANCEL_SHIELD_BUTTONS = [
