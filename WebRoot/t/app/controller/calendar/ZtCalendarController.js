@@ -94,10 +94,29 @@ Ext.define('ZCS.controller.calendar.ZtCalendarController', {
             callback: function(records, operation, success) {
                 if (success) {
                     // Fix for bug: 83607
-                    me.getCalMonthView().view.refreshDelta(0);
+                    me.refreshCurrentView();
                 }
             }
         });
+    },
+
+    /*
+     * Refreshes and reloads default/last selected calendar view
+     */
+    refreshCurrentView: function() {
+        var monthView = this.getCalMonthView(),
+            dayView = this.getCalDayView(),
+            weekView = this.getCalWeekView();
+
+        if (!monthView.isHidden()) {
+            monthView.view.refreshDelta(0);
+        }
+        else if (!dayView.isHidden()) {
+            dayView.view.refreshDelta(0);
+        }
+        else if (!weekView.isHidden()) {
+            weekView.view.refreshDelta(0);
+        }
     },
 
     /*
