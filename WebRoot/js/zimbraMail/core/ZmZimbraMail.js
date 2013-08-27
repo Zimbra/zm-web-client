@@ -2545,7 +2545,13 @@ function(ev) {
 
 ZmZimbraMail.prototype._offlineSettingsListener =
 function(ev) {
-    var dialog = appCtxt.getOfflineSettingsDialog();
+    var dialog;
+    if (appCtxt.isOfflineSupported()) {
+        dialog = appCtxt.getOfflineSettingsDialog();
+    } else {
+        dialog = appCtxt.getMsgDialog();
+        dialog.setMessage(ZmMsg.offlineSupportedBrowser, "", ZmMsg.offlineSettings);
+    }
     dialog.popup();
 };
 
