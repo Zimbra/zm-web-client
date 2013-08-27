@@ -119,6 +119,11 @@ function(item, force) {
 	if (changed) {
 		this.setReadingPane(true);	// so that second view gets positioned
 	}
+    else if (item.isUnread && itemView._msgViews && itemView._msgViews[itemView._msgViewList[0]]._expanded === false){
+        //expand most recent msg
+        itemView._msgViews[itemView._msgViewList[0]]._toggleExpansion();
+        itemView._msgViews[itemView._msgViewList[0]]._item._markReadLocal(true);
+    }
 	return ZmDoublePaneView.prototype.setItem.apply(this, arguments);
 };
 
