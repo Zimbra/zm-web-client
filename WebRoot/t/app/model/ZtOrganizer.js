@@ -54,6 +54,7 @@ Ext.define('ZCS.model.ZtOrganizer', {
 		/**
 		 * Returns an ID for an organizer which should be unique. Since the same tag can be used by multiple apps
 		 * (appearing in multiple overviews), we need to qualify its ID to be unique; otherwise ST gets confused.
+		 * Same thing goes for the Trash folder.
 		 *
 		 * @param {String}      itemId      organizer ID
 		 * @param {String}      type        ZCS.constant.ORG_*
@@ -62,6 +63,7 @@ Ext.define('ZCS.model.ZtOrganizer', {
 		 * @return {String}     suitable DOM ID for organizer
 		 */
 		getOrganizerId: function(itemId, type, app) {
+			app = app || ZCS.session.getActiveApp();
 			return (itemId === ZCS.constant.ID_TRASH || type === ZCS.constant.ORG_TAG) ? [app, type, itemId].join('-') : itemId;
 		},
 

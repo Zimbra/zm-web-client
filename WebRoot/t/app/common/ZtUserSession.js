@@ -235,7 +235,8 @@ Ext.define('ZCS.common.ZtUserSession', {
 		if (!isRoot && ((validType && !hideFolder) || isTrash)) {
 
 			// Get exact folder type if we're dealing with a folder. Tag needs unique ID for each store
-			// it appears in (tag is only organizer that can appear in multiple overviews).
+			// it appears in (tag is only organizer that can appear in multiple overviews). Trash also
+			// appears in more than one overview.
 			var type1 = (type === ZCS.constant.ORG_FOLDER) ? ZCS.constant.FOLDER_TYPE[app] : type,
 				id = ZCS.model.ZtOrganizer.getOrganizerId(itemId, type, app);
 

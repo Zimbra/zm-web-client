@@ -299,12 +299,15 @@ Ext.define('ZCS.controller.mail.ZtMailItemController', {
 
 		var isConv = (item.get('type') === ZCS.constant.ITEM_CONVERSATION),
 			toastMsg = isConv ? ZtMsg.moveConversation : ZtMsg.moveMessage,
-			folderName = ZCS.cache.get(folderId).get('displayName');
+			folder = ZCS.cache.get(ZCS.model.ZtOrganizer.getOrganizerId(folderId, ZCS.constant.ORG_FOLDER)),
+			folderName = folder && folder.get('displayName');
 
 		if (isConv) {
 			ZCS.app.getConvListController().removeItem(item, isSwipeDelete);
 		}
-		ZCS.app.fireEvent('showToast', Ext.String.format(toastMsg, folderName));
+		if (folderName) {
+			ZCS.app.fireEvent('showToast', Ext.String.format(toastMsg, folderName));
+		}
 	},
 
 	/**
