@@ -142,7 +142,7 @@ function(contact, isDirty) {
 		this._contact.removeChangeListener(this._changeListener);
 	}
 	contact.addChangeListener(this._changeListener);
-	this._contact = contact;
+	this._contact = this._item = contact;
 
 	if (!this._htmlInitialized) {
 		this._createHtml();
@@ -1120,23 +1120,7 @@ function() {
 	var tagCell = this._getTagCell();
 	if (!tagCell) { return; }
 
-	// get sorted list of tags for this msg
-	var ta = [];
-	for (var i = 0; i < this._contact.tags.length; i++)
-		ta.push(this._tagList.root.getByNameOrRemote(this._contact.tags[i]));
-	ta.sort(ZmTag.sortCompare);
-
-	var html = [];
-	var i = 0;
-	for (var j = 0; j < ta.length; j++) {
-		var tag = ta[j];
-		if (!tag) continue;
-		var icon = tag.getIconWithColor();
-		html[i++] = AjxImg.getImageSpanHtml(icon, null, null, AjxStringUtil.htmlEncode(tag.name));
-		html[i++] = "&nbsp;";
-	}
-
-	tagCell.innerHTML = html.join("");
+	tagCell.innerHTML = ZmTagsHelper.getTagsHtml(this._contact, this);
 };
 
 // Consistent spot to locate various dialogs
