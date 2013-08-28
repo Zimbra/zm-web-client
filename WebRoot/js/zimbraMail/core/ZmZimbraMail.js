@@ -80,7 +80,7 @@ ZmZimbraMail = function(params) {
     this._userShell = params.userShell;
 
     var offlineSetting = appCtxt.getSettings().getSetting("WEBCLIENT_OFFLINE_ENABLED");
-    window.isWeboffline = offlineSetting && offlineSetting.value;
+    window.isWebClientOfflineEnabled = offlineSetting && offlineSetting.value;
     appCtxt._supportsOffline = appCtxt.isOfflineSupported();
 
     if (appCtxt._supportsOffline && !appCtxt.isOfflineMode(true)){
@@ -2546,7 +2546,7 @@ function(ev) {
 ZmZimbraMail.prototype._offlineSettingsListener =
 function(ev) {
     var dialog;
-    if (appCtxt.isOfflineSupported()) {
+    if (AjxEnv.isOfflineSupported) {
         dialog = appCtxt.getOfflineSettingsDialog();
     } else {
         dialog = appCtxt.getMsgDialog();

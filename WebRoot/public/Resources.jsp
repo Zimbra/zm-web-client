@@ -66,7 +66,7 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 	}
     resources = resources.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll("\"", "&quot;");
     
-	String query = "v="+vers+(inSkinDebugMode||inDevMode?"&debug=1":"")+localeQs+"&skin="+skin;
+    String query = "v="+vers+"&debug="+(inSkinDebugMode||inDevMode)+localeQs+"&skin="+skin;
 
 %><script type="text/javascript" src="<%=contextPath%>/res/<%=resources%>.js<%=ext%>?<%=query%>"></script>
  

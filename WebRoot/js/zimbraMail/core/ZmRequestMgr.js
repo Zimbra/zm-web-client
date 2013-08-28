@@ -713,7 +713,7 @@ function(notify) {
 		this._handleModifies(notify.modified);
 	}
 
-    if (window.isWeboffline && !appCtxt.isOfflineMode() && (notify.deleted || notify.created || notify.modified)){
+    if (window.isWebClientOfflineEnabled && !appCtxt.isOfflineMode() && (notify.deleted || notify.created || notify.modified)){
         appCtxt._offlineHandler.sendSyncRequest();
     }
 	this._controller.runAppFunction("postNotify", false, notify);

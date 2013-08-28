@@ -42,8 +42,6 @@
     String skin = authResult.getSkin();
 %>
 <app:skinAndRedirect defaultSkin="${skin}" />
-
-<% if (!("true".equals(request.getParameter("weboffline")))) { %>
 <%
 	// Set to expire far in the past.
 	response.setHeader("Expires", "Tue, 24 Jan 2000 17:46:50 GMT");
@@ -54,7 +52,7 @@
 	// Set standard HTTP/1.0 no-cache header.
 	response.setHeader("Pragma", "no-cache");
 %>
-<% } %>
+
 <!DOCTYPE html>
 <zm:getUserAgent var="ua" session="false"/>
 <%	java.util.List<String> localePref = authResult.getPrefs().get("zimbraPrefLocale");
@@ -141,10 +139,10 @@
 	pageContext.setAttribute("unitTest", unitTest);
 	pageContext.setAttribute("preset", preset);
 	pageContext.setAttribute("editor", editor);
-        pageContext.setAttribute("isCoverage", isCoverage);
-        pageContext.setAttribute("isPerfMetric", isPerfMetric);
-        pageContext.setAttribute("isLocaleId", localeId != null);
-    pageContext.setAttribute("weboffline", "TRUE".equals(authResult.getPrefs().get("zimbraPrefWebClientOfflineAccessEnabled").get(0)));
+    pageContext.setAttribute("isCoverage", isCoverage);
+    pageContext.setAttribute("isPerfMetric", isPerfMetric);
+    pageContext.setAttribute("isLocaleId", localeId != null);
+    pageContext.setAttribute("isWebClientOfflineEnabled", "TRUE".equals(authResult.getPrefs().get("zimbraPrefWebClientOfflineAccessEnabled").get(0)));
 %>
 <html class="user_font_size_normal">
 <head>
@@ -165,10 +163,8 @@
 -->
 
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
-<% if (!("true".equals(request.getParameter("weboffline")))) { %>
 <meta http-equiv="cache-control" content="no-cache"/>
 <meta http-equiv="Pragma" content="no-cache"/>
-<% } %>
 <fmt:setLocale value='${locale}' scope='request' />
 <c:if test="${not isLocaleId}">
 <zm:getValidLocale locale='${locale}' var='validLocale'/>
@@ -181,9 +177,7 @@
 <title><fmt:message key="zimbraTitle"/></title>
 <link href="<c:url value="/css/images,common,dwt,msgview,login,zm,spellcheck,skin.css">
 	<c:param name="v" value="${vers}" />
-	<c:if test="${isDebug}">
-		<c:param name="debug" value="1" />
-	</c:if>
+	<c:param name='debug' value='${isDebug}' />
 	<c:param name="skin" value="${skin}" />
 	<c:param name="locale" value="${locale}" />
 	<c:if test="${not empty param.customerDomain}">
@@ -193,9 +187,7 @@
 <c:if test="${ua.isIE7up}">
     <link href="<c:url value="/css/ie-custom-icons.css">
     <c:param name="v" value="${vers}" />
-    <c:if test="${isDebug}">
-		<c:param name="debug" value="1" />
-	</c:if>
+	<c:param name='debug' value='${isDebug}' />
     <c:param name="skin" value="${skin}" />
     <c:param name="locale" value="${locale}" />
     <c:if test="${not empty param.customerDomain}">
@@ -226,11 +218,8 @@
     window.appCoverageMode		= ${isCoverage};
     window.isScriptErrorOn		= ${isScriptErrorOn};
     window.isPerfMetric			= ${isPerfMetric};
-    window.isWeboffline			= ${weboffline}
-
+    window.isWebClientOfflineEnabled = ${isWebClientOfflineEnabled};
 	window.authTokenExpires = <%= authResult.getExpires()%>;
-
-
 </script>
 <noscript>
 <meta http-equiv="Refresh" content="0;url=public/noscript.jsp" >

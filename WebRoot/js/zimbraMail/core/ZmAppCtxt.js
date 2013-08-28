@@ -1286,7 +1286,7 @@ function(locale, skin, reload){
     var appCacheManifest= appContextPath + "/appcache/images,common,dwt,msgview,login,zm,spellcheck,skin.appcache?";
     var urlParams = [];
     window.cacheKillerVersion && urlParams.push("v=" + window.cacheKillerVersion);
-    window.appDevMode && urlParams.push("debug=1");
+    urlParams.push("debug="+window.appDevMode);
     urlParams.push("compress=" + !(window.appDevMode === true));
     urlParams.push("templates=only");
     var manifestUrl = encodeURIComponent(appCacheManifest + urlParams.join('&'));
@@ -2096,5 +2096,5 @@ function() {
 
 ZmAppCtxt.prototype.isOfflineSupported =
 function(){
-    return AjxEnv.isChrome && window.isWeboffline && AjxEnv.supported.localstorage &&  AjxEnv.supported.applicationcache && AjxEnv.supported.indexeddb;
+    return window.isWebClientOfflineEnabled && AjxEnv.isOfflineSupported;
 };
