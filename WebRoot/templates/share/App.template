@@ -96,7 +96,7 @@
 <$ } $>
 	    <tr>
 	        <th colspan=2 style='padding-bottom:5px; text-align:left; max-width:350px;'>
-                <$= AjxStringUtil.htmlEncode(data.name) $>
+                <div style='overflow-x:hidden;'><$= AjxStringUtil.htmlEncode(data.name) $></div>
             </th>
 	    </tr>
 <$ if (data.numUnread) { $>
