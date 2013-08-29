@@ -1429,11 +1429,9 @@ function(isTextMsg, html, isTruncated) {
 
 ZmMailMsgCapsuleView.prototype._renderMessageBody =
 function(msg, container, callback, index) {
-	
-	if (!this._beenHere) {
-		this._addLine();
-	}
-	
+
+	this._addLine(); //separator between header and message body
+
 	this._msgBodyDivId = [this._htmlElId, ZmId.MV_MSG_BODY].join("_");
 	var autoSendTime = AjxUtil.isDate(msg.autoSendTime) ? AjxDateFormat.getDateTimeInstance(AjxDateFormat.FULL, AjxDateFormat.MEDIUM).format(msg.autoSendTime) : null;
 	if (autoSendTime) {
