@@ -1081,14 +1081,7 @@ function(msgDraft) {
 		this._handleInline(msgDraft);
 	}
 	this.reEnableDesignMode();
-//	this._action = ZmOperation.DRAFT;
-	if (this._msg) {
-		this._msg.nId = msgDraft.id;
-		this._msg.id = msgDraft.id;
-		this._msg.isDraft = true;
-	} else {
-		this._msg = msgDraft;
-	}
+    this._msg = msgDraft;
 	this._msgAttId = null;
 	// always redo att links since user couldve removed att before saving draft
 	this.cleanupAttachments(true);
