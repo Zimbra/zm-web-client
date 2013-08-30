@@ -12,35 +12,27 @@
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
  */
+$include-pictos-font: false;
+$include-default-icons: false;
+
+$experimental-support-for-mozilla : false;
+$experimental-support-for-webkit : false;
+// $support-for-original-webkit-gradients : false;
+$experimental-support-for-opera : false;
+$experimental-support-for-microsoft : false;
+$experimental-support-for-khtml : false;
+
 //Base variables referenced through widgets, also overriding default sencha style variables.
 @import 'variables/base';
 
 // Importing defaults - this has to follow the overrides!!!
-@import '../../touch/resources/themes/stylesheets/sencha-touch/base';
-@import '../../touch/resources/themes/stylesheets/sencha-touch/base/all';
-@import '../../touch/resources/themes/stylesheets/sencha-touch/default';
-@import '../../touch/resources/themes/stylesheets/sencha-touch/default/all';
+// Layout
 
-//@include sencha-msgbox;
+@import 'sencha-touch/default';
+@import 'sencha-touch/default/all';
 
 
-// You may remove any of the following modules that you
-// do not use in order to create a smaller css file.
-//@include sencha-panel;
-//@include sencha-buttons;
-//@include sencha-sheet;
-//@include sencha-picker;
-//@include sencha-tabs;
-//@include sencha-toolbar;
-//@include sencha-toolbar-forms;
-//@include sencha-indexbar;
-//@include sencha-list;
-//@include sencha-layout;
-//@include sencha-list-paging;
-//@include sencha-list-pullrefresh;
-//@include sencha-carousel;
-//@include sencha-form;
-//@include sencha-msgbox;
+
 
 //Widget styling
 @import 'widgets/base';
