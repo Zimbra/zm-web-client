@@ -95,6 +95,12 @@ Ext.define('ZCS.controller.ZtAppViewController', {
 			this.hideListPanel();
 		}, this);
 
+		//Handle show list panel events.
+		ZCS.app.on('showListPanel', function () {
+			this.showListPanel();
+		}, this);
+
+
 		//Handle changing apps.
 		ZCS.app.on('applicationSwitch', function (newApp) {
 			var oldApp = ZCS.session.getActiveApp(),
