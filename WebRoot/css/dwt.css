@@ -1071,12 +1071,38 @@ UL.DwtListView-Rows {
 	@TextArea-disabled@
 }
 
+#IFDEF WEBKIT
+.DwtInputField input::-webkit-input-placeholder,
+#ENDIF
+#IFDEF GECKO
+.DwtInputField input:-moz-placeholder,
+.DwtInputField input::-moz-placeholder,
+#ENDIF
+#IFDEF MSIE_10
+.DwtInputField input:-ms-input-placeholder,
+#ENDIF
+#IFDEF MODERN_IE
+.DwtInputField input:-ms-input-placeholder,
+#ENDIF
 .DwtInputField-hint input[type="text"],
 .DwtInputField-hint input[type="password"],
 .DwtInputField-hint input,
 .DwtSimpleInput-hint {
 	@InputField-hint@
 }
+
+#IFDEF WEBKIT
+.DwtInputField textarea::-webkit-input-placeholder,
+#ENDIF
+#IFDEF WEBKIT
+.DwtInputField textarea:-moz-placeholder,
+#ENDIF
+#IFDEF WEBKIT
+.DwtInputField textarea::-moz-placeholder,
+#ENDIF
+#IFDEF WEBKIT
+.DwtInputField textarea:-ms-input-placeholder,
+#ENDIF
 .DwtInputField-hint textarea {
 	@Text-light@
 }
