@@ -1963,9 +1963,6 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 	margin-top:-2px;
 	overflow:hidden;
 	right:1px;
-#IFDEF MSIE
-	margin-left:55px;
-#ENDIF
 }
 .calendar_cur_time_indicator_strip {
 	background-color:@CalendarIndicatorColor@;
