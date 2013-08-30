@@ -84,30 +84,12 @@ Ext.define('ZCS.view.mail.ZtMsgView', {
 		return this.callParent(arguments);
 	},
 
-	//We cache the current view state in the record.  We can't cache it in the component because that component
-	//might get used by ore than one record before making it back to the record that is doing the caching.
-	applyExpanded: function (value, oldValue) {
-		if (this.getMsg()) {
-			this.getMsg().viewExpansionState = value;
-		}
-
-		return value;
-	},
-
-	applyState: function (value, oldValue) {
-		if (this.getMsg()) {
-			this.getMsg().viewState = value;
-		}
-
-		return value;
-	},
-
 	doMsgViewUpdate: function (msgView, msgId, renderBody) {
+
 		var controller = ZCS.app.getConvController(),
 			msg = ZCS.cache.get(msgId),
 			oldMsgView = controller.getMsgViewById(msgId),
-			shouldBeExpanded,
-			modelState;
+			shouldBeExpanded, modelState;
 
 		//<debug>
 		if (oldMsgView) {
@@ -116,13 +98,13 @@ Ext.define('ZCS.view.mail.ZtMsgView', {
 		//</debug>
 
 		// don't force any full list height recalcs.  Let individual iframe events do this if necessary,
-		// otherwise we should receive the proper height during the lists rendering phase.
+		// otherwise we should receive the proper height during the list's rendering phase.
 		if (msg) {
+			shouldBeExpanded = !!msg.get('isLoaded'),
 			msgView.setMsg(msg);
-			shouldBeExpanded = this.shouldBeExpanded();
 			modelState = shouldBeExpanded ? ZCS.constant.HDR_EXPANDED : ZCS.constant.HDR_COLLAPSED;
 			msgView.setExpanded(shouldBeExpanded);
-			msgView.setState(msg.viewState || modelState);
+			msgView.setState(modelState);
 			this.updateExpansion();
 			this.renderHeader();
 			if (renderBody && msgView.getExpanded()) {
@@ -228,27 +210,6 @@ Ext.define('ZCS.view.mail.ZtMsgView', {
 			listRef.updatedItems.push(this);
 			listRef.handleItemHeights();
 			listRef.refreshScroller(listRef.getScrollable().getScroller());
-		}
-	},
-
-	/**
-	 * The view property gets precendence because it is set by user taps.
-	 * Then the model property saved on the server gets precendence.
-	 * Notice that we check for strict equality on the view properties because
-	 * they might be undefined.
-	 *
-	 */
-	shouldBeExpanded: function () {
-		var msg = this.getMsg();
-
-		if (msg.viewExpansionState === false) {
-			return false;
-		} else if (msg.viewExpansionState === true) {
-			return true;
-		} else if (!!msg.get('isLoaded')) {
-			return true;
-		} else {
-			return false;
 		}
 	},
 
