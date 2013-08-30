@@ -57,8 +57,18 @@ Ext.define('ZCS.model.mail.ZtConvWriter', {
 		} else if (action === 'update') {
 
 			// 'update' operation means we're performing a ConvActionRequest
-			var itemData = Ext.merge(data[0] || {}, options);
+			var itemData = Ext.merge(data[0] || {}, options),
+				op = itemData.op;
+
 			json = this.getActionRequest(request, itemData, 'ConvAction');
+			if (op === 'move' || op === 'trash') {
+				var changeToken = ZCS.session.getChangeToken();
+				if (changeToken) {
+					json.Header.context.change = {
+						token: changeToken
+					};
+				}
+			}
 		}
 
 		// Do not pass query in query string.

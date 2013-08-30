@@ -126,10 +126,20 @@ Ext.define('ZCS.model.ZtSoapProxy', {
 	processHeader: function(header) {
 
 		var context = header && header.context,
+			session = header && header.session,
+			changeToken = context && context.change && context.change.token,
 			notifications = context && context.notify,
 			refresh = context && context.refresh;
 
-		if (notifications) {
+		if (session) {
+			ZCS.session.setSessionId(session);
+		}
+
+		if (changeToken) {
+			ZCS.session.setChangeToken(changeToken);
+		}
+
+		if (notifications && !ZCS.session.isStaleSession(session)) {
 			this.handleNotifications(notifications);
 		}
 
@@ -141,16 +151,18 @@ Ext.define('ZCS.model.ZtSoapProxy', {
 	handleNotifications: function(notifications) {
 
 		Ext.each(notifications, function(notify) {
-			ZCS.session.setNotifySeq(notify.seq);
-			this.normalizeNotifications(notify);
-			if (notify.deleted) {
-				this.handleDeletes(notify.deleted);
-			}
-			if (notify.created) {
-				this.handleCreates(notify.created);
-			}
-			if (notify.modified) {
-				this.handleModifies(notify.modified);
+			if (notify.seq > ZCS.session.getNotifySeq()) {
+				ZCS.session.setNotifySeq(notify.seq);
+				this.normalizeNotifications(notify);
+				if (notify.deleted) {
+					this.handleDeletes(notify.deleted);
+				}
+				if (notify.created) {
+					this.handleCreates(notify.created);
+				}
+				if (notify.modified) {
+					this.handleModifies(notify.modified);
+				}
 			}
 		}, this);
 	},
@@ -221,7 +233,7 @@ Ext.define('ZCS.model.ZtSoapProxy', {
 		Ext.Logger.info('Handling refresh block');
 		//</debug>
 		ZCS.session.loadFolders(refresh);
-		ZCS.session.setNotifySeq(0, true);
+		ZCS.session.setNotifySeq(0);
 	},
 
 	/**

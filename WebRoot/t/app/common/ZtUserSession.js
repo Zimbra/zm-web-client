@@ -31,7 +31,9 @@ Ext.define('ZCS.common.ZtUserSession', {
 	],
 
 	config: {
-		sessionId:              null,
+		sessionId:              null,       // User session ID, created by server
+		notifySeq:              0,          // Help server track which notifications we have gotten
+		changeToken:            null,       // Used to prevent race conditions during item modification
 		accountName:            '',
 		accountId:              '',
 		initialSearchResults:   null,
@@ -41,15 +43,55 @@ Ext.define('ZCS.common.ZtUserSession', {
 		version:                '[unknown]'
 	},
 
+	/**
+	 * Finds and returns the session ID encoded in any of several formats.
+	 *
+	 * @param {mixed} session Any valid session object: string, number, object, or array.
+	 *
+	 * @return {Number|Null} session ID or null
+	 */
+	extractSessionId: function(session) {
+
+		var id;
+		if (Array.isArray(session)) {
+			session = session[0].id;
+		}
+		else if (session && session.id) {
+			session = session.id;
+		}
+
+		// We either have extracted the id or were given some primitive form.
+		// Whatever we have at this point, attempt conversion and clean up response.
+		id = parseInt(session);
+		// Normalize response
+		if (isNaN(id)) {
+			id = null;
+		}
+
+		return id;
+	},
+
+	applySessionId: function(session) {
+		var curSessionId = this.getSessionId();
+		if (curSessionId) {
+			this.staleSessions[curSessionId] = true;
+		}
+		return this.extractSessionId(session);
+	},
+
+	isStaleSession: function(session) {
+		var sessionId = this.extractSessionId(session);
+		return sessionId && this.staleSessions[sessionId];
+	},
+
 	initSession: function(data) {
 
 		this.setDebugLevel(data.debugLevel);
 
-		// session ID
-		this.setSessionId(data.header.context.session.id);
-
-		// Notification sequence number (so the server knows what we've seen)
-		this.notifySeq = 0;
+		// session handling
+		this.staleSessions = {};
+		this.setSessionId(data.header.context.session);
+		this.setNotifySeq(0);
 
 		// Load organizers
 		this.loadFolders(data.header.context.refresh);
@@ -157,18 +199,13 @@ Ext.define('ZCS.common.ZtUserSession', {
 		}
 	},
 
-	getNotifySeq: function() {
-		return this.notifySeq;
-	},
-
-	setNotifySeq: function(seq, force) {
+	applyNotifySeq: function(seq) {
 		//<debug>
-		Ext.Logger.info('set notify seq to ' + seq + ' (current is ' + this.notifySeq + ')');
+		Ext.Logger.info('set notify seq to ' + seq + ' (current is ' + this.getNotifySeq() + ')');
 		//</debug>
 
-		if (force || (seq > this.notifySeq)) {
-			this.notifySeq = seq;
-		}
+		// Make sure it's highest we've seen, or 0 (got a refresh block, start over)
+		return seq > this.getNotifySeq() || seq === 0 ? seq : undefined;
 	},
 
 	/**
