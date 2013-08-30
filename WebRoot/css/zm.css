@@ -952,7 +952,7 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 	color:black;
 	margin:3px 7px;
 	opacity:.25;
-#IFDEF MSIE
+#IFDEF MSIE_LOWER_THAN_9
 	border-color:#CCC;
 #ENDIF
 }
