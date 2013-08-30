@@ -847,6 +847,7 @@ function() {
 	this.setVisible(false);
 	if (this._subjectSpan && this._infoDiv) {
 		this._subjectSpan.innerHTML = this._infoDiv.innerHTML = "";
+        this._subjectSpan.title = "";
 	}
 };
 
@@ -881,6 +882,7 @@ ZmConvView2Header.prototype._setSubject =
 function() {
 	var subject = this._convView.renderObjects(this, ZmMailMsg.stripSubjectPrefixes(this._item.subject ||ZmMsg.noSubject), true);
 	this._subjectSpan.innerHTML = subject;
+    this._subjectSpan.title = subject;
 };
 
 ZmConvView2Header.prototype._setInfo =
