@@ -31,7 +31,7 @@ Ext.define('ZCS.view.ZtItemPanel', {
 	xtype: 'itempanel',
 
 	config: {
-		layout: 'fit',
+		layout: 'vbox',
 		cls:    'zcs-item-panel',
 		app:    null
 	},
@@ -85,11 +85,20 @@ Ext.define('ZCS.view.ZtItemPanel', {
 		};
 
 		var itemView = {
-			xtype: app + 'itemview'
+			xtype: app + 'itemview',
+			flex: 1
+		};
+
+		var titleBar = {
+			xtype: 'component',
+			itemId: 'itemTitleOnlyBar',
+			cls: 'zcs-conv-title-bar',
+			height: app === ZCS.constant.APP_MAIL ? 30 : 0
 		};
 
 		this.add([
 			toolbar,
+			titleBar,
 			itemView
 		]);
 

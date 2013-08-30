@@ -197,6 +197,10 @@ Ext.define('ZCS.controller.ZtItemController', {
 	 *                                      isDraft     if true, draft is being displayed
 	 */
 	updateToolbar: function(params) {
+		this.updateTitle(params);
+	},
+
+	updateTitle: function (params) {
 		var toolbar = this.getItemPanelToolbar();
 		if (toolbar && params && params.title != null) {
 			toolbar.setTitle(params.title);

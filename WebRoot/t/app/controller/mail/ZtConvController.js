@@ -33,6 +33,7 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 
 		refs: {
 			itemPanelToolbar:   'appview #' + ZCS.constant.APP_MAIL + 'itempanel titlebar',
+			convTitleBar: 'appview #' + ZCS.constant.APP_MAIL + 'itempanel #itemTitleOnlyBar',
 			itemPanel:          'appview #' + ZCS.constant.APP_MAIL + 'itempanel',
 			msgListView:        ZCS.constant.APP_MAIL + 'itemview',
 			quickReply:         '#quickReply',
@@ -690,6 +691,14 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 		else {
 			this.showButton(ZCS.constant.OP_EDIT, false);
 
+		}
+	},
+
+	updateTitle: function (params) {
+		var convTitleBar = this.getConvTitleBar();
+
+		if (toolbar && params && params.title != null) {
+			convTitleBar.setHtml(params.title);
 		}
 	}
 });
