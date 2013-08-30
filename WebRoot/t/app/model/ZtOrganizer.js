@@ -208,11 +208,11 @@ Ext.define('ZCS.model.ZtOrganizer', {
 
 		var	type = this.get('type');
 
-		if (type === ZCS.constant.ORG_MAIL_FOLDER) {
-			return this.mayContain(item);
-		}
-		else if (type === ZCS.constant.ORG_TAG) {
+		if (type === ZCS.constant.ORG_TAG) {
 			return !item.hasTag(this);
+		}
+		else {
+			return this.mayContain(item);
 		}
 	},
 

@@ -224,7 +224,7 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
 	/**
 	 * Launches an assignment view
 	 */
-	doAssignmentView: function (item, view, listTitle, viewProp) {
+	doAssignmentView: function (item, view, listTitle, viewType) {
 
 		var targetComp = Ext.Viewport.down('tabpanel'),
 			activeComp = this.getItemPanel(),
@@ -242,8 +242,9 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
 
 		// TODO: if we're caching assignment views, we will need to update its overview
 		// TODO: when we get notified of organizer changes
-		if (!this[viewProp]) {
-			this[viewProp] = Ext.create(view, {
+		var assignmentView = this[viewType];
+		if (!assignmentView) {
+			assignmentView = this[viewType] = Ext.create(view, {
 				targetElement: targetComp.bodyElement,
 				record: item,
 				listTitle: listTitle,
@@ -262,7 +263,15 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
 			hideAll: true
 		});
 
-		this[viewProp].showWithComponent(activeComp, item, contentHeight);
+		var list = assignmentView.down('list'),
+			listItems = list.getViewItems(),
+			store = list.getStore();
+
+		store.each(function(organizer, index) {
+			organizer = organizer instanceof ZCS.model.ZtOrganizer ? organizer : ZCS.cache.get(organizer.getId());
+			listItems[index].setDisabled(!organizer.isValidAssignmentTarget(item));
+		}, this);
+		assignmentView.showWithComponent(activeComp, item, contentHeight);
 	},
 
 	/**
