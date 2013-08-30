@@ -37,12 +37,25 @@ Ext.define('ZCS.view.mail.ZtMsgHeader', {
 		}
 	},
 
+	setReadOnly: function (isReadOnly) {
+		var header = Ext.fly(this.element.query('.zcs-msgHdr-link')[0]);
+		if (header) {
+			if (isReadOnly) {
+				header.setVisible(false);
+			} else {
+				header.setVisible(true);
+			}
+		}
+	},
+
 	/**
 	 * Displays the message header in one of three states: collapsed, expanded, or detailed.
 	 *
 	 * @param {ZtMailMsg}   msg     msg being rendered
 	 */
 	render: function(msg, state) {
+
+
 
 		var msgView = this.up('msgview');
 		state = state || msgView.getState();

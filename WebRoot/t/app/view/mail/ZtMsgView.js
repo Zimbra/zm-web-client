@@ -188,6 +188,9 @@ Ext.define('ZCS.view.mail.ZtMsgView', {
 		this.readOnly = isReadOnly;
 		if (!isReadOnly) {
 			this.updateExpansion();
+			this.down('msgheader').setReadOnly(isReadOnly);
+		} else {
+			this.down('msgheader').setReadOnly(isReadOnly);
 		}
 	},
 
