@@ -248,8 +248,8 @@ function(objStore, callback, limit){
 
 
 ZmOfflineDB.indexedDB.openOfflineLogDB =
-function(callback, errorCallback) {
-    var request = indexedDB.open("OfflineLog");
+function(callback, errorCallback, version) {
+    var request = version ? indexedDB.open("OfflineLog", version) : indexedDB.open("OfflineLog");
 
     request.onerror = function(event) {
         if (errorCallback) {
@@ -257,16 +257,23 @@ function(callback, errorCallback) {
         }
     };
     request.onsuccess = function(event) {
-        ZmOfflineDB.indexedDB.offlineLogDB = event.target.result;
-        if (callback) {
-            callback(event);
+        var db = ZmOfflineDB.indexedDB.offlineLogDB = event.target.result;
+        if (db.objectStoreNames.contains("RequestQueue")) {
+            if (callback) {
+                callback(event);
+            }
+        }
+        else {
+            ZmOfflineDB.indexedDB.openOfflineLogDB(callback, errorCallback, db.version + 1);
         }
     };
     request.onupgradeneeded = function(event) {
         var db = event.target.result;
-        var objectStore = db.createObjectStore("RequestQueue", {keyPath : "oid", autoIncrement : true});
-        objectStore.createIndex("methodName", "methodName");
-        objectStore.createIndex("id", "id");
+        if (!db.objectStoreNames.contains("RequestQueue")) {
+            var objectStore = db.createObjectStore("RequestQueue", {keyPath : "oid", autoIncrement : true});
+            objectStore.createIndex("methodName", "methodName");
+            objectStore.createIndex("id", "id");
+        }
     };
 };
 

@@ -1781,16 +1781,49 @@ function(params) {
     var jsonObj = $.extend(true, {}, params.jsonObj),//Always clone the object
         methodName = Object.keys(jsonObj)[0],
         msgNode = jsonObj[methodName].m,
+        msgNodeAttach = msgNode.attach,
+        origMsg = this._origMsg,
         currentTime = new Date().getTime(),
-        callback;
+        callback,
+        aid = [];
 
     jsonObj.methodName = methodName;
     msgNode.d = currentTime; //for displaying date and time in the outbox/Drafts folder
+    msgNode.id = msgNode.id || (origMsg && origMsg.id);
 
-    if (!msgNode.id && this._origMsg && this._origMsg.id) {
-        msgNode.id = this._origMsg.id;
+    if (msgNodeAttach && msgNodeAttach.aid) {
+        var msgNodeAttachIds = msgNodeAttach.aid.split(",");
+        for (var i = 0; i < msgNodeAttachIds.length; i++) {
+            var msgNodeAttachId = msgNodeAttachIds[i];
+            if (msgNodeAttachId) {
+                aid.push(msgNodeAttachId);
+                msgNodeAttach[msgNodeAttachId] = appCtxt.getById(msgNodeAttachId);
+                appCtxt.cacheRemove(msgNodeAttachId);
+            }
+        }
     }
-    callback = this._handleOfflineResponseSendMessageCallback.bind(this, params, jsonObj, !!msgNode.id)
+
+    if (origMsg && origMsg.hasAttach) {//Always append origMsg attachments for offline handling
+        var origMsgAttachments = origMsg.attachments;
+        if (msgNodeAttach) {
+            delete msgNodeAttach.mp;//Have to rewrite the code for including original attachments
+        } else {
+            msgNodeAttach = msgNode.attach = {};
+        }
+        for (var j = 0; j < origMsgAttachments.length; j++) {
+            var node = origMsgAttachments[j].node;
+            if (node && node.isOfflineUploaded) {
+                aid.push(node.aid);
+                msgNodeAttach[node.aid] = node;
+            }
+        }
+    }
+
+    if (msgNodeAttach) {
+        msgNodeAttach.aid = aid.join();
+    }
+
+    callback = this._handleOfflineResponseSendMessageCallback.bind(this, params, jsonObj, !!msgNode.id);
 
     if (msgNode.id) { //Existing drafts created online or offline
         jsonObj.id = msgNode.id;
@@ -1804,10 +1837,7 @@ function(params) {
     }
     else {
         jsonObj.id = msgNode.id = currentTime.toString(); //Id should be string
-        msgNode.f = msgNode.f || "";
-        if (msgNode.f.indexOf(ZmItem.FLAG_OFFLINE_CREATED) === -1) {
-            msgNode.f = msgNode.f + ZmItem.FLAG_OFFLINE_CREATED;
-        }
+        msgNode.f = (msgNode.f || "").replace(ZmItem.FLAG_OFFLINE_CREATED, "").concat(ZmItem.FLAG_OFFLINE_CREATED);
         ZmOfflineDB.indexedDB.setItemInRequestQueue(jsonObj, callback);
     }
 };
@@ -2116,12 +2146,16 @@ function(findHits, includeInlineImages, includeInlineAtts) {
 				props.part = attach.cachekey;
 			}
 			if (!useCL) {
-				props.url = [
-					appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI),
-					"&loc=", AjxEnv.DEFAULT_LOCALE,
-					"&id=", this.id,
-					"&part=", attach.part
-				].join("");
+                if (attach.node && attach.node.isOfflineUploaded) { //for offline upload attachments
+                    props.url = attach.node.data;
+                } else {
+                    props.url = [
+                        appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI),
+                        "&loc=", AjxEnv.DEFAULT_LOCALE,
+                        "&id=", this.id,
+                        "&part=", attach.part
+                    ].join("");
+			}
 			}
 			if (attach.contentId || (includeInlineImages && attach.contentDisposition == "inline")) {  // bug: 28741
 				props.ci = true;

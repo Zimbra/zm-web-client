@@ -745,7 +745,8 @@ function(result) {
         params,
         methodName,
         msg,
-        flags;
+        flags,
+        attach;
 
     for (var i = 0, length = result.length; i < length; i++) {
         obj = result[i];
@@ -754,6 +755,20 @@ function(result) {
             if (methodName === "SendMsgRequest" || methodName === "SaveDraftRequest") {
                 msg = obj[methodName].m;
                 flags = msg.f;
+                attach = msg.attach;
+                if (attach) {
+                    var isOfflineUploaded;
+                    for (var j in attach) {
+                        if (attach[j] && attach[j].isOfflineUploaded) {
+                            isOfflineUploaded = true;
+                            this._uploadOfflineAttachments(obj, msg);
+                            break;
+                        }
+                    }
+                    if (isOfflineUploaded) {
+                        continue;
+                    }
+                }
                 if (flags && flags.indexOf(ZmItem.FLAG_OFFLINE_CREATED) !== -1) {
                     msg.f = flags.replace(ZmItem.FLAG_OFFLINE_CREATED, "");//Removing the offline created flag
                     delete msg.id;//Removing the temporary id
@@ -965,6 +980,7 @@ function(result) {
     var resp = [],
         obj,
         msgNode,
+        generatedMsg,
         messagePart,
         i,
         length;
@@ -973,43 +989,116 @@ function(result) {
     for (i = 0, length = result.length; i < length; i++) {
         obj = result[i];
         if (obj) {
-            msgNode = obj[obj.methodName]["m"];
+            msgNode = obj[obj.methodName] && obj[obj.methodName]["m"];
             if (msgNode) {
-                msgNode.su = msgNode.su._content;
-                msgNode.f = (msgNode.f || "").replace(ZmItem.FLAG_ISSENT, "").concat(ZmItem.FLAG_ISSENT);
+                generatedMsg = {
+                    id : msgNode.id,
+                    f : msgNode.f || "",
+                    mid : msgNode.mid,
+                    cid : msgNode.cid,
+                    idnt : msgNode.idnt,
+                    e : msgNode.e,
+                    l : "",
+                    fr : "",
+                    su : msgNode.su._content,
+                    mp : [],
+                    d : msgNode.d
+                };
+                //Flags
                 if (obj.methodName === "SendMsgRequest") {
-                    msgNode.l = ZmFolder.ID_OUTBOX;
+                    generatedMsg.f = generatedMsg.f.replace(ZmItem.FLAG_ISSENT, "").concat(ZmItem.FLAG_ISSENT);
                 }
                 else if (obj.methodName === "SaveDraftRequest") {
-                    msgNode.l = ZmFolder.ID_DRAFTS;
-                    msgNode.f = msgNode.f.replace(ZmItem.FLAG_ISDRAFT, "").concat(ZmItem.FLAG_ISDRAFT);
+                    generatedMsg.f = generatedMsg.f.replace(ZmItem.FLAG_ISDRAFT, "").concat(ZmItem.FLAG_ISDRAFT);
                 }
+                if (msgNode.attach) {//attachment is there
+                    generatedMsg.f = generatedMsg.f.replace(ZmItem.FLAG_ATTACH, "").concat(ZmItem.FLAG_ATTACH);
+                }
+                //Folder id
+                if (obj.methodName === "SendMsgRequest") {
+                    generatedMsg.l = ZmFolder.ID_OUTBOX;
+                }
+                else if (obj.methodName === "SaveDraftRequest") {
+                    generatedMsg.l = ZmFolder.ID_DRAFTS;
+                }
+                //Message part
                 messagePart = msgNode.mp[0];
                 if (messagePart) {
                     if (messagePart.ct === ZmMimeTable.TEXT_PLAIN) {
-                        messagePart.content = msgNode.fr = (messagePart.content) ? messagePart.content._content : "";
-                        messagePart.body = true;
+                        generatedMsg.mp.push({
+                            ct : ZmMimeTable.TEXT_PLAIN,
+                            body : true,
+                            part : "1",
+                            content : (messagePart.content) ? messagePart.content._content : ""
+                        });
+                        generatedMsg.fr = generatedMsg.mp[0].content;
                     }
                     else if (messagePart.ct === ZmMimeTable.MULTI_ALT) {
-                        var partsArray = messagePart.mp,
-                            partsArrayLength = partsArray.length,
-                            part;
+                        var attach = msgNode.attach;
+                        if (attach) {//attachment is there
+                            generatedMsg.mp.push({
+                                ct : ZmMimeTable.MULTI_MIXED,
+                                part: ZmMimeTable.TEXT,
+                                mp : [{
+                                        ct : ZmMimeTable.MULTI_ALT,
+                                        part : 1,
+                                        mp : [{
+                                                ct : ZmMimeTable.TEXT_PLAIN,
+                                                part : "1.1",
+                                                content : (messagePart.mp[0].content) ? messagePart.mp[0].content._content : ""
+                                              },
+                                              {
+                                                ct : ZmMimeTable.TEXT_HTML,
+                                                part : "1.2",
+                                                body : true,
+                                                content : (messagePart.mp[1].content) ? messagePart.mp[1].content._content : ""
+                                              }]
+                                    }]
+                            });
+                            generatedMsg.fr = generatedMsg.mp[0].mp[0].mp[0].content;
 
-                        for (var j = 0; j < partsArrayLength; j++) {
-                            part = partsArray[j];
-                            part.part = j + 1;
-                            if (part.ct === ZmMimeTable.TEXT_PLAIN) {
-                                part.content = msgNode.fr = (part.content) ? part.content._content : "";
+                            if (attach && attach.hasOwnProperty("aid")) {
+                                var attachIds = attach.aid.split(",");
+                                for (var i = 0; i < attachIds.length; i++) {
+                                    var attachment = attach[attachIds[i]];
+                                    if (attachment) {
+                                        generatedMsg.mp[0].mp.push({
+                                            cd : "attachment",
+                                            ct : attachment.ct,
+                                            filename : attachment.filename,
+                                            aid : attachment.aid,
+                                            s : attachment.s,
+                                            data : attachment.data,
+                                            isOfflineUploaded : attachment.isOfflineUploaded,
+                                            part : (i + 1).toString()
+                                        });
+                                    }
+                                }
                             }
-                            else if (part.ct === ZmMimeTable.TEXT_HTML) {
-                                part.content = (part.content) ? part.content._content : "";
-                                part.body = true;
-                            }
+                        }
+                        else {
+                            generatedMsg.mp.push({
+                                ct : ZmMimeTable.MULTI_ALT,
+                                part: ZmMimeTable.TEXT,
+                                mp : [{
+                                        ct : ZmMimeTable.TEXT_PLAIN,
+                                        part : "1",
+                                        content : (messagePart.mp[0].content) ? messagePart.mp[0].content._content : ""
+                                    },
+                                    {
+                                        ct : ZmMimeTable.TEXT_HTML,
+                                        part : "2",
+                                        body : true,
+                                        content : (messagePart.mp[1].content) ? messagePart.mp[1].content._content : ""
+                                    }
+                                ]
+                            });
+                            generatedMsg.fr = generatedMsg.mp[0].mp[0].content;
                         }
                     }
                 }
-                resp.push(msgNode);
             }
+            resp.push(generatedMsg);
         }
     }
     return resp;
@@ -1092,4 +1181,38 @@ function(folderId){
         ZmOfflineDB.indexedDB.addObjectStores(callback);
     }
 
+};
+
+ZmOffline.prototype._uploadOfflineAttachments =
+function (obj, msg) {
+    var attach = msg.attach,
+        aidArray = attach.aid.split(",");
+
+    for (var i = 0; i < aidArray.length; i++) {
+        var aid = aidArray[i],
+            attachment = attach[aid];
+        if (attachment && attachment.isOfflineUploaded) {
+            var blob = new Blob([attachment.data], {type : attachment.ct});
+            blob.name = attachment.filename;
+            var callback = this._uploadOfflineAttachmentsCallback.bind(this, attachment.aid, obj, msg);
+            ZmComposeController.prototype._uploadImage(blob, callback);
+        }
+    }
+};
+
+ZmOffline.prototype._uploadOfflineAttachmentsCallback =
+function(attachmentId, obj, msg, uploadResponse) {
+    var attach = msg.attach,
+        isOfflineUploaded = false;
+
+    delete attach[attachmentId];
+    attach.aid = attach.aid.replace(attachmentId, uploadResponse[0].aid);
+    for (var j in attach) {
+        if (attach[j] && attach[j].isOfflineUploaded) {
+            isOfflineUploaded = true;
+        }
+    }
+    if (isOfflineUploaded === false) {
+        this._sendOfflineRequest([].concat(obj));
+    }
 };

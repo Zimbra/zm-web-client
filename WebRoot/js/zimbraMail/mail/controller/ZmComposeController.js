@@ -2501,10 +2501,10 @@ function(dlgType, msg, style, callbacks) {
 	dlg.popup();
 };
 
-ZmComposeController.prototype._handleOfflineUpload = function(files) {
-    var callback = this._storeFilesInWebStorage.bind(this);
-    var saveDraftCallback = ZmComposeController.readFilesAsDataURL.bind(null, files, callback, null);
-    this.saveDraft(null, null, null, saveDraftCallback);
+ZmComposeController.prototype._handleOfflineUpload =
+function(files) {
+    var callback = this._readFilesAsDataURLCallback.bind(this);
+    ZmComposeController.readFilesAsDataURL(files, callback);
 };
 
 /**
@@ -2515,11 +2515,11 @@ ZmComposeController.prototype._handleOfflineUpload = function(files) {
  * @param {FileList} files                  Object containing one or more files
  * @param {AjxCallback/Bound} callback	    the success callback
  * @param {AjxCallback/Bound} errorCallback the error callback
- * @param {Object} result                   Additional Object passed to the callback function
  *
  * @public
  */
-ZmComposeController.readFilesAsDataURL = function(files, callback, errorCallback, result) {
+ZmComposeController.readFilesAsDataURL =
+function(files, callback, errorCallback) {
     var i = 0,
         filesLength = files.length,
         dataURLArray = [],
@@ -2527,7 +2527,7 @@ ZmComposeController.readFilesAsDataURL = function(files, callback, errorCallback
 
     if (!window.FileReader || filesLength === 0) {
         if (errorCallback) {
-            errorCallback.run(dataURLArray, fileReadErrorCount, result);
+            errorCallback.run(dataURLArray, fileReadErrorCount);
         }
         return;
     }
@@ -2540,10 +2540,12 @@ ZmComposeController.readFilesAsDataURL = function(files, callback, errorCallback
         reader.onload = function(file, ev) {
             dataURLArray.push(
                 {
-                    name : file.name,
-                    type : file.type,
-                    size : file.size,
-                    data : ev.target.result
+                    filename : file.name,
+                    ct : file.type,
+                    s : file.size,
+                    data : ev.target.result,
+                    aid : new Date().getTime().toString(),
+                    isOfflineUploaded : true
                 }
             );
         }.bind(null, file);
@@ -2556,10 +2558,10 @@ ZmComposeController.readFilesAsDataURL = function(files, callback, errorCallback
         reader.onloadend = function() {
             if ((dataURLArray.length + fileReadErrorCount) === filesLength) {
                 if (fileReadErrorCount > 0 && errorCallback) {
-                    errorCallback.run(dataURLArray, fileReadErrorCount, result);
+                    errorCallback.run(dataURLArray, fileReadErrorCount);
                 }
                 if (callback) {
-                    callback.run(dataURLArray, fileReadErrorCount, result);
+                    callback.run(dataURLArray, fileReadErrorCount);
                 }
             }
         };
@@ -2568,18 +2570,15 @@ ZmComposeController.readFilesAsDataURL = function(files, callback, errorCallback
     }
 };
 
-ZmComposeController.prototype._storeFilesInWebStorage = function(attachmentsArray, result) {
-    console.log("_saveAttachmentsOffline");
-    console.log(result);
-    if (result) {
-        var data = localStorage.getItem(result);
-        if (data) {
-            data = JSON.parse(data);
-            data = data[data.length-1];
-            if (!data.attachments) {
-                data.attachments = attachmentsArray;
-            }
+ZmComposeController.prototype._readFilesAsDataURLCallback =
+function(filesArray) {
+    for (var j = 0; j < filesArray.length; j++) {
+        var file = filesArray[j];
+        if (file) {
+            appCtxt.cacheSet(file.aid, file);
         }
     }
-
+    var curView = this._composeView,
+        callback = curView._resetUpload.bind(curView);
+    this.saveDraft(ZmComposeController.DRAFT_TYPE_AUTO, filesArray, null, callback);
 };
