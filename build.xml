@@ -1278,7 +1278,6 @@ if (ext == null) ext = "";
 
     <target name="touch-prod">
         <mkdir dir='${build.touch.dir}'/>
-        <mkdir dir='${touch.prod.dir}/${touch.prod.build.mode}'/>
 
         <exec executable="/bin/bash">
             <arg value="${this.zwc.basedir}/build-prod-touch.sh"/>
