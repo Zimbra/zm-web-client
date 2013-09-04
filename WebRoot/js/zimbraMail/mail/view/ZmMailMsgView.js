@@ -2102,6 +2102,7 @@ function() {
 		if (att.links.remove) {
 			this._addClickHandler(att.part, ZmMailMsgView.ATT_LINK_REMOVE, this.removeAttachmentCallback, this, att.part);
 		}
+        this._handleAttachmentForOfflineMode(att);
 	}
 	
 	// add handlers for "all attachments" links
@@ -2115,51 +2116,43 @@ function() {
 			removeAllLink.onclick = allAttParams.removeAllCallback;
 		}
 	}
+};
 
-    if (appCtxt.isOfflineMode()){
-        $("#" + this._attLinksId + " a[id$='_main']").each(function(index, node){
-            var cb = ZmMailMsgView.getAttachmentBlobHtml.bind(this, node)
-            appCtxt._offlineHandler.getItem(node.href, cb, {}, "zmofflineattachmentstore");
-        });
+ZmMailMsgView.prototype._handleAttachmentForOfflineMode =
+function(attachment) {
+    if (!appCtxt.isOfflineMode()) {
+        return;
+    }
+    var url = attachment.url;
+    if (url && url.indexOf("data:") === -1) {
+        var callback = this._handleAttachmentForOfflineModeCallback.bind(this, attachment);
+        appCtxt._offlineHandler.getItem(url, callback, {}, "zmofflineattachmentstore");
     }
 };
 
-ZmMailMsgView.getAttachmentBlobHtml =
-function(node, data){
-    if (!data || !data.response){
+ZmMailMsgView.prototype._handleAttachmentForOfflineModeCallback =
+function(attachment, data) {
+    if (!data) {
         return;
     }
-    var byteString = "";
-    try {
-        byteString = window.atob( data.response.content.replace(/\s/g, '') );
-    } catch(e){
-        return;
+    var response = data.response;
+    if (response && response.type && response.content) {
+        var url = "data:" + response.type + ";base64," + response.content;
+        //Attachment main link
+        var id = this._getAttachmentLinkId(attachment.part, ZmMailMsgView.ATT_LINK_MAIN),
+            link = document.getElementById(id);
+        if (link) {
+            link.href = url;
+        }
+        //download link
+        id = this._getAttachmentLinkId(attachment.part, ZmMailMsgView.ATT_LINK_DOWNLOAD);
+        link = document.getElementById(id);
+        if (link) {
+            link.href = url;
+            link.download = attachment.label;
+            link.onclick = null;
+        }
     }
-    if( !byteString ){
-        return;
-    }
-     // write the bytes of the string to an ArrayBuffer
-    var byteStringLength = byteString.length;
-    var ab = new ArrayBuffer( byteStringLength );
-    var ia = new Uint8Array(ab)
-    for (var i = 0; i < byteStringLength; i++) {
-        ia[i] = byteString.charCodeAt(i);
-    }
-    var blob;
-    // write the ArrayBuffer to a blob, and you're done
-    if (typeof window.Blob === "function") {
-        blob = new Blob([ab], {"type" : data.response.type});
-    } else {
-        var blobbuilder = new BlobBuilder();
-        blobbuilder.append(ab)
-        blob = blobbuilder.getBlob(data.response.type);
-        blob.type = data.response.type;
-        blob.name = blob.name || new Date().getTime();
-    }
-    var blobUrl = (window.URL || window.webkitURL).createObjectURL(blob);
-    $(node).attr("href", blobUrl);
-    var downloadElementId = node.id.replace(new RegExp(ZmMailMsgView.ATT_LINK_MAIN + '$'), ZmMailMsgView.ATT_LINK_DOWNLOAD);
-    $("#" + downloadElementId ).attr({href: blobUrl,target: '_blank'});;
 };
 
 /**

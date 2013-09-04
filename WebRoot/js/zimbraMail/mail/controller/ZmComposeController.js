@@ -2210,96 +2210,43 @@ function(callback){
     return this._processDataURIImages(imgArray, length, callback);
 };
 
-ZmComposeController.prototype._processDataURIImages = function(imgArray, length, callback){
+ZmComposeController.prototype._processDataURIImages =
+function (imgArray, length, callback) {
 
-    if (!window.atob) {
+    if (!(typeof window.atob === "function" && typeof window.Blob === "function")) {
         return;
     }
 
-    var BlobBuilder = window.MozBlobBuilder || window.WebKitBlobBuilder || window.MSBlobBuilder || window.BlobBuilder;
-    if (typeof (BlobBuilder || window.Blob) !== "function") {
-        return;
-    }
-
-    //converts datauri string to blob object used for uploading the image
-    //dataURI format  data:image/png;base64,iVBORw0
-    var dataURItoBlob = function( dataURI ){
-        if( dataURI ){
-            var dataURIArray = dataURI.split(",");
-            if( dataURIArray.length === 2 ){
-                if (dataURIArray[0].indexOf('base64') === -1){
-                    return;
-                }
-                // convert base64 to raw binary data held in a string
-                // doesn't handle URLEncoded DataURIs
-                try{
-                    var byteString = window.atob( dataURIArray[1] );
-                }
-                catch(e){
-                    return;
-                }
-                if( !byteString ){
-                    return;
-                }
-                // separate out the mime component
-                var mimeString = dataURIArray[0].split(':');
-                if( !mimeString[1] ){
-                    return;
-                }
-                mimeString = mimeString[1].split(';')[0];
-                if(mimeString){
-                    // write the bytes of the string to an ArrayBuffer
-                    var byteStringLength = byteString.length;
-                    var ab = new ArrayBuffer( byteStringLength );
-                    var ia = new Uint8Array(ab);
-                    for (var i = 0; i < byteStringLength; i++) {
-                        ia[i] = byteString.charCodeAt(i);
-                    }
-                    var blob;
-                    // write the ArrayBuffer to a blob, and you're done
-                    if (typeof window.Blob === "function") {
-                        blob = new Blob([ab], {"type" : mimeString});
-                    }
-                    else {
-                        var blobbuilder = new BlobBuilder();
-                        blobbuilder.append(ab);
-
-                        blob = blobbuilder.getBlob(mimeString);
-                        blob.type = mimeString;
-                        blob.name = blob.name || new Date().getTime();
-                    }
-                    return blob;
+    for (var i = 0, blobArray = []; i < length; i++) {
+        var img = imgArray[i];
+        if (img) {
+            var imgSrc = img.src;
+            if (imgSrc && imgSrc.indexOf("data:") !== -1) {
+                var blob = AjxUtil.dataURItoBlob(imgSrc);
+                if (blob) {
+                    //setting data-zim-uri attribute for image replacement in callback
+                    var id = Dwt.getNextId();
+                    img.setAttribute("id", id);
+                    img.setAttribute("data-zim-uri", id);
+                    blob.id = id;
+                    blobArray.push(blob);
                 }
             }
         }
-    };
-
-    var blobArray = [];//Array containing blob objects used for uploading images
-    for(var i = 0; i < length; i++ ){
-        var imgSrc = imgArray[i].src;
-        if(imgSrc && imgSrc.indexOf("data:") !== -1){
-            var blob = dataURItoBlob(imgSrc);
-            if(blob){
-                //setting data-zim-uri attribute for image replacement in callback
-                var id = Dwt.getNextId();
-                imgArray[i].setAttribute("id", id);
-                imgArray[i].setAttribute("data-zim-uri", id);
-                blob.id = id;
-                blobArray.push(blob);
-            }
-        }
     }
+
     length = blobArray.length;
-    if(length === 0){
+    if (length === 0) {
         return;
     }
 
     this._uploadedImageArray = [];
     this._dataURIImagesLength = length;
-    for( i = 0; i < length ; i++ ){
+
+    for (i = 0; i < length; i++) {
         var blob = blobArray[i];
         var uploadImageCallback = this._handleUploadImage.bind(this, callback, blob.id);
-        this._uploadImage( blob, uploadImageCallback);
+        this._uploadImage(blob, uploadImageCallback);
     }
     return true;
 };

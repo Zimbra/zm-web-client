@@ -1192,10 +1192,12 @@ function (obj, msg) {
         var aid = aidArray[i],
             attachment = attach[aid];
         if (attachment && attachment.isOfflineUploaded) {
-            var blob = new Blob([attachment.data], {type : attachment.ct});
-            blob.name = attachment.filename;
-            var callback = this._uploadOfflineAttachmentsCallback.bind(this, attachment.aid, obj, msg);
-            ZmComposeController.prototype._uploadImage(blob, callback);
+            var blob = AjxUtil.dataURItoBlob(attachment.data);
+            if (blob) {
+                blob.name = attachment.filename;
+                var callback = this._uploadOfflineAttachmentsCallback.bind(this, attachment.aid, obj, msg);
+                ZmComposeController.prototype._uploadImage(blob, callback);
+            }
         }
     }
 };
