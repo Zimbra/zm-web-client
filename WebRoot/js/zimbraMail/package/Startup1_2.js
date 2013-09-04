@@ -49,6 +49,7 @@ AjxPackage.require("zimbraMail.share.model.ZmAttachmentTypeList");
 
 AjxPackage.require("zimbraMail.core.ZmApp");
 AjxPackage.require("zimbraMail.share.ZmSearchApp");
+AjxPackage.require("zimbraMail.share.ZmSocialApp");
 
 AjxPackage.require("zimbraMail.share.view.ZmPopupMenu");
 AjxPackage.require("zimbraMail.share.view.ZmActionMenu");

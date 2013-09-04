@@ -1113,6 +1113,16 @@ function(callback, order, delay, runNow) {
 	}
 };
 
+ZmZimbraMail.prototype._isInternalApp =
+function(app) {
+	return !ZmApp.SETTING[app] || (appCtxt.get(ZmApp.SETTING[app], null, appCtxt.multiAccounts && appCtxt.accountList.mainAccount));
+};
+
+ZmZimbraMail.prototype._isUpsellApp =
+function(app) {
+	return !this._isInternalApp(app) && appCtxt.get(ZmApp.UPSELL_SETTING[app]);
+};
+
 /**
  * @private
  */
@@ -1124,10 +1134,8 @@ function(params) {
 	if (params && params.app) {
 		startApp = ZmApp.QS_ARG_R[params.app.toLowerCase()];
 		// make sure app given in QS is actually enabled
-		var setting = ZmApp.SETTING[startApp];
-		var upsellSetting = ZmApp.UPSELL_SETTING[startApp];
-
-		if (setting && !appCtxt.get(setting, null, account) && (!upsellSetting || !appCtxt.get(upsellSetting))) { // an app is valid if it's enabled or has its upsell enabled
+		// an app is valid if it's enabled as internal, upsell, or external
+		if (!this._isInternalApp(startApp) && !this._isUpsellApp(startApp)) {
 			startApp = null;
 		}
 	}
@@ -1141,8 +1149,7 @@ function(params) {
 		var defaultStartApp = null;
 		for (var i = 0; i < ZmApp.DEFAULT_APPS.length; i++) {
 			var app = ZmApp.DEFAULT_APPS[i];
-			var setting = ZmApp.SETTING[app];
-			if (!setting || appCtxt.get(setting, null, account)) {
+			if (this._isInternalApp(app)) {
 				defaultStartApp = app;
 				break;
 			}
@@ -1256,19 +1263,15 @@ function(apps) {
 	});
 
 	// Instantiate enabled apps, which will invoke app registration.
-	// We also create "upsell" apps, which will only show the content of a URL in an iframe,
-	// to encourage the user to upgrade.
+	// We also create "upsell" (external) apps, which will only show the content of a URL in an iframe.
 	for (var i = 0; i < ZmApp.APPS.length; i++) {
 		var app = ZmApp.APPS[i];
-		var account = appCtxt.multiAccounts && appCtxt.accountList.mainAccount;
-		var appEnabled = ZmApp.SETTING[app] && appCtxt.get(ZmApp.SETTING[app], null, account);
-        var forceEnabled = app == ZmApp.BRIEFCASE;
-		var upsellEnabled = ZmApp.UPSELL_SETTING[app] && appCtxt.get(ZmApp.UPSELL_SETTING[app]);
-		if (appEnabled || upsellEnabled || forceEnabled) {
-			ZmApp.ENABLED_APPS[app] = appEnabled || upsellEnabled;
-
+		var isInternal = this._isInternalApp(app);
+		var isUpsell = this._isUpsellApp(app);
+		if (isInternal || isUpsell || app === ZmApp.BRIEFCASE) {
+			ZmApp.ENABLED_APPS[app] = isInternal || isUpsell;
 			this._createApp(app);
-			this._apps[app].isUpsell = (!appEnabled && upsellEnabled);
+			this._apps[app].isUpsell = isUpsell;
 		}
 	}
 };
@@ -2046,13 +2049,14 @@ function(appName, force, callback, errorCallback, params) {
 	DBG.println(AjxDebug.DBG1, "activateApp: " + appName + ", current app = " + this._activeApp);
 
 	var account = appCtxt.multiAccounts && appCtxt.accountList.mainAccount;
+	var isUpsell = this._isUpsellApp(appName);
 	var view = this._appViewMgr.getAppView(appName);
 	if (view && !force) {
 		// if the app has been launched, make its view the current one
 		DBG.println(AjxDebug.DBG3, "activateApp, current " + appName + " view: " + view);
 		if (this._appViewMgr.pushView(view)) {
 			this._appViewMgr.setAppView(appName, view);
-            if (!appCtxt.get(ZmApp.SETTING[appName], null, account) && appCtxt.get(ZmApp.UPSELL_SETTING[appName])) {
+            if (isUpsell) {
                 var title = [ZmMsg.zimbraTitle, appName].join(": ");
                 Dwt.setTitle(title);
             }            
@@ -2066,16 +2070,13 @@ function(appName, force, callback, errorCallback, params) {
 			this._createApp(appName);
 		}
 
-		if (!appCtxt.get(ZmApp.SETTING[appName], null, account) &&
-			appCtxt.get(ZmApp.UPSELL_SETTING[appName]))
-		{
+		if (isUpsell) {
 			this._createUpsellView(appName);
 			if (callback) {
 				callback.run();
 			}
 		}
-		else
-		{
+		else {
 			DBG.println(AjxDebug.DBG1, "Launching app " + appName);
 			var respCallback = new AjxCallback(this, this._handleResponseActivateApp, [callback, appName]);
 			var eventType = [appName, ZmAppEvent.PRE_LAUNCH].join("_");
@@ -3110,10 +3111,7 @@ function() {
 			continue;
 		}
 
-		var account = appCtxt.multiAccounts && appCtxt.accountList.mainAccount;
-		var setting = ZmApp.SETTING[id];
-		var upsellSetting = ZmApp.UPSELL_SETTING[id];
-		if ((setting && appCtxt.get(setting, null, account)) || (upsellSetting && appCtxt.get(upsellSetting))) {
+		if (this._isInternalApp(id) || this._isUpsellApp(id)) {
 			buttons.push(id);
 		}
 	}

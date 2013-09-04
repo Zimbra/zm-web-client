@@ -702,6 +702,7 @@ ZmId.APP_MAIL			= "Mail";
 ZmId.APP_PORTAL			= "Portal";
 ZmId.APP_PREFERENCES	= "Options";
 ZmId.APP_SEARCH			= "Search";
+ZmId.APP_SOCIAL			= "Social";
 ZmId.APP_TASKS			= "Tasks";
 ZmId.APP_VOICE			= "Voice";
 
