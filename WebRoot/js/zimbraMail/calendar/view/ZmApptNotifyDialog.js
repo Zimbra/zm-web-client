@@ -113,10 +113,10 @@ function() {
 	html[i++] = ZmMsg.sendUpdatesNew;
 	html[i++] = "</label>";
 	html[i++] = "</td></tr>";
-	html[i++] = "<tr><td width=1%><input value='2' type='radio' name='";
+	html[i++] = "<tr><td width=1%><input value='2' type='radio'" + "id='" + this._defaultRadioId + this._notifyChoiceName + "' name='"; // Applying unique Id. Fix for bug: 77590 & bug: 76533
 	html[i++] = this._notifyChoiceName;
 	html[i++] = "'></td><td style='white-space:nowrap'>";
-	html[i++] = "<label for='" + this._notifyChoiceName + "'>";
+	html[i++] = "<label for='" + this._defaultRadioId + this._notifyChoiceName + "'>"; // Applying unique Id. Fix for bug: 77590 & bug: 76533
 	html[i++] = ZmMsg.sendUpdatesAll;
 	html[i++] = "</label>";
 	html[i++] = "</td></tr>";
