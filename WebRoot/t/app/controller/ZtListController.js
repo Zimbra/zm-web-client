@@ -185,10 +185,14 @@ Ext.define('ZCS.controller.ZtListController', {
 
 		if (success) {
 
-			// If we got here via tap on a saved search in the overview, remember it so we can show its name
 			if (folder) {
+				// If we got here via tap on a saved search in the overview, remember it so we can show its name
 				var searchId = (folder.get('type') === ZCS.constant.ORG_SAVED_SEARCH) ? folder.get('itemId') : null;
 				ZCS.session.setSetting(ZCS.constant.SETTING_CUR_SEARCH_ID, searchId, app);
+			}
+			else {
+				// If the user ran a search, deselect the selected folder since it no longer matches results
+				this.getFolderList().getActiveItem().deselectAll();
 			}
 
 			this.updateTitlebar();
