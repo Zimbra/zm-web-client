@@ -135,6 +135,7 @@ ZCS.constant.OP_REMOVE_ATT  = 'REMOVE_ATT';
 ZCS.constant.OP_ADD_CONTACT = 'ADD_CONTACT';
 ZCS.constant.OP_EDIT        = 'EDIT';
 ZCS.constant.OP_MENU        = 'MENU';
+ZCS.constant.OP_SEARCH      = 'SEARCH';
 
 // Buttons in toolbar at top of item panel
 ZCS.constant.ITEM_BUTTONS = {};

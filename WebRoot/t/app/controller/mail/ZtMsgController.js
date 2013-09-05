@@ -162,6 +162,7 @@ Ext.define('ZCS.controller.mail.ZtMsgController', {
 		if (menu) {
             if (params.address) {
 				menu.setArgs(ZCS.constant.OP_COMPOSE, [ params.address ]);
+				menu.setArgs(ZCS.constant.OP_SEARCH, [ params.address ]);
 			}
 			if (params.addrObj && menu.getItem(ZCS.constant.OP_ADD_CONTACT)) {
 				menu.setArgs(ZCS.constant.OP_ADD_CONTACT, [ params.addrObj ]);
@@ -201,11 +202,17 @@ Ext.define('ZCS.controller.mail.ZtMsgController', {
                     });
                 }
 			}
-			menuData.push({
-				label:      ZtMsg.newMessage,
-				action:     ZCS.constant.OP_COMPOSE,
-				listener:   'doCompose'
-			});
+			menuData.push(
+				{
+					label:      ZtMsg.newMessage,
+					action:     ZCS.constant.OP_COMPOSE,
+					listener:   'doCompose'
+				},
+				{
+					label:      ZtMsg.search,
+					action:     ZCS.constant.OP_SEARCH,
+					listener:   'doSearch'
+				});
 			return menuData;
 		}
 		else {
@@ -318,6 +325,15 @@ Ext.define('ZCS.controller.mail.ZtMsgController', {
         contactCtrl.setItem(contact);
         contactCtrl.showContactForm(ZCS.constant.OP_EDIT, contact);
     },
+
+	/**
+	 * Searches for mail from the given sender.
+	 *
+	 * @param {String}  addr    email address
+	 */
+	doSearch: function(addr) {
+		ZCS.app.getConvListController().doSearch('from:' + addr);
+	},
 
 	doLoadEntireMessage: function(msg, msgBody) {
 
