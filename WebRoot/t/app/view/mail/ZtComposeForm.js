@@ -108,13 +108,13 @@ Ext.define('ZCS.view.mail.ZtComposeForm', {
 						xtype: 'component',
 						cls: 'x-form-label x-form-label-nowrap x-field zcs-toggle-field',
 						itemId: 'ccToggle',
-						html: ZtMsg.ccOrBcc,
+						html: ZtMsg.showCcBcc,
 						height: '2.5em',
-						width: '4.5em',
+						width: '6.5em',
 						listeners: {
 							painted: function () {
 								this.element.on('tap', function() {
-									composeForm.showCc();
+									composeForm.showCcBcc(composeForm.down('#cc').isHidden());
 								});
 							}
 						}
@@ -241,10 +241,17 @@ Ext.define('ZCS.view.mail.ZtComposeForm', {
 	},
 
 	// TODO: Separate toggles for CC and BCC
-	showCc: function () {
-		this.down('#ccToggle').hide();
-		this.down('#cc').show();
-		this.down('#bcc').show();
+	showCcBcc: function(show) {
+
+		if (show) {
+			this.down('#cc').show();
+			this.down('#bcc').show();
+		}
+		else {
+			this.down('#cc').hide();
+			this.down('#bcc').hide();
+		}
+		this.down('#ccToggle').setHtml(show ? ZtMsg.hideCcBcc : ZtMsg.showCcBcc);
 	},
 
 	doAttach: function () {

@@ -243,12 +243,14 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 		}
 
 		// get the form fields; show CC/BCC if we have any of those addresses
+		var showCcBcc = false;
 		Ext.each(ZCS.constant.RECIP_TYPES, function(type) {
 			formField[type] = form.down('contactfield[name=' + type + ']');
 			if (type !== ZCS.constant.TO && addresses[type] && addresses[type].length) {
-				panel.showCc();
+				showCcBcc = true;
 			}
 		}, this);
+		panel.showCcBcc(showCcBcc);
 
 		var action = this.getAction(),
 			attachmentsField = this.getAttachmentsField();
