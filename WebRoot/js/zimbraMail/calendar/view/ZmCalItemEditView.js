@@ -751,7 +751,8 @@ function(width) {
 		};
 		this._reminderSelectInput = new DwtInputField(params);
 		var reminderInputEl = this._reminderSelectInput.getInputElement();
-		Dwt.setSize(reminderInputEl, Dwt.DEFAULT, "2rem");
+        // Fix for bug: 83100. Fix adapted from ZmReminderDialog::_createButtons
+		Dwt.setSize(reminderInputEl, "120px", "2rem");
 		reminderInputEl.onblur = AjxCallback.simpleClosure(this._handleReminderOnBlur, this, reminderInputEl);
 
 		var reminderButtonListener = new AjxListener(this, this._reminderButtonListener);
