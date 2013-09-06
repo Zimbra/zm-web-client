@@ -200,6 +200,7 @@ function(params, forceSingle) {
 			headerClass:	"DwtTreeItem",
 			noTooltips:		true,
 			treeStyle:		params.treeStyle,
+			dynamicWidth:	params.dynamicWidth,
 			treeIds:		params.treeIds,
 			account:		((appCtxt.multiAccounts && params.forceSingle) ? appCtxt.getActiveAccount() : (params.account || appCtxt.getActiveAccount())),
 			skipImplicit: 	true

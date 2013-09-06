@@ -70,6 +70,8 @@ ZmTreeView = function(params) {
 							? params.actionSupported
 							: this._overview.actionSupported;
 
+	this.dynamicWidth = this._overview.dynamicWidth;
+
 	this._dataTree = null;
 	this._treeItemHash = {};	// map organizer to its corresponding tree item by ID
 };
@@ -481,6 +483,7 @@ function(parentNode, organizer, index, noTooltips, omit) {
 					imageInfo:				parentOrganizer.getIconWithColor(),
 					forceNotifySelection:	true,
 					arrowDisabled:			!this.actionSupported,
+					dynamicWidth:			this.dynamicWidth,
 					dndScrollCallback:		this._overview && this._overview._dndScrollCallback,
 					dndScrollId:			this._overview && this._overview._scrollableContainerId,
 					id:						ZmId.getTreeItemId(this.overviewId, parentOrganizer.id)
@@ -502,6 +505,7 @@ function(parentNode, organizer, index, noTooltips, omit) {
 			index:				index,
 			text:				organizer.getName(this._showUnread),
 			arrowDisabled:		!this.actionSupported,
+			dynamicWidth:		this.dynamicWidth,
 			dndScrollCallback:	this._overview && this._overview._dndScrollCallback,
 			dndScrollId:		this._overview && this._overview._scrollableContainerId,
 			imageInfo:			organizer.getIconWithColor(),
