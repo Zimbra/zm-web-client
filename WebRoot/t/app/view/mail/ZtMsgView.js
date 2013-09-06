@@ -210,9 +210,11 @@ Ext.define('ZCS.view.mail.ZtMsgView', {
 		if (!doNotRecomputeHeights) {
 			var listRef = this.up('.list');
 			// Let the list know this item got updated.
-			listRef.updatedItems.push(this);
-			listRef.handleItemHeights();
-			listRef.refreshScroller(listRef.getScrollable().getScroller());
+			if (listRef.getInfinite() && listRef.itemsCount) {
+				listRef.updatedItems.push(this);
+				listRef.handleItemHeights();
+				listRef.refreshScroller(listRef.getScrollable().getScroller());
+			}
 		}
 	},
 

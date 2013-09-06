@@ -2,12 +2,12 @@
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2013 Zimbra Software, LLC.
- * 
+ *
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
@@ -22,34 +22,30 @@
 # In general, a template that begins with <tpl> is an XTemplate, and one that does
 # not is an itemTpl.
 
+<template id='ConvListItemTEST'>
+    {subject:htmlEncode}
+</template>
+
 <template id='ConvListItem'>
 	<div class='zcs-mail-list'>
 		<tpl if='isInvite'>
-		<div class='zcs-mail-invitation'>
-			<img src='/t/resources/images/invitation<tpl if='isUnread'>_unread</tpl>.png' />
-		</div>
+			<img class='zcs-mail-invitation' src='resources/images/invitation<tpl if='isUnread'>_unread</tpl>.png' />
 		<tpl else>
-		<div class='zcs-mail-readState'>
-			<img src='/t/resources/images/<tpl if='isUnread'>un</tpl>read.png' />
-		</div>
+			<img class='zcs-mail-readState' src='resources/images/<tpl if='isUnread'>un</tpl>read.png' />
 		</tpl>
 		<div class='zcs-mail-senders<tpl if='isUnread'>-unread</tpl>'>
 			{senders}
 		</div>
 		<div class='zcs-mail-date'>{dateStr}</div>
 		<tpl if='hasAttachment'>
-			<div class='zcs-mail-attachment'>
-			<img src='/t/resources/images/attachment.png' />
-		</div>
+			<img class='zcs-mail-attachment' src='resources/images/attachment.png' />
 		</tpl>
 		<div class='zcs-mail-subject<tpl if='isUnread'>-unread</tpl>'>{subject:htmlEncode}</div>
 		<tpl if='numMsgs &gt; 1'>
 			<span class='zcs-numMsgs'>{numMsgs}</span>
 		</tpl>
 		<tpl if='isFlagged'>
-			<div class='zcs-mail-flag'>
-			<img src='/t/resources/images/flagged.png' />
-		</div>
+			<img  class='zcs-mail-flag' src='resources/images/flagged.png' />
 		</tpl>
 		<div class='zcs-mail-fragment'>{fragment:htmlEncode}</div>
 	</div>

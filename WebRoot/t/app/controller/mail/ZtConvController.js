@@ -284,11 +284,14 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 
 	adjustItemHeights: function(msgViews) {
 		var msgListView = this.getMsgListView();
-		msgListView.updatedItems = msgViews;
-		msgListView.handleItemHeights();
-		msgListView.handleItemTransforms();
-		msgListView.refreshScroller();
 
+		// Was only needed when list was infinite
+		if (msgListView.getInfinite() && msgListView.itemsCount) {
+			msgListView.updatedItems = msgViews;
+			msgListView.handleItemHeights();
+			msgListView.handleItemTransforms();
+			msgListView.refreshScroller();
+		}
 	},
 
 	/**
@@ -307,28 +310,32 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 			curFolder = ZCS.session.getCurrentSearchOrganizer(),
 			curFolderId = curFolder && curFolder.get('itemId'),
 			ignoreFolder = ZCS.constant.CONV_REPLY_OMIT,
+			lastMessage = null,
 			activeMsg = null;
 
 		for (i = 0; i < ln; i++) {
 			msg = msgs[i];
 			folderId = msg.get('folderId');
 			if (!ignoreFolder[folderId] || (curFolderId === folderId)) {
-				activeMsg = msg;
-				break;
+				if (!activeMsg) {
+					activeMsg = msg;
+				}
+				lastMessage = msg;
+
 			}
 		}
 		activeMsg = activeMsg || (ln > 0 ? msgs[0] : null);
 
 		if (callback && activeMsg) {
 			if (activeMsg.get('isLoaded')) {
-				callback(activeMsg);
+				callback(activeMsg, lastMessage);
 			}
 			else {
 				activeMsg.save({
 					op: 'load',
 					id: activeMsg.getId(),
 					success: function() {
-						callback(activeMsg);
+						callback(activeMsg, lastMessage);
 					}
 				});
 			}
@@ -523,8 +530,8 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 			return;
 		}
 
-		this.getActiveMsg(function(msg) {
-			ZCS.app.getComposeController().reply(msg);
+		this.getActiveMsg(function(originalMessage, lastMessage) {
+			ZCS.app.getComposeController().reply(originalMessage, lastMessage);
 		});
 	},
 
@@ -534,14 +541,14 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 			return;
 		}
 
-		this.getActiveMsg(function(msg) {
-			ZCS.app.getComposeController().replyAll(msg);
+		this.getActiveMsg(function(originalMessage, lastMessage) {
+			ZCS.app.getComposeController().replyAll(originalMessage, lastMessage);
 		});
 	},
 
 	doEdit: function() {
-		this.getActiveMsg(function(msg) {
-			ZCS.app.getComposeController().compose(msg);
+		this.getActiveMsg(function(originalMessage, lastMessage) {
+			ZCS.app.getComposeController().compose(originalMessage, lastMessage);
 		});
 	},
 

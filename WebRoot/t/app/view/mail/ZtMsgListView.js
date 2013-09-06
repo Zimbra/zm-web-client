@@ -32,14 +32,14 @@ Ext.define('ZCS.view.mail.ZtMsgListView', {
 		useComponents:      true,
 		defaultType:        'msgview',
 		disableSelection:   true,
-		scrollToTopOnRefresh:   true,		
+		scrollToTopOnRefresh:   false,		
 		variableHeights:    true,
 		store:              'ZtMsgStore',
 		itemCls:            'zcs-msgview',
 		allowTaps:          true,
 		emptyText:          ZtMsg.selectConv,
 		deferEmptyText:     false,
-		infinite: 			true,
+		infinite: 			false,
 		scrollable: {
 			direction: 'vertical'
 		}
@@ -99,6 +99,10 @@ Ext.define('ZCS.view.mail.ZtMsgListView', {
 				if (msgHeader) {
 					msgHeader.fireEvent('toggleView', msgHeader, elm.hasCls('zcs-msgHdr-link'));
 				}
+
+				//Stop this event from triggering a scroll reset.
+				e.preventDefault();
+				return false;
 
 			},
 			element:    'element',
@@ -221,8 +225,11 @@ Ext.define('ZCS.view.mail.ZtMsgListView', {
 
 		this.setAllowTaps(!isReadOnly);
 
-		listRef.handleItemHeights();
-		listRef.refreshScroller(listRef.getScrollable().getScroller());
+		// Was only needed when list was inifite
+		if (listRef.getInfinite() && listRef.itemsCount) {
+			listRef.handleItemHeights();
+			listRef.refreshScroller(listRef.getScrollable().getScroller());
+		}
 	},
 
 	/**

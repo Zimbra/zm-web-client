@@ -36,6 +36,7 @@ Ext.application({
 
     requires: [
         'Ext.MessageBox',
+        'ZCS.common.ZtTapRecognizer',
 	    'ZCS.common.ZtHtmlUtil',
 	    'ZCS.common.mail.ZtMailUtil',
 	    'ZCS.common.ZtConstants',
@@ -94,6 +95,16 @@ Ext.application({
         '748x1024': 'resources/startup/748x1024.png',
         '1536x2008': 'resources/startup/1536x2008.png',
         '1496x2048': 'resources/startup/1496x2048.png'
+    },
+
+    eventPublishers: {
+    	touchGesture: {
+    		recognizers: {
+    			tap: {
+    				xclass: 'ZCS.common.ZtTapRecognizer'
+    			}
+    		}
+    	}
     },
 
     launch: function() {
