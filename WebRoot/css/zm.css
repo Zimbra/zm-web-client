@@ -285,6 +285,10 @@
 	text-align:center;
 }
 
+/* Fix for bug: 83187 */
+.ZWidgetTitle.ZmNavToolBarTitle.itemCountText {
+    @LeftBoxPadding@
+}
 
 /* ??? USE ? */
 TD.DDSepVisible DIV {
