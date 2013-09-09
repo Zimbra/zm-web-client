@@ -197,7 +197,11 @@ Ext.define('ZCS.view.mail.ZtMsgListView', {
             offset = 0,
             i, ln, item, translateY;
 
-        if (items[0].element.dom.parentElement.style["position"] !== "relative") {
+        if (typeof items[0] === 'object' &&
+        		typeof items[0].element === 'object' && 
+        			typeof items[0].element.dom === 'object' && 
+        				items[0].element.dom.parentElement &&
+        					items[0].element.dom.parentElement.style["position"] !== "relative") {
         	items[0].element.dom.parentElement.style["position"] = "relative";
     	}
 
@@ -206,11 +210,14 @@ Ext.define('ZCS.view.mail.ZtMsgListView', {
     	// not registered.
 		for (i = 0, ln = items.length; i < ln; i++) {
             item = items[i];
-            if (!noAbsolute) {
-		        item.element.forceAbsolutePositioning = true;
-		        item.translate(item.x, item.y);
-		    } else {
-		    	item.element.forceAbsolutePositioning = false;
+
+            if (item.element) {
+	            if (!noAbsolute) {
+			        item.element.forceAbsolutePositioning = true;
+			        item.translate(item.x, item.y);
+			    } else {
+			    	item.element.forceAbsolutePositioning = false;
+		    	}
 	    	}
         }
     },
