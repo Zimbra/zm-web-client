@@ -154,5 +154,10 @@ Ext.define('ZCS.view.ZtItemPanel', {
 	showListPanelToggle: function () {
 		var listpanelToggle = this.down('#listpanelToggle');
 		listpanelToggle.show();
+	},
+
+	isListPanelToggleHidden: function() {
+		var listpanelToggle = this.down('#listpanelToggle');
+		return listpanelToggle.isHidden();
 	}
 });

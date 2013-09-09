@@ -40,11 +40,7 @@ Ext.define('ZCS.view.mail.ZtMsgHeader', {
 	setReadOnly: function (isReadOnly) {
 		var header = Ext.fly(this.element.query('.zcs-msgHdr-link')[0]);
 		if (header) {
-			if (isReadOnly) {
-				header.setVisible(false);
-			} else {
-				header.setVisible(true);
-			}
+			header.setVisible(!isReadOnly);
 		}
 	},
 

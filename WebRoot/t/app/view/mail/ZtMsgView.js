@@ -15,6 +15,8 @@
 
 /**
  * This class displays a mail message using two components: a header and a body.
+ * Note that Sencha Touch reuses ListItem views, so no correspondence between
+ * message and view can be assumed.
  *
  * @author Conrad Damon <cdamon@zimbra.com>
  */
@@ -188,10 +190,8 @@ Ext.define('ZCS.view.mail.ZtMsgView', {
 		this.readOnly = isReadOnly;
 		if (!isReadOnly) {
 			this.updateExpansion();
-			this.down('msgheader').setReadOnly(isReadOnly);
-		} else {
-			this.down('msgheader').setReadOnly(isReadOnly);
 		}
+		this.down('msgheader').setReadOnly(isReadOnly);
 	},
 
 	/**

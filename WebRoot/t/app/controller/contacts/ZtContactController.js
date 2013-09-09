@@ -238,7 +238,10 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
 		// To account for the panel header
 		contentHeight += 20;
 
-		activeComp.hideListPanelToggle();
+		var toggleHidden = activeComp.isListPanelToggleHidden();
+		if (!toggleHidden) {
+			activeComp.hideListPanelToggle();
+		}
 
 		// TODO: if we're caching assignment views, we will need to update its overview
 		// TODO: when we get notified of organizer changes
@@ -254,7 +257,9 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
 						hideAll: false
 					});
 
-					activeComp.showListPanelToggle();
+					if (!toggleHidden) {
+						activeComp.showListPanelToggle();
+					}
 				}
 			});
 		}
