@@ -542,7 +542,7 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 .Expand {
 	padding-left:5px;
 	width:16px;
-#IFDEF MSIE
+#IFDEF MSIE_LOWER_THAN_9
 	width:23px;
 #ENDIF
 }
@@ -653,9 +653,6 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 	display:inline-block;
 	background-color:@darken(AppC,20)@;
 	height:16px;
-#IFDEF MSIE
-	display:inline;
-#ENDIF
 	@roundCorners(4px)@
 }
 
@@ -972,7 +969,7 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 	position:absolute;
 	top:0px;
 	padding:0px;
-#IFNDEF MSIE
+#IFNDEF MSIE_LOWER_THAN_9
 	left:2px;
 	top:5px;
 #ENDIF
@@ -1012,7 +1009,7 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 	right:0px;
 	top:5px;
 	white-space:nowrap;
-#IFDEF MSIE
+#IFDEF MSIE_LOWER_THAN_9
 	right:1px;
 	top:1px;
 #ENDIF
@@ -1045,7 +1042,7 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 	clear:both;
 	padding:15px 5px 5px;
 /* IE doesn't seem to support the show/hide.  TODO:investigate why */
-#IFNDEF MSIE
+#IFNDEF MSIE_LOWER_THAN_9
 	@transition@:visibility 0s linear .5s, opacity .5s linear 0s;
 	visibility:hidden;
 	opacity:0;

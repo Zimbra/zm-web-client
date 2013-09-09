@@ -476,19 +476,19 @@ TD.vSpace {
 }
 
 .ZmMsgListBottomRowIcon {
-#IFNDEF MSIE
+#IFNDEF MSIE_LOWER_THAN_9
 	margin-left: 28px;
 #ENDIF
-#IFDEF MSIE
+#IFDEF MSIE_LOWER_THAN_9
 	margin-left: 18px;
 #ENDIF
 }
 
 .ZmConvExpanded .ZmMsgListBottomRowIcon {
-#IFNDEF MSIE
+#IFNDEF MSIE_LOWER_THAN_9
 	margin-left: 50px;
 #ENDIF
-#IFDEF MSIE
+#IFDEF MSIE_LOWER_THAN_9
 	margin-left: 36px;
 #ENDIF
 }
