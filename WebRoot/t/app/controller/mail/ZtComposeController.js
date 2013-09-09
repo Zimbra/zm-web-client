@@ -420,10 +420,14 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 		var msg = this.getMessageModel(true);
 		msg.save({
 			isDraft: true,
-			success: function () {
+			success: function(msg, operation) {
 				ZCS.app.fireEvent('showToast', ZtMsg.draftSaved);
 				this.setFormHash(this.calculateFormHash());
-				this.setDraftId(msg.get('itemId'));
+				// parse response so we can get ID of draft msg - that way we can tell server to
+				// delete it when the msg is sent
+				var reader = ZCS.model.mail.ZtMailMsg.getProxy().getReader(),
+					response = reader.getResponseData(operation.getResponse());
+				this.setDraftId(response.Body.SaveDraftResponse.m[0].id);
 			}
 		}, this);
 	},
