@@ -205,10 +205,6 @@
 	<div id='${id}_listview'></div>
 </template>
 
-<template id='share.Widgets#ZmAddShareLink'>
-    <a id="${id}_addshare_link" href="#"><$=ZmMsg.sharedFoldersLink$></a>
-</template>
-
 <template id='share.Widgets#ZmShareProxyToolTip'>
     <div style="width:250px">
         <div class="Img${icon}" style="float:left;vertical-align:top"></div>

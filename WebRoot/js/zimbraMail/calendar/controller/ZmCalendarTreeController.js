@@ -284,6 +284,8 @@ function() {
                 ZmOperation.CLEAR_ALL);
     }
 
+	ops.push(ZmOperation.FIND_SHARES);
+
 	return ops;
 };
 

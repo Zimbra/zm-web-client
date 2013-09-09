@@ -203,7 +203,7 @@ ZmAddrBookTreeController.prototype._getHeaderActionMenuOps =
 function() {
 	var ops = null;
 	if (appCtxt.get(ZmSetting.NEW_ADDR_BOOK_ENABLED)) {
-		ops = [ZmOperation.NEW_ADDRBOOK];
+		ops = [ZmOperation.NEW_ADDRBOOK, ZmOperation.FIND_SHARES];
 	}
 	return ops;
 };

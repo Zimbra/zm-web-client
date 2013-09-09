@@ -263,7 +263,8 @@ function() {
 		ZmOperation.SEP,
 		ZmOperation.PRIORITY_FILTER,
 		ZmOperation.EXPAND_ALL,
-		ZmOperation.SYNC
+		ZmOperation.SYNC,
+		ZmOperation.FIND_SHARES
 	];
 };
 

@@ -53,6 +53,7 @@ ZmTreeController = function(type) {
 	this._listeners[ZmOperation.SYNC_ALL]		= new AjxListener(this, this._syncAllListener);
 	this._listeners[ZmOperation.EDIT_PROPS]		= new AjxListener(this, this._editPropsListener);
 	this._listeners[ZmOperation.EMPTY_FOLDER]   = new AjxListener(this, this._emptyListener);
+	this._listeners[ZmOperation.FIND_SHARES]	= this._findSharesListener.bind(this);
 
 	// drag-and-drop
 	this._dragSrc = new DwtDragSource(Dwt.DND_DROP_MOVE);
@@ -156,6 +157,58 @@ function (parent, isTrash) {
 	op.setVisible(featureEnabled && isTrash);
 	op.setEnabled(isTrash);
 };
+
+ZmTreeController.prototype._findSharesListener =
+function(ev) {
+	var folder = this._getActionedOrganizer(ev);
+	var account = folder.getAccount();
+
+	if (appCtxt.multiAccounts && account && account.isZimbraAccount) {
+		appCtxt.accountList.setActiveAccount(account);
+	}
+	var dialog = appCtxt.getShareSearchDialog();
+	var addCallback = this._handleAddShare.bind(this);
+	dialog.popup(folder.type, addCallback);
+};
+
+ZmTreeController.prototype._handleAddShare = function () {
+	var dialog = appCtxt.getShareSearchDialog();
+	var shares = dialog.getShares();
+	dialog.popdown();
+	if (shares.length === 0) {
+		return;
+	}
+
+	AjxDispatcher.require("Share");
+	var requests = [];
+	for (var i = 0; i < shares.length; i++) {
+		var share = shares[i];
+		var name = share.folderPath.substr(1); //no need to replace the "/" here anymore since I do that in ZmShare.getDefaultMountpointName for the entire name.
+		var ownerName = (share.normalizedOwnerName.indexOf('@') > -1) ? share.normalizedOwnerName.substr(0, share.normalizedOwnerName.indexOf('@')) : share.normalizedOwnerName;
+		requests.push({
+			_jsns: "urn:zimbraMail",
+			link: {
+				l: ZmOrganizer.ID_ROOT,
+				name: ZmShare.getDefaultMountpointName(ownerName, name),
+				view: share.view,
+				zid: share.ownerId,
+				rid: share.folderId
+			}
+		});
+	}
+
+	var params = {
+		jsonObj: {
+			BatchRequest: {
+				_jsns: "urn:zimbra",
+				CreateMountpointRequest: requests
+			}
+		},
+		asyncMode: true
+	};
+	appCtxt.getAppController().sendRequest(params);
+};
+
 
 
 
