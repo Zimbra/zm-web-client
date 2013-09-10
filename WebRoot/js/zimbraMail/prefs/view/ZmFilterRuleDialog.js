@@ -96,7 +96,7 @@ function(rule, editMode, referenceRule, accountName, outgoing) {
 	this._rule = rule || ZmFilterRule.getDummyRule();
 	this._editMode = editMode;
 	this._referenceRule = referenceRule;
-	this.setTitle(rule ? ZmMsg.editFilter : ZmMsg.addFilter);
+	this.setTitle(editMode ? ZmMsg.editFilter : ZmMsg.addFilter);
 
 	var nameField = Dwt.byId(this._nameInputId);
 	var name = rule ? rule.name : null;

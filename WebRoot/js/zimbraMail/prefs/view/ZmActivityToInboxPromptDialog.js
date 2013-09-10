@@ -183,7 +183,7 @@ function () {
 	this.popdown(); //popdown existing 
 	var filterRuleDialog = appCtxt.getFilterRuleDialog();
 	this._setConditions(this._activityExceptionsRule);
-	filterRuleDialog.popup(this._activityExceptionsRule, true);
+	filterRuleDialog.popup(this._activityExceptionsRule, this._ruleExists);
 };
 
 /**
