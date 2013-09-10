@@ -348,7 +348,7 @@ ZmShortcutsPanel = function() {
 
 	this._createHtml();
 
-	this._tabGroup = new DwtTabGroup(this.toString(), true);
+	this._tabGroup = new DwtTabGroup(this.toString());
 	this._tabGroup.addMember(this);
 };
 
