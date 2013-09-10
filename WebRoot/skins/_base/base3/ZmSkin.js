@@ -35,7 +35,7 @@ ZmSkin.hints = {
 	searchResultsToolbar:	{ containers: ["skin_tr_search_results_toolbar"] },
 
 	newButton:		{ containers: ["skin_td_new_button"] },
-	tree:			{ minWidth:parseInt("@TreeMinWidth@"), maxWidth:parseInt("@TreeMaxWidth@"), 
+	tree:			{ minWidth: "@TreeMinWidth@", maxWidth: "@TreeMaxWidth@",
 					  containers: ["skin_td_tree","skin_td_tree_app_sash"],
 					  resizeContainers : ["skin_td_tree", "skin_container_app_new_button"]
 					},

@@ -1389,8 +1389,10 @@ function(delta) {
 
 	// MOW: get the min/max sizes from the skin.hints
 	if (!this.treeMinSize) {
-		this.treeMinSize = window.skin.hints.tree.minWidth || 150;
-		this.treeMaxSize = window.skin.hints.tree.maxWidth || 300;
+		this.treeMinSize =
+			DwtCssStyle.asPixelCount(window.skin.hints.tree.minWidth || 150);
+		this.treeMaxSize =
+			DwtCssStyle.asPixelCount(window.skin.hints.tree.maxWidth || 300);
 	}
 
 	// pin the resize to the minimum and maximum allowable
