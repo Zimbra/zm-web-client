@@ -84,7 +84,7 @@ function(list, sortField, folderId) {
 	this._rendered = true;
 
 	// check in case there are more items but no scrollbar
-	if (this._isPageless) {
+	if (this._isPageless && (!list.isGal || list.isGalPagingSupported)) {
 		this._checkItemCount();
 	}
 };
