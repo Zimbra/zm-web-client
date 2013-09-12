@@ -3794,6 +3794,10 @@ HTML>BODY .appt-selected .appt_allday_body
 	padding-left:5px;
 }
 
+.ZmFilterRulesView {
+	@ChromeBg@
+}
+
 .ZmFilterRulesView .DwtListView-Rows {
 	/*overflow:visible;*/
 #IFNDEF MSIE
