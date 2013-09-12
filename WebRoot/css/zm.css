@@ -1489,7 +1489,6 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 .ZmEditContactView {
 	@PanelBg@
 	@PanelBorder@
-	border-top:0px;
 }
 
 .AlphabetBarTable {
