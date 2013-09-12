@@ -262,7 +262,7 @@
 				<div id='${id}_splitview' style='position:relative;width:100%;height:100%;'>
 					<div id='${id}_listview' style='position:absolute;width:230px;height:100%;left:0;'></div>
 					<div id='${id}_sash' style='position:absolute;width:8px;height:100%;left:230px;'></div>
-					<div id='${id}_contentCell' style='position:absolute;height:100%;left:238px;'>
+					<div id='${id}_contentCell' style='position:absolute;left:238px;'>
 						<div class='ZmContactInfoView' id='${id}_content'></div>
 					</div>
 				</div>
