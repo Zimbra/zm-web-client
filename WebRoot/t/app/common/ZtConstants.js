@@ -428,7 +428,7 @@ ZCS.constant.SETTING_VALUE[ZCS.constant.SETTING_SHOW_SEARCH] = 'false';
 // Default values for settings
 ZCS.constant.SETTING_DEFAULT = {};
 ZCS.constant.SETTING_DEFAULT[ZCS.constant.SETTING_LOCALE]                   = 'en_US';
-ZCS.constant.SETTING_DEFAULT[ZCS.constant.SETTING_GET_NAME_FROM_CONTACTS]   = true; // KDDI feature request, bug 81656
+ZCS.constant.SETTING_DEFAULT[ZCS.constant.SETTING_GET_NAME_FROM_CONTACTS]   = true; // see bug 81656
 
 // Setting that tells us if an app is enabled
 ZCS.constant.APP_SETTING = {};
