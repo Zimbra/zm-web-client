@@ -64,6 +64,7 @@ ZmZimletBase.prototype = new ZmObjectHandler();
  */
 ZmZimletBase.prototype._init =
 function(zimletContext, shell) {
+	DBG.println(AjxDebug.ZIMLET, "Creating zimlet " + zimletContext.name);
 	this._passRpcErrors = false;
 	this._zimletContext = zimletContext;
 	this._dwtShell = shell;

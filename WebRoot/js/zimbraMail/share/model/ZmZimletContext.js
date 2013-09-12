@@ -162,14 +162,6 @@ ZmZimletContext.RE_SCAN_MSG = /(^|[^\\])\$\{msg\.([\$a-zA-Z0-9_]+)\}/g;
 ZmZimletContext.__RE_SCAN_SETTING = /\$\{setting\.([\$a-zA-Z0-9_]+)\}/g;
 
 /**
- * @private
- */
-ZmZimletContext._isArray =
-function(obj){
-    return (!AjxUtil.isUndefined(obj) && appCtxt.isChildWindow && obj.length && AjxUtil.isFunction(obj.sort) && AjxUtil.isFunction(obj.unshift) );
-};
-
-/**
  * This function creates a 'sane' JSON object, given one returned by the
  * Zimbra server.
  *<p>
@@ -195,7 +187,7 @@ function(obj, tag, wantarray_re) {
 		if (obj instanceof DwtControl) { //Don't recurse into DwtControls, causes too much recursion
 			return obj;
 		}
-		else if (obj instanceof Array || ZmZimletContext._isArray(obj)) {
+		else if (obj instanceof Array || AjxUtil.isArray1(obj)) {
 			if (obj.length == 1 && !(wantarray_re && wantarray_re.test(tag))) {
 				cool_json = doit(obj[0], tag);
 			} else {
