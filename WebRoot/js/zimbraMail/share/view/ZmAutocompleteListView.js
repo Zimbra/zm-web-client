@@ -815,7 +815,7 @@ function(on, str) {
  */
 ZmAutocompleteListView.prototype._autocompleteAction =
 function(ev) {
-    if (appCtxt.isOfflineMode()){
+    if (appCtxt.isWebClientOffline()) {
         return; // To be removed
     }
 	var aclv = ev.aclv;

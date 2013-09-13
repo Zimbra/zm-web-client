@@ -43,8 +43,8 @@ function(parentNode, node, fields, organizer, treeView) {
 			ovc.updateLabel(organizer);
 	}
 
-    if (organizer.getAccount().isMain && appCtxt._offlineHandler && organizer.webofflinesyncdays && (organizer.webofflinesyncdays != "0")){
-        appCtxt._offlineHandler.storeFolderMetaData(organizer.nId, organizer);
+    if (organizer.getAccount().isMain && appCtxt.webClientOfflineHandler && organizer.webofflinesyncdays && (organizer.webofflinesyncdays != "0")){
+        appCtxt.webClientOfflineHandler.storeFolderMetaData(organizer.nId, organizer);
     }
 };
 

@@ -45,6 +45,12 @@ ZmAppCtxt = function() {
     this.sendAsEmails = [];
     this.sendOboEmails = [];
 
+    // HTML-5 offline-specific
+    this.isWebClientOfflineSupported = AjxEnv.isOfflineSupported && window.isWebClientOfflineEnabled;
+    if (this.isWebClientOfflineSupported) {
+        this.webClientOfflineHandler = new ZmOffline();
+    }
+
 	this._evtMgr = new AjxEventMgr();
 
 	this._itemCache			= {};
@@ -53,11 +59,6 @@ ZmAppCtxt = function() {
 	this._isExpandableDL	= {};	// distribution lists
 
 	this._setAuthTokenWarning();
-    this._supportsOffline = this.isOfflineSupported();
-    if (this._supportsOffline && this.isOfflineMode()){
-        this._offlineHandler = new ZmOffline();
-
-    }
 };
 
 ZmAppCtxt.ONE_MINUTE = 60 * 1000;
@@ -2047,38 +2048,17 @@ function() {
 	}
 };
 
-ZmAppCtxt.prototype.isOfflineMode =
-function(isStrict) {
-    if (!navigator.onLine) {
-        return true;
+ZmAppCtxt.prototype.isWebClientOffline =
+function() {
+    if (this.isWebClientOfflineSupported) {
+        return ZmOffline.isServerReachable === false;
     }
-
-    if (isStrict && appCtxt._supportsOffline){
-        var resp = $.ajax({
-            type: "GET",
-            cache: false,
-            url: "/public/blank.html",
-            async: false,
-            timeout: 5000
-        }).responseText;
-        return !(resp);
-    }
-
     return false;
 };
 
 ZmAppCtxt.prototype.initWebOffline =
 function(callback) {
-    $( window ).bind("online offline",
-        function(){
-            appCtxt.setStatusMsg(appCtxt.isOfflineMode() ?  ZmMsg.networkChangeOffline : ZmMsg.networkChangeOnline);
-            if (!appCtxt.isOfflineMode()){
-                ZmOffline.syncData();
-            }
-        });
-     if (this._supportsOffline){
-         this._offlineHandler.init(callback);
-     }
+    this.webClientOfflineHandler.init(callback)
 };
 
 /**
@@ -2092,9 +2072,4 @@ function() {
         this._offlineSettingsDialog = new ZmOfflineSettingsDialog();
     }
     return this._offlineSettingsDialog;
-};
-
-ZmAppCtxt.prototype.isOfflineSupported =
-function(){
-    return AjxEnv.isOfflineSupported && window.isWebClientOfflineEnabled;
 };

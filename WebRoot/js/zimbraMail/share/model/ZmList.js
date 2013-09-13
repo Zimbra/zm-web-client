@@ -1263,7 +1263,7 @@ function(params, isOutboxFolder, notify) {
 
     for (var i = 0, msg; i < m.length; i++) {
         msg = m[i];
-        appCtxt._offlineHandler.modifyItem(msg.id, msg, ZmOffline.MESSAGE);
+        appCtxt.webClientOfflineHandler.modifyItem(msg.id, msg, ZmOffline.MESSAGE);
     }
 };
 

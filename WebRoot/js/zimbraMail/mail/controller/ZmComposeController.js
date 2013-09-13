@@ -2213,7 +2213,7 @@ function(callback){
 ZmComposeController.prototype._processDataURIImages =
 function (imgArray, length, callback) {
 
-    if (!(typeof window.atob === "function" && typeof window.Blob === "function")) {
+    if ( !(typeof window.atob === "function" && typeof window.Blob === "function") || appCtxt.isWebClientOffline()) {
         return;
     }
 
@@ -2253,7 +2253,7 @@ function (imgArray, length, callback) {
 
 ZmComposeController.prototype._uploadMyComputerFile =
     function(files, prevData, start){
-        if (appCtxt._supportsOffline && appCtxt.isOfflineMode(true)) {
+        if (appCtxt.isWebClientOffline()) {
             return this._handleOfflineUpload(files);
         }
 

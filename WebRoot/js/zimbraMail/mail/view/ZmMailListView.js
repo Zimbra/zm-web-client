@@ -29,7 +29,7 @@ ZmMailListView = function(params) {
 	}
 
 	this._disallowSelection[ZmItem.F_READ] = true;
-    if (!appCtxt.isOfflineMode()){
+    if (!appCtxt.isWebClientOffline()) {
         localStorage.setItem("MAILVIEW", params.mode || ZmId.VIEW_TRAD);
     }
 };

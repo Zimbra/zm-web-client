@@ -746,7 +746,7 @@ function(params, callback, result) {
 	if (!this.isReadOnly() && params.markRead) {
         //For offline mode keep isUnread property as true so that additional MsgActionRequest gets fired.
         //MsgActionRequest also gets stored in outbox queue and it also sends notify header for reducing the folder unread count.
-        if (appCtxt.isOfflineMode()) {
+        if (appCtxt.isWebClientOffline()) {
             this._markReadLocal(false);
         }
         else {
@@ -1821,6 +1821,11 @@ function(params) {
 
     if (msgNodeAttach) {
         msgNodeAttach.aid = aid.join();
+    }
+
+    // Checking for inline Attachment
+    if (this.getInlineAttachments().length > 0 || (origMsg && origMsg.getInlineAttachments().length > 0)) {
+        msgNode.isInlineAttachment = true;
     }
 
     callback = this._handleOfflineResponseSendMessageCallback.bind(this, params, jsonObj, !!msgNode.id);

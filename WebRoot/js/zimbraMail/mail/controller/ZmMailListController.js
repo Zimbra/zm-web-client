@@ -168,7 +168,7 @@ ZmMailListController.FOLDERS_TO_OMIT = [ZmFolder.ID_TRASH, ZmFolder.ID_SPAM];
  */
 ZmMailListController.prototype.switchView =
 function(view, force) {
-    if (!appCtxt.isOfflineMode()){
+    if (!appCtxt.isWebClientOffline()) {
         localStorage.setItem("MAILVIEW",view || ZmId.VIEW_TRAD);
     }
 	if ((view == ZmId.VIEW_TRAD || view == ZmId.VIEW_CONVLIST) && view != this.getCurrentViewType()) {
@@ -2201,7 +2201,7 @@ function(parent, num) {
         parent.setItemVisible(ZmOperation.TAG_MENU, false);
     }
 
-    if (appCtxt.isOfflineMode()) {
+    if (appCtxt.isWebClientOffline()) {
         parent.enable(
                         [
                             ZmOperation.ACTIONS_MENU,
@@ -2277,7 +2277,7 @@ function(menu) {
 		menu.enable(ZmOperation.MARK_UNREAD, false);
 	}
 
-    if (appCtxt.isOfflineMode()){
+    if (appCtxt.isWebClientOffline()) {
         menu.enable([ZmOperation.ADD_FILTER_RULE,ZmOperation.CREATE_APPT, ZmOperation.CREATE_TASK], false);
     }
 };

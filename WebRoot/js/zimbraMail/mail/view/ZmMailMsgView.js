@@ -1995,7 +1995,7 @@ function() {
 				linkCount++;
 			}
 			// add as Briefcase file
-			if (att.links.briefcase && !appCtxt.get(ZmSetting.ATTACHMENTS_BLOCKED) && !appCtxt.isOfflineMode()) {
+			if (att.links.briefcase && !appCtxt.get(ZmSetting.ATTACHMENTS_BLOCKED) && !appCtxt.isWebClientOffline()) {
 				htmlArr[idx++] = linkCount ? " | " : "";
 				var params = {
 					id:				this._getAttachmentLinkId(att.part, ZmMailMsgView.ATT_LINK_BRIEFCASE),
@@ -2017,7 +2017,7 @@ function() {
 				linkCount++;
 			}
 			// remove attachment from msg
-			if (att.links.remove && !appCtxt.isOfflineMode()) {
+			if (att.links.remove && !appCtxt.isWebClientOffline()) {
 				htmlArr[idx++] = linkCount ? " | " : "";
 				var params = {
 					id:				this._getAttachmentLinkId(att.part, ZmMailMsgView.ATT_LINK_REMOVE),
@@ -2067,7 +2067,7 @@ function() {
 		hasGeneratedAttachments = hasGeneratedAttachments || att.generated;
 	}
 
-	if (!hasGeneratedAttachments && attInfo.length > 1 && !appCtxt.isOfflineMode()) {
+	if (!hasGeneratedAttachments && attInfo.length > 1 && !appCtxt.isWebClientOffline()) {
 		allAttParams = this._addAllAttachmentsLinks(attInfo, (imageAttsFound > 1), this._msg.subject);
 		htmlArr[idx++] = allAttParams.html;
 	}
@@ -2120,13 +2120,12 @@ function() {
 
 ZmMailMsgView.prototype._handleAttachmentForOfflineMode =
 function(attachment) {
-    if (!appCtxt.isOfflineMode()) {
-        return;
-    }
-    var url = attachment.url;
-    if (url && url.indexOf("data:") === -1) {
-        var callback = this._handleAttachmentForOfflineModeCallback.bind(this, attachment);
-        appCtxt._offlineHandler.getItem(url, callback, {}, "zmofflineattachmentstore");
+    if (appCtxt.isWebClientOffline()) {
+        var url = attachment.url;
+        if (url && url.indexOf("data:") === -1) {
+            var callback = this._handleAttachmentForOfflineModeCallback.bind(this, attachment);
+            appCtxt.webClientOfflineHandler.getItem(url, callback, {}, "zmofflineattachmentstore");
+        }
     }
 };
 
@@ -2143,6 +2142,7 @@ function(attachment, data) {
             link = document.getElementById(id);
         if (link) {
             link.href = url;
+            link.onclick = null;
         }
         //download link
         id = this._getAttachmentLinkId(attachment.part, ZmMailMsgView.ATT_LINK_DOWNLOAD);

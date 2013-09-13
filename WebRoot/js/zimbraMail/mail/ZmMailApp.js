@@ -1622,7 +1622,7 @@ function(params, callback) {
 ZmMailApp.prototype._handleLoadLaunch =
 function(params, callback) {
 	// set type for initial search
-	this._groupBy = (appCtxt.isOfflineMode(true)) ? ZmSetting.GROUP_BY_MESSAGE : appCtxt.get(ZmSetting.GROUP_MAIL_BY);
+	this._groupBy = (appCtxt.isWebClientOffline()) ? ZmSetting.GROUP_BY_MESSAGE : appCtxt.get(ZmSetting.GROUP_MAIL_BY);
 
 	var query;
 	params = params || {};
@@ -1730,7 +1730,7 @@ function(query, callback, response, type) {
 	}
 	else if(appCtxt.isExternalAccount()) {
         query = "inid:" + this.getDefaultFolderId();
-    } else if (appCtxt.isOfflineMode()){
+    } else if (appCtxt.isWebClientOffline()) {
         query = query || "in:inbox";
     } else {
 		query = query || appCtxt.get(ZmSetting.INITIAL_SEARCH, null, account);

@@ -34,7 +34,7 @@ ZmOffline = function(){
 
 ZmOffline._checkCacheDone =
 function (){
-    if (appCtxt.isOfflineSupported() && ZmOffline.appCacheDone && ZmOffline.cacheProgress.length === 0 && ZmOffline.syncStarted && ZmOffline.messageNotShowed){
+    if (appCtxt.isWebClientOfflineSupported && ZmOffline.appCacheDone && ZmOffline.cacheProgress.length === 0 && ZmOffline.syncStarted && ZmOffline.messageNotShowed){
         appCtxt.setStatusMsg(ZmMsg.offlineCachingDone, ZmStatusView.LEVEL_INFO);
         ZmOffline.messageNotShowed = false;
     }
@@ -65,7 +65,7 @@ function (){
 
 ZmOffline.prototype.init =
 function(cb){
-    if (!appCtxt.isOfflineMode()){
+    if (!appCtxt.isWebClientOffline()){
         this._fixLazyCSSLoadIssues();
         window.applicationCache.addEventListener('cached', function(e) {
             ZmOffline._checkAppCacheDone();
@@ -76,7 +76,7 @@ function(cb){
         }, false);
     }
 
-    var callback = (appCtxt.isOfflineMode()) ? this.setOffline.bind(this, cb) : cb;
+    var callback = (appCtxt.isWebClientOffline()) ? this.setOffline.bind(this, cb) : cb;
     ZmOfflineDB.indexedDB.open(callback);
     this._addListeners();
 };
@@ -143,8 +143,12 @@ function(key, callback, params, objStore) {
 };
 ZmOffline.prototype._addListeners =
 function(){
-    $(window).bind("online offline",this._setNetwork.bind(this));
-    $(window).bind("online", this._replayOfflineRequest.bind(this));
+    //$(window).bind("online offline",this._setNetwork.bind(this));
+    //$(window).bind("online", this._replayOfflineRequest.bind(this));
+    $(window).on("online offline", ZmOffline.checkServerStatus);
+    $(document).on("ZWCOffline", this._onZWCOffline.bind(this));
+    $(document).on("ZWCOnline", this._onZWCOnline.bind(this));
+    ZmOffline.checkServerStatus();
 };
 
 
@@ -154,7 +158,7 @@ function() {
 	if (!containerEl) {
 		return;
 	}
-    var isOffline = appCtxt.isOfflineMode(true);
+    var isOffline = appCtxt.isWebClientOffline();
     if (isOffline){
         this._enableApps(false);
     }
@@ -170,6 +174,19 @@ function() {
         appCtxt.networkBtn = null;
         //this.sendSyncRequest();
     }
+};
+
+ZmOffline.prototype._onZWCOffline =
+function() {
+    appCtxt.setStatusMsg(ZmMsg.OfflineServerNotReachable);
+    this._enableApps(false);
+};
+
+ZmOffline.prototype._onZWCOnline =
+function() {
+    appCtxt.setStatusMsg(ZmMsg.OfflineServerReachable);
+    this._replayOfflineRequest();
+    ZmOffline.syncData();
 };
 
 ZmOffline.prototype._enableApps =
@@ -734,7 +751,7 @@ ZmOffline.prototype._sendOfflineRequest =
 function(result) {
 
     if (!result || result.length === 0) {
-        this._enableApps(!appCtxt.isOfflineMode());
+        this._enableApps(!appCtxt.isWebClientOffline());
         jQuery(document).trigger('OfflineRequestSent');
         return;
     }
@@ -769,6 +786,10 @@ function(result) {
                         continue;
                     }
                 }
+                if (msg.isInlineAttachment) {
+                    this._uploadOfflineInlineAttachments(obj, msg);
+                    continue;
+                }
                 if (flags && flags.indexOf(ZmItem.FLAG_OFFLINE_CREATED) !== -1) {
                     msg.f = flags.replace(ZmItem.FLAG_OFFLINE_CREATED, "");//Removing the offline created flag
                     delete msg.id;//Removing the temporary id
@@ -791,7 +812,7 @@ function(result) {
 ZmOffline.prototype._checkOutboxQueue =
 function(result) {
     if (!result || result.length === 0) {
-        this._enableApps(!appCtxt.isOfflineMode());
+        this._enableApps(!appCtxt.isWebClientOffline());
         return;
     }
 };
@@ -912,7 +933,7 @@ ZmOffline.prototype._enableMailFeatures =
 function(online) {
     var mailApp = appCtxt.getApp(ZmApp.MAIL);
     var mlc = mailApp.getMailListController();
-    var view = appCtxt.isOfflineMode() ? ZmId.VIEW_TRAD : localStorage.getItem("MAILVIEW");
+    var view = appCtxt.isWebClientOffline() ? ZmId.VIEW_TRAD : localStorage.getItem("MAILVIEW");
     mlc.switchView(view, true);
     var toolbar = mlc._toolbar[mlc._currentViewId];
     toolbar && mlc._resetOperations(mlc._toolbar[mlc._currentViewId], 1);
@@ -1109,7 +1130,7 @@ function(result) {
  */
 ZmOffline.addOutboxFolder =
 function() {
-    if (!appCtxt._supportsOffline) {
+    if (!appCtxt.isWebClientOfflineSupported) {
         return;
     }
     var folderTree = appCtxt.getFolderTree(),
@@ -1217,4 +1238,66 @@ function(attachmentId, obj, msg, uploadResponse) {
     if (isOfflineUploaded === false) {
         this._sendOfflineRequest([].concat(obj));
     }
+};
+
+ZmOffline.prototype._uploadOfflineInlineAttachments =
+function (obj, msg) {
+    var template = document.createElement("template");
+    template.innerHTML = msg.mp[0].mp[1].content._content;
+    var dataURIImageNodeList = template.content.querySelectorAll("img[src^='data:']");
+    for (var i = 0; i < dataURIImageNodeList.length; i++) {
+        var blob = AjxUtil.dataURItoBlob(dataURIImageNodeList[i].src);
+        if (blob) {
+            var callback = this._uploadOfflineInlineAttachmentsCallback.bind(this, dataURIImageNodeList[i], obj, msg, template);
+            ZmComposeController.prototype._uploadImage(blob, callback);
+        }
+    }
+
+};
+
+ZmOffline.prototype._uploadOfflineInlineAttachmentsCallback =
+function(img, obj, msg, template, uploadResponse) {
+    //img.src =
+    var dataURIImageNodeList = template.content.querySelectorAll("img[src^='data:']");
+    if (dataURIImageNodeList.length === 0) {
+        delete msg.isInlineAttachment;
+        this._sendOfflineRequest([].concat(obj));
+    }
+};
+
+ZmOffline.checkServerStatus =
+function() {
+    if (ZmOffline.serverTimeoutId) {
+        clearTimeout(ZmOffline.serverTimeoutId);
+    }
+    $.ajax({
+        type: "HEAD",
+        url: "/public/blank.html",
+        timeout: 1000,
+        statusCode: {
+            0: function() {
+                if (ZmOffline.isServerReachable === true) {
+                    $.event.trigger({
+                        type: "ZWCOffline"
+                    });
+                }
+                ZmOffline.isServerReachable = false;
+            },
+            200: function() {
+                if (ZmOffline.isServerReachable === false) {
+                    $.event.trigger({
+                        type: "ZWCOnline"
+                    });
+                }
+                ZmOffline.isServerReachable = true;
+            }
+        }
+    }).always(function() {
+        ZmOffline.serverTimeoutId = setTimeout(ZmOffline.checkServerStatus, 10000);
+    });
+};
+
+ZmOffline.isOnlineMode =
+function() {
+    return appCtxt.isWebClientOfflineSupported && !appCtxt.isWebClientOffline();
 };

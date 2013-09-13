@@ -81,10 +81,10 @@ ZmZimbraMail = function(params) {
 
     var offlineSetting = appCtxt.getSettings().getSetting("WEBCLIENT_OFFLINE_ENABLED");
     window.isWebClientOfflineEnabled = offlineSetting && offlineSetting.value;
-    appCtxt._supportsOffline = appCtxt.isOfflineSupported();
+    appCtxt.isWebClientOfflineSupported = AjxEnv.isOfflineSupported && window.isWebClientOfflineEnabled;
 
-    if (appCtxt._supportsOffline && !appCtxt.isOfflineMode(true)){
-        appCtxt._offlineHandler = new ZmOffline();
+    if (ZmOffline.isOnlineMode()) {
+        appCtxt.webClientOfflineHandler = new ZmOffline();
     }
 
     this._requestMgr = new ZmRequestMgr(this); // NOTE: requires settings to be initialized
@@ -133,7 +133,7 @@ ZmZimbraMail = function(params) {
 	this._shell.addGlobalSelectionListener(new AjxListener(this, this._globalSelectionListener));
 
     /// go!
-    if (appCtxt._supportsOffline){
+    if (appCtxt.isWebClientOfflineSupported) {
         var callback = this.startup.bind(this, params);
         appCtxt.initWebOffline(callback);
     } else {
@@ -207,7 +207,7 @@ function(params) {
 	var shell = new DwtShell({userShell:userShell, docBodyScrollable:false, id:ZmId.SHELL});
 	appCtxt.setShell(shell);
 
-    if (appCtxt._supportsOffline && window.applicationCache && (window.applicationCache.status !== window.applicationCache.UPDATEREADY) && !appCtxt.isOfflineMode()){
+    if (ZmOffline.isOnlineMode() && window.applicationCache && (window.applicationCache.status !== window.applicationCache.UPDATEREADY)){
         var soapDoc = AjxSoapDoc.create("GetInfoRequest", "urn:zimbraAccount");
         var hdr = soapDoc.createHeaderElement();
         var context = soapDoc.set("context", null, hdr, "urn:zimbra");
@@ -218,7 +218,9 @@ function(params) {
         var requestStr = soapDoc.getXml();
         var ctxt = this;
         $.ajax({url: '/service/soap/GetInfoRequest', data: requestStr, type: 'POST', context: ctxt}).complete(function(response){
-            $.extend(params.batchInfoResponse.Body.BatchResponse.GetInfoResponse[0], JSON.parse(response.responseText).Body.GetInfoResponse);
+            if (response.responseText) {
+                $.extend(params.batchInfoResponse.Body.BatchResponse.GetInfoResponse[0], JSON.parse(response.responseText).Body.GetInfoResponse);
+            }
             var response = params.batchInfoResponse.Body.BatchResponse.GetInfoResponse[0];
             var newLocale = response.attrs._attrs['zimbraLocale'];
             var newSkin = response.prefs._attrs['zimbraPrefSkin'];
@@ -400,14 +402,14 @@ function(params) {
         this._requestMgr.sendRequest({response:getInfoResponse, offlineCache:true});
     }
 
-    if (appCtxt.isOfflineMode(true)){
+    if (appCtxt.isWebClientOffline()) {
         var respCallback = new AjxCallback(this, this._handleResponseGetMetaData, params);
         var callback = appCtxt.accountList.mainAccount.loadMetaData.bind(appCtxt.accountList.mainAccount, respCallback);
         //var store = "inbox" + (appCtxt.get(ZmSetting.GROUP_MAIL_BY) || "message");
         var store = "inboxmessage";
         params._skipResponse = true;
-        appCtxt._offlineHandler._syncSearchRequest(callback, store, params);
-        appCtxt._offlineHandler.syncFoldersMetaData();
+        appCtxt.webClientOfflineHandler._syncSearchRequest(callback, store, params);
+        appCtxt.webClientOfflineHandler.syncFoldersMetaData();
 
     } else {
         var respCallback = new AjxCallback(this, this._handleResponseGetMetaData, params);
@@ -745,7 +747,7 @@ function(params, result) {
 	// startup and packages have been optimized for quick mail display
 	if (this._doingPostRenderStartup) {
 		this.addAppListener(params.startApp, ZmAppEvent.POST_RENDER, new AjxListener(this, this._postRenderStartup));
-        if (appCtxt.isOfflineMode(true)){
+        if (appCtxt.isWebClientOffline()) {
             params.searchResponse.Body.SearchResponse.m = appCtxt._msgSearchResponse;
             /*
             if (params.searchResponse.Body.SearchResponse.m){
@@ -850,13 +852,13 @@ function(params, result) {
 		}
 	}
 
-    if (appCtxt.isOfflineSupported() && appCtxt._offlineHandler){
+    if (appCtxt.isWebClientOfflineSupported) {
         callback = new AjxCallback(this,
 		function() {
-            if (appCtxt.isOfflineMode(true)){
-                appCtxt._offlineHandler.initOfflineFolders();
+            if (appCtxt.isWebClientOffline()) {
+                appCtxt.webClientOfflineHandler.initOfflineFolders();
             } else {
-                appCtxt._offlineHandler.cacheMailData();
+                appCtxt.webClientOfflineHandler.cacheMailData();
             }
 
 		});
@@ -2997,7 +2999,7 @@ function() {
     if (window.ZmDesktopAlert) {
         ZmDesktopAlert.closeNotification();
     }
-    if (appCtxt._offlineHandler){
+    if (appCtxt.webClientOfflineHandler) {
             ZmOffline.closeDB();
     }
 	ZmZimbraMail._endSessionDone = true;

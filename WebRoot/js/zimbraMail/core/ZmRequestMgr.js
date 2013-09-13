@@ -119,7 +119,7 @@ function(params) {
         return;
     }
 
-    if (!response && appCtxt._supportsOffline && appCtxt.isOfflineMode(true)) {
+    if (!response && appCtxt.isWebClientOffline()) {
         if (params.offlineCallback) {
             params.offlineCallback(params);
         }
@@ -242,7 +242,7 @@ ZmRequestMgr.prototype._handleResponseSendRequest =
 function(params, result) {
 	DBG.println("req", "ZmRequestMgr.handleResponseSendRequest for req: " + params.reqId);
 	var isCannedResponse = (params.response != null);
-	if (!isCannedResponse && !appCtxt.isOfflineMode()) {
+	if (!isCannedResponse && !appCtxt.isWebClientOffline()) {
 		if (!this._pendingRequests[params.reqId]) {
 			DBG.println("req", "ZmRequestMgr.handleResponseSendRequest no pending request for " + params.reqId);
 			return;
@@ -315,7 +315,7 @@ function(params, result) {
 	    result.set(response.Body);
 	}
 
-    if (appCtxt._supportsOffline && !appCtxt.isOfflineMode()){
+    if (ZmOffline.isOnlineMode()) {
         this.__setItemCacheOffline(params, response);
     }
 
@@ -713,8 +713,8 @@ function(notify) {
 		this._handleModifies(notify.modified);
 	}
 
-    if (window.isWebClientOfflineEnabled && !appCtxt.isOfflineMode() && (notify.deleted || notify.created || notify.modified)){
-        appCtxt._offlineHandler.sendSyncRequest();
+    if (ZmOffline.isOnlineMode() && (notify.deleted || notify.created || notify.modified)) {
+        appCtxt.webClientOfflineHandler.sendSyncRequest();
     }
 	this._controller.runAppFunction("postNotify", false, notify);
 };
@@ -933,7 +933,7 @@ var store = (function (params){
                     folder = params.jsonObj.SearchRequest.query || "";
                     return folder && folder.replace && folder.replace(/in:|\"/g, "") + (params.jsonObj.SearchRequest.types) || "";
                 }
-                folder = appCtxt._offlineHandler._getFolder(appCtxt.getCurrentSearch().folderId);
+                folder = appCtxt.webClientOfflineHandler._getFolder(appCtxt.getCurrentSearch().folderId);
                 if (params.jsonObj.SearchConvRequest){
                     return  folder + "conversation";
                 } else if (params.jsonObj.GetMsgRequest){
@@ -944,8 +944,8 @@ var store = (function (params){
             return "ZmOfflineStore";
         })(params);
 
-    if (appCtxt._supportsOffline && appCtxt.isOfflineMode() && !params.offlineRequestDone){
-         appCtxt._offlineHandler.getItem(id, callback, params, store);
+    if (appCtxt.isWebClientOffline() && !params.offlineRequestDone){
+         appCtxt.webClientOfflineHandler.getItem(id, callback, params, store);
     }
 
 };
@@ -956,8 +956,8 @@ function(params,response ){
     if (id == "GetMailboxMetadataRequest" || id == "DiscoverRightsRequest" ){
        params.offlineCache = true;
     }
-    if (appCtxt._supportsOffline && !appCtxt.isOfflineMode() && params.offlineCache === true){
-        appCtxt._offlineHandler.setItem(id, response, params.store || "ZmOfflineStore");
+    if (ZmOffline.isOnlineMode() && params.offlineCache === true){
+        appCtxt.webClientOfflineHandler.setItem(id, response, params.store || "ZmOfflineStore");
     }
 };
 
