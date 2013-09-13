@@ -100,12 +100,16 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 			togglingQuotedText = Ext.isBoolean(showQuotedText),
 			trimQuotedText = togglingQuotedText ? !showQuotedText : !isLast && !isInvite && !this.showingQuotedText,
 			msgId = msg.getId(),
-			html = msg.getContentAsHtml(this.getId(), trimQuotedText),
 			hasQuotedContent = ZCS.model.mail.ZtMailMsg.hasQuotedContent[msgId],
 			isHtml = msg.hasHtmlPart(),
 			container = this.htmlContainer,
 			iframeWidth = this.element.getWidth() || (this.parent.getChildWidth() - 22),
 			iframe = this.iframe;
+
+		if (window.inlineData.debugLevel === 'orig') {
+			trimQuotedText = true;
+		}
+		var html = msg.getContentAsHtml(this.getId(), trimQuotedText);
 
 		this.setMsg(msg);
 
