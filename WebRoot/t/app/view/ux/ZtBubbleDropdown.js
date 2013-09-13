@@ -127,7 +127,12 @@ Ext.define('ZCS.view.ux.ZtBubbleDropdown', {
 							this.configureStore(value, this.getMenuStore());
 
 							this.getMenuStore().load({
-								callback: this.loadMenuFromStore,
+								callback: function () {
+									//only show the menu if the response we are getting is still the value of the input.
+									if (value === this.getInput().getValue()) {
+										this.loadMenuFromStore.call(this);
+									}
+								},
 								scope: this
 							});
 						} else {
