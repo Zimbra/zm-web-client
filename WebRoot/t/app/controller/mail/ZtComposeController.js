@@ -317,6 +317,14 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 
 		this.setFormHash(this.calculateFormHash());
 
+		if (!(toFieldAddresses && toFieldAddresses.length)) {
+			formField[ZCS.constant.TO].focusInput();
+		} else if (!subject) {
+			subjectFld.focus();
+		} else {
+			editor.focus();
+		}
+
 		ZCS.htmlutil.resetWindowScroll();
 	},
 
