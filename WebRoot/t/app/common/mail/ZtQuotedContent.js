@@ -399,7 +399,7 @@ Ext.define('ZCS.common.mail.ZtQuotedContent', {
 		// HR: look for a couple different forms that are used to delimit quoted content
 		else if (nodeName === 'hr') {
 			// see if the HR is ours, or one commonly used by other mail clients such as Outlook
-			if (el.id === ZCS.quoted.HTML_SEP_ID || (el.size === '2' && el.width === '100%' && el.align === 'center')) {
+			if (el.id === ZCS.constant.HTML_QUOTE_DIVIDER_ID || (el.size === '2' && el.width === '100%' && el.align === 'center')) {
 				type = this.SEP_STRONG;
 			}
 			else {
@@ -557,8 +557,6 @@ ZCS.quoted.REGEX_DATE     = /, 20\d\d/;
 ZCS.quoted.REGEX_INTRO    = new RegExp('^(-{2,}|' + ZtMsg.on + ')', 'i');
 
 ZCS.quoted.REGEX_SCRIPT = /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi;
-
-ZCS.quoted.HTML_SEP_ID = 'zwchr';   // inserted by ZCS HTML composer
 
 // nodes to ignore; they won't have anything we're interested in
 ZCS.quoted.IGNORE_NODE = ZCS.util.arrayAsLookupHash([

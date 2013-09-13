@@ -534,6 +534,8 @@ ZCS.constant.HTML_QUOTE_PREFIX_PRE		= '<blockquote style="border-left:2px solid 
 ZCS.constant.HTML_QUOTE_PREFIX_POST     = '</blockquote>';
 ZCS.constant.HTML_QUOTE_NONPREFIX_PRE	= '<div style="' + ZCS.constant.HTML_QUOTE_STYLE + '">';
 ZCS.constant.HTML_QUOTE_NONPREFIX_POST	= '</div><br/>';
+ZCS.constant.HTML_QUOTE_DIVIDER_ID     	= 'zwchr';
+ZCS.constant.HTML_QUOTE_DIVIDER     	= '<hr id="' + ZCS.constant.HTML_QUOTE_DIVIDER_ID + '">';
 
 // Wrapping text
 ZCS.constant.WRAP_LENGTH				= 80;

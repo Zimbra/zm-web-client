@@ -548,11 +548,7 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 			usePrefix = ZCS.session.getSetting(ZCS.constant['SETTING_' + which + '_USE_PREFIX']),
 			incHeaders = ZCS.session.getSetting(ZCS.constant['SETTING_' + which + '_INCLUDE_HEADERS']);
 
-		if (incWhat === ZCS.constant.INC_NONE) {
-			return '';
-		}
-
-		if (incWhat === ZCS.constant.INC_ATTACH) {
+		if (incWhat === ZCS.constant.INC_NONE || incWhat === ZCS.constant.INC_ATTACH) {
 			return '';
 		}
 
@@ -585,10 +581,9 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 			return '';
 		}
 
-		var	quoted = usePrefix ? this.quoteHtml(content) : content,
-			divider = isForward ? ZtMsg.forwardedMessage : ZtMsg.originalMessage;
+		var	quoted = usePrefix ? this.quoteHtml(content) : content;
 
-		return sep + '----- ' + divider + ' -----' + sep + quoted;
+		return sep + ZCS.constant.HTML_QUOTE_DIVIDER + quoted;
 	},
 
 	/**
