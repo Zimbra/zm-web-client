@@ -317,7 +317,7 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 
 		this.setFormHash(this.calculateFormHash());
 
-		if (!(toFieldAddresses && toFieldAddresses.length)) {
+		if (!(addresses[ZCS.constant.TO] && addresses[ZCS.constant.TO].length)) {
 			formField[ZCS.constant.TO].focusInput();
 		} else if (!subject) {
 			subjectFld.focus();
