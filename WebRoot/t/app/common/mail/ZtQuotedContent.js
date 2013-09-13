@@ -265,12 +265,12 @@ Ext.define('ZCS.common.mail.ZtQuotedContent', {
 
 	/**
 	 * For HTML, we strip off the html, head, and body tags and stick the rest in a temporary DOM node so that
-	 * we can walk the tree. Instead of going line by line, we go element by element. The easiest way is to figure
-	 * out which nodes we can remove if the message appears to have quoted and original content.
+	 * we can walk the tree. Instead of going line by line, we go element by element. If we find one that
+	 * is recognized as a separator, we remove all subsequent elements.
 	 *
-	 * @param {string}	text		message body content
+	 * @param {String}	text		message body content
 	 *
-	 * @return	{string}	original content if quoted content was found, otherwise NULL
+	 * @return	{String}	original content if quoted content was found, otherwise NULL
 	 * @private
 	 */
 	getOriginalHtmlContent: function(text) {
@@ -281,228 +281,184 @@ Ext.define('ZCS.common.mail.ZtQuotedContent', {
 		}
 
 		var htmlNode = this.writeToTestIframeDoc(text);
-		var ctxt = {
-			curType:	null,
-			count:		{},
-			level:		0,
-			toRemove:	[],
-			done:		false,
-			stop:		false,
-			hasQuoted:	false,
-			sepNode:	null,
-			nodeCount:  0,
-			results:	[]
-		};
-		this.traverseOriginalHtmlContent(htmlNode, ctxt);
 
-		// check for special case of WROTE preceded by UNKNOWN, followed by mix of UNKNOWN and QUOTED (inline reply)
-		this.checkInlineWrote(ctxt.count, ctxt.results, true, ctxt);
+		var done = false, nodeList = [];
+		this.flatten(htmlNode, nodeList);
 
-		// if there's one UNKNOWN section and some QUOTED, preserve the UNKNOWN
-		if (!ctxt.done) {
-			if (ctxt.count[this.UNKNOWN] === 1 && ctxt.hasQuoted) {
-				for (var i = 0; i < ctxt.toRemove.length; i++) {
-					var el = ctxt.toRemove[i];
-					if (el && el.parentNode) {
-						el.parentNode.removeChild(el);
-					}
+		var ln = nodeList.length, i, results = [], count = {}, el, prevEl, nodeName, type, prevType, sepNode;
+		for (i = 0; i < ln; i++) {
+			el = nodeList[i];
+			nodeName = el.nodeName.toLowerCase();
+			type = this.checkNode(nodeList[i]);
+			if (type !== null) {
+				results.push({ type: type, node: el, nodeName: nodeName });
+				count[type] = count[type] ? count[type] + 1 : 1;
+				// definite separator
+				if (type === this.SEP_STRONG || type === this.WROTE_STRONG) {
+					sepNode = el;
+					done = true;
+					break;
 				}
-				ctxt.done = true;
+				// some sort of line followed by a header
+				if (type === this.HEADER && prevType === this.LINE) {
+					sepNode = prevEl;
+					done = true;
+					break;
+				}
+				prevEl = el;
+				prevType = type;
 			}
 		}
 
+		if (sepNode) {
+			this.prune(sepNode, true);
+		}
+
 		// convert back to text, restoring html, head, and body nodes
-		var content = ctxt.done ? '<html>' + htmlNode.innerHTML + '</html>' : text;
+		var content = done ? '<html>' + htmlNode.innerHTML + '</html>' : text;
 		htmlNode.innerHTML = '';
 		return content;
 	},
 
+	/**
+	 * Traverse the given node depth-first to produce a list of descendant nodes. Some nodes are
+	 * ignored.
+	 *
+	 * @param {Element}     node        node
+	 * @param {Array}       list        result list which grows in place
+	 * @private
+	 */
+	flatten: function(node, list) {
 
-	// Walk the tree, looking for a definitive delimiter and determining content types for nodes. If we find a node
-	// that's a delimiter, we clip it and all subsequent nodes at its level, and we're done.
-	traverseOriginalHtmlContent: function(el, ctxt) {
+		list.push(node);
 
-		if (ctxt.done || !el || ctxt.stop) {
-			return;
+		var children = node.childNodes || [],
+			i, el, nodeName;
+
+		for (i = 0; i < children.length; i++) {
+			el = children[i];
+			nodeName = el.nodeName.toLowerCase();
+			if (nodeName !== 'blockquote' && !this.IGNORE_NODE[nodeName]) {
+				this.flatten(el, list);
+			}
+		}
+	},
+
+	/**
+	 * Removes all subsequent siblings of the given node, and then does the same for its parent.
+	 * The effect is that all nodes that come after the given node in a depth-first traversal of
+	 * the DOM will be removed.
+	 *
+	 * @param {Element}     node
+	 * @param {Boolean}     clipNode    if true, also remove the node
+	 * @private
+	 */
+	prune: function(node, clipNode) {
+
+		var p = node && node.parentNode,
+			nodeName = p && p.nodeName.toLowerCase();
+
+		// clip all subsequent nodes
+		while (p && p.lastChild && p.lastChild !== node) {
+			p.removeChild(p.lastChild);
 		}
 
-		ctxt.nodeCount++;
+		// clip the node if asked
+		if (clipNode && p && p.lastChild === node) {
+			p.removeChild(p.lastChild);
+		}
+
+		// stop when we get up to BODY or HTML element
+		if (p && nodeName !== 'body' && nodeName !== 'html') {
+			this.prune(p, false);
+		}
+	},
+
+	/**
+	 * Tries to determine the type of the given node.
+	 *
+	 * @param {Element}     el      a DOM node
+	 * @return {String}     type, or null
+	 * @private
+	 */
+	checkNode: function(el) {
+
+		if (!el) { return null; }
 
 		var nodeName = el.nodeName.toLowerCase(),
-			processChildren = true,
-			type, testLine;
-        //<debug>
-		Ext.Logger.verbose('html', Ext.String.repeat('&nbsp;&nbsp;&nbsp;&nbsp;', ctxt.level) + nodeName + ((nodeName === '#text' && /\S+/.test(el.nodeValue) ? ' - ' + el.nodeValue.substr(0, 20) : '')));
-        //</debug>
+			type = null,
+			content;
+
 		// Text node: test against our regexes
 		if (nodeName === '#text') {
-			if (!ZCS.constant.REGEX_NON_WHITESPACE.test(el.nodeValue)) {
-				return;
+			content = Ext.String.trim(el.nodeValue);
+			if (ZCS.constant.REGEX_NON_WHITESPACE.test(content)) {
+				type = this.getLineType(content);
 			}
-			testLine = Ext.String.trim(el.nodeValue);
-			type = this.getLineType(testLine);
-			if (type === this.SEP_STRONG || type === this.WROTE_STRONG) {
-				ctxt.sepNode = el;	// mark for removal
-			}
-			else if (type !== this.WROTE_STRONG) {
-				// Check for colon in case we have a "wrote:" line or a header
-				if (testLine.indexOf(':') !== -1 && el.parentNode) {
-					// what appears as a single "... wrote:" line may have multiple elements, so gather it all
-					// together into one line and test that
-					testLine = Ext.String.trim(Ext.String.htmlDecode(ZCS.htmlutil.stripTags(el.parentNode.innerHTML)));
-					type = this.getLineType(testLine);
-					if (type === this.WROTE_STRONG) {
-						// check for a multinode WROTE; if we find one, gather it into a SPAN so that we
-						// have a single node to deal with later
-						var pn = el.parentNode,
-							nodes = pn.childNodes,
-							startNodeIndex, stopNodeIndex;
-
-						for (var i = pn.childNodes.length - 1; i >= 0; i--) {
-							var childNode = pn.childNodes[i];
-							var text = childNode.nodeValue;
-							if (!text) {
-								continue;
-							}
-							if (text.match(/(\w+):$/)) {
-								stopNodeIndex = i;
-							}
-							else if ((stopNodeIndex !== null) && text.match(this.INTRO_RE)) {
-								startNodeIndex = i;
-								break;
-							}
-						}
-						if (startNodeIndex !== null && stopNodeIndex !== null) {
-							var span = document.createElement('span');
-							for (var i = 0; i < (stopNodeIndex - startNodeIndex) + 1; i++) {
-								span.appendChild(nodes[startNodeIndex]);
-							}
-							pn.insertBefore(span, nodes[startNodeIndex]);
-							ctxt.sepNode = span;
-						}
-					}
-					else if (type === this.HEADER) {
-						if (ctxt.results.length && ctxt.results[ctxt.results.length - 1].type === this.LINE && ctxt.lineNode) {
-							ctxt.sepNode = ctxt.lineNode;
-							ctxt.done = true;
-						}
-					}
-				}
-			}
-
-			// HR: look for a couple different forms that are used to delimit quoted content
-		} else if (nodeName === 'hr') {
+		}
+		// HR: look for a couple different forms that are used to delimit quoted content
+		else if (nodeName === 'hr') {
 			// see if the HR is ours, or one commonly used by other mail clients such as Outlook
 			if (el.id === ZCS.quoted.HTML_SEP_ID || (el.size === '2' && el.width === '100%' && el.align === 'center')) {
 				type = this.SEP_STRONG;
-				ctxt.sepNode = el;	// mark for removal
 			}
-
-			// PRE: treat as one big line of text (should maybe go line by line)
-		} else if (nodeName === 'pre') {
-			var text = Ext.String.htmlDecode(ZCS.htmlutil.stripTags(el.innerHTML));
-			type = this.getLineType(text);
-
-			// BR: ignore
-		} else if (nodeName === 'br') {
-			return;
-
-			// DIV: check for Outlook class used as delimiter
-		} else if (nodeName === 'div') {
+			else {
+				type = this.LINE;
+			}
+		}
+		// PRE: treat as one big line of text (should maybe go line by line)
+		else if (nodeName === 'pre') {
+			type = this.checkNodeContent(el);
+		}
+		// DIV: check for Outlook class used as delimiter, or a top border used as a separator, and finally just
+		// check the text content
+		else if (nodeName === 'div') {
 			if (el.className === 'OutlookMessageHeader' || el.className === 'gmail_quote') {
 				type = this.SEP_STRONG;
-				ctxt.sepNode = el;	// mark for removal
 			}
 			else if (el.outerHTML.toLowerCase().indexOf('border-top') !== -1) {
 				var styleObj = window.getComputedStyle(el);
 				if (styleObj && styleObj.borderTopWidth && parseInt(styleObj.borderTopWidth) > 0) {
-					type = this.LINE;
-					ctxt.lineNode = el;
+					// Take aggressive approach and assume top border is separator and not just a line
+					type = this.SEP_STRONG;
 				}
 			}
-
-			// SPAN: check for Outlook ID used as delimiter
-		} else if (nodeName === 'span') {
+			type = type || this.checkNodeContent(el);
+		}
+		// SPAN: check for Outlook ID used as delimiter, then check text content
+		else if (nodeName === 'span') {
 			if (el.id === 'OLK_SRC_BODY_SECTION') {
 				type = this.SEP_STRONG;
-				ctxt.sepNode = el;	// mark for removal
 			}
-
-			// IMG: treat as original content
-		} else if (nodeName === 'img') {
+			type = type || this.checkNodeContent(el);
+		}
+		// IMG: treat as original content
+		else if (nodeName === 'img') {
 			type = this.UNKNOWN;
-
-			// BLOCKQUOTE: treat as quoted section
-		} else if (nodeName === 'blockquote') {
+		}
+		// BLOCKQUOTE: treat as quoted section
+		else if (nodeName === 'blockquote') {
 			type = this.QUOTED;
-			ctxt.toRemove.push(el);
-			ctxt.hasQuoted = true;
-			processChildren = false;
-
-		} else if (nodeName === 'script') {
-			throw new Error('SCRIPT tag found in this.traverseOriginalHtmlContent');
-
-			// node types to ignore
-		} else if (this.IGNORE_NODE[nodeName]) {
-			return;
 		}
 
-		// see if we've found a new type
-		if (type) {
-			if (ctxt.curType) {
-				if (ctxt.curType !== type) {
-					ctxt.count[ctxt.curType] = ctxt.count[ctxt.curType] ? ctxt.count[ctxt.curType] + 1 : 1;
-					ctxt.results.push({type:ctxt.curType});
-					ctxt.curType = type;
-					ctxt.curBlock = [];
-				}
-			}
-			else {
-				ctxt.curType = type;
-			}
+		return type;
+	},
+
+	/**
+	 * Checks innerText to see if it's a separator.
+	 * @param {Element} node
+	 * @return {String}
+	 * @private
+	 */
+	checkNodeContent: function(node) {
+
+		var content = node.innerText || '';
+		if (!ZCS.constant.REGEX_NON_WHITESPACE.test(content) || content.length > 200) {
+			return null;
 		}
-
-		// if we find an UNKNOWN block after quoted content we may have inline comments, so stop
-		if (ctxt.hasQuoted && type === this.UNKNOWN && ctxt.count[this.WROTE_STRONG] === 1) {
-			ctxt.stop = true;
-			ctxt.sepNode = null;
-			return;
-		}
-
-		// if we found a recognized delimiter, set flag to clip it and subsequent nodes at its level
-		if (type === this.SEP_STRONG) {
-			ctxt.done = true;
-		}
-
-		if (!processChildren) {
-			return;	// don't visit node's children
-		}
-
-		ctxt.level++;
-
-		// any element that gets here will get recursed into
-		for (var i = 0, len = el.childNodes.length; i < len; i++) {
-			var childNode = el.childNodes[i];
-			if (ctxt.nodeCount > ZCS.quoted.MAX_NODES) {
-				ctxt.sepNode = null;
-				return;
-			}
-			this.traverseOriginalHtmlContent(childNode, ctxt);
-			// see if we ran into a delimiter
-			if (ctxt.done) {
-				// clip all subsequent nodes
-				while (el && el.lastChild && el.lastChild !== childNode) {
-					el.removeChild(el.lastChild);
-				}
-				// clip the delimiter node
-				if (el && el.lastChild === ctxt.sepNode) {
-					el.removeChild(el.lastChild);
-				}
-				break;
-			}
-		}
-
-		ctxt.level--;
+		// We're really only interested in SEP_STRONG and WROTE_STRONG
+		var type = this.getLineType(content);
+		return (type === this.SEP_STRONG || type === this.WROTE_STRONG) ? type : null;
 	},
 
 	/**
@@ -512,16 +468,16 @@ Ext.define('ZCS.common.mail.ZtQuotedContent', {
 	 *
 	 * @private
 	 */
-	checkInlineWrote: function(count, results, isHtml, ctxt) {
+	checkInlineWrote: function(count, results) {
 
-		if (count[ZCS.quoted.WROTE_STRONG] > 0) {
+		if (count[this.WROTE_STRONG] > 0) {
 			var unknownBlock, foundSep = false, afterSep = {};
 			for (var i = 0; i < results.length; i++) {
 				var result = results[i], type = result.type;
-				if (type === ZCS.quoted.WROTE_STRONG) {
+				if (type === this.WROTE_STRONG) {
 					foundSep = true;
 				}
-				else if (type === ZCS.quoted.UNKNOWN && !foundSep) {
+				else if (type === this.UNKNOWN && !foundSep) {
 					if (unknownBlock) {
 						return null;
 					}
@@ -534,26 +490,12 @@ Ext.define('ZCS.common.mail.ZtQuotedContent', {
 				}
 			}
 
-			var mixed = (afterSep[ZCS.quoted.UNKNOWN] && afterSep[ZCS.quoted.QUOTED]);
-			var endsWithUnknown = (count[ZCS.quoted.UNKNOWN] === 2 && results[results.length - 1].type === ZCS.quoted.UNKNOWN);
-			if (unknownBlock && (!isHtml || ctxt.sepNode) && (!mixed || endsWithUnknown)) {
-				if (isHtml) {
-					// In HTML mode we do DOM surgery rather than returning the original content
-					var el = ctxt.sepNode.parentNode;
-					// clip all subsequent nodes
-					while (el && el.lastChild && el.lastChild != ctxt.sepNode) {
-						el.removeChild(el.lastChild);
-					}
-					// clip the delimiter node
-					if (el && el.lastChild == ctxt.sepNode) {
-						el.removeChild(el.lastChild);
-					}
-				}
-				else {
-					var originalText = this.getTextFromBlock(unknownBlock);
-					if (originalText) {
-						return originalText;
-					}
+			var mixed = (afterSep[this.UNKNOWN] && afterSep[this.QUOTED]);
+			var endsWithUnknown = (count[this.UNKNOWN] === 2 && results[results.length - 1].type === this.UNKNOWN);
+			if (unknownBlock && (!mixed || endsWithUnknown)) {
+				var originalText = this.getTextFromBlock(unknownBlock);
+				if (originalText) {
+					return originalText;
 				}
 			}
 		}
