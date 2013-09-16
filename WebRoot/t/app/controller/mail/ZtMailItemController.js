@@ -344,8 +344,23 @@ Ext.define('ZCS.controller.mail.ZtMailItemController', {
 	 * @param {ZtMailItem}   item     mail item
 	 */
 	doMarkRead: function(item) {
+
 		item = item || this.getItem();
-		this.performOp(item, item.get('isUnread') ? 'read' : '!read');
+
+		var isConv = (item.get('type') === ZCS.constant.ITEM_CONVERSATION),
+			isUnread = item.get('isUnread'),
+			toastMsg;
+
+		if (isConv) {
+			toastMsg = isUnread ? ZtMsg.convMarkedRead : ZtMsg.convMarkedUnread;
+		}
+		else {
+			toastMsg = isUnread ? ZtMsg.messageMarkedRead : ZtMsg.messageMarkedUnread;
+		}
+
+		this.performOp(item, isUnread ? 'read' : '!read', function() {
+			ZCS.app.fireEvent('showToast', toastMsg);
+		});
 	},
 
 	/**
@@ -354,7 +369,22 @@ Ext.define('ZCS.controller.mail.ZtMailItemController', {
 	 * @param {ZtMailItem}   item     mail item
 	 */
 	doFlag: function(item) {
+
 		item = item || this.getItem();
-		this.performOp(item, item.get('isFlagged') ? '!flag' : 'flag');
+
+		var isConv = (item.get('type') === ZCS.constant.ITEM_CONVERSATION),
+			isFlagged = item.get('isFlagged'),
+			toastMsg;
+
+		if (isConv) {
+			toastMsg = isFlagged ? ZtMsg.convUnflagged : ZtMsg.convFlagged;
+		}
+		else {
+			toastMsg = isFlagged ? ZtMsg.messageUnflagged : ZtMsg.messageFlagged;
+		}
+
+		this.performOp(item, isFlagged ? '!flag' : 'flag', function() {
+			ZCS.app.fireEvent('showToast', toastMsg);
+		});
 	}
 });
