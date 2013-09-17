@@ -33,6 +33,11 @@
 /* entire message body */
 .MsgBody {
 	@MailMsgBody@
+
+    /* restrict selection to the message element - only supported by Gecko
+       and Trident as of 2013 */
+    -moz-user-select: element;
+    -ms-user-select: element;
 }
 
 /* text message font (eg: not HTML) */
