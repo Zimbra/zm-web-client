@@ -121,6 +121,7 @@ BODY									{	margin:0px; 	}
 	background-color:transparent;
 	background-image:none;
 	border:0px;
+    border-collapse: separate;
 	@cssShadow@:0px 0px 0px transparent;
 	#IFDEF MSIE_LOWER_THAN_9
 	-ms-filter: progid:DXImageTransform.Microsoft.gradient(enabled=false);

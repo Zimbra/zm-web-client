@@ -1894,6 +1894,10 @@ input.xform_field {
 .ZActive	.ZButtonTable .ZWidgetTitle		{					@ButtonText-active@		}
 .ZSelected	.ZButtonTable .ZWidgetTitle		{					@ButtonText-selected@	}
 
+.ZToolbarButtonBorder, .ZButtonBorder {
+    border-collapse: separate;
+}
+
 .ZButtonTable .ZLeftIcon DIV, .ZButtonTable .ZLeftIcon IMG	    {	margin:.2rem 0px .1rem 4px;	}
 .ZButtonTable .ZRightIcon DIV, .ZButtonTable .ZRightIcon IMG	{	margin:.2rem 4px .1rem 0px;	}
 .ZButtonTable .ZDropDown DIV, .ZButtonTable .ZDropDown IMG	    {	margin:.2rem 4px .1rem 0px;	}
