@@ -1231,6 +1231,12 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 	margin-bottom:3px;
 }
 
+.addrBubbleContainer INPUT::-ms-clear,
+.attBubbleContainer INPUT::-ms-clear {
+	width: 0px;
+	height: 0px;
+}
+
 .addrBubbleContainer INPUT:first-child, 
 .attBubbleContainer INPUT:first-child {
 	margin-left:0px;
