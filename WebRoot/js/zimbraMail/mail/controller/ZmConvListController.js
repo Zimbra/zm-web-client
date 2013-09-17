@@ -454,20 +454,38 @@ function(ev) {
 		if (!handled) {
 			if (ev.detail == DwtListView.ITEM_DBL_CLICKED) {
 				if (item.type == ZmItem.CONV && item.numMsgs == 1) {
-					var msg = item.getFirstHotMsg();
-					item = msg || item;
+					if (!item._loaded) {
+						//unloaded Conv makes problems.
+						item.load(null, this._handleConvLoaded.bind(this, item));
+						return true;
+					}
 				}
-				if (item.type == ZmItem.MSG) {
-					AjxDispatcher.run("GetMsgController", item && item.nId).show(item, this, null, true);
-				} else {
-					AjxDispatcher.run("GetConvController").show(item, this, null, true);
-				}
+				this._showItem(item);
 				return true;
 			}
 		}
 	}
 	return false;
 };
+
+ZmConvListController.prototype._handleConvLoaded =
+function(conv) {
+	var msg = conv.getFirstHotMsg();
+	var item = msg || conv;
+	this._showItem(item);
+};
+
+ZmConvListController.prototype._showItem =
+function(item) {
+	if (item.type == ZmItem.MSG) {
+		AjxDispatcher.run("GetMsgController", item && item.nId).show(item, this, null, true);
+	}
+	else {
+		AjxDispatcher.run("GetConvController").show(item, this, null, true);
+	}
+
+};
+
 
 ZmConvListController.prototype._menuPopdownActionListener =
 function(ev) {

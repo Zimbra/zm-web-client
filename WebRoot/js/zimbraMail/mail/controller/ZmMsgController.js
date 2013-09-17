@@ -340,6 +340,11 @@ function(params) {
 	return this._msg;
 };
 
+ZmMsgController.prototype.getItems =
+function() {
+	return [this._msg];
+};
+
 ZmMsgController.prototype._getLoadedMsg =
 function(params, callback) {
 	callback.run(this._msg);
