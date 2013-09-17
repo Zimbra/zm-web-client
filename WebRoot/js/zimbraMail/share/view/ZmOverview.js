@@ -59,7 +59,7 @@ ZmOverview = function(params, controller) {
 
 	this._controller = controller;
 
-	this.setScrollStyle(params.scroll || Dwt.SCROLL);
+	this.setScrollStyle(params.scroll || Dwt.SCROLL_Y);
 
 	this.overviewId			= params.overviewId;
 	this.containerId		= params.containerId;

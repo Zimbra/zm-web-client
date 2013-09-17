@@ -155,8 +155,6 @@ function(params, forceSingle) {
 
 	var overview = ZmDialog.prototype._setOverview.call(this, params, forceSingle); //reuse from ZmDialog
 
-	overview.getHtmlElement().style.overflowX = "hidden"; //must do that or the vertical scrollbar causes a horizontal one to be added as well. might be some better solution to that, but not sure what.
-	
 	if (!appCtxt.multiAccounts || forceSingle) {
 		//this  is needed for some reason
 		this._overview[params.overviewId] = overview;
