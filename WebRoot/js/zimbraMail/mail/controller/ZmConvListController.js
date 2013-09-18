@@ -459,6 +459,8 @@ function(ev) {
 						item.load(null, this._handleConvLoaded.bind(this, item));
 						return true;
 					}
+					this._handleConvLoaded(item);
+					return true;
 				}
 				this._showItem(item);
 				return true;
