@@ -1284,16 +1284,18 @@ function() {
 
 ZmAppCtxt.prototype.reloadOfflineAppCache =
 function(locale, skin, reload){
-    var appCacheManifest= appContextPath + "/appcache/images,common,dwt,msgview,login,zm,spellcheck,skin.appcache?";
-    var urlParams = [];
-    window.cacheKillerVersion && urlParams.push("v=" + window.cacheKillerVersion);
-    urlParams.push("debug="+window.appDevMode);
-    urlParams.push("compress=" + !(window.appDevMode === true));
-    urlParams.push("templates=only");
-    var manifestUrl = encodeURIComponent(appCacheManifest + urlParams.join('&'));
-    document.cookie = "ZM_CACHE_NEW_LANG = " + locale ;
-    document.cookie = "ZM_CACHE_NEW_SKIN = " + skin ;
-    $("#offlineIframe").attr('src', 'public/Offline.jsp/?url=' + manifestUrl + '&reload=' + reload);
+    if (this.isWebClientOfflineSupported) {
+        var appCacheManifest= appContextPath + "/appcache/images,common,dwt,msgview,login,zm,spellcheck,skin.appcache?";
+        var urlParams = [];
+        window.cacheKillerVersion && urlParams.push("v=" + window.cacheKillerVersion);
+        urlParams.push("debug="+window.appDevMode);
+        urlParams.push("compress=" + !(window.appDevMode === true));
+        urlParams.push("templates=only");
+        var manifestUrl = encodeURIComponent(appCacheManifest + urlParams.join('&'));
+        document.cookie = "ZM_CACHE_NEW_LANG = " + locale ;
+        document.cookie = "ZM_CACHE_NEW_SKIN = " + skin ;
+        $("#offlineIframe").attr('src', 'public/Offline.jsp/?url=' + manifestUrl + '&reload=' + reload);
+    }
 };
 
 /**
