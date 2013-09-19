@@ -1844,7 +1844,7 @@ input.xform_field {
 .ZWidgetTable DIV				{	}
 .ZHasText .ZWidgetTitle			{	padding:0px 4px;	}
 
-#IFDEF MSIE
+#IFDEF MSIE_LOWER_THAN_9
 .ZWidgetTable .ZLeftIcon .IEImage DIV, .ZWidgetTable .ZLeftIcon .IEImage IMG {
     margin:0px !important;
 }
@@ -1856,11 +1856,6 @@ input.xform_field {
 .ZWidgetTable .ZLeftIcon DIV, .ZWidgetTable .ZLeftIcon IMG	    {	margin:1px 0px;			}
 .ZWidgetTable .ZRightIcon DIV, .ZWidgetTable .ZRightIcon IMG	{	margin:1px 0px;			}
 .ZWidgetTable .ZDropDown DIV, .ZWidgetTable .ZDropDown IMG		{	margin:1px 0px;			}
-
-#IFDEF MSIE
-.ZWidgetTable .ZLeftIcon DIV, .ZWidgetTable .ZLeftIcon IMG	    {	margin-left:4px;		}
-.ZWidgetTable .ZDropDown DIV, .ZWidgetTable .ZDropDown IMG		{	margin-right:4px;		}
-#ENDIF
 
 .ZHasText .ZLeftIcon DIV, .ZHasText .ZLeftIcon IMG		{	margin-right:0px !important;	}
 .ZHasText .ZRightIcon DIV, .ZHasText .ZRightIcon IMG	{	margin-left:0px !important;		}

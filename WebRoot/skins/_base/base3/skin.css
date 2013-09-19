@@ -423,8 +423,14 @@ BODY									{	margin:0px; 	}
 .ZNewButton.ZHover .ZToolbarButtonBorder	{	@ToolbarButtonBorder-hover@				}
 .ZNewButton.ZActive .ZToolbarButtonBorder 	{	@ToolbarButtonBorder-active@			}
 
+#IFNDEF MSIE_LOWER_THAN_9
 .ZToolbarButtonTable TD:first-child 		{	padding-left:@ToolbarButtonPaddingSize@;	}
 .ZToolbarButtonTable TD:last-child			{	padding-right:@ToolbarButtonPaddingSize@;	}
+#ENDIF
+
+#IFDEF MSIE_LOWER_THAN_9
+.ZToolbarButtonTable			{	padding: 0px @ToolbarButtonPaddingSize@;	}
+#ENDIF
 
 /* offline */
 .ZmNetworkStatus 		{ font-weight:bold; }

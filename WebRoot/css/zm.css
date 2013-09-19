@@ -242,9 +242,11 @@
 	@FullWidth@
 }
 
+#IFNDEF MSIE_LOWER_THAN_9
 .itemToolbar {
 	padding-left:6px;
 }
+#ENDIF
 
 /* toolbar in child window for message view */
 .ZmMsgViewToolBar_cw {
