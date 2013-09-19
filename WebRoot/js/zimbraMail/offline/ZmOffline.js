@@ -1045,59 +1045,78 @@ function(result) {
                 //Message part
                 messagePart = msgNode.mp[0];
                 if (messagePart) {
-                    if (messagePart.ct === ZmMimeTable.TEXT_PLAIN) {
+                    var attach = msgNode.attach;
+                    if (attach && attach.aid) { //attachment is there
+
                         generatedMsg.mp.push({
-                            ct : ZmMimeTable.TEXT_PLAIN,
-                            body : true,
-                            part : "1",
-                            content : (messagePart.content) ? messagePart.content._content : ""
+                            ct : ZmMimeTable.MULTI_MIXED,
+                            part: ZmMimeTable.TEXT,
+                            mp : []
                         });
-                        generatedMsg.fr = generatedMsg.mp[0].content;
-                    }
-                    else if (messagePart.ct === ZmMimeTable.MULTI_ALT) {
-                        var attach = msgNode.attach;
-                        if (attach) {//attachment is there
-                            generatedMsg.mp.push({
-                                ct : ZmMimeTable.MULTI_MIXED,
-                                part: ZmMimeTable.TEXT,
+
+                        if (messagePart.ct === ZmMimeTable.TEXT_PLAIN) {
+
+                            generatedMsg.mp[0].mp.push({
+                                body : true,
+                                part : "1",
+                                ct : ZmMimeTable.TEXT_PLAIN,
+                                content : messagePart.content._content
+                            });
+                            generatedMsg.fr = generatedMsg.mp[0].mp[0].content;
+
+                        } else if (messagePart.ct === ZmMimeTable.MULTI_ALT) {
+
+                            generatedMsg.mp[0].mp.push({
+                                ct : ZmMimeTable.MULTI_ALT,
+                                part : "1",
                                 mp : [{
-                                        ct : ZmMimeTable.MULTI_ALT,
-                                        part : 1,
-                                        mp : [{
-                                                ct : ZmMimeTable.TEXT_PLAIN,
-                                                part : "1.1",
-                                                content : (messagePart.mp[0].content) ? messagePart.mp[0].content._content : ""
-                                              },
-                                              {
-                                                ct : ZmMimeTable.TEXT_HTML,
-                                                part : "1.2",
-                                                body : true,
-                                                content : (messagePart.mp[1].content) ? messagePart.mp[1].content._content : ""
-                                              }]
-                                    }]
+                                        ct : ZmMimeTable.TEXT_PLAIN,
+                                        part : "1.1",
+                                        content : (messagePart.mp[0].content) ? messagePart.mp[0].content._content : ""
+                                       },
+                                       {
+                                        ct : ZmMimeTable.TEXT_HTML,
+                                        part : "1.2",
+                                        body : true,
+                                        content : (messagePart.mp[1].content) ? messagePart.mp[1].content._content : ""
+                                       }
+                                ]
                             });
                             generatedMsg.fr = generatedMsg.mp[0].mp[0].mp[0].content;
 
-                            if (attach && attach.hasOwnProperty("aid")) {
-                                var attachIds = attach.aid.split(",");
-                                for (var i = 0; i < attachIds.length; i++) {
-                                    var attachment = attach[attachIds[i]];
-                                    if (attachment) {
-                                        generatedMsg.mp[0].mp.push({
-                                            cd : "attachment",
-                                            ct : attachment.ct,
-                                            filename : attachment.filename,
-                                            aid : attachment.aid,
-                                            s : attachment.s,
-                                            data : attachment.data,
-                                            isOfflineUploaded : attachment.isOfflineUploaded,
-                                            part : (i + 1).toString()
-                                        });
-                                    }
-                                }
+                        }
+
+                        var attachIds = attach.aid.split(",");
+                        for (var j = 0; j < attachIds.length; j++) {
+                            var attachment = attach[attachIds[j]];
+                            if (attachment) {
+                                generatedMsg.mp[0].mp.push({
+                                    cd : "attachment",
+                                    ct : attachment.ct,
+                                    filename : attachment.filename,
+                                    aid : attachment.aid,
+                                    s : attachment.s,
+                                    data : attachment.data,
+                                    isOfflineUploaded : attachment.isOfflineUploaded,
+                                    part : (j + 2).toString()
+                                });
                             }
                         }
-                        else {
+
+                    } else {
+
+                        if (messagePart.ct === ZmMimeTable.TEXT_PLAIN) {
+
+                            generatedMsg.mp.push({
+                                ct : ZmMimeTable.TEXT_PLAIN,
+                                body : true,
+                                part : "1",
+                                content : messagePart.content._content
+                            });
+                            generatedMsg.fr = generatedMsg.mp[0].content;
+
+                        } else if (messagePart.ct === ZmMimeTable.MULTI_ALT) {
+
                             generatedMsg.mp.push({
                                 ct : ZmMimeTable.MULTI_ALT,
                                 part: ZmMimeTable.TEXT,
@@ -1115,6 +1134,7 @@ function(result) {
                                 ]
                             });
                             generatedMsg.fr = generatedMsg.mp[0].mp[0].content;
+
                         }
                     }
                 }

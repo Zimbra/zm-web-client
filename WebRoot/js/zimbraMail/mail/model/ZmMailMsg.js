@@ -1828,7 +1828,7 @@ function(params) {
         msgNode.isInlineAttachment = true;
     }
 
-    callback = this._handleOfflineResponseSendMessageCallback.bind(this, params, jsonObj, !!msgNode.id);
+    callback = this._handleOfflineResponseSendMessageCallback.bind(this, params, jsonObj);
 
     if (msgNode.id) { //Existing drafts created online or offline
         jsonObj.id = msgNode.id;
@@ -1848,14 +1848,14 @@ function(params) {
 };
 
 ZmMailMsg.prototype._handleOfflineResponseSendMessageCallback =
-function(params, jsonObj, isExistingMsg) {
+function(params, jsonObj) {
 
     var data = {},
-        header = this._generateOfflineHeader(params, jsonObj, isExistingMsg),
+        header = this._generateOfflineHeader(params, jsonObj),
         notify = header.context.notify[0],
         result;
 
-    data[jsonObj.methodName.replace("Request", "Response")] = isExistingMsg ? notify.modified : notify.created;
+    data[jsonObj.methodName.replace("Request", "Response")] = notify.modified;
     result = new ZmCsfeResult(data, false, header);
     this._handleResponseSendMessage(params, result);
     appCtxt.getRequestMgr()._notifyHandler(notify);
@@ -1871,7 +1871,7 @@ function(params, jsonObj, isExistingMsg) {
 };
 
 ZmMailMsg.prototype._generateOfflineHeader =
-function(params, jsonObj, isExistingMsg) {
+function(params, jsonObj) {
 
     var m = ZmOffline.generateMsgResponse(jsonObj),
         folderArray = [],
@@ -1879,27 +1879,37 @@ function(params, jsonObj, isExistingMsg) {
             context : {
                 notify : [{
                     created : {
-                        m : isExistingMsg ? [] : m
+                        m : m
                     },
                     modified : {
                         folder : folderArray,
-                        m : isExistingMsg ? m : []
+                        m : m
                     }
                 }]
             }
         };
 
-    if (params.isDraft) {
-        folderArray.push({
-            id : ZmFolder.ID_DRAFTS,
-            n : appCtxt.getById(ZmFolder.ID_DRAFTS).numTotal + (isExistingMsg ? 0 : 1)
-        });
+    if (params.isDraft || params.isAutoSave) {
+        if (this.folderId !== ZmFolder.ID_DRAFTS) {
+            folderArray.push({
+                id : ZmFolder.ID_DRAFTS,
+                n : appCtxt.getById(ZmFolder.ID_DRAFTS).numTotal + 1
+            });
+        }
     }
     else {
-        folderArray.push({
-            id : ZmFolder.ID_OUTBOX,
-            n : appCtxt.getById(ZmFolder.ID_OUTBOX).numTotal + (isExistingMsg ? 0 : 1)
-        });
+        if (this.folderId !== ZmFolder.ID_OUTBOX) {
+            folderArray.push({
+                id : ZmFolder.ID_OUTBOX,
+                n : appCtxt.getById(ZmFolder.ID_OUTBOX).numTotal + 1
+            });
+        }
+        if (this.folderId === ZmFolder.ID_DRAFTS) {
+            folderArray.push({
+                id : ZmFolder.ID_DRAFTS,
+                n : appCtxt.getById(ZmFolder.ID_DRAFTS).numTotal - 1
+            });
+        }
     }
     return header;
 };
