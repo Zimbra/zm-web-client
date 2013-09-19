@@ -541,5 +541,8 @@ SELECT						{	@FieldBorder@	}
 #IFDEF MSIE
 .ZmSearchToolbar .DwtInputField-hint INPUT { border-width:0; padding:0; margin:3px 0 -3px; 	}
 #ENDIF
+#IFDEF MSIE_11
+.ZmSearchToolbar .DwtInputField-hint INPUT { border-width:0; padding:3px 0; margin:0; 	}
+#ENDIF
 
 .appt_new_time .ImgBlank_16, .appt_time .ImgBlank_16{ display: none; }
