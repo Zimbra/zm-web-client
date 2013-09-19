@@ -1275,10 +1275,6 @@ padding: 0 @BoxPaddingSize@ 0 @BoxPaddingSize@;
 	line-height:20px;
 }
 
-.ZOptionsSectionTable LABEL {
-	white-space:nowrap;
-}
-
 .ZOptionsLabelTop {
 	vertical-align:top;
 	line-height:20px;
