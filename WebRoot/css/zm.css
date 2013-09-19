@@ -1616,11 +1616,6 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 .contactGroupTableContent .ImgPlus {
 	display:inline-block;
 	margin-left:.5em;
-#IFDEF MSIE
-	display:inline;
-	height:16px;
-	width:16px;
-#ENDIF
 }
 
 .ZmContactInfoView .contactHeaderSection {
