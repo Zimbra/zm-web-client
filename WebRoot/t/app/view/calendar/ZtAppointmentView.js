@@ -38,12 +38,24 @@ Ext.define('ZCS.view.calendar.ZtAppointmentView', {
         items: [
             {
                 xtype: 'panel',
+                scrollable: true,
                 itemId: 'apptDetails'
             }
         ],
         listeners: {
             back: function (){
                 this.getNavigationBar().setTitle(this.getTitle());
+            },
+            tap: {
+                element: 'element',
+                fn: function(e) {
+                    var elm = Ext.fly(e.target),
+                        idParams = ZCS.util.getIdParams(elm.dom.id) || {};
+                    // invite response button (accept/tentative/decline)
+                    if (elm.hasCls('zcs-invite-button')) {
+                        this.fireEvent('inviteReply', idParams.msgId, idParams.action);
+                    }
+                }
             }
         },
         title: null
@@ -60,14 +72,29 @@ Ext.define('ZCS.view.calendar.ZtAppointmentView', {
             isOrganizer = invite.get('isOrganizer'),
             stats = attendees && this.getAttendeeStats(attendees, isOrganizer),
             reminder = invite.get('reminderAlert'),
+            myResponse = invite.get('myResponse'),
+            idParams = {
+                type:       ZCS.constant.IDTYPE_INVITE_ACTION,
+                msgId:      msg.get('id')
+            },
             data = {
                 start:  startTime + (invite.get('isAllDay') ? "" : " - " + endTime),
                 location: invite.get('location'),
                 organizer: organizer,
                 attendees: stats && stats.summary,
+                myResponse: myResponse ? ZCS.constant.PSTATUS_TEXT[myResponse] : '',
                 calendar: null /* TODO: After other calendar folders are shown in touch client */,
                 reminder: reminder ? reminder : "", /* TODO: Get strings similar to Ajax Client */
-                notes: invite.get('notes')
+                notes: invite.get('notes'),
+                invAcceptButtonId:     ZCS.util.getUniqueId(Ext.apply({}, {
+                    action: ZCS.constant.OP_ACCEPT
+                }, idParams)),
+                invTentativeButtonId:  ZCS.util.getUniqueId(Ext.apply({}, {
+                    action: ZCS.constant.OP_TENTATIVE
+                }, idParams)),
+                invDeclineButtonId:    ZCS.util.getUniqueId(Ext.apply({}, {
+                    action: ZCS.constant.OP_DECLINE
+                }, idParams))
             },
             apptTitle = invite.get('subject'),
             tpl,html,me;

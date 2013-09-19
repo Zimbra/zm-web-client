@@ -54,17 +54,22 @@ Ext.define('ZCS.controller.calendar.ZtCalendarController', {
             calWeekView: 'appview #' + ZCS.constant.APP_CALENDAR + 'itempanel #calWeekView',
             calDayView: 'appview #' + ZCS.constant.APP_CALENDAR + 'itempanel #calDayView',
             itemPanelTitleBar: 'appview #' + ZCS.constant.APP_CALENDAR + 'itempanel titlebar',
-            calToolbar: 'appview #' + ZCS.constant.APP_CALENDAR + 'itempanel caltoolbar'
+            calToolbar: 'appview #' + ZCS.constant.APP_CALENDAR + 'itempanel caltoolbar',
+            appointmentView : ZCS.constant.APP_CALENDAR + 'appointmentview'
         },
 
         control: {
             calendarView: {
                 eventtap: 'onEventTap',
                 periodchange: 'onPeriodChange'
+            },
+            appointmentView: {
+                inviteReply: 'doInviteReply'
             }
         },
 
-        app: ZCS.constant.APP_CALENDAR
+        app: ZCS.constant.APP_CALENDAR,
+        invite: null
     },
 
     launch: function() {
@@ -152,6 +157,7 @@ Ext.define('ZCS.controller.calendar.ZtCalendarController', {
             direction:  'up',
             duration:   250
         });
+        this.setInvite(msg.get('invite'));
     },
 
     /**
@@ -287,6 +293,45 @@ Ext.define('ZCS.controller.calendar.ZtCalendarController', {
                 eventHeight: 'auto',
                 eventBarTpl: '<div>{title}&nbsp;&nbsp;&nbsp;<i>{event}</i></div>'
             })]
+        });
+    },
+
+    /**
+     * Sends the attendee response as a notification to the organizer
+     */
+    doInviteReply: function(invId, action) {
+        var invite = this.getInvite(),
+            msg = Ext.create('ZCS.model.mail.ZtMailMsg');
+
+        msg.set('origId', invId);  //not sure if origId should be set to invite id
+        msg.set('inviteAction', action);
+        msg.set('replyType', 'r');
+
+        msg.set('subject', invite.get('subject'));
+
+        var from = ZCS.mailutil.getFromAddress();
+        msg.addAddresses(from);
+
+        if (!invite.get('isOrganizer')) {
+            var	organizer = invite.get('organizer'),
+                organizerEmail = organizer && organizer.get('email'),
+                toEmail = organizerEmail || invite.get('sentBy');
+
+            if (toEmail) {
+                msg.addAddresses(ZCS.model.mail.ZtEmailAddress.fromEmail(toEmail, ZCS.constant.TO));
+            }
+        }
+
+        var replyBody = invite.getSummary(true) + ZCS.constant.INVITE_REPLY_TEXT[action] + '<br><br>';
+
+        msg.createMime(replyBody, true);
+        var me = this;
+        msg.save({
+            isInviteReply: true,
+            success: function () {
+                me.getApptViewPanel().hide();
+                ZCS.app.fireEvent('showToast', ZtMsg.invReplySent);
+            }
         });
     }
 });
