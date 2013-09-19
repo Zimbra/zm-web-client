@@ -350,16 +350,20 @@ function(resetLeft) {
 	ZmCalColView._inSyncScroll = true;
 
 	try {
-		var bodyElement = document.getElementById(this._bodyDivId);
-		var hourElement = document.getElementById(this._hoursScrollDivId);
-		var alldayElement = document.getElementById(this._allDayScrollDivId);
-		var unionGridScrollElement = document.getElementById(this._unionGridScrollDivId);
-		var alldayApptElement = document.getElementById(this._allDayApptScrollDivId);
+		var bodyElement = document.getElementById(this._bodyDivId),
+		    hourElement = document.getElementById(this._hoursScrollDivId),
+		    alldayElement = document.getElementById(this._allDayScrollDivId),
+		    unionGridScrollElement = document.getElementById(this._unionGridScrollDivId),
+		    alldayApptElement = document.getElementById(this._allDayApptScrollDivId),
+            allDayHeadingDivId = document.getElementById(this._tabsContainerDivId); // Fix for bug: 66603. Assign this a scroll handler
+
 		hourElement.scrollTop = bodyElement.scrollTop;
 		hourElement.scrollLeft = bodyElement.scrollLeft;
 		if (resetLeft) bodyElement.scrollLeft = 0;
 		alldayElement.scrollLeft = bodyElement.scrollLeft;
 		alldayApptElement.scrollLeft = bodyElement.scrollLeft;
+        // Fix for bug: 66603. Assign this a scroll handler
+        bodyElement.scrollLeft = allDayHeadingDivId.scrollLeft;
 		if (unionGridScrollElement) unionGridScrollElement.scrollTop = bodyElement.scrollTop;
         this._checkForOffscreenAppt(bodyElement);
 
@@ -819,6 +823,8 @@ function(abook) {
     this._hourColDivId = Dwt.getNextId();
     this._startLimitIndicatorDivId = Dwt.getNextId();
     this._endLimitIndicatorDivId = Dwt.getNextId();
+    // Fix for bug: 66603. Reference to parent container of _allDayHeadingDivId
+    this._tabsContainerDivId = Dwt.getNextId();
 
 
 	if (this._scheduleMode) {
@@ -888,6 +894,8 @@ function(abook) {
 	html.append("<div id='", this._allDayScrollDivId, "' style='position:absolute; overflow:hidden;'>");
 
 	// all day headings
+    // Fix for bug: 66603. Adding a container to calendar headings
+    html.append("<div id='", this._tabsContainerDivId, "' name='_tabsContainerDivId' style='position:absolute;height:25px;bottom:0px;'>");
 	html.append("<div id='", this._allDayHeadingDivId, "' class='calendar_heading' style='", headerStyle,	"'>");
 	if (!this._scheduleMode) {
 		for (var i =0; i < this.numDays; i++) {
@@ -895,6 +903,8 @@ function(abook) {
 		}
 	}
 	html.append("</div>");
+    // Fix for bug: 66603
+    html.append("</div>");
 
 	// divs to separate day headings
 	if (!this._scheduleMode) {
@@ -962,6 +972,8 @@ function(abook) {
     var func = AjxCallback.simpleClosure(ZmCalColView.__onScroll, ZmCalColView, this);
 	document.getElementById(this._bodyDivId).onscroll = func;
 	document.getElementById(this._allDayApptScrollDivId).onscroll = func;
+    // Fix for bug: 66603. Adding a handler to enable scrolling.
+    document.getElementById(this._tabsContainerDivId).onscroll = func;
 
 	var ids = [this._apptBodyDivId, this._bodyHourDivId, this._allDayDivId, this._allDaySepDivId];
 	var types = [ZmCalBaseView.TYPE_APPTS_DAYGRID, ZmCalBaseView.TYPE_HOURS_COL, ZmCalBaseView.TYPE_ALL_DAY, ZmCalBaseView.TYPE_DAY_SEP];

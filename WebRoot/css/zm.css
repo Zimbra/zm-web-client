@@ -2603,6 +2603,20 @@ HTML>BODY .appt-selected .appt_allday_body
 	top:4px;
 }
 
+/* Fix for bug: 66603 (Fixes bubble width problem, class resets few attributes of .ZmCalDayTab) */
+.ZmCalDayMerged {
+    max-width: none;
+    width: 1px;
+    padding: 0px;
+    text-indent: 6px;
+    z-index: 99;
+}
+
+/* Fix for bug: 66603 (Takes care of bubbles in split view, class resets min-width) */
+.ZmCalDaySplit {
+    min-width: 1px;
+}
+
 .ZmDayTabSeparator{
 	width:1px;
 	height:1px;
