@@ -1597,6 +1597,7 @@ function(draftType, msg, resp) {
 // Send button was pressed
 ZmComposeController.prototype._sendListener =
 function(ev) {
+	appCtxt.notifyZimlets("onSendButtonClicked", [this, this._msg]);
 	this._send();
 };
 
