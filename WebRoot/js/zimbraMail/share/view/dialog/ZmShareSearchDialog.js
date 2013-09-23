@@ -162,35 +162,20 @@ ZmShareSearchDialog.prototype._resetTree = function() {
     treeItem.showCheckBox(false);
 };
 
-ZmShareSearchDialog.prototype._doGroupSearch = function() {
-    this._setSearching(true);
-    this._appendInfoNode(ZmOrganizer.ID_ROOT, ZmShareProxy.ID_LOADING, ZmMsg.sharedFoldersLoading);
-
-    // perform group search
-    var params = {
-        jsonObj: {
-            GetShareInfoRequest: {
-                _jsns: "urn:zimbraAccount",
-                includeSelf: 0,
-                grantee: { type: "grp" }
-            }
-        },
-        asyncMode: true,
-        callback: new AjxCallback(this, this._handleGroupSearchResults),
-        errorCallback: new AjxCallback(this, this._handleGroupSearchError)
-    };
-    appCtxt.getAppController().sendRequest(params);
-};
-
-ZmShareSearchDialog.prototype._doUserSearch = function(emails) {
+// Fix for bug: 79402. Passing extra param for wide search.
+ZmShareSearchDialog.prototype._doUserSearch = function(emails, isWideSearch) {
     this._resetTree();
     // collect unique email addresses
     emails = emails.split(/\s*[;,]\s*/);
     var emailMap = {};
     for (var i = 0; i < emails.length; i++) {
         var email = AjxStringUtil.trim(emails[i]);
-        if (!email) continue;
-        if (email == appCtxt.get(ZmSetting.USERNAME)) continue;
+        if (!email) {
+            continue;
+        }
+        if (email === appCtxt.get(ZmSetting.USERNAME)) {
+            continue;
+        }
         emailMap[email.toLowerCase()] = email;
     }
 
@@ -220,6 +205,16 @@ ZmShareSearchDialog.prototype._doUserSearch = function(emails) {
         i++;
     }
 
+    // Fix for bug: 79402. Replaces _doGroupSearch.
+    if (isWideSearch) {
+        this._appendInfoNode(ZmOrganizer.ID_ROOT, ZmShareProxy.ID_LOADING, ZmMsg.sharedFoldersLoading);
+
+        requests.push({
+            _jsns: "urn:zimbraAccount",
+            includeSelf: 0
+        });
+    }
+
     // anything to do?
     if (requests.length == 0) {
         return;
@@ -245,48 +240,9 @@ ZmShareSearchDialog.prototype._setSearching = function(searching) {
     this._form.setEnabled(!searching);
 };
 
-ZmShareSearchDialog.prototype._handleGroupSearchResults = function(resp) {
-    this._setSearching(false);
-
-    // remove loading node
-    this._removeNode(ZmShareProxy.ID_LOADING);
-
-    // add shares
-    var shares = AjxUtil.get(resp.getResponse(), "GetShareInfoResponse", "share");
-    if (shares && shares.length > 0) {
-        // get list of owners with their shares, in alphabetical order
-        var owners = {};
-        this._addToOwnerMap(owners, shares);
-        owners = AjxUtil.values(owners);
-        owners.sort(ZmShareSearchDialog.__byOwnerName);
-
-        // add nodes for shares
-        this._appendShareNodes(owners);
-
-        // search for individual shares from these users
-        var emails = new Array(shares.length);
-        for (var i = 0; i < shares.length; i++) {
-            emails[i] = shares[i].ownerEmail;
-        }
-        this._doUserSearch(emails.join(";"));
-    }
-
-    // no shares found
-    else {
-        this._appendInfoNode(ZmOrganizer.ID_ROOT, ZmShareProxy.ID_NONE_FOUND, ZmMsg.sharedFoldersNoGroupsFound);
-    }
-};
-
-ZmShareSearchDialog.prototype._handleGroupSearchError = function(resp) {
-    this._setSearching(false);
-    this._removeNode(ZmShareProxy.ID_LOADING);
-    var treeItem = this._appendInfoNode(ZmOrganizer.ID_ROOT, ZmShareProxy.ID_ERROR, ZmMsg.sharedFoldersError);
-//    treeItem.setToolTipContent("[Error tooltip]"); // TODO
-};
-
 ZmShareSearchDialog.prototype._handleUserSearchResults = function(emailMap, requestIdMap, resp) {
     this._setSearching(false);
-	
+
     // remove placeholder nodes
     for (var email in emailMap) {
         this._removeNode(emailMap[email]);
@@ -468,7 +424,8 @@ ZmShareSearchDialog.prototype.popup = function(organizerType, addCallback, cance
     form.setEnabled("SEARCH", false);   //disable search button by default
     this._selectApplicationOption();
     this._resetTree();
-    this._doGroupSearch();
+    // Fix for bug: 79402. Do wide search.
+    this._doUserSearch("", true);
 
     DwtDialog.prototype.popup.call(this);
 
