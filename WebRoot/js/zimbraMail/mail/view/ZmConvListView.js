@@ -863,6 +863,9 @@ function(item) {
 
 ZmConvListView.prototype._expandAll =
 function(expand) {
+    if (!this._list)
+        return;
+
 	var a = this._list.getArray();
 	for (var i = 0, count = a.length; i < count; i++) {
 		var conv = a[i];
