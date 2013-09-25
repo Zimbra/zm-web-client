@@ -3642,6 +3642,24 @@ HTML>BODY .appt-selected .appt_allday_body
 	width:99%;
 }
 
+.ZOptionsHeaderTable, .ZOptionsSectionTable {
+	width:99%;
+}
+
+#IFNDEF MSIE_LOWER_THAN_9
+.ZOptionsHeaderL, .ZOptionsHeaderR {
+    display: none;
+}
+.ZOptionsHeader {
+    padding: 4px 8px;
+    @roundCorners(8px 8px 0px 0px)@
+}
+
+.ZOptionsSectionMain {
+    @roundCorners(0px 0px 8px 8px)@
+}
+#ENDIF
+
 .ZmPreferencesPage .Label {
 	padding-right:5px;
 	@NoWrap@
