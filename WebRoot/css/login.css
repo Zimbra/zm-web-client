@@ -80,7 +80,7 @@ FORM {
 	border:1px solid @AppC@; 
 	height:22px;
 	width:235px;
-#IFDEF MSIE
+#IFDEF MSIE_LOWER_THAN_9
 	height:18px;
 	padding:0;
 #ENDIF 

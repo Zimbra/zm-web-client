@@ -119,23 +119,19 @@ INPUT[type="checkbox"] {
 	INPUT {cursor: expression(this.type=="checkbox"?'pointer':''); }
 #ENDIF
 
-/* TODO: figure out what we need to do for IE/etc to set the same INPUT styles */
-#IFDEF GECKO
-	/* set for 'text' and 'password' fields explicitly so checkboxes and radio buttons don't get borders */
-	INPUT[type="text"],
-	INPUT[type="password"] {
-		@InputField@
-		@InputField-normal@
-	}
-	INPUT[disabled] {
-		@InputField-disabled@
-	}
-	textarea {
-		@TextArea@
-		@TextArea-normal@
-	}
-#ENDIF
-
+/* set for 'text' and 'password' fields explicitly so checkboxes and radio buttons don't get borders */
+INPUT[type="text"],
+INPUT[type="password"] {
+	@InputField@
+	@InputField-normal@
+}
+INPUT[disabled] {
+	@InputField-disabled@
+}
+textarea {
+	@TextArea@
+	@TextArea-normal@
+}
 
 
 /*** Syntactic sugar ***/
