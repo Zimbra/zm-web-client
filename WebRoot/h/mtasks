@@ -64,8 +64,10 @@
                                         </td>
                                         <td><div class='vertSep'></div></td>
                                         <app:button id="OPNEWCAL" name="actionNewTaskList" src="tasks/ImgNewTaskList.png" tooltip="taskListNew" text="taskListNew"/>
-                                        <td><div class='vertSep'></div></td>
-                                        <app:button id="OPNEWLINK" name="actionNewSharedTaskList" src="tasks/ImgNewTaskList.png" tooltip="taskListNewShared" text="taskListNewShared"/>
+                                        <c:if test="${mailbox.features.sharing}">
+                                            <td><div class='vertSep'></div></td>
+                                            <app:button id="OPNEWLINK" name="actionNewSharedTaskList" src="tasks/ImgNewTaskList.png" tooltip="taskListNewShared" text="taskListNewShared"/>
+                                        </c:if>
                                     </tr>
                                 </table>
                             </td>

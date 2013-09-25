@@ -86,8 +86,10 @@
                                         <app:button id="OPNEWCAL" name="actionNewCalendar" src="calendar/ImgNewAppointment.png" tooltip="calendarNew" text="calendarNew"/>
                                         <td><div class='vertSep'></div></td>
                                         <app:button id="OPNEWSUB" name="actionNewSubscribedCalendar" src="calendar/ImgNewAppointment.png" tooltip="calendarNewSubscribed" text="calendarNewSubscribed"/>
-                                        <td><div class='vertSep'></div></td>
-                                        <app:button id="OPNEWLINK" name="actionNewSharedCalendar" src="calendar/ImgNewAppointment.png" tooltip="calendarNewShared" text="calendarNewShared"/>
+                                        <c:if test="${mailbox.features.sharing}">
+                                            <td><div class='vertSep'></div></td>
+                                            <app:button id="OPNEWLINK" name="actionNewSharedCalendar" src="calendar/ImgNewAppointment.png" tooltip="calendarNewShared" text="calendarNewShared"/>
+                                        </c:if>
                                         <td><div class='vertSep'></div></td>
                                         <app:button id="OPFREEBUSYLINK" name="actionSendFreeBusyLink" src="calendar/ImgNewAppointment.png" tooltip="sendFreeBusyLink" text="sendFreeBusyLink"/>
                                     </tr>
