@@ -1,3 +1,5 @@
+<!DOCTYPE html>
+<html>
 <%--
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
@@ -164,4 +166,4 @@ response.setHeader("Pragma", "no-cache");
 
 
 </body>
-
+</html>
