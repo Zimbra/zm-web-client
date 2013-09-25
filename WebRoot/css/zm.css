@@ -1222,6 +1222,7 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 	overflow:auto;
 }
 
+.addrBubbleContainer TEXTAREA,
 .addrBubbleContainer INPUT, 
 .attBubbleContainer INPUT {
 	background-color:transparent;
@@ -1233,12 +1234,18 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 	margin-bottom:3px;
 }
 
+.addrBubbleContainer TEXTAREA {
+	display: inline-block;
+	overflow: hidden;
+}
+
 .addrBubbleContainer INPUT::-ms-clear,
 .attBubbleContainer INPUT::-ms-clear {
 	width: 0px;
 	height: 0px;
 }
 
+.addrBubbleContainer TEXTAREA:first-child,
 .addrBubbleContainer INPUT:first-child, 
 .attBubbleContainer INPUT:first-child {
 	margin-left:0px;
@@ -1441,8 +1448,6 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 .ZmSpellMenuItem .ZWidgetTitle {
 	font-weight:bold;
 }
-
-
 
 /* ??? USED? */
 .NtdDialogTable .NtdLabel {

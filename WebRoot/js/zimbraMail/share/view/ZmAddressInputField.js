@@ -576,6 +576,8 @@ function(params) {
 	this._inputId = params.inputId || Dwt.getNextId();
 	this._dragInsertionBarId = Dwt.getNextId();
 	var data = {
+		inputTagName:		AjxEnv.isIE || AjxEnv.isModernIE ?
+								'textarea' : 'input',
 		holderId:			this._holderId,
 		inputId:			this._inputId,
 		dragInsertionBarId:	this._dragInsertionBarId
@@ -653,7 +655,7 @@ function() {
 ZmAddressInputField.prototype._setInputValue =
 function(value) {
 	DBG.println("aif", "SET input value to: " + AjxStringUtil.htmlEncode(value));
-	this._input.value = value;
+	this._input.value = value && value.replace(/\s+/g, ' ');
 	this._resizeInput();
 };
 
