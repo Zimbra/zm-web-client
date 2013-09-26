@@ -2364,19 +2364,24 @@ function(attaData){
     return result;
 };
 
-ZmComposeController.prototype._uploadImage = function(blob, callback){
+ZmComposeController.prototype._uploadImage = function(blob, callback, errorCallback){
     var req = new XMLHttpRequest();
     req.open("POST", appCtxt.get(ZmSetting.CSFE_ATTACHMENT_UPLOAD_URI)+"?fmt=extended,raw", true);
     req.setRequestHeader("Cache-Control", "no-cache");
     req.setRequestHeader("X-Requested-With", "XMLHttpRequest");
     req.setRequestHeader("Content-Type", blob.type);
     req.setRequestHeader("Content-Disposition", 'attachment; filename="' + AjxUtil.convertToEntities(blob.name) + '"');
-    req.onreadystatechange = function(){
-        if(req.readyState === 4 && req.status === 200) {
-            var resp = eval("["+req.responseText+"]");
-            callback.run(resp[2]);
+    req.onreadystatechange = function() {
+        if (req.readyState === 4) {
+            if (req.status === 200) {
+                var resp = eval("["+req.responseText+"]");
+                callback.run(resp[2]);
+            }
+            else {
+                errorCallback && errorCallback();
+            }
         }
-    }
+    };
     req.send(blob);
 };
 

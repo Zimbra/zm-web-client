@@ -77,7 +77,7 @@ function(cb){
     }
 
     var callback = (appCtxt.isWebClientOffline()) ? this.setOffline.bind(this, cb) : cb;
-    ZmOfflineDB.indexedDB.open(callback);
+    ZmOfflineDB.indexedDB.init(callback);
     this._addListeners();
 };
 
@@ -185,6 +185,7 @@ function() {
 ZmOffline.prototype._onZWCOnline =
 function() {
     appCtxt.setStatusMsg(ZmMsg.OfflineServerReachable);
+    this._enableApps(true);
     this._replayOfflineRequest();
     ZmOffline.syncData();
 };
@@ -744,51 +745,31 @@ function(item, store){
 ZmOffline.prototype._replayOfflineRequest =
 function() {
     var callback = this._sendOfflineRequest.bind(this);
-    ZmOfflineDB.indexedDB.getAllItemsInRequestQueue(callback);
+    ZmOfflineDB.indexedDB.getItemInRequestQueue(false, callback)
 };
 
 ZmOffline.prototype._sendOfflineRequest =
 function(result) {
 
     if (!result || result.length === 0) {
-        this._enableApps(!appCtxt.isWebClientOffline());
-        jQuery(document).trigger('OfflineRequestSent');
         return;
     }
 
-    var batchCommand = new ZmBatchCommand(true, null, true),
-        requestMgr = appCtxt.getRequestMgr(),
-        obj,
-        params,
-        methodName,
-        msg,
-        flags,
-        attach;
+    var obj = result.shift();
 
-    for (var i = 0, length = result.length; i < length; i++) {
-        obj = result[i];
-        methodName = obj.methodName;
+    if (obj) {
+        var methodName = obj.methodName;
         if (methodName) {
             if (methodName === "SendMsgRequest" || methodName === "SaveDraftRequest") {
-                msg = obj[methodName].m;
-                flags = msg.f;
-                attach = msg.attach;
+                var msg = obj[methodName].m;
+                var flags = msg.f;
+                var attach = msg.attach;
                 if (attach) {
-                    var isOfflineUploaded;
                     for (var j in attach) {
                         if (attach[j] && attach[j].isOfflineUploaded) {
-                            isOfflineUploaded = true;
-                            this._uploadOfflineAttachments(obj, msg);
-                            break;
+                            return this._uploadOfflineAttachments(obj, msg, result);
                         }
                     }
-                    if (isOfflineUploaded) {
-                        continue;
-                    }
-                }
-                if (msg.isInlineAttachment) {
-                    this._uploadOfflineInlineAttachments(obj, msg);
-                    continue;
                 }
                 if (flags && flags.indexOf(ZmItem.FLAG_OFFLINE_CREATED) !== -1) {
                     msg.f = flags.replace(ZmItem.FLAG_OFFLINE_CREATED, "");//Removing the offline created flag
@@ -796,31 +777,24 @@ function(result) {
                     delete msg.did;//Removing the temporary draft id
                 }
             }
-            params = {
+            var params = {
                 noBusyOverlay : true,
                 asyncMode : true,
-                callback : this._handleResponseSendOfflineRequest.bind(this, obj),
+                callback : this._handleResponseSendOfflineRequest.bind(this, obj, result),
+                errorCallback : this._handleErrorResponseSendOfflineRequest.bind(this, obj, result),
                 jsonObj : {}
             };
             params.jsonObj[methodName] = obj[methodName];
-            batchCommand.add(requestMgr.sendRequest.bind(requestMgr, params));
+            return appCtxt.getRequestMgr().sendRequest(params);
         }
     }
-    batchCommand.run();
-};
 
-ZmOffline.prototype._checkOutboxQueue =
-function(result) {
-    if (!result || result.length === 0) {
-        this._enableApps(!appCtxt.isWebClientOffline());
-        return;
-    }
+    this._sendOfflineRequest(result);
 };
 
 ZmOffline.prototype._handleResponseSendOfflineRequest =
-function(obj) {
-    var callback = ZmOfflineDB.indexedDB.getAllItemsInRequestQueue.bind(this, this._checkOutboxQueue.bind(this));
-    ZmOfflineDB.indexedDB.deleteItemInRequestQueue(obj.oid, callback);
+function(obj, result) {
+    this._sendOfflineRequest(result);
     var notify = {
         deleted : {
             id : obj.id.toString()
@@ -833,6 +807,13 @@ function(obj) {
         }
     };
     appCtxt.getRequestMgr()._notifyHandler(notify);
+    ZmOfflineDB.indexedDB.deleteItemInRequestQueue(obj.oid);
+};
+
+ZmOffline.prototype._handleErrorResponseSendOfflineRequest =
+function(obj, result) {
+    this._sendOfflineRequest(result);
+    return true;
 };
 
 /**
@@ -1168,25 +1149,22 @@ function() {
 
 ZmOffline.updateOutboxFolderCount =
 function() {
-    var indexObj = {methodName : "SendMsgRequest"};
-    ZmOfflineDB.indexedDB.actionsInRequestQueueUsingIndex(indexObj, ZmOffline.updateOutboxFolderCountCallback);
+    var key = {methodName : "SendMsgRequest"};
+    ZmOfflineDB.indexedDB.getItemCountInRequestQueue(key, ZmOffline.updateOutboxFolderCountCallback);
 };
 
 ZmOffline.updateOutboxFolderCountCallback =
-function(result) {
-    var outboxFolder = appCtxt.getById(ZmFolder.ID_OUTBOX),
-        length = result ? result.length : 0;
+function(count) {
+    var outboxFolder = appCtxt.getById(ZmFolder.ID_OUTBOX);
     if (outboxFolder) {
-        outboxFolder.notifyModify({n : length});
+        outboxFolder.notifyModify({n : count});
     }
 };
 
 ZmOffline.addOfflineDrafts =
 function(callback, params) {
-    var indexObj = {
-        methodName : "SaveDraftRequest"
-    };
-    ZmOfflineDB.indexedDB.actionsInRequestQueueUsingIndex(indexObj, ZmOffline.addOfflineDraftsCallback.bind(null, callback, params), ZmOffline.addOfflineDraftsErrorCallback.bind(null, callback, params));
+    var key = {methodName : "SaveDraftRequest"};
+    ZmOfflineDB.indexedDB.getItemInRequestQueue(key, ZmOffline.addOfflineDraftsCallback.bind(null, callback, params), ZmOffline.addOfflineDraftsErrorCallback.bind(null, callback, params));
 };
 
 ZmOffline.addOfflineDraftsCallback =
@@ -1225,7 +1203,7 @@ function(folderId){
 };
 
 ZmOffline.prototype._uploadOfflineAttachments =
-function (obj, msg) {
+function (obj, msg, result) {
     var attach = msg.attach,
         aidArray = attach.aid.split(",");
 
@@ -1236,15 +1214,16 @@ function (obj, msg) {
             var blob = AjxUtil.dataURItoBlob(attachment.data);
             if (blob) {
                 blob.name = attachment.filename;
-                var callback = this._uploadOfflineAttachmentsCallback.bind(this, attachment.aid, obj, msg);
-                ZmComposeController.prototype._uploadImage(blob, callback);
+                var callback = this._uploadOfflineAttachmentsCallback.bind(this, attachment.aid, obj, msg, result);
+                var errorCallback = this._uploadOfflineAttachmentsErrorCallback.bind(this, attachment.aid, obj, msg, result);
+                ZmComposeController.prototype._uploadImage(blob, callback, errorCallback);
             }
         }
     }
 };
 
 ZmOffline.prototype._uploadOfflineAttachmentsCallback =
-function(attachmentId, obj, msg, uploadResponse) {
+function(attachmentId, obj, msg, result, uploadResponse) {
     var attach = msg.attach,
         isOfflineUploaded = false;
 
@@ -1256,7 +1235,24 @@ function(attachmentId, obj, msg, uploadResponse) {
         }
     }
     if (isOfflineUploaded === false) {
-        this._sendOfflineRequest([].concat(obj));
+        this._sendOfflineRequest(result.concat(obj));
+    }
+};
+
+ZmOffline.prototype._uploadOfflineAttachmentsErrorCallback =
+function(attachmentId, obj, msg, result) {
+    var attach = msg.attach,
+        isOfflineUploaded = false;
+
+    delete attach[attachmentId];
+    AjxUtil.arrayRemove(attach.aid, attachmentId);
+    for (var j in attach) {
+        if (attach[j] && attach[j].isOfflineUploaded) {
+            isOfflineUploaded = true;
+        }
+    }
+    if (isOfflineUploaded === false) {
+        this._sendOfflineRequest(result.concat(obj));
     }
 };
 

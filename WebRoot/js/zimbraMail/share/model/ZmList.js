@@ -1072,41 +1072,20 @@ ZmList.prototype._handleOfflineResponseDoAction =
 function(params, isOutboxFolder, requestParams) {
 
     var action = params.action,
-        callback = this._handleOfflineResponseDoActionCallback.bind(this, params, isOutboxFolder),
-        obj;
+        callback = this._handleOfflineResponseDoActionCallback.bind(this, params, isOutboxFolder);
 
     if (isOutboxFolder && action.op === "trash") {
-        obj = {
+        var key = {
             methodName : "SendMsgRequest", //Outbox folder only contains offline sent emails
-            operation : "delete",
             id : action.id
         };
-        ZmOfflineDB.indexedDB.actionsInRequestQueueUsingIndex(obj, callback);
+        ZmOfflineDB.indexedDB.deleteItemInRequestQueue(key, callback);
     }
     else {
-        obj = requestParams.jsonObj;
+        var obj = requestParams.jsonObj;
         obj.methodName = ZmItem.SOAP_CMD[params.type] + "Request";
         obj.id = action.id;
         ZmOfflineDB.indexedDB.setItemInRequestQueue(obj, callback);
-        /*
-        jsonObj = $.extend(true, {}, requestParams.jsonObj);//Always clone the object
-        jsonObj.methodName = indexObj.methodName = requestName;
-        indexObj.operation = "add";
-        indexObj.onBeforeAddCallback = function(oldValue, newValue) {
-            newValue[requestName].action.op = oldValue[requestName].action.op + "," + newValue[requestName].action.op;
-        };
-        ids = id.split(",");
-        for (var i = 0, idsLength = ids.length; i < idsLength; i++) {
-            jsonObj[requestName].action.id = jsonObj.id = indexObj.id = ids[i];
-            indexObj.value = jsonObj;
-            if (i === idsLength - 1) {
-                ZmOfflineDB.indexedDB.actionsInRequestQueueUsingIndex(indexObj, callback);
-            }
-            else {
-                ZmOfflineDB.indexedDB.actionsInRequestQueueUsingIndex(indexObj);
-            }
-        }
-        */
     }
 };
 

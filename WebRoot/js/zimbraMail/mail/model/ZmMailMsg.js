@@ -1832,13 +1832,13 @@ function(params) {
 
     if (msgNode.id) { //Existing drafts created online or offline
         jsonObj.id = msgNode.id;
-        var indexObj = {
-            operation : "add",
+        var value = {
+            update : true,
             methodName : methodName,
             id : msgNode.id,
             value : jsonObj
         };
-        ZmOfflineDB.indexedDB.actionsInRequestQueueUsingIndex(indexObj, callback);
+        ZmOfflineDB.indexedDB.setItemInRequestQueue(value, callback);
     }
     else {
         jsonObj.id = msgNode.id = currentTime.toString(); //Id should be string
@@ -1861,12 +1861,11 @@ function(params, jsonObj) {
     appCtxt.getRequestMgr()._notifyHandler(notify);
 
     if (!params.isDraft && !params.isInvite) {
-        var indexObj = {
-            operation : "delete",
+        var key = {
             methodName : "SaveDraftRequest",
             id : jsonObj[jsonObj.methodName].m.id
         };
-        ZmOfflineDB.indexedDB.actionsInRequestQueueUsingIndex(indexObj);//Delete any drafts for this message id
+        ZmOfflineDB.indexedDB.deleteItemInRequestQueue(key);//Delete any drafts for this message id
     }
 };
 

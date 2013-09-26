@@ -944,8 +944,8 @@ ZmSearchController.prototype._doIndexedDBSearch =
 function(search) {
     var respCallback = this._handleResponseDoIndexedDBSearch.bind(this, search);
     var errorCallback = this._handleErrorDoIndexedDBSearch.bind(this, search);
-    var indexObj = { methodName : "SendMsgRequest" };
-    ZmOfflineDB.indexedDB.actionsInRequestQueueUsingIndex(indexObj, respCallback, errorCallback);
+    var key = {methodName : "SendMsgRequest"};
+    ZmOfflineDB.indexedDB.getItemInRequestQueue(key, respCallback, errorCallback);
 };
 
 /**
@@ -977,7 +977,7 @@ function(search, result) {
 
     this._showResults(results, search);
 
-    ZmOffline.updateOutboxFolderCountCallback(result);
+    ZmOffline.updateOutboxFolderCountCallback(result.length);
 };
 
 /**
