@@ -323,11 +323,8 @@ ZmUploadDialog.prototype._popupErrorDialog = function(message) {
 
 ZmUploadDialog.prototype._uploadSaveDocs = function(files, status, guids) {
 	if (status != AjxPost.SC_OK) {
-		var message = AjxMessageFormat.format(ZmMsg.uploadError, status);
-		if(status == '413') {
-			message = ZmMsg.errorAttachmentTooBig;
-		}
-		this._popupErrorDialog(message);
+		appCtxt.getAppController().popupUploadErrorDialog(ZmItem.BRIEFCASE,
+		                                                  status);
 	} else {
 		guids = guids.split(",");
 		for (var i = 0; i < files.length; i++) {

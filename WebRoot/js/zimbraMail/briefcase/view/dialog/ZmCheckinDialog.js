@@ -82,11 +82,8 @@ function(formId, callback){
 
 ZmCheckinDialog.prototype._uploadSaveDocs = function(file, status, guid) {
 	if (status != AjxPost.SC_OK) {
-		var message = AjxMessageFormat.format(ZmMsg.uploadError, status);
-		if(status == '413') {
-			message = ZmMsg.errorAttachmentTooBig;
-		}
-		this._popupErrorDialog(message);
+		appCtxt.getAppController().popupUploadErrorDialog(ZmItem.BRIEFCASE,
+		                                                  status);
 	} else {
 
         file.guid = guid;

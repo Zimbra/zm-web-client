@@ -231,6 +231,50 @@ function(msg, ex, noExecReset, hideReportButton, expanded, noEncoding) {
 		errorDialog.showDetail();
 };
 
+/**
+ * Pops-up an error dialog describing an upload error.
+ *
+ * @param	{constant}	type		the type of the uploaded item, e.g. <code>ZmItem.MSG</code>.
+ * @param	{Number}	respCode		the HTTP reponse status code
+ * @param	{String}	extraMsg		optional message to append to the status
+ */
+ZmController.prototype.popupUploadErrorDialog =
+function(type, respCode, extraMsg) {
+    var warngDlg = appCtxt.getMsgDialog();
+    var style = DwtMessageDialog.CRITICAL_STYLE;
+    var msg;
+
+    switch (respCode) {
+    case AjxPost.SC_OK:
+        return true;
+
+    case AjxPost.SC_REQUEST_ENTITY_TOO_LARGE:
+        var basemsg =
+            type && ZmMsg['attachmentSizeError_' + type] ||
+            ZmMsg.attachmentSizeError;
+        var sizelimit =
+            AjxUtil.formatSize(appCtxt.get(ZmSetting.MESSAGE_SIZE_LIMIT));
+		msg = AjxMessageFormat.format(basemsg, sizelimit);
+
+        break;
+
+    default:
+        var basemsg =
+            type && ZmMsg['errorAttachment_' + type] ||
+            ZmMsg.errorAttachment;
+        msg = AjxMessageFormat.format(basemsg, respCode || AjxPost.SC_NO_CONTENT);
+
+        break;
+    }
+
+    if (extraMsg) {
+        msg += '<br /><br />';
+        msg += extraMsg;
+    }
+    warngDlg.setMessage(msg, style);
+    warngDlg.popup();
+};
+
 ZmController.handleScriptError =
 function(ex) {
 

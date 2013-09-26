@@ -1595,26 +1595,12 @@ function(file) {
 	return contentType;
 };
 
-ZmZimbraMail.prototype._handleUploadErrorResponse = function(respCode) {
-    var warngDlg = appCtxt.getMsgDialog();
-    var style = DwtMessageDialog.CRITICAL_STYLE;
-    if (respCode == '200') {
-        return true;
-    } else if(respCode == '413') {
-        warngDlg.setMessage(ZmMsg.errorAttachmentTooBig, style);
-    } else {
-       var msg = AjxMessageFormat.format(ZmMsg.errorAttachment, (respCode || AjxPost.SC_NO_CONTENT));
-       warngDlg.setMessage(msg, style);
-    }
-    warngDlg.popup();
-};
-
 ZmZimbraMail.prototype._handleUploadResponse = function(req, controller) {
     if(req) {
         if(req.readyState == 4 && req.status == 200) {
             var resp = eval("["+req.responseText+"]");
             this._attachmentsProcessed++;
-            this._handleUploadErrorResponse(resp[0]);
+            this.popupUploadErrorDialog(ZmItem.MSG, resp[0]);
             if(resp.length > 2) {
                 var respObj = resp[2];
                 for (var i = 0; i < respObj.length; i++) {

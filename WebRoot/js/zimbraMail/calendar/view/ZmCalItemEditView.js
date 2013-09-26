@@ -1276,13 +1276,9 @@ function(status, attId) {
 		this._controller._handleException(ex, {continueCallback:callback});
 	} else {
 		// bug fix #2131 - handle errors during attachment upload.
-		var msg = AjxMessageFormat.format(ZmMsg.errorAttachment, (status || AjxPost.SC_NO_CONTENT));
-		switch (status) {
-			// add other error codes/message here as necessary
-			case AjxPost.SC_REQUEST_ENTITY_TOO_LARGE: 	msg += " " + ZmMsg.errorAttachmentTooBig + "<br><br>"; break;
-			default: 									msg += " "; break;
-		}
-		this._controller.showErrorMessage(msg + ZmMsg.errorTryAgain);
+		this._controller.popupUploadErrorDialog(ZmItem.APPT, status,
+		                                        ZmMsg.errorTryAgain);
+		this._controller.enableToolbar(true);
 	}
 };
 
