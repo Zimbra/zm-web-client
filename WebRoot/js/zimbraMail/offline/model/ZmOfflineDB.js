@@ -375,7 +375,7 @@ function(key, callback, errorCallback) {
                 if (result) {
                     resultArray.push(result.value);
                     try {
-                        result.continue();
+                        result['continue']();
                     }
                     catch (e) {
 
@@ -409,7 +409,7 @@ function(key, callback, errorCallback) {
             if (result) {
                 resultArray.push(result.value);
                 try {
-                    result.continue();
+                    result['continue']();
                 }
                 catch (e) {
 
@@ -498,8 +498,8 @@ function(key, callback, errorCallback) {
                 var result = request.result;
                 if (result) {
                     try {
-                        result.delete();
-                        result.continue();
+                        result['delete']();
+                        result['continue']();
                     }
                     catch (e) {
 
@@ -511,7 +511,7 @@ function(key, callback, errorCallback) {
     else if (key) {
         [].concat(key).forEach(function(key) {
             try {
-                objectStore.delete(key);
+                objectStore['delete'](key);
             }
             catch (e) {
 
