@@ -403,7 +403,7 @@ A:visited { @Text-link@ }
 }
 
 .MsgOps {
-	@ToolbarBg@;
+	@ToolbarBg@
 /*    background-color: @HeaderColor@;*/
 }
 
@@ -714,7 +714,7 @@ A:visited { @Text-link@ }
 	vertical-align:top;
 	@SeparatorBorder@
 	font-weight:bold;
-	@Text-disabled@;
+	@Text-disabled@
 }
 
 .shortcutDescription {
@@ -776,7 +776,7 @@ A:visited { @Text-link@ }
 }
 
 .ZhCalType, .ZhABType, .ZhFolderType {
-@Text-disabled@;
+@Text-disabled@
 }
 
 .ZhCalMonthHeaderRow {
@@ -1256,7 +1256,7 @@ padding: 0 @BoxPaddingSize@ 0 @BoxPaddingSize@;
 }
 
 .ZOptionsHint {
-	@Text-disabled@;
+	@Text-disabled@
 }
 
 .ZOptionsSectionMain {
@@ -1289,7 +1289,7 @@ padding: 0 @BoxPaddingSize@ 0 @BoxPaddingSize@;
 }
 
 .ZhDateHint {
-	@Text-disabled@;
+	@Text-disabled@
     padding-left: 5px;
 }
 

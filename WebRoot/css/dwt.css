@@ -1482,7 +1482,7 @@ input.xform_field {
 
 .RadioGrouperLabel {
 	margin-left:@BoxMarginSize@;
-	@FontSize-big@;
+	@FontSize-big@
 }
 
 
@@ -2032,7 +2032,7 @@ input.xform_field {
 }
 
 .DwtComboBox .ZButton					{	width:20px; @WidgetHeight@	}
-.DwtComboBox .ZButtonBorder				{	@ComboBoxRoundCorners@;		}
+.DwtComboBox .ZButtonBorder				{	@ComboBoxRoundCorners@		}
 .DwtComboBox .ImgSelectPullDownArrow	{	margin-right:5px;			}
 
 
@@ -2051,11 +2051,11 @@ input.xform_field {
 
 			.ZFieldInput		{	width:100%; height:100%;
 									@InputField@	@InputField-normal@		}
-.ZFocused	.ZFieldInput		{					@InputField-focused@;	}
-.ZError		.ZFieldInput		{ 					@InputField-error@;		}
-.ZRequired	.ZFieldInput		{ 					@InputField-required@;	}
-.ZDisabled	.ZFieldInput		{ 					@InputField-disabled@;	}
-.ZHint		.ZFieldInput		{ 					@InputField-hint@;		}
+.ZFocused	.ZFieldInput		{					@InputField-focused@	}
+.ZError		.ZFieldInput		{ 					@InputField-error@		}
+.ZRequired	.ZFieldInput		{ 					@InputField-required@	}
+.ZDisabled	.ZFieldInput		{ 					@InputField-disabled@	}
+.ZHint		.ZFieldInput		{ 					@InputField-hint@		}
 
 
 

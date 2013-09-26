@@ -18,7 +18,7 @@
 
 .editorBody { background: #dddddd !important;}
 
-.ZDToolBar { @AppTabBorder-normal@; padding:3px;}
+.ZDToolBar { @AppTabBorder-normal@ padding:3px;}
 
 .ZDToolBar .ZWidgetTitle { @Text@}
 

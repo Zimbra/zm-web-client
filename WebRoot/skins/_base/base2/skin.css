@@ -308,8 +308,8 @@ BODY						{	margin:0px; 				}
 }
 
 /** Logo Images **/
-.ImgAppBanner			{	@AppBanner@; background-repeat:no-repeat;     }
-.ImgLoginBanner			{	@LoginBanner@; background-repeat:no-repeat;   }	
+.ImgAppBanner			{	@AppBanner@ background-repeat:no-repeat;     }
+.ImgLoginBanner			{	@LoginBanner@ background-repeat:no-repeat;   }	
 
 #IFDEF MSIE
 #skin_container_logo A, #skin_container_logo A:hover, #skin_container_logo A:link {

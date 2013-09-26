@@ -467,7 +467,7 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 }
 
 .ZmPicker .DwtTree {
-	@PageBg@;
+	@PageBg@
 }
 
 /* Header for each picker */
@@ -2367,7 +2367,7 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 
 /* Used ???*/
 .calendar_date_search {
-	@DateSearchBackground@;
+	@DateSearchBackground@
 	height:2.9rem;
 	margin-right:5px;
 	border-bottom:1px solid @darken(AppC,30)@;
@@ -2411,19 +2411,19 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 /* ??? USE? */
 .appt_new_tag					{	font-weight:bold;	color:#FC0;	}
 
-.appt_name						{	@SmallBoxPadding@; font-weight:bold;  }
-.appt_new_name					{	@SmallBoxPadding@;	}
+.appt_name						{	@SmallBoxPadding@ font-weight:bold;  }
+.appt_new_name					{	@SmallBoxPadding@	}
 
 .appt_30_name,
-.appt_allday_name				{	@SmallBoxPadding@; padding-top:1px; @NoWrap@	}
+.appt_allday_name				{	@SmallBoxPadding@ padding-top:1px; @NoWrap@	}
 .appt_30_new_name,
-.appt_allday_new_name 			{	@SmallBoxPadding@; padding-top:1px; @NoWrap@	}
+.appt_allday_new_name 			{	@SmallBoxPadding@ padding-top:1px; @NoWrap@	}
 
 
-.appt_time						{	@SmallBoxPadding@;	}
-.appt_new_time					{	@SmallBoxPadding@;	}
-.appt_end_time					{	@SmallBoxPadding@; color:#666; @NoWrap@	}
-.appt_location					{	@SmallBoxPadding@; color:#666; font-weight:normal;	}
+.appt_time						{	@SmallBoxPadding@	}
+.appt_new_time					{	@SmallBoxPadding@	}
+.appt_end_time					{	@SmallBoxPadding@ color:#666; @NoWrap@	}
+.appt_location					{	@SmallBoxPadding@ color:#666; font-weight:normal;	}
 .appt_icon						{ 	position:relative; float:right;		}
 
 .appt_top_sash,
@@ -2886,7 +2886,7 @@ HTML>BODY .appt-selected .appt_allday_body
 
 .ZmSchedulerNameTdBorder {
 	@FreeBusyViewGridHeight@
-	@FreeBusyViewGridWidth@;
+	@FreeBusyViewGridWidth@
 	@RightSeparator@
 	@BottomSeparator@
 	@Label@
@@ -2924,7 +2924,7 @@ HTML>BODY .appt-selected .appt_allday_body
 
 /* MAKE THE RIGHT BORDER BLACK */
 .ZmSchedulerGridDivBorder {
-	@FreeBusyViewGridWidth@;
+	@FreeBusyViewGridWidth@
 	@FreeBusyViewGridHeight@
 	@RightSeparator@
 	@BottomSeparator@
@@ -2932,7 +2932,7 @@ HTML>BODY .appt-selected .appt_allday_body
 }
 
 .ZmSchedulerGridTopCellBorder {
-	@FreeBusyViewGridWidth@;
+	@FreeBusyViewGridWidth@
 	@FreeBusyViewGridHeight@
 	@TopSeparator@
 	@RightSeparator@
@@ -3560,7 +3560,7 @@ HTML>BODY .appt-selected .appt_allday_body
 
 .ZmAutocompleteListView .LinkText, .ZmAutocompleteListView .LinkText-hide {
 	padding-left:8px;
-	@FontSize-small@;
+	@FontSize-small@
 }
 
 .ZmAutocompleteListView .LinkText {
@@ -4352,14 +4352,14 @@ HTML>BODY .appt-selected .appt_allday_body
 
 .shortcutKeys-prefs {
 	@SeparatorBorder@
-	@Text-disabled@;
+	@Text-disabled@
 	padding:6px;
 	width:250px;
 	background-color:white;
 }
 
 .shortcutKeys-panel {
-	@Text-disabled@;
+	@Text-disabled@
 	color:white;
 	white-space:nowrap;
 }
@@ -4704,7 +4704,7 @@ HTML>BODY .appt-selected .appt_allday_body
 }
 
 .ZImageDisabled {
-	@Icon-disabled@;
+	@Icon-disabled@
 }
 
 .ZCheckboxCell {
@@ -5322,7 +5322,7 @@ If you feel compelled to have a background color, please do so on a per skin lev
 .ZmEditContactViewImage {
 	border:1px solid @darken(AppC,40)@;
 	width:48px;
-	@PanelBg@;
+	@PanelBg@
 }
 
 .ZmEditContactView .inputTable {
