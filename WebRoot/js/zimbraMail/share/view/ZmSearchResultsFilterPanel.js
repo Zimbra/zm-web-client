@@ -877,9 +877,17 @@ function(menu) {
 				});
 		subMenu.addClassName(this.toString() + "SubMenu");
 		menuItem.setMenu({menu: subMenu, menuPopupStyle: DwtButton.MENU_POPUP_STYLE_CASCADE});
-		var input = this._input[type] = new DwtInputField({parent:subMenu, size: 5});
+		var input = this._input[type] = new DwtInputField({
+			parent:          subMenu,
+			type:            DwtInputField.FLOAT,
+			errorIconStyle:  DwtInputField.ERROR_ICON_LEFT,
+			validationStyle: DwtInputField.CONTINUAL_VALIDATION,
+			size:            5
+		});
+		input.setValidNumberRange(0, 1e6);
 		var comboBox = new DwtComboBox({
 			parent:			input,
+			parentElement: input.getInputElement().parentNode,
 			id:		DwtId.makeId(ZmId.WIDGET_COMBOBOX, this._viewId, this.id, type+ZmSizeSearchFilter.UNIT),
 			inputParams:	{size: ZmSizeSearchFilter.COMBO_INPUT_WIDTH},
 			useLabel: true,
@@ -905,9 +913,16 @@ function(type, comboBox, ev) {
 ZmSizeSearchFilter.prototype._keyUpListener =
 function(type, comboBox, ev) {
 	var keyCode = DwtKeyEvent.getCharCode(ev);
+	var input = this._input[type];
 	if (keyCode == 13 || keyCode == 3) {
-		var term = new ZmSearchToken(ZmSizeSearchFilter.OP[type], this._input[type].getValue() + comboBox.getValue());
-		this._updateCallback(term);
+		var errorMsg = input.getValidationError();
+		if (errorMsg) {
+			appCtxt.setStatusMsg(errorMsg, ZmStatusView.LEVEL_WARNING);
+		} else {
+			var term = new ZmSearchToken(ZmSizeSearchFilter.OP[type],
+			                             input.getValue() + comboBox.getValue());
+			this._updateCallback(term);
+		}
 	}
 };
 
