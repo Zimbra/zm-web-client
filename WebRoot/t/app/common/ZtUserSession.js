@@ -148,16 +148,22 @@ Ext.define('ZCS.common.ZtUserSession', {
 			tagRoot = refresh.tags,
 			organizerData = {};
 
-		// each overview needs data with unique IDs, so even though tags are global, we
-		// need to create a separate record for each tag per app
+		// Each overview needs data with unique IDs, so even though tags are global, we
+		// need to create a separate record for each tag per app.
 		Ext.each(ZCS.constant.APPS, function(app) {
 			var organizers = organizerData[app] = [];
+			// Trash is the only folder that can appear in multiple overviews
 			this.addOrganizer(folderRoot, organizers, app, ZCS.constant.ORG_FOLDER, []);
+			// A saved search appears in each overview it has a type for
 			this.addOrganizer(folderRoot, organizers, app, ZCS.constant.ORG_SAVED_SEARCH, []);
+			// Tags appear in every overview
 			this.addOrganizer(tagRoot, organizers, app, ZCS.constant.ORG_TAG, []);
 			organizers.sort(ZCS.model.ZtOrganizer.compare);
 		}, this);
 		this.setOrganizerData(organizerData);
+
+		ZCS.app.on('notifyFolderDelete', this.handleFolderDelete, this);
+		ZCS.app.on('notifyFolderChange', this.handleFolderChange, this);
 	},
 
 	/**
@@ -281,9 +287,11 @@ Ext.define('ZCS.common.ZtUserSession', {
 				id:             id,
 //				itemId:         itemId,
 				itemId:         id,
+				tagId:          (type === ZCS.constant.ORG_TAG) ? itemId : null,
 				parentItemId:   node.l,
 				name:           node.name,
 				displayName:    Ext.String.htmlEncode(node.name),
+				notifyType:     type,
 				path:           node.name,
 				color:          node.color,
 				rgb:            node.rgb,
@@ -294,7 +302,10 @@ Ext.define('ZCS.common.ZtUserSession', {
 			};
 			organizer.typeName = ZCS.constant.ORG_NAME[type1];
 
-			if (parents.length) {
+			if (node.absFolderPath) {
+				organizer.path = node.absFolderPath;
+			}
+			else if (parents && parents.length) {
 				organizer.path = parents.join('/') + '/' + node.name;
 			}
 
@@ -322,7 +333,7 @@ Ext.define('ZCS.common.ZtUserSession', {
 		}
 
 		// process child organizers
-		if ((isRoot || organizer) && hasChildren) {
+		if ((isRoot || organizer) && hasChildren && parents) {
 			if (!isRoot) {
 				parents.push(organizer.name);
 			}
@@ -333,6 +344,59 @@ Ext.define('ZCS.common.ZtUserSession', {
 				parents.pop();
 			}
 		}
+	},
+
+	handleFolderDelete: function(folder, notification) {
+
+		var orgIndex = null,
+			orgData = this.getOrganizerData();
+
+		Ext.each(ZCS.constant.APPS, function(app) {
+			Ext.each(this.getOrganizerDataByApp(app), function(organizer, index) {
+				if (organizer === folder) {
+					orgIndex = index;
+					return false;
+				}
+			}, this);
+			if (orgIndex !== null) {
+				orgData[app].splice(orgIndex, 1);
+			}
+		}, this);
+
+		folder.destroy();
+	},
+
+	handleFolderChange: function(folder, notification) {
+
+		var organizer;
+		Ext.each(ZCS.constant.APPS, function(app) {
+			organizer = this.findOrganizerInList(notification.id, this.getOrganizerDataByApp(app));
+			if (organizer) {
+				// TODO: should maybe use Ext.copyTo() and a list of props
+				Ext.apply(organizer, notification);
+				return false;
+			}
+		}, this);
+
+		folder.handleModifyNotification(notification);
+	},
+
+	findOrganizerInList: function(id, list) {
+
+		var ln = list ? list.length : 0, i, org, organizer;
+		for (i = 0; i < ln; i++) {
+			org = list[i];
+			if (org.id === id) {
+				return org;
+			}
+			else if (org.items) {
+				organizer = this.findOrganizerInList(id, org.items);
+				if (organizer) {
+					return organizer;
+				}
+			}
+		}
+		return null;
 	},
 
 	/**

@@ -88,6 +88,8 @@ Ext.define('ZCS.controller.ZtListController', {
 				this.updateTitlebar(newApp);
 			}
 		}, this);
+
+		ZCS.app.on('notifyFolderChange', this.handleFolderChange, this);
 	},
 
 	/**
@@ -241,6 +243,20 @@ Ext.define('ZCS.controller.ZtListController', {
 			else {
 				this.getItemController().clear();
 			}
+		}
+	},
+
+	/**
+	 * Update list panel title if the current folder changed in some way, since the title
+	 * often reflects something about the folder (number of items, for example).
+	 */
+	handleFolderChange: function(folder, notification) {
+
+		this.callParent(arguments);
+		var	curOrganizer = ZCS.session.getCurrentSearchOrganizer();
+		if (curOrganizer && curOrganizer.get('itemId') === folder.get('itemId')) {
+			this.updateTitlebar();
+			ZCS.app.fireEvent('updatelistpanelToggle', this.getOrganizerTitle(), ZCS.session.getActiveApp());
 		}
 	}
 });

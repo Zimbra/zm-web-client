@@ -26,17 +26,19 @@ Ext.define('ZCS.model.ZtOrganizer', {
 	config: {
 		fields: [
 			// global fields
-			{ name: 'type', type: 'string' },           // ZCS.constant.ORG_*
-			{ name: 'typeName', type: 'string' },       // display name of group
-			{ name: 'itemId', type: 'string' },         // ID on ZCS server
-			{ name: 'parentItemId', type: 'string' },   // ID of parent organizer
-			{ name: 'name', type: 'string' },           // not encoded, should not be displayed
-			{ name: 'displayName', type: 'string' },    // HTML-encoded
-			{ name: 'path', type: 'string' },           // full path with / separators
-			{ name: 'itemCount', type: 'int' },         // number of items contained by this organizer
-			{ name: 'color', type: 'int' },             // standard color
-			{ name: 'rgb', type: 'string' },            // extended RGB color
-			{ name: 'url', type: 'string' },            // feeds
+			{ name: 'type',         type: 'string' },  // ZCS.constant.ORG_*
+			{ name: 'typeName',     type: 'string' },  // display name of group
+			{ name: 'itemId',       type: 'string' },  // ID on ZCS server
+			{ name: 'tagId',        type: 'string' },  // ID of tag on ZCS server
+			{ name: 'notifyType',   type: 'string' },  // notification type
+			{ name: 'parentItemId', type: 'string' },  // ID of parent organizer
+			{ name: 'name',         type: 'string' },  // not encoded, should not be displayed
+			{ name: 'displayName',  type: 'string' },  // HTML-encoded
+			{ name: 'path',         type: 'string' },  // full path with / separators
+			{ name: 'itemCount',    type: 'int' },     // number of items contained by this organizer
+			{ name: 'color',        type: 'int' },     // standard color
+			{ name: 'rgb',          type: 'string' },  // extended RGB color
+			{ name: 'url',          type: 'string' },  // feeds
 
 			// folder fields
 			{ name: 'disclosure', type: 'boolean' },    // override NestedList button behavior
@@ -120,6 +122,9 @@ Ext.define('ZCS.model.ZtOrganizer', {
 		var orgId = (data && (data.itemId || data.id)) || id;
 
 		ZCS.cache.set(orgId, this);
+		if (data.tagId) {
+			ZCS.cache.set(data.tagId, this);
+		}
 		if (data.path) {
 			ZCS.cache.set(this.isSystem() ? ZCS.constant.FOLDER_SYSTEM_NAME[orgId] : data.path, this, 'path');
 		}
@@ -192,8 +197,12 @@ Ext.define('ZCS.model.ZtOrganizer', {
 	},
 
 	handleModifyNotification: function(modify) {
+
 		if (modify.u != null) {
 			this.set('unreadCount', modify.u);
+		}
+		if (modify.name) {
+			this.set('name', modify.name);
 		}
 	},
 

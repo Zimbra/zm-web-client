@@ -73,7 +73,7 @@ Ext.define('ZCS.model.calendar.ZtCalendarReader', {
             ehour = index ? new Date(node.inst[index].s + node.dur).getHours() : new Date(node.inst[0].s + node.dur).getHours(),
             eminutes = index ? new Date(node.inst[index].s + node.dur).getMinutes() : new Date(node.inst[0].s + node.dur).getMinutes(),
             data = {
-                type: ZCS.constant.ITEM_CALENDAR,
+                type: ZCS.constant.ORG_CALENDAR,
                 event: shour + ':' + this.getPaddedDigits(sminutes) + ' - ' + ehour + ':' + this.getPaddedDigits(eminutes),
                 title: Ext.String.htmlEncode(node.name), //Fix for bug: 83580. Prevents XSS attacks.
                 start: new Date(syear, smonth, sday, shour, sminutes),

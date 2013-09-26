@@ -71,5 +71,26 @@ Ext.define('ZCS.view.ZtOverview', {
 		});
 
 		this.add(organizerList);
+
+		ZCS.app.on('notifyFolderCreate', this.handleFolderCreate, this);
+	},
+
+	handleFolderCreate: function(folder, notification) {
+
+		Ext.each(ZCS.constant.APPS, function(app) {
+			var organizers = [];
+			ZCS.session.addOrganizer(notification, organizers, app, ZCS.constant.ORG_FOLDER, []);
+			if (organizers.length > 0) {
+				var list = this.down('folderlist'),
+					store = list && list.getStore(),
+					parentId = notification.l,
+					parent = (parentId === ZCS.constant.ID_ROOT) ? store.getRoot() : store.getNodeById(parentId);
+
+				if (parent) {
+					// appending the node inserts it into the correct sorted position (!)
+					parent.appendChild(organizers[0]);
+				}
+			}
+		}, this);
 	}
 });

@@ -66,7 +66,6 @@ Ext.define('ZCS.controller.mail.ZtConvListController', {
 		ZCS.app.on('notifyConversationDelete', this.handleDeleteNotification, this);
 		ZCS.app.on('notifyConversationCreate', this.handleCreateNotification, this);
 		ZCS.app.on('notifyConversationChange', this.handleModifyNotification, this);
-		ZCS.app.on('notifyMailFolderChange', this.handleFolderChange, this);
 	},
 
 	doDelete: function (list, item, target, record) {
@@ -243,19 +242,6 @@ Ext.define('ZCS.controller.mail.ZtConvListController', {
 		//If this item is a draft, go ahead and select it, because the normal ext logic unselects it.
 		if (item.data.isDraft) {
 			this.getListView().select(item);
-		}
-	},
-
-	/**
-	 * Update list panel title if unread count of current folder changed.
-	 */
-	handleFolderChange: function(folder, notification) {
-
-		this.callParent(arguments);
-		var	curOrganizer = ZCS.session.getCurrentSearchOrganizer();
-		if (curOrganizer && curOrganizer.get('itemId') === folder.get('itemId')) {
-			this.updateTitlebar();
-			ZCS.app.fireEvent('updatelistpanelToggle', this.getOrganizerTitle(), ZCS.session.getActiveApp());
 		}
 	}
 },

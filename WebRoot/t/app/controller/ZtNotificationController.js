@@ -40,10 +40,14 @@ Ext.define('ZCS.controller.ZtNotificationController', {
 	doNotify: function(notification) {
 
 		var item = ZCS.cache.get(notification.id),
-			itemType = (item && item.get('type')) || ZCS.constant.NODE_ITEM[notification.nodeType],
+			itemType = notification.itemType = (item && (item.get('notifyType') || item.get('type'))) || ZCS.constant.NODE_ITEM[notification.nodeType],
 			event = itemType ? 'notify' + Ext.String.capitalize(itemType) + notification.type : null;
 
 		if (event && (notification.type === ZCS.constant.NOTIFY_CREATE || item != null)) {
+			//<debug>
+			Ext.Logger.info('Notification: ' + event);
+			//</debug>
+
 			ZCS.app.fireEvent(event, item, notification);
 		}
 	}

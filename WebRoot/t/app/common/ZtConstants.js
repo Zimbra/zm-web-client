@@ -83,7 +83,7 @@ ZCS.constant.IS_ENABLED[ZCS.constant.APP_CONTACTS]              = true;
 ZCS.constant.IS_ENABLED[ZCS.constant.FEATURE_ADD_ATTACHMENT]    = false;
 ZCS.constant.IS_ENABLED[ZCS.constant.FEATURE_QUICK_REPLY]       = true;
 ZCS.constant.IS_ENABLED[ZCS.constant.FEATURE_FIND_OBJECTS]      = true;
-ZCS.constant.IS_ENABLED[ZCS.constant.APP_CALENDAR]  = true;
+ZCS.constant.IS_ENABLED[ZCS.constant.APP_CALENDAR]              = true;
 
 // Text for tab bar
 ZCS.constant.TAB_TITLE = {};
@@ -140,11 +140,11 @@ ZCS.constant.OP_SEARCH      = 'SEARCH';
 // Buttons in toolbar at top of item panel
 ZCS.constant.ITEM_BUTTONS = {};
 ZCS.constant.ITEM_BUTTONS[ZCS.constant.APP_MAIL]        = [
-	{ op: ZCS.constant.OP_EDIT,         icon: 'edit',         event: 'edit', hidden: true },
+	{ op: ZCS.constant.OP_EDIT,         icon: 'edit',         event: 'edit',        hidden: true },
 	{ op: ZCS.constant.OP_REPLY,        icon: 'reply',        event: 'reply' },
 	{ op: ZCS.constant.OP_REPLY_ALL,    icon: 'replytoall',   event: 'replyAll' },
 	{ op: ZCS.constant.OP_DELETE,       icon: 'trash',        event: 'delete' },
-	{ op: ZCS.constant.OP_MENU,         icon: 'arrow_down',   event: 'showMenu', menuName: ZCS.constant.MENU_CONV }
+	{ op: ZCS.constant.OP_MENU,         icon: 'arrow_down',   event: 'showMenu',    menuName: ZCS.constant.MENU_CONV }
 ];
 ZCS.constant.ITEM_BUTTONS[ZCS.constant.APP_CONTACTS]    = [
     { op: ZCS.constant.OP_EDIT,     icon: 'edit',       event: 'edit' },
@@ -160,9 +160,18 @@ ZCS.constant.HDR_DETAILED   = 'detailed';
 ZCS.constant.ITEM_CONVERSATION      = 'conversation';
 ZCS.constant.ITEM_MESSAGE           = 'message';
 ZCS.constant.ITEM_CONTACT           = 'contact';
-ZCS.constant.ITEM_FOLDER            = 'folder';
+//ZCS.constant.ITEM_APPOINTMENT       = 'appt';
+//ZCS.constant.ITEM_FOLDER            = 'folder';
 ZCS.constant.ADDRESS_AUTOCOMPLETE   = 'match';
 ZCS.constant.ITEM_CALENDAR          = 'calendar';
+
+// Organizer types
+ZCS.constant.ORG_FOLDER             = 'folder';
+ZCS.constant.ORG_MAIL_FOLDER        = 'mailFolder';
+ZCS.constant.ORG_ADDRESS_BOOK       = 'addressBook';
+ZCS.constant.ORG_SAVED_SEARCH       = 'search';
+ZCS.constant.ORG_TAG                = 'tag';
+ZCS.constant.ORG_CALENDAR           = 'calendar';
 
 // App to which each item type belongs
 ZCS.constant.APP_FOR_TYPE = {};
@@ -189,13 +198,15 @@ ZCS.constant.NODE_CONTACT       = 'cn';
 ZCS.constant.NODE_MATCH         = 'match';
 ZCS.constant.NODE_FOLDER        = 'folder';
 ZCS.constant.NODE_CALENDAR      = 'appt';
+ZCS.constant.NODE_TAG           = 'tag';
 
 // Order in which to handle notifications
 ZCS.constant.NODES = [
 	ZCS.constant.NODE_CONVERSATION,
 	ZCS.constant.NODE_MESSAGE,
 	ZCS.constant.NODE_CONTACT,
-	ZCS.constant.NODE_FOLDER
+	ZCS.constant.NODE_FOLDER,
+	ZCS.constant.NODE_TAG
 ];
 
 // Notification types
@@ -203,13 +214,15 @@ ZCS.constant.NOTIFY_DELETE  = 'Delete';
 ZCS.constant.NOTIFY_CREATE  = 'Create';
 ZCS.constant.NOTIFY_CHANGE  = 'Change';
 
-// JSON node name for each item type
+// JSON node name for each item/org type
 ZCS.constant.ITEM_NODE = {};
 ZCS.constant.ITEM_NODE[ZCS.constant.ITEM_CONVERSATION]      = ZCS.constant.NODE_CONVERSATION;
 ZCS.constant.ITEM_NODE[ZCS.constant.ITEM_MESSAGE]           = ZCS.constant.NODE_MESSAGE;
 ZCS.constant.ITEM_NODE[ZCS.constant.ITEM_CONTACT]           = ZCS.constant.NODE_CONTACT;
 ZCS.constant.ITEM_NODE[ZCS.constant.ADDRESS_AUTOCOMPLETE]   = ZCS.constant.NODE_MATCH;
 ZCS.constant.ITEM_NODE[ZCS.constant.ITEM_CALENDAR]          = ZCS.constant.NODE_CALENDAR;
+ZCS.constant.ITEM_NODE[ZCS.constant.ORG_FOLDER]             = ZCS.constant.NODE_FOLDER;
+ZCS.constant.ITEM_NODE[ZCS.constant.ORG_TAG]                = ZCS.constant.NODE_TAG;
 
 // Item type based on JSON node name
 ZCS.constant.NODE_ITEM = ZCS.util.getBackMap(ZCS.constant.ITEM_NODE);
@@ -226,18 +239,11 @@ ZCS.constant.STORE[ZCS.constant.APP_MAIL]       = 'ZtConvStore';
 ZCS.constant.STORE[ZCS.constant.APP_CONTACTS]   = 'ZtContactStore';
 ZCS.constant.STORE[ZCS.constant.APP_CALENDAR]   = 'ZtCalendarStore';
 
-// Organizer types
-ZCS.constant.ORG_FOLDER         = 'folder';
-ZCS.constant.ORG_MAIL_FOLDER    = 'mailFolder';
-ZCS.constant.ORG_ADDRESS_BOOK   = 'addressBook';
-ZCS.constant.ORG_SAVED_SEARCH   = 'search';
-ZCS.constant.ORG_TAG            = 'tag';
-ZCS.constant.ORG_CALENDAR_FOLDER    = 'calendar';
-
 // App based on organizer type
 ZCS.constant.ORG_APP = {};
-ZCS.constant.ORG_APP[ZCS.constant.ORG_MAIL_FOLDER]  = ZCS.constant.APP_MAIL;
-ZCS.constant.ORG_APP[ZCS.constant.ORG_ADDRESS_BOOK] = ZCS.constant.APP_CONTACTS;
+ZCS.constant.ORG_APP[ZCS.constant.ORG_MAIL_FOLDER]      = ZCS.constant.APP_MAIL;
+ZCS.constant.ORG_APP[ZCS.constant.ORG_ADDRESS_BOOK]     = ZCS.constant.APP_CONTACTS;
+ZCS.constant.ORG_APP[ZCS.constant.ORG_CALENDAR]         = ZCS.constant.APP_CALENDAR;
 
 // View (from JSON folder data) that determines which app a folder belongs to
 ZCS.constant.FOLDER_VIEW = {};
@@ -249,15 +255,15 @@ ZCS.constant.FOLDER_VIEW[ZCS.constant.APP_CALENDAR] = 'calendar';
 ZCS.constant.FOLDER_TYPE = {};
 ZCS.constant.FOLDER_TYPE[ZCS.constant.APP_MAIL]     = ZCS.constant.ORG_MAIL_FOLDER;
 ZCS.constant.FOLDER_TYPE[ZCS.constant.APP_CONTACTS] = ZCS.constant.ORG_ADDRESS_BOOK;
-ZCS.constant.FOLDER_TYPE[ZCS.constant.APP_CALENDAR] = ZCS.constant.ORG_CALENDAR_FOLDER;
+ZCS.constant.FOLDER_TYPE[ZCS.constant.APP_CALENDAR] = ZCS.constant.ORG_CALENDAR;
 
 // Organizer names (appear in overview groups)
 ZCS.constant.ORG_NAME = {};
-ZCS.constant.ORG_NAME[ZCS.constant.ORG_MAIL_FOLDER]   = ZtMsg.folders;
-ZCS.constant.ORG_NAME[ZCS.constant.ORG_ADDRESS_BOOK]  = ZtMsg.addressBooks;
-ZCS.constant.ORG_NAME[ZCS.constant.ORG_SAVED_SEARCH]  = ZtMsg.searches;
-ZCS.constant.ORG_NAME[ZCS.constant.ORG_TAG]           = ZtMsg.tags;
-ZCS.constant.ORG_NAME[ZCS.constant.ORG_CALENDAR_FOLDER] = ZtMsg.calendar;
+ZCS.constant.ORG_NAME[ZCS.constant.ORG_MAIL_FOLDER]     = ZtMsg.folders;
+ZCS.constant.ORG_NAME[ZCS.constant.ORG_ADDRESS_BOOK]    = ZtMsg.addressBooks;
+ZCS.constant.ORG_NAME[ZCS.constant.ORG_SAVED_SEARCH]    = ZtMsg.searches;
+ZCS.constant.ORG_NAME[ZCS.constant.ORG_TAG]             = ZtMsg.tags;
+ZCS.constant.ORG_NAME[ZCS.constant.ORG_CALENDAR]        = ZtMsg.calendar;
 
 // Organizer nodes (in JSON within a refresh block from the server)
 ZCS.constant.ORG_NODE = {};
@@ -267,11 +273,11 @@ ZCS.constant.ORG_NODE[ZCS.constant.ORG_TAG]           = 'tag';
 
 // Order in which organizers should appear grouped in overview
 ZCS.constant.ORG_SORT_VALUE = {};
-ZCS.constant.ORG_SORT_VALUE[ZCS.constant.ORG_MAIL_FOLDER]   = 1;
-ZCS.constant.ORG_SORT_VALUE[ZCS.constant.ORG_ADDRESS_BOOK]  = 1;
-ZCS.constant.ORG_SORT_VALUE[ZCS.constant.ORG_SAVED_SEARCH]  = 2;
-ZCS.constant.ORG_SORT_VALUE[ZCS.constant.ORG_TAG]           = 3;
-ZCS.constant.ORG_SORT_VALUE[ZCS.constant.ORG_CALENDAR_FOLDER]   = 1;
+ZCS.constant.ORG_SORT_VALUE[ZCS.constant.ORG_MAIL_FOLDER]       = 1;
+ZCS.constant.ORG_SORT_VALUE[ZCS.constant.ORG_ADDRESS_BOOK]      = 1;
+ZCS.constant.ORG_SORT_VALUE[ZCS.constant.ORG_SAVED_SEARCH]      = 2;
+ZCS.constant.ORG_SORT_VALUE[ZCS.constant.ORG_TAG]               = 3;
+ZCS.constant.ORG_SORT_VALUE[ZCS.constant.ORG_CALENDAR]          = 1;
 
 // System folder IDs
 ZCS.constant.ID_ROOT      = '1';
