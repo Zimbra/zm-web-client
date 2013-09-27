@@ -148,7 +148,7 @@ function(){
     $(window).on("online offline", ZmOffline.checkServerStatus);
     $(document).on("ZWCOffline", this._onZWCOffline.bind(this));
     $(document).on("ZWCOnline", this._onZWCOnline.bind(this));
-    ZmOffline.checkServerStatus();
+    setInterval(ZmOffline.checkServerStatus, 10000);
 };
 
 
@@ -1282,34 +1282,38 @@ function(img, obj, msg, template, uploadResponse) {
 };
 
 ZmOffline.checkServerStatus =
-function() {
-    if (ZmOffline.serverTimeoutId) {
-        clearTimeout(ZmOffline.serverTimeoutId);
-    }
+function(retry) {
     $.ajax({
         type: "HEAD",
         url: "/public/blank.html",
-        timeout: 1000,
         statusCode: {
             0: function() {
                 if (ZmOffline.isServerReachable === true) {
-                    $.event.trigger({
-                        type: "ZWCOffline"
-                    });
+                    if (retry) {
+                        $.event.trigger({
+                            type: "ZWCOffline"
+                        });
+                    }
+                    else {
+                        return ZmOffline.checkServerStatus(true);
+                    }
                 }
                 ZmOffline.isServerReachable = false;
             },
             200: function() {
                 if (ZmOffline.isServerReachable === false) {
-                    $.event.trigger({
-                        type: "ZWCOnline"
-                    });
+                    if (retry) {
+                        $.event.trigger({
+                            type: "ZWCOnline"
+                        });
+                    }
+                    else {
+                        return ZmOffline.checkServerStatus(true);
+                    }
                 }
                 ZmOffline.isServerReachable = true;
             }
         }
-    }).always(function() {
-        ZmOffline.serverTimeoutId = setTimeout(ZmOffline.checkServerStatus, 10000);
     });
 };
 
