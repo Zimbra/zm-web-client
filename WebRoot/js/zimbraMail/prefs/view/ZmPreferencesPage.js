@@ -36,7 +36,7 @@ ZmPreferencesPage = function(parent, section, controller, id) {
 	this._section = section;
 	this._controller = controller;
 
-	this.setScrollStyle(DwtControl.SCROLL);
+	this.setScrollStyle(DwtControl.SCROLL_Y);
 
 	this._title = [ZmMsg.zimbraTitle, controller.getApp().getDisplayName(), section.title].join(": ");
 
