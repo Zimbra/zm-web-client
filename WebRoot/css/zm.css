@@ -3836,12 +3836,7 @@ HTML>BODY .appt-selected .appt_allday_body
 
 .ZmFilterRulesView .DwtListView-Rows {
 	/*overflow:visible;*/
-#IFNDEF MSIE
 	height:auto;
-#ENDIF
-#IFDEF MSIE
-	height:185px;
-#ENDIF
 	min-height:185px;
 }
 
