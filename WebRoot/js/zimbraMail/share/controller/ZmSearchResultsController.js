@@ -227,8 +227,10 @@ function(ev, zimletEvent) {
 
 // Note the error and then eat it - we don't want to show toast or clear out results
 ZmSearchResultsController.prototype._errorCallback =
-function(ev) {
-	this._toolbar.setLabel(ZmMsg.invalidSearch, true);
+function(ex) {
+	var msg = ZmCsfeException.getErrorMsg(ex.code);
+	msg = msg || ZmMsg.unknownError;
+	this._toolbar.setLabel(msg, true);
 	return true;
 };
 
