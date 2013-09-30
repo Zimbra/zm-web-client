@@ -161,7 +161,7 @@ Ext.define('Ext.ux.field.DateTimePicker', {
          * Accepts any valid datetime format. You can view formats over in the {@link Ext.Date} documentation.
          * Defaults to `Ext.util.Format.defaultDateFormat`.
          */
-        dateTimeFormat: 'm/d/Y h:i:A',
+        dateTimeFormat: ZtMsg.invDateTimeOnlyFormat,
         /**
          * @cfg {Object}
          * @hide

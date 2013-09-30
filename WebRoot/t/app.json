@@ -67,6 +67,12 @@
         },
         {
             "path": "app/view/ux/Ext.ux.TouchCalendarWeekEvents.js"
+        },
+        {
+            "path": "app/view/ux/DateTimePicker.js"
+        },
+        {
+            "path": "app/view/ux/DateTime.js"
         }
     ],
 

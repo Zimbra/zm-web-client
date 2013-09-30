@@ -10,7 +10,7 @@ Ext.define('Ext.ux.picker.DateTime', {
          * The start year for the date picker.
          * @accessor
          */
-        yearFrom: 1980,
+        yearFrom: new Date().getFullYear(),
 
         /**
          * @cfg {Number} yearTo
@@ -18,7 +18,7 @@ Ext.define('Ext.ux.picker.DateTime', {
          * @default the current year (new Date().getFullYear())
          * @accessor
          */
-        yearTo: new Date().getFullYear(),
+        yearTo: new Date().getFullYear() + 50,
 
         /**
          * @cfg {String} monthText
