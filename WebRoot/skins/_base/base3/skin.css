@@ -149,7 +149,7 @@ BODY									{	margin:0px; 	}
 
 /** App Toolbar **/
 #skin_tr_toolbar>.skin_layout_cell		{	@PageBg@ border-top:1px solid #999; 	}
-#skin_spacing_app_top_toolbar			{	height:3.0rem; 	}
+#skin_spacing_app_top_toolbar			{	height:35px; height:3.0rem; 	}
 #skin_container_app_top_toolbar			{	@SkinBorderAppToolbar@ width:auto; padding-top:5px; padding-left:@SashSize@; 	}
 #skin_container_app_new_button			{	@SkinBorderAppToolbar@ width:@TreeStartWidth@; padding:5px; }
 #skin_spacing_app_row					{	border-top:1px solid; border-spacing:0; padding:0px 7px; @AppTab@ 	}
@@ -563,7 +563,7 @@ SELECT						{	@FieldBorder@	}
 
 
 /*Temporary overrides that need to move to skin properties*/
-/*.DwtListView-ColHeader			{ height:1.8rem; 						}*/
+/*.DwtListView-ColHeader			{ height:1.8rem; height:19px;					}*/
 .DwtListView-Column					{ background-color:@lighten(AppC,33)@; 		}
 .DwtListView-Column TD				{ color:@darken(AppC,55)@; 					}
 .overviewHeader,
@@ -585,7 +585,7 @@ SELECT						{	@FieldBorder@	}
 .RowDouble .ImgCheckboxUnchecked 	{ margin:6px 0px 4px; 	}
 .RowDouble .BottomRow				{ margin:4px 0px 6px; 	}
 .Row-matched, .RowDouble-matched	{ background-color:@SearchResultColor@;		}
-.TopRow, .BottomRow					{ height:1.6rem; position:relative;	}
+.TopRow, .BottomRow					{ height:16px; height:1.6rem; position:relative;	}
 #IFDEF MSIE_LESS_THAN_9
 .TopRow, .BottomRow					{ width:99%;	}
 #ENDIF
@@ -605,7 +605,7 @@ SELECT						{	@FieldBorder@	}
 .TopRow .ImgNodeExpanded			{ padding:0px; }
 .ZmMsgListColTag 					{ padding:0px 2px 0px 3px; vertical-align:middle; }
 .BottomRow .ZmMsgListColTag 		{ margin-right:3px; }
-.ZmMsgListDate						{ position:absolute; right:0px; text-align:right; width:6.8rem;}
+.ZmMsgListDate						{ position:absolute; right:0px; text-align:right; width:75px; width:6.8rem;}
 .ZmMsgListColSelection, .ZmMsgListColFlag, .ZmMsgListColTag, .ZmMsgListColAccount,
 .ZmMsgListColStatus, .ZmMsgListColMute, .ZmMsgListColRead, .ZmMsgListColAttachment, .ZmMsgListColExpand
 {

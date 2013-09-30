@@ -1119,7 +1119,9 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 	background-color:white;
 	border:1px inset #F0F0F0;
 	color:#666;
+	height:16px;
 	height:1.8rem;
+	line-height:16px;
 	line-height:1.8rem;
 	padding:3px 2px 1px;
 }
@@ -1865,6 +1867,7 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 .ZmTaskProgress {
 	background-color:white;
 	border:1px solid #C5C5C5;
+	height:10px;
 	height:.9rem;
 	width:80px;
 }
@@ -2008,7 +2011,9 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 .calendar_heading {
 	@WidgetHeaderContainer@
 	@WidgetHeaderContainer-normal@
-	height:1.8rem;			/* ??? SIZE */
+	/* SIZE??? */
+	height:20px;
+	height:1.8rem;
 	overflow:hidden;
 }
 
@@ -2368,6 +2373,7 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 /* Used ???*/
 .calendar_date_search {
 	@DateSearchBackground@
+	height:32px;
 	height:2.9rem;
 	margin-right:5px;
 	border-bottom:1px solid @darken(AppC,30)@;
@@ -2999,6 +3005,7 @@ HTML>BODY .appt-selected .appt_allday_body
 
 .ZmTaskbar .ZToolbarButton,
 .ZmTaskbar .ZmStatusImageButton {
+	height:23px;
 	height:1.7rem;
 	margin-top:-2px;
 }
@@ -3806,11 +3813,13 @@ HTML>BODY .appt-selected .appt_allday_body
 }
 
 .ZmPrefZimletListView .Row-selected TD {
+	line-height:23px;
 	line-height:1.7rem;
 	white-space:normal;
 }
 
 .ZOptionsOfflineAccts {
+	font-size:14px;
 	font-size:1.1rem;
 	text-align:center;
 }
@@ -5910,6 +5919,7 @@ DIV.ZmSuggestLink {
 }
 
 .ZmDateFieldInput {
+	height:22px;
 	height:1.8rem;
 }
 

@@ -356,7 +356,7 @@
 										</td>
 									</tr>
 									<tr id='${id}_reminder_options'>
-										<td valign=top class='ZmFieldLabelRight' style='line-height:1.8rem' id='${id}_repeatLabel'><$= ZmMsg.reminderLabel $></td>
+										<td valign=top class='ZmFieldLabelRight' style='line-height:22px; line-height:1.8rem' id='${id}_repeatLabel'><$= ZmMsg.reminderLabel $></td>
 										<td valign=top colspan=9 align='left' id='${id}_reminderSelectContainer'>
 											<table><tr>
 												<td id='${id}_reminderSelectInput'></td>
