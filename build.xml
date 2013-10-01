@@ -1296,6 +1296,41 @@ if (ext == null) ext = "";
             <fileset refid="templates.fileset"/>
         </copy>
     </target>
+
+    <target name="touch-prod-deploy" depends="init">
+
+        <exec executable="/bin/bash">
+            <arg value="${this.zwc.basedir}/build-prod-touch.sh"/>
+            <arg value="production"/>
+        </exec>
+
+        <delete dir="${webapp.dir}/t"/>
+
+        <!--Copy the production dir-->
+        <copy todir='${webapp.dir}/t'>
+            <fileset dir='${touch.prod.dir}/production'/>
+        </copy>
+
+        <!--Copy the templates dir-->
+        <fileset id="templates.fileset" dir="${touch.dir}/resources/templates" casesensitive="yes"/>
+
+        <copy todir="${webapp.dir}/t/resources/templates" verbose="true">
+            <fileset refid="templates.fileset"/>
+        </copy>
+
+    </target>
+
+    <target name="touch-dev-deploy" depends="init">
+
+        <antcall target="compile.sass"/>
+
+        <delete dir="${webapp.dir}/t"/>
+
+        <copy todir='${webapp.dir}/t'>
+            <fileset dir='${touch.dir}' includes="${touch.includes}" excludes="${touch.excludes}"/>
+        </copy>
+
+    </target>
     
     <target name='deploy' depends='war'>
         <ant dir="${server.dir}" target="stop-jetty" inheritAll="false"/>
