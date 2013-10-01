@@ -72,25 +72,106 @@ Ext.define('ZCS.view.ZtOverview', {
 
 		this.add(organizerList);
 
-		ZCS.app.on('notifyFolderCreate', this.handleFolderCreate, this);
+		ZCS.app.on('notifyFolderCreate', this.handleOrganizerCreate, this);
+		ZCS.app.on('notifyFolderChange', this.handleOrganizerChange, this);
+
+		ZCS.app.on('notifySearchCreate', this.handleOrganizerCreate, this);
+		ZCS.app.on('notifySearchChange', this.handleOrganizerChange, this);
+
+		ZCS.app.on('notifyTagCreate', this.handleOrganizerCreate, this);
 	},
 
-	handleFolderCreate: function(folder, notification) {
+	/**
+	 * An organizer has just been created. We need to add it to our session data,
+	 * and insert it into the organizer list component.
+	 *
+	 * @param {ZtOrganizer}     folder          null (arg not passed)
+	 * @param {Object}          notification    JSON with organizer data
+	 */
+	handleOrganizerCreate: function(folder, notification) {
 
-		Ext.each(ZCS.constant.APPS, function(app) {
-			var organizers = [];
-			ZCS.session.addOrganizer(notification, organizers, app, ZCS.constant.ORG_FOLDER, []);
-			if (organizers.length > 0) {
-				var list = this.down('folderlist'),
-					store = list && list.getStore(),
-					parentId = notification.l,
-					parent = (parentId === ZCS.constant.ID_ROOT) ? store.getRoot() : store.getNodeById(parentId);
+		var organizers = [];
+		ZCS.session.addOrganizer(notification, organizers, this.getApp(), notification.itemType, []);
+		var organizer = organizers[0];
+		if (organizer) {
+			this.insertOrganizer(organizer, organizer.parentItemId);
+		}
+	},
 
-				if (parent) {
-					// appending the node inserts it into the correct sorted position (!)
-					parent.appendChild(organizers[0]);
-				}
+	/**
+	 * An organizer has just changed. If it is a move, we need to relocate it within
+	 * the organizer nested list.
+	 *
+	 * @param {ZtOrganizer}     folder          organizer that changed
+	 * @param {Object}          notification    JSON with new data
+	 */
+	handleOrganizerChange: function(folder, notification) {
+
+		if (notification.l) {
+			var reader = ZCS.model.ZtOrganizer.getProxy().getReader(),
+				data = reader.getDataFromNode(notification, folder.get('type'), this.getApp(), []),
+				list = this.down('folderlist'),
+				store = list && list.getStore(),
+				oldParentId = folder.get('parentItemId');
+
+			folder.set('parentItemId', data.parentItemId);
+			this.insertOrganizer(ZCS.cache.get(data.id), data.parentItemId, oldParentId);
+		}
+	},
+
+	/**
+	 * Adds a new child to the given parent, inserting it at the proper position within
+	 * the parent's children.
+	 *
+	 * @param {ZtOrganizer} organizer
+	 * @param {String}      parentId
+	 * @private
+	 */
+	insertOrganizer: function(organizer, parentId, oldParentId) {
+
+		var list = this.down('folderlist'),
+			store = list && list.getStore(),
+			parent = (!parentId || parentId === ZCS.constant.ID_ROOT) ? store.getRoot() : store.getNodeById(parentId),
+			oldParent = (!oldParentId || oldParentId === ZCS.constant.ID_ROOT) ? store.getRoot() : store.getNodeById(oldParentId);
+
+		if (parent) {
+			var index = this.getSortIndex(parent, organizer);
+			if (index === -1) {
+				parent.appendChild(organizer);
 			}
-		}, this);
+			else {
+				parent.insertChild(index, organizer);
+			}
+			parent.set('disclosure', true);
+			parent.set('leaf', false);
+
+			if (oldParent && !(oldParent.childNodes && oldParent.childNodes.length > 0)) {
+				oldParent.set('disclosure', false);
+				oldParent.set('leaf', true);
+			}
+		}
+	},
+
+	/**
+	 * Returns the index of the child within the parent's children, or -1 if there
+	 * are no children.
+	 *
+	 * @param {ZtOrganizer} parent
+	 * @param {ZtOrganizer} child
+	 * @return {Integer}    the sort index
+	 * @private
+	 */
+	getSortIndex: function(parent, child) {
+
+		var ln = parent && parent.childNodes ? parent.childNodes.length : 0,
+			i, organizer;
+
+		for (i = 0; i < ln; i++) {
+			organizer = parent.childNodes[i];
+			if (ZCS.model.ZtOrganizer.compare(child, organizer) === -1) {
+				return i;
+			}
+		}
+		return -1;
 	}
 });

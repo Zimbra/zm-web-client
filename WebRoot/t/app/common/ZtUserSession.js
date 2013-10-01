@@ -162,8 +162,13 @@ Ext.define('ZCS.common.ZtUserSession', {
 		}, this);
 		this.setOrganizerData(organizerData);
 
-		ZCS.app.on('notifyFolderDelete', this.handleFolderDelete, this);
-		ZCS.app.on('notifyFolderChange', this.handleFolderChange, this);
+		ZCS.app.on('notifyFolderDelete', this.handleOrganizerDelete, this);
+		ZCS.app.on('notifySearchDelete', this.handleOrganizerDelete, this);
+		ZCS.app.on('notifyTagDelete', this.handleOrganizerDelete, this);
+
+		ZCS.app.on('notifyFolderChange', this.handleOrganizerChange, this);
+		ZCS.app.on('notifySearchChange', this.handleOrganizerChange, this);
+		ZCS.app.on('notifyTagChange', this.handleOrganizerChange, this);
 	},
 
 	/**
@@ -260,6 +265,8 @@ Ext.define('ZCS.common.ZtUserSession', {
 			organizer;
 
 		if (!isRoot && (type === ZCS.constant.ORG_SAVED_SEARCH) && node.types) {
+			// a saved search should only have a single type since we no longer support
+			// mixed searches, but there might be legacy searches out there
 			Ext.each(node.types.split(','), function(type) {
 				if (ZCS.constant.APP_FOR_TYPE[Ext.String.trim(type)] === app) {
 					validType = true;
@@ -277,54 +284,7 @@ Ext.define('ZCS.common.ZtUserSession', {
 		// add the organizer if it has the right view/type; Trash is part of every folder list
 		if (!isRoot && ((validType && !hideFolder) || isTrash)) {
 
-			// Get exact folder type if we're dealing with a folder. Tag needs unique ID for each store
-			// it appears in (tag is only organizer that can appear in multiple overviews). Trash also
-			// appears in more than one overview.
-			var type1 = (type === ZCS.constant.ORG_FOLDER) ? ZCS.constant.FOLDER_TYPE[app] : type,
-				id = ZCS.model.ZtOrganizer.getOrganizerId(itemId, type, app);
-
-			organizer = {
-				id:             id,
-//				itemId:         itemId,
-				itemId:         id,
-				tagId:          (type === ZCS.constant.ORG_TAG) ? itemId : null,
-				parentItemId:   node.l,
-				name:           node.name,
-				displayName:    Ext.String.htmlEncode(node.name),
-				notifyType:     type,
-				path:           node.name,
-				color:          node.color,
-				rgb:            node.rgb,
-				itemCount:      node.n,
-				disclosure:     hasChildren,
-				type:           type1,
-				url:            node.url
-			};
-			organizer.typeName = ZCS.constant.ORG_NAME[type1];
-
-			if (node.absFolderPath) {
-				organizer.path = node.absFolderPath;
-			}
-			else if (parents && parents.length) {
-				organizer.path = parents.join('/') + '/' + node.name;
-			}
-
-			// type-specific fields
-			if (type1 === ZCS.constant.ORG_MAIL_FOLDER) {
-				if (node.u != null) {
-					organizer.unreadCount = node.u;
-				}
-			}
-			else if (type === ZCS.constant.ORG_SAVED_SEARCH) {
-				organizer.query = node.query;
-			}
-
-			if (hasChildren) {
-				organizer.items = [];
-				organizer.leaf = false;
-			} else {
-				organizer.leaf = true;
-			}
+			organizer = ZCS.model.ZtOrganizer.getProxy().getReader().getDataFromNode(node, type, app, parents);
 
             //<debug>
 			Ext.Logger.verbose('adding folder ' + organizer.path);
@@ -346,14 +306,14 @@ Ext.define('ZCS.common.ZtUserSession', {
 		}
 	},
 
-	handleFolderDelete: function(folder, notification) {
+	handleOrganizerDelete: function(organizer, notification) {
 
 		var orgIndex = null,
 			orgData = this.getOrganizerData();
 
 		Ext.each(ZCS.constant.APPS, function(app) {
-			Ext.each(this.getOrganizerDataByApp(app), function(organizer, index) {
-				if (organizer === folder) {
+			Ext.each(this.getOrganizerDataByApp(app), function(org, index) {
+				if (org === organizer) {
 					orgIndex = index;
 					return false;
 				}
@@ -363,22 +323,19 @@ Ext.define('ZCS.common.ZtUserSession', {
 			}
 		}, this);
 
-		folder.destroy();
+		organizer.destroy();
 	},
 
-	handleFolderChange: function(folder, notification) {
+	handleOrganizerChange: function(organizer, notification) {
 
-		var organizer;
+		var org;
 		Ext.each(ZCS.constant.APPS, function(app) {
-			organizer = this.findOrganizerInList(notification.id, this.getOrganizerDataByApp(app));
-			if (organizer) {
-				// TODO: should maybe use Ext.copyTo() and a list of props
-				Ext.apply(organizer, notification);
-				return false;
+			org = this.findOrganizerInList(notification.id, this.getOrganizerDataByApp(app));
+			if (org) {
+				Ext.copyTo(org, notification, ['l', 'name', 'color', 'rgb', 'n', 'url', 'absFolderPath', 'u', 'query']);
+				organizer.handleModifyNotification(notification, app);
 			}
 		}, this);
-
-		folder.handleModifyNotification(notification);
 	},
 
 	findOrganizerInList: function(id, list) {

@@ -23,32 +23,43 @@ Ext.define('ZCS.model.ZtOrganizer', {
 
 	extend: 'Ext.data.Model',
 
+	requires: [
+		'ZCS.model.ZtOrganizerReader'
+	],
+
 	config: {
+
 		fields: [
 			// global fields
-			{ name: 'type',         type: 'string' },  // ZCS.constant.ORG_*
-			{ name: 'typeName',     type: 'string' },  // display name of group
-			{ name: 'itemId',       type: 'string' },  // ID on ZCS server
-			{ name: 'tagId',        type: 'string' },  // ID of tag on ZCS server
-			{ name: 'notifyType',   type: 'string' },  // notification type
-			{ name: 'parentItemId', type: 'string' },  // ID of parent organizer
-			{ name: 'name',         type: 'string' },  // not encoded, should not be displayed
-			{ name: 'displayName',  type: 'string' },  // HTML-encoded
-			{ name: 'path',         type: 'string' },  // full path with / separators
-			{ name: 'itemCount',    type: 'int' },     // number of items contained by this organizer
-			{ name: 'color',        type: 'int' },     // standard color
-			{ name: 'rgb',          type: 'string' },  // extended RGB color
-			{ name: 'url',          type: 'string' },  // feeds
+			{ name: 'type',             type: 'string' },  // ZCS.constant.ORG_*
+			{ name: 'typeName',         type: 'string' },  // display name of group
+			{ name: 'itemId',           type: 'string' },  // ID (possibly qualified)
+			{ name: 'zcsId',            type: 'string' },  // ID on ZCS server
+			{ name: 'tagId',            type: 'string' },  // ID of tag on ZCS server
+			{ name: 'notifyType',       type: 'string' },  // notification type
+			{ name: 'parentItemId',     type: 'string' },  // ID of parent organizer
+			{ name: 'name',             type: 'string' },  // not encoded, should not be displayed
+			{ name: 'displayName',      type: 'string' },  // HTML-encoded
+			{ name: 'path',             type: 'string' },  // full path with / separators
+			{ name: 'itemCount',        type: 'int' },     // number of items contained by this organizer
+			{ name: 'color',            type: 'int' },     // standard color
+			{ name: 'rgb',              type: 'string' },  // extended RGB color
+			{ name: 'url',              type: 'string' },  // feeds
 
 			// folder fields
-			{ name: 'disclosure', type: 'boolean' },    // override NestedList button behavior
+			{ name: 'disclosure',       type: 'boolean' }, // override NestedList button behavior
 
 			// mail folder fields
-			{ name: 'unreadCount', type: 'int' },       // number of unread messages in this folder
+			{ name: 'unreadCount',      type: 'int' },     // number of unread messages in this folder
 
 			// saved search fields
-			{ name: 'query', type: 'string' }           // search query
-		]
+			{ name: 'query',            type: 'string' }   // search query
+		],
+
+		proxy: {
+			type:   'memory',
+			reader: 'organizerreader'
+		}
 	},
 
 	statics: {
@@ -85,12 +96,14 @@ Ext.define('ZCS.model.ZtOrganizer', {
 			}
 
 			// organizers may come to us as data or as instantiated ZtOrganizer objects
-			var orgType1 = organizer1.type || organizer1.get('type'),
-				orgType2 = organizer2.type || organizer2.get('type'),
-				id1 = organizer1.itemId || organizer1.get('itemId'),
-				id2 = organizer2.itemId || organizer2.get('itemId'),
-				name1 = organizer1.name || organizer1.get('name'),
-				name2 = organizer2.name || organizer2.get('name'),
+			var get1 = !!organizer1.get,
+				get2 = !!organizer2.get,
+				orgType1 = organizer1.type || (get1 ? organizer1.get('type') : null),
+				orgType2 = organizer2.type || (get2 ? organizer2.get('type') : null),
+				id1 = organizer1.zcsId || (get1 ? organizer1.get('zcsId') : null),
+				id2 = organizer2.zcsId || (get2 ? organizer2.get('zcsId') : null),
+				name1 = organizer1.name || (get1 ? organizer1.get('name') : null),
+				name2 = organizer2.name || (get2 ? organizer2.get('name') : null),
 				isSystem1 = (orgType1 !== ZCS.constant.ORG_SAVED_SEARCH && orgType1 !== ZCS.constant.ORG_TAG && id1 <= ZCS.constant.MAX_SYSTEM_ID),
 				isSystem2 = (orgType2 !== ZCS.constant.ORG_SAVED_SEARCH && orgType2 !== ZCS.constant.ORG_TAG && id2 <= ZCS.constant.MAX_SYSTEM_ID),
 				sortField1, sortField2;
@@ -122,8 +135,8 @@ Ext.define('ZCS.model.ZtOrganizer', {
 		var orgId = (data && (data.itemId || data.id)) || id;
 
 		ZCS.cache.set(orgId, this);
-		if (data.tagId) {
-			ZCS.cache.set(data.tagId, this);
+		if (data.zcsId && data.zcsId !== orgId) {
+			ZCS.cache.set(data.zcsId, this);
 		}
 		if (data.path) {
 			ZCS.cache.set(this.isSystem() ? ZCS.constant.FOLDER_SYSTEM_NAME[orgId] : data.path, this, 'path');
@@ -196,14 +209,26 @@ Ext.define('ZCS.model.ZtOrganizer', {
 		return title;
 	},
 
-	handleModifyNotification: function(modify) {
+	handleModifyNotification: function(modify, app) {
+
+		// Use reader to perform any needed data transformation
+		var reader = ZCS.model.ZtOrganizer.getProxy().getReader(),
+			data = reader.getDataFromNode(modify, this.get('type'), app, []);
 
 		if (modify.u != null) {
-			this.set('unreadCount', modify.u);
+			this.set('unreadCount', data.unreadCount);
 		}
 		if (modify.name) {
-			this.set('name', modify.name);
+			this.set('name', data.name);
 		}
+		if (modify.color) {
+			this.set('color', data.color);
+		}
+		if (modify.rgb) {
+			this.set('rgb', data.rgb);
+		}
+
+		// Note: updating parent folder ('parentItemId') is handled in ZtOverview
 	},
 
 	/**

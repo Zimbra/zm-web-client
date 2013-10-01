@@ -195,9 +195,10 @@ ZCS.constant.TYPE_FOR_CLASS = ZCS.util.getBackMap(ZCS.constant.CLASS_FOR_TYPE);
 ZCS.constant.NODE_CONVERSATION  = 'c';
 ZCS.constant.NODE_MESSAGE       = 'm';
 ZCS.constant.NODE_CONTACT       = 'cn';
+ZCS.constant.NODE_CALENDAR      = 'appt';
 ZCS.constant.NODE_MATCH         = 'match';
 ZCS.constant.NODE_FOLDER        = 'folder';
-ZCS.constant.NODE_CALENDAR      = 'appt';
+ZCS.constant.NODE_SEARCH        = 'search';
 ZCS.constant.NODE_TAG           = 'tag';
 
 // Order in which to handle notifications
@@ -206,6 +207,7 @@ ZCS.constant.NODES = [
 	ZCS.constant.NODE_MESSAGE,
 	ZCS.constant.NODE_CONTACT,
 	ZCS.constant.NODE_FOLDER,
+	ZCS.constant.NODE_SEARCH,
 	ZCS.constant.NODE_TAG
 ];
 
@@ -222,6 +224,7 @@ ZCS.constant.ITEM_NODE[ZCS.constant.ITEM_CONTACT]           = ZCS.constant.NODE_
 ZCS.constant.ITEM_NODE[ZCS.constant.ADDRESS_AUTOCOMPLETE]   = ZCS.constant.NODE_MATCH;
 ZCS.constant.ITEM_NODE[ZCS.constant.ITEM_CALENDAR]          = ZCS.constant.NODE_CALENDAR;
 ZCS.constant.ITEM_NODE[ZCS.constant.ORG_FOLDER]             = ZCS.constant.NODE_FOLDER;
+ZCS.constant.ITEM_NODE[ZCS.constant.ORG_SAVED_SEARCH]       = ZCS.constant.NODE_SEARCH;
 ZCS.constant.ITEM_NODE[ZCS.constant.ORG_TAG]                = ZCS.constant.NODE_TAG;
 
 // Item type based on JSON node name
