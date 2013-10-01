@@ -482,7 +482,7 @@ Ext.define('ZCS.common.mail.ZtQuotedContent', {
 						return null;
 					}
 					else {
-						unknownBlock = isHtml ? true : result.block;
+						unknownBlock = result.block;
 					}
 				}
 				else if (foundSep) {
