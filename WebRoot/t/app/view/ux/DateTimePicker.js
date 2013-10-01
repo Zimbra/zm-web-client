@@ -110,7 +110,6 @@ Ext.define('Ext.ux.field.DateTimePicker', {
     alternateClassName: 'Ext.form.DateTimePicker',
     xtype: 'datetimepickerfield',
     requires: [
-        'Ext.ux.picker.DateTime',
         'Ext.DateExtras'
     ],
 
