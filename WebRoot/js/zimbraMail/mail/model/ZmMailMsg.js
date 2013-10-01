@@ -2527,6 +2527,9 @@ function(addrNodes, parentNode, isDraft, accountName) {
 	// from or the one we have is the default anyway
 	var identity = this.identity;
 	var isPrimary = identity == null || identity.isDefault;
+	if (this.delegatedSenderAddr) {
+		isPrimary = false;
+	}
 
 	// If repying to an invite which was addressed to user's alias then accept
 	// reply should appear from the alias
