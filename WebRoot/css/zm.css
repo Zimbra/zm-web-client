@@ -5100,6 +5100,11 @@ If you feel compelled to have a background color, please do so on a per skin lev
 .ZPropertySheet				{	@PropertySheet@				}
 .ZPropertySheet>TBODY>TR>TD {	@PropertySheetSpacing@		}
 
+/* make nested property sheets align properly */
+.ZPropertySheet>TBODY>TR>TD>.ZPropertySheet>TBODY>TR>TD:first-child {
+	@PropertySheetNoLeftSpacing@
+}
+
 
 /*briefcase app*/
 
