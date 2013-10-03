@@ -360,7 +360,7 @@ function(viewId, headerList) {
 	var headers = headerList;
 	if (userHeaders && isMultiColumn) {
 		headers = userHeaders.split(ZmListView.COL_JOIN);
-		//we have to do it regardless of the size of headers and headerList, as items could be added and removed, masking each other as far as length (previous code compared length) 
+		//we have to do it regardless of the size of headers and headerList, as items could be added and removed, masking each other as far as length (previous code compared length)
 		headers = this._normalizeHeaders(headers, headerList);
 	}
     // adding account header in _normalizeHeader method
@@ -398,8 +398,17 @@ function(viewId, headerList) {
 				hdrParams.visible = true;
 				this._showingAccountColumn = true;
 			} else {
-				hdrParams.visible = (appCtxt.multiAccounts && header == ZmItem.F_ACCOUNT && !userHeaders)
+				var visible = (appCtxt.multiAccounts && header == ZmItem.F_ACCOUNT && !userHeaders)
 					? false : (header.indexOf("*") == -1);
+                if (!userHeaders && isMultiColumn) {
+                    //this is the default header
+                    if (typeof hdrParams.visible === "undefined") {
+                        //if the visible header is not set than use the computed value
+                        hdrParams.visible = visible;
+                    }
+                } else {
+                    hdrParams.visible = visible;
+                }
 			}
 			hList.push(new DwtListHeaderItem(hdrParams));
 		}
