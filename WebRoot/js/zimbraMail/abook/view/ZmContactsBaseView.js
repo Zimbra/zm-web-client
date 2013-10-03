@@ -195,10 +195,29 @@ function(itemArray) {
  */
 ZmContactsBaseView.prototype._modifyContact =
 function(ev) {
+	var list = this.getList();
+	//the item was updated - the list might be "old" (not pointing to the latest items,
+	// since we refreshed the items in the appCtxt cache by a different view. see bug 84226)
+	//therefor let's make sure the modified contact replaces the old one in the list.
+	var contact = ev.item;
+	if (contact) {
+		var arr = list.getArray();
+		for (var i = 0; i < arr.length; i++) {
+			if (arr[i].id === contact.id) {
+				if (arr[i] === contact) {
+					//nothing changed, still points to same object
+					break;
+				}
+				arr[i] = contact;
+				//update the viewed contact
+				this.parent.setContact(contact);
+				break;
+			}
+		}
+	}
 	// if fileAs changed, resort the internal list
 	// XXX: this is somewhat inefficient. We should just remove this contact and reinsert
 	if (ev.getDetail("fileAsChanged")) {
-		var list = this.getList();
 		if (list) {
 			list.sort(ZmContact.compareByFileAs);
 		}

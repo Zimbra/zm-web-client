@@ -1734,7 +1734,12 @@ function(obj, batchMode) {
 	};
 
 	// update this contact's list per old/new attrs
-	this.list.modifyLocal(obj, details);
+	for (var listId in this._list) {
+		var list = listId && appCtxt.getById(listId);
+		if (!list) { continue; }
+		list.modifyLocal(obj, details);
+	}
+
 	this._notify(ZmEvent.E_MODIFY, obj);
 
 	var buddy = this.getBuddy();

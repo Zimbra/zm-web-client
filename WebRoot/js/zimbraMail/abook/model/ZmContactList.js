@@ -752,7 +752,8 @@ ZmContactList.prototype.modifyLocal =
 function(item, details) {
 	if (details) {
 		// notify item's list
-		details.items = [item];
+		this._evt.items = details.items = [item];
+		this._evt.item = details.contact; //somehow this was set to something obsolete. What a mess. Also note that item is Object while details.contact is ZmContact
 		this._notify(ZmEvent.E_MODIFY, details);
 	}
 
