@@ -270,7 +270,7 @@ function() {
 		if (cmd == "compose") {
 			cc._setView(params);
 		} else {
-			AjxDispatcher.require(["MailCore", "CalendarCore"]);
+			AjxDispatcher.require(["MailCore", "ContactsCore", "CalendarCore"]);
 			var op = params.action || ZmOperation.NEW_MESSAGE;
 			if (params.msg && params.msg._mode) {
 				switch (params.msg._mode) {

@@ -21,6 +21,8 @@
  * 	- To display mini-calendar
  * 	- For reminders refresh
  * 	- If search for resources returns data
+ *
+ * Any user of this package will need to load ContactsCore first.
  */
 
 AjxPackage.require("zimbraMail.calendar.model.ZmCalendar");
