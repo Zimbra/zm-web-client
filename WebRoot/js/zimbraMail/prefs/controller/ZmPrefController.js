@@ -448,6 +448,14 @@ function(exception1/*, ..., exceptionN*/) {
 			// should keep us from getting here
 			message = ZmMsg.invalidPrefValue;
 		}
+        else if(exception.code == ZmCsfeException.TOO_MANY_IDENTITIES) {
+            //Bug fix # 80409 - Show a custom/localized message and not the server error
+            message = ZmMsg.errorTooManyIdentities;
+        }
+        else if(exception.code == ZmCsfeException.IDENTITY_EXISTS) {
+           //Displaying custom message in case of identity already exists
+           message = AjxMessageFormat.format(ZmMsg.errorIdentityAlreadyExists, message.substring(message.length, message.lastIndexOf(':') + 2));
+        }
 		appCtxt.setStatusMsg(message, ZmStatusView.LEVEL_CRITICAL);
 	}
 };
