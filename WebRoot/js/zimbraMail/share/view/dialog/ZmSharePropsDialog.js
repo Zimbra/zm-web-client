@@ -103,13 +103,15 @@ function(mode, object, share) {
 	var isGuestShare = share ? share.isGuest() : false;
 	var isPublicShare = share ? share.isPublic() : false;
 	var supportsPublic = object.supportsPublicAccess();
+	var externalEnabled = appCtxt.get(ZmSetting.SHARING_EXTERNAL_ENABLED);
+	var publicEnabled = appCtxt.get(ZmSetting.SHARING_PUBLIC_ENABLED);
 
 	this._userRadioEl.checked = isUserShare;
 	this._userRadioEl.disabled = !isNewShare;
 	this._guestRadioEl.checked = isGuestShare;
-	this._guestRadioEl.disabled = !isNewShare || !supportsPublic;
+	this._guestRadioEl.disabled = !(externalEnabled && isNewShare  && supportsPublic);
 	this._publicRadioEl.checked = isPublicShare;
-	this._publicRadioEl.disabled = !isNewShare || !supportsPublic || (object.type === ZmOrganizer.FOLDER);
+	this._publicRadioEl.disabled = !(publicEnabled && isNewShare && supportsPublic && (object.type !== ZmOrganizer.FOLDER));
 
 	var type = this._getType(isUserShare, isGuestShare, isPublicShare);
 	this._handleShareWith(type);
