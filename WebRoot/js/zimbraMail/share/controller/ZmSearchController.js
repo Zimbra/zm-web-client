@@ -561,8 +561,8 @@ function(params, noRender, callback, errorCallback) {
 	}
 
 	var respCallback = this._handleResponseDoSearch.bind(this, search, noRender, callback, params.noUpdateOverview);
-    if (search.hasFolderTerm('outbox')) {
-        var offlineCallback = this._handleOfflineDoSearch.bind(this, search, noRender, callback, params.noUpdateOverview);
+    var offlineCallback = this._handleOfflineDoSearch.bind(this, search, noRender, callback, params.noUpdateOverview);
+    if (search.folderId == ZmFolder.ID_OUTBOX) {
         var offlineRequest = true;
     }
 	if (!errorCallback) {
@@ -942,10 +942,21 @@ function(id) {
  */
 ZmSearchController.prototype._doIndexedDBSearch =
 function(search) {
-    var respCallback = this._handleResponseDoIndexedDBSearch.bind(this, search);
-    var errorCallback = this._handleErrorDoIndexedDBSearch.bind(this, search);
-    var key = {methodName : "SendMsgRequest"};
-    ZmOfflineDB.indexedDB.getItemInRequestQueue(key, respCallback, errorCallback);
+    var respCallback = this._handleResponseDoIndexedDBSearch.bind(this, search),
+        errorCallback = this._handleErrorDoIndexedDBSearch.bind(this, search);
+
+    if (search.folderId == ZmFolder.ID_OUTBOX) {
+        var key = {methodName : "SendMsgRequest"};
+        ZmOfflineDB.indexedDB.getItemInRequestQueue(key, respCallback, errorCallback);
+    }
+    else {
+        var objStore = ZmFolder.MSG_KEY[search.folderId] + ZmOffline.MESSAGE;
+        if (search.folderId == ZmFolder.ID_DRAFTS) {
+            respCallback = errorCallback = this._addOfflineDrafts.bind(this, search);
+        }
+        //ZmOfflineDB.indexedDB.getItem(false, objStore, respCallback, errorCallback);
+        ZmOfflineDB.indexedDB.getAll(objStore, respCallback);
+    }
 };
 
 /**
@@ -963,12 +974,23 @@ function(search, result) {
         result.reverse();
     }
 
-    var respEl = ZmOffline.generateMsgResponse(result),
-        results = new ZmSearchResult(search);
+    if (search.folderId == ZmFolder.ID_OUTBOX) {
+        var respEl = ZmOffline.generateMsgResponse(result);
+        ZmOffline.updateOutboxFolderCountCallback(respEl.length);
+    }
+    else {
+        respEl = [];
+        result.forEach(function(val) {
+            if (val.value) {
+                respEl.push(val.value.Body.GetMsgResponse.m[0]);
+            }
+        });
+    }
 
+    var results = new ZmSearchResult(search);
     results.type = search.types ? search.types.get(0) : null;
 
-    if (search.types.get(0) === ZmId.ITEM_CONV) {//conversation mode
+    if (results.type === ZmId.ITEM_CONV) {//conversation mode
         results.set({ "c" : respEl });
     }
     else {
@@ -976,8 +998,6 @@ function(search, result) {
     }
 
     this._showResults(results, search);
-
-    ZmOffline.updateOutboxFolderCountCallback(result.length);
 };
 
 /**
@@ -990,4 +1010,17 @@ function(search, result) {
     var results = new ZmSearchResult(search);
     results.type = search.types ? search.types.get(0) : null;
     this._showResults(results, search);
+};
+
+ZmSearchController.prototype._addOfflineDrafts =
+function(search, result) {
+    var callback = this._addOfflineDraftsCallback.bind(this, search, result);
+    var key = {methodName : "SaveDraftRequest"};
+    ZmOfflineDB.indexedDB.getItemInRequestQueue(key, callback, callback);
+};
+
+ZmSearchController.prototype._addOfflineDraftsCallback =
+function(search, result, newResult) {
+    var respEl = ZmOffline.generateMsgResponse(newResult);
+    this._handleResponseDoIndexedDBSearch(search, [].concat(result).concat(respEl));
 };

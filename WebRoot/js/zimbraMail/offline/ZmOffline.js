@@ -128,12 +128,7 @@ function(key, callback, params, objStore) {
     }
     var searchRequest = params && params.jsonObj && params.jsonObj.SearchRequest;
     if (searchRequest && searchRequest._jsns === "urn:zimbraMail" ){
-        if (searchRequest.query === 'in:"drafts"') {
-            this._syncSearchRequest(ZmOffline.addOfflineDrafts.bind(null, callback), objStore, params);
-        }
-        else {
-            this._syncSearchRequest(callback, objStore, params);
-        }
+        this._syncSearchRequest(callback, objStore, params);
         return;
     }
 
@@ -1158,33 +1153,6 @@ function(count) {
     var outboxFolder = appCtxt.getById(ZmFolder.ID_OUTBOX);
     if (outboxFolder) {
         outboxFolder.notifyModify({n : count});
-    }
-};
-
-ZmOffline.addOfflineDrafts =
-function(callback, params) {
-    var key = {methodName : "SaveDraftRequest"};
-    ZmOfflineDB.indexedDB.getItemInRequestQueue(key, ZmOffline.addOfflineDraftsCallback.bind(null, callback, params), ZmOffline.addOfflineDraftsErrorCallback.bind(null, callback, params));
-};
-
-ZmOffline.addOfflineDraftsCallback =
-function(callback, params, result) {
-    var responseElement = ZmOffline.generateMsgResponse(result);
-    if (callback) {
-        if (responseElement && params.response && params.response.Body) {
-            var searchResponse = params.response.Body.SearchResponse;
-            if (searchResponse && searchResponse.m) {
-                searchResponse.m = responseElement.concat(searchResponse.m);
-            }
-        }
-        callback(params);
-    }
-};
-
-ZmOffline.addOfflineDraftsErrorCallback =
-function(callback, params) {
-    if (callback) {
-        callback(params);
     }
 };
 
