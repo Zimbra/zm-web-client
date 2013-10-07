@@ -1282,14 +1282,14 @@ function(img, obj, msg, template, uploadResponse) {
 };
 
 ZmOffline.checkServerStatus =
-function(retry) {
+function(doStop) {
     $.ajax({
         type: "HEAD",
         url: "/public/blank.html",
         statusCode: {
             0: function() {
                 if (ZmOffline.isServerReachable === true) {
-                    if (retry) {
+                    if (doStop) {
                         $.event.trigger({
                             type: "ZWCOffline"
                         });
@@ -1302,7 +1302,7 @@ function(retry) {
             },
             200: function() {
                 if (ZmOffline.isServerReachable === false) {
-                    if (retry) {
+                    if (doStop) {
                         $.event.trigger({
                             type: "ZWCOnline"
                         });
