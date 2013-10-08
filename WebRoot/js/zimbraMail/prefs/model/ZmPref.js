@@ -142,7 +142,7 @@ function(value) {
 ZmPref.validatePollingInterval =
 function(interval) {
 	var minimum = appCtxt.get(ZmSetting.MIN_POLLING_INTERVAL);
-	if (interval && minimum && interval >= minimum) {
+	if (interval && (!minimum || interval >= minimum)) {
 		return true;
 	} else {
 		var min = minimum / 60;
