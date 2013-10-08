@@ -328,17 +328,7 @@ function(params) {
 		var child = children[i];
 		if (!child || (params.omit && params.omit[child.nId])) { continue; }
 		if (!(params.include && params.include[child.nId])) {
-			var allowed = ((org.nId == ZmOrganizer.ID_ROOT) && this.allowedTypes[child.type]) ||
-						  ((org.nId != ZmOrganizer.ID_ROOT) && this.allowedSubTypes[child.type]);
-			if (!allowed) {
-				if (params.omitParents) continue;
-				var proxy = AjxUtil.createProxy(params);
-				proxy.treeNode = null;
-				proxy.organizer = child;
-				this._render(proxy);
-				continue;
-			}
-			if (this._allowedTypes && !this._allowedTypes[child.type]) {
+			if (!this._isAllowed(org, child)) {
 				if (params.omitParents) continue;
 				var proxy = AjxUtil.createProxy(params);
 				proxy.treeNode = null;
@@ -397,6 +387,42 @@ function(params) {
 		this._addNew(parentNode, child, null, params.noTooltips, params.omit);
 		numItems++;
 	}
+};
+
+/**
+ * a bit complicated and hard to explain - We should only allow (render on this view)
+ * a child of an "allowedSubTypes", if all its ancestors are allowed all the way to the root ("Folders"), meaning
+ * it has an ancestor that is of the allowedTypes (but is not the root)
+ * e.g.
+ * allowed:
+ * Folders-->folder1--->searchFolder1
+ * Folders--->folder1--->folder2--->folder3--->searchFolder1
+ *
+ * not allowed:
+ * Folders-->searchFolder1
+ * Folders-->searchFolder1--->searchFolder2
+ *
+ * @param org
+ * @param child
+ * @returns {*}
+ * @private
+ */
+ZmTreeView.prototype._isAllowed =
+function(org, child) {
+	if (!org) { //could happen, for example the Zimlets root doesn't have a parent.
+		return true; //seems returning true in this case works... what a mess.
+	}
+	if (Number(org.nId) === ZmOrganizer.ID_ROOT) {
+		return this.allowedTypes[child.type];
+	}
+	//org is not root
+	if (this.allowedTypes[child.type]) {
+		return true; //optimization, end the recursion if we find a non root allowed ancestor.
+	}
+	if (this.allowedSubTypes[child.type]) {
+		return this._isAllowed(org.parent, org); //go up parent to see if eventually it's allowed.
+	}
+	return false;
 };
 
 /**
