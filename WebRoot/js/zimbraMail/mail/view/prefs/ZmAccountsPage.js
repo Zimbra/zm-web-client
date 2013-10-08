@@ -1171,7 +1171,7 @@ function(id, section, value) {
 			var searchPath = array[i] = tree.getById(fid).getSearchPath();
 			seenComma = seenComma || searchPath.match(/,/);
 		}
-		value = array.join(seenComma ? "; " : ", ");
+		value = AjxUtil.uniq(array).join(seenComma ? "; " : ", ");
 	}
 
 	switch (setup.displayContainer) {
