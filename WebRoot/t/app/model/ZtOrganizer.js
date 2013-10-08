@@ -179,7 +179,7 @@ Ext.define('ZCS.model.ZtOrganizer', {
 
 		this.callParent(arguments);
 
-		var orgId = (data && (data.zcsId || data.id)) || id;
+		var orgId = (data && (data.id || data.zcsId)) || id;
 //		console.log('Cache organizer "' + data.name + '" under key "' + orgId + '"');
 
 		ZCS.cache.set(orgId, this);
