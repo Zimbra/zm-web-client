@@ -650,36 +650,37 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 	color:black;
 	border:2px solid #999;
 	padding:1px 3px;
-	margin-bottom:2px;
+	margin-bottom:0px;
 	margin-left:3px;
 	display:inline-block;
 	background-color:@darken(AppC,20)@;
-	height:16px;
+	height:12px;
 	@roundCorners(4px)@
 }
 
 .AttachmentSpan{
-	position:relative;
 	overflow:visible;
 	padding-right:17px !important;
+	position:relative;
 }
 
 
-.AttProgressSpan1, .AttProgressSpan2 {
-	height:14px;
+.AttProgressSpan1,
+.AttProgressSpan2 {
+	height:15px;
+	left:0px;
 	overflow:hidden;
-
+	@roundCorners(4px 0px 0px 4px)@
 }
 
 .AttProgressSpan1 {
-	width:1px;
-	position:absolute;
 	background:#999;
-	margin-top:2px;
-}
-
-.AttProgressSpan2 {
-	left:0px;
+	color:white;
+	margin-top:0px;
+	padding:1px 0px 1px 5px;
+	position:absolute;
+	top:0px;
+	width:1px;
 }
 
 .AttachmentClose {
@@ -1123,7 +1124,7 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 	height:1.8rem;
 	line-height:16px;
 	line-height:1.8rem;
-	padding:3px 2px 1px;
+	padding:1px 2px;
 }
 
 .attach_text {
@@ -1203,23 +1204,54 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 	margin:0px 0px 0px 65px;
 }
 
-/* Styles to support the autocomplete option to show addresses in bubbles */
+/* Styles for bubbles in general */
 
-.addrBubbleContainer, .attBubbleContainer {
-	@TextCursor@
-	background-color:white;
-	border:1px inset #F0F0F0;
-	height:2rem;
+.addrBubble,
+.addrBubble-selected,
+.addrBubble-actioned,
+.attachmentBubble {
+	border:1px solid #999;
+	color:black;
+	display:inline-block;
+	line-height: 1.27rem;
+	margin:0px 1px;
+	padding:1px 5px 2px;
+	position:relative !important;
+	vertical-align:top;
+	white-space:nowrap;
+	@roundCorners(8px)@
 }
 
-.addrBubbleHolder-empty {
-	padding:0px;
-	margin-top:0px;
+.addrBubble,
+.attachmentBubble {
+	@InactiveCursor@
+	background-color:#EEE;
+}
+
+.addrBubbleHolder .addrBubble:hover {
+	@ActiveCursor@
+}
+
+.addrBubble-selected,
+.addrBubbleHolder .addrBubble-selected {
+	@TextCursor@
+	background-color:@SelC@;
+}
+
+.addrBubble-actioned,
+.addrBubbleHolder .addrBubble-actioned {
+	@TextCursor@
+	background-color:@RightClickColor@;
+}
+
+.addrBubble .ImgBubbleExpand,
+.addrBubble .ImgBubbleDelete {
+	top:.1rem !important;
 }
 
 .addrBubbleHolder, .attBubbleHolder {
-	padding:2px 0px;
-	margin-top:2px;
+/*	padding:2px 0px;
+	margin-top:2px; */
 	max-height:98px;
 	overflow:auto;
 }
@@ -1230,7 +1262,7 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 	background-color:transparent;
 	border-width:0px !important;
 	font-size:1rem;
-	height:1.4rem;
+	height:1.6rem;
 	outline:none !important;
 	margin-left:3px;
 	margin-bottom:3px;
@@ -1253,20 +1285,12 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 	margin-left:0px;
 }
 
-.addrBubble, 
-.addrBubble-selected, 
-.addrBubble-actioned, 
-.attachmentBubble {
-	color:black;
-	border:1px solid #999;
-	line-height: 1.27rem;
-	padding:1px 5px 2px;
-	position:relative !important;
-	margin:0px 2px 2px 1px;
-	display:inline-block;
-	white-space:nowrap;
-	@roundCorners(8px)@
+.addrBubble .link {
+	@ActiveCursor@
+	color:#666;
 }
+
+/* Styles to show addresses in bubbles in conversation view */
 
 #IFDEF MSIE
 .Conv2Reply .addrBubble,
@@ -1275,17 +1299,6 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 	white-space:normal;
 }
 #ENDIF
-
-.addrBubble .ImgBubbleExpand,
-.addrBubble .ImgBubbleDelete {
-	top:.25rem !important;
-}
-
-.addrBubble, 
-.attachmentBubble {
-	@InactiveCursor@
-	background-color:#EEE;
-}
 
 /* NOTE: this has to be AFTER the .addrBubble definition above so it overrides it (the element is of multi class "addrBubble tagBubble")  - doing it this way since multi-selection doesn't work in IE*/
 .TagBubble {
@@ -1297,47 +1310,72 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 
 .TagBubble .TagName,
 .TagBubble .ImgBubbleDelete {
-	display:inline-block; vertical-align:middle;
+	display:inline-block;
+	vertical-align:middle;
 }
 
-.addrBubble-selected {
+/* Styles to show addresses in bubbles in input fields */
+
+.addrBubbleContainer .addrBubble,
+.addrBubbleContainer .addrBubble-selected,
+.addrBubbleContainer .addrBubble-actioned,
+.attBubbleContainer .attachmentBubble {
+	margin:2px 1px;
+}
+
+.addrBubbleContainer,
+.attBubbleContainer {
 	@TextCursor@
-	background-color:@SelC@;
+	background-color:white;
+	border:1px inset #F0F0F0;
+	height:2rem;
 }
 
-.addrBubble-actioned {
-	@TextCursor@
-	background-color:@RightClickColor@;
+.addrBubbleHolder-empty {
+	margin-top:0px;
+	padding:0px;
 }
 
-.addrBubbleHolder SPAN:hover {
-	@ActiveCursor@
+.addrBubbleHolder,
+.attBubbleHolder {
+	max-height:98px;
+	overflow:auto;
 }
 
-.addrBubble .link {
-	@ActiveCursor@
-	color:#666;
+.addrBubbleHolder INPUT,
+.attBubbleHolder INPUT {
+	background-color:transparent;
+	border-width:0px !important;
+	font-size:1rem;
+	height:1.4rem;
+	outline:none !important;
+	margin:2px 0px 3px 3px;
 }
 
+.addrBubbleHolder INPUT:first-child,
+.attBubbleHolder INPUT:first-child {
+	margin-left:0px;
+}
+
+/* Styles used in search bubbles */
 .addrBubbleInsertionBar {
 	background-color:black;
-	width:2px;
 	height:auto;
 	margin-bottom:2px;
 	margin-left:3px;
+	width:2px;
 }
 
 .addrBubble.COND {
 	@ActiveCursor@
-	text-transform:uppercase;
 	font-style:italic;
+	text-transform:uppercase;
 }
 
 .addrBubble.GROUP {
 	@ActiveCursor@
 	font-weight:bold;
 }
-
 
 
 /*

@@ -27,12 +27,12 @@ HTML {
 BODY {
 	@ChromeBg@
 	@FullSize@
-	margin: 0px;
+	margin:0px;
 }
 
 FORM {
-	margin: 0;
-	padding: 0;
+	margin:0px;
+	padding:0px;
 }
 
 
@@ -77,24 +77,25 @@ FORM {
 .form TD 							{ padding-bottom:10px; 						}
 .form INPUT[type='text'], 
 .form INPUT[type='password'] 		{ 
-	border:1px solid @AppC@; 
-	height:22px;
+	border:1px solid @AppC@;
 	width:235px;
 #IFDEF MSIE_LOWER_THAN_9
 	height:18px;
-	padding:0;
+	padding:0px;
+#ELSE
+	height:20px;
 #ENDIF 
 }
 .form INPUT[type='text']:focus, 
 .form INPUT[type='password']:focus 	{ border:1px solid @SelC@; 					}
-.form SELECT 						{ height:22px; width:165px; 				}
+.form SELECT 						{ height:20px; width:165px; 				}
 .form .submitTD 					{ text-align:left; 							}
 .form .ZLoginButton					{ @LoginButton@ float:right; font-size:11px;}
 .form HR { 
 	border-color:transparent transparent @LoginLabelColor@; 
-	height:0;
+	height:0px;
 }
-.LoginScreen .postioning{
+.LoginScreen .positioning {
 	position:relative;
 	z-index:20;
 }
@@ -104,11 +105,11 @@ FORM {
 	margin-left:5px;
 }
 .LoginScreen #ZLoginWhatsThis {
+	left:0;
 	margin-left:-10em;
 	position:absolute;
-	width:40em;
 	top:25px;
-	left:0;
+	width:40em;
 	z-index:30; 
 }
 .LoginScreen .ZLoginInfoMessage {
@@ -117,7 +118,7 @@ FORM {
 	color:@TxtC@;
 	padding:3px 7px;
 	text-align:left;
-	@cssShadow@:0 0 2px black;
+	@cssShadow@:0px 0px 2px black;
 }
 
 
@@ -144,6 +145,7 @@ FORM {
 	text-align:center;
 }
 .LaunchButton INPUT {
+	@FontSize-bigger@
 	background-color:#DCF9FE;
 	border:1px solid #6CF;
 	color:black;
@@ -153,7 +155,6 @@ FORM {
 	text-align:center;
 	width:250px;
 	@cssShadow@:0px 0px 3px black;
-	@FontSize-bigger@
 	@grad(#DCF9FE,#9FF0FF,linear-vertical)@
 	@roundCorners(26px)@
 }
@@ -180,8 +181,8 @@ FORM {
 
 /* limiting the error message on mobile screen to 40px (approx 3 lines)*/
 .LoginScreen .center-small #ZLoginErrorPanel {
-    max-height: 40px;
-    overflow: auto;
+	max-height:40px;
+	overflow:auto;
 }
 
 .center-small H1 {

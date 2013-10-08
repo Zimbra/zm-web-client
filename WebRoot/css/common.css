@@ -72,8 +72,8 @@ BODY {
 }
 
 FORM {
-	margin:0;
-	padding:0;
+	margin:0px;
+	padding:0px;
 }
 
 TABLE {
@@ -102,17 +102,18 @@ INPUT[readonly] {
 	@InputField-disabled@
 }
 TEXTAREA {
-	@TextArea@ @TextArea-normal@
-	#IFDEF SAFARI
-		resize:none;
-	#ENDIF
+	@TextArea@
+	@TextArea-normal@
+#IFDEF SAFARI
+	resize:none;
+#ENDIF
 }
 TEXTAREA[readonly] {
 	@TextArea-disabled@
 }
 
 INPUT[type="checkbox"] {
-		@ActiveCursor@
+	@ActiveCursor@
 }
 
 #IFDEF MSIE

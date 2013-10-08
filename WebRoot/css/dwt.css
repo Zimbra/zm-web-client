@@ -150,7 +150,7 @@
 .DwtHorizontalSash					{	@HSashContainer@	}
 .DwtHorizontalSash DIV				{	@HSashThumb@		}
 
-.RightBorderSeparator           		{   border-right:5px solid @SeparatorColor@; 	}
+.RightBorderSeparator				{	border-right:5px solid @SeparatorColor@; 	}
 
 
 
@@ -250,7 +250,7 @@
 
 .overviewHeader .ImgNodeExpanded,
 .overviewHeader .ImgNodeCollapsed {
-    @ActiveCursor@
+	@ActiveCursor@
 }
 
 /*
@@ -326,10 +326,10 @@
 .DwtSelect-disabled .Text				{	@SelectText-disabled@			}
 .DwtSelect-focused .Text				{	@SelectText-focused@			}
 
-.DwtSelect table,
-.DwtSelect-hover table,
-.DwtSelect-active table,
-.DwtSelect-disabled table {
+.DwtSelect TABLE,
+.DwtSelect-hover TABLE,
+.DwtSelect-active TABLE,
+.DwtSelect-disabled TABLE {
 	@FullWidth@
 	@CompactTable@
 	@TableFixed@
@@ -350,10 +350,10 @@
 
 /* Makes sure the button is stretched to fit its container */
 /* MOW NOTE: THIS DOESN'T SEEM TO BE USED!
-.DwtSelectComposite .DwtButton table,
-.DwtSelectComposite .DwtButton-hover table,
-.DwtSelectComposite .DwtButton-active table,
-.DwtSelectComposite .DwtButton-disabled table {
+.DwtSelectComposite .DwtButton TABLE,
+.DwtSelectComposite .DwtButton-hover TABLE,
+.DwtSelectComposite .DwtButton-active TABLE,
+.DwtSelectComposite .DwtButton-disabled TABLE {
 	@CompactTable@
 	width:100%;
 }
@@ -382,25 +382,25 @@
 }
 
 
-.DwtMenuItem 						{	@MenuItem@	}
+.DwtMenuItem 							{	@MenuItem@	}
 
 .DwtMenuItem-selected,
 .DwtMenuItem-IconArea-selected,
-.DwtMenuItem-CheckedArea-selected 	{	@MenuItem-hover@	}
+.DwtMenuItem-CheckedArea-selected 		{	@MenuItem-hover@	}
 
 .DwtMenuItem-active,
 .DwtMenuItem-IconArea-active,
 .DwtMenuItem-CheckedArea-active 		{	@MenuItem-active@	}
 
-.DwtMenuItem .Text 					{	@MenuItemText@			@MenuItemTextPadding@	}
+.DwtMenuItem .Text 						{	@MenuItemText@			@MenuItemTextPadding@	}
 .DwtMenuItem-selected .Text 			{	@MenuItemText-hover@	@MenuItemTextPadding@	}
 .DwtMenuItem-active .Text 				{	@MenuItemText-active@	@MenuItemTextPadding@	}
-.DwtMenuItem .DisabledText 			{	@MenuItemText-disabled@	@MenuItemTextPadding@	}
+.DwtMenuItem .DisabledText 				{	@MenuItemText-disabled@	@MenuItemTextPadding@	}
 
 .DwtMenuItem-IconArea,
-.DwtMenuItem-CheckedArea 			{}
+.DwtMenuItem-CheckedArea 				{}
 
-.DwtMenuItem-Separator 				{	@MenuItemSeparator@	}
+.DwtMenuItem-Separator 					{	@MenuItemSeparator@	}
 
 .DwtMenuCascadeCell 					{	@LeftSeparator@		}
 
@@ -422,11 +422,11 @@
 .DwtMenuScrollTop div,
 .DwtMenuScrollBottom div				{	margin:@MenuScrollArrowMargin@ auto;	}
 
-.DwtMenu-congruentLeft				{	@MenuCongruentLeft@	}
-.DwtMenu-congruentRight				{	@MenuCongruentRight@ 	}
+.DwtMenu-congruentLeft					{	@MenuCongruentLeft@	}
+.DwtMenu-congruentRight					{	@MenuCongruentRight@ 	}
 
 /* ??? */
-.DwtSelectMenu table{
+.DwtSelectMenu TABLE{
 	@FullWidth@
 }
 
@@ -435,7 +435,7 @@
 /* ??? USE */
 .DwtSelectMenu .DwtMenuItem 			{	@MenuItem@		}
 .DwtSelectMenu .DwtMenuItem-text 		{	padding-left:@BoxPaddingSize@;	text-align:left;	}
-.DwtSelectMenu .DwtMenuItem-leftFill 		{	width:19px;		/* ??? SIZE? */	}
+.DwtSelectMenu .DwtMenuItem-leftFill 	{	width:19px;		/* ??? SIZE? */	}
 
 .DwtSelectMenu .DwtMenuItem-selected .DwtMenuItem-text{
 	@ActiveCursor@
@@ -483,13 +483,13 @@
 	@ListColHeaderContainer-normal@
 }
 
-.FixedColumnHeaderTables .DwtListView-Column table {
+.FixedColumnHeaderTables .DwtListView-Column TABLE {
 	table-layout:fixed
 }
 
 /* ??? SHOTGUN */
 
-.DwtListView-Column td {
+.DwtListView-Column TD {
 	@ListColHeaderText@
 	@ListColHeaderText-normal@
 }
@@ -519,7 +519,7 @@
 }
 
 .DwtDefaultCursor {
-    cursor:default;
+	cursor:default;
 }
 
 /* Header of the currently selected column */
@@ -547,7 +547,7 @@ TD.DwtListView-ColumnActive {
 
 
 .ZmContactSearchListView .DwtListView-Rows {
-    height:276px;
+	height:276px;
 }
 
 /* ??? SHOTGUN */
@@ -611,7 +611,7 @@ UL.DwtListView-Rows {
 	@WindowTitleText-light@
 }
 
-/* Container (td) for the body of the dialog, including buttons.
+/* Container (TD) for the body of the dialog, including buttons.
 	Class "Dwt[Dark|Light]InnerBorder" is also applied to this elements */
 .DwtDialogBody 	{
   cursor:default;
@@ -627,10 +627,10 @@ UL.DwtListView-Rows {
 .DwtDialog .Field {
 	width:290px;
 }
-.DwtDialog textarea {
+.DwtDialog TEXTAREA {
 	width:100%;
 }
-.DwtDialogBody td {
+.DwtDialogBody TD {
 	/* @Label-wrap@ */
 }
 
@@ -680,9 +680,9 @@ UL.DwtListView-Rows {
 .DwtResizableWindow-handles { position:absolute; left:0px; top:0px; width:100%; height:100%; border-collapse:collapse; }
 .DwtResizableWindow-cont { position:absolute; left:3px; top:3px; right:3px; bottom:3px; }
 
-.DwtResizableWindow-handles td { font-size:1px !important; line-height:1px !important; }
+.DwtResizableWindow-handles TD { font-size:1px !important; line-height:1px !important; }
 
-.DwtResizableWindow-handles-top td, .DwtResizableWindow-handles-bot td { height:12px; }
+.DwtResizableWindow-handles-top TD, .DwtResizableWindow-handles-bot TD { height:12px; }
 .DwtResizableWindow-NW, .DwtResizableWindow-NE, .DwtResizableWindow-SW, .DwtResizableWindow-SE, .DwtResizableWindow-W, .DwtResizableWindow-E { width:10px; }
 
 .DwtResizableWindow-NW { cursor:nw-resize; }
@@ -851,47 +851,47 @@ UL.DwtListView-Rows {
 
 
 .DwtColorPicker .Colors {
-    position:relative;
-    height:12px;
-    clear:both;
+	position:relative;
+	height:12px;
+	clear:both;
 }
 
 .DwtColorPicker .Color {
-    display:inline;
-    float:left;
-    width:12px;
-    height:11px;
-    margin-left:1px;
-    margin-right:1px;
-    border:1px solid black;
-    border-top:none;
+	display:inline;
+	float:left;
+	width:12px;
+	height:11px;
+	margin-left:1px;
+	margin-right:1px;
+	border:1px solid black;
+	border-top:none;
 }
 
 .DwtColorPicker .First .Color {
-    border-top:1px solid black;
+	border-top:1px solid black;
 }
 
 .DwtColorPicker .Colors .ZHover {
-    width:10px;
-    border-left-width:2px;
-    border-right-width:2px;
+	width:10px;
+	border-left-width:2px;
+	border-right-width:2px;
 }
 
 .DwtColorPicker .Text {
-    clear:both;
-    margin:4px 0px;
+	clear:both;
+	margin:4px 0px;
 }
 
 .DwtColorPickerButton .Color {
-    width:12px;
-    height:11px;
-    border:1px solid black !important;
+	width:12px;
+	height:11px;
+	border:1px solid black !important;
 }
 
 .DwtColorPickerLabel .Color {
-    width:12px;
-    height:11px;
-    border:1px solid black !important;
+	width:12px;
+	height:11px;
+	border:1px solid black !important;
 }
 /* ??? USED? */
 .DwtResizeGripper {
@@ -952,12 +952,12 @@ UL.DwtListView-Rows {
 }
 
 .DwtCalendarWeekNo {
-    @Text-anchor@
+	@Text-anchor@
 }
 
 .DwtCalendarWeekNoTitle {
 	@MiniCalDOWBg@
-    @Text-anchor@
+	@Text-anchor@
 }
 
 #IFNDEF MSIE
@@ -1008,19 +1008,19 @@ UL.DwtListView-Rows {
 }
 
 .DwtCalendarDay-green {
-    background-color:#80C095;
+	background-color:#80C095;
 }
 
 .DwtCalendarDay-red {
-    background-color:#EC8080;
+	background-color:#EC8080;
 }
 
 .DwtCalendarDay-orange {
-    background-color:#FFBB80;
+	background-color:#FFBB80;
 }
 
 .DwtMenu .DwtCalendar {
-    width:170px;
+	width:170px;
 }
 
 .menuOverview {
@@ -1033,87 +1033,87 @@ UL.DwtListView-Rows {
  * TODO: make sure this has DwtInputField + DwtInputField-error at same time
  *
  */
-.DwtInputField input[type="text"],
-.DwtInputField input[type="password"],
-.DwtInputField input,
+.DwtInputField INPUT[type="text"],
+.DwtInputField INPUT[type="password"],
+.DwtInputField INPUT,
 .DwtSimpleInput {
 	@InputField@
 	@InputField-normal@
 }
-.DwtInputField textarea {
+.DwtInputField TEXTAREA {
 	@TextArea@
 }
 
-.DwtInputField-error input[type="text"],
-.DwtInputField-error input[type="password"],
+.DwtInputField-error INPUT[type="text"],
+.DwtInputField-error INPUT[type="password"],
 .DwtSimpleInput-error {
 	@InputField-error@
 }
-.DwtInputField-error textarea {
+.DwtInputField-error TEXTAREA {
 	@TextArea-error@
 }
 
-.DwtInputField-focused input[type="text"],
-.DwtInputField-focused input[type="password"],
+.DwtInputField-focused INPUT[type="text"],
+.DwtInputField-focused INPUT[type="password"],
 .DwtSimpleInput-focused {
 	@InputField-focused@
 }
-.DwtInputField-focused textarea {
+.DwtInputField-focused TEXTAREA {
 	@TextArea-focused@
 }
 
-.DwtInputField-disabled input[type="text"],
-.DwtInputField-disabled input[type="password"],
+.DwtInputField-disabled INPUT[type="text"],
+.DwtInputField-disabled INPUT[type="password"],
 .DwtSimpleInput-disabled {
 	@InputField-disabled@
 }
-.DwtInputField-disabled textarea {
+.DwtInputField-disabled TEXTAREA {
 	@TextArea-disabled@
 }
 
 #IFDEF WEBKIT
-.DwtInputField input::-webkit-input-placeholder,
+.DwtInputField INPUT::-webkit-input-placeholder,
 #ENDIF
 #IFDEF GECKO
-.DwtInputField input:-moz-placeholder,
-.DwtInputField input::-moz-placeholder,
+.DwtInputField INPUT:-moz-placeholder,
+.DwtInputField INPUT::-moz-placeholder,
 #ENDIF
 #IFDEF MSIE_10
-.DwtInputField input:-ms-input-placeholder,
+.DwtInputField INPUT:-ms-input-placeholder,
 #ENDIF
 #IFDEF MODERN_IE
-.DwtInputField input:-ms-input-placeholder,
+.DwtInputField INPUT:-ms-input-placeholder,
 #ENDIF
-.DwtInputField-hint input[type="text"],
-.DwtInputField-hint input[type="password"],
-.DwtInputField-hint input,
+.DwtInputField-hint INPUT[type="text"],
+.DwtInputField-hint INPUT[type="password"],
+.DwtInputField-hint INPUT,
 .DwtSimpleInput-hint {
 	@InputField-hint@
 }
 
 #IFDEF WEBKIT
-.DwtInputField textarea::-webkit-input-placeholder,
+.DwtInputField TEXTAREA::-webkit-input-placeholder,
 #ENDIF
 #IFDEF WEBKIT
-.DwtInputField textarea:-moz-placeholder,
+.DwtInputField TEXTAREA:-moz-placeholder,
 #ENDIF
 #IFDEF WEBKIT
-.DwtInputField textarea::-moz-placeholder,
+.DwtInputField TEXTAREA::-moz-placeholder,
 #ENDIF
 #IFDEF WEBKIT
-.DwtInputField textarea:-ms-input-placeholder,
+.DwtInputField TEXTAREA:-ms-input-placeholder,
 #ENDIF
-.DwtInputField-hint textarea {
+.DwtInputField-hint TEXTAREA {
 	@Text-light@
 }
 
-.DwtInputField-errorhint input[type="text"],
-.DwtInputField-errorhint input[type="password"],
+.DwtInputField-errorhint INPUT[type="text"],
+.DwtInputField-errorhint INPUT[type="password"],
 .DwtSimpleInput-errorhint {
 	@InputField-error@
 	@Text-light@
 }
-.DwtInputField-errorhint textarea {
+.DwtInputField-errorhint TEXTAREA {
 	@TextArea-error@
 	@Text-light@
 }
@@ -1147,83 +1147,83 @@ UL.DwtListView-Rows {
 
 /* ??? SHOTGUNNING EVERYWHERE... */
 
-.DwtPropertyEditor table {
+.DwtPropertyEditor TABLE {
 	border-collapse:collapse;
 }
 .DwtPropertyEditor * {
 	@FontSize-normal@
 }
-.DwtPropertyEditor table td {
-  padding:1px @BoxPaddingSize@;
+.DwtPropertyEditor TABLE TD {
+	padding:1px @BoxPaddingSize@;
 }
 
 /* ??? Wrong name -- switch to ZmFieldLabelRight */
-.DwtPropertyEditor table td.label {
-  cursor:default;
-  text-align:right;
-  font-weight:bold;
+.DwtPropertyEditor TABLE TD.label {
+	cursor:default;
+	font-weight:bold;
+	text-align:right;
 }
-.DwtPropertyEditor table td.label:after {
+.DwtPropertyEditor TABLE TD.label:after {
 	content:":";
 }
 
-.DwtPropertyEditor table td.grouplabel {
+.DwtPropertyEditor TABLE TD.grouplabel {
 	vertical-align:top;
 }
 
 /* ??? Wrong name -- switch to ZmInput */
-.DwtPropertyEditor table td.field {
+.DwtPropertyEditor TABLE TD.field {
 
 }
 
-.DwtPropertyEditor table tr.readonly td.field {
+.DwtPropertyEditor TABLE TR.readonly TD.field {
 	@InputField-disabled@
 }
 
 
-.DwtPropertyEditor table tr.expander-collapsed td,
-.DwtPropertyEditor table tr.expander-expanded td {
+.DwtPropertyEditor TABLE TR.expander-collapsed TD,
+.DwtPropertyEditor TABLE TR.expander-expanded TD {
 	@PageBg@
 	cursor:pointer;
 }
 
 /* ??? USE? NO IMAGE? */
-.DwtPropertyEditor table tr.expander-collapsed td div {
-  background:url("@DwtImgDir@/Expand.gif?v=@jsVersion@") no-repeat 100% 50%;
-  padding-right:15px;
+.DwtPropertyEditor TABLE TR.expander-collapsed TD DIV {
+	background:url("@DwtImgDir@/Expand.gif?v=@jsVersion@") no-repeat 100% 50%;
+	padding-right:15px;
 }
 
 /* ??? USE? NO IMAGE? */
-.DwtPropertyEditor table tr.expander-expanded td div {
-  background:url("@DwtImgDir@/Collapse.gif?v=@jsVersion@") no-repeat 100% 50%;
-  padding-right:15px;
+.DwtPropertyEditor TABLE TR.expander-expanded TD DIV {
+	background:url("@DwtImgDir@/Collapse.gif?v=@jsVersion@") no-repeat 100% 50%;
+	padding-right:15px;
 }
 
-.DwtPropertyEditor table tr.level-1 td.label { padding-left:20px; }
-.DwtPropertyEditor table tr.level-2 td.label { padding-left:35px; }
-.DwtPropertyEditor table tr.level-3 td.label { padding-left:50px; }
-.DwtPropertyEditor table tr.level-4 td.label { padding-left:65px; }
-.DwtPropertyEditor table tr.level-5 td.label { padding-left:80px; }
-.DwtPropertyEditor table tr.level-6 td.label { padding-left:95px; }
-.DwtPropertyEditor table tr.level-7 td.label { padding-left:110px; }
-.DwtPropertyEditor table tr.level-8 td.label { padding-left:125px; }
-.DwtPropertyEditor table tr.level-9 td.label { padding-left:140px; }
+.DwtPropertyEditor TABLE TR.level-1 TD.label { padding-left:20px; }
+.DwtPropertyEditor TABLE TR.level-2 TD.label { padding-left:35px; }
+.DwtPropertyEditor TABLE TR.level-3 TD.label { padding-left:50px; }
+.DwtPropertyEditor TABLE TR.level-4 TD.label { padding-left:65px; }
+.DwtPropertyEditor TABLE TR.level-5 TD.label { padding-left:80px; }
+.DwtPropertyEditor TABLE TR.level-6 TD.label { padding-left:95px; }
+.DwtPropertyEditor TABLE TR.level-7 TD.label { padding-left:110px; }
+.DwtPropertyEditor TABLE TR.level-8 TD.label { padding-left:125px; }
+.DwtPropertyEditor TABLE TR.level-9 TD.label { padding-left:140px; }
 
 /* change text color for field values that have actually changed -- WHY?  */
-.DwtPropertyEditor table tr.dirty td {
+.DwtPropertyEditor TABLE TR.dirty TD {
 	color:@ValueChangedColor@;
 }
-.DwtPropertyEditor table tr.invisible {
+.DwtPropertyEditor TABLE TR.invisible {
 	display:none;
 }
 
-.DwtPropertyEditor input[type="text"].DwtPropertyEditor-input,
-.DwtPropertyEditor input[type="password"].DwtPropertyEditor-input {
+.DwtPropertyEditor INPUT[type="text"].DwtPropertyEditor-input,
+.DwtPropertyEditor INPUT[type="password"].DwtPropertyEditor-input {
 	position:absolute;
 	@InputField@
 }
-.DwtPropertyEditor input[type="text"].DwtPropertyEditor-input-error,
-.DwtPropertyEditor input[type="password"].DwtPropertyEditor-input-error {
+.DwtPropertyEditor INPUT[type="text"].DwtPropertyEditor-input-error,
+.DwtPropertyEditor INPUT[type="password"].DwtPropertyEditor-input-error {
 	@InputField-error@
 }
 
@@ -1265,19 +1265,19 @@ UL.DwtListView-Rows {
 .xform_field_disabled {
 	
 }
-input.xform_field_disabled {
+INPUT.xform_field_disabled {
 	@InputField-disabled@
 }
-textarea.xform_field {
+TEXTAREA.xform_field {
 	overflow-x:auto;
-	overflow-y:auto;	
+	overflow-y:auto;
 }
-	
-textarea.xform_field_disabled {
+
+TEXTAREA.xform_field_disabled {
 	@TextArea-disabled@
 }
 
-input.dynselect_display_disabled {
+INPUT.dynselect_display_disabled {
 	@InputField-disabled@
 }
 
@@ -1288,14 +1288,11 @@ input.dynselect_display_disabled {
 	@CompactTable@
 }
 
-
 .xform_field_container,
 .xform_select_container,
-.xform_output_container
-{
+.xform_output_container {
 
 }
-
 
 .xform_field,
 .xform_select,
@@ -1303,32 +1300,29 @@ input.dynselect_display_disabled {
 .xform_textarea,
 .xform_output,
 .xform_button,
-.xform_anchor{
+.xform_anchor {
 
 }
 
-input.xform_field {
+INPUT.xform_field {
 	@InputField-normal@
 }
 .xform_output {
 	@TextPadding@
 }
 
-.xform_select1 {
-
-}
-
 .xform_select {
-  height:100px;
-  width:200px;
+	height:100px;
+	width:200px;
 }
 
 .xform_repeat_label,
 .xform_label,
-.xform_label_left {
+.xform_label_left,
+.xform_label_right {
 	@Label@
 	@TextPadding@
-	text-align:right;
+	height:2.3em;		/* added for FF */
 }
 
 .xform_repeat_label {
@@ -1336,16 +1330,19 @@ input.xform_field {
 	padding-top:3px;
 }
 
+.xform_repeat_label,
+.xform_label,
+.xform_label_left {
+	text-align:right;
+}
+
 .xform_label_right {
-	@Label@
-	@TextPadding@
 	text-align:left;
 }
 
-
 .xform_separator {
 	width:100%;
-	height:1;
+	height:1px;
 	@BottomSeparator@
 }
 
@@ -1365,7 +1362,7 @@ input.xform_field {
 .xform_button_grid_small_table {
 	@CompactTable@
 }
-.xform_button_grid_small_table td {
+.xform_button_grid_small_table TD {
 	padding:0px;
 }
 
@@ -1393,7 +1390,7 @@ input.xform_field {
 .xform_button_grid_medium_table {
 	@CompactTable@
 }
-.xform_button_grid_medium_table td {
+.xform_button_grid_medium_table TD {
 	padding:2;
 }
 .xform_button_grid_medium_button {
@@ -1577,14 +1574,14 @@ input.xform_field {
 }
 .dynselect_error_note,
 .oselect_error_note {
-    @MenuContainer@
-    @Text-error@
-    @NoticeContainer-warning@  
-    position:absolute;
-    z-index:10000000000;
-    border-bottom-width:1px;
-    border-right-width:1px;
-    white-space:nowrap;
+	@MenuContainer@
+	@Text-error@
+	@NoticeContainer-warning@
+	border-bottom-width:1px;
+	border-right-width:1px;
+	position:absolute;
+	white-space:nowrap;
+	z-index:10000000000;
 }
 
 .dynselect_menu,
@@ -1611,7 +1608,6 @@ input.xform_field {
 .dynselect_choice_table_scrolled,
 .oselect_choice_table_scrolled {
 	@CompactTable@
-
 	/* ???
 		border-left:1px solid #CCCCCC;
 		border-top:0px;
@@ -1669,7 +1665,7 @@ input.xform_field {
  * DwtShellBusyDialog - dialog that comes up when the server is taking a long time to respond
  */
 
-.DwtShellBusyDialog table.DialogContent {
+.DwtShellBusyDialog TABLE.DialogContent {
 	width:300px;			/* ??? SIZE */
 	height:75px;
 }
@@ -1693,7 +1689,7 @@ input.xform_field {
 	height:32px;
 }
 
-.DwtShellBusyDialog table td.MsgText {
+.DwtShellBusyDialog TABLE TD.MsgText {
 	@FontSize-big@
 	@BoxPadding@
 	min-width:20rem;
@@ -1704,16 +1700,16 @@ input.xform_field {
 
 /* DwtGridSizePicker */
 
-.DwtGridSizePicker table {
+.DwtGridSizePicker TABLE {
 	border-collapse:collapse;
 	@NotSelectable@
 	@SeparatorBorder@
 	@InactiveCursor@
 }
-.DwtGridSizePicker table tr.info td {
+.DwtGridSizePicker TABLE TR.info TD {
 	text-align:center; padding:1px 0px;
 }
-.DwtGridSizePicker table tr.grid td {
+.DwtGridSizePicker TABLE TR.grid TD {
 	@SeparatorBorder@
 	width:16px;
 	height:16px;
@@ -1722,7 +1718,7 @@ input.xform_field {
 	padding:0px;
 	@AppBg@
 }
-.DwtGridSizePicker table tr.grid td.Hovered {
+.DwtGridSizePicker TABLE TR.grid TD.Hovered {
 	@SelectedBg@
 }
 
@@ -1733,9 +1729,9 @@ input.xform_field {
 	padding:0px; margin:0px;
 	background-color:white;
 }
-.DwtSpinner td { padding:0px; margin:0px; }
-.DwtSpinner-inputCell input[type='text'],
-.DwtSpinner-inputCell input[type='text'] {
+.DwtSpinner TD { padding:0px; margin:0px; }
+.DwtSpinner-inputCell INPUT[type='text'],
+.DwtSpinner-inputCell INPUT[type='text'] {
 	margin:0px; border:none; padding:1px 2px; text-align:right;
 }
 
@@ -1746,7 +1742,7 @@ input.xform_field {
 	@NotSelectable@
 	border-left:1px solid black;
 	text-align:center;
-	background-color:#eee;
+	background-color:#EEE;
 	cursor:default;
 	vertical-align:middle;
 	height:10px;
@@ -1754,10 +1750,10 @@ input.xform_field {
 
 .DwtSpinner-UpBtn div, .DwtSpinner-DownBtn div { margin-left:auto; margin-right:auto; vertical-align:middle; }
 
-.DwtSpinner-Up-pressed { background-color:#a6cccc; }
-.DwtSpinner-Down-pressed { background-color:#a6cccc; }
-.DwtSpinner-Up-disabled { background-color:#eee; }
-.DwtSpinner-Down-disabled { background-color:#eee; }
+.DwtSpinner-Up-pressed { background-color:#A6CCCC; }
+.DwtSpinner-Down-pressed { background-color:#A6CCCC; }
+.DwtSpinner-Up-disabled { background-color:#EEE; }
+.DwtSpinner-Down-disabled { background-color:#EEE; }
 
 .DwtSpinner-disabled .DwtSpinner-UpBtn,
 .DwtSpinner-disabled .DwtSpinner-DownBtn {
@@ -1795,15 +1791,15 @@ input.xform_field {
 
 /* Portlet panel:  sizes are hard-coded */
 
-.ZPanelTitlebar		{	position:absolute; width:100%; height:20px; top:-1px;}
-.ZPanelIcon			{	width:0px;	 }
-.ZPanelTitle		{	width:100%;	padding:1px 0px 0px 4px;  }
-.ZPanelToolbar		{	width:0px;	padding:1px 10px 0px 6px; 	}
+.ZPanelTitlebar		{	position:absolute; width:100%; height:20px; top:-1px; }
+.ZPanelIcon			{	width:0px; }
+.ZPanelTitle		{	width:100%;	padding:1px 0px 0px 4px; }
+.ZPanelToolbar		{	width:0px;	padding:1px 10px 0px 6px; }
 
 .ZPanelIcon  DIV	{	margin-left:5px;}
 
 .ZPanelContents		{	position:absolute;	overflow:auto;
-						left:4px;top:22px;right:4px;bottom:4px;
+						left:4px; top:22px; right:4px; bottom:4px;
 					}
 
 /* Drag selection box (rubber-band style DnD selection) */
@@ -1839,27 +1835,27 @@ input.xform_field {
 
 .ZCenterTitle .ZWidgetTitle		{	text-align:center;  vertical-align:middle;	}
 
-.ZDisabled .ZDropDown           { @Text-disabled@ }
+.ZDisabled .ZDropDown			{	@Text-disabled@ }
 
 .ZWidgetTable DIV				{	}
 .ZHasText .ZWidgetTitle			{	padding:0px 4px;	}
 
 #IFDEF MSIE_LOWER_THAN_9
 .ZWidgetTable .ZLeftIcon .IEImage DIV, .ZWidgetTable .ZLeftIcon .IEImage IMG {
-    margin:0px !important;
+	margin:0px !important;
 }
 .ZHasIcon .ZMenuItemBorder .ZLeftIcon .IEImageMask IMG {
 	width:auto; height:auto;
 }
 #ENDIF
 
-.ZWidgetTable .ZLeftIcon DIV, .ZWidgetTable .ZLeftIcon IMG	    {	margin:1px 0px;			}
+.ZWidgetTable .ZLeftIcon DIV, .ZWidgetTable .ZLeftIcon IMG		{	margin:1px 0px;			}
 .ZWidgetTable .ZRightIcon DIV, .ZWidgetTable .ZRightIcon IMG	{	margin:1px 0px;			}
 .ZWidgetTable .ZDropDown DIV, .ZWidgetTable .ZDropDown IMG		{	margin:1px 0px;			}
 
-.ZHasText .ZLeftIcon DIV, .ZHasText .ZLeftIcon IMG		{	margin-right:0px !important;	}
-.ZHasText .ZRightIcon DIV, .ZHasText .ZRightIcon IMG	{	margin-left:0px !important;		}
-.ZHasText .ZDropDown DIV		{	margin-left:0px !important;		}
+.ZHasText .ZLeftIcon DIV, .ZHasText .ZLeftIcon IMG				{	margin-right:0px !important;	}
+.ZHasText .ZRightIcon DIV, .ZHasText .ZRightIcon IMG			{	margin-left:0px !important;		}
+.ZHasText .ZDropDown DIV										{	margin-left:0px !important;		}
 
 .DwtDragProxy .ZWidgetTitle		{ width:auto; }
 .DwtDragProxy .ZWidgetTable 	{ width:auto; }
@@ -1893,26 +1889,30 @@ input.xform_field {
     border-collapse: separate;
 }
 
-.ZButtonTable .ZLeftIcon DIV, .ZButtonTable .ZLeftIcon IMG	    {
+.ZButtonTable .ZLeftIcon DIV,
+.ZButtonTable .ZLeftIcon IMG {
 	margin:1px 0px 1px 4px;
 	margin:.2rem 0px .1rem 4px;
 }
-.ZButtonTable .ZRightIcon DIV, .ZButtonTable .ZRightIcon IMG	{
+.ZButtonTable .ZRightIcon DIV,
+.ZButtonTable .ZRightIcon IMG {
 	margin:1px 4px 1px 0px;
 	margin:.2rem 4px .1rem 0px;
 }
-.ZButtonTable .ZDropDown DIV, .ZButtonTable .ZDropDown IMG	    {
+.ZButtonTable .ZDropDown DIV,
+.ZButtonTable .ZDropDown IMG {
 	margin:1px 4px 1px 0px;
 	margin:.2rem 4px .1rem 0px;
 }
 
-#skin_container_help .ZButtonLink  {cursor:pointer}
-
-.ZImageOnlyButton	{cursor:pointer}
+#skin_container_help .ZButtonLink,
+.ZImageOnlyButton {
+	cursor:pointer;
+}
 
 
 /* normal buttons with text should be at least a certain width */
-.ZHasText .ZButtonTable {	@TextButtonWidth@ }
+.ZHasText .ZButtonTable 			{	@TextButtonWidth@ }
 
 .ZButtonBorder .ZDropDown DIV		{	margin-left:3px;	}
 
@@ -1927,13 +1927,13 @@ input.xform_field {
 
 .ZmMailMsgView .ZToolbar	{ @ToolbarContainer@	}
 
-.ZToolbarTable              { /*width:100%;*/ }
-.ZToolbarPrefix             { width:.5em; }
-.ZToolbarSuffix             { width:100%; }
+.ZToolbarTable				{ /*width:100%;*/ }
+.ZToolbarPrefix				{ width:.5em; }
+.ZToolbarSuffix				{ width:100%; }
 
-.ZToolbarSeparator          { width:0.5em; @SeparatorBorder@ }
-.ZToolbarSpacer             { width:0.5em; }
-.ZToolbarFiller             { width:100%; }
+.ZToolbarSeparator			{ width:0.5em; @SeparatorBorder@ }
+.ZToolbarSpacer				{ width:0.5em; }
+.ZToolbarFiller				{ width:100%; }
 
 
 /***************
@@ -2035,8 +2035,8 @@ input.xform_field {
 	padding-right:2px;	*/
 }
 
-.DwtComboBox .DwtInputField input[type='text'],
-.DwtComboBox .DwtInputField input[type='password'] {
+.DwtComboBox .DwtInputField INPUT[type='text'],
+.DwtComboBox .DwtInputField INPUT[type='password'] {
 	
 }
 
@@ -2124,11 +2124,11 @@ input.xform_field {
 /* MOW NOTE: THIS DOESN'T SEEM TO BE USED!
 
 .ZPanelTitlebar		{	position:absolute; width:100%; height:20px; top:-1px;}
-.ZPanelIcon			{	width:0px;	 }
-.ZPanelTitle		{	width:100%;	padding:1px 0px 0px 4px;  }
+.ZPanelIcon			{	width:0px;	}
+.ZPanelTitle		{	width:100%;	padding:1px 0px 0px 4px;	}
 .ZPanelToolbar		{	width:0px;	padding:1px 10px 0px 6px; 	}
 
-.ZPanelIcon  DIV	{	margin-left:5px;}
+.ZPanelIcon DIV		{	margin-left:5px;}
 
 .ZPanelContents		{	left:4px;top:22px;right:4px;bottom:4px;			overflow:auto;		}
 */
@@ -2179,12 +2179,12 @@ input.xform_field {
  *
  *************/
 
-.DwtSlider	 	{		/* TODO: IS THIS ACTUALLY USED BY ITSELF? */
+.DwtSlider {		/* TODO: IS THIS ACTUALLY USED BY ITSELF? */
 	@Slider@
 	@HSliderBorder@
 }
 
-.DwtSliderThumb				{
+.DwtSliderThumb {
 	position:relative;
 }
 
@@ -2197,7 +2197,7 @@ input.xform_field {
 }
 
 .DwtHorizontalSlider .DwtSliderThumb {
-    @HSliderThumbSize@
+	@HSliderThumbSize@
 }
 
 .DwtHorizontalSlider .DwtSliderThumbBorder {
@@ -2209,7 +2209,7 @@ input.xform_field {
 .DwtVerticalSlider {
 	@Slider@
 	@VSliderBorder@
-    @VSliderSize@
+	@VSliderSize@
 }
 
 .DwtVerticalSlider .DwtSliderThumb {
@@ -2267,8 +2267,8 @@ input.xform_field {
 .ZHasSubmenu .ZMenuItemBorder .ZDropDown DIV, .ZHasSubmenu .ZMenuItemBorder .ZDropDown IMG 	{	width:16px;	height:16px; }
 
 
-.ZMenuItem-Separator	 						{	@MenuItemSeparator@	}
-.ZMenuItemSeparatorBorder TD					{	height:12px !important;}
+.ZMenuItem-Separator							{	@MenuItemSeparator@			}
+.ZMenuItemSeparatorBorder TD					{	height:12px !important;		}
 
 .ZHasIcon .ZMenuItemSeparatorBorder .ZLeftIcon DIV, .ZHasIcon .ZMenuItemSeparatorBorder .ZLeftIcon IMG,
 .ZHasCheck .ZMenuItemSeparatorBorder .ZCheckIcon DIV, .ZHasCheck .ZMenuItemSeparatorBorder .ZCheckIcon IMG,
@@ -2349,37 +2349,37 @@ input.xform_field {
 }
 
 .ZTreeItemCheckbox {
-	cursor:pointer;
-	border-width:1px;
-	border-style:solid;
-	border-color:#363636 #b8b8b8 #b8b8b8 #363636;
-	margin-right:2px;
-	width:12px;
-	height:12px;
 	background-color:white;
-
+	border-color:#363636 #B8B8B8 #B8B8B8 #363636;
+	border-style:solid;
+	border-width:1px;
+	cursor:pointer;
+	margin-right:2px;
 #IFDEF MSIE
-	width:14px;
 	height:14px;
+	width:14px;
+#ELSE
+	height:12px;
+	width:12px;
 #ENDIF
 }
 
 .ZTreeItemCheckboxImg {
 	padding-left:2px;
 	padding-top:2px;
-	width:10px;
-	height:10px;
-
 #IFDEF MSIE
-	width:12px;
 	height:12px;
+	width:12px;
+#ELSE
+	height:10px;
+	width:10px;
 #ENDIF
 }
 
 .DwtFormRowAdd .ZButtonTable, .DwtFormRowRemove .ZButtonTable {
-	border:none;
 	background-color:transparent;
 	background-image:none;
-	@cssShadow@:0 0 0 transparent;
+	border:none;
+	@cssShadow@:0px 0px 0px transparent;
 	@roundCorners(0px)@
 }

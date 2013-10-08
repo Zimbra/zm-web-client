@@ -430,7 +430,7 @@ if (application.getInitParameter("offlineMode") != null) {
 							<label for="client"><fmt:message key="versionLabel"/></label>
 						</td>
 						<td>
-							<div class="postioning">
+							<div class="positioning">
 								<c:choose>
 									<c:when test="${client eq 'socialfox'}">
 										<input type="hidden" name="client" value="socialfox"/>
