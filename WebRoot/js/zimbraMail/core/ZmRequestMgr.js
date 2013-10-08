@@ -193,7 +193,7 @@ function(params) {
 						skipAuthCheck:		params.skipAuthCheck,
 						resend:				params.resend,
 						noSession:			params.noSession,
-						useStringify1:		AjxEnv.isIE && params.fromChildWindow,
+						useStringify1:		(AjxEnv.isIE || AjxEnv.isModernIE) && params.fromChildWindow,
 						emptyResponseOkay:	params.emptyResponseOkay
 					};
 		methodName = params.methodName = ZmCsfeCommand.getMethodName(cmdParams.jsonObj || cmdParams.soapDoc);
