@@ -35,20 +35,42 @@ Ext.define('ZCS.controller.ZtNotificationController', {
 	 * and modifies, we pass along the item which is retrieved from the item cache. If we don't
 	 * find the item, no event is fired.
 	 *
+	 * Some organizers (Trash and tags) can appear in more than one app overview. Sencha requires
+	 * those to have unique IDs, so we end up with a many-to-one mapping of Sencha organizer IDs
+	 * and ZCS IDs. If we get a notification for one of those organizers, we need to process
+	 * it for each of the associated objects within Sencha.
+	 *
 	 * @param {Object}  notification        JSON notification
 	 */
 	doNotify: function(notification) {
 
-		var item = ZCS.cache.get(notification.id),
-			itemType = notification.itemType = (item && (item.get('notifyType') || item.get('type'))) || ZCS.constant.NODE_ITEM[notification.nodeType],
-			event = itemType ? 'notify' + Ext.String.capitalize(itemType) + notification.type : null;
+		if (notification.type === ZCS.constant.NOTIFY_CREATE) {
+			var itemType = notification.itemType = ZCS.constant.NODE_ITEM[notification.nodeType] || notification.nodeType;
+			if (itemType) {
+				var eventName = 'notify' + Ext.String.capitalize(itemType) + notification.type;
+				//<debug>
+				Ext.Logger.info('Notification: ' + eventName);
+				//</debug>
+				ZCS.app.fireEvent(eventName, null, notification);
+			}
+		}
+		else {
+			var result = ZCS.cache.get(notification.id, null, true);
+			if (result) {
+				var items = Array.isArray(result) ? result : [ result ],
+					item = items[0],
+					itemType = notification.itemType = item && item.get('type'),
+					eventName = itemType ? 'notify' + Ext.String.capitalize(itemType) + notification.type : null;
 
-		if (event && (notification.type === ZCS.constant.NOTIFY_CREATE || item != null)) {
-			//<debug>
-			Ext.Logger.info('Notification: ' + event);
-			//</debug>
-
-			ZCS.app.fireEvent(event, item, notification);
+				if (eventName) {
+					Ext.each(items, function(item) {
+						//<debug>
+						Ext.Logger.info('Notification: ' + eventName);
+						//</debug>
+						ZCS.app.fireEvent(eventName, item, notification);
+					}, this);
+				}
+			}
 		}
 	}
 });

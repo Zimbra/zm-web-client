@@ -29,31 +29,35 @@ Ext.define('ZCS.model.ZtOrganizer', {
 
 	config: {
 
+		// Note that 'id' is the ID within Sencha. Since a single organizer from
+		// the ZCS server may exist in multiple Sencha stores, and each instance within Sencha
+		// must have a unique ID, we need to disambiguate the ID. For example, a tag with 'zcsId'
+		// 607 may correspond to ZtOrganizer instances with IDs 'mail-tag-607' and 'contacts-tag-607'.
+
 		fields: [
 			// global fields
-			{ name: 'type',             type: 'string' },  // ZCS.constant.ORG_*
-			{ name: 'typeName',         type: 'string' },  // display name of group
-			{ name: 'itemId',           type: 'string' },  // ID (possibly qualified)
-			{ name: 'zcsId',            type: 'string' },  // ID on ZCS server
-			{ name: 'tagId',            type: 'string' },  // ID of tag on ZCS server
-			{ name: 'notifyType',       type: 'string' },  // notification type
-			{ name: 'parentItemId',     type: 'string' },  // ID of parent organizer
-			{ name: 'name',             type: 'string' },  // not encoded, should not be displayed
-			{ name: 'displayName',      type: 'string' },  // HTML-encoded
-			{ name: 'path',             type: 'string' },  // full path with / separators
-			{ name: 'itemCount',        type: 'int' },     // number of items contained by this organizer
-			{ name: 'color',            type: 'int' },     // standard color
-			{ name: 'rgb',              type: 'string' },  // extended RGB color
-			{ name: 'url',              type: 'string' },  // feeds
+			{ name: 'type',             type: 'string' },   // folder, search, or tag
+			{ name: 'folderType',       type: 'string' },   // specific type of folder (eg mail folder)
+			{ name: 'zcsId',            type: 'string' },   // ID on ZCS server
+			{ name: 'parentItemId',     type: 'string' },   // ID of parent organizer
+			{ name: 'parentZcsId',      type: 'string' },   // ID of parent on ZCS server
+			{ name: 'name',             type: 'string' },   // not encoded, should not be displayed
+			{ name: 'displayName',      type: 'string' },   // HTML-encoded
+			{ name: 'path',             type: 'string' },   // full path with / separators
+			{ name: 'itemCount',        type: 'int' },      // number of items contained by this organizer
+			{ name: 'color',            type: 'int' },      // standard color
+			{ name: 'rgb',              type: 'string' },   // extended RGB color
+			{ name: 'url',              type: 'string' },   // feeds
 
 			// folder fields
-			{ name: 'disclosure',       type: 'boolean' }, // override NestedList button behavior
+			{ name: 'disclosure',       type: 'boolean' },  // override NestedList button behavior
 
 			// mail folder fields
-			{ name: 'unreadCount',      type: 'int' },     // number of unread messages in this folder
+			{ name: 'unreadCount',      type: 'int' },      // number of unread messages in this folder
 
 			// saved search fields
-			{ name: 'query',            type: 'string' }   // search query
+			{ name: 'query',            type: 'string' },   // search query
+			{ name: 'searchTypes',      type: 'string' }    // search types
 		],
 
 		proxy: {
@@ -65,19 +69,38 @@ Ext.define('ZCS.model.ZtOrganizer', {
 	statics: {
 
 		/**
-		 * Returns an ID for an organizer which should be unique. Since the same tag can be used by multiple apps
-		 * (appearing in multiple overviews), we need to qualify its ID to be unique; otherwise ST gets confused.
-		 * Same thing goes for the Trash folder.
+		 * Returns an ID for an organizer which should be unique. Note that this is the ID of the
+		 * organizer within a Sencha store, and not a DOM ID.
 		 *
-		 * @param {String}      itemId      organizer ID
-		 * @param {String}      type        ZCS.constant.ORG_*
+		 * @param {String}      zcsId       organizer ID on ZCS server
 		 * @param {String}      app         ZCS.constant.APP_*
+		 * @param {String}      context     (optional) container (such as 'overview' or 'assignment')
 		 *
-		 * @return {String}     suitable DOM ID for organizer
+		 * @return {String}     suitable ID for organizer within a Sencha store
 		 */
-		getOrganizerId: function(itemId, type, app) {
-			app = app || ZCS.session.getActiveApp();
-			return (itemId === ZCS.constant.ID_TRASH || type === ZCS.constant.ORG_TAG) ? [app, type, itemId].join('-') : itemId;
+		getOrganizerId: function(zcsId, app, context) {
+			return Ext.clean([ app, context, zcsId ]).join('-');
+		},
+
+		/**
+		 * Parse an organizer ID into its component fields.
+		 *
+		 * @param {String}      id          organizer ID, such as 'mail-overview-2'
+		 *
+		 * @return {Object}     object with ID fields
+		 */
+		parseOrganizerId: function(id) {
+
+			var fields = id.split('-'),
+				parsed = {}, i, prop;
+
+			parsed.zcsId = fields.pop();
+			for (i = 0; i < fields.length; i++) {
+				prop = ZCS.constant.IS_APP[fields[i]] ? 'app' : 'context';
+				parsed[prop] = fields[i];
+			}
+
+			return parsed;
 		},
 
 		/**
@@ -104,8 +127,8 @@ Ext.define('ZCS.model.ZtOrganizer', {
 				id2 = organizer2.zcsId || (get2 ? organizer2.get('zcsId') : null),
 				name1 = organizer1.name || (get1 ? organizer1.get('name') : null),
 				name2 = organizer2.name || (get2 ? organizer2.get('name') : null),
-				isSystem1 = (orgType1 !== ZCS.constant.ORG_SAVED_SEARCH && orgType1 !== ZCS.constant.ORG_TAG && id1 <= ZCS.constant.MAX_SYSTEM_ID),
-				isSystem2 = (orgType2 !== ZCS.constant.ORG_SAVED_SEARCH && orgType2 !== ZCS.constant.ORG_TAG && id2 <= ZCS.constant.MAX_SYSTEM_ID),
+				isSystem1 = (orgType1 === ZCS.constant.ORG_FOLDER && id1 <= ZCS.constant.MAX_SYSTEM_ID),
+				isSystem2 = (orgType2 === ZCS.constant.ORG_FOLDER && id2 <= ZCS.constant.MAX_SYSTEM_ID),
 				sortField1, sortField2;
 
 			if (orgType1 !== orgType2) {
@@ -125,6 +148,30 @@ Ext.define('ZCS.model.ZtOrganizer', {
 			}
 
 			return sortField1 > sortField2 ? 1 : (sortField1 === sortField2 ? 0 : -1);
+		},
+
+		/**
+		 * Fills in a few Sencha-related fields in an organizer data object:
+		 *
+		 *      id:             ID within a specific Sencha store
+		 *      parentItemId:   ID of parent organizer within a specific Sencha store
+		 *      leaf:           true if organizer has no children
+		 *      disclosure:     true if we should show disclosure icon (to show children)
+		 *
+		 * @param {Object}      organizer       anonymous object with organizer data
+		 * @param {String}      app             app (used to create unique ID)
+		 * @param {String}      context         context (used to create unique ID)
+		 * @param {Boolean}     hasChildren     true if organizer contains child organizers
+		 */
+		addOtherFields: function(organizer, app, context, hasChildren) {
+
+			organizer.id = ZCS.model.ZtOrganizer.getOrganizerId(organizer.zcsId, app, context);
+			organizer.parentItemId = ZCS.model.ZtOrganizer.getOrganizerId(organizer.parentZcsId, app, context);
+
+			if (Ext.isBoolean(hasChildren)) {
+				organizer.leaf = !hasChildren;
+				organizer.disclosure = hasChildren;
+			}
 		}
 	},
 
@@ -132,24 +179,31 @@ Ext.define('ZCS.model.ZtOrganizer', {
 
 		this.callParent(arguments);
 
-		var orgId = (data && (data.itemId || data.id)) || id;
+		var orgId = (data && (data.zcsId || data.id)) || id;
+//		console.log('Cache organizer "' + data.name + '" under key "' + orgId + '"');
 
 		ZCS.cache.set(orgId, this);
 		if (data.zcsId && data.zcsId !== orgId) {
-			ZCS.cache.set(data.zcsId, this);
+			var orgList = ZCS.cache.get(data.zcsId, null, true);
+			if (!orgList || !Array.isArray(orgList)) {
+				orgList = [];
+				ZCS.cache.set(data.zcsId, orgList);
+			}
+			orgList.push(this);
 		}
+
 		if (data.path) {
-			ZCS.cache.set(this.isSystem() ? ZCS.constant.FOLDER_SYSTEM_NAME[orgId] : data.path, this, 'path');
+			var sysId = ZCS.util.localId(this.get('zcsId'));
+			ZCS.cache.set(this.isSystem() ? '/' + ZCS.constant.FOLDER_SYSTEM_NAME[sysId] : data.path, this, 'path');
 		}
 	},
 
 	isFolder: function() {
-		var type = this.get('type');
-		return type !== ZCS.constant.ORG_SAVED_SEARCH && type !== ZCS.constant.ORG_TAG;
+		return this.get('type') === ZCS.constant.ORG_FOLDER;
 	},
 
 	isSystem: function() {
-		return this.isFolder() && (this.get('itemId') <= ZCS.constant.MAX_SYSTEM_ID);
+		return this.isFolder() && (ZCS.util.localId(this.get('zcsId')) <= ZCS.constant.MAX_SYSTEM_ID);
 	},
 
 	isFeed: function() {
@@ -174,7 +228,7 @@ Ext.define('ZCS.model.ZtOrganizer', {
 
 			return 'in:"' + path + '"';
 		}
-		else if (type === ZCS.constant.ORG_SAVED_SEARCH) {
+		else if (type === ZCS.constant.ORG_SEARCH) {
 			return this.get('query');
 		}
 		else if (type === ZCS.constant.ORG_TAG) {
@@ -209,6 +263,10 @@ Ext.define('ZCS.model.ZtOrganizer', {
 		return title;
 	},
 
+	handleDeleteNotification: function() {
+		this.destroy();
+	},
+
 	handleModifyNotification: function(modify, app) {
 
 		// Use reader to perform any needed data transformation
@@ -220,6 +278,9 @@ Ext.define('ZCS.model.ZtOrganizer', {
 		}
 		if (modify.name) {
 			this.set('name', data.name);
+		}
+		if (modify.absFolderPath) {
+			this.set('path', data.path);
 		}
 		if (modify.color) {
 			this.set('color', data.color);
@@ -265,10 +326,10 @@ Ext.define('ZCS.model.ZtOrganizer', {
 			return false;
 		}
 
-		var	myId = this.get('itemId'),
+		var	myId = this.get('zcsId'),
 			itemFolderId = item.get('folderId'),
 			curFolder = ZCS.session.getCurrentSearchOrganizer(),
-			curFolderId = curFolder ? curFolder.get('itemId') : null,
+			curFolderId = curFolder ? curFolder.get('zcsId') : null,
 			isDraftsFolder = ZCS.util.folderIs(this, ZCS.constant.ID_DRAFTS),
 			isTrashFolder = ZCS.util.folderIs(this, ZCS.constant.ID_TRASH),
 			isDraft = item.get('isDraft');

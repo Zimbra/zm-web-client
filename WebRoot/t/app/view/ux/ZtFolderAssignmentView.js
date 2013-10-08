@@ -19,49 +19,36 @@
  * @author Macy Abbey
  */
 Ext.define('ZCS.view.ux.ZtFolderAssignmentView', {
+
 	extend: 'ZCS.view.ux.ZtAssignmentView',
-	requires: [
-		'ZCS.model.ZtFolder'
-	],
+
 	alias: 'widget.moveview',
 
 	config: {
 		/**
-		 * @cfg {Object} Folder tree with which to populate the store
+		 * @cfg {Object} Organizer tree with which to populate the store
 		 */
-		folderTree: null
+		organizerTree: null
 	},
 
 	constructor: function (config) {
 
-		var cfg = config || {};
-
-		// get the organizer data for this app
-		var organizerData = {
-			items: cfg.folderTree
+		var cfg = config || {},
+			organizerData = {
+			items: cfg.organizerTree
 		};
 
-		// create a store for the organizers
-		var organizerStore = Ext.create('Ext.data.TreeStore', {
-			model:                  'ZCS.model.ZtFolder',
-			defaultRootProperty:    'items',
-			root:                   organizerData,
-			storeId:                'organizerStore',
-			proxy: {
-				type: 'memory',
-				model: 'ZCS.model.ZtFolder'
-			}
-		});
+		var organizerStore = Ext.create('ZCS.store.ZtOrganizerStore');
+		organizerStore.setRoot(organizerData);
 
 		cfg.list = {
 			xtype:              'folderlist',
-			displayField:       'name',
+			displayField:       'displayName',
 			title:              cfg.listTitle,
 			store:              organizerStore,
 			grouped:            false,
 			canDisableItems:    true
 		};
-
 		cfg.listHasOwnHeader = true;
 
 		this.callParent([cfg]);

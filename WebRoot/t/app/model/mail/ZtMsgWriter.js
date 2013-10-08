@@ -43,7 +43,7 @@ Ext.define('ZCS.model.mail.ZtMsgWriter', {
 			methodJson = json.Body.SearchConvRequest;
 
 			var curFolder = ZCS.session.getCurrentSearchOrganizer(),
-				curFolderId = curFolder && curFolder.get('itemId'),
+				curFolderId = curFolder && curFolder.get('zcsId'),
 				fetch = (curFolderId === ZCS.constant.ID_DRAFTS) ? 'all' : 'u1';
 
 			Ext.apply(methodJson, {

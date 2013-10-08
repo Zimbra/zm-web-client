@@ -29,7 +29,7 @@ Ext.define('ZCS.model.mail.ZtConvReader', {
 		var data = {},
 			nowMs = Ext.Date.now();
 
-		data.itemId = node.id;
+		data.zcsId = node.id;
 		data.type = ZCS.constant.ITEM_CONVERSATION;
 		data.subject = ZCS.mailutil.stripSubjectPrefixes(node.su);
 		data.numMsgs = node.n;

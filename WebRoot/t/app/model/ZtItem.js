@@ -30,7 +30,7 @@ Ext.define('ZCS.model.ZtItem', {
 
 		fields: [
 			{ name: 'type',     type: 'string' },   // ZCS.constant.ITEM_*
-			{ name: 'itemId',   type: 'string' },   // ID on server
+			{ name: 'zcsId',    type: 'string' },   // ID on server
 			{ name: 'tags',		type: 'auto' }      // list of tag data objects
 		],
 
@@ -65,6 +65,7 @@ Ext.define('ZCS.model.ZtItem', {
 		parseTags: function(tagIds, app) {
 
 			return !tagIds ? [] : Ext.Array.map(tagIds.split(','), function(tagId) {
+
 				var id = ZCS.model.ZtOrganizer.getOrganizerId(tagId, ZCS.constant.ORG_TAG, app),
 					tag = ZCS.cache.get(id);
 
@@ -88,7 +89,7 @@ Ext.define('ZCS.model.ZtItem', {
 			var tagDataList;
 			if (tags && tags.length) {
 				tagDataList = Ext.Array.map(Ext.Array.clean(tags), function(tag) {
-					var tagData = Ext.copyTo({}, tag, 'itemId,color,name,displayName');
+					var tagData = Ext.copyTo({}, tag, 'zcsId,color,name,displayName');
 					tagData.id = ZCS.util.getUniqueId(tagData);
 					return tagData;
 				});

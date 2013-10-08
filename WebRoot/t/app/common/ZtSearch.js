@@ -39,11 +39,13 @@ Ext.define('ZCS.common.ZtSearch', {
 				m = q && q.match(ZCS.constant.REGEX_FOLDER_TAG_SEARCH);
 
 			if (m && m.length) {
-				var	path = m[2],
-					organizer = ZCS.cache.get(path, 'path') || (path && ZCS.cache.get(path.toLowerCase(), 'path'));
-
+				var	path = m[2];
+				if (path && path.charAt(0) !== '/') {
+					path = '/' + path;
+				}
+				var	organizer = ZCS.cache.get(path, 'path') || (path && ZCS.cache.get(path.toLowerCase(), 'path'));
 				if (organizer) {
-					return organizer.get('itemId');
+					return organizer.get('zcsId');
 				}
 			}
 			return null;

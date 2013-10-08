@@ -137,7 +137,7 @@ Ext.define('ZCS.controller.contacts.ZtContactListController', {
     handleCreateNotification: function(item, create) {
 
         var curFolder = ZCS.session.getCurrentSearchOrganizer(),
-            curFolderId = curFolder && curFolder.get('itemId'),
+            curFolderId = curFolder && curFolder.get('zcsId'),
             doAdd = false,
             creates = create.creates,
             ln = creates && creates.cn ? creates.cn.length : 0,

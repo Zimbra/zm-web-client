@@ -189,7 +189,7 @@ Ext.define('ZCS.controller.ZtListController', {
 
 			if (folder) {
 				// If we got here via tap on a saved search in the overview, remember it so we can show its name
-				var searchId = (folder.get('type') === ZCS.constant.ORG_SAVED_SEARCH) ? folder.get('itemId') : null;
+				var searchId = (folder.get('type') === ZCS.constant.ORG_SEARCH) ? folder.get('zcsId') : null;
 				ZCS.session.setSetting(ZCS.constant.SETTING_CUR_SEARCH_ID, searchId, app);
 			}
 			else {
@@ -254,7 +254,7 @@ Ext.define('ZCS.controller.ZtListController', {
 
 		this.callParent(arguments);
 		var	curOrganizer = ZCS.session.getCurrentSearchOrganizer();
-		if (curOrganizer && curOrganizer.get('itemId') === folder.get('itemId')) {
+		if (curOrganizer && curOrganizer.get('zcsId') === folder.get('zcsId')) {
 			this.updateTitlebar();
 			ZCS.app.fireEvent('updatelistpanelToggle', this.getOrganizerTitle(), ZCS.session.getActiveApp());
 		}

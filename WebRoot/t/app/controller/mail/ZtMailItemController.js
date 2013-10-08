@@ -42,7 +42,7 @@ Ext.define('ZCS.controller.mail.ZtMailItemController', {
 	 * Launches a move assignment view.
 	 */
 	doMove: function(item) {
-		this.doAssignmentView(item, 'ZCS.view.ux.ZtFolderAssignmentView', ZtMsg.folders, ZCS.constant.ORG_MAIL_FOLDER);
+		this.doAssignmentView(item, 'ZCS.view.ux.ZtFolderAssignmentView', ZtMsg.folders, ZCS.constant.ORG_FOLDER);
 	},
 
 	/**
@@ -93,7 +93,7 @@ Ext.define('ZCS.controller.mail.ZtMailItemController', {
 				targetElement: targetComp.bodyElement,
 				record: item,
 				listTitle: listTitle,
-				folderTree: ZCS.session.getOrganizerDataByAppAndOrgType(ZCS.constant.APP_MAIL, ZCS.constant.ORG_MAIL_FOLDER),
+				organizerTree: ZCS.session.getOrganizerData(ZCS.constant.APP_MAIL, viewType, 'assignment'),
 				onAssignmentComplete: function () {
 					me.updateToolbar({
 						hideAll: false
@@ -213,7 +213,7 @@ Ext.define('ZCS.controller.mail.ZtMailItemController', {
 			isDrafts = ZCS.util.folderIs(curFolder, ZCS.constant.ID_DRAFTS);
 
 		if (menu && menu.getItem(ZCS.constant.OP_TAG)) {
-			var tags = ZCS.session.getOrganizerDataByAppAndOrgType(ZCS.constant.APP_MAIL, ZCS.constant.ORG_TAG);
+			var tags = ZCS.session.getOrganizerData(ZCS.constant.APP_MAIL, ZCS.constant.ORG_TAG);
 			menu.enableItem(ZCS.constant.OP_TAG, tags && tags.length > 0);
 		}
 		menu.enableItem(ZCS.constant.OP_REPLY, !isFeed);
@@ -295,7 +295,7 @@ Ext.define('ZCS.controller.mail.ZtMailItemController', {
 
 	/**
 	 * If we moved a conv, we can't rely on notifications to figure out that it moved since
-	 * we may not have loaded its messages (the only move notifications that come are for
+	 * we may not have loaded its messages (the only move notifications that we get are for
 	 * messages). So we do it manually if the request succeeded.
 	 *
 	 * @private
@@ -304,7 +304,7 @@ Ext.define('ZCS.controller.mail.ZtMailItemController', {
 
 		var isConv = (item.get('type') === ZCS.constant.ITEM_CONVERSATION),
 			toastMsg = isConv ? ZtMsg.moveConversation : ZtMsg.moveMessage,
-			folder = ZCS.cache.get(ZCS.model.ZtOrganizer.getOrganizerId(folderId, ZCS.constant.ORG_FOLDER)),
+			folder = ZCS.cache.get(folderId),
 			folderName = folder && folder.get('displayName');
 
 		if (isConv) {

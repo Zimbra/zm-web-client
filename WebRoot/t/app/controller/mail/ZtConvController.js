@@ -170,7 +170,7 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
         //</debug>
 
 		var curFolder = ZCS.session.getCurrentSearchOrganizer(),
-			curFolderId = curFolder && curFolder.get('itemId'),
+			curFolderId = curFolder && curFolder.get('zcsId'),
 			store = this.getStore();
 
 		this.callParent(arguments);
@@ -245,7 +245,7 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 			record = store.getAt(i);
 			if (msgView && record) {
 				msgView.render(record);
-				msgId = record.get('itemId');
+				msgId = record.get('zcsId');
 				this.msgViewById[msgId] = msgView;
 			}
 		}
@@ -308,7 +308,7 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 			msgs = conv && conv.getMessages(),
 			ln = msgs ? msgs.length : 0, i, msg, folderId,
 			curFolder = ZCS.session.getCurrentSearchOrganizer(),
-			curFolderId = curFolder && curFolder.get('itemId'),
+			curFolderId = curFolder && curFolder.get('zcsId'),
 			ignoreFolder = ZCS.constant.CONV_REPLY_OMIT,
 			lastMessage = null,
 			activeMsg = null;
@@ -359,7 +359,7 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 			convListCtlr = ZCS.app.getConvListController(),
 			convStore = convListCtlr.getStore(),
 			curFolder = ZCS.session.getCurrentSearchOrganizer(),
-			curFolderId = curFolder ? curFolder.get('itemId') : '',
+			curFolderId = curFolder ? curFolder.get('zcsId') : '',
 			createFolderId = ZCS.util.localId(create.l);
 
 		// Ignore new msg in Trash/Junk/Drafts
@@ -490,7 +490,7 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 				messages = conv && conv.getMessages(),
 				ln = messages ? messages.length : 0, i,
 				curFolder = ZCS.session.getCurrentSearchOrganizer(),
-				curFolderId = curFolder && curFolder.get('itemId'),
+				curFolderId = curFolder && curFolder.get('zcsId'),
 				removeConv = true,
 				folderId, isGone, index, convListView, wasSelected;
 

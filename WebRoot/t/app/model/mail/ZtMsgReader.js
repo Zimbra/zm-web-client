@@ -39,7 +39,7 @@ Ext.define('ZCS.model.mail.ZtMsgReader', {
 		var data = {},
 			ctxt;
 
-		data.itemId         = node.id;
+		data.zcsId          = node.id;
 		data.type           = ZCS.constant.ITEM_MESSAGE;
 		data.folderId       = node.l;
 		data.fragment       = node.fr;
@@ -101,7 +101,7 @@ Ext.define('ZCS.model.mail.ZtMsgReader', {
 		var records = [],
 			ln = root.length, i,
 			curFolder = ZCS.session.getCurrentSearchOrganizer(),
-			curFolderId = curFolder ? curFolder.get('itemId') : '';
+			curFolderId = curFolder ? curFolder.get('zcsId') : '';
 
 		// Process each msg from JSON to data
 		for (i = 0; i < ln; i++) {

@@ -26,7 +26,9 @@ Ext.define('ZCS.model.contacts.ZtContactReader', {
 
 	getDataFromNode: function(node) {
 
-		var data = {},
+		var data = {
+				zcsId:  node.id
+			},
 			attrs = node._attrs;
 
 		data.type = ZCS.constant.ITEM_CONTACT;
@@ -179,7 +181,7 @@ Ext.define('ZCS.model.contacts.ZtContactReader', {
 			    data.memberPhone = attrs.workPhone || attrs.homePhone || attrs.otherPhone || '';
 			    if (member.type === 'C' || member.type === 'G') {
 				    // TODO: what should we do here? will this happen?
-				    data.itemId = member.value;
+				    data.zcsId = member.value;
 			    }
                 data.memberImageUrl = ZCS.model.contacts.ZtContact.getImageUrl(attrs, member.value);
 		    }

@@ -214,8 +214,11 @@ Ext.define('ZCS.common.ZtUtil', {
 	 * @return {Boolean}    true if folder matches given folder ID
 	 */
 	folderIs: function(folder, folderId) {
-		folder = Ext.isString(folder) ? ZCS.cache.get(folder) : folder;
-		return folder ? this.localId(folder.get('itemId')) === folderId : false;
+
+		if (Ext.isString(folder)) {
+			folder = ZCS.cache.get(folder);
+		}
+		return folder ? this.localId(folder.get('zcsId')) === folderId : false;
 	},
 
 	/**
@@ -225,7 +228,7 @@ Ext.define('ZCS.common.ZtUtil', {
 	 */
 	curFolderLocalId: function() {
 		var curFolder = ZCS.session.getCurrentSearchOrganizer();
-		return curFolder ? this.localId(curFolder.get('itemId')) : '';
+		return curFolder ? this.localId(curFolder.get('zcsId')) : '';
 	},
 
 	/**

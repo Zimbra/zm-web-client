@@ -46,13 +46,6 @@ Ext.define('ZCS.controller.ZtItemController', {
 		item: null
 	},
 
-	launch: function () {
-        //<debug>
-		Ext.Logger.verbose('STARTUP: item ctlr launch - ' + ZCS.util.getClassName(this));
-        //</debug>
-		this.callParent();
-	},
-
 	/**
 	 * Clears the content of the toolbar. Hides placeholder text if appropriate.
 	 *

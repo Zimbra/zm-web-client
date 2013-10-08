@@ -24,26 +24,29 @@ Ext.define('ZCS.view.ux.ZtTagAssignmentView', {
 
 	alias: 'widget.tagview',
 
+	config: {
+		/**
+		 * @cfg {Object} Organizer tree with which to populate the store
+		 */
+		organizerTree: null
+	},
+
 	constructor: function (config) {
 
 		var cfg = config || {},
-			tagData = ZCS.session.getOrganizerDataByAppAndOrgType(ZCS.constant.APP_MAIL, ZCS.constant.ORG_TAG);
+			organizerData = {
+			items: cfg.organizerTree
+		};
 
-		// It would be nicer to create actual ZtOrganizer instances to populate the store, but doing that
-		// messes up the store for some reason - it ends up with one unusable record.
-		var tagStore = Ext.create('Ext.data.Store', {
-//			model:  'ZCS.model.ZtOrganizer',
-			data:   tagData,
-			proxy: {
-				type: 'memory',
-				model: 'ZCS.model.ZtOrganizer'
-			}
-		});
+		var organizerStore = Ext.create('ZCS.store.ZtOrganizerStore');
+		organizerStore.setRoot(organizerData);
 
 		cfg.list = {
-			xtype:              'foldersublist',
+			xtype:              'foldersublist',    // tags are a list (no children)
+			grouped:            false,
 			ui:                 'dark',
-			store:              tagStore,
+			title:              cfg.listTitle,
+			store:              organizerStore,
 			canDisableItems:    true,
 			itemTpl:            ZCS.template.TagAssignmentListItem
 		};

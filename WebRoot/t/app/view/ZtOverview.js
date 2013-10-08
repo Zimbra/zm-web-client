@@ -51,7 +51,7 @@ Ext.define('ZCS.view.ZtOverview', {
 		// get the organizer data for this app
 		var app = this.getApp(),
 			organizerData = {
-				items: ZCS.session.getOrganizerDataByApp(app)
+				items: ZCS.session.getOrganizerData(app, null, 'overview')
 			};
 
 		// create a store for the organizers
@@ -90,11 +90,10 @@ Ext.define('ZCS.view.ZtOverview', {
 	 */
 	handleOrganizerCreate: function(folder, notification) {
 
-		var organizers = [];
-		ZCS.session.addOrganizer(notification, organizers, this.getApp(), notification.itemType, []);
-		var organizer = organizers[0];
+		var organizer = ZCS.model.ZtOrganizer.getProxy().getReader().getDataFromNode(notification, notification.itemType);
 		if (organizer) {
-			this.insertOrganizer(organizer, organizer.parentItemId);
+			ZCS.model.ZtOrganizer.addOtherFields(organizer, this.getApp(), 'overview', false);
+			this.insertOrganizer(organizer, organizer.parentItemId, organizer.parentZcsId);
 		}
 	},
 
@@ -112,10 +111,15 @@ Ext.define('ZCS.view.ZtOverview', {
 				data = reader.getDataFromNode(notification, folder.get('type'), this.getApp(), []),
 				list = this.down('folderlist'),
 				store = list && list.getStore(),
-				oldParentId = folder.get('parentItemId');
+				oldParentId = folder.get('parentItemId'),
+				oldParentZcsId = folder.get('parentZcsId'),
+				itemId = ZCS.model.ZtOrganizer.getOrganizerId(notification.id, this.getApp(), 'overview'),
+				newParentId = ZCS.model.ZtOrganizer.getOrganizerId(data.parentZcsId, this.getApp(), 'overview');
 
-			folder.set('parentItemId', data.parentItemId);
-			this.insertOrganizer(ZCS.cache.get(data.id), data.parentItemId, oldParentId);
+			folder.set('parentZcsId', data.parentZcsId);
+			folder.set('parentItemId', newParentId);
+
+			this.insertOrganizer(ZCS.cache.get(itemId), newParentId, data.parentZcsId, oldParentId, oldParentZcsId);
 		}
 	},
 
@@ -127,16 +131,17 @@ Ext.define('ZCS.view.ZtOverview', {
 	 * @param {String}      parentId
 	 * @private
 	 */
-	insertOrganizer: function(organizer, parentId, oldParentId) {
+	insertOrganizer: function(organizer, parentId, parentZcsId, oldParentId, oldParentZcsId) {
 
 		var list = this.down('folderlist'),
 			store = list && list.getStore(),
-			parent = (!parentId || parentId === ZCS.constant.ID_ROOT) ? store.getRoot() : store.getNodeById(parentId),
-			oldParent = (!oldParentId || oldParentId === ZCS.constant.ID_ROOT) ? store.getRoot() : store.getNodeById(oldParentId);
+			parent = (!parentId || parentZcsId === ZCS.constant.ID_ROOT) ? store.getRoot() : store.getNodeById(parentId),
+			oldParent = (!oldParentId || oldParentZcsId === ZCS.constant.ID_ROOT) ? store.getRoot() : store.getNodeById(oldParentId);
 
-		if (parent) {
+		if (parent && organizer) {
 			var index = this.getSortIndex(parent, organizer);
 			if (index === -1) {
+				// TODO: possible JS error here if organizer isn't decorated (missing 'childNodes' property)
 				parent.appendChild(organizer);
 			}
 			else {

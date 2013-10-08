@@ -97,7 +97,7 @@ Ext.define('ZCS.model.ZtSoapProxy', {
 				}),
 				orgId = search.getOrganizerId(),
 				org = orgId && ZCS.cache.get(orgId),
-				app = (org && ZCS.constant.ORG_APP[org.get('type')]) || ZCS.session.getActiveApp();
+				app = (org && ZCS.constant.FOLDER_APP[org.get('type')]) || ZCS.session.getActiveApp();
 
 			ZCS.session.setSetting(ZCS.constant.SETTING_CUR_SEARCH, search, app);
 			if (ZCS.session.getSetting(ZCS.constant.SETTING_SHOW_SEARCH)) {
@@ -119,7 +119,7 @@ Ext.define('ZCS.model.ZtSoapProxy', {
 			ZCS.app.getMainController().schedulePoll();
 		}
 		else {
-			ZCS.app.fireEvent('serverError', data.Body.Fault);
+			ZCS.app.fireEvent('serverError', (data.Body && data.Body.Fault) || data.statusText || "Unknown error");
 		}
 	},
 

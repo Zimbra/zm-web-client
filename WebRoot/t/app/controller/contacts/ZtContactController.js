@@ -251,7 +251,7 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
 				targetElement: targetComp.bodyElement,
 				record: item,
 				listTitle: listTitle,
-				folderTree: ZCS.session.getOrganizerDataByAppAndOrgType(ZCS.constant.APP_CONTACTS, ZCS.constant.ORG_ADDRESS_BOOK),
+				folderTree: ZCS.session.getOrganizerData(ZCS.constant.APP_CONTACTS, ZCS.constant.ORG_FOLDER),
 				onAssignmentComplete: function () {
 					me.updateToolbar({
 						hideAll: false
@@ -485,7 +485,7 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
 		    folder = (curApp === ZCS.constant.APP_CONTACTS) ? ZCS.session.getCurrentSearchOrganizer() : null;
 
         contact.save({
-	        folderId: folder ? folder.get('itemId') : null,
+	        folderId: folder ? folder.get('zcsId') : null,
             success: function() {
 	            me.hideContactForm();
                 ZCS.app.fireEvent('showToast', ZtMsg.contactCreated);

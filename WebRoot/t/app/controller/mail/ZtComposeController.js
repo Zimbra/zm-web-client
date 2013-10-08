@@ -114,7 +114,7 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 		}
 
 		this.setAction(ZCS.constant.OP_COMPOSE);
-		this.setDraftId(msg ? msg.get('itemId') : null);
+		this.setDraftId(msg ? msg.get('zcsId') : null);
 		this.showComposeForm(addresses, subject, body);
 	},
 

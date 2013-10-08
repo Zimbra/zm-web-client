@@ -72,6 +72,7 @@ ZCS.constant.APPS = [
 	ZCS.constant.APP_CONTACTS,
     ZCS.constant.APP_CALENDAR
 ];
+ZCS.constant.IS_APP = ZCS.util.arrayAsLookupHash(ZCS.constant.APPS);
 
 // Turn features on/off
 ZCS.constant.FEATURE_ADD_ATTACHMENT = 'add_attachment'; // attach file when composing
@@ -156,21 +157,29 @@ ZCS.constant.HDR_COLLAPSED  = 'collapsed';
 ZCS.constant.HDR_EXPANDED   = 'expanded';
 ZCS.constant.HDR_DETAILED   = 'detailed';
 
-// Item types as known by server
+// Item types (server JSON)
 ZCS.constant.ITEM_CONVERSATION      = 'conversation';
 ZCS.constant.ITEM_MESSAGE           = 'message';
 ZCS.constant.ITEM_CONTACT           = 'contact';
-//ZCS.constant.ITEM_APPOINTMENT       = 'appt';
-//ZCS.constant.ITEM_FOLDER            = 'folder';
-ZCS.constant.ADDRESS_AUTOCOMPLETE   = 'match';
-ZCS.constant.ITEM_CALENDAR          = 'calendar';
+ZCS.constant.ITEM_APPOINTMENT       = 'appointment';
+ZCS.constant.ITEM_CALENDAR          = 'calendar';   // TODO: organizer, not item
+ZCS.constant.ITEM_MATCH             = 'match';      // autocomplete response JSON
 
-// Organizer types
-ZCS.constant.ORG_FOLDER             = 'folder';
+// JSON node names for items
+ZCS.constant.NODE_CONVERSATION  = 'c';
+ZCS.constant.NODE_MESSAGE       = 'm';
+ZCS.constant.NODE_CONTACT       = 'cn';
+ZCS.constant.NODE_CALENDAR      = 'appt';
+ZCS.constant.NODE_MATCH         = 'match';
+
+// Organizer types (same as server JSON)
+ZCS.constant.ORG_FOLDER         = 'folder';
+ZCS.constant.ORG_SEARCH         = 'search';
+ZCS.constant.ORG_TAG            = 'tag';
+
+// Folder sub-types
 ZCS.constant.ORG_MAIL_FOLDER        = 'mailFolder';
 ZCS.constant.ORG_ADDRESS_BOOK       = 'addressBook';
-ZCS.constant.ORG_SAVED_SEARCH       = 'search';
-ZCS.constant.ORG_TAG                = 'tag';
 ZCS.constant.ORG_CALENDAR           = 'calendar';
 
 // App to which each item type belongs
@@ -182,33 +191,23 @@ ZCS.constant.APP_FOR_TYPE[ZCS.constant.ITEM_CALENDAR]      = ZCS.constant.APP_CA
 
 // Model class for each item type
 ZCS.constant.CLASS_FOR_TYPE = {};
-ZCS.constant.CLASS_FOR_TYPE[ZCS.constant.ITEM_CONVERSATION]    = 'ZCS.model.mail.ZtConv';
-ZCS.constant.CLASS_FOR_TYPE[ZCS.constant.ITEM_MESSAGE]         = 'ZCS.model.mail.ZtMailMsg';
-ZCS.constant.CLASS_FOR_TYPE[ZCS.constant.ITEM_CONTACT]         = 'ZCS.model.contacts.ZtContact';
-ZCS.constant.CLASS_FOR_TYPE[ZCS.constant.ADDRESS_AUTOCOMPLETE] = 'ZCS.model.address.ZtAutoComplete';
-ZCS.constant.CLASS_FOR_TYPE[ZCS.constant.ITEM_CALENDAR]        = 'ZCS.model.calendar.ZtCalendar';
+ZCS.constant.CLASS_FOR_TYPE[ZCS.constant.ITEM_CONVERSATION] = 'ZCS.model.mail.ZtConv';
+ZCS.constant.CLASS_FOR_TYPE[ZCS.constant.ITEM_MESSAGE]      = 'ZCS.model.mail.ZtMailMsg';
+ZCS.constant.CLASS_FOR_TYPE[ZCS.constant.ITEM_CONTACT]      = 'ZCS.model.contacts.ZtContact';
+ZCS.constant.CLASS_FOR_TYPE[ZCS.constant.ITEM_MATCH]        = 'ZCS.model.address.ZtAutoComplete';
+ZCS.constant.CLASS_FOR_TYPE[ZCS.constant.ITEM_CALENDAR]     = 'ZCS.model.calendar.ZtCalendar';
 
 // Item type for model class
 ZCS.constant.TYPE_FOR_CLASS = ZCS.util.getBackMap(ZCS.constant.CLASS_FOR_TYPE);
-
-// JSON node names for items
-ZCS.constant.NODE_CONVERSATION  = 'c';
-ZCS.constant.NODE_MESSAGE       = 'm';
-ZCS.constant.NODE_CONTACT       = 'cn';
-ZCS.constant.NODE_CALENDAR      = 'appt';
-ZCS.constant.NODE_MATCH         = 'match';
-ZCS.constant.NODE_FOLDER        = 'folder';
-ZCS.constant.NODE_SEARCH        = 'search';
-ZCS.constant.NODE_TAG           = 'tag';
 
 // Order in which to handle notifications
 ZCS.constant.NODES = [
 	ZCS.constant.NODE_CONVERSATION,
 	ZCS.constant.NODE_MESSAGE,
 	ZCS.constant.NODE_CONTACT,
-	ZCS.constant.NODE_FOLDER,
-	ZCS.constant.NODE_SEARCH,
-	ZCS.constant.NODE_TAG
+	ZCS.constant.ORG_FOLDER,
+	ZCS.constant.ORG_SEARCH,
+	ZCS.constant.ORG_TAG
 ];
 
 // Notification types
@@ -221,11 +220,8 @@ ZCS.constant.ITEM_NODE = {};
 ZCS.constant.ITEM_NODE[ZCS.constant.ITEM_CONVERSATION]      = ZCS.constant.NODE_CONVERSATION;
 ZCS.constant.ITEM_NODE[ZCS.constant.ITEM_MESSAGE]           = ZCS.constant.NODE_MESSAGE;
 ZCS.constant.ITEM_NODE[ZCS.constant.ITEM_CONTACT]           = ZCS.constant.NODE_CONTACT;
-ZCS.constant.ITEM_NODE[ZCS.constant.ADDRESS_AUTOCOMPLETE]   = ZCS.constant.NODE_MATCH;
+ZCS.constant.ITEM_NODE[ZCS.constant.ITEM_MATCH]             = ZCS.constant.NODE_MATCH;
 ZCS.constant.ITEM_NODE[ZCS.constant.ITEM_CALENDAR]          = ZCS.constant.NODE_CALENDAR;
-ZCS.constant.ITEM_NODE[ZCS.constant.ORG_FOLDER]             = ZCS.constant.NODE_FOLDER;
-ZCS.constant.ITEM_NODE[ZCS.constant.ORG_SAVED_SEARCH]       = ZCS.constant.NODE_SEARCH;
-ZCS.constant.ITEM_NODE[ZCS.constant.ORG_TAG]                = ZCS.constant.NODE_TAG;
 
 // Item type based on JSON node name
 ZCS.constant.NODE_ITEM = ZCS.util.getBackMap(ZCS.constant.ITEM_NODE);
@@ -242,11 +238,14 @@ ZCS.constant.STORE[ZCS.constant.APP_MAIL]       = 'ZtConvStore';
 ZCS.constant.STORE[ZCS.constant.APP_CONTACTS]   = 'ZtContactStore';
 ZCS.constant.STORE[ZCS.constant.APP_CALENDAR]   = 'ZtCalendarStore';
 
-// App based on organizer type
-ZCS.constant.ORG_APP = {};
-ZCS.constant.ORG_APP[ZCS.constant.ORG_MAIL_FOLDER]      = ZCS.constant.APP_MAIL;
-ZCS.constant.ORG_APP[ZCS.constant.ORG_ADDRESS_BOOK]     = ZCS.constant.APP_CONTACTS;
-ZCS.constant.ORG_APP[ZCS.constant.ORG_CALENDAR]         = ZCS.constant.APP_CALENDAR;
+// App based on folder type
+ZCS.constant.FOLDER_APP = {};
+ZCS.constant.FOLDER_APP[ZCS.constant.ORG_MAIL_FOLDER]      = ZCS.constant.APP_MAIL;
+ZCS.constant.FOLDER_APP[ZCS.constant.ORG_ADDRESS_BOOK]     = ZCS.constant.APP_CONTACTS;
+ZCS.constant.FOLDER_APP[ZCS.constant.ORG_CALENDAR]         = ZCS.constant.APP_CALENDAR;
+
+// Folder type for each app
+ZCS.constant.APP_FOLDER = ZCS.util.getBackMap(ZCS.constant.FOLDER_APP);
 
 // View (from JSON folder data) that determines which app a folder belongs to
 ZCS.constant.FOLDER_VIEW = {};
@@ -254,33 +253,25 @@ ZCS.constant.FOLDER_VIEW[ZCS.constant.APP_MAIL]     = 'message';
 ZCS.constant.FOLDER_VIEW[ZCS.constant.APP_CONTACTS] = 'contact';
 ZCS.constant.FOLDER_VIEW[ZCS.constant.APP_CALENDAR] = 'calendar';
 
-// Folder type by app
+// Folder type by organizer view (from JSON)
 ZCS.constant.FOLDER_TYPE = {};
-ZCS.constant.FOLDER_TYPE[ZCS.constant.APP_MAIL]     = ZCS.constant.ORG_MAIL_FOLDER;
-ZCS.constant.FOLDER_TYPE[ZCS.constant.APP_CONTACTS] = ZCS.constant.ORG_ADDRESS_BOOK;
-ZCS.constant.FOLDER_TYPE[ZCS.constant.APP_CALENDAR] = ZCS.constant.ORG_CALENDAR;
+ZCS.constant.FOLDER_TYPE[ZCS.constant.ITEM_MESSAGE]     = ZCS.constant.ORG_MAIL_FOLDER;
+ZCS.constant.FOLDER_TYPE[ZCS.constant.ITEM_CONTACT]     = ZCS.constant.ORG_ADDRESS_BOOK;
+ZCS.constant.FOLDER_TYPE[ZCS.constant.ITEM_APPOINTMENT] = ZCS.constant.ORG_CALENDAR;
 
 // Organizer names (appear in overview groups)
 ZCS.constant.ORG_NAME = {};
 ZCS.constant.ORG_NAME[ZCS.constant.ORG_MAIL_FOLDER]     = ZtMsg.folders;
 ZCS.constant.ORG_NAME[ZCS.constant.ORG_ADDRESS_BOOK]    = ZtMsg.addressBooks;
-ZCS.constant.ORG_NAME[ZCS.constant.ORG_SAVED_SEARCH]    = ZtMsg.searches;
+ZCS.constant.ORG_NAME[ZCS.constant.ORG_SEARCH]          = ZtMsg.searches;
 ZCS.constant.ORG_NAME[ZCS.constant.ORG_TAG]             = ZtMsg.tags;
 ZCS.constant.ORG_NAME[ZCS.constant.ORG_CALENDAR]        = ZtMsg.calendar;
 
-// Organizer nodes (in JSON within a refresh block from the server)
-ZCS.constant.ORG_NODE = {};
-ZCS.constant.ORG_NODE[ZCS.constant.ORG_FOLDER]        = 'folder';
-ZCS.constant.ORG_NODE[ZCS.constant.ORG_SAVED_SEARCH]  = 'search';
-ZCS.constant.ORG_NODE[ZCS.constant.ORG_TAG]           = 'tag';
-
 // Order in which organizers should appear grouped in overview
 ZCS.constant.ORG_SORT_VALUE = {};
-ZCS.constant.ORG_SORT_VALUE[ZCS.constant.ORG_MAIL_FOLDER]       = 1;
-ZCS.constant.ORG_SORT_VALUE[ZCS.constant.ORG_ADDRESS_BOOK]      = 1;
-ZCS.constant.ORG_SORT_VALUE[ZCS.constant.ORG_SAVED_SEARCH]      = 2;
-ZCS.constant.ORG_SORT_VALUE[ZCS.constant.ORG_TAG]               = 3;
-ZCS.constant.ORG_SORT_VALUE[ZCS.constant.ORG_CALENDAR]          = 1;
+ZCS.constant.ORG_SORT_VALUE[ZCS.constant.ORG_FOLDER]        = 1;
+ZCS.constant.ORG_SORT_VALUE[ZCS.constant.ORG_SEARCH]        = 2;
+ZCS.constant.ORG_SORT_VALUE[ZCS.constant.ORG_TAG]           = 3;
 
 // System folder IDs
 ZCS.constant.ID_ROOT      = '1';
@@ -323,7 +314,7 @@ ZCS.constant.TCON[ZCS.constant.ID_DRAFTS]   = 'd';
 // System folder sort order
 ZCS.constant.FOLDER_SORT_VALUE = {};
 
-ZCS.constant.FOLDER_SORT_VALUE[ZCS.constant.ID_TRASH]   = 5;
+ZCS.constant.FOLDER_SORT_VALUE[ZCS.constant.ID_TRASH]   = 99;
 
 ZCS.constant.FOLDER_SORT_VALUE[ZCS.constant.ID_INBOX]   = 1;
 ZCS.constant.FOLDER_SORT_VALUE[ZCS.constant.ID_SENT]    = 2;

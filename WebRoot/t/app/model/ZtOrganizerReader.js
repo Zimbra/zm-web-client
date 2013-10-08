@@ -14,69 +14,63 @@
  */
 
 /**
- * This class parses JSON organizer (folder/search/tag) data into ZtOrganizer objects.
+ * This class parses JSON organizer (folder/search/tag) data into ZtOrganizer data objects.
  *
  * @author Conrad Damon <cdamon@zimbra.com>
  */
 Ext.define('ZCS.model.ZtOrganizerReader', {
 
-	// we don't extend ZtReader since we don't actually make SOAP requests
+	// we don't extend ZtReader since we don't work directly with SOAP responses
 	extend: 'Ext.data.reader.Json',
 
 	alias: 'reader.organizerreader',
 
-	getDataFromNode: function(node, type, app, parents) {
-
-		// Get exact folder type if we're dealing with a folder. Tag needs unique ID for each store
-		// it appears in (tag is only organizer that can appear in multiple overviews). Trash also
-		// appears in more than one overview.
-		var type1 = (type === ZCS.constant.ORG_FOLDER) ? ZCS.constant.FOLDER_TYPE[app] : type,
-			id = ZCS.model.ZtOrganizer.getOrganizerId(node.id, type, app),
-			parentId = node.l ? ZCS.model.ZtOrganizer.getOrganizerId(node.l, type, app) : null;
-
-		var childNodeName = ZCS.constant.ORG_NODE[type],
-			hasChildren = !!(node[childNodeName] && node[childNodeName].length > 0);
+	/**
+	 * Returns an anonymous object that can used to create a ZtOrganizer instance based
+	 * on the given JSON node. At this point, the only ID is the ZCS ID which the server
+	 * gives us. The IDs of the organizers within Sencha stores aren't added until the
+	 * organizer data is requested from the session, when we'll have enough info to
+	 * construct unique IDs.
+	 *
+	 * @param {Object}  node    JSON node
+	 * @param {String}  type    organizer type (folder/search/tag)
+	 */
+	getDataFromNode: function(node, type) {
 
 		var data = {
-			id:             id,
-			itemId:         id,
 			zcsId:          node.id,
-			parentItemId:   parentId,
+			parentZcsId:    node.l || ZCS.constant.ID_ROOT,
+			type:           type,
+			folderType:     (type === ZCS.constant.ORG_FOLDER) ? ZCS.constant.FOLDER_TYPE[node.view] : null,
 			name:           node.name,
 			displayName:    Ext.String.htmlEncode(node.name),
-			notifyType:     type,
-			path:           node.name,
+			path:           node.absFolderPath || node.name,
 			color:          node.color,
 			rgb:            node.rgb,
 			itemCount:      node.n,
-			disclosure:     hasChildren,
-			type:           type1,
-			url:            node.url
+			disclosure:     false,
+			leaf:           true,
+
+			url:            node.url,   // feeds
+			unreadCount:    node.u,     // mail folders
+			query:          node.query, // saved searches
+			searchTypes:    node.types  // saved searches
 		};
-		data.typeName = ZCS.constant.ORG_NAME[type1];
 
-		if (node.absFolderPath) {
-			data.path = node.absFolderPath;
-		}
-		else if (parents && parents.length) {
-			data.path = parents.join('/') + '/' + node.name;
-		}
+		var	childNodeNames = !type ? [ ZCS.constant.ORG_FOLDER, ZCS.constant.ORG_SEARCH, ZCS.constant.ORG_TAG ] :
+				(type === ZCS.constant.ORG_FOLDER) ? [ ZCS.constant.ORG_FOLDER, ZCS.constant.ORG_SEARCH ] : [ type ],
+			hasChildren = false;
 
-		// type-specific fields
-		if (type1 === ZCS.constant.ORG_MAIL_FOLDER) {
-			if (node.u != null) {
-				data.unreadCount = node.u;
+		Ext.each(childNodeNames, function(childType) {
+			if (node[childType] && node[childType].length > 0) {
+				hasChildren = true;
+				return false;
 			}
-		}
-		else if (type === ZCS.constant.ORG_SAVED_SEARCH) {
-			data.query = node.query;
-		}
+		}, this);
 
+		data.leaf = !hasChildren;
 		if (hasChildren) {
 			data.items = [];
-			data.leaf = false;
-		} else {
-			data.leaf = true;
 		}
 
 		return data;
