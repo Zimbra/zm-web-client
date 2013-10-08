@@ -141,7 +141,6 @@ Ext.define('ZCS.view.ZtOverview', {
 		if (parent && organizer) {
 			var index = this.getSortIndex(parent, organizer);
 			if (index === -1) {
-				// TODO: possible JS error here if organizer isn't decorated (missing 'childNodes' property)
 				parent.appendChild(organizer);
 			}
 			else {
