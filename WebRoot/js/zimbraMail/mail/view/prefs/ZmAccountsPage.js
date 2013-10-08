@@ -1167,7 +1167,7 @@ function(id, section, value) {
 		var array = [value];
 		var seenComma = false;
 		for (var i = 0; i < folderIds.length; i++) {
-			var fid = ZmOrganizer.normalizeId(folderIds[i]);
+			var fid = folderIds[i];
 			var searchPath = array[i] = tree.getById(fid).getSearchPath();
 			seenComma = seenComma || searchPath.match(/,/);
 		}
