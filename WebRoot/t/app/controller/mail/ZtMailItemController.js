@@ -35,38 +35,41 @@ Ext.define('ZCS.controller.mail.ZtMailItemController', {
 		 * implementation is entirely decoupled from its component context, this seems the only reasonable
 		 * way to re-establish that context.
 		 */
-		activeMailComponent: null
+		activeMailComponent:    null,
+
+		app:                    ZCS.constant.APP_MAIL
 	},
 
 	/**
 	 * Launches a move assignment view.
 	 */
 	doMove: function(item) {
-		this.doAssignmentView(item, 'ZCS.view.ux.ZtFolderAssignmentView', ZtMsg.folders, ZCS.constant.ORG_FOLDER);
+		this.doAssignmentView(item, ZCS.constant.ORG_FOLDER);
 	},
 
 	/**
 	 * Launches a tag assignment view.
 	 */
 	doTag: function(item) {
-		this.doAssignmentView(item, 'ZCS.view.ux.ZtTagAssignmentView', ZtMsg.tags, ZCS.constant.ORG_TAG);
+		this.doAssignmentView(item, ZCS.constant.ORG_TAG);
 	},
 
 	/**
 	 * Launches an assignment view
+	 *
+	 * @param {ZtMailItem}  item        item being moved or tagged
+	 * @param {String}      type        ZCS.constant.ORG_*
 	 */
-	doAssignmentView: function (item, view, listTitle, viewType) {
+	doAssignmentView: function (item, type) {
 
 		var targetComp = Ext.Viewport.down('tabpanel'),
 			activeComp = this.getActiveMailComponent(),
 			activeList = activeComp.down('list'),
 			activeStore = activeList.getStore(),
 			item = item || this.getItem(),
-			contentHeight,
 			isMessage = item instanceof ZCS.model.mail.ZtMailMsg,
 			convCtlr = ZCS.app.getConvController(),
-			quickReply = convCtlr.getQuickReply(),
-			me = this;
+			quickReply = convCtlr.getQuickReply();
 
 		if (isMessage) {
 			activeStore.filter('id', item.get('id'));
@@ -74,64 +77,33 @@ Ext.define('ZCS.controller.mail.ZtMailItemController', {
 
 		activeList.setReadOnly(true);
 
-		//TODO, determine why total height calc is failing in position maps now.
-		contentHeight = 400; //activeList.getItemMap().getTotalHeight();
-
-		//To account for the panel header
-		contentHeight += 20;
-
-		var toggleHidden = activeComp.isListPanelToggleHidden();
-		if (!toggleHidden) {
-			activeComp.hideListPanelToggle();
-		}
-
-		// TODO: if we're caching assignment views, we will need to update its overview
-		// TODO: when we get notified of organizer changes
-		var assignmentView = this[viewType];
-		if (!assignmentView) {
-			assignmentView = this[viewType] = Ext.create(view, {
-				targetElement: targetComp.bodyElement,
-				record: item,
-				listTitle: listTitle,
-				organizerTree: ZCS.session.getOrganizerData(ZCS.constant.APP_MAIL, viewType, 'assignment'),
-				onAssignmentComplete: function () {
-					me.updateToolbar({
-						hideAll: false
-					});
-
-					if (!toggleHidden) {
-						activeComp.showListPanelToggle();
-					}
-
-					activeList.setReadOnly(false);
-					//undo any filtering we may have done
-					activeStore.clearFilter();
-					if (quickReply) {
-						quickReply.show();
-					}
-
-					ZCS.app.fireEvent('rerenderMessages');
-				}
-			});
-		}
-
-		this.updateToolbar({
-			hideAll: true
-		});
+		ZCS.app.getAssignmentController().showAssignmentView(item, type, this.getApp(), this, 'afterAssignment');
 
 		if (quickReply) {
 			quickReply.hide();
 		}
+	},
 
-		var list = assignmentView.down('foldersublist') || assignmentView.down('list'),
-			listItems = list.getViewItems(),
-			store = list.getStore();
+	/**
+	 * Function to run after assignment has happened.
+	 */
+	afterAssignment: function() {
 
-		store.each(function(organizer, index) {
-			organizer = organizer instanceof ZCS.model.ZtOrganizer ? organizer : ZCS.cache.get(organizer.getId());
-			listItems[index].setDisabled(!organizer.isValidAssignmentTarget(item));
-		}, this);
-		assignmentView.showWithComponent(activeComp, item, contentHeight);
+		var	activeComp = this.getActiveMailComponent(),
+			activeList = activeComp.down('list'),
+			activeStore = activeList.getStore(),
+			convCtlr = ZCS.app.getConvController(),
+			quickReply = convCtlr.getQuickReply();
+
+		activeList.setReadOnly(false);
+
+		//undo any filtering we may have done
+		activeStore.clearFilter();
+		if (quickReply) {
+			quickReply.show();
+		}
+
+		ZCS.app.fireEvent('rerenderMessages');
 	},
 
 	/**
@@ -239,7 +211,7 @@ Ext.define('ZCS.controller.mail.ZtMailItemController', {
 	 */
 	saveItemMove: function (folder, item) {
 
-		var folderId = folder.get('id'),
+		var folderId = folder.get('zcsId'),
 			me = this,
 			data = {
 				op:     'move',

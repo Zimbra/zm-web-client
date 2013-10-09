@@ -71,7 +71,8 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
 			]
 		},
 
-		composeMode: null
+		composeMode:    null,
+		app:            ZCS.constant.APP_CONTACTS
 	},
 
     launch: function() {
@@ -211,72 +212,24 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
 	 * Launches a move assignment view.
 	 */
 	doMove: function(item) {
-		this.doAssignmentView(item, 'ZCS.view.ux.ZtFolderAssignmentView', ZtMsg.folders, 'folderView');
+		this.doAssignmentView(item, ZCS.constant.ORG_FOLDER);
 	},
 
 	/**
 	 * Launches a tag assignment view.
 	 */
 	doTag: function(item) {
-		this.doAssignmentView(item, 'ZCS.view.ux.ZtTagAssignmentView', ZtMsg.tags, 'tagView');
+		this.doAssignmentView(item, ZCS.constant.ORG_TAG);
 	},
 
 	/**
 	 * Launches an assignment view
+	 *
+	 * @param {ZtContact}   item        contact being moved or tagged
+	 * @param {String}      type        ZCS.constant.ORG_*
 	 */
-	doAssignmentView: function (item, view, listTitle, viewType) {
-
-		var targetComp = Ext.Viewport.down('tabpanel'),
-			activeComp = this.getItemPanel(),
-			item = item || this.getItem(),
-			contentHeight,
-			me = this;
-
-		// TODO: determine why total height calc is failing in position maps now.
-		contentHeight = 400;
-
-		// To account for the panel header
-		contentHeight += 20;
-
-		var toggleHidden = activeComp.isListPanelToggleHidden();
-		if (!toggleHidden) {
-			activeComp.hideListPanelToggle();
-		}
-
-		// TODO: if we're caching assignment views, we will need to update its overview
-		// TODO: when we get notified of organizer changes
-		var assignmentView = this[viewType];
-		if (!assignmentView) {
-			assignmentView = this[viewType] = Ext.create(view, {
-				targetElement: targetComp.bodyElement,
-				record: item,
-				listTitle: listTitle,
-				folderTree: ZCS.session.getOrganizerData(ZCS.constant.APP_CONTACTS, ZCS.constant.ORG_FOLDER),
-				onAssignmentComplete: function () {
-					me.updateToolbar({
-						hideAll: false
-					});
-
-					if (!toggleHidden) {
-						activeComp.showListPanelToggle();
-					}
-				}
-			});
-		}
-
-		this.updateToolbar({
-			hideAll: true
-		});
-
-		var list = assignmentView.down('list'),
-			listItems = list.getViewItems(),
-			store = list.getStore();
-
-		store.each(function(organizer, index) {
-			organizer = organizer instanceof ZCS.model.ZtOrganizer ? organizer : ZCS.cache.get(organizer.getId());
-			listItems[index].setDisabled(!organizer.isValidAssignmentTarget(item));
-		}, this);
-		assignmentView.showWithComponent(activeComp, item, contentHeight);
+	doAssignmentView: function(item, type) {
+		ZCS.app.getAssignmentController().showAssignmentView(item || this.getItem(), type, this.getApp(), this);
 	},
 
 	/**
@@ -585,7 +538,7 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
 	 */
 	saveItemMove: function (folder, item) {
 
-		var folderId = folder.get('id'),
+		var folderId = folder.get('zcsId'),
 			me = this,
 			data = {
 				op:         'move',

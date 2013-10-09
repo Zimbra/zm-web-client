@@ -69,6 +69,7 @@ Ext.application({
 		'ZCS.controller.ZtMainController',
 		'ZCS.controller.ZtToastController',
 		'ZCS.controller.ZtNotificationController',
+		'ZCS.controller.ZtAssignmentController',
 		'ZCS.controller.mail.ZtConvListController',
 		'ZCS.controller.mail.ZtConvController',
 		'ZCS.controller.mail.ZtMsgController',
@@ -173,6 +174,10 @@ Ext.application({
     },
 
     getAppointmentController: function() {
-        return this.getController('ZCS.controller.calendar.ZtNewApptController')
+        return this.getController('ZCS.controller.calendar.ZtNewApptController');
+    },
+
+    getAssignmentController: function() {
+        return this.getController('ZCS.controller.ZtAssignmentController');
     }
 });
