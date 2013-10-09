@@ -72,6 +72,7 @@ Ext.define('ZCS.view.calendar.ZtAppointmentView', {
             isOrganizer = invite.get('isOrganizer'),
             stats = attendees && this.getAttendeeStats(attendees, isOrganizer),
             reminder = invite.get('reminderAlert'),
+            recurrence = invite.get('recurrence'),
             myResponse = invite.get('myResponse'),
             idParams = {
                 type:       ZCS.constant.IDTYPE_INVITE_ACTION,
@@ -85,6 +86,7 @@ Ext.define('ZCS.view.calendar.ZtAppointmentView', {
                 myResponse: myResponse ? ZCS.constant.PSTATUS_TEXT[myResponse] : '',
                 calendar: null /* TODO: After other calendar folders are shown in touch client */,
                 reminder: reminder ? reminder : "", /* TODO: Get strings similar to Ajax Client */
+                recurrence: recurrence ? recurrence : "",
                 notes: invite.get('notes'),
                 invAcceptButtonId:     ZCS.util.getUniqueId(Ext.apply({}, {
                     action: ZCS.constant.OP_ACCEPT
