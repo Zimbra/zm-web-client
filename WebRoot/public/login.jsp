@@ -9,7 +9,6 @@
 <%-- this checks and redirects to admin if need be --%>
 <zm:adminRedirect/>
 <app:skinAndRedirect />
-<!DOCTYPE html>
 <fmt:setLocale value='${pageContext.request.locale}' scope='request' />
 <fmt:setBundle basename="/messages/ZmMsg" scope="request"/>
 <fmt:setBundle basename="/messages/ZhMsg" var="zhmsg" scope="request"/>
@@ -290,9 +289,12 @@ if (application.getInitParameter("offlineMode") != null) {
 	response.setHeader("Expires", "-1");
 	response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0");
 	response.setHeader("Pragma", "no-cache");
+
+	// Prevent IE from ever going into compatibility/quirks mode.
+	response.setHeader("X-UA-Compatible", "IE=edge");
 %>
 
-
+<!DOCTYPE html>
 <!-- set this class so CSS definitions that now use REM size, would work relative to this.
 	Since now almost everything is relative to one of the 2 absolute font size classese -->
 <html class="user_font_size_normal">

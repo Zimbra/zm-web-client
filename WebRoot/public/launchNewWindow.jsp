@@ -15,6 +15,9 @@
 
 	// Set standard HTTP/1.0 no-cache header.
 	response.setHeader("Pragma", "no-cache");
+
+	// Prevent IE from ever going into compatibility/quirks mode.
+	response.setHeader("X-UA-Compatible", "IE=edge");
 %><!DOCTYPE html>
 <!--
  launchNewWindow.jsp

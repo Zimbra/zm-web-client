@@ -7,7 +7,10 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<%
+    // Prevent IE from ever going into compatibility/quirks mode.
+    response.setHeader("X-UA-Compatible", "IE=edge");
+%><!DOCTYPE html>
 <fmt:setLocale value='${pageContext.request.locale}' scope='request' />
 <fmt:setBundle basename="/messages/ZmMsg" scope="request"/>
 <fmt:setBundle basename="/messages/ZMsg" var="zmsg" scope="request"/>
