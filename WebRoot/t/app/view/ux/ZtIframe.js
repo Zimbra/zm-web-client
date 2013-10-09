@@ -481,8 +481,12 @@ Ext.define('ZCS.view.ux.ZtIframe', {
      */
     resizeToContent: function(callback) {
 
-        var doc = this.getDoc(),
-            body = this.getBody(),
+        var doc = this.getDoc();
+	    if (!doc) {
+		    return;
+	    }
+
+        var body = this.getBody(),
             docEl = doc.documentElement,
             contentHeight = body ? body.scrollHeight : 0,
             contentWidth = body ? body.scrollWidth : 0,
