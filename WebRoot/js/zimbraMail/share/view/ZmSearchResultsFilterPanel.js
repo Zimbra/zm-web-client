@@ -545,6 +545,7 @@ function(menu, text, width) {
 			});
 	comboBox.addChangeListener(this._domainChangeListener.bind(this));
 	comboBox.input.addListener(DwtEvent.ONKEYUP, this._keyUpListener.bind(this));
+	subMenu.addPopdownListener(comboBox.popdown.bind(comboBox));
 	return comboBox;
 };
 

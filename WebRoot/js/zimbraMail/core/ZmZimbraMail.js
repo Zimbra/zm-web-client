@@ -3220,10 +3220,10 @@ function() {
 ZmZimbraMail.prototype.handleKeyAction =
 function(actionCode, ev) {
 
-	DwtMenu.closeActiveMenu();
-
 	var app = ZmApp.GOTO_ACTION_CODE_R[actionCode];
 	if (app) {
+		DwtMenu.closeActiveMenu();
+
 		if (app == this.getActiveApp()) { return false; }
 		this.activateApp(app);
 		return true;
@@ -3234,6 +3234,8 @@ function(actionCode, ev) {
 	if (ev && (ev.keyCode == 13 || ev.keyCode == 3) &&
 		!(ev.altKey || ev.ctrlKey || ev.metaKey || ev.shiftKey) &&
 		 ev.target && (ev.target.id != DwtKeyboardMgr.FOCUS_FIELD_ID)) { return false; }
+
+	DwtMenu.closeActiveMenu();
 
 	switch (actionCode) {
 		case ZmKeyMap.DBG_NONE:
