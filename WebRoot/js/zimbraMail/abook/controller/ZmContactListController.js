@@ -317,11 +317,13 @@ function(dl, specificMailers, contact) {
 		}
 		else if (mailPolicy == ZmGroupView.MAIL_POLICY_MEMBERS) {
 			if (grantee.name == contact.getEmail()) {
+				//this means only members of this DL can send.
 				break;
 			}
 			else {
-				mailPolicy = null;
-				//ignore permission of other groups since we don't allow in our UI
+				//must be another DL, and we do allow it, so treat it as regular user.
+				specificMailers.push(grantee.name);
+				mailPolicy = ZmGroupView.MAIL_POLICY_SPECIFIC;
 			}
 		}
 	}
