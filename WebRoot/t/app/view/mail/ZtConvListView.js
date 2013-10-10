@@ -27,7 +27,7 @@ Ext.define('ZCS.view.mail.ZtConvListView', {
 	config: {
 		loadingText:            ZtMsg.loadingConvs,
 		emptyText:              ZtMsg.noConvs,
-		scrollToTopOnRefresh:   true,
+		scrollToTopOnRefresh:   false,
 		itemTpl:                ZCS.template.ConvListItem,
 		cls:                    'zcs-conv-list',
 		itemHeight: 			90,
