@@ -164,6 +164,10 @@ function(params) {
 
 	this._setFromSelect(msg);
 
+	if (obo) {
+		this.identitySelect.setSelectedValue(obo);
+	}
+
 	if (params.identity) {
 		if (this.identitySelect) {
 			this.identitySelect.setSelectedValue(params.identity.id);
@@ -188,9 +192,6 @@ function(params) {
 		}
 	}
 
-	if (obo) {
-        this.identitySelect.setSelectedValue(obo);
-	}
 	this._setSubject(action, msg, params.subjOverride);
 	this._setBody(action, msg, params.extraBodyText);
 
