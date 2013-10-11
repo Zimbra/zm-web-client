@@ -47,6 +47,7 @@ BODY									{	margin:0px; 	}
 											height:60%;
 											margin:auto 10px;  /*auto to appease IE*/
 										}
+#skin_spacing_top_row > .skin_table		{	border-collapse: separate;	}
 #skin_spacing_top_row .DwtLinkButtonDropDownArrowRow	{	background-color:@SkinTopRowColor@; 	}
 
 /** Logo displayed in the app **/
