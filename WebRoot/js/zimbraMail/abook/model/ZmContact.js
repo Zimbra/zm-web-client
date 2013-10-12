@@ -398,6 +398,8 @@ function(node, args) {
 			contact.isGal = args.isGal;
 		}
 		contact._loadFromDom(node);
+		//update the canonical list
+		appCtxt.getApp(ZmApp.CONTACTS).getContactList().add(contact);
 	} else {
 		if (node.m) {
 			contact.attr[ZmContact.F_groups] = node.m;
