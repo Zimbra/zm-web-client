@@ -2074,16 +2074,17 @@ function() {
 	return this.id ? this.getFileAs() : ZmMsg.newContact;
 };
 
-ZmContact.NO_MAX_IMAGE_WIDTH = - 1;
+ZmContact.NO_MAX_IMAGE_WIDTH = ZmContact.NO_MAX_IMAGE_HEIGHT = - 1;
 
 /**
  * Get the image URL.
  *
  * maxWidth {int} max pixel width (optional - default 48, or pass ZmContact.NO_MAX_IMAGE_WIDTH if full size image is required)
+ * maxHeight {int} max pixel height (optional - default to maxWidth, or pass ZmContact.NO_MAX_IMAGE_HEIGHT if full size image is required)
  * @return	{String}	the image URL
  */
 ZmContact.prototype.getImageUrl =
-function(maxWidth) {
+function(maxWidth, maxHeight) {
   	var image = this.getAttr(ZmContact.F_image);
 	var imagePart  = image && image.part || this.getAttr(ZmContact.F_imagepart); //see bug 73146
 
@@ -2096,7 +2097,13 @@ function(maxWidth) {
 		maxWidth = maxWidth || 48;
 		maxWidthStyle = ["&max_width=", maxWidth].join("");
 	}
-  	return  [msgFetchUrl, "&id=", this.id, "&part=", imagePart, maxWidthStyle, "&t=", (new Date()).getTime()].join("");
+	var maxHeightStyle = "";
+	if (maxHeight !== ZmContact.NO_MAX_IMAGE_HEIGHT) {
+		maxHeight = maxHeight ||
+			(maxWidth !== ZmContact.NO_MAX_IMAGE_WIDTH ? maxWidth : 48);
+		maxHeightStyle = ["&max_height=", maxHeight].join("");
+	}
+  	return  [msgFetchUrl, "&id=", this.id, "&part=", imagePart, maxWidthStyle, maxHeightStyle, "&t=", (new Date()).getTime()].join("");
 };
 
 ZmContact.prototype.addModifyZimletImageToBatch =
