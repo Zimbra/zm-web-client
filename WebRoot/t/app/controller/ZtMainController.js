@@ -27,6 +27,10 @@ Ext.define('ZCS.controller.ZtMainController', {
 		'Ext.MessageBox'
 	],
 
+	mixins: {
+		organizerNotificationHandler: 'ZCS.common.ZtOrganizerNotificationHandler'
+	},
+
 	config: {
 
 		refs: {
@@ -60,6 +64,19 @@ Ext.define('ZCS.controller.ZtMainController', {
 		Ext.Viewport.add(Ext.create('ZCS.view.ZtMain'));
 		ZCS.app.on('serverError', this.handleError, this);
 		window.onbeforeunload = this.unloadHandler;
+
+		// handle organizer notifications
+		ZCS.app.on('notifyFolderCreate', this.handleOrganizerCreate, this);
+		ZCS.app.on('notifySearchCreate', this.handleOrganizerCreate, this);
+		ZCS.app.on('notifyTagCreate', this.handleOrganizerCreate, this);
+
+		ZCS.app.on('notifyFolderDelete', this.handleOrganizerDelete, this);
+		ZCS.app.on('notifySearchDelete', this.handleOrganizerDelete, this);
+		ZCS.app.on('notifyTagDelete', this.handleOrganizerDelete, this);
+
+		ZCS.app.on('notifyFolderChange', this.handleOrganizerChange, this);
+		ZCS.app.on('notifySearchChange', this.handleOrganizerChange, this);
+		ZCS.app.on('notifyTagChange', this.handleOrganizerChange, this);
 	},
 
 	/**
@@ -176,5 +193,36 @@ Ext.define('ZCS.controller.ZtMainController', {
 		if (isDirty) {
 			return ZtMsg.appExitWarning;
 		}
+	},
+
+	/**
+	 * An organizer has just been created. We need to add it to our session data,
+	 * and insert it into the organizer list component.
+	 *
+	 * @param {ZtOrganizer}     folder          undefined (arg not passed)
+	 * @param {Object}          notification    JSON with organizer data
+	 */
+	handleOrganizerCreate: function(folder, notification) {
+		this.addOrganizer(Ext.ComponentQuery.query('overview'), notification, 'overview');
+	},
+
+	/**
+	 * An organizer has just changed. If it is a move, we need to relocate it within
+	 * the organizer nested list.
+	 *
+	 * @param {ZtOrganizer}     folder          organizer that changed
+	 * @param {Object}          notification    JSON with new data
+	 */
+	handleOrganizerChange: function(folder, notification) {
+		this.modifyOrganizer(Ext.ComponentQuery.query('overview'), folder, notification, 'overview');
+	},
+
+	/**
+	 * An organizer has been hard-deleted. Remove it from overview stores.
+	 *
+	 * @param {ZtOrganizer}     folder          organizer that changed
+	 */
+	handleOrganizerDelete: function(folder) {
+		this.removeOrganizer(Ext.ComponentQuery.query('overview'), folder);
 	}
 });

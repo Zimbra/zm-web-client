@@ -16,13 +16,40 @@
 /**
  * Controller for managing an assignment view (used to move or tag an item). Assignment views
  * are used to allow the user to choose a folder to move an item to to, or a tag to tag the item
- * with. There will typically be two possible assignment views for each app.
+ * with. There will typically be two possible assignment views for each app, one for folders and
+ * one for tags.
  *
  * @author Conrad Damon <cdamon@zimbra.com>
  */
 Ext.define('ZCS.controller.ZtAssignmentController', {
 
 	extend: 'Ext.app.Controller',
+
+	mixins: {
+		organizerNotificationHandler: 'ZCS.common.ZtOrganizerNotificationHandler'
+	},
+
+	config: {
+		/**
+		 * @cfg {Object}    hash keyed by app/type, eg 'folder-mail' or 'tag-contacts'
+		 */
+		assignmentViews: {}
+	},
+
+	launch: function() {
+
+		ZCS.app.on('notifyFolderCreate', this.handleOrganizerCreate, this);
+		ZCS.app.on('notifySearchCreate', this.handleOrganizerCreate, this);
+		ZCS.app.on('notifyTagCreate', this.handleOrganizerCreate, this);
+
+		ZCS.app.on('notifyFolderDelete', this.handleOrganizerDelete, this);
+		ZCS.app.on('notifySearchDelete', this.handleOrganizerDelete, this);
+		ZCS.app.on('notifyTagDelete', this.handleOrganizerDelete, this);
+
+		ZCS.app.on('notifyFolderChange', this.handleOrganizerChange, this);
+		ZCS.app.on('notifySearchChange', this.handleOrganizerChange, this);
+		ZCS.app.on('notifyTagChange', this.handleOrganizerChange, this);
+	},
 
 	showAssignmentView: function(item, type, app, controller, afterAssignment) {
 
@@ -44,15 +71,19 @@ Ext.define('ZCS.controller.ZtAssignmentController', {
 			itemPanel.hideListPanelToggle();
 		}
 
-		// TODO: if we're caching assignment views, we will need to update its overview
-		// TODO: when we get notified of organizer changes
-		var assignmentView = this[cacheKey];
+		var views = this.getAssignmentViews(),
+			assignmentView = views[cacheKey];
+
 		if (!assignmentView) {
-			assignmentView = this[cacheKey] = Ext.create(viewClass, {
-				targetElement:          targetComp.bodyElement,
-				record:                 item,
-				listTitle:              isTags ? ZtMsg.tags : ZtMsg.folders,
-				organizerTree:          ZCS.session.getOrganizerData(app, type, 'assignment'),
+
+			assignmentView = Ext.create(viewClass, {
+
+				targetElement:    targetComp.bodyElement,
+				record:           item,
+				listTitle:        isTags ? ZtMsg.tags : ZtMsg.folders,
+				organizerTree:    ZCS.session.getOrganizerData(app, type, 'assignment'),
+				app:              app,
+
 				onAssignmentComplete:   function () {
 					if (controller && controller.updateToolbar) {
 						controller.updateToolbar({
@@ -67,6 +98,7 @@ Ext.define('ZCS.controller.ZtAssignmentController', {
 					}
 				}
 			});
+			views[cacheKey] = assignmentView;
 		}
 
 		if (controller && controller.updateToolbar) {
@@ -87,5 +119,17 @@ Ext.define('ZCS.controller.ZtAssignmentController', {
 		assignmentView.showWithComponent(itemPanel, item, contentHeight);
 
 		return assignmentView;
+	},
+
+	handleOrganizerCreate: function(folder, notification) {
+		this.addOrganizer(Ext.Object.getValues(this.getAssignmentViews()), notification, 'assignment');
+	},
+
+	handleOrganizerDelete: function(folder, notification) {
+		this.removeOrganizer(Ext.Object.getValues(this.getAssignmentViews()), folder);
+	},
+
+	handleOrganizerChange: function(folder, notification) {
+		this.modifyOrganizer(Ext.Object.getValues(this.getAssignmentViews()), folder, notification, 'assignment');
 	}
 });

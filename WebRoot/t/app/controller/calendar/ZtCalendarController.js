@@ -74,6 +74,10 @@ Ext.define('ZCS.controller.calendar.ZtCalendarController', {
 
     launch: function() {
 
+	    if (!ZCS.util.isAppEnabled(this.getApp())) {
+		    return;
+	    }
+
         this.callParent();
 
         //Create a toolbar with calendar view buttons - Month, Week, Day, Workweek and Today

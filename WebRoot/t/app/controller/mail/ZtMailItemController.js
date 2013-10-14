@@ -24,11 +24,6 @@ Ext.define('ZCS.controller.mail.ZtMailItemController', {
 
 	extend: 'ZCS.controller.ZtItemController',
 
-	requires: [
-		'ZCS.view.ux.ZtFolderAssignmentView',
-		'ZCS.view.ux.ZtTagAssignmentView'
-	],
-
 	config: {
 		/**
 		 * This is the mail component which contains the menu that has been triggered.  Since the menu

@@ -55,8 +55,10 @@ Ext.define('ZCS.view.ZtOverview', {
 			};
 
 		// create a store for the organizers
-		var organizerStore = Ext.create('ZCS.store.ZtOrganizerStore');
-		organizerStore.setRoot(organizerData);
+		var organizerStore = Ext.create('ZCS.store.ZtOrganizerStore', {
+			storeId:    [ app, 'overview' ].join('-'),
+			data:       organizerData
+		});
 
 		// show the account name at the top of the overview
 		var accountName = ZCS.session.getAccountName(),
@@ -71,111 +73,5 @@ Ext.define('ZCS.view.ZtOverview', {
 		});
 
 		this.add(organizerList);
-
-		ZCS.app.on('notifyFolderCreate', this.handleOrganizerCreate, this);
-		ZCS.app.on('notifyFolderChange', this.handleOrganizerChange, this);
-
-		ZCS.app.on('notifySearchCreate', this.handleOrganizerCreate, this);
-		ZCS.app.on('notifySearchChange', this.handleOrganizerChange, this);
-
-		ZCS.app.on('notifyTagCreate', this.handleOrganizerCreate, this);
-	},
-
-	/**
-	 * An organizer has just been created. We need to add it to our session data,
-	 * and insert it into the organizer list component.
-	 *
-	 * @param {ZtOrganizer}     folder          null (arg not passed)
-	 * @param {Object}          notification    JSON with organizer data
-	 */
-	handleOrganizerCreate: function(folder, notification) {
-
-		var organizer = ZCS.model.ZtOrganizer.getProxy().getReader().getDataFromNode(notification, notification.itemType);
-		if (organizer) {
-			ZCS.model.ZtOrganizer.addOtherFields(organizer, this.getApp(), 'overview', false);
-			this.insertOrganizer(organizer, organizer.parentItemId, organizer.parentZcsId);
-		}
-	},
-
-	/**
-	 * An organizer has just changed. If it is a move, we need to relocate it within
-	 * the organizer nested list.
-	 *
-	 * @param {ZtOrganizer}     folder          organizer that changed
-	 * @param {Object}          notification    JSON with new data
-	 */
-	handleOrganizerChange: function(folder, notification) {
-
-		if (notification.l) {
-			var reader = ZCS.model.ZtOrganizer.getProxy().getReader(),
-				data = reader.getDataFromNode(notification, folder.get('type'), this.getApp(), []),
-				list = this.down('folderlist'),
-				store = list && list.getStore(),
-				oldParentId = folder.get('parentItemId'),
-				oldParentZcsId = folder.get('parentZcsId'),
-				itemId = ZCS.model.ZtOrganizer.getOrganizerId(notification.id, this.getApp(), 'overview'),
-				newParentId = ZCS.model.ZtOrganizer.getOrganizerId(data.parentZcsId, this.getApp(), 'overview');
-
-			folder.set('parentZcsId', data.parentZcsId);
-			folder.set('parentItemId', newParentId);
-
-			this.insertOrganizer(ZCS.cache.get(itemId), newParentId, data.parentZcsId, oldParentId, oldParentZcsId);
-		}
-	},
-
-	/**
-	 * Adds a new child to the given parent, inserting it at the proper position within
-	 * the parent's children.
-	 *
-	 * @param {ZtOrganizer} organizer
-	 * @param {String}      parentId
-	 * @private
-	 */
-	insertOrganizer: function(organizer, parentId, parentZcsId, oldParentId, oldParentZcsId) {
-
-		var list = this.down('folderlist'),
-			store = list && list.getStore(),
-			parent = (!parentId || parentZcsId === ZCS.constant.ID_ROOT) ? store.getRoot() : store.getNodeById(parentId),
-			oldParent = (!oldParentId || oldParentZcsId === ZCS.constant.ID_ROOT) ? store.getRoot() : store.getNodeById(oldParentId);
-
-		if (parent && organizer) {
-			var index = this.getSortIndex(parent, organizer);
-			if (index === -1) {
-				parent.appendChild(organizer);
-			}
-			else {
-				parent.insertChild(index, organizer);
-			}
-			parent.set('disclosure', true);
-			parent.set('leaf', false);
-
-			if (oldParent && !(oldParent.childNodes && oldParent.childNodes.length > 0)) {
-				oldParent.set('disclosure', false);
-				oldParent.set('leaf', true);
-			}
-		}
-	},
-
-	/**
-	 * Returns the index of the child within the parent's children, or -1 if there
-	 * are no children.
-	 *
-	 * @param {ZtOrganizer} parent
-	 * @param {ZtOrganizer} child
-	 * @return {Integer}    the sort index
-	 * @private
-	 */
-	getSortIndex: function(parent, child) {
-
-		var ln = parent && parent.childNodes ? parent.childNodes.length : 0,
-			i, organizer;
-
-		for (i = 0; i < ln; i++) {
-			organizer = parent.childNodes[i];
-			if (ZCS.model.ZtOrganizer.compare(child, organizer) === -1) {
-				return i;
-			}
-		}
-		return -1;
 	}
 });

@@ -25,8 +25,8 @@ Ext.define('ZCS.controller.ZtNotificationController', {
 
 	extend: 'Ext.app.Controller',
 
-	launch: function(notification) {
-		ZCS.app.on('notify', this.doNotify, notification);
+	launch: function() {
+		ZCS.app.on('notify', this.doNotify, this);
 	},
 
 	/**
@@ -43,6 +43,10 @@ Ext.define('ZCS.controller.ZtNotificationController', {
 	 * @param {Object}  notification        JSON notification
 	 */
 	doNotify: function(notification) {
+
+		if (!this.handleNotification(notification)) {
+			return;
+		}
 
 		if (notification.type === ZCS.constant.NOTIFY_CREATE) {
 			var itemType = notification.itemType = ZCS.constant.NODE_ITEM[notification.nodeType] || notification.nodeType;
@@ -72,5 +76,20 @@ Ext.define('ZCS.controller.ZtNotificationController', {
 				}
 			}
 		}
+	},
+
+	// Returns true if we should handle the notification. We don't want to handle empty folder change notifications.
+	handleNotification: function(notification) {
+
+		if (notification.type === ZCS.constant.NOTIFY_CHANGE && notification.nodeType === ZCS.constant.ORG_FOLDER) {
+			for (var prop in notification) {
+				if (ZCS.constant.ORG_NODE_FIELD_HASH[prop]) {
+					return true;
+				}
+			}
+			return false;
+		}
+
+		return true;
 	}
 });

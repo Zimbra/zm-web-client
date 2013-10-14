@@ -38,7 +38,9 @@ Ext.define('ZCS.view.ux.ZtFolderAssignmentView', {
 			items: cfg.organizerTree
 		};
 
-		var organizerStore = Ext.create('ZCS.store.ZtOrganizerStore');
+		var organizerStore = Ext.create('ZCS.store.ZtOrganizerStore', {
+			storeId: [ cfg.app, 'assignment' ].join('-')
+		});
 		organizerStore.setRoot(organizerData);
 
 		cfg.list = {

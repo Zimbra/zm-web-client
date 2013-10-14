@@ -42,7 +42,7 @@ Ext.define('ZCS.controller.ZtAppViewController', {
 		this.appViews = {};
 
 		Ext.each(ZCS.constant.APPS, function(app) {
-			if (ZCS.session.getSetting(ZCS.constant.APP_SETTING[app])) {
+			if (ZCS.util.isAppEnabled(app)) {
 				//Init our bookkeeping object.
                 if (app !== ZCS.constant.APP_CALENDAR) {
                     this.appViews[app] = {

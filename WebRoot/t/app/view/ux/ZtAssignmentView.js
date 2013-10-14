@@ -88,7 +88,9 @@ Ext.define('ZCS.view.ux.ZtAssignmentView', {
 
 		listHasOwnHeader: false,
 
-		animatedComponent: null
+		animatedComponent: null,
+
+		app: null
 
 	},
 

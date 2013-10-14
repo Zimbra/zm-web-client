@@ -79,12 +79,14 @@ ZCS.constant.FEATURE_ADD_ATTACHMENT = 'add_attachment'; // attach file when comp
 ZCS.constant.FEATURE_QUICK_REPLY    = 'quick_reply';    // quick reply area for conv panel
 ZCS.constant.FEATURE_FIND_OBJECTS   = 'find_objects';   // look for URLs and email addrs in msg body, make them actionable
 
+// Global way to turn features on/off, regardless of user settings
 ZCS.constant.IS_ENABLED = {};
+ZCS.constant.IS_ENABLED[ZCS.constant.APP_MAIL]                  = true;
 ZCS.constant.IS_ENABLED[ZCS.constant.APP_CONTACTS]              = true;
+ZCS.constant.IS_ENABLED[ZCS.constant.APP_CALENDAR]              = true;
 ZCS.constant.IS_ENABLED[ZCS.constant.FEATURE_ADD_ATTACHMENT]    = false;
 ZCS.constant.IS_ENABLED[ZCS.constant.FEATURE_QUICK_REPLY]       = true;
 ZCS.constant.IS_ENABLED[ZCS.constant.FEATURE_FIND_OBJECTS]      = true;
-ZCS.constant.IS_ENABLED[ZCS.constant.APP_CALENDAR]              = true;
 
 // Text for tab bar
 ZCS.constant.TAB_TITLE = {};
@@ -196,6 +198,10 @@ ZCS.constant.CLASS_FOR_TYPE[ZCS.constant.ITEM_MESSAGE]      = 'ZCS.model.mail.Zt
 ZCS.constant.CLASS_FOR_TYPE[ZCS.constant.ITEM_CONTACT]      = 'ZCS.model.contacts.ZtContact';
 ZCS.constant.CLASS_FOR_TYPE[ZCS.constant.ITEM_MATCH]        = 'ZCS.model.address.ZtAutoComplete';
 ZCS.constant.CLASS_FOR_TYPE[ZCS.constant.ITEM_CALENDAR]     = 'ZCS.model.calendar.ZtCalendar';
+
+ZCS.constant.ORG_NODE_FIELD_HASH = ZCS.util.arrayAsLookupHash([
+	'name', 'absFolderPath', 'color', 'rgb', 'l', 'n', 'u', 'url', 'query', 'types'
+]);
 
 // Item type for model class
 ZCS.constant.TYPE_FOR_CLASS = ZCS.util.getBackMap(ZCS.constant.CLASS_FOR_TYPE);

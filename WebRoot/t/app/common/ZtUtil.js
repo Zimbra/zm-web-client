@@ -572,5 +572,9 @@ Ext.define('ZCS.common.ZtUtil', {
             case 0: return ZtMsg.recurWeekend;
             case 1: return ZtMsg.recurWeekday;
         }
-    }
+    },
+
+	isAppEnabled: function(app) {
+		return ZCS.constant.IS_ENABLED[app] && ZCS.session.getSetting(ZCS.constant.APP_SETTING[app]);
+	}
 });

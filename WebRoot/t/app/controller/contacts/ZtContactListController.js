@@ -60,7 +60,12 @@ Ext.define('ZCS.controller.contacts.ZtContactListController', {
 	},
 
     launch: function() {
-        ZCS.app.on('notifyContactCreate', this.handleCreateNotification, this);
+
+	    if (!ZCS.util.isAppEnabled(this.getApp())) {
+		    return;
+	    }
+
+	    ZCS.app.on('notifyContactCreate', this.handleCreateNotification, this);
         ZCS.app.on('notifyContactChange', this.handleModifyNotification, this);
 	    this.loadAllContacts();
     },
