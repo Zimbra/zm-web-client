@@ -1080,9 +1080,13 @@ UL.DwtListView-Rows {
 #ENDIF
 #IFDEF MSIE_10
 .DwtInputField INPUT:-ms-input-placeholder,
+.DwtInputField INPUT[type="text"]:-ms-input-placeholder,
+.DwtInputField INPUT[type="password"]:-ms-input-placeholder,
 #ENDIF
 #IFDEF MODERN_IE
 .DwtInputField INPUT:-ms-input-placeholder,
+.DwtInputField INPUT[type="text"]:-ms-input-placeholder,
+.DwtInputField INPUT[type="password"]:-ms-input-placeholder,
 #ENDIF
 .DwtInputField-hint INPUT[type="text"],
 .DwtInputField-hint INPUT[type="password"],
