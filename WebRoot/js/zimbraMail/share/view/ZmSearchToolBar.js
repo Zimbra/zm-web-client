@@ -593,7 +593,17 @@ function(ev) {
 
 ZmMainSearchToolBar.prototype._setInputExpanded =
 function(expanded) {
-	this._searchField.getInputElement().className = expanded ? "search_input-expanded" : "search_input";
+	var input = this._searchField.getInputElement();
+	var cls = expanded ? "search_input-expanded" : "search_input";
+
+	if (AjxEnv.isIE9) {
+		// bug 83493: IE9 gets the layout wrong on the first try
+		setTimeout(function() {
+			input.className = cls;
+		}, 0);
+	} else {
+		input.className = cls;
+	}
 };
 
 ZmMainSearchToolBar.prototype._checkSharedMenuItem =
