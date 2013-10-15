@@ -69,6 +69,7 @@
   <filter>
     <filter-name>CharEncodingFilter</filter-name>
     <filter-class>com.zimbra.webClient.filters.CharEncodingFilter</filter-class>
+    <async-supported>true</async-supported>
   </filter>
   <filter-mapping>
     <filter-name>CharEncodingFilter</filter-name>
@@ -81,6 +82,7 @@
   <filter>
     <filter-name>DoSFilter</filter-name>
     <filter-class>com.zimbra.cs.servlet.DoSFilter</filter-class>
+    <async-supported>true</async-supported>
 
     <init-param>
      <param-name>maxRequestsPerSec</param-name>
@@ -119,6 +121,8 @@
   <filter>
     <filter-name>GzipFilter</filter-name>
     <filter-class>org.eclipse.jetty.servlets.IncludableGzipFilter</filter-class>
+    <async-supported>true</async-supported>
+    
     <init-param>
       <param-name>mimeTypes</param-name>
       <param-value>application/x-javascript,text/html,text/plain,text/css,application/soap+xml</param-value>
@@ -148,6 +152,7 @@
   <filter>
     <filter-name>Set Header Filter</filter-name>
     <filter-class>com.zimbra.webClient.filters.SetHeaderFilter</filter-class>
+    <async-supported>true</async-supported>
     <init-param>
       <param-name>debug</param-name>
       <param-value>0</param-value>
@@ -204,6 +209,7 @@
   <filter>
     <filter-name>StandardRedirectHelp</filter-name>
     <filter-class>com.zimbra.webClient.filters.RedirectHelp</filter-class>
+    <async-supported>true</async-supported>
     <init-param>
       <param-name>input.dir</param-name>
       <param-value>/bhelp</param-value>
@@ -221,6 +227,7 @@
   <filter>
     <filter-name>AdvancedRedirectHelp</filter-name>
     <filter-class>com.zimbra.webClient.filters.RedirectHelp</filter-class>
+    <async-supported>true</async-supported>
     <init-param>
       <param-name>input.dir</param-name>
       <param-value>/help</param-value>
@@ -238,6 +245,7 @@
   <filter>
     <filter-name>AdminRedirectHelp</filter-name>
     <filter-class>com.zimbra.webClient.filters.RedirectHelp</filter-class>
+    <async-supported>true</async-supported>
     <init-param>
       <param-name>input.dir</param-name>
       <param-value>/adminhelp</param-value>
@@ -256,6 +264,7 @@
   <filter>
     <filter-name>InsertHelpBranding</filter-name>
     <filter-class>com.zimbra.webClient.filters.InsertHelpBranding</filter-class>
+    <async-supported>true</async-supported>
     <init-param>
       <param-name>exts</param-name>
       <param-value>.htm,.xml</param-value>
@@ -274,6 +283,7 @@
   <filter>
     <filter-name>TimezoneFilter</filter-name>
     <filter-class>com.zimbra.webClient.filters.TimezoneFilter</filter-class>
+    <async-supported>true</async-supported>
   </filter>
   <filter-mapping>
     <filter-name>TimezoneFilter</filter-name>
@@ -283,6 +293,7 @@
   <filter>
     <filter-name>ForwardFilter</filter-name>
     <filter-class>com.zimbra.webClient.filters.ForwardFilter</filter-class>
+    <async-supported>true</async-supported>
   </filter>
   <filter-mapping>
     <filter-name>ForwardFilter</filter-name>
@@ -292,6 +303,7 @@
  <filter>
     <filter-name>RestFilter</filter-name>
     <filter-class>com.zimbra.webClient.filters.RestFilter</filter-class>
+    <async-supported>true</async-supported>
   </filter>
   <filter-mapping>
     <filter-name>RestFilter</filter-name>
@@ -301,6 +313,7 @@
   <filter>
     <filter-name>RequestStringFilter</filter-name>
     <filter-class>com.zimbra.cs.servlet.RequestStringFilter</filter-class>
+    <async-supported>true</async-supported>
   </filter>
   <filter-mapping>
     <filter-name>RequestStringFilter</filter-name>
@@ -315,6 +328,7 @@
   <servlet>
     <servlet-name>Forwarder</servlet-name>
     <servlet-class>com.zimbra.webClient.servlet.Forward</servlet-class>
+    <async-supported>true</async-supported>
   </servlet>
 
   <servlet-mapping>
@@ -325,6 +339,7 @@
   <servlet>
     <servlet-name>SetCookieServlet</servlet-name>
     <servlet-class>com.zimbra.webClient.servlet.SetCookieServlet</servlet-class>
+    <async-supported>true</async-supported>
   </servlet>
 
   <servlet-mapping>
@@ -335,6 +350,7 @@
   <servlet>
     <servlet-name>jsp</servlet-name>
     <servlet-class>com.zimbra.webClient.servlet.JspServlet</servlet-class>
+    <async-supported>true</async-supported>
     <init-param>
       <param-name>logVerbosityLevel</param-name>
       <param-value>DEBUG</param-value>
@@ -379,6 +395,7 @@
   <servlet>
     <servlet-name>Properties2Javascript</servlet-name>
     <servlet-class>com.zimbra.webClient.servlet.Props2JsServlet</servlet-class>
+    <async-supported>true</async-supported>
     <init-param>
       <param-name>basename-patterns</param-name>
       <param-value>
@@ -395,6 +412,7 @@
   <servlet>
     <servlet-name>SkinResources</servlet-name>
     <servlet-class>com.zimbra.webClient.servlet.SkinResources</servlet-class>
+    <async-supported>true</async-supported>
     <!--
     <init-param>
       <description>Override the request server name.</description>
@@ -443,6 +461,7 @@
   <servlet>
     <servlet-name>AdminResources</servlet-name>
     <servlet-class>com.zimbra.webClient.servlet.AdminServlet</servlet-class>
+    <async-supported>true</async-supported>
   </servlet>
 
   <servlet-mapping>
