@@ -261,37 +261,11 @@ Ext.define('ZCS.common.ZtUserSession', {
 	 */
 	addOrganizerData: function(organizer, list, app, type, context) {
 
-		var isValid = !ZCS.constant.FOLDER_HIDE[organizer.zcsId],
-			isRoot = (organizer.zcsId === ZCS.constant.ID_ROOT),
-			isTrash = (organizer.zcsId === ZCS.constant.ID_TRASH),
-			orgApp = ZCS.constant.FOLDER_APP[organizer.folderType];
-
-		// check if we're constrained by organizer type
-		if (isValid && !isRoot && type && organizer.type !== type) {
-			isValid = false;
-		}
-
-		// if we're constrained by app, folders must be of the correct type
-		if (isValid && !isRoot && app && !isRoot && !isTrash && organizer.type === ZCS.constant.ORG_FOLDER && orgApp !== app) {
-			isValid = false;
-		}
-
-		// if this is a search, make sure it looks for items for the given app
-		if (isValid && app && organizer.type === ZCS.constant.ORG_SEARCH && organizer.searchTypes) {
-			isValid = false;
-			// a saved search should only have a single type since we no longer support
-			// mixed searches, but there might be legacy mixed-type searches out there
-			Ext.each(organizer.searchTypes.split(','), function(type) {
-				if (ZCS.constant.APP_FOR_TYPE[Ext.String.trim(type)] === app) {
-					isValid = true;
-					return false;
-				}
-			}, this);
-		}
-
 		// Create a copy of the organizer data, since we don't want the caller to mess with the canonical data.
-		var org = {};
-		if (isValid) {
+		var org = {},
+			isTrash = (organizer.zcsId === ZCS.constant.ID_TRASH);
+
+		if (this.isValidOrganizer(organizer, app, type)) {
 			Ext.apply(org, organizer);
 			delete org.items;
 			ZCS.model.ZtOrganizer.addOtherFields(org, app, context, !!(organizer.items && organizer.items.length > 0));
@@ -311,6 +285,48 @@ Ext.define('ZCS.common.ZtUserSession', {
 		}
 
 		return org;
+	},
+
+	/**
+	 * Returns true if the given organizer (in the form of a data object) is valid for the given app
+	 * and/or type. For example, an address book folder is valid for Contacts but not Mail.
+	 *
+	 * @param {Object}  organizer
+	 * @param {String}  app
+	 * @param {String}  type
+	 * @return {Boolean}    true if the organizer is valid
+	 */
+	isValidOrganizer: function(organizer, app, type) {
+
+		var isValid = !ZCS.constant.FOLDER_HIDE[organizer.zcsId],
+			isRoot = (organizer.zcsId === ZCS.constant.ID_ROOT),
+			isTrash = (organizer.zcsId === ZCS.constant.ID_TRASH),
+			orgApp = ZCS.constant.FOLDER_APP[organizer.folderType];
+
+		// check if we're constrained by organizer type
+		if (isValid && !isRoot && type && organizer.type !== type) {
+			isValid = false;
+		}
+
+		// if we're constrained by app, folders must be of the correct type
+		if (isValid && !isRoot && app && !isTrash && organizer.type === ZCS.constant.ORG_FOLDER && orgApp !== app) {
+			isValid = false;
+		}
+
+		// if this is a search, make sure it looks for items for the given app
+		if (isValid && app && organizer.type === ZCS.constant.ORG_SEARCH && organizer.searchTypes) {
+			isValid = false;
+			// a saved search should only have a single type since we no longer support
+			// mixed searches, but there might be legacy mixed-type searches out there
+			Ext.each(organizer.searchTypes.split(','), function(type) {
+				if (ZCS.constant.APP_FOR_TYPE[Ext.String.trim(type)] === app) {
+					isValid = true;
+					return false;
+				}
+			}, this);
+		}
+
+		return isValid;
 	},
 
 	handleOrganizerCreate: function(folder, notification) {

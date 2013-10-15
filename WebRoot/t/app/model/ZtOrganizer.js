@@ -33,6 +33,8 @@ Ext.define('ZCS.model.ZtOrganizer', {
 		// the ZCS server may exist in multiple Sencha stores, and each instance within Sencha
 		// must have a unique ID, we need to disambiguate the ID. For example, a tag with 'zcsId'
 		// 607 may correspond to ZtOrganizer instances with IDs 'mail-tag-607' and 'contacts-tag-607'.
+		// Also, the 'parentItemId' is basically the same as the internal Sencha field 'parentId',
+		// but 'parentId' isn't always assigned by the time we need to use it.
 
 		fields: [
 			// global fields
@@ -132,15 +134,15 @@ Ext.define('ZCS.model.ZtOrganizer', {
 				sortField1, sortField2;
 
 			if (orgType1 !== orgType2) {
-				sortField1 = ZCS.constant.ORG_SORT_VALUE[orgType1];
-				sortField2 = ZCS.constant.ORG_SORT_VALUE[orgType2];
+				sortField1 = ZCS.constant.ORG_SORT_VALUE[orgType1] || 0;
+				sortField2 = ZCS.constant.ORG_SORT_VALUE[orgType2] || 0;
 			}
 			else if (isSystem1 !== isSystem2) {
 				return isSystem1 ? -1 : 1;
 			}
 			else if (isSystem1 && isSystem2) {
-				sortField1 = ZCS.constant.FOLDER_SORT_VALUE[id1];
-				sortField2 = ZCS.constant.FOLDER_SORT_VALUE[id2];
+				sortField1 = ZCS.constant.FOLDER_SORT_VALUE[id1] || 0;
+				sortField2 = ZCS.constant.FOLDER_SORT_VALUE[id2] || 0;
 			}
 			else {
 				sortField1 = name1 ? name1.toLowerCase() : '';

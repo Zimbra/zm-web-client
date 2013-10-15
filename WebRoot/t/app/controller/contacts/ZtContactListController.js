@@ -67,6 +67,21 @@ Ext.define('ZCS.controller.contacts.ZtContactListController', {
 
 	    ZCS.app.on('notifyContactCreate', this.handleCreateNotification, this);
         ZCS.app.on('notifyContactChange', this.handleModifyNotification, this);
+
+	    if (ZCS.session.getSetting(ZCS.constant.SETTING_SHOW_DL_FOLDER)) {
+		    // cobble together a folder create notification for the DL folder
+		    var dlFolder = {
+			    type:           ZCS.constant.NOTIFY_CREATE,
+			    id:             ZCS.constant.ID_DLS,
+			    nodeType:       ZCS.constant.ORG_FOLDER,
+			    absFolderPath:  '/Distribution Lists',
+			    l:              '1',
+			    name:           ZtMsg.distributionLists,
+			    view:           'contact'
+		    };
+		    ZCS.app.fireEvent('notify', dlFolder);
+	    }
+
 	    this.loadAllContacts();
     },
 

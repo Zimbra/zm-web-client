@@ -280,15 +280,18 @@ ZCS.constant.ORG_SORT_VALUE[ZCS.constant.ORG_SEARCH]        = 2;
 ZCS.constant.ORG_SORT_VALUE[ZCS.constant.ORG_TAG]           = 3;
 
 // System folder IDs
-ZCS.constant.ID_ROOT      = '1';
-ZCS.constant.ID_INBOX     = '2';
-ZCS.constant.ID_TRASH     = '3';
-ZCS.constant.ID_JUNK      = '4';
-ZCS.constant.ID_SENT      = '5';
-ZCS.constant.ID_DRAFTS    = '6';
-ZCS.constant.ID_CONTACTS  = '7';
-ZCS.constant.ID_EMAILED   = '13';
-ZCS.constant.ID_CHATS     = '14';
+ZCS.constant.ID_ROOT        = '1';
+ZCS.constant.ID_INBOX       = '2';
+ZCS.constant.ID_TRASH       = '3';
+ZCS.constant.ID_JUNK        = '4';
+ZCS.constant.ID_SENT        = '5';
+ZCS.constant.ID_DRAFTS      = '6';
+ZCS.constant.ID_CONTACTS    = '7';
+ZCS.constant.ID_EMAILED     = '13';
+ZCS.constant.ID_CHATS       = '14';
+
+// Use negative ID for internal system folder
+ZCS.constant.ID_DLS         = '-18';    // distribution lists
 
 // An ID less than this indicates a system folder
 ZCS.constant.MAX_SYSTEM_ID = 255;
@@ -328,7 +331,8 @@ ZCS.constant.FOLDER_SORT_VALUE[ZCS.constant.ID_DRAFTS]  = 3;
 ZCS.constant.FOLDER_SORT_VALUE[ZCS.constant.ID_JUNK]    = 4;
 
 ZCS.constant.FOLDER_SORT_VALUE[ZCS.constant.ID_CONTACTS]    = 1;
-ZCS.constant.FOLDER_SORT_VALUE[ZCS.constant.ID_EMAILED]     = 2;
+ZCS.constant.FOLDER_SORT_VALUE[ZCS.constant.ID_DLS]         = 2;
+ZCS.constant.FOLDER_SORT_VALUE[ZCS.constant.ID_EMAILED]     = 3;
 
 // System folder names (used in search queries)
 ZCS.constant.FOLDER_SYSTEM_NAME = {};
@@ -383,27 +387,35 @@ ZCS.constant.TYPE_ARRAY     = 'array';
 ZCS.constant.TYPE_HASH      = 'hash';
 
 // Names of user settings (LDAP attribute names)
-ZCS.constant.SETTING_ALIASES            = 'zimbraMailAlias';
-ZCS.constant.SETTING_INITIAL_SEARCH     = 'zimbraPrefMailInitialSearch';
+
+// General
 ZCS.constant.SETTING_SHOW_SEARCH        = 'zimbraPrefShowSearchString';
 ZCS.constant.SETTING_LOCALE             = 'zimbraPrefLocale';
 ZCS.constant.SETTING_TIMEZONE           = 'zimbraPrefTimeZoneId';
+ZCS.constant.SETTING_JSLOGGING_ENABLED  = 'zimbraTouchJSErrorTrackingEnabled';  // third-party logging service
+ZCS.constant.SETTING_JSLOGGING_KEY      = 'zimbraTouchJSErrorTrackingKey';      // third-party logging service
+
+// Mail
+ZCS.constant.SETTING_MAIL_ENABLED       = 'zimbraFeatureMailEnabled';
+ZCS.constant.SETTING_ALIASES            = 'zimbraMailAlias';
+ZCS.constant.SETTING_INITIAL_SEARCH     = 'zimbraPrefMailInitialSearch';
 ZCS.constant.SETTING_MARK_READ          = 'zimbraPrefMarkMsgRead';  // -1 = never, 0 = now, [int] = delay in seconds
 ZCS.constant.SETTING_REPLY_INCLUDE      = 'zimbraPrefReplyIncludeOriginalText';
 ZCS.constant.SETTING_FORWARD_INCLUDE    = 'zimbraPrefForwardIncludeOriginalText';
 ZCS.constant.SETTING_REPLY_PREFIX       = 'zimbraPrefForwardReplyPrefixChar';
-ZCS.constant.SETTING_MAIL_ENABLED       = 'zimbraFeatureMailEnabled';
-ZCS.constant.SETTING_CONTACTS_ENABLED   = 'zimbraFeatureContactsEnabled';
 ZCS.constant.SETTING_DISPLAY_IMAGES     = 'zimbraPrefDisplayExternalImages';
 ZCS.constant.SETTING_TRUSTED_SENDERS    = 'zimbraPrefMailTrustedSenderList';
 ZCS.constant.SETTING_FROM_ADDRESS       = 'zimbraPrefFromAddress';
 ZCS.constant.SETTING_FROM_NAME          = 'zimbraPrefFromDisplay';
-// Attrs to handle JS logging to a 3rd party service
-ZCS.constant.SETTING_JSLOGGING_ENABLED  = 'zimbraTouchJSErrorTrackingEnabled';
-ZCS.constant.SETTING_JSLOGGING_KEY      = 'zimbraTouchJSErrorTrackingKey';
+
+// Contacts
+ZCS.constant.SETTING_CONTACTS_ENABLED   = 'zimbraFeatureContactsEnabled';
+ZCS.constant.SETTING_SHOW_DL_FOLDER     = 'zimbraFeatureDistributionListFolderEnabled';
+
+// Calendar
 ZCS.constant.SETTING_CALENDAR_ENABLED   = 'zimbraFeatureCalendarEnabled';
 
-// Names of internal settings
+// Internal settings
 ZCS.constant.SETTING_CUR_SEARCH                 = 'CUR_SEARCH';
 ZCS.constant.SETTING_CUR_SEARCH_ID              = 'CUR_SEARCH_ID';
 ZCS.constant.SETTING_REPLY_INCLUDE_WHAT         = 'REPLY_INCLUDE_WHAT';
@@ -424,6 +436,7 @@ ZCS.constant.SETTING_TYPE[ZCS.constant.SETTING_DISPLAY_IMAGES]              = ZC
 ZCS.constant.SETTING_TYPE[ZCS.constant.SETTING_JSLOGGING_ENABLED]           = ZCS.constant.TYPE_BOOLEAN;
 ZCS.constant.SETTING_TYPE[ZCS.constant.SETTING_TRUSTED_SENDERS]             = ZCS.constant.TYPE_ARRAY;
 ZCS.constant.SETTING_TYPE[ZCS.constant.SETTING_GET_NAME_FROM_CONTACTS]      = ZCS.constant.TYPE_BOOLEAN;
+ZCS.constant.SETTING_TYPE[ZCS.constant.SETTING_SHOW_DL_FOLDER]              = ZCS.constant.TYPE_BOOLEAN;
 ZCS.constant.SETTING_TYPE[ZCS.constant.SETTING_CUR_SEARCH]                  = ZCS.constant.TYPE_HASH;
 ZCS.constant.SETTING_TYPE[ZCS.constant.SETTING_CUR_SEARCH_ID]               = ZCS.constant.TYPE_HASH;
 
@@ -435,6 +448,7 @@ ZCS.constant.SETTING_VALUE[ZCS.constant.SETTING_SHOW_SEARCH] = 'false';
 ZCS.constant.SETTING_DEFAULT = {};
 ZCS.constant.SETTING_DEFAULT[ZCS.constant.SETTING_LOCALE]                   = 'en_US';
 ZCS.constant.SETTING_DEFAULT[ZCS.constant.SETTING_GET_NAME_FROM_CONTACTS]   = true; // see bug 81656
+ZCS.constant.SETTING_DEFAULT[ZCS.constant.SETTING_SHOW_DL_FOLDER]           = true;
 
 // Setting that tells us if an app is enabled
 ZCS.constant.APP_SETTING = {};

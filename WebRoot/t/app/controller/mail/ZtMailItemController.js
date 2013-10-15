@@ -64,7 +64,7 @@ Ext.define('ZCS.controller.mail.ZtMailItemController', {
 			item = item || this.getItem(),
 			isMessage = item instanceof ZCS.model.mail.ZtMailMsg,
 			convCtlr = ZCS.app.getConvController(),
-			quickReply = convCtlr.getQuickReply();
+			quickReply = !isMessage && convCtlr.getQuickReply();
 
 		if (isMessage) {
 			activeStore.filter('id', item.get('id'));

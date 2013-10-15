@@ -34,13 +34,14 @@ Ext.define('ZCS.common.ZtOrganizerNotificationHandler', {
 	 */
 	addOrganizer: function(parentViews, notification, context, app) {
 
-		var ln = parentViews.length, i, parentView, organizer;
+		var ln = parentViews.length, i, parentView, organizer, app1;
 
 		for (i = 0; i < ln; i++) {
 			parentView = parentViews[i];
+			app1 = app || parentView.getApp();
 			organizer = ZCS.model.ZtOrganizer.getProxy().getReader().getDataFromNode(notification, notification.itemType);
-			if (organizer) {
-				ZCS.model.ZtOrganizer.addOtherFields(organizer, app || parentView.getApp(), context, false);
+			if (ZCS.session.isValidOrganizer(organizer, app1)) {
+				ZCS.model.ZtOrganizer.addOtherFields(organizer, app1, context, false);
 				this.insertOrganizer(parentView.down('folderlist'), organizer, organizer.parentItemId, organizer.parentZcsId);
 			}
 		}
