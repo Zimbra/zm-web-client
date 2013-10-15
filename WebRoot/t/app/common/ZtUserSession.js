@@ -148,7 +148,9 @@ Ext.define('ZCS.common.ZtUserSession', {
 			tagRoot = refresh.tags;
 
 		// move tags in with folders and searches
-		folderRoot[ZCS.constant.ORG_TAG] = tagRoot[ZCS.constant.ORG_TAG];
+		if (tagRoot) {
+			folderRoot[ZCS.constant.ORG_TAG] = tagRoot[ZCS.constant.ORG_TAG];
+		}
 		this.setOrganizerRoot(this.addOrganizer(folderRoot));
 
 		// These listeners are so that we can keep the internal canonical tree of
