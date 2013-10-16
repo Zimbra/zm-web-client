@@ -538,7 +538,7 @@ function(spanElement, contentObjText, matchContext, canvas) {
 		} else {
 			// If it's an email address just use the address value.
 			if (obj.objectContent instanceof AjxEmailAddress) {obj.objectContent = obj.objectContent.address;}
-			txt = this.xmlObj().processString(c.toolTip, obj);
+			txt = this.xmlObj().process(c.toolTip, obj);
 		}
 		canvas.innerHTML = txt;
 	}
