@@ -158,7 +158,7 @@ ZmEditContactView.prototype.getFormItems = function() {
 			},
 			{ id: "FILE_AS", type: "DwtSelect", onchange: this._handleFileAsChange, items: this.getFileAsOptions() },
 			{ id: "FOLDER", type: "DwtButton", image: "ContactsFolder",
-				enabled: "this._contact && !this._contact.isShared()",
+				enabled: "this._contact && !this._contact.isReadOnly()",
 				onclick: this._handleFolderButton
 			},
 			{ id: "TAG", type: "DwtControl",
@@ -573,7 +573,7 @@ ZmEditContactView.prototype.getModifiedAttrs = function() {
 	}
 
 	// make sure we set the folder (when new)
-	if (!attributes[ZmContact.F_folderId] && !this._contact.isShared()) {
+	if (!attributes[ZmContact.F_folderId] && !this._contact.id) {
 		attributes[ZmContact.F_folderId] = this.getValue("FOLDER");
 	}
 
