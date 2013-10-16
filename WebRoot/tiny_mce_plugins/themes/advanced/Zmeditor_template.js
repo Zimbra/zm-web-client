@@ -211,7 +211,7 @@ Zmeditor_template.getFontSize = function(value){
 
             // Find out current fontSize, fontFamily and fontClass
             getParent(function(n) {
-                if (n.nodeType !== Node.ELEMENT_NODE) {//access style property only for element node
+                if (n.nodeType !== 1) {//access style property only for element node
                     return false;
                 }
                 if (n.nodeName === 'SPAN') {
