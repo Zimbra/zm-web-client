@@ -524,6 +524,18 @@ function onLoad() {
 		}
 	}
 	clientChange("${zm:cook(client)}");
+    //check if the login page is loaded in the sidebar.
+    if (navigator.mozSocial) {
+        //send a ping so that worker knows about this page.
+        navigator.mozSocial.getWorker().port.postMessage({topic: "worker.reload", data: true});
+        //this page is loaded in firefox sidebar so listen for message from worker.
+        navigator.mozSocial.getWorker().port.onmessage = function onmessage(e) {
+            var topic = e.data.topic;
+            if (topic && topic == "sidebar.authenticated") {
+                window.location.href = "/public/launchSidebar.jsp";
+            }
+        };
+    }
 }
 
 </script>
