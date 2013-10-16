@@ -134,7 +134,7 @@
     <c:when test="${(zm:actionSet(param,'moreActions') && empty anAction && empty param.actionDelete) }">
         <mo:status style="Warning"><fmt:message key="actionNoActionSelected"/></mo:status>
     </c:when>
-    <c:when test="${(zm:actionSet(param, 'actionDelete') && param.isInTrash eq 'true') || zm:actionSet(param, 'actionHardDelete' || (zm:actionSet(param,'moreActions') && anAction == 'actionHardDelete'))}">
+    <c:when test="${(zm:actionSet(param, 'actionDelete') && param.isInTrash eq 'true') || zm:actionSet(param, 'actionHardDelete') || (zm:actionSet(param,'moreActions') && anAction == 'actionHardDelete')}">
     <zm:deleteContact var="result" id="${ids}"/>
     <c:set var="op" value="x" scope="request"/>
     <mo:status>
