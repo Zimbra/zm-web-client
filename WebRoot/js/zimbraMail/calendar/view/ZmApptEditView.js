@@ -1742,6 +1742,12 @@ function(addrInput, addrs, type, shortForm) {
 		addrs = result.good;
 	}
 
+	if (addrs.isAjxVector) {
+		//todo - why aren't we using ZmRecipients way more here? We probably could use a refactoring to unite this code with the
+		//mail compose recipients case - same thing as attendees, more or less.
+		addrs = ZmRecipients.expandAddrs(addrs);  //expand groups to their individual emails (not DLs).
+	}
+
 	// make sure we have an array to deal with
 	addrs = (addrs instanceof AjxVector) ? addrs.getArray() : (typeof addrs == "string") ? [addrs] : addrs;
 

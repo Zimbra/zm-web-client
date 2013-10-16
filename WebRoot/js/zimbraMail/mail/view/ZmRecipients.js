@@ -700,7 +700,7 @@ function(addrs) {
         // If there was only one button, the picker will just return the list of selections,
         // not a list per button type
         var typeAddrs = (this._fieldNames.length == 1) ? addrs :  addrs[type];
-		var addrVec = this._expandAddrs(typeAddrs);
+		var addrVec = ZmRecipients.expandAddrs(typeAddrs);
 		this.addAddresses(type, addrVec);
 	}
 
@@ -718,7 +718,7 @@ function(addrs) {
 };
 
 // Expands any addresses that are groups
-ZmRecipients.prototype._expandAddrs =
+ZmRecipients.expandAddrs =
 function(addrs) {
 	var addrsNew = [];
 	var addrsArray = (addrs instanceof AjxVector) ? addrs.getArray() : addrs;
