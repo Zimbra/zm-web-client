@@ -32,6 +32,7 @@ var queryParams = parseQueryString();
 var MAIL_ICON = baseurl + queryParams.mailIconURL;
 var ICON = baseurl + queryParams.iconURL;
 var CHECK_INTERVAL = 60 * 1000;
+var fetchTimer;
 
 onconnect = function(e) {
     var port = e.ports[0];
@@ -39,21 +40,44 @@ onconnect = function(e) {
     port.onmessage = function (msgEvent)
     {
         var msg = msgEvent.data;
-        if (msg.topic == "social.port-closing") {
+        if (!msg) {
+            //onmessage called with no data
+            return;
+        }
+        if (msg.topic === "social.port-closing") {
             if (port == apiPort) {
                 apiPort.close();
                 apiPort = null;
             }
             return;
         }
-        if (msg.topic == "social.initialize") {
+        if (msg.topic === "social.initialize") {
             apiPort = port;
 			fetchData();
-			setInterval(fetchData, CHECK_INTERVAL);
+			//setInterval(fetchData, CHECK_INTERVAL);
+        }
+        if (msg.topic === "worker.reload") {
+            fetchData();
         }
     }
 
-	fetchData = function () {
+    broadcast = function (topic, payload)
+    {
+        // we need to broadcast to all ports connected to this markd worker
+        for (var i = 0; i < ports.length; i++) {
+            try {
+                ports[i].postMessage({topic: topic, data: payload});
+            } catch(e) {
+                ports.splice(i, 1);
+            }
+        }
+    }
+
+    fetchData = function () {
+        if (fetchTimer) {
+            clearTimeout(fetchTimer);
+        }
+        fetchTimer = setTimeout(fetchData, CHECK_INTERVAL);
 		var requestStr = '<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope"><soap:Header><context xmlns="urn:zimbra"><userAgent xmlns="" name="ZimbraWebClient - FF24 (Mac)"/><session xmlns=""/><format xmlns="" type="js"/></context></soap:Header><soap:Body><GetInfoRequest xmlns="urn:zimbraAccount" sections=""/></soap:Body></soap:Envelope>';
 
 		var xmlhttp = new XMLHttpRequest();
@@ -61,6 +85,7 @@ onconnect = function(e) {
 		xmlhttp.send(requestStr);
 
 		if (xmlhttp.status == 200 || xmlhttp.status == 201) {
+            broadcast("sidebar.authenticated"); //send authenticated message.
 			var jsonResponse = JSON.parse(xmlhttp.responseText);
 			var folderInfo = jsonResponse.Header.context.refresh.folder[0].folder;
 			if (apiPort) {
@@ -68,7 +93,7 @@ onconnect = function(e) {
 					userName: jsonResponse.Body.GetInfoResponse.name,
 					displayName: jsonResponse.Body.GetInfoResponse.name,
 					portrait: ICON,
-					profileURL: jsonResponse.Body.GetInfoResponse.publicURL
+					profileURL: baseurl
 				}});
 				for (var i = 0; i < folderInfo.length; i++) {
 					if (folderInfo[i].absFolderPath === "/Inbox") {
@@ -76,6 +101,7 @@ onconnect = function(e) {
 							data: {
 								name: "mail",
 								iconURL: MAIL_ICON,
+                                contentPanel: baseurl + "/public/launchSidebar.jsp",
 								counter: folderInfo[i].u || 0,
 								label: "Unread Mail"
 							}});

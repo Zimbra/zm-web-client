@@ -163,7 +163,7 @@
         var unread = msg.f && (msg.f.indexOf("u") != -1);
         var attach = msg.f && (msg.f.indexOf("a") != -1);
         html.push("<li>");
-        html.push("<a target='_blank' href='/?view=msg&id=");
+        html.push("<a target='_blank' onclick='refreshView();' href='/?view=msg&id=");
         html.push(msg.id);
         html.push("' class='MSG_LINK ");
         html.push(unread ? "Unread'" : "'");
@@ -189,6 +189,13 @@
         html.push("</li>");
     }
 
+    function refreshView() {
+        //wait for about 3 secs to load the message in new window and then refresh the view so correct status is reflected.
+        setTimeout(function() {
+            searchMsgs();
+        }, 3 * 1000);
+    }
+
     function searchMsgs() {
         var request = {
                 Body: {
@@ -212,6 +219,11 @@
                 createListItem(html, msgResponse[i]);
             }
             document.getElementById("msgList").innerHTML = html.join("");
+            if (navigator.mozSocial) {
+                //reload the worker.
+                var worker = navigator.mozSocial.getWorker();
+                worker.port.postMessage({topic: "worker.reload", data: true});
+            }
         } else {
             //this is an error.
             var jsonResponse = JSON.parse(xmlhttp.responseText);
@@ -222,6 +234,13 @@
             }
         }
     }
+
+    navigator.mozSocial.getWorker().port.onmessage = function onmessage(e) {
+        var topic = e.data.topic;;
+        if (topic && topic === "sidebar.authenticated") {
+            //Do nothing. Place holder for future topic handling
+        }
+    };
 </script>
 </body>
 </html>
