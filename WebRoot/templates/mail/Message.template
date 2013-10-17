@@ -115,16 +115,6 @@
 		</span>
 </template>
 
-<template id='mail.Message#MailAttachmentInputForm'>
-	<form>
-		<$ for (var i = 0; i < data.inputs.length; i++) { $>
-			<input type="file" title='<$= ZmMsg.uploadNewFile $>'
-				multiple="true" name="files"
-				id='<$= data.inputs[i].id $>'>
-		<$ } $>
-	</form>
-</template>
-
 <template id='mail.Message#AutoSend'>
 	<$ if (data.autoSendTime) { $>
 		<tr id='OBJ_PREFIX_<$=Dwt.getNextId()$>_scheduled'>

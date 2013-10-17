@@ -356,6 +356,14 @@ function() {
 	return (inlineOption && inlineOption.checked);
 };
 
+ZmAttachDialog.prototype.setInline =
+function(checked) {
+	var inlineOption = document.getElementById(this._htmlElId+"_inlineCheckbox");
+
+	if (inlineOption)
+		inlineOption.checked = checked;
+};
+
 
 /**
  * Attachment Upload View

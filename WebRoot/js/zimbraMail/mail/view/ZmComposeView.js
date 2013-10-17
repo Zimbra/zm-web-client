@@ -115,6 +115,9 @@ ZmComposeView.OP[AjxEmailAddress.TO]	= ZmId.CMP_TO;
 ZmComposeView.OP[AjxEmailAddress.CC]	= ZmId.CMP_CC;
 ZmComposeView.OP[AjxEmailAddress.BCC]	= ZmId.CMP_BCC;
 
+ZmComposeView.UPLOAD_COMPUTER = 1;
+ZmComposeView.UPLOAD_INLINE = 2;
+ZmComposeView.UPLOAD_BRIEFCASE = 3;
 
 // Public methods
 
@@ -1266,25 +1269,59 @@ function(idoc){
 	}
 };
 
+/**
+ * Display an attachment dialog - either a direct and native upload dialog or
+ * the legacy dialog.
+ *
+ * @param {constant}  type      One of the <code>ZmComposeView.UPLOAD_</code> constants.
+ */
 ZmComposeView.prototype.showAttachmentDialog =
-function(val) {
+function(type) {
 
 	if (this._disableAttachments) { return };
 
-	var attachDialog = this._attachDialog = appCtxt.getAttachDialog();
-	if (val === ZmMsg.myComputer) {
-		attachDialog.getMyComputerView();
-	}
-	else if (val === ZmMsg.briefcase) {
-		attachDialog.getBriefcaseView();
-	}
-	else {
+	// collapse the attachment menu, just in case
+	this.collapseAttMenu();
+
+	if (AjxEnv.supportsHTML5File &&
+	    type !== ZmComposeView.UPLOAD_BRIEFCASE) {
+		var isinline = (type === ZmComposeView.UPLOAD_INLINE);
+
+		inputelem = document.createElement('INPUT');
+		inputelem.type = 'file';
+		inputelem.title = ZmMsg.uploadNewFile;
+		inputelem.multiple = true;
+		inputelem.style.display = 'none';
+
+		inputelem.onchange =
+			this._submitMyComputerAttachments.bind(this, null, inputelem,
+			                                       isinline);
+
+		// IE won't react to unparented INPUTs
+		var fragment = document.createDocumentFragment();
+		fragment.appendChild(inputelem);
+
+		inputelem.click();
+
 		return;
 	}
+
+	var attachDialog = this._attachDialog = appCtxt.getAttachDialog();
+
+	if (type === ZmComposeView.UPLOAD_BRIEFCASE) {
+		attachDialog.getBriefcaseView();
+	} else {
+		attachDialog.getMyComputerView();
+	}
+
 	var callback = this._attsDoneCallback.bind(this, true);
 	attachDialog.setUploadCallback(callback);
 	attachDialog.popup();
 	attachDialog.enableInlineOption(this._composeMode === DwtHtmlEditor.HTML);
+
+	if (type === ZmComposeView.UPLOAD_INLINE)
+		attachDialog.setInline(true);
+
 };
 
 /**
@@ -2960,41 +2997,12 @@ function(templateId, data) {
 	this._attButton = new DwtButton({parent:this, id:attButtonId});
 	this._attButton.setText(ZmMsg.attach);
 
-	if (AjxEnv.supportsHTML5File) {
-		var normalid = ZmId.getViewId(this._view, ZmId.CMP_ATT_COMPUTER_INP);
-		var inlineid = ZmId.getViewId(this._view, ZmId.CMP_ATT_INLINE_INP);
-		var inputs = [{id: normalid, isinline: false},
-		              {id: inlineid, isinline: true}];
-		var hiddendiv = document.createElement('div');
-
-		hiddendiv.innerHTML =
-			AjxTemplate.expand("mail.Message#MailAttachmentInputForm",
-			                   {inputs: inputs});
-		hiddendiv.style.display = 'none';
-		this.getHtmlElement().appendChild(hiddendiv);
-
-		for (var i = 0; i < inputs.length; i++) {
-			var inputelem = Dwt.byId(inputs[i].id);
-			inputelem.onchange =
-				AjxCallback.simpleClosure(this._submitMyComputerAttachments,
-				                          this, null, inputelem,
-				                          inputs[i].isinline);
-		}
-
-		this._attButton.addSelectionListener(AjxCallback.simpleClosure(
-			this.__clickElementID, this, normalid
-		));
-
-	} else {
-			this._attButton.addSelectionListener(function(event) {
-				var curView = appCtxt.getAppViewMgr().getCurrentView();
-				curView.collapseAttMenu();
-				curView.showAttachmentDialog(ZmMsg.myComputer);
-			 });
-	}
 	this._attButton.setMenu(new AjxCallback(this, this._attachButtonMenuCallback));
 	this._attButton.reparentHtmlElement(data.attBtnId);
 	this._attButton.setToolTipContent(ZmMsg.attach, true);
+	this._attButton.addSelectionListener(
+		this.showAttachmentDialog.bind(this, ZmComposeView.UPLOAD_COMPUTER, false)
+	);
 };
 
 ZmComposeView.prototype._initDragAndDrop =
@@ -3280,30 +3288,27 @@ function(menuItem) {
 	menuItem.setEnabled(isHTML);
 };
 
-ZmComposeView.prototype.__clickElementID = function(elementid) {
-	Dwt.byId(elementid).click();
-};
-
 ZmComposeView.prototype._attachButtonMenuCallback =
 function() {
 	var menu = new DwtMenu({parent:this._attButton});
-	if (!AjxEnv.supportsHTML5File) {
-		mi = this._createAttachMenuItem(menu, ZmMsg.myComputer, new AjxListener(this, this.showAttachmentDialog,[ZmMsg.myComputer]) );
-	} else {
-		// create the item for making regular attachments
-		var listener = new AjxListener(this, this.__clickElementID,
-		                               [ZmId.getViewId(this._view, ZmId.CMP_ATT_COMPUTER_INP)]);
-		this._createAttachMenuItem(menu, ZmMsg.myComputer, listener);
 
+	var listener =
+		this.showAttachmentDialog.bind(this, ZmComposeView.UPLOAD_COMPUTER);
+	this._createAttachMenuItem(menu, ZmMsg.myComputer, listener);
+
+	if (AjxEnv.supportsHTML5File) {
 		// create the item for making inline attachments
-		var listener = new AjxListener(this, this.__clickElementID,
-		                               [ZmId.getViewId(this._view, ZmId.CMP_ATT_INLINE_INP)]);
+		var listener =
+			this.showAttachmentDialog.bind(this, ZmComposeView.UPLOAD_INLINE);
 		var mi = this._createAttachMenuItem(menu, ZmMsg.attachInline, listener);
 		menu.addPopupListener(new AjxListener(this, this._checkMenuItems,[mi]));
 	}
 
 	if (appCtxt.multiAccounts || appCtxt.get(ZmSetting.BRIEFCASE_ENABLED)) {
-		mi = this._createAttachMenuItem(menu, ZmMsg.briefcase, new AjxListener(this, this.showAttachmentDialog, [ZmMsg.briefcase]) );
+		var listener =
+			this.showAttachmentDialog.bind(this,
+			                               ZmComposeView.UPLOAD_BRIEFCASE);
+		this._createAttachMenuItem(menu, ZmMsg.briefcase, listener);
 	}
 	appCtxt.notifyZimlets("initializeAttachPopup", [menu, this], {waitUntilLoaded:true});
 

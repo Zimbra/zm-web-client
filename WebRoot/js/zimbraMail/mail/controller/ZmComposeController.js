@@ -1638,35 +1638,9 @@ function() {
 // Attachment button was pressed
 ZmComposeController.prototype._attachmentListener =
 function(isInline) {
-
-    var view = this._composeView,
-        fileInputElement;
-
-    if (isInline && AjxEnv.supportsHTML5File && !view._attcBtnInlineFileInpId) {
-        view.collapseAttMenu();//This will create the attach menu options
-    }
-
-    if (AjxEnv.supportsHTML5File) {
-        if (isInline) {
-            if (view._attcBtnInlineFileInpId) {
-                fileInputElement = document.getElementById(view._attcBtnInlineFileInpId);
-            }
-        }
-        else {
-            if (view._attcBtnFileInpId) {
-                fileInputElement = document.getElementById(view._attcBtnFileInpId);
-            }
-        }
-        if (fileInputElement && fileInputElement.click) {
-            try {
-                fileInputElement.click();
-                return;
-            }
-            catch(e) {
-            }
-        }
-    }
-    view.showAttachmentDialog(ZmMsg.myComputer);
+	var type =
+		isInline ? ZmComposeView.UPLOAD_INLINE : ZmComposeView.UPLOAD_COMPUTER;
+	this._composeView.showAttachmentDialog(type);
 };
 
 ZmComposeController.prototype._optionsListener =
