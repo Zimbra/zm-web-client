@@ -57,7 +57,7 @@
         </mo:status>
     </c:when>
 
-    <c:when test="${zm:actionSet(param, 'actionHardDelete' || (zm:actionSet(param,'moreActions') && anAction == 'actionHardDelete'))}">
+    <c:when test="${zm:actionSet(param, 'actionHardDelete') || (zm:actionSet(param,'moreActions') && anAction == 'actionHardDelete')}">
         <c:set var="count" value="${0}"/>
                 <c:forEach var="taskId" items="${paramValues.id}">
                     <zm:getMessage var="message" id="${taskId}" markread="true" neuterimages="${empty param.xim}"/>

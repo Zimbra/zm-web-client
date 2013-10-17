@@ -46,7 +46,7 @@
     <c:when test="${empty ids}">
         <mo:status style="Warning"><fmt:message key="actionNoItemSelected"/></mo:status>
     </c:when>
-    <c:when test="${(param.isInTrash eq 'true' && zm:actionSet(param, 'actionDelete')) || zm:actionSet(param, 'actionHardDelete' || (zm:actionSet(param,'moreActions') && anAction == 'actionHardDelete'))}">
+    <c:when test="${(param.isInTrash eq 'true' && zm:actionSet(param, 'actionDelete')) || zm:actionSet(param, 'actionHardDelete') || (zm:actionSet(param,'moreActions') && anAction == 'actionHardDelete')}">
         <zm:deleteBriefcase var="result" id="${ids}"/>
         <zm:clearSearchCache/>
         <c:set var="op" value="x" scope="request"/>
