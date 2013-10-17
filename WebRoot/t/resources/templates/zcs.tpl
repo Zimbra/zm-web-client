@@ -164,13 +164,13 @@
 
 <template id='ContactListItem'>
 	<div class='zcs-contactListItem'>
-		<tpl if='isGroup'>
+		<tpl if='isMultiple'>
 			<div class='zcs-contactList-group' <tpl if='imageUrl'>style='background-image:url({imageUrl})'</tpl>></div>
 		<tpl else>
 			<div class='zcs-contactList-person' <tpl if='imageUrl'>style='background-image:url({imageUrl})'</tpl>></div>
 		</tpl>
 		<div class='zcs-contactList-text'>
-			<tpl if='isGroup'>
+			<tpl if='isMultiple'>
 				<div class='zcs-contactList-name'>{nickname:htmlEncode}</div>
 			<tpl else>
 				<div class='zcs-contactList-name'>{nameLastFirst:htmlEncode}</div>
@@ -181,11 +181,20 @@
 </template>
 
 <template id='Contact'>
-	<tpl if='isGroup'>
+	<tpl if='isMultiple'>
 		<div class='zcs-contactgroupview-header'>
 			<div class='zcs-contactgroupview-image'></div>
 			<div class='zcs-contactgroupview-personalInfo'>
-				<span name="contactname">{nickname:htmlEncode}</span>
+				<div><span name="contactname">{nickname:htmlEncode}</span></div>
+				<tpl if='isDistributionList && (isOwner || isMember)'>
+					<tpl if='isOwner && isMember'>
+						<div>{[ZtMsg.dlOwnerAndMember]}</div>
+					<tpl elseif='isOwner'>
+						<div>{[ZtMsg.dlOwner]}</div>
+					<tpl else>
+						<div>{[ZtMsg.dlMember]}</div>
+					</tpl>
+				</tpl>
 			</div>
 		</div>
 		<div class='zcs-contactgroupview-members'>

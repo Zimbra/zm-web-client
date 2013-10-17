@@ -34,6 +34,7 @@ Ext.define('ZCS.model.contacts.ZtContact', {
 
 		fields: [
 
+			{ name: 'contactType',  type: 'string' },   // ZCS.constant.CONTACT_*
 			{ name: 'folderId',     type: 'string' },
 
 			// simple fields (not composite, not multiple) - see ZCS.constant.CONTACT_FIELDS
@@ -143,14 +144,40 @@ Ext.define('ZCS.model.contacts.ZtContact', {
                 }
             },
 
-			// Fields related to contact groups
-			{ name: 'isGroup', type: 'boolean' },       // true for groups
-            { name: 'groupMembers', type: 'auto' },     // list of small member objects
+			// true if the contact is a local, user-created group
+			{
+				name: 'isGroup',
+				type: 'boolean',
+				convert: function(value, record) {
+					return record.get('contactType') === ZCS.constant.CONTACT_GROUP;
+				}
+			},
 
-			// group member fields
-			{ name: 'memberEmail', type: 'string' },
-			{ name: 'memberPhone', type: 'string' },
-            { name: 'memberImageUrl', type: 'auto'}
+			// true if the contact is a distribution list
+			{
+				name: 'isDistributionList',
+				type: 'boolean',
+				convert: function(value, record) {
+					return record.get('contactType') === ZCS.constant.CONTACT_DL;
+				}
+			},
+
+			// true if the contact is a group or a distribution list
+			{
+				name: 'isMultiple',
+				type: 'boolean',
+				convert: function(value, record) {
+					return record.get('contactType') !== ZCS.constant.CONTACT_PERSON;
+				}
+			},
+
+			// List of members (groups and distribution lists). Each member is an anonymous object
+			// with 'memberEmail', 'memberPhone', and 'memberImageUrl' properties.
+            { name: 'groupMembers', type: 'auto' },
+
+			// Distribution lists
+            { name: 'isMember', type: 'boolean'},
+            { name: 'isOwner',  type: 'boolean'}
         ],
 
 		proxy: {

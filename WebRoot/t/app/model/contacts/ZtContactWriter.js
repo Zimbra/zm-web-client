@@ -31,19 +31,46 @@ Ext.define('ZCS.model.contacts.ZtContactWriter', {
 			action = request.getAction(),
 			itemData = data && data.length ? Ext.merge(data[0], options) : options,
 			contactId = itemData.contactId,
+			folderId = itemData.folder && itemData.folder.get('zcsId'),
             query = itemData.query,
 			json, methodJson;
 
 		if (action === 'read') {
 
 			if (contactId) {
-				json = this.getSoapEnvelope(request, data, 'GetContacts');
-				methodJson = json.Body.GetContactsRequest;
-				methodJson.cn = {
-					id: contactId
-				};
-				methodJson.derefGroupMember = itemData.isGroup ? 1 : 0;
-			} else {
+				if (itemData.contactType === ZCS.constant.CONTACT_DL) {
+					json = this.getSoapEnvelope(request, data, 'GetDistributionListMembers', { namespace: 'urn:zimbraAccount' });
+					methodJson = json.Body.GetDistributionListMembersRequest;
+					Ext.apply(methodJson, {
+						dl: {
+							_content: itemData.nickname
+						},
+						limit:  100,
+						offset: 0
+					});
+					operation.config.dlId = contactId;
+				}
+				else {
+					json = this.getSoapEnvelope(request, data, 'GetContacts');
+					methodJson = json.Body.GetContactsRequest;
+					methodJson.cn = {
+						id: contactId
+					};
+					methodJson.derefGroupMember = (itemData.contactType === ZCS.constant.CONTACT_GROUP) ? 1 : 0;
+				}
+			}
+			else if (folderId === ZCS.constant.ID_DLS) {
+				request.setUrl(ZCS.constant.SERVICE_URL_BASE + 'GetAccountDistributionListsRequest');    // replace configured 'read' URL
+				json = this.getSoapEnvelope(request, data, 'GetAccountDistributionLists', { namespace: 'urn:zimbraAccount' });
+				methodJson = json.Body.GetAccountDistributionListsRequest;
+
+				Ext.apply(methodJson, {
+					attrs:      'zimbraDistributionListUnsubscriptionPolicy,zimbraDistributionListSubscriptionPolicy,zimbraHideInGal',
+					ownerOf:    1
+				});
+
+			}
+			else {
 				var query = request.getParams().query || 'in:contacts';
 				request.setUrl(ZCS.constant.SERVICE_URL_BASE + 'SearchRequest');    // replace configured 'read' URL
 				json = this.getSoapEnvelope(request, data, 'Search');

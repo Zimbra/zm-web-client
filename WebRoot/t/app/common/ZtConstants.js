@@ -167,12 +167,19 @@ ZCS.constant.ITEM_APPOINTMENT       = 'appointment';
 ZCS.constant.ITEM_CALENDAR          = 'calendar';   // TODO: organizer, not item
 ZCS.constant.ITEM_MATCH             = 'match';      // autocomplete response JSON
 
+// Contact types
+ZCS.constant.CONTACT_PERSON     = 'person';
+ZCS.constant.CONTACT_GROUP      = 'group';
+ZCS.constant.CONTACT_DL         = 'distributionList';
+
 // JSON node names for items
 ZCS.constant.NODE_CONVERSATION  = 'c';
 ZCS.constant.NODE_MESSAGE       = 'm';
 ZCS.constant.NODE_CONTACT       = 'cn';
 ZCS.constant.NODE_CALENDAR      = 'appt';
 ZCS.constant.NODE_MATCH         = 'match';
+ZCS.constant.NODE_DL            = 'dl';
+ZCS.constant.NODE_DL_MEMBER     = 'dlm';
 
 // Organizer types (same as server JSON)
 ZCS.constant.ORG_FOLDER         = 'folder';
@@ -639,8 +646,10 @@ ZCS.constant.QUICK_REPLY_LARGE  = 80;
 
 // Contact fields used by the contact template
 ZCS.constant.CONTACT_TEMPLATE_FIELDS = [
-	'isGroup', 'nameLastFirst', 'fullName', 'nickname', 'email', 'phone',
-	'address', 'url', 'groupMembers', 'jobTitle', 'company', 'tags'
+	'isGroup', 'isDistributionList', 'isMultiple',
+	'nameLastFirst', 'fullName', 'nickname', 'email', 'phone',
+	'address', 'url', 'jobTitle', 'company', 'tags',
+	'groupMembers', 'isOwner', 'isMember'
 ];
 
 // Contact fields that can have multiple values

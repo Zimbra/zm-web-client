@@ -93,17 +93,21 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
 		// Make sure the organizer button stays...
 		ZCS.app.fireEvent('updatelistpanelToggle', this.getOrganizerTitle(), ZCS.session.getActiveApp());
 
-		var store = this.getStore();
+		var store = this.getStore(),
+			contactType = contact.get('contactType');
+
 		store.load({
-			contactId: contact.getId(),
-			isGroup: contact.get('isGroup'),
+			contactId:      contact.getId(),
+			contactType:    contactType,
+			nickname:       contact.get('nickname'),    // for DLs, which are fetched by nickname rather than ID
+
 			callback: function(records, operation, success) {
 				var contact = records[0];
 				if (success) {
 					this.getContactView().showItem(contact);
 					this.updateToolbar({
 						title:      Ext.String.htmlEncode(contact.get('longName')),
-						isGroup:    contact.get('isGroup')
+						isMultiple: contact.get('isMultiple')
 					});
 				}
 			},
@@ -133,7 +137,7 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
 			this.showButton(button.op, !hideAll);
 		}, this);
 
-		this.showButton(ZCS.constant.OP_EDIT, !hideAll && !params.isGroup)
+		this.showButton(ZCS.constant.OP_EDIT, !hideAll && !params.isMultiple)
 	},
 
 	/**

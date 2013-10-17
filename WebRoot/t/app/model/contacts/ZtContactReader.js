@@ -24,29 +24,60 @@ Ext.define('ZCS.model.contacts.ZtContactReader', {
 
 	alias: 'reader.contactreader',
 
-	getDataFromNode: function(node) {
+	/**
+	 * Returns the JSON node name for the object this reader should look for in the data.
+	 *
+	 * @param {object}      data        response data
+	 */
+	getNodeName: function(data) {
+		if (data.soapMethod === 'GetAccountDistributionLists') {
+			return ZCS.constant.NODE_DL;
+		}
+		else if (data.soapMethod === 'GetDistributionListMembers') {
+			return ZCS.constant.NODE_DL_MEMBER;
+		}
+		else {
+			return this.callParent(arguments);
+		}
+	},
+
+	getDataFromNode: function(node, options) {
 
 		var data = {
 				zcsId:  node.id
 			},
-			attrs = node._attrs;
+			attrs = node._attrs || {};
 
 		data.type = ZCS.constant.ITEM_CONTACT;
-		if (attrs.type === 'group') {
-            //Check if the group has already been cached and the group members exists.
-            //Use the same, else fetch it from the node.
-            var cachedGroup = ZCS.cache.get(node.id),
-                cachedGroupMembers = cachedGroup && cachedGroup.get('groupMembers');
 
-            if (!cachedGroupMembers || (cachedGroupMembers.length == 0)) {
-                data.groupMembers = this.getGroupMembers(node.m);
-            } else {
-                data.groupMembers = cachedGroupMembers;
-            }
+		// user-created local group
+		if (attrs.type === 'group') {
+			data.contactType = ZCS.constant.CONTACT_GROUP;
+			if (node.m) {
+				data.groupMembers = this.getGroupMembers(node.m);
+			}
 	        data.isGroup = true;
             data.nickname = attrs.nickname;
         }
+		// distribution list
+		else if (options && options.nodeName === ZCS.constant.NODE_DL) {
+			data.contactType = ZCS.constant.CONTACT_DL;
+			data.nickname = node.name;
+			data.isMember = node.isMember;
+			data.isOwner = node.isOwner;
+		}
+		// distribution list member
+		else if (options && options.nodeName === ZCS.constant.NODE_DL_MEMBER) {
+			var members = options.dlMembers;
+			if (members) {
+				members.push({
+					memberEmail: node._content
+				});
+			}
+		}
+		// regular contact
 		else {
+			data.contactType = ZCS.constant.CONTACT_PERSON;
 			data.folderId = node.l;
 			data = this.parseAttributes(attrs, data);
 		}
@@ -184,13 +215,80 @@ Ext.define('ZCS.model.contacts.ZtContactReader', {
 				    data.zcsId = member.value;
 			    }
                 data.memberImageUrl = ZCS.model.contacts.ZtContact.getImageUrl(attrs, member.value);
+			    group.push(data);
 		    }
 		    else if (member.type === 'I') {
 			    data.memberEmail = member.value;
+			    group.push(data);
 		    }
-			group.push(data);
 		}, this);
 
 	    return group;
-    }
+    },
+
+	/**
+	 * Override so we can handle distribution lists. The members of the list are loaded via
+	 * the SOAP method GetDistributionListMembers, which returns a list. Normally when we load
+	 * a contact we're just dealing with a single record (that's also true for local groups,
+	 * whose member list is just part of the attribute data). Since we have a list result that
+	 * is associated with a single record, we need to accumulate the member list somewhere. We use
+	 * the options for that.
+	 *
+	 * @param {Object}  response    response object
+	 * @return {Object} JSON response data
+	 */
+	getResponseData: function(response) {
+
+		var data = this.callParent(arguments),
+			operation = response.request && response.request.options && response.request.options.operation;
+
+		data.options = data.options || {};
+		if (operation && operation.config.dlId) {
+			data.options.dlId = operation.config.dlId;
+			data.options.dlMembers = [];
+		}
+		return data;
+	},
+
+	/**
+	 * Override so we can handle distribution lists. See above for initial explanation. This function
+	 * will build up the member list from the SOAP response, then construct the single DL contact record
+	 * that will be used to instantiate the ZtContact.
+	 *
+	 * @param {Array}   root        list of DL members
+	 * @param {Object}  options     options
+	 * @return {Array}
+	 */
+	getRecords: function(root, options) {
+
+		if (options.dlId && options.dlMembers) {
+
+			Ext.each(root, function(node) {
+				this.getDataFromNode(node, options);
+			}, this);
+
+			// get the DL ZtContact from when the list view was loaded so we can use its fields
+			var dl = ZCS.cache.get(options.dlId),
+				recordData = ZCS.util.getFields(dl, ['nickname','isMember','isOwner']);
+
+			Ext.apply(recordData, {
+				type:           ZCS.constant.ITEM_CONTACT,
+				contactType:    ZCS.constant.CONTACT_DL,
+				groupMembers:   options.dlMembers,
+				zcsId:          options.dlId
+			});
+
+			var	record = {
+					clientId:   null,
+					id:         options.dlId,
+					data:       recordData,
+					node:       null
+				};
+
+			return [ record ];
+		}
+		else {
+			return this.callParent(arguments);
+		}
+	}
 });
