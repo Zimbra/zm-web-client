@@ -636,6 +636,12 @@ function() {
 
 ZmComposeController.prototype._handleErrorSendMsg =
 function(draftType, msg, ex, params) {
+	if (draftType != ZmComposeController.DRAFT_TYPE_NONE &&
+		AjxUtil.isDefined(this._wasDirty)) {
+		this._composeView._isDirty = this._wasDirty;
+		delete this._wasDirty;
+	}
+
     var retVal = false;
 	if (!this.isHidden) {
 		this.resetToolbarOperations();
@@ -1763,6 +1769,8 @@ function(draftType, attId, docIds, callback, contactId) {
 
 	if (!this._canSaveDraft()) { return; }
 
+	this._wasDirty = this._composeView._isDirty;
+	this._composeView._isDirty = false;
 	draftType = draftType || ZmComposeController.DRAFT_TYPE_MANUAL;
 
 	var respCallback = this._handleResponseSaveDraftListener.bind(this, draftType, callback);
@@ -1783,8 +1791,6 @@ function(draftType, callback, result) {
 		this._draftType = ZmComposeController.DRAFT_TYPE_MANUAL;
 	}
 //	this._action = ZmOperation.DRAFT;
-
-	this._composeView._isDirty = false;
 
 	if (callback) {
 		callback.run(result);
