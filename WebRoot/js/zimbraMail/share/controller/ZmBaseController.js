@@ -168,6 +168,11 @@ function(actionCode, ev) {
 
 	switch (actionCode) {
 
+		case ZmKeyMap.FLAG:
+            if (isExternalAccount) { break; }
+			this._doFlag(this.getItems());
+			break;
+
 		case ZmKeyMap.MOVE:
             if (isExternalAccount) { break; }
 			if (!appCtxt.isChildWindow) {
@@ -290,8 +295,8 @@ function(view, className) {
 	if (this._toolbar[view]) { return; }
 
 	var buttons = this._getToolBarOps();
-	var secondaryButtons = this._getSecondaryToolBarOps() || [];
-	var rightSideButtons = this._getRightSideToolBarOps() || [];
+	var secondaryButtons = this._getSecondaryToolBarOps();
+	var rightSideButtons = this._getRightSideToolBarOps();
 	if (!(buttons || secondaryButtons)) { return; }
 
 	var tbParams = {
@@ -299,7 +304,6 @@ function(view, className) {
 		buttons:			buttons,
 		secondaryButtons:	secondaryButtons,
 		rightSideButtons: 	rightSideButtons,
-		overrides:          this._getButtonOverrides(buttons.concat(secondaryButtons).concat(rightSideButtons)),
 		context:			view,
 		controller:			this,
 		refElementId:		ZmId.SKIN_APP_TOP_TOOLBAR,
@@ -342,8 +346,6 @@ function(view, className) {
 
 	appCtxt.notifyZimlets("initializeToolbar", [this._app, tb, this, view], {waitUntilLoaded:true});
 };
-
-ZmBaseController.prototype._getButtonOverrides = function(buttons) {};
 
 /**
  * Initializes the view and its listeners.
@@ -632,7 +634,6 @@ function(dlg) {
 		title:			this._getMoveDialogTitle(this._pendingActionData.length, this._pendingActionData),
 		description:	ZmMsg.targetFolder,
 		treeStyle:		DwtTree.SINGLE_STYLE,
-		noRootSelect: 	true, //I don't think you can ever use the "move" dialog to move anything to a root folder... am I wrong?
 		appName:		this._app._name
 	};
 };

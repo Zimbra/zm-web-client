@@ -26,23 +26,12 @@ Ext.define('ZCS.model.contacts.ZtContactReader', {
 
 	getDataFromNode: function(node) {
 
-		var data = {
-				zcsId:  node.id
-			},
+		var data = {},
 			attrs = node._attrs;
 
 		data.type = ZCS.constant.ITEM_CONTACT;
 		if (attrs.type === 'group') {
-            //Check if the group has already been cached and the group members exists.
-            //Use the same, else fetch it from the node.
-            var cachedGroup = ZCS.cache.get(node.id),
-                cachedGroupMembers = cachedGroup && cachedGroup.get('groupMembers');
-
-            if (!cachedGroupMembers || (cachedGroupMembers.length == 0)) {
-                data.groupMembers = this.getGroupMembers(node.m);
-            } else {
-                data.groupMembers = cachedGroupMembers;
-            }
+			data.groupMembers = this.getGroupMembers(node.m);
 	        data.isGroup = true;
             data.nickname = attrs.nickname;
         }
@@ -50,8 +39,6 @@ Ext.define('ZCS.model.contacts.ZtContactReader', {
 			data.folderId = node.l;
 			data = this.parseAttributes(attrs, data);
 		}
-
-		data.tags = ZCS.model.ZtItem.parseTags(node.t, ZCS.constant.APP_CONTACTS);
 
         return data;
 	},
@@ -181,7 +168,7 @@ Ext.define('ZCS.model.contacts.ZtContactReader', {
 			    data.memberPhone = attrs.workPhone || attrs.homePhone || attrs.otherPhone || '';
 			    if (member.type === 'C' || member.type === 'G') {
 				    // TODO: what should we do here? will this happen?
-				    data.zcsId = member.value;
+				    data.itemId = member.value;
 			    }
                 data.memberImageUrl = ZCS.model.contacts.ZtContact.getImageUrl(attrs, member.value);
 		    }

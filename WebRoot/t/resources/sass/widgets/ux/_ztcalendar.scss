@@ -70,7 +70,7 @@ div.more-events {
   @include background(url('/img/zimbra/ImgQuestionMark.png') $invBtnIconPos);
 }
 
-.view-appt-noresponse {
+.view-appt-unknown {
   @extend .view-appt-ptst;
   @include background(url('/img/zimbra/ImgNeedsAction.png') $invBtnIconPos);
 }
@@ -79,25 +79,4 @@ div.more-events {
   @extend .zcs-link;
   padding-left: 0.5em;
   padding-right: 0.5em;
-}
-
-/*Create appointment classes*/
-.zcs-appt-formline {
-	border-bottom: 1px solid $light-grey;
-	min-height: 1.8em;
-}
-
-.zcs-appt-form {
-	background-color: white;
-	background-image: none;
-
-	.x-form-inner {
-	@extend .zcs-appt-formline;
-
-		.zcs-appt-label {
-			background-color: #F7F7F7;
-			padding: 12px;  /*.65em*/
-			text-align: right;
-		}
-	}
 }

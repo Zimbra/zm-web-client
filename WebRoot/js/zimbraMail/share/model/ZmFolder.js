@@ -132,10 +132,9 @@ ZmFolder.QUERY_NAME[ZmFolder.ID_CHATS]			= "chats";
 ZmFolder.QUERY_NAME[ZmFolder.ID_SYNC_FAILURES]	= "Error Reports";
 
 ZmFolder.QUERY_ID = {};
-for (id in ZmFolder.QUERY_NAME) {
+for (var id in ZmFolder.QUERY_NAME) {
 	ZmFolder.QUERY_ID[ZmFolder.QUERY_NAME[id]] = id;
 }
-delete id;
 
 // order within the overview panel
 ZmFolder.SORT_ORDER = {};
@@ -740,22 +739,14 @@ function(){
 ZmFolder.prototype._remoteMoveOk =
 function(folder) {
 	if (!this.isRemote() && folder.isMountpoint && folder.rid) { return true; }
-	if (!this.link || !folder.link || this.getOwner() !== folder.getOwner()) { return false; }
-	if (!this._folderActionOk(this, "isInsert")) {
-		return false;
-	}
-	return this._folderActionOk(folder, "isDelete");
+	if (!this.link || !folder.link || this.zid != folder.zid) { return false; }
+	if (this.id.split(":")[0] != folder.id.split(":")[0]) { return false; }
+	var share = this.shares && this.shares[0];
+	if (!(share && share.isInsert())) { return false; }
+	share = folder.shares && folder.shares[0];
+    return (share && share.isDelete());
 };
 
-ZmFolder.prototype._folderActionOk =
-function(folder, func) {
-	var share = folder.shares && folder.shares[0];
-	if (!share) {
-		//if shares is not set, default to readOnly.
-		return !folder.isReadOnly();
-	}
-	return share[func]();
-};
 /**
  * Returns true if this folder is for outbound mail.
  */

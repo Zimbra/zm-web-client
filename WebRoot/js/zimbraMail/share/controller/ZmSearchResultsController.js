@@ -115,7 +115,6 @@ function(search, resultsCtlr) {
 					resultsApp:	resultsCtlr.getApp().getName()
 				});
 	}
-
 	this._resultsController = resultsCtlr;
 	if (appCtxt.getCurrentViewId().indexOf(this._currentViewId) !== -1) {
 		var elements = {};
@@ -139,7 +138,6 @@ function(search, resultsCtlr) {
 								tabParams:	this._getTabParams()});
 		this._app.pushView(this._currentViewId);
 		this._filterPanel.reset();
-
 		// search tab button menu
 		var button = appCtxt.getAppChooser().getButton(this.tabId);
 		var menu = new DwtMenu({ parent: button	});
@@ -227,10 +225,8 @@ function(ev, zimletEvent) {
 
 // Note the error and then eat it - we don't want to show toast or clear out results
 ZmSearchResultsController.prototype._errorCallback =
-function(ex) {
-	var msg = ZmCsfeException.getErrorMsg(ex.code);
-	msg = msg || ZmMsg.unknownError;
-	this._toolbar.setLabel(msg, true);
+function(ev) {
+	this._toolbar.setLabel(ZmMsg.invalidSearch, true);
 	return true;
 };
 

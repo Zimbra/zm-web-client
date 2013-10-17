@@ -282,7 +282,6 @@ function() {
                 ZmSetting.COMPOSE_INIT_DIRECTION,
                 ZmSetting.SHOW_COMPOSE_DIRECTION_BUTTONS,
 				ZmSetting.FONT_NAME,
-				ZmSetting.FONT_SIZE,
 				ZmSetting.PASSWORD,
 				ZmSetting.SEARCH_INCLUDES_SHARED,
 				ZmSetting.SEARCH_INCLUDES_SPAM,
@@ -690,11 +689,6 @@ function() {
 		displayContainer:	ZmPref.TYPE_FONT
 	});
 
-	ZmPref.registerPref("FONT_SIZE", {
-		displayName:		ZmMsg.selectFontSize, //this was never defined in ZmMsg in the above case (font_name) and see the typo there too. So not sure what's this for.
-		displayContainer:	ZmPref.TYPE_FONT_SIZE
-	});
-
 	var markReadTime = AjxMessageFormat.format(ZmMsg.messageReadTime, DwtId.makeId(ZmId.WIDGET_INPUT, ZmId.OP_MARK_READ));
 	ZmPref.registerPref("MARK_MSG_READ", {
 		displayName:		ZmMsg.messageReadLabel,
@@ -993,7 +987,7 @@ function() {
 	var params = ZmApp.prototype._getOverviewParams.call(this);
 	params.omit = {};
 	params.omit[ZmOrganizer.ID_ZIMLET] = true;
-	params.actionSupported = false;
+
 	return params;
 };
 

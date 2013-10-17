@@ -32,14 +32,13 @@ Ext.define('ZCS.view.mail.ZtMsgListView', {
 		useComponents:      true,
 		defaultType:        'msgview',
 		disableSelection:   true,
-		scrollToTopOnRefresh:   false,		
 		variableHeights:    true,
 		store:              'ZtMsgStore',
 		itemCls:            'zcs-msgview',
 		allowTaps:          true,
 		emptyText:          ZtMsg.selectConv,
 		deferEmptyText:     false,
-		infinite: 			false,
+		infinite: 			true,
 		scrollable: {
 			direction: 'vertical'
 		}
@@ -67,7 +66,7 @@ Ext.define('ZCS.view.mail.ZtMsgListView', {
 				// address bubble
 				if (elm.hasCls('zcs-contact-bubble')) {
 					msgHeader.fireEvent('contactTap', elm, {
-						menuName:   ZCS.constant.MENU_ADDRESS,
+						menuName:   ZCS.constant.MENU_CONTACT,
 						msg:        msg,
 						address:    idParams.address,
 						name:       idParams.name,
@@ -100,10 +99,6 @@ Ext.define('ZCS.view.mail.ZtMsgListView', {
 					msgHeader.fireEvent('toggleView', msgHeader, elm.hasCls('zcs-msgHdr-link'));
 				}
 
-				//Stop this event from triggering a scroll reset.
-				e.preventDefault();
-				return false;
-
 			},
 			element:    'element',
 			delegate:   '.zcs-msg-header',
@@ -133,7 +128,7 @@ Ext.define('ZCS.view.mail.ZtMsgListView', {
 				// address bubble
 				if (elm.hasCls('zcs-contact-bubble')) {
 					msgBody.fireEvent('contactTap', elm, {
-						menuName:   ZCS.constant.MENU_ADDRESS,
+						menuName:   ZCS.constant.MENU_CONTACT,
 						msg:        msg,
 						address:    idParams.address
 					});
@@ -160,19 +155,6 @@ Ext.define('ZCS.view.mail.ZtMsgListView', {
 			scope:      this
 		});
 
-		this.element.on({
-			swipe: function(e) { 
-				if (e.direction === "left") {
-					this.fireEvent('messageSwipeLeft', e);
-				} 
-
-				if (e.direction === "right") {
-					this.fireEvent('messageSwipeRight', e);
-				}
-			},
-			scope: this
-		});
-
 		var scroller = this.getScrollable();
 
 
@@ -197,11 +179,7 @@ Ext.define('ZCS.view.mail.ZtMsgListView', {
             offset = 0,
             i, ln, item, translateY;
 
-        if (typeof items[0] === 'object' &&
-        		typeof items[0].element === 'object' && 
-        			typeof items[0].element.dom === 'object' && 
-        				items[0].element.dom.parentElement &&
-        					items[0].element.dom.parentElement.style["position"] !== "relative") {
+        if (items[0].element.dom.parentElement.style["position"] !== "relative") {
         	items[0].element.dom.parentElement.style["position"] = "relative";
     	}
 
@@ -210,14 +188,11 @@ Ext.define('ZCS.view.mail.ZtMsgListView', {
     	// not registered.
 		for (i = 0, ln = items.length; i < ln; i++) {
             item = items[i];
-
-            if (item.element) {
-	            if (!noAbsolute) {
-			        item.element.forceAbsolutePositioning = true;
-			        item.translate(item.x, item.y);
-			    } else {
-			    	item.element.forceAbsolutePositioning = false;
-		    	}
+            if (!noAbsolute) {
+		        item.element.forceAbsolutePositioning = true;
+		        item.translate(item.x, item.y);
+		    } else {
+		    	item.element.forceAbsolutePositioning = false;
 	    	}
         }
     },
@@ -232,11 +207,8 @@ Ext.define('ZCS.view.mail.ZtMsgListView', {
 
 		this.setAllowTaps(!isReadOnly);
 
-		// Was only needed when list was inifite
-		if (listRef.getInfinite() && listRef.itemsCount) {
-			listRef.handleItemHeights();
-			listRef.refreshScroller(listRef.getScrollable().getScroller());
-		}
+		listRef.handleItemHeights();
+		listRef.refreshScroller(listRef.getScrollable().getScroller());
 	},
 
 	/**

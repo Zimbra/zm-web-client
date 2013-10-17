@@ -85,7 +85,6 @@ Ext.define('ZCS.view.ZtOrganizerList', {
 
 		var list = this.callParent(arguments);
 
-		list.xtype = 'foldersublist';
 		list.grouped = this.getGrouped();
 		list.store.setGrouper(this.getStore().config.grouper);
 
@@ -105,26 +104,5 @@ Ext.define('ZCS.view.ZtOrganizerList', {
 
 	getTitleTextTpl: function(node) {
 		return this.getItemTextTpl(node);
-	}
-});
-
-Ext.define('ZCS.view.ZtOrganizerSubList', {
-
-	extend: 'Ext.dataview.List',
-
-	xtype: 'foldersublist',
-
-	// The two overrides below are so that absolutely nothing happens when the user taps on a
-	// disabled organizer. Don't show the pressed or the selected background color.
-	onItemTrigger: function(me, index) {
-		if (!me.getItemAt(index).getDisabled()) {
-			this.callParent(arguments);
-		}
-	},
-
-	doItemTouchStart: function(me, index, target, record) {
-		if (me.getItemAt(index) && !me.getItemAt(index).getDisabled()) {
-			this.callParent(arguments);
-		}
 	}
 });

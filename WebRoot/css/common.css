@@ -39,16 +39,6 @@
 	@FontFamily-system@
 }
 
-.user_font_size_normal {
-	font-size:@UserFontSize-normal@
-}
-.user_font_size_large {
-	font-size:@UserFontSize-large@
-}
-.user_font_size_larger {
-	font-size:@UserFontSize-larger@
-}
-
 /*
 * HTML elements - use for global declarations
 */
@@ -72,8 +62,8 @@ BODY {
 }
 
 FORM {
-	margin:0px;
-	padding:0px;
+	margin:0;
+	padding:0;
 }
 
 TABLE {
@@ -102,37 +92,40 @@ INPUT[readonly] {
 	@InputField-disabled@
 }
 TEXTAREA {
-	@TextArea@
-	@TextArea-normal@
-#IFDEF SAFARI
-	resize:none;
-#ENDIF
+	@TextArea@ @TextArea-normal@
+	#IFDEF SAFARI
+		resize:none;
+	#ENDIF
 }
 TEXTAREA[readonly] {
 	@TextArea-disabled@
 }
 
 INPUT[type="checkbox"] {
-	@ActiveCursor@
+		@ActiveCursor@
 }
 
 #IFDEF MSIE
 	INPUT {cursor: expression(this.type=="checkbox"?'pointer':''); }
 #ENDIF
 
-/* set for 'text' and 'password' fields explicitly so checkboxes and radio buttons don't get borders */
-INPUT[type="text"],
-INPUT[type="password"] {
-	@InputField@
-	@InputField-normal@
-}
-INPUT[disabled] {
-	@InputField-disabled@
-}
-textarea {
-	@TextArea@
-	@TextArea-normal@
-}
+/* TODO: figure out what we need to do for IE/etc to set the same INPUT styles */
+#IFDEF GECKO
+	/* set for 'text' and 'password' fields explicitly so checkboxes and radio buttons don't get borders */
+	INPUT[type="text"],
+	INPUT[type="password"] {
+		@InputField@
+		@InputField-normal@
+	}
+	INPUT[disabled] {
+		@InputField-disabled@
+	}
+	textarea {
+		@TextArea@
+		@TextArea-normal@
+	}
+#ENDIF
+
 
 
 /*** Syntactic sugar ***/
@@ -460,7 +453,7 @@ TD.vSpace {
 	table-layout:fixed;
 }
 
-.Row TD, .RowDouble TD, .Row DIV, .RowDouble DIV {
+.Row TD, .RowDouble TD {
 	@ListItemText@
 }
 
@@ -469,47 +462,16 @@ TD.vSpace {
 }
 
 .RowDouble TD.SubjectDoubleRow {
-	vertical-align:text-bottom;
-}
-
-.ZmMsgListBottomRowIcon {
-#IFNDEF MSIE_LOWER_THAN_9
-	margin-left: 28px;
-#ENDIF
-#IFDEF MSIE_LOWER_THAN_9
-	margin-left: 18px;
-#ENDIF
-}
-
-.ZmConvExpanded .ZmMsgListBottomRowIcon {
-#IFNDEF MSIE_LOWER_THAN_9
-	margin-left: 50px;
-#ENDIF
-#IFDEF MSIE_LOWER_THAN_9
-	margin-left: 36px;
-#ENDIF
-}
-
-.ZmMsgListSelection .ZmMsgListBottomRowIcon {
-	margin-left: 46px;
-}
-
-.ZmConvExpanded .ZmMsgListSelection .ZmMsgListBottomRowIcon {
-	margin-left: 68px;
+    vertical-align:text-bottom;
 }
 
 #IFDEF MACINTOSH
 #IFDEF WEBKIT
-	.RowDouble TD.SubjectDoubleRow, .RowDouble DIV.SubjectDoubleRow  			{	padding-top:1px; 		}
-	.RowDouble .Unread TD.SubjectDoubleRow, .RowDouble .Unread DIV.SubjectDoubleRow  	{	padding-top:0px; 		}
+	.RowDouble TD.SubjectDoubleRow 			{	padding-top:1px; 		} 
+	.RowDouble .Unread TD.SubjectDoubleRow 	{	padding-top:0px; 		}
 #ENDIF
 #ENDIF
 
-#IFDEF MSIE
-.SubjectDoubleRow {
-	width:100%;
-}
-#ENDIF
 /* list row styles (bgs & border) */
 
 .Row						{	@ListItemContainer-normal@			}
@@ -518,12 +480,8 @@ TD.vSpace {
 
 .selected, 	/* TODO: used? */
 .Row-selected,
-.Row-selected .ZmListFlagsWrapper,
-.Row-selected .ZmMsgListDate,
 .Row-selected-dragProxy,
-.Row-selected-disabled,
-.Row-selected-disabled .ZmMsgListDate,
-.Row-selected-disabled .ZmListFlagsWrapper 		{	@ListItemContainer-selected@		}
+.Row-selected-disabled 		{	@ListItemContainer-selected@		}
 
 /* .Row-matched, */
 .Row-matched-dragProxy 		{ 	@ListItemContainer-matched@		}
@@ -538,26 +496,18 @@ TD.vSpace {
 .Row-dragProxy,
 .Row-matched-dragProxy 		{	@ListItemContainer-dragProxy@		}
 
-.RowDouble-dragProxy .ZmListFlagsWrapper,
-.RowDouble-dragProxy .ZmMsgListDate,
-.Row-dragProxy .ZmListFlagsWrapper,
-.Row-dragProxy .ZmMsgListDate	{	@ListItemContainer-dragProxy@	}
 
 /* list row TD's (eg: text) */
 
-.Row TD, .RowDouble TD,
-.Row DIV, .RowDouble DIV	{	@ListItemText-normal@				}
+.Row TD, .RowDouble TD		{	@ListItemText-normal@				}
 
-.RowOdd TD, .RowOdd DIV		{	@ListItemText-alt@	}
-.RowOdd .ZmMsgListDate, .RowOdd .ZmListFlagsWrapper	{	background-color:@ListItemBgColor-alt@;	}
-
-LI.RowDouble, LI.Row {list-style: none;}
+.RowOdd TD					{	@ListItemText-alt@					}
 
 .selected TD,	/* TODO: used? */
 
 .Row-selected TD,
 .Row-selected-dragProxy TD,
-.Row-selected-disabled TD 	{	@ListItemText-selected@	}
+.Row-selected-disabled TD 	{	@ListItemText-selected@				}
 
 /* .Row-matched TD			 	{ 	@ListItemText-matched@				} */
 

@@ -550,14 +550,12 @@ function(overviewId) {
 		for (var i = 0; i < len; i++) {
 			var treeId = treeIds[i];
 			var treeView = overview.getTreeView(treeId);
-			if (treeView) {
-				var items = treeView.getTreeItemList();
-				var len1 = items.length;
-				for (var j = 0; j < len1; j++) {
-					var treeItem = items[j];
-					if (treeItem._expanded) {
-						expIds.push(treeItem._htmlElId);
-					}
+			var items = treeView.getTreeItemList();
+			var len1 = items.length;
+			for (var j = 0; j < len1; j++) {
+				var treeItem = items[j];
+				if (treeItem._expanded) {
+					expIds.push(treeItem._htmlElId);
 				}
 			}
 		}
@@ -1182,10 +1180,7 @@ function(appName, date) {
 		div.innerHTML = date.getTime();
 		div.style.display = "none";
 		document.body.appendChild(div);
-	}
-	if (window.appDevMode) {
-		console.profile(id);
-	}
+	}	
 };
 
 /**
@@ -1209,8 +1204,5 @@ function(appName, date) {
 		div.innerHTML = date.getTime();
 		div.style.display = "none";
 		document.body.appendChild(div);
-	}
-	if (window.appDevMode) {
-		console.profileEnd();
 	}
 };

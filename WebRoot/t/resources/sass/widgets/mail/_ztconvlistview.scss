@@ -19,31 +19,22 @@ $zcs-mail-topline3: 3.5em;
 $zcs-mail-dateWidth: 5.5em;
 
 .zcs-mail-list {
-	height: 85px;
-	overflow: hidden;
+	min-height: 5.75em;
+	margin: -0.65em -0.8em; /* reverses .x-list-item-body */
+	overflow: hidden; /* necessary? */
 	position: relative;
 }
 
-.zcs-conv-list {
-	.x-list-item {
-		.x-innerhtml {
-			padding:5px !important;
-		}
-	}
-}
-
-/*
+/**
  * Hack to get ios5 to use hardware acceleration and not render improperly.
-
+ */
 .zcs-mail-list * {
 	-webkit-transform: translate3d(0,0,0);
 }
- */
 
 .zcs-mail-list-item {
 	position: absolute;
 }
-
 
 .zcs-mail-list-item-icon {
 	@extend .zcs-mail-list-item;
@@ -66,7 +57,6 @@ $zcs-mail-dateWidth: 5.5em;
 .zcs-mail-senders {
 	@extend .zcs-mail-list-item;
 	@include ellipsis();
-	height: 1.2em;
 	font-size: 1.2em;
 	left: $zcs-mail-indent;
 	right: $zcs-mail-dateWidth+.5em;
@@ -81,10 +71,7 @@ $zcs-mail-dateWidth: 5.5em;
 .zcs-mail-date {
 	@extend .zcs-mail-list-item;
 	@extend .zcs-date;
-	/**
 	@include ellipsis();
-	**/
-	overflow:hidden;
 	right: .5em;
 	top: .4em;
 	white-space: nowrap;
@@ -99,11 +86,7 @@ $zcs-mail-dateWidth: 5.5em;
 
 .zcs-mail-subject {
 	@extend .zcs-mail-list-item;
-	/**
 	@include ellipsis();
-	**/
-	overflow:hidden;
-	max-height: 18px;
 	font-size: 1em;
 	left: $zcs-mail-indent;
 	right: 1.6em;
@@ -136,11 +119,7 @@ $zcs-mail-dateWidth: 5.5em;
 .zcs-mail-fragment {
 	@extend .zcs-mail-list-item;
 	@extend .zcs-fragment;
-	height: 2.6em;
-	/**
 	@include ellipsis();
-	**/
-	overflow:hidden;
 	bottom: .2em;
 	left: $zcs-mail-indent;
 	line-height: 1.3em;

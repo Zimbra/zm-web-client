@@ -127,12 +127,7 @@ Ext.define('ZCS.view.ux.ZtBubbleDropdown', {
 							this.configureStore(value, this.getMenuStore());
 
 							this.getMenuStore().load({
-								callback: function () {
-									//only show the menu if the response we are getting is still the value of the input.
-									if (value === this.getInput().getValue()) {
-										this.loadMenuFromStore.call(this);
-									}
-								},
+								callback: this.loadMenuFromStore,
 								scope: this
 							});
 						} else {
@@ -172,7 +167,7 @@ Ext.define('ZCS.view.ux.ZtBubbleDropdown', {
 	 * on the drop down.
 	 */
 	shouldAutoBubble: function () {
-		return this.menu.isHidden() !== true;
+		return this.menu.isHidden();
 	},
 
 	/**
@@ -196,33 +191,13 @@ Ext.define('ZCS.view.ux.ZtBubbleDropdown', {
 			} else {
 				label = record.get(me.getDropdownDisplayField());
 			}
-            //Add email addresses of individual members in case of a contact group autocomplete
-            var isGroup = record.get('isGroup');
-            if (isGroup) {
-                var contactGroup = ZCS.cache.get(record.get('contactId'));
-                if (contactGroup) {
-                   var members = contactGroup.get('groupMembers'),
-                       groupMembers = [];
-                   for (var i=0; i < members.length; i++) {
-                       var m = members[i],
-                           memberEmail = ZCS.model.mail.ZtEmailAddress.fromEmail(m.memberEmail);
-                       if (memberEmail) {
-                           //Push only valid emails
-                          groupMembers.push(memberEmail);
-                       }
-                   }
-                }
-            }
+
 			menuRecords.push({
 				label: label,
 				listener: function () {
 					me.clearInput();
-                    if (isGroup && groupMembers) {
-                        me.addBubbles(groupMembers);
-                    } else {
-                        me.addBubble(record);
-                    }
-                    me.getInput().dom.value = '';
+					me.addBubble(record);
+					me.getInput().dom.value = '';
 					me.focusInput();
 				}
 			});

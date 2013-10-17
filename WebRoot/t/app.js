@@ -2,12 +2,12 @@
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2012, 2013 Zimbra Software, LLC.
- *
+ * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- *
+ * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
@@ -22,10 +22,8 @@ Ext.Loader.setPath({
 // Load utils and templates
 Ext.require([
 	'ZCS.common.ZtUtil',
-	'ZCS.common.ZtTemplate',
-    'ZCS.common.ZtViewport'
+	'ZCS.common.ZtTemplate'
 ]);
-
 
 //<feature logger>
 Ext.require('ZCS.common.ZtLogger');
@@ -33,19 +31,18 @@ Ext.require('ZCS.common.ZtLogger');
 
 // Define and run the app
 Ext.application({
+
     name: 'ZCS',
 
     requires: [
         'Ext.MessageBox',
-        'ZCS.common.ZtTapRecognizer',
 	    'ZCS.common.ZtHtmlUtil',
 	    'ZCS.common.mail.ZtMailUtil',
 	    'ZCS.common.ZtConstants',
 	    'ZCS.common.ZtTemplate',
 	    'ZCS.common.ZtItemCache',
 	    'ZCS.common.ZtUserSession',
-        'ZCS.common.ZtTimezone',
-        'ZCS.common.calendar.ZtRecurrence'
+        'ZCS.common.ZtTimezone'
     ],
     //<feature logger>
 	logger: {
@@ -69,16 +66,14 @@ Ext.application({
 		'ZCS.controller.ZtMainController',
 		'ZCS.controller.ZtToastController',
 		'ZCS.controller.ZtNotificationController',
-		'ZCS.controller.ZtAssignmentController',
 		'ZCS.controller.mail.ZtConvListController',
 		'ZCS.controller.mail.ZtConvController',
 		'ZCS.controller.mail.ZtMsgController',
 		'ZCS.controller.mail.ZtComposeController',
 		'ZCS.controller.contacts.ZtContactListController',
 		'ZCS.controller.contacts.ZtContactController',
-        'ZCS.controller.calendar.ZtCalendarController',
-        'ZCS.controller.calendar.ZtNewApptController'
-    ],
+        'ZCS.controller.calendar.ZtCalendarController'
+	],
 
     views: ['ZtMain'],
 
@@ -98,16 +93,6 @@ Ext.application({
         '748x1024': 'resources/startup/748x1024.png',
         '1536x2008': 'resources/startup/1536x2008.png',
         '1496x2048': 'resources/startup/1496x2048.png'
-    },
-
-    eventPublishers: {
-    	touchGesture: {
-    		recognizers: {
-    			tap: {
-    				xclass: 'ZCS.common.ZtTapRecognizer'
-    			}
-    		}
-    	}
     },
 
     launch: function() {
@@ -171,13 +156,5 @@ Ext.application({
 
     getCalendarController: function() {
         return this.getController('ZCS.controller.calendar.ZtCalendarController');
-    },
-
-    getAppointmentController: function() {
-        return this.getController('ZCS.controller.calendar.ZtNewApptController');
-    },
-
-    getAssignmentController: function() {
-        return this.getController('ZCS.controller.ZtAssignmentController');
     }
 });

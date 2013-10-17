@@ -1,6 +1,5 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
- * 
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2013 Zimbra Software, LLC.
  * 
@@ -11,7 +10,6 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
  * ***** END LICENSE BLOCK *****
  */
 //@tag foundation,core

@@ -46,6 +46,13 @@ Ext.define('ZCS.controller.ZtItemController', {
 		item: null
 	},
 
+	launch: function () {
+        //<debug>
+		Ext.Logger.verbose('STARTUP: item ctlr launch - ' + ZCS.util.getClassName(this));
+        //</debug>
+		this.callParent();
+	},
+
 	/**
 	 * Clears the content of the toolbar. Hides placeholder text if appropriate.
 	 *
@@ -79,18 +86,6 @@ Ext.define('ZCS.controller.ZtItemController', {
 	},
 
 	doDelete: function() {
-	},
-
-	/**
-	 * Removes the given tag from the item.
-	 *
-	 * @param {String}  tagName     tag name
-	 */
-	doRemoveTag: function(tagName) {
-		var item = this.getItem();
-		if (item && tagName) {
-			this.tagItem(item, tagName, true);
-		}
 	},
 
 	getPlaceholder: function() {
@@ -190,10 +185,6 @@ Ext.define('ZCS.controller.ZtItemController', {
 	 *                                      isDraft     if true, draft is being displayed
 	 */
 	updateToolbar: function(params) {
-		this.updateTitle(params);
-	},
-
-	updateTitle: function (params) {
 		var toolbar = this.getItemPanelToolbar();
 		if (toolbar && params && params.title != null) {
 			toolbar.setTitle(params.title);

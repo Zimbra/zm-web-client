@@ -24,47 +24,50 @@ Ext.define('ZCS.controller.mail.ZtMailItemController', {
 
 	extend: 'ZCS.controller.ZtItemController',
 
+	requires: [
+		'ZCS.view.mail.ZtFolderAssignmentView',
+		'ZCS.view.mail.ZtTagAssignmentView'
+	],
+
 	config: {
 		/**
 		 * This is the mail component which contains the menu that has been triggered.  Since the menu
 		 * implementation is entirely decoupled from its component context, this seems the only reasonable
 		 * way to re-establish that context.
 		 */
-		activeMailComponent:    null,
-
-		app:                    ZCS.constant.APP_MAIL
+		activeMailComponent: null
 	},
 
 	/**
 	 * Launches a move assignment view.
 	 */
 	doMove: function(item) {
-		this.doAssignmentView(item, ZCS.constant.ORG_FOLDER);
+		this.doAssignmentView(item, 'ZCS.view.mail.ZtFolderAssignmentView', ZtMsg.folders, 'folderView');
 	},
 
 	/**
 	 * Launches a tag assignment view.
 	 */
 	doTag: function(item) {
-		this.doAssignmentView(item, ZCS.constant.ORG_TAG);
+		this.doAssignmentView(item, 'ZCS.view.mail.ZtTagAssignmentView', ZtMsg.tags, 'tagView');
 	},
 
 	/**
 	 * Launches an assignment view
-	 *
-	 * @param {ZtMailItem}  item        item being moved or tagged
-	 * @param {String}      type        ZCS.constant.ORG_*
 	 */
-	doAssignmentView: function (item, type) {
+	doAssignmentView: function (item, view, listTitle, viewProp) {
 
-		var targetComp = Ext.Viewport.down('tabpanel'),
+		var targetComp = Ext.Viewport.down('tabpanel'), // TODO: relies on Mail being first app, need to get tabpanel for current app
 			activeComp = this.getActiveMailComponent(),
 			activeList = activeComp.down('list'),
 			activeStore = activeList.getStore(),
 			item = item || this.getItem(),
+			contentHeight,
 			isMessage = item instanceof ZCS.model.mail.ZtMailMsg,
 			convCtlr = ZCS.app.getConvController(),
-			quickReply = !isMessage && convCtlr.getQuickReply();
+			quickReply = convCtlr.getQuickReply()
+			me = this;
+
 
 		if (isMessage) {
 			activeStore.filter('id', item.get('id'));
@@ -72,33 +75,50 @@ Ext.define('ZCS.controller.mail.ZtMailItemController', {
 
 		activeList.setReadOnly(true);
 
-		ZCS.app.getAssignmentController().showAssignmentView(item, type, this.getApp(), this, 'afterAssignment');
+		//TODO, determine why total height calc is failing in position maps now.
+		contentHeight = 400; //activeList.getItemMap().getTotalHeight();
+
+		//To account for the panel header
+		contentHeight += 20;
+
+		activeComp.hideListPanelToggle();
+
+		// TODO: if we're caching assignment views, we will need to update its overview
+		// TODO: when we get notified of organizer changes
+		if (!this[viewProp]) {
+			this[viewProp] = Ext.create(view, {
+				targetElement: targetComp.bodyElement,
+				record: item || this.getItem(),
+				listTitle: listTitle,
+				onAssignmentComplete: function () {
+					me.updateToolbar({
+						hideAll: false
+					});
+
+					activeComp.showListPanelToggle();
+
+					activeList.setReadOnly(false);
+					//undo any filtering we may have done
+					activeStore.clearFilter();
+					if (quickReply) {
+						quickReply.show();
+					}
+
+
+					ZCS.app.fireEvent('rerenderMessages');
+				}
+			});
+		}
+
+		this.updateToolbar({
+			hideAll: true
+		});
 
 		if (quickReply) {
 			quickReply.hide();
 		}
-	},
 
-	/**
-	 * Function to run after assignment has happened.
-	 */
-	afterAssignment: function() {
-
-		var	activeComp = this.getActiveMailComponent(),
-			activeList = activeComp.down('list'),
-			activeStore = activeList.getStore(),
-			convCtlr = ZCS.app.getConvController(),
-			quickReply = convCtlr.getQuickReply();
-
-		activeList.setReadOnly(false);
-
-		//undo any filtering we may have done
-		activeStore.clearFilter();
-		if (quickReply) {
-			quickReply.show();
-		}
-
-		ZCS.app.fireEvent('rerenderMessages');
+		this[viewProp].showWithComponent(activeComp, item, contentHeight);
 	},
 
 	/**
@@ -180,7 +200,7 @@ Ext.define('ZCS.controller.mail.ZtMailItemController', {
 			isDrafts = ZCS.util.folderIs(curFolder, ZCS.constant.ID_DRAFTS);
 
 		if (menu && menu.getItem(ZCS.constant.OP_TAG)) {
-			var tags = ZCS.session.getOrganizerData(ZCS.constant.APP_MAIL, ZCS.constant.ORG_TAG);
+			var tags = ZCS.session.getOrganizerDataByAppAndOrgType(ZCS.constant.APP_MAIL, ZCS.constant.ORG_TAG);
 			menu.enableItem(ZCS.constant.OP_TAG, tags && tags.length > 0);
 		}
 		menu.enableItem(ZCS.constant.OP_REPLY, !isFeed);
@@ -189,12 +209,13 @@ Ext.define('ZCS.controller.mail.ZtMailItemController', {
 	},
 
 	/**
-	 * Applies the given tag to the given mail item.
+	 * Saves the item and tags it.
 	 *
 	 * @param {ZtOrganizer}     tag     tag to apply or remove
 	 * @param {ZtMailitem}      item    item to tag or untag
+	 * @param {Boolean}         remove  if true, remove given tag from the item
 	 */
-	saveItemTag: function (tag, item) {
+	saveItemTag: function (tag, item, remove) {
 		this.tagItem(item, tag.get('name'), false);
 	},
 
@@ -206,7 +227,7 @@ Ext.define('ZCS.controller.mail.ZtMailItemController', {
 	 */
 	saveItemMove: function (folder, item) {
 
-		var folderId = folder.get('zcsId'),
+		var folderId = folder.get('id'),
 			me = this,
 			data = {
 				op:     'move',
@@ -245,7 +266,9 @@ Ext.define('ZCS.controller.mail.ZtMailItemController', {
 	 *
 	 * @param {ZtMailItem}   item     mail item
 	 */
-	doDelete: function(item, isSwipeDelete) {
+	doDelete: function(item) {
+
+		this.lastDeletedItem = item;
 
 		item = item || this.getItem();
 
@@ -256,30 +279,27 @@ Ext.define('ZCS.controller.mail.ZtMailItemController', {
 			};
 
 		this.performOp(item, data, function() {
-			me.processMove(item, ZCS.constant.ID_TRASH, isSwipeDelete);
+			me.processMove(item, ZCS.constant.ID_TRASH);
 		});
 	},
 
 	/**
 	 * If we moved a conv, we can't rely on notifications to figure out that it moved since
-	 * we may not have loaded its messages (the only move notifications that we get are for
+	 * we may not have loaded its messages (the only move notifications that come are for
 	 * messages). So we do it manually if the request succeeded.
 	 *
 	 * @private
 	 */
-	processMove: function(item, folderId, isSwipeDelete) {
+	processMove: function(item, folderId) {
 
 		var isConv = (item.get('type') === ZCS.constant.ITEM_CONVERSATION),
 			toastMsg = isConv ? ZtMsg.moveConversation : ZtMsg.moveMessage,
-			folder = ZCS.cache.get(folderId),
-			folderName = folder && folder.get('displayName');
+			folderName = ZCS.cache.get(folderId).get('displayName');
 
 		if (isConv) {
-			ZCS.app.getConvListController().removeItem(item, isSwipeDelete);
+			ZCS.app.getConvListController().removeConv(item);
 		}
-		if (folderName) {
-			ZCS.app.fireEvent('showToast', Ext.String.format(toastMsg, folderName));
-		}
+		ZCS.app.fireEvent('showToast', Ext.String.format(toastMsg, folderName));
 	},
 
 	/**
@@ -311,23 +331,8 @@ Ext.define('ZCS.controller.mail.ZtMailItemController', {
 	 * @param {ZtMailItem}   item     mail item
 	 */
 	doMarkRead: function(item) {
-
 		item = item || this.getItem();
-
-		var isConv = (item.get('type') === ZCS.constant.ITEM_CONVERSATION),
-			isUnread = item.get('isUnread'),
-			toastMsg;
-
-		if (isConv) {
-			toastMsg = isUnread ? ZtMsg.convMarkedRead : ZtMsg.convMarkedUnread;
-		}
-		else {
-			toastMsg = isUnread ? ZtMsg.messageMarkedRead : ZtMsg.messageMarkedUnread;
-		}
-
-		this.performOp(item, isUnread ? 'read' : '!read', function() {
-			ZCS.app.fireEvent('showToast', toastMsg);
-		});
+		this.performOp(item, item.get('isUnread') ? 'read' : '!read');
 	},
 
 	/**
@@ -336,22 +341,7 @@ Ext.define('ZCS.controller.mail.ZtMailItemController', {
 	 * @param {ZtMailItem}   item     mail item
 	 */
 	doFlag: function(item) {
-
 		item = item || this.getItem();
-
-		var isConv = (item.get('type') === ZCS.constant.ITEM_CONVERSATION),
-			isFlagged = item.get('isFlagged'),
-			toastMsg;
-
-		if (isConv) {
-			toastMsg = isFlagged ? ZtMsg.convUnflagged : ZtMsg.convFlagged;
-		}
-		else {
-			toastMsg = isFlagged ? ZtMsg.messageUnflagged : ZtMsg.messageFlagged;
-		}
-
-		this.performOp(item, isFlagged ? '!flag' : 'flag', function() {
-			ZCS.app.fireEvent('showToast', toastMsg);
-		});
+		this.performOp(item, item.get('isFlagged') ? '!flag' : 'flag');
 	}
 });

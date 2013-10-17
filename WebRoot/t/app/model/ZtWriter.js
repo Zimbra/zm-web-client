@@ -57,14 +57,20 @@ Ext.define('ZCS.model.ZtWriter', {
 			session = !sessionId ? {} : {
 				_content: sessionId,
 				id: sessionId
-			},
-			notifySeq = ZCS.session.getNotifySeq();
+			};
 
 		var json = {
 			Header: {
 				context: {
 					_jsns: 'urn:zimbra',
+					userAgent: {
+						name: Ext.browser.userAgent,
+						version: Ext.browser.version.version
+					},
 					session: session,
+					notify: {
+						seq: ZCS.session.getNotifySeq()
+					},
 					account: {
 						_content: ZCS.session.getAccountName(),
 						by: 'name'
@@ -73,17 +79,6 @@ Ext.define('ZCS.model.ZtWriter', {
 			},
 			Body: {}
 		};
-
-		if (notifySeq > 0) {
-			json.Header.context.notify = { seq: notifySeq };
-		}
-
-		if (method !== 'NoOp') {
-			json.Header.context.userAgent = {
-				name: Ext.browser.userAgent,
-				version: Ext.browser.version.version
-			};
-		}
 
 		var methodName = method + 'Request';
 		json.Body[methodName] = {

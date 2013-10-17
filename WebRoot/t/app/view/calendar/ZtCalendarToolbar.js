@@ -108,10 +108,7 @@ Ext.define('ZCS.view.calendar.ZtCalendarToolbar', {
                         xtype: 'button',
                         cls: 'zcs-flat',
                         iconCls: this.getNewButtonIcon(),
-                        iconMask: true,
-                        handler: function() {
-                            ZCS.app.getAppointmentController().showNewApptForm();
-                        }
+                        iconMask: true
                     }
                 ]
             }

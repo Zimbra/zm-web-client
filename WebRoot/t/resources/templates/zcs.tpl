@@ -2,12 +2,12 @@
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2013 Zimbra Software, LLC.
- *
+ * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- *
+ * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
@@ -22,32 +22,36 @@
 # In general, a template that begins with <tpl> is an XTemplate, and one that does
 # not is an itemTpl.
 
-<template id='ConvListItemTEST'>
-    {subject:htmlEncode}
-</template>
-
 <template id='ConvListItem'>
 	<div class='zcs-mail-list'>
 		<tpl if='isInvite'>
-			<img class='zcs-mail-invitation' src='resources/images/invitation<tpl if='isUnread'>_unread</tpl>.png' />
+		<div class='zcs-mail-invitation'>
+			<img src='/t/resources/images/invitation<tpl if='isUnread'>_unread</tpl>.png' />
+		</div>
 		<tpl else>
-			<img class='zcs-mail-readState' src='resources/images/<tpl if='isUnread'>un</tpl>read.png' />
+		<div class='zcs-mail-readState'>
+			<img src='/t/resources/images/<tpl if='isUnread'>un</tpl>read.png' />
+		</div>
 		</tpl>
 		<div class='zcs-mail-senders<tpl if='isUnread'>-unread</tpl>'>
 			{senders}
 		</div>
 		<div class='zcs-mail-date'>{dateStr}</div>
 		<tpl if='hasAttachment'>
-			<img class='zcs-mail-attachment' src='resources/images/attachment.png' />
+			<div class='zcs-mail-attachment'>
+			<img src='/t/resources/images/attachment.png' />
+		</div>
 		</tpl>
-		<div class='zcs-mail-subject<tpl if='isUnread'>-unread</tpl>'>{subject:htmlEncode}</div>
+		<div class='zcs-mail-subject<tpl if='isUnread'>-unread</tpl>'>{[Ext.String.htmlEncode(values.subject)]}</div>
 		<tpl if='numMsgs &gt; 1'>
 			<span class='zcs-numMsgs'>{numMsgs}</span>
 		</tpl>
 		<tpl if='isFlagged'>
-			<img  class='zcs-mail-flag' src='resources/images/flagged.png' />
+			<div class='zcs-mail-flag'>
+			<img src='/t/resources/images/flagged.png' />
+		</div>
 		</tpl>
-		<div class='zcs-mail-fragment'>{fragment:htmlEncode}</div>
+		<div class='zcs-mail-fragment'>{[Ext.String.htmlEncode(values.fragment)]}</div>
 	</div>
 </template>
 
@@ -64,7 +68,7 @@
 		</div>
 		</tpl>
 		<div class='zcs-msgHdr-date'>{dateStr}</div>
-		<div class='zcs-msgHdr-fragment'>{fragment:htmlEncode}</div>
+		<div class='zcs-msgHdr-fragment'>{[Ext.String.htmlEncode(values.fragment)]}</div>
 	</div>
 	</tpl>
 </template>
@@ -171,10 +175,10 @@
 		</tpl>
 		<div class='zcs-contactList-text'>
 			<tpl if='isGroup'>
-				<div class='zcs-contactList-name'>{nickname:htmlEncode}</div>
+				<div class='zcs-contactList-name'>{nickname}</div>
 			<tpl else>
-				<div class='zcs-contactList-name'>{nameLastFirst:htmlEncode}</div>
-				<div class='zcs-contactList-title'>{job:htmlEncode}</div>
+				<div class='zcs-contactList-name'>{nameLastFirst}</div>
+				<div class='zcs-contactList-title'>{job}</div>
 			</tpl>
 		</div>
 	</div>
@@ -185,7 +189,7 @@
 		<div class='zcs-contactgroupview-header'>
 			<div class='zcs-contactgroupview-image'></div>
 			<div class='zcs-contactgroupview-personalInfo'>
-				<span name="contactname">{nickname:htmlEncode}</span>
+				<span name="contactname">{nickname}</span>
 			</div>
 		</div>
 		<div class='zcs-contactgroupview-members'>
@@ -193,10 +197,10 @@
 				<div class='zcs-contactgroupview-member'>
 					<div class='zcs-contact-image' <tpl if='memberImageUrl'>style='background-image:url({memberImageUrl})'</tpl>></div>
 					<div class='zcs-contact-info'>
-						<span name="contactname">{longName:htmlEncode}</span>
-						<tpl if='jobTitle'><span>{jobTitle:htmlEncode}</span></tpl>
-						<span>{memberEmail:htmlEncode}</span>
-						<span>{memberPhone:htmlEncode}</span>
+						<span name="contactname">{longName}</span>
+						<tpl if='jobTitle'><span>{jobTitle}</span></tpl>
+						<span>{memberEmail}</span>
+						<span>{memberPhone}</span>
 					</div>
 				</div>
 			</tpl>
@@ -205,28 +209,18 @@
 		<div class='zcs-contactview-header'>
 			<div class='zcs-contactview-image' style='{imageStyle}'></div>
 			<div class='zcs-contactview-personalInfo'>
-				<span name="contactname">{fullName:htmlEncode}</span>
-				<tpl if='jobTitle'><span>{jobTitle:htmlEncode}</span></tpl>
-				<tpl if='company'><span>{company:htmlEncode}</span></tpl>
+				<span name="contactname">{fullName}</span>
+				<tpl if='jobTitle'><span>{jobTitle}</span></tpl>
+				<tpl if='company'><span>{company}</span></tpl>
 			</div>
 		</div>
-		<tpl if='tags && tags.length'>
-			<div>
-				<tpl for='tags'>
-					<span class='zcs-area-bubble zcs-tag-bubble' id='{id}'>
-						<div class="zcs-tag-small zcs-tag-{color}" tagName="{name}" <tpl if='rgb'>style='background-color: {rgb};'</tpl>></div>
-						{displayName}
-					</span>
-				</tpl>
-			</div>
-		</tpl>
 		<div class='zcs-contactview-fieldSets'>
 			<tpl if='email'>
 				<div class='zcs-contactview-fieldSet'>
 					<div class='zcs-contactview-label'>{[ZtMsg.email]}</div>
 					<div class='zcs-contactview-fields'>
 						<tpl for='email'>
-							<div class='zcs-contactview-field'>{email:htmlEncode}</div>
+							<div class='zcs-contactview-field'>{email}</div>
 							<div class='zcs-contactview-subLabel'>{typeStr}</div>
 						</tpl>
 					</div>
@@ -237,7 +231,7 @@
 					<div class='zcs-contactview-label'>{[ZtMsg.phone]}</div>
 					<div class='zcs-contactview-fields'>
 						<tpl for='phone'>
-							<div class='zcs-contactview-field'><a href="tel:{phone:htmlEncode}">{phone:htmlEncode}</a></div>
+							<div class='zcs-contactview-field'><a href="tel:{phone}">{phone}</a></div>
 							<div class='zcs-contactview-subLabel'>{typeStr}</div>
 						</tpl>
 					</div>
@@ -250,13 +244,13 @@
 						<tpl for='address'>
 							<div class='zcs-contactview-field'>
 								<tpl if='mapAddr'><a href='http://maps.apple.com/?q={mapAddr}'></tpl>
-									<span class='zcs-contactview-street'>{street:htmlEncode}</span>
+									<span class='zcs-contactview-street'>{street}</span>
 									<tpl if='city'>
-										<span class='zcs-contactview-city'>{city:htmlEncode},&nbsp</span>
+										<span class='zcs-contactview-city'>{city},&nbsp</span>
 									</tpl>
-									<span class='zcs-contactview-state'>{state:htmlEncode}&nbsp</span>
-									<span class='zcs-contactview-postalcode'>{postalCode:htmlEncode}</span>
-									<span class='zcs-contactview-country'>{country:htmlEncode}</span>
+									<span class='zcs-contactview-state'>{state}&nbsp</span>
+									<span class='zcs-contactview-postalcode'>{postalCode}</span>
+									<span class='zcs-contactview-country'>{country}</span>
 								<tpl if='mapAddr'></a></tpl>
 							</div>
 							<div class='zcs-contactview-subLabel'>{typeStr}</div>
@@ -269,7 +263,7 @@
 					<div class='zcs-contactview-label'>{[ZtMsg.url]}</div>
 					<div class='zcs-contactview-fields'>
 						<tpl for='url'>
-							<div class='zcs-contactview-field'>{url:htmlEncode}</div>
+							<div class='zcs-contactview-field'>{url}</div>
 							<div class='zcs-contactview-subLabel'>{typeStr}</div>
 						</tpl>
 					</div>
@@ -334,12 +328,6 @@
 				</td>
 			</tr>
 
-			</tpl>
-			<tpl if='recurrence'>
-			    <tr>
-			        <td class='zcs-invite-label'>{[ZtMsg.invRecurLabel]}</td>
-			        <td>{recurrence}</td>
-			    </tr>
 			</tpl>
 			<tpl if='attendeeResponse && attendeeResponseMsg'>
 				<tr>
@@ -482,7 +470,7 @@
 		</tpl>
 
 		<tpl if='attendee.ptst == [ZCS.constant.PSTATUS_UNKNOWN]'>
-			<span class="view-appt-noresponse"> {[ZtMsg.noresponse]} </span>
+			<span class="view-appt-unknown"> {[ZtMsg.unknown]} </span>
 		</tpl>
 	</tpl>
 </template>
@@ -534,44 +522,13 @@
 				</tr>
 			</tpl>
 
-            <tpl if='myResponse'>
-                <tr class='zcs-invite-buttons'>
-                    <td class='zcs-invite-label'>{[ZtMsg.invRespondLabel]}</td>
-                    <td>
-                        <tpl if='myResponse == [ZCS.constant.PSTATUS_TEXT[ZCS.constant.PSTATUS_ACCEPTED]]'>
-                            <span class='zcs-invite-button zcs-accept-inactive'>{[ZtMsg.acceptAction]}</span>
-                        <tpl else>
-                            <span class='zcs-invite-button zcs-invite-accept' id='{invAcceptButtonId}'>{[ZtMsg.acceptAction]}</span>
-                        </tpl>
-
-                        <tpl if='myResponse == [ZCS.constant.PSTATUS_TEXT[ZCS.constant.PSTATUS_TENTATIVE]]'>
-                            <span class='zcs-invite-button zcs-tentative-inactive'>{[ZtMsg.tentativeAction]}</span>
-                        <tpl else>
-                            <span class='zcs-invite-button zcs-invite-tentative' id='{invTentativeButtonId}'>{[ZtMsg.tentativeAction]}</span>
-                        </tpl>
-
-                        <tpl if='myResponse == [ZCS.constant.PSTATUS_TEXT[ZCS.constant.PSTATUS_DECLINED]]'>
-                            <span class='zcs-invite-button zcs-decline-inactive'>{[ZtMsg.declineAction]}</span>
-                        <tpl else>
-                            <span class='zcs-invite-button zcs-invite-decline' id='{invDeclineButtonId}'>{[ZtMsg.declineAction]}</span>
-                        </tpl>
-                    </td>
-                </tr>
-            </tpl>
 
 			<tpl if='reminder'>
 				<tr>
 					<td class='zcs-invite-label'>{[ZtMsg.invReminderLabel]}</td>
-					<td>{reminder} {[ZtMsg.invReminderText]}</td>
+					<td>{reminder}</td>
 				</tr>
 			</tpl>
-
-			<tpl if='recurrence'>
-                <tr>
-                    <td class='zcs-invite-label'>{[ZtMsg.invRecurLabel]}</td>
-                    <td>{recurrence}</td>
-                </tr>
-            </tpl>
 
 		</table>
 

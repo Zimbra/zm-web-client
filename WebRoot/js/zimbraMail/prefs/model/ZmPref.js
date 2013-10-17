@@ -44,7 +44,6 @@ ZmPref.TYPE_SHORTCUTS		= "SHORTCUTS";
 ZmPref.TYPE_CUSTOM			= "CUSTOM";
 ZmPref.TYPE_LOCALES			= "LOCALES";
 ZmPref.TYPE_FONT			= "FONT";
-ZmPref.TYPE_FONT_SIZE		= "FONT_SIZE";
 
 ZmPref.ORIENT_VERTICAL		= "vertical";
 ZmPref.ORIENT_HORIZONTAL	= "horizontal";
@@ -142,7 +141,7 @@ function(value) {
 ZmPref.validatePollingInterval =
 function(interval) {
 	var minimum = appCtxt.get(ZmSetting.MIN_POLLING_INTERVAL);
-	if (interval && (!minimum || interval >= minimum)) {
+	if (interval && minimum && interval >= minimum) {
 		return true;
 	} else {
 		var min = minimum / 60;

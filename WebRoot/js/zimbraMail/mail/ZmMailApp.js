@@ -109,13 +109,11 @@ ZmMailApp.INC_MAP[ZmSetting.INC_SMART_HDR]		= [ZmSetting.INC_SMART, false, true]
 ZmMailApp.INC_MAP[ZmSetting.INC_SMART_PRE_HDR]	= [ZmSetting.INC_SMART, true, true];
 
 ZmMailApp.INC_MAP_REV = {};
-for (i in ZmMailApp.INC_MAP) {
-	key = (i == ZmSetting.INC_NONE || i == ZmSetting.INC_ATTACH) ? ZmMailApp.INC_MAP[i][0] :
+for (var i in ZmMailApp.INC_MAP) {
+	var key = (i == ZmSetting.INC_NONE || i == ZmSetting.INC_ATTACH) ? ZmMailApp.INC_MAP[i][0] :
 			  														   ZmMailApp.INC_MAP[i].join("|");
 	ZmMailApp.INC_MAP_REV[key] = i;
 }
-delete i;
-delete key;
 
 ZmMailApp._setGroupByMaps =
 function() {
@@ -202,7 +200,6 @@ function(settings) {
 	settings.registerSetting("MAIL_NOTIFY_TOASTER",				{name:"zimbraPrefMailToasterEnabled", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false, isGlobal:true});
 	settings.registerSetting("MAIL_PRIORITY_ENABLED",			{name:"zimbraFeatureMailPriorityEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	settings.registerSetting("MAIL_READ_RECEIPT_ENABLED",		{name:"zimbraFeatureReadReceiptsEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
-	settings.registerSetting("MAIL_SEND_LATER_ENABLED",			{name:"zimbraFeatureMailSendLaterEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	settings.registerSetting("MAIL_SEND_READ_RECEIPTS",			{name:"zimbraPrefMailSendReadReceipts", type:ZmSetting.T_PREF, dataType:ZmSetting.D_STRING, defaultValue:"never"});
 	settings.registerSetting("MAIL_WHITELIST",					{type: ZmSetting.T_PREF, dataType: ZmSetting.D_LIST});
 	settings.registerSetting("MAIL_WHITELIST_MAX_NUM_ENTRIES",	{name:"zimbraMailWhitelistMaxNumEntries", type: ZmSetting.T_COS, dataType: ZmSetting.D_INT, defaultValue:100});
@@ -1622,7 +1619,7 @@ function(params, callback) {
 ZmMailApp.prototype._handleLoadLaunch =
 function(params, callback) {
 	// set type for initial search
-	this._groupBy = (appCtxt.isWebClientOffline()) ? ZmSetting.GROUP_BY_MESSAGE : appCtxt.get(ZmSetting.GROUP_MAIL_BY);
+	this._groupBy = appCtxt.get(ZmSetting.GROUP_MAIL_BY);
 
 	var query;
 	params = params || {};
@@ -1730,9 +1727,8 @@ function(query, callback, response, type) {
 	}
 	else if(appCtxt.isExternalAccount()) {
         query = "inid:" + this.getDefaultFolderId();
-    } else if (appCtxt.isWebClientOffline()) {
-        query = query || "in:inbox";
-    } else {
+    }
+    else {
 		query = query || appCtxt.get(ZmSetting.INITIAL_SEARCH, null, account);
 	}
 
@@ -1748,7 +1744,6 @@ function(query, callback, response, type) {
 		limit:				this.getLimit(),
 		getHtml:			appCtxt.get(ZmSetting.VIEW_AS_HTML, null, account),
 		noUpdateOverview:	noUpdateOverview,
-        offlineCache:       true,
 		accountName:		(account && account.name),
 		callback:			callback,
 		response:			response,
@@ -1764,6 +1759,8 @@ function(params) {
 	if (!appCtxt.inStartup && (appCtxt.get(ZmSetting.READING_PANE_LOCATION) != ZmSetting.RP_OFF)) {
 		params.fetch = true;
 	}
+	AjxDispatcher.require("MailCore");
+    params.headers = ZmMailMsg.requestHeaders;
 	return params;
 };
 
@@ -1979,7 +1976,7 @@ function(sessionId) {
  */
 ZmMailApp.prototype.getMailListController =
 function() {
-	var groupMailBy = appCtxt.get(ZmSetting.GROUP_MAIL_BY) ;
+	var groupMailBy = appCtxt.get(ZmSetting.GROUP_MAIL_BY);
 	return (groupMailBy == ZmSetting.GROUP_BY_CONV) ? AjxDispatcher.run("GetConvListController") :
 													  AjxDispatcher.run("GetTradController");
 };
@@ -2368,9 +2365,4 @@ ZmMailApp.prototype._checkVacationReplyEnabled = function(){
 	ynDialog.registerCallback(DwtDialog.YES_BUTTON, ZmMailApp._handleOOORemindResponse, null, [ynDialog, true]);
 	ynDialog.registerCallback(DwtDialog.NO_BUTTON, ZmMailApp._handleOOORemindResponse, null, [ynDialog, false]);
 	ynDialog.popup();
-};
-
-ZmMailApp.prototype._createVirtualFolders =
-function() {
-    ZmOffline.addOutboxFolder();
 };

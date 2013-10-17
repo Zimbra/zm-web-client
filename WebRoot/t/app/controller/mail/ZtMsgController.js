@@ -48,12 +48,6 @@ Ext.define('ZCS.controller.mail.ZtMsgController', {
 				toggleQuotedText:   'doToggleQuotedText',
 				loadEntireMessage:  'doLoadEntireMessage',
 				addressTouch:       'doComposeToAddress'
-			},
-			'.moveview': {
-				messageAssignment: 'saveItemMove'
-			},
-			'.tagview': {
-				messageAssignment: 'saveItemTag'
 			}
 		},
 
@@ -90,7 +84,7 @@ Ext.define('ZCS.controller.mail.ZtMsgController', {
 	doToggleView: function(msgHeader, detailsTapped) {
 
 		var msgView = msgHeader.up('msgview'),
-			msg = msgView.getMsg(),
+			msg = msgView.getRecord(),
 			curExpanded = msgView.getExpanded(),
 			curState = msgView.getState(),
 			newExpanded, newState;
@@ -101,46 +95,24 @@ Ext.define('ZCS.controller.mail.ZtMsgController', {
 		else {
 			newState = (curState === ZCS.constant.HDR_EXPANDED) ? ZCS.constant.HDR_DETAILED : ZCS.constant.HDR_EXPANDED;
 		}
-		
 		newExpanded = (newState !== ZCS.constant.HDR_COLLAPSED);
-
-		msgView.setExpanded(newState === ZCS.constant.HDR_EXPANDED || newState === ZCS.constant.HDR_DETAILED);
-		
+		msgView.setExpanded(newExpanded);
 		msgView.setState(newState);
-
 		//<debug>
         Ext.Logger.info("Header state: " + newState + " (" + newExpanded + ")");
         //</debug>
-
-        msgView.updateExpansion();
-    	msgView.renderHeader();
-
-		if (newExpanded && msg && !msg.get('isLoaded')) {	
+		if (newExpanded && msg && !msg.get('isLoaded')) {
 			msg.save({
 				op: 'load',
 				id: msg.getId(),
 				success: function() {
-					if (newExpanded) {
-						msgView.renderBody();
-						if (!msgView.usingIframe()) {
-							msgView.updateHeight();
-						} 
-					} else {
-						msgView.updateHeight();				
-					}
+					msgView.render(msg);
+					msgView.updateHeight();
 				}
 			});
-		}	
+		}
 		else {
-			//The body might not be rendered if we are going to expanded from not expanded.
-			if (newExpanded) {
-				msgView.renderBody();
-				if (!msgView.usingIframe()) {
-					msgView.updateHeight();
-				} 
-			} else {
-				msgView.updateHeight();				
-			}
+			msgView.refreshView();
 		}
 	},
 
@@ -148,31 +120,19 @@ Ext.define('ZCS.controller.mail.ZtMsgController', {
 
 		this.setItem(params.msg);
 		this.setActiveMailComponent(menuButton.up('.itempanel'));
-        this.callParent(arguments);
+		this.callParent(arguments);
 
-		var menuName = params.menuName,
-            menu = this.getMenu(menuName);
-
-        if (menu && menuName === ZCS.constant.MENU_ADDRESS) {
-            //The menu config(Add/Edit contact) depends on whether or not the contact already exists.
-            //Set the menu items every time the user taps on the address.
-            this.setMenuItems(menuName);
-        }
-
+		var menu = this.getMenu(params.menuName);
 		if (menu) {
-            if (params.address) {
+			if (params.address) {
 				menu.setArgs(ZCS.constant.OP_COMPOSE, [ params.address ]);
-				menu.setArgs(ZCS.constant.OP_SEARCH, [ params.address ]);
 			}
 			if (params.addrObj && menu.getItem(ZCS.constant.OP_ADD_CONTACT)) {
 				menu.setArgs(ZCS.constant.OP_ADD_CONTACT, [ params.addrObj ]);
 			}
-            if (params.addrObj && menu.getItem(ZCS.constant.OP_EDIT)) {
-                menu.setArgs(ZCS.constant.OP_EDIT, [ params.addrObj ]);
-            }
-            if (params.tagName) {
-                menu.setArgs(ZCS.constant.OP_REMOVE_TAG, [ params.tagName ]);
-            }
+		}
+		if (menu && params.tagName) {
+			menu.setArgs(ZCS.constant.OP_REMOVE_TAG, [ params.tagName ]);
 		}
 	},
 
@@ -182,37 +142,20 @@ Ext.define('ZCS.controller.mail.ZtMsgController', {
 	 */
 	getMenuConfig: function(menuName) {
 
-		if (menuName === ZCS.constant.MENU_ADDRESS) {
+		if (menuName === ZCS.constant.MENU_CONTACT) {
 			var menuData = [];
 			if (ZCS.constant.IS_ENABLED[ZCS.constant.APP_CONTACTS]) {
-                var msg = this.getItem(),
-                    fromAddr = msg.getAddressByType(ZCS.constant.FROM),
-                    cachedAddr = ZCS.cache.get(fromAddr && fromAddr.get('email'), 'email');
-                if (cachedAddr) {
-                    menuData.push({
-                        label:      ZtMsg.editContact,
-                        action:     ZCS.constant.OP_EDIT,
-                        listener:   'doEditContact'
-                    });
-                } else {
-                    menuData.push({
-                        label:      ZtMsg.addContact,
-                        action:     ZCS.constant.OP_ADD_CONTACT,
-                        listener:   'doAddContact'
-                    });
-                }
-			}
-			menuData.push(
-				{
-					label:      ZtMsg.newMessage,
-					action:     ZCS.constant.OP_COMPOSE,
-					listener:   'doCompose'
-				},
-				{
-					label:      ZtMsg.search,
-					action:     ZCS.constant.OP_SEARCH,
-					listener:   'doSearch'
+				menuData.push({
+					label:      ZtMsg.addContact,
+					action:     ZCS.constant.OP_ADD_CONTACT,
+					listener:   'doAddContact'
 				});
+			}
+			menuData.push({
+				label:      ZtMsg.newMessage,
+				action:     ZCS.constant.OP_COMPOSE,
+				listener:   'doCompose'
+			});
 			return menuData;
 		}
 		else {
@@ -287,6 +230,13 @@ Ext.define('ZCS.controller.mail.ZtMsgController', {
 		}
 	},
 
+	doRemoveTag: function(tagName) {
+		var msg = this.getItem();
+		if (msg && tagName) {
+			this.tagItem(msg, tagName, true);
+		}
+	},
+
 	doToggleQuotedText: function(msgBody) {
 		var msgView = msgBody.up('msgview'),
 			msg = msgView.getMsg();
@@ -317,22 +267,6 @@ Ext.define('ZCS.controller.mail.ZtMsgController', {
 
 	doAddContact: function(addr) {
 		ZCS.app.getContactController().showContactForm(ZCS.constant.OP_COMPOSE, ZCS.model.contacts.ZtContact.fromEmailObj(addr));
-	},
-
-    doEditContact: function(addr) {
-        var contact = ZCS.cache.get(addr.get('email'), 'email'),
-            contactCtrl = ZCS.app.getContactController();
-        contactCtrl.setItem(contact);
-        contactCtrl.showContactForm(ZCS.constant.OP_EDIT, contact);
-    },
-
-	/**
-	 * Searches for mail from the given sender.
-	 *
-	 * @param {String}  addr    email address
-	 */
-	doSearch: function(addr) {
-		ZCS.app.getConvListController().doSearch('from:' + addr);
 	},
 
 	doLoadEntireMessage: function(msg, msgBody) {
@@ -370,5 +304,22 @@ Ext.define('ZCS.controller.mail.ZtMsgController', {
 		else {
 			this.callParent(arguments);
 		}
+	},
+
+	/**
+	 * Nothing changes in the UI when flagging a message, so show toast.
+	 *
+	 * @param {ZtMailItem}   item     mail item
+	 */
+	doFlag: function(item) {
+
+		item = item || this.getItem();
+
+		var isFlagged = item.get('isFlagged'),
+			toastMsg = isFlagged ? ZtMsg.messageUnflagged : ZtMsg.messageFlagged;
+
+		this.performOp(item, isFlagged ? '!flag' : 'flag', function() {
+			ZCS.app.fireEvent('showToast', toastMsg);
+		});
 	}
 });

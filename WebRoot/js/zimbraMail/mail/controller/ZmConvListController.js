@@ -54,6 +54,7 @@ ZmMailListController.GROUP_BY_MSG_KEY[ZmId.VIEW_CONVLIST]	= "byConversation";
 ZmMailListController.GROUP_BY_SHORTCUT[ZmId.VIEW_CONVLIST]	= ZmKeyMap.VIEW_BY_CONV;
 ZmMailListController.GROUP_BY_VIEWS.push(ZmId.VIEW_CONVLIST);
 
+
 // Public methods
 
 ZmConvListController.getDefaultViewType =
@@ -112,7 +113,7 @@ function(view, force) {
 // Internally we manage two maps, one for CLV and one for CV2 (if applicable)
 ZmConvListController.prototype.getKeyMapName =
 function() {
-	if (this._convView && this._convView.isActiveQuickReply()) { //if user is quick replying, don't use the mapping of conv/mail list - so Ctrl+Z works
+	if (this._convView.isActiveQuickReply()) { //if user is quick replying, don't use the mapping of conv/mail list - so Ctrl+Z works
 		return ZmKeyMap.MAP_QUICK_REPLY;
 	}
 	return ZmKeyMap.MAP_CONVERSATION_LIST;
@@ -194,25 +195,20 @@ function(actionCode, ev) {
 			return DwtListView.prototype.handleKeyAction.apply(mlv, arguments);
 
 		// these are for quick reply
+		case ZmKeyMap.CANCEL:
+			var itemView = this.getItemView();
+			if (itemView && itemView._cancelListener) {
+				itemView._cancelListener();
+			}
+			break;
+		
 		case ZmKeyMap.SEND:
 			var itemView = this.getItemView();
 			if (itemView && itemView._sendListener) {
 				itemView._sendListener();
 			}
 			break;
-
-		// do this last since we want CANCEL to bubble up if not handled
-		case ZmKeyMap.CANCEL:
-			var itemView = this.getItemView();
-			if (itemView && itemView._cancelListener && itemView._replyView && itemView._replyView.getVisible()) {
-				itemView._cancelListener();
-				break;
-			}
-            else{
-                this._backListener();  //Bug: 83244 - need to close conv window after pressing 'Esc' key.
-                break;
-            }
-
+			
 		default:
 			return ZmDoublePaneController.prototype.handleKeyAction.apply(this, arguments);
 	}
@@ -517,7 +513,7 @@ function() {
 				var terms = ["underid:" + rootFolderId];
 				var search = this._currentSearch;
 				if (search) {
-					var foldersToExclude = ZmMailListController.FOLDERS_TO_OMIT;
+					var foldersToExclude = [ZmFolder.ID_TRASH, ZmFolder.ID_SPAM];
 					for (var i = 0; i < foldersToExclude.length; i++) {
 						var folderId = foldersToExclude[i];
 						if (acctId) {

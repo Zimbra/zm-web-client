@@ -31,7 +31,7 @@ Ext.define('ZCS.view.ZtItemPanel', {
 	xtype: 'itempanel',
 
 	config: {
-		layout: 'vbox',
+		layout: 'fit',
 		cls:    'zcs-item-panel',
 		app:    null
 	},
@@ -85,20 +85,11 @@ Ext.define('ZCS.view.ZtItemPanel', {
 		};
 
 		var itemView = {
-			xtype: app + 'itemview',
-			flex: 1
-		};
-
-		var titleBar = {
-			xtype: 'component',
-			itemId: 'itemTitleOnlyBar',
-			cls: 'zcs-conv-title-bar',
-			height: app === ZCS.constant.APP_MAIL ? 30 : 0
+			xtype: app + 'itemview'
 		};
 
 		this.add([
 			toolbar,
-			titleBar,
 			itemView
 		]);
 
@@ -154,10 +145,5 @@ Ext.define('ZCS.view.ZtItemPanel', {
 	showListPanelToggle: function () {
 		var listpanelToggle = this.down('#listpanelToggle');
 		listpanelToggle.show();
-	},
-
-	isListPanelToggleHidden: function() {
-		var listpanelToggle = this.down('#listpanelToggle');
-		return listpanelToggle.isHidden();
 	}
 });

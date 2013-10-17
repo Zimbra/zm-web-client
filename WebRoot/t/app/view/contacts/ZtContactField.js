@@ -41,10 +41,7 @@ Ext.define('ZCS.view.contacts.ZtContactField', {
 		bubbleDisplayField: 'longName',
 
 		menuItemTpl: [
-            '<tpl if="displayName">',
-            '<span class="zcs-auto-complete-name">{displayName}</span>',
-            '</tpl>',
-            '<tpl if="name">',
+			'<tpl if="name">',
 			'<span class="zcs-auto-complete-name">{name}</span>',
 			'</tpl>',
 			'<tpl if="email">',

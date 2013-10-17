@@ -33,15 +33,7 @@ ZmTaskEditView = function(parent, controller) {
     this._view = controller.getCurrentViewId();
 	this._sessionId = controller.getSessionId();
 
-	var idParams = {
-		skinComponent:  ZmId.SKIN_APP_MAIN,
-		app:            ZmId.APP_TASKS,
-		componentType:  ZmId.WIDGET_VIEW,
-		componentName:  ZmId.VIEW_TASKEDIT
-	};
-
-	var domId = ZmId.create(idParams, "A task editing view");
-    ZmCalItemEditView.call(this, parent, null, controller, null, DwtControl.ABSOLUTE_STYLE, "ZmTaskEditView", domId);
+    ZmCalItemEditView.call(this, parent, null, controller, null, DwtControl.ABSOLUTE_STYLE, "ZmTaskEditView", ZmId.getViewId(this._view));
 };
 
 ZmTaskEditView.prototype = new ZmCalItemEditView;
@@ -388,7 +380,7 @@ function(width) {
 	// add location
 	var params = {parent: this, type: DwtInputField.STRING};
 	this._location = new DwtInputField(params);
-	Dwt.setSize(this._location.getInputElement(), width, "2rem");
+	Dwt.setSize(this._location.getInputElement(), width, "22px");
 	this._location.reparentHtmlElement(this._htmlElId + "_location");
 
 	// add priority DwtButton
@@ -416,7 +408,7 @@ function(width) {
     };
     this._pCompleteSelectInput = new DwtInputField(params);
     var pCompleteInputEl = this._pCompleteSelectInput.getInputElement();
-    Dwt.setSize(pCompleteInputEl, Dwt.DEFAULT, "2rem");
+    Dwt.setSize(pCompleteInputEl, Dwt.DEFAULT, "22px");
     pCompleteInputEl.onblur = AjxCallback.simpleClosure(this._handleCompleteOnBlur, this, pCompleteInputEl);
 
     var pCompleteButtonListener = new AjxListener(this, this._pCompleteButtonListener);

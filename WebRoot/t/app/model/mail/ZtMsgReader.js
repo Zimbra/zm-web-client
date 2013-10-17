@@ -39,7 +39,7 @@ Ext.define('ZCS.model.mail.ZtMsgReader', {
 		var data = {},
 			ctxt;
 
-		data.zcsId          = node.id;
+		data.itemId         = node.id;
 		data.type           = ZCS.constant.ITEM_MESSAGE;
 		data.folderId       = node.l;
 		data.fragment       = node.fr;
@@ -57,7 +57,7 @@ Ext.define('ZCS.model.mail.ZtMsgReader', {
 		data.dateStr = ZCS.util.getRelativeDateString(node.d);
 		data.fullDateStr = Ext.Date.format(new Date(node.d), 'F j, Y g:i:s A');
 
-		data.tags = ZCS.model.ZtItem.parseTags(node.t, ZCS.constant.APP_MAIL);
+		data.tags = ZCS.model.ZtItem.parseTags(node.t);
 
 		if (node.mp) {
 			ctxt = {
@@ -75,8 +75,7 @@ Ext.define('ZCS.model.mail.ZtMsgReader', {
 			data.isLoaded = false;
 		}
 
-        // Fix for bug: 83398. Checking if invite is empty
-		if (node.inv && (Object.keys(node.inv[0]).length !== 0)) {
+		if (node.inv) {
 
             var invite = ZCS.model.mail.ZtInvite.fromJson(node.inv[0], node.id);
  			data.invite = Ext.Object.merge({}, invite, {});
@@ -101,7 +100,7 @@ Ext.define('ZCS.model.mail.ZtMsgReader', {
 		var records = [],
 			ln = root.length, i,
 			curFolder = ZCS.session.getCurrentSearchOrganizer(),
-			curFolderId = curFolder ? curFolder.get('zcsId') : '';
+			curFolderId = curFolder ? curFolder.get('itemId') : '';
 
 		// Process each msg from JSON to data
 		for (i = 0; i < ln; i++) {

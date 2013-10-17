@@ -140,7 +140,7 @@ function() {
     if (appCtxt.isExternalAccount()) {
         return [];
     }
-	return [ZmOperation.NEW_TASK_FOLDER, ZmOperation.FIND_SHARES];
+	return [ZmOperation.NEW_TASK_FOLDER];
 };
 
 // Returns a list of desired action menu operations

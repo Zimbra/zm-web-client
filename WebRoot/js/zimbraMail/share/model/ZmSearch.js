@@ -454,13 +454,10 @@ function(params) {
 			asyncMode:true,
 			callback:respCallback,
 			errorCallback:params.errorCallback,
-            offlineCallback:params.offlineCallback,
 			timeout:params.timeout,
-            offlineCache:params.offlineCache,
 			noBusyOverlay:params.noBusyOverlay,
 			response:this.response,
-			accountName:this.accountName,
-            offlineRequest:params.offlineRequest
+			accountName:this.accountName
 		};
 		return appCtxt.getAppController().sendRequest(searchParams);
 	}
@@ -1290,7 +1287,7 @@ function() {
 			} else if (t.op == "tag") {
 				tagId = this._getTagId(t.arg, true);
 				if (tagId) {
-					func.push("item.hasTag('" + t.arg + "')");
+					func.push("item.hasTag('" + tagId + "')");
 				}
 			} else if (t.op == "is") {
 				var test = ZmParsedQuery.FLAG[t.arg];

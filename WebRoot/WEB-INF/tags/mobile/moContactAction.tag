@@ -1,7 +1,7 @@
 <%--
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2008, 2009, 2010, 2011, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
@@ -134,7 +134,7 @@
     <c:when test="${(zm:actionSet(param,'moreActions') && empty anAction && empty param.actionDelete) }">
         <mo:status style="Warning"><fmt:message key="actionNoActionSelected"/></mo:status>
     </c:when>
-    <c:when test="${(zm:actionSet(param, 'actionDelete') && param.isInTrash eq 'true') || zm:actionSet(param, 'actionHardDelete') || (zm:actionSet(param,'moreActions') && anAction == 'actionHardDelete')}">
+    <c:when test="${(zm:actionSet(param, 'actionDelete') && param.isInTrash eq 'true') || zm:actionSet(param, 'actionHardDelete' || (zm:actionSet(param,'moreActions') && anAction == 'actionHardDelete'))}">
     <zm:deleteContact var="result" id="${ids}"/>
     <c:set var="op" value="x" scope="request"/>
     <mo:status>

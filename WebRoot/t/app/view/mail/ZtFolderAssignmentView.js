@@ -18,39 +18,41 @@
  *
  * @author Macy Abbey
  */
-Ext.define('ZCS.view.ux.ZtFolderAssignmentView', {
-
-	extend: 'ZCS.view.ux.ZtAssignmentView',
-
+Ext.define('ZCS.view.mail.ZtFolderAssignmentView', {
+	extend: 'ZCS.view.mail.ZtAssignmentView',
+	requires: [
+		'ZCS.model.ZtFolder'
+	],
 	alias: 'widget.moveview',
-
-	config: {
-		/**
-		 * @cfg {Object} Organizer tree with which to populate the store
-		 */
-		organizerTree: null
-	},
-
 	constructor: function (config) {
 
-		var cfg = config || {},
-			organizerData = {
-			items: cfg.organizerTree
-		};
+		cfg = config || {};
 
-		var organizerStore = Ext.create('ZCS.store.ZtOrganizerStore', {
-			storeId: [ cfg.app, 'assignment' ].join('-')
+				// get the organizer data for this app
+		var organizerData = {
+				items: ZCS.session.getOrganizerDataByAppAndOrgType(ZCS.constant.APP_MAIL, ZCS.constant.ORG_MAIL_FOLDER)
+			};
+
+		// create a store for the organizers
+		var organizerStore = Ext.create('Ext.data.TreeStore', {
+			model: 'ZCS.model.ZtFolder',
+			defaultRootProperty: 'items',
+			root: organizerData,
+			storeId: 'organizerStore',
+			proxy: {
+				type: 'memory',
+				model: 'ZCS.model.ZtFolder'
+			}
 		});
-		organizerStore.setRoot(organizerData);
 
 		cfg.list = {
-			xtype:              'folderlist',
-			displayField:       'displayName',
-			title:              cfg.listTitle,
-			store:              organizerStore,
-			grouped:            false,
-			canDisableItems:    true
+			xtype: 'folderlist',
+			displayField: 'name',
+			title: cfg.listTitle,
+			store: organizerStore,
+			grouped: false
 		};
+
 		cfg.listHasOwnHeader = true;
 
 		this.callParent([cfg]);

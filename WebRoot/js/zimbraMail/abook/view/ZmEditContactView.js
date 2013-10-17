@@ -61,8 +61,8 @@ ZmEditContactView = function(parent, controller) {
 	// save other state
 	this._controller = controller;
 
-	ZmTagsHelper.setupListeners(this);
-
+	this._tagList = appCtxt.getTagTree();
+	this._tagList.addChangeListener(new AjxListener(this, this._tagChangeListener));
 	this._changeListener = new AjxListener(this, this._contactChangeListener);
 
 	this.setScrollStyle(Dwt.SCROLL);
@@ -109,7 +109,7 @@ ZmEditContactView.prototype.getFormItems = function() {
 			{ id: "COMPANY", type: "DwtInputField", width: 209, hint: ZmMsg.AB_FIELD_company, visible: "get('SHOW_COMPANY')", onblur: "this._controller.updateTabTitle()" },
 			{ id: "TITLE", type: "DwtInputField", width: 209, hint: ZmMsg.AB_FIELD_jobTitle, visible: "get('SHOW_TITLE')" },
 			{ id: "DEPARTMENT", type: "DwtInputField", width: 209, hint: ZmMsg.AB_FIELD_department, visible: "get('SHOW_DEPARTMENT')" },
-			{ id: "NOTES", type: "DwtInputField", width: "47em", rows:4 },
+			{ id: "NOTES", type: "DwtInputField", cols: (AjxEnv.isMozilla ? 60 : 65), rows:4 },
             // phonetic name fields
             { id: "PHONETIC_PREFIX", visible: "this.isVisible('PREFIX')", ignore:true },
             { id: "PHONETIC_FIRST", type: "DwtInputField", width: 95, hint: ZmMsg.AB_FIELD_phoneticFirstName, visible: "this.isVisible('FIRST')" },
@@ -158,7 +158,7 @@ ZmEditContactView.prototype.getFormItems = function() {
 			},
 			{ id: "FILE_AS", type: "DwtSelect", onchange: this._handleFileAsChange, items: this.getFileAsOptions() },
 			{ id: "FOLDER", type: "DwtButton", image: "ContactsFolder",
-				enabled: "this._contact && !this._contact.isReadOnly()",
+				enabled: "this._contact && !this._contact.isShared()",
 				onclick: this._handleFolderButton
 			},
 			{ id: "TAG", type: "DwtControl",
@@ -397,7 +397,7 @@ ZmEditContactView.prototype.set = function(contact, isDirty) {
 	}
 
 	// save contact
-	this._contact = this._item = contact;
+	this._contact = contact;
 
 	// fill in base fields
 	for (var id in ZmEditContactView.ATTRS) {
@@ -534,10 +534,6 @@ ZmEditContactView.prototype.getModifiedAttrs = function() {
 					if (!v) continue;
 					var list = ZmEditContactView.LISTS[id];
 					var a = onlyvalue ? list.attrs[0] : item.type;
-					if (id === "OTHER" && AjxUtil.arrayContains(AjxUtil.values(ZmEditContactView.ATTRS), a)) {
-						//ignore attributes named the same as one of our basic attributes.
-						continue;
-					}
 					if (!counts[a]) counts[a] = 0;
 					var count = ++counts[a];
 					a = ZmContact.getAttributeName(a, count);
@@ -573,7 +569,7 @@ ZmEditContactView.prototype.getModifiedAttrs = function() {
 	}
 
 	// make sure we set the folder (when new)
-	if (!attributes[ZmContact.F_folderId] && !this._contact.id) {
+	if (!attributes[ZmContact.F_folderId] && !this._contact.isShared()) {
 		attributes[ZmContact.F_folderId] = this.getValue("FOLDER");
 	}
 
@@ -592,6 +588,13 @@ ZmEditContactView.prototype.getModifiedAttrs = function() {
 		if (m) {
 			// NOTE: ZmContact.modify expects the "aid_" prefix.
 			attributes[ZmContact.F_image] = "aid_"+m[1];
+		}
+	}
+
+	// trim everything
+	for (var a in attributes) {
+		if (AjxUtil.isString(attributes[a])) {
+			attributes[a] = AjxStringUtil.trim(attributes[a]);
 		}
 	}
 
@@ -645,38 +648,68 @@ ZmEditContactView.prototype.enableInputs = function(bEnable) {
  * 
  */
 ZmEditContactView.prototype.cleanup = function() {
-	this._contact = this._item = null;
+	this._contact = null;
 	this.clean = true;
 };
 
-ZmEditContactView.prototype.dispose =
-function() {
-	ZmTagsHelper.disposeListeners(this);
-	DwtComposite.prototype.dispose.apply(this, arguments);
+ZmEditContactView.prototype._setTags =
+function(contactOrTagIds) {
+	var tagControl = this.getControl("TAG");
+	if (tagControl) {
+		if (contactOrTagIds === undefined) // contactOrTagIds can also be an empty array, so just checking for a falsy value should not happen here
+			contactOrTagIds = this._contact;
+		var tagIds = (contactOrTagIds instanceof ZmContact) ? contactOrTagIds.tags : contactOrTagIds;
+
+		tagControl.clearContent();
+		if (tagIds && tagIds.length) {
+			tagControl.setContent(this._getTagHtml(tagIds));
+			tagControl.setVisible(true);
+		} else {
+			tagControl.setVisible(false);
+		}
+	}
 };
 
-ZmEditContactView.prototype._setTags =
-function(contact) {
-	//use the helper to get the tags.
-	var tagsHtml = ZmTagsHelper.getTagsHtml(contact || this._item, this);
+ZmEditContactView.prototype._getTagHtml =
+function(tagIds) {
+	var html = [];
+	var idx = 0;
+	var tagCellId = this.getControl("TAG").getHTMLElId();
 
-	var tagControl = this.getControl("TAG");
-	if (!tagControl) {
-		return;
+	// get sorted list of tags for this msg
+	var tagList = appCtxt.getAccountTagList(this._contact);
+
+	var tags = [];
+	for (var i = 0; i < tagIds.length; i++) {
+		tags.push(tagList.getByNameOrRemote(tagIds[i]));
 	}
-	tagControl.clearContent();
-	if (tagsHtml.length > 0) {
-		tagControl.setContent(tagsHtml);
-		tagControl.setVisible(true);
+	tags.sort(ZmTag.sortCompare);
+
+	for (var j = 0; j < tags.length; j++) {
+		var tag = tags[j];
+		if (!tag) { continue; }
+		var icon = tag.getIconWithColor();
+		var attr = ["id='", tagCellId, tag.id, "'"].join("");
+		// XXX: set proper class name for link once defined!
+		html[idx++] = "<a href='javascript:;' class='' onclick='ZmEditContactView._tagClicked(";
+		html[idx++] = '"';
+		html[idx++] = AjxStringUtil.encodeQuotes(tag.name);
+		html[idx++] = '"';
+		html[idx++] = "); return false;'>";
+		html[idx++] = AjxImg.getImageSpanHtml(icon, "vertical-align:middle; margin-right:4px", attr, AjxStringUtil.htmlEncode(tag.name), "inlineContactTagIcon");
+		html[idx++] = "</a>&nbsp;";
 	}
-	else {
-		tagControl.setVisible(false);
-	}
+	return html.join("");
 };
 
 ZmEditContactView._onBlur =
 function() {
 	this._controller._updateTabTitle();
+};
+
+ZmEditContactView._tagClicked =
+function() {
+	ZmContactSplitView._tagClicked.apply(this, arguments);
 };
 
 //
@@ -881,7 +914,20 @@ ZmEditContactView.prototype._handleChooseFolder = function(organizer) {
 ZmEditContactView.prototype._contactChangeListener = function(ev) {
 	if (ev.type != ZmEvent.S_CONTACT) return;
 	if (ev.event == ZmEvent.E_TAGS || ev.event == ZmEvent.E_REMOVE_ALL) {
-		this._setTags();
+		this._setTags(this._contact);
+	}
+};
+
+/**
+ * @private
+ */
+ZmEditContactView.prototype._tagChangeListener = function(ev) {
+	if (ev.type != ZmEvent.S_TAG) { return; }
+
+	var fields = ev.getDetail("fields");
+	var changed = fields && (fields[ZmOrganizer.F_COLOR] || fields[ZmOrganizer.F_NAME]);
+	if ((ev.event == ZmEvent.E_MODIFY && changed) || ev.event == ZmEvent.E_DELETE || ev.event == ZmEvent.E_CREATE) {
+		this._setTags(this._contact);
 	}
 };
 
@@ -2323,7 +2369,6 @@ ZmEditContactViewOther.prototype._createHtmlFromTemplate = function(templateId, 
 
         var checkbox = new DwtCheckbox({parent:container});
         checkbox.setText(ZmMsg.includeYear);
-		checkbox.addSelectionListener(new AjxListener(this, this._handleDateSelection,[calendar]));
         this._calendarIncludeYear = checkbox;
 	}                                                        
 };
@@ -2399,17 +2444,15 @@ ZmEditContactViewOther._getDateFormatter = function() {
 
 ZmEditContactViewOther.prototype._handleDropDown = function(evt) {
     var value = this.getValue().value;
-    var date = ZmEditContactViewOther.parseDate(value) || new Date();
-    var includeYear = date.getFullYear() !== 0;
+    var date = ZmEditContactViewOther.parseDate(value) || new Date;
+    var includeYear = date.getFullYear() != 0;
     // NOTE: Temporarilly set the year to the current year in the
     // NOTE: case of a date without a year set (i.e. full year == 0).
     // NOTE: This is done so that the calendar doesn't show the
     // NOTE: wrong year.
-	if (!includeYear) {
-		date.setFullYear(new Date().getFullYear());
-	}
-	this._calendarIncludeYear.setSelected(includeYear); //see bug 46952 and bug 83177
+    if (!includeYear) date.setFullYear(new Date().getFullYear());
     this._calendar.setDate(date);
+    this._calendarIncludeYear.setSelected(includeYear);
     this._picker.popup();
 };
 
@@ -2664,9 +2707,9 @@ ZmEditContactViewAddress.prototype._createInput = function() {
 			},
 			{ id: "STREET1", type: "DwtInputField", width: 343, hint: ZmMsg.AB_FIELD_street },
 			{ id: "STREET2", type: "DwtInputField", width: 343, hint: ZmMsg.AB_FIELD_street },
-			{ id: "CITY", type: "DwtInputField", width: 160, hint: ZmMsg.AB_FIELD_city },
-			{ id: "STATE", type: "DwtInputField", width: 90, hint: ZmMsg.AB_FIELD_state },
-			{ id: "ZIP", type: "DwtInputField", width: 80, hint: ZmMsg.AB_FIELD_postalCode },
+			{ id: "CITY", type: "DwtInputField", width: 123, hint: ZmMsg.AB_FIELD_city },
+			{ id: "STATE", type: "DwtInputField", width: 77, hint: ZmMsg.AB_FIELD_state },
+			{ id: "ZIP", type: "DwtInputField", width: 66, hint: ZmMsg.AB_FIELD_postalCode },
 			{ id: "COUNTRY", type: "DwtInputField", width: 343, hint: ZmMsg.AB_FIELD_country }
 		]
 	};

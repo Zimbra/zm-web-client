@@ -88,8 +88,6 @@ Ext.define('ZCS.controller.ZtListController', {
 				this.updateTitlebar(newApp);
 			}
 		}, this);
-
-		ZCS.app.on('notifyFolderChange', this.handleFolderChange, this);
 	},
 
 	/**
@@ -187,14 +185,10 @@ Ext.define('ZCS.controller.ZtListController', {
 
 		if (success) {
 
+			// If we got here via tap on a saved search in the overview, remember it so we can show its name
 			if (folder) {
-				// If we got here via tap on a saved search in the overview, remember it so we can show its name
-				var searchId = (folder.get('type') === ZCS.constant.ORG_SEARCH) ? folder.get('zcsId') : null;
+				var searchId = (folder.get('type') === ZCS.constant.ORG_SAVED_SEARCH) ? folder.get('itemId') : null;
 				ZCS.session.setSetting(ZCS.constant.SETTING_CUR_SEARCH_ID, searchId, app);
-			}
-			else {
-				// If the user ran a search, deselect the selected folder since it no longer matches results
-				this.getFolderList().getActiveItem().deselectAll();
 			}
 
 			this.updateTitlebar();
@@ -225,38 +219,5 @@ Ext.define('ZCS.controller.ZtListController', {
 		}
 
 		titlebar.setTitle(this.getOrganizerTitle(null, true, app));
-	},
-
-	removeItem: function(item, isSwipeDelete) {
-
-		var list = this.getListView(),
-			store = list.getStore(),
-			currentIndex = store.indexOf(item),
-			toSelect;
-
-		store.remove(item);
-		if (!isSwipeDelete) {
-			toSelect = store.getAt(currentIndex);
-			if (toSelect) {
-				list.select(toSelect, false);
-			}
-			else {
-				this.getItemController().clear();
-			}
-		}
-	},
-
-	/**
-	 * Update list panel title if the current folder changed in some way, since the title
-	 * often reflects something about the folder (number of items, for example).
-	 */
-	handleFolderChange: function(folder, notification) {
-
-		this.callParent(arguments);
-		var	curOrganizer = ZCS.session.getCurrentSearchOrganizer();
-		if (curOrganizer && curOrganizer.get('zcsId') === folder.get('zcsId')) {
-			this.updateTitlebar();
-			ZCS.app.fireEvent('updatelistpanelToggle', this.getOrganizerTitle(), ZCS.session.getActiveApp());
-		}
 	}
 });

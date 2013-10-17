@@ -325,8 +325,7 @@ ZmShare.getDefaultMountpointName = function(owner, name) {
     if (!ZmShare._defaultNameFormatter) {
         ZmShare._defaultNameFormatter = new AjxMessageFormat(ZmMsg.shareNameDefault);
     }
-    var defaultName = ZmShare._defaultNameFormatter.format([owner, name]);
-	return defaultName.replace(/\//g," ");
+    return ZmShare._defaultNameFormatter.format([owner, name]);
 };
 
 /**

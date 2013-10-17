@@ -576,8 +576,6 @@ function(params) {
 	this._inputId = params.inputId || Dwt.getNextId();
 	this._dragInsertionBarId = Dwt.getNextId();
 	var data = {
-		inputTagName:		AjxEnv.isIE || AjxEnv.isModernIE ?
-								'textarea' : 'input',
 		holderId:			this._holderId,
 		inputId:			this._inputId,
 		dragInsertionBarId:	this._dragInsertionBarId
@@ -597,17 +595,6 @@ function(params) {
     var args = {container:this._holder, threshold:10, amount:15, interval:5, id:this._holderId};
     this._dndScrollCallback = DwtControl._dndScrollCallback.bind(null, [args]);
     this._dndScrollId = this._holderId;
-	
-	if (AjxPluginDetector.detectFlash() && !ZmAddressInputField._zcInitDone) {
-		var callback = ZmAddressInputField._initZeroClipboard.bind();
-		AjxDispatcher.require("ZeroClipboard", true, callback);
-		ZmAddressInputField._zcInitDone = true;
-	}
-};
-
-ZmAddressInputField._initZeroClipboard =
-function() {
-	ZeroClipboard.setMoviePath('/js/ajax/3rdparty/zeroclipboard/ZeroClipboard.swf');
 };
 
 ZmAddressInputField.prototype._reset =
@@ -655,7 +642,7 @@ function() {
 ZmAddressInputField.prototype._setInputValue =
 function(value) {
 	DBG.println("aif", "SET input value to: " + AjxStringUtil.htmlEncode(value));
-	this._input.value = value && value.replace(/\s+/g, ' ');
+	this._input.value = value;
 	this._resizeInput();
 };
 
@@ -810,7 +797,6 @@ function() {
 			menu.addSelectionListener(menuItem, this._listeners[menuItem]);
 		}
 	}
-	menu.addPopupListener(this._menuPopupListener.bind(this));
 	menu.addPopdownListener(this._menuPopdownListener.bind(this));
 
 	if (this._bubbleMenuCreatedCallback) {
@@ -828,7 +814,6 @@ function() {
 		var sel = this.getSelection();
 		var bubble = (sel.length == 1) ? sel[0] : null;
 		menu.enable(ZmOperation.DELETE, sel.length > 0);
-		menu.enable(ZmOperation.COPY, sel.length > 0);
 		menu.enable(ZmOperation.EDIT, Boolean(bubble));
 		var email = bubble && bubble.email;
 		var ac = window.parentAppCtxt || window.appCtxt;
@@ -848,17 +833,12 @@ function() {
 
 ZmAddressInputField.prototype._getActionMenuOps =
 function() {
-
-	var ops = [ZmOperation.DELETE];
-	if (AjxPluginDetector.detectFlash()) {
-		// we use Zero Clipboard (a Flash hack) to copy address
-		ops.push(ZmOperation.COPY);
-	};
-	ops.push(ZmOperation.EDIT);
-	ops.push(ZmOperation.EXPAND);
-	ops.push(ZmOperation.CONTACT);
-	
-	return ops;
+	return [
+		ZmOperation.DELETE,
+		ZmOperation.EDIT,
+		ZmOperation.EXPAND,
+		ZmOperation.CONTACT
+	];
 };
 
 ZmAddressInputField.prototype._handleResponseGetContact =
@@ -953,48 +933,6 @@ function(resp, contact) {
 	ctlr.show(contact);
 };
 
-// Sets up our use of Zero Clipboard to copy address to clipboard via a menu item
-ZmAddressInputField.prototype._menuPopupListener =
-function() {
-
-	var op = this._actionMenu.getOp(ZmOperation.COPY);
-	if (!op || ZmAddressInputField._clip) { return; }
-
-	// ZeroClipboard uses a transparent Flash movie to copy content to the clipboard. For security reasons,
-	// the copy has to be user-initiated, so it click-jacks the user's press of the Copy menu item. We need
-	// to make sure we propagate the mousedown and mouseup events so that the movie gets them.
-	var clip = ZmAddressInputField._clip = new ZeroClipboard.Client();
-	op.setEventPropagation(true, [DwtEvent.ONMOUSEDOWN, DwtEvent.ONMOUSEUP]);
-	op.removeListener(DwtEvent.ONMOUSEDOWN, op._listeners[DwtEvent.ONMOUSEDOWN]);
-	op.removeListener(DwtEvent.ONMOUSEUP, op._listeners[DwtEvent.ONMOUSEUP]);
-
-	// For some reason, superimposing the movie on just our menu item doesn't work, so we surround our
-	// menu item HTML with a friendly container.
-	var content = op.getContent();
-	op.setContent('<div id="d_clip_container" style="position:relative"><div id="d_clip_button">' + content + '</div></div>');
-	clip.glue( 'd_clip_button', 'd_clip_container' );
-
-	clip.addEventListener( 'onMouseDown', this._clipCopy.bind(this));
-//	clip.addEventListener( 'onLoad', console.log("clip loaded"));
-//	clip.addEventListener( 'onMouseDown', console.log("clip mousedown"));
-//	clip.addEventListener( 'onMouseUp', console.log("clip mouseup"));
-//	clip.addEventListener( 'onComplete', console.log("clip complete"));
-	clip.addEventListener( 'onComplete', this._clipCopyComplete.bind(this));
-};
-
-// Copies address text from the active bubble to the clipboard.
-ZmAddressInputField.prototype._clipCopy =
-function(clip) {
-	console.log("clip mousedown");
-	clip.setText(ZmAddressInputField.menuContext.bubble.address + this._separator);
-};
-
-ZmAddressInputField.prototype._clipCopyComplete =
-function(clip) {
-	this._actionMenu.popdown();
-};
-
-
 ZmAddressInputField.prototype._menuPopdownListener =
 function() {
 
@@ -1081,9 +1019,9 @@ function() {
 	}
 	Dwt.setSize(this._input, inputWidth, Dwt.DEFAULT);
 
-//	if (AjxEnv.isIE) {
+	if (AjxEnv.isIE) {
 		// TODO: make the INPUT line up with the SPANs vertically
-//	}
+	}
 };
 
 ZmAddressInputField.prototype.hasFocus =
@@ -1938,7 +1876,7 @@ function() {
 	var sel = this.getSelection();
 	var addrs = [];
 	for (var i = 0; i < sel.length; i++) {
-		addrs.push(sel[i].address);
+		addrs.push(sel[i].email);
 	}
 	var textarea = this._getTextarea();
 	textarea.value = addrs.join(this._separator) + this._separator;

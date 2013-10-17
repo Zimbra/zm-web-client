@@ -60,54 +60,16 @@ Ext.define('ZCS.controller.contacts.ZtContactListController', {
 	},
 
     launch: function() {
-
-	    if (!ZCS.util.isAppEnabled(this.getApp())) {
-		    return;
-	    }
-
-	    ZCS.app.on('notifyContactCreate', this.handleCreateNotification, this);
+        this.callParent(arguments);
+        ZCS.app.on('notifyContactCreate', this.handleCreateNotification, this);
         ZCS.app.on('notifyContactChange', this.handleModifyNotification, this);
-
-	    if (ZCS.session.getSetting(ZCS.constant.SETTING_SHOW_DL_FOLDER)) {
-		    // cobble together a folder create notification for the DL folder
-		    var dlFolder = {
-			    type:           ZCS.constant.NOTIFY_CREATE,
-			    id:             ZCS.constant.ID_DLS,
-			    nodeType:       ZCS.constant.ORG_FOLDER,
-			    absFolderPath:  '/Distribution Lists',
-			    l:              '1',
-			    name:           ZtMsg.distributionLists,
-			    view:           'contact'
-		    };
-		    ZCS.app.fireEvent('notify', dlFolder);
-	    }
-
 	    this.loadAllContacts();
-    },
-
-    /**
-     * Load contacts from the system Contacts folder.
-     */
-    loadContacts: function() {
-
-        var defaultQuery = this.getDefaultQuery();
-
-        this.getStore().getProxy().setExtraParams({
-            query: defaultQuery
-        });
-
-        this.getStore().load({
-            query: defaultQuery,
-            callback: Ext.Function.bind(this.storeLoaded, this, [defaultQuery, null], 0)
-        })
     },
 
     /**
      * Load local contacts via REST call so we can cache them.
      */
     loadAllContacts: function() {
-
-        var store = this.getStore();
 
 	    var restUri = ZCS.htmlutil.buildUrl({
 		    path: '/home/' + ZCS.session.getAccountName() + '/Contacts',
@@ -126,7 +88,7 @@ Ext.define('ZCS.controller.contacts.ZtContactListController', {
 				    reader = ZCS.model.contacts.ZtContact.getProxy().getReader(),
 				    ln = contacts.length, i, fields, data, attrs, j, field, value;
 
-                for (i = 0; i < ln; i++) {
+			    for (i = 0; i < ln; i++) {
 				    fields = contacts[i].split('\u001D');
 				    attrs = {};
 				    for (j = 0; j < fields.length; j += 2) {
@@ -135,18 +97,8 @@ Ext.define('ZCS.controller.contacts.ZtContactListController', {
 				    if (!ZCS.cache.get(attrs.id)) {
 					    data = reader.getDataFromNode({ _attrs: attrs });
 				        new ZCS.model.contacts.ZtContact(data, attrs.id);
-                    }
-                    //Fire a GetContactsRequest for each group and cache them, the
-                    //member information is needed for contact group autocomplete.
-                    if (attrs.type === 'group') {
-                        store.load({
-                            contactId: attrs.id,
-                            isGroup: true,
-                            scope: this
-                        });
-                    }
-                }
-
+				    }
+			    }
 		    }
 	    });
     },
@@ -157,7 +109,7 @@ Ext.define('ZCS.controller.contacts.ZtContactListController', {
     handleCreateNotification: function(item, create) {
 
         var curFolder = ZCS.session.getCurrentSearchOrganizer(),
-            curFolderId = curFolder && curFolder.get('zcsId'),
+            curFolderId = curFolder && curFolder.get('itemId'),
             doAdd = false,
             creates = create.creates,
             ln = creates && creates.cn ? creates.cn.length : 0,
@@ -192,18 +144,11 @@ Ext.define('ZCS.controller.contacts.ZtContactListController', {
 	 * If the modified contact is in this list's store, update its model.
 	 */
 	handleModifyNotification: function(item, modify) {
-
 	    var store = this.getStore();
 	    if (store.getById(item.getId())) {
 		    item.handleModifyNotification(modify);
 	    }
-
-		// Handle contact move
-		if (modify.l) {
-			item.set('folderId', modify.l);
-			this.removeItem(item);
-		}
-	},
+    },
 
 	getItemController: function() {
         return ZCS.app.getContactController();

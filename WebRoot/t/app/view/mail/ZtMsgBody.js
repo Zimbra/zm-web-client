@@ -100,18 +100,14 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 			togglingQuotedText = Ext.isBoolean(showQuotedText),
 			trimQuotedText = togglingQuotedText ? !showQuotedText : !isLast && !isInvite && !this.showingQuotedText,
 			msgId = msg.getId(),
+			html = msg.getContentAsHtml(this.getId(), trimQuotedText),
+			hasQuotedContent = ZCS.model.mail.ZtMailMsg.hasQuotedContent[msgId],
 			isHtml = msg.hasHtmlPart(),
 			container = this.htmlContainer,
 			iframeWidth = this.element.getWidth() || (this.parent.getChildWidth() - 22),
 			iframe = this.iframe;
 
-		if (window.inlineData.debugLevel === 'orig') {
-			trimQuotedText = true;
-		}
-		var html = msg.getContentAsHtml(this.getId(), trimQuotedText),
-			hasQuotedContent = ZCS.model.mail.ZtMailMsg.hasQuotedContent[msgId];
-
-			this.setMsg(msg);
+		this.setMsg(msg);
 
 		this.setUsingIframe(isHtml);
 
@@ -205,7 +201,7 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 			attachments:    attInfo.length > 0 ? attInfo : null,
 			images:         this.hiddenImages && this.hiddenImages.length > 0,
 			truncated:      msg.isTruncated(),
-			quoted:         !hasQuotedContent ? null : trimQuotedText ? 'show' : 'hide'
+			quoted:         !hasQuotedContent ? null : (trimQuotedText || togglingQuotedText) && trimQuotedText ? 'show' : 'hide'
 		});
 	},
 
@@ -230,14 +226,16 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 			});
 		}
 
-		// Look for email addresses (whether they're part of a mailto: link or not),
-		// and convert them so that tapping them takes the user to compose.
-		content = content.replace(ZCS.constant.REGEX_EMAIL, function(m, mailto, addr) {
-			if (mailto) {
-				return Ext.String.format(" href='#' addr='{0}'", addr);
+		// Look for email addresses. If parsing HTML, skip email that's part of a mailto: link.
+		content = content.replace(ZCS.constant.REGEX_EMAIL, function(m) {
+            //<debug>
+			Ext.Logger.info('addr regex matched: ' + m);
+            //</debug>
+			if (isHtml && m.toLowerCase().indexOf('mailto:') === 0) {
+				return m;
 			}
 			else {
-				return Ext.String.format("<a href='#' addr='{0}'>{0}</a>", addr);
+				return Ext.String.format("<a href='#' addr='{0}'>{0}</a>", m);
 			}
 		});
 
@@ -259,6 +257,7 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 			this.infoBar.destroy();
 		}
 
+		// Create DIV to show truncated message if needed
 		if (this.truncatedComponent) {
 			this.truncatedComponent.destroy();
 		}
@@ -292,7 +291,7 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 		}
 
 		// Tell user they aren't seeing the whole long message
-		if (params.truncated && (params.quoted !== 'show')) {
+		if (params.truncated) {
 			this.truncatedComponent = new Ext.Component({
 				html: ZCS.view.mail.ZtMsgBody.truncatedTpl.apply({})
 			});

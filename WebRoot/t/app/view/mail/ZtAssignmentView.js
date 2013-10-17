@@ -17,10 +17,10 @@
  * This class is a sheet which present a view to the user that allows them
  * to assign some model on the left to the configured message on the right.
  * It takes the display of the message component and highlights it on the right.
- *	
+ *
  * @author Macy Abbey
  */
-Ext.define('ZCS.view.ux.ZtAssignmentView', {
+Ext.define('ZCS.view.mail.ZtAssignmentView', {
 	extend: 'Ext.Sheet',
 	requires: [
 		'Ext.Anim'
@@ -88,9 +88,7 @@ Ext.define('ZCS.view.ux.ZtAssignmentView', {
 
 		listHasOwnHeader: false,
 
-		animatedComponent: null,
-
-		app: null
+		animatedComponent: null
 
 	},
 
@@ -150,7 +148,7 @@ Ext.define('ZCS.view.ux.ZtAssignmentView', {
 			});
 		}
 
-		//Add either a fully configured list or a list using default config options
+		//Add either a fully configured list or a list using config options
 		cfg.items[0].items.push(cfg.list || {
 			xtype: 'list',
 			ui: 'dark',
@@ -166,22 +164,23 @@ Ext.define('ZCS.view.ux.ZtAssignmentView', {
 
 		this.callParent(arguments);
 
-		var tapProducer = this.down('nestedlist') || this.down('list'),
-			item, eventName;
+		var tapProducer;
 
-		tapProducer.on('itemtap', function (list, index, target, organizer, e, eOpts) {
-			if (!target.getDisabled()) {
-				item = me.getRecord();
-				eventName = item.get('type') + 'Assignment';
-				me.fireEvent(eventName, organizer, item);
-				e.preventDefault();
-				me.onClose();
-			}
+		if (this.down('nestedlist')) {
+			tapProducer = this.down('nestedlist');
+		} else {
+			tapProducer = this.down('list');
+		}
+
+		tapProducer.on('itemtap', function (list, index, target, assignmentRecord, e, eOpts) {
+			me.fireEvent('assignment', assignmentRecord, me.getRecord());
+			e.preventDefault();
+			me.onClose();
 		});
 
-		ZCS.app.on('orientationChange', function (newDimensions) {
-			if (this.isHidden() !== null && !this.isHidden()) {
-				Ext.defer(this.rePosition, 100, this, [newDimensions]);
+		ZCS.app.on('orientationChange', function () {
+			if (!this.isHidden()) {
+				Ext.defer(this.rePosition, 200, this);
 			}
 		}, this);
 	},
@@ -189,18 +188,13 @@ Ext.define('ZCS.view.ux.ZtAssignmentView', {
 	/**
 	 * Repositions the assignment view
 	 */
-	rePosition: function (newDimensions) {
+	rePosition: function () {
 		this.resizeSheet();
 		this.positionSheet();
 		this.show();
 
 		var fromBox = this.getAnimatedComponent().element.getPageBox(),
-			targetBox = this.down('#animationTarget').element.getPageBox(),	
-			appDimensions = newDimensions[ZCS.session.getActiveApp()];
-
-		//TODO - determine how to make the dimensions to use generic.
-
-		this.originalDimensions = appDimensions.itemPanel;
+			targetBox = this.down('#animationTarget').element.getPageBox();
 
 		this.getAnimatedComponent().setWidth(targetBox.width);
 		this.getAnimatedComponent().setHeight(targetBox.height);

@@ -172,9 +172,9 @@ function(view) {
 			parent:		this._container,
 			id:			ZmId.getViewId(ZmId.VIEW_CONV2, null, view),
 			posStyle:	Dwt.ABSOLUTE_STYLE,
-			mode:		view,
+			mode:		ZmId.VIEW_CONV2,
 			standalone:	true, //double-clicked stand-alone view of the conv (not within the double pane)
-			controller:	this._getConvListController()
+			controller:	this
 		};
 		this._view[view] = new ZmConvView2(params);
 		this._view[view].addInviteReplyListener(this._inviteReplyListener);

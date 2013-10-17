@@ -51,14 +51,12 @@ Ext.define('ZCS.view.ZtOverview', {
 		// get the organizer data for this app
 		var app = this.getApp(),
 			organizerData = {
-				items: ZCS.session.getOrganizerData(app, null, 'overview')
+				items: ZCS.session.getOrganizerDataByApp(app)
 			};
 
 		// create a store for the organizers
-		var organizerStore = Ext.create('ZCS.store.ZtOrganizerStore', {
-			storeId:    [ app, 'overview' ].join('-'),
-			data:       organizerData
-		});
+		var organizerStore = Ext.create('ZCS.store.ZtOrganizerStore');
+		organizerStore.setRoot(organizerData);
 
 		// show the account name at the top of the overview
 		var accountName = ZCS.session.getAccountName(),

@@ -68,11 +68,9 @@
 					</td>
 				<$ } $>
 				<td width=16 nowrap class='imageCell' id='${id}_imageCell'></td>
-				<td nowrap class='${textClassName}' id='${id}_textTDCell'>
-				    <div class='ZTreeItemTextCell' id='${id}_textCell'></div>
-				</td>
+				<td width=100% nowrap class='${textClassName}' id='${id}_textCell'></td>
                 <td width=16 class='imageCell' id='${id}_extraCell'></td>
-				<td width=1% align=center nowrap id='${id}_countCell'></td>
+				<td align=center nowrap id='${id}_countCell'></td>
 				<td align=center nowrap id='${id}_nodeCell'></td>
 			</tr>
 		</table>

@@ -547,6 +547,14 @@ function(ed, ev) {
     DwtOutsideMouseEventMgr.forwardEvent(ev);
 };
 
+/* commenting this code as focus is shifting during table edit operation 76446
+ZmAdvancedHtmlEditor.prototype._handleEditorMouseUpEvent =
+function(ed, ev) {
+    var kbMgr = DwtShell.getShell(window).getKeyboardMgr();
+    kbMgr.grabFocus(this._editorContainer);//This will finally call ZmEditorContainer.prototype._focus method which will call ZmAdvancedHtmlEditor.prototype.restoreFocus method
+};
+*/
+
 ZmAdvancedHtmlEditor.prototype.onLoadContent =
 function(ed) {
 	if (this._onContentInitializeCallback) {
@@ -639,7 +647,9 @@ function(id, content) {
             ed.onPostRender.add(obj.onPostRender.bind(obj));
             ed.onInit.add(obj.onInit.bind(obj));
             ed.onKeyDown.add(obj._handleEditorKeyEvent.bind(obj));
-            ed.onMouseDown.add(obj._handleEditorMouseDownEvent.bind(obj));
+            if (!AjxEnv.isIE) {
+                ed.onMouseDown.add(obj._handleEditorMouseDownEvent.bind(obj));
+            }
             ed.onPaste.add(obj.onPaste.bind(obj));
             ed.onBeforeExecCommand.add(obj.onBeforeExecCommand.bind(obj));
             //Adding toggle button for showing/hiding the extended toolbar
@@ -1144,9 +1154,9 @@ function(ev) {
 		case "ignore":
 			val = orig;
 			this._ignoreWords[val] = true;
-//			if (fixall) {
+			if (fixall) {
 				// TODO: visually "correct" all of them
-//			}
+			}
 			break;
 		case "add":
 			val = orig;
@@ -1623,7 +1633,7 @@ function(words, keepModeDiv) {
 	rec = function(node) {
 		switch (node.nodeType) {
 			case 1: /* ELEMENT */
-				for (var i = node.firstChild; i; i = rec(i)) {}
+				for (var i = node.firstChild; i; i = rec(i));
 				node = node.nextSibling;
 				break;
 			case 3: /* TEXT */
@@ -1960,7 +1970,7 @@ function() {
     ZmSignatureEditor.prototype._imageUploaded.apply(this, arguments);
 };
 
-/**
+/*
  * This will be fired before every popup open
  *
  * @param {windowManager} tinymce window manager for popups
@@ -2080,7 +2090,7 @@ ZmAdvancedHtmlEditor.prototype._settingChangeListener = function(ev) {
     editor.nodeChanged && editor.nodeChanged();//update the toolbar state
 };
 
-/**
+/*
  * This will be fired after every tinymce menu open. Listen for outside events happening in ZCS
  *
  * @param {menu} tinymce menu object
@@ -2100,7 +2110,7 @@ function(menu) {
     }
 };
 
-/**
+/*
  * This will be fired after every tinymce menu hide. Removing the outside event listener registered in onShowMenu
  *
  * @param {menu} tinymce menu object

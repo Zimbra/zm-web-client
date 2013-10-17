@@ -30,7 +30,7 @@ Ext.define('ZCS.model.ZtItem', {
 
 		fields: [
 			{ name: 'type',     type: 'string' },   // ZCS.constant.ITEM_*
-			{ name: 'zcsId',    type: 'string' },   // ID on server
+			{ name: 'itemId',   type: 'string' },   // ID on server
 			{ name: 'tags',		type: 'auto' }      // list of tag data objects
 		],
 
@@ -57,44 +57,23 @@ Ext.define('ZCS.model.ZtItem', {
 	statics: {
 
 		/**
-		 * If the node has a list of tag IDs, return a list of their ZtOrganizer tag objects.
+		 * If the node has a list of tag IDs, return a list their ZtOrganizer tag objects.
 		 *
 		 * @param {Array}  tagIds   comma-separated list of tag IDs
 		 * @return {Array}  list of ZtOrganizer
 		 */
-		parseTags: function(tagIds, app) {
+		parseTags: function(tagIds) {
 
 			return !tagIds ? [] : Ext.Array.map(tagIds.split(','), function(tagId) {
-
-				var id = ZCS.model.ZtOrganizer.getOrganizerId(tagId, ZCS.constant.ORG_TAG, app),
-					tag = ZCS.cache.get(id);
-
+				var tag = ZCS.cache.get(tagId);
 				if (tag) {
 					return tag.getData();
 				} else {
 					//<debug>
-                    Ext.Logger.warn('Could not find tag with ID ' + id + ' in the item cache');
+                    Ext.Logger.warn('Encountered an item with a tag that is not in cache and thus will not display.');
                     //</debug>
 				}
 			});
-		},
-
-		/**
-		 * Sets up tags with just the data we need, and an associated DOM ID.
-		 *
-		 * @param {Array}   tags        list of tags
-		 * @return {Array}  list of tag data objects
-		 */
-		getTagData: function(tags) {
-			var tagDataList;
-			if (tags && tags.length) {
-				tagDataList = Ext.Array.map(Ext.Array.clean(tags), function(tag) {
-					var tagData = Ext.copyTo({}, tag, 'zcsId,color,name,displayName');
-					tagData.id = ZCS.util.getUniqueId(tagData);
-					return tagData;
-				});
-			}
-			return tagDataList;
 		}
 	},
 
@@ -120,34 +99,7 @@ Ext.define('ZCS.model.ZtItem', {
 	handleModifyNotification: function(modify) {
 
 		if (modify.t != null) {
-			var type = this.get('type'),
-				app = ZCS.constant.APP_FOR_TYPE[type];
-
-			this.set('tags', ZCS.model.ZtItem.parseTags(modify.t, app));
+			this.set('tags', ZCS.model.ZtItem.parseTags(modify.t));
 		}
-	},
-
-	/**
-	 * Returns true if this item has the given tag.
-	 *
-	 * @param {ZtOrganizer}     tag     a tag
-	 * @return {Boolean}
-	 */
-	hasTag: function(tag) {
-
-		var targetName = tag.get('name'),
-			tags = this.get('tags'),
-			ln = tags ? tags.length : 0,
-			i, tag, tagName;
-
-		for (i = 0; i < ln; i++) {
-			tag = tags[i];
-			tagName = tag instanceof ZCS.model.ZtOrganizer ? tag.get('name') : tag.name;
-			if (tagName === targetName) {
-				return true;
-			}
-		}
-
-		return false;
 	}
 });

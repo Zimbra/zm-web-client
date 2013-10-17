@@ -989,13 +989,11 @@ function(params) {
 	var more = Boolean(params.ids.length && !params.cancelled);
 
 	var respCallback = new AjxCallback(this, this._handleResponseDoAction, [params]);
-    var isOutboxFolder = this.controller && this.controller.isOutboxFolder();
-    var offlineCallback = this._handleOfflineResponseDoAction.bind(this, params, isOutboxFolder);
 
 	if (params.batchCmd) {
 		params.batchCmd.addRequestParams(params.request, respCallback, params.errorCallback);
 	} else {
-		var reqParams = {asyncMode:true, callback:respCallback, errorCallback: params.errorCallback, offlineCallback: offlineCallback, accountName:params.accountName, more:more};
+		var reqParams = {asyncMode:true, callback:respCallback, errorCallback: params.errorCallback, accountName:params.accountName, more:more};
 		if (useJson) {
 			reqParams.jsonObj = params.request;
 		} else {
@@ -1004,9 +1002,6 @@ function(params) {
 		if (params.safeMove) {
 			reqParams.useChangeToken = true;
 		}
-        if (isOutboxFolder) {
-            reqParams.offlineRequest = true;
-        }
 		DBG.println("sa", "*** do action: " + list.length + " items");
 		params.reqId = appCtxt.getAppController().sendRequest(reqParams);
 	}
@@ -1063,187 +1058,6 @@ function(params, result) {
 			ZmBaseController.showSummary(params.actionSummary, params.actionLogItem, params.closeChildWin);
 		}
 	}
-};
-
-/**
- * @private
- */
-ZmList.prototype._handleOfflineResponseDoAction =
-function(params, isOutboxFolder, requestParams) {
-
-    var action = params.action,
-        callback = this._handleOfflineResponseDoActionCallback.bind(this, params, isOutboxFolder);
-
-    if (isOutboxFolder && action.op === "trash") {
-        var key = {
-            methodName : "SendMsgRequest", //Outbox folder only contains offline sent emails
-            id : action.id
-        };
-        ZmOfflineDB.indexedDB.deleteItemInRequestQueue(key, callback);
-    }
-    else {
-        var obj = requestParams.jsonObj;
-        obj.methodName = ZmItem.SOAP_CMD[params.type] + "Request";
-        obj.id = action.id;
-        ZmOfflineDB.indexedDB.setItemInRequestQueue(obj, callback);
-    }
-};
-
-/**
- * @private
- */
-ZmList.prototype._handleOfflineResponseDoActionCallback =
-function(params, isOutboxFolder) {
-
-    var data = {},
-        header = this._generateOfflineHeader(params),
-        result,
-        hdr,
-        notify;
-
-    data[ZmItem.SOAP_CMD[params.type] + "Response"] = params.request[ZmItem.SOAP_CMD[params.type] + "Request"];
-    result = new ZmCsfeResult(data, false, header);
-    hdr = result.getHeader();
-    this._handleResponseDoAction(params, result);
-    if (hdr) {
-        notify = hdr.context.notify[0];
-        if (notify) {
-            appCtxt._requestMgr._notifyHandler(notify);
-            this._updateOfflineData(params, isOutboxFolder, notify);
-        }
-    }
-};
-
-/**
- * @private
- */
-ZmList.prototype._generateOfflineHeader =
-function(params) {
-
-    var action = params.action,
-        op = action.op,
-        ids = action.id.split(","),
-        idsLength = ids.length,
-        id,
-        msg,
-        flags,
-        folderId,
-        folder,
-        targetFolder,
-        mObj,
-        cObj,
-        folderObj,
-        m = [],
-        c = [],
-        folderArray = [],
-        header;
-
-    for (var i = 0; i < idsLength; i++) {
-
-        id = ids[i];
-        msg = this.getById(id);
-        flags =  msg.flags || "";
-        folderId = msg.getFolderId();
-        folder = appCtxt.getById(folderId);
-        mObj = {
-            id : id
-        };
-        cObj = {
-            id : "-" + mObj.id
-        };
-        folderObj = {
-            id : folderId
-        };
-
-        switch (op)
-        {
-            case "flag":
-                mObj.f = flags + "f";
-                break;
-            case "!flag":
-                mObj.f = flags.replace("f", "");
-                break;
-            case "read":
-                mObj.f = flags.replace("u", "");
-                folderObj.u = folder.numUnread - 1;
-                break;
-            case "!read":
-                mObj.f = flags + "u";
-                folderObj.u = folder.numUnread + 1;
-                break;
-            case "trash"://No break statement
-                mObj.l = ZmFolder.ID_TRASH;
-            case "spam"://No break statement
-                mObj.l = ZmFolder.ID_SPAM;
-            case "!spam"://No break statement
-                mObj.l = ZmFolder.ID_INBOX;// Have to set the old folder id. Currently point to inbox
-            case "move":
-                if (action.l) {
-                    mObj.l = action.l;
-                }
-                folderObj.n = folder.numTotal - 1;
-                if (msg.isUnread && folder.numUnread > 1) {
-                    folderObj.u = folder.numUnread - 1;
-                }
-                targetFolder = appCtxt.getById(mObj.l);
-                folderArray.push({
-                    id : targetFolder.id,
-                    n : targetFolder.numTotal + 1,
-                    u : (msg.isUnread ? targetFolder.numUnread + 1 : targetFolder.numUnread)
-                });
-                break;
-            case "tag":
-                msg.tags.push(action.tn);
-                mObj.tn = msg.tags.join();
-                break;
-            case "!tag":
-                AjxUtil.arrayRemove(msg.tags, action.tn);
-                mObj.tn = msg.tags.join();
-                break;
-            case "update":
-                if (action.t === "") {//Removing all tag names for a msg
-                    mObj.tn = "";
-                    mObj.t = "";
-                }
-                break;
-        }
-        m.push(mObj);
-        c.push(cObj);
-        folderArray.push(folderObj);
-    }
-
-    header = {
-        context : {
-            notify : [{
-                modified : {
-                    m : m,
-                    c : c,
-                    folder : folderArray
-                }
-            }]
-        }
-    };
-
-    return header;
-};
-
-ZmList.prototype._updateOfflineData =
-function(params, isOutboxFolder, notify) {
-
-    var modified = notify.modified;
-    if (!modified) {
-        return;
-    }
-
-    var m = modified.m;
-    if (!m) {
-        return;
-    }
-
-    for (var i = 0, msg; i < m.length; i++) {
-        msg = m[i];
-        appCtxt.webClientOfflineHandler.modifyItem(msg.id, msg, ZmOffline.MESSAGE);
-    }
 };
 
 ZmList.getActionSummary =
@@ -1390,7 +1204,7 @@ function(ev) {
 	var tag = ev.getDetail("organizers")[0];
 	var fields = ev.getDetail("fields");
 	var ctlr = appCtxt.getCurrentController();
-	if (!ctlr) { return; }
+	if (!ctlr || (appCtxt.getCurrentList() != this)) { return; }
 
 	var a = this.getArray();
 
@@ -1406,7 +1220,7 @@ function(ev) {
 		var newName = tag.name;
 		for (var i = 0; i < a.length; i++) {
 			var item = a[i]; //not using the following here as it didn't seem to work for contacts, the list is !isCanonical and null is returned, even though a[i] is fine ==> this.getById(a[i].id); // make sure item is realized (contact may not be)
-			if (!item || !item.isZmItem || !item.hasTag(oldName)) {
+			if (!item || !item.hasTag(oldName)) {
 				continue; //nothing to do if item does not have tag
 			}
 			if (item.isShared()) {

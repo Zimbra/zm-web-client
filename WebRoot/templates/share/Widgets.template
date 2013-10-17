@@ -10,7 +10,7 @@
 
 <template id='share.Widgets#ZmAppChooser' class='ZWidget'>
 	<table class='ZToolbarTable'>
-		<tr valign='middle' id='${id}_items'>
+		<tr valign='bottom' id='${id}_items'>
 			<td id='${id}_suffix' valign=bottom>
 				<div class='ZAppTabSpacer'></div>
 			</td>
@@ -58,8 +58,8 @@
 			<td id='${id}_searchMenuButton' class='ZmSearchToolbarCell'></td>
 			<td>
                 <div class='ZmSearchToolbarDiv'>
-				    <div id='${id}_inputField' class='ZmSearchInput'></div>
-				    <div id='${id}_searchButton' class='ZmSearchButton' hint='icon'></div>
+				    <div id='${id}_inputField' style='margin-right:20px'></div>
+				    <div id='${id}_searchButton' hint='icon' style='position:absolute;right:4px;top:1px;'></div>
 				</div>
 			</td>
 			<!-- UNCOMMENT THIS IF YOU WANT CUSTOM SEARCH TO APPEAR AS A SEPARATE BUTTON ON SEARCH TOOLBAR
@@ -205,6 +205,10 @@
 	<div id='${id}_listview'></div>
 </template>
 
+<template id='share.Widgets#ZmAddShareLink'>
+    <a id="${id}_addshare_link" href="#"><$=ZmMsg.sharedFoldersLink$></a>
+</template>
+
 <template id='share.Widgets#ZmShareProxyToolTip'>
     <div style="width:250px">
         <div class="Img${icon}" style="float:left;vertical-align:top"></div>
@@ -261,6 +265,6 @@
 <template id="share.Widgets#ZmAddressInputField">
 	<div id='${holderId}' class='addrBubbleHolder-empty'>
 		<span id='${dragInsertionBarId}' style='display:none' class='addrBubbleInsertionBar'>&nbsp;</span>
-		<${inputTagName} class='addrInputField' id='${inputId}' />
+		<input id='${inputId}'>
 	</div>
 </template>

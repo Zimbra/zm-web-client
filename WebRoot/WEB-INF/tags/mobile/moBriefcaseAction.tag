@@ -1,7 +1,7 @@
 <%--
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2008, 2009, 2010, 2011, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
@@ -46,7 +46,7 @@
     <c:when test="${empty ids}">
         <mo:status style="Warning"><fmt:message key="actionNoItemSelected"/></mo:status>
     </c:when>
-    <c:when test="${(param.isInTrash eq 'true' && zm:actionSet(param, 'actionDelete')) || zm:actionSet(param, 'actionHardDelete') || (zm:actionSet(param,'moreActions') && anAction == 'actionHardDelete')}">
+    <c:when test="${(param.isInTrash eq 'true' && zm:actionSet(param, 'actionDelete')) || zm:actionSet(param, 'actionHardDelete' || (zm:actionSet(param,'moreActions') && anAction == 'actionHardDelete'))}">
         <zm:deleteBriefcase var="result" id="${ids}"/>
         <zm:clearSearchCache/>
         <c:set var="op" value="x" scope="request"/>

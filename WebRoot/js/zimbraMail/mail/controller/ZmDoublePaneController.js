@@ -480,7 +480,7 @@ function(parent, num) {
 
 ZmDoublePaneController.prototype._resetOperation = 
 function(parent, op, num) {
-	if (parent && op == ZmOperation.KEEP_READING) {
+	if (op == ZmOperation.KEEP_READING) {
 		parent.enable(ZmOperation.KEEP_READING, this._keepReading(true));
 	}
 };
@@ -561,6 +561,7 @@ function(ev) {
 		}
 	}
 	return handled;
+	DBG.timePt("***** CONV: msg selection");
 };
 
 ZmDoublePaneController.prototype._handleResponseListSelectionListener =

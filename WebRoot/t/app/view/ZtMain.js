@@ -49,7 +49,7 @@ Ext.define("ZCS.view.ZtMain", {
 		this.callParent(arguments);
 
 		Ext.each(ZCS.constant.APPS, function(app) {
-			if (ZCS.util.isAppEnabled(app)) {
+			if (ZCS.session.getSetting(ZCS.constant.APP_SETTING[app])) {
 				var mainView = {
 					title: ZCS.constant.TAB_TITLE[app],
 					xtype: 'appview',

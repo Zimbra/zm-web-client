@@ -66,6 +66,7 @@ Ext.define('ZCS.controller.mail.ZtConvListController', {
 		ZCS.app.on('notifyConversationDelete', this.handleDeleteNotification, this);
 		ZCS.app.on('notifyConversationCreate', this.handleCreateNotification, this);
 		ZCS.app.on('notifyConversationChange', this.handleModifyNotification, this);
+		ZCS.app.on('notifyMailFolderChange', this.handleFolderChange, this);
 	},
 
 	doDelete: function (list, item, target, record) {
@@ -82,6 +83,22 @@ Ext.define('ZCS.controller.mail.ZtConvListController', {
 
 	doCompose: function() {
 		ZCS.app.getComposeController().compose();
+	},
+
+	removeConv: function(conv) {
+		var list = this.getListView(),
+			conversationStore = list.getStore(),
+			currentIndex = conversationStore.indexOf(conv),
+			toSelect;
+
+		conversationStore.remove(conv);
+		toSelect = conversationStore.getAt(currentIndex);
+		if (toSelect) {
+			list.select(toSelect, false);
+		}
+		else {
+			this.getItemController().clear();
+		}
 	},
 
 	handleSwipe: function(list, index, convItem, record, e, eOpts) {
@@ -125,9 +142,13 @@ Ext.define('ZCS.controller.mail.ZtConvListController', {
 			swipeElm.on('tap', function (event, node, options, eOpts) {
 				var el = Ext.fly(event.target);
 				if (el.hasCls('zcs-swipe-delete')) {
-					ZCS.app.fireEvent('swipeDeleteMailItem', record);
+					ZCS.app.fireEvent('deleteMailItem', record);
 					swipeElm.fadeAway();
-					event.stopEvent();
+				}
+
+				if (el.hasCls('zcs-swipe-spam')) {
+					ZCS.app.fireEvent('moveMailItemToSpam', record);
+					swipeElm.fadeAway();
 				}
 			});
 
@@ -173,22 +194,16 @@ Ext.define('ZCS.controller.mail.ZtConvListController', {
 	handleCreateNotification: function(item, create) {
 
 		var curFolder = ZCS.session.getCurrentSearchOrganizer(),
-			curFolderId = curFolder && curFolder.get('zcsId'),
-			isOutbound = ZCS.util.isOutboundFolderId(curFolderId),
+			curFolderId = curFolder && curFolder.get('itemId'),
 			doAdd = false,
 			creates = create.creates,
 			ln = creates && creates.m ? creates.m.length : 0,
-			msgCreate, i, addresses, recips, fragment;
+			msgCreate, i;
 
 		for (i = 0; i < ln; i++) {
 			msgCreate = creates.m[i];
 			if (msgCreate.cid === create.id && msgCreate.l === curFolderId) {
 				doAdd = true;
-				if (isOutbound) {
-					addresses = ZCS.model.mail.ZtMailItem.convertAddressJsonToModel(msgCreate.e);
-					recips = ZCS.mailutil.getSenders(addresses);
-					fragment = msgCreate.fr;
-				}
 				break;
 			}
 		}
@@ -197,11 +212,6 @@ Ext.define('ZCS.controller.mail.ZtConvListController', {
 			data = reader.getDataFromNode(create),
 			store = this.getStore(),
 			conv = new ZCS.model.mail.ZtConv(data, create.id);
-
-		if (recips) {
-			conv.set('senders', recips);
-		}
-		conv.set('fragment', conv.get('fragment') || fragment);
 
 		if (doAdd) {
 			store.insert(0, [conv]);
@@ -220,10 +230,9 @@ Ext.define('ZCS.controller.mail.ZtConvListController', {
 		// field since that breaks the connection to the list item in the UI
 		if (modify.newId) {
 			var oldConv = ZCS.cache.get(modify.id),
-				newConv;
-
-			if (store.getById(oldConv.getId())) {
 				newConv = oldConv && oldConv.copy(modify.newId);
+
+			if (newConv) {
 				store.remove(oldConv);
 				store.insert(0, newConv);   // moves conv to top
 				item = newConv;
@@ -242,6 +251,19 @@ Ext.define('ZCS.controller.mail.ZtConvListController', {
 		//If this item is a draft, go ahead and select it, because the normal ext logic unselects it.
 		if (item.data.isDraft) {
 			this.getListView().select(item);
+		}
+	},
+
+	/**
+	 * Update list panel title if unread count of current folder changed.
+	 */
+	handleFolderChange: function(folder, notification) {
+
+		this.callParent(arguments);
+		var	curOrganizer = ZCS.session.getCurrentSearchOrganizer();
+		if (curOrganizer && curOrganizer.get('itemId') === folder.get('itemId')) {
+			this.updateTitlebar();
+			ZCS.app.fireEvent('updatelistpanelToggle', this.getOrganizerTitle(), ZCS.session.getActiveApp());
 		}
 	}
 },

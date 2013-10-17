@@ -78,19 +78,7 @@ Ext.define('ZCS.model.contacts.ZtContactWriter', {
 		}
 		else if (action === 'update') {
 
-			if (itemData.op === 'modify') {
-				json = this.getSoapEnvelope(request, data, 'ModifyContact');
-				methodJson = json.Body.ModifyContactRequest;
-
-				var cn = methodJson.cn = { id: itemData.id };
-				cn.m = [];
-				cn.a = this.populateAttrs(itemData.newContact, itemData.attrs);
-
-				Ext.apply(methodJson, {
-					cn: cn
-				});
-			}
-			else {
+			if (itemData.op === 'delete' || itemData.op === 'move') {
 				json = this.getSoapEnvelope(request, itemData, 'ContactAction');
 				methodJson = json.Body.ContactActionRequest;
 
@@ -104,10 +92,18 @@ Ext.define('ZCS.model.contacts.ZtContactWriter', {
 				if (itemData.folderId) {
 					methodJson.action.l = itemData.folderId;
 				}
+			}
+			else if (itemData.op === 'modify') {
+				json = this.getSoapEnvelope(request, data, 'ModifyContact');
+				methodJson = json.Body.ModifyContactRequest;
 
-				if (itemData.tn) {
-					methodJson.action.tn = itemData.tn;
-				}
+				var cn = methodJson.cn = { id: itemData.id };
+				cn.m = [];
+				cn.a = this.populateAttrs(itemData.newContact, itemData.attrs);
+
+				Ext.apply(methodJson, {
+					cn: cn
+				});
 			}
 		}
 

@@ -56,14 +56,14 @@ function() {
         this._dialog.setButtonVisible(ZmFolderPropsDialog.ADD_SHARE_BUTTON, true);
     }
 
-	this.setSize(Dwt.DEFAULT, "100");
+	this.setSize(Dwt.DEFAULT, "200");
     if (Dwt.getVisible(this._nameInputEl)) {
         this._nameInputEl.focus();
     }
 };
 
 
-/**  doSave will be invoked for each tab view.
+/*  doSave will be invoked for each tab view.
  *
  * @param	{BatchCommand}	batchCommand	Accumulates updates from all tabs
  * @param	{Object}	    saveState		Accumulates error messages and indication of any update
@@ -88,21 +88,6 @@ function(batchCommand, saveState) {
 				return;
 			}
             batchCommand.add(new AjxCallback(organizer, organizer.rename, [name, null, this._handleRenameErrorCallback]));
-            saveState.commandCount++;
-		}
-	}
-
-    if (!organizer.isDataSource() && appCtxt.isWebClientOfflineSupported) {
-        var webOfflineSyncDays = $('#folderOfflineLblId').val() || 0;
-		if (organizer.webOfflineSyncDays != webOfflineSyncDays) {
-			var error = ZmOrganizer.checkWebOfflineSyncDays(webOfflineSyncDays);
-			if (error) {
-                saveState.errorMessage.push(error);
-                // Only error checking for now.  If additional, should not return here
-				return;
-			}
-            var cb = appCtxt.webClientOfflineHandler && appCtxt.webClientOfflineHandler._modifyWebOfflineSyncDays.bind(appCtxt.webClientOfflineHandler, organizer.nId);
-            batchCommand.add(new AjxCallback(organizer, organizer.setOfflineSyncInterval, [webOfflineSyncDays, cb, this._handleErrorCallback]));
             saveState.commandCount++;
 		}
 	}
@@ -204,7 +189,6 @@ function(event) {
 
 	this._props.setPropertyVisible(this._urlId, organizer.url);
 	this._props.setPropertyVisible(this._permId, showPerm);
-    $('#folderOfflineLblId').val(organizer.webOfflineSyncDays || 0)
 
 	Dwt.setVisible(this._excludeFbEl, !organizer.link && (organizer.type == ZmOrganizer.CALENDAR));
 	// TODO: False until server handling of the flag is added
@@ -266,11 +250,6 @@ function() {
 	this._urlId   = this._props.addProperty(ZmMsg.urlLabel,    this._urlEl);
 	this._permId  = this._props.addProperty(ZmMsg.permissions, this._permEl);
 	this._colorId = this._props.addProperty(ZmMsg.colorLabel,  this._color);
-    if (appCtxt.isWebClientOfflineSupported) {
-        this._offlineEl = document.createElement("DIV");
-        this._offlineId = this._props.addProperty(ZmMsg.offlineFolderSyncInterval,  this._offlineEl);
-        $(this._offlineEl).closest("tr").find(">:first-child").attr("colSpan", 2);
-    }
 
     var container = this.getHtmlElement();
 	container.appendChild(this._props.getHtmlElement());

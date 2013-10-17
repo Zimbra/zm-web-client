@@ -64,7 +64,6 @@ ZmZimletBase.prototype = new ZmObjectHandler();
  */
 ZmZimletBase.prototype._init =
 function(zimletContext, shell) {
-	DBG.println(AjxDebug.ZIMLET, "Creating zimlet " + zimletContext.name);
 	this._passRpcErrors = false;
 	this._zimletContext = zimletContext;
 	this._dwtShell = shell;
@@ -538,7 +537,7 @@ function(spanElement, contentObjText, matchContext, canvas) {
 		} else {
 			// If it's an email address just use the address value.
 			if (obj.objectContent instanceof AjxEmailAddress) {obj.objectContent = obj.objectContent.address;}
-			txt = this.xmlObj().process(c.toolTip, obj);
+			txt = this.xmlObj().processString(c.toolTip, obj);
 		}
 		canvas.innerHTML = txt;
 	}

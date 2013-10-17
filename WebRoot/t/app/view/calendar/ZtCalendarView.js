@@ -59,6 +59,7 @@ Ext.define('ZCS.view.calendar.ZtCalendarView', {
             hidden: true,
             value: new Date(),
             enableEventBars: {
+                eventHeight: 'auto',
                 eventBarTpl: '<div>{title}</div>'
             },
             viewConfig: {
@@ -76,6 +77,7 @@ Ext.define('ZCS.view.calendar.ZtCalendarView', {
             hidden: true,
             value: new Date(),
             enableEventBars: {
+                eventHeight: 'auto',
                 eventBarTpl: '<div>{title}&nbsp;&nbsp;&nbsp;<i>{event}</i></div>'
             },
             viewConfig: {

@@ -114,7 +114,7 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 		}
 
 		this.setAction(ZCS.constant.OP_COMPOSE);
-		this.setDraftId(msg ? msg.get('zcsId') : null);
+		this.setDraftId(msg ? msg.get('itemId') : null);
 		this.showComposeForm(addresses, subject, body);
 	},
 
@@ -243,14 +243,12 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 		}
 
 		// get the form fields; show CC/BCC if we have any of those addresses
-		var showCcBcc = false;
 		Ext.each(ZCS.constant.RECIP_TYPES, function(type) {
 			formField[type] = form.down('contactfield[name=' + type + ']');
 			if (type !== ZCS.constant.TO && addresses[type] && addresses[type].length) {
-				showCcBcc = true;
+				panel.showCc();
 			}
 		}, this);
-		panel.showCcBcc(showCcBcc);
 
 		var action = this.getAction(),
 			attachmentsField = this.getAttachmentsField();
@@ -272,10 +270,7 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 				else {
 					attachmentsField.setHtml(ZCS.controller.mail.ZtComposeController.originalAttachmentsTpl.apply({}));
 				}
-                // Bug: 82698. Attachment info will only be present in case of valid attachments, for invite msg message.ics is ignored as attachment
-                if (origMsg.getAttachmentInfo().length) {
-                    attachmentsField.show();
-                }
+				attachmentsField.show();
 			}
 		}
 
@@ -316,14 +311,6 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 		editor.innerHTML = body || '';
 
 		this.setFormHash(this.calculateFormHash());
-
-		if (!(addresses[ZCS.constant.TO] && addresses[ZCS.constant.TO].length)) {
-			formField[ZCS.constant.TO].focusInput();
-		} else if (!subject) {
-			subjectFld.focus();
-		} else {
-			editor.focus();
-		}
 
 		ZCS.htmlutil.resetWindowScroll();
 	},
@@ -428,14 +415,10 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 		var msg = this.getMessageModel(true);
 		msg.save({
 			isDraft: true,
-			success: function(msg, operation) {
+			success: function () {
 				ZCS.app.fireEvent('showToast', ZtMsg.draftSaved);
 				this.setFormHash(this.calculateFormHash());
-				// parse response so we can get ID of draft msg - that way we can tell server to
-				// delete it when the msg is sent
-				var reader = ZCS.model.mail.ZtMailMsg.getProxy().getReader(),
-					response = reader.getResponseData(operation.getResponse());
-				this.setDraftId(response.Body.SaveDraftResponse.m[0].id);
+				this.setDraftId(msg.get('itemId'));
 			}
 		}, this);
 	},
@@ -548,7 +531,11 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 			usePrefix = ZCS.session.getSetting(ZCS.constant['SETTING_' + which + '_USE_PREFIX']),
 			incHeaders = ZCS.session.getSetting(ZCS.constant['SETTING_' + which + '_INCLUDE_HEADERS']);
 
-		if (incWhat === ZCS.constant.INC_NONE || incWhat === ZCS.constant.INC_ATTACH) {
+		if (incWhat === ZCS.constant.INC_NONE) {
+			return '';
+		}
+
+		if (incWhat === ZCS.constant.INC_ATTACH) {
 			return '';
 		}
 
@@ -581,9 +568,10 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 			return '';
 		}
 
-		var	quoted = usePrefix ? this.quoteHtml(content) : content;
+		var	quoted = usePrefix ? this.quoteHtml(content) : content,
+			divider = isForward ? ZtMsg.forwardedMessage : ZtMsg.originalMessage;
 
-		return sep + ZCS.constant.HTML_QUOTE_DIVIDER + quoted;
+		return sep + '----- ' + divider + ' -----' + sep + quoted;
 	},
 
 	/**

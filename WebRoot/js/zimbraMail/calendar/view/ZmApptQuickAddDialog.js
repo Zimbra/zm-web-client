@@ -40,7 +40,7 @@ ZmApptQuickAddDialog = function(parent) {
 	DBG.timePt("ZmQuickAddDialog constructor", true);
 
 	AjxDispatcher.run("GetResources");
-    AjxDispatcher.require(["MailCore", "CalendarCore"]);
+    AjxDispatcher.require("CalendarCore");
 
     var app = appCtxt.getApp(ZmApp.CALENDAR);
     this._fbCache = new ZmFreeBusyCache(app);
@@ -257,7 +257,7 @@ function() {
 											validationStyle:DwtInputField.CONTINUAL_VALIDATION,
 											parentElement:(this._htmlElId + "_subject")});
 	this._subjectField.setRequired();
-	Dwt.setSize(this._subjectField.getInputElement(), "100%", "2rem");
+	Dwt.setSize(this._subjectField.getInputElement(), "100%", "22px");
 
 
     this._locationField = new DwtInputField({parent:this, type:DwtInputField.STRING,
@@ -265,7 +265,7 @@ function() {
 											errorIconStyle:DwtInputField.ERROR_ICON_NONE,
 											validationStyle:DwtInputField.ONEXIT_VALIDATION,
 											parentElement:(this._htmlElId + "_location")});
-	Dwt.setSize(this._locationField.getInputElement(), "100%", "2rem");
+	Dwt.setSize(this._locationField.getInputElement(), "100%", "22px");
 
     // create DwtSelects
 	this._showAsSelect = new DwtSelect({parent:this, parentElement:(this._htmlElId + "_showAs")});
