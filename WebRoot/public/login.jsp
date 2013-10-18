@@ -326,6 +326,8 @@ if (application.getInitParameter("offlineMode") != null) {
 	<c:set var="version" value="${initParam.zimbraCacheBusterVersion}"/>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=1">
 	<meta name="description" content="<fmt:message key="zimbraLoginMetaDesc"/>">
+	<meta name="apple-mobile-web-app-capable" content="yes" />
+	<meta name="apple-mobile-web-app-status-bar-style" content="black" />
 	<link rel="stylesheet" type="text/css" href="<c:url value='/css/common,login,zhtml,skin.css'>
 		<c:param name="skin"	value="${skin}" />
 		<c:param name="v"		value="${version}" />
