@@ -201,7 +201,7 @@ Ext.define('ZCS.view.ux.ZtBubbleDropdown', {
             if (isGroup) {
                 var contactGroup = ZCS.cache.get(record.get('contactId'));
                 if (contactGroup) {
-                   var members = contactGroup.get('groupMembers'),
+                   var members = contactGroup.get('members'),
                        groupMembers = [];
                    for (var i=0; i < members.length; i++) {
                        var m = members[i],

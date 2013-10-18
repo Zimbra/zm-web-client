@@ -40,17 +40,7 @@ Ext.define('ZCS.view.contacts.ZtContactField', {
 		},
 		bubbleDisplayField: 'longName',
 
-		menuItemTpl: [
-            '<tpl if="displayName">',
-            '<span class="zcs-auto-complete-name">{displayName}</span>',
-            '</tpl>',
-            '<tpl if="name">',
-			'<span class="zcs-auto-complete-name">{name}</span>',
-			'</tpl>',
-			'<tpl if="email">',
-			'<span class="zcs-auto-complete-email">{email}</span>',
-			'</tpl>'
-		],
+		menuItemTpl: ZCS.template.AutocompleteMatch,
 
 		remoteFilter: true,
 

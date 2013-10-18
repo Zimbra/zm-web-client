@@ -19,12 +19,8 @@
 #   - any line that starts with a # is a comment
 #   - beginning and trailing space are trimmed during processing
 #
-# In general, a template that begins with <tpl> is an XTemplate, and one that does
-# not is an itemTpl.
-
-<template id='ConvListItemTEST'>
-    {subject:htmlEncode}
-</template>
+# The templates in this file will either be used to create an XTemplate, or as
+# an item template (itemTpl).
 
 <template id='ConvListItem'>
 	<div class='zcs-mail-list'>
@@ -595,3 +591,21 @@
 	</tpl>
 </template>
 
+<template id='AutocompleteMatch'>
+	<tpl if="displayName">
+        <span class="zcs-auto-complete-name">{displayName}</span>
+    </tpl>
+    <tpl if="name">
+		<span class="zcs-auto-complete-name">{name}</span>
+	</tpl>
+	<tpl if="email">
+		<span class="zcs-auto-complete-email">{email}</span>
+	</tpl>
+</template>
+
+<template id='Bubble'>
+   <div class="zcs-area-bubble {bubbleCls}">
+       {bubbleName}
+       <div class="bubble-close-icon delete-mini-icon"></div>
+   </div>
+</template>

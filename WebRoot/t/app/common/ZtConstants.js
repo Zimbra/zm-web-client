@@ -649,7 +649,7 @@ ZCS.constant.CONTACT_TEMPLATE_FIELDS = [
 	'isGroup', 'isDistributionList', 'isMultiple',
 	'nameLastFirst', 'fullName', 'nickname', 'email', 'phone',
 	'address', 'url', 'jobTitle', 'company', 'tags',
-	'groupMembers', 'isOwner', 'isMember'
+	'members', 'isOwner', 'isMember'
 ];
 
 // Contact fields that can have multiple values

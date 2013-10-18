@@ -53,10 +53,20 @@ Ext.define('ZCS.model.contacts.ZtContactWriter', {
 				else {
 					json = this.getSoapEnvelope(request, data, 'GetContacts');
 					methodJson = json.Body.GetContactsRequest;
-					methodJson.cn = {
-						id: contactId
-					};
-					methodJson.derefGroupMember = (itemData.contactType === ZCS.constant.CONTACT_GROUP) ? 1 : 0;
+					if (itemData.contactType === ZCS.constant.CONTACT_GROUP) {
+						methodJson.cn = [];
+						Ext.each(contactId, function(id) {
+							methodJson.cn.push({
+								id: id
+							});
+						}, this);
+						methodJson.derefGroupMember = 1;
+					}
+					else {
+						methodJson.cn = {
+							id: contactId
+						};
+					}
 				}
 			}
 			else if (folderId === ZCS.constant.ID_DLS) {

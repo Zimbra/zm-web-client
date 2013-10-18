@@ -118,12 +118,7 @@ Ext.define('ZCS.view.ux.ZtBubbleArea', {
      *
      * @cfg The tpl to use for bubbles.
      */
-    bubbleTpl: [
-        '<div class="zcs-area-bubble {bubbleCls}">',
-            '{bubbleName}',
-            '<div class="bubble-close-icon delete-mini-icon"></div>',
-        '</div>'
-    ],
+    bubbleTpl: ZCS.template.Bubble,
 
     /**
      * @required

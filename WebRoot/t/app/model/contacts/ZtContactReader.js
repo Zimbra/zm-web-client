@@ -54,7 +54,7 @@ Ext.define('ZCS.model.contacts.ZtContactReader', {
 		if (attrs.type === 'group') {
 			data.contactType = ZCS.constant.CONTACT_GROUP;
 			if (node.m) {
-				data.groupMembers = this.getGroupMembers(node.m);
+				data.members = this.getMembers(node.m);
 			}
 	        data.isGroup = true;
             data.nickname = attrs.nickname;
@@ -198,7 +198,7 @@ Ext.define('ZCS.model.contacts.ZtContactReader', {
 	 *
 	 * @return {Array}  list of parsed member data
 	 */
-    getGroupMembers: function(members) {
+    getMembers: function(members) {
 
         var group = [], data;
 
@@ -274,7 +274,7 @@ Ext.define('ZCS.model.contacts.ZtContactReader', {
 			Ext.apply(recordData, {
 				type:           ZCS.constant.ITEM_CONTACT,
 				contactType:    ZCS.constant.CONTACT_DL,
-				groupMembers:   options.dlMembers,
+				members:        options.dlMembers,
 				zcsId:          options.dlId
 			});
 

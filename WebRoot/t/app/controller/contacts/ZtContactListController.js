@@ -118,13 +118,15 @@ Ext.define('ZCS.controller.contacts.ZtContactListController', {
 		    }
 	    });
 
+
 	    Ext.Ajax.request({
 			url: restUri,
 		    success: function(response, options) {
 			    var text = response.responseText,
 				    contacts = text.split('\u001E'),
 				    reader = ZCS.model.contacts.ZtContact.getProxy().getReader(),
-				    ln = contacts.length, i, fields, data, attrs, j, field, value;
+				    ln = contacts.length, i, fields, data, attrs, j, field, value,
+				    contactGroupIds = [];
 
                 for (i = 0; i < ln; i++) {
 				    fields = contacts[i].split('\u001D');
@@ -136,17 +138,18 @@ Ext.define('ZCS.controller.contacts.ZtContactListController', {
 					    data = reader.getDataFromNode({ _attrs: attrs });
 				        new ZCS.model.contacts.ZtContact(data, attrs.id);
                     }
-                    //Fire a GetContactsRequest for each group and cache them, the
-                    //member information is needed for contact group autocomplete.
-                    if (attrs.type === 'group') {
-                        store.load({
-                            contactId: attrs.id,
-                            isGroup: true,
-                            scope: this
-                        });
+                    if (attrs.type === ZCS.constant.CONTACT_GROUP) {
+	                    contactGroupIds.push(attrs.id);
                     }
                 }
-
+			    // if we got any contact groups, expand them now so that they're available for autocomplete
+			    if (contactGroupIds.length > 0) {
+				    store.load({
+					    contactId:      contactGroupIds,
+					    contactType:    ZCS.constant.CONTACT_GROUP,
+					    scope:          this
+				    });
+			    }
 		    }
 	    });
     },

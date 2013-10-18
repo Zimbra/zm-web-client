@@ -173,7 +173,7 @@ Ext.define('ZCS.model.contacts.ZtContact', {
 
 			// List of members (groups and distribution lists). Each member is an anonymous object
 			// with 'memberEmail', 'memberPhone', and 'memberImageUrl' properties.
-            { name: 'groupMembers', type: 'auto' },
+            { name: 'members', type: 'auto' },
 
 			// Distribution lists
             { name: 'isMember', type: 'boolean'},
