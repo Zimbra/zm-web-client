@@ -36,10 +36,11 @@ Ext.define('ZCS.model.address.ZtAutoCompleteReader', {
 
         if (!isGroup) {
 			var emailAddressObj = ZCS.model.mail.ZtEmailAddress.fromEmail(node.email);
-
-            data.email = emailAddressObj.get('email');
-            data.name = emailAddressObj.get('name');
-            data.displayName = emailAddressObj.get('displayName');
+	        if (emailAddressObj) {
+	            data.email = emailAddressObj.get('email');
+	            data.name = emailAddressObj.get('name');
+	            data.displayName = emailAddressObj.get('displayName');
+	        }
         } else {
             data.displayName = node.display;
         }

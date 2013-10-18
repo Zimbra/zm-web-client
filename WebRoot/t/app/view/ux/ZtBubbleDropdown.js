@@ -181,51 +181,48 @@ Ext.define('ZCS.view.ux.ZtBubbleDropdown', {
 	 * Retrieve menu items based on the current menu store.
 	 */
 	getMenuItems: function () {
+
 		var menuRecords = [],
 			me = this,
 			label,
 			tpl = this.getMenuItemTpl() ? new Ext.XTemplate(this.getMenuItemTpl()) : null;
 
 		this.getMenuStore().each(function (record) {
+
 			if (tpl) {
-				var data = {
-					name:   record.get('longName'),
-					email:  record.get('email')
-				};
-				label = tpl.apply(data);
+				var name = record.get('longName'),
+					email = record.get('email');
+				label = (name || email) ? tpl.apply({ name:name, email:email }) : null;
 			} else {
 				label = record.get(me.getDropdownDisplayField());
 			}
-            //Add email addresses of individual members in case of a contact group autocomplete
-            var isGroup = record.get('isGroup');
-            if (isGroup) {
-                var contactGroup = ZCS.cache.get(record.get('contactId'));
-                if (contactGroup) {
-                   var members = contactGroup.get('members'),
-                       groupMembers = [];
-                   for (var i=0; i < members.length; i++) {
-                       var m = members[i],
-                           memberEmail = ZCS.model.mail.ZtEmailAddress.fromEmail(m.memberEmail);
-                       if (memberEmail) {
-                           //Push only valid emails
-                          groupMembers.push(memberEmail);
-                       }
-                   }
-                }
-            }
-			menuRecords.push({
-				label: label,
-				listener: function () {
-					me.clearInput();
-                    if (isGroup && groupMembers) {
-                        me.addBubbles(groupMembers);
-                    } else {
-                        me.addBubble(record);
-                    }
-                    me.getInput().dom.value = '';
-					me.focusInput();
+
+			var groupMembers, contactGroup;
+			if (record.get('isGroup')) {
+				contactGroup = ZCS.cache.get(record.get('contactId'));
+				if (contactGroup) {
+					groupMembers = Ext.Array.clean(Ext.Array.map(contactGroup.get('members'), function(member) {
+						return ZCS.model.mail.ZtEmailAddress.fromEmail(member.memberEmail);
+					}));
 				}
-			});
+			}
+
+			var gotGroupMembers = groupMembers && groupMembers.length > 0;
+			if (label || gotGroupMembers) {
+				menuRecords.push({
+					label: label,
+					listener: function () {
+						me.clearInput();
+	                    if (gotGroupMembers) {
+	                        me.addBubbles(groupMembers);
+	                    } else {
+	                        me.addBubble(record);
+	                    }
+	                    me.getInput().dom.value = '';
+						me.focusInput();
+					}
+				});
+			}
 		});
 
 		//Only return the number specified in the config and no more.
