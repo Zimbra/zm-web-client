@@ -615,7 +615,7 @@ function(conf, field, options, rowData, testType, rowId) {
 			date = new Date(dataValue);
 			dateText = AjxDateUtil.simpleComputeDateStr(date);
 		} else {
-			date = new Date();
+			date = null;
 			dateText = ZmMsg.chooseDate;
 		}
 		dateButton.setText(dateText);
@@ -626,7 +626,7 @@ function(conf, field, options, rowData, testType, rowId) {
 		var cal = new DwtCalendar({parent:calMenu});
 		cal.setSkipNotifyOnPage(true);
 		cal.addSelectionListener(this._dateLstnr);
-		cal.setDate(date);
+		cal.setDate(date || new Date());
 		cal._dateButton = dateButton;
 		this._inputs[rowId][field] = {id: id, dwtObj: dateButton};
 		tabGroup.addMember(dateButton.getTabGroupMember());
@@ -1467,7 +1467,7 @@ function(rowId) {
 		caseSensitive = inputs["caseSensitive"] ? inputs["caseSensitive"].value : null;	
 	}
 
-	return { testType:testType, comparator:comparator, value:value, subjectMod:subjectMod, caseSensitive:caseSensitive };
+	return { testType:testType, comparator:comparator, value:value, subjectMod:subjectMod, caseSensitive:caseSensitive, subject: subject };
 };
 
 /**
@@ -1511,6 +1511,9 @@ function(inputs, conf, field) {
 	}
 	if (type == ZmFilterRule.TYPE_CALENDAR) {
 		var date = inputs[field].dwtObj.getData(ZmFilterRuleDialog.DATA);
+		if (!date) {
+			return null;
+		}
 		return String(date.getTime() / 1000);
 	}
 	if (type == ZmFilterRule.TYPE_FOLDER_PICKER) {
@@ -1559,7 +1562,7 @@ function() {
 };
 
 /**
-* Returns true if the condition has the necessary parts, an error message otherwise.
+* Returns false if the condition has the necessary parts, an error message otherwise.
 *
 * @param condition	[Object]	condition
 * 
