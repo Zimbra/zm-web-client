@@ -592,8 +592,15 @@ function(resp, contact) {
  */
 ZmListController.prototype._dragListener =
 function(ev) {
-	if (ev.action == DwtDragEvent.SET_DATA) {
+
+	if (this.isSearchResults && ev.action == DwtDragEvent.DRAG_START) {
+		this.searchResultsController.showOverview(true);
+	}
+	else if (ev.action == DwtDragEvent.SET_DATA) {
 		ev.srcData = {data: ev.srcControl.getDnDSelection(), controller: this};
+	}
+	else if (this.isSearchResults && (ev.action == DwtDragEvent.DRAG_END || ev.action == DwtDragEvent.DRAG_CANCEL)) {
+		this.searchResultsController.showOverview(false);
 	}
 };
 

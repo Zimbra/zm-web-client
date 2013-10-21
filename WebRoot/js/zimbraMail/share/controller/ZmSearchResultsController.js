@@ -75,6 +75,19 @@ function(results, resultsCtlr) {
 	this.inactive = true;	// search tabs can always be reused (unless pinned)
 };
 
+/**
+ * Shows the overview or the filter panel. The overview is showing during a DnD operation.
+ *
+ * @param {Boolean}     show    if true, show the overview; if false, show the filter panel
+ */
+ZmSearchResultsController.prototype.showOverview =
+function(show) {
+	var overview = this._resultsApp.getOverview();
+	if (overview) {
+		appCtxt.getAppViewMgr().setViewComponents(this.viewId, { tree: show ? overview : this._filterPanel }, true);
+	}
+};
+
 // creates the toolbar and filter panel
 ZmSearchResultsController.prototype._initialize =
 function() {
