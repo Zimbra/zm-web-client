@@ -92,8 +92,7 @@ Ext.define('ZCS.view.ZtItemPanel', {
 		var titleBar = {
 			xtype: 'component',
 			itemId: 'itemTitleOnlyBar',
-			cls: 'zcs-conv-title-bar',
-			height: app === ZCS.constant.APP_MAIL ? 30 : 0
+			cls: 'zcs-conv-title-bar'
 		};
 
 		this.add([
