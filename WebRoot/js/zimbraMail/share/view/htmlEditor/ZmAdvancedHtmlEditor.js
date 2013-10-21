@@ -299,7 +299,6 @@ ZmAdvancedHtmlEditor.prototype._convertHtml2Text = function (convertor) {
 
 ZmAdvancedHtmlEditor.prototype.moveCaretToTop =
 function(offset) {
-	var focused = document.activeElement;
 	if (this._mode == DwtHtmlEditor.TEXT) {
 		var control = this.getContentField();
 		if (control.createTextRange) { // IE
@@ -323,13 +322,6 @@ function(offset) {
 	} else {
 		this._moveCaretToTopHtml(true, offset);
 	}
-    try {
-	    if (focused) {
-			focused.focus();
-		}
-    } catch(ex) {
-        // do nothing
-    }
 };
 
 ZmAdvancedHtmlEditor.prototype._moveCaretToTopHtml =
