@@ -2305,10 +2305,9 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 			<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
 		</tr>
 	</table>
-	<div class='ZOptionsSectionMain' style="width:100%;padding:0px;">
-		<table class='ZOptionsSectionTable'>
-			<tr><td class='ZOptionsSectionMain'>
-				<table width=100%>
+	<table class='ZOptionsSectionTable ZDeviceOptionsTable' width='100%'>
+		<tr><td class='ZOptionsSectionMain'>
+				<table width=100% class='ZPropertySheet' cellspacing='6'>
 					<tr><td class='ZOptionsLabel'><$=ZmMsg.deviceEmailNotificationsRegionLabel$></td>
 						<td class='ZOptionsField' colspan="4">
 							<table><tr><td>
@@ -2342,20 +2341,19 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 						</td>
 					</tr>
 					<tr><td class='ZOptionsLabel'><$=ZmMsg.deviceEmailNotificationsVerificationCodeLabel$></td>
-						<td class='ZOptionsField'><div id='${id}_DEVICE_EMAIL_CODE' tabindex='800'></div></td>
-						<td class="ZOptionsField" colspan="3"><div id="${id}_DEVICE_EMAIL_CODE_VALIDATE" tabindex='810'></div></td>
+						<td class='ZOptionsField' colspan="3"><div id='${id}_DEVICE_EMAIL_CODE' tabindex='800'></div></td>
+						<td class="ZOptionsField"><div id="${id}_DEVICE_EMAIL_CODE_VALIDATE" tabindex='810'></div></td>
 					</tr>
 					<tr><td class='ZOptionsLabel'><$=ZmMsg.deviceEmailNotificationsVerificationStatusLabel$></td>
-						<td class='ZOptionsField'>
+						<td class='ZOptionsField' colspan="3">
 							<div id='${id}_DEVICE_EMAIL_CODE_STATUS' tabindex='900'></div>
 						</td>
-						<td class="ZOptionsField" colspan="3"><div id="${id}_DEVICE_EMAIL_CODE_INVALIDATE" tabindex='910'></div></td>
+						<td class="ZOptionsField"><div id="${id}_DEVICE_EMAIL_CODE_INVALIDATE" tabindex='910'></div></td>
 					</tr>
 				</table>
-				</td>
-			</tr>
-		</table>
-	</div>
+			</td>
+		</tr>
+	</table>
 <$ } $>
 	
 </template>

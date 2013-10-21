@@ -3821,6 +3821,10 @@ HTML>BODY .appt-selected .appt_allday_body
 }
 #ENDIF
 
+.ZDeviceOptionsTable INPUT {
+	width: 100%;
+}
+
 .ZOptionsItemsListView .DwtListView-Rows {
 	height:auto;
 }
