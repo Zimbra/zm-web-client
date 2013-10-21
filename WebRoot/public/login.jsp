@@ -21,7 +21,7 @@
 
 <%-- get useragent --%>
 <zm:getUserAgent var="ua" session="false"/>
-<c:set var="useMobile" value="${ua.isiPhone or ua.isiPod or ua.isOsAndroid}"/>
+<c:set var="useMobile" value="${ua.isiPhone or ua.isiPod or ua.isOsAndroid or ua.isMobile}"/>
 <c:set var="trimmedUserName" value="${fn:trim(param.username)}"/>
 
 <c:if test="${param.loginOp eq 'relogin' and empty loginException}">
