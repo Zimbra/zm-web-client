@@ -207,7 +207,10 @@ function(params) {
 		this._setPriority(priority);
 	}
 
-	this._moveCaretOnTimer(true, params.extraBodyText ? params.extraBodyText.length : 0);
+    //Force focus on body only for reply and replyAll
+    if (ZmComposeController.IS_REPLY[action]) {
+        this._moveCaretOnTimer(true, params.extraBodyText ? params.extraBodyText.length : 0);
+    }
 
 	if (action != ZmOperation.FORWARD_ATT) {
 		this._saveExtraMimeParts();
@@ -2352,6 +2355,9 @@ function(action, msg, extraBodyText) {
 		AjxDebug.println(AjxDebug.REPLY, "value snippet: " + AjxStringUtil.htmlEncode(value.substr(0, 200)));
 		if (!this.isHidden) {
 			this._htmlEditor.setContent(value);
+            if (!htmlMode && ZmComposeController.IS_REPLY[action]) {
+                this._setBodyFieldCursor();
+            }
 		}
 	}
 
