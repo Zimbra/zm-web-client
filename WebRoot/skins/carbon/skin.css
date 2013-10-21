@@ -22,3 +22,8 @@
 	margin-bottom:0;
 #ENDIF
 }
+
+.Conv2Reply .Link,
+.Conv2Reply .LabelColName {
+	color:white;
+}
