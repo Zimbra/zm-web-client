@@ -784,14 +784,25 @@ function() {
  */
 ZmSearch.prototype.matches =
 function(item) {
-	var matchFunc = this.parsedQuery && this.parsedQuery.getMatchFunction();
-	return matchFunc ? matchFunc(item) : null;
-};
 
-ZmSearch.prototype.isMatchable =
-function(item) {
-	var matchFunc = this.parsedQuery && this.parsedQuery.getMatchFunction();
-	return (matchFunc != null);
+	if (!this.parsedQuery) {
+		return null;
+	}
+
+	// if search is constrained to a folder, we can return false if item is not in that folder
+	if (this.folderId && !this.parsedQuery.hasOrTerm) {
+		if (item.type === ZmItem.CONV) {
+			if (item.folders && !item.folders[this.folderId]) {
+				return false;
+			}
+		}
+		else if (item.folderId && item.folderId !== this.folderId) {
+			return false;
+		}
+	}
+
+	var matchFunc = this.parsedQuery.getMatchFunction();
+	return matchFunc ? matchFunc(item) : null;
 };
 
 /**
@@ -920,6 +931,7 @@ function() {
  * TODO: handle "field[lastName]" and "#lastName"
  */
 ZmParsedQuery = function(query) {
+	this.hasOrTerm = false;
 	this._tokens = this._parse(AjxStringUtil.trim(query, true));
 };
 
@@ -1264,7 +1276,7 @@ function() {
  * 
  * @return {Function}	the match function
  * 
- * TODO: refactor so that items generate their code
+ * TODO: refactor so that tokens generate their code
  * TODO: handle more ops
  */
 ZmParsedQuery.prototype.getMatchFunction =

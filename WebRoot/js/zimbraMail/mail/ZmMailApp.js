@@ -1326,13 +1326,6 @@ function(creates, list, controller, last) {
 	var convs = {};
 	var msgs = {};
 
-	// make sure current search is matchable (conv can just match on cid)
-	if (!(list.search && list.search.isMatchable()) && (controller == this._tradController)) {
-		var query = list.search ? list.search.query : "";
-		AjxDebug.println(AjxDebug.NOTIFY, "ZmMailApp: search not matchable: " + query);
-		return;
-	}
-
 	var sortBy = list.search.sortBy;
 
 	var convResults = this._checkType(creates, ZmItem.CONV, convs, list, sortBy, null, last);

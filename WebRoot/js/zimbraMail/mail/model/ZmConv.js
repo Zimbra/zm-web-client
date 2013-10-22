@@ -352,27 +352,33 @@ function() {
 
 /**
  * Checks if this conversation has a message that matches the given search.
- * If the search is not present or not matchable, the provided default value is
- * returned.
+ * If we're not able to tell whether a msg matches, we return the given default value.
  *
  * @param {ZmSearch}	search			the search to match against
- * @param {Object}	defaultValue		the value to return if search is not matchable
- * @return	{Boolean|Object}	<code>true</code> if this conversation has the message
+ * @param {Object}	    defaultValue	the value to return if search is not matchable or conv not loaded
+ * @return	{Boolean}	<code>true</code> if this conversation has a matching message
  */
 ZmConv.prototype.hasMatchingMsg =
 function(search, defaultValue) {
-	if (search && search.isMatchable() && this.msgs) {
-		var msgs = this.msgs.getArray();
+
+	var msgs = this.msgs && this.msgs.getArray(),
+		hasUnknown = false;
+
+	if (msgs && msgs.length > 0) {
 		for (var i = 0; i < msgs.length; i++) {
-			var msg = msgs[i];
-			if (search.matches(msg) && !msg.ignoreJunkTrash() && this.folders[msg.folderId]) {
+			var msg = msgs[i],
+				msgMatches = search.matches(msg);
+
+			if (msgMatches && !msg.ignoreJunkTrash() && this.folders[msg.folderId]) {
 				return true;
 			}
+			else if (msgMatches === null) {
+				hasUnknown = true;
+			}
 		}
-	} else {
-		return defaultValue;
 	}
-	return false;
+
+	return hasUnknown ? !!defaultValue : false;
 };
 
 ZmConv.prototype.ignoreJunkTrash =
