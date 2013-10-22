@@ -22,7 +22,7 @@
  * 		$set:debugtrace {on,off}			turn offline debug trace on/off
  * 		$set:instant_notify					show whether instant notify is on or off
  * 		$set:instant_notify {on,off}		turn instant notify on/off
- *		$set:poll [N]						set poll interval to N ms (unless doing instant notify)
+ *		$set:poll [N]						set poll interval to N seconds (unless doing instant notify)
  * 		$set:noop							send a poll (get notifications)
  * 		$set:rr								refresh reminders
  * 		$set:rh								run reminder housekeeping

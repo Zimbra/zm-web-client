@@ -1369,9 +1369,9 @@ function(app, type, listener) {
  */
 ZmZimbraMail.prototype.sendNoOp =
 function() {
-	var soapDoc = AjxSoapDoc.create("NoOpRequest", "urn:zimbraMail");
+	var jsonObj = { NoOpRequest: { _jsns: "urn:zimbraMail" } };
 	var accountName = appCtxt.isOffline && appCtxt.accountList.mainAccount.name;
-	this.sendRequest({soapDoc:soapDoc, asyncMode:true, noBusyOverlay:true, accountName:accountName});
+	this.sendRequest({jsonObj:jsonObj, asyncMode:true, noBusyOverlay:true, accountName:accountName});
 };
 
 /**
@@ -1735,36 +1735,36 @@ function(resetBackoff) {
  */
 ZmZimbraMail.prototype._execPoll =
 function() {
+
 	this._cancelInstantNotify();
 
 	// It'd be more efficient to make these instance variables, but for some
 	// reason that breaks polling in IE.
-	var soapDoc = AjxSoapDoc.create("NoOpRequest", "urn:zimbraMail");
+	var jsonObj = { NoOpRequest: { _jsns: "urn:zimbraMail" } },
+		method = jsonObj.NoOpRequest;
+
 	try {
         if (this._pollInstantNotifications) {
-            var method = soapDoc.getMethod();
 			var sessionId = ZmCsfeCommand.getSessionId();
 			if (sessionId) {
-            	method.setAttribute("wait", 1);
-            	method.setAttribute("limitToOneBlocked", 1);
+				method.wait = 1;
+				method.limitToOneBlocked = 1;
 			}
         }
 		var params = {
-			soapDoc: soapDoc,
-			asyncMode: true,
-			callback: new AjxCallback(this, this._handleResponseDoPoll),
-			errorCallback: new AjxCallback(this, this._handleErrorDoPoll),
-			noBusyOverlay: true,
-			timeout: appCtxt.get(ZmSetting.INSTANT_NOTIFY_TIMEOUT),
-			accountName: appCtxt.isOffline && appCtxt.accountList.mainAccount.name
+			jsonObj:        jsonObj,
+			asyncMode:      true,
+			callback:       this._handleResponseDoPoll.bind(this),
+			errorCallback:  this._handleErrorDoPoll.bind(this),
+			noBusyOverlay:  true,
+			timeout:        appCtxt.get(ZmSetting.INSTANT_NOTIFY_TIMEOUT),
+			accountName:    appCtxt.isOffline && appCtxt.accountList.mainAccount.name
 		};
 		this._pollRequest = this.sendRequest(params);
 
 		// bug #42664 - handle case where sync-status-changes fall between 2 client requests
-		if (appCtxt.isOffline &&
-			!appCtxt.accountList.isInitialSyncing() &&
-			appCtxt.accountList.isSyncStatus(ZmZimbraAccount.STATUS_RUNNING))
-		{
+		var accList = appCtxt.accountList;
+		if (appCtxt.isOffline && !accList.isInitialSyncing() && accList.isSyncStatus(ZmZimbraAccount.STATUS_RUNNING)) {
 			this.sendNoOp();
 		}
 	} catch (ex) {
