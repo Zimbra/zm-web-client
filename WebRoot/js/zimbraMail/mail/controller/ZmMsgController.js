@@ -423,7 +423,13 @@ function(ev) {
         }
     } else {
         id = item.id;
-        if (item._part) { id+= "&part=" + item._part; }
+        //Fix for bug: 84261. We get sub body part of multi-part attachment e.g. 2.1, 3.1, etc.
+        //Substring body part currently in view e.g. 2, 3, etc.
+        var part = item.getBodyPart().part;
+        if (part) {
+            id+= "&part=" + part.substring(0, part.indexOf('.'));
+        }
+
         if (item.showImages) {
             showImages = true;
         }
