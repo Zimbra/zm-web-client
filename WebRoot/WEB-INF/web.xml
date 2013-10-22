@@ -106,17 +106,16 @@
     <url-pattern>/*</url-pattern>
   </filter-mapping>
 
-  <!-- <filter>
-    <filter-name>ThrottlingFilter</filter-name>
-    <filter-class>com.zimbra.cs.servlet.ThrottlingFilter</filter-class>
+  <filter>
+    <filter-name>ZimbraQoSFilter</filter-name>
+    <filter-class>com.zimbra.cs.servlet.ZimbraQoSFilter</filter-class>
   </filter>
+
   <filter-mapping>
-    <filter-name>ThrottlingFilter</filter-name>
-    <url-pattern>/h/*</url-pattern>
-    <url-pattern>/m/*</url-pattern>
+    <filter-name>ZimbraQoSFilter</filter-name>
+    <url-pattern>/*</url-pattern>
   </filter-mapping>
- -->
- 
+
   <!-- HTTPCOMPRESSIONBEGIN %%comment VAR:zimbraHttpCompressionEnabled,-->%%
   <filter>
     <filter-name>GzipFilter</filter-name>
