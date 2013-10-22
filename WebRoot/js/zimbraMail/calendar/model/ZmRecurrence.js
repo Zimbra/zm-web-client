@@ -224,14 +224,17 @@ function(recur) {
 
         if (!exclude && !dates) {
             exclude = recur.exclude = {};
-            dates = exclude.dates = [];
+            dates = exclude.dates = {};
+            // Fix for bug: 77998, 84054. Object was missing child element dtval as per soap doc.
+            dates.dtval = [];
         }
 
         ridZ = i;
         dtval = {};
         s = dtval.s = {};
         s.d = ridZ;
-        dates.push(dtval);
+        // dtval should hold list of timestamps for conflicting appointments.
+        dates.dtval.push(dtval);
     }
 };
 
