@@ -28,7 +28,7 @@
     </c:if>
 </app:handleError>
 <html>
-<app:head mailbox="${mailbox}"/>
+<app:head mailbox="${mailbox}" print="true"/>
 <body style='background:white;'>
 <style>
     .ZhCallListPrintView td, .zPrintMsgs *{

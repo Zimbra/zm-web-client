@@ -59,15 +59,7 @@
 </app:handleError>
 
 <html>
-<head>
-    <meta http-equiv="cache-control" content="no-cache"/>
-    <meta http-equiv="Pragma" content="no-cache"/>
-    <c:url var='cssurl' value='/css/common,login,images,skin.css'>
-        <c:param name="client"	value="standard" />
-    </c:url>
-    <link rel="stylesheet" type="text/css" href="${cssurl}">
-    
-</head>
+<app:head mailbox="${mailbox}" print="true"/>
 <body style='background:white;'>
 <style type="text/css">
     .zPrintMsgs *{
