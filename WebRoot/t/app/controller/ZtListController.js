@@ -139,7 +139,7 @@ Ext.define('ZCS.controller.ZtListController', {
 	 */
 	doSearch: function(query, folder) {
 
-		if (query.indexOf('$cmd:') === 0) {
+		if (query.indexOf('$cmd:') === 0 || query.indexOf('$set:') === 0) {
 			ZCS.common.ZtClientCmdHandler.handle(query.substr(5), this.getStore().getProxy());
 			return;
 		}

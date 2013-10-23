@@ -126,17 +126,22 @@ Ext.define('ZCS.model.ZtSoapProxy', {
 	processHeader: function(header) {
 
 		var context = header && header.context,
-			session = header && header.session,
+			session = context && context.session,
 			changeToken = context && context.change && context.change.token,
 			notifications = context && context.notify,
 			refresh = context && context.refresh;
 
 		if (session) {
-			ZCS.session.setSessionId(session);
+			ZCS.session.setSessionId(session.id);
 		}
 
 		if (changeToken) {
 			ZCS.session.setChangeToken(changeToken);
+		}
+
+		if (refresh) {
+			ZCS.session.loadFolders(refresh);
+			ZCS.session.setNotifySeq(0);
 		}
 
 		if (notifications && !ZCS.session.isStaleSession(session)) {
@@ -144,7 +149,7 @@ Ext.define('ZCS.model.ZtSoapProxy', {
 		}
 
 		if (refresh) {
-			this.handleRefresh(refresh);
+			ZCS.app.getMainController().sendPoll();
 		}
 	},
 
@@ -220,20 +225,6 @@ Ext.define('ZCS.model.ZtSoapProxy', {
 				ZCS.app.fireEvent('notify', notification);
 			}, this);
 		}, this);
-	},
-
-	/**
-	 * Handle receipt of a {refresh} block, which typically happens when a new session
-	 * on the server has been started (for example at login).
-	 *
-	 * @param {object}  refresh     JSON folder data
-	 */
-	handleRefresh: function(refresh) {
-		//<debug>
-		Ext.Logger.info('Handling refresh block');
-		//</debug>
-		ZCS.session.loadFolders(refresh);
-		ZCS.session.setNotifySeq(0);
 	},
 
 	/**
