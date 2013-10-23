@@ -34,31 +34,24 @@
 </app:handleError>
 <%--TODO: clean up this code --%>
 <html>
-<head>
-    <meta http-equiv="cache-control" content="no-cache"/>
-    <meta http-equiv="Pragma" content="no-cache"/>
-    <c:url var='cssurl' value='/css/common,login,images,skin.css'>
-        <c:param name="client"	value="standard" />
-    </c:url>
-    <link rel="stylesheet" type="text/css" href="${cssurl}">
-    <style type="text/css">
-        .smalltext{
-            font-size:8pt;
-            color:#666;
-        }
-        .ZhCallListPrintView td, .zPrintMsgs *{
-            font-family:Tahoma,Arial,Helvetica,sans-serif;
-            font-size:${mailbox.prefs.defaultPrintFontSize};
-        }
-        .companyName{
-             color: #555555 !important;
-        }
-        .sectionLabel{
-             color: gray !important;
-        }
-    </style>
-</head>
+<app:head mailbox="${mailbox}" print="true"/>
 <body style='background:white;'>
+<style type="text/css">
+    .smalltext{
+        font-size:8pt;
+        color:#666;
+    }
+    .ZhCallListPrintView td, .zPrintMsgs *{
+        font-family:Tahoma,Arial,Helvetica,sans-serif;
+        font-size:${mailbox.prefs.defaultPrintFontSize};
+    }
+    .companyName{
+        color: #555555 !important;
+    }
+    .sectionLabel{
+        color: gray !important;
+    }
+</style>
 <div class="ZhCallListPrintView">
 <table><tr>
     <td><b><fmt:message key="zimbraTitle"/></b></td>

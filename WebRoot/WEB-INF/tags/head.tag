@@ -15,6 +15,7 @@
 <%@ tag body-content="scriptless" %>
 <%@ attribute name="title" rtexprvalue="true" required="false" %>
 <%@ attribute name="mailbox" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.bean.ZMailboxBean"%>
+<%@ attribute name="print" rtexprvalue="true" required="false" type="java.lang.Boolean"%>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
@@ -35,15 +36,22 @@
     </title>
     <c:set var="version" value="${initParam.zimbraCacheBusterVersion}"/>
     <!-- skin is ${zm:cook(skin)} -->
-    <c:if test="${empty param.print}" >
-		<c:url var='cssurl' value='/css/common,login,images,skin.css'>
-			<c:param name="client"	value="standard" />
-			<c:param name="skin"	value="${skin}" />
-			<c:param name="v"		value="${version}" />
-            <c:param name="debug"   value="${param.dev}" />
-		</c:url>
-		<link rel="stylesheet" type="text/css" href="${cssurl}">
-    </c:if>
+    <c:choose>
+        <c:when test="${not print}">
+            <c:set var='css' value='/css/common,login,images,skin.css'/>
+        </c:when>
+        <c:otherwise>
+            <c:set var='css' value='/css/zhtml.css'/>
+        </c:otherwise>
+    </c:choose>
+    <c:url var='cssurl' value="${css}">
+        <c:param name="client"	value="standard" />
+        <c:param name="skin"	value="${skin}" />
+        <c:param name="v"		value="${version}" />
+        <c:param name="debug"   value="${param.dev}" />
+    </c:url>
+    <link rel="stylesheet" type="text/css" href="${cssurl}">
+
 
     <style type="text/css" media="screen">
         .dragoverclass{

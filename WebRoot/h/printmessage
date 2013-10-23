@@ -33,7 +33,7 @@ ${zm:clearMessageCache(mailbox)}
 
 </app:handleError>
 <html>
-<app:head mailbox="${mailbox}"/>
+<app:head mailbox="${mailbox}" print="true"/>
 <body style='background:white;'>
 <div class='ZhCallListPrintView'>
 <table cellpadding="0" cellspacing="5"  width="100%">
