@@ -210,7 +210,7 @@ function(params) {
 
     //Force focus on body only for reply and replyAll
     if (ZmComposeController.IS_REPLY[action]) {
-        this._moveCaretOnTimer(true, params.extraBodyText ? params.extraBodyText.length : 0);
+        this._moveCaretOnTimer(params.extraBodyText ? params.extraBodyText.length : 0);
     }
 
 	if (action !== ZmOperation.FORWARD_ATT) {
