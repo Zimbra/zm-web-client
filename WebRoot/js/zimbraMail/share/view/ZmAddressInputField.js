@@ -765,7 +765,7 @@ function(ev) {
 		actionMenu.getOp(ZmOperation.CONTACT).setVisible(false);
 		actionMenu.getOp(ZmOperation.EXPAND).setVisible(false);
 
-		this._setContactText(false);
+		this._setContactText(null);
 		menu.popup(0, ev.docX, ev.docY);
 	}
 
@@ -837,7 +837,15 @@ function() {
 		//not sure this is %100 good, since isExpandableDL returns false also if EXPAND_DL_ENABLED setting is false.
 		//but I tried to do this in _setContactText by passing in the contact we get (using getContactByEmail) - but that contact somehow doesn't
 		//have isGal set or type "group" (the type is "contact"), thus isDistributionList returns null. Not sure what this inconsistency comes from.
-		menu.enable(ZmOperation.CONTACT, !isExpandableDl);
+
+		//so this is messy and I just try to do the best with information - see the comment above - so I use isExpandableDl as indication of DL (sometimes it's false despite it being an expandable DL)
+		//and I also use isDL as another way to try to know if it's a DL (by trying to find the contact from the contactsApp cache - sometimes it's there, sometimes not (it's there
+		//after you go to the DL folder).
+		var contactsApp = appCtxt.getApp(ZmApp.CONTACTS);
+		var contact = contactsApp && contactsApp.getContactByEmail(email);
+		var isDL = contact && contact.isDistributionList();
+		var canEdit = !(isDL || isExpandableDl) || (contact && contact.dlInfo && contact.dlInfo.isOwner);
+		menu.enable(ZmOperation.CONTACT, canEdit);
 
 	}
 
@@ -864,16 +872,13 @@ function() {
 ZmAddressInputField.prototype._handleResponseGetContact =
 function(ev, contact) {
 	ZmAddressInputField.menuContext.contact = contact;
-	this._setContactText(contact != null);
+	this._setContactText(contact);
 	this.getActionMenu().popup(0, ev.docX, ev.docY);
 };
 
 ZmAddressInputField.prototype._setContactText =
-function(isContact) {
-	var actionMenu = this.getActionMenu();
-	var newOp = isContact ? ZmOperation.EDIT_CONTACT : ZmOperation.NEW_CONTACT;
-	var newText = isContact ? null : ZmMsg.AB_ADD_CONTACT;
-	ZmOperation.setOperation(actionMenu, ZmOperation.CONTACT, newOp, newText);
+function(contact) {
+	ZmListController.setContactTextOnMenus(contact, this.getActionMenu());
 };
 
 ZmAddressInputField.prototype._deleteListener =

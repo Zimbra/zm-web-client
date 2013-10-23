@@ -876,7 +876,7 @@ function(parent, num) {
 	parent.enable([ZmOperation.SEARCH_MENU, ZmOperation.BROWSE], searchEnabled);
 
 	if (parent instanceof ZmPopupMenu) {
-		this._setContactText(!this.isGalSearch(), contact && contact.isGroup());
+		this._setContactText(contact);
 		if (appCtxt.get(ZmSetting.IM_ENABLED)) {
 			var imItem = parent.getOp(ZmOperation.IM);
 			ZmImApp.updateImMenuItemByContact(imItem, contact);

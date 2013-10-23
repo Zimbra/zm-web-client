@@ -657,20 +657,51 @@ function(ev) {
 
 /**
  * Sets text to "add" or "edit" based on whether a participant is a contact or not.
- * isContact - basically true if not a GAL item, I think.
- * isGroup - true if this is a group (and it is passed here...)
+ * contact - the contact (or null)
+ * extraMenu - see ZmMailListController.prototype._setContactText
  *
  * @private
  */
 ZmListController.prototype._setContactText =
-function(isContact, isGroup) {
-	var newOp = (isContact || isGroup) ? ZmOperation.EDIT_CONTACT : ZmOperation.NEW_CONTACT;
-	var newText = isGroup ? ZmMsg.AB_EDIT_GROUP :
-				isContact ? null :
-				ZmMsg.AB_ADD_CONTACT;
-	ZmOperation.setOperation(this.getCurrentToolbar(), ZmOperation.CONTACT, newOp, ZmMsg.AB_ADD_CONTACT);
-	ZmOperation.setOperation(this.getActionMenu(), ZmOperation.CONTACT, newOp, newText);
+function(contact, extraMenu) {
+	var menus = [this.getActionMenu()];
+	if (extraMenu) {
+		menus.push(extraMenu);
+	}
+	ZmListController.setContactTextOnMenus(contact, menus);
 };
+
+/**
+ * Sets text to "add" or "edit" based on whether a participant is a contact or not.
+ * contact - the contact (or null)
+ * menus - array of one or more menus
+ *
+ * @private
+ */
+ZmListController.setContactTextOnMenus =
+function(contact, menus) {
+	menus = AjxUtil.toArray(menus);
+	var newOp = contact ? ZmOperation.EDIT_CONTACT : ZmOperation.NEW_CONTACT;
+	var newText;
+	if (!contact) {
+		newText = ZmMsg.AB_ADD_CONTACT;
+	}
+	else if (contact.isDistributionList()) {
+		newText = ZmMsg.AB_EDIT_DL;
+	}
+	else if (contact.isGroup()) {
+		newText = ZmMsg.AB_EDIT_GROUP;
+	}
+	else {
+		newText = null; //no change ("edit contact")
+	}
+
+	for (var i = 0; i < menus.length; i++) {
+		var menu = menus[i];
+		ZmOperation.setOperation(menu, ZmOperation.CONTACT, newOp, newText);
+	}
+};
+
 
 /**
  * This method gets overloaded if folder id is retrieved another way

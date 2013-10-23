@@ -977,7 +977,7 @@ ZmMailListController.prototype._handleResponseGetContact =
 function(imItem, address, ev, contact) {
 
 	this._actionEv.contact = contact;
-	this._setContactText(contact != null);
+	this._setContactText(contact);
 
 	if (imItem) {
 		if (contact) {
@@ -2074,11 +2074,8 @@ function(view, menu) {
 
 // Handle participant menu.
 ZmMailListController.prototype._setContactText =
-function(isContact) {
-	ZmListController.prototype._setContactText.call(this, isContact);
-	var newOp = isContact ? ZmOperation.EDIT_CONTACT : ZmOperation.NEW_CONTACT;
-	var newText = isContact ? null : ZmMsg.AB_ADD_CONTACT;
-	ZmOperation.setOperation(this._participantActionMenu, ZmOperation.CONTACT, newOp, newText);
+function(contact) {
+	ZmListController.prototype._setContactText.call(this, contact, this._participantActionMenu);
 };
 
 ZmMailListController.prototype._setReplyText =
