@@ -1328,7 +1328,7 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 	@TextCursor@
 	background-color:white;
 	border:1px inset #F0F0F0;
-	height:2rem;
+	min-height:2rem;
 }
 
 .addrBubbleHolder-empty {
