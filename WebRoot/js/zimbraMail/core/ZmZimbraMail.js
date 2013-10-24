@@ -2254,10 +2254,9 @@ function(parent, parentElement, adminUrl) {
     menu.createSeparator();
 
 	if (AjxEnv.isFirefox && AjxEnv.browserVersion >= 23.0) {
-		menu.createSeparator();
-
 		mi = menu.createMenuItem("socialfoxSettings", {text: ZmMsg.socialfoxEnableSidebar});
 		mi.addSelectionListener(new AjxListener(this, this._socialfoxSettingsListener));
+		menu.createSeparator();
 	}
 
 	if (appCtxt.get(ZmSetting.CHANGE_PASSWORD_ENABLED)) {
