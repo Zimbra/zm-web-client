@@ -19,6 +19,7 @@
 	// Prevent IE from ever going into compatibility/quirks mode.
 	response.setHeader("X-UA-Compatible", "IE=edge");
 %><!DOCTYPE html>
+<zm:getUserAgent var="ua" session="false"/>
 <!--
  launchNewWindow.jsp
  * ***** BEGIN LICENSE BLOCK *****
@@ -135,6 +136,17 @@
 	<jsp:param name="skin" value="${skin}" />
 </jsp:include>
 <link href='${contextPath}/css/common,dwt,msgview,login,zm,spellcheck,images,skin.css?v=${vers}${isDebug?"&debug=1":""}&skin=${zm:cook(skin)}' rel='stylesheet' type="text/css">
+<c:if test="${ua.isIE7up}">
+    <link href="<c:url value="/css/ie-custom-icons.css">
+    <c:param name="v" value="${vers}" />
+	<c:param name='debug' value='${isDebug}' />
+    <c:param name="skin" value="${skin}" />
+    <c:param name="locale" value="${locale}" />
+    <c:if test="${not empty param.customerDomain}">
+        <c:param name="customerDomain"	value="${param.customerDomain}" />
+    </c:if>		
+</c:url>" rel="stylesheet" type="text/css" />
+</c:if>
 <jsp:include page="Boot.jsp"/>
 <script type="text/javascript">
 	AjxEnv.DEFAULT_LOCALE = "${zm:javaLocaleId(locale)}";
