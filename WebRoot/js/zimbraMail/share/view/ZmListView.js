@@ -510,15 +510,12 @@ function(htmlArr, idx, item, field, colIdx, params, classes) {
 	} else {
 		idx = DwtListView.prototype._getCellContents.apply(this, arguments);
 	}
-
 	return idx;
 };
 
 ZmListView.prototype._getImageHtml =
 function(htmlArr, idx, imageInfo, id, classes) {
-	imageInfo = imageInfo || "Blank_16";
-	var idText = id ? ["id='", id, "'"].join("") : null;
-	htmlArr[idx++] = AjxImg.getImageHtml(imageInfo, null, idText, null, null, classes);
+	htmlArr[idx++] = ["<div id='", id, "' class='", classes.join(" "), "'>", AjxImg.getImageHtml(imageInfo || "Blank_16"), "</div>"].join("");
 	return idx;
 };
 

@@ -557,6 +557,11 @@ TD.DwtListView-ColumnActive {
 	overflow:hidden;
 }
 
+.ZmRowDoubleHeader DIV DIV, .DwtMsgListMultiCol DIV DIV {
+	padding-left: 0;
+	padding-right: 0;
+}
+
 UL.DwtListView-Rows {
 	list-style:none;
 	padding:0px;

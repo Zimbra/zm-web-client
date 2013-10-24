@@ -610,12 +610,6 @@ SELECT						{	@FieldBorder@	}
 .ZmMsgListColStatus, .ZmMsgListColMute, .ZmMsgListColRead, .ZmMsgListColAttachment, .ZmMsgListColExpand
 {
 	width:16px;
-#IFNDEF MSIE
-	margin-left:3px;
-#ENDIF
-#IFDEF MSIE
-	margin:0px 3px 0px 2px;
-#ENDIF
 }
 
 .ZmMsgListColPriority {
@@ -630,12 +624,6 @@ SELECT						{	@FieldBorder@	}
 .ZmMsgListColDate { }
 .ZmMsgListColSubject { }
 */
-#IFDEF MSIE
-.ZmMsgListColFolder,
-.ZmMsgListColSize,
-.ZmMsgListColDate,
-.ZmMsgListColSubject				{ margin:0px 3px 0px 2px;	}
-#ENDIF
 .ZToolbarTable .vertSep				{ border-color:@ToolbarSeparatorColor@;		}
 #IFDEF MSIE
 .ZmSearchToolbar .DwtInputField-hint INPUT { border-width:0px; padding:0px; margin:3px 0px -3px; 	}
