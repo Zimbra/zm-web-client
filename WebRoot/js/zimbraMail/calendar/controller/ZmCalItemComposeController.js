@@ -1,3 +1,4 @@
+
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
@@ -32,6 +33,9 @@ ZmCalItemComposeController = function(container, app, type, sessionId) {
 	if (arguments.length == 0) { return; }
 	ZmBaseController.apply(this, arguments);
 	this._elementsToHide = ZmAppViewMgr.LEFT_NAV;
+
+	this._onAuthTokenWarningListener = this._onAuthTokenWarningListener.bind(this);
+	appCtxt.addAuthTokenWarningListener(this._onAuthTokenWarningListener);
 };
 
 ZmCalItemComposeController.prototype = new ZmBaseController;
@@ -111,6 +115,21 @@ function() {
 	ps.popup(this._composeView._getDialogXY());
 
 	return false;
+};
+
+ZmCalItemComposeController.prototype._onAuthTokenWarningListener =
+function() {
+	try {
+		if (this._composeView && this._composeView.isDirty()) {
+			return this.saveCalItem();
+		}
+	} catch(ex) {
+		var msg = AjxUtil.isString(ex) ?
+			AjxMessageFormat.format(ZmMsg.errorSavingWithMessage, errorMsg) :
+			ZmMsg.errorSaving;
+
+		appCtxt.setStatusMsg(msg, ZmStatusView.LEVEL_CRITICAL);
+	}
 };
 
 /**
