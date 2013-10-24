@@ -551,7 +551,7 @@ function() {
 	var contact = this._actionEv.contact;
 	if (contact) {
 		if (contact.isDistributionList()) {
-			this._editListener(this._actionEv, false, contact);
+			this._editListener(this._actionEv, contact);
 			return;
 		}
 		if (contact.isLoaded) {

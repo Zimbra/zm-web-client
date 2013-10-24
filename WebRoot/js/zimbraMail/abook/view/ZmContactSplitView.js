@@ -430,7 +430,7 @@ function(contact, isGal, oldContact, expandDL, isBack) {
 	//it is done with isBack set to true.
 	if (contact.isDistributionList() && !isBack) {
 		var callbackHere = this._setContact.bind(this, contact, isGal, oldContact, expandDL, true);
-		this._controller.gatherContactExtraDlStuff(contact, callbackHere);
+		contact.gatherExtraDlStuff(callbackHere);
 		return;
 	}
 

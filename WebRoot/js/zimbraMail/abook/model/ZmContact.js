@@ -902,6 +902,136 @@ function() {
 };
 
 
+ZmContact.prototype.gatherExtraDlStuff =
+function(callback) {
+	if (this.dlInfo && !this.dlInfo.isMinimal) {
+		//already there, skip to next step, loading DL Members
+		this.loadDlMembers(callback);
+		return;
+	}
+	var callbackFromGettingInfo = this._handleGetDlInfoResponse.bind(this, callback);
+	this.loadDlInfo(callbackFromGettingInfo);
+};
+
+
+ZmContact.prototype._handleGetDlInfoResponse =
+function(callback, result) {
+	var response = result._data.GetDistributionListResponse;
+	var dl = response.dl[0];
+	var attrs = dl._attrs;
+	var isMember = dl.isMember;
+	var isOwner = dl.isOwner;
+	var mailPolicySpecificMailers = [];
+	this.dlInfo = {	isMember: isMember,
+						isOwner: isOwner,
+						subscriptionPolicy: attrs.zimbraDistributionListSubscriptionPolicy,
+						unsubscriptionPolicy: attrs.zimbraDistributionListUnsubscriptionPolicy,
+						description: attrs.description || "",
+						displayName: attrs.displayName || "",
+						notes: attrs.zimbraNotes || "",
+						hideInGal: attrs.zimbraHideInGal == "TRUE",
+						mailPolicy: isOwner && this._getMailPolicy(dl, mailPolicySpecificMailers),
+						owners: isOwner && this._getOwners(dl)};
+	this.dlInfo.mailPolicySpecificMailers = mailPolicySpecificMailers;
+
+	this.loadDlMembers(callback);
+};
+
+ZmContact.prototype.loadDlMembers =
+function(callback) {
+	if ((!appCtxt.get("EXPAND_DL_ENABLED") || this.dlInfo.hideInGal) && !this.dlInfo.isOwner) {
+		// can't get members if dl has zimbraHideInGal true, and not owner
+		//also, if zimbraFeatureDistributionListExpandMembersEnabled is false - also do not show the members (again unless it's the owner)
+		this.dlMembers = [];
+		if (callback) {
+			callback();
+		}
+		return;
+	}
+	if (this.dlMembers) {
+		//already there - just callback
+		if (callback) {
+			callback();
+		}
+		return;
+	}
+	var respCallback = this._handleGetDlMembersResponse.bind(this, callback);
+	this.getAllDLMembers(respCallback);
+};
+
+
+ZmContact.prototype._handleGetDlMembersResponse =
+function(callback, result) {
+	var list = result.list;
+	if (!list) {
+		this.dlMembers = [];
+		callback();
+		return;
+	}
+	var members = [];
+	for (var i = 0; i < list.length; i++) {
+		members.push({type: ZmContact.GROUP_INLINE_REF,
+						value: list[i],
+						address: list[i]});
+	}
+
+	this.dlMembers = members;
+	callback();
+};
+
+ZmContact.prototype._getOwners =
+function(dl) {
+	var owners = dl.owners[0].owner;
+	var ownersArray = [];
+	for (var i = 0; i < owners.length; i++) {
+		var owner = owners[i].name;
+		ownersArray.push(owner); //just the email address, I think and hope.
+	}
+	return ownersArray;
+};
+
+ZmContact.prototype._getMailPolicy =
+function(dl, specificMailers) {
+	var mailPolicy;
+
+	var rights = dl.rights[0].right;
+	var right = rights[0];
+	var grantees = right.grantee;
+	if (!grantees) {
+		return ZmGroupView.MAIL_POLICY_ANYONE;
+	}
+	for (var i = 0; i < grantees.length; i++) {
+		var grantee = grantees[i];
+
+		mailPolicy = ZmGroupView.GRANTEE_TYPE_TO_MAIL_POLICY_MAP[grantee.type];
+
+		if (mailPolicy == ZmGroupView.MAIL_POLICY_SPECIFIC) {
+			specificMailers.push(grantee.name);
+		}
+		else if (mailPolicy == ZmGroupView.MAIL_POLICY_ANYONE) {
+			break;
+		}
+		else if (mailPolicy == ZmGroupView.MAIL_POLICY_INTERNAL) {
+			break;
+		}
+		else if (mailPolicy == ZmGroupView.MAIL_POLICY_MEMBERS) {
+			if (grantee.name == this.getEmail()) {
+				//this means only members of this DL can send.
+				break;
+			}
+			else {
+				//must be another DL, and we do allow it, so treat it as regular user.
+				specificMailers.push(grantee.name);
+				mailPolicy = ZmGroupView.MAIL_POLICY_SPECIFIC;
+			}
+		}
+	}
+	mailPolicy = mailPolicy || ZmGroupView.MAIL_POLICY_ANYONE;
+
+	return mailPolicy;
+};
+
+
 ZmContact.prototype.loadDlInfo =
 function(callback) {
 	var soapDoc = AjxSoapDoc.create("GetDistributionListRequest", "urn:zimbraAccount", null);

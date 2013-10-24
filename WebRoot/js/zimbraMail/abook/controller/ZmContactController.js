@@ -60,9 +60,18 @@ ZmContactController.prototype.getDefaultViewType = ZmContactController.getDefaul
  *
  * @param	{ZmContact}	contact		the contact
  * @param	{Boolean}	isDirty		<code>true</code> to mark the contact as dirty
+ * @param	{Boolean}	isBack		<code>true</code> in case of DL, we load (or reload) all the DL info, so we have to call back here. isBack indicates this is after the reload so we can continue.
  */
 ZmContactController.prototype.show =
-function(contact, isDirty) {
+function(contact, isDirty, isBack) {
+	if (contact.isDistributionList() && !isBack) {
+		//load the full DL info available for the owner, for edit.
+		var callback = this.show.bind(this, contact, isDirty, true); //callback HERE
+		contact.clearDlInfo();
+		contact.gatherExtraDlStuff(callback);
+		return;
+	}
+
 	this._contact = contact;
 	if (isDirty) {
 		this._contactDirty = true;
