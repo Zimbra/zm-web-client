@@ -529,6 +529,7 @@ function(spanElement, contentObjText, matchContext, canvas) {
 	var c = this.xmlObj("contentObject");
 	if (c && c.toolTip) {
 		var obj = this._createContentObj(contentObjText, matchContext);
+
 		var txt;
 		if (c.toolTip instanceof Object &&
 		    c.toolTip.actionUrl) {
@@ -542,6 +543,8 @@ function(spanElement, contentObjText, matchContext, canvas) {
 		}
 		canvas.innerHTML = txt;
 
+		Dwt.setSize(canvas, parseInt(c.toolTip.width) || Dwt.DEFAULT, parseInt(c.toolTip.height) || Dwt.DEFAULT);
+		
 		if (this._isTooltipSticky()) {
 			Dwt.setHandler(canvas, DwtEvent.ONCLICK, AjxCallback.simpleClosure(this.setTooltipSticky, this, [true]));
 
