@@ -261,6 +261,10 @@
 	background-color:@lighten(AppC,90)@; 
 }
 
+.InvCounter .ZmCounterToolBar {
+    background-color:transparent;
+}
+
 .ZmInviteToolBar {
 	@InlineToolbarContainer@
 	background-color:@lighten(AppC,90)@;

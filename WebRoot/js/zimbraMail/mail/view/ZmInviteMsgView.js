@@ -771,3 +771,10 @@ function() {
         this._dayView._scrollToTime(inviteDate.getHours());
     }
 }
+
+ZmInviteMsgView.prototype.repositionCounterToolbar =
+function(hdrTableId) {
+    if (this._invite && this._invite.hasCounterMethod() && hdrTableId && this._counterToolbar) {
+        this._counterToolbar.reparentHtmlElement(hdrTableId + '_counterToolbar', 0);
+    }
+}

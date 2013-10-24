@@ -334,6 +334,7 @@ function(visible, readingPaneOnRight,msg) {
 			}
 
 			inviteMsgView.set(this._msg);
+			inviteMsgView.repositionCounterToolbar(this._hdrTableId);
 			inviteMsgView.showMoreInfo(null, null, readingPaneOnRight);
 		}
 	}
@@ -1404,6 +1405,7 @@ function(msg, container) {
         if (this._calendarSelectCellId && this._inviteMsgView._inviteMoveSelect) {
             this._inviteMsgView._inviteMoveSelect.reparentHtmlElement(this._calendarSelectCellId, 0);
         }
+        this._inviteMsgView.repositionCounterToolbar(this._hdrTableId);
     }
 
 

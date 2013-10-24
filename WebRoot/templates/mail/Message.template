@@ -166,6 +166,7 @@
 												<tr>
 													<td width=20><$= AjxImg.getImageHtml("Information") $></td>
 													<td class='LabelColValue'><$= data.counterInvMsg $></td>
+													<td id='${hdrTableId}_counterToolbar' width="1"></td>
 												</tr>
 											</table>
 										</div>
