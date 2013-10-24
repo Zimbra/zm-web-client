@@ -1481,8 +1481,10 @@ function(fullVersion, width, height, name) {
     if (window.appCoverageMode) {
         url[i++] = "&coverage=1";
     }
-     name = name || "_blank";
+	this.__childWindowId = (this.__childWindowId+1) || 0;
+	url[i++] = "&childId=" + this.__childWindowId;
 
+    name = name || "_blank";
 	width = width || 705;
 	height = height || 465;
 	var args = ["height=", height, ",width=", width, ",location=no,menubar=no,resizable=yes,scrollbars=no,status=yes,toolbar=no"].join("");
@@ -1493,7 +1495,7 @@ function(fullVersion, width, height, name) {
 	this.handlePopupBlocker(newWin);
 	if(newWin) {
 		// add this new window to global list so parent can keep track of child windows!
-		return this.getAppController().addChildWindow(newWin);
+		return this.getAppController().addChildWindow(newWin, this.__childWindowId);
 	}
 };
 

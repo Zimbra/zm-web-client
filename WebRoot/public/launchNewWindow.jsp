@@ -113,6 +113,8 @@
     }
 	request.setAttribute("localeId", locale.toString());
 
+	String childId = request.getParameter("childId");
+
 	// make variables available in page context (e.g. ${foo})
 	pageContext.setAttribute("contextPath", contextPath);
 	pageContext.setAttribute("skin", skin);
@@ -124,6 +126,7 @@
 	pageContext.setAttribute("isDevMode", isDev);
 	pageContext.setAttribute("isDebug", isSkinDebugMode || isDevMode);
     pageContext.setAttribute("isCoverage", isCoverage);
+    pageContext.setAttribute("childId", childId);
 %>
 <fmt:setLocale value='${pageContext.request.locale}' scope='request' />
 <title><fmt:setBundle basename="/messages/ZmMsg"/><fmt:message key="zimbraTitle"/></title>
@@ -144,6 +147,7 @@
 	window.appDevMode			= ${isDevMode};
     window.appCoverageMode		= ${isCoverage};
     window.authTokenExpires     = ${authTokenExpires};
+    window.childId              = ${childId};
 </script>
 
 <%@ include file="loadImgData.jsp" %>

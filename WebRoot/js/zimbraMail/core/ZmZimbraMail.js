@@ -280,9 +280,11 @@ function() {
 		// close all child windows
 		for (var i = 0; i < childWinList.size(); i++) {
 			var childWin = childWinList.get(i);
-			childWin.win.onbeforeunload = null;
-			childWin.win.parentController = null;
-			childWin.win.close();
+			if (childWin.win) {
+				childWin.win.onbeforeunload = null;
+				childWin.win.parentController = null;
+				childWin.win.close();
+			}
 		}
 	}
 };
@@ -2866,14 +2868,14 @@ function(bStartTimer) {
  * @private
  */
 ZmZimbraMail.prototype.addChildWindow =
-function(childWin) {
+function(childWin, childId) {
 	if (this._childWinList == null) {
 		this._childWinList = new AjxVector();
 	}
 
 	// NOTE: we now save childWin w/in Object so other params can be added to it.
 	// Otherwise, Safari breaks (see http://bugs.webkit.org/show_bug.cgi?id=7162)
-	var newWinObj = {win:childWin};
+	var newWinObj = {win:childWin,childId:childId};
 	this._childWinList.add(newWinObj);
 
 	return newWinObj;
@@ -2886,10 +2888,12 @@ function(childWin) {
  */
 ZmZimbraMail.prototype.getChildWindow =
 function(childWin) {
-	if (this._childWinList) {
-		for (var i = 0; i < this._childWinList.size(); i++) {
-			if (childWin == this._childWinList.get(i).win) {
-				return this._childWinList.get(i);
+	var list = this._childWinList;
+	if (list && childWin) {
+		for (var i = 0; i < list.size(); i++) {
+			var winObj = list.get(i);
+			if (childWin === winObj.win || childWin.childId === winObj.childId) {
+				return winObj;
 			}
 		}
 	}
@@ -2903,10 +2907,15 @@ function(childWin) {
  */
 ZmZimbraMail.prototype.removeChildWindow =
 function(childWin) {
-	if (this._childWinList) {
-		for (var i = 0; i < this._childWinList.size(); i++) {
-			if (childWin == this._childWinList.get(i).win) {
-				this._childWinList.removeAt(i);
+	var list = this._childWinList;
+	if (list) {
+		for (var i = 0; i < list.size(); i++) {
+			var winObj = list.get(i);
+			if (childWin == winObj.win) {
+				// Bug 84426: We don't want our old window metadata to go away; if it's merely a refresh
+				// we want access to the parameters of our old window, so clear the actual window object,
+				// and leave the other parameters in winObj intact
+				winObj.win = null;
 				break;
 			}
 		}
@@ -3015,7 +3024,7 @@ function() {
 	if (childWinList) {
 		for (var i = 0; i < childWinList.size(); i++) {
 			var childWin = childWinList.get(i);
-			if (childWin.win.ZmNewWindow && childWin.win.ZmNewWindow._confirmExitMethod()) {
+			if (childWin.win && childWin.win.ZmNewWindow && childWin.win.ZmNewWindow._confirmExitMethod()) {
 				return false;
 			}
 		}

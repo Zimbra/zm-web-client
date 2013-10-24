@@ -161,8 +161,8 @@ function(ev) {
  */
 ZmNewWindow.prototype.startup =
 function() {
-
 	// get params from parent window b/c of Safari bug #7162
+	// and in case of a refresh, our old window parameters are still stored there
 	if (window.parentController) {
 		var childWinObj = window.parentController.getChildWindow(window);
 		if (childWinObj) {
