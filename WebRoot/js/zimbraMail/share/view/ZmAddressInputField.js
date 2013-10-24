@@ -934,7 +934,7 @@ function() {
 	var contact = ZmAddressInputField.menuContext.contact;
 	if (contact) {
 		if (contact.isLoaded) {
-			ctlr.show(contact, true);
+			ctlr.show(contact);
 		} else {
 			var callback = this._loadContactCallback.bind(this);
 			contact.load(callback);
