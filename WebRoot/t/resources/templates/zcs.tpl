@@ -194,7 +194,7 @@
 			</div>
 		</div>
 		<div class='zcs-contactgroupview-members'>
-			<tpl for='groupMembers'>
+			<tpl for='members'>
 				<div class='zcs-contactgroupview-member'>
 					<div class='zcs-contact-image' <tpl if='memberImageUrl'>style='background-image:url({memberImageUrl})'</tpl>></div>
 					<div class='zcs-contact-info'>
