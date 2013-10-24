@@ -662,7 +662,6 @@ function(value) {
 // Handles key events that occur in the INPUT.
 ZmAddressInputField.prototype._keyDownCallback =
 function(ev, aclv) {
-
 	ev = DwtUiEvent.getEvent(ev);
 	var key = DwtKeyEvent.getCharCode(ev);
 	var propagate;
@@ -1072,7 +1071,10 @@ function(restore) {
 ZmAddressInputField.prototype._resizeInput =
 function() {
 	var val = AjxStringUtil.htmlEncode(this._input.value);
-	var holderWidth = Dwt.getSize(this._holder).x;
+	var paddings = Dwt.getMargins(this._holder);
+	var margins = Dwt.getMargins(this._input);
+	var maxWidth = Dwt.getSize(this._holder).x - (this._input.offsetLeft + ((AjxEnv.isTrident) ? (margins.left + paddings.left) : 0) + paddings.right + margins.right + 1);
+
 	var inputFontSize = DwtCssStyle.getProperty(this._input, "font-size");
 	var strW = AjxStringUtil.getWidth(val, false, inputFontSize);
 	if (AjxEnv.isWindows && (AjxEnv.isFirefox || AjxEnv.isSafari || AjxEnv.isChrome) ){
@@ -1080,7 +1082,7 @@ function() {
 		strW = strW * 1.2;
 	}
 	var pad = this._editMode ? ZmAddressInputField.INPUT_EXTRA_SMALL : ZmAddressInputField.INPUT_EXTRA;
-	var inputWidth = Math.min(strW, holderWidth) + pad;
+	var inputWidth = Math.min(strW + pad, maxWidth);
 	if (this._editMode) {
 		inputWidth = Math.max(inputWidth, ZmAddressInputField.INPUT_EXTRA);
 	}

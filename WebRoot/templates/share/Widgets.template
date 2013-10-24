@@ -261,6 +261,6 @@
 <template id="share.Widgets#ZmAddressInputField">
 	<div id='${holderId}' class='addrBubbleHolder-empty'>
 		<span id='${dragInsertionBarId}' style='display:none' class='addrBubbleInsertionBar'>&nbsp;</span>
-		<${inputTagName} class='addrInputField' id='${inputId}' />
+		<${inputTagName} class='addrInputField user_font_system' id='${inputId}' />
 	</div>
 </template>
