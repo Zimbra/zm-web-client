@@ -12,8 +12,8 @@
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
  */
-$base-color: #0095D3; // VMware Serenity Blue
-$base-gradient: 'matte';  // switch to 'flat' for no gradient
+$base-color: #0087C3; // Zimbra Blue
+$base-gradient: 'flat';  // switch to 'matte' for slight gradient
 
 $tabs-dark: darken($base-color, 5%);
 //$tabs-bar-gradient: $base-gradient;
@@ -26,7 +26,7 @@ $list-active-color: darken($base-color, 5%);
 $list-pressed-color: lighten($base-color, 40%);
 
 
-$light-grey: #E3E3E3;
+$light-grey: #E5E5E5;
 $medium-grey: #C3C3C3;
 $dark-grey: #3F3F3F;
 $white: #FFF;
