@@ -918,7 +918,7 @@ function(ev) {
 		span.className = object.handler.getClassName(object.object, object.context, span.id);
 		var shell = DwtShell.getShell(window);
 		var manager = shell.getHoverMgr();
-		manager.setHoverOutDelay(0);
+		manager.setHoverOutDelay(150);
 		manager.setHoverOutData(object);
 		manager.setHoverOutListener(this._hoverOutListener);
 		manager.hoverOut();
