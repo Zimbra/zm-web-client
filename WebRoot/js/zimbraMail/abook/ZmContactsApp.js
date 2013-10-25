@@ -237,7 +237,6 @@ function() {
 	ZmItem.registerItem(ZmItem.CONTACT,
 						{app:			ZmApp.CONTACTS,
 						 nameKey:		"contact",
-						 countKey:  	"typeContact",
 						 icon:			"Contact",
 						 soapCmd:		"ContactAction",
 						 itemClass:		"ZmContact",
@@ -254,7 +253,6 @@ function() {
 
 	ZmItem.registerItem(ZmItem.GROUP,
 						{nameKey:	"group",
-						 countKey:	"typeContactGroup",
 						 icon:		"Group",
 						 soapCmd:	"ContactAction"
 						});
@@ -285,7 +283,7 @@ function() {
 							 treeType:			ZmOrganizer.FOLDER,
 							 dropTargets:		[ZmOrganizer.ADDRBOOK],
 							 views:				["contact"],
-							 folderKey:			"addressBook",
+							 folderKey:			"contactsFolder",
 							 mountKey:			"mountAddrBook",
 							 createFunc:		"ZmOrganizer.create",
 							 compareFunc:		"ZmAddrBook.sortCompare",

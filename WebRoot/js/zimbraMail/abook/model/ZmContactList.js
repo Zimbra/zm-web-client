@@ -526,11 +526,11 @@ function(params) {
 		params1.action = "move";
         params1.accountName = appCtxt.multiAccounts && appCtxt.accountList.mainAccount.name;
         if (params1.folder.id == ZmFolder.ID_TRASH) {
-            params1.actionText = ZmMsg.actionTrash;
+            params1.actionTextKey = 'actionTrash';
             // bug: 47389 avoid moving to local account's Trash folder.
             params1.accountName = appCtxt.multiAccounts && params.items[0].getAccount().name;
         } else {
-            params1.actionText = ZmMsg.actionMove;
+            params1.actionTextKey = 'actionMove';
             params1.actionArg = toFolder.getName(false, false, true);
         }
 		params1.callback = params.outOfTrash && new AjxCallback(this, this._handleResponseMoveItems, params);

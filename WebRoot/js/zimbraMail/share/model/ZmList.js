@@ -333,7 +333,7 @@ function(offset, newList) {
  * @param	{AjxCallback}		params.callback			the callback to run after each sub-request
  * @param	{closure}			params.finalCallback	the callback to run after all items have been processed
  * @param	{int}				params.count			the starting count for number of items processed
- * @param   {String}    		params.actionText   	pattern for generating action summary
+ * @param   {String}    		params.actionTextKey   	pattern for generating action summarykey to action summary message
  */
 ZmList.prototype.flagItems =
 function(params) {
@@ -405,7 +405,7 @@ function(params) {
 	params.items = items1;
 	params.attrs = {tn: tagName};
 	params.action = doTag ? "tag" : "!tag";
-    params.actionText = doTag ? ZmMsg.actionTag : ZmMsg.actionUntag;
+    params.actionTextKey = doTag ? 'actionTag' : 'actionUntag';
 	params.actionArg = params.tag && params.tag.name;
 
 	this._itemAction(params);
@@ -441,7 +441,7 @@ function(params) {
 	params.items = items1;
 	params.action = "update";
 	params.attrs = {t: ""};
-    params.actionText = ZmMsg.actionRemoveTags;
+    params.actionTextKey = 'actionRemoveTags';
 
 	this._itemAction(params);
 };
@@ -463,12 +463,12 @@ function(params) {
  * @param	{closure}		params.finalCallback	the callback to run after all items have been processed
  * @param	{int}			params.count			the starting count for number of items processed
  * @param	{boolean}		params.noUndo			true if the action is not undoable (e.g. performed as an undo)
- * @param	{String}		params.actionText		optional text to display in the confirmation toast instead of the default summary. May be set explicitly to null to disable the confirmation toast entirely
+ * @param	{String}		params.actionText		optional key to text to display in the confirmation toast instead of the default summary. May be set explicitly to null to disable the confirmation toast entirely
  */
 ZmList.prototype.moveItems =
 function(params) {
 	
-	params = Dwt.getParams(arguments, ["items", "folder", "attrs", "callback", "errorCallback" ,"finalCallback", "noUndo", "actionText"]);
+	params = Dwt.getParams(arguments, ["items", "folder", "attrs", "callback", "errorCallback" ,"finalCallback", "noUndo", "actionTextKey"]);
 
 	var params1 = AjxUtil.hashCopy(params);
 	params1.items = AjxUtil.toArray(params.items);
@@ -477,10 +477,10 @@ function(params) {
 	params1.closeChildWin = params.closeChildWin;
 	
 	if (params1.folder.id == ZmFolder.ID_TRASH) {
-		params1.actionText = (params.actionText !== null) ? (params.actionText || ZmMsg.actionTrash) : null;
+		params1.actionTextKey = 'actionTrash';
 		params1.action = "trash";
 	} else {
-		params1.actionText = (params.actionText !== null) ? (params.actionText || ZmMsg.actionMove) : null;
+		params1.actionTextKey = 'actionMove';
 		params1.actionArg = params.folder.getName(false, false, true);
 		params1.action = "move";
 		params1.attrs.l = params.folder.id;
@@ -539,7 +539,7 @@ function(params, params1) {
 				items:			toCopy,
 				folder:			params.folder, // Should refer to our own trash folder
 				finalCallback:	this._itemAction.bind(this, params1, null),
-				actionText:		null
+				actionTextKey:	null
 			};
 			this.copyItems(params2);
 			return true;
@@ -587,18 +587,18 @@ function(params, result) {
  * @param {Hash}		params.attrs			the additional attrs for SOAP command
  * @param {closure}		params.finalCallback	the callback to run after all items have been processed
  * @param {int}			params.count			the starting count for number of items processed
- * @param {String}		params.actionText		optional text to display in the confirmation toast instead of the default summary. May be set explicitly to null to disable the confirmation toast
+ * @param {String}		params.actionTextKey	key to optional text to display in the confirmation toast instead of the default summary. May be set explicitly to null to disable the confirmation toast
  */
 ZmList.prototype.copyItems =
 function(params) {
 
-	params = Dwt.getParams(arguments, ["items", "folder", "attrs", "actionText"]);
+	params = Dwt.getParams(arguments, ["items", "folder", "attrs", "actionTextKey"]);
 
 	params.items = AjxUtil.toArray(params.items);
 	params.attrs = params.attrs || {};
 	params.attrs.l = params.folder.id;
 	params.action = "copy";
-	params.actionText = (params.actionText !== null) ? (params.actionText || ZmMsg.itemCopied) : null;
+	params.actionTextKey = 'itemCopied';
 	params.actionArg = params.folder.getName(false, false, true);
 	params.callback = new AjxCallback(this, this._handleResponseCopyItems, params);
 
@@ -616,8 +616,8 @@ ZmList.prototype._handleResponseCopyItems =
 function(params, result) {
 	var resp = result.getResponse();
 	if (resp.length > 0) {
-		if (params.actionText) {
-			var msg = AjxMessageFormat.format(params.actionText, resp.length);
+		if (params.actionTextKey) {
+			var msg = AjxMessageFormat.format(ZmMsg[params.actionTextKey], resp.length);
 			appCtxt.getAppController().setStatusMsg(msg);
 		}
 	}
@@ -691,7 +691,7 @@ function(params) {
 	if (toDelete.length) {
 		params.items = toDelete;
 		params.action = "delete";
-        params.actionText = ZmMsg.actionDelete;
+        params.actionTextKey = 'actionDelete';
 		this._itemAction(params);
 	}
 };
@@ -937,7 +937,7 @@ function(params, batchCmd) {
 		errorCallback:	params.errorCallback,
 		batchCmd:		batchCmd,
 		numItems:		params.count || 0,
-		actionText:		params.actionText,
+		actionTextKey:	params.actionTextKey,
 		actionArg:		params.actionArg,
 		actionLogItem:	actionLogItem,
 		childWin:		params.childWin,
@@ -1036,8 +1036,8 @@ function(params, result) {
 				params.callback.run(items, result);
 			}
 
-			if (params.actionText) {
-				summary = ZmList.getActionSummary(params.actionText, params.numItems, params.type, params.actionArg);
+			if (params.actionTextKey) {
+				summary = ZmList.getActionSummary(params);
 				var pdParams = {
 					state:		ZmListController.PROGRESS_DIALOG_UPDATE,
 					summary:	summary
@@ -1246,11 +1246,35 @@ function(params, isOutboxFolder, notify) {
     }
 };
 
+/**
+ * Returns a string describing an action, intended for display as toast to tell the
+ * user what they just did.
+ *
+ * @param   {Object}        params          hash of params:
+ *          {String}        type            item type (ZmItem.*)
+ *          {Number}        numItems        number of items affected
+ *          {String}        actionTextKey   ZmMsg key for text string describing action
+ *          {String}        actionArg       (optional) additional argument
+ *
+ * @return {String}     action summary
+ */
 ZmList.getActionSummary =
-function(text, num, type, arg) {
-	var typeTextAuto = AjxMessageFormat.format(ZmMsg[ZmItem.COUNT_KEY[type]], num);
-	var typeTextSingular = AjxMessageFormat.format(ZmMsg[ZmItem.COUNT_KEY[type]], 1);
-	return AjxMessageFormat.format(text, [num, typeTextAuto, AjxStringUtil.htmlEncode(arg), typeTextSingular]);
+function(params) {
+
+	var type = params.type,
+		typeKey = ZmItem.MSG_KEY[type],
+		typeText = ZmMsg[typeKey],
+		capKey = AjxStringUtil.capitalizeFirstLetter(typeKey),
+		countKey = 'type' + capKey,
+		num = params.numItems,
+		alternateKey = params.actionTextKey + capKey,
+		text = ZmMsg[alternateKey] || ZmMsg[params.actionTextKey],
+		countText = ZmMsg[countKey],
+		arg = AjxStringUtil.htmlEncode(params.actionArg),
+		textAuto = countText ? AjxMessageFormat.format(countText, num) : typeText,
+		textSingular = countText ? AjxMessageFormat.format(ZmMsg[countKey], 1) : typeText;
+
+	return AjxMessageFormat.format(text, [ num, textAuto, arg, textSingular ]);
 };
 
 /**

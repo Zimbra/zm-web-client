@@ -78,7 +78,7 @@ function(params) {
 		return ZmList.prototype.moveItems.apply(this, arguments);
 	}
 
-	params = Dwt.getParams(arguments, ["items", "folder", "attrs", "callback", "finalCallback", "noUndo", "actionText", "fromFolderId"]);
+	params = Dwt.getParams(arguments, ["items", "folder", "attrs", "callback", "finalCallback", "noUndo", "actionTextKey", "fromFolderId"]);
 	params.items = AjxUtil.toArray(params.items);
 
 	var params1 = AjxUtil.hashCopy(params);
@@ -92,9 +92,9 @@ function(params) {
 	params1.attrs.l = params.folder.id;
 	params1.action = (params.folder.id == ZmFolder.ID_TRASH) ? "trash" : "move";
     if (params1.folder.id == ZmFolder.ID_TRASH) {
-        params1.actionText = params.actionText || ZmMsg.actionTrash;
+        params1.actionTextKey = params.actionTextKey || "actionTrash";
     } else {
-        params1.actionText = params.actionText || ZmMsg.actionMove;
+        params1.actionTextKey = params.actionTextKey || "actionMove";
         params1.actionArg = params1.folder.getName(false, false, true);
     }
 	params1.callback = new AjxCallback(this, this._handleResponseMoveItems, [params]);
@@ -189,7 +189,7 @@ function(params) {
 	if (params.folder) {
 		params1.attrs.l = params.folder.id;
 	}
-	params1.actionText = params.markAsSpam ? ZmMsg.actionMarkAsJunk : ZmMsg.actionMarkAsNotJunk;
+	params1.actionTextKey = params.markAsSpam ? 'actionMarkAsJunk' : 'actionMarkAsNotJunk';
 
 	params1.callback = new AjxCallback(this, this._handleResponseSpamItems, params);
 	this._itemAction(params1);
@@ -237,7 +237,7 @@ function(params, result) {
 			list._notify(ZmEvent.E_MOVE, details);
 		}
 		if (params.actionText) {
-			summary = ZmList.getActionSummary(params.actionText, params.numItems, params.type, params.actionArg);
+			summary = ZmList.getActionSummary(params);
 		}
 
 		if (params.childWin) {
@@ -290,7 +290,7 @@ function(params) {
 			params.attrs = params.attrs || {};
 			params.attrs.tcon = ZmFolder.TCON_CODE[searchFolder.nId];
 			params.action = "delete";
-            params.actionText = ZmMsg.actionDelete;
+            params.actionTextKey = 'actionDelete';
 			params.callback = new AjxCallback(this, this._handleResponseDeleteItems, instantOn);
 			return this._itemAction(params);
 		}
@@ -355,7 +355,7 @@ function(params) {
 		params.items = items1;
 		params.op = "read";
 		if (items1.length > 1) {
-        	params.actionText = params.value ? ZmMsg.actionMarkRead : ZmMsg.actionMarkUnread;
+        	params.actionTextKey = params.value ? 'actionMarkRead' : 'actionMarkUnread';
 		}
 		this.flagItems(params);
 	}
@@ -404,7 +404,7 @@ function(params) {
 	if (items1.length) {
 		params.items = items1;
 		params.op = "mute";
-        params.actionText = params.value ? ZmMsg.actionMarkMute : ZmMsg.actionMarkUnmute;
+        params.actionTextKey = params.value ? 'actionMarkMute' : 'actionMarkUnmute';
 		this.flagItems(params);
 	}
     else if(params.forceCallback) {

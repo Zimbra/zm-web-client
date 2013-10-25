@@ -117,7 +117,6 @@ function() {
 	ZmItem.registerItem(ZmItem.BRIEFCASE_ITEM,
 						{app:			ZmApp.BRIEFCASE,
 						 nameKey:		"file",
-                         countKey:      "typeFile",
 						 icon:			"GenericDoc",
 						 soapCmd:		"ItemAction",
 						 itemClass:		"ZmBriefcaseItem",

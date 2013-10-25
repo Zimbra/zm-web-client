@@ -420,12 +420,9 @@ function(ev) {
             dlg.setMessage(ZmMsg.orgChange, DwtMessageDialog.WARNING_STYLE);
             dlg.popup();
 		} else {
-            if(data instanceof ZmCalendar){
-                // Root node's type is folder, but it's labelled 'Calendars'.  Pass the proper
-                // name down to the status message.
-                var folderName = (dropFolder.nId == ZmFolder.ID_ROOT) ? ZmMsg.calendars : null;
-                this._doMove(data, dropFolder, folderName);
-            } else{
+            if (data instanceof ZmCalendar) {
+                this._doMove(data, dropFolder);
+            } else {
                 ctlr._doMove(appts, dropFolder, null, isShiftKey);
             }
 		}

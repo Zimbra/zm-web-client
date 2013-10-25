@@ -1863,7 +1863,11 @@ function(deleteList, mode) {
 		batchCmd.add(new AjxCallback(appt, appt.cancel, args));
 	}
 	batchCmd.run();
-	var summary = ZmList.getActionSummary(ZmMsg.actionDelete, batchCmd.size(), ZmItem.APPT);
+	var summary = ZmList.getActionSummary({
+		actionTextKey:  'actionDelete',
+		numItems:       batchCmd.size(),
+		type:           ZmItem.APPT
+	});
 	appCtxt.setStatusMsg(summary);
 	appCtxt.notifyZimlets("onAppointmentDelete", deleteList);//notify Zimlets on delete
 };
@@ -2139,7 +2143,11 @@ function(appt) {
         currentView.close();
     }
 
-	var summary = ZmList.getActionSummary(ZmMsg.actionDelete, 1, ZmItem.APPT);
+	var summary = ZmList.getActionSummary({
+		actionTextKey:  'actionDelete',
+		numItems:       1,
+		type:           ZmItem.APPT
+	});
 	appCtxt.setStatusMsg(summary);
 	appCtxt.notifyZimlets("onAppointmentDelete", [appt]);//notify Zimlets on delete 
 };

@@ -1788,8 +1788,15 @@ ZmContact.prototype._handleResponseMove =
 function(newFolderId, resp) {
 	var newFolder = newFolderId && appCtxt.getById(newFolderId);
 	var count = 1;
-	if (newFolder)
-		appCtxt.setStatusMsg(AjxMessageFormat.format(ZmMsg.actionMove, [count, AjxMessageFormat.format(ZmMsg[ZmItem.COUNT_KEY[ZmItem.CONTACT]], count), newFolder.name]));
+	debugger;
+	if (newFolder) {
+		appCtxt.setStatusMsg(ZmList.getActionSummary({
+			actionTextKey:  'actionMove',
+			numItems:       count,
+			type:           ZmItem.CONTACT,
+			actionArg:      newFolder.name
+		}));
+	}
 	
 	this._notify(ZmEvent.E_MODIFY, resp);
 };

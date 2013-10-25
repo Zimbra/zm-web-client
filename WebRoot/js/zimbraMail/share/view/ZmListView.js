@@ -861,11 +861,15 @@ function(allResults) {
 	if (this._selectAllEnabled) {
 		var curResult = this._controller._activeSearch;
 		if (curResult && curResult.getAttribute("more")) {
-			var list = this.getList();
-			var typeText = AjxMessageFormat.format(ZmMsg[ZmItem.COUNT_KEY[this.type]], list ? list.size() : 2);
-			var shortcut = appCtxt.getShortcutHint(null, ZmKeyMap.SELECT_ALL);
-			var args = [list ? list.size() : ZmMsg.all, typeText, shortcut, "ZmListView.selectAllResults()"];
-			var toastMsg = AjxMessageFormat.format(ZmMsg.allPageSelected, args);
+
+			var list = this.getList(),
+				type = this.type,
+				countKey = 'type' + AjxStringUtil.capitalize(ZmItem.MSG_KEY[type]),
+				typeText = AjxMessageFormat.format(ZmMsg[countKey], list ? list.size() : 2),
+				shortcut = appCtxt.getShortcutHint(null, ZmKeyMap.SELECT_ALL),
+				args = [list ? list.size() : ZmMsg.all, typeText, shortcut, "ZmListView.selectAllResults()"],
+				toastMsg = AjxMessageFormat.format(ZmMsg.allPageSelected, args);
+
 			if (allResults) {
 				this.allSelected = true;
 				toastMsg = ZmMsg.allSearchSelected;
@@ -1021,7 +1025,7 @@ function(ev) {
 ZmListView.prototype.getToolTipContent =
 function(ev) {
 	var div = this.getTargetItemDiv(ev);
-	if (!div) { return; }
+	if (!div) { return ""; }
 	var id = ev.target.id || div.id;
 	if (!id) { return ""; }
 

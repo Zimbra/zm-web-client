@@ -1923,7 +1923,7 @@ function() {
 							 hasColor:			true,
 							 defaultColor:		ZmOrganizer.C_NONE,
 							 treeType:			ZmOrganizer.FOLDER,
-							 folderKey:			"search",
+							 folderKey:			"savedSearch",
 							 disableShare:		true,
  							 dropTargets:		[ZmOrganizer.FOLDER, ZmOrganizer.SEARCH],
 							 createFunc:		"ZmSearchFolder.create",

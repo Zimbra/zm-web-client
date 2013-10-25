@@ -754,7 +754,11 @@ function(tasks) {
 };
 
 ZmTaskListController.prototype._handleDeleteResponse = function(tasks, resp) {
-    var summary = ZmList.getActionSummary(ZmMsg.actionDelete, tasks.length, ZmItem.TASK);
+    var summary = ZmList.getActionSummary({
+	    actionTextKey:  'actionDelete',
+	    numItems:       tasks.length,
+	    type:           ZmItem.TASK
+    });
     appCtxt.setStatusMsg(summary);
 };
 

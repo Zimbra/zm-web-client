@@ -1289,12 +1289,15 @@ function() {
 
 	var size = this._getItemCount();
 	if (size == null) { return ""; }
-	var lv = this._view[this._currentViewId];
-	var list = lv && lv._list;
-	var type = lv._getItemCountType();
-	var total = this._getNumTotal();
-	var num = total || size;
-    var typeText = type ? AjxMessageFormat.format(ZmMsg[ZmItem.COUNT_KEY[type]], num) : "";
+
+	var lv = this._view[this._currentViewId],
+		list = lv && lv._list,
+		type = lv._getItemCountType(),
+		total = this._getNumTotal(),
+		num = total || size,
+		countKey = 'type' + AjxStringUtil.capitalizeFirstLetter(ZmItem.MSG_KEY[type]),
+        typeText = type ? AjxMessageFormat.format(ZmMsg[countKey], num) : "";
+
 	if (total && (size != total)) {
 		return AjxMessageFormat.format(ZmMsg.itemCount1, [size, total, typeText]);
 	} else {
@@ -1420,8 +1423,13 @@ function(params, actionParams) {
 		if (contResult) {
 			if (lv.allSelected) {
 				// items beyond page were acted on, give user a total count
-				if (actionParams.actionText) {
-					actionParams.actionSummary = ZmList.getActionSummary(actionParams.actionText, this._continuation.totalItems, contResult.type, actionParams.actionArg);
+				if (actionParams.actionTextKey) {
+					actionParams.actionSummary = ZmList.getActionSummary({
+						actionTextKey:  actionParams.actionTextKey,
+						numItems:       this._continuation.totalItems,
+						type:           contResult.type,
+						actionArg:      actionParams.actionArg
+					});
 				}
 				lv.deselectAll();
 			}

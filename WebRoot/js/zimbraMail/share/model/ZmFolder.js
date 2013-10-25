@@ -314,7 +314,7 @@ function(newParent, noUndo, actionText, batchCmd) {
 	if (origName != name) {
 		this.rename(name);
 	}
-	ZmOrganizer.prototype.move.call(this, newParent, noUndo, actionText, batchCmd);
+	ZmOrganizer.prototype.move.call(this, newParent, noUndo, batchCmd);
 };
 
 /**

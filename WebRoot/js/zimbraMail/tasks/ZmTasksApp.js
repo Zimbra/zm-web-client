@@ -89,7 +89,6 @@ function() {
 	ZmItem.registerItem(ZmItem.TASK,
 						{app:			ZmApp.TASKS,
 						 nameKey:		"task",
-						 countKey:  	"typeTask",
 						 icon:			"TasksApp",
 						 soapCmd:		"ItemAction",
 						 itemClass:		"ZmTask",
@@ -109,7 +108,7 @@ ZmTasksApp.prototype._registerOrganizers =
 function() {
 	ZmOrganizer.registerOrg(ZmOrganizer.TASKS,
 							{app:				ZmApp.TASKS,
-							 nameKey:			"taskFolder",
+							 nameKey:			"tasksFolder",
 							 defaultFolder:		ZmFolder.ID_TASKS,
 							 soapCmd:			"FolderAction",
 							 firstUserId:		256,

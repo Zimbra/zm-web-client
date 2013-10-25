@@ -180,8 +180,6 @@ ZmItemMoveAction.prototype._doMove = function(callback, errorCallback, folderId)
 		folder:			appCtxt.getById(folderId),
 		noUndo:			true,
 		finalCallback:	this._handleDoMove.bind(this, this._item.folderId, folderId),
-		actionText:		ZmItemMoveAction.UNDO_MSG[this._op],
-
 		fromFolderId: this._toFolderId
 	});
 };
@@ -254,8 +252,7 @@ ZmItemMoveAction.multipleUndo = function(actions, redo, fromFolderId) {
 						items: items,
 						folder: appCtxt.getById(redo ? to : from),
 						noUndo: true,
-						fromFolderId: fromFolderId,
-						actionText: hasMasterAction ? (commonop && ZmItemMoveAction.UNDO_MSG[commonop]) : null
+						fromFolderId: fromFolderId
 					});
 				}
 			}
@@ -305,7 +302,7 @@ ZmOrganizerMoveAction.prototype.getToFolderId = function() {
 ZmOrganizerMoveAction.prototype._doMove = function(callback, errorCallback, folderId) {
 	var folder = appCtxt.getById(folderId);
 	if (folder) {
-		this._organizer.move(folder, true, ZmMsg.actionUndoMove);
+		this._organizer.move(folder, true);
 	}
 };
 

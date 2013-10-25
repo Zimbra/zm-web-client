@@ -759,12 +759,13 @@ function(items, on) {
 	}
 
 	var params = {items:items1, op:"flag", value:on};
-    params.actionText = on ? ZmMsg.actionFlag : ZmMsg.actionUnflag;
+    params.actionTextKey = on ? 'actionFlag' : 'actionUnflag';
 	var list = params.list = this._getList(params.items);
 	this._setupContinuation(this._doFlag, [on], params);
 	list.flagItems(params);
 };
 
+// TODO: shouldn't this be in ZmMailItemController?
 ZmBaseController.prototype._doMsgPriority = 
 function(items, on) {
 	items = AjxUtil.toArray(items);
@@ -785,7 +786,7 @@ function(items, on) {
 	}
 
 	var params = {items:items1, op:"priority", value:on};
-    params.actionText = on ? ZmMsg.actionMsgPriority : ZmMsg.actionUnMsgPriority; 
+    params.actionTextKey = on ? 'actionMsgPriority' : 'actionUnMsgPriority';
 	var list = params.list = this._getList(params.items);
 	this._setupContinuation(this._doMsgPriority, [on], params);
 	list.flagItems(params);	
