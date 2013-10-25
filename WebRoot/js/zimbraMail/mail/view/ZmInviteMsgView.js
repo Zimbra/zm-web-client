@@ -179,7 +179,10 @@ function(msg) {
 ZmInviteMsgView.prototype.showMoreInfo =
 function(callback, dayViewCallback) {
 	var apptId = this._invite && this._invite.hasAttendeeResponse() && this._invite.getAppointmentId();
-	if (apptId) {
+
+    // Fix for bug: 83785. apptId: 0 is default id for an appointment without any parent.
+    // Getting apptId: 0 when external user takes action on appointment and organizer gets reply mail.
+	if (apptId !== '0' && apptId) {
 		var jsonObj = {GetAppointmentRequest:{_jsns:"urn:zimbraMail"}};
 		var request = jsonObj.GetAppointmentRequest;
 		request.id = apptId;
