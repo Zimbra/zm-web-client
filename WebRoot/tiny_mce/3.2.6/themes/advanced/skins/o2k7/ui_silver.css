@@ -1,17 +1,3 @@
-/*
- * ***** BEGIN LICENSE BLOCK *****
- * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2009, 2010, 2012, 2013 Zimbra Software, LLC.
- * 
- * The contents of this file are subject to the Zimbra Public License
- * Version 1.4 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
- * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * ***** END LICENSE BLOCK *****
- */
 /* Silver */
 .o2k7SkinSilver .mceToolbar .mceToolbarStart span, .o2k7SkinSilver .mceButton, .o2k7SkinSilver .mceSplitButton, .o2k7SkinSilver .mceSeparator, .o2k7SkinSilver .mceSplitButton a.mceOpen, .o2k7SkinSilver .mceListBox a.mceOpen {background-image:url(img/button_bg_silver.png)}
 .o2k7SkinSilver table, .o2k7SkinSilver .mceMenuItemTitle a {background:#eee}
