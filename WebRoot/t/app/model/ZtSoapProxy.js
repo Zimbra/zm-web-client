@@ -92,7 +92,7 @@ Ext.define('ZCS.model.ZtSoapProxy', {
 		var query = operation.config.query;
 
 		if (query) {
-			var search = Ext.create('ZCS.common.ZtSearch', {
+			var search = operation.config.search = Ext.create('ZCS.common.ZtSearch', {
 					query: query
 				}),
 				orgId = search.getOrganizerId(),
@@ -151,6 +151,7 @@ Ext.define('ZCS.model.ZtSoapProxy', {
 		if (refresh) {
 			ZCS.app.getMainController().sendPoll();
 		}
+		// TODO: notify each app (so mail can re-run search)
 	},
 
 	handleNotifications: function(notifications) {
@@ -352,6 +353,18 @@ Ext.define('ZCS.model.ZtSoapProxy', {
 			notifications.created.c = tmp;
 		} else {
 			delete notifications.created.c;
+		}
+
+		// If the conv's first msg didn't match the current search, then we won't have created
+		// a ZtConv for it. Save the conv create node so we can use it to create a ZtConv if
+		// the second msg matches the search.
+		var msgCreate, convCreate;
+		for (id in createdMsgs) {
+			msgCreate = createdMsgs[id];
+			convCreate = createdConvs[msgCreate.cid];
+			if (convCreate && convCreate._wasVirtConv) {
+				msgCreate.convCreateNode = convCreate;
+			}
 		}
 
 		// Create modified notifs for the virtual convs that have been promoted, using

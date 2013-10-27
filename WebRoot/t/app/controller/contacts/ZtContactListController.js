@@ -97,8 +97,9 @@ Ext.define('ZCS.controller.contacts.ZtContactListController', {
         });
 
         this.getStore().load({
-            query: defaultQuery,
-            callback: Ext.Function.bind(this.storeLoaded, this, [defaultQuery, null], 0)
+            query:      defaultQuery,
+            callback:   this.storeLoaded,
+	        scope:      this
         })
     },
 

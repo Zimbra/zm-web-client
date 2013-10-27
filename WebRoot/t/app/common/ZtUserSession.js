@@ -71,12 +71,19 @@ Ext.define('ZCS.common.ZtUserSession', {
 		return id;
 	},
 
+	/**
+	 * If session ID changed, mark the previous one as stale.
+	 */
 	applySessionId: function(session) {
-		var curSessionId = this.getSessionId();
-		if (curSessionId) {
+
+		var curSessionId = this.getSessionId(),
+			newSessionId = this.extractSessionId(session);
+
+		if (curSessionId && curSessionId !== newSessionId) {
 			this.staleSessions[curSessionId] = true;
 		}
-		return this.extractSessionId(session);
+
+		return newSessionId;
 	},
 
 	isStaleSession: function(session) {

@@ -64,7 +64,8 @@ Ext.define('ZCS.controller.mail.ZtConvListController', {
 		this.callParent();
 
 		ZCS.app.on('notifyConversationDelete', this.handleDeleteNotification, this);
-		ZCS.app.on('notifyConversationCreate', this.handleCreateNotification, this);
+		ZCS.app.on('notifyConversationCreate', this.handleConvCreateNotification, this);
+		ZCS.app.on('notifyMessageCreate', this.handleMsgCreateNotification, this);
 		ZCS.app.on('notifyConversationChange', this.handleModifyNotification, this);
 	},
 
@@ -85,6 +86,7 @@ Ext.define('ZCS.controller.mail.ZtConvListController', {
 	},
 
 	handleSwipe: function(list, index, convItem, record, e, eOpts) {
+
 		var convEl = convItem.element,
 			convElBox = convEl.getBox(),
 			buttonHeight = convElBox.height,
@@ -144,6 +146,7 @@ Ext.define('ZCS.controller.mail.ZtConvListController', {
 	},
 
 	setupScrollHandling: function (list) {
+
 		//Make sure no delete buttons are hanging around after
 		//a data change event or on a scroll
 		var scroller = list.getScrollable().getScroller(),
@@ -169,20 +172,23 @@ Ext.define('ZCS.controller.mail.ZtConvListController', {
 	/**
 	 * Handle a newly created conv. Add it to view if any of its messages (which
 	 * should have also just been created) are in the currently viewed folder.
+	 *
+	 * @param {ZtItem}  item        (not passed for create notifications)
+	 * @param {Object}  create      JSON create node
 	 */
-	handleCreateNotification: function(item, create) {
+	handleConvCreateNotification: function(item, convCreate) {
 
-		var curFolder = ZCS.session.getCurrentSearchOrganizer(),
+		var curFolder = this.getFolder() || ZCS.session.getCurrentSearchOrganizer(),
 			curFolderId = curFolder && curFolder.get('zcsId'),
 			isOutbound = ZCS.util.isOutboundFolderId(curFolderId),
+			creates = convCreate.creates,
 			doAdd = false,
-			creates = create.creates,
 			ln = creates && creates.m ? creates.m.length : 0,
 			msgCreate, i, addresses, recips, fragment;
 
 		for (i = 0; i < ln; i++) {
 			msgCreate = creates.m[i];
-			if (msgCreate.cid === create.id && msgCreate.l === curFolderId) {
+			if (msgCreate.cid === convCreate.id && msgCreate.l === curFolderId) {
 				doAdd = true;
 				if (isOutbound) {
 					addresses = ZCS.model.mail.ZtMailItem.convertAddressJsonToModel(msgCreate.e);
@@ -194,18 +200,69 @@ Ext.define('ZCS.controller.mail.ZtConvListController', {
 		}
 
 		var reader = ZCS.model.mail.ZtConv.getProxy().getReader(),
-			data = reader.getDataFromNode(create),
+			data = reader.getDataFromNode(convCreate),
 			store = this.getStore(),
-			conv = new ZCS.model.mail.ZtConv(data, create.id);
+			conv = new ZCS.model.mail.ZtConv(data, convCreate.id);
 
 		if (recips) {
 			conv.set('senders', recips);
 		}
 		conv.set('fragment', conv.get('fragment') || fragment);
 
-		if (doAdd) {
+		if (doAdd || convCreate.doAdd) {
 			store.insert(0, [conv]);
 		}
+	},
+
+	/**
+	 * We only care about a new message if it matches our search and if we have
+	 * not seen its conv. For example, a conversation may have one or more messages
+	 * in folders other than Inbox (such as Sent), and then receive a message into
+	 * Inbox. In that case, we want to create a new conversation and add it to our
+	 * list.
+	 *
+	 * @param {ZtItem}  item        (not passed for create notifications)
+	 * @param {Object}  create      JSON create node
+	 */
+	handleMsgCreateNotification: function(item, msgCreate) {
+
+		var store = this.getStore();
+
+		if (store.getById(msgCreate.cid)) {
+			return;
+		}
+
+		var curFolder = this.getFolder() || ZCS.session.getCurrentSearchOrganizer(),
+			curFolderId = curFolder && curFolder.get('zcsId'),
+			convCreate;
+
+		if (msgCreate.l === curFolderId) {
+			// virtual conv that got promoted will have convCreateNode
+			if (msgCreate.convCreateNode) {
+				convCreate = msgCreate.convCreateNode;
+				if (convCreate.newId) {
+					convCreate.id = convCreate.newId;
+					convCreate.doAdd = true;
+					this.handleConvCreateNotification(null, convCreate);
+				}
+			}
+			else {
+				// create from msg node
+				convCreate = {
+					id:         msgCreate.cid,
+					d:          msgCreate.d,
+					e:          Ext.clone(msgCreate.e),
+					f:          msgCreate.f,
+					fr:         msgCreate.fr,
+					itemType:   ZCS.constant.ITEM_CONVERSATION,
+					nodeType:   ZCS.constant.NODE_CONVERSATION,
+					su:         msgCreate.su,
+					doAdd:      true
+				};
+				this.handleConvCreateNotification(null, convCreate);
+			}
+		}
+
 	},
 
 	/**

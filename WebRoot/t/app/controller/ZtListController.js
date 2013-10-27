@@ -59,7 +59,10 @@ Ext.define('ZCS.controller.ZtListController', {
 			itemPanel: {
 				showMenu: null
 			}
-		}
+		},
+
+		search: null,   // the ZtSearch that generated this controller's data
+		folder: null    // the ZtOrganizer that was tapped, if any
 	},
 
 	/**
@@ -79,8 +82,9 @@ Ext.define('ZCS.controller.ZtListController', {
 		});
 
 		this.getStore().load({
-			query: defaultQuery,
-			callback: Ext.Function.bind(this.storeLoaded, this, [defaultQuery, null], 0)
+			query:      defaultQuery,
+			callback:   this.storeLoaded,
+			scope:      this
 		});
 
 		ZCS.app.on('applicationSwitch', function (newApp) {
@@ -163,7 +167,8 @@ Ext.define('ZCS.controller.ZtListController', {
 		this.getStore().load({
 			query:      query,
 			folder:     folder,
-			callback:   Ext.Function.bind(this.storeLoaded, this, [query, folder], 0)
+			callback:   this.storeLoaded,
+			scope:      this
 		});
 
 		ZCS.app.fireEvent('hideOverviewPanel');
@@ -173,17 +178,17 @@ Ext.define('ZCS.controller.ZtListController', {
 	 * After the search has run, remember it as the one backing the current list,
 	 * and set the title in the top toolbar.
 	 *
-	 * @param {string}      query       search query that produced these results
-	 * @param {ZtOrganizer} folder      overview folder that was tapped (optional)
 	 * @param {array}       records
 	 * @param {Operation}   operation
 	 * @param {boolean}     success
 	 */
-	storeLoaded: function(query, folder, records, operation, success) {
+	storeLoaded: function(records, operation, success) {
 
-		query = query || operation.config.query;
+		var app = this.getApp(),
+			folder = operation.config.folder;
 
-		var app = this.getApp();
+		this.setSearch(operation.config.search);
+		this.setFolder(folder);
 
 		if (success) {
 
@@ -204,7 +209,8 @@ Ext.define('ZCS.controller.ZtListController', {
 				//make sure this element doesn't get focus due to an errant touch
 				this.getSearchBox().blur();
 			}
-		} else {
+		}
+		else {
 			//<debug>
 			Ext.Logger.info('Parameters not present in storeLoaded');
 	        //</debug>
