@@ -99,10 +99,8 @@ $zcs-mail-dateWidth: 5.5em;
 
 .zcs-mail-subject {
 	@extend .zcs-mail-list-item;
-	/**
 	@include ellipsis();
-	**/
-	overflow:hidden;
+	//overflow:hidden;
 	max-height: 18px;
 	font-size: 1em;
 	left: $zcs-mail-indent;
