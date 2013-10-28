@@ -1788,7 +1788,6 @@ ZmContact.prototype._handleResponseMove =
 function(newFolderId, resp) {
 	var newFolder = newFolderId && appCtxt.getById(newFolderId);
 	var count = 1;
-	debugger;
 	if (newFolder) {
 		appCtxt.setStatusMsg(ZmList.getActionSummary({
 			actionTextKey:  'actionMove',
