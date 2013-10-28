@@ -442,7 +442,7 @@ if (application.getInitParameter("offlineMode") != null)  {
                                             <option value="advanced"  <c:if test="${client eq 'advanced'}">selected</c:if>> <fmt:message key="clientAdvanced"/></option>
                                             <option value="standard"  <c:if test="${client eq 'standard'}">selected</c:if>> <fmt:message key="clientStandard"/></option>
                                             <option value="mobile"  <c:if test="${client eq 'mobile'}">selected</c:if>> <fmt:message key="clientMobile"/></option>
-                                            <option value="touch"  <c:if test="${client eq 'touch'}">selected</c:if>> <fmt:message key="clientTouch"/></option>
+                                            <%--<option value="touch"  <c:if test="${client eq 'touch'}">selected</c:if>> <fmt:message key="clientTouch"/></option>--%>
 
                                         </select>
                                     </c:otherwise>
