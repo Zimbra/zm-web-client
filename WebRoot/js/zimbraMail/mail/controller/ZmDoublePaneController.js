@@ -238,29 +238,23 @@ function() {
 
 ZmDoublePaneController.prototype._getActionMenuOps =
 function() {
-	var list = this._flagOps();
-	list.push(ZmOperation.SEP);
+	var list = [];
 	list = list.concat(this._msgOps());
     list.push(ZmOperation.REDIRECT);
     list.push(ZmOperation.EDIT_AS_NEW);		// bug #28717
 	list.push(ZmOperation.SEP);
+	list = list.concat(this._deleteOps());
+	list.push(ZmOperation.SEP);
 	list = list.concat(this._standardActionMenuOps());
-	if (!appCtxt.isChildWindow && appCtxt.get(ZmSetting.DETACH_MAILVIEW_ENABLED)) {
-		list.push(ZmOperation.SEP, ZmOperation.DETACH);
-	}
-	list.push(ZmOperation.SHOW_ORIG);
+	list.push(ZmOperation.SEP);
+	list = list.concat(this._flagOps());
+	list.push(ZmOperation.SEP);
+	list = list.concat(this._createOps());
+	list.push(ZmOperation.SEP);
+	list = list.concat(this._otherOps());
 	if (this.getCurrentViewType() == ZmId.VIEW_TRAD) {
 		list.push(ZmOperation.SHOW_CONV);
 	}
-	if (appCtxt.get(ZmSetting.FILTERS_ENABLED)) {
-		list.push(ZmOperation.ADD_FILTER_RULE);
-	}
-    if(appCtxt.get(ZmSetting.CALENDAR_ENABLED)) {
-        list.push(ZmOperation.CREATE_APPT);
-    }
-    if(appCtxt.get(ZmSetting.TASKS_ENABLED)) {
-        list.push(ZmOperation.CREATE_TASK);        
-    }
     //list.push(ZmOperation.QUICK_COMMANDS);
 	return list;
 };

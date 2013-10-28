@@ -59,6 +59,8 @@ ZmMailListController = function(container, mailApp, type, sessionId, searchResul
 
 	this._listeners[ZmOperation.MARK_READ] = this._markReadListener.bind(this);
 	this._listeners[ZmOperation.MARK_UNREAD] = this._markUnreadListener.bind(this);
+	this._listeners[ZmOperation.FLAG] = this._flagListener.bind(this, true);
+	this._listeners[ZmOperation.UNFLAG] = this._flagListener.bind(this, false);
 	//fixed bug:15460 removed reply and forward menu.
 	if (appCtxt.get(ZmSetting.REPLY_MENU_ENABLED)) {
 		this._listeners[ZmOperation.REPLY] = this._replyListener.bind(this);
@@ -612,6 +614,8 @@ function() {
 	list.push(ZmOperation.SEP);
 	list = list.concat(this._msgOps());
 	list.push(ZmOperation.SEP);
+	list = list.concat(this._deleteOps());
+	list.push(ZmOperation.SEP);
 	if (!appCtxt.isChildWindow) {
 		list.push(ZmOperation.MOVE_MENU);
 		list.push(ZmOperation.TAG_MENU);
@@ -635,29 +639,17 @@ function() {
 
 ZmMailListController.prototype._getSecondaryToolBarOps =
 function() {
-	var list = [ZmOperation.PRINT];
-	list.push(ZmOperation.SEP, ZmOperation.MARK_READ, ZmOperation.MARK_UNREAD);
-	list.push(ZmOperation.SEP, ZmOperation.SHOW_ORIG);
+	var list = [];
+	list.push(ZmOperation.REDIRECT, ZmOperation.EDIT_AS_NEW);
+	list.push(ZmOperation.SEP, ZmOperation.PRINT);
+	list.push(ZmOperation.SEP /*ZmOperation.MARK_READ, ZmOperation.MARK_UNREAD*/);
+	list = list.concat(this._flagOps());
+	list.push(ZmOperation.SEP);
+	list = list.concat(this._createOps());
+	list.push(ZmOperation.SEP);
+	list = list.concat(this._otherOps(true));
 	if (this.getCurrentViewType() == ZmId.VIEW_TRAD) {
 		list.push(ZmOperation.SHOW_CONV);
-	}
-	if (!appCtxt.isChildWindow && this._showDetachInSecondary() && appCtxt.get(ZmSetting.DETACH_MAILVIEW_ENABLED) && !appCtxt.isExternalAccount()) {
-		list.push(ZmOperation.DETACH);
-	}
-    list.push(ZmOperation.SEP, ZmOperation.REDIRECT, ZmOperation.EDIT_AS_NEW);
-
-	if (!appCtxt.isChildWindow) {
-		list.push(ZmOperation.SEP);
-		if (appCtxt.get(ZmSetting.FILTERS_ENABLED)) {
-			list.push(ZmOperation.ADD_FILTER_RULE);
-		}
-	    if(appCtxt.get(ZmSetting.CALENDAR_ENABLED)) {
-	        list.push(ZmOperation.CREATE_APPT);
-	    }
-	    if(appCtxt.get(ZmSetting.TASKS_ENABLED)) {
-	        list.push(ZmOperation.CREATE_TASK);
-	    }
-	    //list.push(ZmOperation.QUICK_COMMANDS);
 	}
 
 
@@ -713,7 +705,7 @@ function() {
 
 ZmMailListController.prototype._flagOps =
 function() {
-	return [ZmOperation.MARK_READ, ZmOperation.MARK_UNREAD];
+	return [ZmOperation.MARK_READ, ZmOperation.MARK_UNREAD, ZmOperation.FLAG, ZmOperation.UNFLAG];
 };
 
 ZmMailListController.prototype._msgOps =
@@ -722,22 +714,51 @@ function() {
 
 	list.push(ZmOperation.EDIT); // hidden except for Drafts
 
-	var replyGroupExists = false;
 	if (appCtxt.get(ZmSetting.REPLY_MENU_ENABLED)) {
 		list.push(ZmOperation.REPLY, ZmOperation.REPLY_ALL);
-		replyGroupExists = true;
 	}
 
 	if (appCtxt.get(ZmSetting.FORWARD_MENU_ENABLED)) {
 		list.push(ZmOperation.FORWARD);
-		replyGroupExists = true;
 	}
-	if (replyGroupExists) {
-		list.push(ZmOperation.SEP);
-	}
-	list.push(this.getDeleteOperation(), ZmOperation.SPAM); // hidden except for Drafts)
 	return list;
 };
+
+ZmMailListController.prototype._deleteOps =
+function() {
+	return [this.getDeleteOperation(), ZmOperation.SPAM];
+};
+
+ZmMailListController.prototype._createOps =
+function() {
+	var list = [];
+	if (appCtxt.isChildWindow) {
+		return list;
+	}
+	if (appCtxt.get(ZmSetting.FILTERS_ENABLED)) {
+		list.push(ZmOperation.ADD_FILTER_RULE);
+	}
+	if (appCtxt.get(ZmSetting.CALENDAR_ENABLED)) {
+		list.push(ZmOperation.CREATE_APPT);
+	}
+	if (appCtxt.get(ZmSetting.TASKS_ENABLED)) {
+		list.push(ZmOperation.CREATE_TASK);
+	}
+	//list.push(ZmOperation.QUICK_COMMANDS);
+	return list;
+};
+
+ZmMailListController.prototype._otherOps =
+function(isSecondary) {
+	var list = [];
+	if (!appCtxt.isChildWindow && (!isSecondary || this._showDetachInSecondary()) && appCtxt.get(ZmSetting.DETACH_MAILVIEW_ENABLED) && !appCtxt.isExternalAccount()) {
+		list.push(ZmOperation.DETACH);
+	}
+	list.push(ZmOperation.SHOW_ORIG);
+	return list;
+};
+
+
 
 ZmMailListController.prototype.getDeleteOperation =
 function() {
@@ -781,10 +802,13 @@ function() {
 		// TODO: refactor / clean up
 		if (item.type == ZmItem.MSG) {
 			status[item.isUnread ? "hasUnread" : "hasRead"] = true;
+			status[item.isFlagged ? "hasFlagged" : "hasUnflagged"] = true;
 		}
 		else if (item.type == ZmItem.CONV) {
 			status.hasUnread = status.hasUnread || item.hasFlag(ZmItem.FLAG_UNREAD, true);
 			status.hasRead = status.hasRead || item.hasFlag(ZmItem.FLAG_UNREAD, false);
+			status.hasUnflagged = status.hasUnflagged || item.hasFlag(ZmItem.FLAG_FLAGGED, false);
+			status.hasFlagged = status.hasFlagged || item.hasFlag(ZmItem.FLAG_FLAGGED, true);
 		}
 		if (status.hasUnread && status.hasRead) {
 			break;
@@ -1047,6 +1071,17 @@ ZmMailListController.prototype._markUnreadListener =
 function(ev) {
 	this._doMarkRead(this._listView[this._currentViewId].getSelection(), false);
 };
+
+/**
+ * flags or unflags (based on the status of the first item. See doFlag)
+ * @param ev
+ * @private
+ */
+ZmMailListController.prototype._flagListener =
+function(on) {
+	this._doFlag(this._listView[this._currentViewId].getSelection(), on);
+};
+
 
 ZmMailListController.prototype._replyListener =
 function(ev) {
@@ -2131,6 +2166,8 @@ function(parent, num) {
 
 	parent.setItemVisible(ZmOperation.MARK_READ, !(isDrafts || isOutboxFolder));
 	parent.setItemVisible(ZmOperation.MARK_UNREAD, !(isDrafts || isOutboxFolder));
+	parent.setItemVisible(ZmOperation.FLAG, !(isDrafts || isOutboxFolder));
+	parent.setItemVisible(ZmOperation.UNFLAG, !(isDrafts || isOutboxFolder));
 	parent.setItemVisible(ZmOperation.SPAM, !(isDrafts || isOutboxFolder));
 	parent.setItemVisible(ZmOperation.DETACH, !(isDrafts || isOutboxFolder));
 
@@ -2262,17 +2299,14 @@ function(parent) {
 ZmMailListController.prototype._enableFlags =
 function(menu) {
     if(appCtxt.isExternalAccount()) {
-        menu.enable([ZmOperation.MARK_READ, ZmOperation.MARK_UNREAD], false);
+        menu.enable([ZmOperation.MARK_READ, ZmOperation.MARK_UNREAD, ZmOperation.FLAG, ZmOperation.UNFLAG], false);
         return;
     }
 	var status = this._getReadStatus();
-	menu.enable([ZmOperation.MARK_READ, ZmOperation.MARK_UNREAD], true);
-	if (!status.hasUnread) {
-		menu.enable(ZmOperation.MARK_READ, false);
-	}
-	if (!status.hasRead) {
-		menu.enable(ZmOperation.MARK_UNREAD, false);
-	}
+	menu.enable(ZmOperation.MARK_READ, status.hasUnread);
+	menu.enable(ZmOperation.MARK_UNREAD, status.hasRead);
+	menu.enable(ZmOperation.FLAG, status.hasUnflagged);
+	menu.enable(ZmOperation.UNFLAG, status.hasFlagged);
 
     if (appCtxt.isWebClientOffline()) {
         menu.enable([ZmOperation.ADD_FILTER_RULE,ZmOperation.CREATE_APPT, ZmOperation.CREATE_TASK], false);

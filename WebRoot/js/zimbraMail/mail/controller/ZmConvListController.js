@@ -867,8 +867,10 @@ function(items, method, args) {
 };
 
 ZmConvListController.prototype._doFlag =
-function(items) {
-	var on = !items[0].isFlagged;
+function(items, on) {
+	if (on !== true && on !== false) {
+		on = !items[0].isFlagged;
+	}
 	this._applyAction(items, "_doFlag", [on]);
 };
 
