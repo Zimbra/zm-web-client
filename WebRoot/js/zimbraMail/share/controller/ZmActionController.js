@@ -51,9 +51,13 @@ ZmActionController.prototype.actionPerformed = function(params) {
 	var logElement = this._actionStack.logAction(params);
 	if (logElement) {
 		this.dismiss();
-		this._active = true;
+		logElement.onComplete(new AjxCallback(this, this._handleActionComplete));
 	}
 	return logElement;
+};
+
+ZmActionController.prototype._handleActionComplete = function(action) {
+	this._active = true;
 };
 
 /**
@@ -84,10 +88,19 @@ ZmActionController.prototype.undo = function(action) {
 };
 
 ZmActionController.prototype.undoCurrent = function() {
-	if (this._active) {
-		this.dismiss();
+	if (this._actionStack.canUndo()) {
+		if (this._actionStack.actionIsComplete()) {
+			if (this._active) {
+				this.dismiss();
+			}
+			this._actionStack.undo();
+		} else {
+			this._actionStack.onComplete(new AjxCallback(this,function(action) {
+				// We must call this.undo on a timeout to allow the status message to transition in before dismissing
+				setTimeout(AjxCallback.simpleClosure(this.undo, this, action), 0);
+			}));
+		}
 	}
-	this._actionStack.undo();
 };
 
 ZmActionController.prototype.onPopup = function() {

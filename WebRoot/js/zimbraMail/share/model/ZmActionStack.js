@@ -160,6 +160,24 @@ ZmActionStack.prototype.canRedo = function() {
 	return this._pointer < this._stack.length - 1;
 };
 
+
+/**
+ * Returns whether the next undo action has completed
+ */
+ZmActionStack.prototype.actionIsComplete = function() {
+	return this.canUndo() && this._current().getComplete();
+};
+
+/**
+ * Attaches a completion callback to the current action
+ */
+ZmActionStack.prototype.onComplete = function(callback) {
+	var action = this._current();
+	if (action) {
+		action.onComplete(callback);
+	}
+};
+
 /**
  * Undoes the current action (if applicable) and moves the internal pointer
  */
@@ -203,4 +221,11 @@ ZmActionStack.prototype._push = function(action) {
  */
 ZmActionStack.prototype._pop = function() {
 	return this.canUndo() ? this._stack[this._pointer--] : null;
+};
+
+/**
+ * Returns the action at the current position, does not move the pointer
+ */
+ZmActionStack.prototype._current = function() {
+	return this.canUndo() ? this._stack[this._pointer] : null;
 };

@@ -56,12 +56,28 @@ ZmAction.prototype.redo = function() {
 };
 
 ZmAction.prototype.setComplete = function() {
-	this._complete = true;
-	this._notify(ZmEvent.E_COMPLETE);
+	if (!this._complete) {
+		this._complete = true;
+		this._notify(ZmEvent.E_COMPLETE);
+	}
 };
 
 ZmAction.prototype.getComplete = function() {
 	return this._complete;
+};
+
+ZmAction.prototype.onComplete = function(callback) {
+	if (this._complete) {
+		callback.run(this);
+	} else {
+		this.addChangeListener(new AjxListener(this, this._handleComplete, [callback]));
+	}
+};
+
+ZmAction.prototype._handleComplete = function(callback, event) {
+	if (event.event===ZmEvent.E_COMPLETE) {
+		callback.run(this);
+	}
 };
 
 /**
