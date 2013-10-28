@@ -135,7 +135,7 @@
         <c:otherwise>
             <c:set var="client" value="${param.client}"/>
             <c:if test="${empty client and useMobile}"><c:set var="client" value="mobile"/></c:if>
-            <c:if test="${empty client and useTablet}"><c:set var="client" value="touch"/></c:if>
+            <c:if test="${empty client and useTablet}"><c:set var="client" value="mobile"/></c:if>
             <c:if test="${empty client or client eq 'preferred'}">
                 <c:set var="client" value="${requestScope.authResult.prefs.zimbraPrefClientType[0]}"/>
             </c:if>
@@ -315,7 +315,7 @@ if (application.getInitParameter("offlineMode") != null)  {
     <c:set var="useStandard" value="${not (ua.isFirefox3up or ua.isGecko1_9up or ua.isIE7up or ua.isSafari4Up or ua.isChrome)}"/>
     <c:if test="${empty client}">
         <%-- set client select default based on user agent. --%>
-        <c:set var="client" value="${useTablet ? 'touch' : useMobile ? 'mobile' : useStandard ? 'standard' : 'preferred' }"/>
+        <c:set var="client" value="${useTablet ? 'mobile' : useMobile ? 'mobile' : useStandard ? 'standard' : 'preferred' }"/>
     </c:if>
     <c:set var="smallScreen" value="${client eq 'mobile' or client eq 'socialfox'}"/>
     <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE9" />
