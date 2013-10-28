@@ -748,7 +748,25 @@ function(ev) {
                 }
             } else{
                 var bContained = this._selectedItems.contains(div);
-                this._createItemHtml(task, {div:div, bContained:bContained});
+
+				var today = new Date();
+		        today.setHours(0,0,0,0);
+		        today = today.getTime();
+
+		        var dueDate = task.endDate;
+		        if (dueDate != null) {
+		            dueDate.setHours(0,0,0,0);
+		            dueDate = dueDate.getTime();
+		        }
+
+				var taskStatusClass = this._normalClass;
+				if (task.status == ZmCalendarApp.STATUS_COMP) {
+		           taskStatusClass += " ZmCompletedtask";
+		        } else if (dueDate != null && dueDate < today) {
+		           taskStatusClass += " ZmOverduetask";
+		        }
+
+                this._createItemHtml(task, {div:div, bContained:bContained, divClass:taskStatusClass});
                 this.associateItemWithElement(task, div);
                 if(this._controller.isReadingPaneOn()) {
                     task.message = null;
