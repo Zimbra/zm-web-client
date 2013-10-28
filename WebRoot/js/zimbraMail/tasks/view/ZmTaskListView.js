@@ -471,12 +471,14 @@ function(task, colIdx) {
 	htmlArr[idx++] = "</tr></table>";
 
     // second row
-    htmlArr[idx++] = "<table width=100% class='BottomRow'><tr>";
-    htmlArr[idx++] = "<td><div class='ZmTaskProgress'><div";
-    htmlArr[idx++] = " class='";
-    htmlArr[idx++] = this.getColorForStatus(task.status);
-    htmlArr[idx++] = "' style='width:"+ task.pComplete + "%;'></div></div></td>";
-    htmlArr[idx++] = "<td width=75 align=right><table><tr>";
+    htmlArr[idx++] = "<table width=100% class='BottomRow'><tr><td>";
+	if (task.pComplete) {
+		htmlArr[idx++] = "<div class='ZmTaskProgress'><div";
+		htmlArr[idx++] = " class='";
+		htmlArr[idx++] = this.getColorForStatus(task.status);
+		htmlArr[idx++] = "' style='width:"+ task.pComplete + "%;'></div></div>";
+	}
+    htmlArr[idx++] = "</td><td width=75 align=right><table><tr>";
 
     idx = this._getAbridgedCell(htmlArr, idx, task, ZmItem.F_TAG, colIdx, width);
     if(task.priority == ZmCalItem.PRIORITY_HIGH || task.priority == ZmCalItem.PRIORITY_LOW) {
