@@ -515,6 +515,7 @@ function(htmlArr, idx, item, field, colIdx, params, classes) {
 
 ZmListView.prototype._getImageHtml =
 function(htmlArr, idx, imageInfo, id, classes) {
+	classes = classes || [];
 	htmlArr[idx++] = ["<div id='", id, "' class='", classes.join(" "), "'>", AjxImg.getImageHtml(imageInfo || "Blank_16"), "</div>"].join("");
 	return idx;
 };
