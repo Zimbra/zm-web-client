@@ -25,18 +25,48 @@ function (callback) {
 ZmOfflineDB.indexedDB.open = function(callback, version) {
     var createObjectStore = function(){
         var db = ZmOfflineDB.indexedDB.db;
-        var stores = ZmOffline.store.concat([ZmOffline.ZmOfflineStore, ZmOffline.ZmOfflineAttachmentStore, ZmOfflineDB.indexedDB.idxStore]);
+        var stores = ZmOffline.store.concat([ZmOffline.ZmOfflineStore, ZmOffline.ZmOfflineAttachmentStore, ZmOfflineDB.indexedDB.idxStore, ZmApp.MAIL, ZmOffline.ATTACHMENT, ZmOffline.REQUESTQUEUE]);
         for (var i=0, length=stores.length; i<length;i++){
             if(!db.objectStoreNames.contains(stores[i])) {
                 DBG.println(AjxDebug.DBG1, "Creating objectstore : " + stores[i]);
-                var store = db.createObjectStore(stores[i], {keyPath: "key"});
+                if (stores[i] === ZmApp.MAIL) {
+                    var store = db.createObjectStore(stores[i], {keyPath: "id"});
+                    store.createIndex("size", "s");
+                    store.createIndex("folder", "l");
+                    store.createIndex("receiveddate", "d");
+                    store.createIndex("flags", "f", {multiEntry : true});
+                    store.createIndex("tagnames", "tn", {multiEntry : true});
+                    store.createIndex("subject", "su", {multiEntry : true});
+                    store.createIndex("fragment", "fr", {multiEntry : true});
+                    //Email index
+                    store.createIndex("from", "e.from");
+                    store.createIndex("to", "e.to", {multiEntry : true});
+                    store.createIndex("cc", "e.cc", {multiEntry : true});
+                }
+                else if (stores[i] === ZmOffline.ATTACHMENT) {
+                    var store = db.createObjectStore(stores[i], {keyPath: "id"});
+                     //Attachment Type Index
+                    store.createIndex("type", "type");
+                    store.createIndex("name", "name");
+                    store.createIndex("size", "size");
+                    store.createIndex("mid", "mid");
+                }
+                else if (stores[i] === ZmOffline.REQUESTQUEUE) {
+                    var store = db.createObjectStore(stores[i], {keyPath : "oid", autoIncrement : true});
+                    //Request queue index
+                    store.createIndex("methodname", "methodname");
+                    store.createIndex("id", "id");
+                    store.createIndex("methodname, id", ["methodname", "id"]);
+                }
+                else {
+                    var store = db.createObjectStore(stores[i], {keyPath: "key"});
+                }
             }
-
         }
     };
 
     try {
-        var request = (version) ? indexedDB.open("ZmOfflineDB", version) : indexedDB.open("ZmOfflineDB");
+        var request = (version) ? indexedDB.open(appCtxt.getLoggedInUsername(), version) : indexedDB.open(appCtxt.getLoggedInUsername());
         request.onerror = ZmOfflineDB.indexedDB.onerror;
 
         if (callback){
@@ -323,6 +353,7 @@ function(value, callback, errorCallback) {
     }
     catch (e) {
         errorCallback && errorCallback();
+        DBG.println(AjxDebug.DBG1, "ZmOfflineDB.indexedDB.setItemInRequestQueue : Exception : " +e);
     }
 };
 
@@ -377,6 +408,7 @@ function(key, callback, errorCallback) {
     }
     catch (e) {
         errorCallback && errorCallback();
+        DBG.println(AjxDebug.DBG1, "ZmOfflineDB.indexedDB.getItemInRequestQueue : Exception : " +e);
     }
 };
 
@@ -413,6 +445,7 @@ function(key, callback, errorCallback) {
     }
     catch (e) {
         errorCallback && errorCallback();
+        DBG.println(AjxDebug.DBG1, "ZmOfflineDB.indexedDB.getItemCountInRequestQueue : Exception : " +e);
     }
 };
 
@@ -448,6 +481,7 @@ function(key, callback, errorCallback) {
     }
     catch (e) {
         errorCallback && errorCallback();
+        DBG.println(AjxDebug.DBG1, "ZmOfflineDB.indexedDB.deleteItemInRequestQueue : Exception : " +e);
     }
 };
 
@@ -479,11 +513,161 @@ function(key, objectStore) {
             });
         }
     }
+    catch (e) {
+        DBG.println(AjxDebug.DBG1, "ZmOfflineDB.indexedDB._createIndexAndKeyRange : Exception : " +e);
+    }
     finally {
         return {
             index : index,
             keyRangeArray : keyRangeArray
         };
+    }
+};
+
+ZmOfflineDB.setItem =
+function(value, objectStoreName, callback, errorCallback) {
+    try {
+        var db = ZmOfflineDB.indexedDB.db;
+        var transaction = db.transaction(objectStoreName, "readwrite");
+        var objectStore = transaction.objectStore(objectStoreName);
+        [].concat(value).forEach(function(val) {
+            objectStore.put(val);
+        });
+        transaction.oncomplete = callback;
+        transaction.onerror = errorCallback;
+    } catch(e) {
+        DBG.println(AjxDebug.DBG1, "Exception ZmOfflineDB.setItem" + e);
+    }
+};
+
+ZmOfflineDB.getItem =
+function(key, objectStoreName, callback, errorCallback) {
+    try {
+        var db = ZmOfflineDB.indexedDB.db;
+        var transaction = db.transaction(objectStoreName);
+        var objectStore = transaction.objectStore(objectStoreName);
+        var resultArray = [];
+
+        if (key) {
+            [].concat(key).forEach(function(ele) {
+                objectStore.get(ele).onsuccess = function(ev) {
+                    var result = ev.target.result;
+                    if (result) {
+                        resultArray.push(result);
+                    }
+                };
+            });
+        }
+        else {
+            objectStore.openCursor().onsuccess = function(ev) {
+                var result = ev.target.result;
+                if (result) {
+                    resultArray.push(result.value);
+                    result['continue']();
+                }
+            };
+        }
+
+        if (callback) {
+            transaction.oncomplete = function() {
+                callback(resultArray);
+            }
+        }
+        transaction.onerror = errorCallback;
+    }
+    catch (e) {
+        errorCallback && errorCallback();
+        DBG.println(AjxDebug.DBG1, "Exception ZmOfflineDB.getItem" + e);
+    }
+};
+
+ZmOfflineDB.getItemCount =
+function(key, objectStoreName, callback, errorCallback) {
+    try {
+        var db = ZmOfflineDB.indexedDB.db;
+        var transaction = db.transaction(objectStoreName);
+        var objectStore = transaction.objectStore(objectStoreName);
+        var count = 0;
+
+        if (key) {
+            objectStore.count(key).onsuccess = function(ev) {
+                count = ev.target.result || 0;
+            };
+        }
+        else {
+            objectStore.count().onsuccess = function(ev) {
+                count = ev.target.result || 0;
+            };
+        }
+
+        if (callback) {
+            transaction.oncomplete = function() {
+                callback(count);
+            }
+        }
+        transaction.onerror = errorCallback;
+    }
+    catch (e) {
+        errorCallback && errorCallback();
+    }
+};
+
+
+ZmOfflineDB.search =
+function(search, objectStoreName, callback, errorCallback) {
+    if (search.folder) {
+        var indexName = "folder";
+    }
+    else if (search.tagnames.length > 0) {
+        var indexName = "tagnames";
+    }
+    else if (search.flags.length > 0) {
+        var indexName = "flags";
+    }
+    else if (search.from.length > 0) {
+        var indexName = "from";
+    }
+    else if (search.to.length > 0) {
+        var indexName = "to";
+    }
+    else if (search.cc.length > 0) {
+        var indexName = "cc";
+    }
+    else if (search.content.length > 0) {
+        var indexName = "content";
+    }
+    if (!indexName) {
+        return;
+    }
+
+    try {
+        var indexValue = [].concat(search[indexName]);
+        var db = ZmOfflineDB.indexedDB.db;
+        var transaction = db.transaction(objectStoreName);
+        var objectStore = transaction.objectStore(objectStoreName);
+        var resultArray = [];
+        var index = objectStore.index(indexName);
+        var range = IDBKeyRange.only(indexValue[0]);
+
+        index.openCursor(range).onsuccess = function(ev) {
+            var result = ev.target.result;
+            if (result) {
+                resultArray.push(result.value);
+                result['continue']();
+            }
+        };
+
+        if (callback) {
+            transaction.oncomplete = function() {
+                resultArray = ZmOffline.recreateMsg(resultArray);
+                callback(resultArray);
+            }
+        }
+        transaction.onerror = errorCallback;
+    }
+    catch (e) {
+        errorCallback && errorCallback();
+        DBG.println(AjxDebug.DBG1, "ZmOfflineDB.indexedDB.search : Exception : " +e);
     }
 };
 

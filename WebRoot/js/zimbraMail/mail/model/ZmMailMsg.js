@@ -183,6 +183,7 @@ function(params) {
 			noBusyOverlay:	params.noBusyOverlay,
 			accountName:	params.accountName
 		};
+        newParams.offlineCallback = ZmMailMsg._handleOfflineResponseFetchMsg.bind(null, m.id, newParams.callback);
 		params.sender.sendRequest(newParams);
 	}
 };
@@ -192,6 +193,24 @@ function(callback, result) {
 	if (callback) {
 		callback.run(result);
 	}
+};
+
+ZmMailMsg._handleOfflineResponseFetchMsg =
+function(msgId, callback) {
+    var getItemCallback = ZmMailMsg._handleOfflineResponseFetchMsgCallback.bind(null, callback);
+    ZmOfflineDB.getItem(msgId, ZmApp.MAIL, getItemCallback);
+};
+
+ZmMailMsg._handleOfflineResponseFetchMsgCallback =
+function(callback, result) {
+    var response = {
+        GetMsgResponse : {
+            m : ZmOffline.recreateMsg(result)
+        }
+    };
+    if (callback) {
+        callback(new ZmCsfeResult(response));
+    }
 };
 
 ZmMailMsg.stripSubjectPrefixes =
@@ -1910,6 +1929,7 @@ function(params, jsonObj) {
             });
         }
     }
+    ZmOfflineDB.setItem(ZmOffline.modifyMsg(m), ZmApp.MAIL);
     return header;
 };
 

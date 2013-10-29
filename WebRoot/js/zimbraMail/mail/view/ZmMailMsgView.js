@@ -2104,10 +2104,10 @@ function() {
 		if (att.links.remove) {
 			this._addClickHandler(att.part, ZmMailMsgView.ATT_LINK_REMOVE, this.removeAttachmentCallback, this, att.part);
 		}
-        this._handleAttachmentForOfflineMode(att);
 	}
-	
-	// add handlers for "all attachments" links
+    this._handleAttachmentsForOfflineMode(attInfo);
+
+    // add handlers for "all attachments" links
 	if (allAttParams) {
 		var downloadAllLink = document.getElementById(allAttParams.downloadAllLinkId);
 		if (downloadAllLink) {
@@ -2120,41 +2120,51 @@ function() {
 	}
 };
 
-ZmMailMsgView.prototype._handleAttachmentForOfflineMode =
-function(attachment) {
+ZmMailMsgView.prototype._handleAttachmentsForOfflineMode =
+function(attachments) {
     if (appCtxt.isWebClientOffline()) {
-        var url = attachment.url;
-        if (url && url.indexOf("data:") === -1) {
-            var callback = this._handleAttachmentForOfflineModeCallback.bind(this, attachment);
-            appCtxt.webClientOfflineHandler.getItem(url, callback, {}, "zmofflineattachmentstore");
+        var keyArray = [];
+        attachments.forEach(function(attachment) {
+            var key = "id=" + attachment.mid + "&part=" + attachment.part;
+            keyArray.push(key);
+        });
+        if (keyArray.length > 0) {
+            var callback = this._handleAttachmentsForOfflineModeCallback.bind(this, attachments);
+            ZmOfflineDB.getItem(keyArray, ZmOffline.ATTACHMENT, callback);
         }
     }
 };
 
-ZmMailMsgView.prototype._handleAttachmentForOfflineModeCallback =
-function(attachment, data) {
-    if (!data) {
+ZmMailMsgView.prototype._handleAttachmentsForOfflineModeCallback =
+function(attachments, resultArray) {
+    if (!resultArray) {
         return;
     }
-    var response = data.response;
-    if (response && response.type && response.content) {
-        var url = "data:" + response.type + ";base64," + response.content;
-        //Attachment main link
-        var id = this._getAttachmentLinkId(attachment.part, ZmMailMsgView.ATT_LINK_MAIN),
-            link = document.getElementById(id);
-        if (link) {
-            link.href = url;
-            link.onclick = null;
-        }
-        //download link
-        id = this._getAttachmentLinkId(attachment.part, ZmMailMsgView.ATT_LINK_DOWNLOAD);
-        link = document.getElementById(id);
-        if (link) {
-            link.href = url;
-            link.download = attachment.label;
-            link.onclick = null;
-        }
-    }
+    var self = this;
+    attachments.forEach(function(attachment) {
+        resultArray.forEach(function(result) {
+            if (attachment.url === result.url) {
+                if (result.type && result.content) {
+                    var url = "data:" + result.type + ";base64," + result.content;
+                    //Attachment main link
+                    var id = self._getAttachmentLinkId(attachment.part, ZmMailMsgView.ATT_LINK_MAIN),
+                        link = document.getElementById(id);
+                    if (link) {
+                        link.href = url;
+                        link.onclick = null;
+                    }
+                    //download link
+                    id = self._getAttachmentLinkId(attachment.part, ZmMailMsgView.ATT_LINK_DOWNLOAD);
+                    link = document.getElementById(id);
+                    if (link) {
+                        link.href = url;
+                        link.download = attachment.label;
+                        link.onclick = null;
+                    }
+                }
+            }
+        });
+    });
 };
 
 /**

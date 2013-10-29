@@ -25,6 +25,8 @@ ZmOffline = function(){
     ZmOffline.cacheConversationLimit = 1000;
     ZmOffline.ZmOfflineStore = "zmofflinestore";
     ZmOffline.ZmOfflineAttachmentStore = "zmofflineattachmentstore";
+    ZmOffline.ATTACHMENT = "Attachment";
+    ZmOffline.REQUESTQUEUE = "RequestQueue";
     ZmOffline.syncStarted = false;
     ZmOffline._syncInProgress = false;
     ZmOffline.store = [];
@@ -275,12 +277,13 @@ function(folder, type, callback, result){
         this._updateCacheProgress(folderName + type);
         return;
     }
-    for(var i=0, length = messages.length; i < length ; i++){
-        if (isConv){
+    if (isConv) {
+        for(var i=0, length = messages.length; i < length ; i++){
             this._convIds.push(messages[i].id)
-        } else {
-            this.addItem( messages[i], type, (folderName + type));
         }
+    }
+    else {
+        this.addItem(messages);
     }
     if (type === ZmOffline.MESSAGE){
         this._updateCacheProgress(folderName + type);
@@ -821,6 +824,12 @@ ZmOffline.prototype.addItem =
 function(item, type, store){
     var isConv = (type === ZmOffline.CONVERSATION);
     var value = this._getValue(item, isConv);
+    if (value && value.Body && value.Body.GetMsgResponse) {
+        item = ZmOffline.modifyMsg(item);
+        var callback = this._fetchMsgAttachments.bind(this, item);
+        ZmOfflineDB.setItem(item, ZmApp.MAIL, callback);
+        return;
+    }
     store = store || ((item.l) ? this._getFolder(item.l) + type : ZmOffline.ZmOfflineStore);
     this._cacheAttachments(item);
     this.setItem(item.id, value, store);
@@ -1013,10 +1022,10 @@ function(result) {
                 }
                 //Folder id
                 if (obj.methodName === "SendMsgRequest") {
-                    generatedMsg.l = ZmFolder.ID_OUTBOX;
+                    generatedMsg.l = ZmFolder.ID_OUTBOX.toString();
                 }
                 else if (obj.methodName === "SaveDraftRequest") {
-                    generatedMsg.l = ZmFolder.ID_DRAFTS;
+                    generatedMsg.l = ZmFolder.ID_DRAFTS.toString();
                 }
                 //Message part
                 messagePart = msgNode.mp[0];
@@ -1288,4 +1297,211 @@ function(doStop) {
 ZmOffline.isOnlineMode =
 function() {
     return appCtxt.isWebClientOfflineSupported && !appCtxt.isWebClientOffline();
+};
+
+ZmOffline.prototype._fetchMsgAttachments =
+function(messages) {
+    var attachments = [];
+    [].concat(messages).forEach(function(msg) {
+        var mailMsg = ZmMailMsg.createFromDom(msg, {'list':[]});
+        var attachInfo = mailMsg.getAttachmentInfo();
+        attachInfo.forEach(function(attachment) {
+            attachments.push(attachment);
+        });
+    });
+    this._saveAttachments(attachments);
+};
+
+ZmOffline.prototype._saveAttachments =
+function(attachments) {
+    if (!attachments || attachments.length === 0) {
+        return;
+    }
+    var attachment = attachments.shift();
+    var callback = this._isAttachmentSavedinIndexedDBCallback.bind(this, attachment, attachments);
+    ZmOffline.isAttachmentSavedinIndexedDB(attachment, callback);
+};
+
+ZmOffline.isAttachmentSavedinIndexedDB =
+function(attachment, callback, errorCallback) {
+    var key = "id=" + attachment.mid + "&part=" + attachment.part;
+    ZmOfflineDB.getItemCount(key, ZmOffline.ATTACHMENT, callback, errorCallback);
+};
+
+ZmOffline.prototype._isAttachmentSavedinIndexedDBCallback =
+function(attachment, attachments, count) {
+    var callback = this._saveAttachments.bind(this, attachments);
+    if (count === 0) {
+        var request = $.ajax({
+            url: attachment.url,
+            headers: {'X-Zimbra-Encoding':'x-base64'}
+        });
+
+        request.done(function(response) {
+            var key = "id=" + attachment.mid + "&part=" + attachment.part;
+            var item = {
+                id : key,
+                mid : attachment.mid,
+                url : attachment.url,
+                type : attachment.ct,
+                name : attachment.label,
+                size : attachment.sizeInBytes,
+                content : response
+            };
+            ZmOfflineDB.setItem(item, ZmOffline.ATTACHMENT, callback, callback);
+        }.bind(this));
+
+        request.fail(callback);
+    }
+    else {
+        callback();
+    }
+};
+
+ZmOffline.prototype.search =
+function(search, callback, errorCallback) {
+    if (!search) {
+        return;
+    }
+    var searchObj = this.parseSearchObj(search);
+    ZmOfflineDB.search(searchObj, ZmApp.MAIL, callback, errorCallback || callback);
+};
+
+ZmOffline.prototype.parseSearchObj =
+function(search) {
+    var parsedQuery = search.parsedQuery;
+    var tokens = parsedQuery.getTokens();
+    var key = {
+        content : [],
+        flags : [],
+        tagnames : [],
+        from : "",
+        to : [],
+        cc : [],
+        hasOrTerm : parsedQuery.hasOrTerm,
+        length : tokens.length
+    };
+
+    if (search.hasFolderTerm()) {
+        key.folder = search.folderId;
+    }
+
+    tokens.forEach(function(token) {
+        if (token.op === "content") {
+            key.content.push(token.arg);
+        }
+        else if (token.op === "tag") {
+            key.tagnames.push(token.arg);
+        }
+        else if (token.op === "from") {
+            key.from = token.arg.toLowerCase();
+        }
+        else if (token.op === "to") {
+            key.to.push(token.arg.toLowerCase());
+        }
+        else if (token.op === "cc") {
+            key.cc.push(token.arg.toLowerCase());
+        }
+        else if (token.op === "has") {
+            if (token.arg === "attachment") {
+                key.flags.push("a");
+            }
+        }
+        else if (token.op === "is") {
+            if (token.arg === "unread") {
+                key.flags.push("u");
+            }
+            else if (token.arg === "flagged") {
+                key.flags.push("f");
+            }
+            else if (token.arg === "draft") {
+                key.flags.push("d");
+            }
+            else if (token.arg === "sent") {
+                key.flags.push("s");
+            }
+            else if (token.arg === "replied") {
+                key.flags.push("r");
+            }
+            else if (token.arg === "forwarded") {
+                key.flags.push("w");
+            }
+        }
+    });
+    return key;
+};
+
+ZmOffline.modifyMsg =
+function(msg) {
+
+    var result = [].concat(msg).map(function(item) {
+        if (item.f) {
+            item.f = item.f.split("");
+        }
+        if (item.su) {
+            item.su = item.su.split(" ");
+        }
+        if (item.fr) {
+            item.fr = item.fr.split(" ");
+        }
+        if (item.tn) {
+            item.tn = item.tn.split(",");
+        }
+        if (item.l) {
+            item.l = item.l.toString();
+        }
+        if (item.e) {
+            var to = [];
+            var cc = [];
+            item.e.forEach(function(element){
+                if (element.a) {
+                    if (element.t === "f") {
+                        item.e.from = element.a.toLowerCase();
+                    }
+                    else if (element.t === "t") {
+                        to.push(element.a.toLowerCase());
+                    }
+                    else if (element.t === "c") {
+                        cc.push(element.a.toLowerCase());
+                    }
+                }
+            });
+            if (to.length) {
+                item.e.to = to;
+            }
+            if (cc.length) {
+                item.e.cc = cc;
+            }
+        }
+        return item;
+    });
+
+    return result;
+};
+
+ZmOffline.recreateMsg =
+function(msg) {
+
+    var result = [].concat(msg).map(function(item) {
+        if (Array.isArray(item.f)) {
+            item.f = item.f.join();
+        }
+        if (Array.isArray(item.su)) {
+            item.su = item.su.join(" ");
+        }
+        if (Array.isArray(item.fr)) {
+            item.fr = item.fr.join(" ");
+        }
+        if (Array.isArray(item.tn)) {
+            item.tn = item.tn.join();
+        }
+        if (item.e) {
+            delete item.e.from;
+            delete item.e.to;
+            delete item.e.cc;
+        }
+        return item;
+    });
+
+    return result;
 };

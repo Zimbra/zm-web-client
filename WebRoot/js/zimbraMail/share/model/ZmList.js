@@ -1072,7 +1072,7 @@ ZmList.prototype._handleOfflineResponseDoAction =
 function(params, isOutboxFolder, requestParams) {
 
     var action = params.action,
-        callback = this._handleOfflineResponseDoActionCallback.bind(this, params, isOutboxFolder);
+        callback = this._handleOfflineResponseDoActionCallback.bind(this, params, isOutboxFolder, requestParams.callback);
 
     if (isOutboxFolder && action.op === "trash") {
         var key = {
@@ -1083,9 +1083,9 @@ function(params, isOutboxFolder, requestParams) {
     }
     else {
         var obj = requestParams.jsonObj;
-        obj.methodName = ZmItem.SOAP_CMD[params.type] + "Request";
+        obj.methodname = ZmItem.SOAP_CMD[params.type] + "Request";
         obj.id = action.id;
-        ZmOfflineDB.indexedDB.setItemInRequestQueue(obj, callback);
+        ZmOfflineDB.setItem(obj, ZmOffline.REQUESTQUEUE, callback);
     }
 };
 
@@ -1093,7 +1093,7 @@ function(params, isOutboxFolder, requestParams) {
  * @private
  */
 ZmList.prototype._handleOfflineResponseDoActionCallback =
-function(params, isOutboxFolder) {
+function(params, isOutboxFolder, callback) {
 
     var data = {},
         header = this._generateOfflineHeader(params),
@@ -1104,7 +1104,9 @@ function(params, isOutboxFolder) {
     data[ZmItem.SOAP_CMD[params.type] + "Response"] = params.request[ZmItem.SOAP_CMD[params.type] + "Request"];
     result = new ZmCsfeResult(data, false, header);
     hdr = result.getHeader();
-    this._handleResponseDoAction(params, result);
+    if (callback) {
+        callback.run(result);
+    }
     if (hdr) {
         notify = hdr.context.notify[0];
         if (notify) {
@@ -1171,12 +1173,15 @@ function(params) {
                 mObj.f = flags + "u";
                 folderObj.u = folder.numUnread + 1;
                 break;
-            case "trash"://No break statement
+            case "trash":
                 mObj.l = ZmFolder.ID_TRASH;
-            case "spam"://No break statement
+                break;
+            case "spam":
                 mObj.l = ZmFolder.ID_SPAM;
-            case "!spam"://No break statement
+                break;
+            case "!spam":
                 mObj.l = ZmFolder.ID_INBOX;// Have to set the old folder id. Currently point to inbox
+                break;
             case "move":
                 if (action.l) {
                     mObj.l = action.l;
@@ -1240,10 +1245,22 @@ function(params, isOutboxFolder, notify) {
         return;
     }
 
-    for (var i = 0, msg; i < m.length; i++) {
-        msg = m[i];
-        appCtxt.webClientOfflineHandler.modifyItem(msg.id, msg, ZmOffline.MESSAGE);
-    }
+    var callback = this._updateOfflineDataCallback.bind(this, params, m);
+    ZmOfflineDB.getItem(params.action.id.split(","), ZmApp.MAIL, callback);
+};
+
+ZmList.prototype._updateOfflineDataCallback =
+function(params, msgArray, result) {
+    result = ZmOffline.recreateMsg(result);
+    var newMsgArray = [];
+    result.forEach(function(res) {
+        msgArray.forEach(function(msg) {
+            if (msg.id === res.id) {
+                newMsgArray.push($.extend(res, msg));
+            }
+        });
+    });
+    ZmOfflineDB.setItem(ZmOffline.modifyMsg(newMsgArray), ZmApp.MAIL);
 };
 
 /**

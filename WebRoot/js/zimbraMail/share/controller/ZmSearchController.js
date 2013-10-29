@@ -561,7 +561,7 @@ function(params, noRender, callback, errorCallback) {
 	}
 
 	var respCallback = this._handleResponseDoSearch.bind(this, search, noRender, callback, params.noUpdateOverview);
-    var offlineCallback = this._handleOfflineDoSearch.bind(this, search, noRender, callback, params.noUpdateOverview);
+    var offlineCallback = this._handleOfflineDoSearch.bind(this, search, respCallback);
     if (search.folderId == ZmFolder.ID_OUTBOX) {
         var offlineRequest = true;
     }
@@ -625,10 +625,12 @@ function(search, noRender, callback, noUpdateOverview, result) {
  * Takes the search result and hands it to the appropriate controller for display.
  *
  * @param {ZmSearch}	search			contains search info used to run search against server
+ * @param {AjxCallback}	callback		the callback to run after generating offline result
  */
 ZmSearchController.prototype._handleOfflineDoSearch =
-function(search, ex, params, result) {
-    this._doIndexedDBSearch(search, ex, params);
+function(search, callback) {
+    var respCallback = this._handleOfflineResponseDoSearch.bind(this, search, callback);
+    appCtxt.webClientOfflineHandler.search(search, respCallback);
 };
 
 /**
@@ -934,82 +936,30 @@ function(id) {
 };
 
 /**
- * Performs the IndexedDB search.
- *
- * @param {ZmSearch}	search		the search object
- *
- * @private
- */
-ZmSearchController.prototype._doIndexedDBSearch =
-function(search) {
-    var respCallback = this._handleResponseDoIndexedDBSearch.bind(this, search),
-        errorCallback = this._handleErrorDoIndexedDBSearch.bind(this, search);
-
-    if (search.folderId == ZmFolder.ID_OUTBOX) {
-        var key = {methodName : "SendMsgRequest"};
-        ZmOfflineDB.indexedDB.getItemInRequestQueue(key, respCallback, errorCallback);
-    }
-    else {
-        var objStore = ZmFolder.MSG_KEY[search.folderId] + ZmOffline.MESSAGE;
-        if (search.folderId == ZmFolder.ID_DRAFTS) {
-            respCallback = errorCallback = this._addOfflineDrafts.bind(this, search);
-        }
-        //ZmOfflineDB.indexedDB.getItem(false, objStore, respCallback, errorCallback);
-        ZmOfflineDB.indexedDB.getAll(objStore, respCallback);
-    }
-};
-
-/**
  * Takes the search result and hands it to the appropriate controller for display.
  *
  * @param {ZmSearch}	search			contains search info used to run search against server
+ * @param {AjxCallback}	callback		online response callback to run after generating search response
  * @param {Object}	    result			the object stored in indexedDB
  *
  * @private
  */
-ZmSearchController.prototype._handleResponseDoIndexedDBSearch =
-function(search, result) {
+ZmSearchController.prototype._handleOfflineResponseDoSearch =
+function(search, callback, result) {
 
     if (search.sortBy === ZmSearch.DATE_DESC) {
         result.reverse();
     }
 
+    var searchResult = new ZmSearchResult(search);
+    searchResult.set({m : result});
+
+    var zmCsfeResult = new ZmCsfeResult(searchResult);
+    callback(zmCsfeResult);
+
     if (search.folderId == ZmFolder.ID_OUTBOX) {
-        var respEl = ZmOffline.generateMsgResponse(result);
-        ZmOffline.updateOutboxFolderCountCallback(respEl.length);
+        ZmOffline.updateOutboxFolderCountCallback(result.length);
     }
-    else {
-        respEl = [];
-        result.forEach(function(val) {
-            if (val.value) {
-                respEl.push(val.value.Body.GetMsgResponse.m[0]);
-            }
-        });
-    }
-
-    var results = new ZmSearchResult(search);
-    results.type = search.types ? search.types.get(0) : null;
-
-    if (results.type === ZmId.ITEM_CONV) {//conversation mode
-        results.set({ "c" : respEl });
-    }
-    else {
-        results.set({ "m" : respEl });
-    }
-
-    this._showResults(results, search);
-};
-
-/**
- * Handle a few minor errors where we show an empty result set.
- *
- * @private
- */
-ZmSearchController.prototype._handleErrorDoIndexedDBSearch =
-function(search, result) {
-    var results = new ZmSearchResult(search);
-    results.type = search.types ? search.types.get(0) : null;
-    this._showResults(results, search);
 };
 
 ZmSearchController.prototype._addOfflineDrafts =
