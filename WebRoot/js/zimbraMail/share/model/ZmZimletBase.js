@@ -591,7 +591,7 @@ function(spanElement, contentObjText, matchContext, canvas) {
 	var omem = DwtOutsideMouseEventMgr.INSTANCE;
 	omem.stopListening({
 		id: "ZimletTooltip",
-		elementId: canvas.id
+		elementId: canvas ? canvas.id : ""
 	});
 };
 
