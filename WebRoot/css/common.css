@@ -692,3 +692,10 @@ LI.RowDouble, LI.Row {list-style: none;}
 .FakeAnchor:active, a:active {
 	@Anchor-active@
 }
+
+.FakeAnchor.ZDisabled,
+.FakeAnchor.ZDisabled:hover,
+.FakeAnchor.ZDisabled:active {
+	@Text-disabled@
+	text-decoration: none;
+}

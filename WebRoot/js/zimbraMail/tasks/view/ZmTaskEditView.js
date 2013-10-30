@@ -147,15 +147,13 @@ function(calItem, mode) {
         this._remindDateField.value = AjxDateUtil.simpleComputeDateStr(rd);
         this._reminderCheckbox.setSelected(calItem.alarm);
         this._setRemindersEnabled(calItem.alarm);
-
+		
         if (calItem.alarmActions.contains(ZmCalItem.ALARM_EMAIL)) {
             this._reminderEmailCheckbox.setSelected(true);
         }
         if (calItem.alarmActions.contains(ZmCalItem.ALARM_DEVICE_EMAIL)) {
             this._reminderDeviceEmailCheckbox.setSelected(true);
         }
-
-        this._setEmailReminderControls();
     }
 
 	this._location.setValue(calItem.getLocation());
@@ -165,6 +163,7 @@ function(calItem, mode) {
     if (!this._notesHtmlEditor.getContent() && calItem.message){
         this._notesHtmlEditor.setContent(calItem.message.getInviteDescriptionContentValue(ZmMimeTable.TEXT_PLAIN) || "");
     }
+    this._setEmailReminderControls();
 };
 
 ZmTaskEditView.prototype._populateForSave =
@@ -430,6 +429,8 @@ function(width) {
         var remindDateBtnListener = new AjxListener(this, this._remindDateBtnListener);
         var remindDateCalSelectionListener = new AjxListener(this, this._dateCalSelectionListener);
 
+        this._reminderLabel = Dwt.byId(this._htmlElId+"_reminderLabel");
+
         this._reminderCheckbox = new DwtCheckbox({parent:this});
         this._reminderCheckbox.replaceElement(this._htmlElId+"_reminderCheckbox");
         this._reminderCheckbox.addSelectionListener(new AjxListener(this, this._setEmailReminderControls));
@@ -450,7 +451,6 @@ function(width) {
         this._reminderDeviceEmailCheckbox.setText(ZmMsg.deviceEmail);
         this._reminderConfigure = new DwtText({parent:this,className:"FakeAnchor"});
         this._reminderConfigure.setText(ZmMsg.remindersConfigure);
-        this._reminderConfigure.getHtmlElement().onclick = AjxCallback.simpleClosure(skin.gotoPrefs, skin, "NOTIFICATIONS");
         this._reminderConfigure.replaceElement(document.getElementById(this._htmlElId+"_reminderConfigure"));
         this._setEmailReminderControls();
         
@@ -623,16 +623,6 @@ function(isComplete) {
     this._pCompleteSelectInput.setValue(this.formatPercentComplete(isComplete ? 100 : 0));
 };
 
-ZmTaskEditView.prototype._setRemindersEnabled =
-function(isEnabled) {
-    if (this._hasReminderSupport) {
-        this._remindDateButton.setEnabled(isEnabled);
-        this._remindTimeSelect.setEnabled(isEnabled);
-        Dwt.addClass(this._remindDateField.parentNode, !isEnabled ? 'DWTInputField-disabled' : 'DWTInputField', !isEnabled ? 'DWTInputField' : 'DWTInputField-disabled');
-        this._remindDateField.disabled = !isEnabled;
-    }
-};
-
 // Listeners
 ZmTaskEditView.prototype._handleCompleteOnBlur =
 function(inputEl) {
@@ -675,6 +665,7 @@ function(ev) {
 		{
 			this._statusSelect.setSelectedValue(ZmCalendarApp.STATUS_INPR);
 		}
+		this._setEmailReminderControls();
         return;
     }
 };
@@ -713,6 +704,7 @@ function(ev) {
 			this._statusSelect.setSelectedValue(ZmCalendarApp.STATUS_INPR);
 		}
 	}
+	this._setEmailReminderControls();
 };
 
 
@@ -723,22 +715,46 @@ function(el) {
 		ZmCalItemEditView.prototype._handleOnClick.call(this, el);
 };
 
+
+ZmTaskEditView.prototype._setRemindersEnabled =
+function(isEnabled) {
+    if (this._hasReminderSupport) {
+        this._remindDateButton.setEnabled(isEnabled);
+        this._remindTimeSelect.setEnabled(isEnabled);
+        Dwt.addClass(this._remindDateField.parentNode, !isEnabled ? 'DWTInputField-disabled' : 'DWTInputField', !isEnabled ? 'DWTInputField' : 'DWTInputField-disabled');
+        this._remindDateField.disabled = !isEnabled;
+    }
+};
+
+ZmTaskEditView.prototype._setRemindersConfigureEnabled = function(enabled) {
+	this._reminderConfigure.setEnabled(enabled);
+    this._reminderConfigure.getHtmlElement().onclick = enabled ? AjxCallback.simpleClosure(skin.gotoPrefs, skin, "NOTIFICATIONS") : null;
+};
+
 //
 // ZmCalItemEditView methods
 //
 
 ZmTaskEditView.prototype._setEmailReminderControls = function() {
-    ZmCalItemEditView.prototype._setEmailReminderControls.apply(this, arguments);
-    // primary reminder checkbox overrides other values
-    var isSelected = this._reminderCheckbox.isSelected();
-    this._remindDateField.disabled = !isSelected;
-    this._remindDateButton.setEnabled(isSelected);
-    this._remindTimeSelect.setEnabled(isSelected);
-    if (!isSelected) {
-        this._reminderEmailCheckbox.setEnabled(false);
-        this._reminderDeviceEmailCheckbox.setEnabled(false);
-    }
-    this._reminderDeviceEmailCheckbox.setVisible(appCtxt.get(ZmSetting.CAL_DEVICE_EMAIL_REMINDERS_ENABLED));
+    if (this._hasReminderSupport) {
+
+		ZmCalItemEditView.prototype._setEmailReminderControls.apply(this, arguments);
+
+		// Bug 55392: Disable reminders altogether when task is completed
+		var remindersEnabled = (this._statusSelect.getValue() != ZmCalendarApp.STATUS_COMP);
+		Dwt.condClass(this._reminderLabel, remindersEnabled, "", "ZDisabled");
+		this._reminderCheckbox.setEnabled(remindersEnabled);
+
+		// primary reminder checkbox overrides other values
+		var isSelected = this._reminderCheckbox.isSelected();
+		this._setRemindersEnabled(isSelected);
+		if (!isSelected) {
+		    this._reminderEmailCheckbox.setEnabled(false);
+		    this._reminderDeviceEmailCheckbox.setEnabled(false);
+		}
+		this._setRemindersConfigureEnabled(isSelected);
+		this._reminderDeviceEmailCheckbox.setVisible(appCtxt.get(ZmSetting.CAL_DEVICE_EMAIL_REMINDERS_ENABLED));
+	}
 };
 
 ZmTaskEditView.prototype.adjustReminderValue = function(calItem) {
