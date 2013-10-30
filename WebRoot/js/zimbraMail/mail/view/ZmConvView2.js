@@ -1510,6 +1510,13 @@ function(msg, container, callback, index) {
 	this._beenHere = true;
 };
 
+ZmMailMsgCapsuleView.prototype._getInviteSubs =
+function(subs) {
+	ZmMailMsgView.prototype._getInviteSubs.apply(this, arguments);
+
+    subs.noTopHeader = true;
+};
+
 ZmMailMsgCapsuleView.prototype._addLine =
 function() {
 	var div = document.createElement("div");

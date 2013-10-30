@@ -1560,7 +1560,6 @@ function(msg, notifyZimlets) {
 ZmMailMsgView.prototype._getInviteSubs =
 function(subs, sentBy, sentByAddr, sender, addr) {
 	this._inviteMsgView.addSubs(subs, sentBy, sentByAddr, sender ? addr : null);
-    subs.noTopHeader = this._mode == ZmId.VIEW_CONV2;
     var imv = this._inviteMsgView;
     if (imv._inviteToolbar && imv._inviteToolbar.getVisible()) {
         subs.toolbarCellId = this._inviteToolbarCellId =
