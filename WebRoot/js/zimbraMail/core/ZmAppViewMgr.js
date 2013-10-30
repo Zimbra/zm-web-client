@@ -1215,7 +1215,7 @@ function(viewId, show) {
 		}
 		
 		if (view.app) {
-			this._controller.setActiveApp(view.app, viewId, view.isTabView);
+			this._controller.setActiveApp(view);
 		}
 	}
 	else {

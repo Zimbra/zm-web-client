@@ -2103,15 +2103,14 @@ function(callback, appName) {
  * current app toolbar and the overview. The previous and newly current apps are
  * notified of the change. This method is called after a new view is pushed.
  *
- * @param {constant}	appName		the app
- * @param {constant}	view		the view
- * @param	{Boolean}	isTabView	if <code>true</code>, the app has a tab view
+ * @param {Object}	view
  */
 ZmZimbraMail.prototype.setActiveApp =
-function(appName, view, isTabView) {
+function(view) {
+	var appName = view.app;
 
 	// update app chooser
-	if (!isTabView) {
+	if (!view.isTabView) {
 		this._components[ZmAppViewMgr.C_APP_CHOOSER].setSelected(appName);
 	}
 
@@ -2127,7 +2126,7 @@ function(appName, view, isTabView) {
 			// some views are not stored in _apps collection, so check if it exists.
 			var app = this._apps[this._activeApp];
 			if (app) {
-				app.activate(false, view);
+				app.activate(false, view.id);
 			}
 			this._previousApp = this._activeApp;
 		}
@@ -2136,20 +2135,28 @@ function(appName, view, isTabView) {
 		this._activeApp = appName;
 		if (appEnabled) {
 			var app = this._apps[this._activeApp];
-
-			if (appCtxt.get(ZmSetting.SEARCH_ENABLED) && appName != ZmApp.SEARCH) {
-				var searchType = app ? app.getInitialSearchType() : null;
-				if (!searchType) {
-					searchType = ZmApp.DEFAULT_SEARCH[appName];
+			if (appCtxt.get(ZmSetting.SEARCH_ENABLED)) {
+				var searchType;
+				var currentSearch;
+				if (appName === ZmApp.SEARCH) {
+					currentSearch = view.controller._resultsController._currentSearch;
+					var types = currentSearch && currentSearch.types;
+					searchType = types && types.size() > 0 && types.get(0);
+				}
+				else {
+					currentSearch = app.currentSearch;
+					searchType = app.getInitialSearchType();
+					if (!searchType) {
+						searchType = ZmApp.DEFAULT_SEARCH[appName];
+					}
 				}
 				if (searchType) {
 					appCtxt.getSearchController().setDefaultSearchType(searchType);
 				}
-
 				// set search string value to match current app's last search, if applicable
 				var stb = appCtxt.getSearchController().getSearchToolbar();
 				if (appCtxt.get(ZmSetting.SHOW_SEARCH_STRING) && stb) {
-					var value = app.currentSearch ? app.currentSearch.query : app.currentQuery;
+					var value = currentSearch ? currentSearch.query : app.currentQuery;
 					stb.setSearchFieldValue(value || "");
 				}
 			}
