@@ -125,8 +125,12 @@ Ext.define('ZCS.common.ZtOrganizerNotificationHandler', {
 	 */
 	insertOrganizer: function(list, organizer, parentId, parentZcsId, oldParentId, oldParentZcsId) {
 
-		var	store = list && list.getStore(),
-			parent = (!parentId || parentZcsId === ZCS.constant.ID_ROOT) ? store.getRoot() : store.getNodeById(parentId),
+		var	store = list && list.getStore();
+		if (!store) {
+			return;
+		}
+
+		var	parent = (!parentId || parentZcsId === ZCS.constant.ID_ROOT) ? store.getRoot() : store.getNodeById(parentId),
 			oldParent = (!oldParentId || oldParentZcsId === ZCS.constant.ID_ROOT) ? store.getRoot() : store.getNodeById(oldParentId);
 
 		if (parent && organizer) {
