@@ -537,27 +537,18 @@ function(field, classes) {
 
 ZmListView.prototype._setImage =
 function(item, field, imageInfo, classes) {
-	var img = this._getElement(item, field);
-	if (img) {
-		imageInfo = imageInfo || "Blank_16";
-		classes = classes || [];
-		var newClass = AjxImg.getClassForImage(imageInfo);
-		if (newClass) {
-			classes.push(newClass);
+	var cell = this._getElement(item, field);
+	if (cell) {
+		if (classes) {
+			cell.className = AjxUtil.uniq(classes).join(" ");
 		}
-		img.className = classes.join(" ");
-		//AjxImg.setImage(img.parentNode, imageInfo, null, null, classes);
+		cell.innerHTML = AjxImg.getImageHtml(imageInfo || "Blank_16");
 	}
 };
 
 ZmListView.prototype._replaceTagImage =
 function(item, field, classes) {
-	var img = this._getElement(item, field);
-	if (img) {
-		var htmlArr = [];
-		this._getImageHtml(htmlArr, 0, item.getTagImageInfo(), this._getFieldId(item, field), classes);
-		$(img).replaceWith(htmlArr.join(""));
-	}
+	this._setImage(item, field, item.getTagImageInfo(), classes);
 };
 
 ZmListView.prototype._getFragmentSpan =

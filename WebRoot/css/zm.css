@@ -584,6 +584,11 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 	vertical-align:bottom;
 }
 
+/* The tag cell often contains an <img> tag, causing browsers to make it higher than it should be */
+.ZmMsgListColTag {
+	height: 16px;
+}
+
 /* put space between display of tag icons and their names */
 .Tags A {
 	@NoWrap@
