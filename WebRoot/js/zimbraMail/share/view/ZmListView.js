@@ -515,8 +515,14 @@ function(htmlArr, idx, item, field, colIdx, params, classes) {
 
 ZmListView.prototype._getImageHtml =
 function(htmlArr, idx, imageInfo, id, classes) {
-	classes = classes || [];
-	htmlArr[idx++] = ["<div id='", id, "' class='", classes.join(" "), "'>", AjxImg.getImageHtml(imageInfo || "Blank_16"), "</div>"].join("");
+	htmlArr[idx++] = "<div";
+	if (id) {
+		htmlArr[idx++] = [" id='", id, "' "].join("");
+	}
+	htmlArr[idx++] = AjxUtil.getClassAttr(classes);
+	htmlArr[idx++] = ">";
+	htmlArr[idx++] = AjxImg.getImageHtml(imageInfo || "Blank_16");
+	htmlArr[idx++] = "</div>";
 	return idx;
 };
 
