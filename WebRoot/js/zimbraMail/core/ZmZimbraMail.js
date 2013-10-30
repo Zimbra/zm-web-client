@@ -2157,6 +2157,7 @@ function(view) {
 				var stb = appCtxt.getSearchController().getSearchToolbar();
 				if (appCtxt.get(ZmSetting.SHOW_SEARCH_STRING) && stb) {
 					var value = currentSearch ? currentSearch.query : app.currentQuery;
+					value = appName === ZmApp.SEARCH ? "" : value;
 					stb.setSearchFieldValue(value || "");
 				}
 			}
