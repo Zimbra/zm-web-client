@@ -1350,6 +1350,12 @@ function(msg, container) {
 	var reportBtnCellId		= ZmId.getViewId(this._viewId, ZmId.MV_REPORT_BTN_CELL, this._mode);
 	this._expandRowId		= ZmId.getViewId(this._viewId, ZmId.MV_EXPAND_ROW, this._mode);
 
+	// the message view adapts to whatever height the image has, but
+	// more than 96 pixels is a bit silly...
+	var imageURL = ai.sentByContact &&
+		ai.sentByContact.getImageUrl(48, 96) ||
+		ZmContact.NO_IMAGE_URL;
+
 	var subs = {
 		id: 				this._htmlElId,
 		hdrTableId: 		this._hdrTableId,
@@ -1358,6 +1364,7 @@ function(msg, container) {
 		attachId:			this._attLinksId,
 		infoBarId:			this._infoBarId,
 		subject:			subject,
+		imageURL:			imageURL,
 		dateString:			dateString,
 		hasAttachments:		(attachmentsCount != 0),
 		attachmentsCount:	attachmentsCount,
@@ -1377,7 +1384,7 @@ function(msg, container) {
 	else {
 		subs.sentBy = ai.sentBy;
 		subs.sentByNormal = ai.sentByAddr;
-		subs.sentByIcon = ai.sentByIcon;
+		subs.sentByImageURL = ai.sentByImageURL;
 		subs.sentByAddr = ai.sentByAddr;
 		subs.obo = ai.obo;
 		subs.oboAddr = ai.oboAddr;
@@ -1459,7 +1466,8 @@ function(msg, notifyZimlets) {
         msg.sentByDomain = sentByAddr.substr(sentByAddr.indexOf("@") + 1);
         msg.showImages = this._isTrustedSender(msg);
     }
-	var sentByIcon = cl && (cl.getContactByEmail((sentBy && sentBy.address) ? sentBy.address : sentByAddr) ? "Contact" : "NewContact");
+	var sentByContact = cl && cl.getContactByEmail((sentBy && sentBy.address) ?
+	                                               sentBy.address : sentByAddr);
 	var obo = sender ? fromAddr : null;
 	var oboAddr = (obo && obo != ZmMsg.unknown) ? obo.getAddress() : null;
 
@@ -1546,7 +1554,7 @@ function(msg, notifyZimlets) {
 		sender:			sender,
 		sentBy:			sentBy,
 		sentByAddr:		sentByAddr,
-		sentByIcon:		sentByIcon,
+		sentByContact:	sentByContact,
 		obo:			obo,
 		oboAddr:		oboAddr,
 		bwo:			bwo,

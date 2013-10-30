@@ -2,6 +2,9 @@
 	<div><!-- empty container DIV here so Dwt.parseHtmlFragment returns the infoBar div below -->
 		<table class='MsgHeaderTable' id='${id}_headerElement' width=100%>
 			<tr>
+				<td class='MsgHeaderContactContainer'>
+					<img class='MsgHeaderContactImage' src="${imageURL}" />
+				</td>
 				<td>
 					<div>
 						<table width=100%>
@@ -141,6 +144,11 @@
 	<div><!-- empty container DIV here so Dwt.parseHtmlFragment returns the infoBar div below -->
 		<table class='InvHeaderTable' id='${id}_headerElement'>
 			<tr>
+				<$ if (!data.noTopHeader) { $>
+				<td class='InvHeaderContactContainer'>
+					<img class='InvHeaderContactImage' src="${imageURL}" />
+				</td>
+				<$ } $>
 				<td>
 					<div class='InvHeaderDiv'>
 						<$ if (!data.noTopHeader) { $>
@@ -718,6 +726,9 @@
 </template>
 	
 <template id='mail.Message#Conv2MsgHeader-collapsed'>
+	<div class='image'>
+		<img src="${imageURL}" />
+	</div>
 	<div class='info'>
 		<div id='${fromId}' class='ZmConvListFrom'>${from}</div>
 		<div class='ZmConvListFragment'><$= data.fragment $></div>
@@ -727,6 +738,9 @@
 </template>
 
 <template id='mail.Message#Conv2MsgHeader-expanded'>
+	<div class='image'>
+		 <img src="${imageURL}" />
+	</div>
 	<div class='info'>
 		<table id='${hdrTableId}' class='ZPropertySheet' cellspacing='6'>
 			<tr>

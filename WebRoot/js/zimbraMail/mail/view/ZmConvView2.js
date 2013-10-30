@@ -2049,11 +2049,17 @@ function(state, force) {
 	if (!isExpanded) {
 		var fromId = id + "_0";
 		this._idToAddr[fromId] = ai.fromAddr;
+
+		var imageURL = ai.sentByContact &&
+			ai.sentByContact.getImageUrl(32, 32) ||
+			ZmContact.NO_IMAGE_URL_SMALL;
+
 		subs = {
 			readCellId:		this._readCellId,
 			from:			ai.from,
 			fromId:			fromId,
 			fragment:		AjxStringUtil.htmlEncode(msg.fragment),
+			imageURL:		imageURL,
 			date:			dateString,
 			dateCellId:		this._dateCellId,
 			dateTooltip:	dateTooltip
@@ -2061,6 +2067,10 @@ function(state, force) {
 		html = AjxTemplate.expand("mail.Message#Conv2MsgHeader-collapsed", subs);
 	}
 	else {
+		var imageURL = ai.sentByContact &&
+			ai.sentByContact.getImageUrl(48, 48) ||
+			ZmContact.NO_IMAGE_URL;
+
 		subs = {
 			hdrTableId:		this._msgView._hdrTableId = id + "_hdrTable",
 			readCellId:		this._readCellId,
@@ -2072,6 +2082,7 @@ function(state, force) {
 			bwoAddr:		ai.bwoAddr,
 			addressTypes:	ai.addressTypes,
 			participants:	ai.participants,
+			imageURL:		imageURL,
 			date:			dateString,
 			dateCellId:		this._dateCellId,
 			dateTooltip:	dateTooltip,

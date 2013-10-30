@@ -632,9 +632,22 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 
 .MsgHeaderTable {}
 
+.MsgHeaderContactImage, .InvHeaderContactImage {
+	width: 48px;
+	margin: 4px;
+}
+
+.MsgHeaderTable > TBODY > TR > TD, .InvHeaderTable > TBODY > TR > TD {
+	vertical-align: top;
+}
+
+.MsgHeaderContactContainer, .InvHeaderContactContainer {
+	width: 56px;
+	text-align: center;
+}
+
 /* Container for the header of the message */
 .InvHeaderDiv {
-	background-color:@lighten(AppC,50)@;
 	padding:0px 7px;
 }
 .Conv2Messages .InvHeaderDiv {
@@ -991,8 +1004,23 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 	font-weight:bold;
 }
 
-.Conv2MsgHeader .info {
+.Conv2MsgHeader .image {
 	margin:5px 7px 5px 20px;
+	width: 48px;
+	height: 48px;
+	vertical-align: top;
+	text-align: center;
+	position:absolute;
+}
+
+.Collapsed .Conv2MsgHeader .image {
+	margin-top: 4px;
+	margin-bottom: 4px;
+	height: 32px;
+}
+
+.Conv2MsgHeader .info {
+	margin:5px 7px 5px 68px;
 	overflow:hidden;
 #IFDEF MSIE
 	width:100%;

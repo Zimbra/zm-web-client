@@ -1084,7 +1084,6 @@ ZmEditContactViewImage.prototype.toString = function() {
 
 // Constants
 
-ZmEditContactViewImage.NO_IMAGE_URL = appContextPath + "/img/large/ImgPerson_48.png";
 ZmEditContactViewImage.IMAGE_URL = "/service/content/proxy?aid=@aid@";
 
 // Public methods
@@ -1098,7 +1097,7 @@ ZmEditContactViewImage.IMAGE_URL = "/service/content/proxy?aid=@aid@";
 ZmEditContactViewImage.prototype.setValue = function(value) {
 	this._src = value;
 	if (!value) {
-		this._imgEl.src = ZmEditContactViewImage.NO_IMAGE_URL;
+		this._imgEl.src = ZmContact.NO_IMAGE_URL;
 		this._badgeEl.className = "ImgAdd";
         
 	}
