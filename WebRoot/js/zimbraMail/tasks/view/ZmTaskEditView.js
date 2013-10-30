@@ -302,15 +302,15 @@ function() {
 
 ZmTaskEditView.prototype._getPriorityImage =
 function(flag) {
-	if (flag == ZmCalItem.PRIORITY_HIGH)	{ return "PriorityHigh_list"; }
-	if (flag == ZmCalItem.PRIORITY_LOW)	{ return "PriorityLow_list"; }
+	if (ZmCalItem.isPriorityHigh(flag))	{ return "PriorityHigh_list"; }
+	if (ZmCalItem.isPriorityLow(flag))	{ return "PriorityLow_list"; }
 	return "PriorityNormal_list";
 };
 
 ZmTaskEditView.prototype._getPriorityText =
 function(flag) {
-	if (flag == ZmCalItem.PRIORITY_HIGH)	{ return ZmMsg.high; }
-	if (flag == ZmCalItem.PRIORITY_LOW)	{ return ZmMsg.low; }
+	if (ZmCalItem.isPriorityHigh(flag))	{ return ZmMsg.high; }
+	if (ZmCalItem.isPriorityLow(flag))	{ return ZmMsg.low; }
 	return ZmMsg.normal;
 };
 

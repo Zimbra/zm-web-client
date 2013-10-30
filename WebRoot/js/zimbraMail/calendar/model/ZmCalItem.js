@@ -148,14 +148,18 @@ ZmCalItem.FORWARD_MAPPING[ZmCalItem.MODE_FORWARD_INVITE]            = ZmCalItem.
  * Defines the "low" priority.
  */
 ZmCalItem.PRIORITY_LOW				= 9;
+ZmCalItem.PRIORITY_LOW_RANGE		= [6,7,8,9];
+
 /**
  * Defines the "normal" priority.
  */
 ZmCalItem.PRIORITY_NORMAL			= 5;
+ZmCalItem.PRIORITY_NORMAL_RANGE		= [0,5];
 /**
  * Defines the "high" priority.
  */
 ZmCalItem.PRIORITY_HIGH				= 1;
+ZmCalItem.PRIORITY_HIGH_RANGE		= [1,2,3,4];
 
 /**
  * Defines the "chair" role.
@@ -2635,6 +2639,16 @@ function() {
 
 // Static methods
 
+ZmCalItem.isPriorityHigh = function(priority) {
+	return AjxUtil.arrayContains(ZmCalItem.PRIORITY_HIGH_RANGE, priority);
+};
+ZmCalItem.isPriorityLow = function(priority) {
+	return AjxUtil.arrayContains(ZmCalItem.PRIORITY_LOW_RANGE, priority);
+};
+ZmCalItem.isPriorityNormal = function(priority) {
+	return AjxUtil.arrayContains(ZmCalItem.PRIORITY_NORMAL_RANGE, priority);
+};
+
 /**
  * Gets the priority label.
  * 
@@ -2644,12 +2658,16 @@ function() {
  */
 ZmCalItem.getLabelForPriority =
 function(priority) {
-	switch (priority) {
-		case ZmCalItem.PRIORITY_LOW:	return ZmMsg.low;
-		case ZmCalItem.PRIORITY_NORMAL: return ZmMsg.normal;
-		case ZmCalItem.PRIORITY_HIGH:	return ZmMsg.high;
-		default: return "";
+	if (ZmCalItem.isPriorityLow(priority)) {
+		return ZmMsg.low;
 	}
+	if (ZmCalItem.isPriorityNormal(priority)) {
+		return ZmMsg.normal;
+	}
+	if (ZmCalItem.isPriorityHigh(priority)) {
+		return ZmMsg.high;
+	}
+	return "";
 };
 
 /**
@@ -2661,17 +2679,16 @@ function(priority) {
  */
 ZmCalItem.getImageForPriority =
 function(task, id) {
-	switch (task.priority) {
-		case ZmCalItem.PRIORITY_LOW:
+	if (ZmCalItem.isPriorityLow(task.priority)) {
 			return id
 				? AjxImg.getImageHtml("PriorityLow_list", null, ["id='", id, "'"].join(""))
 				: AjxImg.getImageHtml("PriorityLow_list");
-		case ZmCalItem.PRIORITY_HIGH:
+	} else if (ZmCalItem.isPriorityHigh(task.priority)) {
 			return id
 				? AjxImg.getImageHtml("PriorityHigh_list", null, ["id='", id, "'"].join(""))
 				: AjxImg.getImageHtml("PriorityHigh_list");
-		default: return "";
 	}
+	return "";
 };
 
 /**
