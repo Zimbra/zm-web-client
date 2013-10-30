@@ -463,12 +463,11 @@ function(params) {
  * @param	{closure}		params.finalCallback	the callback to run after all items have been processed
  * @param	{int}			params.count			the starting count for number of items processed
  * @param	{boolean}		params.noUndo			true if the action is not undoable (e.g. performed as an undo)
- * @param	{String}		params.actionText		optional key to text to display in the confirmation toast instead of the default summary. May be set explicitly to null to disable the confirmation toast entirely
  */
 ZmList.prototype.moveItems =
 function(params) {
 	
-	params = Dwt.getParams(arguments, ["items", "folder", "attrs", "callback", "errorCallback" ,"finalCallback", "noUndo", "actionTextKey"]);
+	params = Dwt.getParams(arguments, ["items", "folder", "attrs", "callback", "errorCallback" ,"finalCallback", "noUndo"]);
 
 	var params1 = AjxUtil.hashCopy(params);
 	params1.items = AjxUtil.toArray(params.items);
@@ -486,6 +485,9 @@ function(params) {
 		params1.attrs.l = params.folder.id;
 	}
 	params1.callback = new AjxCallback(this, this._handleResponseMoveItems, [params]);
+	if (params.noToast) {
+		params1.actionTextKey = null;
+	}
 
     if (appCtxt.multiAccounts) {
 		// Reset accountName for multi-account to be the respective account if we're

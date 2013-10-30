@@ -226,7 +226,7 @@ ZmItemMoveAction.prototype.redo = function(callback, errorCallback) {
 };
 
 ZmItemMoveAction.multipleUndo = function(actions, redo, fromFolderId) {
-	var masterAction = actions && actions.length && actions[0];
+
 	var sortingTable = {};
 	for (var i=0; i<actions.length; i++) {
 		var action = actions[i];
@@ -241,34 +241,42 @@ ZmItemMoveAction.multipleUndo = function(actions, redo, fromFolderId) {
 			sortingTable[from][to][type].push(action);
 		}
 	}
+	var convMsgIds = {};
 	for (var from in sortingTable) {
 		for (var to in sortingTable[from]) {
 			for (var type in sortingTable[from][to]) {
 				var subset = sortingTable[from][to][type];
 				var items = [];
 				var list = null;
-				var hasMasterAction = false;
-				var commonop;
+				var noToast = true;
 				for (var i=0; i<subset.length; i++) {
 					var action = subset[i];
-					if (action == masterAction)
-						hasMasterAction = true;
 					var item = action.getItem();
 					items.push(item);
-					if (!list && item.list)
+					if (!list && item.list) {
 						list = item.list;
-					var op = action.getOp && action.getOp();
-					if (!commonop)
-						commonop = op;
-					else if (commonop != op)
-						commonop = "move";
+					}
+					// undoing a conv move triggers two requests, one for the conv and one for its msgs; we only
+					// want to show toast for the conv move
+					if (type === ZmItem.CONV) {
+						var convMsgs = item.msgs.getArray();
+						for (var j = 0; j < convMsgs.length; j++) {
+							convMsgIds[convMsgs[j].id] = true;
+						}
+					}
+					else if (type === ZmItem.MSG) {
+						if (!convMsgIds[item.id]) {
+							noToast = false;
+						}
+					}
 				}
 				if (list) {
 					list.moveItems({
-						items: items,
-						folder: appCtxt.getById(redo ? to : from),
-						noUndo: true,
-						fromFolderId: fromFolderId
+						items:          items,
+						folder:         appCtxt.getById(redo ? to : from),
+						noUndo:         true,
+						fromFolderId:   fromFolderId,
+						noToast:        noToast
 					});
 				}
 			}
