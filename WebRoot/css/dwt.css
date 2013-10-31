@@ -551,7 +551,7 @@ TD.DwtListView-ColumnActive {
 }
 
 /* ??? SHOTGUN */
-.DwtListView-Rows TD, .ZmRowDoubleHeader, .ZmRowDoubleHeader DIV, .DwtMsgListMultiCol DIV {
+.DwtListView-Rows TD, .ZmRowDoubleHeader, .DwtMsgListMultiCol DIV {
 	padding-left:@TextPaddingSize@;
 	padding-right:2px;
 	overflow:hidden;

@@ -582,7 +582,7 @@ SELECT						{	@FieldBorder@	}
 .RowDouble .ZmRowDoubleHeader		{ border:1px solid white; 			}
 .RowDouble .TopRow,
 .RowDouble .ImgCheckboxChecked,
-.RowDouble .ImgCheckboxUnchecked 	{ margin:6px 0px 4px; 	}
+.RowDouble .ImgCheckboxUnchecked 	{ margin:6px 0px 0px; 	}
 .RowDouble .BottomRow				{ margin:4px 0px 6px; 	}
 .Row-matched, .RowDouble-matched	{ background-color:@SearchResultColor@;		}
 .TopRow, .BottomRow					{ height:16px; height:1.6rem; position:relative;	}
@@ -600,7 +600,7 @@ SELECT						{	@FieldBorder@	}
 .TopRow .ImgMsgRead,
 .TopRow .ImgMsgUnread				{ margin:0px 3px 0px 3px; }
 .TopRow .ImgCheckboxUnchecked,
-.TopRow .ImgCheckboxChecked			{ margin:0px 0px 0px -3px; }
+.TopRow .ImgCheckboxChecked			{ margin:0px 0px 0px -1px; }
 .TopRow .ImgNodeCollapsed,
 .TopRow .ImgNodeExpanded			{ padding:0px; }
 .ZmMsgListColTag 					{ padding:0px 2px 0px 3px; vertical-align:middle; }
