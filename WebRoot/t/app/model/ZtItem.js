@@ -66,8 +66,8 @@ Ext.define('ZCS.model.ZtItem', {
 
 			return !tagIds ? [] : Ext.Array.map(tagIds.split(','), function(tagId) {
 
-				var id = ZCS.model.ZtOrganizer.getOrganizerId(tagId, ZCS.constant.ORG_TAG, app),
-					tag = ZCS.cache.get(id);
+				var tags = ZCS.cache.get(tagId),
+					tag = Array.isArray(tags) ? tags[0] : tags;
 
 				if (tag) {
 					return tag.getData();
