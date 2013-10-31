@@ -530,7 +530,7 @@ function(view) {
 	DBG.timePt("setting list");
 	this._list.removeChangeListener(this._listChangeListener);
 	this._list.addChangeListener(this._listChangeListener);
-	this._listView[view].set(this._list, null, this._folderId);
+	this._listView[view].set(this._list, null, this._folderId, this.isSearchResults);
 	DBG.timePt("done setting list");
 };
 

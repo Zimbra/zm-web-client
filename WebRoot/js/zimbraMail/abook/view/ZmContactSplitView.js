@@ -288,6 +288,19 @@ function(enable) {
 };
 
 /**
+ * shows/hides the alphabet bar.
+ *
+ * @param	{Boolean}	visible		if <code>true</code>, show the alphabet bar
+ */
+ZmContactSplitView.prototype.showAlphabetBar =
+function(visible) {
+	if (this._alphabetBar) {
+		this._alphabetBar.setVisible(visible);
+	}
+};
+
+
+/**
  * @private
  */
 ZmContactSplitView.prototype._initialize =
@@ -1041,9 +1054,10 @@ ZmContactSimpleView.prototype.toString = function() { return "ZmContactSimpleVie
  * @param	{ZmContactList}		list		the list
  * @param	{String}	defaultColumnSort		the sort field
  * @param	{String}	folderId		the folder id
+ * @param	{Boolean}	isSearchResults	is this a search tab?
  */
 ZmContactSimpleView.prototype.set =
-function(list, defaultColumnSort, folderId) {
+function(list, defaultColumnSort, folderId, isSearchResults) {
 	var fid = folderId || this._controller.getFolderId();
 	ZmContactsBaseView.prototype.set.call(this, list, defaultColumnSort, fid);
 
@@ -1051,7 +1065,7 @@ function(list, defaultColumnSort, folderId) {
 		this.parent.clear();
 	}
 
-	this.parent.enableAlphabetBar(!(list && list.isGal));
+	this.parent.showAlphabetBar(!isSearchResults);
 };
 
 /**
