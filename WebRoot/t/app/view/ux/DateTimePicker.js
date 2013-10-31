@@ -189,8 +189,16 @@ Ext.define('Ext.ux.field.DateTimePicker', {
             value = null;
         }
 
+        if (Ext.isDate(value)) {
+            //Round off the time to the nearest quarter hour
+            var hour = value.getHours(),
+                minutes = value.getMinutes(),
+                m = (((minutes + 7.5)/15 | 0) * 15) % 60,
+                h = (((minutes/105 + .5) | 0) + hour) % 24;
+            value = new Date(value.getFullYear(), value.getMonth(), value.getDate(), h, m);
+        }
         if (Ext.isObject(value)) {
-            value = new Date(value.year, value.month - 1, value.day,value.hour,value.minute);
+            value = new Date(value.year, value.month - 1, value.day, value.hour, value.minute);
         }
 
         return value;
@@ -262,6 +270,10 @@ Ext.define('Ext.ux.field.DateTimePicker', {
         var picker = this._picker,
             value = this.getValue();
 
+        if (!value) {
+            this.setValue(new Date());
+            value = this.getValue();
+        }
         if (picker && !picker.isPicker) {
             picker = Ext.factory(picker, Ext.ux.picker.DateTime);
             picker.on({

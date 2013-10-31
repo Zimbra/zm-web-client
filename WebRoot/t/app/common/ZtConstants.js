@@ -294,6 +294,7 @@ ZCS.constant.ID_JUNK        = '4';
 ZCS.constant.ID_SENT        = '5';
 ZCS.constant.ID_DRAFTS      = '6';
 ZCS.constant.ID_CONTACTS    = '7';
+ZCS.constant.ID_CALENDAR    = '10';
 ZCS.constant.ID_EMAILED     = '13';
 ZCS.constant.ID_CHATS       = '14';
 
@@ -352,6 +353,7 @@ ZCS.constant.FOLDER_SYSTEM_NAME[ZCS.constant.ID_JUNK]    = 'junk';
 
 ZCS.constant.FOLDER_SYSTEM_NAME[ZCS.constant.ID_CONTACTS]    = 'contacts';
 ZCS.constant.FOLDER_SYSTEM_NAME[ZCS.constant.ID_EMAILED]     = 'emailed contacts';
+ZCS.constant.FOLDER_SYSTEM_NAME[ZCS.constant.ID_CALENDAR]     = 'calendar';
 
 ZCS.constant.FOLDER_SYSTEM_ID = ZCS.util.getBackMap(ZCS.constant.FOLDER_SYSTEM_NAME);
 
@@ -695,6 +697,19 @@ ZCS.constant.CONTACT_FIELDS = [
     'image',
     'imagepart',
     'zimletImage'
+];
+
+ZCS.constant.CALENDAR_FIELDS = [
+    'subject',
+    'location',
+    'start',
+    'end',
+    'startAllDay',
+    'endAllDay',
+    'isAllDay',
+    'repeat',
+    'reminder',
+    'notes'
 ];
 
 ZCS.constant.EXTRA_NAME_FIELDS = [

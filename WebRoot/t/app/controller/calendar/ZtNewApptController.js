@@ -22,7 +22,7 @@ Ext.define('ZCS.controller.calendar.ZtNewApptController', {
         control: {
             newApptPanel: {
                 cancel: 'doCancel',
-                create: 'createAppt'
+                create: 'doSave'
             }
         },
 
@@ -62,33 +62,40 @@ Ext.define('ZCS.controller.calendar.ZtNewApptController', {
         this.getNewApptPanel().hide();
     },
 
+    doSave: function() {
+        var newAppt = this.getCalendarModel();
+        if (newAppt) {
+            this.createAppt(newAppt);
+        }
+    },
+
     /**
      * @private
      */
-    createAppt: function() {
-        //TODO: Send a CreateAppointmentRequest to the server.
+    createAppt: function(appt, callback, scope) {
+        var folder = ZCS.session.getCurrentSearchOrganizer();
 
-        this.getNewApptPanel().hide();
+        appt.save({
+            folderId: folder ? folder.get('zcsId') : null,
+            success: function() {
+                this.getNewApptPanel().hide();
+                ZCS.app.fireEvent('showToast', ZtMsg.apptCreated);
+                if (callback) {
+                    callback.apply(scope);
+                }
+            },
+            failure: function() {
+                ZCS.app.fireEvent('showToast', ZtMsg.errorCreateAppt);
+            }
+        }, this);
+    },
+
+    getCalendarModel: function() {
+        var appt = Ext.create('ZCS.model.calendar.ZtCalendar'),
+            values = this.getNewApptForm().getValues();
+
+        ZCS.util.setFields(values, appt, ZCS.constant.CALENDAR_FIELDS);
+        return appt;
     }
-//
-//    getCalendarModel: function() {
-//        var values = this.getNewApptForm().getValues(),
-//            subject = values.subject,
-//            location = values.location,
-//            startDate = values.start,
-//            endDate = values.end,
-//            calRepeat = values.repeat,
-//            calReminder = values.reminder;
-//
-//        console.info(
-//            'Capturing the form data: \n' +
-//            'Subject: ' + subject + '\n' +
-//            'Location: ' + location + '\n' +
-//            'Start Date: ' + startDate + '\n' +
-//            'End Date: ' + endDate + '\n' +
-//            'Repeat: ' + calRepeat + '\n' +
-//            'Reminder: ' + calReminder + '\n'
-//        );
-//    }
 
 });

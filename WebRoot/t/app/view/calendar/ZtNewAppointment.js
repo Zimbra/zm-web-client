@@ -72,7 +72,7 @@ Ext.define('ZCS.view.calendar.ZtNewAppointment', {
             toolbar = {
                 xtype: 'titlebar',
                 docked: 'top',
-                title: ZtMsg.createAppt,
+                title: ZtMsg.apptCreate,
                 items: [
                     {
                         xtype: 'button',
@@ -200,13 +200,27 @@ Ext.define('ZCS.view.calendar.ZtNewAppointment', {
                                 html:   ZtMsg.startLabel,
                                 cls:    'zcs-appt-label',
                                 width:  '20%'
-
                             },
                             {
                                 xtype: 'datetimepickerfield',
                                 name: 'start',
-                                flex: 1,
-                                width: '80%'
+                                width: '80%',
+                                destroyPickerOnHide: true
+                            },
+                            {
+                                xtype: 'datepickerfield',
+                                name: 'startAllDay',
+                                itemId: 'startAllDay',
+                                width: '80%',
+                                hidden: true,
+                                dateFormat: ZtMsg.invDateFormat,
+                                listeners: {
+                                    focus: function() {
+                                        if (!this.getValue()) {
+                                            this.setValue(new Date());
+                                        }
+                                    }
+                                }
                             }
                         ]
                     },
@@ -226,7 +240,62 @@ Ext.define('ZCS.view.calendar.ZtNewAppointment', {
                                 xtype: 'datetimepickerfield',
                                 name: 'end',
                                 flex: 1,
-                                width: '80%'
+                                width: '80%',
+                                destroyPickerOnHide: true
+                            },
+                            {
+                                xtype: 'datepickerfield',
+                                name: 'endAllDay',
+                                width: '80%',
+                                hidden: true,
+                                dateFormat: ZtMsg.invDateFormat,
+                                listeners: {
+                                    focus: function() {
+                                        var start = Ext.ComponentQuery.query('#startAllDay')[0].getValue();
+                                        if (start) {
+                                            this.setValue(start);
+                                        } else if (!this.getValue()) {
+                                            this.setValue(new Date());
+                                        }
+                                    }
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        layout: {
+                            type: 'hbox'
+                        },
+                        items: [
+                            {
+                                xtype: 'label',
+                                html:   ZtMsg.allDay,
+                                cls:    'zcs-appt-label',
+                                width:  '20%'
+
+                            },
+                            {
+                                xtype: 'togglefield',
+                                name: 'isAllDay',
+                                width:  '80%',
+                                flex: 1,
+                                listeners: {
+                                    change: function(field, newValue) {
+                                        if (field.getValue() == 1) {
+                                            Ext.ComponentQuery.query('datetimepickerfield')[0].hide();
+                                            Ext.ComponentQuery.query('datetimepickerfield')[1].hide();
+
+                                            Ext.ComponentQuery.query('datepickerfield')[0].show();
+                                            Ext.ComponentQuery.query('datepickerfield')[1].show();
+                                        } else {
+                                            Ext.ComponentQuery.query('datepickerfield')[0].hide();
+                                            Ext.ComponentQuery.query('datepickerfield')[1].hide();
+
+                                            Ext.ComponentQuery.query('datetimepickerfield')[0].show();
+                                            Ext.ComponentQuery.query('datetimepickerfield')[1].show();
+                                        }
+                                    }
+                                }
                             }
                         ]
                     },
