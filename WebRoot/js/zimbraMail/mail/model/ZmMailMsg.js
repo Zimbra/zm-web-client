@@ -2868,12 +2868,27 @@ function(addrs, callback) {
 
 ZmMailMsg.prototype.doDelete =
 function() {
+	var params = {jsonObj:{MsgActionRequest:{_jsns:"urn:zimbraMail",action:{id:this.id, op:"delete"}}}, asyncMode:true};
 
-	var jsonObj = {MsgActionRequest:{_jsns:"urn:zimbraMail"}};
-	var request = jsonObj.MsgActionRequest;
-	request.action = {id:this.id, op:"delete"};
+	// Bug 84549: The params object is a property of the child window, because it
+	// was constructed using this window's Object constructor. But when the child
+	// window closes immediately after the request is sent, the object would be 
+	// garbage-collected by the browser (or otherwise become invalid).
+	// Therefore, we need to pass an object that is native to the parent window
+	if (appCtxt.isChildWindow && AjxEnv.isIE) {
+		var cp = function(from){
+			var to = window.opener.Object();
+			for (var key in from) {
+				var value = from[key];
+				to[key] = (AjxUtil.isObject(value)) ? cp(value) : value;
+			}
+			return to;
+		};
+		params = cp(params);
+	}
+
 	var ac = window.parentAppCtxt || window.appCtxt;
-	ac.getRequestMgr().sendRequest({jsonObj:jsonObj, asyncMode:true});
+	ac.getRequestMgr().sendRequest(params);
 };
 
 /**
