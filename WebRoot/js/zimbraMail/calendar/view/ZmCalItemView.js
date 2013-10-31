@@ -290,7 +290,7 @@ function(calItem) {
 	//do this so EmailTooltipZimlet.prototype._createBubbles is called and the bubbles actually get created. (in ZmApptView.prototype._getSubs they are not created in the calls to findObjects).
 	appCtxt.notifyZimlets("onApptView", [calItem, this]); //really not sure we need this but I am consistent here with other cases.
 
-    var selParams = {parent: this};
+    var selParams = {parent: this, id: Dwt.getNextId('ZmNeedActionSelect_')};
     var statusSelect = new DwtSelect(selParams);
 
     var ptst = {};
@@ -307,7 +307,7 @@ function(calItem) {
     for (var stat in ptst) {
         //stat = ptst[index];
         if (stat === ZmCalBaseItem.PSTATUS_NEEDS_ACTION && calItemPtst !== ZmCalBaseItem.PSTATUS_NEEDS_ACTION) { continue; }
-        data = new DwtSelectOptionData(stat, ZmCalItem.getLabelForParticipationStatus(stat), false, null, ZmCalItem.getParticipationStatusIcon(stat));
+        data = new DwtSelectOptionData(stat, ZmCalItem.getLabelForParticipationStatus(stat), false, null, ZmCalItem.getParticipationStatusIcon(stat), Dwt.getNextId('ZmNeedActionOption_' + stat + '_'));
         statusSelect.addOption(data);
         if (stat == calItemPtst){
             statusSelect.setSelectedValue(stat);
