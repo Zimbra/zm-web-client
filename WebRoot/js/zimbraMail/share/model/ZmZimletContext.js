@@ -498,6 +498,9 @@ function(obj) {
 			var item = menu.createMenuItem(data.id, params);
 			item.setData("xmlMenuItem", data);
 			item.addSelectionListener(this._handleMenuItemSelected);
+			if (data.menuItem) {
+				item.setMenu(this._makeMenu(data.menuItem));
+			}
 		}
 	}
 	return menu;
