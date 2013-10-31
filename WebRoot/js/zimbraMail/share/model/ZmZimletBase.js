@@ -647,7 +647,7 @@ ZmZimletBase.prototype.createPropertyEditor =
 function(callback) {
 	var userprop = this.xmlObj().userProperties;
 
-	if (!userprop) {return;}
+	if (!userprop || !userprop.length) {return;}
 
     for (var i = 0; i < userprop.length; ++i) {
         userprop[i].label = this._zimletContext.processMessage(userprop[i].label);
