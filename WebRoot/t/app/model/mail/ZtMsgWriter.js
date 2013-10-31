@@ -160,6 +160,7 @@ Ext.define('ZCS.model.mail.ZtMsgWriter', {
 						read:       '1',
 						html:       '1',
 						needExp:    '1',
+                        ridZ:       itemData.apptView ? itemData.ridZ : '',
 						max:        itemData.noMax ? 0 : ZCS.constant.MAX_MESSAGE_SIZE * 1000,
 						header:     ZCS.constant.ADDITIONAL_MAIL_HEADERS
 					}

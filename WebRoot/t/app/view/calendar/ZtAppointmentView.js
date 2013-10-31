@@ -61,11 +61,11 @@ Ext.define('ZCS.view.calendar.ZtAppointmentView', {
         title: null
     },
 
-    setPanel: function(msg) {
+    setPanel: function(msg, event) {
         var invite = msg.get('invite'),
             dateFormat = invite.get('isAllDay') ? ZtMsg.invDateFormat : ZtMsg.invDateTimeOnlyFormat,
-            startTime = Ext.Date.format(invite.get('start'), dateFormat),
-            endTime = Ext.Date.format(invite.get('end'), ZtMsg.invTimeOnlyFormat),
+            startTime = Ext.Date.format(event.get('start'), dateFormat),
+            endTime = Ext.Date.format(event.get('end'), ZtMsg.invTimeOnlyFormat),
             organizer = invite.get('organizer') && invite.get('organizer').get('name'),
             location = invite.get('location'),
             attendees = invite.get('attendees'),

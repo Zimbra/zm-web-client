@@ -136,14 +136,16 @@ Ext.define('ZCS.controller.calendar.ZtCalendarController', {
     onEventTap: function(event) {
         var msg = Ext.create('ZCS.model.mail.ZtMailMsg'),
             inviteId = event.get('invId'),
+            start = event.get('start'),
             me = this;
 
         msg.save({
             op: 'load',
             id: inviteId,
             apptView: true,
-            success: function(records) {
-                me.showItem(records);
+            ridZ: start,
+            success: function(record) {
+                me.showItem(record, event);
             }
         });
     },
@@ -153,9 +155,9 @@ Ext.define('ZCS.controller.calendar.ZtCalendarController', {
      * @param {ZCS.model.calendar.ZtCalendar} event The Event record that was tapped
      */
 
-    showItem: function(msg) {
+    showItem: function(msg, event) {
         var panel = this.getApptViewPanel();
-        panel.setPanel(msg);
+        panel.setPanel(msg, event);
         panel.show({
             type:       'slide',
             direction:  'up',
@@ -198,7 +200,7 @@ Ext.define('ZCS.controller.calendar.ZtCalendarController', {
     },
 
     getDefaultQuery: function() {
-        return '';
+        return 'in:calendar';
     },
 
     createToolbar: function() {
