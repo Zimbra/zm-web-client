@@ -453,7 +453,7 @@ and the container element is replaced with that control.
 									<col> <!-- color -->
 								</colgroup>
 								<tr valign=top>
-									<td class='ZOptionsFieldTop'><div id='${id}_COMPOSE_AS_FORMAT' tabindex='20'></div></td>
+									<td class='ZOptionsFieldTop' style="white-space:nowrap"><div id='${id}_COMPOSE_AS_FORMAT' tabindex='20'></div></td>
 									<td class='ZOptionsLabelTop ZOptionsLabelNarrow'><$=ZmMsg.fFamilyLabel$></td>
 									<td class='ZOptionsField'><select id='${id}_COMPOSE_INIT_FONT_FAMILY' tabindex='30'></select></td>
 									<td class='ZOptionsLabelTop ZOptionsLabelNarrow'><$=ZmMsg.fSizeLabel$></td>
