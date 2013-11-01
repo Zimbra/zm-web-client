@@ -112,7 +112,7 @@ Ext.define('ZCS.common.ZtHtmlUtil', {
 	 * @return {Number}    the height of the element
 	 */
 	getHeightFromComputedStyle: function(el, doc) {
-		return this.getComputedStyle(el, doc, "height");
+		return this.getTotalFromComputedStyle(el, doc, [ 'height', 'marginTop', 'marginBottom', 'paddingTop', 'paddingBottom' ]);
 	},
 
 	/**
@@ -124,15 +124,32 @@ Ext.define('ZCS.common.ZtHtmlUtil', {
 	 * @return {Number}    the width of the element
 	 */
 	getWidthFromComputedStyle: function(el, doc) {
-		return this.getComputedStyle(el, doc, "width");
+		return this.getTotalFromComputedStyle(el, doc, [ 'width', 'marginLeft', 'marginRight', 'paddingLeft', 'paddingRight' ]);
 	},
 
-	getComputedStyle: function (el, doc, attr) {
+	/**
+	 * Totals the values of the given style attributes of an element.
+	 *
+	 * @param {Element}     el      element
+	 * @param {Document}    doc     document
+	 * @param {Array}       attrs   list of style attributes to total
+	 *
+	 * @return {Number}     total value
+	 */
+	getTotalFromComputedStyle: function(el, doc, attrs) {
+
 		doc = doc || window.document;
-		var styleObj = doc.defaultView.getComputedStyle(el);
-		return parseInt(styleObj[attr]);
-	},
+		var styleObj = doc.defaultView.getComputedStyle(el),
+			ln = attrs.length, i, value,
+			total = 0;
 
+		for (i = 0; i < ln; i++) {
+			value = parseInt(styleObj[attrs[i]]);
+			total += isNaN(value) ? 0 : value;
+		}
+
+		return total;
+	},
 
 	/**
 	 * Calculates an element's height by summing the heights of its child nodes.
@@ -156,11 +173,7 @@ Ext.define('ZCS.common.ZtHtmlUtil', {
 		for (i = 0; i < ln; i++) {
 			child = el.childNodes[i];
 			if (child && child.nodeType === Node.ELEMENT_NODE) {
-				height += child.offsetHeight;
-				styleObj = doc.defaultView.getComputedStyle(child);
-				if (styleObj) {
-					height += parseInt(styleObj.marginTop) + parseInt(styleObj.marginBottom);
-				}
+				height += this.getHeightFromComputedStyle(child, doc);
 			}
 		}
 
@@ -213,6 +226,9 @@ Ext.define('ZCS.common.ZtHtmlUtil', {
 				html = html.replace(regex, '');
 			}
 		});
+
+		// some editors like to put every <br> in a <div>
+		html = html.replace(/<div><br ?\/?><\/div>/gi, '<br>');
 
 		// remove empty surrounding <div> containers, and leading/trailing <br>
 		var len = 0;
