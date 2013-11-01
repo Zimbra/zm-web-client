@@ -59,6 +59,7 @@ ZmAppCtxt.ONE_MINUTE = 60 * 1000;
 ZmAppCtxt.MAX_TIMEOUT_VALUE = 2147483647;
 
 ZmAppCtxt._ZIMLETS_EVENT = 'ZIMLETS';
+ZmAppCtxt._AUTHTOKEN_EVENT = 'AUTHTOKEN';
 
 /**
  * Returns a string representation of the application context.
@@ -75,6 +76,29 @@ function() {
 	window.setInterval(this._authTokenWarningTimeout.bind(this), ZmAppCtxt.ONE_MINUTE);
 };
 
+/**
+ * Adds a listener to the auth token warning event. This listener is fired once
+ * per minute when less than five minutes remain before token expiry.
+ *
+ * @param	{AjxCallback}	listener		the listener
+ * @param	{int}		index		the index to where to add the listener
+ * @return	{Boolean}	<code>true</code> if the listener is added; <code>false</code> otherwise
+ */
+ZmAppCtxt.prototype.addAuthTokenWarningListener =
+function(listener, index) {
+	return this._evtMgr.addListener(ZmAppCtxt._AUTHTOKEN_EVENT, listener, index);
+};
+
+/**
+ * Removes a listener for the auth token warning event.
+ *
+ * @param	{AjxCallback}	listener		the listener
+ * @return	{Boolean}	<code>true</code> if the listener is removed; <code>false</code> otherwise
+ */
+ZmAppCtxt.prototype.removeAuthTokenWarningListener =
+function(listener) {
+	return this._evtMgr.removeListener(ZmAppCtxt._AUTHTOKEN_EVENT, listener);
+};
 
 ZmAppCtxt.prototype._authTokenWarningTimeout =
 function () {
@@ -85,6 +109,11 @@ function () {
 
 	if (minutesToLive > 5 || minutesToLive <= 0) {
 		return;
+	}
+
+	if (this._evtMgr.isListenerRegistered(ZmAppCtxt._AUTHTOKEN_EVENT)) {
+		var event = new ZmEvent(ZmAppCtxt._AUTHTOKEN_EVENT);
+		this._evtMgr.notifyListeners(ZmAppCtxt._AUTHTOKEN_EVENT, event);
 	}
 
 	var msg = AjxMessageFormat.format(ZmMsg.authTokenExpirationWarning, [minutesToLive, minutesToLive  > 1 ? ZmMsg.minutes : ZmMsg.minute]);
