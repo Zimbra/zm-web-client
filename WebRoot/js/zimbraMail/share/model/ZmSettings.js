@@ -1120,6 +1120,9 @@ function(ev) {
 
 ZmSettings.prototype._implicitChangeListener =
 function(ev) {
+	if (!appCtxt.get(ZmSetting.OPTIONS_ENABLED)) {
+		return;
+	}
 	if (ev.type != ZmEvent.S_SETTING) { return; }
 	var id = ev.source.id;
 	var setting = this.getSetting(id);
