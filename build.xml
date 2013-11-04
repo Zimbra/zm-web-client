@@ -1042,15 +1042,9 @@
             <targetfilelist dir='.' files='${jsp.file}'/>
         </packagedependset>
 
-        <uptodate targetfile="${jam.file}" property="jam.uptodate">
-            <srcresources>
-                <files includesfile="${depends.file}" />
-            </srcresources>
-        </uptodate>
-
         <if>
             <not>
-                <equals arg1="${jam.uptodate}" arg2="true" />
+                <available file='${jam.file}'/>
             </not>
             <then>
                 <condition property='wrap' value='false' else='true'>
