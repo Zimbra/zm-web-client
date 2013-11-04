@@ -413,6 +413,21 @@ function(dialog, folderList) {
 		return;
 	}
 
+	// Bug 78392: We need the selection sorted
+	if (filterSel.length > 1) {
+		var list = this._listView.getList().getArray();
+		var selectedIds = {}, sortedSelection = [];
+		for (var i=0; i<filterSel.length; i++) {
+			selectedIds[filterSel[i].id] = true;
+		}
+		for (var i=0; i<list.length; i++) {
+			if (selectedIds[list[i].id]) {
+				sortedSelection.push(list[i]);
+			}
+		}
+		filterSel = sortedSelection;
+	}
+
 	var work = new ZmFilterWork(filterSel, this._outgoing);
 
 	this._progressController.start(folderList, work);
