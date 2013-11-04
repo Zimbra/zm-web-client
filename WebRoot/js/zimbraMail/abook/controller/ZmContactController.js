@@ -64,7 +64,7 @@ ZmContactController.prototype.getDefaultViewType = ZmContactController.getDefaul
  */
 ZmContactController.prototype.show =
 function(contact, isDirty, isBack) {
-	if (contact.isDistributionList() && !isBack) {
+	if (contact.id && contact.isDistributionList() && !isBack) {
 		//load the full DL info available for the owner, for edit.
 		var callback = this.show.bind(this, contact, isDirty, true); //callback HERE
 		contact.clearDlInfo();
