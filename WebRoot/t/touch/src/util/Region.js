@@ -1,19 +1,3 @@
-/*
- * ***** BEGIN LICENSE BLOCK *****
- * 
- * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2013 Zimbra Software, LLC.
- * 
- * The contents of this file are subject to the Zimbra Public License
- * Version 1.4 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
- * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
- * ***** END LICENSE BLOCK *****
- */
 /**
  * Represents a rectangular region and provides a number of utility methods
  * to compare regions.
@@ -241,12 +225,13 @@ Ext.define('Ext.util.Region', {
         return (p < this.top || p > this.bottom);
     },
 
-    /*
+    /**
      * Restrict a point within the region by a certain factor.
      * @param {String} axis Optional
-     * @param {Ext.util.Point/Ext.util.Offset/Object} p
+     * @param {Ext.util.Point/Object} p
      * @param {Number} factor
-     * @return {Ext.util.Point/Ext.util.Offset/Object/Number}
+     * @return {Ext.util.Point/Object/Number}
+     * @private
      */
     restrict: function(axis, p, factor) {
         if (Ext.isObject(axis)) {

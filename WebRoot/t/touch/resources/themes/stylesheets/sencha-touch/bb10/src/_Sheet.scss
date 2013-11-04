@@ -1,39 +1,23 @@
-// bb-crosscut
-.bb-crosscut {
-    background: #000;
+/**
+ * @class Ext.Sheet
+ */
 
-    .x-button {
-        background: transparent;
-        background-image: none;
-        border: 0;
-        border-bottom: 1px solid #272727;
-        height: 42px;
+.x-sheet,
+.x-picker,
+.x-sheet-action {
+    padding: .7em;
+    border-top: 1px solid darken($base-color, 30%);
+    background-color: white;
+    @include border-radius(0);
+}
 
-        &:before {
-            display: none;
-        }
+.x-sheet-inner,
+.x-sheet-action-inner {
+    > .x-button {
+        margin-bottom: .5em;
 
-        &.x-button-pressing {
-
-        }
-
-        &:first-child {
-            border-top: 1px solid #272727;
-        }
-    }
-
-    .x-button-label {
-        text-align: left;
-        color: #fff;
-        font-size: 16px;
-    }
-
-    .x-button-icon {
-        margin-right: 2px;
-        margin-left: 5px;
-
-        &:before {
-            font-size: 28px;
+        &:last-child {
+            margin-bottom: 0;
         }
     }
 }

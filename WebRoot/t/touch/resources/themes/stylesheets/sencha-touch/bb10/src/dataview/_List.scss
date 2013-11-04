@@ -9,7 +9,7 @@
 .x-list-item {
     border-bottom: 1px solid #F7F3F7;
     color: #292429;
-    font-size: 16px;
+    font-size: 20px;
     padding: 0 10px;
     line-height: 38px;
 }
@@ -38,9 +38,13 @@
     color: #000;
 }
 
-.x-item-selected {
-    background-color: transparent !important;
+.x-list .x-list-item.x-item-selected .x-dock-horizontal,
+.x-list .x-list-item.x-item-selected.x-list-item-tpl {
+    background-color: transparent;
     @include box-shadow(inset 0 0 0 2px $base-color);
+}
+
+.xlist .x-item-selected {
 }
 
 .x-list .x-list-header {
@@ -64,4 +68,12 @@
 
 .x-indexbar-pressed {
     background: rgba(150,150,150,.2);
+}
+
+.x-list-item-odd {
+    &.x-list-item-tpl,
+    .x-dock-horizontal {
+        background-color: darken(#fff, 5%);
+        border-bottom: 1px solid darken(#fff, 5%);
+    }
 }

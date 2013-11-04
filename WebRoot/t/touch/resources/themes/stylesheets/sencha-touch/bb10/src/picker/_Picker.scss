@@ -5,20 +5,24 @@
 $picker-row-height: 2.9em !default;
 
 .x-picker .x-picker-inner {
-    background-color: #fff;
     overflow: hidden;
     @include background-clip(padding-box);
-    background: #dedede;
 }
 
-.x-picker-mask {
-	z-index: 0;
+.x-picker-slot {
+    background-color: #040404;
+    -webkit-transition: .3s;
+    transition: .3s;
+
+    &.x-scrolling {
+        background-color: #222;
+    }
 }
 
 .x-picker-bar {
-    border-top: 1px solid $base-color;
-    border-bottom: 1px solid $base-color;
-    background: #fff;
+    border-top: 1px solid rgba($base-color, .7);
+    border-bottom: 1px solid rgba($base-color, .7);
+    background: rgba(#777, .3);
     height: $picker-row-height;
 }
 
@@ -41,9 +45,11 @@ $picker-row-height: 2.9em !default;
 }
 
 .x-picker-slot {
-	border-right: 1px solid #d0d0d0;
+	border-right: 1px solid #292929;
 
     .x-dataview-item {
+        text-align: center;
+        color: #fff;
         height: $picker-row-height;
         line-height: $picker-row-height;
         padding: 0 10px;

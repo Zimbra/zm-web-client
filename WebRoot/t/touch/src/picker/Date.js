@@ -1,19 +1,3 @@
-/*
- * ***** BEGIN LICENSE BLOCK *****
- * 
- * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2013 Zimbra Software, LLC.
- * 
- * The contents of this file are subject to the Zimbra Public License
- * Version 1.4 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
- * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
- * ***** END LICENSE BLOCK *****
- */
 /**
  * A date picker component which shows a Date Picker on the screen. This class extends from {@link Ext.picker.Picker}
  * and {@link Ext.Sheet} so it is a popup.
@@ -59,7 +43,7 @@ Ext.define('Ext.picker.Date', {
     extend: 'Ext.picker.Picker',
     xtype: 'datepicker',
     alternateClassName: 'Ext.DatePicker',
-    requires: ['Ext.DateExtras'],
+    requires: ['Ext.DateExtras', 'Ext.util.InputBlocker'],
 
     /**
      * @event change
@@ -480,6 +464,6 @@ Ext.define('Ext.picker.Date', {
         }
 
         this.hide();
-        this.inputBlocker.unblockInputs();
+        Ext.util.InputBlocker.unblockInputs();
     }
 });

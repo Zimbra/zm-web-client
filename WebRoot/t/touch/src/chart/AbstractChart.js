@@ -752,8 +752,8 @@ Ext.define('Ext.chart.AbstractChart', {
                     continue;
                 }
                 axis = Ext.factory(axis, null, oldAxis = oldMap[axis.getId && axis.getId() || axis.id], 'axis');
-                axis.setChart(this);
                 if (axis) {
+                    axis.setChart(this);
                     result.push(axis);
                     result.map[axis.getId()] = axis;
                     if (!oldAxis) {
@@ -764,7 +764,7 @@ Ext.define('Ext.chart.AbstractChart', {
             }
 
             for (i in oldMap) {
-                if (!result.map[oldMap[i]]) {
+                if (!result.map[i]) {
                     oldMap[i].destroy();
                 }
             }
@@ -775,11 +775,6 @@ Ext.define('Ext.chart.AbstractChart', {
     },
 
     updateAxes: function (newAxes) {
-        var i, ln, axis;
-        for (i = 0, ln = newAxes.length; i < ln; i++) {
-            axis = newAxes[i];
-            axis.setChart(this);
-        }
         this.scheduleLayout();
     },
 
@@ -880,25 +875,26 @@ Ext.define('Ext.chart.AbstractChart', {
         }
     },
 
-    applyInteractions: function (interations, oldInterations) {
-        if (!oldInterations) {
-            oldInterations = [];
-            oldInterations.map = {};
+    applyInteractions: function (interactions, oldInteractions) {
+        if (!oldInteractions) {
+            oldInteractions = [];
+            oldInteractions.map = {};
         }
         var me = this,
-            result = [], oldMap = oldInterations.map;
+            result = [], oldMap = oldInteractions.map,
+            i, interaction;
         result.map = {};
-        interations = Ext.Array.from(interations, true);
-        for (var i = 0, ln = interations.length; i < ln; i++) {
-            var interation = interations[i];
-            if (!interation) {
+        interactions = Ext.Array.from(interactions, true);
+        for (i = 0, ln = interactions.length; i < ln; i++) {
+            interaction = interactions[i];
+            if (!interaction) {
                 continue;
             }
-            interation = Ext.factory(interation, null, oldMap[interation.getId && interation.getId() || interation.id], 'interaction');
-            interation.setChart(me);
-            if (interation) {
-                result.push(interation);
-                result.map[interation.getId()] = interation;
+            interaction = Ext.factory(interaction, null, oldMap[interaction.getId && interaction.getId() || interaction.id], 'interaction');
+            if (interaction) {
+                interaction.setChart(me);
+                result.push(interaction);
+                result.map[interaction.getId()] = interaction;
             }
         }
 
@@ -924,17 +920,17 @@ Ext.define('Ext.chart.AbstractChart', {
         }
         if (newStore) {
             newStore.on('refresh', 'onRefresh', me, null, 'after');
-            me.onRefresh();
         }
 
         me.fireEvent('storechanged', newStore, oldStore);
+        me.onRefresh();
     },
 
     /**
      * Redraw the chart. If animations are set this will animate the chart too.
      */
     redraw: function () {
-        this.fireEvent('redraw');
+        this.fireEvent('redraw', this);
     },
 
     performLayout: function () {
@@ -1189,7 +1185,7 @@ Ext.define('Ext.chart.AbstractChart', {
 
     /**
      * @private
-     * @param deep
+     * @param {Boolean} deep
      * @return {Array}
      */
     getRefItems: function (deep) {

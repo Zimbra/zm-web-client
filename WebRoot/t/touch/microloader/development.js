@@ -1,19 +1,3 @@
-/*
- * ***** BEGIN LICENSE BLOCK *****
- * 
- * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2012, 2013 Zimbra Software, LLC.
- * 
- * The contents of this file are subject to the Zimbra Public License
- * Version 1.4 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
- * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
- * ***** END LICENSE BLOCK *****
- */
 /**
  * Sencha Blink - Development
  * @author Jacky Nguyen <jacky@sencha.com>
@@ -40,7 +24,11 @@
     var options = eval("(" + xhr.responseText + ")"),
         scripts = options.js || [],
         styleSheets = options.css || [],
-        i, ln, path, platform, theme;
+        i, ln, path, platform, theme, exclude;
+
+    if(options.platform && options.platforms && options.platforms[options.platform] && options.platforms[options.platform].js) {
+        scripts = options.platforms[options.platform].js.concat(scripts);
+    }
 
     if (navigator.userAgent.match(/IEMobile\/10\.0/)) {
         var msViewportStyle = document.createElement("style");
@@ -88,7 +76,7 @@
         }
 
         function isTablet(ua) {
-            return !isPhone(ua) && (/iPad/.test(ua) || /Android/.test(ua) || /(RIM Tablet OS)/.test(ua) ||
+            return !isPhone(ua) && (/iPad/.test(ua) || /Android|Silk/.test(ua) || /(RIM Tablet OS)/.test(ua) ||
                 (/MSIE 10/.test(ua) && /; Touch/.test(ua)));
         }
 
@@ -137,6 +125,12 @@
                 case 'ie10':
                     profileMatch = /MSIE 10/.test(ua);
                     break;
+                case 'windows':
+                    profileMatch = /MSIE 10/.test(ua) || /Trident/.test(ua);
+                    break;
+                case 'tizen':
+                    profileMatch = /Tizen/.test(ua);
+                    break;
                 case 'firefox':
                     profileMatch = /Firefox/.test(ua);
             }
@@ -153,12 +147,13 @@
 
         if (typeof path != 'string') {
             platform = path.platform;
+            exclude = path.exclude;
             theme = path.theme;
             path = path.path;
         }
 
         if (platform) {
-            if (!filterPlatform(platform)) {
+            if (!filterPlatform(platform) || filterPlatform(exclude)) {
                 continue;
             }
             Ext.theme = {
@@ -174,11 +169,12 @@
 
         if (typeof path != 'string') {
             platform = path.platform;
+            exclude = path.exclude;
             path = path.path;
         }
 
         if (platform) {
-            if (!filterPlatform(platform)) {
+            if (!filterPlatform(platform) || filterPlatform(exclude)) {
                 continue;
             }
         }

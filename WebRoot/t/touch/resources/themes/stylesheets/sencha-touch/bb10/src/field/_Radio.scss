@@ -1,7 +1,4 @@
-/**
- * @class Ext.field.Radio
- */
-
+@charset "utf-8";
 .x-field-radio .x-field-mask {
     height: 47px;
 
@@ -29,4 +26,11 @@
     font-size: 26px;
     line-height: 13px;
     content: '•';
+}
+
+.x-item-disabled.x-field-radio {
+    .x-input-radio:checked ~ .x-field-mask:after {
+        @include background(linear-gradient(color-stops(#bfd7e3, #85b3c9)));
+        @include box-shadow(inset 0 1px 0 0 #aac5d3);
+    }
 }

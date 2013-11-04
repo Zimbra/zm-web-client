@@ -10,7 +10,7 @@
  * instantiated in your container.
  *
  * Please note that the {@link Ext.Container#getScrollable} method returns an instance of {@link Ext.scroll.View}.
- * So if you need to get access to the scroller after your container has been instantiated, you must used the
+ * So if you need to get access to the scroller after your container has been instantiated, you must use the
  * {@link Ext.scroll.View#getScroller} method.
  *
  *     // lets assume container is a container you have

@@ -1,29 +1,13 @@
-/*
- * ***** BEGIN LICENSE BLOCK *****
- * 
- * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2013 Zimbra Software, LLC.
- * 
- * The contents of this file are subject to the Zimbra Public License
- * Version 1.4 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
- * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
- * ***** END LICENSE BLOCK *****
- */
 /**
  * Utility class to calculate [affine transformation](http://en.wikipedia.org/wiki/Affine_transformation) matrix.
  *
  * This class is compatible with SVGMatrix except:
- * 
+ *
  *   1. Ext.draw.Matrix is not read only.
  *   2. Using Number as its components rather than floats.
- *   
+ *
  * Using this class to reduce the severe numeric problem with HTML Canvas and SVG transformation.
- * 
+ *
  */
 Ext.define('Ext.draw.Matrix', {
 
@@ -31,14 +15,14 @@ Ext.define('Ext.draw.Matrix', {
         /**
          * @static
          * Return the affine matrix that transform two points (x0, y0) and (x1, y1) to (x0p, y0p) and (x1p, y1p)
-         * @param x0
-         * @param y0
-         * @param x1
-         * @param y1
-         * @param x0p
-         * @param y0p
-         * @param x1p
-         * @param y1p
+         * @param {Number} x0
+         * @param {Number} y0
+         * @param {Number} x1
+         * @param {Number} y1
+         * @param {Number} x0p
+         * @param {Number} y0p
+         * @param {Number} x1p
+         * @param {Number} y1p
          */
         createAffineMatrixFromTwoPair: function (x0, y0, x1, y1, x0p, y0p, x1p, y1p) {
             var dx = x1 - x0,
@@ -57,14 +41,14 @@ Ext.define('Ext.draw.Matrix', {
         /**
          * @static
          * Return the affine matrix that transform two points (x0, y0) and (x1, y1) to (x0p, y0p) and (x1p, y1p)
-         * @param x0
-         * @param y0
-         * @param x1
-         * @param y1
-         * @param x0p
-         * @param y0p
-         * @param x1p
-         * @param y1p
+         * @param {Number} x0
+         * @param {Number} y0
+         * @param {Number} x1
+         * @param {Number} y1
+         * @param {Number} x0p
+         * @param {Number} y0p
+         * @param {Number} x1p
+         * @param {Number} y1p
          */
         createPanZoomFromTwoPair: function (x0, y0, x1, y1, x0p, y0p, x1p, y1p) {
             if (arguments.length === 2) {
@@ -129,12 +113,12 @@ Ext.define('Ext.draw.Matrix', {
     /**
      * Create an affine transform matrix.
      *
-     * @param xx Coefficient from x to x
-     * @param xy Coefficient from x to y
-     * @param yx Coefficient from y to x
-     * @param yy Coefficient from y to y
-     * @param dx Offset of x
-     * @param dy Offset of y
+     * @param {Number} xx Coefficient from x to x
+     * @param {Number} xy Coefficient from x to y
+     * @param {Number} yx Coefficient from y to x
+     * @param {Number} yy Coefficient from y to y
+     * @param {Number} dx Offset of x
+     * @param {Number} dy Offset of y
      */
     constructor: function (xx, xy, yx, yy, dx, dy) {
         if (xx && xx.length === 6) {
@@ -151,12 +135,12 @@ Ext.define('Ext.draw.Matrix', {
      *
      * __Note:__ The given transform will come after the current one.
      *
-     * @param xx Coefficient from x to x.
-     * @param xy Coefficient from x to y.
-     * @param yx Coefficient from y to x.
-     * @param yy Coefficient from y to y.
-     * @param dx Offset of x.
-     * @param dy Offset of y.
+     * @param {Number} xx Coefficient from x to x.
+     * @param {Number} xy Coefficient from x to y.
+     * @param {Number} yx Coefficient from y to x.
+     * @param {Number} yy Coefficient from y to y.
+     * @param {Number} dx Offset of x.
+     * @param {Number} dy Offset of y.
      * @return {Ext.draw.Matrix} this
      */
     prepend: function (xx, xy, yx, yy, dx, dy) {
@@ -193,12 +177,12 @@ Ext.define('Ext.draw.Matrix', {
      *
      * __Note:__ The given transform will come before the current one.
      *
-     * @param xx Coefficient from x to x.
-     * @param xy Coefficient from x to y.
-     * @param yx Coefficient from y to x.
-     * @param yy Coefficient from y to y.
-     * @param dx Offset of x.
-     * @param dy Offset of y.
+     * @param {Number} xx Coefficient from x to x.
+     * @param {Number} xy Coefficient from x to y.
+     * @param {Number} yx Coefficient from y to x.
+     * @param {Number} yy Coefficient from y to y.
+     * @param {Number} dx Offset of x.
+     * @param {Number} dy Offset of y.
      * @return {Ext.draw.Matrix} this
      */
     append: function (xx, xy, yx, yy, dx, dy) {
@@ -507,8 +491,8 @@ Ext.define('Ext.draw.Matrix', {
 
     /**
      * @private
-     * @param i
-     * @param j
+     * @param {Number} i
+     * @param {Number} j
      * @return {String}
      */
     get: function (i, j) {
@@ -530,11 +514,10 @@ Ext.define('Ext.draw.Matrix', {
     },
 
     /**
-     *
      * @param {Object} bbox Given as `{x: Number, y: Number, width: Number, height: Number}`.
      * @param {Number} [radius]
      * @param {Object} [target] Optional target object to recieve the result.
-     * Recommanded to use it for better gc.
+     * Recommended to use it for better gc.
      *
      * @return {Object} Object with x, y, width and height.
      */
@@ -755,7 +738,7 @@ Ext.define('Ext.draw.Matrix', {
     },
 
     /**
-     * Split matrix into Translate Scale, Shear, and Rotate.
+     * Split matrix into Translate, Scale, Shear, and Rotate.
      * @return {Object}
      */
     split: function () {
@@ -800,7 +783,7 @@ Ext.define('Ext.draw.Matrix', {
          */
         registerName(properties, 'a', 0);
 
-        // TODO: Help me finish this. 
+        // TODO: Help me finish this.
         registerName(properties, 'b', 1);
         registerName(properties, 'c', 2);
         registerName(properties, 'd', 3);

@@ -24,6 +24,22 @@
                 color: color-by-background($base-color);
             }
         }
+
+				&.x-item-pressed {
+					.x-dock-horizontal,
+					&.x-list-item-tpl .x-innerhtml {
+						background-color: #ccc;
+						color: color-by-background($background-color);
+					}
+				}
+    }
+
+    .x-list-item-odd {
+        &.x-list-item-tpl,
+        .x-dock-horizontal {
+            background-color: darken($base-color, 5%);
+            border-bottom: 1px solid darken($base-color, 5%);
+        }
     }
 
     .x-list-header {
