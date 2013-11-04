@@ -504,6 +504,13 @@ function(ev, items) {
 		var tagEvent = menuItem.getData(ZmTagMenu.KEY_TAG_EVENT);
 		var tagAdded = menuItem.getData(ZmTagMenu.KEY_TAG_ADDED);
 		items = items || this.getItems();
+
+		for (var i=0; i<items.length; i++) {
+			if (items[i].cloneOf) {
+				items[i] = items[i].cloneOf;
+			}
+		}
+
 		if (tagEvent == ZmEvent.E_TAGS && tagAdded) {
 			this._doTag(items, menuItem.getData(Dwt.KEY_OBJECT), true);
 		} else if (tagEvent == ZmEvent.E_CREATE) {
@@ -1075,6 +1082,12 @@ function(parent, items) {
 
 		// dynamically build tag menu add/remove lists
 		items = items || AjxUtil.toArray(this.getItems());
+
+		for (var i=0; i<items.length; i++) {
+			if (items[i].cloneOf) {
+				items[i] = items[i].cloneOf;
+			}
+		}
 
 		var account = (appCtxt.multiAccounts && items.length == 1) ? items[0].getAccount() : null;
 

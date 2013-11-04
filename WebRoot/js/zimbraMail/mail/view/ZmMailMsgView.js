@@ -441,13 +441,18 @@ function(msg, oldMsg, dayViewCallback) {
 		}
     }
 
-	if (!appCtxt.isChildWindow) {
-		this._setTags(msg);
-		// Remove listener for current msg if it exists
-		if (oldMsg) {
-			oldMsg.removeChangeListener(this._changeListener);
-		}
-		msg.addChangeListener(this._changeListener);
+	this._setTags(msg);
+	// Remove listener for current msg if it exists
+	if (oldMsg) {
+		oldMsg.removeChangeListener(this._changeListener);
+	}
+	msg.addChangeListener(this._changeListener);
+
+	if (msg.cloneOf) {
+		msg.cloneOf.addChangeListener(this._changeListener);
+	}
+	if (oldMsg && oldMsg.cloneOf) {
+		oldMsg.cloneOf.removeChangeListener(this._changeListener);
 	}
 
 	// reset scroll view to top most
@@ -1839,9 +1844,14 @@ ZmMailMsgView.prototype._renderMessageFooter = function(msg, container) {};
 
 ZmMailMsgView.prototype._setTags =
 function(msg) {
-
+	if (!msg) {
+		msg = this._item;
+	}
+	if (msg.cloneOf) {
+		msg = msg.cloneOf;
+	}
 	//use the helper to get the tags.
-	var tagsHtml = ZmTagsHelper.getTagsHtml(msg || this._item, this);
+	var tagsHtml = ZmTagsHelper.getTagsHtml(msg, this);
 
 	var table = document.getElementById(this._hdrTableId);
 	if (!table) { return; }

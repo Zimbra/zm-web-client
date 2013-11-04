@@ -652,6 +652,16 @@ function(msg) {
 		newMsg.share = msg.share;
 	}
 
+	// TODO: When/if you get rid of this function, also remove the cloneOf uses in:
+	//		ZmBaseController.prototype._tagListener
+	//		ZmBaseController.prototype._setTagMenu
+	//		ZmMailMsgView.prototype._setTags
+	//		ZmMailMsgView.prototype._handleResponseSet
+	//		ZmMailListController.prototype._handleResponseFilterListener
+	//		ZmMailListController.prototype._handleResponseNewApptListener
+	//		ZmMailListController.prototype._handleResponseNewTaskListener
+	newMsg.cloneOf = msg;
+
 	return newMsg;
 };
 
