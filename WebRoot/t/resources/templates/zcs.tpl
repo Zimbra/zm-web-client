@@ -23,27 +23,31 @@
 # an item template (itemTpl).
 
 <template id='ConvListItem'>
-	<div class='zcs-mail-list'>
-		<tpl if='isInvite'>
-			<img class='zcs-mail-invitation' src='resources/images/invitation<tpl if='isUnread'>_unread</tpl>.png' />
-		<tpl else>
-			<img class='zcs-mail-readState' src='resources/images/<tpl if='isUnread'>un</tpl>read.png' />
-		</tpl>
-		<div class='zcs-mail-senders<tpl if='isUnread'>-unread</tpl>'>
-			{senders}
+	<div class='zcs-mail-list-slideable'>
+		<div class= 'zcs-mail-list-entry'>
+			<div class='zcs-mail-list'>
+				<tpl if='isInvite'>
+					<img class='zcs-mail-invitation' src='resources/images/invitation<tpl if='isUnread'>_unread</tpl>.png' />
+				<tpl else>
+					<span class='zcs-mail-readState<tpl if='isUnread'>-unread</tpl>'></span>
+				</tpl>
+				<div class='zcs-mail-senders<tpl if='isUnread'>-unread</tpl>'>
+					{senders}
+				</div>
+				<div class='zcs-mail-date'>{dateStr}</div>
+				<tpl if='hasAttachment'>
+					<img class='zcs-mail-attachment' src='resources/images/attachment.png' />
+				</tpl>
+				<div class='zcs-mail-subject<tpl if='isUnread'>-unread</tpl>'>{subject:htmlEncode}</div>
+				<tpl if='numMsgs &gt; 1'>
+					<span class='zcs-numMsgs'>{numMsgs}</span>
+				</tpl>
+				<tpl if='isFlagged'>
+					<img  class='zcs-mail-flag' src='resources/images/flagged.png' />
+				</tpl>
+				<div class='zcs-mail-fragment'>{fragment:htmlEncode}</div>
+			</div>
 		</div>
-		<div class='zcs-mail-date'>{dateStr}</div>
-		<tpl if='hasAttachment'>
-			<img class='zcs-mail-attachment' src='resources/images/attachment.png' />
-		</tpl>
-		<div class='zcs-mail-subject<tpl if='isUnread'>-unread</tpl>'>{subject:htmlEncode}</div>
-		<tpl if='numMsgs &gt; 1'>
-			<span class='zcs-numMsgs'>{numMsgs}</span>
-		</tpl>
-		<tpl if='isFlagged'>
-			<img  class='zcs-mail-flag' src='resources/images/flagged.png' />
-		</tpl>
-		<div class='zcs-mail-fragment'>{fragment:htmlEncode}</div>
 	</div>
 </template>
 
@@ -445,7 +449,7 @@
 
 # show a single attachment
 <template id='Attachment'>
-	<span class='zcs-area-bubble zcs-attachment-bubble' id="{id}"><div class='{icon}'></div>{label} <span>({size})</span></span>
+	<span class='zcs-area-bubble zcs-attachment-bubble' id="{id}">{label} <span>({size})</span></span>
 </template>
 
 <template id='QuotedLink'>
@@ -467,7 +471,7 @@
 </template>
 
 <template id='Folder'>
-	<tpl if='unreadCount'><b></tpl>{name}<tpl if='unreadCount'> ({unreadCount})</b></tpl>
+	<tpl if='unreadCount'></tpl>{name}<tpl if='unreadCount'> ({unreadCount})</tpl>
 </template>
 
 <template id="ApptViewAttendeeList">
@@ -539,7 +543,7 @@
 				</tr>
 			</tpl>
 
-            <tpl if='myResponse'>
+			<tpl if='myResponse'>
                 <tr class='zcs-invite-buttons'>
                     <td class='zcs-invite-label'>{[ZtMsg.invRespondLabel]}</td>
                     <td>
@@ -570,13 +574,6 @@
 					<td>{reminder} {[ZtMsg.invReminderText]}</td>
 				</tr>
 			</tpl>
-
-			<tpl if='recurrence'>
-                <tr>
-                    <td class='zcs-invite-label'>{[ZtMsg.invRecurLabel]}</td>
-                    <td>{recurrence}</td>
-                </tr>
-            </tpl>
 
 		</table>
 
@@ -609,3 +606,4 @@
        <div class="bubble-close-icon delete-mini-icon"></div>
    </div>
 </template>
+

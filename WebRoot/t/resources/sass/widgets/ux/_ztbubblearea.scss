@@ -2,12 +2,12 @@
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2013 Zimbra Software, LLC.
- * 
+ *
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
@@ -22,13 +22,10 @@ $font-size: 11px;
 $font-weight: bold;
 $input-font-size: 14px;
 
-$bubble-border-radius: 10px; // to match other input borders
-$bubble-bkgd-color: #D8D8D8;
 $bubble-height: 18px;
-$bubble-text-color: darken($bubble-bkgd-color,25%);
-$bubble-text-padding: 0 8px;
+$bubble-text-color: $base-color;
 
-$space-between-bubbles: 6px;
+$space-between-bubbles: 16px;
 $space-between-rows: 2px;
 
 //Disabling close icon for now.
@@ -37,26 +34,20 @@ $bubble-close-icon-height: 0;
 $bubble-close-icon-margin: 0;
 
 .zcs-area-bubble {
-    border: 1px solid $bubble-text-color;
     display: inline-block;
-    font-color: $bubble-text-color;
+    cursor: pointer;
+    color: $bubble-text-color;
     font-size: $font-size;
     font-weight: $font-weight;
     line-height: $bubble-height;
-    padding: $bubble-text-padding;
-    @include border-radius($bubble-border-radius);
-    @include background-gradient($bubble-bkgd-color,'glossy');
-
-    &:active {
-        @include background-gradient(darken($bubble-bkgd-color, 25%),'glossy');
+    margin-right: $space-between-bubbles;
+    span {
+        font-weight: normal;
+        cursor: default;
     }
 }
 
 .zcs-bubblearea {
-
-    .zcs-area-bubble {
-        margin-right: $space-between-bubbles;
-    }
 
     background-color: $white;
     @include border-radius($default-textarea-radius);

@@ -2,12 +2,12 @@
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2013 Zimbra Software, LLC.
- * 
+ *
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
@@ -38,34 +38,82 @@ Ext.define('ZCS.view.ZtAppView', {
 		layout: 'hbox',
 		padding: 0,
 		app: null,
+
+		// Configs for each app's floating menus
+		menuConfigs: {
+			mail: {
+				msgActions: [
+					{ label: ZtMsg.markRead,    action: ZCS.constant.OP_MARK_READ,  handlerName: 'doMarkRead' },
+					{ label: ZtMsg.flag,        action: ZCS.constant.OP_FLAG,       handlerName: 'doFlag' },
+					{ label: ZtMsg.reply,       action: ZCS.constant.OP_REPLY,      handlerName: 'doReply' },
+					{ label: ZtMsg.replyAll,    action: ZCS.constant.OP_REPLY_ALL,  handlerName: 'doReplyAll' },
+					{ label: ZtMsg.forward,     action: ZCS.constant.OP_FORWARD,    handlerName: 'doForward' },
+					{ label: ZtMsg.move,        action: ZCS.constant.OP_MOVE,       handlerName: 'doMove' },
+					{ label: ZtMsg.tag,         action: ZCS.constant.OP_TAG,        handlerName: 'doTag' },
+					{ label: ZtMsg.markSpam,    action: ZCS.constant.OP_SPAM,       handlerName: 'doSpam' },
+					{ label: ZtMsg.del,         action: ZCS.constant.OP_DELETE,     handlerName: 'doDelete' }
+				],
+				addressActions: [
+					{ label: ZtMsg.editContact, action: ZCS.constant.OP_EDIT,           handlerName:   'doEditContact'},
+					{ label: ZtMsg.addContact,  action: ZCS.constant.OP_ADD_CONTACT,    handlerName:   'doAddContact'},
+					{ label: ZtMsg.newMessage,  action: ZCS.constant.OP_COMPOSE,        handlerName:   'doCompose' },
+					{ label: ZtMsg.search,      action: ZCS.constant.OP_SEARCH,         handlerName:   'doSearch' }
+				],
+				convActions: [
+					{ label: ZtMsg.convMarkRead,    action: ZCS.constant.OP_MARK_READ,  handlerName: 'doMarkRead' },
+					{ label: ZtMsg.convFlag,        action: ZCS.constant.OP_FLAG,       handlerName: 'doFlag' },
+					{ label: ZtMsg.convMove,        action: ZCS.constant.OP_MOVE,       handlerName: 'doMove' },
+					{ label: ZtMsg.convTag,         action: ZCS.constant.OP_TAG,        handlerName: 'doTag' }
+				],
+				tagActions: [
+					{ label: ZtMsg.removeTag, action: ZCS.constant.OP_REMOVE_TAG,       handlerName: 'doRemoveTag' }
+				],
+				originalAttachment: [
+					{ label: ZtMsg.removeAttachment, action: ZCS.constant.OP_REMOVE_ATT, handlerName: 'doRemoveAttachment' }
+				],
+				settings: [
+					{ label: ZtMsg.logout, action: ZCS.constant.OP_LOGOUT, handlerName: 'doLogout' }
+				],
+				recipientActions: [
+					{ label: 'Remove', handlerName: 'doRemoveRecipient' }
+				]
+			},
+			contacts: {
+				contactActions: [
+					{ label: ZtMsg.move,        action: ZCS.constant.OP_MOVE,       handlerName: 'doMove' },
+					{ label: ZtMsg.tag,         action: ZCS.constant.OP_TAG,        handlerName: 'doTag' },
+					{ label: ZtMsg.del,         action: ZCS.constant.OP_DELETE,     handlerName: 'doDelete' }
+				]
+			}
+		},
 		positioningConfig: {
-		    tablet: {
-			    landscape: {
-		            itemNavigationReservesSpace: true,
-		            itemNavigationAlwaysShown: true,
-		            hasOverviewNavigation: true,
-		            navigationWidth: 0.3
-			    },
-			    portrait: {
-			        itemNavigationReservesSpace: false,
-		            itemNavigationAlwaysShown: false,
-			        hasOverviewNavigation: true,
-		            navigationWidth: 0.4
-			    }
+			tablet: {
+				landscape: {
+					itemNavigationReservesSpace: true,
+					itemNavigationAlwaysShown: true,
+					hasOverviewNavigation: true,
+					navigationWidth: 0.3
+				},
+				portrait: {
+					itemNavigationReservesSpace: false,
+					itemNavigationAlwaysShown: false,
+					hasOverviewNavigation: true,
+					navigationWidth: 0.4
+				}
 			},
 			phone: {
-			    landscape: {
-		            itemNavigationReservesSpace: false,
-		            itemNavigationAlwaysShown: false,
-		            hasOverviewNavigation: true,
-		            navigationWidth: 0.8
-			    },
-			    portrait: {
-			        itemNavigationReservesSpace: false,
-		            itemNavigationAlwaysShown: false,
-			        hasOverviewNavigation: true,
-		            navigationWidth: 1.0
-			    }
+				landscape: {
+					itemNavigationReservesSpace: false,
+					itemNavigationAlwaysShown: false,
+					hasOverviewNavigation: true,
+					navigationWidth: 0.8
+				},
+				portrait: {
+					itemNavigationReservesSpace: false,
+					itemNavigationAlwaysShown: false,
+					hasOverviewNavigation: true,
+					navigationWidth: 1.0
+				}
 			}
 		}
 	},
@@ -99,6 +147,12 @@ Ext.define('ZCS.view.ZtAppView', {
 			app: app
 		});
 
+		for (var menuName in this.getMenuConfigs()[app]) {
+			Ext.create('ZCS.common.ZtMenu', {
+				itemId: menuName+'Menu',
+				data: this.getMenuConfigs()[app][menuName]
+			});
+		}
 	},
 
 	registerOverviewPanel: function (overviewPanelConfig) {

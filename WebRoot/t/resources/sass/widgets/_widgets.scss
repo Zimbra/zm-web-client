@@ -1,0 +1,55 @@
+/*
+ * ***** BEGIN LICENSE BLOCK *****
+ * Zimbra Collaboration Suite Web Client
+ * Copyright (C) 2012, 2013 Zimbra Software, LLC.
+ *
+ * The contents of this file are subject to the Zimbra Public License
+ * Version 1.4 ("License"); you may not use this file except in
+ * compliance with the License.  You may obtain a copy of the License at
+ * http://www.zimbra.com/license.
+ *
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * ***** END LICENSE BLOCK *****
+ */
+
+@import 'widgets/base';
+@import 'widgets/common';
+
+@import 'widgets/main';
+@import 'widgets/zttag';
+@import 'widgets/zttoast';
+@import 'widgets/zticons';
+@import 'widgets/mail/base';
+@import 'widgets/mail/ztassignmentview';
+@import 'widgets/mail/ztcomposeform';
+@import 'widgets/mail/ztconvlistview';
+@import 'widgets/mail/ztquickreply';
+@import 'widgets/mail/ztmsgview';
+@import 'widgets/ux/ztbubblearea';
+@import 'widgets/ux/ztmenu';
+@import 'widgets/ux/ztlefttitlebar';
+@import 'widgets/contacts/ztcontact';
+@import 'widgets/ux/skin1';
+@import 'widgets/ux/Ext.ux.TouchCalendarEvents';
+@import 'widgets/ux/Ext.ux.TouchCalendarView';
+@import 'widgets/ux/ztcalendar';
+
+// Your custom code goes here...
+// Import custom icon font
+@include icon-font('ZimbraTouch', inline-font-files('../../../../resources/images/pictos/ZimbraTouch.woff', woff, '../../../../resources/images/pictos/ZimbraTouch.ttf', truetype,'../../../../resources/images/pictos/ZimbraTouch.svg', svg));
+// Bind font letters to class names
+@include icon('trash', 'T', 'ZimbraTouch');
+@include icon('minus', 'd', 'ZimbraTouch');
+@include icon('plus', 'a', 'ZimbraTouch');
+@include icon('add', 'a', 'ZimbraTouch');
+@include icon('compose', 'C', 'ZimbraTouch');
+@include icon('edit', 'E', 'ZimbraTouch');
+@include icon('organizer', 'O', 'ZimbraTouch');
+@include icon('arrow_down', 'M', 'ZimbraTouch');
+@include icon('settings', 'S', 'ZimbraTouch');
+@include icon('reply', 'R', 'ZimbraTouch');
+@include icon('replytoall', 'A', 'ZimbraTouch');
+//@include icon('forward', 'F', 'ZimbraTouch');
+//@include icon('expand', 'x', 'ZimbraTouch');
+//@include icon('tag', 't', 'ZimbraTouch');

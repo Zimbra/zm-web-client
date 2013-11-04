@@ -2,12 +2,12 @@
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2013 Zimbra Software, LLC.
- * 
+ *
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
@@ -31,23 +31,35 @@ Ext.define('ZCS.controller.mail.ZtMsgController', {
 		refs: {
 			msgHeader: 'msgheader',
 			msgBody: 'msgbody',
-			msgView: 'msgview'
+			msgView: 'msgview',
+			msgActionsMenu: 'list[itemId=msgActionsMenu]',
+			addressActionsMenu: 'list[itemId=addressActionsMenu]',
+			tagActionsMenu: 'list[itemId=tagActionsMenu]'
 		},
 
 		control: {
 			msgHeader: {
-				contactTap: 'doShowMenu',
+				contactTap: 'showMenu',
 				toggleView: 'doToggleView',
-				menuTap:    'doShowMenu',
-				tagTap:     'doShowMenu'
+				menuTap:    'showMenu',
+				tagTap:     'showMenu'
 			},
 			msgBody: {
-				contactTap:         'doShowMenu',
+				contactTap:         'showMenu',
 				inviteReply:        'doInviteReply',
 				attachmentTap:      'doShowAttachment',
 				toggleQuotedText:   'doToggleQuotedText',
 				loadEntireMessage:  'doLoadEntireMessage',
 				addressTouch:       'doComposeToAddress'
+			},
+			msgActionsMenu: {
+				itemtap:            'onMenuItemSelect'
+			},
+			addressActionsMenu: {
+				itemtap:            'onMenuItemSelect'
+			},
+			tagActionsMenu: {
+				itemtap:            'onMenuItemSelect'
 			},
 			'.moveview': {
 				messageAssignment: 'saveItemMove'
@@ -55,25 +67,6 @@ Ext.define('ZCS.controller.mail.ZtMsgController', {
 			'.tagview': {
 				messageAssignment: 'saveItemTag'
 			}
-		},
-
-		menuConfigs: {
-
-			msgActions: [
-				{ label: ZtMsg.markRead,    action: ZCS.constant.OP_MARK_READ,  listener: 'doMarkRead' },
-				{ label: ZtMsg.flag,        action: ZCS.constant.OP_FLAG,       listener: 'doFlag' },
-				{ label: ZtMsg.reply,       action: ZCS.constant.OP_REPLY,      listener: 'doReply' },
-				{ label: ZtMsg.replyAll,    action: ZCS.constant.OP_REPLY_ALL,  listener: 'doReplyAll' },
-				{ label: ZtMsg.forward,     action: ZCS.constant.OP_FORWARD,    listener: 'doForward' },
-				{ label: ZtMsg.move,        action: ZCS.constant.OP_MOVE,       listener: 'doMove' },
-				{ label: ZtMsg.tag,         action: ZCS.constant.OP_TAG,        listener: 'doTag' },
-				{ label: ZtMsg.markSpam,    action: ZCS.constant.OP_SPAM,       listener: 'doSpam' },
-				{ label: ZtMsg.del,         action: ZCS.constant.OP_DELETE,     listener: 'doDelete' }
-			],
-
-			tagActions: [
-				{ label: ZtMsg.removeTag, action: ZCS.constant.OP_REMOVE_TAG, listener: 'doRemoveTag' }
-			]
 		},
 
 		tagId: ''
@@ -101,11 +94,11 @@ Ext.define('ZCS.controller.mail.ZtMsgController', {
 		else {
 			newState = (curState === ZCS.constant.HDR_EXPANDED) ? ZCS.constant.HDR_DETAILED : ZCS.constant.HDR_EXPANDED;
 		}
-		
+
 		newExpanded = (newState !== ZCS.constant.HDR_COLLAPSED);
 
 		msgView.setExpanded(newState === ZCS.constant.HDR_EXPANDED || newState === ZCS.constant.HDR_DETAILED);
-		
+
 		msgView.setState(newState);
 
 		//<debug>
@@ -115,7 +108,7 @@ Ext.define('ZCS.controller.mail.ZtMsgController', {
         msgView.updateExpansion();
     	msgView.renderHeader();
 
-		if (newExpanded && msg && !msg.get('isLoaded')) {	
+		if (newExpanded && msg && !msg.get('isLoaded')) {
 			msg.save({
 				op: 'load',
 				id: msg.getId(),
@@ -124,111 +117,35 @@ Ext.define('ZCS.controller.mail.ZtMsgController', {
 						msgView.renderBody();
 						if (!msgView.usingIframe()) {
 							msgView.updateHeight();
-						} 
+						}
 					} else {
-						msgView.updateHeight();				
+						msgView.updateHeight();
 					}
 				}
 			});
-		}	
+		}
 		else {
 			//The body might not be rendered if we are going to expanded from not expanded.
 			if (newExpanded) {
 				msgView.renderBody();
 				if (!msgView.usingIframe()) {
 					msgView.updateHeight();
-				} 
+				}
 			} else {
-				msgView.updateHeight();				
+				msgView.updateHeight();
 			}
-		}
-	},
-
-	doShowMenu: function(menuButton, params) {
-
-		this.setItem(params.msg);
-		this.setActiveMailComponent(menuButton.up('.itempanel'));
-        this.callParent(arguments);
-
-		var menuName = params.menuName,
-            menu = this.getMenu(menuName);
-
-        if (menu && menuName === ZCS.constant.MENU_ADDRESS) {
-            //The menu config(Add/Edit contact) depends on whether or not the contact already exists.
-            //Set the menu items every time the user taps on the address.
-            this.setMenuItems(menuName);
-        }
-
-		if (menu) {
-            if (params.address) {
-				menu.setArgs(ZCS.constant.OP_COMPOSE, [ params.address ]);
-				menu.setArgs(ZCS.constant.OP_SEARCH, [ params.address ]);
-			}
-			if (params.addrObj && menu.getItem(ZCS.constant.OP_ADD_CONTACT)) {
-				menu.setArgs(ZCS.constant.OP_ADD_CONTACT, [ params.addrObj ]);
-			}
-            if (params.addrObj && menu.getItem(ZCS.constant.OP_EDIT)) {
-                menu.setArgs(ZCS.constant.OP_EDIT, [ params.addrObj ]);
-            }
-            if (params.tagName) {
-                menu.setArgs(ZCS.constant.OP_REMOVE_TAG, [ params.tagName ]);
-            }
-		}
-	},
-
-	/**
-	 * Override so that we show an "Add to Contacts" item only if the contacts
-	 * app is enabled.
-	 */
-	getMenuConfig: function(menuName) {
-
-		if (menuName === ZCS.constant.MENU_ADDRESS) {
-			var menuData = [];
-			if (ZCS.constant.IS_ENABLED[ZCS.constant.APP_CONTACTS]) {
-                var msg = this.getItem(),
-                    fromAddr = msg.getAddressByType(ZCS.constant.FROM),
-                    cachedAddr = ZCS.cache.get(fromAddr && fromAddr.get('email'), 'email');
-                if (cachedAddr) {
-                    menuData.push({
-                        label:      ZtMsg.editContact,
-                        action:     ZCS.constant.OP_EDIT,
-                        listener:   'doEditContact'
-                    });
-                } else {
-                    menuData.push({
-                        label:      ZtMsg.addContact,
-                        action:     ZCS.constant.OP_ADD_CONTACT,
-                        listener:   'doAddContact'
-                    });
-                }
-			}
-			menuData.push(
-				{
-					label:      ZtMsg.newMessage,
-					action:     ZCS.constant.OP_COMPOSE,
-					listener:   'doCompose'
-				},
-				{
-					label:      ZtMsg.search,
-					action:     ZCS.constant.OP_SEARCH,
-					listener:   'doSearch'
-				});
-			return menuData;
-		}
-		else {
-			return this.callParent(arguments);
 		}
 	},
 
 	/**
 	 * Starts a forward session with the active message as the original message.
 	 */
-	doForward: function() {
-		ZCS.app.getComposeController().forward(this.getItem());
+	doForward: function(actionParams) {
+		ZCS.app.getComposeController().forward(actionParams.msg);
 	},
 
-	doComposeToAddress: function (address) {
-		var addressModel = ZCS.model.mail.ZtEmailAddress.fromEmail(address, ZCS.constant.TO);
+	doComposeToAddress: function (actionParams) {
+		var addressModel = ZCS.model.mail.ZtEmailAddress.fromEmail(actionParams.address, ZCS.constant.TO);
 		ZCS.app.getComposeController().showComposeForm([addressModel]);
 	},
 
@@ -300,27 +217,27 @@ Ext.define('ZCS.controller.mail.ZtMsgController', {
 	 *
 	 * @param {String}  addr    email address of recipient (To: field)
 	 */
-	doCompose: function(addr) {
-		var msg = this.getItem(),
-			toAddr = msg.getAddressObject('email', addr);
+	doCompose: function(actionParams) {
+		var msg = actionParams.msg,
+			toAddr = msg.getAddressObject('email', actionParams.address);
 
 		ZCS.app.getComposeController().showComposeForm([toAddr]);
 	},
 
-	doReply: function() {
-		ZCS.app.getComposeController().reply(this.getItem());
+	doReply: function(actionParams) {
+		ZCS.app.getComposeController().reply(actionParams.msg);
 	},
 
-	doReplyAll: function() {
-		ZCS.app.getComposeController().replyAll(this.getItem());
+	doReplyAll: function(actionParams) {
+		ZCS.app.getComposeController().replyAll(actionParams.msg);
 	},
 
-	doAddContact: function(addr) {
-		ZCS.app.getContactController().showContactForm(ZCS.constant.OP_COMPOSE, ZCS.model.contacts.ZtContact.fromEmailObj(addr));
+	doAddContact: function(actionParams) {
+		ZCS.app.getContactController().showContactForm(ZCS.constant.OP_COMPOSE, ZCS.model.contacts.ZtContact.fromEmailObj(actionParams.addrObj));
 	},
 
-    doEditContact: function(addr) {
-        var contact = ZCS.cache.get(addr.get('email'), 'email'),
+    doEditContact: function(actionParams) {
+        var contact = ZCS.cache.get(actionParams.addrObj.get('email'), 'email'),
             contactCtrl = ZCS.app.getContactController();
         contactCtrl.setItem(contact);
         contactCtrl.showContactForm(ZCS.constant.OP_EDIT, contact);
@@ -328,11 +245,9 @@ Ext.define('ZCS.controller.mail.ZtMsgController', {
 
 	/**
 	 * Searches for mail from the given sender.
-	 *
-	 * @param {String}  addr    email address
 	 */
-	doSearch: function(addr) {
-		ZCS.app.getConvListController().doSearch('from:' + addr);
+	doSearch: function(actionParams) {
+		ZCS.app.getConvListController().doSearch('from:' + actionParams.address);
 	},
 
 	doLoadEntireMessage: function(msg, msgBody) {
@@ -353,9 +268,9 @@ Ext.define('ZCS.controller.mail.ZtMsgController', {
 	/**
 	 * If the msg is already in Trash, permanently delete it.
 	 */
-	doDelete: function() {
+	doDelete: function(actionParams) {
 
-		var msg = this.getItem(),
+		var msg = actionParams.msg,
 			localFolderId = msg ? ZCS.util.localId(msg.get('folderId')) : '';
 
 		if (localFolderId === ZCS.constant.ID_TRASH || localFolderId === ZCS.constant.ID_JUNK) {
@@ -370,5 +285,80 @@ Ext.define('ZCS.controller.mail.ZtMsgController', {
 		else {
 			this.callParent(arguments);
 		}
+	},
+
+	/**
+	 * Make sure the action menu shows the appropriate action based on the unread status of this conversation.
+	 * The action will be either Mark Read or Mark Unread.
+	 */
+	updateMenuLabels: function(menuButton, params, menu) {
+
+		var message = this.getMsgHeader().up('msgview').getMsg();
+
+		var menuName = params.menuName;
+
+		if (menuName === ZCS.constant.MENU_CONV || menuName === ZCS.constant.MENU_MSG) {
+			var	isConvMenu = (menuName === ZCS.constant.MENU_CONV),
+				unreadLabel, flagLabel,
+				spamLabel = (message.get('folderId') === ZCS.constant.ID_JUNK) ? ZtMsg.markNotSpam : ZtMsg.markSpam;
+
+			if (isConvMenu) {
+				unreadLabel = message.get('isUnread') ? ZtMsg.convMarkRead : ZtMsg.convMarkUnread;
+				flagLabel = message.get('isFlagged') ? ZtMsg.convUnflag : ZtMsg.convFlag;
+			}
+			else {
+				unreadLabel = message.get('isUnread') ? ZtMsg.markRead : ZtMsg.markUnread;
+				flagLabel = message.get('isFlagged') ? ZtMsg.unflag : ZtMsg.flag;
+			}
+
+			var store = menu.getStore(),
+				unreadAction = menu.getItemAt(store.find('action', ZCS.constant.OP_MARK_READ)),
+				flagAction = menu.getItemAt(store.find('action', ZCS.constant.OP_FLAG)),
+				spamAction = menu.getItemAt(store.find('action', ZCS.constant.OP_SPAM));
+
+			if (unreadAction) {
+				unreadAction.getRecord().set('label', unreadLabel);
+			}
+			if (flagAction) {
+				flagAction.getRecord().set('label', flagLabel);
+			}
+			if (spamAction) {
+				spamAction.getRecord().set('label', spamLabel);
+			}
+		} else if (menuName === ZCS.constant.MENU_ADDRESS) {
+			// Hiding/showing address listitems instead of changing labels
+			menu.hideItem(ZCS.constant.OP_ADD_CONTACT, true);
+			menu.hideItem(ZCS.constant.OP_EDIT, true);
+
+			// Pick which listitem to show, only if contacts app is enabled
+			if (ZCS.constant.IS_ENABLED[ZCS.constant.APP_CONTACTS]) {
+				var fromAddr = message.getAddressByType(ZCS.constant.FROM),
+					cachedAddr = ZCS.cache.get(fromAddr && fromAddr.get('email'), 'email');
+
+				if (cachedAddr) {
+					menu.hideItem(ZCS.constant.OP_EDIT, false);
+				} else {
+					menu.hideItem(ZCS.constant.OP_ADD_CONTACT, false);
+				}
+			}
+		}
+	},
+
+	/**
+	 * Disable "Tag" action if user doesn't have any tags.
+	 */
+	enableMenuItems: function(menu) {
+
+		var curFolder = ZCS.session.getCurrentSearchOrganizer(),
+			isFeed = curFolder && curFolder.isFeed(),
+			isDrafts = ZCS.util.folderIs(curFolder, ZCS.constant.ID_DRAFTS);
+
+		if (menu && menu.getItem(ZCS.constant.OP_TAG)) {
+			var tags = ZCS.session.getOrganizerData(ZCS.constant.APP_MAIL, ZCS.constant.ORG_TAG);
+			menu.enableItem(ZCS.constant.OP_TAG, tags && tags.length > 0);
+		}
+		menu.enableItem(ZCS.constant.OP_REPLY, !isFeed);
+		menu.enableItem(ZCS.constant.OP_REPLY_ALL, !isFeed);
+		menu.enableItem(ZCS.constant.OP_SPAM, !isDrafts);
 	}
 });

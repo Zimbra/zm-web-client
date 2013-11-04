@@ -9,6 +9,10 @@ $compose-padding: .5em;
 	background-color: white;
 	background-image: none;
 
+	.x-form .x-scroll-container {
+		background-color: transparent;
+	}
+
 	.x-form-inner {
 
 		.x-field {
@@ -29,6 +33,10 @@ $compose-padding: .5em;
 			@extend .zcs-compose-formline;
 			margin-bottom: 0;
 			padding: 0 $compose-padding;
+			.x-innerhtml {
+				padding-bottom: 5px;
+				line-height: 1.5em;
+			}
 		}
 		.zcs-body-field {
 			background-color: white;

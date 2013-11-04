@@ -12,13 +12,15 @@
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
  */
+$include-pictos-font: true;
+$include-default-icons: false;
 
-// Import variable overrides
-@import 'variables/variables';
+$experimental-support-for-mozilla : false;
+$experimental-support-for-webkit : false;
+// $support-for-original-webkit-gradients : false;
+$experimental-support-for-opera : false;
+$experimental-support-for-microsoft : false;
+$experimental-support-for-khtml : false;
 
-// Importing defaults - this has to follow the overrides!!!
-@import 'sencha-touch/cupertino';
-@import 'sencha-touch/cupertino/all';
-
-// Import all widgets
-@import 'widgets/widgets'
+//Base variables referenced through widgets, also overriding default sencha style variables.
+@import 'variables/base';

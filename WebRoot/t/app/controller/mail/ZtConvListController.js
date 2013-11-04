@@ -2,12 +2,12 @@
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2012, 2013 Zimbra Software, LLC.
- * 
+ *
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
@@ -51,8 +51,9 @@ Ext.define('ZCS.controller.mail.ZtConvListController', {
 				newItem: 'doCompose'
 			},
 			listView: {
-				itemswipe: 'handleSwipe',
-				initialize: 'setupScrollHandling'
+				itemtouchstart: 'onItemTouchStart',
+				itemtouchmove:  'onItemTouchMove',
+				itemtouchend:   'onItemTouchEnd'
 			}
 		},
 
@@ -85,88 +86,73 @@ Ext.define('ZCS.controller.mail.ZtConvListController', {
 		ZCS.app.getComposeController().compose();
 	},
 
-	handleSwipe: function(list, index, convItem, record, e, eOpts) {
+	onItemTouchStart: function (list, index, convItem, record, e, eOpts) {
+		this.listItemLastMouseX = e.pageX;
+		this.listItemLastMouseY = e.pageY;
+		this.listItemLastX = 0;
+	},
 
-		var convEl = convItem.element,
-			convElBox = convEl.getBox(),
-			buttonHeight = convElBox.height,
-			buttonWidth = 120,
-			swipeElm = Ext.dom.Element.create({
-				html: ZCS.controller.mail.ZtConvListController.swipeToDeleteTpl.apply({
-					width: buttonWidth,
-					height: buttonHeight
-				}),
-				"class": 'zcs-outer-swipe-elm'
-			}),
-			dockItem = convEl.down('.x-dock'),
-			sameItemSwipeButton = convEl.down('.zcs-outer-swipe-elm'),
-			anySwipeButton = list.element.down('.zcs-outer-swipe-elm'),
-			anim = Ext.create('Ext.Anim');
+	/**
+	 * The event 'itemtouchmove' only fires once at the start of moving. Detect
+	 *  if it represents primarily an X axis move, or Y axis move. If X, suspend
+	 *  scrolling and attach a continous touchmove listener.
+	 */
+	onItemTouchMove: function (list, index, convItem, record, e, eOpts) {
+		var me = this,
+			listItemWidth,
+			sliderDivWidth;
 
-		e.preventDefault();
+		if (Math.abs(e.pageX - this.listItemLastMouseX) > Math.abs(e.pageY - this.listItemLastMouseY)) {
+			// Minimizing processing required in continuous touchmove handler
+			listItemWidth = convItem.element.getWidth();
+			sliderDivWidth = convItem.element.down('.zcs-mail-list-slideable').getWidth();
+			this.minListItemX = listItemWidth - sliderDivWidth;
+			this.currentSlidingEl = convItem.element.down('.zcs-mail-list-slideable');
+			this.currentSlidingItem = convItem;
 
-		if (sameItemSwipeButton) {
-			sameItemSwipeButton.fadeAway();
-		} else {
+			convItem.addCls('x-item-pressed');
 
-			if (anySwipeButton && !anySwipeButton.fading) {
-				anySwipeButton.fadeAway();
-			}
-
-			swipeElm.fadeAway = function () {
-				var fadingButton = swipeElm;
-				fadingButton.fading = true;
-				Ext.Anim.run(fadingButton, 'fade', {
-					after: function() {
-						fadingButton.destroy();
-					},
-					out: true
-				})
-			}
-
-			swipeElm.on('tap', function (event, node, options, eOpts) {
-				var el = Ext.fly(event.target);
-				if (el.hasCls('zcs-swipe-delete')) {
-					ZCS.app.fireEvent('swipeDeleteMailItem', record);
-					swipeElm.fadeAway();
-					event.stopEvent();
-				}
+			list.setScrollable(false);
+			list.container.innerElement.on({
+				touchmove: this.slideConvItem, //Ext.Function.createThrottled(this.onItemTouchMove, 20, this),
+				delegate: '.' + Ext.baseCSSPrefix + 'list-item',
+				scope: this
 			});
-
-			swipeElm.on('swipe', function () {
-				swipeElm.fadeAway();
-			});
-
-			//Delay this so any scroll that occurs before a swiper has a chance to complete
-			Ext.defer(function () {
-				swipeElm.insertAfter(Ext.fly(convEl.dom.children[0]));
-			}, 100);
-
 		}
 	},
 
-	setupScrollHandling: function (list) {
+	slideConvItem: function (e) {
+		var moveDistance = e.pageX - this.listItemLastMouseX,
+			newX = this.listItemLastX + moveDistance;
 
-		//Make sure no delete buttons are hanging around after
-		//a data change event or on a scroll
-		var scroller = list.getScrollable().getScroller(),
-			cleanSwipeButtons = function () {
-				var swipeElm = list.element.down('.zcs-outer-swipe-elm');
-				if (swipeElm) {
-					swipeElm.fadeAway();
-				}
-			},
-			nukeSwipeButtons = function () {
-				//Seeing a button fade away from the previous list is weird, destroy is instead.
-				var swipeElm = list.element.down('.zcs-outer-swipe-elm');
-				if (swipeElm) {
-					swipeElm.destroy();
-				}
-			};
+		// Don't move left past end of the item's width
+		if (newX < this.minListItemX) {
+			this.currentSlidingEl.setX(this.minListItemX);
+			this.currentSlidingItem.addCls('delete-active');
+		// Don't let item move right past start
+		} else if (newX > 0) {
+			this.currentSlidingEl.setX(0);
+		// Only take action if X movement is not 0
+		} else if (moveDistance != 0) {
+			this.currentSlidingEl.setX(newX);
+			this.currentSlidingItem.removeCls('delete-active');
+		}
+		this.listItemLastMouseX = e.pageX;
+		this.listItemLastX = newX;
+	},
 
-		scroller.on('scrollstart', cleanSwipeButtons);
-
-		list.getStore().on('load', nukeSwipeButtons);
+	onItemTouchEnd: function (list, index, convItem, record, e, eOpts) {
+		list.container.innerElement.un({
+			touchmove: this.slideConvItem,
+			delegate: '.' + Ext.baseCSSPrefix + 'list-item',
+			scope: this
+		});
+		list.setScrollable(true);
+		convItem.element.down('.zcs-mail-list-slideable').setX(0);
+		if (convItem.element.hasCls('delete-active')) {
+			ZCS.app.fireEvent('swipeDeleteMailItem', record);
+		}
+		convItem.removeCls('x-item-pressed');
 	},
 
 	/**

@@ -2,12 +2,12 @@
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2013 Zimbra Software, LLC.
- * 
+ *
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
@@ -38,15 +38,15 @@ Ext.define('ZCS.controller.mail.ZtMailItemController', {
 	/**
 	 * Launches a move assignment view.
 	 */
-	doMove: function(item) {
-		this.doAssignmentView(item, ZCS.constant.ORG_FOLDER);
+	doMove: function(actionParams) {
+		this.doAssignmentView(actionParams.msg, ZCS.constant.ORG_FOLDER);
 	},
 
 	/**
 	 * Launches a tag assignment view.
 	 */
-	doTag: function(item) {
-		this.doAssignmentView(item, ZCS.constant.ORG_TAG);
+	doTag: function(actionParams) {
+		this.doAssignmentView(actionParams.msg, ZCS.constant.ORG_TAG);
 	},
 
 	/**
@@ -99,93 +99,6 @@ Ext.define('ZCS.controller.mail.ZtMailItemController', {
 		}
 
 		ZCS.app.fireEvent('rerenderMessages');
-	},
-
-	/**
-	 * Make sure the action menu shows the appropriate action based on the unread status of this conversation.
-	 * The action will be either Mark Read or Mark Unread.
-	 */
-	doShowMenu: function(menuButton, params) {
-
-		var itemPanel = menuButton.up('.itempanel');
-		if (!itemPanel) {
-			var itemPanelEl = menuButton.up('.zcs-item-panel');
-			itemPanel = itemPanelEl && Ext.getCmp(itemPanelEl.id);
-		}
-		this.setActiveMailComponent(itemPanel);
-
-		var menuName = params.menuName;
-
-		if (menuName === ZCS.constant.MENU_CONV || menuName === ZCS.constant.MENU_MSG) {
-			var	menu = this.getMenu(menuName),
-				isConvMenu = (menuName === ZCS.constant.MENU_CONV),
-				item = this.getItem(),
-				unreadLabel, flagLabel,
-				spamLabel = (item.get('folderId') === ZCS.constant.ID_JUNK) ? ZtMsg.markNotSpam : ZtMsg.markSpam;
-
-			if (isConvMenu) {
-				unreadLabel = item.get('isUnread') ? ZtMsg.convMarkRead : ZtMsg.convMarkUnread;
-				flagLabel = item.get('isFlagged') ? ZtMsg.convUnflag : ZtMsg.convFlag;
-			}
-			else {
-				unreadLabel = item.get('isUnread') ? ZtMsg.markRead : ZtMsg.markUnread;
-				flagLabel = item.get('isFlagged') ? ZtMsg.unflag : ZtMsg.flag;
-			}
-
-			if (menu) {
-				var list = menu.down('list'),
-					store = list.getStore(),
-					unreadAction = list.getItemAt(store.find('action', ZCS.constant.OP_MARK_READ)),
-					flagAction = list.getItemAt(store.find('action', ZCS.constant.OP_FLAG)),
-					spamAction = list.getItemAt(store.find('action', ZCS.constant.OP_SPAM));
-;
-				if (unreadAction) {
-					unreadAction.getRecord().set('label', unreadLabel);
-				}
-				if (flagAction) {
-					flagAction.getRecord().set('label', flagLabel);
-				}
-				if (spamAction) {
-					spamAction.getRecord().set('label', spamLabel);
-				}
-			}
-			else {
-				// first time showing menu, change data since menu not ready yet
-				var menuData = this.getMenuConfig(menuName);
-				Ext.each(menuData, function(menuItem) {
-					if (menuItem.action === ZCS.constant.OP_MARK_READ) {
-						menuItem.label = unreadLabel;
-					}
-					if (menuItem.action === ZCS.constant.OP_FLAG) {
-						menuItem.label = flagLabel;
-					}
-					if (menuItem.action === ZCS.constant.OP_SPAM) {
-						menuItem.label = spamLabel;
-					}
-				}, this);
-			}
-		}
-
-		this.callParent(arguments);
-	},
-
-	/**
-	 * Disable "Tag" action if user doesn't have any tags.
-	 */
-	enableMenuItems: function(menuName) {
-
-		var menu = this.getMenu(menuName),
-			curFolder = ZCS.session.getCurrentSearchOrganizer(),
-			isFeed = curFolder && curFolder.isFeed(),
-			isDrafts = ZCS.util.folderIs(curFolder, ZCS.constant.ID_DRAFTS);
-
-		if (menu && menu.getItem(ZCS.constant.OP_TAG)) {
-			var tags = ZCS.session.getOrganizerData(ZCS.constant.APP_MAIL, ZCS.constant.ORG_TAG);
-			menu.enableItem(ZCS.constant.OP_TAG, tags && tags.length > 0);
-		}
-		menu.enableItem(ZCS.constant.OP_REPLY, !isFeed);
-		menu.enableItem(ZCS.constant.OP_REPLY_ALL, !isFeed);
-		menu.enableItem(ZCS.constant.OP_SPAM, !isDrafts);
 	},
 
 	/**
@@ -246,10 +159,8 @@ Ext.define('ZCS.controller.mail.ZtMailItemController', {
 	 * @param {ZtMailItem}   item     mail item
 	 */
 	doDelete: function(item, isSwipeDelete) {
-
-		item = item || this.getItem();
-
 		var me = this,
+			item = item && item.msg || item || this.getItem(),
 			data = {
 				op:     'trash',
 				tcon:   this.getTcon()
@@ -285,13 +196,11 @@ Ext.define('ZCS.controller.mail.ZtMailItemController', {
 	/**
 	 * Moves the mail item to Junk.
 	 *
-	 * @param {ZtMailItem}   item     mail item
+	 * @param {Object}   actionParams     parameters associated with this action
 	 */
-	doSpam: function(item) {
-
-		item = item || this.getItem();
-
-		var unspam = (item.get('folderId') === ZCS.constant.ID_JUNK),
+	doSpam: function(actionParams) {
+		var item = actionParams.msg,
+			unspam = (item.get('folderId') === ZCS.constant.ID_JUNK),
 			op = unspam ? '!spam' : 'spam',
 			newFolder = unspam ? ZCS.constant.ID_INBOX : ZCS.constant.ID_JUNK,
 			me = this,

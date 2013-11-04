@@ -25,6 +25,11 @@ Ext.define('ZCS.controller.ZtAssignmentController', {
 
 	extend: 'Ext.app.Controller',
 
+	requires: [
+		"ZCS.view.ux.ZtFolderAssignmentView",
+		"ZCS.view.ux.ZtTagAssignmentView"
+	],
+
 	mixins: {
 		organizerNotificationHandler: 'ZCS.common.ZtOrganizerNotificationHandler'
 	},

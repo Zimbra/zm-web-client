@@ -2,12 +2,12 @@
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2012, 2013 Zimbra Software, LLC.
- * 
+ *
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
@@ -275,20 +275,18 @@ Ext.define('ZCS.common.ZtUtil', {
 
 		if (dateDiff < ZCS.constant.MSEC_PER_MINUTE) {
 			dateStr = ZtMsg.receivedNow;
-		}
-		else if (dateDiff < ZCS.constant.MSEC_PER_DAY) {
+		} else {
 			if (dateDiff < ZCS.constant.MSEC_PER_HOUR) {
 				num = Math.round(dateDiff / ZCS.constant.MSEC_PER_MINUTE);
 				unit = num > 1 ? ZtMsg.minutes : ZtMsg.minute;
-			}
-			else {
+			} else if (dateDiff < ZCS.constant.MSEC_PER_DAY) {
 				num = Math.round(dateDiff / ZCS.constant.MSEC_PER_HOUR);
 				unit = num > 1 ? ZtMsg.hours : ZtMsg.hour;
+			} else {
+				num = Math.round(dateDiff / ZCS.constant.MSEC_PER_DAY);
+				unit = num > 1 ? ZtMsg.days : ZtMsg.day;
 			}
 			dateStr = Ext.String.format(ZtMsg.receivedRecently, num, unit);
-		}
-		else {
-			dateStr = Ext.Date.format(then, 'M j');
 		}
 
 		return dateStr;
@@ -401,178 +399,170 @@ Ext.define('ZCS.common.ZtUtil', {
 		}, this);
 	},
 
-    /**
-     * Returns the position of item in an array.
-     *
-     * @param {Array} array
-     * @param {Object} object
-     * @param {String} strict
-     * @return {Number}
-     */
-    indexOf: function(array, object, strict) {
+	/**
+	 * Returns the position of item in an array.
+	 *
+	 * @param {Array} array
+	 * @param {Object} object
+	 * @param {String} strict
+	 * @return {Number}
+	 */
+	indexOf: function(array, object, strict) {
 
-        if (array) {
-            var i,
-                item;
+		if (array) {
+			var i,
+				item;
 
-            for (i = 0; i < array.length; i++) {
-                item = array[i];
+			for (i = 0; i < array.length; i++) {
+				item = array[i];
 
-                if ((strict && item === object) || (!strict && item == object)) {
-                    return i;
-                }
-            }
-        }
-        return -1;
-    },
+				if ((strict && item === object) || (!strict && item == object)) {
+					return i;
+				}
+			}
+		}
+		return -1;
+	},
 
-    /**
-     * Returns server date time object.
-     *
-     * @param {String} serverStr
-     * @param {String} noSpecialUtcCase
-     * @return {Date}
-     */
-    parseServerDateTime: function(serverStr, noSpecialUtcCase) {
-        if (serverStr == null) {
-            return null;
-        }
+	/**
+	 * Returns server date time object.
+	 *
+	 * @param {String} serverStr
+	 * @param {String} noSpecialUtcCase
+	 * @return {Date}
+	 */
+	parseServerDateTime: function(serverStr, noSpecialUtcCase) {
+		if (serverStr == null) {
+			return null;
+		}
 
-        var d = new Date(),
-            yyyy = parseInt(serverStr.substr(0,4), 10),
-            MM = parseInt(serverStr.substr(4,2), 10),
-            dd = parseInt(serverStr.substr(6,2), 10);
+		var d = new Date(),
+			yyyy = parseInt(serverStr.substr(0,4), 10),
+			MM = parseInt(serverStr.substr(4,2), 10),
+			dd = parseInt(serverStr.substr(6,2), 10);
 
-        d.setFullYear(yyyy);
-        d.setMonth(MM - 1);
-        d.setMonth(MM - 1);
-        d.setDate(dd);
-        this.parseServerTime(serverStr, d, noSpecialUtcCase);
-        return d;
-    },
+		d.setFullYear(yyyy);
+		d.setMonth(MM - 1);
+		d.setMonth(MM - 1);
+		d.setDate(dd);
+		this.parseServerTime(serverStr, d, noSpecialUtcCase);
+		return d;
+	},
 
-    /**
-     * Returns server date time object.
-     *
-     * @param {String} serverStr
-     * @param {Date} date
-     * @param {String} noSpecialUtcCase
-     * @return {Date}
-     */
-    parseServerTime: function(serverStr, date, noSpecialUtcCase) {
-        if (serverStr.charAt(8) == 'T') {
-            var hh = parseInt(serverStr.substr(9,2), 10),
-                mm = parseInt(serverStr.substr(11,2), 10),
-                ss = parseInt(serverStr.substr(13,2), 10);
+	/**
+	 * Returns server date time object.
+	 *
+	 * @param {String} serverStr
+	 * @param {Date} date
+	 * @param {String} noSpecialUtcCase
+	 * @return {Date}
+	 */
+	parseServerTime: function(serverStr, date, noSpecialUtcCase) {
+		if (serverStr.charAt(8) == 'T') {
+			var hh = parseInt(serverStr.substr(9,2), 10),
+				mm = parseInt(serverStr.substr(11,2), 10),
+				ss = parseInt(serverStr.substr(13,2), 10);
 
-            if (!noSpecialUtcCase && serverStr.charAt(15) == 'Z') {
-                mm += ZCS.timezone.getOffset(ZCS.timezone.DEFAULT_TZ, date);
-            }
-            date.setHours(hh, mm, ss, 0);
-        }
-        return date;
-    },
+			if (!noSpecialUtcCase && serverStr.charAt(15) == 'Z') {
+				mm += ZCS.timezone.getOffset(ZCS.timezone.DEFAULT_TZ, date);
+			}
+			date.setHours(hh, mm, ss, 0);
+		}
+		return date;
+	},
 
-    /**
-     * Returns messages from properties with formatted data.
-     *
-     * @param {String} pattern
-     * @param {Object} value - This could be a Number/String/Array object
-     * @return {String}
-     */
-    formatRecurMsg: function(pattern, value) {
-        switch (pattern) {
-            case ZtMsg.recurStart:
-                return Ext.String.format(pattern, Ext.Date.format(value, 'F j, Y'));
+	/**
+	 * Returns messages from properties with formatted data.
+	 *
+	 * @param {String} pattern
+	 * @param {Object} value - This could be a Number/String/Array object
+	 * @return {String}
+	 */
+	formatRecurMsg: function(pattern, value) {
+		switch (pattern) {
+			case ZtMsg.recurStart:
+				return Ext.String.format(pattern, Ext.Date.format(value, 'F j, Y'));
 
-            case ZtMsg.recurEndNumber:
-                return Ext.String.format(pattern, value);
+			case ZtMsg.recurEndNumber:
+				return Ext.String.format(pattern, value);
 
-            case ZtMsg.recurEndByDate:
-                return Ext.String.format(pattern, Ext.Date.format(value, 'F j, Y'));
+			case ZtMsg.recurEndByDate:
+				return Ext.String.format(pattern, Ext.Date.format(value, 'F j, Y'));
 
-            case ZtMsg.recurDailyEveryNumDays:
-                return Ext.String.format(pattern, value);
+			case ZtMsg.recurDailyEveryNumDays:
+				return Ext.String.format(pattern, value);
 
-            case ZtMsg.recurWeeklyEveryNumWeeksDate: {
-                if (value[1].length === 0) {
-                    return Ext.String.format(pattern, value[0], '');
-                }
-                else if (value[1].length >= 1) {
-                    var daysLen = value[1].length,
-                        i,
-                        recurStr = "";
+			case ZtMsg.recurWeeklyEveryNumWeeksDate: {
+				if (value[1].length === 0) {
+					return Ext.String.format(pattern, value[0], '');
+				}
+				else if (value[1].length === 1) {
+					return Ext.String.format(pattern, value[0], Ext.Date.format(value[0][0], 'l'));
+				}
 
-                    for (i = 0; i < daysLen; i++) {
-                        recurStr += Ext.Date.format(value[1][i], 'l')  + (i !== daysLen - 1 ? ', ' : '');
-                    }
+				var weekDaysLen = value[1].length,
+					i,
+					msgStr = '';
 
-                    return Ext.String.format(pattern, value[0], recurStr);
-                }
+				for (i = 0; i < weekDaysLen; i++) {
+					msgStr += Ext.Date.format(value[1][i], 'l') + (i !== weekDaysLen - 1 ? ', ' : '');
+				}
 
-                var weekDaysLen = value[1].length,
-                    i,
-                    msgStr = '';
+				return Ext.String.format(pattern, value[0], msgStr);
+			}
 
-                for (i = 0; i < weekDaysLen; i++) {
-                    msgStr += Ext.Date.format(value[1][i], 'l') + (i !== weekDaysLen - 1 ? ', ' : '');
-                }
+			case ZtMsg.recurWeeklyEveryWeekday:
+				return Ext.String.format(pattern, Ext.Date.format(value, 'l'));
 
-                return Ext.String.format(pattern, value[0], msgStr);
-            }
+			case ZtMsg.recurYearlyEveryDate:
+				return Ext.String.format(pattern, Ext.Date.format(value[0], 'F'), value[1]);
 
-            case ZtMsg.recurWeeklyEveryWeekday:
-                return Ext.String.format(pattern, Ext.Date.format(value, 'l'));
+			case ZtMsg.recurYearlyEveryMonthWeekDays:
+				return Ext.String.format(pattern, this.getOrdinal(value[0]), this.getDayType(value[1]), Ext.Date.format(value[2], 'F'));
 
-            case ZtMsg.recurYearlyEveryDate:
-                return Ext.String.format(pattern, Ext.Date.format(value[0], 'F'), value[1]);
+			case ZtMsg.recurYearlyEveryMonthNumDay:
+				return Ext.String.format(pattern, this.getOrdinal(value[0]), Ext.Date.format(value[1], 'l'), Ext.Date.format(value[2], 'F'));
 
-            case ZtMsg.recurYearlyEveryMonthWeekDays:
-                return Ext.String.format(pattern, this.getOrdinal(value[0]), this.getDayType(value[1]), Ext.Date.format(value[2], 'F'));
+			case ZtMsg.recurMonthlyEveryNumMonthsNumDay:
+				return Ext.String.format(pattern, this.getOrdinal(value[0]), Ext.Date.format(value[1], 'l'), value[2]);
 
-            case ZtMsg.recurYearlyEveryMonthNumDay:
-                return Ext.String.format(pattern, this.getOrdinal(value[0]), Ext.Date.format(value[1], 'l'), Ext.Date.format(value[2], 'F'));
+			case ZtMsg.recurMonthlyEveryNumMonthsWeekDays:
+				return Ext.String.format(pattern, this.getOrdinal(value[0]), this.getDayType(value[1]), value[2]);
 
-            case ZtMsg.recurMonthlyEveryNumMonthsNumDay:
-                return Ext.String.format(pattern, this.getOrdinal(value[0]), Ext.Date.format(value[1], 'l'), value[2]);
+			case ZtMsg.recurMonthlyEveryNumMonthsDate:
+				return Ext.String.format(pattern, value[0], value[1]);
+		}
+	},
 
-            case ZtMsg.recurMonthlyEveryNumMonthsWeekDays:
-                return Ext.String.format(pattern, this.getOrdinal(value[0]), this.getDayType(value[1]), value[2]);
+	/**
+	 * Returns words - last, first, second, third and fourth based on the bysetpos/ordinal values supplied.
+	 *
+	 * @param {String} ordinal
+	 * @return {String}
+	 */
+	getOrdinal: function(ordinal) {
+		switch (ordinal) {
+			case -1: return ZtMsg.recurLast;
+			case 1: return ZtMsg.recurFirst;
+			case 2: return ZtMsg.recurSecond;
+			case 3: return ZtMsg.recurThird;
+			case 4: return ZtMsg.recurFourth;
+		}
+	},
 
-            case ZtMsg.recurMonthlyEveryNumMonthsDate:
-                return Ext.String.format(pattern, value[0], value[1]);
-        }
-    },
-
-    /**
-     * Returns words - last, first, second, third and fourth based on the bysetpos/ordinal values supplied.
-     *
-     * @param {String} ordinal
-     * @return {String}
-     */
-    getOrdinal: function(ordinal) {
-        switch (ordinal) {
-            case -1: return ZtMsg.recurLast;
-            case 1: return ZtMsg.recurFirst;
-            case 2: return ZtMsg.recurSecond;
-            case 3: return ZtMsg.recurThird;
-            case 4: return ZtMsg.recurFourth;
-        }
-    },
-
-    /**
-     * Returns words - day, week end, weekday based on the dayType values supplied.
-     *
-     * @param {String} dayType
-     * @return {String}
-     */
-    getDayType: function(dayType) {
-        switch (dayType) {
-            case -1: return ZtMsg.recurDay;
-            case 0: return ZtMsg.recurWeekend;
-            case 1: return ZtMsg.recurWeekday;
-        }
-    },
+	/**
+	 * Returns words - day, week end, weekday based on the dayType values supplied.
+	 *
+	 * @param {String} dayType
+	 * @return {String}
+	 */
+	getDayType: function(dayType) {
+		switch (dayType) {
+			case -1: return ZtMsg.recurDay;
+			case 0: return ZtMsg.recurWeekend;
+			case 1: return ZtMsg.recurWeekday;
+		}
+	},
 
 	isAppEnabled: function(app) {
 		return ZCS.constant.IS_ENABLED[app] && ZCS.session.getSetting(ZCS.constant.APP_SETTING[app]);

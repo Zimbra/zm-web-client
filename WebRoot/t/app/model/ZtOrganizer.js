@@ -177,12 +177,17 @@ Ext.define('ZCS.model.ZtOrganizer', {
 		}
 	},
 
-	constructor: function(data, id) {
+	constructor: function(data, id, raw) {
+ 
+        // Setting these fixes bug in framework when instance of this record is already cached
+ 	    this.modified = {};
+        this.raw = raw || data || {};
+        this.stores = [];		this.callParent(arguments);
 
 		this.callParent(arguments);
 
 		var orgId = (data && (data.id || data.zcsId)) || id;
-//		console.log('Cache organizer "' + data.name + '" under key "' + orgId + '"');
+		//console.log('Cache organizer "' + data.name + '" under key "' + orgId + '"');
 
 		ZCS.cache.set(orgId, this);
 		if (data.zcsId && data.zcsId !== orgId) {

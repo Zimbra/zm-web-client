@@ -77,15 +77,10 @@ Ext.define('ZCS.view.ux.ZtIframe', {
             position = component.element.getBox(),
             doc = this.getDoc(),
             theWin = window,
-            frozenY = null,
-            lastPageX = null,
-            lastPageY = null,
-            xDifferential = null,
-            yDifferential = null,
             mouseButtonDown = false,
             //Convert coordinates in the touch objects to be coordinates for this window
             //and not the iframe
-            touchProcessor = function (touches, newTarget, changeId, freezeY) {
+            touchProcessor = function (touches, newTarget, changeId) {
                 var i,
                     oldTouch,
                     numTouches = touches.length,
@@ -118,7 +113,7 @@ Ext.define('ZCS.view.ux.ZtIframe', {
                         pageX = oldTouch.screenX;
                     }
 
-                    pageY = freezeY ? frozenY : oldTouch.screenY;
+                    pageY = oldTouch.screenY;
 
                     //definition of page, client, screen found here: http://www.w3.org/TR/2011/WD-touch-events-20110505/
                     //since we're in an iframe, pageY needs to be the whole scroll of the list, not just the scoll of the iframe.
@@ -144,7 +139,7 @@ Ext.define('ZCS.view.ux.ZtIframe', {
 
                 return window.document.createTouchList.apply(window.document, newTouches);
             },
-            cloneMouseEvent = function (ev, target, changeId, freezeY) {
+            cloneMouseEvent = function (ev, target, changeId) {
                 position = component.element.getBox();
 
                 var clonedEvent = document.createEvent('MouseEvent'),
@@ -160,22 +155,6 @@ Ext.define('ZCS.view.ux.ZtIframe', {
                 eventPageX = ev.screenX + position.left;
                 eventScreenY = undefined;
                 eventPageY = ev.screenY;
-
-                // //Touch end events only have updated coordinates in the changedTouches
-                // //not on the touch event itself.
-                // if (ev.type === 'touchend') {
-                //     eventPageX = 0;
-                //     eventPageY = 0;
-                // }
-
-                if (freezeY && ev.type === 'mousedown') {
-                    frozenY = eventPageY;
-                }
-
-                if (freezeY) {
-                    eventScreenY = frozenY;
-                    eventPageY = frozenY;
-                }
 
                 clonedEvent.initMouseEvent(
                     ev.type, //type, The type of event that occurred.
@@ -199,7 +178,7 @@ Ext.define('ZCS.view.ux.ZtIframe', {
                 clonedEvent.actionTarget = ev.target;
                 return clonedEvent;
             },
-            cloneTouchEvent = function (ev, target, changeId, freezeY) {
+            cloneTouchEvent = function (ev, target, changeId) {
 
                 position = component.element.getBox();
                 // This function is based on Apple's implementation, it may differ in other touch based browsers.
@@ -236,23 +215,13 @@ Ext.define('ZCS.view.ux.ZtIframe', {
                 }
 
 
-                        //<debug>
+                //<debug>
                 Ext.Logger.iframe('PageY' + eventPageY);
                 //</debug>
 
-
-                if (freezeY && ev.type === 'touchstart') {
-                    frozenY = eventPageY;
-                }
-
-                if (freezeY) {
-                    eventScreenY = frozenY;
-                    eventPageY = frozenY;
-                }
-
-                touches = touchProcessor(ev.touches, target, changeId, freezeY);
-                targetTouches = touchProcessor(ev.targetTouches, target, changeId, freezeY);
-                changedTouches = touchProcessor(ev.changedTouches, target, changeId, freezeY);
+                touches = touchProcessor(ev.touches, target, changeId);
+                targetTouches = touchProcessor(ev.targetTouches, target, changeId);
+                changedTouches = touchProcessor(ev.changedTouches, target, changeId);
 
                 /*
                     The arguments are different for IOS and Android for the initTouchEvent function
@@ -402,24 +371,9 @@ Ext.define('ZCS.view.ux.ZtIframe', {
                         component.fireEvent('inviteReply', idParams.msgId, idParams.action);
                     }
 
-                    //If the delegation occurred succesfully, do the rest of the processing.
-                    //It might fail if an anchor is encountered.
-                    if (delegateEvent(ev)) {
+                    delegateEvent(ev);
 
-                        if (isEndingEvent) {
-                            lastPageX = 0;
-                            lastPageY = 0;
-                            //<debug>
-                            Ext.Logger.iframe("Touch end");
-                            //</debug>
-                        }
-
-                        //Cache these for the next time the handler is called.
-                        lastPageY = ev.pageY;
-                        lastPageX = ev.pageX;
-
-                    }
-
+                    // Don't let the iframe move - only let the parent list scroll
                     ev.preventDefault();
                     return false;
 
@@ -480,11 +434,10 @@ Ext.define('ZCS.view.ux.ZtIframe', {
      * are 150px high.
      */
     resizeToContent: function(callback) {
-
         var doc = this.getDoc();
-	    if (!doc) {
-		    return;
-	    }
+        if (!doc) {
+            return;
+        }
 
         var body = this.getBody(),
             docEl = doc.documentElement,

@@ -503,7 +503,7 @@ Ext.define('ZCS.common.ZtUserSession', {
 	 */
 	loadCss: function() {
 		Ext.Ajax.request({
-			url: '/t/resources/css/msgbody.css',
+			url: 'resources/css/msgbody.css',
 			async: false,
 			success: function(response) {
 				ZCS.session.msgBodyCss = response.responseText

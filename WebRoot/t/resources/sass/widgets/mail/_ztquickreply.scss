@@ -9,21 +9,31 @@
 
 .zcs-quick-reply {
 	background-color: $light-grey;
-	border-top: 1px solid darken($light-grey,15%);
 	padding: .25em;
 
 	.x-form-fieldset {
 		margin: 0;
 
 		.x-form-fieldset-inner {
-			@extend .no-right-round;
-			border: 1px solid;
-			border-color: rgba(0,0,0,.6) rgba(0,0,0,0) rgba(0,0,0,.2) rgba(0,0,0,.5);
+			background: transparent;
+			border: $default-border;
+			border-radius: $default-textarea-radius;
+			&.x-inner {
+				@extend .no-right-round;
+			}
+
+			.x-field-input {
+				border: none;
+				border-radius: 0;
+			}
 		}
 	}
 
 	.x-button {
+		border-color: $default-border-color;
 		@extend .no-left-round;
 		font-size: .9em;
+		height: auto;
+		border-left: none;
 	}
 }

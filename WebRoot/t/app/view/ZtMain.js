@@ -2,12 +2,12 @@
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2012, 2013 Zimbra Software, LLC.
- * 
+ *
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
@@ -20,28 +20,29 @@
  */
 Ext.define("ZCS.view.ZtMain", {
 
-    extend: 'Ext.TabPanel',
+	extend: 'Ext.TabPanel',
 
 	requires: [
+		'ZCS.view.mail.ZtComposeForm',
 		'ZCS.view.ZtAppView'
 	],
 
 	alias: 'widget.ztmain',
 
-    config: {
-	    fullscreen: true,
-        tabBarPosition: 'top',
-        cls: 'zcs-main-tabs',
-        ui: 'dark',
-	    defaults: {
-		    styleHtmlContent: true
-	    },
-	    layout: {
-		    animation: {
-			    type: 'fade'
-		    }
-	    }
-    },
+	config: {
+		fullscreen: true,
+		tabBarPosition: 'top',
+		cls: 'zcs-main-tabs',
+		ui: 'dark',
+		defaults: {
+			styleHtmlContent: true
+		},
+		layout: {
+			animation: {
+				type: 'fade'
+			}
+		}
+	},
 
 	initialize: function() {
 		var numTabs = 0;
@@ -73,7 +74,7 @@ Ext.define("ZCS.view.ZtMain", {
 			},
 			{
 				xtype: 'component',
-                cls: 'zcs-banner-image'
+				cls: 'zcs-banner-image'
 			},
 			{
 				xtype: 'button',
@@ -84,5 +85,8 @@ Ext.define("ZCS.view.ZtMain", {
 				iconCls: 'settings'
 			}
 		]);
+
+		Ext.Viewport.add(Ext.create('ZCS.view.mail.ZtComposeForm'));
+		Ext.Viewport.add(Ext.create('ZCS.view.contacts.ZtContactForm'));
 	}
 });

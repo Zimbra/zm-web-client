@@ -2,12 +2,12 @@
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2012, 2013 Zimbra Software, LLC.
- * 
+ *
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
@@ -37,7 +37,8 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 			itemPanel:          'appview #' + ZCS.constant.APP_MAIL + 'itempanel',
 			msgListView:        ZCS.constant.APP_MAIL + 'itemview',
 			quickReply:         '#quickReply',
-			quickReplyTextarea: '#quickReply textareafield'
+			quickReplyTextarea: '#quickReply textareafield',
+			convActionsMenu: 'list[itemId=convActionsMenu]'
 		},
 
 		control: {
@@ -56,16 +57,10 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 			msgListView: {
 				messageSwipeRight:   'doGoBackOneConversation',
 				messageSwipeLeft:   'doGoForwardOneConversation'
+			},
+			convActionsMenu: {
+				itemtap: 'onMenuItemSelect'
 			}
-		},
-
-		menuConfigs: {
-			convActions: [
-				{ label: ZtMsg.convMarkRead,    action: ZCS.constant.OP_MARK_READ,  listener: 'doMarkRead' },
-				{ label: ZtMsg.convFlag,        action: ZCS.constant.OP_FLAG,       listener: 'doFlag' },
-				{ label: ZtMsg.convMove,        action: ZCS.constant.OP_MOVE,       listener: 'doMove' },
-				{ label: ZtMsg.convTag,         action: ZCS.constant.OP_TAG,        listener: 'doTag' }
-			]
 		},
 
 		// Flag to turn handling of 'updatedata' event within ZtMsgView on and off
@@ -148,11 +143,12 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 
 	navigateToAdjacentConversation: function (indexIncrement) {
 		var conversationStore = ZCS.app.getConvListController().getStore(),
+            conversationList = ZCS.app.getConvListController().getListView(),
 			conversationIndex = conversationStore.indexOf(this.currentConversation),
 			adjacentConversation = conversationStore.getAt(conversationIndex + indexIncrement);
-		
+
 		if (adjacentConversation) {
-			this.showItem(adjacentConversation);
+            conversationList.select(adjacentConversation, false, false);
 		}
 	},
 
@@ -196,7 +192,7 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 
 		//Reset the translation on this list -- in the touch world, scrolling is done
 		//by using translate3d.  In Sencha's implementation, there is a scroller object (Ext.scroll.Scroller)
-		//and an underlying translation provider.  There appears to be a bug with the list 
+		//and an underlying translation provider.  There appears to be a bug with the list
 		//in that if you fire a refresh event on the list, and you have its scrollToTopOnRefresh
 		//property set to true, it will tell the Scroller object to scroll, but if the translation
 		//object has an old y value, that never gets reset by the scroller.
@@ -641,9 +637,16 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 		var activeMsg = this.getActiveMsg(),
 			fromAddr = activeMsg && activeMsg.getAddressByType(ZCS.constant.FROM),
 			fromName = Ext.String.htmlEncode(fromAddr && fromAddr.get('longName')),
-			placeholder = fromName && Ext.String.format(ZtMsg.quickReplyPlaceholder, fromName);
+			textAreaWidth = this.getQuickReplyTextarea().element.getWidth(),
+			placeholder;
 
-		return placeholder || '';
+		if (textAreaWidth > 450 && fromName) {
+			placeholder = Ext.String.format(ZtMsg.quickReplyPlaceholder, fromName);
+		} else {
+			placeholder = ZtMsg.quickReplyPlaceholderShort;
+		}
+
+		return placeholder;
 	},
 
 	/**

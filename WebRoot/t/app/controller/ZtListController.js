@@ -209,8 +209,7 @@ Ext.define('ZCS.controller.ZtListController', {
 				//make sure this element doesn't get focus due to an errant touch
 				this.getSearchBox().blur();
 			}
-		}
-		else {
+		} else {
 			//<debug>
 			Ext.Logger.info('Parameters not present in storeLoaded');
 	        //</debug>

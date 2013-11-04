@@ -2,12 +2,12 @@
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2013 Zimbra Software, LLC.
- * 
+ *
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
@@ -17,7 +17,7 @@
  * This class is a sheet which present a view to the user that allows them
  * to assign some model on the left to the configured message on the right.
  * It takes the display of the message component and highlights it on the right.
- *	
+ *
  * @author Macy Abbey
  */
 Ext.define('ZCS.view.ux.ZtAssignmentView', {
@@ -91,7 +91,6 @@ Ext.define('ZCS.view.ux.ZtAssignmentView', {
 		animatedComponent: null,
 
 		app: null
-
 	},
 
 	constructor: function (cfg) {
@@ -100,46 +99,58 @@ Ext.define('ZCS.view.ux.ZtAssignmentView', {
 		cfg.cls = 'zcs-sheet';
 		cfg.style = "visibility:hidden; position:absolute; padding:0;";
 
-		cfg.items = [{
-			xtype: 'panel',
-			layout: 'fit',
-			width: '30%',
-			cls: 'zcs-assignment-panel',
-			items: []
-		}, {
-			xtype: 'panel',
-			ui: 'light',
-			cls: 'zcs-preview-panel',
-			flex: 1,
-			padding: '0 1em',
-			layout: {
-				type: 'vbox',
-				align: 'stretch'
-			},
-			items: [{
-				xtype: 'component',
-				flex: 1
+		me.isPhone = Ext.os.deviceType === "Phone";
+
+		if (me.isPhone) {
+			cfg.items = [{
+				xtype: 'panel',
+				layout: 'fit',
+				width: '100%',
+				cls: 'zcs-assignment-panel',
+				items: []
+			}];
+		} else {
+			cfg.items = [{
+				xtype: 'panel',
+				layout: 'fit',
+				width: '30%',
+				cls: 'zcs-assignment-panel',
+				items: []
 			}, {
-				xtype: 'component',
-				itemId: 'animationTarget',
-				flex: 1.5
-			}, {
-				xtype: 'component',
-				flex: 1
-			}, {
-				docked: 'top',
-				xtype: 'toolbar',
-				items: [
-					{xtype: 'spacer'}, {
-					xtype: 'button',
-					ui: 'neutral',
-					text: 'Cancel',
-					handler: function () {
-						this.up('.assignmentview').onClose();
-					}
+				xtype: 'panel',
+				ui: 'light',
+				cls: 'zcs-preview-panel',
+				flex: 1,
+				padding: '0 1em',
+				layout: {
+					type: 'vbox',
+					align: 'stretch'
+				},
+				items: [{
+					xtype: 'component',
+					flex: 1
+				}, {
+					xtype: 'component',
+					itemId: 'animationTarget',
+					flex: 1.5
+				}, {
+					xtype: 'component',
+					flex: 1
+				}, {
+					docked: 'top',
+					xtype: 'toolbar',
+					items: [
+						{xtype: 'spacer'}, {
+						xtype: 'button',
+						ui: 'neutral',
+						text: 'Cancel',
+						handler: function () {
+							this.up('.assignmentview').onClose();
+						}
+					}]
 				}]
-			}]
-		}];
+			}];
+		}
 
 		//Don't add another toolbar if the list has its own header
 		if (!cfg.listHasOwnHeader) {
@@ -195,18 +206,20 @@ Ext.define('ZCS.view.ux.ZtAssignmentView', {
 		this.show();
 
 		var fromBox = this.getAnimatedComponent().element.getPageBox(),
-			targetBox = this.down('#animationTarget').element.getPageBox(),	
+			targetBox = this.down('#animationTarget').element.getPageBox(),
 			appDimensions = newDimensions[ZCS.session.getActiveApp()];
 
 		//TODO - determine how to make the dimensions to use generic.
 
 		this.originalDimensions = appDimensions.itemPanel;
 
-		this.getAnimatedComponent().setWidth(targetBox.width);
-		this.getAnimatedComponent().setHeight(targetBox.height);
-		this.getAnimatedComponent().setLeft(targetBox.left);
-		this.getAnimatedComponent().setTop(targetBox.top);
-		this.getAnimatedComponent().show();
+		if (!this.isPhone) {
+			this.getAnimatedComponent().setWidth(targetBox.width);
+			this.getAnimatedComponent().setHeight(targetBox.height);
+			this.getAnimatedComponent().setLeft(targetBox.left);
+			this.getAnimatedComponent().setTop(targetBox.top);
+			this.getAnimatedComponent().show();
+		}
 	},
 
 	/**
@@ -230,43 +243,56 @@ Ext.define('ZCS.view.ux.ZtAssignmentView', {
 
 		var sheet = this;
 
-		this.popComponentOutOfContainer(component);
-		var fromBox = component.element.getPageBox();
+		if (!this.isPhone) {
+			this.popComponentOutOfContainer(component);
+			var fromBox = component.element.getPageBox();
+		}
+
 		this.setupThisSheet();
 
-		var targetBox = this.down('#animationTarget').element.getPageBox(),
-			anim = Ext.create('Ext.Anim');
+		if (!this.isPhone) {
+			var targetBox = this.down('#animationTarget').element.getPageBox(),
+				anim = Ext.create('Ext.Anim');
 
-		component.setHidden(true);
+			component.setHidden(true);
 
-		component._hidden = true;
+			component._hidden = true;
 
-		//Pertinent doc, Ext.fx.animation.Abstract
-		component.show({
-			from: {
-				top: fromBox.top,
-				left: fromBox.left,
-				width: fromBox.width,
-				height: fromBox.height
-			},
-			to: {
-				top: targetBox.top,
-				left: targetBox.left,
-				width: targetBox.width,
-				height: Math.min(targetBox.height, contentHeight)
-			},
-			preserveEndState: true,
-			onEnd: function () {
+			component.on('show', function() {
 				sheet.setVisibility(true);
 				component.setZIndex(sheet.getZIndex() + 1);
 				if (sheet.getOnTransitionComplete()) {
 					sheet.getOnTransitionComplete()();
 				}
-			},
-			duration: 750
-		});
+			}, this, { single: true });
 
-		this.setAnimatedComponent(component);
+			//Pertinent doc, Ext.fx.animation.Abstract
+			component.show({
+				from: {
+					top: fromBox.top,
+					left: fromBox.left,
+					width: fromBox.width,
+					height: fromBox.height
+				},
+				to: {
+					top: targetBox.top,
+					left: targetBox.left,
+					width: targetBox.width,
+					height: Math.min(targetBox.height, contentHeight)
+				},
+				preserveEndState: true,
+				duration: 750
+			});
+
+			this.setAnimatedComponent(component);
+		} else {
+			sheet.setVisibility(true);
+			component.setZIndex(sheet.getZIndex() + 1);
+			if (sheet.getOnTransitionComplete()) {
+				sheet.getOnTransitionComplete()();
+			}
+		}
+
 	},
 
 	popComponentOutOfContainer: function (component) {
@@ -350,19 +376,21 @@ Ext.define('ZCS.view.ux.ZtAssignmentView', {
 	},
 
 	onClose: function () {
-		this.shiftedComponent.floating = false;
-		this.updateComponentBox(this.shiftedComponent, this.originalDimensions);
+		if (!this.isPhone) {
+			this.shiftedComponent.floating = false;
+			this.updateComponentBox(this.shiftedComponent, this.originalDimensions);
 
-		this.shiftedComponent.element.applyStyles({
-			position: 'relative',
-			left: this.originalDimensions.left,
-			top: this.originalDimensions.top,
-			height: this.originalDimensions.height,
-			width: this.originalDimensions.width,
-			"font-size": "1em"
-		});
+			this.shiftedComponent.element.applyStyles({
+				position: 'relative',
+				left: this.originalDimensions.left,
+				top: this.originalDimensions.top,
+				height: this.originalDimensions.height,
+				width: this.originalDimensions.width,
+				"font-size": "1em"
+			});
 
-		this.originalParent.add(this.shiftedComponent);
+			this.originalParent.add(this.shiftedComponent);
+		}
 
 		this.setVisibility(false);
 

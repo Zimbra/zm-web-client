@@ -18,7 +18,11 @@
     }
 
     .x-button-icon.x-icon-mask {
-      @include mask-by-background($bg-color);
+      @if (lightness($bg-color) > 50) {
+        @include background-gradient(darken($bg-color, 100%), $base-gradient);
+      } @else {
+        @include background-gradient(lighten($bg-color, 100%), $base-gradient);
+      }
     }
 
     &.x-button-pressing, &.x-button-pressed, &.x-button-active {
@@ -32,6 +36,10 @@
 
 .zcs-main-tabs {
 	@include tabbar-button(darken($toolbar-base-color, 5%), $toolbar-gradient);
+
+  .x-tabbar.x-docked-top {
+    border: none;
+  }
 
 	.settings {
 		color: #E5E5E5;

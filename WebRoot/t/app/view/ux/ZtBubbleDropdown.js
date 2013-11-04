@@ -2,12 +2,12 @@
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2013 Zimbra Software, LLC.
- * 
+ *
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
@@ -85,16 +85,18 @@ Ext.define('ZCS.view.ux.ZtBubbleDropdown', {
 			 * Setup the menu that will be used to display options after
 			 * the user inputs some search text.
 			 */
-			painted: function () {
-				this.menu = Ext.create('ZCS.common.ZtMenu', {
-					referenceComponent: this.getInput(),
-					modal: true,
-					hideOnMaskTap: true,
-					maxHeight: 400,
-					width: this.getMenuWidth()
-				});
-
+			initialize: function () {
 				this.showMenu = Ext.Function.createBuffered(function (value) {
+
+					if (!this.menu) {
+						this.menu = Ext.create('ZCS.common.ZtMenu', {
+							modal: true,
+							hideOnMaskTap: true,
+							maxHeight: 400,
+							width: this.getMenuWidth()
+						});
+					}
+
 					var ipadLandscapeKeyboardHeight = 352,
 						ipadPortraitKeyboardHeight = 264,
 						prevNextBarHeight = 65,
@@ -109,7 +111,9 @@ Ext.define('ZCS.view.ux.ZtBubbleDropdown', {
 					//Unfortunately, there does not appear to be a programmatic way to get the height of the
 					//current virtual keyboard so we are left with this, which is not cross-OS and seems a bit
 					//brittle.
-					if (isLandscape) {
+					if (Ext.os.deviceType === "Desktop") {
+						keyboardHeight = 0;
+					} else if (isLandscape) {
 						keyboardHeight = ipadLandscapeKeyboardHeight + prevNextBarHeight;
 					} else {
 						keyboardHeight = ipadPortraitKeyboardHeight + prevNextBarHeight;
@@ -181,14 +185,12 @@ Ext.define('ZCS.view.ux.ZtBubbleDropdown', {
 	 * Retrieve menu items based on the current menu store.
 	 */
 	getMenuItems: function () {
-
 		var menuRecords = [],
 			me = this,
 			label,
 			tpl = this.getMenuItemTpl() ? new Ext.XTemplate(this.getMenuItemTpl()) : null;
 
 		this.getMenuStore().each(function (record) {
-
 			if (tpl) {
 				var name = record.get('longName'),
 					email = record.get('email');
@@ -207,22 +209,12 @@ Ext.define('ZCS.view.ux.ZtBubbleDropdown', {
 				}
 			}
 
-			var gotGroupMembers = groupMembers && groupMembers.length > 0;
-			if (label || gotGroupMembers) {
-				menuRecords.push({
-					label: label,
-					listener: function () {
-						me.clearInput();
-	                    if (gotGroupMembers) {
-	                        me.addBubbles(groupMembers);
-	                    } else {
-	                        me.addBubble(record);
-	                    }
-	                    me.getInput().dom.value = '';
-						me.focusInput();
-					}
-				});
-			}
+			menuRecords.push({
+				label: label,
+				isGroup: isGroup,
+				groupMembers: groupMembers,
+				emailRecord: record
+			});
 		});
 
 		//Only return the number specified in the config and no more.
@@ -235,14 +227,41 @@ Ext.define('ZCS.view.ux.ZtBubbleDropdown', {
 	 * Shows the menu ui element with the contents of the menu store.
 	 */
 	loadMenuFromStore: function () {
-		var menuItems;
+		var menuItems,
+			menu = this.menu,
+			store = menu.getStore();
 
 		if (this.getMenuStore().getCount() > 0) {
 			menuItems = this.getMenuItems();
-			this.menu.setMenuItems(menuItems);
-			this.menu.popup('tc-bc?');
+			if (store) {
+				store.suspendEvents();
+				store.removeAll();
+				store.resumeEvents();
+			}
+			menu.setData(menuItems);
+			menu.on('itemtap', this.handleMenuItemTap, this);
+			menu.popup(this.getInput(), 'tc-bc?');
 		} else {
-			this.menu.hide();
+			menu.hide();
 		}
+	},
+
+	handleMenuItemTap: function (list, index, target, record) {
+		var me = this,
+			isGroup = record.get('isGroup'),
+			groupMembers = record.get('groupMembers'),
+			gotGroupMembers = groupMembers && groupMembers.length > 0,
+			emailRecord = record.get('emailRecord');
+
+		me.clearInput();
+		 if (gotGroupMembers) {
+            me.addBubbles(groupMembers);
+        } else {
+            me.addBubble(emailRecord);
+        }
+
+		me.getInput().dom.value = '';
+		me.focusInput();
+		list.hide();
 	}
 });

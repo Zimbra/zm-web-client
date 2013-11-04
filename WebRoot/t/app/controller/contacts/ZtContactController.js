@@ -2,12 +2,12 @@
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2013 Zimbra Software, LLC.
- * 
+ *
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
@@ -32,6 +32,7 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
 			// event handlers
 			itemPanelToolbar:   'appview #' + ZCS.constant.APP_CONTACTS + 'itempanel titlebar',
 			itemPanel:          'appview #' + ZCS.constant.APP_CONTACTS + 'itempanel',
+			contactActionsMenu: 'list[itemId=contactActionsMenu]',
 
 			// other
 			contactView:    ZCS.constant.APP_CONTACTS + 'itemview',
@@ -55,21 +56,12 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
 		        contactAssignment: 'saveItemTag'
 	        },
 	        contactView: {
-		        tagTap:     'doShowMenu'
-	        }
+		        tagTap:     'showMenu'
+	        },
+            contactActionsMenu: {
+                itemtap:    'onMenuItemSelect'
+            }
         },
-
-		menuConfigs: {
-			contactActions: [
-				{ label: ZtMsg.move,        action: ZCS.constant.OP_MOVE,       listener: 'doMove' },
-				{ label: ZtMsg.tag,         action: ZCS.constant.OP_TAG,        listener: 'doTag' },
-				{ label: ZtMsg.del,         action: ZCS.constant.OP_DELETE,     listener: 'doDelete' }
-			],
-
-			tagActions: [
-				{ label: ZtMsg.removeTag, action: ZCS.constant.OP_REMOVE_TAG, listener: 'doRemoveTag' }
-			]
-		},
 
 		composeMode:    null,
 		app:            ZCS.constant.APP_CONTACTS
@@ -146,7 +138,7 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
 	 * @param {String}      mode        ZCS.constant.OP_COMPOSE or ZCS.constant.OP_EDIT
 	 * @param {ZtContact}   contact     contact used to fill in form fields (optional)
      */
-    showContactForm: function(mode, contact) {
+	showContactForm: function(mode, contact) {
 
 		var me = this,
 			panel = this.getContactPanel(),
@@ -154,7 +146,6 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
 			isEdit = (mode === ZCS.constant.OP_EDIT);
 
 		this.setComposeMode(mode);
-		panel.resetForm();
 
 		// Set the title of the form
 		panel.down('titlebar').setTitle(isEdit ? ZtMsg.editContact : ZtMsg.createContact);
@@ -164,30 +155,46 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
 			this.populateForm(contact);
 		}
 
-        panel.show({
-            type:       'slide',
-            direction:  'up',
-            duration:   250
-        });
-    },
+		me.unhideContactForm();
+	},
 
- 	/**
-     * Hides the contact form.
-     */
-    hideContactForm: function() {
-        var panel = this.getContactPanel();
+	unhideContactForm: function () {
+		if (Ext.os.deviceType === "Phone") {
+			this.getContactPanel().element.dom.style.removeProperty('display');
+		} else {
+			this.getContactPanel().show({
+				type: 'fadeIn',
+				duration: 250
+			});
+		}
+	},
+
+	/**
+	 * Hides the contact form.
+	 */
+	hideContactForm: function() {
+		var panel = this.getContactPanel();
+
+		if (Ext.os.deviceType === "Phone") {
+			panel.element.dom.style.setProperty('display', 'none');
+		} else {
+			panel.hide({
+				type: 'fadeOut',
+				duration: 250
+			});
+		}
+
 		panel.resetForm();
-		panel.hide();
 		this.setComposeMode(null);
-    },
+	},
 
 	/**
 	 * Moves the contact to Trash, or deletes it if it's already in Trash.
 	 */
-	doDelete: function(contact) {
+	doDelete: function() {
 
-        contact = contact || this.getItem();
-        var folderId, toastMsg, op;
+        var contact = this.getItem(),
+            folderId, toastMsg, op;
 
         if (contact.get('folderId') === ZCS.constant.ID_TRASH) {
             op = 'delete';
@@ -332,16 +339,6 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
 			}
 		}
 	},
-
-    getContactPanel: function() {
-
-        if (!this.contactPanel) {
-            this.contactPanel = Ext.create('ZCS.view.contacts.ZtContactForm');
-            Ext.Viewport.add(this.contactPanel);
-        }
-
-        return this.contactPanel;
-    },
 
     modifyContact: function(newContact, changedAttrs) {
 
@@ -570,17 +567,5 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
 	 */
 	saveItemTag: function (tag, item) {
 		this.tagItem(item, tag.get('name'), false);
-	},
-
-	doShowMenu: function(menuButton, params) {
-
-		this.callParent(arguments);
-
-		var menuName = params.menuName,
-			menu = this.getMenu(menuName);
-
-		if (menu && params.tagName) {
-			menu.setArgs(ZCS.constant.OP_REMOVE_TAG, [ params.tagName ]);
-		}
 	}
 });

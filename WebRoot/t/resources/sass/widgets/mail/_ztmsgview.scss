@@ -2,38 +2,48 @@
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2013 Zimbra Software, LLC.
- * 
+ *
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
  */
-$msgBkgdColor: $white;
 
 .zcs-item-panel {
-	background-color: darken($msgBkgdColor, 10%);
 
 	.zcs-msgview {
 		background-color: transparent;
 		padding: .5em;
 
+		.x-dock {
+			border: none;
+		}
+
+		&.x-list-item:last-child {
+			border: none;
+		}
+
 		.x-list-item-inner {
-			background-color: $msgBkgdColor;
-			border: 1px solid darken($msgBkgdColor, 25%);
+			background-color: $msg-bg-color;
+			border: none;
+			border-radius: 5px;
 		}
 	}
 }
 
 .zcs-conv-title-bar {
 	background-color: $list-bg-color;
-	font-size:1.6em;
-	line-height:1.4em;
-	padding-top: 0.3em;
+	padding-top: 0.6em;
 	padding-left: 0.6em;
+	padding-right: 0.6em;
+}
+
+.zcs-msglist {
+	background-color: $list-bg-color;
 }
 
 /* BEGIN MSG HEADER */
@@ -50,12 +60,24 @@ $msgHdrDetailToggle: 6.5em;  /* width set for english text */
 
 $msgHdrTopOffset: $msgHdrStdMargin;
 $msgHdrTopOffset2: $msgHdrTextSize * 2.3 + $msgHdrTopOffset;
+$msgHdrTopOffset3: $msgHdrTextSize * 4 + $msgHdrTopOffset;
 $msgHdrButtonDelta: $msgHdrImageSize - $msgHdrButtonSize;
 $msgHdrButtonTopOffset: $msgHdrButtonDelta;
 
 .zcs-mail-msgHdr {
 	min-height: $msgHdrTextSize*5;
 	position: relative;
+}
+
+.x-portrait .zcs-mail-msgHdr.detailed {
+	min-height: $msgHdrTextSize*6;
+
+	.zcs-msgHdr-date {
+		text-align: left;
+		top: $msgHdrTopOffset3;
+		left: $msgHdrLeftIndent+$msgHdrStdMargin;
+	}
+
 }
 
 .zcs-msgHdr-element {
@@ -182,8 +204,8 @@ $msgHdrButtonTopOffset: $msgHdrButtonDelta;
 }
 
 .zcs-msg-body-text {
-	font-size: 1em;
-	font-family: sans-serif;
+	font-size: 1.1em;
+	font-family: monospace;
 	word-wrap: break-word;
 	-webkit-user-select: text;
 }
@@ -233,11 +255,11 @@ $infoColor: #FF9;
 $attachTextColor: #333;
 
 .zcs-attachments {
-	line-height: 2.2em;
+	line-height: 1.8em;
 	margin-bottom: 1.5em;
 
 	.zcs-attachment-bubble {
-		color: $attachTextColor;
+		color: $base-color;
 
 		DIV {
 			margin-right: .5em;
@@ -247,10 +269,6 @@ $attachTextColor: #333;
 		A:link, A:visited {
 			color: $attachTextColor;
 			text-decoration: none;
-		}
-
-		SPAN {
-			font-weight: normal;
 		}
 	}
 }

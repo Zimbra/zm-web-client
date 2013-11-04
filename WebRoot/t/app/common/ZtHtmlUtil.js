@@ -2,12 +2,12 @@
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2013 Zimbra Software, LLC.
- * 
+ *
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
@@ -278,5 +278,142 @@ Ext.define('ZCS.common.ZtHtmlUtil', {
 		}
 
 		return html;
+	},
+
+	/**
+	 * Goes through the message DOM looking for images to fix, including those that are used
+	 * as background images (usually in BODY or TD). Internal images will get their URLs set
+	 * to grab a part from the server. External images will be hidden or shown based on a user
+	 * setting.
+	 *
+	 * @param {ZtMailMsg}       msg                     msg being displayed
+	 * @param {Element}         containerEl             top-level element of DOM
+	 * @param {boolean}         hideExternalImages      if true, hide external images
+	 *
+	 * @return {Array}    list of hidden images
+	 */
+	fixImages: function(msg, containerEl, hideExternalImages, onLoadHandler) {
+
+		if (!containerEl) {
+			return [];
+		}
+
+		var	els = containerEl.getElementsByTagName('*'),
+			ln = els.length,
+			html = containerEl.innerHTML,
+			checkBackground = (html.indexOf('dfbackground') !== -1) ||
+			                  (html.indexOf('pnbackground') !== -1),
+			hiddenImages = [],
+			onloadHandler,
+			fixedBackground = false;
+
+		for (var i = 0; i < ln; i++) {
+
+			var el = els[i],
+				nodeName = el.nodeName.toLowerCase(),
+				isImg = (nodeName === 'img');
+
+			if ((isImg && this.fixImage(msg, el, 'src', hideExternalImages, onLoadHandler)) ||
+				(checkBackground && this.fixImage(msg, el, 'background', hideExternalImages, onLoadHandler))) {
+
+				hiddenImages.push(el);
+				if (!isImg) {
+					fixedBackground = true;
+				}
+			}
+		}
+
+		if (fixedBackground) {
+            //<debug>
+			Ext.Logger.image('Background handled, resize on timer');
+            //</debug>
+			Ext.defer(onLoadHandler, 500, this.iframe);
+		}
+
+		return hiddenImages;
+	},
+
+	/**
+	 * Rewrites the src reference for internal images so that they display, and optionally
+	 * does the same for external images. Internal images will have 'cid', 'doc', and 'pnsrc'
+	 * converted to a URL with a part value that can be used to fetch the image from our
+	 * server. The part value is taken from the message's MIME parts.
+	 *
+	 * @param {ZmMailMsg}	msg			        mail message
+	 * @param {Element}		el		            element to be checked (img)
+	 * @param {string}		attr		        attribute name
+	 * @param {boolean}     hideExternalImages  if true, replace external image with placeholder
+	 *
+	 * @return	true if the image is external and was replaced
+	 */
+	fixImage: function(msg, el, attr, hideExternalImages, onloadHandler) {
+
+		var dfAttr = 'df' + attr,
+			pnAttr = 'pn' + attr,
+			baseValue, dfValue, pnValue, value,
+			imgChanged = false,
+			me = this;
+
+		try {
+			baseValue = el.getAttribute(attr);
+			dfValue = el.getAttribute(dfAttr);
+			pnValue = el.getAttribute(pnAttr);
+		}
+		catch(e) {
+            //<debug>
+			Ext.Logger.warn('ZtMsgBody.restoreImages: exception accessing base attribute ' + attr + ' in ' + el.nodeName);
+            //</debug>
+		}
+
+		value = baseValue || dfValue || pnValue;
+
+		if (value) {
+			if (value.indexOf('cid:') === 0) {
+				// image came as a related part keyed by Content-ID
+				var cid = '<' + decodeURIComponent(value.substr(4)) + '>';
+				value = msg.getPartUrlByField('contentId', cid, 'foundInMsgBody');
+				if (value) {
+					el.setAttribute(attr, value);
+					imgChanged = true;
+				}
+			}
+			else if (value.indexOf('doc:') === 0) {
+				// image is in Briefcase
+				value = [ZCS.session.getSetting(ZCS.constant.SETTING_REST_URL), '/', value.substring(4)].join('');
+				if (value) {
+					el.setAttribute(attr, value);
+					imgChanged = true;
+				}
+			}
+			else if (pnValue) {
+				// image came as a related part keyed by Content-Location
+				value = msg.getPartUrlByField('contentLocation', value, 'foundInMsgBody');
+				if (value) {
+					el.setAttribute(attr, value);
+					imgChanged = true;
+				}
+			}
+			else if (dfValue) {
+				if (hideExternalImages) {
+					if (attr === 'src') {
+						el.src = '/img/zimbra/1x1-trans.png';
+					}
+					return true;
+				}
+				else {
+					el.src = dfValue;
+					imgChanged = true;
+				}
+			}
+			else if (value.indexOf('data:') === 0) {
+			}
+		}
+
+		if (imgChanged && onloadHandler) {
+			el.onload = Ext.Function.bind(onloadHandler, null, [me, el]);
+			ZCS.view.mail.ZtMsgBody.numImgsToLoad += 1;
+		}
+
+		return false;
 	}
 });
