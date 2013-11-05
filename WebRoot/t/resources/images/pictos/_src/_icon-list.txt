@@ -1,0 +1,27 @@
+Name		Glyph				Letter
+-------------------------------------------------------
+Settings	gear				S
+Organizer	3 lines	stacked vertically	O
+Compose		pencil in box			C
+Edit		pencil				E
+Reply		arrow to left			R
+Reply-All	2 arrows to left		A
+Forward		arrow to right			F
+Trash		trashcan			T
+Expanded	down-facing triangle		x
+Collapsed	right-facing triangle		c
+Disclosure	triangle to right in circle	D
+Add		addition sign			a
+Remove		subtraction sign		d
+Tag		tag				t
+Menu-Android	3 boxes stacked vertically	G
+Menu-iOS	3 circles stacked horizontally	I
+Apps		grid of 9 boxes			P
+Back		left-facing chevron		<
+Search*		magnifying glass		s
+Mail*		envelope			M
+Contacts*	2 human torsos			N
+Calendar*	month calendar page		L
+Sign Out*	right-facing arrow		o
+
+* - no local svg file
