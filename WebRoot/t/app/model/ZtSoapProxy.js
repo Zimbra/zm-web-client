@@ -29,9 +29,9 @@ Ext.define('ZCS.model.ZtSoapProxy', {
 	 * that we only do this once.
 	 */
 	doRequest: function(operation, callback, scope) {
+
 		var me = this,
 			inlineResults = ZCS.session.getInitialSearchResults();
-
 
 		if (inlineResults) {
 
@@ -150,8 +150,8 @@ Ext.define('ZCS.model.ZtSoapProxy', {
 
 		if (refresh) {
 			ZCS.app.getMainController().sendPoll();
+			ZCS.app.fireEvent('notifyRefresh');
 		}
-		// TODO: notify each app (so mail can re-run search)
 	},
 
 	handleNotifications: function(notifications) {

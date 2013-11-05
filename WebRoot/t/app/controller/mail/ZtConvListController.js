@@ -68,6 +68,8 @@ Ext.define('ZCS.controller.mail.ZtConvListController', {
 		ZCS.app.on('notifyConversationCreate', this.handleConvCreateNotification, this);
 		ZCS.app.on('notifyMessageCreate', this.handleMsgCreateNotification, this);
 		ZCS.app.on('notifyConversationChange', this.handleModifyNotification, this);
+
+		ZCS.app.on('notifyRefresh', this.handleRefresh, this);
 	},
 
 	doDelete: function (list, item, target, record) {
@@ -286,6 +288,10 @@ Ext.define('ZCS.controller.mail.ZtConvListController', {
 		if (item.data.isDraft) {
 			this.getListView().select(item);
 		}
+	},
+
+	handleRefresh: function() {
+		this.redoSearch();
 	}
 },
 	function (thisClass) {

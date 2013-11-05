@@ -74,12 +74,15 @@ Ext.define('ZCS.controller.ZtMainController', {
 		ZCS.app.on('notifyFolderChange', this.handleOrganizerChange, this);
 		ZCS.app.on('notifySearchChange', this.handleOrganizerChange, this);
 		ZCS.app.on('notifyTagChange', this.handleOrganizerChange, this);
+
+		ZCS.app.on('notifyRefresh', this.handleRefresh, this);
 	},
 
 	/**
 	 * Logs off the application
 	 */
 	doLogout: function() {
+
         var qs = location.search;
         var pairs = [];
         var j = 0;
@@ -97,7 +100,7 @@ Ext.define('ZCS.controller.ZtMainController', {
         }  else {
             logoutUrl = "/?loginOp=logout";
         }
-        //Append client=touch param to the logout url
+        // Append client=touch param to the logout url
         logoutUrl += "&client=touch";
 		window.location.href = logoutUrl;
 	},
@@ -193,6 +196,15 @@ Ext.define('ZCS.controller.ZtMainController', {
 	},
 
 	/**
+	 * Returns a list of known overviews.
+	 * @return {Array}  list of ZtOverview
+	 * @private
+	 */
+	getOverviewList: function() {
+		return Ext.ComponentQuery.query('overview');
+	},
+
+	/**
 	 * An organizer has just been created. We need to add it to our session data,
 	 * and insert it into the organizer list component.
 	 *
@@ -200,7 +212,7 @@ Ext.define('ZCS.controller.ZtMainController', {
 	 * @param {Object}          notification    JSON with organizer data
 	 */
 	handleOrganizerCreate: function(folder, notification) {
-		this.addOrganizer(Ext.ComponentQuery.query('overview'), notification, 'overview');
+		this.addOrganizer(this.getOverviewList(), notification, 'overview');
 	},
 
 	/**
@@ -211,7 +223,7 @@ Ext.define('ZCS.controller.ZtMainController', {
 	 * @param {Object}          notification    JSON with new data
 	 */
 	handleOrganizerChange: function(folder, notification) {
-		this.modifyOrganizer(Ext.ComponentQuery.query('overview'), folder, notification, 'overview');
+		this.modifyOrganizer(this.getOverviewList(), folder, notification, 'overview');
 	},
 
 	/**
@@ -220,6 +232,13 @@ Ext.define('ZCS.controller.ZtMainController', {
 	 * @param {ZtOrganizer}     folder          organizer that changed
 	 */
 	handleOrganizerDelete: function(folder) {
-		this.removeOrganizer(Ext.ComponentQuery.query('overview'), folder);
+		this.removeOrganizer(this.getOverviewList(), folder);
+	},
+
+	/**
+	 * We got a <refresh> block. Reload the overviews.
+	 */
+	handleRefresh: function() {
+		this.reloadOverviews(this.getOverviewList(), 'overview');
 	}
 });

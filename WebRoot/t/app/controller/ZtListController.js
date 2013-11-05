@@ -263,5 +263,19 @@ Ext.define('ZCS.controller.ZtListController', {
 			this.updateTitlebar();
 			ZCS.app.fireEvent('updatelistpanelToggle', this.getOrganizerTitle(), ZCS.session.getActiveApp());
 		}
+	},
+
+	/**
+	 * Re-runs the current search.
+	 */
+	redoSearch: function() {
+
+		var curSearch = ZCS.session.getSetting(ZCS.constant.SETTING_CUR_SEARCH, this.getApp()),
+			query = curSearch && curSearch.getQuery(),
+			folder = ZCS.session.getCurrentSearchOrganizer();
+
+		if (query) {
+			this.doSearch(query, folder);
+		}
 	}
 });

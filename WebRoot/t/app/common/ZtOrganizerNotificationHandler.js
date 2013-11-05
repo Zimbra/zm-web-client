@@ -30,18 +30,17 @@ Ext.define('ZCS.common.ZtOrganizerNotificationHandler', {
 	 * @param {Array}   parentViews     views that may need to be updated
 	 * @param {Object}  notification    notification JSON
 	 * @param {String}  context         where organizers appear (eg 'overview' or 'assignment')
-	 * @param {String}  app             app in which organizers appear
 	 */
-	addOrganizer: function(parentViews, notification, context, app) {
+	addOrganizer: function(parentViews, notification, context) {
 
-		var ln = parentViews.length, i, parentView, organizer, app1;
+		var ln = parentViews.length, i, parentView, organizer, app;
 
 		for (i = 0; i < ln; i++) {
 			parentView = parentViews[i];
-			app1 = app || parentView.getApp();
+			app = parentView.getApp();
 			organizer = ZCS.model.ZtOrganizer.getProxy().getReader().getDataFromNode(notification, notification.itemType);
-			if (ZCS.session.isValidOrganizer(organizer, app1)) {
-				ZCS.model.ZtOrganizer.addOtherFields(organizer, app1, context, false);
+			if (ZCS.session.isValidOrganizer(organizer, app)) {
+				ZCS.model.ZtOrganizer.addOtherFields(organizer, app, context, false);
 				this.insertOrganizer(parentView.down('folderlist'), organizer, organizer.parentItemId, organizer.parentZcsId);
 			}
 		}
@@ -55,15 +54,14 @@ Ext.define('ZCS.common.ZtOrganizerNotificationHandler', {
 	 * @param {ZtOrganizer} organizer       organizer being modified
 	 * @param {Object}      notification    notification JSON
 	 * @param {String}      context         where organizers appear (eg 'overview' or 'assignment')
-	 * @param {String}      app             app in which organizers appear
 	 */
-	modifyOrganizer: function(parentViews, organizer, notification, context, app) {
+	modifyOrganizer: function(parentViews, organizer, notification, context) {
 
 		var ln = parentViews.length, i, organizer;
 
 		for (i = 0; i < ln; i++) {
 			var parentView = parentViews[i],
-				app = app || parentView.getApp();
+				app = parentView.getApp();
 
 			// organizer has moved (has a new parent)
 			if (notification.l) {
@@ -172,5 +170,27 @@ Ext.define('ZCS.common.ZtOrganizerNotificationHandler', {
 			}
 		}
 		return -1;
+	},
+
+	/**
+	 * Handles the arrival of a <refresh> block by regenerating overviews.
+	 *
+	 * @param {Array}       parentViews     views that may need to be updated
+	 * @param {String}      context         where organizers appear (eg 'overview' or 'assignment')
+	 */
+	reloadOverviews: function(parentViews, context) {
+
+		var ln = parentViews.length, i, app;
+
+		for (i = 0; i < ln; i++) {
+			var parentView = parentViews[i],
+				app = parentView.getApp(),
+				list = parentView.down('folderlist'),
+				store = list && list.getStore();
+
+			store.setData({
+				items: ZCS.session.getOrganizerData(app, null, context)
+			});
+		}
 	}
 });

@@ -54,6 +54,8 @@ Ext.define('ZCS.controller.ZtAssignmentController', {
 		ZCS.app.on('notifyFolderChange', this.handleOrganizerChange, this);
 		ZCS.app.on('notifySearchChange', this.handleOrganizerChange, this);
 		ZCS.app.on('notifyTagChange', this.handleOrganizerChange, this);
+
+		ZCS.app.on('notifyRefresh', this.handleRefresh, this);
 	},
 
 	showAssignmentView: function(item, type, app, controller, afterAssignment) {
@@ -126,15 +128,31 @@ Ext.define('ZCS.controller.ZtAssignmentController', {
 		return assignmentView;
 	},
 
+	/**
+	 * Returns a list of known assignment views.
+	 * @return {Array}  list of ZtAssignmentView
+	 * @private
+	 */
+	getAssignmentViewList: function() {
+		return Ext.Object.getValues(this.getAssignmentViews());
+	},
+
 	handleOrganizerCreate: function(folder, notification) {
-		this.addOrganizer(Ext.Object.getValues(this.getAssignmentViews()), notification, 'assignment');
+		this.addOrganizer(this.getAssignmentViewList(), notification, 'assignment');
 	},
 
 	handleOrganizerDelete: function(folder, notification) {
-		this.removeOrganizer(Ext.Object.getValues(this.getAssignmentViews()), folder);
+		this.removeOrganizer(this.getAssignmentViewList(), folder);
 	},
 
 	handleOrganizerChange: function(folder, notification) {
-		this.modifyOrganizer(Ext.Object.getValues(this.getAssignmentViews()), folder, notification, 'assignment');
+		this.modifyOrganizer(this.getAssignmentViewList(), folder, notification, 'assignment');
+	},
+
+	/**
+	 * We got a <refresh> block. Reload the overviews.
+	 */
+	handleRefresh: function() {
+		this.reloadOverviews(this.getAssignmentViewList(), 'assignment');
 	}
 });
