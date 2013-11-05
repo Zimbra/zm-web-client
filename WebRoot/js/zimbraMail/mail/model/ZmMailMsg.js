@@ -2340,7 +2340,7 @@ function(addrNodes, parentNode, isDraft, accountName) {
 	// from or the one we have is the default anyway
 	var identity = this.identity;
 	var isPrimary = identity == null || identity.isDefault;
-	if (this.delegatedSenderAddr) {
+	if (this.delegatedSenderAddr && !this.delegatedSenderAddrIsDL) {
 		isPrimary = false;
 	}
 
