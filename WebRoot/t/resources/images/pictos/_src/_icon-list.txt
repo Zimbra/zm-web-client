@@ -18,6 +18,10 @@ Menu-Android	3 boxes stacked vertically	G
 Menu-iOS	3 circles stacked horizontally	I
 Apps		grid of 9 boxes			P
 Back		left-facing chevron		<
+Read-Unread	circle				r
+Invite		clock face			v
+Flag*		flag				f
+Attachment*	paperclip			h
 Search*		magnifying glass		s
 Mail*		envelope			M
 Contacts*	2 human torsos			N
