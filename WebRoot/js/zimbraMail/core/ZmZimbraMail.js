@@ -419,6 +419,7 @@ function(params) {
     }
 	// fetch meta data for the main account
 
+	//todo - might want to move this call and the methods to ZmMailApp as it's specific to mail app only.
     this._initDelegatedSenderAddrs();
     if(appCtxt.isOffline) {
         var updatePref = appCtxt.get(ZmSetting.OFFLINE_UPDATE_NOTIFY);
@@ -442,24 +443,28 @@ function() {
 
 ZmZimbraMail.prototype._getDelegatedSenderEmails =
 function(sendRights, sendRight) {
-    var emails = [];
-        if (sendRights && sendRights.length){
-            for (var i=0;i<sendRights.length; i++){
-                var target = sendRights[i].target;
-                var right =  sendRights[i].right;
-                if (right == sendRight || right == (sendRight + "DistList")){
-                    for (var j=0;j < target.length; j++){
-                        var emailList = target[j].email;
-                        for (var k=0; k < emailList.length; k++){
-                            var email = emailList[k].addr;
-                            emails.push(email);
-                        }
-                    }
-                }
+	var emails = [];
+	if (!sendRights || !sendRights.length) {
+		return emails;
+	}
+	for (var i = 0; i < sendRights.length; i++) {
+		var target = sendRights[i].target;
+		var right = sendRights[i].right;
+		var sendRightDistList = sendRight + "DistList";
+		if (right !== sendRight && right !== sendRightDistList) {
+			continue;
+		}
+		var isDL = right === sendRightDistList;
+		for (var j = 0; j < target.length; j++) {
+			var emailList = target[j].email;
+			for (var k = 0; k < emailList.length; k++) {
+				var addr = emailList[k].addr;
+				emails.push({addr: addr, isDL: isDL});
+			}
+		}
 
-            }
-        }
-    return emails;
+	}
+	return emails;
 };
 
 ZmZimbraMail.prototype._initDelegatedSenderEmails =
@@ -468,7 +473,7 @@ function(result){
     var sendRights = response && response.targets;
     appCtxt.sendAsEmails = this._getDelegatedSenderEmails(sendRights, 'sendAs');
     appCtxt.sendOboEmails = this._getDelegatedSenderEmails(sendRights, 'sendOnBehalfOf');
-}
+};
 
 ZmZimbraMail.registerViewsToTypeMap = function() {
 	// organizer types based on view

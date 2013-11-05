@@ -545,7 +545,7 @@ function(attId, docIds, draftType, callback, contactId) {
 	var ac = window.parentAppCtxt || window.appCtxt;
 	var acctName = appCtxt.multiAccounts
 		? this._composeView.getFromAccount().name : this._accountName;
-	if (msg.delegatedSenderAddr) {
+	if (msg.delegatedSenderAddr && !msg.delegatedSenderAddrIsDL) {
 		acctName = msg.delegatedSenderAddr;
 	}
 
