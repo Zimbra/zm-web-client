@@ -32,15 +32,15 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 		stores: ['ZCS.store.mail.ZtMsgStore'],
 
 		refs: {
-			itemPanelToolbar:   'appview #' + ZCS.constant.APP_MAIL + 'itempanel titlebar',
-			convTitleBar: 'appview #' + ZCS.constant.APP_MAIL + 'itempanel #itemTitleOnlyBar',
-			itemPanel:          'appview #' + ZCS.constant.APP_MAIL + 'itempanel',
-			msgListView:        ZCS.constant.APP_MAIL + 'itemview',
-			quickReply:         '#quickReply',
-			quickReplyTitleBar: '#quickReply titlebar',
-			quickReplyTextarea: '#quickReply textareafield',
-			convActionsMenu: 'list[itemId=convActionsMenu]',
-			convReplyActionsMenu: 'list[itemId=convReplyActionsMenu]'
+			itemPanelToolbar:       'appview #' + ZCS.constant.APP_MAIL + 'itempanel titlebar',
+			convTitleBar:           'appview #' + ZCS.constant.APP_MAIL + 'itempanel #itemTitleOnlyBar',
+			itemPanel:              'appview #' + ZCS.constant.APP_MAIL + 'itempanel',
+			msgListView:            ZCS.constant.APP_MAIL + 'itemview',
+			quickReply:             '#quickReply',
+			quickReplyTitleBar:     '#quickReply titlebar',
+			quickReplyTextarea:     '#quickReply textareafield',
+			convActionsMenu:        'list[itemId=convActionsMenu]',
+			convReplyActionsMenu:   'list[itemId=convReplyActionsMenu]'
 		},
 
 		control: {
@@ -178,17 +178,17 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 		Ext.Logger.info("conv controller: show conv " + conv.getId());
         //</debug>
 
-		var curFolder = ZCS.session.getCurrentSearchOrganizer(),
-			curFolderId = curFolder && curFolder.get('zcsId'),
-			store = this.getStore();
-
 		this.callParent(arguments);
 
-		var	isDraft = (curFolderId === ZCS.constant.ID_DRAFTS),
+		var curFolder = ZCS.session.getCurrentSearchOrganizer(),
+			curFolderId = curFolder && curFolder.get('zcsId'),
+			store = this.getStore(),
+			isDraft = (curFolderId === ZCS.constant.ID_DRAFTS),
 			convQueryTerms = [ 'underid:1' ],
-			title = Ext.String.htmlEncode(conv.get('subject') || ZtMsg.noSubject);
+			title = Ext.String.htmlEncode(conv.get('subject') || ZtMsg.noSubject),
+			msgListView = this.getMsgListView();
 
-		//Make sure the organizer button stays.
+		// Make sure the organizer button stays.
 		ZCS.app.fireEvent('updatelistpanelToggle', this.getOrganizerTitle(), ZCS.session.getActiveApp());
 
 		Ext.each(Object.keys(ZCS.constant.CONV_HIDE), function(id) {
@@ -202,16 +202,15 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 			quickReply.show();
 		}
 
-
-		//Reset the translation on this list -- in the touch world, scrolling is done
-		//by using translate3d.  In Sencha's implementation, there is a scroller object (Ext.scroll.Scroller)
-		//and an underlying translation provider.  There appears to be a bug with the list
-		//in that if you fire a refresh event on the list, and you have its scrollToTopOnRefresh
-		//property set to true, it will tell the Scroller object to scroll, but if the translation
-		//object has an old y value, that never gets reset by the scroller.
-		//So manually reset it here.
-		this.getMsgListView().topItemIndex = 0;
-		this.getMsgListView().getScrollable().getScroller().getTranslatable().y = 0;
+		// Reset the translation on this list -- in the touch world, scrolling is done
+		// by using translate3d.  In Sencha's implementation, there is a scroller object (Ext.scroll.Scroller)
+		// and an underlying translation provider.  There appears to be a bug with the list
+		// in that if you fire a refresh event on the list, and you have its scrollToTopOnRefresh
+		// property set to true, it will tell the Scroller object to scroll, but if the translation
+		// object has an old y value, that never gets reset by the scroller.
+		// So manually reset it here.
+		msgListView.topItemIndex = 0;
+		msgListView.getScrollable().getScroller().getTranslatable().y = 0;
 
 		store.load({
 			convId: conv.getId(),
@@ -229,6 +228,10 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 					}
 
 					this.setHandleUpdateDataEvent(false);
+
+					// Hate to use a timer here, but couldn't find an event that fires after the msgListView has
+					// rendered. The Sencha List component doesn't fire 'show' or 'painted'.
+					Ext.defer(msgListView.scrollToFirstExpandedMsg, 100, msgListView);
 				}
 			},
 			scope: this
@@ -377,7 +380,7 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 			return;
 		}
 
-		// Move the conv to the top since it got a new msg and we always sort date descending.
+		// Move the conv to the top since it got a new msg and we always sort the conv list date descending.
 		// Also propagate some fields from the message that don't appear in the conv's modified
 		// notification. We only do this for a real conv (more than two messages). If a conv has
 		// just been promoted from virtual to real, then ZtConvListController::handleModifyNotification
@@ -398,7 +401,12 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 				store = this.getStore(),
 				msg = new ZCS.model.mail.ZtMailMsg(data, create.id);
 
-			store.insert(0, [msg]);
+			if (ZCS.session.getSetting(ZCS.constant.SETTING_CONVERSATION_ORDER) === ZCS.constant.DATE_ASC) {
+				store.add(msg);
+			}
+			else {
+				store.insert(0, [msg]);
+			}
 		}
 	},
 

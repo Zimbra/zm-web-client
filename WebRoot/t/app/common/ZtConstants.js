@@ -395,6 +395,10 @@ ZCS.constant.FROM_SOAP_TYPE['s']  = ZCS.constant.SENDER;
 // and the other way too
 ZCS.constant.TO_SOAP_TYPE = ZCS.util.getBackMap(ZCS.constant.FROM_SOAP_TYPE);
 
+// sort orders
+ZCS.constant.DATE_DESC 		= "dateDesc";
+ZCS.constant.DATE_ASC 		= "dateAsc";
+
 // Data types
 ZCS.constant.TYPE_STRING    = 'string';
 ZCS.constant.TYPE_NUMBER    = 'number';
@@ -405,24 +409,25 @@ ZCS.constant.TYPE_HASH      = 'hash';
 // Names of user settings (LDAP attribute names)
 
 // General
-ZCS.constant.SETTING_SHOW_SEARCH        = 'zimbraPrefShowSearchString';
-ZCS.constant.SETTING_LOCALE             = 'zimbraPrefLocale';
-ZCS.constant.SETTING_TIMEZONE           = 'zimbraPrefTimeZoneId';
 ZCS.constant.SETTING_JSLOGGING_ENABLED  = 'zimbraTouchJSErrorTrackingEnabled';  // third-party logging service
 ZCS.constant.SETTING_JSLOGGING_KEY      = 'zimbraTouchJSErrorTrackingKey';      // third-party logging service
+ZCS.constant.SETTING_LOCALE             = 'zimbraPrefLocale';
+ZCS.constant.SETTING_SHOW_SEARCH        = 'zimbraPrefShowSearchString';
+ZCS.constant.SETTING_TIMEZONE           = 'zimbraPrefTimeZoneId';
 
 // Mail
-ZCS.constant.SETTING_MAIL_ENABLED       = 'zimbraFeatureMailEnabled';
 ZCS.constant.SETTING_ALIASES            = 'zimbraMailAlias';
-ZCS.constant.SETTING_INITIAL_SEARCH     = 'zimbraPrefMailInitialSearch';
-ZCS.constant.SETTING_MARK_READ          = 'zimbraPrefMarkMsgRead';  // -1 = never, 0 = now, [int] = delay in seconds
-ZCS.constant.SETTING_REPLY_INCLUDE      = 'zimbraPrefReplyIncludeOriginalText';
-ZCS.constant.SETTING_FORWARD_INCLUDE    = 'zimbraPrefForwardIncludeOriginalText';
-ZCS.constant.SETTING_REPLY_PREFIX       = 'zimbraPrefForwardReplyPrefixChar';
+ZCS.constant.SETTING_CONVERSATION_ORDER = 'zimbraPrefConversationOrder';
 ZCS.constant.SETTING_DISPLAY_IMAGES     = 'zimbraPrefDisplayExternalImages';
-ZCS.constant.SETTING_TRUSTED_SENDERS    = 'zimbraPrefMailTrustedSenderList';
+ZCS.constant.SETTING_FORWARD_INCLUDE    = 'zimbraPrefForwardIncludeOriginalText';
 ZCS.constant.SETTING_FROM_ADDRESS       = 'zimbraPrefFromAddress';
 ZCS.constant.SETTING_FROM_NAME          = 'zimbraPrefFromDisplay';
+ZCS.constant.SETTING_INITIAL_SEARCH     = 'zimbraPrefMailInitialSearch';
+ZCS.constant.SETTING_MAIL_ENABLED       = 'zimbraFeatureMailEnabled';
+ZCS.constant.SETTING_MARK_READ          = 'zimbraPrefMarkMsgRead';  // -1 = never, 0 = now, [int] = delay in seconds
+ZCS.constant.SETTING_REPLY_INCLUDE      = 'zimbraPrefReplyIncludeOriginalText';
+ZCS.constant.SETTING_REPLY_PREFIX       = 'zimbraPrefForwardReplyPrefixChar';
+ZCS.constant.SETTING_TRUSTED_SENDERS    = 'zimbraPrefMailTrustedSenderList';
 
 // Contacts
 ZCS.constant.SETTING_CONTACTS_ENABLED   = 'zimbraFeatureContactsEnabled';
@@ -434,14 +439,14 @@ ZCS.constant.SETTING_CALENDAR_ENABLED   = 'zimbraFeatureCalendarEnabled';
 // Internal settings
 ZCS.constant.SETTING_CUR_SEARCH                 = 'CUR_SEARCH';
 ZCS.constant.SETTING_CUR_SEARCH_ID              = 'CUR_SEARCH_ID';
-ZCS.constant.SETTING_REPLY_INCLUDE_WHAT         = 'REPLY_INCLUDE_WHAT';
-ZCS.constant.SETTING_REPLY_USE_PREFIX           = 'REPLY_USE_PREFIX';
-ZCS.constant.SETTING_REPLY_INCLUDE_HEADERS      = 'REPLY_INCLUDE_HEADERS';
+ZCS.constant.SETTING_FORWARD_INCLUDE_HEADERS    = 'FORWARD_INCLUDE_HEADERS';
 ZCS.constant.SETTING_FORWARD_INCLUDE_WHAT       = 'FORWARD_INCLUDE_WHAT';
 ZCS.constant.SETTING_FORWARD_USE_PREFIX         = 'FORWARD_USE_PREFIX';
-ZCS.constant.SETTING_FORWARD_INCLUDE_HEADERS    = 'FORWARD_INCLUDE_HEADERS';
-ZCS.constant.SETTING_REST_URL                   = 'REST_URL';
 ZCS.constant.SETTING_GET_NAME_FROM_CONTACTS     = 'GET_NAME_FROM_CONTACTS';
+ZCS.constant.SETTING_REPLY_INCLUDE_HEADERS      = 'REPLY_INCLUDE_HEADERS';
+ZCS.constant.SETTING_REPLY_INCLUDE_WHAT         = 'REPLY_INCLUDE_WHAT';
+ZCS.constant.SETTING_REPLY_USE_PREFIX           = 'REPLY_USE_PREFIX';
+ZCS.constant.SETTING_REST_URL                   = 'REST_URL';
 
 ZCS.constant.SETTINGS = ZCS.constant.makeList('SETTING_');
 
@@ -468,6 +473,7 @@ ZCS.constant.SETTING_DEFAULT = {};
 ZCS.constant.SETTING_DEFAULT[ZCS.constant.SETTING_LOCALE]                   = 'en_US';
 ZCS.constant.SETTING_DEFAULT[ZCS.constant.SETTING_GET_NAME_FROM_CONTACTS]   = true; // see bug 81656
 ZCS.constant.SETTING_DEFAULT[ZCS.constant.SETTING_SHOW_DL_FOLDER]           = true;
+ZCS.constant.SETTING_DEFAULT[ZCS.constant.SETTING_CONVERSATION_ORDER]       = ZCS.constant.DATE_DESC;
 
 // Setting that tells us if an app is enabled
 ZCS.constant.APP_SETTING = {};

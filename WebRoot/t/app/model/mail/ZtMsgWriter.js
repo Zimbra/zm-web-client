@@ -49,7 +49,7 @@ Ext.define('ZCS.model.mail.ZtMsgWriter', {
 			Ext.apply(methodJson, {
 				cid:    convId,
 				fetch:  fetch,
-				sortBy: 'dateDesc',
+				sortBy: ZCS.constant.DATE_DESC,
 				offset: 0,
 				limit:  100,
 				recip:  '2',

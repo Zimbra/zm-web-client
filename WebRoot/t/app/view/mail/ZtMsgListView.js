@@ -54,7 +54,9 @@ Ext.define('ZCS.view.mail.ZtMsgListView', {
 
 		// Message header taps
 		this.on({
+
 			tap: function(e, node) {
+
                 var target = e.event.actionTarget || e.event.target,
                     elm = Ext.fly(target);
 
@@ -109,6 +111,7 @@ Ext.define('ZCS.view.mail.ZtMsgListView', {
 				return false;
 
 			},
+
 			element:    'element',
 			delegate:   '.zcs-msg-header',
 			scope:      this
@@ -116,9 +119,12 @@ Ext.define('ZCS.view.mail.ZtMsgListView', {
 
 		// Message body taps
 		this.on({
+
 			tap: function(e) {
+
                 var target = e.event.actionTarget || e.event.target,
                     elm = Ext.fly(target);
+
 				// see if tap listener has been turned off
 				if (!this.getAllowTaps()) {
 					return false;
@@ -159,13 +165,16 @@ Ext.define('ZCS.view.mail.ZtMsgListView', {
 					msgBody.fireEvent('loadEntireMessage', msg, msgBody);
 				}
 			},
+
 			element:    'element',
 			delegate:   '.zcs-msg-body',
 			scope:      this
 		});
 
 		this.element.on({
+
 			swipe: function(e) {
+
                 var iframe = this.down('[xtype=iframe]'),
                     iframeDom,
                     scrollLeftMax,
@@ -175,14 +184,12 @@ Ext.define('ZCS.view.mail.ZtMsgListView', {
                     leftSwipeAllowed = false,
                     rightSwipeAllowed = false;
 
-
-
                 if (iframe) {
     				iframeDom = iframe.element.dom;
     				scrollLeftMax = iframeDom.scrollWidth - iframeDom.clientWidth;
-                    scrollisMaxed = iframeDom.scrollLeft == scrollLeftMax;
-                    scrollIsAtStart = iframeDom.scrollLeft == 0;
-                    leftSwipeAllowed = scrollisMaxed && iframeDom.leftSwipeAllowed;
+	                scrollIsMaxed = (iframeDom.scrollLeft === scrollLeftMax);
+                    scrollIsAtStart = (iframeDom.scrollLeft === 0);
+                    leftSwipeAllowed = scrollIsMaxed && iframeDom.leftSwipeAllowed;
                     rightSwipeAllowed = scrollIsAtStart && iframeDom.rightSwipeAllowed;
                 } else {
                     noScrollRestrictions = true;
@@ -199,10 +206,12 @@ Ext.define('ZCS.view.mail.ZtMsgListView', {
 	                this.fireEvent('messageSwipeRight', e);
 				}
 			},
+
 			scope: this
 		});
 
         var interactionStart = function (e) {
+
                 this.lastPageX = e.pageX;
                 var iframe = this.down('[xtype=iframe]'),
                     iframeDom;
@@ -211,21 +220,19 @@ Ext.define('ZCS.view.mail.ZtMsgListView', {
 
                 if (iframe) {
                     iframeDom = iframe.element.dom;
-                    var scrollLeft = iframeDom.scrollLeft;
+                    var scrollLeft = iframeDom.scrollLeft,
+                        scrollLeftMax = iframeDom.scrollWidth - iframeDom.clientWidth;
 
-                    scrollLeftMax = iframeDom.scrollWidth - iframeDom.clientWidth;
-
-                    //We only want to touch the dom in touchmove if scrolling is possible
-                    //even a no-op could hurt scroll performance.
+                    // We only want to touch the dom in touchmove if scrolling is possible
+                    // even a no-op could hurt scroll performance.
                     if (scrollLeftMax > 0) {
                         this.scrollIsPossible = true;
                     } else {
                         this.scrollIsPossible = false;
                     }
 
-                    //Decide if left swiping or right swiping should be allowed based on the
-                    //current swipe state of the message.  We don't want a scroll and wipe to happen in the same
-                    //gesture
+                    // Decide if left swiping or right swiping should be allowed based on the current swipe state of
+                    // the message.  We don't want a scroll and wipe to happen in the same gesture
                     if (scrollLeft === 0) {
                         iframeDom.leftSwipeAllowed = false;
                         iframeDom.rightSwipeAllowed = true;
@@ -238,7 +245,9 @@ Ext.define('ZCS.view.mail.ZtMsgListView', {
                     }
                 }
             },
+
             interactionMove = function (e) {
+
                 if (this.scrollIsPossible && this.scrollIsEnabled) {
                     var xDifferential = e.pageX - this.lastPageX;
                     if (xDifferential !== 0) {
@@ -247,16 +256,18 @@ Ext.define('ZCS.view.mail.ZtMsgListView', {
                     this.lastPageX = e.pageX;
                 }
             },
+
             interactionEnd = function () {
+
                 this.scrollIsEnabled = false;
             };
 
-        //Allow swipes to happen at the beginning or end of a touch move.  But not in the middle.
+        // Allow swipes to happen at the beginning or end of a touch move.  But not in the middle.
 		this.element.on({
 			touchstart: interactionStart,
 			touchmove: interactionMove,
             touchend: interactionEnd,
-            //let this work with clicks/mouse too
+            // let this work with clicks/mouse too
             mousedown: interactionStart,
             mousemove: interactionMove,
             mouseup: interactionEnd,
@@ -265,8 +276,7 @@ Ext.define('ZCS.view.mail.ZtMsgListView', {
 
 		var scroller = this.getScrollable();
 
-
-		//Start the list scroll off by not using absolute positioning.
+		// Start the list scroll off by not using absolute positioning.
 		scroller.getScroller().on('scrollstart', function () {
             //<debug>
 			Ext.Logger.iframe('Scroll start on list');
@@ -283,6 +293,7 @@ Ext.define('ZCS.view.mail.ZtMsgListView', {
 	},
 
 	doIframeProofPositioning: function(noAbsolute) {
+
         var items = this.listItems,
             offset = 0,
             i, ln, item, translateY;
@@ -335,6 +346,41 @@ Ext.define('ZCS.view.mail.ZtMsgListView', {
 	onContainerResize: function(container, size) {
 		if (size.height > 0 && size.width > 0) {
 			this.callParent(arguments);
+		}
+	},
+
+	/**
+	 * Make sure the user can read the first expanded msg (which is either the latest unread msg,
+	 * or the latest msg if all are read).
+	 */
+	scrollToFirstExpandedMsg: function() {
+
+		var msgViews = this.getViewItems(),
+			ln = msgViews.length, i,
+			totalHeight = 0,
+			containerHeight = this.element.getHeight();
+
+		for (i = 0; i < ln; i++) {
+			var msgView = msgViews[i],
+				msgViewHeight = msgView.element.getHeight(),
+				msgViewBottom = totalHeight + msgViewHeight,
+				scrollAmt = 0;
+
+			if (msgView.getExpanded()) {
+				if (msgViewBottom > containerHeight) {
+					if (msgViewHeight > containerHeight) {
+						scrollAmt = totalHeight;
+					}
+					else {
+						scrollAmt = msgViewBottom - containerHeight;
+					}
+					this.getScrollable().getScroller().scrollTo(0, scrollAmt);
+				}
+				break;
+			}
+			else {
+				totalHeight += msgViewHeight;
+			}
 		}
 	}
 });

@@ -89,17 +89,18 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 		Ext.Logger.conv('ZtMsgBody render into element ' + this.element.id);
         //</debug>
 
-		// if this is the last msg in the conv to be rendered, we don't hide quoted text
+		// if this is the oldest msg in the conv to be rendered, we don't hide quoted text
 		var store = this.up('mailitemview').getStore(),
 			count = store.getCount(),
 			msgIndex = store.indexOf(msg),
-			isLast = (msgIndex === count - 1),
+			isAsc = (ZCS.session.getSetting(ZCS.constant.SETTING_CONVERSATION_ORDER) === ZCS.constant.DATE_ASC),
+			isOldest = isAsc ? msgIndex === 0 : msgIndex === count - 1,
 			markedUpHtml;
 
 		var me = this,
 			isInvite = msg.get('isInvite'),
 			togglingQuotedText = Ext.isBoolean(showQuotedText),
-			trimQuotedText = togglingQuotedText ? !showQuotedText : !isLast && !isInvite && !this.showingQuotedText,
+			trimQuotedText = togglingQuotedText ? !showQuotedText : !isOldest && !isInvite && !this.showingQuotedText,
 			msgId = msg.getId(),
 			isHtml = msg.hasHtmlPart(),
 			container = this.htmlContainer,

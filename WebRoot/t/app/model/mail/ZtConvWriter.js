@@ -45,7 +45,7 @@ Ext.define('ZCS.model.mail.ZtConvWriter', {
 				isOutbound = ZCS.util.isOutboundFolderId(folderId);
 
 			Ext.apply(methodJson, {
-				sortBy: 'dateDesc',
+				sortBy: ZCS.constant.DATE_DESC,
 				offset: operation.getStart(),
 				limit:  ZCS.constant.DEFAULT_PAGE_SIZE,
 				query:  query,

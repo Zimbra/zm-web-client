@@ -25,7 +25,22 @@ Ext.define('ZCS.store.mail.ZtMsgStore', {
 	config: {
 		model: 'ZCS.model.mail.ZtMailMsg',
 
-		remoteSort: true,
+//		remoteSort: true,
+
+		// We always ask for msgs in dateDesc order from server since we ask it to expand the first one and we want
+		// that to be the latest msg. The user may want msgs in dateAsc order, so we use a sorter here to take care
+		// of that.
+		sorters: [
+			{
+				sorterFn: function(msg1, msg2) {
+					var isAsc = (ZCS.session.getSetting(ZCS.constant.SETTING_CONVERSATION_ORDER) === ZCS.constant.DATE_ASC),
+						date1 = msg1.get('date'),
+						date2 = msg2.get('date');
+
+					return isAsc ? date1 - date2 : date2 - date1;
+				}
+			}
+		],
 
 		listeners: {
 
