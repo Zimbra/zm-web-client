@@ -127,7 +127,7 @@ function() {
 		this._ifw = null;
 	}
 	if (this._inviteMsgView) {
-		this._inviteMsgView.reset();
+		this._inviteMsgView.reset(true);
 	}
 	
 	var el = this.getHtmlElement();

@@ -45,17 +45,32 @@ function() {
 };
 
 ZmInviteMsgView.prototype.reset =
-function() {
+function(cleanupHTML) {
 	if (this._inviteToolbar) {
-		this._inviteToolbar.setDisplay(Dwt.DISPLAY_NONE);
+		if (cleanupHTML) {
+			this._inviteToolbar.dispose();
+			this._inviteToolbar = null;
+		} else {
+			this._inviteToolbar.setDisplay(Dwt.DISPLAY_NONE);
+		}
 	}
 
 	if (this._counterToolbar) {
-		this._counterToolbar.setDisplay(Dwt.DISPLAY_NONE);
+		if (cleanupHTML) {
+			this._counterToolbar.dispose();
+			this._counterToolbar = null;
+		} else {
+			this._counterToolbar.setDisplay(Dwt.DISPLAY_NONE);
+		}
 	}
 
 	if (this._dayView) {
-		this._dayView.setDisplay(Dwt.DISPLAY_NONE);
+		if (cleanupHTML) {
+			this._dayView.dispose();
+			this._dayView = null;
+		} else {
+			this._dayView.setDisplay(Dwt.DISPLAY_NONE);
+		}
 		Dwt.delClass(this.parent.getHtmlElement(), "RightBorderSeparator");
 	}
 
