@@ -1043,8 +1043,21 @@
         </packagedependset>
 
         <if>
+            <available file="${depends.file}"/>
+            <then>
+                <files includesfile="${depends.file}" />
+
+                <uptodate targetfile="${jam.file}" property="jam.uptodate">
+                    <srcresources>
+                        <files includesfile="${depends.file}" />
+                    </srcresources>
+                </uptodate>
+            </then>
+        </if>
+
+        <if>
             <not>
-                <available file='${jam.file}'/>
+                <equals arg1="${jam.uptodate}" arg2="true" />
             </not>
             <then>
                 <condition property='wrap' value='false' else='true'>
