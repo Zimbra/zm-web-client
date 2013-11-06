@@ -46,6 +46,11 @@ Ext.define('ZCS.common.ZtMenuable', {
 			this.setActiveMailComponent(itemPanel);
 		}
 
+		menuButton.addCls('menu-open');
+		menu.addListener('hide', function () {
+			menuButton.removeCls('menu-open');
+		}, this, {single: true});
+
 		this.updateMenuLabels(menuButton, params, menu);
 		this.enableMenuItems(menu);
 		menu.setActionParams(params);

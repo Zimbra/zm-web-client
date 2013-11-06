@@ -37,8 +37,10 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 			itemPanel:          'appview #' + ZCS.constant.APP_MAIL + 'itempanel',
 			msgListView:        ZCS.constant.APP_MAIL + 'itemview',
 			quickReply:         '#quickReply',
+			quickReplyTitleBar: '#quickReply titlebar',
 			quickReplyTextarea: '#quickReply textareafield',
-			convActionsMenu: 'list[itemId=convActionsMenu]'
+			convActionsMenu: 'list[itemId=convActionsMenu]',
+			convReplyActionsMenu: 'list[itemId=convReplyActionsMenu]'
 		},
 
 		control: {
@@ -60,12 +62,17 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 			},
 			convActionsMenu: {
 				itemtap: 'onMenuItemSelect'
+			},
+			convReplyActionsMenu: {
+				itemtap: 'onMenuItemSelect'
 			}
 		},
 
 		// Flag to turn handling of 'updatedata' event within ZtMsgView on and off
 		handleUpdateDataEvent: false
 	},
+
+	activeDeleteAnimCount: 0,
 
 	launch: function () {
 
@@ -85,16 +92,22 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 
 		this.getStore().on('addrecords', this.onAddRecords, this);
 
-		var quickReplyTextarea = this.getQuickReplyTextarea();
+		var quickReplyTextarea = this.getQuickReplyTextarea(),
+			quickReplyTitleBar = this.getQuickReplyTitleBar(),
+			quickReply = this.getQuickReply();
 		if (quickReplyTextarea) {
 			quickReplyTextarea.on('focus', function() {
 				quickReplyTextarea.setHeight(ZCS.constant.QUICK_REPLY_LARGE);
+				quickReplyTitleBar.show();
+				quickReply.addCls('expanded');
 				if (!quickReplyTextarea.getValue()) {
 					this.setQuickReplyPlaceholderText('');
 				}
 			}, this);
 			quickReplyTextarea.on('blur', function() {
 				quickReplyTextarea.setHeight(ZCS.constant.QUICK_REPLY_SMALL);
+				quickReplyTitleBar.hide();
+				quickReply.removeCls('expanded');
 				if (!quickReplyTextarea.getValue()) {
 					this.setQuickReplyPlaceholderText(this.getQuickReplyPlaceholderText());
 				}
@@ -212,6 +225,7 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 
 					if (quickReply) {
 						this.setQuickReplyPlaceholderText(this.getQuickReplyPlaceholderText());
+						quickReply.down('titlebar').setTitle(this.getQuickReplyTitleText());
 					}
 
 					this.setHandleUpdateDataEvent(false);
@@ -542,6 +556,17 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 		});
 	},
 
+	doForward: function(actionParams) {
+
+		if (this.isFeedAction()) {
+			return;
+		}
+
+		this.getActiveMsg(function(originalMessage, lastMessage) {
+			ZCS.app.getComposeController().forward(originalMessage, lastMessage);
+		});
+	},
+
 	doEdit: function() {
 		this.getActiveMsg(function(originalMessage, lastMessage) {
 			ZCS.app.getComposeController().compose(originalMessage, lastMessage);
@@ -594,7 +619,40 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 		}
 	},
 
-	swipeDelete: function(record) {
+	swipeDelete: function(record, list, convItem) {
+		var listStore = list.getStore(),
+			itemIndex = listStore.indexOf(record),
+			placeholder,
+			listItem;
+
+		// Replace the deleted item with a placeholder to indicate deletion
+		listStore.remove(record);
+		placeholder = listStore.insert(itemIndex, {deletedIndicator: true});
+
+		// Handle visual experience of delete
+		Ext.defer(function () {
+			// Suspend events so list doesn't re-order during animation
+			this.activeDeleteAnimCount++;
+			listStore.suspendEvents();
+			Ext.Anim.run(convItem.element, 'fade', {
+				duration: 2000,
+				scope: this,
+				after: function () {
+					this.activeDeleteAnimCount--;
+					listStore.remove(placeholder);
+
+					if (this.activeDeleteAnimCount == 0) {
+						// Let list refresh after all animations are done
+						listStore.resumeEvents();
+					} else {
+						// Stay blank instead of letting text show again
+						convItem.element.down('.zcs-mail-listitem-deleted').setHtml("");
+					}
+				}
+			});
+		}, 2000, this);
+
+		// Handle the actual conversation deletion
 		this.doDelete(record, true);
 	},
 
@@ -633,20 +691,41 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 	 * @return {String}     placeholder text
 	 */
 	getQuickReplyPlaceholderText: function() {
+		return Ext.String.format(ZtMsg.quickReplyPlaceholder, this.getAllNames());
+	},
 
+	getQuickReplyTitleText: function() {
+		return Ext.String.format(ZtMsg.quickReplyTitle, this.getAllNames('longName'));
+	},
+
+	/**
+	 * Returns a string of all names involved in the conversation. Comma
+	 * separated, with TO addresss first: "User1, CCUser1, and CCUser2"
+	 */
+	getAllNames: function(nameField) {
 		var activeMsg = this.getActiveMsg(),
-			fromAddr = activeMsg && activeMsg.getAddressByType(ZCS.constant.FROM),
-			fromName = Ext.String.htmlEncode(fromAddr && fromAddr.get('longName')),
-			textAreaWidth = this.getQuickReplyTextarea().element.getWidth(),
-			placeholder;
+			action = ZCS.constant.OP_REPLY_ALL,
+			addrs = ZCS.app.getComposeController().getReplyAddresses(activeMsg, action),
+			allAddrs = [].concat(addrs.TO, addrs.CC),
+			names = [],
+			nameString,
+			nameField = nameField || 'shortName',
+			i;
 
-		if (textAreaWidth > 450 && fromName) {
-			placeholder = Ext.String.format(ZtMsg.quickReplyPlaceholder, fromName);
-		} else {
-			placeholder = ZtMsg.quickReplyPlaceholderShort;
+		for (i = 0; i < allAddrs.length; i++) {
+			if (allAddrs[i]) {
+				names.push(allAddrs[i].get(nameField));
+			}
 		}
 
-		return placeholder;
+		if (allAddrs.length < 3) {
+			nameString = names.join(' and ');
+		} else {
+			nameString = names.join(', ');
+			nameString = nameString.replace(/,\s([^,]+)$/, ', and $1');
+		}
+
+		return nameString;
 	},
 
 	/**

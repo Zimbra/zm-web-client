@@ -115,11 +115,13 @@ ZCS.constant.CANCEL_SHIELD_BUTTONS = [
 
 // popup menus
 ZCS.constant.MENU_CONV      = 'convActions';
+ZCS.constant.MENU_CONV_REPLY= 'convReplyActions';
 ZCS.constant.MENU_MSG       = 'msgActions';
 ZCS.constant.MENU_TAG       = 'tagActions';
 ZCS.constant.MENU_ADDRESS   = 'addressActions';
 ZCS.constant.MENU_CONTACT   = 'contactActions';
 ZCS.constant.MENU_ORIG_ATT  = 'originalAttachment';
+ZCS.constant.MENU_RECIPIENT = 'recipientActions';
 
 // Operations (generally tied to dropdown menu items)
 ZCS.constant.OP_COMPOSE     = 'COMPOSE';
@@ -144,8 +146,7 @@ ZCS.constant.OP_SEARCH      = 'SEARCH';
 ZCS.constant.ITEM_BUTTONS = {};
 ZCS.constant.ITEM_BUTTONS[ZCS.constant.APP_MAIL]        = [
 	{ op: ZCS.constant.OP_EDIT,         icon: 'edit',         event: 'edit',        hidden: true },
-	{ op: ZCS.constant.OP_REPLY,        icon: 'reply',        event: 'reply' },
-	{ op: ZCS.constant.OP_REPLY_ALL,    icon: 'replytoall',   event: 'replyAll' },
+    { op: ZCS.constant.OP_REPLY,        icon: 'reply',        event: 'showMenu',    menuName: ZCS.constant.MENU_CONV_REPLY },
 	{ op: ZCS.constant.OP_DELETE,       icon: 'trash',        event: 'delete' },
 	{ op: ZCS.constant.OP_MENU,         icon: 'arrow_down',   event: 'showMenu',    menuName: ZCS.constant.MENU_CONV }
 ];
@@ -370,11 +371,17 @@ ZCS.constant.REPLY_TO = 'REPLY_TO';
 ZCS.constant.SENDER   = 'SENDER';
 
 // Recipients
-ZCS.constant.RECIP_TYPES = [
-	ZCS.constant.TO,
-	ZCS.constant.CC,
-	ZCS.constant.BCC
-];
+if (Ext.os.deviceType === "Phone") {
+    ZCS.constant.RECIP_TYPES = [
+        ZCS.constant.TO
+    ];
+} else {
+    ZCS.constant.RECIP_TYPES = [
+        ZCS.constant.TO,
+        ZCS.constant.CC,
+        ZCS.constant.BCC
+    ];
+}
 
 // Map SOAP type constants to those above
 ZCS.constant.FROM_SOAP_TYPE = {};
@@ -524,6 +531,8 @@ ZCS.constant.FLAG_PROP[ZCS.constant.FLAG_INVITE]			= 'isInvite';
 ZCS.constant.MSEC_PER_MINUTE = 60000;
 ZCS.constant.MSEC_PER_HOUR = 60 * ZCS.constant.MSEC_PER_MINUTE;
 ZCS.constant.MSEC_PER_DAY = 24 * ZCS.constant.MSEC_PER_HOUR;
+ZCS.constant.MSEC_PER_WEEK = 7 * ZCS.constant.MSEC_PER_DAY;
+ZCS.constant.MSEC_PER_YEAR = 365 * ZCS.constant.MSEC_PER_DAY;
 
 // How many senders to show for a conv in the conv list
 ZCS.constant.NUM_CONV_SENDERS = 3;

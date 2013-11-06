@@ -52,9 +52,10 @@
 	border-right: 1px solid $default-border-color;
 }
 
-$zcs-toolbar-button-size: 1.4em;
-$zcs-titlebar-fontsize: 1.4em;
-$zcs-title-fontsize: 1.2rem; //uses rem so it's not relational to container bar
+$zcs-titlebar-fontsize: 1.4em;  // for titlebar icons
+$zcs-title-fontsize: 1.2rem;    //uses rem so it's not relational to container bar
+$zcs-list-header-fontsize: .75rem;
+$zcs-list-item-fontsize: 1rem;
 
 @mixin zimbra-button() {
 	background-image: none;
@@ -81,54 +82,68 @@ $zcs-button-active-color: rgba(255,255,255,.3);
 
 /* Overview */
 
-$zcs-overview-base-color: #333333;
+$zcs-overview-base-color: #666666;
+$zcs-overview-category-color: #333333;
 $zcs-overview-text-color: #E5E5E5;
 
 .zcs-overview {
-	@extend .zcs-side-panel;
 
-	.zcs-folder-list {
-		font-size: $zcs-titlebar-fontsize;
+	.x-button-icon {
+		color: $zcs-overview-text-color;
+	}
 
-		.x-toolbar {
-			background-color: $zcs-overview-base-color;
-			background-image: none;
+	.x-toolbar {
+		border-radius: 0;
+		border-bottom: none;
+		background-color: $zcs-overview-base-color;
+		background-image: none;
+		color: $zcs-overview-text-color;
+
+		.x-title {
 			color: $zcs-overview-text-color;
 
-			.x-title {
-				color: $zcs-overview-text-color;
-
-				.x-innerhtml {
-					font-size: $zcs-title-fontsize;
-				}
+			.x-innerhtml {
+				font-size: $zcs-title-fontsize;
 			}
 		}
+		.x-button-icon {
+			font-size: $zcs-titlebar-fontsize;
+		}
+	}
 
-		.x-dock-body {
-			font-size: .77em;
+	.x-dock-body {
 
-			.x-list {
-				background-color: lighten($zcs-overview-base-color, 5%);
+		.x-list {
+			background-color: $zcs-overview-base-color;
 
-				.x-list-header {
-					background-color: lighten($zcs-overview-base-color, 15%);
-					background-image: none;
-					border-top-color: lighten($zcs-overview-base-color, 20%);
-					border-bottom-color: lighten($zcs-overview-base-color, 10%);
+			.x-list-header {
+				padding: .25em 1em;
+				border-top: none;
+				border-bottom: none;
+				background-color: $zcs-overview-category-color;
+				background-image: none;
+				color: $zcs-overview-text-color;
+				.x-innerhtml {
+					font-size: $zcs-list-header-fontsize;
+				}
+			}
+
+			.x-list-item {
+				font-size: $zcs-list-item-fontsize;
+				//font-weight: bold;
+				border-top: none;
+				border-bottom: none;
+				background:transparent;
+
+				&.x-list-item-tpl{
 					color: $zcs-overview-text-color;
 				}
+				&.x-list-item-tpl:before {
+					border-bottom: none;
+				}
 
-				.x-list-item {
-					border-top-color: lighten($zcs-overview-base-color, 15%);
-
-					&.x-list-item-tpl{
-						border-bottom-width: 0;
-						color: $zcs-overview-text-color;
-					}
-
-					.x-innerhtml {
-						@include ellipsis();
-					}
+				.x-innerhtml {
+					@include ellipsis();
 				}
 			}
 		}
@@ -140,7 +155,70 @@ $zcs-overview-text-color: #E5E5E5;
 	border-radius: 0.3em;
 	box-shadow: rgba(0, 0, 0, 0.8) 0 0.2em 0.6em;
 	background-image: none;
-	border: 6px solid #000507;
+	border: 6px solid #CBCBCB;
+
+	.x-button {
+		top: inherit;
+		bottom: 0;
+		border-color: $base-color;
+		border-radius: 0.3em;
+
+		.x-button-label {
+			color: $base-color;
+		}
+	}
+
+	.x-list-inner {
+		background-color: #CBCBCB;
+
+		.x-list-item {
+			border-left: 1px solid $base-color;
+			border-right: 1px solid $base-color;
+			border-top: none;
+			background-color: $white;
+			color: $base-color;
+			text-align: center;
+		}
+
+		// Apply to all non hidden menu items
+		.x-list-item:not(.x-item-hidden) {
+			border-top: 1px solid $base-color;
+			border-top-right-radius: 0.3em;
+			border-top-left-radius: 0.3em;
+			.x-dock-horizontal {
+				border: none;
+			}
+		}
+		// Remove from all but first
+		.x-list-item:not(.x-item-hidden) ~ .x-list-item {
+			border-top: none;
+			border-top-right-radius: 0;
+			border-top-left-radius:0;
+			border-top: 1px solid #ccc;
+		}
+
+		.x-list-item-last {
+			border-bottom: 1px solid $base-color;
+			border-bottom-right-radius: 0.3em;
+			border-bottom-left-radius: 0.3em;
+		}
+	}
+}
+
+.zcs-contact-suggest {
+	border: 1px solid $base-color;
+	border-radius: 0.3em;
+	.x-list-item.x-list-item-first {
+		border-top: none;
+		.x-dock-horizontal {
+			border: none;
+		}
+	}
+}
+
+.x-phone .zcs-floating-list {
+	border-bottom-right-radius: 0px;
+	border-bottom-left-radius: 0px;
 }
 
 /* List Panel */

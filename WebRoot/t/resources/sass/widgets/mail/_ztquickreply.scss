@@ -6,10 +6,32 @@
 	border-top-left-radius: 0;
 	border-bottom-left-radius: 0;
 }
+.no-bottom-round {
+	border-bottom-right-radius: 0;
+	border-bottom-left-radius: 0;
+}
+.no-top-round {
+	border-top-right-radius: 0;
+	border-top-left-radius: 0;
+}
+
 
 .zcs-quick-reply {
 	background-color: $light-grey;
 	padding: .25em;
+
+	.x-toolbar {
+		border: $default-border;
+		border-top-left-radius: $default-textarea-radius;
+		border-top-right-radius: $default-textarea-radius;
+		border-bottom: none;
+		height: auto;
+		min-height: 30px;
+		.x-title .x-innerhtml {
+			white-space: normal;
+			text-align: left;
+		}
+	}
 
 	.x-form-fieldset {
 		margin: 0;
@@ -26,6 +48,15 @@
 				border: none;
 				border-radius: 0;
 			}
+		}
+	}
+
+	&.expanded {
+		.x-form-fieldset-inner.x-inner {
+			@extend .no-top-round;
+		}
+		.x-button {
+			@extend .no-top-round;
 		}
 	}
 

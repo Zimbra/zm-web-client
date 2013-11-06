@@ -89,10 +89,14 @@ Ext.define('ZCS.view.ux.ZtBubbleDropdown', {
 				this.showMenu = Ext.Function.createBuffered(function (value) {
 
 					if (!this.menu) {
-						this.menu = Ext.create('ZCS.common.ZtMenu', {
-							modal: true,
-							hideOnMaskTap: true,
+						this.menu = Ext.create('Ext.dataview.List', {
+							cls: 'zcs-contact-suggest',
+							itemTpl: '{label}',
+							scrollable: 'vertical',
+							defaultType: 'listitem',
+							disableSelection: true,
 							maxHeight: 400,
+							itemHeight: 68,
 							width: this.getMenuWidth()
 						});
 					}
@@ -119,7 +123,7 @@ Ext.define('ZCS.view.ux.ZtBubbleDropdown', {
 						keyboardHeight = ipadPortraitKeyboardHeight + prevNextBarHeight;
 					}
 
-					availableHeight = (viewportBox.height - keyboardHeight) - startY;
+					availableHeight = viewportBox.height - startY;
 
 					//Let the menu know that it only has the space between the bottom of the input
 					//and the top of the keyboard  to show itself, this will allow it to scroll.
@@ -199,8 +203,9 @@ Ext.define('ZCS.view.ux.ZtBubbleDropdown', {
 				label = record.get(me.getDropdownDisplayField());
 			}
 
-			var groupMembers, contactGroup;
-			if (record.get('isGroup')) {
+			var groupMembers, contactGroup,
+				isGroup = record.get('isGroup');
+			if (isGroup) {
 				contactGroup = ZCS.cache.get(record.get('contactId'));
 				if (contactGroup) {
 					groupMembers = Ext.Array.clean(Ext.Array.map(contactGroup.get('members'), function(member) {
@@ -238,9 +243,10 @@ Ext.define('ZCS.view.ux.ZtBubbleDropdown', {
 				store.removeAll();
 				store.resumeEvents();
 			}
+			menu.setHeight(Math.min(menu.get('maxHeight'), menu.get('itemHeight') * menuItems.length));
 			menu.setData(menuItems);
 			menu.on('itemtap', this.handleMenuItemTap, this);
-			menu.popup(this.getInput(), 'tc-bc?');
+			menu.showBy(this.getInput(), 'tc-bc?');
 		} else {
 			menu.hide();
 		}

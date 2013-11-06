@@ -23,32 +23,38 @@
 # an item template (itemTpl).
 
 <template id='ConvListItem'>
-	<div class='zcs-mail-list-slideable'>
-		<div class= 'zcs-mail-list-entry'>
-			<div class='zcs-mail-list'>
-				<tpl if='isInvite'>
-					<img class='zcs-mail-invitation' src='resources/images/invitation<tpl if='isUnread'>_unread</tpl>.png' />
-				<tpl else>
-					<span class='zcs-mail-readState<tpl if='isUnread'>-unread</tpl>'></span>
-				</tpl>
-				<div class='zcs-mail-senders<tpl if='isUnread'>-unread</tpl>'>
-					{senders}
+	<tpl if='deletedIndicator'>
+		<div class='zcs-mail-listitem-deleted'>
+			Conversation deleted
+		</div>
+	<tpl else>
+		<div class='zcs-mail-list-slideable'>
+			<div class= 'zcs-mail-list-entry'>
+				<div class='zcs-mail-list'>
+					<tpl if='isInvite'>
+						<img class='zcs-mail-invitation' src='resources/images/invitation<tpl if='isUnread'>_unread</tpl>.png' />
+					<tpl else>
+						<span class='zcs-mail-readState<tpl if='isUnread'>-unread</tpl>'></span>
+					</tpl>
+					<div class='zcs-mail-senders<tpl if='isUnread'>-unread</tpl>'>
+						{senders}
+					</div>
+					<div class='zcs-mail-date'>{dateStr}</div>
+					<tpl if='hasAttachment'>
+						<img class='zcs-mail-attachment' src='resources/images/attachment.png' />
+					</tpl>
+					<div class='zcs-mail-subject<tpl if='isUnread'>-unread</tpl>'>{subject:htmlEncode}</div>
+					<tpl if='numMsgs &gt; 1'>
+						<span class='zcs-numMsgs'>{numMsgs}</span>
+					</tpl>
+					<tpl if='isFlagged'>
+						<img  class='zcs-mail-flag' src='resources/images/flagged.png' />
+					</tpl>
+					<div class='zcs-mail-fragment'>{fragment:htmlEncode}</div>
 				</div>
-				<div class='zcs-mail-date'>{dateStr}</div>
-				<tpl if='hasAttachment'>
-					<img class='zcs-mail-attachment' src='resources/images/attachment.png' />
-				</tpl>
-				<div class='zcs-mail-subject<tpl if='isUnread'>-unread</tpl>'>{subject:htmlEncode}</div>
-				<tpl if='numMsgs &gt; 1'>
-					<span class='zcs-numMsgs'>{numMsgs}</span>
-				</tpl>
-				<tpl if='isFlagged'>
-					<img  class='zcs-mail-flag' src='resources/images/flagged.png' />
-				</tpl>
-				<div class='zcs-mail-fragment'>{fragment:htmlEncode}</div>
 			</div>
 		</div>
-	</div>
+	</tpl>
 </template>
 
 # In the message header templates below, the values FROM, TO, CC, and BCC are taken

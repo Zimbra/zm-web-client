@@ -47,7 +47,8 @@ Ext.define('ZCS.controller.ZtMainController', {
 				activeitemchange: function (tabPanel, tab, oldTab) {
 				    ZCS.app.fireEvent('applicationSwitch', tab.config.app);
 				    ZCS.session.setActiveApp(tab.config.app);
-				}
+				},
+				logout:     'doLogout'
 			},
 			settingsMenu: {
 				itemtap:    'onMenuItemSelect'
@@ -82,7 +83,6 @@ Ext.define('ZCS.controller.ZtMainController', {
 	 * Logs off the application
 	 */
 	doLogout: function() {
-
         var qs = location.search;
         var pairs = [];
         var j = 0;
@@ -100,7 +100,7 @@ Ext.define('ZCS.controller.ZtMainController', {
         }  else {
             logoutUrl = "/?loginOp=logout";
         }
-        // Append client=touch param to the logout url
+        //Append client=touch param to the logout url
         logoutUrl += "&client=touch";
 		window.location.href = logoutUrl;
 	},

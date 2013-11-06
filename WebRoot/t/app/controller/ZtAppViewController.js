@@ -13,7 +13,9 @@ Ext.define('ZCS.controller.ZtAppViewController', {
 	config: {
 		refs: {
 			appview: '.appview',
-			listpanelToggle: 'itempanel #listpanelToggle'
+			listpanelToggle: 'itempanel #listpanelToggle',
+			appsMenu: 'appsmenu',
+			appContainer: 'ztmain'
 		},
 
 		control : {
@@ -26,6 +28,15 @@ Ext.define('ZCS.controller.ZtAppViewController', {
 				tap: function () {
 					this.showListPanel();
 				}
+			},
+			'folderlist': {
+				showAppsMenu: 'doShowAppsMenu'
+			},
+			'caltoolbar': {
+				showAppsMenu: 'doShowAppsMenu'
+			},
+			'appsmenu list': {
+				itemtap: 'onAppMenuItemTap'
 			}
 
 		}
@@ -131,6 +142,23 @@ Ext.define('ZCS.controller.ZtAppViewController', {
 
             newAppView.itemPanel.show();
 		}, this);
+	},
+
+	doShowAppsMenu: function (button, e) {
+		this.hideOverviewPanel();
+		this.getAppsMenu().show();
+	},
+
+	onAppMenuItemTap: function (list, index, target, record, e) {
+		var mainAppContainer = this.getAppContainer(),
+			appName = record.get('app');
+
+		if (appName == 'signout') {
+			mainAppContainer.fireEvent('logout');
+		} else if (appName != 'settings') {
+			mainAppContainer.setActiveItem('[app='+appName+']');
+			this.getAppsMenu().hide();
+		}
 	},
 
 	/**

@@ -41,10 +41,17 @@ $bubble-close-icon-margin: 0;
     font-weight: $font-weight;
     line-height: $bubble-height;
     margin-right: $space-between-bubbles;
+    border-radius: 6px;
+    padding: 0px 5px;
     span {
         font-weight: normal;
         cursor: default;
     }
+}
+
+.menu-open .zcs-area-bubble {
+    background: $bubble-text-color;
+    color: $white;
 }
 
 .zcs-bubblearea {

@@ -144,16 +144,17 @@ Ext.define('ZCS.controller.mail.ZtConvListController', {
 	},
 
 	onItemTouchEnd: function (list, index, convItem, record, e, eOpts) {
+		var slidingEl = convItem.element.down('.zcs-mail-list-slideable');
 		list.container.innerElement.un({
 			touchmove: this.slideConvItem,
 			delegate: '.' + Ext.baseCSSPrefix + 'list-item',
 			scope: this
 		});
 		list.setScrollable(true);
-		convItem.element.down('.zcs-mail-list-slideable').setX(0);
-		if (convItem.element.hasCls('delete-active')) {
-			ZCS.app.fireEvent('swipeDeleteMailItem', record);
+		if (slidingEl.getX() == this.minListItemX) {
+			ZCS.app.fireEvent('swipeDeleteMailItem', record, list, convItem);
 		}
+		slidingEl.setX(0);
 		convItem.removeCls('x-item-pressed');
 	},
 

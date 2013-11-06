@@ -61,9 +61,21 @@ $zcs-mail-dateWidth: 5.5em;
 			background: $list-active-color;
 			color: $white;
 		}
-		&.x-item-pressed .zcs-mail-list-entry{
+		&.x-item-pressed .zcs-mail-list-entry {
 			background: #F3F3F3;
 			color: black;
+		}
+
+		&.x-list-item-tpl:before {
+			border-bottom: none;
+		}
+
+		.zcs-mail-listitem-deleted {
+			height: 90px;
+			background: white;
+			line-height: 90px;
+			text-align: center;
+			font-size: 1.2em;
 		}
 	}
 }

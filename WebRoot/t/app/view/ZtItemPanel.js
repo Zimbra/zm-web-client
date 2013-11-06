@@ -55,6 +55,7 @@ Ext.define('ZCS.view.ZtItemPanel', {
 		items.push({
 			xtype: 'button',
 			align: 'left',
+			iconCls: 'back',
 			itemId: 'listpanelToggle',
 			hidden: true
 		});
@@ -106,29 +107,37 @@ Ext.define('ZCS.view.ZtItemPanel', {
 			var quickReply = {
 				xtype: 'container',
 				itemId: 'quickReply',
-				docked: 'bottom',
 				cls: 'zcs-quick-reply',
+				docked: 'bottom',
 				hidden: true,
-				layout: 'hbox',
+				layout: 'vbox',
 				items: [{
-					xtype: 'fieldset',
-					flex: 1,
-					items: [
-						{
-							flex: 1,
-							xtype: 'textareafield',
-							placeholder: 'Test Placeholder',
-							height: ZCS.constant.QUICK_REPLY_SMALL
+					xtype: 'titlebar',
+					titleAlign: 'left',
+					hidden: true
+				}, {
+					xtype: 'container',
+					layout: 'hbox',
+					items: [{
+						xtype: 'fieldset',
+						flex: 1,
+						items: [
+							{
+								flex: 1,
+								xtype: 'textareafield',
+								placeholder: 'Test Placeholder',
+								height: ZCS.constant.QUICK_REPLY_SMALL
+							}
+						]
+					},{
+						xtype: 'button',
+						text: ZtMsg.send,
+						ui: 'neutral',
+						padding: '0 1em',
+						handler: function() {
+							ZCS.app.fireEvent('sendQuickReply');
 						}
-					]
-				},{
-					xtype: 'button',
-					text: ZtMsg.send,
-					ui: 'neutral',
-					padding: '0 1em',
-					handler: function() {
-						ZCS.app.fireEvent('sendQuickReply');
-					}
+					}]
 				}]
 			}
 			this.add(quickReply);

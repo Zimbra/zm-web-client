@@ -93,19 +93,19 @@ Ext.define('ZCS.view.ux.ZtBubbleArea', {
 
         name: null,
 
-	    listeners: {
-		    initialize: function() {
-			    var me = this;
+        listeners: {
+            initialize: function() {
+                var me = this;
 
-			    if (!me.getReadOnly()) {
-				    me.inputField = me.down('#inputField');
-				    me.element.on('tap', function (e, el) {
-					    me.focusInput();
-					    return true;
-				    });
-			    }
-		    }
-	    }
+                if (!me.getReadOnly()) {
+                    me.inputField = me.down('#inputField');
+                    me.element.on('tap', function (e, el) {
+                        me.focusInput();
+                        return true;
+                    });
+                }
+            }
+        }
     },
 
     /**
@@ -309,7 +309,7 @@ Ext.define('ZCS.view.ux.ZtBubbleArea', {
                 tpl: me.bubbleTpl,
                 data: bubbleModel,
                 listeners: {
-                    painted: function () {
+                    initialize: function () {
                         var thisBubble = this;
 
                         if (!me.getReadOnly()) {

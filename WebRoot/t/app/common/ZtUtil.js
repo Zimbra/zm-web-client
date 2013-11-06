@@ -282,9 +282,15 @@ Ext.define('ZCS.common.ZtUtil', {
 			} else if (dateDiff < ZCS.constant.MSEC_PER_DAY) {
 				num = Math.round(dateDiff / ZCS.constant.MSEC_PER_HOUR);
 				unit = num > 1 ? ZtMsg.hours : ZtMsg.hour;
-			} else {
+			} else if (dateDiff < ZCS.constant.MSEC_PER_WEEK) {
 				num = Math.round(dateDiff / ZCS.constant.MSEC_PER_DAY);
 				unit = num > 1 ? ZtMsg.days : ZtMsg.day;
+			} else if (dateDiff < ZCS.constant.MSEC_PER_YEAR) {
+				num = Math.round(dateDiff / ZCS.constant.MSEC_PER_WEEK);
+				unit = num > 1 ? ZtMsg.weeks : ZtMsg.week;
+			} else {
+				num = Math.round(dateDiff / ZCS.constant.MSEC_PER_YEAR);
+				unit = num > 1 ? ZtMsg.years : ZtMsg.year;
 			}
 			dateStr = Ext.String.format(ZtMsg.receivedRecently, num, unit);
 		}

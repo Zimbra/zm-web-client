@@ -22,17 +22,11 @@ Ext.define('ZCS.common.ZtMenu', {
 
 	extend: 'Ext.dataview.List',
 
-	animationToggle: 1,
-
 	config: {
-		/* Bottom centered */
 		bottom: 0,
-		left: Ext.Viewport.element.getWidth() / 2 - 80,
-		/* Centered in viweport */
-		centered: true,
-
 		cls: 'zcs-floating-list',
-		width: 160,	 // TODO: would be nicer to have it autosize to width of longest item
+		// TODO: would be nicer to have it autosize to width of longest item
+		width: Ext.os.deviceType === "Phone" ? Ext.Viewport.element.getWidth() : 160,
 		hidden: true,
 		modal: true,
 		hideOnMaskTap: true,
@@ -74,6 +68,13 @@ Ext.define('ZCS.common.ZtMenu', {
 		}, this);
 
 		me.callParent(arguments);
+		me.add({
+			xtype: 'button',
+			text: 'Cancel',
+			handler: function () {
+				me.hide();
+			}
+		});
 	},
 
 	/**
@@ -85,9 +86,10 @@ Ext.define('ZCS.common.ZtMenu', {
 	adjustHeight: function () {
 		var list = this,
 			totalHeight = list.getItemMap().getTotalHeight(),
-			actualHeight = 0;
+			actualHeight = 0,
+			bufferHeight = 52;  // additional height for margin and cancel button
 
-		this.setHeight(totalHeight + 12);
+		this.setHeight(totalHeight + bufferHeight);
 		//list.refresh();
 
 		var ln = list.listItems.length,
@@ -108,8 +110,8 @@ Ext.define('ZCS.common.ZtMenu', {
 			Ext.defer(this.adjustHeight, 100);
 		} else {
 			var heightToUse = Math.min(this.getMaxHeight(), actualHeight);
-			list.setHeight(heightToUse + 12);
-			list.setMaxHeight(heightToUse + 12);
+			list.setHeight(heightToUse + bufferHeight);
+			list.setMaxHeight(heightToUse + bufferHeight);
 		}
 	},
 
@@ -123,23 +125,11 @@ Ext.define('ZCS.common.ZtMenu', {
 		this.deselect(this.getSelection()); // clear the previous selection
 
 		if (Ext.os.deviceType === "Phone") {
-			if (this.animationToggle) {
-				this.setBottom(0);
-				this.setLeft(Ext.Viewport.element.getWidth() / 2 - 80);
-				this.show({
-					type: 'slide',
-					direction: 'up',
-					duration: 250
-				});
-				this.animationToggle = 0;
-			} else {
-				this.setBottom(Ext.Viewport.element.getHeight() / 2 - this.getHeight() / 2);
-				this.show({
-					type: 'fadeIn',
-					duration: 250
-				});
-				this.animationToggle = 1;
-			}
+			this.show({
+				type: 'slide',
+				direction: 'up',
+				duration: 250
+			});
 		} else {
 			this.showBy(this.getReferenceComponent(), positioning || 'tr-br?');
 		}

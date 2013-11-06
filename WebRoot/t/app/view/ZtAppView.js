@@ -65,6 +65,11 @@ Ext.define('ZCS.view.ZtAppView', {
 					{ label: ZtMsg.convMove,        action: ZCS.constant.OP_MOVE,       handlerName: 'doMove' },
 					{ label: ZtMsg.convTag,         action: ZCS.constant.OP_TAG,        handlerName: 'doTag' }
 				],
+				convReplyActions: [
+					{ label: ZtMsg.reply,       action: ZCS.constant.OP_REPLY,      handlerName: 'doReply' },
+					{ label: ZtMsg.replyAll,    action: ZCS.constant.OP_REPLY_ALL,  handlerName: 'doReplyAll' },
+					{ label: ZtMsg.forward,     action: ZCS.constant.OP_FORWARD,    handlerName: 'doForward' }
+				],
 				tagActions: [
 					{ label: ZtMsg.removeTag, action: ZCS.constant.OP_REMOVE_TAG,       handlerName: 'doRemoveTag' }
 				],
