@@ -489,10 +489,10 @@
 				</table>
 			</td>
 			<td>
-				<span id='${zdndToolTipId}' class='zdnd_tooltip'>
+				<div id='${zdndToolTipId}' class='zdnd_tooltip'>
 					<$=ZmMsg.dndTooltip$>
-				</span>
-				<span id='${attDivId}'></span>
+				</div>
+				<div id='${attDivId}'></div>
 			</td>
 			<td width='1%'></td>
 		</tr>
