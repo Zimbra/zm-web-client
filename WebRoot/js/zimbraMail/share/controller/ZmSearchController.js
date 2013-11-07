@@ -567,6 +567,9 @@ function(params, noRender, callback, errorCallback) {
     }
 	if (!errorCallback) {
 		errorCallback = this._handleErrorDoSearch.bind(this, search);
+		if (!params.errorCallback) {
+			params.errorCallback = errorCallback;
+		}
 	}
 
 	// calendar searching is special so hand it off if necessary

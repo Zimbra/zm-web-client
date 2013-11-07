@@ -675,18 +675,27 @@ function(params, result) {
 ZmApptCache.prototype._getApptSummariesError =
 function(params, ex) {
     var code = ex ? ex.code : null;
-	if (code == ZmCsfeException.MAIL_QUERY_PARSE_ERROR) {
-		var d = appCtxt.getMsgDialog();
-		d.setMessage(ZmMsg.errorCalendarParse);
-		d.popup();
-		return true;
-	}
+	if (params.errorCallback) {
+		//if there is a error callback handler then call it else do default handling
+		params.errorCallback.run(ex);
+		if (code !== ZmCsfeException.ACCT_NO_SUCH_ACCOUNT && code !== ZmCsfeException.MAIL_NO_SUCH_MOUNTPOINT) {
+			//additional processing is needed for these codes so do not return yet.
+			return true;
+		}
+	} else {
+		if (code == ZmCsfeException.MAIL_QUERY_PARSE_ERROR) {
+			var d = appCtxt.getMsgDialog();
+			d.setMessage(ZmMsg.errorCalendarParse);
+			d.popup();
+			return true;
+		}
 
-    if (code == ZmCsfeException.MAIL_NO_SUCH_TAG) {
-        var msg = ex.getErrorMsg();
-        appCtxt.setStatusMsg(msg, ZmStatusView.LEVEL_WARNING);
-        return true;
-    }
+		if (code == ZmCsfeException.MAIL_NO_SUCH_TAG) {
+			var msg = ex.getErrorMsg();
+			appCtxt.setStatusMsg(msg, ZmStatusView.LEVEL_WARNING);
+			return true;
+		}
+	}
 
 	var ids = {};
 	var invalidAccountMarker = {};
