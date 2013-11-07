@@ -64,8 +64,6 @@ ZmAttachDialog.prototype.constructor = ZmAttachDialog;
  */
 ZmAttachDialog.TABKEY_BRIEFCASE		= "BRIEFCASE";
 
-ZmAttachDialog.supportsHTML5 = ( window.FileReader/*Firefox*/ || AjxEnv.isChrome || AjxEnv.isSafari4up );
-
 //Listeners
 
 /**
@@ -475,7 +473,7 @@ function() {
     var sizeEl = document.getElementById(fieldId+"_size");
 
     //HTML5
-    if(ZmAttachDialog.supportsHTML5){
+    if(AjxEnv.supportsHTML5File){
         Dwt.setHandler(inputEl, "onchange", AjxCallback.simpleClosure(this._handleFileSize, this, inputEl, sizeEl));
     }
 
@@ -610,7 +608,7 @@ function(){
 ZmMyComputerTabViewPage.prototype.validate =
 function(){
     var status, errorMsg;
-    if(ZmAttachDialog.supportsHTML5){
+    if(AjxEnv.supportsHTML5File){
         status = this._validateFileSize();
         errorMsg = AjxMessageFormat.format(ZmMsg.attachmentSizeError, AjxUtil.formatSize(appCtxt.get(ZmSetting.MESSAGE_SIZE_LIMIT)));
     }else{
