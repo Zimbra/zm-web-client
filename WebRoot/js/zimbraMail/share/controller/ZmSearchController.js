@@ -702,9 +702,6 @@ function(search, ex) {
 	{
 		var msg = ex.getErrorMsg();
 		appCtxt.setStatusMsg(msg, ZmStatusView.LEVEL_WARNING);
-		var results = new ZmSearchResult(search);
-		results.type = search.types ? search.types.get(0) : null;
-		this._showResults(results, search);
 		return true;
 	}
 	return false;
