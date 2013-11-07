@@ -1368,6 +1368,10 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 	min-height:2rem;
 }
 
+.addrBubbleContainerPending {
+	background-color:#FFC;
+}
+
 .addrBubbleHolder-empty {
 	margin-top:0px;
 	padding:0px;

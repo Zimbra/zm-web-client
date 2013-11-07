@@ -50,6 +50,9 @@ ZmSearchResultsToolBar.prototype.toString = function() { return "ZmSearchResults
 
 ZmSearchResultsToolBar.prototype.TEMPLATE = "share.Widgets#ZmSearchResultsToolBar";
 
+ZmSearchResultsToolBar.prototype.PENDING_BUBBLE_CONTAINER_CLASS = "addrBubbleContainerPending";
+ZmSearchResultsToolBar.prototype.PENDING_SEARCH_DELAY = 2000; // 2 seconds
+
 ZmSearchResultsToolBar.prototype._createHtml =
 function() {
 
@@ -144,20 +147,47 @@ function(text, showError) {
 // Don't let the removal or addition of a bubble when we're setting up trigger a search loop.
 ZmSearchResultsToolBar.prototype._bubbleChange =
 function(bubble, added) {
-	if (!this._settingSearch) {
-		var pq = new ZmParsedQuery(bubble.address);
-		var tokens = pq.getTokens();
-		// don't run search if a conditional was added or removed
-		if (!(tokens && tokens[0] && tokens[0].type == ZmParsedQuery.COND)) {
-			// use timer to let content of search bar get set - if a search term is autocompleted,
-			// the bubble is added before the text it replaces is removed
-			setTimeout(this._handleEnterKeyPress.bind(this), 10);
-		}
+		//cancel existing timeout since we restart the 2 seconds wait.
+	this._clearPendingSearchTimeout();
+	if (this._settingSearch) {
+		return;
 	}
+	var pq = new ZmParsedQuery(bubble.address);
+	var tokens = pq.getTokens();
+	// don't run search if a conditional was added or removed
+	if (tokens && tokens[0] && tokens[0].type == ZmParsedQuery.COND) {
+		return;
+	}
+	//add class to make the search bar yellow to indicate it's a "pending" state (a.k.a. dirty or edit).
+	Dwt.addClass(this._searchField._elRef, this.PENDING_BUBBLE_CONTAINER_CLASS);
+	// wait 2 seconds before running the search, to see if the user continues to create bubbles (or delete them), so we don't send requests to the server annoying and blocking the user.
+	// Interestingly, I piggy-back on an existing timeout (but that was 10 miliseconds only), This is an old comment as to why there was already a very short timeout ==>
+	// use timer to let content of search bar get set - if a search term is autocompleted,
+	// the bubble is added before the text it replaces is removed
+	this._pendingSearchTimeout = setTimeout(this._handleEnterKeyPress.bind(this), this.PENDING_SEARCH_DELAY);
+};
+
+ZmSearchResultsToolBar.prototype._clearPendingSearchTimeout =
+function() {
+	if (!this._pendingSearchTimeout) {
+		return;
+	}
+	clearTimeout(this._pendingSearchTimeout);
+	this._pendingSearchTimeout = null;
+};
+
+ZmSearchResultsToolBar.prototype._handleKeyDown =
+function(ev) {
+	//cancel existing timeout since the user is still typing (new bubble, but not completed yet).
+	this._clearPendingSearchTimeout();
+	ZmSearchToolBar.prototype._handleKeyDown.apply(this, arguments);
 };
 
 ZmSearchResultsToolBar.prototype._handleEnterKeyPress =
 function(ev) {
+	//cancel existing timeout in case we explicitly clicked the enter key, so we don't want this to be called twice.
+	this._clearPendingSearchTimeout();
+	Dwt.delClass(this._searchField._elRef, this.PENDING_BUBBLE_CONTAINER_CLASS);
 	this.setLabel(ZmMsg.searching);
 	ZmSearchToolBar.prototype._handleEnterKeyPress.apply(this, arguments);
 };
