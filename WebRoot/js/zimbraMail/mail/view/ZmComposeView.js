@@ -1609,6 +1609,14 @@ function(incAddrs, incSubject) {
 	return curFormValue !== this._origFormValue;
 };
 
+ZmComposeView.prototype._setDNDTipVisible = function(show) {
+	// never show it unless the browser actually supports the required APIs
+	if (!AjxEnv.supportsHTML5File)
+		show = false;
+
+	Dwt.setVisible(ZmId.getViewId(this._view, ZmId.CMP_DND_TOOLTIP), show);
+};
+
 ZmComposeView.prototype._removeAttachedFile  =
 function(spanId, attachmentPart) {
 
@@ -1630,18 +1638,12 @@ function(spanId, attachmentPart) {
 		}
 	}
 
-	var dndTooltip = document.getElementById(ZmId.getViewId(this._view, ZmId.CMP_DND_TOOLTIP));
-	if (!parent.childNodes.length){
+	if (!parent.childNodes.length) {
 		this._attcDiv.innerHTML = "";
-		if (dndTooltip){
-			dndTooltip.innerHTML = ZmMsg.dndTooltip;
-			dndTooltip.style.display = "block";
-		}
+		this._setDNDTipVisible(true);
 	}
 	else {
-		if (dndTooltip){
-			dndTooltip.style.display = "none";
-		}
+		this._setDNDTipVisible(false);
 	}
 };
 
@@ -3105,13 +3107,13 @@ function() {
 	this._attButton.setEnabled(false);
 	this.enableToolbarButtons(this._controller, false);
 	this._controller._uploadingProgress = true;
-	Dwt.setVisible(ZmId.getViewId(this._view, ZmId.CMP_DND_TOOLTIP), false);
+	this._setDNDTipVisible(false);
 };
 
 ZmComposeView.prototype.checkAttachments =
 function() {
 	if (!this._attachCount) { return; }
-	Dwt.setVisible(ZmId.getViewId(this._view, ZmId.CMP_DND_TOOLTIP), false);
+	this._setDNDTipVisible(false);
 };
 
 ZmComposeView.prototype.updateAttachFileNode =
@@ -3154,8 +3156,7 @@ function(option) {
 	}
 
 	this._disableAttachments = !(option);
-
-	Dwt.setVisible(ZmId.getViewId(this._view, ZmId.CMP_DND_TOOLTIP),option);
+	this._setDNDTipVisible(option);
 };
 
 
