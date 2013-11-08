@@ -155,6 +155,7 @@ function() {
 							 newOp			: ZmOperation.NEW_BRIEFCASE,
 							 displayOrder	: 100,
 							 hasColor       : true,
+							 defaultColor	: ZmOrganizer.C_NONE,
 							 childWindow    : true
 							});
 };
