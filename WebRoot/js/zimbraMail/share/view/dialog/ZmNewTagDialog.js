@@ -114,7 +114,7 @@ function(color, text, image) {
 
 ZmNewTagDialog.prototype._contentHtml = 
 function() {
-	return AjxTemplate.expand("share.Dialogs#ZmPromptDialog", {id:this._htmlElId});
+	return AjxTemplate.expand("share.Dialogs#ZmNewTagDialog", {id:this._htmlElId});
 };
 
 ZmNewTagDialog.prototype._okButtonListener =
