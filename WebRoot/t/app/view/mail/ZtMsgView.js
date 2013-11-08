@@ -2,12 +2,12 @@
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2013 Zimbra Software, LLC.
- * 
+ *
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
@@ -39,6 +39,54 @@ Ext.define('ZCS.view.mail.ZtMsgView', {
 				xtype: 'msgheader'
 			}, {
 				xtype: 'msgbody'
+			}, {
+				xtype: 'button',
+				cls: 'zcs-btn-msg-details'
+			}, {
+				xtype: 'container',
+				docked: 'bottom',
+				hidden: true,
+				itemId: 'toolbarContainer',
+				items: [{
+					xtype: 'toolbar',
+					hidden: true,
+					height: 40,
+					cls: 'zcs-msg-actions-toolbar',
+					showAnimation: {
+						type: 'slide',
+						direction: 'down'
+					},
+					hideAnimation: {
+						type: 'slideOut',
+						direction: 'up'
+					},
+					listeners: {
+						hide: function () {
+							var parentContainer = this.up('#toolbarContainer');
+							if (parentContainer) {
+								parentContainer.hide();
+							}
+						}
+					},
+					items: [{
+						xtype: 'button',
+						text: 'Cancel',
+						action: 'cancel'
+					}, {
+						xtype: 'spacer'
+					}, {
+						xtype: 'button',
+						iconCls: 'reply',
+						menuName: ZCS.constant.MENU_MSG_REPLY
+					}, {
+						xtype: 'button',
+						iconCls: 'trash'
+					}, {
+						xtype: 'button',
+						iconCls: 'arrow_down',
+						menuName: ZCS.constant.MENU_MSG
+					}]
+				}]
 			}
 		],
 
@@ -66,7 +114,7 @@ Ext.define('ZCS.view.mail.ZtMsgView', {
 
 					var msgId = msgData.id;
 
-					this.doMsgViewUpdate(msgView, msgId, false);	
+					this.doMsgViewUpdate(msgView, msgId, false);
 				}
 			}
 		}

@@ -145,6 +145,42 @@ $zcs-overview-text-color: #E5E5E5;
 				.x-innerhtml {
 					@include ellipsis();
 				}
+
+				.zcs-menu-label {
+					padding-left: 40px;
+				}
+
+				.zcs-menu-icon:before {
+					font-size: 1.5em;
+					text-align: center;
+					font-family: "ZimbraTouch";
+					position: absolute;
+					top: 7px;
+				}
+				.zcs-menu-icon.mail:before {
+					content: "M";
+				}
+				.zcs-menu-icon.calendar:before {
+					content: "L";
+				}
+				.zcs-menu-icon.contacts:before {
+					content: "N";
+				}
+				.zcs-menu-icon.settings:before {
+					content: "S";
+				}
+				.zcs-menu-icon.signout:before {
+					content: "o";
+				}
+				.zcs-menu-icon.folder:before {
+					content: "M";
+				}
+				.zcs-menu-icon.search:before {
+					content: "s";
+				}
+				.zcs-menu-icon.tag:before {
+					content: "t";
+				}
 			}
 		}
 	}
@@ -178,6 +214,10 @@ $zcs-overview-text-color: #E5E5E5;
 			background-color: $white;
 			color: $base-color;
 			text-align: center;
+
+			&.x-item-disabled {
+				color: $light-grey;
+			}
 		}
 
 		// Apply to all non hidden menu items
@@ -197,7 +237,7 @@ $zcs-overview-text-color: #E5E5E5;
 			border-top: 1px solid #ccc;
 		}
 
-		.x-list-item-last {
+		.x-list-item:last-child {
 			border-bottom: 1px solid $base-color;
 			border-bottom-right-radius: 0.3em;
 			border-bottom-left-radius: 0.3em;

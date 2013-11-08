@@ -92,7 +92,7 @@ Ext.define('ZCS.view.ux.ZtBubbleDropdown', {
 						this.menu = Ext.create('Ext.dataview.List', {
 							cls: 'zcs-contact-suggest',
 							itemTpl: '{label}',
-							scrollable: 'vertical',
+							scrollable: Ext.os.deviceType === "Phone" ? false : 'vertical',
 							defaultType: 'listitem',
 							disableSelection: true,
 							maxHeight: 400,
@@ -252,7 +252,7 @@ Ext.define('ZCS.view.ux.ZtBubbleDropdown', {
 		}
 	},
 
-	handleMenuItemTap: function (list, index, target, record) {
+	handleMenuItemTap: function (list, index, target, record, e, eOpts) {
 		var me = this,
 			isGroup = record.get('isGroup'),
 			groupMembers = record.get('groupMembers'),

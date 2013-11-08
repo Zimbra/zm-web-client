@@ -100,15 +100,12 @@ Ext.define('ZCS.controller.mail.ZtConvListController', {
 	 *  scrolling and attach a continous touchmove listener.
 	 */
 	onItemTouchMove: function (list, index, convItem, record, e, eOpts) {
-		var me = this,
-			listItemWidth,
-			sliderDivWidth;
+		var me = this;
 
 		if (Math.abs(e.pageX - this.listItemLastMouseX) > Math.abs(e.pageY - this.listItemLastMouseY)) {
 			// Minimizing processing required in continuous touchmove handler
-			listItemWidth = convItem.element.getWidth();
 			sliderDivWidth = convItem.element.down('.zcs-mail-list-slideable').getWidth();
-			this.minListItemX = listItemWidth - sliderDivWidth;
+			this.deleteThreshold = convItem.element.getWidth() / -2;
 			this.currentSlidingEl = convItem.element.down('.zcs-mail-list-slideable');
 			this.currentSlidingItem = convItem;
 
@@ -127,9 +124,9 @@ Ext.define('ZCS.controller.mail.ZtConvListController', {
 		var moveDistance = e.pageX - this.listItemLastMouseX,
 			newX = this.listItemLastX + moveDistance;
 
-		// Don't move left past end of the item's width
-		if (newX < this.minListItemX) {
-			this.currentSlidingEl.setX(this.minListItemX);
+		// Apply delete style at halfway
+		if (newX <= this.deleteThreshold) {
+			this.currentSlidingEl.setX(newX);
 			this.currentSlidingItem.addCls('delete-active');
 		// Don't let item move right past start
 		} else if (newX > 0) {
@@ -151,7 +148,7 @@ Ext.define('ZCS.controller.mail.ZtConvListController', {
 			scope: this
 		});
 		list.setScrollable(true);
-		if (slidingEl.getX() == this.minListItemX) {
+		if (slidingEl.getX() <= this.deleteThreshold) {
 			ZCS.app.fireEvent('swipeDeleteMailItem', record, list, convItem);
 		}
 		slidingEl.setX(0);

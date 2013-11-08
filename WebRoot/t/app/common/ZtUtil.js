@@ -572,5 +572,16 @@ Ext.define('ZCS.common.ZtUtil', {
 
 	isAppEnabled: function(app) {
 		return ZCS.constant.IS_ENABLED[app] && ZCS.session.getSetting(ZCS.constant.APP_SETTING[app]);
+	},
+
+	getDeviceType: function () {
+		//Tablet is default for testing in a browser.
+		var dt = Ext.os.deviceType;
+
+		if (dt === 'Desktop') {
+			return 'tablet';
+		} else {
+			return dt.toLowerCase();
+		}
 	}
 });

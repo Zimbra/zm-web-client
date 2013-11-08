@@ -57,7 +57,7 @@ Ext.define('ZCS.controller.mail.ZtMailItemController', {
 	 */
 	doAssignmentView: function (item, type) {
 
-		var targetComp = Ext.Viewport.down('tabpanel'),
+		var targetComp = Ext.Viewport,
 			activeComp = this.getActiveMailComponent(),
 			activeList = activeComp.down('list'),
 			activeStore = activeList.getStore(),
@@ -217,11 +217,10 @@ Ext.define('ZCS.controller.mail.ZtMailItemController', {
 	/**
 	 * Toggles read/unread on the mail item.
 	 *
-	 * @param {ZtMailItem}   item     mail item
+	 * @param {Object}   actionParams     parameters associated with this action
 	 */
-	doMarkRead: function(item) {
-
-		item = item || this.getItem();
+	doMarkRead: function(actionParams) {
+		var item = actionParams.msg || this.getItem();
 
 		var isConv = (item.get('type') === ZCS.constant.ITEM_CONVERSATION),
 			isUnread = item.get('isUnread'),
@@ -242,11 +241,10 @@ Ext.define('ZCS.controller.mail.ZtMailItemController', {
 	/**
 	 * Toggles the flagged state of the mail item.
 	 *
-	 * @param {ZtMailItem}   item     mail item
+	 * @param {Object}   actionParams     parameters associated with this action
 	 */
-	doFlag: function(item) {
-
-		item = item || this.getItem();
+	doFlag: function(actionParams) {
+		var item = actionParams.msg || this.getItem();
 
 		var isConv = (item.get('type') === ZCS.constant.ITEM_CONVERSATION),
 			isFlagged = item.get('isFlagged'),

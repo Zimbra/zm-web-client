@@ -60,7 +60,7 @@ Ext.define('ZCS.controller.ZtAssignmentController', {
 
 	showAssignmentView: function(item, type, app, controller, afterAssignment) {
 
-		var targetComp = Ext.Viewport.down('tabpanel'),
+		var targetComp = Ext.Viewport,
 			itemPanel = Ext.ComponentQuery.query('appview #' + app + 'itempanel')[0],
 			cacheKey = [ type, app ].join('-'),
 			viewClass = 'ZCS.view.ux.Zt' + Ext.String.capitalize(type) + 'AssignmentView',

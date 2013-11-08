@@ -371,17 +371,11 @@ ZCS.constant.REPLY_TO = 'REPLY_TO';
 ZCS.constant.SENDER   = 'SENDER';
 
 // Recipients
-if (Ext.os.deviceType === "Phone") {
-    ZCS.constant.RECIP_TYPES = [
-        ZCS.constant.TO
-    ];
-} else {
-    ZCS.constant.RECIP_TYPES = [
-        ZCS.constant.TO,
-        ZCS.constant.CC,
-        ZCS.constant.BCC
-    ];
-}
+ZCS.constant.RECIP_TYPES = [
+	ZCS.constant.TO,
+	ZCS.constant.CC,
+	ZCS.constant.BCC
+];
 
 // Map SOAP type constants to those above
 ZCS.constant.FROM_SOAP_TYPE = {};
@@ -757,3 +751,34 @@ ZCS.constant.IS_FATAL_ERROR = ZCS.util.arrayAsLookupHash([
 	'service.AUTH_REQUIRED',
 	'service.AUTH_EXPIRED'
 ]);
+
+ZCS.constant.SIDE_MENU_CONFIG = {
+    tablet: {
+        landscape: {
+            itemNavigationReservesSpace: true,
+            itemNavigationAlwaysShown: true,
+            hasOverviewNavigation: true,
+            navigationWidth: 0.3
+	    },
+        portrait: {
+            itemNavigationReservesSpace: false,
+            itemNavigationAlwaysShown: false,
+            hasOverviewNavigation: true,
+            navigationWidth: 0.4
+        }
+    },
+    phone: {
+	    landscape: {
+            itemNavigationReservesSpace: false,
+            itemNavigationAlwaysShown: false,
+            hasOverviewNavigation: true,
+            navigationWidth: 0.8
+	    },
+	    portrait: {
+            itemNavigationReservesSpace: false,
+            itemNavigationAlwaysShown: false,
+            hasOverviewNavigation: true,
+            navigationWidth: 1.0
+        }
+    }
+};

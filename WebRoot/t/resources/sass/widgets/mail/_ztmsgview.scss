@@ -22,6 +22,9 @@
 		.x-dock {
 			border: none;
 		}
+		.x-docked-bottom {
+			overflow: hidden;
+		}
 
 		&.x-list-item:last-child {
 			border: none;
@@ -31,6 +34,32 @@
 			background-color: $msg-bg-color;
 			border: none;
 			border-radius: 5px;
+		}
+
+
+		.zcs-btn-msg-details {
+			height: 24px;
+			width: 24px;
+			position: absolute;
+			bottom: 0;
+			right: 0;
+			background: url('../images/msg_corner.png');
+			border: none;
+		}
+
+		.zcs-msg-actions-toolbar {
+			background: $medium-grey;
+
+			.x-button {
+				.x-button-label {
+					color: $dark-grey;
+					font-size: 1.2em;
+				}
+				.x-button-icon {
+					color: $dark-grey;
+					font-size: 1.4em;
+				}
+			}
 		}
 	}
 }
@@ -55,7 +84,7 @@ $msgHdrLabelIndent: $msgHdrImageSize + $msgHdrStdMargin;
 $msgHdrLeftIndent: $msgHdrImageSize + $msgHdrStdMargin*2;
 
 $msgHdrButtonSize: $msgHdrImageSize/1.5;
-$msgHdrRightIndent: $msgHdrButtonSize + $msgHdrStdMargin*4;
+$msgHdrRightIndent: $msgHdrStdMargin;
 $msgHdrDetailToggle: 6.5em;  /* width set for english text */
 
 $msgHdrTopOffset: $msgHdrStdMargin;

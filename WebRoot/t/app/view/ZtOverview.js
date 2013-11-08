@@ -73,7 +73,7 @@ Ext.define('ZCS.view.ZtOverview', {
 				items : [{
 					xtype: 'button',
 					cls: 'zcs-apps-btn',
-					iconCls: 'organizer',
+					iconCls: 'apps',
 					align: 'left',
 					handler: function() {
 						this.up('folderlist').fireEvent('showAppsMenu');

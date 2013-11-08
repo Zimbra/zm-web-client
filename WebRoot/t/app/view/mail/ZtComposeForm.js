@@ -98,27 +98,20 @@ Ext.define('ZCS.view.mail.ZtComposeForm', {
 						type: 'hbox'
 					},
 					items: [{
+						xtype: 'button',
+						itemId: 'showcc',
+						cls: 'zcs-show-cc-btn',
+						iconCls: 'collapsed',
+						handler: function () {
+							composeForm.showCcBcc(composeForm.down('#cc').isHidden());
+						}
+					}, {
 						xtype: 'contactfield',
 						name: ZCS.constant.TO,
 						addressType: ZCS.constant.TO,
 						flex: 1,
 						label: ZtMsg.toHdr,
-						labelWidth: '5.5em'
-					}, {
-						xtype: 'component',
-						cls: 'x-form-label x-form-label-nowrap x-field zcs-toggle-field',
-						itemId: 'ccToggle',
-						html: ZtMsg.showCcBcc,
-						hidden: isPhone,
-						height: '2.5em',
-						width: '6.5em',
-						listeners: {
-							initialize: function () {
-								this.element.on('tap', function() {
-									composeForm.showCcBcc(composeForm.down('#cc').isHidden());
-								});
-							}
-						}
+						labelWidth: '3em'
 					}]
 				}, {
 					xtype: 'contactfield',
@@ -126,7 +119,7 @@ Ext.define('ZCS.view.mail.ZtComposeForm', {
 					itemId: 'cc',
 					addressType: ZCS.constant.CC,
 					height: '2.5em',
-					hidden: isPhone,
+					hidden: true,
 					label: ZtMsg.ccHdr,
 					labelWidth: '5.5em'
 				}, {
@@ -135,7 +128,7 @@ Ext.define('ZCS.view.mail.ZtComposeForm', {
 					itemId: 'bcc',
 					addressType: ZCS.constant.BCC,
 					height: '2.5em',
-					hidden: isPhone,
+					hidden: true,
 					label: ZtMsg.bccHdr,
 					labelWidth: '5.5em'
 				}, {
@@ -246,20 +239,16 @@ Ext.define('ZCS.view.mail.ZtComposeForm', {
 
 	// TODO: Separate toggles for CC and BCC
 	showCcBcc: function(show) {
-		// Short circuit this if viewing on phone.
-		if (Ext.os.deviceType === "Phone") {
-			return;
-		}
-
 		if (show) {
 			this.down('#cc').show();
 			this.down('#bcc').show();
+			this.down('#showcc').setIconCls('expanded');
 		}
 		else {
 			this.down('#cc').hide();
 			this.down('#bcc').hide();
+			this.down('#showcc').setIconCls('collapsed');
 		}
-		this.down('#ccToggle').setHtml(show ? ZtMsg.hideCcBcc : ZtMsg.showCcBcc);
 	},
 
 	doAttach: function () {
@@ -268,10 +257,8 @@ Ext.define('ZCS.view.mail.ZtComposeForm', {
 
 	resetForm: function () {
 		this.down('.formpanel').reset();
-		if (Ext.os.deviceType !== "Phone") {
-			this.down('#ccToggle').show();
-			this.down('#cc').hide();
-			this.down('#bcc').hide();
-		}
+		this.down('#cc').hide();
+		this.down('#bcc').hide();
+		this.down('#showcc').setIconCls('collapsed');
 	}
 });

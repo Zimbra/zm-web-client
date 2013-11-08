@@ -88,6 +88,7 @@ Ext.define('ZCS.controller.ZtAppViewController', {
 			var newDimensions = this.resetPanelSize(width, height);
 			this.updateModalnessOfOverlays(newDimensions);
 			this.updatelistpanelToggle(this.overviewTitle);
+			this.getAppsMenu().setDimensions();
 			ZCS.app.fireEvent('orientationChange', newDimensions);
 		}, this);
 
@@ -406,7 +407,7 @@ Ext.define('ZCS.controller.ZtAppViewController', {
 	},
 
 	showPlaceholder: function (positioningConfig) {
-		var orientationConfig = positioningConfig[this.getDeviceType()][this.orientation];
+		var orientationConfig = positioningConfig[ZCS.util.getDeviceType()][this.orientation];
 
 		return orientationConfig.itemNavigationReservesSpace;
 	},
@@ -416,7 +417,7 @@ Ext.define('ZCS.controller.ZtAppViewController', {
 	},
 
 	alwaysShowListPanel: function (positioningConfig) {
-		var orientationConfig = positioningConfig[this.getDeviceType()][this.orientation];
+		var orientationConfig = positioningConfig[ZCS.util.getDeviceType()][this.orientation];
 
 		return orientationConfig.itemNavigationAlwaysShown;
 	},
@@ -425,7 +426,7 @@ Ext.define('ZCS.controller.ZtAppViewController', {
 	 * @private
 	 */
 	getNavigationWidth: function (positioningConfig, width) {
-		var orientationConfig = positioningConfig[this.getDeviceType()][this.orientation],
+		var orientationConfig = positioningConfig[ZCS.util.getDeviceType()][this.orientation],
 			width = (width || Ext.Viewport.element.getWidth()) * orientationConfig.navigationWidth;
 
 		return width;
@@ -435,7 +436,7 @@ Ext.define('ZCS.controller.ZtAppViewController', {
 	 * @private
 	 */
 	getItemPanelWidth: function (positioningConfig) {
-		var orientationConfig = positioningConfig[this.getDeviceType()][this.orientation];
+		var orientationConfig = positioningConfig[ZCS.util.getDeviceType()][this.orientation];
 
 		if (orientationConfig.itemNavigationReservesSpace) {
 			return (100 - orientationConfig.navigationWidth * 100) + '%';
@@ -481,16 +482,5 @@ Ext.define('ZCS.controller.ZtAppViewController', {
 
 	getOverviewPanelHeight: function (height) {
 		return (height || Ext.Viewport.element.getHeight());
-	},
-
-	getDeviceType: function () {
-		//Tablet is default for testing in a browser.
-		var dt = Ext.os.deviceType;
-
-		if (dt === 'Desktop') {
-			return 'tablet';
-		} else {
-			return dt.toLowerCase();
-		}
 	}
 });

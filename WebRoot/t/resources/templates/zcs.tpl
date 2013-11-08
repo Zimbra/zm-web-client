@@ -92,9 +92,6 @@
 		</div>
 		</tpl>
 		<a class='zcs-msgHdr-link' onClick='return false;'>{[ZtMsg.showDetails]}</a>
-		<a class='x-button-normal x-button x-iconalign-center x-layout-box-item x-stretched zcs-flat zcs-msgHdr-menuButton' onClick='return false;'>
-			<span class='zcs-msgHeader-menuButton-span x-button-icon x-shown arrow_down'></span>
-		</a>
 		</div>
 		<tpl if='tags && tags.length'>
 		<div class='zcs-mail-dtlMsgHdr'>
@@ -128,9 +125,6 @@
 		</tpl>
 		<div class='zcs-msgHdr-date'>{fullDateStr}</div>
 		<a class='zcs-msgHdr-link' onClick='return false;'>{[ZtMsg.hideDetails]}</a>
-		<a class='x-button-normal x-button x-iconalign-center zcs-flat x-layout-box-item x-stretched zcs-msgHdr-menuButton' onClick='return false;'>
-			<span class='x-button-icon x-shown arrow_down'></span>
-		</a>
 	</div>
 	<tpl if='addrs.TO'>
 		<div class='zcs-mail-dtlMsgHdr'>

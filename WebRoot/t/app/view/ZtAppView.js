@@ -45,13 +45,14 @@ Ext.define('ZCS.view.ZtAppView', {
 				msgActions: [
 					{ label: ZtMsg.markRead,    action: ZCS.constant.OP_MARK_READ,  handlerName: 'doMarkRead' },
 					{ label: ZtMsg.flag,        action: ZCS.constant.OP_FLAG,       handlerName: 'doFlag' },
-					{ label: ZtMsg.reply,       action: ZCS.constant.OP_REPLY,      handlerName: 'doReply' },
-					{ label: ZtMsg.replyAll,    action: ZCS.constant.OP_REPLY_ALL,  handlerName: 'doReplyAll' },
-					{ label: ZtMsg.forward,     action: ZCS.constant.OP_FORWARD,    handlerName: 'doForward' },
 					{ label: ZtMsg.move,        action: ZCS.constant.OP_MOVE,       handlerName: 'doMove' },
 					{ label: ZtMsg.tag,         action: ZCS.constant.OP_TAG,        handlerName: 'doTag' },
-					{ label: ZtMsg.markSpam,    action: ZCS.constant.OP_SPAM,       handlerName: 'doSpam' },
-					{ label: ZtMsg.del,         action: ZCS.constant.OP_DELETE,     handlerName: 'doDelete' }
+					{ label: ZtMsg.markSpam,    action: ZCS.constant.OP_SPAM,       handlerName: 'doSpam' }
+				],
+				msgReplyActions: [
+					{ label: ZtMsg.reply,       action: ZCS.constant.OP_REPLY,      handlerName: 'doReply' },
+					{ label: ZtMsg.replyAll,    action: ZCS.constant.OP_REPLY_ALL,  handlerName: 'doReplyAll' },
+					{ label: ZtMsg.forward,     action: ZCS.constant.OP_FORWARD,    handlerName: 'doForward' }
 				],
 				addressActions: [
 					{ label: ZtMsg.editContact, action: ZCS.constant.OP_EDIT,           handlerName:   'doEditContact'},
@@ -89,36 +90,6 @@ Ext.define('ZCS.view.ZtAppView', {
 					{ label: ZtMsg.tag,         action: ZCS.constant.OP_TAG,        handlerName: 'doTag' },
 					{ label: ZtMsg.del,         action: ZCS.constant.OP_DELETE,     handlerName: 'doDelete' }
 				]
-			}
-		},
-		positioningConfig: {
-			tablet: {
-				landscape: {
-					itemNavigationReservesSpace: true,
-					itemNavigationAlwaysShown: true,
-					hasOverviewNavigation: true,
-					navigationWidth: 0.3
-				},
-				portrait: {
-					itemNavigationReservesSpace: false,
-					itemNavigationAlwaysShown: false,
-					hasOverviewNavigation: true,
-					navigationWidth: 0.4
-				}
-			},
-			phone: {
-				landscape: {
-					itemNavigationReservesSpace: false,
-					itemNavigationAlwaysShown: false,
-					hasOverviewNavigation: true,
-					navigationWidth: 0.8
-				},
-				portrait: {
-					itemNavigationReservesSpace: false,
-					itemNavigationAlwaysShown: false,
-					hasOverviewNavigation: true,
-					navigationWidth: 1.0
-				}
 			}
 		}
 	},
@@ -161,14 +132,14 @@ Ext.define('ZCS.view.ZtAppView', {
 	},
 
 	registerOverviewPanel: function (overviewPanelConfig) {
-		this.fireEvent('registerOverviewPanel', overviewPanelConfig, this, this.getPositioningConfig());
+		this.fireEvent('registerOverviewPanel', overviewPanelConfig, this, ZCS.constant.SIDE_MENU_CONFIG);
 	},
 
 	registerListPanel: function (listPanelConfig) {
-		this.fireEvent('registerListPanel', listPanelConfig, this, this.getPositioningConfig());
+		this.fireEvent('registerListPanel', listPanelConfig, this, ZCS.constant.SIDE_MENU_CONFIG);
 	},
 
 	registerItemPanel: function (itemPanelConfig) {
-		this.fireEvent('registerItemPanel', itemPanelConfig, this, this.getPositioningConfig());
+		this.fireEvent('registerItemPanel', itemPanelConfig, this, ZCS.constant.SIDE_MENU_CONFIG);
 	}
 });

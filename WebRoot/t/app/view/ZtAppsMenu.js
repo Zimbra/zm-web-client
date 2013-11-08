@@ -51,6 +51,7 @@ Ext.define('ZCS.view.ZtAppsMenu', {
             xtype: 'list',
             flex: 1,
             grouped: true,
+            itemTpl: '<div class="zcs-menu-icon {app}"></div><div class="zcs-menu-label">{text}</div>',
             store: {
                 data: menuItems,
                 grouper: {
@@ -60,10 +61,16 @@ Ext.define('ZCS.view.ZtAppsMenu', {
                 }
             }
         }]);
-
-        this.setHeight(Ext.Viewport.element.getHeight());
-        this.setWidth(Ext.Viewport.element.getWidth() * 0.3);
+        this.setDimensions();
         this.callParent(arguments);
+    },
+
+    setDimensions: function () {
+        var orientation = Ext.Viewport.getOrientation(),
+            deviceType = ZCS.util.getDeviceType(),
+            menuPositionConfig = ZCS.constant.SIDE_MENU_CONFIG[deviceType][orientation];
+        this.setHeight(Ext.Viewport.element.getHeight());
+        this.setWidth(Ext.Viewport.element.getWidth() * menuPositionConfig.navigationWidth);
     }
 
 });

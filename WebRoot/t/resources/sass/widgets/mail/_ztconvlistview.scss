@@ -21,7 +21,7 @@ $zcs-mail-dateWidth: 5.5em;
 
 
 .zcs-mail-list-slideable {
-	width: 120%;
+	width: 200%;
 	overflow: hidden;
 	position: absolute;
 
@@ -30,7 +30,7 @@ $zcs-mail-dateWidth: 5.5em;
 	.zcs-mail-list-entry {
 		background: white;
 		height: 90px;
-		width: 84%;   /* 100/120 = 83 */
+		width: 50%;
 		float: left;
 		overflow: hidden;
 		padding: 5px;
@@ -43,10 +43,6 @@ $zcs-mail-dateWidth: 5.5em;
 
 .zcs-conv-list {
 	.x-list-item {
-		background-image: url(../images/trash.png) !important;
-		background-position: 95% 50% !important;
-		background-repeat: no-repeat no-repeat !important;
-
 		border-top: none !important;
 		background-color: #DCDCDC !important;
 		&.delete-active {
@@ -55,6 +51,17 @@ $zcs-mail-dateWidth: 5.5em;
 
 		.x-innerhtml {
 			padding: 0px !important;
+		}
+
+		.x-innerhtml:before {
+			position: absolute;
+			right: 30px;
+			text-align: center;
+			font-family: "ZimbraTouch";
+			content: "T";
+			color: $white;
+			line-height: 90px;
+			font-size: 3em;
 		}
 
 		&.x-item-selected .zcs-mail-list-entry {
