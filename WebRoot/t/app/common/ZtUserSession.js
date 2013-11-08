@@ -124,6 +124,8 @@ Ext.define('ZCS.common.ZtUserSession', {
 		// name of logged-in account
 		this.setAccountName(gir.name);
 
+		this.loadSignature(gir.signatures);
+
 		// save the JSON results of the user's initial search (usually 'in:inbox')
 		this.setInitialSearchResults(data.response.SearchResponse[0]);
 
@@ -509,5 +511,44 @@ Ext.define('ZCS.common.ZtUserSession', {
 				ZCS.session.msgBodyCss = response.responseText
 			}
 		});
+	},
+
+	/**
+	 * Find the most appropriate signature(s) to use for compose and reply/forward. If there is a
+	 * signature named "Mobile", that's used for everything. Otherwise, we look for signatures for
+	 * the primary account.
+	 *
+	 * @param {Object}  data
+	 */
+	loadSignature: function(data) {
+
+		var signatures = data && data.signature,
+			ln = signatures ? signatures.length : 0, i,
+			defaultSig, replySig, mobileSig,
+			defaultSigId = ZCS.session.getSetting(ZCS.constant.SETTING_SIGNATURE_ID),
+			replySigId = ZCS.session.getSetting(ZCS.constant.SETTING_REPLY_SIGNATURE_ID);
+
+		for (i = 0; i < ln; i++) {
+			var sig = signatures[i],
+				content = sig.content && sig.content[0],
+				value = content && content._content,
+				type = content && content.type;
+
+			if (!value) {
+				continue;
+			}
+			if (sig.name === 'Mobile') {
+				mobileSig = value;
+			}
+			else if (sig.id === defaultSigId) {
+				defaultSig = value;
+			}
+			else if (sig.id === replySigId) {
+				replySig = value;
+			}
+		}
+
+		ZCS.session.setSetting(ZCS.constant.SETTING_SIGNATURE, mobileSig || defaultSig);
+		ZCS.session.setSetting(ZCS.constant.SETTING_REPLY_SIGNATURE, mobileSig || replySig);
 	}
 });

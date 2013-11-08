@@ -92,7 +92,8 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 
 		var addresses = {},
 			subject = null,
-			body = null;
+			body = null,
+			signature = ZCS.session.getSetting(ZCS.constant.SETTING_SIGNATURE);
 
 		if (msg) {
 			Ext.each(ZCS.constant.RECIP_TYPES, function(type) {
@@ -100,6 +101,9 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 			}, this);
 			subject = this.getSubject(msg, '');
 			body = msg.getContentForInclusion();
+		}
+		else {
+			body = signature ? '<br><br>' + signature : null;
 		}
 
 		this.setAction(ZCS.constant.OP_COMPOSE);
@@ -113,17 +117,7 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 	 * @param {ZtMailMsg}   msg     original message
 	 */
 	reply: function(msg) {
-
-		var action = ZCS.constant.OP_REPLY,
-			addrs = this.getReplyAddresses(msg, action),
-			subject = this.getSubject(msg, ZtMsg.rePrefix),
-			body = this.quoteOrigMsg(msg, action);
-
-		this.setAction(action);
-		this.setOrigMsg(msg);
-		this.setDraftId(null);
-
-		this.showComposeForm(addrs, subject, body, msg);
+		this.doReply(msg, false);
 	},
 
 	/**
@@ -132,8 +126,12 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 	 * @param {ZtMailMsg}   msg     original message
 	 */
 	replyAll: function(msg) {
+		this.doReply(msg, true);
+	},
 
-		var action = ZCS.constant.OP_REPLY_ALL,
+	doReply: function(msg, replyAll) {
+
+		var action = replyAll ? ZCS.constant.OP_REPLY_ALL : ZCS.constant.OP_REPLY,
 			addrs = this.getReplyAddresses(msg, action),
 			subject = this.getSubject(msg, ZtMsg.rePrefix),
 			body = this.quoteOrigMsg(msg, action);
@@ -527,7 +525,8 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 		var headerText = '',
 			headers = [],
 			hdrList = ZCS.constant.QUOTED_HDRS,
-			sep = '<br><br>',
+			sep1 = '<br>',
+			sep2 = '<br><br>',
 			ln = hdrList.length, i, hdr;
 
 		if (incHeaders) {
@@ -537,7 +536,7 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 					headers.push(hdr);
 				}
 			}
-			headerText += headers.join('<br>') + sep;
+			headerText += headers.join('<br>') + sep2;
 		}
 
 		var content = msg.getContentForInclusion(),
@@ -555,7 +554,23 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 
 		var	quoted = usePrefix ? this.quoteHtml(content) : content;
 
-		return sep + ZCS.constant.HTML_QUOTE_DIVIDER + quoted;
+		var signature = ZCS.session.getSetting(ZCS.constant.SETTING_REPLY_SIGNATURE),
+			sigStyle = ZCS.session.getSetting(ZCS.constant.SETTING_SIGNATURE_STYLE),
+			body = '';
+
+		if (signature) {
+			if (sigStyle === ZCS.constant.SIG_OUTLOOK) {
+				body = sep2 + signature + sep2 + ZCS.constant.HTML_QUOTE_DIVIDER + quoted;
+			}
+			else {
+				body = sep2 + ZCS.constant.HTML_QUOTE_DIVIDER + quoted + sep2 + '--<br>' + signature;
+			}
+		}
+		else {
+			body = sep2 + ZCS.constant.HTML_QUOTE_DIVIDER + quoted;
+		}
+
+		return body;
 	},
 
 	/**

@@ -406,6 +406,10 @@ ZCS.constant.TYPE_BOOLEAN   = 'boolean';
 ZCS.constant.TYPE_ARRAY     = 'array';
 ZCS.constant.TYPE_HASH      = 'hash';
 
+// Content types
+ZCS.constant.TEXT_PLAIN = 'text/plain';
+ZCS.constant.TEXT_HTML  = 'text/html';
+
 // Names of user settings (LDAP attribute names)
 
 // General
@@ -427,6 +431,9 @@ ZCS.constant.SETTING_MAIL_ENABLED       = 'zimbraFeatureMailEnabled';
 ZCS.constant.SETTING_MARK_READ          = 'zimbraPrefMarkMsgRead';  // -1 = never, 0 = now, [int] = delay in seconds
 ZCS.constant.SETTING_REPLY_INCLUDE      = 'zimbraPrefReplyIncludeOriginalText';
 ZCS.constant.SETTING_REPLY_PREFIX       = 'zimbraPrefForwardReplyPrefixChar';
+ZCS.constant.SETTING_SIGNATURE_ID       = 'zimbraPrefDefaultSignatureId';
+ZCS.constant.SETTING_REPLY_SIGNATURE_ID = 'zimbraPrefForwardReplySignatureId';
+ZCS.constant.SETTING_SIGNATURE_STYLE    = 'zimbraPrefMailSignatureStyle';
 ZCS.constant.SETTING_TRUSTED_SENDERS    = 'zimbraPrefMailTrustedSenderList';
 
 // Contacts
@@ -445,8 +452,10 @@ ZCS.constant.SETTING_FORWARD_USE_PREFIX         = 'FORWARD_USE_PREFIX';
 ZCS.constant.SETTING_GET_NAME_FROM_CONTACTS     = 'GET_NAME_FROM_CONTACTS';
 ZCS.constant.SETTING_REPLY_INCLUDE_HEADERS      = 'REPLY_INCLUDE_HEADERS';
 ZCS.constant.SETTING_REPLY_INCLUDE_WHAT         = 'REPLY_INCLUDE_WHAT';
+ZCS.constant.SETTING_REPLY_SIGNATURE            = 'REPLY_SIGNATURE';
 ZCS.constant.SETTING_REPLY_USE_PREFIX           = 'REPLY_USE_PREFIX';
 ZCS.constant.SETTING_REST_URL                   = 'REST_URL';
+ZCS.constant.SETTING_SIGNATURE                  = 'SIGNATURE';
 
 ZCS.constant.SETTINGS = ZCS.constant.makeList('SETTING_');
 
@@ -474,6 +483,10 @@ ZCS.constant.SETTING_DEFAULT[ZCS.constant.SETTING_LOCALE]                   = 'e
 ZCS.constant.SETTING_DEFAULT[ZCS.constant.SETTING_GET_NAME_FROM_CONTACTS]   = true; // see bug 81656
 ZCS.constant.SETTING_DEFAULT[ZCS.constant.SETTING_SHOW_DL_FOLDER]           = true;
 ZCS.constant.SETTING_DEFAULT[ZCS.constant.SETTING_CONVERSATION_ORDER]       = ZCS.constant.DATE_DESC;
+
+// Signature styles
+ZCS.constant.SIG_INTERNET   = "internet";
+ZCS.constant.SIG_OUTLOOK    = "outlook";
 
 // Setting that tells us if an app is enabled
 ZCS.constant.APP_SETTING = {};
