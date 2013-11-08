@@ -2427,7 +2427,9 @@ function(m, cancel) {
             pct = part.getContentType();
 
 			if (pct == ZmMimeTable.TEXT_HTML) {
-				content = "<html><body id='htmlmode'>" + (this._includeEditReply ? part.getContent() : AjxBuffer.concat(hprefix, part.getContent())) + "</body></html>";
+                var htmlContent = part.getContent();
+                htmlContent = AjxStringUtil.defangHtmlContent(htmlContent);
+                content = "<html><body id='htmlmode'>" + (this._includeEditReply ? htmlContent : AjxBuffer.concat(hprefix, htmlContent)) + "</body></html>";
 			} else {
 				content = this._includeEditReply ? part.getContent() : AjxBuffer.concat(tprefix, part.getContent());
 			}
