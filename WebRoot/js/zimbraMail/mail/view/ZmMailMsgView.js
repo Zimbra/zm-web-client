@@ -945,12 +945,14 @@ function(params) {
 	// - msg is HTML
 	// - user pref says not to show images up front, or this is Spam folder
 	// - we're not already showing images
-	// - there are <img> tags
+	// - there are <img> tags OR tags with dfbackground set
 	var isSpam = (this._msg && this._msg.folderId == ZmOrganizer.ID_SPAM);
 	var imagesNotShown = (!this._msg || !this._msg.showImages);
 	this._needToShowInfoBar = (!params.isTextMsg &&
 		(!appCtxt.get(ZmSetting.DISPLAY_EXTERNAL_IMAGES) || isSpam) &&
-		imagesNotShown && /<img/i.test(html));
+		imagesNotShown &&
+		(/<img/i.test(html) || /<[^>]+dfbackground/.test(html)));
+
 	var displayImages;
 	if (this._needToShowInfoBar) {
 		displayImages = this._showInfoBar(this._infoBarId);
