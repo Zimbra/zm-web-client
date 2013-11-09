@@ -681,19 +681,19 @@ function(contact, extraMenu) {
 ZmListController.setContactTextOnMenus =
 function(contact, menus) {
 	menus = AjxUtil.toArray(menus);
-	var newOp = contact ? ZmOperation.EDIT_CONTACT : ZmOperation.NEW_CONTACT;
-	var newText;
-	if (!contact) {
-		newText = ZmMsg.AB_ADD_CONTACT;
-	}
-	else if (contact.isDistributionList()) {
+	var newOp = ZmOperation.EDIT_CONTACT;
+	var newText = null; //no change ("edit contact")
+
+	if (contact && contact.isDistributionList()) {
 		newText = ZmMsg.AB_EDIT_DL;
 	}
-	else if (contact.isGroup()) {
+	else if (contact && contact.isGroup()) {
 		newText = ZmMsg.AB_EDIT_GROUP;
 	}
-	else {
-		newText = null; //no change ("edit contact")
+	else if (!contact || contact.isGal) {
+		// if there's no contact, or it's a GAL contact - there's no "edit" - just "add".
+		newText = ZmMsg.AB_ADD_CONTACT;
+		newOp = ZmOperation.NEW_CONTACT;
 	}
 
 	for (var i = 0; i < menus.length; i++) {
