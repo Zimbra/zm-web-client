@@ -2849,7 +2849,16 @@ function(composeMode) {
 
 	// init html editor
 	if (appCtxt.isTinyMCEEnabled()) {
-		this._htmlEditor = new ZmAdvancedHtmlEditor(this, DwtControl.RELATIVE_STYLE, null, this._composeMode);
+		var attmcallback =
+			this.showAttachmentDialog.bind(this, ZmComposeView.UPLOAD_INLINE);
+
+		this._htmlEditor =
+			new ZmAdvancedHtmlEditor({
+				parent: this,
+				posStyle: DwtControl.RELATIVE_STYLE,
+				mode: this._composeMode,
+				attachmentCallback: attmcallback
+			});
 		this._bodyFieldId = this._htmlEditor.getBodyFieldId();
 		this._bodyField = document.getElementById(this._bodyFieldId);
 	} else {

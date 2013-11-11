@@ -111,7 +111,7 @@
     <property name="ffext.src.dir" value="ffext/src/zimbradnd"/>
 
     <!-- TINY_MCE INTEGRATION -->
-    <property name="tinymce.version" value="3.5.4.1"/>
+    <property name="tinymce.version" value="4.0.10"/>
     <property name='tinymce.dir' value='${js.dir}/ajax/3rdparty/tinymce'/>
     <property name="tinymce.zplugins.dir" value="${web.dir}/tiny_mce_plugins"/>
 
@@ -1639,15 +1639,46 @@ if (ext == null) ext = "";
     <target name="tinymce">
         <copy todir='${tinymce.dir}' verbose='${sync.verbose}'>
             <fileset dir='${web.dir}/tiny_mce/${tinymce.version}' />
+            <scriptmapper language="javascript">
+                // replace dots with underscores in JS file names, retaining the suffix
+                if (/\.js$/.test(source)) {
+                  source = source.substr(0, source.length - 3).replace(/\./g, '_') + '.js';
+                }
+                self.addMappedName(source);
+            </scriptmapper>
         </copy>
-        <copy todir='${tinymce.dir}/plugins' verbose='${sync.verbose}'>
-            <fileset dir='${tinymce.zplugins.dir}' excludes="plugins/**,themes/**,langs/**"/>
-        </copy>
-        <copy todir='${tinymce.dir}' verbose='${sync.verbose}' overwrite="true">
-            <fileset dir="${tinymce.zplugins.dir}" includes="plugins/**,themes/**,langs/**">
-                <different targetdir="${tinymce.dir}"/>
-            </fileset>
-        </copy>
+
+        <!-- generate an authoritative and correct list of locales -->
+        <property name="tinymce.locale.file" value="${tinymce.dir}/locales.js"/>
+
+        <fileset id="tinymce.locales.ref"
+                 dir="${web.dir}/tiny_mce/${tinymce.version}/langs"
+                 includes="*.js"/>
+
+        <uptodate targetfile="${tinymce.locale.file}" property="tinymce.uptodate">
+            <srcresources>
+                <fileset refid="tinymce.locales.ref" />
+            </srcresources>
+        </uptodate>
+
+        <if>
+            <not>
+                <equals arg1="${tinymce.uptodate}" arg2="true" />
+            </not>
+            <then>
+                <echo message="Generating ${tinymce.locale.file}" />
+
+                <pathconvert property='tinymce.locales'
+                             refid='tinymce.locales.ref'
+                             pathsep='", "'>
+                    <regexpmapper from="^.*/(.*)\.js" to="\1" />
+                </pathconvert>
+
+                <echo file="${tinymce.dir}/locales.js"
+                      message='tinyMCE.locale_list = [ "${tinymce.locales}" ];'
+                      />
+            </then>
+        </if>
     </target>
 
     <target name="modernizr">

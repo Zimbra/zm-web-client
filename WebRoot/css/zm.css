@@ -6056,3 +6056,36 @@ RBC, RTC {
 	white-space:nowrap;
 }
 #ENDIF
+
+/* TinyMCE customizations */
+
+.user_font_modern .mce-widget button span,
+.user_font_modern .mce-menu-item span {
+	@FontFamily-modern@
+}
+.user_font_classic .mce-widget button span,
+.user_font_classic .mce-menu-item span {
+	@FontFamily-classic@
+}
+.user_font_wide .mce-widget button span,
+.user_font_wide .mce-menu-item span {
+	@FontFamily-wide@
+}
+.user_font_system .mce-widget button span,
+.user_font_system .mce-menu-item span {
+	@FontFamily-system@
+}
+
+.user_font_size_normal .mce-widget button span,
+.user_font_size_normal .mce-menu-item span {
+	font-size:@UserFontSize-normal@
+}
+.user_font_size_large .mce-widget button span,
+.user_font_size_large .mce-menu-item span {
+	font-size:@UserFontSize-large@
+}
+.user_font_size_larger .mce-widget button span,
+.user_font_size_larger .mce-menu-item span {
+	font-size:@UserFontSize-larger@
+}
+
