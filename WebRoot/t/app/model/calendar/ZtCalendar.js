@@ -52,18 +52,13 @@ Ext.define('ZCS.model.calendar.ZtCalendar', {
             {
                 name: 'invId',
                 type: 'string'
-            },
-            {
-                name: 'isAllDay',
-                type: 'boolean'
             }
         ],
 
         proxy: {
             type: 'soapproxy',
             api: {
-                read: urlBase + 'SearchRequest',
-                create: urlBase + 'CreateAppointmentRequest'
+                read: urlBase + 'SearchRequest'
             },
 
             reader: 'calendarreader',

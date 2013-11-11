@@ -4,10 +4,6 @@
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <%@ page import="java.util.Locale" %>
 <%@ page import="com.zimbra.cs.taglib.bean.BeanUtils" %>
-<%
-    // Prevent IE from ever going into compatibility/quirks mode.
-    response.setHeader("X-UA-Compatible", "IE=edge");
-%><!DOCTYPE html>
 <!--
 ***** BEGIN LICENSE BLOCK *****
 Zimbra Collaboration Suite Web Client
@@ -122,6 +118,7 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
     pageContext.setAttribute("isCoverage", isCoverage);
     pageContext.setAttribute("authTokenExpires", authTokenExpires);
 %>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
     <title>Zimbra Docs</title>

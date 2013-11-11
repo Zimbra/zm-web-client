@@ -2,12 +2,12 @@
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2012, 2013 Zimbra Software, LLC.
- *
+ * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- *
+ * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
@@ -20,48 +20,69 @@
  */
 Ext.define("ZCS.view.ZtMain", {
 
-	extend: 'Ext.Container',
+    extend: 'Ext.TabPanel',
 
 	requires: [
-		'ZCS.view.mail.ZtComposeForm',
-		'ZCS.view.ZtAppView',
-		'ZCS.view.ZtAppsMenu'
+		'ZCS.view.ZtAppView'
 	],
 
 	alias: 'widget.ztmain',
 
-	config: {
-		fullscreen: true,
-		defaults: {
-			styleHtmlContent: true
-		},
-		layout: {
-			type: 'card',
-			animation: {
-				type: 'fade'
-			}
-		}
-	},
+    config: {
+	    fullscreen: true,
+        tabBarPosition: 'top',
+        cls: 'zcs-main-tabs',
+        ui: 'dark',
+	    defaults: {
+		    styleHtmlContent: true
+	    },
+	    layout: {
+		    animation: {
+			    type: 'fade'
+		    }
+	    }
+    },
 
 	initialize: function() {
-		var me = this;
+		var numTabs = 0;
 
 		this.callParent(arguments);
 
 		Ext.each(ZCS.constant.APPS, function(app) {
-			if (ZCS.util.isAppEnabled(app)) {
+			if (ZCS.session.getSetting(ZCS.constant.APP_SETTING[app])) {
 				var mainView = {
 					title: ZCS.constant.TAB_TITLE[app],
 					xtype: 'appview',
 					itemId: app + 'view',
 					app: app
 				};
-				me.add(mainView);
+				numTabs += 1;
+				this.add(mainView);
 			}
 		}, this);
 
-		Ext.Viewport.add(Ext.create('ZCS.view.ZtAppsMenu'));
-		Ext.Viewport.add(Ext.create('ZCS.view.mail.ZtComposeForm'));
-		Ext.Viewport.add(Ext.create('ZCS.view.contacts.ZtContactForm'));
+		//Hide buttons in tab bar if only one button
+		if (numTabs < 2) {
+			this.getTabBar().addCls('zcs-no-tabs-showing');
+		}
+
+		// Place some branding text on the right side of the tab bar
+		this.getTabBar().add([
+			{
+				xtype: 'spacer'
+			},
+			{
+				xtype: 'component',
+                cls: 'zcs-banner-image'
+			},
+			{
+				xtype: 'button',
+				cls: 'zcs-flat',
+				handler: function() {
+					this.up('tabbar').fireEvent('showMenu', this, { menuName: 'settings' });
+				},
+				iconCls: 'settings'
+			}
+		]);
 	}
 });

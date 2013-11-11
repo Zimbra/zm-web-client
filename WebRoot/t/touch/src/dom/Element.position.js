@@ -12,16 +12,16 @@ Ext.dom.Element.override({
      * Gets the current X position of the element based on page coordinates.  Element must be part of the DOM tree to have page coordinates (`display:none` or elements not appended return `false`).
      * @return {Number} The X position of the element
      */
-    getX: function() {
-        return this.getXY()[0];
+    getX: function(el) {
+        return this.getXY(el)[0];
     },
 
     /**
      * Gets the current Y position of the element based on page coordinates.  Element must be part of the DOM tree to have page coordinates (`display:none` or elements not appended return `false`).
      * @return {Number} The Y position of the element
      */
-    getY: function() {
-        return this.getXY()[1];
+    getY: function(el) {
+        return this.getXY(el)[1];
     },
 
     /**

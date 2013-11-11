@@ -31,74 +31,25 @@ Ext.define('ZCS.common.ZtUserSession', {
 	],
 
 	config: {
-		sessionId:              null,       // User session ID, created by server
-		notifySeq:              0,          // Help server track which notifications we have gotten
-		changeToken:            null,       // Used to prevent race conditions during item modification
+		sessionId:              null,
 		accountName:            '',
 		accountId:              '',
 		initialSearchResults:   null,
 		debugLevel:             '',
-		organizerRoot:          null,       // Root for canonical tree of organizers (unsorted)
+		organizerData:          null,
 		activeApp:              '',
 		version:                '[unknown]'
-	},
-
-	/**
-	 * Finds and returns the session ID encoded in any of several formats.
-	 *
-	 * @param {mixed} session Any valid session object: string, number, object, or array.
-	 *
-	 * @return {Number|Null} session ID or null
-	 */
-	extractSessionId: function(session) {
-
-		var id;
-		if (Array.isArray(session)) {
-			session = session[0].id;
-		}
-		else if (session && session.id) {
-			session = session.id;
-		}
-
-		// We either have extracted the id or were given some primitive form.
-		// Whatever we have at this point, attempt conversion and clean up response.
-		id = parseInt(session);
-		// Normalize response
-		if (isNaN(id)) {
-			id = null;
-		}
-
-		return id;
-	},
-
-	/**
-	 * If session ID changed, mark the previous one as stale.
-	 */
-	applySessionId: function(session) {
-
-		var curSessionId = this.getSessionId(),
-			newSessionId = this.extractSessionId(session);
-
-		if (curSessionId && curSessionId !== newSessionId) {
-			this.staleSessions[curSessionId] = true;
-		}
-
-		return newSessionId;
-	},
-
-	isStaleSession: function(session) {
-		var sessionId = this.extractSessionId(session);
-		return sessionId && this.staleSessions[sessionId];
 	},
 
 	initSession: function(data) {
 
 		this.setDebugLevel(data.debugLevel);
 
-		// session handling
-		this.staleSessions = {};
-		this.setSessionId(data.header.context.session);
-		this.setNotifySeq(0);
+		// session ID
+		this.setSessionId(data.header.context.session.id);
+
+		// Notification sequence number (so the server knows what we've seen)
+		this.notifySeq = 0;
 
 		// Load organizers
 		this.loadFolders(data.header.context.refresh);
@@ -121,10 +72,28 @@ Ext.define('ZCS.common.ZtUserSession', {
 		this.createSettings(Ext.Object.merge({}, gir.attrs._attrs, gir.prefs._attrs, identityAttrs));
 		this.setSetting(ZCS.constant.SETTING_REST_URL, gir.rest);
 
+        //Check for query string params to override calendar state ref Bug: 83049
+        var qs = location.search.substring(1);
+
+        if (qs) {
+            var qsArgs = qs.split('&'),
+                i,
+                pair,
+                qsArgsLen = qsArgs.length;
+
+            for (i = 0; i < qsArgsLen; i++) {
+                pair = qsArgs[i].split('=');
+
+                if (decodeURIComponent(pair[0]) == 'touchcal' && decodeURIComponent(pair[1]) == 'true') {
+                    //Override the calendar settings
+                    ZCS.constant.IS_ENABLED[ZCS.constant.APP_CALENDAR] = true;
+                    ZCS.session.setSetting(ZCS.constant.SETTING_CALENDAR_ENABLED, "TRUE" && ZCS.constant.IS_ENABLED[ZCS.constant.APP_CALENDAR]);
+                }
+            }
+        }
+
 		// name of logged-in account
 		this.setAccountName(gir.name);
-
-		this.loadSignature(gir.signatures);
 
 		// save the JSON results of the user's initial search (usually 'in:inbox')
 		this.setInitialSearchResults(data.response.SearchResponse[0]);
@@ -146,7 +115,7 @@ Ext.define('ZCS.common.ZtUserSession', {
 	},
 
 	/**
-	 * Loads folders, searches, and tags from data in a {refresh} block.
+	 * Loads folders (and saved searches and tags) from data in a {refresh} block.
 	 *
 	 * @param {object}  refresh     JSON folder data
 	 */
@@ -154,27 +123,19 @@ Ext.define('ZCS.common.ZtUserSession', {
 
 		// parse organizer info from the {refresh} block
 		var folderRoot = refresh.folder[0],
-			tagRoot = refresh.tags;
+			tagRoot = refresh.tags,
+			organizerData = {};
 
-		// move tags in with folders and searches
-		if (tagRoot) {
-			folderRoot[ZCS.constant.ORG_TAG] = tagRoot[ZCS.constant.ORG_TAG];
-		}
-		this.setOrganizerRoot(this.addOrganizer(folderRoot));
-
-		// These listeners are so that we can keep the internal canonical tree of
-		// organizers up to date.
-		ZCS.app.on('notifyFolderCreate', this.handleOrganizerCreate, this);
-		ZCS.app.on('notifySearchCreate', this.handleOrganizerCreate, this);
-		ZCS.app.on('notifyTagCreate', this.handleOrganizerCreate, this);
-
-		ZCS.app.on('notifyFolderDelete', this.handleOrganizerDelete, this);
-		ZCS.app.on('notifySearchDelete', this.handleOrganizerDelete, this);
-		ZCS.app.on('notifyTagDelete', this.handleOrganizerDelete, this);
-
-		ZCS.app.on('notifyFolderChange', this.handleOrganizerChange, this);
-		ZCS.app.on('notifySearchChange', this.handleOrganizerChange, this);
-		ZCS.app.on('notifyTagChange', this.handleOrganizerChange, this);
+		// each overview needs data with unique IDs, so even though tags are global, we
+		// need to create a separate record for each tag per app
+		Ext.each(ZCS.constant.APPS, function(app) {
+			var organizers = organizerData[app] = [];
+			this.addOrganizer(folderRoot, organizers, app, ZCS.constant.ORG_FOLDER, []);
+			this.addOrganizer(folderRoot, organizers, app, ZCS.constant.ORG_SAVED_SEARCH, []);
+			this.addOrganizer(tagRoot, organizers, app, ZCS.constant.ORG_TAG, []);
+			organizers.sort(ZCS.model.ZtOrganizer.compare);
+		}, this);
+		this.setOrganizerData(organizerData);
 	},
 
 	/**
@@ -216,206 +177,143 @@ Ext.define('ZCS.common.ZtUserSession', {
 		}
 	},
 
-	applyNotifySeq: function(seq) {
+	getNotifySeq: function() {
+		return this.notifySeq;
+	},
+
+	setNotifySeq: function(seq, force) {
 		//<debug>
-		Ext.Logger.info('set notify seq to ' + seq + ' (current is ' + this.getNotifySeq() + ')');
+		Ext.Logger.info('set notify seq to ' + seq + ' (current is ' + this.notifySeq + ')');
 		//</debug>
 
-		// Make sure it's highest we've seen, or 0 (got a refresh block, start over)
-		return seq > this.getNotifySeq() || seq === 0 ? seq : undefined;
-	},
-
-	/**
-	 * Creates organizer data from the given node and adds it to the given list (of its
-	 * parent's children).
-	 * @private
-	 */
-	addOrganizer: function(node, list, type) {
-
-		var organizer = ZCS.model.ZtOrganizer.getProxy().getReader().getDataFromNode(node, type);
-		if (list) {
-			list.push(organizer);
+		if (force || (seq > this.notifySeq)) {
+			this.notifySeq = seq;
 		}
-
-		var	childNodeNames = !type ? [ ZCS.constant.ORG_FOLDER, ZCS.constant.ORG_SEARCH, ZCS.constant.ORG_TAG ] :
-				(type === ZCS.constant.ORG_FOLDER) ? [ ZCS.constant.ORG_FOLDER, ZCS.constant.ORG_SEARCH ] : [ type ];
-
-		Ext.each(childNodeNames, function(childType) {
-			Ext.each(node[childType], function(child) {
-				this.addOrganizer(child, organizer.items, childType);
-			}, this);
-		}, this);
-
-		return organizer;
 	},
 
 	/**
-	 * Returns the tree for the given app, in a form that is consumable by a TreeStore. Note
-	 * that each organizer is copied, so we aren't returning references to the canonical organizer data
-	 * within the session.
+	 * Returns the tree for the given app, in a form that is consumable by a TreeStore.
 	 *
 	 * @param {string}  app     app name
 	 * @return {object}     tree (each node is a ZtOrganizer)
 	 */
-	getOrganizerData: function(app, type, context) {
+	getOrganizerDataByApp: function(app) {
+		var organizerData = this.getOrganizerData();
+		return organizerData ? organizerData[app] : null;
+	},
 
-		var root = this.addOrganizerData(this.getOrganizerRoot(), null, app, type, context);
+	getOrganizerDataByAppAndOrgType: function (app, type) {
+		var organizerData = this.getOrganizerDataByApp(app),
+			typeData = Ext.Array.filter(organizerData, function (data) {
+			    if (data.type === type) {
+			    	return true;
+			    } else {
+			    	return false;
+			    }
+			});
 
-		return root.items;
+		return typeData;
 	},
 
 	/**
-	 * Filter the given organizer and add it to the list if it passes. Then handle its children.
-	 * Currently we don't handle the situation where an organizer is missed because it has a
-	 * parent that got filtered out.
 	 * @private
 	 */
-	addOrganizerData: function(organizer, list, app, type, context) {
+	addOrganizer: function(node, organizers, app, type, parents) {
 
-		// Create a copy of the organizer data, since we don't want the caller to mess with the canonical data.
-		var org = {},
-			isTrash = (organizer.zcsId === ZCS.constant.ID_TRASH);
-
-		if (this.isValidOrganizer(organizer, app, type)) {
-			Ext.apply(org, organizer);
-			delete org.items;
-			ZCS.model.ZtOrganizer.addOtherFields(org, app, context, !!(organizer.items && organizer.items.length > 0));
-			if (isTrash) {
-				org.folderType = ZCS.constant.APP_FOLDER[app];
-			}
-			if (list) {
-				list.push(org);
-			}
-
-			if (organizer.items) {
-				org.items = [];
-				Ext.each(organizer.items, function(child) {
-					this.addOrganizerData(child, org.items, app, type, context);
-				}, this);
-			}
+		if (!node) {
+			return;
 		}
 
-		return org;
-	},
+		var itemId = node.id,
+			isRoot = (!itemId || itemId === ZCS.constant.ID_ROOT),
+			isTrash = (itemId === ZCS.constant.ID_TRASH),
+			view = node.view || ZCS.constant.FOLDER_VIEW[ZCS.constant.APP_MAIL],    // if view missing, default to 'message'
+			appView = ZCS.constant.FOLDER_VIEW[app],
+			hideFolder = ZCS.constant.FOLDER_HIDE[itemId],
+			childNodeName = ZCS.constant.ORG_NODE[type];
 
-	/**
-	 * Returns true if the given organizer (in the form of a data object) is valid for the given app
-	 * and/or type. For example, an address book folder is valid for Contacts but not Mail.
-	 *
-	 * @param {Object}  organizer
-	 * @param {String}  app
-	 * @param {String}  type
-	 * @return {Boolean}    true if the organizer is valid
-	 */
-	isValidOrganizer: function(organizer, app, type) {
+		var hasChildren = !!(node[childNodeName] && node[childNodeName].length > 0),
+			validType = false,
+			organizer;
 
-		var isValid = !ZCS.constant.FOLDER_HIDE[organizer.zcsId],
-			isRoot = (organizer.zcsId === ZCS.constant.ID_ROOT),
-			isTrash = (organizer.zcsId === ZCS.constant.ID_TRASH),
-			orgApp = ZCS.constant.FOLDER_APP[organizer.folderType];
-
-		// check if we're constrained by organizer type
-		if (isValid && !isRoot && type && organizer.type !== type) {
-			isValid = false;
-		}
-
-		// if we're constrained by app, folders must be of the correct type
-		if (isValid && !isRoot && app && !isTrash && organizer.type === ZCS.constant.ORG_FOLDER && orgApp !== app) {
-			isValid = false;
-		}
-
-		// if this is a search, make sure it looks for items for the given app
-		if (isValid && app && organizer.type === ZCS.constant.ORG_SEARCH && organizer.searchTypes) {
-			isValid = false;
-			// a saved search should only have a single type since we no longer support
-			// mixed searches, but there might be legacy mixed-type searches out there
-			Ext.each(organizer.searchTypes.split(','), function(type) {
+		if (!isRoot && (type === ZCS.constant.ORG_SAVED_SEARCH) && node.types) {
+			Ext.each(node.types.split(','), function(type) {
 				if (ZCS.constant.APP_FOR_TYPE[Ext.String.trim(type)] === app) {
-					isValid = true;
+					validType = true;
 					return false;
 				}
 			}, this);
 		}
+		else if (type === ZCS.constant.ORG_FOLDER) {
+			validType = (view === appView);
+		}
+		else if (type === ZCS.constant.ORG_TAG) {
+			validType = true;
+		}
 
-		return isValid;
-	},
+		// add the organizer if it has the right view/type; Trash is part of every folder list
+		if (!isRoot && ((validType && !hideFolder) || isTrash)) {
 
-	handleOrganizerCreate: function(folder, notification) {
+			// Get exact folder type if we're dealing with a folder. Tag needs unique ID for each store
+			// it appears in (tag is only organizer that can appear in multiple overviews).
+			var type1 = (type === ZCS.constant.ORG_FOLDER) ? ZCS.constant.FOLDER_TYPE[app] : type,
+				id = (isTrash || type === ZCS.constant.ORG_TAG) ? [app, type, itemId].join('-') : itemId;
 
-		var organizer = ZCS.model.ZtOrganizer.getProxy().getReader().getDataFromNode(notification, notification.itemType);
-		this.findOrganizer(this.getOrganizerRoot(), organizer.parentZcsId, false, organizer);
-	},
+			organizer = {
+				id:             id,
+				itemId:         itemId,
+				parentItemId:   node.l,
+				name:           node.name,
+				displayName:    Ext.String.htmlEncode(node.name),
+				path:           node.name,
+				color:          node.color,
+				rgb:            node.rgb,
+				itemCount:      node.n,
+				disclosure:     hasChildren,
+				type:           type1,
+				url:            node.url
+			};
+			organizer.typeName = ZCS.constant.ORG_NAME[type1];
 
-	handleOrganizerDelete: function(organizer, notification) {
+			if (parents.length) {
+				organizer.path = parents.join('/') + '/' + node.name;
+			}
 
-		this.findOrganizer(this.getOrganizerRoot(), notification.id, true);
-		Ext.each(ZCS.cache.get(notification.id, null, true), function(org) {
-			org.handleDeleteNotification();
-		}, this);
-	},
-
-	handleOrganizerChange: function(organizer, notification) {
-
-		var root = this.getOrganizerRoot(),
-			org = this.findOrganizer(root, notification.id),
-			proxy, prop;
-
-		if (org) {
-			proxy = ZCS.model.ZtOrganizer.getProxy().getReader().getDataFromNode(notification, notification.itemType);
-			for (prop in proxy) {
-				if (proxy[prop] != null && org[prop] !== proxy[prop]) {
-					org[prop] = proxy[prop];
+			// type-specific fields
+			if (type1 === ZCS.constant.ORG_MAIL_FOLDER) {
+				if (node.u != null) {
+					organizer.unreadCount = node.u;
 				}
 			}
-			if (notification.l) {
-				org = this.findOrganizer(root, notification.id, true);
-				this.findOrganizer(root, notification.l, false, org);
+			else if (type === ZCS.constant.ORG_SAVED_SEARCH) {
+				organizer.query = node.query;
 			}
-			Ext.each(ZCS.cache.get(notification.id, null, true), function(org) {
-				org.handleModifyNotification(notification);
+
+			if (hasChildren) {
+				organizer.items = [];
+				organizer.leaf = false;
+			} else {
+				organizer.leaf = true;
+			}
+
+            //<debug>
+			Ext.Logger.verbose('adding folder ' + organizer.path);
+            //</debug>
+			organizers.push(organizer);
+		}
+
+		// process child organizers
+		if ((isRoot || organizer) && hasChildren) {
+			if (!isRoot) {
+				parents.push(organizer.name);
+			}
+			Ext.each(node[childNodeName], function(node) {
+				this.addOrganizer(node, isRoot ? organizers : organizer.items, app, type, parents);
 			}, this);
-		}
-	},
-
-	/**
-	 * Finds the organizer with the given ID in the canonical organizer tree, and possibly
-	 * performs an action as a side effect.
-	 *
-	 * @param {Object}      org         root from which to start search
-	 * @param {String}      id          ID of organizer being sought
-	 * @param {Boolean}     doDelete    (optional) if true, remove the organizer
-	 * @param {Object}      newChildOrg (optional) if true, add this child to the organizer's child list
-	 *
-	 * @private
-	 * @return {Object}     the organizer that was found, or null
-	 */
-	findOrganizer: function(org, id, doDelete, newChildOrg) {
-
-		if (org.zcsId === id) {
-			if (newChildOrg) {
-				org.items = org.items || [];
-				org.items.push(newChildOrg);
-				org.leaf = false;
-				org.disclosure = true;
-			}
-			return org;
-		}
-
-		var list = org.items,
-			ln = list ? list.length : 0,
-			i, childOrg;
-
-		for (i = 0; i < ln; i++) {
-			childOrg = this.findOrganizer(org.items[i], id, doDelete, newChildOrg);
-			if (childOrg) {
-				if (doDelete) {
-					list.splice(i, 1);
-				}
-				return childOrg;
+			if (!isRoot) {
+				parents.pop();
 			}
 		}
-
-		return null;
 	},
 
 	/**
@@ -474,6 +372,10 @@ Ext.define('ZCS.common.ZtUserSession', {
 		// Contacts app needs to be enabled by us and the user
 		var contactsSetting = ZCS.constant.SETTING_CONTACTS_ENABLED;
 		this.setSetting(contactsSetting, this.getSetting(contactsSetting) && ZCS.constant.IS_ENABLED[ZCS.constant.APP_CONTACTS]);
+
+        // Calendar app needs to be enabled by us and the user
+        var calendarSetting = ZCS.constant.SETTING_CALENDAR_ENABLED;
+        this.setSetting(calendarSetting, this.getSetting(calendarSetting) && ZCS.constant.IS_ENABLED[ZCS.constant.APP_CALENDAR]);
 	},
 
 	/**
@@ -505,50 +407,11 @@ Ext.define('ZCS.common.ZtUserSession', {
 	 */
 	loadCss: function() {
 		Ext.Ajax.request({
-			url: 'resources/css/msgbody.css',
+			url: '/t/resources/css/msgbody.css',
 			async: false,
 			success: function(response) {
 				ZCS.session.msgBodyCss = response.responseText
 			}
 		});
-	},
-
-	/**
-	 * Find the most appropriate signature(s) to use for compose and reply/forward. If there is a
-	 * signature named "Mobile", that's used for everything. Otherwise, we look for signatures for
-	 * the primary account.
-	 *
-	 * @param {Object}  data
-	 */
-	loadSignature: function(data) {
-
-		var signatures = data && data.signature,
-			ln = signatures ? signatures.length : 0, i,
-			defaultSig, replySig, mobileSig,
-			defaultSigId = ZCS.session.getSetting(ZCS.constant.SETTING_SIGNATURE_ID),
-			replySigId = ZCS.session.getSetting(ZCS.constant.SETTING_REPLY_SIGNATURE_ID);
-
-		for (i = 0; i < ln; i++) {
-			var sig = signatures[i],
-				content = sig.content && sig.content[0],
-				value = content && content._content,
-				type = content && content.type;
-
-			if (!value) {
-				continue;
-			}
-			if (sig.name === 'Mobile') {
-				mobileSig = value;
-			}
-			else if (sig.id === defaultSigId) {
-				defaultSig = value;
-			}
-			else if (sig.id === replySigId) {
-				replySig = value;
-			}
-		}
-
-		ZCS.session.setSetting(ZCS.constant.SETTING_SIGNATURE, mobileSig || defaultSig);
-		ZCS.session.setSetting(ZCS.constant.SETTING_REPLY_SIGNATURE, mobileSig || replySig);
 	}
 });

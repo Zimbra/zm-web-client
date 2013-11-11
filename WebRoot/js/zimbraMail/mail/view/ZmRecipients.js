@@ -85,12 +85,12 @@ function(htmlElId, typeStr) {
 ZmRecipients.prototype.createRecipientHtml =
 function(parent, viewId, htmlElId, fieldNames, bccToggleId) {
 
-    this._fieldNames = fieldNames;
+	this._fieldNames = fieldNames;
 	var contactsEnabled = appCtxt.get(ZmSetting.CONTACTS_ENABLED);
 	var galEnabled = appCtxt.get(ZmSetting.GAL_ENABLED);
 
-    	// init autocomplete list
-    if (contactsEnabled || galEnabled || appCtxt.isOffline) {
+	// init autocomplete list
+	if (contactsEnabled || galEnabled || appCtxt.isOffline) {
 		var params = {
 			dataClass:		appCtxt.getAutocompleter(),
 			matchValue:		ZmAutocomplete.AC_VALUE_FULL,
@@ -102,8 +102,8 @@ function(parent, viewId, htmlElId, fieldNames, bccToggleId) {
 		this._acAddrSelectList = new ZmAutocompleteListView(params);
 	}
 
-	var isPickerEnabled = contactsEnabled || galEnabled || appCtxt.multiAccounts;	
-	
+	var isPickerEnabled = contactsEnabled || galEnabled || appCtxt.multiAccounts;
+
 	this._pickerButton = {};
 
 	// process compose fields
@@ -112,7 +112,7 @@ function(parent, viewId, htmlElId, fieldNames, bccToggleId) {
 		var typeStr = AjxEmailAddress.TYPE_STRING[type];
 
 		// save identifiers
-        var ids = this.createRecipientIds(htmlElId, typeStr);
+		var ids = this.createRecipientIds(htmlElId, typeStr);
 		this._divId[type] = ids.row;
 		this._buttonTdId[type] = ids.picker;
 		var inputId = this._fieldId[type] = ids.control;
@@ -167,7 +167,7 @@ function(parent, viewId, htmlElId, fieldNames, bccToggleId) {
 				// autocomplete-related handlers
 				if (contactsEnabled || appCtxt.isOffline) {
 					this._acAddrSelectList.handle(this._field[type], aifId);
- 				} else {
+				} else {
 					this._setEventHandler(this._fieldId[type], "onKeyUp");
 				}
 
@@ -177,12 +177,12 @@ function(parent, viewId, htmlElId, fieldNames, bccToggleId) {
 	}
 
 	// Toggle BCC
-    if (bccToggleId){
-        this._toggleBccEl = document.getElementById(bccToggleId);
-        if (this._toggleBccEl) {
-            Dwt.setHandler(this._toggleBccEl, DwtEvent.ONCLICK, AjxCallback.simpleClosure(this._toggleBccField, this));
-        }
-    }
+	if (bccToggleId){
+		this._toggleBccEl = document.getElementById(bccToggleId);
+		if (this._toggleBccEl) {
+			Dwt.setHandler(this._toggleBccEl, DwtEvent.ONCLICK, AjxCallback.simpleClosure(this._toggleBccField, this));
+		}
+	}
 }
 
 ZmRecipients.prototype.reset =
@@ -382,10 +382,7 @@ function() {
 	addrs[ZmRecipients.BAD] = new AjxVector();
 	for (var i = 0; i < this._fieldNames.length; i++) {
 		var type = this._fieldNames[i];
-
-		if (!this._field[type]) { //this check is in case we don't have all fields set up (might be configurable. Didn't look deeply).
-			continue;
-		}
+		if (!this._using[type]) { continue; }
 
 		var val = this.getAddrFieldValue(type);
 		if (val.length == 0) { continue; }
@@ -700,7 +697,7 @@ function(addrs) {
         // If there was only one button, the picker will just return the list of selections,
         // not a list per button type
         var typeAddrs = (this._fieldNames.length == 1) ? addrs :  addrs[type];
-		var addrVec = ZmRecipients.expandAddrs(typeAddrs);
+		var addrVec = this._expandAddrs(typeAddrs);
 		this.addAddresses(type, addrVec);
 	}
 
@@ -718,7 +715,7 @@ function(addrs) {
 };
 
 // Expands any addresses that are groups
-ZmRecipients.expandAddrs =
+ZmRecipients.prototype._expandAddrs =
 function(addrs) {
 	var addrsNew = [];
 	var addrsArray = (addrs instanceof AjxVector) ? addrs.getArray() : addrs;

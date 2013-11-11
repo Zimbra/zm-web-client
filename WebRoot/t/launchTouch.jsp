@@ -63,8 +63,6 @@
    		<meta http-equiv="Refresh" content="0;url=/t/noscript.jsp" >
    	</noscript>
     <meta charset="UTF-8">
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
     <title><fmt:message key="zimbraTitle"/></title>
     <style type="text/css">
             /**

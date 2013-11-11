@@ -250,12 +250,6 @@ Ext.define('Ext.picker.Slot', {
             itemtap: 'doItemTap'
         });
 
-        this.element.on({
-            scope: this,
-            touchstart: 'onTouchStart',
-            touchend: 'onTouchEnd'
-        });
-
         scroller.on({
             scope: this,
             scrollend: 'onScrollEnd'
@@ -338,16 +332,6 @@ Ext.define('Ext.picker.Slot', {
         difference = y - parentY;
 
         scroller.scrollTo(0, difference, animated);
-    },
-
-    // @private
-    onTouchStart: function() {
-        this.element.addCls(Ext.baseCSSPrefix + 'scrolling');
-    },
-
-    // @private
-    onTouchEnd: function() {
-        this.element.removeCls(Ext.baseCSSPrefix + 'scrolling');
     },
 
     // @private

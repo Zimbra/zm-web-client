@@ -152,9 +152,6 @@ function() {
         ops.push(ZmOperation.NEW_BRIEFCASE);
     }
     ops.push(ZmOperation.EXPAND_ALL);
-	if (!appCtxt.isExternalAccount()) {
-		ops.push(ZmOperation.FIND_SHARES);
-	}
 	return ops;
 };
 

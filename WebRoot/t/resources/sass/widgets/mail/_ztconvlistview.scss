@@ -2,12 +2,12 @@
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2013 Zimbra Software, LLC.
- *
+ * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- *
+ * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
@@ -18,87 +18,23 @@ $zcs-mail-topline2: 1.8em;
 $zcs-mail-topline3: 3.5em;
 $zcs-mail-dateWidth: 5.5em;
 
-
-
-.zcs-mail-list-slideable {
-	width: 200%;
-	overflow: hidden;
-	position: absolute;
-
-	background: transparent;
-
-	.zcs-mail-list-entry {
-		background: white;
-		height: 90px;
-		width: 50%;
-		float: left;
-		overflow: hidden;
-		padding: 5px;
-
-		.zcs-mail-list {
-			position: relative;
-		}
-	}
+.zcs-mail-list {
+	min-height: 5.75em;
+	margin: -0.65em -0.8em; /* reverses .x-list-item-body */
+	overflow: hidden; /* necessary? */
+	position: relative;
 }
 
-.zcs-conv-list {
-	.x-list-item {
-		border-top: none !important;
-		background-color: #DCDCDC !important;
-		&.delete-active {
-			background-color: #CE2A26 !important;
-		}
-
-		.x-innerhtml {
-			padding: 0px !important;
-		}
-
-		.x-innerhtml:before {
-			position: absolute;
-			right: 30px;
-			text-align: center;
-			font-family: "ZimbraTouch";
-			content: "T";
-			color: $white;
-			line-height: 90px;
-			font-size: 3em;
-		}
-
-		&.x-item-selected .zcs-mail-list-entry {
-			background: $list-active-color;
-			color: $white;
-		}
-		&.x-item-pressed .zcs-mail-list-entry {
-			background: #F3F3F3;
-			color: black;
-		}
-
-		&.x-list-item-tpl:before {
-			border-bottom: none;
-		}
-
-		.zcs-mail-listitem-deleted {
-			height: 90px;
-			background: white;
-			line-height: 90px;
-			text-align: center;
-			font-size: 1.2em;
-		}
-	}
-}
-
-/*
+/**
  * Hack to get ios5 to use hardware acceleration and not render improperly.
-
+ */
 .zcs-mail-list * {
 	-webkit-transform: translate3d(0,0,0);
 }
- */
 
 .zcs-mail-list-item {
 	position: absolute;
 }
-
 
 .zcs-mail-list-item-icon {
 	@extend .zcs-mail-list-item;
@@ -110,29 +46,17 @@ $zcs-mail-dateWidth: 5.5em;
 
 .zcs-mail-readState {
 	@extend .zcs-mail-list-item-icon;
-	border-radius:12px;
-	height: 12px;
-	width: 12px;
 	left: .25em;
 	top: $zcs-mail-topline1;
-	background: $medium-grey;
-}
-
-.zcs-mail-readState-unread {
-	@extend .zcs-mail-readState;
-	background: $base-color;
 }
 
 .zcs-mail-invitation {
-	@extend .zcs-mail-list-item-icon;
-	left: .25em;
-	top: $zcs-mail-topline1;
+	@extend .zcs-mail-readState;
 }
 
 .zcs-mail-senders {
 	@extend .zcs-mail-list-item;
 	@include ellipsis();
-	height: 1.2em;
 	font-size: 1.2em;
 	left: $zcs-mail-indent;
 	right: $zcs-mail-dateWidth+.5em;
@@ -147,10 +71,7 @@ $zcs-mail-dateWidth: 5.5em;
 .zcs-mail-date {
 	@extend .zcs-mail-list-item;
 	@extend .zcs-date;
-	/**
 	@include ellipsis();
-	**/
-	overflow:hidden;
 	right: .5em;
 	top: .4em;
 	white-space: nowrap;
@@ -166,12 +87,6 @@ $zcs-mail-dateWidth: 5.5em;
 .zcs-mail-subject {
 	@extend .zcs-mail-list-item;
 	@include ellipsis();
-	/**
-	overflow:hidden;
-	**/
-	white-space: nowrap;
-	text-overflow: ellipsis;
-	max-height: 18px;
 	font-size: 1em;
 	left: $zcs-mail-indent;
 	right: 1.6em;
@@ -204,11 +119,7 @@ $zcs-mail-dateWidth: 5.5em;
 .zcs-mail-fragment {
 	@extend .zcs-mail-list-item;
 	@extend .zcs-fragment;
-	height: 2.6em;
-	/**
 	@include ellipsis();
-	**/
-	overflow:hidden;
 	bottom: .2em;
 	left: $zcs-mail-indent;
 	line-height: 1.3em;
@@ -228,6 +139,7 @@ $zcs-mail-dateWidth: 5.5em;
 	-webkit-box-pack: center;
 	-webkit-box-align: center;
 	@include background-image(linear-gradient(left, rgba(0,0,0,0), rgba(0,0,0,0.66) 66%, rgba(0,0,0,0.66)));
+	@include sencha-button-ui('delete', #993333, 'glossy');
 
 	.x-button{
 		padding-left: 2em;

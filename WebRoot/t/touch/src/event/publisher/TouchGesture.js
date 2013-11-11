@@ -1,3 +1,17 @@
+/*
+ * ***** BEGIN LICENSE BLOCK *****
+ * Zimbra Collaboration Suite Web Client
+ * Copyright (C) 2013 Zimbra Software, LLC.
+ * 
+ * The contents of this file are subject to the Zimbra Public License
+ * Version 1.4 ("License"); you may not use this file except in
+ * compliance with the License.  You may obtain a copy of the License at
+ * http://www.zimbra.com/license.
+ * 
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * ***** END LICENSE BLOCK *****
+ */
 /**
  * @private
  */
@@ -10,8 +24,6 @@ Ext.define('Ext.event.publisher.TouchGesture', {
         'Ext.event.Touch',
         'Ext.AnimationQueue'
     ],
-
-    isNotPreventable: /^(select|a)$/i,
 
     handledEvents: ['touchstart', 'touchmove', 'touchend', 'touchcancel'],
 
@@ -47,18 +59,13 @@ Ext.define('Ext.event.publisher.TouchGesture', {
         if (Ext.browser.is.Chrome && Ext.os.is.Android) {
             this.screenPositionRatio = Ext.browser.version.gt('18') ? 1 : 1 / window.devicePixelRatio;
         }
-        else if (Ext.browser.is.AndroidStock4) {
-            this.screenPositionRatio = 1;
-        }
         else if (Ext.os.is.BlackBerry) {
             this.screenPositionRatio = 1 / window.devicePixelRatio;
         }
-        else if (Ext.browser.engineName == 'WebKit' && Ext.os.is.Desktop) {
-            this.screenPositionRatio = 1;
-        }
         else {
-            this.screenPositionRatio = window.innerWidth / window.screen.width;
+            this.screenPositionRatio = (Ext.browser.engineName == 'WebKit' && Ext.os.is.Desktop) ? 1 : window.innerWidth / window.screen.width;
         }
+
         this.initConfig(config);
 
         return this.callSuper();
@@ -231,22 +238,41 @@ Ext.define('Ext.event.publisher.TouchGesture', {
     updateTouch: function(touch) {
         var identifier = touch.identifier,
             currentTouch = this.touchesMap[identifier],
-            target, x, y;
+            ratio = this.screenPositionRatio,
+            screenX = touch.screenX * ratio,
+            screenY = touch.screenY * ratio,
+            target, targetWindow, framePageBox, x, y, offsets;
 
         if (!currentTouch) {
             target = this.getElementTarget(touch.target);
+            targetWindow = target.ownerDocument.defaultView;
 
             this.touchesMap[identifier] = currentTouch = {
                 identifier: identifier,
                 target: target,
-                targets: this.getBubblingTargets(target)
+                targets: this.getBubblingTargets(target),
+                offsets: { x: 0, y: 0 }
             };
 
             this.currentIdentifiers.push(identifier);
+
+            offsets = currentTouch.offsets;
+
+            if (targetWindow !== document.defaultView) {
+                framePageBox = targetWindow.frameElement.getBoundingClientRect();
+                offsets.x = framePageBox.left + touch.pageX - screenX;
+                offsets.y = framePageBox.top + touch.pageY - screenY;
+            }
+            else {
+                offsets.x = touch.pageX - screenX;
+                offsets.y = touch.pageY - screenY;
+            }
         }
 
-        x  = touch.pageX;
-        y  = touch.pageY;
+        offsets = currentTouch.offsets;
+
+        x = Math.round(offsets.x + screenX);
+        y = Math.round(offsets.y + screenY);
 
         if (x === currentTouch.pageX && y === currentTouch.pageY) {
             return false;
@@ -280,10 +306,8 @@ Ext.define('Ext.event.publisher.TouchGesture', {
 
     onTouchStart: function(e) {
         var changedTouches = e.changedTouches,
-            target = e.target,
             ln = changedTouches.length,
-            isNotPreventable = this.isNotPreventable,
-            i, touch, parent;
+            i, touch;
 
         this.updateTouches(changedTouches);
 
@@ -301,8 +325,6 @@ Ext.define('Ext.event.publisher.TouchGesture', {
         }
 
         this.invokeRecognizers('onTouchStart', e);
-
-        parent = target.parentNode || {};
     },
 
     onTouchMove: function(e) {
@@ -404,11 +426,7 @@ Ext.define('Ext.event.publisher.TouchGesture', {
                 MSPointerDown: 'touchstart',
                 MSPointerMove: 'touchmove',
                 MSPointerUp: 'touchend',
-                MSPointerCancel: 'touchcancel',
-                pointerdown: 'touchstart',
-                pointermove: 'touchmove',
-                pointerup: 'touchend',
-                pointercancel: 'touchcancel'
+                MSPointerCancel: 'touchcancel'
             },
 
             touchToPointerMap: {
@@ -442,7 +460,7 @@ Ext.define('Ext.event.publisher.TouchGesture', {
             }
         });
     }
-    else if (!Ext.browser.is.Ripple && (Ext.os.is.ChromeOS || !Ext.feature.has.Touch)) {
+    else if (Ext.os.is.ChromeOS || !Ext.feature.has.Touch) {
         this.override({
             handledEvents: ['touchstart', 'touchmove', 'touchend', 'touchcancel', 'mousedown', 'mousemove', 'mouseup']
         });

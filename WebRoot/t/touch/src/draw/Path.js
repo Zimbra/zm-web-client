@@ -15,7 +15,7 @@ Ext.define("Ext.draw.Path", {
     /**
      * Create a path from pathString
      * @constructor
-     * @param {String} pathString
+     * @param pathString
      */
     constructor: function (pathString) {
         var me = this;
@@ -184,7 +184,7 @@ Ext.define("Ext.draw.Path", {
             l0 = Math.sqrt(x0 * x0 + y0 * y0),
             l2 = Math.sqrt(x2 * x2 + y2 * y2),
             dist, cx, cy;
-        // cos rx, -sin ry , x1 - cos rx x1 + ry sin y1
+        // cos rx, -sin ry , x1 - cos rx x1 + ry sin y1 
         // sin rx, cos ry, -rx sin x1 + y1 - cos ry y1
         if (area === 0) {
             me.lineTo(x1, y1);
@@ -253,14 +253,14 @@ Ext.define("Ext.draw.Path", {
      *
      * See [the whatwg reference of ellipse](http://www.whatwg.org/specs/web-apps/current-work/multipage/the-canvas-element.html#dom-context-2d-ellipse).
      *
-     * @param {Number} cx
-     * @param {Number} cy
-     * @param {Number} radiusX
-     * @param {Number} radiusY
-     * @param {Number} rotation
-     * @param {Number} startAngle
-     * @param {Number} endAngle
-     * @param {Number} anticlockwise
+     * @param cx
+     * @param cy
+     * @param radiusX
+     * @param radiusY
+     * @param rotation
+     * @param startAngle
+     * @param endAngle
+     * @param anticlockwise
      */
     ellipse: function (cx, cy, radiusX, radiusY, rotation, startAngle, endAngle, anticlockwise) {
         var me = this,
@@ -310,12 +310,12 @@ Ext.define("Ext.draw.Path", {
     /**
      * Create an circular arc.
      *
-     * @param {Number} x
-     * @param {Number} y
-     * @param {Number} radius
-     * @param {Number} startAngle
-     * @param {Number} endAngle
-     * @param {Number} anticlockwise
+     * @param x
+     * @param y
+     * @param radius
+     * @param startAngle
+     * @param endAngle
+     * @param anticlockwise
      */
     arc: function (x, y, radius, startAngle, endAngle, anticlockwise) {
         this.ellipse(x, y, radius, radius, 0, startAngle, endAngle, anticlockwise);
@@ -324,15 +324,12 @@ Ext.define("Ext.draw.Path", {
     /**
      * Draw a rectangle and close it.
      *
-     * @param {Number} x
-     * @param {Number} y
-     * @param {Number} width
-     * @param {Number} height
+     * @param x
+     * @param y
+     * @param width
+     * @param height
      */
     rect: function (x, y, width, height) {
-        if (width == 0 || height == 0) {
-            return;
-        }
         var me = this;
         me.moveTo(x, y);
         me.lineTo(x + width, y);
@@ -343,14 +340,14 @@ Ext.define("Ext.draw.Path", {
 
     /**
      * @private
-     * @param {Array} result
-     * @param {Number} cx
-     * @param {Number} cy
-     * @param {Number} rx
-     * @param {Number} ry
-     * @param {Number} phi
-     * @param {Number} theta1
-     * @param {Number} theta2
+     * @param result
+     * @param cx
+     * @param cy
+     * @param rx
+     * @param ry
+     * @param phi
+     * @param theta1
+     * @param theta2
      * @return {Number}
      */
     approximateArc: function (result, cx, cy, rx, ry, phi, theta1, theta2) {
@@ -409,13 +406,13 @@ Ext.define("Ext.draw.Path", {
 
     /**
      * [http://www.w3.org/TR/SVG/implnote.html#ArcImplementationNotes](http://www.w3.org/TR/SVG/implnote.html#ArcImplementationNotes)
-     * @param {Number} rx
-     * @param {Number} ry
-     * @param {Number} rotation Differ from svg spec, this is radian.
-     * @param {Number} fA
-     * @param {Number} fS
-     * @param {Number} x2
-     * @param {Number} y2
+     * @param rx
+     * @param ry
+     * @param rotation Differ from svg spec, this is radian.
+     * @param fA
+     * @param fS
+     * @param x2
+     * @param y2
      */
     arcSvg: function (rx, ry, rotation, fA, fS, x2, y2) {
         if (rx < 0) {
@@ -471,7 +468,7 @@ Ext.define("Ext.draw.Path", {
 
     /**
      * Feed the path from svg path string.
-     * @param {String} pathString
+     * @param pathString
      */
     fromSvgString: function (pathString) {
         if (!pathString) {
@@ -682,12 +679,12 @@ Ext.define("Ext.draw.Path", {
 
     /**
      * @private
-     * @param {Number} x1
-     * @param {Number} y1
-     * @param {Number} x2
-     * @param {Number} y2
-     * @param {Number} x
-     * @param {Number} y
+     * @param x1
+     * @param y1
+     * @param x2
+     * @param y2
+     * @param x
+     * @param y
      * @return {Number}
      */
     rayTestLine: function (x1, y1, x2, y2, x, y) {
@@ -717,17 +714,17 @@ Ext.define("Ext.draw.Path", {
 
     /**
      * @private
-     * @param {Number} x1
-     * @param {Number} y1
-     * @param {Number} x2
-     * @param {Number} y2
-     * @param {Number} x3
-     * @param {Number} y3
-     * @param {Number} x4
-     * @param {Number} y4
-     * @param {Number} x
-     * @param {Number} y
-     * @param {Number} idx
+     * @param x1
+     * @param y1
+     * @param x2
+     * @param y2
+     * @param x3
+     * @param y3
+     * @param x4
+     * @param y4
+     * @param x
+     * @param y
+     * @param idx
      * @return {*}
      */
     rayTestCubicBezier: function (x1, y1, x2, y2, x3, y3, x4, y4, x, y, idx) {
@@ -745,9 +742,9 @@ Ext.define("Ext.draw.Path", {
     },
 
     /**
-     * Test whether the given point is on or inside the path.
-     * @param {Number} x
-     * @param {Number} y
+     * Test wether the given point is on or inside the path.
+     * @param x
+     * @param y
      * @return {Boolean}
      */
     isPointInPath: function (x, y) {
@@ -968,15 +965,15 @@ Ext.define("Ext.draw.Path", {
      * @private
      * Expand the rect by the bbox of a bezier curve.
      *
-     * @param {Object} target
-     * @param {Number} x1
-     * @param {Number} y1
-     * @param {Number} cx1
-     * @param {Number} cy1
-     * @param {Number} cx2
-     * @param {Number} cy2
-     * @param {Number} x2
-     * @param {Number} y2
+     * @param target
+     * @param x1
+     * @param y1
+     * @param cx1
+     * @param cy1
+     * @param cx2
+     * @param cy2
+     * @param x2
+     * @param y2
      */
     expandDimension: function (target, x1, y1, cx1, cy1, cx2, cy2, x2, y2) {
         var me = this,
@@ -999,12 +996,12 @@ Ext.define("Ext.draw.Path", {
 
     /**
      * @private
-     * Determine the curve
-     * @param {Number} a
-     * @param {Number} b
-     * @param {Number} c
-     * @param {Number} d
-     * @param {Number} dim
+     * Determin the
+     * @param a
+     * @param b
+     * @param c
+     * @param d
+     * @param dim
      */
     curveDimension: function (a, b, c, d, dim) {
         var qa = 3 * (-a + 3 * (b - c) + d),
@@ -1055,11 +1052,11 @@ Ext.define("Ext.draw.Path", {
      *
      * Returns `a * (1 - t) ^ 3 + 3 * b (1 - t) ^ 2 * t + 3 * c (1 - t) * t ^ 3 + d * t ^ 3`.
      *
-     * @param {Number} a
-     * @param {Number} b
-     * @param {Number} c
-     * @param {Number} d
-     * @param {Number} t
+     * @param a
+     * @param b
+     * @param c
+     * @param d
+     * @param t
      * @return {Number}
      */
     interpolate: function (a, b, c, d, t) {

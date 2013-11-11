@@ -73,7 +73,7 @@ ZmApptEditView = function(parent, attendees, controller, dateInfo) {
     // Free busy info that excludes the current appointment.  So the cache information cannot
     // be shared across appointments.
     //this._fbCache = app.getFreeBusyCache();
-    AjxDispatcher.require(["MailCore", "CalendarCore"]);
+    AjxDispatcher.require("CalendarCore");
     this._fbCache = new ZmFreeBusyCache(app);
 
     this._customRecurDialogCallback = this._recurChangeForLocationConflict.bind(this);
@@ -1740,12 +1740,6 @@ function(addrInput, addrs, type, shortForm) {
 	if (typeof addrs == "string" && (addrs.indexOf(ZmAppt.ATTENDEES_SEPARATOR) != -1)) {
 		var result = AjxEmailAddress.parseEmailString(addrs, type);
 		addrs = result.good;
-	}
-
-	if (addrs.isAjxVector) {
-		//todo - why aren't we using ZmRecipients way more here? We probably could use a refactoring to unite this code with the
-		//mail compose recipients case - same thing as attendees, more or less.
-		addrs = ZmRecipients.expandAddrs(addrs);  //expand groups to their individual emails (not DLs).
 	}
 
 	// make sure we have an array to deal with

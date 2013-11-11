@@ -3,7 +3,7 @@
  * device your application is running on.
  *
  * The {@link Ext.device.Orientation#orientationchange orientationchange} event gets passes the `alpha`, `beta` and
- * `gamma` values. ** These properties only exist when packaging with the Sencha Native Packager. **
+ * `gamma` values.
  *
  * You can find more information about these values and how to use them on the [W3C device orientation specification](http://dev.w3.org/geo/api/spec-source-orientation.html#deviceorientation).
  *
@@ -39,7 +39,8 @@ Ext.define('Ext.device.Orientation', {
         if (browserEnv.Sencha) {
             return Ext.create('Ext.device.orientation.Sencha');
         }
-
-        return Ext.create('Ext.device.orientation.HTML5');
+        else {
+            return Ext.create('Ext.device.orientation.HTML5');
+        }
     }
 });

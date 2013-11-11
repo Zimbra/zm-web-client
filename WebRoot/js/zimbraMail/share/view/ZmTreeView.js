@@ -37,7 +37,6 @@
  * @param {Boolean}	params.isCheckedByDefault	sets the default state of "checked" tree style
  * @param {Hash}	params.allowedTypes			a hash of org types this tree may display
  * @param {Hash}	params.allowedSubTypes		a hash of org types this tree may display below top level
- * @param {boolean}    params.actionSupported     (default to value from Overview if not passed)
  *
  * @extends		DwtTree
  */
@@ -65,12 +64,6 @@ ZmTreeView = function(params) {
 	
 	this._dragSrc = params.dragSrc;
 	this._dropTgt = params.dropTgt;
-
-	this.actionSupported = params.actionSupported !== undefined
-							? params.actionSupported
-							: this._overview.actionSupported;
-
-	this.dynamicWidth = this._overview.dynamicWidth;
 
 	this._dataTree = null;
 	this._treeItemHash = {};	// map organizer to its corresponding tree item by ID
@@ -131,6 +124,7 @@ function() {
 	return "ZmTreeView";
 };
 
+ZmTreeView.prototype.SHARE_LINK_TEMPLATE = "share.Widgets#ZmAddShareLink";
 
 /**
  * Populates the tree view with the given data and displays it.
@@ -192,6 +186,46 @@ function(params) {
 		this.addSeparator();
 	}
 
+    //determine if call is from dialog/picker rather than nav tree
+    var isApp = this._overview && this._overview.isAppOverview;
+    var isZimbraAccount = true;
+    var acct;
+    if(appCtxt.multiAccounts && params.account){
+        acct = params.account;
+        isZimbraAccount = acct.isZimbraAccount && !acct.isMain;
+    }
+
+
+    // TODO: Find a better way to indicate which trees show the share link
+    var addShareLink =
+        appCtxt.get(ZmSetting.SHARING_ENABLED, null, acct)  && isApp  && isZimbraAccount &&
+        (
+            this.type == ZmOrganizer.FOLDER   ||
+            this.type == ZmOrganizer.ADDRBOOK ||
+            this.type == ZmOrganizer.CALENDAR ||
+            this.type == ZmOrganizer.TASKS    ||
+            this.type == ZmOrganizer.BRIEFCASE
+        )
+    ;
+    if (addShareLink) {
+        //bug 56122: If folderes are deferred for creation, the sort order is messed up.
+        var parentNode = this._treeItemHash[root.id];
+        parentNode._realizeDeferredChildren();
+
+        var item = new DwtTreeItem({
+            parent: parentNode,
+            deferred:false // NOTE: Needed so we can grab link element
+        });
+        item.setImage("Blank_16");
+        item.enableSelection(false);
+        item.showCheckBox(false);
+
+        var id = item.getHTMLElId();
+        item.setText(AjxTemplate.expand(this.SHARE_LINK_TEMPLATE, id));
+        var linkEl = document.getElementById(id+"_addshare_link");
+        linkEl.onclick = AjxCallback.simpleClosure(this._handleAddShareLink, this, (acct? acct.id : null));
+        this._addShareLink = item;
+    }
 
 	if (appCtxt.getSkinHint("noOverviewHeaders") ||
 		this._hideHeaderTreeItem())
@@ -328,7 +362,17 @@ function(params) {
 		var child = children[i];
 		if (!child || (params.omit && params.omit[child.nId])) { continue; }
 		if (!(params.include && params.include[child.nId])) {
-			if (!this._isAllowed(org, child)) {
+			var allowed = ((org.nId == ZmOrganizer.ID_ROOT) && this.allowedTypes[child.type]) ||
+						  ((org.nId != ZmOrganizer.ID_ROOT) && this.allowedSubTypes[child.type]);
+			if (!allowed) {
+				if (params.omitParents) continue;
+				var proxy = AjxUtil.createProxy(params);
+				proxy.treeNode = null;
+				proxy.organizer = child;
+				this._render(proxy);
+				continue;
+			}
+			if (this._allowedTypes && !this._allowedTypes[child.type]) {
 				if (params.omitParents) continue;
 				var proxy = AjxUtil.createProxy(params);
 				proxy.treeNode = null;
@@ -390,42 +434,6 @@ function(params) {
 };
 
 /**
- * a bit complicated and hard to explain - We should only allow (render on this view)
- * a child of an "allowedSubTypes", if all its ancestors are allowed all the way to the root ("Folders"), meaning
- * it has an ancestor that is of the allowedTypes (but is not the root)
- * e.g.
- * allowed:
- * Folders-->folder1--->searchFolder1
- * Folders--->folder1--->folder2--->folder3--->searchFolder1
- *
- * not allowed:
- * Folders-->searchFolder1
- * Folders-->searchFolder1--->searchFolder2
- *
- * @param org
- * @param child
- * @returns {*}
- * @private
- */
-ZmTreeView.prototype._isAllowed =
-function(org, child) {
-	if (!org) { //could happen, for example the Zimlets root doesn't have a parent.
-		return true; //seems returning true in this case works... what a mess.
-	}
-	if (Number(org.nId) === ZmOrganizer.ID_ROOT) {
-		return this.allowedTypes[child.type];
-	}
-	//org is not root
-	if (this.allowedTypes[child.type]) {
-		return true; //optimization, end the recursion if we find a non root allowed ancestor.
-	}
-	if (this.allowedSubTypes[child.type]) {
-		return this._isAllowed(org.parent, org); //go up parent to see if eventually it's allowed.
-	}
-	return false;
-};
-
-/**
  * Adds a tree item node for the given organizer to the tree, and then adds its children.
  *
  * @param parentNode	[DwtTreeItem]	node under which to add the new one
@@ -447,7 +455,7 @@ function(parentNode, organizer, index, noTooltips, omit) {
 	if (ds && ds.type == ZmAccount.TYPE_IMAP) {
 		var cname = appCtxt.isFamilyMbox ? null : this._headerClass;
 		var icon =  "Folder";
-		ti = new DwtHeaderTreeItem({parent:this, text:organizer.getName(), className:cname, imageInfo:icon, selectable: false});
+		ti = new DwtTreeItem({parent:this, text:organizer.getName(), className:cname, imageInfo:icon, selectable: false});
 	} else {
 		// create parent chain
 		if (!parentNode) {
@@ -466,8 +474,6 @@ function(parentNode, organizer, index, noTooltips, omit) {
 					text:					parentOrganizer.getName(),
 					imageInfo:				parentOrganizer.getIconWithColor(),
 					forceNotifySelection:	true,
-					arrowDisabled:			!this.actionSupported,
-					dynamicWidth:			this.dynamicWidth,
 					dndScrollCallback:		this._overview && this._overview._dndScrollCallback,
 					dndScrollId:			this._overview && this._overview._scrollableContainerId,
 					id:						ZmId.getTreeItemId(this.overviewId, parentOrganizer.id)
@@ -479,12 +485,15 @@ function(parentNode, organizer, index, noTooltips, omit) {
 				this._treeItemHash[parentOrganizer.id] = parentNode;
 			}
 		}
+		if (this._addShareLink && this._addShareLink.parent == parentNode) {
+			var addShareIndex = parentNode.getChildIndex(this._addShareLink);
+			if (addShareIndex >= 0 && (!index || index > addShareIndex))
+				index = addShareIndex; // Bug 52053: We must make sure nothing has a higher index than that of this._addShareLink
+		}
 		var params = {
 			parent:				parentNode,
 			index:				index,
 			text:				organizer.getName(this._showUnread),
-			arrowDisabled:		!this.actionSupported,
-			dynamicWidth:		this.dynamicWidth,
 			dndScrollCallback:	this._overview && this._overview._dndScrollCallback,
 			dndScrollId:		this._overview && this._overview._scrollableContainerId,
 			imageInfo:			organizer.getIconWithColor(),
@@ -646,3 +655,66 @@ function() {
 	return null;
 };
 
+ZmTreeView.prototype._handleAddShareLink = function(acctId, htmlEvent) {
+
+    if( appCtxt.multiAccounts && acctId) {
+        var account  = appCtxt.accountList.getAccount(acctId);
+        if (account && account.isZimbraAccount) {
+            appCtxt.accountList.setActiveAccount(account);
+        }
+    }
+    try {
+        var dialog = appCtxt.getShareSearchDialog();
+        var addCallback = new AjxCallback(this, this._handleAddShare);
+        dialog.popup(this.type, addCallback);
+    }
+    finally {
+        // make sure link is not followed, no matter what!
+        return false;
+    }
+};
+
+ZmTreeView.prototype._handleAddShare = function() {
+    var dialog = appCtxt.getShareSearchDialog();
+    var shares = dialog.getShares();
+    dialog.popdown();
+    if (shares.length == 0) return;
+
+    AjxDispatcher.require("Share");
+    var requests = [];
+    for (var i = 0; i < shares.length; i++) {
+        var share = shares[i];
+        var name = share.folderPath.substr(1).replace(/\//g," ");
+        var ownerName = (share.normalizedOwnerName.indexOf('@') >1) ? share.normalizedOwnerName.substr(0, share.normalizedOwnerName.indexOf('@')) : share.normalizedOwnerName;
+        requests.push({
+            _jsns: "urn:zimbraMail",
+            link: {
+                l: ZmOrganizer.ID_ROOT,
+                name: ZmShare.getDefaultMountpointName(ownerName, name),
+                view: share.view,
+                zid: share.ownerId,
+                rid: share.folderId
+            }
+        });
+        var params = {
+            jsonObj: {
+                BatchRequest: {
+                    _jsns: "urn:zimbra",
+                    CreateMountpointRequest: requests
+                }
+            },
+            asyncMode: true,
+            callback: new AjxCallback(this, this._handleAddShareResponse),
+            errorCallback: new AjxCallback(this, this._handleAddShareError)
+        };
+        appCtxt.getAppController().sendRequest(params);
+    }
+};
+
+ZmTreeView.prototype._handleAddShareResponse = function(resp) {
+    // TODO
+};
+
+ZmTreeView.prototype._handleAddShareError = function(resp) {
+    // TODO
+};

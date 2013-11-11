@@ -65,26 +65,13 @@ Ext.define('Ext.slider.Toggle', {
         this.onChange(this, this.getThumbs()[0], newValue, oldValue);
     },
 
-    setIndexValue: function(index, value, animation) {
-        var oldValue = this.getValue()[index];
-        this.callParent(arguments);
-
-        var thumb = this.getThumb(index),
-            newValue = this.getValue()[index];
-
-        if (oldValue !== newValue) {
-            this.fireEvent('change', this, thumb, newValue, oldValue);
-        }
-    },
-
     onChange: function(me, thumb, newValue, oldValue) {
         var isOn = newValue > 0,
             onCls = me.getMaxValueCls(),
-            offCls = me.getMinValueCls(),
-            element = this.element;
+            offCls = me.getMinValueCls();
 
-        element.addCls(isOn ? onCls : offCls);
-        element.removeCls(isOn ? offCls : onCls);
+        this.element.addCls(isOn ? onCls : offCls);
+        this.element.removeCls(isOn ? offCls : onCls);
     },
 
     toggle: function() {
@@ -105,5 +92,7 @@ Ext.define('Ext.slider.Toggle', {
 
         this.setIndexValue(0, newValue, this.getAnimation());
         this.refreshThumbConstraints(thumb);
+
+        this.fireEvent('change', this, thumb, newValue, oldValue);
     }
 });

@@ -31,56 +31,19 @@ Ext.define('ZCS.model.contacts.ZtContactWriter', {
 			action = request.getAction(),
 			itemData = data && data.length ? Ext.merge(data[0], options) : options,
 			contactId = itemData.contactId,
-			folderId = itemData.folder && itemData.folder.get('zcsId'),
             query = itemData.query,
 			json, methodJson;
 
 		if (action === 'read') {
 
 			if (contactId) {
-				if (itemData.contactType === ZCS.constant.CONTACT_DL) {
-					json = this.getSoapEnvelope(request, data, 'GetDistributionListMembers', { namespace: 'urn:zimbraAccount' });
-					methodJson = json.Body.GetDistributionListMembersRequest;
-					Ext.apply(methodJson, {
-						dl: {
-							_content: itemData.nickname
-						},
-						limit:  100,
-						offset: 0
-					});
-					operation.config.dlId = contactId;
-				}
-				else {
-					json = this.getSoapEnvelope(request, data, 'GetContacts');
-					methodJson = json.Body.GetContactsRequest;
-					if (itemData.contactType === ZCS.constant.CONTACT_GROUP) {
-						methodJson.cn = [];
-						Ext.each(contactId, function(id) {
-							methodJson.cn.push({
-								id: id
-							});
-						}, this);
-						methodJson.derefGroupMember = 1;
-					}
-					else {
-						methodJson.cn = {
-							id: contactId
-						};
-					}
-				}
-			}
-			else if (folderId === ZCS.constant.ID_DLS) {
-				request.setUrl(ZCS.constant.SERVICE_URL_BASE + 'GetAccountDistributionListsRequest');    // replace configured 'read' URL
-				json = this.getSoapEnvelope(request, data, 'GetAccountDistributionLists', { namespace: 'urn:zimbraAccount' });
-				methodJson = json.Body.GetAccountDistributionListsRequest;
-
-				Ext.apply(methodJson, {
-					attrs:      'zimbraDistributionListUnsubscriptionPolicy,zimbraDistributionListSubscriptionPolicy,zimbraHideInGal',
-					ownerOf:    1
-				});
-
-			}
-			else {
+				json = this.getSoapEnvelope(request, data, 'GetContacts');
+				methodJson = json.Body.GetContactsRequest;
+				methodJson.cn = {
+					id: contactId
+				};
+				methodJson.derefGroupMember = itemData.isGroup ? 1 : 0;
+			} else {
 				var query = request.getParams().query || 'in:contacts';
 				request.setUrl(ZCS.constant.SERVICE_URL_BASE + 'SearchRequest');    // replace configured 'read' URL
 				json = this.getSoapEnvelope(request, data, 'Search');
@@ -115,19 +78,7 @@ Ext.define('ZCS.model.contacts.ZtContactWriter', {
 		}
 		else if (action === 'update') {
 
-			if (itemData.op === 'modify') {
-				json = this.getSoapEnvelope(request, data, 'ModifyContact');
-				methodJson = json.Body.ModifyContactRequest;
-
-				var cn = methodJson.cn = { id: itemData.id };
-				cn.m = [];
-				cn.a = this.populateAttrs(itemData.newContact, itemData.attrs);
-
-				Ext.apply(methodJson, {
-					cn: cn
-				});
-			}
-			else {
+			if (itemData.op === 'delete' || itemData.op === 'move') {
 				json = this.getSoapEnvelope(request, itemData, 'ContactAction');
 				methodJson = json.Body.ContactActionRequest;
 
@@ -141,10 +92,18 @@ Ext.define('ZCS.model.contacts.ZtContactWriter', {
 				if (itemData.folderId) {
 					methodJson.action.l = itemData.folderId;
 				}
+			}
+			else if (itemData.op === 'modify') {
+				json = this.getSoapEnvelope(request, data, 'ModifyContact');
+				methodJson = json.Body.ModifyContactRequest;
 
-				if (itemData.tn) {
-					methodJson.action.tn = itemData.tn;
-				}
+				var cn = methodJson.cn = { id: itemData.id };
+				cn.m = [];
+				cn.a = this.populateAttrs(itemData.newContact, itemData.attrs);
+
+				Ext.apply(methodJson, {
+					cn: cn
+				});
 			}
 		}
 

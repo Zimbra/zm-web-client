@@ -1,3 +1,17 @@
+/*
+ * ***** BEGIN LICENSE BLOCK *****
+ * Zimbra Collaboration Suite Web Client
+ * Copyright (C) 2013 Zimbra Software, LLC.
+ * 
+ * The contents of this file are subject to the Zimbra Public License
+ * Version 1.4 ("License"); you may not use this file except in
+ * compliance with the License.  You may obtain a copy of the License at
+ * http://www.zimbra.com/license.
+ * 
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * ***** END LICENSE BLOCK *****
+ */
 //@tag dom,core
 //@define Ext.DomHelper
 //@require Ext.dom.Query
@@ -327,7 +341,7 @@ Ext.define('Ext.dom.Helper', {
         isBeforeBegin = where == 'beforebegin';
         isAfterBegin = where == 'afterbegin';
 
-        range = Ext.feature.has.CreateContextualFragment ? el.ownerDocument.createRange() : undefined;
+        range = (Ext.feature.has.CreateContextualFragment && Ext.get(el).isPainted()) ? el.ownerDocument.createRange() : undefined;
         setStart = 'setStart' + (this.endRe.test(where) ? 'After' : 'Before');
 
         if (isBeforeBegin || where == 'afterend') {
@@ -345,15 +359,8 @@ Ext.define('Ext.dom.Helper', {
             rangeEl = (isAfterBegin ? 'first' : 'last') + 'Child';
             if (el.firstChild) {
                 if (range) {
-                    // Creating ranges on a hidden element throws an error, checking for the element being painted is
-                    // VERY expensive, so we'll catch the error and fall back to using the full fragment
-                    try {
-                        range[setStart](el[rangeEl]);
-                        frag = range.createContextualFragment(html);
-                    }
-                    catch(e) {
-                        frag = this.createContextualFragment(html);
-                    }
+                    range[setStart](el[rangeEl]);
+                    frag = range.createContextualFragment(html);
                 } else {
                     frag = this.createContextualFragment(html);
                 }

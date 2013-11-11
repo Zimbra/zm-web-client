@@ -696,7 +696,7 @@ Ext.define('Ext.app.Controller', {
 
     /**
      * Returns a reference to a Model.
-     * @param {String} modelName
+     * @param modelName
      * @return {Object}
      * @deprecated 2.0.0 Considered bad practice - please just use the Model name instead
      * (e.g. `MyApp.model.User` vs `this.getModel('User')`).
@@ -715,8 +715,8 @@ Ext.define('Ext.app.Controller', {
 
     /**
      * Returns a reference to another Controller.
-     * @param {String} controllerName
-     * @param {String} profile
+     * @param controllerName
+     * @param profile
      * @return {Object}
      * @deprecated 2.0.0 Considered bad practice - if you need to do this
      * please use this.getApplication().getController() instead

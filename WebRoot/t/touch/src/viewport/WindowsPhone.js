@@ -15,12 +15,6 @@ Ext.define('Ext.viewport.WindowsPhone', {
 //        height: '100.2%'
 //    },
 
-    config: {
-        translatable: {
-            translationMethod: 'csstransform'
-        }
-    },
-
     initialize: function () {
         // There is -ms-user-select CSS property for IE10, but it seems it works only in desktop browser. So we need to prevent selection event.
         var preventSelection = function(e) {
@@ -32,30 +26,8 @@ Ext.define('Ext.viewport.WindowsPhone', {
             }
         };
 
-        document.body.addEventListener('onselectstart', preventSelection);
+        document.body.attachEvent('onselectstart', preventSelection);
 
         this.callParent(arguments);
-    },
-
-    supportsOrientation: function() {
-        return false;
-    },
-
-    onResize: function() {
-        this.waitUntil(function() {
-            var oldWidth = this.windowWidth,
-                oldHeight = this.windowHeight,
-                width = this.getWindowWidth(),
-                height = this.getWindowHeight(),
-                currentOrientation = this.getOrientation(),
-                newOrientation = this.determineOrientation();
-
-            return ((oldWidth !== width && oldHeight !== height) && currentOrientation !== newOrientation);
-        }, function() {
-            var currentOrientation = this.getOrientation(),
-                newOrientation = this.determineOrientation();
-            this.fireOrientationChangeEvent(newOrientation, currentOrientation);
-
-        }, Ext.emptyFn, 250);
     }
 });

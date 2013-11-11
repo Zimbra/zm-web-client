@@ -2,12 +2,12 @@
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2013 Zimbra Software, LLC.
- *
+ * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- *
+ * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
@@ -51,35 +51,23 @@ Ext.define('ZCS.view.ZtOverview', {
 		// get the organizer data for this app
 		var app = this.getApp(),
 			organizerData = {
-				items: ZCS.session.getOrganizerData(app, null, 'overview')
+				items: ZCS.session.getOrganizerDataByApp(app)
 			};
 
 		// create a store for the organizers
-		var organizerStore = Ext.create('ZCS.store.ZtOrganizerStore', {
-			storeId:    [ app, 'overview' ].join('-'),
-			data:       organizerData
-		});
+		var organizerStore = Ext.create('ZCS.store.ZtOrganizerStore');
+		organizerStore.setRoot(organizerData);
 
 		// show the account name at the top of the overview
-		var accountName = ZCS.session.getAccountName();
+		var accountName = ZCS.session.getAccountName(),
+			userName = accountName.substr(0, accountName.indexOf('@'));
 
 		// create the nested list that contains the grouped organizers
 		var organizerList = Ext.create('ZCS.view.ZtOrganizerList', {
-			title:          app.charAt(0).toUpperCase() + app.slice(1),
+			title:          userName,
 			displayField:   'displayName',
 			store:          organizerStore,
-			grouped:        true,
-			toolbar : {
-				items : [{
-					xtype: 'button',
-					cls: 'zcs-apps-btn',
-					iconCls: 'apps',
-					align: 'left',
-					handler: function() {
-						this.up('folderlist').fireEvent('showAppsMenu');
-					}
-				}]
-			}
+			grouped:        true
 		});
 
 		this.add(organizerList);

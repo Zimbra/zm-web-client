@@ -1,7 +1,7 @@
 <%--
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010, 2011, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
@@ -56,17 +56,7 @@
     <c:choose>
         <c:when test="${not empty appt}">
             <c:set var="apptFolder" value="${zm:getFolder(pageContext, appt.folderId)}"/>
-            <c:choose>
-                <c:when test="${apptFolder.isMountPoint}">
-                    <c:param name="action" value="${apptFolder.isMountPointWritable ? 'edit' : 'view'}"/>
-                </c:when>
-                <c:when test="${apptFolder.isFeed or not appt.organizer}">
-                    <c:param name="action" value="view"/>
-                </c:when>
-                <c:otherwise>
-                    <c:param name="action" value="edit"/>
-                </c:otherwise>
-            </c:choose>
+            <c:param name="action" value="${apptFolder.isMountPoint or apptFolder.isFeed or not appt.organizer ? 'view' : 'edit'}"/>
             <c:param name="invId" value="${appt.seriesInviteId}"/>
             <c:param name="pstat" value="${appt.participantStatus}"/>
             <c:if test="${appt.exception}">

@@ -60,46 +60,10 @@ Ext.define('ZCS.controller.contacts.ZtContactListController', {
 	},
 
     launch: function() {
-        if (!ZCS.util.isAppEnabled(this.getApp())) {
-            return;
-        }
-
+        this.callParent(arguments);
         ZCS.app.on('notifyContactCreate', this.handleCreateNotification, this);
         ZCS.app.on('notifyContactChange', this.handleModifyNotification, this);
-
-        if (ZCS.session.getSetting(ZCS.constant.SETTING_SHOW_DL_FOLDER)) {
-            // cobble together a folder create notification for the DL folder
-            var dlFolder = {
-                type:           ZCS.constant.NOTIFY_CREATE,
-                id:             ZCS.constant.ID_DLS,
-                nodeType:       ZCS.constant.ORG_FOLDER,
-                absFolderPath:  '/Distribution Lists',
-                l:              '1',
-                name:           ZtMsg.distributionLists,
-                view:           'contact'
-            };
-            ZCS.app.fireEvent('notify', dlFolder);
-        }
-
 	    this.loadAllContacts();
-    },
-
-    /**
-     * Load contacts from the system Contacts folder.
-     */
-    loadContacts: function() {
-
-        var defaultQuery = this.getDefaultQuery();
-
-        this.getStore().getProxy().setExtraParams({
-            query: defaultQuery
-        });
-
-        this.getStore().load({
-            query:      defaultQuery,
-            callback:   this.storeLoaded,
-            scope:      this
-        });
     },
 
     /**
@@ -107,51 +71,36 @@ Ext.define('ZCS.controller.contacts.ZtContactListController', {
      */
     loadAllContacts: function() {
 
-        var store = this.getStore();
+	    var restUri = ZCS.htmlutil.buildUrl({
+		    path: '/home/' + ZCS.session.getAccountName() + '/Contacts',
+		    qsArgs: {
+			    fmt:    'cf',
+			    t:      2,
+			    all:    'all'
+		    }
+	    });
 
-        var restUri = ZCS.htmlutil.buildUrl({
-            path: '/home/' + ZCS.session.getAccountName() + '/Contacts',
-            qsArgs: {
-                fmt:    'cf',
-                t:      2,
-                all:    'all'
-            }
-        });
+	    Ext.Ajax.request({
+			url: restUri,
+		    success: function(response, options) {
+			    var text = response.responseText,
+				    contacts = text.split('\u001E'),
+				    reader = ZCS.model.contacts.ZtContact.getProxy().getReader(),
+				    ln = contacts.length, i, fields, data, attrs, j, field, value;
 
-
-        Ext.Ajax.request({
-            url: restUri,
-            success: function(response, options) {
-                var text = response.responseText,
-                    contacts = text.split('\u001E'),
-                    reader = ZCS.model.contacts.ZtContact.getProxy().getReader(),
-                    ln = contacts.length, i, fields, data, attrs, j, field, value,
-                    contactGroupIds = [];
-
-                for (i = 0; i < ln; i++) {
-                    fields = contacts[i].split('\u001D');
-                    attrs = {};
-                    for (j = 0; j < fields.length; j += 2) {
-                        attrs[fields[j]] = fields[j + 1];
-                    }
-                    if (!ZCS.cache.get(attrs.id)) {
-                        data = reader.getDataFromNode({ _attrs: attrs });
-                        new ZCS.model.contacts.ZtContact(data, attrs.id);
-                    }
-                    if (attrs.type === ZCS.constant.CONTACT_GROUP) {
-                        contactGroupIds.push(attrs.id);
-                    }
-                }
-                // if we got any contact groups, expand them now so that they're available for autocomplete
-                if (contactGroupIds.length > 0) {
-                    store.load({
-                        contactId:      contactGroupIds,
-                        contactType:    ZCS.constant.CONTACT_GROUP,
-                        scope:          this
-                    });
-                }
-            }
-        });
+			    for (i = 0; i < ln; i++) {
+				    fields = contacts[i].split('\u001D');
+				    attrs = {};
+				    for (j = 0; j < fields.length; j += 2) {
+					    attrs[fields[j]] = fields[j + 1];
+				    }
+				    if (!ZCS.cache.get(attrs.id)) {
+					    data = reader.getDataFromNode({ _attrs: attrs });
+				        new ZCS.model.contacts.ZtContact(data, attrs.id);
+				    }
+			    }
+		    }
+	    });
     },
 
     /**
@@ -160,7 +109,7 @@ Ext.define('ZCS.controller.contacts.ZtContactListController', {
     handleCreateNotification: function(item, create) {
 
         var curFolder = ZCS.session.getCurrentSearchOrganizer(),
-            curFolderId = curFolder && curFolder.get('zcsId'),
+            curFolderId = curFolder && curFolder.get('itemId'),
             doAdd = false,
             creates = create.creates,
             ln = creates && creates.cn ? creates.cn.length : 0,
@@ -195,18 +144,11 @@ Ext.define('ZCS.controller.contacts.ZtContactListController', {
 	 * If the modified contact is in this list's store, update its model.
 	 */
 	handleModifyNotification: function(item, modify) {
-
 	    var store = this.getStore();
 	    if (store.getById(item.getId())) {
 		    item.handleModifyNotification(modify);
 	    }
-
-		// Handle contact move
-		if (modify.l) {
-			item.set('folderId', modify.l);
-			this.removeItem(item);
-		}
-	},
+    },
 
 	getItemController: function() {
         return ZCS.app.getContactController();

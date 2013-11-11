@@ -352,33 +352,27 @@ function() {
 
 /**
  * Checks if this conversation has a message that matches the given search.
- * If we're not able to tell whether a msg matches, we return the given default value.
+ * If the search is not present or not matchable, the provided default value is
+ * returned.
  *
  * @param {ZmSearch}	search			the search to match against
- * @param {Object}	    defaultValue	the value to return if search is not matchable or conv not loaded
- * @return	{Boolean}	<code>true</code> if this conversation has a matching message
+ * @param {Object}	defaultValue		the value to return if search is not matchable
+ * @return	{Boolean|Object}	<code>true</code> if this conversation has the message
  */
 ZmConv.prototype.hasMatchingMsg =
 function(search, defaultValue) {
-
-	var msgs = this.msgs && this.msgs.getArray(),
-		hasUnknown = false;
-
-	if (msgs && msgs.length > 0) {
+	if (search && search.isMatchable() && this.msgs) {
+		var msgs = this.msgs.getArray();
 		for (var i = 0; i < msgs.length; i++) {
-			var msg = msgs[i],
-				msgMatches = search.matches(msg);
-
-			if (msgMatches && !msg.ignoreJunkTrash() && this.folders[msg.folderId]) {
+			var msg = msgs[i];
+			if (search.matches(msg) && !msg.ignoreJunkTrash() && this.folders[msg.folderId]) {
 				return true;
 			}
-			else if (msgMatches === null) {
-				hasUnknown = true;
-			}
 		}
+	} else {
+		return defaultValue;
 	}
-
-	return hasUnknown ? !!defaultValue : false;
+	return false;
 };
 
 ZmConv.prototype.ignoreJunkTrash =
@@ -561,20 +555,10 @@ function(folderId) {
 };
 
 ZmConv.prototype.getMsgList =
-function(offset, ascending, omit) {
+function(offset, ascending) {
 	// this.msgs will not be set if the conv has not yet been loaded
 	var list = this.msgs && this.msgs.getArray();
 	var a = list ? (list.slice(offset || 0)) : [];
-	if (omit) {
-		var a1 = [];
-		for (var i = 0; i < a.length; i++) {
-			var msg = a[i];
-			if (!(msg && msg.folderId && omit[msg.folderId])) {
-				a1.push(msg);
-			}
-		}
-		a = a1;
-	}
 	if (ascending) {
 		a.reverse();
 	}
@@ -610,7 +594,7 @@ function(params, callback) {
 	params = params || {};
 
 	if (this.msgs && this.msgs.size()) {
-		msg = this.msgs.getFirstHit(params.offset, params.limit, params.foldersToOmit);
+		msg = this.msgs.getFirstHit(params.offset, params.limit);
 	}
 
 	if (callback) {

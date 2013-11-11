@@ -321,8 +321,8 @@ function(inputEl, sizeEl){
     for(var i=0; i<files.length;i++){
         var file = files[i];
         var size = file.size || file.fileSize /*Safari*/;
-        if ((-1 /* means unlimited */ != appCtxt.get(ZmSetting.MESSAGE_SIZE_LIMIT)) &&
-            (size > appCtxt.get(ZmSetting.MESSAGE_SIZE_LIMIT))) {
+        if ((-1 /* means unlimited */ != appCtxt.get(ZmSetting.ATTACHMENT_SIZE_LIMIT)) &&
+            (size > appCtxt.get(ZmSetting.ATTACHMENT_SIZE_LIMIT))) {
             className = "RedC";
         }
         totalSize += size;
@@ -583,8 +583,6 @@ function(calItem) {
 ZmCalItemEditView.prototype._setRepeatDesc =
 function(calItem) {
 	if (calItem.isCustomRecurrence()) {
-        //Bug fix # 58493 - Set the classname if for the first time directly custom weekly/monthly/yearly repetition is selected
-        this._repeatDescField.className = "FakeAnchor";
 		this._repeatDescField.innerHTML = calItem.getRecurBlurb();
 	} else {
 		this._repeatDescField.innerHTML = (calItem.getRecurType() != "NON")
@@ -641,11 +639,9 @@ function(body, composingHtml) {
     var includePref = appCtxt.get(ZmSetting.FORWARD_INCLUDE_ORIG);
     if (includePref == ZmSetting.INCLUDE_PREFIX || includePref == ZmSetting.INCLUDE_PREFIX_FULL) {
         var preface = (composingHtml ? '<br>' : '\n');
-		var wrapParams = {
-			text:				body,
-			htmlMode:			composingHtml,
-			preserveReturns:	true
-		}
+		var wrapParams = ZmHtmlEditor.getWrapParams(composingHtml);
+		wrapParams.text = body;
+		wrapParams.preserveReturns = true;
         body = preface + AjxStringUtil.wordWrap(wrapParams);
     }
     return body;
@@ -712,7 +708,7 @@ function(width) {
 	};
 	this._subjectField = new DwtInputField(params);
 	this._subjectField.setRequired();
-	Dwt.setSize(this._subjectField.getInputElement(), "100%", "2rem");
+	Dwt.setSize(this._subjectField.getInputElement(), "100%", "22px");
 
 	// CalItem folder DwtSelect
 	this._folderSelect = new DwtSelect({parent:this, parentElement:(this._htmlElId + "_folderSelect")});
@@ -747,12 +743,11 @@ function(width) {
 			type: DwtInputField.STRING,
 			errorIconStyle: DwtInputField.ERROR_ICON_NONE,
 			validationStyle: DwtInputField.CONTINUAL_VALIDATION,
-			className: "DwtInputField ReminderInput"
+            className: "DwtInputField ReminderInput"
 		};
 		this._reminderSelectInput = new DwtInputField(params);
 		var reminderInputEl = this._reminderSelectInput.getInputElement();
-        // Fix for bug: 83100. Fix adapted from ZmReminderDialog::_createButtons
-		Dwt.setSize(reminderInputEl, "120px", "2rem");
+		Dwt.setSize(reminderInputEl, Dwt.DEFAULT, "22px");
 		reminderInputEl.onblur = AjxCallback.simpleClosure(this._handleReminderOnBlur, this, reminderInputEl);
 
 		var reminderButtonListener = new AjxListener(this, this._reminderButtonListener);
@@ -1276,9 +1271,13 @@ function(status, attId) {
 		this._controller._handleException(ex, {continueCallback:callback});
 	} else {
 		// bug fix #2131 - handle errors during attachment upload.
-		this._controller.popupUploadErrorDialog(ZmItem.APPT, status,
-		                                        ZmMsg.errorTryAgain);
-		this._controller.enableToolbar(true);
+		var msg = AjxMessageFormat.format(ZmMsg.errorAttachment, (status || AjxPost.SC_NO_CONTENT));
+		switch (status) {
+			// add other error codes/message here as necessary
+			case AjxPost.SC_REQUEST_ENTITY_TOO_LARGE: 	msg += " " + ZmMsg.errorAttachmentTooBig + "<br><br>"; break;
+			default: 									msg += " "; break;
+		}
+		this._controller.showErrorMessage(msg + ZmMsg.errorTryAgain);
 	}
 };
 

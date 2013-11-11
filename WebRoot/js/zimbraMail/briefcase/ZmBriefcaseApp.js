@@ -117,6 +117,7 @@ function() {
 	ZmItem.registerItem(ZmItem.BRIEFCASE_ITEM,
 						{app:			ZmApp.BRIEFCASE,
 						 nameKey:		"file",
+                         countKey:      "typeFile",
 						 icon:			"GenericDoc",
 						 soapCmd:		"ItemAction",
 						 itemClass:		"ZmBriefcaseItem",
@@ -155,7 +156,6 @@ function() {
 							 newOp			: ZmOperation.NEW_BRIEFCASE,
 							 displayOrder	: 100,
 							 hasColor       : true,
-							 defaultColor	: ZmOrganizer.C_NONE,
 							 childWindow    : true
 							});
 };
@@ -335,9 +335,9 @@ function() {
  */
 ZmBriefcaseApp.addEditorParam =
 function(restUrl) {
-//    if (restUrl && window.isTinyMCE) {
+    if(restUrl && window.isTinyMCE) {
     //        restUrl += (restUrl.match(/\?/) ?  "&editor=tinymce" : "?editor=tinymce");
-//    }
+    }
     return restUrl;
 };
 

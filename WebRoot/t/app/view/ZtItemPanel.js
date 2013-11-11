@@ -2,12 +2,12 @@
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2013 Zimbra Software, LLC.
- *
+ * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- *
+ * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
@@ -31,7 +31,7 @@ Ext.define('ZCS.view.ZtItemPanel', {
 	xtype: 'itempanel',
 
 	config: {
-		layout: 'vbox',
+		layout: 'fit',
 		cls:    'zcs-item-panel',
 		app:    null
 	},
@@ -55,7 +55,6 @@ Ext.define('ZCS.view.ZtItemPanel', {
 		items.push({
 			xtype: 'button',
 			align: 'left',
-			iconCls: 'back',
 			itemId: 'listpanelToggle',
 			hidden: true
 		});
@@ -86,20 +85,11 @@ Ext.define('ZCS.view.ZtItemPanel', {
 		};
 
 		var itemView = {
-			xtype: app + 'itemview',
-			flex: 1
-		};
-
-		var titleBar = {
-			xtype: 'component',
-			itemId: 'itemTitleOnlyBar',
-			cls: 'zcs-conv-title-bar',
-			minHeight: app === ZCS.constant.APP_MAIL ? 30 : 0
+			xtype: app + 'itemview'
 		};
 
 		this.add([
 			toolbar,
-			titleBar,
 			itemView
 		]);
 
@@ -107,37 +97,29 @@ Ext.define('ZCS.view.ZtItemPanel', {
 			var quickReply = {
 				xtype: 'container',
 				itemId: 'quickReply',
-				cls: 'zcs-quick-reply',
 				docked: 'bottom',
+				cls: 'zcs-quick-reply',
 				hidden: true,
-				layout: 'vbox',
+				layout: 'hbox',
 				items: [{
-					xtype: 'titlebar',
-					titleAlign: 'left',
-					hidden: true
-				}, {
-					xtype: 'container',
-					layout: 'hbox',
-					items: [{
-						xtype: 'fieldset',
-						flex: 1,
-						items: [
-							{
-								flex: 1,
-								xtype: 'textareafield',
-								placeholder: 'Test Placeholder',
-								height: ZCS.constant.QUICK_REPLY_SMALL
-							}
-						]
-					},{
-						xtype: 'button',
-						text: ZtMsg.send,
-						ui: 'neutral',
-						padding: '0 1em',
-						handler: function() {
-							ZCS.app.fireEvent('sendQuickReply');
+					xtype: 'fieldset',
+					flex: 1,
+					items: [
+						{
+							flex: 1,
+							xtype: 'textareafield',
+							placeholder: 'Test Placeholder',
+							height: ZCS.constant.QUICK_REPLY_SMALL
 						}
-					}]
+					]
+				},{
+					xtype: 'button',
+					text: ZtMsg.send,
+					ui: 'neutral',
+					padding: '0 1em',
+					handler: function() {
+						ZCS.app.fireEvent('sendQuickReply');
+					}
 				}]
 			}
 			this.add(quickReply);
@@ -163,10 +145,5 @@ Ext.define('ZCS.view.ZtItemPanel', {
 	showListPanelToggle: function () {
 		var listpanelToggle = this.down('#listpanelToggle');
 		listpanelToggle.show();
-	},
-
-	isListPanelToggleHidden: function() {
-		var listpanelToggle = this.down('#listpanelToggle');
-		return listpanelToggle.isHidden();
 	}
 });

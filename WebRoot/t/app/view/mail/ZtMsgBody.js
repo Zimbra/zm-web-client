@@ -2,12 +2,12 @@
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2013 Zimbra Software, LLC.
- *
+ * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- *
+ * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
@@ -37,43 +37,42 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 	},
 
 	statics: {
-		externalImagesShown:    {}     // lookup hash of IDs of msgs whose external images user has loaded
-	},
+		externalImagesShown:    {},     // lookup hash of IDs of msgs whose external images user has loaded
+		numImgsToLoad:          0,      // number of images whose 'src' has been set so they load
+		numImgsLoaded:          0,      // number of images whose 'onload' handlers have fired
 
-    numImgsToLoad:          0,      // number of images whose 'src' has been set so they load
-    numImgsLoaded:          0,      // number of images whose 'onload' handlers have fired
+		/**
+		 * Resizes the IFRAME after all of the fixed images have loaded. The alternative is to resize
+		 * the IFRAME after each image loads, but that could be a lot of resizing. This approach should
+		 * be much more efficient, with the risk that a single slow-loading or failing image could
+		 * prevent the resize.
+		 *
+		 * Only IMG elements are handled this way. For background images, we set a timer to do the
+		 * resize, since there is no 'onload' event fired when a background image has loaded. (One way
+		 * to get around that is by 'image preloading', but I don't think it's worth it.)
+		 *
+		 * @param {ZtMsgBody}   msgBody     the msg body object
+		 * @param {Element}     img         the IMG whose onload handler was invoked
+		 *
+		 * @private
+		 */
+		imgOnloadHandler: function(msgBody, img) {
 
-    /**
-     * Resizes the IFRAME after all of the fixed images have loaded. The alternative is to resize
-     * the IFRAME after each image loads, but that could be a lot of resizing. This approach should
-     * be much more efficient, with the risk that a single slow-loading or failing image could
-     * prevent the resize.
-     *
-     * Only IMG elements are handled this way. For background images, we set a timer to do the
-     * resize, since there is no 'onload' event fired when a background image has loaded. (One way
-     * to get around that is by 'image preloading', but I don't think it's worth it.)
-     *
-     * @param {ZtMsgBody}   msgBody     the msg body object
-     * @param {Element}     img         the IMG whose onload handler was invoked
-     *
-     * @private
-     */
-    imgOnloadHandler: function(obj, img) {
-
-        this.numImgsLoaded += 1;
-        var toLoad = this.numImgsToLoad,
-            loaded = this.numImgsLoaded;
-        //<debug>
-        Ext.Logger.image('Img onload handler: ' + loaded + ' / ' + toLoad);
-        //</debug>
-        if (loaded === toLoad || toLoad === 0) {
+			ZCS.view.mail.ZtMsgBody.numImgsLoaded += 1;
+			var toLoad = ZCS.view.mail.ZtMsgBody.numImgsToLoad,
+				loaded = ZCS.view.mail.ZtMsgBody.numImgsLoaded;
             //<debug>
-            Ext.Logger.image('Img onload handler: resize iframe');
+			Ext.Logger.image('Img onload handler: ' + loaded + ' / ' + toLoad);
             //</debug>
-            this.iframe.resizeToContent();
-        }
-        img.onload = null;
-    },
+			if (toLoad > 0 && loaded === toLoad) {
+                //<debug>
+				Ext.Logger.image('Img onload handler: resize iframe');
+                //</debug>
+				msgBody.iframe.resizeToContent();
+			}
+			img.onload = null;
+		}
+	},
 
 	/**
 	 * Renders the given msg.
@@ -89,31 +88,26 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 		Ext.Logger.conv('ZtMsgBody render into element ' + this.element.id);
         //</debug>
 
-		// if this is the oldest msg in the conv to be rendered, we don't hide quoted text
+		// if this is the last msg in the conv to be rendered, we don't hide quoted text
 		var store = this.up('mailitemview').getStore(),
 			count = store.getCount(),
 			msgIndex = store.indexOf(msg),
-			isAsc = (ZCS.session.getSetting(ZCS.constant.SETTING_CONVERSATION_ORDER) === ZCS.constant.DATE_ASC),
-			isOldest = isAsc ? msgIndex === 0 : msgIndex === count - 1,
+			isLast = (msgIndex === count - 1),
 			markedUpHtml;
 
 		var me = this,
 			isInvite = msg.get('isInvite'),
 			togglingQuotedText = Ext.isBoolean(showQuotedText),
-			trimQuotedText = togglingQuotedText ? !showQuotedText : !isOldest && !isInvite && !this.showingQuotedText,
+			trimQuotedText = togglingQuotedText ? !showQuotedText : !isLast && !isInvite && !this.showingQuotedText,
 			msgId = msg.getId(),
+			html = msg.getContentAsHtml(this.getId(), trimQuotedText),
+			hasQuotedContent = ZCS.model.mail.ZtMailMsg.hasQuotedContent[msgId],
 			isHtml = msg.hasHtmlPart(),
 			container = this.htmlContainer,
 			iframeWidth = this.element.getWidth() || (this.parent.getChildWidth() - 22),
 			iframe = this.iframe;
 
-		if (window.inlineData.debugLevel === 'orig') {
-			trimQuotedText = true;
-		}
-		var html = msg.getContentAsHtml(this.getId(), trimQuotedText),
-			hasQuotedContent = ZCS.model.mail.ZtMailMsg.hasQuotedContent[msgId];
-
-			this.setMsg(msg);
+		this.setMsg(msg);
 
 		this.setUsingIframe(isHtml);
 
@@ -177,14 +171,9 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 				isTrusted = msg.hasTrustedSender(),
 				imagesShown = ZCS.view.mail.ZtMsgBody.externalImagesShown[msgId],
 				showExternalImages = ZCS.session.getSetting(ZCS.constant.SETTING_DISPLAY_IMAGES),
-				hideExternalImages = (!showExternalImages || isSpam) && !isTrusted && !imagesShown,
-				onLoadHandler = null;
+				hideExternalImages = (!showExternalImages || isSpam) && !isTrusted && !imagesShown;
 
-			this.numImgsToLoad = 0;
-			this.numImgsLoaded = 0;
-			onloadHandler = Ext.Function.bind(this.imgOnloadHandler, this);
-
-			this.hiddenImages = ZCS.htmlutil.fixImages(msg, iframe.getBody(), hideExternalImages, onloadHandler);
+			this.hiddenImages = this.fixImages(msg, iframe.getBody(), hideExternalImages);
 
 			iframe.show();
 		}
@@ -212,7 +201,7 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 			attachments:    attInfo.length > 0 ? attInfo : null,
 			images:         this.hiddenImages && this.hiddenImages.length > 0,
 			truncated:      msg.isTruncated(),
-			quoted:         !hasQuotedContent ? null : trimQuotedText ? 'show' : 'hide'
+			quoted:         !hasQuotedContent ? null : (trimQuotedText || togglingQuotedText) && trimQuotedText ? 'show' : 'hide'
 		});
 	},
 
@@ -237,14 +226,16 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 			});
 		}
 
-		// Look for email addresses (whether they're part of a mailto: link or not),
-		// and convert them so that tapping them takes the user to compose.
-		content = content.replace(ZCS.constant.REGEX_EMAIL, function(m, mailto, addr) {
-			if (mailto) {
-				return Ext.String.format(" href='#' addr='{0}'", addr);
+		// Look for email addresses. If parsing HTML, skip email that's part of a mailto: link.
+		content = content.replace(ZCS.constant.REGEX_EMAIL, function(m) {
+            //<debug>
+			Ext.Logger.info('addr regex matched: ' + m);
+            //</debug>
+			if (isHtml && m.toLowerCase().indexOf('mailto:') === 0) {
+				return m;
 			}
 			else {
-				return Ext.String.format("<a href='#' addr='{0}'>{0}</a>", addr);
+				return Ext.String.format("<a href='#' addr='{0}'>{0}</a>", m);
 			}
 		});
 
@@ -300,7 +291,7 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 		}
 
 		// Tell user they aren't seeing the whole long message
-		if (params.truncated && (params.quoted !== 'show')) {
+		if (params.truncated) {
 			this.truncatedComponent = new Ext.Component({
 				html: ZCS.view.mail.ZtMsgBody.truncatedTpl.apply({})
 			});
@@ -320,6 +311,149 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 			});
 			this.add(this.quotedTextComponent);
 		}
+	},
+
+	/**
+	 * Goes through the message DOM looking for images to fix, including those that are used
+	 * as background images (usually in BODY or TD). Internal images will get their URLs set
+	 * to grab a part from the server. External images will be hidden or shown based on a user
+	 * setting.
+	 *
+	 * @param {ZtMailMsg}       msg                     msg being displayed
+	 * @param {Element}         containerEl             top-level element of DOM
+	 * @param {boolean}         hideExternalImages      if true, hide external images
+	 *
+	 * @return {Array}    list of hidden images
+	 */
+	fixImages: function(msg, containerEl, hideExternalImages) {
+
+		if (!containerEl) {
+			return [];
+		}
+
+		var	els = containerEl.getElementsByTagName('*'),
+			ln = els.length,
+			html = containerEl.innerHTML,
+			checkBackground = (html.indexOf('dfbackground') !== -1) ||
+			                  (html.indexOf('pnbackground') !== -1),
+			hiddenImages = [],
+			onloadHandler,
+			fixedBackground = false;
+
+		if (this.getUsingIframe()) {
+			ZCS.view.mail.ZtMsgBody.numImgsToLoad = 0;
+			ZCS.view.mail.ZtMsgBody.numImgsLoaded = 0;
+			onloadHandler = ZCS.view.mail.ZtMsgBody.imgOnloadHandler;
+		}
+
+		for (var i = 0; i < ln; i++) {
+
+			var el = els[i],
+				nodeName = el.nodeName.toLowerCase(),
+				isImg = (nodeName === 'img');
+
+			if ((isImg && this.fixImage(msg, el, 'src', hideExternalImages, onloadHandler)) ||
+				(checkBackground && this.fixImage(msg, el, 'background', hideExternalImages))) {
+
+				hiddenImages.push(el);
+				if (!isImg) {
+					fixedBackground = true;
+				}
+			}
+		}
+
+		if (fixedBackground) {
+            //<debug>
+			Ext.Logger.image('Background handled, resize on timer');
+            //</debug>
+			Ext.defer(this.iframe.resizeToContent, 500, this.iframe);
+		}
+
+		return hiddenImages;
+	},
+
+	/**
+	 * Rewrites the src reference for internal images so that they display, and optionally
+	 * does the same for external images. Internal images will have 'cid', 'doc', and 'pnsrc'
+	 * converted to a URL with a part value that can be used to fetch the image from our
+	 * server. The part value is taken from the message's MIME parts.
+	 *
+	 * @param {ZmMailMsg}	msg			        mail message
+	 * @param {Element}		el		            element to be checked (img)
+	 * @param {string}		attr		        attribute name
+	 * @param {boolean}     hideExternalImages  if true, replace external image with placeholder
+	 *
+	 * @return	true if the image is external and was replaced
+	 */
+	fixImage: function(msg, el, attr, hideExternalImages, onloadHandler) {
+
+		var dfAttr = 'df' + attr,
+			pnAttr = 'pn' + attr,
+			baseValue, dfValue, pnValue, value,
+			imgChanged = false,
+			me = this;
+
+		try {
+			baseValue = el.getAttribute(attr);
+			dfValue = el.getAttribute(dfAttr);
+			pnValue = el.getAttribute(pnAttr);
+		}
+		catch(e) {
+            //<debug>
+			Ext.Logger.warn('ZtMsgBody.restoreImages: exception accessing base attribute ' + attr + ' in ' + el.nodeName);
+            //</debug>
+		}
+
+		value = baseValue || dfValue || pnValue;
+
+		if (value) {
+			if (value.indexOf('cid:') === 0) {
+				// image came as a related part keyed by Content-ID
+				var cid = '<' + decodeURIComponent(value.substr(4)) + '>';
+				value = msg.getPartUrlByField('contentId', cid, 'foundInMsgBody');
+				if (value) {
+					el.setAttribute(attr, value);
+					imgChanged = true;
+				}
+			}
+			else if (value.indexOf('doc:') === 0) {
+				// image is in Briefcase
+				value = [ZCS.session.getSetting(ZCS.constant.SETTING_REST_URL), '/', value.substring(4)].join('');
+				if (value) {
+					el.setAttribute(attr, value);
+					imgChanged = true;
+				}
+			}
+			else if (pnValue) {
+				// image came as a related part keyed by Content-Location
+				value = msg.getPartUrlByField('contentLocation', value, 'foundInMsgBody');
+				if (value) {
+					el.setAttribute(attr, value);
+					imgChanged = true;
+				}
+			}
+			else if (dfValue) {
+				if (hideExternalImages) {
+					if (attr === 'src') {
+						el.src = '/img/zimbra/1x1-trans.png';
+					}
+					return true;
+				}
+				else {
+					el.src = dfValue;
+					imgChanged = true;
+				}
+			}
+			else if (value.indexOf('data:') === 0) {
+			}
+		}
+
+		if (imgChanged && onloadHandler) {
+			el.onload = Ext.Function.bind(onloadHandler, null, [me, el]);
+			ZCS.view.mail.ZtMsgBody.numImgsToLoad += 1;
+		}
+
+		return false;
 	},
 
 	/**
@@ -369,12 +503,12 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 	 */
 	showExternalImages: function() {
 
-		var onloadHandler = this.imgOnloadHandler,
+		var onloadHandler = ZCS.view.mail.ZtMsgBody.imgOnloadHandler,
 			fixedBackground = false,
 			me = this;
 
-		this.numImgsToLoad = 0;
-		this.numImgsLoaded = 0;
+		ZCS.view.mail.ZtMsgBody.numImgsToLoad = 0;
+		ZCS.view.mail.ZtMsgBody.numImgsLoaded = 0;
 
 		Ext.each(this.hiddenImages, function(el) {
 			var isImg = (el.nodeName.toLowerCase() === 'img'),
@@ -382,7 +516,7 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 
 			el.setAttribute(attr, el.getAttribute('df' + attr));
 			if (isImg) {
-				this.numImgsToLoad += 1;
+				ZCS.view.mail.ZtMsgBody.numImgsToLoad += 1;
 				el.onload = Ext.Function.bind(onloadHandler, null, [me, el]);
 			}
 			else {

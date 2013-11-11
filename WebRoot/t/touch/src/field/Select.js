@@ -133,7 +133,7 @@ Ext.define('Ext.field.Select', {
          * `false` if you want it to use a popup overlay {@link Ext.List}.
          * `auto` if you want to show a {@link Ext.picker.Picker} only on phones.
          */
-        usePicker: 'auto',
+        usePicker: (Ext.os.is.BlackBerry && Ext.os.version.getMajor() === 10) ? false : 'auto',
 
         /**
          * @cfg {Boolean} autoSelect
@@ -168,12 +168,10 @@ Ext.define('Ext.field.Select', {
         pickerSlotAlign: 'center'
     },
 
-    platformConfig: [
-        {
-            theme: ['Windows'],
-            pickerSlotAlign: 'left'
-        }
-    ],
+    platformConfig: [{
+        theme: ['Windows'],
+        pickerSlotAlign: 'left'
+    }],
 
     // @private
     initialize: function() {
@@ -187,46 +185,8 @@ Ext.define('Ext.field.Select', {
             masktap: 'onMaskTap'
         });
 
-        component.doMaskTap = Ext.emptyFn;
-
         if (Ext.browser.is.AndroidStock2) {
             component.input.dom.disabled = true;
-        }
-
-        if (Ext.theme.name === "Blackberry") {
-            this.label.on({
-                scope: me,
-                tap: "onFocus"
-            });
-        }
-    },
-
-    getElementConfig: function() {
-        if (Ext.theme.name === "Blackberry") {
-                var prefix = Ext.baseCSSPrefix;
-
-                return {
-                    reference: 'element',
-                    className: 'x-container',
-                    children: [
-                        {
-                            reference: 'innerElement',
-                            cls: prefix + 'component-outer',
-                            children: [
-                                {
-                                    reference: 'label',
-                                    cls: prefix + 'form-label',
-                                    children: [{
-                                        reference: 'labelspan',
-                                        tag: 'span'
-                                    }]
-                                }
-                            ]
-                        }
-                    ]
-                };
-        } else {
-            return this.callParent(arguments);
         }
     },
 
@@ -316,16 +276,14 @@ Ext.define('Ext.field.Select', {
 
         if (!this.picker) {
             this.picker = Ext.create('Ext.picker.Picker', Ext.apply({
-                slots: [
-                    {
-                        align: this.getPickerSlotAlign(),
-                        name: this.getName(),
-                        valueField: this.getValueField(),
-                        displayField: this.getDisplayField(),
-                        value: this.getValue(),
-                        store: this.getStore()
-                    }
-                ],
+                slots: [{
+                    align       : this.getPickerSlotAlign(),
+                    name        : this.getName(),
+                    valueField  : this.getValueField(),
+                    displayField: this.getDisplayField(),
+                    value       : this.getValue(),
+                    store       : this.getStore()
+                }],
                 listeners: {
                     change: this.onPickerChange,
                     scope: this
@@ -355,9 +313,9 @@ Ext.define('Ext.field.Select', {
                     store: this.getStore(),
                     itemTpl: '<span class="x-list-label">{' + this.getDisplayField() + ':htmlEncode}</span>',
                     listeners: {
-                        select: this.onListSelect,
+                        select : this.onListSelect,
                         itemtap: this.onListTap,
-                        scope: this
+                        scope  : this
                     }
                 }
             }, config));
@@ -378,54 +336,44 @@ Ext.define('Ext.field.Select', {
      * {@link Ext.List list}.
      */
     showPicker: function() {
-        var me = this,
-            store = me.getStore(),
-            value = me.getValue();
-
+        var store = this.getStore();
         //check if the store is empty, if it is, return
         if (!store || store.getCount() === 0) {
             return;
         }
 
-        if (me.getReadOnly()) {
+        if (this.getReadOnly()) {
             return;
         }
 
-        me.isFocused = true;
+        this.isFocused = true;
 
-        if (me.getUsePicker()) {
-            var picker = me.getPhonePicker(),
-                name = me.getName(),
-                pickerValue = {};
+        if (this.getUsePicker()) {
+            var picker = this.getPhonePicker(),
+                name   = this.getName(),
+                value  = {};
 
-            pickerValue[name] = value;
-            picker.setValue(pickerValue);
-
+            value[name] = this.getValue();
+            picker.setValue(value);
             if (!picker.getParent()) {
                 Ext.Viewport.add(picker);
             }
-
             picker.show();
         } else {
-            var listPanel = me.getTabletPicker(),
+            var listPanel = this.getTabletPicker(),
                 list = listPanel.down('list'),
                 index, record;
+
+            store = list.getStore();
+            index = store.find(this.getValueField(), this.getValue(), null, null, null, true);
+            record = store.getAt((index == -1) ? 0 : index);
 
             if (!listPanel.getParent()) {
                 Ext.Viewport.add(listPanel);
             }
 
-            listPanel.showBy(me.getComponent(), null);
-
-            if (value || me.getAutoSelect()) {
-                store = list.getStore();
-                index = store.find(me.getValueField(), value, null, null, null, true);
-                record = store.getAt(index);
-
-                if (record) {
-                    list.select(record, null, true);
-                }
-            }
+            listPanel.showBy(this.getComponent(), null);
+            list.select(record, null, true);
         }
     },
 
@@ -439,8 +387,8 @@ Ext.define('Ext.field.Select', {
 
     onListTap: function() {
         this.listPanel.hide({
-            type: 'fade',
-            out: true,
+            type : 'fade',
+            out  : true,
             scope: this
         });
     },
@@ -579,24 +527,6 @@ Ext.define('Ext.field.Select', {
         Ext.Component.prototype.setDisabled.apply(this, arguments);
     },
 
-    // @private
-    updateLabelWidth: function() {
-        if (Ext.theme.name === "Blackberry") {
-            return;
-        } else {
-            this.callParent(arguments);
-        }
-    },
-
-    // @private
-    updateLabelAlign: function() {
-        if (Ext.theme.name === "Blackberry") {
-            return;
-        } else {
-            this.callParent(arguments);
-        }
-    },
-
     /**
      * Resets the Select field to the value of the first record in the store.
      * @return {Ext.field.Select} this
@@ -631,7 +561,7 @@ Ext.define('Ext.field.Select', {
         this.showPicker();
     },
 
-    destroy: function() {
+    destroy: function () {
         this.callParent(arguments);
         var store = this.getStore();
 

@@ -67,12 +67,6 @@
         },
         {
             "path": "app/view/ux/Ext.ux.TouchCalendarWeekEvents.js"
-        },
-        {
-            "path": "app/view/ux/DateTimePicker.js"
-        },
-        {
-            "path": "app/view/ux/DateTime.js"
         }
     ],
 
@@ -92,18 +86,15 @@
      *
      *      }
      */
-    "css": [{
+    "css": [
+        {
             "path": "resources/css/app.css",
-            "update": "full",
-            "platform": ["android","safari","chrome","ie10","firefox","ios","blackberry"]
-        }, {
-            "path": "resources/css/original.css",
-            "update": "full",
-            "platform": ["original"]
-        }, {
-            "path": "resources/css/msgbody.css",
             "update": "full"
-        }
+        },
+	{
+	    "path": "resources/css/msgbody.css",
+ 	    "update": "full"
+	}
     ],
 
     /**

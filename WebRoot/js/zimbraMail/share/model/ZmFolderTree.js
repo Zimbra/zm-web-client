@@ -254,7 +254,6 @@ function(type, parent, obj, tree, path, elementType, account) {
 		link: 		elementType == "link",
 		broken: 	obj.broken,
 		account:	account,
-        webOfflineSyncDays : obj.webOfflineSyncDays,
         retentionPolicy: obj.retentionPolicy
 	};
 

@@ -228,11 +228,11 @@ Ext.define('Ext.data.proxy.Server', {
             reader = me.getReader();
 
             try {
-                resultSet = reader.process(me.getResponseResult(response));
+                resultSet = reader.process(response);
             } catch(e) {
                 operation.setException(e.message);
 
-                me.fireEvent('exception', me, response, operation);
+                me.fireEvent('exception', this, response, operation);
                 return;
             }
 
@@ -242,8 +242,7 @@ Ext.define('Ext.data.proxy.Server', {
             }
 
             if (operation.process(action, resultSet, request, response) === false) {
-                me.setException(operation, response);
-                me.fireEvent('exception', me, response, operation);
+                this.fireEvent('exception', this, response, operation);
             }
         } else {
             me.setException(operation, response);
@@ -263,13 +262,6 @@ Ext.define('Ext.data.proxy.Server', {
         }
 
         me.afterRequest(request, success);
-    },
-
-    /**
-     * @private
-     */
-    getResponseResult: function(response) {
-        return response;
     },
 
     /**
@@ -445,7 +437,7 @@ Ext.define('Ext.data.proxy.Server', {
      * @protected
      * @template
      */
-    doRequest: function() {
+    doRequest: function(operation, callback, scope) {
         //<debug>
         Ext.Logger.error("The doRequest function has not been implemented on your Ext.data.proxy.Server subclass. See src/data/ServerProxy.js for details");
         //</debug>

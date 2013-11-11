@@ -2,12 +2,12 @@
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2013 Zimbra Software, LLC.
- *
+ * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- *
+ * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
@@ -40,7 +40,6 @@ $defaultInvState: normal !default;
 $invBtnGradient: glossy-gradient($invBtnColor);
 $invBtnActiveGradient: glossy-gradient(darken($invBtnColor, 25%));
 $invBtnIconPos: .35em center no-repeat;
-$invWarningIconPos: 3px -9.1em no-repeat #FFC;
 
 // Mixin to return the proper backgrounds and borders per invite type (accept, tentative, decline) and state (normal and active)
 @mixin invite-button($type: $defaultInvType, $state: $defaultInvState) {
@@ -79,14 +78,12 @@ $invWarningIconPos: 3px -9.1em no-repeat #FFC;
 
 .zcs-invite-button {
   box-align: center;
-  height: 1.4em;
+  min-height: 1.8em;
   padding: .3em .6em;
   position: relative;
   overflow: hidden;
   -webkit-user-select: none;
   @include border-radius(.4em);
-  display: inline-block;
-  margin-bottom: 5px;
 
   &.zcs-invite-accept {
     @include invite-button('accept');
@@ -153,9 +150,4 @@ $invWarningIconPos: 3px -9.1em no-repeat #FFC;
   @extend .zcs-invite-status;
   @include background(url('/img/zimbra/ImgQuestionMark.png') $invBtnIconPos);
   background-color: #FFC;
-}
-
-.zcs-invite-outdated {
-  padding: 0 0 0 1.5em;
-  @include background(url('/img/dwt.png?v=130725100351') $invWarningIconPos);
 }

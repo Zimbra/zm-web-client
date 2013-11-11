@@ -109,35 +109,30 @@ Ext.define("Ext.draw.TextMeasurer", {
      * That may *not* be the exact size of the text as it is displayed.
      * @param {String} text
      * @param {String} font
-     * @return {Object} An object with `width`, `height` and `sizes` properties.
+     * @return {Object} An object with `width` and `height` properties.
      * @return {Number} return.width
      * @return {Number} return.height
-     * @return {Array} return.sizes Results of individual line measurements, in case of multiline text.
      */
     measureText: function (text, font) {
         var lines = text.split('\n'),
             ln = lines.length,
             height = 0,
             width = 0,
-            line, i,
-            sizes;
+            line, i;
 
         if (ln === 1) {
             return this.measureTextSingleLine(text, font);
         }
 
-        sizes = [];
         for (i = 0; i < ln; i++) {
             line = this.measureTextSingleLine(lines[i], font);
-            sizes.push(line);
             height += line.height;
             width = Math.max(width, line.width);
         }
 
         return {
             width: width,
-            height: height,
-            sizes: sizes
+            height: height
         };
     }
 });

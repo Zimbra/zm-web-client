@@ -393,17 +393,14 @@ Ext.define('Ext.chart.series.Gauge', {
     },
 
     getSprites: function () {
-        var me = this,
-            store = me.getStore(),
-            value = me.getValue();
-
         // The store must be initialized, or the value must be set
-        if (!store && !Ext.isNumber(value)) {
-            return [];
+        if(!this.getStore() && !Ext.isNumber(this.getValue())) {
+            return null;
         }
 
         // Return cached sprites
-        var chart = me.getChart(),
+        var me = this,
+            chart = me.getChart(),
             animate = chart.getAnimate(),
             sprites = me.sprites,
             spriteIndex = 0,
@@ -415,9 +412,9 @@ Ext.define('Ext.chart.series.Gauge', {
         }
 
         rendererData = {
-            store: store,
+            store: me.getStore(),
             field: me.getField(),
-            value: value,
+            value: me.getValue(),
             series: me
         };
 
@@ -430,7 +427,7 @@ Ext.define('Ext.chart.series.Gauge', {
         sprite.rendererIndex = spriteIndex++;
 
         // Create background sprite(s)
-        me.getLabel().getTemplate().setField(true); // Enable labels
+        me.setLabelField(true);             // Enable labels
         sectors = me.normalizeSectors(me.getSectors());
         for (i = 0; i < sectors.length; i++) {
             attr = {

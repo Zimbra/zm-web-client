@@ -279,9 +279,9 @@ body {
  */
 /* line 5, /Users/jamieavins/git/SDK/touch/resources/themes/stylesheets/sencha-touch/base/src/layout/_Box.scss */
 .x-layout-box {
-  display: flex;
   display: -webkit-box;
   display: -ms-flexbox;
+  display: flex;
 }
 /* line 8, /Users/jamieavins/git/SDK/touch/resources/themes/stylesheets/sencha-touch/base/src/layout/_Box.scss */
 .x-layout-box.x-horizontal {
@@ -305,9 +305,9 @@ body {
 }
 /* line 24, /Users/jamieavins/git/SDK/touch/resources/themes/stylesheets/sencha-touch/base/src/layout/_Box.scss */
 .x-layout-box > .x-layout-box-item {
-  display: flex !important;
   display: -webkit-box !important;
   display: -ms-flexbox !important;
+  display: flex !important;
 }
 /* line 28, /Users/jamieavins/git/SDK/touch/resources/themes/stylesheets/sencha-touch/base/src/layout/_Box.scss */
 .x-layout-box.x-align-start {
@@ -441,9 +441,9 @@ body {
  */
 /* line 5, /Users/jamieavins/git/SDK/touch/resources/themes/stylesheets/sencha-touch/base/src/layout/_Dock.scss */
 .x-dock {
-  display: flex;
   display: -webkit-box;
   display: -ms-flexbox;
+  display: flex;
 }
 /* line 8, /Users/jamieavins/git/SDK/touch/resources/themes/stylesheets/sencha-touch/base/src/layout/_Dock.scss */
 .x-dock > .x-dock-body {
@@ -462,9 +462,9 @@ body {
 /* line 17, /Users/jamieavins/git/SDK/touch/resources/themes/stylesheets/sencha-touch/base/src/layout/_Dock.scss */
 .x-dock.x-sized > .x-dock-body {
   position: relative;
-  display: flex;
   display: -webkit-box;
   display: -ms-flexbox;
+  display: flex;
   -webkit-box-flex: 1;
   -ms-flex: 1 0 auto;
   flex: 1 0 auto;
@@ -478,9 +478,9 @@ body {
 /* line 29, /Users/jamieavins/git/SDK/touch/resources/themes/stylesheets/sencha-touch/base/src/layout/_Dock.scss */
 .x-dock.x-unsized > .x-dock-body, .x-dock.x-stretched > .x-dock-body {
   position: relative;
-  display: flex;
   display: -webkit-box;
   display: -ms-flexbox;
+  display: flex;
   -webkit-box-flex: 1;
   -ms-flex: 1 0 auto;
   flex: 1 0 auto;
@@ -512,9 +512,9 @@ body {
 }
 /* line 52, /Users/jamieavins/git/SDK/touch/resources/themes/stylesheets/sencha-touch/base/src/layout/_Dock.scss */
 .x-dock.x-dock-horizontal > .x-dock-item {
-  display: flex;
   display: -webkit-box;
   display: -ms-flexbox;
+  display: flex;
 }
 /* line 56, /Users/jamieavins/git/SDK/touch/resources/themes/stylesheets/sencha-touch/base/src/layout/_Dock.scss */
 .x-dock.x-dock-horizontal > .x-dock-item.x-sized > .x-inner, .x-dock.x-dock-horizontal > .x-dock-item.x-sized > .x-body {
@@ -563,9 +563,9 @@ body {
  */
 /* line 5, /Users/jamieavins/git/SDK/touch/resources/themes/stylesheets/sencha-touch/base/src/layout/_Fit.scss */
 .x-stretched.x-container {
-  display: flex;
   display: -webkit-box;
   display: -ms-flexbox;
+  display: flex;
   -webkit-box-orient: vertical;
   -ms-flex-direction: column;
   flex-direction: column;
@@ -573,9 +573,9 @@ body {
 /* line 10, /Users/jamieavins/git/SDK/touch/resources/themes/stylesheets/sencha-touch/base/src/layout/_Fit.scss */
 .x-stretched.x-container > .x-inner, .x-stretched.x-container > .x-body,
 .x-stretched.x-container > .x-body > .x-inner {
-  display: flex;
   display: -webkit-box;
   display: -ms-flexbox;
+  display: flex;
   -webkit-box-flex: 1;
   -ms-flex: 1 0 auto;
   flex: 1 0 auto;
@@ -587,9 +587,9 @@ body {
 
 /* line 18, /Users/jamieavins/git/SDK/touch/resources/themes/stylesheets/sencha-touch/base/src/layout/_Fit.scss */
 .x-layout-fit.x-stretched > .x-layout-fit-item {
-  display: flex;
   display: -webkit-box;
   display: -ms-flexbox;
+  display: flex;
   -webkit-box-flex: 1;
   -ms-flex: 1 0 auto;
   flex: 1 0 auto;
@@ -633,9 +633,9 @@ body {
   right: 0;
   bottom: 0;
   left: 0;
-  display: flex;
   display: -webkit-box;
   display: -ms-flexbox;
+  display: flex;
   -webkit-box-align: center;
   -ms-flex-align: center;
   align-items: center;
@@ -858,9 +858,9 @@ body {
  */
 /* line 5, /Users/jamieavins/git/SDK/touch/resources/themes/stylesheets/sencha-touch/base/src/_Button.scss */
 .x-button {
-  display: flex;
   display: -webkit-box;
   display: -ms-flexbox;
+  display: flex;
   -webkit-box-align: center;
   -ms-flex-align: center;
   align-items: center;
@@ -1607,9 +1607,9 @@ input, textarea {
   right: 0;
   height: 100%;
   z-index: 10;
-  display: flex;
   display: -webkit-box;
   display: -ms-flexbox;
+  display: flex;
   -webkit-box-align: center;
   -ms-flex-align: center;
   align-items: center;
@@ -1638,9 +1638,9 @@ input, textarea {
 }
 /* line 40, /Users/jamieavins/git/SDK/touch/resources/themes/stylesheets/sencha-touch/base/src/_Mask.scss */
 .x-mask .x-loading-spinner-outer {
-  display: flex;
   display: -webkit-box;
   display: -ms-flexbox;
+  display: flex;
   -webkit-box-orient: vertical;
   -ms-flex-direction: column;
   flex-direction: column;
@@ -1670,24 +1670,23 @@ input, textarea {
 /* line 64, /Users/jamieavins/git/SDK/touch/resources/themes/stylesheets/sencha-touch/base/src/_Mask.scss */
 .x-mask .x-mask-message {
   position: absolute;
-  bottom: 5px;
-  color: #333;
-  left: 0;
-  right: 0;
+  bottom: 1.7em;
   -webkit-box-flex: 0;
   -ms-flex: 0 0 auto;
   flex: 0 0 auto;
+  max-width: 13em;
+  min-width: 8em;
 }
-/* line 74, /Users/jamieavins/git/SDK/touch/resources/themes/stylesheets/sencha-touch/base/src/_Mask.scss */
+/* line 73, /Users/jamieavins/git/SDK/touch/resources/themes/stylesheets/sencha-touch/base/src/_Mask.scss */
 .x-mask.x-has-message .x-mask-inner {
   padding-bottom: 2em;
 }
-/* line 78, /Users/jamieavins/git/SDK/touch/resources/themes/stylesheets/sencha-touch/base/src/_Mask.scss */
+/* line 77, /Users/jamieavins/git/SDK/touch/resources/themes/stylesheets/sencha-touch/base/src/_Mask.scss */
 .x-mask.x-has-message .x-loading-spinner-outer {
-  height: 168px;
+  height: 7.5em;
 }
 
-/* line 94, /Users/jamieavins/git/SDK/touch/resources/themes/stylesheets/sencha-touch/base/src/_Mask.scss */
+/* line 93, /Users/jamieavins/git/SDK/touch/resources/themes/stylesheets/sencha-touch/base/src/_Mask.scss */
 .x-ie .x-mask[visibility='visible'] ~ div:not(.x-mask) .x-input-el,
 .x-ie .x-mask[visibility='visible'] ~ div:not(.x-panel) .x-input-el,
 .x-ie .x-mask[visibility='visible'] ~ div:not(.x-floating) .x-input-el,
@@ -1769,105 +1768,6 @@ audio {
   min-width: 4.5em;
 }
 
-/* line 1, /Users/jamieavins/git/SDK/touch/resources/themes/stylesheets/sencha-touch/base/src/_ProgressIndicator.scss */
-.x-progressindicator {
-  width: 50%;
-  height: 1.3em;
-}
-
-/* line 6, /Users/jamieavins/git/SDK/touch/resources/themes/stylesheets/sencha-touch/base/src/_ProgressIndicator.scss */
-.x-progressindicator .x-progressindicator-inner {
-  background: #222222;
-  padding: 10px;
-  height: 100%;
-  border-radius: 20px;
-  box-shadow: 0px 5px 17px rgba(40, 40, 40, 0.5);
-  box-sizing: content-box;
-  position: relative;
-}
-
-/* line 16, /Users/jamieavins/git/SDK/touch/resources/themes/stylesheets/sencha-touch/base/src/_ProgressIndicator.scss */
-.x-progressindicator .x-progressindicator-text {
-  display: flex;
-  display: -webkit-box;
-  display: -ms-flexbox;
-  -webkit-box-align: center;
-  -ms-flex-align: center;
-  align-items: center;
-  -webkit-box-pack: center;
-  -ms-flex-pack: center;
-  justify-content: center;
-  width: 100%;
-  height: 100%;
-  position: absolute;
-  top: 0px;
-  left: 0px;
-  color: white;
-  text-shadow: 1px 1px 2px black;
-}
-
-/* line 29, /Users/jamieavins/git/SDK/touch/resources/themes/stylesheets/sencha-touch/base/src/_ProgressIndicator.scss */
-.x-progressindicator .x-progressindicator-bar {
-  height: 100%;
-  width: 0%;
-  border-radius: 10px;
-}
-
-/* line 35, /Users/jamieavins/git/SDK/touch/resources/themes/stylesheets/sencha-touch/base/src/_ProgressIndicator.scss */
-.x-progressindicator:not(.x-item-hidden) .x-progressindicator-bar .x-progressindicator-bar-fill {
-  height: 100%;
-  width: 100%;
-  background-color: gray;
-  border-radius: 10px;
-  -webkit-animation-name: progressIndicator;
-  -moz-animation-name: progressIndicator;
-  -ms-animation-name: progressIndicator;
-  -o-animation-name: progressIndicator;
-  animation-name: progressIndicator;
-  -webkit-animation-duration: 1s;
-  -moz-animation-duration: 1s;
-  -ms-animation-duration: 1s;
-  -o-animation-duration: 1s;
-  animation-duration: 1s;
-  -webkit-animation-timing-function: linear;
-  -moz-animation-timing-function: linear;
-  -ms-animation-timing-function: linear;
-  -o-animation-timing-function: linear;
-  animation-timing-function: linear;
-  -webkit-animation-iteration-count: infinite;
-  -moz-animation-iteration-count: infinite;
-  -ms-animation-iteration-count: infinite;
-  -o-animation-iteration-count: infinite;
-  animation-iteration-count: infinite;
-  background-repeat: repeat-x;
-  background-size: 30px 30px;
-  background-image: -webkit-linear-gradient(-45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
-  background-image: -moz-linear-gradient(-45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
-  background-image: -o-linear-gradient(-45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
-  background-image: linear-gradient(-45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
-}
-
-@-webkit-keyframes progressIndicator {
-  /* line 54, /Users/jamieavins/git/SDK/touch/resources/themes/stylesheets/sencha-touch/base/src/_ProgressIndicator.scss */
-  to {
-    background-position: 30px;
-  }
-}
-
-@-moz-keyframes progressIndicator {
-  /* line 60, /Users/jamieavins/git/SDK/touch/resources/themes/stylesheets/sencha-touch/base/src/_ProgressIndicator.scss */
-  to {
-    background-position: 30px;
-  }
-}
-
-@keyframes progressIndicator {
-  /* line 66, /Users/jamieavins/git/SDK/touch/resources/themes/stylesheets/sencha-touch/base/src/_ProgressIndicator.scss */
-  to {
-    background-position: 30px;
-  }
-}
-
 /**
  * @class Ext.Panel
  */
@@ -1926,71 +1826,57 @@ audio {
   position: relative;
   background-color: #eee;
   min-height: 2.6em;
-  overflow: hidden;
 }
-/* line 11, /Users/jamieavins/git/SDK/touch/resources/themes/stylesheets/sencha-touch/base/src/_Toolbar.scss */
+/* line 10, /Users/jamieavins/git/SDK/touch/resources/themes/stylesheets/sencha-touch/base/src/_Toolbar.scss */
 .x-toolbar.x-docked-top {
   border-bottom: 1px solid;
 }
-/* line 15, /Users/jamieavins/git/SDK/touch/resources/themes/stylesheets/sencha-touch/base/src/_Toolbar.scss */
+/* line 14, /Users/jamieavins/git/SDK/touch/resources/themes/stylesheets/sencha-touch/base/src/_Toolbar.scss */
 .x-toolbar.x-docked-bottom {
   border-top: 1px solid;
 }
-/* line 19, /Users/jamieavins/git/SDK/touch/resources/themes/stylesheets/sencha-touch/base/src/_Toolbar.scss */
+/* line 18, /Users/jamieavins/git/SDK/touch/resources/themes/stylesheets/sencha-touch/base/src/_Toolbar.scss */
 .x-toolbar.x-docked-left {
   width: 50px;
   height: auto;
   border-right: 1px solid;
 }
-/* line 25, /Users/jamieavins/git/SDK/touch/resources/themes/stylesheets/sencha-touch/base/src/_Toolbar.scss */
+/* line 24, /Users/jamieavins/git/SDK/touch/resources/themes/stylesheets/sencha-touch/base/src/_Toolbar.scss */
 .x-toolbar.x-docked-right {
   width: 50px;
   height: auto;
   border-left: 1px solid;
 }
 
-/* line 32, /Users/jamieavins/git/SDK/touch/resources/themes/stylesheets/sencha-touch/base/src/_Toolbar.scss */
+/* line 31, /Users/jamieavins/git/SDK/touch/resources/themes/stylesheets/sencha-touch/base/src/_Toolbar.scss */
 .x-title {
   font-size: 1.2em;
   text-align: center;
   font-weight: bold;
   max-width: 100%;
 }
-/* line 39, /Users/jamieavins/git/SDK/touch/resources/themes/stylesheets/sencha-touch/base/src/_Toolbar.scss */
-.x-title.x-title-align-left {
-  padding-left: 10px;
-}
-/* line 44, /Users/jamieavins/git/SDK/touch/resources/themes/stylesheets/sencha-touch/base/src/_Toolbar.scss */
-.x-title.x-title-align-right {
-  padding-right: 10px;
-}
-/* line 48, /Users/jamieavins/git/SDK/touch/resources/themes/stylesheets/sencha-touch/base/src/_Toolbar.scss */
+/* line 38, /Users/jamieavins/git/SDK/touch/resources/themes/stylesheets/sencha-touch/base/src/_Toolbar.scss */
 .x-title .x-innerhtml {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-/* line 54, /Users/jamieavins/git/SDK/touch/resources/themes/stylesheets/sencha-touch/base/src/_Toolbar.scss */
+/* line 44, /Users/jamieavins/git/SDK/touch/resources/themes/stylesheets/sencha-touch/base/src/_Toolbar.scss */
 .x-navigation-bar .x-container {
   overflow: visible;
 }
 
-/* line 61, /Users/jamieavins/git/SDK/touch/resources/themes/stylesheets/sencha-touch/base/src/_Toolbar.scss */
+/* line 51, /Users/jamieavins/git/SDK/touch/resources/themes/stylesheets/sencha-touch/base/src/_Toolbar.scss */
 .x-toolbar-inner .x-field .x-component-outer {
   -webkit-box-flex: 1;
   -ms-flex: 1 0 auto;
   flex: 1 0 auto;
 }
 
-/* line 67, /Users/jamieavins/git/SDK/touch/resources/themes/stylesheets/sencha-touch/base/src/_Toolbar.scss */
+/* line 57, /Users/jamieavins/git/SDK/touch/resources/themes/stylesheets/sencha-touch/base/src/_Toolbar.scss */
 .x-ie .x-toolbar-inner {
   height: 100% !important;
-}
-
-/* line 1, /Users/jamieavins/git/SDK/touch/resources/themes/stylesheets/sencha-touch/base/src/_Menu.scss */
-.x-menu {
-  background: #eee;
 }
 
 /* line 1, /Users/jamieavins/git/SDK/touch/resources/themes/stylesheets/sencha-touch/base/src/carousel/_Carousel.scss */
@@ -2012,9 +1898,9 @@ audio {
   -webkit-box-flex: 1;
   -ms-flex: 1 0 auto;
   flex: 1 0 auto;
-  display: flex;
   display: -webkit-box;
   display: -ms-flexbox;
+  display: flex;
   -webkit-box-pack: center;
   -ms-flex-pack: center;
   justify-content: center;
@@ -2203,7 +2089,6 @@ audio {
   bottom: 0;
   left: 0;
   text-align: center;
-  font-family: "Pictos";
   content: "l";
 }
 
@@ -2216,7 +2101,6 @@ audio {
   bottom: 0;
   left: 0;
   text-align: center;
-  font-family: "Pictos";
   content: "`";
 }
 
@@ -2227,11 +2111,6 @@ audio {
 
 /* line 8, /Users/jamieavins/git/SDK/touch/resources/themes/stylesheets/sencha-touch/base/src/dataview/_DataView.scss */
 .x-dataview-nowrap .x-dataview-container {
-  white-space: nowrap !important;
-}
-
-/* line 14, /Users/jamieavins/git/SDK/touch/resources/themes/stylesheets/sencha-touch/base/src/dataview/_DataView.scss */
-.x-dataview-nowrap .x-container.x-dataview {
   white-space: nowrap !important;
 }
 
@@ -2266,22 +2145,22 @@ audio {
   top: 0;
   width: 100%;
 }
-/* line 30, /Users/jamieavins/git/SDK/touch/resources/themes/stylesheets/sencha-touch/base/src/dataview/_List.scss */
-.x-list .x-list-item > .x-dock {
-  height: auto;
-}
-/* line 34, /Users/jamieavins/git/SDK/touch/resources/themes/stylesheets/sencha-touch/base/src/dataview/_List.scss */
-.x-list .x-list-item .x-dock-horizontal {
-  border-top: 1px solid #cccccc;
-}
-/* line 39, /Users/jamieavins/git/SDK/touch/resources/themes/stylesheets/sencha-touch/base/src/dataview/_List.scss */
-.x-list .x-list-item.x-item-selected .x-dock-horizontal, .x-list .x-list-item.x-item-selected.x-list-item-tpl {
-  background-color: #ccc;
-}
-/* line 45, /Users/jamieavins/git/SDK/touch/resources/themes/stylesheets/sencha-touch/base/src/dataview/_List.scss */
+/* line 32, /Users/jamieavins/git/SDK/touch/resources/themes/stylesheets/sencha-touch/base/src/dataview/_List.scss */
 .x-list .x-list-item.x-item-pressed.x-list-item-tpl,
 .x-list .x-list-item.x-item-pressed .x-dock-horizontal {
   background-color: #ddd;
+}
+/* line 37, /Users/jamieavins/git/SDK/touch/resources/themes/stylesheets/sencha-touch/base/src/dataview/_List.scss */
+.x-list .x-list-item > .x-dock {
+  height: auto;
+}
+/* line 41, /Users/jamieavins/git/SDK/touch/resources/themes/stylesheets/sencha-touch/base/src/dataview/_List.scss */
+.x-list .x-list-item .x-dock-horizontal {
+  border-top: 1px solid #cccccc;
+}
+/* line 46, /Users/jamieavins/git/SDK/touch/resources/themes/stylesheets/sencha-touch/base/src/dataview/_List.scss */
+.x-list .x-list-item.x-item-selected .x-dock-horizontal, .x-list .x-list-item.x-item-selected.x-list-item-tpl {
+  background-color: #ccc;
 }
 /* line 51, /Users/jamieavins/git/SDK/touch/resources/themes/stylesheets/sencha-touch/base/src/dataview/_List.scss */
 .x-list .x-list-item .x-list-item-body, .x-list .x-list-item.x-list-item-tpl .x-innerhtml {
@@ -2321,10 +2200,10 @@ audio {
 .x-list .x-list-emptytext {
   text-align: center;
   pointer-events: none;
-  font-color: #333333;
-  display: flex;
+  font-size: #333333;
   display: -webkit-box;
   display: -ms-flexbox;
+  display: flex;
   -webkit-box-orient: vertical;
   -ms-flex-direction: column;
   flex-direction: column;
@@ -2389,13 +2268,6 @@ audio {
 /* line 148, /Users/jamieavins/git/SDK/touch/resources/themes/stylesheets/sencha-touch/base/src/dataview/_List.scss */
 .x-list-nowrap .x-list-container {
   white-space: nowrap !important;
-}
-
-/* line 153, /Users/jamieavins/git/SDK/touch/resources/themes/stylesheets/sencha-touch/base/src/dataview/_List.scss */
-.x-list-item-dragging {
-  border-bottom: 1px solid #cccccc;
-  background: white !important;
-  z-index: 1;
 }
 
 /* line 1, /Users/jamieavins/git/SDK/touch/resources/themes/stylesheets/sencha-touch/base/src/dataview/_IndexBar.scss */
@@ -2470,9 +2342,9 @@ audio {
 
 /* line 15, /Users/jamieavins/git/SDK/touch/resources/themes/stylesheets/sencha-touch/base/src/form/_Panel.scss */
 .x-field {
-  display: flex;
   display: -webkit-box;
   display: -ms-flexbox;
+  display: flex;
 }
 /* line 18, /Users/jamieavins/git/SDK/touch/resources/themes/stylesheets/sencha-touch/base/src/form/_Panel.scss */
 .x-field .x-field-input {
@@ -2496,9 +2368,9 @@ audio {
 /* line 40, /Users/jamieavins/git/SDK/touch/resources/themes/stylesheets/sencha-touch/base/src/form/_Panel.scss */
 .x-label-align-left,
 .x-label-align-right {
-  -webkit-box-orient: horizontal !important;
-  -ms-flex-direction: row !important;
-  flex-direction: row !important;
+  -webkit-box-orient: horizontal;
+  -ms-flex-direction: row;
+  flex-direction: row;
 }
 /* line 43, /Users/jamieavins/git/SDK/touch/resources/themes/stylesheets/sencha-touch/base/src/form/_Panel.scss */
 .x-label-align-left .x-component-outer,
@@ -2559,9 +2431,9 @@ audio {
 
 /* line 92, /Users/jamieavins/git/SDK/touch/resources/themes/stylesheets/sencha-touch/base/src/form/_Panel.scss */
 .x-spinner .x-component-outer {
-  display: flex;
   display: -webkit-box;
   display: -ms-flexbox;
+  display: flex;
 }
 /* line 95, /Users/jamieavins/git/SDK/touch/resources/themes/stylesheets/sencha-touch/base/src/form/_Panel.scss */
 .x-spinner .x-component-outer > * {
@@ -2725,9 +2597,9 @@ input[type="search"]::-webkit-search-cancel-button {
   right: 0;
   bottom: 0;
   z-index: 3;
-  display: flex;
   display: -webkit-box;
   display: -ms-flexbox;
+  display: flex;
   -webkit-box-align: stretch;
   -ms-flex-align: stretch;
   align-items: stretch;
@@ -2830,9 +2702,9 @@ input[type="search"]::-webkit-search-cancel-button {
  */
 /* line 5, /Users/jamieavins/git/SDK/touch/resources/themes/stylesheets/sencha-touch/base/src/plugin/_PullRefresh.scss */
 .x-list-pullrefresh {
-  display: flex;
   display: -webkit-box;
   display: -ms-flexbox;
+  display: flex;
   -webkit-box-orient: horizontal;
   -ms-flex-direction: row;
   flex-direction: row;
@@ -3035,298 +2907,6 @@ input[type="search"]::-webkit-search-cancel-button {
 .x-table-cell {
   display: table-cell !important;
   vertical-align: middle;
-}
-
-/* line 2, /Users/jamieavins/git/SDK/touch/resources/themes/stylesheets/sencha-touch/base/src/grid/_Grid.scss */
-.x-grid .x-grid-header-container {
-  border-width: 0 1px 1px 0;
-  border-style: solid;
-  height: 65px;
-  font-weight: bold;
-  overflow: hidden;
-}
-/* line 9, /Users/jamieavins/git/SDK/touch/resources/themes/stylesheets/sencha-touch/base/src/grid/_Grid.scss */
-.x-grid .x-grid-header-container .x-grid-column {
-  display: inline-block;
-}
-/* line 13, /Users/jamieavins/git/SDK/touch/resources/themes/stylesheets/sencha-touch/base/src/grid/_Grid.scss */
-.x-grid .x-grid-header-container .x-grid-header-container-inner {
-  width: 100000px;
-  position: absolute;
-  top: 0;
-  left: 0;
-}
-/* line 21, /Users/jamieavins/git/SDK/touch/resources/themes/stylesheets/sencha-touch/base/src/grid/_Grid.scss */
-.x-grid .x-grid-column {
-  height: 64px;
-  border-width: 1px 1px 0 1px;
-  border-style: solid;
-  line-height: 64px;
-  vertical-align: middle;
-  padding: 0 8px;
-}
-/* line 29, /Users/jamieavins/git/SDK/touch/resources/themes/stylesheets/sencha-touch/base/src/grid/_Grid.scss */
-.x-grid .x-grid-column .x-innerhtml {
-  display: inline-block;
-  width: auto;
-  position: relative;
-}
-/* line 37, /Users/jamieavins/git/SDK/touch/resources/themes/stylesheets/sencha-touch/base/src/grid/_Grid.scss */
-.x-grid .x-grid-column.x-column-sorted-asc .x-innerhtml:after, .x-grid .x-grid-column.x-column-sorted-desc .x-innerhtml:after {
-  position: absolute;
-  width: 12px;
-  right: -16px;
-  line-height: 64px;
-  top: 0;
-  height: 64px;
-  font-family: 'Pictos';
-  font-size: 12px;
-}
-/* line 49, /Users/jamieavins/git/SDK/touch/resources/themes/stylesheets/sencha-touch/base/src/grid/_Grid.scss */
-.x-grid .x-grid-column.x-column-sorted-asc .x-innerhtml:after {
-  content: "{";
-}
-/* line 52, /Users/jamieavins/git/SDK/touch/resources/themes/stylesheets/sencha-touch/base/src/grid/_Grid.scss */
-.x-grid .x-grid-column.x-column-sorted-desc .x-innerhtml:after {
-  content: "}";
-}
-/* line 57, /Users/jamieavins/git/SDK/touch/resources/themes/stylesheets/sencha-touch/base/src/grid/_Grid.scss */
-.x-grid .x-grid-headergroup {
-  display: inline-block;
-  position: relative;
-  vertical-align: bottom;
-  height: 64px;
-  padding-top: 32px;
-}
-/* line 64, /Users/jamieavins/git/SDK/touch/resources/themes/stylesheets/sencha-touch/base/src/grid/_Grid.scss */
-.x-grid .x-grid-headergroup .x-inner > .x-innerhtml {
-  height: 32px;
-  line-height: 28px;
-  vertical-align: middle;
-  display: block;
-  position: absolute;
-  width: 100%;
-  top: 0;
-  left: 0;
-  text-align: center;
-  border-style: solid;
-  border-width: 1px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-/* line 80, /Users/jamieavins/git/SDK/touch/resources/themes/stylesheets/sencha-touch/base/src/grid/_Grid.scss */
-.x-grid .x-grid-headergroup .x-grid-column {
-  height: 32px !important;
-  line-height: 27px !important;
-  font-size: 0.7em;
-}
-/* line 87, /Users/jamieavins/git/SDK/touch/resources/themes/stylesheets/sencha-touch/base/src/grid/_Grid.scss */
-.x-grid .x-grid-headergroup .x-grid-column.x-column-sorted-asc .x-innerhtml:after, .x-grid .x-grid-headergroup .x-grid-column.x-column-sorted-desc .x-innerhtml:after {
-  line-height: 27px;
-  height: 27px;
-}
-/* line 95, /Users/jamieavins/git/SDK/touch/resources/themes/stylesheets/sencha-touch/base/src/grid/_Grid.scss */
-.x-grid .x-grid-row {
-  position: absolute;
-  left: 0;
-  top: 0;
-  border-width: 0 0 1px 0;
-  border-style: solid;
-}
-/* line 103, /Users/jamieavins/git/SDK/touch/resources/themes/stylesheets/sencha-touch/base/src/grid/_Grid.scss */
-.x-grid .x-grid-cell {
-  display: inline-block;
-  vertical-align: middle;
-  line-height: 60px;
-  padding: 0 8px;
-  height: 60px;
-  overflow: hidden;
-  border-width: 0 1px 0 0;
-}
-/* line 114, /Users/jamieavins/git/SDK/touch/resources/themes/stylesheets/sencha-touch/base/src/grid/_Grid.scss */
-.x-grid .x-grid-cell-align-center,
-.x-grid .x-grid-column-align-center {
-  text-align: center;
-}
-/* line 119, /Users/jamieavins/git/SDK/touch/resources/themes/stylesheets/sencha-touch/base/src/grid/_Grid.scss */
-.x-grid .x-grid-cell-align-right,
-.x-grid .x-grid-column-align-right {
-  text-align: right;
-}
-/* line 123, /Users/jamieavins/git/SDK/touch/resources/themes/stylesheets/sencha-touch/base/src/grid/_Grid.scss */
-.x-grid .x-grid-viewoptions {
-  border-width: 0 0 0 1px;
-  border-style: solid;
-}
-/* line 127, /Users/jamieavins/git/SDK/touch/resources/themes/stylesheets/sencha-touch/base/src/grid/_Grid.scss */
-.x-grid .x-grid-viewoptions .x-list-item .x-innerhtml {
-  padding: 0px !important;
-}
-/* line 131, /Users/jamieavins/git/SDK/touch/resources/themes/stylesheets/sencha-touch/base/src/grid/_Grid.scss */
-.x-grid .x-grid-viewoptions .x-column-options-header {
-  height: 32px;
-  line-height: 28px;
-  vertical-align: middle;
-  border-style: solid;
-  border-width: 1px;
-  overflow: hidden;
-  padding-left: 10px;
-}
-/* line 144, /Users/jamieavins/git/SDK/touch/resources/themes/stylesheets/sencha-touch/base/src/grid/_Grid.scss */
-.x-grid .x-grid-viewoptions .x-column-options-sortablehandle,
-.x-grid .x-grid-viewoptions .x-column-options-visibleindicator,
-.x-grid .x-grid-viewoptions .x-column-options-folder,
-.x-grid .x-grid-viewoptions .x-column-options-leaf {
-  width: 40px;
-  height: 48px;
-  position: absolute;
-  bottom: 0;
-}
-/* line 150, /Users/jamieavins/git/SDK/touch/resources/themes/stylesheets/sencha-touch/base/src/grid/_Grid.scss */
-.x-grid .x-grid-viewoptions .x-column-options-sortablehandle:after,
-.x-grid .x-grid-viewoptions .x-column-options-visibleindicator:after,
-.x-grid .x-grid-viewoptions .x-column-options-folder:after,
-.x-grid .x-grid-viewoptions .x-column-options-leaf:after {
-  position: absolute;
-  top: 0;
-  left: 0;
-  height: 100%;
-  width: 100%;
-  text-align: center;
-  font-size: 24px;
-  font-family: 'Pictos';
-  line-height: 48px;
-  content: "l";
-  vertical-align: middle;
-}
-/* line 165, /Users/jamieavins/git/SDK/touch/resources/themes/stylesheets/sencha-touch/base/src/grid/_Grid.scss */
-.x-grid .x-grid-viewoptions .x-column-options-sortablehandle {
-  left: 0;
-}
-/* line 167, /Users/jamieavins/git/SDK/touch/resources/themes/stylesheets/sencha-touch/base/src/grid/_Grid.scss */
-.x-grid .x-grid-viewoptions .x-column-options-sortablehandle:after {
-  line-height: 54px;
-}
-/* line 171, /Users/jamieavins/git/SDK/touch/resources/themes/stylesheets/sencha-touch/base/src/grid/_Grid.scss */
-.x-grid .x-grid-viewoptions .x-column-options-visibleindicator {
-  right: 0;
-}
-/* line 173, /Users/jamieavins/git/SDK/touch/resources/themes/stylesheets/sencha-touch/base/src/grid/_Grid.scss */
-.x-grid .x-grid-viewoptions .x-column-options-visibleindicator:after {
-  font-size: 30px;
-  line-height: 54px;
-  content: "E";
-}
-/* line 181, /Users/jamieavins/git/SDK/touch/resources/themes/stylesheets/sencha-touch/base/src/grid/_Grid.scss */
-.x-grid .x-grid-viewoptions .x-column-options-folder,
-.x-grid .x-grid-viewoptions .x-column-options-leaf {
-  width: 30px;
-  left: 40px;
-}
-/* line 185, /Users/jamieavins/git/SDK/touch/resources/themes/stylesheets/sencha-touch/base/src/grid/_Grid.scss */
-.x-grid .x-grid-viewoptions .x-column-options-folder:after,
-.x-grid .x-grid-viewoptions .x-column-options-leaf:after {
-  line-height: 52px;
-  content: "o";
-}
-/* line 191, /Users/jamieavins/git/SDK/touch/resources/themes/stylesheets/sencha-touch/base/src/grid/_Grid.scss */
-.x-grid .x-grid-viewoptions .x-column-options-leaf:after {
-  content: "F";
-}
-/* line 195, /Users/jamieavins/git/SDK/touch/resources/themes/stylesheets/sencha-touch/base/src/grid/_Grid.scss */
-.x-grid .x-grid-viewoptions .x-list-item.x-item-selected.x-list-item-tpl {
-  background: transparent;
-}
-/* line 197, /Users/jamieavins/git/SDK/touch/resources/themes/stylesheets/sencha-touch/base/src/grid/_Grid.scss */
-.x-grid .x-grid-viewoptions .x-list-item.x-item-selected.x-list-item-tpl .x-innerhtml {
-  background: transparent;
-}
-/* line 202, /Users/jamieavins/git/SDK/touch/resources/themes/stylesheets/sencha-touch/base/src/grid/_Grid.scss */
-.x-grid .x-grid-viewoptions .x-column-options-text {
-  display: block;
-  height: 30px;
-  margin: 10px 50px 5px 80px;
-  position: relative;
-  vertical-align: middle;
-  line-height: 28px;
-}
-/* line 212, /Users/jamieavins/git/SDK/touch/resources/themes/stylesheets/sencha-touch/base/src/grid/_Grid.scss */
-.x-grid .x-grid-columnoptions {
-  border-width: 0 0 1px;
-}
-/* line 216, /Users/jamieavins/git/SDK/touch/resources/themes/stylesheets/sencha-touch/base/src/grid/_Grid.scss */
-.x-grid .x-grid-multiselection-column {
-  position: relative;
-  padding: 0;
-}
-/* line 220, /Users/jamieavins/git/SDK/touch/resources/themes/stylesheets/sencha-touch/base/src/grid/_Grid.scss */
-.x-grid .x-grid-multiselection-column:after {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 60px;
-  height: 64px;
-  line-height: 64px;
-  font-family: 'Pictos';
-  font-size: 26px;
-  text-align: center;
-  content: "2";
-}
-/* line 234, /Users/jamieavins/git/SDK/touch/resources/themes/stylesheets/sencha-touch/base/src/grid/_Grid.scss */
-.x-grid .x-grid-multiselection-cell {
-  position: relative;
-  padding: 0;
-}
-/* line 238, /Users/jamieavins/git/SDK/touch/resources/themes/stylesheets/sencha-touch/base/src/grid/_Grid.scss */
-.x-grid .x-grid-multiselection-cell:after {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 60px;
-  height: 60px;
-  line-height: 60px;
-  font-family: 'Pictos';
-  font-size: 20px;
-  text-align: center;
-  content: "_";
-}
-/* line 252, /Users/jamieavins/git/SDK/touch/resources/themes/stylesheets/sencha-touch/base/src/grid/_Grid.scss */
-.x-grid .x-item-selected .x-grid-multiselection-cell:after {
-  content: "3";
-}
-/* line 257, /Users/jamieavins/git/SDK/touch/resources/themes/stylesheets/sencha-touch/base/src/grid/_Grid.scss */
-.x-grid .x-grid-pagingtoolbar > .x-body {
-  padding: 0 30px 0 50px;
-}
-/* line 262, /Users/jamieavins/git/SDK/touch/resources/themes/stylesheets/sencha-touch/base/src/grid/_Grid.scss */
-.x-grid .x-grid-pagingtoolbar-currentpage {
-  position: relative;
-  height: 22px;
-}
-/* line 266, /Users/jamieavins/git/SDK/touch/resources/themes/stylesheets/sencha-touch/base/src/grid/_Grid.scss */
-.x-grid .x-grid-pagingtoolbar-currentpage span {
-  position: absolute;
-  right: 0;
-  top: 0;
-  line-height: 22px;
-  height: 22px;
-}
-/* line 275, /Users/jamieavins/git/SDK/touch/resources/themes/stylesheets/sencha-touch/base/src/grid/_Grid.scss */
-.x-grid .x-grid-summaryrow {
-  height: 32px;
-  font-size: 0.8em;
-  position: relative;
-}
-/* line 280, /Users/jamieavins/git/SDK/touch/resources/themes/stylesheets/sencha-touch/base/src/grid/_Grid.scss */
-.x-grid .x-grid-summaryrow .x-grid-cell {
-  height: 32px;
-  line-height: 30px;
-  border-width: 0 0 1px;
-  border-style: solid;
-}
-/* line 288, /Users/jamieavins/git/SDK/touch/resources/themes/stylesheets/sencha-touch/base/src/grid/_Grid.scss */
-.x-grid .x-grid-summaryrow .x-grid-multiselection-cell:after {
-  content: '';
 }
 
 /**

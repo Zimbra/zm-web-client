@@ -1,3 +1,17 @@
+/*
+ * ***** BEGIN LICENSE BLOCK *****
+ * Zimbra Collaboration Suite Web Client
+ * Copyright (C) 2013 Zimbra Software, LLC.
+ * 
+ * The contents of this file are subject to the Zimbra Public License
+ * Version 1.4 ("License"); you may not use this file except in
+ * compliance with the License.  You may obtain a copy of the License at
+ * http://www.zimbra.com/license.
+ * 
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * ***** END LICENSE BLOCK *****
+ */
 /**
  * @private
  */
@@ -14,7 +28,8 @@ Ext.define('Ext.event.publisher.Dom', {
 
     idOrClassSelectorRegex: /^([#|\.])([\w\-]+)$/,
 
-    handledEvents: ['focus', 'blur', 'paste', 'input', 'change',
+    handledEvents: ['click', 'focus', 'blur', 'paste', 'input', 'change',
+                    'mousemove', 'mousedown', 'mouseup', 'mouseover', 'mouseout',
                     'keyup', 'keydown', 'keypress', 'submit',
                     'transitionend', 'animationstart', 'animationend'],
 
@@ -114,17 +129,16 @@ Ext.define('Ext.event.publisher.Dom', {
             doc = document;
         }
 
-        var defaultView = doc.defaultView;
+        var defaultView = doc.defaultView,
+            addEventListener;
 
-        if (Ext.os.is.iOS && Ext.os.version.getMajor() < 5) {
-            document.addEventListener(eventName, this.onEvent, !this.doesEventBubble(eventName));
-        }
-        else if (defaultView && defaultView.addEventListener) {
-            doc.defaultView.addEventListener(eventName, this.onEvent, !this.doesEventBubble(eventName));
+        if (defaultView && defaultView.addEventListener) {
+            addEventListener = defaultView.addEventListener;
         }
         else {
-            doc.addEventListener(eventName, this.onEvent, !this.doesEventBubble(eventName));
+            addEventListener = doc.addEventListener;
         }
+        addEventListener(eventName, this.onEvent, !this.doesEventBubble(eventName));
         return this;
     },
 
@@ -133,17 +147,17 @@ Ext.define('Ext.event.publisher.Dom', {
             doc = document;
         }
 
-        var defaultView = doc.defaultView;
+        var defaultView = doc.defaultView,
+            removeEventListener;
 
-        if (Ext.os.is.iOS && Ext.os.version.getMajor() < 5) {
-            document.removeEventListener(eventName, this.onEvent, !this.doesEventBubble(eventName));
-        }
-        else if (defaultView && defaultView.addEventListener) {
-            doc.defaultView.removeEventListener(eventName, this.onEvent, !this.doesEventBubble(eventName));
+        if (defaultView && defaultView.removeEventListener) {
+            removeEventListener = defaultView.removeEventListener;
         }
         else {
-            doc.removeEventListener(eventName, this.onEvent, !this.doesEventBubble(eventName));
+            removeEventListener = doc.addEventListener;
         }
+        removeEventListener(eventName, this.onEvent, !this.doesEventBubble(eventName));
+
         return this;
     },
 
@@ -332,13 +346,7 @@ Ext.define('Ext.event.publisher.Dom', {
             event.setDelegatedTarget(target);
 
             if (hasIdSubscribers) {
-                // We use getAttribute instead of referencing id here as forms can have there properties overridden by children
-                // Example:
-                //  <form id="myForm">
-                //      <input name="id">
-                //  </form>
-                // form.id === input node named id whereas form.getAttribute("id") === "myForm"
-                id = target.getAttribute("id");
+                id = target.id;
 
                 if (id) {
                     if (idSubscribers.hasOwnProperty(id)) {
@@ -426,6 +434,7 @@ Ext.define('Ext.event.publisher.Dom', {
 
     onEvent: function(e) {
         var eventName = this.eventNameMap[e.type];
+
         // Set the current frame start time to be the timestamp of the event.
         Ext.frameStartTime = e.timeStamp;
 

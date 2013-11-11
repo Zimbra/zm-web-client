@@ -27,8 +27,7 @@ Ext.define('ZCS.model.ZtReader', {
 	 * this method because it has access to the Request object; we then copy the SOAP method
 	 * from there to the data, which readRecords() receives as an argument.
 	 *
-	 * @param {Object}  response    response object
-	 * @return {Object} JSON response data
+	 * @param {object}  response    response object
 	 */
 	getResponseData: function(response) {
 
@@ -57,9 +56,11 @@ Ext.define('ZCS.model.ZtReader', {
 	readRecords: function(data) {
 
 		this.rawData = data;
-		data.options = data.options || {};
 
-		var nodeName = data.options.nodeName = this.getNodeName(data),
+		var Model = this.getModel(),
+			className = Ext.getClassName(Model),
+			type = ZCS.constant.TYPE_FOR_CLASS[className],
+			nodeName = ZCS.constant.ITEM_NODE[type],
 			count = 0,
 			total = 0,
 			root = this.getRoot(data, nodeName),
@@ -76,27 +77,14 @@ Ext.define('ZCS.model.ZtReader', {
 			total = count = root.length;
 		}
 
+
 		return new Ext.data.ResultSet({
-			total:      total,
-			count:      count,
-			records:    this.getRecords(root, data.options),
-			success:    true,
-			message:    ''
+			total  : total,
+			count  : count,
+			records: this.getRecords(root),
+			success: true,
+			message: ''
 		});
-	},
-
-	/**
-	 * Returns the JSON node name for the object this reader should look for in the data.
-	 *
-	 * @param {object}      data        response data
-	 */
-	getNodeName: function(data) {
-
-		var Model = this.getModel(),
-			className = Ext.getClassName(Model),
-			type = ZCS.constant.TYPE_FOR_CLASS[className];
-
-		return ZCS.constant.ITEM_NODE[type];
 	},
 
 	/**
@@ -107,30 +95,32 @@ Ext.define('ZCS.model.ZtReader', {
 	 */
 	getRoot: function(data, nodeName) {
 		var responseObj = this.getResponseBody(data);
+
 		return responseObj ? responseObj[nodeName] : null;
 	},
 
 	getResponseBody: function (data) {
 		var responseMethod = data.soapMethod + 'Response';
+
 		return data.Body[responseMethod];
 	},
 
 	/**
 	 * Converts a list of JSON nodes into a list of records.
 	 *
-	 * @param {Array}   root        list of JSON nodes
-	 * @return {Array}  list of records
+	 * @param {array}   root        list of JSON nodes
+	 * @return {array}  list of records
 	 */
-	getRecords: function(root, options) {
+	getRecords: function(root) {
 
 		var records = [];
 
 		Ext.each(root, function(node) {
 			records.push({
-				clientId:   null,
-				id:         node.id,
-				data:       this.getDataFromNode(node, options),
-				node:       node
+				clientId: null,
+				id: node.id,
+				data: this.getDataFromNode(node),
+				node: node
 			});
 		}, this);
 
@@ -144,6 +134,6 @@ Ext.define('ZCS.model.ZtReader', {
 	 * @param {object}  node        JSON node representing model instance
 	 */
 	getDataFromNode: function(node) {
-		return Ext.clone(node);
+		return node;
 	}
 });

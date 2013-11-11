@@ -284,8 +284,6 @@ function() {
                 ZmOperation.CLEAR_ALL);
     }
 
-	ops.push(ZmOperation.FIND_SHARES);
-
 	return ops;
 };
 
@@ -342,9 +340,7 @@ function(organizer) {
             return;
         }
 
-        if (Number(organizer.nId) === ZmOrganizer.ID_TRASH) { //nId is String so change to Number so I can do === to compare to number. A bit messy but I prefer that over keeping ==.
-			return;
-		}
+        if (organizer.id == ZmOrganizer.ID_TRASH) return;
 
 		var appId = ZmOrganizer.APP[organizer.type];
 		var app = appId && appCtxt.getApp(appId);
@@ -420,9 +416,12 @@ function(ev) {
             dlg.setMessage(ZmMsg.orgChange, DwtMessageDialog.WARNING_STYLE);
             dlg.popup();
 		} else {
-            if (data instanceof ZmCalendar) {
-                this._doMove(data, dropFolder);
-            } else {
+            if(data instanceof ZmCalendar){
+                // Root node's type is folder, but it's labelled 'Calendars'.  Pass the proper
+                // name down to the status message.
+                var folderName = (dropFolder.nId == ZmFolder.ID_ROOT) ? ZmMsg.calendars : null;
+                this._doMove(data, dropFolder, folderName);
+            } else{
                 ctlr._doMove(appts, dropFolder, null, isShiftKey);
             }
 		}
@@ -462,7 +461,7 @@ function() {
 ZmCalendarTreeController.prototype.getExternalCalendarDialog =
 function() {
     if(!this._externalCalendarDialog) {
-        AjxDispatcher.require(["MailCore", "CalendarCore", "Calendar", "CalendarAppt"]);
+        AjxDispatcher.require(["CalendarCore", "Calendar", "CalendarAppt"]);
 	    this._externalCalendarDialog = new ZmExternalCalendarDialog({parent: this._shell, controller: this});
     }
     return this._externalCalendarDialog;

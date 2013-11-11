@@ -986,6 +986,7 @@ var noArgs = [],
          * from the current method, for example: `this.callOverridden(arguments)`
          * @return {Object} Returns the result of calling the overridden method
          * @protected
+         * @deprecated Use callParent instead
          */
         callOverridden: function(args) {
             var method = this.callOverridden.caller;
@@ -1281,8 +1282,8 @@ var noArgs = [],
 
         /**
          * @private
-         * @param {String} name
-         * @param {Mixed} value
+         * @param name
+         * @param value
          * @return {Mixed}
          */
         link: function(name, value) {

@@ -2,12 +2,12 @@
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2012, 2013 Zimbra Software, LLC.
- *
+ * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- *
+ * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
@@ -24,6 +24,7 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 	extend: 'Ext.app.Controller',
 
 	requires: [
+		'ZCS.view.mail.ZtComposeForm',
 		'ZCS.common.ZtUtil'
 	],
 
@@ -38,8 +39,6 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 			composePanel:       'composepanel',
 			contactField:       'composepanel contactfield',
 			attachmentsField:   '#attachments',
-			originalAttachmentMenu: 'list[itemId=originalAttachmentMenu]',
-			recipientActionsMenu: 'list[itemId=recipientActionsMenu]',
 
 			// other
 			mailView:       '#' + ZCS.constant.APP_MAIL + 'view',
@@ -52,16 +51,10 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 				send:                       'doSend',
 				saveDraft:                  'doSaveDraft',
 				showOriginalAttachments:    'doShowOriginalAttachments',
-				originalAttachmentTap:      'showMenu'
-			},
-			originalAttachmentMenu: {
-				itemtap:            'onMenuItemSelect'
-			},
-			recipientActionsMenu: {
-				itemtap:            'onMenuItemSelect'
+				originalAttachmentTap:      'doShowMenu'
 			},
 			contactField: {
-				bubbleTap:  'showMenu'
+				bubbleTap:  'showBubbleMenu'
 			}
 		},
 
@@ -73,14 +66,32 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 			'ZCS.store.address.ZtAutoCompleteStore'
 		],
 
+		menuConfigs: {
+			originalAttachment: [
+				{ label: ZtMsg.removeAttachment, action: ZCS.constant.OP_REMOVE_ATT, listener: 'doRemoveAttachment' }
+			]
+		},
+
 		action:     '',
 		origMsg:    null,   // reply/forward
 		draftId:    null,   // ID of existing draft to delete when edited version is sent
 		formHash:   ''      // used to perform dirty check
 	},
 
-	doRemoveRecipient: function (actionParams) {
-		actionParams.field.removeBubble(actionParams.bubble);
+	showBubbleMenu: function (field, bubble, bubbleModel) {
+		var menu = Ext.create('ZCS.common.ZtMenu', {
+			referenceComponent: bubble,
+			modal: true
+		});
+
+		menu.setMenuItems(Ext.create('ZCS.model.ZtMenuItem', {
+			label: 'Remove',
+			listener: function () {
+				field.removeBubble(bubble);
+			}
+		}));
+
+		menu.popup();
 	},
 
 	/**
@@ -92,8 +103,7 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 
 		var addresses = {},
 			subject = null,
-			body = null,
-			signature = ZCS.session.getSetting(ZCS.constant.SETTING_SIGNATURE);
+			body = null;
 
 		if (msg) {
 			Ext.each(ZCS.constant.RECIP_TYPES, function(type) {
@@ -102,13 +112,10 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 			subject = this.getSubject(msg, '');
 			body = msg.getContentForInclusion();
 		}
-		else {
-			body = signature ? '<br><br>' + signature : null;
-		}
 
 		this.setAction(ZCS.constant.OP_COMPOSE);
-		this.setDraftId(msg ? msg.get('zcsId') : null);
-		this.showComposeForm(addresses, subject, body, msg);
+		this.setDraftId(msg ? msg.get('itemId') : null);
+		this.showComposeForm(addresses, subject, body);
 	},
 
 	/**
@@ -117,21 +124,8 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 	 * @param {ZtMailMsg}   msg     original message
 	 */
 	reply: function(msg) {
-		this.doReply(msg, false);
-	},
 
-	/**
-	 * Reply to the sender and other recipients of the given message.
-	 *
-	 * @param {ZtMailMsg}   msg     original message
-	 */
-	replyAll: function(msg) {
-		this.doReply(msg, true);
-	},
-
-	doReply: function(msg, replyAll) {
-
-		var action = replyAll ? ZCS.constant.OP_REPLY_ALL : ZCS.constant.OP_REPLY,
+		var action = ZCS.constant.OP_REPLY,
 			addrs = this.getReplyAddresses(msg, action),
 			subject = this.getSubject(msg, ZtMsg.rePrefix),
 			body = this.quoteOrigMsg(msg, action);
@@ -140,7 +134,26 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 		this.setOrigMsg(msg);
 		this.setDraftId(null);
 
-		this.showComposeForm(addrs, subject, body, msg);
+		this.showComposeForm(addrs, subject, body);
+	},
+
+	/**
+	 * Reply to the sender and other recipients of the given message.
+	 *
+	 * @param {ZtMailMsg}   msg     original message
+	 */
+	replyAll: function(msg) {
+
+		var action = ZCS.constant.OP_REPLY_ALL,
+			addrs = this.getReplyAddresses(msg, action),
+			subject = this.getSubject(msg, ZtMsg.rePrefix),
+			body = this.quoteOrigMsg(msg, action);
+
+		this.setAction(action);
+		this.setOrigMsg(msg);
+		this.setDraftId(null);
+
+		this.showComposeForm(addrs, subject, body);
 	},
 
 	/**
@@ -158,7 +171,7 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 		this.setOrigMsg(msg);
 		this.setDraftId(null);
 
-		this.showComposeForm(null, subject, body, msg);
+		this.showComposeForm(null, subject, body);
 	},
 
 	/**
@@ -210,15 +223,16 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 	 * @param {Object|Array|String} addresses    addresses (hash by type, list of To:, or a single To:)
 	 * @param {String}              subject      message subject
 	 * @param {String}              body         message body
- 	 * @param {ZtMailMsg}   msg     original message
 	 */
-	showComposeForm: function(addresses, subject, body, msg) {
+	showComposeForm: function(addresses, subject, body) {
 
 		var panel = this.getComposePanel(),
 			form = panel.down('formpanel'),
 			formField = {},
 			subjectFld = form.down('field[name=subject]'),
 			editor = this.getEditor();
+
+		panel.resetForm();
 
 		// make sure addresses is a hash of arrays by address type; array is list of ZtEmailAddress
 		if (!Ext.isObject(addresses)) {
@@ -229,14 +243,12 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 		}
 
 		// get the form fields; show CC/BCC if we have any of those addresses
-		var showCcBcc = false;
 		Ext.each(ZCS.constant.RECIP_TYPES, function(type) {
 			formField[type] = form.down('contactfield[name=' + type + ']');
 			if (type !== ZCS.constant.TO && addresses[type] && addresses[type].length) {
-				showCcBcc = true;
+				panel.showCc();
 			}
 		}, this);
-		panel.showCcBcc(showCcBcc);
 
 		var action = this.getAction(),
 			attachmentsField = this.getAttachmentsField();
@@ -258,14 +270,35 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 				else {
 					attachmentsField.setHtml(ZCS.controller.mail.ZtComposeController.originalAttachmentsTpl.apply({}));
 				}
-                // Bug: 82698. Attachment info will only be present in case of valid attachments, for invite msg message.ics is ignored as attachment
-                if (origMsg.getAttachmentInfo().length) {
-                    attachmentsField.show();
-                }
+				attachmentsField.show();
 			}
 		}
 
-		this.unhideComposeForm();
+		panel.show({
+			type: 'slide',
+			direction: 'up',
+			duration: 250,
+			onEnd: function () {
+				//Only apply this after layout so it doesn't interfere with Ext layout managers
+				Ext.fly(editor).addCls('zcs-fully-editable');
+
+				if (!(addresses[ZCS.constant.TO] && addresses[ZCS.constant.TO].length)) {
+					formField[ZCS.constant.TO].focusInput();
+				} else if (!subject) {
+					subjectFld.focus();
+				} else {
+					editor.focus();
+
+					var range = document.createRange();
+					range.selectNodeContents(editor);
+			        range.collapse(true);
+			        var sel = window.getSelection();
+			        sel.removeAllRanges();
+			        sel.addRange(range);
+					// editor.scrollTop = 0
+				}
+			}
+		});
 
 		Ext.each(ZCS.constant.RECIP_TYPES, function(type) {
 			formField[type].addBubbles(addresses[type]);
@@ -277,31 +310,9 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 
 		editor.innerHTML = body || '';
 
-		ZCS.htmlutil.fixImages(msg, editor, false);
-
 		this.setFormHash(this.calculateFormHash());
 
-		if (!(addresses[ZCS.constant.TO] && addresses[ZCS.constant.TO].length)) {
-			panel.suspendEvents();
-			ZCS.ZTPreventOverflowCheck = true;
-			formField[ZCS.constant.TO].focusInput();
-			ZCS.ZTPreventOverflowCheck = false;
-			panel.resumeEvents(false);
-		} else if (!subject) {
-			subjectFld.focus();
-		} else {
-			editor.focus();
-
-			var range = document.createRange();
-			range.selectNodeContents(editor);
-			range.collapse(true);
-			var sel = window.getSelection();
-			sel.removeAllRanges();
-			sel.addRange(range);
-		}
-
-        Ext.fly(editor).addCls('zcs-fully-editable');
-
+		ZCS.htmlutil.resetWindowScroll();
 	},
 
 	/**
@@ -362,13 +373,10 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 	 * @private
 	 */
 	endComposeSession: function() {
-		var editor = this.getEditor(),
-			composePanel = this.getComposePanel();
-
+		var editor = this.getEditor();
 		// Remove this style so it doesn't interfere with the next layout
 		Ext.fly(editor).removeCls('zcs-fully-editable');
-		this.hideComposeForm();
-		composePanel.resetForm();
+		this.getComposePanel().hide();
 	},
 
 	/**
@@ -390,10 +398,7 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 	 * but can also take a message created via quick reply and send that.
 	 */
 	sendMessage: function(msg, callback, scope) {
-		var composePanel = this.getComposePanel();
-
-		composePanel.element.dom.style.setProperty('display', 'none');
-		composePanel.resetForm();
+		this.getComposePanel().hide();
 		msg.save({
 			success: function() {
 				ZCS.app.fireEvent('showToast', ZtMsg.messageSent);
@@ -410,14 +415,10 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 		var msg = this.getMessageModel(true);
 		msg.save({
 			isDraft: true,
-			success: function(msg, operation) {
+			success: function () {
 				ZCS.app.fireEvent('showToast', ZtMsg.draftSaved);
 				this.setFormHash(this.calculateFormHash());
-				// parse response so we can get ID of draft msg - that way we can tell server to
-				// delete it when the msg is sent
-				var reader = ZCS.model.mail.ZtMailMsg.getProxy().getReader(),
-					response = reader.getResponseData(operation.getResponse());
-				this.setDraftId(response.Body.SaveDraftResponse.m[0].id);
+				this.setDraftId(msg.get('itemId'));
 			}
 		}, this);
 	},
@@ -506,6 +507,18 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 		return msg;
 	},
 
+	/**
+	 * @private
+	 */
+	getComposePanel: function() {
+		if (!this.composePanel) {
+			this.composePanel = Ext.create('ZCS.view.mail.ZtComposeForm');
+			Ext.Viewport.add(this.composePanel);
+		}
+
+		return this.composePanel;
+	},
+
 	quoteHtml: function(html) {
 		return ZCS.constant.HTML_QUOTE_PREFIX_PRE + html + ZCS.constant.HTML_QUOTE_PREFIX_POST;
 	},
@@ -518,15 +531,18 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 			usePrefix = ZCS.session.getSetting(ZCS.constant['SETTING_' + which + '_USE_PREFIX']),
 			incHeaders = ZCS.session.getSetting(ZCS.constant['SETTING_' + which + '_INCLUDE_HEADERS']);
 
-		if (incWhat === ZCS.constant.INC_NONE || incWhat === ZCS.constant.INC_ATTACH) {
+		if (incWhat === ZCS.constant.INC_NONE) {
+			return '';
+		}
+
+		if (incWhat === ZCS.constant.INC_ATTACH) {
 			return '';
 		}
 
 		var headerText = '',
 			headers = [],
 			hdrList = ZCS.constant.QUOTED_HDRS,
-			sep1 = '<br>',
-			sep2 = '<br><br>',
+			sep = '<br><br>',
 			ln = hdrList.length, i, hdr;
 
 		if (incHeaders) {
@@ -536,7 +552,7 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 					headers.push(hdr);
 				}
 			}
-			headerText += headers.join('<br>') + sep2;
+			headerText += headers.join('<br>') + sep;
 		}
 
 		var content = msg.getContentForInclusion(),
@@ -552,25 +568,10 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 			return '';
 		}
 
-		var	quoted = usePrefix ? this.quoteHtml(content) : content;
+		var	quoted = usePrefix ? this.quoteHtml(content) : content,
+			divider = isForward ? ZtMsg.forwardedMessage : ZtMsg.originalMessage;
 
-		var signature = ZCS.session.getSetting(ZCS.constant.SETTING_REPLY_SIGNATURE),
-			sigStyle = ZCS.session.getSetting(ZCS.constant.SETTING_SIGNATURE_STYLE),
-			body = '';
-
-		if (signature) {
-			if (sigStyle === ZCS.constant.SIG_OUTLOOK) {
-				body = sep2 + signature + sep2 + ZCS.constant.HTML_QUOTE_DIVIDER + quoted;
-			}
-			else {
-				body = sep2 + ZCS.constant.HTML_QUOTE_DIVIDER + quoted + sep2 + '--<br>' + signature;
-			}
-		}
-		else {
-			body = sep2 + ZCS.constant.HTML_QUOTE_DIVIDER + quoted;
-		}
-
-		return body;
+		return sep + '----- ' + divider + ' -----' + sep + quoted;
 	},
 
 	/**
@@ -599,6 +600,17 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 			html[idx++] = ZCS.controller.mail.ZtComposeController.attachmentTpl.apply(attInfo);
 		}
 		attachmentsField.setHtml(html.join(''));
+	},
+
+	doShowMenu: function(menuButton, params) {
+
+		this.mixins.menuable.doShowMenu.apply(this, arguments);
+		if (params) {
+			var menu = this.getMenu(params.menuName);
+			if (menu) {
+				menu.setArgs(ZCS.constant.OP_REMOVE_ATT, [ params.bubbleId ]);
+			}
+		}
 	},
 
 	/**
@@ -652,28 +664,6 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 		parts.push(values.subject, editor ? editor.innerHTML.length : 0);  // MD5 of content would be better
 
 		return parts.join('\u001D');
-	},
-
-	unhideComposeForm: function () {
-		if (Ext.os.deviceType === "Phone") {
-			this.getComposePanel().element.dom.style.removeProperty('display');
-		} else {
-			this.getComposePanel().show({
-				type: 'fadeIn',
-				duration: 250
-			});
-		}
-	},
-
-	hideComposeForm: function () {
-		if (Ext.os.deviceType === "Phone") {
-			this.getComposePanel().element.dom.style.setProperty('display', 'none');
-		} else {
-			this.getComposePanel().hide({
-				type: 'fadeOut',
-				duration: 250
-			});
-		}
 	}
 },
 	function(thisClass) {

@@ -9,21 +9,7 @@ $compose-padding: .5em;
 	background-color: white;
 	background-image: none;
 
-	.x-form .x-scroll-container {
-		background-color: transparent;
-	}
-
 	.x-form-inner {
-
-		.zcs-show-cc-btn {
-			height: 100%;
-			border-radius: 0;
-			border: transparent;
-			border-bottom: 1px solid $light-grey;
-			.x-button-icon {
-				color: $medium-grey;
-			}
-		}
 
 		.x-field {
 			@extend .zcs-compose-formline;
@@ -43,10 +29,6 @@ $compose-padding: .5em;
 			@extend .zcs-compose-formline;
 			margin-bottom: 0;
 			padding: 0 $compose-padding;
-			.x-innerhtml {
-				padding-bottom: 5px;
-				line-height: 1.5em;
-			}
 		}
 		.zcs-body-field {
 			background-color: white;

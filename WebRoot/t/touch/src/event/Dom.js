@@ -74,7 +74,7 @@ Ext.define('Ext.event.Dom', {
      * @return {Number}
      */
     getPageX: function() {
-        return this.pageX || this.browserEvent.pageX;
+        return this.browserEvent.pageX;
     },
 
     /**
@@ -83,7 +83,7 @@ Ext.define('Ext.event.Dom', {
      * @return {Number}
      */
     getPageY: function() {
-        return this.pageY || this.browserEvent.pageY;
+        return this.browserEvent.pageY;
     },
 
     /**

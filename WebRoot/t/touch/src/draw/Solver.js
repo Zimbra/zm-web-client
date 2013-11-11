@@ -1,3 +1,17 @@
+/*
+ * ***** BEGIN LICENSE BLOCK *****
+ * Zimbra Collaboration Suite Web Client
+ * Copyright (C) 2013 Zimbra Software, LLC.
+ * 
+ * The contents of this file are subject to the Zimbra Public License
+ * Version 1.4 ("License"); you may not use this file except in
+ * compliance with the License.  You may obtain a copy of the License at
+ * http://www.zimbra.com/license.
+ * 
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * ***** END LICENSE BLOCK *****
+ */
 (function () {
     var PI2_3 = 2.0943951023931953/* 120 Deg */,
         abs = Math.abs,
@@ -16,7 +30,7 @@
         singleton: true,
         /**
          * Cubic root of number
-         * @param {Number} number
+         * @param number {Number}
          */
         cubicRoot: function (number) {
             if (number > 0) {
@@ -30,8 +44,8 @@
 
         /**
          * Returns the function f(x) = a * x + b and solver for f(x) = y
-         * @param {Number} a
-         * @param {Number} b
+         * @param a
+         * @param b
          */
         linearFunction: function (a, b) {
             var result;
@@ -58,9 +72,9 @@
         /**
          * Returns the function f(x) = a * x ^ 2 + b * x + c and solver for f(x) = y
          *
-         * @param {Number} a
-         * @param {Number} b
-         * @param {Number} c
+         * @param a
+         * @param b
+         * @param c
          */
         quadraticFunction: function (a, b, c) {
             var result;
@@ -92,10 +106,10 @@
 
         /**
          * Returns the function f(x) = a * x^3 + b * x^2 + c * x + d and solver for f(x) = y
-         * @param {Number} a
-         * @param {Number} b
-         * @param {Number} c
-         * @param {Number} d
+         * @param a
+         * @param b
+         * @param c
+         * @param d
          */
         cubicFunction: function (a, b, c, d) {
             var result;

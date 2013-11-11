@@ -117,13 +117,6 @@ Ext.define('Ext.TitleBar', {
         title: null,
 
         /**
-         * @cfg {String} titleAlign
-         * The alignment for the title of the toolbar.
-         * @accessor
-         */
-        titleAlign: 'center',
-
-        /**
          * @cfg {String} defaultType
          * The default xtype to create.
          * @accessor
@@ -154,24 +147,16 @@ Ext.define('Ext.TitleBar', {
          * the TitleBar.
          * @accessor
          */
-        items: [],
-
-        /**
-         * @cfg {String} maxButtonWidth The maximum width of the button by percentage
-         * @accessor
-         */
-        maxButtonWidth: '40%'
+        items: []
     },
 
-    platformConfig: [{
-        theme: ['Blackberry'],
-        titleAlign: 'left'
-    }, {
-        theme: ['Cupertino'],
-        maxButtonWidth: '80%'
-    }],
-
     hasCSSMinHeight: true,
+
+    /**
+     * The max button width in this toolbar
+     * @private
+     */
+    maxButtonWidth: '40%',
 
     beforeInitialize: function() {
         this.applyItems = this.applyInitialItems;
@@ -191,7 +176,6 @@ Ext.define('Ext.TitleBar', {
 
     applyInitialItems: function(items) {
         var me = this,
-            titleAlign = me.getTitleAlign(),
             defaults = me.getDefaults() || {};
 
         me.initialItems = items;
@@ -232,32 +216,11 @@ Ext.define('Ext.TitleBar', {
             }
         });
 
-
-        switch(titleAlign) {
-            case 'left':
-                me.titleComponent = me.leftBox.add({
-                    xtype: 'title',
-                    cls: Ext.baseCSSPrefix + 'title-align-left',
-                    hidden: defaults.hidden
-                });
-                me.refreshTitlePosition = Ext.emptyFn;
-            break;
-            case 'right':
-                me.titleComponent = me.rightBox.add({
-                    xtype: 'title',
-                    cls: Ext.baseCSSPrefix + 'title-align-right',
-                    hidden: defaults.hidden
-                });
-                me.refreshTitlePosition = Ext.emptyFn;
-            break;
-            default:
-                me.titleComponent = me.add({
-                    xtype: 'title',
-                    hidden: defaults.hidden,
-                    centered: true
-                });
-            break;
-        }
+        me.titleComponent = me.add({
+            xtype: 'title',
+            hidden: defaults.hidden,
+            centered: true
+        });
 
         me.doAdd = me.doBoxAdd;
         me.remove = me.doBoxRemove;
@@ -273,34 +236,34 @@ Ext.define('Ext.TitleBar', {
         }
     },
 
-    doBoxRemove: function(item, destroy) {
+    doBoxRemove: function(item) {
         if (item.config.align == 'right') {
-            this.rightBox.remove(item, destroy);
+            this.rightBox.remove(item);
         }
         else {
-            this.leftBox.remove(item, destroy);
+            this.leftBox.remove(item);
         }
     },
 
     doBoxInsert: function(index, item) {
         if (item.config.align == 'right') {
-            this.rightBox.insert(index, item);
+            this.rightBox.add(item);
         }
         else {
-            this.leftBox.insert(index, item);
+            this.leftBox.add(item);
         }
     },
 
-    calculateMaxButtonWidth: function() {
-        var maxButtonWidth = this.getMaxButtonWidth();
+    getMaxButtonWidth: function() {
+        var value = this.maxButtonWidth;
 
         //check if it is a percentage
-        if (Ext.isString(maxButtonWidth)) {
-            maxButtonWidth = parseInt(maxButtonWidth.replace('%', ''), 10);
+        if (Ext.isString(this.maxButtonWidth)) {
+            value = parseInt(value.replace('%', ''), 10);
+            value = Math.round((this.element.getWidth() / 100) * value);
         }
-        maxButtonWidth = Math.round((this.element.getWidth() / 100) * maxButtonWidth);
 
-        return maxButtonWidth;
+        return value;
     },
 
     refreshTitlePosition: function() {
@@ -325,7 +288,7 @@ Ext.define('Ext.TitleBar', {
             }
 
             leftBoxWidth = leftBox.renderElement.getWidth();
-            maxButtonWidth = this.calculateMaxButtonWidth();
+            maxButtonWidth = this.getMaxButtonWidth();
 
             if (leftBoxWidth > maxButtonWidth) {
                 leftButton.renderElement.setWidth(maxButtonWidth);

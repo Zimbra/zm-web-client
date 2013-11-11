@@ -28,7 +28,6 @@ Ext.define("Ext.chart.series.sprite.StackedCartesian", {
                 dataStartY: 'data'
             },
             defaults: {
-                selectionTolerance: 20,
                 groupCount: 1,
                 groupOffset: 0,
                 dataStartY: null
@@ -46,12 +45,11 @@ Ext.define("Ext.chart.series.sprite.StackedCartesian", {
             dataX = sprite.attr.dataX,
             dataY = sprite.attr.dataY,
             dataStartY = sprite.attr.dataStartY,
-            selectionTolerance = sprite.attr.selectionTolerance,
             minX = 0.5, minY = Infinity, index = -1,
             imat = mat.clone().prependMatrix(this.surfaceMatrix).inverse(),
             center = imat.transformPoint([x, y]),
-            positionLB = imat.transformPoint([x - selectionTolerance, y - selectionTolerance]),
-            positionTR = imat.transformPoint([x + selectionTolerance, y + selectionTolerance]),
+            positionLB = imat.transformPoint([x - 22, y - 22]),
+            positionTR = imat.transformPoint([x + 22, y + 22]),
             dx, dy,
             top = Math.min(positionLB[1], positionTR[1]),
             bottom = Math.max(positionLB[1], positionTR[1]);

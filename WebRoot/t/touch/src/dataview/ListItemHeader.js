@@ -10,6 +10,7 @@ Ext.define('Ext.dataview.ListItemHeader', {
          * @cfg
          * @inheritdoc
          */
-        baseCls: Ext.baseCSSPrefix + 'list-header'
+        baseCls: Ext.baseCSSPrefix + 'list-header',
+        docked: 'top'
     }
 });

@@ -504,7 +504,8 @@ Ext.define('ZCS.common.mail.ZtMailUtil', {
 	 */
 	getSenders: function(addresses, numSenders) {
 
-		var	isOutbound = ZCS.util.isOutboundFolderId(ZCS.util.curFolderLocalId()),
+		var	curFolderId = ZCS.util.curFolderLocalId(),
+			isOutbound = (curFolderId === ZCS.constant.ID_SENT || curFolderId === ZCS.constant.ID_DRAFTS),
 			addrType = isOutbound ? ZCS.constant.TO : ZCS.constant.FROM,
 			senderStr = '',
 			senders;
@@ -548,9 +549,7 @@ Ext.define('ZCS.common.mail.ZtMailUtil', {
 				contactName = contact.get(useShortName ? 'shortName' : 'longName');
 			}
 		}
-		contactName = contactName || addr.get(useShortName ? 'shortName' : 'longName');
-
-		return Ext.String.htmlEncode(contactName);
+		return contactName || addr.get(useShortName ? 'shortName' : 'longName');
 	},
 
 	/**

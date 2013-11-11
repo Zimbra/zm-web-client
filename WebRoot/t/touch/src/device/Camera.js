@@ -5,10 +5,10 @@
  * current device:
  *
  * - Sencha Packager
- * - Cordova
+ * - PhoneGap
  * - Simulator
  *
- * Both the Sencha Packager and Cordova implementations will use the native camera functionality to take or select
+ * Both the Sencha Packager and PhoneGap implementations will use the native camera functionality to take or select
  * a photo. The Simulator implementation will simply return fake images.
  *
  * ## Example
@@ -36,7 +36,7 @@ Ext.define('Ext.device.Camera', {
 
     requires: [
         'Ext.device.Communicator',
-        'Ext.device.camera.Cordova',
+        'Ext.device.camera.PhoneGap',
         'Ext.device.camera.Sencha',
         'Ext.device.camera.Simulator'
     ],
@@ -45,13 +45,15 @@ Ext.define('Ext.device.Camera', {
         var browserEnv = Ext.browser.is;
 
         if (browserEnv.WebView) {
-            if (browserEnv.Cordova) {
-                return Ext.create('Ext.device.camera.Cordova');
-            } else if (browserEnv.Sencha) {
+            if (browserEnv.PhoneGap) {
+                return Ext.create('Ext.device.camera.PhoneGap');
+            }
+            else {
                 return Ext.create('Ext.device.camera.Sencha');
             }
         }
-
-        return Ext.create('Ext.device.camera.Simulator');
+        else {
+            return Ext.create('Ext.device.camera.Simulator');
+        }
     }
 });

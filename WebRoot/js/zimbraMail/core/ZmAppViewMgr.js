@@ -917,7 +917,6 @@ function(show) {
  */
 ZmAppViewMgr.prototype.fitAll =
 function() {
-	this._shell.relayout();
 	this._fitToContainer(ZmAppViewMgr.ALL_COMPONENTS);
 };
 
@@ -1215,7 +1214,7 @@ function(viewId, show) {
 		}
 		
 		if (view.app) {
-			this._controller.setActiveApp(view);
+			this._controller.setActiveApp(view.app, viewId, view.isTabView);
 		}
 	}
 	else {
@@ -1389,10 +1388,8 @@ function(delta) {
 
 	// MOW: get the min/max sizes from the skin.hints
 	if (!this.treeMinSize) {
-		this.treeMinSize =
-			DwtCssStyle.asPixelCount(window.skin.hints.tree.minWidth || 150);
-		this.treeMaxSize =
-			DwtCssStyle.asPixelCount(window.skin.hints.tree.maxWidth || 300);
+		this.treeMinSize = window.skin.hints.tree.minWidth || 150;
+		this.treeMaxSize = window.skin.hints.tree.maxWidth || 300;
 	}
 
 	// pin the resize to the minimum and maximum allowable

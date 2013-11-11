@@ -22,114 +22,111 @@
 
 Ext.define('ZCS.view.calendar.ZtAppointmentView', {
 
-    extend: 'Ext.navigation.View',
+    extend: 'Ext.Panel',
 
     xtype: ZCS.constant.APP_CALENDAR + 'appointmentview',
 
-    config: {
-        fullscreen: true,
-        width: '50%',
-        height: '80%',
-        hidden: true,
-        modal: true,
-        centered: true,
-        hideOnMaskTap: true,
+    requires: [
+        'Ext.NavigationView'
+    ],
 
-        items: [
-            {
-                xtype: 'panel',
-                scrollable: true,
-                itemId: 'apptDetails'
-            }
-        ],
-        listeners: {
-            back: function (){
-                this.getNavigationBar().setTitle(this.getTitle());
-            },
-            tap: {
-                element: 'element',
-                fn: function(e) {
-                    var elm = Ext.fly(e.target),
-                        idParams = ZCS.util.getIdParams(elm.dom.id) || {};
-                    // invite response button (accept/tentative/decline)
-                    if (elm.hasCls('zcs-invite-button')) {
-                        this.fireEvent('inviteReply', idParams.msgId, idParams.action);
-                    }
-                }
-            }
-        },
-        title: null
+    config: {
+        width:      '50%',
+        height:     '80%',
+        hidden:     true,
+        modal      : true,
+        centered   : true,
+        hideOnMaskTap: true
     },
 
-    setPanel: function(msg, event) {
+    initialize: function() {
+        this.callParent(arguments);
+
+        var view = Ext.create('Ext.NavigationView', {
+            fullscreen: true,
+
+            items: [
+                {
+                    xtype: 'container',
+                    height: '100%',
+                    scrollable: true,
+                    itemId: 'apptDetails'
+                }
+            ]
+        });
+
+        var container = Ext.create('Ext.Container', {
+            layout: 'card',
+            width: '100%',
+            height: '100%',
+            items: [
+                view
+            ]
+        });
+
+        this.add([container]);
+    },
+
+    setPanel: function(msg) {
+
         var invite = msg.get('invite'),
             dateFormat = invite.get('isAllDay') ? ZtMsg.invDateFormat : ZtMsg.invDateTimeOnlyFormat,
-            startTime = Ext.Date.format(event.get('start'), dateFormat),
-            endTime = Ext.Date.format(event.get('end'), ZtMsg.invTimeOnlyFormat),
+            startTime = Ext.Date.format(invite.get('start'), dateFormat),
+            endTime = Ext.Date.format(invite.get('end'), ZtMsg.invTimeOnlyFormat),
             organizer = invite.get('organizer') && invite.get('organizer').get('name'),
             location = invite.get('location'),
             attendees = invite.get('attendees'),
+            stats = this.getAttendeeStats(invite),
             isOrganizer = invite.get('isOrganizer'),
-            stats = attendees && this.getAttendeeStats(attendees, isOrganizer),
-            reminder = invite.get('reminderAlert'),
-            recurrence = invite.get('recurrence'),
-            myResponse = invite.get('myResponse'),
-            idParams = {
-                type:       ZCS.constant.IDTYPE_INVITE_ACTION,
-                msgId:      msg.get('id')
-            },
+
             data = {
                 start:  startTime + (invite.get('isAllDay') ? "" : " - " + endTime),
                 location: invite.get('location'),
                 organizer: organizer,
                 attendees: stats && stats.summary,
-                myResponse: myResponse ? ZCS.constant.PSTATUS_TEXT[myResponse] : '',
                 calendar: null /* TODO: After other calendar folders are shown in touch client */,
-                reminder: reminder ? reminder : "", /* TODO: Get strings similar to Ajax Client */
-                recurrence: recurrence ? recurrence : "",
-                notes: invite.get('notes'),
-                invAcceptButtonId:     ZCS.util.getUniqueId(Ext.apply({}, {
-                    action: ZCS.constant.OP_ACCEPT
-                }, idParams)),
-                invTentativeButtonId:  ZCS.util.getUniqueId(Ext.apply({}, {
-                    action: ZCS.constant.OP_TENTATIVE
-                }, idParams)),
-                invDeclineButtonId:    ZCS.util.getUniqueId(Ext.apply({}, {
-                    action: ZCS.constant.OP_DECLINE
-                }, idParams))
+                reminder: invite.get('reminderAlert') + " minutes before", /* TODO: Get strings similar to Ajax Client */
+                notes: invite.get('notes')
             },
-            apptTitle = invite.get('subject'),
-            tpl,html,me;
+            tpl,html,navView,me;
 
         tpl = Ext.create('Ext.XTemplate', ZCS.template.ApptViewDesc);
         html = tpl.apply(data);
+        navView = this.down('navigationview');
 
-        this.setTitle(apptTitle);
-
-        this.down('#apptDetails').setHtml(html);
-        this.getNavigationBar().setTitle(apptTitle);
-
-        if (attendees) {
-            Ext.get("showAttendees").clearListeners();
-
-            me = this;
-            Ext.get("showAttendees").on({
-                tap: function (ev) {
-                    var listData = me.getListDataAsHtml(stats,isOrganizer),
-                        list;
-                    me.push({
-                            title: ZtMsg.attendeesTitle,
-                            xtype: 'list',
-                            striped: true,
-                            itemId: 'attendeeList',
-                            fullscreen: true,
-                            itemTpl: '{title}',
-                            data: listData
-                        });
-
-                }
-            })
+        if(navView.getInnerItems().length > 1){
+            navView.removeInnerAt(1);
         }
+
+        navView.down('#apptDetails').setHtml(html);
+        navView.getNavigationBar().setTitle(invite.get('subject'));
+        Ext.get("showAttendees").clearListeners();
+
+        me = this;
+        Ext.get("showAttendees").on({
+            tap: function (ev) {
+                var listData = me.getListDataAsHtml(stats,isOrganizer),
+                    navView = me.down('navigationview'), list;
+
+                if(navView.getInnerItems().length > 1) {
+                    list = navView.getInnerItems()[1];
+                    list.setData(listData);
+                    navView.setActiveItem(navView.getInnerItems()[1]);
+                }
+                else {
+                    navView.push({
+                        title: ZtMsg.attendeesTitle,
+                        xtype: 'list',
+                        striped: true,
+                        itemId: 'attendeeList',
+                        fullscreen: true,
+                        striped: true,
+                        itemTpl: '{title}',
+                        data: listData
+                    })
+                }
+            }
+        })
 
     },
 
@@ -150,9 +147,10 @@ Ext.define('ZCS.view.calendar.ZtAppointmentView', {
 
 
 
-    getAttendeeStats: function(attendees, isOrganizer) {
+    getAttendeeStats: function(invite) {
 
-        var accepted = 0, declined = 0, tentative = 0, unknown = 0, stats=[], attendeeList = "", i, name;
+        var attendees = invite.get('attendees'),
+            accepted = 0, declined = 0, tentative = 0, unknown = 0, stats=[], attendeeList = "", i, name;
 
         for (i=0 ; i < attendees.length; i++) {
             name = attendees[i].get('name') || attendees[i].get('email');
@@ -181,12 +179,10 @@ Ext.define('ZCS.view.calendar.ZtAppointmentView', {
                     break;
             }
         }
-        if (isOrganizer) {
-            stats.summary = ((accepted ? accepted + " " + ZtMsg.accepted : "")
-                + (declined ? ", " + declined + " " + ZtMsg.declined: "")
-                + (tentative ? ", " + tentative + " " + ZtMsg.tentative : "")
-                + (unknown ? ", " + unknown + " " + ZtMsg.noresponse : "")).replace(/(^,)|(,$)/g, "");
-        } else {
+        if (invite.get('isOrganizer')) {
+            stats.summary = ((accepted ? accepted + " " + ZtMsg.accepted : "") + (declined ? ", " + declined + " " + ZtMsg.declined: "") + (tentative ? ", " + tentative + " " + ZtMsg.tentative : "") + (unknown ? ", " + unknown + " " + ZtMsg.unknown : "")).replace(/(^,)|(,$)/g, "");
+        }
+        else {
 
             // TODO: Show only upto 4 attendees.
             stats.summary = attendeeList.replace(/(^,)|(,$)/g, "");

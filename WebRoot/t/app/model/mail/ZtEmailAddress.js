@@ -72,7 +72,7 @@ Ext.define('ZCS.model.mail.ZtEmailAddress', {
 		 * @param {String}  emailStr    email string
 		 * @param {String}  type        address type
 		 *
-		 * @return {ZtEmailAddress}     an email address object, or null if the email string is invalid
+		 * @return {ZtEmailAddress}     an email address object, or null if the email string if invalid
 		 * @adapts ZCS.model.mail.ZtEmailAddress.parse
 		 */
 		fromEmail: function(emailStr, type) {

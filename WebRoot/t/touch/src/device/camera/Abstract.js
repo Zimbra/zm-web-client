@@ -1,3 +1,17 @@
+/*
+ * ***** BEGIN LICENSE BLOCK *****
+ * Zimbra Collaboration Suite Web Client
+ * Copyright (C) 2013 Zimbra Software, LLC.
+ * 
+ * The contents of this file are subject to the Zimbra Public License
+ * Version 1.4 ("License"); you may not use this file except in
+ * compliance with the License.  You may obtain a copy of the License at
+ * http://www.zimbra.com/license.
+ * 
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * ***** END LICENSE BLOCK *****
+ */
 /**
  * @private
  */
@@ -10,26 +24,14 @@ Ext.define('Ext.device.camera.Abstract', {
     },
 
     destination: {
-        data: 0,
-        file: 1,
-        'native': 2
+        data: 0, // Returns base64-encoded string
+        file: 1  // Returns file's URI
     },
 
     encoding: {
         jpeg: 0,
         jpg: 0,
         png: 1
-    },
-
-    media: {
-        picture: 0,
-        video: 1,
-        all: 2
-    },
-
-    direction: {
-        back: 0,
-        front:1
     },
 
     /**
@@ -79,7 +81,5 @@ Ext.define('Ext.device.camera.Abstract', {
      * @param {Number} height
      * The height of the image to return
      */
-    capture: Ext.emptyFn,
-    getPicture: Ext.emptyFn,
-    cleanup: Ext.emptyFn
+    capture: Ext.emptyFn
 });

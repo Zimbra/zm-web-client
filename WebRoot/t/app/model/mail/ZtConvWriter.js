@@ -42,10 +42,10 @@ Ext.define('ZCS.model.mail.ZtConvWriter', {
 
 			var	query = request.getParams().query,
 				folderId = ZCS.util.localId(ZCS.common.ZtSearch.parseQuery(query)),
-				isOutbound = ZCS.util.isOutboundFolderId(folderId);
+				isOutbound = (folderId === ZCS.constant.ID_SENT || folderId === ZCS.constant.ID_DRAFTS);
 
 			Ext.apply(methodJson, {
-				sortBy: ZCS.constant.DATE_DESC,
+				sortBy: 'dateDesc',
 				offset: operation.getStart(),
 				limit:  ZCS.constant.DEFAULT_PAGE_SIZE,
 				query:  query,
@@ -57,18 +57,8 @@ Ext.define('ZCS.model.mail.ZtConvWriter', {
 		} else if (action === 'update') {
 
 			// 'update' operation means we're performing a ConvActionRequest
-			var itemData = Ext.merge(data[0] || {}, options),
-				op = itemData.op;
-
+			var itemData = Ext.merge(data[0] || {}, options);
 			json = this.getActionRequest(request, itemData, 'ConvAction');
-			if (op === 'move' || op === 'trash') {
-				var changeToken = ZCS.session.getChangeToken();
-				if (changeToken) {
-					json.Header.context.change = {
-						token: changeToken
-					};
-				}
-			}
 		}
 
 		// Do not pass query in query string.

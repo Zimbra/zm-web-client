@@ -41,9 +41,6 @@ ZmNewWindow = function() {
 
 	//update body class to reflect user selected font
 	document.body.className = "user_font_" + appCtxt.get(ZmSetting.FONT_NAME);
-	//update root html elment class to reflect user selected font size
-	Dwt.addClass(document.documentElement, "user_font_size_" + appCtxt.get(ZmSetting.FONT_SIZE));
-
 
 	this._settings = appCtxt.getSettings();
 	this._settings.setReportScriptErrorsSettings(AjxException, ZmController.handleScriptError); //must set this for child window since AjxException is fresh for this window. Also must pass AjxException and the handler since we want it to update the one from this child window, and not the parent window
@@ -161,8 +158,8 @@ function(ev) {
  */
 ZmNewWindow.prototype.startup =
 function() {
+
 	// get params from parent window b/c of Safari bug #7162
-	// and in case of a refresh, our old window parameters are still stored there
 	if (window.parentController) {
 		var childWinObj = window.parentController.getChildWindow(window);
 		if (childWinObj) {
@@ -270,7 +267,7 @@ function() {
 		if (cmd == "compose") {
 			cc._setView(params);
 		} else {
-			AjxDispatcher.require(["MailCore", "ContactsCore", "CalendarCore"]);
+			AjxDispatcher.require(["CalendarCore"]);
 			var op = params.action || ZmOperation.NEW_MESSAGE;
 			if (params.msg && params.msg._mode) {
 				switch (params.msg._mode) {
@@ -651,16 +648,6 @@ function(msg) {
 	if (msg.share) {
 		newMsg.share = msg.share;
 	}
-
-	// TODO: When/if you get rid of this function, also remove the cloneOf uses in:
-	//		ZmBaseController.prototype._tagListener
-	//		ZmBaseController.prototype._setTagMenu
-	//		ZmMailMsgView.prototype._setTags
-	//		ZmMailMsgView.prototype._handleResponseSet
-	//		ZmMailListController.prototype._handleResponseFilterListener
-	//		ZmMailListController.prototype._handleResponseNewApptListener
-	//		ZmMailListController.prototype._handleResponseNewTaskListener
-	newMsg.cloneOf = msg;
 
 	return newMsg;
 };

@@ -328,8 +328,6 @@ Ext.define('Ext.data.Operation', {
             this.setCompleted();
             this.setSuccessful();
         } else {
-            this.setResponse(response);
-            this.setResultSet(resultSet);
             return false;
         }
 

@@ -119,10 +119,10 @@ Ext.define('Ext.field.Checkbox', {
          * @inheritdoc
          */
         component: {
-            xtype: 'input',
-            type: 'checkbox',
-            useMask: true,
-            cls: Ext.baseCSSPrefix + 'input-checkbox'
+            xtype   : 'input',
+            type    : 'checkbox',
+            useMask : true,
+            cls     : Ext.baseCSSPrefix + 'input-checkbox'
         }
 
         /**
@@ -132,24 +132,21 @@ Ext.define('Ext.field.Checkbox', {
     },
 
     platformConfig: [{
-        theme: ['Windows', 'Blackberry'],
+        theme: ['Windows'],
         labelAlign: 'left'
     }],
 
     // @private
     initialize: function() {
-        var me = this,
-            component = me.getComponent();
+        var me = this;
 
         me.callParent();
 
-        component.on({
+        me.getComponent().on({
             scope: me,
             order: 'before',
             masktap: 'onMaskTap'
         });
-
-        component.doMaskTap = Ext.emptyFn;
 
         me.label.on({
             scope: me,
@@ -298,13 +295,10 @@ Ext.define('Ext.field.Checkbox', {
     },
 
     getSameGroupFields: function() {
-        var me = this,
-            component = me.up('formpanel') || me.up('fieldset'),
-            name = me.getName(),
-            replaceLeft = me.qsaLeftRe,
-            replaceRight = me.qsaRightRe,
-            //handle baseCls with multiple class values
-            baseCls = me.getBaseCls().split(' ').join('.'),
+        var component = this.up('formpanel') || this.up('fieldset'),
+            name = this.getName(),
+            replaceLeft = this.qsaLeftRe,
+            replaceRight = this.qsaRightRe,
             components = [],
             elements, element, i, ln;
 
@@ -323,7 +317,7 @@ Ext.define('Ext.field.Checkbox', {
         ln = elements.length;
         for (i = 0; i < ln; i++) {
             element = elements[i];
-            element = Ext.fly(element).up('.' + baseCls);
+            element = Ext.fly(element).up('.x-field');
             if (element && element.id) {
                 components.push(Ext.getCmp(element.id));
             }

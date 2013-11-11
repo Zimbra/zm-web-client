@@ -29,33 +29,9 @@ $linkTextSize: 0.9em;
 	}
 }
 
-.x-portrait .zcs-msglist .x-list-emptytext {
-	margin-left: 220px;
-}
-
 .zcs-msg-body-text {
-	font-size: 1em;
-	font-family: sans-serif;
+	font-size: 1.1em;
+	font-family: monospace;
 	word-wrap: break-word;
 	-webkit-user-select: text;
-}
-
-.zcs-item-titlebar {
-	.x-button-label {
-		font-size: 1rem;
-	}
-	.x-button-pressed {
-		border: 1px solid $base-color;
-	}
-	.x-button .x-button-label {
-		color: $base-color;
-	}
-	.x-item-disabled .x-button-label {
-		color: $light-blue;
-	}
-}
-
-.x-form-label span {
-	font-size: .95em;
-	font-weight: bold;
 }

@@ -62,7 +62,7 @@ Ext.define("Ext.chart.axis.layout.Discrete", {
 
         var out = me.snapEnds(context, Math.max(0, attr.min), Math.min(attr.max, data.length - 1), estStepSize);
         if (out) {
-            me.trimByRange(context, out, viewMin, viewMax);
+            me.trimByRange(context, out, viewMin - zoom * (1 + attr.startGap), viewMax + zoom * (1 + attr.endGap));
             context.majorTicks = out;
         }
     },

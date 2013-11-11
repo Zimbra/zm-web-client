@@ -70,7 +70,7 @@ div.more-events {
   @include background(url('/img/zimbra/ImgQuestionMark.png') $invBtnIconPos);
 }
 
-.view-appt-noresponse {
+.view-appt-unknown {
   @extend .view-appt-ptst;
   @include background(url('/img/zimbra/ImgNeedsAction.png') $invBtnIconPos);
 }

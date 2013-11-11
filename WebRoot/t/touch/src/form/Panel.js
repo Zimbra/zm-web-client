@@ -158,7 +158,6 @@ Ext.define('Ext.form.Panel', {
      * @param {Ext.form.Panel} this This FormPanel.
      * @param {Object} values A hash collection of the qualified form values about to be submitted.
      * @param {Object} options Submission options hash (only available when `standardSubmit` is `false`).
-     * @param {Ext.EventObject} e The event object if the form was submitted via a HTML5 form submit event.
      */
 
     /**
@@ -192,17 +191,11 @@ Ext.define('Ext.form.Panel', {
         url: null,
 
         /**
-         * @cfg (String} enctype
-         * The enctype attribute for the form, specifies how the form should be encoded when submitting
-         */
-        enctype: null,
-
-        /**
          * @cfg {Object} baseParams
          * Optional hash of params to be sent (when `standardSubmit` configuration is `false`) on every submit.
          * @accessor
          */
-        baseParams: null,
+        baseParams : null,
 
         /**
          * @cfg {Object} submitOnAction
@@ -251,78 +244,12 @@ Ext.define('Ext.form.Panel', {
          * If set to true, {@link #reset}() resets to the last loaded or {@link #setValues}() data instead of
          * when the form was first created.
          */
-        trackResetOnLoad:false,
-
-        /**
-         * @cfg {Object} api
-         * If specified, load and submit actions will be loaded and submitted via Ext.Direct.  Methods which have been imported by
-         * {@link Ext.direct.Manager} can be specified here to load and submit forms. API methods may also be
-         * specified as strings and will be parsed into the actual functions when the first submit or load has occurred. Such as the following:
-         *
-         *     api: {
-         *         load: App.ss.MyProfile.load,
-         *         submit: App.ss.MyProfile.submit
-         *     }
-         *
-         *     api: {
-         *         load: 'App.ss.MyProfile.load',
-         *         submit: 'App.ss.MyProfile.submit'
-         *     }
-         *
-         * Load actions can use {@link #paramOrder} or {@link #paramsAsHash} to customize how the load method
-         * is invoked.  Submit actions will always use a standard form submit. The `formHandler` configuration
-         * (see Ext.direct.RemotingProvider#action) must be set on the associated server-side method which has
-         * been imported by {@link Ext.direct.Manager}.
-         */
-        api: null,
-
-        /**
-         * @cfg {String/String[]} paramOrder
-         * A list of params to be executed server side. Only used for the {@link #api} `load`
-         * configuration.
-         *
-         * Specify the params in the order in which they must be executed on the
-         * server-side as either (1) an Array of String values, or (2) a String of params
-         * delimited by either whitespace, comma, or pipe. For example,
-         * any of the following would be acceptable:
-         *
-         *     paramOrder: ['param1','param2','param3']
-         *     paramOrder: 'param1 param2 param3'
-         *     paramOrder: 'param1,param2,param3'
-         *     paramOrder: 'param1|param2|param'
-         */
-        paramOrder: null,
-
-        /**
-         * @cfg {Boolean} paramsAsHash
-         * Only used for the {@link #api} `load` configuration. If true, parameters will be sent as a
-         * single hash collection of named arguments. Providing a {@link #paramOrder} nullifies this
-         * configuration.
-         */
-        paramsAsHash: null,
-
-        /**
-         * @cfg {Number} timeout
-         * Timeout for form actions in seconds.
-         */
-        timeout: 30,
-
-        /**
-         * @cfg {Boolean} multipartDetection
-         * If this is enabled the form will automatically detect the need to use 'multipart/form-data' during submission.
-         */
-        multipartDetection: true
+        trackResetOnLoad:false
     },
 
     getElementConfig: function() {
         var config = this.callParent();
         config.tag = "form";
-        // Added a submit input for standard form submission. This cannot have "display: none;" or it will not work
-        config.children.push({
-            tag: 'input',
-            type: 'submit',
-            style: 'visibility: hidden; width: 0; height: 0; position: absolute; right: 0; bottom: 0;'
-        });
 
         return config;
     },
@@ -336,17 +263,6 @@ Ext.define('Ext.form.Panel', {
             submit: 'onSubmit',
             scope : me
         });
-    },
-
-    applyEnctype: function(newValue) {
-        var  form = this.element.dom || null;
-        if(form) {
-            if (newValue) {
-                form.setAttribute("enctype", newValue);
-            } else {
-                form.setAttribute("enctype");
-            }
-        }
     },
 
     updateRecord: function(newRecord) {
@@ -386,7 +302,7 @@ Ext.define('Ext.form.Panel', {
         if (e && !me.getStandardSubmit()) {
             e.stopEvent();
         } else {
-            this.submit(null, e);
+            this.submit();
         }
     },
 
@@ -413,31 +329,11 @@ Ext.define('Ext.form.Panel', {
     },
 
     /**
-     * Performs a Ajax-based submission of form values (if {@link #standardSubmit} is false) or otherwise
+     * Performs a Ajax-based submission of form values (if `standardSubmit` is `false`) or otherwise
      * executes a standard HTML Form submit action.
-     *
-     * **Notes**
-     *
-     *  1. Only the first parameter is implemented. Put all other parameters inside the first
-     *  parameter:
-     *
-     *     submit({params: "" ,headers: "" etc.})
-     *
-     *  2. Submit example:
-     *
-     *     myForm.submit({
-     *       url: 'PostMyData/To',
-     *       method: 'Post',
-     *       success: function() { Ext.Msg.alert("success"); },
-     *       failure: function() { Ext.Msg.alert("error"); }
-     *     });
-     *
-     *  3. Parameters and values only submit for a POST and not for a GET.
      *
      * @param {Object} options
      * The configuration when submitting this form.
-     *
-     * The following are the configurations when submitting via Ajax only:
      *
      * @param {String} options.url
      * The url for the action (defaults to the form's {@link #url}).
@@ -445,21 +341,16 @@ Ext.define('Ext.form.Panel', {
      * @param {String} options.method
      * The form method to use (defaults to the form's {@link #method}, or POST if not defined).
      *
+     * @param {String/Object} options.params
+     * The params to pass when submitting this form (defaults to this forms {@link #baseParams}).
+     * Parameters are encoded as standard HTTP parameters using {@link Ext#urlEncode}.
+     *
      * @param {Object} options.headers
      * Request headers to set for the action.
      *
      * @param {Boolean} [options.autoAbort=false]
      * `true` to abort any pending Ajax request prior to submission.
      * __Note:__ Has no effect when `{@link #standardSubmit}` is enabled.
-     *
-     * @param {Number} options.timeout
-     * The number is seconds the loading will timeout in.
-     *
-     * The following are the configurations when loading via Ajax or Direct:
-     *
-     * @param {String/Object} options.params
-     * The params to pass when submitting this form (defaults to this forms {@link #baseParams}).
-     * Parameters are encoded as standard HTTP parameters using {@link Ext#urlEncode}.
      *
      * @param {Boolean} [options.submitDisabled=false]
      * `true` to submit all fields regardless of disabled state.
@@ -474,21 +365,18 @@ Ext.define('Ext.form.Panel', {
      * a response is received from the server and is a JSON object where the `success` property is set
      * to `true`, `{"success": true}`.
      *
-     * The function is passed the following parameters and can be used for submitting via Ajax or Direct:
+     * The function is passed the following parameters:
      *
      * @param {Ext.form.Panel} options.success.form
-     * The {@link Ext.form.Panel} that requested the action.
+     * The form that requested the action.
      *
      * @param {Ext.form.Panel} options.success.result
      * The result object returned by the server as a result of the submit request.
      *
-     * @param {Object} options.success.data
-     * The parsed data returned by the server.
-     *
      * @param {Function} options.failure
      * The callback that will be invoked after a failed transaction attempt.
      *
-     * The function is passed the following parameters and can be used for submitting via Ajax or Direct:
+     * The function is passed the following parameters:
      *
      * @param {Ext.form.Panel} options.failure.form
      * The {@link Ext.form.Panel} that requested the submit.
@@ -496,16 +384,12 @@ Ext.define('Ext.form.Panel', {
      * @param {Ext.form.Panel} options.failure.result
      * The failed response or result object returned by the server which performed the operation.
      *
-     * @param {Object} options.success.data
-     * The parsed data returned by the server.
-     *
      * @param {Object} options.scope
      * The scope in which to call the callback functions (The `this` reference for the callback functions).
      *
-     * @return {Ext.data.Connection} The request object if the {@link #standardSubmit} config is false.
-     * If the standardSubmit config is true, then the return value is undefined.
+     * @return {Ext.data.Connection} The request object.
      */
-    submit: function(options, e) {
+    submit: function(options) {
         var me = this,
             form = me.element.dom || {},
             formValues;
@@ -513,7 +397,6 @@ Ext.define('Ext.form.Panel', {
         options = Ext.apply({
             url : me.getUrl() || form.action,
             submit: false,
-            form: form,
             method : me.getMethod() || form.method || 'post',
             autoAbort : false,
             params : null,
@@ -525,29 +408,11 @@ Ext.define('Ext.form.Panel', {
 
         formValues = me.getValues(me.getStandardSubmit() || !options.submitDisabled);
 
-        return me.fireAction('beforesubmit', [me, formValues, options, e], 'doBeforeSubmit');
+        return me.fireAction('beforesubmit', [me, formValues, options], 'doBeforeSubmit');
     },
 
     doBeforeSubmit: function(me, formValues, options) {
         var form = me.element.dom || {};
-
-        var multipartDetected = false;
-        if(this.getMultipartDetection() === true) {
-            this.getFieldsAsArray().forEach(function(field) {
-                if(field.isFile === true) {
-                    multipartDetected = true;
-                    return false;
-                }
-            });
-
-            if(multipartDetected) {
-                form.setAttribute("enctype", "multipart/form-data");
-            }
-        }
-
-        if(options.enctype) {
-            form.setAttribute("enctype", options.enctype);
-        }
 
         if (me.getStandardSubmit()) {
             if (options.url && Ext.isEmpty(form.action)) {
@@ -569,330 +434,63 @@ Ext.define('Ext.form.Panel', {
 
             form.method = (options.method || form.method).toLowerCase();
             form.submit();
-        } else {
-            var api = me.getApi(),
-                url = options.url || me.getUrl(),
-                scope = options.scope || me,
-                waitMsg = options.waitMsg,
-                failureFn = function(response, responseText) {
-                    if (Ext.isFunction(options.failure)) {
-                        options.failure.call(scope, me, response, responseText);
-                    }
-
-                    me.fireEvent('exception', me, response);
-                },
-                successFn = function(response, responseText) {
-                    if (Ext.isFunction(options.success)) {
-                        options.success.call(options.scope || me, me, response, responseText);
-                    }
-
-                    me.fireEvent('submit', me, response);
-                },
-                submit;
-
+        }
+        else {
             if (options.waitMsg) {
-                if (typeof waitMsg === 'string') {
-                    waitMsg = {
-                        xtype   : 'loadmask',
-                        message : waitMsg
-                    };
-                }
-
-                me.setMasked(waitMsg);
+                me.setMasked(options.waitMsg);
             }
 
-            if (api) {
-                submit = api.submit;
-
-                if (typeof submit === 'string') {
-                    submit = Ext.direct.Manager.parseMethod(submit);
-
-                    if (submit) {
-                        api.submit = submit;
-                    }
-                }
-
-                if (submit) {
-                    return submit(this.element, function(data, response, success) {
-                        me.setMasked(false);
-
-                        if (success) {
-                            if (data.success) {
-                                successFn(response, data);
-                            } else {
-                                failureFn(response, data);
-                            }
-                        } else {
-                            failureFn(response, data);
-                        }
-                    }, this);
-                }
-            } else {
-                var request = Ext.merge({},
-                    {
-                        url: url,
-                        timeout: this.getTimeout() * 1000,
-                        form: form,
-                        scope: me
-                    },
-                    options
-                );
-                delete request.success;
-                delete request.failure;
-
-                request.params = Ext.merge(me.getBaseParams() || {}, options.params);
-                request.header = Ext.apply(
-                    {
-                        'Content-Type' : 'application/x-www-form-urlencoded; charset=UTF-8'
-                    },
-                    options.headers || {}
-                );
-                request.callback = function(callbackOptions, success, response) {
-                    var me = this,
-                        responseText = response.responseText,
-                        responseXML = response.responseXML,
-                        statusResult = Ext.Ajax.parseStatus(response.status, response);
-
-                    me.setMasked(false);
-
-                    if(response.success === false) success = false;
-                    if (success) {
-                        if (statusResult && responseText && responseText.length == 0) {
-                            success = true;
-                        } else {
-                            if(!Ext.isEmpty(response.responseBytes)) {
-                                success = statusResult.success;
-                            }else {
-                                if(Ext.isString(responseText) && response.request.options.responseType === "text") {
-                                    response.success = true;
-                                } else if(Ext.isString(responseText)) {
-                                    try {
-                                        response = Ext.decode(responseText);
-                                    }catch (e){
-                                        response.success = false;
-                                        response.error = e;
-                                        response.message = e.message;
-                                    }
-                                } else if(Ext.isSimpleObject(responseText)) {
-                                    response = responseText;
-                                    Ext.applyIf(response, {success:true});
-                                }
-
-                                if(!Ext.isEmpty(responseXML)){
-                                    response.success = true;
-                                }
-                                success = !!response.success;
-                            }
-                        }
-                        if (success) {
-                            successFn(response, responseText);
-                        } else {
-                            failureFn(response, responseText);
-                        }
-                    }
-                    else {
-                        failureFn(response, responseText);
-                    }
-                };
-
-                if(Ext.feature.has.XHR2 && request.xhr2) {
-                    delete request.form;
-                    var formData = new FormData(form);
-                    if (request.params) {
-                        Ext.iterate(request.params, function(name, value) {
-                            if (Ext.isArray(value)) {
-                                Ext.each(value, function(v) {
-                                    formData.append(name, v);
-                                });
-                            } else {
-                                formData.append(name, value);
-                            }
-                        });
-                        delete request.params;
-                    }
-                    request.data = formData;
-                }
-
-                return Ext.Ajax.request(request);
-            }
-        }
-    },
-
-    /**
-     * Performs an Ajax or Ext.Direct call to load values for this form.
-     *
-     * @param {Object} options
-     * The configuration when loading this form.
-     *
-     * The following are the configurations when loading via Ajax only:
-     *
-     * @param {String} options.url
-     * The url for the action (defaults to the form's {@link #url}).
-     *
-     * @param {String} options.method
-     * The form method to use (defaults to the form's {@link #method}, or GET if not defined).
-     *
-     * @param {Object} options.headers
-     * Request headers to set for the action.
-     *
-     * @param {Number} options.timeout
-     * The number is seconds the loading will timeout in.
-     *
-     * The following are the configurations when loading via Ajax or Direct:
-     *
-     * @param {Boolean} [options.autoAbort=false]
-     * `true` to abort any pending Ajax request prior to loading.
-     *
-     * @param {String/Object} options.params
-     * The params to pass when submitting this form (defaults to this forms {@link #baseParams}).
-     * Parameters are encoded as standard HTTP parameters using {@link Ext#urlEncode}.
-     *
-     * @param {String/Object} [options.waitMsg]
-     * If specified, the value which is passed to the loading {@link #masked mask}. See {@link #masked} for
-     * more information.
-     *
-     * @param {Function} options.success
-     * The callback that will be invoked after a successful response. A response is successful if
-     * a response is received from the server and is a JSON object where the `success` property is set
-     * to `true`, `{"success": true}`.
-     *
-     * The function is passed the following parameters and can be used for loading via Ajax or Direct:
-     *
-     * @param {Ext.form.Panel} options.success.form
-     * The {@link Ext.form.Panel} that requested the load.
-     *
-     * @param {Ext.form.Panel} options.success.result
-     * The result object returned by the server as a result of the load request.
-     *
-     * @param {Object} options.success.data
-     * The parsed data returned by the server.
-     *
-     * @param {Function} options.failure
-     * The callback that will be invoked after a failed transaction attempt.
-     *
-     * The function is passed the following parameters and can be used for loading via Ajax or Direct:
-     *
-     * @param {Ext.form.Panel} options.failure.form
-     * The {@link Ext.form.Panel} that requested the load.
-     *
-     * @param {Ext.form.Panel} options.failure.result
-     * The failed response or result object returned by the server which performed the operation.
-     *
-     * @param {Object} options.success.data
-     * The parsed data returned by the server.
-     *
-     * @param {Object} options.scope
-     * The scope in which to call the callback functions (The `this` reference for the callback functions).
-     *
-     * @return {Ext.data.Connection} The request object.
-     */
-    load : function(options) {
-        options = options || {};
-
-        var me = this,
-            api = me.getApi(),
-            url = me.getUrl() || options.url,
-            waitMsg = options.waitMsg,
-            successFn = function(data, response) {
-                me.setValues(data.data);
-
-                if (Ext.isFunction(options.success)) {
-                    options.success.call(options.scope || me, me, response, data);
-                }
-
-                me.fireEvent('load', me, response);
-            },
-            failureFn = function(data, response) {
-                if (Ext.isFunction(options.failure)) {
-                    options.failure.call(scope, me, response, data);
-                }
-
-                me.fireEvent('exception', me, response);
-            },
-            load, method, args;
-
-        if (options.waitMsg) {
-            if (typeof waitMsg === 'string') {
-                waitMsg = {
-                    xtype   : 'loadmask',
-                    message : waitMsg
-                };
-            }
-
-            me.setMasked(waitMsg);
-        }
-
-        if (api) {
-            load = api.load;
-
-            if (typeof load === 'string') {
-                load = Ext.direct.Manager.parseMethod(load);
-
-                if (load) {
-                    api.load = load;
-                }
-            }
-
-            if (load) {
-                method = load.directCfg.method;
-                args = method.getArgs(me.getParams(options.params), me.getParamOrder(), me.getParamsAsHash());
-
-                args.push(function(data, response, success) {
-                    me.setMasked(false);
-
-                    if (success) {
-                        successFn(response, data);
-                    } else {
-                        failureFn(response, data);
-                    }
-                }, me);
-
-                return load.apply(window, args);
-            }
-        } else if (url) {
             return Ext.Ajax.request({
-                url: url,
-                scope: me,
-                timeout: (options.timeout || this.getTimeout()) * 1000,
-                method: options.method || 'GET',
+                url: options.url,
+                method: options.method,
+                rawData: Ext.urlEncode(Ext.apply(
+                    Ext.apply({}, me.getBaseParams() || {}),
+                    options.params || {},
+                    formValues
+                )),
                 autoAbort: options.autoAbort,
                 headers: Ext.apply(
-                    {
-                        'Content-Type' : 'application/x-www-form-urlencoded; charset=UTF-8'
-                    },
+                    {'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'},
                     options.headers || {}
                 ),
+                scope: me,
                 callback: function(callbackOptions, success, response) {
                     var me = this,
                         responseText = response.responseText,
-                        statusResult = Ext.Ajax.parseStatus(response.status, response);
+						statusResult = Ext.Ajax.parseStatus(response.status, response),
+                        failureFn;
 
                     me.setMasked(false);
 
-                    if (success) {
-                        if (statusResult && responseText.length == 0) {
-                            success = true;
-                        } else {
-                            response = Ext.decode(responseText);
-                            success = !!response.success;
+                    failureFn = function() {
+                        if (Ext.isFunction(options.failure)) {
+                            options.failure.call(options.scope || me, me, response, responseText);
                         }
+                        me.fireEvent('exception', me, response);
+                    };
+
+                    if (success) {
+						if (statusResult && responseText.length == 0) {
+							success = true;
+						} else {
+                        	response = Ext.decode(responseText);
+                        	success = !!response.success;
+						}
                         if (success) {
-                            successFn(response, responseText);
+                            if (Ext.isFunction(options.success)) {
+                                options.success.call(options.scope || me, me, response, responseText);
+                            }
+                            me.fireEvent('submit', me, response);
                         } else {
-                            failureFn(response, responseText);
+                            failureFn();
                         }
                     }
                     else {
-                        failureFn(response, responseText);
+                        failureFn();
                     }
                 }
             });
         }
-    },
-
-    //@private
-    getParams : function(params) {
-        return Ext.apply({}, params, this.getBaseParams());
     },
 
     /**
@@ -1114,7 +712,7 @@ Ext.define('Ext.form.Panel', {
     /**
      * @private
      * Returns all {@link Ext.field.Field field} instances inside this form.
-     * @param {Boolean} byName return only fields that match the given name, otherwise return all fields.
+     * @param byName return only fields that match the given name, otherwise return all fields.
      * @return {Object/Array} All field instances, mapped by field name; or an array if `byName` is passed.
      */
     getFields: function(byName) {
@@ -1323,7 +921,13 @@ Ext.define('Ext.form.Panel', {
          * @inheritdoc Ext.form.Panel#setRecord
          * @deprecated 2.0.0 Please use #setRecord instead.
          */
-        loadModel: 'setRecord'
+        loadModel: 'setRecord',
+        /**
+         * @method
+         * @inheritdoc Ext.form.Panel#setRecord
+         * @deprecated 2.0.0 Please use #setRecord instead.
+         */
+        load: 'setRecord'
     });
 
     this.override({

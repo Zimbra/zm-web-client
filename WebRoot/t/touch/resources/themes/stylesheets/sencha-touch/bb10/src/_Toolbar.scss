@@ -1,15 +1,29 @@
+/*
+ * ***** BEGIN LICENSE BLOCK *****
+ * Zimbra Collaboration Suite Web Client
+ * Copyright (C) 2013 Zimbra Software, LLC.
+ * 
+ * The contents of this file are subject to the Zimbra Public License
+ * Version 1.4 ("License"); you may not use this file except in
+ * compliance with the License.  You may obtain a copy of the License at
+ * http://www.zimbra.com/license.
+ * 
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * ***** END LICENSE BLOCK *****
+ */
 /**
  * @class Ext.Toolbar
  */
 
 .x-toolbar {
-    min-height: 44px;
+    min-height: 45px;
 }
 
 .x-toolbar,
 .x-tabbar {
     border-width: 0 !important;
-    height: 50px;
+    @include box-shadow(0 1px 0 0 #C4C4C4);
 }
 
 .x-toolbar-plain,
@@ -19,75 +33,69 @@
 
 .x-toolbar-light,
 .x-tabbar-light {
-    @include background(linear-gradient(top, color-stops(#20abe0, #197aba)));
-}
-
-.x-toolbar-neutral,
-.x-tabbar-neutral {
-    @include background(linear-gradient(color-stops(#FAFAFA, #D5D5D5)));
-		.x-title {
-			color: #333333;
-		}
-}
-
-.x-toolbar-dark,
-.x-tabbar-dark {
-    @include background(linear-gradient(color-stops(#323232, #272727)));
-
-    .x-landscape &.x-docked-bottom {
-        height: 66px;
-    }
+    @include background(linear-gradient(85deg, color-stops(#005F9A, #0AACE5)));
 }
 
 .x-toolbar-neutral,
 .x-tabbar-neutral,
-.x-toolbar-plain,
-.x-tabbar-plain {
-    .x-button-icon:before {
-        color: #000;
-    }
-
-    .x-button-pressing,
-    .x-button-pressed {
-        .x-button-icon:before {
-            color: #fff;
-        }        
-    }
-}
-
-.x-tabbar.x-docked-bottom,
-.x-toolbar.x-docked-bottom {
-    height: 66px;
-
-    .x-button-normal,
-    .x-button-normal:before {
-        border: 0 !important;
-        background: transparent none !important;
-        @include box-shadow(none);
-    }
-
-    .x-button-normal:before {
-        height: 2px !important;
-    }
-
-    .x-button.menu {
-        margin: 0;
-        border-right-style: solid;
-        border-right-width: 1px;
-    }
+.x-toolbar-dark,
+.x-tabbar-dark {
+    @include background(linear-gradient(color-stops(#323232, #252525)));
 }
 
 .x-title {
     color: #fafafa;
-    font-size: 20px;
+    font-size: 18px;
     font-weight: normal;
-		letter-spacing: 1px;
 }
 
+///**
+// * @var {color} $toolbar-base-color
+// * The primary color variable from which toolbars derive their light and dark UIs.
+// */
+//$toolbar-base-color: $base-color !default;
 
-.x-toolbar {
-    .x-field-focused .x-input-el {
-        @include border-radius(2px);
-        border: 2px solid $base-color;
-    }
-}
+///**
+// * @var {measurement} $toolbar-spacing
+// * Space between items in a toolbar (like buttons and fields)
+// */
+//$toolbar-spacing: .2em !default;
+
+//.x-toolbar {
+//    padding: 0 $toolbar-spacing;
+//    margin-bottom: 0.2em;
+//    background-color: transparent;
+//    border-width: 0 !important;
+
+//    &.x-docked-left {
+//        width: 7em;
+//        padding: $toolbar-spacing;
+//    }
+
+//    &.x-docked-right {
+//        width: 7em;
+//        padding: $toolbar-spacing;
+//    }
+
+//    &.x-docked-bottom {
+//        background-color: $background-color;
+//    }
+//}
+
+//.x-toolbar-inner {
+//    height: 100% !important;
+//}
+
+//.x-title {
+//    line-height: 32px;
+//    font-size: $font-size-extra-large;
+//    color: $foreground-color;
+//    text-align: left;
+//    margin: 0 0.3em;
+//    padding: 0 5px;
+//    font-weight: normal;
+//}
+
+//.x-field-select .x-component-outer .x-input-el {
+////    color: $phone-contrast-foreground-color !important;
+//}

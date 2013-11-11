@@ -162,6 +162,20 @@ ZmZimletContext.RE_SCAN_MSG = /(^|[^\\])\$\{msg\.([\$a-zA-Z0-9_]+)\}/g;
 ZmZimletContext.__RE_SCAN_SETTING = /\$\{setting\.([\$a-zA-Z0-9_]+)\}/g;
 
 /**
+ * @private
+ */
+ZmZimletContext._isArray =
+function(obj){
+    return (!AjxUtil.isUndefined(obj) && appCtxt.isChildWindow && obj.length && AjxUtil.isFunction(obj.sort) && AjxUtil.isFunction(obj.unshift) );
+};
+
+ZmZimletContext._isArrayIE =
+function(obj){
+    //Default Array when borrowed from parent window looses
+    return (AjxEnv.isIE && !AjxUtil.isUndefined(obj) && appCtxt.isChildWindow && obj.length && obj.length>0 && obj[0]);
+}
+
+/**
  * This function creates a 'sane' JSON object, given one returned by the
  * Zimbra server.
  *<p>
@@ -187,7 +201,7 @@ function(obj, tag, wantarray_re) {
 		if (obj instanceof DwtControl) { //Don't recurse into DwtControls, causes too much recursion
 			return obj;
 		}
-		else if (obj instanceof Array || AjxUtil.isArray1(obj)) {
+		else if (obj instanceof Array || ZmZimletContext._isArray(obj) || ZmZimletContext._isArrayIE(obj)) {
 			if (obj.length == 1 && !(wantarray_re && wantarray_re.test(tag))) {
 				cool_json = doit(obj[0], tag);
 			} else {
@@ -498,9 +512,6 @@ function(obj) {
 			var item = menu.createMenuItem(data.id, params);
 			item.setData("xmlMenuItem", data);
 			item.addSelectionListener(this._handleMenuItemSelected);
-			if (data.menuItem) {
-				item.setMenu(this._makeMenu(data.menuItem));
-			}
 		}
 	}
 	return menu;

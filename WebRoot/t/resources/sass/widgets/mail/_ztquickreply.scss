@@ -6,65 +6,24 @@
 	border-top-left-radius: 0;
 	border-bottom-left-radius: 0;
 }
-.no-bottom-round {
-	border-bottom-right-radius: 0;
-	border-bottom-left-radius: 0;
-}
-.no-top-round {
-	border-top-right-radius: 0;
-	border-top-left-radius: 0;
-}
-
 
 .zcs-quick-reply {
 	background-color: $light-grey;
+	border-top: 1px solid darken($light-grey,15%);
 	padding: .25em;
-
-	.x-toolbar {
-		border: $default-border;
-		border-top-left-radius: $default-textarea-radius;
-		border-top-right-radius: $default-textarea-radius;
-		border-bottom: none;
-		height: auto;
-		min-height: 30px;
-		.x-title .x-innerhtml {
-			white-space: normal;
-			text-align: left;
-		}
-	}
 
 	.x-form-fieldset {
 		margin: 0;
 
 		.x-form-fieldset-inner {
-			background: transparent;
-			border: $default-border;
-			border-radius: $default-textarea-radius;
-			&.x-inner {
-				@extend .no-right-round;
-			}
-
-			.x-field-input {
-				border: none;
-				border-radius: 0;
-			}
-		}
-	}
-
-	&.expanded {
-		.x-form-fieldset-inner.x-inner {
-			@extend .no-top-round;
-		}
-		.x-button {
-			@extend .no-top-round;
+			@extend .no-right-round;
+			border: 1px solid;
+			border-color: rgba(0,0,0,.6) rgba(0,0,0,0) rgba(0,0,0,.2) rgba(0,0,0,.5);
 		}
 	}
 
 	.x-button {
-		border-color: $default-border-color;
 		@extend .no-left-round;
 		font-size: .9em;
-		height: auto;
-		border-left: none;
 	}
 }

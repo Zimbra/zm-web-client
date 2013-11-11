@@ -1,3 +1,17 @@
+/*
+ * ***** BEGIN LICENSE BLOCK *****
+ * Zimbra Collaboration Suite Web Client
+ * Copyright (C) 2013 Zimbra Software, LLC.
+ * 
+ * The contents of this file are subject to the Zimbra Public License
+ * Version 1.4 ("License"); you may not use this file except in
+ * compliance with the License.  You may obtain a copy of the License at
+ * http://www.zimbra.com/license.
+ * 
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * ***** END LICENSE BLOCK *****
+ */
 /**
  * @class Ext.Mask
  */
@@ -63,11 +77,10 @@
 
     .x-mask-message {
         position: absolute;
-        bottom: 5px;
-        color: #333;
-        left: 0;
-        right: 0;
+        bottom: 1.7em;
         @include st-box-flex(0);
+        max-width: 13em;
+        min-width: 8em;
     }
 
     &.x-has-message {
@@ -76,7 +89,7 @@
         }
 
         .x-loading-spinner-outer {
-            height: 168px;
+            height: 7.5em;
         }
     }
 }

@@ -45,32 +45,17 @@ function() {
 };
 
 ZmInviteMsgView.prototype.reset =
-function(cleanupHTML) {
+function() {
 	if (this._inviteToolbar) {
-		if (cleanupHTML) {
-			this._inviteToolbar.dispose();
-			this._inviteToolbar = null;
-		} else {
-			this._inviteToolbar.setDisplay(Dwt.DISPLAY_NONE);
-		}
+		this._inviteToolbar.setDisplay(Dwt.DISPLAY_NONE);
 	}
 
 	if (this._counterToolbar) {
-		if (cleanupHTML) {
-			this._counterToolbar.dispose();
-			this._counterToolbar = null;
-		} else {
-			this._counterToolbar.setDisplay(Dwt.DISPLAY_NONE);
-		}
+		this._counterToolbar.setDisplay(Dwt.DISPLAY_NONE);
 	}
 
 	if (this._dayView) {
-		if (cleanupHTML) {
-			this._dayView.dispose();
-			this._dayView = null;
-		} else {
-			this._dayView.setDisplay(Dwt.DISPLAY_NONE);
-		}
+		this._dayView.setDisplay(Dwt.DISPLAY_NONE);
 		Dwt.delClass(this.parent.getHtmlElement(), "RightBorderSeparator");
 	}
 
@@ -224,7 +209,7 @@ function(callback, dayViewCallback, result) {
 		var html = [];
 		var idx = 0;
 		var attendees = appt.inv[0].comp[0].at || [];
-        AjxDispatcher.require(["MailCore", "CalendarCore"]);
+        AjxDispatcher.require(["CalendarCore"]);
 
         var options = {};
 	    options.addrBubbles = appCtxt.get(ZmSetting.USE_ADDR_BUBBLES);
@@ -264,7 +249,7 @@ function(dayViewCallback) {
             return;
         }
 
-		AjxDispatcher.require(["MailCore", "CalendarCore", "Calendar"]);
+		AjxDispatcher.require(["CalendarCore", "Calendar"]);
 		var cc = AjxDispatcher.run("GetCalController");
 
 		if (!this._dayView) {
@@ -474,7 +459,7 @@ ZmInviteMsgView.PTST_MSG[ZmCalBaseItem.PSTATUS_TENTATIVE] = {msg: AjxMessageForm
 
 ZmInviteMsgView.prototype.addSubs =
 function(subs, sentBy, sentByAddr, obo) {
-    AjxDispatcher.require(["MailCore", "CalendarCore", "Calendar"]);
+    AjxDispatcher.require(["CalendarCore", "Calendar"]);
 	subs.invite = this._invite;
 
 	if (!this._msg.isInviteCanceled() && !subs.invite.isOrganizer() && subs.invite.hasInviteReplyMethod()) {
@@ -787,12 +772,5 @@ function() {
     var inviteDate = this._getInviteDate();
     if ((inviteDate != null) && this._dayView) {
         this._dayView._scrollToTime(inviteDate.getHours());
-    }
-}
-
-ZmInviteMsgView.prototype.repositionCounterToolbar =
-function(hdrTableId) {
-    if (this._invite && this._invite.hasCounterMethod() && hdrTableId && this._counterToolbar) {
-        this._counterToolbar.reparentHtmlElement(hdrTableId + '_counterToolbar', 0);
     }
 }

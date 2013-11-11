@@ -224,22 +224,13 @@ ZmUploadDialog.prototype._upload = function(){
         var notes = this.getNotes();
         if(this._supportsHTML5){
             if(this._validateSize()){
-                var f = element.files;
+                var f = element.files; 
                 for(var j=0; j<f.length; j++){
-                    //Bug fix #79986 Check for invalid filename before upload
-                    if(!ZmAppCtxt.INVALID_NAME_CHARS_RE.test(f[j].name)) {
-                        files.push({name:f[j].name, fullname: f[j].name, notes: notes});
-                    }
-                    else {
-                        //Bug fix # 79986 show warning in the upload dialog
-                        var aCtxt = ZmAppCtxt.handleWindowOpener();
-                        this._msgInfo.innerHTML = AjxMessageFormat.format(ZmMsg.errorInvalidName, AjxStringUtil.htmlEncode(f[j].name));
-                        return;
-                    }
+                    files.push({name:f[j].name, fullname: f[j].name, notes: notes});
                 }
             }else{
 	            var aCtxt = ZmAppCtxt.handleWindowOpener();
-                this._msgInfo.innerHTML = AjxMessageFormat.format(ZmMsg.attachmentSizeError, AjxUtil.formatSize(aCtxt.get(ZmSetting.DOCUMENT_SIZE_LIMIT)));
+                this._msgInfo.innerHTML = AjxMessageFormat.format(ZmMsg.attachmentSizeError, AjxUtil.formatSize(aCtxt.get(ZmSetting.DOCUMENT_SIZE_LIMIT)));;
                 return;
             }
         }else{
@@ -323,8 +314,11 @@ ZmUploadDialog.prototype._popupErrorDialog = function(message) {
 
 ZmUploadDialog.prototype._uploadSaveDocs = function(files, status, guids) {
 	if (status != AjxPost.SC_OK) {
-		appCtxt.getAppController().popupUploadErrorDialog(ZmItem.BRIEFCASE,
-		                                                  status);
+		var message = AjxMessageFormat.format(ZmMsg.uploadError, status);
+		if(status == '413') {
+			message = ZmMsg.errorAttachmentTooBig;
+		}
+		this._popupErrorDialog(message);
 	} else {
 		guids = guids.split(",");
 		for (var i = 0; i < files.length; i++) {
@@ -661,6 +655,18 @@ ZmUploadDialog._addHandler = function(event) {
 ZmUploadDialog.prototype._createUploadHtml = function() {
 	var id = this._htmlElId;
 	var aCtxt = ZmAppCtxt.handleWindowOpener();
+	if (!aCtxt) {
+		//hack if ZmAppCtxt is not defined; not sure why that would be the case.
+		aCtxt = appCtxt;
+		if (window.opener) {
+			try {
+				aCtxt = window.opener.appCtxt;
+			}
+			catch (ex) {
+				aCtxt = appCtxt;
+			}
+		}
+	}
     var uri = aCtxt.get(ZmSetting.CSFE_UPLOAD_URI);
 
     var subs = {

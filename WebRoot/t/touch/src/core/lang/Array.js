@@ -1,3 +1,17 @@
+/*
+ * ***** BEGIN LICENSE BLOCK *****
+ * Zimbra Collaboration Suite Web Client
+ * Copyright (C) 2013 Zimbra Software, LLC.
+ * 
+ * The contents of this file are subject to the Zimbra Public License
+ * Version 1.4 ("License"); you may not use this file except in
+ * compliance with the License.  You may obtain a copy of the License at
+ * http://www.zimbra.com/license.
+ * 
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * ***** END LICENSE BLOCK *****
+ */
 //@tag foundation,core
 //@define Ext.Array
 //@require Ext.String
@@ -975,7 +989,7 @@
 
     /**
      * Old alias to {@link Ext.Array#min}
-     * @deprecated 2.0.0 Please use {@link Ext.Array#min} instead
+     * @deprecated 4.0.0 Please use {@link Ext.Array#min} instead
      * @method
      * @member Ext
      * @alias Ext.Array#min
@@ -984,7 +998,7 @@
 
     /**
      * Old alias to {@link Ext.Array#max}
-     * @deprecated 2.0.0 Please use {@link Ext.Array#max} instead
+     * @deprecated 4.0.0 Please use {@link Ext.Array#max} instead
      * @method
      * @member Ext
      * @alias Ext.Array#max
@@ -993,7 +1007,7 @@
 
     /**
      * Old alias to {@link Ext.Array#sum}
-     * @deprecated 2.0.0 Please use {@link Ext.Array#sum} instead
+     * @deprecated 4.0.0 Please use {@link Ext.Array#sum} instead
      * @method
      * @member Ext
      * @alias Ext.Array#sum
@@ -1002,7 +1016,7 @@
 
     /**
      * Old alias to {@link Ext.Array#mean}
-     * @deprecated 2.0.0 Please use {@link Ext.Array#mean} instead
+     * @deprecated 4.0.0 Please use {@link Ext.Array#mean} instead
      * @method
      * @member Ext
      * @alias Ext.Array#mean
@@ -1011,7 +1025,7 @@
 
     /**
      * Old alias to {@link Ext.Array#flatten}
-     * @deprecated 2.0.0 Please use {@link Ext.Array#flatten} instead
+     * @deprecated 4.0.0 Please use {@link Ext.Array#flatten} instead
      * @method
      * @member Ext
      * @alias Ext.Array#flatten
@@ -1020,7 +1034,7 @@
 
     /**
      * Old alias to {@link Ext.Array#clean}
-     * @deprecated 2.0.0 Please use {@link Ext.Array#clean} instead
+     * @deprecated 4.0.0 Please use {@link Ext.Array#clean} instead
      * @method
      * @member Ext
      * @alias Ext.Array#clean
@@ -1029,7 +1043,7 @@
 
     /**
      * Old alias to {@link Ext.Array#unique}
-     * @deprecated 2.0.0 Please use {@link Ext.Array#unique} instead
+     * @deprecated 4.0.0 Please use {@link Ext.Array#unique} instead
      * @method
      * @member Ext
      * @alias Ext.Array#unique
@@ -1038,7 +1052,7 @@
 
     /**
      * Old alias to {@link Ext.Array#pluck Ext.Array.pluck}
-     * @deprecated 2.0.0 Please use {@link Ext.Array#pluck Ext.Array.pluck} instead
+     * @deprecated 4.0.0 Please use {@link Ext.Array#pluck Ext.Array.pluck} instead
      * @method
      * @member Ext
      * @alias Ext.Array#pluck

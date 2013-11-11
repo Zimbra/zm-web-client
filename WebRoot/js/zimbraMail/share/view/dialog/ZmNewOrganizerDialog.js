@@ -180,7 +180,8 @@ ZmNewOrganizerDialog.prototype._contentHtml =
 function() {
 	var html = [];
 	var idx = 0;
-	html[idx++] = "<table class='ChooserDialog ZPropertySheet' cellspacing='6' >";
+	html[idx++] = "<table class='ZPropertySheet' cellspacing='6' ";
+	html[idx++] = (AjxEnv.isSafari) ? " width='300'>" : ">";
 	idx = this._createStandardContentHtml(html, idx);
 	idx = this._createExtraContentHtml(html, idx);
 	html[idx++] = "</table>";

@@ -399,7 +399,7 @@
 	</table>
 </template>
 
-<template id="share.Dialogs#ZmNewTagDialog">
+<template id="share.Dialogs#ZmPromptDialog">
 	<table class='ZPropertySheet' cellspacing='6'>
 		<tr>
 			<td class='Label'><$= ZmMsg.tagName $>:</td>

@@ -59,10 +59,7 @@ Ext.define('ZCS.controller.ZtListController', {
 			itemPanel: {
 				showMenu: null
 			}
-		},
-
-		search: null,   // the ZtSearch that generated this controller's data
-		folder: null    // the ZtOrganizer that was tapped, if any
+		}
 	},
 
 	/**
@@ -82,9 +79,8 @@ Ext.define('ZCS.controller.ZtListController', {
 		});
 
 		this.getStore().load({
-			query:      defaultQuery,
-			callback:   this.storeLoaded,
-			scope:      this
+			query: defaultQuery,
+			callback: Ext.Function.bind(this.storeLoaded, this, [defaultQuery, null], 0)
 		});
 
 		ZCS.app.on('applicationSwitch', function (newApp) {
@@ -92,8 +88,6 @@ Ext.define('ZCS.controller.ZtListController', {
 				this.updateTitlebar(newApp);
 			}
 		}, this);
-
-		ZCS.app.on('notifyFolderChange', this.handleFolderChange, this);
 	},
 
 	/**
@@ -143,7 +137,7 @@ Ext.define('ZCS.controller.ZtListController', {
 	 */
 	doSearch: function(query, folder) {
 
-		if (query.indexOf('$cmd:') === 0 || query.indexOf('$set:') === 0) {
+		if (query.indexOf('$cmd:') === 0) {
 			ZCS.common.ZtClientCmdHandler.handle(query.substr(5), this.getStore().getProxy());
 			return;
 		}
@@ -167,8 +161,7 @@ Ext.define('ZCS.controller.ZtListController', {
 		this.getStore().load({
 			query:      query,
 			folder:     folder,
-			callback:   this.storeLoaded,
-			scope:      this
+			callback:   Ext.Function.bind(this.storeLoaded, this, [query, folder], 0)
 		});
 
 		ZCS.app.fireEvent('hideOverviewPanel');
@@ -178,28 +171,24 @@ Ext.define('ZCS.controller.ZtListController', {
 	 * After the search has run, remember it as the one backing the current list,
 	 * and set the title in the top toolbar.
 	 *
+	 * @param {string}      query       search query that produced these results
+	 * @param {ZtOrganizer} folder      overview folder that was tapped (optional)
 	 * @param {array}       records
 	 * @param {Operation}   operation
 	 * @param {boolean}     success
 	 */
-	storeLoaded: function(records, operation, success) {
+	storeLoaded: function(query, folder, records, operation, success) {
 
-		var app = this.getApp(),
-			folder = operation.config.folder;
+		query = query || operation.config.query;
 
-		this.setSearch(operation.config.search);
-		this.setFolder(folder);
+		var app = this.getApp();
 
 		if (success) {
 
+			// If we got here via tap on a saved search in the overview, remember it so we can show its name
 			if (folder) {
-				// If we got here via tap on a saved search in the overview, remember it so we can show its name
-				var searchId = (folder.get('type') === ZCS.constant.ORG_SEARCH) ? folder.get('zcsId') : null;
+				var searchId = (folder.get('type') === ZCS.constant.ORG_SAVED_SEARCH) ? folder.get('itemId') : null;
 				ZCS.session.setSetting(ZCS.constant.SETTING_CUR_SEARCH_ID, searchId, app);
-			}
-			else {
-				// If the user ran a search, deselect the selected folder since it no longer matches results
-				this.getFolderList().getActiveItem().deselectAll();
 			}
 
 			this.updateTitlebar();
@@ -230,52 +219,5 @@ Ext.define('ZCS.controller.ZtListController', {
 		}
 
 		titlebar.setTitle(this.getOrganizerTitle(null, true, app));
-	},
-
-	removeItem: function(item, isSwipeDelete) {
-
-		var list = this.getListView(),
-			store = list.getStore(),
-			currentIndex = store.indexOf(item),
-			toSelect;
-
-		store.remove(item);
-		if (!isSwipeDelete) {
-			toSelect = store.getAt(currentIndex);
-			if (toSelect) {
-				list.select(toSelect, false);
-			}
-			else {
-				this.getItemController().clear();
-			}
-		}
-	},
-
-	/**
-	 * Update list panel title if the current folder changed in some way, since the title
-	 * often reflects something about the folder (number of items, for example).
-	 */
-	handleFolderChange: function(folder, notification) {
-
-		this.callParent(arguments);
-		var	curOrganizer = ZCS.session.getCurrentSearchOrganizer();
-		if (curOrganizer && curOrganizer.get('zcsId') === folder.get('zcsId')) {
-			this.updateTitlebar();
-			ZCS.app.fireEvent('updatelistpanelToggle', this.getOrganizerTitle(), ZCS.session.getActiveApp());
-		}
-	},
-
-	/**
-	 * Re-runs the current search.
-	 */
-	redoSearch: function() {
-
-		var curSearch = ZCS.session.getSetting(ZCS.constant.SETTING_CUR_SEARCH, this.getApp()),
-			query = curSearch && curSearch.getQuery(),
-			folder = ZCS.session.getCurrentSearchOrganizer();
-
-		if (query) {
-			this.doSearch(query, folder);
-		}
 	}
 });

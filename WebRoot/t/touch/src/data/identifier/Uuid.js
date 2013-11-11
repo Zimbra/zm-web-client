@@ -1,3 +1,17 @@
+/*
+ * ***** BEGIN LICENSE BLOCK *****
+ * Zimbra Collaboration Suite Web Client
+ * Copyright (C) 2013 Zimbra Software, LLC.
+ * 
+ * The contents of this file are subject to the Zimbra Public License
+ * Version 1.4 ("License"); you may not use this file except in
+ * compliance with the License.  You may obtain a copy of the License at
+ * http://www.zimbra.com/license.
+ * 
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * ***** END LICENSE BLOCK *****
+ */
 /**
  * @author Tommy Maintz
  *
@@ -50,15 +64,9 @@
  */
 Ext.define('Ext.data.identifier.Uuid', {
     extend: 'Ext.data.identifier.Simple',
+
     alias: 'data.identifier.uuid',
 
-    /**
-     * Provides a way to determine if this identifier supports creating unique IDs. Proxies like {@link Ext.data.proxy.LocalStorage}
-     * need the identifier to create unique IDs and will check this property.
-     * @property isUnique
-     * @type Boolean
-     * @private
-     */
     isUnique: true,
 
     config: {
@@ -222,8 +230,8 @@ Ext.define('Ext.data.identifier.Uuid', {
     /**
      * Converts a value into a hexadecimal value. Also allows for a maximum length
      * of the returned value.
-     * @param {String} value
-     * @param {Number} length
+     * @param value
+     * @param length
      * @private
      */
     toHex: function(value, length) {
@@ -238,18 +246,18 @@ Ext.define('Ext.data.identifier.Uuid', {
 
     /**
      * Generates a random value with between a low and high.
-     * @param {Number} low
-     * @param {Number} high
+     * @param lo
+     * @param hi
      * @private
      */
-    rand: function(low, high) {
-        var v = Math.random() * (high - low + 1);
-        return Math.floor(v) + low;
+    rand: function(lo, hi) {
+        var v = Math.random() * (hi - lo + 1);
+        return Math.floor(v) + lo;
     },
 
     /**
      * Splits a number into a low and high value.
-     * @param {Number} bignum
+     * @param bignum
      * @private
      */
     split: function(bignum) {

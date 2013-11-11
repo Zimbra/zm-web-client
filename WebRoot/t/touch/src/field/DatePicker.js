@@ -105,7 +105,7 @@
  *
  */
 Ext.define('Ext.field.DatePicker', {
-    extend: 'Ext.field.Select',
+    extend: 'Ext.field.Text',
     alternateClassName: 'Ext.form.DatePicker',
     xtype: 'datepickerfield',
     requires: [
@@ -181,9 +181,6 @@ Ext.define('Ext.field.DatePicker', {
             masktap: 'onMaskTap'
         });
 
-
-        component.doMaskTap = Ext.emptyFn;
-
         if (Ext.browser.is.AndroidStock2) {
             component.input.dom.disabled = true;
         }
@@ -236,7 +233,7 @@ Ext.define('Ext.field.DatePicker', {
 
     /**
      * Returns the {@link Date} value of this field.
-     * If you wanted a formatted date use the {@link #getFormattedValue} method.
+     * If you wanted a formated date
      * @return {Date} The date selected
      */
     getValue: function() {

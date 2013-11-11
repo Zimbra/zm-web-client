@@ -112,13 +112,13 @@ Ext.define('Ext.Img', {
     },
 
     hide: function() {
-        this.callParent(arguments);
+        this.callParent();
         this.hiddenSrc = this.hiddenSrc || this.getSrc();
         this.setSrc(null);
     },
 
     show: function() {
-        this.callParent(arguments);
+        this.callParent();
         if (this.hiddenSrc) {
             this.setSrc(this.hiddenSrc);
             delete this.hiddenSrc;
@@ -203,12 +203,6 @@ Ext.define('Ext.Img', {
 
     onError : function(e) {
         this.detachListeners();
-
-        // Attempt to set the src even though the error event fired.
-        if (this.getMode() === 'background') {
-            this.element.dom.style.backgroundImage = 'url("' + this.imageObject.src + '")';
-        }
-
         this.fireEvent('error', this, e);
     },
 

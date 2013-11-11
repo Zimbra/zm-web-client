@@ -526,23 +526,22 @@ function() {
 	this._headerColId = [];
 	this._dayNameId = [];
 	this._bodyColId = [];
-    this._weekNumberIds = {};
 
 	var html = new AjxBuffer();
 			
 	html.append("<table class=calendar_view_table cellpadding=0 cellspacing=0 id='",this._monthViewTable,"'>");
 	html.append("<tr>");
 
+    if(this._showWeekNumber) {
+        html.append("<td width=10 valign='bottom' class='calendar_month_header_cells_text'>");
+	    html.append(AjxMsg.calendarWeekTitle);
+	    html.append("</td>");
+    }
+
 	html.append("<td>");
 	html.append("<div id='", this._headerId, "' style='position:relative;'>");
 	html.append("<table id=calendar_month_header_table class=calendar_month_header_table>");
 	html.append("<colgroup>");
-
-    // Add column group to adjust week title heading.
-    if (this._showWeekNumber) {
-        html.append("<col id='", Dwt.getNextId(), "'/>");
-    }
-
 	for (var i=0; i < 7; i++) {
 		this._headerColId[i] = Dwt.getNextId();
 		html.append("<col id='", this._headerColId[i], "'/>");
@@ -552,13 +551,6 @@ function() {
 	html.append("<td colspan=7 class=calendar_month_header_month id='", this._titleId, "'></td>");
 	html.append("</tr>");
 	html.append("<tr>");
-
-    // Week title to heading.
-    if (this._showWeekNumber) {
-        html.append("<td width=10 valign='bottom' class='calendar_month_header_cells_text'>");
-        html.append(AjxMsg.calendarWeekTitle);
-        html.append("</td>");
-    }
 	
 	for (var day=0; day < 7; day++) {
 		this._dayNameId[day] = Dwt.getNextId();
@@ -571,17 +563,29 @@ function() {
 	html.append("</td></tr>");
 	html.append("<tr>");
 
+    if(this._showWeekNumber) {
+        html.append("<td width=10>");
+
+        //generate cells for showing week numbers on the side
+        this._weekNumberIds = {};
+        html.append("<table id='", this._weekNumBodyId, "' class='calendar_month_table'>");
+        for (var i=0; i < 6; i++)	 {
+            var weekNumberId = Dwt.getNextId();
+            html.append("<tr>");
+            html.append("<td id='" +  weekNumberId + "' class='calendar_month_weekno_td'>");
+            html.append("</td>");
+            html.append("</tr>");
+            this._weekNumberIds[i] = weekNumberId;
+        }
+        html.append("</table>");
+        html.append("</td>");
+    }
+
     html.append("<td class='calendar_month_body_container'>");
 	html.append("<div id='", this._daysId, "' class=calendar_month_body>");
 	
 	html.append("<table id='", this._bodyId, "' class=calendar_month_table>");
 	html.append("<colgroup>");
-
-    // Add column group to adjust week number.
-    if (this._showWeekNumber) {
-        html.append("<col id='"+ this._weekNumBodyId + "'></col>");
-    }
-
 	for (var i=0; i < 7; i++) {
 		this._bodyColId[i] = Dwt.getNextId();
 		html.append("<col id='", this._bodyColId[i], "'/>");
@@ -591,14 +595,6 @@ function() {
 	for (var i=0; i < 6; i++)	 {
 		var weekId = Dwt.getNextId();
 		html.append("<tr id='" +  weekId + "'>");
-
-        // Holds week number per row.
-        if (this._showWeekNumber) {
-            var weekNumberId = Dwt.getNextId();
-            html.append("<td id='" + weekNumberId + "' class='calendar_month_weekno_td'></td>");
-            this._weekNumberIds[i] = weekNumberId;
-        }
-
 		for (var j=0; j < 7; j++)	 {
 			this._createDay(html, i*7+j, i, j);
 		}
@@ -733,8 +729,8 @@ function() {
 
                 var day = this._getDayForAppt(appt);
                 if (day) {
-                    var dow = (apptSet.dow + iAppt) % (this._showWeekNumber ? 8 : 7); // 8 columns, 7 days of week & 1 week number.
-                    var apptX = this._calculateAllDayX(dow, ae.head) + (this._showWeekNumber ? 15 : 0); // Add week number width
+                    var dow = (apptSet.dow + iAppt) % 7;
+                    var apptX = this._calculateAllDayX(dow, ae.head);
                     var apptY = dayY[day.week] + (21*apptSet.rows[day.week]) + 18 + 3; //first 17, each appt + 1, second 17, day heading
                     Dwt.setLocation(ae, apptX, apptY);
                 }
@@ -788,7 +784,7 @@ function() {
 	var he = document.getElementById(this._headerId);
 	var headingHeight = Dwt.getSize(he).y;
 
-	var w = width - 5; // No need to subtract week number column width.
+	var w = width - (this._showWeekNumber ? 15 : 5);
 	var h = height - headingHeight - 10;
 	
 	var de = document.getElementById(this._daysId);
@@ -800,13 +796,12 @@ function() {
     }
 	Dwt.setSize(be, w, h);
 
-    // Set the width to 15px fixed.
-    if (this._showWeekNumber) {
+    if(this._showWeekNumber) {
         var wk = document.getElementById(this._weekNumBodyId);
-        Dwt.setSize(wk, 15, Dwt.DEFAULT);
+        Dwt.setSize(wk, Dwt.DEFAULT, h);
     }
 
-	colWidth = Math.floor(w / (this._showWeekNumber ? 8 : 7)) - 1; // Divide by 8 columns.
+	colWidth = Math.floor(w/7) - 1;
 
 	var fdow = this.firstDayOfWeek();
 	for (var i=0; i < 7; i++) {
@@ -1064,8 +1059,8 @@ function(row, height) {
     if(!this._showWeekNumber) return;
     
     var weekNumCell = document.getElementById(this._weekNumberIds[row]);
-    if (weekNumCell) {
-        Dwt.setSize(weekNumCell, 15, Dwt.DEFAULT); // No need to set fixed height to rows.
+    if(weekNumCell) {
+        Dwt.setSize(weekNumCell, Dwt.DEFAULT, height);
     }
 };
 
@@ -1747,7 +1742,7 @@ function(data, newDayIndex) {
             Dwt.setVisible(data.apptDiv[i], true);
             var apptTable = data.apptDiv[i].firstChild;
             var apptSize = Dwt.getSize(apptTable);
-            var apptX = (this.dayWidth * day.dow) + this.dayWidth/2 - apptSize.x/2 + (this._showWeekNumber ? 15 : 0); // Adjust week number width while dragging
+            var apptX = (this.dayWidth * day.dow) + this.dayWidth/2 - apptSize.x/2;
             var apptY = (data.weekY[day.week] + data.weekY[day.week + 1])/2 - apptSize.y/2;
             Dwt.setLocation(data.apptDiv[i], apptX, apptY);
 

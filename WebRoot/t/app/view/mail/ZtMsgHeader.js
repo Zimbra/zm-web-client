@@ -37,21 +37,12 @@ Ext.define('ZCS.view.mail.ZtMsgHeader', {
 		}
 	},
 
-	setReadOnly: function (isReadOnly) {
-		var header = Ext.fly(this.element.query('.zcs-msgHdr-link')[0]);
-		if (header) {
-			header.setVisible(!isReadOnly);
-		}
-	},
-
 	/**
 	 * Displays the message header in one of three states: collapsed, expanded, or detailed.
 	 *
 	 * @param {ZtMailMsg}   msg     msg being rendered
 	 */
 	render: function(msg, state) {
-
-
 
 		var msgView = this.up('msgview');
 		state = state || msgView.getState();
@@ -63,7 +54,14 @@ Ext.define('ZCS.view.mail.ZtMsgHeader', {
 		var data = msg.getData(),
 			tpl = ZCS.view.mail.ZtMsgHeader.TEMPLATE[state];
 
-		data.tags = ZCS.model.ZtItem.getTagData(data.tags);
+		// set up tags with just the data we need, and an associated DOM ID
+		if (data.tags) {
+			data.tags = Ext.Array.map(Ext.Array.clean(data.tags), function(tag) {
+				var tagData = Ext.copyTo({}, tag, 'itemId,color,name,displayName');
+				tagData.id = ZCS.util.getUniqueId(tagData);
+				return tagData;
+			});
+		}
 
 		this.setMsg(msg);
 

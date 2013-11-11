@@ -77,6 +77,7 @@ ZmItem.prototype.toString = function() { return "ZmItem"; };
 
 ZmItem.APP 				= {};	// App responsible for item
 ZmItem.MSG_KEY 			= {};	// Type names
+ZmItem.COUNT_KEY    	= {};	// msg key that handles plural
 ZmItem.ICON 			= {};	// Representative icons
 ZmItem.RESULTS_LIST 	= {};	// Function for creating search results list
 
@@ -144,7 +145,6 @@ ZmItem.FLAG_LOW_PRIORITY		= "?";
 ZmItem.FLAG_HIGH_PRIORITY		= "!";
 ZmItem.FLAG_PRIORITY            = "+"; //msg prioritization
 ZmItem.FLAG_NOTE                = "t"; //specially for notes
-ZmItem.FLAG_OFFLINE_CREATED     = "o";
 
 ZmItem.ALL_FLAGS = [
 	ZmItem.FLAG_FLAGGED,
@@ -160,8 +160,7 @@ ZmItem.ALL_FLAGS = [
 	ZmItem.FLAG_HIGH_PRIORITY,
 	ZmItem.FLAG_LOW_PRIORITY,
 	ZmItem.FLAG_PRIORITY,
-    ZmItem.FLAG_NOTE,
-    ZmItem.FLAG_OFFLINE_CREATED
+    ZmItem.FLAG_NOTE
 ];
 
 // Map flag to item property
@@ -180,7 +179,6 @@ ZmItem.FLAG_PROP[ZmItem.FLAG_LOW_PRIORITY]		= "isLowPriority";
 ZmItem.FLAG_PROP[ZmItem.FLAG_HIGH_PRIORITY]		= "isHighPriority";
 ZmItem.FLAG_PROP[ZmItem.FLAG_PRIORITY]          = "isPriority";
 ZmItem.FLAG_PROP[ZmItem.FLAG_NOTE]              = "isNote";
-ZmItem.FLAG_PROP[ZmItem.FLAG_OFFLINE_CREATED]   = "isOfflineCreated";
 
 // DnD actions this item is allowed
 
@@ -217,6 +215,7 @@ ZmItem.NOTES_SEPARATOR			= "*~*~*~*~*~*~*~*~*~*";
  * @param	{Hash}	params			a hash of parameters
  * @param {constant}	params.app			the app that handles this item type
  * @param {String}		params.nameKey		the message key for item name
+ * @param {String}		params.countKey 	the message key for plural of item name
  * @param {String}		params.icon			the name of item icon class
  * @param {String}		params.soapCmd		the SOAP command for acting on this item
  * @param {String}		params.itemClass	the name of class that represents this item
@@ -229,6 +228,7 @@ ZmItem.registerItem =
 function(item, params) {
 	if (params.app)				{ ZmItem.APP[item]					= params.app; }
 	if (params.nameKey)			{ ZmItem.MSG_KEY[item]				= params.nameKey; }
+	if (params.countKey)	    { ZmItem.COUNT_KEY[item]		    = params.countKey; }
 	if (params.icon)			{ ZmItem.ICON[item]					= params.icon; }
 	if (params.soapCmd)			{ ZmItem.SOAP_CMD[item]				= params.soapCmd; }
 	if (params.itemClass)		{ ZmList.ITEM_CLASS[item]			= params.itemClass; }

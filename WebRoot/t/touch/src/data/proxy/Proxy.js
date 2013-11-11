@@ -199,7 +199,6 @@ Ext.define('Ext.data.proxy.Proxy', {
 
     onDestroy: function() {
         Ext.destroy(this.getReader(), this.getWriter());
-        Ext.Evented.prototype.destroy.apply(this, arguments);
     },
 
     /**
@@ -328,8 +327,6 @@ Ext.define('Ext.data.proxy.Proxy', {
          if (Ext.isFunction(batchOptions.callback)) {
              Ext.callback(batchOptions.callback, scope, [batch, batchOptions]);
          }
-
-         Ext.destroy(batch);
     }
 
     // <deprecated product=touch since=2.0>

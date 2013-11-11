@@ -86,11 +86,12 @@ Ext.define('ZCS.controller.ZtBaseController', {
 	},
 
 	/**
-	 * Folder change notification: these are mostly handled by ZtOverview and ZtUserSession
+	 * Folder change notification: let the folder handle it.
 	 *
 	 * @param {ZtOrganizer} folder         folder that was changed
 	 * @param {Object}      notification   JSON detailing the changes (each changed field and its new value)
 	 */
 	handleFolderChange: function(folder, notification) {
+		folder.handleModifyNotification(notification);
 	}
 });

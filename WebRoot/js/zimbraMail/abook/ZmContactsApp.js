@@ -237,6 +237,7 @@ function() {
 	ZmItem.registerItem(ZmItem.CONTACT,
 						{app:			ZmApp.CONTACTS,
 						 nameKey:		"contact",
+						 countKey:  	"typeContact",
 						 icon:			"Contact",
 						 soapCmd:		"ContactAction",
 						 itemClass:		"ZmContact",
@@ -253,6 +254,7 @@ function() {
 
 	ZmItem.registerItem(ZmItem.GROUP,
 						{nameKey:	"group",
+						 countKey:	"typeContactGroup",
 						 icon:		"Group",
 						 soapCmd:	"ContactAction"
 						});
@@ -283,7 +285,7 @@ function() {
 							 treeType:			ZmOrganizer.FOLDER,
 							 dropTargets:		[ZmOrganizer.ADDRBOOK],
 							 views:				["contact"],
-							 folderKey:			"contactsFolder",
+							 folderKey:			"addressBook",
 							 mountKey:			"mountAddrBook",
 							 createFunc:		"ZmOrganizer.create",
 							 compareFunc:		"ZmAddrBook.sortCompare",
@@ -386,8 +388,6 @@ function(creates, force) {
 				} else if (name == "link") {
 					this._handleCreateLink(create, ZmOrganizer.ADDRBOOK);
 				} else if (name == "cn") {
-					//note- this is updating the view list. The canonical is upadated
-					// in ZmContact.prototype._handleResponseCreate. See bug 81055
 					var clc = AjxDispatcher.run("GetContactListController");
 					if (clc._folderId == ZmFolder.ID_DLS) {
 						//the simplest solution I could think of to the messy problem that the clcList in this case is GAL and thus

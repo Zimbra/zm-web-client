@@ -97,9 +97,10 @@ Ext.define('Ext.layout.Default', {
     },
 
     /**
-     * @param {Ext.Component} item
-     * @param {Boolean} isInner
-     * @param {Boolean} [destroying]
+     *
+     * @param item
+     * @param isInner
+     * @param [destroying]
      */
     onItemInnerStateChange: function(item, isInner, destroying) {
         if (isInner) {

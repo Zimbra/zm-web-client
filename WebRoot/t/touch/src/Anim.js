@@ -291,8 +291,6 @@ Ext.define('Ext.Anim', {
     Ext.Anim.run = function(el, anim, config) {
         if (el.isComponent) {
             el = el.element;
-        } else {
-            el = Ext.get(el);
         }
 
         config = config || {};

@@ -40,11 +40,7 @@ Ext.define('Ext.util.translatable.ScrollPosition', {
 
             this.wrapper = wrapper;
 
-            wrapper.on('painted', function() {
-                if (!this.isAnimating) {
-                    this.refresh();
-                }
-            }, this);
+            wrapper.on('painted', 'refresh', this);
 
             this.refresh();
         }

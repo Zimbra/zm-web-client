@@ -47,10 +47,6 @@ ZmMailList.prototype.constructor = ZmMailList;
 ZmMailList.prototype.isZmMailList = true;
 ZmMailList.prototype.toString = function() { return "ZmMailList"; };
 
-ZmMailList._SPECIAL_FOLDERS = [ZmFolder.ID_DRAFTS, ZmFolder.ID_TRASH, ZmFolder.ID_SPAM, ZmFolder.ID_SENT];
-ZmMailList._SPECIAL_FOLDERS_HASH = AjxUtil.arrayAsHash(ZmMailList._SPECIAL_FOLDERS);
-
-
 /**
  * Override so that we can specify "tcon" attribute for conv move - we don't want
  * to move messages in certain system folders as a side effect. Also, we need to
@@ -78,7 +74,7 @@ function(params) {
 		return ZmList.prototype.moveItems.apply(this, arguments);
 	}
 
-	params = Dwt.getParams(arguments, ["items", "folder", "attrs", "callback", "finalCallback", "noUndo", "actionTextKey", "fromFolderId"]);
+	params = Dwt.getParams(arguments, ["items", "folder", "attrs", "callback", "finalCallback", "noUndo", "actionText", "fromFolderId"]);
 	params.items = AjxUtil.toArray(params.items);
 
 	var params1 = AjxUtil.hashCopy(params);
@@ -92,9 +88,9 @@ function(params) {
 	params1.attrs.l = params.folder.id;
 	params1.action = (params.folder.id == ZmFolder.ID_TRASH) ? "trash" : "move";
     if (params1.folder.id == ZmFolder.ID_TRASH) {
-        params1.actionTextKey = params.actionTextKey || "actionTrash";
+        params1.actionText = params.actionText || ZmMsg.actionTrash;
     } else {
-        params1.actionTextKey = params.actionTextKey || "actionMove";
+        params1.actionText = params.actionText || ZmMsg.actionMove;
         params1.actionArg = params1.folder.getName(false, false, true);
     }
 	params1.callback = new AjxCallback(this, this._handleResponseMoveItems, [params]);
@@ -189,7 +185,7 @@ function(params) {
 	if (params.folder) {
 		params1.attrs.l = params.folder.id;
 	}
-	params1.actionTextKey = params.markAsSpam ? 'actionMarkAsJunk' : 'actionMarkAsNotJunk';
+	params1.actionText = params.markAsSpam ? ZmMsg.actionMarkAsJunk : ZmMsg.actionMarkAsNotJunk;
 
 	params1.callback = new AjxCallback(this, this._handleResponseSpamItems, params);
 	this._itemAction(params1);
@@ -237,7 +233,7 @@ function(params, result) {
 			list._notify(ZmEvent.E_MOVE, details);
 		}
 		if (params.actionText) {
-			summary = ZmList.getActionSummary(params);
+			summary = ZmList.getActionSummary(params.actionText, params.numItems, params.type, params.actionArg);
 		}
 
 		if (params.childWin) {
@@ -290,7 +286,7 @@ function(params) {
 			params.attrs = params.attrs || {};
 			params.attrs.tcon = ZmFolder.TCON_CODE[searchFolder.nId];
 			params.action = "delete";
-            params.actionTextKey = 'actionDelete';
+            params.actionText = ZmMsg.actionDelete;
 			params.callback = new AjxCallback(this, this._handleResponseDeleteItems, instantOn);
 			return this._itemAction(params);
 		}
@@ -355,7 +351,7 @@ function(params) {
 		params.items = items1;
 		params.op = "read";
 		if (items1.length > 1) {
-        	params.actionTextKey = params.value ? 'actionMarkRead' : 'actionMarkUnread';
+        	params.actionText = params.value ? ZmMsg.actionMarkRead : ZmMsg.actionMarkUnread;
 		}
 		this.flagItems(params);
 	}
@@ -404,7 +400,7 @@ function(params) {
 	if (items1.length) {
 		params.items = items1;
 		params.op = "mute";
-        params.actionTextKey = params.value ? 'actionMarkMute' : 'actionMarkUnmute';
+        params.actionText = params.value ? ZmMsg.actionMarkMute : ZmMsg.actionMarkUnmute;
 		this.flagItems(params);
 	}
     else if(params.forceCallback) {
@@ -665,11 +661,10 @@ function() {
  * 
  * @param {int}	offset	the starting point within list
  * @param {int}	limit		the ending point within list
- * @param {foldersToOmit}	A hash of folders to omit
  * @return	{ZmMailMsg}		the message
  */
 ZmMailList.prototype.getFirstHit =
-function(offset, limit, foldersToOmit) {
+function(offset, limit) {
 	if (this.type != ZmItem.MSG) { return null; }
 
 	var msg = null;	
@@ -681,7 +676,7 @@ function(offset, limit, foldersToOmit) {
 		var end = (offset + limit > numMsgs) ? numMsgs : offset + limit;
 		var list = this.getArray();
 		for (var i = offset; i < end; i++) {
-			if (!(foldersToOmit && list[i].folderId && foldersToOmit[list[i].folderId]) && list[i].inHitList) {
+			if (list[i].inHitList) {
 				msg = list[i];
 				break;
 			}
@@ -773,77 +768,38 @@ function(items, sortBy, event, details) {
 	}
 };
 
-ZmMailList.prototype._isItemInSpecialFolder =
-function(item) {
-//	if (item.folderId) { //case of one message in conv, even if not loaded yet, we know the folder.
-//		return ZmMailList._SPECIAL_FOLDERS_HASH[item.folderId];
-//	}
-	var msgs = item.msgs;
-	if (!msgs) { //might not be loaded yet. In this case, tough luck - the tcon will be set as usual - based on searched folder, if set
-		return false;
-	}
-	for (var i = 0; i < msgs.size(); i++) {
-		var msg = msgs.get(i);
-		var msgFolderId = msg.folderId;
-		if (!ZmMailList._SPECIAL_FOLDERS_HASH[msgFolderId]) {
-			return false;
-		}
-	}
-	return true;
-};
-
 ZmMailList.prototype._getTcon =
-function(items, nFromFolderId) {
-
-	//if all items are in a special folder (draft/trash/spam/sent) - then just allow the move without any restriction
-	var allItemsSpecial = true;
-	for (var i = 0; i < items.length; i++) {
-		if (!this._isItemInSpecialFolder(items[i])) {
-			allItemsSpecial = false;
-			break;
-		}
-	}
-
-	if (allItemsSpecial) {
-		return "";
-	}
-
-	var fromFolder;
-	if (nFromFolderId) {
-		fromFolder = appCtxt.getById(nFromFolderId);
-	}
-	else {
-		fromFolder = this.search && appCtxt.getById(this.search.folderId);
+function(items, nId) {
+	var chars = [];
+	var folders = [ZmFolder.ID_DRAFTS, ZmFolder.ID_TRASH, ZmFolder.ID_SPAM, ZmFolder.ID_SENT];
+    var id;
+    if(!nId){
+        var searchFolder = this.search && appCtxt.getById(this.search.folderId);
+        if(searchFolder){
+            nId = searchFolder.isRemote() ? searchFolder.rid : searchFolder.nId;
+            id = searchFolder.id;
+        }
     }
 
-	var tcon = [];
-	for (i = 0; i < ZmMailList._SPECIAL_FOLDERS.length; i++) {
-		var specialFolderId = ZmMailList._SPECIAL_FOLDERS[i];
-		if (!fromFolder) {
-			tcon.push(ZmFolder.TCON_CODE[specialFolderId]);
-			continue;
-		}
-		if (fromFolder.id == specialFolderId) {
-			continue; //we're moving out of the special folder - allow  items under it
-		}
-        var specialFolder;
+	for (var i = 0; i < folders.length; i++) {
+		var folderId = folders[i];
+        var folder;
         // get folder object from qualified Ids for multi-account
         if (appCtxt.multiAccounts) {
             var acct  = items && items[0].getAccount && items[0].getAccount();
             var acctId = acct ? acct.id : appCtxt.getActiveAccount().id;
-			var fId = [acctId, ":", specialFolderId].join("");
-			specialFolder = appCtxt.getById(fId);
+            var fId = [acctId, ":", folderId].join("");
+            folder = appCtxt.getById(fId);
+        } else {
+            folder = appCtxt.getById(folderId);
         }
-		else {
-            specialFolder = appCtxt.getById(specialFolderId);
-        }
-
-		if (!fromFolder.isChildOf(specialFolder)) {
-			//if origin folder (searched folder) not descendant of the special folder - add the tcon code - don't move items from under the special folder.
-			tcon.push(ZmFolder.TCON_CODE[specialFolderId]);
+        var nFolder = (id) ? appCtxt.getById(id) : appCtxt.getById(nId);
+        // if nId is undefined send the default tcon [-tjs].
+		if (!nId || (nId != folderId && folder && nFolder && !nFolder.isChildOf(folder))) {
+			chars.push(ZmFolder.TCON_CODE[folderId]);
 		}
 	}
-	return (tcon.length) ?  ("-" + tcon.join("")) : "";
+	return (chars.length) ?  ("-" + chars.join("")) : "";
 };
 
 // If this list is the result of a search that is constrained by the read

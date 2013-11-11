@@ -80,25 +80,21 @@
  * # Loading data from a server
  *
  * We often want to load data from our server or some other web service so that we don't have to hard code it all
- * locally. Let's say we want to load some horror movies from Rotten Tomatoes into a DataView, and for each one
- * render the cover image and title. To do this all we have to do is grab an api key from rotten tomatoes (http://developer.rottentomatoes.com/)
- * and modify the {@link #store} and {@link #itemTpl} a little:
+ * locally. Let's say we want to load all of the latest tweets about Sencha Touch into a DataView, and for each one
+ * render the user's profile picture, user name and tweet message. To do this all we have to do is modify the
+ * {@link #store} and {@link #itemTpl} a little:
  *
  *     @example portrait
  *     Ext.create('Ext.DataView', {
  *         fullscreen: true,
+ *         cls: 'twitterView',
  *         store: {
  *             autoLoad: true,
- *             fields: ['id', 'title',
- *              {
- *                  name:'thumbnail_image',
- *                  convert: function(v, record) {return record.raw.posters.thumbnail; }
- *              }],
+ *             fields: ['from_user', 'text', 'profile_image_url'],
  *
  *             proxy: {
  *                 type: 'jsonp',
- *                 // Modify this line with your API key, pretty please...
- *                 url: 'http://api.rottentomatoes.com/api/public/v1.0/movies.json?apikey=hbjgfgryw8tygxztr5wtag3u&q=Horror',
+ *                 url: 'http://search.twitter.com/search.json?q=Sencha Touch',
  *
  *                 reader: {
  *                     type: 'json',
@@ -107,7 +103,7 @@
  *             }
  *         },
  *
- *         itemTpl: '<img src="{thumbnail_image}" /><p>{title}</p><div style="clear: both"></div>'
+ *         itemTpl: '<img src="{profile_image_url}" /><h2>{from_user}</h2><p>{text}</p><div style="clear: both"></div>'
  *     });
  *
  * The Store no longer has hard coded data, instead we've provided a {@link Ext.data.proxy.Proxy Proxy}, which fetches
@@ -378,7 +374,7 @@ Ext.define('Ext.dataview.DataView', {
         pressedDelay: 100,
 
         /**
-         * @cfg {String/Boolean} loadingText
+         * @cfg {String} loadingText
          * A string to display during data load operations.  If specified, this text will be
          * displayed in a loading div and the view's contents will be cleared while loading, otherwise the view's
          * contents will continue to display normally until the new data is loaded and the contents are replaced.
@@ -477,8 +473,7 @@ Ext.define('Ext.dataview.DataView', {
     initialize: function() {
         this.callParent();
         var me = this,
-            container,
-            triggerEvent = me.getTriggerEvent();
+            container;
 
         me.on(me.getTriggerCtEvent(), me.onContainerTrigger, me);
 
@@ -487,9 +482,7 @@ Ext.define('Ext.dataview.DataView', {
         }));
         container.dataview = me;
 
-        if (triggerEvent) {
-            me.on(triggerEvent, me.onItemTrigger, me);
-        }
+        me.on(me.getTriggerEvent(), me.onItemTrigger, me);
 
         container.on({
             itemtouchstart: 'onItemTouchStart',
@@ -565,9 +558,7 @@ Ext.define('Ext.dataview.DataView', {
 
     // apply to the selection model to maintain visual UI cues
     onItemTrigger: function(me, index) {
-        if (!this.isDestroyed) {
-            this.selectWithEvent(this.getStore().getAt(index));
-        }
+        this.selectWithEvent(this.getStore().getAt(index));
     },
 
     doAddPressedCls: function(record) {
@@ -1023,8 +1014,8 @@ Ext.define('Ext.dataview.DataView', {
 
     /**
      * @private
-     * @param {Ext.data.Store} store
-     * @param {Array} records
+     * @param store
+     * @param records
      */
     onStoreAdd: function(store, records) {
         if (records) {
@@ -1035,9 +1026,9 @@ Ext.define('Ext.dataview.DataView', {
 
     /**
      * @private
-     * @param {Ext.data.Store} store
-     * @param {Array} records
-     * @param {Array} indices
+     * @param store
+     * @param records
+     * @param indices
      */
     onStoreRemove: function(store, records, indices) {
         var container = this.container,
@@ -1050,15 +1041,14 @@ Ext.define('Ext.dataview.DataView', {
 
     /**
      * @private
-     * @param {Ext.data.Store} store
-     * @param {Ext.data.Model} record
+     * @param store
+     * @param record
      * @param {Number} newIndex
      * @param {Number} oldIndex
      */
     onStoreUpdate: function(store, record, newIndex, oldIndex) {
         var me = this,
-            container = me.container,
-            item;
+            container = me.container;
 
         oldIndex = (typeof oldIndex === 'undefined') ? newIndex : oldIndex;
 
@@ -1069,11 +1059,8 @@ Ext.define('Ext.dataview.DataView', {
             }
         }
         else {
-            item = me.getViewItems()[newIndex];
-            if (item) {
-                // Bypassing setter because sometimes we pass the same record (different data)
-                container.updateListItem(record, item);
-            }
+            // Bypassing setter because sometimes we pass the same record (different data)
+            container.updateListItem(record, me.getViewItems()[newIndex]);
         }
     }
     //<deprecated product=touch since=2.0>

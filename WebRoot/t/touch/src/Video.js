@@ -42,7 +42,7 @@ Ext.define('Ext.Video', {
 
     config: {
         /**
-         * @cfg {String/Array} url
+         * @cfg {String/Array} urls
          * Location of the video to play. This should be in H.264 format and in a .mov file format.
          * @accessor
          */

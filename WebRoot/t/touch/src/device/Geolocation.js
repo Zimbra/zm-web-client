@@ -1,3 +1,17 @@
+/*
+ * ***** BEGIN LICENSE BLOCK *****
+ * Zimbra Collaboration Suite Web Client
+ * Copyright (C) 2013 Zimbra Software, LLC.
+ * 
+ * The contents of this file are subject to the Zimbra Public License
+ * Version 1.4 ("License"); you may not use this file except in
+ * compliance with the License.  You may obtain a copy of the License at
+ * http://www.zimbra.com/license.
+ * 
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * ***** END LICENSE BLOCK *****
+ */
 /**
  * Provides access to the native Geolocation API when running on a device. There are three implementations of this API:
  *
@@ -41,21 +55,18 @@ Ext.define('Ext.device.Geolocation', {
 
     requires: [
         'Ext.device.Communicator',
-        'Ext.device.geolocation.Cordova',
         'Ext.device.geolocation.Sencha',
         'Ext.device.geolocation.Simulator'
     ],
 
     constructor: function() {
         var browserEnv = Ext.browser.is;
-        if (browserEnv.WebView) {
-            if (browserEnv.Cordova) {
-                return Ext.create('Ext.device.geolocation.Cordova');
-            } else if (browserEnv.Sencha) {
-                return Ext.create('Ext.device.geolocation.Sencha');
-            }
-        }
 
-        return Ext.create('Ext.device.geolocation.Simulator');
+        if (browserEnv.WebView && browserEnv.Sencha) {
+            return Ext.create('Ext.device.geolocation.Sencha');
+        }
+        else {
+            return Ext.create('Ext.device.geolocation.Simulator');
+        }
     }
 });

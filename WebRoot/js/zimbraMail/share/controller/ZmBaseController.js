@@ -168,6 +168,11 @@ function(actionCode, ev) {
 
 	switch (actionCode) {
 
+		case ZmKeyMap.FLAG:
+            if (isExternalAccount) { break; }
+			this._doFlag(this.getItems());
+			break;
+
 		case ZmKeyMap.MOVE:
             if (isExternalAccount) { break; }
 			if (!appCtxt.isChildWindow) {
@@ -216,7 +221,7 @@ function() {
 
 ZmBaseController.prototype.supportsDnD =
 function() {
-	return !appCtxt.isExternalAccount();
+	return !(this.isSearchResults || appCtxt.isExternalAccount());
 };
 
 // abstract protected methods
@@ -290,8 +295,8 @@ function(view, className) {
 	if (this._toolbar[view]) { return; }
 
 	var buttons = this._getToolBarOps();
-	var secondaryButtons = this._getSecondaryToolBarOps() || [];
-	var rightSideButtons = this._getRightSideToolBarOps() || [];
+	var secondaryButtons = this._getSecondaryToolBarOps();
+	var rightSideButtons = this._getRightSideToolBarOps();
 	if (!(buttons || secondaryButtons)) { return; }
 
 	var tbParams = {
@@ -299,7 +304,6 @@ function(view, className) {
 		buttons:			buttons,
 		secondaryButtons:	secondaryButtons,
 		rightSideButtons: 	rightSideButtons,
-		overrides:          this._getButtonOverrides(buttons.concat(secondaryButtons).concat(rightSideButtons)),
 		context:			view,
 		controller:			this,
 		refElementId:		ZmId.SKIN_APP_TOP_TOOLBAR,
@@ -342,8 +346,6 @@ function(view, className) {
 
 	appCtxt.notifyZimlets("initializeToolbar", [this._app, tb, this, view], {waitUntilLoaded:true});
 };
-
-ZmBaseController.prototype._getButtonOverrides = function(buttons) {};
 
 /**
  * Initializes the view and its listeners.
@@ -504,13 +506,6 @@ function(ev, items) {
 		var tagEvent = menuItem.getData(ZmTagMenu.KEY_TAG_EVENT);
 		var tagAdded = menuItem.getData(ZmTagMenu.KEY_TAG_ADDED);
 		items = items || this.getItems();
-
-		for (var i=0; i<items.length; i++) {
-			if (items[i].cloneOf) {
-				items[i] = items[i].cloneOf;
-			}
-		}
-
 		if (tagEvent == ZmEvent.E_TAGS && tagAdded) {
 			this._doTag(items, menuItem.getData(Dwt.KEY_OBJECT), true);
 		} else if (tagEvent == ZmEvent.E_CREATE) {
@@ -639,7 +634,6 @@ function(dlg) {
 		title:			this._getMoveDialogTitle(this._pendingActionData.length, this._pendingActionData),
 		description:	ZmMsg.targetFolder,
 		treeStyle:		DwtTree.SINGLE_STYLE,
-		noRootSelect: 	true, //I don't think you can ever use the "move" dialog to move anything to a root folder... am I wrong?
 		appName:		this._app._name
 	};
 };
@@ -766,13 +760,12 @@ function(items, on) {
 	}
 
 	var params = {items:items1, op:"flag", value:on};
-    params.actionTextKey = on ? 'actionFlag' : 'actionUnflag';
+    params.actionText = on ? ZmMsg.actionFlag : ZmMsg.actionUnflag;
 	var list = params.list = this._getList(params.items);
 	this._setupContinuation(this._doFlag, [on], params);
 	list.flagItems(params);
 };
 
-// TODO: shouldn't this be in ZmMailItemController?
 ZmBaseController.prototype._doMsgPriority = 
 function(items, on) {
 	items = AjxUtil.toArray(items);
@@ -793,7 +786,7 @@ function(items, on) {
 	}
 
 	var params = {items:items1, op:"priority", value:on};
-    params.actionTextKey = on ? 'actionMsgPriority' : 'actionUnMsgPriority';
+    params.actionText = on ? ZmMsg.actionMsgPriority : ZmMsg.actionUnMsgPriority; 
 	var list = params.list = this._getList(params.items);
 	this._setupContinuation(this._doMsgPriority, [on], params);
 	list.flagItems(params);	
@@ -1082,12 +1075,6 @@ function(parent, items) {
 
 		// dynamically build tag menu add/remove lists
 		items = items || AjxUtil.toArray(this.getItems());
-
-		for (var i=0; i<items.length; i++) {
-			if (items[i].cloneOf) {
-				items[i] = items[i].cloneOf;
-			}
-		}
 
 		var account = (appCtxt.multiAccounts && items.length == 1) ? items[0].getAccount() : null;
 

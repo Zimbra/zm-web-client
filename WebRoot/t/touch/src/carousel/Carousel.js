@@ -479,9 +479,7 @@ Ext.define('Ext.carousel.Carousel', {
     setOffset: function(offset) {
         this.offset = offset;
 
-        if (Ext.isNumber(this.itemOffset)) {
-            this.getTranslatable().translateAxis(this.currentAxis, offset + this.itemOffset);
-        }
+        this.getTranslatable().translateAxis(this.currentAxis, offset + this.itemOffset);
 
         return this;
     },

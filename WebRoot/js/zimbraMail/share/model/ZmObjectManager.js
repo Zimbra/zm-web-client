@@ -53,7 +53,7 @@ ZmObjectManager = function(view, selectCallback, skipHandlers) {
     this.sortHandlers();
 	this.reset();
 	this.setView(view);
-};
+}
 
 ZmObjectManager._TOOLTIP_DELAY = 275;
 
@@ -449,12 +449,12 @@ ZmObjectManager.prototype.processObjectsInNode = function(doc, node){
 				node = next;
 			}
 
-			// bug 28264: the only workaround possible seems to be
-			// to remove textIndent styles that have a negative value:
-			if (parseFloat(node.style.textIndent) < 0) {
-				node.style.textIndent = "";
-			}
-            for (i = node.firstChild; i; i = recurse(i, handlers)) {}
+                        // bug 28264: the only workaround possible seems to be
+                        // to remove textIndent styles that have a negative value:
+                        if (parseFloat(node.style.textIndent) < 0)
+                                node.style.textIndent = "";
+
+                        for (i = node.firstChild; i; i = recurse(i, handlers));
 			return node.nextSibling;
 
 		    case 3:	// TEXT_NODE
@@ -579,7 +579,7 @@ function(node, re_discard, re_allow, callbacks) {
 				node.style.cssText = node.style.cssText;
 			}
 
-			for (i = node.firstChild; i; i = recurse(i, handlers)) {}
+			for (i = node.firstChild; i; i = recurse(i, handlers));
 			return node.nextSibling;
 
 		    case 3:	// TEXT_NODE
@@ -918,7 +918,7 @@ function(ev) {
 		span.className = object.handler.getClassName(object.object, object.context, span.id);
 		var shell = DwtShell.getShell(window);
 		var manager = shell.getHoverMgr();
-		manager.setHoverOutDelay(150);
+		manager.setHoverOutDelay(0);
 		manager.setHoverOutData(object);
 		manager.setHoverOutListener(this._hoverOutListener);
 		manager.hoverOut();

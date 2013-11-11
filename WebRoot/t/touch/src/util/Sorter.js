@@ -160,7 +160,7 @@ Ext.define('Ext.util.Sorter', {
             value1, value2,
             property = me._property;
 
-        if (root !== null && root !== undefined) {
+        if (root !== null) {
             item1 = item1[root];
             item2 = item2[root];
         }

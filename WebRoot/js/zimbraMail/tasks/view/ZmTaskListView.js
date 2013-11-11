@@ -35,25 +35,11 @@ ZmTaskListView = function(parent, controller, dropTgt) {
     
 	var headerList = this._getHeaderList(parent);
 
-	var idParams = {
-		skinComponent:  ZmId.SKIN_APP_MAIN,
-		app:            ZmId.APP_TASKS,
-		componentType:  ZmId.WIDGET_VIEW,
-		componentName:  ZmId.VIEW_TASKLIST
-	};
-    var params = {
-	    parent:     parent,
-        posStyle:   Dwt.ABSOLUTE_STYLE,
-	    view:       ZmId.VIEW_TASKLIST,
-	    id:         ZmId.create(idParams, "The main task list view"),
-	    pageless:   false,
-		type:       ZmItem.TASK,
-	    controller: controller,
-	    headerList: headerList,
-	    dropTgt:    dropTgt
-    };
+    var params = {parent:parent, posStyle:Dwt.ABSOLUTE_STYLE, view:ZmId.VIEW_TASKLIST, pageless:false,
+				  type:ZmItem.TASK, controller:controller, headerList:headerList, dropTgt:dropTgt}
 
 	ZmListView.call(this, params);
+
 };
 
 ZmTaskListView.prototype = new ZmListView;
@@ -471,14 +457,12 @@ function(task, colIdx) {
 	htmlArr[idx++] = "</tr></table>";
 
     // second row
-    htmlArr[idx++] = "<table width=100% class='BottomRow'><tr><td>";
-	if (task.pComplete) {
-		htmlArr[idx++] = "<div class='ZmTaskProgress'><div";
-		htmlArr[idx++] = " class='";
-		htmlArr[idx++] = this.getColorForStatus(task.status);
-		htmlArr[idx++] = "' style='width:"+ task.pComplete + "%;'></div></div>";
-	}
-    htmlArr[idx++] = "</td><td width=75 align=right><table><tr>";
+    htmlArr[idx++] = "<table width=100% class='BottomRow'><tr>";
+    htmlArr[idx++] = "<td><div style='height:10px; width:80px; border:1px solid #c5c5c5;'><div";
+    htmlArr[idx++] = " class='";
+    htmlArr[idx++] = this.getColorForStatus(task.status);
+    htmlArr[idx++] = "' style='height:10px; width:"+ task.pComplete + "%;'></div></div></td>";
+    htmlArr[idx++] = "<td width=60 align=right><table><tr>";
 
     idx = this._getAbridgedCell(htmlArr, idx, task, ZmItem.F_TAG, colIdx, width);
     if(task.priority == ZmCalItem.PRIORITY_HIGH || task.priority == ZmCalItem.PRIORITY_LOW) {
@@ -750,25 +734,7 @@ function(ev) {
                 }
             } else{
                 var bContained = this._selectedItems.contains(div);
-
-				var today = new Date();
-		        today.setHours(0,0,0,0);
-		        today = today.getTime();
-
-		        var dueDate = task.endDate;
-		        if (dueDate != null) {
-		            dueDate.setHours(0,0,0,0);
-		            dueDate = dueDate.getTime();
-		        }
-
-				var taskStatusClass = this._normalClass;
-				if (task.status == ZmCalendarApp.STATUS_COMP) {
-		           taskStatusClass += " ZmCompletedtask";
-		        } else if (dueDate != null && dueDate < today) {
-		           taskStatusClass += " ZmOverduetask";
-		        }
-
-                this._createItemHtml(task, {div:div, bContained:bContained, divClass:taskStatusClass});
+                this._createItemHtml(task, {div:div, bContained:bContained});
                 this.associateItemWithElement(task, div);
                 if(this._controller.isReadingPaneOn()) {
                     task.message = null;
@@ -987,8 +953,8 @@ function() {
 
 ZmTaskListView.prototype._getPrefSortField =
 function(){
-	var activeSortBy = this.getActiveSearchSortBy();
-	return activeSortBy && ZmTaskListView.SORTBY_HASH[activeSortBy] ?
+var activeSortBy = this.getActiveSearchSortBy();
+return activeSortBy && ZmTaskListView.SORTBY_HASH[activeSortBy] ?
        ZmTaskListView.SORTBY_HASH[activeSortBy].field : ZmItem.F_DATE;
 };
 

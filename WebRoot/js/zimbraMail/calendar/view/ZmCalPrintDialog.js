@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2011, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2011, 2012, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
@@ -535,7 +535,7 @@ function(id) {
 
     this._dateInputField = new DwtInputField(params);
     var timeInputEl = this._dateInputField.getInputElement();
-    Dwt.setSize(timeInputEl, "80px", "2rem");
+    Dwt.setSize(timeInputEl, "80px", "22px");
     timeInputEl.typeId = this.id;
 };
 

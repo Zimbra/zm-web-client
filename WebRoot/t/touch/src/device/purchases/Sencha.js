@@ -54,7 +54,7 @@ Ext.define('Ext.device.purchases.Sencha', {
      *     });
      * 
      * @param {Object} config
-     * @param {Object[]} config.productInfos An array of all products productInfos
+     * @param {Array[]} config.productInfos An array of all products productInfos
      * @param {Function} config.success
      * @param {Ext.data.Store} config.success.store A store of all products available to purchase.
      * @param {Function} config.failure
@@ -115,7 +115,7 @@ Ext.define('Ext.device.purchases.Sencha', {
                     }
 
                     var store = Ext.create('Ext.data.Store', {
-                        model: 'Ext.device.purchases.Purchase',
+                        model: 'Ext.device.Purchases.Purchase',
                         data: purchases
                     });
 
@@ -152,7 +152,7 @@ Ext.define('Ext.device.purchases.Sencha', {
                     }
 
                     var store = Ext.create('Ext.data.Store', {
-                        model: 'Ext.device.purchases.Purchase',
+                        model: 'Ext.device.Purchases.Purchase',
                         data: purchases
                     });
 
@@ -223,7 +223,7 @@ Ext.define('Ext.device.purchases.Sencha', {
     /**
      *
      */
-    Ext.define('Ext.device.purchases.Purchase', {
+    Ext.define('Ext.device.Purchases.Purchase', {
         extend: 'Ext.data.Model',
 
         config: {

@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2011, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2011, 2012, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
@@ -36,10 +36,9 @@ ZmFolderChooser = function(params) {
 	if (arguments.length == 0) { return; }
 	params.className = params.className || "ZmFolderChooser";
 	DwtComposite.call(this, params);
-	var aCtxt = appCtxt.isChildWindow ? parentAppCtxt : appCtxt;
 
 	this._overview = {};
-	this._opc = aCtxt.getOverviewController();
+	this._opc = appCtxt.getOverviewController();
 	this._treeView = {};
 	this._folderTreeDivId = this._htmlElId + "_folderTreeDivId";
 
@@ -152,10 +151,11 @@ function(params) {
 ZmFolderChooser.prototype._setOverview =
 function(params, forceSingle) {
 	params.overviewClass = "menuOverview";
-	params.dynamicWidth = true;
 
 	var overview = ZmDialog.prototype._setOverview.call(this, params, forceSingle); //reuse from ZmDialog
 
+	overview.getHtmlElement().style.overflowX = "hidden"; //must do that or the vertical scrollbar causes a horizontal one to be added as well. might be some better solution to that, but not sure what.
+	
 	if (!appCtxt.multiAccounts || forceSingle) {
 		//this  is needed for some reason
 		this._overview[params.overviewId] = overview;
@@ -171,15 +171,6 @@ ZmFolderChooser.prototype._renderOverview =
 function() {
 	ZmDialog.prototype._renderOverview.apply(this, arguments); //reuse code from ZmDialog
 };
-
-/**
- * delegate to ZmDialog.
- */
-ZmFolderChooser.prototype._setRootSelection =
-function() {
-	ZmDialog.prototype._setRootSelection.apply(this, arguments); //reuse code from ZmDialog
-};
-
 
 /**
  * delegate to ZmDialog. called from ZmDialog.prototype._setOverview (which we delegate to from ZmFolderChooser.prototype._setOverview)

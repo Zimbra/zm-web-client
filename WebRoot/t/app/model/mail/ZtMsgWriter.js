@@ -43,13 +43,13 @@ Ext.define('ZCS.model.mail.ZtMsgWriter', {
 			methodJson = json.Body.SearchConvRequest;
 
 			var curFolder = ZCS.session.getCurrentSearchOrganizer(),
-				curFolderId = curFolder && curFolder.get('zcsId'),
+				curFolderId = curFolder && curFolder.get('itemId'),
 				fetch = (curFolderId === ZCS.constant.ID_DRAFTS) ? 'all' : 'u1';
 
 			Ext.apply(methodJson, {
 				cid:    convId,
 				fetch:  fetch,
-				sortBy: ZCS.constant.DATE_DESC,
+				sortBy: 'dateDesc',
 				offset: 0,
 				limit:  100,
 				recip:  '2',
@@ -160,7 +160,6 @@ Ext.define('ZCS.model.mail.ZtMsgWriter', {
 						read:       '1',
 						html:       '1',
 						needExp:    '1',
-                        ridZ:       itemData.apptView ? itemData.ridZ : '',
 						max:        itemData.noMax ? 0 : ZCS.constant.MAX_MESSAGE_SIZE * 1000,
 						header:     ZCS.constant.ADDITIONAL_MAIL_HEADERS
 					}

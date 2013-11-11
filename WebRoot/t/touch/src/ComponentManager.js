@@ -32,10 +32,9 @@ Ext.define('Ext.ComponentManager', {
                     id;
 
                 for (id in map) {
-                    if (map.hasOwnProperty(id)) {
-                        list.push(map[id]);
-                    }
+                    list.push(map[id]);
                 }
+
                 return list;
             }
         };

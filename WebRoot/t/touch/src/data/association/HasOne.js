@@ -277,13 +277,9 @@ Ext.define('Ext.data.association.HasOne', {
 
             this.set(foreignKey, value);
 
-            if (value || value === 0) {
-                record = Model.cache[Model.generateCacheId(associatedModel.modelName, value)];
-                if (record) {
-                    this[instanceName] = record;
-                }
-            } else {
-                delete this[instanceName];
+            record = Model.cache[Model.generateCacheId(associatedModel.modelName, value)];
+            if (record) {
+                this[instanceName] = record;
             }
 
             if (Ext.isFunction(options)) {
@@ -334,7 +330,7 @@ Ext.define('Ext.data.association.HasOne', {
                 options.success = function(rec){
                     model[instanceName] = rec;
                     if (success) {
-                        success.apply(this, arguments);
+                        success.call(this, arguments);
                     }
                 };
 
@@ -365,7 +361,7 @@ Ext.define('Ext.data.association.HasOne', {
         var inverse = this.getInverseAssociation(),
             newRecord = reader.read([associationData]).getRecords()[0];
 
-        record[this.getSetterName()].call(record, newRecord);
+        record[this.getInstanceName()] = newRecord;
 
         //if the inverse association was found, set it now on each record we've just created
         if (inverse) {

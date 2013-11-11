@@ -74,21 +74,15 @@ Ext.define('Ext.Panel', {
     },
 
     getElementConfig: function() {
-        return {
-            reference: 'element',
-            classList: ['x-container', 'x-unsized'],
-            children: [
-                {
-                    reference: 'innerElement',
-                    className: 'x-inner'
-                },
-                {
-                    reference: 'tipElement',
-                    className: 'x-anchor',
-                    hidden: true
-                }
-            ]
-        };
+        var config = this.callParent();
+
+        config.children.push({
+            reference: 'tipElement',
+            className: 'x-anchor',
+            hidden: true
+        });
+
+        return config;
     },
 
     applyBodyPadding: function(bodyPadding) {
@@ -139,9 +133,7 @@ Ext.define('Ext.Panel', {
         this.element.setStyle('border-width', newBodyBorder);
     },
 
-    alignTo: function(component, alignment) {
-        var alignmentInfo = this.getAlignmentInfo(component, alignment);
-        if(alignmentInfo.isAligned) return;
+    alignTo: function(component) {
         var tipElement = this.tipElement;
 
         tipElement.hide();
