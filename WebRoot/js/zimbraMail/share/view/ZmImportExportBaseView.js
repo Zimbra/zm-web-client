@@ -188,6 +188,7 @@ ZmImportExportBaseView.prototype._folderButton_onclick = function() {
 		skipReadOnly:	true,
 		omit:			{},
 		forceSingle:	true,
+		showDrafts:		(this instanceof ZmExportView),
 		hideNewButton:	(this instanceof ZmExportView)
 	};
 	params.omit[ZmOrganizer.ID_TRASH] = true;
