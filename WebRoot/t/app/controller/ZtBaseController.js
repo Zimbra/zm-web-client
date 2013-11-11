@@ -40,7 +40,8 @@ Ext.define('ZCS.controller.ZtBaseController', {
 	},
 
 	/**
-	 * Returns a string that represents he name of the current organizer.
+	 * Returns a string that represents the name of the current organizer, or just
+	 * "Search Results" if there is none.
 	 *
 	 * @param {String}      defaultText     text to use if there is no name
 	 * @param {Boolean}     showCount       if true, show number of items
@@ -50,7 +51,7 @@ Ext.define('ZCS.controller.ZtBaseController', {
 	 */
 	getOrganizerTitle: function(defaultText, showCount, app) {
 
-		defaultText = defaultText || ZtMsg.searchResults;
+		defaultText = defaultText || ZCS.constant.DEFAULT_OVERVIEW_TITLE;
 		var	organizer = ZCS.session.getCurrentSearchOrganizer(app);
 		return organizer ? organizer.getTitle(defaultText, showCount) : defaultText;
 	},

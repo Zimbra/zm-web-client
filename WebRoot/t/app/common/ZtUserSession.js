@@ -31,16 +31,17 @@ Ext.define('ZCS.common.ZtUserSession', {
 	],
 
 	config: {
-		sessionId:              null,       // User session ID, created by server
-		notifySeq:              0,          // Help server track which notifications we have gotten
-		changeToken:            null,       // Used to prevent race conditions during item modification
+		sessionId:              null,           // User session ID, created by server
+		notifySeq:              0,              // Help server track which notifications we have gotten
+		changeToken:            null,           // Used to prevent race conditions during item modification
 		accountName:            '',
 		accountId:              '',
 		initialSearchResults:   null,
 		debugLevel:             '',
-		organizerRoot:          null,       // Root for canonical tree of organizers (unsorted)
+		organizerRoot:          null,           // Root for canonical tree of organizers (unsorted)
 		activeApp:              '',
-		version:                '[unknown]'
+		version:                '[unknown]',
+		lastSearchOrganizer:    null            // Last organizer (folder/saved search/tag) visited
 	},
 
 	/**
@@ -497,7 +498,12 @@ Ext.define('ZCS.common.ZtUserSession', {
 				orgId = search && search.getOrganizerId();
 		}
 
-		return orgId ? ZCS.cache.get(orgId) : null;
+		var organizer = orgId ? ZCS.cache.get(orgId) : null;
+		if (organizer) {
+			this.setLastSearchOrganizer(organizer);
+		}
+
+		return organizer;
 	},
 
 	/**

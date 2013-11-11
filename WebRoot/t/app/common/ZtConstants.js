@@ -94,6 +94,9 @@ ZCS.constant.TAB_TITLE[ZCS.constant.APP_MAIL]       = ZtMsg.mail;
 ZCS.constant.TAB_TITLE[ZCS.constant.APP_CONTACTS]   = ZtMsg.contacts;
 ZCS.constant.TAB_TITLE[ZCS.constant.APP_CALENDAR]   = ZtMsg.calendar;
 
+// Text to show in overview toolbar if we're showing search results (not a folder, saved search, or tag)
+ZCS.constant.DEFAULT_OVERVIEW_TITLE = ZtMsg.searchResults;
+
 // Title to show in overview
 ZCS.constant.OVERVIEW_TITLE = {};
 ZCS.constant.OVERVIEW_TITLE[ZCS.constant.APP_MAIL]       = ZtMsg.folders;

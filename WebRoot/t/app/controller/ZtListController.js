@@ -116,9 +116,18 @@ Ext.define('ZCS.controller.ZtListController', {
 	 * @param {boolean}     show        if true, show the overview
 	 */
 	doShowFolders: function(show) {
-		//TODO: consider removing control of this to the app view controller...
-		//      only downside is not being able to differentiate between apps at that point
-		ZCS.app.fireEvent('showOverviewPanel');
+
+		var curFolder = ZCS.session.getCurrentSearchOrganizer(),
+			lastFolder = ZCS.session.getLastSearchOrganizer();
+
+		if (!curFolder && lastFolder) {
+			// user is looking at search results, tapped the Back button - show last organizer visited
+			this.doSearch(lastFolder.getQuery(), lastFolder);
+		}
+		else {
+			// user is looking at organizer contents, show the overview
+			ZCS.app.fireEvent('showOverviewPanel');
+		}
 	},
 
 	/**
@@ -229,7 +238,14 @@ Ext.define('ZCS.controller.ZtListController', {
 			return;
 		}
 
-		titlebar.setTitle(this.getOrganizerTitle(null, true, app));
+		// If the user is looking at an organizer, show a menu icon to go to overview.
+		// If the user is looking at search results, show a back button to go to last organizer.
+		var orgTitle = this.getOrganizerTitle(null, true, app),
+			curFolder = ZCS.session.getCurrentSearchOrganizer(),
+			navButtonIcon = curFolder ? 'organizer' : 'back';
+
+		titlebar.down('button').setIconCls(navButtonIcon);
+		titlebar.setTitle(orgTitle);
 	},
 
 	removeItem: function(item, isSwipeDelete) {
