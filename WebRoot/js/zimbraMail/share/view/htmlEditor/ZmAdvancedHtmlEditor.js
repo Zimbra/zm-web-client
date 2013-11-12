@@ -36,7 +36,6 @@ ZmAdvancedHtmlEditor = function() {
 	this.isTinyMCE = window.isTinyMCE;
 	this._mode = params.mode;
 	this._hasFocus = {};
-    this.isSignatureEditor = params.parent.isSignatureEditor;
     this._bodyTextAreaId = params.textAreaId;
 	this._attachmentCallback = params.attachmentCallback;
 	this.initTinyMCEEditor(params);
@@ -887,19 +886,6 @@ ZmAdvancedHtmlEditor.prototype.onBeforeInsertImage = function(ed, cmd, ui, val, 
     if (element && element.nodeName === "IMG") {
         element.setAttribute("data-mce-src", element.src);
         element.setAttribute("data-mce-zsrc", element.src);//To find out whether src is modified or not set a dummy attribute
-    }
-    else {
-        if (this.isSignatureEditor) {
-            ZmSignatureEditor.prototype._insertImagesListener.call(this);
-            o.terminate = true; //This will terminate tinymce from executing this command
-        }
-        else {
-            var view = this.getParent();
-            if (view && view.toString() === "ZmComposeView") {
-                view.getController()._attachmentListener(true);
-                o.terminate = true;
-            }
-        }
     }
 };
 

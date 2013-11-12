@@ -675,6 +675,16 @@ function(ev) {
 	this._resetOperations();
 };
 
+ZmSignaturesPage.prototype._insertImagesListener =
+function(ev) {
+	AjxDispatcher.require("BriefcaseCore");
+	appCtxt.getApp(ZmApp.BRIEFCASE)._createDeferredFolders();
+	var callback = this._sigEditor._imageUploaded.bind(this._sigEditor);
+	var cFolder = appCtxt.getById(ZmOrganizer.ID_BRIEFCASE);
+	var dialog = appCtxt.getUploadDialog();
+	dialog.popup(cFolder,callback, ZmMsg.uploadImage, null, true);
+};
+
 // Updates name and format of selected sig based on form fields
 ZmSignaturesPage.prototype._updateSignature =
 function(select) {
@@ -1197,7 +1207,7 @@ function(tb) {
 	var button = new DwtToolBarButton({parent:tb});
 	button.setImage("InsertImage");
 	button.setToolTipContent(ZmMsg.insertImage);
-	button.addSelectionListener(new AjxListener(this, this._insertImagesListener));
+	button.addSelectionListener(new AjxListener(this.parent, this.parent._insertImagesListener));
 };
 
 ZmSignatureEditor.prototype._createUrlImageButton =
@@ -1211,16 +1221,6 @@ function(tb) {
 ZmSignatureEditor.prototype._insertUrlImagesListener =
 function(ev) {
 	this._getImgSelDlg().popup();
-};
-
-ZmSignatureEditor.prototype._insertImagesListener =
-function(ev) {
-	AjxDispatcher.require("BriefcaseCore");
-    appCtxt.getApp(ZmApp.BRIEFCASE)._createDeferredFolders();
-	var callback = new AjxCallback(this, this._imageUploaded);
-	var cFolder = appCtxt.getById(ZmOrganizer.ID_BRIEFCASE);
-	var dialog = appCtxt.getUploadDialog();
-	dialog.popup(cFolder,callback, ZmMsg.uploadImage, null, true);
 };
 
 ZmSignatureEditor.prototype._imageUploaded =
