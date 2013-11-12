@@ -309,12 +309,8 @@ function(ev) {
 			}
 		}
 		if (needsSort) {
-			var col = Dwt.byId(this._currentColId);
-			var hdr = (col && this.getItemFromElement(col)) || (this._headerHash && this._headerHash[ZmItem.F_SORTED_BY]) || null;
-			if (hdr) {
-				this._saveState({scroll:true,selection:true,focus:true});
-				this._sortColumn(hdr, this._bSortAsc, new AjxCallback(this, this._restoreState));
-			}
+			this._saveState({scroll: true, selection:true, focus: true});
+			this._redoSearch(this._restoreState.bind(this, this._state));
 		}
 		if (ev.batchMode) {
 			this._fixAlternation(0);
@@ -1247,6 +1243,21 @@ function(id, field) {
 	return (!this._disallowSelection[field]);
 };
 
+ZmListView.prototype._redoSearch =
+function(callback) {
+	var search = this._controller._currentSearch;
+	if (!search) {
+		return;
+	}
+	var sel = this.getSelection();
+	var selItem = sel && sel[0];
+	var changes = {
+		isRedo: true,
+		selectedItem: selItem
+	};
+	appCtxt.getSearchController().redoSearch(search, false, changes, callback);
+};
+
 ZmListView.prototype._sortColumn =
 function(columnItem, bSortAsc, callback) {
 	// change the sort preference for this view in the settings
@@ -1496,9 +1507,9 @@ function(params) {
 };
 
 ZmListView.prototype._restoreState =
-function() {
+function(state) {
 
-	var s = this._state;
+	var s = state || this._state;
 	if (s.selected && s.selected.length) {
 		var dontCheck = s.selected.length == 1 && !s.singleItemChecked;
 		this.setSelectedItems(s.selected, dontCheck);

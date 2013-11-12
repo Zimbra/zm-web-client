@@ -1247,9 +1247,9 @@ function(params) {
 };
 
 ZmConvListView.prototype._restoreState =
-function() {
+function(state) {
 
-	var s = this._state;
+	var s = state || this._state;
 	if (s.expanded) {
 		for (var id in s.expanded) {
 			if (s.expanded[id]) {

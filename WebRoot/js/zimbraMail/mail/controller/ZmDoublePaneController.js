@@ -78,7 +78,8 @@ function(results, mailList, callback, markRead) {
 	// if search was run as a result of a <refresh> block rather than by the user, preserve
 	// what's in the reading pane as long as it's still in the list of results
 	var s = results && results.search;
-	var refreshSelItem = (s && s.isRefresh && mlv && mlv.hasItem(s.selectedItem) && s.selectedItem);
+	var isRefresh = s && (s.isRefresh || s.isRedo);
+	var refreshSelItem = (isRefresh && mlv && mlv.hasItem(s.selectedItem) && s.selectedItem);
 	if (this._doublePaneView) {
 		if (!refreshSelItem) {
 			this._doublePaneView._itemView.reset();
@@ -93,6 +94,7 @@ function(results, mailList, callback, markRead) {
 
 	if (refreshSelItem) {
 		mlv.setSelection(refreshSelItem, true);
+		this._resetOperations(this._toolbar[this._currentViewId], 1)
 	}
 	else {
 		var dpv = this._doublePaneView;
