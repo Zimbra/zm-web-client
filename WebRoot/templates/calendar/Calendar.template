@@ -73,7 +73,7 @@
     <$ if (data.peelIcon) { $>
         <td id='${id}_peel' width=12 valign="top">
             <$= AjxImg.getImageHtml('PeelSpacer', "width:12") $>
-            <div style='position:absolute;z-index:1;top:${peelTop};right:${peelRight};'>
+            <div style='position:absolute;z-index:1;top:${peelTop}px;right:${peelRight}px;'>
                 <$= AjxImg.getImageHtml(data.peelIcon, "width:12") $>
             </div>
         </td>
