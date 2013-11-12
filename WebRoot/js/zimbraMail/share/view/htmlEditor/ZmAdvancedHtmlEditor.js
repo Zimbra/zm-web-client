@@ -669,7 +669,7 @@ function(id, content) {
 		'outdent indent |',
 		'justifyleft justifycenter justifyright |',
 		this._attachmentCallback ? 'zimage' : 'image',
-		'link unlink emoticons |',
+		'link unlink zemoticons |',
 		appCtxt.get(ZmSetting.SHOW_COMPOSE_DIRECTION_BUTTONS) ? 'ltr rtl |' : '',
 		'formatselect undo redo |',
 		'removeformat |',
@@ -679,7 +679,7 @@ function(id, content) {
 	];
 
 	var plugins = [
-		"table", "paste", "directionality", "emoticons", "textcolor",
+		"table", "paste", "directionality", "zemoticons", "textcolor",
 		"link", "hr", "charmap", "contextmenu"
 	];
 

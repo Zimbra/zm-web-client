@@ -1639,6 +1639,7 @@ if (ext == null) ext = "";
     <target name="tinymce">
         <copy todir='${tinymce.dir}' verbose='${sync.verbose}'>
             <fileset dir='${web.dir}/tiny_mce/${tinymce.version}' />
+            <fileset dir='${web.dir}/tiny_mce/custom' />
             <scriptmapper language="javascript">
                 // replace dots with underscores in JS file names, retaining the suffix
                 if (/\.js$/.test(source)) {
@@ -1655,7 +1656,8 @@ if (ext == null) ext = "";
                  dir="${web.dir}/tiny_mce/${tinymce.version}/langs"
                  includes="*.js"/>
 
-        <uptodate targetfile="${tinymce.locale.file}" property="tinymce.uptodate">
+        <uptodate targetfile="${tinymce.locale.file}"
+		          property="tinymce.locales.uptodate">
             <srcresources>
                 <fileset refid="tinymce.locales.ref" />
             </srcresources>
@@ -1663,7 +1665,7 @@ if (ext == null) ext = "";
 
         <if>
             <not>
-                <equals arg1="${tinymce.uptodate}" arg2="true" />
+                <equals arg1="${tinymce.locales.uptodate}" arg2="true" />
             </not>
             <then>
                 <echo message="Generating ${tinymce.locale.file}" />
@@ -1677,6 +1679,79 @@ if (ext == null) ext = "";
                 <echo file="${tinymce.dir}/locales.js"
                       message='tinyMCE.locale_list = [ "${tinymce.locales}" ];'
                       />
+            </then>
+        </if>
+
+        <!-- generate a mapping of emoticons to their image data -->
+        <property name="tinymce.emoticon.file" value="${tinymce.dir}/plugins/zemoticons/data.js"/>
+
+        <fileset id="tinymce.emoticons.ref"
+                 dir="${web.dir}/tiny_mce/${tinymce.version}/plugins/emoticons/img"/>
+
+        <uptodate targetfile="${tinymce.emoticon.file}"
+                  property="tinymce.emoticons.uptodate">
+            <srcresources>
+                <fileset refid="tinymce.emoticons.ref" />
+            </srcresources>
+        </uptodate>
+
+        <if>
+            <not>
+                <equals arg1="${tinymce.emoticons.uptodate}" arg2="true" />
+            </not>
+            <then>
+                <echo message="Generating ${tinymce.emoticon.file}" />
+
+                <script language="javascript">
+                    importClass(org.apache.tools.ant.util.Base64Converter);
+                    importClass(java.nio.charset.StandardCharsets);
+                    importClass(java.nio.file.Files);
+                    importClass(java.nio.file.Paths);
+                    importClass(java.nio.file.StandardOpenOption);
+
+                    var conv = new Base64Converter();
+                    var filename_patt = /smiley-(.*)\.(\w+)/;
+
+                    var mimemap = {
+                        gif: 'image/gif',
+                        png: 'image/png',
+                        jpg: 'image/jpeg',
+                    };
+
+                    var emoticons =
+                        self.getProject().getReference("tinymce.emoticons.ref");
+                    var dstfile =
+                        self.getProject().getProperty("tinymce.emoticon.file");
+                    var iter = emoticons.iterator();
+
+                    // build up a map of emoticon name -> image data URI
+                    var map = {};
+
+                    while (iter.hasNext()) {
+                        var path = iter.next().getFile().toPath();
+                        var match =
+                            String(path.getFileName()).match(filename_patt);
+
+                        var data = conv.encode(Files.readAllBytes(path));
+                        var name = match[1];
+                        var type = mimemap[match[2]];
+
+                        map[name] =
+                            String(java.lang.String.format("data:%s;base64,%s",
+                                                           type, data));
+                    }
+
+                    // write it to disk as a loadable JavaScript source file
+                    writer = Files.newBufferedWriter(Paths.get(dstfile),
+                                                     StandardCharsets.UTF_8,
+                                                     StandardOpenOption.TRUNCATE_EXISTING,
+                                                     StandardOpenOption.CREATE);
+
+                    writer.write("tinyMCE.emoticon_map = ");
+                    writer.write(JSON.stringify(map, null, 4));
+                    writer.write(";\n");
+                    writer.close();
+                </script>
             </then>
         </if>
     </target>
