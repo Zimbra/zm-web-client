@@ -1295,6 +1295,7 @@ function(newParent, noUndo, batchCmd) {
 	var params = {};
 	params.batchCmd = batchCmd;
 	params.actionTextKey = 'actionMoveOrganizer';
+	params.orgName = this.getName(false, false, true, false, false, this.type);
 	if (newId == ZmOrganizer.ID_TRASH) {
 		params.actionArg = ZmMsg.trash;
 		params.action = "trash";
@@ -1304,7 +1305,6 @@ function(newParent, noUndo, batchCmd) {
 		if (newParent.account && newParent.account.isLocal()) {
 			newId = [ZmAccount.LOCAL_ACCOUNT_ID, newId].join(":");
 		}
-		params.orgName = this.getName(false, false, true, false, false, this.type);
 		params.actionArg = newParent.getName(false, false, true, false, false, this.type);
 		params.action = "move";
 		params.attrs = {l: newId};
