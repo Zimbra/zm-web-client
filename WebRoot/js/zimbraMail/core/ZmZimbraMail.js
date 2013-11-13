@@ -2308,17 +2308,20 @@ function(parent, parentElement, adminUrl) {
 	button.addSelectionListener(helpListener);
 
     var mi;
-    if(adminUrl) {
+	if (adminUrl) {
 	    mi = menu.createMenuItem("adminLink", {text: ZmMsg.adminLinkLabel});
 	    mi.addSelectionListener(new AjxListener(null, ZmZimbraMail.adminLinkCallback, adminUrl));
+	}
 
-        menu.createSeparator();
-    }
+	mi = menu.createMenuItem("standardHtmlLink", {text: ZmMsg.htmlClient});
+	mi.addSelectionListener(ZmZimbraMail.standardHtmlLinkCallback);
+
+	menu.createSeparator();
 
     mi = menu.createMenuItem("documentation", {text: ZmMsg.productHelp});
 	mi.addSelectionListener(helpListener);
 
-	var mi = menu.createMenuItem("onlinehelp", {text: ZmMsg.onlineHelp});
+	mi = menu.createMenuItem("onlinehelp", {text: ZmMsg.onlineHelp});
 	mi.addSelectionListener(new AjxListener(this, this._onlineHelpListener));
 
 
@@ -2778,6 +2781,21 @@ function(url) {
 	ZmZimbraMail.unloadHackCallback();
 	var ac = window.parentAppCtxt || window.appCtxt;
 	window.open(url);
+};
+
+/**
+ * @private
+ */
+ZmZimbraMail.standardHtmlLinkCallback =
+function() {
+	var urlParams = {
+		path: appContextPath,
+		qsArgs: {
+			client: "standard"
+		}
+	};
+	var url = AjxUtil.formatUrl(urlParams);
+	ZmZimbraMail.sendRedirect(url);	// will trigger onbeforeunload
 };
 
 /**
