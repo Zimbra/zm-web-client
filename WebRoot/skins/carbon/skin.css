@@ -316,7 +316,7 @@ BODY						{	margin:0px; 				}
     #ENDIF
 }
 .LoginScreen H1, .SplashScreen H1 {
-    margin:22px 100px 32px 20px;
+    margin:22px 100px 22px 20px;
 }
 .LoginScreen H2, .SplashScreen H2 {
     display:none;

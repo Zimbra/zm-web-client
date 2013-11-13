@@ -122,7 +122,7 @@ FORM {
 	background-repeat:no-repeat;
 }
 
-.LoginScreen h1 {margin:22px 20px 32px 20px;}
+.LoginScreen h1 {margin:22px 20px 22px 20px;}
 
 .LoginScreen form {text-align:center;}  /* fixes IE centering of form */
 .form {
