@@ -1650,7 +1650,7 @@ if (ext == null) ext = "";
         </copy>
 
         <!-- generate an authoritative and correct list of locales -->
-        <property name="tinymce.locale.file" value="${tinymce.dir}/locales.js"/>
+        <property name="tinymce.locale.file" location="${tinymce.dir}/locales.js"/>
 
         <fileset id="tinymce.locales.ref"
                  dir="${web.dir}/tiny_mce/${tinymce.version}/langs"
@@ -1683,7 +1683,7 @@ if (ext == null) ext = "";
         </if>
 
         <!-- generate a mapping of emoticons to their image data -->
-        <property name="tinymce.emoticon.file" value="${tinymce.dir}/plugins/zemoticons/data.js"/>
+        <property name="tinymce.emoticon.file" location="${tinymce.dir}/plugins/zemoticons/data.js"/>
 
         <fileset id="tinymce.emoticons.ref"
                  dir="${web.dir}/tiny_mce/${tinymce.version}/plugins/emoticons/img"/>
