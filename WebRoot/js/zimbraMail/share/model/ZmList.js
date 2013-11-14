@@ -1262,7 +1262,7 @@ function(params, msgArray, result) {
             }
         });
     });
-    ZmOfflineDB.setItem(ZmOffline.modifyMsg(newMsgArray), ZmApp.MAIL);
+    ZmOfflineDB.setItem(newMsgArray, ZmApp.MAIL);
 };
 
 /**

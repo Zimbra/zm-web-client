@@ -25,7 +25,7 @@ function (callback) {
 ZmOfflineDB.indexedDB.open = function(callback, version) {
     var createObjectStore = function(){
         var db = ZmOfflineDB.indexedDB.db;
-        var stores = ZmOffline.store.concat([ZmOffline.ZmOfflineStore, ZmOffline.ZmOfflineAttachmentStore, ZmOfflineDB.indexedDB.idxStore, ZmApp.MAIL, ZmOffline.ATTACHMENT, ZmOffline.REQUESTQUEUE]);
+        var stores = ZmOffline.store.concat([ZmOffline.ZmOfflineStore, ZmOfflineDB.indexedDB.idxStore, ZmApp.MAIL, ZmOffline.ATTACHMENT, ZmOffline.REQUESTQUEUE]);
         for (var i=0, length=stores.length; i<length;i++){
             if(!db.objectStoreNames.contains(stores[i])) {
                 DBG.println(AjxDebug.DBG1, "Creating objectstore : " + stores[i]);
@@ -35,7 +35,7 @@ ZmOfflineDB.indexedDB.open = function(callback, version) {
                     store.createIndex("folder", "l");
                     store.createIndex("receiveddate", "d");
                     store.createIndex("flags", "f", {multiEntry : true});
-                    store.createIndex("tagnames", "tn", {multiEntry : true});
+                    store.createIndex("tag", "tn", {multiEntry : true});
                     store.createIndex("subject", "su", {multiEntry : true});
                     store.createIndex("fragment", "fr", {multiEntry : true});
                     //Email index
@@ -530,6 +530,9 @@ function(value, objectStoreName, callback, errorCallback) {
         var db = ZmOfflineDB.indexedDB.db;
         var transaction = db.transaction(objectStoreName, "readwrite");
         var objectStore = transaction.objectStore(objectStoreName);
+        if (objectStoreName === ZmApp.MAIL) {
+            value = ZmOffline.modifyMsg(value);
+        }
         [].concat(value).forEach(function(val) {
             objectStore.put(val);
         });
@@ -570,6 +573,9 @@ function(key, objectStoreName, callback, errorCallback) {
 
         if (callback) {
             transaction.oncomplete = function() {
+                if (objectStoreName === ZmApp.MAIL) {
+                    resultArray = ZmOffline.recreateMsg(resultArray);
+                }
                 callback(resultArray);
             }
         }
@@ -612,62 +618,243 @@ function(key, objectStoreName, callback, errorCallback) {
     }
 };
 
-
 ZmOfflineDB.search =
-function(search, objectStoreName, callback, errorCallback) {
-    if (search.folder) {
-        var indexName = "folder";
-    }
-    else if (search.tagnames.length > 0) {
-        var indexName = "tagnames";
-    }
-    else if (search.flags.length > 0) {
-        var indexName = "flags";
-    }
-    else if (search.from.length > 0) {
-        var indexName = "from";
-    }
-    else if (search.to.length > 0) {
-        var indexName = "to";
-    }
-    else if (search.cc.length > 0) {
-        var indexName = "cc";
-    }
-    else if (search.content.length > 0) {
-        var indexName = "content";
-    }
-    if (!indexName) {
+function(search, callback, errorCallback) {
+    if (!search) {
         return;
     }
-
     try {
-        var indexValue = [].concat(search[indexName]);
+        search = ZmOfflineDB._parseSearchObj(search);
         var db = ZmOfflineDB.indexedDB.db;
-        var transaction = db.transaction(objectStoreName);
-        var objectStore = transaction.objectStore(objectStoreName);
-        var resultArray = [];
-        var index = objectStore.index(indexName);
-        var range = IDBKeyRange.only(indexValue[0]);
-
-        index.openCursor(range).onsuccess = function(ev) {
-            var result = ev.target.result;
-            if (result) {
-                resultArray.push(result.value);
-                result['continue']();
+        var transaction = db.transaction(ZmApp.MAIL);
+        var objectStore = transaction.objectStore(ZmApp.MAIL);
+        var tokens = search.parsedQuery.getTokens();
+        var isSearchAttachment = false;
+        tokens.forEach(function(token) {
+            var indexName = token.indexName;
+            var indexValue = token.indexValue;
+            if (indexName && indexValue) {
+                token.result = [];
+                var indexArray = [];
+                var rangeArray = [];
+                if (indexName === "content") {
+                    indexArray.push(objectStore.index("subject"), objectStore.index("fragment"));
+                    /*
+                    var boundKeyRange = IDBKeyRange.bound(indexValue, indexValue + '\uffff');
+                    var boundKeyRangeUpper = IDBKeyRange.bound(indexValue.toUpperCase(), indexValue.toUpperCase() + '\uffff');
+                    var boundKeyRangeLower = IDBKeyRange.bound(indexValue.toLowerCase(), indexValue.toLowerCase() + '\uffff');
+                    var c = IDBKeyRange.bound(indexValue, indexValue + '\uffff');
+                    */
+                    var capitalize = indexValue.charAt(0).toUpperCase() + indexValue.substr(1).toLowerCase();
+                    var boundKeyRangeUpper = IDBKeyRange.bound(indexValue.toUpperCase(), capitalize + '\uffff');
+                    var lowerCase = indexValue.charAt(0).toLowerCase() + indexValue.substr(1).toUpperCase();
+                    var boundKeyRangeLower = IDBKeyRange.bound(lowerCase, indexValue.toLowerCase() + '\uffff');
+                    rangeArray.push(boundKeyRangeUpper, boundKeyRangeLower);
+                    isSearchAttachment = true;
+                }
+                else if (indexName === "size") {
+                    indexArray.push(objectStore.index(indexName));
+                    if (token.op === "smaller") {
+                        rangeArray.push(IDBKeyRange.upperBound(indexValue, true));
+                    }
+                    else if (token.op === "larger") {
+                        rangeArray.push(IDBKeyRange.lowerBound(indexValue, true));
+                    }
+                }
+                else if (indexName === "type") {
+                    isSearchAttachment = true;
+                }
+                else {
+                    indexArray.push(objectStore.index(indexName));
+                    rangeArray.push(IDBKeyRange.only(indexValue));
+                }
+                indexArray.forEach(function(index) {
+                    rangeArray.forEach(function(range) {
+                        index.openKeyCursor(range).onsuccess = function(token, ev) {
+                            var result = ev.target.result;
+                            if (result) {
+                                console.log(result.key + " : " + result.primaryKey);
+                                if (token.indexName === "content") {
+                                    if (result.key.toLowerCase().indexOf(token.indexValue.toLowerCase()) !== -1) {
+                                        token.result.push(result.primaryKey);
+                                    }
+                                }
+                                else {
+                                    token.result.push(result.primaryKey);
+                                }
+                                result['continue']();
+                            }
+                            else {
+                                token.result = AjxUtil.uniq(token.result);
+                            }
+                        }.bind(null, token);
+                    });
+                });
+            }
+        });
+        transaction.oncomplete = function() {
+            var searchCallback = ZmOfflineDB._searchCallback.bind(null, search, callback, errorCallback);
+            if (isSearchAttachment) {
+                ZmOfflineDB.searchAttachment(search, searchCallback, errorCallback);
+            }
+            else {
+                searchCallback();
             }
         };
-
-        if (callback) {
-            transaction.oncomplete = function() {
-                resultArray = ZmOffline.recreateMsg(resultArray);
-                callback(resultArray);
-            }
-        }
         transaction.onerror = errorCallback;
     }
     catch (e) {
         errorCallback && errorCallback();
-        DBG.println(AjxDebug.DBG1, "ZmOfflineDB.indexedDB.search : Exception : " +e);
+        DBG.println(AjxDebug.DBG1, "ZmOfflineDB.search : Exception : " +e);
+    }
+};
+
+ZmOfflineDB._parseSearchObj =
+function(search) {
+    var tokens = search.parsedQuery.getTokens();
+    tokens.forEach(function(token) {
+        if (token.op === "content" || token.op === "tag") {
+            token.indexName = token.op;
+            token.indexValue = token.arg;
+        }
+        else if (token.op === "from" || token.op === "to" || token.op === "cc") {
+            token.indexName = token.op;
+            token.indexValue = token.arg.toLowerCase();
+        }
+        else if (token.op === "has") {
+            if (token.arg === "attachment") {
+                token.indexName = "flags";
+                token.indexValue = "a";
+            }
+        }
+        else if (token.op === "is") {
+            token.indexName = "flags";
+            if (token.arg === "unread") {
+                token.indexValue = "u";
+            }
+            else if (token.arg === "flagged") {
+                token.indexValue = "f";
+            }
+            else if (token.arg === "draft") {
+                token.indexValue = "d";
+            }
+            else if (token.arg === "sent") {
+                token.indexValue = "s";
+            }
+            else if (token.arg === "replied") {
+                token.indexValue = "r";
+            }
+            else if (token.arg === "forwarded") {
+                token.indexValue = "w";
+            }
+            else if (token.arg === "received") {
+                token.indexName = "from";
+                token.indexValue = appCtxt.getLoggedInUsername();
+            }
+        }
+        else if (token.op === "in") {
+            token.indexName = "folder";
+            token.indexValue = ZmFolder["ID_" + token.arg.toUpperCase()].toString();
+        }
+        else if (token.op === "type") {
+            token.indexName = token.op;
+            token.indexValue = token.arg.toLowerCase();
+            token.objectStoreName = ZmOffline.ATTACHMENT;
+        }
+        else if (token.op === "larger" || token.op === "smaller") {
+            token.indexName = "size";
+            if (token.arg.toLowerCase().indexOf("kb") !== -1) {
+                token.indexValue = parseInt(token.arg) * 1024;
+            }
+            if (token.arg.toLowerCase().indexOf("mb") !== -1) {
+                token.indexValue = parseInt(token.arg) * 1024 * 1024;
+            }
+        }
+    });
+    return search;
+};
+
+ZmOfflineDB._searchCallback =
+function(search, callback, errorCallback) {
+    var tokens = search.parsedQuery.getTokens();
+    var resultArray = [];
+    tokens.forEach(function(token, i) {
+        var previousToken = tokens[i-1];
+        if (token.result) {
+            if (previousToken) {
+                if (previousToken.op === "or") {
+                    resultArray = AjxUtil.union(resultArray, token.result);
+                }
+                else if (previousToken.op === "not") {
+                    resultArray = AjxUtil.arraySubstract(resultArray, token.result);
+                }
+                else {// default and case
+                    resultArray = AjxUtil.intersection(resultArray, token.result);
+                }
+            }
+            else {
+                resultArray = token.result;
+            }
+        }
+    });
+    ZmOfflineDB.getItem(resultArray, ZmApp.MAIL, callback, errorCallback);
+};
+
+ZmOfflineDB.searchAttachment =
+function(search, callback, errorCallback) {
+    try {
+        var db = ZmOfflineDB.indexedDB.db;
+        var transaction = db.transaction(ZmOffline.ATTACHMENT);
+        var objectStore = transaction.objectStore(ZmOffline.ATTACHMENT);
+        var tokens = search.parsedQuery.getTokens();
+        tokens.forEach(function(token) {
+            var indexName = token.indexName;
+            var indexValue = token.indexValue;
+            if (indexName && indexValue) {
+                if (!token.result) {
+                    token.result = [];
+                }
+                var rangeArray = [];
+                if (indexName === "type") {
+                    var index = objectStore.index(indexName);
+                    rangeArray.push(IDBKeyRange.only(indexValue));
+                }
+                else {
+                    var index = objectStore.index("name");
+                    var capitalize = indexValue.charAt(0).toUpperCase() + indexValue.substr(1).toLowerCase();
+                    var boundKeyRangeUpper = IDBKeyRange.bound(indexValue.toUpperCase(), capitalize + '\uffff');
+                    var lowerCase = indexValue.charAt(0).toLowerCase() + indexValue.substr(1).toUpperCase();
+                    var boundKeyRangeLower = IDBKeyRange.bound(lowerCase, indexValue.toLowerCase() + '\uffff');
+                    rangeArray.push(boundKeyRangeUpper, boundKeyRangeLower);
+                }
+            }
+            rangeArray.forEach(function(range) {
+                index.openKeyCursor(range).onsuccess = function(token, ev) {
+                    var result = ev.target.result;
+                    if (result) {
+                        console.log(result.key + " : " + result.primaryKey);
+                        var primaryKey = result.primaryKey;
+                        var mid = primaryKey.substring(primaryKey.indexOf("id=") + 3, primaryKey.indexOf("&"));
+                        if (mid) {
+                            mid = parseInt(mid);
+                            if (isNaN(mid) === false) {
+                                token.result.push(mid);
+                            }
+                        }
+                        result['continue']();
+                    }
+                    else {
+                        token.result = AjxUtil.uniq(token.result);
+                    }
+                }.bind(null, token);
+            });
+            transaction.oncomplete = callback;
+            transaction.onerror = errorCallback;
+        });
+    }
+    catch (e) {
+        errorCallback && errorCallback();
+        DBG.println(AjxDebug.DBG1, "ZmOfflineDB.searchAttachment : Exception : " +e);
     }
 };
 

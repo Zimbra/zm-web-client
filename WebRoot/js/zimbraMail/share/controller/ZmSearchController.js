@@ -633,7 +633,7 @@ function(search, noRender, callback, noUpdateOverview, result) {
 ZmSearchController.prototype._handleOfflineDoSearch =
 function(search, callback) {
     var respCallback = this._handleOfflineResponseDoSearch.bind(this, search, callback);
-    appCtxt.webClientOfflineHandler.search(search, respCallback);
+    ZmOfflineDB.search(search, respCallback);
 };
 
 /**

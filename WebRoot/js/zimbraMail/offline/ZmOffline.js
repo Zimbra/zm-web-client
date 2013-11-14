@@ -24,7 +24,6 @@ ZmOffline = function(){
     ZmOffline.cacheProgress = [];
     ZmOffline.cacheConversationLimit = 1000;
     ZmOffline.ZmOfflineStore = "zmofflinestore";
-    ZmOffline.ZmOfflineAttachmentStore = "zmofflineattachmentstore";
     ZmOffline.ATTACHMENT = "Attachment";
     ZmOffline.REQUESTQUEUE = "RequestQueue";
     ZmOffline.syncStarted = false;
@@ -611,31 +610,6 @@ function(items){
     }
 };
 
-
-ZmOffline.prototype._cacheAttachments =
-function(msg){
-    var mailMsg = ZmMailMsg.createFromDom(msg, {'list':[]});
-    var attachInfo = mailMsg.getAttachmentInfo();
-    if (!attachInfo || !attachInfo.length){
-        return;
-    }
-    var attachUrls = []
-    for (var i=0, length=attachInfo.length; i< length;i++){
-        $.ajax({url: attachInfo[i].url,
-                headers: {'X-Zimbra-Encoding':'x-base64'}
-        }).done(this._cacheAttachmentData.bind(this,attachInfo[i]));
-
-        attachUrls.push(attachInfo[i].url)
-    }
-};
-
-ZmOffline.prototype._cacheAttachmentData =
-function(attachInfo, content){
-    var attachObj = {type:attachInfo.ct, content:content};
-    this.setItem(attachInfo.url, attachObj, ZmOffline.ZmOfflineAttachmentStore)
-
-};
-
 ZmOffline.prototype._syncSearchRequest =
 function(callback, store, params){
     ZmOfflineDB.indexedDB.getAll(store, this._generateMsgSearchResponse.bind(this, callback, params, store), ZmOffline.cacheMessageLimit);
@@ -825,13 +799,11 @@ function(item, type, store){
     var isConv = (type === ZmOffline.CONVERSATION);
     var value = this._getValue(item, isConv);
     if (value && value.Body && value.Body.GetMsgResponse) {
-        item = ZmOffline.modifyMsg(item);
         var callback = this._fetchMsgAttachments.bind(this, item);
         ZmOfflineDB.setItem(item, ZmApp.MAIL, callback);
         return;
     }
     store = store || ((item.l) ? this._getFolder(item.l) + type : ZmOffline.ZmOfflineStore);
-    this._cacheAttachments(item);
     this.setItem(item.id, value, store);
 };
 
@@ -1302,7 +1274,8 @@ function() {
 ZmOffline.prototype._fetchMsgAttachments =
 function(messages) {
     var attachments = [];
-    [].concat(messages).forEach(function(msg) {
+    messages = ZmOffline.recreateMsg(messages);
+    messages.forEach(function(msg) {
         var mailMsg = ZmMailMsg.createFromDom(msg, {'list':[]});
         var attachInfo = mailMsg.getAttachmentInfo();
         attachInfo.forEach(function(attachment) {
@@ -1356,79 +1329,6 @@ function(attachment, attachments, count) {
     else {
         callback();
     }
-};
-
-ZmOffline.prototype.search =
-function(search, callback, errorCallback) {
-    if (!search) {
-        return;
-    }
-    var searchObj = this.parseSearchObj(search);
-    ZmOfflineDB.search(searchObj, ZmApp.MAIL, callback, errorCallback || callback);
-};
-
-ZmOffline.prototype.parseSearchObj =
-function(search) {
-    var parsedQuery = search.parsedQuery;
-    var tokens = parsedQuery.getTokens();
-    var key = {
-        content : [],
-        flags : [],
-        tagnames : [],
-        from : "",
-        to : [],
-        cc : [],
-        hasOrTerm : parsedQuery.hasOrTerm,
-        length : tokens.length
-    };
-
-    if (search.hasFolderTerm()) {
-        key.folder = search.folderId;
-    }
-
-    tokens.forEach(function(token) {
-        if (token.op === "content") {
-            key.content.push(token.arg);
-        }
-        else if (token.op === "tag") {
-            key.tagnames.push(token.arg);
-        }
-        else if (token.op === "from") {
-            key.from = token.arg.toLowerCase();
-        }
-        else if (token.op === "to") {
-            key.to.push(token.arg.toLowerCase());
-        }
-        else if (token.op === "cc") {
-            key.cc.push(token.arg.toLowerCase());
-        }
-        else if (token.op === "has") {
-            if (token.arg === "attachment") {
-                key.flags.push("a");
-            }
-        }
-        else if (token.op === "is") {
-            if (token.arg === "unread") {
-                key.flags.push("u");
-            }
-            else if (token.arg === "flagged") {
-                key.flags.push("f");
-            }
-            else if (token.arg === "draft") {
-                key.flags.push("d");
-            }
-            else if (token.arg === "sent") {
-                key.flags.push("s");
-            }
-            else if (token.arg === "replied") {
-                key.flags.push("r");
-            }
-            else if (token.arg === "forwarded") {
-                key.flags.push("w");
-            }
-        }
-    });
-    return key;
 };
 
 ZmOffline.modifyMsg =

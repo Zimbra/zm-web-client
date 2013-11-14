@@ -205,7 +205,7 @@ ZmMailMsg._handleOfflineResponseFetchMsgCallback =
 function(callback, result) {
     var response = {
         GetMsgResponse : {
-            m : ZmOffline.recreateMsg(result)
+            m : result
         }
     };
     if (callback) {
@@ -1929,7 +1929,7 @@ function(params, jsonObj) {
             });
         }
     }
-    ZmOfflineDB.setItem(ZmOffline.modifyMsg(m), ZmApp.MAIL);
+    ZmOfflineDB.setItem(m, ZmApp.MAIL);
     return header;
 };
 
