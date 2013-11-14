@@ -390,7 +390,8 @@ function(row, share) {
 
 		// public shares have no editable fields, and sent no mail
 		var isAllShare = share.grantee && (share.grantee.type == ZmShare.TYPE_ALL);
-		if (((isAllShare || share.isPublic() || share.isGuest()) && (action == ZmShare.EDIT)) ||
+        // Fix for bug: 76685. Removed share.isGuest() from the condition and it adds edit cmd link
+		if (((isAllShare || share.isPublic()) && (action == ZmShare.EDIT)) ||
             ((isAllShare || share.isPublic()) && action == ZmShare.RESEND)) { continue; }
 
 		var link = document.createElement("A");
