@@ -1842,12 +1842,13 @@ function(ev) {
     			proto = switchMode ? proto : parts.protocol;
     			port = switchMode ? port : parts.port;
     		}
-    		url = AjxUtil.formatUrl({protocol:proto, port:port, path:path, qsReset:true});
+			var qsArgs = {skin: appCurrentSkin};
+    		url = AjxUtil.formatUrl({protocol: proto, port: port, path: path, qsReset: true, qsArgs: qsArgs});
     	}
 
     	var args  = "height=465,width=705,location=no,menubar=no,resizable=yes,scrollbars=no,status=yes,toolbar=no";
     	window.open(url,'ChangePasswordWindow', args);
-}
+};
 
 /**
  * Gets the skin hint for the given argument(s), which will be used to look
