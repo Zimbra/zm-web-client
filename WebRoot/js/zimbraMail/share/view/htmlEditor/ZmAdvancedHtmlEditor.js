@@ -503,7 +503,7 @@ function(params) {
 
 	if (!window.tinyMCE) {
         window.tinyMCEPreInit = {};
-        window.tinyMCEPreInit.suffix = '_min';
+        window.tinyMCEPreInit.suffix = '';
         window.tinyMCEPreInit.base = appContextPath + ZmAdvancedHtmlEditor.TINY_MCE_PATH; // SET PATH TO TINYMCE HERE
         // Tell TinyMCE that the page has already been loaded
         window.tinyMCE_GZ = {};
