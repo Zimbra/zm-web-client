@@ -1653,7 +1653,7 @@ if (ext == null) ext = "";
         <property name="tinymce.locale.file" location="${tinymce.dir}/locales.js"/>
 
         <fileset id="tinymce.locales.ref"
-                 dir="${web.dir}/tiny_mce/${tinymce.version}/langs"
+                 dir="${web.dir}/tiny_mce/custom/langs"
                  includes="*.js"/>
 
         <uptodate targetfile="${tinymce.locale.file}"
