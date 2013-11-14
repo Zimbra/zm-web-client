@@ -1944,7 +1944,7 @@ ZmOrganizer.prototype.hasFeeds = function() { return false; };
  * Checks if this folder maps to a datasource. If type is given, returns
  * true if folder maps to a datasource *and* is of the given type.
  *
- * @param	{int}	type			the type (see {@link ZmAccount.TYPE_POP} or {@link ZmAccount.TYPE_IMAP})
+ * @param	{constant}	type			the type (see {@link ZmAccount.TYPE_POP} or {@link ZmAccount.TYPE_IMAP})
  * @param	{Boolean}	checkParent		if <code>true</code>, walk-up the parent chain
  * @return	{Boolean}	<code>true</code> if this folder maps to a datasource
  */
@@ -1959,7 +1959,7 @@ function(type, checkParent) {
  * returns non-null result only if folder maps to datasource(s) *and* is of the
  * given type.
  *
- * @param	{int}	type			the type (see {@link ZmAccount.TYPE_POP} or {@link ZmAccount.TYPE_IMAP})
+ * @param	{constant}	type			the type (see {@link ZmAccount.TYPE_POP} or {@link ZmAccount.TYPE_IMAP})
  * @param	{Boolean}	checkParent		if <code>true</code>, walk-up the parent chain
  * @return	{Array}	the data sources this folder maps to or <code>null</code> for none
  */
