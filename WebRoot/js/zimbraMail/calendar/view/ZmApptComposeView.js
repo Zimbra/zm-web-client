@@ -214,6 +214,11 @@ function() {
 
 ZmApptComposeView.prototype.getAppt = 
 function(attId) {
+	return this.getCalItem(attId);
+};
+
+ZmApptComposeView.prototype.getCalItem =
+function(attId) {
 	return this._apptEditView.getCalItem(attId);
 };
 

@@ -119,9 +119,13 @@ function() {
 
 ZmCalItemComposeController.prototype._onAuthTokenWarningListener =
 function() {
+	// The auth token will expire in less than five minutes, so we must issue
+	// issue a last, hard save. This method is typically called more than once.
 	try {
 		if (this._composeView && this._composeView.isDirty()) {
-			return this.saveCalItem();
+			// bypass most of the validity checking logic
+			var calItem = this._composeView.getCalItem();
+			return this._saveCalItemFoRealz(calItem, null, null, true);
 		}
 	} catch(ex) {
 		var msg = AjxUtil.isString(ex) ?
