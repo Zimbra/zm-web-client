@@ -79,6 +79,7 @@ Ext.define('ZCS.model.mail.ZtMsgWriter', {
 				parts = m.mp = [],                  // Note: should only ever be one top-level part
 				mime = msg.getMime(),
 				origAtt = msg.get('origAttachments'),
+				attachments = msg.get('attachments'),
 				draftId = msg.get('draftId');
 
 			// recipient addresses
@@ -121,6 +122,23 @@ Ext.define('ZCS.model.mail.ZtMsgWriter', {
 				m.attach = {
 					mp: origAtt
 				};
+			}
+
+			if (attachments && attachments.length > 0) {
+				if (!m.attach) {
+					m.attach = {
+						aid: ""
+					};
+				} else {
+					m.attach.aid = "";
+				}
+
+				Ext.each(attachments, function (attachment) {
+					m.attach.aid += attachment.aid + ",";
+				});
+
+				m.attach.aid = m.attach.aid.slice(0, -1);
+
 			}
 
 			if (itemData.isInviteReply) {

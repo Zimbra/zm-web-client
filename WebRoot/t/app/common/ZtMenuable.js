@@ -48,7 +48,10 @@ Ext.define('ZCS.common.ZtMenuable', {
 
 		menuButton.addCls('menu-open');
 		menu.addListener('hide', function () {
-			menuButton.removeCls('menu-open');
+			//We may have removed the menuButton in the menu action.
+			if (menuButton.dom) {
+				menuButton.removeCls('menu-open');
+			}
 		}, this, {single: true});
 
 		this.updateMenuLabels(menuButton, params, menu);

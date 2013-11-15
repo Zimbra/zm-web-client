@@ -84,6 +84,9 @@ Ext.define('ZCS.controller.mail.ZtMsgController', {
 			},
 			'msgview toolbar button[iconCls=arrow_down]': {
 				tap: 'onMsgActionsButtonTap'
+			},
+			'msgview toolbar': {
+				show: 'onMsgViewToolbarShow'
 			}
 		},
 
@@ -121,6 +124,12 @@ Ext.define('ZCS.controller.mail.ZtMsgController', {
 				menuName:   button.menuName,
 				msg:        msg
 			});
+		}
+	},
+
+	onMsgViewToolbarShow: function (toolbar, eOpts) {
+		if (toolbar.up('msgview').element.hasCls('x-list-item-last')) {
+			toolbar.up('list').getScrollable().getScroller().scrollToEnd();
 		}
 	},
 

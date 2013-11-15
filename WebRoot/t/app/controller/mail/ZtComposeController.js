@@ -38,6 +38,7 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 			composePanel:       'composepanel',
 			contactField:       'composepanel contactfield',
 			attachmentsField:   '#attachments',
+			attachmentUploadField: 'composepanel filefield',
 			originalAttachmentMenu: 'list[itemId=originalAttachmentMenu]',
 			recipientActionsMenu: 'list[itemId=recipientActionsMenu]',
 
@@ -52,7 +53,9 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 				send:                       'doSend',
 				saveDraft:                  'doSaveDraft',
 				showOriginalAttachments:    'doShowOriginalAttachments',
-				originalAttachmentTap:      'showMenu'
+				originalAttachmentTap:      'showMenu',
+				attachmentAdded:            'uploadTemporaryAttachment'
+			
 			},
 			originalAttachmentMenu: {
 				itemtap:            'onMenuItemSelect'
@@ -63,6 +66,7 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 			contactField: {
 				bubbleTap:  'showMenu'
 			}
+
 		},
 
 		models: [
@@ -101,8 +105,7 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 			}, this);
 			subject = this.getSubject(msg, '');
 			body = msg.getContentForInclusion();
-		}
-		else {
+		} else {
 			body = signature ? '<br><br>' + signature : null;
 		}
 
@@ -371,6 +374,65 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 		composePanel.resetForm();
 	},
 
+	uploadTemporaryAttachment: function (field, newValue, oldValue) {
+		var fileInput = this,
+			me = this,
+			progressIndicator = Ext.create("Ext.ProgressIndicator", {
+            	loadingText: "Uploading: {percent}%"
+        	});
+
+        var request = {
+            url: ZCS.constant.ATTACHMENT_UPLOAD + '?fmt=extended,raw',
+            method: 'POST',
+            xhr2: true,
+            progress:progressIndicator,
+            success: function(response) {
+            	var responseParts = response.responseText.split(','),
+            		responseJson,
+            		responsePayload;
+
+            	if (responseParts[0] === '200') {
+            		responseJsonString = Ext.Array.slice(responseParts, 2).join(',');
+            		responsePayload = Ext.JSON.decode(responseJsonString);
+            	
+            		var msg = me.getMessageModel(true),
+            			attachments = msg.get('attachments');
+
+            		if (!attachments) {
+            			attachments = [];
+            		} 
+
+            		Ext.each(responsePayload, function (uploadResponse) {
+            			attachments.push({
+            				aid: uploadResponse.aid,
+            				label: uploadResponse.filename,
+            				size: ZCS.util.getDisplayForBytes(uploadResponse.s)
+            			});
+            		});
+
+            		me.doShowAllAttachments(attachments);
+
+            	}
+
+            	//Adds an attachment
+            },
+            failure: function(response) {
+                // ? what to do on file upload failure...
+            }
+        };
+
+        var input = field.getComponent().input;
+        var files = input.dom.files;
+        if (files.length) {
+            request.binaryData = files[0];
+            request.headers = {
+            	"Content-Disposition": 'attachment; filename="' + files[0].name + '"',
+				"Content-Type": files[0].type +";"
+            };
+            Ext.Ajax.request(request);
+        }
+	},
+
 	/**
 	 * Sends a message constructed from values in the compose form.
 	 *
@@ -390,14 +452,14 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 	 * but can also take a message created via quick reply and send that.
 	 */
 	sendMessage: function(msg, callback, scope) {
-		var composePanel = this.getComposePanel();
+		var me = this,
+			composePanel = this.getComposePanel();
 
-		composePanel.element.dom.style.setProperty('display', 'none');
-		composePanel.resetForm();
 		msg.save({
 			success: function() {
 				ZCS.app.fireEvent('showToast', ZtMsg.messageSent);
 				ZCS.app.fireEvent('messageSent', this.getDraftId() != null);
+				me.endComposeSession();
 				if (callback) {
 					callback.apply(scope);
 				}
@@ -449,32 +511,47 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 		Ext.Logger.info('Send message');
         //</debug>
 
-		if (origMsg) {
-			var attArea = this.getAttachmentsField(),
-				attBubbles = attArea.element.query('.zcs-attachment-bubble');
+		var attArea = this.getAttachmentsField(),
+			attBubbles = attArea.element.query('.zcs-attachment-bubble');
 
-			// set up data for forwarded attachments
-			if (attBubbles && attBubbles.length) {
-				var ln = attBubbles ? attBubbles.length : 0, i,
-					origAtt = [],
-					msgId = origMsg.getId(), idParams;
-				for (i = 0; i < ln; i++) {
-					idParams = ZCS.util.getIdParams(attBubbles[i].id);
-					if (idParams) {
-						origAtt.push({
-							mid:    msgId,
-							part:   idParams.part
-						});
-					}
+		// set up data for forwarded attachments
+		if (attBubbles && attBubbles.length) {
+			var ln = attBubbles ? attBubbles.length : 0, i,
+				origAtt = [],
+				newAtt = [],
+				msgId = origMsg ? origMsg.getId() : null, 
+				bubbleEl,
+				aid,
+				idParams;
+
+			for (i = 0; i < ln; i++) {
+				idParams = ZCS.util.getIdParams(attBubbles[i].id);
+				bubbleEl = Ext.fly(attBubbles[i]);
+
+				//Only attachments added by the user during compose get the aid attribute
+				aid = bubbleEl.getAttribute('aid');
+
+				if (idParams && origMsg && !aid) {
+					origAtt.push({
+						mid:    msgId,
+						part:   idParams.part
+					});
+				} else {
+					newAtt.push({
+						aid:    aid,
+						label: bubbleEl.getAttribute('label'),
+						size: bubbleEl.getAttribute('size')
+					});
 				}
 			}
 		}
+
 		values.content = editor.innerHTML;
 
-		return this.setOutboundMessage(values, action, origMsg, origAtt);
+		return this.setOutboundMessage(values, action, origMsg, origAtt, newAtt);
 	},
 
-	setOutboundMessage: function(values, action, origMsg, origAtt) {
+	setOutboundMessage: function(values, action, origMsg, origAtt, newAtt) {
 
 		var msg = Ext.create('ZCS.model.mail.ZtMailMsg'),
 			from = ZCS.mailutil.getFromAddress(),
@@ -492,6 +569,10 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 				msg.set('irtMessageId', irtMessageId);
 			}
 			msg.set('origAttachments', origAtt);
+		}
+
+		if (newAtt && newAtt.length > 0) {
+			msg.set('attachments', newAtt);
 		}
 
 		if (action === ZCS.constant.OP_REPLY || action === ZCS.constant.OP_REPLY_ALL) {
@@ -578,11 +659,40 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 	 * @private
 	 */
 	doShowOriginalAttachments: function() {
-
-		var origMsg = this.getOrigMsg(),
-			attachments = origMsg.getAttachmentInfo(),
+		var originalAttachmentString  = this.getOriginalAttachmentHtml(),
 			attachmentsField = this.getAttachmentsField();
 
+		attachmentsField.setHtml(originalAttachmentString);
+	},
+
+	doShowAllAttachments: function (attachments) {
+		var origAttachmentsHtml = this.getOriginalAttachmentHtml(),
+			newAttachmentsHtml = this.getNewAttachmentHtml(attachments),
+			attachmentsField = this.getAttachmentsField();
+
+		attachmentsField.setHtml(origAttachmentsHtml + newAttachmentsHtml);
+		attachmentsField.show();
+	},
+
+	/**
+	 * Gets HTML representing new attachments
+	 */
+
+	getNewAttachmentHtml: function (attachments) {
+		return this.getAttachmentHtml(attachments);
+	},
+
+	/**
+	 * Gets HTML representing just the original attachments
+	 */
+	getOriginalAttachmentHtml: function () {
+		var origMsg = this.getOrigMsg(),
+			attachments = origMsg ? origMsg.getAttachmentInfo() : [];
+
+		return this.getAttachmentHtml(attachments);
+	},
+
+	getAttachmentHtml: function (attachments) {
 		var html = [],
 			idx = 0,
 			ln = attachments.length, i;
@@ -596,9 +706,11 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 				});
 
 			attInfo.id = id;
+
 			html[idx++] = ZCS.controller.mail.ZtComposeController.attachmentTpl.apply(attInfo);
 		}
-		attachmentsField.setHtml(html.join(''));
+
+		return html.join('');
 	},
 
 	/**
@@ -606,11 +718,11 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 	 *
 	 * @param {Stirng}  bubbleId    DOM ID of the attachment bubble
 	 */
-	doRemoveAttachment: function(bubbleId) {
+	doRemoveAttachment: function(actionParams) {
 		//<debug>
-        Ext.Logger.info('Remove orig att ' + bubbleId);
+        Ext.Logger.info('Remove orig att ' + actionParams.bubbleId);
         //</debug>
-		var bubble = Ext.fly(bubbleId);
+		var bubble = Ext.fly(actionParams.bubbleId);
 		if (bubble) {
 			bubble.destroy();
 		}

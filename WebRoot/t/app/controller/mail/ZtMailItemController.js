@@ -64,10 +64,14 @@ Ext.define('ZCS.controller.mail.ZtMailItemController', {
 			item = item || this.getItem(),
 			isMessage = item instanceof ZCS.model.mail.ZtMailMsg,
 			convCtlr = ZCS.app.getConvController(),
-			quickReply = !isMessage && convCtlr.getQuickReply();
+			quickReply = convCtlr.getQuickReply(),
+			convTitle = convCtlr.getConvTitleBar();
 
 		if (isMessage) {
 			activeStore.filter('id', item.get('id'));
+			if (convTitle) {
+				convTitle.hide();
+			}
 		}
 
 		activeList.setReadOnly(true);
@@ -88,7 +92,8 @@ Ext.define('ZCS.controller.mail.ZtMailItemController', {
 			activeList = activeComp.down('list'),
 			activeStore = activeList.getStore(),
 			convCtlr = ZCS.app.getConvController(),
-			quickReply = convCtlr.getQuickReply();
+			quickReply = convCtlr.getQuickReply(),
+			convTitle = convCtlr.getConvTitleBar();
 
 		activeList.setReadOnly(false);
 
@@ -96,6 +101,9 @@ Ext.define('ZCS.controller.mail.ZtMailItemController', {
 		activeStore.clearFilter();
 		if (quickReply) {
 			quickReply.show();
+		}
+		if (convTitle) {
+			convTitle.show();
 		}
 
 		ZCS.app.fireEvent('rerenderMessages');

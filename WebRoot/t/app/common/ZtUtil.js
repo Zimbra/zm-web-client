@@ -29,6 +29,15 @@ Ext.define('ZCS.common.ZtUtil', {
 
 	idParams: {},
 
+
+	/**
+	 * TODO: Conrad to fill this in from web client
+	 *
+	 */
+	getDisplayForBytes: function (bytes) {
+		return (parseInt(bytes, 10) / 1025) + "Kb"
+	},
+
 	/**
 	 * Returns a "reversed" map, with the keys and values switched.
 	 *

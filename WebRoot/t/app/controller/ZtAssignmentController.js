@@ -65,7 +65,8 @@ Ext.define('ZCS.controller.ZtAssignmentController', {
 			cacheKey = [ type, app ].join('-'),
 			viewClass = 'ZCS.view.ux.Zt' + Ext.String.capitalize(type) + 'AssignmentView',
 			isTags = (type === ZCS.constant.ORG_TAG),
-			contentHeight;
+			contentHeight,
+			titlebar = itemPanel.down('titlebar');
 
 		// TODO: determine why total height calc is failing in position maps now.
 		contentHeight = 400;
@@ -92,10 +93,8 @@ Ext.define('ZCS.controller.ZtAssignmentController', {
 				app:              app,
 
 				onAssignmentComplete:   function () {
-					if (controller && controller.updateToolbar) {
-						controller.updateToolbar({
-							hideAll: false
-						});
+					if (titlebar) {
+						titlebar.show();
 					}
 					if (!toggleHidden) {
 						itemPanel.showListPanelToggle();
@@ -108,10 +107,8 @@ Ext.define('ZCS.controller.ZtAssignmentController', {
 			views[cacheKey] = assignmentView;
 		}
 
-		if (controller && controller.updateToolbar) {
-			controller.updateToolbar({
-				hideAll: true
-			});
+		if (titlebar) {
+			titlebar.hide();
 		}
 
 		var list = assignmentView.down('list'),

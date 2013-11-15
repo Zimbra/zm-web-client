@@ -142,9 +142,13 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 	},
 
 	doGoBackOneConversation: function (e) {
-		if (e.pageX - e.distance < 50) {
-			//this is actually an edge swipe.
-			ZCS.app.fireEvent('showListPanel');
+		// Check for an edge swipe.
+		if (e.target.getBoundingClientRect().left - e.distance < 50) {
+			if (Ext.Viewport.getOrientation() == 'portrait') {
+				ZCS.app.fireEvent('showListPanel');
+			} else {
+				ZCS.app.fireEvent('showOverviewPanel');
+			}
 		} else {
 			this.navigateToAdjacentConversation(-1);
 		}
@@ -792,10 +796,20 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 	},
 
 	updateTitle: function (params) {
-		var convTitleBar = this.getConvTitleBar();
+		var convTitleBar = this.getConvTitleBar(),
+			msgListView = this.getMsgListView(),
+			listScrollInner = msgListView.element.down('.x-scroll-view .x-inner');
 
-		if (toolbar && params && params.title != null) {
+		if (convTitleBar && params && params.title != null) {
 			convTitleBar.setHtml(params.title);
+			if (params.title) {
+				convTitleBar.show();
+			} else {
+				convTitleBar.hide();
+			}
 		}
+
+		// Add padding inside scroll inner so items start below transparent titlebar
+		listScrollInner.addCls('top-padding-'+convTitleBar.element.getHeight());
 	}
 });

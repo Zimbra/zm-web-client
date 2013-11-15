@@ -92,7 +92,7 @@ Ext.define('ZCS.view.ux.ZtBubbleDropdown', {
 						this.menu = Ext.create('Ext.dataview.List', {
 							cls: 'zcs-contact-suggest',
 							itemTpl: '{label}',
-							scrollable: Ext.os.deviceType === "Phone" ? false : 'vertical',
+							scrollable: 'vertical',
 							defaultType: 'listitem',
 							disableSelection: true,
 							maxHeight: 400,
@@ -247,6 +247,9 @@ Ext.define('ZCS.view.ux.ZtBubbleDropdown', {
 			menu.setData(menuItems);
 			menu.on('itemtap', this.handleMenuItemTap, this);
 			menu.showBy(this.getInput(), 'tc-bc?');
+
+			// Don't let the viewport blur input field when scrolling menu
+          	delete Ext.Viewport.focusedElement;
 		} else {
 			menu.hide();
 		}

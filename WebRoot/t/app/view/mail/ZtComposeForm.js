@@ -183,6 +183,18 @@ Ext.define('ZCS.view.mail.ZtComposeForm', {
 							}
 						}
 					}, {
+						xtype: 'filefield',
+						height: '2.5em',
+						hidden: true,
+						listeners: {
+							change: function (field, newValue, oldValue) {
+								//When the value of this field is reset, newValue is null.
+								if (newValue) {
+									composeForm.fireEvent('attachmentAdded', field, newValue, oldValue);
+								}
+							}
+						}
+					}, {
 						xtype: 'container',
 						padding: 0,
 						flex: 1,
@@ -213,7 +225,7 @@ Ext.define('ZCS.view.mail.ZtComposeForm', {
 				}]
 			};
 
-		if (ZCS.constant.IS_ENABLED[ZCS.constant.FEATURE_ADD_ATTACHMENT]) {
+		if (ZCS.constant.IS_ENABLED[ZCS.constant.FEATURE_ADD_ATTACHMENT] && Ext.feature.has.XHR2) {
 			form.items[3].items.push({
 				xtype: 'component',
 				cls: 'x-form-label x-form-label-nowrap x-field zcs-toggle-field',
@@ -252,7 +264,7 @@ Ext.define('ZCS.view.mail.ZtComposeForm', {
 	},
 
 	doAttach: function () {
-		this.fireEvent('doAttachment');
+		this.down('filefield').show();
 	},
 
 	resetForm: function () {
@@ -260,5 +272,10 @@ Ext.define('ZCS.view.mail.ZtComposeForm', {
 		this.down('#cc').hide();
 		this.down('#bcc').hide();
 		this.down('#showcc').setIconCls('collapsed');
+		//This is necessary to reset the file input inside of the form.
+		this.down('.formpanel').element.dom.reset();
+		//Reset this so we don't parse out old attachment info next time we come to the form.
+		this.down('#attachments').setHtml('');
+		this.down('.filefield').hide();
 	}
 });

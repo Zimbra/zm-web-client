@@ -449,7 +449,7 @@
 
 # show a single attachment
 <template id='Attachment'>
-	<span class='zcs-area-bubble zcs-attachment-bubble' id="{id}">{label} <span>({size})</span></span>
+	<span class='zcs-area-bubble zcs-attachment-bubble' id="{id}" aid="{aid}" label="{label}" size="{size}">{label} <span>({size})</span></span>
 </template>
 
 <template id='QuotedLink'>

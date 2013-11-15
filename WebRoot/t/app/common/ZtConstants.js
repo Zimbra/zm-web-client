@@ -84,7 +84,7 @@ ZCS.constant.IS_ENABLED = {};
 ZCS.constant.IS_ENABLED[ZCS.constant.APP_MAIL]                  = true;
 ZCS.constant.IS_ENABLED[ZCS.constant.APP_CONTACTS]              = true;
 ZCS.constant.IS_ENABLED[ZCS.constant.APP_CALENDAR]              = true;
-ZCS.constant.IS_ENABLED[ZCS.constant.FEATURE_ADD_ATTACHMENT]    = false;
+ZCS.constant.IS_ENABLED[ZCS.constant.FEATURE_ADD_ATTACHMENT]    = true;
 ZCS.constant.IS_ENABLED[ZCS.constant.FEATURE_QUICK_REPLY]       = true;
 ZCS.constant.IS_ENABLED[ZCS.constant.FEATURE_FIND_OBJECTS]      = true;
 
@@ -120,6 +120,7 @@ ZCS.constant.CANCEL_SHIELD_BUTTONS = [
 ZCS.constant.MENU_CONV      = 'convActions';
 ZCS.constant.MENU_CONV_REPLY= 'convReplyActions';
 ZCS.constant.MENU_MSG       = 'msgActions';
+ZCS.constant.MENU_MSG_REPLY = 'msgReplyActions';
 ZCS.constant.MENU_TAG       = 'tagActions';
 ZCS.constant.MENU_ADDRESS   = 'addressActions';
 ZCS.constant.MENU_CONTACT   = 'contactActions';
@@ -579,6 +580,7 @@ ZCS.constant.REGEX_CONTACT_FIELD        = /^([a-z][a-zA-Z]+)(\d*)$/;
 
 // URL paths
 ZCS.constant.PATH_MSG_FETCH = '/service/home/~/';
+ZCS.constant.ATTACHMENT_UPLOAD = '/service/upload';
 ZCS.constant.IMAGE_URL_BASE = '/img/zimbra/Img';
 
 // Default height of IFRAME element

@@ -269,7 +269,8 @@ $zcs-overview-text-color: #E5E5E5;
 	.zcs-list-titlebar {
 		font-size: $zcs-titlebar-fontsize;
 		border: none;
-
+		border-radius: 0;
+		
 		.x-title {
 			font-size: $zcs-title-fontsize;
 		}
