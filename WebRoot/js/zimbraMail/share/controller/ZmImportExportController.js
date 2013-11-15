@@ -359,7 +359,15 @@ function(funcName, params, type, fault1 /* , ... , faultN */) {
 			for (var i = 0; i < formatArgs.length; i++) {
 				formatArgs[i] = args[mappings[i]];
 			}
-			messages.push(ZMsg[code] ? AjxMessageFormat.format(ZMsg[code], formatArgs) : message);
+			var errorMsg = ZMsg[code] ? AjxMessageFormat.format(ZMsg[code], formatArgs) : "";
+			// be a little more verbose if there was a failure
+			if (type == "fail") {
+				errorMsg = message ? errorMsg + '<br><br>' + AjxStringUtil.htmlEncode(message) : errorMsg;
+			}
+			else if (type == "warn") {
+				errorMsg = errorMsg || message;
+			}
+			messages.push(errorMsg);
 		}
 	}
 	// show success or failure
@@ -519,7 +527,7 @@ function(errorCallback, message) {
 	if (errorCallback) {
 		errorCallback.run(false);
 	}
-	var msg = AjxStringUtil.htmlEncode(message) || ZmMsg.importFailed; 
+	var msg = message || ZmMsg.importFailed;
 	ZmImportExportController.__showMessage(msg, DwtMessageDialog.CRITICAL_STYLE);
 	return true;
 };
