@@ -2730,7 +2730,7 @@ function(menu, emails, isObo, displayValueFunc) {
 		var addr = email.addr;
 		var extraData = {isDL: email.isDL, isObo: isObo};
 		var displayValue = displayValueFunc(addr);
-		var optData = new DwtSelectOptionData(addr, displayValue, null, null, null, null, extraData);
+		var optData = new DwtSelectOptionData(addr, displayValue, null, null, null, extraData);
 		menu.addOption(optData);
 	}
 };
