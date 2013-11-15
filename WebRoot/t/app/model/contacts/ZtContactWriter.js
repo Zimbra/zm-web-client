@@ -170,10 +170,13 @@ Ext.define('ZCS.model.contacts.ZtContactWriter', {
 			jsonAttrs = [];
 
 		Ext.each(attrList, function(attr) {
-			jsonAttrs.push({
-				n:          attr,
-				_content:   attrHash[attr] || ''
-			});
+			// always add in edit mode; add in create mode only if it has a value
+			if (attrs || attrHash[attr]) {
+				jsonAttrs.push({
+					n:          attr,
+					_content:   attrHash[attr] || ''
+				});
+			}
 		}, this);
 
 		return jsonAttrs;
