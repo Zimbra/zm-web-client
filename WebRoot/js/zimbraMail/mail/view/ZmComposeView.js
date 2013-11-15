@@ -2300,7 +2300,8 @@ function(mode, params) {
 				text:				text,
 				preserveReturns:	true,
 				htmlMode:			htmlMode,
-				isHeaders:			true			
+				isHeaders:			true,
+				prefix:				incOptions.pre
 			}
 			if (htmlMode) {
 				var marker = this._getMarker(DwtHtmlEditor.HTML, ZmComposeView.BC_HEADERS);
