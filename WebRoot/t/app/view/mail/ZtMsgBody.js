@@ -118,7 +118,7 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 		this.setUsingIframe(isHtml);
 
 		if (ZCS.constant.IS_ENABLED[ZCS.constant.FEATURE_FIND_OBJECTS]) {
-			markedUpHtml = this.markupEmailsAndLinks(html.content, isHtml);
+			markedUpHtml = ZCS.htmlutil.findObjects(html.content, isHtml);
 
             if (isInvite && html.inviteDesc) {
                 markedUpHtml = html.inviteDesc + markedUpHtml;
@@ -214,41 +214,6 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 			truncated:      msg.isTruncated(),
 			quoted:         !hasQuotedContent ? null : trimQuotedText ? 'show' : 'hide'
 		});
-	},
-
-	/**
-	 * Makes URLs and email addresses actionable by turning them into links. Tapping an email
-	 * address will take the user to the compose form.
-	 *
-	 * @param {String}  content     text to parse
-	 * @param {Boolean} isHtml      true if the content is HTML
-	 *
-	 * @return {String}     content with actionable URLs and email addresses
-	 */
-	markupEmailsAndLinks: function(content, isHtml) {
-
-		// Look for URLs. Don't look for them in HTML; assume author put them in anchors.
-		if (!isHtml) {
-			content = content.replace(ZCS.constant.REGEX_URL, function(m) {
-                //<debug>
-				Ext.Logger.info('link regex matched: ' + m);
-                //</debug>
-				return Ext.String.format("<a href='{0}' target='_blank'>{0}</a>", m);
-			});
-		}
-
-		// Look for email addresses (whether they're part of a mailto: link or not),
-		// and convert them so that tapping them takes the user to compose.
-		content = content.replace(ZCS.constant.REGEX_EMAIL, function(m, mailto, addr) {
-			if (mailto) {
-				return Ext.String.format(" href='#' addr='{0}'", addr);
-			}
-			else {
-				return Ext.String.format("<a href='#' addr='{0}'>{0}</a>", addr);
-			}
-		});
-
-		return content;
 	},
 
 	/**

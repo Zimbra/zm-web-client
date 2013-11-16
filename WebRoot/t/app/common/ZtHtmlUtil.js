@@ -415,5 +415,134 @@ Ext.define('ZCS.common.ZtHtmlUtil', {
 		}
 
 		return false;
+	},
+
+	/**
+	 * Lazily creates a test hidden IFRAME and writes the given HTML to it, then returns the HTML element.
+	 *
+	 * @private
+	 */
+	getHtmlDom: function(html) {
+
+		var idoc = this.htmlContentIframeDoc;
+		if (!idoc) {
+			var iframe = Ext.DomHelper.append(document.body, {
+				tag:    'iframe',
+				id:     'zcs-test-iframe',
+				cls:    'zcs-offscreen'
+			});
+			idoc = this.htmlContentIframeDoc = iframe.contentDocument;
+		}
+		html = ZCS.htmlutil.hideCidImages(html);
+		idoc.open();
+		idoc.write(html);
+		idoc.close();
+
+		return idoc.childNodes[0];
+	},
+
+	/**
+	 * Makes URLs and email addresses actionable by turning them into links. Tapping an email
+	 * address will take the user to the compose form.
+	 *
+	 * @param {String}  content     text to parse
+	 * @param {Boolean} isHtml      true if the content is HTML
+	 *
+	 * @return {String}     content with actionable URLs and email addresses
+	 */
+	findObjects: function(content, isHtml) {
+
+		if (!isHtml) {
+			// turn URLs into links
+			content = content.replace(ZCS.constant.REGEX_URL, function(m) {
+				return Ext.String.format("<a href='{0}' target='_blank'>{0}</a>", m);
+			});
+
+			// mark up email addresses so we can handle them on tap
+			content = content.replace(ZCS.constant.REGEX_EMAIL, function(m, mailto, addr) {
+				if (mailto) {
+					return Ext.String.format(" href='#' addr='{0}'", addr);
+				}
+				else {
+					return Ext.String.format("<a href='#' addr='{0}'>{0}</a>", addr);
+				}
+			});
+		}
+
+		else {
+			var htmlNode = ZCS.htmlutil.getHtmlDom(content);
+			this.findObjectsProcessNode(htmlNode);
+			content = htmlNode.innerHTML;
+			htmlNode.innerHTML = '';
+		}
+
+		return content;
+	},
+
+	findObjectsProcessNode: function(node) {
+
+		var nodeType = node.nodeType,
+			value = node.nodeValue,
+			parent = node.parentNode,
+			parentNodeName = parent.nodeName && parent.nodeName.toLowerCase();
+
+		if (nodeType === Node.ELEMENT_NODE) {
+			node.normalize();
+			var nodeName = node.nodeName.toLowerCase();
+			if (nodeName === 'a') {
+				// add an 'addr' attribute to a 'mailto' link
+				if (node.href && node.href.indexOf('mailto:') === 0) {
+					node.href = '#';
+					node.setAttribute('addr', node.href.substr(7));
+				}
+			}
+		}
+		else if (nodeType === Node.TEXT_NODE) {
+			// check for a URL that's not already part of a link
+			if (ZCS.constant.REGEX_URL.test(value) && parentNodeName !== 'a') {
+				var	before = RegExp.leftContext,
+					url = RegExp.lastMatch,
+					after = RegExp.rightContext,
+					span = document.createElement('span'),
+					link = document.createElement('a');
+
+				if (before) {
+					span.appendChild(document.createTextNode(before));
+				}
+				link.appendChild(document.createTextNode(url));
+				link.href = url;
+				link.target = '_blank';
+				span.appendChild(link);
+				if (after) {
+					span.appendChild(document.createTextNode(after));
+				}
+				parent.replaceChild(span, node);
+			}
+			// email address
+			else if (ZCS.constant.REGEX_EMAIL.test(value)) {
+				var	before = RegExp.leftContext,
+					addr = RegExp.$2,
+					after = RegExp.rightContext,
+					span = document.createElement('span'),
+					link = document.createElement('a');
+
+				if (before) {
+					span.appendChild(document.createTextNode(before));
+				}
+				link.appendChild(document.createTextNode(addr));
+				link.href = '#';
+				link.setAttribute('addr', addr);
+				span.appendChild(link);
+				if (after) {
+					span.appendChild(document.createTextNode(after));
+				}
+				parent.replaceChild(span, node);
+			}
+		}
+
+		var ln = node.childNodes ? node.childNodes.length : 0, i;
+		for (i = 0; i < node.childNodes.length; i++){
+			this.findObjectsProcessNode(node.childNodes[i]);
+		}
 	}
 });
