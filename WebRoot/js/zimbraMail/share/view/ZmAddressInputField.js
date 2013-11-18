@@ -1074,6 +1074,7 @@ function() {
 	var paddings = Dwt.getMargins(this._holder);
 	var margins = Dwt.getMargins(this._input);
 	var maxWidth = Dwt.getSize(this._holder).x - (this._input.offsetLeft + ((AjxEnv.isTrident) ? (margins.left + paddings.left) : 0) + paddings.right + margins.right + 1);
+	maxWidth = Math.max(maxWidth, 3); //don't get too small - minimum 3 - if it gets negative, the cursor would not show up before starting to type (bug 84924)
 
 	var inputFontSize = DwtCssStyle.getProperty(this._input, "font-size");
 	var strW = AjxStringUtil.getWidth(val, false, inputFontSize);
