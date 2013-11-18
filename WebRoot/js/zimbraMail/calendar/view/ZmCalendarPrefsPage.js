@@ -548,7 +548,7 @@ function() {
         isDirty = this._customDlg.isDirty();
     }
 
-    if(isCustom != this._isCustom) {
+    if (!isCustom && this._isCustom) { //switching to normal should trigger dirty anyway.
         isDirty = true;
     }
 
