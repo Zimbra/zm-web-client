@@ -21,17 +21,20 @@ Ext.define('ZCS.view.ZtAppsMenu', {
     },
 
     initialize: function() {
+
         var accountName = ZCS.session.getAccountName(),
             userName = accountName.substr(0, accountName.indexOf('@')),
             menuItems = [];
 
         // Prepare menu items
         Ext.each(ZCS.constant.APPS, function(app) {
-            menuItems.push({
-                app: app,
-                text: app.charAt(0).toUpperCase() + app.slice(1),
-                group: ZtMsg.applications
-            });
+		        if (ZCS.util.isAppEnabled(app)) {
+			        menuItems.push({
+		                app: app,
+		                text: app.charAt(0).toUpperCase() + app.slice(1),
+		                group: ZtMsg.applications
+	                });
+		        }
         });
         menuItems.push({
             app: 'settings',
