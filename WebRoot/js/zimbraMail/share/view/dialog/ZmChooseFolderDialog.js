@@ -355,7 +355,7 @@ function(ev) {
 			var folder = folderList[i];
 			//Note - although this case is checked in mayContain, I do not chagne mayContain since mayContain is complicated and returns a boolean and used from DnD and is overridden a bunch of times.
 			//Only here we need the special message (see bug 82064) so I settle for that for now.
-			if (!folder.isInTrash() && folder.hasChild(this._data.name) && !this._acceptFolderMatch) {
+			if (this._data.isZmFolder && !folder.isInTrash() && folder.hasChild(this._data.name) && !this._acceptFolderMatch) {
 				msg = ZmMsg.folderAlreadyExistsInDestination;
 				break;
 			}
