@@ -97,10 +97,6 @@
             "update": "full",
             "platform": ["android","safari","chrome","ie10","firefox","ios","blackberry"]
         }, {
-            "path": "resources/css/original.css",
-            "update": "full",
-            "platform": ["original"]
-        }, {
             "path": "resources/css/msgbody.css",
             "update": "full"
         }
