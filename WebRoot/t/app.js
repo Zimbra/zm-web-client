@@ -117,7 +117,7 @@ Ext.application({
 				},
 				longPress: {
 					xclass: 'ZCS.common.ZtLongPressRecognizer'
-				},
+				}
 			}
 		}
 	},

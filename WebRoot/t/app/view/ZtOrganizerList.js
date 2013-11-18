@@ -33,7 +33,7 @@ Ext.define('ZCS.view.ZtOrganizerList', {
 		grouped: true,
 
 		listConfig: {
-			itemTpl: '<div class="zcs-menu-icon {type}"></div><div class="zcs-menu-label">{name}</div>',
+			itemTpl: '<div class="zcs-menu-icon {type}"></div><div class="zcs-menu-label">{name}</div>'
 		},
 
 		// Show the folder's child list.
