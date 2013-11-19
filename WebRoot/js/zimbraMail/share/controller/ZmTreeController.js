@@ -744,16 +744,23 @@ function(organizer) {
 ZmTreeController.prototype._doEmpty =
 function(organizer) {
     var recursive = false;
-    organizer.empty(recursive);
+    organizer.empty(recursive, null, this._doEmptyHandler.bind(this, organizer));
+};
+
+ZmTreeController.prototype._doEmptyHandler =
+function(organizer) {
+	appCtxt.setStatusMsg({msg: AjxMessageFormat.format(ZmMsg.folderEmptied, organizer.getName())});
 	var ctlr = appCtxt.getCurrentController();
-	if (ctlr && ctlr._getSearchFolderId && ctlr.getListView) {
-		var folderId = ctlr._getSearchFolderId();
-		if (folderId && (folderId == organizer.id)) {
-			var view = ctlr.getListView();
-			view._resetList();
-			view._setNoResultsHtml();
-		}
+	if (!ctlr || !ctlr._getSearchFolderId || !ctlr.getListView) {
+		return;
 	}
+	var folderId = ctlr._getSearchFolderId();
+	if (folderId !== organizer.id) {
+		return;
+	}
+	var view = ctlr.getListView();
+	view._resetList();
+	view._setNoResultsHtml();
 };
 
 /**

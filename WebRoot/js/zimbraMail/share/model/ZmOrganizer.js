@@ -1337,9 +1337,10 @@ function(batchCmd) {
  *
  * @param	{Boolean}	doRecursive		<code>true</code> to recursively empty the organizer
  * @param	{ZmBatchCommand}	batchCmd	the batch command
+ * @param	{Object}	callback
  */
 ZmOrganizer.prototype.empty =
-function(doRecursive, batchCmd) {
+function(doRecursive, batchCmd, callback) {
 	doRecursive = doRecursive || false;
 
 	var isEmptyOp = ((this.type == ZmOrganizer.FOLDER || this.type == ZmOrganizer.ADDRBOOK) &&
@@ -1351,7 +1352,7 @@ function(doRecursive, batchCmd) {
 	// make sure we're not emptying a system object (unless it's SPAM/TRASH/SYNCFAILURES)
 	if (this.isSystem() && !isEmptyOp) { return; }
 
-	var params = {action:"empty", batchCmd:batchCmd};
+	var params = {action: "empty", batchCmd: batchCmd, callback: callback};
 	params.attrs = (this.nId == ZmFolder.ID_TRASH)
 		? {recursive:true}
 		: {recursive:doRecursive};
