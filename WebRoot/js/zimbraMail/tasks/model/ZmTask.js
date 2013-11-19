@@ -37,8 +37,8 @@ ZmTask = function(list, id, folderId) {
 	this.priority = ZmCalItem.PRIORITY_NORMAL;
 	this.pComplete = 0;
 	this.status = ZmCalendarApp.STATUS_NEED;
-    this.startDate = "";
-    this.endDate = "";
+    this.startDate = null;
+    this.endDate = null;
     this.remindDate = new Date();
     this.alarm = false;
 	this._useAbsoluteReminder = true;
@@ -344,13 +344,15 @@ function(node, instNode) {
         this.startDate = new Date(startTime);
         this.uniqStartTime = this.startDate.getTime();
     } else {
-        this.startDate = null;
-        if(comp && comp.s && comp.s[0].d) {
-            var start = comp.s[0].d;
-            var yyyy = parseInt(start.substr(0,4), 10);
-            var MM = parseInt(start.substr(4,2), 10);
-            var dd = parseInt(start.substr(6,2), 10);
-            this.startDate = new Date(yyyy, MM -1, dd);
+        if (comp) {
+            this.startDate = null;
+            if (comp.s && comp.s[0].d) {
+                var start = comp.s[0].d;
+                var yyyy = parseInt(start.substr(0,4), 10);
+                var MM = parseInt(start.substr(4,2), 10);
+                var dd = parseInt(start.substr(6,2), 10);
+                this.startDate = new Date(yyyy, MM -1, dd);
+            }
         }
     }
 
@@ -359,13 +361,15 @@ function(node, instNode) {
         var endTime = parseInt(nodeInst.dueDate,10) + adjustMs;
         this.endDate = new Date(endTime);
     } else {
-        this.endDate = null;
-        if(comp && comp.e && comp.e[0].d) {
-            var end = comp.e[0].d;
-            var yyyy = parseInt(end.substr(0,4), 10);
-            var MM = parseInt(end.substr(4,2), 10);
-            var dd = parseInt(end.substr(6,2), 10);
-            this.endDate = new Date(yyyy, MM -1, dd);
+        if(comp) {
+            this.endDate = null;
+            if (comp.e && comp.e[0].d) {
+                var end = comp.e[0].d;
+                var yyyy = parseInt(end.substr(0,4), 10);
+                var MM = parseInt(end.substr(4,2), 10);
+                var dd = parseInt(end.substr(6,2), 10);
+                this.endDate = new Date(yyyy, MM -1, dd);
+            }
         }
     }
 
