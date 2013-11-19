@@ -823,7 +823,11 @@ function(tasks) {
 	}
 	var actionLogItem = (actionController && actionController.actionPerformed({op: "trash", ids: idList, attrs: {l: ZmOrganizer.ID_TRASH}})) || null;
 	batchCmd.run();
-	var summary = ZmList.getActionSummary(ZmMsg.actionTrash, tasks.length, ZmItem.TASK);
+
+    // Mark the action as complete, so that the undo in the toast message will work
+    actionLogItem.setComplete();
+
+    var summary = ZmList.getActionSummary({type:ZmItem.TASK, actionTextKey:"actionTrash", numItems:tasks.length});
 	
 	var undoLink = actionLogItem && actionController && actionController.getUndoLink(actionLogItem);
 	if (undoLink && actionController) {
