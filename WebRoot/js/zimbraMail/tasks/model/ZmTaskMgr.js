@@ -200,19 +200,25 @@ function(searchResp, params) {
 
 	var newList = new AjxVector();
 	if (this._rawTasks && this._rawTasks.length) {
-		this._list = new ZmList(ZmItem.TASK);
+		//this._list = new ZmList(ZmItem.TASK);
 		for (var i = 0; i < this._rawTasks.length; i++) {
 			DBG.println(AjxDebug.DBG2, "task[j]:" + this._rawTasks[i].name);
 			var taskNode = this._rawTasks[i];
-			//var instances = taskNode ? taskNode.inst : null;
-			//if (instances) {
-				var args = {list:this._list};
-				//for (var j = 0; j < instances.length; j++) {
+			////var instances = taskNode ? taskNode.inst : null;
+			////if (instances) {
+            //var args = {list:this._list};
+            // Pass null as the list - otherwise the list, created above and used nowhere else
+            // for viewing will be the one associated with teh
+            var args = {list:null};
+				////for (var j = 0; j < instances.length; j++) {
 					var task = ZmTask.createFromDom(taskNode, args, null);
 					DBG.println(AjxDebug.DBG2, "lite task :" + task);
 					if (task) newList.add(task);
-				//}
-			//}
+				////}
+			////}
+
+            // Accumulate this list to be processed by the reminderController callback
+            newList.add(task);
 		}
 
 	}

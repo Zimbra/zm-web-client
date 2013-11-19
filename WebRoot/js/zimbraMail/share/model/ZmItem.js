@@ -58,6 +58,10 @@ ZmItem = function(type, id, list, noCache) {
 	var curItem = appCtxt.getById(id);
 	if (curItem) {
 		this._list = AjxUtil.hashCopy(curItem._list);
+        if (!list) {
+            // No list specified, preserve the previous list
+            this.list = curItem.list;
+        }
 	}
 	if (list) {
 		this._list[list.id] = true;
