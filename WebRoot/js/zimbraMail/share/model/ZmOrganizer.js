@@ -1581,7 +1581,7 @@ function(name) {
 */
 ZmOrganizer.prototype.getChild =
 function(name) {
-	name = name.toLowerCase();
+	name = name ? name.toLowerCase() : "";
 	var a = this.children.getArray();
 	var sz = this.children.size();
 	for (var i = 0; i < sz; i++) {
