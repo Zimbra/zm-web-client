@@ -128,6 +128,13 @@ function(width, height) {
 	this._resetColWidth();
 };
 
+ZmTaskListView.prototype.hideNewTask =
+    function() {
+        if (this._newTaskInputEl && Dwt.getVisibility(this._newTaskInputEl)) {
+            Dwt.setVisibility(this._newTaskInputEl, false);
+        }
+    };
+
 /**
  * Saves the new task.
  * 
@@ -138,19 +145,38 @@ function(keepFocus) {
 	if (this._newTaskInputEl && Dwt.getVisibility(this._newTaskInputEl)) {
 		var name = AjxStringUtil.trim(this._newTaskInputEl.value);
 		if (name != "") {
-			var respCallback = new AjxCallback(this, this._saveNewTaskResponse, [keepFocus]);
-            var errorCallback = new AjxCallback(this, this._handleNewTaskError);
-			this._controller.quickSave(name, respCallback, errorCallback);
+            var regex = new RegExp("[" + ZmTaskEditView.INVALID_SUBJECT_CHAR + "]");
+            if (regex.test(name)) {
+                this.showErrorMessage(ZmMsg.invalidTaskSubject);
+            } else {
+                var respCallback = new AjxCallback(this, this._saveNewTaskResponse, [keepFocus]);
+                var errorCallback = new AjxCallback(this, this._handleNewTaskError);
+                this._controller.quickSave(name, respCallback, errorCallback);
+            }
 		} else {
 			this._saveNewTaskResponse(keepFocus);
 		}
 	}
 };
 
+ZmTaskListView.prototype.showErrorMessage =
+    function(errorMsg) {
+        var dialog = appCtxt.getMsgDialog();
+        dialog.reset();
+        var msg = errorMsg ? AjxMessageFormat.format(ZmMsg.errorSavingWithMessage, errorMsg) : ZmMsg.errorSaving;
+        dialog.setMessage(msg, DwtMessageDialog.CRITICAL_STYLE);
+        dialog.popup();
+        dialog.registerCallback(DwtDialog.OK_BUTTON, function() {
+                dialog.popdown();
+                this._newTaskInputEl.focus();
+            },this);
+        this.enableToolbar(true);
+    };
+
 ZmTaskListView.prototype._saveNewTaskResponse =
 function(keepFocus) {
+    this._newTaskInputEl.value = "";
 	if (keepFocus) {
-		this._newTaskInputEl.value = "";
 		this._newTaskInputEl.focus();
 	} else {
 		Dwt.setVisibility(this._newTaskInputEl, false);
@@ -599,7 +625,9 @@ function(el) {
 
 		this._resetInputSize(el);
 	} else {
-		this._newTaskInputEl.value = "";
+        // Preserve any existing newTask text.  This will be cleared when
+        // a task is successfully created, leaving it empty for the next task
+		//this._newTaskInputEl.value = "";
 	}
 	Dwt.setVisibility(this._newTaskInputEl, true);
 	this._newTaskInputEl.focus();
@@ -618,9 +646,11 @@ function(parent) {
 
 	var hList = [];
     var sortBy = "date";
+    var field  =  ZmItem.F_DATE;
     var activeSortBy = this.getActiveSearchSortBy();
     if (activeSortBy && ZmTaskListView.SORTBY_HASH[activeSortBy]) {
-			sortBy = ZmTaskListView.SORTBY_HASH[activeSortBy].msg;
+		sortBy = ZmTaskListView.SORTBY_HASH[activeSortBy].msg;
+        field = ZmTaskListView.SORTBY_HASH[activeSortBy].field;
 	}
 
     if (appCtxt.get(ZmSetting.SHOW_SELECTION_CHECKBOX)) {
@@ -638,7 +668,7 @@ function(parent) {
         hList.push(new DwtListHeaderItem({field:ZmItem.F_DATE, text:ZmMsg.dateDue, width:ZmTaskListView.COL_WIDTH_DATE_DUE, sortable:ZmItem.F_DATE}));
     }
 	else {
-        hList.push(new DwtListHeaderItem({field:ZmItem.F_SORTED_BY, text:AjxMessageFormat.format(ZmMsg.arrangedBy, ZmMsg[sortBy]), sortable:ZmItem.F_SORTED_BY, resizeable:false}));
+        hList.push(new DwtListHeaderItem({field:ZmItem.F_SORTED_BY, text:AjxMessageFormat.format(ZmMsg.arrangedBy, ZmMsg[sortBy]), sortable:field, resizeable:false}));
 	}
 	return hList;
 };
@@ -693,6 +723,17 @@ function(ev) {
 	if (ev.type != this.type)
 		return;
 
+    var folderId = this._controller.getList().search.folderId;
+    if (appCtxt.getById(folderId) &&
+        appCtxt.getById(folderId).isRemote())
+    {
+        folderId = appCtxt.getById(folderId).getRemoteId();
+    }
+
+    if (appCtxt.isOffline) {
+        folderId = ZmOrganizer.getSystemId(folderId);
+    }
+
     //TODO: Optimize ChangeListener logic
 	var items = ev.getDetail("items") || ev.items;
     var filter = this._controller.getAllowableTaskStatus();
@@ -702,16 +743,6 @@ function(ev) {
 			var item = items[i];
 
 			// skip if this item does not belong in this list.
-			var folderId = this._controller.getList().search.folderId;
-			if (appCtxt.getById(folderId) &&
-				appCtxt.getById(folderId).isRemote())
-			{
-				folderId = appCtxt.getById(folderId).getRemoteId();
-			}
-
-			if (appCtxt.isOffline) {
-				folderId = ZmOrganizer.getSystemId(folderId);
-			}
 
 			if (folderId && folderId != item.folderId) { continue; }			// does not belong to this folder
 			if (this._list && this._list.contains(item)) { continue; }			// skip if we already have it
@@ -781,7 +812,8 @@ function(ev) {
         var needsSort = false;
         for (var i = 0, len = items.length; i < len; i++) {
 			var item = items[i];
-            var movedHere = item.type == ZmId.ITEM_CONV ? item.folders[this._folderId] : item.folderId == this._folderId;
+            var evOp = (ev.event == ZmEvent.E_MOVE) ? "MOVE" : "DELETE";
+            var movedHere = item.type == ZmId.ITEM_CONV ? item.folders[folderId] : item.folderId == folderId;
 			if (movedHere && ev.event == ZmEvent.E_MOVE) {
 				// We've moved the item into this folder
 				if (this._getRowIndex(item) === null) { // Not already here
@@ -812,7 +844,6 @@ function(ev) {
 
     //Handle Create Notification
     if(ev.event == ZmEvent.E_MOVE){
-        var folderId = this._controller._folderId || this.folderId || this._folderId;
         for (var i = 0; i < items.length; i++) {
             var item = items[i];
             if(item && item.folderId == folderId && this._getRowIndex(item) === null){
@@ -844,8 +875,14 @@ function(div) {
 ZmTaskListView._handleOnBlur =
 function(ev) {
 	var appCtxt = window.parentAppCtxt || window.appCtxt;
-	var tlv = appCtxt.getApp(ZmApp.TASKS).getTaskListController().getListView();
-	tlv.saveNewTask();
+    var tlv = appCtxt.getApp(ZmApp.TASKS).getTaskListController().getListView();
+    var appController = appCtxt.getAppController();
+    if (appController._activeApp == ZmId.APP_TASKS) {
+        tlv.saveNewTask();
+    } else {
+        // Switched tabs, hide the newTask text, preserve till next time
+        tlv.hideNewTask();
+    }
 };
 
 ZmTaskListView.prototype._selectItem =

@@ -76,6 +76,9 @@ ZmTaskEditView.STATUS_VALUES = [
 ZmTaskEditView.DIALOG_X = 50;
 ZmTaskEditView.DIALOG_Y = 100;
 
+// Characters disallowed in the Task subject name
+ZmTaskEditView.INVALID_SUBJECT_CHAR = "/\":";
+
 
 // Public Methods
 
@@ -216,12 +219,14 @@ function(calItem) {
     }
     
 	calItem.setAllDayEvent(true);
-    calItem.pComplete = this.getpCompleteInputValue();
+    var completion = this.getpCompleteInputValue();
+    // Should always be valid at this point - made it past isValid
+    calItem.pComplete = completion.valid ? completion.percent : 0;
 	calItem.priority = this._getPriority();
 	calItem.status = this._statusSelect.getValue();
 
     //bug:51913 disable alarm when stats is completed
-    if(this.getpCompleteInputValue() == 100 && this._statusSelect.getValue() == ZmCalendarApp.STATUS_COMP) {
+    if(calItem.pComplete == 100 && this._statusSelect.getValue() == ZmCalendarApp.STATUS_COMP) {
        calItem.alarm = false;
        calItem.remindDate = new Date();
        calItem.setTaskReminder(null);
@@ -243,23 +248,31 @@ ZmTaskEditView.prototype.isValid =
 function() {
 	var errorMsg;
 	var subj = AjxStringUtil.trim(this._subjectField.getValue());
+    if (subj && subj.length) {
 
-	if (subj && subj.length) {
-		var startDate = AjxStringUtil.trim(this._startDateField.value);
-        var endDate =   AjxStringUtil.trim(this._endDateField.value);
-		if (startDate.length > 0 && (!ZmTimeSelect.validStartEnd(this._startDateField, this._endDateField))) {
-            if(endDate.length <= 0) {
-                errorMsg = ZmMsg.errorEmptyTaskDueDate;
-            } else {
-                errorMsg = ZmMsg.errorInvalidDates;
+        var regex = new RegExp("[" + ZmTaskEditView.INVALID_SUBJECT_CHAR + "]");
+        if (regex.test(subj)) {
+            errorMsg = ZmMsg.invalidTaskSubject;
+        } else {
+            var startDate = AjxStringUtil.trim(this._startDateField.value);
+            var endDate =   AjxStringUtil.trim(this._endDateField.value);
+            if (startDate.length > 0 && (!ZmTimeSelect.validStartEnd(this._startDateField, this._endDateField))) {
+                if(endDate.length <= 0) {
+                    errorMsg = ZmMsg.errorEmptyTaskDueDate;
+                } else {
+                    errorMsg = ZmMsg.errorInvalidDates;
+                }
             }
-		}
-		var remindTime =  ZmTimeSelect.parse(this._remindTimeSelect.getInputField().getValue());
-		if (!remindTime) {
-			errorMsg = AjxMsg.invalidTimeString;
-		}
-        if(Math.round(this.getpCompleteInputValue()) > 100) {
-           errorMsg = ZmMsg.errorInvalidPercentage;
+            var remindTime =  ZmTimeSelect.parse(this._remindTimeSelect.getInputField().getValue());
+            if (!remindTime) {
+                errorMsg = AjxMsg.invalidTimeString;
+            }
+            var completion =  this.getpCompleteInputValue();
+            if (!completion.valid) {
+                errorMsg = ZmMsg.errorInvalidPercentage;
+            } else if ((completion.percent < 0) || (completion.percent > 100)) {
+                errorMsg = ZmMsg.errorInvalidPercentage;
+            }
         }
     } else {
 		errorMsg = ZmMsg.errorMissingSubject;
@@ -352,8 +365,16 @@ function(flag) {
 };
 
 ZmTaskEditView.prototype.getpCompleteInputValue = function() {
-  var pValue = this._pCompleteSelectInput.getValue();
-  return Math.round(pValue.replace(/[%]/g,""));  
+    var pValue  = this._pCompleteSelectInput.getValue();
+    pValue      = pValue.replace(/[%]/g,"");
+    var regex   = new RegExp("^[0-9]*$");
+    var valid   = regex.test(pValue);
+    var percent = 0;
+    if (valid) {
+        percent = Math.round(pValue);
+    }
+
+  return { valid: valid, percent: percent};
 };
 
 ZmTaskEditView.prototype._unSelectRemindersCheckbox = function() {
@@ -567,7 +588,8 @@ function(excludeAttendees) {
 	vals.push(this._location.getValue());
 	vals.push(this._getPriority());
 	vals.push(this._folderSelect.getValue());
-	vals.push(this.getpCompleteInputValue());
+    var completion = this.getpCompleteInputValue();
+	vals.push(completion.valid ? completion.percent : 0);
 	vals.push(this._statusSelect.getValue());
 	var startDate = AjxDateUtil.simpleParseDateStr(this._startDateField.value);
 	if (startDate) vals.push(AjxDateUtil.getServerDateTime(startDate));
@@ -632,16 +654,18 @@ function(inputEl) {
 		return;
 	}
     var newVal = this.getpCompleteInputValue();
-    if (newVal == 100) {
-        this._statusSelect.setSelectedValue(ZmCalendarApp.STATUS_COMP);
-        this._unSelectRemindersCheckbox();   //bug:51913 disable alarm when stats is completed
-    } else if (newVal == 0) {
-        this._statusSelect.setSelectedValue(ZmCalendarApp.STATUS_NEED);
-    } else if ((newVal > 0 || newVal < 100) && (this._statusSelect.getValue() != ZmCalendarApp.STATUS_COMP || this._statusSelect.getValue() != ZmCalendarApp.STATUS_NEED))
-    {
-        this._statusSelect.setSelectedValue(ZmCalendarApp.STATUS_INPR);
+    if (newVal.valid) {
+        if (newVal.percent == 100) {
+            this._statusSelect.setSelectedValue(ZmCalendarApp.STATUS_COMP);
+            this._unSelectRemindersCheckbox();   //bug:51913 disable alarm when stats is completed
+        } else if (newVal.percent == 0) {
+            this._statusSelect.setSelectedValue(ZmCalendarApp.STATUS_NEED);
+        } else if ((newVal.percent > 0 || newVal.percent < 100) && (this._statusSelect.getValue() != ZmCalendarApp.STATUS_COMP ||
+                    this._statusSelect.getValue() != ZmCalendarApp.STATUS_NEED)) {
+            this._statusSelect.setSelectedValue(ZmCalendarApp.STATUS_INPR);
+        }
+        inputEl.value = this.formatPercentComplete(pCompleteString);
     }
-    inputEl.value = this.formatPercentComplete(pCompleteString);
 };
 
 ZmTaskEditView.prototype._pCompleteButtonListener =
@@ -686,7 +710,8 @@ function(ev) {
 		} else if (newVal == ZmCalendarApp.STATUS_NEED) {
 			this._pCompleteSelectInput.setValue(this.formatPercentComplete(0));
 		} else if (newVal == ZmCalendarApp.STATUS_INPR) {
-			if (this.getpCompleteInputValue() == "100") {
+            var completion = this.getpCompleteInputValue();
+            if (completion.valid && (completion.percent == 100)) {
 				this._pCompleteSelectInput.setValue(this.formatPercentComplete(0));
 			}
 		}
