@@ -1153,10 +1153,10 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 
 
 .zdnd_tooltip {
+	@Text-hint@
 	display:none;
 	background-color:white;
 	border:1px inset #F0F0F0;
-	color:#666;
 	height:16px;
 	height:1.8rem;
 	line-height:16px;
