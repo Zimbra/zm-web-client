@@ -1849,7 +1849,7 @@ function(msg) {
 	if (!msg) {
 		msg = this._item;
 	}
-	if (msg.cloneOf) {
+	if (msg && msg.cloneOf) {
 		msg = msg.cloneOf;
 	}
 	//use the helper to get the tags.
