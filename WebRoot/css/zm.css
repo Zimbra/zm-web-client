@@ -589,6 +589,10 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 	height: 16px;
 }
 
+.ZmMsgListColTag .ImgTagStack {
+	margin: 0px;
+}
+
 /* put space between display of tag icons and their names */
 .Tags A {
 	@NoWrap@
