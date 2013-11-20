@@ -4452,7 +4452,6 @@ HTML>BODY .appt-selected .appt_allday_body
 .shortcutKeys-panel {
 	@Text-disabled@
 	color:white;
-	white-space:nowrap;
 }
 
 .shortcutKeys-print {
