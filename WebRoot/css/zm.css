@@ -4447,6 +4447,8 @@ HTML>BODY .appt-selected .appt_allday_body
 	padding:6px;
 	width:250px;
 	background-color:white;
+	line-height:25px; /*for IE8*/
+	line-height:2.5rem;
 }
 
 .shortcutKeys-panel {
