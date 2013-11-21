@@ -1413,7 +1413,7 @@ function(msg, container) {
 	this._headerElement = Dwt.byId(this._htmlElId + "_headerElement");
 
     if (this._inviteMsgView) {
-        if (this._inviteToolbarCellId && this._inviteToolbarCellId) {
+        if (this._inviteToolbarCellId && this._inviteToolbarCellId && this._inviteMsgView._inviteToolbar) {
             this._inviteMsgView._inviteToolbar.reparentHtmlElement(this._inviteToolbarCellId, 0);
         }
         if (this._calendarSelectCellId && this._inviteMsgView._inviteMoveSelect) {
