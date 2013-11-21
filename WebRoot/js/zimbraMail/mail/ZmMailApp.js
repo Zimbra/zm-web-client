@@ -109,7 +109,7 @@ ZmMailApp.INC_MAP[ZmSetting.INC_SMART_HDR]		= [ZmSetting.INC_SMART, false, true]
 ZmMailApp.INC_MAP[ZmSetting.INC_SMART_PRE_HDR]	= [ZmSetting.INC_SMART, true, true];
 
 ZmMailApp.INC_MAP_REV = {};
-for (i in ZmMailApp.INC_MAP) {
+for (var i in ZmMailApp.INC_MAP) {
 	key = (i == ZmSetting.INC_NONE || i == ZmSetting.INC_ATTACH) ? ZmMailApp.INC_MAP[i][0] :
 			  														   ZmMailApp.INC_MAP[i].join("|");
 	ZmMailApp.INC_MAP_REV[key] = i;
