@@ -573,8 +573,9 @@ function(msg) {
 	if (this._isStandalone()) {
 		this._selectedMsg = msg;
 	}
-	else if (this._controller._mailListView) {
-		this._controller._mailListView._selectedMsg = msg;
+	var mlv = this._controller._mailListView;
+	if (mlv) {
+		mlv._selectedMsg = msg;
 	}
 };
 
