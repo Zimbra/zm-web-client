@@ -1671,8 +1671,11 @@ if (ext == null) ext = "";
                 <echo message="Generating ${tinymce.locale.file}" />
 
                 <pathconvert property='tinymce.locales'
-                             refid='tinymce.locales.ref'
                              pathsep='", "'>
+                    <sort>
+                        <fileset refid='tinymce.locales.ref' />
+                    </sort>
+
                     <regexpmapper from="^.*/(.*)\.js" to="\1" />
                 </pathconvert>
 
