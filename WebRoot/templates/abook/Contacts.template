@@ -378,19 +378,17 @@
 				<$ } $>
 				<table class='ZPropertySheet' cellspacing='6'>
 					<tr>
-						<$ if (data.addrbook && !isEdit) { $>
-							<td class='contactLocation'><$= ZmMsg.locationLabel $></td>
-							<td class='companyFolder'>
-								<$= AjxImg.getImageHtml(data.addrbook.getIcon()) $>&nbsp;
-								<$= data.addrbook.getName() $>
+                        <td id='${id}_locationLabel' class='contactLocation'><$= ZmMsg.locationLabel $></td>
+						<$ if ((data.isGal || data.addrbook) && !isEdit) { $>
+							<td id='${id}_locationFolder' class='companyFolder'>
+                                <$ if (data.addrbook) { $>
+								    <$= AjxImg.getImageHtml(data.addrbook.getIcon()) $>&nbsp;<$= data.addrbook.getName() $>
+                                <$ } else { $>
+                                    <$= AjxImg.getImageHtml('GAL') $>&nbsp;<$= ZmMsg.GAL $>
+                                <$ } $>
 							</td>
 						<$ } else if (isEdit) { $>
-							<td class='contactLocation'><$= ZmMsg.locationLabel $></td>
 							<td id='${id}_LOCATION_FOLDER'></td>
-						<$ } else if (data.isGal) { $>
-							<td class='contactLocation'><$= ZmMsg.locationLabel $></td>
-							<td width='16'><$= AjxImg.getImageHtml('GAL') $></td>
-							<td class='companyFolder'><$= ZmMsg.GAL $></td>
 						<$ } $>
 					</tr>
 				</table>
@@ -416,7 +414,7 @@
 			fullnameHtml = '';
 		}
 	$>
-	<div class='contactHeader <$= data.isInTrash ? "Trash" : "" $>'><$= fullnameHtml $></div>
+	<div id='${id}_contactName' class='contactHeader <$= data.isInTrash ? "Trash" : "" $>'><$= fullnameHtml $></div>
 	<$ if (nickname && !isEdit) { $>
 		<div class='contactHeader'>&ldquo;<$= AjxStringUtil.htmlEncode(nickname) $>&rdquo;</div>
 	<$ } $>

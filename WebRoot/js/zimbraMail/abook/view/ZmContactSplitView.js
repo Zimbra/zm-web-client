@@ -31,6 +31,7 @@ ZmContactSplitView = function(params) {
 
 	params.className = params.className || "ZmContactSplitView";
 	params.posStyle = params.posStyle || Dwt.ABSOLUTE_STYLE;
+	params.id = Dwt.getNextId('ZmContactSplitView_');
 	DwtComposite.call(this, params);
 
 	this._controller = params.controller;
