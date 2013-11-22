@@ -1601,19 +1601,22 @@ function(msgId, partId, name, folderId, ex){
 };
 
 ZmBriefcaseController.prototype._getFileConflictDialog =
-function(){
-    if(!this._nameConflictDialog){
-       var dlg = this._nameConflictDialog = appCtxt.getOkCancelMsgDialog();
-       var id = this._nameConflictId = Dwt.getNextId();
-       dlg.setContent(AjxTemplate.expand("briefcase.Briefcase#NameConflictDialog", {id: id}));
-       dlg.setTitle(ZmMsg.addToBriefcaseTitle);
+    function(){
+        if(!this._nameConflictDialog){
 
-       this._renameRadio = document.getElementById(id+'_rename');
-       this._renameField = document.getElementById(id+'_newname');
+            var dlg = new DwtMessageDialog({parent:appCtxt.getShell(), buttons:[DwtDialog.OK_BUTTON, DwtDialog.CANCEL_BUTTON],
+                id: "Briefcase_FileConflictDialog"});
+            this._nameConflictDialog = dlg;
+            var id = this._nameConflictId = Dwt.getNextId();
+            dlg.setTitle(ZmMsg.addToBriefcaseTitle);
+            dlg.setContent(AjxTemplate.expand("briefcase.Briefcase#NameConflictDialog", {id: id}));
 
-    }
-    return this._nameConflictDialog;
-};
+            this._renameRadio = document.getElementById(id+'_rename');
+            this._renameField = document.getElementById(id+'_newname');
+
+        }
+        return this._nameConflictDialog;
+    };
 
 ZmBriefcaseController.prototype.getKeyMapName =
 function() {
