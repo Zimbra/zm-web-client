@@ -1020,7 +1020,11 @@ function(ev) {
 			this._doCheckCompleted(items[i],fItem);
 		}	
 	}
-    var summary = ZmList.getActionSummary(ZmMsg.actionCompleted, items.length, ZmItem.TASK);
+    var summary = ZmList.getActionSummary({
+        actionTextKey:  'actionCompleted',
+        numItems:       items.length,
+        type:           ZmItem.TASK
+    });
     appCtxt.setStatusMsg(summary);
 };
 
