@@ -359,8 +359,10 @@ function(ev){
         appCtxt.accountList.setActiveAccount(item.getAccount());
     }
     var noChange = ev && ev._details && ev._details.oldFolderId == item.folderId;
-    if ((ev.event == ZmEvent.E_MOVE && noChange) || ev.event == ZmEvent.E_DELETE)
+    // Ignore (no preview change) if move to same folder, deletion, or multi-select (shift key)
+    if ((ev.event === ZmEvent.E_MOVE && noChange) || ev.event === ZmEvent.E_DELETE || ev.shiftKey) {
         return;
+    }
 
     if(ev.field == ZmItem.F_EXPAND && this._detailListView._isExpandable(item)){
         this._detailListView.expandItem(item);   
