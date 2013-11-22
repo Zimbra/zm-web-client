@@ -844,10 +844,17 @@ function(ev, id, noFocus) {
 			// we allow user to check "Shared Items" for appointments since it
 			// is based on whats checked in their tree view
 			if (id == ZmItem.APPT || id == ZmId.SEARCH_CUSTOM) {
+				if (this._sharedMenuItemChecked == null) {
+					this._sharedMenuItemChecked = sharedMI.getChecked();
+				}
 				sharedMI.setChecked(false, true);
 				sharedMI.setEnabled(false);
 			} else {
 				sharedMI.setEnabled(true);
+				if (this._sharedMenuItemChecked) {
+					sharedMI.setChecked(true, true);
+				}
+				this._sharedMenuItemChecked = null;
 			}
 		}
 		this._contactSource = ZmItem.CONTACT;
