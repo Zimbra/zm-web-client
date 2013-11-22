@@ -78,10 +78,10 @@ function(contact, isDirty, isBack) {
 	}
 	this.setList(contact.list);
 
-	if (!this._toolbar[this._currentViewId]) {
+	if (!this.getCurrentToolbar()) {
 		this._initializeToolBar(this._currentViewId);
 	}
-	this._resetOperations(this._toolbar[this._currentViewId], 1); // enable all buttons
+	this._resetOperations(this.getCurrentToolbar(), 1); // enable all buttons
 
 	this._createView(this._currentViewId);
 
@@ -169,6 +169,11 @@ function(actionCode) {
 	switch (actionCode) {
 
 		case ZmKeyMap.SAVE:
+			var tb = this.getCurrentToolbar();
+			var saveButton = tb.getButton(ZmOperation.SAVE);
+			if (!saveButton.getEnabled()) {
+				break;
+			}
 			this._saveListener();
 			break;
 
@@ -187,9 +192,9 @@ function(actionCode) {
 ZmContactController.prototype.enableToolbar =
 function(enable) {
 	if (enable) {
-		this._resetOperations(this._toolbar[this._currentViewId], 1);
+		this._resetOperations(this.getCurrentToolbar(), 1);
 	} else {
-		this._toolbar[this._currentViewId].enableAll(enable);
+		this.getCurrentToolbar().enableAll(enable);
 	}
 };
 
