@@ -77,7 +77,7 @@ ZmTaskEditView.DIALOG_X = 50;
 ZmTaskEditView.DIALOG_Y = 100;
 
 // Characters disallowed in the Task subject name
-ZmTaskEditView.INVALID_SUBJECT_CHAR = "/\":";
+ZmTaskEditView.INVALID_SUBJECT_REGEX = /[/\":]/;
 
 
 // Public Methods
@@ -226,7 +226,7 @@ function(calItem) {
 	calItem.status = this._statusSelect.getValue();
 
     //bug:51913 disable alarm when stats is completed
-    if(calItem.pComplete == 100 && this._statusSelect.getValue() == ZmCalendarApp.STATUS_COMP) {
+    if (calItem.pComplete === 100 && this._statusSelect.getValue() === ZmCalendarApp.STATUS_COMP) {
        calItem.alarm = false;
        calItem.remindDate = new Date();
        calItem.setTaskReminder(null);
@@ -250,8 +250,7 @@ function() {
 	var subj = AjxStringUtil.trim(this._subjectField.getValue());
     if (subj && subj.length) {
 
-        var regex = new RegExp("[" + ZmTaskEditView.INVALID_SUBJECT_CHAR + "]");
-        if (regex.test(subj)) {
+        if (ZmTaskEditView.INVALID_SUBJECT_REGEX.test(subj)) {
             errorMsg = ZmMsg.invalidTaskSubject;
         } else {
             var startDate = AjxStringUtil.trim(this._startDateField.value);
@@ -367,8 +366,7 @@ function(flag) {
 ZmTaskEditView.prototype.getpCompleteInputValue = function() {
     var pValue  = this._pCompleteSelectInput.getValue();
     pValue      = pValue.replace(/[%]/g,"");
-    var regex   = new RegExp("^[0-9]*$");
-    var valid   = regex.test(pValue);
+    var valid = /^\d*$/.test(pValue);
     var percent = 0;
     if (valid) {
         percent = Math.round(pValue);

@@ -145,8 +145,7 @@ function(keepFocus) {
 	if (this._newTaskInputEl && Dwt.getVisibility(this._newTaskInputEl)) {
 		var name = AjxStringUtil.trim(this._newTaskInputEl.value);
 		if (name != "") {
-            var regex = new RegExp("[" + ZmTaskEditView.INVALID_SUBJECT_CHAR + "]");
-            if (regex.test(name)) {
+            if (ZmTaskEditView.INVALID_SUBJECT_REGEX.test(name)) {
                 this.showErrorMessage(ZmMsg.invalidTaskSubject);
             } else {
                 var respCallback = new AjxCallback(this, this._saveNewTaskResponse, [keepFocus]);
@@ -775,7 +774,7 @@ function(ev) {
                 // If task status is modified and item is not part of current view
                 var parentNode = div.parentNode;
                 parentNode && parentNode.removeChild(div);
-                this._controller._resetToolbarOperations();
+                this._controller._resetToolbarOperations(this.view);
                 if(this._controller.isReadingPaneOn()) {
                     this._controller.getTaskMultiView().getTaskView().reset();
                 }
@@ -812,8 +811,8 @@ function(ev) {
         var needsSort = false;
         for (var i = 0, len = items.length; i < len; i++) {
 			var item = items[i];
-            var evOp = (ev.event == ZmEvent.E_MOVE) ? "MOVE" : "DELETE";
-            var movedHere = item.type == ZmId.ITEM_CONV ? item.folders[folderId] : item.folderId == folderId;
+            var evOp = (ev.event == ZmEvent.E_MOVE) ? ZmEvent.E_MOVE : ZmEvent.E_DELETE;
+            var movedHere = (item.type === ZmId.ITEM_CONV) ? item.folders[folderId] : item.folderId === folderId;
 			if (movedHere && ev.event == ZmEvent.E_MOVE) {
 				// We've moved the item into this folder
 				if (this._getRowIndex(item) === null) { // Not already here
@@ -834,7 +833,7 @@ function(ev) {
         if(needsSort) {
             this.checkTaskReplenishListView();
         }
-		this._controller._resetToolbarOperations();
+		this._controller._resetToolbarOperations(this.view);
 		if(this._controller.isReadingPaneOn()) {
 			this._controller.getTaskMultiView().getTaskView().reset();
 		}
