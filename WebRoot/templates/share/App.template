@@ -96,21 +96,21 @@
 <$ } $>
 	    <tr>
 	        <th colspan=2 style='padding-bottom:5px; text-align:left; max-width:350px;'>
-                <div style='overflow-x:hidden;'><$= AjxStringUtil.htmlEncode(data.name) $></div>
+                <div id='tt_f_name' style='overflow-x:hidden;'><$= AjxStringUtil.htmlEncode(data.name) $></div>
             </th>
 	    </tr>
 <$ if (data.numUnread) { $>
 		<tr>
-			<td valign='top'>
+			<td id='tt_u_label' valign='top'>
 				<$= AjxMessageFormat.format(ZmMsg.makeLabel, data.unreadLabel) $>
 			</td>
-			<td valign='top' style='font-weight:bold'>
+			<td id='tt_u_count' valign='top' style='font-weight:bold'>
 				<$= data.numUnread $>
 			</td>
 		</tr>
 <$ } $>
 		<tr>
-			<td valign='top' style='padding-right:20px'>
+			<td id='tt_m_label' valign='top' style='padding-right:20px'>
 				<$ if (data.itemText == ZmMsg.messages) { $>
 				    <$= ZmMsg.totalMessagesLabel $>
 				<$ } $>
@@ -118,16 +118,16 @@
                     <$= AjxMessageFormat.format(ZmMsg.makeLabel, data.itemText) $>
 			    <$ } $>
 			</td>
-			<td valign='top'>
+			<td id='tt_m_count' valign='top'>
 				<$= data.numTotal $>
 			</td>
 		</tr>
 <$ if (data.sizeTotal) { $>
 		<tr>
-			<td valign='top'>
+			<td id='tt_s_label' valign='top'>
 				<$= ZmMsg.sizeLabel $>
 			</td>
-			<td valign='top'>
+			<td id='tt_s_value' valign='top'>
 				<$= AjxUtil.formatSize(data.sizeTotal) $>
 			</td>
 		</tr>
