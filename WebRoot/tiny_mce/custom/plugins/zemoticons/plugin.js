@@ -32,12 +32,17 @@ tinymce.PluginManager.add('zemoticons', function(editor, url) {
 
         emoticonsHtml = ['<table role="presentation" class="mce-grid">'];
 
-        var emoticons = AjxUtil.getHashKeys(tinyMCE.emoticon_map);
+        var emoticons = [];
+        for (var icon in tinyMCE.emoticon_map)
+            emoticons.push(icon);
 
         while (emoticons.length) {
             emoticonsHtml.push('<tr>');
 
-            AjxUtil.foreach(emoticons.splice(0, 4), function(icon) {
+            var row = emoticons.splice(0, 4);
+
+            for (var i = 0; i < row.length; i++) {
+                var icon = row[i];
                 var emoticonUrl = tinyMCE.emoticon_map[icon];
 
                 emoticonsHtml.push('<td><a href="#" data-mce-url="');
@@ -48,7 +53,7 @@ tinymce.PluginManager.add('zemoticons', function(editor, url) {
                 emoticonsHtml.push(icon);
                 emoticonsHtml.push('">');
                 emoticonsHtml.push('</a></td>');
-            });
+            };
 
             emoticonsHtml.push('</tr>');
         }

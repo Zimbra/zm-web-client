@@ -82,12 +82,12 @@
     <c:if test="${(isHtml)}" >
         setTimeout(function() {
             try{
-                myEditor.saveHTML();
+                myEditor.save();
                 _fields["body"] = trim(document.getElementById("body").value);
             }catch(ex){// we may come here if editor is not yet loaded
                 setTimeout(function() {
                     try{
-                        myEditor.saveHTML();
+                        myEditor.save();
                         _fields["body"] = trim(document.getElementById("body").value);
                     }catch(ex1){}
                 },4000);//wait for 4 more seconds
@@ -108,7 +108,7 @@
             }
         }
     <c:if test="${(isHtml)}">
-        myEditor.saveHTML();
+        myEditor.save();
         _bodyVal = trim(document.getElementById("body").value);
         if(trim(_fields["body"]) != _bodyVal) {
             _checkFail = true;

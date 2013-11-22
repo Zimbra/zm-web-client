@@ -22,13 +22,14 @@
 <%@ attribute name="mailbox" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.bean.ZMailboxBean" %>
 <fmt:setBundle basename='/messages/AjxMsg' var='AjxMsg' scope='request' />
 <app:spellcheck/>
-<script type="text/javascript" src="../js/ajax/3rdparty/tinymce/tiny_mce.js"></script>
+<app:loadTinyMCE />
+
 <script type="text/javascript">
 <!--             
 var myEditor;
 
     var saveContentToTextarea = function(){
-        myEditor.saveHTML();
+        myEditor.save();
         var _htmlval = document.getElementById("body").value;
         var stripHTML = /<\S[^><]*>/g;
         var stripNBSP  = /&nbsp;/g
@@ -37,7 +38,7 @@ var myEditor;
     };
 
     var saveToTextareaToSend = function(){
-        myEditor.saveHTML();
+        myEditor.save();
         var _htmlval = document.getElementById("body").value;
         var stripHTML = /<\S[^><]*>/g;
         var stripNBSP  = /&nbsp;/g
@@ -67,7 +68,9 @@ var myEditor;
             </c:forEach>
         </c:forEach>
 
-        var onTinyMCEEditorInit = function(ed){
+        var onTinyMCEEditorInit = function(ev){
+            var ed = ev.target;
+
             ed.dom.setStyles( ed.getBody(), {
                 "font-family" : "${mailbox.prefs.htmlEditorDefaultFontFamily}",
                 "font-size"   : "${mailbox.prefs.htmlEditorDefaultFontSize}",
@@ -77,7 +80,9 @@ var myEditor;
             enableSpellCheck(ed);
         };
 
-        var handleContentLoad = function(ed){
+        var handleContentLoad = function(ev){
+            var ed = ev.target;
+
             var imageArray = ed.dom.select("img[dfsrc^='doc:']"),
                 path = ["/home/", "${mailbox.accountInfo.name}", "/"].join(""),
                 image;
@@ -87,37 +92,32 @@ var myEditor;
             }
         };
 
-        /* Spellcheck button action*/
-        var onSpellCheck = function(event){
-            this.dom.loadCSS("../css/spellcheck.css");
-            var onSpellCheck = function(event){
-                var spellCheckerId = this.controlManager.get("spellchecker").id, //Spellchecker button id
-                    dom;
-                if(spellCheckerId){
-                    dom = tinyMCE.DOM;
-                    if( dom.hasClass(spellCheckerId, "mceButtonActive") ){
-                        dom.removeClass(spellCheckerId, "mceButtonActive");
-                        this.endSpellCheck();
-                    }
-                    else{
-                        dom.addClass(spellCheckerId, "mceButtonActive");
-                        this.startSpellCheck();
-                    }
-                }
-            };
-            return onSpellCheck.call(this, event);
-        };
+        if (window.tinymce) {
+            tinymce.PluginManager.add('zspellchecker', function(ed) {
+                tinyMCE.DOM.loadCSS("../css/spellcheck.css");
 
-        //Refer http://www.tinymce.com/i18n/index.php?ctrl=lang&act=download&pr_id=1
-        var tinyMCELocaleArray = ['sq', 'ar', 'hy', 'az', 'eu', 'be', 'bn', 'nb', 'bs', 'br', 'bg', 'my', 'ca', 'km', 'ch', 'zh', 'hr', 'cs', 'da', 'dv', 'nl', 'en', 'eo', 'et', 'fi', 'fr', 'gl', 'ka', 'de', 'el', 'gu', 'he', 'hi', 'hu', 'is', 'id', 'ia', 'it', 'ja', 'kl', 'ko', 'lv', 'lt', 'lb', 'mk', 'ms', 'ml', 'mn', 'se', 'no', 'nn', 'fa', 'pl', 'pt', 'ps', 'ro', 'ru', 'sc', 'sr', 'si', 'sk', 'sl', 'es', 'sv', 'ta', 'tt', 'te', 'th', 'tn', 'tr', 'tw', 'uk', 'ur', 'vi', 'cy', 'zu', 'zh-tw', 'cn', 'zh-cn'],
-            locale = "${mailbox.prefs.locale}" || "en";
+                /* Spellcheck button action*/
+                function onSpellCheck(event) {
+                    var spellChecker = event.target; //Spellchecker button id
 
-        locale = locale.toLowerCase().replace("_", "-");
-        if (tinymce.inArray(tinyMCELocaleArray, locale) === -1) {
-            locale = locale.substr(0, 2);
-            if (tinymce.inArray(tinyMCELocaleArray, locale) === -1) {
-                locale = "en";
-            }
+                    if (!spellChecker)
+                        return;
+
+                    if (ed.dom.hasClass(spellChecker, "mce-active") ){
+                        ed.dom.removeClass(spellChecker, "mce-active");
+                        ed.endSpellCheck();
+                    } else {
+                        ed.dom.addClass(spellChecker, "mce-active");
+                        ed.startSpellCheck();
+                    }
+                };
+
+                ed.addButton('zspellchecker', {
+                    onclick: onSpellCheck,
+                    icon: "spellchecker",
+                    title: "Check spelling"
+                });
+            });
         }
 
         var tinyMCEInitObj = {
@@ -128,17 +128,14 @@ var myEditor;
             <c:if test="${param.op eq 'reply' or param.op eq 'replyAll'}" >
                 auto_focus : "body",
             </c:if>
-            plugins : "advlist,inlinepopups,table,paste,directionality,emotions" + (tinymce.isIE ? "" : ",autolink"),
-            theme : "advanced",
-            theme_advanced_buttons1 : "fontselect,fontsizeselect,forecolor,backcolor,|,bold,italic,underline,strikethrough,|,bullist,numlist,|,outdent,indent,|,justifyleft,justifycenter,justifyright,|,image,link,unlink,emotions,|,spellchecker",
-            theme_advanced_buttons2 : "formatselect,undo,redo,|,removeformat,|,pastetext,|,tablecontrols,|,blockquote,hr,charmap",
-            theme_advanced_buttons3 : "",
-            theme_advanced_buttons4 : "",
-            theme_advanced_toolbar_location : "top",
-            theme_advanced_toolbar_align : "left",
-            theme_advanced_resizing : true,
-            theme_advanced_fonts : fonts.join(";"),
-            theme_advanced_statusbar_location : "none",
+            plugins : "advlist table paste directionality zspellchecker zemoticons image link" + (tinymce.isIE ? "" : " autolink"),
+            theme : "modern",
+            toolbar_items_size: 'small',
+            toolbar1 : "fontselect fontsizeselect forecolor backcolor | bold italic underline strikethrough | bullist numlist | outdent indent | alignleft aligncenter alignright alignjustify | image link unlink zemoticons | zspellchecker",
+            toolbar2 : "formatselect undo redo | removeformat | pastetext | table | blockquote hr charmap",
+            font_formats : fonts.join(";"),
+            statusbar : false,
+            menubar : false,
             convert_urls : false,
             verify_html : false,
             gecko_spellcheck : true,
@@ -147,28 +144,22 @@ var myEditor;
             table_default_cellpadding : 3,
             table_default_border: 1,
             content_css : false,
-            language : locale,
-            theme_advanced_show_current_color : true,
+            language : tinyMCE.getlanguage("${mailbox.prefs.locale}"),
             paste_retain_style_properties : "all",
             paste_remove_styles_if_webkit : false,
             setup : function(ed) {
-                ed.onInit.add(onTinyMCEEditorInit);
-                ed.onLoadContent.add(handleContentLoad);
-                ed.onBeforeRenderUI.add(function() {
-                    tinymce.ScriptLoader.loadScripts(['../js/ajax/3rdparty/tinymce/themes/advanced/Zmeditor_template.js']);
-                });
-                ed.onSaveContent.add(function(ed, o) {
+                ed.on('init', onTinyMCEEditorInit);
+                ed.on('LoadContent', handleContentLoad);
+                ed.on('SaveContent', function(ev) {
+                    var ed = ev.target;
+
                     if (!ed.isDirty() && ed.getContent() == "<div></div>") {
-                        o.content = "";
+                        ed.content = "";
                     }
                 });
-                ed.onBeforeSetContent.add(function(ed, o) {
+                ed.on('BeforeSetContent', function(ed) {
                     // Replaces all double br elements for avoiding enter issue
-                    o.content = o.content.replace(/<br><br>/ig, '<br><div><br></div>');
-                });
-                ed.addButton('spellchecker', {
-                    onclick : onSpellCheck,
-                    title: "Check spelling"
+                    ed.content = ed.content.replace(/<br><br>/ig, '<br><div><br></div>');
                 });
             }
         };

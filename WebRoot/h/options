@@ -206,6 +206,7 @@
     </c:if>
 </c:set>
 
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <app:view mailbox="${mailbox}" title="${title}" context="${null}" selected='options' folders="true" searches="true" tags="true" keys="true" editmode="true">
 
     <form action="" method="post" name="optionsForm" onsubmit="cancelOnbeforeUnload();" accept-charset="utf-8">
@@ -353,7 +354,7 @@ grabFieldValues = function(){
 grabSignatures = function () {
 	for(var j = 0 ;j < sigcount ; j++) {
 		if(myEdit[j] != null) {
-		myEdit[j].saveHTML();
+		myEdit[j].save();
 		var fname = "signatureValue"+j;
 		var sigValue = trim(document.getElementById(fname).value);
 		_fields[fname] = sigValue;
@@ -392,7 +393,7 @@ checkForChanges = function(){
     <c:if test="${param.selected eq 'signatures'}">
         for(var j = 0 ;j < sigcount ; j++) {
             if(myEdit[j] != null) {
-                myEdit[j].saveHTML();
+                myEdit[j].save();
                 var fname = "signatureValue"+j;
                 var sigValue = trim(document.getElementById(fname).value);
                 if(trim(_fields[fname]) != sigValue) {
@@ -401,7 +402,7 @@ checkForChanges = function(){
             }
         }
         if(document.getElementById("newSignatureValue")) {
-            myEditor.saveHTML();
+            myEditor.save();
             var newSig = trim(document.getElementById("newSignatureValue").value);
             if(trim(_fields["newSignatureValue"]) != newSig) {
                 _checkFail = true;

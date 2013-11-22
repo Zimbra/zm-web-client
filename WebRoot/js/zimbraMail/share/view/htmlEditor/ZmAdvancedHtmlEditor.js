@@ -67,21 +67,6 @@ ZmAdvancedHtmlEditor.prototype.toString = function() { return "ZmAdvancedHtmlEdi
 ZmAdvancedHtmlEditor.TINY_MCE_PATH = "/js/ajax/3rdparty/tinymce";
 ZmAdvancedHtmlEditor.DELTA_HEIGHT = 6;
 
-ZmAdvancedHtmlEditor.LOCALE_MAP = {
-	/* TinyMCE specifies a region */
-	fr: "fr_FR",
-	hu: "hu_HU",
-	ko: "ko_KR",
-	pt: "pt_PT",
-	sv: "sv_SE",
-	th: "th_TH",
-	tr: "tr_TR",
-
-	/* remappings */
-	zh_HK: "zh_TW",
-};
-
-
 ZmAdvancedHtmlEditor.prototype.getEditor =
 function() {
 	return  (window.tinyMCE) ? tinyMCE.get(this._bodyTextAreaId) : null;
@@ -732,6 +717,7 @@ function(id, content) {
         height: "auto",
         table_default_cellpadding : 3,
         table_default_border: 1,
+        language: tinyMCE.getlanguage(appCtxt.get(ZmSetting.LOCALE_NAME)),
         directionality : appCtxt.get(ZmSetting.COMPOSE_INIT_DIRECTION),
         paste_retain_style_properties : "all",
         paste_remove_styles_if_webkit : false,
@@ -747,15 +733,6 @@ function(id, content) {
             ed.on('BeforeExecCommand', obj.onBeforeExecCommand.bind(obj));
 		}
     };
-
-	var locale = appCtxt.get(ZmSetting.LOCALE_NAME);
-	locale = ZmAdvancedHtmlEditor.LOCALE_MAP[locale] || locale;
-
-	// check the locale against the generated list
-	if (tinyMCE.locale_list && AjxUtil.indexOf(tinyMCE.locale_list, locale) >= 0) {
-        tinyMCEInitObj.language = locale,
-        tinyMCEInitObj.language_load = true;
-	}
 
 	if( this._mode === DwtHtmlEditor.HTML ){
         Dwt.setVisible(obj.getHtmlElement(), false);
@@ -850,9 +827,6 @@ ZmAdvancedHtmlEditor.prototype.onInit = function(ev) {
 
     obj.getEditorContainer().setFocusMember(obj.restoreFocus.bind(obj, ed));
 
-    if (tinymce.settings && tinymce.settings.language_load === false){
-        tinymce.settings.language_load = true;
-    }
     ed.on('open', ZmAdvancedHtmlEditor.onPopupOpen);
     if (view && view.toString() === "ZmComposeView" && ZmDragAndDrop.isSupported()) {
         var dnd = view._dnd;
