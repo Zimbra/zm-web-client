@@ -582,8 +582,17 @@ function(otherAccount) {
 */
 ZmFolder.prototype.mayContain =
 function(what, folderType, ignoreExisting) {
-	if (!what) { return true; }
-	if (this.isFeed() /*|| this.isSyncIssuesFolder()*/) { return false; }
+
+	if (!what) {
+		return true;
+	}
+	if (this.isFeed() /*|| this.isSyncIssuesFolder()*/) {
+		return false;
+	}
+	// placeholder for showing a large number of folders
+	if (this.id === ZmFolder.ID_LOAD_FOLDERS) {
+		return false;
+	}
 
 	var thisType = folderType || this.type;
 	var invalid = false;
