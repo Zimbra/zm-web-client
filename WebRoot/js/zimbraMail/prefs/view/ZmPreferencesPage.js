@@ -31,6 +31,7 @@
  */
 ZmPreferencesPage = function(parent, section, controller, id) {
 	if (arguments.length == 0) return;
+	id = id || ("Prefs_Pages_" + section.id);
 	DwtTabViewPage.call(this, parent, "ZmPreferencesPage", null, id);
 
 	this._section = section;
@@ -609,7 +610,7 @@ ZmPreferencesPage.prototype._setupSelect =
 function(id, setup, value) {
 	value = this._prepareValue(id, setup, value);
 
-	var params = {parent:this};
+	var params = {parent: this, id: "Prefs_Select_" + id};
 	for (var p in setup.displayParams) {
 		params[p] = setup.displayParams[p];
 	}
@@ -638,7 +639,9 @@ ZmPreferencesPage.prototype._setupComboBox =
 function(id, setup, value) {
 	value = this._prepareValue(id, setup, value);
 
-	var cboxObj = new DwtComboBox({parent:this});
+	var params = {parent: this, id: "Prefs_ComboBox_" + id};
+
+	var cboxObj = new DwtComboBox(params);
 	this.setFormObject(id, cboxObj);
 
 	var options = setup.options || setup.displayOptions || setup.choices || [];
@@ -659,7 +662,8 @@ ZmPreferencesPage.prototype._setupRadioGroup =
 function(id, setup, value) {
 	value = this._prepareValue(id, setup, value);
 
-	var container = new DwtComposite(this);
+	var params = {parent: this, id: "Prefs_RadioGroup_" + id};
+	var container = new DwtComposite(params);
 
 	// build horizontally-oriented radio group, if needed
 	var orient = setup.orientation || ZmPref.ORIENT_VERTICAL;
@@ -739,7 +743,8 @@ function(radioIds) {
 
 ZmPreferencesPage.prototype._setupCheckbox =
 function(id, setup, value) {
-	var checkbox = new DwtCheckbox({parent:this, checked:value});
+	var params = {parent: this, checked: value, id: "Prefs_Checkbox_" + id};
+	var checkbox = new DwtCheckbox(params);
 	this.setFormObject(id, checkbox);
 	var text = setup.displayFunc ? setup.displayFunc() : setup.displayName;
 	var cboxLabel = ZmPreferencesPage.__formatLabel(text, value);
@@ -763,7 +768,8 @@ function(id, setup, value) {
 	value = this._prepareValue(id, setup, value);
 	var params = {
 		parent: this, type: setup.type ? setup.type : DwtInputField.STRING, initialValue: value, size: setup.cols || 40,
-		rows: setup.rows, wrap: setup.wrap, maxLen:setup.maxLen, hint:setup.hint
+		rows: setup.rows, wrap: setup.wrap, maxLen:setup.maxLen, hint:setup.hint,
+		id: "Prefs_Input_" + id
 	};
 	var input = new DwtInputField(params);
 	this.setFormObject(id, input);
@@ -829,7 +835,9 @@ function(tabGroup) {
 
 ZmPreferencesPage.prototype._setupColor =
 function(id, setup, value) {
-	var picker = new DwtButtonColorPicker({parent:this});
+
+	var params = {parent: this, id: "Prefs_ColorPicker_" + id};
+	var picker = new DwtButtonColorPicker(params);
 	picker.setImage("FontColor");
 	picker.showColorDisplay(true);
 	picker.setToolTipContent(ZmMsg.fontColor);
@@ -870,7 +878,8 @@ function(id, setup, value) {
 
 ZmPreferencesPage.prototype._setupLocales =
 function(id, setup, value) {
-	var button = new DwtButton({parent:this});
+	var params = {parent: this, id: "Prefs_Locale_" + id};
+	var button = new DwtButton(params);
 	button.setSize(60, Dwt.DEFAULT);
 	button.setMenu(new AjxListener(this, this._createLocalesMenu, [setup]));
 	this._showLocale(value, button);
