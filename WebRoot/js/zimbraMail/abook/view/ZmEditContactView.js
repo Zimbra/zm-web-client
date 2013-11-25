@@ -893,14 +893,14 @@ ZmEditContactView.prototype._contactChangeListener = function(ev) {
  * @private
  */
 ZmEditContactView.prototype.__getDetailsMenu = function() {
-	var menu = new DwtMenu({parent:this.getControl("DETAILS"),style:DwtMenu.POPUP_STYLE});
+	var menu = new DwtMenu({parent: this.getControl("DETAILS"), style: DwtMenu.POPUP_STYLE, id: "ContactDetailsMenu"});
 	var ids = ZmEditContactView.SHOW_ID_PREFIXES;
 	var labels = ZmEditContactView.SHOW_ID_LABELS;
 	var count = 0;
 	for (var i = 0; i < ids.length; i++) {
 		var id = ids[i];
 		if (this.getControl(id)) {
-			var menuitem = new DwtMenuItem({parent:menu, style:DwtMenuItem.CHECK_STYLE});
+			var menuitem = new DwtMenuItem({parent: menu, style: DwtMenuItem.CHECK_STYLE, id: "ContactDetailsMenu_" + id});
 			menuitem.setText(labels[i]);
 			// NOTE: Always show first and last but don't allow to change
 			if (id in ZmEditContactView.ALWAYS_SHOW) {
