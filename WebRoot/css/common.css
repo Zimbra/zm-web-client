@@ -699,3 +699,13 @@ LI.RowDouble, LI.Row {list-style: none;}
 	@Text-disabled@
 	text-decoration: none;
 }
+
+.AutoAnchor, .AutoAnchor:link, .AutoAnchor:visited {
+	@AutoAnchor@
+}
+.AutoAnchor:hover {
+	@AutoAnchor-hover@
+}
+.AutoAnchor:active {
+	@AutoAnchor-active@
+}
