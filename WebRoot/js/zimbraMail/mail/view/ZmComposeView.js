@@ -2348,6 +2348,7 @@ function(mode, params) {
 		var wrapParams = {
 			text:				body,
 			preserveReturns:	true,
+			htmlMode:			htmlMode,
 			prefix:				appCtxt.get(ZmSetting.REPLY_PREFIX)
 		}
 		if (htmlMode && incOptions.prefix) {
