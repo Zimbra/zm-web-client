@@ -683,10 +683,10 @@ function(ev) {
             if (menuSelectionListener) mi.addSelectionListener(menuSelectionListener);
             if (j == ZmTimeInput.DEFAULT_TOP_ROW) defaultTopMenuItem = mi;
 
-            minutesSelectMenu = new DwtMenu({parent:mi, style:DwtMenu.DROPDOWN_STYLE, layout:DwtMenu.LAYOUT_CASCADE, maxRows:1, congruent: true});
+            maxMinutesItem = 60 / this._interval;
+            minutesSelectMenu = new DwtMenu({parent:mi, style:DwtMenu.DROPDOWN_CENTERV_STYLE, layout:DwtMenu.LAYOUT_CASCADE, maxRows:maxMinutesItem, congruent: true});
             mi.setMenu(minutesSelectMenu, true);
             mi.setSelectableWithSubmenu(true);
-            maxMinutesItem = 60/this._interval;
             for (k = 1; k < maxMinutesItem; k++) {
                 now.setMinutes(k*this._interval);
                 smi = new DwtMenuItem({parent: minutesSelectMenu, style: DwtMenuItem.NO_STYLE});
