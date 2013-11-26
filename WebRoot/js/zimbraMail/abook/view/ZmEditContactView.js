@@ -297,13 +297,13 @@ ZmEditContactView.prototype.getOtherOptions = function() {
  */
 ZmEditContactView.prototype.getFileAsOptions = function() {
 	return [
-		{ value: ZmContact.FA_LAST_C_FIRST, label: ZmMsg.AB_FILE_AS_lastFirst },
-		{ value: ZmContact.FA_FIRST_LAST, label: ZmMsg.AB_FILE_AS_firstLast },
-		{ value: ZmContact.FA_COMPANY, label: ZmMsg.AB_FILE_AS_company },
-		{ value: ZmContact.FA_LAST_C_FIRST_COMPANY, label: ZmMsg.AB_FILE_AS_lastFirstCompany },
-		{ value: ZmContact.FA_FIRST_LAST_COMPANY, label: ZmMsg.AB_FILE_AS_firstLastCompany },
-		{ value: ZmContact.FA_COMPANY_LAST_C_FIRST, label: ZmMsg.AB_FILE_AS_companyLastFirst },
-		{ value: ZmContact.FA_COMPANY_FIRST_LAST, label: ZmMsg.AB_FILE_AS_companyFirstLast }
+		{ id: "FA_LAST_C_FIRST", value: ZmContact.FA_LAST_C_FIRST, label: ZmMsg.AB_FILE_AS_lastFirst },
+		{ id: "FA_FIRST_LAST", value: ZmContact.FA_FIRST_LAST, label: ZmMsg.AB_FILE_AS_firstLast },
+		{ id: "FA_COMPANY", value: ZmContact.FA_COMPANY, label: ZmMsg.AB_FILE_AS_company },
+		{ id: "FA_LAST_C_FIRST_COMPANY", value: ZmContact.FA_LAST_C_FIRST_COMPANY, label: ZmMsg.AB_FILE_AS_lastFirstCompany },
+		{ id: "FA_FIRST_LAST_COMPANY", value: ZmContact.FA_FIRST_LAST_COMPANY, label: ZmMsg.AB_FILE_AS_firstLastCompany },
+		{ id: "FA_COMPANY_LAST_C_FIRST", value: ZmContact.FA_COMPANY_LAST_C_FIRST, label: ZmMsg.AB_FILE_AS_companyLastFirst },
+		{ id: "FA_COMPANY_FIRST_LAST", value: ZmContact.FA_COMPANY_FIRST_LAST, label: ZmMsg.AB_FILE_AS_companyFirstLast }
 		// TODO: [Q] ZmContact.FA_CUSTOM ???
 	];
 };
