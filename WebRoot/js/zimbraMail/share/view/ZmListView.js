@@ -952,7 +952,7 @@ function() {
 ZmListView.prototype._getSortMenu =
 function (sortFields, defaultSortField) {
 	// create a action menu for the header list
-	var menu = new ZmPopupMenu(this);
+	var menu = new ZmPopupMenu(this, null, Dwt.getNextId("SORT_MENU_"));
 	var actionListener = new AjxListener(this, this._colHeaderActionListener);
 
 	for (var i = 0; i < sortFields.length; i++) {
@@ -966,7 +966,7 @@ function (sortFields, defaultSortField) {
 		menu.addSelectionListener(column.field, actionListener);
 	}
 	return menu;
-}
+};
 
 
 /*

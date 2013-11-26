@@ -1307,7 +1307,7 @@ function(parent) {
     var sortActionListener = new AjxListener(this, this._sortByActionListener);
     var menu = new ZmPopupMenu(parent);
     parent.createSeparator();
-	var menuItem = parent.createMenuItem(ZmId.GROUPBY, {text:ZmMsg.groupBy, style:DwtMenuItem.NO_STYLE});
+	var menuItem = parent.createMenuItem(Dwt.getNextId("GROUP_BY_"), {text:ZmMsg.groupBy, style:DwtMenuItem.NO_STYLE});
     var groupById = Dwt.getNextId("GroupByActionMenu_");
     var sortById = Dwt.getNextId("SortByActionMenu_");
     for (var i=0; i<list.length; i++) {
