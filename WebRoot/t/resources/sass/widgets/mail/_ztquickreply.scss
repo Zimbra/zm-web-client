@@ -27,9 +27,11 @@
 		border-bottom: none;
 		height: auto;
 		min-height: 30px;
+
 		.x-title .x-innerhtml {
-			white-space: normal;
+			font-weight: normal;
 			text-align: left;
+			white-space: normal;
 		}
 	}
 
@@ -40,6 +42,7 @@
 			background: transparent;
 			border: $default-border;
 			border-radius: $default-textarea-radius;
+
 			&.x-inner {
 				@extend .no-right-round;
 			}
@@ -55,12 +58,14 @@
 		.x-form-fieldset-inner.x-inner {
 			@extend .no-top-round;
 		}
+
 		.x-button {
 			@extend .no-top-round;
 		}
 	}
 
 	.x-button {
+		background-color: lighten($light-grey, 50%);
 		border-color: $default-border-color;
 		@extend .no-left-round;
 		font-size: .9em;

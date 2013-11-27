@@ -2,7 +2,7 @@
 @import 'widgets/mail/ztinvite';
 @import 'compass/css3/box';
 
-$linkColor: #336699;
+$linkColor: $base-color;
 $linkColorActive: red;
 $linkTextSize: 0.9em;
 
@@ -38,21 +38,6 @@ $linkTextSize: 0.9em;
 	font-family: sans-serif;
 	word-wrap: break-word;
 	-webkit-user-select: text;
-}
-
-.zcs-item-titlebar {
-	.x-button-label {
-		font-size: 1rem;
-	}
-	.x-button-pressed {
-		border: 1px solid $base-color;
-	}
-	.x-button .x-button-label {
-		color: $base-color;
-	}
-	.x-item-disabled .x-button-label {
-		color: $light-blue;
-	}
 }
 
 .x-form-label span {

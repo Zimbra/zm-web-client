@@ -13,14 +13,16 @@
  * ***** END LICENSE BLOCK *****
  */
 
-$light-grey: #E3E3E3;
-$medium-grey: #C3C3C3;
-$dark-grey: #3F3F3F;
-$light-blue: #ABD1FE;
+$light-grey: #E5E5E5;
+$medium-grey: #CCCCCC;
+$dark-grey: #666666;
+$light-blue: #75C3E1;
 $white: #FFF;
 
-$base-color: #0086C2;
-$base-gradient: 'matte';  // switch to 'flat' for no gradient
+$primary-text-color: #333;
+
+$base-color: #0087C3;
+$base-gradient: 'flat';
 
 $tabs-dark: darken($base-color, 5%);
 //$tabs-bar-gradient: $base-gradient;
@@ -32,8 +34,8 @@ $toolbar-bg-color: $white;
 
 $msg-bg-color: $white;
 
-$list-bg-color: #e7e7e7 !default;
-$list-active-color: #43B1E0;
+$list-bg-color: $light-grey !default;
+$list-active-color: $light-blue;
 $list-pressed-color: lighten($base-color, 40%);
 
 $default-border-color: $medium-grey;
@@ -46,4 +48,7 @@ $default-textarea-radius: 5px;
 
 //Form overrides
 $form-label-background-color: $white;
+
+$mask-color: rgba(0,0,0,.15);
+
 

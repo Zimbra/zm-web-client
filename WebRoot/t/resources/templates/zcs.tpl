@@ -66,11 +66,11 @@
 		<div class='zcs-msgHdr-person' style='{imageStyle}'></div>
 		<tpl for='addrs.FROM'>
 		<div class='zcs-msgHdr-fromBubble'>
-			<span class='zcs-area-bubble zcs-contact-bubble' id='{id}'>{name}</span>
+			<span id='{id}'>{name}</span>
 		</div>
 		</tpl>
-		<div class='zcs-msgHdr-date'>{dateStr}</div>
-		<div class='zcs-msgHdr-fragment'>{fragment:htmlEncode}</div>
+		<div class='zcs-msgHdr-date'><span>{dateStr}</span></div>
+		<div class='zcs-msgHdr-fragment'><span>{fragment:htmlEncode}</span></div>
 	</div>
 	</tpl>
 </template>
@@ -81,10 +81,10 @@
 		<div class='zcs-msgHdr-person' style='{imageStyle}'></div>
 		<tpl for='addrs.FROM'>
 		<div class='zcs-msgHdr-fromBubble'>
-			<span class='zcs-area-bubble zcs-contact-bubble' id='{id}'>{name}</span>
+			<span id='{id}'>{name}</span>
 		</div>
 		</tpl>
-		<div class='zcs-msgHdr-date'>{dateStr}</div>
+		<div class='zcs-msgHdr-date'><span>{dateStr}</span></div>
 		<tpl if='recipients'>
 		<div class='zcs-msgHdr-to'>
 			<span>{[ZtMsg.to]}</span>
@@ -117,22 +117,24 @@
 		<div class='zcs-msgHdr-person' style='{imageStyle}'></div>
 		<tpl for='addrs.FROM'>
 			<div class='zcs-msgHdr-fromBubble'>
-				<span class='zcs-area-bubble zcs-contact-bubble' id='{id}'>{name}</span>
+				<span id='{id}'>{name}</span>
 			</div>
 		</tpl>
 		<tpl for='addrs.FROM'>
-			<div class='zcs-msgHdr-from'>{[ZtMsg.from]} {address}</div>
+			<div class='zcs-msgHdr-from'>
+				<span>{[ZtMsg.from]} {address}</span>
+			</div>
 		</tpl>
-		<div class='zcs-msgHdr-date'>{fullDateStr}</div>
+		<div class='zcs-msgHdr-date'><span>{fullDateStr}</span></div>
 		<a class='zcs-msgHdr-link' onClick='return false;'>{[ZtMsg.hideDetails]}</a>
 	</div>
 	<tpl if='addrs.TO'>
 		<div class='zcs-mail-dtlMsgHdr'>
 			<div class='zcs-msgHdr-label'>{[ZtMsg.toHdr]}</div>
 			<div class='zcs-msgHdr-field'>
-				<tpl for='addrs.TO'>
-				<span class='zcs-area-bubble zcs-contact-bubble' id='{id}'>{name}</span>
-				</tpl>
+			<tpl for='addrs.TO'>
+				<span class='zcs-contact-name' id='{id}'>{name}</span>
+			</tpl>
 			</div>
 		</div>
 	</tpl>
@@ -140,9 +142,9 @@
 		<div class='zcs-mail-dtlMsgHdr'>
 			<div class='zcs-msgHdr-label'>{[ZtMsg.ccHdr]}</div>
 			<div class='zcs-msgHdr-field'>
-				<tpl for='addrs.CC'>
-				<span class='zcs-area-bubble zcs-contact-bubble' id='{id}'>{name}</span>
-				</tpl>
+			<tpl for='addrs.CC'>
+				<span class='zcs-contact-name' id='{id}'>{name}</span>
+			</tpl>
 			</div>
 		</div>
 	</tpl>
@@ -150,13 +152,13 @@
 		<div class='zcs-mail-dtlMsgHdr'>
 			<div class='zcs-msgHdr-label'>{[ZtMsg.tagsHdr]}</div>
 			<div class='zcs-msgHdr-field'>
-				<tpl for='tags'>
+			<tpl for='tags'>
 				<span class='zcs-area-bubble zcs-tag-bubble' id='{id}'>
 					<div class="zcs-tag-small zcs-tag-{color}" tagName="{name}" <tpl if='rgb'>style='background-color: {rgb};'</tpl>></div>
 					{displayName}
 				</span>
 			</tpl>
-		</div>
+			</div>
 		</div>
 	</tpl>
 	</tpl>
@@ -321,7 +323,7 @@
 			<tr>
 				<td class='zcs-invite-label'>{[ZtMsg.invOrganizerLabel]}</td>
 				<td>
-					<span class='zcs-area-bubble zcs-contact-bubble' id='{organizer.id}'>{organizer.name}</span>
+					<span class='zcs-contact-name' id='{organizer.id}'>{organizer.name}</span>
 				</td>
 			</tr>
 			</tpl>
@@ -329,7 +331,7 @@
 			<tr>
 				<td class='zcs-invite-label'>{[ZtMsg.invSentByLabel]}</td>
 				<td>
-					<span class='zcs-area-bubble zcs-contact-bubble' id='{sentBy.id}'>{sentBy.name}</span>
+					<span class='zcs-contact-name' id='{sentBy.id}'>{sentBy.name}</span>
 				</td>
 			</tr>
 			</tpl>
@@ -338,7 +340,7 @@
 				<td class='zcs-invite-label'>{[ZtMsg.invAttendeesLabel]}</td>
 				<td>
 				<tpl for='attendees'>
-					<span class='zcs-area-bubble zcs-contact-bubble' id='{id}'>{name}</span>
+					<span class='zcs-contact-name' id='{id}'>{name}</span>
 				</tpl>
 				</td>
 			</tr>
@@ -374,7 +376,7 @@
 					<td class='zcs-invite-label'>{[ZtMsg.invOptionalAttendeesLabel]}</td>
 					<td>
 						<tpl for='attendees'>
-							<span class='zcs-area-bubble zcs-contact-bubble' id='{id}'>{displayName}</span>
+							<span class='zcs-contact-name' id='{id}'>{displayName}</span>
 						</tpl>
 					</td>
 				</tr>
@@ -415,7 +417,7 @@
 				<tr>
 					<td class='zcs-invite-label'>{[ZtMsg.invIntendedFor]}</td>
 					<td>
-						<span class='zcs-area-bubble zcs-contact-bubble'>{intendedFor}</span>
+						<span class='zcs-contact-name'>{intendedFor}</span>
 					</td>
 				</tr>
 			</tpl>
@@ -544,29 +546,29 @@
 			</tpl>
 
 			<tpl if='myResponse'>
-                <tr class='zcs-invite-buttons'>
-                    <td class='zcs-invite-label'>{[ZtMsg.invRespondLabel]}</td>
-                    <td>
-                        <tpl if='myResponse == [ZCS.constant.PSTATUS_TEXT[ZCS.constant.PSTATUS_ACCEPTED]]'>
-                            <span class='zcs-invite-button zcs-accept-inactive'>{[ZtMsg.acceptAction]}</span>
-                        <tpl else>
-                            <span class='zcs-invite-button zcs-invite-accept' id='{invAcceptButtonId}'>{[ZtMsg.acceptAction]}</span>
-                        </tpl>
+				<tr class='zcs-invite-buttons'>
+					<td class='zcs-invite-label'>{[ZtMsg.invRespondLabel]}</td>
+					<td>
+						<tpl if='myResponse == [ZCS.constant.PSTATUS_TEXT[ZCS.constant.PSTATUS_ACCEPTED]]'>
+							<span class='zcs-invite-button zcs-accept-inactive'>{[ZtMsg.acceptAction]}</span>
+						<tpl else>
+							<span class='zcs-invite-button zcs-invite-accept' id='{invAcceptButtonId}'>{[ZtMsg.acceptAction]}</span>
+						</tpl>
 
-                        <tpl if='myResponse == [ZCS.constant.PSTATUS_TEXT[ZCS.constant.PSTATUS_TENTATIVE]]'>
-                            <span class='zcs-invite-button zcs-tentative-inactive'>{[ZtMsg.tentativeAction]}</span>
-                        <tpl else>
-                            <span class='zcs-invite-button zcs-invite-tentative' id='{invTentativeButtonId}'>{[ZtMsg.tentativeAction]}</span>
-                        </tpl>
+						<tpl if='myResponse == [ZCS.constant.PSTATUS_TEXT[ZCS.constant.PSTATUS_TENTATIVE]]'>
+							<span class='zcs-invite-button zcs-tentative-inactive'>{[ZtMsg.tentativeAction]}</span>
+						<tpl else>
+							<span class='zcs-invite-button zcs-invite-tentative' id='{invTentativeButtonId}'>{[ZtMsg.tentativeAction]}</span>
+						</tpl>
 
-                        <tpl if='myResponse == [ZCS.constant.PSTATUS_TEXT[ZCS.constant.PSTATUS_DECLINED]]'>
-                            <span class='zcs-invite-button zcs-decline-inactive'>{[ZtMsg.declineAction]}</span>
-                        <tpl else>
-                            <span class='zcs-invite-button zcs-invite-decline' id='{invDeclineButtonId}'>{[ZtMsg.declineAction]}</span>
-                        </tpl>
-                    </td>
-                </tr>
-            </tpl>
+						<tpl if='myResponse == [ZCS.constant.PSTATUS_TEXT[ZCS.constant.PSTATUS_DECLINED]]'>
+							<span class='zcs-invite-button zcs-decline-inactive'>{[ZtMsg.declineAction]}</span>
+						<tpl else>
+							<span class='zcs-invite-button zcs-invite-decline' id='{invDeclineButtonId}'>{[ZtMsg.declineAction]}</span>
+						</tpl>
+					</td>
+				</tr>
+			</tpl>
 
 			<tpl if='reminder'>
 				<tr>
@@ -590,9 +592,9 @@
 
 <template id='AutocompleteMatch'>
 	<tpl if="displayName">
-        <span class="zcs-auto-complete-name">{displayName}</span>
-    </tpl>
-    <tpl if="name">
+		<span class="zcs-auto-complete-name">{displayName}</span>
+	</tpl>
+	<tpl if="name">
 		<span class="zcs-auto-complete-name">{name}</span>
 	</tpl>
 	<tpl if="email">
@@ -601,9 +603,9 @@
 </template>
 
 <template id='Bubble'>
-   <div class="zcs-area-bubble {bubbleCls}">
-       {bubbleName}
-       <div class="bubble-close-icon delete-mini-icon"></div>
-   </div>
+	<div class="zcs-area-bubble {bubbleCls}">
+		{bubbleName}
+		<div class="bubble-close-icon delete-mini-icon"></div>
+	</div>
 </template>
 

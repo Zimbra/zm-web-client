@@ -52,10 +52,11 @@
 	border-right: 1px solid $default-border-color;
 }
 
-$zcs-titlebar-fontsize: 1.4em;  // for titlebar icons
-$zcs-title-fontsize: 1.2rem;    //uses rem so it's not relational to container bar
-$zcs-list-header-fontsize: .75rem;
-$zcs-list-item-fontsize: 1rem;
+$zcs-titlebar-fontsize: 1.2rem;       // for titlebar height
+$zcs-titlebar-icon-fontsize: 1.4rem;  // for titlebar icons
+$zcs-title-fontsize: 1.4rem;          // for titlebar text - uses rem so it's not relational to container bar
+$zcs-list-header-fontsize: 0.9rem;    // for org list category header text
+$zcs-list-item-fontsize: 1.2rem;      // for app menu list items
 
 @mixin zimbra-button() {
 	background-image: none;
@@ -82,9 +83,9 @@ $zcs-button-active-color: rgba(255,255,255,.3);
 
 /* Overview */
 
-$zcs-overview-base-color: #666666;
-$zcs-overview-category-color: #333333;
-$zcs-overview-text-color: #E5E5E5;
+$zcs-overview-base-color: $dark-grey;
+$zcs-overview-category-color: darken($dark-grey, 10%);
+$zcs-overview-text-color: $light-grey;
 
 .zcs-overview {
 
@@ -98,89 +99,93 @@ $zcs-overview-text-color: #E5E5E5;
 		background-color: $zcs-overview-base-color;
 		background-image: none;
 		color: $zcs-overview-text-color;
+		font-size: $zcs-titlebar-fontsize;
 
 		.x-title {
 			color: $zcs-overview-text-color;
+			font-weight: normal;
 
 			.x-innerhtml {
 				font-size: $zcs-title-fontsize;
 			}
 		}
-		.x-button-icon {
-			font-size: $zcs-titlebar-fontsize;
+
+		.x-button {
+			font-size: $zcs-titlebar-icon-fontsize;
 		}
 	}
 
-	.x-dock-body {
+	.x-dock-body .x-list {
+		background-color: $zcs-overview-base-color;
 
-		.x-list {
-			background-color: $zcs-overview-base-color;
+		.x-list-header {              // Category headers
+			padding: .25em 1em;
+			border-top: none;
+			border-bottom: none;
+			background-color: $zcs-overview-category-color;
+			background-image: none;
+			color: $zcs-overview-text-color;
 
-			.x-list-header {
-				padding: .25em 1em;
-				border-top: none;
-				border-bottom: none;
-				background-color: $zcs-overview-category-color;
-				background-image: none;
+			.x-innerhtml {
+				font-size: $zcs-list-header-fontsize;
+				font-weight: normal;
+				text-transform: uppercase;
+			}
+		}
+
+		.x-list-item {
+			font-size: $zcs-list-item-fontsize;
+			border-top: none;
+			border-bottom: none;
+			background:transparent;
+
+			&.x-list-item-tpl {
 				color: $zcs-overview-text-color;
-				.x-innerhtml {
-					font-size: $zcs-list-header-fontsize;
-				}
 			}
 
-			.x-list-item {
-				font-size: $zcs-list-item-fontsize;
-				//font-weight: bold;
-				border-top: none;
+			&.x-list-item-tpl:before {
 				border-bottom: none;
-				background:transparent;
+			}
 
-				&.x-list-item-tpl{
-					color: $zcs-overview-text-color;
-				}
-				&.x-list-item-tpl:before {
-					border-bottom: none;
-				}
+			.x-innerhtml {
+				@include ellipsis();
+			}
 
-				.x-innerhtml {
-					@include ellipsis();
-				}
+			.zcs-menu-label {
+				padding-left: 2.2em;
+			}
 
-				.zcs-menu-label {
-					padding-left: 40px;
-				}
+			.zcs-menu-icon:before {
+				font-family: "ZimbraTouch";
+				font-size: 1.5em;
+				position: absolute;
+				top: .3em;
+				text-align: center;
+			}
 
-				.zcs-menu-icon:before {
-					font-size: 1.5em;
-					text-align: center;
-					font-family: "ZimbraTouch";
-					position: absolute;
-					top: 7px;
-				}
-				.zcs-menu-icon.mail:before {
-					content: "M";
-				}
-				.zcs-menu-icon.calendar:before {
-					content: "L";
-				}
-				.zcs-menu-icon.contacts:before {
-					content: "N";
-				}
-				.zcs-menu-icon.settings:before {
-					content: "S";
-				}
-				.zcs-menu-icon.signout:before {
-					content: "o";
-				}
-				.zcs-menu-icon.folder:before {
-					content: "M";
-				}
-				.zcs-menu-icon.search:before {
-					content: "s";
-				}
-				.zcs-menu-icon.tag:before {
-					content: "t";
-				}
+			.zcs-menu-icon.mail:before {
+				content: "M";
+			}
+			.zcs-menu-icon.calendar:before {
+				content: "L";
+			}
+			.zcs-menu-icon.contacts:before {
+				content: "N";
+			}
+			.zcs-menu-icon.settings:before {
+				content: "S";
+			}
+			.zcs-menu-icon.signout:before {
+				content: "o";
+			}
+			.zcs-menu-icon.folder:before {
+				content: "M";
+			}
+			.zcs-menu-icon.search:before {
+				content: "s";
+			}
+			.zcs-menu-icon.tag:before {
+				content: "t";
 			}
 		}
 	}
@@ -225,6 +230,7 @@ $zcs-overview-text-color: #E5E5E5;
 			border-top: 1px solid $base-color;
 			border-top-right-radius: 0.3em;
 			border-top-left-radius: 0.3em;
+
 			.x-dock-horizontal {
 				border: none;
 			}
@@ -245,20 +251,22 @@ $zcs-overview-text-color: #E5E5E5;
 	}
 }
 
+.x-phone .zcs-floating-list {
+	border-bottom-right-radius: 0px;
+	border-bottom-left-radius: 0px;
+}
+
 .zcs-contact-suggest {
 	border: 1px solid $base-color;
 	border-radius: 0.3em;
+
 	.x-list-item.x-list-item-first {
 		border-top: none;
+
 		.x-dock-horizontal {
 			border: none;
 		}
 	}
-}
-
-.x-phone .zcs-floating-list {
-	border-bottom-right-radius: 0px;
-	border-bottom-left-radius: 0px;
 }
 
 /* List Panel */
@@ -273,21 +281,8 @@ $zcs-overview-text-color: #E5E5E5;
 		
 		.x-title {
 			font-size: $zcs-title-fontsize;
-		}
-	}
-
-	/* Zebra Stripes */
-	.x-list-item {
-		.x-dock-horizontal {
-			border-top: 1px solid transparent;
-		}
-
-		&:nth-child(even) .x-dock-horizontal {
-			background-color: darken($list-bg-color, 5%);
-		}
-
-		&.x-list-footer-wrap:nth-child(odd) .x-dock-horizontal {
-			border-bottom: 1px solid darken($list-bg-color, 5%);
+			font-weight: normal;
+			color: $primary-text-color;
 		}
 	}
 }
@@ -307,11 +302,6 @@ $zcs-overview-text-color: #E5E5E5;
 	}
 }
 
-.zcs-sheet {
-	background-color: rgba(0,0,0,.25);
-	background-image: none;
-}
-
 /* Assignment Panel */
 
 .zcs-assignment-panel {
@@ -320,24 +310,43 @@ $zcs-overview-text-color: #E5E5E5;
 
 /* Item Panel */
 
-.zcs-item-titlebar.x-toolbar {
+.zcs-item-titlebar {
+
+	&.x-toolbar {
 	font-size: $zcs-titlebar-fontsize;
 	border: none;
 	border-radius: 0px;
 
-	.x-title {
-		font-size: $zcs-title-fontsize;
-		font-weight: bold;
+		.x-title {
+			font-size: $zcs-title-fontsize;
+			font-weight: normal;
+		}
+	}
+
+	.x-button-icon {
+		font-size: $zcs-titlebar-icon-fontsize;
+	}
+
+	.x-button-pressed {
+		border: 1px solid $base-color;
+	}
+
+	.x-button .x-button-label {
+		color: $base-color;
+	}
+
+	.x-item-disabled .x-button-label {
+		color: $light-blue;
 	}
 }
 
-/* Banner Image */
+/* Veil */
 
-.zcs-banner-image {
-	background-image: url("/t/resources/images/app_banner.png");
-	border: none;
-	width:150px;
-	height:50px;
-	background-repeat: no-repeat;
-	background-position: 30px 5px
+.zcs-sheet {
+	background-color: rgba(0,0,0,.25);
+	background-image: none;
+}
+/* Modal Veil */
+.x-mask {
+	background: $mask-color center center no-repeat;
 }

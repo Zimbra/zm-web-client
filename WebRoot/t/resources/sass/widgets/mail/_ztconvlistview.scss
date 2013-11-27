@@ -132,7 +132,7 @@ $zcs-mail-dateWidth: 5.5em;
 .zcs-mail-senders {
 	@extend .zcs-mail-list-item;
 	@include ellipsis();
-	height: 1.2em;
+	height: 1.4em;
 	font-size: 1.2em;
 	left: $zcs-mail-indent;
 	right: $zcs-mail-dateWidth+.5em;

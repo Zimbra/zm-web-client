@@ -14,25 +14,31 @@
  */
 $contactBkgdColor: $white;
 
-$contactListHeight: 3.6em;  /* estimated */
-$contactListImageSize: 2.2em;
-$contactImageSize: 7.0em;
+$contactListStdMargin: 0.5rem;
+$contactListHeight: 3.6rem;  /* estimated */
+$contactListImageSize: 2.4rem;
+$contactListLeftIndent: $contactListImageSize + $contactListStdMargin*3;
+$contactListRightIndent: $contactListStdMargin;
+$contactListTopOffset: 0.5rem;
+
+$contactBaseFontSize: 1rem;
+$contactImageSize: 7em;
 $contactStdMargin: 0.7em;
-$contactTopOffset: 0.5em;
 $contactListImageTopOffset: $contactListHeight/2 - $contactListImageSize/2;
-$contactRightIndent: $contactStdMargin;
-$contactLeftIndent: $contactListImageSize + $contactStdMargin*2;
 $contactButtonSize: $contactImageSize/1.5;
 $contactGutter: 2em;
 $contactFieldTopOffset: $contactImageSize + $contactStdMargin*3;
-$contactFieldWidth: 18em;
+$contactFieldWidth: 23em;
+
+
+/* Contact Image Base Classes */
 
 .zcs-contact {
 	background-position: center;
 	background-size: 100% auto;
 	background-repeat: no-repeat;
+	@include border-radius($contactImageSize/2);
 }
-
 
 .zcs-contact-person {
 	@extend .zcs-contact;
@@ -44,7 +50,8 @@ $contactFieldWidth: 18em;
 	background-image: url('../images/group.png');
 }
 
-/*Generic Classes*/
+/* Generic Classes */
+
 .zcs-floatLeft {
 	float: left;
 }
@@ -58,23 +65,21 @@ $contactFieldWidth: 18em;
 	clear: left;
 }
 
-/*Contact List Classes*/
+/* Contact List Classes */
 
 .zcs-contactlist-item {
 	position: absolute;
 }
 
 .zcs-contactlist-image {
-	@extend .zcs-contactlist-item;
 	height: $contactListImageSize;
-	left: $contactStdMargin;
-	top: $contactListImageTopOffset;
 	width: $contactListImageSize;
 }
 
 .zcs-contactList-person {
 	@extend .zcs-contactlist-image;
 	@extend .zcs-contact-person;
+	margin: $contactListStdMargin*2 0;
 }
 
 .zcs-contactList-group {
@@ -84,26 +89,27 @@ $contactFieldWidth: 18em;
 
 .zcs-contactList-text {
 	@extend .zcs-contactlist-item;
-	bottom: $contactTopOffset;
-	left: $contactLeftIndent;
-	right: $contactRightIndent;
-	top: $contactTopOffset;
+	bottom: $contactListTopOffset;
+	left: $contactListLeftIndent;
+	right: $contactListRightIndent;
+	top: $contactListTopOffset;
 
 	DIV {
 		@include ellipsis();
+		line-height: 1.5rem;
+		margin: $contactListStdMargin 0;
 		width: 100%;
 	}
 	.zcs-contactList-name {
-		font-size: 1.1em;
-		font-weight: bold;
+		font-size: 1.2rem;
 	}
 	.zcs-contactList-title {
 		@include opacity(.75);
-		font-size: .8em;
+		font-size: 1rem;
 	}
 }
 
-/*Contact View classes*/
+/* Contact View Classes */
 
 .zcs-item-panel {
 
@@ -111,12 +117,13 @@ $contactFieldWidth: 18em;
 		background-color: $contactBkgdColor;
 
 		.x-innerhtml {
-			padding: 2em;
+			padding: 4.5em 2em 2em;  // Larger top padding accounts for titlebar height
 		}
 	}
 }
 
 .zcs-contactview-header {
+	font-size: $contactBaseFontSize;
 
 	.zcs-contactview-image {
 		@extend .zcs-floatLeft;
@@ -131,21 +138,43 @@ $contactFieldWidth: 18em;
 
 		SPAN {
 			@extend .zcs-newLine;
-			@include ellipsis();
+			//@include ellipsis();
 			margin-bottom:.25em;
 			max-width: $contactFieldWidth*1.5;
 			min-width: $contactFieldWidth;
 		}
 
 		SPAN[name=contactname] {
-			font-size: 1.4em;
-			font-weight: bold;
+			font-size: 1.5em;
 			margin: .5em 0;
 		}
 	}
 }
 
+.x-phone .zcs-contactview-header {
+	font-size: $contactBaseFontSize*0.9;
+
+	.zcs-contactview-image {
+		height: $contactImageSize/2;
+		width: $contactImageSize/2;
+	}
+
+	.zcs-contactview-personalInfo SPAN {
+		max-width: $contactFieldWidth;
+		min-width: $contactFieldWidth/2;
+	}
+}
+
+.x-phone.x-portrait {
+
+	.zcs-contactview-header .zcs-contactview-personalInfo SPAN {
+		max-width: $contactFieldWidth/2;
+		min-width: $contactFieldWidth/3;
+	}
+}
+
 .zcs-contactview-fieldSets {
+	font-size: $contactBaseFontSize;
 	margin-top: $contactFieldTopOffset;
 
 	.zcs-contactview-fieldSet {
@@ -155,7 +184,7 @@ $contactFieldWidth: 18em;
 		.zcs-contactview-label {
 			@extend .zcs-floatLeft;
 			@include ellipsis();
-			@include opacity(.7);
+			@include opacity(.5);
 			text-align: right;
 			width: $contactImageSize;
 		}
@@ -166,7 +195,7 @@ $contactFieldWidth: 18em;
 			.zcs-contactview-field {
 				@extend .zcs-newLine;
 				@include ellipsis();
-				margin: 0 1em .5em $contactGutter;
+				margin: 0 1em 1.5em $contactGutter;
 				max-width: $contactFieldWidth*2;
 				min-width: $contactFieldWidth;
 			}
@@ -190,15 +219,37 @@ $contactFieldWidth: 18em;
 	}
 }
 
-/*Create Contact Classes*/
+.x-phone .zcs-contactview-fieldSets {
+	font-size: $contactBaseFontSize*0.9;
+
+	.zcs-contactview-label {
+		width: $contactImageSize/2;
+	}
+
+	.zcs-contactview-fields .zcs-contactview-field {
+		max-width: $contactFieldWidth;
+		min-width: $contactFieldWidth/2;
+	}
+
+}
+
+.x-phone.x-portrait {
+
+	.zcs-contactview-fieldSets .zcs-contactview-fields .zcs-contactview-field {
+		max-width: $contactFieldWidth*0.5;
+		min-width: $contactFieldWidth/3;
+	}
+}
+
+/* Create Contact Classes */
 
 $contactBorderColor: #E3E3E3;
 
 .zcs-contact-image {
-    @extend .zcs-contact-person;
+	@extend .zcs-contact-person;
 	height: $contactImageSize;
 	margin: 3px auto auto;
-    width: $contactImageSize;
+	width: $contactImageSize;
 }
 
 .zcs-contact-personalinfo {
@@ -234,6 +285,7 @@ $contactBorderColor: #E3E3E3;
 	}
 }
 
+// TODO: Fix this naming convention to use dashes rather than camelcase
 .zcsContactField {
 	border: solid $contactBorderColor;
 	border-width: 0 0 1px;
@@ -253,7 +305,8 @@ $contactBorderColor: #E3E3E3;
 	@include border-radius(0);
 }
 
-/*Contact group classes*/
+/* Contact Group Classes */
+
 .zcs-contactgroupview-header {
 
 	.zcs-contactgroupview-image {
@@ -333,5 +386,4 @@ $zcsMemberImageSize: 4em;
 			}
 		}
 	}
-
 }
