@@ -327,14 +327,16 @@ function(flag) {
 
 ZmTaskEditView.prototype._createPriorityMenuItem =
 function(menu, text, flag) {
-	var item = DwtMenuItem.create({parent:menu, imageInfo:this._getPriorityImage(flag), text:text});
+	// I prefer a readable ID part for the priority, over the 1, 5 and 9 that those constants are set to.
+	var priorityId = ZmCalItem.isPriorityHigh(flag) ? "high" : ZmCalItem.isPriorityLow(flag) ? "low" : "normal";
+	var item = DwtMenuItem.create({parent: menu, imageInfo: this._getPriorityImage(flag), text: text, id: Dwt.getNextId("EditTaskPriorityMenu_" + priorityId + "_")});
 	item._priorityFlag = flag;
 	item.addSelectionListener(this._priorityMenuListnerObj);
 };
 
 ZmTaskEditView.prototype._priorityButtonMenuCallback =
 function() {
-	var menu = new DwtMenu({parent:this._prioritySelect});
+	var menu = new DwtMenu({parent: this._prioritySelect, id: Dwt.getNextId("EditTaskPriorityMenu_")});
 	this._priorityMenuListnerObj = new AjxListener(this, this._priorityMenuListner);
 	this._createPriorityMenuItem(menu, ZmMsg.high, ZmCalItem.PRIORITY_HIGH);
 	this._createPriorityMenuItem(menu, ZmMsg.normal, ZmCalItem.PRIORITY_NORMAL);
