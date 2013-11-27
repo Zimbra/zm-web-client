@@ -115,10 +115,9 @@ ZmComposeView.OP[AjxEmailAddress.TO]	= ZmId.CMP_TO;
 ZmComposeView.OP[AjxEmailAddress.CC]	= ZmId.CMP_CC;
 ZmComposeView.OP[AjxEmailAddress.BCC]	= ZmId.CMP_BCC;
 
-ZmComposeView.UPLOAD_MENU = "ATTACH_MENU";
-ZmComposeView.UPLOAD_COMPUTER = "ATTACH_MENU_COMPUTER";
-ZmComposeView.UPLOAD_INLINE = "ATTACH_MENU_INLINE";
-ZmComposeView.UPLOAD_BRIEFCASE = "ATTACH_MENU_BRIEFCASE";
+ZmComposeView.UPLOAD_COMPUTER = 1;
+ZmComposeView.UPLOAD_INLINE = 2;
+ZmComposeView.UPLOAD_BRIEFCASE = 3;
 
 // Public methods
 
@@ -3089,8 +3088,8 @@ function(accountName, msgId) {
 
 
 ZmComposeView.prototype._createAttachMenuItem =
-function(menu, text, listner, type) {
-	var item = DwtMenuItem.create({parent: menu, text: text, id: type ? Dwt.getNextId(type + "_") : null});
+function(menu, text, listner) {
+	var item = DwtMenuItem.create({parent:menu, text:text});
 	item.value = text;
 	if (listner) {
 		item.addSelectionListener(listner);
@@ -3303,21 +3302,25 @@ function(menuItem) {
 
 ZmComposeView.prototype._attachButtonMenuCallback =
 function() {
-	var menu = new DwtMenu({parent: this._attButton, id: Dwt.getNextId(ZmComposeView.UPLOAD_MENU + "_")});
+	var menu = new DwtMenu({parent:this._attButton});
 
-	var listener = this.showAttachmentDialog.bind(this, ZmComposeView.UPLOAD_COMPUTER);
-	this._createAttachMenuItem(menu, ZmMsg.myComputer, listener, ZmComposeView.UPLOAD_COMPUTER);
+	var listener =
+		this.showAttachmentDialog.bind(this, ZmComposeView.UPLOAD_COMPUTER);
+	this._createAttachMenuItem(menu, ZmMsg.myComputer, listener);
 
 	if (AjxEnv.supportsHTML5File) {
 		// create the item for making inline attachments
-		listener = this.showAttachmentDialog.bind(this, ZmComposeView.UPLOAD_INLINE);
-		var mi = this._createAttachMenuItem(menu, ZmMsg.attachInline, listener, ZmComposeView.UPLOAD_INLINE);
+		var listener =
+			this.showAttachmentDialog.bind(this, ZmComposeView.UPLOAD_INLINE);
+		var mi = this._createAttachMenuItem(menu, ZmMsg.attachInline, listener);
 		menu.addPopupListener(new AjxListener(this, this._checkMenuItems,[mi]));
 	}
 
 	if (appCtxt.multiAccounts || appCtxt.get(ZmSetting.BRIEFCASE_ENABLED)) {
-		listener = this.showAttachmentDialog.bind(this, ZmComposeView.UPLOAD_BRIEFCASE);
-		this._createAttachMenuItem(menu, ZmMsg.briefcase, listener, ZmComposeView.UPLOAD_BRIEFCASE);
+		var listener =
+			this.showAttachmentDialog.bind(this,
+			                               ZmComposeView.UPLOAD_BRIEFCASE);
+		this._createAttachMenuItem(menu, ZmMsg.briefcase, listener);
 	}
 	appCtxt.notifyZimlets("initializeAttachPopup", [menu, this], {waitUntilLoaded:true});
 
@@ -3875,7 +3878,7 @@ function(isDraft, status, attId, docIds, msgIds) {
 //Mandatory Spellcheck Callback
 ZmComposeView.prototype._spellCheckShield =
 function(words) {
-	if (words && words.available && words.misspelled !== null && words.misspelled.length !== 0) {
+	if (words && words.available && words.misspelled && words.misspelled.length !== 0) {
 		var msgDialog = new DwtMessageDialog({parent: appCtxt.getShell(), buttons:[DwtDialog.YES_BUTTON, DwtDialog.NO_BUTTON], id: Dwt.getNextId("SpellCheckConfirm_")});
 		msgDialog.setMessage(AjxMessageFormat.format(ZmMsg.misspellingsMessage, [words.misspelled.length]), DwtMessageDialog.WARNING_STYLE);
 		msgDialog.registerCallback(DwtDialog.YES_BUTTON, this._spellCheckShieldOkListener, this, [ msgDialog, words ] );
