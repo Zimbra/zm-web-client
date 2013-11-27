@@ -544,8 +544,8 @@
 		<td colspan=2>
 			<table class='ZPropertySheet' cellspacing='6'>
 				<tr valign='center'>
-					<td class='Label'><input type='checkbox' id='${id}_excludeFbCheckbox' /></td>
-					<td><label for='${id}_excludeFbCheckbox'> <$= ZmMsg.excludeFromFreeBusy $> </label></td>
+					<td style='width:2em;'><input type='checkbox' id='${id}_excludeFbCheckbox' /></td>
+					<td class='Label'><label for='${id}_excludeFbCheckbox'> <$= ZmMsg.excludeFromFreeBusy $> </label></td>
 				</tr>
 			</table>
 		</td>
