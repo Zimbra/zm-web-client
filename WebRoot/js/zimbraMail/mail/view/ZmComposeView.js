@@ -1117,7 +1117,7 @@ ZmComposeView.prototype._fixMultipartRelatedImages =
 function(msg, idoc, account) {
 
 	if (!this._firstTimeFixImages) {
-		this._htmlEditor.removeOnContentInitializedListener();
+		this._htmlEditor.clearOnContentInitializedListeners();
 		var self = this; // Fix possible hiccups during compose in new window
 		setTimeout(function() {
 				self._fixMultipartRelatedImages(msg, self._htmlEditor._getIframeDoc(), account);

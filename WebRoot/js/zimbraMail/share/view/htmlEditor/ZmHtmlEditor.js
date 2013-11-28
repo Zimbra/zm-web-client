@@ -44,6 +44,7 @@ ZmHtmlEditor = function(parent, posStyle, content, mode, withAce) {
 	settings.getSetting(ZmSetting.COMPOSE_INIT_FONT_SIZE).addChangeListener(listener);
 
 	this._ignoreWords = {};
+	this._onContentInitializeCallbacks = [];
 };
 
 ZmHtmlEditor.prototype = new DwtHtmlEditor;
@@ -141,20 +142,21 @@ function() {
 	if (this.ACE_ENABLED && this._mode == DwtHtmlEditor.HTML) {
 		setTimeout(AjxCallback.simpleClosure(this._deserializeAceObjects, this), 100);
 	}
-	if (this._onContentInitializeCallback) {
-		AjxDebug.println(AjxDebug.REPLY, "ZmHtmlEditor::_onContentInitialized - run callback");
-		this._onContentInitializeCallback.run();
+	if (this._onContentInitializeCallbacks) {
+		AjxDebug.println(AjxDebug.REPLY, "ZmHtmlEditor::_onContentInitialized - run callbacks");
+		AjxUtil.foreach(this._onContentInitializeCallbacks,
+		                function(fn) { fn.run() });
 	}
 };
 
 ZmHtmlEditor.prototype.addOnContentInitializedListener =
 function(callback) {
-	this._onContentInitializeCallback = callback;
+	this._onContentInitializeCallbacks.push(callback);
 };
 
-ZmHtmlEditor.prototype.removeOnContentInitializedListener =
+ZmHtmlEditor.prototype.clearOnContentInitializedListeners =
 function() {
-	this._onContentInitializeCallback = null;
+	this._onContentInitializeCallbacks = [];
 };
 
 ZmHtmlEditor.prototype.getContent =

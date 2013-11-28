@@ -836,7 +836,7 @@ function() {
 	if (idoc) {
 		if (!this._firstTimeFixImages) {
 			this._firstTimeFixImages = true;
-			this._sigEditor.removeOnContentInitializedListener();
+			this._sigEditor.clearOnContentInitializedListeners();
 		}
 
 		var images = idoc.getElementsByTagName("img");

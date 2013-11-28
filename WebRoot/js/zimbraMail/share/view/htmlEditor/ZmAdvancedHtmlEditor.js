@@ -38,6 +38,7 @@ ZmAdvancedHtmlEditor = function() {
 	this._hasFocus = {};
     this._bodyTextAreaId = params.textAreaId;
 	this._attachmentCallback = params.attachmentCallback;
+	this._onContentInitializeCallbacks = []
 	this.initTinyMCEEditor(params);
     this._ignoreWords = {};
     var settings = appCtxt.getSettings();
@@ -503,10 +504,10 @@ function(params) {
 
 ZmAdvancedHtmlEditor.prototype.addOnContentInitializedListener =
 function(callback) {
-	this._onContentInitializeCallback = callback;
+	this._onContentInitializeCallbacks.push(callback);
 };
 
-ZmAdvancedHtmlEditor.prototype.removeOnContentInitializedListener =
+ZmAdvancedHtmlEditor.prototype.clearOnContentInitializedListeners =
 function() {
 	this._onContentInitializeCallback = null;
 };
@@ -610,8 +611,10 @@ function(ev) {
 
 ZmAdvancedHtmlEditor.prototype.onLoadContent =
 function(ev) {
-	if (this._onContentInitializeCallback) {
-		this._onContentInitializeCallback.run();
+	if (this._onContentInitializeCallbacks) {
+		AjxDebug.println(AjxDebug.REPLY, "ZmAdvancedHtmlEditor::onLoadContent - run callbacks");
+		AjxUtil.foreach(this._onContentInitializeCallbacks,
+		                function(fn) { fn.run() });
 	}
 };
 
