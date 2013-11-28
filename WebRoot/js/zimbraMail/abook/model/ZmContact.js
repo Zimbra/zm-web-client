@@ -71,9 +71,6 @@ ZmContact.prototype = new ZmItem;
 ZmContact.prototype.constructor = ZmContact;
 ZmContact.prototype.isZmContact = true;
 
-ZmContact.NO_IMAGE_URL = appContextPath + "/img/large/ImgPerson_48.png";
-ZmContact.NO_IMAGE_URL_SMALL = appContextPath + "/img/large/ImgPerson_32.png";
-
 // fields
 ZmContact.F_anniversary				= "anniversary";
 ZmContact.F_assistantPhone			= "assistantPhone";

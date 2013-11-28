@@ -2090,7 +2090,7 @@ function(state, force) {
 
 		var imageURL = ai.sentByContact &&
 			ai.sentByContact.getImageUrl(32, 32) ||
-			ZmContact.NO_IMAGE_URL_SMALL;
+			ZmZimbraMail.DEFAULT_CONTACT_ICON_SMALL;
 
 		subs = {
 			readCellId:		this._readCellId,
@@ -2107,7 +2107,7 @@ function(state, force) {
 	else {
 		var imageURL = ai.sentByContact &&
 			ai.sentByContact.getImageUrl(48, 48) ||
-			ZmContact.NO_IMAGE_URL;
+			ZmZimbraMail.DEFAULT_CONTACT_ICON;
 
 		subs = {
 			hdrTableId:		this._msgView._hdrTableId = id + "_hdrTable",

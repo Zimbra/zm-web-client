@@ -1097,7 +1097,7 @@ ZmEditContactViewImage.IMAGE_URL = "/service/content/proxy?aid=@aid@";
 ZmEditContactViewImage.prototype.setValue = function(value) {
 	this._src = value;
 	if (!value) {
-		this._imgEl.src = ZmContact.NO_IMAGE_URL;
+		this._imgEl.src = ZmZimbraMail.DEFAULT_CONTACT_ICON;
 		this._badgeEl.className = "ImgAdd";
         
 	}

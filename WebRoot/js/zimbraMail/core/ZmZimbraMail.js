@@ -2288,6 +2288,9 @@ function() {
 ZmZimbraMail.ONLINE_HELP_URL = "http://help.zimbra.com/?";
 ZmZimbraMail.NEW_FEATURES_URL = "http://www.zimbra.com/products/whats_new.html?";
 
+ZmZimbraMail.DEFAULT_CONTACT_ICON = appContextPath + "/img/large/ImgPerson_48.png";
+ZmZimbraMail.DEFAULT_CONTACT_ICON_SMALL = appContextPath + "/img/large/ImgPerson_32.png";
+
 /**
 * Adds a "help" submenu.
 *

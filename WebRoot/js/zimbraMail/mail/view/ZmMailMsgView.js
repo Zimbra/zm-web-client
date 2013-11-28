@@ -1361,7 +1361,7 @@ function(msg, container) {
 	// more than 96 pixels is a bit silly...
 	var imageURL = ai.sentByContact &&
 		ai.sentByContact.getImageUrl(48, 96) ||
-		ZmContact.NO_IMAGE_URL;
+		ZmZimbraMail.DEFAULT_CONTACT_ICON;
 
 	var subs = {
 		id: 				this._htmlElId,
