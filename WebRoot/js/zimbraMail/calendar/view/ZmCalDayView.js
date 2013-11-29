@@ -618,26 +618,13 @@ function() {
         // Fix for bug: 66603. The class adjusts width of calendar title bubbles
         div = this._createDivForColumn(col.titleId, titleParentEl, this._mergedView ? "" : "ZmCalDayTab ZmCalDayMerged", calColor, calColor);
         div.style.top = ZmCalDayTabView._TAB_BORDER_WIDTH + 'px';
-		if (this._mergedView) {
-            //var div = this._createDivForColumn(Dwt.getNextId(), titleParentEl, "ZmCalDayTab", calColor, calColor);
-            html = ["<table border=0><tr>"];
-            for (k=0; k<this._calendars.length; k++) {
-                mergedCal = this._calendars[k];
-                calMergerdTabColor = mergedCal.rgb;
-                calName = AjxStringUtil.clipByLength(mergedCal.getName(), ZmCalDayTabView._TAB_TITLE_MAX_LENGTH);
-                // Fix for bug: 66603. The class adjusts width of calendar title bubbles
-                html.push('<td class="ZmCalDayTab ZmCalDaySplit" style="background-color: ', calMergerdTabColor, ';" valign="top">');
-                html.push(calName);
-                html.push('</td>');
-                html.push('<td>&nbsp;</td>');
-            }
-            html.push('</tr</table>');
-            div.innerHTML = html.join("");
-		} else {
+
+        // Fix for bug: 84268. Removed calendar titles from the merged view.
+        if (!this._mergedView) {
             calName = AjxStringUtil.clipByLength(cal.getName(), ZmCalDayTabView._TAB_TITLE_MAX_LENGTH);
             div.style.top = ZmCalDayTabView._TAB_BORDER_WIDTH + 'px';
-			div.innerHTML = calName;
-		}
+            div.innerHTML = calName;
+        }
 
         this._createDivForColumn(col.borderLeftAllDayDivId, allDayDivEl, "ZmDayTabSeparator", calColor, calColor);
         this._createDivForColumn(col.borderTopAllDayDivId, allDayDivEl, "ZmDayTabSeparator", calColor, calColor);
