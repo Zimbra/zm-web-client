@@ -10,6 +10,7 @@
 
 
 <c:catch var="exception">
+    <zm:getUserAgent var="ua" session="false"/>
     <zm:getMailbox var="mailbox"/>
     <c:choose>
         <c:when test="${not empty mailbox.prefs.locale}">
@@ -63,94 +64,45 @@
    		<meta http-equiv="Refresh" content="0;url=/t/noscript.jsp" >
    	</noscript>
     <meta charset="UTF-8">
+    <c:set var="version" value="${initParam.zimbraCacheBusterVersion}"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=1">
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black" />
     <title><fmt:message key="zimbraTitle"/></title>
+    <link rel="stylesheet" type="text/css" href="<c:url value='/css/ztouch.css'>
+		<c:param name="v" value="${version}" />
+	</c:url>">
     <style type="text/css">
-            /**
-            * It is recommended to keep this as minimal as possible to provide instant feedback
-            * while other resources are still being loaded for the first time
-            */
         html, body {
             height: 100% !important;
         }
 
-        #SplashScreenImgBanner{
-            background-image: url("/skins/_base/logos/LoginBanner_white.png");
-            background-position: left bottom;
-            background-repeat: no-repeat;
-            height: 60px;
-            margin: 0 30px;
-            width: 440px;
-        }
+        <c:if test="${ua.isiPhone or ua.isiPod}">
+            /* Put CSS for iPhone/iPad layouts in here*/
+            @media only screen and (max-device-width: 480px) and (orientation:portrait) {
+                .ImgLoginBanner {
+                    width: 165px;
+                }
+            }
 
-        #SplashScreenAppName  {
-            color: white;
-            display: none;
-            float: right;
-            font-size: 16px;
-            height: 60px;
-            margin-top: 40px;
-            width: 300px;
-        }
+            @media only screen and (max-device-width: 480px) and (orientation:landscape) {
 
-        .SplashScreen {
-            background-color: #DDD;
-            font-family: Arial, Helvetica, sans-serif;
-            font-size: 11px;
-            height: 100%;
-            left: 0;
-            position: absolute;
-            top: 0;
-            width: 100%;
-        }
+            }
+        </c:if>
 
-        .SplashScreen .contentBox {
-            background-color: #00638D;
-            background-image: -webkit-linear-gradient(top , #0095D3, #00638D);
-            min-height: 265px;
-            padding-top: 10px;
-            width: 500px;
-        }
+        <c:if test="${ua.isTouchiPad}">
+            @media only screen and (min-device-width: 481px) and (max-device-width: 1024px) and (orientation:portrait) {
+                /* Put CSS for iPad PORTRAIT layouts in here */
+                .ImgLoginBanner {
+                    height: 150px;
+                }
+            }
 
-        .SplashScreen .center {
-            height: 270px;
-            left: 50%;
-            margin-top: -135px;
-            margin-left: -250px;
-            overflow: visible;
-            position: absolute;
-            top: 40%;
-            width: 500px;
-            z-index: 11;
-        }
+            @media only screen and (min-device-width: 481px) and (max-device-width: 1024px) and (orientation:landscape) {
+                /* Put CSS for iPad LANDSCAPE layouts in here */
+            }
+        </c:if>
 
-        .SplashScreen .content {
-            color: white;
-            text-align: center;
-        }
-
-        .SplashScreen .message {
-            color: white;
-            font-size: 14px;
-            font-weight: bold;
-            margin-top: 80px;
-        }
-
-        .SplashScreen .footer {
-            bottom: 0;
-            position: absolute;
-            text-align: center;
-            width: 100%;
-            z-index: 10;
-        }
-
-        .SplashScreen .copyright {
-            color: #6B6B6B;
-            cursor: default;
-            font-size: 11px;
-            margin-bottom: 5px;
-        }
     </style>
 
     <jsp:include page="../public/Resources.jsp">
@@ -171,30 +123,13 @@
         };
     </script>
 
-    <script>
-//        var gir = batchInfoResponse.Body.BatchResponse.GetInfoResponse[0];
-//        var loggingEnabled = gir.attrs._attrs['zimbraTouchJSErrorTrackingEnabled'];
-        var loggingEnabled = false; // for 8.x only, uncomment the above lines for Zimbra.Next
-        if (loggingEnabled) {
-            document.write(unescape("%3Cscript src='//d3nslu0hdya83q.cloudfront.net/dist/1.0/raven.min.js' type='text/javascript'%3E%3C/script%3E"));
-        }
-    </script>
-
-    <%--for 8.x only, remove the below block in Zimbra.Next. --%>
-    <script>
-        var loggerKey = "https://b89f3cf41d5d45ad90b11da6a645efc1@app.getsentry.com/6798";
-        if (loggingEnabled) {
-            if (Raven)
-                Raven.config(loggerKey).install();
-        }
-    </script>
     <!-- The line below must be kept intact for Sencha Command to build your application -->
     <script id="microloader" type="text/javascript" src="touch/microloader/development.js"></script>
 </head>
 <body>
 
 <!-- BEGIN SPLASH SCREEN -->
-<div id='appLoadingIndicator' class='SplashScreen'>
+<div id='appLoadingIndicator' class='LoginScreen'>
     <script language='javascript'>
         function showCompanyUrl() {
             window.open(ZtMsg.splashScreenCompanyURL, '_blank');
@@ -202,22 +137,10 @@
     </script>
 
     <div class="center">
-        <div class="contentBox">
-            <h1><div id='SplashScreenImgBanner' onclick='showCompanyUrl()'></div></h1>
-            <h2><div id="SplashScreenAppName"><script>document.write(ZtMsg.splashScreenAppName)</script></div></h2>
-            <div class="content">
-                <div class="message"><script>document.write(ZtMsg.splashScreenLoading)</script></div>
-            </div>
-        </div>
+        <h1><div class='ImgLoginBanner' onclick='showCompanyUrl()'></div></h1>
+        <div>&nbsp;</div>
+        <div class="SplashScreenProgressBar"></div>
     </div>
-    <div class="footer">
-        <div class="copyright">
-            <script>
-                document.write(ZtMsg.splashScreenCopyright);
-            </script>
-        </div>
-    </div>
-
 </div>
 <!-- END SPLASH SCREEN -->
 </body>
