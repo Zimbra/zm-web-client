@@ -722,6 +722,7 @@ function(ev) {
 	if (ev.type != this.type)
 		return;
 
+    var resort = false;
     var folderId = this._controller.getList().search.folderId;
     if (appCtxt.getById(folderId) &&
         appCtxt.getById(folderId).isRemote())
@@ -789,6 +790,8 @@ function(ev) {
 		        if (dueDate != null) {
 		            dueDate.setHours(0,0,0,0);
 		            dueDate = dueDate.getTime();
+                    // May change the section the task is sorted under
+                    resort = true;
 		        }
 
 				var taskStatusClass = this._normalClass;
@@ -858,6 +861,9 @@ function(ev) {
 		this._resetColWidth();
 	}
 
+    if (resort) {
+       this._renderList(this._list);
+    }
     //this.reRenderListView();
 };
 
