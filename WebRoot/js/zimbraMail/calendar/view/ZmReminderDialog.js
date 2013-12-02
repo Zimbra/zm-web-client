@@ -79,7 +79,7 @@ function() {
         for (var i = 0; i < appts.length && i < 5; i++) {
             var appt = appts[i];
             var startDelta = this._computeDelta(appt);
-            var delta = startDelta ? this._formatDeltaString(startDelta) : "";
+            var delta = startDelta ? this._formatDeltaString(startDelta, appt.isAllDayEvent()) : "";
             var text = [appt.getName(), ", ", this._getDurationText(appt), "\n(", delta, ")"].join("");
             if (AjxEnv.isMac) {
                 ZmDesktopAlert.getInstance().start(ZmMsg.reminders, text, true);
@@ -368,7 +368,7 @@ function(data) {
 						: startDelta > ZmReminderDialog.SOON ? "ZmReminderSoon"
 						: "ZmReminderFuture";
 
-		td.innerHTML = startDelta ? this._formatDeltaString(startDelta) : "";
+		td.innerHTML = startDelta ? this._formatDeltaString(startDelta, data.appt.isAllDayEvent()) : "";
 	}
 };
 
@@ -728,49 +728,74 @@ function(appt) {
 
 ZmReminderDialog.prototype._computeDelta =
 function(appt) {
-	//I refactored the big nested ternary operator (?:) to make it more readable and try to understand what's the logic here.
-	// After doing so, this doesn't make sense to me. But I have no idea if it should be this way on purpose, and that is the way it was with the ?:
-	// Basically if there is NO alarmData it uses the appt startTime, which makes sense. But if there IS alarmData but no alarmInstStart it uses the endTime? WHY? What about the startTime?
-	// I don't get it. Seems wrong.
-	var now = (new Date()).getTime();
-	if (!appt.alarmData || appt.alarmData.length === 0) {
-		return now - appt.getStartTime();
-	}
-	var alarmInstStart = appt.alarmData[0].alarmInstStart; //returned from the server in case i'm wondering
-	if (alarmInstStart) {
-		return now - appt.adjustMS(alarmInstStart, appt.tzo);
-	}
-	if (!appt.getEndTime()) {
-		return null;
-	}
-	return now - appt.getEndTime();
+    var deltaTime = null;
+
+    // Split out task processing - the deltaTime is used to split the tasks into sections (Past Due, Upcoming, No
+    // Due Date), and a task is only overdue when it is later than its end time.  AlarmData is the
+    // next reminder trigger time, and is inappropriate to use for sorting the tasks.
+    var now = (new Date()).getTime();
+    if (appt.type === ZmItem.TASK) {
+        if (appt.getEndTime()) {
+            deltaTime = now - appt.getEndTime();
+        }
+    } else {
+        // Calendar Appt
+
+        //I refactored the big nested ternary operator (?:) to make it more readable and try to understand what's the logic here.
+        // After doing so, this doesn't make sense to me. But I have no idea if it should be this way on purpose, and that is the way it was with the ?:
+        // Basically if there is NO alarmData it uses the appt startTime, which makes sense. But if there IS alarmData but no alarmInstStart it uses the endTime? WHY? What about the startTime?
+        // I don't get it. Seems wrong.
+        if (!appt.alarmData || appt.alarmData.length === 0) {
+            deltaTime = now - appt.getStartTime();
+        } else {
+            var alarmInstStart = appt.alarmData[0].alarmInstStart; //returned from the server in case i'm wondering
+            if (alarmInstStart) {
+                deltaTime = now - appt.adjustMS(alarmInstStart, appt.tzo);
+            } else if (appt.getEndTime()) {
+                deltaTime = now - appt.getEndTime();
+            }
+        }
+    }
+	return deltaTime;
 };
 
 ZmReminderDialog.prototype._formatDeltaString =
-function(deltaMSec) {
+function(deltaMSec, isAllDay) {
 	var prefix = deltaMSec < 0 ? "In" : "OverdueBy";
 	deltaMSec = Math.abs(deltaMSec);
 
 	// calculate parts
+    var years  = 0;
+    var months = 0;
+    var days   = 0;
+    var hours  = 0;
+    var mins   = 0;
+    var secs   = 0;
 	var years =  Math.floor(deltaMSec / (AjxDateUtil.MSEC_PER_DAY * 365));
-	if (years != 0)
+	if (years != 0) {
 		deltaMSec -= years * AjxDateUtil.MSEC_PER_DAY * 365;
-	var months = Math.floor(deltaMSec / (AjxDateUtil.MSEC_PER_DAY * 30.42));
-	if (months > 0)
+    }
+	months = Math.floor(deltaMSec / (AjxDateUtil.MSEC_PER_DAY * 30.42));
+	if (months > 0) {
 		deltaMSec -= Math.floor(months * AjxDateUtil.MSEC_PER_DAY * 30.42);
-	var days = Math.floor(deltaMSec / AjxDateUtil.MSEC_PER_DAY);
-	if (days > 0)
+    }
+	days = Math.floor(deltaMSec / AjxDateUtil.MSEC_PER_DAY);
+	if (days > 0) {
 		deltaMSec -= days * AjxDateUtil.MSEC_PER_DAY;
-	var hours = Math.floor(deltaMSec / AjxDateUtil.MSEC_PER_HOUR);
-	if (hours > 0)
-		deltaMSec -= hours * AjxDateUtil.MSEC_PER_HOUR;
-	var mins = Math.floor(deltaMSec / 60000);
-	if (mins > 0)
-		deltaMSec -= mins * 60000;
-	var secs = Math.floor(deltaMSec / 1000);
-	if (secs > 30 && mins < 59) mins++;
-
-	var secs = 0;
+    }
+    hours = Math.floor(deltaMSec / AjxDateUtil.MSEC_PER_HOUR);
+    if (hours > 0) {
+        deltaMSec -= hours * AjxDateUtil.MSEC_PER_HOUR;
+    }
+    mins = Math.floor(deltaMSec / 60000);
+    if (mins > 0) {
+        deltaMSec -= mins * 60000;
+    }
+    secs = Math.floor(deltaMSec / 1000);
+    if (secs > 30 && mins < 59) {
+        mins++;
+    }
+	secs = 0;
 
 	// determine message
 	var amount;
@@ -786,17 +811,25 @@ function(deltaMSec) {
 		}
 	} else if (days > 0) {
 		amount = "Days";
-		if (days <= 2 && hours > 0) {
+		if (!isAllDay && (days <= 2 && hours > 0)) {
+            // Only include hours if not an all day appt/task
 			amount = "DaysHours";
 		}
-	} else if (hours > 0) {
-		amount = "Hours";
-		if (hours < 5 && mins > 0) {
-			amount = "HoursMinutes";
-		}
 	} else {
-		amount = "Minutes";
-	}
+        if (isAllDay) {
+            // 'Overdue' from start of day, which really means due today
+            amount ="Today";
+        }  else {
+            if (hours > 0) {
+                amount = "Hours";
+                if (hours < 5 && mins > 0) {
+                    amount = "HoursMinutes";
+                }
+            } else {
+                amount = "Minutes";
+            }
+        }
+    }
 
 	// format message
 	var key = ["reminder",prefix,amount].join("");
