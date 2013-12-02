@@ -821,7 +821,7 @@ ZmSearchAutocomplete.prototype._loadFolders =
 			var folders = folderTree ? folderTree.asList({includeRemote:true}) : [];
 			for (var i = 0, len = folders.length; i < len; i++) {
 				var folder = folders[i];
-				if (folder.id != ZmOrganizer.ID_ROOT && !ZmFolder.HIDE_ID[folder.id]) {
+				if (folder.id !== ZmOrganizer.ID_ROOT && !ZmFolder.HIDE_ID[folder.id] && folder.id !== ZmFolder.ID_DLS) {
 					list.push(folder);
 				}
 			}
