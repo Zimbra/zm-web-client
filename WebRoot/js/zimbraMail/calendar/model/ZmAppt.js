@@ -263,16 +263,24 @@ function(controller, callback) {
 		sentBy: sentBy,
 		when: this.getDurationText(false, false),
 		location: this.getLocation(),
-		width: "250"
+		width: "250",
+		hideAttendees: true
 	};
 
 	this.updateParticipantStatus();
 	if (this.ptstHashMap != null) {
 		var ptstStatus = {};
-		ptstStatus[ZmMsg.ptstAccept] = this.getAttendeeToolTipString(this.ptstHashMap[ZmCalBaseItem.PSTATUS_ACCEPT]);
-		ptstStatus[ZmMsg.ptstDeclined] = this.getAttendeeToolTipString(this.ptstHashMap[ZmCalBaseItem.PSTATUS_DECLINED]);
-		ptstStatus[ZmMsg.ptstTentative] = this.getAttendeeToolTipString(this.ptstHashMap[ZmCalBaseItem.PSTATUS_TENTATIVE]);
-		ptstStatus[ZmMsg.ptstNeedsAction] = this.getAttendeeToolTipString(this.ptstHashMap[ZmCalBaseItem.PSTATUS_NEEDS_ACTION]);
+		var statusAttendees;
+		var hideAttendees = true;
+		statusAttendees = ptstStatus[ZmMsg.ptstAccept] = this.getAttendeeToolTipString(this.ptstHashMap[ZmCalBaseItem.PSTATUS_ACCEPT]);
+		hideAttendees = hideAttendees && !statusAttendees;
+		statusAttendees = ptstStatus[ZmMsg.ptstDeclined] = this.getAttendeeToolTipString(this.ptstHashMap[ZmCalBaseItem.PSTATUS_DECLINED]);
+		hideAttendees = hideAttendees && !statusAttendees;
+		statusAttendees = ptstStatus[ZmMsg.ptstTentative] = this.getAttendeeToolTipString(this.ptstHashMap[ZmCalBaseItem.PSTATUS_TENTATIVE]);
+		hideAttendees = hideAttendees && !statusAttendees;
+		statusAttendees = ptstStatus[ZmMsg.ptstNeedsAction] = this.getAttendeeToolTipString(this.ptstHashMap[ZmCalBaseItem.PSTATUS_NEEDS_ACTION]);
+		hideAttendees = hideAttendees && !statusAttendees;
+		params.hideAttendees = hideAttendees;
 		params.ptstStatus = ptstStatus;
 
 		var attendees = [];
