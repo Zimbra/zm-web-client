@@ -40,7 +40,6 @@ Ext.define('ZCS.view.mail.ZtComposeForm', {
 		layout: 'fit',
 		width: Ext.os.deviceType === "Phone" ? '100%' : '80%',
 		height: '100%',
-		scrollable: false,
 		hidden: true,
 		modal: true,
 		cls: 'zcs-compose-form'
@@ -74,7 +73,6 @@ Ext.define('ZCS.view.mail.ZtComposeForm', {
 						xtype: 'button',
 						text: ZtMsg.send,
 						align: 'right',
-						minWidth: '6em',
 						handler: function() {
 							this.up('composepanel').fireEvent('send');
 						}
@@ -82,23 +80,34 @@ Ext.define('ZCS.view.mail.ZtComposeForm', {
 				]
 			},
 			form = {
+				// Scrolling container
 				xtype: 'formpanel',
-				scrollable: false,
-				scrollable: false,
+				scrollable: true,
 				defaults: {
 					inputCls: 'zcs-form-input',
 					labelWidth: '5.5em'
 				},
-				layout: {
-					type: 'vbox'
+				listeners: {
+					initialize: function () {
+						/**
+						 * Fixing dom bug caused by contenteditable where parent scroller
+						 * gets pushed outside its fit container. Manually making sure the
+						 * scroll container always fills its parent when scrolling starts.
+						 */
+						this.getScrollable().getScroller().on('scrollstart', function () {
+							this.container.dom.scrollIntoView(false);
+						});
+					}
 				},
 				items: [{
-					height: '2.5em',
+					minHeight: '2.5em',
+					cls: 'zcs-recipient-line',
 					layout: {
 						type: 'hbox'
 					},
 					items: [{
 						xtype: 'button',
+						height: '2.5em',
 						itemId: 'showcc',
 						cls: 'zcs-show-cc-btn',
 						iconCls: 'collapsed',
@@ -118,7 +127,7 @@ Ext.define('ZCS.view.mail.ZtComposeForm', {
 					name: ZCS.constant.CC,
 					itemId: 'cc',
 					addressType: ZCS.constant.CC,
-					height: '2.5em',
+					minHeight: '2.5em',
 					hidden: true,
 					label: ZtMsg.ccHdr,
 					labelWidth: '5.5em'
@@ -127,7 +136,7 @@ Ext.define('ZCS.view.mail.ZtComposeForm', {
 					name: ZCS.constant.BCC,
 					itemId: 'bcc',
 					addressType: ZCS.constant.BCC,
-					height: '2.5em',
+					minHeight: '2.5em',
 					hidden: true,
 					label: ZtMsg.bccHdr,
 					labelWidth: '5.5em'
@@ -155,11 +164,6 @@ Ext.define('ZCS.view.mail.ZtComposeForm', {
 					}]
 				}, {
 					xtype: 'container',
-					flex: 1,
-					scrollable: {
-						direction: 'both',
-						directionLock: true
-					},
 					items: [{
 						xtype: 'component',
 						cls: 'zcs-attachments',
@@ -194,34 +198,19 @@ Ext.define('ZCS.view.mail.ZtComposeForm', {
 								}
 							}
 						}
-					}, {
-						xtype: 'container',
-						padding: 0,
-						flex: 1,
-						items: [{
-							xtype: 'component',
-							itemId: 'body',
-							html: '<div contenteditable="true" class="zcs-editable zcs-body-field"></div>',
-							listeners: {
-								painted: function () {
-									var heightToSet = Math.max(this.up('container').element.getHeight(), this.element.down('.zcs-body-field').dom.scrollHeight),
-										bodyField = this.element.down('.zcs-body-field');
-
-									this.setHeight(heightToSet);
-
-									bodyField.setHeight(heightToSet);
-
-									bodyField.dom.addEventListener('blur', function () {
-										ZCS.htmlutil.resetWindowScroll();
-									});
-
-									bodyField.dom.addEventListener('focus', function () {
-										setTimeout(ZCS.htmlutil.resetWindowScroll, 0);
-									});
-								}
-							}
-						}]
 					}]
+				}, {
+					xtype: 'component',
+					itemId: 'body',
+					html: '<div contenteditable="true" class="zcs-editable zcs-body-field"></div>',
+					listeners: {
+						painted: function () {
+							var heightToSet = Math.max(this.up('container').element.getHeight(), this.element.down('.zcs-body-field').dom.scrollHeight),
+								bodyField = this.element.down('.zcs-body-field');
+
+							bodyField.setMinHeight(heightToSet);
+						}
+					}
 				}]
 			};
 
@@ -264,7 +253,7 @@ Ext.define('ZCS.view.mail.ZtComposeForm', {
 	},
 
 	doAttach: function () {
-		this.down('filefield').show();
+		this.down('filefield').element.down('input').dom.click();
 	},
 
 	resetForm: function () {
@@ -276,6 +265,5 @@ Ext.define('ZCS.view.mail.ZtComposeForm', {
 		this.down('.formpanel').element.dom.reset();
 		//Reset this so we don't parse out old attachment info next time we come to the form.
 		this.down('#attachments').setHtml('');
-		this.down('.filefield').hide();
 	}
 });

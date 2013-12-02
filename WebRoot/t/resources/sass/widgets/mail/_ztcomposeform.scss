@@ -16,15 +16,22 @@ $compose-padding: .5em;
 	.x-form-inner {
 
 		.zcs-show-cc-btn {
-			height: 100%;
 			border-radius: 0;
 			border: transparent;
-			border-bottom: 1px solid $light-grey;
 			.x-button-icon {
 				color: $medium-grey;
 			}
+			&.x-item-disabled .x-button-icon {
+				color: $light-grey;
+			}
 		}
 
+		.zcs-recipient-line {
+			@extend .zcs-compose-formline;
+			.x-field {
+				border-bottom: none;
+			}
+		}
 		.x-field {
 			@extend .zcs-compose-formline;
 		}
@@ -50,7 +57,7 @@ $compose-padding: .5em;
 		}
 		.zcs-body-field {
 			background-color: white;
-			padding: $compose-padding;
+			margin: $compose-padding;
 		}
 	}
 }

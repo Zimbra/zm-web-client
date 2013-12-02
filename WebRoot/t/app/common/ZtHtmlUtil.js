@@ -163,7 +163,9 @@ Ext.define('ZCS.common.ZtHtmlUtil', {
 
 		var height = 0,
 			ln = el ? el.childNodes.length : 0,
-			i, child, styleObj;
+			i, 
+			child,
+			computedHeight;
 
 		doc = doc || window.document;
 
@@ -173,8 +175,17 @@ Ext.define('ZCS.common.ZtHtmlUtil', {
 		for (i = 0; i < ln; i++) {
 			child = el.childNodes[i];
 			if (child && child.nodeType === Node.ELEMENT_NODE) {
-				height += this.getHeightFromComputedStyle(child, doc);
+				computedHeight = this.getHeightFromComputedStyle(child, doc); 
+				
+
+				//Sometimes, like with br elements, you have to get the height directly from the element instead of the computedStyle.
+				if (computedHeight === 0 && child.clientHeight) {
+					height += child.clientHeight;
+				} else if (computedHeight) {
+					height += computedHeight;
+				}
 			}
+
 		}
 
 		return height;

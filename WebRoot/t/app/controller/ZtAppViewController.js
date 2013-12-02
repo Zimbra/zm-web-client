@@ -15,6 +15,7 @@ Ext.define('ZCS.controller.ZtAppViewController', {
 			appview: '.appview',
 			listpanelToggle: 'itempanel #listpanelToggle',
 			appsMenu: 'appsmenu',
+			organizerEdit: 'organizeredit',
 			appContainer: 'ztmain'
 		},
 
@@ -89,6 +90,7 @@ Ext.define('ZCS.controller.ZtAppViewController', {
 			this.updateModalnessOfOverlays(newDimensions);
 			this.updatelistpanelToggle(this.overviewTitle);
 			this.getAppsMenu().setDimensions();
+			this.getOrganizerEdit().setDimensions();
 			ZCS.app.fireEvent('orientationChange', newDimensions);
 		}, this);
 
@@ -474,7 +476,6 @@ Ext.define('ZCS.controller.ZtAppViewController', {
 			masked: false,
 			centered: false,
 			hideOnMaskTap: this.makeOverlaysModal(positioningConfig),
-			style: 'padding: 0; position: absolute;font-size:81%;',
 			padding: 0,
 			top: 0
 		};

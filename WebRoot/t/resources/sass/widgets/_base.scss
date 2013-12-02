@@ -18,6 +18,13 @@
 .x-toolbar {
 	background-color: $toolbar-bg-color;
 	height: $toolbar-height;
+
+	&.x-docked-top .x-button {
+		padding-top: 0;
+	}
+	.x-title {
+		padding-top: 0;
+	}
 }
 
 .x-button-icon {
@@ -88,10 +95,76 @@ $zcs-overview-category-color: darken($dark-grey, 10%);
 $zcs-overview-text-color: $light-grey;
 
 .zcs-overview {
+	background: $zcs-overview-base-color;
 
-	.x-button-icon {
+	.x-button-icon,
+	.x-button-label,
+	.x-label {
 		color: $zcs-overview-text-color;
 	}
+	.x-button.zcs-text-btn {
+		width: 52px;
+		border: 1px solid;
+	}
+
+	/* Folder edit form */
+	.zcs-folder-edit {
+		background: $zcs-overview-category-color;
+
+		.zcs-textfield {
+			margin-top: 20px;
+			margin-bottom: 40px;
+			.x-field-text {
+				background-color: transparent;
+
+				.x-field-input {
+					border: none;
+
+					input {
+						padding: 0em .4em;
+						min-height: 2.2em;
+					}
+				}
+			}
+		}
+
+		.zcs-folder-del-btn ,
+		.zcs-folder-loc-btn {
+			border: none;
+			border-radius: 5px;
+			.x-button-label {
+				color: $zcs-overview-category-color;
+			}
+			.x-button-icon {
+				color: $zcs-overview-category-color;
+			}
+
+			&.x-item-disabled {
+				.x-button-label {
+					color: $medium-grey;
+				}
+				.x-button-icon {
+					color: $medium-grey;
+				}
+			}
+		}
+
+		.zcs-folder-del-btn {
+			width: 150px;
+			background-color: #E16767;
+		}
+		.zcs-folder-loc-btn {
+			margin-bottom: 50px;
+			.x-button-label {
+				text-align: left;
+			}
+		}
+		.x-label {
+			margin-bottom: 10px;
+		}
+	}
+
+	/* end of Folder edit form styles */
 
 	.x-toolbar {
 		border-radius: 0;
@@ -278,7 +351,7 @@ $zcs-overview-text-color: $light-grey;
 		font-size: $zcs-titlebar-fontsize;
 		border: none;
 		border-radius: 0;
-		
+
 		.x-title {
 			font-size: $zcs-title-fontsize;
 			font-weight: normal;
@@ -300,6 +373,13 @@ $zcs-overview-text-color: $light-grey;
 			padding: 0em .4em;
 		}
 	}
+}
+
+
+.x-sheet {
+	padding: 0;
+	position: absolute;
+	font-size:81%;
 }
 
 /* Assignment Panel */
@@ -346,7 +426,11 @@ $zcs-overview-text-color: $light-grey;
 	background-color: rgba(0,0,0,.25);
 	background-image: none;
 }
-/* Modal Veil */
-.x-mask {
-	background: $mask-color center center no-repeat;
+
+/* Floating message boxes */
+.x-msgbox {
+	background-color: $white;
+	.x-msgbox-buttons .x-toolbar-inner .x-button {
+		border-left-width: 0px;
+	}
 }

@@ -98,24 +98,26 @@ Ext.define('ZCS.view.ZtAppView', {
 
 		this.callParent(arguments);
 
-		var app = this.getApp();
+		var app = this.getApp(),
+			overviewEditable = Ext.Array.contains(ZCS.constant.EDITABLE_OVERVIEW_APPS, app);
 
 		this.registerOverviewPanel({
 			xtype: 'overview',
 			itemId: app + 'overview',
 			app: app,
-			title: ZCS.constant.OVERVIEW_TITLE[app]
+			title: ZCS.constant.OVERVIEW_TITLE[app],
+			showEdit: overviewEditable
 		});
 
-        if (app !== ZCS.constant.APP_CALENDAR) {
-            this.registerListPanel({
-                xtype: 'listpanel',
-                itemId: app + 'listpanel',
-                app: app,
-                newButtonIcon: ZCS.constant.NEW_ITEM_ICON[app],
-                storeName: ZCS.constant.STORE[app]
-            });
-        }
+		if (app !== ZCS.constant.APP_CALENDAR) {
+			this.registerListPanel({
+				xtype: 'listpanel',
+				itemId: app + 'listpanel',
+				app: app,
+				newButtonIcon: ZCS.constant.NEW_ITEM_ICON[app],
+				storeName: ZCS.constant.STORE[app]
+			});
+		}
 
 		this.registerItemPanel({
 			xtype: 'itempanel',

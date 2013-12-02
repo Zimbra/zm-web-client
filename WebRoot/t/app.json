@@ -45,6 +45,9 @@
             "update": "full"
         },
         {
+            "path": "app/view/ux/Ext.ux.ColorSelector.js"
+        },
+        {
             "path": "app/view/ux/Ext.ux.TouchCalendar.js"
         },
         {
@@ -95,7 +98,11 @@
     "css": [{
             "path": "resources/css/app.css",
             "update": "full",
-            "platform": ["android","safari","chrome","ie10","firefox","ios","blackberry"]
+            "platform": ["safari","chrome","ie10","firefox","ios","blackberry"]
+        }, {
+            "path": "resources/css/android.css",
+            "update": "full",
+            "platform": ["android"]
         }, {
             "path": "resources/css/msgbody.css",
             "update": "full"

@@ -26,6 +26,11 @@ Ext.define('ZCS.view.ZtOrganizerList', {
 
 	xtype: 'folderlist',
 
+	/**
+	 * List will fire different events on 'itemtap' depending on editing state
+	 */
+	editing: false,
+
 	config: {
 
 		cls: 'zcs-folder-list',
@@ -65,9 +70,13 @@ Ext.define('ZCS.view.ZtOrganizerList', {
 
 		e.preventDefault();
 
-		this.fireEvent('search', folder.getQuery(), folder);
+		if (!this.editing) {
+			this.fireEvent('search', folder.getQuery(), folder);
 
-		this.fireEvent('itemtap', list, index, target, folder, e);
+			this.fireEvent('itemtap', list, index, target, folder, e);
+		} else {
+			this.fireEvent('edititemtap', folder, list);
+		}
 
 	},
 

@@ -38,13 +38,15 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 			composePanel:       'composepanel',
 			contactField:       'composepanel contactfield',
 			attachmentsField:   '#attachments',
-			attachmentUploadField: 'composepanel filefield',
 			originalAttachmentMenu: 'list[itemId=originalAttachmentMenu]',
 			recipientActionsMenu: 'list[itemId=recipientActionsMenu]',
 
 			// other
 			mailView:       '#' + ZCS.constant.APP_MAIL + 'view',
-			composeForm:    'composepanel formpanel'
+			composeForm:    'composepanel formpanel',
+			toField:        'composepanel formpanel contactfield[name=' + ZCS.constant.TO + ']',
+			ccField:        'composepanel formpanel contactfield[name=' + ZCS.constant.CC + ']',
+			bccField:       'composepanel formpanel contactfield[name=' + ZCS.constant.BCC + ']'
 		},
 
 		control: {
@@ -55,7 +57,7 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 				showOriginalAttachments:    'doShowOriginalAttachments',
 				originalAttachmentTap:      'showMenu',
 				attachmentAdded:            'uploadTemporaryAttachment'
-			
+
 			},
 			originalAttachmentMenu: {
 				itemtap:            'onMenuItemSelect'
@@ -64,7 +66,9 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 				itemtap:            'onMenuItemSelect'
 			},
 			contactField: {
-				bubbleTap:  'showMenu'
+				bubbleTap:      'showMenu',
+				bubbleAdded:    'checkRecipientStatus',
+				bubbleRemoved:  'checkRecipientStatus'
 			}
 
 		},
@@ -261,10 +265,10 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 				else {
 					attachmentsField.setHtml(ZCS.controller.mail.ZtComposeController.originalAttachmentsTpl.apply({}));
 				}
-                // Bug: 82698. Attachment info will only be present in case of valid attachments, for invite msg message.ics is ignored as attachment
-                if (origMsg.getAttachmentInfo().length) {
-                    attachmentsField.show();
-                }
+				// Bug: 82698. Attachment info will only be present in case of valid attachments, for invite msg message.ics is ignored as attachment
+				if (origMsg.getAttachmentInfo().length) {
+					attachmentsField.show();
+				}
 			}
 		}
 
@@ -273,6 +277,7 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 		Ext.each(ZCS.constant.RECIP_TYPES, function(type) {
 			formField[type].addBubbles(addresses[type]);
 		}, this);
+		this.checkRecipientStatus();
 
 		if (subject) {
 			subjectFld.setValue(subject);
@@ -285,11 +290,7 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 		this.setFormHash(this.calculateFormHash());
 
 		if (!(addresses[ZCS.constant.TO] && addresses[ZCS.constant.TO].length)) {
-			panel.suspendEvents();
-			ZCS.ZTPreventOverflowCheck = true;
 			formField[ZCS.constant.TO].focusInput();
-			ZCS.ZTPreventOverflowCheck = false;
-			panel.resumeEvents(false);
 		} else if (!subject) {
 			subjectFld.focus();
 		} else {
@@ -303,7 +304,7 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 			sel.addRange(range);
 		}
 
-        Ext.fly(editor).addCls('zcs-fully-editable');
+		Ext.fly(editor).addCls('zcs-fully-editable');
 
 	},
 
@@ -378,59 +379,59 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 		var fileInput = this,
 			me = this,
 			progressIndicator = Ext.create("Ext.ProgressIndicator", {
-            	loadingText: "Uploading: {percent}%"
-        	});
+				loadingText: "Uploading: {percent}%"
+			});
 
-        var request = {
-            url: ZCS.constant.ATTACHMENT_UPLOAD + '?fmt=extended,raw',
-            method: 'POST',
-            xhr2: true,
-            progress:progressIndicator,
-            success: function(response) {
-            	var responseParts = response.responseText.split(','),
-            		responseJson,
-            		responsePayload;
+		var request = {
+			url: ZCS.constant.ATTACHMENT_UPLOAD + '?fmt=extended,raw',
+			method: 'POST',
+			xhr2: true,
+			progress:progressIndicator,
+			success: function(response) {
+				var responseParts = response.responseText.split(','),
+					responseJson,
+					responsePayload;
 
-            	if (responseParts[0] === '200') {
-            		responseJsonString = Ext.Array.slice(responseParts, 2).join(',');
-            		responsePayload = Ext.JSON.decode(responseJsonString);
-            	
-            		var msg = me.getMessageModel(true),
-            			attachments = msg.get('attachments');
+				if (responseParts[0] === '200') {
+					responseJsonString = Ext.Array.slice(responseParts, 2).join(',');
+					responsePayload = Ext.JSON.decode(responseJsonString);
 
-            		if (!attachments) {
-            			attachments = [];
-            		} 
+					var msg = me.getMessageModel(true),
+						attachments = msg.get('attachments');
 
-            		Ext.each(responsePayload, function (uploadResponse) {
-            			attachments.push({
-            				aid: uploadResponse.aid,
-            				label: uploadResponse.filename,
-            				size: ZCS.util.getDisplayForBytes(uploadResponse.s)
-            			});
-            		});
+					if (!attachments) {
+						attachments = [];
+					}
 
-            		me.doShowAllAttachments(attachments);
+					Ext.each(responsePayload, function (uploadResponse) {
+						attachments.push({
+							aid: uploadResponse.aid,
+							label: uploadResponse.filename,
+							size: ZCS.util.getDisplayForBytes(uploadResponse.s)
+						});
+					});
 
-            	}
+					me.doShowAllAttachments(attachments);
 
-            	//Adds an attachment
-            },
-            failure: function(response) {
-                // ? what to do on file upload failure...
-            }
-        };
+				}
 
-        var input = field.getComponent().input;
-        var files = input.dom.files;
-        if (files.length) {
-            request.binaryData = files[0];
-            request.headers = {
-            	"Content-Disposition": 'attachment; filename="' + files[0].name + '"',
+				//Adds an attachment
+			},
+			failure: function(response) {
+				// ? what to do on file upload failure...
+			}
+		};
+
+		var input = field.getComponent().input;
+		var files = input.dom.files;
+		if (files.length) {
+			request.binaryData = files[0];
+			request.headers = {
+				"Content-Disposition": 'attachment; filename="' + files[0].name + '"',
 				"Content-Type": files[0].type +";"
-            };
-            Ext.Ajax.request(request);
-        }
+			};
+			Ext.Ajax.request(request);
+		}
 	},
 
 	/**
@@ -519,7 +520,7 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 			var ln = attBubbles ? attBubbles.length : 0, i,
 				origAtt = [],
 				newAtt = [],
-				msgId = origMsg ? origMsg.getId() : null, 
+				msgId = origMsg ? origMsg.getId() : null,
 				bubbleEl,
 				aid,
 				idParams;
@@ -785,6 +786,29 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 				type: 'fadeOut',
 				duration: 250
 			});
+		}
+	},
+
+	checkRecipientStatus: function (bubbleModel) {
+		var composePanel = this.getComposePanel(),
+			toCount = this.getToField().element.query('.zcs-area-bubble').length,
+			ccCount = this.getCcField().element.query('.zcs-area-bubble').length,
+			bccCount = this.getBccField().element.query('.zcs-area-bubble').length,
+			ccToggle = composePanel.down('#showcc'),
+			sendBtn = composePanel.down('button[text='+ZtMsg.send+']');
+
+		// Disable the cc/bcc collapse if either contains recipients
+		if (ccCount + bccCount > 0) {
+			ccToggle.disable();
+		} else {
+			ccToggle.enable();
+		}
+
+		// Disable send button until there is at least 1 recipient
+		if (toCount + ccCount + bccCount > 0) {
+			sendBtn.enable();
+		} else {
+			sendBtn.disable();
 		}
 	}
 },

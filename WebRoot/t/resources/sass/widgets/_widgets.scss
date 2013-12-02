@@ -32,6 +32,7 @@
 @import 'widgets/ux/skin1';
 @import 'widgets/ux/Ext.ux.TouchCalendarEvents';
 @import 'widgets/ux/Ext.ux.TouchCalendarView';
+@import 'widgets/ux/Ext.ux.ColorSelector';
 @import 'widgets/ux/ztcalendar';
 
 // Your custom code goes here...
@@ -66,5 +67,5 @@
 //@include icon('attachment', 'h', 'ZimbraTouch');
 //@include icon('read_unread', 'r', 'ZimbraTouch');
 //@include icon('invite', 'v', 'ZimbraTouch');
-//@include icon('forward', 'F', 'ZimbraTouch');
+@include icon('forward', 'F', 'ZimbraTouch');
 //@include icon('disclosure', 'D', 'ZimbraTouch');

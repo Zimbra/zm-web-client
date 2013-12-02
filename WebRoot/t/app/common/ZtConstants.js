@@ -74,6 +74,10 @@ ZCS.constant.APPS = [
 ];
 ZCS.constant.IS_APP = ZCS.util.arrayAsLookupHash(ZCS.constant.APPS);
 
+ZCS.constant.EDITABLE_OVERVIEW_APPS = [
+    ZCS.constant.APP_MAIL
+];
+
 // Turn features on/off
 ZCS.constant.FEATURE_ADD_ATTACHMENT = 'add_attachment'; // attach file when composing
 ZCS.constant.FEATURE_QUICK_REPLY    = 'quick_reply';    // quick reply area for conv panel
@@ -756,6 +760,9 @@ ZCS.constant.IS_FATAL_ERROR = ZCS.util.arrayAsLookupHash([
 	'service.AUTH_REQUIRED',
 	'service.AUTH_EXPIRED'
 ]);
+
+// Needs to match _zttag.scss
+ZCS.constant.TAG_COLOR_COUNT = 10;
 
 ZCS.constant.SIDE_MENU_CONFIG = {
     tablet: {

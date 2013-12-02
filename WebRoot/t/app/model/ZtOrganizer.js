@@ -2,12 +2,12 @@
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2013 Zimbra Software, LLC.
- * 
+ *
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
@@ -178,13 +178,13 @@ Ext.define('ZCS.model.ZtOrganizer', {
 	},
 
 	constructor: function(data, id, raw) {
- 
+
         // Setting these fixes bug in framework when instance of this record is already cached
  	    this.modified = {};
         this.raw = raw || data || {};
-        this.stores = [];		this.callParent(arguments);
+        this.stores = [];
 
-		this.callParent(arguments);
+        this.callParent(arguments);
 
 		var orgId = (data && (data.id || data.zcsId)) || id;
 		//console.log('Cache organizer "' + data.name + '" under key "' + orgId + '"');
@@ -358,5 +358,22 @@ Ext.define('ZCS.model.ZtOrganizer', {
 		}
 
 		return true;
+	},
+
+	/**
+	 * Returns true if this folder is movable.
+	 */
+	isMovable: function () {
+		// TO DO - implement this
+		return true;
+	},
+
+	/**
+	 * Returns true if this folder is deletable.
+	 */
+	isDeletable: function () {
+		// TO DO - implement this
+		return !ZCS.util.folderIs(this, ZCS.constant.ID_TRASH);
 	}
+
 });

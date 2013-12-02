@@ -33,11 +33,13 @@ Ext.define('ZCS.view.ZtOverview', {
 	xtype: 'overview',
 
 	config: {
-		layout: 'fit',
+		layout: 'vbox',
+		height: '100%',
 		//ui: 'dark',
 		cls: 'zcs-overview',
 		app: null,
-		title: null
+		title: null,
+		showEdit: false
 	},
 
 	initialize: function() {
@@ -49,7 +51,8 @@ Ext.define('ZCS.view.ZtOverview', {
 		// is to display them in a single nested list that is grouped by organizer type.
 
 		// get the organizer data for this app
-		var app = this.getApp(),
+		var me = this,
+			app = this.getApp(),
 			organizerData = {
 				items: ZCS.session.getOrganizerData(app, null, 'overview')
 			};
@@ -65,6 +68,7 @@ Ext.define('ZCS.view.ZtOverview', {
 
 		// create the nested list that contains the grouped organizers
 		var organizerList = Ext.create('ZCS.view.ZtOrganizerList', {
+			flex:           1,
 			title:          app.charAt(0).toUpperCase() + app.slice(1),
 			displayField:   'displayName',
 			store:          organizerStore,
@@ -78,10 +82,45 @@ Ext.define('ZCS.view.ZtOverview', {
 					handler: function() {
 						this.up('folderlist').fireEvent('showAppsMenu');
 					}
+				}, {
+					xtype: 'button',
+					hidden: !this.config.showEdit,
+					cls: 'zcs-text-btn',
+					text: 'Edit',
+					action: 'edit',
+					align: 'right',
+					scope: this
 				}]
 			}
 		});
 
 		this.add(organizerList);
+
+		if (this.config.showEdit) {
+			var organizerEditToolbar = Ext.create('Ext.Toolbar', {
+				height: 50,
+				docked: 'bottom',
+				hidden: true,
+				items: [{
+					xtype: 'spacer'
+				}, {
+					text: 'New Folder',
+					action: 'newFolder',
+					cls: 'zcs-text-btn',
+					width: 90
+				}, {
+					xtype: 'spacer'
+				}, {
+					text: 'New Tag',
+					action: 'newTag',
+					cls: 'zcs-text-btn',
+					align: 'right',
+					width: 90
+				}, {
+					xtype: 'spacer'
+				}]
+			});
+			this.add(organizerEditToolbar);
+		}
 	}
 });

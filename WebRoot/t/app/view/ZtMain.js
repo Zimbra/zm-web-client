@@ -25,7 +25,8 @@ Ext.define("ZCS.view.ZtMain", {
 	requires: [
 		'ZCS.view.mail.ZtComposeForm',
 		'ZCS.view.ZtAppView',
-		'ZCS.view.ZtAppsMenu'
+		'ZCS.view.ZtAppsMenu',
+		'ZCS.view.ZtOrganizerEdit',
 	],
 
 	alias: 'widget.ztmain',
@@ -61,6 +62,7 @@ Ext.define("ZCS.view.ZtMain", {
 		}, this);
 
 		Ext.Viewport.add(Ext.create('ZCS.view.ZtAppsMenu'));
+		Ext.Viewport.add(Ext.create('ZCS.view.ZtOrganizerEdit'));
 		Ext.Viewport.add(Ext.create('ZCS.view.mail.ZtComposeForm'));
 		Ext.Viewport.add(Ext.create('ZCS.view.contacts.ZtContactForm'));
 	}
