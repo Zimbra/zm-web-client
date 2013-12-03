@@ -16,7 +16,7 @@ $contactBkgdColor: $white;
 
 $contactListStdMargin: 0.5rem;
 $contactListHeight: 3.6rem;  /* estimated */
-$contactListImageSize: 2.4rem;
+$contactListImageSize: 2.5rem;
 $contactListLeftIndent: $contactListImageSize + $contactListStdMargin*3;
 $contactListRightIndent: $contactListStdMargin;
 $contactListTopOffset: 0.5rem;
@@ -28,7 +28,7 @@ $contactListImageTopOffset: $contactListHeight/2 - $contactListImageSize/2;
 $contactButtonSize: $contactImageSize/1.5;
 $contactGutter: 2em;
 $contactFieldTopOffset: $contactImageSize + $contactStdMargin*3;
-$contactFieldWidth: 23em;
+$contactFieldWidth: 21em; //optimized intially for iPad in landscape
 
 
 /* Contact Image Base Classes */
@@ -79,7 +79,7 @@ $contactFieldWidth: 23em;
 .zcs-contactList-person {
 	@extend .zcs-contactlist-image;
 	@extend .zcs-contact-person;
-	margin: $contactListStdMargin*2 0;
+	margin: $contactListStdMargin*1.5 0;
 }
 
 .zcs-contactList-group {
@@ -89,15 +89,14 @@ $contactFieldWidth: 23em;
 
 .zcs-contactList-text {
 	@extend .zcs-contactlist-item;
-	bottom: $contactListTopOffset;
+	bottom: $contactListTopOffset*2;
 	left: $contactListLeftIndent;
 	right: $contactListRightIndent;
-	top: $contactListTopOffset;
+	top: $contactListTopOffset*2;
 
 	DIV {
 		@include ellipsis();
 		line-height: 1.5rem;
-		margin: $contactListStdMargin 0;
 		width: 100%;
 	}
 	.zcs-contactList-name {
@@ -140,14 +139,21 @@ $contactFieldWidth: 23em;
 			@extend .zcs-newLine;
 			//@include ellipsis();
 			margin-bottom:.25em;
-			max-width: $contactFieldWidth*1.5;
-			min-width: $contactFieldWidth;
+			max-width: $contactFieldWidth;
+			min-width: $contactFieldWidth/2;
 		}
 
 		SPAN[name=contactname] {
 			font-size: 1.5em;
 			margin: .5em 0;
 		}
+	}
+}
+
+.x-portrait .zcs-contactview-header {
+	.zcs-contactview-personalInfo SPAN {
+		max-width: $contactFieldWidth*1.1; // Tested iPad Mini
+		min-width: $contactFieldWidth/2;
 	}
 }
 
@@ -160,16 +166,15 @@ $contactFieldWidth: 23em;
 	}
 
 	.zcs-contactview-personalInfo SPAN {
-		max-width: $contactFieldWidth;
-		min-width: $contactFieldWidth/2;
+		max-width: $contactFieldWidth*0.95;  // Tested iPod Touch - gen 5 - may need to be smaller for pre-gen 5
+		min-width: $contactFieldWidth*0.5;
 	}
 }
 
-.x-phone.x-portrait {
-
-	.zcs-contactview-header .zcs-contactview-personalInfo SPAN {
-		max-width: $contactFieldWidth/2;
-		min-width: $contactFieldWidth/3;
+.x-phone.x-portrait .zcs-contactview-header {
+	.zcs-contactview-personalInfo SPAN {
+		max-width: $contactFieldWidth*0.6;  // Tested iPod Touch - gen 5
+		min-width: $contactFieldWidth*0.4;
 	}
 }
 
@@ -234,7 +239,6 @@ $contactFieldWidth: 23em;
 }
 
 .x-phone.x-portrait {
-
 	.zcs-contactview-fieldSets .zcs-contactview-fields .zcs-contactview-field {
 		max-width: $contactFieldWidth*0.5;
 		min-width: $contactFieldWidth/3;

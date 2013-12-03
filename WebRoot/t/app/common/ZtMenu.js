@@ -26,7 +26,7 @@ Ext.define('ZCS.common.ZtMenu', {
 		bottom: 0,
 		cls: 'zcs-floating-list',
 		// TODO: would be nicer to have it autosize to width of longest item
-		width: Ext.os.deviceType === "Phone" ? Ext.Viewport.element.getWidth() : 160,
+		width: Ext.os.deviceType === "Phone" ? Ext.Viewport.element.getWidth() : 320,
 		hidden: true,
 		modal: true,
 		hideOnMaskTap: true,
@@ -87,7 +87,7 @@ Ext.define('ZCS.common.ZtMenu', {
 		var list = this,
 			totalHeight = list.getItemMap().getTotalHeight(),
 			actualHeight = 0,
-			bufferHeight = 52;  // additional height for margin and cancel button
+			bufferHeight = 62;  // additional height for margin and cancel button
 
 		this.setHeight(totalHeight + bufferHeight);
 		//list.refresh();

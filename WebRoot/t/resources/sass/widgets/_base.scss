@@ -167,12 +167,12 @@ $zcs-overview-text-color: $light-grey;
 	/* end of Folder edit form styles */
 
 	.x-toolbar {
-		border-radius: 0;
 		border-bottom: none;
 		background-color: $zcs-overview-base-color;
 		background-image: none;
 		color: $zcs-overview-text-color;
 		font-size: $zcs-titlebar-fontsize;
+		@include border-radius(0);
 
 		.x-title {
 			color: $zcs-overview-text-color;
@@ -265,73 +265,93 @@ $zcs-overview-text-color: $light-grey;
 }
 
 /* Floating List */
-.zcs-floating-list {
-	border-radius: 0.3em;
+
+$floating-list-background-color: $white;
+$floating-list-radius: 0.3em;
+$floating-list-margin: 0.3em;
+
+.zcs-floating-list-shadow {
 	box-shadow: rgba(0, 0, 0, 0.8) 0 0.2em 0.6em;
+	//@include single-box-shadow();  // TODO: use compass mix-in
+}
+
+.zcs-floating-list {
+	background-color: transparent;
 	background-image: none;
-	border: 6px solid #CBCBCB;
+	border: $floating-list-margin solid transparent;
+	font-size: 1.25em;
+	@include border-radius($floating-list-radius);
 
 	.x-button {
-		top: inherit;
+		@extend .zcs-floating-list-shadow;
 		bottom: 0;
-		border-color: $base-color;
-		border-radius: 0.3em;
+		border-color: $floating-list-background-color;
+		top: inherit;
+		@include border-radius($floating-list-radius);
+
+		display: none;  // Cancel button is shown only on phones
 
 		.x-button-label {
 			color: $base-color;
+			font-weight: bold;
 		}
 	}
 
-	.x-list-inner {
-		background-color: #CBCBCB;
 
-		.x-list-item {
-			border-left: 1px solid $base-color;
-			border-right: 1px solid $base-color;
-			border-top: none;
-			background-color: $white;
-			color: $base-color;
-			text-align: center;
+	.x-scroll-container {
+		@extend .zcs-floating-list-shadow;
 
-			&.x-item-disabled {
-				color: $light-grey;
+		.x-inner {
+			min-height: inherit;
+
+			.x-list-item {
+				border-top: none;
+				background-color: $floating-list-background-color;
+				color: $base-color;
+				text-align: center;
+
+				&.x-item-disabled {
+					color: $light-grey;
+				}
 			}
-		}
 
-		// Apply to all non hidden menu items
-		.x-list-item:not(.x-item-hidden) {
-			border-top: 1px solid $base-color;
-			border-top-right-radius: 0.3em;
-			border-top-left-radius: 0.3em;
+			// Apply to all non-hidden menu items
+			.x-list-item:not(.x-item-hidden) {
+				border-top-right-radius: $floating-list-radius;
+				border-top-left-radius: $floating-list-radius;
 
-			.x-dock-horizontal {
-				border: none;
+				.x-dock-horizontal {
+					border: none;
+				}
 			}
-		}
-		// Remove from all but first
-		.x-list-item:not(.x-item-hidden) ~ .x-list-item {
-			border-top: none;
-			border-top-right-radius: 0;
-			border-top-left-radius:0;
-			border-top: 1px solid #ccc;
-		}
+			// Remove from all but first
+			.x-list-item:not(.x-item-hidden) ~ .x-list-item {
+				border-top: none;  // <-- why?
+				border-top-right-radius: 0;
+				border-top-left-radius: 0;
+				border-top: 1px solid $medium-grey;
+			}
 
-		.x-list-item:last-child {
-			border-bottom: 1px solid $base-color;
-			border-bottom-right-radius: 0.3em;
-			border-bottom-left-radius: 0.3em;
+			.x-list-item:last-child {
+				border-bottom-right-radius: $floating-list-radius;
+				border-bottom-left-radius: $floating-list-radius;
+			}
 		}
 	}
 }
 
-.x-phone .zcs-floating-list {
-	border-bottom-right-radius: 0px;
-	border-bottom-left-radius: 0px;
+.x-phone .zcs-floating-list .x-button {  //TODO: make iOS only, assuming android can use back button to dismiss
+	display: flex;
+	display: -webkit-box;
 }
+
+/* Contact Auto-Complete Suggestion Panel */
+
+$contact-suggest-radius: $floating-list-radius;
 
 .zcs-contact-suggest {
 	border: 1px solid $base-color;
-	border-radius: 0.3em;
+	@include border-radius($contact-suggest-radius);
 
 	.x-list-item.x-list-item-first {
 		border-top: none;
@@ -350,7 +370,7 @@ $zcs-overview-text-color: $light-grey;
 	.zcs-list-titlebar {
 		font-size: $zcs-titlebar-fontsize;
 		border: none;
-		border-radius: 0;
+		@include border-radius(0);
 
 		.x-title {
 			font-size: $zcs-title-fontsize;
@@ -395,7 +415,7 @@ $zcs-overview-text-color: $light-grey;
 	&.x-toolbar {
 	font-size: $zcs-titlebar-fontsize;
 	border: none;
-	border-radius: 0px;
+	@include border-radius(0);
 
 		.x-title {
 			font-size: $zcs-title-fontsize;

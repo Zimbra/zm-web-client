@@ -35,7 +35,7 @@ $zcs-msgview-radius: 5px;
 		.x-list-item-inner {
 			background-color: $msg-bg-color;
 			border: none;
-			border-radius: $zcs-msgview-radius;
+			@include border-radius($zcs-msgview-radius);
 		}
 
 		.zcs-btn-msg-details {
@@ -60,7 +60,7 @@ $zcs-msgview-radius: 5px;
 
 		.zcs-msg-actions-toolbar {
 			background: $medium-grey;
-			border-radius: 0 0 $zcs-msgview-radius $zcs-msgview-radius;
+			@include border-radius(0 0 $zcs-msgview-radius $zcs-msgview-radius);
 			font-size:1.2rem;
 
 			.x-button {
@@ -85,7 +85,7 @@ $zcs-msgview-radius: 5px;
 	position: absolute;
 	width: 100%;
 	z-index: 1;
-	@include background-image(linear-gradient(#808080 50%, rgba(#808080, .5)));
+	@include background-image(linear-gradient(#808080 25%, rgba(#808080, .5)));
 }
 
 
@@ -118,7 +118,7 @@ $msgHdrLabelIndent: $msgHdrImageSize + $msgHdrStdMargin;
 $msgHdrLeftIndent: $msgHdrImageSize + $msgHdrStdMargin*2;
 
 $msgHdrRightIndent: $msgHdrStdMargin;
-$msgHdrDetailToggle: 6.5em;  /* width set for english text */
+$msgHdrDetailToggle: 3.5em;  /* width set for english text */
 
 $msgHdrTopOffset1: $msgHdrStdMargin;
 $msgHdrTopOffset2: $msgHdrTextSize * 1.5 + $msgHdrTopOffset1;
@@ -126,7 +126,7 @@ $msgHdrTopOffset3: $msgHdrTextSize * 3 + $msgHdrTopOffset1;
 
 .zcs-mail-msgHdr {
 	font-size: 1rem; /* reset font size for baseline */
-	min-height: $msgHdrTextSize*5;
+	min-height: $msgHdrTextSize*4.5;
 	position: relative;
 }
 
@@ -166,6 +166,7 @@ $msgHdrTopOffset3: $msgHdrTextSize * 3 + $msgHdrTopOffset1;
 .zcs-msgHdr-from {
 	@extend .zcs-msgHdr-element;
 	left: $msgHdrLeftIndent;
+	line-height: 1.7em;
 	right: $msgHdrRightIndent;
 	top: $msgHdrTopOffset2;
 	@include ellipsis();
@@ -200,8 +201,8 @@ $msgHdrTopOffset3: $msgHdrTextSize * 3 + $msgHdrTopOffset1;
 	@extend .zcs-msgHdr-element;
 	font-size: 1em;
 	left: $msgHdrLeftIndent;
-	line-height: 1.5em;
-	right: $msgHdrRightIndent;
+	line-height: 1.7em;
+	right: $msgHdrRightIndent+$msgHdrDetailToggle;
 	top: $msgHdrTopOffset2;
 	@include ellipsis();
 }
@@ -222,7 +223,7 @@ $msgHdrTopOffset3: $msgHdrTextSize * 3 + $msgHdrTopOffset1;
 	display: inline-block;
 	text-align: right;
 	width: $msgHdrLabelIndent;
-	@include opacity(.75);
+	@include opacity(.5);
 }
 
 .zcs-mail-dtlMsgHdr {
