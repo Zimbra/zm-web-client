@@ -43,7 +43,7 @@ Ext.define('ZCS.model.ZtOrganizer', {
 			{ name: 'zcsId',            type: 'string' },   // ID on ZCS server
 			{ name: 'parentItemId',     type: 'string' },   // ID of parent organizer
 			{ name: 'parentZcsId',      type: 'string' },   // ID of parent on ZCS server
-			{ name: 'name',             type: 'string' },   // not encoded, should not be displayed
+			{ name: 'name',             type: 'string' },   // name on server - not encoded, should not be displayed
 			{ name: 'displayName',      type: 'string' },   // HTML-encoded
 			{ name: 'path',             type: 'string' },   // full path with / separators
 			{ name: 'itemCount',        type: 'int' },      // number of items contained by this organizer
@@ -59,7 +59,16 @@ Ext.define('ZCS.model.ZtOrganizer', {
 
 			// saved search fields
 			{ name: 'query',            type: 'string' },   // search query
-			{ name: 'searchTypes',      type: 'string' }    // search types
+			{ name: 'searchTypes',      type: 'string' },   // search types
+
+			// title including count (if count is nonzero, title is bolded)
+			{
+				name:       'title',
+				type:       'string',
+				convert:    function(value, record) {
+					return record.getTitle(null, true);
+				}
+			}
 		],
 
 		proxy: {
@@ -253,15 +262,15 @@ Ext.define('ZCS.model.ZtOrganizer', {
 	getTitle: function(defaultText, showCount) {
 
 		var	organizerName = this.get('name'),
-			type = this.get('type'),
+			folderType = this.get('folderType'),
 			title = organizerName || defaultText || '';
 
 		if (organizerName) {
-			if (type === ZCS.constant.ORG_MAIL_FOLDER) {
+			if (folderType === ZCS.constant.ORG_MAIL_FOLDER) {
 				var unread = showCount ? this.get('unreadCount') : 0;
 				title = (unread > 0) ? '<b>' + organizerName + ' (' + unread + ')</b>' : organizerName;
 			}
-			else if (type === ZCS.constant.ORG_ADDRESS_BOOK) {
+			else if (folderType === ZCS.constant.ORG_ADDRESS_BOOK) {
 				var contactCount = showCount ? this.get('itemCount') : 0;
 				title = (contactCount > 0) ? '<b>' + organizerName + ' (' + contactCount + ')</b>' : organizerName;
 			}
