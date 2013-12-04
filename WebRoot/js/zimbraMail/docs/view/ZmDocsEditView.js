@@ -25,10 +25,15 @@ ZmDocsEditView = function(parent, className, posStyle, controller, deferred) {
 };
 
 ZmDocsEditView.prototype = new DwtComposite;
-ZmDocsEditView.prototype.construction = ZmDocsEditView;
+ZmDocsEditView.prototype.constructor = ZmDocsEditView;
 
 ZmDocsEditView.ZD_VALUE = "ZD";
 ZmDocsEditView.APP_ZIMBRA_DOC = "application/x-zimbra-doc";
+
+ZmDocsEditView.prototype.toString =
+function() {
+	return "ZmDocsEditView";
+};
 
 ZmDocsEditView.prototype.getController =
 function() {
