@@ -123,7 +123,7 @@ ZmEditContactView.prototype.getFormItems = function() {
 				type: "ZmEditContactViewInputSelect", equals:ZmEditContactViewInputSelect.equals, params: {
 					inputWidth: 352, hint: ZmMsg.emailAddrHint, options: this.getEmailOptions()
 				}
-			} },
+			}, validator: ZmEditContactView.emailValidator },
 			{ id: "PHONE", type: "ZmEditContactViewInputSelectRows", rowitem: {
 				type: "ZmEditContactViewInputSelect", equals:ZmEditContactViewInputSelect.equals, params: {
 					inputWidth: 351, hint: ZmMsg.phoneNumberHint, options: this.getPhoneOptions()
@@ -179,6 +179,21 @@ ZmEditContactView.prototype.getFormItems = function() {
 		];
 	}
 	return this._formItems;
+};
+
+/**
+ * validate the array of email addresses. (0, 1 or more, each from a row in the edit view)
+ * @param {Array} emails
+ * @returns {*}
+ */
+ZmEditContactView.emailValidator = function(emails) {
+	for (var i = 0; i < emails.length; i++) {
+		var address = emails[i];
+		if (!AjxEmailAddress.validateAddress(address)) {
+			throw ZmMsg.invalidEmailAddress;
+		}
+	}
+	return true;
 };
 
 /**
