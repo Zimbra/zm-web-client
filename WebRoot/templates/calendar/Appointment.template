@@ -1109,7 +1109,7 @@
 <template id='calendar.Appointment#TimeSuggestion-NoSuggestions'>
 	<div class='NoSuggestions'>
 		<div style='margin-bottom:2em;'>${message}</div>
-		<span class="Fakeanchor" id="${id}_showall"><$= ZmMsg.showTimesAnyway $></span>
+		<span class="FakeAnchor" id="${id}_showall"><$= ZmMsg.showTimesAnyway $></span>
 	</div>
 </template>
 
