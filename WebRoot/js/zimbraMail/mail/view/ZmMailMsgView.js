@@ -2181,7 +2181,8 @@ function(params) {
 		html[i++] = params.rfc822Part;
 		html[i++] = "\"); return false;'";
 	}
-	html[i++] = ">" + AjxStringUtil.htmlEncode(params.text) + "</a>";
+	html[i++] = "title='" + AjxStringUtil.htmlEncode(params.label || params.text);
+	html[i++] = "'>" + AjxStringUtil.htmlEncode(params.text) + "</a>";
 
 	return html.join("");
 };
@@ -2197,7 +2198,8 @@ function(params) {
 	var params1 = {
 		id:				params.id,
 		noUnderline:	true,
-		text:			params.text
+		text:			params.text,
+		label:			params.att.label
 	}; 
 	// handle rfc/822 attachments differently
 	if (params.att.ct == ZmMimeTable.MSG_RFC822) {
