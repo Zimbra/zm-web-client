@@ -3325,7 +3325,7 @@ function(appt, actionMenu) {
 	actionMenu.setItemVisible(ZmOperation.REPLY_TENTATIVE, showAcceptDecline);
 	actionMenu.setItemVisible(ZmOperation.INVITE_REPLY_MENU, showAcceptDecline);
 	actionMenu.setItemVisible(ZmOperation.PROPOSE_NEW_TIME, showAcceptDecline);
-    actionMenu.setItemVisible(ZmOperation.REINVITE_ATTENDEES, isTheCalendarOrganizer && !isFolderReadOnly && !appt.inviteNeverSent && appt.otherAttendees);
+    actionMenu.setItemVisible(ZmOperation.REINVITE_ATTENDEES, !isTrash && isTheCalendarOrganizer && !isFolderReadOnly && !appt.inviteNeverSent && appt.otherAttendees);
     actionMenu.setItemVisible(ZmOperation.TAG_MENU, appCtxt.get(ZmSetting.TAGGING_ENABLED));
 
     // Initially enabling all the options in the action menu. And then selectively disabling unsupported options for special users.
