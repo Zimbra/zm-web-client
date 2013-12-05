@@ -83,6 +83,7 @@ $zcs-button-active-color: rgba(255,255,255,.3);
 .x-toolbar-dark .x-button.zcs-flat,
 .x-tabbar .x-button.zcs-flat {
 	@include zimbra-button;
+
 	&:active {
 		background-color: $zcs-button-active-color;
 	}
@@ -102,9 +103,14 @@ $zcs-overview-text-color: $light-grey;
 	.x-label {
 		color: $zcs-overview-text-color;
 	}
+
 	.x-button.zcs-text-btn {
-		width: 52px;
-		border: 1px solid;
+		padding-right: .5em;
+		padding-left: .5em;
+
+		.x-button-label {
+			font-weight: bold;
+		}
 	}
 
 	/* Folder edit form */
@@ -114,27 +120,30 @@ $zcs-overview-text-color: $light-grey;
 		.zcs-textfield {
 			margin-top: 20px;
 			margin-bottom: 40px;
+
 			.x-field-text {
 				background-color: transparent;
 
 				.x-field-input {
 					border: none;
 
-					input {
-						padding: 0em .4em;
+					INPUT {
+						padding: 0 0.4em;
 						min-height: 2.2em;
 					}
 				}
 			}
 		}
 
-		.zcs-folder-del-btn ,
+		.zcs-folder-del-btn,
 		.zcs-folder-loc-btn {
 			border: none;
 			border-radius: 5px;
+
 			.x-button-label {
 				color: $zcs-overview-category-color;
 			}
+
 			.x-button-icon {
 				color: $zcs-overview-category-color;
 			}
@@ -143,6 +152,7 @@ $zcs-overview-text-color: $light-grey;
 				.x-button-label {
 					color: $medium-grey;
 				}
+
 				.x-button-icon {
 					color: $medium-grey;
 				}
@@ -153,12 +163,14 @@ $zcs-overview-text-color: $light-grey;
 			width: 150px;
 			background-color: #E16767;
 		}
+
 		.zcs-folder-loc-btn {
 			margin-bottom: 50px;
 			.x-button-label {
 				text-align: left;
 			}
 		}
+
 		.x-label {
 			margin-bottom: 10px;
 		}
@@ -177,14 +189,15 @@ $zcs-overview-text-color: $light-grey;
 		.x-title {
 			color: $zcs-overview-text-color;
 			font-weight: normal;
+			padding: 0 0.25em;
 
 			.x-innerhtml {
-				font-size: $zcs-title-fontsize;
+				font-size: $zcs-list-item-fontsize;
 			}
 		}
 
 		.x-button {
-			font-size: $zcs-titlebar-icon-fontsize;
+			font-size: $zcs-list-header-fontsize;
 		}
 	}
 
@@ -267,6 +280,9 @@ $zcs-overview-text-color: $light-grey;
 /* Floating List */
 
 $floating-list-background-color: $white;
+$floating-list-text-color: $base-color;
+$floating-list-text-disabled-color: $light-grey;
+$floating-list-divider-color: $medium-grey;
 $floating-list-radius: 0.3em;
 $floating-list-margin: 0.3em;
 
@@ -292,7 +308,7 @@ $floating-list-margin: 0.3em;
 		display: none;  // Cancel button is shown only on phones
 
 		.x-button-label {
-			color: $base-color;
+			color: $floating-list-text-color;
 			font-weight: bold;
 		}
 	}
@@ -307,11 +323,11 @@ $floating-list-margin: 0.3em;
 			.x-list-item {
 				border-top: none;
 				background-color: $floating-list-background-color;
-				color: $base-color;
+				color: $floating-list-text-color;
 				text-align: center;
 
 				&.x-item-disabled {
-					color: $light-grey;
+					color: $floating-list-text-disabled-color;
 				}
 			}
 
@@ -324,12 +340,13 @@ $floating-list-margin: 0.3em;
 					border: none;
 				}
 			}
+
 			// Remove from all but first
 			.x-list-item:not(.x-item-hidden) ~ .x-list-item {
 				border-top: none;  // <-- why?
 				border-top-right-radius: 0;
 				border-top-left-radius: 0;
-				border-top: 1px solid $medium-grey;
+				border-top: 1px solid $floating-list-divider-color;
 			}
 
 			.x-list-item:last-child {
@@ -450,6 +467,7 @@ $contact-suggest-radius: $floating-list-radius;
 /* Floating message boxes */
 .x-msgbox {
 	background-color: $white;
+
 	.x-msgbox-buttons .x-toolbar-inner .x-button {
 		border-left-width: 0px;
 	}

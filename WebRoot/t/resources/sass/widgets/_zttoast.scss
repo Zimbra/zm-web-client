@@ -3,16 +3,18 @@
  */
 
 .x-sheet.zcs-toast {
-	color: white;
-	height: 2em;
-	padding: 0.2em;
+	background-color: $dark-grey;
+	color: $white;
+//	height: 2em;
+	padding: 0.3em;
 //	width: 20em;
-	@include border-radius(.1em);
+	@include border-radius(.3em);
 	@include box-shadow(rgba(0,0,0,.4) 2px 2px 3px);
 
 	.zcs-toast-contents{
 		font-size: 1em;
 		font-weight: bold;
+		line-height: 1.6em;
 		text-align: center;
 
 		.zcs-toast-status-icon {
