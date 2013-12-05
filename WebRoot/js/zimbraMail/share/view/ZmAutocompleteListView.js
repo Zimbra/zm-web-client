@@ -815,9 +815,6 @@ function(on, str) {
  */
 ZmAutocompleteListView.prototype._autocompleteAction =
 function(ev) {
-    if (appCtxt.isWebClientOffline()) {
-        return; // To be removed
-    }
 	var aclv = ev.aclv;
 	aclv._acActionId[ev.element.id] = -1; // so we don't try to cancel
 	aclv.autocomplete(ev.element);

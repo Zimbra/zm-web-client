@@ -52,6 +52,7 @@ ZmOfflineDB.indexedDB.open = function(callback, version) {
                     //Email index
                     store.createIndex("firstname", "_attrs.firstName");
                     store.createIndex("lastname", "_attrs.lastName");
+                    store.createIndex("middlename", "_attrs.middleName");
                     store.createIndex("email", "_attrs.email");
                     store.createIndex("company", "_attrs.company");
                     store.createIndex("jobtitle", "_attrs.jobTitle", {multiEntry : true});
@@ -921,7 +922,7 @@ function(search, callback, errorCallback) {
                 var indexArray = [];
                 var rangeArray = [];
                 if (indexName === "content") {
-                    indexArray.push(objectStore.index("firstname"), objectStore.index("lastname"), objectStore.index("email"), objectStore.index("company"), objectStore.index("jobtitle"));
+                    indexArray.push(objectStore.index("firstname"), objectStore.index("lastname"), objectStore.index("middlename"), objectStore.index("email"), objectStore.index("company"), objectStore.index("jobtitle"));
                     var capitalize = indexValue.charAt(0).toUpperCase() + indexValue.substr(1).toLowerCase();
                     var boundKeyRangeUpper = IDBKeyRange.bound(indexValue.toUpperCase(), capitalize + '\uffff');
                     var lowerCase = indexValue.charAt(0).toLowerCase() + indexValue.substr(1).toUpperCase();
@@ -1000,6 +1001,47 @@ function(resultArray, search, callback, errorCallback) {
         });
     }
     ZmOfflineDB.getItem(resultArray, ZmApp.CONTACTS, callback, errorCallback);
+};
+
+ZmOfflineDB.searchContactsForAutoComplete =
+function(searchStr, callback, errorCallback) {
+    try {
+        var db = ZmOfflineDB.indexedDB.db;
+        var transaction = db.transaction(ZmApp.CONTACTS);
+        var objectStore = transaction.objectStore(ZmApp.CONTACTS);
+        var indexArray = [objectStore.index("firstname"), objectStore.index("email"), objectStore.index("middlename"), objectStore.index("lastname")];
+        var indexValue = searchStr;
+        var capitalize = indexValue.charAt(0).toUpperCase() + indexValue.substr(1).toLowerCase();
+        var boundKeyRangeUpper = IDBKeyRange.bound(indexValue.toUpperCase(), capitalize + '\uffff');
+        var lowerCase = indexValue.charAt(0).toLowerCase() + indexValue.substr(1).toUpperCase();
+        var boundKeyRangeLower = IDBKeyRange.bound(lowerCase, indexValue.toLowerCase() + '\uffff');
+        var rangeArray = [boundKeyRangeUpper, boundKeyRangeLower];
+        var resultArray = [];
+
+        indexArray.forEach(function(index) {
+            rangeArray.forEach(function(range) {
+                index.openKeyCursor(range).onsuccess = function(ev) {
+                    var result = ev.target.result;
+                    if (result) {
+                        console.log(result.key + " : " + result.primaryKey);
+                        if (result.key.toLowerCase().indexOf(indexValue.toLowerCase()) !== -1) {
+                            resultArray.push(result.primaryKey);
+                        }
+                        result['continue']();
+                    }
+                };
+            });
+        });
+        transaction.oncomplete = function() {
+            resultArray = AjxUtil.uniq(resultArray);
+            ZmOfflineDB.getItem(resultArray, ZmApp.CONTACTS, callback, errorCallback);
+        };
+        transaction.onerror = errorCallback;
+    }
+    catch (e) {
+        errorCallback && errorCallback();
+        DBG.println(AjxDebug.DBG1, "ZmOfflineDB.searchContactsForAutoComplete : Exception : " +e);
+    }
 };
 
 ZmOfflineDB.indexedDB.close =
