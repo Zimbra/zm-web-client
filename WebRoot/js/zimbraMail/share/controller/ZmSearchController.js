@@ -959,8 +959,13 @@ function(search, callback, result) {
     }
 
     var searchResult = new ZmSearchResult(search);
-    searchResult.set({m : result});
-
+    if (search.searchFor === ZmId.SEARCH_MAIL) {
+        search.types =  new AjxVector([ZmItem.MSG]);
+        searchResult.set({m : result});
+    }
+    else if (search.searchFor === ZmItem.CONTACT || search.contactSource === ZmItem.CONTACT) {
+        searchResult.set({cn : result});
+    }
     var zmCsfeResult = new ZmCsfeResult(searchResult);
     callback(zmCsfeResult);
 

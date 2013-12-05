@@ -30,7 +30,8 @@ ZmOffline = function(){
     ZmOffline._syncInProgress = false;
     ZmOffline.store = [];
     ZmOffline.folders = [];
-
+    ZmOffline.SUPPORTED_APPS = [ZmApp.MAIL, ZmApp.CONTACTS];
+    ZmOffline.SUPPORTED_MAIL_TREE_VIEWS = [ZmOrganizer.FOLDER, ZmOrganizer.SEARCH, ZmOrganizer.TAG];
 };
 
 ZmOffline._checkCacheDone =
@@ -145,6 +146,7 @@ function(){
     $(document).on("ZWCOffline", this._onZWCOffline.bind(this));
     $(document).on("ZWCOnline", this._onZWCOnline.bind(this));
     setInterval(ZmOffline.checkServerStatus, 10000);
+    ZmZimbraMail.addListener(ZmAppEvent.ACTIVATE, new AjxListener(this, this._onAppActivate));
 };
 
 
@@ -175,33 +177,41 @@ function() {
 ZmOffline.prototype._onZWCOffline =
 function() {
     appCtxt.setStatusMsg(ZmMsg.OfflineServerNotReachable);
-    this._enableApps(false);
+    this._disableApps();
 };
 
 ZmOffline.prototype._onZWCOnline =
 function() {
     appCtxt.setStatusMsg(ZmMsg.OfflineServerReachable);
-    this._enableApps(true);
+    this._enableApps();
     this._replayOfflineRequest();
     ZmOffline.syncData();
 };
 
 ZmOffline.prototype._enableApps =
-function(opt){
-   var supportedApps = [ZmApp.MAIL];
-    for (var id in ZmApp.CHOOSER_SORT) {
-        if (supportedApps.indexOf(id) !== -1){
-            continue;
-        }
-        var appChooser = appCtxt.getAppChooser();
-        if (appChooser){
-            var app = appChooser.getButton(id);
-            if (app){
-                app.setEnabled(opt);
-            }
+function() {
+    var appChooser = appCtxt.getAppChooser();
+    for (var i in ZmApp.ENABLED_APPS) {
+        var appButton = appChooser.getButton(i);
+        if (appButton) {
+            appButton.setEnabled(true);
         }
     }
-    this._enableMailFeatures(opt);
+    this._enableMailFeatures();
+};
+
+ZmOffline.prototype._disableApps =
+function() {
+    var appChooser = appCtxt.getAppChooser();
+    var enabledApps = AjxUtil.keys(ZmApp.ENABLED_APPS);
+    var disabledApps = AjxUtil.arraySubstract(enabledApps, ZmOffline.SUPPORTED_APPS);
+    for (var j = 0; j < disabledApps.length; j++) {
+        var appButton = appChooser.getButton(disabledApps[j]);
+        if (appButton) {
+            appButton.setEnabled();
+        }
+    }
+    this._disableMailFeatures();
 };
 
 // Mail
@@ -229,6 +239,7 @@ function(){
 ZmOffline.prototype._cacheMailMessages =
 function(){
     appCtxt.setStatusMsg(ZmMsg.offlineCachingSync, ZmStatusView.LEVEL_INFO);
+    this._cacheContacts();
     if (!localStorage.getItem("syncToken")){
         for (var i=0, length=ZmOffline.folders.length; i<length;i++){
             this._downloadMessages(ZmOffline.folders[i], 0, ZmOffline.cacheMessageLimit, ZmOffline.MESSAGE, "all", 1, null);
@@ -885,7 +896,7 @@ function(){
     indexedDB.deleteDatabase('ZmOfflineDB');
     indexedDB.deleteDatabase("OfflineLog");
 };
-
+/*
 ZmOffline.prototype._enableMailFeatures =
 function(online) {
     var mailApp = appCtxt.getApp(ZmApp.MAIL);
@@ -935,10 +946,54 @@ function(online) {
                 }
             }
         }
+    }
+};
+*/
 
+ZmOffline.prototype._enableMailFeatures =
+function() {
+    var overview = appCtxt.getApp(ZmApp.MAIL).getOverview();
+    var zimletTreeView = overview.getTreeView(ZmOrganizer.ZIMLET);
+    if (zimletTreeView) {
+        zimletTreeView.setVisible(true);
     }
 
+    var folders = appCtxt.getFolderTree().getByType(ZmOrganizer.FOLDER);
+    for (var i = 0; i < folders.length; i++) {
+        var folder = folders[i];
+        if (folder) {
+            var treeItem = overview.getTreeItemById(folder.id);
+            if (treeItem) {
+                treeItem.setVisible(true);
+            }
+        }
+    }
+};
 
+ZmOffline.prototype._disableMailFeatures =
+function() {
+    var mailApp = appCtxt.getApp(ZmApp.MAIL);
+    var controller = mailApp.getMailListController();
+    if (controller && controller.getCurrentViewType() === ZmId.VIEW_CONVLIST) {
+        controller.switchView(ZmId.VIEW_TRAD, true);
+    }
+
+    var overview = mailApp.getOverview();
+    var zimletTreeView = overview && overview.getTreeView(ZmOrganizer.ZIMLET);
+    if (zimletTreeView) {
+        zimletTreeView.setVisible(false);
+    }
+
+    var folders = appCtxt.getFolderTree().getByType(ZmOrganizer.FOLDER);
+    for (var i = 1; i < folders.length; i++) {
+        var folder = folders[i];
+        if (folder.webOfflineSyncDays === 0 && folder.id != ZmFolder.ID_OUTBOX) {
+            var treeItem = overview.getTreeItemById(folder.id);
+            if (treeItem) {
+                treeItem.setVisible(false);
+            }
+        }
+    }
 };
 
 ZmOffline.closeDB =
@@ -1239,6 +1294,7 @@ function(doStop) {
             0: function() {
                 if (ZmOffline.isServerReachable === true) {
                     if (doStop) {
+                        ZmOffline.isServerReachable = false;
                         $.event.trigger({
                             type: "ZWCOffline"
                         });
@@ -1252,6 +1308,7 @@ function(doStop) {
             200: function() {
                 if (ZmOffline.isServerReachable === false) {
                     if (doStop) {
+                        ZmOffline.isServerReachable = true;
                         $.event.trigger({
                             type: "ZWCOnline"
                         });
@@ -1404,4 +1461,84 @@ function(msg) {
     });
 
     return result;
+};
+
+ZmOffline.modifyContact =
+function(contact) {
+
+    var result = [].concat(contact).map(function(item) {
+        if (item.tn) {
+            item.tn = item.tn.split(",");
+        }
+        if (item._attrs) {
+            if (item._attrs.jobTitle) {
+                item._attrs.jobTitle = item._attrs.jobTitle.split(" ");
+            }
+        }
+        return item;
+    });
+
+    return result;
+};
+
+ZmOffline.recreateContact =
+function(contact) {
+
+    var result = [].concat(contact).map(function(item) {
+        if (Array.isArray(item.tn)) {
+            item.tn = item.tn.join();
+        }
+        if (item._attrs) {
+            if (Array.isArray(item._attrs.jobTitle)) {
+                item._attrs.jobTitle = item._attrs.jobTitle.join(" ");
+            }
+        }
+        return item;
+    });
+
+    return result;
+};
+
+ZmOffline.prototype._cacheContacts =
+function() {
+    var jsonObj = {SearchRequest:{_jsns:"urn:zimbraMail"}};
+    var request = jsonObj.SearchRequest;
+    ZmMailMsg.addRequestHeaders(request);
+    request.offset = 0;
+    request.limit = 200;
+    request.query = "in:contacts or in:\"Emailed Contacts\"";
+    request.types = "contact";
+    request.sortBy = "priorityDesc";
+    var respCallback = this._handleResponseCacheContacts.bind(this);
+    var params = {
+        jsonObj : jsonObj,
+        asyncMode : true,
+        callback : respCallback
+    };
+    appCtxt.getRequestMgr().sendRequest(params);
+};
+
+ZmOffline.prototype._handleResponseCacheContacts =
+function(result, callback) {
+    var response = result && result.getResponse();
+    if (!response) {
+        return;
+    }
+    var contacts = response.SearchResponse && response.SearchResponse.cn;
+    if (!contacts) {
+        return;
+    }
+    console.log("contacts length "+contacts.length);
+    ZmOfflineDB.setItem(contacts, ZmApp.CONTACTS, callback);
+};
+
+ZmOffline.prototype._onAppActivate =
+function(ev) {
+    var item = ev && ev.item;
+    var appName = item && item.getName();
+    if (appName === ZmApp.MAIL) {
+        if (appCtxt.isWebClientOffline()) {
+            this._disableMailFeatures();
+        }
+    }
 };
