@@ -81,7 +81,7 @@
             /* Put CSS for iPhone/iPad layouts in here*/
             @media only screen and (max-device-width: 480px) and (orientation:portrait) {
                 .ImgLoginBanner {
-                    width: 165px;
+                    width: 10.25em;
                 }
             }
 
@@ -94,7 +94,7 @@
             @media only screen and (min-device-width: 481px) and (max-device-width: 1024px) and (orientation:portrait) {
                 /* Put CSS for iPad PORTRAIT layouts in here */
                 .ImgLoginBanner {
-                    height: 150px;
+                    height: 3.75em;
                 }
             }
 
@@ -129,15 +129,9 @@
 <body>
 
 <!-- BEGIN SPLASH SCREEN -->
-<div id='appLoadingIndicator' class='LoginScreen'>
-    <script language='javascript'>
-        function showCompanyUrl() {
-            window.open(ZtMsg.splashScreenCompanyURL, '_blank');
-        }
-    </script>
-
+<div id='appLoadingIndicator' class='SplashScreen'>
     <div class="center">
-        <h1><div class='ImgLoginBanner' onclick='showCompanyUrl()'></div></h1>
+        <h1><div class='ImgLoginBanner'></div></h1>
         <div>&nbsp;</div>
         <div class="SplashScreenProgressBar"></div>
     </div>

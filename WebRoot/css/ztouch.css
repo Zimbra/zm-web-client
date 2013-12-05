@@ -36,15 +36,16 @@ BODY {
 }
 
 .LoginScreen .zLoginField {
-    border-radius: 8px;
+    border-radius: 4px;
     height: 1.25em;
     font-size: 1.25em;
+    margin-bottom: 0.75em;
 }
 
 .ImgLoginBanner {
     cursor: pointer;
-    background: url(/skins/_base/logos/LoginBanner.png) no-repeat bottom;
-    height: 60px;
+    background: url(/t/resources/images/LoginBanner.png) no-repeat bottom;
+    height: 2.75em;
     width: 100%;
 }
 
@@ -54,13 +55,14 @@ BODY {
     background-color: #FFFFFF;
     color: #BFBFBF;
     font-size: 1.25em;
+    margin-top: 0.25em;
 }
 
 .LoginScreen #ZLoginErrorPanel {
     background-color: #FFFF99;
     border: 0 none;
     border-radius: 8px;
-    margin: 0 0 20px 0;
+    margin: 0 0 1.25em 0;
     padding: 0.5em 1em;
 }
 
@@ -75,11 +77,28 @@ BODY {
 .LoginScreen .copyright {
     color: #BFBFBF;
     cursor:default;
-    margin-bottom:20px;
+    margin-bottom:1.25em;
+}
+
+.SplashScreen {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background-color: #FFFFFF;
+}
+
+.SplashScreen .center {
+    left:25%;
+    overflow:visible;
+    position:absolute;
+    right:25%;
 }
 
 .SplashScreenProgressBar {
-    background: url(/skins/_base/logos/SplashScreenProgressBar.GIF) no-repeat bottom;
-    height: 12px;
+    background: url(/t/resources/images/SplashScreenProgressBar.GIF) no-repeat bottom;
+    height: 0.75em;
     text-align: center;
 }

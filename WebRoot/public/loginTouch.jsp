@@ -51,9 +51,7 @@
             <c:choose>
                 <c:when test="${!empty cookie.ZM_TEST}">
                     <zm:login username="${fullUserName}" password="${param.password}" varRedirectUrl="postLoginUrl"
-                              varAuthResult="authResult"
-                              newpassword="${param.loginNewPassword}" rememberme="${param.zrememberme == '1'}"
-                              requestedSkin="${param.skin}" importData="true"/>
+                              varAuthResult="authResult" rememberme="true" importData="true"/>
                     <%-- continue on at not empty authResult test --%>
                 </c:when>
                 <c:otherwise>
@@ -68,8 +66,7 @@
             <c:if test="${not empty authtoken}">
                 <zm:login authtoken="${authtoken}" authtokenInUrl="${not empty param.zauthtoken}"
                           varRedirectUrl="postLoginUrl" varAuthResult="authResult"
-                          rememberme="${param.zrememberme == '1'}"
-                          requestedSkin="${param.skin}" adminPreAuth="${param.adminPreAuth == '1'}" importData="true"/>
+                          rememberme="true" adminPreAuth="${param.adminPreAuth == '1'}" importData="true"/>
                 <%-- continue on at not empty authResult test --%>
             </c:if>
         </c:otherwise>
@@ -158,7 +155,7 @@
 
             @media only screen and (max-device-width: 480px) and (orientation:portrait) {
                 .ImgLoginBanner {
-                    width: 165px;
+                    width: 10.25em;
                 }
             }
 
@@ -171,7 +168,7 @@
             @media only screen and (min-device-width: 481px) and (max-device-width: 1024px) and (orientation:portrait) {
                 /* Put CSS for iPad PORTRAIT layouts in here */
                 .ImgLoginBanner {
-                    height: 150px;
+                    height: 3.75em;
                 }
             }
 
@@ -182,6 +179,9 @@
 
         <c:if test="${ua.isOsAndroid}">
             /* Put CSS for Android device layouts in here */
+            BODY {
+                font-family: "Roboto", Arial, sans-serif;
+            }
         </c:if>
 
     </style>
@@ -222,9 +222,7 @@
 <body onload="onLoad()">
     <div class="LoginScreen">
         <div class="center">
-            <h1><a href="http://www.zimbra.com/" id="bannerLink" target="_new">
-                <div class="ImgLoginBanner"></div>
-            </a></h1>
+            <h1><div class="ImgLoginBanner"></div></h1>
             <c:if test="${errorCode != null}">
                 <div id="ZLoginErrorPanel">
                     <table><tr>
@@ -238,10 +236,8 @@
                 <div style='text-align: center;'>
                     <div><input id="username" class="zLoginField" name="username" onkeyup="enableSignIn();" type="text" value="${fn:escapeXml(param.username)}"
                                 size="25" placeholder="<fmt:message key="username"/>" autocapitalize="off" autocorrect="off"/></div>
-                    <div>&nbsp;</div>
                     <div><input id="password" class="zLoginField" name="password" onkeyup="enableSignIn();" type="password" value=""
                                 size="25" placeholder="<fmt:message key="password"/>" autocomplete="off"/></div>
-                    <div>&nbsp;</div>
                     <div><input type="submit" id="loginBtn" class="LoginButton" value="<fmt:message key="login"/>" /></div>
                 </div>
             </form>
