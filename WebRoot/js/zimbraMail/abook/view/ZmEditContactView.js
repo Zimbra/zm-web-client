@@ -189,7 +189,7 @@ ZmEditContactView.prototype.getFormItems = function() {
 ZmEditContactView.emailValidator = function(emails) {
 	for (var i = 0; i < emails.length; i++) {
 		var address = emails[i];
-		if (!AjxEmailAddress.validateAddress(address)) {
+		if (address && !AjxEmailAddress.validateAddress(address)) {
 			throw ZmMsg.invalidEmailAddress;
 		}
 	}
