@@ -828,7 +828,7 @@ function(search, callback, errorCallback) {
                     resultArray = AjxUtil.union(resultArray, token.result);
                 }
                 else if (previousToken.op === "not") {
-                    resultArray = AjxUtil.arraySubstract(resultArray, token.result);
+                    resultArray = AjxUtil.arraySubtract(resultArray, token.result);
                 }
                 else {// default and case
                     resultArray = AjxUtil.intersection(resultArray, token.result);
