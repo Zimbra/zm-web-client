@@ -257,6 +257,10 @@ function(params) {
 						var folder = this.folderId && appCtxt.getById(this.folderId);
 						method.setAttribute("recip", (folder && folder.isOutbound()) ? "1" : "0");
 					}
+					if (this.types.contains(ZmItem.CONV)) {
+						// get ID/folder for every msg in each conv result
+						method.setAttribute("fullConversation", 1);
+					}
 					// if we're prefetching the first hit message, also mark it as read
 					if (this.fetch) {
 
@@ -405,6 +409,11 @@ function(params) {
 						// special handling for showing participants ("To" instead of "From")
 						var folder = this.folderId && appCtxt.getById(this.folderId);
 						request.recip = (folder && folder.isOutbound()) ? "1" : "0";
+					}
+
+					if (this.types.contains(ZmItem.CONV)) {
+						// get ID/folder for every msg in each conv result
+						request.fullConversation = 1;
 					}
 
 					// if we're prefetching the first hit message, also mark it as read
@@ -660,7 +669,7 @@ function(soapDoc) {
 		method.setAttribute("sortBy", this.sortBy);
 	}
 
-	if (ZmSearch._mailEnabled) {
+	if (this.types.contains(ZmItem.MSG) || this.types.contains(ZmItem.CONV)) {
 		ZmMailMsg.addRequestHeaders(soapDoc);
 	}
 
@@ -709,7 +718,7 @@ function(req) {
 		req.sortBy = this.sortBy;
 	}
 
-	if (ZmSearch._mailEnabled) {
+	if (this.types.contains(ZmItem.MSG) || this.types.contains(ZmItem.CONV)) {
 		ZmMailMsg.addRequestHeaders(req);
 	}
 
