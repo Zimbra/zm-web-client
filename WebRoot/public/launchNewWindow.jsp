@@ -43,6 +43,9 @@
 
 <%--bug:74490 The page session = "false" has been removed hence it defaults to true. This is required for getting the mailbox object--%>
 <zm:getMailbox var="mailbox"/>
+<c:set var="refreshSkin" value="${true}" scope="request"/>
+<c:remove var="skin" scope="session"/>
+<app:skin mailbox="${mailbox}"/>
 <%!
 	static String getParameter(HttpServletRequest request, String pname, String defValue) {
 		String value = request.getParameter(pname);
@@ -57,12 +60,6 @@
 <%
 	String contextPath = request.getContextPath();
 	if(contextPath.equals("/")) contextPath = "";
-
-    String skin = request.getParameter("skin");
-    if (skin == null || !mailbox.getAvailableSkins().contains(skin)) {
-        skin = application.getInitParameter("zimbraDefaultSkin");
-	}
-	skin = skin.replaceAll("['\"<>&]", "");
 
     String authTokenExpires = request.getParameter("authTokenExpires");
 
@@ -115,7 +112,7 @@
 	request.setAttribute("localeId", locale.toString());
 
 	String childId = request.getParameter("childId");
-
+    String skin = (String)request.getAttribute("skin");
 	// make variables available in page context (e.g. ${foo})
 	pageContext.setAttribute("contextPath", contextPath);
 	pageContext.setAttribute("skin", skin);

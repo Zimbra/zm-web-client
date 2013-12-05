@@ -9,6 +9,8 @@
 
 <app:handleError>
     <zm:getMailbox var="mailbox"/>
+    <c:set var="refreshSkin" value="${true}" scope="request"/>
+    <c:remove var="skin" scope="session"/>
     <app:skin mailbox="${mailbox}" />
     <c:choose>
     <c:when test="${not empty mailbox.prefs.locale}">
