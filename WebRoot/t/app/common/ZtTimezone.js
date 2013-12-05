@@ -813,7 +813,9 @@ Ext.define('ZCS.common.ZtTimezone', {
 
 	    thisClass.AUTO_DETECTED = 'Auto-Detected';
 
-	    rules.sort(thisClass.byOffset);
+        thisClass.TZ_TRANSITION_YEAR = 2011;
+
+        rules.sort(thisClass.byOffset);
 	    Ext.each(rules, function(rule) {
 	        this.addRule(rule);
         }, this);
@@ -823,4 +825,3 @@ Ext.define('ZCS.common.ZtTimezone', {
     }
 );
 
-ZCS.timezone.TZ_TRANSITION_YEAR = 2011;
