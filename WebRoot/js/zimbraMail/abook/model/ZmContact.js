@@ -1265,6 +1265,8 @@ function(attr, batchCmd, isAutoCreate) {
 		}
 	}
 
+	this._addRequestAttr(cn, ZmContact.X_fullName, ZmContact.computeFileAs(attr));
+
 	var respCallback = new AjxCallback(this, this._handleResponseCreate, [attr, batchCmd != null, isAutoCreate]);
 
 	if (batchCmd) {
