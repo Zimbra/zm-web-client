@@ -773,7 +773,7 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 .ZmMailMsgView .LabelColValue, 
 .ZmMailMsgCapsuleView .LabelColValue {
 	@MailMsgHeaderText@
-	line-height:1.6em;
+	line-height:1.8em;
 	vertical-align:top;
 	white-space:normal;
 }
