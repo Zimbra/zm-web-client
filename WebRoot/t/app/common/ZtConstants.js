@@ -66,6 +66,12 @@ ZCS.constant.APP_MAIL     = 'mail';
 ZCS.constant.APP_CONTACTS = 'contacts';
 ZCS.constant.APP_CALENDAR = 'calendar';
 
+// App names
+ZCS.constant.APP_NAME = {};
+ZCS.constant.APP_NAME[ZCS.constant.APP_MAIL]        = ZtMsg.appMail;
+ZCS.constant.APP_NAME[ZCS.constant.APP_CONTACTS]    = ZtMsg.appContacts;
+ZCS.constant.APP_NAME[ZCS.constant.APP_CALENDAR]    = ZtMsg.appCalendar;
+
 // Order of app tabs
 ZCS.constant.APPS = [
 	ZCS.constant.APP_MAIL,

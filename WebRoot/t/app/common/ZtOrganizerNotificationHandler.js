@@ -33,11 +33,12 @@ Ext.define('ZCS.common.ZtOrganizerNotificationHandler', {
 	 */
 	addOrganizer: function(parentViews, notification, context) {
 
+		parentViews = Ext.Array.from(parentViews);
 		var ln = parentViews.length, i, parentView, organizer, app;
 
 		for (i = 0; i < ln; i++) {
 			parentView = parentViews[i];
-			app = parentView.getApp();
+			app = (parentView.getApp && parentView.getApp()) || ZCS.session.getActiveApp();
 			organizer = ZCS.model.ZtOrganizer.getProxy().getReader().getDataFromNode(notification, notification.itemType);
 			if (ZCS.session.isValidOrganizer(organizer, app)) {
 				ZCS.model.ZtOrganizer.addOtherFields(organizer, app, context, false);
@@ -57,11 +58,12 @@ Ext.define('ZCS.common.ZtOrganizerNotificationHandler', {
 	 */
 	modifyOrganizer: function(parentViews, organizer, notification, context) {
 
+		parentViews = Ext.Array.from(parentViews);
 		var ln = parentViews.length, i, organizer;
 
 		for (i = 0; i < ln; i++) {
 			var parentView = parentViews[i],
-				app = parentView.getApp();
+				app = (parentView.getApp && parentView.getApp()) || ZCS.session.getActiveApp();
 
 			// organizer has moved (has a new parent)
 			if (notification.l) {
@@ -82,6 +84,11 @@ Ext.define('ZCS.common.ZtOrganizerNotificationHandler', {
 					this.insertOrganizer(list, organizer, newParentId, data.parentZcsId, oldParentId, oldParentZcsId);
 				}
 			}
+			if (notification.name) {
+				// not yet working
+				organizer.set('name', notification.name);
+				organizer.set('path', notification.absFolderPath || notification.name);
+			}
 		}
 	},
 
@@ -93,6 +100,7 @@ Ext.define('ZCS.common.ZtOrganizerNotificationHandler', {
 	 */
 	removeOrganizer: function(parentViews, organizer) {
 
+		parentViews = Ext.Array.from(parentViews);
 		var ln = parentViews.length, i, organizer;
 
 		for (i = 0; i < ln; i++) {
@@ -184,7 +192,7 @@ Ext.define('ZCS.common.ZtOrganizerNotificationHandler', {
 
 		for (i = 0; i < ln; i++) {
 			var parentView = parentViews[i],
-				app = parentView.getApp(),
+				app = (parentView.getApp && parentView.getApp()) || ZCS.session.getActiveApp(),
 				list = parentView.down('folderlist'),
 				store = list && list.getStore();
 

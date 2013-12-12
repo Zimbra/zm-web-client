@@ -45,104 +45,107 @@ Ext.define('ZCS.view.ZtOrganizerEdit', {
 
         layout: 'card',
         items: [{
-            xtype: 'titlebar',
-            docked: 'top',
+            xtype:      'titlebar',
+            docked:     'top',
             items: [{
-                cls: 'zcs-text-btn',
-                text: 'Cancel',
+                cls:    'zcs-text-btn',
+                text:   ZtMsg.cancel,
                 action: 'cancel',
-                align: 'left'
+                align:  'left'
             }, {
-                cls: 'zcs-text-btn',
-                text: 'Save',
+                cls:    'zcs-text-btn',
+                text:   ZtMsg.save,
                 action: 'save',
-                align: 'right'
+                align:  'right'
             }]
         }, {
-            xtype: 'container',
-            itemId: 'folderEditCard',
-            cls: 'zcs-folder-edit',
-            padding: 12,
-            flex: 1,
+            xtype:      'container',
+            itemId:     'folderEditCard',
+            cls:        'zcs-folder-edit',
+            padding:    12,
+            flex:       1,
             items: [{
-                xtype: 'container',
-                cls: 'zcs-textfield',
+                xtype:  'container',
+                cls:    'zcs-textfield',
                 items: [{
-                    xtype: 'textfield',
-                    placeHolder: 'Folder name',
-                    itemId: 'folderName',
-                    clearIcon: false
+                    xtype:          'textfield',
+                    placeHolder:    ZtMsg.folderName,
+                    itemId:         'folderName',
+                    clearIcon:      false
                 }]
             }, {
-                xtype: 'label',
-                html: 'Location:'
+                xtype:  'label',
+                html:   'Location:'
             }, {
-                xtype: 'button',
-                itemId: 'folderLocation',
-                cls:   'zcs-folder-loc-btn',
-                iconCls: 'forward',
-                iconAlign: 'right'
+                xtype:      'button',
+                itemId:     'folderLocation',
+                cls:        'zcs-folder-loc-btn',
+                iconCls:    'forward',
+                iconAlign:  'right'
             }, {
                 xtype: 'container',
                 items: [{
-                    xtype: 'button',
-                    action: 'delete',
-                    cls:   'zcs-folder-del-btn',
-                    text: 'Delete',
-                    centered: true
+                    xtype:      'button',
+                    action:     'delete',
+                    cls:        'zcs-folder-del-btn',
+                    text:       ZtMsg.del,
+                    centered:   true
                 }]
             }]
         }, {
-            xtype: 'container',
-            itemId: 'tagEditCard',
-            cls: 'zcs-folder-edit',
-            padding: 12,
+            xtype:      'container',
+            itemId:     'tagEditCard',
+            cls:        'zcs-folder-edit',
+            padding:    12,
             flex: 1,
             items: [{
-                xtype: 'container',
-                cls: 'zcs-textfield',
+                xtype:  'container',
+                cls:    'zcs-textfield',
                 items: [{
-                    xtype: 'textfield',
-                    placeHolder: 'Tag name',
-                    itemId: 'tagName',
-                    clearIcon: false
+                    xtype:          'textfield',
+                    placeHolder:    ZtMsg.tagName,
+                    itemId:         'tagName',
+                    clearIcon:      false
                 }]
             }, {
-                xtype: 'label',
-                html: 'Color:'
+                xtype:  'label',
+                html:   ZtMsg.colorLabel
             }, {
-                xtype: 'colorselector',
+                xtype:  'colorselector',
                 itemId: 'colorPicker'
            }]
         }, {
-            xtype: 'container',
-            flex: 1,
+            xtype:  'container',
+            flex:   1,
             itemId: 'locationSelectionCard',
             layout: 'fit'
         }]
     },
 
     initialize: function() {
+
         var folderLocationSelector = this.down('#locationSelectionCard'),
             selectorData,
             selectorStore;
 
         // Prepare a store for the folder-selector list
-        selectorData = ZCS.session.getOrganizerData('mail', null, 'location');
-        selectorData = selectorData.filter(function (item) {return item.folderType == 'mailFolder';});
+        selectorData = ZCS.session.getOrganizerData('mail', null, 'selector');
+        selectorData = selectorData.filter(function (item) {
+	        return item.folderType === 'mailFolder';
+        });
         selectorStore = Ext.create('ZCS.store.ZtOrganizerStore', {
             storeId:    'foldereditlocationselector',
-            data:       {items: selectorData}
+            data:       { items: selectorData }
         });
 
         // Create the nested folder-selector list and add it to its card
         var selectorList = Ext.create('ZCS.view.ZtOrganizerList', {
-            flex:           1,
-            displayField:   'displayName',
-            store:          selectorStore,
-            grouped:        true,
-            editing:        true,
-            title:          'Select Location:',
+            flex:               1,
+            displayField:       'displayName',
+            store:              selectorStore,
+            grouped:            true,
+            editing:            true,
+            title:              ZtMsg.folderLocationLabel,
             updateTitleText:    false,
             useTitleAsBackText: false
         });
@@ -151,5 +154,4 @@ Ext.define('ZCS.view.ZtOrganizerEdit', {
         this.setDimensions();
         this.callParent(arguments);
     }
-
 });

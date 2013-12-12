@@ -28,20 +28,20 @@ Ext.define('ZCS.view.ZtAppsMenu', {
         Ext.each(ZCS.constant.APPS, function(app) {
                 if (ZCS.util.isAppEnabled(app)) {
                     menuItems.push({
-                        app: app,
-                        text: app.charAt(0).toUpperCase() + app.slice(1),
-                        group: ZtMsg.applications
+                        app:    app,
+                        text:   ZCS.constant.APP_NAME[app],
+                        group:  ZtMsg.applications
                     });
                 }
         });
 
         menuItems.push({
             app: 'settings',
-            text: 'Settings',
+            text: ZtMsg.settings,
             group: ZtMsg.applications
         }, {
             app: 'signout',
-            text: 'Sign Out',
+            text: ZtMsg.logout,
             group: ZtMsg.applications
         });
 

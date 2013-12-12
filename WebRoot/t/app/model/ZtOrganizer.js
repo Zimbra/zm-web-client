@@ -24,7 +24,9 @@ Ext.define('ZCS.model.ZtOrganizer', {
 	extend: 'Ext.data.Model',
 
 	requires: [
-		'ZCS.model.ZtOrganizerReader'
+		'ZCS.model.ZtOrganizerReader',
+		'ZCS.model.ZtOrganizerWriter',
+		'ZCS.model.ZtSoapProxy'
 	],
 
 	config: {
@@ -195,22 +197,79 @@ Ext.define('ZCS.model.ZtOrganizer', {
 
         this.callParent(arguments);
 
-		var orgId = (data && (data.id || data.zcsId)) || id;
+		this.useSoapProxy(true);
+
+		if (!data) {
+			return;
+		}
+
+		var orgId = (data.id || data.zcsId) || id;
 		//console.log('Cache organizer "' + data.name + '" under key "' + orgId + '"');
 
-		ZCS.cache.set(orgId, this);
-		if (data.zcsId && data.zcsId !== orgId) {
-			var orgList = ZCS.cache.get(data.zcsId, null, true);
-			if (!orgList || !Array.isArray(orgList)) {
-				orgList = [];
-				ZCS.cache.set(data.zcsId, orgList);
+		if (orgId) {
+			ZCS.cache.set(orgId, this);
+			if (data.zcsId && data.zcsId !== orgId) {
+				var orgList = ZCS.cache.get(data.zcsId, null, true);
+				if (!orgList || !Array.isArray(orgList)) {
+					orgList = [];
+					ZCS.cache.set(data.zcsId, orgList);
+				}
+				orgList.push(this);
 			}
-			orgList.push(this);
 		}
 
 		if (data.path) {
-			var sysId = ZCS.util.localId(this.get('zcsId'));
-			ZCS.cache.set(this.isSystem() ? '/' + ZCS.constant.FOLDER_SYSTEM_NAME[sysId] : data.path, this, 'path');
+			var sysId = ZCS.util.localId(this.get('zcsId')),
+				sysName = ZCS.constant.FOLDER_SYSTEM_NAME[sysId],
+				path = sysName && this.isSystem() ? '/' + sysName : data.path;
+
+			ZCS.cache.set(path, this, 'path');
+		}
+	},
+
+	/**
+	 * Set up organizers to use one of two different proxies, SOAP or memory.
+	 *
+	 * @param {Boolean} useSoap     if true, use SOAP; otherwise, use a memory proxy
+	 * @private
+	 */
+	useSoapProxy: function(useSoap) {
+
+		if (useSoap) {
+			var urlBase = ZCS.constant.SERVICE_URL_BASE;
+			this.setProxy({
+				type:   'soapproxy',
+				// our server always wants us to POST for API calls
+				actionMethods: {
+					create  : 'POST',
+					read    : 'POST',
+					update  : 'POST',
+					destroy : 'POST'
+				},
+				headers: {
+					'Content-Type': 'application/soap+xml; charset=utf-8'
+				},
+				// prevent Sencha from adding junk to the URL
+				pageParam: false,
+				startParam: false,
+				limitParam: false,
+				noCache: false,
+
+				api: {
+					create:     urlBase + 'CreateFolderRequest',
+					read:       urlBase + 'GetFolderRequest',
+					update:     urlBase + 'FolderActionRequest',
+					destroy:    urlBase + 'FolderActionRequest'
+				},
+				reader: 'organizerreader',
+				writer: 'organizerwriter'
+			});
+		}
+		else {
+			this.setProxy({
+				type:   'memory',
+				reader: 'organizerreader'
+			});
 		}
 	},
 
@@ -386,3 +445,4 @@ Ext.define('ZCS.model.ZtOrganizer', {
 	}
 
 });
+

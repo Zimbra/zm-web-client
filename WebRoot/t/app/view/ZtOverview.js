@@ -33,13 +33,12 @@ Ext.define('ZCS.view.ZtOverview', {
 	xtype: 'overview',
 
 	config: {
-		layout: 'vbox',
-		height: '100%',
-		//ui: 'dark',
-		cls: 'zcs-overview',
-		app: null,
-		title: null,
-		showEdit: false
+		layout:     'vbox',
+		height:     '100%',
+		cls:        'zcs-overview',
+		app:        null,
+		title:      null,
+		showEdit:   false
 	},
 
 	initialize: function() {
@@ -75,21 +74,21 @@ Ext.define('ZCS.view.ZtOverview', {
 			grouped:        true,
 			toolbar : {
 				items : [{
-					xtype: 'button',
-					cls: 'zcs-apps-btn',
-					iconCls: 'apps',
-					align: 'left',
+					xtype:      'button',
+					cls:        'zcs-apps-btn',
+					iconCls:    'apps',
+					align:      'left',
 					handler: function() {
 						this.up('folderlist').fireEvent('showAppsMenu');
 					}
 				}, {
-					xtype: 'button',
+					xtype:  'button',
 					hidden: !this.config.showEdit,
-					cls: 'zcs-text-btn',
-					text: 'Edit',
+					cls:    'zcs-text-btn',
+					text:   ZtMsg.edit,
 					action: 'edit',
-					align: 'right',
-					scope: this
+					align:  'right',
+					scope:  this
 				}]
 			}
 		});
@@ -104,18 +103,18 @@ Ext.define('ZCS.view.ZtOverview', {
 				items: [{
 					xtype: 'spacer'
 				}, {
-					text: 'New Folder',
+					text:   ZtMsg.newFolder,
 					action: 'newFolder',
-					cls: 'zcs-text-btn',
-					width: 90
+					cls:    'zcs-text-btn',
+					width:  90
 				}, {
 					xtype: 'spacer'
 				}, {
-					text: 'New Tag',
+					text:   ZtMsg.newTag,
 					action: 'newTag',
-					cls: 'zcs-text-btn',
-					align: 'right',
-					width: 90
+					cls:    'zcs-text-btn',
+					align:  'right',
+					width:  90
 				}, {
 					xtype: 'spacer'
 				}]

@@ -44,7 +44,7 @@ Ext.define('ZCS.model.ZtItem', {
 				destroy : 'POST'
 			},
 			headers: {
-				'Content-Type': "application/soap+xml; charset=utf-8"
+				'Content-Type': 'application/soap+xml; charset=utf-8'
 			},
 			// prevent Sencha from adding junk to the URL
 			pageParam: false,

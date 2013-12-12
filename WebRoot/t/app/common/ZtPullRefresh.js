@@ -22,9 +22,10 @@
  * @author Macy Abbey
  */
 Ext.define('ZCS.common.ZtPullRefresh', {
+
 	extend: 'Ext.plugin.PullRefresh',
 
-	 /**
+	/**
      * @private
      * Called after fetchLatest has finished grabbing data. Matches any returned records against what is already in the
      * Store. Remove records that are no longer present, add new records.
@@ -85,4 +86,5 @@ Ext.define('ZCS.common.ZtPullRefresh', {
             this.snapBack();
         }
     }
-})
+});
+
