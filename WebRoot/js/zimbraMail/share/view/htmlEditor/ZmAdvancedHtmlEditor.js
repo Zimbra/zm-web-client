@@ -651,24 +651,22 @@ function(id, content) {
 	}
 
 	var toolbarbuttons = [
-		'fontselect fontsizeselect forecolor backcolor |',
-		'bold italic underline strikethrough |',
-		'bullist numlist |',
-		'outdent indent |',
-		'justifyleft justifycenter justifyright |',
+		'fontselect fontsizeselect formatselect |',
+		'bold italic underline strikethrough removeformat |',
+		'forecolor backcolor |',
+		'outdent indent bullist numlist blockquote |',
+		'alignleft aligncenter alignright alignjustify |',
 		this._attachmentCallback ? 'zimage' : 'image',
-		'link unlink zemoticons |',
+		'link zemoticons charmap hr table |',
 		appCtxt.get(ZmSetting.SHOW_COMPOSE_DIRECTION_BUTTONS) ? 'ltr rtl |' : '',
-		'formatselect undo redo |',
-		'removeformat |',
-		'pastetext |',
-		'table |',
-		'blockquote hr charmap'
+		'undo redo |',
+		'pastetext code'
 	];
 
 	var plugins = [
-		"table", "paste", "directionality", "zemoticons", "textcolor",
-		"link", "hr", "charmap", "contextmenu"
+		"zemoticons",
+		"table", "paste", "directionality", "textcolor", "lists", "advlist",
+		"link", "hr", "charmap", "contextmenu", "code"
 	];
 
 	if (this._attachmentCallback) {
@@ -710,6 +708,7 @@ function(id, content) {
 		ie7_compat: false,
 		object_resizing : true,
         font_formats : fonts.join(";"),
+		contextmenu: 'link | inserttable tableprops deletetable | cell row column',
 		convert_urls : false,
 		verify_html : false,
 		gecko_spellcheck : true,

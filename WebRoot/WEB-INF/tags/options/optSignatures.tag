@@ -269,15 +269,32 @@
             }
         };
 
+        var toolbarbuttons = [
+            'fontselect fontsizeselect formatselect |',
+            'bold italic underline strikethrough |',
+            'forecolor backcolor |',
+            'removeformat |',
+            'outdent indent bullist numlist blockquote |',
+            'alignleft aligncenter alignright alignjustify |',
+            'image link zemoticons charmap hr table |',
+            'undo redo |',
+            'pastetext code'
+        ];
+
+        var plugins = [
+            "zemoticons",
+            "table", "paste", "directionality", "textcolor", "lists", "advlist",
+            "link", "hr", "charmap", "contextmenu", "code"
+        ];
+
         var tinyMCEInitObj = {
             mode : "none",
             height : "200px",
             width : "100%",
-            plugins : "advlist table paste directionality zemoticons image link" + (tinymce.isIE ? "" : " autolink"),
+            plugins : plugins.join(' '),
             theme : "modern",
             toolbar_items_size: 'small',
-            toolbar1 : "fontselect fontsizeselect forecolor backcolor | bold italic underline strikethrough | bullist numlist | outdent indent | alignleft aligncenter alignright alignjustify | image link unlink emoticons",
-            toolbar2 : "formatselect undo redo | removeformat | pastetext | table | blockquote hr charmap",
+            toolbar : toolbarbuttons.join(' '),
             font_formats : fonts.join(";"),
             statusbar : false,
             menubar : false,
