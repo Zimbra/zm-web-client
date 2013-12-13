@@ -75,17 +75,7 @@ function(id) {
 };
 
 ZmDocsEditController.prototype.loadDocument = function(item) {
-    var content = this._docMgr.fetchDocumentContent(item);
-    if(content) {
-    //        if(window.isTinyMCE) {
-    //            this._docsEdit.setPendingContent(content);
-    //        }else {
-	content = content.replace(/<img\s+.*dfsrc="http:\/\//gi, '<img src="http:\/\/');
-	content = content.replace(/<img\s+.*dfsrc="https:\/\//gi, '<img src="https:\/\/');
-            this._docsEdit._editor.setContent(content);
-    //        }
-        ZmDocsEditController.savedDoc = content;
-    }
+    this._docsEdit.loadDoc(item);
 };
 
 ZmDocsEditController.prototype._initModel = function(){
@@ -126,44 +116,17 @@ function(){
 	this.statusView.setStatusMsg(params);
 };
 
-window.onbeforeunload = function() {
-    return ZmDocsEditApp._controller.checkForChanges();
+ZmDocsEditController.prototype.checkForChanges = function() {
+    if (this._docsEdit.isDirty()) {
+        return ZmMsg.exitDocUnSavedChanges;
+    }
 };
 
-ZmDocsEditController.prototype.checkForChanges = function() {
-   var curDoc = null;
-   var controller = ZmDocsEditApp._controller;
-    //   if(window.isTinyMCE) {
-    //     var ed = tinyMCE.get('tiny_mce_content');
-    //     curDoc = ed.getContent();
-    //   } else {
-     curDoc = controller._docsEdit._editor.getContent();  
-    //   }
-   /*if(!ZmDocsEditApp.fileInfo.id) {
-     return ZmMsg.exitDocNotSaved;
-   }*/
-   if(  ZmDocsEditController.savedDoc == null &&
-       (curDoc == '<html><body></body></html>' ||
-       !curDoc)) {
-        return;     
-   } else if(curDoc != ZmDocsEditController.savedDoc) {
-        return ZmMsg.exitDocUnSavedChanges;
-   } 
-};
 /**
 * return boolean  - Check if document has any changes to be saved
 * */
 ZmDocsEditController.prototype._isDirty = function() {
-   var curDoc = null;
-   var controller = ZmDocsEditApp._controller;
-   curDoc = controller._docsEdit._editor.getContent();
-   if(  ZmDocsEditController.savedDoc == null &&
-       (curDoc == '<html><body></body></html>' ||
-       !curDoc)) {
-        return false;
-   } else if(curDoc != ZmDocsEditController.savedDoc) {
-        return true;
-   }
+    return this._docsEdit.isDirty();
 }
 
 ZmDocsEditController.prototype.exit = function(){

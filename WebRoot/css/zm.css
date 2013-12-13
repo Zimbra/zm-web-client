@@ -5343,6 +5343,24 @@ If you feel compelled to have a background color, please do so on a per skin lev
 	padding-left:5px;
 }
 
+.ZmDocsEditViewTable {
+	@FullSize@
+}
+
+.ZmHtmlEditorFooter, .ZmDocsEditViewHeaderCell {
+	height: 24px;
+	height: 2rem;
+}
+
+.ZmDocsEditViewTable {
+	@FullSize@
+}
+
+.ZmHtmlEditorFooter, .ZmDocsEditViewHeaderCell {
+	height: 24px;
+	height: 2rem;
+}
+
 .ZmBriefcaseTabView_Table {
 	padding-top:10px;
 }

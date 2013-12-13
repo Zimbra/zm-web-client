@@ -884,16 +884,16 @@ function(items){
     items = AjxUtil.toArray(items);
     for (var i = 0; i < items.length; i++) {
         var item = items[i];
-        var restUrl = item.getRestUrl(false, false, true); //get the URL with version number so even on IE9 it would always be the latest.
-        if (restUrl) {
-
-            if (item.isWebDoc()) {
-                //added for bug: 45150
-                restUrl = AjxStringUtil.fixCrossDomainReference(restUrl);
-                restUrl = ZmBriefcaseApp.addEditorParam(restUrl);
-                restUrl += (restUrl.match(/\?/) ? '&' : '?') + "action=edit&localeId=" + AjxEnv.DEFAULT_LOCALE;
-                window.open(restUrl, this._getWindowName(item.name), "");
-            }
+        if (item.isWebDoc()) {
+			var win = appCtxt.getNewWindow(false, null, null,
+										   this._getWindowName(item.name));
+            win.command = "documentEdit";
+            win.params = {
+				restUrl: item.getRestUrl(),
+				id: item.id,
+				name: item.name,
+				folderId: item.folderId
+			};
         }
     }
 };

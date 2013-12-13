@@ -866,7 +866,7 @@ function() {
 	}
 	tg.addMember(this._composeView._subjectField);
 	var mode = this._composeView.getComposeMode();
-	var member = (mode === DwtHtmlEditor.TEXT) ? this._composeView._bodyField : this._composeView.getHtmlEditor().getEditorContainer();
+	var member = (mode === DwtHtmlEditor.TEXT) ? this._composeView._bodyField : this._composeView.getHtmlEditor();
 	tg.addMember(member);
 };
 

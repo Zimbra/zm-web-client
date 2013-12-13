@@ -21,9 +21,10 @@
  * @param {Object}		content
  * @param {constant}	mode
  * @param {Boolean}		withAce
- * @param {Boolean}		reparentContainer
+ * @param {Boolean}		parentElement
  * @param {String}		textAreaId
  * @param {Function}	attachmentCallback		callback to create image attachment
+ * @param {Function}	initCallback			callback invoked when the editor is fully initialized
  *
  * @author Satish S
  * @private
@@ -33,14 +34,21 @@ ZmAdvancedHtmlEditor = function() {
 
 	var params = Dwt.getParams(arguments, ZmAdvancedHtmlEditor.PARAMS);
 
+	if (!params.className)
+		params.className = 'ZmHtmlEditor';
+
+    DwtControl.call(this, params);
+
 	this.isTinyMCE = window.isTinyMCE;
 	this._mode = params.mode;
 	this._hasFocus = {};
     this._bodyTextAreaId = params.textAreaId;
 	this._attachmentCallback = params.attachmentCallback;
 	this._onContentInitializeCallbacks = []
+	this._initCallback = params.initCallback;
 	this.initTinyMCEEditor(params);
     this._ignoreWords = {};
+
     var settings = appCtxt.getSettings();
     var listener = new AjxListener(this, this._settingChangeListener);
     settings.getSetting(ZmSetting.COMPOSE_INIT_FONT_COLOR).addChangeListener(listener);
@@ -48,6 +56,8 @@ ZmAdvancedHtmlEditor = function() {
     settings.getSetting(ZmSetting.COMPOSE_INIT_FONT_SIZE).addChangeListener(listener);
     settings.getSetting(ZmSetting.COMPOSE_INIT_DIRECTION).addChangeListener(listener);
     settings.getSetting(ZmSetting.SHOW_COMPOSE_DIRECTION_BUTTONS).addChangeListener(listener);
+
+	this.addControlListener(this._resetSize.bind(this));
 };
 
 ZmAdvancedHtmlEditor.PARAMS = [
@@ -56,17 +66,20 @@ ZmAdvancedHtmlEditor.PARAMS = [
 	'content',
 	'mode',
 	'withAce',
-	'reparentContainer',
+	'parentElement',
 	'textAreaId',
-	'attachmentCallback'
+	'attachmentCallback',
+	'initCallback'
 ];
+
+ZmAdvancedHtmlEditor.prototype = new DwtControl();
+ZmAdvancedHtmlEditor.prototype.constructor = ZmAdvancedHtmlEditor;
 
 ZmAdvancedHtmlEditor.prototype.isZmAdvancedHtmlEditor = true;
 ZmAdvancedHtmlEditor.prototype.isInputControl = true;
 ZmAdvancedHtmlEditor.prototype.toString = function() { return "ZmAdvancedHtmlEditor"; };
 
 ZmAdvancedHtmlEditor.TINY_MCE_PATH = "/js/ajax/3rdparty/tinymce";
-ZmAdvancedHtmlEditor.DELTA_HEIGHT = 6;
 
 ZmAdvancedHtmlEditor.prototype.getEditor =
 function() {
@@ -88,56 +101,54 @@ function() {
 	return document.getElementById(this.getBodyFieldId());
 };
 
-ZmAdvancedHtmlEditor.prototype.setSize =
-function(x, y) {
-    var div,
-        bodyField;
-
-    if (!y) {
-        return;
-    }
-
-    div = this._spellCheckDivId && document.getElementById(this._spellCheckDivId);
-    bodyField = this.getBodyField();  //textarea or editor iframe
-
-    if (y === Dwt.CLEAR) {
-        bodyField.style.height = null;
-        if (div) div.style.height = null;
-    } else if (y === Dwt.DEFAULT) {
-        bodyField.style.height = "auto";
-        if (div) div.style.height = "auto";
-    } else if (typeof(y) === "number" && !isNaN(y)) {
-        //Subtracting editor toolbar height
-        if (bodyField.nodeName.toLowerCase() === "iframe") {
-            y = y - 28;
-            var secondToolbarRow = this.getToolbar("2");
-            if (secondToolbarRow && secondToolbarRow.style.display !== "none") {
-                y = y - 26; // subtracting second Toolbar height
-            }
-        }
-        //Subtracting spellcheckmodediv height
-        var spellCheckModeDiv = this._spellCheckModeDivId && document.getElementById(this._spellCheckModeDivId);
-        if (spellCheckModeDiv && spellCheckModeDiv.style.display !== "none") {
-            y = y - (div ? 45 : 39);
-        }
-        // FUDGE: we must substract borders and paddings - yuck.
-        y = y - ZmAdvancedHtmlEditor.DELTA_HEIGHT;
-        y = y < 0 ? 0 : y;
-
-        if (y + "px" !== bodyField.style.height) {
-            bodyField.style.height = y + "px";
-        }
-
-        if (div) {
-            div.style.height = y + (AjxEnv.isIE ? 8 : 2) + "px";
-        }
-    }
-};
-
-ZmAdvancedHtmlEditor.prototype.editorContainerFocus =
+ZmAdvancedHtmlEditor.prototype._resetSize =
 function() {
-	DBG.println("focus on container");
-	this.focus();
+	var size = Dwt.getSize(this.getHtmlElement());
+	var x = size.x, y = size.y;
+
+	if (this._mode != DwtHtmlEditor.HTML) {
+		var field = this.getContentField();
+		// subtrack padding and borders
+		AjxUtil.foreach([this.getInsets(),
+		                 Dwt.getInsets(field)],
+                    function(insets) {
+                        y -= insets.top + insets.bottom;
+                        x -= insets.left + insets.right;
+                    });
+
+		Dwt.setSize(field, x, y);
+		return;
+	}
+
+	var editor = this.getEditor();
+
+	if (!x || !y || !editor) {
+		return;
+	}
+
+    //Subtracting editor toolbar heights
+    AjxUtil.foreach(Dwt.byClassName('mce-toolbar',
+                                    editor.getContainer()),
+                    function(elem) {
+                        y -= Dwt.getSize(elem).y;
+                    });
+
+    //Subtracting spellcheckmodediv height
+    var spellCheckModeDiv = this._spellCheckModeDivId && document.getElementById(this._spellCheckModeDivId);
+    if (spellCheckModeDiv && spellCheckModeDiv.style.display !== "none") {
+        y = y - Dwt.getSize(spellCheckModeDiv).y;
+    }
+
+    // subtrack padding and borders
+    AjxUtil.foreach([this.getInsets(),
+                     Dwt.getInsets(editor.getContainer()),
+                     Dwt.getInsets(editor.getContentAreaContainer())],
+                    function(insets) {
+                        y -= insets.top + insets.bottom;
+                        x -= insets.left + insets.right;
+                    });
+
+    editor.theme.resizeTo(Math.max(0, x), Math.max(0, y));
 };
 
 ZmAdvancedHtmlEditor.prototype.focus =
@@ -399,11 +410,6 @@ function(tryOnTimer, offset) {
 	}
 };
 
-ZmAdvancedHtmlEditor.prototype.getEditorContainer =
-function() {
-	return this._editorContainer;
-};
-
 ZmAdvancedHtmlEditor.prototype.hasFocus =
 function() {
 	return Boolean(this._hasFocus[this._mode]);
@@ -439,16 +445,6 @@ function() {
     }
 };
 
-ZmAdvancedHtmlEditor.prototype.reparentHtmlElement =
-function(id, position) {
-	return this._editorContainer.reparentHtmlElement(id, position);
-};
-
-ZmAdvancedHtmlEditor.prototype.getParent =
-function() {
-	return this._editorContainer.parent;
-};
-
 ZmAdvancedHtmlEditor.prototype.getInputElement =
 function() {
 	return document.getElementById(this._bodyTextAreaId);
@@ -456,20 +452,13 @@ function() {
 
 ZmAdvancedHtmlEditor.prototype.initTinyMCEEditor =
 function(params) {
-	this._editorContainer =
-		new ZmEditorContainer(AjxUtil.hashUpdate({className: "ZmHtmlEditor"},
-		                                         params));
-
-    if( params.reparentContainer ){
-        this._editorContainer.reparentHtmlElement(params.reparentContainer);
-    }
-	var htmlEl = this._editorContainer.getHtmlElement();
+	var htmlEl = this.getHtmlElement();
 
     if( this._mode === DwtHtmlEditor.HTML ){
         Dwt.setVisible(htmlEl, false);
     }
 	//textarea on which html editor is constructed
-    var id = this._bodyTextAreaId = this._bodyTextAreaId || this._editorContainer.getHTMLElId() + "_content";
+    var id = this._bodyTextAreaId = this._bodyTextAreaId || this.getHTMLElId() + "_content";
 	var textEl = document.createElement("textarea");
 	textEl.setAttribute("id", id);
 	textEl.setAttribute("name", id);
@@ -485,7 +474,7 @@ function(params) {
 
     Dwt.setHandler(textEl, DwtEvent.ONFOCUS, this.setFocusStatus.bind(this, true, true));
     Dwt.setHandler(textEl, DwtEvent.ONBLUR, this.setFocusStatus.bind(this, false, true));
-	this._editorContainer.setFocusMember(textEl);
+	this.setFocusMember(textEl);
 
 	if (!window.tinyMCE) {
         window.tinyMCEPreInit = {};
@@ -762,7 +751,7 @@ ZmAdvancedHtmlEditor.prototype.onPaste = function(ev) {
     if (!items) {
         return;
     }
-    view = this.getParent();
+    view = this.parent;
     if (view && view.toString() !== "ZmComposeView") {
         return;
     }
@@ -791,7 +780,8 @@ ZmAdvancedHtmlEditor.prototype.onPaste = function(ev) {
 ZmAdvancedHtmlEditor.prototype.onPostRender = function(ev) {
 	var ed = this.getEditor();
 
-    this.setSize("", parseInt(this.getContentField().style.height) + ZmAdvancedHtmlEditor.DELTA_HEIGHT);
+    this._resetSize();
+
     ed.dom.setStyles(ed.getBody(), {"font-family" : appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_FAMILY),
                                     "font-size"   : appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_SIZE),
                                     "color"       : appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_COLOR)
@@ -806,7 +796,7 @@ ZmAdvancedHtmlEditor.prototype.onInit = function(ev) {
         tinymceEvent = tinymce.dom.Event,
         doc = ed.getDoc(),
         win = ed.getWin(),
-        view = obj.getParent();
+        view = obj.parent;
 
     tinymceEvent.bind(win, 'focus', function(e) {
         obj.setFocusStatus(true);
@@ -827,7 +817,7 @@ ZmAdvancedHtmlEditor.prototype.onInit = function(ev) {
         });
     }
 
-    obj.getEditorContainer().setFocusMember(obj.restoreFocus.bind(obj, ed));
+    obj.setFocusMember(obj.restoreFocus.bind(obj, ed));
 
     ed.on('open', ZmAdvancedHtmlEditor.onPopupOpen);
     if (view && view.toString() === "ZmComposeView" && ZmDragAndDrop.isSupported()) {
@@ -840,8 +830,14 @@ ZmAdvancedHtmlEditor.prototype.onInit = function(ev) {
 
     obj._editorInitialized = true;
 
+    setTimeout(this._resetSize.bind(this), 0);
+
     if (obj._onTinyMCEEditorInitcallback) {
         obj._onTinyMCEEditorInitcallback();
+    }
+
+    if (this._initCallback) {
+        this._initCallback(this);
     }
 };
 
@@ -931,6 +927,7 @@ ZmAdvancedHtmlEditor.prototype.setMode = function (mode, convert, convertor) {
             Dwt.setVisible(this.getHtmlElement(), true);
         }
     }
+    this._resetSize();
 };
 
 ZmAdvancedHtmlEditor.prototype.getContentField =
@@ -1329,8 +1326,8 @@ function(ev) {
 		 (plainText && /(click|mousedown|contextmenu)/i.test(ev.type))) && 
 		(word == AjxUtil.getInnerText(p) && !this._ignoreWords[word]))
 	{
-		sc.menu = this._spellCheckCreateMenu(this.getParent(), 0, suggestions, word, p.id, modified);
-		var pos, ms = sc.menu.getSize(), ws = this._editorContainer.shell.getSize();
+		sc.menu = this._spellCheckCreateMenu(this.parent, 0, suggestions, word, p.id, modified);
+		var pos, ms = sc.menu.getSize(), ws = this.shell.getSize();
 		if (!plainText) {
 			// bug fix #5857 - use Dwt.toWindow instead of Dwt.getLocation so we can turn off dontIncScrollTop
 			pos = Dwt.toWindow(document.getElementById(this._iFrameId), 0, 0, null, true);
@@ -1430,7 +1427,7 @@ ZmAdvancedHtmlEditor.prototype.discardMisspelledWords =
 function(keepModeDiv) {
 	if (!this._spellCheck) { return; }
 
-    var size = this._editorContainer.getSize();
+    var size = this.getSize();
 	if (this._mode == DwtHtmlEditor.HTML) {
 		var doc = this._getIframeDoc();
 		doc.body.style.display = "none";
@@ -1494,12 +1491,12 @@ function(keepModeDiv) {
 	if (this.onExitSpellChecker) {
 		this.onExitSpellChecker.run();
 	}
-    this.setSize(size.x, size.y);
+    this._resetSize();
 };
 
 ZmAdvancedHtmlEditor.prototype._spellCheckShowModeDiv =
 function() {
-	var size = this._editorContainer.getSize();
+	var size = this.getSize();
 
 	if (!this._spellCheckModeDivId) {
 		var div = document.createElement("div");
@@ -1518,7 +1515,7 @@ function() {
 
 		//var editable = document.getElementById((this._spellCheckDivId || this.getBodyFieldId()));
 		//editable.parentNode.insertBefore(div, editable);
-		var container = this._editorContainer.getHtmlElement();
+		var container = this.getHtmlElement();
 		container.insertBefore(div, container.firstChild);
 
 		var el = div.getElementsByTagName("span");
@@ -1530,7 +1527,7 @@ function() {
 	else {
 		document.getElementById(this._spellCheckModeDivId).style.display = "";
 	}
-    this.setSize(size.x, size.y);
+    this._resetSize();
 };
 
 ZmAdvancedHtmlEditor._spellCheckResumeEditing =
@@ -1548,11 +1545,11 @@ function() {
 
 ZmAdvancedHtmlEditor.prototype._spellCheckHideModeDiv =
 function() {
-	var size = this._editorContainer.getSize();
+	var size = this.getSize();
 	if (this._spellCheckModeDivId) {
 		document.getElementById(this._spellCheckModeDivId).style.display = "none";
 	}
-    this.setSize(size.x, size.y + (this._mode == DwtHtmlEditor.TEXT ? 1 : 0));
+    this._resetSize();
 };
 
 ZmAdvancedHtmlEditor.prototype.highlightMisspelledWords =
@@ -1868,11 +1865,6 @@ function() {
 	}
 };
 
-ZmAdvancedHtmlEditor.prototype.getHtmlElement =
-function() {
-    return this._editorContainer.getHtmlElement();
-};
-
 /*
  * Returns toolbar row of tinymce
  *
@@ -2164,24 +2156,12 @@ function(pl, o) {
     }
 };
 
-ZmEditorContainer = function(params) {
-	if (arguments.length == 0) { return; }
-	params = Dwt.getParams(arguments, ZmEditorContainer.PARAMS);
-
-	DwtComposite.call(this, params);
-};
-
-ZmEditorContainer.PARAMS = ["parent", "className", "posStyle", "content", "mode", "blankIframeSrc"];
-
-ZmEditorContainer.prototype = new DwtComposite();
-ZmEditorContainer.prototype.constructor = ZmEditorContainer;
-
-ZmEditorContainer.prototype.setFocusMember =
+ZmAdvancedHtmlEditor.prototype.setFocusMember =
 function(member) {
 	this._focusMember = member;
 };
 
-ZmEditorContainer.prototype._focus =
+ZmAdvancedHtmlEditor.prototype._focus =
 function() {
     var focusMember = this._focusMember;
     if (focusMember) {

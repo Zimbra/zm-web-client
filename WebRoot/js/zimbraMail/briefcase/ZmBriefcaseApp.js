@@ -302,12 +302,18 @@ function(contentType, name, winName) {
 	}
 
     if (AjxDispatcher.run("GetBriefcaseController").chkFolderPermission(folderId)) {
-        var url = this.getEditURLForContentType(contentType) + "?" + (name ?"name=" + name + "&" : "") + "l="+folderId + "&skin=" + appCurrentSkin + "&localeId=" + AjxEnv.DEFAULT_LOCALE;
-		url += 	"&authTokenExpires=" + window.authTokenExpires;
-        if (window.appCoverageMode)
-            url = url + "&coverage=1";
-        var winname = winName || name || (new Date()).getTime().toString();
-        window.open(url, winname); //bug:44324 removed new launching window
+        if (contentType == ZmMimeTable.APP_ZIMBRA_DOC) {
+            var win = appCtxt.getNewWindow(false, null, null, winName);
+            win.command = "documentEdit";
+            win.params = { name: name, folderId: folderId };
+        } else {
+            var url = this.getEditURLForContentType(contentType) + "?" + (name ?"name=" + name + "&" : "") + "l="+folderId + "&skin=" + appCurrentSkin + "&localeId=" + AjxEnv.DEFAULT_LOCALE;
+            url += "&authTokenExpires=" + window.authTokenExpires;
+            if (window.appCoverageMode)
+                url = url + "&coverage=1";
+            var winname = winName || name || (new Date()).getTime().toString();
+            window.open(url, winname); //bug:44324 removed new launching window
+        }
     }
 };
 

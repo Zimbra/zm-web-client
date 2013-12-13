@@ -61,10 +61,6 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 		request.setAttribute("packages", "dev");
     }
 
-    //  boolean isTinyMce = getParameter(request, "editor", "").equals("tinymce");
-    //  Support for TinyMCE suspended.
-    boolean isTinyMce = false;
-
     String authTokenExpires = request.getParameter("authTokenExpires");
 
     final String SKIN_COOKIE_NAME = "ZM_SKIN";
@@ -127,7 +123,7 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
     <title>Zimbra Docs</title>
     <style type="text/css">
         <!--
-        @import url(<%= contextPath %>/css/common,dwt,msgview,login,zm,spellcheck,spreadsheet,docs,images,skin.css?v=<%= vers %><%= inSkinDebugMode || isDevMode ? "&debug=1" : "" %>&skin=${zm:cook(skin)});
+        @import url(<%= contextPath %>/css/common,dwt,msgview,login,zm,spellcheck,spreadsheet,docs,images,docs,skin.css?v=<%= vers %><%= inSkinDebugMode || isDevMode ? "&debug=1" : "" %>&skin=${zm:cook(skin)});
         -->
     </style>
     <jsp:include page="Resources.jsp">
@@ -136,6 +132,16 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
     </jsp:include>
     <jsp:include page="Boot.jsp"/>
     <script>
+        window.isRestView = false;
+        window.appContextPath		= "${zm:jsEncode(contextPath)}";
+        window.appCurrentSkin		= "${zm:jsEncode(skin)}";
+        window.appExtension			= "${zm:jsEncode(ext)}";
+        window.appRequestLocaleId	= "${locale}";
+        window.appDevMode			= ${isDevMode};
+        window.appCoverageMode		= ${isCoverage};
+        window.authTokenExpires		= ${authTokenExpires};
+
+        window.cacheKillerVersion = "${vers}";
         AjxEnv.DEFAULT_LOCALE = "${zm:javaLocaleId(locale)}";
         <jsp:include page="/js/ajax/util/AjxTimezoneData.js" />
     </script>
@@ -156,13 +162,14 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
             <% } else { %>
                 <script type="text/javascript" src="<%=contextPath%><%=pageurl%><%=ext%>?v=<%=vers%>"></script>
             <% } %>
-        <% }
-           if(isTinyMce) { 
-        %>
-            <script type="text/javascript" src="<%=contextPath%>/tiny_mce/3.2.6/tiny_mce.js"></script>
         <%
             }
         %>
+        <jsp:include page="Resources.jsp">
+            <jsp:param name="res" value="I18nMsg,AjxMsg,ZMsg,ZmMsg,AjxKeys,ZmKeys,AjxTemplateMsg" />
+            <jsp:param name="skin" value="${skin}" />
+        </jsp:include>
+        <link href='${contextPath}/css/common,dwt,msgview,login,zm,spellcheck,images,skin.css?v=${vers}${isDebug?"&debug=1":""}&skin=${zm:cook(skin)}' rel='stylesheet' type="text/css">
 </head>
 <c:set var="fileName" value="${empty param.name ? 'Untitled' : zm:cook(param.name)}"/>
 <c:set var="folderId" value="${empty param.l ? '' : zm:cook(param.l)}"/>
@@ -171,19 +178,11 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 <div id="main_shell"></div>
 <noscript><p><b>Javascript must be enabled to use this.</b></p></noscript>
 <script type="text/javascript" language="JavaScript">
-
-    window.appContextPath = '<%= contextPath %>';
-    window.appRequestLocaleId = "${locale}";
-    window.contextPath = '<%= contextPath %>';
-    window.isRestView = false;
-    window.isTinyMCE = <%= isTinyMce %>;
-    window.appDevMode     = ${isDevMode};
-    window.appCoverageMode = ${isCoverage};
     window.DBG = new AjxDebug(AjxDebug.NONE, null, false);
-    window.authTokenExpires     = ${authTokenExpires};
 
     if(!ZmCsfeCommand.noAuth){
         ZmDocsEditApp.setFile('${fileId}', '${fileName}', '${folderId}');
+        ZmDocsEditApp.launch();
     }else{
         window.location = window.appContextPath;
     }

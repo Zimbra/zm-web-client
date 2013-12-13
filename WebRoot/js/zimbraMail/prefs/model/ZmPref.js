@@ -654,7 +654,7 @@ function( control ) {
         var valueEl = document.getElementById(signaturePage._htmlElId + "_SIG_EDITOR");
         var htmlEditor = new ZmAdvancedHtmlEditor({
             parent: signaturePage,
-            reparentContainer: valueEl.parentNode,
+            parentElement: valueEl.parentNode,
             textAreaId: "TEXTAREA_SIGNATURE",
             attachmentCallback:
                 signaturePage._insertImagesListener.bind(signaturePage)

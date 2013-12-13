@@ -1,3 +1,4 @@
+
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
@@ -966,7 +967,7 @@ function(composeMode, initOnly) {
 	var quotedText = this.modeSwitch && this._getQuotedText();
 	this._composeMode = composeMode;
 	this._setReturns();
-	var curMember = htmlMode ? this._htmlEditor.getEditorContainer() : this._bodyField;
+	var curMember = htmlMode ? this._htmlEditor : this._bodyField;
 		
 	// switch the editor's mode
 	this._htmlEditor.setContent("");
@@ -991,7 +992,7 @@ function(composeMode, initOnly) {
 	this._setFormValue();
 
 	// update the tabbing group
-	var newMember = (composeMode === DwtHtmlEditor.TEXT) ? this._bodyField : this._htmlEditor.getEditorContainer();
+	var newMember = (composeMode === DwtHtmlEditor.TEXT) ? this._bodyField : this._htmlEditor;
 	if (curMember && newMember && (curMember !== newMember) && this._controller._tabGroup) {
 		this._controller._tabGroup.replaceMember(curMember, newMember);
 		// focus via replaceMember() doesn't take, try again
@@ -2857,6 +2858,7 @@ function(composeMode) {
 				parent: this,
 				posStyle: DwtControl.RELATIVE_STYLE,
 				mode: this._composeMode,
+				initCallback: this._controlListener.bind(this),
 				attachmentCallback: attmcallback
 			});
 		this._bodyFieldId = this._htmlEditor.getBodyFieldId();
@@ -3595,12 +3597,16 @@ function(ev, force) {
 // Miscellaneous methods
 ZmComposeView.prototype._resetBodySize =
 function() {
-	var size = this.getSize();
-	if (!size || size.x <= 0 || size.y <= 0) { return; }
+	if (!this._htmlEditor)
+		return;
 
-	var height = size.y - Dwt.getSize(this._headerEl).y;
-	if (height !== size.y) {
-		this._htmlEditor.setSize(size.x, height);
+	var size = Dwt.insetBounds(this.getInsetBounds(),
+	                           this._htmlEditor.getInsets());
+
+	if (size) {
+		size.height -= Dwt.getSize(this._headerEl).y;
+
+		this._htmlEditor.setSize(size.width, size.height);
 	}
 };
 

@@ -312,6 +312,11 @@ function() {
 		startupFocusItem = msgController.getCurrentView();
 
 		target = "view-window";
+	} else if (cmd == 'documentEdit') {
+		AjxDispatcher.require(["Docs"]);
+		ZmDocsEditApp.setFile(params.id, params.name, params.folderId);
+		ZmDocsEditApp.restUrl = params.restUrl;
+		new ZmDocsEditApp();
 	} else if (cmd == "shortcuts") {
 		var panel = appCtxt.getShortcutsPanel();
 		panel.popup(params.cols);
@@ -673,13 +678,20 @@ function(msg) {
  */
 ZmNewWindow._confirmExitMethod =
 function(ev) {
-	if (appCtxt.get(ZmSetting.WARN_ON_EXIT) && window.parentController &&
-		(window.newWindowCommand == "compose" || window.newWindowCommand == "composeDetach"))
-	{
+	if (!appCtxt.get(ZmSetting.WARN_ON_EXIT) || !window.parentController)
+		return;
+
+	var cmd = window.newWindowCommand;
+
+	if (cmd == "compose" || cmd == "composeDetach")	{
 		var cc = AjxDispatcher.run("GetComposeController", appCtxt.composeCtlrSessionId);
 		// only show native confirmation dialog if compose view is dirty
 		if (cc && cc._composeView && cc._composeView.isDirty()) {
 			return ZmMsg.newWinComposeExit;
 		}
+	} else if (cmd == 'documentEdit') {
+		var ctrl = ZmDocsEditApp._controller;
+		var msg = ctrl.checkForChanges();
+		return msg || ctrl.exit();
 	}
 };
