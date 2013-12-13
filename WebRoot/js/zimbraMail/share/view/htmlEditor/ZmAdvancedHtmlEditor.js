@@ -655,7 +655,7 @@ function(id, content) {
 	var plugins = [
 		"zemoticons",
 		"table", "paste", "directionality", "textcolor", "lists", "advlist",
-		"link", "hr", "charmap", "contextmenu", "code"
+		"link", "hr", "charmap", "code"
 	];
 
 	if (this._attachmentCallback) {
@@ -697,7 +697,6 @@ function(id, content) {
 		ie7_compat: false,
 		object_resizing : true,
         font_formats : fonts.join(";"),
-		contextmenu: 'link | inserttable tableprops deletetable | cell row column',
 		convert_urls : false,
 		verify_html : false,
 		gecko_spellcheck : true,
@@ -722,6 +721,9 @@ function(id, content) {
             ed.on('MouseDown', obj._handleEditorMouseDownEvent.bind(obj));
             ed.on('paste', obj.onPaste.bind(obj));
             ed.on('BeforeExecCommand', obj.onBeforeExecCommand.bind(obj));
+
+            ed.on('contextmenu',
+                  obj.notifyListeners.bind(obj, DwtEvent.ONCONTEXTMENU));
 		}
     };
 
