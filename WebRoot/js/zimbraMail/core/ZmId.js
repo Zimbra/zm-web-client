@@ -1362,7 +1362,6 @@ ZmId.showIds = function(params) {
 
 	var ids = ZmId.lookup(params),
 		len = ids.length,
-		backMap = ZmId._getBackMap(),
 		text = "",
 		i;
 
@@ -1380,7 +1379,7 @@ ZmId.showIds = function(params) {
 			if (!value) {
 				continue;
 			}
-			value = backMap[value] ? "ZmId." + backMap[value] : value;
+			value = ZmId._backMap[value] ? "ZmId." + ZmId._backMap[value] : value;
 			text += paramName + AjxStringUtil.repeat(" ", 16 - paramName.length) + value + "\n";
 		}
 	}
@@ -1388,34 +1387,14 @@ ZmId.showIds = function(params) {
 	DBG.printRaw(text);
 };
 
-ZmId._getBackMap =
-function() {
-	if (!ZmId._backMap) {
-		ZmId._backMap = {};
-		for (var key in ZmId) {
-			var value = ZmId[key];
-			if (typeof value === 'string') {
-				ZmId._backMap[value] = key;
-			}
-		}
-	};
-	return ZmId._backMap;
-};
+ZmId._backMap = AjxUtil.valueHash(ZmId, function(k) {
+	return typeof ZmId[k] === 'string';
+});
 
 // Create a static hash so we know if a string is a view type (eg "CLV")
-ZmId._isViewType = {};
-keys = AjxUtil.keys(ZmId);
-len = keys.length;
-for (i = 0; i < len; i++) {
-	key = keys[i];
-	if (typeof ZmId[key] === "string" && key.indexOf("VIEW_") ===0) {
-		ZmId._isViewType[ZmId[key]] = true;
-	}
-}
-delete keys;
-delete key;
-delete len;
-delete i;
+ZmId._isViewType = AjxUtil.arrayAsHash(AjxUtil.values(ZmId, function(k) {
+	return typeof ZmId[k] === "string" && k.indexOf("VIEW_") === 0;
+}));
 
 // Convert a list of values of ID parameters back into a hash by figuring out the matching key for each value.
 // View names (such as "CLV") are a bit tricky since they can be either a componentName (for a view widget), or

@@ -84,16 +84,17 @@ ZmAttendeePicker.COLS[ZmCalBaseItem.LOCATION]	= [ZmItem.F_NAME, ZmItem.F_LOCATIO
 ZmAttendeePicker.COLS[ZmCalBaseItem.EQUIPMENT]	= [ZmItem.F_NAME, ZmItem.F_LOCATION, ZmItem.F_CONTACT, "FBSTATUS", ZmItem.F_NOTES];
 
 // search fields
-i = 1;
-ZmAttendeePicker.SF_ATT_NAME	= i++;
-ZmAttendeePicker.SF_NAME		= i++;
-ZmAttendeePicker.SF_SOURCE		= i++;
-ZmAttendeePicker.SF_CAPACITY	= i++;
-ZmAttendeePicker.SF_DESCRIPTION	= i++;
-ZmAttendeePicker.SF_SITE		= i++;
-ZmAttendeePicker.SF_BUILDING	= i++;
-ZmAttendeePicker.SF_FLOOR		= i++;
-delete i;
+(function () {
+	var i = 1;
+	ZmAttendeePicker.SF_ATT_NAME	= i++;
+	ZmAttendeePicker.SF_NAME		= i++;
+	ZmAttendeePicker.SF_SOURCE		= i++;
+	ZmAttendeePicker.SF_CAPACITY	= i++;
+	ZmAttendeePicker.SF_DESCRIPTION	= i++;
+	ZmAttendeePicker.SF_SITE		= i++;
+	ZmAttendeePicker.SF_BUILDING	= i++;
+	ZmAttendeePicker.SF_FLOOR		= i++;
+})();
 
 // search field labels
 ZmAttendeePicker.SF_LABEL = {};

@@ -131,11 +131,7 @@ ZmFolder.QUERY_NAME[ZmOrganizer.ID_BRIEFCASE]	= "briefcase";
 ZmFolder.QUERY_NAME[ZmFolder.ID_CHATS]			= "chats";
 ZmFolder.QUERY_NAME[ZmFolder.ID_SYNC_FAILURES]	= "Error Reports";
 
-ZmFolder.QUERY_ID = {};
-for (id in ZmFolder.QUERY_NAME) {
-	ZmFolder.QUERY_ID[ZmFolder.QUERY_NAME[id]] = id;
-}
-delete id;
+ZmFolder.QUERY_ID = AjxUtil.valueHash(ZmFolder.QUERY_NAME);
 
 // order within the overview panel
 ZmFolder.SORT_ORDER = {};

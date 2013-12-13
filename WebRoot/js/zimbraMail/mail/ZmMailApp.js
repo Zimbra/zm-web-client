@@ -109,13 +109,12 @@ ZmMailApp.INC_MAP[ZmSetting.INC_SMART_HDR]		= [ZmSetting.INC_SMART, false, true]
 ZmMailApp.INC_MAP[ZmSetting.INC_SMART_PRE_HDR]	= [ZmSetting.INC_SMART, true, true];
 
 ZmMailApp.INC_MAP_REV = {};
-for (var i in ZmMailApp.INC_MAP) {
-	key = (i == ZmSetting.INC_NONE || i == ZmSetting.INC_ATTACH) ? ZmMailApp.INC_MAP[i][0] :
-			  														   ZmMailApp.INC_MAP[i].join("|");
+
+AjxUtil.foreach(ZmMailApp.INC_MAP, function(v, i) {
+	var key = (i == ZmSetting.INC_NONE || i == ZmSetting.INC_ATTACH) ?
+		v[0] : v.join("|");
 	ZmMailApp.INC_MAP_REV[key] = i;
-}
-delete i;
-delete key;
+});
 
 ZmMailApp._setGroupByMaps =
 function() {

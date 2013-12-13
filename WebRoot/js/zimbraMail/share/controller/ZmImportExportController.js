@@ -85,13 +85,11 @@ ZmImportExportController.TYPE_EXTS[ZmImportExportController.TYPE_ICS] = [ "ics" 
 ZmImportExportController.TYPE_EXTS[ZmImportExportController.TYPE_TGZ] = [ "tgz", "zip" ];
 
 ZmImportExportController.EXTS_TYPE = {};
-for (p in ZmImportExportController.TYPE_EXTS) {
-	for (i = 0; i < ZmImportExportController.TYPE_EXTS[p].length; i++) {
-		ZmImportExportController.EXTS_TYPE[ZmImportExportController.TYPE_EXTS[p][i]] = p;
+AjxUtil.foreach(ZmImportExportController.TYPE_EXTS, function(exts, p) {
+	for (var i = 0; i < exts.length; i++) {
+		ZmImportExportController.EXTS_TYPE[exts[i]] = p;
 	}
-}
-delete p;
-delete i;
+});
 
 ZmImportExportController.__FAULT_ARGS_MAPPING = {
 	"formatter.INVALID_FORMAT": [ "filename" ],

@@ -2166,11 +2166,9 @@ function(mode, comp) {
 };
 
 // Chart for determining number of blank lines between non-empty components.
-ZmComposeView.BC_SPACING = {};
-for (i = 0; i < ZmComposeView.BC_ALL_COMPONENTS.length; i++) {
-	ZmComposeView.BC_SPACING[ZmComposeView.BC_ALL_COMPONENTS[i]] = {};
-}
-delete i;
+ZmComposeView.BC_SPACING = AjxUtil.arrayAsHash(ZmComposeView.BC_ALL_COMPONENTS,
+                                               function() { return Object() });
+
 ZmComposeView.BC_SPACING[ZmComposeView.BC_NOTHING][ZmComposeView.BC_SIG_PRE]		= 2;
 ZmComposeView.BC_SPACING[ZmComposeView.BC_NOTHING][ZmComposeView.BC_DIVIDER]		= 2;
 ZmComposeView.BC_SPACING[ZmComposeView.BC_NOTHING][ZmComposeView.BC_SIG_POST]		= 2;
