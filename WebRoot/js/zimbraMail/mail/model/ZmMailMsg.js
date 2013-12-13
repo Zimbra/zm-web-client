@@ -2128,7 +2128,7 @@ function(findHits, includeInlineImages, includeInlineAtts) {
 				}
 
 				var folder = appCtxt.getById(this.folderId);
-				if ((attach.name || attach.fileName) && appCtxt.get(ZmSetting.BRIEFCASE_ENABLED) && (folder && !folder.isRemote())) {
+				if ((attach.name || attach.fileName) && appCtxt.get(ZmSetting.BRIEFCASE_ENABLED)) {
 					if (!useCL) {
 						props.links.briefcase = true;
 					}
