@@ -3736,6 +3736,17 @@ HTML>BODY .appt-selected .appt_allday_body
 	width:99%;
 }
 
+/* Match the width of ZmPreferencesPage */
+.prefHeader {width:99%;
+             padding: 4px 8px;
+             @FontSize-bigger@;
+             color:white;
+             background-color:@darken(AppC,30)@;
+             @roundCorners(6px 6px 0 0)@
+}
+
+.prefHeaderComment {width:99%;}
+
 #IFNDEF MSIE_LOWER_THAN_9
 .ZOptionsHeaderL, .ZOptionsHeaderR {
     display: none;

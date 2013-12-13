@@ -1,12 +1,6 @@
 <template id='data.ImportExport#ImportExportPrefPage'>
 	<$ if (appCtxt.get(ZmSetting.IMPORT_ENABLED)) { $>
-		<table width=100%>
-			<tr class='ZOptionsHeaderRow'>
-				<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
-				<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg._import$></td>
-				<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
-			</tr>
-		</table>
+		<div class='prefHeader'><$=ZmMsg._import$></div>
 		<table class='ZOptionsSectionTable' width=100%>
 			<tr>
 				<td class='ZOptionsSectionMain'>
@@ -19,13 +13,7 @@
 		</table>
 	<$ } $>
 	<$ if (appCtxt.get(ZmSetting.EXPORT_ENABLED)) { $>
-		<table width=100%>
-			<tr class='ZOptionsHeaderRow'>
-				<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
-				<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg._export$></td>
-				<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
-			</tr>
-		</table>
+		<div class='prefHeader'><$=ZmMsg._export$></div>
 		<table class='ZOptionsSectionTable' width=100%>
 			<tr>
 				<td class='ZOptionsSectionMain'>
