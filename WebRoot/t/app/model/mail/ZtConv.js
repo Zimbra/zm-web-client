@@ -40,14 +40,13 @@ Ext.define('ZCS.model.mail.ZtConv', {
 				name:       'numMsgsShown',
 				type:       'int',
 				convert:    function(value, record) {
-					var numMsgs = record.get('numMsgs');
+					var numMsgs = 0;
 					Ext.each(record.getMessages(), function(msg) {
-						var folderId = msg.get('folderId');
-						if (ZCS.constant.CONV_HIDE[folderId]) {
-							numMsgs--;
+						if (ZCS.model.mail.ZtConv.shouldShowMessage(msg)) {
+							numMsgs++;
 						}
 					});
-					return numMsgs && numMsgs > 0 ? numMsgs : 0;
+					return numMsgs;
 				}
 			}
 		],
@@ -65,6 +64,19 @@ Ext.define('ZCS.model.mail.ZtConv', {
 		},
 
 		messages: []
+	},
+
+	statics: {
+
+		shouldShowMessage: function(msg) {
+
+			var curFolder = ZCS.session.getCurrentSearchOrganizer(),
+				curFolderId = curFolder ? curFolder.get('zcsId') : '',
+				msgFolderId = msg instanceof ZCS.model.mail.ZtMailMsg ? msg.get('folderId') : msg.l,
+				localId = ZCS.util.localId(msgFolderId);
+
+			return (msgFolderId === curFolderId) || !ZCS.constant.CONV_HIDE[localId];
+		}
 	},
 
 	constructor: function(data, id, raw) {
