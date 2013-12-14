@@ -44,8 +44,8 @@
 						<img class='zcs-mail-attachment' src='resources/images/attachment.png' />
 					</tpl>
 					<div class='zcs-mail-subject<tpl if='isUnread'>-unread</tpl>'>{subject:htmlEncode}</div>
-					<tpl if='numMsgs &gt; 1'>
-						<span class='zcs-numMsgs'>{numMsgs}</span>
+					<tpl if='numMsgsShown &gt; 1'>
+						<span class='zcs-numMsgs'>{numMsgsShown}</span>
 					</tpl>
 					<tpl if='isFlagged'>
 						<img  class='zcs-mail-flag' src='resources/images/flagged.png' />

@@ -32,8 +32,24 @@ Ext.define('ZCS.model.mail.ZtConv', {
 	config: {
 
 		fields: [
-			{ name: 'senders', type: 'string' },
-			{ name: 'numMsgs',  type: 'int' }
+			{ name: 'senders',  type: 'string' },
+			{ name: 'numMsgs',  type: 'int' },
+
+			// number of messages user will see in reading pane (which excludes Junk/Trash/Drafts)
+			{
+				name:       'numMsgsShown',
+				type:       'int',
+				convert:    function(value, record) {
+					var numMsgs = record.get('numMsgs');
+					Ext.each(record.getMessages(), function(msg) {
+						var folderId = msg.get('folderId');
+						if (ZCS.constant.CONV_HIDE[folderId]) {
+							numMsgs--;
+						}
+					});
+					return numMsgs && numMsgs > 0 ? numMsgs : 0;
+				}
+			}
 		],
 
 		proxy: {
@@ -49,6 +65,17 @@ Ext.define('ZCS.model.mail.ZtConv', {
 		},
 
 		messages: []
+	},
+
+	constructor: function(data, id, raw) {
+
+		// do this first so that 'numMsgsShown' can be calculated during construction
+		if (data && data.msgs) {
+			this.setMessages(data.msgs);
+		}
+
+		// need to do this or get a JS error handling search results (see ZtItem ctor)
+		return this.callParent(arguments) || this;
 	},
 
 	handleModifyNotification: function(modify) {

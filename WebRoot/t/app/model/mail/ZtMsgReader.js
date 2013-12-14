@@ -89,7 +89,7 @@ Ext.define('ZCS.model.mail.ZtMsgReader', {
 	},
 
 	/**
-	 * Override so we can omit Trash/Junk messages from being displayed as part of the conv, unless
+	 * Override so we can omit Trash/Junk/Drafts messages from being displayed as part of the conv, unless
 	 * the user is in one of those folders.
 	 */
 	getRecords: function(root) {

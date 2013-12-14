@@ -45,13 +45,14 @@ Ext.define('ZCS.model.mail.ZtConvWriter', {
 				isOutbound = ZCS.util.isOutboundFolderId(folderId);
 
 			Ext.apply(methodJson, {
-				sortBy: ZCS.constant.DATE_DESC,
-				offset: operation.getStart(),
-				limit:  ZCS.constant.DEFAULT_PAGE_SIZE,
-				query:  query,
-				types:  'conversation',
-				fetch:  1,
-				recip:  isOutbound ? 1 : 0
+				sortBy:             ZCS.constant.DATE_DESC,
+				offset:             operation.getStart(),
+				limit:              ZCS.constant.DEFAULT_PAGE_SIZE,
+				query:              query,
+				types:              'conversation',
+				fullConversation:   1,
+				fetch:              1,
+				recip:              isOutbound ? 1 : 0
 			});
 
 		} else if (action === 'update') {
