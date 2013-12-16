@@ -784,7 +784,9 @@ function(item) {
 	}
 	for (var i = 0; i < msgs.size(); i++) {
 		var msg = msgs.get(i);
-		var msgFolderId = msg.folderId;
+		var msgFolder = appCtxt.getById(msg.folderId);
+		var msgFolderId = msgFolder && msgFolder.getLocalId();
+
 		if (!ZmMailList._SPECIAL_FOLDERS_HASH[msgFolderId]) {
 			return false;
 		}
@@ -808,14 +810,10 @@ function(items, nFromFolderId) {
 		return "";
 	}
 
-	var fromFolder;
-	if (nFromFolderId) {
-		fromFolder = appCtxt.getById(nFromFolderId);
-	}
-	else {
-		fromFolder = this.search && appCtxt.getById(this.search.folderId);
-    }
+	var fromFolderId = nFromFolderId || (this.search && this.search.folderId);
+	var	fromFolder = fromFolderId && appCtxt.getById(fromFolderId);
 
+	fromFolderId = fromFolder && fromFolder.getLocalId();
 	var tcon = [];
 	for (i = 0; i < ZmMailList._SPECIAL_FOLDERS.length; i++) {
 		var specialFolderId = ZmMailList._SPECIAL_FOLDERS[i];
@@ -823,7 +821,7 @@ function(items, nFromFolderId) {
 			tcon.push(ZmFolder.TCON_CODE[specialFolderId]);
 			continue;
 		}
-		if (fromFolder.id == specialFolderId) {
+		if (fromFolderId === specialFolderId) {
 			continue; //we're moving out of the special folder - allow  items under it
 		}
         var specialFolder;
