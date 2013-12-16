@@ -1402,6 +1402,16 @@ function(incOptions) {
 		mi.setEnabled(allowOptions);
 		mi.setChecked(incOptions.headers, true);
 	}
+	//If we attach multiple messages, disable changing from "include as attachment" to "include original" (inc_body, a.k.a. include inline). Bug 74467
+	var incOptionsDisabled = this._msgIds && this._msgIds.length > 1;
+	mi = menu.getOp(ZmOperation.INC_BODY);
+	if (mi) {
+		mi.setEnabled(!incOptionsDisabled);
+	}
+	mi = menu.getOp(ZmOperation.INC_ATTACHMENT);
+	if (mi) {
+		mi.setEnabled(!incOptionsDisabled);
+	}
 };
 
 /**
