@@ -304,6 +304,7 @@ function() {
 		//the user might of course click "reply to all" later in the window so I deep copy here in any case.
 		var msg = this._deepCopyMsg(params.msg);
 		msg.isRfc822 = params.isRfc822; //simpler
+		params.msg.addChangeListener(msg.detachedChangeListener.bind(msg));
 
 		var msgController = AjxDispatcher.run("GetMsgController");
 		appCtxt.msgCtlrSessionId = msgController.getSessionId();

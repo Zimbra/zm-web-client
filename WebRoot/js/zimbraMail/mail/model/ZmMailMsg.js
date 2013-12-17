@@ -1952,6 +1952,20 @@ function() {
 	}
 };
 
+/**
+ * from a child window - since we clone the message, the cloned message needs to listen to changes on the original (parent window) message.
+ * @param ev
+ */
+ZmMailMsg.prototype.detachedChangeListener =
+function(ev) {
+	var parentWindowMsg = ev.item;
+	//for now I only need it for keeping up with the isUnread and isFlagged status of the detached message. Keep it simple.
+	this.isUnread = parentWindowMsg.isUnread;
+	this.isFlagged = parentWindowMsg.isFlagged;
+};
+
+
+
 ZmMailMsg.prototype.isRealAttachment =
 function(attachment) {
 	var type = attachment.contentType;
