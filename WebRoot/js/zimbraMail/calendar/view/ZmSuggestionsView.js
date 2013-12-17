@@ -88,8 +88,14 @@ function(list, noResultsOk, doAdd, prefixHtml) {
 		if (prefixHtml) {
 		    htmlArr.push(prefixHtml);
 		}
+		var nonZeroAvailableFound = false;
 		for (var i = 0; i < size; i++) {
 			var item = list.get(i);
+			nonZeroAvailableFound = nonZeroAvailableFound || item.availableUsers > 0;
+			//Note that this works since it's sorted from higher available down, so first we'll get the non zero.
+			if (item.availableUsers === 0 && nonZeroAvailableFound) {
+				break; //ignore 0 available if we got items with more than 0 available.
+			}
 
             if (this._showHeaders) {
                 hdrKey = this._getHeaderKey(item);
