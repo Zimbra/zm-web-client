@@ -1776,7 +1776,7 @@ ZmMailApp.prototype._handleLoadShowSearchResults =
 function(results, callback, searchResultsController) {
 
 	var sessionId = searchResultsController ? searchResultsController.getCurrentViewId() : ZmApp.MAIN_SESSION;
-	var controller = (results.type == ZmItem.MSG) ? this.getTradController(sessionId, searchResultsController) :
+	var controller = ((results.type == ZmItem.MSG) || !appCtxt.get(ZmSetting.CONVERSATIONS_ENABLED)) ? this.getTradController(sessionId, searchResultsController) :
 													this.getConvListController(sessionId, searchResultsController);
 	controller.show(results);
 	this._setLoadedTime(this.toString(), new Date());

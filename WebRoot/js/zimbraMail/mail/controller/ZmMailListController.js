@@ -362,7 +362,7 @@ function(actionCode, ev) {
 			break;
 
 		case ZmKeyMap.VIEW_BY_CONV:
-			if (!isSyncFailures) {
+			if (!isSyncFailures && appCtxt.get(ZmSetting.CONVERSATIONS_ENABLED)) {
 				this.switchView(ZmId.VIEW_CONVLIST);
 			}
 			break;
