@@ -584,7 +584,9 @@ SELECT						{	@FieldBorder@	}
 .RowDouble .ImgCheckboxChecked,
 .RowDouble .ImgCheckboxUnchecked 	{ margin:6px 0px 0px; 	}
 .RowDouble .BottomRow				{ margin:4px 0px 6px; 	}
-.Row-matched, .RowDouble-matched	{ background-color:@SearchResultColor@;		}
+.Row-matched, .RowDouble-matched,
+.RowDouble-matched .ZmListFlagsWrapper,
+.RowDouble-matched .ZmMsgListDate	{ background-color:@SearchResultColor@;		}.ZmListFlagsWrapper
 .TopRow, .BottomRow					{ height:16px; height:1.6rem; position:relative;	}
 #IFDEF MSIE_LESS_THAN_9
 .TopRow, .BottomRow					{ width:99%;	}
