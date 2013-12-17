@@ -3419,8 +3419,18 @@ function(appt, actionMenu) {
 ZmCalViewController.prototype._listActionListener =
 function(ev) {
 	ZmListController.prototype._listActionListener.call(this, ev);
+	var count = this.getSelectionCount();
 	var appt = ev.item;
 	var actionMenu = this.getActionMenu();
+	actionMenu.enableAll(count === 1);
+	if (count > 1) {
+		var isExternalAccount = appCtxt.isExternalAccount();
+  		var isFolderReadOnly = appt.isFolderReadOnly();
+		var enabled = !isExternalAccount && !isFolderReadOnly;
+		actionMenu.enable([ZmOperation.TAG_MENU, ZmOperation.MOVE_MENU, ZmOperation.MOVE, ZmOperation.DELETE], enabled);
+		actionMenu.popup(0, ev.docX, ev.docY);
+		return;
+	}
     var calendar = appt && appt.getFolder();
     var isTrash = calendar && calendar.nId == ZmOrganizer.ID_TRASH;
 	var menu = (appt.isRecurring() && !appt.isException && !isTrash) ? this._recurringActionMenu : actionMenu;
