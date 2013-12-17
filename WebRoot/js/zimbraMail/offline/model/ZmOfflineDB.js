@@ -25,7 +25,7 @@ function (callback) {
 ZmOfflineDB.indexedDB.open = function(callback, version) {
     var createObjectStore = function(){
         var db = ZmOfflineDB.indexedDB.db;
-        var stores = ZmOffline.store.concat([ZmOffline.ZmOfflineStore, ZmOfflineDB.indexedDB.idxStore, ZmApp.MAIL, ZmOffline.ATTACHMENT, ZmApp.CONTACTS, ZmOffline.REQUESTQUEUE]);
+        var stores = ZmOffline.store.concat([ZmOffline.ZmOfflineStore, ZmOfflineDB.indexedDB.idxStore, ZmApp.MAIL, ZmOffline.ATTACHMENT, ZmApp.CONTACTS, ZmApp.CALENDAR, ZmOffline.REQUESTQUEUE]);
         for (var i=0, length=stores.length; i<length;i++){
             if(!db.objectStoreNames.contains(stores[i])) {
                 DBG.println(AjxDebug.DBG1, "Creating objectstore : " + stores[i]);
@@ -71,8 +71,14 @@ ZmOfflineDB.indexedDB.open = function(callback, version) {
                     store.createIndex("methodname", "methodname");
                     store.createIndex("id", "id");
                     store.createIndex("methodname, id", ["methodname", "id"]);
-                }
-                else {
+                } else if (stores[i] === ZmApp.CALENDAR) {
+                    // Store ZmAppts, otherwise no start and end date fields.  The rawAppts potentially represent
+                    // several appts (base appt info + instance), with differing startDates.  The instanceId is a
+                    // generated key field, storing id:startTime (time in msec)
+                    var store = db.createObjectStore(stores[i], {keyPath: "instanceId"});
+                    store.createIndex("startDate", "startDate");
+                    store.createIndex("endDate", "endDate");
+                } else {
                     var store = db.createObjectStore(stores[i], {keyPath: "key"});
                 }
             }
@@ -1043,6 +1049,53 @@ function(searchStr, callback, errorCallback) {
         DBG.println(AjxDebug.DBG1, "ZmOfflineDB.searchContactsForAutoComplete : Exception : " +e);
     }
 };
+
+
+
+ZmOfflineDB.doIndexSearch =
+function(search, objectStoreName, formatter, callback, errorCallback, indexName) {
+    try {
+        var db = ZmOfflineDB.indexedDB.db;
+        var transaction = db.transaction(objectStoreName);
+        var objectStore = transaction.objectStore(objectStoreName);
+        var resultArray = [];
+        var index = objectStore.index(indexName);
+
+        // From lower (inclusive) to upper (exclusive)
+        var range = null;
+        if (search.length == 1) {
+            range = IDBKeyRange.only(search[0]);
+        } else if (search.length == 2) {
+            range = IDBKeyRange.bound(search[0], search[1], false, true);
+        }
+        if (range == null) {
+            errorCallback && errorCallback();
+            DBG.println(AjxDebug.DBG1, "ZmOfflineDB.indexedDB.search : Exception : " + e);
+        } else {
+            index.openCursor(range).onsuccess = function(ev) {
+                var result = ev.target.result;
+                if (result) {
+                    resultArray.push(result.value);
+                    result['continue']();
+                }
+            };
+
+            if (callback) {
+                transaction.oncomplete = function() {
+                    if (formatter) {
+                        resultArray = formatter(resultArray);
+                    }
+                    callback(resultArray);
+                }
+            }
+            transaction.onerror = errorCallback;
+        }
+    }
+    catch (e) {
+        errorCallback && errorCallback();
+        DBG.println(AjxDebug.DBG1, "ZmOfflineDB.indexedDB.search : Exception : " + e);
+    }
+}
 
 ZmOfflineDB.indexedDB.close =
 function(){

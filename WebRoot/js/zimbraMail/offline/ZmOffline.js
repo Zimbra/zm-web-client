@@ -30,8 +30,10 @@ ZmOffline = function(){
     ZmOffline._syncInProgress = false;
     ZmOffline.store = [];
     ZmOffline.folders = [];
-    ZmOffline.SUPPORTED_APPS = [ZmApp.MAIL, ZmApp.CONTACTS];
+    ZmOffline.SUPPORTED_APPS = [ZmApp.MAIL, ZmApp.CONTACTS, ZmApp.CALENDAR];
     ZmOffline.SUPPORTED_MAIL_TREE_VIEWS = [ZmOrganizer.FOLDER, ZmOrganizer.SEARCH, ZmOrganizer.TAG];
+    // The number of days we read into the future to get calendar entries
+    ZmOffline.CALENDAR_READ_AHEAD = 42;
 };
 
 ZmOffline._checkCacheDone =
@@ -221,10 +223,10 @@ function(){
     if (ZmOffline.folders.length === 0){
         this.initOfflineFolders();
         this.storeFoldersMetaData();
-        ZmOfflineDB.indexedDB.addObjectStores(this._cacheMailMessages.bind(this));
+        ZmOfflineDB.indexedDB.addObjectStores(this._cacheOfflineData.bind(this));
         return;
     }
-    this._cacheMailMessages();
+    this._cacheOfflineData();
 };
 
 ZmOffline.prototype.initOfflineFolders =
@@ -236,7 +238,7 @@ function(){
     }
 };
 
-ZmOffline.prototype._cacheMailMessages =
+ZmOffline.prototype._cacheOfflineData =
 function(){
     appCtxt.setStatusMsg(ZmMsg.offlineCachingSync, ZmStatusView.LEVEL_INFO);
     this._cacheContacts();
@@ -245,6 +247,7 @@ function(){
             this._downloadMessages(ZmOffline.folders[i], 0, ZmOffline.cacheMessageLimit, ZmOffline.MESSAGE, "all", 1, null);
             //this._downloadMessages(ZmOffline.folders[i], 0, ZmOffline.cacheConversationLimit, ZmOffline.CONVERSATION, "u1", 1, this._loadConversations.bind(this, ZmOffline.folders[i] , this._convIds));
         }
+        this._downloadCalendar();
     } else{
         this.sendSyncRequest();
     }
@@ -253,14 +256,14 @@ function(){
 
 ZmOffline.prototype._downloadMessages =
 function(folder, offset, limit, type, fetch, html, callback){
-if (!folder.webOfflineSyncDays || folder.webOfflineSyncDays == "0"){
-    return;
-}
+    if (!folder.webOfflineSyncDays || folder.webOfflineSyncDays == "0"){
+        return;
+    }
 
-var date = new Date();
-var offsetDate = AjxDateFormat.getDateInstance(AjxDateFormat.SHORT).format(AjxDateUtil.roll(date, AjxDateUtil.DAY, -(parseInt(folder.webOfflineSyncDays))))
-var jsonObj = {SearchRequest:{_jsns:"urn:zimbraMail"}};
-var request = jsonObj.SearchRequest;
+    var date = new Date();
+    var offsetDate = AjxDateFormat.getDateInstance(AjxDateFormat.SHORT).format(AjxDateUtil.roll(date, AjxDateUtil.DAY, -(parseInt(folder.webOfflineSyncDays))))
+    var jsonObj = {SearchRequest:{_jsns:"urn:zimbraMail"}};
+    var request = jsonObj.SearchRequest;
     ZmOffline.cacheProgress.push(folder.name.toLowerCase() + type);
     ZmMailMsg.addRequestHeaders(request);
     request.offset = offset;
@@ -302,6 +305,139 @@ function(folder, type, callback, result){
         callback.run();
     }
 };
+
+
+ZmOffline.CALENDAR_PROGRESS = "Calendar Appointments";
+ZmOffline.prototype._downloadCalendar =
+function() {
+    // *** ARE The various calendar components created at this pt - App, CalMgr, MiniCalCache, CalViewController ??
+
+    ZmOffline.cacheProgress.push(ZmOffline.CALENDAR_PROGRESS);
+
+    // Bundle it together in a batch request
+    var jsonObj = {BatchRequest:{_jsns:"urn:zimbra", onerror:"continue"}};
+    var request = jsonObj.BatchRequest;
+
+    // Get the Cal Manager and CalViewController
+    var calMgr = appCtxt.getCalManager();
+    var calViewController = calMgr && calMgr.getCalViewController();
+
+    // Get checked calendars for the first (main) account
+    var calendarIds = calViewController.getMainAccountCheckedCalendarIds();
+    var apptCache = calViewController.getApptCache();
+
+    // MiniCal Request
+    var miniCalCache  = calViewController.getMiniCalCache();
+    var miniCalParams = calViewController.getMiniCalendarParams()
+    miniCalParams.folderIds = calendarIds;
+    request.GetMiniCalRequest = {_jsns:"urn:zimbraMail"};
+    miniCalCache._setSoapParams(request.GetMiniCalRequest, miniCalParams);
+
+
+    var endDate = new Date();
+    endDate.setHours(23,59,59,999);
+    //grab a week's appt backwards for reminders
+    var startDate = new Date(endDate.getTime());
+    startDate.setDate(startDate.getDate()-7);
+    startDate.setHours(0,0,0, 0);
+
+    endDate.setDate(endDate.getDate()+ ZmOffline.CALENDAR_READ_AHEAD);
+
+
+
+    // Appt Search Request
+    // ZmCalViewController._maintenanceAction gets the current view, and bases the time range off of that
+    // What should be supported here?
+    // *** USING The MiniCal range - Should also cover the needed reminder range
+    var searchParams = {
+        start:            startDate.getTime(),
+        end:              endDate.getTime(),
+        accountFolderIds: calendarIds,
+        folderIds:        calendarIds,
+        offset:           0
+    }
+    apptCache.setFolderSearchParams(searchParams.folderIds, searchParams);
+    request.SearchRequest = {_jsns:"urn:zimbraMail"};
+    apptCache._setSoapParams(request.SearchRequest, searchParams);
+
+    // Reminder Request ?? Need apart from Search Request - done in calendar because of different range for
+    // reminder/calendar view.  Needed here?
+    // *** IGNORE FOR NOW ***
+
+    //var calApp  = appCtxt.getApp(ZmApp.CALENDAR);
+    //var reminderParams = calApp.getReminderController().getRefreshParams();
+    //var reminderRequest ={_jsns:"urn:zimbraMail"};
+    //request.SearchRequest = request.SearchRequest ? [request.SearchRequest, searchRequest] : searchRequest;
+    //reminderSearchParams.folderIds = this._calViewController.getCheckedCalendarFolderIds(true);
+    //this._setSoapParams(searchRequest, reminderSearchParams);
+
+
+    var respCallback = this._handleCalendarResponse.bind(this);
+    appCtxt.getRequestMgr().sendRequest({jsonObj:jsonObj, asyncMode:true, callback:respCallback});
+};
+
+
+ZmOffline.prototype._handleCalendarResponse =
+function(response) {
+
+    var batchResp   = response && response._data && response._data.BatchResponse;
+    var miniCalResp = batchResp && batchResp.GetMiniCalResponse;
+    var searchResp  = batchResp && batchResp.SearchResponse && batchResp.SearchResponse[0];
+
+    try{
+        // Store the miniCal info in the generic offline store
+        //this.setItem("GetMiniCalRequest", miniCalResp, "ZmOfflineStore");
+
+        var onsuccess = function(e) {
+            ZmOfflineDB.indexedDB.setIndex(contact.id, ZmApp.CONTACTS);
+            DBG.println(AjxDebug.DBG1, "Added appointment in indexedDB");
+        };
+        var onError = function(e) {
+            DBG.println(AjxDebug.DBG1, "Error while adding appointments in indexedDB" + e);
+        };
+
+        var appt;
+        var apptList = new ZmApptList();
+        // Convert the raw appts into ZmAppt objects.  Each rawAppt may represent several actual appointments (if the
+        // appt is a recurring one), with differing start and end dates.  So break a raw appt into its component appts
+        // and store them individually, with start and end time index info.
+        apptList.loadFromSummaryJs(searchResp.appt);
+        var numAppt = apptList.size();
+        var apptContainers = [];
+        var apptContainer;
+        var startTime;
+         for (var i = 0; i < numAppt; i++) {
+            appt       = apptList.get(i);
+            this._cleanApptForStorage(appt);
+            startTime  = appt.startDate.getTime();
+            // The appts do not contain a unique id for each instance.  Generate one (used as the primary key),
+            // for each appt/instance.  Also, create a container with the index info
+            apptContainer = {appt: appt,
+                             instanceId: appt.id + ":" + startTime.toString(),
+                             startDate:  startTime,
+                             endDate:    appt.endDate.getTime()
+                            };
+            apptContainers.push(apptContainer);
+        }
+        ZmOfflineDB.setItem(apptContainers, ZmApp.CALENDAR, null, onError);
+
+    }catch(ex){
+        DBG.println(AjxDebug.DBG1, ex);
+    }
+
+    this._updateCacheProgress(ZmOffline.CALENDAR_PROGRESS);
+
+};
+
+ZmOffline.prototype._cleanApptForStorage =
+function(appt) {
+    delete appt.list;
+    delete appt._list;
+    delete appt._evt;
+    delete appt._evtMgr;
+}
+
+
 
 ZmOffline.prototype._updateCacheProgress =
 function(folderName){
@@ -1294,6 +1430,7 @@ function(doStop) {
             0: function() {
                 if (ZmOffline.isServerReachable === true) {
                     if (doStop) {
+                        // Reset here - state must be correct for functions triggered by ZWCOffline
                         ZmOffline.isServerReachable = false;
                         $.event.trigger({
                             type: "ZWCOffline"
@@ -1308,6 +1445,7 @@ function(doStop) {
             200: function() {
                 if (ZmOffline.isServerReachable === false) {
                     if (doStop) {
+                        // Reset here - state must be correct for functions triggered by ZWCOnline
                         ZmOffline.isServerReachable = true;
                         $.event.trigger({
                             type: "ZWCOnline"

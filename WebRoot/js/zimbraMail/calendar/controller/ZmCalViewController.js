@@ -338,6 +338,16 @@ function(includeTrash) {
     return includeTrash ? this._checkedCalendarsAll : this._checkedCalendars;
 };
 
+ZmCalViewController.prototype.getMainAccountCheckedCalendarIds =
+function() {
+    if (!this._checkedAccountCalendarIds) {
+        // Generate the checked calendar data
+        this._updateCheckedCalendars();
+    }
+    // If there are any account calendar ids, the 0th should be the main account - copy its checked calendars
+    return (this._checkedAccountCalendarIds.length == 0) ? [] : this._checkedAccountCalendarIds[0].slice(0);
+}
+
 /**
  * Gets the unchecked calendar folder ids for a owner email
  *
@@ -660,6 +670,11 @@ function(ev) {
 	}
 };
 
+ZmCalViewController.prototype.getApptCache =
+function(){
+    return this.apptCache;
+};
+    
 /**
  * Gets the calendar by folder id.
  * 
@@ -781,7 +796,7 @@ function(ev) {
 
 ZmCalViewController.prototype._isItemMovable =
 function(item, isShiftKey, folder) {
-	return (!isShiftKey && !folder.isReadOnly());
+	return (!isShiftKey && !folder.isReadOnly() && !appCtxt.isWebClientOffline());
 };
 
 ZmCalViewController.prototype._moveCallback =
@@ -2938,14 +2953,14 @@ function(parent, num) {
     var isReadOnly = calendar ? calendar.isReadOnly() : false;
     var isSynced = Boolean(calendar && calendar.url);
     var isShared = calendar ? calendar.isRemote() : false;
-    var disabled = isSynced || isReadOnly || (num == 0);
+    var disabled = isSynced || isReadOnly || (num == 0) || appCtxt.isWebClientOffline();
     var isPrivate = appt && appt.isPrivate() && calendar.isRemote() && !calendar.hasPrivateAccess();
-    var isForwardable = !isTrash && calendar && !calendar.isReadOnly() && appCtxt.get(ZmSetting.GROUP_CALENDAR_ENABLED);
-    var isReplyable = !isTrash && appt && (num == 1);
+    var isForwardable = !isTrash && calendar && !calendar.isReadOnly() && appCtxt.get(ZmSetting.GROUP_CALENDAR_ENABLED) && !appCtxt.isWebClientOffline();
+    var isReplyable = !isTrash && appt && (num == 1) && !appCtxt.isWebClientOffline();
     var isTrashMultiple = isTrash && (num && num>1);
 
     parent.enable([ZmOperation.REPLY, ZmOperation.REPLY_ALL], (isReplyable && !isTrashMultiple));
-    parent.enable(ZmOperation.TAG_MENU, (!isReadOnly && !isSynced && num > 0) || isTrashMultiple);
+    parent.enable(ZmOperation.TAG_MENU, ((!isReadOnly && !isSynced && num > 0) || isTrashMultiple)) && !appCtxt.isWebClientOffline();
     parent.enable(ZmOperation.VIEW_APPOINTMENT, !isPrivate && !isTrashMultiple);
     parent.enable([ZmOperation.FORWARD_APPT, ZmOperation.FORWARD_APPT_INSTANCE, ZmOperation.FORWARD_APPT_SERIES], isForwardable && !isTrashMultiple);
     parent.enable(ZmOperation.PROPOSE_NEW_TIME, !isTrash && (appt && !appt.isOrganizer()) && !isTrashMultiple);
@@ -2969,6 +2984,12 @@ function(parent, num) {
 	if (op && parent.setSelected) {
 		parent.setSelected(op);
 	}
+
+    if (appCtxt.isWebClientOffline()) {
+        // Disable the list view when offline
+        //parent.enable(ZmCalViewController.VIEW_TO_OP[ZmOperation.CAL_LIST_VIEW], false);
+        parent.enable(ZmOperation.CAL_LIST_VIEW, false);
+    }
 
     //this._resetQuickCommandOperations(parent);
 };
@@ -3386,7 +3407,7 @@ function(appt, actionMenu) {
 	if (del && !isTrash) {
 		del.setText((isTheCalendarOrganizer && appt.otherAttendees) ? ZmMsg.cancel : ZmMsg.del);
 		var isSynced = Boolean(calendar.url);
-		del.setEnabled(!calendar.isReadOnly() && !isSynced && !isPrivate);
+		del.setEnabled(!calendar.isReadOnly() && !isSynced && !isPrivate && !appCtxt.isWebClientOffline());
 	}
 
 	// recurring action menu options
@@ -3470,7 +3491,7 @@ function(ev) {
 			var calendar = item.getFolder();
 			var isReadOnly = calendar ? calendar.isReadOnly() : false;
 			var isSynced = Boolean(calendar && calendar.url);
-			if (isSynced || isReadOnly) {
+			if (isSynced || isReadOnly  || !appCtxt.isWebClientOffline()) {
 				ev.doIt = false; // can't tag a GAL or shared contact
 				view.dragSelect(div);
 				return;
@@ -3735,7 +3756,7 @@ function(appts, newFolderId) {
 	var isMovingBetw = false;
 	for (var i = 0; i < appts.length; i++) {
 		var appt = appts[i];
-		if (!appt.isReadOnly() && appt._orig && appt.otherAttendees) {
+		if (!appt.isReadOnly() && appt._orig && appt.otherAttendees && !appCtxt.isWebClientOffline()) {
 			var origFolder = appt._orig.getFolder();
 			var newFolder = appCtxt.getById(newFolderId);
 			if (origFolder && newFolder) {

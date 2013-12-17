@@ -157,6 +157,30 @@ function() {
 
 // Public methods
 
+ZmAppt.loadOfflineData =
+function(apptInfo, list) {
+    var appt = new ZmAppt(list);
+    var recurrence;
+    var alarmActions;
+    var subObjects = {_recurrence:ZmRecurrence, alarmActions:AjxVector};
+    for (var prop in apptInfo) {
+        // PROBLEM: The indexeddb serialization/deserialization does not recreate the actual objects - for example,
+        // a AjxVector is recreated as an object containing an array.  We really want a more generalized means, but
+        // for the moment do custom deseralization here.   Also, assuming only one sublevel of custom objects
+        if (subObjects[prop]) {
+            var obj = new subObjects[prop]();
+            for (var rprop in apptInfo[prop]) {
+                obj[rprop] = apptInfo[prop][rprop];
+            }
+            appt[prop] = obj;
+        } else {
+            appt[prop] = apptInfo[prop];
+        }
+    }
+
+    return appt;
+}
+
 /**
  * Used to make our own copy because the form will modify the date object by 
  * calling its setters instead of replacing it with a new date object.
