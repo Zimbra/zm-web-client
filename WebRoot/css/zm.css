@@ -1765,7 +1765,8 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 	width:1%;
 }
 
-.ZmContactInfoView .companyFolder DIV {
+.ZmContactInfoView .companyFolder DIV,
+.ZmContactInfoView .companyFolder IMG {
 	display:inline-block;
 	vertical-align:bottom;
 }

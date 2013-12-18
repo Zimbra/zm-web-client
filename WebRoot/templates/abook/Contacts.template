@@ -382,7 +382,7 @@
 						<$ if ((data.isGal || data.addrbook) && !isEdit) { $>
 							<td id='${id}_locationFolder' class='companyFolder'>
                                 <$ if (data.addrbook) { $>
-								    <$= AjxImg.getImageHtml(data.addrbook.getIcon()) $>&nbsp;<$= data.addrbook.getName() $>
+								    <$= AjxImg.getImageHtml(data.addrbook.getIconWithColor()) $>&nbsp;<$= data.addrbook.getName() $>
                                 <$ } else { $>
                                     <$= AjxImg.getImageHtml('GAL') $>&nbsp;<$= ZmMsg.GAL $>
                                 <$ } $>
