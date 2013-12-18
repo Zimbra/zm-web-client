@@ -428,12 +428,16 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 	handleModifyNotification: function(item, modify) {
 
 		var store = this.getStore(),
-			itemPresent = store.getById(item.getId());
+			itemPresent = !!store.getById(item.getId());
 
 		// msg has been moved
 		if (modify.l) {
 
 			item.set('folderId', modify.l);
+			var conv = ZCS.cache.get(item.get('convId'));
+			if (conv) {
+				conv.set('numMsgsShown', conv.get('numMsgsShown'));
+			}
 
 			if (itemPresent) {
 				// if the msg was moved to Trash or Junk, remove it from the list in the item panel
