@@ -2263,7 +2263,7 @@ function(mode, params) {
 		preface = AjxMessageFormat.format(ZmMsg.replyPrefix, [date, time, address]);
 		preface += this._crlf;
 		if (htmlMode) {
-			preface = '<span id="' + AjxStringUtil.HTML_SEP_ID + ' ' + ZmComposeView.BC_HTML_MARKER_ATTR + '="' + marker + '">' + preface + '</span>';
+			preface = '<span id="' + AjxStringUtil.HTML_SEP_ID + '" ' + ZmComposeView.BC_HTML_MARKER_ATTR + '="' + marker + '">' + preface + '</span>';
 		}
 	}
 		
