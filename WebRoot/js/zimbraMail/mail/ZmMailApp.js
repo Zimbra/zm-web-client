@@ -2366,3 +2366,42 @@ ZmMailApp.prototype._createVirtualFolders =
 function() {
     ZmOffline.addOutboxFolder();
 };
+
+ZmMailApp.prototype.enableFeatures =
+function() {
+    ZmApp.prototype.enableFeatures.apply(this);
+
+    var enable   = !appCtxt.isWebClientOffline();
+    var overview = this.getOverview();
+    if (enable) {
+        var folders = appCtxt.getFolderTree().getByType(ZmOrganizer.FOLDER);
+        for (var i = 0; i < folders.length; i++) {
+            var folder = folders[i];
+            if (folder) {
+                var treeItem = overview.getTreeItemById(folder.id);
+                if (treeItem) {
+                    treeItem.setVisible(true);
+                }
+            }
+        }
+    } else {
+        // Disable
+        var controller = this.getMailListController();
+        if (controller && controller.getCurrentViewType() === ZmId.VIEW_CONVLIST) {
+            controller.switchView(ZmId.VIEW_TRAD, true);
+        }
+
+        var folders = appCtxt.getFolderTree().getByType(ZmOrganizer.FOLDER);
+        for (var i = 1; i < folders.length; i++) {
+            var folder = folders[i];
+            if (folder.webOfflineSyncDays === 0 && folder.id != ZmFolder.ID_OUTBOX) {
+                var treeItem = overview.getTreeItemById(folder.id);
+                if (treeItem) {
+                    treeItem.setVisible(false);
+                }
+            }
+        }
+    }
+
+};
+

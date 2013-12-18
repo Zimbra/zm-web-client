@@ -136,7 +136,6 @@ ZmCalViewController.ACTION_CODE_TO_VIEW[ZmKeyMap.CAL_MONTH_VIEW]		= ZmId.VIEW_CA
 ZmCalViewController.ACTION_CODE_TO_VIEW[ZmKeyMap.CAL_LIST_VIEW]			= ZmId.VIEW_CAL_LIST;
 ZmCalViewController.ACTION_CODE_TO_VIEW[ZmKeyMap.CAL_FB_VIEW]		    = ZmId.VIEW_CAL_FB;
 
-
 // Zimlet hack
 ZmCalViewController.prototype.postInitListeners =
 function () {
@@ -2250,7 +2249,7 @@ function(appt, mode) {
 
 ZmCalViewController.prototype._showQuickAddDialog =
 function(appt, shiftKey) {
-    if(appCtxt.isExternalAccount()) { return; }
+    if(appCtxt.isExternalAccount() || appCtxt.isWebClientOffline()) { return; }
 	// find out if we really should display the quick add dialog
 	var useQuickAdd = appCtxt.get(ZmSetting.CAL_USE_QUICK_ADD);
 	if ((useQuickAdd && !shiftKey) || (!useQuickAdd && shiftKey)) {
@@ -2484,7 +2483,7 @@ function(appt) {
 			// prompt user to edit instance vs. series if recurring but not for exception and from edit mode
 			if (appt.isException || appt.editViewMode) {
 				var mode = appt.editViewMode || ZmCalItem.MODE_EDIT_SINGLE_INSTANCE;
-				if (appt.isReadOnly() || calendar.isReadOnly() || isSynced) {
+				if (appt.isReadOnly() || calendar.isReadOnly() || isSynced || appCtxt.isWebClientOffline()) {
 					this.showApptReadOnlyView(appt, mode);
 				} else {
 					this.editAppointment(appt, mode);
@@ -2495,7 +2494,7 @@ function(appt) {
 		} else {
 			// if simple appointment, no prompting necessary
             var isTrash = calendar.nId == ZmOrganizer.ID_TRASH;
-			if (appt.isReadOnly() || calendar.isReadOnly() || isSynced || isTrash) {
+			if (appt.isReadOnly() || calendar.isReadOnly() || isSynced || isTrash || appCtxt.isWebClientOffline()) {
                 var mode = appt.isRecurring() ? (appt.isException ? ZmCalItem.MODE_EDIT_SINGLE_INSTANCE : ZmCalItem.MODE_EDIT_SERIES) : ZmCalItem.MODE_EDIT;
 				this.showApptReadOnlyView(appt, mode);
 			} else {
@@ -2938,9 +2937,11 @@ function(navToolbar, currentViewName) {
 
 ZmCalViewController.prototype._resetOperations =
 function(parent, num) {
+    if (!parent) return;
+
 	parent.enableAll(true);
 	var currViewName = this._viewMgr.getCurrentViewName();
-    parent.enable(ZmOperation.TAG_MENU, appCtxt.get(ZmSetting.TAGGING_ENABLED));
+    parent.enable(ZmOperation.TAG_MENU, appCtxt.get(ZmSetting.TAGGING_ENABLED) && !appCtxt.isWebClientOffline());
 
 	if (currViewName == ZmId.VIEW_CAL_LIST && num > 1) { return; }
 
@@ -2960,19 +2961,20 @@ function(parent, num) {
     var isTrashMultiple = isTrash && (num && num>1);
 
     parent.enable([ZmOperation.REPLY, ZmOperation.REPLY_ALL], (isReplyable && !isTrashMultiple));
-    parent.enable(ZmOperation.TAG_MENU, ((!isReadOnly && !isSynced && num > 0) || isTrashMultiple)) && !appCtxt.isWebClientOffline();
+    parent.enable(ZmOperation.TAG_MENU, ((!isReadOnly && !isSynced && num > 0) || isTrashMultiple) && !appCtxt.isWebClientOffline());
     parent.enable(ZmOperation.VIEW_APPOINTMENT, !isPrivate && !isTrashMultiple);
-    parent.enable([ZmOperation.FORWARD_APPT, ZmOperation.FORWARD_APPT_INSTANCE, ZmOperation.FORWARD_APPT_SERIES], isForwardable && !isTrashMultiple);
-    parent.enable(ZmOperation.PROPOSE_NEW_TIME, !isTrash && (appt && !appt.isOrganizer()) && !isTrashMultiple);
-    parent.enable(ZmOperation.SHOW_ORIG, num == 1 && appt && appt.getRestUrl() != null && !isTrashMultiple);
+    parent.enable([ZmOperation.FORWARD_APPT, ZmOperation.FORWARD_APPT_INSTANCE, ZmOperation.FORWARD_APPT_SERIES], isForwardable
+                  && !isTrashMultiple  && !appCtxt.isWebClientOffline());
+    parent.enable(ZmOperation.PROPOSE_NEW_TIME, !isTrash && (appt && !appt.isOrganizer()) && !isTrashMultiple && !appCtxt.isWebClientOffline());
+    parent.enable(ZmOperation.SHOW_ORIG, num == 1 && appt && appt.getRestUrl() != null && !isTrashMultiple  && !appCtxt.isWebClientOffline());
 
     parent.enable([ZmOperation.DELETE, ZmOperation.MOVE, ZmOperation.MOVE_MENU], !disabled || isTrashMultiple);
 
     parent.enable(ZmOperation.VIEW_APPT_INSTANCE,!isTrash);
 
     var apptAccess = ((appt && appt.isPrivate() && calendar.isRemote()) ? calendar.hasPrivateAccess() : true );
-    parent.enable(ZmOperation.DUPLICATE_APPT,apptAccess && !isTrashMultiple && this._app.containsWritableFolder());
-    parent.enable(ZmOperation.SHOW_ORIG,apptAccess && !isTrashMultiple);
+    parent.enable(ZmOperation.DUPLICATE_APPT,apptAccess && !isTrashMultiple && this._app.containsWritableFolder() && !appCtxt.isWebClientOffline());
+    parent.enable(ZmOperation.SHOW_ORIG,apptAccess && !isTrashMultiple  && !appCtxt.isWebClientOffline());
 
 	/*if (currViewName == ZmId.VIEW_CAL_LIST) {
 		parent.enable(ZmOperation.PRINT_CALENDAR, num > 0);
@@ -3156,6 +3158,7 @@ function(menu) {
 	for (var i = 0; i < ZmCalViewController.OPS.length; i++) {
 		var op = ZmCalViewController.OPS[i];
 		menu.addSelectionListener(op, this._listeners[op]);
+        menu.enable(op, ((op != ZmOperation.CAL_LIST_VIEW) || !appCtxt.isWebClientOffline()));
 	}
 };
 
@@ -3376,32 +3379,52 @@ function(appt, actionMenu) {
 	actionMenu.enable(ZmOperation.REPLY_ALL, isReplyable);
 
     var disabledOps;
-    if(isExternalAccount) {
-        disabledOps = [ZmOperation.REINVITE_ATTENDEES,
-                       ZmOperation.PROPOSE_NEW_TIME,
-                       ZmOperation.REPLY,
-                       ZmOperation.REPLY_ALL,
-                       ZmOperation.DUPLICATE_APPT,
-                       ZmOperation.DELETE,
-                       ZmOperation.DELETE_INSTANCE,
-                       ZmOperation.DELETE_SERIES];
-
+    if(appCtxt.isWebClientOffline()) {
+         disabledOps = [ZmOperation.REINVITE_ATTENDEES,
+            ZmOperation.PROPOSE_NEW_TIME,
+            ZmOperation.REPLY,
+            ZmOperation.REPLY_ALL,
+            ZmOperation.DUPLICATE_APPT,
+            ZmOperation.DELETE,
+            ZmOperation.DELETE_INSTANCE,
+            ZmOperation.DELETE_SERIES,
+            ZmOperation.FORWARD_APPT,
+            ZmOperation.FORWARD_APPT_INSTANCE,
+            ZmOperation.FORWARD_APPT_SERIES,
+            ZmOperation.SHOW_ORIG,
+            ZmOperation.DUPLICATE_APPT,
+            ZmOperation.MOVE,
+            ZmOperation.TAG_MENU,
+            ZmOperation.MOVE_MENU];
         actionMenu.enable(disabledOps, false);
+    } else {
+        if(isExternalAccount) {
+            disabledOps = [ZmOperation.REINVITE_ATTENDEES,
+                ZmOperation.PROPOSE_NEW_TIME,
+                ZmOperation.REPLY,
+                ZmOperation.REPLY_ALL,
+                ZmOperation.DUPLICATE_APPT,
+                ZmOperation.DELETE,
+                ZmOperation.DELETE_INSTANCE,
+                ZmOperation.DELETE_SERIES];
+
+            actionMenu.enable(disabledOps, false);
+        }
+
+        // bug:71007 Disabling unsupported options for shared calendar with view only rights
+        if (isFolderReadOnly) {
+            disabledOps = [ZmOperation.REINVITE_ATTENDEES,
+                           ZmOperation.PROPOSE_NEW_TIME,
+                           ZmOperation.DELETE,
+                           ZmOperation.DELETE_INSTANCE,
+                           ZmOperation.DELETE_SERIES,
+                           ZmOperation.MOVE,
+                           ZmOperation.TAG_MENU,
+                           ZmOperation.MOVE_MENU];
+
+            actionMenu.enable(disabledOps, false);
+        }
     }
-
-    // bug:71007 Disabling unsupported options for shared calendar with view only rights
-    if (isFolderReadOnly) {
-        disabledOps = [ZmOperation.REINVITE_ATTENDEES,
-                       ZmOperation.PROPOSE_NEW_TIME,
-                       ZmOperation.DELETE,
-                       ZmOperation.DELETE_INSTANCE,
-                       ZmOperation.DELETE_SERIES,
-                       ZmOperation.MOVE,
-                       ZmOperation.TAG_MENU,
-                       ZmOperation.MOVE_MENU];
-
-	    actionMenu.enable(disabledOps, false);
-	}
 
 	var del = actionMenu.getMenuItem(ZmOperation.DELETE);
 	if (del && !isTrash) {
@@ -3450,6 +3473,12 @@ function(ev) {
 	menu.popup(0, ev.docX, ev.docY);
 };
 
+ZmCalViewController.prototype._clearViewActionMenu =
+function() {
+    // This will cause it to regenerate next time its accessed
+    this._viewActionMenu = null;
+}
+
 ZmCalViewController.prototype._viewActionListener =
 function(ev) {
 	if (!this._viewActionMenu) {
@@ -3467,6 +3496,9 @@ function(ev) {
 				this._initCalViewMenu(menu);
 			} else if (this._listeners[menuItem]) {
 				this._viewActionMenu.addSelectionListener(menuItem, this._listeners[menuItem]);
+                if ((menuItem == ZmOperation.NEW_APPT) || (menuItem == ZmOperation.NEW_ALLDAY_APPT)) {
+                    this._viewActionMenu.enable(menuItem, !appCtxt.isWebClientOffline());
+                }
 			}
 		}
         this._viewActionMenu.addPopdownListener(this._menuPopdownListener);

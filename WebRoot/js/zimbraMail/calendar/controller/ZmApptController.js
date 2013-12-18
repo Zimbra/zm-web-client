@@ -151,6 +151,9 @@ function(mode) {
         this._disableEditForTrashedItems();
     }
 
+    if (appCtxt.isWebClientOffline()) {
+        this._disableEditForOffline();
+    }
     if (isReadOnly) {
         this._disableActionsForReadOnlyAppt();
     }
@@ -158,6 +161,28 @@ function(mode) {
         this._disableActionsForExternalAccount();
     }
 };
+
+ZmApptController.prototype._disableEditForOffline =
+function() {
+    var actionMenu = this._toolbar.getActionsMenu();
+    if(actionMenu){
+        actionMenu.enable([
+            ZmOperation.EDIT,
+            ZmOperation.TAG,
+            ZmOperation.TAG_MENU,
+            ZmOperation.REPLY,
+            ZmOperation.REPLY_ALL,
+            ZmOperation.PROPOSE_NEW_TIME,
+            ZmOperation.DUPLICATE_APPT,
+            ZmOperation.FORWARD_APPT,
+            ZmOperation.DELETE
+        ], false);
+    }
+    var tagButton = this._toolbar.getButton(ZmOperation.TAG_MENU);
+    if (tagButton) {
+        tagButton.setEnabled(false);
+    }
+}
 
 ZmApptController.prototype._disableEditForTrashedItems =
 function() {

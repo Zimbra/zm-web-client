@@ -1083,8 +1083,23 @@ function(active, viewId) {
 		appCtxt.getAppController().setNewButtonProps(this.getNewButtonProps());
 		this.setOverviewPanelContent();
 		this.stopAlert();
+        this.enableFeatures();
 	}
 };
+
+/**
+ * Handle the common aspects of a transition from online to offline and offline to online, and also do so
+ * when an app is activated
+ */
+ZmApp.prototype.enableFeatures =
+function() {
+    var enable = !appCtxt.isWebClientOffline();
+    var overview = this.getOverview();
+    var zimletTreeView = overview && overview.getTreeView(ZmOrganizer.ZIMLET);
+    if (zimletTreeView) {
+        zimletTreeView.setVisible(enable);
+    }
+}
 
 /**
  * Checks if the application is active.

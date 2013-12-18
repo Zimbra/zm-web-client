@@ -192,6 +192,7 @@ function() {
 
 ZmOffline.prototype._enableApps =
 function() {
+    // Configure the tabs
     var appChooser = appCtxt.getAppChooser();
     for (var i in ZmApp.ENABLED_APPS) {
         var appButton = appChooser.getButton(i);
@@ -199,11 +200,15 @@ function() {
             appButton.setEnabled(true);
         }
     }
-    this._enableMailFeatures();
-};
+
+    // Enable features for the current app
+    var app = appCtxt.getCurrentApp();
+    app.enableFeatures();
+ };
 
 ZmOffline.prototype._disableApps =
 function() {
+    // Configure the tabs
     var appChooser = appCtxt.getAppChooser();
     var enabledApps = AjxUtil.keys(ZmApp.ENABLED_APPS);
     var disabledApps = AjxUtil.arraySubstract(enabledApps, ZmOffline.SUPPORTED_APPS);
@@ -213,7 +218,10 @@ function() {
             appButton.setEnabled();
         }
     }
-    this._disableMailFeatures();
+
+    // Disable features for the current app
+    var app = appCtxt.getCurrentApp();
+    app.enableFeatures();
 };
 
 // Mail
@@ -436,8 +444,6 @@ function(appt) {
     delete appt._evt;
     delete appt._evtMgr;
 }
-
-
 
 ZmOffline.prototype._updateCacheProgress =
 function(folderName){
@@ -1085,52 +1091,6 @@ function(online) {
     }
 };
 */
-
-ZmOffline.prototype._enableMailFeatures =
-function() {
-    var overview = appCtxt.getApp(ZmApp.MAIL).getOverview();
-    var zimletTreeView = overview.getTreeView(ZmOrganizer.ZIMLET);
-    if (zimletTreeView) {
-        zimletTreeView.setVisible(true);
-    }
-
-    var folders = appCtxt.getFolderTree().getByType(ZmOrganizer.FOLDER);
-    for (var i = 0; i < folders.length; i++) {
-        var folder = folders[i];
-        if (folder) {
-            var treeItem = overview.getTreeItemById(folder.id);
-            if (treeItem) {
-                treeItem.setVisible(true);
-            }
-        }
-    }
-};
-
-ZmOffline.prototype._disableMailFeatures =
-function() {
-    var mailApp = appCtxt.getApp(ZmApp.MAIL);
-    var controller = mailApp.getMailListController();
-    if (controller && controller.getCurrentViewType() === ZmId.VIEW_CONVLIST) {
-        controller.switchView(ZmId.VIEW_TRAD, true);
-    }
-
-    var overview = mailApp.getOverview();
-    var zimletTreeView = overview && overview.getTreeView(ZmOrganizer.ZIMLET);
-    if (zimletTreeView) {
-        zimletTreeView.setVisible(false);
-    }
-
-    var folders = appCtxt.getFolderTree().getByType(ZmOrganizer.FOLDER);
-    for (var i = 1; i < folders.length; i++) {
-        var folder = folders[i];
-        if (folder.webOfflineSyncDays === 0 && folder.id != ZmFolder.ID_OUTBOX) {
-            var treeItem = overview.getTreeItemById(folder.id);
-            if (treeItem) {
-                treeItem.setVisible(false);
-            }
-        }
-    }
-};
 
 ZmOffline.closeDB =
 function(){

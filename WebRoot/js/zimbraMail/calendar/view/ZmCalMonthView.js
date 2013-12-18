@@ -896,12 +896,14 @@ function(ev, div) {
 	var type = this._getItemData(div, "type");
 	switch (type) {
 		case ZmCalBaseView.TYPE_MONTH_DAY:
-			this._timeSelectionAction(ev, div, false);
-			if (ev.button == DwtMouseEvent.RIGHT) {
-				DwtUiEvent.copy(this._actionEv, ev);
-				this._actionEv.item = this;
-				this._evtMgr.notifyListeners(ZmCalBaseView.VIEW_ACTION, this._actionEv);
-			}
+            if (!appCtxt.isWebClientOffline()) {
+                this._timeSelectionAction(ev, div, false);
+                if (ev.button == DwtMouseEvent.RIGHT) {
+                    DwtUiEvent.copy(this._actionEv, ev);
+                    this._actionEv.item = this;
+                    this._evtMgr.notifyListeners(ZmCalBaseView.VIEW_ACTION, this._actionEv);
+                }
+            }
 			break;
         case ZmCalBaseView.TYPE_APPT:
             this.setToolTipContent(null);

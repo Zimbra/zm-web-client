@@ -152,7 +152,7 @@ function(overviewId, listener) {
 
 ZmCalendarTreeController.prototype.resetOperations = 
 function(actionMenu, type, id) {
-	if (actionMenu) {
+	if (actionMenu && !appCtxt.isWebClientOffline()) {
 		var calendar = appCtxt.getById(id);
 		var nId;
 		if (calendar) {
@@ -320,15 +320,19 @@ function(ev) {
         return null;
     }
 	var menu = ZmTreeController.prototype._getActionMenu.apply(this, arguments);
-    var isTrash = organizer.nId == ZmOrganizer.ID_TRASH;
-    //bug 67531: "Move" Option should be disabled for the default calendar
-    var isCalendar = organizer.nId == ZmOrganizer.ID_CALENDAR;
-    menu.enableAll(!isTrash);
-    menu.enable(ZmOperation.MOVE, !isCalendar && !isTrash);
-    menu.enable(ZmOperation.EMPTY_FOLDER, isTrash);
-    var menuItem = menu.getMenuItem(ZmOperation.EMPTY_FOLDER);
-    if (menuItem) {
-        menuItem.setText(isTrash ? ZmMsg.emptyTrash : ZmMsg.emptyFolder);
+    if (appCtxt.isWebClientOffline())  {
+        menu.enableAll(false);
+    } else {
+        var isTrash = organizer.nId == ZmOrganizer.ID_TRASH;
+        //bug 67531: "Move" Option should be disabled for the default calendar
+        var isCalendar = organizer.nId == ZmOrganizer.ID_CALENDAR;
+        menu.enableAll(!isTrash);
+        menu.enable(ZmOperation.MOVE, !isCalendar && !isTrash);
+        menu.enable(ZmOperation.EMPTY_FOLDER, isTrash);
+        var menuItem = menu.getMenuItem(ZmOperation.EMPTY_FOLDER);
+        if (menuItem) {
+            menuItem.setText(isTrash ? ZmMsg.emptyTrash : ZmMsg.emptyFolder);
+        }
     }
     return menu;
 };
