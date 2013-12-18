@@ -1660,6 +1660,10 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 	@WidgetHeaderSize-big@
 }
 
+.ZmTaskEditView .ZHasDropDown {
+	display:inline-block;
+}
+
 .newTaskBanner {
 	@InactiveCursor@
 	color:rgb(120, 111, 91);
@@ -5729,6 +5733,11 @@ DIV .SuggestBtn {
 .ZmShareSearchView {
 	margin:4px;
 }
+
+.ZmShareSearchView .ZHasDropDown {
+	display:inline-block;
+}
+
 .ZmShareSearchDialog .FilterTree {
 	@TreeContainer@
 	@NormalInsetBorder@
@@ -5857,6 +5866,10 @@ DIV .SuggestBtn {
 	background-color:@lighten(AppC,25)@;
 	border-bottom-color:@lighten(AppC,25)@;
 	/*Color comes from WindowInnerBorder */
+}
+
+.ZmFolderPropertyView .ZHasDropDown{
+	display:inline-block;
 }
 
 .ZmFolderPropertyView {
