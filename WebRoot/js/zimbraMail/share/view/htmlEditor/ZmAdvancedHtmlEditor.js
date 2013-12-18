@@ -43,11 +43,14 @@ ZmAdvancedHtmlEditor = function() {
 	this._mode = params.mode;
 	this._hasFocus = {};
     this._bodyTextAreaId = params.textAreaId;
+	this._initCallbacks = [];
 	this._attachmentCallback = params.attachmentCallback;
 	this._onContentInitializeCallbacks = []
-	this._initCallback = params.initCallback;
 	this.initTinyMCEEditor(params);
     this._ignoreWords = {};
+
+    if (params.initCallback)
+        this._initCallbacks.push(params.initCallback);
 
     var settings = appCtxt.getSettings();
     var listener = new AjxListener(this, this._settingChangeListener);
@@ -168,7 +171,7 @@ function(editor) {
             currentObj.setFocusStatus(true);
         }
         else {
-            currentObj._onTinyMCEEditorInitcallback = currentObj.focus.bind(currentObj, editor);
+            currentObj._initCallbacks.push(currentObj.focus.bind(currentObj, editor));
         }
     }
     else {
@@ -360,9 +363,7 @@ function(offset) {
 ZmAdvancedHtmlEditor.prototype._moveCaretToTopHtml =
 function(tryOnTimer, offset) {
 	var editor = this.getEditor();
-	if (!editor) { return; }
-
-	var body = editor.getDoc().body;
+	var body = editor && editor.getDoc().body;
 	var success = false;
 	if (AjxEnv.isIE) {
 		if (body) {
@@ -375,7 +376,7 @@ function(tryOnTimer, offset) {
 			success = true;
 		}
 	} else {
-		var selection = editor.selection ? editor.selection.getSel() : "";
+		var selection = editor && editor.selection ? editor.selection.getSel() : "";
 		if (selection) {
             if (offset) { // if we get an offset, use it as character count into text node
                 var target = body.firstChild;
@@ -404,9 +405,17 @@ function(tryOnTimer, offset) {
           success = true;
         }
 	}
-	if (!success && tryOnTimer) {
-		var action = new AjxTimedAction(this, this._moveCaretToTopHtml);
-		AjxTimedAction.scheduleAction(action, DwtHtmlEditor._INITDELAY + 1);
+
+	if (success) {
+		editor.focus();
+	} else if (tryOnTimer) {
+		if (editor) {
+			var action = new AjxTimedAction(this, this._moveCaretToTopHtml);
+			AjxTimedAction.scheduleAction(action, DwtHtmlEditor._INITDELAY + 1);
+		} else {
+			var cb = ZmAdvancedHtmlEditor.prototype._moveCaretToTopHtml;
+			this._initCallbacks.push(cb.bind(this, tryOnTimer, offset));
+		}
 	}
 };
 
@@ -834,13 +843,7 @@ ZmAdvancedHtmlEditor.prototype.onInit = function(ev) {
 
     setTimeout(this._resetSize.bind(this), 0);
 
-    if (obj._onTinyMCEEditorInitcallback) {
-        obj._onTinyMCEEditorInitcallback();
-    }
-
-    if (this._initCallback) {
-        this._initCallback(this);
-    }
+    AjxUtil.foreach(this._initCallbacks, function(fn) { fn.run() });
 };
 
 /*
