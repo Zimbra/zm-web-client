@@ -526,14 +526,17 @@ function(id) {
  * @param	{String}	cid		the content id
  * @param	{String}	aid		the attachment id
  * @param	{String}	part		the part
+ * @param	{Boolean}	ismsg		if true, aid is a message id
  */
 ZmMailMsg.prototype.addInlineAttachmentId =
-function (cid, aid, part) {
+function (cid, aid, part, ismsg) {
 	if (!this._inlineAtts) {
 		this._inlineAtts = [];
 	}
 	this._onChange("inlineAttachments",aid);
-	if (aid) {
+	if (ismsg && aid && part) {
+		this._inlineAtts.push({"cid":cid, "mid":aid, "part": part});
+	} else if (aid) {
 		this._inlineAtts.push({"cid":cid, "aid":aid});
 	} else if (part) {
 		this._inlineAtts.push({"cid":cid, "part":part});
@@ -1619,7 +1622,8 @@ function(request, isDraft, accountName, requestReadReceipt, sendTime) {
 							if (inlineAtts[j].aid) {
 								attachNode.aid = inlineAtts[j].aid;
 							} else {
-								var id = (isDraft || this.isDraft)
+								var id = inlineAtts[j].mid
+									|| (isDraft || this.isDraft)
 									? (oboDraftMsgId || this.id || this.origId)
 									: (this.origId || this.id);
 

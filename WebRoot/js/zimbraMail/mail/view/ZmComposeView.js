@@ -452,13 +452,21 @@ function(msg, handleInlineDocs){
 	var idoc = this._htmlEditor._getIframeDoc();
 	var images = idoc ? idoc.getElementsByTagName("img") : [];
 	for (var i = 0; i < images.length; i++) {
-		dfsrc = images[i].getAttribute("dfsrc") || images[i].getAttribute("mce_src") || images[i].src;
+		dfsrc = images[i].getAttribute("dfsrc") || images[i].getAttribute("data-mce-src") || images[i].src;
 		if (dfsrc) {
 			if (dfsrc.substring(0,4) === "cid:") {
 				cid = dfsrc.substring(4).replace("%40","@");
 				var docpath = images[i].getAttribute("doc");
+				var mid = images[i].getAttribute('data-zimbra-id');
+				var part = images[i].getAttribute('data-zimbra-part');
+
 				if (docpath){
 					msg.addInlineDocAttachment(cid, null, docpath);
+					handled = true;
+				} else if (mid && part) {
+					images[i].removeAttribute('data-zimbra-id');
+					images[i].removeAttribute('data-zimbra-part');
+					msg.addInlineAttachmentId(cid, mid, part, true);
 					handled = true;
 				} else {
 					ci = "<" + cid + ">";
@@ -1146,7 +1154,7 @@ function(msg, idoc, account) {
 	var images = idoc.getElementsByTagName("img");
 	var num = 0;
 	for (var i = 0; i < images.length; i++) {
-		var dfsrc = images[i].getAttribute("dfsrc") || images[i].getAttribute("mce_src") || images[i].src;
+		var dfsrc = images[i].getAttribute("dfsrc") || images[i].getAttribute("data-mce-src") || images[i].src;
 		if (dfsrc) {
 			if (dfsrc.substring(0,4) === "cid:") {
 				num++;
@@ -1232,7 +1240,8 @@ function(idoc) {
 		for (var i = 0; i < images.length; i++) {
 			var img = images[i];
 			var cid = "";
-			var dfsrc = img.getAttribute("dfsrc") || img.getAttribute("mce_src");
+			var src = img.src && unescape(img.src);
+			var dfsrc = img.getAttribute("dfsrc") || img.getAttribute("data-mce-src");
 			if (dfsrc && dfsrc.indexOf("cid:") === 0) {
 				cid = dfsrc;
 				img.removeAttribute("dfsrc");
@@ -1242,6 +1251,15 @@ function(idoc) {
 				cid = "cid:" + this._generateCid();
 				img.removeAttribute("dfsrc");
 				img.setAttribute("doc", dfsrc.substring(4, dfsrc.length));
+			} else if (src && src.indexOf(appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI)) === 0) {
+				// bug 85129 - handle images copied from another mail
+				var qsparams = AjxStringUtil.parseQueryString(dfsrc);
+
+				if (qsparams.id && qsparams.part) {
+					cid = "cid:" + this._generateCid();
+					img.setAttribute('data-zimbra-id', qsparams.id);
+					img.setAttribute('data-zimbra-part', qsparams.part);
+				}
 			} else {
 				// If "Display External Images" is false then handle Reply/Forward
 				if (dfsrc && (!this._msg || this._msg.showImages))
