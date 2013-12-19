@@ -360,8 +360,9 @@ ZmShareSearchDialog.prototype._appendShareNodes = function(owners) {
                 if (this._getNode(shareId) != null) continue;
 
                  // NOTE: strip the leading slash from folder path
-                var shareName = share.folderPath.substr(1).replace(/\//g, " ");
-                var shareNode = this._createOrganizer(parentNode, shareId, shareName);
+				var folderPath = share.folderPath;
+                var shareFullPathName = folderPath.substr(1);
+                var shareNode = this._createOrganizer(parentNode, shareId, shareFullPathName);
                 shareNode.shareInfo = share;
 
                 // augment share info
@@ -371,8 +372,14 @@ ZmShareSearchDialog.prototype._appendShareNodes = function(owners) {
                 share.roleActions = ZmShare.getRoleActions(share.role);
                 share.normalizedOwnerName = share.ownerName || share.ownerEmail;
                 share.normalizedGranteeName = share.granteeDisplayName || share.granteeName;
-                share.normalizedFolderPath = shareName;
-                share.defaultMountpointName = ZmShare.getDefaultMountpointName(share.normalizedOwnerName, share.normalizedFolderPath);
+                share.normalizedFolderPath = shareFullPathName;
+				share.name = folderPath.substr(folderPath.lastIndexOf("/") + 1);
+				var ownerName = share.normalizedOwnerName;
+				var indexOfAtSign = ownerName.indexOf('@');
+				if (indexOfAtSign > -1) {
+					ownerName = ownerName.substr(0, indexOfAtSign)
+				}
+                share.defaultMountpointName = ZmShare.getDefaultMountpointName(ownerName, share.name);
 
                 // set tooltip
                 var tooltip = AjxTemplate.expand(shareNode.TOOLTIP_TEMPLATE, share);
