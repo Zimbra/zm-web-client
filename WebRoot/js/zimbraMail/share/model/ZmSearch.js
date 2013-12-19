@@ -408,7 +408,7 @@ function(params) {
 					if (this.types.contains(ZmItem.MSG) || this.types.contains(ZmItem.CONV)) {
 						// special handling for showing participants ("To" instead of "From")
 						var folder = this.folderId && appCtxt.getById(this.folderId);
-						request.recip = (folder && folder.isOutbound()) ? "1" : "0";
+						request.recip = (folder && folder.isOutbound()) ? "2" : "0";
 					}
 
 					if (this.types.contains(ZmItem.CONV)) {

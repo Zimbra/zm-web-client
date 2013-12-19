@@ -739,19 +739,35 @@ function(field, itemIdx) {
 
 ZmMailListView.prototype._getToolTip =
 function(params) {
-	var tooltip, field = params.field, item = params.item, matchIndex = params.match.participant;
-	if (!item) { return; }
 
-	if (field == ZmItem.F_STATUS) {
+	var tooltip,
+		field = params.field,
+		item = params.item,
+		matchIndex = params.match.participant || 0;
+
+	if (!item) {
+		return;
+	}
+
+	if (field === ZmItem.F_STATUS) {
 		tooltip = item.getStatusTooltip();
 	}
-	else if (appCtxt.get(ZmSetting.CONTACTS_ENABLED) && (field == ZmItem.F_FROM || field == ZmItem.F_PARTICIPANT)) {
+	else if (appCtxt.get(ZmSetting.CONTACTS_ENABLED) && (field === ZmItem.F_FROM || field === ZmItem.F_PARTICIPANT)) {
 		var addr;
-		if (!item.getAddress) { return; }
-		if (field == ZmItem.F_FROM) { 
-			addr = item.getAddress(this._isOutboundFolder() ? AjxEmailAddress.TO : AjxEmailAddress.FROM);
-		} else if (field == ZmItem.F_PARTICIPANT) {
-			var matchIndex = (matchIndex != null) ? parseInt(matchIndex) : 0;
+		if (!item.getAddress) {
+			return;
+		}
+		if (field === ZmItem.F_FROM) {
+			if (this._isOutboundFolder()) {
+				// this needs to be in sync with code that sets field IDs in ZmMailMsgListView::_getCellContents
+				var addrs = item.getAddresses(AjxEmailAddress.TO).getArray();
+				addr = addrs[matchIndex];
+			}
+			else {
+				addr = item.getAddress(AjxEmailAddress.FROM);
+			}
+		}
+		else if (field === ZmItem.F_PARTICIPANT) {
 			addr = item.participants && item.participants.get(matchIndex);
 		}
 		if (!addr) {
@@ -766,10 +782,10 @@ function(params) {
 			function(callback) {
 				appCtxt.getToolTipMgr().getToolTip(ZmToolTipMgr.PERSON, ttParams, callback);
 			});
-		tooltip = {callback:ttCallback};
+		tooltip = { callback:ttCallback };
 	}
-	else if (field == ZmItem.F_SUBJECT || field ==  ZmItem.F_FRAGMENT) {
-		var invite = (item.type == ZmItem.MSG) && item.isInvite() && item.invite;
+	else if (field === ZmItem.F_SUBJECT || field === ZmItem.F_FRAGMENT) {
+		var invite = (item.type === ZmItem.MSG) && item.isInvite() && item.invite;
 		if (invite && item.needsRsvp()) {
 			tooltip = invite.getToolTip();
 		}
@@ -782,17 +798,16 @@ function(params) {
 		    tooltip = AjxStringUtil.htmlEncode(item.fragment || ZmMsg.fragmentIsEmpty);
         }
 	}
-	else if (field == ZmItem.F_FOLDER) {
+	else if (field === ZmItem.F_FOLDER) {
 		var folder = appCtxt.getById(item.folderId);
 		if (folder && folder.parent) {
-			var name = folder.getName();
 			var path = folder.getPath();
-			if (path != name) {
+			if (path !== folder.getName()) {
 				tooltip = path;
 			}
 		}
 	}
-	else if (field == ZmItem.F_ACCOUNT) {
+	else if (field === ZmItem.F_ACCOUNT) {
 		tooltip = item.getAccount().getDisplayName();
 	}
 	else {

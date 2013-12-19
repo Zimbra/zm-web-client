@@ -332,9 +332,6 @@ function() {
 	return this._getHeaders(ZmId.VIEW_CONVLIST, headers);
 };
 
-// No-op so that conv list view retains From column (doesn't change it to To) for outbound folders
-ZmConvListView.prototype._resetFromColumnLabel = function() {};
-
 ZmConvListView.prototype._getDivClass =
 function(base, item, params) {
 	if (item.type == ZmItem.MSG) {
@@ -566,19 +563,25 @@ function(item, colIdx) {
 
 ZmConvListView.prototype._getParticipantHtml =
 function(conv, fieldId) {
+
 	var html = [];
 	var idx = 0;
 
-	var part1 = conv.participants ? conv.participants.getArray() : null;
+	var part = conv.participants ? conv.participants.getArray() : [],
+		isOutbound = this._isOutboundFolder(),
+		part1 = [];
+
+	for (var i = 0; i < part.length; i++) {
+		var p = part[i];
+		if ((isOutbound && p.type === AjxEmailAddress.TO) || (!isOutbound && p.type === AjxEmailAddress.FROM)) {
+			part1.push(p);
+		}
+	}
 	var origLen = part1 ? part1.length : 0;
 	if (origLen > 0) {
 
 		// bug 23832 - create notif for conv in sent gives us sender as participant, we want recip
-		var folder = appCtxt.getById(this._folderId);
-		if ((origLen == 1) && (part1[0].type == AjxEmailAddress.FROM) && folder && conv.isZmConv &&
-			(folder.isUnder(ZmFolder.ID_SENT) || folder.isUnder(ZmFolder.ID_DRAFTS) ||
-			folder.isUnder(ZmFolder.ID_OUTBOX))) {
-
+		if ((origLen === 1) && (part1[0].type === AjxEmailAddress.FROM) && conv.isZmConv && isOutbound) {
 			var msg = conv.getFirstHotMsg();
 			if (msg) {
 				var addrs = msg.getAddresses(AjxEmailAddress.TO).getArray();
@@ -594,9 +597,10 @@ function(conv, fieldId) {
 		var partColWidth = headerCol ? headerCol._width : ZmMsg.COLUMN_WIDTH_FROM_CLV;
 		var part2 = this._fitParticipants(part1, conv, partColWidth);
 		for (var j = 0; j < part2.length; j++) {
-			if (j == 0 && (conv.participantsElided || part2.length < origLen)) {
+			if (j === 0 && (conv.participantsElided || part2.length < origLen)) {
 				html[idx++] = AjxStringUtil.ELLIPSIS;
-			} else if (part2.length > 1 && j > 0) {
+			}
+			else if (part2.length > 1 && j > 0) {
 				html[idx++] = AjxStringUtil.LIST_SEP;
 			}
 			var p2 = (part2 && part2[j] && (part2[j].index != null)) ? part2[j].index : "";
@@ -608,7 +612,7 @@ function(conv, fieldId) {
 			html[idx++] = "</span>";
 		}
 	} else {
-		html[idx++] = this._isOutboundFolder() ? "&nbsp;" : ZmMsg.noRecipients;
+		html[idx++] = isOutbound ? "&nbsp;" : ZmMsg.noRecipients;
 	}
 
 	return html.join("");
