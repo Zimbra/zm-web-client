@@ -1,0 +1,246 @@
+/*
+ * ***** BEGIN LICENSE BLOCK *****
+ * Zimbra Collaboration Suite Web Client
+ * Copyright (C) 2011, 2012, 2013 Zimbra Software, LLC.
+ *
+ * The contents of this file are subject to the Zimbra Public License
+ * Version 1.4 ("License"); you may not use this file except in
+ * compliance with the License.  You may obtain a copy of the License at
+ * http://www.zimbra.com/license.
+ *
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * ***** END LICENSE BLOCK *****
+ */
+
+.form .ZLoginButton {
+	background-color:@AltC@;
+	border-color:white;
+	color:white;
+}
+
+.form .ZLoginButton:hover {
+	background-color:@lighten(AltC,25)@;
+	color:@TxtC@;
+}
+
+.form .ZLoginButton:active {
+	background-color:@darken(AltC,25)@;
+}
+
+#skin_spacing_app_row {
+	height:2.4rem;
+}
+
+.ZAppTabBorder .ZWidgetTitle {
+	font-size:1.3rem;
+}
+
+#skin_container_tree,
+#skin_container_tree_footer,
+.DwtListView,
+.ZmConvView,
+.ZmConvView2 {
+	border-width:0px;
+}
+
+.ZmConvView,
+.ZmConvView2 {
+	background-color:@AppC@;
+}
+
+#skin_container_tree,
+.Conv2View,
+.Conv2View-bottom {
+	background-color:transparent;
+	background-image:none;
+}
+
+/*.OverviewTree>DIV {
+	background-color:white;
+	@roundCorners(3px)@
+}*/
+
+.overviewHeader,
+.overviewHeader-actioned,
+.overviewHeader-selected {
+	padding-top:0px;
+	padding-bottom:0px;
+}
+.overviewHeader>TABLE,
+.overviewHeader-actioned>TABLE {
+	border-width:0px;
+}
+.overviewHeader TD,
+.overviewHeader-actioned TD {
+	background-color:#999;
+	color:white;
+	font-size:1.2rem;
+	font-weight:normal;
+}
+.overviewHeader .ImgNodeExpanded,
+.overviewHeader-actioned .ImgNodeExpanded,
+.overviewHeader-selected .ImgNodeExpanded {
+	background-image:url(@AppContextPath@/skins/@SkinName@/img/harmony/ImgNodeExpanded_white.png);
+	background-position:0px 0px;
+}
+.overviewHeader .ImgNodeCollapsed,
+.overviewHeader-actioned .ImgNodeCollapsed,
+.overviewHeader-selected .ImgNodeCollapsed {
+	background-image:url(@AppContextPath@/skins/@SkinName@/img/harmony/ImgNodeCollapsed_white.png);
+	background-position:0px 0px;
+}
+.ZNewButton .ZToolbarButtonBorder {
+	background-color:rgba(241,89,34,.7);
+	border-color:rgb(241,89,34);
+}
+.ZNewButton.ZHover .ZToolbarButtonBorder,
+.ZNewButton.ZActive .ZToolbarButtonBorder {
+	border-color:@AltC@;
+}
+.ZNewButton.ZActive .ZToolbarButtonBorder {
+	background-color:@AltC@;
+	background-image:none;
+}
+.ZNewButton .ZToolbarButtonTable .ZLeftIcon {
+	display:none;
+}
+.ZNewButton .ZToolbarButtonTable .ZWidgetTitle {
+	color:white;
+}
+.ZNewButton.ZHover .ZToolbarButtonTable .ZWidgetTitle {
+	color:@TxtC@;
+}
+.ZNewButton .ImgSelectPullDownArrow {
+	background-image:url(@AppContextPath@/skins/@SkinName@/img/harmony/ImgNewSelectPullDownArrow.png);
+	background-position:0px 0px;
+}
+
+.ZmMailMsgCapsuleView {
+	border-color:@AppC@;
+	border-width:0px 0px 3px;
+}
+
+.DwtListView-Column,
+.Conv2Header,
+.Conv2Header .info{
+	background-color:@AppC@;
+	border-bottom-width:0px;
+}
+
+.Conv2Header .subject,
+.Conv2Header .info {
+	color:@TxtC@;
+}
+
+.Row {
+	background-color:transparent;
+	border-color:transparent;
+}
+
+.Row-focused {
+	border-color:@AppC@;
+}
+
+.RowDouble {
+	border-bottom-color:@AppC@;
+	border-bottom-width:.5em;
+	border-top-width:0px;
+}
+
+.Row>DIV,
+.RowDouble>TABLE,
+.RowDouble .ZmRowDoubleHeader,
+.ZmContactSplitView,
+.ZmContactSimpleView,
+.ZmContactInfoView,
+.ZmContactInfoView .contactHeaderTable,
+.SimpleContact {
+	background-color:white;
+	border-width:0px;
+	@roundCorners(3px)@
+}
+
+.RowDouble .ZmMsgListDate,
+.RowDouble .ZmListFlagsWrapper {
+	background-color:white;
+}
+
+/* Removes the color for rows that are colored by their tags */
+.Row[style*="background"]>DIV,
+.RowDouble[style*="background"]>TABLE,
+.RowDouble[style*="background"] .ZmRowDoubleHeader,
+.RowDouble[style*="background"] DIV.ZmListFlagsWrapper.
+.RowDouble[style*="background"] DIV.ZmMsgListDate {
+	background-color:transparent;
+}
+
+.Row>DIV,
+.Row>DIV>DIV {
+	@ListItemHeight@
+	line-height:16px;
+	line-height:1.6rem;
+}
+
+.Row-selected {
+	background-color:transparent;
+}
+
+.Row-selected>DIV,
+.Row-selected.RowDouble>TABLE,
+.Row-selected.RowDouble .ZmRowDoubleHeader,
+.Row-selected.SimpleContact {
+/*.Row-selected .ZmContactSplitView,
+.Row-selected .ZmContactSimpleView,
+.Row-selected .ZmContactInfoView,
+.Row-selected .ZmContactInfoView .contactHeaderTable,*/
+	background-color:@SelC@;
+}
+
+.ZmComposeView INPUT,
+.ZmComposeView TEXTAREA {
+	border:none;
+	outline:none;
+}
+
+.ZmContactSplitView,
+.ZmContactSimpleView,
+.ZmContactInfoView .contactHeaderTable {
+	background-color:transparent;
+}
+
+.ZmContactInfoView {
+	background-color:white;
+}
+
+.ZmContactInfoView .contactHeaderTable,
+.SimpleContact {
+	margin-bottom:.5em;
+	padding-top:.25em;
+}
+
+.DwtListView-Sash:first-child DIV {
+	background-color:@darken(AppC,10)@ !important;
+}
+
+TD.DwtListView-ColumnActive  {
+	background-color:@darken(AppC,5)@;
+	font-weight:bold;
+}
+
+.WindowOuterContainer {
+	background-color:@AppC@;
+}
+
+.WindowInnerContainer {
+	background-color:@AppC@;
+	border-top:none;
+}
+
+.ZmDocsEditView {
+	background-color:@AppC@;
+}
+
+.ZmDocsEditViewHeaderCell>DIV {
+	margin:5px 3px 0px;
+}

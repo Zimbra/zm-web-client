@@ -929,7 +929,9 @@ and the container element is replaced with that control.
 							<table>
 								<tr>
 									<td style='padding-right:.5em;'><input id='${id}_PRIMARY_REPLY_TO_NAME' tabindex='1050' size=30></td>
-									<td><select id='${id}_PRIMARY_REPLY_TO_EMAIL' tabindex='1060'></select></td>
+									<td class='ZmSelector'>
+										<select id='${id}_PRIMARY_REPLY_TO_EMAIL' tabindex='1060'></select>
+									</td>
 								</tr>
 							</table>
 						</td>
@@ -1097,7 +1099,7 @@ and the container element is replaced with that control.
 									<td style='padding-right:.5em;'>
 										<input id='${id}_EXTERNAL_REPLY_TO_NAME' tabindex='2150' size=30>
 									</td>
-									<td>
+									<td class='ZmSelector'>
 										<select id='${id}_EXTERNAL_REPLY_TO_EMAIL' tabindex='2160'></select>
 									</td>
 								</tr>
@@ -1163,7 +1165,7 @@ and the container element is replaced with that control.
 									<td style='padding-right:.5em;'>
 										<input id='${id}_PERSONA_REPLY_TO_NAME' tabindex='3050' size=30>
 									</td>
-									<td>
+									<td class='ZmSelector'>
 										<select id='${id}_PERSONA_REPLY_TO_EMAIL' tabindex='3060' size=40></select>
 									</td>
 								</tr>

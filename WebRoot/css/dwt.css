@@ -839,6 +839,7 @@ UL.DwtListView-Rows {
 
 /* ??? USE? */
 .NoResults {
+	color:@TxtC@;
 	font-size:10pt;	/* ??? SIZE */
 	text-align:center;
 	@NoWrap@
@@ -2050,7 +2051,6 @@ INPUT.xform_field {
 }
 
 .DwtComboBox .ZButton					{	width:20px; @WidgetHeight@	}
-.DwtComboBox .ZButtonBorder				{	@ComboBoxRoundCorners@		}
 .DwtComboBox .ImgSelectPullDownArrow	{	margin-right:5px;			}
 
 

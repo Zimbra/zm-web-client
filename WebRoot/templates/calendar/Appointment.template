@@ -115,7 +115,7 @@
                               </tr>
                               <tr>
                                  <td id='${id}_reminder_options' class='ZmFieldLabelRight'><$= ZmMsg.reminderLabel $></td>
-                                 <td id='${id}_reminderSelectContainer'>
+                                 <td id='${id}_reminderSelectContainer' class='miniTimeButton ZmSelector'>
                                    <table>
                                      <tr><td id='${id}_reminderSelectInput'></td>
                                        <td id='${id}_reminderSelect'> </td>
@@ -325,7 +325,7 @@
 											<table><tr>
 												<td class='ZmFieldLabelCenter'><div id='${id}_reminderCheckbox'></div></td>
 												<td class="quickAddDateFld"><$=AjxTemplate.expand("#DateField",{id:data.id+"_remindDateField",value:data.currDate})$></td>
-												<td class="miniCalendarButton" id='${id}_remindMiniCalBtn'> </td>
+												<td class="miniCalendarButton ZmSelector" id='${id}_remindMiniCalBtn'> </td>
 											</tr></table>
 										</td>
 										<td id='${id}_remindTimeSelect' colspan=2></td>
@@ -357,7 +357,7 @@
 									</tr>
 									<tr id='${id}_reminder_options'>
 										<td valign=top class='ZmFieldLabelRight' style='line-height:22px; line-height:1.8rem' id='${id}_repeatLabel'><$= ZmMsg.reminderLabel $></td>
-										<td valign=top colspan=9 align='left' id='${id}_reminderSelectContainer'>
+										<td valign=top colspan=9 align='left' id='${id}_reminderSelectContainer' class='miniTimeButton ZmSelector'>
 											<table><tr>
 												<td id='${id}_reminderSelectInput'></td>
 												<td id='${id}_reminderSelect'> </td>
@@ -479,7 +479,7 @@
                         <table>
                             <tr>
                                 <td class="quickAddDateFld"><$=AjxTemplate.expand("#DateField",{id:data.id+"_startDate"})$></td>
-                                <td class="miniCalendarButton" id='${id}_startMiniCal'></td>
+                                <td class="miniCalendarButton ZmSelector" id='${id}_startMiniCal'></td>
                                 <td id='${id}_startTimeAt'><div style='margin:0 5px;'><$= ZmMsg.at $></div></td>
                                 <td id='${id}_startTime'></td>
                             </tr>
@@ -492,7 +492,7 @@
                         <table>
                             <tr>
                                 <td class="quickAddDateFld"><$=AjxTemplate.expand("#DateField",{id:data.id+"_endDate"})$></td>
-                                <td class="miniCalendarButton" id='${id}_endMiniCal'></td>
+                                <td class="miniCalendarButton ZmSelector" id='${id}_endMiniCal'></td>
                                 <td id='${id}_endTimeAt'><div style='margin:0 5px;'><$= ZmMsg.at $></div></td>
                                 <td id='${id}_endTime'></td>
                             </tr>
@@ -533,7 +533,7 @@
 		<td class='ZmFieldLabelRight' id='${id}_statusLabel'><$= ZmMsg.statusLabel $></td>
 		<td width=175 id='${id}_status'></td>
 		<td>
-			<table class='ZmCompletionSelector'>
+			<table class='ZmCompletionSelector ZmSelector'>
 				<tr>
 					<td id='${id}_pCompleteSelectInput'></td>
 					<td id='${id}_pCompleteSelect'></td>
@@ -566,7 +566,7 @@
 			<td <$ if (!data.isAppt) { $> colspan='3' <$ } $> >
 				<table><tr>
 					<td class='quickAddDateFld'><$=AjxTemplate.expand("#DateField",{id:data.id+"_startDateField",value:data.currDate})$></td>
-					<td class='miniCalendarButton' id='${id}_startMiniCalBtn'></td>
+					<td class='miniCalendarButton ZmSelector' id='${id}_startMiniCalBtn'></td>
 				</tr></table>
 			</td>
 		<$ if (data.isAppt) { $>
@@ -579,7 +579,7 @@
 			<td <$ if (!data.isAppt) { $> colspan='3' <$ } $>>
 				<table><tr>
 					<td class='quickAddDateFld'><$=AjxTemplate.expand("#DateField",{id:data.id+"_endDateField",value:data.currDate})$></td>
-					<td class='miniCalendarButton' id='${id}_endMiniCalBtn'></td>
+					<td class='miniCalendarButton ZmSelector' id='${id}_endMiniCalBtn'></td>
 				</tr></table>
 			</td>
 		<$ if (data.isAppt) { $>
@@ -595,7 +595,7 @@
 			<td>
 				<table><tr>
 					<td class="quickAddDateFld"><$=AjxTemplate.expand("#DateField",{id:data.id+"_startDateField",value:data.currDate})$></td>
-					<td class="miniCalendarButton" id='${id}_startMiniCalBtn'></td>
+					<td class="miniCalendarButton ZmSelector" id='${id}_startMiniCalBtn'></td>
 				</tr></table>
 			</td>
 		<$ if (data.isAppt) { $>
@@ -609,7 +609,7 @@
 			<td>
 				<table><tr>
 					<td class="quickAddDateFld"><$=AjxTemplate.expand("#DateField",{id:data.id+"_endDateField",value:data.currDate})$></td>
-					<td class="miniCalendarButton" id='${id}_endMiniCalBtn'></td>
+					<td class="miniCalendarButton ZmSelector" id='${id}_endMiniCalBtn'></td>
 				</tr></table>
 			</td>
 		<$ if (data.isAppt) { $>
@@ -629,7 +629,7 @@
 		<td style='padding-left:0;'>
 			<table><tr>
 				<td class="quickAddDateFld"><$=AjxTemplate.expand("#DateField",{id:data.id+"_endDateField",value:data.currDate})$></td>
-				<td class="miniCalendarButton" id='${id}_endMiniCalBtn'></td>
+				<td class="miniCalendarButton ZmSelector" id='${id}_endMiniCalBtn'></td>
 			</tr></table>
 		</td>
 	<$ if (data.isAppt) { $>
@@ -641,7 +641,7 @@
 		<td style='padding-left:0;'>
 			<table><tr>
 				<td class="quickAddDateFld"><$=AjxTemplate.expand("#DateField",{id:data.id+"_startDateField",value:data.currDate})$></td>
-				<td class="miniCalendarButton" id='${id}_startMiniCalBtn'></td>
+				<td class="miniCalendarButton ZmSelector" id='${id}_startMiniCalBtn'></td>
 			</tr></table>
 		</td>
 	<$ if (data.isAppt) { $>
@@ -1054,7 +1054,7 @@
 </template>
 
 <template id='calendar.Appointment#ApptTimeInput'>
-	<table>
+	<table class='miniTimeButton ZmSelector'>
 		<tr>
 			<td id='${id}_timeSelectInput'></td>
 			<td id='${id}_timeSelectBtn'> </td>
