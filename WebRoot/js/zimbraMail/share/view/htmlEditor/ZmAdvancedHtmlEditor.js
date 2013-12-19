@@ -830,6 +830,10 @@ ZmAdvancedHtmlEditor.prototype.onInit = function(ev) {
 
     obj.setFocusMember(obj.restoreFocus.bind(obj, ed));
 
+    // must be assigned on init, to ensure that our handlers are called after
+    // in TinyMCE's in 'FormatControls.js'.
+    ed.on('nodeChange', obj.onNodeChange.bind(obj));
+
     ed.on('open', ZmAdvancedHtmlEditor.onPopupOpen);
     if (view && view.toString() === "ZmComposeView" && ZmDragAndDrop.isSupported()) {
         var dnd = view._dnd;
@@ -845,6 +849,81 @@ ZmAdvancedHtmlEditor.prototype.onInit = function(ev) {
 
     AjxUtil.foreach(this._initCallbacks, function(fn) { fn.run() });
 };
+
+
+ZmAdvancedHtmlEditor.prototype.__getEditorControl = function(type, text) {
+	// This method provides a naive emulation of the control manager offered in
+	// TinyMCE 3.x. We assume that there's only one control of a given type
+	// with a given text in the entire TinyMCE control hierarchy. Hopefully,
+	// this heuristic won't prove too fragile.
+	var ed = this.getEditor();
+
+	function finditem(item) {
+		// the text in settings appears constant and unlocalized
+		if (item.type === type && item.settings.text === text)
+			return item;
+
+		if (typeof item.items === 'function') {
+			var items = item.items();
+
+			for (var i = 0; i < items.length; i++) {
+				var r = finditem(items[i]);
+				if (r)
+					return r;
+			}
+		}
+	};
+
+	return finditem(ed.theme.panel);
+};
+
+
+ZmAdvancedHtmlEditor.prototype.onNodeChange = function(event) {
+	// update the font size box -- TinyMCE only checks for it on SPANs
+	var fontsizebtn = this.__getEditorControl('listbox', 'Font Sizes');
+	var found = false;
+
+	var normalize = function(v) {
+		return Math.round(DwtCssStyle.asPixelCount(v));
+	};
+
+	for (var i = 0; !found && i < event.parents.length; i++) {
+		var fontsize =
+			normalize(DwtCssStyle.getProperty(event.parents[i], 'font-size'));
+
+		for (var j = 0; !found && j < fontsizebtn._values.length; j++) {
+			var value = fontsizebtn._values[j].value;
+
+			if (normalize(value) === fontsize) {
+				fontsizebtn.value(value);
+				found = true;
+			}
+		}
+	}
+
+	// update the font family box -- TinyMCE only checks for it on SPANs
+	var fontfamilybtn = this.__getEditorControl('listbox', 'Font Family');
+	var found = false;
+
+	var normalize = function(v) {
+		return v.replace(/,\s+/g, ',').replace(/[\'\"]/g, '');
+	};
+
+	for (var i = 0; !found && i < event.parents.length; i++) {
+		var fontfamily =
+			normalize(DwtCssStyle.getProperty(event.parents[i], 'font-family'));
+
+		for (var j = 0; !found && j < fontfamilybtn._values.length; j++) {
+			var value = fontfamilybtn._values[j].value;
+
+			if (normalize(value) === fontfamily) {
+				fontfamilybtn.value(value);
+				found = true;
+			}
+		}
+	}
+};
+
 
 /*
 **   TinyMCE will fire onBeforeExecCommand before executing all commands
