@@ -36,6 +36,7 @@ Ext.define('ZCS.common.ZtMenu', {
 		scrollable: 'vertical',
 		defaultType: 'listitem',
 		disableSelection: true,
+		showCancelButton: Ext.os.deviceType === "Phone",
 
 		name: '',
 
@@ -68,13 +69,15 @@ Ext.define('ZCS.common.ZtMenu', {
 		}, this);
 
 		me.callParent(arguments);
-		me.add({
-			xtype: 'button',
-			text: 'Cancel',
-			handler: function () {
-				me.hide();
-			}
-		});
+		if (me.config.showCancelButton) {
+			me.add({
+				xtype: 'button',
+				text: 'Cancel',
+				handler: function () {
+					me.hide();
+				}
+			});
+		}
 	},
 
 	/**
@@ -87,7 +90,7 @@ Ext.define('ZCS.common.ZtMenu', {
 		var list = this,
 			totalHeight = list.getItemMap().getTotalHeight(),
 			actualHeight = 0,
-			bufferHeight = 62;  // additional height for margin and cancel button
+			bufferHeight = this.config.showCancelButton ? 62 : 12;  // additional height for margin and cancel button
 
 		this.setHeight(totalHeight + bufferHeight);
 		//list.refresh();
