@@ -104,8 +104,16 @@ $px-unit: 1px;
 .zcs-msglist {
 	background-color: $list-bg-color;
 
-	.x-body {
+	.x-body::after {
+		content: "";
 		background: url("../images/app_banner.png") no-repeat 98% 98%;
+		opacity: 0.9;
+		top: 0;
+		left: 0;
+		bottom: 0;
+		right: 0;
+		position: absolute;
+		z-index: -1;
 	}
 }
 
