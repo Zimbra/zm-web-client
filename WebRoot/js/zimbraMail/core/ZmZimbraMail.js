@@ -637,8 +637,7 @@ function() {
  */
 ZmZimbraMail.prototype.showReminder =
 function() {
-	var calMgr = appCtxt.getCalManager();
-	var reminderController = calMgr.getReminderController();
+    var reminderController = appCtxt.getApp(ZmApp.CALENDAR).getReminderController();
 	reminderController.refresh();
 };
 
@@ -3311,7 +3310,9 @@ function(actionCode, ev) {
 
 		case ZmKeyMap.QUICK_REMINDER: {
             var account = appCtxt.multiAccounts && appCtxt.accountList.mainAccount;
-            if (appCtxt.get(ZmSetting.CALENDAR_ENABLED, null, account)) {
+            // calMgr.showQuickReminder uses an entire alternate search mechanism from ZmApptCache - setting params,
+            // sending a search, etc.  Suppress for offline - lots of work for little gain to adapt this to offline modek
+            if (appCtxt.get(ZmSetting.CALENDAR_ENABLED, null, account) && !appCtxt.isWebClientOffline()) {
                 var calMgr = appCtxt.getCalManager();
                 calMgr.showQuickReminder();
             }

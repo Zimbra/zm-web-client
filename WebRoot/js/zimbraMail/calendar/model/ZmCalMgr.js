@@ -320,6 +320,7 @@ function(params) {
 		
 	}
 	params.queryHint = query;
+    params.needToFetch = params.folderIds;
 	params.folderIdMapper = folderIdMapper;
 	params.offset = 0;
 };
@@ -331,12 +332,16 @@ function(params) {
 
 	this._setSoapParams(request, params);
 
-	var accountName = appCtxt.multiAccounts ? appCtxt.accountList.mainAccount.name : null;
+    var calController = this.getCalViewController();
+    var apptCache     = calController.getApptCache();
+
+    var accountName = appCtxt.multiAccounts ? appCtxt.accountList.mainAccount.name : null;
 	if (params.callback) {
 		appCtxt.getAppController().sendRequest({
 			jsonObj: jsonObj,
 			asyncMode: true,
 			callback: (new AjxCallback(this, this._getApptSummariesResponse, [params])),
+            offlineCallback: apptCache.offlineSearchAppts(null, null, params),
 			noBusyOverlay: params.noBusyOverlay,
 			accountName: accountName
 		});

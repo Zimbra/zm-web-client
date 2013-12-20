@@ -243,27 +243,27 @@ function(params) {
 };
 
 ZmApptCache.prototype.setFolderSearchParams =
-    function (foldersToFetch, params) {
-        var folderIdMapper = {};
-        var query = "";
-        for (var i = 0; i < foldersToFetch.length; i++) {
-            var fid = foldersToFetch[i];
+function (foldersToFetch, params) {
+    var folderIdMapper = {};
+    var query = "";
+    for (var i = 0; i < foldersToFetch.length; i++) {
+        var fid = foldersToFetch[i];
 
-            // map remote folder ids into local ones while processing search since
-            // server wont do it for us (see bug 7083)
-            var folder = appCtxt.getById(fid);
-            var rid = folder ? folder.getRemoteId() : fid;
-            folderIdMapper[rid] = fid;
+        // map remote folder ids into local ones while processing search since
+        // server wont do it for us (see bug 7083)
+        var folder = appCtxt.getById(fid);
+        var rid = folder ? folder.getRemoteId() : fid;
+        folderIdMapper[rid] = fid;
 
-            if (query.length) {
-                query += " OR ";
-            }
-            query += "inid:" + ['"', fid, '"'].join("");
-
+        if (query.length) {
+            query += " OR ";
         }
-        params.queryHint = query;
-        params.folderIdMapper = folderIdMapper;
+        query += "inid:" + ['"', fid, '"'].join("");
+
     }
+    params.queryHint = query;
+    params.folderIdMapper = folderIdMapper;
+}
 
 ZmApptCache.prototype._search =
 function(params) {
@@ -279,7 +279,7 @@ function(params) {
 			asyncMode: true,
 			callback: (new AjxCallback(this, this._getApptSummariesResponse, [params])),
 			errorCallback: (new AjxCallback(this, this._getApptSummariesError, [params])),
-            offlineCallback: this._offlineSearchAppts.bind(this, null, params),
+            offlineCallback: this.offlineSearchAppts.bind(this, null, null, params),
 			noBusyOverlay: params.noBusyOverlay,
 			accountName: accountName
 		});
@@ -330,6 +330,7 @@ function(searchParams, miniCalParams, reminderSearchParams) {
 		}
 		searchParams.query = this._calViewController._userQuery;
 		apptVec = this.setSearchParams(searchParams);
+        //DBG.println(AjxDebug.DBG1, "_doBatchRequest searchParams key: " + searchParams.mergeKey + " , size = " + (apptVec ? apptVec.size().toString() : "null"));
 
 		// search data in cache
 		if (apptVec) {
@@ -362,6 +363,7 @@ function(searchParams, miniCalParams, reminderSearchParams) {
 	if (miniCalParams) {
 		var miniCalCache = this._calViewController.getMiniCalCache();
 		var cacheData = miniCalCache.getCacheData(miniCalParams);
+        //DBG.println(AjxDebug.DBG1, "_doBatchRequest minical key: " + miniCalCache._getCacheKey(miniCalParams) + " , size = " + (cacheData ? cacheData.length.toString() : "null"));
 
 		// mini cal data in cache
 		if (cacheData && cacheData.length > 0) {
@@ -402,7 +404,7 @@ function(searchParams, miniCalParams, reminderSearchParams) {
 			asyncMode: true,
 			callback: (new AjxCallback(this, this.handleBatchResponse, [searchParams, miniCalParams, reminderSearchParams])),
 			errorCallback: (new AjxCallback(this, this.handleBatchResponseError, [searchParams, miniCalParams, reminderSearchParams])),
-            offlineCallback: this._offlineSearchAppts.bind(this, searchParams, reminderSearchParams),
+            offlineCallback: this.offlineSearchAppts.bind(this, searchParams, miniCalParams, reminderSearchParams),
             noBusyOverlay: true,
 			accountName: accountName
 		};
@@ -889,16 +891,20 @@ function(items) {
 	return false;
 };
 
-// This will be invoked from ZmApptCache.getApptSummaries (via _search) and _doBatchCommand.
-// Search and Reminder Params (if both are passed) will use the same date range.
-ZmApptCache.prototype._offlineSearchAppts =
-function(searchParams, reminderParams) {
+// This will be invoked from ZmApptCache.getApptSummaries (via _search)
+//  and _doBatchCommand, and the ZmMiniCalCache offline callback.
+// Search and Reminder Params (if both are passed) will use the
+// same date range.
+ZmApptCache.prototype.offlineSearchAppts =
+function(searchParams, miniCalParams, reminderParams) {
+    // MiniCal search called with searchParams set
     var params = null;
     if (searchParams) {
         params = searchParams;
     } else {
         params = reminderParams;
-    }
+
+     }
     if (!params || !params.start || !params.end) {
         if (params && params.errorCallback) {
             params.errorCallback.run();
@@ -907,13 +913,15 @@ function(searchParams, reminderParams) {
     }
 
     var search = [params.start, params.end];
-    var offlineSearchAppts2 = this._offlineSearchAppts2.bind(this, searchParams, reminderParams, search);
+    var offlineSearchAppts2 = this._offlineSearchAppts2.bind(
+        this, searchParams, miniCalParams, reminderParams, params.errorCallback, search);
     // Find the appointments whose startDate falls within the specified range
-    ZmOfflineDB.doIndexSearch(search, ZmApp.CALENDAR, null, offlineSearchAppts2, params.errorCallback, "startDate");
+    ZmOfflineDB.doIndexSearch(
+        search, ZmApp.CALENDAR, null, offlineSearchAppts2, params.errorCallback, "startDate");
 }
 
 ZmApptCache.prototype._offlineSearchAppts2 =
-function(searchParams, reminderParams, search, apptContainers) {
+function(searchParams, miniCalParams, reminderParams, errorCallback, search, apptContainers) {
     var apptContainer;
     var apptSet = {};
     for (var i = 0; i < apptContainers.length; i++) {
@@ -921,13 +929,15 @@ function(searchParams, reminderParams, search, apptContainers) {
         apptSet[apptContainer.instanceId] = apptContainer.appt;
     }
 
-    var offlineSearchAppts3 = this._offlineSearchAppts3.bind(this, searchParams, reminderParams, apptSet);
+    var offlineSearchAppts3 = this._offlineSearchAppts3.bind(
+        this, searchParams, miniCalParams, reminderParams, apptSet);
     // Find the appointments whose endDate falls within the specified range
-    ZmOfflineDB.doIndexSearch(search, ZmApp.CALENDAR, null, offlineSearchAppts3, searchParams.errorCallback, "endDate");
+    ZmOfflineDB.doIndexSearch(
+        search, ZmApp.CALENDAR, null, offlineSearchAppts3, errorCallback, "endDate");
 }
 
 ZmApptCache.prototype._offlineSearchAppts3 =
-function(searchParams, reminderParams, apptSet, apptContainers) {
+function(searchParams, miniCalParams, reminderParams, apptSet, apptContainers) {
     var apptContainer;
     var reminderList;
     var calendarList;
@@ -947,39 +957,42 @@ function(searchParams, reminderParams, apptSet, apptContainers) {
         appts.push(appt);
     }
 
-    // For the moment, ignoring ApptCache._accountsSearchList - is it ever used, is it correctly stored and used??
-    // Weird - if it is stored and accessed, how can it insure the proper time range (i.e. the next query that it
-    //         is served to has the same start and end dates??
-    // *** NOT DONE ***
-
     if (reminderParams) {
         reminderList = this._cacheOfflineSearch(reminderParams, appts);
 
-        // For getApptSummaries, searchParams == null, so its OK to invoke the reminder callback, and return
-        // with the reminderList.
+        // For getApptSummaries, searchParams == null, so its OK to invoke the reminder
+        // callback, and return with the reminderList.
         if (!searchParams) {
             if (reminderParams.callback && reminderList) {
-                // Last param == raw SOAP result.  Find out how that is used, if at all.
-                // I'M NOT CURRENTLY STORING IT! - or, for that matter, can't generate it from the searches
+                // Last param == raw SOAP result.  The only usage seems to be from:
+                // ZmSearchController.doSearch -> ZmCalViewController._handleUserSearch ...-> ZmApptCache.getApptSummaries
+                // The callbacks return this to ZmSearchController._handleResponseDoSearch.
+                // In order to support that param, we would need to have the rawAppts also
+                // stored in a separate ObjectStore, and apply the search params to it
                 // *** NOT DONE ***
                 reminderParams.callback.run(reminderList, reminderParams.query, null);
             } else {
-                // How would this work??? At the end of a callback chain
-                // Could return stuff up my callbacks, but what happens in the original when its returned to RequestMgr.sendRequest??
-                // *** NOT DONE ***
-                // CHECKED - done for tooltips, CAN"T PASS IT BACK through the indexedDB search calls
-                // Will need to store the info, have available for toolTip - and disentangle the tooltip from its
-                // sync call
-                // SEE ZmCalViewController, getApptSummaries calls ***
+                // Seems like the only way to get here is from
+                // ZmFreeBusySchedulerView.popupFreeBusyToolTop ->
+                // ZmCalViewController.getUserStatusToolTipText ...-> ZmApptCache.getApptSummaries,
+                // where getUserStatusToolTipText does not provide a callback (it may be expecting
+                // the appt to be cached). For offline, we are not providing FreeBusy, so should never hit here
+                DBG.println(AjxDebug.DBG1, "ZmApptCache._offlineSearchAppts3 called with no reminderParam.callback");
                 return reminderList;
             }
         }
     }
 
     if (searchParams) {
-        // _doBatchCommand: Search params provided - whether or not there are reminder results, the
-        // search callback is executed, not the reminder.
-        calendarList = this._cacheOfflineSearch(searchParams, appts);
+        if (this._cachedVec) {
+            // Cache hit in _doBatchResponse for a calendar search.  Access and use in-memory cache
+            calendarList = this._cachedVec.clone();
+            this._cachedVec = null;
+        } else {
+            // _doBatchCommand: Search params provided - whether or not there are reminder results, the
+            // search callback is executed, not the reminder.
+            calendarList = this._cacheOfflineSearch(searchParams, appts);
+        }
         if (searchParams.callback) {
             searchParams.callback.run(calendarList, null, searchParams.query);
         }  else {
@@ -987,34 +1000,81 @@ function(searchParams, reminderParams, apptSet, apptContainers) {
             //return accountList;
         }
     }
- }
+
+
+    if (miniCalParams && calendarList) {
+        // Base the miniCal off of the checked calendar appt data
+        this.processOfflineMiniCal(miniCalParams, calendarList);
+    }
+
+}
+
+ZmApptCache.prototype.processOfflineMiniCal =
+function(miniCalParams, apptList) {
+    // Base the minical off of the checked calendar appt data
+    var dates = {};
+    var dateList = [];
+    var date;
+    var appt;
+    for (var i = 0; i < apptList.size(); i++) {
+        appt = apptList.get(i);
+        date = this._formatMiniCalEntry(appt.startDate);
+        dates[date] = true;
+    }
+    for (date in dates) {
+        dateList.push(date);
+    }
+    var miniCalCache = this._calViewController.getMiniCalCache();
+    miniCalCache.highlightMiniCal(dateList);
+    miniCalCache.updateCache(miniCalParams, dateList);
+    //DBG.println(AjxDebug.DBG1, "Cache miniCal key: " + miniCalCache._getCacheKey(miniCalParams) + " , size = " + dateList.length);
+    if (miniCalParams.callback) {
+        miniCalParams.callback.run(dateList);
+    }
+}
+
+ZmApptCache.prototype._formatMiniCalEntry =
+function(date) {
+    return date.getFullYear().toString() + AjxDateUtil._getMonth(date, true).toString() +
+           AjxDateUtil._getDate(date,true).toString();
+}
 
 ZmApptCache.prototype._cacheOfflineSearch =
 function(params, appts) {
-    var resultList = [];
+    var resultList = params.resultList || [];
     var apptList;
     var appt;
     var folderList;
     var list;
+    var folderId;
 
     var folder2List = this.createFolder2ListMap(appts, "folderId", params.folderIdMapper);
-    //if (folderIds && folderIds.length) {
-    for (var folderId in folder2List) {
-        folderList = folder2List[folderId];
-        apptList = new ZmApptList();
-        for (var i = 0; i < folderList.length; i++) {
-            // Assuming appts are a new instance, i.e. changes (like list) are not persisted
-            // SO, just set this appts list
-            appt = ZmAppt.loadOfflineData(folderList[i], apptList);
-            apptList.add(appt);
+
+    // The offline db returns all entries within the specified date range.
+    // Prune the entries by folder id here - Only process those in the params.needToFetch list
+    var folderIds = params.needToFetch;
+    if (folderIds && folderIds.length) {
+        for (var i = 0; i < folderIds.length; i++) {
+            folderId = folderIds[i];
+            folderList = folder2List[folderId];
+            if (folderList) {
+                apptList = new ZmApptList();
+                for (var j = 0; j < folderList.length; j++) {
+                    // Assuming appts are a new instance, i.e. changes (like list) are not persisted
+                    // SO, just set this appts list
+                    appt = ZmAppt.loadOfflineData(folderList[j], apptList);
+                    apptList.add(appt);
+                }
+                list = this.createCaches(apptList, params, folderId);
+                resultList.push(list);
+            }
         }
-        list = this.createCaches(apptList, params, folderId);
-        resultList.push(list);
     }
     //}
     // merge all the data and return
     var newList = ZmApptList.mergeVectors(resultList);
     this._cachedMergedApptVectors[params.mergeKey] = newList.clone();
+    //DBG.println(AjxDebug.DBG1, "Cache appts: " + params.mergeKey + " , size = " + newList.size());
     return newList;
 }
 

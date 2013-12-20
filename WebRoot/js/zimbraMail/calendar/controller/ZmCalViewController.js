@@ -347,6 +347,15 @@ function() {
     return (this._checkedAccountCalendarIds.length == 0) ? [] : this._checkedAccountCalendarIds[0].slice(0);
 }
 
+ZmCalViewController.prototype.getOfflineSearchCalendarIds =
+function() {
+    if (!this._offlineSearchCalendarIds) {
+        // Generate the checked calendar data
+        this._updateCheckedCalendars();
+    }
+    return (this._offlineSearchCalendarIds);
+}
+
 /**
  * Gets the unchecked calendar folder ids for a owner email
  *
@@ -513,11 +522,15 @@ function() {
     this._checkedCalendarIds = [];
     this._checkedLocalCalendarIds = [];
     this._checkedAccountCalendarIds = [];
+    this._offlineSearchCalendarIds = [];
     this._reminderCalendarIds = [];
     var checkedAccountCalendarIds = {};
     var trashFolder = null;
     for (var i = 0; i < allCalendars.length; i++) {
         var cal = allCalendars[i];
+        if (!cal.noSuchFolder) {
+            this._offlineSearchCalendarIds.push(cal.id);
+        }
         if (!cal.noSuchFolder && (cal.id != ZmOrganizer.ID_TRASH) &&
             (cal.isRemote && !cal.isRemote())) {
             this._reminderCalendarIds.push(cal.id);
@@ -625,7 +638,7 @@ function() {
 		if (info.item) {
 			var calendar = info.item;
 			//If, Remote Calendars & not mount-points, dont send check/uncheck requests
-			if (calendar.isRemote() && (!calendar.isMountpoint || !calendar.zid)) {
+			if (appCtxt.isWebClientOffline() || (calendar.isRemote() && (!calendar.isMountpoint || !calendar.zid))) {
 				calendar.isChecked = info.checked;
 				calendar.checkedCallback(info.checked);
 				this._handleCheckedCalendarRefresh(calendar);

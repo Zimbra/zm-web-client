@@ -148,7 +148,7 @@ function(){
     $(document).on("ZWCOffline", this._onZWCOffline.bind(this));
     $(document).on("ZWCOnline", this._onZWCOnline.bind(this));
     setInterval(ZmOffline.checkServerStatus, 10000);
-    ZmZimbraMail.addListener(ZmAppEvent.ACTIVATE, new AjxListener(this, this._onAppActivate));
+    //ZmZimbraMail.addListener(ZmAppEvent.ACTIVATE, new AjxListener(this, this._onAppActivate));
 };
 
 
@@ -331,15 +331,15 @@ function() {
     var calViewController = calMgr && calMgr.getCalViewController();
 
     // Get checked calendars for the first (main) account
-    var calendarIds = calViewController.getMainAccountCheckedCalendarIds();
+    var calendarIds = calViewController.getOfflineSearchCalendarIds();
     var apptCache = calViewController.getApptCache();
 
     // MiniCal Request
-    var miniCalCache  = calViewController.getMiniCalCache();
-    var miniCalParams = calViewController.getMiniCalendarParams()
-    miniCalParams.folderIds = calendarIds;
-    request.GetMiniCalRequest = {_jsns:"urn:zimbraMail"};
-    miniCalCache._setSoapParams(request.GetMiniCalRequest, miniCalParams);
+    //var miniCalCache  = calViewController.getMiniCalCache();
+    //var miniCalParams = calViewController.getMiniCalendarParams()
+    //miniCalParams.folderIds = calendarIds;
+    //request.GetMiniCalRequest = {_jsns:"urn:zimbraMail"};
+    //miniCalCache._setSoapParams(request.GetMiniCalRequest, miniCalParams);
 
 
     var endDate = new Date();
@@ -348,15 +348,10 @@ function() {
     var startDate = new Date(endDate.getTime());
     startDate.setDate(startDate.getDate()-7);
     startDate.setHours(0,0,0, 0);
-
     endDate.setDate(endDate.getDate()+ ZmOffline.CALENDAR_READ_AHEAD);
 
-
-
-    // Appt Search Request
-    // ZmCalViewController._maintenanceAction gets the current view, and bases the time range off of that
-    // What should be supported here?
-    // *** USING The MiniCal range - Should also cover the needed reminder range
+    // Appt Search Request.  This request will provide data for the calendar view displays, the reminders, and
+    // the minical display.  Entries will be stored as ZmAppt data,
     var searchParams = {
         start:            startDate.getTime(),
         end:              endDate.getTime(),
@@ -383,7 +378,6 @@ function() {
     var respCallback = this._handleCalendarResponse.bind(this);
     appCtxt.getRequestMgr().sendRequest({jsonObj:jsonObj, asyncMode:true, callback:respCallback});
 };
-
 
 ZmOffline.prototype._handleCalendarResponse =
 function(response) {
@@ -1630,6 +1624,7 @@ function(result, callback) {
     ZmOfflineDB.setItem(contacts, ZmApp.CONTACTS, callback);
 };
 
+/*
 ZmOffline.prototype._onAppActivate =
 function(ev) {
     var item = ev && ev.item;
@@ -1640,3 +1635,4 @@ function(ev) {
         }
     }
 };
+*/
