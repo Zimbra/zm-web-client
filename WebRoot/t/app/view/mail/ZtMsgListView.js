@@ -56,8 +56,8 @@ Ext.define('ZCS.view.mail.ZtMsgListView', {
 
 			tap: function(e, node) {
 
-                var target = e.event.actionTarget || e.event.target,
-                    elm = Ext.fly(target);
+				var target = e.event.actionTarget || e.event.target,
+					elm = Ext.fly(target);
 
 				// see if tap listener has been turned off
 				if (!this.getAllowTaps()) {
@@ -73,10 +73,10 @@ Ext.define('ZCS.view.mail.ZtMsgListView', {
 				if (elm.hasCls('zcs-contact-bubble')) {
 					msgHeader.fireEvent('contactTap', elm, {
 						menuName:   ZCS.constant.MENU_ADDRESS,
-						msg:        msg,
-						address:    idParams.address,
-						name:       idParams.name,
-						addrObj:    idParams.addrObj
+						msg:		msg,
+						address:	idParams.address,
+						name:	   idParams.name,
+						addrObj:	idParams.addrObj
 					});
 					return true;
 				}
@@ -85,8 +85,8 @@ Ext.define('ZCS.view.mail.ZtMsgListView', {
 				if (elm.hasCls('zcs-tag-bubble')) {
 					msgHeader.fireEvent('tagTap', elm, {
 						menuName:   ZCS.constant.MENU_TAG,
-						msg:        msg,
-						tagName:    idParams.name
+						msg:		msg,
+						tagName:	idParams.name
 					});
 					return true;
 				}
@@ -95,7 +95,7 @@ Ext.define('ZCS.view.mail.ZtMsgListView', {
 				if (elm.hasCls('zcs-msgHdr-menuButton') || elm.hasCls('zcs-msgHeader-menuButton-span')) {
 					msgHeader.fireEvent('menuTap', elm, {
 						menuName:   ZCS.constant.MENU_MSG,
-						msg:        msg
+						msg:		msg
 					});
 					return true;
 				}
@@ -111,9 +111,9 @@ Ext.define('ZCS.view.mail.ZtMsgListView', {
 
 			},
 
-			element:    'element',
+			element:	'element',
 			delegate:   '.zcs-msg-header',
-			scope:      this
+			scope:	  this
 		});
 
 		// Message body taps
@@ -121,8 +121,8 @@ Ext.define('ZCS.view.mail.ZtMsgListView', {
 
 			tap: function(e) {
 
-                var target = e.event.actionTarget || e.event.target,
-                    elm = Ext.fly(target);
+				var target = e.event.actionTarget || e.event.target,
+					elm = Ext.fly(target);
 
 				// see if tap listener has been turned off
 				if (!this.getAllowTaps()) {
@@ -143,8 +143,8 @@ Ext.define('ZCS.view.mail.ZtMsgListView', {
 				if (elm.hasCls('zcs-contact-bubble')) {
 					msgBody.fireEvent('contactTap', elm, {
 						menuName:   ZCS.constant.MENU_ADDRESS,
-						msg:        msg,
-						address:    idParams.address
+						msg:		msg,
+						address:	idParams.address
 					});
 					return false;
 				}
@@ -165,111 +165,114 @@ Ext.define('ZCS.view.mail.ZtMsgListView', {
 				}
 			},
 
-			element:    'element',
+			element:	'element',
 			delegate:   '.zcs-msg-body',
-			scope:      this
+			scope:	  this
 		});
 
 		this.element.on({
 
 			swipe: function(e) {
 
-                var iframe = this.down('[xtype=iframe]'),
-                    iframeDom,
-                    scrollLeftMax,
-                    noScrollRestrictions = false,
-                    scrollIsMaxed = false,
-                    scrollIsAtStart = false,
-                    leftSwipeAllowed = false,
-                    rightSwipeAllowed = false;
+				var iframe = this.down('[xtype=iframe]'),
+					iframeDom,
+					scrollLeftMax,
+					noScrollRestrictions = false,
+					scrollIsMaxed = false,
+					scrollIsAtStart = false,
+					leftSwipeAllowed = false,
+					rightSwipeAllowed = false;
 
-                if (iframe) {
-    				iframeDom = iframe.element.dom;
-    				scrollLeftMax = iframeDom.scrollWidth - iframeDom.clientWidth;
-	                scrollIsMaxed = (iframeDom.scrollLeft === scrollLeftMax);
-                    scrollIsAtStart = (iframeDom.scrollLeft === 0);
-                    leftSwipeAllowed = scrollIsMaxed && iframeDom.leftSwipeAllowed;
-                    rightSwipeAllowed = scrollIsAtStart && iframeDom.rightSwipeAllowed;
-                } else {
-                    noScrollRestrictions = true;
-                }
+				if (iframe) {
+					iframeDom = iframe.element.dom;
+					scrollLeftMax = iframeDom.scrollWidth - iframeDom.clientWidth;
+					scrollIsMaxed = (iframeDom.scrollLeft === scrollLeftMax);
+					scrollIsAtStart = (iframeDom.scrollLeft === 0);
+					leftSwipeAllowed = scrollIsMaxed && iframeDom.leftSwipeAllowed;
+					rightSwipeAllowed = scrollIsAtStart && iframeDom.rightSwipeAllowed;
+				} else {
+					noScrollRestrictions = true;
+				}
 
-                leftSwipeAllowed = leftSwipeAllowed || noScrollRestrictions;
-                rightSwipeAllowed = rightSwipeAllowed || noScrollRestrictions;
+				leftSwipeAllowed = leftSwipeAllowed || noScrollRestrictions;
+				rightSwipeAllowed = rightSwipeAllowed || noScrollRestrictions;
 
 				if (e.direction === "left" && leftSwipeAllowed) {
 					this.fireEvent('messageSwipeLeft', e);
 				}
 
 				if (e.direction === "right" && rightSwipeAllowed) {
-	                this.fireEvent('messageSwipeRight', e);
+					this.fireEvent('messageSwipeRight', e);
 				}
 			},
 
 			scope: this
 		});
 
-        var interactionStart = function (e) {
+		var interactionStart = function (e) {
 
-                this.lastPageX = e.pageX;
-                var iframe = this.down('[xtype=iframe]'),
-                    iframeDom;
+				this.lastPageX = e.pageX;
+				var iframe = this.down('[xtype=iframe]'),
+					iframeDom;
 
-                this.scrollIsEnabled = true;
+				this.scrollIsEnabled = true;
 
-                if (iframe) {
-                    iframeDom = iframe.element.dom;
-                    var scrollLeft = iframeDom.scrollLeft,
-                        scrollLeftMax = iframeDom.scrollWidth - iframeDom.clientWidth;
+				if (iframe) {
+					iframeDom = iframe.element.dom;
+					var scrollLeft = iframeDom.scrollLeft,
+						scrollLeftMax = iframeDom.scrollWidth - iframeDom.clientWidth;
 
-                    // We only want to touch the dom in touchmove if scrolling is possible
-                    // even a no-op could hurt scroll performance.
-                    if (scrollLeftMax > 0) {
-                        this.scrollIsPossible = true;
-                    } else {
-                        this.scrollIsPossible = false;
-                    }
+					// We only want to touch the dom in touchmove if scrolling is possible
+					// even a no-op could hurt scroll performance.
+					if (scrollLeftMax > 0) {
+						this.scrollIsPossible = true;
+					} else {
+						this.scrollIsPossible = false;
+					}
 
-                    // Decide if left swiping or right swiping should be allowed based on the current swipe state of
-                    // the message.  We don't want a scroll and wipe to happen in the same gesture
-                    if (scrollLeft === 0) {
-                        iframeDom.leftSwipeAllowed = false;
-                        iframeDom.rightSwipeAllowed = true;
-                    } else if (scrollLeft === scrollLeftMax) {
-                        iframeDom.rightSwipeAllowed = false;
-                        iframeDom.leftSwipeAllowed = true;
-                    } else {
-                        iframeDom.leftSwipeAllowed = false;
-                        iframeDom.rightSwipeAllowed = false;
-                    }
-                }
-            },
+					// Decide if left swiping or right swiping should be allowed based on the current swipe state of
+					// the message.  We don't want a scroll and wipe to happen in the same gesture
+					if (!this.scrollIsPossible) {
+						iframeDom.leftSwipeAllowed = true;
+						iframeDom.rightSwipeAllowed = true;
+					} else if (scrollLeft === 0) {
+						iframeDom.leftSwipeAllowed = false;
+						iframeDom.rightSwipeAllowed = true;
+					} else if (scrollLeft === scrollLeftMax) {
+						iframeDom.rightSwipeAllowed = false;
+						iframeDom.leftSwipeAllowed = true;
+					} else {
+						iframeDom.leftSwipeAllowed = false;
+						iframeDom.rightSwipeAllowed = false;
+					}
+				}
+			},
 
-            interactionMove = function (e) {
+			interactionMove = function (e) {
 
-                if (this.scrollIsPossible && this.scrollIsEnabled) {
-                    var xDifferential = e.pageX - this.lastPageX;
-                    if (xDifferential !== 0) {
-                        this.down('[xtype=iframe]').element.dom.scrollLeft -= xDifferential;
-                    }
-                    this.lastPageX = e.pageX;
-                }
-            },
+				if (this.scrollIsPossible && this.scrollIsEnabled) {
+					var xDifferential = e.pageX - this.lastPageX;
+					if (xDifferential !== 0) {
+						this.down('[xtype=iframe]').element.dom.scrollLeft -= xDifferential;
+					}
+					this.lastPageX = e.pageX;
+				}
+			},
 
-            interactionEnd = function () {
+			interactionEnd = function () {
 
-                this.scrollIsEnabled = false;
-            };
+				this.scrollIsEnabled = false;
+			};
 
-        // Allow swipes to happen at the beginning or end of a touch move.  But not in the middle.
+		// Allow swipes to happen at the beginning or end of a touch move.  But not in the middle.
 		this.element.on({
 			touchstart: interactionStart,
 			touchmove: interactionMove,
-            touchend: interactionEnd,
-            // let this work with clicks/mouse too
-            mousedown: interactionStart,
-            mousemove: interactionMove,
-            mouseup: interactionEnd,
+			touchend: interactionEnd,
+			// let this work with clicks/mouse too
+			mousedown: interactionStart,
+			mousemove: interactionMove,
+			mouseup: interactionEnd,
 			scope: this
 		});
 
@@ -277,50 +280,27 @@ Ext.define('ZCS.view.mail.ZtMsgListView', {
 
 		// Start the list scroll off by not using absolute positioning.
 		scroller.getScroller().on('scrollstart', function () {
-            //<debug>
+			//<debug>
 			Ext.Logger.iframe('Scroll start on list');
-            //</debug>
+			//</debug>
 		 	this.doIframeProofPositioning(true);
 		}, this);
 
 		scroller.getScroller().on('scrollend', function () {
 			//<debug>
-            Ext.Logger.iframe('Scoll end on list');
-            //</debug>
+			Ext.Logger.iframe('Scoll end on list');
+			//</debug>
 			this.doIframeProofPositioning();
 		}, this);
 	},
 
 	doIframeProofPositioning: function(noAbsolute) {
-
-        var items = this.listItems,
-            offset = 0,
-            i, ln, item, translateY;
-
-        if (typeof items[0] === 'object' &&
-        		typeof items[0].element === 'object' &&
-        			typeof items[0].element.dom === 'object' &&
-        				items[0].element.dom.parentElement &&
-        					items[0].element.dom.parentElement.style["position"] !== "relative") {
-        	items[0].element.dom.parentElement.style["position"] = "relative";
-    	}
-
-    	// Every expanded list item may have links, so force it to have
-    	// absolute positioning, which will prevent a bug where link taps were
-    	// not registered.
-		for (i = 0, ln = items.length; i < ln; i++) {
-            item = items[i];
-
-            if (item.element) {
-	            if (!noAbsolute) {
-			        item.element.forceAbsolutePositioning = true;
-			        item.translate(item.x, item.y);
-			    } else {
-			    	item.element.forceAbsolutePositioning = false;
-		    	}
-	    	}
-        }
-    },
+		if (!noAbsolute) {
+			this.setScrollHack();
+		} else {
+			this.resetScrollHack();
+		}
+	},
 
 	setReadOnly: function (isReadOnly) {
 		var listRef = this;
@@ -381,5 +361,23 @@ Ext.define('ZCS.view.mail.ZtMsgListView', {
 				totalHeight += msgViewHeight;
 			}
 		}
+	},
+
+	setScrollHack: function () {
+		var scroller = this.getScrollable().getScroller(),
+			lastY = this.getScrollable().getScroller().getTranslatable().lastY;
+			
+		scroller.getElement().dom.style.position = "absolute";
+		scroller.getElement().dom.style.top = lastY + "px";
+		scroller.getElement().dom.style.webkitTransform = 'translate3d(0px, 0px, 0px)';
+	},
+
+	resetScrollHack: function () {
+		var scroller = this.getScrollable().getScroller(),
+			lastY = this.getScrollable().getScroller().getTranslatable().lastY;
+
+		scroller.getElement().dom.style.position = "relative";
+		scroller.getElement().dom.style.top = "0px";
+		scroller.getElement().dom.style.webkitTransform = 'translate3d(0px, ' + lastY + 'px, 0px)';
 	}
 });

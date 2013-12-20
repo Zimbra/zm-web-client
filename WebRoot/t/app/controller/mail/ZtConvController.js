@@ -216,6 +216,11 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 		msgListView.topItemIndex = 0;
 		msgListView.getScrollable().getScroller().getTranslatable().y = 0;
 
+		//Additionally, reset our own hacks which prevent bugs with iframes that have parents with
+		//translate3d.  Removing this will cause the msg list view to retain its old scroll position
+		//when it should not.
+     	msgListView.resetScrollHack();
+
 		store.load({
 			convId: conv.getId(),
 			convQuery: convQueryTerms.join(' AND '),

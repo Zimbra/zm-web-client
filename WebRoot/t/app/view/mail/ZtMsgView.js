@@ -264,43 +264,5 @@ Ext.define('ZCS.view.mail.ZtMsgView', {
 				listRef.refreshScroller(listRef.getScrollable().getScroller());
 			}
 		}
-	},
-
-	/**
-	 * When an iframe, that has a parent which has a translate3d value for its transform property, receives a touch event, it
-	 * incorrectly interprets the target of that event.  However, if that same parent element has absolute positioning, then
-	 * the iframe does correctly interpret that event.  So when this list item gets translated to its position, and it's expanded,
-	 * give it absolute positoning.
-	 *
-	 */
-	translate: function(x, y) {
-
-
-        if (!isNaN(x) && typeof x == 'number') {
-            this.x = x;
-        }
-
-        if (!isNaN(y) && typeof y == 'number') {
-            this.y = y;
-        }
-
-		// Sencha hides a list item by scrolling it up 10000. That doesn't work for a very large
-		// message, so move it left as well to make sure it's offscreen.
-		if (this.y === -10000) {
-			this.x = this.y;
-		}
-
-        if (this.element.forceAbsolutePositioning) {
-            //In case the element was not forced before.
-            this.element.dom.style.position = "absolute";
-            this.element.dom.style.webkitTransform = 'translate3d(0px, 0px, 0px)';
-            this.element.dom.style.top = this.y + 'px';
-        } else {
-        	if (this.element.dom.style.top) {
-        		this.element.dom.style.top = '0px';
-        	}
-        	this.element.translate(x, y);
-        }
-    }
-
+	}
 });
