@@ -363,6 +363,17 @@ function(tagName) {
 };
 
 /**
+ * is it possible to add a tag to this item?
+ * @param tagName
+ * @returns {boolean}
+ */
+ZmItem.prototype.canAddTag =
+function(tagName) {
+	return !this.hasTag(tagName);
+};
+
+
+/**
 * Gets the folder id that contains this item, if available.
 * 
 * @return	{String}	the folder id or <code>null</code> for none

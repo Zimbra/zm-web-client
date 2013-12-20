@@ -282,6 +282,21 @@ function(msg) {
 	delete this.msgFolder[msg.id];
 };
 
+ZmConv.prototype.canAddTag =
+function(tagName) {
+	if (!this.msgs) {
+		return ZmItem.prototype.canAddTag.call(this, tagName);
+	}
+	var msgs = this.msgs.getArray();
+	for (var i = 0; i < msgs.length; i++) {
+		var msg = msgs[i];
+		if (msg.canAddTag(tagName)) {
+			return true;
+		}
+	}
+	return false;
+};
+
 ZmConv.prototype.mute =
 function() {
     this.isMute = true;
