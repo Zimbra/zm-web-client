@@ -158,7 +158,7 @@ ZmMailListController.viewToTab = {};
 
 ZmMailListController.REPLY_FOLDERS_TO_OMIT = [ZmFolder.ID_DRAFTS, ZmFolder.ID_SENT, ZmFolder.ID_TRASH, ZmFolder.ID_SPAM];
 
-ZmMailListController.FOLDERS_TO_OMIT = [ZmFolder.ID_TRASH, ZmFolder.ID_SPAM];
+ZmMailListController.FOLDERS_TO_OMIT = [ZmFolder.ID_TRASH, ZmFolder.ID_SPAM, ZmFolder.ID_DRAFTS];
 
 // Public methods
 

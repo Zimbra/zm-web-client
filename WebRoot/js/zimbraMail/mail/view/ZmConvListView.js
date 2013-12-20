@@ -471,7 +471,8 @@ function(htmlArr, idx, item, field, colIdx, params, classes) {
 			if (item.type == ZmItem.CONV && item.numMsgs > 1) {
 				htmlArr[idx++] = "<div id='" + this._getFieldId(item, field) + "' " + AjxUtil.getClassAttr(classes) + ">";
 				htmlArr[idx++] = "(";
-				htmlArr[idx++] = item.numMsgs;
+//				htmlArr[idx++] = item.numMsgs;
+				htmlArr[idx++] = this._getDisplayedMsgCount(item);
 				htmlArr[idx++] = ")";
 				htmlArr[idx++] = "</div>";
 			} else if (item.size) {
@@ -618,9 +619,26 @@ function(conv, fieldId) {
 	return html.join("");
 };
 
+// Returns the actual number of msgs that will be shown on expansion or in
+// the reading pane (msgs in Trash/Junk/Drafts are omitted)
+ZmConvListView.prototype._getDisplayedMsgCount =
+function(conv) {
+
+	var omit = this._controller.getFoldersToOmit(),
+		num = 0, id;
+
+	for (id in conv.msgFolder) {
+		if (!omit[conv.msgFolder[id]]) {
+			num++;
+		}
+	}
+
+	return num;
+};
+
 ZmConvListView.prototype._getHeaderToolTip =
 function(field, itemIdx) {
-	
+
 	if (field == ZmItem.F_EXPAND) {
 		return "";
 	}

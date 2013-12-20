@@ -174,7 +174,7 @@ function(params, callback, result) {
 };
 
 /**
- * This method supports ZmZimletBase::getMsgsForConv. It loads all of this conv's
+ * This method supports ZmZimletBase::getMsgsForConv. It loads *all* of this conv's
  * messages, including their content. Note that it is not search-based, and uses
  * GetConvRequest rather than SearchConvRequest.
  * 
@@ -209,8 +209,10 @@ function(params, callback, batchCmd) {
 
 ZmConv.prototype._handleResponseLoadMsgs =
 function(callback, result) {
+
 	var resp = result.getResponse().GetConvResponse.c[0];
 	this.msgIds = [];
+	this.msgFolder = {};
 
 	if (!this.msgs) {
 		// create new msg list
@@ -230,6 +232,7 @@ function(callback, result) {
 	for (var i = len - 1; i >= 0; i--) {
 		var msgNode = resp.m[i];
 		this.msgIds.push(msgNode.id);
+		this.msgFolder[msgNode.id] = msgNode.l;
 		msgNode.su = resp.su;
 		// construct ZmMailMsg's so they get cached
 		var msg = ZmMailMsg.createFromDom(msgNode, {list: this.msgs});
@@ -260,6 +263,7 @@ function(msg, index) {
 	for (var i = 0, len = a.length; i < len; i++) {
 		this.msgIds.push(a[i].id);
 	}
+	this.msgFolder[msg.id] = msg.folderId;
 };
 
 /**
@@ -275,6 +279,7 @@ function(msg) {
 	if (this.msgIds && this.msgIds.length) {
 		AjxUtil.arrayRemove(this.msgIds, msg.id);
 	}
+	delete this.msgFolder[msg.id];
 };
 
 ZmConv.prototype.mute =
@@ -320,6 +325,7 @@ function() {
 		this.msgs = null;
 	}
 	this.msgIds = [];
+	this.msgFolder = {};
 	
 	ZmMailItem.prototype.clear.call(this);
 };
@@ -658,6 +664,7 @@ function(msg, callback) {
 
 ZmConv.prototype._loadFromDom =
 function(convNode) {
+
 	this.numMsgs = convNode.n;
 	this.date = convNode.d;
 	this._parseFlags(convNode.f);
@@ -675,9 +682,11 @@ function(convNode) {
 	// note that the list of msg IDs in a search result is partial - only msgs that matched are included
 	if (convNode.m) {
 		this.msgIds = [];
+		this.msgFolder = {};
 		for (var i = 0, count = convNode.m.length; i < count; i++) {
 			var msgNode = convNode.m[i];
 			this.msgIds.push(msgNode.id);
+			this.msgFolder[msgNode.id] = msgNode.l;
 			this.folders[msgNode.l] = true;
 		}
 		if (count == 1) {
@@ -686,6 +695,7 @@ function(convNode) {
 			// bug 49067 - SearchConvResponse does not return the folder ID w/in
 			// the msgNode as fully qualified so reset if this 1-msg conv was
 			// returned by a simple folder search
+			// TODO: if 85358 is fixed, we can remove this section
 			var searchFolderId = this.list && this.list.search && this.list.search.folderId;
 			if (searchFolderId) {
 				this.folderId = searchFolderId;
@@ -747,6 +757,8 @@ function(msg) {
 	this.fragment = msg.fragment;
 	this.sf = msg.sf;
 	this.msgIds = [msg.id];
+	this.msgFolder = this.msgFolder || {};
+	this.msgFolder[msg.id] = msg.folderId;
 	//add a flag to redraw this conversation when additional information is available
 	this.redrawConvRow = true;
 };
