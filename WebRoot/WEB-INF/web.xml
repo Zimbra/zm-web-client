@@ -109,6 +109,7 @@
   <filter>
     <filter-name>ZimbraQoSFilter</filter-name>
     <filter-class>com.zimbra.cs.servlet.ZimbraQoSFilter</filter-class>
+    <async-supported>true</async-supported>
   </filter>
 
   <filter-mapping>
