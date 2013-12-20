@@ -147,7 +147,8 @@ Ext.define('ZCS.controller.mail.ZtMsgController', {
 			msg = msgView.getMsg(),
 			curExpanded = msgView.getExpanded(),
 			curState = msgView.getState(),
-			newExpanded, newState;
+			newExpanded, newState,
+			msgToolbarBtn = msgView.down('button[cls=zcs-btn-msg-details]');
 
 		if (!detailsTapped) {
 			newState = curExpanded ? ZCS.constant.HDR_COLLAPSED : ZCS.constant.HDR_EXPANDED;
@@ -161,6 +162,12 @@ Ext.define('ZCS.controller.mail.ZtMsgController', {
 		msgView.setExpanded(newState === ZCS.constant.HDR_EXPANDED || newState === ZCS.constant.HDR_DETAILED);
 
 		msgView.setState(newState);
+
+		if (newState === ZCS.constant.HDR_COLLAPSED) {
+			msgToolbarBtn.hide();
+		} else {
+			msgToolbarBtn.show();
+		}
 
 		//<debug>
         Ext.Logger.info("Header state: " + newState + " (" + newExpanded + ")");
