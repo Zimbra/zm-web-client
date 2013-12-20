@@ -29,7 +29,7 @@ ZmSignaturesPage.prototype.toString = function() {
 };
 
 //
-// Data
+// Constants
 //
 
 ZmSignaturesPage.SIGNATURE_TEMPLATE = "prefs.Pages#SignatureSplitView";
@@ -63,7 +63,7 @@ function() {
 	this._byName = {};
 	for (var id in this._signatures) {
 		var signature = this._signatures[id];
-        if(!signature._new){         // avoid messing with existing signatures with same names
+        if (!signature._new) {         // avoid messing with existing signatures with same names
 		    this._byName[signature.name] = signature;
         }
 	}
@@ -93,7 +93,9 @@ function() {
 	var array = [];
 	for (var id in this._signatures) {
 		var signature = this._signatures[id];
-		if (signature._new) { continue; }
+		if (signature._new) {
+			continue;
+		}
 
 		if (this._hasChanged(signature)) {
 			array.push(signature);
@@ -162,9 +164,9 @@ function() {
         if (u1 && u2){
 		    for (var j = 0; j < ZmSignaturesPage.SIG_FIELDS.length; j++) {
 			    var field = ZmSignaturesPage.SIG_FIELDS[j];
-			    var savedSigId = (u1[field]) || ((field == ZmIdentity.REPLY_SIGNATURE) ? ZmIdentity.SIG_ID_NONE : u1[field]);
+			    var savedSigId = (u1[field]) || ((field === ZmIdentity.REPLY_SIGNATURE) ? ZmIdentity.SIG_ID_NONE : u1[field]);
 			    var curSigId = this._newSigId[u2[field]] || u2[field];
-			    if (savedSigId != curSigId) {
+			    if (savedSigId !== curSigId) {
 				    list.push({identity:identityId, sig:field, value:curSigId});
 		        }
 		    }
@@ -196,7 +198,7 @@ function() {
 		if (AjxUtil.isArray(sig)) {
 			return AjxUtil.map(sig, printSigs).join("\n");
 		}
-		return [sig.name, " (", ((sig._orig && sig._orig.value != sig.value) ? (sig._orig.value+" changed to ") : ""), sig.value, ")"].join("");
+		return [sig.name, " (", ((sig._orig && sig._orig.value !== sig.value) ? (sig._orig.value+" changed to ") : ""), sig.value, ")"].join("");
 	}
 
 	var printUsages = function(usage) {
@@ -248,26 +250,28 @@ function(signature, strict) {
 	var hasName = AjxStringUtil._NON_WHITESPACE.test(signature.name);
 	var hasContact = Boolean(signature.contactId);
 	var hasValue = AjxStringUtil._NON_WHITESPACE.test(signature.getValue()) || hasContact;
-	var isNameDefault = (this._newNamesHash[signature.name] != null);
 	if (!hasName && !hasValue) {
 		this._deleteSignature(signature);
 		if (strict) {
 			return true;
 		}
-	} else if (!hasName || (!hasValue && !isNameDefault)) {
+	}
+	else if (!hasName || !hasValue) {
 		return !hasName ? ZmMsg.signatureNameMissingRequired : ZmMsg.signatureValueMissingRequired;
-	} else if (strict && isNameDefault && !hasValue) {
+	}
+	else if (strict && !hasValue) {
 		return true;
 	}
 	if (hasName && this._byName[signature.name]) {
         // If its a new signature with a in-use name or a existing signature whose name the user is trying to edit to a existing name value
-		if(signature._new || (this._byName[signature.name].id != signature.id))
-        return AjxMessageFormat.format(ZmMsg.signatureNameDuplicate, AjxStringUtil.htmlEncode(signature.name));
+		if (signature._new || (this._byName[signature.name].id !== signature.id)) {
+            return AjxMessageFormat.format(ZmMsg.signatureNameDuplicate, AjxStringUtil.htmlEncode(signature.name));
+		}
 	}
 	var sigValue = signature.value;
 	var maxLength = appCtxt.get(ZmSetting.SIGNATURE_MAX_LENGTH);
 	if (maxLength > 0 && sigValue.length > maxLength) {
-		return AjxMessageFormat.format((signature.contentType == ZmMimeTable.TEXT_HTML)
+		return AjxMessageFormat.format((signature.contentType === ZmMimeTable.TEXT_HTML)
 			? ZmMsg.errorHtmlSignatureTooLong
 			: ZmMsg.errorSignatureTooLong, maxLength);
 	}
@@ -287,7 +291,7 @@ function(batchCommand) {
 	var deletedSigs = this.getDeletedSignatures();
 	for (var i = 0; i < deletedSigs.length; i++) {
 		var signature = deletedSigs[i];
-		var callback = new AjxCallback(this, this._handleDeleteResponse, [signature]);
+		var callback = this._handleDeleteResponse.bind(this, signature);
 		signature.doDelete(callback, null, batchCommand);
 	}
 
@@ -296,8 +300,8 @@ function(batchCommand) {
 	for (var i = 0; i < modifiedSigs.length; i++) {
 		var signature = modifiedSigs[i];
 		var comps = this._signatures[signature._htmlElId];
-		var callback = new AjxCallback(this, this._handleModifyResponse, [signature]);
-		var errorCallback = new AjxCallback(this, this._handleModifyError, [signature]);
+		var callback = this._handleModifyResponse.bind(this, signature);
+		var errorCallback = this._handleModifyError.bind(this, signature);
 		signature.save(callback, errorCallback, batchCommand);
 	}
 
@@ -307,7 +311,7 @@ function(batchCommand) {
 		var signature = newSigs[i];
 		signature._id = signature.id; // Clearing existing dummy id
 		signature.id = null;
-		var callback = new AjxCallback(this, this._handleNewResponse, [signature]);
+		var callback = this._handleNewResponse.bind(this, signature);
 		signature.create(callback, null, batchCommand);
 	}
 
@@ -331,7 +335,7 @@ function(batchCommand) {
 
 ZmSignaturesPage.prototype.getPostSaveCallback =
 function() {
-	return new AjxCallback(this, this._postSave);
+	return this._postSave.bind(this);
 };
 
 // if a new sig has been assigned to an identity, we need to save again since
@@ -341,7 +345,7 @@ function() {
 
 	var newUsage = this._getUsage(true);
 	if (newUsage) {
-		var respCallback = new AjxCallback(this, this._handleResponsePostSave);
+		var respCallback = this._handleResponsePostSave.bind(this);
 		this._controller.save(respCallback, true);
 	}
 };
@@ -371,12 +375,12 @@ function(container) {
 
 	container.getHtmlElement().innerHTML = AjxTemplate.expand(ZmSignaturesPage.SIGNATURE_TEMPLATE, {id:this._htmlElId});
 
-	//Signature LIST
+	// Signature list
 	var listEl = document.getElementById(this._htmlElId + "_SIG_LIST");
 	var list = new ZmSignatureListView(this);
 	this._replaceControlElement(listEl, list);
 	list.setMultiSelect(false);
-	list.addSelectionListener(new AjxListener(this, this._selectionListener));
+	list.addSelectionListener(this._selectionListener.bind(this));
 	list.setUI(null, true); // renders headers and empty list
 	this._sigList = list;
 
@@ -384,7 +388,7 @@ function(container) {
 	var addEl = document.getElementById(this._htmlElId + "_SIG_NEW");
 	var button = new DwtButton(this);
 	button.setText(ZmMsg.newSignature);
-	button.addSelectionListener(new AjxListener(this, this._handleAddButton));
+	button.addSelectionListener(this._handleAddButton.bind(this));
 	this._replaceControlElement(addEl, button);
 	this._sigAddBtn = button;
 
@@ -392,7 +396,7 @@ function(container) {
 	var deleteEl = document.getElementById(this._htmlElId + "_SIG_DELETE");
 	var button = new DwtButton(this);
 	button.setText(ZmMsg.del);
-	button.addSelectionListener(new AjxListener(this, this._handleDeleteButton));
+	button.addSelectionListener(this._handleDeleteButton.bind(this));
 	this._replaceControlElement(deleteEl, button);
 	this._deleteBtn = button;
 
@@ -403,7 +407,7 @@ function(container) {
 	var el = document.getElementById(this._htmlElId + "_SIG_VCARD_BROWSE");
 	var button = new DwtButton(this);
 	button.setText(ZmMsg.browse);
-	button.addSelectionListener(new AjxListener(this, this._handleVcardBrowseButton));
+	button.addSelectionListener(this._handleVcardBrowseButton.bind(this));
 	this._replaceControlElement(el, button);
 	this._vcardBrowseBtn = button;
 
@@ -411,18 +415,18 @@ function(container) {
 	var el = document.getElementById(this._htmlElId + "_SIG_VCARD_CLEAR");
 	var button = new DwtButton(this);
 	button.setText(ZmMsg.clear);
-	button.addSelectionListener(new AjxListener(this, this._handleVcardClearButton));
+	button.addSelectionListener(this._handleVcardClearButton.bind(this));
 	this._replaceControlElement(el, button);
 	this._vcardClearBtn = button;
 
 	// Signature Name
 	var nameEl = document.getElementById(this._htmlElId + "_SIG_NAME");
 	var params = {
-		parent: this,
-		type: DwtInputField.STRING,
-		required: true,
-		validationStyle: DwtInputField.CONTINUAL_VALIDATION,
-		validator: AjxCallback.simpleClosure(this._updateName, this)
+		parent:             this,
+		type:               DwtInputField.STRING,
+		required:           true,
+		validationStyle:    DwtInputField.CONTINUAL_VALIDATION,
+		validator:          this._updateName.bind(this)
 	};
 	var input = this._sigName = new DwtInputField(params);
 	this._replaceControlElement(nameEl, input);
@@ -434,14 +438,14 @@ function(container) {
 		select.setToolTipContent(ZmMsg.formatTooltip);
 		select.addOption(ZmMsg.formatAsText, 1 , true);
 		select.addOption(ZmMsg.formatAsHtml, 0, false);
-		select.addChangeListener(new AjxListener(this,this._handleFormatSelect));
+		select.addChangeListener(this._handleFormatSelect.bind(this));
 		this._replaceControlElement(formatEl, select);
 		this._sigFormat = select;
 	}
 
 	// Signature CONTENT
 	var valueEl = document.getElementById(this._htmlElId + "_SIG_EDITOR");
-    if( !appCtxt.isTinyMCEEnabled() ){
+    if (!appCtxt.isTinyMCEEnabled()) {
         var htmlEditor = new ZmSignatureEditor(this);
         this._replaceControlElement(valueEl, htmlEditor);
     }
@@ -450,7 +454,7 @@ function(container) {
 	// Signature use by identity
 	var collection = appCtxt.getIdentityCollection();
 	if (collection) {
-		collection.addChangeListener(new AjxListener(this, this._identityChangeListener));
+		collection.addChangeListener(this._identityChangeListener.bind(this));
 	}
 
 	this._initialized = true;
@@ -521,7 +525,7 @@ function(row, identity, signatures, sigType) {
 
 	var select = this._sigSelect[identity.id][sigType] = new DwtSelect(this);
 	var curSigId = identity.getField(sigType);
-	var noSigId = (sigType == ZmIdentity.REPLY_SIGNATURE) ? ZmIdentity.SIG_ID_NONE : "";
+	var noSigId = (sigType === ZmIdentity.REPLY_SIGNATURE) ? ZmIdentity.SIG_ID_NONE : "";
 	this._addUsageSelectOption(select, {name:ZmMsg.noSignature, id:noSigId}, sigType, identity);
 	if (signatures) {
 		for (var i = 0, len = signatures.length; i < len; i++) {
@@ -538,38 +542,41 @@ ZmSignaturesPage.prototype._addUsageSelectOption =
 function(select, signature, sigType, identity) {
 
 	var curSigId = identity.getField(sigType);
-	if (!curSigId && sigType == ZmIdentity.REPLY_SIGNATURE) {
+	if (!curSigId && sigType === ZmIdentity.REPLY_SIGNATURE) {
 		curSigId = identity.getField(ZmIdentity.SIGNATURE) || ZmIdentity.SIG_ID_NONE;
 	}
-	DBG.println(AjxDebug.DBG3, "Adding " + sigType + " option for " + identity.name + ": " + signature.name + " / " + signature.id + " (" + (curSigId == signature.id) + ")");
-	select.addOption(signature.name, (curSigId == signature.id), signature.id);
+	DBG.println(AjxDebug.DBG3, "Adding " + sigType + " option for " + identity.name + ": " + signature.name + " / " + signature.id + " (" + (curSigId === signature.id) + ")");
+	// a new signature starts with an empty name; use a space so that option gets added
+	select.addOption(signature.name || ' ', (curSigId === signature.id), signature.id);
 };
 
 // handles addition, removal, or rename of a signature within the form
 ZmSignaturesPage.prototype._updateUsageSelects =
 function(signature, action) {
 
-	if (!this._initialized) { return; }
+	if (!this._initialized) {
+		return;
+	}
 
 	for (var id in this._sigSelect) {
 		for (var sigType in this._sigSelect[id]) {
 			var select = this._sigSelect[id][sigType];
 			if (select) {
-				var hasOption = Boolean(select.getOptionWithValue(signature.id));
+				var hasOption = !!(select.getOptionWithValue(signature.id));
 				var collection = appCtxt.getIdentityCollection();
 				var identity = collection && collection.getById(id);
-				if (action == ZmEvent.E_CREATE && !hasOption && identity) {
+				if (action === ZmEvent.E_CREATE && !hasOption && identity) {
 					this._addUsageSelectOption(select, signature, sigType, identity);
 				}
-				else if (action == ZmEvent.E_DELETE && hasOption && identity) {
+				else if (action === ZmEvent.E_DELETE && hasOption && identity) {
 					select.removeOptionWithValue(signature.id);
 					var curSigId = identity.getField(sigType);
-					if (curSigId == signature.id) {
-						var noSigId = (sigType == ZmIdentity.REPLY_SIGNATURE) ? ZmIdentity.SIG_ID_NONE : "";
+					if (curSigId === signature.id) {
+						var noSigId = (sigType === ZmIdentity.REPLY_SIGNATURE) ? ZmIdentity.SIG_ID_NONE : "";
 						select.setSelectedValue(noSigId);
 					}
 				}
-				else if (action == ZmEvent.E_MODIFY && hasOption) {
+				else if (action === ZmEvent.E_MODIFY && hasOption) {
 					select.rename(signature.id, signature.name);
 				}
 			}
@@ -581,13 +588,15 @@ ZmSignaturesPage.prototype._identityChangeListener =
 function(ev) {
 
 	var identity = ev.getDetail("item");
-	if (!identity) { return; }
+	if (!identity) {
+		return;
+	}
 	
 	var collection = appCtxt.getIdentityCollection();
 	var id = identity.id;
 	var signatures = appCtxt.getSignatureCollection().getSignatures(true);
 	var table = document.getElementById(this._htmlElId + "_SIG_TABLE");
-	if (ev.event == ZmEvent.E_CREATE) {
+	if (ev.event === ZmEvent.E_CREATE) {
 		var index = collection.getSortIndex(identity);
 		this._addUsageSelects(identity, table, signatures, index);
 		for (var i = 0; i < ZmSignaturesPage.SIG_FIELDS.length; i++) {
@@ -599,18 +608,18 @@ function(ev) {
 			}
 		}
 	}
-	else if (ev.event == ZmEvent.E_DELETE) {
+	else if (ev.event === ZmEvent.E_DELETE) {
 		var row = document.getElementById(id + "_row");
 		if (row) {
 			table.deleteRow(row.rowIndex);
 		}
 		delete this._origUsage[id];
 	}
-	else if (ev.event == ZmEvent.E_MODIFY) {
+	else if (ev.event === ZmEvent.E_MODIFY) {
 		var row = document.getElementById(id + "_row");
 		if (row) {
 			var index = collection.getSortIndex(identity);
-			if (index == row.rowIndex - 1) {	// header row doesn't count
+			if (index === row.rowIndex - 1) {	// header row doesn't count
 				var span = document.getElementById(id + "_name");
 				if (span) {
 					span.innerHTML = identity.name + ":";
@@ -624,27 +633,30 @@ function(ev) {
 	}
 };
 
+// Sets the height of the editor and the list
 ZmSignaturesPage.prototype._resetSize =
 function() {
 	this._resetEditorSize();
 
-	// Make sure they are on the the same level
+	// Make sure they are on the same level
 	var sigSize = Dwt.getSize(this._sigEditor.getHtmlElement().parentNode);
-	if (sigSize && sigSize.y)
+	if (sigSize && sigSize.y) {
 		this._sigList.setSize(Dwt.CLEAR, sigSize.y);
+	}
 };
 
 ZmSignaturesPage.prototype._resetEditorSize =
 function() {
 	// Adjust Size of the HTML Editor
 	var size = Dwt.getSize(this._sigEditor.getHtmlElement().parentNode);
-	if (size && size.y)
+	if (size && size.y) {
 		this._sigEditor.setSize(Dwt.CLEAR, size.y);
+	}
 };
 
 ZmSignaturesPage.prototype._setupCustom =
 function(id, setup, value) {
-	if (id == ZmSetting.SIGNATURES) {
+	if (id === ZmSetting.SIGNATURES) {
 		// create container control
 		var container = new DwtComposite(this);
 		this.setFormObject(id, container);
@@ -653,7 +665,7 @@ function(id, setup, value) {
 		this._defaultRadioGroup = new DwtRadioButtonGroup();
 
 		this._initialize(container);
-        if( !appCtxt.isTinyMCEEnabled() ){
+        if (!appCtxt.isTinyMCEEnabled()) {
             this._populateSignatures();
         }
 
@@ -682,18 +694,20 @@ function(ev) {
 	var callback = this._sigEditor._imageUploaded.bind(this._sigEditor);
 	var cFolder = appCtxt.getById(ZmOrganizer.ID_BRIEFCASE);
 	var dialog = appCtxt.getUploadDialog();
-	dialog.popup(cFolder,callback, ZmMsg.uploadImage, null, true);
+	dialog.popup(cFolder, callback, ZmMsg.uploadImage, null, true);
 };
 
 // Updates name and format of selected sig based on form fields
 ZmSignaturesPage.prototype._updateSignature =
 function(select) {
 
-	if (!this._selSignature) { return; }
+	if (!this._selSignature) {
+		return;
+	}
 
 	var sig = this._selSignature;
 	var newName = AjxStringUtil.trim(this._sigName.getValue());
-	var isNameModified = (newName != sig.name);
+	var isNameModified = (newName !== sig.name);
 
 	sig.name = newName;
 
@@ -732,9 +746,8 @@ function(reset) {
 		var signature = signatures[i];
 		this._addSignature(signature, true, reset);
 	}
-	this._calcAutoSignatureNames(signatures);
 	for (var i = count; i < this._minEntries; i++) {
-		this._addNewSignature(true, true); //autoAdded
+		this._addNewSignature(true, true);  // autoAdded
 	}
 
 	var selectSig = this._sigList.getList().get(0);
@@ -743,38 +756,11 @@ function(reset) {
 	this._origUsage = this._getUsageFromIdentities();
 };
 
-ZmSignaturesPage.prototype._calcAutoSignatureNames =
-function(signatures) {
-	this._newNames = [];
-	this._newNamesHash = {};
-	for (var i = 1; i <= this._maxEntries; i++) {
-		var sigName = AjxMessageFormat.format(ZmMsg.signatureNewName, i);
-		this._newNames.push(sigName);
-		this._newNamesHash[sigName] = true;
-	}
-};
-
-ZmSignaturesPage.prototype._getNewSignatureName =
-function() {
-	var used = {};
-	for (var id in this._signatures) {
-		used[this._signatures[id].name] = true;
-	}
-
-	for (var i = 0; i < this._newNames.length; i++) {
-		var name = this._newNames[i];
-		if (!used[name]) {
-			return name;
-		}
-	}
-	return "";
-};
-
 ZmSignaturesPage.prototype._getNewSignature =
 function() {
 	var signature = new ZmSignature(null);
 	signature.id = Dwt.getNextId();
-	signature.name = this._getNewSignatureName();
+	signature.name = '';
 	signature._new = true;
 	this._isTempId[signature.id] = true;
 	return signature;
@@ -792,6 +778,7 @@ function(skipControls, autoAdded) {
 
 ZmSignaturesPage.prototype._addSignature =
 function(signature, skipControls, reset, index, skipNotify) {
+
 	if (!signature._new) {
 		if (reset) {
 			this._restoreFromOrig(signature);
@@ -802,7 +789,7 @@ function(signature, skipControls, reset, index, skipNotify) {
 
 	this._signatures[signature.id] = signature;
 
-	if (this._sigList.getItemIndex(signature) == null) {
+	if (this._sigList.getItemIndex(signature) === null) {
 		this._sigList.addItem(signature, index);
 		if (!skipNotify) {
 			this._updateUsageSelects(signature, ZmEvent.E_CREATE);
@@ -824,8 +811,9 @@ function(msg) {
 	// first time the editor is initialized, idoc.getElementsByTagName("img") is empty
 	// Instead of waiting for 500ms, trying to add this callback. Risky but works.
 	if (!this._firstTimeFixImages) {
-		this._sigEditor.addOnContentInitializedListener(new AjxCallback(this, this._fixSignatureInlineImages));
-	} else {
+		this._sigEditor.addOnContentInitializedListener(this._fixSignatureInlineImages.bind(this));
+	}
+	else {
 		this._fixSignatureInlineImages();
 	}
 };
@@ -845,7 +833,7 @@ function() {
 		for (var i = 0; i < images.length; i++) {
 			img = images[i];
 			var dfsrc = img.getAttribute("dfsrc");
-			if (dfsrc && dfsrc.indexOf("doc:") == 0) {
+			if (dfsrc && dfsrc.indexOf("doc:") === 0) {
 				var url = [path, dfsrc.substring(4)].join('');
 				img.src = AjxStringUtil.fixCrossDomainReference(url, false, true);
 			}
@@ -862,7 +850,7 @@ function() {
 		for (var i = 0; i < images.length; i++) {
 			img = images[i];
 			var dfsrc = img.getAttribute("dfsrc");
-			if (dfsrc && dfsrc.substring(0, 4) == "doc:") {
+			if (dfsrc && dfsrc.substring(0, 4) === "doc:") {
 				img.removeAttribute("src");
 			}
 		}
@@ -872,12 +860,14 @@ function() {
 ZmSignaturesPage.prototype._resetSignature =
 function(signature, clear) {
 	this._selSignature = signature;
-	if (!signature) { return; }
+	if (!signature) {
+		return;
+	}
 
 	this._sigList.setSelection(signature, true);
 	this._sigName.setValue(signature.name);
 	if (this._sigFormat) {
-		this._sigFormat.setSelectedValue(signature.getContentType() == ZmMimeTable.TEXT_PLAIN);
+		this._sigFormat.setSelectedValue(signature.getContentType() === ZmMimeTable.TEXT_PLAIN);
 	}
 	var vcardName = "";
 	if (signature.contactId) {
@@ -890,15 +880,15 @@ function(signature, clear) {
 	this._vcardField.value = vcardName;
 
     this._sigEditor.clear();
-	var editorMode = (appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED) && signature.getContentType() == ZmMimeTable.TEXT_HTML)
+	var editorMode = (appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED) && signature.getContentType() === ZmMimeTable.TEXT_HTML)
 		? DwtHtmlEditor.HTML : DwtHtmlEditor.TEXT;
 	var htmlModeInited = this._sigEditor.isHtmlModeInited();
-	if (editorMode != this._sigEditor.getMode()) {
+	if (editorMode !== this._sigEditor.getMode()) {
 		this._sigEditor.setMode(editorMode);
 		this._resetEditorSize();
 	}
-	this._sigEditor.setContent(signature.getValue(editorMode == DwtHtmlEditor.HTML ? ZmMimeTable.TEXT_HTML : ZmMimeTable.TEXT_PLAIN));
-	if (editorMode == DwtHtmlEditor.HTML) {
+	this._sigEditor.setContent(signature.getValue(editorMode === DwtHtmlEditor.HTML ? ZmMimeTable.TEXT_HTML : ZmMimeTable.TEXT_PLAIN));
+	if (editorMode === DwtHtmlEditor.HTML) {
 		this._fixSignatureInlineImages_onTimer();
 	}
 };
@@ -936,12 +926,12 @@ ZmSignaturesPage.prototype._handleFormatSelect =
 function(ev) {
 	var isText = this._sigFormat ? this._sigFormat.getValue() : true;
 	var currentIsText = this._sigEditor.getMode() === DwtHtmlEditor.TEXT;
-	if (isText == currentIsText) {
+	if (isText === currentIsText) {
 		return;
 	}
 
 	var content = this._sigEditor.getContent();
-	var contentIsEmpty = content == "<html><body><br></body></html>" || content == "";
+	var contentIsEmpty = (content === "<html><body><br></body></html>" || content === "");
 
 	if (!contentIsEmpty && isText) {
 		if (!this._formatWarningDialog) {
@@ -1017,7 +1007,7 @@ function(signature, resp) {
 ZmSignaturesPage.prototype._handleModifyError =
 function(signature) {
 	this._restoreFromOrig(signature);
-	if (this._selSignature.id == signature.id) {
+	if (this._selSignature.id === signature.id) {
 		this._resetSignature(signature);
 	}
 	return true;
@@ -1067,9 +1057,11 @@ ZmSignaturesPage.prototype._updateName =
 function(value) {
 
 	var signature = this._selSignature;
-	if (!signature) { return; }
+	if (!signature) {
+		return;
+	}
 
-	if (signature.name != value) {
+	if (signature.name !== value) {
 		signature.name = value;
 		this._sigList.redrawItem(signature);
 		this._sigList.setSelection(signature, true);
@@ -1079,12 +1071,14 @@ function(value) {
 
 ZmSignaturesPage.prototype._validateName =
 function(value) {
-	if (value.replace(/\s*/g,"") == "") {
+	if (value.replace(/\s*/g, "") === "") {
 		throw ZmMsg.errorMissingRequired;
 	}
 
 	var signature = this._selSignature;
-	if (!signature) { return; }
+	if (!signature) {
+		return;
+	}
 
 	signature.name = value;
 	this._sigList.redrawItem(signature);
@@ -1097,9 +1091,9 @@ ZmSignaturesPage.prototype._hasChanged =
 function(signature) {
 
 	var o = signature._orig;
-	return (o.name != signature.name ||
-			o.contactId != signature.contactId ||
-			o.contentType != signature.getContentType() ||
+	return (o.name !== signature.name ||
+			o.contactId !== signature.contactId ||
+			o.contentType !== signature.getContentType() ||
 			!AjxStringUtil.equalsHtmlPlatformIndependent(AjxStringUtil.htmlEncode(o.value), AjxStringUtil.htmlEncode(signature.getValue())));
 };
 
@@ -1129,7 +1123,7 @@ function(signature) {
 //ZmSignatureListView:  Signatures List
 
 ZmSignatureListView = function(parent) {
-	if (arguments.length == 0) { return; }
+	if (arguments.length === 0) { return; }
 
 	DwtListView.call(this, {parent:parent, className:"ZmSignatureListView"});
 };
@@ -1290,7 +1284,7 @@ function() {
 
 	dlg.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this,function() {
 		var imgUrl = this._imgSelField.value;
-		if (imgUrl != '') {
+		if (imgUrl) {
 			this.insertImage(imgUrl, true); //do not use execcommand - since it has no way of adding 0 border, which is necessary if image is wrapped in a link
 		}
 		dlg.popdown();
@@ -1315,7 +1309,7 @@ function() {
 
 ZmSignatureEditor.prototype.insertLink =
 function(params) {
-	if (this.getContent() == "") {
+	if (!this.getContent()) {
 		this.setContent("<br>");
 	}
 	ZmHtmlEditor.prototype.insertLink.call(this, params);
