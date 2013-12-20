@@ -86,6 +86,16 @@ Ext.define('ZCS.view.ux.ZtBubbleDropdown', {
 			 * the user inputs some search text.
 			 */
 			initialize: function () {
+				var me = this;
+
+				if (!me.getReadOnly()) {
+					me.inputField = me.down('#inputField');
+					me.element.on('tap', function (e, el) {
+						me.focusInput();
+						return true;
+					});
+				}
+
 				this.showMenu = Ext.Function.createBuffered(function (value) {
 
 					if (!this.menu) {
@@ -249,7 +259,7 @@ Ext.define('ZCS.view.ux.ZtBubbleDropdown', {
 			menu.showBy(this.getInput(), 'tc-bc?');
 
 			// Don't let the viewport blur input field when scrolling menu
-          	delete Ext.Viewport.focusedElement;
+			delete Ext.Viewport.focusedElement;
 		} else {
 			menu.hide();
 		}
