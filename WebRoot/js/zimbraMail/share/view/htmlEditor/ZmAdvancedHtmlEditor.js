@@ -730,6 +730,7 @@ function(id, content) {
             ed.on('MouseDown', obj._handleEditorMouseDownEvent.bind(obj));
             ed.on('paste', obj.onPaste.bind(obj));
             ed.on('BeforeExecCommand', obj.onBeforeExecCommand.bind(obj));
+            ed.on('BeforeSetContent', obj.onBeforeSetContent.bind(obj));
 
             ed.on('contextmenu',
                   obj.notifyListeners.bind(obj, DwtEvent.ONCONTEXTMENU));
@@ -851,16 +852,16 @@ ZmAdvancedHtmlEditor.prototype.onInit = function(ev) {
 };
 
 
-ZmAdvancedHtmlEditor.prototype.__getEditorControl = function(type, text) {
+ZmAdvancedHtmlEditor.prototype.__getEditorControl = function(type, tooltip) {
 	// This method provides a naive emulation of the control manager offered in
 	// TinyMCE 3.x. We assume that there's only one control of a given type
-	// with a given text in the entire TinyMCE control hierarchy. Hopefully,
+	// with a given tooltip in the entire TinyMCE control hierarchy. Hopefully,
 	// this heuristic won't prove too fragile.
 	var ed = this.getEditor();
 
 	function finditem(item) {
-		// the text in settings appears constant and unlocalized
-		if (item.type === type && item.settings.text === text)
+		// the tooltip in settings appears constant and unlocalized
+		if (item.type === type && item.settings.tooltip === tooltip)
 			return item;
 
 		if (typeof item.items === 'function') {
@@ -871,6 +872,10 @@ ZmAdvancedHtmlEditor.prototype.__getEditorControl = function(type, text) {
 				if (r)
 					return r;
 			}
+		}
+
+		if (typeof item.menu === 'object') {
+			return finditem(item.menu);
 		}
 	};
 
@@ -953,6 +958,15 @@ ZmAdvancedHtmlEditor.prototype.onBeforeRepaint = function(ed, cmd, ui, val, o) {
         }
         element.removeAttribute("data-mce-zsrc");
     }
+};
+
+ZmAdvancedHtmlEditor._TABLE_RE = /^<table><tbody>(<tr>(<td>(<br>| )<\/td>)*<\/tr>)*<\/tbody><\/table>$/;
+
+ZmAdvancedHtmlEditor.prototype.onBeforeSetContent = function(ev) {
+	if (ZmAdvancedHtmlEditor._TABLE_RE.test(ev.content)) {
+		ev.content = ev.content.replace(/<table>/,
+		                                '<table style="width: 90%">');
+	}
 };
 
 ZmAdvancedHtmlEditor.prototype._onDragEnter = function() {
