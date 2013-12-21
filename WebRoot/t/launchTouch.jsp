@@ -10,35 +10,35 @@
 
 
 <c:catch var="exception">
-    <zm:getUserAgent var="ua" session="false"/>
-    <zm:getMailbox var="mailbox"/>
-    <c:choose>
-        <c:when test="${not empty mailbox.prefs.locale}">
-            <fmt:setLocale value='${mailbox.prefs.locale}' scope='request' />
-        </c:when>
-        <c:otherwise>
-            <fmt:setLocale value='${pageContext.request.locale}' scope='request' />
-        </c:otherwise>
-    </c:choose>
-    <fmt:setBundle basename="/messages/ZtMsg" scope="request" force="true"/>
-    <c:set var='localeId' value="${mailbox.prefs.locale}" scope="request"/>
-    <c:set var="initialMailSearch" value="${mailbox.accountInfo.prefs.mailInitialSearch}"/>
-    <c:if test="${fn:startsWith(initialMailSearch, 'in:')}">
-        <c:set var="path" value="${fn:substring(initialMailSearch, 3, -1)}"/>
-    </c:if>
+	<zm:getUserAgent var="ua" session="false"/>
+	<zm:getMailbox var="mailbox"/>
+	<c:choose>
+		<c:when test="${not empty mailbox.prefs.locale}">
+			<fmt:setLocale value='${mailbox.prefs.locale}' scope='request' />
+		</c:when>
+		<c:otherwise>
+			<fmt:setLocale value='${pageContext.request.locale}' scope='request' />
+		</c:otherwise>
+	</c:choose>
+	<fmt:setBundle basename="/messages/ZtMsg" scope="request" force="true"/>
+	<c:set var='localeId' value="${mailbox.prefs.locale}" scope="request"/>
+	<c:set var="initialMailSearch" value="${mailbox.accountInfo.prefs.mailInitialSearch}"/>
+	<c:if test="${fn:startsWith(initialMailSearch, 'in:')}">
+		<c:set var="path" value="${fn:substring(initialMailSearch, 3, -1)}"/>
+	</c:if>
 
-    <c:set var="authcookie" value="${cookie.ZM_AUTH_TOKEN.value}"/>
-    <%
-        java.lang.String authCookie = (String) pageContext.getAttribute("authcookie");
-        ZAuthToken auth = new ZAuthToken(null, authCookie, null);
-    %>
+	<c:set var="authcookie" value="${cookie.ZM_AUTH_TOKEN.value}"/>
+	<%
+		java.lang.String authCookie = (String) pageContext.getAttribute("authcookie");
+		ZAuthToken auth = new ZAuthToken(null, authCookie, null);
+	%>
 
-    <zm:getInfoJSON var="getInfoJSON" authtoken="<%= auth %>" dosearch="true" itemsperpage="20" types="conversation"
-                    folderpath="${path}" sortby="dateDesc" fullconversation="true"/>
+	<zm:getInfoJSON var="getInfoJSON" authtoken="<%= auth %>" dosearch="true" itemsperpage="20" types="conversation"
+					folderpath="${path}" sortby="dateDesc" fullconversation="true"/>
 </c:catch>
 <c:if test="${not empty exception}">
-    <zm:getException var="error" exception="${exception}"/>
-    <c:redirect url="/?loginOp=relogin&client=touch&loginErrorCode=${error.code}"/>
+	<zm:getException var="error" exception="${exception}"/>
+	<c:redirect url="/?loginOp=relogin&client=touch&loginErrorCode=${error.code}"/>
 </c:if>
 
 <!DOCTYPE HTML>
@@ -59,82 +59,84 @@
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
 -->
-    <!-- Detect browser support for javascript, if not redirect to /t/noscript.jsp page -->
-   	<noscript>
-   		<meta http-equiv="Refresh" content="0;url=/t/noscript.jsp" >
-   	</noscript>
-    <meta charset="UTF-8">
-    <c:set var="version" value="${initParam.zimbraCacheBusterVersion}"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=1">
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
-    <title><fmt:message key="zimbraTitle"/></title>
-    <link rel="stylesheet" type="text/css" href="<c:url value='/css/ztouch.css'>
+	<!-- Detect browser support for javascript, if not redirect to /t/noscript.jsp page -->
+	<noscript>
+		<meta http-equiv="Refresh" content="0;url=/t/noscript.jsp" >
+	</noscript>
+	<meta charset="UTF-8">
+	<c:set var="version" value="${initParam.zimbraCacheBusterVersion}"/>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=1">
+	<meta name="apple-mobile-web-app-capable" content="yes" />
+	<meta name="apple-mobile-web-app-status-bar-style" content="black" />
+	<title><fmt:message key="zimbraTitle"/></title>
+	<link rel="stylesheet" type="text/css" href="<c:url value='/css/ztouch.css'>
 		<c:param name="v" value="${version}" />
 	</c:url>">
-    <style type="text/css">
-        html, body {
-            height: 100% !important;
-        }
+	<style type="text/css">
+		HTML, BODY {
+			height: 100% !important; /* why isn't this in /css/ztouch.css and why important? */
+		}
 
-        <c:if test="${ua.isiPhone or ua.isiPod}">
-            /* Put CSS for iPhone/iPad layouts in here*/
-            @media only screen and (max-device-width: 480px) and (orientation:portrait) {
-                .ImgLoginBanner {
-                    width: 10.25em;
-                }
-            }
+		<c:if test="${ua.isiPhone or ua.isiPod}">
+			@media only screen and (max-device-width: 480px) and (orientation:portrait) {
+				/* Put CSS for iPhone/iPod PORTRAIT layouts in here*/
+				/*.LoginScreen H1, .SplashScreen H1{
+					margin-top: 2em;
+				}*/
+			}
 
-            @media only screen and (max-device-width: 480px) and (orientation:landscape) {
+			@media only screen and (max-device-width: 480px) and (orientation:landscape) {
+				/* Put CSS for iPhone/iPod LANDSCAPE layouts in here*/
+				/*.LoginScreen H1, .SplashScreen H1 {
+					margin-top: 2em;
+				}*/
+			}
+		</c:if>
 
-            }
-        </c:if>
+		<c:if test="${ua.isTouchiPad}">
+			@media only screen and (min-device-width: 481px) and (max-device-width: 1024px) and (orientation:portrait) {
+				/* Put CSS for iPad PORTRAIT layouts in here */
+				/*.LoginScreen H1, .SplashScreen H1 {
+					margin-top: 2em;
+				}*/
+			}
 
-        <c:if test="${ua.isTouchiPad}">
-            @media only screen and (min-device-width: 481px) and (max-device-width: 1024px) and (orientation:portrait) {
-                /* Put CSS for iPad PORTRAIT layouts in here */
-                .ImgLoginBanner {
-                    height: 3.75em;
-                }
-            }
+			@media only screen and (min-device-width: 481px) and (max-device-width: 1024px) and (orientation:landscape) {
+				/* Put CSS for iPad LANDSCAPE layouts in here */
+			}
+		</c:if>
 
-            @media only screen and (min-device-width: 481px) and (max-device-width: 1024px) and (orientation:landscape) {
-                /* Put CSS for iPad LANDSCAPE layouts in here */
-            }
-        </c:if>
+	</style>
 
-    </style>
+	<jsp:include page="../public/Resources.jsp">
+		<jsp:param name="res" value="ZtMsg"/>
+	</jsp:include>
+	<%
+		String debug = request.getParameter("debug");
+	%>
 
-    <jsp:include page="../public/Resources.jsp">
-        <jsp:param name="res" value="ZtMsg"/>
-    </jsp:include>
-    <%
-        String debug = request.getParameter("debug");
-    %>
+	<script type="text/javascript">
 
-    <script type="text/javascript">
+		var batchInfoResponse = ${getInfoJSON};
+		var debugLevel = "<%= (debug != null) ? debug : "" %>";
+		window.inlineData = {
+			header:batchInfoResponse.Header,
+			response:batchInfoResponse.Body.BatchResponse,
+			debugLevel:debugLevel
+		};
+	</script>
 
-        var batchInfoResponse = ${getInfoJSON};
-        var debugLevel = "<%= (debug != null) ? debug : "" %>";
-        window.inlineData = {
-            header:batchInfoResponse.Header,
-            response:batchInfoResponse.Body.BatchResponse,
-	        debugLevel:debugLevel
-        };
-    </script>
-
-    <!-- The line below must be kept intact for Sencha Command to build your application -->
-    <script id="microloader" type="text/javascript" src="touch/microloader/development.js"></script>
+	<!-- The line below must be kept intact for Sencha Command to build your application -->
+	<script id="microloader" type="text/javascript" src="touch/microloader/development.js"></script>
 </head>
 <body>
 
 <!-- BEGIN SPLASH SCREEN -->
 <div id='appLoadingIndicator' class='SplashScreen'>
-    <div class="center">
-        <h1><div class='ImgLoginBanner'></div></h1>
-        <div>&nbsp;</div>
-        <div class="SplashScreenProgressBar"></div>
-    </div>
+	<div class="center">
+		<h1><div class='ImgLoginBanner'></div></h1>
+		<div class="SplashScreenProgressBar"></div>
+	</div>
 </div>
 <!-- END SPLASH SCREEN -->
 </body>

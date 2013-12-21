@@ -13,92 +13,166 @@
  * ***** END LICENSE BLOCK *****
  */
 
+
+/* Common Styles for Login and Splash */
+
 BODY {
-    font-family: "Helvetica Neue",Helvetica,Arial,"Liberation Sans",sans-serif;
-    font-size: 1em;
+	font-family:"Helvetica Neue",Helvetica,Arial,"Liberation Sans",sans-serif;
+	font-size:1em;
+	margin:0;
 }
 
-.LoginScreen {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    background-color: #FFFFFF;
+.LoginScreen,
+.SplashScreen {
+	background-color:white;
+	height:100%;
+	left:0;
+	min-height:640px;
+	overflow:hidden;
+	position:absolute;
+	top:0;
+	width:100%;
 }
 
-.LoginScreen .center {
-    left:25%;
-    overflow:visible;
-    position:absolute;
-    right:25%;
+.LoginScreen .center,
+.SplashScreen .center {
+	left:50%;
+	margin-left:-150px;
+	overflow:visible;
+	position:absolute;
+	width:300px;
 }
 
-.LoginScreen .zLoginField {
-    border-radius: 4px;
-    height: 1.25em;
-    font-size: 1.25em;
-    margin-bottom: 0.75em;
+.x-phone .LoginScreen H1,
+.x-phone .SplashScreen H1 {
+	margin-top:.5em;
+	margin-bottom:1em;
+}
+
+.LoginScreen H1,
+.SplashScreen H1 {
+	margin-top:1em;
+	margin-bottom:2em;
 }
 
 .ImgLoginBanner {
-    cursor: pointer;
-    background: url(/t/resources/images/LoginBanner.png) no-repeat bottom;
-    height: 2.75em;
-    width: 100%;
+	background:url('/t/resources/images/login_banner.png') no-repeat bottom;
+	cursor:pointer;
+	height:85px;
+	width:300px;
+}
+
+
+/* Login Screen */
+
+.LoginScreen .zLoginField {
+	border:1px solid #CCC;
+	border-radius:4px;
+	height:1.25em;
+	font-size:1.25em;
+	margin-bottom:0.75em;
+}
+
+.x-android .LoginScreen .zLoginFieldDiv {
+	border-color:#999;
+	border-style:solid;
+	border-width:0 1px 1px;
+	border-radius:0px;
+	height:.5em;
+	margin-bottom:1.75em;
+	margin-top:3em;
+	overflow:visible;
+	position:relative;
+}
+
+.x-android .LoginScreen .zLoginField {
+	border:none;
+	height:1.25em;
+	font-size:1.25em;
+	position:absolute;
+	top:-1.5em;
+	left:2px;
+	right:2px;
 }
 
 .LoginButton {
-    border: none;
-    -webkit-appearance: none;
-    background-color: #FFFFFF;
-    color: #BFBFBF;
-    font-size: 1.25em;
-    margin-top: 0.25em;
+	border:none;
+	background-color:transparent;;
+	color:#999; /* disabled color by default */
+	font-size:1.5em;
+	line-height:2em;
+	margin-top:1em;
+	-webkit-appearance:none;
+}
+
+.x-phone .LoginButton {
+	margin-top:.5em;
+}
+
+.LoginButton.enabled {
+	color:#0087C3;
+}
+
+.x-android .LoginButton {
+	border:1px solid #CCC;
+	border-radius:0px;
+	background-color:#CCC;
+	color:#999;
+	font-size:1.5em;
+	line-height:2em;
+	margin-top:0.25em;
+	width:100%;
+	-webkit-appearance:none;
+}
+
+.x-android .LoginButton.enabled {
+	border-color:#999;
+	color:#333;
 }
 
 .LoginScreen #ZLoginErrorPanel {
-    background-color: #FFFF99;
-    border: 0 none;
-    border-radius: 8px;
-    margin: 0 0 1.25em 0;
-    padding: 0.5em 1em;
+	background-color:#FFFF99;
+	border:none;
+	border-radius:8px;
+	margin:0 0 1.25em;
+	padding:0.5em 1em;
 }
 
 .LoginScreen .Footer {
-    bottom:0;
-    position:absolute;
-    text-align:center;
-    width:100%;
-    z-index:10;
+	bottom:0;
+	position:absolute;
+	text-align:center;
+	width:100%;
+	z-index:10;
 }
 
 .LoginScreen .copyright {
-    color: #BFBFBF;
-    cursor:default;
-    margin-bottom:1.25em;
+	color:#999;
+	cursor:default;
+	font-size:.8em;
+	margin:0 .5em 1em;
 }
 
-.SplashScreen {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    background-color: #FFFFFF;
-}
 
-.SplashScreen .center {
-    left:25%;
-    overflow:visible;
-    position:absolute;
-    right:25%;
-}
+/* Splash Screen */
 
 .SplashScreenProgressBar {
-    background: url(/t/resources/images/SplashScreenProgressBar.GIF) no-repeat bottom;
-    height: 0.75em;
-    text-align: center;
+	background:no-repeat center bottom;
+	margin-top:4em;
+	text-align:center;
+}
+
+/* must keep these separate as an override will load both and the wrong one may show momentarily */
+.x-ios .SplashScreenProgressBar {
+	background-image:url('/t/resources/images/progress_ios.gif');
+	height:64px;
+	margin-left:118px;
+	width:64px;
+}
+
+.x-android .SplashScreenProgressBar {
+	background-image:url('/t/resources/images/progress_android.gif');
+	height:4px;
+	margin-left:22px;
+	width:256px;
 }

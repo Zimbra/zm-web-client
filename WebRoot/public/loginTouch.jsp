@@ -144,19 +144,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=1">
     <meta name="description" content="<fmt:message key="zimbraLoginMetaDesc"/>">
     <link rel="stylesheet" type="text/css" href="<c:url value='/css/ztouch.css'>
-		<c:param name="v" value="${version}" />
-	</c:url>">
+        <c:param name="v" value="${version}" />
+        </c:url>">
     <style type="text/css">
         <c:if test="${ua.isiPhone or ua.isiPod}">
-                /* Put CSS for iPhone/iPad layouts in here*/
+            /* Put CSS for iPhone/iPod layouts in here*/
             .LoginScreen {
                 font-size: 0.5em;
             }
 
             @media only screen and (max-device-width: 480px) and (orientation:portrait) {
-                .ImgLoginBanner {
-                    width: 10.25em;
-                }
+                /*.LoginScreen H1, .SplashScreen H1 {
+                    margin-top: tbd;
+                }*/
             }
 
             @media only screen and (max-device-width: 480px) and (orientation:landscape) {
@@ -167,9 +167,9 @@
         <c:if test="${ua.isTouchiPad}">
             @media only screen and (min-device-width: 481px) and (max-device-width: 1024px) and (orientation:portrait) {
                 /* Put CSS for iPad PORTRAIT layouts in here */
-                .ImgLoginBanner {
-                    height: 3.75em;
-                }
+                /*.LoginScreen H1, .SplashScreen H1 {
+                    margin-top: tbd;
+                }*/
             }
 
             @media only screen and (min-device-width: 481px) and (max-device-width: 1024px) and (orientation:landscape) {
@@ -198,10 +198,10 @@
                 passwd = document.getElementById('password');
 
             if (userName.value.length || passwd.value.length) {
-                loginBtn.style.color = 'blue';
+                loginBtn.className += ' enabled';
             }
             else {
-                loginBtn.style.color = 'grey';
+                loginBtn.className = loginBtn.className.replace( /(?:^|\s)enabled(?!\S)/g , '');
             }
         }
 
@@ -234,11 +234,11 @@
             <form method="post" name="loginForm" action="${formActionUrl}" accept-charset="UTF-8">
                 <input type="hidden" name="loginOp" value="login"/>
                 <div style='text-align: center;'>
-                    <div><input id="username" class="zLoginField" name="username" onkeyup="enableSignIn();" type="text" value="${fn:escapeXml(param.username)}"
+                    <div class='zLoginFieldDiv'><input id="username" class="zLoginField" name="username" onkeyup="enableSignIn();" type="text" value="${fn:escapeXml(param.username)}"
                                 size="25" placeholder="<fmt:message key="username"/>" autocapitalize="off" autocorrect="off"/></div>
-                    <div><input id="password" class="zLoginField" name="password" onkeyup="enableSignIn();" type="password" value=""
+                    <div class='zLoginFieldDiv'><input id="password" class="zLoginField" name="password" onkeyup="enableSignIn();" type="password" value=""
                                 size="25" placeholder="<fmt:message key="password"/>" autocomplete="off"/></div>
-                    <div><input type="submit" id="loginBtn" class="LoginButton" value="<fmt:message key="login"/>" /></div>
+                    <div class='LoginButtonDiv'><input type="submit" id="loginBtn" class="LoginButton" value="<fmt:message key="login"/>" /></div>
                 </div>
             </form>
         </div>
