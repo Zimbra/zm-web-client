@@ -24,14 +24,15 @@
  * The calendar application manages the creation and display of appointments.
  *
  * @param	{DwtControl}	container		the container
+ * @param	{ZmController}	parentController	the parent window controller (set by the child window)
  *
  * @author Conrad Damon
  * 
  * @extends		ZmApp
  */
-ZmCalendarApp = function(container) {
+ZmCalendarApp = function(container, parentController) {
 
-	ZmApp.call(this, ZmApp.CALENDAR, container);
+	ZmApp.call(this, ZmApp.CALENDAR, container, parentController);
 
 	this._addSettingsChangeListeners();
 
