@@ -596,7 +596,7 @@ function(what, folderType, ignoreExisting) {
 				   (!this.isInTrash() && this.hasChild(what.name) && !ignoreExisting) ||
 	               (what.type !== thisType) ||
 				   (what.id === this.id) ||
-				   (what.disallowSubFolder) ||
+				   (this.disallowSubFolder) ||
 				   (appCtxt.multiAccounts && !this.mayContainFolderFromAccount(what.getAccount())) || // cannot move folders across accounts, unless the target is local
                    (this.isRemote() && !this._remoteMoveOk(what)) ||
 				   (what.isRemote() && !this._remoteMoveOk(what)));				// a remote folder can be DnD but not its children

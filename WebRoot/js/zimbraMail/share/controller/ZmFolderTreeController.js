@@ -509,7 +509,7 @@ ZmFolderTreeController.prototype._deleteListener =
 function(ev) {
 	var organizer = this._getActionedOrganizer(ev);
 
-	// bug fix #35405 - accounts with disallowSubFolder flag set cannot be moved to Trash
+	// bug fix #35405 - accounts with disallowSubFolder flag set (eg Yahoo) do not support moving folder to Trash
 	var trashFolder = appCtxt.isOffline ? this.getDataTree().getById(ZmFolder.ID_TRASH) : null;
 	if (trashFolder && trashFolder.disallowSubFolder && organizer.numTotal > 0) {
 		var d = appCtxt.getMsgDialog();
@@ -518,26 +518,32 @@ function(ev) {
 		return;
 	}
 
-	if (organizer.nId == ZmFolder.ID_SPAM || organizer.isInTrash() || (trashFolder && trashFolder.disallowSubFolder)) {
+	// TODO: not sure what SPAM is doing in here - can you delete it?
+	if (organizer.nId === ZmFolder.ID_SPAM || organizer.isInTrash() || (trashFolder && trashFolder.disallowSubFolder)) {
 		this._pendingActionData = organizer;
 		var ds = this._deleteShield = appCtxt.getOkCancelMsgDialog();
 		ds.reset();
 		ds.registerCallback(DwtDialog.OK_BUTTON, this._deleteShieldYesCallback, this, organizer);
 		ds.registerCallback(DwtDialog.CANCEL_BUTTON, this._clearDialog, this, this._deleteShield);
 		var confirm;
-		if (organizer.type == ZmOrganizer.SEARCH) {
+		if (organizer.type === ZmOrganizer.SEARCH) {
 			confirm = ZmMsg.confirmDeleteSavedSearch;
-		} else if (organizer.disallowSubFolder || organizer.isMountpoint) {
-			confirm = ZmMsg.confirmDeleteFolder;
-		} else if (organizer.nId == ZmFolder.ID_TRASH) {
+		}
+		else if (organizer.nId === ZmFolder.ID_TRASH) {
 			confirm = ZmMsg.confirmEmptyTrashFolder;
-		} else {
+		}
+		else if (organizer.nId === ZmFolder.ID_SPAM) {
 			confirm = ZmMsg.confirmEmptyFolder;
+		}
+		else {
+			// TODO: should probably split out msgs by folder type
+			confirm = ZmMsg.confirmDeleteFolder;
 		}
 		var msg = AjxMessageFormat.format(confirm, organizer.getName());
 		ds.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
 		ds.popup();
-	} else {
+	}
+	else {
 		this._doMove(organizer, appCtxt.getById(ZmFolder.ID_TRASH));
 	}
 };
