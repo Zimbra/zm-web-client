@@ -73,10 +73,6 @@
 		<c:param name="v" value="${version}" />
 	</c:url>">
 	<style type="text/css">
-		HTML, BODY {
-			height: 100% !important; /* why isn't this in /css/ztouch.css and why important? */
-		}
-
 		<c:if test="${ua.isiPhone or ua.isiPod}">
 			@media only screen and (max-device-width: 480px) and (orientation:portrait) {
 				/* Put CSS for iPhone/iPod PORTRAIT layouts in here*/

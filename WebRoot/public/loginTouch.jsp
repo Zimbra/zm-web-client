@@ -205,7 +205,28 @@
             }
         }
 
+        function detectUserAgent() {
+            var isiOS = ${ua.isTouchiPad or ua.isiPod or ua.isiPhone},
+                isAndroid = ${ua.isOsAndroid},
+                isTablet = ${ua.isTouchiPad or (ua.isOsAndroid and not ua.isMobile)},
+                isPhone = ${ua.isiPod or ua.isiPhone or (ua.isOsAndroid and ua.isMobile)};
+
+            if (isiOS) {
+                document.body.className = "x-ios";
+            } else if (isAndroid) {
+                document.body.className = "x-android";
+            }
+
+            if (isTablet) {
+                document.body.className += " x-tablet";
+            } else if (isPhone) {
+                document.body.className += " x-phone";
+            }
+        }
+
         function onLoad() {
+
+            detectUserAgent();
             var loginForm = document.loginForm;
             if (loginForm.username) {
                 if (loginForm.username.value != "") {
