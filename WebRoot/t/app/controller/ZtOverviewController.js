@@ -16,7 +16,7 @@
 /**
  * This class represents a controller that manages the mail app's folder list.
  */
-Ext.define('ZCS.controller.mail.ZtFolderListController', {
+Ext.define('ZCS.controller.ZtOverviewController', {
 
     extend: 'Ext.app.Controller',
 
@@ -28,11 +28,11 @@ Ext.define('ZCS.controller.mail.ZtFolderListController', {
 
         refs: {
             // event handlers
-            folderList:         'sheet #' + ZCS.constant.APP_MAIL + 'overview nestedlist',
+            folderList:         'overview nestedlist',
             folderSelector:     'organizeredit nestedlist',
-            newFolderBtn:       '#' + ZCS.constant.APP_MAIL + 'overview button[action=newFolder]',
-            newTagBtn:          '#' + ZCS.constant.APP_MAIL + 'overview button[action=newTag]',
-            editBtn:            '#' + ZCS.constant.APP_MAIL + 'overview button[action=edit]',
+	        newFolderBtn:       'overview button[action=newFolder]',
+	        newTagBtn:          'overview button[action=newTag]',
+            editBtn:            'overview button[action=edit]',
             folderLocBtn:       'organizeredit #folderLocation',
             cancelBtn:          'organizeredit button[action=cancel]',
             saveBtn:            'organizeredit button[action=save]',
@@ -40,14 +40,13 @@ Ext.define('ZCS.controller.mail.ZtFolderListController', {
             deleteTagBtn:       'organizeredit button[action=deleteTag]',
 
             // other
-            overview:           '#' + ZCS.constant.APP_MAIL + 'overview',
             organizerEditPanel: 'organizeredit',
             colorPicker:        'organizeredit colorselector'
         },
 
         control: {
             folderList: {
-                edititemtap:    'doEdit'
+                edititemtap:    'showEdit'
             },
             folderSelector: {
                 edititemtap:        'assignParentFolder',
@@ -97,106 +96,92 @@ Ext.define('ZCS.controller.mail.ZtFolderListController', {
 		ZCS.app.on('notifyRefresh', this.handleRefresh, this);
 	},
 
-	doEdit: function(item, list) {
+	getOverview: function() {
+		return ZCS.session.getCurrentOverview();
+	},
 
-	    var type = item.get('type');
+	getCurrentFolderList: function() {
+		return Ext.ComponentQuery.query('sheet #' + ZCS.session.getActiveApp() + 'overview nestedlist')[0];
+	},
 
-        if (type === ZCS.constant.ORG_FOLDER) {
-            this.showFolderEdit(item, list);
-        }
-        else if (type === ZCS.constant.ORG_TAG) {
-            this.showTagEdit(item, list);
-        }
-    },
+	getEditType: function() {
+		return this.getOrganizerEditPanel().getActiveItem().get('itemId') === 'tagEditCard' ? ZCS.constant.ORG_TAG : ZCS.constant.ORG_FOLDER;
+	},
 
     doSave: function() {
-
-        var organizerEditPanel = this.getOrganizerEditPanel();
-
-        if (organizerEditPanel.getActiveItem().get('itemId') === 'tagEditCard') {
+        if (this.getEditType() === ZCS.constant.ORG_TAG) {
             this.saveTag();
-        } else {
+        }
+        else {
             this.saveFolder();
         }
     },
 
-    showFolderEdit: function(folder, list) {
+	showNewFolder: function () {
+		this.showNew(ZCS.constant.ORG_FOLDER);
+	},
 
-        var organizerEditPanel = this.getOrganizerEditPanel();
+	showNewTag: function () {
+		this.showNew(ZCS.constant.ORG_TAG);
+	},
 
-        // Set the panel up for Edit Folder
-        organizerEditPanel.down('titlebar').setTitle(ZtMsg.editFolder);
-        if (folder.isDeletable()) {
-            this.getDeleteBtn().show();
-        } else {
-            this.getDeleteBtn().hide();
-        }
+	showNew: function(type) {
 
-        // Assign the folder being edited
-        organizerEditPanel.down('#folderName').setValue(folder.get('name'));
-        organizerEditPanel.setFolder(folder);
+		var	isTag = (type === ZCS.constant.ORG_TAG),
+			organizerEditPanel = this.getOrganizerEditPanel(),
+			deleteBtn = isTag ? this.getDeleteTagBtn() : this.getDeleteFolderBtn();
 
-        // Assign its current parent folder
-        this.assignParentFolder(folder.parentNode);
+		organizerEditPanel.down('titlebar').setTitle(isTag ? ZtMsg.newTag : ZtMsg.newFolder);
+		deleteBtn.hide();
 
-        if (!folder.isMovable()) {
-            this.getFolderLocBtn().disable();
-        }
+		if (isTag) {
+			this.getColorPicker().setColor(0);
+		}
+		else {
+			// assign a default parent folder
+			this.assignParentFolder(this.getCurrentFolderList().getLastNode());
+		}
 
-        organizerEditPanel.show();
-    },
+		organizerEditPanel.setActiveItem('#' + type + 'EditCard');
+		organizerEditPanel.show();
+	},
 
-    showNewFolder: function () {
+	showEdit: function(organizer, list) {
 
-        var organizerEditPanel = this.getOrganizerEditPanel(),
-            folderList = this.getFolderList(),
-            parentFolder = folderList.getLastNode();
+		var type = organizer.get('type'),
+			isTag = (type === ZCS.constant.ORG_TAG),
+			organizerEditPanel = this.getOrganizerEditPanel(),
+			deleteBtn = isTag ? this.getDeleteTagBtn() : this.getDeleteFolderBtn();
 
-        // Set the panel up for New Folder
-        organizerEditPanel.down('titlebar').setTitle(ZtMsg.newFolder);
-        this.getDeleteBtn().hide();
+		organizerEditPanel.down('titlebar').setTitle(isTag ? ZtMsg.editTag : ZtMsg.editFolder);
+		if (organizer.isDeletable()) {
+			deleteBtn.show();
+		} else {
+			deleteBtn.hide();
+		}
+		organizerEditPanel.down('#' + type + 'Name').setValue(organizer.get('name'));
 
-        // Assign its default parent folder
-        this.assignParentFolder(parentFolder);
+		if (isTag) {
+			organizerEditPanel.setTag(organizer);
+			this.getColorPicker().setColor(organizer.get('color'));
+		}
+		else {
+			organizerEditPanel.setFolder(organizer);
+			this.assignParentFolder(organizer.parentNode);
+			if (!organizer.isMovable()) {
+				this.getFolderLocBtn().disable();
+			}
+		}
 
-        organizerEditPanel.show();
-    },
-
-    showTagEdit: function (tag, list) {
-
-        var organizerEditPanel  = this.getOrganizerEditPanel(),
-            colorPicker         = this.getColorPicker();
-
-        // Set the panel up for Edit Tag
-        organizerEditPanel.down('titlebar').setTitle(ZtMsg.editTag);
-
-        // Assign the tag being edited
-        organizerEditPanel.down('#tagName').setValue(tag.get('name'));
-        organizerEditPanel.setTag(tag);
-        colorPicker.setColor(tag.get('color'));
-
-        organizerEditPanel.setActiveItem('#tagEditCard');
-        organizerEditPanel.show();
-    },
-
-    showNewTag: function () {
-
-        var organizerEditPanel = this.getOrganizerEditPanel(),
-            colorPicker = this.getColorPicker();
-
-        // Set the panel up for New Tag
-        organizerEditPanel.down('titlebar').setTitle(ZtMsg.newTag);
-        colorPicker.setColor(0);
-
-        organizerEditPanel.setActiveItem('#tagEditCard');
-        organizerEditPanel.show();
-    },
+		organizerEditPanel.setActiveItem('#' + type + 'EditCard');
+		organizerEditPanel.show();
+	},
 
     assignParentFolder: function (folder, folderList) {
 
         var overview = this.getOverview(),
             organizerEditPanel = this.getOrganizerEditPanel(),
-            folderName = folder.parentNode == null ? 'Mail' : folder.get('name');
+            folderName = folder.parentNode ? folder.get('name') : ZCS.constant.APP_NAME[ZCS.session.getActiveApp()];
 
         this.getFolderLocBtn().setText(folderName);
         organizerEditPanel.setParentFolder(folder);
@@ -254,7 +239,8 @@ Ext.define('ZCS.controller.mail.ZtFolderListController', {
         if (folderList._lastNode !== rootNode) {
             // reset folder selector to top level which triggers activeitemchange
             folderList.goToNode(rootNode);
-        } else {
+        }
+        else {
             // if already on first card just update filter manually
             this.filterFolderList(folderList);
         }
@@ -263,17 +249,18 @@ Ext.define('ZCS.controller.mail.ZtFolderListController', {
 
     toggleEditState: function() {
 
-        var overview = this.getOverview(),
+	    var overview = this.getOverview(),
             organizerEditToolbar = overview.getDockedItems()[0],
             button = this.getEditBtn(),
-            folderList = this.getFolderList();
+            folderList = this.getCurrentFolderList();
 
         if (folderList.editing) {
-            button.setText('Edit');
+            button.setText(ZtMsg.edit);
             folderList.editing = undefined;
             organizerEditToolbar.hide();
-        } else {
-            button.setText('Done');
+        }
+        else {
+            button.setText(ZtMsg.done);
             folderList.editing = true;
             organizerEditToolbar.show();
         }

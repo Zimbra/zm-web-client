@@ -178,6 +178,7 @@ Ext.define('ZCS.model.ZtOrganizer', {
 		 */
 		addOtherFields: function(organizer, app, context, hasChildren) {
 
+			app = app || ZCS.constant.FOLDER_APP[organizer.type] || 'default';
 			organizer.id = ZCS.model.ZtOrganizer.getOrganizerId(organizer.zcsId, app, context);
 			organizer.parentItemId = ZCS.model.ZtOrganizer.getOrganizerId(organizer.parentZcsId, app, context);
 
@@ -438,12 +439,12 @@ Ext.define('ZCS.model.ZtOrganizer', {
 	/**
 	 * Returns true if the given item can be moved to this folder.
 	 *
-	 * @param {ZtItem}      item        item
-	 * @return {Boolean}
+	 * @param {ZtItem|ZtOrganizer}  what    the item or folder being moved
+	 * @return {Boolean}    true if the item or folder can be moved to this folder
 	 */
-	mayContain: function(item) {
+	mayContain: function(what) {
 
-		if (!item) {
+		if (!what) {
 			return true;
 		}
 		if (this.isFeed()) {
@@ -451,26 +452,58 @@ Ext.define('ZCS.model.ZtOrganizer', {
 		}
 
 		var	myId = this.get('zcsId'),
-			itemFolderId = item.get('folderId'),
-			curFolder = ZCS.session.getCurrentSearchOrganizer(),
-			curFolderId = curFolder ? curFolder.get('zcsId') : null,
-			isDraftsFolder = ZCS.util.folderIs(this, ZCS.constant.ID_DRAFTS),
+			myParentId = this.get('parentZcsId'),
+			myType = this.get('type'),
+			myFolderType = (myType === ZCS.constant.ORG_FOLDER) ? this.get('folderType') : null,
 			isTrashFolder = ZCS.util.folderIs(this, ZCS.constant.ID_TRASH),
-			isDraft = item.get('isDraft');
+			isJunkFolder = ZCS.util.folderIs(this, ZCS.constant.ID_JUNK),
+			isDraftsFolder = ZCS.util.folderIs(this, ZCS.constant.ID_DRAFTS);
 
-		// Can't move an item to its current folder. Also, assume that there's no reason to
-		// move something to the folder the user is viewing.
-		if (myId === itemFolderId || myId === curFolderId) {
-			return false;
+		if (what instanceof ZCS.model.ZtOrganizer) {
+
+			var type = what.get('type'),
+				folderType = (type === ZCS.constant.ORG_FOLDER) ? what.get('folderType') : null,
+				id = what.get('zcsId'),
+				parentId = what.get('parentZcsId');
+
+			// folders can only be moved into a parent of the same folder type
+			if (!folderType || folderType !== myFolderType) {
+				return false;
+			}
+
+			// can't move folder into itself, its current parent, or a child folder
+			if (id === myId || parentId === myId || id === myParentId) {
+				return false;
+			}
+
+			// Drafts and Junk cannot have subfolders
+			if (isTrashFolder || isJunkFolder) {
+				return false;
+			}
 		}
+		else if (what instanceof ZCS.model.ZtItem) {
 
-		// can move drafts into Trash or Drafts
-		if (isDraft && !isDraftsFolder && !isTrashFolder) {
-			return false;
+			var itemFolderId = what.get('folderId'),
+				isDraft = what.get('isDraft');
+
+			// can't move an item to its current folder
+			// just check messages for now
+			// TODO: iterate through conv messages to see if at least one is not in this folder
+			if (myId === itemFolderId && what instanceof ZCS.model.mail.ZtMailMsg) {
+				return false;
+			}
+
+			// a draft can only be moved into Trash or Drafts
+			if (isDraft && !isDraftsFolder && !isTrashFolder) {
+				return false;
+			}
+
+			// only drafts can be moved into Drafts
+			if (isDraftsFolder && !isDraft) {
+				return false;
+			}
 		}
-
-		// only drafts can be moved into Drafts
-		if (isDraftsFolder && !isDraft) {
+		else {
 			return false;
 		}
 
@@ -478,7 +511,7 @@ Ext.define('ZCS.model.ZtOrganizer', {
 	},
 
 	/**
-	 * Returns true if this folder is movable.
+	 * Returns true if this organizer is movable.
 	 */
 	isMovable: function () {
 		// TO DO - implement this
@@ -486,12 +519,10 @@ Ext.define('ZCS.model.ZtOrganizer', {
 	},
 
 	/**
-	 * Returns true if this folder is deletable.
+	 * Returns true if this organizer is deletable.
 	 */
 	isDeletable: function () {
 		// TO DO - implement this
 		return !ZCS.util.folderIs(this, ZCS.constant.ID_TRASH);
 	}
-
 });
-

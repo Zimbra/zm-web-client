@@ -138,9 +138,9 @@ Ext.define('ZCS.view.ZtOrganizerEdit', {
             selectorStore;
 
         // Prepare a store for the folder-selector list
-        selectorData = ZCS.session.getOrganizerData('mail', null, 'selector');
+        selectorData = ZCS.session.getOrganizerData(null, null, 'selector');
         selectorData = selectorData.filter(function (item) {
-	        return item.folderType === 'mailFolder';
+	        return item.type === 'folder';
         });
         selectorStore = Ext.create('ZCS.store.ZtOrganizerStore', {
             storeId:    'foldereditlocationselector',

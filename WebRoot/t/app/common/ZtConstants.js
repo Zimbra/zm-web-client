@@ -82,7 +82,8 @@ ZCS.constant.IS_APP = ZCS.util.arrayAsLookupHash(ZCS.constant.APPS);
 
 // Apps here support editing of their overviews (add, modify, delete folders)
 ZCS.constant.EDITABLE_OVERVIEW_APPS = [
-    ZCS.constant.APP_MAIL
+    ZCS.constant.APP_MAIL,
+	ZCS.constant.APP_CONTACTS
 ];
 
 // Turn features on/off

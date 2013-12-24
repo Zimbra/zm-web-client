@@ -256,6 +256,7 @@ Ext.define('ZCS.common.ZtUserSession', {
 	 * within the session.
 	 *
 	 * @param {string}  app     app name
+	 * @param {string}  type    organizer type
 	 * @return {object}     tree (each node is a ZtOrganizer)
 	 */
 	getOrganizerData: function(app, type, context) {
