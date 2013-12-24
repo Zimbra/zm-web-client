@@ -1312,7 +1312,9 @@ function(msg, container) {
 	var subject = msg.subject || ZmMsg.noSubject;
 	var dateFormatter = AjxDateFormat.getDateTimeInstance(AjxDateFormat.LONG, AjxDateFormat.SHORT);
 	// bug fix #31512 - if no sent date then display received date
-	var dateString = dateFormatter.format(new Date(msg.sentDate || msg.date));
+	var date = new Date(msg.sentDate || msg.date);
+	var dateString = AjxDateUtil.computeDateStr(new Date(), date);
+	var dateTooltip = appCtxt.get(ZmSetting.BROWSER_TOOLTIPS_ENABLED) ? dateFormatter.format(date) : "";
 
 	var additionalHdrs = [];
 	var invite = msg.invite;
@@ -1373,6 +1375,7 @@ function(msg, container) {
 		subject:			subject,
 		imageURL:			imageURL,
 		dateString:			dateString,
+		dateTooltip:		dateTooltip,
 		hasAttachments:		(attachmentsCount != 0),
 		attachmentsCount:	attachmentsCount,
 		bwo:                ai.bwo,

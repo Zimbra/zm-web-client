@@ -23,7 +23,7 @@
 								<td class='LabelColValue SubjectCol' valign=top width=100%>
 									<$= data.subject $>
 								</td>
-								<td class='LabelColValue DateCol' align=right>${dateString}</td>
+								<td class='LabelColValue DateCol' align=right title='${dateTooltip}'>${dateString}</td>
 								<td>&nbsp;</td>
 							</tr>
 						</table>
@@ -160,7 +160,7 @@
 								<td class='LabelColValue SubjectCol ${subjChangeClass}' valign=top width=100%>
 									<$= data.subject $>
 								</td>
-								<td class='LabelColValue DateCol' align=right>${dateString}</td>
+								<td class='LabelColValue DateCol' align=right title='${dateTooltip}'>${dateString}</td>
 							</tr>
 						</table>
 						<$ } $>
