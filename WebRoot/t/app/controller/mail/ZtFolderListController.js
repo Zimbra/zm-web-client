@@ -279,40 +279,61 @@ Ext.define('ZCS.controller.mail.ZtFolderListController', {
 
         var organizerEditPanel = this.getOrganizerEditPanel(),
             folder = organizerEditPanel.getFolder(),
-	        folderName = organizerEditPanel.down('#folderName').getValue(),
+	        newFolderName = organizerEditPanel.down('#folderName').getValue(),
             newParentFolder = organizerEditPanel.getParentFolder(),
-	        parentId = (newParentFolder && newParentFolder.get('zcsId')) || ZCS.constant.ID_ROOT;
+	        newParentId = (newParentFolder && newParentFolder.get('zcsId')) || ZCS.constant.ID_ROOT,
+	        app = ZCS.session.getActiveApp(),
+	        options = {};
 
 	    if (!folder) {
 		    folder = Ext.create('ZCS.model.ZtOrganizer', {
 			    type:           ZCS.constant.ORG_FOLDER,
-			    name:           folderName,
-			    parentZcsId:    parentId
+			    name:           newFolderName,
+			    parentZcsId:    newParentId
 		    });
+		    options.view = ZCS.constant.FOLDER_VIEW[app];
+		    folder.save(options);
 	    }
 	    else {
-		    folder.set('name', folderName);
-		    folder.set('parentZcsId', parentId);
+		    if (newFolderName !== folder.get('name')) {
+			    options.name = newFolderName;
+			    folder.save(options);
+		    }
+		    if (newParentId !== folder.get('parentZcsId')) {
+			    options.parentId = newParentId;
+			    folder.save(options);
+		    }
 	    }
 
-	    var app = ZCS.session.getActiveApp();
-	    folder.save({
-		    view:       ZCS.constant.FOLDER_VIEW[app]
-	    });
-
         this.hideEditPanel();
     },
 
-    deleteFolder: function () {
+    deleteFolder: function() {
 
         var organizerEditPanel = this.getOrganizerEditPanel(),
-            folder = organizerEditPanel.getFolder();
+            folder = organizerEditPanel.getFolder(),
+	        options = {};
 
-        console.log('Delete folder');
+	    if (folder) {
+		    if (folder.deleteIsHard()) {
+			    var deleteMsg = Ext.String.format(ZtMsg.hardDeleteFolderText, folder.get('name'));
+			    Ext.Msg.confirm(ZtMsg.hardDeleteFolderTitle, deleteMsg, function(buttonId) {
+				    if (buttonId === 'yes') {
+					    options.delete = true;
+					    folder.save(options);
+				    }
+			    }, this);
+		    }
+		    else {
+			    options.trash = true;
+			    folder.save(options);
+		    }
+	    }
+
         this.hideEditPanel();
     },
 
-    saveTag: function () {
+    saveTag: function() {
 
         var organizerEditPanel = this.getOrganizerEditPanel(),
             tag = organizerEditPanel.getTag(),

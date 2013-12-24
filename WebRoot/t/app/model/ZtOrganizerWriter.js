@@ -57,9 +57,41 @@ Ext.define('ZCS.model.ZtOrganizerWriter', {
 		else if (action === 'read') {
 
 			// GetFolderRequest
-		} else if (action === 'update') {
 
-			// FolderActionRequest
+		}
+		else if (action === 'update') {
+
+			var	organizer = request.getRecords()[0],
+				type = organizer.get('type');
+
+			if (type === ZCS.constant.ORG_FOLDER) {
+				json = this.getSoapEnvelope(request, data, 'FolderAction');
+				methodJson = json.Body.FolderActionRequest;
+				var action = methodJson.action = {
+					id: organizer.get('zcsId')
+				};
+				if (itemData.name) {
+					action.op = 'rename';
+					action.name = itemData.name;
+				}
+				else if (itemData.trash) {
+					action.op = 'trash';
+				}
+				else if (itemData.delete) {
+					action.op = 'delete';
+				}
+				else if (itemData.parentId) {
+					action.op = 'move';
+					action.l = itemData.parentId;
+				}
+			}
+			else if (type === ZCS.constant.ORG_TAG) {
+				json = this.getSoapEnvelope(request, data, 'CreateTag');
+				methodJson = json.Body.CreateTagRequest;
+				var tag = methodJson.tag = {};
+				tag.name = organizer.get('name');
+				tag.color = organizer.get('color');
+			}
 		}
 
 		// Do not pass query in query string.

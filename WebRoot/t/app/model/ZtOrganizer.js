@@ -273,16 +273,63 @@ Ext.define('ZCS.model.ZtOrganizer', {
 		}
 	},
 
+	/**
+	 * Returns true if this organizer is some type of folder (mail folder, address book, calendar, etc).
+	 *
+	 * @returns {boolean}   true if this organizer is some type of folder (mail folder, address book, calendar, etc)
+	 */
 	isFolder: function() {
 		return this.get('type') === ZCS.constant.ORG_FOLDER;
 	},
 
+	/**
+	 * Returns true if this is a system folder (Inbox, Trash, Contacts, etc).
+	 *
+	 * @returns {boolean}   true if this is a system folder (Inbox, Trash, Contacts, etc)
+	 */
 	isSystem: function() {
 		return this.isFolder() && (ZCS.util.localId(this.get('zcsId')) <= ZCS.constant.MAX_SYSTEM_ID);
 	},
 
+	/**
+	 * Returns true if this organizer is a feed (RSS or Atom)
+	 *
+	 * @returns {boolean}   true if this organizer is a feed (RSS or Atom)
+	 */
 	isFeed: function() {
 		return !!(this.get('url'));
+	},
+
+	/**
+	 * Returns true if this folder is the given folder or a subfolder of it.
+	 * @param {String}  folderId        ID of folder to check against
+	 * @returns {boolean}   true if this folder is the given folder or a subfolder of it
+	 */
+	isUnder: function(folderId) {
+
+		if (ZCS.util.folderIs(this, folderId)) {
+			return true;
+		}
+
+		var folder = ZCS.cache.get(this.get('parentItemId'));
+		while (folder && folder.get('zcsId') !== ZCS.constant.ID_ROOT) {
+			if (ZCS.util.folderIs(folder, folderId)) {
+				return true;
+			}
+			folder = ZCS.cache.get(folder.get('parentItemId'));
+		}
+
+		return false;
+	},
+
+	/**
+	 * Returns true if deleting an item from this folder results in permanent deletion (rather
+	 * than just moving to Trash).
+	 *
+	 * @returns {boolean}   true if deleting an item from this folder results in permanent deletion
+	 */
+	deleteIsHard: function() {
+		return this.isUnder(ZCS.constant.ID_TRASH) || this.isUnder(ZCS.constant.ID_JUNK);
 	},
 
 	/**
@@ -353,6 +400,8 @@ Ext.define('ZCS.model.ZtOrganizer', {
 		}
 		if (modify.name) {
 			this.set('name', data.name);
+			// need to do this because Sencha does not recalculate converted fields
+			this.set('title', this.get('title'));
 		}
 		if (modify.absFolderPath) {
 			this.set('path', data.path);
