@@ -28,15 +28,16 @@ Ext.define('ZCS.controller.mail.ZtFolderListController', {
 
         refs: {
             // event handlers
-            folderList:     'sheet #' + ZCS.constant.APP_MAIL + 'overview nestedlist',
-            folderSelector: 'organizeredit nestedlist',
-            newFolderBtn:   '#' + ZCS.constant.APP_MAIL + 'overview button[action=newFolder]',
-            newTagBtn:      '#' + ZCS.constant.APP_MAIL + 'overview button[action=newTag]',
-            editBtn:        '#' + ZCS.constant.APP_MAIL + 'overview button[action=edit]',
-            folderLocBtn:   'organizeredit #folderLocation',
-            cancelBtn:      'organizeredit button[action=cancel]',
-            saveBtn:        'organizeredit button[action=save]',
-            deleteBtn:      'organizeredit button[action=delete]',
+            folderList:         'sheet #' + ZCS.constant.APP_MAIL + 'overview nestedlist',
+            folderSelector:     'organizeredit nestedlist',
+            newFolderBtn:       '#' + ZCS.constant.APP_MAIL + 'overview button[action=newFolder]',
+            newTagBtn:          '#' + ZCS.constant.APP_MAIL + 'overview button[action=newTag]',
+            editBtn:            '#' + ZCS.constant.APP_MAIL + 'overview button[action=edit]',
+            folderLocBtn:       'organizeredit #folderLocation',
+            cancelBtn:          'organizeredit button[action=cancel]',
+            saveBtn:            'organizeredit button[action=save]',
+            deleteFolderBtn:    'organizeredit button[action=deleteFolder]',
+            deleteTagBtn:       'organizeredit button[action=deleteTag]',
 
             // other
             overview:           '#' + ZCS.constant.APP_MAIL + 'overview',
@@ -70,8 +71,11 @@ Ext.define('ZCS.controller.mail.ZtFolderListController', {
             saveBtn: {
                 tap:            'doSave'
             },
-            deleteBtn: {
+            deleteFolderBtn: {
                 tap:            'deleteFolder'
+            },
+            deleteTagBtn: {
+                tap:            'deleteTag'
             }
         }
     },
@@ -292,43 +296,16 @@ Ext.define('ZCS.controller.mail.ZtFolderListController', {
 			    parentZcsId:    newParentId
 		    });
 		    options.view = ZCS.constant.FOLDER_VIEW[app];
-		    folder.save(options);
 	    }
 	    else {
 		    if (newFolderName !== folder.get('name')) {
 			    options.name = newFolderName;
-			    folder.save(options);
 		    }
 		    if (newParentId !== folder.get('parentZcsId')) {
 			    options.parentId = newParentId;
-			    folder.save(options);
 		    }
 	    }
-
-        this.hideEditPanel();
-    },
-
-    deleteFolder: function() {
-
-        var organizerEditPanel = this.getOrganizerEditPanel(),
-            folder = organizerEditPanel.getFolder(),
-	        options = {};
-
-	    if (folder) {
-		    if (folder.deleteIsHard()) {
-			    var deleteMsg = Ext.String.format(ZtMsg.hardDeleteFolderText, folder.get('name'));
-			    Ext.Msg.confirm(ZtMsg.hardDeleteFolderTitle, deleteMsg, function(buttonId) {
-				    if (buttonId === 'yes') {
-					    options.delete = true;
-					    folder.save(options);
-				    }
-			    }, this);
-		    }
-		    else {
-			    options.trash = true;
-			    folder.save(options);
-		    }
-	    }
+	    folder.save(options);
 
         this.hideEditPanel();
     },
@@ -337,24 +314,73 @@ Ext.define('ZCS.controller.mail.ZtFolderListController', {
 
         var organizerEditPanel = this.getOrganizerEditPanel(),
             tag = organizerEditPanel.getTag(),
-	        tagName = organizerEditPanel.down('#tagName').getValue(),
-	        color = this.getColorPicker().getColor();
+	        newTagName = organizerEditPanel.down('#tagName').getValue(),
+	        newTagColor = this.getColorPicker().getColor(),
+	        options = {};
 
 	    if (!tag) {
 		    tag = Ext.create('ZCS.model.ZtOrganizer', {
 			    type:   ZCS.constant.ORG_TAG,
-			    name:   tagName,
-			    color:  color
+			    name:   newTagName,
+			    color:  newTagColor
 		    });
 	    }
 	    else {
-		    tag.set('name', tagName);
-		    tag.set('color', color);
+		    if (newTagName !== tag.get('name')) {
+			    options.name = newTagName;
+		    }
+		    if (newTagColor !== tag.get('color')) {
+			    options.color = newTagColor;
+		    }
 	    }
-	    tag.save();
+	    tag.save(options);
 
         this.hideEditPanel();
     },
+
+	deleteFolder: function() {
+
+		var organizerEditPanel = this.getOrganizerEditPanel(),
+			folder = organizerEditPanel.getFolder(),
+			options = {};
+
+		if (folder) {
+			if (folder.deleteIsHard()) {
+				var deleteMsg = Ext.String.format(ZtMsg.hardDeleteFolderText, folder.get('name'));
+				Ext.Msg.confirm(ZtMsg.hardDeleteFolderTitle, deleteMsg, function(buttonId) {
+					if (buttonId === 'yes') {
+						options.delete = true;
+						folder.save(options);
+					}
+				}, this);
+			}
+			else {
+				options.trash = true;
+				folder.save(options);
+			}
+		}
+
+		this.hideEditPanel();
+	},
+
+	deleteTag: function() {
+
+		var organizerEditPanel = this.getOrganizerEditPanel(),
+			tag = organizerEditPanel.getTag(),
+			options = {};
+
+		if (tag) {
+			var deleteMsg = Ext.String.format(ZtMsg.hardDeleteTagText, tag.get('name'));
+			Ext.Msg.confirm(ZtMsg.hardDeleteTagTitle, deleteMsg, function(buttonId) {
+				if (buttonId === 'yes') {
+					options.delete = true;
+					tag.save(options);
+				}
+			}, this);
+		}
+
+		this.hideEditPanel();
+	},
 
 	handleOrganizerCreate: function(folder, notification) {
 		this.addOrganizer(this.getOrganizerEditPanel(), notification, 'selector');

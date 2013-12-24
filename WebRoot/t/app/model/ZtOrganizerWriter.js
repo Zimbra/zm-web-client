@@ -86,11 +86,23 @@ Ext.define('ZCS.model.ZtOrganizerWriter', {
 				}
 			}
 			else if (type === ZCS.constant.ORG_TAG) {
-				json = this.getSoapEnvelope(request, data, 'CreateTag');
-				methodJson = json.Body.CreateTagRequest;
-				var tag = methodJson.tag = {};
-				tag.name = organizer.get('name');
-				tag.color = organizer.get('color');
+
+				json = this.getSoapEnvelope(request, data, 'TagAction');
+				methodJson = json.Body.TagActionRequest;
+				var action = methodJson.action = {
+					id: organizer.get('zcsId')
+				};
+				if (itemData.name) {
+					action.op = 'rename';
+					action.name = itemData.name;
+				}
+				else if (itemData.color) {
+					action.op = 'color';
+					action.color = itemData.color;
+				}
+				else if (itemData.delete) {
+					action.op = 'delete';
+				}
 			}
 		}
 

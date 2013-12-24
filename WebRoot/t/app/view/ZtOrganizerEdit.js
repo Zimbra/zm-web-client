@@ -86,7 +86,7 @@ Ext.define('ZCS.view.ZtOrganizerEdit', {
                 xtype: 'container',
                 items: [{
                     xtype:      'button',
-                    action:     'delete',
+                    action:     'deleteFolder',
                     cls:        'zcs-folder-del-btn',
                     text:       ZtMsg.del,
                     centered:   true
@@ -113,7 +113,16 @@ Ext.define('ZCS.view.ZtOrganizerEdit', {
             }, {
                 xtype:  'colorselector',
                 itemId: 'colorPicker'
-           }]
+           }, {
+	            xtype: 'container',
+	            items: [{
+		            xtype:      'button',
+		            action:     'deleteTag',
+		            cls:        'zcs-folder-del-btn',
+		            text:       ZtMsg.del,
+		            centered:   true
+	            }]
+            }]
         }, {
             xtype:  'container',
             flex:   1,
