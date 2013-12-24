@@ -13,6 +13,9 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+ * @deprecated  as of ZCS 8.5. With bug 84887 we have switched to TinyMCE.
+ */
 ZmDocsEditor = function(params) {
     if (arguments.length == 0) { return; }
     params = Dwt.getParams(arguments, DwtHtmlEditor.PARAMS);
