@@ -52,7 +52,6 @@ Ext.define("ZCS.view.ZtMain", {
 		Ext.each(ZCS.constant.APPS, function(app) {
 			if (ZCS.util.isAppEnabled(app)) {
 				var mainView = {
-					title: ZCS.constant.TAB_TITLE[app],
 					xtype: 'appview',
 					itemId: app + 'view',
 					app: app

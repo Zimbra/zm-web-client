@@ -122,7 +122,7 @@ Ext.define('ZCS.common.ZtUtil', {
 			app;
 
 		app = (parts.length >= 3 && parts[0] === 'ZCS' && parts[2]);
-		return ZCS.constant.TAB_TITLE[app] ? app : '';
+		return ZCS.constant.APP_NAME[app] ? app : '';
 	},
 
 	/**

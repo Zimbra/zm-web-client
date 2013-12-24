@@ -61,7 +61,7 @@ ZCS.constant.POLL_INTERVAL = 120;
 // Max amount of message content to get, in K
 ZCS.constant.MAX_MESSAGE_SIZE = 100;
 
-// Apps
+// Apps (these should be the same names that are used in source paths, eg ZCS.model.mail.ZtConv)
 ZCS.constant.APP_MAIL     = 'mail';
 ZCS.constant.APP_CONTACTS = 'contacts';
 ZCS.constant.APP_CALENDAR = 'calendar';
@@ -80,6 +80,7 @@ ZCS.constant.APPS = [
 ];
 ZCS.constant.IS_APP = ZCS.util.arrayAsLookupHash(ZCS.constant.APPS);
 
+// Apps here support editing of their overviews (add, modify, delete folders)
 ZCS.constant.EDITABLE_OVERVIEW_APPS = [
     ZCS.constant.APP_MAIL
 ];
@@ -97,12 +98,6 @@ ZCS.constant.IS_ENABLED[ZCS.constant.APP_CALENDAR]              = true;
 ZCS.constant.IS_ENABLED[ZCS.constant.FEATURE_ADD_ATTACHMENT]    = true;
 ZCS.constant.IS_ENABLED[ZCS.constant.FEATURE_QUICK_REPLY]       = true;
 ZCS.constant.IS_ENABLED[ZCS.constant.FEATURE_FIND_OBJECTS]      = true;
-
-// Text for tab bar
-ZCS.constant.TAB_TITLE = {};
-ZCS.constant.TAB_TITLE[ZCS.constant.APP_MAIL]       = ZtMsg.mail;
-ZCS.constant.TAB_TITLE[ZCS.constant.APP_CONTACTS]   = ZtMsg.contacts;
-ZCS.constant.TAB_TITLE[ZCS.constant.APP_CALENDAR]   = ZtMsg.calendar;
 
 // Text to show in overview toolbar if we're showing search results (not a folder, saved search, or tag)
 ZCS.constant.DEFAULT_OVERVIEW_TITLE = ZtMsg.searchResults;
