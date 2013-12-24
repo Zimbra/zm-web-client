@@ -14,12 +14,18 @@
  */
 
 
+/** Styles typically assume iOS tablets by default and override to other styles as necessary **/
+
 /* Common Styles for Login and Splash */
 
 BODY {
-	font-family:"Helvetica Neue",Helvetica,Arial,"Liberation Sans",sans-serif;
+	font-family:"Helvetica Neue", Helvetica, sans-serif;
 	font-size:1em;
 	margin:0;
+}
+
+BODY.x-android {
+	font-family:Roboto, "Droid Sans", sans-serif;
 }
 
 .LoginScreen,
@@ -34,6 +40,10 @@ BODY {
 	width:100%;
 }
 
+.x-phone .LoginScreen {
+	min-height:500px;
+}
+
 .LoginScreen .center,
 .SplashScreen .center {
 	left:50%;
@@ -45,8 +55,8 @@ BODY {
 
 .x-phone .LoginScreen H1,
 .x-phone .SplashScreen H1 {
-	margin-top:.5em;
-	margin-bottom:1em;
+	margin-top:1.5em;
+	margin-bottom:2em;
 }
 
 .LoginScreen H1,
@@ -62,16 +72,12 @@ BODY {
 	width:300px;
 }
 
+.x-phone .ImgLoginBanner {
+	margin-left:15%;
+	zoom:0.7;
+}
 
 /* Login Screen */
-
-.LoginScreen .zLoginField {
-	border:1px solid #CCC;
-	border-radius:4px;
-	height:1.25em;
-	font-size:1.25em;
-	margin-bottom:0.75em;
-}
 
 .x-android .LoginScreen .zLoginFieldDiv {
 	border-color:#999;
@@ -85,14 +91,28 @@ BODY {
 	position:relative;
 }
 
+.LoginScreen .zLoginField {
+	border:1px solid #CCC;
+	border-radius:4px;
+	height:1.25em;
+	font-size:1.25em;
+	margin-bottom:0.75em;
+	-webkit-appearance:caret;
+}
+
 .x-android .LoginScreen .zLoginField {
 	border:none;
 	height:1.25em;
 	font-size:1.25em;
+	outline-color:transparent;
 	position:absolute;
-	top:-1.5em;
-	left:2px;
-	right:2px;
+	top:-1.25em;
+	left:5px;
+	right:5px;
+}
+
+.x-phone .LoginScreen .zLoginField {
+	font-size:1em;
 }
 
 .LoginButton {
@@ -106,7 +126,8 @@ BODY {
 }
 
 .x-phone .LoginButton {
-	margin-top:.5em;
+	font-size:1.25em;
+	margin-top:0;
 }
 
 .LoginButton.enabled {
@@ -121,6 +142,7 @@ BODY {
 	font-size:1.5em;
 	line-height:2em;
 	margin-top:0.25em;
+	outline-color:transparent;
 	width:100%;
 	-webkit-appearance:none;
 }
@@ -130,12 +152,24 @@ BODY {
 	color:#333;
 }
 
+.x-android .LoginButton.enabled:active {
+	background-color:#F15922;
+	border-color:#F15922;
+	color:white;
+}
+
 .LoginScreen #ZLoginErrorPanel {
 	background-color:#FFFF99;
 	border:none;
 	border-radius:8px;
 	margin:0 0 1.25em;
 	padding:0.5em 1em;
+}
+
+.x-phone .LoginScreen #ZLoginErrorPanel {
+	font-size:.75em;
+	margin-left:6%;
+	width:80%;
 }
 
 .LoginScreen .Footer {
@@ -150,9 +184,12 @@ BODY {
 	color:#999;
 	cursor:default;
 	font-size:.8em;
-	margin:0 .5em 1em;
+	margin:0 1em 1em;
 }
 
+.x-phone .LoginScreen .copyright {
+	font-size:.7em;
+}
 
 /* Splash Screen */
 

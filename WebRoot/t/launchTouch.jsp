@@ -59,7 +59,7 @@
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
 -->
-	<!-- Detect browser support for javascript, if not redirect to /t/noscript.jsp page -->
+	<%-- Detect browser support for javascript, if not redirect to /t/noscript.jsp page --%>
 	<noscript>
 		<meta http-equiv="Refresh" content="0;url=/t/noscript.jsp" >
 	</noscript>
@@ -72,37 +72,6 @@
 	<link rel="stylesheet" type="text/css" href="<c:url value='/css/ztouch.css'>
 		<c:param name="v" value="${version}" />
 	</c:url>">
-	<style type="text/css">
-		<c:if test="${ua.isiPhone or ua.isiPod}">
-			@media only screen and (max-device-width: 480px) and (orientation:portrait) {
-				/* Put CSS for iPhone/iPod PORTRAIT layouts in here*/
-				/*.LoginScreen H1, .SplashScreen H1{
-					margin-top: 2em;
-				}*/
-			}
-
-			@media only screen and (max-device-width: 480px) and (orientation:landscape) {
-				/* Put CSS for iPhone/iPod LANDSCAPE layouts in here*/
-				/*.LoginScreen H1, .SplashScreen H1 {
-					margin-top: 2em;
-				}*/
-			}
-		</c:if>
-
-		<c:if test="${ua.isTouchiPad}">
-			@media only screen and (min-device-width: 481px) and (max-device-width: 1024px) and (orientation:portrait) {
-				/* Put CSS for iPad PORTRAIT layouts in here */
-				/*.LoginScreen H1, .SplashScreen H1 {
-					margin-top: 2em;
-				}*/
-			}
-
-			@media only screen and (min-device-width: 481px) and (max-device-width: 1024px) and (orientation:landscape) {
-				/* Put CSS for iPad LANDSCAPE layouts in here */
-			}
-		</c:if>
-
-	</style>
 
 	<jsp:include page="../public/Resources.jsp">
 		<jsp:param name="res" value="ZtMsg"/>
@@ -122,18 +91,18 @@
 		};
 	</script>
 
-	<!-- The line below must be kept intact for Sencha Command to build your application -->
+	<%-- The line below must be kept intact for Sencha Command to build your application --%>
 	<script id="microloader" type="text/javascript" src="touch/microloader/development.js"></script>
 </head>
 <body>
 
-<!-- BEGIN SPLASH SCREEN -->
+<%-- BEGIN SPLASH SCREEN --%>
 <div id='appLoadingIndicator' class='SplashScreen'>
-	<div class="center">
+	<div class='center'>
 		<h1><div class='ImgLoginBanner'></div></h1>
 		<div class="SplashScreenProgressBar"></div>
 	</div>
 </div>
-<!-- END SPLASH SCREEN -->
+<%-- END SPLASH SCREEN --%>
 </body>
 </html>

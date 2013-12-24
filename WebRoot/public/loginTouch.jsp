@@ -139,52 +139,21 @@
  * ***** END LICENSE BLOCK *****
 -->
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
-    <title><fmt:message key="zimbraLoginTitle"/></title>
     <c:set var="version" value="${initParam.zimbraCacheBusterVersion}"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=1">
     <meta name="description" content="<fmt:message key="zimbraLoginMetaDesc"/>">
+
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+    <link rel="apple-touch-icon" sizes="57x57" href="/t/resources/icons/Icon.png" />
+    <link rel="apple-touch-icon" sizes="72x72" href="/t/resources/icons/Icon~ipad.png" />
+    <link rel="apple-touch-icon" sizes="114x114" href="/t/resources/icons/Icon@2x.png" />
+    <link rel="apple-touch-icon" sizes="144x144" href="/t/resources/icons/Icon~ipad@2x.png" />
+
+    <title><fmt:message key="zimbraLoginTitle"/></title>
     <link rel="stylesheet" type="text/css" href="<c:url value='/css/ztouch.css'>
         <c:param name="v" value="${version}" />
         </c:url>">
-    <style type="text/css">
-        <c:if test="${ua.isiPhone or ua.isiPod}">
-            /* Put CSS for iPhone/iPod layouts in here*/
-            .LoginScreen {
-                font-size: 0.5em;
-            }
-
-            @media only screen and (max-device-width: 480px) and (orientation:portrait) {
-                /*.LoginScreen H1, .SplashScreen H1 {
-                    margin-top: tbd;
-                }*/
-            }
-
-            @media only screen and (max-device-width: 480px) and (orientation:landscape) {
-
-            }
-        </c:if>
-
-        <c:if test="${ua.isTouchiPad}">
-            @media only screen and (min-device-width: 481px) and (max-device-width: 1024px) and (orientation:portrait) {
-                /* Put CSS for iPad PORTRAIT layouts in here */
-                /*.LoginScreen H1, .SplashScreen H1 {
-                    margin-top: tbd;
-                }*/
-            }
-
-            @media only screen and (min-device-width: 481px) and (max-device-width: 1024px) and (orientation:landscape) {
-                /* Put CSS for iPad LANDSCAPE layouts in here */
-            }
-        </c:if>
-
-        <c:if test="${ua.isOsAndroid}">
-            /* Put CSS for Android device layouts in here */
-            BODY {
-                font-family: "Roboto", Arial, sans-serif;
-            }
-        </c:if>
-
-    </style>
 
     <script type="text/javascript">
         var b = document.documentElement;
@@ -238,7 +207,6 @@
             }
         }
     </script>
-
 </head>
 <body onload="onLoad()">
     <div class="LoginScreen">
@@ -255,11 +223,14 @@
             <form method="post" name="loginForm" action="${formActionUrl}" accept-charset="UTF-8">
                 <input type="hidden" name="loginOp" value="login"/>
                 <div style='text-align: center;'>
-                    <div class='zLoginFieldDiv'><input id="username" class="zLoginField" name="username" onkeyup="enableSignIn();" type="text" value="${fn:escapeXml(param.username)}"
-                                size="25" placeholder="<fmt:message key="username"/>" autocapitalize="off" autocorrect="off"/></div>
-                    <div class='zLoginFieldDiv'><input id="password" class="zLoginField" name="password" onkeyup="enableSignIn();" type="password" value=""
-                                size="25" placeholder="<fmt:message key="password"/>" autocomplete="off"/></div>
-                    <div class='LoginButtonDiv'><input type="submit" id="loginBtn" class="LoginButton" value="<fmt:message key="login"/>" /></div>
+                    <div class='zLoginFieldDiv'><input id="username" class="zLoginField" name="username"
+                        onkeyup="enableSignIn();" type="text" value="${fn:escapeXml(param.username)}" size="25"
+                        placeholder="<fmt:message key="username"/>" autocapitalize="off" autocorrect="off"/></div>
+                    <div class='zLoginFieldDiv'><input id="password" class="zLoginField" name="password"
+                        onkeyup="enableSignIn();" type="password" value="" size="25"
+                        placeholder="<fmt:message key="password"/>" autocomplete="off"/></div>
+                    <div class='LoginButtonDiv'><input type="submit" id="loginBtn" class="LoginButton"
+                        value="<fmt:message key="login"/>" /></div>
                 </div>
             </form>
         </div>
@@ -269,5 +240,7 @@
             </div>
         </div>
     </div>
+    <%-- pre-loads splash screen animated gif - not displayed on login page --%>
+    <div class="SplashScreenProgressBar" style="display:none;"></div>
 </body>
 </html>
