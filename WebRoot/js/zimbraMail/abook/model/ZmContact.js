@@ -303,7 +303,16 @@ ZmContact.X_FIELDS = [
 
 ZmContact.IGNORE_NORMALIZATION = [];
 
+ZmContact.ADDR_PREFIXES = ["work","home","other"];
+ZmContact.ADDR_SUFFIXES = ["Street","City","State","PostalCode","Country"];
+
 ZmContact.updateFieldConstants = function() {
+
+	for (var i = 0; i < ZmContact.ADDR_PREFIXES.length; i++) {
+		for (var j = 0; j < ZmContact.ADDR_SUFFIXES.length; j++) {
+			ZmContact.IGNORE_NORMALIZATION.push(ZmContact.ADDR_PREFIXES[i] + ZmContact.ADDR_SUFFIXES[j]);
+		}
+	}
 
 ZmContact.DISPLAY_FIELDS = [].concat(
 	ZmContact.ADDRESS_FIELDS,

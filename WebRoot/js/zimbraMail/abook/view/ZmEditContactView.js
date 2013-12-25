@@ -386,9 +386,6 @@ ZmEditContactView.LISTS = {
 }; // updateFieldLists
 ZmEditContactView.updateFieldLists();
 
-ZmEditContactView.ADDR_PREFIXES = ["work","home","other"];
-ZmEditContactView.ADDR_SUFFIXES = ["Street","City","State","PostalCode","Country"];
-
 //
 // Data
 //
@@ -523,27 +520,31 @@ ZmEditContactView.prototype.getModifiedAttrs = function() {
 		var value = this.getValue(id);
 		if (id in ZmEditContactView.LISTS) {
 			var items = value;
+			var addressTypeCounts = [];
 			for (var j = 0; j < items.length; j++) {
 				var item = items[j];
 				if (id == "ADDRESS") {
-					var prefix = item.type;
-					var address = null;
-					var needsClear = true;
-					for (var p in item) {
-						if (p == "type") continue;
-						var v = item[p];
-						if (!v) continue;
-						var a = prefix+p;
-						if (!counts[a]) counts[a] = 0;
-						var count = ++counts[a];
-						a = count > 1 ? a+count : a;
-						if (needsClear) {
-							ZmEditContactView.__clearAddressAttributes(attributes,prefix,count);
-							needsClear = false;
+					var type = item.type;
+					addressTypeCounts[type] = addressTypeCounts[type] || 1;
+					var itemAttributes = {};
+					var foundNonEmptyAttr = false;
+					for (var prop in item) {
+						if (prop === "type") {
+							continue;
 						}
-						attributes[a] = v;
+						var value = item[prop];
+						var att = ZmContact.getAttributeName(type + prop, addressTypeCounts[type]);
+						itemAttributes[att] = value;
+						foundNonEmptyAttr = foundNonEmptyAttr || value;
 					}
-				} else {
+					if (foundNonEmptyAttr) {
+						addressTypeCounts[type]++;
+						for (var itemAtt in itemAttributes) {
+							attributes[itemAtt] = itemAttributes[itemAtt];
+						}
+					}
+				}
+				else {
 					var onlyvalue = ZmEditContactView.LISTS[id] && ZmEditContactView.LISTS[id].onlyvalue;
 					var v = onlyvalue ? item : item.value;
 					if (!v) continue;
@@ -976,10 +977,10 @@ function(nattrs,id,prefixes,onlyvalue,listAttrs) {
 			attributes[list.attrs[i]] = true;
 		}
 	}
-	for (var i = 0; i < ZmEditContactView.ADDR_PREFIXES.length; i++) {
-		var prefix = ZmEditContactView.ADDR_PREFIXES[i];
-		for (var j = 0; j < ZmEditContactView.ADDR_SUFFIXES.length; j++) {
-			var suffix = ZmEditContactView.ADDR_SUFFIXES[j];
+	for (var i = 0; i < ZmContact.ADDR_PREFIXES.length; i++) {
+		var prefix = ZmContact.ADDR_PREFIXES[i];
+		for (var j = 0; j < ZmContact.ADDR_SUFFIXES.length; j++) {
+			var suffix = ZmContact.ADDR_SUFFIXES[j];
 			attributes[prefix+suffix] = true;
 		}
 	}
@@ -1003,8 +1004,8 @@ function(nattrs,id,prefixes,onlyvalue,listAttrs) {
  */
 ZmEditContactView.prototype.__initRowsAddress = function(nattrs,id,listAttrs) {
 	var array = [];
-	var prefixes = ZmEditContactView.ADDR_PREFIXES;
-	var suffixes = ZmEditContactView.ADDR_SUFFIXES;
+	var prefixes = ZmContact.ADDR_PREFIXES;
+	var suffixes = ZmContact.ADDR_SUFFIXES;
 	for (var k = 0; k < prefixes.length; k++) {
 		var prefix = prefixes[k];
 		for (var j = 1; true; j++) {
@@ -1029,17 +1030,6 @@ ZmEditContactView.prototype.__initRowsAddress = function(nattrs,id,listAttrs) {
 
 // functions
 
-/**
- * @private
- */
-ZmEditContactView.__clearAddressAttributes = function(attributes, prefix, count) {
-	var suffixes = ZmEditContactView.ADDR_SUFFIXES;
-	for (var i = 0; i < suffixes.length; i++) {
-		var suffix = suffixes[i];
-		var p = [prefix, suffix, count > 1 ? count : ""].join("");
-		attributes[p] = "";
-	}
-};
 
 //
 // Class: ZmEditContactViewImage
@@ -2604,7 +2594,7 @@ ZmEditContactViewAddress.prototype.setValue = function(value) {
 	ZmEditContactViewInputSelect.prototype.setValue.apply(this, arguments);
 	value = value || {};
 	this._select.setSelectedValue(value.type);
-	this._setStreet(value.Street);
+	this._input.setValue("STREET", value.Street);
 	this._input.setValue("CITY", value.City);
 	this._input.setValue("STATE", value.State);
 	this._input.setValue("ZIP", value.PostalCode);
@@ -2616,7 +2606,7 @@ ZmEditContactViewAddress.prototype.setValue = function(value) {
 ZmEditContactViewAddress.prototype.getValue = function() {
 	return {
 		type: this._select.getValue(),
-		Street: this._getStreet(),
+		Street: this._input.getValue("STREET"),
 		City: this._input.getValue("CITY"),
 		State: this._input.getValue("STATE"),
 		PostalCode: this._input.getValue("ZIP"),
@@ -2637,33 +2627,12 @@ ZmEditContactViewAddress.equals = function(a,b) {
 ZmEditContactViewAddress.prototype._setControlIds = function(rowId, index) {
 	var id = this.getHTMLElId();
 	ZmEditContactViewInputSelect.prototype._setControlIds.apply(this, arguments);
-	var fieldIds = ["STREET", "STREET1", "STREET2", "CITY", "STATE", "ZIP", "COUNTRY"];
+	var fieldIds = ["STREET", "CITY", "STATE", "ZIP", "COUNTRY"];
 	for (var i = 0; i < fieldIds.length; i++) {
 		var fieldId = fieldIds[i];
 		var form = this._input.getControl(fieldId);
 		this._setControlId.call(form, form, [id,fieldId].join("_"));
 	}
-};
-
-ZmEditContactViewAddress.prototype._setStreet = function(value) {
-	var street1 = this._input.getControl("STREET1");
-	if (street1) {
-		var lines = value.split("\n");
-		this._input.setValue("STREET1", lines[0]);
-		this._input.setValue("STREET2", lines.slice(1).join(" "));
-	}
-	else {
-		this._input.setValue("STREET", value);
-	}
-};
-ZmEditContactViewAddress.prototype._getStreet = function() {
-	var street1 = this._input.getControl("STREET1");
-	if (street1) {
-		var value1 = this._input.getValue("STREET1");
-		var value2 = this._input.getControl("STREET1") ? this._input.getValue("STREET2") : null;
-		return value2 ? [value1,value2].join("\n") : value1;  
-	}
-	return this._input.getValue("STREET");
 };
 
 ZmEditContactViewAddress.prototype._createInput = function() {
@@ -2677,8 +2646,6 @@ ZmEditContactViewAddress.prototype._createInput = function() {
 			{ id: "STREET", type: "DwtInputField", width: 343, rows: 2,
 				hint: ZmMsg.AB_FIELD_street, params: { forceMultiRow: true }
 			},
-			{ id: "STREET1", type: "DwtInputField", width: 343, hint: ZmMsg.AB_FIELD_street },
-			{ id: "STREET2", type: "DwtInputField", width: 343, hint: ZmMsg.AB_FIELD_street },
 			{ id: "CITY", type: "DwtInputField", width: 160, hint: ZmMsg.AB_FIELD_city },
 			{ id: "STATE", type: "DwtInputField", width: 90, hint: ZmMsg.AB_FIELD_state },
 			{ id: "ZIP", type: "DwtInputField", width: 80, hint: ZmMsg.AB_FIELD_postalCode },

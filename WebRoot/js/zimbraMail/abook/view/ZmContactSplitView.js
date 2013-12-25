@@ -704,8 +704,8 @@ function(data) {
 
 	var itemListData = ZmContactSplitView._getListData(data, ZmMsg.addressLabel);
 	var types = {"work":ZmMsg.work, "home":ZmMsg.home, "other":ZmMsg.other};
-	var prefixes = ZmEditContactView.ADDR_PREFIXES;
-	var suffixes = ZmEditContactView.ADDR_SUFFIXES;
+	var prefixes = ZmContact.ADDR_PREFIXES;
+	var suffixes = ZmContact.ADDR_SUFFIXES;
 	var html = [];
 	for (var i = 0; i < prefixes.length; i++) {
 		var count = 0;
@@ -767,8 +767,8 @@ function(data) {
 			delete attrs[list.attrs[i]];
 		}
 	}
-	var prefixes = ZmEditContactView.ADDR_PREFIXES;
-	var suffixes = ZmEditContactView.ADDR_SUFFIXES;
+	var prefixes = ZmContact.ADDR_PREFIXES;
+	var suffixes = ZmContact.ADDR_SUFFIXES;
 	for (var i = 0; i < prefixes.length; i++) {
 		for (var j = 0; j < suffixes.length; j++) {
 			delete attrs[prefixes[i] + suffixes[j]];
