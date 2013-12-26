@@ -663,7 +663,9 @@ function(appt) {
 	if (is30 &&
 		(this.view != ZmId.VIEW_CAL_DAY) )
 	{
-		var widthLimit = Math.floor(8 * apptWidthPercent)
+        // Fix for bug: 57930. Adjust the width of appointment based on duration text.
+        var adjustWidth = appt.getDurationText(true, true).length * 2;
+		var widthLimit = Math.floor(adjustWidth * apptWidthPercent);
 		if (apptName.length > widthLimit) {
 			apptName = apptName.substring(0, widthLimit) + "...";
 		}
