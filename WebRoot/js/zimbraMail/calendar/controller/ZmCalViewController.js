@@ -2554,7 +2554,7 @@ function(appt, mode, isInstance) {
 		var calendar = appt.getFolder();
 		var isSynced = Boolean(calendar.url);
 
-		if (appt.isReadOnly() || calendar.isReadOnly() || isSynced) {
+		if (appt.isReadOnly() || calendar.isReadOnly() || isSynced || appCtxt.isWebClientOffline()) {
 			this.showApptReadOnlyView(appt, editMode);
 		} else {
 			this.editAppointment(appt, editMode);

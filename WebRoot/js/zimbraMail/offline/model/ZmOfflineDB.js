@@ -76,6 +76,9 @@ ZmOfflineDB.indexedDB.open = function(callback, version) {
                     // several appts (base appt info + instance), with differing startDates.  The instanceId is a
                     // generated key field, storing id:startTime (time in msec)
                     var store = db.createObjectStore(stores[i], {keyPath: "instanceId"});
+                    // id is non-unique, but if a appt has been exploded into multiple ZmAppt entries, it allows
+                    // us to access them for Update/Delete
+                    store.createIndex("invId", "invId");
                     store.createIndex("startDate", "startDate");
                     store.createIndex("endDate", "endDate");
                 } else {

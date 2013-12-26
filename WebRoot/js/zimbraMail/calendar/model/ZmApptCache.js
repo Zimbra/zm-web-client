@@ -311,7 +311,7 @@ function(searchParams, miniCalParams, reminderSearchParams) {
 
 ZmApptCache.prototype._doBatchRequest =
 function(searchParams, miniCalParams, reminderSearchParams) {
-
+    this._cachedVec = null;
 	var caledarIds = searchParams.accountFolderIds.shift();
 	if (searchParams) {
 		searchParams.folderIds = caledarIds;
@@ -956,6 +956,8 @@ function(searchParams, miniCalParams, reminderParams, apptSet, apptContainers) {
         // appt.prototype = new ZmAppt();
         appts.push(appt);
     }
+    var cachedVec = this._cachedVec;
+    this._cachedVec = null;
 
     if (reminderParams) {
         reminderList = this._cacheOfflineSearch(reminderParams, appts);
@@ -984,10 +986,9 @@ function(searchParams, miniCalParams, reminderParams, apptSet, apptContainers) {
     }
 
     if (searchParams) {
-        if (this._cachedVec) {
+        if (cachedVec) {
             // Cache hit in _doBatchResponse for a calendar search.  Access and use in-memory cache
-            calendarList = this._cachedVec.clone();
-            this._cachedVec = null;
+            calendarList = cachedVec.clone();
         } else {
             // _doBatchCommand: Search params provided - whether or not there are reminder results, the
             // search callback is executed, not the reminder.
@@ -1078,3 +1079,48 @@ function(params, appts) {
     return newList;
 }
 
+// Update a top level field in a ZmAppt.  This will also trigger a clearCache call, since
+// the cache entries will have an out-of-date field.  This is essentially what the online
+// mode does - on a notification that modified or deletes an appt, it clears the in-memory cache.
+ZmApptCache.prototype.updateOfflineAppt =
+function(id, field, value, callback) {
+
+    var search = [id];
+    var errorCallback = this.updateErrorCallback.bind(this, field, value);
+    var updateOfflineAppt2 = this._updateOfflineAppt2.bind(this, field, value, errorCallback, callback);
+    // Find the appointments that match the specified id, update appt[field] = value,
+    // and write it back into the db
+    ZmOfflineDB.doIndexSearch([id], ZmApp.CALENDAR, null, updateOfflineAppt2, errorCallback, "invId");
+}
+
+ZmApptCache.prototype.updateErrorCallback =
+function(field, value, e) {
+    DBG.println(AjxDebug.DBG1, "Error while updating appt['" + field + "'] = '" + value + "' in indexedDB.  Error = " + e);
+}
+
+ZmApptCache.prototype._updateOfflineAppt2 =
+function(field, value, errorCallback, callback, apptContainers) {
+    if (apptContainers.length > 0) {
+        //this.clearCache();
+        var appt;
+        for (var i = 0; i < apptContainers.length; i++) {
+            appt = apptContainers[i].appt;
+            appt[field] = value;
+        }
+        var errorCallback = this.updateErrorCallback.bind(this, field, value);
+        var updateOfflineAppt3 = this._updateOfflineAppt3.bind(this, field, value, callback);
+        ZmOfflineDB.setItem(apptContainers, ZmApp.CALENDAR, updateOfflineAppt3, errorCallback);
+    }
+}
+
+ZmApptCache.prototype._updateOfflineAppt3 =
+function(field, value, callback) {
+    // Final step - Do a grand refresh.  We've modified the indexedDB entry, but appts
+    // are used in the various caches, and in the display lists.
+    this.clearCache();
+    this._calViewController.refreshCurrentView();
+
+    if (callback) {
+        callback.run(field, value);
+    }
+}

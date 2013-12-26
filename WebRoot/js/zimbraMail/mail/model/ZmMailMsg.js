@@ -1933,7 +1933,12 @@ function(params, jsonObj) {
             });
         }
     }
-    ZmOfflineDB.setItem(m, ZmApp.MAIL);
+    if (!params.isInvite) {
+        // If existing invite message - do not overwrite it.  The online code does not reload
+        // the invite msg, it just patches it in-memory.  When the cal item ptst is patched in the db, it will
+        // make a call to patch the invite too.
+        ZmOfflineDB.setItem(m, ZmApp.MAIL);
+    }
     return header;
 };
 

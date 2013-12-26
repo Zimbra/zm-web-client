@@ -175,12 +175,17 @@ function() {
             ZmOperation.PROPOSE_NEW_TIME,
             ZmOperation.DUPLICATE_APPT,
             ZmOperation.FORWARD_APPT,
-            ZmOperation.DELETE
+            ZmOperation.DELETE,
+            ZmOperation.SHOW_ORIG
         ], false);
     }
     var tagButton = this._toolbar.getButton(ZmOperation.TAG_MENU);
     if (tagButton) {
         tagButton.setEnabled(false);
+    }
+    var printButton = this._toolbar.getButton(ZmOperation.PRINT);
+    if (printButton) {
+        printButton.setEnabled(false);
     }
 }
 
@@ -336,6 +341,28 @@ function(ev) {
 
 ZmApptController.prototype._handleSaveResponse =
 function(result, value) {
+    if (appCtxt.isWebClientOffline()) {
+        // Set the value of the appt stored in-memory in the list.  Normally, this would be updated
+        // by a notification, but not offline.
+        //var appt = this.getCalItem();
+        //appt.ptst = value;
+
+        // Update the version currently in use.  It may get updated again below, but it doesn't matter
+        this.getCurrentView().setOrigPtst(value);
+
+        // This is awkward; better maybe to make the ApptCache be a child of CalMgr.  Later
+        // Upate the value in the indexedDB
+        var calMgr = appCtxt.getCalManager();
+        var calViewController = calMgr && calMgr.getCalViewController();
+        var apptCache = calViewController.getApptCache();
+
+        // MAYBE provide a callback (last param to this call) that reads the original email invite msg, and
+        // updates its indexedDB entry too (See ZmMailMsg line 1232, where it updates the in-memory info).  BUT, it
+        // doesn't seem to effect anything (at least with our read-only mode).  Anyway, the
+        // apptCache._updateOfflineAppt3 will call the passed callback, allowing additional read/update
+        // SO if necessary, add updateOfflineInvitePtsd.bind(this, result._data.m[0].id, value)
+        apptCache.updateOfflineAppt(result._data.m[0].id, "ptst", value);
+    }
     if (this.isCloseAction()) {
         this._closeView();
     } else {

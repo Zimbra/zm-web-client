@@ -30,6 +30,7 @@ ZmOffline = function(){
     ZmOffline._syncInProgress = false;
     ZmOffline.store = [];
     ZmOffline.folders = [];
+    ZmOffline.calendars = {};
     ZmOffline.SUPPORTED_APPS = [ZmApp.MAIL, ZmApp.CONTACTS, ZmApp.CALENDAR];
     ZmOffline.SUPPORTED_MAIL_TREE_VIEWS = [ZmOrganizer.FOLDER, ZmOrganizer.SEARCH, ZmOrganizer.TAG];
     // The number of days we read into the future to get calendar entries
@@ -332,6 +333,9 @@ function() {
 
     // Get checked calendars for the first (main) account
     var calendarIds = calViewController.getOfflineSearchCalendarIds();
+    for (var i = 0; i < calendarIds.length; i++) {
+        ZmOffline.calendars[calendarIds[i]] = calendarIds[i];
+    }
     var apptCache = calViewController.getApptCache();
 
     // MiniCal Request
@@ -398,6 +402,7 @@ function(response) {
             DBG.println(AjxDebug.DBG1, "Error while adding appointments in indexedDB" + e);
         };
 
+        var rawAppt;
         var appt;
         var apptList = new ZmApptList();
         // Convert the raw appts into ZmAppt objects.  Each rawAppt may represent several actual appointments (if the
@@ -416,6 +421,7 @@ function(response) {
             // for each appt/instance.  Also, create a container with the index info
             apptContainer = {appt: appt,
                              instanceId: appt.id + ":" + startTime.toString(),
+                             invId:      appt.invId,
                              startDate:  startTime,
                              endDate:    appt.endDate.getTime()
                             };
@@ -423,6 +429,22 @@ function(response) {
         }
         ZmOfflineDB.setItem(apptContainers, ZmApp.CALENDAR, null, onError);
 
+        // Now make a server read to get the detailed appt invites
+        if (searchResp.appt) {
+            var msgIds = [];
+            for (var j = 0; j < searchResp.appt.length; j++) {
+                // If present, accumulate both the series id and invId.  The user may ask for a series or
+                // individual appt.  ZmCalItem.getDetails does:
+                //   var id = seriesMode ? (this.seriesInvId || this.invId || this.id) : this.invId;
+                rawAppt = searchResp.appt[j];
+                var seriesId = rawAppt.seriesInvId || rawAppt.invId || rawAppt.id;
+                msgIds.push(seriesId);
+                if (seriesId !== rawAppt.invId) {
+                    msgIds.push(rawAppt.invId);
+                }
+            }
+            this._loadMessages(msgIds);
+        }
     }catch(ex){
         DBG.println(AjxDebug.DBG1, ex);
     }
@@ -961,7 +983,11 @@ function(index){
             return ZmOffline.folders[i].name;
         }
     }
-    return null;
+    if (ZmOffline.calendars[index]) {
+        return ZmOffline.calendars[index];
+    } else {
+        return null;
+    }
 };
 
 /**
