@@ -56,6 +56,11 @@ Ext.define('ZCS.model.ZtOrganizer', {
 			// folder fields
 			{ name: 'disclosure',       type: 'boolean' },  // override NestedList button behavior
 
+			// mountpoint (link) fields
+			{ name: 'isMountpoint',     type: 'boolean' },  // true if this is a link to a remote folder
+			{ name: 'remoteAccountId',  type: 'string' },   // account ID of shared folder
+			{ name: 'remoteFolderId',   type: 'string' },   // local ID of shared folder
+
 			// mail folder fields
 			{ name: 'unreadCount',      type: 'int' },      // number of unread messages in this folder
 
@@ -92,7 +97,7 @@ Ext.define('ZCS.model.ZtOrganizer', {
 		 * @return {String}     suitable ID for organizer within a Sencha store
 		 */
 		getOrganizerId: function(zcsId, app, context) {
-			return Ext.clean([ app, context, zcsId ]).join('-');
+			return Ext.clean([ app, context, zcsId ]).join(ZCS.constant.ID_JOIN);
 		},
 
 		/**
@@ -104,7 +109,7 @@ Ext.define('ZCS.model.ZtOrganizer', {
 		 */
 		parseOrganizerId: function(id) {
 
-			var fields = id.split('-'),
+			var fields = id.split(ZCS.constant.ID_JOIN),
 				parsed = {}, i, prop;
 
 			parsed.zcsId = fields.pop();

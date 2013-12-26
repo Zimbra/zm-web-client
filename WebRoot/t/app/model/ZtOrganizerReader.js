@@ -37,28 +37,43 @@ Ext.define('ZCS.model.ZtOrganizerReader', {
 	 */
 	getDataFromNode: function(node, type) {
 
-		var data = {
-			zcsId:          node.id,
-			parentZcsId:    node.l || ZCS.constant.ID_ROOT,
-			type:           type,
-			folderType:     (type === ZCS.constant.ORG_FOLDER) ? ZCS.constant.FOLDER_TYPE[node.view] : null,
-			name:           node.name,
-			displayName:    Ext.String.htmlEncode(node.name),
-			path:           node.absFolderPath || node.name,
-			color:          node.color,
-			rgb:            node.rgb,
-			itemCount:      node.n,
-			disclosure:     false,
-			leaf:           true,
+		// give mountpoint a real type
+		var isMountpoint = false;
+		if (type === ZCS.constant.ORG_MOUNTPOINT) {
+			type = ZCS.constant.ORG_FOLDER;
+			isMountpoint = true;
+		}
 
-			url:            node.url,   // feeds
-			unreadCount:    node.u,     // mail folders
-			query:          node.query, // saved searches
-			searchTypes:    node.types  // saved searches
+		var data = {
+
+			// global
+			zcsId:              node.id,
+			parentZcsId:        node.l || ZCS.constant.ID_ROOT,
+			type:               type,
+			folderType:         type === ZCS.constant.ORG_FOLDER ? ZCS.constant.FOLDER_TYPE[node.view] : null,
+			name:               node.name,
+			displayName:        Ext.String.htmlEncode(node.name),
+			path:               node.absFolderPath || node.name,
+			color:              node.color,
+			rgb:                node.rgb,
+			itemCount:          node.n,
+			disclosure:         false,
+			leaf:               true,
+
+			// shared folders
+			isMountpoint:       isMountpoint,
+			remoteAccountId:    node.zid,
+			remoteFolderId:     node.rid,
+
+			// other
+			url:                node.url,   // feeds
+			unreadCount:        node.u,     // mail folders
+			query:              node.query, // saved searches
+			searchTypes:        node.types  // saved searches
 		};
 
-		var	childNodeNames = !type ? [ ZCS.constant.ORG_FOLDER, ZCS.constant.ORG_SEARCH, ZCS.constant.ORG_TAG ] :
-				(type === ZCS.constant.ORG_FOLDER) ? [ ZCS.constant.ORG_FOLDER, ZCS.constant.ORG_SEARCH ] : [ type ],
+		var	childNodeNames = !type ? [ ZCS.constant.ORG_FOLDER, ZCS.constant.ORG_SEARCH, ZCS.constant.ORG_TAG, ZCS.constant.ORG_MOUNTPOINT ] :
+				(type === ZCS.constant.ORG_FOLDER) ? [ ZCS.constant.ORG_FOLDER, ZCS.constant.ORG_SEARCH, ZCS.constant.ORG_MOUNTPOINT ] : [ type ],
 			hasChildren = false;
 
 		Ext.each(childNodeNames, function(childType) {

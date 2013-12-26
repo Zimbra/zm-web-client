@@ -61,6 +61,9 @@ ZCS.constant.POLL_INTERVAL = 120;
 // Max amount of message content to get, in K
 ZCS.constant.MAX_MESSAGE_SIZE = 100;
 
+// Character used to join ID parts; should not be ':' or '-' since those are used in ZCS IDs
+ZCS.constant.ID_JOIN = '_';
+
 // Apps (these should be the same names that are used in source paths, eg ZCS.model.mail.ZtConv)
 ZCS.constant.APP_MAIL     = 'mail';
 ZCS.constant.APP_CONTACTS = 'contacts';
@@ -196,6 +199,7 @@ ZCS.constant.NODE_DL_MEMBER     = 'dlm';
 ZCS.constant.ORG_FOLDER         = 'folder';
 ZCS.constant.ORG_SEARCH         = 'search';
 ZCS.constant.ORG_TAG            = 'tag';
+ZCS.constant.ORG_MOUNTPOINT     = 'link';
 
 // Folder sub-types
 ZCS.constant.ORG_MAIL_FOLDER        = 'mailFolder';

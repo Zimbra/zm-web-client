@@ -31,7 +31,26 @@ Ext.define('ZCS.model.ZtItem', {
 		fields: [
 			{ name: 'type',     type: 'string' },   // ZCS.constant.ITEM_*
 			{ name: 'zcsId',    type: 'string' },   // ID on server
-			{ name: 'tags',		type: 'auto' }      // list of tag data objects
+			{ name: 'tags',		type: 'auto' },     // list of tag data objects
+
+			// account ID (will be user account for local items)
+			{
+				name:       'accountId',
+				type:       'string',
+				convert:    function(value, record) {
+					return ZCS.util.parseId(record.get('zcsId')).accountId;
+				}
+			},
+
+			// an item is shared (remote) if its account ID is not the current user
+			{
+				name:       'isShared',
+				type:       'string',
+				convert:    function(value, record) {
+					// Ext doesn't support using get('accountId') here
+					return ZCS.util.parseId(record.get('zcsId')).accountId !== ZCS.session.getAccountId();
+				}
+			}
 		],
 
 		proxy: {

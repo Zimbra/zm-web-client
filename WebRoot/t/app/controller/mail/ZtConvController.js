@@ -188,18 +188,25 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 			curFolderId = curFolder && curFolder.get('zcsId'),
 			store = this.getStore(),
 			isDraft = (curFolderId === ZCS.constant.ID_DRAFTS),
-			convQueryTerms = [ 'underid:1' ],
+			remoteAccountId = conv.get('isShared') && conv.get('accountId'),
+			convQueryTerms = [],
 			title = Ext.String.htmlEncode(conv.get('subject') || ZtMsg.noSubject),
 			msgListView = this.getMsgListView();
 
-		// Make sure the organizer button stays.
-		ZCS.app.fireEvent('updatelistpanelToggle', this.getOrganizerTitle(), ZCS.session.getActiveApp());
+		function makeFolderTerm(id) {
+			return 'underid:' + (remoteAccountId ? '"' + [ remoteAccountId, id ].join(':') + '"' : id);
+		}
+
+		convQueryTerms.push(makeFolderTerm(ZCS.constant.ID_ROOT));
 
 		Ext.each(Object.keys(ZCS.constant.CONV_HIDE), function(id) {
 			if (id !== curFolderId) {
-				convQueryTerms.push('NOT underid:' + id);
+				convQueryTerms.push('NOT ' + makeFolderTerm(id));
 			}
 		}, this);
+
+		// Make sure the organizer button stays.
+		ZCS.app.fireEvent('updatelistpanelToggle', this.getOrganizerTitle(), ZCS.session.getActiveApp());
 
 		var quickReply = this.getQuickReply();
 		if (quickReply) {

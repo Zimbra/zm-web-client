@@ -238,8 +238,8 @@ Ext.define('ZCS.common.ZtUserSession', {
 			list.push(organizer);
 		}
 
-		var	childNodeNames = !type ? [ ZCS.constant.ORG_FOLDER, ZCS.constant.ORG_SEARCH, ZCS.constant.ORG_TAG ] :
-				(type === ZCS.constant.ORG_FOLDER) ? [ ZCS.constant.ORG_FOLDER, ZCS.constant.ORG_SEARCH ] : [ type ];
+		var	childNodeNames = !type ? [ ZCS.constant.ORG_FOLDER, ZCS.constant.ORG_SEARCH, ZCS.constant.ORG_TAG, ZCS.constant.ORG_MOUNTPOINT ] :
+				(type === ZCS.constant.ORG_FOLDER) ? [ ZCS.constant.ORG_FOLDER, ZCS.constant.ORG_SEARCH, ZCS.constant.ORG_MOUNTPOINT ] : [ type ];
 
 		Ext.each(childNodeNames, function(childType) {
 			Ext.each(node[childType], function(child) {
