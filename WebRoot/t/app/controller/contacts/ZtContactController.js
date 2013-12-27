@@ -222,15 +222,15 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
 	/**
 	 * Launches a move assignment view.
 	 */
-	doMove: function(item) {
-		this.doAssignmentView(item, ZCS.constant.ORG_FOLDER);
+	doMove: function(actionParams) {
+		this.doAssignmentView(null, ZCS.constant.ORG_FOLDER);
 	},
 
 	/**
 	 * Launches a tag assignment view.
 	 */
-	doTag: function(item) {
-		this.doAssignmentView(item, ZCS.constant.ORG_TAG);
+	doTag: function(actionParams) {
+		this.doAssignmentView(null, ZCS.constant.ORG_TAG);
 	},
 
 	/**
