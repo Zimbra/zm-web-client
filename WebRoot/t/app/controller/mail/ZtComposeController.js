@@ -53,7 +53,6 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 			composePanel: {
 				cancel:                     'doCancel',
 				send:                       'doSend',
-				saveDraft:                  'doSaveDraft',
 				showOriginalAttachments:    'doShowOriginalAttachments',
 				originalAttachmentTap:      'showMenu',
 				attachmentAdded:            'uploadTemporaryAttachment'

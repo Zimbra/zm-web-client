@@ -61,15 +61,7 @@ Ext.define('ZCS.view.mail.ZtComposeForm', {
 						handler: function() {
 							this.up('composepanel').fireEvent('cancel');
 						}
-					}, {
-						xtype: 'button',
-						text: ZtMsg.saveDraft,
-						hidden: isPhone,
-						align: 'right',
-						handler: function() {
-							this.up('composepanel').fireEvent('saveDraft');
-						}
-					}, {
+					},{
 						xtype: 'button',
 						text: ZtMsg.send,
 						align: 'right',
