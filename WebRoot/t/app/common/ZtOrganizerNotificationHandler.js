@@ -29,9 +29,8 @@ Ext.define('ZCS.common.ZtOrganizerNotificationHandler', {
 	 *
 	 * @param {Array}   parentViews     views that may need to be updated
 	 * @param {Object}  notification    notification JSON
-	 * @param {String}  context         where organizers appear (eg 'overview' or 'assignment')
 	 */
-	addOrganizer: function(parentViews, notification, context) {
+	addOrganizer: function(parentViews, notification) {
 
 		parentViews = Ext.Array.from(parentViews);
 		var ln = parentViews.length, i, parentView, organizer, app;
@@ -41,8 +40,9 @@ Ext.define('ZCS.common.ZtOrganizerNotificationHandler', {
 			app = (parentView.getApp && parentView.getApp()) || ZCS.session.getActiveApp();
 			organizer = ZCS.model.ZtOrganizer.getProxy().getReader().getDataFromNode(notification, notification.itemType);
 			if (ZCS.session.isValidOrganizer(organizer, app)) {
-				ZCS.model.ZtOrganizer.addOtherFields(organizer, app, context, false);
-				this.insertOrganizer(parentView.down('folderlist'), organizer, organizer.parentItemId, organizer.parentZcsId);
+				var list = parentView.down('organizerlist');
+				ZCS.model.ZtOrganizer.addOtherFields(organizer, app, list.getType(), false);
+				this.insertOrganizer(list, organizer, organizer.parentItemId, organizer.parentZcsId);
 			}
 		}
 	},
@@ -54,9 +54,8 @@ Ext.define('ZCS.common.ZtOrganizerNotificationHandler', {
 	 * @param {Array}       parentViews     views that may need to be updated
 	 * @param {ZtOrganizer} organizer       organizer being modified
 	 * @param {Object}      notification    notification JSON
-	 * @param {String}      context         where organizers appear (eg 'overview' or 'assignment')
 	 */
-	modifyOrganizer: function(parentViews, organizer, notification, context) {
+	modifyOrganizer: function(parentViews, organizer, notification) {
 
 		parentViews = Ext.Array.from(parentViews);
 		var ln = parentViews.length, i, organizer;
@@ -69,25 +68,18 @@ Ext.define('ZCS.common.ZtOrganizerNotificationHandler', {
 			if (notification.l) {
 				var reader = ZCS.model.ZtOrganizer.getProxy().getReader(),
 					data = reader.getDataFromNode(notification, organizer.get('type'), app, []),
-					list = parentView.down('folderlist'),
+					list = parentView.down('organizerlist'),
 					store = list && list.getStore(),
 					organizerId = organizer.getId();
 
 				if (store.getNodeById(organizerId)) {
-					var	oldParentId = organizer.get('parentItemId'),
-					oldParentZcsId = organizer.get('parentZcsId'),
-					newParentId = ZCS.model.ZtOrganizer.getOrganizerId(data.parentZcsId, app, context);
+					var	newParentItemId = organizer.get('parentItemId'),
+						newParentZcsId = organizer.get('parentZcsId'),
+						oldParentId = organizer.get('oldParentItemId'),
+						oldParentZcsId = organizer.get('oldParentZcsId');
 
-					organizer.set('parentZcsId', data.parentZcsId);
-					organizer.set('parentItemId', newParentId);
-
-					this.insertOrganizer(list, organizer, newParentId, data.parentZcsId, oldParentId, oldParentZcsId);
+					this.insertOrganizer(list, organizer, newParentItemId, newParentZcsId, oldParentId, oldParentZcsId);
 				}
-			}
-			if (notification.name) {
-				// not yet working
-				organizer.set('name', notification.name);
-				organizer.set('path', notification.absFolderPath || notification.name);
 			}
 		}
 	},
@@ -105,7 +97,7 @@ Ext.define('ZCS.common.ZtOrganizerNotificationHandler', {
 
 		for (i = 0; i < ln; i++) {
 			var parentView = parentViews[i],
-				list = parentView.down('folderlist'),
+				list = parentView.down('organizerlist'),
 				store = list && list.getStore(),
 				parentNode = store.getNodeById(organizer.get('parentItemId'));
 
@@ -184,20 +176,19 @@ Ext.define('ZCS.common.ZtOrganizerNotificationHandler', {
 	 * Handles the arrival of a <refresh> block by regenerating overviews.
 	 *
 	 * @param {Array}       parentViews     views that may need to be updated
-	 * @param {String}      context         where organizers appear (eg 'overview' or 'assignment')
 	 */
-	reloadOverviews: function(parentViews, context) {
+	reloadOverviews: function(parentViews) {
 
 		var ln = parentViews.length, i, app;
 
 		for (i = 0; i < ln; i++) {
 			var parentView = parentViews[i],
 				app = (parentView.getApp && parentView.getApp()) || ZCS.session.getActiveApp(),
-				list = parentView.down('folderlist'),
+				list = parentView.down('organizerlist'),
 				store = list && list.getStore();
 
 			store.setData({
-				items: ZCS.session.getOrganizerData(app, null, context)
+				items: ZCS.session.getOrganizerData(app, null, list.getType())
 			});
 		}
 	}

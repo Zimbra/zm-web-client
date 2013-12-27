@@ -24,7 +24,7 @@ Ext.define('ZCS.view.ZtOrganizerList', {
 
 	extend: 'Ext.dataview.NestedList',
 
-	xtype: 'folderlist',
+	xtype: 'organizerlist',
 
 	/**
 	 * List will fire different events on 'itemtap' depending on editing state
@@ -33,13 +33,25 @@ Ext.define('ZCS.view.ZtOrganizerList', {
 
 	config: {
 
-		cls: 'zcs-folder-list',
+		cls: 'zcs-organizer-list',
 
 		grouped: true,
 
 		listConfig: {
 			itemTpl: '<div class="zcs-menu-icon {type}"></div><div class="zcs-menu-label">{title}</div>'
 		},
+
+		listeners  : {
+			element:    'element',
+			delegate:   'div.x-list-header',
+			tap: function(e) {
+					if (this.getType() === ZCS.constant.ORG_LIST_SELECTOR) {
+						this.fireEvent('edititemtap', null, this.getActiveItem());
+					}
+			}
+		},
+
+		type: null,
 
 		// Show the folder's child list.
 		onItemDisclosure: function(record, item, index, e) {
@@ -98,7 +110,7 @@ Ext.define('ZCS.view.ZtOrganizerList', {
 
 		var list = this.callParent(arguments);
 
-		list.xtype = 'foldersublist';
+		list.xtype = 'organizersublist';
 		list.grouped = this.getGrouped();
 		list.store.setGrouper(this.getStore().config.grouper);
 
@@ -125,7 +137,7 @@ Ext.define('ZCS.view.ZtOrganizerSubList', {
 
 	extend: 'Ext.dataview.List',
 
-	xtype: 'foldersublist',
+	xtype: 'organizersublist',
 
 	// The two overrides below are so that absolutely nothing happens when the user taps on a
 	// disabled organizer. Don't show the pressed or the selected background color.

@@ -53,6 +53,14 @@ Ext.define('ZCS.model.ZtOrganizer', {
 			{ name: 'rgb',              type: 'string' },   // extended RGB color
 			{ name: 'url',              type: 'string' },   // feeds
 
+			// these fields are used to distinguish organizers that can appear in multiple stores
+			{ name: 'app',              type: 'string' },   // app to which this organizer belongs
+			{ name: 'context',          type: 'string' },   // context to which this organizer belongs (eg 'overview')
+
+			// these are internal fields used when a folder has been renamed
+			{ name: 'oldParentItemId',  type: 'string' },   // ID of former parent organizer
+			{ name: 'oldParentZcsId',   type: 'string' },   // ID of former parent on ZCS server
+
 			// folder fields
 			{ name: 'disclosure',       type: 'boolean' },  // override NestedList button behavior
 
@@ -183,7 +191,8 @@ Ext.define('ZCS.model.ZtOrganizer', {
 		 */
 		addOtherFields: function(organizer, app, context, hasChildren) {
 
-			app = app || ZCS.constant.FOLDER_APP[organizer.type] || 'default';
+			app = organizer.app = app || ZCS.constant.FOLDER_APP[organizer.type] || 'default';
+			organizer.context = context;
 			organizer.id = ZCS.model.ZtOrganizer.getOrganizerId(organizer.zcsId, app, context);
 			organizer.parentItemId = ZCS.model.ZtOrganizer.getOrganizerId(organizer.parentZcsId, app, context);
 
@@ -308,6 +317,7 @@ Ext.define('ZCS.model.ZtOrganizer', {
 
 	/**
 	 * Returns true if this folder is the given folder or a subfolder of it.
+	 *
 	 * @param {String}  folderId        ID of folder to check against
 	 * @returns {boolean}   true if this folder is the given folder or a subfolder of it
 	 */
@@ -326,6 +336,24 @@ Ext.define('ZCS.model.ZtOrganizer', {
 		}
 
 		return false;
+	},
+
+	/**
+	 * Returns the full path for this organizer based on its parent chain.
+	 *
+	 * @returns {string}    path
+	 */
+	calculatePath: function() {
+
+		var pathParts = [],
+			folder = this;
+
+		while (folder && folder.get('zcsId') !== ZCS.constant.ID_ROOT) {
+			pathParts.unshift(folder.get('name'));
+			folder = ZCS.cache.get(folder.get('parentItemId'));
+		}
+
+		return '/' + pathParts.join('/');
 	},
 
 	/**
@@ -365,6 +393,17 @@ Ext.define('ZCS.model.ZtOrganizer', {
 	},
 
 	/**
+	 * Returns the name that should be used to group this type of organizer.
+	 * For a folder, that's the folder type; otherwise, it's just the type.
+	 *
+	 * @returns {string}    group name
+	 */
+	getGroupName: function() {
+		var type = this.get('folderType') || this.get('type');
+		return ZCS.constant.ORG_NAME[type] || '';
+	},
+
+	/**
 	 * Returns a string that represents this organizer.
 	 *
 	 * @param {String}      defaultText     text to use if there is no name
@@ -395,14 +434,22 @@ Ext.define('ZCS.model.ZtOrganizer', {
 		this.destroy();
 	},
 
-	handleModifyNotification: function(modify, app) {
+	handleModifyNotification: function(modify) {
 
 		// Use reader to perform any needed data transformation
 		var reader = ZCS.model.ZtOrganizer.getProxy().getReader(),
+			app = this.get('app'),
 			data = reader.getDataFromNode(modify, this.get('type'), app, []);
 
-		if (modify.u != null) {
-			this.set('unreadCount', data.unreadCount);
+		if (modify.l) {
+			// these are used to help UI widgets find a folder node so it can be moved
+			this.set('oldParentItemId', this.get('parentItemId'));
+			this.set('oldParentZcsId', this.get('parentZcsId'));
+			// now we can update the current ID fields
+			this.set('parentItemId', ZCS.model.ZtOrganizer.getOrganizerId(data.parentZcsId, app, this.get('context')));
+			this.set('parentZcsId', data.parentZcsId);
+			// Line below can be removed once bug 85404 is fixed and server returns path
+			this.set('path', this.calculatePath());
 		}
 		if (modify.name) {
 			this.set('name', data.name);
@@ -412,14 +459,15 @@ Ext.define('ZCS.model.ZtOrganizer', {
 		if (modify.absFolderPath) {
 			this.set('path', data.path);
 		}
+		if (modify.u != null) {
+			this.set('unreadCount', data.unreadCount);
+		}
 		if (modify.color) {
 			this.set('color', data.color);
 		}
 		if (modify.rgb) {
 			this.set('rgb', data.rgb);
 		}
-
-		// Note: updating parent folder ('parentItemId') is handled in ZtOverview
 	},
 
 	/**
@@ -482,7 +530,7 @@ Ext.define('ZCS.model.ZtOrganizer', {
 			}
 
 			// Drafts and Junk cannot have subfolders
-			if (isTrashFolder || isJunkFolder) {
+			if (isDraftsFolder || isJunkFolder) {
 				return false;
 			}
 		}

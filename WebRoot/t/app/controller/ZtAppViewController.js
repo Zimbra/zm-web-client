@@ -30,7 +30,7 @@ Ext.define('ZCS.controller.ZtAppViewController', {
 					this.showListPanel();
 				}
 			},
-			'folderlist': {
+			'organizerlist': {
 				showAppsMenu: 'doShowAppsMenu'
 			},
 			'caltoolbar': {

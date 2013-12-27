@@ -204,7 +204,7 @@ Ext.define('ZCS.model.ZtSoapProxy', {
 		Ext.each(ZCS.constant.NODES, function(nodeType) {
 			Ext.each(creates[nodeType], function(notification) {
 				notification.type = ZCS.constant.NOTIFY_CREATE;
-				notification.nodeType = nodeType;
+				notification.nodeType = (nodeType === ZCS.constant.ORG_MOUNTPOINT) ? ZCS.constant.ORG_FOLDER : nodeType;
 				notification.creates = creates; // conv needs to know about msg creates
 				ZCS.app.fireEvent('notify', notification);
 			}, this);
@@ -222,7 +222,7 @@ Ext.define('ZCS.model.ZtSoapProxy', {
 		Ext.each(ZCS.constant.NODES, function(nodeType) {
 			Ext.each(modifies[nodeType], function(notification) {
 				notification.type = ZCS.constant.NOTIFY_CHANGE;
-				notification.nodeType = nodeType;
+				notification.nodeType = (nodeType === ZCS.constant.ORG_MOUNTPOINT) ? ZCS.constant.ORG_FOLDER : nodeType;
 				ZCS.app.fireEvent('notify', notification);
 			}, this);
 		}, this);

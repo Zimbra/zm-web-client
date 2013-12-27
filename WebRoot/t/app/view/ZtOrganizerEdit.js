@@ -134,13 +134,14 @@ Ext.define('ZCS.view.ZtOrganizerEdit', {
     initialize: function() {
 
         var folderLocationSelector = this.down('#locationSelectionCard'),
+	        listType = ZCS.constant.ORG_LIST_SELECTOR,
             selectorData,
             selectorStore;
 
         // Prepare a store for the folder-selector list
-        selectorData = ZCS.session.getOrganizerData(null, null, 'selector');
+        selectorData = ZCS.session.getOrganizerData(null, null, listType);
         selectorData = selectorData.filter(function (item) {
-	        return item.type === 'folder';
+	        return item.type === 'folder' && !item.isMountpoint;
         });
         selectorStore = Ext.create('ZCS.store.ZtOrganizerStore', {
             storeId:    'foldereditlocationselector',
@@ -156,7 +157,8 @@ Ext.define('ZCS.view.ZtOrganizerEdit', {
             editing:            true,
             title:              ZtMsg.folderLocationLabel,
             updateTitleText:    false,
-            useTitleAsBackText: false
+            useTitleAsBackText: false,
+	        type:               listType
         });
         folderLocationSelector.add(selectorList);
 

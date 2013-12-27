@@ -139,7 +139,8 @@ Ext.define('ZCS.controller.ZtOverviewController', {
 		}
 		else {
 			// assign a default parent folder
-			this.assignParentFolder(this.getCurrentFolderList().getLastNode());
+			var list = this.getCurrentFolderList();
+			this.assignParentFolder(list.getLastNode(), list.getActiveItem());
 		}
 
 		organizerEditPanel.setActiveItem('#' + type + 'EditCard');
@@ -167,7 +168,7 @@ Ext.define('ZCS.controller.ZtOverviewController', {
 		}
 		else {
 			organizerEditPanel.setFolder(organizer);
-			this.assignParentFolder(organizer.parentNode);
+			this.assignParentFolder(organizer.parentNode, list);
 			if (!organizer.isMovable()) {
 				this.getFolderLocBtn().disable();
 			}
@@ -177,15 +178,16 @@ Ext.define('ZCS.controller.ZtOverviewController', {
 		organizerEditPanel.show();
 	},
 
-    assignParentFolder: function (folder, folderList) {
+    assignParentFolder: function(folder, folderList) {
 
         var overview = this.getOverview(),
             organizerEditPanel = this.getOrganizerEditPanel(),
-            folderName = folder.parentNode ? folder.get('name') : ZCS.constant.APP_NAME[ZCS.session.getActiveApp()];
+	        isRoot = !(folder && folder.parentNode),
+            // root has no name, so get group name from first organizer in store
+            folderName = !isRoot ? folder.get('name') : folderList.getStore().getAt(0).getGroupName();
 
         this.getFolderLocBtn().setText(folderName);
-        organizerEditPanel.setParentFolder(folder);
-
+        organizerEditPanel.setParentFolder(folder || folderList.getParent().getStore().getRoot());
         organizerEditPanel.setActiveItem('#folderEditCard');
     },
 
@@ -193,24 +195,31 @@ Ext.define('ZCS.controller.ZtOverviewController', {
      * Filters the folder location selector, only showing those folders which
      * mayContain the folder currently being edited.
      */
-    filterFolderList: function (folderList) {
+    filterFolderList: function(folderList) {
 
         var activeList = folderList.getActiveItem(),
             activeStore = activeList.getStore(),
-            editedFolder = this.getOrganizerEditPanel().getFolder();
+            folder = this.getOrganizerEditPanel().getFolder(),
+	        app = ZCS.session.getActiveApp();
+
+	    if (!folder) {
+		    // creating a new folder, so use a dummy for filtering
+		    folder = Ext.create('ZCS.model.ZtOrganizer', {
+			    type:       ZCS.constant.ORG_FOLDER,
+			    folderType: ZCS.constant.APP_FOLDER[app]
+		    });
+	    }
 
         activeStore.clearFilter();
-        if (editedFolder) {
-            activeStore.filter([{
-                filterFn: function (item) {
-                    return item.mayContain(editedFolder);
-                }
-            }]);
-        }
+        activeStore.filter([{
+            filterFn: function(item) {
+                return item.mayContain(folder);
+            }
+        }]);
         activeList.refresh();
     },
 
-    hideEditPanel: function () {
+    hideEditPanel: function() {
 
         var organizerEditPanel = this.getOrganizerEditPanel();
 
@@ -229,7 +238,7 @@ Ext.define('ZCS.controller.ZtOverviewController', {
         organizerEditPanel.hide();
     },
 
-    showFolderSelection: function () {
+    showFolderSelection: function() {
 
         var organizerEditPanel = this.getOrganizerEditPanel(),
             folderLocationSelector = organizerEditPanel.down('#locationSelectionCard'),
@@ -370,7 +379,7 @@ Ext.define('ZCS.controller.ZtOverviewController', {
 	},
 
 	handleOrganizerCreate: function(folder, notification) {
-		this.addOrganizer(this.getOrganizerEditPanel(), notification, 'selector');
+		this.addOrganizer(this.getOrganizerEditPanel(), notification);
 	},
 
 	/**
@@ -381,7 +390,7 @@ Ext.define('ZCS.controller.ZtOverviewController', {
 	 * @param {Object}          notification    JSON with new data
 	 */
 	handleOrganizerChange: function(folder, notification) {
-		this.modifyOrganizer(this.getOrganizerEditPanel(), folder, notification, 'selector');
+		this.modifyOrganizer(this.getOrganizerEditPanel(), folder, notification);
 	},
 
 	/**
@@ -397,6 +406,6 @@ Ext.define('ZCS.controller.ZtOverviewController', {
 	 * We got a <refresh> block. Reload the overviews.
 	 */
 	handleRefresh: function() {
-		this.reloadOverviews(this.getOrganizerEditPanel(), 'selector');
+		this.reloadOverviews(this.getOrganizerEditPanel());
 	}
 });

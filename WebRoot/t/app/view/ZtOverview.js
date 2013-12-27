@@ -52,13 +52,14 @@ Ext.define('ZCS.view.ZtOverview', {
 		// get the organizer data for this app
 		var me = this,
 			app = this.getApp(),
+			listType = ZCS.constant.ORG_LIST_OVERVIEW,
 			organizerData = {
-				items: ZCS.session.getOrganizerData(app, null, 'overview')
+				items: ZCS.session.getOrganizerData(app, null, listType)
 			};
 
 		// create a store for the organizers
 		var organizerStore = Ext.create('ZCS.store.ZtOrganizerStore', {
-			storeId:    [ app, 'overview' ].join('-'),
+			storeId:    [ app, listType ].join('-'),
 			data:       organizerData
 		});
 
@@ -72,6 +73,7 @@ Ext.define('ZCS.view.ZtOverview', {
 			displayField:   'displayName',
 			store:          organizerStore,
 			grouped:        true,
+			type:           listType,
 			toolbar : {
 				items : [{
 					xtype:      'button',
@@ -79,7 +81,7 @@ Ext.define('ZCS.view.ZtOverview', {
 					iconCls:    'apps',
 					align:      'left',
 					handler: function() {
-						this.up('folderlist').fireEvent('showAppsMenu');
+						this.up('organizerlist').fireEvent('showAppsMenu');
 					}
 				}, {
 					xtype:  'button',

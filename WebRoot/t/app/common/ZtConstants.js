@@ -206,6 +206,11 @@ ZCS.constant.ORG_MAIL_FOLDER        = 'mailFolder';
 ZCS.constant.ORG_ADDRESS_BOOK       = 'addressBook';
 ZCS.constant.ORG_CALENDAR           = 'calendar';
 
+// Organizer list types
+ZCS.constant.ORG_LIST_OVERVIEW      = 'overview';
+ZCS.constant.ORG_LIST_ASSIGNMENT    = 'assignment';
+ZCS.constant.ORG_LIST_SELECTOR      = 'selector';
+
 // App to which each item type belongs
 ZCS.constant.APP_FOR_TYPE = {};
 ZCS.constant.APP_FOR_TYPE[ZCS.constant.ITEM_CONVERSATION]  = ZCS.constant.APP_MAIL;
@@ -235,7 +240,8 @@ ZCS.constant.NODES = [
 	ZCS.constant.NODE_CONTACT,
 	ZCS.constant.ORG_FOLDER,
 	ZCS.constant.ORG_SEARCH,
-	ZCS.constant.ORG_TAG
+	ZCS.constant.ORG_TAG,
+	ZCS.constant.ORG_MOUNTPOINT
 ];
 
 // Notification types

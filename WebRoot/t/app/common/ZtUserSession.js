@@ -162,20 +162,6 @@ Ext.define('ZCS.common.ZtUserSession', {
 			folderRoot[ZCS.constant.ORG_TAG] = tagRoot[ZCS.constant.ORG_TAG];
 		}
 		this.setOrganizerRoot(this.addOrganizer(folderRoot));
-
-		// These listeners are so that we can keep the internal canonical tree of
-		// organizers up to date.
-		ZCS.app.on('notifyFolderCreate', this.handleOrganizerCreate, this);
-		ZCS.app.on('notifySearchCreate', this.handleOrganizerCreate, this);
-		ZCS.app.on('notifyTagCreate', this.handleOrganizerCreate, this);
-
-		ZCS.app.on('notifyFolderDelete', this.handleOrganizerDelete, this);
-		ZCS.app.on('notifySearchDelete', this.handleOrganizerDelete, this);
-		ZCS.app.on('notifyTagDelete', this.handleOrganizerDelete, this);
-
-		ZCS.app.on('notifyFolderChange', this.handleOrganizerChange, this);
-		ZCS.app.on('notifySearchChange', this.handleOrganizerChange, this);
-		ZCS.app.on('notifyTagChange', this.handleOrganizerChange, this);
 	},
 
 	/**
@@ -342,10 +328,10 @@ Ext.define('ZCS.common.ZtUserSession', {
 		return isValid;
 	},
 
-	handleOrganizerCreate: function(folder, notification) {
+	handleOrganizerCreate: function(organizer, notification) {
 
-		var organizer = ZCS.model.ZtOrganizer.getProxy().getReader().getDataFromNode(notification, notification.itemType);
-		this.findOrganizer(this.getOrganizerRoot(), organizer.parentZcsId, false, organizer);
+		var org = ZCS.model.ZtOrganizer.getProxy().getReader().getDataFromNode(notification, notification.itemType);
+		this.findOrganizer(this.getOrganizerRoot(), org.parentZcsId, false, org);
 	},
 
 	handleOrganizerDelete: function(organizer, notification) {
@@ -373,9 +359,6 @@ Ext.define('ZCS.common.ZtUserSession', {
 				org = this.findOrganizer(root, notification.id, true);
 				this.findOrganizer(root, notification.l, false, org);
 			}
-			Ext.each(ZCS.cache.get(notification.id, null, true), function(org) {
-				org.handleModifyNotification(notification);
-			}, this);
 		}
 	},
 

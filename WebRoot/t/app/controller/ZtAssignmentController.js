@@ -89,7 +89,7 @@ Ext.define('ZCS.controller.ZtAssignmentController', {
 				targetElement:    targetComp.bodyElement,
 				record:           item,
 				listTitle:        isTags ? ZtMsg.tags : ZtMsg.folders,
-				organizerTree:    ZCS.session.getOrganizerData(app, type, 'assignment'),
+				organizerTree:    ZCS.session.getOrganizerData(app, type, ZCS.constant.ORG_LIST_ASSIGNMENT),
 				app:              app,
 
 				onAssignmentComplete:   function () {
@@ -135,7 +135,7 @@ Ext.define('ZCS.controller.ZtAssignmentController', {
 	},
 
 	handleOrganizerCreate: function(folder, notification) {
-		this.addOrganizer(this.getAssignmentViewList(), notification, 'assignment');
+		this.addOrganizer(this.getAssignmentViewList(), notification);
 	},
 
 	handleOrganizerDelete: function(folder, notification) {
@@ -143,13 +143,13 @@ Ext.define('ZCS.controller.ZtAssignmentController', {
 	},
 
 	handleOrganizerChange: function(folder, notification) {
-		this.modifyOrganizer(this.getAssignmentViewList(), folder, notification, 'assignment');
+		this.modifyOrganizer(this.getAssignmentViewList(), folder, notification);
 	},
 
 	/**
 	 * We got a <refresh> block. Reload the overviews.
 	 */
 	handleRefresh: function() {
-		this.reloadOverviews(this.getAssignmentViewList(), 'assignment');
+		this.reloadOverviews(this.getAssignmentViewList());
 	}
 });

@@ -38,13 +38,15 @@ Ext.define('ZCS.view.ux.ZtTagAssignmentView', {
 			items: cfg.organizerTree
 		};
 
-		var organizerStore = Ext.create('ZCS.store.ZtOrganizerStore', {
-			storeId: [ cfg.app, 'assignment' ].join('-')
+		var listType = ZCS.constant.ORG_LIST_ASSIGNMENT,
+			organizerStore = Ext.create('ZCS.store.ZtOrganizerStore', {
+				storeId:    [ cfg.app, listType ].join('-'),
+				type:       listType
 		});
 		organizerStore.setRoot(organizerData);
 
 		cfg.list = {
-			xtype:              'foldersublist',    // tags are a list (no children)
+			xtype:              'organizersublist',    // tags are a list (no children)
 			grouped:            false,
 			ui:                 'dark',
 			title:              cfg.listTitle,

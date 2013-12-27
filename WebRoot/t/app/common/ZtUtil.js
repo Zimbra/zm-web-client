@@ -182,7 +182,7 @@ Ext.define('ZCS.common.ZtUtil', {
 			return result;
 		}
 
-		// handle ID that was made unique to satisfy ST, eg "mail_folder_3"
+		// handle ID that was made unique to satisfy ST, eg "mail_overview_3"
 		var parts;
 		if (id.indexOf(ZCS.constant.ID_JOIN) > 0) {
 			parts = id.split(ZCS.constant.ID_JOIN);

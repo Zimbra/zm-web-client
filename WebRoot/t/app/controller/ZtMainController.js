@@ -201,44 +201,48 @@ Ext.define('ZCS.controller.ZtMainController', {
 	 * @private
 	 */
 	getOverviewList: function() {
-		return Ext.ComponentQuery.query('overview');
+		return Ext.ComponentQuery.query(ZCS.constant.ORG_LIST_OVERVIEW);
 	},
 
 	/**
 	 * An organizer has just been created. We need to add it to our session data,
 	 * and insert it into the organizer list component.
 	 *
-	 * @param {ZtOrganizer}     folder          undefined (arg not passed)
+	 * @param {ZtOrganizer}     organizer       undefined (arg not passed)
 	 * @param {Object}          notification    JSON with organizer data
 	 */
-	handleOrganizerCreate: function(folder, notification) {
-		this.addOrganizer(this.getOverviewList(), notification, 'overview');
+	handleOrganizerCreate: function(organizer, notification) {
+		this.addOrganizer(this.getOverviewList(), notification);
 	},
 
 	/**
 	 * An organizer has just changed. If it is a move, we need to relocate it within
 	 * the organizer nested list.
 	 *
-	 * @param {ZtOrganizer}     folder          organizer that changed
+	 * @param {ZtOrganizer}     organizer       organizer that changed
 	 * @param {Object}          notification    JSON with new data
 	 */
-	handleOrganizerChange: function(folder, notification) {
-		this.modifyOrganizer(this.getOverviewList(), folder, notification, 'overview');
+	handleOrganizerChange: function(organizer, notification) {
+		organizer.handleModifyNotification(notification);
+		ZCS.session.handleOrganizerChange(organizer, notification);
+		this.modifyOrganizer(this.getOverviewList(), organizer, notification);
 	},
 
 	/**
 	 * An organizer has been hard-deleted. Remove it from overview stores.
 	 *
-	 * @param {ZtOrganizer}     folder          organizer that changed
+	 * @param {ZtOrganizer}     organizer          organizer that changed
 	 */
-	handleOrganizerDelete: function(folder) {
-		this.removeOrganizer(this.getOverviewList(), folder);
+	handleOrganizerDelete: function(organizer) {
+		organizer.handleDeleteNotification();
+		ZCS.session.handleOrganizerDelete(organizer, notification);
+		this.removeOrganizer(this.getOverviewList(), organizer);
 	},
 
 	/**
 	 * We got a <refresh> block. Reload the overviews.
 	 */
 	handleRefresh: function() {
-		this.reloadOverviews(this.getOverviewList(), 'overview');
+		this.reloadOverviews(this.getOverviewList());
 	}
 });
