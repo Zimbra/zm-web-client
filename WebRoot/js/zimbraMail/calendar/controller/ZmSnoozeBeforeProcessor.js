@@ -42,7 +42,7 @@ ZmSnoozeBeforeProcessor.prototype.constructor = ZmSnoozeBeforeProcessor;
 
 
 ZmSnoozeBeforeProcessor.prototype.execute =
-function(apptList, chosenSnoozeMilliseconds, soapDoc) {
+function(apptList, chosenSnoozeMilliseconds, appts) {
     var added = false;
     var untilTime;
     var earliestUntilTime = 0;
@@ -74,9 +74,10 @@ function(apptList, chosenSnoozeMilliseconds, soapDoc) {
 
             if (snoozeMilliseconds < 0) {
                 // Found a valid untilTime
-                actionNode = soapDoc.set(this._apptType);
-                actionNode.setAttribute("id", appt.id);
-                actionNode.setAttribute("until", untilTime);
+                var apptInfo = { id: appt.id, until: untilTime};
+                appts.push(apptInfo)
+
+
                 added = true;
                 if ((earliestUntilTime ==0) || (earliestUntilTime > untilTime)) {
                     // Keep track of the earliest reminder that will occur
@@ -90,9 +91,8 @@ function(apptList, chosenSnoozeMilliseconds, soapDoc) {
         // At least one future appt was added.  Take the one with the earliest reminder
         // and apply it to past appointments
         for (var i = 0; i < pastAppts.length; i++) {
-            actionNode = soapDoc.set(this._apptType);
-            actionNode.setAttribute("id", pastAppts[i].id);
-            actionNode.setAttribute("until", earliestUntilTime);
+           var apptInfo = { id: pastAppts[i].id, until: earliestUntilTime};
+            appts.push(apptInfo)
         }
     }
     return added;

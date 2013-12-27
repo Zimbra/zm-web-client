@@ -1079,15 +1079,15 @@ function(params, appts) {
     return newList;
 }
 
-// Update a top level field in a ZmAppt.  This will also trigger a clearCache call, since
+// Update a field in a ZmAppt.  This will also trigger a clearCache call, since
 // the cache entries will have an out-of-date field.  This is essentially what the online
 // mode does - on a notification that modified or deletes an appt, it clears the in-memory cache.
 ZmApptCache.prototype.updateOfflineAppt =
-function(id, field, value, callback) {
+function(id, field, value, nullData, callback) {
 
     var search = [id];
     var errorCallback = this.updateErrorCallback.bind(this, field, value);
-    var updateOfflineAppt2 = this._updateOfflineAppt2.bind(this, field, value, errorCallback, callback);
+    var updateOfflineAppt2 = this._updateOfflineAppt2.bind(this, field, value, nullData, errorCallback, callback);
     // Find the appointments that match the specified id, update appt[field] = value,
     // and write it back into the db
     ZmOfflineDB.doIndexSearch([id], ZmApp.CALENDAR, null, updateOfflineAppt2, errorCallback, "invId");
@@ -1099,13 +1099,26 @@ function(field, value, e) {
 }
 
 ZmApptCache.prototype._updateOfflineAppt2 =
-function(field, value, errorCallback, callback, apptContainers) {
+function(fieldName, value, nullData, errorCallback, callback, apptContainers) {
     if (apptContainers.length > 0) {
         //this.clearCache();
         var appt;
+        var fieldNames    = fieldName.split(".");
+        var firstFieldName = fieldNames[0];
+        var lastFieldName  = fieldNames[fieldNames.length-1];
+        var field;
         for (var i = 0; i < apptContainers.length; i++) {
             appt = apptContainers[i].appt;
-            appt[field] = value;
+            field = appt;
+            if (!appt[firstFieldName]) {
+                appt[firstFieldName] = nullData;
+            } else {
+                for (var j = 0; j < fieldNames.length-1; j++) {
+                    field = field[fieldNames[j]];
+                    if (!field) break;
+                }
+                field[lastFieldName] = value;
+            }
         }
         var errorCallback = this.updateErrorCallback.bind(this, field, value);
         var updateOfflineAppt3 = this._updateOfflineAppt3.bind(this, field, value, callback);
