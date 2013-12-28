@@ -256,8 +256,9 @@ Ext.define('ZCS.controller.ZtListController', {
 			toSelect;
 
 		store.remove(item);
+		var count = store.getCount();
 		if (!isSwipeDelete) {
-			toSelect = store.getAt(currentIndex);
+			toSelect = store.getAt(currentIndex < count ? currentIndex : count - 1);
 			if (toSelect) {
 				list.select(toSelect, false);
 			}
