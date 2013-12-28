@@ -412,40 +412,41 @@ ZmConvListView.prototype._getCellContents =
 function(htmlArr, idx, item, field, colIdx, params, classes) {
 
 	var classes = classes || [];
-	if (field == ZmItem.F_SELECTION) {
+	if (field === ZmItem.F_SELECTION) {
 		if (this.isMultiColumn()) {
 			//add the checkbox only for multicolumn layout. The checkbox for single column layout is added in _getAbridgedContent
 			idx = ZmMailListView.prototype._getCellContents.apply(this, arguments);
 		}
 	}
-	else if (field == ZmItem.F_EXPAND) {
+	else if (field === ZmItem.F_EXPAND) {
 		idx = this._getImageHtml(htmlArr, idx, this._getCellCollapseExpandImage(item), this._getFieldId(item, field), classes);
 	}
-    else if (field == ZmItem.F_READ) {
+    else if (field === ZmItem.F_READ) {
 		idx = this._getImageHtml(htmlArr, idx, item.getReadIcon(), this._getFieldId(item, field), classes);
 	}
-	else if (item.type == ZmItem.MSG) {
+	else if (item.type === ZmItem.MSG) {
 		idx = ZmMailMsgListView.prototype._getCellContents.apply(this, arguments);
 	}
 	else {
-		if (field == ZmItem.F_STATUS) {
+		var visibleMsgCount = this._getDisplayedMsgCount(item);
+		if (field === ZmItem.F_STATUS) {
 			if (item.type == ZmItem.CONV && item.numMsgs == 1 && item.isScheduled) {
 				idx = this._getImageHtml(htmlArr, idx, "SendLater", this._getFieldId(item, field), classes);
 			} else {
 				htmlArr[idx++] = "<div " + AjxUtil.getClassAttr(classes) + "></div>";
 			}
 		}
-		else if (field == ZmItem.F_FROM) {
+		else if (field === ZmItem.F_FROM) {
 			htmlArr[idx++] = "<div id='" + this._getFieldId(item, field) + "' " + AjxUtil.getClassAttr(classes) + ">";
 			htmlArr[idx++] = this._getParticipantHtml(item, this._getFieldId(item, ZmItem.F_PARTICIPANT));
-			if (item.type == ZmItem.CONV && (item.numMsgs > 1) && !this.isMultiColumn()) {
+			if (item.type === ZmItem.CONV && (visibleMsgCount > 1) && !this.isMultiColumn()) {
 				htmlArr[idx++] = " - <span class='ZmConvListNumMsgs'>";
-				htmlArr[idx++] = item.numMsgs;
+				htmlArr[idx++] = visibleMsgCount;
 				htmlArr[idx++] = "</span>";
 			}
 			htmlArr[idx++] = "</div>";
 		}
-		else if (field == ZmItem.F_SUBJECT) {
+		else if (field === ZmItem.F_SUBJECT) {
 			var subj = ZmMailMsg.stripSubjectPrefixes(item.subject || ZmMsg.noSubject);
 			htmlArr[idx++] = "<div id='" + this._getFieldId(item, field) + "' " + AjxUtil.getClassAttr(classes) + ">";
 			htmlArr[idx++] = "<span>";
@@ -455,7 +456,7 @@ function(htmlArr, idx, item, field, colIdx, params, classes) {
 			}
 			htmlArr[idx++] = "</div>";
 		}
-		else if (field == ZmItem.F_FOLDER) {
+		else if (field === ZmItem.F_FOLDER) {
 				htmlArr[idx++] = "<div " + AjxUtil.getClassAttr(classes) + " id='";
 				htmlArr[idx++] = this._getFieldId(item, field);
 				htmlArr[idx++] = "'>"; // required for IE bug
@@ -467,21 +468,21 @@ function(htmlArr, idx, item, field, colIdx, params, classes) {
 				}
 				htmlArr[idx++] = "</div>";
 		}
-		else if (field == ZmItem.F_SIZE) {
-			if (item.type == ZmItem.CONV && item.numMsgs > 1) {
+		else if (field === ZmItem.F_SIZE) {
+			if (item.type == ZmItem.CONV && visibleMsgCount > 1) {
 				htmlArr[idx++] = "<div id='" + this._getFieldId(item, field) + "' " + AjxUtil.getClassAttr(classes) + ">";
 				htmlArr[idx++] = "(";
-//				htmlArr[idx++] = item.numMsgs;
-				htmlArr[idx++] = this._getDisplayedMsgCount(item);
+				htmlArr[idx++] = visibleMsgCount;
 				htmlArr[idx++] = ")";
 				htmlArr[idx++] = "</div>";
-			} else if (item.size) {
+			}
+			else if (item.size) {
 				htmlArr[idx++] =  "<div id='" + this._getFieldId(item, field) + "' " + AjxUtil.getClassAttr(classes) + ">";
 				htmlArr[idx++] = AjxUtil.formatSize(item.size);
 				htmlArr[idx++] = "</div>";
 			}
 		}
-		else if (field == ZmItem.F_SORTED_BY) {
+		else if (field === ZmItem.F_SORTED_BY) {
 			htmlArr[idx++] = this._getAbridgedContent(item, colIdx);
 		}
 		else {
@@ -499,8 +500,9 @@ function(item, colIdx) {
 	var idx = 0;
 	var width = (AjxEnv.isIE || AjxEnv.isSafari) ? 22 : 16;
 
-	var isMsg = (item.type == ZmItem.MSG);
-	var isConv = (item.type == ZmItem.CONV && item.numMsgs > 1);
+	var isMsg = (item.type === ZmItem.MSG);
+	var isConv = (item.type === ZmItem.CONV && item.numMsgs > 1);
+
 	var selectionCssClass = '';
 	for (var i = 0; i < this._headerList.length; i++) {
 		if (this._headerList[i]._field == ZmItem.F_SELECTION) {
