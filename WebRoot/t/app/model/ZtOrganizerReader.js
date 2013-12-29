@@ -38,7 +38,9 @@ Ext.define('ZCS.model.ZtOrganizerReader', {
 	getDataFromNode: function(node, type) {
 
 		// give mountpoint a real type
-		var isMountpoint = false;
+		var isFolder = (type === ZCS.constant.ORG_FOLDER),
+			isMountpoint = false;
+
 		if (type === ZCS.constant.ORG_MOUNTPOINT) {
 			type = ZCS.constant.ORG_FOLDER;
 			isMountpoint = true;
@@ -50,10 +52,10 @@ Ext.define('ZCS.model.ZtOrganizerReader', {
 			zcsId:              node.id,
 			parentZcsId:        node.l || ZCS.constant.ID_ROOT,
 			type:               type,
-			folderType:         type === ZCS.constant.ORG_FOLDER ? ZCS.constant.FOLDER_TYPE[node.view] : null,
+			folderType:         isFolder ? ZCS.constant.FOLDER_TYPE[node.view] : null,
 			name:               node.name,
 			displayName:        Ext.String.htmlEncode(node.name),
-			path:               node.absFolderPath || node.name,
+			path:               isFolder ? node.absFolderPath || node.name : '',
 			color:              node.color,
 			rgb:                node.rgb,
 			itemCount:          node.n,

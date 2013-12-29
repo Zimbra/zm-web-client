@@ -62,7 +62,7 @@ Ext.define('ZCS.controller.mail.ZtMailItemController', {
 			activeList = activeComp.down('list'),
 			activeStore = activeList.getStore(),
 			item = item || this.getItem(),
-			isMessage = item instanceof ZCS.model.mail.ZtMailMsg,
+			isMessage = item.getType() === ZCS.constant.ITEM_MESSAGE,
 			convCtlr = ZCS.app.getConvController(),
 			quickReply = convCtlr.getQuickReply(),
 			convTitle = convCtlr.getConvTitleBar();

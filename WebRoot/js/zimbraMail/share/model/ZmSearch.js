@@ -1324,7 +1324,7 @@ function() {
 				return null;
 			}
 			var next = this._tokens[i + 1];
-			if (next && (next.type == ZmParsedQuery.TERM || next == ZmParsedQuery.COND[ZmParsedQuery.COND_NOT] || next == ZmParsedQuery.GROUP_CLOSE)) {
+			if (next && (next.type === ZmParsedQuery.TERM || next === ZmParsedQuery.COND_OP[ZmParsedQuery.COND_NOT] || next === ZmParsedQuery.GROUP_CLOSE)) {
 				func.push(ZmParsedQuery.COND_OP[ZmParsedQuery.COND_AND]);
 			}
 		}

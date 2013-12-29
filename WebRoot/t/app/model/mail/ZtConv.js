@@ -63,7 +63,8 @@ Ext.define('ZCS.model.mail.ZtConv', {
 			writer: 'convwriter'
 		},
 
-		messages: []
+		messages:       [],
+		folderHash:     {}
 	},
 
 	statics: {
@@ -88,6 +89,31 @@ Ext.define('ZCS.model.mail.ZtConv', {
 
 		// need to do this or get a JS error handling search results (see ZtItem ctor)
 		return this.callParent(arguments) || this;
+	},
+
+	updateMessages: function(messages) {
+
+		var folderHash = {},
+			folderId;
+
+		Ext.each(messages, function(message) {
+			folderId = message.get('folderId');
+			if (folderId) {
+				folderHash[folderId] = true;
+			}
+		}, this);
+
+		this.setFolderHash(folderHash);
+	},
+
+	/**
+	 * Returns true if any msg in this conv is in the given folder.
+	 *
+	 * @param {string}  folderId
+	 * @return {boolean}    true if any msg in this conv is in the given folder
+	 */
+	isInFolder: function(folderId) {
+		return !!(this.getFolderHash[folderId]);
 	},
 
 	handleModifyNotification: function(modify) {

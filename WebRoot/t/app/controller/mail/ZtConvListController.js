@@ -156,39 +156,38 @@ Ext.define('ZCS.controller.mail.ZtConvListController', {
 	},
 
 	/**
-	 * Handle a newly created conv. Add it to view if any of its messages (which
-	 * should have also just been created) are in the currently viewed folder.
+	 * Handle a newly created conv. Add it to view if it matches the current search.
 	 *
 	 * @param {ZtItem}  item        (not passed for create notifications)
 	 * @param {Object}  create      JSON create node
 	 */
 	handleConvCreateNotification: function(item, convCreate) {
 
-		var curFolder = this.getFolder() || ZCS.session.getCurrentSearchOrganizer(),
+		var reader = ZCS.model.mail.ZtConv.getProxy().getReader(),
+			data = reader.getDataFromNode(convCreate),
+			store = this.getStore(),
+			conv = new ZCS.model.mail.ZtConv(data, convCreate.id);
+
+		var curSearch = ZCS.session.getSetting(ZCS.constant.SETTING_CUR_SEARCH, this.getApp()),
+			curFolder = this.getFolder() || ZCS.session.getCurrentSearchOrganizer(),
 			curFolderId = curFolder && curFolder.get('zcsId'),
 			isOutbound = ZCS.util.isOutboundFolderId(curFolderId),
 			creates = convCreate.creates,
-			doAdd = false,
+			doAdd = curSearch.match(conv),
 			ln = creates && creates.m ? creates.m.length : 0,
 			msgCreate, i, addresses, recips, fragment;
 
 		for (i = 0; i < ln; i++) {
 			msgCreate = creates.m[i];
-			if (msgCreate.cid === convCreate.id && msgCreate.l === curFolderId) {
-				doAdd = true;
+			if (msgCreate.cid === convCreate.id) {
+				fragment = msgCreate.fr;
 				if (isOutbound) {
 					addresses = ZCS.model.mail.ZtMailItem.convertAddressJsonToModel(msgCreate.e);
 					recips = ZCS.mailutil.getSenders(addresses);
-					fragment = msgCreate.fr;
 				}
 				break;
 			}
 		}
-
-		var reader = ZCS.model.mail.ZtConv.getProxy().getReader(),
-			data = reader.getDataFromNode(convCreate),
-			store = this.getStore(),
-			conv = new ZCS.model.mail.ZtConv(data, convCreate.id);
 
 		if (recips) {
 			conv.set('senders', recips);
@@ -212,17 +211,21 @@ Ext.define('ZCS.controller.mail.ZtConvListController', {
 	 */
 	handleMsgCreateNotification: function(item, msgCreate) {
 
-		var store = this.getStore();
+		var reader = ZCS.model.mail.ZtMailMsg.getProxy().getReader(),
+			data = reader.getDataFromNode(msgCreate),
+			store = this.getStore(),
+			msg = new ZCS.model.mail.ZtMailMsg(data, msgCreate.id);
 
 		if (store.getById(msgCreate.cid)) {
 			return;
 		}
 
-		var curFolder = this.getFolder() || ZCS.session.getCurrentSearchOrganizer(),
+		var curSearch = ZCS.session.getSetting(ZCS.constant.SETTING_CUR_SEARCH, this.getApp()),
+			curFolder = this.getFolder() || ZCS.session.getCurrentSearchOrganizer(),
 			curFolderId = curFolder && curFolder.get('zcsId'),
 			convCreate;
 
-		if (msgCreate.l === curFolderId) {
+		if (curSearch.match(msg)) {
 			// virtual conv that got promoted will have convCreateNode
 			if (msgCreate.convCreateNode) {
 				convCreate = msgCreate.convCreateNode;

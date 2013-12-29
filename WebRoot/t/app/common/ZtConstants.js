@@ -410,8 +410,8 @@ ZCS.constant.FROM_SOAP_TYPE['s']  = ZCS.constant.SENDER;
 ZCS.constant.TO_SOAP_TYPE = ZCS.util.getBackMap(ZCS.constant.FROM_SOAP_TYPE);
 
 // sort orders
-ZCS.constant.DATE_DESC 		= "dateDesc";
-ZCS.constant.DATE_ASC 		= "dateAsc";
+ZCS.constant.DATE_DESC 		= 'dateDesc';
+ZCS.constant.DATE_ASC 		= 'dateAsc';
 
 // Data types
 ZCS.constant.TYPE_STRING    = 'string';
@@ -499,8 +499,8 @@ ZCS.constant.SETTING_DEFAULT[ZCS.constant.SETTING_SHOW_DL_FOLDER]           = tr
 ZCS.constant.SETTING_DEFAULT[ZCS.constant.SETTING_CONVERSATION_ORDER]       = ZCS.constant.DATE_DESC;
 
 // Signature styles
-ZCS.constant.SIG_INTERNET   = "internet";
-ZCS.constant.SIG_OUTLOOK    = "outlook";
+ZCS.constant.SIG_INTERNET   = 'internet';
+ZCS.constant.SIG_OUTLOOK    = 'outlook';
 
 // Setting that tells us if an app is enabled
 ZCS.constant.APP_SETTING = {};
@@ -509,17 +509,17 @@ ZCS.constant.APP_SETTING[ZCS.constant.APP_CONTACTS] = ZCS.constant.SETTING_CONTA
 ZCS.constant.APP_SETTING[ZCS.constant.APP_CALENDAR] = ZCS.constant.SETTING_CALENDAR_ENABLED;
 
 // Values for what is included on reply/forward - server bundles several options into a single value
-ZCS.constant.INC_NONE				= "includeNone";
-ZCS.constant.INC_ATTACH			    = "includeAsAttachment";
-ZCS.constant.INC_BODY				= "includeBody";				// deprecated - same as includeBodyAndHeaders
-ZCS.constant.INC_BODY_ONLY			= "includeBodyOnly";
-ZCS.constant.INC_BODY_PRE			= "includeBodyWithPrefix";
-ZCS.constant.INC_BODY_HDR			= "includeBodyAndHeaders";
-ZCS.constant.INC_BODY_PRE_HDR		= "includeBodyAndHeadersWithPrefix";
-ZCS.constant.INC_SMART				= "includeSmart";
-ZCS.constant.INC_SMART_PRE			= "includeSmartWithPrefix";
-ZCS.constant.INC_SMART_HDR			= "includeSmartAndHeaders";
-ZCS.constant.INC_SMART_PRE_HDR		= "includeSmartAndHeadersWithPrefix";
+ZCS.constant.INC_NONE				= 'includeNone';
+ZCS.constant.INC_ATTACH			    = 'includeAsAttachment';
+ZCS.constant.INC_BODY				= 'includeBody';				// deprecated - same as includeBodyAndHeaders
+ZCS.constant.INC_BODY_ONLY			= 'includeBodyOnly';
+ZCS.constant.INC_BODY_PRE			= 'includeBodyWithPrefix';
+ZCS.constant.INC_BODY_HDR			= 'includeBodyAndHeaders';
+ZCS.constant.INC_BODY_PRE_HDR		= 'includeBodyAndHeadersWithPrefix';
+ZCS.constant.INC_SMART				= 'includeSmart';
+ZCS.constant.INC_SMART_PRE			= 'includeSmartWithPrefix';
+ZCS.constant.INC_SMART_HDR			= 'includeSmartAndHeaders';
+ZCS.constant.INC_SMART_PRE_HDR		= 'includeSmartAndHeadersWithPrefix';
 
 // Map to translate setting value to values for three related settings
 ZCS.constant.INC_MAP = {};
@@ -806,3 +806,52 @@ ZCS.constant.SIDE_MENU_CONFIG = {
         }
     }
 };
+
+// Constants related to parsing search queries based on the Zimbra query language
+
+// types of search tokens
+ZCS.constant.SEARCH_TERM	= 'TERM';	// search operator such as 'in'
+ZCS.constant.SEARCH_COND	= 'COND';	// AND OR NOT
+ZCS.constant.SEARCH_GROUP	= 'GROUP';	// ( or )
+
+// query operators
+ZCS.constant.SEARCH_IS_OP = ZCS.util.arrayAsLookupHash([
+	'content', 'subject', 'msgid', 'envto', 'envfrom', 'contact', 'to', 'from', 'cc', 'tofrom',
+	'tocc', 'fromcc', 'tofromcc', 'in', 'under', 'inid', 'underid', 'has', 'filename', 'type',
+	'attachment', 'is', 'date', 'mdate', 'day', 'week', 'month', 'year', 'after', 'before',
+	'size', 'bigger', 'larger', 'smaller', 'tag', 'priority', 'message', 'my', 'modseq', 'conv',
+	'conv-count', 'conv-minm', 'conv-maxm', 'conv-start', 'conv-end', 'appt-start', 'appt-end',
+	'author', 'title', 'keywords', 'company', 'metadata', 'item', 'sort'
+]);
+
+// special operator for content term
+ZCS.constant.SEARCH_OP_CONTENT = 'content';
+
+// conditional ops
+ZCS.constant.SEARCH_COND_AND	= 'and'
+ZCS.constant.SEARCH_COND_OR		= 'or';
+ZCS.constant.SEARCH_COND_NOT	= 'not';
+ZCS.constant.SEARCH_GROUP_OPEN	= '(';
+ZCS.constant.SEARCH_GROUP_CLOSE	= ')';
+
+// JS version of conditional
+ZCS.constant.SEARCH_COND_OP = {};
+ZCS.constant.SEARCH_COND_OP[ZCS.constant.SEARCH_COND_AND]	= ' && ';
+ZCS.constant.SEARCH_COND_OP[ZCS.constant.SEARCH_COND_OR]	= ' || ';
+ZCS.constant.SEARCH_COND_OP[ZCS.constant.SEARCH_COND_NOT]	= ' !';
+
+// word separators
+ZCS.constant.SEARCH_IS_EOW	= ZCS.util.arrayAsLookupHash([ ' ', ':', ZCS.constant.SEARCH_GROUP_OPEN, ZCS.constant.SEARCH_GROUP_CLOSE ]);
+
+// map is:xxx to code that checks item property
+ZCS.constant.SEARCH_FLAG = {};
+ZCS.constant.SEARCH_FLAG['unread']		= "item.get('isUnread')";
+ZCS.constant.SEARCH_FLAG['read']		= "!item.get('isUnread')";
+ZCS.constant.SEARCH_FLAG['flagged']		= "item.get('isFlagged')";
+ZCS.constant.SEARCH_FLAG['unflagged']	= "!item.get('isFlagged')";
+ZCS.constant.SEARCH_FLAG['forwarded']	= "item.get('isForwarded')";
+ZCS.constant.SEARCH_FLAG['unforwarded']	= "!item.get('isForwarded')";
+ZCS.constant.SEARCH_FLAG['sent']		= "item.get('isSent')";
+ZCS.constant.SEARCH_FLAG['draft']		= "item.get('isDraft')";
+ZCS.constant.SEARCH_FLAG['replied']		= "item.get('isReplied')";
+ZCS.constant.SEARCH_FLAG['unreplied']	= "!item.get('isReplied')";

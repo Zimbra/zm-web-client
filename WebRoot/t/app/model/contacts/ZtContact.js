@@ -35,7 +35,6 @@ Ext.define('ZCS.model.contacts.ZtContact', {
 		fields: [
 
 			{ name: 'contactType',  type: 'string' },   // ZCS.constant.CONTACT_*
-			{ name: 'folderId',     type: 'string' },
 
 			// simple fields (not composite, not multiple) - see ZCS.constant.CONTACT_FIELDS
 			{ name: 'firstName',    type: 'string' },

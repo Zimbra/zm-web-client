@@ -20,7 +20,7 @@
  * ID to the local ID with a colon.
  *
  * To cache something by a key other than ID, an altKey can be used. For example,
- * a folder can be cached with an altKey of 'path' and a key of 'Inbox/work'.
+ * a folder can be cached with an altKey of 'path' and a key of '/inbox/work'.
  *
  * @author Conrad Damon <cdamon@zimbra.com>
  */
@@ -47,6 +47,17 @@ Ext.define('ZCS.common.ZtItemCache', {
 	 * @return {object}     the item with the given key/altKey
 	 */
 	get: function(key, altKey, raw) {
+
+		if (!key) {
+			return null;
+		}
+
+		if (altKey) {
+			key = key.toLowerCase();
+			if (altKey === 'path') {
+				key = (key[0] === '/') ? key : '/' + key;
+			}
+		}
 
 		var cache = altKey ? this._cache[altKey] : this._cache,
 			result = cache ? cache[key] : null;
@@ -79,6 +90,13 @@ Ext.define('ZCS.common.ZtItemCache', {
 			Ext.Logger.warn('Trying to add empty item to item cache. Use clear() to remove an item.');
             //</debug>
 			return;
+		}
+
+		if (altKey) {
+			key = key.toLowerCase();
+			if (altKey === 'path') {
+				key = (key[0] === '/') ? key : '/' + key;
+			}
 		}
 
 		var cache = altKey ? this._cache[altKey] : this._cache;

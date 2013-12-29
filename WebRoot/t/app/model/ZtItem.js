@@ -31,6 +31,7 @@ Ext.define('ZCS.model.ZtItem', {
 		fields: [
 			{ name: 'type',     type: 'string' },   // ZCS.constant.ITEM_*
 			{ name: 'zcsId',    type: 'string' },   // ID on server
+			{ name: 'folderId', type: 'string' },   // folder that contains this item
 			{ name: 'tags',		type: 'auto' },     // list of tag data objects
 
 			// account ID (will be user account for local items)
@@ -147,14 +148,24 @@ Ext.define('ZCS.model.ZtItem', {
 	},
 
 	/**
+	 * Returns true if the item is in the given folder.
+	 *
+	 * @param folderId
+	 * @return {boolean}   true if the item is in the given folder
+	 */
+	isInFolder: function(folderId) {
+		return this.get('folderId') === folderId;
+	},
+
+	/**
 	 * Returns true if this item has the given tag.
 	 *
-	 * @param {ZtOrganizer}     tag     a tag
+	 * @param {ZtOrganizer|string}     tag     a tag
 	 * @return {Boolean}
 	 */
 	hasTag: function(tag) {
 
-		var targetName = tag.get('name'),
+		var targetName = tag instanceof ZCS.model.ZtOrganizer ? tag.get('name') : tag,
 			tags = this.get('tags'),
 			ln = tags ? tags.length : 0,
 			i, tag, tagName;

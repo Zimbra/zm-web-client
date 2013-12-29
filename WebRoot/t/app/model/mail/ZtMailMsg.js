@@ -33,7 +33,6 @@ Ext.define('ZCS.model.mail.ZtMailMsg', {
 
 		fields: [
 			// directly from server
-			{ name: 'folderId',     type: 'string' },
 			{ name: 'convId',       type: 'string' },
 			{ name: 'subject',      type: 'string' },
 			{ name: 'date',         type: 'int' },

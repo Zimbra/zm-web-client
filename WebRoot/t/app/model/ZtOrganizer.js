@@ -240,6 +240,10 @@ Ext.define('ZCS.model.ZtOrganizer', {
 
 			ZCS.cache.set(path, this, 'path');
 		}
+
+		if (data.type === ZCS.constant.ORG_TAG) {
+			ZCS.cache.set(data.name, this, 'tagName');
+		}
 	},
 
 	/**
@@ -542,7 +546,7 @@ Ext.define('ZCS.model.ZtOrganizer', {
 			// can't move an item to its current folder
 			// just check messages for now
 			// TODO: iterate through conv messages to see if at least one is not in this folder
-			if (myId === itemFolderId && what instanceof ZCS.model.mail.ZtMailMsg) {
+			if (myId === itemFolderId && what.getType() === ZCS.constant.ITEM_MESSAGE) {
 				return false;
 			}
 
