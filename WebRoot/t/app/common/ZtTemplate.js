@@ -68,6 +68,21 @@ Ext.define('ZCS.common.ZtTemplate', {
 				}
 			}
 		});
+	},
+
+	/**
+	 * Creates a template and adds a function to it that can be used to include another template.
+	 *
+	 * @param {String}  tplName     name of template
+	 * @returns {Ext.XTemplate}
+	 */
+	createNestableTemplate: function(tplName) {
+		return Ext.create('Ext.XTemplate', ZCS.template[tplName], {
+			includeTpl: function(tpl, values) {
+				tpl = Ext.isString(tpl) ? Ext.create('Ext.XTemplate', ZCS.template[tpl]) : tpl;
+				return tpl.apply(values);
+			}
+		});
 	}
 }, function () {
 	ZCS.common.ZtTemplate.loadTemplates();

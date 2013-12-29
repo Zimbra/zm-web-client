@@ -372,9 +372,9 @@ ZCS.constant.FOLDER_SYSTEM_NAME[ZCS.constant.ID_SENT]    = 'sent';
 ZCS.constant.FOLDER_SYSTEM_NAME[ZCS.constant.ID_DRAFTS]  = 'drafts';
 ZCS.constant.FOLDER_SYSTEM_NAME[ZCS.constant.ID_JUNK]    = 'junk';
 
-ZCS.constant.FOLDER_SYSTEM_NAME[ZCS.constant.ID_CONTACTS]    = 'contacts';
-ZCS.constant.FOLDER_SYSTEM_NAME[ZCS.constant.ID_EMAILED]     = 'emailed contacts';
-ZCS.constant.FOLDER_SYSTEM_NAME[ZCS.constant.ID_CALENDAR]     = 'calendar';
+ZCS.constant.FOLDER_SYSTEM_NAME[ZCS.constant.ID_CONTACTS]   = 'contacts';
+ZCS.constant.FOLDER_SYSTEM_NAME[ZCS.constant.ID_EMAILED]    = 'emailed contacts';
+ZCS.constant.FOLDER_SYSTEM_NAME[ZCS.constant.ID_CALENDAR]   = 'calendar';
 
 ZCS.constant.FOLDER_SYSTEM_ID = ZCS.util.getBackMap(ZCS.constant.FOLDER_SYSTEM_NAME);
 
@@ -383,12 +383,14 @@ ZCS.constant.FOLDER_HIDE = {};
 ZCS.constant.FOLDER_HIDE[ZCS.constant.ID_CHATS] = true;
 
 // Email address types
-ZCS.constant.TO       = 'TO';
-ZCS.constant.FROM     = 'FROM';
-ZCS.constant.CC       = 'CC';
-ZCS.constant.BCC      = 'BCC';
-ZCS.constant.REPLY_TO = 'REPLY_TO';
-ZCS.constant.SENDER   = 'SENDER';
+ZCS.constant.TO             = 'to';
+ZCS.constant.FROM           = 'from';
+ZCS.constant.CC             = 'cc';
+ZCS.constant.BCC            = 'bcc';
+ZCS.constant.REPLY_TO       = 'reply-to';
+ZCS.constant.SENDER         = 'sender';
+ZCS.constant.RESENT_FROM    = 'resent-from';
+ZCS.constant.READ_RECEIPT   = 'read-receipt';
 
 // Recipients
 ZCS.constant.RECIP_TYPES = [
@@ -405,6 +407,8 @@ ZCS.constant.FROM_SOAP_TYPE['c']  = ZCS.constant.CC;
 ZCS.constant.FROM_SOAP_TYPE['b']  = ZCS.constant.BCC;
 ZCS.constant.FROM_SOAP_TYPE['r']  = ZCS.constant.REPLY_TO;
 ZCS.constant.FROM_SOAP_TYPE['s']  = ZCS.constant.SENDER;
+ZCS.constant.FROM_SOAP_TYPE['rf'] = ZCS.constant.RESENT_FROM;
+ZCS.constant.FROM_SOAP_TYPE['n']  = ZCS.constant.READ_RECEIPT;
 
 // and the other way too
 ZCS.constant.TO_SOAP_TYPE = ZCS.util.getBackMap(ZCS.constant.FROM_SOAP_TYPE);

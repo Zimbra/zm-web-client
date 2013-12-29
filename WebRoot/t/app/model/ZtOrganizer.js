@@ -567,6 +567,10 @@ Ext.define('ZCS.model.ZtOrganizer', {
 		return true;
 	},
 
+	isOutbound: function() {
+		return ZCS.util.isOutboundFolderId(this.get('zcsId'));
+	},
+
 	/**
 	 * Returns true if this organizer is movable.
 	 */

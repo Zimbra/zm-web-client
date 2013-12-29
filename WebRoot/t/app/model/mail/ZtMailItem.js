@@ -28,7 +28,7 @@ Ext.define('ZCS.model.mail.ZtMailItem', {
 
 	config: {
 		fields: [
-			{ name: 'addresses',        type: 'auto' },
+			{ name: 'addresses',        type: 'auto' },     // hash of lists of ZtEmailAddress, keyed by addr type
 			{ name: 'subject',          type: 'string' },
 			{ name: 'fragment',         type: 'string' },
 			{ name: 'dateStr',          type: 'string' },

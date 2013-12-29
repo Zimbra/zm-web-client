@@ -57,6 +57,20 @@
 	</tpl>
 </template>
 
+<template id='SentBy'>
+	<div class='zcs-msgHdr-fromBubble'>
+        <span id='{fromId}'>{fromName}</span>
+	    <tpl if='onBehalfOfName'>
+	        {[ZtMsg.onBehalfOfMidLabel]}
+	            <span id='{onBehalfOfId}'>{onBehalfOfName}</span>
+	    </tpl>
+	    <tpl if='byWayOfName'>
+	        {[ZtMsg.byWayMidLabel]}
+	            <span id='{byWayId}'>{byWayName}</span>
+	    </tpl>
+    </div>
+</template>
+
 # In the message header templates below, the values FROM, TO, CC, and BCC are taken
 # from ZCS.constants. It is unlikely that they will change, but that's where they're defined.
 
@@ -64,11 +78,7 @@
 	<tpl>
 	<div class='zcs-mail-msgHdr collapsed'>
 		<div class='zcs-msgHdr-person' style='{imageStyle}'></div>
-		<tpl for='addrs.FROM'>
-		<div class='zcs-msgHdr-fromBubble'>
-			<span id='{id}'>{name}</span>
-		</div>
-		</tpl>
+		{[this.includeTpl('SentBy', values)]}
 		<div class='zcs-msgHdr-date'><span>{dateStr}</span></div>
 		<div class='zcs-msgHdr-fragment'><span>{fragment:htmlEncode}</span></div>
 	</div>
@@ -79,31 +89,27 @@
 	<tpl>
 	<div class='zcs-mail-msgHdr expanded'>
 		<div class='zcs-msgHdr-person' style='{imageStyle}'></div>
-		<tpl for='addrs.FROM'>
-		<div class='zcs-msgHdr-fromBubble'>
-			<span id='{id}'>{name}</span>
-		</div>
-		</tpl>
+		{[this.includeTpl('SentBy', values)]}
 		<div class='zcs-msgHdr-date'><span>{dateStr}</span></div>
 		<tpl if='recipients'>
-		<div class='zcs-msgHdr-to'>
-			<span>{[ZtMsg.to]}</span>
-			<span>{recipients}</span>
-		</div>
+			<div class='zcs-msgHdr-to'>
+				<span>{[ZtMsg.to]}</span>
+				<span>{recipients}</span>
+			</div>
 		</tpl>
 		<a class='zcs-msgHdr-link' onClick='return false;'>{[ZtMsg.showDetails]}</a>
 		</div>
 		<tpl if='tags && tags.length'>
-		<div class='zcs-mail-dtlMsgHdr'>
-			<div class='zcs-msgHdr-field'>
-				<tpl for='tags'>
-				<span class='zcs-area-bubble zcs-tag-bubble' id='{id}'>
-					<div class="zcs-tag-small zcs-tag-{color}" tagName="{name}" <tpl if='rgb'>style='background-color: {rgb};'</tpl>></div>
-					{displayName}
-				</span>
-				</tpl>
+			<div class='zcs-mail-dtlMsgHdr'>
+				<div class='zcs-msgHdr-field'>
+					<tpl for='tags'>
+					<span class='zcs-area-bubble zcs-tag-bubble' id='{id}'>
+						<div class="zcs-tag-small zcs-tag-{color}" tagName="{name}" <tpl if='rgb'>style='background-color: {rgb};'</tpl>></div>
+						{displayName}
+					</span>
+					</tpl>
+				</div>
 			</div>
-		</div>
 		</tpl>
 	</div>
 	</tpl>
@@ -115,11 +121,7 @@
 	<tpl>
 	<div class='zcs-mail-msgHdr detailed'>
 		<div class='zcs-msgHdr-person' style='{imageStyle}'></div>
-		<tpl for='addrs.FROM'>
-			<div class='zcs-msgHdr-fromBubble'>
-				<span id='{id}'>{name}</span>
-			</div>
-		</tpl>
+		{[this.includeTpl('SentBy', values)]}
 		<tpl for='addrs.FROM'>
 			<div class='zcs-msgHdr-from'>
 				<span>{[ZtMsg.from]} {address}</span>
@@ -497,8 +499,6 @@
 		</tpl>
 	</tpl>
 </template>
-
-
 
 <template id="ApptViewDesc">
 	<tpl>
