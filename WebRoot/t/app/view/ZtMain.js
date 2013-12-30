@@ -26,7 +26,7 @@ Ext.define("ZCS.view.ZtMain", {
 		'ZCS.view.mail.ZtComposeForm',
 		'ZCS.view.ZtAppView',
 		'ZCS.view.ZtAppsMenu',
-		'ZCS.view.ZtOrganizerEdit',
+		'ZCS.view.ZtOrganizerEdit'
 	],
 
 	alias: 'widget.ztmain',

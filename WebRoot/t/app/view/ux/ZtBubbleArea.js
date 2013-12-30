@@ -91,7 +91,7 @@ Ext.define('ZCS.view.ux.ZtBubbleArea', {
 
         inputCharacterWidthIncrement: 20,
 
-        name: null,
+        name: null
 
     },
 
