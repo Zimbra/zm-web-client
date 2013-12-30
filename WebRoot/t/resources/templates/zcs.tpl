@@ -61,12 +61,12 @@
 	<div class='zcs-msgHdr-fromBubble'>
         <span id='{fromId}'>{fromName}</span>
 	    <tpl if='onBehalfOfName'>
-	        {[ZtMsg.onBehalfOfMidLabel]}
-	            <span id='{onBehalfOfId}'>{onBehalfOfName}</span>
+	        <span class='zcs-msgHdr-text'>{[ZtMsg.onBehalfOfMidLabel]}</span>
+	        <span id='{onBehalfOfId}'>{onBehalfOfName}</span>
 	    </tpl>
 	    <tpl if='byWayOfName'>
-	        {[ZtMsg.byWayMidLabel]}
-	            <span id='{byWayId}'>{byWayName}</span>
+	        <span class='zcs-msgHdr-text'>{[ZtMsg.byWayOfMidLabel]}</span>
+            <span id='{byWayOfId}'>{byWayOfName}</span>
 	    </tpl>
     </div>
 </template>
