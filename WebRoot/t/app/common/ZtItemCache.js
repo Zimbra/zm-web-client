@@ -54,8 +54,9 @@ Ext.define('ZCS.common.ZtItemCache', {
 
 		if (altKey) {
 			key = key.toLowerCase();
+			// normalize path to omit leading /
 			if (altKey === 'path') {
-				key = (key[0] === '/') ? key : '/' + key;
+				key = (key[0] === '/') ? key.substr(1) : key;
 			}
 		}
 
@@ -94,8 +95,9 @@ Ext.define('ZCS.common.ZtItemCache', {
 
 		if (altKey) {
 			key = key.toLowerCase();
+			// normalize path to omit leading /
 			if (altKey === 'path') {
-				key = (key[0] === '/') ? key : '/' + key;
+				key = (key[0] === '/') ? key.substr(1) : key;
 			}
 		}
 

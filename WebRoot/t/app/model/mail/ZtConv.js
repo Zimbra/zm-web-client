@@ -83,7 +83,7 @@ Ext.define('ZCS.model.mail.ZtConv', {
 	constructor: function(data, id, raw) {
 
 		// do this first so that 'numMsgsShown' can be calculated during construction
-		if (data && data.msgs) {
+		if (data && data.msgs && data.msgs.length > 0) {
 			this.setMessages(data.msgs);
 		}
 
@@ -113,7 +113,7 @@ Ext.define('ZCS.model.mail.ZtConv', {
 	 * @return {boolean}    true if any msg in this conv is in the given folder
 	 */
 	isInFolder: function(folderId) {
-		return !!(this.getFolderHash[folderId]);
+		return !!(this.getFolderHash()[folderId]);
 	},
 
 	handleModifyNotification: function(modify) {

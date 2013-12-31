@@ -1284,9 +1284,6 @@ function() {
  * true if the item matches the search.
  * 
  * @return {Function}	the match function
- * 
- * TODO: refactor so that tokens generate their code
- * TODO: handle more ops
  */
 ZmParsedQuery.prototype.getMatchFunction =
 function() {
@@ -1302,22 +1299,27 @@ function() {
 	var func = ["return Boolean("];
 	for (var i = 0, len = this._tokens.length; i < len; i++) {
 		var t = this._tokens[i];
-		if (t.type == ZmParsedQuery.TERM) {
-			if (t.op == "in" || t.op == "inid") {
-				folderId = (t.op == "in") ? this._getFolderId(t.arg) : t.arg;
+		if (t.type === ZmParsedQuery.TERM) {
+			if (t.op === "in" || t.op === "inid") {
+				folderId = (t.op === "in") ? this._getFolderId(t.arg) : t.arg;
 				if (folderId) {
-					func.push("((item.type == ZmItem.CONV) ? item.folders && item.folders['" + folderId +"'] : item.folderId == '" + folderId + "')");
+					func.push("((item.type === ZmItem.CONV) ? item.folders && item.folders['" + folderId +"'] : item.folderId === '" + folderId + "')");
 				}
-			} else if (t.op == "tag") {
+			}
+			else if (t.op === "tag") {
 				tagId = this._getTagId(t.arg, true);
 				if (tagId) {
 					func.push("item.hasTag('" + t.arg + "')");
 				}
-			} else if (t.op == "is") {
+			}
+			else if (t.op === "is") {
 				var test = ZmParsedQuery.FLAG[t.arg];
 				if (test) {
 					func.push(test);
 				}
+			}
+			else if (t.op === 'has' && t.arg === 'attachment') {
+				func.push("item.hasAttach");
 			}
 			else {
 				// search had a term we don't know how to match
@@ -1328,10 +1330,10 @@ function() {
 				func.push(ZmParsedQuery.COND_OP[ZmParsedQuery.COND_AND]);
 			}
 		}
-		else if (t.type == ZmParsedQuery.COND) {
+		else if (t.type === ZmParsedQuery.COND) {
 			func.push(ZmParsedQuery.COND_OP[t.op]);
 		}
-		else if (t.type == ZmParsedQuery.GROUP) {
+		else if (t.type === ZmParsedQuery.GROUP) {
 			func.push(t.op);
 		}
 	}

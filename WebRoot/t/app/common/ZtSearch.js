@@ -281,6 +281,9 @@ Ext.define('ZCS.common.ZtSearch', {
 						func.push(test);
 					}
 				}
+				else if (op === 'has' && arg === 'attachment') {
+					func.push("item.get('hasAttachment')");
+				}
 				else {
 					// search had a term we don't know how to match
 					return null;

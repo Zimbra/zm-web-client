@@ -385,6 +385,8 @@ Ext.define('ZCS.model.ZtOrganizer', {
 			if (this.isSystem()) {
 				path = path.toLowerCase();
 			}
+			// normalize path to omit leading /
+			path = (path[0] === '/') ? path.substr(1) : path;
 
 			return 'in:"' + path + '"';
 		}

@@ -156,31 +156,31 @@ Ext.define('ZCS.controller.mail.ZtConvListController', {
 	},
 
 	/**
-	 * Handle a newly created conv. Add it to view if it matches the current search.
+	 * Handle a newly created conv. Add it to view if it matches the current search. Unfortunately, a conv
+	 * node from a notification does not contain msg data (a conv node from search results has msg data),
+	 * so we need to construct it from msg create notifications that we got with the conv create.
 	 *
 	 * @param {ZtItem}  item        (not passed for create notifications)
 	 * @param {Object}  create      JSON create node
 	 */
 	handleConvCreateNotification: function(item, convCreate) {
 
-		var reader = ZCS.model.mail.ZtConv.getProxy().getReader(),
-			data = reader.getDataFromNode(convCreate),
-			store = this.getStore(),
-			conv = new ZCS.model.mail.ZtConv(data, convCreate.id);
+		var creates = convCreate.creates,
+			ln = creates && creates.m ? creates.m.length : 0,
+			msgs = [],
+			msgCreate, i, addresses, recips, fragment;
 
 		var curSearch = ZCS.session.getSetting(ZCS.constant.SETTING_CUR_SEARCH, this.getApp()),
 			curFolder = this.getFolder() || ZCS.session.getCurrentSearchOrganizer(),
-			curFolderId = curFolder && curFolder.get('zcsId'),
-			isOutbound = ZCS.util.isOutboundFolderId(curFolderId),
-			creates = convCreate.creates,
-			doAdd = curSearch.match(conv),
-			ln = creates && creates.m ? creates.m.length : 0,
-			msgCreate, i, addresses, recips, fragment;
+			isOutbound = ZCS.util.isOutboundFolderId(curFolder.get('zcsId'));
 
+		// gather up the conv's msgs from their create nodes (typically just one msg)
 		for (i = 0; i < ln; i++) {
 			msgCreate = creates.m[i];
 			if (msgCreate.cid === convCreate.id) {
-				fragment = msgCreate.fr;
+				msgs.push(msgCreate);
+				fragment = fragment || msgCreate.fr;
+				// if we're in Sent, gather the recipients so we can show them instead of senders
 				if (isOutbound) {
 					addresses = ZCS.model.mail.ZtMailItem.convertAddressJsonToModel(msgCreate.e);
 					recips = ZCS.mailutil.getSenders(addresses);
@@ -188,13 +188,20 @@ Ext.define('ZCS.controller.mail.ZtConvListController', {
 				break;
 			}
 		}
+		convCreate.m = msgs;
+
+		var reader = ZCS.model.mail.ZtConv.getProxy().getReader(),
+			data = reader.getDataFromNode(convCreate),
+			store = this.getStore(),
+			conv = new ZCS.model.mail.ZtConv(data, convCreate.id);
 
 		if (recips) {
 			conv.set('senders', recips);
 		}
 		conv.set('fragment', conv.get('fragment') || fragment);
 
-		if (doAdd || convCreate.doAdd) {
+		// if the newly arrived conv matches the current search, add it at the top of our list
+		if (curSearch.match(conv)) {
 			store.insert(0, [conv]);
 		}
 	},
@@ -216,27 +223,35 @@ Ext.define('ZCS.controller.mail.ZtConvListController', {
 			store = this.getStore(),
 			msg = new ZCS.model.mail.ZtMailMsg(data, msgCreate.id);
 
+		var curSearch = ZCS.session.getSetting(ZCS.constant.SETTING_CUR_SEARCH, this.getApp()),
+			msgMatches = curSearch.match(msg),
+			convCreate;
+
+		// conv is already in the store, doesn't need to be added; just bump conv to top if msg matches
 		if (store.getById(msgCreate.cid)) {
+			if (msgMatches) {
+				var conv = ZCS.cache.get(msgCreate.cid);
+				if (conv && store.indexOf(conv) > 0) {
+					store.insert(0, [conv]);
+				}
+			}
 			return;
 		}
 
-		var curSearch = ZCS.session.getSetting(ZCS.constant.SETTING_CUR_SEARCH, this.getApp()),
-			curFolder = this.getFolder() || ZCS.session.getCurrentSearchOrganizer(),
-			curFolderId = curFolder && curFolder.get('zcsId'),
-			convCreate;
-
-		if (curSearch.match(msg)) {
-			// virtual conv that got promoted will have convCreateNode
+		// conv is not in our list
+		if (msgMatches) {
+			// virtual conv that got promoted will have convCreateNode; we get here if the first msg in the conv
+			// did not match the search (so conv is not in list), but the second one does
 			if (msgCreate.convCreateNode) {
 				convCreate = msgCreate.convCreateNode;
 				if (convCreate.newId) {
 					convCreate.id = convCreate.newId;
-					convCreate.doAdd = true;
 					this.handleConvCreateNotification(null, convCreate);
 				}
 			}
 			else {
-				// create from msg node
+				// normally shouldn't get here, since conv create should be handled first; if we somehow get here,
+				// create a new conv based on the msg create node
 				convCreate = {
 					id:         msgCreate.cid,
 					d:          msgCreate.d,
@@ -245,13 +260,11 @@ Ext.define('ZCS.controller.mail.ZtConvListController', {
 					fr:         msgCreate.fr,
 					itemType:   ZCS.constant.ITEM_CONVERSATION,
 					nodeType:   ZCS.constant.NODE_CONVERSATION,
-					su:         msgCreate.su,
-					doAdd:      true
+					su:         msgCreate.su
 				};
 				this.handleConvCreateNotification(null, convCreate);
 			}
 		}
-
 	},
 
 	/**
@@ -266,12 +279,13 @@ Ext.define('ZCS.controller.mail.ZtConvListController', {
 		// field since that breaks the connection to the list item in the UI
 		if (modify.newId) {
 			var oldConv = ZCS.cache.get(modify.id),
+				index = oldConv ? store.indexOf(oldConv) : -1,
 				newConv;
 
-			if (store.getById(oldConv.getId())) {
-				newConv = oldConv && oldConv.copy(modify.newId);
+			if (index !== -1) {
+				newConv = oldConv.copy(modify.newId);
 				store.remove(oldConv);
-				store.insert(0, newConv);   // moves conv to top
+				store.insert(index, newConv);   // replace old conv with new one
 				item = newConv;
 			}
 		}
@@ -285,7 +299,7 @@ Ext.define('ZCS.controller.mail.ZtConvListController', {
 		// let the conv itself handle the simple stuff
 		item.handleModifyNotification(modify);
 
-		//If this item is a draft, go ahead and select it, because the normal ext logic unselects it.
+		// If this item is a draft, go ahead and select it, because the normal ext logic unselects it.
 		if (item.data.isDraft) {
 			this.getListView().select(item);
 		}
