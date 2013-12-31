@@ -457,7 +457,7 @@
 </template>
 
 <template id='QuotedLink'>
-	<div class='zcs-quoted-link'>
+	<div class='zcs-quoted-link' id='{id}'>
 	<tpl if='show'>
 		{[ZtMsg.showQuotedText]}
 	<tpl else>
@@ -467,7 +467,7 @@
 </template>
 
 <template id='Truncated'>
-	<div class='zcs-truncated-message'><span>{[ZtMsg.messageTruncated]}</span> <span class='zcs-truncated-message-link'>{[ZtMsg.messageTruncatedLink]}</span></div>
+	<div class='zcs-truncated-message'><span>{[ZtMsg.messageTruncated]}</span> <span class='zcs-truncated-message-link' id='{id}'>{[ZtMsg.messageTruncatedLink]}</span></div>
 </template>
 
 <template id='OriginalAttachments'>

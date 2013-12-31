@@ -230,7 +230,7 @@ Ext.define('ZCS.model.mail.ZtInvite', {
 
 		var	dateFormat = this.get('isAllDay') ? ZtMsg.invDateFormat : ZtMsg.invDateTimeFormat,
 			idParams = {
-				type:       ZCS.constant.IDTYPE_INVITE_ACTION,
+				objType:    ZCS.constant.OBJ_INVITE,
 				msgId:      this.getMsgId(),
 				msgBodyId:  msgBodyId
 			},
@@ -249,15 +249,9 @@ Ext.define('ZCS.model.mail.ZtInvite', {
                 attendeeResponse: this.get('attendeeResponse'),
                 attendeeResponseMsg: this.get('attendeeResponseMsg'),
 
-				acceptButtonId:     ZCS.util.getUniqueId(Ext.apply({}, {
-					action: ZCS.constant.OP_ACCEPT
-				}, idParams)),
-				tentativeButtonId:  ZCS.util.getUniqueId(Ext.apply({}, {
-					action: ZCS.constant.OP_TENTATIVE
-				}, idParams)),
-				declineButtonId:    ZCS.util.getUniqueId(Ext.apply({}, {
-					action: ZCS.constant.OP_DECLINE
-				}, idParams))
+				acceptButtonId:     ZCS.util.getUniqueId(Ext.apply({}, { action: ZCS.constant.OP_ACCEPT }, idParams)),
+				tentativeButtonId:  ZCS.util.getUniqueId(Ext.apply({}, { action: ZCS.constant.OP_TENTATIVE }, idParams)),
+				declineButtonId:    ZCS.util.getUniqueId(Ext.apply({}, { action: ZCS.constant.OP_DECLINE }, idParams))
             },
             invite = {};
 

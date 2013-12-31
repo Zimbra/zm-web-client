@@ -110,6 +110,7 @@ Ext.define('ZCS.model.ZtItem', {
 			if (tags && tags.length) {
 				tagDataList = Ext.Array.map(Ext.Array.clean(tags), function(tag) {
 					var tagData = Ext.copyTo({}, tag, 'zcsId,color,name,displayName');
+					tagData.objType = ZCS.constant.OBJ_TAG;
 					tagData.id = ZCS.util.getUniqueId(tagData);
 					return tagData;
 				});

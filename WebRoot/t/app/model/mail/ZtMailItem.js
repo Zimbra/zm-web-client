@@ -85,6 +85,7 @@ Ext.define('ZCS.model.mail.ZtMailItem', {
 					return Ext.Array.map(addrs,
 						function (addr) {
 							var	addrData = {
+									objType:    ZCS.constant.OBJ_ADDRESS,
 									address:    addr.get('email'),
 									name:       ZCS.mailutil.getDisplayName(addr),
 									addrObj:    addr

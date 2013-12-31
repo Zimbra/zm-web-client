@@ -697,9 +697,9 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 		for (i = 0; i < ln; i++) {
 			var attInfo = attachments[i],
 				id = ZCS.util.getUniqueId({
-					type:   ZCS.constant.IDTYPE_ATTACHMENT,
-					url:    attInfo.url,
-					part:   attInfo.part
+					objType:    ZCS.constant.OBJ_ATTACHMENT,
+					url:        attInfo.url,
+					part:       attInfo.part
 				});
 
 			attInfo.id = id;

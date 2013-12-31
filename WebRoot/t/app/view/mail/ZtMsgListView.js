@@ -70,7 +70,7 @@ Ext.define('ZCS.view.mail.ZtMsgListView', {
 					idParams = ZCS.util.getIdParams(elm.dom.id) || {};
 
 				// address bubble
-				if (elm.hasCls('zcs-contact-bubble')) {
+				if (idParams.objType === ZCS.constant.OBJ_ADDRESS) {
 					msgHeader.fireEvent('contactTap', elm, {
 						menuName:   ZCS.constant.MENU_ADDRESS,
 						msg:		msg,
@@ -82,20 +82,11 @@ Ext.define('ZCS.view.mail.ZtMsgListView', {
 				}
 
 				// tag bubble
-				if (elm.hasCls('zcs-tag-bubble')) {
+				if (idParams.objType === ZCS.constant.OBJ_TAG) {
 					msgHeader.fireEvent('tagTap', elm, {
 						menuName:   ZCS.constant.MENU_TAG,
 						msg:		msg,
 						tagName:	idParams.name
-					});
-					return true;
-				}
-
-				// message actions menu
-				if (elm.hasCls('zcs-msgHdr-menuButton') || elm.hasCls('zcs-msgHeader-menuButton-span')) {
-					msgHeader.fireEvent('menuTap', elm, {
-						menuName:   ZCS.constant.MENU_MSG,
-						msg:		msg
 					});
 					return true;
 				}
@@ -134,13 +125,13 @@ Ext.define('ZCS.view.mail.ZtMsgListView', {
 					idParams = ZCS.util.getIdParams(elm.dom.id) || {};
 
 				// attachment bubble
-				if (elm.hasCls('zcs-attachment-bubble')) {
+				if (idParams.objType === ZCS.constant.OBJ_ATTACHMENT) {
 					msgBody.fireEvent('attachmentTap', elm);
 					return false;
 				}
 
 				// address bubble
-				if (elm.hasCls('zcs-contact-bubble')) {
+				if (idParams.objType === ZCS.constant.OBJ_ADDRESS) {
 					msgBody.fireEvent('contactTap', elm, {
 						menuName:   ZCS.constant.MENU_ADDRESS,
 						msg:		msg,
@@ -150,17 +141,17 @@ Ext.define('ZCS.view.mail.ZtMsgListView', {
 				}
 
 				// invite response button (accept/tentative/decline)
-				if (elm.hasCls('zcs-invite-button')) {
+				if (idParams.objType === ZCS.constant.OBJ_INVITE) {
 					msgBody.fireEvent('inviteReply', idParams.msgId, idParams.action);
 				}
 
 				// show/hide quoted text link
-				if (elm.hasCls('zcs-quoted-link')) {
+				if (idParams.objType === ZCS.constant.OBJ_QUOTED) {
 					msgBody.fireEvent('toggleQuotedText', msgBody);
 				}
 
 				// load rest of truncated message
-				if (elm.hasCls('zcs-truncated-message-link')) {
+				if (idParams.objType === ZCS.constant.OBJ_TRUNCATED) {
 					msgBody.fireEvent('loadEntireMessage', msg, msgBody);
 				}
 			},

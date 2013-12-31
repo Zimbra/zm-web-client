@@ -267,7 +267,9 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 		// Tell user they aren't seeing the whole long message
 		if (params.truncated && (params.quoted !== 'show')) {
 			this.truncatedComponent = new Ext.Component({
-				html: ZCS.view.mail.ZtMsgBody.truncatedTpl.apply({})
+				html: ZCS.view.mail.ZtMsgBody.truncatedTpl.apply({
+					id: ZCS.util.getUniqueId({ objType: ZCS.constant.OBJ_TRUNCATED })
+				})
 			});
 			prepend.push(this.truncatedComponent);
 		}
@@ -281,7 +283,10 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 		// Let user show/hide quoted text
 		if (params.quoted) {
 			this.quotedTextComponent = new Ext.Component({
-				html: ZCS.view.mail.ZtMsgBody.quotedLinkTpl.apply({ show: params.quoted === 'show' })
+				html: ZCS.view.mail.ZtMsgBody.quotedLinkTpl.apply({
+					id:     ZCS.util.getUniqueId({ objType: ZCS.constant.OBJ_QUOTED }),
+					show:   params.quoted === 'show'
+				})
 			});
 			this.add(this.quotedTextComponent);
 		}
@@ -385,8 +390,8 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 		for (i = 0; i < ln; i++) {
 			var attInfo = attachments[i],
 				id = ZCS.util.getUniqueId({
-					type:   ZCS.constant.IDTYPE_ATTACHMENT,
-					url:    attInfo.url
+					objType:    ZCS.constant.OBJ_ATTACHMENT,
+					url:        attInfo.url
 				});
 
 			attInfo.id = id;

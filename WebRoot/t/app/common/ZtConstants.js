@@ -173,6 +173,14 @@ ZCS.constant.HDR_COLLAPSED  = 'collapsed';
 ZCS.constant.HDR_EXPANDED   = 'expanded';
 ZCS.constant.HDR_DETAILED   = 'detailed';
 
+// Types of actionable objects that can appear in msg header or body
+ZCS.constant.OBJ_ADDRESS    = 'address';
+ZCS.constant.OBJ_ATTACHMENT = 'attachment';
+ZCS.constant.OBJ_INVITE     = 'invite'; // accept/tentative/decline
+ZCS.constant.OBJ_TAG        = 'tag';
+ZCS.constant.OBJ_QUOTED     = 'quoted';
+ZCS.constant.OBJ_TRUNCATED  = 'truncated';
+
 // Item types (server JSON)
 ZCS.constant.ITEM_CONVERSATION      = 'conversation';
 ZCS.constant.ITEM_MESSAGE           = 'message';
@@ -685,12 +693,6 @@ ZCS.constant.ROLE_CHAIR             = 'OPT';
 ZCS.constant.ROLE_REQUIRED          = 'REQ';
 ZCS.constant.ROLE_OPTIONAL          = 'OPT';
 ZCS.constant.ROLE_NON_PARTICIPANT   = 'NON';
-
-// Types for IDs we make up
-ZCS.constant.IDTYPE_INVITE_ACTION   = 'INVITE_ACTION';
-ZCS.constant.IDTYPE_QUOTED_LINK     = 'QUOTED_TEXT';
-ZCS.constant.IDTYPE_ATTACHMENT      = 'ATTACHMENT';
-ZCS.constant.IDTYPE_TAG             = 'TAG';
 
 // Quick reply textarea - height in pixels
 ZCS.constant.QUICK_REPLY_SMALL  = 20;

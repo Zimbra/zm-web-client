@@ -75,7 +75,7 @@ Ext.define('ZCS.view.calendar.ZtAppointmentView', {
             recurrence = invite.get('recurrence'),
             myResponse = invite.get('myResponse'),
             idParams = {
-                type:       ZCS.constant.IDTYPE_INVITE_ACTION,
+	            objType:    ZCS.constant.OBJ_INVITE,
                 msgId:      msg.get('id')
             },
             data = {
@@ -88,15 +88,9 @@ Ext.define('ZCS.view.calendar.ZtAppointmentView', {
                 reminder: reminder ? reminder : "", /* TODO: Get strings similar to Ajax Client */
                 recurrence: recurrence ? recurrence : "",
                 notes: invite.get('notes'),
-                invAcceptButtonId:     ZCS.util.getUniqueId(Ext.apply({}, {
-                    action: ZCS.constant.OP_ACCEPT
-                }, idParams)),
-                invTentativeButtonId:  ZCS.util.getUniqueId(Ext.apply({}, {
-                    action: ZCS.constant.OP_TENTATIVE
-                }, idParams)),
-                invDeclineButtonId:    ZCS.util.getUniqueId(Ext.apply({}, {
-                    action: ZCS.constant.OP_DECLINE
-                }, idParams))
+	            invAcceptButtonId:     ZCS.util.getUniqueId(Ext.apply({}, { action: ZCS.constant.OP_ACCEPT }, idParams)),
+	            invTentativeButtonId:  ZCS.util.getUniqueId(Ext.apply({}, { action: ZCS.constant.OP_TENTATIVE }, idParams)),
+	            invDeclineButtonId:    ZCS.util.getUniqueId(Ext.apply({}, { action: ZCS.constant.OP_DECLINE }, idParams))
             },
             apptTitle = invite.get('subject'),
             tpl,html,me;
