@@ -23,6 +23,7 @@ $contactListTopOffset: 0.5rem;
 
 $contactBaseFontSize: 1rem;
 $contactImageSize: 7em;
+$contactEditImageSize: 5em;
 $contactStdMargin: 0.7em;
 $contactListImageTopOffset: $contactListHeight/2 - $contactListImageSize/2;
 $contactButtonSize: $contactImageSize/1.5;
@@ -247,66 +248,99 @@ $contactFieldWidth: 21em; //optimized intially for iPad in landscape
 
 /* Create Contact Classes */
 
-$contactBorderColor: #E3E3E3;
+$contactBorderColor: $light-grey;
 
-.zcs-contact-image {
-	@extend .zcs-contact-person;
-	height: $contactImageSize;
-	margin: 3px auto auto;
-	width: $contactImageSize;
+.zcs-contact-imgborder {
+	background-color: white;
+
+	.zcs-contact-image {
+		@extend .zcs-contact-person;
+		height: $contactEditImageSize;
+		margin: .5em auto auto;
+		width: $contactEditImageSize;
+	}
+}
+
+.x-phone {
+	.zcs-contact-imgborder {
+		width:0;
+
+		.zcs-contact-image {
+			display: none;
+		}
+	}
 }
 
 .zcs-contact-personalinfo {
 	width: 80%;
 }
+.x-phone .zcs-contactview-personalInfo {
+	width: 100%;
+}
 
 .zcs-contact-formline {
-	border-bottom: 1px solid $light-grey;
+	border-bottom: 1px solid $contactBorderColor;
 	min-height: 1.8em;
 }
 
 .zcs-contact-form {
 	background-color: white;
 	background-image: none;
+	font-size: 1rem;
+	min-height: 1.8em;
 
 	.x-form-inner {
 	@extend .zcs-contact-formline;
 
 		.zcs-contact-label {
-			background-color: #F7F7F7;
-			padding: 12px;  /*.65em*/
+			@extend .zcs-contact-form;
+			color: lighten($primary-text-color, 25%);
+			padding: .85em;
 			text-align: right;
 		}
+
 		.x-button.zcs-contact-addremove {
-			background-color: white;
+			@extend .zcs-contact-form;
 			color: $linkColor;
-			font-size: .7em;
+			height: 2.9em;
+			padding-left: .5em;
+			@include border-radius(0);
 
 			&:active {
 				background-color: $light-grey;
 			}
 		}
+
+		// Clear icons should only be shown on focus
+		// but can't use this easily until clear icon is font-based
+		/*.x-field {
+			.x-field-input .x-clear-icon {
+			}
+			&.x-field-focused {
+				.x-field-input .x-clear-icon {
+				}
+			}
+		}*/
+	}
+
+	.x-form .x-scroll-container {
+		background-color: white;
 	}
 }
 
-// TODO: Fix this naming convention to use dashes rather than camelcase
-.zcsContactField {
-	border: solid $contactBorderColor;
-	border-width: 0 0 1px;
+.zcs-contact-field {
+	border-bottom: 1px solid $contactBorderColor;
 }
 
-.zcs-contact-imgborder,
 .zcs-contact-spacer,
 .zcs-contact-addremove {
-	@extend .zcsContactField;
+	@extend .zcs-contact-field;
 }
 
 .x-webkit .x-layout-box.x-vertical>.x-layout-box-item.x-flexed.zcs-contact-spacer {
+	background-color: white;
 	height: 15px !important;
 	width: 100% !important;
-}
-.zcs-contact-addremove {
-	@include border-radius(0);
 }
 
 /* Contact Group Classes */

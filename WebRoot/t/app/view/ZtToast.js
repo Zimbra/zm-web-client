@@ -26,14 +26,11 @@ Ext.define('ZCS.view.ZtToast', {
 		floating: true,
 		modal: false,
 		width: 350,
-		top: 25,
 		left: 300,
-		padding: 0,
 		cls: 'zcs-toast',
 		layout: 'fit',
 		items: [{
 			xtype: 'component',
-			padding: 0,
 			tpl: ZCS.template.Toast
 		}],
 		hideAnimation: 'fadeOut'
@@ -76,21 +73,19 @@ Ext.define('ZCS.view.ZtToast', {
 
 		me.element.applyStyles({
 			position: 'absolute',
-			"zIndex": 10000	
+			"zIndex": 10000
 		});
 
 		me.show({
 			from: {
 				opacity: 0,
-				left: left,
-				top: 25
+				left: left
 			},
 			to: {
 				opacity: 1,
-				left: left,
-				top: 25
+				left: left
 			},
-			duration: 500
+			duration: 1000
 		});
 	},
 

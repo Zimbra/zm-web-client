@@ -14,18 +14,22 @@
  */
 
 @import 'variables/base';
-@import 'compass/css3/border-radius';
 @import 'recipes/background/gradients';
+@import 'compass/css3/border-radius';
+@import 'compass/typography/text/ellipsis';
 
 $font-color: $dark-grey;
 $font-weight: normal;
-$input-font-size: 1.2em;
+$input-font-size: 1.2rem;
 
-$bubble-height: 1em;
+$bubble-height: 1rem;
+$bubble-lineheight: 1.6rem;
 $bubble-text-color: $base-color;
+$bubble-bkgd-color: transparent;
+$bubble-padding: $bubble-height/2;
 
-$space-between-bubbles: 1.5em;
-$space-between-rows: .2em;
+$space-between-bubbles: 0.25rem;
+$space-between-rows: .2rem;
 
 //Disabling close icon for now.
 $bubble-close-icon-width: 0;
@@ -33,13 +37,19 @@ $bubble-close-icon-height: 0;
 $bubble-close-icon-margin: 0;
 
 .zcs-area-bubble {
-	display: inline-block;
-	cursor: pointer;
+	background-color: $bubble-bkgd-color;
 	color: $bubble-text-color;
+	cursor: pointer;
+	display: inline-block;
 	font-weight: $font-weight;
 	line-height: $bubble-height;
 	margin-right: $space-between-bubbles;
-	padding: 0px 5px;
+	max-width: 30rem;
+	overflow: hidden;
+	padding: $bubble-padding 0 $bubble-padding $bubble-padding/2;
+	white-space: nowrap;
+	@include border-radius($bubble-height/2);
+	@include ellipsis();
 
 	SPAN {
 		font-weight: normal;
@@ -47,9 +57,17 @@ $bubble-close-icon-margin: 0;
 	}
 }
 
+.x-phone .zcs-area-bubble {
+	max-width: 10rem;
+}
+
 .menu-open .zcs-area-bubble {
 	background: $bubble-text-color;
 	color: $white;
+}
+
+.bubble-inline-item {
+	display: inline-block;
 }
 
 .zcs-bubblearea {
@@ -58,9 +76,16 @@ $bubble-close-icon-margin: 0;
 	@include border-radius($default-textarea-radius);
 
 	> DIV {
-		.bubble-comp, .input-comp {
-			display: inline-block;
-			margin-top: $space-between-rows;
+
+		.bubble-comp{
+			@extend .bubble-inline-item;
+			line-height: $bubble-lineheight;
+			margin-bottom: $space-between-rows;
+		}
+
+		.input-comp {
+			@extend .bubble-inline-item;
+			margin-top: $bubble-height/2;
 		}
 
 		.bubble-close-icon {
@@ -74,9 +99,11 @@ $bubble-close-icon-margin: 0;
 	}
 
 	.bubble-main-contents {
+		padding-top: 0.25rem;
+
 		.x-inner {
 			overflow-y: auto;
-			padding: 0.3em 0.4em !important;
+			/*padding: 0.3rem 0.4rem !important; */
 		}
 	}
 
@@ -84,15 +111,12 @@ $bubble-close-icon-margin: 0;
 		margin-left: 0px;
 
 		.x-innerhtml {
-			height: $bubble-height;
+			height: $bubble-height + $bubble-padding * 2;
 			position: relative;
 			display: inline-block;
 
 			INPUT {
-				top: 5px;
-				height: $bubble-height;
 				font-size: $input-font-size;
-				position: absolute;
 			}
 		}
 	}
@@ -118,6 +142,7 @@ $bubble-close-icon-margin: 0;
 	&[class~=zcs-read-only] {
 		 background: $default-readonly-color !important;
 		 border-color: $default-border-disabled;
+
 		.bubble-close-icon{
 			display: none !important;
 		}

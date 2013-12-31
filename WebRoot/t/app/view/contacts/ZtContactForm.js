@@ -62,20 +62,19 @@ Ext.define('ZCS.view.contacts.ZtContactForm', {
                 title: ZtMsg.createContact,
                 items: [
                     {
-                        xtype:  'button',
-                        text:   ZtMsg.cancel,
-                        ui:     'neutral',
+                        xtype:        'button',
+                        text:         ZtMsg.cancel,
+                        paddingRight: '1em',
 
                         handler: function() {
                             this.up('contactpanel').fireEvent('cancel');
                         }
                     },
                     {
-                        xtype:      'button',
-                        text:       ZtMsg.save,
-                        align:      'right',
-                        ui:         'green',
-                        padding:    '0 2em',
+                        xtype:          'button',
+                        text:           ZtMsg.save,
+                        align:          'right',
+                        paddingLeft:    '1em',
 
                         handler: function() {
                             this.up('contactpanel').fireEvent('save');

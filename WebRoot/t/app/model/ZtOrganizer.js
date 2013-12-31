@@ -423,11 +423,11 @@ Ext.define('ZCS.model.ZtOrganizer', {
 		if (organizerName) {
 			if (folderType === ZCS.constant.ORG_MAIL_FOLDER) {
 				var unread = showCount ? this.get('unreadCount') : 0;
-				title = (unread > 0) ? '<b>' + organizerName + ' (' + unread + ')</b>' : organizerName;
+				title = (unread > 0) ? organizerName + ' (' + unread + ')' : organizerName;
 			}
 			else if (folderType === ZCS.constant.ORG_ADDRESS_BOOK) {
 				var contactCount = showCount ? this.get('itemCount') : 0;
-				title = (contactCount > 0) ? '<b>' + organizerName + ' (' + contactCount + ')</b>' : organizerName;
+				title = (contactCount > 0) ? organizerName + ' (' + contactCount + ')' : organizerName;
 			}
 		}
 

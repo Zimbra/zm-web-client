@@ -99,7 +99,7 @@ Ext.define('ZCS.view.ZtOverview', {
 
 		if (this.config.showEdit) {
 			var organizerEditToolbar = Ext.create('Ext.Toolbar', {
-				height: 50,
+				//height: 50,
 				docked: 'bottom',
 				hidden: true,
 				items: [{
@@ -107,16 +107,13 @@ Ext.define('ZCS.view.ZtOverview', {
 				}, {
 					text:   ZtMsg.newFolder,
 					action: 'newFolder',
-					cls:    'zcs-text-btn',
-					width:  90
+					cls:    'zcs-text-btn'
 				}, {
 					xtype: 'spacer'
 				}, {
 					text:   ZtMsg.newTag,
 					action: 'newTag',
-					cls:    'zcs-text-btn',
-					align:  'right',
-					width:  90
+					cls:    'zcs-text-btn'
 				}, {
 					xtype: 'spacer'
 				}]

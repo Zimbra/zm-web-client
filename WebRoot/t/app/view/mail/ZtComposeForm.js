@@ -58,12 +58,14 @@ Ext.define('ZCS.view.mail.ZtComposeForm', {
 					{
 						xtype: 'button',
 						text: ZtMsg.cancel,
+						paddingRight: '1em',
 						handler: function() {
 							this.up('composepanel').fireEvent('cancel');
 						}
 					},{
 						xtype: 'button',
 						text: ZtMsg.send,
+						paddingLeft: '1em',
 						align: 'right',
 						handler: function() {
 							this.up('composepanel').fireEvent('send');
@@ -92,14 +94,12 @@ Ext.define('ZCS.view.mail.ZtComposeForm', {
 					}
 				},
 				items: [{
-					minHeight: '2.5em',
 					cls: 'zcs-recipient-line',
 					layout: {
 						type: 'hbox'
 					},
 					items: [{
 						xtype: 'button',
-						height: '2.5em',
 						itemId: 'showcc',
 						cls: 'zcs-show-cc-btn',
 						iconCls: 'collapsed',
@@ -119,7 +119,6 @@ Ext.define('ZCS.view.mail.ZtComposeForm', {
 					name: ZCS.constant.CC,
 					itemId: 'cc',
 					addressType: ZCS.constant.CC,
-					minHeight: '2.5em',
 					hidden: true,
 					label: ZtMsg.ccHdr,
 					labelWidth: '5.5em'
@@ -128,13 +127,11 @@ Ext.define('ZCS.view.mail.ZtComposeForm', {
 					name: ZCS.constant.BCC,
 					itemId: 'bcc',
 					addressType: ZCS.constant.BCC,
-					minHeight: '2.5em',
 					hidden: true,
 					label: ZtMsg.bccHdr,
 					labelWidth: '5.5em'
 				}, {
 					cls: 'zcs-subjectline',
-					height: '2.5em',
 					layout: {
 						type: 'hbox'
 					},
@@ -143,7 +140,6 @@ Ext.define('ZCS.view.mail.ZtComposeForm', {
 						cls: 'zcs-subject',
 						name: 'subject',
 						flex: 1,
-						height: '2.5em',
 						label: ZtMsg.subjectHdr,
 						labelWidth: '5.5em',
 						listeners: {
@@ -180,7 +176,6 @@ Ext.define('ZCS.view.mail.ZtComposeForm', {
 						}
 					}, {
 						xtype: 'filefield',
-						height: '2.5em',
 						hidden: true,
 						listeners: {
 							change: function (field, newValue, oldValue) {

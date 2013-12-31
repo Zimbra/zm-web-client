@@ -45,13 +45,12 @@
 	border-bottom: 1px solid $light-grey;
 
 	.x-innerhtml {
-		font-size: .8em;
-		font-weight: bold;
-		line-height: 2em;
+		font-size: 1rem;
+		line-height: 1.2rem;
 
 		//TODO: the following should come from a link style
-		color: #336699;
-		text-decoration: underline;
+		color: $base-color;
+		//text-decoration: underline;
 	}
 }
 
@@ -59,10 +58,10 @@
 	border-right: 1px solid $default-border-color;
 }
 
-$zcs-titlebar-fontsize: 1.2rem;       // for titlebar height
-$zcs-titlebar-icon-fontsize: 1.4rem;  // for titlebar icons
-$zcs-title-fontsize: 1.4rem;          // for titlebar text - uses rem so it's not relational to container bar
+$zcs-titlebar-fontsize: 1.2rem;       // for titlebar height, icons & labels
+$zcs-title-fontsize: 1.4rem;          // for titlebar text - slightly larger to stand out
 $zcs-list-header-fontsize: 0.9rem;    // for org list category header text
+$zcs-list-fontsize: 0.9rem;           // for typical list item text
 $zcs-list-item-fontsize: 1.2rem;      // for app menu list items
 
 @mixin zimbra-button() {
@@ -71,7 +70,8 @@ $zcs-list-item-fontsize: 1.2rem;      // for app menu list items
 	border: none;
 }
 
-$zcs-button-active-color: rgba(255,255,255,.3);
+$zcs-button-active-color: white;
+$zcs-button-active-bkgd-color: lighten($base-color, 25%);
 
 /**
  * Make our buttons flat, no border, bigger images.
@@ -85,7 +85,8 @@ $zcs-button-active-color: rgba(255,255,255,.3);
 	@include zimbra-button;
 
 	&:active {
-		background-color: $zcs-button-active-color;
+		background-color: $zcs-button-active-bkgd-color;
+		color: $zcs-button-active-color;
 	}
 }
 
@@ -95,21 +96,57 @@ $zcs-overview-base-color: $dark-grey;
 $zcs-overview-category-color: darken($dark-grey, 10%);
 $zcs-overview-text-color: $light-grey;
 
+.zcs-overview-toolbar {
+	border: none;
+	background-image: none;
+	font-size: $zcs-titlebar-fontsize;
+	@include border-radius(0);
+}
+
 .zcs-overview {
 	background: $zcs-overview-base-color;
 
-	.x-button-icon,
-	.x-button-label,
-	.x-label {
+	.x-toolbar.x-docked-top {             // Overview top toolbar
+		@extend .zcs-overview-toolbar;
+		background-color: $zcs-overview-base-color;
 		color: $zcs-overview-text-color;
-	}
 
-	.x-button.zcs-text-btn {
-		padding-right: .5em;
-		padding-left: .5em;
+		.x-title,
+		.x-button-icon,
+		.x-button-label,
+		.x-label {
+			color: $zcs-overview-text-color;
+		}
 
-		.x-button-label {
-			font-weight: bold;
+		.x-title {
+			font-size: $zcs-title-fontsize;
+			padding: 0 0.5em;
+		}
+
+		.x-button {
+
+			&:active {
+				background-color: $zcs-button-active-bkgd-color;
+				color: $zcs-button-active-color;
+
+				.x-button-icon,
+				.x-button-label {
+					color: $zcs-button-active-color;
+				}
+			}
+
+			&.zcs-text-btn {
+				font-size: 0.9rem;
+				padding-right: 0.5em;
+				padding-left: 0.5em;
+			}
+
+			.x-button-label {
+				font-weight: bold;
+			}
+		}
+		.x-button.x-button-back {
+			color:white;
 		}
 	}
 
@@ -118,8 +155,8 @@ $zcs-overview-text-color: $light-grey;
 		background: $zcs-overview-category-color;
 
 		.zcs-textfield {
-			margin-top: 20px;
-			margin-bottom: 40px;
+			margin-top: 1.5em;
+			margin-bottom: 3em;
 
 			.x-field-text {
 				background-color: transparent;
@@ -139,6 +176,32 @@ $zcs-overview-text-color: $light-grey;
 		.zcs-folder-loc-btn {
 			border: none;
 			border-radius: 5px;
+		}
+
+		.zcs-folder-del-btn {
+			background-color: #E16767;
+			font-size: 1rem;
+			width: 80%;
+
+			.x-button-label {
+				color: white;
+				font-weight:bold;
+			}
+
+			&:active {
+				background-color: white;
+				.x-button-label {
+					color: #E16767;
+				}
+			}
+		}
+
+		.zcs-folder-loc-btn {
+			margin-bottom: 4em;
+
+			.x-button-label {
+				text-align: left;
+			}
 
 			.x-button-label {
 				color: $zcs-overview-category-color;
@@ -159,32 +222,18 @@ $zcs-overview-text-color: $light-grey;
 			}
 		}
 
-		.zcs-folder-del-btn {
-			width: 150px;
-			background-color: #E16767;
-		}
-
-		.zcs-folder-loc-btn {
-			margin-bottom: 50px;
-			.x-button-label {
-				text-align: left;
-			}
-		}
-
 		.x-label {
+			color: $zcs-overview-text-color;
 			margin-bottom: 10px;
 		}
 	}
 
 	/* end of Folder edit form styles */
 
-	.x-toolbar {
-		border-bottom: none;
-		background-color: $zcs-overview-base-color;
-		background-image: none;
-		color: $zcs-overview-text-color;
-		font-size: $zcs-titlebar-fontsize;
-		@include border-radius(0);
+	.x-toolbar.x-docked-bottom {         // Overview bottom toolbar for editing
+		@extend .zcs-overview-toolbar;
+		background-color: $zcs-overview-text-color;
+		color: $zcs-overview-base-color;
 
 		.x-title {
 			color: $zcs-overview-text-color;
@@ -198,6 +247,10 @@ $zcs-overview-text-color: $light-grey;
 
 		.x-button {
 			font-size: $zcs-list-header-fontsize;
+
+			&.zcs-apps-btn {
+				font-size: $zcs-list-item-fontsize;
+			}
 		}
 	}
 
@@ -224,6 +277,11 @@ $zcs-overview-text-color: $light-grey;
 			border-top: none;
 			border-bottom: none;
 			background:transparent;
+
+			&:active {
+				background-color: $selection-color;
+				color: white;
+			}
 
 			&.x-list-item-tpl {
 				color: $zcs-overview-text-color;
@@ -379,6 +437,7 @@ $contact-suggest-radius: $floating-list-radius;
 	}
 }
 
+
 /* List Panel */
 
 .zcs-list-panel {
@@ -395,13 +454,31 @@ $contact-suggest-radius: $floating-list-radius;
 			color: $primary-text-color;
 		}
 	}
+
+	.x-list {
+		font-size: $zcs-list-fontsize;
+
+		.x-list-item {
+			&.x-list-item-tpl::before {
+				left: 0;
+			}
+
+			&:active,
+			&.x-item-pressed,
+			&.x-list-item-selected.x-list-item-tpl {
+				background-color: $zcs-button-active-bkgd-color;
+				color: $zcs-button-active-color;
+			}
+		}
+	}
 }
 
-/* List Panel Search */
+/* List Panel - Search */
 
 .zcs-list-search {
 	background-color: $list-bg-color;
 	padding: 8px;
+
 	.x-form-fieldset-inner {
 		border: none;
 		background: transparent;
@@ -412,18 +489,22 @@ $contact-suggest-radius: $floating-list-radius;
 	}
 }
 
+/* Not sure what this is supposed to do - commenting out for now */
 
-.x-sheet {
+/*.x-sheet {
 	padding: 0;
 	position: absolute;
 	font-size:81%;
-}
+}*/
+
 
 /* Assignment Panel */
 
 .zcs-assignment-panel {
 	@extend .zcs-side-panel;
 }
+// see /widgets/mail/_ztassignmentview.scss for more
+
 
 /* Item Panel */
 
@@ -431,7 +512,7 @@ $contact-suggest-radius: $floating-list-radius;
 
 	&.x-toolbar {
 	font-size: $zcs-titlebar-fontsize;
-	border: none;
+	border-color: transparent;
 	@include border-radius(0);
 
 		.x-title {
@@ -440,22 +521,36 @@ $contact-suggest-radius: $floating-list-radius;
 		}
 	}
 
-	.x-button-icon {
-		font-size: $zcs-titlebar-icon-fontsize;
+	.x-button {
+		background-color: transparent;
+
+		.x-button-icon,
+		.x-button-label {
+			color: $base-color;
+			font-size: $zcs-titlebar-fontsize;
+		}
+
+		&:active,
+		&.x-button-pressed {
+			background-color: $base-color;
+
+			.x-button-icon,
+			.x-button-label{
+				color: white;
+			}
+		}
+
+		&.x-item-disabled {
+
+			.x-button-icon,
+			.x-button-label {
+				color: $light-grey;
+			}
+		}
 	}
 
-	.x-button-pressed {
-		border: 1px solid $base-color;
-	}
-
-	.x-button .x-button-label {
-		color: $base-color;
-	}
-
-	.x-item-disabled .x-button-label {
-		color: $light-blue;
-	}
 }
+
 
 /* Veil */
 
@@ -464,7 +559,9 @@ $contact-suggest-radius: $floating-list-radius;
 	background-image: none;
 }
 
+
 /* Floating message boxes */
+
 .x-msgbox {
 	background-color: $white;
 

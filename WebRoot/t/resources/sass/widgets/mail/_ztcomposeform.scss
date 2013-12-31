@@ -1,8 +1,10 @@
-$compose-padding: .5em;
+$compose-padding: 1.2rem;
+$compose-fontsize: 1.2rem;
+$compose-fieldheight: 2.5rem;
 
 .zcs-compose-formline {
 	border-bottom: 1px solid $light-grey;
-	min-height: 1.8em;
+	font-size: $compose-fontsize;
 }
 
 .zcs-compose-form {
@@ -15,48 +17,75 @@ $compose-padding: .5em;
 
 	.x-form-inner {
 
-		.zcs-show-cc-btn {
-			border-radius: 0;
-			border: transparent;
-			.x-button-icon {
-				color: $medium-grey;
-			}
-			&.x-item-disabled .x-button-icon {
-				color: $light-grey;
-			}
-		}
-
 		.zcs-recipient-line {
 			@extend .zcs-compose-formline;
+
+			.zcs-show-cc-btn {
+				background-color: transparent;
+				border-color: transparent;
+				border-radius: 0;
+
+				.x-button-icon {
+					color: $dark-grey;
+				}
+
+				&.x-item-disabled .x-button-icon {
+					color: $light-grey;
+				}
+			}
+
 			.x-field {
 				border-bottom: none;
 			}
 		}
+
 		.x-field {
 			@extend .zcs-compose-formline;
 		}
+
 		.zcs-bubblearea {
 			@include border-radius(0);
 		}
+
 		.x-form-label {
+			color: $primary-text-color;
 			text-align: right;
-		}
-		.zcs-subject {
-			.x-field-input {
-				font-size:.97em;  //fixes oveflowing input and hiding the bottom border
+
+			SPAN {
+				font-weight: normal;
 			}
 		}
+
+		.zcs-subject {
+			height: $compose-fieldheight;
+
+			.x-field-input {
+				font-size:.97em;  //fixes oveflowing input and hiding the bottom border
+
+				.x-input-el {
+					font-weight: normal;
+					padding: 0.2em 0.5em 0.3em;
+				}
+			}
+		}
+
+		.zcs-toggle-field {
+			height: $compose-fieldheight;
+		}
+
 		.zcs-attachments {
 			@extend .zcs-compose-formline;
 			margin-bottom: 0;
 			padding: 0 $compose-padding;
 			.x-innerhtml {
 				padding-bottom: 5px;
-				line-height: 1.5em;
+				line-height: 1.5rem;
 			}
 		}
+
 		.zcs-body-field {
 			background-color: white;
+			font-size: $compose-fontsize;
 			margin: $compose-padding;
 		}
 	}
@@ -64,12 +93,12 @@ $compose-padding: .5em;
 
 .zcs-auto-complete-name {
 	display: block;
-	height: 1.5em;
+	height: 1.5rem;
 	@include ellipsis();
 }
 .zcs-auto-complete-email {
 	@extend .zcs-auto-complete-name;
-	font-size: .85em;
+	font-size: .85rem;
 	@include opacity(.8);
 }
 
