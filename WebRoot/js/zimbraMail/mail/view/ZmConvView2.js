@@ -788,7 +788,7 @@ ZmConvView2.prototype.isActiveQuickReply = function() {
  * Creates an object manager and returns findObjects content
  * @param view    {Object} the view used by ZmObjectManager to set mouse events
  * @param content {String} content to scan
- * @param htmlEncode {boolean} 
+ * @param htmlEncode {boolean}
  */
 ZmConvView2.prototype.renderObjects = 
 function(view, content, htmlEncode) {
@@ -883,7 +883,7 @@ ZmConvView2Header.prototype._setSubject =
 function() {
 	var subject = this._convView.renderObjects(this, ZmMailMsg.stripSubjectPrefixes(this._item.subject ||ZmMsg.noSubject), true);
 	this._subjectSpan.innerHTML = subject;
-    this._subjectSpan.title = subject;
+    this._subjectSpan.title = this._item.subject || ZmMsg.noSubject;
 };
 
 ZmConvView2Header.prototype._setInfo =
@@ -2079,7 +2079,7 @@ function(state, force) {
 	var dateFormatter = AjxDateFormat.getDateTimeInstance(AjxDateFormat.LONG, AjxDateFormat.SHORT);
 	this._fullDateString = dateFormatter.format(new Date(date));
 	var dateTooltip = this._browserToolTip ? this._fullDateString : "";
-	
+
 	this._readIconId = id + "_read";
 	this._readCellId = id + "_readCell";
 
