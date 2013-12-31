@@ -77,7 +77,7 @@ Ext.define('ZCS.model.ZtOrganizerWriter', {
 				else if (itemData.trash) {
 					action.op = 'trash';
 				}
-				else if (itemData.delete) {
+				else if (itemData.del) {
 					action.op = 'delete';
 				}
 				else if (itemData.parentId) {
@@ -100,7 +100,7 @@ Ext.define('ZCS.model.ZtOrganizerWriter', {
 					action.op = 'color';
 					action.color = itemData.color;
 				}
-				else if (itemData.delete) {
+				else if (itemData.del) {
 					action.op = 'delete';
 				}
 			}

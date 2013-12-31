@@ -345,7 +345,7 @@ Ext.define('ZCS.controller.ZtOverviewController', {
 				var deleteMsg = Ext.String.format(ZtMsg.hardDeleteFolderText, folder.get('name'));
 				Ext.Msg.confirm(ZtMsg.hardDeleteFolderTitle, deleteMsg, function(buttonId) {
 					if (buttonId === 'yes') {
-						options.delete = true;
+						options.del = true;
 						folder.save(options);
 					}
 				}, this);
@@ -369,7 +369,7 @@ Ext.define('ZCS.controller.ZtOverviewController', {
 			var deleteMsg = Ext.String.format(ZtMsg.hardDeleteTagText, tag.get('name'));
 			Ext.Msg.confirm(ZtMsg.hardDeleteTagTitle, deleteMsg, function(buttonId) {
 				if (buttonId === 'yes') {
-					options.delete = true;
+					options.del = true;
 					tag.save(options);
 				}
 			}, this);
