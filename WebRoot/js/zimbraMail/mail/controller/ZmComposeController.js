@@ -1290,11 +1290,7 @@ function(action) {
 
 	// add read receipt
 	if (ac.get(ZmSetting.MAIL_READ_RECEIPT_ENABLED, null, ac.getActiveAccount())) {
-		var fid = this._msg && this._msg.folderId;
-		var folder = fid ? ac.getById(fid) : null;
-		if (!folder || (folder && !folder.isRemote())) {
-			list.push(ZmOperation.SEP, ZmOperation.REQUEST_READ_RECEIPT);
-		}
+		list.push(ZmOperation.SEP, ZmOperation.REQUEST_READ_RECEIPT);
 	}
 
 	var button = this._toolbar.getButton(ZmOperation.COMPOSE_OPTIONS);
@@ -1411,6 +1407,13 @@ function(incOptions) {
 	mi = menu.getOp(ZmOperation.INC_ATTACHMENT);
 	if (mi) {
 		mi.setEnabled(!incOptionsDisabled);
+	}
+	mi = menu.getOp(ZmOperation.REQUEST_READ_RECEIPT);
+	if (mi) {
+		var fid = this._msg && this._msg.folderId;
+		var ac = window.parentAppCtxt || window.appCtxt;
+		var folder = fid ? ac.getById(fid) : null;
+		mi.setEnabled(!folder || (folder && !folder.isRemote()));
 	}
 };
 
