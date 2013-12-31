@@ -693,11 +693,8 @@ function(soapDoc) {
 	// always set limit
 	method.setAttribute("limit", this._getLimit());
 
-	// and of course, always set the query and append the query hint if applicable
-	// only use query hint if this is not a "simple" search
-	var query = (this.queryHint)
-		? ([this.query, " (", this.queryHint, ")"].join(""))
-		: this.query;
+	var query = this._getQuery();
+
 	soapDoc.set("query", query);
 
 	// set search field if provided
@@ -748,16 +745,25 @@ function(req) {
 		req.resultMode = "IDS";
 	}
 
-	// and of course, always set the query and append the query hint if
-	// applicable only use query hint if this is not a "simple" search
-	req.query = (this.queryHint)
-		? ([this.query, " (", this.queryHint, ")"].join(""))
-		: this.query;
+	req.query = this._getQuery();
 
 	// set search field if provided
 	if (this.field) {
 		req.field = this.field;
 	}
+};
+
+/**
+ * @private
+ */
+ZmSearch.prototype._getQuery =
+function() {
+	// and of course, always set the query and append the query hint if applicable
+	// only use query hint if this is not a "simple" search
+	if (this.queryHint) {
+		return ["(", this.query, ") (", this.queryHint, ")"].join("");
+	}
+	return this.query;
 };
 
 /**
