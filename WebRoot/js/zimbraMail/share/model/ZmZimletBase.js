@@ -1166,6 +1166,7 @@ function(canvasData, url, x, y) {
 		if (canvasData.height)
 			view.setSize(Dwt.DEFAULT, canvasData.height);
 		var title = canvasData.title || ("Zimlet dialog (" + this.xmlObj("description") + ")");
+		title = this._zimletContext.processMessage(title);
 		canvas = this._createDialog({ view: view, title: title });
 		canvas.view = view;
 		if (url) {
