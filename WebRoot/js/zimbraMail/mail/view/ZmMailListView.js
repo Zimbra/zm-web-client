@@ -222,7 +222,7 @@ function() {
 
 
 ZmMailListView.prototype._getExtraStyle =
-function(item) {
+function(item,start,end) {
 	if (!appCtxt.get(ZmSetting.COLOR_MESSAGES)) {
 		return null;
 	}
@@ -230,14 +230,29 @@ function(item) {
 	if (!color) {
 		return null;
 	}
+	start = start || 0.75;
+	end = end || 0.25;
 
-	return Dwt.createLinearGradientCss(AjxColor.lighten(color, 0.75), AjxColor.lighten(color, 0.25), "v");
+	return Dwt.createLinearGradientCss(AjxColor.lighten(color, start), AjxColor.lighten(color, end), "v");
 };
 
 
 ZmMailListView.prototype._getAbridgedContent =
 function(item, colIdx) {
 	// override me
+};
+
+ZmMailListView.prototype._getListFlagsWrapper =
+function(htmlArr, idx, item) {
+	htmlArr[idx++] = "<div class='ZmListFlagsWrapper'";
+	//compute the start and end of gradient based on height of this div and its position
+	var extraStyle = this._getExtraStyle(item,0.49,0.33);
+	if (extraStyle) {
+		htmlArr[idx++] = " style='" + extraStyle + ";'>";
+	} else {
+		htmlArr[idx++] = ">";
+	}
+	return idx;
 };
 
 //apply colors to from and subject cells via zimlet
@@ -291,6 +306,13 @@ function(htmlArr, idx, item, field, colIdx, params, classes) {
 		htmlArr[idx++] = "<div id='";
 		htmlArr[idx++] = this._getFieldId(item, field);
 		htmlArr[idx++] = "' ";
+		if (!this.isMultiColumn()) {
+			//compute the start and end of gradient based on height of this div and its position
+			var extraStyle = this._getExtraStyle(item,0.69,0.55);
+			if (extraStyle) {
+				htmlArr[idx++] = " style='" + extraStyle + "'";
+			}
+		}
 		htmlArr[idx++] = AjxUtil.getClassAttr(classes);
 		htmlArr[idx++] = ">" + date + "</div>";
 	}

@@ -547,7 +547,7 @@ function(item, colIdx) {
 	idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_SUBJECT, colIdx, null, null, bottomRowMargin);
 
 	//add the attach, flag and tags in a wrapping div
-	htmlArr[idx++] = "<div class='ZmListFlagsWrapper'>";
+	idx = this._getListFlagsWrapper(htmlArr, idx, item);
 
 	if (item.hasAttach) {
 		idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_ATTACHMENT, colIdx, width, "valign=top");
