@@ -30,7 +30,7 @@ Ext.define('ZCS.view.ZtAppsMenu', {
                     menuItems.push({
                         app:    app,
                         text:   ZCS.constant.APP_NAME[app],
-                        group:  ZtMsg.applications
+                        group:  ZtMsg.applicationsGroup
                     });
                 }
         });
@@ -38,11 +38,11 @@ Ext.define('ZCS.view.ZtAppsMenu', {
         menuItems.push({
             app: 'settings',
             text: ZtMsg.settings,
-            group: ZtMsg.applications
+            group: ZtMsg.otherGroup
         }, {
             app: 'signout',
             text: ZtMsg.logout,
-            group: ZtMsg.applications
+            group: ZtMsg.otherGroup
         });
 
         this.add([{
