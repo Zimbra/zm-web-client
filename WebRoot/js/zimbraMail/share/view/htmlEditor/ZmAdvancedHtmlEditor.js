@@ -933,25 +933,25 @@ ZmAdvancedHtmlEditor.prototype.onNodeChange = function(event) {
 /*
 **   TinyMCE will fire onBeforeExecCommand before executing all commands
  */
-ZmAdvancedHtmlEditor.prototype.onBeforeExecCommand = function(ed, cmd, ui, val, o) {
-    if (cmd === "mceImage") {
-        this.onBeforeInsertImage(ed, cmd, ui, val, o);
+ZmAdvancedHtmlEditor.prototype.onBeforeExecCommand = function(ev) {
+    if (ev.command === "mceImage") {
+        this.onBeforeInsertImage(ev);
     }
-    else if (cmd === "mceRepaint") { //img src modified
-        this.onBeforeRepaint(ed, cmd, ui, val, o);
+    else if (ev.command === "mceRepaint") { //img src modified
+        this.onBeforeRepaint(ev);
     }
 };
 
-ZmAdvancedHtmlEditor.prototype.onBeforeInsertImage = function(ed, cmd, ui, val, o) {
-    var element = ed.selection.getNode();
+ZmAdvancedHtmlEditor.prototype.onBeforeInsertImage = function(ev) {
+    var element = ev.target.selection.getNode();
     if (element && element.nodeName === "IMG") {
         element.setAttribute("data-mce-src", element.src);
         element.setAttribute("data-mce-zsrc", element.src);//To find out whether src is modified or not set a dummy attribute
     }
 };
 
-ZmAdvancedHtmlEditor.prototype.onBeforeRepaint = function(ed, cmd, ui, val, o) {
-    var element = ed.selection.getNode();
+ZmAdvancedHtmlEditor.prototype.onBeforeRepaint = function(ev) {
+    var element = ev.target.selection.getNode();
     if (element && element.nodeName === "IMG") {
         if (element.src !== element.getAttribute("data-mce-zsrc")) {
             element.removeAttribute("dfsrc");
