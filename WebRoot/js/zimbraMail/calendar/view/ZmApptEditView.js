@@ -2892,22 +2892,13 @@ function() {
     var notesEditorHeight = (this._notesHtmlEditor && this._notesHtmlEditor.getHtmlElement()) ? this._notesHtmlEditor.getHtmlElement().clientHeight:0;
 	var rowHeight = (size.y - topSizeHeight) + notesEditorHeight ;
     var rowWidth = mainTableSize.x;
-    if(AjxEnv.isIE)
-        rowHeight = rowHeight - 10;
-    else {
-        var adj = (appCtxt.isTinyMCEEnabled()) ? 12 : 38;
-        rowHeight = rowHeight + adj;
-    }
+	rowHeight = AjxEnv.isIE ? rowHeight - 10 : rowHeight + 12;
 
     if(rowHeight < 350){
         rowHeight = 350;
     }
 
-    if( appCtxt.isTinyMCEEnabled() ) {
-        this._notesHtmlEditor.setSize(rowWidth-5, rowHeight);
-    }else {
-        this._notesHtmlEditor.setSize(rowWidth-10, rowHeight-25);
-    }
+    this._notesHtmlEditor.setSize(rowWidth - 5, rowHeight);
 };
 
 ZmApptEditView.prototype._getComponentsHeight =

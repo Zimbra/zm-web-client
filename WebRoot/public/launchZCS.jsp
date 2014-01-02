@@ -429,10 +429,6 @@ delete text;
         <zm:calSearchJSON var="calSearchJSON" authtoken="${requestScope.authResult.authToken}" timezone="${requestScope.tz}" itemsperpage="500" types="appointment"/>
         window.inlineCalSearchResponse = ${calSearchJSON};
         </c:if>
-        <%-- Support for tinymce suspended --%>
-        <c:if test="${editor eq 'tinymce'}">
-            //window.isTinyMCE = true;
-        </c:if>
 		<c:if test="${isLeakDetectorOn}">
 		AjxLeakDetector.begin();
 		</c:if>

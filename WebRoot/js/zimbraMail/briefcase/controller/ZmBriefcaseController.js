@@ -627,7 +627,6 @@ function(ev) {
         //added for bug: 45150
         restUrl = AjxStringUtil.fixCrossDomainReference(restUrl);
         if (item.isWebDoc()) {
-			restUrl = ZmBriefcaseApp.addEditorParam(restUrl);
             restUrl += (restUrl.match(/\?/) ? "&" : "?") + "localeId=" + AjxEnv.DEFAULT_LOCALE;
 
 		}
@@ -928,7 +927,6 @@ function(items){
 		restUrl = AjxStringUtil.fixCrossDomainReference(restUrl);
 		if (item.isWebDoc()) {
 			//added for bug: 45150
-			restUrl = ZmBriefcaseApp.addEditorParam(restUrl);
 			restUrl += (restUrl.match(/\?/) ? "&" : "?") + "localeId=" + AjxEnv.DEFAULT_LOCALE;
 		} else {
             // do not try to

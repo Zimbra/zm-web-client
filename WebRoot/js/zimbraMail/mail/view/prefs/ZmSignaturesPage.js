@@ -443,13 +443,7 @@ function(container) {
 		this._sigFormat = select;
 	}
 
-	// Signature CONTENT
-	var valueEl = document.getElementById(this._htmlElId + "_SIG_EDITOR");
-    if (!appCtxt.isTinyMCEEnabled()) {
-        var htmlEditor = new ZmSignatureEditor(this);
-        this._replaceControlElement(valueEl, htmlEditor);
-    }
-	this._sigEditor = htmlEditor;
+	// Signature CONTENT - editor added by ZmPref.regenerateSignatureEditor
 
 	// Signature use by identity
 	var collection = appCtxt.getIdentityCollection();
@@ -665,9 +659,6 @@ function(id, setup, value) {
 		this._defaultRadioGroup = new DwtRadioButtonGroup();
 
 		this._initialize(container);
-        if (!appCtxt.isTinyMCEEnabled()) {
-            this._populateSignatures();
-        }
 
 		return container;
 	}
@@ -714,9 +705,6 @@ function(select) {
 	var isText = this._sigFormat ? this._sigFormat.getValue() : true;
 	sig.setContentType(isText ? ZmMimeTable.TEXT_PLAIN : ZmMimeTable.TEXT_HTML);
 
-	if (!isText && !appCtxt.isTinyMCEEnabled()) {
-		this._restoreSignatureInlineImages();
-	}
 	sig.value = this._sigEditor.getContent(false, true);
 
 	if (isNameModified) {

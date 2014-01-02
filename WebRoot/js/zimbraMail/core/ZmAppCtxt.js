@@ -2064,14 +2064,6 @@ function() {
 };
 
 /**
- * Returns true for enabling tinymce editor
-*/
-ZmAppCtxt.prototype.isTinyMCEEnabled =
-function() {
-    return true;
-};
-
-/**
  * When using pre-auth window.opener.appCtxt may not be accessible.  This function
  * handles appCtxt assignment to avoid a permission denied error
  * @return {Object} ZmAppCtxt

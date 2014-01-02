@@ -2867,25 +2867,19 @@ function(composeMode) {
 	this._clearFormValue();
 
 	// init html editor
-	if (appCtxt.isTinyMCEEnabled()) {
-		var attmcallback =
-			this.showAttachmentDialog.bind(this, ZmComposeView.UPLOAD_INLINE);
+	var attmcallback =
+		this.showAttachmentDialog.bind(this, ZmComposeView.UPLOAD_INLINE);
 
-		this._htmlEditor =
-			new ZmAdvancedHtmlEditor({
-				parent: this,
-				posStyle: DwtControl.RELATIVE_STYLE,
-				mode: this._composeMode,
-				initCallback: this._controlListener.bind(this),
-				attachmentCallback: attmcallback
-			});
-		this._bodyFieldId = this._htmlEditor.getBodyFieldId();
-		this._bodyField = document.getElementById(this._bodyFieldId);
-	} else {
-		this._htmlEditor = new ZmHtmlEditor(this, DwtControl.RELATIVE_STYLE, null, this._composeMode, null);
-		this._bodyFieldId = this._htmlEditor.getBodyFieldId();
-		this._bodyField = document.getElementById(this._bodyFieldId);
-	}
+	this._htmlEditor =
+		new ZmAdvancedHtmlEditor({
+			parent: this,
+			posStyle: DwtControl.RELATIVE_STYLE,
+			mode: this._composeMode,
+			initCallback: this._controlListener.bind(this),
+			attachmentCallback: attmcallback
+		});
+	this._bodyFieldId = this._htmlEditor.getBodyFieldId();
+	this._bodyField = document.getElementById(this._bodyFieldId);
 	this._includedPreface = "";
 	
 	this._marker = {};

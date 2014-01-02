@@ -649,20 +649,18 @@ function(a, b) {
 
 ZmPref.regenerateSignatureEditor =
 function( control ) {
-    if( appCtxt.isTinyMCEEnabled() ){
-        var signaturePage = control.parent;
-        var valueEl = document.getElementById(signaturePage._htmlElId + "_SIG_EDITOR");
-        var htmlEditor = new ZmAdvancedHtmlEditor({
-            parent: signaturePage,
-            parentElement: valueEl.parentNode,
-            textAreaId: "TEXTAREA_SIGNATURE",
-            attachmentCallback:
-                signaturePage._insertImagesListener.bind(signaturePage)
-        });
-        valueEl.parentNode.removeChild(valueEl);
-        signaturePage._sigEditor = htmlEditor;
-        signaturePage._populateSignatures();
-    }
+    var signaturePage = control.parent;
+    var valueEl = document.getElementById(signaturePage._htmlElId + "_SIG_EDITOR");
+    var htmlEditor = new ZmAdvancedHtmlEditor({
+        parent: signaturePage,
+        parentElement: valueEl.parentNode,
+        textAreaId: "TEXTAREA_SIGNATURE",
+        attachmentCallback:
+            signaturePage._insertImagesListener.bind(signaturePage)
+    });
+    valueEl.parentNode.removeChild(valueEl);
+    signaturePage._sigEditor = htmlEditor;
+    signaturePage._populateSignatures();
 };
 
 /**

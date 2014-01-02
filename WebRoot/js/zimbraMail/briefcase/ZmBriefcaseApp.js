@@ -333,21 +333,6 @@ function() {
 };
 
 /**
- * Adds the editor parameter to the REST URL.
- * 
- * @param	{String}	restUrl		the REST URL
- * @return	{String}	the resulting REST URL
- * @private
- */
-ZmBriefcaseApp.addEditorParam =
-function(restUrl) {
-//    if (restUrl && window.isTinyMCE) {
-    //        restUrl += (restUrl.match(/\?/) ?  "&editor=tinymce" : "?editor=tinymce");
-//    }
-    return restUrl;
-};
-
-/**
  * Gets the edit URL.
  * 
  * @param	{String}	contentType		the content type

@@ -406,13 +406,7 @@ function() {
 		this._action != ZmOperation.FORWARD_ATT)
 	{
 		if (composeMode == DwtHtmlEditor.HTML) {
-            if (appCtxt.isTinyMCEEnabled()) {
-                view._focusHtmlEditor();
-            }
-            else{
-                var ta = new AjxTimedAction(view, view._focusHtmlEditor);
-                AjxTimedAction.scheduleAction(ta, 10);
-            }
+            view._focusHtmlEditor();
 		}
 		this._composeView._setBodyFieldCursor();
 	}

@@ -782,15 +782,8 @@ function(width) {
     this._notesContainer = document.getElementById(this._htmlElId + "_notes");
     this._topContainer = document.getElementById(this._htmlElId + "_top");
 
-    if( appCtxt.isTinyMCEEnabled() ) {
-        this._notesHtmlEditor = new ZmAdvancedHtmlEditor(this, null, null, this._composeMode, null, this._htmlElId + "_notes");
-        this._notesHtmlEditor.addOnContentInitializedListener(new AjxCallback(this,this._resizeNotes));
-    } else {
-        this._notesHtmlEditor = new ZmHtmlEditor(this, null, null, this._composeMode);
-        this._notesHtmlEditor.reparentHtmlElement(this._htmlElId + "_notes");
-        // bug: 19079 to avoid access denied exception set some content which corrects the doc domain
-        this._notesHtmlEditor.setContent("");
-    }
+    this._notesHtmlEditor = new ZmAdvancedHtmlEditor(this, null, null, this._composeMode, null, this._htmlElId + "_notes");
+    this._notesHtmlEditor.addOnContentInitializedListener(new AjxCallback(this,this._resizeNotes));
 };
 
 ZmCalItemEditView.prototype._handleReminderOnBlur =
@@ -986,11 +979,7 @@ function() {
         rowHeight = 100;
     }
     
-    //	if(window.isTinyMCE) {
-    //        this._notesHtmlEditor.setSize(rowWidth-5, rowHeight)
-    //    }else {
-        this._notesHtmlEditor.setSize(rowWidth-10, rowHeight -5);
-    //    }
+    this._notesHtmlEditor.setSize(rowWidth-10, rowHeight -5);
 };
 
 ZmCalItemEditView.prototype._handleRepeatDescFieldHover =
