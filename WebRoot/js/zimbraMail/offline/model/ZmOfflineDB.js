@@ -78,9 +78,10 @@ ZmOfflineDB.indexedDB.open = function(callback, version) {
                     var store = db.createObjectStore(stores[i], {keyPath: "instanceId"});
                     // id is non-unique, but if a appt has been exploded into multiple ZmAppt entries, it allows
                     // us to access them for Update/Delete
-                    store.createIndex("invId", "invId");
+                    store.createIndex("id",        "id");
+                    store.createIndex("invId",     "invId");
                     store.createIndex("startDate", "startDate");
-                    store.createIndex("endDate", "endDate");
+                    store.createIndex("endDate",   "endDate");
                 } else {
                     var store = db.createObjectStore(stores[i], {keyPath: "key"});
                 }
@@ -231,7 +232,7 @@ ZmOfflineDB.indexedDB.getItem = function(key, callback, params, objStore){
     }
 };
 
-ZmOfflineDB.indexedDB.deteleItem = function(id, objStore, callback){
+ZmOfflineDB.indexedDB.deleteItem = function(id, objStore, callback){
 
     if (!objStore){
         return;
@@ -281,8 +282,8 @@ ZmOfflineDB.indexedDB.getItemById = function(key, callback){
 
 ZmOfflineDB.indexedDB.deleteItemById = function(key){
     ZmOfflineDB.indexedDB.getItemById(key, function(store){
-        store && ZmOfflineDB.indexedDB.deteleItem(key, store);
-        ZmOfflineDB.indexedDB.deteleItem(key, ZmOfflineDB.indexedDB.idxStore);
+        store && ZmOfflineDB.indexedDB.deleteItem(key, store);
+        ZmOfflineDB.indexedDB.deleteItem(key, ZmOfflineDB.indexedDB.idxStore);
     });
 };
 
