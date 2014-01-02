@@ -646,7 +646,7 @@ function() {
 ZmComposeController.prototype._handleErrorSendMsg =
 function(draftType, msg, ex) {
 	if (draftType != ZmComposeController.DRAFT_TYPE_NONE &&
-		AjxUtil.isDefined(this._wasDirty)) {
+		!AjxUtil.isUndefined(this._wasDirty)) {
 		this._composeView._isDirty = this._wasDirty;
 		delete this._wasDirty;
 	}
