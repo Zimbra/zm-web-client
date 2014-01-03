@@ -151,16 +151,12 @@ function(files, conflicts) {
                 ZmDocsEditApp.fileInfo = item;
                 this.setFooterInfo(item);
             }
-            var wAppCtxt = null;
-            if(window.isRestView) {
-                wAppCtxt = top.appCtxt;
-            } else {
-                wAppCtxt = window.opener && window.opener.appCtxt;
-            }
-            appCtxt.setStatusMsg(ZmMsg.savedDoc, ZmStatusView.LEVEL_INFO);
 
             if(this._saveClose){
+                parentAppCtxt.setStatusMsg(ZmMsg.savedDoc, ZmStatusView.LEVEL_INFO);
                 window.close();
+            } else {
+                appCtxt.setStatusMsg(ZmMsg.savedDoc, ZmStatusView.LEVEL_INFO);
             }
         }
     }
