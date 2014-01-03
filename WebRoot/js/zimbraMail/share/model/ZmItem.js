@@ -518,12 +518,10 @@ function() {
 ZmItem.prototype.isShared =
 function() {
 	if (this._isShared == null) {
-		if (this.id == -1) {
+		if (this.id === -1) {
 			this._isShared = false;
 		} else {
-			var acct = appCtxt.getActiveAccount();
-			var id = String(this.id);
-			this._isShared = ((id.indexOf(":") != -1) && (id.indexOf(acct.id) != 0));
+			this._isShared = appCtxt.isRemoteId(this.id);
 		}
 	}
 	return this._isShared;

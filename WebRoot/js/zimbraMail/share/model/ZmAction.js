@@ -191,12 +191,16 @@ ZmItemMoveAction.prototype.getToFolderId = function() {
 };
 
 ZmItemMoveAction.prototype._doMove = function(callback, errorCallback, folderId) {
-	this._item.list.moveItems({
-		items:			[this._item],
+
+	var items = ZmItemMoveAction._realizeItems(this._item), // probably unnecessary since conv forces multipleUndo
+		list = items[0] && items[0].list;
+
+	list.moveItems({
+		items:			items,
 		folder:			appCtxt.getById(folderId),
 		noUndo:			true,
 		finalCallback:	this._handleDoMove.bind(this, this._item.folderId, folderId),
-		fromFolderId: this._toFolderId
+		fromFolderId:   this._toFolderId
 	});
 };
 
@@ -228,7 +232,7 @@ ZmItemMoveAction.prototype.redo = function(callback, errorCallback) {
 ZmItemMoveAction.multipleUndo = function(actions, redo, fromFolderId) {
 
 	var sortingTable = {};
-	for (var i=0; i<actions.length; i++) {
+	for (var i = 0; i < actions.length; i++) {
 		var action = actions[i];
 		if (action instanceof ZmItemMoveAction) {
 			var from = action.getFromFolderId();
@@ -241,42 +245,26 @@ ZmItemMoveAction.multipleUndo = function(actions, redo, fromFolderId) {
 			sortingTable[from][to][type].push(action);
 		}
 	}
-	var convMsgIds = {};
+
 	for (var from in sortingTable) {
 		for (var to in sortingTable[from]) {
 			for (var type in sortingTable[from][to]) {
 				var subset = sortingTable[from][to][type];
 				var items = [];
 				var list = null;
-				var noToast = true;
-				for (var i=0; i<subset.length; i++) {
+				for (var i = 0; i < subset.length; i++) {
 					var action = subset[i];
 					var item = action.getItem();
 					items.push(item);
-					if (!list && item.list) {
-						list = item.list;
-					}
-					// undoing a conv move triggers two requests, one for the conv and one for its msgs; we only
-					// want to show toast for the conv move
-					if (type === ZmItem.CONV) {
-						var convMsgs = item.msgs.getArray();
-						for (var j = 0; j < convMsgs.length; j++) {
-							convMsgIds[convMsgs[j].id] = true;
-						}
-					}
-					else if (type === ZmItem.MSG) {
-						if (!convMsgIds[item.id]) {
-							noToast = false;
-						}
-					}
 				}
+				items = ZmItemMoveAction._realizeItems(items);
+				list = items[0] && items[0].list;
 				if (list) {
 					list.moveItems({
 						items:          items,
 						folder:         appCtxt.getById(redo ? to : from),
 						noUndo:         true,
-						fromFolderId:   fromFolderId,
-						noToast:        noToast
+						fromFolderId:   fromFolderId
 					});
 				}
 			}
@@ -286,6 +274,23 @@ ZmItemMoveAction.multipleUndo = function(actions, redo, fromFolderId) {
 
 ZmItemMoveAction.multipleRedo = function(actions) {
 	ZmItemMoveAction.multipleUndo(actions, true);
+};
+
+// Creates ZmMailMsg out of anonymous msg-like objects
+ZmItemMoveAction._realizeItems = function(items) {
+
+	var list, msg;
+	return AjxUtil.map(AjxUtil.toArray(items), function(item) {
+		if (item.isConvMsg) {
+			list = list || new ZmMailList(ZmItem.MSG);
+			msg = new ZmMailMsg(item.id, list, true);
+			msg.folderId = item.folderId;
+			return msg;
+		}
+		else {
+			return item;
+		}
+	});
 };
 
 /**

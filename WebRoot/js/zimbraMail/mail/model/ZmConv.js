@@ -33,6 +33,7 @@ ZmConv = function(id, list) {
 	this._sortBy = ZmSearch.DATE_DESC;
 	this._listChangeListener = new AjxListener(this, this._msgListChangeListener);
 	this.folders = {};
+	this.msgFolder = {};
 };
 
 ZmConv.prototype = new ZmMailItem;
@@ -212,7 +213,6 @@ function(callback, result) {
 
 	var resp = result.getResponse().GetConvResponse.c[0];
 	this.msgIds = [];
-	this.msgFolder = {};
 
 	if (!this.msgs) {
 		// create new msg list
@@ -340,6 +340,7 @@ function() {
 		this.msgs = null;
 	}
 	this.msgIds = [];
+	this.folders = {};
 	this.msgFolder = {};
 	
 	ZmMailItem.prototype.clear.call(this);
@@ -772,7 +773,6 @@ function(msg) {
 	this.fragment = msg.fragment;
 	this.sf = msg.sf;
 	this.msgIds = [msg.id];
-	this.msgFolder = this.msgFolder || {};
 	this.msgFolder[msg.id] = msg.folderId;
 	//add a flag to redraw this conversation when additional information is available
 	this.redrawConvRow = true;

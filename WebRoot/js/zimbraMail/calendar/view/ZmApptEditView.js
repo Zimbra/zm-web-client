@@ -1942,10 +1942,7 @@ function() {
 		this.setSchedulerVisibility(currAcct.isZimbraAccount && !currAcct.isMain);
 	}
 
-	var acct = appCtxt.getActiveAccount();
-	var id = String(cal.id);
-	var isRemote = (id.indexOf(":") != -1) && (id.indexOf(acct.id) != 0);
-	var isEnabled = !isRemote || cal.hasPrivateAccess();
+	var isEnabled = !appCtxt.isRemoteId(cal.id) || cal.hasPrivateAccess();
 
     this._privateCheckbox.disabled = !isEnabled;
 

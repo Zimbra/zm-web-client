@@ -2103,3 +2103,16 @@ function() {
     }
     return this._offlineSettingsDialog;
 };
+
+/**
+ * Returns true if the given ID is not local. That's the case if the ID has
+ * an account part that is not the active account.
+ *
+ * @param {String|Number}   id
+ * @returns {Boolean}   true if the given ID is not local
+ */
+ZmAppCtxt.prototype.isRemoteId = function(id) {
+	id = String(id);
+	var acct = appCtxt.getActiveAccount();
+	return (id.indexOf(":") !== -1) && (id.indexOf(acct.id) !== 0);
+};
