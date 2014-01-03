@@ -113,7 +113,7 @@ function() {
 	}
 };
 
-ZmOfflineDB.delete =
+ZmOfflineDB.deleteDB =
 function(callback, errorCallback) {
 	try {
 		var request = indexedDB.deleteDatabase(appCtxt.getLoggedInUsername());
@@ -122,7 +122,7 @@ function(callback, errorCallback) {
 	}
 	catch (e) {
 		errorCallback && errorCallback();
-		DBG.println(AjxDebug.DBG1, "Exception ZmOfflineDB.delete :: " + e);
+		DBG.println(AjxDebug.DBG1, "Exception ZmOfflineDB.deleteDB :: " + e);
 	}
 };
 
