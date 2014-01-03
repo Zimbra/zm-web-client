@@ -834,9 +834,6 @@ ZmAdvancedHtmlEditor.prototype.onBeforeExecCommand = function(ed, cmd, ui, val, 
     else if (cmd === "mceRepaint") { //img src modified
         this.onBeforeRepaint(ed, cmd, ui, val, o);
     }
-    else if (cmd === "mceInsertLink") {
-        console.warn(cmd, arguments);
-    }
 };
 
 ZmAdvancedHtmlEditor.prototype.onBeforeInsertImage = function(ed, cmd, ui, val, o) {
