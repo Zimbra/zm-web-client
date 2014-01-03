@@ -138,6 +138,7 @@ function(files, conflicts) {
         appCtxt.setStatusMsg(formatter.format(files[0].name), ZmStatusView.LEVEL_WARNING);
     } else {
         if (files && files.length > 0) {
+            this._editor.clearDirty();
 
             ZmDocsEditApp.fileInfo.id = files[0].id;
             ZmDocsEditApp.fileInfo.version = files[0].ver;

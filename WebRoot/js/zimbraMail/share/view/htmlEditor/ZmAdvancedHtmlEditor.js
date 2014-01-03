@@ -442,7 +442,7 @@ function() {
 	var editor = this.getEditor();
     if (editor && this._editorInitialized) {
         editor.undoManager && editor.undoManager.clear();
-        editor.isNotDirty = true;//setting tinymce editor internal property
+        this.clearDirty();
 	}
     var field = this.getContentField();
     if(field){
@@ -2093,6 +2093,16 @@ ZmAdvancedHtmlEditor.prototype.isDirty = function(){
         if (editor) {
             return editor.isDirty();
         }
+    }
+};
+
+/**
+ * Mark the editor content as unmodified; e.g. as freshly saved.
+ */
+ZmAdvancedHtmlEditor.prototype.clearDirty = function(){
+	var ed = this.getEditor();
+    if (ed) {
+        this.getEditor().isNotDirty = true;
     }
 };
 
