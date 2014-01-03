@@ -706,6 +706,7 @@ function(id, content) {
 		ie7_compat: false,
 		object_resizing : true,
         font_formats : fonts.join(";"),
+        fontsize_formats : AjxMsg.fontSizes || '',
 		convert_urls : false,
 		verify_html : false,
 		gecko_spellcheck : true,
