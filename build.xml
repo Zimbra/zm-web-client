@@ -113,7 +113,8 @@
     <!-- TINY_MCE INTEGRATION -->
     <property name="tinymce.version" value="4.0.10"/>
     <property name='tinymce.dir' value='${js.dir}/ajax/3rdparty/tinymce'/>
-    <property name="tinymce.zplugins.dir" value="${web.dir}/tiny_mce_plugins"/>
+    <property name='tinymce.js.dir' value='WebRoot/tiny_mce/${tinymce.version}' />
+    <property name="tinymce.custom.dir" value="WebRoot/tiny_mce/custom"/>
 
     <!-- MODERNIZR INTEGRATION -->
     <property name="modernizr.version" value="2.6.1"/>
@@ -1638,8 +1639,8 @@ if (ext == null) ext = "";
 
     <target name="tinymce">
         <copy todir='${tinymce.dir}' verbose='${sync.verbose}'>
-            <fileset dir='${web.dir}/tiny_mce/${tinymce.version}' />
-            <fileset dir='${web.dir}/tiny_mce/custom' />
+            <fileset dir='${tinymce.js.dir}' />
+            <fileset dir='${tinymce.custom.dir}' />
             <scriptmapper language="javascript">
                 // replace dots with underscores in JS file names, retaining the suffix
                 if (/\.js$/.test(source)) {
@@ -1653,7 +1654,7 @@ if (ext == null) ext = "";
         <property name="tinymce.locale.file" location="${tinymce.dir}/locales.js"/>
 
         <fileset id="tinymce.locales.ref"
-                 dir="${web.dir}/tiny_mce/custom/langs"
+                 dir="${tinymce.custom.dir}/langs"
                  includes="*.js"/>
 
         <uptodate targetfile="${tinymce.locale.file}"
@@ -1689,7 +1690,7 @@ if (ext == null) ext = "";
         <property name="tinymce.emoticon.file" location="${tinymce.dir}/plugins/zemoticons/data.js"/>
 
         <fileset id="tinymce.emoticons.ref"
-                 dir="${web.dir}/tiny_mce/${tinymce.version}/plugins/emoticons/img"/>
+                 dir="${tinymce.js.dir}/plugins/emoticons/img"/>
 
         <uptodate targetfile="${tinymce.emoticon.file}"
                   property="tinymce.emoticons.uptodate">
