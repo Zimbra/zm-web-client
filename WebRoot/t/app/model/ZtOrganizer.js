@@ -454,8 +454,6 @@ Ext.define('ZCS.model.ZtOrganizer', {
 			// now we can update the current ID fields
 			this.set('parentItemId', ZCS.model.ZtOrganizer.getOrganizerId(data.parentZcsId, app, this.get('context')));
 			this.set('parentZcsId', data.parentZcsId);
-			// Line below can be removed once bug 85404 is fixed and server returns path
-			this.set('path', this.calculatePath());
 		}
 		if (modify.name) {
 			this.set('name', data.name);
