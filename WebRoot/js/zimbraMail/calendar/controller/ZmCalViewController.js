@@ -633,33 +633,83 @@ function() {
 	var accountName = appCtxt.isOffline && appCtxt.accountList.mainAccount.name;
 	var batchCmd = new ZmBatchCommand(null, accountName, true);
 	var itemCount = 0;
-	for (var i in this._calItemStatus) {
-		var info = this._calItemStatus[i];
-		if (info.item) {
-			var calendar = info.item;
-			//If, Remote Calendars & not mount-points, dont send check/uncheck requests
-			if (appCtxt.isWebClientOffline() || (calendar.isRemote() && (!calendar.isMountpoint || !calendar.zid))) {
-				calendar.isChecked = info.checked;
-				calendar.checkedCallback(info.checked);
-				this._handleCheckedCalendarRefresh(calendar);
-			} else {
-				batchCmd.add(new AjxCallback(calendar, calendar.checkAction, [info.checked]));
-				itemCount++;
-			}
-		}
-	}
+    for (var i in this._calItemStatus) {
+        var info = this._calItemStatus[i];
+        if (info.item) {
+            var calendar = info.item;
+            //If, Remote Calendars & not mount-points, dont send check/uncheck requests
+            if ((calendar.isRemote() && (!calendar.isMountpoint || !calendar.zid))) {
+                calendar.isChecked = info.checked;
+                calendar.checkedCallback(info.checked);
+                this._handleCheckedCalendarRefresh(calendar);
+            } else {
+                batchCmd.add(new AjxCallback(calendar, calendar.checkAction, [info.checked]));
+                itemCount++;
+            }
+        }
+    }
 
-	if (appCtxt.multiAccounts) {
-		this.apptCache.clearCache();
-	}
+    if (appCtxt.multiAccounts) {
+        this.apptCache.clearCache();
+    }
 
-	this._calItemStatus = {};
-	if (itemCount > 0) {
-		batchCmd.run();
-	}
+    if (itemCount > 0) {
+        if (appCtxt.isWebClientOffline()) {
+            // The offlineCallback gets bound inside batchCmd.run to this
+            var offlineCallback = this._handleOfflineCalendarCheck.bind(this, batchCmd);
+            batchCmd.run(null, null, offlineCallback);
+        } else {
+            this._calItemStatus = {};
+            batchCmd.run();
+        }
+    }
 
 	this._updateCalItemStateActionId = null;
 };
+
+// Update the check change locally (a folder and its subfolders) and store the batch command into the request queue
+ZmCalViewController.prototype._handleOfflineCalendarCheck =
+function(batchCmd) {
+
+    // Json batchCommand created in _updaetCalItemState above.  Must be Json to be stored in offline request queue
+    var jsonObj = batchCmd.getRequestBody();
+
+    this.apptCache.clearCache();
+    // Apply the changes locally
+    var calendarIds = [];
+    for (var i in this._calItemStatus) {
+        var info = this._calItemStatus[i];
+        if (info.item) {
+            var calendar = info.item;
+            calendarIds.push(calendar.id);
+            // Remote non-mountpoint has aleady been processed for local display - ignore it
+            if (!(calendar.isRemote() && (!calendar.isMountpoint || !calendar.zid))) {
+                calendar.isChecked = info.checked;
+                calendar.checkedCallback(info.checked);
+                this._handleCheckedCalendarRefresh(calendar);
+            }
+        }
+    }
+     this._calItemStatus = {};
+
+    // Store the request for playback
+    var jsonObjCopy = $.extend(true, {}, jsonObj);  //Always clone the object.  ?? Needed here ??
+    // This should be the only BatchCommand queued for calendars for replay (for the FolderAction, checked).
+    jsonObjCopy.methodName = "BatchRequest";
+    // Modify the id to thwart ZmOffline._handleResponseSendOfflineRequest, which sends a DELETE
+    // notification for the id - so a single calendar would get deleted in the UI
+    jsonObjCopy.id = "C" + calendarIds.join(":");
+    var value = {
+        update:          true,
+        methodName:      jsonObjCopy.methodName,
+        id:              jsonObjCopy.id,
+        value:           jsonObjCopy
+    };
+
+    // No callback - we apply the check changes, whether or not the request goes into the queue successfully
+    ZmOfflineDB.setItemInRequestQueue(value);
+};
+
 
 ZmCalViewController.prototype._handleCheckedCalendarRefresh =
 function(calendar){

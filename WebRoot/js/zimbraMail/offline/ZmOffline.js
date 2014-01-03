@@ -235,7 +235,7 @@ function(){
         this.initOfflineFolders();
         this.storeFoldersMetaData();
         //ZmOfflineDB.indexedDB.addObjectStores(this._cacheOfflineData.bind(this));
-        return;
+        //return;
     }
     this._cacheOfflineData();
 };
@@ -450,7 +450,8 @@ function(startTime, endTime, callback, getMessages, previousMessageIds, apptIds,
         for (var apptId in apptIds) {
             search = [apptId];
             // If its a recurring appt, several ZmAppts may share the same id.  Find them and delete them all
-            ZmOfflineDB.doIndexSearch(search, ZmApp.CALENDAR, null, offlineDeleteTrashedAppts, null, "id");
+            ZmOfflineDB.doIndexSearch(search, ZmApp.CALENDAR, null, offlineDeleteTrashedAppts,
+                                      this.calendarDeleteErrorCallback.bind(this), "id");
         }
 
         // Now make a server read to get the detailed appt invites, for edit view and tooltips
@@ -494,6 +495,10 @@ function(startTime, endTime, callback, getMessages, previousMessageIds, apptIds,
 ZmOffline.prototype.calendarDownloadErrorCallback =
 function(e) {
     DBG.println(AjxDebug.DBG1, "Error while adding appts to indexedDB.  Error = " + e);
+}
+ZmOffline.prototype.calendarDeleteErrorCallback =
+function(e) {
+    DBG.println(AjxDebug.DBG1, "Error while deleting appts from indexedDB.  Error = " + e);
 }
 
 ZmOffline.prototype._createApptPrimaryKey =
@@ -809,13 +814,13 @@ function(apptContainers) {
     var appt;
     for (var i = 0; i < apptContainers.length; i++) {
         appt = apptContainers[i].appt;
-        ZmOfflineDB.deleteItem(this._createApptPrimaryKey(appt), ZmApp.CALENDAR, null);
+        ZmOfflineDB.deleteItem(this._createApptPrimaryKey(appt), ZmApp.CALENDAR, this.calendarDeleteErrorCallback.bind(this));
     }
 }
 
 ZmOffline.prototype._expiredErrorCallback =
 function(e) {
-    DBG.println(AjxDebug.DBG1, "Error while reading expired appts in indexedDB.  Error = " + e);
+    DBG.println(AjxDebug.DBG1, "Error while trying to search for expired appts in indexedDB.  Error = " + e);
 }
 
 

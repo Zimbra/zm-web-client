@@ -563,13 +563,15 @@ function(jsonObj, apptList, dismiss) {
     var jsonObjCopy = $.extend(true, {}, jsonObj);  //Always clone the object.  ?? Needed here ??
     var methodName = dismiss ? "DismissCalendarItemAlarmRequest" : "SnoozeCalendarItemAlarmRequest";
     jsonObjCopy.methodName = methodName;
-    jsonObjCopy.id = this._createSendRequestKey(apptList);
+    // Modify the id to thwart ZmOffline._handleResponseSendOfflineRequest, which sends a DELETE
+    // notification for the id (which impacts here if there is a single id).
+    jsonObjCopy.id = "C" + this._createSendRequestKey(apptList);
 
     var value = {
-        update :     true,
-        methodName : methodName,
-        id :         jsonObjCopy.id,
-        value :      jsonObjCopy
+        update:          true,
+        methodName:      methodName,
+        id:              jsonObjCopy.id,
+        value:           jsonObjCopy
     };
 
     var callback = this._handleOfflineReminderDBCallback.bind(this, jsonObjCopy, apptList, dismiss);

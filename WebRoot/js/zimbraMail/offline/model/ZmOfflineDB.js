@@ -305,7 +305,7 @@ function(key, objectStore) {
 
     try {
         if (key.id && key.methodName) {
-            index = objectStore.index("methodName, id");
+            index = objectStore.index("methodname, id");
             [].concat(key.methodName).forEach(function(methodName) {
                 [].concat(key.id).forEach(function(id) {
                     keyRangeArray.push(IDBKeyRange.only([methodName, id]));
@@ -319,7 +319,7 @@ function(key, objectStore) {
             });
         }
         else if (key.methodName) {
-            index = objectStore.index("methodName");
+            index = objectStore.index("methodname");
             [].concat(key.methodName).forEach(function(methodName) {
                 keyRangeArray.push(IDBKeyRange.only(methodName));
             });

@@ -952,8 +952,6 @@ function(searchParams, miniCalParams, reminderParams, apptSet, apptContainers) {
     var appt;
     for (var instanceId in apptSet) {
         appt = apptSet[instanceId];
-        // Let it be known that this object really is a ZmAppt
-        // appt.prototype = new ZmAppt();
         appts.push(appt);
     }
     var cachedVec = this._cachedVec;
@@ -971,7 +969,7 @@ function(searchParams, miniCalParams, reminderParams, apptSet, apptContainers) {
                 // The callbacks return this to ZmSearchController._handleResponseDoSearch.
                 // In order to support that param, we would need to have the rawAppts also
                 // stored in a separate ObjectStore, and apply the search params to it
-                // *** NOT DONE ***
+                // *** NOT DONE, But not supporting Calendar search right now ***
                 reminderParams.callback.run(reminderList, reminderParams.query, null);
             } else {
                 // Seems like the only way to get here is from
@@ -997,8 +995,7 @@ function(searchParams, miniCalParams, reminderParams, apptSet, apptContainers) {
         if (searchParams.callback) {
             searchParams.callback.run(calendarList, null, searchParams.query);
         }  else {
-            // doBatchCommand - not done yet
-            //return accountList;
+            // This should never occur offline
         }
     }
 
