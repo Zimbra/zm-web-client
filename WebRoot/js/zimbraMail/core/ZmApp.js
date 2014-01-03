@@ -1093,13 +1093,30 @@ function(active, viewId) {
  */
 ZmApp.prototype.enableFeatures =
 function() {
-    var enable = !appCtxt.isWebClientOffline();
     var overview = this.getOverview();
-    var zimletTreeView = overview && overview.getTreeView(ZmOrganizer.ZIMLET);
-    if (zimletTreeView) {
-        zimletTreeView.setVisible(enable);
-    }
-}
+	if (overview) {
+		var enable = !appCtxt.isWebClientOffline();
+		var zimletTreeView = overview.getTreeView(ZmOrganizer.ZIMLET);
+		if (zimletTreeView) {
+			zimletTreeView.setVisible(enable);
+		}
+		// enable/disable
+		// right click
+		overview.actionSupported = enable;
+		// drag and drop
+		overview.dndSupported = enable;
+		// new buttons
+		var newButton = appCtxt.getAppController().getNewButton();
+		if (newButton) {
+			if (ZmController._defaultNewId === ZmOperation.NEW_MESSAGE) {
+				newButton._setDropDownCellMouseHandlers(enable);
+			}
+			else {
+				newButton.setEnabled(enable);
+			}
+		}
+	}
+};
 
 /**
  * Checks if the application is active.

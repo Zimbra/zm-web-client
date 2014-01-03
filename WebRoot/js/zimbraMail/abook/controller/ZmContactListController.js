@@ -766,6 +766,23 @@ function(parent, num) {
                     );
         parent.setItemVisible(ZmOperation.TAG_MENU, false);
     }
+
+	if (appCtxt.isWebClientOffline()) {
+		parent.enable(
+			[
+				ZmOperation.MOVE,
+				ZmOperation.EDIT,
+				ZmOperation.CONTACT,
+				ZmOperation.MOVE_MENU,
+				ZmOperation.CONTACTGROUP_MENU,
+				ZmOperation.DELETE,
+				ZmOperation.TAG_MENU,
+				ZmOperation.PRINT,
+				ZmOperation.PRINT_CONTACT
+			],
+			false
+		);
+	}
 };
 
 
@@ -850,7 +867,7 @@ function(ev) {
 			this._editListener.call(this, ev);
 			return;
 		}
-		if (!this.isGalSearch() && (!folder || (!folder.isReadOnly() && !folder.isInTrash()))) {
+		if (!this.isGalSearch() && (!folder || (!folder.isReadOnly() && !folder.isInTrash())) && !appCtxt.isWebClientOffline()) {
 			AjxDispatcher.run("GetContactController").show(ev.item);
 		}
 	}

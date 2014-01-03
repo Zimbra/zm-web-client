@@ -788,10 +788,6 @@ function(active, viewId) {
 ZmCalendarApp.prototype.enableFeatures =
 function() {
     ZmApp.prototype.enableFeatures.apply(this);
-
-    var newButton = appCtxt.getAppController().getNewButton();
-    newButton.setEnabled(!appCtxt.isWebClientOffline());
-
     var controller = this.getCalController();
     if (controller) {
         controller._resetToolbarOperations();

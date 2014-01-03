@@ -401,23 +401,12 @@ function(params) {
     // NOTE: We must go through the request mgr for default handling
     var getInfoResponse = AjxUtil.get(params, "getInfoResponse");
     if (getInfoResponse) {
-        this._requestMgr.sendRequest({response:getInfoResponse, offlineCache:true});
+        this._requestMgr.sendRequest({response:getInfoResponse});
     }
 
-    if (appCtxt.isWebClientOffline()) {
-        var respCallback = new AjxCallback(this, this._handleResponseGetMetaData, params);
-        var callback = appCtxt.accountList.mainAccount.loadMetaData.bind(appCtxt.accountList.mainAccount, respCallback);
-        //var store = "inbox" + (appCtxt.get(ZmSetting.GROUP_MAIL_BY) || "message");
-        var store = "inboxmessage";
-        params._skipResponse = true;
-        appCtxt.webClientOfflineHandler._syncSearchRequest(callback, store, params);
-        appCtxt.webClientOfflineHandler.syncFoldersMetaData();
-
-    } else {
-        var respCallback = new AjxCallback(this, this._handleResponseGetMetaData, params);
-        appCtxt.accountList.mainAccount.loadMetaData(respCallback);
-    }
 	// fetch meta data for the main account
+	var respCallback = new AjxCallback(this, this._handleResponseGetMetaData, params);
+	appCtxt.accountList.mainAccount.loadMetaData(respCallback);
 
 	//todo - might want to move this call and the methods to ZmMailApp as it's specific to mail app only.
     this._initDelegatedSenderAddrs();
@@ -437,7 +426,8 @@ function() {
     soapDoc.set("right","sendOnBehalfOfDistList");
     var batchCmd = new ZmBatchCommand(null, appCtxt.accountList.mainAccount.name);
     var callback = this._initDelegatedSenderEmails.bind(this);
-	batchCmd.addNewRequestParams(soapDoc, callback, callback);
+	var errorCallback = this._handleErrorDelegatedSenderEmails.bind(this, callback);
+	batchCmd.addNewRequestParams(soapDoc, callback, errorCallback);
     batchCmd.run();
 };
 
@@ -469,10 +459,34 @@ function(sendRights, sendRight) {
 
 ZmZimbraMail.prototype._initDelegatedSenderEmails =
 function(result){
-    var response = result.getResponse().DiscoverRightsResponse;
-    var sendRights = response && response.targets;
+    var response = result.getResponse();
+	if (ZmOffline.isOnlineMode()) {
+		response.methodname = Object.keys(response)[0];
+		ZmOfflineDB.setItem(response, ZmOffline.META_DATA);
+	}
+	var discoverRightsResponse = response && response.DiscoverRightsResponse;
+	var sendRights = discoverRightsResponse && discoverRightsResponse.targets;
     appCtxt.sendAsEmails = this._getDelegatedSenderEmails(sendRights, 'sendAs');
     appCtxt.sendOboEmails = this._getDelegatedSenderEmails(sendRights, 'sendOnBehalfOf');
+};
+
+ZmZimbraMail.prototype._handleErrorDelegatedSenderEmails =
+function(callback, ex) {
+	if (ex.code === ZmCsfeException.EMPTY_RESPONSE && appCtxt.isWebClientOffline()) {
+		var getItemCallback = this._handleGetItemCallback.bind(this, callback);
+		ZmOfflineDB.getItem("DiscoverRightsResponse", ZmOffline.META_DATA, getItemCallback);
+	}
+};
+
+ZmZimbraMail.prototype._handleGetItemCallback =
+function(callback, resultArray) {
+    var result = resultArray && resultArray[0];
+    if (result) {
+        var csfeResult = new ZmCsfeResult({BatchResponse : result});
+	    if (csfeResult) {
+		    callback.run(csfeResult);
+	    }
+	}
 };
 
 ZmZimbraMail.registerViewsToTypeMap = function() {
@@ -753,17 +767,10 @@ function(params, result) {
 	// startup and packages have been optimized for quick mail display
 	if (this._doingPostRenderStartup) {
 		this.addAppListener(params.startApp, ZmAppEvent.POST_RENDER, new AjxListener(this, this._postRenderStartup));
-        if (appCtxt.isWebClientOffline()) {
-            params.searchResponse.Body.SearchResponse.m = appCtxt._msgSearchResponse;
-            /*
-            if (params.searchResponse.Body.SearchResponse.m){
-                 params.searchResponse.Body.SearchResponse.m = appCtxt._msgSearchResponse;
-            } else {
-                 params.searchResponse.Body.SearchResponse.c = appCtxt._msgSearchResponse;
-            } */
-
+        //For offline mode offline callback will take care
+		if (!appCtxt.isWebClientOffline()) {
+	        this._searchResponse = params.searchResponse;
         }
-		this._searchResponse = params.searchResponse;
 	} else {
 		AjxDispatcher.require("Startup2");
 	}

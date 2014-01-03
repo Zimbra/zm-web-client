@@ -2378,7 +2378,7 @@ function() {
         for (var i = 0; i < folders.length; i++) {
             var folder = folders[i];
             if (folder) {
-                var treeItem = overview.getTreeItemById(folder.id);
+                var treeItem = overview && overview.getTreeItemById(folder.id);
                 if (treeItem) {
                     treeItem.setVisible(true);
                 }
@@ -2395,7 +2395,7 @@ function() {
         for (var i = 1; i < folders.length; i++) {
             var folder = folders[i];
             if (folder.webOfflineSyncDays === 0 && folder.id != ZmFolder.ID_OUTBOX) {
-                var treeItem = overview.getTreeItemById(folder.id);
+                var treeItem = overview && overview.getTreeItemById(folder.id);
                 if (treeItem) {
                     treeItem.setVisible(false);
                 }

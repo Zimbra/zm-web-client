@@ -182,7 +182,8 @@ function(sections, callback, batchCommand) {
 	if (!batchCommand) {
 		if (command.size() > 0) {
 			var respCallback = new AjxCallback(this, this._handleLoad, [callback]);
-			command.run(respCallback);
+			var offlineCallback = this._handleOfflineLoad.bind(this, respCallback);
+			command.run(respCallback, null, offlineCallback);
 		}
 	} else {
 		if (callback) {
@@ -202,6 +203,10 @@ function(callback, result) {
 	if (br) {
 		var metaDataResp = (this._itemId != null) ? br.GetCustomMetadataResponse : br.GetMailboxMetadataResponse;
 		if (metaDataResp && metaDataResp.length) {
+			if (ZmOffline.isOnlineMode()) {
+				br.methodname = Object.keys(br)[0];
+				ZmOfflineDB.setItem(br, ZmOffline.META_DATA);
+			}
 			for (var i = 0; i < metaDataResp.length; i++) {
 				var data = metaDataResp[i].meta[0];
 				this._sections[data.section] = data._attrs;
@@ -211,6 +216,28 @@ function(callback, result) {
 
 	if (callback) {
 		callback.run(this._sections);
+	}
+};
+
+/**
+ * @private
+ */
+ZmMetaData.prototype._handleOfflineLoad =
+function(callback) {
+	var getItemCallback = this._handleGetItemCallback.bind(this, callback);
+	var key = (this._itemId != null) ? "GetCustomMetadataResponse" : "GetMailboxMetadataResponse";
+	ZmOfflineDB.getItem(key, ZmOffline.META_DATA, getItemCallback);
+};
+
+/**
+ * @private
+ */
+ZmMetaData.prototype._handleGetItemCallback =
+function(callback, resultArray) {
+	var result = resultArray && resultArray[0];
+	if (result) {
+		var csfeResult = new ZmCsfeResult({BatchResponse : result});
+		callback.run(csfeResult);
 	}
 };
 
