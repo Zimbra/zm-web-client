@@ -187,11 +187,13 @@ function(isStart, ev) {
 	if (isStart) {
 		if (ed && (ed.valueOf() < ev.detail.valueOf())) {
 			this.setValue("endDateField", newDate);
+			this.getControl("endMiniCal").setDate(ev.detail);
 		}
 		this.setValue("startDateField", newDate);
 	} else {
 		if (sd && (sd.valueOf() > ev.detail.valueOf())) {
 			this.setValue("startDateField", newDate);
+			this.getControl("startMiniCal").setDate(ev.detail);
 		}
 		this.setValue("endDateField", newDate);
 	}
