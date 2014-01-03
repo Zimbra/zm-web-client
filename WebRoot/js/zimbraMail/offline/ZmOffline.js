@@ -26,6 +26,7 @@ ZmOffline = function(){
     ZmOffline.ZmOfflineStore = "zmofflinestore";
     ZmOffline.ATTACHMENT = "Attachment";
     ZmOffline.REQUESTQUEUE = "RequestQueue";
+	ZmOffline.META_DATA = "MetaData";
     ZmOffline.syncStarted = false;
     ZmOffline._syncInProgress = false;
     ZmOffline.store = [];
@@ -83,7 +84,7 @@ function(cb){
     }
 
     var callback = (appCtxt.isWebClientOffline()) ? this.setOffline.bind(this, cb) : cb;
-    ZmOfflineDB.indexedDB.init(callback);
+    ZmOfflineDB.init(callback, callback);
     this._addListeners();
 };
 
@@ -113,7 +114,7 @@ function(key, value, objStore) {
 
     try{
         if (key){
-            ZmOfflineDB.indexedDB.setItem(key, value, objStore);
+            ZmOfflineDB.setItem(key, value, objStore);
         }
     }catch(ex){
         DBG.println(AjxDebug.DBG1, ex);
@@ -129,7 +130,7 @@ function(key, callback, params, objStore) {
 
     objStore = objStore.toLowerCase();
 
-    if ($.inArray(objStore, ZmOfflineDB.indexedDB.db.objectStoreNames) === -1){
+    if ($.inArray(objStore, ZmOfflineDB.db.objectStoreNames) === -1){
         return;
     }
     var searchRequest = params && params.jsonObj && params.jsonObj.SearchRequest;
@@ -139,7 +140,7 @@ function(key, callback, params, objStore) {
     }
 
     if (key){
-      ZmOfflineDB.indexedDB.getItem(key, callback, params, objStore);
+      ZmOfflineDB.getItem(key, callback, params, objStore);
     }
 };
 ZmOffline.prototype._addListeners =
@@ -233,7 +234,7 @@ function(){
     if (ZmOffline.folders.length === 0){
         this.initOfflineFolders();
         this.storeFoldersMetaData();
-        ZmOfflineDB.indexedDB.addObjectStores(this._cacheOfflineData.bind(this));
+        //ZmOfflineDB.indexedDB.addObjectStores(this._cacheOfflineData.bind(this));
         return;
     }
     this._cacheOfflineData();
@@ -808,7 +809,7 @@ function(apptContainers) {
     var appt;
     for (var i = 0; i < apptContainers.length; i++) {
         appt = apptContainers[i].appt;
-        ZmOfflineDB.indexedDB.deleteItem(this._createApptPrimaryKey(appt), ZmApp.CALENDAR, null);
+        ZmOfflineDB.deleteItem(this._createApptPrimaryKey(appt), ZmApp.CALENDAR, null);
     }
 }
 
@@ -845,7 +846,7 @@ function(type, modifiedItem, result){
         if (folder){
             callback = this.addItem.bind(this, offlineItem, type, (folder + type));
         }
-        ZmOfflineDB.indexedDB.deleteItem(prevKey, (prevFolder + type), callback);
+        ZmOfflineDB.deleteItem(prevKey, (prevFolder + type), callback);
     } else {
         if (folder){
             this.addItem(modifiedItem, type, (folder + type));
@@ -900,14 +901,14 @@ function(items){
         if (folder){  // Only inbox for now
             this.addItem(msg, ZmOffline.MESSAGE,  + ZmOffline.MESSAGE );
         } else { // Message is moved
-            ZmOfflineDB.indexedDB.deleteItemById(msg.id);
+            //ZmOfflineDB.indexedDB.deleteItemById(msg.id);
         }
     }
 };
 
 ZmOffline.prototype._syncSearchRequest =
 function(callback, store, params){
-    ZmOfflineDB.indexedDB.getAll(store, this._generateMsgSearchResponse.bind(this, callback, params, store), ZmOffline.cacheMessageLimit);
+    //ZmOfflineDB.indexedDB.getAll(store, this._generateMsgSearchResponse.bind(this, callback, params, store), ZmOffline.cacheMessageLimit);
 };
 
 ZmOffline.prototype.syncFoldersMetaData =
@@ -1012,7 +1013,7 @@ function(item, store){
 ZmOffline.prototype._replayOfflineRequest =
 function() {
     var callback = this._sendOfflineRequest.bind(this);
-    ZmOfflineDB.indexedDB.getItemInRequestQueue(false, callback)
+    ZmOfflineDB.getItemInRequestQueue(false, callback)
 };
 
 ZmOffline.prototype._sendOfflineRequest =
@@ -1074,7 +1075,7 @@ function(obj, result) {
         }
     };
     appCtxt.getRequestMgr()._notifyHandler(notify);
-    ZmOfflineDB.indexedDB.deleteItemInRequestQueue(obj.oid);
+    ZmOfflineDB.deleteItemInRequestQueue(obj.oid);
 };
 
 ZmOffline.prototype._handleErrorResponseSendOfflineRequest =
@@ -1129,7 +1130,7 @@ function(deletedIds, type, folder){
     }
     var store = folder + type;
     for (var i=0, length = deletedIds.length;i < length; i++){
-        ZmOfflineDB.indexedDB.deleteItem(deletedIds[i], store);
+        ZmOfflineDB.deleteItem(deletedIds[i], store);
     }
 
 };
@@ -1148,7 +1149,7 @@ function(id, newItem, type){
 
     var updateItem = this._updateItem.bind(this, type, newItem);
     var cb = this.getItem.bind(this, id, updateItem, {});
-    ZmOfflineDB.indexedDB.getItemById(id, cb);
+    ZmOfflineDB.getItemById(id, cb);
 };
 
 
@@ -1158,7 +1159,7 @@ function(ids){
         return;
     }
     for(var i=0, length = ids.length; i < length; i++){
-        ZmOfflineDB.indexedDB.deleteItemById(ids[i]);
+        ZmOfflineDB.deleteItemById(ids[i]);
     }
 };
 
@@ -1172,7 +1173,7 @@ function(ids){
 ZmOffline.prototype._deleteItemById =
 function(id, stores){
       for (store in stores){
-          ZmOfflineDB.indexedDB.deleteItem(id, store);
+          ZmOfflineDB.deleteItem(id, store);
       }
 };
 
@@ -1247,7 +1248,7 @@ function(){
     }
     DBG.println(AjxDebug.DBG1, "Closing offline databases");
 
-    ZmOfflineDB.indexedDB.close();
+    ZmOfflineDB.close();
 };
 
 ZmOffline.generateMsgResponse =
@@ -1423,7 +1424,7 @@ function() {
 ZmOffline.updateOutboxFolderCount =
 function() {
     var key = {methodName : "SendMsgRequest"};
-    ZmOfflineDB.indexedDB.getItemCountInRequestQueue(key, ZmOffline.updateOutboxFolderCountCallback);
+    ZmOfflineDB.getItemCountInRequestQueue(key, ZmOffline.updateOutboxFolderCountCallback);
 };
 
 ZmOffline.updateOutboxFolderCountCallback =
@@ -1439,12 +1440,14 @@ function(folderId){
     var folderInfo = appCtxt.getById(folderId);
     var storeName = (folderInfo.name).toLowerCase() + ZmOffline.MESSAGE;
     var callback = this._downloadMessages.bind(this, folderInfo, 0, ZmOffline.cacheMessageLimit, ZmOffline.MESSAGE, "all", 1, null);
-    if ($.inArray(storeName, ZmOfflineDB.indexedDB.db.objectStoreNames) !== -1) {
+    /*
+	if ($.inArray(storeName, ZmOfflineDB.indexedDB.db.objectStoreNames) !== -1) {
         ZmOfflineDB.indexedDB.clearObjStore(storeName, callback);
     } else {
         ZmOffline.store.push(storeName);
         ZmOfflineDB.indexedDB.addObjectStores(callback);
     }
+    */
 
 };
 

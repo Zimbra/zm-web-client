@@ -1861,12 +1861,12 @@ function(params) {
             id : msgNode.id,
             value : jsonObj
         };
-        ZmOfflineDB.indexedDB.setItemInRequestQueue(value, callback);
+        ZmOfflineDB.setItemInRequestQueue(value, callback);
     }
     else {
         jsonObj.id = msgNode.id = currentTime.toString(); //Id should be string
         msgNode.f = (msgNode.f || "").replace(ZmItem.FLAG_OFFLINE_CREATED, "").concat(ZmItem.FLAG_OFFLINE_CREATED);
-        ZmOfflineDB.indexedDB.setItemInRequestQueue(jsonObj, callback);
+        ZmOfflineDB.setItemInRequestQueue(jsonObj, callback);
     }
 };
 
@@ -1888,7 +1888,7 @@ function(params, jsonObj) {
             methodName : "SaveDraftRequest",
             id : jsonObj[jsonObj.methodName].m.id
         };
-        ZmOfflineDB.indexedDB.deleteItemInRequestQueue(key);//Delete any drafts for this message id
+        ZmOfflineDB.deleteItemInRequestQueue(key);//Delete any drafts for this message id
     }
 };
 

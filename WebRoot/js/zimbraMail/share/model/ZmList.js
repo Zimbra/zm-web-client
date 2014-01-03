@@ -1081,7 +1081,7 @@ function(params, isOutboxFolder, requestParams) {
             methodName : "SendMsgRequest", //Outbox folder only contains offline sent emails
             id : action.id
         };
-        ZmOfflineDB.indexedDB.deleteItemInRequestQueue(key, callback);
+        ZmOfflineDB.deleteItemInRequestQueue(key, callback);
     }
     else {
         var obj = requestParams.jsonObj;

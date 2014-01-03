@@ -959,7 +959,7 @@ function(search, callback, result) {
     }
 
     var searchResult = new ZmSearchResult(search);
-    if (search.searchFor === ZmId.SEARCH_MAIL) {
+    if (search.searchFor === ZmId.SEARCH_MAIL || search.parsedSearchFor === ZmId.SEARCH_MAIL) {
         search.types =  new AjxVector([ZmItem.MSG]);
         searchResult.set({m : result});
     }
@@ -978,7 +978,7 @@ ZmSearchController.prototype._addOfflineDrafts =
 function(search, result) {
     var callback = this._addOfflineDraftsCallback.bind(this, search, result);
     var key = {methodName : "SaveDraftRequest"};
-    ZmOfflineDB.indexedDB.getItemInRequestQueue(key, callback, callback);
+    ZmOfflineDB.getItemInRequestQueue(key, callback, callback);
 };
 
 ZmSearchController.prototype._addOfflineDraftsCallback =

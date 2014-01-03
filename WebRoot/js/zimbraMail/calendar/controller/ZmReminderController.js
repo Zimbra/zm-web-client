@@ -573,7 +573,7 @@ function(jsonObj, apptList, dismiss) {
     };
 
     var callback = this._handleOfflineReminderDBCallback.bind(this, jsonObjCopy, apptList, dismiss);
-    ZmOfflineDB.indexedDB.setItemInRequestQueue(value, callback);
+    ZmOfflineDB.setItemInRequestQueue(value, callback);
 };
 
 ZmReminderController.prototype._createSendRequestKey =
