@@ -416,7 +416,7 @@ function(tb) {
 		var text = num + " (" + item + ")";
 		var mi = menu.createMenuItem(i, {text:text});
 		mi.addSelectionListener(listener);
-		mi.setData(ZmAdvancedHtmlEditor.VALUE, num);
+		mi.setData(ZmHtmlEditor.VALUE, num);
 		if(i == 0){
 				this._fontSizeButton.setText(text);
 		}
@@ -446,7 +446,7 @@ function(ev) {
 ZmLiteHtmlEditor.prototype._fontStyleListener =
 function(ev) {
 
-	var styleType = ev.item.getData(ZmAdvancedHtmlEditor.VALUE);
+	var styleType = ev.item.getData(ZmHtmlEditor.VALUE);
 	var style = ZmLiteHtmlEditor.STYLE[styleType];
 	if(!style) return;
 

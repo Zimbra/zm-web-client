@@ -29,10 +29,10 @@
  * @author Satish S
  * @private
  */
-ZmAdvancedHtmlEditor = function() {
+ZmHtmlEditor = function() {
 	if (arguments.length == 0) { return; }
 
-	var params = Dwt.getParams(arguments, ZmAdvancedHtmlEditor.PARAMS);
+	var params = Dwt.getParams(arguments, ZmHtmlEditor.PARAMS);
 
 	if (!params.className) {
 		params.className = 'ZmHtmlEditor';
@@ -64,7 +64,7 @@ ZmAdvancedHtmlEditor = function() {
 	this.addControlListener(this._resetSize.bind(this));
 };
 
-ZmAdvancedHtmlEditor.PARAMS = [
+ZmHtmlEditor.PARAMS = [
 	'parent',
 	'posStyle',
 	'content',
@@ -76,24 +76,24 @@ ZmAdvancedHtmlEditor.PARAMS = [
 	'initCallback'
 ];
 
-ZmAdvancedHtmlEditor.prototype = new DwtControl();
-ZmAdvancedHtmlEditor.prototype.constructor = ZmAdvancedHtmlEditor;
+ZmHtmlEditor.prototype = new DwtControl();
+ZmHtmlEditor.prototype.constructor = ZmHtmlEditor;
 
-ZmAdvancedHtmlEditor.prototype.isZmAdvancedHtmlEditor = true;
-ZmAdvancedHtmlEditor.prototype.isInputControl = true;
-ZmAdvancedHtmlEditor.prototype.toString = function() { return "ZmAdvancedHtmlEditor"; };
+ZmHtmlEditor.prototype.isZmHtmlEditor = true;
+ZmHtmlEditor.prototype.isInputControl = true;
+ZmHtmlEditor.prototype.toString = function() { return "ZmHtmlEditor"; };
 
-ZmAdvancedHtmlEditor.TINY_MCE_PATH = "/js/ajax/3rdparty/tinymce";
+ZmHtmlEditor.TINY_MCE_PATH = "/js/ajax/3rdparty/tinymce";
 
 // used as a data key (mostly for menu items)
-ZmAdvancedHtmlEditor.VALUE = "value";
+ZmHtmlEditor.VALUE = "value";
 
-ZmAdvancedHtmlEditor.prototype.getEditor =
+ZmHtmlEditor.prototype.getEditor =
 function() {
 	return  (window.tinyMCE) ? tinyMCE.get(this._bodyTextAreaId) : null;
 };
 
-ZmAdvancedHtmlEditor.prototype.getBodyFieldId =
+ZmHtmlEditor.prototype.getBodyFieldId =
 function() {
 	if (this._mode == DwtHtmlEditor.HTML) {
 		var editor = this.getEditor();
@@ -103,12 +103,12 @@ function() {
 	return this._bodyTextAreaId;
 };
 
-ZmAdvancedHtmlEditor.prototype.getBodyField =
+ZmHtmlEditor.prototype.getBodyField =
 function() {
 	return document.getElementById(this.getBodyFieldId());
 };
 
-ZmAdvancedHtmlEditor.prototype._resetSize =
+ZmHtmlEditor.prototype._resetSize =
 function() {
 	var size = Dwt.getSize(this.getHtmlElement());
 	var x = size.x, y = size.y;
@@ -158,7 +158,7 @@ function() {
     editor.theme.resizeTo(Math.max(0, x), Math.max(0, y));
 };
 
-ZmAdvancedHtmlEditor.prototype.focus =
+ZmHtmlEditor.prototype.focus =
 function(editor) {
     var currentObj = this,
         bodyField;
@@ -192,7 +192,7 @@ function(editor) {
  * @param editor object
  * @param {Boolean} collapse whether to collapse selection or not for IE html mode
  */
-ZmAdvancedHtmlEditor.prototype.restoreFocus =
+ZmHtmlEditor.prototype.restoreFocus =
 function(editor, collapse) {
     var currentObj = this,
         windowManager,
@@ -217,7 +217,7 @@ function(editor, collapse) {
 /**
  * @param	{Boolean}	keepModeDiv	if <code>true</code>, _spellCheckModeDiv is not removed
  */
-ZmAdvancedHtmlEditor.prototype.getTextVersion = function (convertor, keepModeDiv) {
+ZmHtmlEditor.prototype.getTextVersion = function (convertor, keepModeDiv) {
     this.discardMisspelledWords(keepModeDiv);
     return this._mode === DwtHtmlEditor.HTML
         ? this._convertHtml2Text(convertor)
@@ -230,7 +230,7 @@ ZmAdvancedHtmlEditor.prototype.getTextVersion = function (convertor, keepModeDiv
  * @param {boolean}		insertFontStyle		if true, add surrounding DIV with font settings
  * @param {boolean}		onlyInnerContent	if true, do not surround with HTML and BODY
  */
-ZmAdvancedHtmlEditor.prototype.getContent =
+ZmHtmlEditor.prototype.getContent =
 function(insertFontStyle, onlyInnerContent) {
 
     this.discardMisspelledWords();
@@ -260,23 +260,23 @@ function(insertFontStyle, onlyInnerContent) {
 	return content;
 };
 
-ZmAdvancedHtmlEditor.prototype._embedHtmlContent =
+ZmHtmlEditor.prototype._embedHtmlContent =
 function(html, insertFontStyle, onlyInnerContent) {
 
 	html = html || "";
 	if (insertFontStyle) {
-		html = ZmAdvancedHtmlEditor._getFontStyle(html);
+		html = ZmHtmlEditor._getFontStyle(html);
 	}
 	return onlyInnerContent ? html : [ "<html><body>", html, "</body></html>" ].join("");
 };
-ZmAdvancedHtmlEditor._embedHtmlContent = ZmAdvancedHtmlEditor.prototype._embedHtmlContent;
+ZmHtmlEditor._embedHtmlContent = ZmHtmlEditor.prototype._embedHtmlContent;
 
-ZmAdvancedHtmlEditor._getFontStyle =
+ZmHtmlEditor._getFontStyle =
 function(html) {
-	return ZmAdvancedHtmlEditor._getFontStylePrefix() + html + ZmAdvancedHtmlEditor._getFontStyleSuffix();
+	return ZmHtmlEditor._getFontStylePrefix() + html + ZmHtmlEditor._getFontStyleSuffix();
 };
 
-ZmAdvancedHtmlEditor._getFontStylePrefix =
+ZmHtmlEditor._getFontStylePrefix =
 function() {
 	var a = [], i = 0;
 	a[i++] = '<div style="font-family: ';
@@ -293,7 +293,7 @@ function() {
 	return a.join("");
 };
 
-ZmAdvancedHtmlEditor._getFontStyleSuffix =
+ZmHtmlEditor._getFontStyleSuffix =
 function() {
 	return "</div>";
 };
@@ -301,7 +301,7 @@ function() {
 /*
  If editor is not initialized and mode is HTML, tinymce will automatically initialize the editor with the content in textarea
  */
-ZmAdvancedHtmlEditor.prototype.setContent = function (content) {
+ZmHtmlEditor.prototype.setContent = function (content) {
     if (this._mode === DwtHtmlEditor.HTML && this._editorInitialized) {
         this.getEditor().setContent(content, {format:'raw'});
     } else {
@@ -310,22 +310,22 @@ ZmAdvancedHtmlEditor.prototype.setContent = function (content) {
     this._ignoreWords = {};
 };
 
-ZmAdvancedHtmlEditor.prototype.reEnableDesignMode =
+ZmHtmlEditor.prototype.reEnableDesignMode =
 function() {
 	// tinyMCE doesn't need to handle this
 };
 
-ZmAdvancedHtmlEditor.prototype.getMode =
+ZmHtmlEditor.prototype.getMode =
 function() {
 	return this._mode;
 };
 
-ZmAdvancedHtmlEditor.prototype.isHtmlModeInited =
+ZmHtmlEditor.prototype.isHtmlModeInited =
 function() {
 	return Boolean(this.getEditor());
 };
 
-ZmAdvancedHtmlEditor.prototype._convertHtml2Text = function (convertor) {
+ZmHtmlEditor.prototype._convertHtml2Text = function (convertor) {
     var editor = this.getEditor(),
         body;
     if (editor) {
@@ -337,7 +337,7 @@ ZmAdvancedHtmlEditor.prototype._convertHtml2Text = function (convertor) {
     return "";
 };
 
-ZmAdvancedHtmlEditor.prototype.moveCaretToTop =
+ZmHtmlEditor.prototype.moveCaretToTop =
 function(offset) {
 	if (this._mode == DwtHtmlEditor.TEXT) {
 		var control = this.getContentField();
@@ -364,7 +364,7 @@ function(offset) {
 	}
 };
 
-ZmAdvancedHtmlEditor.prototype._moveCaretToTopHtml =
+ZmHtmlEditor.prototype._moveCaretToTopHtml =
 function(tryOnTimer, offset) {
 	var editor = this.getEditor();
 	var body = editor && editor.getDoc().body;
@@ -417,31 +417,31 @@ function(tryOnTimer, offset) {
 			var action = new AjxTimedAction(this, this._moveCaretToTopHtml);
 			AjxTimedAction.scheduleAction(action, DwtHtmlEditor._INITDELAY + 1);
 		} else {
-			var cb = ZmAdvancedHtmlEditor.prototype._moveCaretToTopHtml;
+			var cb = ZmHtmlEditor.prototype._moveCaretToTopHtml;
 			this._initCallbacks.push(cb.bind(this, tryOnTimer, offset));
 		}
 	}
 };
 
-ZmAdvancedHtmlEditor.prototype.hasFocus =
+ZmHtmlEditor.prototype.hasFocus =
 function() {
 	return Boolean(this._hasFocus[this._mode]);
 };
 
 /*ZmSignature editor contains getIframeDoc method dont want to break the existing code*/
-ZmAdvancedHtmlEditor.prototype._getIframeDoc = ZmAdvancedHtmlEditor.prototype.getIframeDoc =
+ZmHtmlEditor.prototype._getIframeDoc = ZmHtmlEditor.prototype.getIframeDoc =
 function() {
 	var editor = this.getEditor();
 	return editor ? editor.getDoc() : null;
 };
 
-ZmAdvancedHtmlEditor.prototype._getIframeWin =
+ZmHtmlEditor.prototype._getIframeWin =
 function() {
 	var editor = this.getEditor();
 	return editor ? editor.getWin() : null;
 };
 
-ZmAdvancedHtmlEditor.prototype.clear =
+ZmHtmlEditor.prototype.clear =
 function() {
 	var editor = this.getEditor();
     if (editor && this._editorInitialized) {
@@ -458,12 +458,12 @@ function() {
     }
 };
 
-ZmAdvancedHtmlEditor.prototype.getInputElement =
+ZmHtmlEditor.prototype.getInputElement =
 function() {
 	return document.getElementById(this._bodyTextAreaId);
 };
 
-ZmAdvancedHtmlEditor.prototype.initTinyMCEEditor =
+ZmHtmlEditor.prototype.initTinyMCEEditor =
 function(params) {
 	var htmlEl = this.getHtmlElement();
 
@@ -492,7 +492,7 @@ function(params) {
 	if (!window.tinyMCE) {
         window.tinyMCEPreInit = {};
         window.tinyMCEPreInit.suffix = '';
-        window.tinyMCEPreInit.base = appContextPath + ZmAdvancedHtmlEditor.TINY_MCE_PATH; // SET PATH TO TINYMCE HERE
+        window.tinyMCEPreInit.base = appContextPath + ZmHtmlEditor.TINY_MCE_PATH; // SET PATH TO TINYMCE HERE
         // Tell TinyMCE that the page has already been loaded
         window.tinyMCE_GZ = {};
         window.tinyMCE_GZ.loaded = true;
@@ -504,17 +504,17 @@ function(params) {
 	}
 };
 
-ZmAdvancedHtmlEditor.prototype.addOnContentInitializedListener =
+ZmHtmlEditor.prototype.addOnContentInitializedListener =
 function(callback) {
 	this._onContentInitializeCallbacks.push(callback);
 };
 
-ZmAdvancedHtmlEditor.prototype.clearOnContentInitializedListeners =
+ZmHtmlEditor.prototype.clearOnContentInitializedListeners =
 function() {
 	this._onContentInitializeCallback = null;
 };
 
-ZmAdvancedHtmlEditor.prototype._handleEditorKeyEvent =
+ZmHtmlEditor.prototype._handleEditorKeyEvent =
 function(ev) {
 	var ed = this.getEditor();
 	var retVal = true;
@@ -606,27 +606,27 @@ function(ev) {
 };
 
 //Notifies mousedown event in tinymce editor to ZCS
-ZmAdvancedHtmlEditor.prototype._handleEditorMouseDownEvent =
+ZmHtmlEditor.prototype._handleEditorMouseDownEvent =
 function(ev) {
     DwtOutsideMouseEventMgr.forwardEvent(ev);
 };
 
-ZmAdvancedHtmlEditor.prototype.onLoadContent =
+ZmHtmlEditor.prototype.onLoadContent =
 function(ev) {
 	if (this._onContentInitializeCallbacks) {
-		AjxDebug.println(AjxDebug.REPLY, "ZmAdvancedHtmlEditor::onLoadContent - run callbacks");
+		AjxDebug.println(AjxDebug.REPLY, "ZmHtmlEditor::onLoadContent - run callbacks");
 		AjxUtil.foreach(this._onContentInitializeCallbacks,
 		                function(fn) { fn.run() });
 	}
 };
 
-ZmAdvancedHtmlEditor.prototype.setFocusStatus =
+ZmHtmlEditor.prototype.setFocusStatus =
 function(hasFocus, isTextModeFocus) {
 	var mode = isTextModeFocus ? DwtHtmlEditor.TEXT : DwtHtmlEditor.HTML;
 	this._hasFocus[mode] = hasFocus;
 };
 
-ZmAdvancedHtmlEditor.prototype.initEditorManager =
+ZmHtmlEditor.prototype.initEditorManager =
 function(id, content) {
 
 	var obj = this;
@@ -638,7 +638,7 @@ function(id, content) {
 	var urlParts = AjxStringUtil.parseURL(location.href);
 
 	//important: tinymce doesn't handle url parsing well when loaded from REST URL - override baseURL/baseURI to fix this
-	tinymce.baseURL = appContextPath + ZmAdvancedHtmlEditor.TINY_MCE_PATH + "/";
+	tinymce.baseURL = appContextPath + ZmHtmlEditor.TINY_MCE_PATH + "/";
 
 	if (tinymce.EditorManager) {
 		tinymce.EditorManager.baseURI = new tinymce.util.URI(urlParts.protocol + "://" + urlParts.authority + tinymce.baseURL);
@@ -725,8 +725,8 @@ function(id, content) {
         directionality : appCtxt.get(ZmSetting.COMPOSE_INIT_DIRECTION),
         paste_retain_style_properties : "all",
         paste_remove_styles_if_webkit : false,
-        paste_preprocess : ZmAdvancedHtmlEditor.pastePreProcess,
-        paste_postprocess : ZmAdvancedHtmlEditor.pastePostProcess,
+        paste_preprocess : ZmHtmlEditor.pastePreProcess,
+        paste_postprocess : ZmHtmlEditor.pastePostProcess,
 		setup : function(ed) {
             ed.on('LoadContent', obj.onLoadContent.bind(obj));
             ed.on('PostRender', obj.onPostRender.bind(obj));
@@ -754,7 +754,7 @@ function(id, content) {
 	this._editor = this.getEditor();
 };
 
-ZmAdvancedHtmlEditor.prototype.onPaste = function(ev) {
+ZmHtmlEditor.prototype.onPaste = function(ev) {
     var data = ev.clipboardData,
         items,
         blob,
@@ -794,7 +794,7 @@ ZmAdvancedHtmlEditor.prototype.onPaste = function(ev) {
 };
 
 
-ZmAdvancedHtmlEditor.prototype.onPostRender = function(ev) {
+ZmHtmlEditor.prototype.onPostRender = function(ev) {
 	var ed = this.getEditor();
 
     this._resetSize();
@@ -807,7 +807,7 @@ ZmAdvancedHtmlEditor.prototype.onPostRender = function(ev) {
     Dwt.setVisible(this.getHtmlElement(), true);
 };
 
-ZmAdvancedHtmlEditor.prototype.onInit = function(ev) {
+ZmHtmlEditor.prototype.onInit = function(ev) {
 	var ed = this.getEditor();
     var obj = this,
         tinymceEvent = tinymce.dom.Event,
@@ -840,7 +840,7 @@ ZmAdvancedHtmlEditor.prototype.onInit = function(ev) {
     // in TinyMCE's in 'FormatControls.js'.
     ed.on('nodeChange', obj.onNodeChange.bind(obj));
 
-    ed.on('open', ZmAdvancedHtmlEditor.onPopupOpen);
+    ed.on('open', ZmHtmlEditor.onPopupOpen);
     if (view && view.toString() === "ZmComposeView" && ZmDragAndDrop.isSupported()) {
         var dnd = view._dnd;
         tinymceEvent.bind(doc, 'dragenter', this._onDragEnter.bind(this));
@@ -857,7 +857,7 @@ ZmAdvancedHtmlEditor.prototype.onInit = function(ev) {
 };
 
 
-ZmAdvancedHtmlEditor.prototype.__getEditorControl = function(type, tooltip) {
+ZmHtmlEditor.prototype.__getEditorControl = function(type, tooltip) {
 	// This method provides a naive emulation of the control manager offered in
 	// TinyMCE 3.x. We assume that there's only one control of a given type
 	// with a given tooltip in the entire TinyMCE control hierarchy. Hopefully,
@@ -888,7 +888,7 @@ ZmAdvancedHtmlEditor.prototype.__getEditorControl = function(type, tooltip) {
 };
 
 
-ZmAdvancedHtmlEditor.prototype.onNodeChange = function(event) {
+ZmHtmlEditor.prototype.onNodeChange = function(event) {
 	// update the font size box -- TinyMCE only checks for it on SPANs
 	var fontsizebtn = this.__getEditorControl('listbox', 'Font Sizes');
 	var found = false;
@@ -938,7 +938,7 @@ ZmAdvancedHtmlEditor.prototype.onNodeChange = function(event) {
 /*
 **   TinyMCE will fire onBeforeExecCommand before executing all commands
  */
-ZmAdvancedHtmlEditor.prototype.onBeforeExecCommand = function(ev) {
+ZmHtmlEditor.prototype.onBeforeExecCommand = function(ev) {
     if (ev.command === "mceImage") {
         this.onBeforeInsertImage(ev);
     }
@@ -947,7 +947,7 @@ ZmAdvancedHtmlEditor.prototype.onBeforeExecCommand = function(ev) {
     }
 };
 
-ZmAdvancedHtmlEditor.prototype.onBeforeInsertImage = function(ev) {
+ZmHtmlEditor.prototype.onBeforeInsertImage = function(ev) {
     var element = ev.target.selection.getNode();
     if (element && element.nodeName === "IMG") {
         element.setAttribute("data-mce-src", element.src);
@@ -955,7 +955,7 @@ ZmAdvancedHtmlEditor.prototype.onBeforeInsertImage = function(ev) {
     }
 };
 
-ZmAdvancedHtmlEditor.prototype.onBeforeRepaint = function(ev) {
+ZmHtmlEditor.prototype.onBeforeRepaint = function(ev) {
     var element = ev.target.selection.getNode();
     if (element && element.nodeName === "IMG") {
         if (element.src !== element.getAttribute("data-mce-zsrc")) {
@@ -965,33 +965,33 @@ ZmAdvancedHtmlEditor.prototype.onBeforeRepaint = function(ev) {
     }
 };
 
-ZmAdvancedHtmlEditor._TABLE_RE = /^<table><tbody>(<tr>(<td>(<br>| )<\/td>)*<\/tr>)*<\/tbody><\/table>$/;
+ZmHtmlEditor._TABLE_RE = /^<table><tbody>(<tr>(<td>(<br>| )<\/td>)*<\/tr>)*<\/tbody><\/table>$/;
 
-ZmAdvancedHtmlEditor.prototype.onBeforeSetContent = function(ev) {
-	if (ZmAdvancedHtmlEditor._TABLE_RE.test(ev.content)) {
+ZmHtmlEditor.prototype.onBeforeSetContent = function(ev) {
+	if (ZmHtmlEditor._TABLE_RE.test(ev.content)) {
 		ev.content = ev.content.replace(/<table>/,
 		                                '<table style="width: 90%">');
 	}
 };
 
-ZmAdvancedHtmlEditor.prototype._onDragEnter = function() {
+ZmHtmlEditor.prototype._onDragEnter = function() {
     Dwt.addClass(Dwt.getElement(this._iFrameId), "DropTarget");
 };
 
-ZmAdvancedHtmlEditor.prototype._onDragLeave = function() {
+ZmHtmlEditor.prototype._onDragLeave = function() {
     Dwt.delClass(Dwt.getElement(this._iFrameId), "DropTarget");
 };
 
-ZmAdvancedHtmlEditor.prototype._onDragOver = function(dnd, ev) {
+ZmHtmlEditor.prototype._onDragOver = function(dnd, ev) {
     dnd._onDragOver(ev);
 };
 
-ZmAdvancedHtmlEditor.prototype._onDrop = function(dnd, ev) {
+ZmHtmlEditor.prototype._onDrop = function(dnd, ev) {
     dnd._onDrop(ev, true);
     Dwt.delClass(Dwt.getElement(this._iFrameId), "DropTarget");
 };
 
-ZmAdvancedHtmlEditor.prototype.setMode = function (mode, convert, convertor) {
+ZmHtmlEditor.prototype.setMode = function (mode, convert, convertor) {
     this.discardMisspelledWords();
     if (mode === this._mode || (mode !== DwtHtmlEditor.HTML && mode !== DwtHtmlEditor.TEXT)) {
         return;
@@ -1006,7 +1006,7 @@ ZmAdvancedHtmlEditor.prototype.setMode = function (mode, convert, convertor) {
             tinyMCE.execCommand('mceToggleEditor', false, this._bodyTextAreaId);//tinymce will automatically toggles the editor and sets the corresponding content.
         }
         else {
-            //switching from plain text to html using tinymces mceToggleEditor method is always using the last editor creation setting. Due to this current ZmAdvancedHtmlEditor object always point to last ZmAdvancedHtmlEditor object. Hence initializing the tinymce editor again for the first time when mode is switched from plain text to html.
+            //switching from plain text to html using tinymces mceToggleEditor method is always using the last editor creation setting. Due to this current ZmHtmlEditor object always point to last ZmHtmlEditor object. Hence initializing the tinymce editor again for the first time when mode is switched from plain text to html.
             this.initEditorManager(this._bodyTextAreaId);
         }
     } else {
@@ -1033,12 +1033,12 @@ ZmAdvancedHtmlEditor.prototype.setMode = function (mode, convert, convertor) {
     this._resetSize();
 };
 
-ZmAdvancedHtmlEditor.prototype.getContentField =
+ZmHtmlEditor.prototype.getContentField =
 function() {
 	return document.getElementById(this._bodyTextAreaId);
 };
 
-ZmAdvancedHtmlEditor.prototype.insertImage =
+ZmHtmlEditor.prototype.insertImage =
 function(src, dontExecCommand, width, height, dfsrc) {
 
 	var html = [];
@@ -1071,7 +1071,7 @@ function(src, dontExecCommand, width, height, dfsrc) {
     ed.execCommand('mceInsertRawHTML', false, html.join(""), {skip_undo : 1});
 };
 
-ZmAdvancedHtmlEditor.prototype.replaceImage =
+ZmHtmlEditor.prototype.replaceImage =
 function(id, src){
     var doc = this.getEditor().getDoc();
     if(doc){
@@ -1088,7 +1088,7 @@ function(id, src){
 /*
 This function will replace all the img elements matching src
  */
-ZmAdvancedHtmlEditor.prototype.replaceImageSrc =
+ZmHtmlEditor.prototype.replaceImageSrc =
 function(src, newsrc){
 	var doc = this.getEditor().getDoc();
 	if(doc){
@@ -1112,7 +1112,7 @@ function(src, newsrc){
 	}
 };
 
-ZmAdvancedHtmlEditor.prototype.addCSSForDefaultFontSize =
+ZmHtmlEditor.prototype.addCSSForDefaultFontSize =
 function(editor) {
 	var selectorText = "body,td,pre";
 	var ruleText = [
@@ -1126,7 +1126,7 @@ function(editor) {
 	}
 };
 
-ZmAdvancedHtmlEditor.prototype.insertDefaultCSS =
+ZmHtmlEditor.prototype.insertDefaultCSS =
 function(doc, selectorText, ruleText) {
 	var sheet, styleElement;
 	if (doc.createStyleSheet) {
@@ -1153,7 +1153,7 @@ function(doc, selectorText, ruleText) {
 	}
 };
 
-ZmAdvancedHtmlEditor.prototype.resetSpellCheck =
+ZmHtmlEditor.prototype.resetSpellCheck =
 function() {
 	//todo: remove this when spellcheck is disabled
 	this.discardMisspelledWords();
@@ -1162,7 +1162,7 @@ function() {
 
 /**SpellCheck modules**/
 
-ZmAdvancedHtmlEditor.prototype.checkMisspelledWords =
+ZmHtmlEditor.prototype.checkMisspelledWords =
 function(callback, onExitCallback, errCallback){
 	var text = this.getTextVersion();
 	if (/\S/.test(text)) {
@@ -1184,7 +1184,7 @@ function(callback, onExitCallback, errCallback){
 	return false;
 };
 
-ZmAdvancedHtmlEditor.prototype.spellCheck =
+ZmHtmlEditor.prototype.spellCheck =
 function(callback, keepModeDiv) {
 	var text = this.getTextVersion(null, keepModeDiv);
 
@@ -1207,7 +1207,7 @@ function(callback, keepModeDiv) {
 	return false;
 };
 
-ZmAdvancedHtmlEditor.prototype._spellCheckCallback =
+ZmHtmlEditor.prototype._spellCheckCallback =
 function(words) {
     // Remove the below comment for hard coded spell check response for development
     //words = {"misspelled":[{"word":"onee","suggestions":"one,nee,knee,once,ones,one's"},{"word":"twoo","suggestions":"two,too,woo,twos,two's"},{"word":"fourrr","suggestions":"Fourier,furor,furry,firer,fuhrer,fore,furrier,four,furrow,fora,fury,fours,ferry,foray,flurry,four's"}],"available":true};
@@ -1237,14 +1237,14 @@ function(words) {
 	}
 };
 
-ZmAdvancedHtmlEditor.prototype._spellCheckSuggestionListener =
+ZmHtmlEditor.prototype._spellCheckSuggestionListener =
 function(ev) {
 	var self = this;
 	var item = ev.item;
 	var orig = item.getData("orig");
 	if (!orig) { return; }
 
-	var val = item.getData(ZmAdvancedHtmlEditor.VALUE);
+	var val = item.getData(ZmHtmlEditor.VALUE);
 	var plainText = this._mode == DwtHtmlEditor.TEXT;
 	var fixall = item.getData("fixall");
 	var doc = plainText ? document : this._getIframeDoc();
@@ -1286,12 +1286,12 @@ function(ev) {
 	this._handleSpellCheckerEvents(null);
 };
 
-ZmAdvancedHtmlEditor.prototype._getEditorDocument = function() {
+ZmHtmlEditor.prototype._getEditorDocument = function() {
 	var plainText = this._mode == DwtHtmlEditor.TEXT;
 	return plainText ? document : this._getIframeDoc();
 };
 
-ZmAdvancedHtmlEditor.prototype._editWord = function(fixall, spanEl) {
+ZmHtmlEditor.prototype._editWord = function(fixall, spanEl) {
 	// edit clicked
 	var doc = this._getEditorDocument();
 	var input = doc.createElement("input");
@@ -1316,12 +1316,12 @@ ZmAdvancedHtmlEditor.prototype._editWord = function(fixall, spanEl) {
 	input.onkeydown = inputListener;
 };
 
-ZmAdvancedHtmlEditor.prototype._editWordHandler = function(fixall, spanEl, ev) {
+ZmHtmlEditor.prototype._editWordHandler = function(fixall, spanEl, ev) {
 	// the event gets lost after 20 milliseconds so we need
 	// to save the following :(
 	setTimeout(AjxCallback.simpleClosure(this._editWordHandler2, this, fixall, spanEl, ev), 20);
 };
-ZmAdvancedHtmlEditor.prototype._editWordHandler2 = function(fixall, spanEl, ev) {
+ZmHtmlEditor.prototype._editWordHandler2 = function(fixall, spanEl, ev) {
 	ev = DwtUiEvent.getEvent(ev);
 	var evType = ev.type;
 	var evKeyCode = ev.keyCode;
@@ -1350,7 +1350,7 @@ ZmAdvancedHtmlEditor.prototype._editWordHandler2 = function(fixall, spanEl, ev) 
 	this._handleSpellCheckerEvents(null);
 };
 
-ZmAdvancedHtmlEditor.prototype._editWordFix = function(spanEls, value) {
+ZmHtmlEditor.prototype._editWordFix = function(spanEls, value) {
 	spanEls = spanEls instanceof Array ? spanEls : [ spanEls ];
 	var doc = this._getEditorDocument();
 	for (var i = spanEls.length - 1; i >= 0; i--) {
@@ -1364,7 +1364,7 @@ ZmAdvancedHtmlEditor.prototype._editWordFix = function(spanEls, value) {
 	}
 };
 
-ZmAdvancedHtmlEditor.prototype._getParentElement =
+ZmHtmlEditor.prototype._getParentElement =
 function() {
 	var ed = this.getEditor();
 	if (ed.selection) {
@@ -1375,7 +1375,7 @@ function() {
 	}
 };
 
-ZmAdvancedHtmlEditor.prototype._handleSpellCheckerEvents =
+ZmHtmlEditor.prototype._handleSpellCheckerEvents =
 function(ev) {
 	var plainText = this._mode == DwtHtmlEditor.TEXT;
 	var p = plainText ? (ev ? DwtUiEvent.getTarget(ev) : null) : this._getParentElement(),
@@ -1456,7 +1456,7 @@ function(ev) {
 	}
 };
 
-ZmAdvancedHtmlEditor.prototype._spellCheckCreateMenu = function(parent, fixall, suggestions, word, spanId, modified) {
+ZmHtmlEditor.prototype._spellCheckCreateMenu = function(parent, fixall, suggestions, word, spanId, modified) {
     
 	var menu = new ZmPopupMenu(parent);
 //	menu.dontStealFocus();
@@ -1512,7 +1512,7 @@ ZmAdvancedHtmlEditor.prototype._spellCheckCreateMenu = function(parent, fixall, 
 	return menu;
 };
 
-ZmAdvancedHtmlEditor.prototype._spellCheckCreateMenuItem =
+ZmHtmlEditor.prototype._spellCheckCreateMenuItem =
 function(menu, id, params, fixall, value, word, spanId, listener) {
 	if (params.className == null) {
 		params.className = "ZMenuItem ZmSpellMenuItem";
@@ -1526,7 +1526,7 @@ function(menu, id, params, fixall, value, word, spanId, listener) {
 	return item;
 };
 
-ZmAdvancedHtmlEditor.prototype.discardMisspelledWords =
+ZmHtmlEditor.prototype.discardMisspelledWords =
 function(keepModeDiv) {
 	if (!this._spellCheck) { return; }
 
@@ -1597,7 +1597,7 @@ function(keepModeDiv) {
     this._resetSize();
 };
 
-ZmAdvancedHtmlEditor.prototype._spellCheckShowModeDiv =
+ZmHtmlEditor.prototype._spellCheckShowModeDiv =
 function() {
 	var size = this.getSize();
 
@@ -1623,9 +1623,9 @@ function() {
 
 		var el = div.getElementsByTagName("span");
 		Dwt.associateElementWithObject(el[0], this);
-		Dwt.setHandler(el[0], "onclick", ZmAdvancedHtmlEditor._spellCheckResumeEditing);
+		Dwt.setHandler(el[0], "onclick", ZmHtmlEditor._spellCheckResumeEditing);
 		Dwt.associateElementWithObject(el[1], this);
-		Dwt.setHandler(el[1], "onclick", ZmAdvancedHtmlEditor._spellCheckAgain);
+		Dwt.setHandler(el[1], "onclick", ZmHtmlEditor._spellCheckAgain);
 	}
 	else {
 		document.getElementById(this._spellCheckModeDivId).style.display = "";
@@ -1633,20 +1633,20 @@ function() {
     this._resetSize();
 };
 
-ZmAdvancedHtmlEditor._spellCheckResumeEditing =
+ZmHtmlEditor._spellCheckResumeEditing =
 function() {
 	var editor = Dwt.getObjectFromElement(this);
 	editor.discardMisspelledWords();
     editor.restoreFocus(0, true);
 };
 
-ZmAdvancedHtmlEditor._spellCheckAgain =
+ZmHtmlEditor._spellCheckAgain =
 function() {
     Dwt.getObjectFromElement(this).spellCheck(null, true);
 };
 
 
-ZmAdvancedHtmlEditor.prototype._spellCheckHideModeDiv =
+ZmHtmlEditor.prototype._spellCheckHideModeDiv =
 function() {
 	var size = this.getSize();
 	if (this._spellCheckModeDivId) {
@@ -1655,7 +1655,7 @@ function() {
     this._resetSize();
 };
 
-ZmAdvancedHtmlEditor.prototype.highlightMisspelledWords =
+ZmHtmlEditor.prototype.highlightMisspelledWords =
 function(words, keepModeDiv) {
 	this.discardMisspelledWords(keepModeDiv);
 
@@ -1856,11 +1856,11 @@ function(words, keepModeDiv) {
 /**
  * Returns true if editor content is spell checked
  */
-ZmAdvancedHtmlEditor.prototype.isSpellCheckMode = function() {
+ZmHtmlEditor.prototype.isSpellCheckMode = function() {
     return Boolean( this._spellCheck );
 };
 
-ZmAdvancedHtmlEditor.prototype._loadExternalStyle =
+ZmHtmlEditor.prototype._loadExternalStyle =
 function(path) {
 	var doc = this._getIframeDoc();
 	// check if already loaded
@@ -1888,7 +1888,7 @@ function(path) {
 	}
 };
 
-ZmAdvancedHtmlEditor.prototype._registerEditorEventHandler =
+ZmHtmlEditor.prototype._registerEditorEventHandler =
 function(iFrameDoc, name) {
 	if (AjxEnv.isIE) {
 		iFrameDoc.attachEvent("on" + name, this.__eventClosure);
@@ -1897,7 +1897,7 @@ function(iFrameDoc, name) {
 	}
 };
 
-ZmAdvancedHtmlEditor.prototype._unregisterEditorEventHandler =
+ZmHtmlEditor.prototype._unregisterEditorEventHandler =
 function(iFrameDoc, name) {
 	if (AjxEnv.isIE) {
 		iFrameDoc.detachEvent("on" + name, this.__eventClosure);
@@ -1906,14 +1906,14 @@ function(iFrameDoc, name) {
 	}
 };
 
-ZmAdvancedHtmlEditor.prototype.__eventClosure =
+ZmHtmlEditor.prototype.__eventClosure =
 function(ev) {
 	this._handleEditorEvent(AjxEnv.isIE ? this._getIframeWin().event : ev);
 	return tinymce.dom.Event.cancel(ev);
 };
 
 
-ZmAdvancedHtmlEditor.prototype._handleEditorEvent =
+ZmHtmlEditor.prototype._handleEditorEvent =
 function(ev) {
 	var ed = this.getEditor();
 	var retVal = true;
@@ -1959,7 +1959,7 @@ function(ev) {
 	return retVal;
 };
 
-ZmAdvancedHtmlEditor.prototype._getSelection =
+ZmHtmlEditor.prototype._getSelection =
 function() {
 	if (AjxEnv.isIE) {
 		return this._getIframeDoc().selection;
@@ -1975,7 +1975,7 @@ function() {
  *  @param {object}	tinymce editor
  *  @return	{Toolbar HTML Element}
  */
-ZmAdvancedHtmlEditor.prototype.getToolbar =
+ZmHtmlEditor.prototype.getToolbar =
 function(number, editor) {
     var controlManager,
         toolbar;
@@ -1999,7 +1999,7 @@ function(number, editor) {
  *  @param {object}	tinymce editor
  *  @return	{Toolbar Button HTML Element}
  */
-ZmAdvancedHtmlEditor.prototype.getToolbarButton =
+ZmHtmlEditor.prototype.getToolbarButton =
 function(buttonName, editor) {
     var controlManager,
         toolbarButton;
@@ -2018,7 +2018,7 @@ function(buttonName, editor) {
 /*
  *  Inserting image for signature
  */
-ZmAdvancedHtmlEditor.prototype.insertImageDoc =
+ZmHtmlEditor.prototype.insertImageDoc =
 function(file) {
     var src = file.rest;
     if (!src) { return; }
@@ -2034,7 +2034,7 @@ function(file) {
 /*
  *  Insert image callback
  */
-ZmAdvancedHtmlEditor.prototype._imageUploaded = function(folder, fileNames, files) {
+ZmHtmlEditor.prototype._imageUploaded = function(folder, fileNames, files) {
 
 	for (var i = 0; i < files.length; i++) {
 		var file = files[i];
@@ -2054,7 +2054,7 @@ ZmAdvancedHtmlEditor.prototype._imageUploaded = function(folder, fileNames, file
  * @param {popupWindow}	contains tinymce popup info or popup DOM Window
  *
  */
-ZmAdvancedHtmlEditor.onPopupOpen = function(windowManager, popupWindow) {
+ZmHtmlEditor.onPopupOpen = function(windowManager, popupWindow) {
     if (!popupWindow) {
         return;
     }
@@ -2099,7 +2099,7 @@ ZmAdvancedHtmlEditor.onPopupOpen = function(windowManager, popupWindow) {
 /**
  * Returns true if editor content is modified
  */
-ZmAdvancedHtmlEditor.prototype.isDirty = function(){
+ZmHtmlEditor.prototype.isDirty = function(){
     if( this._mode === DwtHtmlEditor.HTML ){
         var editor = this.getEditor();
         if (editor) {
@@ -2111,7 +2111,7 @@ ZmAdvancedHtmlEditor.prototype.isDirty = function(){
 /**
  * Mark the editor content as unmodified; e.g. as freshly saved.
  */
-ZmAdvancedHtmlEditor.prototype.clearDirty = function(){
+ZmHtmlEditor.prototype.clearDirty = function(){
 	var ed = this.getEditor();
     if (ed) {
         this.getEditor().isNotDirty = true;
@@ -2121,7 +2121,7 @@ ZmAdvancedHtmlEditor.prototype.clearDirty = function(){
 /**
  * Listen for change in fontfamily, fontsize, fontcolor, direction and showing compose direction buttons preference and update the corresponding one.
  */
-ZmAdvancedHtmlEditor.prototype._settingChangeListener = function(ev) {
+ZmHtmlEditor.prototype._settingChangeListener = function(ev) {
     if (ev.type != ZmEvent.S_SETTING) { return; }
 
     var id = ev.source.id,
@@ -2182,18 +2182,18 @@ ZmAdvancedHtmlEditor.prototype._settingChangeListener = function(ev) {
  *
  * @param {menu} tinymce menu object
  */
-ZmAdvancedHtmlEditor.onShowMenu =
+ZmHtmlEditor.onShowMenu =
 function(menu) {
     if (menu && menu.isMenuVisible) {
         var omemParams = {
-            id:					"ZmAdvancedHtmlEditor",
+            id:					"ZmHtmlEditor",
             elementId:			(menu.classPrefix === "mceMenu") ? ("menu_" + menu.id) : (menu.id + "_menu"),
             outsideListener:	function(){
                                     this.hideMenu();
                                 }.bind(menu)
         };
         appCtxt.getOutsideMouseEventMgr().startListening(omemParams);
-        ZmAdvancedHtmlEditor.isListening = 1;
+        ZmHtmlEditor.isListening = 1;
     }
 };
 
@@ -2202,22 +2202,22 @@ function(menu) {
  *
  * @param {menu} tinymce menu object
  */
-ZmAdvancedHtmlEditor.onHideMenu =
+ZmHtmlEditor.onHideMenu =
 function(menu) {
-    if (menu && menu.isMenuVisible === 0 && ZmAdvancedHtmlEditor.isListening) {
+    if (menu && menu.isMenuVisible === 0 && ZmHtmlEditor.isListening) {
         var omemParams = {
-            id:					"ZmAdvancedHtmlEditor",
+            id:					"ZmHtmlEditor",
             elementId:			(menu.classPrefix === "mceMenu") ? ("menu_" + menu.id) : (menu.id + "_menu")
         };
         appCtxt.getOutsideMouseEventMgr().stopListening(omemParams);
-        delete ZmAdvancedHtmlEditor.isListening;
+        delete ZmHtmlEditor.isListening;
     }
 };
 
 /*
  * TinyMCE paste preprocess Callback function which will be executed first before the default preprocess function
  */
-ZmAdvancedHtmlEditor.pastePreProcess =
+ZmHtmlEditor.pastePreProcess =
 function(pl, o) {
     if (!pl || !o) {
         return;
@@ -2238,7 +2238,7 @@ function(pl, o) {
 /*
  * TinyMCE paste Callback function to execute after the contents has been converted into a DOM structure.
  */
-ZmAdvancedHtmlEditor.pastePostProcess =
+ZmHtmlEditor.pastePostProcess =
 function(pl, o) {
     if (!pl || !o || !o.node || !o.target) {
         return;
@@ -2277,12 +2277,12 @@ function(pl, o) {
     }
 };
 
-ZmAdvancedHtmlEditor.prototype.setFocusMember =
+ZmHtmlEditor.prototype.setFocusMember =
 function(member) {
 	this._focusMember = member;
 };
 
-ZmAdvancedHtmlEditor.prototype._focus =
+ZmHtmlEditor.prototype._focus =
 function() {
     var focusMember = this._focusMember;
     if (focusMember) {

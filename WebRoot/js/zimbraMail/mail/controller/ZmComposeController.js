@@ -1313,9 +1313,9 @@ function(action) {
 		var mi = menu.getOp(op);
 		if (!mi) { continue; }
 		if (op == ZmOperation.FORMAT_HTML) {
-			mi.setData(ZmAdvancedHtmlEditor.VALUE, DwtHtmlEditor.HTML);
+			mi.setData(ZmHtmlEditor.VALUE, DwtHtmlEditor.HTML);
 		} else if (op == ZmOperation.FORMAT_TEXT) {
-			mi.setData(ZmAdvancedHtmlEditor.VALUE, DwtHtmlEditor.TEXT);
+			mi.setData(ZmHtmlEditor.VALUE, DwtHtmlEditor.TEXT);
 		}
 		mi.setData(ZmOperation.KEY_ID, op);
 		mi.addSelectionListener(this._listeners[ZmOperation.COMPOSE_OPTIONS]);
@@ -1338,7 +1338,7 @@ function(composeMode, incOptions) {
 	if (!menu) { return; }
 
 	if (ac.get(ZmSetting.HTML_COMPOSE_ENABLED)) {
-		menu.checkItem(ZmAdvancedHtmlEditor.VALUE, composeMode, true);
+		menu.checkItem(ZmHtmlEditor.VALUE, composeMode, true);
 	}
 
 	if (ac.get(ZmSetting.MAIL_READ_RECEIPT_ENABLED) || ac.multiAccounts) {
@@ -1686,7 +1686,7 @@ function(ev) {
             this._msg._resetAllInlineAttachments();
         }
 
-		this._setFormat(ev.item.getData(ZmAdvancedHtmlEditor.VALUE));
+		this._setFormat(ev.item.getData(ZmHtmlEditor.VALUE));
 	} else if (op != ZmOperation.ADD_SIGNATURE) {
 		// at this point we assume the op is related to include options
 		if (this._setInclude(op)) {
@@ -1915,7 +1915,7 @@ function(mode) {
 
 	// reset the radio button for the format button menu
 	var menu = this._toolbar.getButton(ZmOperation.COMPOSE_OPTIONS).getMenu();
-	menu.checkItem(ZmAdvancedHtmlEditor.VALUE, mode, true);
+	menu.checkItem(ZmHtmlEditor.VALUE, mode, true);
 
 	this._composeView.reEnableDesignMode();
 };

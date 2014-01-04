@@ -246,7 +246,7 @@ function(actionCode) {
 				// reset the radio button for the format button menu
 				var formatBtn = this._toolbar.getButton(ZmOperation.COMPOSE_OPTIONS);
 				if (formatBtn) {
-					formatBtn.getMenu().checkItem(ZmAdvancedHtmlEditor.VALUE, newMode, true);
+					formatBtn.getMenu().checkItem(ZmHtmlEditor.VALUE, newMode, true);
 				}
 			}
 			break;
@@ -289,7 +289,7 @@ function(skipNotify, composeMode) {
 	if (formatBtn) {
         var menu = formatBtn.getMenu ? formatBtn.getMenu() : null;
         if(menu) {
-		    menu.checkItem(ZmAdvancedHtmlEditor.VALUE, mode, skipNotify);
+		    menu.checkItem(ZmHtmlEditor.VALUE, mode, skipNotify);
         }
 	}
 };
@@ -308,7 +308,7 @@ function(skipNotify, composeMode) {
 
 	var formatBtn = this._toolbar.getButton(ZmOperation.COMPOSE_OPTIONS);
 	if (formatBtn) {
-		formatBtn.getMenu().checkItem(ZmAdvancedHtmlEditor.VALUE, mode, skipNotify);
+		formatBtn.getMenu().checkItem(ZmHtmlEditor.VALUE, mode, skipNotify);
 	}
 };
 
@@ -406,13 +406,13 @@ function() {
 		var mi = new DwtMenuItem({parent:m, style:DwtMenuItem.RADIO_STYLE, id:[ZmId.WIDGET_MENU_ITEM,this._currentViewId,ZmOperation.FORMAT_HTML].join("_")});
 		mi.setImage("HtmlDoc");
 		mi.setText(ZmMsg.formatAsHtml);
-		mi.setData(ZmAdvancedHtmlEditor.VALUE, DwtHtmlEditor.HTML);
+		mi.setData(ZmHtmlEditor.VALUE, DwtHtmlEditor.HTML);
         mi.addSelectionListener(new AjxListener(this, this._formatListener));
 
 		mi = new DwtMenuItem({parent:m, style:DwtMenuItem.RADIO_STYLE, id:[ZmId.WIDGET_MENU_ITEM,this._currentViewId,ZmOperation.FORMAT_TEXT].join("_")});
 		mi.setImage("GenericDoc");
 		mi.setText(ZmMsg.formatAsText);
-		mi.setData(ZmAdvancedHtmlEditor.VALUE, DwtHtmlEditor.TEXT);
+		mi.setData(ZmHtmlEditor.VALUE, DwtHtmlEditor.TEXT);
         mi.addSelectionListener(new AjxListener(this, this._formatListener));
 	}
 
@@ -570,7 +570,7 @@ ZmCalItemComposeController.prototype._formatListener =
 function(ev, mode) {
 	if (!mode && !(ev && ev.item.getChecked())) return;
 
-	mode = mode || ev.item.getData(ZmAdvancedHtmlEditor.VALUE);
+	mode = mode || ev.item.getData(ZmHtmlEditor.VALUE);
 	if (mode == this._composeView.getComposeMode()) return;
 
 	if (mode == DwtHtmlEditor.TEXT) {
@@ -674,7 +674,7 @@ function(ev) {
 	// reset the radio button for the format button menu
 	var formatBtn = this._toolbar.getButton(ZmOperation.COMPOSE_OPTIONS);
 	if (formatBtn) {
-		formatBtn.getMenu().checkItem(ZmAdvancedHtmlEditor.VALUE, DwtHtmlEditor.HTML, true);
+		formatBtn.getMenu().checkItem(ZmHtmlEditor.VALUE, DwtHtmlEditor.HTML, true);
 	}
 	this._composeView.reEnableDesignMode();
 };

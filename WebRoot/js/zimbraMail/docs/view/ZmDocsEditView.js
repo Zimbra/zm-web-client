@@ -286,7 +286,7 @@ ZmDocsEditView.prototype._initialize = function() {
     var toolbar = this._toolbar = new DwtToolBar({parent:this, parentElement: data.headerId, className:"ZDToolBar", cellSpacing:2, posStyle:DwtControl.RELATIVE_STYLE});
     this._createToolbar(toolbar);
 
-    var editor = this._editor = new ZmAdvancedHtmlEditor({
+    var editor = this._editor = new ZmHtmlEditor({
 		parent: this,
 		parentElement: data.mainId,
 		content: '',

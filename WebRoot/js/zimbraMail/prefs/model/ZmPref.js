@@ -651,7 +651,7 @@ ZmPref.regenerateSignatureEditor =
 function( control ) {
     var signaturePage = control.parent;
     var valueEl = document.getElementById(signaturePage._htmlElId + "_SIG_EDITOR");
-    var htmlEditor = new ZmAdvancedHtmlEditor({
+    var htmlEditor = new ZmHtmlEditor({
         parent: signaturePage,
         parentElement: valueEl.parentNode,
         textAreaId: "TEXTAREA_SIGNATURE",

@@ -2071,7 +2071,7 @@ function(action, msg, extraBodyText, noEditorUpdate) {
 		
 	if (!this._htmlEditor && htmlMode) {
 		// wrap <html> and <body> tags around content, and set font style
-		value = ZmAdvancedHtmlEditor._embedHtmlContent(value, true);
+		value = ZmHtmlEditor._embedHtmlContent(value, true);
 	}
 				
 	this._bodyContent[this._composeMode] = value;
@@ -2871,7 +2871,7 @@ function(composeMode) {
 		this.showAttachmentDialog.bind(this, ZmComposeView.UPLOAD_INLINE);
 
 	this._htmlEditor =
-		new ZmAdvancedHtmlEditor({
+		new ZmHtmlEditor({
 			parent: this,
 			posStyle: DwtControl.RELATIVE_STYLE,
 			mode: this._composeMode,

@@ -782,7 +782,7 @@ function(width) {
     this._notesContainer = document.getElementById(this._htmlElId + "_notes");
     this._topContainer = document.getElementById(this._htmlElId + "_top");
 
-    this._notesHtmlEditor = new ZmAdvancedHtmlEditor(this, null, null, this._composeMode, null, this._htmlElId + "_notes");
+    this._notesHtmlEditor = new ZmHtmlEditor(this, null, null, this._composeMode, null, this._htmlElId + "_notes");
     this._notesHtmlEditor.addOnContentInitializedListener(new AjxCallback(this,this._resizeNotes));
 };
 
