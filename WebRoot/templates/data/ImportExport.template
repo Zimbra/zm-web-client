@@ -6,7 +6,7 @@
 				<td class='ZOptionsSectionMain'>
 					<table width="100%">
 						<tr><td><div id='${id}_IMPORT_FOLDER' tabindex="100"></div></td></tr>
-						<tr><td align="right"><button id="${id}_IMPORT_BUTTON" tabindex="200"></button></td></tr>
+						<tr><td align="right"><button id="${id}_IMPORT_BUTTON" tabindex="200" style="display:inline-block;"></button></td></tr>
 					</table>
 				</td>
 			</tr>
@@ -19,7 +19,7 @@
 				<td class='ZOptionsSectionMain'>
 					<table width="100%" >
 						<tr><td><div id='${id}_EXPORT_FOLDER' tabindex="300"></div></td></tr>
-						<tr><td align="right"><button id="${id}_EXPORT_BUTTON" tabindex="400"></button></td></tr>
+						<tr><td align="right"><button id="${id}_EXPORT_BUTTON" tabindex="400" style="display:inline-block;"></button></td></tr>
 					</table>
 				</td>
 			</tr>
