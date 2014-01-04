@@ -164,7 +164,7 @@ function() {
 	return this._apptEditView.getComposeMode();
 };
 
-// Sets the mode ZmHtmlEditor should be in.
+// Sets the mode the editor should be in.
 ZmApptComposeView.prototype.setComposeMode = 
 function(composeMode) {
 	if (composeMode == DwtHtmlEditor.TEXT || 

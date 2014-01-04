@@ -390,7 +390,7 @@ function(files, status, guids) {
 		appController.sendRequest(params);
 	}
 	else {
-		this._finishUpload(files); //this calls the callback of the client - e.g. ZmSignatureEditor.prototype._imageUploaded since _uploadSaveDocsResponse is not called in this case, we still need the client callback since the user chose the "old" version of the image
+		this._finishUpload(files); //this calls the callback of the client - e.g. ZmAdvancedHtmlEditor.prototype._imageUploaded since _uploadSaveDocsResponse is not called in this case, we still need the client callback since the user chose the "old" version of the image
 	}
 };
 

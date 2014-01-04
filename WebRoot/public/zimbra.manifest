@@ -383,7 +383,6 @@ CACHE:
 /js/zimbraMail/share/view/ZmColorMenu.js
 /js/zimbraMail/share/view/ZmColorButton.js
 /js/zimbraMail/share/view/ZmFolderChooser.js
-/js/zimbraMail/share/view/htmlEditor/ZmHtmlEditor.js
 /js/zimbraMail/share/view/htmlEditor/ZmAdvancedHtmlEditor.js
 /js/zimbraMail/share/view/ZmDragAndDrop.js
 /js/zimbraMail/share/view/dialog/ZmDialog.js

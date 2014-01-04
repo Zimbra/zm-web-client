@@ -14,7 +14,7 @@
  */
 
 /**
- * Advanced Html Editor which switches between TinyMCE and ZmHtmlEditor
+ * HTML editor which wraps TinyMCE
  *
  * @param {Hash}		params				a hash of parameters:
  * @param {constant}	posStyle				new message, reply, forward, or an invite action
@@ -34,8 +34,9 @@ ZmAdvancedHtmlEditor = function() {
 
 	var params = Dwt.getParams(arguments, ZmAdvancedHtmlEditor.PARAMS);
 
-	if (!params.className)
+	if (!params.className) {
 		params.className = 'ZmHtmlEditor';
+	}
 
     DwtControl.call(this, params);
 
@@ -83,6 +84,9 @@ ZmAdvancedHtmlEditor.prototype.isInputControl = true;
 ZmAdvancedHtmlEditor.prototype.toString = function() { return "ZmAdvancedHtmlEditor"; };
 
 ZmAdvancedHtmlEditor.TINY_MCE_PATH = "/js/ajax/3rdparty/tinymce";
+
+// used as a data key (mostly for menu items)
+ZmAdvancedHtmlEditor.VALUE = "value";
 
 ZmAdvancedHtmlEditor.prototype.getEditor =
 function() {
@@ -1240,7 +1244,7 @@ function(ev) {
 	var orig = item.getData("orig");
 	if (!orig) { return; }
 
-	var val = item.getData(ZmHtmlEditor._VALUE);
+	var val = item.getData(ZmAdvancedHtmlEditor.VALUE);
 	var plainText = this._mode == DwtHtmlEditor.TEXT;
 	var fixall = item.getData("fixall");
 	var doc = plainText ? document : this._getIframeDoc();
@@ -2028,11 +2032,19 @@ function(file) {
 };
 
 /*
- *  Signature Insert image callback
+ *  Insert image callback
  */
-ZmAdvancedHtmlEditor.prototype._imageUploaded =
-function() {
-    ZmSignatureEditor.prototype._imageUploaded.apply(this, arguments);
+ZmAdvancedHtmlEditor.prototype._imageUploaded = function(folder, fileNames, files) {
+
+	for (var i = 0; i < files.length; i++) {
+		var file = files[i];
+		var path = appCtxt.get(ZmSetting.REST_URL) + ZmFolder.SEP;
+		var docPath = folder.getRestUrl() + ZmFolder.SEP + file.name;
+		file.docpath = ["doc:", docPath.substr(docPath.indexOf(path) + path.length)].join("");
+		file.rest = folder.getRestUrl() + ZmFolder.SEP + AjxStringUtil.urlComponentEncode(file.name);
+
+		this.insertImageDoc(file);
+	}
 };
 
 /**
