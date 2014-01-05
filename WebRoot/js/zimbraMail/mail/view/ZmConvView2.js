@@ -614,7 +614,7 @@ function(params) {
 	params.hideView = params.sendNow;
 	var composeCtlr = AjxDispatcher.run("GetComposeController", params.hideView ? ZmApp.HIDDEN_SESSION : null);
 	params.composeMode = composeCtlr._getComposeMode(msg, composeCtlr._getIdentity(msg));
-	var htmlMode = (params.composeMode == DwtHtmlEditor.HTML);
+	var htmlMode = (params.composeMode == Dwt.HTML);
 	params.toOverride = this._replyView.getAddresses(AjxEmailAddress.TO);
 	params.ccOverride = this._replyView.getAddresses(AjxEmailAddress.CC);
 	var value = this._replyView.getValue();

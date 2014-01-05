@@ -869,14 +869,14 @@ function(signature, clear) {
 
     this._sigEditor.clear();
 	var editorMode = (appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED) && signature.getContentType() === ZmMimeTable.TEXT_HTML)
-		? DwtHtmlEditor.HTML : DwtHtmlEditor.TEXT;
+		? Dwt.HTML : Dwt.TEXT;
 	var htmlModeInited = this._sigEditor.isHtmlModeInited();
 	if (editorMode !== this._sigEditor.getMode()) {
 		this._sigEditor.setMode(editorMode);
 		this._resetEditorSize();
 	}
-	this._sigEditor.setContent(signature.getValue(editorMode === DwtHtmlEditor.HTML ? ZmMimeTable.TEXT_HTML : ZmMimeTable.TEXT_PLAIN));
-	if (editorMode === DwtHtmlEditor.HTML) {
+	this._sigEditor.setContent(signature.getValue(editorMode === Dwt.HTML ? ZmMimeTable.TEXT_HTML : ZmMimeTable.TEXT_PLAIN));
+	if (editorMode === Dwt.HTML) {
 		this._fixSignatureInlineImages_onTimer();
 	}
 };
@@ -890,7 +890,7 @@ function() {
 
 ZmSignaturesPage.prototype._setFormat =
 function(isText) {
-	this._sigEditor.setMode(isText ? DwtHtmlEditor.TEXT : DwtHtmlEditor.HTML, true);
+	this._sigEditor.setMode(isText ? Dwt.TEXT : Dwt.HTML, true);
 	this._selSignature.setContentType(isText ? ZmMimeTable.TEXT_PLAIN : ZmMimeTable.TEXT_HTML);
 	this._resetSize();
 };
@@ -913,7 +913,7 @@ function(isText) {
 ZmSignaturesPage.prototype._handleFormatSelect =
 function(ev) {
 	var isText = this._sigFormat ? this._sigFormat.getValue() : true;
-	var currentIsText = this._sigEditor.getMode() === DwtHtmlEditor.TEXT;
+	var currentIsText = this._sigEditor.getMode() === Dwt.TEXT;
 	if (isText === currentIsText) {
 		return;
 	}

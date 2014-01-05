@@ -20,7 +20,6 @@
  */
 
 AjxPackage.require("zimbraMail.slides.view.ZmSlideThemeManager");
-AjxPackage.require("zimbraMail.slides.view.ZmSlideComponentEditor");
 AjxPackage.require("zimbraMail.slides.view.DwtAnimate");
 AjxPackage.require("zimbraMail.slides.view.ZmSlideEditView");
 AjxPackage.require("zimbraMail.briefcase.model.ZmDocletMgr");

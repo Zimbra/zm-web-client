@@ -201,7 +201,6 @@ CACHE:
 /js/ajax/dwt/events/DwtMouseEventCapture.js
 /js/ajax/dwt/events/DwtListViewActionEvent.js
 /js/ajax/dwt/events/DwtSelectionEvent.js
-/js/ajax/dwt/events/DwtHtmlEditorStateEvent.js
 /js/ajax/dwt/events/DwtTreeEvent.js
 /js/ajax/dwt/events/DwtHoverEvent.js
 /js/ajax/dwt/events/DwtOutsideMouseEventMgr.js
@@ -350,7 +349,6 @@ CACHE:
 /js/ajax/dwt/widgets/DwtColorPicker.js
 /js/ajax/dwt/widgets/DwtCheckbox.js
 /js/ajax/dwt/widgets/DwtRadioButton.js
-/js/ajax/dwt/widgets/DwtHtmlEditor.js
 /js/ajax/dwt/widgets/DwtPasswordField.js
 /js/ajax/dwt/widgets/DwtCalendar.js
 /js/ajax/dwt/widgets/DwtPropertyPage.js
@@ -363,7 +361,6 @@ CACHE:
 /js/ajax/dwt/widgets/DwtPropertyEditor.js
 /js/ajax/dwt/widgets/DwtConfirmDialog.js
 /js/ajax/dwt/widgets/DwtChooser.js
-/js/ajax/dwt/widgets/DwtGridSizePicker.js
 /js/ajax/dwt/widgets/DwtSpinner.js
 /js/ajax/dwt/widgets/DwtButtonColorPicker.js
 /js/ajax/dwt/widgets/DwtMessageComposite.js
@@ -632,7 +629,6 @@ CACHE:
 /js/zimbraMail/share/view/dialog/ZmUploadDialog.js
 /js/zimbraMail/share/view/dialog/ZmUploadConflictDialog.js
 /js/zimbraMail/share/view/dialog/ZmDebugLogDialog.js
-/js/zimbraMail/share/view/htmlEditor/ZmTableEditor.js
 /js/zimbraMail/share/view/htmlEditor/ZmSpellChecker.js
 /js/zimbraMail/share/model/ZmAttachmentTypeList.js
 /js/zimbraMail/share/model/ZmShare.js

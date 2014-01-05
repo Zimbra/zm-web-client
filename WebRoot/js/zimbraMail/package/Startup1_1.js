@@ -70,7 +70,6 @@ AjxPackage.require("ajax.dwt.events.DwtMouseEvent");
 AjxPackage.require("ajax.dwt.events.DwtMouseEventCapture");
 AjxPackage.require("ajax.dwt.events.DwtListViewActionEvent");
 AjxPackage.require("ajax.dwt.events.DwtSelectionEvent");
-AjxPackage.require("ajax.dwt.events.DwtHtmlEditorStateEvent");
 AjxPackage.require("ajax.dwt.events.DwtTreeEvent");
 AjxPackage.require("ajax.dwt.events.DwtHoverEvent");
 AjxPackage.require("ajax.dwt.events.DwtOutsideMouseEventMgr");

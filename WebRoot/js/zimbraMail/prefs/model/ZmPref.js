@@ -688,3 +688,46 @@ function(useBubbles) {
 	}
 	return true;
 };
+
+ZmPref._normalizeFontId = function(id, dontFallback) {
+	var oldid = id;
+	id = id.replace(/,\s/g,",").replace(/'/g,"").toLowerCase(); // Make sure all ids that are supposed to be found in ZmPref.FONT_FAMILY are actually found
+	if (!dontFallback) {
+		var map = ZmPref.FONT_FAMILY;
+		if (map && !map[id]) {
+			var keys = AjxUtil.keys(map);
+			if (keys.length) {
+				var splitId = id.split(","); // e.g. ["times new roman","helvetica"]
+				for (var i=0; i<splitId.length; i++) { // Loop over input font names
+					for (var j=0; j<keys.length; j++) { // Loop over candidate styles, e.g. ["arial,sans-serif","times new roman,serif"]
+						if (keys[j].indexOf(splitId[i]) != -1) {
+							return keys[j];
+						}
+					}
+				}
+				return keys[0];
+			}
+		}
+	}
+	return id;
+};
+ZmPref._normalizeFontName = function(fontId) {
+	return ZmPref.FONT_FAMILY[ZmPref._normalizeFontId(fontId)].name;
+};
+ZmPref._normalizeFontValue = function(fontId) {
+	return ZmPref.FONT_FAMILY[ZmPref._normalizeFontId(fontId)].value;
+};
+
+ZmPref.FONT_FAMILY = {};
+(function() {
+	var KEYS = [ "fontFamilyIntl", "fontFamilyBase" ];
+	var i, j, key, value, name;
+	for (j = 0; j < KEYS.length; j++) {
+		for (i = 1; value = AjxMsg[KEYS[j]+i+".css"]; i++) {
+			if (value.match(/^#+$/)) break;
+			value = ZmPref._normalizeFontId(value,true);
+			name = AjxMsg[KEYS[j]+i+".display"];
+			ZmPref.FONT_FAMILY[value] = {name:name, value:value};
+		}
+	}
+})();

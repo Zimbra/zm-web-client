@@ -405,7 +405,7 @@ function() {
 		this._action != ZmOperation.FORWARD_INLINE &&
 		this._action != ZmOperation.FORWARD_ATT)
 	{
-		if (composeMode == DwtHtmlEditor.HTML) {
+		if (composeMode == Dwt.HTML) {
             view._focusHtmlEditor();
 		}
 		this._composeView._setBodyFieldCursor();
@@ -860,7 +860,7 @@ function() {
 	}
 	tg.addMember(this._composeView._subjectField);
 	var mode = this._composeView.getComposeMode();
-	var member = (mode === DwtHtmlEditor.TEXT) ? this._composeView._bodyField : this._composeView.getHtmlEditor();
+	var member = (mode === Dwt.TEXT) ? this._composeView._bodyField : this._composeView.getHtmlEditor();
 	tg.addMember(member);
 };
 
@@ -899,7 +899,7 @@ function(actionCode) {
 		case ZmKeyMap.HTML_FORMAT:
 			if (appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED)) {
 				var mode = this._composeView.getComposeMode();
-				var newMode = (mode == DwtHtmlEditor.TEXT) ? DwtHtmlEditor.HTML : DwtHtmlEditor.TEXT;
+				var newMode = (mode == Dwt.TEXT) ? Dwt.HTML : Dwt.TEXT;
 				this._setFormat(newMode);
 				this._setOptionsMenu(newMode);
 			}
@@ -1313,9 +1313,9 @@ function(action) {
 		var mi = menu.getOp(op);
 		if (!mi) { continue; }
 		if (op == ZmOperation.FORMAT_HTML) {
-			mi.setData(ZmHtmlEditor.VALUE, DwtHtmlEditor.HTML);
+			mi.setData(ZmHtmlEditor.VALUE, Dwt.HTML);
 		} else if (op == ZmOperation.FORMAT_TEXT) {
-			mi.setData(ZmHtmlEditor.VALUE, DwtHtmlEditor.TEXT);
+			mi.setData(ZmHtmlEditor.VALUE, Dwt.TEXT);
 		}
 		mi.setData(ZmOperation.KEY_ID, op);
 		mi.addSelectionListener(this._listeners[ZmOperation.COMPOSE_OPTIONS]);
@@ -1431,29 +1431,29 @@ ZmComposeController.prototype._getComposeMode =
 function(msg, identity, params) {
 
 	// depending on COS/user preference set compose format
-	var composeMode = DwtHtmlEditor.TEXT;
+	var composeMode = Dwt.TEXT;
     var ac = window.parentAppCtxt || window.appCtxt;
 	if (ac.get(ZmSetting.HTML_COMPOSE_ENABLED)) {
         if (this._action == ZmOperation.NEW_MESSAGE) {
             if (ac.get(ZmSetting.COMPOSE_AS_FORMAT) == ZmSetting.COMPOSE_HTML) {
-                composeMode = DwtHtmlEditor.HTML;
+                composeMode = Dwt.HTML;
             }
         } 
 		else if (this._action == ZmOperation.DRAFT) {
             if (params && params.isEditAsNew) { //For Edit As New option Bug:73479
                 if (ac.get(ZmSetting.COMPOSE_AS_FORMAT) === ZmSetting.COMPOSE_HTML) {
-                    composeMode = DwtHtmlEditor.HTML;
+                    composeMode = Dwt.HTML;
                 }
             }
             else if (msg && msg.isHtmlMail()) {
-                composeMode = DwtHtmlEditor.HTML;
+                composeMode = Dwt.HTML;
             }
 		}
 		else if (identity) {
 			var sameFormat = ac.get(ZmSetting.COMPOSE_SAME_FORMAT);
 			var asFormat = ac.get(ZmSetting.COMPOSE_AS_FORMAT);
 			if ((!sameFormat && asFormat == ZmSetting.COMPOSE_HTML) ||  (sameFormat && msg && msg.isHtmlMail())) {
-				composeMode = DwtHtmlEditor.HTML;
+				composeMode = Dwt.HTML;
 			}
 		}
 	}
@@ -1472,10 +1472,10 @@ function(mode) {
 	var curMode = this._composeView.getComposeMode();
 	if (mode === curMode) { return false; }
 
-	var op = (mode === DwtHtmlEditor.HTML) ? ZmOperation.FORMAT_HTML : ZmOperation.FORMAT_TEXT;
+	var op = (mode === Dwt.HTML) ? ZmOperation.FORMAT_HTML : ZmOperation.FORMAT_TEXT;
 	var okCallback = this._formatOkCallback.bind(this, mode);
 	var cancelCallback = this._formatCancelCallback.bind(this, curMode);
-	var needFormatWarning = (!AjxUtil.isEmpty(this._getBodyContent()) && mode == DwtHtmlEditor.TEXT);
+	var needFormatWarning = (!AjxUtil.isEmpty(this._getBodyContent()) && mode == Dwt.TEXT);
 	if (!this._warnUserAboutChanges(op, okCallback, cancelCallback, needFormatWarning)) {
 		this._composeView.setComposeMode(mode);
 		return true;
@@ -1725,7 +1725,7 @@ function(op) {
 
 	var cv = this._composeView;
 	if (op != ZmOperation.FORMAT_HTML && op != ZmOperation.FORMAT_TEXT) {
-		if (cv._composeMode == DwtHtmlEditor.TEXT) {
+		if (cv._composeMode == Dwt.TEXT) {
 			AjxTimedAction.scheduleAction(new AjxTimedAction(this, function() { cv.getHtmlEditor().moveCaretToTop(); }), 200);
 		}
 	}    
@@ -2041,7 +2041,7 @@ function() {
 		return this._composeView.getRecipientField(AjxEmailAddress.TO);
 	}
 
-	return (this._composeView.getComposeMode() == DwtHtmlEditor.TEXT)
+	return (this._composeView.getComposeMode() == Dwt.TEXT)
 		? this._composeView._bodyField
 		: this._composeView._htmlEditor;
 };

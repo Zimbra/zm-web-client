@@ -88,6 +88,8 @@ ZmHtmlEditor.TINY_MCE_PATH = "/js/ajax/3rdparty/tinymce";
 // used as a data key (mostly for menu items)
 ZmHtmlEditor.VALUE = "value";
 
+ZmHtmlEditor._INITDELAY = 50;
+
 ZmHtmlEditor.prototype.getEditor =
 function() {
 	return  (window.tinyMCE) ? tinyMCE.get(this._bodyTextAreaId) : null;
@@ -95,7 +97,7 @@ function() {
 
 ZmHtmlEditor.prototype.getBodyFieldId =
 function() {
-	if (this._mode == DwtHtmlEditor.HTML) {
+	if (this._mode == Dwt.HTML) {
 		var editor = this.getEditor();
 		return editor ? this._bodyTextAreaId + '_ifr' : this._bodyTextAreaId;
 	}
@@ -113,7 +115,7 @@ function() {
 	var size = Dwt.getSize(this.getHtmlElement());
 	var x = size.x, y = size.y;
 
-	if (this._mode != DwtHtmlEditor.HTML) {
+	if (this._mode != Dwt.HTML) {
 		var field = this.getContentField();
 		// subtrack padding and borders
 		AjxUtil.foreach([this.getInsets(),
@@ -163,7 +165,7 @@ function(editor) {
     var currentObj = this,
         bodyField;
 
-    if (currentObj._mode === DwtHtmlEditor.HTML) {
+    if (currentObj._mode === Dwt.HTML) {
         editor = editor || currentObj.getEditor();
         if (currentObj._editorInitialized && editor) {
             if (AjxEnv.isWebKitBased) {
@@ -198,7 +200,7 @@ function(editor, collapse) {
         windowManager,
         selection;
 
-    if (AjxEnv.isIE && currentObj._mode === DwtHtmlEditor.HTML) {
+    if (AjxEnv.isIE && currentObj._mode === Dwt.HTML) {
         editor = editor || currentObj.getEditor();
         if (editor) {
             windowManager = editor.windowManager;
@@ -219,7 +221,7 @@ function(editor, collapse) {
  */
 ZmHtmlEditor.prototype.getTextVersion = function (convertor, keepModeDiv) {
     this.discardMisspelledWords(keepModeDiv);
-    return this._mode === DwtHtmlEditor.HTML
+    return this._mode === Dwt.HTML
         ? this._convertHtml2Text(convertor)
         : this.getContentField().value;
 };
@@ -238,7 +240,7 @@ function(insertFontStyle, onlyInnerContent) {
 	var field = this.getContentField();
 
 	var content = "";
-	if (this._mode == DwtHtmlEditor.HTML) {
+	if (this._mode == Dwt.HTML) {
 		var editor = this.getEditor(),
             content1 = "";
         if (editor) {
@@ -302,7 +304,7 @@ function() {
  If editor is not initialized and mode is HTML, tinymce will automatically initialize the editor with the content in textarea
  */
 ZmHtmlEditor.prototype.setContent = function (content) {
-    if (this._mode === DwtHtmlEditor.HTML && this._editorInitialized) {
+    if (this._mode === Dwt.HTML && this._editorInitialized) {
         this.getEditor().setContent(content, {format:'raw'});
     } else {
         this.getContentField().value = content;
@@ -339,7 +341,7 @@ ZmHtmlEditor.prototype._convertHtml2Text = function (convertor) {
 
 ZmHtmlEditor.prototype.moveCaretToTop =
 function(offset) {
-	if (this._mode == DwtHtmlEditor.TEXT) {
+	if (this._mode == Dwt.TEXT) {
 		var control = this.getContentField();
 		if (control.createTextRange) { // IE
 			var range = control.createTextRange();
@@ -415,7 +417,7 @@ function(tryOnTimer, offset) {
 	} else if (tryOnTimer) {
 		if (editor) {
 			var action = new AjxTimedAction(this, this._moveCaretToTopHtml);
-			AjxTimedAction.scheduleAction(action, DwtHtmlEditor._INITDELAY + 1);
+			AjxTimedAction.scheduleAction(action, ZmHtmlEditor._INITDELAY + 1);
 		} else {
 			var cb = ZmHtmlEditor.prototype._moveCaretToTopHtml;
 			this._initCallbacks.push(cb.bind(this, tryOnTimer, offset));
@@ -467,7 +469,7 @@ ZmHtmlEditor.prototype.initTinyMCEEditor =
 function(params) {
 	var htmlEl = this.getHtmlElement();
 
-    if( this._mode === DwtHtmlEditor.HTML ){
+    if( this._mode === Dwt.HTML ){
         Dwt.setVisible(htmlEl, false);
     }
 	//textarea on which html editor is constructed
@@ -478,7 +480,7 @@ function(params) {
     if( appCtxt.get(ZmSetting.COMPOSE_INIT_DIRECTION) === ZmSetting.RTL ){
         textEl.setAttribute("dir", ZmSetting.RTL);
     }
-	textEl.className = "DwtHtmlEditorTextArea";
+	textEl.className = "ZmHtmlEditorTextArea";
     if ( params.content !== null ) {
         textEl.value = params.content;
     }
@@ -622,7 +624,7 @@ function(ev) {
 
 ZmHtmlEditor.prototype.setFocusStatus =
 function(hasFocus, isTextModeFocus) {
-	var mode = isTextModeFocus ? DwtHtmlEditor.TEXT : DwtHtmlEditor.HTML;
+	var mode = isTextModeFocus ? Dwt.TEXT : Dwt.HTML;
 	this._hasFocus[mode] = hasFocus;
 };
 
@@ -700,7 +702,7 @@ function(id, content) {
 
     var tinyMCEInitObj = {
         // General options
-		mode :  (this._mode == DwtHtmlEditor.HTML)? "exact" : "none",
+		mode :  (this._mode == Dwt.HTML)? "exact" : "none",
 		elements:  id,
         plugins : plugins.join(' '),
 		toolbar: toolbarbuttons.join(' '),
@@ -742,7 +744,7 @@ function(id, content) {
 		}
     };
 
-	if( this._mode === DwtHtmlEditor.HTML ){
+	if( this._mode === Dwt.HTML ){
         Dwt.setVisible(obj.getHtmlElement(), false);
     }
     else{
@@ -821,10 +823,9 @@ ZmHtmlEditor.prototype.onInit = function(ev) {
     tinymceEvent.bind(win, 'blur', function(e) {
         obj.setFocusStatus(false);
     });
-    // Set's up the a range for the current ins point or selection. This is IE only because the iFrame can
+    // Sets up the a range for the current ins point or selection. This is IE only because the iFrame can
     // easily lose focus (e.g. by clicking on a button in the toolbar) and we need to be able to get back
     // to the correct insertion point/selection.
-    // DwtHtmlEditor is using _currInsPtBm property to store the cursor position in editor event handler function which is heavy.
     // Here we are registering this dedicated event to store the bookmark which will fire when focus moves outside the editor
     if(AjxEnv.isIE){
         tinymceEvent.bind(doc, 'beforedeactivate', function(e) {
@@ -993,11 +994,11 @@ ZmHtmlEditor.prototype._onDrop = function(dnd, ev) {
 
 ZmHtmlEditor.prototype.setMode = function (mode, convert, convertor) {
     this.discardMisspelledWords();
-    if (mode === this._mode || (mode !== DwtHtmlEditor.HTML && mode !== DwtHtmlEditor.TEXT)) {
+    if (mode === this._mode || (mode !== Dwt.HTML && mode !== Dwt.TEXT)) {
         return;
     }
     this._mode = mode;
-    if (mode === DwtHtmlEditor.HTML) {
+    if (mode === Dwt.HTML) {
         if (convert) {
             var textarea = this.getContentField();
             textarea.value = AjxStringUtil.convertToHtml(textarea.value, true);
@@ -1228,7 +1229,7 @@ function(words) {
 		appCtxt.setStatusMsg(ZmMsg.spellCheckUnavailable, ZmStatusView.LEVEL_CRITICAL);
 	}
 
-	if (AjxEnv.isGeckoBased && this._mode == DwtHtmlEditor.HTML) {
+	if (AjxEnv.isGeckoBased && this._mode == Dwt.HTML) {
 		setTimeout(AjxCallback.simpleClosure(this.focus, this), 10);
 	}
 
@@ -1245,7 +1246,7 @@ function(ev) {
 	if (!orig) { return; }
 
 	var val = item.getData(ZmHtmlEditor.VALUE);
-	var plainText = this._mode == DwtHtmlEditor.TEXT;
+	var plainText = this._mode == Dwt.TEXT;
 	var fixall = item.getData("fixall");
 	var doc = plainText ? document : this._getIframeDoc();
 	var span = doc.getElementById(item.getData("spanId"));
@@ -1287,7 +1288,7 @@ function(ev) {
 };
 
 ZmHtmlEditor.prototype._getEditorDocument = function() {
-	var plainText = this._mode == DwtHtmlEditor.TEXT;
+	var plainText = this._mode == Dwt.TEXT;
 	return plainText ? document : this._getIframeDoc();
 };
 
@@ -1377,7 +1378,7 @@ function() {
 
 ZmHtmlEditor.prototype._handleSpellCheckerEvents =
 function(ev) {
-	var plainText = this._mode == DwtHtmlEditor.TEXT;
+	var plainText = this._mode == Dwt.TEXT;
 	var p = plainText ? (ev ? DwtUiEvent.getTarget(ev) : null) : this._getParentElement(),
 		span, ids, i, suggestions,
 		self = this,
@@ -1489,7 +1490,7 @@ ZmHtmlEditor.prototype._spellCheckCreateMenu = function(parent, fixall, suggesti
 		this._spellCheckCreateMenuItem(menu, "clear", {text:"<i>"+ZmMsg.clearText+"</i>" }, fixall, "", word, spanId);
 	}
 
-    var plainText = this._mode == DwtHtmlEditor.TEXT;
+    var plainText = this._mode == Dwt.TEXT;
     if (!fixall || plainText) {
         menu.createSeparator();
     }
@@ -1531,7 +1532,7 @@ function(keepModeDiv) {
 	if (!this._spellCheck) { return; }
 
     var size = this.getSize();
-	if (this._mode == DwtHtmlEditor.HTML) {
+	if (this._mode == Dwt.HTML) {
 		var doc = this._getIframeDoc();
 		doc.body.style.display = "none";
 
@@ -1785,7 +1786,7 @@ function(words, keepModeDiv) {
 		return node;
 	};
 
-	if (this._mode == DwtHtmlEditor.HTML) {
+	if (this._mode == Dwt.HTML) {
 		// HTML mode; See the "else" branch for the TEXT mode--code differs
 		// quite a lot.  We should probably implement separate functions as
 		// this already becomes long.
@@ -2100,7 +2101,7 @@ ZmHtmlEditor.onPopupOpen = function(windowManager, popupWindow) {
  * Returns true if editor content is modified
  */
 ZmHtmlEditor.prototype.isDirty = function(){
-    if( this._mode === DwtHtmlEditor.HTML ){
+    if( this._mode === Dwt.HTML ){
         var editor = this.getEditor();
         if (editor) {
             return editor.isDirty();

@@ -197,7 +197,7 @@ ZmChat.prototype.sendByEmail = function(mode) {
 		.map("getEmail")
 		.join(AjxEmailAddress.SEPARATOR);
         var text, messages = AjxVector.fromArray(this.messages);
-        if (mode == DwtHtmlEditor.HTML) {
+        if (mode == Dwt.HTML) {
                 text = messages.map("toHtml").join("<br/>");
         } else {
                 text = messages.map("toText").join("\n");

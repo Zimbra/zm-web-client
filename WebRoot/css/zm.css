@@ -1450,7 +1450,7 @@ INPUT[type="text"].search_input-expanded {
 }
 
 /* textarea where you type plain-text */
-.ZmHtmlEditor .DwtHtmlEditorTextArea {
+.ZmHtmlEditor .ZmHtmlEditorTextArea {
 	@FontSize-big@
 	@FontFamily-fixed@
 	@FullWidth@
@@ -1460,7 +1460,7 @@ INPUT[type="text"].search_input-expanded {
 
 /* iframe where you edit HTML WYSIWYG-stylee */
 /* NOTE:this is deliberately always black text on white */
-.ZmHtmlEditor .DwtHtmlEditorIFrame {
+.ZmHtmlEditor .ZmHtmlEditorIFrame {
 	@AppBorder@
 	@FullWidth@
 	background-color:white;
@@ -3325,7 +3325,7 @@ HTML>BODY .appt-selected .appt_allday_body
 	font-style:italic;
 }
 
-.ZmChatWidget .ZmLiteHtmlEditor .DwtHtmlEditorTextArea {
+.ZmChatWidget .ZmLiteHtmlEditor .ZmHtmlEditorTextArea {
 	@AppBg@
 	@AppBorder@
 	border-width:2px !important;
@@ -4299,7 +4299,7 @@ HTML>BODY .appt-selected .appt_allday_body
 .ZmEditNoteView .DwtInputField {
 	width:100%;
 }
-.ZmEditNoteView .DwtHtmlEditorIFrame {
+.ZmEditNoteView .ZmHtmlEditorIFrame {
 	height:100%;
 }
 

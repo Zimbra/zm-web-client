@@ -19,7 +19,7 @@
  *
  * @author Mihai Bazon
  * 
- * @param {DwtHtmlEditor}	parent		the parent needing spell checking
+ * @param {ZmHtmlEditor}	parent		the parent needing spell checking
  *
  * @class
  * @constructor

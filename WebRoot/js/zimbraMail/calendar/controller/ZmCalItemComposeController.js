@@ -241,7 +241,7 @@ function(actionCode) {
 		case ZmKeyMap.HTML_FORMAT:
 			if (appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED)) {
 				var mode = this._composeView.getComposeMode();
-				var newMode = (mode == DwtHtmlEditor.TEXT) ? DwtHtmlEditor.HTML : DwtHtmlEditor.TEXT;
+				var newMode = (mode == Dwt.TEXT) ? Dwt.HTML : Dwt.TEXT;
 				this._formatListener(null, newMode);
 				// reset the radio button for the format button menu
 				var formatBtn = this._toolbar.getButton(ZmOperation.COMPOSE_OPTIONS);
@@ -282,7 +282,7 @@ function(skipNotify, composeMode) {
 		var bComposeEnabled = appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED);
 		var composeFormat = appCtxt.get(ZmSetting.COMPOSE_AS_FORMAT);
 		mode = (bComposeEnabled && composeFormat == ZmSetting.COMPOSE_HTML)
-			? DwtHtmlEditor.HTML : DwtHtmlEditor.TEXT;
+			? Dwt.HTML : Dwt.TEXT;
 	}
 
 	var formatBtn = this._toolbar.getButton(ZmOperation.COMPOSE_OPTIONS);
@@ -303,7 +303,7 @@ function(skipNotify, composeMode) {
 		var bComposeEnabled = appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED);
 		var composeFormat = appCtxt.get(ZmSetting.COMPOSE_AS_FORMAT);
 		mode = (bComposeEnabled && composeFormat == ZmSetting.COMPOSE_HTML)
-			? DwtHtmlEditor.HTML : DwtHtmlEditor.TEXT;
+			? Dwt.HTML : Dwt.TEXT;
 	}
 
 	var formatBtn = this._toolbar.getButton(ZmOperation.COMPOSE_OPTIONS);
@@ -406,13 +406,13 @@ function() {
 		var mi = new DwtMenuItem({parent:m, style:DwtMenuItem.RADIO_STYLE, id:[ZmId.WIDGET_MENU_ITEM,this._currentViewId,ZmOperation.FORMAT_HTML].join("_")});
 		mi.setImage("HtmlDoc");
 		mi.setText(ZmMsg.formatAsHtml);
-		mi.setData(ZmHtmlEditor.VALUE, DwtHtmlEditor.HTML);
+		mi.setData(ZmHtmlEditor.VALUE, Dwt.HTML);
         mi.addSelectionListener(new AjxListener(this, this._formatListener));
 
 		mi = new DwtMenuItem({parent:m, style:DwtMenuItem.RADIO_STYLE, id:[ZmId.WIDGET_MENU_ITEM,this._currentViewId,ZmOperation.FORMAT_TEXT].join("_")});
 		mi.setImage("GenericDoc");
 		mi.setText(ZmMsg.formatAsText);
-		mi.setData(ZmHtmlEditor.VALUE, DwtHtmlEditor.TEXT);
+		mi.setData(ZmHtmlEditor.VALUE, Dwt.TEXT);
         mi.addSelectionListener(new AjxListener(this, this._formatListener));
 	}
 
@@ -573,7 +573,7 @@ function(ev, mode) {
 	mode = mode || ev.item.getData(ZmHtmlEditor.VALUE);
 	if (mode == this._composeView.getComposeMode()) return;
 
-	if (mode == DwtHtmlEditor.TEXT) {
+	if (mode == Dwt.TEXT) {
 		// if formatting from html to text, confirm w/ user!
 		if (!this._textModeOkCancel) {
 			var dlgId = this._composeView.getHTMLElId() + "_formatWarning";
@@ -665,7 +665,7 @@ function() {
 ZmCalItemComposeController.prototype._textModeOkCallback =
 function(ev) {
 	this._textModeOkCancel.popdown();
-	this._composeView.setComposeMode(DwtHtmlEditor.TEXT);
+	this._composeView.setComposeMode(Dwt.TEXT);
 };
 
 ZmCalItemComposeController.prototype._textModeCancelCallback =
@@ -674,7 +674,7 @@ function(ev) {
 	// reset the radio button for the format button menu
 	var formatBtn = this._toolbar.getButton(ZmOperation.COMPOSE_OPTIONS);
 	if (formatBtn) {
-		formatBtn.getMenu().checkItem(ZmHtmlEditor.VALUE, DwtHtmlEditor.HTML, true);
+		formatBtn.getMenu().checkItem(ZmHtmlEditor.VALUE, Dwt.HTML, true);
 	}
 	this._composeView.reEnableDesignMode();
 };

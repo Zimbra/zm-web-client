@@ -103,7 +103,6 @@
 	String vers = getAttribute(request, "version", "");
 
 	String prodMode = getAttribute(request, "prodMode", "");
-	String editor = getParameter(request, "editor", "");
 
 	String ext = getAttribute(request, "fileExtension", null);
 	if (ext == null || isDevMode || isCoverage) ext = "";
@@ -141,7 +140,6 @@
 	pageContext.setAttribute("isLeakDetectorOn", isLeakDetectorOn);
 	pageContext.setAttribute("unitTest", unitTest);
 	pageContext.setAttribute("preset", preset);
-	pageContext.setAttribute("editor", editor);
     pageContext.setAttribute("isCoverage", isCoverage);
     pageContext.setAttribute("isPerfMetric", isPerfMetric);
     pageContext.setAttribute("isLocaleId", localeId != null);

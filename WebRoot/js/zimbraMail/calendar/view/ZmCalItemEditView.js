@@ -47,7 +47,7 @@ ZmCalItemEditView = function(parent, attendees, controller, dateInfo, posStyle, 
 	var bComposeEnabled = appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED);
 	var composeFormat = appCtxt.get(ZmSetting.COMPOSE_AS_FORMAT);
 	this._composeMode = bComposeEnabled && composeFormat == ZmSetting.COMPOSE_HTML
-		? DwtHtmlEditor.HTML : DwtHtmlEditor.TEXT;
+		? Dwt.HTML : Dwt.TEXT;
 
 	this._repeatSelectDisabled = false;
 	this._attachCount = 0;
@@ -224,7 +224,7 @@ function(composeMode) {
 
 ZmCalItemEditView.prototype.reEnableDesignMode =
 function() {
-	if (this._composeMode == DwtHtmlEditor.HTML)
+	if (this._composeMode == Dwt.HTML)
 		this._notesHtmlEditor.reEnableDesignMode();
 };
 
@@ -485,7 +485,7 @@ function(calItem) {
 
 	// set the notes parts (always add text part)
 	var top = new ZmMimePart();
-	if (this._composeMode == DwtHtmlEditor.HTML) {
+	if (this._composeMode == Dwt.HTML) {
 		top.setContentType(ZmMimeTable.MULTI_ALT);
 
 		// create two more mp's for text and html content types
@@ -614,7 +614,7 @@ function(calItem, mode) {
     }
 
     this._controller.setFormatBtnItem(true, isSavedinHTML ? ZmMimeTable.TEXT_HTML : ZmMimeTable.TEXT_PLAIN);
-    this.setComposeMode(isSavedinHTML ? DwtHtmlEditor.HTML : DwtHtmlEditor.TEXT);
+    this.setComposeMode(isSavedinHTML ? Dwt.HTML : Dwt.TEXT);
 
     if(this._isForward /* && !calItem.isOrganizer() */) {
         var preface = [ZmMsg.DASHES, " ", ZmMsg.originalAppointment, " ", ZmMsg.DASHES].join("");
@@ -968,7 +968,7 @@ function() {
 	//var topHeight = topSize.y;
 	var rowHeight = size.y - topSize.y;
     var rowWidth = size.x;
-	//var hFudge = (this._composeMode == DwtHtmlEditor.HTML) ? 30 : 15;
+	//var hFudge = (this._composeMode == Dwt.HTML) ? 30 : 15;
 	//var wFudge = ( AjxEnv.isIE || AjxEnv.isWebKitBased ? 20 : 0 );
     //rowHeight = rowHeight - hFudge;
     //rowWidth = rowWidth - wFudge

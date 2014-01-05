@@ -533,8 +533,8 @@ function() {
 	});
 
 	var styles=[],names=[];
-	for (var key in DwtHtmlEditor.FONT_FAMILY) {
-		var obj = DwtHtmlEditor.FONT_FAMILY[key];
+	for (var key in ZmPref.FONT_FAMILY) {
+		var obj = ZmPref.FONT_FAMILY[key];
 		styles.push(obj.value);
 		names.push(obj.name);
 	}
@@ -550,7 +550,7 @@ function() {
 			if (AjxUtil.indexOf(styles, id) != -1) {
 				return id;
 			}
-			return DwtHtmlEditor._normalizeFontId(id);
+			return ZmPref._normalizeFontId(id);
 		}
 	});
 
