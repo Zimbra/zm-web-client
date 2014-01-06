@@ -113,8 +113,8 @@
     <!-- TINY_MCE INTEGRATION -->
     <property name="tinymce.version" value="4.0.10"/>
     <property name='tinymce.dir' value='${js.dir}/ajax/3rdparty/tinymce'/>
-    <property name='tinymce.js.dir' value='WebRoot/tiny_mce/${tinymce.version}' />
-    <property name="tinymce.custom.dir" value="WebRoot/tiny_mce/custom"/>
+    <property name='tinymce.js.dir' value='tiny_mce/tinymce-${tinymce.version}/js/tinymce' />
+    <property name="tinymce.custom.dir" value="tiny_mce/custom"/>
 
     <!-- MODERNIZR INTEGRATION -->
     <property name="modernizr.version" value="2.6.1"/>
@@ -170,7 +170,7 @@
 			<equals arg1="${zimbra.buildinfo.type}" arg2="NETWORK" />
 		</condition>
         <property name='common.web.includes' value='${custom.web.includes},js/**,css/**'/>
-        <property name='common.web.excludes' value='${custom.web.excludes},js/*/package/**,**/AjxTimezoneData.js,tiny_mce*/**'/>
+        <property name='common.web.excludes' value='${custom.web.excludes},js/*/package/**,**/AjxTimezoneData.js'/>
         <property name='common.jsp.includes' value='${custom.jsp.includes},**'/>
         <property name='common.jsp.excludes' value='${custom.jsp.excludes}'/>
         <property name='common.img.includes' value='${custom.img.includes},**'/>
@@ -217,7 +217,7 @@
         <property name='skins.dir' value='${web.dir}/skins'/>
         <property name='help.dir' value='${web.dir}/help'/>
         <property name='build.help.dir' value='${build.web.dir}/help'/>
-        <property name='web.includes' value='${common.web.includes},h/**,m/**,portals/**,sounds/**,test/**,yui/**,tiny_mce/**,qunit/**'/>
+        <property name='web.includes' value='${common.web.includes},h/**,m/**,portals/**,sounds/**,test/**,yui/**,qunit/**'/>
         <property name='web.excludes' value='${common.web.excludes},js/zimbraAdmin/**'/>
         <property name='jsp.includes' value='${common.jsp.includes}'/>
         <property name='jsp.excludes' value='${common.jsp.excludes},admin.jsp'/>
