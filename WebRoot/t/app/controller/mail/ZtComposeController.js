@@ -311,7 +311,7 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 	 * @private
 	 */
 	getSubject: function(msg, prefix) {
-		return prefix + ZCS.mailutil.stripSubjectPrefixes(msg.get('subject'));
+		return prefix + ' ' + ZCS.mailutil.stripSubjectPrefixes(msg.get('subject'));
 	},
 
 	/**
