@@ -1919,6 +1919,7 @@ function() {
 							 compareFunc:		"ZmFolder.sortCompare",
 							 newOp:				ZmOperation.NEW_FOLDER,
 							 displayOrder:		100,
+							 childWindow:		true,
 							 openSetting:		ZmSetting.FOLDER_TREE_OPEN
 							});
 

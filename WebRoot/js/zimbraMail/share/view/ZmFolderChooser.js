@@ -36,10 +36,9 @@ ZmFolderChooser = function(params) {
 	if (arguments.length == 0) { return; }
 	params.className = params.className || "ZmFolderChooser";
 	DwtComposite.call(this, params);
-	var aCtxt = appCtxt.isChildWindow ? parentAppCtxt : appCtxt;
 
 	this._overview = {};
-	this._opc = aCtxt.getOverviewController();
+	this._opc = appCtxt.getOverviewController();
 	this._treeView = {};
 	this._folderTreeDivId = this._htmlElId + "_folderTreeDivId";
 
