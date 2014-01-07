@@ -31,6 +31,7 @@ ZmOffline = function(){
     ZmOffline._syncInProgress = false;
     ZmOffline.store = [];
     ZmOffline.folders = [];
+	ZmOffline.FOLDER_ID = [];
     ZmOffline.calendars = {};
     ZmOffline.SUPPORTED_APPS = [ZmApp.MAIL, ZmApp.CONTACTS, ZmApp.CALENDAR];
     ZmOffline.SUPPORTED_MAIL_TREE_VIEWS = [ZmOrganizer.FOLDER, ZmOrganizer.SEARCH, ZmOrganizer.TAG];
@@ -38,6 +39,10 @@ ZmOffline = function(){
     ZmOffline.CALENDAR_LOOK_BEHIND = 7;
     ZmOffline.CALENDAR_READ_AHEAD  = 21;
 };
+
+ZmOffline.MAIL_PROGRESS = "Mail";
+ZmOffline.CONTACTS_PROGRESS = "Contacts";
+ZmOffline.CALENDAR_PROGRESS = "Calendar Appointments";
 
 ZmOffline._checkCacheDone =
 function (){
@@ -47,23 +52,6 @@ function (){
     }
 };
 
-ZmOffline._getOfflineFolders =
-function(){
-    var folderTree = appCtxt.getFolderTree(appCtxt.accountList.mainAccount);
-    var folders = folderTree && folderTree.getByType("FOLDER");
-    if (!folders || !folders.length){
-        return;
-    }
-    var offlineFolders = [];
-    for (var i=0,length = folders.length; i < length; i++){
-        if (folders[i].webOfflineSyncDays && folders[i].webOfflineSyncDays != "0"){
-          offlineFolders.push({name:(folders[i].name).toLowerCase(), id:folders[i].nId, webOfflineSyncDays:folders[i].webOfflineSyncDays});
-        }
-
-    }
-    return offlineFolders;
-};
-
 ZmOffline._checkAppCacheDone =
 function (){
     ZmOffline.appCacheDone = true;
@@ -71,7 +59,7 @@ function (){
 };
 
 ZmOffline.prototype.init =
-function(cb){
+function(callback) {
     if (!appCtxt.isWebClientOffline()){
         this._fixLazyCSSLoadIssues();
         window.applicationCache.addEventListener('cached', function(e) {
@@ -82,8 +70,6 @@ function(cb){
             ZmOffline._checkAppCacheDone();
         }, false);
     }
-
-    var callback = (appCtxt.isWebClientOffline()) ? this.setOffline.bind(this, cb) : cb;
     ZmOfflineDB.init(callback, callback);
     this._addListeners();
 };
@@ -98,85 +84,12 @@ function(){
     }
 };
 
-ZmOffline.prototype.setOffline =
-function(callback){
-    callback();
-    window.setTimeout(this._setNetwork.bind(this), 3000);
-};
-
-ZmOffline.prototype.setItem =
-function(key, value, objStore) {
-    if (!objStore){
-        return;
-    }
-
-    objStore = objStore.toLowerCase();
-
-    try{
-        if (key){
-            ZmOfflineDB.setItem(key, value, objStore);
-        }
-    }catch(ex){
-        DBG.println(AjxDebug.DBG1, ex);
-    }
-};
-
-ZmOffline.prototype.getItem =
-function(key, callback, params, objStore) {
-
-    if (!objStore){
-        return;
-    }
-
-    objStore = objStore.toLowerCase();
-
-    if ($.inArray(objStore, ZmOfflineDB.db.objectStoreNames) === -1){
-        return;
-    }
-    var searchRequest = params && params.jsonObj && params.jsonObj.SearchRequest;
-    if (searchRequest && searchRequest._jsns === "urn:zimbraMail" ){
-        this._syncSearchRequest(callback, objStore, params);
-        return;
-    }
-
-    if (key){
-      ZmOfflineDB.getItem(key, callback, params, objStore);
-    }
-};
 ZmOffline.prototype._addListeners =
 function(){
-    //$(window).bind("online offline",this._setNetwork.bind(this));
-    //$(window).bind("online", this._replayOfflineRequest.bind(this));
     $(window).on("online offline", ZmOffline.checkServerStatus);
     $(document).on("ZWCOffline", this._onZWCOffline.bind(this));
     $(document).on("ZWCOnline", this._onZWCOnline.bind(this));
     setInterval(ZmOffline.checkServerStatus, 10000);
-    //ZmZimbraMail.addListener(ZmAppEvent.ACTIVATE, new AjxListener(this, this._onAppActivate));
-};
-
-
-ZmOffline.prototype._setNetwork =
-function() {
-    var containerEl = document.getElementById(ZmId.SKIN_NETWORK);
-	if (!containerEl) {
-		return;
-	}
-    var isOffline = appCtxt.isWebClientOffline();
-    if (isOffline){
-        this._enableApps(false);
-    }
-
-    if (isOffline && !appCtxt.networkBtn){
-        var button = new DwtToolBarButton({parent:DwtShell.getShell(window), id: ZmId.OP_GO_OFFLINE});
-        button.setImage("Disconnect");
-        button.setToolTipContent(ZmMsg.networkChangeWebOffline, true);
-        button.reparentHtmlElement(ZmId.SKIN_NETWORK);
-        appCtxt.networkBtn = button;
-    } else if (!isOffline){
-        Dwt.removeChildren(containerEl);
-        appCtxt.networkBtn = null;
-        //this.sendSyncRequest();
-    }
 };
 
 ZmOffline.prototype._onZWCOffline =
@@ -234,102 +147,58 @@ function(){
     if (ZmOffline.folders.length === 0){
         this.initOfflineFolders();
         this.storeFoldersMetaData();
-        //ZmOfflineDB.indexedDB.addObjectStores(this._cacheOfflineData.bind(this));
-        //return;
     }
     this._cacheOfflineData();
 };
 
 ZmOffline.prototype.initOfflineFolders =
-function(){
-    ZmOffline.folders = ZmOffline._getOfflineFolders();
-    for (var i=0, length = ZmOffline.folders.length;i<length;i++){
-        ZmOffline.store.push((ZmOffline.folders[i].name).toLowerCase() + ZmOffline.MESSAGE);
-        //ZmOffline.store.push(ZmOffline.folders[i] + ZmOffline.CONVERSATION);
-    }
+function() {
+	var folderTree = appCtxt.getFolderTree();
+	if (folderTree) {
+		var folders = folderTree.getByType("FOLDER");
+		folders.forEach(function(folder) {
+			if (folder.webOfflineSyncDays !== 0) {
+				ZmOffline.folders.push({name : folder.name, id : folder.id, type : folder.type, webOfflineSyncDays : folder.webOfflineSyncDays});
+				ZmOffline.FOLDER_ID.push(folder.id);
+			}
+		});
 
-    // Get the possible set of calendars.  Used to insure getFolder allows access to the invite messages
-    var calMgr = appCtxt.getCalManager();
-    var calViewController = calMgr && calMgr.getCalViewController();
-    var calendarIds = calViewController.getOfflineSearchCalendarIds();
-    for (var i = 0; i < calendarIds.length; i++) {
-        // Store for use in processing mail messages - allow invites
-        ZmOffline.calendars[calendarIds[i]] = calendarIds[i];
-    }
+		var addrBooks = folderTree.getByType("ADDRBOOK");
+		addrBooks.forEach(function(folder) {
+			if (folder.id != ZmFolder.ID_DLS) {//Do not add distribution lists
+				ZmOffline.folders.push({name : folder.name, id : folder.id, type : folder.type});
+				ZmOffline.FOLDER_ID.push(folder.id);
+			}
+		});
 
+		//Check for deferredFolders for contacts
+		var contactApp = appCtxt.getApp("Contacts");
+		if (contactApp) {
+			contactApp._deferredFolders.forEach(function(folder) {
+				if (folder.id != ZmFolder.ID_DLS) {
+					ZmOffline.folders.push({name : folder.obj.name, id : folder.obj.id, type : folder.type});
+					ZmOffline.FOLDER_ID.push(folder.obj.id);
+				}
+			});
+		}
+	}
+
+	// Get the possible set of calendars.  Used to insure getFolder allows access to the invite messages
+	var calMgr = appCtxt.getCalManager();
+	var calViewController = calMgr && calMgr.getCalViewController();
+	var calendarIds = calViewController.getOfflineSearchCalendarIds();
+	for (var i = 0; i < calendarIds.length; i++) {
+		// Store for use in processing mail messages - allow invites
+		ZmOffline.calendars[calendarIds[i]] = calendarIds[i];
+	}
 };
 
 ZmOffline.prototype._cacheOfflineData =
 function(){
     appCtxt.setStatusMsg(ZmMsg.offlineCachingSync, ZmStatusView.LEVEL_INFO);
-    this._cacheContacts();
-    if (!localStorage.getItem("syncToken")){
-        for (var i=0, length=ZmOffline.folders.length; i<length;i++){
-            this._downloadMessages(ZmOffline.folders[i], 0, ZmOffline.cacheMessageLimit, ZmOffline.MESSAGE, "all", 1, null);
-            //this._downloadMessages(ZmOffline.folders[i], 0, ZmOffline.cacheConversationLimit, ZmOffline.CONVERSATION, "u1", 1, this._loadConversations.bind(this, ZmOffline.folders[i] , this._convIds));
-        }
-        ZmOffline.cacheProgress.push(ZmOffline.CALENDAR_PROGRESS);
-        this._downloadCalendar(null, null, null, null, true, null);
-    } else{
-        this.sendSyncRequest();
-    }
-
+    this.sendSyncRequest();
 };
 
-ZmOffline.prototype._downloadMessages =
-function(folder, offset, limit, type, fetch, html, callback){
-    if (!folder.webOfflineSyncDays || folder.webOfflineSyncDays == "0"){
-        return;
-    }
-
-    var date = new Date();
-    var offsetDate = AjxDateFormat.getDateInstance(AjxDateFormat.SHORT).format(AjxDateUtil.roll(date, AjxDateUtil.DAY, -(parseInt(folder.webOfflineSyncDays))))
-    var jsonObj = {SearchRequest:{_jsns:"urn:zimbraMail"}};
-    var request = jsonObj.SearchRequest;
-    ZmOffline.cacheProgress.push(folder.name.toLowerCase() + type);
-    ZmMailMsg.addRequestHeaders(request);
-    request.offset = offset;
-    request.limit = limit;
-    request.types = type;
-    request.fetch = fetch;
-    request.html = html;
-    request.query = "after:" + offsetDate + " in:\"" + folder.name +"\""
-	var respCallback = this._handleResponseLoadMsgs.bind(this, folder, type, callback || null);
-	appCtxt.getRequestMgr().sendRequest({jsonObj:jsonObj, asyncMode:true, callback:respCallback});
-};
-
-
-ZmOffline.prototype._handleResponseLoadMsgs =
-function(folder, type, callback, result){
-
-    var searchResponse = result._data && result._data.SearchResponse;
-    var isConv = (type === ZmOffline.CONVERSATION);
-    var messages =  (isConv) ? searchResponse.c : searchResponse.m;
-    var folderName = folder.name.toLowerCase();
-    DBG.println(AjxDebug.DBG1, "_handleResponseLoadMsgs folder: " + folderName + "  type: " + type);
-
-    if (!messages || (messages.length === 0) ){
-        this._updateCacheProgress(folderName + type);
-        return;
-    }
-    if (isConv) {
-        for(var i=0, length = messages.length; i < length ; i++){
-            this._convIds.push(messages[i].id)
-        }
-    }
-    else {
-        this.addItem(messages);
-    }
-    if (type === ZmOffline.MESSAGE){
-        this._updateCacheProgress(folderName + type);
-    }
-    if (callback){
-        callback.run();
-    }
-};
-
-
-ZmOffline.CALENDAR_PROGRESS = "Calendar Appointments";
 ZmOffline.prototype._downloadCalendar =
 function(startTime, endTime, calendarIds, callback, getMessages, previousMessageIds) {
     // Bundle it together in a batch request
@@ -522,93 +391,13 @@ function(folderName){
         ZmOffline.cacheProgress.splice(index, 1);
     }
     if (ZmOffline.cacheProgress.length === 0){
-        this.sendSyncRequest();
+        //this.sendSyncRequest();
         ZmOffline._checkCacheDone();
     }
     DBG.println(AjxDebug.DBG1, "_updateCacheProgress folder: " + folderName + " ZmOffline.cacheProgress " + ZmOffline.cacheProgress.join());
 
 
 };
-
-ZmOffline.prototype._loadConversations =
-function(store, convIds){
-    if (!convIds || convIds.length === 0){
-        return;
-    }
-    var soapDoc = AjxSoapDoc.create("BatchRequest", "urn:zimbra");
-    soapDoc.setMethodAttribute("onerror", "continue");
-
-    for (var i=0, length = convIds.length;i< length; i++) {
-        var requestNode = soapDoc.set("GetConvRequest",null,null,"urn:zimbraMail");
-        var conv = soapDoc.set("c", null, requestNode);
-        conv.setAttribute("id", convIds[i]);
-        conv.setAttribute("read", 0);
-        conv.setAttribute("html", 1);
-        conv.setAttribute("needExp", 1);
-        conv.setAttribute("max", 250000);
-        conv.setAttribute("fetch", "all");
-        conv.setAttribute("header", ["{n:List-ID}","{n:X-Zimbra-DL}","{n:IN-REPLY-TO}"]);
-     }
-
-    var respCallback = this._cacheConversations.bind(this, store);
-    appCtxt.getRequestMgr().sendRequest({
-        soapDoc: soapDoc,
-        asyncMode: true,
-        callback: respCallback
-    });
-
-};
-
-ZmOffline.prototype._cacheConversations  =
-function(folder, result){
-    var convs = result.getResponse().BatchResponse.GetConvResponse;
-    if (!convs  || convs.length === 0){
-        return;
-    }
-    var objStore = folder.toLowercase() + ZmOffline.CONVERSATION;
-    for (var i=0, length = convs.length || 0; i<length; i++){
-        this.addItem(convs[i].c[0], ZmOffline.CONVERSATION, objStore);
-    }
-    var index = $.inArray(objStore, ZmOffline.cacheProgress);
-    if(index != -1){
-        ZmOffline.cacheProgress.splice(index, 1);
-    }
-    ZmOffline._checkCacheDone();
-};
-
-ZmOffline.prototype._getValue =
-function(message, isConv){
-    var result = {
-   "Header":{
-      "context":{
-         "session":{
-            "id":"offline_id",
-            "_content":"offline_content"
-         },
-         "change":{
-            "token":"offline_token"
-         },
-         "_jsns":"urn:zimbra"
-      }
-   },
-   "Body":{},
-    "_jsns":"urn:zimbraSoap"
-    };
-    if (isConv){
-        result.Body.SearchConvResponse = {
-         "_jsns": "urn:zimbraMail",
-         "offset":"0",
-         "sortBy":"dateDesc",
-         "more":false,
-         "_jsns":"urn:zimbraMail"
-        }
-        result.Body.SearchConvResponse.m = message.m;
-    }else{
-       result.Body.GetMsgResponse = {"m" : [message]};
-    }
-    return result;
-};
-
 
 ZmOffline.syncData =
 function(){
@@ -622,137 +411,260 @@ function(){
     cvc && cvc.runRefresh(); // Appointments
 };
 
-ZmOffline.prototype.getSyncRequest =
-function(){
-    var syncToken = localStorage.getItem("syncToken");
-    var soapDoc = AjxSoapDoc.create("SyncRequest", "urn:zimbraMail");
-    if (syncToken) {
-        soapDoc.set("token", syncToken);
-    }
-    return  soapDoc;
-
-}
-
-ZmOffline.prototype.isSyncInProgress =
-function(){
-  return ZmOffline._syncInProgress;
-};
-
-ZmOffline.prototype._setSyncInProgress =
-function(value){
- ZmOffline._syncInProgress = value;
-};
-
 ZmOffline.prototype.sendSyncRequest =
-function(){
-    if (this.isSyncInProgress()){
-        return;
-    }
-    this._setSyncInProgress(true);
-	var syncReq = this.getSyncRequest();
-	appCtxt.getAppController().sendRequest({
-		soapDoc:syncReq,
-		asyncMode:true,
-		noBusyOverlay:true,
-		callback:this.syncHandler.bind(this)
+function() {
+	var syncToken = localStorage.getItem("SyncToken");
+	if (syncToken) {
+		this._sendDeltaSyncRequest(syncToken);
+	}
+	else {
+		this._sendInitialSyncRequest();
+	}
+};
+
+ZmOffline.prototype._sendInitialSyncRequest =
+function() {
+	var syncRequestArray = [];
+	ZmOffline.folders.forEach(function(folder) {
+		var params = {
+			l : folder.id,
+			_jsns : "urn:zimbraMail"
+		};
+		if (folder.type === "FOLDER") {
+			//specify the start date for the mail to be synched
+			var startDate = AjxDateUtil.roll(new Date(), AjxDateUtil.DAY, -parseInt(folder.webOfflineSyncDays));
+			params.msgCutoff = Math.round(startDate.getTime() / 1000);
+		}
+		syncRequestArray.push(params);
 	});
+	if (syncRequestArray.length > 0) {
+		var params = {
+			jsonObj : {BatchRequest:{_jsns:"urn:zimbra", onerror:"continue", SyncRequest:syncRequestArray}},
+			asyncMode : true,
+			callback : this._handleInitialSyncResponse.bind(this),
+			errorCallback : this._handleInitialSyncError.bind(this)
+		};
+		appCtxt.getRequestMgr().sendRequest(params);
+	}
+};
+
+ZmOffline.prototype._handleInitialSyncResponse =
+function(result) {
+	var response = result && result.getResponse();
+	var batchResponse = response && response.BatchResponse;
+	var syncResponse = batchResponse && batchResponse.SyncResponse;
+	if (!syncResponse) {
+		return;
+	}
+	var msgIdArray = [];
+	var contactIdsArray = [];
+	var syncToken;
+	syncResponse.forEach(function(response) {
+		var folderInfo = response.folder && response.folder[0];
+		if (folderInfo.m) {
+			var msgIds = folderInfo.m[0].ids;
+			if (msgIds) {
+				msgIds.split(",").forEach(function(id) {
+					var params = {
+						m : {id : id},
+						_jsns : "urn:zimbraMail"
+					};
+					msgIdArray.push(params);
+				});
+			}
+		}
+		else if (folderInfo.cn) {
+			var contactIds = folderInfo.cn[0].ids;
+			if (contactIds) {
+				var params = {
+					cn : {id : contactIds},
+					_jsns : "urn:zimbraMail"
+				};
+				contactIdsArray.push(params);
+			}
+		}
+		if (!syncToken && response.token) {
+			syncToken = response.token;
+		}
+	});
+	var callback = this._storeSyncToken.bind(this, syncToken);
+	if (msgIdArray.length > 0) {
+		var jsonObj = {BatchRequest:{_jsns:"urn:zimbra", onerror:"continue", GetMsgRequest:msgIdArray}};
+		var params = {
+			jsonObj : jsonObj,
+			asyncMode : true,
+			callback : this._handleGetResponse.bind(this, callback),
+			errorCallback : this._handleGetError.bind(this)
+		};
+		appCtxt.getRequestMgr().sendRequest(params);
+	}
+	if (contactIdsArray.length > 0) {
+		var jsonObj = {BatchRequest:{_jsns:"urn:zimbra", onerror:"continue", GetContactsRequest:contactIdsArray}};
+		var params = {
+			jsonObj : jsonObj,
+			asyncMode : true,
+			callback : this._handleGetResponse.bind(this, callback),
+			errorCallback : this._handleGetError.bind(this)
+		};
+		appCtxt.getRequestMgr().sendRequest(params);
+	}
+	this._downloadCalendar(null, null, null, null, true, null);
+};
+
+ZmOffline.prototype._handleInitialSyncError =
+function() {
 
 };
 
-ZmOffline.prototype.syncHandler =
-function(result){
-    var response = result && result.getResponse();
-    var syncResponse = response && response.SyncResponse;
-    var syncToken =  syncResponse.token;
-    if (syncToken){
-        localStorage.setItem("syncToken", syncToken);
-    }
-    ZmOffline.syncStarted = true;
-    ZmOffline._checkCacheDone();
-    this._processSyncData(syncResponse);  // To be called when user switchs from offline to online or first access
+ZmOffline.prototype._sendDeltaSyncRequest =
+function(syncToken) {
+	var params = {
+		jsonObj : {SyncRequest:{_jsns:"urn:zimbraMail", token:syncToken, typed:1}},
+		asyncMode : true,
+		callback : this._handleDeltaSyncResponse.bind(this),
+		errorCallback : this._handleDeltaSyncError.bind(this)
+	};
+	appCtxt.getRequestMgr().sendRequest(params);
 };
 
-ZmOffline.prototype._processSyncData =
-function(syncResponse){
-    this._setSyncInProgress(false);
-    if (!syncResponse){
-        return;
-    }
-
-    // Handle delete
-    this._handledeleteItems(syncResponse.deleted);
-
-    this._handleUpdateItems(syncResponse.m,    "message");
-    this._handleUpdateAppts(syncResponse.appt, "appt");
-
-    //this._handleUpdateItems(syncResponse.c, "conversation");  Dependency on Bug#81962 (Need sync support for conversations)
-
-
+ZmOffline.prototype._handleDeltaSyncResponse =
+function(result) {
+	var syncResponse = result && result.getResponse().SyncResponse;
+	if (!syncResponse) {
+		return;
+	}
+	var callback = this._storeSyncToken.bind(this, syncResponse.token);
+	if (syncResponse.deleted) {
+		this._handleSyncDeletes(syncResponse.deleted, callback);
+	}
+	if (syncResponse.m || syncResponse.cn) {
+		this._handleSyncUpdate(syncResponse, callback);
+	}
+	if (syncResponse.appt) {
+		this._handleUpdateAppts(syncResponse.appt, callback);
+	}
+	if (syncResponse.folder) {
+		this._handleUpdateFolders(syncResponse.folder, callback);
+	}
 };
 
-ZmOffline.prototype._handledeleteItems =
-function(deletedItems){
-
-    if (!deletedItems || deletedItems.length == 0){
-        return;
-    }
-
-    var ids = deletedItems[0].ids;
-
-    if (ids){
-        this._deleteItemByIds(ids.split(','));
-    }
+ZmOffline.prototype._handleDeltaSyncError =
+function() {
 
 };
 
-ZmOffline.prototype._handleUpdateItems =
-function(items, type){
+ZmOffline.prototype._handleSyncDeletes =
+function(deletes, callback) {
+	var deletedInfo = deletes[0];
+	if (!deletedInfo) {
+		return;
+	}
+	if (deletedInfo.m) {;
+		var deletedMsgIds = deletedInfo.m[0] && deletedInfo.m[0].ids;
+		if (deletedMsgIds) {
+			var deletedMsgIdArray = [].concat(deletedMsgIds.split(","));
+		}
+	}
+	if (deletedInfo.cn) {
+		var deletedContactIds = deletedInfo.cn[0] && deletedInfo.cn[0].ids;
+		if (deletedContactIds) {
+			var deletedContactsIdArray = [].concat(deletedContactIds.split(","));
+		}
+	}
+	if (deletedMsgIdArray && deletedMsgIdArray.length > 0) {
+		ZmOfflineDB.deleteItem(deletedMsgIdArray, ZmApp.MAIL, callback);
+	}
+	if (deletedContactsIdArray && deletedContactsIdArray.length > 0) {
+		ZmOfflineDB.deleteItem(deletedContactsIdArray, ZmApp.CONTACTS, callback);
+	}
+};
 
-// Handle create and modify
+ZmOffline.prototype._handleSyncUpdate =
+function(syncResponse, callback) {
+	var msgs = syncResponse.m;
+	var contacts = syncResponse.cn;
+	var msgIdArray = [];
+	var contactIdsArray = [];
+	if (msgs) {
+		msgs.forEach(function(msg) {
+			var params = {
+				m : {id : msg.id},
+				_jsns : "urn:zimbraMail"
+			};
+			msgIdArray.push(params);
+		});
+	}
+	if (contacts) {
+		contacts.forEach(function(contact) {
+			var params = {
+				cn : {id : contact.id},
+				_jsns : "urn:zimbraMail"
+			};
+			contactIdsArray.push(params);
+		});
+	}
+	if (msgIdArray.length > 0 || contactIdsArray.length > 0) {
+		var params = {
+			jsonObj : {BatchRequest:{_jsns:"urn:zimbra", onerror:"continue", GetMsgRequest:msgIdArray, GetContactsRequest:contactIdsArray}},
+			asyncMode : true,
+			callback : this._handleGetResponse.bind(this, callback),
+			errorCallback : this._handleGetError.bind(this)
+		};
+		appCtxt.getRequestMgr().sendRequest(params);
+	}
+};
 
-    if (!items || items.length === 0 ){
-        return;
-    }
-
-    var updated = [], created = [], deleted = [], item=null, folder = null;
-
-    for (var i=0, length = items.length; i < length; i++){
-        item = items[i];
-        if (item.l === "2" || item.l === "6" || item.l === "5"){
-            if (item.cid){
-                updated.push(item);
-            }else{
-                created.push(item.id);
-            }
-
-        } else {
-            deleted.push(item.id);
-        }
-
-    }
-
-// Create
-
-    if (created.length){
-        this._loadMessages(created);
-    }
-
-
-// Modify
-
-    if (updated.length){
-        var store = null;
-        for (var i=0, length = updated.length;i<length;i++){
-            this.modifyItem(updated[i].id, updated[i], type);
-        }
-    }
-
-    if (deleted.length){
-        this._deleteItemByIds(deleted); // If messages are moved
-    }
+ZmOffline.prototype._handleUpdateFolders =
+function(folders, callback) {
 
 };
 
+ZmOffline.prototype._storeSyncToken =
+function(syncToken) {
+	localStorage.setItem("SyncToken", syncToken);
+};
+
+ZmOffline.prototype._handleGetResponse =
+function(callback, result) {
+	var response = result && result.getResponse();
+	var batchResponse = response && response.BatchResponse;
+	if (!batchResponse) {
+		return;
+	}
+	var getMsgResponse = batchResponse.GetMsgResponse;
+	if (getMsgResponse) {
+		var msgs = [];
+		for (var i = 0; i < getMsgResponse.length; i++) {
+			msgs.push(getMsgResponse[i].m[0]);
+		}
+		var setItemCallback = this._handleSetItemCallback.bind(this, msgs, ZmApp.MAIL, callback);
+		ZmOfflineDB.setItem(msgs, ZmApp.MAIL, setItemCallback);
+	}
+	var getContactsResponse = batchResponse.GetContactsResponse;
+	if (getContactsResponse) {
+		var contacts = [];
+		for (var i = 0; i < getContactsResponse.length; i++) {
+			contacts = contacts.concat(getContactsResponse[i].cn);
+		}
+		var setItemCallback = this._handleSetItemCallback.bind(this, contacts, ZmApp.CONTACTS, callback);
+		ZmOfflineDB.setItem(contacts, ZmApp.CONTACTS, setItemCallback);
+	}
+};
+
+ZmOffline.prototype._handleSetItemCallback =
+function(item, type, callback) {
+	if (callback) {
+		callback();
+	}
+	if (type === ZmApp.MAIL) {
+		this._fetchMsgAttachments(item);
+	}
+};
+
+ZmOffline.prototype._handleGetError =
+function(folder, index, result) {
+	localStorage.removeItem("SyncToken");
+};
 
 // Different enough from mail to warrent its own function
 ZmOffline.prototype._handleUpdateAppts =
@@ -823,42 +735,6 @@ function(e) {
     DBG.println(AjxDebug.DBG1, "Error while trying to search for expired appts in indexedDB.  Error = " + e);
 }
 
-
-
-
-
-
-
-ZmOffline.prototype._updateItem =
-function(type, modifiedItem, result){
-    var store = null, callback = null;
-    var folder =  this._getFolder(modifiedItem.l);
-    if (!folder){
-        return;
-    }
-    folder = folder.toLowerCase();
-    var offlineItem = result && result.response && result.response.Body && result.response.Body.GetMsgResponse.m[0];
-
-    DBG.println(AjxDebug.DBG1, "ZmOffline.prototype.modifyItem : offlineItem " + JSON.stringify(offlineItem));
-
-    if (offlineItem){
-        var prevFolder = offlineItem && this._getFolder(offlineItem.l);
-        prevFolder = prevFolder && prevFolder.toLowerCase();
-        var prevKey = offlineItem && offlineItem.id;
-        $.extend(offlineItem, modifiedItem);
-        folder = this._getFolder(offlineItem.l);
-        folder = folder && folder.toLowerCase();
-        if (folder){
-            callback = this.addItem.bind(this, offlineItem, type, (folder + type));
-        }
-        ZmOfflineDB.deleteItem(prevKey, (prevFolder + type), callback);
-    } else {
-        if (folder){
-            this.addItem(modifiedItem, type, (folder + type));
-        }
-    }
-};
-
 ZmOffline.prototype._loadMessages =
 function(msgIds, callback){
     if (!msgIds || msgIds.length === 0){
@@ -888,32 +764,9 @@ ZmOffline.prototype._cacheMessages =
 function(callback, result){
     var response = result.getResponse();
     var msgs = response && response.BatchResponse.GetMsgResponse;
-    this._putItems(msgs);
     if (callback) {
         callback.run();
     }
-};
-
-ZmOffline.prototype._putItems =
-function(items){
-    if (!items || items.length === 0 ){
-        return;
-    }
-    var key = null, value = null, msg = null;
-    for (var i=0, length = items.length; i<length; i++){
-        msg = items[i].m[0];
-        folder = this._getFolder(msg.l);
-        if (folder){  // Only inbox for now
-            this.addItem(msg, ZmOffline.MESSAGE,  + ZmOffline.MESSAGE );
-        } else { // Message is moved
-            //ZmOfflineDB.indexedDB.deleteItemById(msg.id);
-        }
-    }
-};
-
-ZmOffline.prototype._syncSearchRequest =
-function(callback, store, params){
-    //ZmOfflineDB.indexedDB.getAll(store, this._generateMsgSearchResponse.bind(this, callback, params, store), ZmOffline.cacheMessageLimit);
 };
 
 ZmOffline.prototype.syncFoldersMetaData =
@@ -951,68 +804,6 @@ function(){
     for (var i=0, length = ZmOffline.folders.length;i<length;i++){
         this.storeFolderMetaData(ZmOffline.folders[i].id, appCtxt.getById(ZmOffline.folders[i].id));
     }
-};
-
-ZmOffline.prototype._generateMsgSearchResponse =
-function(callback, params, store, messages){
-    var searchResponse = [];
-    var response = {
-   "Header":{
-      "context":{
-         "session":{
-            "id":"offline_id",
-            "_content":"offline_content"
-         },
-         "change":{
-            "token":"offline_token"
-         },
-         "_jsns":"urn:zimbra"
-      }
-   },
-   "Body":{
-       "SearchResponse":{
-           "sortBy": "dateDesc",
-           "offset": 0,
-           "more": false
-       },
-       "_jsns":"urn:zimbraSoap"
-   }
-   };
-    for (i = (messages.length -1); i > -1 ; i--){
-        var msg = this._getHeaders(messages[i], store);
-        searchResponse.push(msg);
-    }
-    searchResponse = searchResponse.sort(function(item1, item2){
-        if (item1['d'] === item2['d']){
-            return ((Math.abs(parseInt(item1['id'])) < Math.abs(parseInt(item2['id'])) ) ? 1 : -1);
-        }
-        return ((item1['d'] < item2['d'] ) ? 1 : -1);
-    });
-    appCtxt._msgSearchResponse = searchResponse;
-    if (store.match(/message$/)){
-        response.Body.SearchResponse.m = searchResponse;
-    } else {
-        response.Body.SearchResponse.c = searchResponse;
-    }
-
-    if (!params._skipResponse){
-        params.response = response;
-    } else {
-        params = null;
-    }
-
-    callback(params);
-};
-
-ZmOffline.prototype._getHeaders =
-function(item, store){
-    var headers = null;
-    mailItem = item.value.Body;
-    var headers = store.match(/message$/) ? mailItem.GetMsgResponse.m[0] : mailItem.SearchConvResponse.c;
-    if (headers && headers.mp){
-       delete (headers.mp)
-    }
-    return headers;
 };
 
 ZmOffline.prototype._replayOfflineRequest =
@@ -1089,25 +880,6 @@ function(obj, result) {
     return true;
 };
 
-/**
- * Adds conversation or message into the offline database.
- * @param {item}	message or conversation that needs to be added to offline database.
- * @param {type}    type of the mail item ("message" or "conversation").
- */
-
-ZmOffline.prototype.addItem =
-function(item, type, store){
-    var isConv = (type === ZmOffline.CONVERSATION);
-    var value = this._getValue(item, isConv);
-    if (value && value.Body && value.Body.GetMsgResponse) {
-        var callback = this._fetchMsgAttachments.bind(this, item);
-        ZmOfflineDB.setItem(item, ZmApp.MAIL, callback);
-        return;
-    }
-    store = store || ((item.l) ? this._getFolder(item.l) + type : ZmOffline.ZmOfflineStore);
-    this.setItem(item.id, value, store);
-};
-
 ZmOffline.prototype._getFolder =
 function(index){
     for (var i=0, length = ZmOffline.folders.length; i< length; i++){
@@ -1140,48 +912,6 @@ function(deletedIds, type, folder){
 
 };
 
-
-/**
- * Modifies  message or conversation in the offline database.
- * @param {id}	    message/convesation id that should be modified.
- * @param {newItem}    modified item or an object with modified fields as {{'f','fu'}, ['tn':'aaa'] ... }.
- * @param {type}    message or conversation
- */
-
-ZmOffline.prototype.modifyItem =
-function(id, newItem, type){
-    DBG.println(AjxDebug.DBG1, "ZmOffline.prototype.modifyItem : id " + id);
-
-    var updateItem = this._updateItem.bind(this, type, newItem);
-    var cb = this.getItem.bind(this, id, updateItem, {});
-    ZmOfflineDB.getItemById(id, cb);
-};
-
-
-ZmOffline.prototype._deleteItemByIds =
-function(ids){
-    if (!ids || ids.length === 0){
-        return;
-    }
-    for(var i=0, length = ids.length; i < length; i++){
-        ZmOfflineDB.deleteItemById(ids[i]);
-    }
-};
-
-/**
- * Modifies  message or conversation in the offline database.
- * @param {id}	    message/convesation id that should be modified.
- * @param {stores}   Array of store [folder + type] values
- */
-
-
-ZmOffline.prototype._deleteItemById =
-function(id, stores){
-      for (store in stores){
-          ZmOfflineDB.deleteItem(id, store);
-      }
-};
-
 ZmOffline.deleteAllOfflineData =
 function(){
     DBG.println(AjxDebug.DBG1, "Delete all offline data");
@@ -1190,59 +920,6 @@ function(){
     indexedDB.deleteDatabase('ZmOfflineDB');
     indexedDB.deleteDatabase("OfflineLog");
 };
-/*
-ZmOffline.prototype._enableMailFeatures =
-function(online) {
-    var mailApp = appCtxt.getApp(ZmApp.MAIL);
-    var mlc = mailApp.getMailListController();
-    var view = appCtxt.isWebClientOffline() ? ZmId.VIEW_TRAD : localStorage.getItem("MAILVIEW");
-    mlc.switchView(view, true);
-    var toolbar = mlc._toolbar[mlc._currentViewId];
-    toolbar && mlc._resetOperations(mlc._toolbar[mlc._currentViewId], 1);
-
-    var overview = mailApp.getOverview();
-    var children = (overview && overview.getChildren()) || [];
-    var selector = null;
-
-    if (online){
-        for (var i=0,length = children.length; i<length; i++){
-            children[i].setVisible(true);
-        }
-        $("[id$='_addshare_link']").show();
-        var folderTree = appCtxt.getFolderTree(appCtxt.accountList.mainAccount);
-        var folders = folderTree && folderTree.getByType("FOLDER");
-        var treeItem = null;
-        for (var i=1, length = folders.length; i<length;i++){
-                treeItem = overview.getTreeItemById(folders[i].id);
-                if (treeItem){
-                    treeItem.setVisible(true);
-                }
-        }
-    } else {
-        for (var i=0,length = children.length; i<length; i++){
-            selector = "#" + children[i].getHTMLElId() + " .DwtTreeItemLevel1ChildDiv > div";
-            if (children[i].type !== "FOLDER"){
-               children[i].setVisible(false);
-            }
-        }
-        $("[id$='_addshare_link']").hide()
-        var folderTree = appCtxt.getFolderTree(appCtxt.accountList.mainAccount);
-        var folders = folderTree && folderTree.getByType("FOLDER");
-        var treeItem = null;
-        for (var i=1, length = folders.length; i<length;i++){
-            if (folders[i].name == "Outbox"){
-                continue;
-            }
-            if (folders[i].webOfflineSyncDays == "0"){
-                treeItem = overview.getTreeItemById(folders[i].id);
-                if (treeItem){
-                    treeItem.setVisible(false);
-                }
-            }
-        }
-    }
-};
-*/
 
 ZmOffline.closeDB =
 function(){
@@ -1574,6 +1251,7 @@ function(doStop) {
         }
     });
 };
+ZmOffline.checkServerStatus();
 
 ZmOffline.isOnlineMode =
 function() {
@@ -1750,49 +1428,3 @@ function(contact) {
 
     return result;
 };
-
-ZmOffline.prototype._cacheContacts =
-function() {
-    var jsonObj = {SearchRequest:{_jsns:"urn:zimbraMail"}};
-    var request = jsonObj.SearchRequest;
-    ZmMailMsg.addRequestHeaders(request);
-    request.offset = 0;
-    request.limit = 200;
-    request.query = "in:contacts or in:\"Emailed Contacts\"";
-    request.types = "contact";
-    request.sortBy = "priorityDesc";
-    var respCallback = this._handleResponseCacheContacts.bind(this);
-    var params = {
-        jsonObj : jsonObj,
-        asyncMode : true,
-        callback : respCallback
-    };
-    appCtxt.getRequestMgr().sendRequest(params);
-};
-
-ZmOffline.prototype._handleResponseCacheContacts =
-function(result, callback) {
-    var response = result && result.getResponse();
-    if (!response) {
-        return;
-    }
-    var contacts = response.SearchResponse && response.SearchResponse.cn;
-    if (!contacts) {
-        return;
-    }
-    console.log("contacts length "+contacts.length);
-    ZmOfflineDB.setItem(contacts, ZmApp.CONTACTS, callback);
-};
-
-/*
-ZmOffline.prototype._onAppActivate =
-function(ev) {
-    var item = ev && ev.item;
-    var appName = item && item.getName();
-    if (appName === ZmApp.MAIL) {
-        if (appCtxt.isWebClientOffline()) {
-            this._disableMailFeatures();
-        }
-    }
-};
-*/
