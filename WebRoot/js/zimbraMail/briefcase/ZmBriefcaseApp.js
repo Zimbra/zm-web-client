@@ -80,8 +80,6 @@ ZmBriefcaseApp.prototype._registerOperations =
 function() {
 	ZmOperation.registerOp(ZmId.OP_NEW_BRIEFCASE, {textKey:"newBriefcase", image:"NewFolder", tooltipKey:"newBriefcaseTooltip", shortcut:ZmKeyMap.NEW_BRIEFCASE});
 	ZmOperation.registerOp(ZmId.OP_NEW_FILE, {textKey:"uploadNewFile", tooltipKey:"uploadNewFile", image:"Upload", textPrecedence:70});
-	ZmOperation.registerOp(ZmId.OP_NEW_PRESENTATION, {textKey:"newPresentationBeta", tooltipKey:"newPresentation", image:"Presentation", textPrecedence:10});
-	ZmOperation.registerOp(ZmId.OP_NEW_SPREADSHEET, {textKey:"newSpreadSheetBeta", tooltipKey:"newSpreadSheet", image:"ZSpreadSheet", textPrecedence:11});
 	ZmOperation.registerOp(ZmId.OP_NEW_DOC, {textKey:"newDocument", tooltipKey:"newDocument", image:"NewDoc", shortcut:ZmKeyMap.NEW_DOC, textPrecedence:12});
 	ZmOperation.registerOp(ZmId.OP_SHARE_BRIEFCASE, {textKey:"shareFolder", image:"SharedMailFolder"}, ZmSetting.SHARING_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_OPEN_FILE, {textKey:"openFile", tooltipKey:"openFileTooltip", image:"NewDoc"});
@@ -91,7 +89,6 @@ function() {
 	ZmOperation.registerOp(ZmId.OP_SEND_FILE, {textKey:"sendLink", tooltipKey:"sendLink", image:"Send"});
 	ZmOperation.registerOp(ZmId.OP_SEND_FILE_AS_ATT, {textKey:"sendAsAttachment", tooltipKey:"sendAsAttachment", image:"Attachment"});
 	ZmOperation.registerOp(ZmId.OP_SEND_FILE_MENU, {textKey:"send", image:"Send", textPrecedence:75});
-	ZmOperation.registerOp(ZmId.OP_CREATE_SLIDE_SHOW, {textKey:"createSlideShow", image:"Presentation"});
     ZmOperation.registerOp(ZmId.OP_EDIT_FILE, {textKey: "edit", image:"Edit"});
     ZmOperation.registerOp(ZmId.OP_RENAME_FILE, {textKey: "rename", image:"FileRename"});
     ZmOperation.registerOp(ZmId.OP_CHECKIN, {textKey: "checkInFile", image:"Checkin"});
@@ -105,8 +102,6 @@ function() {
 ZmBriefcaseApp.prototype._registerSettings =
 function(settings) {
 	settings = settings || appCtxt.getSettings();
-	settings.registerSetting("SPREADSHEET_ENABLED",	{name:"zimbraFeatureBriefcaseSpreadsheetEnabled", type:ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue:false});
-	settings.registerSetting("SLIDES_ENABLED",		{name:"zimbraFeatureBriefcaseSlidesEnabled", type:ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue:false});
 	settings.registerSetting("DOCS_ENABLED",		{name:"zimbraFeatureBriefcaseDocsEnabled", type:ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue:true});
     settings.registerSetting("PREVIEW_ENABLED",		{ type:ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue:false});
 	settings.registerSetting("READING_PANE_LOCATION_BRIEFCASE",		{name:"zimbraPrefBriefcaseReadingPaneLocation", type:ZmSetting.T_PREF, dataType:ZmSetting.D_STRING, defaultValue:ZmSetting.RP_BOTTOM, isImplicit:true});
@@ -184,8 +179,6 @@ function() {
 	var actionCodes = {};
 	actionCodes[ZmKeyMap.NEW_FILE]			= ZmOperation.NEW_FILE;
 	actionCodes[ZmKeyMap.NEW_BRIEFCASE]		= ZmOperation.NEW_BRIEFCASE;
-	actionCodes[ZmKeyMap.NEW_PRESENTATION]	= ZmOperation.NEW_PRESENTATION;
-	actionCodes[ZmKeyMap.NEW_SPREADSHEET]	= ZmOperation.NEW_SPREADSHEET;
 	actionCodes[ZmKeyMap.NEW_DOC]			= ZmOperation.NEW_DOC;
 
 	ZmApp.registerApp(ZmApp.BRIEFCASE,
@@ -263,22 +256,11 @@ function(op) {
 			AjxDispatcher.require(["BriefcaseCore", "Briefcase"], false, loadCallback, null, true);
 			break;
 		}
-		case ZmOperation.NEW_PRESENTATION: {
-			var loadCallback = new AjxCallback(this, this.newDoc, [ZmMimeTable.APP_ZIMBRA_SLIDES]);
-			AjxDispatcher.require(["BriefcaseCore", "Briefcase"], true, loadCallback, null);
+
+		case ZmOperation.NEW_DOC: {
+			var newDocCallback = new AjxCallback(this, this.newDoc, [ZmMimeTable.APP_ZIMBRA_DOC]);
+			AjxDispatcher.require(["BriefcaseCore", "Briefcase"], true, newDocCallback, null);
 			break;
-		}
-
-		 case ZmOperation.NEW_SPREADSHEET: {
-			 var newDocCallback = new AjxCallback(this, this.newDoc, [ZmMimeTable.APP_ZIMBRA_SPREADSHEET]);
-			 AjxDispatcher.require(["BriefcaseCore", "Briefcase"], true, newDocCallback, null);
-			 break;
-		}
-
-		 case ZmOperation.NEW_DOC: {
-			 var newDocCallback = new AjxCallback(this, this.newDoc, [ZmMimeTable.APP_ZIMBRA_DOC]);
-			 AjxDispatcher.require(["BriefcaseCore", "Briefcase"], true, newDocCallback, null);
-			 break;
 		}
 	}
 };
@@ -306,13 +288,6 @@ function(contentType, name, winName) {
             var win = appCtxt.getNewWindow(false, null, null, winName);
             win.command = "documentEdit";
             win.params = { name: name, folderId: folderId };
-        } else {
-            var url = this.getEditURLForContentType(contentType) + "?" + (name ?"name=" + name + "&" : "") + "l="+folderId + "&skin=" + appCurrentSkin + "&localeId=" + AjxEnv.DEFAULT_LOCALE;
-            url += "&authTokenExpires=" + window.authTokenExpires;
-            if (window.appCoverageMode)
-                url = url + "&coverage=1";
-            var winname = winName || name || (new Date()).getTime().toString();
-            window.open(url, winname); //bug:44324 removed new launching window
         }
     }
 };
@@ -330,41 +305,6 @@ function() {
         "scrollbars=yes,",
         "resizable=yes"
     ].join("");
-};
-
-/**
- * Gets the edit URL.
- * 
- * @param	{String}	contentType		the content type
- * 
- * @return	{String}	the URL
- */
-ZmBriefcaseApp.prototype.getEditURLForContentType =
-function(contentType) {
-	AjxDispatcher.require("Startup1_1");
-	var editPage = "Slides.jsp";
-	switch(contentType) {
-		case ZmMimeTable.APP_ZIMBRA_SLIDES:			editPage = "Slides.jsp"; break;
-		case ZmMimeTable.APP_ZIMBRA_SPREADSHEET:	editPage = "SpreadsheetDoc.jsp"; break;
-		case ZmMimeTable.APP_ZIMBRA_DOC:			editPage = "Docs.jsp"; break;
-		default: return null;
-	};
-	return (appContextPath + "/public/" + editPage);
-};
-
-/**
- * Checks if the item is a doclet.
- * 
- * @param	{ZmBriefcaseItem}	item		the item
- * @return	{Boolean}	<code>true</code> if the item is a doclet
- */
-ZmBriefcaseApp.prototype.isDoclet =
-function(item) {
-	var contentType = item.getContentType();
-	switch(contentType) {
-		case ZmMimeTable.APP_ZIMBRA_SLIDES: return true;
-		default: return false;
-	}
 };
 
 ZmBriefcaseApp.prototype._handleNewItem =

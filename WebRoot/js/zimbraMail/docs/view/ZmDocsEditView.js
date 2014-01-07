@@ -462,7 +462,6 @@ function(iframeN) {
         var html = [];
         html.push('<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">');
         html.push('<html>');
-        //html.push('<link href="' + window.appContextPath + '/css/skin,slides.css?locale=' + AjxEnv.DEFAULT_LOCALE + '" rel="stylesheet" type="text/css" />');
         html.push('<body><br _moz_dirty=""/></body>');
         html.push('</html>');
         doc.write(html.join(""));

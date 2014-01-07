@@ -50,13 +50,10 @@ ZmBriefcaseController = function(container, app, type, sessionId, searchResultsC
 	this._listeners[ZmOperation.SEND_FILE_AS_ATT]	= this._sendFileAsAttachmentListener.bind(this);
 	this._listeners[ZmOperation.NEW_FILE]			= this._uploadFileListener.bind(this);
 	this._listeners[ZmOperation.VIEW_FILE_AS_HTML]	= this._viewAsHtmlListener.bind(this);
-	this._listeners[ZmOperation.CREATE_SLIDE_SHOW]	= this._createSlideShow.bind(this);
     this._listeners[ZmOperation.EDIT_FILE]			= this._editFileListener.bind(this);
     this._listeners[ZmOperation.RENAME_FILE]		= this._renameFileListener.bind(this);
     this._listeners[ZmOperation.NEW_BRIEFCASE_WIN]	= this._newWinListener.bind(this);
 
-	this._listeners[ZmOperation.NEW_SPREADSHEET]	= this._handleDoc.bind(this, ZmOperation.NEW_SPREADSHEET);
-	this._listeners[ZmOperation.NEW_PRESENTATION]	= this._handleDoc.bind(this, ZmOperation.NEW_PRESENTATION);
 	this._listeners[ZmOperation.NEW_DOC]			= this._handleDoc.bind(this, ZmOperation.NEW_DOC);
 
     this._listeners[ZmOperation.CHECKIN]			= this._handleCheckin.bind(this);
@@ -143,12 +140,6 @@ function() {
     if (appCtxt.isExternalAccount()) { return list; }
 	if (appCtxt.get(ZmSetting.MAIL_ENABLED)) {
 		list.push(ZmOperation.SEND_FILE, ZmOperation.SEND_FILE_AS_ATT, ZmOperation.SEP);
-	}
-	if (appCtxt.get(ZmSetting.SPREADSHEET_ENABLED)) {
-		list.push(ZmOperation.NEW_SPREADSHEET,ZmOperation.SEP);
-	}
-	if (appCtxt.get(ZmSetting.SLIDES_ENABLED)) {
-		list.push(ZmOperation.NEW_PRESENTATION,ZmOperation.SEP);
 	}
 	list.push(ZmOperation.NEW_BRIEFCASE_WIN, ZmOperation.SEP);
 
@@ -289,7 +280,7 @@ function(parent, num) {
 	parent.enable([ZmOperation.SEND_FILE, ZmOperation.SEND_FILE_AS_ATT], (isZimbraAccount && isMailEnabled && isItemSelected && !isMultiFolder && !isFolderSelected));
 	parent.enable(ZmOperation.TAG_MENU, (!isReadOnly && isItemSelected && !isFolderSelected && !isOldRevision));
 	parent.enable([ZmOperation.NEW_FILE, ZmOperation.VIEW_MENU], true);
-	parent.enable([ZmOperation.NEW_SPREADSHEET, ZmOperation.NEW_PRESENTATION, ZmOperation.NEW_DOC], true);
+	parent.enable([ZmOperation.NEW_DOC], true);
 	parent.enable([ZmOperation.MOVE, ZmOperation.MOVE_MENU], ( isItemSelected &&  !isReadOnly && !isShared && !isOldRevision));
     parent.enable(ZmOperation.NEW_FILE, !(isTrash || isReadOnly));
     parent.enable(ZmOperation.NEW_BRIEFCASE_WIN, (isItemSelected && !isFolderSelected && num==1));
@@ -358,13 +349,6 @@ function(parent, num) {
     var isDocOpEnabled = !(isTrash || isReadOnly);
     if (appCtxt.get(ZmSetting.DOCS_ENABLED)) {
         parent.enable(ZmOperation.NEW_DOC, isDocOpEnabled);
-    }
-    if (appCtxt.get(ZmSetting.SPREADSHEET_ENABLED)) {
-        parent.enable(ZmOperation.NEW_SPREADSHEET, isDocOpEnabled);
-    }
-    if (appCtxt.get(ZmSetting.SLIDES_ENABLED)) {
-        parent.enable(ZmOperation.NEW_PRESENTATION, isDocOpEnabled);
-        parent.enable(ZmOperation.CREATE_SLIDE_SHOW, isDocOpEnabled && isItemSelected);
     }
 
     if(appCtxt.isExternalAccount()) {
@@ -831,9 +815,6 @@ function() {
 		ZmOperation.SEND_FILE,
 		ZmOperation.SEND_FILE_AS_ATT
 	];	
-    if (appCtxt.get(ZmSetting.SLIDES_ENABLED)) {
-		list.push(ZmOperation.CREATE_SLIDE_SHOW);
-	}
     list.push(ZmOperation.SEP);
     list.push(ZmOperation.CHECKOUT, ZmOperation.CHECKIN, ZmOperation.DISCARD_CHECKOUT, ZmOperation.RESTORE_VERSION/*, ZmOperation.DELETE_VERSION*/);
 
@@ -1346,26 +1327,6 @@ function() {
 	if (this._listView[this._currentViewId] != null) {
 		this._resetOperations(this._toolbar[this._currentViewId], this._listView[this._currentViewId].getSelectionCount());
 	}
-};
-
-ZmBriefcaseController.prototype._createSlideShow =
-function() {
-	var importSlidesQueue = [];
-	var view = this._listView[this._currentViewId];
-	var items = view.getSelection();
-	if (!items) { return; }
-
-	items = AjxUtil.toArray(items);
-	for (var i = 0; i < items.length; i++) {
-		var item = items[i];
-		var restUrl = item.getRestUrl();
-		if(item && !item.isFolder && restUrl != null) {
-			importSlidesQueue.push(restUrl);
-		}
-	}
-	window.importSlides = true;
-	window.importSlidesQueue = importSlidesQueue;
-	this._app.handleOp(ZmOperation.NEW_PRESENTATION);
 };
 
 // item count doesn't include subfolders

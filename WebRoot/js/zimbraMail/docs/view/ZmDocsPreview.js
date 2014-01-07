@@ -31,7 +31,7 @@ ZmDocsPreview = function(container, params){
 
 ZmDocsPreview.prototype.constructor = ZmDocsPreview;
 
-//TODO: Make ZmPreview base class sto isolate all the common methods for Documents/Spreadsheets/Slides
+//TODO: Make ZmPreview base class sto isolate all the common methods for Documents
 //ZmDocsPreview.prototype = new ZmPreview
 
 ZmDocsPreview.launch =

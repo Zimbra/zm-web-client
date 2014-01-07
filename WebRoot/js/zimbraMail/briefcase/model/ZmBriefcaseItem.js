@@ -93,7 +93,7 @@ function() {
  */
 ZmBriefcaseBaseItem.prototype.isWebDoc =
 function() {
-    return (this.contentType == ZmMimeTable.APP_ZIMBRA_SLIDES || this.contentType == ZmMimeTable.APP_ZIMBRA_SPREADSHEET || this.contentType == ZmMimeTable.APP_ZIMBRA_DOC);
+    return (this.contentType == ZmMimeTable.APP_ZIMBRA_DOC);
 };
 
 /**
@@ -104,16 +104,6 @@ function() {
 ZmBriefcaseBaseItem.prototype.isDownloadable =
 function() {
     return (!this.isWebDoc() && !ZmMimeTable.isRenderable(this.contentType) && !ZmMimeTable.isRenderableImage(this.contentType) && !ZmMimeTable.isTextType(this.contentType));
-};
-
-/**
- * Checks if this item is a slide doc.
- * 
- * @return	{Boolean}	<code>true</code> if this item is a slide doc
- */
-ZmBriefcaseBaseItem.prototype.isSlideDoc =
-function() {
-    return (this.contentType == ZmMimeTable.APP_ZIMBRA_SLIDES);
 };
 
 /**
