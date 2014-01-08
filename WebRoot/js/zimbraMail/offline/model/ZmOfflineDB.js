@@ -512,6 +512,34 @@ function(search, callback, errorCallback) {
 					indexArray.push(objectStore.index("to"), objectStore.index("cc"));
 					rangeArray.push(IDBKeyRange.only(indexValue));
 				}
+				else if (indexName === "receiveddate") {
+					indexArray.push(objectStore.index("receiveddate"));
+					if (token.op === "after") {
+						rangeArray.push(IDBKeyRange.lowerBound(indexValue));
+					}
+					else if (token.op === "before") {
+						rangeArray.push(IDBKeyRange.upperBound(indexValue, true));
+					}
+					else if (token.op === "date") {
+						var nextDay = new Date(indexValue);
+						AjxDateUtil.rollToNextDay(nextDay);//This will hold next day
+						if (token.arg.indexOf("<=") !== -1) {
+							rangeArray.push(IDBKeyRange.upperBound(nextDay.getTime()));
+						}
+						else if (token.arg.indexOf(">=") !== -1) {
+							rangeArray.push(IDBKeyRange.lowerBound(indexValue));
+						}
+						else if (token.arg.indexOf("<") !== -1) {
+							rangeArray.push(IDBKeyRange.upperBound(indexValue, true));
+						}
+						else if (token.arg.indexOf(">") !== -1) {
+							rangeArray.push(IDBKeyRange.lowerBound(nextDay.getTime()));
+						}
+						else {
+							rangeArray.push(IDBKeyRange.bound(indexValue, nextDay.getTime(), false, true));
+						}
+					}
+				}
 				else {
 					indexArray.push(objectStore.index(indexName));
 					rangeArray.push(IDBKeyRange.only(indexValue));
@@ -628,6 +656,38 @@ function(search) {
 			}
 			if (token.arg.toLowerCase().indexOf("mb") !== -1) {
 				token.indexValue = parseInt(token.arg) * 1024 * 1024;
+			}
+		}
+		else if (token.op === "after" || token.op === "before" || token.op === "date") {
+			var time = new Date(token.arg).getTime();
+			if (isNaN(time)) {
+				if (token.arg.indexOf("d") !== -1) {
+					var field = AjxDateUtil.DAY;
+				}
+				else if (token.arg.indexOf("w") !== -1) {
+					var field = AjxDateUtil.WEEK;
+				}
+				else if (token.arg.indexOf("m") !== -1) {
+					var field = AjxDateUtil.MONTH;
+				}
+				else if (token.arg.indexOf("y") !== -1) {
+					var field = AjxDateUtil.YEAR;
+				}
+				if (field) {
+					var rolledDate = AjxDateUtil.roll(new Date(), field, parseInt(token.arg));
+					var time = rolledDate && rolledDate.getTime();
+				}
+			}
+			else {
+				if (token.op === "after") {
+					var nextDay = new Date(time);
+					AjxDateUtil.rollToNextDay(nextDay);//This will hold next day
+					time = nextDay.getTime();
+				}
+			}
+			if (time && !isNaN(time)) {
+				token.indexValue = time;
+				token.indexName = "receiveddate";
 			}
 		}
 	});
@@ -790,7 +850,7 @@ function(search, callback, errorCallback) {
 		request.onsuccess = function(ev) {
 			var result = ev.target.result;
 			if (result) {
-				console.log(result.key + " : " + result.primaryKey);
+				DBG.println(AjxDebug.DBG1, result.key + " : " + result.primaryKey);
 				search.sortedResult.push(result.primaryKey);
 				result['continue']();
 			}
