@@ -31,9 +31,9 @@
  */
 ZmNewOrganizerDialog = function(parent, className, title, type, extraButtons) {
 	if (arguments.length == 0) return;
-	
-	ZmDialog.call(this, {parent:parent, className:className, title:title, id:"CreateNewFolderDialog", extraButtons: extraButtons});
+
 	this._organizerType = type;
+	ZmDialog.call(this, {parent:parent, className:className, title:title, id:"CreateNewFolderDialog", extraButtons: extraButtons});
 	this._setupControls();
 };
 
@@ -103,7 +103,7 @@ function(params, account) {
         }
 
         var icon = null;
-        var orgType = this._organizerType; 
+        var orgType = this._organizerType;
         var orgClass = ZmOrganizer.ORG_CLASS[orgType];
         if (orgClass) {
 			//to fix bug 55320 - got rid of the calling getIcon on the prototype hack - that caused isRemote to set _isRemote on the prototype thus causing every object to have it by default set.
@@ -190,7 +190,9 @@ function() {
 ZmNewOrganizerDialog.prototype._createStandardContentHtml =
 function(html, idx) {
 	idx = this._createNameContentHtml(html, idx);
-	idx = this._createColorContentHtml(html, idx);
+	if (this._organizerType != ZmOrganizer.FOLDER || (this._organizerType == ZmOrganizer.FOLDER && appCtxt.get(ZmSetting.MAIL_FOLDER_COLORS_ENABLED))) {
+		idx = this._createColorContentHtml(html, idx);
+	}
 	return idx;
 };
 
