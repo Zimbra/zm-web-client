@@ -437,12 +437,12 @@ Ext.define('ZCS.view.ux.ZtBubbleArea', {
         return {
             itemId: 'inputField',
             xtype: 'component',
-            html: '<input type="text" autocomplete="off" autocorrect="off" autocapitalize="off"/>',
+            html: '<input type="text" autocomplete="off" autocorrect="off" autocapitalize="off" style="width:100% !important;"/>',
             cls: 'input-comp',
             // Setting isFormField true will make this component be included in the list of fields
             // when the parent form is validating its children .
             isFormField: true,
-            width: 30,
+            width: "100%",
             listeners: {
                 initialize: function () {
                     this.validate = function () {
@@ -491,8 +491,6 @@ Ext.define('ZCS.view.ux.ZtBubbleArea', {
                                     }
                                 }
                             } else {
-                                me.resizeInput(this, isDelete, parentDimensions);
-
                                 if (isDelete && this.getValue() === '' && !this.lastLength) {
                                     me.removeLastBubble();
                                 }
@@ -510,41 +508,12 @@ Ext.define('ZCS.view.ux.ZtBubbleArea', {
                                     me.considerBubblingInput(this.dom.value);
                                 }
                             }
-                            this.setWidth(me.getDefaultInputWidth() + this.getValue().length * me.getInputCharacterWidthIncrement());
                             me.fireEvent('inputBlur', e, el);
                         });
                     }
                 }
             }
         };
-    },
-
-    /**
-     * @private
-     * Resizes the input
-     */
-    resizeInput: function (input, isDelete, parentDimensions) {
-        var inputDimensions,
-            rightSideWidthBuffer = 10,
-            minimumWidth = this.getDefaultInputWidth(),
-            sizeIncrement = this.getInputCharacterWidthIncrement(),
-            maxSpace = parentDimensions.width - rightSideWidthBuffer,
-            consumedSpace,
-            newWidth,
-            inputDimensions = input.getBox(false, false),
-            leftPosition = inputDimensions.left - parentDimensions.left;
-
-        //Shrink the input if the user clicked delete.
-        if (isDelete) {
-            if (inputDimensions.width > minimumWidth + sizeIncrement) {
-                input.setWidth(inputDimensions.width - sizeIncrement);
-            }
-        } else {
-            //Make sure we don't expand passed the right side of the form.
-            consumedSpace = Math.min(maxSpace, leftPosition + inputDimensions.width + sizeIncrement);
-            newWidth =  consumedSpace - leftPosition;
-            input.setWidth(newWidth);
-        }
     },
 
     /**
@@ -558,7 +527,6 @@ Ext.define('ZCS.view.ux.ZtBubbleArea', {
                 this.addBubble(model);
                 this.clearInput();
             }
-            this.focusInput();
         }
     }
 });

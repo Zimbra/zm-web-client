@@ -88,14 +88,6 @@ Ext.define('ZCS.view.ux.ZtBubbleDropdown', {
 			initialize: function () {
 				var me = this;
 
-				if (!me.getReadOnly()) {
-					me.inputField = me.down('#inputField');
-					me.element.on('tap', function (e, el) {
-						me.focusInput();
-						return true;
-					});
-				}
-
 				this.showMenu = Ext.Function.createBuffered(function (value) {
 
 					if (!this.menu) {
@@ -190,7 +182,7 @@ Ext.define('ZCS.view.ux.ZtBubbleDropdown', {
 	 * on the drop down.
 	 */
 	shouldAutoBubble: function () {
-		return this.menu.isHidden() !== true;
+		return !this.menu || this.menu.isHidden() === true;
 	},
 
 	/**
@@ -282,5 +274,8 @@ Ext.define('ZCS.view.ux.ZtBubbleDropdown', {
 		me.getInput().dom.value = '';
 		me.focusInput();
 		list.hide();
+
+		e.preventDefault();
+ 		e.stopPropagation();
 	}
 });
