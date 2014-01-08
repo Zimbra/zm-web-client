@@ -29,6 +29,7 @@
 @import 'widgets/ux/ztmenu';
 @import 'widgets/ux/ztlefttitlebar';
 @import 'widgets/contacts/ztcontact';
+@import 'widgets/contacts/ztcontactform';
 @import 'widgets/ux/skin1';
 @import 'widgets/ux/Ext.ux.TouchCalendarEvents';
 @import 'widgets/ux/Ext.ux.TouchCalendarView';
@@ -37,11 +38,13 @@
 
 // Your custom code goes here...
 // Import custom icon font
+@include icon-font('pictos', inline-font-files('../../../../touch/resources/themes/fonts/pictos/pictos-web.woff', woff, '../../../../touch/resources/themes/fonts/pictos/pictos-web.ttf', truetype,'../../../../touch/resources/themes/fonts/pictos/pictos-web.svg', svg));
 @include icon-font('ZimbraTouch', inline-font-files('../../../../resources/images/pictos/ZimbraTouch.woff', woff, '../../../../resources/images/pictos/ZimbraTouch.ttf', truetype,'../../../../resources/images/pictos/ZimbraTouch.svg', svg));
 // Bind font letters to class names
 @include icon('trash', 'T', 'ZimbraTouch');
 @include icon('minus', 'd', 'ZimbraTouch');
 @include icon('remove', 'd', 'ZimbraTouch');
+@include icon('contactFormMinus', '-', 'pictos');
 @include icon('plus', 'a', 'ZimbraTouch');
 @include icon('add', 'a', 'ZimbraTouch');
 @include icon('compose', 'C', 'ZimbraTouch');

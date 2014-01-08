@@ -77,5 +77,55 @@ Ext.define('ZCS.view.contacts.ZtContactField', {
 		}, this);
 
 		return returnBubbles;
+	},
+
+	// override ZCS.view.ux.ZtBubbleArea::addBubble()
+	addBubble: function(){
+		this.callParent(arguments);
+		// resize the inner input field after bubble changes
+		this.resizeInternalInput();
+	},
+
+	// override ZCS.view.ux.ZtBubbleArea::removeBubble()
+	removeBubble: function(){
+		this.callParent(arguments);
+		// resize the inner input field after bubble changes
+		this.resizeInternalInput();
+	},
+
+	resizeInternalInput: function(){
+		// get inner width of the bubble container (excluding field label)
+		// actually we have to deduct el.getBorderWidth() as well
+		// but it can be ignored as this el has no border in this case
+		var fieldWidth = this.element.down('.bubble-main-contents').down('.x-inner').getWidth() 
+						- this.element.down('.bubble-main-contents').down('.x-inner').getPadding("lr");
+
+		var bubbles = this.element.dom.getElementsByClassName("bubble-comp");
+		var inputWidth = fieldWidth;
+
+		for (var i=0;i<bubbles.length;i++){
+			var bubbleWidth = bubbles[i].offsetWidth;
+			inputWidth -= bubbleWidth;
+
+			// this bubble should be put in a new line, so we use this to "reset" the inputWidth
+			if (inputWidth<0){
+				inputWidth = fieldWidth - bubbleWidth;
+			}
+
+			// if the inputWidth is "too small", we shift it onto the next line
+			if (inputWidth<30){
+				inputWidth = fieldWidth;
+			}
+
+			// this is just a hack for safety, which ensures the input is not thrown onto a new line
+			// because of float values rounding after above calculations
+			inputWidth -= 5;
+		}
+
+		// set absolute width for the component which embraces the internal input field
+		this.element.down('.input-comp').dom.style.cssText="width:"+inputWidth+"px !important;";
+
+		// finally set the input width to fit its parent
+		this.element.down('input').dom.style.width="100%";
 	}
 });

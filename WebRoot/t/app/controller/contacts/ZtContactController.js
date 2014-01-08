@@ -23,6 +23,10 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
 
 	extend: 'ZCS.controller.ZtItemController',
 
+    mixins: {
+        contactFieldsMenuable: 'ZCS.common.ZtContactFieldsMenuable'
+    },
+
 	config: {
 
 		models: ['ZCS.model.contacts.ZtContact'],
@@ -31,6 +35,7 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
 		refs: {
 			// event handlers
 			itemPanelToolbar:   'appview #' + ZCS.constant.APP_CONTACTS + 'itempanel titlebar',
+            convTitleBar:       'appview #' + ZCS.constant.APP_CONTACTS + 'itempanel #itemTitleOnlyBar',
 			itemPanel:          'appview #' + ZCS.constant.APP_CONTACTS + 'itempanel',
 			contactActionsMenu: 'list[itemId=contactActionsMenu]',
 
@@ -131,6 +136,19 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
 
 		this.showButton(ZCS.constant.OP_EDIT, !hideAll && !params.isMultiple)
 	},
+
+    updateTitle: function (params) {
+        var convTitleBar = this.getConvTitleBar();
+
+        if (convTitleBar && params && params.title != null) {
+            convTitleBar.setHtml(params.title);
+            if (params.title) {
+                convTitleBar.show();
+            } else {
+                convTitleBar.hide();
+            }
+        }
+    },
 
 	/**
      * Displays the contact form to either create a new contact or edit an existing one.
@@ -311,37 +329,60 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
     doEdit: function() {
         var contact = this.getItem();
         if (contact.get('isGroup')) {
-	        Ext.Msg.alert(ZtMsg.error, ZtMsg.errorEditContactGroup);
+            Ext.Msg.alert(ZtMsg.error, ZtMsg.errorEditContactGroup);
         }
         else {
             this.showContactForm(ZCS.constant.OP_EDIT, contact);
         }
     },
 
-	/**
-	 * Adds or removes an instance of one of the multiply-occurring contact fields (such as Email).
-	 *
-	 * @param {Button}  button      plus or minus button
-	 */
-	doMultiAddRemove: function(button) {
+    /**
+     * Adds or removes an instance of one of the multiply-occurring contact fields (such as Email).
+     *
+     * @param {Button}  button      plus or minus button
+     */
+    doMultiAddRemove: function(button) {
+        var idParams = ZCS.util.getIdParams(button.getItemId()),
+            type = idParams.type,
+            action = idParams.action,
+            container = this.getContactPanel().down(type + 'container');
 
-		var idParams = ZCS.util.getIdParams(button.getItemId()),
-			type = idParams.type,
-			action = idParams.action,
-			container = this.getContactPanel().down(type + 'container');
 
-		if (container) {
-			if (action === 'add') {
-				container.addField();
-			}
-			else if (action === 'remove') {
-				container.removeField(idParams.fieldId);
-			}
+		if (container && action === 'remove') {
+			container.removeField(idParams.fieldId);
+            return;
 		}
+
+        var willShowOptionsOnTap = button.getWillShowOptionsOnTap();
+        
+        if (willShowOptionsOnTap) {
+            var fieldList = Ext.Array.clone(container.getOptionalFields());
+            while (true) {
+                var stop = true;
+                for (var i = 0; i < fieldList.length; i += 1) {
+                    option = fieldList[i];
+                    if (container.getVisibleFields().indexOf(option.order) != -1) {
+                        stop = false;
+                        Ext.Array.remove(fieldList, option);
+                        break;
+                    }
+                }
+                if (stop) break;
+            }
+
+            button.setAvailableOptionalFields(fieldList);
+
+            if (fieldList.length) {
+                this.showFieldsMenu(button);
+            }
+        }
+
+        if (container && action === 'add' && type !== "name" && type !== "company") {
+            container.addField();
+        }
 	},
 
     modifyContact: function(newContact, changedAttrs) {
-
         var contact = this.getItem(),
             me = this,
             data = {
@@ -362,11 +403,7 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
 
 		var	panel = this.getContactPanel(),
 			form = panel.down('formpanel'),
-			value, formField,
-			extraNameFieldsShown = false,
-			extraJobFieldsShown = false,
-            contactImgField = form.down('#photofield'),
-            imageUrl = contact.get('imageUrl');
+			value, formField;
 
 	    // Create and populate the simple attrs
 	    Ext.each(ZCS.constant.CONTACT_FIELDS, function(attr) {
@@ -374,30 +411,36 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
 		    if (value) {
 			    formField = form.down('field[name=' + attr + ']');
 			    if (formField) {
-				    if (ZCS.constant.IS_EXTRA_NAME_FIELD[attr] && !extraNameFieldsShown) {
-					    panel.showNameFields();
-					    extraNameFieldsShown = true;
+                    formField.setValue(value);
+                } else {
+				    if (ZCS.constant.IS_EXTRA_NAME_FIELD[attr]) {
+                        var container = panel.down('namecontainer');
+                        container.addField({
+                            mandatory: false,
+                            value: value,
+                            name: attr,
+                            order: ZCS.constant.NAME_FIELDS_ORDER[attr]
+                        });
 				    }
-				    if (ZCS.constant.IS_EXTRA_JOB_FIELD[attr] && !extraJobFieldsShown) {
-					    panel.showJobFields();
-					    extraJobFieldsShown = true;
+				    if (ZCS.constant.IS_EXTRA_JOB_FIELD[attr]) {
+                        var container = panel.down('companycontainer');
+                        container.addField({
+                            mandatory: false,
+                            value: value,
+                            name: attr,
+                            order: ZCS.constant.COMPANY_FIELDS_ORDER[attr]
+                        });
 				    }
-				    formField.setValue(value);
-			    }
+                }
 		    }
 	    }, this);
-
-        // Fix for bug: 82478. Set or unset contact image
-        contactImgField.setStyle({backgroundImage: imageUrl ? 'url("' + imageUrl + '")' : ''});
 
 	    // Create as many fields as we need for each multiple-occurring attribute (at least one will be added)
 	    var container;
 	    Ext.each(ZCS.constant.CONTACT_MULTI_FIELDS, function(multiField) {
 		    container = panel.down(multiField + 'container');
 		    Ext.each(contact.get(multiField), function(field, index) {
-			    if (index > 0) {
-				    container.addField();
-			    }
+			    container.addField();
 		    }, this);
 	    }, this);
 
@@ -497,6 +540,7 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
 		    contact.set(multiField, fieldValues);
 	    }, this);
 
+        console.log(contact);
         return contact;
     },
 

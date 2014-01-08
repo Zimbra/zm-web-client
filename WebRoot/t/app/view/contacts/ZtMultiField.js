@@ -25,56 +25,61 @@ Ext.define('ZCS.view.contacts.ZtMultiField', {
     extend: 'Ext.Container',
 
     config: {
-        layout:     'vbox',
-        labelName:  '',
-	    type:       ''
+        layout:     	'vbox',
+	    cls: 			'multifield',
+        labelName:  	'',
+	    type:       	'',
+	    // label of ZCS.view.contacts.ZtAddButton which is added to this container
+	    addButtonLabel: '',
+        // only used by "name" or "company" container type
+        optionalFields: [],
+        // only used by "name" or "company" container type
+        visibleFields: 	[]
     },
 
-	// By default, start with one field
 	initialize: function() {
-		this.addField();
+		// add a ZCS.view.contacts.ZtAddButton to the bottom of this container
+		var addButton = Ext.create('ZCS.view.contacts.ZtAddButton',{
+			text: [
+	            '<div class="contact-form-add-field-button-text">',
+	            	this.getAddButtonLabel(),
+	            '</div>'
+	        ].join(" "),
+
+	        itemId: ZCS.util.getUniqueId({
+		                type: this.getType(),
+		                action: 'add'
+		            }),
+	        handler: function(){
+	            this.up('contactpanel').fireEvent('multiAddRemove', this);
+	        }
+		});
+		this.add(addButton);
 	},
 
 	// Label for field type
     getLabelConfig: function() {
 	    return {
-		    xtype:  'label',
-		    html:   this.getLabelName(),
-		    cls:    'zcs-contact-label',
-		    width:  '20%'
-	    };
+	    	xtype: 'label',
+	    	width: '0%'
+	    }
     },
 
 	// Plus and minus buttons for adding/removing fields
-	getAddRemoveConfig: function(fieldId) {
-
+	getRemoveConfig: function(fieldId) {
 		return [
 			{
 				xtype:      'button',
-				iconCls:    'plus',
-				itemId:     ZCS.util.getUniqueId({
-								type:   this.getType(),
-								action: 'add'
-							}),
-				flex:       0,
-				align:      'right',
-				cls:        'zcs-flat zcs-contact-addremove',
-
-				handler: function() {
-					this.up('contactpanel').fireEvent('multiAddRemove', this);
-				}
-			},
-			{
-				xtype:      'button',
-				iconCls:    'minus',
+				ui: 		'plain',
+				iconCls:    'contactFormMinus',
 				itemId:     ZCS.util.getUniqueId({
 								type:       this.getType(),
 								action:     'remove',
 								fieldId:    fieldId
 							}),
 				flex:       0,
-				align:      'right',
-				cls:        'zcs-flat zcs-contact-addremove',
+				align:      'left',
+				cls: 		"contact-form-remove-field-button", 
 
 				handler: function() {
 					this.up('contactpanel').fireEvent('multiAddRemove', this);
@@ -83,37 +88,87 @@ Ext.define('ZCS.view.contacts.ZtMultiField', {
 		];
 	},
 
-	addField: function() {
-
+	addField: function(opts) {
 		var items = [],
 			fieldId = ZCS.util.getUniqueId();
 
-		items.push(this.getLabelConfig());
-		items.push(this.getFieldConfig(fieldId));
+		items.push(this.getLabelConfig(opts));
+		items.push(this.getFieldConfig(fieldId, opts));
 		var config = {
 			layout: 'hbox',
 			items:  items,
-			itemId: fieldId
+			itemId: fieldId,
+			style: {
+				"min-height": "40px"
+			},
+			opts: opts
 		};
-		this.add(config);
+
+		// determine the index at which the new field will be put in the container
+		var insertionIndex = this.findInsertionIndex(opts);
+		// then add it
+		this.insert(insertionIndex,Ext.factory(config, 'Ext.Container'));
+	},
+
+	/*
+	 * determine the index at which the new field will be inserted
+	 * basically this method just return the index right before
+	 * the ADD button, which is last item
+	 */
+	findInsertionIndex: function(opts){
+		return this.getItems().length-1;
 	},
 
 	removeField: function(fieldId) {
+		var me = this;
+		Ext.Msg.confirm(
+			ZtMsg.contactFormRemoveFieldConfirmationMessageHeader,
+			ZtMsg.contactFormRemoveFieldConfirmationMessageBody,
+			function(buttonid){
+				if (buttonid == 'yes'){
+					var field = me.down('#' + fieldId);
+					if (field) {
+						Ext.Anim.run(field, 'slide', {
+							out: true,
+							direction: 'left',
+							duration: 300,
+							after: function(){
+								// re-populate options list
+								if (me.getType() === "name" || me.getType() === "company" ){
+									var visibleFields = Ext.Array.clone(me.getVisibleFields());
+									Ext.Array.remove(visibleFields,field.opts.order);
+									me.setVisibleFields(visibleFields);
 
-		if (this.getItems().getCount() > 1) {
-			var field = this.down('#' + fieldId);
-			if (field) {
-				field.destroy();
+									// show ADD FIELD button again for Name and Company information fieldset
+						            var addFieldButton = field.up(me.getType()+ 'container').down('addtionalFieldsAddButton');
+						            if (addFieldButton && addFieldButton.isHidden()){
+						                addFieldButton.show();
+									}
+					            }
+
+								field.destroy();
+
+								// in case there's no multifield left, add top border radius for ADD button
+								if (me.getItems().length==1){
+									me.getItems().getAt(0).setStyle([
+										"border-top-left-radius: 6px;",
+										"border-top-right-radius: 6px;"
+									].join(""));
+								}
+							}
+						})
+					}
+
+				}
 			}
-		}
-		else {
-			// If trying to remove last field, just clear it.
-			this.reset();
-		}
+		);
 	},
 
 	reset: function() {
-		this.removeAll(true);
-		this.addField();
+		// remove all EXCEPT the last items i.e. the ADD field button
+		var nItems = this.getItems().length;
+		for (var i=0;i<nItems-1;i++){
+			this.removeAt(0);
+		}
 	}
 });

@@ -25,7 +25,8 @@ Ext.define('ZCS.view.contacts.ZtAddrField', {
     xtype: 'addresscontainer',
 
 	config: {
-		type: 'address'
+		type: 'address',
+		addButtonLabel: ZtMsg.contactFormButtonAddPhysicalAddress
 	},
 
 	statics: {
@@ -35,11 +36,13 @@ Ext.define('ZCS.view.contacts.ZtAddrField', {
 	getFieldConfig: function(fieldId) {
 
 		var thisClass = Ext.getClass(this),
-			seq = thisClass.seq++;
+			// seq = thisClass.seq += 1;
+			seq = thisClass.seq;
+			thisClass.seq += 1;
 
 		return {
 			layout: 'vbox',
-			width:  '80%',
+			width:  '100%',
 			items:  [
 				{
 					layout: 'hbox',
@@ -48,19 +51,20 @@ Ext.define('ZCS.view.contacts.ZtAddrField', {
 							xtype:          'textfield',
 							placeHolder:    ZtMsg.streetAdd,
 							name:           'street' + seq,
-							flex:           1
+							flex:           3
 						},
 						{
 							xtype:      'selectfield',
 							name:       'addressType' + seq,
-							flex:       0,
+							flex:       1,
 							options:    [
 								{text: ZtMsg.home,  value: 'home'},
 								{text: ZtMsg.work,  value: 'work'},
 								{text: ZtMsg.other, value: 'other'}
-							]
+							],
+							cls: 		'contact-form-multifield-select-field'
 						}
-					].concat(this.getAddRemoveConfig(fieldId))
+					].reverse().concat(this.getRemoveConfig(fieldId)).reverse()
 				},
 				{
 					layout: 'hbox',
@@ -100,7 +104,7 @@ Ext.define('ZCS.view.contacts.ZtAddrField', {
 		};
 	},
 
-	reset: function() {
+	reset: function () {
 		Ext.getClass(this).seq = 0;
 		this.callParent(arguments);
 	}

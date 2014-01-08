@@ -25,14 +25,14 @@ Ext.define('ZCS.view.contacts.ZtEmailField', {
     xtype: 'emailcontainer',
 
 	config: {
-		type: 'email'
-	},
+		type: 'email',
+		addButtonLabel: ZtMsg.contactFormButtonAddEmailAddress
+	},	
 
 	getFieldConfig: function(fieldId) {
-
 		return {
 			layout: 'hbox',
-			width: '80%',
+			width: '100%',
 			items: [
 				{
 					xtype:          'emailfield',
@@ -40,7 +40,7 @@ Ext.define('ZCS.view.contacts.ZtEmailField', {
 					name:           'email',
 					flex:           1
 				}
-			].concat(this.getAddRemoveConfig(fieldId))
+			].concat(this.getRemoveConfig(fieldId)).reverse()
 		};
 	}
 });
