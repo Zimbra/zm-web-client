@@ -135,6 +135,14 @@ function(batchCommand, saveState) {
         }
     }
 
+	// Saved searches
+	if (Dwt.getVisible(this._queryInputEl) && organizer.type === ZmOrganizer.SEARCH) {
+		var query = this._queryInputEl.value;
+		if (organizer.search.query !== query) {
+			batchCommand.add(new AjxCallback(organizer, organizer.setQuery, [query, null, this._handleErrorCallback]));
+			saveState.commandCount++;
+		}
+	}
 };
 
 ZmFolderPropertyView.prototype._handleFolderChange =
@@ -175,6 +183,15 @@ function(event) {
         Dwt.setVisible(this._nameOutputEl, false);
         Dwt.setVisible(this._nameInputEl,  true);
 	}
+
+	if (organizer.type === ZmOrganizer.SEARCH) {
+		this._queryInputEl.value = organizer.search.query;
+		this._props.setPropertyVisible(this._queryId, true);
+	}
+	else {
+		this._props.setPropertyVisible(this._queryId, false);
+	}
+
 	this._ownerEl.innerHTML = AjxStringUtil.htmlEncode(organizer.owner);
 	this._typeEl.innerHTML = ZmMsg[ZmOrganizer.FOLDER_KEY[organizer.type]] || ZmMsg.folder;
 
@@ -245,6 +262,11 @@ function() {
 	this._nameInputEl._dialog = this;
 	var nameElement = this._nameInputEl;
 
+	this._queryInputEl = document.createElement("INPUT");
+	this._queryInputEl.style.width = "20em";
+	this._queryInputEl._dialog = this;
+	var queryElement = this._queryInputEl;
+
 	this._ownerEl = document.createElement("DIV");
 	this._typeEl = document.createElement("DIV");
 	this._urlEl = document.createElement("DIV");
@@ -254,6 +276,9 @@ function() {
 	nameEl.appendChild(this._nameOutputEl);
 	nameEl.appendChild(nameElement);
 
+	var queryEl = document.createElement("DIV");
+	queryEl.appendChild(queryElement);
+
 	var excludeFbEl      = this._createCheckboxItem("excludeFb",        ZmMsg.excludeFromFreeBusy);
 	var globalMarkReadEl = this._createCheckboxItem("globalMarkRead",   ZmMsg.globalMarkRead);
 
@@ -262,6 +287,7 @@ function() {
 
 	this._props.addProperty(ZmMsg.nameLabel, nameEl);
 	this._props.addProperty(ZmMsg.typeLabel, this._typeEl);
+	this._queryId = this._props.addProperty(ZmMsg.queryLabel, queryEl);
 	this._ownerId = this._props.addProperty(ZmMsg.ownerLabel,  this._ownerEl);
 	this._urlId   = this._props.addProperty(ZmMsg.urlLabel,    this._urlEl);
 	this._permId  = this._props.addProperty(ZmMsg.permissions, this._permEl);
