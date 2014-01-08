@@ -195,7 +195,7 @@ Ext.define('ZCS.controller.ZtItemController', {
 
 	updateTitle: function (params) {
 		var toolbar = this.getItemPanelToolbar();
-		if (toolbar && params && params.title != null) {
+		if (toolbar && params && params.title != null && this.getItemPanel().getApp() !== ZCS.constant.APP_CONTACTS) {
 			toolbar.setTitle(params.title);
 		}
 	},
