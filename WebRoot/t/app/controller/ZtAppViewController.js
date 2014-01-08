@@ -176,12 +176,22 @@ Ext.define('ZCS.controller.ZtAppViewController', {
 		sheetConfig.modal = true;
 		sheetConfig.hideOnMaskTap = true;
 
-
 		sheetConfig.width = width;
 		sheetConfig.height = this.getOverviewPanelHeight();
 
-
 		var overviewPanel = Ext.Viewport.add(sheetConfig);
+
+		// if this sheet contains an editable overview panel
+		// AND the organizer list is in editing mode
+		// THEN we programmatically call ZtFolderListController::hideEditPanel()
+		// ON "hide" event of overviewPanel
+		if (config.showEdit){
+			overviewPanel.on('hide',function () {
+				if (overviewPanel.down('organizerlist') && overviewPanel.down('organizerlist').editing) {
+					overviewPanel.down('overview').fireEvent('shouldHideEditPanel');	
+				}
+			});
+		}
 
 		this.appViews[appview.getApp()].overviewPanel = overviewPanel;
 		this.appViews[appview.getApp()].positioningConfig = positioningConfig;
