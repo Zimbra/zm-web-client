@@ -1085,7 +1085,7 @@ function(params, isOutboxFolder, requestParams) {
     }
     else {
         var obj = requestParams.jsonObj;
-        obj.methodname = ZmItem.SOAP_CMD[params.type] + "Request";
+        obj.methodName = ZmItem.SOAP_CMD[params.type] + "Request";
         obj.id = action.id;
         ZmOfflineDB.setItem(obj, ZmOffline.REQUESTQUEUE, callback);
     }

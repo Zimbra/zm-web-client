@@ -74,9 +74,9 @@ function(callback, errorCallback, version) {
 					else if (objectStoreName === ZmOffline.REQUESTQUEUE) {
 						var store = db.createObjectStore(objectStoreName, {keyPath : "oid", autoIncrement : true});
 						//Request queue index
-						store.createIndex("methodname", "methodname");
+						store.createIndex("methodName", "methodName");
 						store.createIndex("id", "id");
-						store.createIndex("methodname, id", ["methodname", "id"]);
+						store.createIndex("methodName, id", ["methodName", "id"]);
 					} else if (objectStoreName === ZmApp.CALENDAR) {
 						// Store ZmAppts, otherwise no start and end date fields.  The rawAppts potentially represent
 						// several appts (base appt info + instance), with differing startDates.  The instanceId is a
@@ -305,7 +305,7 @@ function(key, objectStore) {
 
     try {
         if (key.id && key.methodName) {
-            index = objectStore.index("methodname, id");
+            index = objectStore.index("methodName, id");
             [].concat(key.methodName).forEach(function(methodName) {
                 [].concat(key.id).forEach(function(id) {
                     keyRangeArray.push(IDBKeyRange.only([methodName, id]));
@@ -319,7 +319,7 @@ function(key, objectStore) {
             });
         }
         else if (key.methodName) {
-            index = objectStore.index("methodname");
+            index = objectStore.index("methodName");
             [].concat(key.methodName).forEach(function(methodName) {
                 keyRangeArray.push(IDBKeyRange.only(methodName));
             });

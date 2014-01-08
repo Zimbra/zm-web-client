@@ -36,8 +36,8 @@ ZmOffline = function(){
     ZmOffline.SUPPORTED_APPS = [ZmApp.MAIL, ZmApp.CONTACTS, ZmApp.CALENDAR];
     ZmOffline.SUPPORTED_MAIL_TREE_VIEWS = [ZmOrganizer.FOLDER, ZmOrganizer.SEARCH, ZmOrganizer.TAG];
     // The number of days we read into the future to get calendar entries
-    ZmOffline.CALENDAR_LOOK_BEHIND = 7;
-    ZmOffline.CALENDAR_READ_AHEAD  = 21;
+    ZmOffline.CALENDAR_LOOK_BEHIND_DAYS = 7;
+    ZmOffline.CALENDAR_READ_AHEAD_DAYS  = 21;
 };
 
 ZmOffline.MAIL_PROGRESS = "Mail";
@@ -215,9 +215,9 @@ function(startTime, endTime, calendarIds, callback, getMessages, previousMessage
         endDate.setHours(23,59,59,999);
         //grab a week's appt backwards for reminders
         var startDate = new Date(endDate.getTime());
-        startDate.setDate(startDate.getDate()-ZmOffline.CALENDAR_LOOK_BEHIND);
+        startDate.setDate(startDate.getDate()-ZmOffline.CALENDAR_LOOK_BEHIND_DAYS);
         startDate.setHours(0,0,0, 0);
-        endDate.setDate(endDate.getDate()+ ZmOffline.CALENDAR_READ_AHEAD);
+        endDate.setDate(endDate.getDate()+ ZmOffline.CALENDAR_READ_AHEAD_DAYS);
         startTime = startDate.getTime();
         endTime   = endDate.getTime();
     }
@@ -229,6 +229,8 @@ function(startTime, endTime, calendarIds, callback, getMessages, previousMessage
             calendarIds.push(calendarId);
         }
     }
+    // Store the marker containing the end of the current display time window.
+    localStorage.setItem("calendarSyncTime", endTime);
 
     // Appt Search Request.  This request will provide data for the calendar view displays, the reminders, and
     // the minical display.  Entries will be stored as ZmAppt data,
@@ -680,14 +682,14 @@ function(items, type){
 
     // We only care about changes within our display window.
     startOfDayDate.setHours(0,0,0,0);
-    var newStartTime = startOfDayDate.getTime() - (AjxDateUtil.MSEC_PER_DAY * ZmOffline.CALENDAR_LOOK_BEHIND);
+    var newStartTime = startOfDayDate.getTime() - (AjxDateUtil.MSEC_PER_DAY * ZmOffline.CALENDAR_LOOK_BEHIND_DAYS);
     endOfDayDate.setHours(23,59,59,999)
-    var newEndTime   = endOfDayDate.getTime()   + (AjxDateUtil.MSEC_PER_DAY * ZmOffline.CALENDAR_READ_AHEAD);
+    var newEndTime   = endOfDayDate.getTime()   + (AjxDateUtil.MSEC_PER_DAY * ZmOffline.CALENDAR_READ_AHEAD_DAYS);
 
     var previousEndTime = newEndTime;
     var lastSyncTime = localStorage.getItem("calendarSyncTime");
     if (lastSyncTime) {
-        previousEndTime = parseInt(lastSyncTime) + (AjxDateUtil.MSEC_PER_DAY * ZmOffline.CALENDAR_READ_AHEAD);
+        previousEndTime = parseInt(lastSyncTime) + (AjxDateUtil.MSEC_PER_DAY * ZmOffline.CALENDAR_READ_AHEAD_DAYS);
     }
     localStorage.setItem("calendarSyncTime", endOfDayDate.getTime());
 

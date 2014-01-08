@@ -136,6 +136,8 @@ ZmCalViewController.ACTION_CODE_TO_VIEW[ZmKeyMap.CAL_MONTH_VIEW]		= ZmId.VIEW_CA
 ZmCalViewController.ACTION_CODE_TO_VIEW[ZmKeyMap.CAL_LIST_VIEW]			= ZmId.VIEW_CAL_LIST;
 ZmCalViewController.ACTION_CODE_TO_VIEW[ZmKeyMap.CAL_FB_VIEW]		    = ZmId.VIEW_CAL_FB;
 
+ZmCalViewController.CHECKED_STATE_KEY = "CalendarsChecked";
+
 // Zimlet hack
 ZmCalViewController.prototype.postInitListeners =
 function () {
@@ -347,14 +349,43 @@ function() {
     return (this._checkedAccountCalendarIds.length == 0) ? [] : this._checkedAccountCalendarIds[0].slice(0);
 }
 
+// Called whether starting on or offline
 ZmCalViewController.prototype.getOfflineSearchCalendarIds =
 function() {
     if (!this._offlineSearchCalendarIds) {
-        // Generate the checked calendar data
-        this._updateCheckedCalendars();
+
+        var checkedCalendarHash = null;
+        if (appCtxt.isWebClientOffline()) {
+            checkedCalendarHash = this._retrieveCalendarCheckedState();
+        }
+
+        // Generate the checked calendar data - this will also store the calendar entries, if we are starting up online
+        this._updateCheckedCalendars(checkedCalendarHash);
     }
     return (this._offlineSearchCalendarIds);
 }
+
+ZmCalViewController.prototype._storeCalendarCheckedState =
+function() {
+    // if !offline, store which calendars are currently checked, in localStorage.  This will be updated
+    // while running, and reloaded if the app starts in offline mode.
+    var calendarCheckedState = this._checkedCalendarIds.join(":");
+    localStorage.setItem(ZmCalendarApp.CHECKED_STATE_KEY, calendarCheckedState);
+}
+
+
+ZmCalViewController.prototype._retrieveCalendarCheckedState =
+function() {
+    // Starting up offline, retrieve the stored calendar checked state
+    var checkedStateText = localStorage.getItem(ZmCalendarApp.CHECKED_STATE_KEY);
+    var checkedCalendarFolderIds = checkedStateText.split(":");
+    var checkedCalendarHash = {};
+    for (var i = 0; i < checkedCalendarFolderIds.length; i++) {
+        checkedCalendarHash[checkedCalendarFolderIds[i]] = true;
+    }
+    return checkedCalendarHash;
+}
+
 
 /**
  * Gets the unchecked calendar folder ids for a owner email
@@ -481,7 +512,7 @@ ZmCalViewController.__map_id = function(item) {
 };
 
 ZmCalViewController.prototype._updateCheckedCalendars =
-function() {
+function(checkedCalendarHash) {
     var allCalendars = [];
 	if (this._calTreeController) {
 		if (appCtxt.multiAccounts) {
@@ -535,7 +566,13 @@ function() {
             (cal.isRemote && !cal.isRemote())) {
             this._reminderCalendarIds.push(cal.id);
         }
-        if (cal.isChecked) {
+        var checked = cal.isChecked;
+        if (checkedCalendarHash) {
+            // LocalStorage values passed in upon offline startup, use those
+            checked = checkedCalendarHash[cal.id] ? true : false;
+            cal.isChecked = checked;
+        }
+        if (checked) {
             if (cal.id == ZmOrganizer.ID_TRASH) {
                 trashFolder = cal;
             } else {
@@ -560,6 +597,13 @@ function() {
     // convert hash to local array
     for (var i in checkedAccountCalendarIds) {
         this._checkedAccountCalendarIds.push(checkedAccountCalendarIds[i]);
+    }
+
+    if (!checkedCalendarHash) {
+        // Not the initial call, update the stored calendar info.  Note this will be called when calendars are
+        // checked/unchecked by the user (online or offline), and when notifications modifying the calendars
+        // are received.
+        this._storeCalendarCheckedState();
     }
 
     // return list of checked calendars
