@@ -65,8 +65,7 @@ function () {
 
 ZmZimletsPage.prototype.reset =
 function(){
-	var zimlets = this.getZimlets();
-	var arr = zimlets._vector.getArray();
+	var arr = this.getZimletsArray();
 	for (var i = 0; i < arr.length; i++) {
 		arr[i].restoreStatus();
 	}
@@ -75,8 +74,10 @@ function(){
 
 ZmZimletsPage.prototype.showMe =
 function(deferred){
-	ZmPreferencesPage.prototype.showMe.call(this);	
-	if (!appCtxt.getZimletMgr().getZimlets().length) {
+	ZmPreferencesPage.prototype.showMe.call(this);
+	var zimlets = this.getZimlets();
+	if (zimlets.size() === 0) {
+		this._zimlets = null; //otherwise it would stay cached and would not update when this method is calledback.
 		if (!deferred) {
 			appCtxt.getAppController().addListener(ZmAppEvent.POST_STARTUP, new AjxListener(this, this.showMe, [true]));
 		}
@@ -84,7 +85,7 @@ function(deferred){
 	}
 	if (this._listView) {
 		var s = this._listView.getSelection();
-		this._listView.set(this.getZimlets()._vector.clone());
+		this._listView.set(zimlets.clone());
 		if (s && s[0]) {
 			this._listView.setSelection(s[0]);
 		}
@@ -327,11 +328,11 @@ function(zimletName, result) {
 	}
 
 	// remove the uninstalled zimlet from the listview
-    var zimlets = this.getZimlets();
-	var zimlet = zimlets.getPrefZimletByName(zimletName);
+    var zimletsCtxt = this.getZimletsCtxt();
+	var zimlet = zimletsCtxt.getPrefZimletByName(zimletName);
 	if (zimlet) {
-		zimlets.removePrefZimlet(zimlet);
-		this._listView.set(zimlets._vector.clone());
+		zimletsCtxt.removePrefZimlet(zimlet);
+		this._listView.set(zimletsCtxt.getZimlets().clone());
 	}
 
 	// prompt user to resart client
@@ -347,7 +348,7 @@ ZmZimletsPage.prototype.addCommand  =
 function(batchCommand) {
 	var soapDoc = AjxSoapDoc.create("ModifyZimletPrefsRequest", "urn:zimbraAccount");
 	// LDAP supports multi-valued attrs, so don't serialize list
-	var zimlets = this.getZimlets()._vector.getArray();
+	var zimlets = this.getZimletsArray();
 	var settingsObj = appCtxt.getSettings();
 	var setting = settingsObj.getSetting(ZmSetting.CHECKED_ZIMLETS);
 	var checked = [];
@@ -366,7 +367,7 @@ function(batchCommand) {
 ZmZimletsPage.prototype._reloadZimlets =
 function() {
 	// reset all zimlets origStatus
-	var zimlets = this.getZimlets()._vector.getArray();
+	var zimlets = this.getZimletsArray();
 	for (var i = 0; i < zimlets.length; i++) {
 		zimlets[i].resetStatus();
 	}
@@ -391,15 +392,14 @@ function() {
 
 ZmZimletsPage.prototype._isChecked =
 function(name) {
-	var z = this.getZimlets().getPrefZimletByName(name);
+	var z = this.getZimletsCtxt().getPrefZimletByName(name);
 	return (z && z.active);
 };
 
 ZmZimletsPage.prototype.isDirty =
 function() {
-	var allZimlets = this.getZimlets();
 	var dirty = false;
-	var arr = allZimlets._vector.getArray();
+	var arr = this.getZimletsArray();
 	var dirtyZimlets = [];
 
 	var printZimlet = function(zimlet) {
@@ -429,13 +429,24 @@ function() {
  * 
  * @private
  */
-ZmZimletsPage.prototype.getZimlets =
+ZmZimletsPage.prototype.getZimletsCtxt =
 function() {
 	if (!this._zimlets) {
 		this._zimlets = ZmZimletsPage._getZimlets();
 	}
 	return this._zimlets;
 };
+
+ZmZimletsPage.prototype.getZimlets =
+function() {
+	return this.getZimletsCtxt().getZimlets();
+};
+
+ZmZimletsPage.prototype.getZimletsArray =
+function() {
+	return this.getZimlets().getArray();
+};
+
 
 ZmZimletsPage._getZimlets =
 function() {
@@ -526,7 +537,7 @@ function(list) {
 
 ZmPrefZimletListView.prototype._handleZimletsLoaded = function(evt) {
     this._zimletsLoaded = true;
-    var array = this.parent.getZimlets()._vector.getArray();
+    var array = this.parent.getZimletsArray();
     for (var i = 0; i < array.length; i++) {
         var item = array[i];
         var label = item.label || item.name.replace(/^.*_/,"");
@@ -635,7 +646,7 @@ function(ev) {
 	var flvId = target.getAttribute("_flvId");
 	var flv = AjxCore.objectWithId(flvId);
 	var name = target.getAttribute("_name");
-	var z = flv.parent.getZimlets().getPrefZimletByName(name);
+	var z = flv.parent.getZimletsCtxt().getPrefZimletByName(name);
 	if (z) {
 		z.active = !z.active;
 	}
@@ -677,6 +688,11 @@ ZmPrefZimlets.prototype.constructor = ZmPrefZimlets;
 ZmPrefZimlets.prototype.toString =
 function() {
 	return "ZmPrefZimlets";
+};
+
+ZmPrefZimlets.prototype.getZimlets =
+function() {
+	return this._vector;
 };
 
 ZmPrefZimlets.prototype.addPrefZimlet =

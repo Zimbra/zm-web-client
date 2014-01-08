@@ -103,11 +103,6 @@ function(zimletArray, userProps, target, callback, sync) {
 			&& appCtxt.get(ZmSetting.DISABLE_SENSITIVE_ZIMLETS_IN_MIXED_MODE) == "TRUE") {
 		zimletArray = this._getNonSensitiveZimlets(zimletArray);
 	}
-	if (!zimletArray || !zimletArray.length) {
-		this.loaded = true;
-		this._resetOverviewTree();
-		return;
-	}
 	var packageCallback = callback ? new AjxCallback(this, this._loadZimlets, [zimletArray, userProps, target, callback, sync]) : null;
 	AjxPackage.require({ name: "Zimlet", callback: packageCallback });
 	if (!callback) {
