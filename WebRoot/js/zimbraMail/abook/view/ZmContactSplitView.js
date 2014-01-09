@@ -448,17 +448,14 @@ function(contact, isGal, oldContact, expandDL, isBack) {
 		return;
 	}
 
-	var folderId = contact.folderId;
-	var folder = folderId ? appCtxt.getById(folderId) : null;
-	var color = folder ? folder.color : ZmOrganizer.DEFAULT_COLOR[ZmOrganizer.ADDRBOOK];
-
-	var addrBook = contact.getAddressBook(); 
+	var addrBook = contact.getAddressBook();
+	var color = addrBook ? addrBook.color : ZmOrganizer.DEFAULT_COLOR[ZmOrganizer.ADDRBOOK];
 	var subs = {
 		id: this._htmlElId,
 		contact: contact,
 		addrbook: addrBook,
 		contactHdrClass: (ZmOrganizer.COLOR_TEXT[color] + "Bg"),
-		isInTrash: (folder && folder.isInTrash())
+		isInTrash: (addrBook && addrBook.isInTrash())
 	};
 
 	if (contact.isGroup()) {

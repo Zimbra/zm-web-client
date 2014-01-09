@@ -379,7 +379,7 @@
 				<table class='ZPropertySheet' cellspacing='6'>
 					<tr>
                         <td id='${id}_locationLabel' class='contactLocation'><$= ZmMsg.locationLabel $></td>
-						<$ if ((data.isGal || data.addrbook) && !isEdit) { $>
+						<$ if (!isEdit) { $>
 							<td id='${id}_locationFolder' class='companyFolder'>
                                 <$ if (data.addrbook) { $>
 								    <$= AjxImg.getImageHtml(data.addrbook.getIconWithColor()) $>&nbsp;<$= data.addrbook.getName() $>
@@ -387,7 +387,7 @@
                                     <$= AjxImg.getImageHtml('GAL') $>&nbsp;<$= ZmMsg.GAL $>
                                 <$ } $>
 							</td>
-						<$ } else if (isEdit) { $>
+						<$ } else { $>
 							<td id='${id}_LOCATION_FOLDER'></td>
 						<$ } $>
 					</tr>
