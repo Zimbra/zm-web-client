@@ -372,9 +372,14 @@ function(params) {
 				if (this.isCheckedStyle) {
 					ti.showCheckBox(false);
 				}
-                params.lastRenderedFolder  = children[i-1];
+                params.lastRenderedFolder  = children[i - 1];
 				params.showRemainingFoldersNode = ti;
 				child._showFoldersCallback = new AjxCallback(this, this._showRemainingFolders, [params]);
+				if (this._dragSrc) {
+					// Bug 55763 - expand placeholder on hover; replacing the _dragHover function is the easiest way, if a bit hacky
+					ti._dragHover = this._showRemainingFolders.bind(this, params);
+				}
+
 				return;
 			}
 		}
