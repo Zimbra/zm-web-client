@@ -258,5 +258,9 @@ tinyMCE.addI18n({
         wordcount: {
             words: "Words:"
         },
+        zimbra: {
+            "blocked_url_title": "Invalid URL",
+            "blocked_url_alert": "Sorry, the URL scheme you entered is not allowed. Please enter a regular URL, such as one starting with \"http\" or \"https\"."
+        }
     }
 });

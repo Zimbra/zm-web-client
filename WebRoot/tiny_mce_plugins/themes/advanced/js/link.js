@@ -33,6 +33,35 @@ var LinkDialog = {
 	update : function() {
 		var f = document.forms[0], ed = tinyMCEPopup.editor, e, b, href = f.href.value.replace(/ /g, '%20');
 
+		/* BEGIN ZIMBRA CHANGE - bug 85478 */
+		// disallow insecure URI schemes
+		if (/^(javascript|data):/.test(href)) {
+			var title = ed.translate('zimbra.blocked_url_title');
+			var msg = ed.translate('zimbra.blocked_url_alert');
+
+			var win = tinyMCEPopup.getWin();
+
+			if (win && win.appCtxt && !tinyMCE.isIE) {
+				// we popup the dialog in a callback on the parent
+				// window in order to display it *after* popping down
+				// this dialog, and thus destroying our current
+				// execution context -- however, this doesn't work in IE
+				win.setTimeout(function() {
+					var dlg = win.appCtxt.getMsgDialog();
+					dlg.setMessage(msg, win.DwtMessageDialog.CRITICAL_STYLE,
+					               title);
+					dlg.popup(null, true);
+				}, 0);
+
+				tinyMCEPopup.close();
+			} else {
+					ed.windowManager.alert(title + '\n\n' + msg);
+			}
+
+			return;
+		}
+		/* END ZIMBRA CHANGE - bug 85478 */
+
 		tinyMCEPopup.restoreSelection();
 		e = ed.dom.getParent(ed.selection.getNode(), 'A');
 
