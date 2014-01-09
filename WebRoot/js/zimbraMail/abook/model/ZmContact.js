@@ -2540,7 +2540,9 @@ function(node) {
 	this.isLoaded = true;
 	this.rev = node.rev;
 	this.sf = node.sf || node._attrs.sf;
-	this.folderId = node.l;
+	if (!this.isGal) {
+		this.folderId = node.l;
+	}
 	this.created = node.cd;
 	this.modified = node.md;
 
