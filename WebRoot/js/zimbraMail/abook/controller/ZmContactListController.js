@@ -684,7 +684,7 @@ function(parent, num) {
 	if (contactGroupMenu) {
 		contactGroupMenu.setNewDisabled(folder && folder.isReadOnly());
 	}
-	appCtxt.notifyZimlets("resetToolbarOperations",[parent, num]);
+	appCtxt.notifyZimlets("resetContactListToolbarOperations",[parent, num]);
 	if (!this.isGalSearch()) {
 		parent.enable([ZmOperation.SEARCH_MENU, ZmOperation.BROWSE, ZmOperation.NEW_MENU, ZmOperation.VIEW_MENU], true);
 
