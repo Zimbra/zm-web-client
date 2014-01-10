@@ -262,6 +262,8 @@ function(apptIds, itemQueryClause, startTime, endTime, callback) {
     request.types  = ZmSearch.TYPE[ZmItem.APPT];
     var query      = itemQueryClause.join(" OR ");
     request.query  = {_content:query};
+    request.calExpandInstStart = startTime;
+    request.calExpandInstEnd   = endTime;
 
     // Call with getMessages == false, so callback will continue the downloading, and do the combined getMsgRequest call
     var respCallback = this._handleCalendarResponse.bind(this, startTime, endTime, callback, callback == null, null, apptIds);
@@ -293,7 +295,8 @@ function(startTime, endTime, callback, getMessages, previousMessageIds, apptIds,
             apptStartTime  = appt.startDate.getTime();
             apptEndTime    = appt.endDate.getTime();
             // If this was called via _downloadByApptId (Sync items), prune if a synced item is outside
-            // of the display window
+            // of the display window.  This may not be needed, since it looks like we can use calExpandInstStart and
+            // End in the Search, but leave it for the moment.
             if (((apptStartTime >= startTime) && (apptStartTime <= endTime)) ||
                 ((apptEndTime   >= startTime) && (apptEndTime   <= endTime)) ) {
                 // The appts do not contain a unique id for each instance.  Generate one (used as the primary key),
@@ -314,7 +317,7 @@ function(startTime, endTime, callback, getMessages, previousMessageIds, apptIds,
         // Store the new/modified entries
         ZmOfflineDB.setItem(apptContainers, ZmApp.CALENDAR, null, this.calendarDownloadErrorCallback.bind(this));
 
-        // Sync informed us that the remainining apptIds were modified, but we did not find them when searching.
+        // Sync informed us that the remaining apptIds were modified, but we did not find them when searching.
         // This implies they were moved to trash.  We don't track the Trash folder offline, so delete them.
         var search;
         var offlineDeleteTrashedAppts = this._offlineDeleteAppts.bind(this);
@@ -696,10 +699,12 @@ function(items, type){
     // Accumulate the ids of the altered appts
     var itemQueryClause = [];
     var apptIds  = {};
+    var sId;
     for (var i = 0, length = items.length; i < length; i++){
         item = items[i];
-        apptIds[item.id] = true;
-        itemQueryClause.push("item:\"" + item.id.toString() + "\"");
+        sId = item.id.toString();
+        apptIds[sId] = true;
+        itemQueryClause.push("item:\"" + sId + "\"");
     }
 
     // If this is not the first download, we need to extend the visible range beyond the last update which read
