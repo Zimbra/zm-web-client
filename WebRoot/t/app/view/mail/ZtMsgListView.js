@@ -85,7 +85,7 @@ Ext.define('ZCS.view.mail.ZtMsgListView', {
 				if (idParams.objType === ZCS.constant.OBJ_TAG) {
 					msgHeader.fireEvent('tagTap', elm, {
 						menuName:   ZCS.constant.MENU_TAG,
-						msg:		msg,
+						item:		msg,
 						tagName:	idParams.name
 					});
 					return true;

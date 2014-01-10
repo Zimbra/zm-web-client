@@ -48,7 +48,7 @@ Ext.define('ZCS.view.contacts.ZtContactView', {
 				if (elm.hasCls('zcs-tag-bubble')) {
 					this.fireEvent('tagTap', elm, {
 						menuName:   ZCS.constant.MENU_TAG,
-						contact:    this.getContact(),
+						item:       this.getContact(),
 						tagName:    idParams.name
 					});
 					return true;

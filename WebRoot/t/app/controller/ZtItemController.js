@@ -84,10 +84,13 @@ Ext.define('ZCS.controller.ZtItemController', {
 	/**
 	 * Removes the given tag from the item.
 	 *
-	 * @param {String}  tagName     tag name
+	 * @param {Object}  tagParams   item, tagName, menuName
 	 */
-	doRemoveTag: function(tagName) {
-		var item = this.getItem();
+	doRemoveTag: function(tagParams) {
+
+		var item = tagParams.item || this.getItem(),
+			tagName = tagParams.tagName;
+
 		if (item && tagName) {
 			this.tagItem(item, tagName, true);
 		}
