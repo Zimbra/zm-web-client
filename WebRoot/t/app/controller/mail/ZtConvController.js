@@ -434,6 +434,29 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 		this.renderMessages();
 	},
 
+	updateMenuLabels: function(menuButton, params, menu) {
+
+		var conv = this.getItem(),
+			unreadLabel, flagLabel;
+
+		if (params.menuName === ZCS.constant.MENU_CONV) {
+
+			unreadLabel = conv.get('isUnread') ? ZtMsg.convMarkRead : ZtMsg.convMarkUnread;
+			flagLabel = conv.get('isFlagged') ? ZtMsg.convUnflag : ZtMsg.convFlag;
+
+			var store = menu.getStore(),
+				unreadAction = menu.getItemAt(store.find('action', ZCS.constant.OP_MARK_READ)),
+				flagAction = menu.getItemAt(store.find('action', ZCS.constant.OP_FLAG));
+
+			if (unreadAction) {
+				unreadAction.getRecord().set('label', unreadLabel);
+			}
+			if (flagAction) {
+				flagAction.getRecord().set('label', flagLabel);
+			}
+		}
+	},
+
 	/**
 	 * Handle message change notifications.
 	 */

@@ -365,19 +365,12 @@ Ext.define('ZCS.controller.mail.ZtMsgController', {
 
 		var menuName = params.menuName;
 
-		if (menuName === ZCS.constant.MENU_CONV || menuName === ZCS.constant.MENU_MSG) {
-			var	isConvMenu = (menuName === ZCS.constant.MENU_CONV),
-				unreadLabel, flagLabel,
-				spamLabel = (message.get('folderId') === ZCS.constant.ID_JUNK) ? ZtMsg.markNotSpam : ZtMsg.markSpam;
+		if (menuName === ZCS.constant.MENU_MSG) {
+			var	unreadLabel, flagLabel, spamLabel;
 
-			if (isConvMenu) {
-				unreadLabel = message.get('isUnread') ? ZtMsg.convMarkRead : ZtMsg.convMarkUnread;
-				flagLabel = message.get('isFlagged') ? ZtMsg.convUnflag : ZtMsg.convFlag;
-			}
-			else {
-				unreadLabel = message.get('isUnread') ? ZtMsg.markRead : ZtMsg.markUnread;
-				flagLabel = message.get('isFlagged') ? ZtMsg.unflag : ZtMsg.flag;
-			}
+			unreadLabel = message.get('isUnread') ? ZtMsg.markRead : ZtMsg.markUnread;
+			flagLabel = message.get('isFlagged') ? ZtMsg.unflag : ZtMsg.flag;
+			spamLabel = (message.get('folderId') === ZCS.constant.ID_JUNK) ? ZtMsg.markNotSpam : ZtMsg.markSpam;
 
 			var store = menu.getStore(),
 				unreadAction = menu.getItemAt(store.find('action', ZCS.constant.OP_MARK_READ)),
@@ -393,7 +386,8 @@ Ext.define('ZCS.controller.mail.ZtMsgController', {
 			if (spamAction) {
 				spamAction.getRecord().set('label', spamLabel);
 			}
-		} else if (menuName === ZCS.constant.MENU_ADDRESS) {
+		}
+		else if (menuName === ZCS.constant.MENU_ADDRESS) {
 			// Hiding/showing address listitems instead of changing labels
 			menu.hideItem(ZCS.constant.OP_ADD_CONTACT, true);
 			menu.hideItem(ZCS.constant.OP_EDIT, true);
