@@ -212,8 +212,8 @@ Ext.define('ZCS.controller.mail.ZtMsgController', {
 		ZCS.app.getComposeController().forward(actionParams.msg);
 	},
 
-	doComposeToAddress: function (actionParams) {
-		var addressModel = ZCS.model.mail.ZtEmailAddress.fromEmail(actionParams.address, ZCS.constant.TO);
+	doComposeToAddress: function (address) {
+		var addressModel = ZCS.model.mail.ZtEmailAddress.fromEmail(address, ZCS.constant.TO);
 		ZCS.app.getComposeController().showComposeForm([addressModel]);
 	},
 

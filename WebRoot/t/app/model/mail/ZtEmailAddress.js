@@ -77,7 +77,7 @@ Ext.define('ZCS.model.mail.ZtEmailAddress', {
 		 */
 		fromEmail: function(emailStr, type) {
 
-			emailStr = Ext.String.trim(emailStr);
+			emailStr = Ext.String.trim(emailStr || '');
 
 			var atIndex = emailStr.indexOf('@'),
 				dotIndex = emailStr.lastIndexOf('.'),
