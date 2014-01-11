@@ -33,6 +33,10 @@
  */
 ZmConvListController = function(container, mailApp, type, sessionId, searchResultsController) {
 	ZmDoublePaneController.apply(this, arguments);
+
+	if (appCtxt.get(ZmSetting.FORWARD_MENU_ENABLED)) {
+		this._listeners[ZmOperation.FORWARD_CONV] = this._forwardConvListener.bind(this);
+	}
 };
 
 ZmConvListController.prototype = new ZmDoublePaneController;
@@ -383,6 +387,52 @@ function(view) {
 ZmConvListController.prototype._preHideCallback =
 function(viewId, force, newViewId) {
 	return force ? true : this.popShield(viewId, null, newViewId);
+};
+
+ZmConvListController.prototype._getActionMenuOps = function() {
+
+	var list = ZmDoublePaneController.prototype._getActionMenuOps.apply(this, arguments),
+		index = AjxUtil.indexOf(list, ZmOperation.FORWARD);
+
+	if (index !== -1) {
+		list.splice(index + 1, 0, ZmOperation.FORWARD_CONV);
+	}
+	return list;
+};
+
+ZmConvListController.prototype._getSecondaryToolBarOps = function() {
+
+	var list = ZmDoublePaneController.prototype._getSecondaryToolBarOps.apply(this, arguments),
+		index = AjxUtil.indexOf(list, ZmOperation.EDIT_AS_NEW);
+
+	if (index !== -1) {
+		list.splice(index + 1, 0, ZmOperation.FORWARD_CONV);
+	}
+	return list;
+};
+
+ZmConvListController.prototype._resetOperations = function(parent, num) {
+
+	ZmDoublePaneController.prototype._resetOperations.apply(this, arguments);
+
+	var canForwardConv = false;
+	if (num === 1) {
+		var clv = this._mailListView;
+		if (clv._getDisplayedMsgCount(clv.getSelection()[0]) > 1) {
+			canForwardConv = true;
+		}
+	}
+	parent.enable(ZmOperation.FORWARD_CONV, canForwardConv);
+};
+
+ZmConvListController.prototype._forwardListener = function(ev) {
+	var action = ev.item.getData(ZmOperation.KEY_ID);
+	this._doAction({ev:ev, action:action, foldersToOmit:this.getFoldersToOmit(ZmMailListController.REPLY_FOLDERS_TO_OMIT)});
+};
+
+ZmConvListController.prototype._forwardConvListener = function(ev) {
+	var action = ev.item.getData(ZmOperation.KEY_ID);
+	this._doAction({ev:ev, action:ZmOperation.FORWARD_CONV, foldersToOmit:this.getFoldersToOmit()});
 };
 
 /**

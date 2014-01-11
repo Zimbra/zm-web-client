@@ -194,7 +194,7 @@ function(params) {
 		}
 	}
 
-	this._setSubject(action, msg, params.subjOverride);
+	this._setSubject(action, msg || (params.selectedMessages && params.selectedMessages[0]), params.subjOverride);
 	this._setBody(action, msg, params.extraBodyText);
 
 	if (appCtxt.get(ZmSetting.MAIL_PRIORITY_ENABLED)) {
@@ -1672,9 +1672,13 @@ function(spanId, id){
 	// Forward/Reply one message
 	if (!id) {
 		this._msgAttId = null;
-	} else if (this._msgIds && this._msgIds.length && (this._msgIds.indexOf(id) !== -1)) {
-		// Remove message from attached messages
-		this._msgIds.splice(this._msgIds.indexOf(id), 1);
+	}
+	else {
+		var index = this._msgIds && this._msgIds.length ? AjxUtil.indexOf(this._msgIds, id) : -1;
+		if (index !== -1) {
+			// Remove message from attached messages
+			this._msgIds.splice(index, 1);
+		}
 	}
 
 	this._removeAttachedFile(spanId);
