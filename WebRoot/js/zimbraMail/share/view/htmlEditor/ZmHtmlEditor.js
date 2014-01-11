@@ -640,7 +640,7 @@ function(id, content) {
 	var urlParts = AjxStringUtil.parseURL(location.href);
 
 	//important: tinymce doesn't handle url parsing well when loaded from REST URL - override baseURL/baseURI to fix this
-	tinymce.baseURL = appContextPath + ZmHtmlEditor.TINY_MCE_PATH + "/";
+	tinymce.baseURL = appContextPath + ZmHtmlEditor.TINY_MCE_PATH;
 
 	if (tinymce.EditorManager) {
 		tinymce.EditorManager.baseURI = new tinymce.util.URI(urlParts.protocol + "://" + urlParts.authority + tinymce.baseURL);
