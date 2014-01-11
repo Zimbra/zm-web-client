@@ -71,13 +71,25 @@ function() {
  * @private
  */
 ZmReminderController.prototype.refresh =
-function() {
+function(retryCount) {
 	this._searchTimeRange = this.getSearchTimeRange();
     AjxDebug.println(AjxDebug.REMINDER, "reminder search time range: " + this._searchTimeRange.start + " to " + this._searchTimeRange.end);
 
-	var params = this.getRefreshParams();
+	try {
+		if (retryCount == null && retryCount != 0) {
+			retryCount = 3; //retry 3 times before giving up.
+		}
+		var params = this.getRefreshParams();
+	} catch(e) {
+		//bug 76771 if there is a exception retry after 1 sec
+		if (retryCount) {
+			setTimeout(this.refresh.bind(this, --retryCount), 1000);
+		} else {
+			AjxDebug.println(AjxDebug.REMINDER, "Too many failures to get refresh params. Giving up.");
+		}
+	}
 	this._calController.getApptSummaries(params);
-	
+
 	// cancel outstanding refresh, since we are doing one now, and re-schedule a new one
 	if (this._refreshActionId) {
 		AjxTimedAction.cancelAction(this._refreshActionId);
