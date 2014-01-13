@@ -112,26 +112,23 @@ function() {
 
 ZmHtmlEditor.prototype._resetSize =
 function() {
-	var size = Dwt.getSize(this.getHtmlElement());
-	var x = size.x, y = size.y;
-
 	if (this._mode != Dwt.HTML) {
 		var field = this.getContentField();
-		// subtrack padding and borders
-		AjxUtil.foreach([this.getInsets(),
-		                 Dwt.getInsets(field)],
-                    function(insets) {
-                        y -= insets.top + insets.bottom;
-                        x -= insets.left + insets.right;
-                    });
-
-		Dwt.setSize(field, x, y);
+		var bounds = this.boundsForChild(field);
+		Dwt.setSize(field, bounds.width, bounds.height);
 		return;
 	}
 
 	var editor = this.getEditor();
 
-	if (!x || !y || !editor) {
+	if (!editor || !editor.getContentAreaContainer()) {
+		return;
+	}
+
+	var bounds = this.boundsForChild(editor.getContentAreaContainer());
+	var x = bounds.width, y = bounds.height;
+
+	if (x <= 0 || y <= 0) {
 		return;
 	}
 
@@ -147,15 +144,6 @@ function() {
     if (spellCheckModeDiv && spellCheckModeDiv.style.display !== "none") {
         y = y - Dwt.getSize(spellCheckModeDiv).y;
     }
-
-    // subtrack padding and borders
-    AjxUtil.foreach([this.getInsets(),
-                     Dwt.getInsets(editor.getContainer()),
-                     Dwt.getInsets(editor.getContentAreaContainer())],
-                    function(insets) {
-                        y -= insets.top + insets.bottom;
-                        x -= insets.left + insets.right;
-                    });
 
     editor.theme.resizeTo(Math.max(0, x), Math.max(0, y));
 };
