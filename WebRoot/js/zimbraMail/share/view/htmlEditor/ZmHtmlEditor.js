@@ -852,7 +852,11 @@ ZmHtmlEditor.prototype.onInit = function(ev) {
 
     obj._editorInitialized = true;
 
-    setTimeout(this._resetSize.bind(this), 0);
+    // issue the resize call five times in order to ensure that we get it right
+    // on all browsers
+    for (var i = 0; i < 5; i++) {
+        setTimeout(this._resetSize.bind(this), i * 200);
+    }
 
     AjxUtil.foreach(this._initCallbacks, function(fn) { fn.run() });
 };
