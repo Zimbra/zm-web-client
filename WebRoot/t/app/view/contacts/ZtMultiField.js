@@ -88,7 +88,7 @@ Ext.define('ZCS.view.contacts.ZtMultiField', {
 		];
 	},
 
-	addField: function(opts) {
+	addField: function (opts) {
 		var items = [],
 			fieldId = ZCS.util.getUniqueId();
 
@@ -107,7 +107,10 @@ Ext.define('ZCS.view.contacts.ZtMultiField', {
 		// determine the index at which the new field will be put in the container
 		var insertionIndex = this.findInsertionIndex(opts);
 		// then add it
-		this.insert(insertionIndex,Ext.factory(config, 'Ext.Container'));
+		var item = this.insert(insertionIndex, Ext.factory(config, 'Ext.Container'));
+
+		//Manually set this property because in production build it won't get copied over.
+		item.opts = opts;
 	},
 
 	/*
