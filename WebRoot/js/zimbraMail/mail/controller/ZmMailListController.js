@@ -1675,6 +1675,9 @@ function(msg) {
 	var w = appCtxt.isChildWindow ? window.opener : window;
     var calController = w.AjxDispatcher.run("GetCalController");
     calController.newApptFromMailItem(msg, new Date());
+	if (appCtxt.isChildWindow) {
+		window.close();
+	}
 };
 
 ZmMailListController.prototype._handleResponseNewTaskListener =
@@ -1684,9 +1687,11 @@ function(msg) {
 		msg = msg.cloneOf;
 	}
 	var w = appCtxt.isChildWindow ? window.opener : window;
-    var aCtxt = appCtxt.isChildWindow ? parentAppCtxt : appCtxt;
 	w.AjxDispatcher.require(["TasksCore", "Tasks"]);
-    aCtxt.getApp(ZmApp.TASKS).newTaskFromMailItem(msg, new Date());
+	w.appCtxt.getApp(ZmApp.TASKS).newTaskFromMailItem(msg, new Date());
+	if (appCtxt.isChildWindow) {
+		window.close();
+	}
 };
 
 ZmMailListController.prototype._handleResponseFilterListener =
@@ -1698,6 +1703,7 @@ function(msg) {
 	if (appCtxt.isChildWindow) {
 		var mailListController = window.opener.AjxDispatcher.run("GetMailListController");
 		mailListController._handleResponseFilterListener(msg);
+		window.close();
 		return;
 	}
 	
