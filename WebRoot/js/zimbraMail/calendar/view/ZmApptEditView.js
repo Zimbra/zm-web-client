@@ -1465,6 +1465,7 @@ function(forceShow) {
 
     var inputEl = this._attInputField[ZmCalBaseItem.OPTIONAL_PERSON].getInputElement();
     Dwt.setVisible(inputEl, Boolean(this._optionalAttendeesShown));
+    this.autoSize();
 };
 
 ZmApptEditView.prototype._toggleResourcesField =
@@ -1474,12 +1475,14 @@ function(forceShow) {
 
     var inputEl = this._attInputField[ZmCalBaseItem.EQUIPMENT].getInputElement();
     Dwt.setVisible(inputEl, Boolean(this._resourcesShown));
+    this.autoSize();
 };
 
 ZmApptEditView.prototype.showResourceField =
 function(show){
     this._showResources.innerHTML = show ? ZmMsg.hideEquipment : ZmMsg.showEquipment;
     Dwt.setVisible(this._resourcesContainer, Boolean(show))
+    this.autoSize();
 };
 
 
@@ -2879,23 +2882,23 @@ function() {
         node.style.height = node.parentNode.style.height;
 
     var size = this.getSize();
-    // Size x by the containing table (excluding the suggestion panel)
-    var mainTableSize = Dwt.getSize(this._mainTable);
-    if (mainTableSize.x <= 0 || size.y <= 0) { return; }
-
     var topDiv = document.getElementById(this._htmlElId + "_top");
     var topDivSize = Dwt.getSize(topDiv);
     var topSizeHeight = this._getComponentsHeight(true);
     var notesEditorHeight = (this._notesHtmlEditor && this._notesHtmlEditor.getHtmlElement()) ? this._notesHtmlEditor.getHtmlElement().clientHeight:0;
 	var rowHeight = (size.y - topSizeHeight) + notesEditorHeight ;
-    var rowWidth = mainTableSize.x;
+	var rowWidth = this.boundsForChild(this._notesHtmlEditor).width;
+
+	if (Dwt.getVisible(this._suggestions))
+		rowWidth -= Dwt.getSize(this._suggestions).x;
+
 	rowHeight = AjxEnv.isIE ? rowHeight - 10 : rowHeight + 12;
 
     if(rowHeight < 350){
         rowHeight = 350;
     }
 
-    this._notesHtmlEditor.setSize(rowWidth - 5, rowHeight);
+    this._notesHtmlEditor.setSize(rowWidth, rowHeight);
 };
 
 ZmApptEditView.prototype._getComponentsHeight =
@@ -2910,7 +2913,6 @@ function(excludeNotes) {
         compHeight += compSize.y;
     }
 
-    if(this._schedulerOpened) compHeight += this._scheduleView.getSize().y;
     return compHeight;
 };
 
@@ -2940,7 +2942,6 @@ function(newWidth, newHeight) {
     if(compHeight > ( size.y + 5 )) {
         Dwt.setSize(this.getHtmlElement().firstChild, size.x-15);
 
-        this._notesHtmlEditor.setSize(mainTableSize.x - 10);
         if(!this._scrollHandled){
             Dwt.setScrollStyle(this.getHtmlElement(), Dwt.SCROLL_Y);
             this._scrollHandled = true;
@@ -2949,7 +2950,6 @@ function(newWidth, newHeight) {
         if(this._scrollHandled){
             Dwt.setScrollStyle(this.getHtmlElement(), Dwt.CLIP);
             Dwt.setSize(this.getHtmlElement().firstChild, size.x);
-            this._notesHtmlEditor.setSize(mainTableSize.x - 10);
         }
         this._scrollHandled = false;
     }
