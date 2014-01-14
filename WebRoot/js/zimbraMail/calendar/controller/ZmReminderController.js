@@ -76,17 +76,18 @@ function(retryCount) {
     AjxDebug.println(AjxDebug.REMINDER, "reminder search time range: " + this._searchTimeRange.start + " to " + this._searchTimeRange.end);
 
 	try {
+		var params = this.getRefreshParams();
+	} catch(e) {
 		if (retryCount == null && retryCount != 0) {
 			retryCount = 3; //retry 3 times before giving up.
 		}
-		var params = this.getRefreshParams();
-	} catch(e) {
 		//bug 76771 if there is a exception retry after 1 sec
 		if (retryCount) {
 			setTimeout(this.refresh.bind(this, --retryCount), 1000);
-		} else {
-			AjxDebug.println(AjxDebug.REMINDER, "Too many failures to get refresh params. Giving up.");
+			return;
 		}
+		AjxDebug.println(AjxDebug.REMINDER, "Too many failures to get refresh params. Giving up.");
+		return;
 	}
 	this._calController.getApptSummaries(params);
 
