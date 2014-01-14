@@ -74,8 +74,9 @@ function(onlyValid) {
 	var list = [];
 	this._rehashByName();
 	for (var id in this._signatures) {
-		var signature = this._signatures[id];
-		if (signature._new && !this._isAutoAddedAndBlank(signature) && !(onlyValid && this._isInvalidSig(signature, true))) {
+		var signature = this._signatures[id],
+			isEmpty = signature._autoAdded && !AjxStringUtil._NON_WHITESPACE.test(signature.getValue());
+		if (signature._new && !isEmpty && !(onlyValid && this._isInvalidSig(signature, true))) {
 			list.push(signature);
 		}
 	}
@@ -760,6 +761,7 @@ function(skipControls, autoAdded) {
 	var signature = this._getNewSignature();
 	signature._autoAdded = autoAdded;
 	signature = this._addSignature(signature, skipControls);
+	setTimeout(this._sigName.focus.bind(this._sigName), 100);
 
 	return signature;
 };
@@ -789,7 +791,9 @@ function(signature, skipControls, reset, index, skipNotify) {
 	}
 
 	this._resetOperations();
-	this._byName[signature.name] = signature;
+	if (signature.name) {
+		this._byName[signature.name] = signature;
+	}
 
 	return signature;
 };
@@ -884,7 +888,15 @@ function(signature, clear) {
 ZmSignaturesPage.prototype._resetOperations =
 function() {
 	if (this._sigAddBtn) {
-		this._sigAddBtn.setEnabled(this._sigList.size() < this._maxEntries);
+		var hasEmptyNewSig = false;
+		for (var id in this._signatures) {
+			var signature = this._signatures[id];
+			if (signature._new && !signature.name) {
+				hasEmptyNewSig = true;
+				break;
+			}
+		}
+		this._sigAddBtn.setEnabled(!hasEmptyNewSig && this._sigList.size() < this._maxEntries);
 	}
 };
 
@@ -1053,6 +1065,7 @@ function(value) {
 		signature.name = value;
 		this._sigList.redrawItem(signature);
 		this._sigList.setSelection(signature, true);
+		this._resetOperations();
 		this._updateUsageSelects(signature, ZmEvent.E_MODIFY);
 	}
 };
@@ -1126,7 +1139,7 @@ function() {
 
 ZmSignatureListView.prototype._getCellContents =
 function(html, idx, signature, field, colIdx, params) {
-	html[idx++] = AjxStringUtil.htmlEncode(signature.name, true);
+	html[idx++] = signature.name ? AjxStringUtil.htmlEncode(signature.name, true) : ZmMsg.signatureNameHint;
 	return idx;
 };
 
@@ -1195,14 +1208,4 @@ function(ev) {
 	}
 
 	this.popdown();
-};
-
-/*
- * determines if signature was auto-added (e.g. user had no signatures) and is blank.
- * returns true if both auto added and blank, else false
- *
- */
-ZmSignaturesPage.prototype._isAutoAddedAndBlank =
-function(signature) {
-	return signature._autoAdded && !AjxStringUtil._NON_WHITESPACE.test(signature.getValue());
 };
