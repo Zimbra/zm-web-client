@@ -310,23 +310,26 @@ function(startTime, endTime, callback, getMessages, previousMessageIds, apptIds,
                                 };
                 apptContainers.push(apptContainer);
             }
-            if (apptIds) {
-                delete apptIds[appt.id];
+        }
+
+        // Unfortunately, periodic appts have a cancel mode ('Delete this instance and any future
+        // ones') that removes a portion of the appts associated with an apptId.  In order to
+        // assure that we have the correct appts and instances, delete all appts mentioned in
+        // the apptIds (provided when syncing) and then write the newly acquired appts (i.e. an
+        // update will be a delete then rewrite).
+        if (apptIds) {
+            var search;
+            var offlineDeleteTrashedAppts = this._offlineDeleteAppts.bind(this);
+            for (var apptId in apptIds) {
+                search = [apptId];
+                // If its a recurring appt, several ZmAppts may share the same id.  Find them and delete them all
+                ZmOfflineDB.doIndexSearch(search, ZmApp.CALENDAR, null, offlineDeleteTrashedAppts,
+                    this.calendarDeleteErrorCallback.bind(this), "id");
             }
         }
-        // Store the new/modified entries
-        ZmOfflineDB.setItem(apptContainers, ZmApp.CALENDAR, null, this.calendarDownloadErrorCallback.bind(this));
 
-        // Sync informed us that the remaining apptIds were modified, but we did not find them when searching.
-        // This implies they were moved to trash.  We don't track the Trash folder offline, so delete them.
-        var search;
-        var offlineDeleteTrashedAppts = this._offlineDeleteAppts.bind(this);
-        for (var apptId in apptIds) {
-            search = [apptId];
-            // If its a recurring appt, several ZmAppts may share the same id.  Find them and delete them all
-            ZmOfflineDB.doIndexSearch(search, ZmApp.CALENDAR, null, offlineDeleteTrashedAppts,
-                                      this.calendarDeleteErrorCallback.bind(this), "id");
-        }
+        // Store the new/modified entries.  This will execute after the deletion transactions above complete
+        ZmOfflineDB.setItem(apptContainers, ZmApp.CALENDAR, null, this.calendarDownloadErrorCallback.bind(this));
 
         // Now make a server read to get the detailed appt invites, for edit view and tooltips
         var msgIds = previousMessageIds ? previousMessageIds : [];
