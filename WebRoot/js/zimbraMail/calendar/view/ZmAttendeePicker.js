@@ -41,7 +41,6 @@ ZmAttendeePicker = function(editView, attendees, controller, type, dateInfo) {
 	this._dateInfo = dateInfo;
 
 	this._offset = 0;
-	this._defaultQuery = ".";
 	this._rendered = false;
 	this._isClean = true;
 	this._searchFields = {};

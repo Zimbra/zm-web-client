@@ -50,7 +50,6 @@ ZmContactSearch = function(params) {
 	DwtComposite.call(this, params);
 
 	this._options = params.options;
-	this._defaultQuery = ".";
 	this._initialized = false;
 	this._searchErrorCallback = new AjxCallback(this, this._handleErrorSearch);
 	if (!ZmContactSearch._controller) {
@@ -93,9 +92,6 @@ function(ascending, firstTime, lastId, lastSortVal) {
 	}
 
 	var query = this._searchCleared ? AjxStringUtil.trim(this._searchField.value) : "";
-	if (!query.length) {
-		query = this._defaultQuery;
-	}
 
 	var queryHint;
 	if (this._selectDiv) {

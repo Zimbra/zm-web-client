@@ -43,7 +43,6 @@ ZmContactPicker = function(buttonInfo) {
 	this._emailListOffset = 0; //client side paginating over email list. Offset of current page of email addresses. Quite different than _lastServerOffset if contacts have 0 or more than 1 email addresses.
 	this._serverContactOffset = 0; //server side paginating over contact list. Offset of last contact block we got from the server (each contact could have 0, 1, or more emails so we have to keep track of this separate from the view offset.
 	this._ascending = true; //asending or descending search. Keep it stored for pagination to do the right sort.
-	this._defaultQuery = ".";
 	this._emailList = new AjxVector();
 	this._detailedSearch = appCtxt.get(ZmSetting.DETAILED_CONTACT_SEARCH_ENABLED);
 	this._searchCleared = {};
@@ -279,10 +278,6 @@ function(colItem, ascending, firstTime, lastId, lastSortVal, offset) {
 		if (this._contactSource == ZmItem.CONTACT) {
 			queryHint.push("is:local");
 		}
-	}
-
-    if (!query.length && this._contactSource == ZmId.SEARCH_GAL) {
-		query = this._defaultQuery;
 	}
 
     if (this._contactSource == ZmItem.CONTACT && query != "") {

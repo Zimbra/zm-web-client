@@ -37,7 +37,6 @@ ZmGroupView = function(parent, controller) {
 
 	this._controller = controller;
 
-	this._defaultQuery = ".";
 	this._view = ZmId.VIEW_GROUP;
 
 	this._tagList = appCtxt.getTagTree();
