@@ -540,7 +540,6 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
 		    contact.set(multiField, fieldValues);
 	    }, this);
 
-        console.log(contact);
         return contact;
     },
 
