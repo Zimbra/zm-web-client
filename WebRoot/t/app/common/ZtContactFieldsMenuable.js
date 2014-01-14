@@ -22,13 +22,17 @@ Ext.define('ZCS.common.ZtContactFieldsMenuable', {
                             order:          record.get('order')
                         }
 
-                        container.addField(opts);
-                        menu.popdown();
-
                         // if the last item is chosen, hide the button itself
                         if (menu.getData().length == 1) {
                             menuButton.hide();
                         }
+
+                        container.addField(opts);
+                        menu.popdown();
+
+                        // prevent propagation which might lead to unexpected focus of underlying textfields
+                        e.preventDefault();
+                        e.stopPropagation();
                     }
                 }]
             });

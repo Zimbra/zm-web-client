@@ -54,6 +54,13 @@ Ext.define('ZCS.view.contacts.ZtMultiField', {
 	            this.up('contactpanel').fireEvent('multiAddRemove', this);
 	        }
 		});
+
+		addButton.addCls('last');
+
+		if (this.getType()!=="name" && this.getType()!=="company"){
+			addButton.addCls('first');
+		}
+
 		this.add(addButton);
 	},
 
@@ -88,7 +95,9 @@ Ext.define('ZCS.view.contacts.ZtMultiField', {
 		];
 	},
 
-	addField: function (opts) {
+	addField: function(opts) {
+		this.getAt(0).removeCls('first');
+
 		var items = [],
 			fieldId = ZCS.util.getUniqueId();
 
@@ -98,19 +107,23 @@ Ext.define('ZCS.view.contacts.ZtMultiField', {
 			layout: 'hbox',
 			items:  items,
 			itemId: fieldId,
-			style: {
-				"min-height": "40px"
-			},
+			cls: 'zcs-contact-form-multifield-field',
 			opts: opts
 		};
 
 		// determine the index at which the new field will be put in the container
 		var insertionIndex = this.findInsertionIndex(opts);
 		// then add it
-		var item = this.insert(insertionIndex, Ext.factory(config, 'Ext.Container'));
+		var item = this.insert(insertionIndex,Ext.factory(config, 'Ext.Container'));
 
 		//Manually set this property because in production build it won't get copied over.
 		item.opts = opts;
+
+		this.getAt(0).addCls('first');
+
+		if (this.getAt(this.getItems().length-1).getHidden()){
+			this.getAt(this.getItems().length-2).addCls('last');
+		}
 	},
 
 	/*
@@ -129,6 +142,7 @@ Ext.define('ZCS.view.contacts.ZtMultiField', {
 			ZtMsg.contactFormRemoveFieldConfirmationMessageBody,
 			function(buttonid){
 				if (buttonid == 'yes'){
+					me.getAt(0).removeCls('first');
 					var field = me.down('#' + fieldId);
 					if (field) {
 						Ext.Anim.run(field, 'slide', {
@@ -151,12 +165,11 @@ Ext.define('ZCS.view.contacts.ZtMultiField', {
 
 								field.destroy();
 
-								// in case there's no multifield left, add top border radius for ADD button
-								if (me.getItems().length==1){
-									me.getItems().getAt(0).setStyle([
-										"border-top-left-radius: 6px;",
-										"border-top-right-radius: 6px;"
-									].join(""));
+								me.getAt(0).addCls('first');
+								if (!me.getAt(me.getItems().length-1).getHidden()){
+									if (me.getAt(me.getItems().length-2)){
+										me.getAt(me.getItems().length-2).removeCls('last');	
+									}
 								}
 							}
 						})
