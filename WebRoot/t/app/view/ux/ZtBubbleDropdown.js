@@ -74,7 +74,7 @@ Ext.define('ZCS.view.ux.ZtBubbleDropdown', {
 			},
 			inputBlur: function (e, el) {
 				if (this.menu) {
-					// this.menu.hide();
+					this.menu.hide();
 				}
 			},
 			destroy: function () {
