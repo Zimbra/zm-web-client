@@ -707,7 +707,7 @@ and the container element is replaced with that control.
 			</td>
 		</tr>
 		<tr>
-			<td width=180 height=150 valign='top'>
+			<td width=180 height=200 valign='top'>
 				<div id='${id}_SIG_LIST' width='100%' tabindex='40'></div>
 			</td>
 			<td>
