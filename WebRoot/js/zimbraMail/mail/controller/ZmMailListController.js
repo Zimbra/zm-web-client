@@ -1101,7 +1101,9 @@ function(params) {
 	// get msg w/ addrs to select identity from - don't load it yet (no callback)
 	// for special handling of multiple forwarded messages, see _handleResponseDoAction
 	var msg = params.msg || this.getMsg(params);
-	if (!msg) { return; }
+	if (!msg) {
+		return;
+	}
 
 	// use resolved msg to figure out identity/persona to use for compose
 	var collection = appCtxt.getIdentityCollection();
@@ -1109,12 +1111,21 @@ function(params) {
 
 	var action = params.action;
 	if (!action || action == ZmOperation.FORWARD_MENU || action == ZmOperation.FORWARD)	{
+		params.origAction = action;
 		action = params.action = (appCtxt.get(ZmSetting.FORWARD_INCLUDE_ORIG) == ZmSetting.INC_ATTACH)
 			? ZmOperation.FORWARD_ATT : ZmOperation.FORWARD_INLINE;
 
 		if (msg.isInvite()) {
 			action = params.action = ZmOperation.FORWARD_ATT;
 		}
+	}
+	if (action === ZmOperation.FORWARD_CONV) {
+		params.origAction = action;
+		// need to remember conv since a single right-clicked item has its selection cleared when
+		// the action menu is popped down during the request to load the conv
+		var selection = this._mailListView.getSelection();
+		params.conv = selection && selection.length === 1 ? selection[0] : null;
+		action = params.action = ZmOperation.FORWARD_ATT;
 	}
 
 	// if html compose is allowed and if opening draft always request html
@@ -1182,8 +1193,8 @@ function(params, msg, finalChoice) {
 		else {
 			var cview = this._listView[this._currentViewId];
 			if (cview) {
-				selection = cview.getSelection();
-				selCount = selection.length;
+				selection = params.conv ? [ params.conv ] : cview.getSelection();
+				selCount = params.conv ? 1 : selection.length;
 			}
 		}
 		// bug 43428 - invitation should be forwarded using appt forward view
@@ -1200,31 +1211,17 @@ function(params, msg, finalChoice) {
 		}
 
 		// forward multiple msgs as attachments
-		if (selCount > 1) {
+		if (selCount > 1 || params.origAction === ZmOperation.FORWARD_CONV) {
 			action = params.action = ZmOperation.FORWARD_ATT;
-			// get msg IDs for each conversation selected
-			var batchCmd = new ZmBatchCommand(false, null, true);
-			var callback = new AjxCallback(this, this._handleLoadMsgs, [params, selection]);
-			for (var i = 0; i < selCount; i++) {
-				var item = selection[i];
-				if (item.type == ZmItem.CONV) {
-					// null args are so that batchCmd is passed as 3rd arg
-					var cb = new AjxCallback(item, item.loadMsgs, [null, null]);
-					batchCmd.add(cb);
-				}
-			}
-
-			if (batchCmd._cmds.length > 0) {
-				batchCmd.run(callback);
-			} else {
-				this._handleLoadMsgs(params, selection);
-			}
+			this._handleLoadMsgs(params, selection);
 			return;
 		}
-	} else if (appCtxt.isOffline && action == ZmOperation.DRAFT) {
+	}
+	else if (appCtxt.isOffline && action == ZmOperation.DRAFT) {
 		var folder = appCtxt.getById(msg.folderId);
 		params.accountName = folder && folder.getAccount().name;
-	} else if(action == ZmOperation.DECLINE_PROPOSAL) {
+	}
+	else if (action == ZmOperation.DECLINE_PROPOSAL) {
 		params.subjOverride = this._getInviteReplySubject(action) + msg.subject;
 	}
 
@@ -1293,12 +1290,21 @@ function(dialog) {
 
 ZmMailListController.prototype._handleLoadMsgs =
 function(params, selection) {
-	var msgIds = new AjxVector();
+
+	var msgIds = new AjxVector(),
+		foldersToOmit = params.foldersToOmit || {};
+
 	for (var i = 0; i < selection.length; i++) {
 		var item = selection[i];
 		if (item.type == ZmItem.CONV) {
-			msgIds.addList(item.msgIds);
-		} else {
+			for (var j = 0; j < item.msgIds.length; j++) {
+				var msgId = item.msgIds[j];
+				if (!foldersToOmit[item.msgFolder[msgId]]) {
+					msgIds.add(msgId);
+				}
+			}
+		}
+		else {
 			if (!msgIds.contains(item.id)) {
 				msgIds.add(item.id);
 			}
@@ -1675,9 +1681,6 @@ function(msg) {
 	var w = appCtxt.isChildWindow ? window.opener : window;
     var calController = w.AjxDispatcher.run("GetCalController");
     calController.newApptFromMailItem(msg, new Date());
-	if (appCtxt.isChildWindow) {
-		window.close();
-	}
 };
 
 ZmMailListController.prototype._handleResponseNewTaskListener =
@@ -1687,11 +1690,9 @@ function(msg) {
 		msg = msg.cloneOf;
 	}
 	var w = appCtxt.isChildWindow ? window.opener : window;
+    var aCtxt = appCtxt.isChildWindow ? parentAppCtxt : appCtxt;
 	w.AjxDispatcher.require(["TasksCore", "Tasks"]);
-	w.appCtxt.getApp(ZmApp.TASKS).newTaskFromMailItem(msg, new Date());
-	if (appCtxt.isChildWindow) {
-		window.close();
-	}
+    aCtxt.getApp(ZmApp.TASKS).newTaskFromMailItem(msg, new Date());
 };
 
 ZmMailListController.prototype._handleResponseFilterListener =
@@ -1703,7 +1704,6 @@ function(msg) {
 	if (appCtxt.isChildWindow) {
 		var mailListController = window.opener.AjxDispatcher.run("GetMailListController");
 		mailListController._handleResponseFilterListener(msg);
-		window.close();
 		return;
 	}
 	
