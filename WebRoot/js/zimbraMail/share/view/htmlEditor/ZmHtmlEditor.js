@@ -112,11 +112,11 @@ function() {
 
 ZmHtmlEditor.prototype._resetSize =
 function() {
-	if (this._mode != Dwt.HTML) {
-		var field = this.getContentField();
+	var field = this.getContentField();
+
+	if (field) {
 		var bounds = this.boundsForChild(field);
 		Dwt.setSize(field, bounds.width, bounds.height);
-		return;
 	}
 
 	var editor = this.getEditor();

@@ -19,6 +19,8 @@ ZmSignaturesPage = function(parent, section, controller) {
 
 	this._minEntries = appCtxt.get(ZmSetting.SIGNATURES_MIN);	// added for Comcast
 	this._maxEntries = appCtxt.get(ZmSetting.SIGNATURES_MAX);
+
+	this.addControlListener(this._resetSize.bind(this));
 };
 
 ZmSignaturesPage.prototype = new ZmPreferencesPage;
@@ -631,22 +633,19 @@ function(ev) {
 // Sets the height of the editor and the list
 ZmSignaturesPage.prototype._resetSize =
 function() {
-	this._resetEditorSize();
-
-	// Make sure they are on the same level
-	var sigSize = Dwt.getSize(this._sigEditor.getHtmlElement().parentNode);
-	if (sigSize && sigSize.y) {
-		this._sigList.setSize(Dwt.CLEAR, sigSize.y);
+	if (!this._sigEditor || !this._sigList) {
+		return;
 	}
-};
 
-ZmSignaturesPage.prototype._resetEditorSize =
-function() {
-	// Adjust Size of the HTML Editor
-	var size = Dwt.getSize(this._sigEditor.getHtmlElement().parentNode);
-	if (size && size.y) {
-		this._sigEditor.setSize(Dwt.CLEAR, size.y);
-	}
+	// resize editor and list to fit appropriately -- in order to get this
+	// right, we size them to a minimum, and then apply the sizes of their
+	// containing table cells
+	AjxUtil.foreach([this._sigEditor, this._sigList], function(ctrl) {
+		ctrl.setSize(0, 0);
+
+		var bounds = Dwt.getInsetBounds(ctrl.getHtmlElement().parentNode);
+		ctrl.setSize(bounds.width, bounds.height);
+	});
 };
 
 ZmSignaturesPage.prototype._setupCustom =
@@ -877,7 +876,7 @@ function(signature, clear) {
 	var htmlModeInited = this._sigEditor.isHtmlModeInited();
 	if (editorMode !== this._sigEditor.getMode()) {
 		this._sigEditor.setMode(editorMode);
-		this._resetEditorSize();
+		this._resetSize();
 	}
 	this._sigEditor.setContent(signature.getValue(editorMode === Dwt.HTML ? ZmMimeTable.TEXT_HTML : ZmMimeTable.TEXT_PLAIN));
 	if (editorMode === Dwt.HTML) {
