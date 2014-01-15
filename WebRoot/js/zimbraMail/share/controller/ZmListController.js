@@ -191,7 +191,7 @@ function(hasMore) {
 	// offline issue. The problem is during initial sync when more
 	// messages come in: the forward navigation arrow doesn't get enabled.
 	
-	if (hasMore) {
+	if (hasMore && this._list) {
 		// bug: 30546
 		this._list.setHasMore(hasMore);
 		this._resetNavToolBarButtons();
