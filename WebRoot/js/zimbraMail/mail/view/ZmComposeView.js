@@ -3440,10 +3440,10 @@ function(ev) {
 	if (!identity) { return; }
 	if (ev.event === ZmEvent.E_CREATE) {
 		// TODO: add identity in sort position
-		this._setIdentityVisible();
 		var text = this._getIdentityText(identity);
 		var option = new DwtSelectOptionData(identity.id, text);
 		this.identitySelect.addOption(option);
+        this._setIdentityVisible();
 	} else if (ev.event === ZmEvent.E_DELETE) {
 		this.identitySelect.removeOptionWithValue(identity.id);
 		this._setIdentityVisible();
