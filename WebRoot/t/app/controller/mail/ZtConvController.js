@@ -674,33 +674,42 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 		var listStore = list.getStore(),
 			itemIndex = listStore.indexOf(record),
 			placeholder,
-			listItem;
+			listItem,
+			deletedId = record.get('zcsId'),
+			storeStillHasItem;
 
 		// Replace the deleted item with a placeholder to indicate deletion
 		listStore.remove(record);
-		placeholder = listStore.insert(itemIndex, {deletedIndicator: true});
+		placeholder = listStore.insert(itemIndex, {deletedIndicator: true, zcsId: deletedId});
 
 		// Handle visual experience of delete
 		Ext.defer(function () {
-			// Suspend events so list doesn't re-order during animation
-			this.activeDeleteAnimCount++;
-			listStore.suspendEvents();
-			Ext.Anim.run(convItem.element, 'fade', {
-				duration: 2000,
-				scope: this,
-				after: function () {
-					this.activeDeleteAnimCount--;
-					listStore.remove(placeholder);
+			
+			storeStillHasItem = deletedId === listStore.getAt(itemIndex).get('zcsId');
+			if (storeStillHasItem) {
+				// Suspend events so list doesn't re-order during animation
+				this.activeDeleteAnimCount++;
+				listStore.suspendEvents();
 
-					if (this.activeDeleteAnimCount == 0) {
-						// Let list refresh after all animations are done
-						listStore.resumeEvents();
-					} else {
-						// Stay blank instead of letting text show again
-						convItem.element.down('.zcs-mail-listitem-deleted').setHtml("");
-					}
+				if (convItem.element && storeStillHasItem) {
+					Ext.Anim.run(convItem.element, 'fade', {
+						duration: 2000,
+						scope: this,
+						after: function () {
+							this.activeDeleteAnimCount--;
+							listStore.remove(placeholder);
+
+							if (this.activeDeleteAnimCount == 0) {
+								// Let list refresh after all animations are done
+								listStore.resumeEvents();
+							} else {
+								// Stay blank instead of letting text show again
+								convItem.element.down('.zcs-mail-listitem-deleted').setHtml("");
+							}
+						}
+					});
 				}
-			});
+			}
 		}, 2000, this);
 
 		// Handle the actual conversation deletion
