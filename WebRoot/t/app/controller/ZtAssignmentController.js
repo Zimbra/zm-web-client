@@ -111,8 +111,11 @@ Ext.define('ZCS.controller.ZtAssignmentController', {
 			titlebar.hide();
 		}
 
-		var list = assignmentView.down('list'),
-			listItems = list.getViewItems(),
+		var list = assignmentView.down('list');
+
+		list.refresh();
+
+		var listItems = list.getViewItems(),
 			store = list.getStore();
 
 		store.each(function(organizer, index) {
