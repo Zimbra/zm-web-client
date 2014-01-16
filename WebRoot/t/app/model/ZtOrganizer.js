@@ -546,7 +546,7 @@ Ext.define('ZCS.model.ZtOrganizer', {
 			// can't move an item to its current folder
 			// just check messages for now
 			// TODO: iterate through conv messages to see if at least one is not in this folder
-			if (myId === itemFolderId && what.getType() === ZCS.constant.ITEM_MESSAGE) {
+			if (myId === itemFolderId && what.get('type') === ZCS.constant.ITEM_MESSAGE) {
 				return false;
 			}
 
