@@ -33,10 +33,6 @@
  */
 ZmConvListController = function(container, mailApp, type, sessionId, searchResultsController) {
 	ZmDoublePaneController.apply(this, arguments);
-
-	if (appCtxt.get(ZmSetting.FORWARD_MENU_ENABLED)) {
-		this._listeners[ZmOperation.FORWARD_CONV] = this._forwardConvListener.bind(this);
-	}
 };
 
 ZmConvListController.prototype = new ZmDoublePaneController;
@@ -428,11 +424,6 @@ ZmConvListController.prototype._resetOperations = function(parent, num) {
 ZmConvListController.prototype._forwardListener = function(ev) {
 	var action = ev.item.getData(ZmOperation.KEY_ID);
 	this._doAction({ev:ev, action:action, foldersToOmit:this.getFoldersToOmit(ZmMailListController.REPLY_FOLDERS_TO_OMIT)});
-};
-
-ZmConvListController.prototype._forwardConvListener = function(ev) {
-	var action = ev.item.getData(ZmOperation.KEY_ID);
-	this._doAction({ev:ev, action:ZmOperation.FORWARD_CONV, foldersToOmit:this.getFoldersToOmit()});
 };
 
 /**

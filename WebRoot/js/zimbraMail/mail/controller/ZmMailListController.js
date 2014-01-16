@@ -69,6 +69,7 @@ ZmMailListController = function(container, mailApp, type, sessionId, searchResul
 
 	if (appCtxt.get(ZmSetting.FORWARD_MENU_ENABLED)) {
 		this._listeners[ZmOperation.FORWARD] = this._forwardListener.bind(this);
+		this._listeners[ZmOperation.FORWARD_CONV] = this._forwardConvListener.bind(this);
 	}
 	this._listeners[ZmOperation.REDIRECT] = new AjxListener(this, this._redirectListener);
 	this._listeners[ZmOperation.EDIT] = this._editListener.bind(this, false);
@@ -637,19 +638,24 @@ function() {
 
 ZmMailListController.prototype._getSecondaryToolBarOps =
 function() {
-	var list = [];
+
+	var list = [],
+		viewType = this.getCurrentViewType();
+
 	list.push(ZmOperation.REDIRECT, ZmOperation.EDIT_AS_NEW);
+	if ((viewType === ZmId.VIEW_CONVLIST || viewType === ZmId.VIEW_CONV && appCtxt.get(ZmSetting.FORWARD_MENU_ENABLED))) {
+		list.push(ZmOperation.FORWARD_CONV);
+	}
 	list.push(ZmOperation.SEP, ZmOperation.PRINT);
-	list.push(ZmOperation.SEP /*ZmOperation.MARK_READ, ZmOperation.MARK_UNREAD*/);
+	list.push(ZmOperation.SEP);
 	list = list.concat(this._flagOps());
 	list.push(ZmOperation.SEP);
 	list = list.concat(this._createOps());
 	list.push(ZmOperation.SEP);
 	list = list.concat(this._otherOps(true));
-	if (this.getCurrentViewType() == ZmId.VIEW_TRAD) {
+	if (viewType === ZmId.VIEW_TRAD) {
 		list.push(ZmOperation.SHOW_CONV);
 	}
-
 
 	return list;
 };
@@ -1094,6 +1100,11 @@ function(ev) {
 	this._doAction({ev:ev, action:action, foldersToOmit:this.getFoldersToOmit(ZmMailListController.REPLY_FOLDERS_TO_OMIT)});
 };
 
+ZmMailListController.prototype._forwardConvListener = function(ev) {
+	var action = ev.item.getData(ZmOperation.KEY_ID);
+	this._doAction({ev:ev, action:ZmOperation.FORWARD_CONV, foldersToOmit:this.getFoldersToOmit()});
+};
+
 // This method may be called with a null ev parameter
 ZmMailListController.prototype._doAction =
 function(params) {
@@ -1123,7 +1134,7 @@ function(params) {
 		params.origAction = action;
 		// need to remember conv since a single right-clicked item has its selection cleared when
 		// the action menu is popped down during the request to load the conv
-		var selection = this._mailListView.getSelection();
+		var selection = this.getSelection();
 		params.conv = selection && selection.length === 1 ? selection[0] : null;
 		action = params.action = ZmOperation.FORWARD_ATT;
 	}
