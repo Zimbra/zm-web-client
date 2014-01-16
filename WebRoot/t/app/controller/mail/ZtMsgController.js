@@ -121,7 +121,7 @@ Ext.define('ZCS.controller.mail.ZtMsgController', {
 			this.doDelete({msg: msg});
 		} else {
 			this.showMenu(button, {
-				menuName:   button.menuName,
+				menuName:   button.initialConfig ? button.initialConfig.menuName : undefined,
 				msg:        msg
 			});
 		}

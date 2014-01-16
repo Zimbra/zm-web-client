@@ -73,7 +73,7 @@ Ext.define('ZCS.view.ZtItemPanel', {
 				iconCls:    button.icon,
 				cls:        'zcs-flat',
 				align:      button.align || 'right',
-				handler:    createHandler(button.event, { menuName: button.menuName }),
+				handler:    createHandler(button.event, { menuName: button.menuName}),
 				hidden:     !!button.hidden,
 				itemId:     itemId
 			});
