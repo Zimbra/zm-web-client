@@ -392,7 +392,7 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 					responseJsonString = Ext.Array.slice(responseParts, 2).join(',');
 					responsePayload = Ext.JSON.decode(responseJsonString);
 
-					var msg = me.getMessageModel(true),
+					var msg = me.getMessageModel(true, true),
 						attachments = msg.get('attachments');
 
 					if (!attachments) {
@@ -481,7 +481,17 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 		}, this);
 	},
 
-	getMessageModel: function(force) {
+	/**
+	 * Retrieves the message model based on the current form state
+	 *
+	 * @param {bool} force                  Will retrieve the model even if certain validation does not pass, like valid email address.
+	 * @param {bool} doNotRevertImageFixes  Useful for when the user is going to continue looking at the compose form
+	 *										Before this model can be sent to the server however, this param must be false.
+	 *									    This is because any images we 'fixed' will not be valid unless we unfix them
+	 *										back to the server syntax.
+	 *
+	 */
+	getMessageModel: function(force, doNotRevertImageFixes) {
 
 		var	values = this.getComposeForm().getValues(),
 			numAddresses = values[ZCS.constant.TO].length + values[ZCS.constant.CC].length + values[ZCS.constant.BCC].length,
@@ -543,7 +553,18 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 			}
 		}
 
-		values.content = editor.innerHTML;
+		//Change any images back to the server defined syntax which is required
+		//when doing any forwards/replies etc...
+		if (origMsg && !doNotRevertImageFixes) {
+			//Use the test iframe so the user can't see any image loading/flickering
+			var testIframeBody = ZCS.htmlutil.getHtmlDom(editor.innerHTML);
+			ZCS.htmlutil.revertImageFixes(origMsg, testIframeBody);
+
+			//The web client has html tags around the head/body so for parity, add those on here.
+			values.content = '<html>' + testIframeBody.innerHTML + '</html>';
+		} else {
+			values.content = editor.innerHTML;
+		}
 
 		return this.setOutboundMessage(values, action, origMsg, origAtt, newAtt);
 	},
@@ -579,7 +600,9 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 			msg.set('replyType', 'w');
 		}
 
-		msg.createMime(values.content, origMsg && origMsg.hasHtmlPart());
+		var originalInlineImages = origMsg.getInlineImageParts();
+
+		msg.createMime(values.content, origMsg && origMsg.hasHtmlPart(), originalInlineImages);
 
 		return msg;
 	},

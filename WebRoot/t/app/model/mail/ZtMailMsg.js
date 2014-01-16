@@ -139,7 +139,8 @@ Ext.define('ZCS.model.mail.ZtMailMsg', {
 
 		var bodyParts = this.get('bodyParts'),
 			ln = bodyParts ? bodyParts.length : 0,
-			i;
+			i,
+			j;
 
 		for (i = 0; i < ln; i++) {
 			var part = bodyParts[i],
@@ -151,7 +152,44 @@ Ext.define('ZCS.model.mail.ZtMailMsg', {
 				return true;
 			}
 		}
+
+		//If we have any image parts in multi related parts, then we also have inline images.
+		var relatedImageParts = this.getInlineImageParts();
+
+		if (relatedImageParts.length > 0) {
+			return true;
+		}
+
 		return false;
+	},
+
+	getInlineImageParts: function () {
+		var topPart = this.data.topPart,
+			relatedParts = [],
+			children = topPart ? topPart.data.children : null,
+			ln = children ? children.length : 0,
+			relatedChild,
+			relatedChildType,
+			relatedChildDisp,
+			child;
+
+		//Also check for inline images in any multi-related parts.
+		for (i = 0; i < ln; i += 1) {
+			child = children[i];
+			if (child.get('contentType') === ZCS.mime.MULTI_RELATED) {
+				for (j = 0; j < child.data.children.length; j += 1) {
+					relatedChild = child.data.children[j];
+					relatedChildType = relatedChild.get('contentType');
+					relatedChildDisp = relatedChild.get('contentDisposition');
+					if (relatedChildDisp === ZCS.constant.OBJ_ATTACHMENT && ZCS.mime.isRenderableImage(relatedChildType)) {
+						relatedChild.data.mid = this.get('id');
+						relatedParts.push(relatedChild);
+					}
+				}
+			}
+		}
+
+		return relatedParts;
 	},
 
 	/**
@@ -297,14 +335,16 @@ Ext.define('ZCS.model.mail.ZtMailMsg', {
 	 * Creates the MIME structure for this message from the given content. If the content
 	 * is HTML, the top part will be multipart/alternative. Otherwise, it's just text/plain.
 	 *
-	 * @param {string}      content     message text
-	 * @param {boolean}     isHtml      true if content is HTML
+	 * @param {string}      content         message text
+	 * @param {boolean}     isHtml          true if content is HTML
+	 * @param {ZCS.model.mail.ZtMimePart[]} Mime parts that are inline images which should be related to the html
 	 */
-	createMime: function(content, isHtml) {
+	createMime: function(content, isHtml, inlineImageParts) {
 
 		var top = new ZCS.model.mail.ZtMimePart(),
 			prefix = ZCS.session.getSetting(ZCS.constant.SETTING_REPLY_PREFIX),
 			textPart, htmlPart;
+
 
 		if (isHtml) {
 			top.set('contentType', ZCS.mime.MULTI_ALT);
@@ -312,10 +352,24 @@ Ext.define('ZCS.model.mail.ZtMailMsg', {
 			textPart.set('contentType', ZCS.mime.TEXT_PLAIN);
 			textPart.setContent(ZCS.mailutil.htmlToText(content, prefix));
 			top.add(textPart);
-			htmlPart = new ZCS.model.mail.ZtMimePart();
-			htmlPart.set('contentType', ZCS.mime.TEXT_HTML);
-			htmlPart.setContent(content);
-			top.add(htmlPart);
+
+			if (!inlineImageParts) {
+				htmlPart = new ZCS.model.mail.ZtMimePart();
+				htmlPart.set('contentType', ZCS.mime.TEXT_HTML);
+				htmlPart.setContent(content);
+				top.add(htmlPart);
+			} else {
+				htmlPart = new ZCS.model.mail.ZtMimePart();
+				htmlPart.set('contentType', ZCS.mime.TEXT_HTML);
+
+				//TODO Parse the html content to reset img sources.
+				htmlPart.setContent(content);
+
+				relatedPart = new ZCS.model.mail.ZtMimePart();
+				relatedPart.set('contentType', ZCS.mime.MULTI_RELATED);
+				relatedPart.set('children', Ext.Array.merge([htmlPart], inlineImageParts));
+				top.add(relatedPart);
+			}
 		}
 		else {
 			top.set('contentType', ZCS.mime.TEXT_PLAIN);

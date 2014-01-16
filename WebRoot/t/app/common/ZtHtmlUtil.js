@@ -345,6 +345,44 @@ Ext.define('ZCS.common.ZtHtmlUtil', {
 	},
 
 	/**
+	 * Goes through the message DOM looking for images to unfix.
+     * Basically reverses this.fixImages
+	 * 
+	 * @param {ZtMailMsg}       msg                     msg being displayed
+	 * @param {Element}         containerEl             top-level element of DOM
+	 *
+	 * @return {Array}    list of hidden images
+	 */
+	revertImageFixes: function (msg, containerEl) {
+		if (!containerEl) {
+			return [];
+		}
+
+		var	els = containerEl.getElementsByTagName('*'),
+			ln = els.length,
+			html = containerEl.innerHTML,
+			checkBackground = (html.indexOf('dfbackground') !== -1) ||
+			                  (html.indexOf('pnbackground') !== -1),
+			unfixedImages = [],
+			fixedBackground = false;
+
+		for (var i = 0; i < ln; i++) {
+
+			var el = els[i],
+				nodeName = el.nodeName.toLowerCase(),
+				isImg = (nodeName === 'img');
+
+			if ((isImg && this.unfixImage(msg, el, 'src')) ||
+				(checkBackground && this.unfixImage(msg, el, 'background'))) {
+
+				unfixedImages.push(el);
+			}
+		}
+
+		return unfixedImages;
+	},
+
+	/**
 	 * Rewrites the src reference for internal images so that they display, and optionally
 	 * does the same for external images. Internal images will have 'cid', 'doc', and 'pnsrc'
 	 * converted to a URL with a part value that can be used to fetch the image from our
@@ -363,6 +401,7 @@ Ext.define('ZCS.common.ZtHtmlUtil', {
 			pnAttr = 'pn' + attr,
 			baseValue, dfValue, pnValue, value,
 			imgChanged = false,
+			origValue,
 			me = this;
 
 		try {
@@ -378,45 +417,47 @@ Ext.define('ZCS.common.ZtHtmlUtil', {
 
 		value = baseValue || dfValue || pnValue;
 
+		origValue = value;
+
 		if (value) {
 			if (value.indexOf('cid:') === 0) {
 				// image came as a related part keyed by Content-ID
 				var cid = '<' + decodeURIComponent(value.substr(4)) + '>';
 				value = msg.getPartUrlByField('contentId', cid, 'foundInMsgBody');
 				if (value) {
+					el.setAttribute(ZCS.constant.ORIGINAL_SRC_ATTRIBUTE, origValue);
 					el.setAttribute(attr, value);
 					imgChanged = true;
 				}
-			}
-			else if (value.indexOf('doc:') === 0) {
+			} else if (value.indexOf('doc:') === 0) {
 				// image is in Briefcase
 				value = [ZCS.session.getSetting(ZCS.constant.SETTING_REST_URL), '/', value.substring(4)].join('');
 				if (value) {
+					el.setAttribute(ZCS.constant.ORIGINAL_SRC_ATTRIBUTE, origValue);
 					el.setAttribute(attr, value);
 					imgChanged = true;
 				}
-			}
-			else if (pnValue) {
+			} else if (pnValue) {
 				// image came as a related part keyed by Content-Location
 				value = msg.getPartUrlByField('contentLocation', value, 'foundInMsgBody');
 				if (value) {
+					el.setAttribute(ZCS.constant.ORIGINAL_SRC_ATTRIBUTE, origValue);
 					el.setAttribute(attr, value);
 					imgChanged = true;
 				}
-			}
-			else if (dfValue) {
+			} else if (dfValue) {
 				if (hideExternalImages) {
 					if (attr === 'src') {
+						el.setAttribute(ZCS.constant.ORIGINAL_SRC_ATTRIBUTE, origValue);
 						el.src = '/img/zimbra/1x1-trans.png';
 					}
 					return true;
-				}
-				else {
+				} else {
+					el.setAttribute(ZCS.constant.ORIGINAL_SRC_ATTRIBUTE, origValue);
 					el.src = dfValue;
 					imgChanged = true;
 				}
-			}
-			else if (value.indexOf('data:') === 0) {
+			} else if (value.indexOf('data:') === 0) {
 			}
 		}
 
@@ -426,6 +467,21 @@ Ext.define('ZCS.common.ZtHtmlUtil', {
 		}
 
 		return false;
+	},
+
+	/**
+	 * Reads out the original value of the attribute which was 'fixed' previously
+	 * If it exists, replaces the attribute that was 'fixed' with its original value.
+	 *
+ 	 * @param {ZmMailMsg}	msg			        mail message
+	 * @param {Element}		el		            element to be checked (img)
+	 * @param {string}		attr		        attribute name
+	 */
+	unfixImage: function(msg, el, attr) {
+		var originalValue = el.getAttribute(ZCS.constant.ORIGINAL_SRC_ATTRIBUTE);
+		if (originalValue) {
+			el.setAttribute(attr, originalValue);
+		}
 	},
 
 	/**

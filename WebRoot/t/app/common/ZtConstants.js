@@ -606,6 +606,8 @@ ZCS.constant.REGEX_FOLDER_TAG_SEARCH    = /^(in|tag):["']?([^\x00-\x1F\x7F:\"]+)
 ZCS.constant.REGEX_CONTACT_ATTR         = /^([a-z]+)([a-zA-Z]+)(\d*)$/;
 ZCS.constant.REGEX_CONTACT_FIELD        = /^([a-z][a-zA-Z]+)(\d*)$/;
 
+ZCS.constant.ORIGINAL_SRC_ATTRIBUTE = 'origSrc';
+
 // URL paths
 ZCS.constant.PATH_MSG_FETCH = '/service/home/~/';
 ZCS.constant.ATTACHMENT_UPLOAD = '/service/upload';

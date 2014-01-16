@@ -202,9 +202,25 @@ Ext.define('ZCS.model.mail.ZtMsgWriter', {
 	 */
 	addMimePart: function(parts, part) {
 
-		var node = {
-		   ct: part.get('contentType')
-		};
+  		var node;
+
+  		//If this is an attachment in a related part, we need a different format.
+  		if (part.get('contentDisposition') === ZCS.constant.OBJ_ATTACHMENT) {
+  			node = {
+  				ci: part.get('contentId').replace('<', '').replace('>', ''),
+  				attach: {
+  					mp: [{
+  						"mid": part.data.mid,
+  						"part": part.get('part')
+  					}]
+  				}
+  			}
+  		} else {
+			node = {
+			   ct: part.get('contentType')
+			};
+		}
+
 		parts.push(node);
 
 		var content = part.getContent();
