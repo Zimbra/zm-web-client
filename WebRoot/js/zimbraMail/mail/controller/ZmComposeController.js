@@ -1239,10 +1239,13 @@ function(account) {
 
 ZmComposeController.prototype._setOptionsVisibility =
 function() {
+
 	var button = this._toolbar.getButton(ZmOperation.COMPOSE_OPTIONS);
-	var menu = button.getMenu();
-	var optionsEmpty = menu.opList.length === 0;
-	if (menu.opList.length === 1 && menu.opList[0] === ZmOperation.ADD_SIGNATURE) {
+	var menu = button.getMenu(),
+		opList = menu && menu.opList,
+		optionsEmpty = !opList || opList.length === 0;
+
+	if (opList && opList.length === 1 && opList[0] === ZmOperation.ADD_SIGNATURE) {
 		//this is kinda ugly, special case for the signature menu that is empty. It gets hidden instead of removed so it's still here.
 		var sigButton = this._getSignatureButton();
 		optionsEmpty = !sigButton.getVisible();
