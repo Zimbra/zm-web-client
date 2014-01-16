@@ -1249,7 +1249,7 @@ function(width) {
 	this._showAsSelect = new DwtSelect({parent:this, parentElement: (this._htmlElId + "_showAsSelect")});
 	for (var i = 0; i < ZmApptViewHelper.SHOWAS_OPTIONS.length; i++) {
 		var option = ZmApptViewHelper.SHOWAS_OPTIONS[i];
-		this._showAsSelect.addOption(option.label, option.selected, option.value, "showAs" + option.value);
+		this._showAsSelect.addOption(option.label, option.selected, option.value, "ShowAs" + option.value);
 	}
 
 	this._showAsSelect.addChangeListener(new AjxListener(this, this.setShowAsFlag, [true]));
