@@ -763,26 +763,23 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 	 * separated, with TO addresss first: "User1, CCUser1, and CCUser2"
 	 */
 	getAllNames: function(nameField) {
+
 		var activeMsg = this.getActiveMsg(),
 			action = ZCS.constant.OP_REPLY_ALL,
 			addrs = ZCS.app.getComposeController().getReplyAddresses(activeMsg, action),
-			allAddrs = [].concat(addrs.TO, addrs.CC),
-			names = [],
-			nameString,
-			nameField = nameField || 'shortName',
-			i;
+			recips = Ext.Array.clean(addrs[ZCS.constant.TO].concat(addrs[ZCS.constant.CC])),
+			names = [], nameString, nameField = nameField || 'shortName';
 
-		for (i = 0; i < allAddrs.length; i++) {
-			if (allAddrs[i]) {
-				names.push(allAddrs[i].get(nameField));
-			}
+		Ext.each(recips, function(recip) {
+			names.push(recip.get(nameField));
+		}, this);
+
+		if (names.length < 3) {
+			nameString = names.join(' ' + ZtMsg.and + ' ');
 		}
-
-		if (allAddrs.length < 3) {
-			nameString = names.join(' and ');
-		} else {
+		else {
 			nameString = names.join(', ');
-			nameString = nameString.replace(/,\s([^,]+)$/, ', and $1');
+			nameString = nameString.replace(/,\s([^,]+)$/, ', ' + ZtMsg.and + ' $1');
 		}
 
 		return nameString;

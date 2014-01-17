@@ -181,7 +181,7 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 			replyAddr = msg.getReplyAddress();
 
 		replyAddr.set('type', ZCS.constant.TO);
-		addrs[ZCS.constant.TO] = replyAddr;
+		addrs[ZCS.constant.TO] = [ replyAddr ];
 
 		if (action === ZCS.constant.OP_REPLY_ALL) {
 			var userEmail = ZCS.session.getAccountName(),
