@@ -233,7 +233,7 @@ Ext.define('ZCS.controller.ZtMainController', {
 	 *
 	 * @param {ZtOrganizer}     organizer          organizer that changed
 	 */
-	handleOrganizerDelete: function(organizer) {
+	handleOrganizerDelete: function(organizer, notification) {
 		organizer.handleDeleteNotification();
 		ZCS.session.handleOrganizerDelete(organizer, notification);
 		this.removeOrganizer(this.getOverviewList(), organizer);
