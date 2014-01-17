@@ -1903,7 +1903,27 @@ function(table, tagCellId) {
 // Msg view header has been left-clicked
 ZmMailMsgCapsuleView.prototype._selectionListener =
 function(ev) {
+
 	this._toggleExpansion();
+
+	// Remember the last msg view that the user collapsed. Expanding any msg view clears that.
+	var convView = this._convView,
+		lastMsgView = convView._lastCollapsedId && convView._msgViews[convView._lastCollapsedId];
+
+	if (lastMsgView) {
+		lastMsgView._lastCollapsed = false;
+		lastMsgView._setHeaderClass();
+	}
+	if (this.isExpanded()) {
+		this._lastCollapsed = false;
+		convView._lastCollapsedId = null;
+	}
+	else {
+		this._lastCollapsed = true;
+		convView._lastCollapsedId = this._msgId;
+	}
+	this._setHeaderClass();
+
 	return true;
 };
 
@@ -2225,21 +2245,7 @@ function(ev) {
 	}
 	
 	if (ev.button == DwtMouseEvent.LEFT) {
-		var returnValue = msgView._selectionListener(ev);
-		msgView._lastCollapsed = false;
-		if (!msgView.isExpanded()) {
-			if (convView._lastCollapsedId) {
-				var lastMsgView = convView._msgViews[convView._lastCollapsedId];
-				if (lastMsgView) {
-					lastMsgView._lastCollapsed = false;
-					lastMsgView._setHeaderClass();
-				}
-			}
-			msgView._lastCollapsed = true;
-			convView._lastCollapsedId = msgView._msgId;
-		}
-		msgView._setHeaderClass();
-		return returnValue;
+		return msgView._selectionListener(ev);
 	}
 	else if (ev.button == DwtMouseEvent.RIGHT) {
 		return msgView._actionListener(ev);
