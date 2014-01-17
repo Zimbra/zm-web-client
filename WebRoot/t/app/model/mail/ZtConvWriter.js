@@ -50,7 +50,7 @@ Ext.define('ZCS.model.mail.ZtConvWriter', {
 				limit:              ZCS.constant.DEFAULT_PAGE_SIZE,
 				query:              query,
 				types:              'conversation',
-				fullConversation:   1,
+				fullConversation:   1,  // as of 8.5 server
 				fetch:              1,
 				recip:              isOutbound ? 1 : 0
 			});

@@ -41,7 +41,7 @@ Ext.define('ZCS.model.mail.ZtConvReader', {
 		data.senders = ZCS.mailutil.getSenders(data.addresses);
 		data.dateStr = ZCS.util.getRelativeDateString(node.d, nowMs);
 
-		// search results will tell us ID and folder for each msg in the conv
+		// search results will tell us ID and folder for each msg in the conv (as of 8.5 server)
 		if (node.m && node.m.length > 0) {
 			var reader = ZCS.model.mail.ZtMailMsg.getProxy().getReader();
 			data.msgs = [];

@@ -69,6 +69,15 @@ Ext.define('ZCS.model.mail.ZtConv', {
 
 	statics: {
 
+		/**
+		 * Returns true if the message is not in one of the folders we normally omit from conversation viewing (unless
+		 * the user is currently viewing that folder).
+		 *
+		 * Note: for an unloaded conv, this relies on an 8.5+ server.
+		 *
+		 * @param   {ZtMailMsg}     msg
+		 * @returns {boolean}
+		 */
 		shouldShowMessage: function(msg) {
 
 			var curFolder = ZCS.session.getCurrentSearchOrganizer(),
