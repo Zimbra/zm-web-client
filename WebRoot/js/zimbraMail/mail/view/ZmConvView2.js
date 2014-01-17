@@ -1908,20 +1908,15 @@ function(ev) {
 
 	// Remember the last msg view that the user collapsed. Expanding any msg view clears that.
 	var convView = this._convView,
-		lastMsgView = convView._lastCollapsedId && convView._msgViews[convView._lastCollapsedId];
+		lastCollapsedMsgView = convView._lastCollapsedId && convView._msgViews[convView._lastCollapsedId];
 
-	if (lastMsgView) {
-		lastMsgView._lastCollapsed = false;
-		lastMsgView._setHeaderClass();
+	if (lastCollapsedMsgView) {
+		lastCollapsedMsgView._lastCollapsed = false;
+		lastCollapsedMsgView._setHeaderClass();
 	}
-	if (this.isExpanded()) {
-		this._lastCollapsed = false;
-		convView._lastCollapsedId = null;
-	}
-	else {
-		this._lastCollapsed = true;
-		convView._lastCollapsedId = this._msgId;
-	}
+	var isCollapsed = !this.isExpanded();
+	this._lastCollapsed = isCollapsed;
+	convView._lastCollapsedId = isCollapsed && this._msgId;
 	this._setHeaderClass();
 
 	return true;
