@@ -14,7 +14,7 @@
  */
 
 /**
- * This class represents a controller that manages the mail app's folder list.
+ * This class represents a controller that manages the overviews.
  */
 Ext.define('ZCS.controller.ZtOverviewController', {
 
@@ -28,16 +28,18 @@ Ext.define('ZCS.controller.ZtOverviewController', {
 
         refs: {
             // event handlers
-            folderList:         'overview nestedlist',
-            folderSelector:     'organizeredit nestedlist',
-	        newFolderBtn:       'overview button[action=newFolder]',
-	        newTagBtn:          'overview button[action=newTag]',
-            editBtn:            'overview button[action=edit]',
-            folderLocBtn:       'organizeredit #folderLocation',
-            cancelBtn:          'organizeredit button[action=cancel]',
-            saveBtn:            'organizeredit button[action=save]',
-            deleteFolderBtn:    'organizeredit button[action=deleteFolder]',
-            deleteTagBtn:       'organizeredit button[action=deleteTag]',
+            folderList:             'overview nestedlist',
+            folderSelector:         'organizeredit nestedlist',
+	        newFolderBtn:           'overview button[action=newFolder]',
+	        newTagBtn:              'overview button[action=newTag]',
+            editBtn:                'overview button[action=edit]',
+            locationSelectionCard:  'organizeredit #locationSelectionCard',
+            locationSelectionCardCancelBtn: 'organizeredit #locationSelectionCard #zcs-location-selection-card-cancel-btn',
+            folderLocBtn:           'organizeredit #folderLocation',
+            cancelBtn:              'organizeredit button[action=cancel]',
+            saveBtn:                'organizeredit button[action=save]',
+            deleteFolderBtn:        'organizeredit button[action=deleteFolder]',
+            deleteTagBtn:           'organizeredit button[action=deleteTag]',
 
             // other
             organizerEditPanel: 'organizeredit',
@@ -75,6 +77,13 @@ Ext.define('ZCS.controller.ZtOverviewController', {
             },
             deleteTagBtn: {
                 tap:            'deleteTag'
+            },
+            locationSelectionCard: {
+                show:           'onLocationSelectionCardShow',
+                hide:           'onLocationSelectionCardHide'
+            },
+            locationSelectionCardCancelBtn: {
+                tap:            'hideLocationSelectionCard'
             }
         }
     },
@@ -115,6 +124,9 @@ Ext.define('ZCS.controller.ZtOverviewController', {
         else {
             this.saveFolder();
         }
+
+        this.hideEditPanel();
+        this.toggleEditState();
     },
 
 	showNewFolder: function () {
@@ -153,6 +165,11 @@ Ext.define('ZCS.controller.ZtOverviewController', {
 			isTag = (type === ZCS.constant.ORG_TAG),
 			organizerEditPanel = this.getOrganizerEditPanel(),
 			deleteBtn = isTag ? this.getDeleteTagBtn() : this.getDeleteFolderBtn();
+
+		//TODO: allow this to succeed once there is a search edit state.
+		if (type === 'search') {
+			return false;
+		}
 
 		organizerEditPanel.down('titlebar').setTitle(isTag ? ZtMsg.editTag : ZtMsg.editFolder);
 		if (organizer.isDeletable()) {
@@ -220,7 +237,6 @@ Ext.define('ZCS.controller.ZtOverviewController', {
     },
 
     hideEditPanel: function() {
-
         var organizerEditPanel = this.getOrganizerEditPanel();
 
         // Clear tag info
@@ -234,12 +250,10 @@ Ext.define('ZCS.controller.ZtOverviewController', {
 
         this.getFolderLocBtn().enable();
 
-        this.toggleEditState();
         organizerEditPanel.hide();
     },
 
     showFolderSelection: function() {
-
         var organizerEditPanel = this.getOrganizerEditPanel(),
             folderLocationSelector = organizerEditPanel.down('#locationSelectionCard'),
             folderList = this.getFolderSelector(),
@@ -257,20 +271,28 @@ Ext.define('ZCS.controller.ZtOverviewController', {
     },
 
     toggleEditState: function() {
-
 	    var overview = this.getOverview(),
             organizerEditToolbar = overview.getDockedItems()[0],
-            button = this.getEditBtn(),
+            editBtn = overview.down('#zcs-overview-edit-btn'),
+            appsBtn = overview.down('#zcs-overview-apps-btn'),
+            organizerEditPanel = this.getOrganizerEditPanel(),
+            organizerListToolbar = overview.down('organizerlist').getToolbar();
             folderList = this.getCurrentFolderList();
 
         if (folderList.editing) {
-            button.setText(ZtMsg.edit);
-            folderList.editing = undefined;
+            folderList.editing = false;
+            overview.removeCls('editing');
+            organizerListToolbar.setTitle(ZCS.util.capitalizeString(overview.getApp()));
+            editBtn.setText(ZtMsg.edit);
+            appsBtn.show();
             organizerEditToolbar.hide();
         }
         else {
-            button.setText(ZtMsg.done);
             folderList.editing = true;
+            overview.addCls('editing');
+            organizerListToolbar.setTitle([ZtMsg.edit,organizerListToolbar.getTitle()].join(" "));
+            editBtn.setText(ZtMsg.done);
+            appsBtn.hide();
             organizerEditToolbar.show();
         }
     },
@@ -330,8 +352,6 @@ Ext.define('ZCS.controller.ZtOverviewController', {
 		    }
 	    }
 	    tag.save(options);
-
-        this.hideEditPanel();
     },
 
 	deleteFolder: function() {
@@ -355,12 +375,9 @@ Ext.define('ZCS.controller.ZtOverviewController', {
 				folder.save(options);
 			}
 		}
-
-		this.hideEditPanel();
 	},
 
 	deleteTag: function() {
-
 		var organizerEditPanel = this.getOrganizerEditPanel(),
 			tag = organizerEditPanel.getTag(),
 			options = {};
@@ -407,5 +424,18 @@ Ext.define('ZCS.controller.ZtOverviewController', {
 	 */
 	handleRefresh: function() {
 		this.reloadOverviews(this.getOrganizerEditPanel());
-	}
+	},
+
+    onLocationSelectionCardShow: function(){
+        this.getOrganizerEditPanel().getDockedItems()[0].hide();
+    },
+
+    onLocationSelectionCardHide: function(){
+        this.getOrganizerEditPanel().getDockedItems()[0].show();
+    },
+
+    hideLocationSelectionCard: function(btn){
+        var organizerEditPanel = this.getOrganizerEditPanel();
+        organizerEditPanel.setActiveItem('#folderEditCard');        
+    }
 });

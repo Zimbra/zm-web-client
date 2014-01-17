@@ -592,5 +592,9 @@ Ext.define('ZCS.common.ZtUtil', {
 		} else {
 			return dt.toLowerCase();
 		}
+	},
+
+	capitalizeString: function(aString){
+	    return aString.replace(/(?:^|\s)\S/g, function(aString) { return aString.toUpperCase(); });
 	}
 });

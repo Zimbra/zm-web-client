@@ -93,6 +93,7 @@ $zcs-button-active-bkgd-color: lighten($base-color, 25%);
 /* Overview */
 
 $zcs-overview-base-color: $dark-grey;
+$zcs-overview-edit-color: lighten($zcs-overview-base-color, 10%);
 $zcs-overview-category-color: darken($dark-grey, 10%);
 $zcs-overview-text-color: $light-grey;
 
@@ -104,11 +105,12 @@ $zcs-overview-text-color: $light-grey;
 }
 
 .zcs-overview {
+
 	background: $zcs-overview-base-color;
 
 	.x-toolbar.x-docked-top {             // Overview top toolbar
 		@extend .zcs-overview-toolbar;
-		background-color: $zcs-overview-base-color;
+		background-color: transparent;
 		color: $zcs-overview-text-color;
 
 		.x-title,
@@ -150,9 +152,13 @@ $zcs-overview-text-color: $light-grey;
 		}
 	}
 
+	&.editing {
+		background-color: $zcs-overview-edit-color;
+	}
+
 	/* Folder edit form */
 	.zcs-folder-edit {
-		background: $zcs-overview-category-color;
+		background-color: $zcs-overview-edit-color;
 
 		.zcs-textfield {
 			margin-top: 1.5em;
@@ -233,7 +239,7 @@ $zcs-overview-text-color: $light-grey;
 	.x-toolbar.x-docked-bottom {         // Overview bottom toolbar for editing
 		@extend .zcs-overview-toolbar;
 		background-color: $zcs-overview-text-color;
-		color: $zcs-overview-base-color;
+		color: transparent;
 
 		.x-title {
 			color: $zcs-overview-text-color;
@@ -255,7 +261,7 @@ $zcs-overview-text-color: $light-grey;
 	}
 
 	.x-dock-body .x-list {
-		background-color: $zcs-overview-base-color;
+		background-color: transparent;
 
 		.x-list-header {              // Category headers
 			padding: .25em 1em;
@@ -332,6 +338,14 @@ $zcs-overview-text-color: $light-grey;
 				content: "t";
 			}
 		}
+	}
+}
+
+
+.zcs-edit-panel {
+	background-color: $zcs-overview-edit-color;
+	.x-toolbar.x-docked-top { 
+		background-color: $zcs-overview-edit-color;
 	}
 }
 

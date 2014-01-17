@@ -27,7 +27,6 @@ Ext.define('ZCS.view.ZtOrganizerEdit', {
     xtype: 'organizeredit',
 
     config: {
-
         /**
          *  Record that represents the folder being edited.
          */
@@ -42,6 +41,8 @@ Ext.define('ZCS.view.ZtOrganizerEdit', {
          *  Record that represents the tag being edited.
          */
         tag: undefined,
+
+        cls: 'zcs-edit-panel zcs-overview',
 
         layout: 'card',
         items: [{
@@ -114,18 +115,19 @@ Ext.define('ZCS.view.ZtOrganizerEdit', {
                 xtype:  'colorselector',
                 itemId: 'colorPicker'
            }, {
-	            xtype: 'container',
-	            items: [{
-		            xtype:      'button',
-		            action:     'deleteTag',
-		            cls:        'zcs-folder-del-btn',
-		            text:       ZtMsg.del,
-		            centered:   true
-	            }]
+                xtype: 'container',
+                items: [{
+                    xtype:      'button',
+                    action:     'deleteTag',
+                    cls:        'zcs-folder-del-btn',
+                    text:       ZtMsg.del,
+                    centered:   true
+                }]
             }]
         }, {
             xtype:  'container',
             flex:   1,
+            cls:    'zcs-folder-edit',
             itemId: 'locationSelectionCard',
             layout: 'fit'
         }]
@@ -134,14 +136,14 @@ Ext.define('ZCS.view.ZtOrganizerEdit', {
     initialize: function() {
 
         var folderLocationSelector = this.down('#locationSelectionCard'),
-	        listType = ZCS.constant.ORG_LIST_SELECTOR,
+            listType = ZCS.constant.ORG_LIST_SELECTOR,
             selectorData,
             selectorStore;
 
         // Prepare a store for the folder-selector list
         selectorData = ZCS.session.getOrganizerData(null, null, listType);
         selectorData = selectorData.filter(function (item) {
-	        return item.type === 'folder' && !item.isMountpoint;
+            return item.type === 'folder' && !item.isMountpoint;
         });
         selectorStore = Ext.create('ZCS.store.ZtOrganizerStore', {
             storeId:    'foldereditlocationselector',
@@ -156,9 +158,18 @@ Ext.define('ZCS.view.ZtOrganizerEdit', {
             grouped:            true,
             editing:            true,
             title:              ZtMsg.folderLocationLabel,
+            toolbar: {
+                items : [{
+                    xtype:      'button',
+                    text:       ZtMsg.cancel,
+                    cls:        'zcs-text-btn',
+                    itemId:     'zcs-location-selection-card-cancel-btn',
+                    align:      'left'
+                }]
+            },
             updateTitleText:    false,
             useTitleAsBackText: false,
-	        type:               listType
+            type:               listType
         });
         folderLocationSelector.add(selectorList);
 

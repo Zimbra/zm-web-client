@@ -78,6 +78,7 @@ Ext.define('ZCS.view.ZtOverview', {
 				items : [{
 					xtype:      'button',
 					cls:        'zcs-apps-btn',
+					itemId: 	'zcs-overview-apps-btn',
 					iconCls:    'apps',
 					align:      'left',
 					handler: function() {
@@ -87,6 +88,7 @@ Ext.define('ZCS.view.ZtOverview', {
 					xtype:  'button',
 					hidden: !this.config.showEdit,
 					cls:    'zcs-text-btn',
+					itemId: 'zcs-overview-edit-btn',
 					text:   ZtMsg.edit,
 					action: 'edit',
 					align:  'right',

@@ -183,12 +183,14 @@ Ext.define('ZCS.controller.ZtAppViewController', {
 
 		// if this sheet contains an editable overview panel
 		// AND the organizer list is in editing mode
-		// THEN we programmatically call ZtFolderListController::hideEditPanel()
+		// THEN we programmatically call ZtOverviewController::hideEditPanel()
 		// ON "hide" event of overviewPanel
 		if (config.showEdit){
 			overviewPanel.on('hide',function () {
 				if (overviewPanel.down('organizerlist') && overviewPanel.down('organizerlist').editing) {
-					overviewPanel.down('overview').fireEvent('shouldHideEditPanel');	
+					var overviewController = ZCS.app.getController('ZtOverviewController');
+					overviewController.hideEditPanel();
+					overviewController.toggleEditState();
 				}
 			});
 		}
