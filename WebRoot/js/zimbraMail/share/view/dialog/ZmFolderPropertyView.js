@@ -101,8 +101,7 @@ function(batchCommand, saveState) {
                 // Only error checking for now.  If additional, should not return here
 				return;
 			}
-            var cb = appCtxt.webClientOfflineHandler && appCtxt.webClientOfflineHandler._modifyWebOfflineSyncDays.bind(appCtxt.webClientOfflineHandler, organizer.nId);
-            batchCommand.add(new AjxCallback(organizer, organizer.setOfflineSyncInterval, [webOfflineSyncDays, cb, this._handleErrorCallback]));
+            batchCommand.add(new AjxCallback(organizer, organizer.setOfflineSyncInterval, [webOfflineSyncDays, null, this._handleErrorCallback]));
             saveState.commandCount++;
 		}
 	}

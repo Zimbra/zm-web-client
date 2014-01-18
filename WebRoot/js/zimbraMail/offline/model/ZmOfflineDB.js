@@ -12,11 +12,11 @@ function (callback) {
 ZmOfflineDB.open =
 function(callback, errorCallback, version) {
 	try {
-		DBG.println(AjxDebug.DBG1, "ZmOfflineDB.open");
+		AjxDebug.println(AjxDebug.OFFLINE, "ZmOfflineDB.open");
 		var loggedInUsername = appCtxt.getLoggedInUsername();
 		var request = (version) ? indexedDB.open(loggedInUsername, version) : indexedDB.open(loggedInUsername);
 		request.onsuccess = function() {
-			DBG.println(AjxDebug.DBG1, "ZmOfflineDB.open success");
+			AjxDebug.println(AjxDebug.OFFLINE, "ZmOfflineDB.open success");
 			var db = request.result;
 			var objectStoreNamesToBeCreated = ZmOfflineDB.OBJECTSTORE_NAMES.filter(function(objectStoreName) {
 				return db.objectStoreNames.contains(objectStoreName);
@@ -31,7 +31,7 @@ function(callback, errorCallback, version) {
 			}
 		};
 		request.onupgradeneeded = function() {
-			DBG.println(AjxDebug.DBG1, "ZmOfflineDB.open onupgradeneeded");
+			AjxDebug.println(AjxDebug.OFFLINE, "ZmOfflineDB.open onupgradeneeded");
 			var db = request.result;
 			ZmOfflineDB.OBJECTSTORE_NAMES.forEach(function(objectStoreName) {
 				if (!db.objectStoreNames.contains(objectStoreName)) {
@@ -101,7 +101,7 @@ function(callback, errorCallback, version) {
 	}
 	catch (e) {
 		errorCallback && errorCallback();
-		DBG.println(AjxDebug.DBG1, "Exception ZmOfflineDB.open :: " + e);
+		AjxDebug.println(AjxDebug.OFFLINE, "Exception ZmOfflineDB.open :: " + e);
 	}
 };
 
@@ -122,7 +122,7 @@ function(callback, errorCallback) {
 	}
 	catch (e) {
 		errorCallback && errorCallback();
-		DBG.println(AjxDebug.DBG1, "Exception ZmOfflineDB.deleteDB :: " + e);
+		AjxDebug.println(AjxDebug.OFFLINE, "Exception ZmOfflineDB.deleteDB :: " + e);
 	}
 };
 
@@ -165,7 +165,7 @@ function(value, callback, errorCallback) {
     }
     catch (e) {
         errorCallback && errorCallback();
-	    DBG.println(AjxDebug.DBG1, "Exception ZmOfflineDB.setItemInRequestQueue :: " + e);
+	    AjxDebug.println(AjxDebug.OFFLINE, "Exception ZmOfflineDB.setItemInRequestQueue :: " + e);
     }
 };
 
@@ -220,7 +220,7 @@ function(key, callback, errorCallback) {
     }
     catch (e) {
         errorCallback && errorCallback();
-	    DBG.println(AjxDebug.DBG1, "Exception ZmOfflineDB.getItemInRequestQueue :: " + e);
+	    AjxDebug.println(AjxDebug.OFFLINE, "Exception ZmOfflineDB.getItemInRequestQueue :: " + e);
     }
 };
 
@@ -257,7 +257,7 @@ function(key, callback, errorCallback) {
     }
     catch (e) {
         errorCallback && errorCallback();
-	    DBG.println(AjxDebug.DBG1, "Exception ZmOfflineDB.getItemCountInRequestQueue :: " + e);
+	    AjxDebug.println(AjxDebug.OFFLINE, "Exception ZmOfflineDB.getItemCountInRequestQueue :: " + e);
     }
 };
 
@@ -293,7 +293,7 @@ function(key, callback, errorCallback) {
     }
     catch (e) {
         errorCallback && errorCallback();
-	    DBG.println(AjxDebug.DBG1, "Exception ZmOfflineDB.deleteItemInRequestQueue :: " + e);
+	    AjxDebug.println(AjxDebug.OFFLINE, "Exception ZmOfflineDB.deleteItemInRequestQueue :: " + e);
     }
 };
 
@@ -326,7 +326,7 @@ function(key, objectStore) {
         }
     }
     catch (e) {
-	    DBG.println(AjxDebug.DBG1, "Exception ZmOfflineDB._createIndexAndKeyRange :: " + e);
+	    AjxDebug.println(AjxDebug.OFFLINE, "Exception ZmOfflineDB._createIndexAndKeyRange :: " + e);
     }
     finally {
         return {
@@ -339,6 +339,7 @@ function(key, objectStore) {
 ZmOfflineDB.setItem =
 function(value, objectStoreName, callback, errorCallback) {
 	try {
+		AjxDebug.println(AjxDebug.OFFLINE, "ZmOfflineDB.setItem :: " + objectStoreName);
 		var db = ZmOfflineDB.db;
 		var transaction = db.transaction(objectStoreName, "readwrite");
 		var objectStore = transaction.objectStore(objectStoreName);
@@ -355,7 +356,7 @@ function(value, objectStoreName, callback, errorCallback) {
 		transaction.onerror = errorCallback;
 	} catch(e) {
 		errorCallback && errorCallback();
-		DBG.println(AjxDebug.DBG1, "Exception ZmOfflineDB.setItem :: " + e);
+		AjxDebug.println(AjxDebug.OFFLINE, "Exception ZmOfflineDB.setItem :: " + e + " :: " + JSON.stringify(value));
 	}
 };
 
@@ -402,7 +403,7 @@ function(key, objectStoreName, callback, errorCallback) {
 	}
 	catch (e) {
 		errorCallback && errorCallback();
-		DBG.println(AjxDebug.DBG1, "Exception ZmOfflineDB.getItem :: " + e);
+		AjxDebug.println(AjxDebug.OFFLINE, "Exception ZmOfflineDB.getItem :: " + e);
 	}
 };
 
@@ -434,7 +435,7 @@ function(key, objectStoreName, callback, errorCallback) {
 	}
 	catch (e) {
 		errorCallback && errorCallback();
-		DBG.println(AjxDebug.DBG1, "Exception ZmOfflineDB.getItemCount :: " + e);
+		AjxDebug.println(AjxDebug.OFFLINE, "Exception ZmOfflineDB.getItemCount :: " + e);
 	}
 };
 
@@ -454,7 +455,7 @@ function(key, objectStoreName, callback, errorCallback) {
 	}
 	catch (e) {
 		errorCallback && errorCallback();
-		DBG.println(AjxDebug.DBG1, "Exception ZmOfflineDB.deleteItem :: " + e);
+		AjxDebug.println(AjxDebug.OFFLINE, "Exception ZmOfflineDB.deleteItem :: " + e);
 	}
 };
 
@@ -549,7 +550,7 @@ function(search, callback, errorCallback) {
 						index.openKeyCursor(range).onsuccess = function(token, ev) {
 							var result = ev.target.result;
 							if (result) {
-								DBG.println(AjxDebug.DBG1, result.key + " : " + result.primaryKey);
+								AjxDebug.println(AjxDebug.OFFLINE, result.key + " : " + result.primaryKey);
 								if (token.indexName === "content") {
 									if (result.key.toLowerCase().indexOf(token.indexValue.toLowerCase()) !== -1) {
 										token.result.push(result.primaryKey);
@@ -581,7 +582,7 @@ function(search, callback, errorCallback) {
 	}
 	catch (e) {
 		errorCallback && errorCallback();
-		DBG.println(AjxDebug.DBG1, "Exception ZmOfflineDB.searchMail :: " + e);
+		AjxDebug.println(AjxDebug.OFFLINE, "Exception ZmOfflineDB.searchMail :: " + e);
 	}
 };
 
@@ -630,18 +631,12 @@ function(search) {
 			}
 		}
 		else if (token.op === "in") {
-			token.indexName = "folder";
-			var folderId = ZmFolder.QUERY_ID[token.arg];
-			if (!folderId) {
-				var folder = appCtxt.getTree("FOLDER");
-				if (folder) {
-					var folderObj = folder.getByName(token.arg);
-					folderId = folderObj && folderObj.id;
-				}
-			}
-			token.indexValue = folderId;
-			if (token.indexValue) {
-				token.indexValue = token.indexValue.toString();
+			var folderTree = appCtxt.getFolderTree();
+			var folder = folderTree && (folderTree.getByName(token.arg) || folderTree.getByPath(token.arg));
+			var folderId = folder && folder.id;
+			if (folderId) {
+				token.indexValue = folderId.toString();
+				token.indexName = "folder";
 			}
 		}
 		else if (token.op === "type") {
@@ -757,7 +752,7 @@ function(search, callback, errorCallback) {
 				index.openKeyCursor(range).onsuccess = function(token, ev) {
 					var result = ev.target.result;
 					if (result) {
-						DBG.println(AjxDebug.DBG1, result.key + " : " + result.primaryKey);
+						AjxDebug.println(AjxDebug.OFFLINE, result.key + " : " + result.primaryKey);
 						var primaryKey = result.primaryKey;
 						var mid = primaryKey.substring(primaryKey.indexOf("id=") + 3, primaryKey.indexOf("&"));
 						if (mid) {
@@ -779,7 +774,7 @@ function(search, callback, errorCallback) {
 	}
 	catch (e) {
 		errorCallback && errorCallback();
-		DBG.println(AjxDebug.DBG1, "Exception ZmOfflineDB.searchAttachment :: " + e);
+		AjxDebug.println(AjxDebug.OFFLINE, "Exception ZmOfflineDB.searchAttachment :: " + e);
 	}
 };
 
@@ -817,7 +812,7 @@ function(search, callback, errorCallback) {
 						index.openKeyCursor(range).onsuccess = function(token, ev) {
 							var result = ev.target.result;
 							if (result) {
-								DBG.println(AjxDebug.DBG1, result.key + " : " + result.primaryKey);
+								AjxDebug.println(AjxDebug.OFFLINE, result.key + " : " + result.primaryKey);
 								if (token.indexName === "content") {
 									if (result.key.toLowerCase().indexOf(token.indexValue.toLowerCase()) !== -1) {
 										token.result.push(result.primaryKey);
@@ -850,7 +845,7 @@ function(search, callback, errorCallback) {
 		request.onsuccess = function(ev) {
 			var result = ev.target.result;
 			if (result) {
-				DBG.println(AjxDebug.DBG1, result.key + " : " + result.primaryKey);
+				AjxDebug.println(AjxDebug.OFFLINE, result.key + " : " + result.primaryKey);
 				search.sortedResult.push(result.primaryKey);
 				result['continue']();
 			}
@@ -863,7 +858,7 @@ function(search, callback, errorCallback) {
 	}
 	catch (e) {
 		errorCallback && errorCallback();
-		DBG.println(AjxDebug.DBG1, "Exception ZmOfflineDB.searchContacts :: " + e);
+		AjxDebug.println(AjxDebug.OFFLINE, "Exception ZmOfflineDB.searchContacts :: " + e);
 	}
 };
 
@@ -901,7 +896,7 @@ function(searchStr, callback, errorCallback) {
 				index.openKeyCursor(range).onsuccess = function(ev) {
 					var result = ev.target.result;
 					if (result) {
-						DBG.println(AjxDebug.DBG1, result.key + " : " + result.primaryKey);
+						AjxDebug.println(AjxDebug.OFFLINE, result.key + " : " + result.primaryKey);
 						if (result.key.toLowerCase().indexOf(indexValue.toLowerCase()) !== -1) {
 							resultArray.push(result.primaryKey);
 						}
@@ -918,12 +913,12 @@ function(searchStr, callback, errorCallback) {
 	}
 	catch (e) {
 		errorCallback && errorCallback();
-		DBG.println(AjxDebug.DBG1, "Exception ZmOfflineDB.searchContactsForAutoComplete :: " + e);
+		AjxDebug.println(AjxDebug.OFFLINE, "Exception ZmOfflineDB.searchContactsForAutoComplete :: " + e);
 	}
 };
 
 ZmOfflineDB.doIndexSearch =
-function(search, objectStoreName, formatter, callback, errorCallback, indexName) {
+function(search, objectStoreName, formatter, callback, errorCallback, indexName, onlyKeys) {
 	try {
 		var db = ZmOfflineDB.db;
 		var transaction = db.transaction(objectStoreName);
@@ -940,12 +935,23 @@ function(search, objectStoreName, formatter, callback, errorCallback, indexName)
 		}
 		if (range == null) {
 			errorCallback && errorCallback();
-			DBG.println(AjxDebug.DBG1, "ZmOfflineDB.doIndexSearch : Exception : " + e);
+			AjxDebug.println(AjxDebug.OFFLINE, "ZmOfflineDB.doIndexSearch : Exception : " + e);
 		} else {
-			index.openCursor(range).onsuccess = function(ev) {
+			if (onlyKeys) {
+				var request = index.openKeyCursor(range);
+			}
+			else {
+				var request = index.openCursor(range);
+			}
+			request.onsuccess = function(ev) {
 				var result = ev.target.result;
 				if (result) {
-					resultArray.push(result.value);
+					if (result.value) {
+						resultArray.push(result.value);
+					}
+					else {
+						resultArray.push(result.primaryKey);
+					}
 					result['continue']();
 				}
 			};
@@ -963,6 +969,6 @@ function(search, objectStoreName, formatter, callback, errorCallback, indexName)
 	}
 	catch (e) {
 		errorCallback && errorCallback();
-		DBG.println(AjxDebug.DBG1, "Exception ZmOfflineDB.doIndexSearch :: " + e);
+		DBG.println(AjxDebug.OFFLINE, "Exception ZmOfflineDB.doIndexSearch :: " + e);
 	}
 };

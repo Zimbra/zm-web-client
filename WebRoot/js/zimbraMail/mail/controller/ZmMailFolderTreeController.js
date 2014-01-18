@@ -42,10 +42,6 @@ function(parentNode, node, fields, organizer, treeView) {
 		if (ovc)
 			ovc.updateLabel(organizer);
 	}
-
-    if (organizer.getAccount().isMain && appCtxt.webClientOfflineHandler && organizer.webofflinesyncdays && (organizer.webofflinesyncdays != "0")){
-        appCtxt.webClientOfflineHandler.storeFolderMetaData(organizer.nId, organizer);
-    }
 };
 
 ZmMailFolderTreeController.prototype._deleteListener =
