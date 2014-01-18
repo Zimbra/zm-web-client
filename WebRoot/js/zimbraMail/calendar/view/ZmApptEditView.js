@@ -50,8 +50,6 @@ ZmApptEditView = function(parent, attendees, controller, dateInfo) {
     this._attendeePicker = {};
     this._pickerButton = {};
 
-	this._useAcAddrBubbles = appCtxt.get(ZmSetting.USE_ADDR_BUBBLES);
-
     //used to preserve original attendees while forwarding appt
     this._fwdApptOrigAttendees = [];
     this._attendeesHashMap = {};
@@ -156,7 +154,7 @@ function() {
         this.setSchedulerVisibility(false);
     }
 
-    if(!appCtxt.get(ZmSetting.GAL_ENABLED) && this._useAcAddrBubbles){
+    if (!appCtxt.get(ZmSetting.GAL_ENABLED)) {
         Dwt.setSize(this._attInputField[ZmCalBaseItem.LOCATION]._input, "100%");
     }
 
@@ -466,8 +464,6 @@ function() {
 		this._attendeesInputField.clear();
 		this._optAttendeesInputField.clear();
         this._forwardToField.clear();
-        this._adjustAddrHeight(this._attendeesInputField.getInputElement());
-        this._adjustAddrHeight(this._optAttendeesInputField.getInputElement());
 	}
     this._attInputField[ZmCalBaseItem.LOCATION].clear();
 	this._locationTextMap = {};
@@ -491,7 +487,7 @@ function() {
 		this._acLocationsList.show(false);
 	}
 
-	if (this._useAcAddrBubbles && this.GROUP_CALENDAR_ENABLED) {
+	if (this.GROUP_CALENDAR_ENABLED) {
 		for (var attType in this._attInputField) {
 			this._attInputField[attType].clear();
 		}
@@ -1349,7 +1345,7 @@ function(idTag, attType, params) {
 	var inputId = this.parent._htmlElId + idTag + "_input";
 	var cellId = this._htmlElId + idTag;
 	var input;
-	if (!params.noAddrBubbles && this._useAcAddrBubbles) {
+	if (!params.noAddrBubbles) {
 		var aifParams = {
 			autocompleteListView:	this._acAddrSelectList,
 			inputId:				inputId,
@@ -1652,10 +1648,8 @@ function(ev) {
 	}
 
 	var addrList = {};
-	var addrs = !this._useAcAddrBubbles && this._collectForwardAddrs();
 	var type = AjxEmailAddress.TO;
-	addrList[type] = this._useAcAddrBubbles ? this._forwardToField.getAddresses(true) :
-											  addrs[type] && addrs[type].good.getArray();
+	addrList[type] = this._forwardToField.getAddresses(true);
 
     var str = (this._forwardToField.getValue() && !(addrList[type] && addrList[type].length)) ? this._forwardToField.getValue() : "";
 	this._contactPicker.popup(type, addrList, str);
@@ -1678,11 +1672,9 @@ function(addrType, ev) {
 	}
 
 	var addrList = {};
-	var addrs = !this._useAcAddrBubbles && this._collectAddrs(inputObj.getValue());
 	var type = AjxEmailAddress.TO;
-	addrList[type] = this._useAcAddrBubbles ? this._attInputField[addrType].getAddresses(true) :
-											  addrs[type] && addrs[type].good.getArray();
-		
+	addrList[type] = this._attInputField[addrType].getAddresses(true);
+
     var str = (inputObj.getValue() && !(addrList[type] && addrList[type].length)) ? inputObj.getValue() : "";
 	contactPicker.popup(type, addrList, str);
 };
@@ -1754,54 +1746,30 @@ function(addrInput, addrs, type, shortForm) {
 	// make sure we have an array to deal with
 	addrs = (addrs instanceof AjxVector) ? addrs.getArray() : (typeof addrs == "string") ? [addrs] : addrs;
 
-	if (this._useAcAddrBubbles) {
-		addrInput.clear();
-		if (addrs && addrs.length) {
-            var len = addrs.length;
-			for (var i = 0; i < len; i++) {
-				var addr = addrs[i];
-				if (addr) {
-					var addrStr, email, match;
-					if (typeof addr == "string") {
-						addrStr = addr;
-					}
-					else if (addr.isAjxEmailAddress) {
-						addrStr = addr.toString(shortForm);
-						match = {isDL: addr.isGroup && addr.canExpand, email: addrStr};
-					}
-					else if (addr instanceof ZmContact) {
-						email = addr.getEmail(true);
-                        //bug: 57858 - give preference to lookup email address if its present
-                        //bug:60427 to show display name format the lookupemail
-                        addrStr = addr.getLookupEmail() ? (new AjxEmailAddress(addr.getLookupEmail(),null,addr.getFullNameForDisplay())).toString() : ZmApptViewHelper.getAttendeesText(addr, type);
-                        match = {isDL: addr.isGroup && addr.canExpand, email: addrStr};
-					}
-					addrInput.addBubble({address:addrStr, match:match, skipNotify:true});
+	addrInput.clear();
+	if (addrs && addrs.length) {
+        var len = addrs.length;
+		for (var i = 0; i < len; i++) {
+			var addr = addrs[i];
+			if (addr) {
+				var addrStr, email, match;
+				if (typeof addr == "string") {
+					addrStr = addr;
 				}
+				else if (addr.isAjxEmailAddress) {
+					addrStr = addr.toString(shortForm);
+					match = {isDL: addr.isGroup && addr.canExpand, email: addrStr};
+				}
+				else if (addr instanceof ZmContact) {
+					email = addr.getEmail(true);
+                    //bug: 57858 - give preference to lookup email address if its present
+                    //bug:60427 to show display name format the lookupemail
+                    addrStr = addr.getLookupEmail() ? (new AjxEmailAddress(addr.getLookupEmail(),null,addr.getFullNameForDisplay())).toString() : ZmApptViewHelper.getAttendeesText(addr, type);
+                    match = {isDL: addr.isGroup && addr.canExpand, email: addrStr};
+				}
+				addrInput.addBubble({address:addrStr, match:match, skipNotify:true});
 			}
 		}
-	}
-	else {
-		var list = [];
-		if (addrs && addrs.length) {
-			for (var i = 0, len = addrs.length; i < len; i++) {
-				var addr = addrs[i];
-				if (addr) {
-					if (typeof addr == "string") {
-						list.push(addr);
-					}
-					else if (addr.isAjxEmailAddress) {
-						list.push(addr.toString(shortForm));
-					}
-					else if (addr instanceof ZmContact) {
-						var email = addr.getEmail(true);
-						list.push(email.toString(shortForm));
-					}
-				}
-			}
-		}
-		var addrStr = (list.length > 0) ? list.join(AjxEmailAddress.SEPARATOR) + AjxEmailAddress.SEPARATOR : "";
-		addrInput.setValue(addrStr || "");
 	}
 };
 
@@ -1977,13 +1945,11 @@ function(enabled) {
 	var attField = this._attInputField[ZmCalBaseItem.PERSON];
 	if (attField) {
 		attField.setEnabled(enabled);
-        this._adjustAddrHeight(attField.getInputElement());
 	}
 
 	attField = this._attInputField[ZmCalBaseItem.OPTIONAL_PERSON];
 	if (attField) {
 		attField.setEnabled(enabled);
-        this._adjustAddrHeight(attField.getInputElement());
 	}
 };
 
@@ -2014,8 +1980,7 @@ function() {
 		dataClass:			appCtxt.getAutocompleter(),
 		matchValue:			ZmAutocomplete.AC_VALUE_FULL,
 		compCallback:		acCallback,
-		keyPressCallback:	keyPressCallback,
-		options:			{addrBubbles:this._useAcAddrBubbles}
+		keyPressCallback:	keyPressCallback
 	};
 
 	// autocomplete for attendees (required and optional) and forward recipients
@@ -2033,8 +1998,7 @@ function() {
 		// autocomplete for locations		
 		params.keyUpCallback = this._handleLocationChange.bind(this);
         //params.matchValue = ZmAutocomplete.AC_VALUE_NAME;
-		params.options = {addrBubbles:	this._useAcAddrBubbles,
-						  type:			ZmAutocomplete.AC_TYPE_LOCATION};
+		params.options = { type: ZmAutocomplete.AC_TYPE_LOCATION };
 		if (AjxEnv.isIE) {
 			params.keyDownCallback = this._resetKnownLocation.bind(this);
 		}
@@ -2048,8 +2012,7 @@ function() {
 		var app = appCtxt.getApp(ZmApp.CALENDAR);
         params.keyUpCallback = this._handleResourceChange.bind(this);
         //params.matchValue = ZmAutocomplete.AC_VALUE_NAME;
-        params.options = {addrBubbles:	this._useAcAddrBubbles,
-                          type:ZmAutocomplete.AC_TYPE_EQUIPMENT};		
+        params.options = { type:ZmAutocomplete.AC_TYPE_EQUIPMENT };
 		params.contextId = [this._controller.getCurrentViewId(), ZmCalBaseItem.EQUIPMENT].join("-");
 		var aclv = this._acResourcesList = new ZmAutocompleteListView(params);
         this._setAutocompleteHandler(aclv, ZmCalBaseItem.EQUIPMENT);
@@ -2070,12 +2033,8 @@ ZmApptEditView.prototype._setAutocompleteHandler =
 function(aclv, attType, input) {
 
 	input = input || this._attInputField[attType];
-	var aifId = null;
-	if (this._useAcAddrBubbles) {
-		aifId = input._htmlElId;
-		input.setAutocompleteListView(aclv);
-	}
-	aclv.handle(input.getInputElement(), aifId);
+	input.setAutocompleteListView(aclv);
+	aclv.handle(input.getInputElement(), input._htmlElId);
 
 	this._acList[attType] = aclv;
 };
@@ -2984,9 +2943,6 @@ function(ev) {
 
     var key = DwtKeyEvent.getCharCode(ev);
     var _nodeName = el.nodeName;
-    if (_nodeName && _nodeName.toLowerCase() === "textarea") {
-        this._adjustAddrHeight(el);
-    }
     if (appCtxt.get(ZmSetting.CONTACTS_ENABLED) ){
         ZmAutocompleteListView.onKeyUp(ev);
     }
@@ -3007,48 +2963,6 @@ function(ev) {
         AjxTimedAction.cancelAction(this._schedActionId);
     }
     this._schedActionId = AjxTimedAction.scheduleAction(new AjxTimedAction(this, this._handleAttendeeField, ZmCalBaseItem.PERSON), 300);
-};
-
-ZmApptEditView.prototype._adjustAddrHeight =
-function(textarea) {
-
-	if (this._useAcAddrBubbles || !textarea) { return; }
-
-	if (textarea.value.length == 0) {
-		textarea.style.height = "21px";
-		if (AjxEnv.isIE) {
-			// for IE use overflow-y
-			textarea.style.overflowY = "hidden";
-		}
-		else {
-			textarea.style.overflow = "hidden";
-		}
-		return;
-	}
-
-	var sh = textarea.scrollHeight;
-	if (sh > textarea.clientHeight) {
-		var taHeight = parseInt(textarea.style.height) || 0;
-		if (taHeight <= 65) {
-			if (sh >= 65) {
-				sh = 65;
-				if (AjxEnv.isIE)
-					textarea.style.overflowY = "scroll";
-				else
-					textarea.style.overflow = "auto";
-			}
-			textarea.style.height = sh + 13;
-		} else {
-			if (AjxEnv.isIE) {
-				// for IE use overflow-y
-				textarea.style.overflowY = "scroll";
-			}
-			else {
-				textarea.style.overflow = "auto";
-			}
-			textarea.scrollTop = sh;
-		}
-	}
 };
 
 ZmApptEditView.prototype.loadPreference =
@@ -3101,7 +3015,6 @@ function() {
                 }
             }
 
-            if (!this._useAcAddrBubbles) { continue; }
             // Color the address bubble or reset to default
             color = isFree ? "" : conflictColor;
             addressElId = this._attInputField[type].getAddressBubble(email);

@@ -40,9 +40,8 @@ ZmMailRedirectDialog = function(parent, className) {
 	recipParams.contextId					= this.toString();
     this._recipients = new ZmRecipients(recipParams);
 
-    this._useAcAddrBubbles = appCtxt.get(ZmSetting.USE_ADDR_BUBBLES);
     this._fieldNames = [AjxEmailAddress.TO];
-    var data = { id : this._htmlElId, acAddrBubbles : this._useAcAddrBubbles};
+    var data = { id : this._htmlElId };
 
     for (var i = 0; i < this._fieldNames.length; i++) {
         var typeStr = AjxEmailAddress.TYPE_STRING[this._fieldNames[i]];

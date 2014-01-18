@@ -297,7 +297,6 @@ function() {
                 ZmSetting.DEFAULT_PRINTFONTSIZE,
 				ZmSetting.OFFLINE_IS_MAILTO_HANDLER,
 				ZmSetting.SHORT_ADDRESS,
-				ZmSetting.USE_ADDR_BUBBLES,
                 ZmSetting.OFFLINE_UPDATE_NOTIFY //offline
 			]
 		},
@@ -737,12 +736,6 @@ function() {
 		displayContainer:	ZmPref.TYPE_CHECKBOX
 	});
 	
-	ZmPref.registerPref("USE_ADDR_BUBBLES", {
-		displayName:		ZmMsg.useAddressBubbles,
-		displayContainer:	ZmPref.TYPE_CHECKBOX,
-		validationFunction: ZmPref.validateBubbles
-	});
-
 	if (appCtxt.isOffline) {
 		ZmPref.registerPref("OFFLINE_IS_MAILTO_HANDLER", {
 			displayName:		ZmMsg.offlineAllowMailTo,

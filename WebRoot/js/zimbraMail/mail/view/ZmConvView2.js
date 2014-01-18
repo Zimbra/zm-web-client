@@ -1098,7 +1098,6 @@ function(msg, msgView, op) {
 	var addresses = ZmComposeView.getReplyAddresses(op, msg, msg);
 	
 	var options = {};
-	options.addrBubbles = appCtxt.get(ZmSetting.USE_ADDR_BUBBLES);
 	options.shortAddress = appCtxt.get(ZmSetting.SHORT_ADDRESS);
 
 	var showMoreIds = {};

@@ -555,7 +555,6 @@ function(list, type, role, objectManager, htmlElId) {
 	}
 
 	var options = {};
-	options.addrBubbles = appCtxt.get(ZmSetting.USE_ADDR_BUBBLES);
 	options.shortAddress = appCtxt.get(ZmSetting.SHORT_ADDRESS);
 	var addressInfo = ZmMailMsgView.getAddressesFieldHtmlHelper(emails, options,
 		role, objectManager, htmlElId);

@@ -1247,8 +1247,8 @@ function(addrs, options, type, om, htmlElId) {
 	var parts = [];
 	for (var i = 0; i < addrs.length; i++) {
 		if (i > 0) {
-			// no need for semicolon if we're showing addr bubbles
-			parts[idx++] = options.addrBubbles ? " " : AjxStringUtil.htmlEncode(AjxEmailAddress.SEPARATOR);
+			// no need for separator since we're showing addr bubbles
+			parts[idx++] = " ";
 		}
 
 		if (i == ZmMailMsgView.MAX_ADDRESSES_IN_FIELD) {
@@ -1329,7 +1329,6 @@ function(msg, container) {
 	}
 
 	var options = {};
-	options.addrBubbles = appCtxt.get(ZmSetting.USE_ADDR_BUBBLES);
 	options.shortAddress = appCtxt.get(ZmSetting.SHORT_ADDRESS);
 	
 	if (this._objectManager) {
@@ -1507,7 +1506,6 @@ function(msg, notifyZimlets) {
 	}
 
 	var options = {};
-	options.addrBubbles = appCtxt.get(ZmSetting.USE_ADDR_BUBBLES);
 	options.shortAddress = appCtxt.get(ZmSetting.SHORT_ADDRESS);
 	
 	if (this._objectManager) {

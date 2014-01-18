@@ -227,7 +227,6 @@ function(callback, dayViewCallback, result) {
         AjxDispatcher.require(["MailCore", "CalendarCore"]);
 
         var options = {};
-	    options.addrBubbles = appCtxt.get(ZmSetting.USE_ADDR_BUBBLES);
 	    options.shortAddress = appCtxt.get(ZmSetting.SHORT_ADDRESS);
 
 		for (var i = 0; i < attendees.length; i++) {
@@ -539,7 +538,6 @@ function(subs, sentBy, sentByAddr, obo) {
     }
 
     var options = {};
-	options.addrBubbles = appCtxt.get(ZmSetting.USE_ADDR_BUBBLES);
 	options.shortAddress = appCtxt.get(ZmSetting.SHORT_ADDRESS);
 
 	var om = this.parent._objectManager;

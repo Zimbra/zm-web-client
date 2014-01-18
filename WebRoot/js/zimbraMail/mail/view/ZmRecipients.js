@@ -27,17 +27,14 @@
  */
 ZmRecipients = function(params) {
 
-    this._useAcAddrBubbles = appCtxt.get(ZmSetting.USE_ADDR_BUBBLES) && appCtxt.get(ZmSetting.CONTACTS_ENABLED);
-	this._divId			= {};
-	this._buttonTdId	= {};
-	this._fieldId		= {};
-	this._using			= {};
-	this._button		= {};
-	this._field			= {};
-	this._divEl			= {};
-    if (this._useAcAddrBubbles) {
-        this._addrInputField = {};
-    }
+	this._divId			    = {};
+	this._buttonTdId	    = {};
+	this._fieldId		    = {};
+	this._using			    = {};
+	this._button		    = {};
+	this._field			    = {};
+	this._divEl			    = {};
+	this._addrInputField    = {};
 
     this._resetContainerSize = params.resetContainerSizeMethod;
     this._enableContainerInputs = params.enableContainerInputs;
@@ -94,9 +91,7 @@ function(parent, viewId, htmlElId, fieldNames, bccToggleId) {
 		var params = {
 			dataClass:		appCtxt.getAutocompleter(),
 			matchValue:		ZmAutocomplete.AC_VALUE_FULL,
-			compCallback:	this._acCompHandler.bind(this),
 			keyUpCallback:	this._acKeyupHandler.bind(this),
-			options:		{addrBubbles:this._useAcAddrBubbles},
 			contextId:		this._contextId
 		};
 		this._acAddrSelectList = new ZmAutocompleteListView(params);
@@ -120,29 +115,24 @@ function(parent, viewId, htmlElId, fieldNames, bccToggleId) {
 		// save field elements
 		this._divEl[type] = document.getElementById(this._divId[type]);
 		var aifId;
-		if (this._useAcAddrBubbles) {
-			var aifParams = {
-				parent:								parent,
-				autocompleteListView:				this._acAddrSelectList,
-				bubbleAddedCallback:				(new AjxCallback(this, this._bubblesChangedCallback)),
-				bubbleRemovedCallback:				(new AjxCallback(this, this._bubblesChangedCallback)),
-				bubbleMenuCreatedCallback:			(new AjxCallback(this, this._bubbleMenuCreated)),
-				bubbleMenuResetOperationsCallback:	(new AjxCallback(this, this._bubbleMenuResetOperations)),
-				inputId:							inputId,
-				type:								type
-			}
-			var aif = this._addrInputField[type] = new ZmAddressInputField(aifParams);
-			aifId = aif._htmlElId;
-			aif.reparentHtmlElement(ids.cell);
+		var aifParams = {
+			parent:								parent,
+			autocompleteListView:				this._acAddrSelectList,
+			bubbleAddedCallback:				(new AjxCallback(this, this._bubblesChangedCallback)),
+			bubbleRemovedCallback:				(new AjxCallback(this, this._bubblesChangedCallback)),
+			bubbleMenuCreatedCallback:			(new AjxCallback(this, this._bubbleMenuCreated)),
+			bubbleMenuResetOperationsCallback:	(new AjxCallback(this, this._bubbleMenuResetOperations)),
+			inputId:							inputId,
+			type:								type
 		}
+		var aif = this._addrInputField[type] = new ZmAddressInputField(aifParams);
+		aifId = aif._htmlElId;
+		aif.reparentHtmlElement(ids.cell);
 
 		// save field control
 		this._field[type] = document.getElementById(this._fieldId[type]);
 		if (this._field[type]) {
 			this._field[type].addrType = type;
-			if (!this._useAcAddrBubbles) {
-				this._setEventHandler(this._fieldId[type], "onFocus");
-			}
 		}
 
 		// create picker
@@ -193,16 +183,12 @@ function() {
 		var type = this._fieldNames[i];
 		var textarea = this._field[type];
 		textarea.value = "";
-		this._adjustAddrHeight(textarea, true);
-		if (this._useAcAddrBubbles) {
-			var addrInput = this._addrInputField[type];
-			if (addrInput) {
-				addrInput.clear();
-			}
+		var addrInput = this._addrInputField[type];
+		if (addrInput) {
+			addrInput.clear();
 		}
 	}
-}
-
+};
 
 ZmRecipients.prototype.resetPickerButtons =
 function(account) {
@@ -254,8 +240,7 @@ function(type) {
 
 
 
-// Adds the given addresses to the form. If we're using address bubbles, we need to add each
-// address separately in case it's a DL.
+// Adds the given addresses to the form. We need to add each address separately in case it's a DL.
 ZmRecipients.prototype.addAddresses =
 function(type, addrVec, used) {
 
@@ -270,19 +255,10 @@ function(type, addrVec, used) {
 			if (!email) { continue; }
 			email = email.toLowerCase();
 			if (!used[email]) {
-				if (this._useAcAddrBubbles) {
-					this.setAddress(type, addr);	// add the bubble now
-				} else {
-					addrList.push(addr);
-				}
+				this.setAddress(type, addr);	// add the bubble now
 				used[email] = true;
 				addrAdded = true;
 			}
-		}
-		if (!this._useAcAddrBubbles) {
-			// calls implicit toString() on each addr object
-			var addrStr = addrList.join(AjxEmailAddress.SEPARATOR);
-			this.setAddress(type, addrStr);
 		}
 	}
 	return addrAdded;
@@ -312,32 +288,19 @@ function(type, addr) {
 		this._showAddressField(type, true);
 	}
 
-	if (this._useAcAddrBubbles) {
-		var addrInput = this._addrInputField[type];
-		if (!addrStr) {
-			addrInput.clear();
-		}
-		else {
-			if (addr.isAjxEmailAddress) {
-				var match = {isDL: addr.isGroup && addr.canExpand, email: addrStr};
-				addrInput.addBubble({address:addrStr, match:match, skipNotify:true, noFocus:true});
-			}
-			else {
-				this._setAddrFieldValue(type, addrStr);
-			}
-		}
+	var addrInput = this._addrInputField[type];
+	if (!addrStr) {
+		addrInput.clear();
 	}
 	else {
-		this._setAddrFieldValue(type, addrStr);
+		if (addr.isAjxEmailAddress) {
+			var match = {isDL: addr.isGroup && addr.canExpand, email: addrStr};
+			addrInput.addBubble({address:addrStr, match:match, skipNotify:true, noFocus:true});
+		}
+		else {
+			this._setAddrFieldValue(type, addrStr);
+		}
 	}
-
-	// Use a timed action so that first time through, addr textarea
-	// has been sized by browser based on content before we try to
-	// adjust it (bug 20926)
-	AjxTimedAction.scheduleAction(new AjxTimedAction(this,
-		function() {
-			this._adjustAddrHeight(this._field[type]);
-		}), 0);
 };
 
 
@@ -407,21 +370,9 @@ function() {
 
 ZmRecipients.prototype.getAddrFieldValue =
 function(type) {
-
-	var val = "";
-	if (this._useAcAddrBubbles) {
-		var addrInput = this._addrInputField[type];
-		if (addrInput) {
-			val = addrInput.getValue();
-		}
-	}
-	else {
-		val = AjxStringUtil.trim(this._field[type].value)
-	}
-
-	return val;
+	var addrInput = this._addrInputField[type];
+	return addrInput ? addrInput.getValue() : '';
 };
-
 
 ZmRecipients.prototype.enableInputs =
 function(bEnable) {
@@ -430,8 +381,6 @@ function(bEnable) {
 		this._field[this._fieldNames[i]].disabled = !bEnable;
 	}
 };
-
-
 
 // Address buttons invoke contact picker
 ZmRecipients.prototype.addressButtonListener =
@@ -455,11 +404,9 @@ function(ev, addrType) {
 
 	var curType = obj ? obj.addrType : addrType;
 	var addrList = {};
-	var addrs = !this._useAcAddrBubbles && this.collectAddrs();
 	for (var i = 0; i < this._fieldNames.length; i++) {
 		var type = this._fieldNames[i];
-		addrList[type] = this._useAcAddrBubbles ? this._addrInputField[type].getAddresses(true) :
-				   								  addrs[type] && addrs[type].good.getArray();
+		addrList[type] = this._addrInputField[type].getAddresses(true);
 	}
 	if (this._contactPopdownListener) {
 		this._contactPicker.addPopdownListener(this._contactPopdownListener);
@@ -499,14 +446,6 @@ function(type, show, skipNotify, skipFocus) {
 	}
 };
 
-
-
-ZmRecipients.prototype._acCompHandler =
-function(text, el, match) {
-	if (this._useAcAddrBubbles) { return; }
-	this._adjustAddrHeight(el);
-};
-
 ZmRecipients.prototype._acKeyupHandler =
 function(ev, acListView, result, element) {
 	var key = DwtKeyEvent.getCharCode(ev);
@@ -516,69 +455,14 @@ function(ev, acListView, result, element) {
 		(AjxEnv.isMac && key == 224)))) // bug fix #24670
 	{
 		element.value = element.value && element.value.replace(/;([^\s])/g, function(all, group){return "; "+group}) || ""; // Change ";" to "; " if it is not succeeded by a whitespace
-		this._adjustAddrHeight(element);
 	}
 };
-
-ZmRecipients.prototype._adjustAddrHeight =
-function(textarea, skipResetBodySize) {
-
-	if (this._useAcAddrBubbles || !textarea) { return; }
-
-	if (textarea.value.length == 0) {
-		textarea.style.height = "21px";
-
-		if (AjxEnv.isIE) {
-			// for IE use overflow-y
-			textarea.style.overflowY = "hidden";
-		} else {
-			textarea.style.overflow = "hidden";
-		}
-
-		if (!skipResetBodySize && this._resetContainerSize) {
-			this._resetContainerSize();
-		}
-
-		return;
-	}
-
-	var sh = textarea.scrollHeight;
-	if (sh > textarea.clientHeight) {
-		var taHeight = parseInt(textarea.style.height) || 0;
-		if (taHeight <= 65) {
-			if (sh >= 65) {
-				sh = 65;
-				if (AjxEnv.isIE)
-					textarea.style.overflowY = "scroll";
-				else
-					textarea.style.overflow = "auto";
-			}
-			textarea.style.height = sh + 13;
-			if (this._resetContainerSize) {
-				this._resetContainerSize();
-			}
-		} else {
-			if (AjxEnv.isIE) {
-				// for IE use overflow-y
-				textarea.style.overflowY = "scroll";
-			}
-			else {
-				textarea.style.overflow = "auto";
-			}
-
-			textarea.scrollTop = sh;
-		}
-	}
-};
-
-
 
 /**
  * a callback that's called when bubbles are added or removed, since we need to resize the msg body in those cases.
  */
 ZmRecipients.prototype._bubblesChangedCallback =
 function() {
-	if (!this._useAcAddrBubbles) { return; }
 	if (this._resetContainerSize) {
 		this._resetContainerSize(); // body size might change due to change in size of address field (due to new bubbles).
 	}
@@ -586,8 +470,6 @@ function() {
 
 ZmRecipients.prototype._bubbleMenuCreated =
 function(addrInput, menu) {
-
-	if (!this._useAcAddrBubbles) { return; }
 
 	this._bubbleActionMenu = menu;
     if (this._fieldNames.length > 1) {
@@ -633,17 +515,12 @@ function(ev) {
 	}
 };
 
-
 ZmRecipients.prototype._setAddrFieldValue =
 function(type, value) {
 
-	if (this._useAcAddrBubbles) {
-		var addrInput = this._addrInputField[type];
-		if (addrInput) {
-			addrInput.setValue(value, true);
-		}
-	} else {
-		this._field[type].value = value || "";
+	var addrInput = this._addrInputField[type];
+	if (addrInput) {
+		addrInput.setValue(value, true);
 	}
 };
 
@@ -660,16 +537,6 @@ function(id, event, addrType) {
 	field[lcEvent] = ZmRecipients["_" + event];
 };
 
-
-ZmRecipients._onKeyUp =
-function(ev) {
-	ev = DwtUiEvent.getEvent(ev);
-	var element = DwtUiEvent.getTargetWithProp(ev, "id");
-	if (!element) { return true; }
-    element._recipients._adjustAddrHeight(element);
-	return true;
-};
-
 // set focus within tab group to element so tabbing works
 ZmRecipients._onFocus =
 function(ev) {
@@ -683,9 +550,6 @@ function(ev) {
 		kbMgr.__currTabGroup.setFocusMember(element);
 	}
 };
-
-
-
 
 // Transfers addresses from the contact picker to the compose view.
 ZmRecipients.prototype._contactPickerOkCallback =
@@ -704,8 +568,8 @@ function(addrs) {
 		this.addAddresses(type, addrVec);
 	}
 
-	//I still need this here since REMOVING stuff with the picker does not call removeBubble in the ZmAddresInputField.
-	//Also - it's better to do it once than for every bubble in this case. user might add many addresses with the picker
+	// Still need this here since REMOVING stuff with the picker does not call removeBubble in the ZmAddressInputField.
+	// Also - it's better to do it once than for every bubble in this case. user might add many addresses with the picker
 	this._bubblesChangedCallback();
 
 	if (this._contactPopdownListener) {
@@ -749,7 +613,6 @@ function() {
 		this._reenter();
 	}
 };
-
 
 ZmRecipients.prototype._toggleBccField =
 function(ev, force) {

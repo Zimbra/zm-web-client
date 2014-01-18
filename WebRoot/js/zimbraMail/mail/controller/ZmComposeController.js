@@ -105,7 +105,7 @@ function() {
 	if (ZmComposeController.SETTINGS) { return; }
 
 	// settings whose changes affect us (so we add a listener to them)
-	ZmComposeController.SETTINGS = [ZmSetting.SHOW_BCC, ZmSetting.USE_ADDR_BUBBLES];
+	ZmComposeController.SETTINGS = [ ZmSetting.SHOW_BCC ];
 
 	// radio groups for options items
 	ZmComposeController.RADIO_GROUP = {};
@@ -280,10 +280,9 @@ function() {
     var selectedIdentityIndex = view.identitySelect && view.identitySelect.getSelectedIndex();
 
 	var addrList = {};
-	var addrs = !view._useAcAddrBubbles && view.getRawAddrFields();
 	for (var i = 0; i < ZmMailMsg.COMPOSE_ADDRS.length; i++) {
 		var type = ZmMailMsg.COMPOSE_ADDRS[i];
-		addrList[type] = view._useAcAddrBubbles ? view.getAddrInputField(type).getAddresses(true) : addrs[type];
+		addrList[type] = view.getAddrInputField(type).getAddresses(true);
 	}
 
 	// this is how child window knows what to do once loading:
@@ -1031,12 +1030,6 @@ function(params) {
 
 	this._composeMode = params.composeMode || this._getComposeMode(msg, identity, params);
 	
-	if (this._needComposeViewRefresh) {
-		this._composeView.dispose();
-		this._composeView = null;
-		this._needComposeViewRefresh = false;
-	}
-
 	var cv = this._composeView;
 	if (!cv) {
 		this.initComposeView();
@@ -1828,9 +1821,6 @@ function(ev) {
 	var id = ev.source.id;
 	if (id == ZmSetting.SHOW_BCC) {
 		//Handle, if SHOW_BCC setting is changed, need to do when we come up with a COS Preference.
-	}
-	else if (id == ZmSetting.USE_ADDR_BUBBLES) {
-		this._needComposeViewRefresh = true;
 	}
 };
 

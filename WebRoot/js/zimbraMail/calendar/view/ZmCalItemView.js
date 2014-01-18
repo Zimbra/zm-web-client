@@ -371,7 +371,6 @@ function(calItem) {
 	var om = this._objectManager;
 	if (om) {
 		var options = {};
-		options.addrBubbles = appCtxt.get(ZmSetting.USE_ADDR_BUBBLES);
 		options.shortAddress = appCtxt.get(ZmSetting.SHORT_ADDRESS);
 
 		om.setHandlerAttr(ZmObjectManager.DATE,

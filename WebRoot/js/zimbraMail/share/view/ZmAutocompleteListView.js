@@ -546,7 +546,7 @@ function(element) {
 		var c = text.charAt(i);
 		if (c == ' ' && !str) { continue; }	// ignore leading space
 		var isDelim = this._isDelim[c];
-		if (isDelim || (this._options.addrBubbles && c == ' ')) {
+		if (isDelim || c == ' ') {
 			// space counts as delim if bubbles are on and the space follows an address
 			var str1 = (this._dataAPI.isComplete && this._dataAPI.isComplete(str, true));
 			if (str1) {
@@ -637,7 +637,7 @@ function(results, element) {
 				state:		ZmAutocompleteListView.STATE_NEW
 			}
 			newContexts.push(context);
-			if (result.isAddress && this._options.addrBubbles) {
+			if (result.isAddress) {
 				// handle a completed email address now
 				this._update(context);
 			}
@@ -894,8 +894,7 @@ function(match) {
 	return value;
 };
 
-// Updates the content of the input with the given match. If bubbles are enabled, adds a bubble, otherwise just
-// adds the text version of the address.
+// Updates the content of the input with the given match and adds a bubble
 ZmAutocompleteListView.prototype._update =
 function(context, match) {
 
@@ -922,13 +921,7 @@ function(context, match) {
 	var address = context.address = context.address || (context.isAddress && context.str) || (match && this._getCompletionValue(match));
 	DBG.println("ac", "UPDATE: result for '" + context.str + "' is " + AjxStringUtil.htmlEncode(address));
 
-	// add bubble now if appropriate
-	if (this._options.addrBubbles) {
-		this._addBubble(context, match, context.isComplete);
-	}
-	else {
-		newText = address + this._separator;
-	}
+	this._addBubble(context, match, context.isComplete);
 
 	// figure out what the content of the input should now be
 	var el = context.element;
@@ -1229,10 +1222,7 @@ function() {
 	var elLoc = Dwt.getLocation(el);
 	var elSize = Dwt.getSize(el);
 	var x = elLoc.x;
-	var y = elLoc.y + elSize.y;
-	if (this._options.addrBubbles) {
-		y += 3;
-	}
+	var y = elLoc.y + elSize.y + 3;
 	DwtPoint.tmp.set(x, y);
 	return DwtPoint.tmp;
 };

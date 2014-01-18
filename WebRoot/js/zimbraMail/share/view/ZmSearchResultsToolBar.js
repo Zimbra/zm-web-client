@@ -115,7 +115,7 @@ function() {
 ZmSearchResultsToolBar.prototype._getAutocompleteParams =
 function() {
 	var params = ZmSearchToolBar.prototype._getAutocompleteParams.apply(this, arguments);
-	params.options = { addrBubbles: true, noBubbleParse: true };
+	params.options = { noBubbleParse: true };
 	return params;
 };
 
@@ -147,7 +147,8 @@ function(text, showError) {
 // Don't let the removal or addition of a bubble when we're setting up trigger a search loop.
 ZmSearchResultsToolBar.prototype._bubbleChange =
 function(bubble, added) {
-		//cancel existing timeout since we restart the 2 seconds wait.
+
+	//cancel existing timeout since we restart the 2 seconds wait.
 	this._clearPendingSearchTimeout();
 	if (this._settingSearch) {
 		return;

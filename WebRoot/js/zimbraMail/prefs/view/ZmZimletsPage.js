@@ -17,7 +17,7 @@
  * Creates a Zimlets preference page.
  * @constructor
  * @class ZmZimletsPage
- * This class represents a page that allows the user to enable/disable availbale
+ * This class represents a page that allows the user to enable/disable available
  * zimlets. User can see all the simlets those are enabled by admin for his account.
  * Out of these available zimlets user can choose some or all for his account.
  *
@@ -475,9 +475,7 @@ ZmZimletsPage.prototype.validate  =
 function() {
 	var emailZimlet = document.getElementById("com_zimbra_email_zimletCheckbox");
 	if (emailZimlet && !emailZimlet.checked) {
-		if (appCtxt.get(ZmSetting.USE_ADDR_BUBBLES)) {
-			return false;
-		}
+		return false;
 	}
 	return true;
 };

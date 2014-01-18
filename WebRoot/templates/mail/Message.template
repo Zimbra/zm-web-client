@@ -390,9 +390,6 @@
 			<div id='${toPickerId}'><$=ZmMsg.toLabel$></div>
 		</td>
 		<td id='${toCellId}'>
-			<$ if (!data.acAddrBubbles) { $>
-				<textarea id='${toInputId}' class='addresses' style='${inputStyle}' rows=1></textarea>
-			<$ } $>
 		</td>
 		<td width='1%'></td>
 	</tr>
@@ -404,9 +401,6 @@
 			<div id='${ccPickerId}'><$=ZmMsg.ccLabel$></div>
 		</td>
 		<td id='${ccCellId}'>
-			<$ if (!data.acAddrBubbles) { $>
-				<textarea id='${ccInputId}' class='addresses' style='${inputStyle}' rows=1></textarea>
-			<$ } $>
 		</td>
 		<td width='1%' style='white-space:nowrap;'>
 			<a href='#' id='${bccToggleId}'><$=ZmMsg.showBCC$></a>
@@ -420,9 +414,6 @@
 			<div id='${bccPickerId}'><$=ZmMsg.bccLabel$></div>
 		</td>
 		<td id='${bccCellId}'>
-			<$ if (!data.acAddrBubbles) { $>
-				<textarea id='${bccInputId}' class='addresses' style='${inputStyle}' rows=1></textarea>
-			<$ } $>
 		</td>
 		<td width='1%'></td>
 	</tr>

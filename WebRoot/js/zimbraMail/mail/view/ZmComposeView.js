@@ -51,7 +51,6 @@ ZmComposeView = function(parent, controller, composeMode) {
 	ZmComposeView.MOVE_TO_FIELD[ZmOperation.MOVE_TO_BCC]	= AjxEmailAddress.BCC;
 		
 	this._onMsgDataChange = this._onMsgDataChange.bind(this);
-	this._useAcAddrBubbles = appCtxt.get(ZmSetting.USE_ADDR_BUBBLES) && appCtxt.get(ZmSetting.CONTACTS_ENABLED);
 
 	this._controller = controller;
 
@@ -2934,8 +2933,7 @@ function(templateId) {
 		attRowId:			ZmId.getViewId(this._view, ZmId.CMP_ATT_ROW),
 		attDivId:			ZmId.getViewId(this._view, ZmId.CMP_ATT_DIV),
 		attBtnId:			ZmId.getViewId(this._view, ZmId.CMP_ATT_BTN),
-		zdndToolTipId:		ZmId.getViewId(this._view, ZmId.CMP_DND_TOOLTIP),
-		acAddrBubbles:		this._useAcAddrBubbles
+		zdndToolTipId:		ZmId.getViewId(this._view, ZmId.CMP_DND_TOOLTIP)
 	};
 
 	this._createHtmlFromTemplate(templateId || this.TEMPLATE, data);
