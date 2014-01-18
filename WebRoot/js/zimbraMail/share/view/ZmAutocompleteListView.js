@@ -917,7 +917,6 @@ function(context, match) {
 ZmAutocompleteListView.prototype._updateContinuation = 
 function(context, match) {
 
-	var newText = "";
 	var address = context.address = context.address || (context.isAddress && context.str) || (match && this._getCompletionValue(match));
 	DBG.println("ac", "UPDATE: result for '" + context.str + "' is " + AjxStringUtil.htmlEncode(address));
 
@@ -937,10 +936,7 @@ function(context, match) {
 			for (var i = 0; i < results.length; i++) {
 				var result = results[i];
 				var key = this._getKey(result);
-				if (context.key === key) {
-					newValue += newText;
-				}
-				else {
+				if (context.key !== key) {
 					newValue += key;
 				}
 			}
