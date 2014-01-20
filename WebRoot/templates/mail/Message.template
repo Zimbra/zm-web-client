@@ -221,7 +221,7 @@
 									<td class='LabelColName'><$= ZmMsg.inviteesLabel $></td>
 									<td class='LabelColValue' id='${ptstId}'></td>
 								</tr>
-							<$ } else if (data.invite.hasOtherAttendees()) { $>
+							<$ } else if (data.invite.hasOtherIndividualAttendees()) { $>
 								<tr>
 									<td class='LabelColName'><$= ZmMsg.inviteesLabel $></td>
 									<td class='LabelColValue'><$= data.invitees $></td>

@@ -195,6 +195,29 @@ function(compNum) {
 };
 
 /**
+ * Checks if the invite has other individual (non-location & resource) attendees.
+ *
+ * @param	{int}	compNum		the component number
+ * @return	{Boolean}	<code>true</code> if the invite has more than one other individual attendee
+ */
+ZmInvite.prototype.hasOtherIndividualAttendees =
+function(compNum) {
+    var cn  = compNum || 0;
+    var att = this.components[cn].at;
+    var otherFound = false;
+
+    if (att && att.length) {
+        for (var i = 0; i < att.length; i++) {
+            if (!att[i].cutype || (att[i].cutype == ZmCalendarApp.CUTYPE_INDIVIDUAL)) {
+                otherFound = true;
+                break;
+            }
+        }
+    }
+    return otherFound;
+};
+
+/**
  * Gets the event name.
  *  
  * @param	{int}	compNum		the component number
