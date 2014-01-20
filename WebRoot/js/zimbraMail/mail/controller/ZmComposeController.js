@@ -796,7 +796,7 @@ function() {
 		msg:			this._msg,
 		extraBodyText:	this._composeView.getUserText(),
 		op:				ZmId.OP_ADD_SIGNATURE
-	};
+ 	};
 	this._composeView.resetBody(params);
 	this._setAddSignatureVisibility();
 	if (identity) {
@@ -959,6 +959,9 @@ function(value) {
 	var button = this._getSignatureButton();
 	var menu = button ? button.getMenu() : null;
 	if (menu) {
+        if (value === ZmIdentity.SIG_ID_NONE) {
+            value = "";
+        }
 		menu.checkItem(ZmComposeController.SIGNATURE_KEY, value, true);
 	}
 };
