@@ -192,8 +192,9 @@ function(params, callback, batchCmd) {
 	var request = jsonObj.GetConvRequest;
 	var c = request.c = {
 		id:		this.id,
+		needExp:	true,
 		html:	(params.getHtml || this.isDraft || appCtxt.get(ZmSetting.VIEW_AS_HTML))
-	}
+	};
 	if (params.fetchAll) {
 		c.fetch = "all";
 	}
