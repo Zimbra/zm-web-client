@@ -220,6 +220,9 @@ function(ev) {
 	}
 
 	var organizer = ev.item && ev.item.getData(Dwt.KEY_OBJECT);
+	if (organizer.id === ZmFolder.ID_LOAD_FOLDERS) {
+		return; // user clicked on "Show More Folders", it's not a real selection, it just expanded more folders.
+	}
 	var value = organizer ? organizer.getName(null, null, true) : ev.item.getText();
 	this._lastVal = value.toLowerCase();
 	this._doSelection();
