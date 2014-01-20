@@ -1,0 +1,21 @@
+# HG changeset patch
+# User Dan Villiom Podlaski Christiansen <dan@cabo.dk>
+# Date 1388762284 -3600
+#      Fri Jan 03 16:18:04 2014 +0100
+# Node ID f00623e6fff6c0aa509b1a74c17b5412f1a4cfab
+# Parent  c6de843a642de763d892a2f292c088cab72f4fa4
+Add Jake to list of build requirements.
+
+diff --git a/package.json b/package.json
+--- a/package.json
++++ b/package.json
+@@ -7,6 +7,9 @@
+ 	"engines": {
+ 		"node" : ">=0.8.0"
+ 	},
++	"devDependencies": {
++		"jake": ">= 0.7.0"
++	},
+ 	"dependencies": {
+ 		"amdlc": ">= 0.0.2",
+ 		"jshint": ">= 2.1.4",

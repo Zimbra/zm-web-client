@@ -1637,6 +1637,10 @@ if (ext == null) ext = "";
         </delete>
     </target>
 
+    <target name="get-tinymce-version">
+        <echo message="${tinymce.version}" />
+    </target>
+
     <target name="tinymce">
         <copy todir='${tinymce.dir}' verbose='${sync.verbose}'>
             <fileset dir='${tinymce.js.dir}' />
