@@ -17,6 +17,14 @@ requirements of Zimbra:
 See the Makefile itself for further documentation on available targets. I'll
 describe a few typical tasks below.
 
+Please note that the final step prior to posting a patch to
+ReviewBoard and/or submitting a change to Perforce should be:
+
+  $ make reset
+
+This blows away the TinyMCE sources, regenerates, patches and rebuilds
+them, and finally reconciles the modifications with Perforce,
+preventing any changes beyond our patches.
 
 PATCHING TINYMCE
 ----------------

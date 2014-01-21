@@ -63,7 +63,6 @@ diff: build
 # fetch TinyMCE anew and reapply patches
 #
 patch:
-	-$(P4) edit $(TINYMCEDIR)/...
 	$(RM) $(TINYMCEDIR)
 	$(CURL) -fL $(TINYMCE_URL) | $(TAR) zxC $(dir $(TINYMCEDIR))
 
@@ -81,3 +80,5 @@ reset:
 	$(MAKE) patch
 	$(MAKE) build
 	$(MAKE) clean
+
+	-$(P4) reconcile $(TINYMCEDIR)/...
