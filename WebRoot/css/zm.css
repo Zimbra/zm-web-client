@@ -5746,7 +5746,7 @@ DIV .SuggestBtn {
 .NoSuggestions {
 	@FontSize-big@
 	color:@TxtC@;
-	padding:15px 10px;
+	padding:5em 1em 1em;
 	text-align:center;
 }
 

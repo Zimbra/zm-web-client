@@ -511,8 +511,8 @@ NOTE: The outer table/tr is a necessary hack. It is NOT inserted in the
 <template id='dwt.Widgets#DwtListView-NoResults'>
 	<table width='100%'>
 		<tr>
-			<td class='NoResults' valign='top'>
-				<br><br>${message}
+			<td class='NoResults'>
+				${message}
 			</td>
 		</tr>
 	</table>

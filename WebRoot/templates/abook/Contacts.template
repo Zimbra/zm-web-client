@@ -557,7 +557,7 @@
 <template id='abook.Contacts#SimpleView-NoResults'>
 	<table width='100%'>
 		<tr>
-			<td class='NoResults' style='padding-top:2em;vertical-align:top;' >
+			<td class='NoResults'>
 				<$= AjxMsg.noResults $>
 			</td>
 		</tr>

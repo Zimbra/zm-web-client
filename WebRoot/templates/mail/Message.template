@@ -672,7 +672,7 @@
 <template id='mail.Message#viewMessage'>
 	<table width='100%'>
 		<tr>
-			<td class='NoResults'><br><$= (data && data.isConv) ? ZmMsg.viewConversation : ZmMsg.viewMessage $></td>
+			<td class='NoResults'><$= (data && data.isConv) ? ZmMsg.viewConversation : ZmMsg.viewMessage $></td>
 		</tr>
 	</table>
 </template>
@@ -680,8 +680,7 @@
 <template id='mail.Message#EmptyMessage'>
 	<table width='100%'>
 		<tr>
-			<td class='NoResults' style="text-align:center;">
-				<br>
+			<td class='NoResults'>
 				<$= ZmMsg.messageEmptyTextContent $>
 			</td>
 		</tr>
