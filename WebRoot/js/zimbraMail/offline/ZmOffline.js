@@ -785,7 +785,7 @@ function(msgIds, callback){
         msg.setAttribute("needExp", 1);
         msg.setAttribute("max", 250000);
      }
-    var respCallback = this._cacheMessages.bind(this, callback);
+    var respCallback = this._handleGetResponse.bind(this, callback);
     appCtxt.getRequestMgr().sendRequest({
         soapDoc: soapDoc,
         asyncMode: true,
@@ -794,14 +794,6 @@ function(msgIds, callback){
 
 };
 
-ZmOffline.prototype._cacheMessages =
-function(callback, result){
-    var response = result.getResponse();
-    var msgs = response && response.BatchResponse.GetMsgResponse;
-    if (callback) {
-        callback.run();
-    }
-};
 
 ZmOffline.prototype._replayOfflineRequest =
 function() {
