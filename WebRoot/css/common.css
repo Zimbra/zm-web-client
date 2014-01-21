@@ -512,18 +512,20 @@ TD.vSpace {
 #ENDIF
 /* list row styles (bgs & border) */
 
-.Row						{	@ListItemContainer-normal@			}
+.Row							{	@ListItemContainer-normal@			}
 
-.RowOdd						{	@ListItemContainer-alt@			}
+.RowOdd							{	@ListItemContainer-alt@			}
 
-.selected, 	/* TODO: used? */
+/* selected row styles */
+.selected,
 .Row-selected,
+.Row-selected-dragProxy,
+.Row-selected-disabled			{	@ListItemContainer-selected@		}
+
 .Row-selected .ZmListFlagsWrapper,
 .Row-selected .ZmMsgListDate,
-.Row-selected-dragProxy,
-.Row-selected-disabled,
 .Row-selected-disabled .ZmMsgListDate,
-.Row-selected-disabled .ZmListFlagsWrapper 	{	@ListItemContainer-selected@		}
+.Row-selected-disabled .ZmListFlagsWrapper 	{	background-color:@ListItemBgColor-selected@;	}
 
 /* .Row-matched, */
 .Row-matched-dragProxy 			{ 	@ListItemContainer-matched@		}

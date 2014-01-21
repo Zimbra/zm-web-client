@@ -750,7 +750,7 @@
 					</table>
 					</td>
 					<td>
-					<div class='groupMembers' id='${id}_listView'></div>
+					<div id='${id}_listView'></div>
 					<table width='100%' class='ZPropertySheet' cellspacing='6'>
 						<tr>
 							<td width='100%'></td>

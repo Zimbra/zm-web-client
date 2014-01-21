@@ -825,7 +825,7 @@ and the container element is replaced with that control.
 			<td class='ZOptionsSectionMain'>
 				<table width=100% class='ZPropertySheet' cellspacing='6'>
 					<tr>
-						<td style='padding:0;margin:0;border:solid 1px silver'> <!-- TODO: correct border color -->
+						<td>
 							<div id='${id}_ACCOUNTS' tabindex='20'></div>
 						</td>
 					</tr>
