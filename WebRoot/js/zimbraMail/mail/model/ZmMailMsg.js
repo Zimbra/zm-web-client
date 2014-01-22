@@ -1441,7 +1441,7 @@ function(request, isDraft, accountName, requestReadReceipt, sendTime) {
 	var mainAccount = ac.accountList.mainAccount;
 
 	//When fwding an email in Parent's(main) account(main == active), but we are sending on-behalf-of child(active != accountName)
-	var doQualifyIds = !ac.isOffline && ac.multiAccounts  && mainAccount.name != accountName;
+	var doQualifyIds = !ac.isOffline && accountName && mainAccount.name !== accountName;
 
 	// if origId is given, means we're saving a draft or sending a msg that was
 	// originally a reply/forward
@@ -1480,7 +1480,11 @@ function(request, isDraft, accountName, requestReadReceipt, sendTime) {
 			}
 
 			if (!isDraft) { // not saveDraftRequest 
-				msgNode.did = this.nId || this.id; // set draft id
+				var did = this.nId || this.id; // set draft id
+				if (doQualifyIds) {
+					did = ZmOrganizer.getSystemId(did, mainAccount, true);
+				}
+				msgNode.did = did;
 			}
 		}
 	}
@@ -1641,7 +1645,13 @@ function(request, isDraft, accountName, requestReadReceipt, sendTime) {
 
 		// attach msg attachments
 		if (this._forAttObjs && this._forAttObjs.length) {
-				var parts = attachNode.mp = this._forAttObjs;
+			var parts = attachNode.mp = this._forAttObjs;
+			if (doQualifyIds) {
+				for (var i = 0; i < parts.length; i++) {
+					var part = parts[i];
+					part.mid = ZmOrganizer.getSystemId(part.mid, mainAccount, true);
+				}
+			}
 		}
 
 		if (this._contactAttIds && this._contactAttIds.length) {
