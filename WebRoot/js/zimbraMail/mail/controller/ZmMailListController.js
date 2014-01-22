@@ -643,9 +643,6 @@ function() {
 		viewType = this.getCurrentViewType();
 
 	list.push(ZmOperation.REDIRECT, ZmOperation.EDIT_AS_NEW);
-	if ((viewType === ZmId.VIEW_CONVLIST || viewType === ZmId.VIEW_CONV) && appCtxt.get(ZmSetting.FORWARD_MENU_ENABLED)) {
-		list.push(ZmOperation.FORWARD_CONV);
-	}
 	list.push(ZmOperation.SEP, ZmOperation.PRINT);
 	list.push(ZmOperation.SEP);
 	list = list.concat(this._flagOps());
