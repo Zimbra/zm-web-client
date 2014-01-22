@@ -264,7 +264,7 @@ function(colItem, ascending, firstTime, lastId, lastSortVal, offset) {
 			: ZmId.SEARCH_GAL;
 
 		if (searchFor == ZmContactsApp.SEARCHFOR_PAS) {
-			queryHint.push(ZmSearchController.generateQueryForShares([ZmId.ITEM_CONTACT]) || "is:local");
+			queryHint.push(ZmSearchController.generateQueryForShares(ZmId.ITEM_CONTACT) || "is:local");
 		} else if (searchFor == ZmContactsApp.SEARCHFOR_CONTACTS) {
 			queryHint.push("is:local");
 		} else if (searchFor == ZmContactsApp.SEARCHFOR_GAL) {

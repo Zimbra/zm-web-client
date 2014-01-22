@@ -101,7 +101,7 @@ function(ascending, firstTime, lastId, lastSortVal) {
 			: ZmId.SEARCH_GAL;
 
 		if (searchFor == ZmContactsApp.SEARCHFOR_PAS) {
-			queryHint = ZmSearchController.generateQueryForShares([ZmId.ITEM_CONTACT]) || "is:local";
+			queryHint = ZmSearchController.generateQueryForShares(ZmId.ITEM_CONTACT) || "is:local";
 		} else if (searchFor == ZmContactsApp.SEARCHFOR_CONTACTS) {
 			queryHint = "is:local";
 		} else if (searchFor == ZmContactsApp.SEARCHFOR_GAL) {

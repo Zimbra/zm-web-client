@@ -361,32 +361,31 @@ function() {
 };
 
 /**
- * Gets the item types. Assembles a list of item types to return based on a search menu value (which can
- * be passed in).
+ * Gets the item type, based on searchFor. The type is the same as the searchFor, except for mail in which the type is either msg or conv based on view.
  *
- * @param {Hash}	params			a hash of arguments for the search
  * @param {String}	searchFor		general description of what to search for
- * @return	{AjxVector}		a list of types
+ * @return	{String}	type
  * 
  * @see		#search
  */
-ZmSearchController.prototype.getTypes =
-function(params) {
-	var types = new AjxVector();
-	var searchFor = params.searchFor || this._searchFor;
+ZmSearchController.prototype.getTypeFromSearchFor =
+function(searchFor) {
 
-	var groupBy;
-	if ((searchFor == ZmId.SEARCH_MAIL) && appCtxt.get(ZmSetting.MAIL_ENABLED))	{
-		groupBy = appCtxt.getApp(ZmApp.MAIL).getGroupMailBy();
-	}
+	return searchFor === ZmId.SEARCH_MAIL ? appCtxt.getApp(ZmApp.MAIL).getGroupMailBy() : searchFor;
+};
 
-	if (searchFor == ZmId.SEARCH_MAIL) {
-		types.add(groupBy);
-	} else {
-		types.add(searchFor);
-	}
 
-	return types;
+/**
+ * Get the searchFor var which is the same as type except for mail, in which case the type is either msg or conv but searchFor is mail.
+ *
+ * @param {String} type	type of items to search for
+ * @return	{String}	searchFor
+ *
+ * @see		#search
+ */
+ZmSearchController.prototype.getSearchForFromType =
+function(type) {
+	return (type === ZmItem.MSG || type === ZmItem.CONV) ? ZmId.SEARCH_MAIL : type;
 };
 
 /**
@@ -432,41 +431,40 @@ function(searchObj) {
  * @private
  */
 ZmSearchController.prototype._getSuitableSortBy =
-function(types) {
+function(type) {
 	var sortBy;
 
-	if (types.size() == 1) {
-		var type = types.get(0);
-		var viewType;
-		switch (type) {
-			case ZmItem.CONV:		viewType = ZmId.VIEW_CONVLIST; break;
-			case ZmItem.MSG:		viewType = ZmId.VIEW_TRAD; break;
-			case ZmItem.CONTACT:	viewType = ZmId.VIEW_CONTACT_SIMPLE; break;
-			case ZmItem.APPT:		viewType = ZmId.VIEW_CAL; break;
-			case ZmItem.TASK:		viewType = ZmId.VIEW_TASKLIST; break;
-			case ZmId.SEARCH_GAL:	viewType = ZmId.VIEW_CONTACT_SIMPLE; break;
-			case ZmItem.BRIEFCASE_ITEM:	viewType = ZmId.VIEW_BRIEFCASE_DETAIL; break;
-			// more types go here as they are suported...
-		}
+	var viewType;
+	switch (type) {
+		case ZmItem.CONV:		viewType = ZmId.VIEW_CONVLIST; break;
+		case ZmItem.MSG:		viewType = ZmId.VIEW_TRAD; break;
+		case ZmItem.CONTACT:	viewType = ZmId.VIEW_CONTACT_SIMPLE; break;
+		case ZmItem.APPT:		viewType = ZmId.VIEW_CAL; break;
+		case ZmItem.TASK:		viewType = ZmId.VIEW_TASKLIST; break;
+		case ZmId.SEARCH_GAL:	viewType = ZmId.VIEW_CONTACT_SIMPLE; break;
+		case ZmItem.BRIEFCASE_ITEM:	viewType = ZmId.VIEW_BRIEFCASE_DETAIL; break;
+		// more types go here as they are suported...
+	}
 
-		if (viewType) {
-			sortBy = appCtxt.get(ZmSetting.SORTING_PREF, viewType);
+	if (viewType) {
+		sortBy = appCtxt.get(ZmSetting.SORTING_PREF, viewType);
+	}
+	//bug:1108 & 43789#c19 (changelist 290073) since sort-by-[RCPT|ATTACHMENT|FLAG|PRIORITY] gives exception with querystring.
+	// Avoided [RCPT|ATTACHMENT|FLAG|PRIORITY] sorting with querysting instead used date sorting
+	var queryString = this._searchToolBar.getSearchFieldValue();
+	if (queryString && queryString.length > 0) {
+		if (sortBy === ZmSearch.RCPT_ASC || sortBy === ZmSearch.RCPT_DESC) {
+			sortBy = sortBy === ZmSearch.RCPT_ASC ? ZmSearch.DATE_ASC : ZmSearch.DATE_DESC;
 		}
-        //bug:1108 & 43789#c19 (changelist 290073) since sort-by-[RCPT|ATTACHMENT|FLAG|PRIORITY] gives exception with querystring.
-        // Avoided [RCPT|ATTACHMENT|FLAG|PRIORITY] sorting with querysting instead used date sorting
-        var queryString = this._searchToolBar.getSearchFieldValue();
-        if(queryString && queryString.length > 0)
-        {
-            if((sortBy == ZmSearch.RCPT_ASC || sortBy == ZmSearch.RCPT_DESC)) {
-               sortBy = (sortBy == ZmSearch.RCPT_ASC) ?  ZmSearch.DATE_ASC : ZmSearch.DATE_DESC;
-            } else if((sortBy == ZmSearch.FLAG_ASC || sortBy == ZmSearch.FLAG_DESC)) {
-               sortBy = (sortBy == ZmSearch.FLAG_ASC) ?  ZmSearch.DATE_ASC : ZmSearch.DATE_DESC;
-            } else if((sortBy == ZmSearch.ATTACH_ASC || sortBy == ZmSearch.ATTACH_DESC)) {
-               sortBy = (sortBy == ZmSearch.ATTACH_ASC) ?  ZmSearch.DATE_ASC : ZmSearch.DATE_DESC;
-            } else if((sortBy == ZmSearch.PRIORITY_ASC || sortBy == ZmSearch.PRIORITY_DESC)) {
-               sortBy = (sortBy == ZmSearch.PRIORITY_ASC) ?  ZmSearch.DATE_ASC : ZmSearch.DATE_DESC;
-            }
-        }
+		else if (sortBy === ZmSearch.FLAG_ASC || sortBy === ZmSearch.FLAG_DESC) {
+			sortBy = sortBy === ZmSearch.FLAG_ASC ? ZmSearch.DATE_ASC : ZmSearch.DATE_DESC;
+		}
+		else if (sortBy === ZmSearch.ATTACH_ASC || sortBy === ZmSearch.ATTACH_DESC) {
+			sortBy = sortBy === ZmSearch.ATTACH_ASC ? ZmSearch.DATE_ASC : ZmSearch.DATE_DESC;
+		}
+		else if (sortBy === ZmSearch.PRIORITY_ASC || sortBy === ZmSearch.PRIORITY_DESC) {
+			sortBy = sortBy === ZmSearch.PRIORITY_ASC ? ZmSearch.DATE_ASC : ZmSearch.DATE_DESC;
+		}
 	}
 
 	return sortBy;
@@ -510,21 +508,25 @@ function(params, noRender, callback, errorCallback) {
 	}
 
 	// get types from search type if not passed in explicitly
+	// Note - types is now always one value (used to allow all types case, but not anymore).
 	var types = params.types;
-
-	if (types && !types.isAjxVector) { // change a scalar type to array. (unless it's a vector)
-		types = AjxUtil.toArray(types);
+	var type;
+	if (!types) {
+		type = (params.skipUpdateSearchToolbar && searchFor == ZmId.SEARCH_MAIL && this._prevType) || this.getTypeFromSearchFor(searchFor);
+	}
+	else {
+		// Support calling it with null, scalar, array or vector, to make sure different clients of this method work.
+		type = AjxUtil.toArray(types)[0];
 	}
 
-	if (!types || (types.length == 0) || (types.isAjxVector && types.size() == 0)) {
-		types = (params.skipUpdateSearchToolbar && searchFor == ZmId.SEARCH_MAIL && this._prevTypes) || this.getTypes(params);
-	}
+	var types = AjxVector.fromArray([type]); //need this Vector (one item) only for couple more usages below that I'm afraid to change now.
 
-	if (types instanceof Array) { // convert array to AjxVector if necessary
-		types = AjxVector.fromArray(types);
-	}
+	//now make sure the searchFor matches the type (searchFor can be taken from the toolbar, but it's not always what we want, for example
+	//in the case of saved search)
+	searchFor = this.getSearchForFromType(type);
+
 	if (searchFor == ZmId.SEARCH_MAIL) {
-        this._prevTypes = types || this._prevTypes; // Saves previous user action, if user selects view
+        this._prevType = type; // Saves previous user action, if user selects view
 		params = appCtxt.getApp(ZmApp.MAIL).getSearchParams(params);
 	}
 
@@ -539,24 +541,24 @@ function(params, noRender, callback, errorCallback) {
 	}
 	else if (params.inclSharedItems || this._inclSharedItems) {
 		// a query hint is part of the query that the user does not see
-		params.queryHint = ZmSearchController.generateQueryForShares(types.getArray());
+		params.queryHint = ZmSearchController.generateQueryForShares(type);
 	}
 
 	// only set contact source if we are searching for contacts
-	params.contactSource = !params.noGal && (types.contains(ZmItem.CONTACT) || types.contains(ZmId.SEARCH_GAL))
+	params.contactSource = !params.noGal && (type === ZmItem.CONTACT || type === ZmId.SEARCH_GAL)
 		? this._contactSource : null;
 	if (params.contactSource == ZmId.SEARCH_GAL) {
 		params.expandDL = true;
 	}
 
 	// find suitable sort by value if not given one (and if applicable)
-	params.sortBy = params.sortBy || this._getSuitableSortBy(types);
+	params.sortBy = params.sortBy || this._getSuitableSortBy(type);
 	params.types = types;
 	var search = new ZmSearch(params);
 
 	// force drafts folder into msg view
-		if (searchFor === ZmId.SEARCH_MAIL && !params.isViewSwitch && search.folderId && Number(search.folderId) === ZmFolder.ID_DRAFTS) {
-		search.types = new AjxVector([ZmItem.MSG]);
+	if (searchFor === ZmId.SEARCH_MAIL && !params.isViewSwitch && search.folderId && Number(search.folderId) === ZmFolder.ID_DRAFTS) {
+		search.types = AjxVector.fromArray([ZmItem.MSG]);
 		search.isDefaultToMessageView = true;
 	}
 
@@ -581,7 +583,7 @@ function(params, noRender, callback, errorCallback) {
 			sessionId = searchResultsController.getCurrentViewId();
 		}
 		var controller = AjxDispatcher.run("GetCalController", sessionId, searchResultsController);
-		if (controller && types.contains(ZmItem.APPT)) {
+		if (controller && type === ZmItem.APPT) {
 			search.calController = controller;
 			controller.handleUserSearch(params, respCallback);
 		} else {
@@ -710,25 +712,23 @@ function(search, ex) {
 /**
  * Provides a string to add to the query when the search includes shared items.
  * 
- * @param types		[array]		list of item types
+ * @param {String} type		item type
  * 
  * @private
  */
 ZmSearchController.generateQueryForShares =
-function(types, account) {
+function(type, account) {
 	var ac = window.parentAppCtxt || window.appCtxt;
 	var list = [];
-	for (var j = 0; j < types.length; j++) {
-		var type = types[j];
-		var app = ac.getApp(ZmItem.APP[type]);
-		if (app) {
-			var ids = app.getRemoteFolderIds(account);
-			for (var i = 0; i < ids.length; i++) {
-				var id = ids[i];
-				var idText = AjxUtil.isNumeric(id) ? id : ['"', id, '"'].join("");
-				list.push("inid:" + idText);
-			}
-		}
+	var app = ac.getApp(ZmItem.APP[type]);
+	if (!app) {
+		return null;
+	}
+	var ids = app.getRemoteFolderIds(account);
+	for (var i = 0; i < ids.length; i++) {
+		var id = ids[i];
+		var idText = AjxUtil.isNumeric(id) ? id : ['"', id, '"'].join("");
+		list.push("inid:" + idText);
 	}
 
 	if (list.length > 0) {
