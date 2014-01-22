@@ -29394,10 +29394,10 @@ define("tinymce/ui/Widget", [
 			self.canFocus = true;
 
 			if (settings.tooltip && Widget.tooltips !== false) {
-				self.on('mouseenter mouseleave', function(e) {
+				self.on('mouseenter', function(e) {
 					var tooltip = self.tooltip().moveTo(-0xFFFF);
 
-					if (e.control == self && e.type == 'mouseenter') {
+					if (e.control == self) {
 						var rel = tooltip.text(settings.tooltip).show().testMoveRel(self.getEl(), ['bc-tc', 'bc-tl', 'bc-tr']);
 
 						tooltip.toggleClass('tooltip-n', rel == 'bc-tc');
@@ -29409,6 +29409,11 @@ define("tinymce/ui/Widget", [
 						tooltip.hide();
 					}
 				});
+
+				self.on('mouseleave mousedown click', function() {
+					self.tooltip().hide();
+				});
+
 			}
 
 			self.aria('label', settings.tooltip);

@@ -1,0 +1,36 @@
+# HG changeset patch
+# User Dan Villiom Podlaski Christiansen <dan@cabo.dk>
+# Date 1385115784 -3600
+#      Fri Nov 22 11:23:04 2013 +0100
+# Node ID a4fee26d882ee910195c6d41eda6e4ae74f3d1cc
+# Parent  a7545ae7b9360ae19e946cf3cdf600ab4b14196e
+Fixed bug where tooltips remain when showing dropdown menus.
+
+diff --git a/js/tinymce/classes/ui/Widget.js b/js/tinymce/classes/ui/Widget.js
+--- a/js/tinymce/classes/ui/Widget.js
++++ b/js/tinymce/classes/ui/Widget.js
+@@ -39,10 +39,10 @@ define("tinymce/ui/Widget", [
+ 			self.canFocus = true;
+ 
+ 			if (settings.tooltip && Widget.tooltips !== false) {
+-				self.on('mouseenter mouseleave', function(e) {
++				self.on('mouseenter', function(e) {
+ 					var tooltip = self.tooltip().moveTo(-0xFFFF);
+ 
+-					if (e.control == self && e.type == 'mouseenter') {
++					if (e.control == self) {
+ 						var rel = tooltip.text(settings.tooltip).show().testMoveRel(self.getEl(), ['bc-tc', 'bc-tl', 'bc-tr']);
+ 
+ 						tooltip.toggleClass('tooltip-n', rel == 'bc-tc');
+@@ -54,6 +54,11 @@ define("tinymce/ui/Widget", [
+ 						tooltip.hide();
+ 					}
+ 				});
++
++				self.on('mouseleave mousedown click', function() {
++					self.tooltip().hide();
++				});
++
+ 			}
+ 
+ 			self.aria('label', settings.tooltip);
