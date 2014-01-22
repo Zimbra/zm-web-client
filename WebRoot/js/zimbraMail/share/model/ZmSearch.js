@@ -761,7 +761,8 @@ function() {
 	// and of course, always set the query and append the query hint if applicable
 	// only use query hint if this is not a "simple" search
 	if (this.queryHint) {
-		return ["(", this.query, ") (", this.queryHint, ")"].join("");
+		var query = this.query ? ["(", this.query, ") "].join("") : "";
+		return [query, "(", this.queryHint, ")"].join("");
 	}
 	return this.query;
 };
