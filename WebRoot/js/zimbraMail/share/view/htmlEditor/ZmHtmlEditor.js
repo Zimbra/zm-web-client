@@ -882,6 +882,11 @@ ZmHtmlEditor.prototype.__getEditorControl = function(type, tooltip) {
 
 
 ZmHtmlEditor.prototype.onNodeChange = function(event) {
+	// Firefox fires NodeChange events whether the editor is visible or not
+	if (this._mode !== Dwt.HTML) {
+		return;
+	}
+
 	// update the font size box -- TinyMCE only checks for it on SPANs
 	var fontsizebtn = this.__getEditorControl('listbox', 'Font Sizes');
 	var found = false;
