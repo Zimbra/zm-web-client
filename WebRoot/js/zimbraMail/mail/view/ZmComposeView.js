@@ -132,7 +132,7 @@ ZmComposeView.UPLOAD_BRIEFCASE = 3;
  * @param {String}		toOverride			To: addresses (optional)
  * @param {String}		ccOverride			Cc: addresses (optional)
  * @param {String}		subjectOverride		subject for new msg (optional)
- * @param {String}		extraBodyText		canned text to prepend to body (invites)
+ * @param {String}		extraBodyText		text to prepend to body
  * @param {Array}		msgIds				list of msg Id's to be added as attachments
  * @param {String}		accountName			on-behalf-of From address
  */
@@ -195,6 +195,9 @@ function(params) {
 
 	this._setSubject(action, msg || (params.selectedMessages && params.selectedMessages[0]), params.subjOverride);
 	this._setBody(action, msg, params.extraBodyText);
+	if (params.extraBodyText) {
+		this._isDirty = true;
+	}
 
 	if (appCtxt.get(ZmSetting.MAIL_PRIORITY_ENABLED)) {
 		var priority = "";

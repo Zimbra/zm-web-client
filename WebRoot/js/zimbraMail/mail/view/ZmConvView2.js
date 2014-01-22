@@ -1086,8 +1086,10 @@ function() {
 };
 
 ZmConvReplyView.prototype._moreOptions =
-function() {
-	this._convView._compose({msg:this._msg, action:this.action});
+function(ev) {
+	var mouseEv = DwtShell.mouseEvent;
+	mouseEv.setFromDhtmlEvent(ev);
+	this._convView._compose({msg:this._msg, action:this.action, ev:mouseEv});
 	this.reset();
 };
 
