@@ -149,20 +149,23 @@ Ext.define('ZCS.controller.ZtMainController', {
 	 */
 	handleError: function(fault) {
 
-		var error = fault && fault.Detail && fault.Detail.Error && fault.Detail.Error.Code,
-			msg = ZtMsg[error] || ZtMsg.unknownError,
-			title = ZtMsg[error + '.title'] || ZtMsg.error,
+		var error = fault && fault.Detail && fault.Detail.Error,
+			code = error && error.Code,
+			info = error && error.a,
+			msg = ZtMsg[code] || ZtMsg.unknownError,
+			title = ZtMsg[code + '_title'] || ZtMsg.error,
 			args;
 
-		if (error === 'mail.SEND_ABORTED_ADDRESS_FAILURE') {
-			args = Ext.Array.map(fault.Detail.Error.a, function(node) {
+		// Propagate any error-related info into args for the error msg. See soap.txt for details.
+		if (info && info.length) {
+			args = Ext.Array.map(info, function(node) {
 				return node._content;
 			});
 		}
 
-		var text = Ext.String.format(msg, args);
+		var text = args ? Ext.String.format(msg, args) : msg;
 
-		if (ZCS.constant.IS_FATAL_ERROR[error]) {
+		if (ZCS.constant.IS_FATAL_ERROR[code]) {
 			if (this.pollId) {
 				clearTimeout(this.pollId);
 				this.pollId = null;

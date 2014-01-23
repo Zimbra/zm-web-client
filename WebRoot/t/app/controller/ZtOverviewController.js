@@ -118,12 +118,12 @@ Ext.define('ZCS.controller.ZtOverviewController', {
 	},
 
     doSave: function() {
-        if (this.getEditType() === ZCS.constant.ORG_TAG) {
-            this.saveTag();
-        }
-        else {
-            this.saveFolder();
-        }
+
+        var errorMsg = (this.getEditType() === ZCS.constant.ORG_TAG) ? this.saveTag() : this.saveFolder();
+	    if (errorMsg) {
+		    Ext.Msg.alert(ZtMsg.error, errorMsg);
+		    return;
+	    }
 
         this.hideEditPanel();
         this.toggleEditState();
@@ -276,7 +276,7 @@ Ext.define('ZCS.controller.ZtOverviewController', {
             editBtn = overview.down('#zcs-overview-edit-btn'),
             appsBtn = overview.down('#zcs-overview-apps-btn'),
             organizerEditPanel = this.getOrganizerEditPanel(),
-            organizerListToolbar = overview.down('organizerlist').getToolbar();
+            organizerListToolbar = overview.down('organizerlist').getToolbar(),
             folderList = this.getCurrentFolderList();
 
         if (folderList.editing) {
@@ -307,6 +307,11 @@ Ext.define('ZCS.controller.ZtOverviewController', {
 	        app = ZCS.session.getActiveApp(),
 	        options = {};
 
+	    var errorMsg = this.checkName(newFolderName);
+	    if (errorMsg) {
+		    return errorMsg;
+	    }
+
 	    if (!folder) {
 		    folder = Ext.create('ZCS.model.ZtOrganizer', {
 			    type:           ZCS.constant.ORG_FOLDER,
@@ -335,6 +340,11 @@ Ext.define('ZCS.controller.ZtOverviewController', {
 	        newTagName = organizerEditPanel.down('#tagName').getValue(),
 	        newTagColor = this.getColorPicker().getColor(),
 	        options = {};
+
+	    var errorMsg = this.checkName(newTagName);
+	    if (errorMsg) {
+		    return errorMsg;
+	    }
 
 	    if (!tag) {
 		    tag = Ext.create('ZCS.model.ZtOrganizer', {
@@ -437,5 +447,28 @@ Ext.define('ZCS.controller.ZtOverviewController', {
     hideLocationSelectionCard: function(btn){
         var organizerEditPanel = this.getOrganizerEditPanel();
         organizerEditPanel.setActiveItem('#folderEditCard');        
-    }
+    },
+
+	/**
+	 * Validates the name of an organizer.
+	 *
+	 * @param {String}  name    organizer name
+	 * @returns {Boolean}   error string if validation fails, null if name is valid
+	 */
+	checkName: function(name) {
+
+		if (!name) {
+			return ZtMsg.nameMissing;
+		}
+
+		if (name.length > ZCS.constant.ORG_NAME_MAX_LENGTH) {
+			return Ext.String.format(ZtMsg.nameTooLong, ZCS.constant.ORG_NAME_MAX_LENGTH);
+		}
+
+		if (!ZCS.constant.ORG_NAME_REGEX.test(name)) {
+			return Ext.String.format(ZtMsg.nameInvalid, name);
+		}
+
+		return null;
+	}
 });

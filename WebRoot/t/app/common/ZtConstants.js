@@ -238,6 +238,11 @@ ZCS.constant.ORG_NODE_FIELD_HASH = ZCS.util.arrayAsLookupHash([
 	'name', 'absFolderPath', 'color', 'rgb', 'l', 'n', 'u', 'url', 'query', 'types'
 ]);
 
+// Organizer name constraints
+ZCS.constant.ORG_NAME_MAX_LENGTH = 128;
+// Following chars invalid in organizer names: " : / [anything less than " "]
+ZCS.constant.ORG_NAME_REGEX = /^[^\\x00-\\x1F\\x7F:\\/\\\"]+$/;
+
 // Item type for model class
 ZCS.constant.TYPE_FOR_CLASS = ZCS.util.getBackMap(ZCS.constant.CLASS_FOR_TYPE);
 
