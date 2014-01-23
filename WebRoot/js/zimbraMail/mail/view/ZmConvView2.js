@@ -927,7 +927,7 @@ ZmConvView2Header.prototype._dblClickListener =
 function(ev) {
 	if (this._convView._isStandalone()) { return; }
 	var conv = ev.dwtObj && ev.dwtObj.parent && ev.dwtObj.parent._item;
-	if (conv) {
+	if (conv && ev.target !== this._subjectSpan) {
 		AjxDispatcher.run("GetConvController", conv.id).show(conv, this._controller);
 	}
 };
