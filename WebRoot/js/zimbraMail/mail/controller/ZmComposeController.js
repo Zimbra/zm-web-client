@@ -268,7 +268,7 @@ function() {
 	this._toolbar.enable(ZmOperation.DETACH_COMPOSE, false);
 
 	var view = this._composeView;
-	var msg = view._msg;
+	var msg = view._msg || view._origMsg;
 	var subj = view._subjectField.value;
 	var forAttHtml = view._attcDiv.innerHTML;
 	var msgAttId = view._msgAttId; //include original as attachment
