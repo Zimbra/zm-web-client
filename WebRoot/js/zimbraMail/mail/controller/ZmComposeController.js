@@ -2239,6 +2239,13 @@ function (imgArray, length, callback) {
     return true;
 };
 
+ZmComposeController.prototype._initUploadMyComputerFile =
+function(files) {
+    // Do a SaveDraft at the start, since we will suppress autosave during the upload
+    var uploadCallback = this._uploadMyComputerFile.bind(this, files, null, 0);
+    this.saveDraft(ZmComposeController.DRAFT_TYPE_AUTO, null, null, uploadCallback);
+}
+
 ZmComposeController.prototype._uploadMyComputerFile =
     function(files, prevData, start){
         if (appCtxt.isWebClientOffline()) {
@@ -2246,25 +2253,29 @@ ZmComposeController.prototype._uploadMyComputerFile =
         }
 
     try {
-        var req = new XMLHttpRequest(); // we do not call this function in IE
-        var curView = this._composeView;
 
+        var curView = this._composeView;
         if (!curView){
             return;
         }
 
         this.upLoadC = this.upLoadC + 1;
-
-        if (!prevData){
-            prevData = [];
-            start = 0;
-        }
-
         var file = files[start];
-
         var fileName = file.name || file.fileName;
 
+        if (!prevData) {
+            // First file to upload
+            prevData = [];
+            start = 0;
+            // The initial save draft will have cleared the attachment display - restore it
+            curView._initProgressSpan(fileName);
+            // Disable autosave while uploading
+            if (this._autoSaveTimer) {
+                this._autoSaveTimer.kill();
+            }
+        }
 
+        var req = new XMLHttpRequest(); // we do not call this function in IE
         req.open("POST", appCtxt.get(ZmSetting.CSFE_ATTACHMENT_UPLOAD_URI)+"?fmt=extended,raw", true);
         req.setRequestHeader("Cache-Control", "no-cache");
         req.setRequestHeader("X-Requested-With", "XMLHttpRequest");
@@ -2299,7 +2310,6 @@ ZmComposeController.prototype._uploadMyComputerFile =
         return false;
     }
 
-
 };
 
 
@@ -2320,15 +2330,17 @@ function(req, prevData, start, files, fileName){
             }
 			else {
                 var callback = curView._resetUpload.bind(curView);
+                // Init autosave, otherwise saveDraft thinks this is a suppressed autosave, and aborts w/o saving
+                this._initAutoSave();
                 this.saveDraft(ZmComposeController.DRAFT_TYPE_AUTO, this._syncPrevData(prevData), null, callback);
-				this._initAutoSave();
             }
         }
 		else {
             DBG.println("Error while uploading file: "  + fileName + " response is null.");
             var callback = curView._resetUpload.bind(curView);
+            // Init autosave, otherwise saveDraft thinks this is a suppressed autosave, and aborts w/o saving
+            this._initAutoSave();
             this.saveDraft(ZmComposeController.DRAFT_TYPE_AUTO, this._syncPrevData(prevData), null, callback);
-			this._initAutoSave();
             var msgDlg = appCtxt.getMsgDialog();
             this.upLoadC = this.upLoadC - 1;
             msgDlg.setMessage(ZmMsg.importErrorUpload, DwtMessageDialog.CRITICAL_STYLE);

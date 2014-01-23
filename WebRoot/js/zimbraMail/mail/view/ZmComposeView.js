@@ -3150,14 +3150,20 @@ function(files,index, aid) {
 
 	this._loadingSpan.firstChild.innerHTML = curFileName;
 	this._loadingSpan.firstChild.nextSibling.innerHTML = curFileName;
+    // Set the next files progress back to 0
+    this._setLoadingProgress(this._loadingSpan, 0);
     if (aid){
         var prevFileName = AjxStringUtil.htmlEncode(files[index-1].name.substr(-32));
         var element = document.createElement("span");
         element.innerHTML = AjxTemplate.expand("mail.Message#MailAttachmentBubble", {fileName:prevFileName, id:aid});
-        if (this._loadingSpan.nextSibling)
-            this._loadingSpan.parentNode.insertBefore(element.firstChild,this._loadingSpan.nextSibling);
-        else
-           this._loadingSpan.parentNode.appendChild(element);
+        var newSpan = element.firstChild;
+        if (this._loadingSpan.nextSibling) {
+            this._loadingSpan.parentNode.insertBefore(newSpan, this._loadingSpan.nextSibling);
+        } else {
+            this._loadingSpan.parentNode.appendChild(element);
+        }
+        // Set the previous files progress to 100%
+        this._setLoadingProgress(newSpan, 100);
     }
 
 };
@@ -3254,6 +3260,14 @@ function() {
     }
 };
 
+// Set the loading progress to a specific percentage
+ZmComposeView.prototype._setLoadingProgress =
+function(loadingSpan, progress) {
+    var span1 = loadingSpan.childNodes[0];
+    var span2 = loadingSpan.childNodes[1];
+    span1.style.width = (span2.offsetWidth *  (progress/100)) + "px";
+}
+
 ZmComposeView.prototype._initProgressSpan =
 function(fileName) {
 	if (fileName.length > 35)
@@ -3307,7 +3321,7 @@ function(files, node, isInline) {
 	this._setAttInline(isInline);
 	this._initProgressSpan(files[0].name);
 
-	this._controller._uploadMyComputerFile(files);
+	this._controller._initUploadMyComputerFile(files);
 
 };
 
