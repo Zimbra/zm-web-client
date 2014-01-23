@@ -44,6 +44,7 @@ ZmSearchResultsFilterPanel = function(params) {
 	
 	// advanced filters
 	this._menu		= {};
+	this._advancedFilterHandlers = {};
 	
 	this._createHtml();
 	this._addFilters();
@@ -332,7 +333,7 @@ function(parent, id, filter) {
 		resultsApp:		this._resultsApp
 	}
 	var filterClass = eval(handler);
-	new filterClass(params);
+	this._advancedFilterHandlers[id] = new filterClass(params);
 };
 
 /**
@@ -384,6 +385,13 @@ function() {
 		var cb = this._checkbox[id];
 		if (cb) {
 			cb.setSelected(false);
+		}
+	}
+	//reset all the advanced filters.
+	for (var i in this._advancedFilterHandlers) {
+		var handler = this._advancedFilterHandlers[i];
+		if (handler && handler.reset) {
+			handler.reset();
 		}
 	}
 };
@@ -630,7 +638,15 @@ function(menu, domains) {
 	}
 };
 
-
+ZmAddressSearchFilter.prototype.reset =
+function() {
+	if (this._domainBox) {
+		this._domainBox.setText('');
+	}
+	if (this._addressBox) {
+		this._addressBox.setValue('');
+	}
+}
 
 /**
  * Allows the user to search by date (before, after, or on a particular date).
