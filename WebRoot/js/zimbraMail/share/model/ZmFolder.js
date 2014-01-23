@@ -625,13 +625,7 @@ function(what, folderType, ignoreExisting) {
 					invalid = true;
 					break;
 				}
-				if (childItem.type === ZmItem.CONTACT) {
-					if (this.nId !== ZmFolder.ID_TRASH) {
-						// can only move contacts into Trash
-						invalid = true;
-						break;
-					}
-				} else if (Dwt.instanceOf(childItem, "ZmBriefcaseFolderItem")) {
+				if (Dwt.instanceOf(childItem, "ZmBriefcaseFolderItem")) {
                      if (childItem.folder && childItem.folder.isRemote() && !childItem.folder.rid) {
                         invalid = true;
                         break;
