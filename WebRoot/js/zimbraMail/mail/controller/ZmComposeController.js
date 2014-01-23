@@ -1476,8 +1476,7 @@ function(mode) {
 	var op = (mode === Dwt.HTML) ? ZmOperation.FORMAT_HTML : ZmOperation.FORMAT_TEXT;
 	var okCallback = this._formatOkCallback.bind(this, mode);
 	var cancelCallback = this._formatCancelCallback.bind(this, curMode);
-	var needFormatWarning = (!AjxUtil.isEmpty(this._getBodyContent()) && mode == Dwt.TEXT);
-	if (!this._warnUserAboutChanges(op, okCallback, cancelCallback, needFormatWarning)) {
+	if (!this._warnUserAboutChanges(op, okCallback, cancelCallback)) {
 		this._composeView.setComposeMode(mode);
 		return true;
 	}
@@ -2397,16 +2396,17 @@ ZmComposeController.prototype._handleUploadImage = function(callback, id, respon
 };
 
 ZmComposeController.prototype._warnUserAboutChanges =
-function(op, okCallback, cancelCallback, switchToText) {
+function(op, okCallback, cancelCallback) {
 
 	var cv = this._composeView;
 	var willLoseChanges = cv.componentContentChanged(ZmComposeView.BC_SIG_PRE) ||
 						  cv.componentContentChanged(ZmComposeView.BC_DIVIDER) ||
 						  cv.componentContentChanged(ZmComposeView.BC_HEADERS) ||
 						  cv.componentContentChanged(ZmComposeView.BC_SIG_POST) ||
-						  !cv.canPreserveQuotedText(op);
-	var switchToText = (op === ZmOperation.FORMAT_TEXT);
-	if (willLoseChanges || switchToText) {
+						  !cv.canPreserveQuotedText(op) ||
+						  (op === ZmOperation.FORMAT_TEXT &&
+						   !AjxUtil.isEmpty(this._getBodyContent()));
+	if (willLoseChanges) {
 		var callbacks = {};
 		callbacks[DwtDialog.OK_BUTTON] = okCallback;
 		callbacks[DwtDialog.CANCEL_BUTTON] = cancelCallback;
