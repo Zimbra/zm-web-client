@@ -2087,8 +2087,8 @@ function() {
 };
 
 ZmAppCtxt.prototype.initWebOffline =
-function(callback) {
-    this.webClientOfflineHandler.init(callback)
+function(params) {
+	this.webClientOfflineHandler.init(params);
 };
 
 /**

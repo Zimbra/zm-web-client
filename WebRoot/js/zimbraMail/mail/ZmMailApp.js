@@ -2371,38 +2371,34 @@ function() {
 ZmMailApp.prototype.enableFeatures =
 function() {
     ZmApp.prototype.enableFeatures.apply(this);
-
+    //Refreshing the mail list both for online and offline mode
+    this.refresh();
     var enable   = !appCtxt.isWebClientOffline();
-    var overview = this.getOverview();
+	var folders = appCtxt.getFolderTree().getByType(ZmOrganizer.FOLDER);
+	var overview = this.getOverview();
+	if (folders && overview) {
+		for (var i = 0; i < folders.length; i++) {
+			var folder = folders[i];
+			var treeItem = folder && overview.getTreeItemById(folder.id);
+			if (!treeItem) {
+				continue;
+			}
+			if (enable) {
+				treeItem.setVisible(true);
+			}
+			else {
+				//Don't hide ROOT folder and OUTBOX folder
+				if (folder.id != ZmFolder.ID_ROOT && folder.id != ZmFolder.ID_OUTBOX && folder.webOfflineSyncDays === 0) {
+					treeItem.setVisible(false);
+				}
+			}
+		}
+	}
     if (enable) {
-        var folders = appCtxt.getFolderTree().getByType(ZmOrganizer.FOLDER);
-        for (var i = 0; i < folders.length; i++) {
-            var folder = folders[i];
-            if (folder) {
-                var treeItem = overview && overview.getTreeItemById(folder.id);
-                if (treeItem) {
-                    treeItem.setVisible(true);
-                }
-            }
-        }
-    } else {
-        // Disable
         var controller = this.getMailListController();
-        if (controller && controller.getCurrentViewType() === ZmId.VIEW_CONVLIST) {
-            controller.switchView(ZmId.VIEW_TRAD, true);
-        }
-
-        var folders = appCtxt.getFolderTree().getByType(ZmOrganizer.FOLDER);
-        for (var i = 1; i < folders.length; i++) {
-            var folder = folders[i];
-            if (folder.webOfflineSyncDays === 0 && folder.id != ZmFolder.ID_OUTBOX) {
-                var treeItem = overview && overview.getTreeItemById(folder.id);
-                if (treeItem) {
-                    treeItem.setVisible(false);
-                }
-            }
+        var setting = appCtxt.getSettings().getSetting(ZmSetting.GROUP_MAIL_BY);
+        if (controller && setting && setting.getOrigValue() === "conversation") {
+            controller.switchView(ZmId.VIEW_CONVLIST);
         }
     }
-
 };
-

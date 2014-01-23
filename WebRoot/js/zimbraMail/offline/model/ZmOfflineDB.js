@@ -45,7 +45,7 @@ function(callback, errorCallback, version) {
 						store.createIndex("subject", "su", {multiEntry : true});
 						store.createIndex("fragment", "fr", {multiEntry : true});
 						//Email index
-						store.createIndex("from", "e.from");
+						store.createIndex("from", "e.from", {multiEntry : true});
 						store.createIndex("to", "e.to", {multiEntry : true});
 						store.createIndex("cc", "e.cc", {multiEntry : true});
 					}
@@ -509,9 +509,14 @@ function(search, callback, errorCallback) {
 				else if (indexName === "type") {
 					isSearchAttachment = true;
 				}
-				else if (indexName === "tocc") {
-					indexArray.push(objectStore.index("to"), objectStore.index("cc"));
-					rangeArray.push(IDBKeyRange.only(indexValue));
+				else if (indexName === "from" || indexName === "to" || indexName === "cc" || indexName === "tocc") {
+					if (indexName === "tocc") {
+						indexArray.push(objectStore.index("to"), objectStore.index("cc"));
+					}
+					else {
+						indexArray.push(objectStore.index(indexName));
+					}
+					rangeArray.push(IDBKeyRange.bound(indexValue.toLowerCase(), indexValue.toLowerCase() + '\uffff'));
 				}
 				else if (indexName === "receiveddate") {
 					indexArray.push(objectStore.index("receiveddate"));
@@ -581,7 +586,12 @@ function(search, callback, errorCallback) {
 		transaction.onerror = errorCallback;
 	}
 	catch (e) {
-		errorCallback && errorCallback();
+		if (errorCallback) {
+			errorCallback();
+		}
+		else if (callback) {
+			callback([]);
+		}
 		AjxDebug.println(AjxDebug.OFFLINE, "Exception ZmOfflineDB.searchMail :: " + e);
 	}
 };

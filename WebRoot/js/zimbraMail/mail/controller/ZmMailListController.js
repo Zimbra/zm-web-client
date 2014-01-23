@@ -171,9 +171,6 @@ ZmMailListController.FOLDERS_TO_OMIT = [ZmFolder.ID_TRASH, ZmFolder.ID_SPAM, ZmF
  */
 ZmMailListController.prototype.switchView =
 function(view, force) {
-    if (!appCtxt.isWebClientOffline()) {
-        localStorage.setItem("MAILVIEW",view || ZmId.VIEW_TRAD);
-    }
 	if ((view == ZmId.VIEW_TRAD || view == ZmId.VIEW_CONVLIST) && view != this.getCurrentViewType()) {
 		if (appCtxt.multiAccounts) {
 			delete this._showingAccountColumn;

@@ -2202,11 +2202,11 @@ INPUT[type="text"].search_input-expanded {
 }
 
 .calendar_header_allday_separator .open {
-	background:url("/img/arrows/ImgSashArrowsUp.png") no-repeat scroll 0 0 transparent;
+	background:url("/img/arrows/ImgSashArrowsUp.png?v=@jsVersion@") no-repeat scroll 0 0 transparent;
 }
 
 .calendar_header_allday_separator .closed {
-	background:url("/img/arrows/ImgSashArrowsDown.png") no-repeat scroll 0 0 transparent;
+	background:url("/img/arrows/ImgSashArrowsDown.png?v=@jsVersion@") no-repeat scroll 0 0 transparent;
 }
 
 /* Separator between individual days of the calendar */

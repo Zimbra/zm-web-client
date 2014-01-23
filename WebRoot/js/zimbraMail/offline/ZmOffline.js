@@ -57,9 +57,11 @@ function (){
 };
 
 ZmOffline.prototype.init =
-function(callback) {
-    if (!appCtxt.isWebClientOffline()){
-        this._fixLazyCSSLoadIssues();
+function(params) {
+    if (appCtxt.isWebClientOffline()) {
+		this._modifyInitParams(params);
+    }
+	else {
         window.applicationCache.addEventListener('cached', function(e) {
             ZmOffline._checkAppCacheDone();
         }, false);
@@ -68,22 +70,12 @@ function(callback) {
             ZmOffline._checkAppCacheDone();
         }, false);
     }
-    ZmOfflineDB.init(callback, callback);
+    ZmOfflineDB.init();
     this._addListeners();
 };
 
-ZmOffline.prototype._fixLazyCSSLoadIssues =
-function(){
-    var cssUrl = appContextPath + "/css/msgview.css?v=" + cacheKillerVersion;
-    var cssFile = localStorage[cssUrl];
-    if (!cssFile){
-        var result = AjxRpc.invoke(null, cssUrl, null, null, true);
-        cssFile = localStorage[cssUrl] = result && result.text;
-    }
-};
-
 ZmOffline.prototype._addListeners =
-function(){
+function() {
     $(window).on("online offline", ZmOffline.checkServerStatus);
     $(document).on("ZWCOffline", this._onZWCOffline.bind(this));
     $(document).on("ZWCOnline", this._onZWCOnline.bind(this));
@@ -107,10 +99,15 @@ function() {
 
 ZmOffline.prototype._onPostStartup =
 function() {
-	if (appCtxt.isWebClientOffline()) {
+    this.initOfflineFolders();
+    if (appCtxt.isWebClientOffline()) {
 		this._onZWCOffline();
 	}
-}
+	else {
+        this._cacheOfflineData();
+	}
+    ZmOffline.updateOutboxFolderCount();
+};
 
 ZmOffline.prototype._enableApps =
 function() {
@@ -144,14 +141,6 @@ function() {
     // Disable features for the current app
     var app = appCtxt.getCurrentApp();
     app.enableFeatures();
-};
-
-// Mail
-
-ZmOffline.prototype.cacheMailData =
-function() {
-	this.initOfflineFolders();
-    this._cacheOfflineData();
 };
 
 ZmOffline.prototype.initOfflineFolders =
@@ -542,6 +531,9 @@ function(result) {
 	if (syncResponse.folder) {
 		this._handleUpdateFolders(syncResponse.folder, callback);
 	}
+    if (syncResponse.search) {
+        this._handleUpdateSearch(syncResponse.search, callback);
+    }
 };
 
 ZmOffline.prototype._handleDeltaSyncError =
@@ -640,6 +632,7 @@ function(folders) {
 			syncRequestArray.push(params);
 			ZmOffline.folders[folderId] = folder;
 		}
+		localStorage.setItem(folderId, JSON.stringify(folder));
 	});
 	if (syncRequestArray.length > 0) {
 		var params = {
@@ -649,6 +642,16 @@ function(folders) {
 		};
 		appCtxt.getRequestMgr().sendRequest(params);
 	}
+};
+
+ZmOffline.prototype._handleUpdateSearch =
+function(search) {
+    for (var i = 0, length = search.length; i < length; i++) {
+        var obj = search[i];
+        if (obj) {
+            localStorage.setItem(obj.id, JSON.stringify(obj));
+        }
+    }
 };
 
 ZmOffline.prototype._storeSyncToken =
@@ -1089,7 +1092,6 @@ function() {
         };
     var folder = ZmFolderTree.createFolder(ZmOrganizer.FOLDER, root, folderObj, folderTree, null, "folder");
     root.children.add(folder);
-    ZmOffline.updateOutboxFolderCount();
 };
 
 ZmOffline.updateOutboxFolderCount =
@@ -1267,6 +1269,7 @@ function(attachment, attachments, count) {
     if (count === 0) {
         var request = $.ajax({
             url: attachment.url,
+	        dataType: "text",
             headers: {'X-Zimbra-Encoding':'x-base64'}
         });
 
@@ -1311,21 +1314,38 @@ function(msg) {
             item.l = item.l.toString();
         }
         if (item.e) {
+            var from = [];
             var to = [];
             var cc = [];
             item.e.forEach(function(element){
-                if (element.a) {
-                    if (element.t === "f") {
-                        item.e.from = element.a.toLowerCase();
+                if (element.t === "f") {
+                    if (element.a) {
+                        from.push(element.a.toLowerCase());
                     }
-                    else if (element.t === "t") {
+                    if (element.p) {
+                        from = from.concat(element.p.toLowerCase().split(" "));
+                    }
+                }
+                else if (element.t === "t") {
+                    if (element.a) {
                         to.push(element.a.toLowerCase());
                     }
-                    else if (element.t === "c") {
+                    if (element.p) {
+                        to = to.concat(element.p.toLowerCase().split(" "));
+                    }
+                }
+                else if (element.t === "c") {
+                    if (element.a) {
                         cc.push(element.a.toLowerCase());
+                    }
+                    if (element.p) {
+                        cc = cc.concat(element.p.toLowerCase().split(" "));
                     }
                 }
             });
+            if (from.length) {
+                item.e.from = from;
+            }
             if (to.length) {
                 item.e.to = to;
             }
@@ -1400,4 +1420,45 @@ function(contact) {
     });
 
     return result;
+};
+
+/*
+** This will modify the GetInfoResponse for offline mode which is already cached in launchZCS.jsp
+ */
+ZmOffline.prototype._modifyInitParams =
+function(params) {
+	if (!params) {
+		return;
+	}
+	var batchInfoResponse = params.batchInfoResponse;
+	if (!batchInfoResponse) {
+		return;
+	}
+	var header = params.batchInfoResponse.Header;
+	var refresh = header && header.context && header.context.refresh;
+	var rootFolder = refresh && refresh.folder && refresh.folder[0];
+	var folderArray = rootFolder && rootFolder.folder;
+	if (AjxUtil.isArray(folderArray)) {
+		for (var i = 0, folderArrayLength = folderArray.length; i < folderArrayLength; i++) {
+			var folder = folderArray[i];
+			if (folder) {
+				var modifiedFolderItem = localStorage.getItem(folder.id);
+				if (modifiedFolderItem) {
+					$.extend(true, folder, JSON.parse(modifiedFolderItem));
+				}
+			}
+		}
+	}
+    var searchFolderArray = rootFolder && rootFolder.search;
+    if (AjxUtil.isArray(searchFolderArray)) {
+        for (var i = 0, searchFolderArrayLength = searchFolderArray.length; i < searchFolderArrayLength; i++) {
+            var searchFolder = folderArray[i];
+            if (searchFolder) {
+                var modifiedSearchFolderItem = localStorage.getItem(searchFolder.id);
+                if (modifiedSearchFolderItem) {
+                    $.extend(true, searchFolder, JSON.parse(modifiedSearchFolderItem));
+                }
+            }
+        }
+    }
 };

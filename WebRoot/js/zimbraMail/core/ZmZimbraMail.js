@@ -133,12 +133,10 @@ ZmZimbraMail = function(params) {
 	this._shell.addGlobalSelectionListener(new AjxListener(this, this._globalSelectionListener));
 
     /// go!
-    if (appCtxt.isWebClientOfflineSupported) {
-        var callback = this.startup.bind(this, params);
-        appCtxt.initWebOffline(callback);
-    } else {
-            this.startup(params);
-    }
+	if (appCtxt.isWebClientOfflineSupported) {
+		appCtxt.initWebOffline(params);
+	}
+	this.startup(params);
 };
 
 ZmZimbraMail.prototype = new ZmController;
@@ -426,9 +424,9 @@ function() {
     soapDoc.set("right","sendOnBehalfOfDistList");
     var batchCmd = new ZmBatchCommand(null, appCtxt.accountList.mainAccount.name);
     var callback = this._initDelegatedSenderEmails.bind(this);
-	var errorCallback = this._handleErrorDelegatedSenderEmails.bind(this, callback);
-	batchCmd.addNewRequestParams(soapDoc, callback, errorCallback);
-    batchCmd.run();
+    batchCmd.addNewRequestParams(soapDoc, callback, callback);
+	var offlineCallback = this._handleOfflineDelegatedSenderEmails.bind(this, callback);
+    batchCmd.run(null, null, offlineCallback);
 };
 
 ZmZimbraMail.prototype._getDelegatedSenderEmails =
@@ -461,8 +459,7 @@ ZmZimbraMail.prototype._initDelegatedSenderEmails =
 function(result){
     var response = result.getResponse();
 	if (ZmOffline.isOnlineMode()) {
-		response.methodname = Object.keys(response)[0];
-		ZmOfflineDB.setItem(response, ZmOffline.META_DATA);
+		localStorage.setItem("DiscoverRightsResponse", JSON.stringify(response));
 	}
 	var discoverRightsResponse = response && response.DiscoverRightsResponse;
 	var sendRights = discoverRightsResponse && discoverRightsResponse.targets;
@@ -470,22 +467,12 @@ function(result){
     appCtxt.sendOboEmails = this._getDelegatedSenderEmails(sendRights, 'sendOnBehalfOf');
 };
 
-ZmZimbraMail.prototype._handleErrorDelegatedSenderEmails =
-function(callback, ex) {
-	if (ex.code === ZmCsfeException.EMPTY_RESPONSE && appCtxt.isWebClientOffline()) {
-		var getItemCallback = this._handleGetItemCallback.bind(this, callback);
-		ZmOfflineDB.getItem("DiscoverRightsResponse", ZmOffline.META_DATA, getItemCallback);
-	}
-};
-
-ZmZimbraMail.prototype._handleGetItemCallback =
-function(callback, resultArray) {
-    var result = resultArray && resultArray[0];
-    if (result) {
-        var csfeResult = new ZmCsfeResult({BatchResponse : result});
-	    if (csfeResult) {
-		    callback.run(csfeResult);
-	    }
+ZmZimbraMail.prototype._handleOfflineDelegatedSenderEmails =
+function(callback) {
+	var result = localStorage.getItem("DiscoverRightsResponse");
+	if (result) {
+		var csfeResult = new ZmCsfeResult({BatchResponse : JSON.parse(result)});
+		callback.run(csfeResult);
 	}
 };
 
@@ -864,20 +851,6 @@ function(params, result) {
 			AjxTimedAction.scheduleAction(action, 10000);  //kick off check in 10 seconds
 		}
 	}
-
-    if (appCtxt.isWebClientOfflineSupported) {
-        callback = new AjxCallback(this,
-		function() {
-            if (appCtxt.isWebClientOffline()) {
-                appCtxt.webClientOfflineHandler.initOfflineFolders();
-            } else {
-                appCtxt.webClientOfflineHandler.cacheMailData();
-            }
-
-		});
-        this.addPostRenderCallback(callback, 7, 100);
-    }
-
 };
 
 /**
