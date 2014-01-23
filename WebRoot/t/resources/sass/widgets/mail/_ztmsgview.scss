@@ -158,16 +158,23 @@ $msgHdrTopOffset3: $msgHdrTextSize * 3 + $msgHdrTopOffset1;
 	@include border-radius($msgHdrImageSize/2);
 }
 
-.zcs-msgHdr-fromBubble {
+.zcs-msgHdr-fromContainer {
 	@extend .zcs-msgHdr-element;
-	color: $base-color;
 	font-size: $msgHdrTextSize;
 	left: $msgHdrLeftIndent;
 	top: $msgHdrTopOffset1;
 
-	SPAN {
+	.zcs-msgHdr-fromBubble {
+		color: $base-color;
 		font-size: 1.3em;
 		line-height: 1em;
+	}
+
+	.zcs-msgHdr-fromConnector {
+		color: $primary-text-color;
+		font-size: 0.8em;
+		line-height: 1em;
+		padding: 0 .25em;
 	}
 }
 

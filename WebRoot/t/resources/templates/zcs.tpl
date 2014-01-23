@@ -58,17 +58,17 @@
 </template>
 
 <template id='SentBy'>
-	<div class='zcs-msgHdr-fromBubble'>
-        <span id='{fromId}'>{fromName}</span>
-	    <tpl if='onBehalfOfName'>
-	        <span class='zcs-msgHdr-text'>{[ZtMsg.onBehalfOfMidLabel]}</span>
-	        <span id='{onBehalfOfId}'>{onBehalfOfName}</span>
-	    </tpl>
-	    <tpl if='byWayOfName'>
-	        <span class='zcs-msgHdr-text'>{[ZtMsg.byWayOfMidLabel]}</span>
-            <span id='{byWayOfId}'>{byWayOfName}</span>
-	    </tpl>
-    </div>
+	<div class='zcs-msgHdr-fromContainer'>
+		<span class='zcs-msgHdr-fromBubble' id='{fromId}'>{fromName}</span>
+		<tpl if='onBehalfOfName'>
+			<span class='zcs-msgHdr-fromConnector'>{[ZtMsg.onBehalfOfMidLabel]}</span>
+			<span class='zcs-msgHdr-fromBubble' id='{onBehalfOfId}'>{onBehalfOfName}</span>
+		</tpl>
+		<tpl if='byWayOfName'>
+			<span class='zcs-msgHdr-fromConnector'>{[ZtMsg.byWayOfMidLabel]}</span>
+			<span class='zcs-msgHdr-fromBubble' id='{byWayOfId}'>{byWayOfName}</span>
+		</tpl>
+	</div>
 </template>
 
 # In the message header templates below, the values FROM, TO, CC, and BCC are taken
