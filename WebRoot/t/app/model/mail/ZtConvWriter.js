@@ -41,7 +41,8 @@ Ext.define('ZCS.model.mail.ZtConvWriter', {
 			methodJson = json.Body.SearchRequest;
 
 			var	query = request.getParams().query,
-				folderId = ZCS.util.localId(ZCS.common.ZtSearch.parseQuery(query)),
+				search = Ext.create('ZCS.common.ZtSearch', { query:query }),
+				folderId = ZCS.util.localId(search.getOrganizerId()),
 				isOutbound = ZCS.util.isOutboundFolderId(folderId);
 
 			Ext.apply(methodJson, {
