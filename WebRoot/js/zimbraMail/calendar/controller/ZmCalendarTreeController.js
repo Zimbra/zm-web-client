@@ -203,8 +203,9 @@ function(actionMenu, type, id) {
             fbLinkMenuItem.setMenu(this._fbLinkSubMenu);
         }
 
+        actionMenu.enable(ZmOperation.NEW_CALENDAR, !isTrash && !appCtxt.isExternalAccount() && !appCtxt.isWebClientOffline());
 
-	}
+    }
 };
 
 ZmCalendarTreeController.prototype._getFreeBusySubMenu =
@@ -294,6 +295,7 @@ ZmCalendarTreeController.prototype._getActionMenuOps =
 function() {
     if(appCtxt.getCurrentApp().containsWritableFolder()) {
         return [
+            ZmOperation.NEW_CALENDAR,
             ZmOperation.SHARE_CALENDAR,
             ZmOperation.DELETE_WITHOUT_SHORTCUT,
             ZmOperation.MOVE,
@@ -460,6 +462,19 @@ function() {
     return appCtxt.getNewCalendarDialog();
 };
 
+ZmCalendarTreeController.prototype._newCallback =
+function(params) {
+    // For a calendar, set the parent folder (params.l) if specified
+    var folder = this._pendingActionData instanceof ZmOrganizer ? this._pendingActionData :
+        (this._pendingActionData && this._pendingActionData.organizer);
+    if (folder) {
+        params.l = folder.id;
+    }
+    ZmTreeController.prototype._newCallback.call(this, params);
+};
+
+
+
 /*
 * Returns an "External Calendar" dialog.
 */
@@ -512,7 +527,7 @@ function(ev, treeView, overviewId) {
 ZmCalendarTreeController.prototype._treeViewListener =
 function(ev) {
 	// handle item(s) clicked
-	if (ev.detail == DwtTree.ITEM_CHECKED) { 
+	if (ev.detail == DwtTree.ITEM_CHECKED) {
 		var overviewId = ev.item.getData(ZmTreeView.KEY_ID);
 		var calendar = ev.item.getData(Dwt.KEY_OBJECT);
 

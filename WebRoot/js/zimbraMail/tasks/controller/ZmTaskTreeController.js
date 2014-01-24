@@ -109,7 +109,7 @@ function(parent, type, id) {
 		op.setText(deleteText);
 	}
 
-
+    parent.enable(ZmOperation.NEW_TASK_FOLDER, !isTrash && !appCtxt.isExternalAccount());
 
 
 	// we always enable sharing in case we're in multi-mbox mode
@@ -134,6 +134,17 @@ function() {
 	return appCtxt.getNewTaskFolderDialog();
 };
 
+ZmTaskTreeController.prototype._newCallback =
+function(params) {
+    // For a task, set the parent folder (params.l) if specified
+    var folder = this._pendingActionData instanceof ZmOrganizer ? this._pendingActionData :
+                    (this._pendingActionData && this._pendingActionData.organizer);
+    if (folder) {
+        params.l = folder.id;
+    }
+    ZmTreeController.prototype._newCallback.call(this, params);
+};
+
 // Returns a list of desired header action menu operations
 ZmTaskTreeController.prototype._getHeaderActionMenuOps =
 function() {
@@ -147,6 +158,7 @@ function() {
 ZmTaskTreeController.prototype._getActionMenuOps =
 function() {
 	return [
+        ZmOperation.NEW_TASK_FOLDER,
 		ZmOperation.SHARE_TASKFOLDER,
 		ZmOperation.DELETE_WITHOUT_SHORTCUT,
 		ZmOperation.RENAME_FOLDER,

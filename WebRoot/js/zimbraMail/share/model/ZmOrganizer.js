@@ -421,9 +421,6 @@ function(params) {
 		if (i == "type" || i == "errorCallback" || i == "account") { continue; }
 
 		var value = params[i];
-		if (i == "color") {
-			value = ZmOrganizer.getColorValue(value, type);
-		}
 		if (value) {
 			folder[i] = value;
 		}
