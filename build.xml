@@ -1580,7 +1580,7 @@ if (ext == null) ext = "";
         <fileset dir="${client.build.dir}" includes="zimbraclient.jar"/>
         <fileset dir="${server.dist.dir}/jetty/common/lib" includes="zimbracommon.jar"/>
         <fileset dir="${server.build.dir}" includes="zimbrastore.jar"/>
-        <fileset dir="${common.lib.dir}" includes="servlet-api-3.0.jar,javamail-1.4.5.jar,json.jar,yuicompressor-2.4.2-zimbra.jar,guava-13.0.1.jar,commons-httpclient-3.1.jar,commons-codec-1.7.jar"/>
+        <fileset dir="${common.lib.dir}" includes="servlet-api-3.1.jar,javamail-1.4.5.jar,json.jar,yuicompressor-2.4.2-zimbra.jar,guava-13.0.1.jar,commons-httpclient-3.1.jar,commons-codec-1.7.jar"/>
     </path>
 
     <target name="jspc">
