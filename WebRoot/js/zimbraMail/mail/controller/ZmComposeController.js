@@ -692,11 +692,17 @@ function(draftType, msg, ex, params) {
 			if (ex.code === ZmCsfeException.MAIL_MESSAGE_TOO_BIG) {
 				errorMsg = AjxMessageFormat.format(ZmMsg.attachmentSizeError, AjxUtil.formatSize(appCtxt.get(ZmSetting.MESSAGE_SIZE_LIMIT)));
 				style = DwtMessageDialog.WARNING_STYLE;
+                showMsg = true;
 			}
-			else {
+			else if (ex.code == ZmCsfeException.MAIL_NO_SUCH_MSG) {
+                // The message was deleted while upload was in progress (likely a discarded draft). Ignore the error.
+                DBG.println(AjxDebug.DBG1, "Message was deleted while uploading a file; ignore the SaveDraft 'No Such Message' error." );
+                retVal  = true;
+                showMsg = false;
+            } else {
 				errorMsg = errorMsg || ZmMsg.attachingFilesError + "<br>" + (ex.msg || "");
+                showMsg = true;
 			}
-			showMsg = true;
         }
         if (errorMsg && showMsg) {
 			this._showMsgDialog(ZmComposeController.MSG_DIALOG_1, errorMsg, style || DwtMessageDialog.CRITICAL_STYLE, null, true);
