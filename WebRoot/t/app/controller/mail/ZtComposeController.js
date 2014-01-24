@@ -498,7 +498,7 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 			editor = this.getEditor(),
 			action = this.getAction(),
 			isNewCompose = (action === ZCS.constant.OP_COMPOSE),
-			origMsg = !isNewCompose && this.getOrigMsg();
+			origMsg = isNewCompose ? null : this.getOrigMsg();
 
 		if (!force && numAddresses === 0) {
 			Ext.Msg.alert(ZtMsg.error, ZtMsg.errorNoAddresses);
@@ -573,7 +573,8 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 
 		var msg = Ext.create('ZCS.model.mail.ZtMailMsg'),
 			from = ZCS.mailutil.getFromAddress(),
-			addrs = Ext.Array.clean([].concat(from, values[ZCS.constant.TO], values[ZCS.constant.CC], values[ZCS.constant.BCC]));
+			addrs = Ext.Array.clean([].concat(from, values[ZCS.constant.TO], values[ZCS.constant.CC], values[ZCS.constant.BCC])),
+			originalInlineImages;
 
 		msg.set('subject', values.subject);
 		msg.addAddresses(addrs);
@@ -587,6 +588,7 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 				msg.set('irtMessageId', irtMessageId);
 			}
 			msg.set('origAttachments', origAtt);
+			originalInlineImages = origMsg.getInlineImageParts();
 		}
 
 		if (newAtt && newAtt.length > 0) {
@@ -599,8 +601,6 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 		else if (action === ZCS.constant.OP_FORWARD) {
 			msg.set('replyType', 'w');
 		}
-
-		var originalInlineImages = origMsg.getInlineImageParts();
 
 		msg.createMime(values.content, origMsg && origMsg.hasHtmlPart(), originalInlineImages);
 
