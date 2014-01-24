@@ -551,10 +551,12 @@ ZmAddressInputField.expandBubble =
 function(bubbleId, email) {
 
 	var bubble = document.getElementById(bubbleId);
-	var parentId = bubble._aifId || ZmAddressInputField.BUBBLE_OBJ_ID[bubbleId];
-	var addrInput = bubble && DwtControl.ALL_BY_ID[parentId];
-	if (addrInput && addrInput.getEnabled()) {
-		addrInput.expandBubble(bubbleId, email);
+	if (bubble) {
+		var parentId = bubble._aifId || ZmAddressInputField.BUBBLE_OBJ_ID[bubbleId];
+		var addrInput = bubble && DwtControl.ALL_BY_ID[parentId];
+		if (addrInput && addrInput.getEnabled()) {
+			addrInput.expandBubble(bubbleId, email);
+		}
 	}
 };
 
