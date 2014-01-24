@@ -314,6 +314,7 @@ function(search, noRender, changes, callback, errorCallback) {
 	params.inDumpster   = search.inDumpster;
 	params.userInitiated = search.userInitiated;
 	params.sessionId	= search.sessionId;
+    params.isEmpty      = search.isEmpty;
 
 	if (changes) {
 		for (var key in changes) {
