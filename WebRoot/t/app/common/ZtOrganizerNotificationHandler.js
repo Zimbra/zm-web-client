@@ -40,7 +40,7 @@ Ext.define('ZCS.common.ZtOrganizerNotificationHandler', {
 			app = (parentView.getApp && parentView.getApp()) || ZCS.session.getActiveApp();
 			organizer = ZCS.model.ZtOrganizer.getProxy().getReader().getDataFromNode(notification, notification.itemType);
 			if (ZCS.session.isValidOrganizer(organizer, app)) {
-				var list = parentView.down('organizerlist');
+				var list = this.getListFromView(parentView);
 				ZCS.model.ZtOrganizer.addOtherFields(organizer, app, list.getType(), false);
 				this.insertOrganizer(list, organizer, organizer.parentItemId, organizer.parentZcsId);
 			}
@@ -68,7 +68,7 @@ Ext.define('ZCS.common.ZtOrganizerNotificationHandler', {
 			if (notification.l) {
 				var reader = ZCS.model.ZtOrganizer.getProxy().getReader(),
 					data = reader.getDataFromNode(notification, organizer.get('type'), app, []),
-					list = parentView.down('organizerlist'),
+					list = this.getListFromView(parentView),
 					store = list && list.getStore(),
 					organizerId = organizer.getId();
 
@@ -97,7 +97,7 @@ Ext.define('ZCS.common.ZtOrganizerNotificationHandler', {
 
 		for (i = 0; i < ln; i++) {
 			var parentView = parentViews[i],
-				list = parentView.down('organizerlist'),
+				list = this.getListFromView(parentView),
 				store = list && list.getStore(),
 				parentNode = store.getNodeById(organizer.get('parentItemId'));
 
@@ -184,12 +184,23 @@ Ext.define('ZCS.common.ZtOrganizerNotificationHandler', {
 		for (i = 0; i < ln; i++) {
 			var parentView = parentViews[i],
 				app = (parentView.getApp && parentView.getApp()) || ZCS.session.getActiveApp(),
-				list = parentView.down('organizerlist'),
+				list = this.getListFromView(parentView),
 				store = list && list.getStore();
 
 			store.setData({
 				items: ZCS.session.getOrganizerData(app, null, list.getType())
 			});
 		}
+	},
+
+	/**
+	 * Gets the organizer list from a view, accounting for the fact that folders and
+	 * tags use two different types of lists.
+	 *
+	 * @param {Container}   view        parent view
+	 * @returns {ZtOrganizerList|ZtOrganizerSubList}   list
+	 */
+	getListFromView: function(view) {
+		return view.down('nestedlist') || view.down('list');
 	}
 });

@@ -51,6 +51,7 @@ Ext.define('ZCS.view.ux.ZtFolderAssignmentView', {
 			title:              cfg.listTitle,
 			store:              organizerStore,
 			grouped:            false,
+			type:               listType,
 			canDisableItems:    true
 		};
 		cfg.listHasOwnHeader = true;

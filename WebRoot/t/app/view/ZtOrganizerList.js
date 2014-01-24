@@ -51,7 +51,7 @@ Ext.define('ZCS.view.ZtOrganizerList', {
 			}
 		},
 
-		type: null,
+		type: null,     // ZCS.constant.ORG_LIST_*
 
 		// Show the folder's child list.
 		onItemDisclosure: function(record, item, index, e) {
@@ -138,6 +138,10 @@ Ext.define('ZCS.view.ZtOrganizerSubList', {
 	extend: 'Ext.dataview.List',
 
 	xtype: 'organizersublist',
+
+	config: {
+		type: null      // ZCS.constant.ORG_LIST_*
+	},
 
 	// The two overrides below are so that absolutely nothing happens when the user taps on a
 	// disabled organizer. Don't show the pressed or the selected background color.

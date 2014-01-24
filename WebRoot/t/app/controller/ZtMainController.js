@@ -215,6 +215,7 @@ Ext.define('ZCS.controller.ZtMainController', {
 	 * @param {Object}          notification    JSON with organizer data
 	 */
 	handleOrganizerCreate: function(organizer, notification) {
+		ZCS.session.handleOrganizerCreate(organizer, notification);
 		this.addOrganizer(this.getOverviewList(), notification);
 	},
 

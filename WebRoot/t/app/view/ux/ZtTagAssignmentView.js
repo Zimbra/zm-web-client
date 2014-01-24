@@ -51,6 +51,7 @@ Ext.define('ZCS.view.ux.ZtTagAssignmentView', {
 			ui:                 'dark',
 			title:              cfg.listTitle,
 			store:              organizerStore,
+			type:               listType,
 			canDisableItems:    true,
 			itemTpl:            ZCS.template.TagAssignmentListItem
 		};
