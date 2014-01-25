@@ -2116,3 +2116,12 @@ ZmAppCtxt.prototype.isRemoteId = function(id) {
 	var acct = appCtxt.getActiveAccount();
 	return (id.indexOf(":") !== -1) && (id.indexOf(acct.id) !== 0);
 };
+
+/**
+ * Returns the singleton AjxClipboard instance, if it is supported.
+ *
+ * @returns {AjxClipboard}
+ */
+ZmAppCtxt.prototype.getClipboard = function() {
+	return AjxClipboard.isSupported() ? new AjxClipboard() : null;
+};

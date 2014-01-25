@@ -395,9 +395,12 @@ function(addMenuFunc, parent /* ... */) {
  */
 ZmOperation.removeOperation =
 function(parent, id, opHash) {
-	parent.getOp(id).dispose();
-	delete opHash[id];
-}
+	var op = parent.getOp(id);
+	if (op) {
+		op.dispose();
+		delete opHash[id];
+	}
+};
 
 /**
  * Replaces the attributes of one operation with those of another, wholly or in part.
