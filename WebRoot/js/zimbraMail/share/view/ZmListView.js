@@ -257,55 +257,56 @@ ZmListView.prototype._changeListener =
 function(ev) {
 
 	var item = this._getItemFromEvent(ev);
-	if (!item || ev.handled || !this._handleEventType[item.type]) { return; }
+	if (!item || ev.handled || !this._handleEventType[item.type]) {
+		return;
+	}
 
-	if (ev.event == ZmEvent.E_TAGS || ev.event == ZmEvent.E_REMOVE_ALL) {
-		DBG.println(AjxDebug.DBG2, "ZmListView: TAG");
+	if (ev.event === ZmEvent.E_TAGS || ev.event === ZmEvent.E_REMOVE_ALL) {
 		this._replaceTagImage(item, ZmItem.F_TAG, this._getClasses(ZmItem.F_TAG));
 	}
 
-	if (ev.event == ZmEvent.E_FLAGS) { // handle "flagged" and "has attachment" flags
-		DBG.println(AjxDebug.DBG2, "ZmListView: FLAGS");
+	if (ev.event === ZmEvent.E_FLAGS) {
 		var flags = ev.getDetail("flags");
 		for (var j = 0; j < flags.length; j++) {
 			var flag = flags[j];
 			var on = item[ZmItem.FLAG_PROP[flag]];
-			if (flag == ZmItem.FLAG_FLAGGED) {
+			if (flag === ZmItem.FLAG_FLAGGED) {
 				this._setImage(item, ZmItem.F_FLAG, on ? "FlagRed" : "FlagDis", this._getClasses(ZmItem.F_FLAG));
-			} else if (flag == ZmItem.FLAG_ATTACH) {
+			}
+			else if (flag === ZmItem.FLAG_ATTACH) {
 				this._setImage(item, ZmItem.F_ATTACHMENT, on ? "Attachment" : null, this._getClasses(ZmItem.F_ATTACHMENT));
-			} else if (flag == ZmItem.FLAG_PRIORITY) {
+			}
+			else if (flag === ZmItem.FLAG_PRIORITY) {
 				this._setImage(item, ZmItem.F_MSG_PRIORITY, on ? "Priority" : "PriorityDis", this._getClasses(ZmItem.F_MSG_PRIORITY));
 			}
 		}
 	}
 
-	// move/delete support batch notification mode
-	if (ev.event == ZmEvent.E_DELETE || ev.event == ZmEvent.E_MOVE || ev.event == ZmEvent.E_TAGS) {
+	// Note: move and delete support batch notification mode
+	if (ev.event === ZmEvent.E_DELETE || ev.event === ZmEvent.E_MOVE) {
 		var items = ev.batchMode ? this._getItemsFromBatchEvent(ev) : [item];
 		var needsSort = false;
 		for (var i = 0, len = items.length; i < len; i++) {
 			var item = items[i];
-            var movedHere = item.type == ZmId.ITEM_CONV ? item.folders[this._folderId] : item.folderId == this._folderId;
-			if (movedHere && ev.event == ZmEvent.E_MOVE) {
+            var movedHere = (item.type === ZmId.ITEM_CONV) ? item.folders[this._folderId] : item.folderId === this._folderId;
+			if (movedHere && ev.event === ZmEvent.E_MOVE) {
 				// We've moved the item into this folder
 				if (this._getRowIndex(item) === null) { // Not already here
 					this.addItem(item);
 					// TODO: couldn't we just find the sort index and insert it?
 					needsSort = true;
 				}
-			} else {
+			}
+			else {
 				// remove the item if the user is working in this view,
 				// if we know the item no longer matches the search, or if the item was hard-deleted
-				if ((ev.event == ZmEvent.E_DELETE) || (this.view == appCtxt.getCurrentViewId()) ||
-					(this._controller._currentSearch.matches(item) === false)) {
-
+				if (ev.event === ZmEvent.E_DELETE || this.view == appCtxt.getCurrentViewId() || this._controller._currentSearch.matches(item) === false) {
 					this.removeItem(item, true, ev.batchMode);
 					// if we've removed it from the view, we should remove it from the reference
 					// list as well so it doesn't get resurrected via replenishment *unless*
 					// we're dealing with a canonical list (i.e. contacts)
 					var itemList = this.getItemList();
-					if (ev.event != ZmEvent.E_MOVE || !itemList.isCanonical) {
+					if (ev.event !== ZmEvent.E_MOVE || !itemList.isCanonical) {
 						itemList.remove(item);
 					}
 				}
