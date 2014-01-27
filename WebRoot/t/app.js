@@ -34,6 +34,8 @@ Ext.require([
 	'ZCS.common.ZtUtil',
 	'ZCS.common.ZtTemplate',
 	'ZCS.common.ZtViewport',
+    'ZCS.common.ZtAndroidViewport',
+	'ZCS.common.ZtSheet',
 	'ZCS.common.overrides.sizemonitorOverflowChange',
 	'ZCS.common.overrides.paintmonitorOverflowChange'
 ]);
@@ -45,7 +47,7 @@ Ext.require('ZCS.common.ZtLogger');
 
 // Define and run the app
 Ext.application({
-	name: 'ZCS',
+    name: 'ZCS',
 
 	requires: [
 		'Ext.MessageBox',
@@ -146,9 +148,14 @@ Ext.application({
 
 		//<debug>
 		Ext.Logger.info('STARTUP: app launch');
+
 		//</debug>
 		// Note: initial view created by ZtMainController
 	},
+
+    viewport: {
+        autoMaximize: true
+    },
 
 	onUpdated: function() {
 		Ext.Msg.confirm(
