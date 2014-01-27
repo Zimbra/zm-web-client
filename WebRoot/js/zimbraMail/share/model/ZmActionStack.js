@@ -141,7 +141,7 @@ ZmActionStack.prototype.logAction = function(params) {
 					var moveAction;
 				
 					if (item instanceof ZmItem) {
-						if (item.type === ZmItem.MSG) {
+						if (item.type !== ZmItem.CONV) {
 							if (!item.isShared()) { // Moving shared items is not undoable
 								moveAction = new ZmItemMoveAction(item, item.getFolderId(), folderId, op);
 							}
