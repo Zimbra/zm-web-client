@@ -774,7 +774,10 @@ function(params, callback, result) {
         else {
             this._markReadLocal(true);
         }
-	}
+	} else {
+        // Setup the _evt.item field and list._evt.item in order to insure proper notifications.
+        this._setupNotify();
+    }
 	this.findAttsFoundInMsgBody();
 
 	this._loading = false;

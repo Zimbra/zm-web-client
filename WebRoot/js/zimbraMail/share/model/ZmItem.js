@@ -819,18 +819,32 @@ function(str) {
  */
 ZmItem.prototype._notify =
 function(event, details) {
-	this._evt.item = this;
-	ZmModel.prototype._notify.call(this, event, details);
-	if (this.list) {
-		if (details) {
-			details.items = [this];
-		} else {
-			details = {items: [this]};
-		}
-		this.list._evt.item = this;
-		this.list._evt.items = [this];
-		this.list._notify(event, details);
-	}
+	this._doNotify(event, details);
+};
+
+ZmItem.prototype._setupNotify =
+function() {
+    this._doNotify();
+}
+
+ZmItem.prototype._doNotify =
+function(event, details) {
+    this._evt.item = this;
+    if (event != null) {
+        ZmModel.prototype._notify.call(this, event, details);
+    }
+    if (this.list) {
+        this.list._evt.item = this;
+        this.list._evt.items = [this];
+        if (event != null) {
+            if (details) {
+                details.items = [this];
+            } else {
+                details = {items: [this]};
+            }
+            this.list._notify(event, details);
+        }
+    }
 };
 
 /**
