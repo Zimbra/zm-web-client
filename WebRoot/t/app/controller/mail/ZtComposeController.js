@@ -822,13 +822,6 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 		} else {
 			ccToggle.enable();
 		}
-
-		// Disable send button until there is at least 1 recipient
-		if (toCount + ccCount + bccCount > 0) {
-			sendBtn.enable();
-		} else {
-			sendBtn.disable();
-		}
 	}
 },
 	function(thisClass) {

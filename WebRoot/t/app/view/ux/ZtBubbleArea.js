@@ -231,7 +231,7 @@ Ext.define('ZCS.view.ux.ZtBubbleArea', {
      *
      */
     clearInput: function() {
-        this.getInput().dom.value = '';
+        this.getInput().dom.value = ' ';
     },
 
     /**
@@ -408,6 +408,7 @@ Ext.define('ZCS.view.ux.ZtBubbleArea', {
         if (me.inputField) {
            me.inputField.validate();
         }
+        this.clearInput();
     },
 
     /**
@@ -424,6 +425,7 @@ Ext.define('ZCS.view.ux.ZtBubbleArea', {
             lastBubble = this.bubbleElements.getAt(numBubbles - 1);
             this.removeBubble(lastBubble);
         }
+        this.clearInput();
     },
 
     /**
@@ -474,9 +476,9 @@ Ext.define('ZCS.view.ux.ZtBubbleArea', {
                                     left: parentBox.left
                                 },
                                 inputValue = this.dom.value,
-                                isSpace = e.browserEvent.keyCode === 32,
-                                isSemiColon = e.browserEvent.keyCode === 186,
-                                isDelete = e.browserEvent.keyCode === 8,
+                                isSpace = (!Ext.os.is.Android && e.browserEvent.keyCode === 32) || (Ext.os.is.Android && inputValue.length>1 && inputValue[inputValue.length-1] === ' '),
+                                isSemiColon = (!Ext.os.is.Android && e.browserEvent.keyCode === 186) || (Ext.os.is.Android && inputValue[inputValue.length-1] === ';'),
+                                isDelete = (!Ext.os.is.Android && e.browserEvent.keyCode === 8 && this.getValue() === '' && this.lastLength===1) || (Ext.os.is.Android && inputValue.length===0),
                                 isEnter = e.browserEvent.keyCode === 13,
                                 isTab = e.browserEvent.keyCode === 9,
                                 isHide = e.browserEvent.keyCode === 10;
@@ -485,13 +487,17 @@ Ext.define('ZCS.view.ux.ZtBubbleArea', {
                                 if (me.shouldAutoBubble()) {
                                     if (this.dom.value) {
                                         if (isSemiColon) {
-                                            inputValue = inputValue.substring(0, inputValue.length - 1);
+                                            inputValue = inputValue.substring(1, inputValue.length - 1);
+                                        }
+                                        if (inputValue[0]===' '){
+                                            inputValue = inputValue.substring(1, inputValue.length);
                                         }
                                         me.considerBubblingInput(inputValue);
                                     }
                                 }
                             } else {
-                                if (isDelete && this.getValue() === '' && !this.lastLength) {
+                                // if (isDelete && this.getValue() === '' && !this.lastLength) {
+                                if (isDelete) {
                                     me.removeLastBubble();
                                 }
                                 me.fireEvent('inputKeyup', e, el);

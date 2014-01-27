@@ -60,11 +60,13 @@ Ext.define('ZCS.common.ZtMenuable', {
 		menu.popup(menuButton, 'tr-br?');
 	},
 
-	onMenuItemSelect: function (list, index, target, record) {
+	onMenuItemSelect: function (list, index, target, record, e) {
 		if (list.getItemAt(index) && !list.getItemAt(index).getDisabled()) {
 			this[record.get('handlerName')](list.getActionParams());
 			list.hide();
 		}
+		e.preventDefault();
+		e.stopPropagation();
 	}
 
 });
