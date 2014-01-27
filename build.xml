@@ -64,7 +64,7 @@
     <property name='docs.dir' value='${zwc.basedir}/docs'/>
     <property name='img.dir' value='${web.dir}/img'/>
     <property name='touch.dir' value='${web.dir}/t'/>
-    <property name='touch.prod.dir' value='${web.dir}/t/build/t'/>
+    <property name='touch.prod.dir' value='${web.dir}/t/build'/>
 
     <property name='webinf.dir' value='${web.dir}/WEB-INF'/>
     <property name='webinf.lib.dir' value='${webinf.dir}/lib'/>
@@ -233,7 +233,7 @@
         <property name='build.web.excludes' value='${common.build.web.excludes}'/>
         <property name='webinf.includes' value='${common.webinf.includes}'/>
         <property name='webinf.excludes' value='${common.webinf.excludes}'/>
-        <property name='touch.includes' value='app/**,app.json,app.js,resources/**,touch/**,launchTouch.jsp,noscript.jsp'/>
+        <property name='touch.includes' value='app/**,app.json,app.js,bootstrap.js,resources/**,touch/**,launchTouch.jsp,noscript.jsp'/>
         <property name='touch.excludes' value='compass/**,lib/**,install.txt,*.xml,build/**,archive/**'/>
 
         <fileset id='help.fileset'
