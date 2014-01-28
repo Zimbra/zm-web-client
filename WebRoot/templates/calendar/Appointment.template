@@ -722,9 +722,9 @@
 </template>
 
 <template id='calendar.Appointment#InlineScheduleView'>
-	<div style='clear:both; margin-right:7px;'>
+	<div class='ZmScheduler'>
 		<!-- free/busy section -->
-		<table width=100% id='${id}_attendeesTable' style='margin:0 3px;'>
+		<table width=100% id='${id}_attendeesTable'>
 			<colgroup>
 				<col style='width:250px' />
 				<col style='width:710px' />

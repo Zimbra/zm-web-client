@@ -2868,6 +2868,15 @@ HTML>BODY .appt-selected .appt_allday_body
  *	Free/busy view
  */
 
+.ZmScheduler {
+	clear:both;
+	margin-right:7px;
+}
+
+.ZmScheduler>TABLE {
+	margin:0 3px;
+}
+
 /* Colors for the free/busy blocks */		/*??? SKIN THIS ? */
 .ZmScheduler-free 			{ background-color:#E3E3DC;	}
 .ZmScheduler-busy 			{ background-color:#4AA6F1;	}
