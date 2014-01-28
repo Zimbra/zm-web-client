@@ -1309,7 +1309,7 @@ function(msg, container) {
 	
 	var ai = this._getAddrInfo(msg, true);
 	
-	var subject = msg.subject || ZmMsg.noSubject;
+	var subject = AjxStringUtil.htmlEncode(msg.subject || ZmMsg.noSubject);
 	var dateFormatter = AjxDateFormat.getDateTimeInstance(AjxDateFormat.LONG, AjxDateFormat.SHORT);
 	// bug fix #31512 - if no sent date then display received date
 	var date = new Date(msg.sentDate || msg.date);
@@ -1340,7 +1340,6 @@ function(msg, container) {
 											ZmObjectManager.ATTR_CURRENT_DATE,
 											this._dateObjectHandlerDate);
 
-		subject 	= this._objectManager.findObjects(subject, true);
 		dateString	= this._objectManager.findObjects(dateString, true, ZmObjectManager.DATE);
 	}
 

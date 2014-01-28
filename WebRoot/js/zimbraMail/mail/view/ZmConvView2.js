@@ -790,7 +790,7 @@ ZmConvView2.prototype.isActiveQuickReply = function() {
  * @param content {String} content to scan
  * @param htmlEncode {boolean}
  */
-ZmConvView2.prototype.renderObjects = 
+ZmConvView2.prototype.renderObjects =
 function(view, content, htmlEncode) {
 	if (this._objectManager) {
 		this._lazyCreateObjectManager(view || this);
@@ -881,9 +881,9 @@ function() {
 
 ZmConvView2Header.prototype._setSubject =
 function() {
-	var subject = this._convView.renderObjects(this, ZmMailMsg.stripSubjectPrefixes(this._item.subject ||ZmMsg.noSubject), true);
-	this._subjectSpan.innerHTML = subject;
-    this._subjectSpan.title = this._item.subject || ZmMsg.noSubject;
+	var subject = this._item.subject || ZmMsg.noSubject;
+	this._subjectSpan.innerHTML = AjxStringUtil.htmlEncode(ZmMailMsg.stripSubjectPrefixes(subject));
+	this._subjectSpan.title = subject;
 };
 
 ZmConvView2Header.prototype._setInfo =
