@@ -62,6 +62,9 @@ ZmHtmlEditor = function() {
     settings.getSetting(ZmSetting.SHOW_COMPOSE_DIRECTION_BUTTONS).addChangeListener(listener);
 
 	this.addControlListener(this._resetSize.bind(this));
+
+	this.addListener(DwtEvent.ONFOCUS, this._onFocus.bind(this));
+	this.addListener(DwtEvent.ONBLUR, this._onBlur.bind(this));
 };
 
 ZmHtmlEditor.PARAMS = [
@@ -614,6 +617,11 @@ ZmHtmlEditor.prototype.setFocusStatus =
 function(hasFocus, isTextModeFocus) {
 	var mode = isTextModeFocus ? Dwt.TEXT : Dwt.HTML;
 	this._hasFocus[mode] = hasFocus;
+
+	if (!isTextModeFocus) {
+		Dwt.condClass(this.getEditor().getBody(), hasFocus,
+		              'mce-active-editor', 'mce-inactive-editor');
+	}
 };
 
 ZmHtmlEditor.prototype.initEditorManager =
@@ -704,7 +712,7 @@ function(id, content) {
 		convert_urls : false,
 		verify_html : false,
 		gecko_spellcheck : true,
-        content_css : false,
+        content_css : appContextPath + '/css/tinymce-content.css?v=' + cacheKillerVersion,
         dialog_type : "modal",
         forced_root_block : "div",
         width: "100%",
@@ -805,6 +813,8 @@ ZmHtmlEditor.prototype.onInit = function(ev) {
         win = ed.getWin(),
         view = obj.parent;
 
+    obj.setFocusStatus(false);
+
     tinymceEvent.bind(win, 'focus', function(e) {
         obj.setFocusStatus(true);
     });
@@ -847,6 +857,22 @@ ZmHtmlEditor.prototype.onInit = function(ev) {
     }
 
     AjxUtil.foreach(this._initCallbacks, function(fn) { fn.run() });
+};
+
+ZmHtmlEditor.prototype._onFocus = function() {
+	var editor = this.getEditor();
+
+	if (this._mode === Dwt.HTML && editor) {
+		editor.fire('focus', {focusedEditor: editor});
+	}
+};
+
+ZmHtmlEditor.prototype._onBlur = function() {
+	var editor = this.getEditor();
+
+	if (this._mode === Dwt.HTML && editor) {
+		editor.fire('blur', {focusedEditor: null});
+	}
 };
 
 

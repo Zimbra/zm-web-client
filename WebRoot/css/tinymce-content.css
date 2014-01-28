@@ -1,0 +1,26 @@
+.mce-inactive-editor .mce-item-table,
+.mce-inactive-editor .mce-item-table td,
+.mce-inactive-editor .mce-item-table th,
+.mce-inactive-editor .mce-item-table caption {
+	border-color: transparent;
+}
+
+.mce-inactive-editor .mce-resizehandle {
+	opacity: 0;
+}
+
+.mce-active-editor .mce-item-table,
+.mce-active-editor .mce-item-table td,
+.mce-active-editor .mce-item-table th,
+.mce-active-editor .mce-item-table caption,
+.mce-inactive-editor .mce-item-table,
+.mce-inactive-editor .mce-item-table td,
+.mce-inactive-editor .mce-item-table th,
+.mce-inactive-editor .mce-item-table caption {
+	@transition@: border-color 0.2s ease;
+}
+
+.mce-active-editor .mce-resizehandle,
+.mce-inactive-editor .mce-resizehandle {
+	@transition@: opacity 0.2s ease;
+}
