@@ -245,6 +245,17 @@ else {
 			}
 			return len;
 		}
+        public boolean isReady() {
+            return true;
+            //TODO: this isn't right, just stubbed for now so we can build
+        }
+        public void setReadListener(ReadListener listener) {
+            //TODO: this isn't right, just stubbed for now so we can build
+        }
+        public boolean isFinished() {
+            return false;
+            //TODO: this isn't right, just stubbed for now so we can build
+        }
 	}
 	static class WrappedOutputStream extends ServletOutputStream {
 		// Data
@@ -273,5 +284,12 @@ else {
 		public void println(int i) throws IOException { print(i);println(); }
 		public void println(long l) throws IOException { print(l);println(); }
 		public void println(String s) throws IOException { print(s);println(); }
+        public boolean isReady() {
+            return true;
+            //TODO: this isn't right, just stubbed for now so we can build
+        }
+        public void setWriteListener(WriteListener listener) {
+            //TODO: this isn't right, just stubbed for now so we can build
+        }
 	}
 %>
