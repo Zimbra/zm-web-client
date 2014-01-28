@@ -1575,7 +1575,7 @@ if (ext == null) ext = "";
     <path id='jspc.class.path'>
         <pathelement  path="${build.classes.dir}" />
         <pathelement path="${server.dist.dir}/jetty/resources" />
-        <fileset dir="${lib.dir}/jsp-2.2" includes="*.jar"/>
+        <fileset dir="${lib.dir}/jsp-2.3" includes="*.jar"/>
         <fileset dir="${taglib.build.dir}" includes="zimbrataglib.jar"/>
         <fileset dir="${client.build.dir}" includes="zimbraclient.jar"/>
         <fileset dir="${server.dist.dir}/jetty/common/lib" includes="zimbracommon.jar"/>

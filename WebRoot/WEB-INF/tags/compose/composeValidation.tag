@@ -34,7 +34,7 @@
     var cancelOnbeforeUnload = function(){
         window.onbeforeunload = null;
         /* do save to textearea before quitting the page */
-    <c:if test="${(isHtml)}" >
+    <c:if test="${isHtml}" >
         saveContentToTextarea();
     </c:if>
     }
@@ -42,7 +42,7 @@
     var prepToSend = function(){
         window.onbeforeunload = null;
         /*process HTML before sending*/
-    <c:if test="${(isHtml)}" >
+    <c:if test="${isHtml}" >
         saveToTextareaToSend();
     </c:if>
         return checkSubject();
@@ -79,7 +79,7 @@
                 _fields[_el[_i].name] = _el[_i].value;
             }
         }
-    <c:if test="${(isHtml)}" >
+    <c:if test="${isHtml}" >
         setTimeout(function() {
             try{
                 myEditor.save();
@@ -107,7 +107,7 @@
                 if(_fields[_el[_i].name] != undefined && _fields[_el[_i].name] != _el[_i].value) { _checkFail = true; }
             }
         }
-    <c:if test="${(isHtml)}">
+    <c:if test="${isHtml}">
         myEditor.save();
         _bodyVal = trim(document.getElementById("body").value);
         if(trim(_fields["body"]) != _bodyVal) {
