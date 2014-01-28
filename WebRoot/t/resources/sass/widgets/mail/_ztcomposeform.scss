@@ -51,6 +51,10 @@ $compose-fieldheight: 2.5rem;
 			color: $primary-text-color;
 			text-align: right;
 
+			&:after {
+				content: ":";
+			}
+
 			SPAN {
 				font-weight: normal;
 			}
@@ -71,12 +75,17 @@ $compose-fieldheight: 2.5rem;
 
 		.zcs-toggle-field {
 			height: $compose-fieldheight;
+
+			&:after {
+				content: "";  // TODO: Field shouldn't have "x-label" value to begin with
+			}
 		}
 
 		.zcs-attachments {
 			@extend .zcs-compose-formline;
 			margin-bottom: 0;
 			padding: 0 $compose-padding;
+
 			.x-innerhtml {
 				padding-bottom: 5px;
 				line-height: 1.5rem;

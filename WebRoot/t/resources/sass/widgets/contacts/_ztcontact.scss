@@ -298,6 +298,10 @@ $contactBorderColor: $light-grey;
 			color: lighten($primary-text-color, 25%);
 			padding: .85em;
 			text-align: right;
+
+			&:after {
+				content: ":";
+			}
 		}
 
 		.x-button.zcs-contact-addremove {

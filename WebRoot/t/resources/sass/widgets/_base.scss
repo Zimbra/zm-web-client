@@ -231,6 +231,10 @@ $zcs-overview-text-color: $light-grey;
 		.x-label {
 			color: $zcs-overview-text-color;
 			margin-bottom: 10px;
+
+			.x-innerhtml:after {
+				content: ":";
+			}
 		}
 	}
 

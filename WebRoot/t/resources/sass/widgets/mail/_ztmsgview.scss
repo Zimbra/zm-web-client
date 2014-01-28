@@ -239,6 +239,10 @@ $msgHdrTopOffset3: $msgHdrTextSize * 3 + $msgHdrTopOffset1;
 	text-align: right;
 	width: $msgHdrLabelIndent;
 	@include opacity(.5);
+
+	&:after {
+		content: ":";
+	}
 }
 
 .zcs-mail-dtlMsgHdr {

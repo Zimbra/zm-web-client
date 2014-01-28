@@ -27,11 +27,15 @@ $invLabelTextSize: 0.9em;
 }
 
 .zcs-invite-label {
-  width: 1%;
-  font-size: $invLabelTextSize;
-  text-align: right;
-  color: #999;
-  //@include opacity(.75);
+	width: 1%;
+	font-size: $invLabelTextSize;
+	text-align: right;
+	color: #999;
+	//@include opacity(.75);
+
+	&:after {
+		content: ":";
+	}
 }
 
 $invBtnColor: #CCC;

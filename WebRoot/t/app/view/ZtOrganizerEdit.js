@@ -76,7 +76,7 @@ Ext.define('ZCS.view.ZtOrganizerEdit', {
                 }]
             }, {
                 xtype:  'label',
-                html:   'Location:'
+                html:   ZtMsg.folderLocationLabel
             }, {
                 xtype:      'button',
                 itemId:     'folderLocation',

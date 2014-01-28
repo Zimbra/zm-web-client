@@ -152,7 +152,7 @@ Ext.define('ZCS.view.calendar.ZtNewAppointment', {
                                 width: '5.5em',
                                 height: '2.5em',
                                 xtype: 'component',
-                                html: ZtMsg.equipment,
+                                html: ZtMsg.equipmentLabel,
                                 itemId: 'equipmentFieldToggle',
                                 cls: 'x-form-label x-form-label-nowrap x-field zcs-toggle-field',
                                 listeners: {
