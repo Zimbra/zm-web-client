@@ -181,6 +181,16 @@ function(msg) {
 			this._inviteMoveSelect.setVisible(visible);
 		}
 	}
+
+    // Bug fix: 77237. If invite is cancelled and participation status is NE, force change it to DE
+    if (this._invite.components && this._invite.components[0].method === ZmId.OP_CANCEL) {
+        var attendeeCount = this._invite.components[0].at.length;
+        for (var i = 0; i < attendeeCount; i++) {
+            if (this._invite.components[0].at[i].ptst === ZmCalBaseItem.PSTATUS_NEEDS_ACTION) {
+                this._invite.components[0].at[i].ptst = ZmCalBaseItem.PSTATUS_DECLINED;
+            }
+        }
+    }
 };
 
 /**
@@ -491,7 +501,7 @@ function(subs, sentBy, sentByAddr, obo) {
 	subs.ptstMsgIconId = this._ptstMsgIconId = (this.parent._htmlElId + "_ptstMsgIcon");
 
 	var isOrganizer = this._invite && this._invite.isOrganizer();
-	
+    var isInviteCancelled = this._invite.components && this._invite.components[0].method === ZmId.OP_CANCEL;
 	// counter proposal
 	if (this._invite.hasCounterMethod() &&
 		this._msg.folderId != ZmFolder.ID_SENT)
@@ -501,7 +511,7 @@ function(subs, sentBy, sentByAddr, obo) {
             AjxMessageFormat.format(ZmMsg.counterInviteMsg, [from]):AjxMessageFormat.format(ZmMsg.counterInviteMsgOnBehalfOf, [sentByAddr, from]);
 	}
 	// if this an action'ed invite, show the status banner
-	else if (isOrganizer && this._invite.hasAttendeeResponse()) {
+	else if ((isOrganizer && this._invite.hasAttendeeResponse()) || isInviteCancelled) {
 		var attendee = this._invite.getAttendees()[0];
 		var ptst = attendee && attendee.ptst;
 		if (ptst) {
@@ -514,15 +524,21 @@ function(subs, sentBy, sentByAddr, obo) {
 			subs.ptstIcon = ZmCalItem.getParticipationStatusIcon(ptst);
 			switch (ptst) {
 				case ZmCalBaseItem.PSTATUS_ACCEPT:
-					ptstStr = (!sentBy) ? ZmMsg.inviteMsgAccepted: ZmMsg.inviteMsgOnBehalfOfAccepted;
+					ptstStr = (!sentBy) ? ZmMsg.inviteMsgAccepted : ZmMsg.inviteMsgOnBehalfOfAccepted;
 					subs.ptstClassName = "InviteStatusAccept";
 					break;
 				case ZmCalBaseItem.PSTATUS_DECLINED:
-					ptstStr = (!sentBy) ? ZmMsg.inviteMsgDeclined: ZmMsg.inviteMsgOnBehalfOfDeclined;
+                    if (isInviteCancelled) {
+                        var organizer = this._invite.getOrganizerName() || this._invite.getOrganizerEmail();
+                        subs.ptstMsg = AjxMessageFormat.format(ZmMsg.inviteMsgCancelled, organizer.split());
+                    }
+                    else {
+					    ptstStr = (!sentBy) ? ZmMsg.inviteMsgDeclined : ZmMsg.inviteMsgOnBehalfOfDeclined;
+                    }
 					subs.ptstClassName = "InviteStatusDecline";
 					break;
 				case ZmCalBaseItem.PSTATUS_TENTATIVE:
-					ptstStr = (!sentBy) ?ZmMsg.inviteMsgTentative:ZmMsg.inviteMsgOnBehalfOfTentative;
+					ptstStr = (!sentBy) ? ZmMsg.inviteMsgTentative:ZmMsg.inviteMsgOnBehalfOfTentative;
 					subs.ptstClassName = "InviteStatusTentative";
 					break;
 			}
