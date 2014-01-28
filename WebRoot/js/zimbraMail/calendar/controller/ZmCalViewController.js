@@ -2105,7 +2105,7 @@ ZmCalViewController.prototype._continueDeleteReply =
 function(appt, mode) {
 	var action = ZmOperation.REPLY_CANCEL;
 	var respCallback = new AjxCallback(this, this._continueDeleteReplyRespondAction, [appt, action, mode]);
-	appt.getDetails(null, respCallback, this._errorCallback);
+	appt.getDetails(mode, respCallback, this._errorCallback);
 };
 
 ZmCalViewController.prototype._continueDeleteReplyRespondAction =
