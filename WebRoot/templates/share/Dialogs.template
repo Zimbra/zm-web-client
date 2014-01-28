@@ -478,20 +478,21 @@
 <!-- ------------------------------ -->
 <template id="share.Dialogs#ZmNewOrgDialogRemote">
 	<tr>
-		<td colspan=2>
-			<table class='ZPropertySheet' cellspacing='6'>
-				<tr valign='center'>
-					<td class='Label'>
-						<input type='checkbox' id='${id}_remote' />
-					</td>
+		<td class='Label'><$= ZmMsg.feedLabel $></td>
+		<td>
+			<table>
+				<tr>
 					<td>
+						<input type='checkbox' id='${id}_remote' style='width:initial;' />
+					</td>
+					<td class='Label'>
 						<label for='${id}_remote'> ${remoteLabel} </label>
 					</td>
 				</tr>
 			</table>
 		</td>
 	</tr>
-	<tr style='display:none;' id='${id}_remoteURLrow' valign='center'>
+	<tr style='display:none;' id='${id}_remoteURLrow'>
 		<td class='Label'>
 			<$= ZmMsg.urlLabel $>
 		</td>
