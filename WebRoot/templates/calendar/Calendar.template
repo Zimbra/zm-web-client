@@ -231,10 +231,6 @@
                                 <td align=right width=111><$= ZmMsg.calPrintView $></td>
                                 <td colspan=4><div id='${id}_printViewContainer'></div></td>
                             </tr>
-                            <tr id='${id}_fitToPageContainer' style='display:block;'>
-                                <td align=right width=111><$= ZmMsg.calPrintFitToPage $></td>
-                                <td colspan=4><div id='${id}_fitToPageSelectContainer'></div></td>
-                            </tr>
                             <tr id='${id}_hoursContainer' style='display:block;'>
                                 <td align=right width=111><$= ZmMsg.calPrintHours $></td>
                                 <td id='${id}_fromHoursContainer'></td>
@@ -257,10 +253,6 @@
                                         <tr id='${id}_oneDayPerPageContainer'>
                                             <td><input value="1" type='checkbox' id='${id}_oneDayPerPage' name='${id}_oneDayPerPage'></td>
                                             <td><label for='${id}_oneDayPerPage'><$= ZmMsg.calPrintOneDayPerPage $></label></td>
-                                        </tr>
-                                        <tr id='${id}_includeTasksContainer'>
-                                            <td><input value="1" type='checkbox' id='${id}_includeTasks' name='${id}_includeTasks'></td>
-                                            <td><label for='${id}_includeTasks'><$= ZmMsg.calPrintIncludeTasks $></label></td>
                                         </tr>
                                         <tr id='${id}_includeMiniCalContainer'>
                                             <td><input value="1" type='checkbox' id='${id}_includeMiniCal' name='${id}_includeMiniCal'></td>

@@ -99,7 +99,6 @@ function(params) {
     }
     this._viewSelect.setSelectedValue(cv);
     this._setViewOptions();
-    //this.workHours = params.workHours;
     this.setWorkingHours(params.workHours);
     this._selDate.setValue(params.currentDate);
     this._dateRangeFrom.setValue(new Date(params.timeRange.start));
@@ -132,7 +131,6 @@ function() {
     var i,
         op,
         list,
-        fitToPageOptions,
         dateRangeRadio = document.getElementById(this._htmlElId + "_dateRangeRadio"),
         selDateRadio = document.getElementById(this._htmlElId + "_selDateRadio"),
         radioListener = AjxCallback.simpleClosure(this._setSelectedDateRadioListener, this);
@@ -160,18 +158,6 @@ function() {
     this._fromTimeSelect = new ZmTimeInput(this, ZmTimeInput.START, this._htmlElId + "_fromHoursContainer");
 	this._toTimeSelect = new ZmTimeInput(this, ZmTimeInput.END, this._htmlElId + "_toHoursContainer");
     this._printErrorMsgContainer = document.getElementById(this._htmlElId + "_printErrorMsgContainer");
-
-    this._fitToPageSelect = new DwtSelect({parent:this, parentElement:this._htmlElId + "_fitToPageSelectContainer"});
-    fitToPageOptions = [
-        {text: ZmMsg.calPrintFtpAuto, value:"auto"},
-        {text: ZmMsg.calPrintFtpOneWeekPerPage, value:"1w"},
-        {text: ZmMsg.calPrintFtpOneDayPerPage, value:"1d"}
-    ];
-
-    for(i=0; i<fitToPageOptions.length; i++) {
-        op = fitToPageOptions[i];
-        this._fitToPageSelect.addOption(op.text, false, op.value);
-    }
 
     dateRangeRadio.onclick = radioListener;
     selDateRadio.onclick = radioListener;
@@ -262,15 +248,12 @@ function(ev) {
     var workDaysOnlyContainer = document.getElementById(this._htmlElId + "_workDaysOnlyContainer");
     var oneWeekPerPageContainer = document.getElementById(this._htmlElId + "_oneWeekPerPageContainer");
     var oneDayPerPageContainer = document.getElementById(this._htmlElId + "_oneDayPerPageContainer");
-    var includeTasksContainer = document.getElementById(this._htmlElId + "_includeTasksContainer");
     var includeMiniCalContainer = document.getElementById(this._htmlElId + "_includeMiniCalContainer");
     var hoursContainer = document.getElementById(this._htmlElId + "_hoursContainer");
-    var fitToPageContainer = document.getElementById(this._htmlElId + "_fitToPageContainer");
 
 
     Dwt.setDisplay(includeMiniCalContainer, Dwt.DISPLAY_BLOCK);
     Dwt.setDisplay(hoursContainer, Dwt.DISPLAY_BLOCK);
-    Dwt.setDisplay(fitToPageContainer, Dwt.DISPLAY_NONE);
     this._resetCheckboxes(false);
 
     switch(val) {
@@ -279,7 +262,6 @@ function(ev) {
             Dwt.setDisplay(workDaysOnlyContainer, Dwt.DISPLAY_NONE);
             Dwt.setDisplay(oneWeekPerPageContainer, Dwt.DISPLAY_NONE);
             Dwt.setDisplay(oneDayPerPageContainer, Dwt.DISPLAY_BLOCK);
-            Dwt.setDisplay(includeTasksContainer, Dwt.DISPLAY_BLOCK);
 
             this._setSelectedDateEnabled(true);
             break;
@@ -289,7 +271,6 @@ function(ev) {
             Dwt.setDisplay(workDaysOnlyContainer, Dwt.DISPLAY_BLOCK);
             Dwt.setDisplay(oneWeekPerPageContainer, Dwt.DISPLAY_BLOCK);
             Dwt.setDisplay(oneDayPerPageContainer, Dwt.DISPLAY_NONE);
-            Dwt.setDisplay(includeTasksContainer, Dwt.DISPLAY_NONE);
 
             this._setSelectedDateEnabled(false);
             break;
@@ -298,7 +279,6 @@ function(ev) {
             Dwt.setDisplay(workDaysOnlyContainer, Dwt.DISPLAY_NONE);
             Dwt.setDisplay(oneWeekPerPageContainer, Dwt.DISPLAY_NONE);
             Dwt.setDisplay(oneDayPerPageContainer, Dwt.DISPLAY_NONE);
-            Dwt.setDisplay(includeTasksContainer, Dwt.DISPLAY_NONE);
             Dwt.setDisplay(hoursContainer, Dwt.DISPLAY_NONE);
 
             this._setSelectedDateEnabled(false);
@@ -308,9 +288,7 @@ function(ev) {
             Dwt.setDisplay(workDaysOnlyContainer, Dwt.DISPLAY_NONE);
             Dwt.setDisplay(oneWeekPerPageContainer, Dwt.DISPLAY_NONE);
             Dwt.setDisplay(oneDayPerPageContainer, Dwt.DISPLAY_NONE);
-            Dwt.setDisplay(includeTasksContainer, Dwt.DISPLAY_NONE);
             Dwt.setDisplay(hoursContainer, Dwt.DISPLAY_NONE);
-            Dwt.setDisplay(fitToPageContainer, Dwt.DISPLAY_BLOCK);
 
             this._setSelectedDateEnabled(false);
             break;
@@ -345,7 +323,6 @@ function(value) {
     document.getElementById(this._htmlElId + "_workDaysOnly").checked = value;
     document.getElementById(this._htmlElId + "_oneWeekPerPage").checked = value;
     document.getElementById(this._htmlElId + "_oneDayPerPage").checked = value;
-    document.getElementById(this._htmlElId + "_includeTasks").checked = value;
     document.getElementById(this._htmlElId + "_includeMiniCal").checked = value;
 };
 
@@ -381,9 +358,7 @@ function() {
         workDaysOnly = document.getElementById(this._htmlElId + "_workDaysOnly").checked,
         oneWeekPerPage = document.getElementById(this._htmlElId + "_oneWeekPerPage").checked,
         oneDayPerPage = document.getElementById(this._htmlElId + "_oneDayPerPage").checked,
-        includeTasks = document.getElementById(this._htmlElId + "_includeTasks").checked,
         includeMiniCal = document.getElementById(this._htmlElId + "_includeMiniCal").checked,
-        fitToPage = this._fitToPageSelect.getValue();
 
     //Create the string and pass it to the URL
     treeView = this._opc.getOverview(this._curOverviewId).getTreeView(ZmOrganizer.CALENDAR);
@@ -435,12 +410,8 @@ function() {
     params[i++] = oneWeekPerPage;
     params[i++] = "&od=";
     params[i++] = oneDayPerPage;
-    params[i++] = "&it=";
-    params[i++] = includeTasks;
     params[i++] = "&imc=";
     params[i++] = includeMiniCal;
-    params[i++] = "&ftp=";
-    params[i++] = fitToPage;
     params[i++] = "&wdays=";
     params[i++] = workDaysOnly ? ZmCalPrintDialog.encodeWorkingDays() : "";
     params[i++] = "&tz=";
@@ -449,7 +420,6 @@ function() {
     params[i++] = appCurrentSkin;
 
     printURL = appContextPath + params.join("");
-    //console.log(printURL);
     return printURL;
 };
 
