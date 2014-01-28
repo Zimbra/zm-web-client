@@ -550,13 +550,6 @@ TD.DwtListView-ColumnActive {
 	height:276px;
 }
 
-/* ??? SHOTGUN */
-.DwtListView-Rows TD, .ZmRowDoubleHeader, .DwtMsgListMultiCol DIV {
-	padding-left:@TextPaddingSize@;
-	padding-right:2px;
-	overflow:hidden;
-}
-
 .ZmRowDoubleHeader DIV DIV, .DwtMsgListMultiCol DIV DIV {
 	padding-left: 0;
 	padding-right: 0;
@@ -581,7 +574,17 @@ UL.DwtListView-Rows {
 	@OverflowEllipsis@
 }
 
-
+/* Fix for bug: 85014 */
+.DwtListView-Rows TD, .ZmRowDoubleHeader, .DwtMsgListMultiCol DIV {
+    overflow:hidden;
+    padding-left:@TextPaddingSize@;
+}
+.DwtListView-Rows TD {
+    padding-right:0px;
+}
+.ZmRowDoubleHeader, .DwtMsgListMultiCol DIV {
+    padding-right:2px;
+}
 
 /*
  * Dialogs
