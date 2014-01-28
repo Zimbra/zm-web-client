@@ -426,7 +426,7 @@ function(ev) {
     } else {
         id = item.id;
         // Fix for bug: 84261, bug: 85363. partId is present if original message is present as an attachment.
-        var part = partId;
+        var part = item.partId;
         if (part) {
             id += "&part=" + part;
         }
