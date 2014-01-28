@@ -511,23 +511,19 @@ function(params, noRender, callback, errorCallback) {
 	// get types from search type if not passed in explicitly
 	// Note - types is now always one value (used to allow all types case, but not anymore).
 	var types = params.types;
-	var type;
-	if (!types) {
-		type = (params.skipUpdateSearchToolbar && searchFor == ZmId.SEARCH_MAIL && this._prevType) || this.getTypeFromSearchFor(searchFor);
-	}
-	else {
-		// Support calling it with null, scalar, array or vector, to make sure different clients of this method work.
-		type = AjxUtil.toArray(types)[0];
-	}
-
-	var types = AjxVector.fromArray([type]); //need this Vector (one item) only for couple more usages below that I'm afraid to change now.
+	// Support calling it with null, scalar, array or vector, to make sure different clients of this method work.
+	var type = !types ? searchFor : AjxUtil.toArray(types)[0];
 
 	//now make sure the searchFor matches the type (searchFor can be taken from the toolbar, but it's not always what we want, for example
 	//in the case of saved search)
 	searchFor = this.getSearchForFromType(type);
 
+	//this makes sure for mail we get the type from the user's setting (CONV/MSG).
+	type = this.getTypeFromSearchFor(searchFor);
+
+	var types = AjxVector.fromArray([type]); //need this Vector (one item) only for couple more usages below that I'm afraid to change now.
+
 	if (searchFor == ZmId.SEARCH_MAIL) {
-        this._prevType = type; // Saves previous user action, if user selects view
 		params = appCtxt.getApp(ZmApp.MAIL).getSearchParams(params);
 	}
 

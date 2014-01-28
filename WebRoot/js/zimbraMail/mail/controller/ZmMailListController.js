@@ -176,9 +176,7 @@ function(view, force) {
 			delete this._showingAccountColumn;
 		}
 
-		if (!appCtxt.isExternalAccount() && !this.isSearchResults && !this._currentSearch.isDefaultToMessageView) {
-			this._app.setGroupMailBy(ZmMailListController.GROUP_BY_SETTING[view]);
-		}
+		this._app.setGroupMailBy(ZmMailListController.GROUP_BY_SETTING[view]);
 
 		var folderId = this._currentSearch && this._currentSearch.folderId;
 		
