@@ -14,25 +14,33 @@
  */
 $contactBkgdColor: $white;
 
-$contactListHeight: 3.6em;  /* estimated */
-$contactListImageSize: 2.2em;
-$contactImageSize: 7.0em;
+$contactListStdMargin: 0.5rem;
+$contactListHeight: 3.6rem;  /* estimated */
+$contactListImageSize: 2.5rem;
+$contactListLeftIndent: $contactListImageSize + $contactListStdMargin*3;
+$contactListRightIndent: $contactListStdMargin;
+$contactListTopOffset: 0.5rem;
+
+$contactBaseFontSize: 1rem;
+$contactImageSize: 7em;
+$contactEditImageSize: 5em;
 $contactStdMargin: 0.7em;
-$contactTopOffset: 0.5em;
 $contactListImageTopOffset: $contactListHeight/2 - $contactListImageSize/2;
-$contactRightIndent: $contactStdMargin;
-$contactLeftIndent: $contactListImageSize + $contactStdMargin*2;
 $contactButtonSize: $contactImageSize/1.5;
 $contactGutter: 2em;
 $contactFieldTopOffset: $contactImageSize + $contactStdMargin*3;
-$contactFieldWidth: 18em;
+$contactFieldWidth: 21em; //optimized intially for iPad in landscape
+$contactFormButtonMinHeight: 40px;
+
+
+/* Contact Image Base Classes */
 
 .zcs-contact {
 	background-position: center;
 	background-size: 100% auto;
 	background-repeat: no-repeat;
+	@include border-radius($contactImageSize/2);
 }
-
 
 .zcs-contact-person {
 	@extend .zcs-contact;
@@ -44,7 +52,8 @@ $contactFieldWidth: 18em;
 	background-image: url('../images/group.png');
 }
 
-/*Generic Classes*/
+/* Generic Classes */
+
 .zcs-floatLeft {
 	float: left;
 }
@@ -58,23 +67,21 @@ $contactFieldWidth: 18em;
 	clear: left;
 }
 
-/*Contact List Classes*/
+/* Contact List Classes */
 
 .zcs-contactlist-item {
 	position: absolute;
 }
 
 .zcs-contactlist-image {
-	@extend .zcs-contactlist-item;
 	height: $contactListImageSize;
-	left: $contactStdMargin;
-	top: $contactListImageTopOffset;
 	width: $contactListImageSize;
 }
 
 .zcs-contactList-person {
 	@extend .zcs-contactlist-image;
 	@extend .zcs-contact-person;
+	margin: $contactListStdMargin*1.5 0;
 }
 
 .zcs-contactList-group {
@@ -84,40 +91,40 @@ $contactFieldWidth: 18em;
 
 .zcs-contactList-text {
 	@extend .zcs-contactlist-item;
-	bottom: $contactTopOffset;
-	left: $contactLeftIndent;
-	right: $contactRightIndent;
-	top: $contactTopOffset;
+	bottom: $contactListTopOffset*2;
+	left: $contactListLeftIndent;
+	right: $contactListRightIndent;
+	top: $contactListTopOffset*2;
 
 	DIV {
 		@include ellipsis();
+		line-height: 1.5rem;
 		width: 100%;
 	}
 	.zcs-contactList-name {
-		font-size: 1.1em;
-		font-weight: bold;
+		font-size: 1.2rem;
 	}
 	.zcs-contactList-title {
 		@include opacity(.75);
-		font-size: .8em;
+		font-size: 1rem;
 	}
 }
 
-/*Contact View classes*/
+/* Contact View Classes */
 
 .zcs-item-panel {
-	background-color: darken($contactBkgdColor, 10%);
 
 	.zcs-contactview {
 		background-color: $contactBkgdColor;
 
 		.x-innerhtml {
-			padding: 2em;
+			padding: 4.5em 2em 2em;  // Larger top padding accounts for titlebar height
 		}
 	}
 }
 
 .zcs-contactview-header {
+	font-size: $contactBaseFontSize;
 
 	.zcs-contactview-image {
 		@extend .zcs-floatLeft;
@@ -132,21 +139,49 @@ $contactFieldWidth: 18em;
 
 		SPAN {
 			@extend .zcs-newLine;
-			@include ellipsis();
+			//@include ellipsis();
 			margin-bottom:.25em;
-			max-width: $contactFieldWidth*1.5;
-			min-width: $contactFieldWidth;
+			max-width: $contactFieldWidth;
+			min-width: $contactFieldWidth/2;
 		}
 
 		SPAN[name=contactname] {
-			font-size: 1.4em;
-			font-weight: bold;
+			font-size: 1.5em;
 			margin: .5em 0;
 		}
 	}
 }
 
+.x-portrait .zcs-contactview-header {
+	.zcs-contactview-personalInfo SPAN {
+		max-width: $contactFieldWidth*1.1; // Tested iPad Mini
+		min-width: $contactFieldWidth/2;
+	}
+}
+
+.x-phone .zcs-contactview-header {
+	font-size: $contactBaseFontSize*0.9;
+
+	.zcs-contactview-image {
+		height: $contactImageSize/2;
+		width: $contactImageSize/2;
+	}
+
+	.zcs-contactview-personalInfo SPAN {
+		max-width: $contactFieldWidth*0.95;  // Tested iPod Touch - gen 5 - may need to be smaller for pre-gen 5
+		min-width: $contactFieldWidth*0.5;
+	}
+}
+
+.x-phone.x-portrait .zcs-contactview-header {
+	.zcs-contactview-personalInfo SPAN {
+		max-width: $contactFieldWidth*0.6;  // Tested iPod Touch - gen 5
+		min-width: $contactFieldWidth*0.4;
+	}
+}
+
 .zcs-contactview-fieldSets {
+	font-size: $contactBaseFontSize;
 	margin-top: $contactFieldTopOffset;
 
 	.zcs-contactview-fieldSet {
@@ -156,7 +191,7 @@ $contactFieldWidth: 18em;
 		.zcs-contactview-label {
 			@extend .zcs-floatLeft;
 			@include ellipsis();
-			@include opacity(.7);
+			@include opacity(.5);
 			text-align: right;
 			width: $contactImageSize;
 		}
@@ -167,7 +202,7 @@ $contactFieldWidth: 18em;
 			.zcs-contactview-field {
 				@extend .zcs-newLine;
 				@include ellipsis();
-				margin: 0 1em .5em $contactGutter;
+				margin: 0 1em 1.5em $contactGutter;
 				max-width: $contactFieldWidth*2;
 				min-width: $contactFieldWidth;
 			}
@@ -191,70 +226,157 @@ $contactFieldWidth: 18em;
 	}
 }
 
-/*Create Contact Classes*/
+.x-phone .zcs-contactview-fieldSets {
+	font-size: $contactBaseFontSize*0.9;
 
-$contactBorderColor: #E3E3E3;
+	.zcs-contactview-label {
+		width: $contactImageSize/2;
+	}
 
-.zcs-contact-image {
-    @extend .zcs-contact-person;
-	height: $contactImageSize;
-	margin: 3px auto auto;
-    width: $contactImageSize;
+	.zcs-contactview-fields .zcs-contactview-field {
+		max-width: $contactFieldWidth;
+		min-width: $contactFieldWidth/2;
+	}
+
+}
+
+.x-phone.x-portrait {
+	.zcs-contactview-fieldSets .zcs-contactview-fields .zcs-contactview-field {
+		max-width: $contactFieldWidth*0.5;
+		min-width: $contactFieldWidth/3;
+	}
+}
+
+/* Create Contact Classes */
+
+$contactBorderColor: $light-grey;
+
+.zcs-contact-imgborder {
+	background-color: white;
+
+	.zcs-contact-image {
+		@extend .zcs-contact-person;
+		height: $contactEditImageSize;
+		margin: .5em auto auto;
+		width: $contactEditImageSize;
+	}
+}
+
+.x-phone {
+	.zcs-contact-imgborder {
+		width:0;
+
+		.zcs-contact-image {
+			display: none;
+		}
+	}
 }
 
 .zcs-contact-personalinfo {
 	width: 80%;
 }
+.x-phone .zcs-contactview-personalInfo {
+	width: 100%;
+}
 
 .zcs-contact-formline {
-	border-bottom: 1px solid $light-grey;
+	border-bottom: none;
 	min-height: 1.8em;
 }
 
 .zcs-contact-form {
-	background-color: white;
+	background-color: #dddddd;
 	background-image: none;
+	font-size: 1rem;
+	min-height: 1.8em;
 
 	.x-form-inner {
-	@extend .zcs-contact-formline;
+		@extend .zcs-contact-formline;
 
 		.zcs-contact-label {
-			background-color: #F7F7F7;
-			padding: 12px;  /*.65em*/
+			@extend .zcs-contact-form;
+			color: lighten($primary-text-color, 25%);
+			padding: .85em;
 			text-align: right;
+
+			&:after {
+				content: ":";
+			}
 		}
+
 		.x-button.zcs-contact-addremove {
-			background-color: white;
+			@extend .zcs-contact-form;
 			color: $linkColor;
-			font-size: .7em;
+			height: 2.9em;
+			padding-left: .5em;
+			@include border-radius(0);
 
 			&:active {
 				background-color: $light-grey;
 			}
 		}
+
+		.multifield{
+			margin-left: 10px;
+			margin-right: 10px;
+			
+			.zcs-contact-form-multifield-field{
+				min-height: "40px";
+				border-bottom: 1px solid #dddddd;
+			}
+
+			.first{
+				-webkit-border-top-left-radius: 4px;
+				        border-top-left-radius: 4px;
+			    -webkit-border-top-right-radius: 4px;
+				        border-top-right-radius: 4px;
+			    overflow: hidden;
+			}
+
+			.last{
+				-webkit-border-bottom-left-radius: 4px;
+				        border-bottom-left-radius: 4px;
+			    -webkit-border-bottom-right-radius: 4px;
+				        border-bottom-right-radius: 4px;
+			    overflow: hidden;
+			}
+		}
+
+		// Clear icons should only be shown on focus
+		// but can't use this easily until clear icon is font-based
+		/*.x-field {
+			.x-field-input .x-clear-icon {
+			}
+			&.x-field-focused {
+				.x-field-input .x-clear-icon {
+				}
+			}
+		}*/
+	}
+
+	.x-form .x-scroll-container {
+		background-color: #dddddd;
 	}
 }
 
-.zcsContactField {
-	border: solid $contactBorderColor;
-	border-width: 0 0 1px;
+.zcs-contact-field {
+	border-bottom: 1px solid $contactBorderColor;
 }
 
-.zcs-contact-imgborder,
 .zcs-contact-spacer,
 .zcs-contact-addremove {
-	@extend .zcsContactField;
+	@extend .zcs-contact-field;
 }
 
 .x-webkit .x-layout-box.x-vertical>.x-layout-box-item.x-flexed.zcs-contact-spacer {
-	height: 15px !important;
+	background-color: #dddddd;
+	height: 5px !important;
 	width: 100% !important;
-}
-.zcs-contact-addremove {
-	@include border-radius(0);
+	border: none;
 }
 
-/*Contact group classes*/
+/* Contact Group Classes */
+
 .zcs-contactgroupview-header {
 
 	.zcs-contactgroupview-image {
@@ -334,5 +456,34 @@ $zcsMemberImageSize: 4em;
 			}
 		}
 	}
+}
 
+.contact-form-remove-field-button{
+    border: none;
+    -webkit-border-radius: initial;
+            border-radius: initial;
+    min-height: $contactFormButtonMinHeight;
+    .x-button-icon:before{
+        color: red;
+    }
+}
+
+.contact-form-add-field-button{
+    border: none;
+    -webkit-border-radius: 0px;
+            border-radius: 0px;
+    min-height: $contactFormButtonMinHeight;
+    .x-button-label{
+        text-align: left;
+        font-weight: bold;
+        
+        .contact-form-add-field-button-text:before{
+            margin-right: 10px;
+            font-size: 1.4em;
+            text-align: center;
+            font-family: "pictos";
+            content: "+";
+            color: #159c1f;
+        }
+    }
 }

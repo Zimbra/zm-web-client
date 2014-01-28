@@ -33,7 +33,7 @@ Ext.define('ZCS.store.ZtOrganizerStore', {
 		storeId:                'organizerStore',
 
 		grouper: function(record) {
-			return record.get('typeName');
+			return record.getGroupName();
 		},
 
 		sorters: [

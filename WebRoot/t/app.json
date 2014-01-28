@@ -40,9 +40,16 @@
             "x-bootstrap": true
         },
         {
+            "path": "bootstrap.js",
+            "x-bootstrap": true
+        },
+        {
             "path": "app.js",
             "bundle": true,  /* Indicates that all class dependencies are concatenated into this file when build */
             "update": "full"
+        },
+        {
+            "path": "app/view/ux/Ext.ux.ColorSelector.js"
         },
         {
             "path": "app/view/ux/Ext.ux.TouchCalendar.js"
@@ -67,6 +74,12 @@
         },
         {
             "path": "app/view/ux/Ext.ux.TouchCalendarWeekEvents.js"
+        },
+        {
+            "path": "app/view/ux/DateTimePicker.js"
+        },
+        {
+            "path": "app/view/ux/DateTime.js"
         }
     ],
 
@@ -86,15 +99,18 @@
      *
      *      }
      */
-    "css": [
-        {
+    "css": [{
             "path": "resources/css/app.css",
+            "update": "full",
+            "platform": ["safari","chrome","ie10","firefox","ios","blackberry"]
+        }, {
+            "path": "resources/css/android.css",
+            "update": "full",
+            "platform": ["android"]
+        }, {
+            "path": "resources/css/msgbody.css",
             "update": "full"
-        },
-	{
-	    "path": "resources/css/msgbody.css",
- 	    "update": "full"
-	}
+        }
     ],
 
     /**

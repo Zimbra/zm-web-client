@@ -41,24 +41,36 @@ Ext.define('ZCS.model.mail.ZtConvWriter', {
 			methodJson = json.Body.SearchRequest;
 
 			var	query = request.getParams().query,
-				folderId = ZCS.util.localId(ZCS.common.ZtSearch.parseQuery(query)),
-				isOutbound = (folderId === ZCS.constant.ID_SENT || folderId === ZCS.constant.ID_DRAFTS);
+				search = Ext.create('ZCS.common.ZtSearch', { query:query }),
+				folderId = ZCS.util.localId(search.getOrganizerId()),
+				isOutbound = ZCS.util.isOutboundFolderId(folderId);
 
 			Ext.apply(methodJson, {
-				sortBy: 'dateDesc',
-				offset: operation.getStart(),
-				limit:  ZCS.constant.DEFAULT_PAGE_SIZE,
-				query:  query,
-				types:  'conversation',
-				fetch:  1,
-				recip:  isOutbound ? 1 : 0
+				sortBy:             ZCS.constant.DATE_DESC,
+				offset:             operation.getStart(),
+				limit:              ZCS.constant.DEFAULT_PAGE_SIZE,
+				query:              query,
+				types:              'conversation',
+				fullConversation:   1,  // as of 8.5 server
+				fetch:              1,
+				recip:              isOutbound ? 1 : 0
 			});
 
 		} else if (action === 'update') {
 
 			// 'update' operation means we're performing a ConvActionRequest
-			var itemData = Ext.merge(data[0] || {}, options);
+			var itemData = Ext.merge(data[0] || {}, options),
+				op = itemData.op;
+
 			json = this.getActionRequest(request, itemData, 'ConvAction');
+			if (op === 'move' || op === 'trash') {
+				var changeToken = ZCS.session.getChangeToken();
+				if (changeToken) {
+					json.Header.context.change = {
+						token: changeToken
+					};
+				}
+			}
 		}
 
 		// Do not pass query in query string.

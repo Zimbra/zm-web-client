@@ -12,42 +12,134 @@
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
  */
-$msgBkgdColor: $white;
+
+$zcs-msgview-radius: 5px;
 
 .zcs-item-panel {
-	background-color: darken($msgBkgdColor, 10%);
 
 	.zcs-msgview {
 		background-color: transparent;
-		padding: .5em;
+		padding: 8px;
+
+		.x-dock {
+			border: none;
+		}
+		.x-docked-bottom {
+			overflow: hidden;
+		}
+
+		&.x-list-item:last-child {
+			border: none;
+		}
 
 		.x-list-item-inner {
-			background-color: $msgBkgdColor;
-			border: 1px solid darken($msgBkgdColor, 25%);
+			background-color: $msg-bg-color;
+			border: none;
+			@include border-radius($zcs-msgview-radius);
 		}
+
+		.zcs-btn-msg-details {
+			background: url('../images/curl.png') bottom right no-repeat;
+			border: none;
+			height: 30px;
+			width: 30px;
+			position: absolute;  // positioning in the bottom right corner of the msg
+			bottom: 0.15em;
+			right: 0.15em;
+			padding-left: 2.5em; // padded to increase the size of the touch target
+			padding-top: 2.5em;
+		}
+
+		@media only screen and (-webkit-min-device-pixel-ratio: 2) {
+			.zcs-btn-msg-details {
+				background: url('../images/curl@2x.png');
+				height: 15px;
+				width: 15px;
+			}
+		}
+
+		.zcs-msg-actions-toolbar {
+			background: $medium-grey;
+			@include border-radius(0 0 $zcs-msgview-radius $zcs-msgview-radius);
+			font-size:1.2rem;
+
+			.x-button {
+				.x-button-label {
+					color: $dark-grey;
+				}
+				.x-button-icon {
+					color: $dark-grey;
+					font-size:1.4rem;
+				}
+			}
+		}
+	}
+}
+
+.zcs-conv-title-bar {
+	background-color: transparent;
+	color: white;
+	font-size: 1.5em;
+	min-height: 2em;
+	padding: 0.4em 0.6em;
+	position: absolute;
+	width: 100%;
+	z-index: 1;
+	@include background-image(linear-gradient(#808080 25%, rgba(#808080, .5)));
+}
+
+
+$px-unit: 1px;
+@mixin top-padding($pixels) {
+
+	.top-padding-#{$pixels} {
+		padding-top: $pixels * $px-unit !important;
+	}
+}
+
+@for $i from 0 through 300 {
+	@include top-padding($i);
+}
+
+.zcs-msglist {
+	background-color: $list-bg-color;
+
+	.x-body::after {
+		content: "";
+		background: url("../images/app_banner.png") no-repeat 98% 98%;
+		opacity: 0.9;
+		top: 0;
+		left: 0;
+		bottom: 0;
+		right: 0;
+		position: absolute;
+		z-index: -1;
 	}
 }
 
 /* BEGIN MSG HEADER */
 
-$msgHdrTextSize: 0.9em;
-$msgHdrImageSize: 3.2em;
-$msgHdrStdMargin: .7em;
+$msgHdrTextSize: 1em;
+$msgHdrImageSize: 3em;
+$msgHdrStdMargin: 1em;
 $msgHdrLabelIndent: $msgHdrImageSize + $msgHdrStdMargin;
 $msgHdrLeftIndent: $msgHdrImageSize + $msgHdrStdMargin*2;
 
-$msgHdrButtonSize: $msgHdrImageSize/1.5;
-$msgHdrRightIndent: $msgHdrButtonSize + $msgHdrStdMargin*4;
-$msgHdrDetailToggle: 6.5em;  /* width set for english text */
+$msgHdrRightIndent: $msgHdrStdMargin;
+$msgHdrDetailToggle: 3.5em;  /* width set for english text */
 
-$msgHdrTopOffset: $msgHdrStdMargin;
-$msgHdrTopOffset2: $msgHdrTextSize * 2.3 + $msgHdrTopOffset;
-$msgHdrButtonDelta: $msgHdrImageSize - $msgHdrButtonSize;
-$msgHdrButtonTopOffset: $msgHdrButtonDelta;
+$msgHdrTopOffset1: $msgHdrStdMargin;
+$msgHdrTopOffset2: $msgHdrTextSize * 1.5 + $msgHdrTopOffset1;
+$msgHdrTopOffset3: $msgHdrTextSize * 3 + $msgHdrTopOffset1;
 
 .zcs-mail-msgHdr {
-	min-height: $msgHdrTextSize*5;
+	font-size: 1rem; /* reset font size for baseline */
+	min-height: $msgHdrTextSize*4.5;
 	position: relative;
+}
+
+.x-portrait .zcs-mail-msgHdr.detailed {
+	min-height: $msgHdrTextSize*6;
 }
 
 .zcs-msgHdr-element {
@@ -61,54 +153,70 @@ $msgHdrButtonTopOffset: $msgHdrButtonDelta;
 	background-repeat: no-repeat;
 	height: $msgHdrImageSize;
 	left: $msgHdrStdMargin;
-	top: $msgHdrTopOffset;
+	top: $msgHdrTopOffset1;
 	width: $msgHdrImageSize;
+	@include border-radius($msgHdrImageSize/2);
 }
 
-.zcs-msgHdr-fromBubble {
+.zcs-msgHdr-fromContainer {
 	@extend .zcs-msgHdr-element;
+	font-size: $msgHdrTextSize;
 	left: $msgHdrLeftIndent;
-	top: $msgHdrTopOffset;
+	top: $msgHdrTopOffset1;
+
+	.zcs-msgHdr-fromBubble {
+		color: $base-color;
+		font-size: 1.3em;
+		line-height: 1em;
+	}
+
+	.zcs-msgHdr-fromConnector {
+		color: $primary-text-color;
+		font-size: 0.8em;
+		line-height: 1em;
+		padding: 0 .25em;
+	}
 }
 
 .zcs-msgHdr-from {
 	@extend .zcs-msgHdr-element;
-	font-size: $msgHdrTextSize;
-	left: $msgHdrLeftIndent+$msgHdrStdMargin;
-	right: $msgHdrRightIndent+$msgHdrDetailToggle;
+	left: $msgHdrLeftIndent;
+	line-height: 1.7em;
+	right: $msgHdrRightIndent;
 	top: $msgHdrTopOffset2;
 	@include ellipsis();
 }
 
 .zcs-msgHdr-fragment {
 	@extend .zcs-msgHdr-element;
-	@extend .zcs-fragment;
-	left: $msgHdrLeftIndent+$msgHdrStdMargin;
+	left: $msgHdrLeftIndent;
 	right: $msgHdrRightIndent;
 	top: $msgHdrTopOffset2;
 	@include ellipsis();
+
+	SPAN {
+		@extend .zcs-fragment;
+	}
 }
 
 .zcs-msgHdr-date {
 	@extend .zcs-msgHdr-element;
-	@extend .zcs-date;
-	top: $msgHdrTopOffset;
 	right: $msgHdrRightIndent;
-}
+	top: $msgHdrTopOffset1;
+	text-align: right;
 
-.zcs-mail-msgHdr.collapsed {
-	.zcs-msgHdr-fragment {
-		right: $msgHdrStdMargin;
+	SPAN {
+		@extend .zcs-date;
+		text-align: right;
 	}
-	.zcs-msgHdr-date {
-		right: $msgHdrStdMargin;
-	}
+
 }
 
 .zcs-msgHdr-to {
 	@extend .zcs-msgHdr-element;
-	font-size: $msgHdrTextSize;
-	left: $msgHdrLeftIndent+$msgHdrStdMargin;
+	font-size: 1em;
+	left: $msgHdrLeftIndent;
+	line-height: 1.7em;
 	right: $msgHdrRightIndent+$msgHdrDetailToggle;
 	top: $msgHdrTopOffset2;
 	@include ellipsis();
@@ -118,50 +226,37 @@ $msgHdrButtonTopOffset: $msgHdrButtonDelta;
 .x-html A.zcs-msgHdr-link {
 	@extend .zcs-msgHdr-element;
 	@extend .zcs-link;
-	top: $msgHdrTopOffset2;
+	line-height: 1em;
 	right: $msgHdrRightIndent;
+	top: $msgHdrTopOffset2;
 	//padded out the size to increase the touch target area
-	margin-top: -.5em;
-	padding: .5em 0 .5em 1em;
+	margin-top: -0.5em;
+	padding: 1.25em 0 0.5em 1.5em;
 }
 
 .zcs-msgHdr-label {
 	display: inline-block;
-	font-size: $msgHdrTextSize;
-	margin-right: $msgHdrStdMargin;
 	text-align: right;
 	width: $msgHdrLabelIndent;
-	@include opacity(.75);
+	@include opacity(.5);
+
+	&:after {
+		content: ":";
+	}
 }
 
 .zcs-mail-dtlMsgHdr {
-	margin-bottom: .3em;
+	font-size: 1rem;
+	margin-bottom: 0.3em;
 
 	.zcs-msgHdr-label {
-		line-height: 1.8em;
+		line-height: 1.5em;
 		position: absolute;
 	}
+
 	.zcs-msgHdr-field {
 		margin-left: $msgHdrLeftIndent;
-
-		.zcs-area-bubble {
-			margin-bottom: .25em;
-		}
 	}
-}
-
-.x-button.zcs-msgHdr-menuButton {
-	@extend .zcs-msgHdr-element;
-	color: rgba(0,0,0,.25);;
-	font-size: 1.2em;
-	right: .25em;
-	top: $msgHdrStdMargin;
-
-	&:active {
-		background-color: (0,0,0,.15);
-		color: rgba(0,0,0,.5);
-	}
-
 }
 
 /* END MSG HEADER */
@@ -169,13 +264,14 @@ $msgHdrButtonTopOffset: $msgHdrButtonDelta;
 /* BEGIN MSG BODY */
 .zcs-msg-body {
 	margin: $msgHdrStdMargin;
-	padding: .25em;
+	margin-bottom: $msgHdrStdMargin*3;
+	padding: $msgHdrStdMargin/2;
 	-webkit-user-select: text;
 }
 
 .zcs-msg-body-text {
-	font-size: 1.1em;
-	font-family: monospace;
+	font-size: 1rem;
+	//font-family: sans-serif;
 	word-wrap: break-word;
 	-webkit-user-select: text;
 }
@@ -201,12 +297,9 @@ $infoColor: #FF9;
 }
 
 //spaces the labels and buttons while assignment view
-.zcs-invite {
-
-	TD {
+.zcs-invite TD {
 	padding-top: 0.5em;
 	padding-right: 1em;
-	}
 }
 
 //space for notes section while assignment view
@@ -215,21 +308,19 @@ $infoColor: #FF9;
 }
 
 //spaces it from upper elements to make the buttons easier to hit
-.zcs-invite-buttons {
-	TD {
-		padding-top: 1em;
-		padding-right: 1em;
-	}
+.zcs-invite-buttons TD {
+	padding-top: 1em;
+	padding-right: 1em;
 }
 
 $attachTextColor: #333;
 
 .zcs-attachments {
-	line-height: 2.2em;
+	line-height: 1.8em;
 	margin-bottom: 1.5em;
 
 	.zcs-attachment-bubble {
-		color: $attachTextColor;
+		color: $base-color;
 
 		DIV {
 			margin-right: .5em;
@@ -239,10 +330,6 @@ $attachTextColor: #333;
 		A:link, A:visited {
 			color: $attachTextColor;
 			text-decoration: none;
-		}
-
-		SPAN {
-			font-weight: normal;
 		}
 	}
 }

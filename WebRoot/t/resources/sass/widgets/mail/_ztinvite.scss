@@ -27,11 +27,15 @@ $invLabelTextSize: 0.9em;
 }
 
 .zcs-invite-label {
-  width: 1%;
-  font-size: $invLabelTextSize;
-  text-align: right;
-  color: #999;
-  //@include opacity(.75);
+	width: 1%;
+	font-size: $invLabelTextSize;
+	text-align: right;
+	color: #999;
+	//@include opacity(.75);
+
+	&:after {
+		content: ":";
+	}
 }
 
 $invBtnColor: #CCC;
@@ -40,6 +44,7 @@ $defaultInvState: normal !default;
 $invBtnGradient: glossy-gradient($invBtnColor);
 $invBtnActiveGradient: glossy-gradient(darken($invBtnColor, 25%));
 $invBtnIconPos: .35em center no-repeat;
+$invWarningIconPos: 3px -9.1em no-repeat #FFC;
 
 // Mixin to return the proper backgrounds and borders per invite type (accept, tentative, decline) and state (normal and active)
 @mixin invite-button($type: $defaultInvType, $state: $defaultInvState) {
@@ -78,12 +83,14 @@ $invBtnIconPos: .35em center no-repeat;
 
 .zcs-invite-button {
   box-align: center;
-  min-height: 1.8em;
+  height: 1.4em;
   padding: .3em .6em;
   position: relative;
   overflow: hidden;
   -webkit-user-select: none;
   @include border-radius(.4em);
+  display: inline-block;
+  margin-bottom: 5px;
 
   &.zcs-invite-accept {
     @include invite-button('accept');
@@ -150,4 +157,9 @@ $invBtnIconPos: .35em center no-repeat;
   @extend .zcs-invite-status;
   @include background(url('/img/zimbra/ImgQuestionMark.png') $invBtnIconPos);
   background-color: #FFC;
+}
+
+.zcs-invite-outdated {
+  padding: 0 0 0 1.5em;
+  @include background(url('/img/dwt.png?v=130725100351') $invWarningIconPos);
 }

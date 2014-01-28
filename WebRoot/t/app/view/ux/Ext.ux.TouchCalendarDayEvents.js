@@ -1,5 +1,6 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2013 Zimbra Software, LLC.
  * 
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 /**
@@ -88,14 +90,15 @@ Ext.define('Ext.ux.TouchCalendarDayEvents', {
 			roundedStartDate    = this.getRoundedTime(startDate),
 			minutesLength       = (endDate.getTime() - startDate.getTime()) / 1000 / 60,
 			timeSlotEl          = this.getCalendar().getDateCell(roundedStartDate),
-			timeSlotRowEl       = timeSlotEl.parent('tr', false),
+			timeSlotRowEl       = timeSlotEl && timeSlotEl.parent('tr', false), // ZCS - Fix for JS error. Occurs in case of all day appointments.
 			heightPixels        = 0;
 
 		if(timeSlotRowEl){
 			var timeSlotHeight  = timeSlotEl.getHeight(),
 				minutesPerPixel = timeSlotHeight / 30;
 
-			heightPixels    = minutesLength * minutesPerPixel;
+            // ZCS - Minimum height of any appointment set to 15 minutes
+			heightPixels    = minutesLength <= 15 ? 15 :(minutesLength * minutesPerPixel);
 		}
 
 		return heightPixels;

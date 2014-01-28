@@ -20,69 +20,49 @@
  */
 Ext.define("ZCS.view.ZtMain", {
 
-    extend: 'Ext.TabPanel',
+	extend: 'Ext.Container',
 
 	requires: [
-		'ZCS.view.ZtAppView'
+		'ZCS.view.mail.ZtComposeForm',
+		'ZCS.view.ZtAppView',
+		'ZCS.view.ZtAppsMenu',
+		'ZCS.view.ZtOrganizerEdit'
 	],
 
 	alias: 'widget.ztmain',
 
-    config: {
-	    fullscreen: true,
-        tabBarPosition: 'top',
-        cls: 'zcs-main-tabs',
-        ui: 'dark',
-	    defaults: {
-		    styleHtmlContent: true
-	    },
-	    layout: {
-		    animation: {
-			    type: 'fade'
-		    }
-	    }
-    },
+	config: {
+		fullscreen: true,
+		defaults: {
+			styleHtmlContent: true
+		},
+		layout: {
+			type: 'card',
+			animation: {
+				type: 'fade'
+			}
+		}
+	},
 
 	initialize: function() {
-		var numTabs = 0;
+		var me = this;
 
 		this.callParent(arguments);
 
 		Ext.each(ZCS.constant.APPS, function(app) {
-			if (ZCS.session.getSetting(ZCS.constant.APP_SETTING[app])) {
+			if (ZCS.util.isAppEnabled(app)) {
 				var mainView = {
-					title: ZCS.constant.TAB_TITLE[app],
 					xtype: 'appview',
 					itemId: app + 'view',
 					app: app
 				};
-				numTabs += 1;
-				this.add(mainView);
+				me.add(mainView);
 			}
 		}, this);
 
-		//Hide buttons in tab bar if only one button
-		if (numTabs < 2) {
-			this.getTabBar().addCls('zcs-no-tabs-showing');
-		}
-
-		// Place some branding text on the right side of the tab bar
-		this.getTabBar().add([
-			{
-				xtype: 'spacer'
-			},
-			{
-				xtype: 'component',
-                cls: 'zcs-banner-image'
-			},
-			{
-				xtype: 'button',
-				cls: 'zcs-flat',
-				handler: function() {
-					this.up('tabbar').fireEvent('showMenu', this, { menuName: 'settings' });
-				},
-				iconCls: 'settings'
-			}
-		]);
+		Ext.Viewport.add(Ext.create('ZCS.view.ZtAppsMenu'));
+		Ext.Viewport.add(Ext.create('ZCS.view.ZtOrganizerEdit'));
+		Ext.Viewport.add(Ext.create('ZCS.view.mail.ZtComposeForm'));
+		Ext.Viewport.add(Ext.create('ZCS.view.contacts.ZtContactForm'));
 	}
 });

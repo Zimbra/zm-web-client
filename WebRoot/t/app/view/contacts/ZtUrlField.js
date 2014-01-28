@@ -25,32 +25,33 @@ Ext.define('ZCS.view.contacts.ZtUrlField', {
 	xtype: 'urlcontainer',
 
 	config: {
-		type: 'url'
+		type: 'url',
+		addButtonLabel: ZtMsg.contactFormButtonAddWebsiteURL
 	},
 
 	getFieldConfig: function(fieldId) {
-
 		return {
 			layout: 'hbox',
-			width: '80%',
+			width: '100%',
 			items: [
 				{
 					xtype:          'urlfield',
 					placeHolder:    ZtMsg.url,
 					name:           'url',
-					flex:           1
+					flex:           3
 				},
 				{
 					xtype:      'selectfield',
 					name:       'urlType',
-					flex:       0,
+					flex:       1,
 					options:    [
 						{text: ZtMsg.home,  value: 'home'},
 						{text: ZtMsg.work,  value: 'work'},
 						{text: ZtMsg.other, value: 'other'}
-					]
+					],
+					cls: 		'contact-form-multifield-select-field'
 				}
-			].concat(this.getAddRemoveConfig(fieldId))
+			].reverse().concat(this.getRemoveConfig(fieldId)).reverse()
 		};
 	}
 });

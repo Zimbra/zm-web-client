@@ -31,7 +31,7 @@ Ext.define('ZCS.view.ZtItemPanel', {
 	xtype: 'itempanel',
 
 	config: {
-		layout: 'fit',
+		layout: 'vbox',
 		cls:    'zcs-item-panel',
 		app:    null
 	},
@@ -55,6 +55,7 @@ Ext.define('ZCS.view.ZtItemPanel', {
 		items.push({
 			xtype: 'button',
 			align: 'left',
+			iconCls: 'back',
 			itemId: 'listpanelToggle',
 			hidden: true
 		});
@@ -72,7 +73,7 @@ Ext.define('ZCS.view.ZtItemPanel', {
 				iconCls:    button.icon,
 				cls:        'zcs-flat',
 				align:      button.align || 'right',
-				handler:    createHandler(button.event, { menuName: button.menuName }),
+				handler:    createHandler(button.event, { menuName: button.menuName}),
 				hidden:     !!button.hidden,
 				itemId:     itemId
 			});
@@ -85,11 +86,19 @@ Ext.define('ZCS.view.ZtItemPanel', {
 		};
 
 		var itemView = {
-			xtype: app + 'itemview'
+			xtype: app + 'itemview',
+			flex: 1
+		};
+
+		var titleBar = {
+			xtype: 'component',
+			itemId: 'itemTitleOnlyBar',
+			cls: 'zcs-conv-title-bar'
 		};
 
 		this.add([
 			toolbar,
+			titleBar,
 			itemView
 		]);
 
@@ -97,29 +106,37 @@ Ext.define('ZCS.view.ZtItemPanel', {
 			var quickReply = {
 				xtype: 'container',
 				itemId: 'quickReply',
-				docked: 'bottom',
 				cls: 'zcs-quick-reply',
+				docked: 'bottom',
 				hidden: true,
-				layout: 'hbox',
+				layout: 'vbox',
 				items: [{
-					xtype: 'fieldset',
-					flex: 1,
-					items: [
-						{
-							flex: 1,
-							xtype: 'textareafield',
-							placeholder: 'Test Placeholder',
-							height: ZCS.constant.QUICK_REPLY_SMALL
+					xtype: 'titlebar',
+					titleAlign: 'left',
+					hidden: true
+				}, {
+					xtype: 'container',
+					layout: 'hbox',
+					items: [{
+						xtype: 'fieldset',
+						flex: 1,
+						items: [
+							{
+								flex: 1,
+								xtype: 'textareafield',
+								placeholder: 'Test Placeholder',
+								height: ZCS.constant.QUICK_REPLY_SMALL
+							}
+						]
+					},{
+						xtype: 'button',
+						text: ZtMsg.send,
+						ui: 'neutral',
+						padding: '0 1em',
+						handler: function() {
+							ZCS.app.fireEvent('sendQuickReply');
 						}
-					]
-				},{
-					xtype: 'button',
-					text: ZtMsg.send,
-					ui: 'neutral',
-					padding: '0 1em',
-					handler: function() {
-						ZCS.app.fireEvent('sendQuickReply');
-					}
+					}]
 				}]
 			}
 			this.add(quickReply);
@@ -145,5 +162,10 @@ Ext.define('ZCS.view.ZtItemPanel', {
 	showListPanelToggle: function () {
 		var listpanelToggle = this.down('#listpanelToggle');
 		listpanelToggle.show();
+	},
+
+	isListPanelToggleHidden: function() {
+		var listpanelToggle = this.down('#listpanelToggle');
+		return listpanelToggle.isHidden();
 	}
 });

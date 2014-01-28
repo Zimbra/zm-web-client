@@ -72,12 +72,12 @@ Ext.define('ZCS.model.mail.ZtEmailAddress', {
 		 * @param {String}  emailStr    email string
 		 * @param {String}  type        address type
 		 *
-		 * @return {ZtEmailAddress}     an email address object, or null if the email string if invalid
+		 * @return {ZtEmailAddress}     an email address object, or null if the email string is invalid
 		 * @adapts ZCS.model.mail.ZtEmailAddress.parse
 		 */
 		fromEmail: function(emailStr, type) {
 
-			emailStr = Ext.String.trim(emailStr);
+			emailStr = Ext.String.trim(emailStr || '');
 
 			var atIndex = emailStr.indexOf('@'),
 				dotIndex = emailStr.lastIndexOf('.'),

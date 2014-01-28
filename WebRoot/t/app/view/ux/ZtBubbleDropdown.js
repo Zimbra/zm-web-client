@@ -74,7 +74,7 @@ Ext.define('ZCS.view.ux.ZtBubbleDropdown', {
 			},
 			inputBlur: function (e, el) {
 				if (this.menu) {
-					// this.menu.hide();
+					this.menu.hide();
 				}
 			},
 			destroy: function () {
@@ -85,16 +85,24 @@ Ext.define('ZCS.view.ux.ZtBubbleDropdown', {
 			 * Setup the menu that will be used to display options after
 			 * the user inputs some search text.
 			 */
-			painted: function () {
-				this.menu = Ext.create('ZCS.common.ZtMenu', {
-					referenceComponent: this.getInput(),
-					modal: true,
-					hideOnMaskTap: true,
-					maxHeight: 400,
-					width: this.getMenuWidth()
-				});
+			initialize: function () {
+				var me = this;
 
 				this.showMenu = Ext.Function.createBuffered(function (value) {
+
+					if (!this.menu) {
+						this.menu = Ext.create('Ext.dataview.List', {
+							cls: 'zcs-contact-suggest',
+							itemTpl: '{label}',
+							scrollable: 'vertical',
+							defaultType: 'listitem',
+							disableSelection: true,
+							maxHeight: 400,
+							itemHeight: 68,
+							width: this.getMenuWidth()
+						});
+					}
+
 					var ipadLandscapeKeyboardHeight = 352,
 						ipadPortraitKeyboardHeight = 264,
 						prevNextBarHeight = 65,
@@ -109,13 +117,15 @@ Ext.define('ZCS.view.ux.ZtBubbleDropdown', {
 					//Unfortunately, there does not appear to be a programmatic way to get the height of the
 					//current virtual keyboard so we are left with this, which is not cross-OS and seems a bit
 					//brittle.
-					if (isLandscape) {
+					if (Ext.os.deviceType === "Desktop") {
+						keyboardHeight = 0;
+					} else if (isLandscape) {
 						keyboardHeight = ipadLandscapeKeyboardHeight + prevNextBarHeight;
 					} else {
 						keyboardHeight = ipadPortraitKeyboardHeight + prevNextBarHeight;
 					}
 
-					availableHeight = (viewportBox.height - keyboardHeight) - startY;
+					availableHeight = viewportBox.height - startY;
 
 					//Let the menu know that it only has the space between the bottom of the input
 					//and the top of the keyboard  to show itself, this will allow it to scroll.
@@ -127,7 +137,12 @@ Ext.define('ZCS.view.ux.ZtBubbleDropdown', {
 							this.configureStore(value, this.getMenuStore());
 
 							this.getMenuStore().load({
-								callback: this.loadMenuFromStore,
+								callback: function () {
+									//only show the menu if the response we are getting is still the value of the input.
+									if (value === this.getInput().getValue()) {
+										this.loadMenuFromStore.call(this);
+									}
+								},
 								scope: this
 							});
 						} else {
@@ -167,7 +182,7 @@ Ext.define('ZCS.view.ux.ZtBubbleDropdown', {
 	 * on the drop down.
 	 */
 	shouldAutoBubble: function () {
-		return this.menu.isHidden();
+		return !this.menu || this.menu.isHidden() === true;
 	},
 
 	/**
@@ -183,23 +198,29 @@ Ext.define('ZCS.view.ux.ZtBubbleDropdown', {
 
 		this.getMenuStore().each(function (record) {
 			if (tpl) {
-				var data = {
-					name:   record.get('longName'),
-					email:  record.get('email')
-				};
-				label = tpl.apply(data);
+				var name = record.get('longName'),
+					email = record.get('email');
+				label = (name || email) ? tpl.apply({ name:name, email:email }) : null;
 			} else {
 				label = record.get(me.getDropdownDisplayField());
 			}
 
+			var groupMembers, contactGroup,
+				isGroup = record.get('isGroup');
+			if (isGroup) {
+				contactGroup = ZCS.cache.get(record.get('contactId'));
+				if (contactGroup) {
+					groupMembers = Ext.Array.clean(Ext.Array.map(contactGroup.get('members'), function(member) {
+						return ZCS.model.mail.ZtEmailAddress.fromEmail(member.memberEmail);
+					}));
+				}
+			}
+
 			menuRecords.push({
 				label: label,
-				listener: function () {
-					me.clearInput();
-					me.addBubble(record);
-					me.getInput().dom.value = '';
-					me.focusInput();
-				}
+				isGroup: isGroup,
+				groupMembers: groupMembers,
+				emailRecord: record
 			});
 		});
 
@@ -213,14 +234,48 @@ Ext.define('ZCS.view.ux.ZtBubbleDropdown', {
 	 * Shows the menu ui element with the contents of the menu store.
 	 */
 	loadMenuFromStore: function () {
-		var menuItems;
+		var menuItems,
+			menu = this.menu,
+			store = menu.getStore();
 
 		if (this.getMenuStore().getCount() > 0) {
 			menuItems = this.getMenuItems();
-			this.menu.setMenuItems(menuItems);
-			this.menu.popup('tc-bc?');
+			if (store) {
+				store.suspendEvents();
+				store.removeAll();
+				store.resumeEvents();
+			}
+			menu.setHeight(Math.min(menu.get('maxHeight'), menu.get('itemHeight') * menuItems.length));
+			menu.setData(menuItems);
+			menu.on('itemtap', this.handleMenuItemTap, this);
+			menu.showBy(this.getInput(), 'tc-bc?');
+
+			// Don't let the viewport blur input field when scrolling menu
+			delete Ext.Viewport.focusedElement;
 		} else {
-			this.menu.hide();
+			menu.hide();
 		}
+	},
+
+	handleMenuItemTap: function (list, index, target, record, e, eOpts) {
+		var me = this,
+			isGroup = record.get('isGroup'),
+			groupMembers = record.get('groupMembers'),
+			gotGroupMembers = groupMembers && groupMembers.length > 0,
+			emailRecord = record.get('emailRecord');
+
+		me.clearInput();
+		 if (gotGroupMembers) {
+            me.addBubbles(groupMembers);
+        } else {
+            me.addBubble(emailRecord);
+        }
+
+		me.getInput().dom.value = '';
+		me.focusInput();
+		list.hide();
+
+		e.preventDefault();
+ 		e.stopPropagation();
 	}
 });

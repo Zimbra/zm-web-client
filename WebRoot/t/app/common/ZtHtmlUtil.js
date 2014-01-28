@@ -2,12 +2,12 @@
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2013 Zimbra Software, LLC.
- * 
+ *
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
@@ -112,7 +112,7 @@ Ext.define('ZCS.common.ZtHtmlUtil', {
 	 * @return {Number}    the height of the element
 	 */
 	getHeightFromComputedStyle: function(el, doc) {
-		return this.getComputedStyle(el, doc, "height");
+		return this.getTotalFromComputedStyle(el, doc, [ 'height', 'marginTop', 'marginBottom', 'paddingTop', 'paddingBottom' ]);
 	},
 
 	/**
@@ -124,15 +124,32 @@ Ext.define('ZCS.common.ZtHtmlUtil', {
 	 * @return {Number}    the width of the element
 	 */
 	getWidthFromComputedStyle: function(el, doc) {
-		return this.getComputedStyle(el, doc, "width");
+		return this.getTotalFromComputedStyle(el, doc, [ 'width', 'marginLeft', 'marginRight', 'paddingLeft', 'paddingRight' ]);
 	},
 
-	getComputedStyle: function (el, doc, attr) {
+	/**
+	 * Totals the values of the given style attributes of an element.
+	 *
+	 * @param {Element}     el      element
+	 * @param {Document}    doc     document
+	 * @param {Array}       attrs   list of style attributes to total
+	 *
+	 * @return {Number}     total value
+	 */
+	getTotalFromComputedStyle: function(el, doc, attrs) {
+
 		doc = doc || window.document;
-		var styleObj = doc.defaultView.getComputedStyle(el);
-		return parseInt(styleObj[attr]);
-	},
+		var styleObj = doc.defaultView.getComputedStyle(el),
+			ln = attrs.length, i, value,
+			total = 0;
 
+		for (i = 0; i < ln; i++) {
+			value = parseInt(styleObj[attrs[i]]);
+			total += isNaN(value) ? 0 : value;
+		}
+
+		return total;
+	},
 
 	/**
 	 * Calculates an element's height by summing the heights of its child nodes.
@@ -146,7 +163,9 @@ Ext.define('ZCS.common.ZtHtmlUtil', {
 
 		var height = 0,
 			ln = el ? el.childNodes.length : 0,
-			i, child, styleObj;
+			i, 
+			child,
+			computedHeight;
 
 		doc = doc || window.document;
 
@@ -156,12 +175,17 @@ Ext.define('ZCS.common.ZtHtmlUtil', {
 		for (i = 0; i < ln; i++) {
 			child = el.childNodes[i];
 			if (child && child.nodeType === Node.ELEMENT_NODE) {
-				height += child.offsetHeight;
-				styleObj = doc.defaultView.getComputedStyle(child);
-				if (styleObj) {
-					height += parseInt(styleObj.marginTop) + parseInt(styleObj.marginBottom);
+				computedHeight = this.getHeightFromComputedStyle(child, doc); 
+				
+
+				//Sometimes, like with br elements, you have to get the height directly from the element instead of the computedStyle.
+				if (computedHeight === 0 && child.clientHeight) {
+					height += child.clientHeight;
+				} else if (computedHeight) {
+					height += computedHeight;
 				}
 			}
+
 		}
 
 		return height;
@@ -214,6 +238,9 @@ Ext.define('ZCS.common.ZtHtmlUtil', {
 			}
 		});
 
+		// some editors like to put every <br> in a <div>
+		html = html.replace(/<div><br ?\/?><\/div>/gi, '<br>');
+
 		// remove empty surrounding <div> containers, and leading/trailing <br>
 		var len = 0;
 		while ((html.length !== len) &&
@@ -262,5 +289,327 @@ Ext.define('ZCS.common.ZtHtmlUtil', {
 		}
 
 		return html;
+	},
+
+	/**
+	 * Goes through the message DOM looking for images to fix, including those that are used
+	 * as background images (usually in BODY or TD). Internal images will get their URLs set
+	 * to grab a part from the server. External images will be hidden or shown based on a user
+	 * setting.
+	 *
+	 * @param {ZtMailMsg}       msg                     msg being displayed
+	 * @param {Element}         containerEl             top-level element of DOM
+	 * @param {boolean}         hideExternalImages      if true, hide external images
+	 *
+	 * @return {Array}    list of hidden images
+	 */
+	fixImages: function(msg, containerEl, hideExternalImages, onLoadHandler) {
+
+		if (!containerEl) {
+			return [];
+		}
+
+		var	els = containerEl.getElementsByTagName('*'),
+			ln = els.length,
+			html = containerEl.innerHTML,
+			checkBackground = (html.indexOf('dfbackground') !== -1) ||
+			                  (html.indexOf('pnbackground') !== -1),
+			hiddenImages = [],
+			onloadHandler,
+			fixedBackground = false;
+
+		for (var i = 0; i < ln; i++) {
+
+			var el = els[i],
+				nodeName = el.nodeName.toLowerCase(),
+				isImg = (nodeName === 'img');
+
+			if ((isImg && this.fixImage(msg, el, 'src', hideExternalImages, onLoadHandler)) ||
+				(checkBackground && this.fixImage(msg, el, 'background', hideExternalImages, onLoadHandler))) {
+
+				hiddenImages.push(el);
+				if (!isImg) {
+					fixedBackground = true;
+				}
+			}
+		}
+
+		if (fixedBackground) {
+            //<debug>
+			Ext.Logger.image('Background handled, resize on timer');
+            //</debug>
+			Ext.defer(onLoadHandler, 500, this.iframe);
+		}
+
+		return hiddenImages;
+	},
+
+	/**
+	 * Goes through the message DOM looking for images to unfix.
+     * Basically reverses this.fixImages
+	 * 
+	 * @param {ZtMailMsg}       msg                     msg being displayed
+	 * @param {Element}         containerEl             top-level element of DOM
+	 *
+	 * @return {Array}    list of hidden images
+	 */
+	revertImageFixes: function (msg, containerEl) {
+		if (!containerEl) {
+			return [];
+		}
+
+		var	els = containerEl.getElementsByTagName('*'),
+			ln = els.length,
+			html = containerEl.innerHTML,
+			checkBackground = (html.indexOf('dfbackground') !== -1) ||
+			                  (html.indexOf('pnbackground') !== -1),
+			unfixedImages = [],
+			fixedBackground = false;
+
+		for (var i = 0; i < ln; i++) {
+
+			var el = els[i],
+				nodeName = el.nodeName.toLowerCase(),
+				isImg = (nodeName === 'img');
+
+			if ((isImg && this.unfixImage(msg, el, 'src')) ||
+				(checkBackground && this.unfixImage(msg, el, 'background'))) {
+
+				unfixedImages.push(el);
+			}
+		}
+
+		return unfixedImages;
+	},
+
+	/**
+	 * Rewrites the src reference for internal images so that they display, and optionally
+	 * does the same for external images. Internal images will have 'cid', 'doc', and 'pnsrc'
+	 * converted to a URL with a part value that can be used to fetch the image from our
+	 * server. The part value is taken from the message's MIME parts.
+	 *
+	 * @param {ZmMailMsg}	msg			        mail message
+	 * @param {Element}		el		            element to be checked (img)
+	 * @param {string}		attr		        attribute name
+	 * @param {boolean}     hideExternalImages  if true, replace external image with placeholder
+	 *
+	 * @return	true if the image is external and was replaced
+	 */
+	fixImage: function(msg, el, attr, hideExternalImages, onloadHandler) {
+
+		var dfAttr = 'df' + attr,
+			pnAttr = 'pn' + attr,
+			baseValue, dfValue, pnValue, value,
+			imgChanged = false,
+			origValue,
+			me = this;
+
+		try {
+			baseValue = el.getAttribute(attr);
+			dfValue = el.getAttribute(dfAttr);
+			pnValue = el.getAttribute(pnAttr);
+		}
+		catch(e) {
+            //<debug>
+			Ext.Logger.warn('ZtMsgBody.restoreImages: exception accessing base attribute ' + attr + ' in ' + el.nodeName);
+            //</debug>
+		}
+
+		value = baseValue || dfValue || pnValue;
+
+		origValue = value;
+
+		if (value) {
+			if (value.indexOf('cid:') === 0) {
+				// image came as a related part keyed by Content-ID
+				var cid = '<' + decodeURIComponent(value.substr(4)) + '>';
+				value = msg.getPartUrlByField('contentId', cid, 'foundInMsgBody');
+				if (value) {
+					el.setAttribute(ZCS.constant.ORIGINAL_SRC_ATTRIBUTE, origValue);
+					el.setAttribute(attr, value);
+					imgChanged = true;
+				}
+			} else if (value.indexOf('doc:') === 0) {
+				// image is in Briefcase
+				value = [ZCS.session.getSetting(ZCS.constant.SETTING_REST_URL), '/', value.substring(4)].join('');
+				if (value) {
+					el.setAttribute(ZCS.constant.ORIGINAL_SRC_ATTRIBUTE, origValue);
+					el.setAttribute(attr, value);
+					imgChanged = true;
+				}
+			} else if (pnValue) {
+				// image came as a related part keyed by Content-Location
+				value = msg.getPartUrlByField('contentLocation', value, 'foundInMsgBody');
+				if (value) {
+					el.setAttribute(ZCS.constant.ORIGINAL_SRC_ATTRIBUTE, origValue);
+					el.setAttribute(attr, value);
+					imgChanged = true;
+				}
+			} else if (dfValue) {
+				if (hideExternalImages) {
+					if (attr === 'src') {
+						el.setAttribute(ZCS.constant.ORIGINAL_SRC_ATTRIBUTE, origValue);
+						el.src = '/img/zimbra/1x1-trans.png';
+					}
+					return true;
+				} else {
+					el.setAttribute(ZCS.constant.ORIGINAL_SRC_ATTRIBUTE, origValue);
+					el.src = dfValue;
+					imgChanged = true;
+				}
+			} else if (value.indexOf('data:') === 0) {
+			}
+		}
+
+		if (imgChanged && onloadHandler) {
+			el.onload = Ext.Function.bind(onloadHandler, null, [me, el]);
+			ZCS.view.mail.ZtMsgBody.numImgsToLoad += 1;
+		}
+
+		return false;
+	},
+
+	/**
+	 * Reads out the original value of the attribute which was 'fixed' previously
+	 * If it exists, replaces the attribute that was 'fixed' with its original value.
+	 *
+ 	 * @param {ZmMailMsg}	msg			        mail message
+	 * @param {Element}		el		            element to be checked (img)
+	 * @param {string}		attr		        attribute name
+	 */
+	unfixImage: function(msg, el, attr) {
+		var originalValue = el.getAttribute(ZCS.constant.ORIGINAL_SRC_ATTRIBUTE);
+		if (originalValue) {
+			el.setAttribute(attr, originalValue);
+		}
+	},
+
+	/**
+	 * Lazily creates a test hidden IFRAME and writes the given HTML to it, then returns the HTML element.
+	 *
+	 * @private
+	 */
+	getHtmlDom: function(html) {
+
+		var idoc = this.htmlContentIframeDoc;
+		if (!idoc) {
+			var iframe = Ext.DomHelper.append(document.body, {
+				tag:    'iframe',
+				id:     'zcs-test-iframe',
+				cls:    'zcs-offscreen'
+			});
+			idoc = this.htmlContentIframeDoc = iframe.contentDocument;
+		}
+		html = ZCS.htmlutil.hideCidImages(html);
+		idoc.open();
+		idoc.write(html);
+		idoc.close();
+
+		return idoc.childNodes[0];
+	},
+
+	/**
+	 * Makes URLs and email addresses actionable by turning them into links. Tapping an email
+	 * address will take the user to the compose form.
+	 *
+	 * @param {String}  content     text to parse
+	 * @param {Boolean} isHtml      true if the content is HTML
+	 *
+	 * @return {String}     content with actionable URLs and email addresses
+	 */
+	findObjects: function(content, isHtml) {
+
+		if (!isHtml) {
+			// turn URLs into links
+			content = content.replace(ZCS.constant.REGEX_URL, function(m) {
+				return Ext.String.format("<a href='{0}' target='_blank'>{0}</a>", m);
+			});
+
+			// mark up email addresses so we can handle them on tap
+			content = content.replace(ZCS.constant.REGEX_EMAIL, function(m, mailto, addr) {
+				if (mailto) {
+					return Ext.String.format(" href='#' addr='{0}'", addr);
+				}
+				else {
+					return Ext.String.format("<a href='#' addr='{0}'>{0}</a>", addr);
+				}
+			});
+		}
+
+		else {
+			var htmlNode = ZCS.htmlutil.getHtmlDom(content);
+			this.findObjectsProcessNode(htmlNode);
+			content = htmlNode.innerHTML;
+			htmlNode.innerHTML = '';
+		}
+
+		return content;
+	},
+
+	findObjectsProcessNode: function(node) {
+
+		var nodeType = node.nodeType,
+			value = node.nodeValue,
+			parent = node.parentNode,
+			parentNodeName = parent.nodeName && parent.nodeName.toLowerCase();
+
+		if (nodeType === Node.ELEMENT_NODE) {
+			node.normalize();
+			var nodeName = node.nodeName.toLowerCase();
+			if (nodeName === 'a') {
+				// add an 'addr' attribute to a 'mailto' link
+				if (node.href && node.href.indexOf('mailto:') === 0) {
+					node.href = '#';
+					node.setAttribute('addr', node.href.substr(7));
+				}
+			}
+		}
+		else if (nodeType === Node.TEXT_NODE) {
+			// check for a URL that's not already part of a link
+			if (ZCS.constant.REGEX_URL.test(value) && parentNodeName !== 'a') {
+				var	before = RegExp.leftContext,
+					url = RegExp.lastMatch,
+					after = RegExp.rightContext,
+					span = document.createElement('span'),
+					link = document.createElement('a');
+
+				if (before) {
+					span.appendChild(document.createTextNode(before));
+				}
+				link.appendChild(document.createTextNode(url));
+				link.href = url;
+				link.target = '_blank';
+				span.appendChild(link);
+				if (after) {
+					span.appendChild(document.createTextNode(after));
+				}
+				parent.replaceChild(span, node);
+			}
+			// email address
+			else if (ZCS.constant.REGEX_EMAIL.test(value)) {
+				var	before = RegExp.leftContext,
+					addr = RegExp.$2,
+					after = RegExp.rightContext,
+					span = document.createElement('span'),
+					link = document.createElement('a');
+
+				if (before) {
+					span.appendChild(document.createTextNode(before));
+				}
+				link.appendChild(document.createTextNode(addr));
+				link.href = '#';
+				link.setAttribute('addr', addr);
+				span.appendChild(link);
+				if (after) {
+					span.appendChild(document.createTextNode(after));
+				}
+				parent.replaceChild(span, node);
+			}
+		}
+
+		var ln = node.childNodes ? node.childNodes.length : 0, i;
+		for (i = 0; i < node.childNodes.length; i++){
+			this.findObjectsProcessNode(node.childNodes[i]);
+		}
 	}
 });

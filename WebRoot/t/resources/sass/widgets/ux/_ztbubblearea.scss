@@ -14,22 +14,22 @@
  */
 
 @import 'variables/base';
-@import 'compass/css3/border-radius';
 @import 'recipes/background/gradients';
+@import 'compass/css3/border-radius';
+@import 'compass/typography/text/ellipsis';
 
 $font-color: $dark-grey;
-$font-size: 11px;
-$font-weight: bold;
-$input-font-size: 14px;
+$font-weight: normal;
+$input-font-size: 1.2rem;
 
-$bubble-border-radius: 10px; // to match other input borders
-$bubble-bkgd-color: #D8D8D8;
-$bubble-height: 18px;
-$bubble-text-color: darken($bubble-bkgd-color,25%);
-$bubble-text-padding: 0 8px;
+$bubble-height: 1rem;
+$bubble-lineheight: 1.6rem;
+$bubble-text-color: $base-color;
+$bubble-bkgd-color: transparent;
+$bubble-padding: $bubble-height/2;
 
-$space-between-bubbles: 6px;
-$space-between-rows: 2px;
+$space-between-bubbles: 0.25rem;
+$space-between-rows: .2rem;
 
 //Disabling close icon for now.
 $bubble-close-icon-width: 0;
@@ -37,95 +37,118 @@ $bubble-close-icon-height: 0;
 $bubble-close-icon-margin: 0;
 
 .zcs-area-bubble {
-    border: 1px solid $bubble-text-color;
-    display: inline-block;
-    font-color: $bubble-text-color;
-    font-size: $font-size;
-    font-weight: $font-weight;
-    line-height: $bubble-height;
-    padding: $bubble-text-padding;
-    @include border-radius($bubble-border-radius);
-    @include background-gradient($bubble-bkgd-color,'glossy');
+	background-color: $bubble-bkgd-color;
+	color: $bubble-text-color;
+	cursor: pointer;
+	display: inline-block;
+	font-weight: $font-weight;
+	line-height: $bubble-height;
+	margin-right: $space-between-bubbles;
+	max-width: 30rem;
+	overflow: hidden;
+	padding: $bubble-padding 0 $bubble-padding $bubble-padding/2;
+	white-space: nowrap;
+	@include border-radius($bubble-height/2);
+	@include ellipsis();
 
-    &:active {
-        @include background-gradient(darken($bubble-bkgd-color, 25%),'glossy');
-    }
+	SPAN {
+		font-weight: normal;
+		cursor: default;
+	}
+}
+
+.x-phone .zcs-area-bubble {
+	max-width: 10rem;
+}
+
+.menu-open .zcs-area-bubble {
+	background: $bubble-text-color;
+	color: $white;
+}
+
+.bubble-inline-item {
+	display: inline-block;
 }
 
 .zcs-bubblearea {
 
-    .zcs-area-bubble {
-        margin-right: $space-between-bubbles;
-    }
+	background-color: $white;
+	@include border-radius($default-textarea-radius);
 
-    background-color: $white;
-    @include border-radius($default-textarea-radius);
+	> DIV {
 
-    > DIV {
-        .bubble-comp, .input-comp {
-            display: inline-block;
-            margin-top: $space-between-rows;
-        }
+		.bubble-comp{
+			@extend .bubble-inline-item;
+			line-height: $bubble-lineheight;
+			margin-bottom: $space-between-rows;
+		}
 
-        .bubble-close-icon {
-            display: inline-block;
-            width: $bubble-close-icon-width;
-            height: $bubble-close-icon-height;
-            margin: $bubble-close-icon-margin;
-            cursor: pointer;
-            cursor: hand;
-        }
-    }
+		.input-comp {
+			@extend .bubble-inline-item;
+			margin-top: $bubble-height/2;
+		}
 
-    .bubble-main-contents {
-        .x-inner {
-            overflow-y: auto;
-            padding: 6px 0.4em !important;
-        }
-    }
+		.bubble-close-icon {
+			display: inline-block;
+			width: $bubble-close-icon-width;
+			height: $bubble-close-icon-height;
+			margin: $bubble-close-icon-margin;
+			cursor: pointer;
+			cursor: hand;
+		}
+	}
 
-    .input-comp {
-        margin-left: 0px;
-        .x-innerhtml {
-            height: $bubble-height;
-            position: relative;
-            display: inline-block;
-            input {
-                top: 5px;
-                height: $bubble-height;
-                font-size: $input-font-size;
-                position: absolute;
-            }
-        }
-    }
+	.bubble-main-contents {
+		padding-top: 0.25rem;
 
-    .emptyText {
-        color: $medium-grey;
-        position: absolute;
-        font-style: italic;
-        top: 6px;
-        left: 6px;
-        text-transform: lowercase;
-    }
+		.x-inner {
+			overflow-y: auto;
+			/*padding: 0.3rem 0.4rem !important; */
+		}
+	}
 
-    INPUT {
-        line-height: $bubble-height;
-        font-color: $font-color;
-        padding: 0;
-        background-color: transparent !important;
-        border: 0 !important;
-        display: inline-block;
-    }
+	.input-comp {
+		margin-left: 0px;
 
-    &[class~=zcs-read-only] {
-         background: $default-readonly-color !important;
-         border-color: $default-border-disabled;
-        .bubble-close-icon{
-            display: none !important;
-        }
-    }
+		.x-innerhtml {
+			height: $bubble-height + $bubble-padding * 2;
+			position: relative;
+			display: inline-block;
+
+			INPUT {
+				font-size: $input-font-size;
+			}
+		}
+	}
+
+	.emptyText {
+		color: $medium-grey;
+		position: absolute;
+		font-style: italic;
+		top: 6px;
+		left: 6px;
+		text-transform: lowercase;
+	}
+
+	INPUT {
+		line-height: $bubble-height;
+		font-color: $font-color;
+		padding: 0;
+		background-color: transparent !important;
+		border: 0 !important;
+		display: inline-block;
+	}
+
+	&[class~=zcs-read-only] {
+		 background: $default-readonly-color !important;
+		 border-color: $default-border-disabled;
+
+		.bubble-close-icon{
+			display: none !important;
+		}
+	}
 }
 
 .x-form-invalid .zcs-bubblearea {
-    background-position: bottom;
+	background-position: bottom;
 }

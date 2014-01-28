@@ -77,7 +77,7 @@ Ext.define('ZCS.common.ZtTimezone', {
             return rule.shortName;
         }
 
-        var generatedShortName = ["GMT", ZCS.timezone.SHORT_NAMES[clientId]].join("");
+        var generatedShortName = ZCS.timezone.SHORT_NAMES[clientId];
 
         if (rule) {
             rule.shortName = generatedShortName;
@@ -96,7 +96,11 @@ Ext.define('ZCS.common.ZtTimezone', {
             return rule.mediumName;
         }
 
-        var generatedMediumName = ZtMsg[clientId] || ['(', this.getShortName(clientId),') ', clientId].join("");
+        if (clientId.indexOf('(') !== -1 && clientId.indexOf(')') !== -1) {
+            clientId = clientId.replace('(', '').replace(')', '');
+        }
+
+        var generatedMediumName = ZtMsg[clientId] || [this.getShortName(clientId), clientId].join("");
 
         if (rule) {
             rule.mediumName = generatedMediumName;
@@ -480,6 +484,71 @@ Ext.define('ZCS.common.ZtTimezone', {
         minutes = minutes < 10 ? '0' + minutes : minutes;
 
         return [sign, hours, period ? "." : "", minutes].join("");
+    },
+
+    getOffset: function(clientId, date) {
+        var rule = this.getRule(clientId || this.DEFAULT_TZ);
+
+        if (rule && rule.daylight) {
+            var year = date.getFullYear(),
+                standard = rule.standard, daylight  = rule.daylight,
+                stdTrans = this.getTransition(standard, year),
+                dstTrans = this.getTransition(daylight, year),
+                month    = date.getMonth()+1, day = date.getDate(),
+                stdMonth = stdTrans[1], stdDay = stdTrans[2],
+                dstMonth = dstTrans[1], dstDay = dstTrans[2];
+
+            // northern hemisphere
+            var isDST = false;
+            if (dstMonth < stdMonth) {
+                isDST = month > dstMonth && month < stdMonth;
+                isDST = isDST || (month == dstMonth && day >= dstDay);
+                isDST = isDST || (month == stdMonth && day <  stdDay);
+            }
+
+            // sorthern hemisphere
+            else {
+                isDST = month < stdMonth || month > dstMonth;
+                isDST = isDST || (month == dstMonth && day >=  dstDay);
+                isDST = isDST || (month == stdMonth && day < stdDay);
+            }
+
+            return isDST ? daylight.offset : standard.offset;
+        }
+        return rule ? rule.standard.offset : -(new Date().getTimezoneOffset());
+    },
+
+    getTransition: function(onset, year) {
+        var trans = [ year || new Date().getFullYear(), onset.mon, 1 ];
+
+        if (onset.mday) {
+            trans[2] = onset.mday;
+        }
+        else if (onset.wkday) {
+            var date = new Date(year, onset.mon - 1, 1, onset.hour, onset.min, onset.sec);
+
+            // last wkday of month
+            if (onset.week == -1) {
+                // NOTE: This creates a date of the *last* day of specified month by
+                //       setting the month to *next* month and setting day of month
+                //       to zero (i.e. the day *before* the first day).
+                var last = new Date(new Date(date.getTime()).setMonth(onset.mon, 0)),
+                    count = last.getDate(),
+                    wkday = last.getDay() + 1,
+                    adjust = wkday >= onset.wkday ? wkday - onset.wkday : 7 - onset.wkday - wkday;
+
+                trans[2] = count - adjust;
+            }
+
+            // Nth wkday of month
+            else {
+                var wkday = date.getDay() + 1,
+                    adjust = onset.wkday == wkday ? 1 :0;
+
+                trans[2] = onset.wkday + 7 * (onset.week - adjust) - wkday + 1;
+            }
+        }
+        return trans;
     }
 },
     function(thisClass) {
@@ -744,7 +813,9 @@ Ext.define('ZCS.common.ZtTimezone', {
 
 	    thisClass.AUTO_DETECTED = 'Auto-Detected';
 
-	    rules.sort(thisClass.byOffset);
+        thisClass.TZ_TRANSITION_YEAR = 2011;
+
+        rules.sort(thisClass.byOffset);
 	    Ext.each(rules, function(rule) {
 	        this.addRule(rule);
         }, this);
@@ -754,4 +825,3 @@ Ext.define('ZCS.common.ZtTimezone', {
     }
 );
 
-ZCS.timezone.TZ_TRANSITION_YEAR = 2011;

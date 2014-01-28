@@ -2,12 +2,12 @@
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2013 Zimbra Software, LLC.
- * 
+ *
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
@@ -39,18 +39,11 @@ Ext.define('ZCS.controller.ZtItemController', {
 
 		control: {
 			itemPanelToolbar: {
-				showMenu: 'doShowMenu'
+				showMenu: 'showMenu'
 			}
 		},
 
 		item: null
-	},
-
-	launch: function () {
-        //<debug>
-		Ext.Logger.verbose('STARTUP: item ctlr launch - ' + ZCS.util.getClassName(this));
-        //</debug>
-		this.callParent();
 	},
 
 	/**
@@ -86,6 +79,21 @@ Ext.define('ZCS.controller.ZtItemController', {
 	},
 
 	doDelete: function() {
+	},
+
+	/**
+	 * Removes the given tag from the item.
+	 *
+	 * @param {Object}  tagParams   item, tagName, menuName
+	 */
+	doRemoveTag: function(tagParams) {
+
+		var item = tagParams.item || this.getItem(),
+			tagName = tagParams.tagName;
+
+		if (item && tagName) {
+			this.tagItem(item, tagName, true);
+		}
 	},
 
 	getPlaceholder: function() {
@@ -185,8 +193,12 @@ Ext.define('ZCS.controller.ZtItemController', {
 	 *                                      isDraft     if true, draft is being displayed
 	 */
 	updateToolbar: function(params) {
+		this.updateTitle(params);
+	},
+
+	updateTitle: function (params) {
 		var toolbar = this.getItemPanelToolbar();
-		if (toolbar && params && params.title != null) {
+		if (toolbar && params && params.title != null && this.getItemPanel().getApp() !== ZCS.constant.APP_CONTACTS) {
 			toolbar.setTitle(params.title);
 		}
 	},

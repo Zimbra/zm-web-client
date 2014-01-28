@@ -25,34 +25,35 @@ Ext.define('ZCS.view.contacts.ZtPhoneField', {
 	xtype: 'phonecontainer',
 
 	config: {
-		type: 'phone'
+		type: 'phone',
+		addButtonLabel: ZtMsg.contactFormButtonAddPhoneNumber
 	},
 
 	getFieldConfig: function(fieldId) {
-
 		return {
 			layout: 'hbox',
-			width: '80%',
+			width: '100%',
 			items: [
 				{
 					xtype:          'textfield',
 					component:      { type: 'tel' },
 					placeHolder:    ZtMsg.phone,
 					name:           'phone',
-					flex:           1
+					flex:           3
 				},
 				{
 					xtype:      'selectfield',
 					name:       'phoneType',
-					flex:       0,
+					flex:       1,
 					options:    [
 						{text: ZtMsg.mobile,    value: 'mobile'},
 						{text: ZtMsg.home,      value: 'home'},
 						{text: ZtMsg.work,      value: 'work'},
 						{text: ZtMsg.other,     value: 'other'}
-					]
+					],
+					cls: 		'contact-form-multifield-select-field'
 				}
-			].concat(this.getAddRemoveConfig(fieldId))
+			].reverse().concat(this.getRemoveConfig(fieldId)).reverse()
 		};
 	}
 });

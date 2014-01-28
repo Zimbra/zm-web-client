@@ -32,15 +32,20 @@ Ext.define('ZCS.model.address.ZtAutoCompleteReader', {
 	getDataFromNode: function(node) {
 
 		var data = {},
-			emailAddressObj = ZCS.model.mail.ZtEmailAddress.fromEmail(node.email);
+            isGroup = data.isGroup = node.isGroup;
 
-		data.email = emailAddressObj.get('email');
-		data.name = emailAddressObj.get('name');
-		data.displayName = node.display || emailAddressObj.get('displayName');
-		data.matchType = node.type;
-		data.isGroup = (node.isGroup === '1');
+        if (!isGroup) {
+			var emailAddressObj = ZCS.model.mail.ZtEmailAddress.fromEmail(node.email);
+	        if (emailAddressObj) {
+	            data.email = emailAddressObj.get('email');
+	            data.name = emailAddressObj.get('name');
+	            data.displayName = emailAddressObj.get('displayName');
+	        }
+        } else {
+            data.displayName = node.display;
+        }
 		data.ranking = node.ranking;
-
+        data.matchType = node.type;
 		data.contactId = node.id;
 		data.folderId = node.l;
 
@@ -59,27 +64,19 @@ Ext.define('ZCS.model.address.ZtAutoCompleteReader', {
 			ids = {};
 
 		Ext.each(root, function(node) {
-			var nodeId;
-
-			if (node.id) {
-				nodeId = node.type + '-' + node.id;
-			} else {
-				//The server did not provide an id for this record.
-				nodeId = null;
-			}
-
-			//For some reason, this API returns the same exact contact record multiple times. Filtering them out.
+			var nodeId = node.id ? [ node.type, node.id ].join(ZCS.constant.ID_JOIN) : null;
+			// For some reason, this API can return the same record multiple times. Filtering them out.
 			if (!ids[nodeId]) {
 
-				//Only set a flag if the node has a server provided id, if not, let ext generate one.
+				// Only set a flag if the node has a server provided id, if not, let ext generate one.
 				if (nodeId) {
 					ids[nodeId] = true;
 				}
 				records.push({
-					clientId: null,
-					id: nodeId,
-					data: this.getDataFromNode(node),
-					node: node
+					clientId:   null,
+					id:         nodeId,
+					data:       this.getDataFromNode(node),
+					node:       node
 				});
 			}
 		}, this);

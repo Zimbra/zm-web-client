@@ -23,6 +23,10 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
 
 	extend: 'ZCS.controller.ZtItemController',
 
+    mixins: {
+        contactFieldsMenuable: 'ZCS.common.ZtContactFieldsMenuable'
+    },
+
 	config: {
 
 		models: ['ZCS.model.contacts.ZtContact'],
@@ -31,7 +35,9 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
 		refs: {
 			// event handlers
 			itemPanelToolbar:   'appview #' + ZCS.constant.APP_CONTACTS + 'itempanel titlebar',
+            convTitleBar:       'appview #' + ZCS.constant.APP_CONTACTS + 'itempanel #itemTitleOnlyBar',
 			itemPanel:          'appview #' + ZCS.constant.APP_CONTACTS + 'itempanel',
+			contactActionsMenu: 'list[itemId=contactActionsMenu]',
 
 			// other
 			contactView:    ZCS.constant.APP_CONTACTS + 'itemview',
@@ -46,12 +52,24 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
 	            multiAddRemove: 'doMultiAddRemove'
             },
             itemPanelToolbar: {
-                'delete':   'doButtonDelete',
                 edit:       'doEdit'
+            },
+	        '.moveview': {
+		        contactAssignment: 'saveItemMove'
+	        },
+	        '.tagview': {
+		        contactAssignment: 'saveItemTag'
+	        },
+	        contactView: {
+		        tagTap:     'showMenu'
+	        },
+            contactActionsMenu: {
+                itemtap:    'onMenuItemSelect'
             }
         },
 
-		composeMode: null
+		composeMode:    null,
+		app:            ZCS.constant.APP_CONTACTS
 	},
 
     launch: function() {
@@ -72,23 +90,26 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
 		// Make sure the organizer button stays...
 		ZCS.app.fireEvent('updatelistpanelToggle', this.getOrganizerTitle(), ZCS.session.getActiveApp());
 
-		var store = this.getStore();
+		var store = this.getStore(),
+			contactType = contact.get('contactType');
+
 		store.load({
-			contactId: contact.getId(),
-			isGroup: contact.get('isGroup'),
+			contactId:      contact.getId(),
+			contactType:    contactType,
+			nickname:       contact.get('nickname'),    // for DLs, which are fetched by nickname rather than ID
+
 			callback: function(records, operation, success) {
 				var contact = records[0];
 				if (success) {
 					this.getContactView().showItem(contact);
 					this.updateToolbar({
-						title:      contact.get('longName'),
-						isGroup:    contact.get('isGroup')
+						title:      Ext.String.htmlEncode(contact.get('longName')),
+						isMultiple: contact.get('isMultiple')
 					});
 				}
 			},
 			scope: this
 		});
-
 	},
 
 	/**
@@ -113,8 +134,21 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
 			this.showButton(button.op, !hideAll);
 		}, this);
 
-		this.showButton(ZCS.constant.OP_EDIT, !hideAll && !params.isGroup)
+		this.showButton(ZCS.constant.OP_EDIT, !hideAll && !params.isMultiple)
 	},
+
+    updateTitle: function (params) {
+        var convTitleBar = this.getConvTitleBar();
+
+        if (convTitleBar && params && params.title != null) {
+            convTitleBar.setHtml(params.title);
+            if (params.title) {
+                convTitleBar.show();
+            } else {
+                convTitleBar.hide();
+            }
+        }
+    },
 
 	/**
      * Displays the contact form to either create a new contact or edit an existing one.
@@ -122,7 +156,7 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
 	 * @param {String}      mode        ZCS.constant.OP_COMPOSE or ZCS.constant.OP_EDIT
 	 * @param {ZtContact}   contact     contact used to fill in form fields (optional)
      */
-    showContactForm: function(mode, contact) {
+	showContactForm: function(mode, contact) {
 
 		var me = this,
 			panel = this.getContactPanel(),
@@ -130,7 +164,6 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
 			isEdit = (mode === ZCS.constant.OP_EDIT);
 
 		this.setComposeMode(mode);
-		panel.resetForm();
 
 		// Set the title of the form
 		panel.down('titlebar').setTitle(isEdit ? ZtMsg.editContact : ZtMsg.createContact);
@@ -140,30 +173,46 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
 			this.populateForm(contact);
 		}
 
-        panel.show({
-            type:       'slide',
-            direction:  'up',
-            duration:   250
-        });
-    },
+		me.unhideContactForm();
+	},
 
- 	/**
-     * Hides the contact form.
-     */
-    hideContactForm: function() {
-        var panel = this.getContactPanel();
+	unhideContactForm: function () {
+		if (Ext.os.deviceType === "Phone") {
+			this.getContactPanel().element.dom.style.removeProperty('display');
+		} else {
+			this.getContactPanel().show({
+				type: 'fadeIn',
+				duration: 250
+			});
+		}
+	},
+
+	/**
+	 * Hides the contact form.
+	 */
+	hideContactForm: function() {
+		var panel = this.getContactPanel();
+
+		if (Ext.os.deviceType === "Phone") {
+			panel.element.dom.style.setProperty('display', 'none');
+		} else {
+			panel.hide({
+				type: 'fadeOut',
+				duration: 250
+			});
+		}
+
 		panel.resetForm();
-		panel.hide();
 		this.setComposeMode(null);
-    },
+	},
 
 	/**
 	 * Moves the contact to Trash, or deletes it if it's already in Trash.
 	 */
-	doDelete: function(contact) {
+	doDelete: function() {
 
-        contact = contact || this.getItem();
-        var folderId, toastMsg, op;
+        var contact = this.getItem(),
+            folderId, toastMsg, op;
 
         if (contact.get('folderId') === ZCS.constant.ID_TRASH) {
             op = 'delete';
@@ -188,7 +237,31 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
         });
     },
 
-    /**
+	/**
+	 * Launches a move assignment view.
+	 */
+	doMove: function(actionParams) {
+		this.doAssignmentView(null, ZCS.constant.ORG_FOLDER);
+	},
+
+	/**
+	 * Launches a tag assignment view.
+	 */
+	doTag: function(actionParams) {
+		this.doAssignmentView(null, ZCS.constant.ORG_TAG);
+	},
+
+	/**
+	 * Launches an assignment view
+	 *
+	 * @param {ZtContact}   item        contact being moved or tagged
+	 * @param {String}      type        ZCS.constant.ORG_*
+	 */
+	doAssignmentView: function(item, type) {
+		ZCS.app.getAssignmentController().showAssignmentView(item || this.getItem(), type, this.getApp(), this);
+	},
+
+	/**
      * Hides the contact form
      */
     doCancel : function() {
@@ -229,6 +302,12 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
 
         if (newContact) {
             if (mode === ZCS.constant.OP_EDIT) {
+                // Bug fix: 83280. Copy the image object from original contact to new contact
+                var imageObj = this.getItem().get('image');
+                if (imageObj) {
+                    newContact.set('image', imageObj);
+                }
+
 	            changedAttrs = ZCS.model.contacts.ZtContact.getChangedAttrs(this.getItem(), newContact);
                 this.modifyContact(newContact, changedAttrs);
             }
@@ -250,47 +329,60 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
     doEdit: function() {
         var contact = this.getItem();
         if (contact.get('isGroup')) {
-	        Ext.Msg.alert(ZtMsg.error, ZtMsg.errorEditContactGroup);
+            Ext.Msg.alert(ZtMsg.error, ZtMsg.errorEditContactGroup);
         }
         else {
             this.showContactForm(ZCS.constant.OP_EDIT, contact);
         }
     },
 
-	/**
-	 * Adds or removes an instance of one of the multiply-occurring contact fields (such as Email).
-	 *
-	 * @param {Button}  button      plus or minus button
-	 */
-	doMultiAddRemove: function(button) {
+    /**
+     * Adds or removes an instance of one of the multiply-occurring contact fields (such as Email).
+     *
+     * @param {Button}  button      plus or minus button
+     */
+    doMultiAddRemove: function(button) {
+        var idParams = ZCS.util.getIdParams(button.getItemId()),
+            type = idParams.type,
+            action = idParams.action,
+            container = this.getContactPanel().down(type + 'container');
 
-		var idParams = ZCS.util.getIdParams(button.getItemId()),
-			type = idParams.type,
-			action = idParams.action,
-			container = this.getContactPanel().down(type + 'container');
 
-		if (container) {
-			if (action === 'add') {
-				container.addField();
-			}
-			else if (action === 'remove') {
-				container.removeField(idParams.fieldId);
-			}
+		if (container && action === 'remove') {
+			container.removeField(idParams.fieldId);
+            return;
 		}
-	},
 
-    getContactPanel: function() {
+        var willShowOptionsOnTap = button.getWillShowOptionsOnTap();
+        
+        if (willShowOptionsOnTap) {
+            var fieldList = Ext.Array.clone(container.getOptionalFields());
+            while (true) {
+                var stop = true;
+                for (var i = 0; i < fieldList.length; i += 1) {
+                    option = fieldList[i];
+                    if (container.getVisibleFields().indexOf(option.order) != -1) {
+                        stop = false;
+                        Ext.Array.remove(fieldList, option);
+                        break;
+                    }
+                }
+                if (stop) break;
+            }
 
-        if (!this.contactPanel) {
-            this.contactPanel = Ext.create('ZCS.view.contacts.ZtContactForm');
-            Ext.Viewport.add(this.contactPanel);
+            button.setAvailableOptionalFields(fieldList);
+
+            if (fieldList.length) {
+                this.showFieldsMenu(button);
+            }
         }
 
-        return this.contactPanel;
-    },
+        if (container && action === 'add' && type !== "name" && type !== "company") {
+            container.addField();
+        }
+	},
 
     modifyContact: function(newContact, changedAttrs) {
-
         var contact = this.getItem(),
             me = this,
             data = {
@@ -311,9 +403,7 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
 
 		var	panel = this.getContactPanel(),
 			form = panel.down('formpanel'),
-			value, formField,
-			extraNameFieldsShown = false,
-			extraJobFieldsShown = false;
+			value, formField;
 
 	    // Create and populate the simple attrs
 	    Ext.each(ZCS.constant.CONTACT_FIELDS, function(attr) {
@@ -321,16 +411,27 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
 		    if (value) {
 			    formField = form.down('field[name=' + attr + ']');
 			    if (formField) {
-				    if (ZCS.constant.IS_EXTRA_NAME_FIELD[attr] && !extraNameFieldsShown) {
-					    panel.showNameFields();
-					    extraNameFieldsShown = true;
+                    formField.setValue(value);
+                } else {
+				    if (ZCS.constant.IS_EXTRA_NAME_FIELD[attr]) {
+                        var container = panel.down('namecontainer');
+                        container.addField({
+                            mandatory: false,
+                            value: value,
+                            name: attr,
+                            order: ZCS.constant.NAME_FIELDS_ORDER[attr]
+                        });
 				    }
-				    if (ZCS.constant.IS_EXTRA_JOB_FIELD[attr] && !extraJobFieldsShown) {
-					    panel.showJobFields();
-					    extraJobFieldsShown = true;
+				    if (ZCS.constant.IS_EXTRA_JOB_FIELD[attr]) {
+                        var container = panel.down('companycontainer');
+                        container.addField({
+                            mandatory: false,
+                            value: value,
+                            name: attr,
+                            order: ZCS.constant.COMPANY_FIELDS_ORDER[attr]
+                        });
 				    }
-				    formField.setValue(value);
-			    }
+                }
 		    }
 	    }, this);
 
@@ -339,9 +440,7 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
 	    Ext.each(ZCS.constant.CONTACT_MULTI_FIELDS, function(multiField) {
 		    container = panel.down(multiField + 'container');
 		    Ext.each(contact.get(multiField), function(field, index) {
-			    if (index > 0) {
-				    container.addField();
-			    }
+			    container.addField();
 		    }, this);
 	    }, this);
 
@@ -379,10 +478,11 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
     createContact: function(contact, callback, scope) {
 
 	    var me = this,
-		    folder = ZCS.session.getCurrentSearchOrganizer();
+		    curApp = ZCS.session.getActiveApp(),
+		    folder = (curApp === ZCS.constant.APP_CONTACTS) ? ZCS.session.getCurrentSearchOrganizer() : null;
 
         contact.save({
-	        folderId: folder ? folder.get('itemId') : null,
+	        folderId: folder ? folder.get('zcsId') : null,
             success: function() {
 	            me.hideContactForm();
                 ZCS.app.fireEvent('showToast', ZtMsg.contactCreated);
@@ -465,8 +565,50 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
 	 * Contact was modified, so re-display it.
 	 */
 	handleModifyNotification: function(item, modify) {
-		if (this.getItem() === item) {
+
+		if (this.getItem() !== item) {
+			return;
+		}
+		if (modify._attrs != null || modify.t != null) {
 			this.getContactView().showItem(item);
 		}
+	},
+
+	/**
+	 * Moves the contact to an address book.
+	 *
+	 * @param {ZtOrganizer}     folder      target folder
+	 * @param {ZtMailItem}      item        item to move
+	 */
+	saveItemMove: function (folder, item) {
+
+		var folderId = folder.get('zcsId'),
+			me = this,
+			data = {
+				op:         'move',
+				folderId:   folderId
+			};
+
+		this.performOp(item, data, function() {
+			me.processMove(item, folderId);
+		});
+	},
+
+	processMove: function(item, folderId) {
+
+		var contactName = Ext.String.htmlEncode(item.get('longName')),
+			addressBook = ZCS.cache.get(folderId).get('displayName');
+
+		ZCS.app.fireEvent('showToast', Ext.String.format(ZtMsg.moveContact, contactName, addressBook));
+	},
+
+	/**
+	 * Applies the given tag to the given contact.
+	 *
+	 * @param {ZtOrganizer}     tag     tag to apply or remove
+	 * @param {ZtMailitem}      item    item to tag or untag
+	 */
+	saveItemTag: function (tag, item) {
+		this.tagItem(item, tag.get('name'), false);
 	}
 });

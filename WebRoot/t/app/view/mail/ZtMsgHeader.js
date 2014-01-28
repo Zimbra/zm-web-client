@@ -37,6 +37,13 @@ Ext.define('ZCS.view.mail.ZtMsgHeader', {
 		}
 	},
 
+	setReadOnly: function (isReadOnly) {
+		var header = Ext.fly(this.element.query('.zcs-msgHdr-link')[0]);
+		if (header) {
+			header.setVisible(!isReadOnly);
+		}
+	},
+
 	/**
 	 * Displays the message header in one of three states: collapsed, expanded, or detailed.
 	 *
@@ -54,22 +61,44 @@ Ext.define('ZCS.view.mail.ZtMsgHeader', {
 		var data = msg.getData(),
 			tpl = ZCS.view.mail.ZtMsgHeader.TEMPLATE[state];
 
-		// set up tags with just the data we need, and an associated DOM ID
-		if (data.tags) {
-			data.tags = Ext.Array.map(Ext.Array.clean(data.tags), function(tag) {
-				var tagData = Ext.copyTo({}, tag, 'itemId,color,name,displayName');
-				tagData.id = ZCS.util.getUniqueId(tagData);
-				return tagData;
-			});
-		}
+		data.tags = ZCS.model.ZtItem.getTagData(data.tags);
 
 		this.setMsg(msg);
 
-		var addrObjs = msg.get('addresses'),
-			fromAddrs = addrObjs[ZCS.constant.FROM],
-			fromAddr = fromAddrs && fromAddrs[0];
+		var addrs = data.addrs = ZCS.model.mail.ZtMailItem.convertAddressModelToObject(msg.get('addresses'));
 
-		data.addrs = ZCS.model.mail.ZtMailItem.convertAddressModelToObject(addrObjs);
+		function getFirstAddr(type) {
+			return addrs[type] && addrs[type][0];
+		}
+
+		var from = getFirstAddr(ZCS.constant.FROM),
+			sender = getFirstAddr(ZCS.constant.SENDER),
+			byWayOf = getFirstAddr(ZCS.constant.RESENT_FROM),
+			onBehalfOf;
+
+		// if we have no FROM address and msg is in an outbound folder, assume current user is the sender
+		if (!from && ZCS.isOutboundFolderId(msg.get('folderId'))) {
+			var fromObj = Ext.create(ZCS.model.mail.ZtEmailAddress, {
+				type:   ZCS.constant.FROM,
+				email:  ZCS.session.getSetting(ZCS.constant.SETTING_FROM_ADDRESS),
+				name:   ZCS.session.getSetting(ZCS.constant.SETTING_FROM_NAME)
+			});
+			from = ZCS.model.mail.ZtMailItem.convertAddressModelToObject(fromObj);
+		}
+
+		if (sender) {
+			onBehalfOf = from;
+			from = sender;
+		}
+		from = from || {};
+
+		data.fromName = from.name || ZtMsg.unknown;
+		data.fromId = from.id;
+		data.onBehalfOfName = (onBehalfOf && onBehalfOf.address !== from.address) ? onBehalfOf.name : '';
+		data.onBehalfOfId = data.onBehalfOfName ? onBehalfOf.id : '';
+		data.byWayOfName = (byWayOf && byWayOf.address !== from.address) ? byWayOf.name : '';
+		data.byWayOfNameId = data.byWayOfNameName ? byWayOfName.id : '';
+
 		if (state === ZCS.constant.HDR_EXPANDED) {
 			data.recipients = Ext.Array.map(Ext.Array.clean([].concat(data.addrs.TO, data.addrs.CC)), function(addr) {
 				return addr.name;
@@ -77,7 +106,7 @@ Ext.define('ZCS.view.mail.ZtMsgHeader', {
 		}
 
 		// Get contact image if it has one
-        var contact = ZCS.cache.get(fromAddr && fromAddr.get('email'), 'email'),
+        var contact = ZCS.cache.get(from && from.address, 'email'),
             imageUrl = contact && ZCS.model.contacts.ZtContact.getImageUrl(contact, contact.getId());
 
         data.imageStyle = imageUrl ? 'background-image: url(' + imageUrl + ')' : '';
@@ -86,7 +115,7 @@ Ext.define('ZCS.view.mail.ZtMsgHeader', {
 	}
 }, function (thisClass) {
 	thisClass.TEMPLATE = {};
-	thisClass.TEMPLATE[ZCS.constant.HDR_COLLAPSED] = Ext.create('Ext.XTemplate', ZCS.template.CollapsedMsgHeader);
-	thisClass.TEMPLATE[ZCS.constant.HDR_EXPANDED] = Ext.create('Ext.XTemplate', ZCS.template.ExpandedMsgHeader);
-	thisClass.TEMPLATE[ZCS.constant.HDR_DETAILED] = Ext.create('Ext.XTemplate', ZCS.template.DetailedMsgHeader);
+	thisClass.TEMPLATE[ZCS.constant.HDR_COLLAPSED] = ZCS.template.createNestableTemplate('CollapsedMsgHeader');
+	thisClass.TEMPLATE[ZCS.constant.HDR_EXPANDED] = ZCS.template.createNestableTemplate('ExpandedMsgHeader');
+	thisClass.TEMPLATE[ZCS.constant.HDR_DETAILED] = ZCS.template.createNestableTemplate('DetailedMsgHeader');
 });

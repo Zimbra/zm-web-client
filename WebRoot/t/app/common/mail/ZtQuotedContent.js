@@ -26,30 +26,6 @@ Ext.define('ZCS.common.mail.ZtQuotedContent', {
 	alternateClassName: 'ZCS.quoted',
 
 	/**
-	 * Lazily creates a test hidden IFRAME and writes the given HTML to it, then returns the HTML element.
-	 *
-	 * @private
-	 */
-	writeToTestIframeDoc: function(html) {
-
-		var idoc = this.htmlContentIframeDoc;
-		if (!idoc) {
-			var iframe = Ext.DomHelper.append(document.body, {
-				tag: 'iframe',
-				id: 'zcs-test-iframe',
-				cls: 'zcs-offscreen'
-			});
-			idoc = this.htmlContentIframeDoc = iframe.contentDocument;
-		}
-		html = ZCS.htmlutil.hideCidImages(html);
-		idoc.open();
-		idoc.write(html);
-		idoc.close();
-
-		return idoc.childNodes[0];
-	},
-
-	/**
 	 * Analyze the text and return what appears to be original (as opposed to quoted) content. We
 	 * look for separators commonly used by mail clients, as well as prefixes that indicate that
 	 * a line is being quoted.
@@ -280,7 +256,7 @@ Ext.define('ZCS.common.mail.ZtQuotedContent', {
 			text = text.replace(this.REGEX_SCRIPT, '');
 		}
 
-		var htmlNode = this.writeToTestIframeDoc(text);
+		var htmlNode = ZCS.htmlutil.getHtmlDom(text);
 		var ctxt = {
 			curType:	null,
 			count:		{},
@@ -328,14 +304,17 @@ Ext.define('ZCS.common.mail.ZtQuotedContent', {
 
 		ctxt.nodeCount++;
 
-		var nodeName = el.nodeName.toLowerCase(),
+		var nodeType = el.nodeType,
+			nodeName = el.nodeName.toLowerCase(),
 			processChildren = true,
 			type, testLine;
+
         //<debug>
 		Ext.Logger.verbose('html', Ext.String.repeat('&nbsp;&nbsp;&nbsp;&nbsp;', ctxt.level) + nodeName + ((nodeName === '#text' && /\S+/.test(el.nodeValue) ? ' - ' + el.nodeValue.substr(0, 20) : '')));
         //</debug>
+
 		// Text node: test against our regexes
-		if (nodeName === '#text') {
+		if (nodeType === Node.TEXT_NODE) {
 			if (!ZCS.constant.REGEX_NON_WHITESPACE.test(el.nodeValue)) {
 				return;
 			}
@@ -389,62 +368,66 @@ Ext.define('ZCS.common.mail.ZtQuotedContent', {
 					}
 				}
 			}
+		}
+		else if (nodeType === Node.ELEMENT_NODE) {
+			el.normalize();
 
 			// HR: look for a couple different forms that are used to delimit quoted content
-		} else if (nodeName === 'hr') {
-			// see if the HR is ours, or one commonly used by other mail clients such as Outlook
-			if (el.id === ZCS.quoted.HTML_SEP_ID || (el.size === '2' && el.width === '100%' && el.align === 'center')) {
-				type = this.SEP_STRONG;
-				ctxt.sepNode = el;	// mark for removal
-			}
+			if (nodeName === 'hr') {
+				// see if the HR is ours, or one commonly used by other mail clients such as Outlook
+				if (el.id === ZCS.quoted.HTML_SEP_ID || (el.size === '2' && el.width === '100%' && el.align === 'center')) {
+					type = this.SEP_STRONG;
+					ctxt.sepNode = el;	// mark for removal
+				}
 
 			// PRE: treat as one big line of text (should maybe go line by line)
-		} else if (nodeName === 'pre') {
-			var text = Ext.String.htmlDecode(ZCS.htmlutil.stripTags(el.innerHTML));
-			type = this.getLineType(text);
+			} else if (nodeName === 'pre') {
+				var text = Ext.String.htmlDecode(ZCS.htmlutil.stripTags(el.innerHTML));
+				type = this.getLineType(text);
 
 			// BR: ignore
-		} else if (nodeName === 'br') {
-			return;
+			} else if (nodeName === 'br') {
+				return;
 
 			// DIV: check for Outlook class used as delimiter
-		} else if (nodeName === 'div') {
-			if (el.className === 'OutlookMessageHeader' || el.className === 'gmail_quote') {
-				type = this.SEP_STRONG;
-				ctxt.sepNode = el;	// mark for removal
-			}
-			else if (el.outerHTML.toLowerCase().indexOf('border-top') !== -1) {
-				var styleObj = window.getComputedStyle(el);
-				if (styleObj && styleObj.borderTopWidth && parseInt(styleObj.borderTopWidth) > 0) {
-					type = this.LINE;
-					ctxt.lineNode = el;
+			} else if (nodeName === 'div') {
+				if (el.className === 'OutlookMessageHeader' || el.className === 'gmail_quote') {
+					type = this.SEP_STRONG;
+					ctxt.sepNode = el;	// mark for removal
 				}
-			}
+				else if (el.outerHTML.toLowerCase().indexOf('border-top') !== -1) {
+					var styleObj = window.getComputedStyle(el);
+					if (styleObj && styleObj.borderTopWidth && parseInt(styleObj.borderTopWidth) > 0) {
+						type = this.LINE;
+						ctxt.lineNode = el;
+					}
+				}
 
 			// SPAN: check for Outlook ID used as delimiter
-		} else if (nodeName === 'span') {
-			if (el.id === 'OLK_SRC_BODY_SECTION') {
-				type = this.SEP_STRONG;
-				ctxt.sepNode = el;	// mark for removal
-			}
+			} else if (nodeName === 'span') {
+				if (el.id === 'OLK_SRC_BODY_SECTION') {
+					type = this.SEP_STRONG;
+					ctxt.sepNode = el;	// mark for removal
+				}
 
 			// IMG: treat as original content
-		} else if (nodeName === 'img') {
-			type = this.UNKNOWN;
+			} else if (nodeName === 'img') {
+				type = this.UNKNOWN;
 
 			// BLOCKQUOTE: treat as quoted section
-		} else if (nodeName === 'blockquote') {
-			type = this.QUOTED;
-			ctxt.toRemove.push(el);
-			ctxt.hasQuoted = true;
-			processChildren = false;
+			} else if (nodeName === 'blockquote') {
+				type = this.QUOTED;
+				ctxt.toRemove.push(el);
+				ctxt.hasQuoted = true;
+				processChildren = false;
 
-		} else if (nodeName === 'script') {
-			throw new Error('SCRIPT tag found in this.traverseOriginalHtmlContent');
+			} else if (nodeName === 'script') {
+				throw new Error('SCRIPT tag found in this.traverseOriginalHtmlContent');
 
-			// node types to ignore
-		} else if (this.IGNORE_NODE[nodeName]) {
-			return;
+				// node types to ignore
+			} else if (this.IGNORE_NODE[nodeName]) {
+				return;
+			}
 		}
 
 		// see if we've found a new type

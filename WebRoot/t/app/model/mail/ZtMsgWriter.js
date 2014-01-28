@@ -43,13 +43,13 @@ Ext.define('ZCS.model.mail.ZtMsgWriter', {
 			methodJson = json.Body.SearchConvRequest;
 
 			var curFolder = ZCS.session.getCurrentSearchOrganizer(),
-				curFolderId = curFolder && curFolder.get('itemId'),
+				curFolderId = curFolder && curFolder.get('zcsId'),
 				fetch = (curFolderId === ZCS.constant.ID_DRAFTS) ? 'all' : 'u1';
 
 			Ext.apply(methodJson, {
 				cid:    convId,
 				fetch:  fetch,
-				sortBy: 'dateDesc',
+				sortBy: ZCS.constant.DATE_DESC,
 				offset: 0,
 				limit:  100,
 				recip:  '2',
@@ -79,6 +79,7 @@ Ext.define('ZCS.model.mail.ZtMsgWriter', {
 				parts = m.mp = [],                  // Note: should only ever be one top-level part
 				mime = msg.getMime(),
 				origAtt = msg.get('origAttachments'),
+				attachments = msg.get('attachments'),
 				draftId = msg.get('draftId');
 
 			// recipient addresses
@@ -123,6 +124,23 @@ Ext.define('ZCS.model.mail.ZtMsgWriter', {
 				};
 			}
 
+			if (attachments && attachments.length > 0) {
+				if (!m.attach) {
+					m.attach = {
+						aid: ""
+					};
+				} else {
+					m.attach.aid = "";
+				}
+
+				Ext.each(attachments, function (attachment) {
+					m.attach.aid += attachment.aid + ",";
+				});
+
+				m.attach.aid = m.attach.aid.slice(0, -1);
+
+			}
+
 			if (itemData.isInviteReply) {
 				Ext.apply(methodJson, {
 					compNum:            0,
@@ -160,6 +178,7 @@ Ext.define('ZCS.model.mail.ZtMsgWriter', {
 						read:       '1',
 						html:       '1',
 						needExp:    '1',
+                        ridZ:       itemData.apptView ? itemData.ridZ : '',
 						max:        itemData.noMax ? 0 : ZCS.constant.MAX_MESSAGE_SIZE * 1000,
 						header:     ZCS.constant.ADDITIONAL_MAIL_HEADERS
 					}
@@ -183,9 +202,25 @@ Ext.define('ZCS.model.mail.ZtMsgWriter', {
 	 */
 	addMimePart: function(parts, part) {
 
-		var node = {
-		   ct: part.get('contentType')
-		};
+  		var node;
+
+  		//If this is an attachment in a related part, we need a different format.
+  		if (part.get('contentDisposition') === ZCS.constant.OBJ_ATTACHMENT) {
+  			node = {
+  				ci: part.get('contentId').replace('<', '').replace('>', ''),
+  				attach: {
+  					mp: [{
+  						"mid": part.data.mid,
+  						"part": part.get('part')
+  					}]
+  				}
+  			}
+  		} else {
+			node = {
+			   ct: part.get('contentType')
+			};
+		}
+
 		parts.push(node);
 
 		var content = part.getContent();

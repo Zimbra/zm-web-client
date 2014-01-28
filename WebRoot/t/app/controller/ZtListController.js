@@ -59,7 +59,10 @@ Ext.define('ZCS.controller.ZtListController', {
 			itemPanel: {
 				showMenu: null
 			}
-		}
+		},
+
+		search: null,   // the ZtSearch that generated this controller's data
+		folder: null    // the ZtOrganizer that was tapped, if any
 	},
 
 	/**
@@ -79,8 +82,9 @@ Ext.define('ZCS.controller.ZtListController', {
 		});
 
 		this.getStore().load({
-			query: defaultQuery,
-			callback: Ext.Function.bind(this.storeLoaded, this, [defaultQuery, null], 0)
+			query:      defaultQuery,
+			callback:   this.storeLoaded,
+			scope:      this
 		});
 
 		ZCS.app.on('applicationSwitch', function (newApp) {
@@ -88,6 +92,8 @@ Ext.define('ZCS.controller.ZtListController', {
 				this.updateTitlebar(newApp);
 			}
 		}, this);
+
+		ZCS.app.on('notifyFolderChange', this.handleFolderChange, this);
 	},
 
 	/**
@@ -110,9 +116,18 @@ Ext.define('ZCS.controller.ZtListController', {
 	 * @param {boolean}     show        if true, show the overview
 	 */
 	doShowFolders: function(show) {
-		//TODO: consider removing control of this to the app view controller...
-		//      only downside is not being able to differentiate between apps at that point
-		ZCS.app.fireEvent('showOverviewPanel');
+
+		var curFolder = ZCS.session.getCurrentSearchOrganizer(),
+			lastFolder = ZCS.session.getLastSearchOrganizer();
+
+		if (!curFolder && lastFolder) {
+			// user is looking at search results, tapped the Back button - show last organizer visited
+			this.doSearch(lastFolder.getQuery(), lastFolder);
+		}
+		else {
+			// user is looking at organizer contents, show the overview
+			ZCS.app.fireEvent('showOverviewPanel');
+		}
 	},
 
 	/**
@@ -137,7 +152,7 @@ Ext.define('ZCS.controller.ZtListController', {
 	 */
 	doSearch: function(query, folder) {
 
-		if (query.indexOf('$cmd:') === 0) {
+		if (query.indexOf('$cmd:') === 0 || query.indexOf('$set:') === 0) {
 			ZCS.common.ZtClientCmdHandler.handle(query.substr(5), this.getStore().getProxy());
 			return;
 		}
@@ -161,7 +176,8 @@ Ext.define('ZCS.controller.ZtListController', {
 		this.getStore().load({
 			query:      query,
 			folder:     folder,
-			callback:   Ext.Function.bind(this.storeLoaded, this, [query, folder], 0)
+			callback:   this.storeLoaded,
+			scope:      this
 		});
 
 		ZCS.app.fireEvent('hideOverviewPanel');
@@ -171,24 +187,28 @@ Ext.define('ZCS.controller.ZtListController', {
 	 * After the search has run, remember it as the one backing the current list,
 	 * and set the title in the top toolbar.
 	 *
-	 * @param {string}      query       search query that produced these results
-	 * @param {ZtOrganizer} folder      overview folder that was tapped (optional)
 	 * @param {array}       records
 	 * @param {Operation}   operation
 	 * @param {boolean}     success
 	 */
-	storeLoaded: function(query, folder, records, operation, success) {
+	storeLoaded: function(records, operation, success) {
 
-		query = query || operation.config.query;
+		var app = this.getApp(),
+			folder = operation.config.folder;
 
-		var app = this.getApp();
+		this.setSearch(operation.config.search);
+		this.setFolder(folder);
 
 		if (success) {
 
-			// If we got here via tap on a saved search in the overview, remember it so we can show its name
 			if (folder) {
-				var searchId = (folder.get('type') === ZCS.constant.ORG_SAVED_SEARCH) ? folder.get('itemId') : null;
+				// If we got here via tap on a saved search in the overview, remember it so we can show its name
+				var searchId = (folder.get('type') === ZCS.constant.ORG_SEARCH) ? folder.get('zcsId') : null;
 				ZCS.session.setSetting(ZCS.constant.SETTING_CUR_SEARCH_ID, searchId, app);
+			}
+			else {
+				// If the user ran a search, deselect the selected folder since it no longer matches results
+				this.getFolderList().getActiveItem().deselectAll();
 			}
 
 			this.updateTitlebar();
@@ -218,6 +238,61 @@ Ext.define('ZCS.controller.ZtListController', {
 			return;
 		}
 
-		titlebar.setTitle(this.getOrganizerTitle(null, true, app));
+		// If the user is looking at an organizer, show a menu icon to go to overview.
+		// If the user is looking at search results, show a back button to go to last organizer.
+		var orgTitle = this.getOrganizerTitle(null, true, app),
+			curFolder = ZCS.session.getCurrentSearchOrganizer(),
+			navButtonIcon = curFolder ? 'organizer' : 'back';
+
+		titlebar.down('button').setIconCls(navButtonIcon);
+		titlebar.setTitle(orgTitle);
+	},
+
+	removeItem: function(item, isSwipeDelete) {
+
+		var list = this.getListView(),
+			store = list.getStore(),
+			currentIndex = store.indexOf(item),
+			toSelect;
+
+		store.remove(item);
+		var count = store.getCount();
+		if (!isSwipeDelete) {
+			toSelect = store.getAt(currentIndex < count ? currentIndex : count - 1);
+			if (toSelect) {
+				list.select(toSelect, false);
+			}
+			else {
+				this.getItemController().clear();
+			}
+		}
+	},
+
+	/**
+	 * Update list panel title if the current folder changed in some way, since the title
+	 * often reflects something about the folder (number of items, for example).
+	 */
+	handleFolderChange: function(folder, notification) {
+
+		this.callParent(arguments);
+		var	curOrganizer = ZCS.session.getCurrentSearchOrganizer();
+		if (curOrganizer && curOrganizer.get('zcsId') === folder.get('zcsId')) {
+			this.updateTitlebar();
+			ZCS.app.fireEvent('updatelistpanelToggle', this.getOrganizerTitle(), ZCS.session.getActiveApp());
+		}
+	},
+
+	/**
+	 * Re-runs the current search.
+	 */
+	redoSearch: function() {
+
+		var curSearch = ZCS.session.getSetting(ZCS.constant.SETTING_CUR_SEARCH, this.getApp()),
+			query = curSearch && curSearch.getQuery(),
+			folder = ZCS.session.getCurrentSearchOrganizer();
+
+		if (query) {
+			this.doSearch(query, folder);
+		}
 	}
 });

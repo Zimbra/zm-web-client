@@ -30,8 +30,28 @@ Ext.define('ZCS.model.ZtItem', {
 
 		fields: [
 			{ name: 'type',     type: 'string' },   // ZCS.constant.ITEM_*
-			{ name: 'itemId',   type: 'string' },   // ID on server
-			{ name: 'tags',		type: 'auto' }      // list of tag data objects
+			{ name: 'zcsId',    type: 'string' },   // ID on server
+			{ name: 'folderId', type: 'string' },   // folder that contains this item
+			{ name: 'tags',		type: 'auto' },     // list of tag data objects
+
+			// account ID (will be user account for local items)
+			{
+				name:       'accountId',
+				type:       'string',
+				convert:    function(value, record) {
+					return ZCS.util.parseId(record.get('zcsId')).accountId;
+				}
+			},
+
+			// an item is shared (remote) if its account ID is not the current user
+			{
+				name:       'isShared',
+				type:       'string',
+				convert:    function(value, record) {
+					// Ext doesn't support using get('accountId') here
+					return ZCS.util.parseId(record.get('zcsId')).accountId !== ZCS.session.getAccountId();
+				}
+			}
 		],
 
 		proxy: {
@@ -44,7 +64,7 @@ Ext.define('ZCS.model.ZtItem', {
 				destroy : 'POST'
 			},
 			headers: {
-				'Content-Type': "application/soap+xml; charset=utf-8"
+				'Content-Type': 'application/soap+xml; charset=utf-8'
 			},
 			// prevent Sencha from adding junk to the URL
 			pageParam: false,
@@ -57,23 +77,45 @@ Ext.define('ZCS.model.ZtItem', {
 	statics: {
 
 		/**
-		 * If the node has a list of tag IDs, return a list their ZtOrganizer tag objects.
+		 * If the node has a list of tag IDs, return a list of their ZtOrganizer tag objects.
 		 *
 		 * @param {Array}  tagIds   comma-separated list of tag IDs
 		 * @return {Array}  list of ZtOrganizer
 		 */
-		parseTags: function(tagIds) {
+		parseTags: function(tagIds, app) {
 
 			return !tagIds ? [] : Ext.Array.map(tagIds.split(','), function(tagId) {
-				var tag = ZCS.cache.get(tagId);
+
+				var tags = ZCS.cache.get(tagId),
+					tag = Array.isArray(tags) ? tags[0] : tags;
+
 				if (tag) {
 					return tag.getData();
 				} else {
 					//<debug>
-                    Ext.Logger.warn('Encountered an item with a tag that is not in cache and thus will not display.');
+                    Ext.Logger.warn('Could not find tag with ID ' + id + ' in the item cache');
                     //</debug>
 				}
 			});
+		},
+
+		/**
+		 * Sets up tags with just the data we need, and an associated DOM ID.
+		 *
+		 * @param {Array}   tags        list of tags
+		 * @return {Array}  list of tag data objects
+		 */
+		getTagData: function(tags) {
+			var tagDataList;
+			if (tags && tags.length) {
+				tagDataList = Ext.Array.map(Ext.Array.clean(tags), function(tag) {
+					var tagData = Ext.copyTo({}, tag, 'zcsId,color,name,displayName');
+					tagData.objType = ZCS.constant.OBJ_TAG;
+					tagData.id = ZCS.util.getUniqueId(tagData);
+					return tagData;
+				});
+			}
+			return tagDataList;
 		}
 	},
 
@@ -99,7 +141,44 @@ Ext.define('ZCS.model.ZtItem', {
 	handleModifyNotification: function(modify) {
 
 		if (modify.t != null) {
-			this.set('tags', ZCS.model.ZtItem.parseTags(modify.t));
+			var type = this.get('type'),
+				app = ZCS.constant.APP_FOR_TYPE[type];
+
+			this.set('tags', ZCS.model.ZtItem.parseTags(modify.t, app));
 		}
+	},
+
+	/**
+	 * Returns true if the item is in the given folder.
+	 *
+	 * @param folderId
+	 * @return {boolean}   true if the item is in the given folder
+	 */
+	isInFolder: function(folderId) {
+		return this.get('folderId') === folderId;
+	},
+
+	/**
+	 * Returns true if this item has the given tag.
+	 *
+	 * @param {ZtOrganizer|string}     tag     a tag
+	 * @return {Boolean}
+	 */
+	hasTag: function(tag) {
+
+		var targetName = tag instanceof ZCS.model.ZtOrganizer ? tag.get('name') : tag,
+			tags = this.get('tags'),
+			ln = tags ? tags.length : 0,
+			i, tag, tagName;
+
+		for (i = 0; i < ln; i++) {
+			tag = tags[i];
+			tagName = tag instanceof ZCS.model.ZtOrganizer ? tag.get('name') : tag.name;
+			if (tagName === targetName) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 });

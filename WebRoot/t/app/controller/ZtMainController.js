@@ -27,30 +27,32 @@ Ext.define('ZCS.controller.ZtMainController', {
 		'Ext.MessageBox'
 	],
 
+	mixins: {
+		organizerNotificationHandler: 'ZCS.common.ZtOrganizerNotificationHandler'
+	},
+
 	config: {
 
 		refs: {
 			tabBar: 'tabbar',
-			mainView: 'ztmain'
+			mainView: 'ztmain',
+			settingsMenu: 'list[itemId=settingsMenu]'
 		},
 
 		control: {
 			tabBar: {
-				showMenu: 'doShowMenu'
+				showMenu: 'showMenu'
 			},
 			mainView: {
 				activeitemchange: function (tabPanel, tab, oldTab) {
 				    ZCS.app.fireEvent('applicationSwitch', tab.config.app);
 				    ZCS.session.setActiveApp(tab.config.app);
-				}
+				},
+				logout:     'doLogout'
+			},
+			settingsMenu: {
+				itemtap:    'onMenuItemSelect'
 			}
-		},
-
-		// settings menu
-		menuConfigs: {
-			settings: [
-				{ label: ZtMsg.logout, action: ZCS.constant.OP_LOGOUT, listener: 'doLogout' }
-			]
 		}
 	},
 
@@ -60,6 +62,21 @@ Ext.define('ZCS.controller.ZtMainController', {
 		Ext.Viewport.add(Ext.create('ZCS.view.ZtMain'));
 		ZCS.app.on('serverError', this.handleError, this);
 		window.onbeforeunload = this.unloadHandler;
+
+		// handle organizer notifications
+		ZCS.app.on('notifyFolderCreate', this.handleOrganizerCreate, this);
+		ZCS.app.on('notifySearchCreate', this.handleOrganizerCreate, this);
+		ZCS.app.on('notifyTagCreate', this.handleOrganizerCreate, this);
+
+		ZCS.app.on('notifyFolderDelete', this.handleOrganizerDelete, this);
+		ZCS.app.on('notifySearchDelete', this.handleOrganizerDelete, this);
+		ZCS.app.on('notifyTagDelete', this.handleOrganizerDelete, this);
+
+		ZCS.app.on('notifyFolderChange', this.handleOrganizerChange, this);
+		ZCS.app.on('notifySearchChange', this.handleOrganizerChange, this);
+		ZCS.app.on('notifyTagChange', this.handleOrganizerChange, this);
+
+		ZCS.app.on('notifyRefresh', this.handleRefresh, this);
 	},
 
 	/**
@@ -132,20 +149,23 @@ Ext.define('ZCS.controller.ZtMainController', {
 	 */
 	handleError: function(fault) {
 
-		var error = fault && fault.Detail && fault.Detail.Error && fault.Detail.Error.Code,
-			msg = ZtMsg[error] || ZtMsg.unknownError,
-			title = ZtMsg[error + '.title'] || ZtMsg.error,
+		var error = fault && fault.Detail && fault.Detail.Error,
+			code = error && error.Code,
+			info = error && error.a,
+			msg = ZtMsg[code] || ZtMsg.unknownError,
+			title = ZtMsg[code + '_title'] || ZtMsg.error,
 			args;
 
-		if (error === 'mail.SEND_ABORTED_ADDRESS_FAILURE') {
-			args = Ext.Array.map(fault.Detail.Error.a, function(node) {
+		// Propagate any error-related info into args for the error msg. See soap.txt for details.
+		if (info && info.length) {
+			args = Ext.Array.map(info, function(node) {
 				return node._content;
 			});
 		}
 
-		var text = Ext.String.format(msg, args);
+		var text = args ? Ext.String.format(msg, args) : msg;
 
-		if (ZCS.constant.IS_FATAL_ERROR[error]) {
+		if (ZCS.constant.IS_FATAL_ERROR[code]) {
 			if (this.pollId) {
 				clearTimeout(this.pollId);
 				this.pollId = null;
@@ -176,5 +196,57 @@ Ext.define('ZCS.controller.ZtMainController', {
 		if (isDirty) {
 			return ZtMsg.appExitWarning;
 		}
+	},
+
+	/**
+	 * Returns a list of known overviews.
+	 * @return {Array}  list of ZtOverview
+	 * @private
+	 */
+	getOverviewList: function() {
+		return Ext.ComponentQuery.query(ZCS.constant.ORG_LIST_OVERVIEW);
+	},
+
+	/**
+	 * An organizer has just been created. We need to add it to our session data,
+	 * and insert it into the organizer list component.
+	 *
+	 * @param {ZtOrganizer}     organizer       undefined (arg not passed)
+	 * @param {Object}          notification    JSON with organizer data
+	 */
+	handleOrganizerCreate: function(organizer, notification) {
+		ZCS.session.handleOrganizerCreate(organizer, notification);
+		this.addOrganizer(this.getOverviewList(), notification);
+	},
+
+	/**
+	 * An organizer has just changed. If it is a move, we need to relocate it within
+	 * the organizer nested list.
+	 *
+	 * @param {ZtOrganizer}     organizer       organizer that changed
+	 * @param {Object}          notification    JSON with new data
+	 */
+	handleOrganizerChange: function(organizer, notification) {
+		organizer.handleModifyNotification(notification);
+		ZCS.session.handleOrganizerChange(organizer, notification);
+		this.modifyOrganizer(this.getOverviewList(), organizer, notification);
+	},
+
+	/**
+	 * An organizer has been hard-deleted. Remove it from overview stores.
+	 *
+	 * @param {ZtOrganizer}     organizer          organizer that changed
+	 */
+	handleOrganizerDelete: function(organizer, notification) {
+		organizer.handleDeleteNotification();
+		ZCS.session.handleOrganizerDelete(organizer, notification);
+		this.removeOrganizer(this.getOverviewList(), organizer);
+	},
+
+	/**
+	 * We got a <refresh> block. Reload the overviews.
+	 */
+	handleRefresh: function() {
+		this.reloadOverviews(this.getOverviewList());
 	}
 });

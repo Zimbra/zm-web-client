@@ -48,8 +48,8 @@ Ext.define('ZCS.view.ZtListView', {
 			noMoreRecordsText: '',
 			loadMoreText: ZtMsg.loadMore
 		}, {
-            xclass: 'ZCS.common.ZtPullRefresh',
-            pullRefreshText: 'Pull down to refresh'
-        }]
+			xclass: 'ZCS.common.ZtPullRefresh',
+			pullText: 'Pull down to refresh'
+		}]
 	}
 });

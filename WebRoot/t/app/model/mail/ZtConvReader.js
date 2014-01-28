@@ -29,7 +29,7 @@ Ext.define('ZCS.model.mail.ZtConvReader', {
 		var data = {},
 			nowMs = Ext.Date.now();
 
-		data.itemId = node.id;
+		data.zcsId = node.id;
 		data.type = ZCS.constant.ITEM_CONVERSATION;
 		data.subject = ZCS.mailutil.stripSubjectPrefixes(node.su);
 		data.numMsgs = node.n;
@@ -40,6 +40,15 @@ Ext.define('ZCS.model.mail.ZtConvReader', {
 		data.addresses = ZCS.model.mail.ZtMailItem.convertAddressJsonToModel(node.e);
 		data.senders = ZCS.mailutil.getSenders(data.addresses);
 		data.dateStr = ZCS.util.getRelativeDateString(node.d, nowMs);
+
+		// search results will tell us ID and folder for each msg in the conv (as of 8.5 server)
+		if (node.m && node.m.length > 0) {
+			var reader = ZCS.model.mail.ZtMailMsg.getProxy().getReader();
+			data.msgs = [];
+			Ext.each(node.m, function(msgData) {
+				data.msgs.push(new ZCS.model.mail.ZtMailMsg(reader.getDataFromNode(msgData), msgData.id));
+			});
+		}
 
 		return data;
 	}

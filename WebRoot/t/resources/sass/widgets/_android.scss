@@ -1,0 +1,59 @@
+@include icon('arrow_down', 'G', 'ZimbraTouch');
+
+/* Floating List color overrides */
+
+$floating-list-background-color: #EFEFEF;
+$floating-list-text-color: #000;
+$floating-list-divider-color: #BBB;
+$floating-list-radius: 0em;
+
+.zcs-floating-list {
+	font-size: 1.1em;
+	@include border-radius($floating-list-radius);
+
+	.x-button {
+		border-color: $floating-list-background-color;
+		@include border-radius($floating-list-radius);
+
+		.x-button-label {
+			color: $floating-list-text-color;
+		}
+	}
+
+
+	.x-scroll-container {
+		.x-inner {
+			.x-list-item {
+				background-color: $floating-list-background-color;
+				color: $floating-list-text-color;
+				text-align: left;
+
+				&.x-item-disabled {
+					color: $medium-grey;
+				}
+
+				.x-list-item-body {
+					padding: 1em;
+				}
+			}
+
+			// Apply to all non-hidden menu items
+			.x-list-item:not(.x-item-hidden) {
+				border-top-right-radius: $floating-list-radius;
+				border-top-left-radius: $floating-list-radius;
+
+				.x-dock-horizontal {
+				}
+			}
+			// Remove from all but first
+			.x-list-item:not(.x-item-hidden) ~ .x-list-item {
+				border-top: 1px solid $medium-grey;
+			}
+
+			.x-list-item:last-child {
+				border-bottom-right-radius: $floating-list-radius;
+				border-bottom-left-radius: $floating-list-radius;
+			}
+		}
+	}
+}

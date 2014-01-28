@@ -37,7 +37,7 @@ Ext.define('ZCS.common.ZtTemplate', {
 
 	loadTemplates: function(callback) {
 		Ext.Ajax.request({
-			url: '/t/resources/templates/zcs.tpl',
+			url: 'resources/templates/zcs.tpl',
 			async: false,
 			success: function(response){
 				var text = response.responseText,
@@ -66,6 +66,21 @@ Ext.define('ZCS.common.ZtTemplate', {
 				if (callback) {
 					callback();
 				}
+			}
+		});
+	},
+
+	/**
+	 * Creates a template and adds a function to it that can be used to include another template.
+	 *
+	 * @param {String}  tplName     name of template
+	 * @returns {Ext.XTemplate}
+	 */
+	createNestableTemplate: function(tplName) {
+		return Ext.create('Ext.XTemplate', ZCS.template[tplName], {
+			includeTpl: function(tpl, values) {
+				tpl = Ext.isString(tpl) ? Ext.create('Ext.XTemplate', ZCS.template[tpl]) : tpl;
+				return tpl.apply(values);
 			}
 		});
 	}

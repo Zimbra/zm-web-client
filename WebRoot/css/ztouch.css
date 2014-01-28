@@ -1,0 +1,215 @@
+/*
+ * ***** BEGIN LICENSE BLOCK *****
+ * Zimbra Collaboration Suite Web Client
+ * Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ *
+ * The contents of this file are subject to the Zimbra Public License
+ * Version 1.4 ("License"); you may not use this file except in
+ * compliance with the License.  You may obtain a copy of the License at
+ * http://www.zimbra.com/license.
+ *
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * ***** END LICENSE BLOCK *****
+ */
+
+
+/** Styles typically assume iOS tablets by default and override to other styles as necessary **/
+
+/* Common Styles for Login and Splash */
+
+BODY {
+	font-family:"Helvetica Neue", Helvetica, sans-serif;
+	font-size:1em;
+	margin:0;
+}
+
+BODY.x-android {
+	font-family:Roboto, "Droid Sans", sans-serif;
+}
+
+.LoginScreen,
+.SplashScreen {
+	background-color:white;
+	height:100%;
+	left:0;
+	min-height:640px;
+	overflow:hidden;
+	position:absolute;
+	top:0;
+	width:100%;
+}
+
+.x-phone .LoginScreen {
+	min-height:500px;
+}
+
+.LoginScreen .center,
+.SplashScreen .center {
+	left:50%;
+	margin-left:-150px;
+	overflow:visible;
+	position:absolute;
+	width:300px;
+}
+
+.x-phone .LoginScreen H1,
+.x-phone .SplashScreen H1 {
+	margin-top:1.5em;
+	margin-bottom:2em;
+}
+
+.LoginScreen H1,
+.SplashScreen H1 {
+	margin-top:1em;
+	margin-bottom:2em;
+}
+
+.ImgLoginBanner {
+	background:url('/t/resources/images/login_banner.png') no-repeat bottom;
+	cursor:pointer;
+	height:85px;
+	width:300px;
+}
+
+.x-phone .ImgLoginBanner {
+	margin-left:15%;
+	zoom:0.7;
+}
+
+/* Login Screen */
+
+.x-android .LoginScreen .zLoginFieldDiv {
+	border-color:#999;
+	border-style:solid;
+	border-width:0 1px 1px;
+	border-radius:0px;
+	height:.5em;
+	margin-bottom:1.75em;
+	margin-top:3em;
+	overflow:visible;
+	position:relative;
+}
+
+.LoginScreen .zLoginField {
+	border:1px solid #CCC;
+	border-radius:4px;
+	height:1.25em;
+	font-size:1.25em;
+	margin-bottom:0.75em;
+	-webkit-appearance:caret;
+}
+
+.x-android .LoginScreen .zLoginField {
+	border:none;
+	height:1.25em;
+	font-size:1.25em;
+	outline-color:transparent;
+	position:absolute;
+	top:-1.25em;
+	left:5px;
+	right:5px;
+}
+
+.x-phone .LoginScreen .zLoginField {
+	font-size:1em;
+}
+
+.LoginButton {
+	border:none;
+	background-color:transparent;;
+	color:#999; /* disabled color by default */
+	font-size:1.5em;
+	line-height:2em;
+	margin-top:1em;
+	-webkit-appearance:none;
+}
+
+.x-phone .LoginButton {
+	font-size:1.25em;
+	margin-top:0;
+}
+
+.LoginButton.enabled {
+	color:#0087C3;
+}
+
+.x-android .LoginButton {
+	border:1px solid #CCC;
+	border-radius:0px;
+	background-color:#CCC;
+	color:#999;
+	font-size:1.5em;
+	line-height:2em;
+	margin-top:0.25em;
+	outline-color:transparent;
+	width:100%;
+	-webkit-appearance:none;
+}
+
+.x-android .LoginButton.enabled {
+	border-color:#999;
+	color:#333;
+}
+
+.x-android .LoginButton.enabled:active {
+	background-color:#F15922;
+	border-color:#F15922;
+	color:white;
+}
+
+.LoginScreen #ZLoginErrorPanel {
+	background-color:#FFFF99;
+	border:none;
+	border-radius:8px;
+	margin:0 0 1.25em;
+	padding:0.5em 1em;
+}
+
+.x-phone .LoginScreen #ZLoginErrorPanel {
+	font-size:.75em;
+	margin-left:6%;
+	width:80%;
+}
+
+.LoginScreen .Footer {
+	bottom:0;
+	position:absolute;
+	text-align:center;
+	width:100%;
+	z-index:10;
+}
+
+.LoginScreen .copyright {
+	color:#999;
+	cursor:default;
+	font-size:.8em;
+	margin:0 1em 1em;
+}
+
+.x-phone .LoginScreen .copyright {
+	font-size:.7em;
+}
+
+/* Splash Screen */
+
+.SplashScreenProgressBar {
+	background:no-repeat center bottom;
+	margin-top:4em;
+	text-align:center;
+}
+
+/* must keep these separate as an override will load both and the wrong one may show momentarily */
+.x-ios .SplashScreenProgressBar {
+	background-image:url('/t/resources/images/progress_ios.gif');
+	height:64px;
+	margin-left:118px;
+	width:64px;
+}
+
+.x-android .SplashScreenProgressBar {
+	background-image:url('/t/resources/images/progress_android.gif');
+	height:4px;
+	margin-left:22px;
+	width:256px;
+}

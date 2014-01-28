@@ -2,7 +2,7 @@
 @import 'widgets/mail/ztinvite';
 @import 'compass/css3/box';
 
-$linkColor: #336699;
+$linkColor: $base-color;
 $linkColorActive: red;
 $linkTextSize: 0.9em;
 
@@ -29,9 +29,18 @@ $linkTextSize: 0.9em;
 	}
 }
 
+.x-portrait .zcs-msglist .x-list-emptytext {
+	margin-left: 220px;
+}
+
 .zcs-msg-body-text {
-	font-size: 1.1em;
-	font-family: monospace;
+	font-size: 1em;
+	font-family: sans-serif;
 	word-wrap: break-word;
 	-webkit-user-select: text;
+}
+
+.x-form-label span {
+	font-size: .95em;
+	font-weight: bold;
 }

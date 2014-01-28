@@ -25,6 +25,10 @@
 <c:set var="useTablet" value="${ua.isTouchiPad or (ua.isOsAndroid and not ua.isMobile)}"/>
 <c:set var="trimmedUserName" value="${fn:trim(param.username)}"/>
 
+<c:if test="${useTablet}">
+    <jsp:forward page="/public/loginTouch.jsp"/>
+</c:if>
+
 <%--'virtualacctdomain' param is set only for external virtual accounts--%>
 <c:if test="${not empty param.username and not empty param.virtualacctdomain}">
     <%--External login email address are mapped to internal virtual account--%>
@@ -324,6 +328,8 @@ if (application.getInitParameter("offlineMode") != null)  {
     <c:set var="version" value="${initParam.zimbraCacheBusterVersion}"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=1">
     <meta name="description" content="<fmt:message key="zimbraLoginMetaDesc"/>">
+	<meta name="apple-mobile-web-app-capable" content="yes" />
+	<meta name="apple-mobile-web-app-status-bar-style" content="black" />
     <link  rel="stylesheet" type="text/css" href="<c:url value='/css/common,login,zhtml,skin.css'>
 		<c:param name="skin"	value="${skin}" />
 		<c:param name="v"		value="${version}" />

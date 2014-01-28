@@ -57,7 +57,7 @@ Ext.define('Ext.picker.Date', {
     extend: 'Ext.picker.Picker',
     xtype: 'datepicker',
     alternateClassName: 'Ext.DatePicker',
-    requires: ['Ext.DateExtras'],
+    requires: ['Ext.DateExtras', 'Ext.util.InputBlocker'],
 
     /**
      * @event change
@@ -478,6 +478,6 @@ Ext.define('Ext.picker.Date', {
         }
 
         this.hide();
-        this.inputBlocker.unblockInputs();
+        Ext.util.InputBlocker.unblockInputs();
     }
 });

@@ -22,9 +22,14 @@
  * @author Macy Abbey
  */
 Ext.define('ZCS.common.ZtPullRefresh', {
-	extend: 'Ext.plugin.PullRefresh',
+    extend: 'Ext.plugin.PullRefresh',
 
-	 /**
+    init: function () {
+        this.callParent(arguments);
+        this.getList().getStore().getProxy().on('exception', this.resetAfterLatestFetched, this);
+    },
+
+    /**
      * @private
      * Called after fetchLatest has finished grabbing data. Matches any returned records against what is already in the
      * Store. Remove records that are no longer present, add new records.
@@ -32,12 +37,8 @@ Ext.define('ZCS.common.ZtPullRefresh', {
     onLatestFetched: function(operation) {
         var store      = this.getList().getStore(),
             oldRecords = store.getData(),
-            newRecords = operation.getRecords(),
+            newRecords = operation.getRecords ? operation.getRecords() : [],
             length     = newRecords.length,
-            list       = this.getList(),
-            scroller   = list.getScrollable().getScroller(),
-            scrollerOffsetX = scroller.position.x,
-            scrollerOffsetY = scroller.position.y,
             recordToInsert,
             toInsert   = [],
             newRecordCollection = new Ext.util.MixedCollection(),
@@ -50,7 +51,7 @@ Ext.define('ZCS.common.ZtPullRefresh', {
             if (oldRecord) {
                 oldRecord.set(newRecord.getData());
             } else {
-            	newRecord.properIndex = i;
+                newRecord.properIndex = i;
                 toInsert.push(newRecord);
             }
 
@@ -58,31 +59,39 @@ Ext.define('ZCS.common.ZtPullRefresh', {
         }
 
         for (i = 0; i < newRecords.length; i += 1) {
-        	newRecordCollection.add(newRecords[i].getId(), newRecord);
+            newRecordCollection.add(newRecords[i].getId(), newRecord);
         }
 
         //Remove non-matching old records.
         for (i = 0; i < oldRecords.length; i += 1) {
-        	oldRecord = oldRecords.getAt(i);
-        	newRecord = newRecordCollection.getByKey(oldRecord.getId());
+            oldRecord = oldRecords.getAt(i);
+            newRecord = newRecordCollection.getByKey(oldRecord.getId());
 
-        	if (!newRecord) {
-        		store.remove(oldRecord);
-        	}
+            if (!newRecord) {
+                store.remove(oldRecord);
+            }
         }
 
         for (i = 0; i < toInsert.length; i += 1) {
-        	recordToInsert = toInsert[i];
-        	store.insert(recordToInsert.properIndex, recordToInsert);
+            recordToInsert = toInsert[i];
+            store.insert(recordToInsert.properIndex, recordToInsert);
         }
+
+        this.resetAfterLatestFetched();
+    },
+
+    resetAfterLatestFetched: function () {
+        var list       = this.getList(),
+            scroller   = list.getScrollable().getScroller(),
+            scrollerOffsetX = scroller.position.x,
+            scrollerOffsetY = scroller.position.y;
 
         scroller.scrollTo(scrollerOffsetX, scrollerOffsetY);
 
-
-        this.setViewState('loaded');
+        this.setState('loaded');
         this.fireEvent('latestfetched');
         if (this.getAutoSnapBack()) {
             this.snapBack();
         }
     }
-})
+});

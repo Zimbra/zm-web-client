@@ -32,8 +32,23 @@ Ext.define('ZCS.model.mail.ZtConv', {
 	config: {
 
 		fields: [
-			{ name: 'senders', type: 'string' },
-			{ name: 'numMsgs',  type: 'int' }
+			{ name: 'senders',  type: 'string' },
+			{ name: 'numMsgs',  type: 'int' },
+
+			// number of messages user will see in reading pane (which excludes Junk/Trash/Drafts)
+			{
+				name:       'numMsgsShown',
+				type:       'int',
+				convert:    function(value, record) {
+					var numMsgs = 0;
+					Ext.each(record.getMessages(), function(msg) {
+						if (ZCS.model.mail.ZtConv.shouldShowMessage(msg)) {
+							numMsgs++;
+						}
+					});
+					return numMsgs;
+				}
+			}
 		],
 
 		proxy: {
@@ -48,7 +63,66 @@ Ext.define('ZCS.model.mail.ZtConv', {
 			writer: 'convwriter'
 		},
 
-		messages: []
+		messages:       [],
+		folderHash:     {}
+	},
+
+	statics: {
+
+		/**
+		 * Returns true if the message is not in one of the folders we normally omit from conversation viewing (unless
+		 * the user is currently viewing that folder).
+		 *
+		 * Note: for an unloaded conv, this relies on an 8.5+ server.
+		 *
+		 * @param   {ZtMailMsg}     msg
+		 * @returns {boolean}
+		 */
+		shouldShowMessage: function(msg) {
+
+			var curFolder = ZCS.session.getCurrentSearchOrganizer(),
+				curFolderId = curFolder ? curFolder.get('zcsId') : '',
+				msgFolderId = msg instanceof ZCS.model.mail.ZtMailMsg ? msg.get('folderId') : msg.l,
+				localId = ZCS.util.localId(msgFolderId);
+
+			return (msgFolderId === curFolderId) || !ZCS.constant.CONV_HIDE[localId];
+		}
+	},
+
+	constructor: function(data, id, raw) {
+
+		// do this first so that 'numMsgsShown' can be calculated during construction
+		if (data && data.msgs && data.msgs.length > 0) {
+			this.setMessages(data.msgs);
+		}
+
+		// need to do this or get a JS error handling search results (see ZtItem ctor)
+		return this.callParent(arguments) || this;
+	},
+
+	updateMessages: function(messages) {
+
+		var folderHash = {},
+			folderId;
+
+		Ext.each(messages, function(message) {
+			folderId = message.get('folderId');
+			if (folderId) {
+				folderHash[folderId] = true;
+			}
+		}, this);
+
+		this.setFolderHash(folderHash);
+	},
+
+	/**
+	 * Returns true if any msg in this conv is in the given folder.
+	 *
+	 * @param {string}  folderId
+	 * @return {boolean}    true if any msg in this conv is in the given folder
+	 */
+	isInFolder: function(folderId) {
+		return !!(this.getFolderHash()[folderId]);
 	},
 
 	handleModifyNotification: function(modify) {
