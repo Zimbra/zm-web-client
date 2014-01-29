@@ -579,6 +579,7 @@ function() {
 		this._addMenuListeners(this._draftsActionMenu);
 		this._draftsActionMenu.addPopdownListener(this._menuPopdownListener);
 		this._setupTagMenu(this._draftsActionMenu);
+		appCtxt.notifyZimlets("onDraftsActionMenuInitialized", [this, this._draftsActionMenu]);
 	}
 };
 
@@ -916,6 +917,7 @@ function(ev) {
             this._actionEv.address = address;
 		this._setTagMenu(this._draftsActionMenu);
         this._resetOperations(this._draftsActionMenu, items.length);
+		appCtxt.notifyZimlets("onMailActionMenuResetOperations", [this, this._draftsActionMenu]);
 		this._draftsActionMenu.popup(0, ev.docX, ev.docY);
 	}
 	else if (!appCtxt.isExternalAccount() && email && items.length == 1 &&
@@ -927,6 +929,7 @@ function(ev) {
 		this._actionEv.address = address;
 		this._setupSpamButton(this._participantActionMenu);
 		this._resetOperations(this._participantActionMenu, items.length);
+		appCtxt.notifyZimlets("onMailActionMenuResetOperations", [this, this._participantActionMenu]);
 		this._enableFlags(this._participantActionMenu);
 		this._enableMuteUnmute(this._participantActionMenu);
 		var imItem = this._participantActionMenu.getOp(ZmOperation.IM);
@@ -963,6 +966,7 @@ function(ev) {
 		this._setupSpamButton(actionMenu);
 		this._enableFlags(actionMenu);
 		this._enableMuteUnmute(actionMenu);
+		appCtxt.notifyZimlets("onMailActionMenuResetOperations", [this, actionMenu]);
 		actionMenu.popup(0, ev.docX, ev.docY);
 		if (ev.ersatz) {
 			// menu popped up via keyboard nav
