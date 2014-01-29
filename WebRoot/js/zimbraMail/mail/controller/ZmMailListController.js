@@ -905,6 +905,8 @@ function(ev) {
 		? ev.detail
 		: ((ev.item && ev.item.isZmMailMsg) ? ev.item.getAddress(AjxEmailAddress.FROM) : null);
 
+	var email = address && address.getAddress();
+
 	var item = (items && items.length == 1) ? items[0] : null;
 	if (this.isDraftsFolder() || (item && item.isDraft && item.type != ZmId.ITEM_CONV)) { //note that we never treat a conversation as a draft for actions. See also bug 64494
 		// show drafts menu
@@ -916,7 +918,7 @@ function(ev) {
         this._resetOperations(this._draftsActionMenu, items.length);
 		this._draftsActionMenu.popup(0, ev.docX, ev.docY);
 	}
-	else if (!appCtxt.isExternalAccount() && address && items.length == 1 &&
+	else if (!appCtxt.isExternalAccount() && email && items.length == 1 &&
 			(appCtxt.get(ZmSetting.CONTACTS_ENABLED) && (ev.field == ZmItem.F_PARTICIPANT || ev.field == ZmItem.F_FROM)))
 	{
 		// show participant menu
@@ -931,7 +933,7 @@ function(ev) {
 		var contactsApp = appCtxt.getApp(ZmApp.CONTACTS);
 		if (contactsApp) {
 			// first check if contact is cached, and no server call is needed
-			var contact = contactsApp.getContactByEmail(address.getAddress());
+			var contact = contactsApp.getContactByEmail(email);
 			if (contact) {
 				this._handleResponseGetContact(imItem, address, ev, contact);
 			} else {
@@ -945,7 +947,7 @@ function(ev) {
 				}
 				this._participantActionMenu.popup(0, ev.docX, ev.docY);
 				var respCallback = new AjxCallback(this, this._handleResponseGetContact, [imItem, address, ev]);
-				contactsApp.getContactByEmail(address.getAddress(), respCallback);
+				contactsApp.getContactByEmail(email, respCallback);
 			}
 		} else if (imItem) {
 			// since contacts app is disabled, we won't be making a server call
