@@ -1805,6 +1805,10 @@ function(draftType, callback, result) {
 	}
 //	this._action = ZmOperation.DRAFT;
 
+	if (draftType === ZmComposeController.DRAFT_TYPE_MANUAL) {
+		this._setCancelText(ZmMsg.close)
+	}
+
 	if (callback) {
 		callback.run(result);
 	}
@@ -2115,7 +2119,16 @@ function() {
 	} else {
         this._composeView.enableAttachButton(true);
     }
+
+	this._setCancelText(this._action === ZmId.OP_DRAFT ? ZmMsg.close : ZmMsg.cancel);
+
 	appCtxt.notifyZimlets("resetToolbarOperations", [this._toolbar, 1]);
+};
+
+ZmComposeController.prototype._setCancelText =
+function(text) {
+	var cancel = this._toolbar.getButton(ZmOperation.CANCEL);
+	cancel.setText(text);
 };
 
 ZmComposeController.prototype._canSaveDraft =
