@@ -191,7 +191,7 @@ function(hasMore) {
 	// offline issue. The problem is during initial sync when more
 	// messages come in: the forward navigation arrow doesn't get enabled.
 	
-	if (hasMore && this._list) {
+	if (hasMore) {
 		// bug: 30546
 		this._list.setHasMore(hasMore);
 		this._resetNavToolBarButtons();
@@ -257,14 +257,6 @@ function(actionCode, ev) {
 			if (button && button.getEnabled()) {
 				this._paginate(this._currentViewId, false);
 				result = true;
-			}
-			break;
-
-		// Esc pops search results tab
-		case ZmKeyMap.CANCEL:
-			var ctlr = this.isSearchResults && this.searchResultsController;
-			if (ctlr) {
-				ctlr._closeListener();
 			}
 			break;
 
@@ -551,7 +543,7 @@ function() {
 	var contact = this._actionEv.contact;
 	if (contact) {
 		if (contact.isDistributionList()) {
-			this._editListener(this._actionEv, contact);
+			this._editListener(this._actionEv, false, contact);
 			return;
 		}
 		if (contact.isLoaded) {
@@ -592,15 +584,8 @@ function(resp, contact) {
  */
 ZmListController.prototype._dragListener =
 function(ev) {
-
-	if (this.isSearchResults && ev.action == DwtDragEvent.DRAG_START) {
-		this.searchResultsController.showOverview(true);
-	}
-	else if (ev.action == DwtDragEvent.SET_DATA) {
+	if (ev.action == DwtDragEvent.SET_DATA) {
 		ev.srcData = {data: ev.srcControl.getDnDSelection(), controller: this};
-	}
-	else if (this.isSearchResults && (ev.action == DwtDragEvent.DRAG_END || ev.action == DwtDragEvent.DRAG_CANCEL)) {
-		this.searchResultsController.showOverview(false);
 	}
 };
 
@@ -657,51 +642,16 @@ function(ev) {
 
 /**
  * Sets text to "add" or "edit" based on whether a participant is a contact or not.
- * contact - the contact (or null)
- * extraMenu - see ZmMailListController.prototype._setContactText
- *
+ * 
  * @private
  */
 ZmListController.prototype._setContactText =
-function(contact, extraMenu) {
-	var menus = [this.getActionMenu()];
-	if (extraMenu) {
-		menus.push(extraMenu);
-	}
-	ZmListController.setContactTextOnMenus(contact, menus);
+function(isContact) {
+	var newOp = isContact ? ZmOperation.EDIT_CONTACT : ZmOperation.NEW_CONTACT;
+	var newText = isContact ? null : ZmMsg.AB_ADD_CONTACT;
+	ZmOperation.setOperation(this.getCurrentToolbar(), ZmOperation.CONTACT, newOp, ZmMsg.AB_ADD_CONTACT);
+	ZmOperation.setOperation(this.getActionMenu(), ZmOperation.CONTACT, newOp, newText);
 };
-
-/**
- * Sets text to "add" or "edit" based on whether a participant is a contact or not.
- * contact - the contact (or null)
- * menus - array of one or more menus
- *
- * @private
- */
-ZmListController.setContactTextOnMenus =
-function(contact, menus) {
-	menus = AjxUtil.toArray(menus);
-	var newOp = ZmOperation.EDIT_CONTACT;
-	var newText = null; //no change ("edit contact")
-
-	if (contact && contact.isDistributionList()) {
-		newText = ZmMsg.AB_EDIT_DL;
-	}
-	else if (contact && contact.isGroup()) {
-		newText = ZmMsg.AB_EDIT_GROUP;
-	}
-	else if (!contact || contact.isGal) {
-		// if there's no contact, or it's a GAL contact - there's no "edit" - just "add".
-		newText = ZmMsg.AB_ADD_CONTACT;
-		newOp = ZmOperation.NEW_CONTACT;
-	}
-
-	for (var i = 0; i < menus.length; i++) {
-		var menu = menus[i];
-		ZmOperation.setOperation(menu, ZmOperation.CONTACT, newOp, newText);
-	}
-};
-
 
 /**
  * This method gets overloaded if folder id is retrieved another way
@@ -734,18 +684,6 @@ function() {
 		return false;
 	}
 	return folder.nId ==  ZmFolder.ID_DRAFTS;
-};
-
-/**
- * returns true if the search folder is drafts
- */
-ZmListController.prototype.isOutboxFolder =
-function() {
-    var folder = this._getSearchFolder();
-    if (!folder) {
-        return false;
-    }
-    return folder.nId == ZmFolder.ID_OUTBOX;
 };
 
 /**
@@ -1289,15 +1227,12 @@ function() {
 
 	var size = this._getItemCount();
 	if (size == null) { return ""; }
-
-	var lv = this._view[this._currentViewId],
-		list = lv && lv._list,
-		type = lv._getItemCountType(),
-		total = this._getNumTotal(),
-		num = total || size,
-		countKey = 'type' + AjxStringUtil.capitalizeFirstLetter(ZmItem.MSG_KEY[type]),
-        typeText = type ? AjxMessageFormat.format(ZmMsg[countKey], num) : "";
-
+	var lv = this._view[this._currentViewId];
+	var list = lv && lv._list;
+	var type = lv._getItemCountType();
+	var total = this._getNumTotal();
+	var num = total || size;
+    var typeText = type ? AjxMessageFormat.format(ZmMsg[ZmItem.COUNT_KEY[type]], num) : "";
 	if (total && (size != total)) {
 		return AjxMessageFormat.format(ZmMsg.itemCount1, [size, total, typeText]);
 	} else {
@@ -1423,13 +1358,8 @@ function(params, actionParams) {
 		if (contResult) {
 			if (lv.allSelected) {
 				// items beyond page were acted on, give user a total count
-				if (actionParams.actionTextKey) {
-					actionParams.actionSummary = ZmList.getActionSummary({
-						actionTextKey:  actionParams.actionTextKey,
-						numItems:       this._continuation.totalItems,
-						type:           contResult.type,
-						actionArg:      actionParams.actionArg
-					});
+				if (actionParams.actionText) {
+					actionParams.actionSummary = ZmList.getActionSummary(actionParams.actionText, this._continuation.totalItems, contResult.type, actionParams.actionArg);
 				}
 				lv.deselectAll();
 			}

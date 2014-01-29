@@ -148,18 +148,14 @@ ZmCalItem.FORWARD_MAPPING[ZmCalItem.MODE_FORWARD_INVITE]            = ZmCalItem.
  * Defines the "low" priority.
  */
 ZmCalItem.PRIORITY_LOW				= 9;
-ZmCalItem.PRIORITY_LOW_RANGE		= [6,7,8,9];
-
 /**
  * Defines the "normal" priority.
  */
 ZmCalItem.PRIORITY_NORMAL			= 5;
-ZmCalItem.PRIORITY_NORMAL_RANGE		= [0,5];
 /**
  * Defines the "high" priority.
  */
 ZmCalItem.PRIORITY_HIGH				= 1;
-ZmCalItem.PRIORITY_HIGH_RANGE		= [1,2,3,4];
 
 /**
  * Defines the "chair" role.
@@ -228,14 +224,6 @@ ZmCalItem.prototype.getFolder			= function() { };						// override if necessary
  * @return	{String}	the organizer
  */
 ZmCalItem.prototype.getOrganizer 		= function() { return this.organizer || ""; };
-
-/**
- * Gets the organizer name.
- *
- * @return	{String}	the organizer name
- */
-ZmCalItem.prototype.getOrganizerName 	= function() { return this.organizerName; };
-
 
 /**
  * Gets the sent by.
@@ -1094,7 +1082,6 @@ function(message, viewMode) {
 	if (message.invite) {
 		this.isOrg = message.invite.isOrganizer();
 		this.organizer = message.invite.getOrganizerEmail();
-		this.organizerName = message.invite.getOrganizerName();
 		this.sentBy = message.invite.getSentBy();
 		this.name = message.invite.getName() || message.subject;
 		this.isException = message.invite.isException();
@@ -1342,10 +1329,9 @@ function(message) {
 	if (htmlContent) {
 		// create a temp iframe to create a proper DOM tree
 		var params = {parent:appCtxt.getShell(), hidden:true, html:htmlContent};
-		var textContent = message.getInviteDescriptionContentValue(ZmMimeTable.TEXT_PLAIN);
-		if (!textContent) { //only go through this pain if textContent is somehow not available from getInviteDescriptionContentValue (no idea if this could happen).
-			var dwtIframe = new DwtIframe(params);
-			textContent = this._getCleanHtml2Text(dwtIframe);
+		var dwtIframe = new DwtIframe(params);
+		if (dwtIframe) {
+			var textContent = this._getCleanHtml2Text(dwtIframe);
 			// bug: 23034 this hidden iframe under shell is adding more space
 			// which breaks calendar column view
 			var iframe = dwtIframe.getIframe();
@@ -2621,9 +2607,6 @@ function(ex) {
                 status.errorMessage=ZmMsg.errorQuotaExceededTask;
             }
     }
-	else if (ex.code === ZmCsfeException.MUST_BE_ORGANIZER) {
-		status.errorMessage = ZmMsg.mustBeOrganizer;
-	}
 
     return status;
 };
@@ -2641,16 +2624,6 @@ function() {
 
 // Static methods
 
-ZmCalItem.isPriorityHigh = function(priority) {
-	return AjxUtil.arrayContains(ZmCalItem.PRIORITY_HIGH_RANGE, priority);
-};
-ZmCalItem.isPriorityLow = function(priority) {
-	return AjxUtil.arrayContains(ZmCalItem.PRIORITY_LOW_RANGE, priority);
-};
-ZmCalItem.isPriorityNormal = function(priority) {
-	return AjxUtil.arrayContains(ZmCalItem.PRIORITY_NORMAL_RANGE, priority);
-};
-
 /**
  * Gets the priority label.
  * 
@@ -2660,16 +2633,12 @@ ZmCalItem.isPriorityNormal = function(priority) {
  */
 ZmCalItem.getLabelForPriority =
 function(priority) {
-	if (ZmCalItem.isPriorityLow(priority)) {
-		return ZmMsg.low;
+	switch (priority) {
+		case ZmCalItem.PRIORITY_LOW:	return ZmMsg.low;
+		case ZmCalItem.PRIORITY_NORMAL: return ZmMsg.normal;
+		case ZmCalItem.PRIORITY_HIGH:	return ZmMsg.high;
+		default: return "";
 	}
-	if (ZmCalItem.isPriorityNormal(priority)) {
-		return ZmMsg.normal;
-	}
-	if (ZmCalItem.isPriorityHigh(priority)) {
-		return ZmMsg.high;
-	}
-	return "";
 };
 
 /**
@@ -2681,16 +2650,17 @@ function(priority) {
  */
 ZmCalItem.getImageForPriority =
 function(task, id) {
-	if (ZmCalItem.isPriorityLow(task.priority)) {
+	switch (task.priority) {
+		case ZmCalItem.PRIORITY_LOW:
 			return id
 				? AjxImg.getImageHtml("PriorityLow_list", null, ["id='", id, "'"].join(""))
 				: AjxImg.getImageHtml("PriorityLow_list");
-	} else if (ZmCalItem.isPriorityHigh(task.priority)) {
+		case ZmCalItem.PRIORITY_HIGH:
 			return id
 				? AjxImg.getImageHtml("PriorityHigh_list", null, ["id='", id, "'"].join(""))
 				: AjxImg.getImageHtml("PriorityHigh_list");
+		default: return "";
 	}
-	return "";
 };
 
 /**

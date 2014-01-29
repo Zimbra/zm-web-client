@@ -399,7 +399,7 @@
 	</table>
 </template>
 
-<template id="share.Dialogs#ZmNewTagDialog">
+<template id="share.Dialogs#ZmPromptDialog">
 	<table class='ZPropertySheet' cellspacing='6'>
 		<tr>
 			<td class='Label'><$= ZmMsg.tagName $>:</td>
@@ -478,21 +478,20 @@
 <!-- ------------------------------ -->
 <template id="share.Dialogs#ZmNewOrgDialogRemote">
 	<tr>
-		<td class='Label'><$= ZmMsg.feedLabel $></td>
-		<td>
-			<table>
-				<tr>
-					<td>
-						<input type='checkbox' id='${id}_remote' style='width:initial;' />
-					</td>
+		<td colspan=2>
+			<table class='ZPropertySheet' cellspacing='6'>
+				<tr valign='center'>
 					<td class='Label'>
+						<input type='checkbox' id='${id}_remote' />
+					</td>
+					<td>
 						<label for='${id}_remote'> ${remoteLabel} </label>
 					</td>
 				</tr>
 			</table>
 		</td>
 	</tr>
-	<tr style='display:none;' id='${id}_remoteURLrow'>
+	<tr style='display:none;' id='${id}_remoteURLrow' valign='center'>
 		<td class='Label'>
 			<$= ZmMsg.urlLabel $>
 		</td>
@@ -545,8 +544,8 @@
 		<td colspan=2>
 			<table class='ZPropertySheet' cellspacing='6'>
 				<tr valign='center'>
-					<td style='width:2em;'><input type='checkbox' id='${id}_excludeFbCheckbox' /></td>
-					<td class='Label'><label for='${id}_excludeFbCheckbox'> <$= ZmMsg.excludeFromFreeBusy $> </label></td>
+					<td class='Label'><input type='checkbox' id='${id}_excludeFbCheckbox' /></td>
+					<td><label for='${id}_excludeFbCheckbox'> <$= ZmMsg.excludeFromFreeBusy $> </label></td>
 				</tr>
 			</table>
 		</td>

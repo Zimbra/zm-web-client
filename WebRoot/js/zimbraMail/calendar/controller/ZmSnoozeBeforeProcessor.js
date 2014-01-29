@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2011, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2011, 2012, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
@@ -42,7 +42,7 @@ ZmSnoozeBeforeProcessor.prototype.constructor = ZmSnoozeBeforeProcessor;
 
 
 ZmSnoozeBeforeProcessor.prototype.execute =
-function(apptList, chosenSnoozeMilliseconds, appts) {
+function(apptList, chosenSnoozeMilliseconds, soapDoc) {
     var added = false;
     var untilTime;
     var earliestUntilTime = 0;
@@ -74,10 +74,9 @@ function(apptList, chosenSnoozeMilliseconds, appts) {
 
             if (snoozeMilliseconds < 0) {
                 // Found a valid untilTime
-                var apptInfo = { id: appt.id, until: untilTime};
-                appts.push(apptInfo)
-
-
+                actionNode = soapDoc.set(this._apptType);
+                actionNode.setAttribute("id", appt.id);
+                actionNode.setAttribute("until", untilTime);
                 added = true;
                 if ((earliestUntilTime ==0) || (earliestUntilTime > untilTime)) {
                     // Keep track of the earliest reminder that will occur
@@ -91,8 +90,9 @@ function(apptList, chosenSnoozeMilliseconds, appts) {
         // At least one future appt was added.  Take the one with the earliest reminder
         // and apply it to past appointments
         for (var i = 0; i < pastAppts.length; i++) {
-           var apptInfo = { id: pastAppts[i].id, until: earliestUntilTime};
-            appts.push(apptInfo)
+            actionNode = soapDoc.set(this._apptType);
+            actionNode.setAttribute("id", pastAppts[i].id);
+            actionNode.setAttribute("until", earliestUntilTime);
         }
     }
     return added;

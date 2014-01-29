@@ -703,7 +703,7 @@ ZmChatWidget.prototype._dropOnTitleListener = function(ev) {
 
 ZmChatWidget.prototype._sendByEmailListener = function() {
         var mode = this._liteEditor.getMode() == ZmLiteHtmlEditor.HTML
-                ? Dwt.HTML : Dwt.TEXT;
+                ? DwtHtmlEditor.HTML : DwtHtmlEditor.TEXT;
 	this.chat.sendByEmail(mode);
 };
 

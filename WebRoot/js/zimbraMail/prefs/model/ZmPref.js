@@ -44,7 +44,6 @@ ZmPref.TYPE_SHORTCUTS		= "SHORTCUTS";
 ZmPref.TYPE_CUSTOM			= "CUSTOM";
 ZmPref.TYPE_LOCALES			= "LOCALES";
 ZmPref.TYPE_FONT			= "FONT";
-ZmPref.TYPE_FONT_SIZE		= "FONT_SIZE";
 
 ZmPref.ORIENT_VERTICAL		= "vertical";
 ZmPref.ORIENT_HORIZONTAL	= "horizontal";
@@ -142,7 +141,7 @@ function(value) {
 ZmPref.validatePollingInterval =
 function(interval) {
 	var minimum = appCtxt.get(ZmSetting.MIN_POLLING_INTERVAL);
-	if (interval && (!minimum || interval >= minimum)) {
+	if (interval && minimum && interval >= minimum) {
 		return true;
 	} else {
 		var min = minimum / 60;
@@ -649,59 +648,40 @@ function(a, b) {
 
 ZmPref.regenerateSignatureEditor =
 function( control ) {
-    var signaturePage = control.parent;
-    var valueEl = document.getElementById(signaturePage._htmlElId + "_SIG_EDITOR");
-    var htmlEditor = new ZmHtmlEditor({
-        parent: signaturePage,
-        parentElement: valueEl.parentNode,
-        textAreaId: "TEXTAREA_SIGNATURE",
-        attachmentCallback:
-            signaturePage._insertImagesListener.bind(signaturePage)
-    });
-    valueEl.parentNode.removeChild(valueEl);
-    signaturePage._sigEditor = htmlEditor;
-    signaturePage._populateSignatures();
+    if( appCtxt.isTinyMCEEnabled() ){
+        var signaturePage = control.parent;
+        var valueEl = document.getElementById(signaturePage._htmlElId + "_SIG_EDITOR");
+        signaturePage.isSignatureEditor = true;
+        var htmlEditor = new ZmAdvancedHtmlEditor(signaturePage, null, null, null, null, valueEl.parentNode, "TEXTAREA_SIGNATURE");
+        valueEl.parentNode.removeChild(valueEl);
+        delete signaturePage.isSignatureEditor;
+        signaturePage._sigEditor = htmlEditor;
+        signaturePage._populateSignatures();
+    }
 };
 
-ZmPref._normalizeFontId = function(id, dontFallback) {
-	var oldid = id;
-	id = id.replace(/,\s/g,",").replace(/'/g,"").toLowerCase(); // Make sure all ids that are supposed to be found in ZmPref.FONT_FAMILY are actually found
-	if (!dontFallback) {
-		var map = ZmPref.FONT_FAMILY;
-		if (map && !map[id]) {
-			var keys = AjxUtil.keys(map);
-			if (keys.length) {
-				var splitId = id.split(","); // e.g. ["times new roman","helvetica"]
-				for (var i=0; i<splitId.length; i++) { // Loop over input font names
-					for (var j=0; j<keys.length; j++) { // Loop over candidate styles, e.g. ["arial,sans-serif","times new roman,serif"]
-						if (keys[j].indexOf(splitId[i]) != -1) {
-							return keys[j];
-						}
-					}
-				}
-				return keys[0];
-			}
+/**
+ * Bubbles are currently only available if the com_zimbra_email zimlet is enabled.  Show a warning 
+ * to the user if the zimlet is not enabled and they try to enable bubbles.
+ * @param useBubbles
+ */
+ZmPref.validateBubbles =
+function(useBubbles) {
+	
+	if (useBubbles) {
+		var emailZimlet = appCtxt.getZimletMgr().getZimletByName("com_zimbra_email");
+		var canUseBubbles = emailZimlet && emailZimlet.handlerObject;
+		if (canUseBubbles && canUseBubbles.getEnabled()) {
+			return true;
 		}
-	}
-	return id;
-};
-ZmPref._normalizeFontName = function(fontId) {
-	return ZmPref.FONT_FAMILY[ZmPref._normalizeFontId(fontId)].name;
-};
-ZmPref._normalizeFontValue = function(fontId) {
-	return ZmPref.FONT_FAMILY[ZmPref._normalizeFontId(fontId)].value;
-};
-
-ZmPref.FONT_FAMILY = {};
-(function() {
-	var KEYS = [ "fontFamilyIntl", "fontFamilyBase" ];
-	var i, j, key, value, name;
-	for (j = 0; j < KEYS.length; j++) {
-		for (i = 1; value = AjxMsg[KEYS[j]+i+".css"]; i++) {
-			if (value.match(/^#+$/)) break;
-			value = ZmPref._normalizeFontId(value,true);
-			name = AjxMsg[KEYS[j]+i+".display"];
-			ZmPref.FONT_FAMILY[value] = {name:name, value:value};
+		else if (!canUseBubbles) {
+			//did user just check on email zimlet?  Check the DOM
+			emailZimlet = document.getElementById("com_zimbra_email_zimletCheckbox");
+			canUseBubbles = emailZimlet && emailZimlet.checked;
+			if (canUseBubbles) { return true;}
 		}
+		ZmPref.SETUP[ZmSetting.USE_ADDR_BUBBLES].errorMessage = AjxMessageFormat.format(ZmMsg.invalidBubblePrefs, ZmMsg.emailZimletLabel);
+		return false;
 	}
-})();
+	return true;
+};

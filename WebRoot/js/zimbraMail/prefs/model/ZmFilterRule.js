@@ -128,7 +128,10 @@ ZmFilterRule.C_HEADER_VALUE = {};
 ZmFilterRule.C_HEADER_VALUE[ZmFilterRule.C_SUBJECT]	= "subject";
 ZmFilterRule.C_HEADER_VALUE[ZmFilterRule.C_HEADER]	= "header";
 
-ZmFilterRule.C_HEADER_MAP = AjxUtil.valueHash(ZmFilterRule.C_HEADER_VALUE);
+ZmFilterRule.C_HEADER_MAP = {};
+for (var i in ZmFilterRule.C_HEADER_VALUE) {
+	ZmFilterRule.C_HEADER_MAP[ZmFilterRule.C_HEADER_VALUE[i]] = i;
+};
 
 ZmFilterRule.C_ADDRESS_VALUE = {};
 ZmFilterRule.C_ADDRESS_VALUE[ZmFilterRule.C_FROM]	= "from";
@@ -137,7 +140,10 @@ ZmFilterRule.C_ADDRESS_VALUE[ZmFilterRule.C_CC]		= "cc";
 ZmFilterRule.C_ADDRESS_VALUE[ZmFilterRule.C_TO_CC]	= "to,cc";
 ZmFilterRule.C_ADDRESS_VALUE[ZmFilterRule.C_BCC]     = "bcc";
 
-ZmFilterRule.C_ADDRESS_MAP = AjxUtil.valueHash(ZmFilterRule.C_ADDRESS_VALUE);
+ZmFilterRule.C_ADDRESS_MAP = {};
+for (var i in ZmFilterRule.C_ADDRESS_VALUE) {
+    ZmFilterRule.C_ADDRESS_MAP[ZmFilterRule.C_ADDRESS_VALUE[i]] = i;
+}
 
 ZmFilterRule.C_LABEL = {};
 ZmFilterRule.C_LABEL[ZmFilterRule.C_FROM]		= ZmMsg.from;
@@ -288,7 +294,10 @@ ZmFilterRule.OP_VALUE[ZmFilterRule.OP_SOCIAL_SOCIALCAST] = "socialSocialCast";
 ZmFilterRule.OP_VALUE[ZmFilterRule.OP_IS_ME]        = "isMe";
 ZmFilterRule.OP_VALUE[ZmFilterRule.OP_NOT_CONV]     = "convNot";
 
-ZmFilterRule.OP_VALUE_MAP = AjxUtil.valueHash(ZmFilterRule.OP_VALUE);
+ZmFilterRule.OP_VALUE_MAP = {};
+for (var i in ZmFilterRule.OP_VALUE) {
+	ZmFilterRule.OP_VALUE_MAP[ZmFilterRule.OP_VALUE[i]] = i;
+};
 
 ZmFilterRule.OP_SOCIAL_MAP = {};
 ZmFilterRule.OP_SOCIAL_MAP[ZmFilterRule.OP_SOCIAL_FACEBOOK] = ZmFilterRule.TEST_FACEBOOK;
@@ -484,10 +493,6 @@ ZmFilterRule.CONDITIONS[ZmFilterRule.C_BULK] = {
 		opsOptions:	[ZmFilterRule.OP_EXISTS, ZmFilterRule.OP_NOT_EXISTS]
 };
 
-// map config keys to fields in a ZmCondition
-ZmFilterRule.CONDITIONS_KEY = {"subjectMod": "subjectModifier", "ops": "comparator",
-							   "value": "value" /*, "valueMod": "valueModifier"*/};   //valueModifier was in the old CONDITIONS_KEY that I revived, but no longer seemed to work at all... no references to it.
-
 // listed in order we want to display them in the SELECT
 ZmFilterRule.CONDITIONS_LIST = [
 	ZmFilterRule.C_FROM,
@@ -609,7 +614,11 @@ ZmFilterRule.A_VALUE[ZmFilterRule.A_FORWARD]	= ZmFilterRule.A_NAME_FORWARD;
 ZmFilterRule.A_VALUE[ZmFilterRule.A_REPLY]      = ZmFilterRule.A_REPLY;
 ZmFilterRule.A_VALUE[ZmFilterRule.A_NOTIFY]     = ZmFilterRule.A_NOTIFY;
 
-ZmFilterRule.A_VALUE_MAP = AjxUtil.valueHash(ZmFilterRule.A_VALUE);
+ZmFilterRule.A_VALUE_MAP = {};
+for (var i in ZmFilterRule.A_VALUE) {
+	ZmFilterRule.A_VALUE_MAP[ZmFilterRule.A_VALUE[i]] = i;
+}
+delete i;
 
 ZmFilterRule.A_LABEL = {};
 ZmFilterRule.A_LABEL[ZmFilterRule.A_KEEP]		= ZmMsg.keepInInbox;

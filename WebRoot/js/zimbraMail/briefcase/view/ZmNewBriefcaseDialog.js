@@ -49,14 +49,3 @@ ZmNewBriefcaseDialog.prototype._createRemoteContentHtml =
 function(html, idx) {
 	return idx;
 };
-
-/**
- * @private
- */
-ZmNewBriefcaseDialog.prototype._setupFolderControl =
-function(){
-	ZmNewOrganizerDialog.prototype._setupFolderControl.call(this);
-	if (this._omit) {
-		this._omit[ZmFolder.ID_TRASH] = true;
-	}
-};

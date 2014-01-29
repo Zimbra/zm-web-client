@@ -1,0 +1,16 @@
+
+.slide_object_title{
+    font-size: 200%;
+    font-weight: bold;
+	padding: 0px;
+	margin: 0px;
+	color: white;
+}
+
+.slide_object_notes{
+    font-size: 145%;
+    font-weight: bold;
+	padding: 0px;
+	margin: 0px;
+	color: black;
+}

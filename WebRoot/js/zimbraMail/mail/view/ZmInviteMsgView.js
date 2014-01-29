@@ -45,32 +45,17 @@ function() {
 };
 
 ZmInviteMsgView.prototype.reset =
-function(cleanupHTML) {
+function() {
 	if (this._inviteToolbar) {
-		if (cleanupHTML) {
-			this._inviteToolbar.dispose();
-			this._inviteToolbar = null;
-		} else {
-			this._inviteToolbar.setDisplay(Dwt.DISPLAY_NONE);
-		}
+		this._inviteToolbar.setDisplay(Dwt.DISPLAY_NONE);
 	}
 
 	if (this._counterToolbar) {
-		if (cleanupHTML) {
-			this._counterToolbar.dispose();
-			this._counterToolbar = null;
-		} else {
-			this._counterToolbar.setDisplay(Dwt.DISPLAY_NONE);
-		}
+		this._counterToolbar.setDisplay(Dwt.DISPLAY_NONE);
 	}
 
 	if (this._dayView) {
-		if (cleanupHTML) {
-			this._dayView.dispose();
-			this._dayView = null;
-		} else {
-			this._dayView.setDisplay(Dwt.DISPLAY_NONE);
-		}
+		this._dayView.setDisplay(Dwt.DISPLAY_NONE);
 		Dwt.delClass(this.parent.getHtmlElement(), "RightBorderSeparator");
 	}
 
@@ -181,16 +166,6 @@ function(msg) {
 			this._inviteMoveSelect.setVisible(visible);
 		}
 	}
-
-    // Bug fix: 77237. If invite is cancelled and participation status is NE, force change it to DE
-    if (this._invite.components && this._invite.components[0].method === ZmId.OP_CANCEL) {
-        var attendeeCount = this._invite.components[0].at.length;
-        for (var i = 0; i < attendeeCount; i++) {
-            if (this._invite.components[0].at[i].ptst === ZmCalBaseItem.PSTATUS_NEEDS_ACTION) {
-                this._invite.components[0].at[i].ptst = ZmCalBaseItem.PSTATUS_DECLINED;
-            }
-        }
-    }
 };
 
 /**
@@ -234,9 +209,10 @@ function(callback, dayViewCallback, result) {
 		var html = [];
 		var idx = 0;
 		var attendees = appt.inv[0].comp[0].at || [];
-        AjxDispatcher.require(["MailCore", "CalendarCore"]);
+        AjxDispatcher.require(["CalendarCore"]);
 
         var options = {};
+	    options.addrBubbles = appCtxt.get(ZmSetting.USE_ADDR_BUBBLES);
 	    options.shortAddress = appCtxt.get(ZmSetting.SHORT_ADDRESS);
 
 		for (var i = 0; i < attendees.length; i++) {
@@ -273,7 +249,7 @@ function(dayViewCallback) {
             return;
         }
 
-		AjxDispatcher.require(["MailCore", "CalendarCore", "Calendar"]);
+		AjxDispatcher.require(["CalendarCore", "Calendar"]);
 		var cc = AjxDispatcher.run("GetCalController");
 
 		if (!this._dayView) {
@@ -483,7 +459,7 @@ ZmInviteMsgView.PTST_MSG[ZmCalBaseItem.PSTATUS_TENTATIVE] = {msg: AjxMessageForm
 
 ZmInviteMsgView.prototype.addSubs =
 function(subs, sentBy, sentByAddr, obo) {
-    AjxDispatcher.require(["MailCore", "CalendarCore", "Calendar"]);
+    AjxDispatcher.require(["CalendarCore", "Calendar"]);
 	subs.invite = this._invite;
 
 	if (!this._msg.isInviteCanceled() && !subs.invite.isOrganizer() && subs.invite.hasInviteReplyMethod()) {
@@ -501,7 +477,7 @@ function(subs, sentBy, sentByAddr, obo) {
 	subs.ptstMsgIconId = this._ptstMsgIconId = (this.parent._htmlElId + "_ptstMsgIcon");
 
 	var isOrganizer = this._invite && this._invite.isOrganizer();
-    var isInviteCancelled = this._invite.components && this._invite.components[0].method === ZmId.OP_CANCEL;
+	
 	// counter proposal
 	if (this._invite.hasCounterMethod() &&
 		this._msg.folderId != ZmFolder.ID_SENT)
@@ -511,7 +487,7 @@ function(subs, sentBy, sentByAddr, obo) {
             AjxMessageFormat.format(ZmMsg.counterInviteMsg, [from]):AjxMessageFormat.format(ZmMsg.counterInviteMsgOnBehalfOf, [sentByAddr, from]);
 	}
 	// if this an action'ed invite, show the status banner
-	else if ((isOrganizer && this._invite.hasAttendeeResponse()) || isInviteCancelled) {
+	else if (isOrganizer && this._invite.hasAttendeeResponse()) {
 		var attendee = this._invite.getAttendees()[0];
 		var ptst = attendee && attendee.ptst;
 		if (ptst) {
@@ -524,21 +500,15 @@ function(subs, sentBy, sentByAddr, obo) {
 			subs.ptstIcon = ZmCalItem.getParticipationStatusIcon(ptst);
 			switch (ptst) {
 				case ZmCalBaseItem.PSTATUS_ACCEPT:
-					ptstStr = (!sentBy) ? ZmMsg.inviteMsgAccepted : ZmMsg.inviteMsgOnBehalfOfAccepted;
+					ptstStr = (!sentBy) ? ZmMsg.inviteMsgAccepted: ZmMsg.inviteMsgOnBehalfOfAccepted;
 					subs.ptstClassName = "InviteStatusAccept";
 					break;
 				case ZmCalBaseItem.PSTATUS_DECLINED:
-                    if (isInviteCancelled) {
-                        var organizer = this._invite.getOrganizerName() || this._invite.getOrganizerEmail();
-                        subs.ptstMsg = AjxMessageFormat.format(ZmMsg.inviteMsgCancelled, organizer.split());
-                    }
-                    else {
-					    ptstStr = (!sentBy) ? ZmMsg.inviteMsgDeclined : ZmMsg.inviteMsgOnBehalfOfDeclined;
-                    }
+					ptstStr = (!sentBy) ? ZmMsg.inviteMsgDeclined: ZmMsg.inviteMsgOnBehalfOfDeclined;
 					subs.ptstClassName = "InviteStatusDecline";
 					break;
 				case ZmCalBaseItem.PSTATUS_TENTATIVE:
-					ptstStr = (!sentBy) ? ZmMsg.inviteMsgTentative:ZmMsg.inviteMsgOnBehalfOfTentative;
+					ptstStr = (!sentBy) ?ZmMsg.inviteMsgTentative:ZmMsg.inviteMsgOnBehalfOfTentative;
 					subs.ptstClassName = "InviteStatusTentative";
 					break;
 			}
@@ -554,6 +524,7 @@ function(subs, sentBy, sentByAddr, obo) {
     }
 
     var options = {};
+	options.addrBubbles = appCtxt.get(ZmSetting.USE_ADDR_BUBBLES);
 	options.shortAddress = appCtxt.get(ZmSetting.SHORT_ADDRESS);
 
 	var om = this.parent._objectManager;
@@ -801,12 +772,5 @@ function() {
     var inviteDate = this._getInviteDate();
     if ((inviteDate != null) && this._dayView) {
         this._dayView._scrollToTime(inviteDate.getHours());
-    }
-}
-
-ZmInviteMsgView.prototype.repositionCounterToolbar =
-function(hdrTableId) {
-    if (this._invite && this._invite.hasCounterMethod() && hdrTableId && this._counterToolbar) {
-        this._counterToolbar.reparentHtmlElement(hdrTableId + '_counterToolbar', 0);
     }
 }

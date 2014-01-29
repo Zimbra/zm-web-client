@@ -91,7 +91,7 @@ function() {
 ZmZimletMgr.prototype.loadZimlets =
 function(zimletArray, userProps, target, callback, sync) {
 	var href = window.location.href.toLowerCase();
-	if(href.indexOf("zimlets=none") > 0 || appCtxt.isWebClientOffline()) {
+	if(href.indexOf("zimlets=none") > 0) {
 		return;
 	} else if(href.indexOf("zimlets=core") > 0) {
 		zimletArray = this._getCoreZimlets(zimletArray);
@@ -102,6 +102,11 @@ function(zimletArray, userProps, target, callback, sync) {
 	if(isMixedMode && !appCtxt.isOffline && !showAllZimlets && isHttp
 			&& appCtxt.get(ZmSetting.DISABLE_SENSITIVE_ZIMLETS_IN_MIXED_MODE) == "TRUE") {
 		zimletArray = this._getNonSensitiveZimlets(zimletArray);
+	}
+	if (!zimletArray || !zimletArray.length) {
+		this.loaded = true;
+		this._resetOverviewTree();
+		return;
 	}
 	var packageCallback = callback ? new AjxCallback(this, this._loadZimlets, [zimletArray, userProps, target, callback, sync]) : null;
 	AjxPackage.require({ name: "Zimlet", callback: packageCallback });

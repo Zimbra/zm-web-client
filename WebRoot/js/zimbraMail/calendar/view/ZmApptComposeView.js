@@ -164,11 +164,11 @@ function() {
 	return this._apptEditView.getComposeMode();
 };
 
-// Sets the mode the editor should be in.
+// Sets the mode ZmHtmlEditor should be in.
 ZmApptComposeView.prototype.setComposeMode = 
 function(composeMode) {
-	if (composeMode == Dwt.TEXT ||
-		(composeMode == Dwt.HTML && appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED)))
+	if (composeMode == DwtHtmlEditor.TEXT || 
+		(composeMode == DwtHtmlEditor.HTML && appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED)))
 	{
 		this._apptEditView.setComposeMode(composeMode);
 	}

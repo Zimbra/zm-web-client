@@ -44,18 +44,6 @@ ZmSearchFolder = function(params) {
 	}
 };
 
-ZmSearchFolder.prototype = new ZmFolder;
-ZmSearchFolder.prototype.constructor = ZmSearchFolder;
-
-/**
- * Returns a string representation of the object.
- *
- * @return		{String}		a string representation of the object
- */
-ZmSearchFolder.prototype.toString =	function() {
-	return "ZmSearchFolder";
-};
-
 ZmSearchFolder.ID_ROOT = ZmOrganizer.ID_ROOT;
 
 /**
@@ -115,54 +103,18 @@ function(params) {
 	appCtxt.setStatusMsg(ZmMsg.searchSaved);
 };
 
+
+ZmSearchFolder.prototype = new ZmFolder;
+ZmSearchFolder.prototype.constructor = ZmSearchFolder;
+
 /**
- * Sets the underlying search query.
- *
- * @param	{String}	    query		    search query
- * @param	{AjxCallback}	callback		the callback
- * @param	{AjxCallback}	errorCallback		the error callback
- * @param	{ZmBatchCommand}	batchCmd		the batch command
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
  */
-ZmSearchFolder.prototype.setQuery = function(query, callback, errorCallback, batchCmd) {
-
-	if (query === this.search.query) {
-		return;
-	}
-
-	var params = {
-		callback:       callback,
-		errorCallback:  errorCallback,
-		batchCmd:       batchCmd
-	};
-
-	var cmd = "ModifySearchFolderRequest";
-	var request = {
-		_jsns: "urn:zimbraMail",
-		search: {
-			query:  query,
-			id:     params.id || this.id
-		}
-	};
-	var jsonObj = {};
-	jsonObj[cmd] = request;
-
-	var respCallback = this._handleResponseOrganizerAction.bind(this, params);
-	if (params.batchCmd) {
-		params.batchCmd.addRequestParams(jsonObj, respCallback, params.errorCallback);
-	}
-	else {
-		var accountName;
-		if (appCtxt.multiAccounts) {
-			accountName = this.account ? this.account.name : appCtxt.accountList.mainAccount.name;
-		}
-		appCtxt.getAppController().sendRequest({
-			jsonObj:        jsonObj,
-			asyncMode:      true,
-			accountName:    accountName,
-			callback:       respCallback,
-			errorCallback:  params.errorCallback
-		});
-	}
+ZmSearchFolder.prototype.toString =
+function() {
+	return "ZmSearchFolder";
 };
 
 /**
@@ -200,19 +152,4 @@ function(parentId) {
 	}
 	
 	return appCtxt.getById(parentId);
-};
-
-// Handle a change to the underlying search query
-ZmSearchFolder.prototype.notifyModify =	function(obj) {
-
-	if (obj.query && obj.query !== this.search.query && obj.id === this.id) {
-		this.search.query = obj.query;
-		var fields = {};
-		fields[ZmOrganizer.F_QUERY] = true;
-		this._notify(ZmEvent.E_MODIFY, {
-			fields: fields
-		});
-		obj.query = null;
-	}
-	ZmFolder.prototype.notifyModify.apply(this, [obj]);
 };

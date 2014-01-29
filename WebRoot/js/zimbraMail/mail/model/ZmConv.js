@@ -33,7 +33,6 @@ ZmConv = function(id, list) {
 	this._sortBy = ZmSearch.DATE_DESC;
 	this._listChangeListener = new AjxListener(this, this._msgListChangeListener);
 	this.folders = {};
-	this.msgFolder = {};
 };
 
 ZmConv.prototype = new ZmMailItem;
@@ -175,7 +174,7 @@ function(params, callback, result) {
 };
 
 /**
- * This method supports ZmZimletBase::getMsgsForConv. It loads *all* of this conv's
+ * This method supports ZmZimletBase::getMsgsForConv. It loads all of this conv's
  * messages, including their content. Note that it is not search-based, and uses
  * GetConvRequest rather than SearchConvRequest.
  * 
@@ -192,9 +191,8 @@ function(params, callback, batchCmd) {
 	var request = jsonObj.GetConvRequest;
 	var c = request.c = {
 		id:		this.id,
-		needExp:	true,
 		html:	(params.getHtml || this.isDraft || appCtxt.get(ZmSetting.VIEW_AS_HTML))
-	};
+	}
 	if (params.fetchAll) {
 		c.fetch = "all";
 	}
@@ -211,7 +209,6 @@ function(params, callback, batchCmd) {
 
 ZmConv.prototype._handleResponseLoadMsgs =
 function(callback, result) {
-
 	var resp = result.getResponse().GetConvResponse.c[0];
 	this.msgIds = [];
 
@@ -233,7 +230,6 @@ function(callback, result) {
 	for (var i = len - 1; i >= 0; i--) {
 		var msgNode = resp.m[i];
 		this.msgIds.push(msgNode.id);
-		this.msgFolder[msgNode.id] = msgNode.l;
 		msgNode.su = resp.su;
 		// construct ZmMailMsg's so they get cached
 		var msg = ZmMailMsg.createFromDom(msgNode, {list: this.msgs});
@@ -264,7 +260,6 @@ function(msg, index) {
 	for (var i = 0, len = a.length; i < len; i++) {
 		this.msgIds.push(a[i].id);
 	}
-	this.msgFolder[msg.id] = msg.folderId;
 };
 
 /**
@@ -280,22 +275,6 @@ function(msg) {
 	if (this.msgIds && this.msgIds.length) {
 		AjxUtil.arrayRemove(this.msgIds, msg.id);
 	}
-	delete this.msgFolder[msg.id];
-};
-
-ZmConv.prototype.canAddTag =
-function(tagName) {
-	if (!this.msgs) {
-		return ZmItem.prototype.canAddTag.call(this, tagName);
-	}
-	var msgs = this.msgs.getArray();
-	for (var i = 0; i < msgs.length; i++) {
-		var msg = msgs[i];
-		if (msg.canAddTag(tagName)) {
-			return true;
-		}
-	}
-	return false;
 };
 
 ZmConv.prototype.mute =
@@ -341,8 +320,6 @@ function() {
 		this.msgs = null;
 	}
 	this.msgIds = [];
-	this.folders = {};
-	this.msgFolder = {};
 	
 	ZmMailItem.prototype.clear.call(this);
 };
@@ -375,33 +352,27 @@ function() {
 
 /**
  * Checks if this conversation has a message that matches the given search.
- * If we're not able to tell whether a msg matches, we return the given default value.
+ * If the search is not present or not matchable, the provided default value is
+ * returned.
  *
  * @param {ZmSearch}	search			the search to match against
- * @param {Object}	    defaultValue	the value to return if search is not matchable or conv not loaded
- * @return	{Boolean}	<code>true</code> if this conversation has a matching message
+ * @param {Object}	defaultValue		the value to return if search is not matchable
+ * @return	{Boolean|Object}	<code>true</code> if this conversation has the message
  */
 ZmConv.prototype.hasMatchingMsg =
 function(search, defaultValue) {
-
-	var msgs = this.msgs && this.msgs.getArray(),
-		hasUnknown = false;
-
-	if (msgs && msgs.length > 0) {
+	if (search && search.isMatchable() && this.msgs) {
+		var msgs = this.msgs.getArray();
 		for (var i = 0; i < msgs.length; i++) {
-			var msg = msgs[i],
-				msgMatches = search.matches(msg);
-
-			if (msgMatches && !msg.ignoreJunkTrash() && this.folders[msg.folderId]) {
+			var msg = msgs[i];
+			if (search.matches(msg) && !msg.ignoreJunkTrash() && this.folders[msg.folderId]) {
 				return true;
 			}
-			else if (msgMatches === null) {
-				hasUnknown = true;
-			}
 		}
+	} else {
+		return defaultValue;
 	}
-
-	return hasUnknown ? !!defaultValue : false;
+	return false;
 };
 
 ZmConv.prototype.ignoreJunkTrash =
@@ -584,20 +555,10 @@ function(folderId) {
 };
 
 ZmConv.prototype.getMsgList =
-function(offset, ascending, omit) {
+function(offset, ascending) {
 	// this.msgs will not be set if the conv has not yet been loaded
 	var list = this.msgs && this.msgs.getArray();
 	var a = list ? (list.slice(offset || 0)) : [];
-	if (omit) {
-		var a1 = [];
-		for (var i = 0; i < a.length; i++) {
-			var msg = a[i];
-			if (!(msg && msg.folderId && omit[msg.folderId])) {
-				a1.push(msg);
-			}
-		}
-		a = a1;
-	}
 	if (ascending) {
 		a.reverse();
 	}
@@ -633,7 +594,7 @@ function(params, callback) {
 	params = params || {};
 
 	if (this.msgs && this.msgs.size()) {
-		msg = this.msgs.getFirstHit(params.offset, params.limit, params.foldersToOmit);
+		msg = this.msgs.getFirstHit(params.offset, params.limit);
 	}
 
 	if (callback) {
@@ -681,7 +642,6 @@ function(msg, callback) {
 
 ZmConv.prototype._loadFromDom =
 function(convNode) {
-
 	this.numMsgs = convNode.n;
 	this.date = convNode.d;
 	this._parseFlags(convNode.f);
@@ -699,11 +659,9 @@ function(convNode) {
 	// note that the list of msg IDs in a search result is partial - only msgs that matched are included
 	if (convNode.m) {
 		this.msgIds = [];
-		this.msgFolder = {};
 		for (var i = 0, count = convNode.m.length; i < count; i++) {
 			var msgNode = convNode.m[i];
 			this.msgIds.push(msgNode.id);
-			this.msgFolder[msgNode.id] = msgNode.l;
 			this.folders[msgNode.l] = true;
 		}
 		if (count == 1) {
@@ -712,7 +670,6 @@ function(convNode) {
 			// bug 49067 - SearchConvResponse does not return the folder ID w/in
 			// the msgNode as fully qualified so reset if this 1-msg conv was
 			// returned by a simple folder search
-			// TODO: if 85358 is fixed, we can remove this section
 			var searchFolderId = this.list && this.list.search && this.list.search.folderId;
 			if (searchFolderId) {
 				this.folderId = searchFolderId;
@@ -774,7 +731,6 @@ function(msg) {
 	this.fragment = msg.fragment;
 	this.sf = msg.sf;
 	this.msgIds = [msg.id];
-	this.msgFolder[msg.id] = msg.folderId;
 	//add a flag to redraw this conversation when additional information is available
 	this.redrawConvRow = true;
 };

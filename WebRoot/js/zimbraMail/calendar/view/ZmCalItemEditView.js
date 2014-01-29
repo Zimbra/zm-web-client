@@ -47,7 +47,7 @@ ZmCalItemEditView = function(parent, attendees, controller, dateInfo, posStyle, 
 	var bComposeEnabled = appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED);
 	var composeFormat = appCtxt.get(ZmSetting.COMPOSE_AS_FORMAT);
 	this._composeMode = bComposeEnabled && composeFormat == ZmSetting.COMPOSE_HTML
-		? Dwt.HTML : Dwt.TEXT;
+		? DwtHtmlEditor.HTML : DwtHtmlEditor.TEXT;
 
 	this._repeatSelectDisabled = false;
 	this._attachCount = 0;
@@ -224,7 +224,7 @@ function(composeMode) {
 
 ZmCalItemEditView.prototype.reEnableDesignMode =
 function() {
-	if (this._composeMode == Dwt.HTML)
+	if (this._composeMode == DwtHtmlEditor.HTML)
 		this._notesHtmlEditor.reEnableDesignMode();
 };
 
@@ -321,8 +321,8 @@ function(inputEl, sizeEl){
     for(var i=0; i<files.length;i++){
         var file = files[i];
         var size = file.size || file.fileSize /*Safari*/;
-        if ((-1 /* means unlimited */ != appCtxt.get(ZmSetting.MESSAGE_SIZE_LIMIT)) &&
-            (size > appCtxt.get(ZmSetting.MESSAGE_SIZE_LIMIT))) {
+        if ((-1 /* means unlimited */ != appCtxt.get(ZmSetting.ATTACHMENT_SIZE_LIMIT)) &&
+            (size > appCtxt.get(ZmSetting.ATTACHMENT_SIZE_LIMIT))) {
             className = "RedC";
         }
         totalSize += size;
@@ -485,7 +485,7 @@ function(calItem) {
 
 	// set the notes parts (always add text part)
 	var top = new ZmMimePart();
-	if (this._composeMode == Dwt.HTML) {
+	if (this._composeMode == DwtHtmlEditor.HTML) {
 		top.setContentType(ZmMimeTable.MULTI_ALT);
 
 		// create two more mp's for text and html content types
@@ -583,8 +583,6 @@ function(calItem) {
 ZmCalItemEditView.prototype._setRepeatDesc =
 function(calItem) {
 	if (calItem.isCustomRecurrence()) {
-        //Bug fix # 58493 - Set the classname if for the first time directly custom weekly/monthly/yearly repetition is selected
-        this._repeatDescField.className = "FakeAnchor";
 		this._repeatDescField.innerHTML = calItem.getRecurBlurb();
 	} else {
 		this._repeatDescField.innerHTML = (calItem.getRecurType() != "NON")
@@ -614,7 +612,7 @@ function(calItem, mode) {
     }
 
     this._controller.setFormatBtnItem(true, isSavedinHTML ? ZmMimeTable.TEXT_HTML : ZmMimeTable.TEXT_PLAIN);
-    this.setComposeMode(isSavedinHTML ? Dwt.HTML : Dwt.TEXT);
+    this.setComposeMode(isSavedinHTML ? DwtHtmlEditor.HTML : DwtHtmlEditor.TEXT);
 
     if(this._isForward /* && !calItem.isOrganizer() */) {
         var preface = [ZmMsg.DASHES, " ", ZmMsg.originalAppointment, " ", ZmMsg.DASHES].join("");
@@ -641,11 +639,9 @@ function(body, composingHtml) {
     var includePref = appCtxt.get(ZmSetting.FORWARD_INCLUDE_ORIG);
     if (includePref == ZmSetting.INCLUDE_PREFIX || includePref == ZmSetting.INCLUDE_PREFIX_FULL) {
         var preface = (composingHtml ? '<br>' : '\n');
-		var wrapParams = {
-			text:				body,
-			htmlMode:			composingHtml,
-			preserveReturns:	true
-		}
+		var wrapParams = ZmHtmlEditor.getWrapParams(composingHtml);
+		wrapParams.text = body;
+		wrapParams.preserveReturns = true;
         body = preface + AjxStringUtil.wordWrap(wrapParams);
     }
     return body;
@@ -712,7 +708,7 @@ function(width) {
 	};
 	this._subjectField = new DwtInputField(params);
 	this._subjectField.setRequired();
-	Dwt.setSize(this._subjectField.getInputElement(), "100%", "2rem");
+	Dwt.setSize(this._subjectField.getInputElement(), "100%", "22px");
 
 	// CalItem folder DwtSelect
 	this._folderSelect = new DwtSelect({parent:this, parentElement:(this._htmlElId + "_folderSelect")});
@@ -747,12 +743,11 @@ function(width) {
 			type: DwtInputField.STRING,
 			errorIconStyle: DwtInputField.ERROR_ICON_NONE,
 			validationStyle: DwtInputField.CONTINUAL_VALIDATION,
-			className: "DwtInputField ReminderInput"
+            className: "DwtInputField ReminderInput"
 		};
 		this._reminderSelectInput = new DwtInputField(params);
 		var reminderInputEl = this._reminderSelectInput.getInputElement();
-        // Fix for bug: 83100. Fix adapted from ZmReminderDialog::_createButtons
-		Dwt.setSize(reminderInputEl, "120px", "2rem");
+		Dwt.setSize(reminderInputEl, Dwt.DEFAULT, "22px");
 		reminderInputEl.onblur = AjxCallback.simpleClosure(this._handleReminderOnBlur, this, reminderInputEl);
 
 		var reminderButtonListener = new AjxListener(this, this._reminderButtonListener);
@@ -782,8 +777,15 @@ function(width) {
     this._notesContainer = document.getElementById(this._htmlElId + "_notes");
     this._topContainer = document.getElementById(this._htmlElId + "_top");
 
-    this._notesHtmlEditor = new ZmHtmlEditor(this, null, null, this._composeMode, null, this._htmlElId + "_notes");
-    this._notesHtmlEditor.addOnContentInitializedListener(new AjxCallback(this,this._resizeNotes));
+    if( appCtxt.isTinyMCEEnabled() ) {
+        this._notesHtmlEditor = new ZmAdvancedHtmlEditor(this, null, null, this._composeMode, null, this._htmlElId + "_notes");
+        this._notesHtmlEditor.addOnContentInitializedListener(new AjxCallback(this,this._resizeNotes));
+    } else {
+        this._notesHtmlEditor = new ZmHtmlEditor(this, null, null, this._composeMode);
+        this._notesHtmlEditor.reparentHtmlElement(this._htmlElId + "_notes");
+        // bug: 19079 to avoid access denied exception set some content which corrects the doc domain
+        this._notesHtmlEditor.setContent("");
+    }
 };
 
 ZmCalItemEditView.prototype._handleReminderOnBlur =
@@ -968,7 +970,7 @@ function() {
 	//var topHeight = topSize.y;
 	var rowHeight = size.y - topSize.y;
     var rowWidth = size.x;
-	//var hFudge = (this._composeMode == Dwt.HTML) ? 30 : 15;
+	//var hFudge = (this._composeMode == DwtHtmlEditor.HTML) ? 30 : 15;
 	//var wFudge = ( AjxEnv.isIE || AjxEnv.isWebKitBased ? 20 : 0 );
     //rowHeight = rowHeight - hFudge;
     //rowWidth = rowWidth - wFudge
@@ -979,7 +981,11 @@ function() {
         rowHeight = 100;
     }
     
-    this._notesHtmlEditor.setSize(rowWidth-10, rowHeight -5);
+    //	if(window.isTinyMCE) {
+    //        this._notesHtmlEditor.setSize(rowWidth-5, rowHeight)
+    //    }else {
+        this._notesHtmlEditor.setSize(rowWidth-10, rowHeight -5);
+    //    }
 };
 
 ZmCalItemEditView.prototype._handleRepeatDescFieldHover =
@@ -1265,9 +1271,13 @@ function(status, attId) {
 		this._controller._handleException(ex, {continueCallback:callback});
 	} else {
 		// bug fix #2131 - handle errors during attachment upload.
-		this._controller.popupUploadErrorDialog(ZmItem.APPT, status,
-		                                        ZmMsg.errorTryAgain);
-		this._controller.enableToolbar(true);
+		var msg = AjxMessageFormat.format(ZmMsg.errorAttachment, (status || AjxPost.SC_NO_CONTENT));
+		switch (status) {
+			// add other error codes/message here as necessary
+			case AjxPost.SC_REQUEST_ENTITY_TOO_LARGE: 	msg += " " + ZmMsg.errorAttachmentTooBig + "<br><br>"; break;
+			default: 									msg += " "; break;
+		}
+		this._controller.showErrorMessage(msg + ZmMsg.errorTryAgain);
 	}
 };
 

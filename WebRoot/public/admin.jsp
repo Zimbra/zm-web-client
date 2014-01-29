@@ -139,11 +139,8 @@
 	Cookie testCookie = new Cookie("ZA_TEST", "true");
 	testCookie.setSecure(com.zimbra.cs.taglib.ZJspSession.secureAuthTokenCookie(request));
 	response.addCookie(testCookie);
-
-	// Prevent IE from ever going into compatibility/quirks mode.
-	response.setHeader("X-UA-Compatible", "IE=edge");
 %>
-<!DOCTYPE html>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
 <!--

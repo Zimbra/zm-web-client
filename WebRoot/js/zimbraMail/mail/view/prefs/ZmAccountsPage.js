@@ -1171,7 +1171,7 @@ function(id, section, value) {
 			var searchPath = array[i] = tree.getById(fid).getSearchPath();
 			seenComma = seenComma || searchPath.match(/,/);
 		}
-		value = AjxUtil.uniq(array).join(seenComma ? "; " : ", ");
+		value = array.join(seenComma ? "; " : ", ");
 	}
 
 	switch (setup.displayContainer) {
@@ -1892,11 +1892,8 @@ function(account) {
 ZmAccountsPage.prototype._handleNameChange =
 function(evt) {
 	var inputEl = DwtUiEvent.getTarget(evt);
-	var newName = inputEl.value;
-	this._accountListView.setCellContents(this._currentAccount, ZmItem.F_NAME, AjxStringUtil.htmlEncode(newName));
-	this._setControlValue("HEADER", this._currentSection, newName);
-
-	this._currentAccount.identity.name = newName;
+	this._accountListView.setCellContents(this._currentAccount, ZmItem.F_NAME, AjxStringUtil.htmlEncode(inputEl.value));
+	this._setControlValue("HEADER", this._currentSection, inputEl.value);
 
 	var type = this._currentAccount.type;
 	if (type == ZmAccount.TYPE_POP || type == ZmAccount.TYPE_IMAP) {

@@ -369,9 +369,7 @@ function(params) {
 
 ZmMsgController.prototype._checkItemCount =
 function() {
-	if (!appCtxt.isChildWindow) {
-		this._backListener();
-	}
+	this._backListener();
 };
 
 ZmMsgController.prototype._getDefaultFocusItem = 

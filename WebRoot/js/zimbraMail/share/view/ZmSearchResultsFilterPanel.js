@@ -44,7 +44,6 @@ ZmSearchResultsFilterPanel = function(params) {
 	
 	// advanced filters
 	this._menu		= {};
-	this._advancedFilterHandlers = {};
 	
 	this._createHtml();
 	this._addFilters();
@@ -70,7 +69,6 @@ ZmSearchResultsFilterPanel.ID_UNREAD		= "UNREAD";
 ZmSearchResultsFilterPanel.ID_TO			= "TO";
 ZmSearchResultsFilterPanel.ID_FROM			= "FROM";
 ZmSearchResultsFilterPanel.ID_DATE			= "DATE";
-ZmSearchResultsFilterPanel.ID_DATE_BRIEFCASE = "DATE_BRIEFCASE";
 ZmSearchResultsFilterPanel.ID_DATE_SENT		= "DATE_SENT";
 ZmSearchResultsFilterPanel.ID_SIZE			= "SIZE";
 ZmSearchResultsFilterPanel.ID_STATUS		= "STATUS";
@@ -92,7 +90,6 @@ ZmSearchResultsFilterPanel.ADVANCED_FILTER_LIST = [
 	ZmSearchResultsFilterPanel.ID_FROM,
 	ZmSearchResultsFilterPanel.ID_TO,
 	ZmSearchResultsFilterPanel.ID_DATE,
-	ZmSearchResultsFilterPanel.ID_DATE_BRIEFCASE,
 	ZmSearchResultsFilterPanel.ID_DATE_SENT,
 	ZmSearchResultsFilterPanel.ID_ATTACHMENT,
 	ZmSearchResultsFilterPanel.ID_SIZE,
@@ -141,11 +138,6 @@ function() {
 		text: 		ZmMsg.filterDateSent,
 		handler:	"ZmDateSearchFilter"
 	};
-	ZmSearchResultsFilterPanel.ADVANCED_FILTER[ZmSearchResultsFilterPanel.ID_DATE_BRIEFCASE] = {
-		text: 		ZmMsg.filterDate,
-		handler:	"ZmDateSearchFilter",
-		apps:       [ZmApp.BRIEFCASE]
-	};
 	ZmSearchResultsFilterPanel.ADVANCED_FILTER[ZmSearchResultsFilterPanel.ID_ATTACHMENT] = {
 		text: 		ZmMsg.filterAttachments,
 		handler:	"ZmAttachmentSearchFilter",
@@ -154,8 +146,7 @@ function() {
 	};
 	ZmSearchResultsFilterPanel.ADVANCED_FILTER[ZmSearchResultsFilterPanel.ID_SIZE] = {
 		text: 		ZmMsg.filterSize,
-		handler:	"ZmSizeSearchFilter",
-		apps:       [ZmApp.MAIL, ZmApp.BRIEFCASE]
+		handler:	"ZmSizeSearchFilter"
 	};
 	ZmSearchResultsFilterPanel.ADVANCED_FILTER[ZmSearchResultsFilterPanel.ID_STATUS] = {
 		text: 		ZmMsg.filterStatus,
@@ -333,7 +324,7 @@ function(parent, id, filter) {
 		resultsApp:		this._resultsApp
 	}
 	var filterClass = eval(handler);
-	this._advancedFilterHandlers[id] = new filterClass(params);
+	new filterClass(params);
 };
 
 /**
@@ -385,13 +376,6 @@ function() {
 		var cb = this._checkbox[id];
 		if (cb) {
 			cb.setSelected(false);
-		}
-	}
-	//reset all the advanced filters.
-	for (var i in this._advancedFilterHandlers) {
-		var handler = this._advancedFilterHandlers[i];
-		if (handler && handler.reset) {
-			handler.reset();
 		}
 	}
 };
@@ -553,7 +537,6 @@ function(menu, text, width) {
 			});
 	comboBox.addChangeListener(this._domainChangeListener.bind(this));
 	comboBox.input.addListener(DwtEvent.ONKEYUP, this._keyUpListener.bind(this));
-	subMenu.addPopdownListener(comboBox.popdown.bind(comboBox));
 	return comboBox;
 };
 
@@ -638,15 +621,7 @@ function(menu, domains) {
 	}
 };
 
-ZmAddressSearchFilter.prototype.reset =
-function() {
-	if (this._domainBox) {
-		this._domainBox.setText('');
-	}
-	if (this._addressBox) {
-		this._addressBox.setValue('');
-	}
-}
+
 
 /**
  * Allows the user to search by date (before, after, or on a particular date).
@@ -894,17 +869,9 @@ function(menu) {
 				});
 		subMenu.addClassName(this.toString() + "SubMenu");
 		menuItem.setMenu({menu: subMenu, menuPopupStyle: DwtButton.MENU_POPUP_STYLE_CASCADE});
-		var input = this._input[type] = new DwtInputField({
-			parent:          subMenu,
-			type:            DwtInputField.FLOAT,
-			errorIconStyle:  DwtInputField.ERROR_ICON_LEFT,
-			validationStyle: DwtInputField.CONTINUAL_VALIDATION,
-			size:            5
-		});
-		input.setValidNumberRange(0, 1e6);
+		var input = this._input[type] = new DwtInputField({parent:subMenu, size: 5});
 		var comboBox = new DwtComboBox({
 			parent:			input,
-			parentElement: input.getInputElement().parentNode,
 			id:		DwtId.makeId(ZmId.WIDGET_COMBOBOX, this._viewId, this.id, type+ZmSizeSearchFilter.UNIT),
 			inputParams:	{size: ZmSizeSearchFilter.COMBO_INPUT_WIDTH},
 			useLabel: true,
@@ -930,16 +897,9 @@ function(type, comboBox, ev) {
 ZmSizeSearchFilter.prototype._keyUpListener =
 function(type, comboBox, ev) {
 	var keyCode = DwtKeyEvent.getCharCode(ev);
-	var input = this._input[type];
 	if (keyCode == 13 || keyCode == 3) {
-		var errorMsg = input.getValidationError();
-		if (errorMsg) {
-			appCtxt.setStatusMsg(errorMsg, ZmStatusView.LEVEL_WARNING);
-		} else {
-			var term = new ZmSearchToken(ZmSizeSearchFilter.OP[type],
-			                             input.getValue() + comboBox.getValue());
-			this._updateCallback(term);
-		}
+		var term = new ZmSearchToken(ZmSizeSearchFilter.OP[type], this._input[type].getValue() + comboBox.getValue());
+		this._updateCallback(term);
 	}
 };
 

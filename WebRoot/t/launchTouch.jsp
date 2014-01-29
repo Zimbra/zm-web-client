@@ -34,7 +34,7 @@
 	%>
 
 	<zm:getInfoJSON var="getInfoJSON" authtoken="<%= auth %>" dosearch="true" itemsperpage="20" types="conversation"
-					folderpath="${path}" sortby="dateDesc" fullconversation="true"/>
+					folderpath="${path}" sortby="dateDesc"/>
 </c:catch>
 <c:if test="${not empty exception}">
 	<zm:getException var="error" exception="${exception}"/>

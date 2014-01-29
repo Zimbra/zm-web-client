@@ -84,7 +84,7 @@ function(list, sortField, folderId) {
 	this._rendered = true;
 
 	// check in case there are more items but no scrollbar
-	if (this._isPageless && (!list.isGal || list.isGalPagingSupported)) {
+	if (this._isPageless) {
 		this._checkItemCount();
 	}
 };
@@ -116,6 +116,21 @@ function() {
 ZmContactsBaseView.prototype.getTitle =
 function() {
 	return [ZmMsg.zimbraTitle, this._controller.getApp().getDisplayName()].join(": ");
+};
+
+/**
+ * overriding in order to prevent distribution lists from being draggable.
+ */
+ZmContactsBaseView.prototype._getDragProxy =
+function(dragOp) {
+	var dndSelection = this.getDnDSelection();
+	dndSelection = AjxUtil.toArray(dndSelection); // it might be array or just a scalar ZmContact. So this will always get array.
+	for (var i = 0; i < dndSelection.length; i++) { //if any is a DL - don't allow the drag. There could be a mix in search results.
+		if (dndSelection[i].isDistributionList()) { //don't allow dragging a DL
+			return null;
+		}
+	}
+	return ZmListView.prototype._getDragProxy.call(this, dragOp);
 };
 
 /**
@@ -195,29 +210,10 @@ function(itemArray) {
  */
 ZmContactsBaseView.prototype._modifyContact =
 function(ev) {
-	var list = this.getList();
-	//the item was updated - the list might be "old" (not pointing to the latest items,
-	// since we refreshed the items in the appCtxt cache by a different view. see bug 84226)
-	//therefor let's make sure the modified contact replaces the old one in the list.
-	var contact = ev.item;
-	if (contact) {
-		var arr = list.getArray();
-		for (var i = 0; i < arr.length; i++) {
-			if (arr[i].id === contact.id) {
-				if (arr[i] === contact) {
-					//nothing changed, still points to same object
-					break;
-				}
-				arr[i] = contact;
-				//update the viewed contact
-				this.parent.setContact(contact);
-				break;
-			}
-		}
-	}
 	// if fileAs changed, resort the internal list
 	// XXX: this is somewhat inefficient. We should just remove this contact and reinsert
 	if (ev.getDetail("fileAsChanged")) {
+		var list = this.getList();
 		if (list) {
 			list.sort(ZmContact.compareByFileAs);
 		}
@@ -472,10 +468,7 @@ function() {
 		endSortVals:	ZmContactAlphabetBar._parseSortVal(ZmMsg.alphabetEndSortValue)
 	};
 
-	var element = this.getHtmlElement();
-	element.innerHTML = AjxTemplate.expand("abook.Contacts#ZmAlphabetBar", subs);
-	Dwt.setHandler(element, DwtEvent.ONMOUSEOUT, ZmContactAlphabetBar._onMouseOut);
-	Dwt.setHandler(element, DwtEvent.ONMOUSEOVER, ZmContactAlphabetBar._onMouseOver);
+	this.getHtmlElement().innerHTML = AjxTemplate.expand("abook.Contacts#ZmAlphabetBar", subs);
 };
 
 ZmContactAlphabetBar._parseSortVal =
@@ -498,11 +491,7 @@ function(sortVal) {
  * @private
  */
 ZmContactAlphabetBar._onMouseOver =
-function(event) {
-	var cell = DwtUiEvent.getTarget(event);
-	if (cell.nodeName.toLowerCase() !== "td") {
-		return;
-	}
+function(cell) {
 	// get reference to alphabet bar - ugh
 	var alphabetBar = AjxDispatcher.run("GetContactListController").getCurrentView().getAlphabetBar();
 	if (alphabetBar.enabled()) {
@@ -514,11 +503,7 @@ function(event) {
  * @private
  */
 ZmContactAlphabetBar._onMouseOut =
-function(event) {
-	var cell = DwtUiEvent.getTarget(event);
-	if (cell.nodeName.toLowerCase() !== "td") {
-		return;
-	}
+function(cell) {
 	// get reference to alphabet bar - ugh
 	var alphabetBar = AjxDispatcher.run("GetContactListController").getCurrentView().getAlphabetBar();
 	if (alphabetBar.enabled()) {

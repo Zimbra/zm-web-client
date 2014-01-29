@@ -187,7 +187,7 @@
                 </td>
             </tr>
             <tr>
-                <td align="center" id="${id}_container">
+                <td align="center">
                     <div id="${id}_body" style="width:100%;height:100%;" class="PreviewViewBody">
                         <!-- Body Iframe -->
                     </div>
@@ -248,33 +248,3 @@
 	</table>
 </template>
 
-<template id='briefcase.Briefcase#ZmDocsEditView'>
-    <table class="ZmDocsEditViewTable">
-        <tbody>
-            <tr>
-                <td colspan="4" class="ZmDocsEditViewHeaderCell" id="${headerId}"></td>
-            </tr>
-            <tr>
-                <td colspan="4" class="ZmDocsEditViewMainCell" id="${mainId}"></td>
-            </tr>
-            <tr class="ZmHtmlEditorFooter" id="${footerId}">
-			    <td>
-                    <$= ZmMsg.locationLabel $>
-                    <span id="${locationId}"></span>
-                </td>
-			    <td>
-                    <$= ZmMsg.versionLabel $>
-                    <span id="${versionId}"></span>
-                </td>
-			    <td>
-                    <$= ZmMsg.authorLabel $>
-                    <span id="${authorId}"></span>
-                </td>
-			    <td>
-                    <$= ZmMsg.modifiedOnLabel $>
-                    <span id="${modifiedId}"></span>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-</template>

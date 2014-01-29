@@ -102,6 +102,8 @@ ZCS.constant.IS_ENABLED[ZCS.constant.APP_CALENDAR]              = true;
 ZCS.constant.IS_ENABLED[ZCS.constant.FEATURE_ADD_ATTACHMENT]    = true;
 ZCS.constant.IS_ENABLED[ZCS.constant.FEATURE_QUICK_REPLY]       = true;
 ZCS.constant.IS_ENABLED[ZCS.constant.FEATURE_FIND_OBJECTS]      = true;
+// Keep calendar disabled by default ref Bug: 83049
+ZCS.constant.IS_ENABLED[ZCS.constant.APP_CALENDAR]  = false;
 
 // Text to show in overview toolbar if we're showing search results (not a folder, saved search, or tag)
 ZCS.constant.DEFAULT_OVERVIEW_TITLE = ZtMsg.searchResults;

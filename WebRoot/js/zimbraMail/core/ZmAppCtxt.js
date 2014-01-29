@@ -45,12 +45,6 @@ ZmAppCtxt = function() {
     this.sendAsEmails = [];
     this.sendOboEmails = [];
 
-    // HTML-5 offline-specific
-    this.isWebClientOfflineSupported = AjxEnv.isOfflineSupported && window.isWebClientOfflineEnabled;
-    if (this.isWebClientOfflineSupported) {
-        this.webClientOfflineHandler = new ZmOffline();
-    }
-
 	this._evtMgr = new AjxEventMgr();
 
 	this._itemCache			= {};
@@ -66,11 +60,6 @@ ZmAppCtxt.MAX_TIMEOUT_VALUE = 2147483647;
 
 ZmAppCtxt._ZIMLETS_EVENT = 'ZIMLETS';
 ZmAppCtxt._AUTHTOKEN_EVENT = 'AUTHTOKEN';
-
-//Regex constants
-//Bug fix # 79986, #81095. Invalid file names are < > , ? | / \ * :
-ZmAppCtxt.INVALID_NAME_CHARS = "[\\|?<>:*\",\\\\\/]";
-ZmAppCtxt.INVALID_NAME_CHARS_RE = new RegExp(ZmAppCtxt.INVALID_NAME_CHARS);
 
 /**
  * Returns a string representation of the application context.
@@ -113,10 +102,6 @@ function(listener) {
 
 ZmAppCtxt.prototype._authTokenWarningTimeout =
 function () {
-
-	if (!window.authTokenExpires) {
-		return; //for cases we the auth token expires is not available. (e.g. some new windows we didn't set it for yet, or for saved rest URLs
-	}
 
 	var now = new Date().getTime();
 	var millisToLive = window.authTokenExpires - now;
@@ -426,19 +411,6 @@ function() {
 };
 
 /**
- * Gets the message dialog with a help button.
- *
- * @return	{DwtMessageDialog}	the message dialog
- */
-ZmAppCtxt.prototype.getHelpMsgDialog =
-	function() {
-		if (!this._helpMsgDialog) {
-			this._helpMsgDialog = new DwtMessageDialog({parent:this._shell, helpText:ZmMsg.help, id: "ZmHelpMsgDialog"});
-		}
-		return this._helpMsgDialog;
-	};
-
-/**
  * Gets the yes/no message dialog.
  * 
  * @return	{DwtMessageDialog}	the message dialog
@@ -595,7 +567,7 @@ function() {
 ZmAppCtxt.prototype.getNewCalendarDialog =
 function() {
 	if (!this._newCalendarDialog) {
-		AjxDispatcher.require(["MailCore", "CalendarCore", "Calendar", "CalendarAppt"]);
+		AjxDispatcher.require(["CalendarCore", "Calendar", "CalendarAppt"]);
 		this._newCalendarDialog = new ZmNewCalendarDialog(this._shell);
 	}
 	return this._newCalendarDialog;
@@ -623,7 +595,7 @@ function() {
 ZmAppCtxt.prototype.getSuggestionPreferenceDialog =
 function() {
 	if (!this._suggestionPrefDialog) {
-		AjxDispatcher.require(["MailCore", "CalendarCore", "Calendar"]);
+		AjxDispatcher.require(["CalendarCore", "Calendar"]);
         this._suggestionPrefDialog = new ZmTimeSuggestionPrefDialog(this._shell);
     }
     return this._suggestionPrefDialog;
@@ -1315,22 +1287,6 @@ function() {
 	return this._uploadManagerIframeId;
 };
 
-ZmAppCtxt.prototype.reloadOfflineAppCache =
-function(locale, skin, reload){
-    if (this.isWebClientOfflineSupported) {
-        var appCacheManifest= appContextPath + "/appcache/images,common,dwt,msgview,login,zm,spellcheck,skin.appcache?";
-        var urlParams = [];
-        window.cacheKillerVersion && urlParams.push("v=" + window.cacheKillerVersion);
-        urlParams.push("debug="+window.appDevMode);
-        urlParams.push("compress=" + !(window.appDevMode === true));
-        urlParams.push("templates=only");
-        var manifestUrl = encodeURIComponent(appCacheManifest + urlParams.join('&'));
-        document.cookie = "ZM_CACHE_NEW_LANG = " + locale ;
-        document.cookie = "ZM_CACHE_NEW_SKIN = " + skin ;
-        $("#offlineIframe").attr('src', 'public/Offline.jsp/?url=' + manifestUrl + '&reload=' + reload);
-    }
-};
-
 /**
  * Gets the upload manager.
  * 
@@ -1485,10 +1441,8 @@ function(fullVersion, width, height, name) {
     if (window.appCoverageMode) {
         url[i++] = "&coverage=1";
     }
-	this.__childWindowId = (this.__childWindowId+1) || 0;
-	url[i++] = "&childId=" + this.__childWindowId;
+     name = name || "_blank";
 
-    name = name || "_blank";
 	width = width || 705;
 	height = height || 465;
 	var args = ["height=", height, ",width=", width, ",location=no,menubar=no,resizable=yes,scrollbars=no,status=yes,toolbar=no"].join("");
@@ -1499,7 +1453,7 @@ function(fullVersion, width, height, name) {
 	this.handlePopupBlocker(newWin);
 	if(newWin) {
 		// add this new window to global list so parent can keep track of child windows!
-		return this.getAppController().addChildWindow(newWin, this.__childWindowId);
+		return this.getAppController().addChildWindow(newWin);
 	}
 };
 
@@ -1846,13 +1800,12 @@ function(ev) {
     			proto = switchMode ? proto : parts.protocol;
     			port = switchMode ? port : parts.port;
     		}
-			var qsArgs = {skin: appCurrentSkin};
-    		url = AjxUtil.formatUrl({protocol: proto, port: port, path: path, qsReset: true, qsArgs: qsArgs});
+    		url = AjxUtil.formatUrl({protocol:proto, port:port, path:path, qsReset:true});
     	}
 
     	var args  = "height=465,width=705,location=no,menubar=no,resizable=yes,scrollbars=no,status=yes,toolbar=no";
     	window.open(url,'ChangePasswordWindow', args);
-};
+}
 
 /**
  * Gets the skin hint for the given argument(s), which will be used to look
@@ -2064,64 +2017,28 @@ function() {
 };
 
 /**
+ * Returns true for enabling tinymce editor
+*/
+ZmAppCtxt.prototype.isTinyMCEEnabled =
+function() {
+    return true;
+};
+
+/**
  * When using pre-auth window.opener.appCtxt may not be accessible.  This function
  * handles appCtxt assignment to avoid a permission denied error
  * @return {Object} ZmAppCtxt
  */
 ZmAppCtxt.handleWindowOpener = 
 function() {
-	try {
-		return window.opener && window.opener.appCtxt || appCtxt;
+	var aCtxt = appCtxt;
+	if (window.opener) {
+		try {
+			aCtxt = window.opener.appCtxt;
+		}
+		catch (ex) {
+			aCtxt = appCtxt;
+		}
 	}
-	catch (ex) {
-		return appCtxt;
-	}
-};
-
-ZmAppCtxt.prototype.isWebClientOffline =
-function() {
-    if (this.isWebClientOfflineSupported) {
-        return ZmOffline.isServerReachable === false;
-    }
-    return false;
-};
-
-ZmAppCtxt.prototype.initWebOffline =
-function(params) {
-	this.webClientOfflineHandler.init(params);
-};
-
-/**
- * Gets the offline settings dialog.
- *
- * @return	{ZmOfflineSettingsDialog}	offline settings dialog
- */
-ZmAppCtxt.prototype.getOfflineSettingsDialog =
-function() {
-    if (!this._offlineSettingsDialog) {
-        this._offlineSettingsDialog = new ZmOfflineSettingsDialog();
-    }
-    return this._offlineSettingsDialog;
-};
-
-/**
- * Returns true if the given ID is not local. That's the case if the ID has
- * an account part that is not the active account.
- *
- * @param {String|Number}   id
- * @returns {Boolean}   true if the given ID is not local
- */
-ZmAppCtxt.prototype.isRemoteId = function(id) {
-	id = String(id);
-	var acct = appCtxt.getActiveAccount();
-	return (id.indexOf(":") !== -1) && (id.indexOf(acct.id) !== 0);
-};
-
-/**
- * Returns the singleton AjxClipboard instance, if it is supported.
- *
- * @returns {AjxClipboard}
- */
-ZmAppCtxt.prototype.getClipboard = function() {
-	return AjxClipboard.isSupported() ? new AjxClipboard() : null;
+	return aCtxt;
 };

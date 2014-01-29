@@ -301,7 +301,7 @@
     initAuto("bccField","bccContainer");
 </app:autoComplete>
 
-<c:if test="${isHtml}" >
+<c:if test="${(isHtml)}" >
 <app:htmlCompose isHtmlCont="${isHtmlCont}" mailbox="${mailbox}" />
 </c:if>
 

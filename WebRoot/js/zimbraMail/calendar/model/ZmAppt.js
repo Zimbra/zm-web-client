@@ -157,30 +157,6 @@ function() {
 
 // Public methods
 
-ZmAppt.loadOfflineData =
-function(apptInfo, list) {
-    var appt = new ZmAppt(list);
-    var recurrence;
-    var alarmActions;
-    var subObjects = {_recurrence:ZmRecurrence, alarmActions:AjxVector};
-    for (var prop in apptInfo) {
-        // PROBLEM: The indexeddb serialization/deserialization does not recreate the actual objects - for example,
-        // a AjxVector is recreated as an object containing an array.  We really want a more generalized means, but
-        // for the moment do custom deseralization here.   Also, assuming only one sublevel of custom objects
-        if (subObjects[prop]) {
-            var obj = new subObjects[prop]();
-            for (var rprop in apptInfo[prop]) {
-                obj[rprop] = apptInfo[prop][rprop];
-            }
-            appt[prop] = obj;
-        } else {
-            appt[prop] = apptInfo[prop];
-        }
-    }
-
-    return appt;
-}
-
 /**
  * Used to make our own copy because the form will modify the date object by 
  * calling its setters instead of replacing it with a new date object.
@@ -287,24 +263,16 @@ function(controller, callback) {
 		sentBy: sentBy,
 		when: this.getDurationText(false, false),
 		location: this.getLocation(),
-		width: "250",
-		hideAttendees: true
+		width: "250"
 	};
 
 	this.updateParticipantStatus();
 	if (this.ptstHashMap != null) {
 		var ptstStatus = {};
-		var statusAttendees;
-		var hideAttendees = true;
-		statusAttendees = ptstStatus[ZmMsg.ptstAccept] = this.getAttendeeToolTipString(this.ptstHashMap[ZmCalBaseItem.PSTATUS_ACCEPT]);
-		hideAttendees = hideAttendees && !statusAttendees;
-		statusAttendees = ptstStatus[ZmMsg.ptstDeclined] = this.getAttendeeToolTipString(this.ptstHashMap[ZmCalBaseItem.PSTATUS_DECLINED]);
-		hideAttendees = hideAttendees && !statusAttendees;
-		statusAttendees = ptstStatus[ZmMsg.ptstTentative] = this.getAttendeeToolTipString(this.ptstHashMap[ZmCalBaseItem.PSTATUS_TENTATIVE]);
-		hideAttendees = hideAttendees && !statusAttendees;
-		statusAttendees = ptstStatus[ZmMsg.ptstNeedsAction] = this.getAttendeeToolTipString(this.ptstHashMap[ZmCalBaseItem.PSTATUS_NEEDS_ACTION]);
-		hideAttendees = hideAttendees && !statusAttendees;
-		params.hideAttendees = hideAttendees;
+		ptstStatus[ZmMsg.ptstAccept] = this.getAttendeeToolTipString(this.ptstHashMap[ZmCalBaseItem.PSTATUS_ACCEPT]);
+		ptstStatus[ZmMsg.ptstDeclined] = this.getAttendeeToolTipString(this.ptstHashMap[ZmCalBaseItem.PSTATUS_DECLINED]);
+		ptstStatus[ZmMsg.ptstTentative] = this.getAttendeeToolTipString(this.ptstHashMap[ZmCalBaseItem.PSTATUS_TENTATIVE]);
+		ptstStatus[ZmMsg.ptstNeedsAction] = this.getAttendeeToolTipString(this.ptstHashMap[ZmCalBaseItem.PSTATUS_NEEDS_ACTION]);
 		params.ptstStatus = ptstStatus;
 
 		var attendees = [];
@@ -1126,10 +1094,7 @@ function(inv, m, notifyList, attendee, type, request) {
 			role = attendee.getParticipantRole() ? attendee.getParticipantRole() : ZmCalItem.ROLE_REQUIRED;
 		}
 		at.role = role;
-		var ptst = attendee.getParticipantStatus();
-		if (!ptst || type === ZmCalBaseItem.PERSON && this.dndUpdate) {  //Bug 56639 - special case for drag-n-drop since the ptst was not updated correctly as we didn't have the informations about attendees and changes.
-			ptst = ZmCalBaseItem.PSTATUS_NEEDS_ACTION
-		}
+		var ptst = attendee.getParticipantStatus() || ZmCalBaseItem.PSTATUS_NEEDS_ACTION;
 		if (notifyList) {
 			var attendeeFound = false;
 			for (var i = 0; i < notifyList.length; i++) {

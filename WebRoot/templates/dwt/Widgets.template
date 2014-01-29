@@ -75,7 +75,7 @@
 </template>
 
 <template id='dwt.Widgets#DwtDialogControls'>
-	<div class='horizSep' id="${id}_buttonsSep"></div>
+	<div class='horizSep'></div>
 	<div id='${id}_buttons' class='DwtDialogButtonBar'>
 		<$ if (AjxEnv.isNav) { $>
 			<input type='button' id='${id}_focus' style='height:0px;width:0px;display:none;'>
@@ -108,7 +108,7 @@
 </template>
 
 <template id='dwt.Widgets#DwtToolTip' width='5' height='5'>
-	<div id='tooltipContents' class='DwtToolTipBody'></div>
+	<div id='${id}Contents' class='DwtToolTipBody'></div>
 </template>
 
 
@@ -200,10 +200,6 @@
 </template>
 
 <template id='dwt.Widgets#ZLinkButton' class='ZWidget'>
-	<$ if (data.noDropDown) { $>
-		<a href='javascript:;' onclick='return false;' id='${id}_title'></a>
-	<$ }
-	   else { $>
 	<table class='DwtLinkButtonTable' style='table-layout:auto;'>
 		<tr>
 			<td class='ZWidgetTitle'><a href='javascript:;' onclick='return false;' id='${id}_title'></a></td>
@@ -219,7 +215,6 @@
 			</td>
 		</tr>
 	</table>
-	<$ } $>
 </template>
 
 <template id='dwt.Widgets#ZButtonColorDisplay'>
@@ -251,33 +246,13 @@
 </template>
 
 <template id='dwt.Widgets#ZTabBar' class='ZWidget'>
-	<table width='100%'>
+	<table>
 		<tr valign='bottom' id='${id}_items'>
 			<$= AjxTemplate.expand("#ZTabBarPrefix", data) $>
 			<$= AjxTemplate.expand("#ZTabBarSuffix", data) $>
 		</tr>
 	</table>
 </template>
-
-<template id='dwt.Widgets#ZTabBarPrefix'>
-	<td id='${id}_prefix'><div class='ZTabBarPrefix'></div></td>
-</template>
-
-<template id='dwt.Widgets#ZTabBarSuffix'>
-	<td id='${id}_suffix' width='100%'><div class='ZTabBarSuffix'></div></td>
-</template>
-
-<template id='dwt.Widgets#ZTab' class='ZWidget'>
-	<$ var buttonClass = data.buttonClass || "Tab" $>
-	<table id='${id}_select' class='Z<$=buttonClass$>Table Z<$=buttonClass$>Border ZWidgetTable ZWidgetBorder'>
-		<tr>
-			<td id='${id}_left_icon' class='ZLeftIcon ZWidgetIcon'></td>
-			<td id='${id}_title' class='ZWidgetTitle'></td>
-			<td id='${id}_right_icon' class='ZRightIcon ZWidgetIcon'></td>
-		</tr>
-	</table>
-</template>
-
 
 <template id='dwt.Widgets#ZTabBarFloat' class='ZWidget'>
 	<div id='${id}_items'>
@@ -292,6 +267,25 @@
 
 <template id='dwt.Widgets#ZTabBarSuffixFloat'>
 	<div id='${id}_suffix' class='ZTabBarSuffix'>&nbsp;</div>
+</template>
+
+<template id='dwt.Widgets#ZTabBarPrefix'>
+	<td id='${id}_prefix' class='ZTabBarPrefix'>&nbsp;</td>
+</template>
+
+<template id='dwt.Widgets#ZTabBarSuffix'>
+	<td id='${id}_suffix' class='ZTabBarSuffix'>&nbsp;</td>
+</template>
+
+<template id='dwt.Widgets#ZTab' class='ZWidget'>
+	<$ var buttonClass = data.buttonClass || "Tab" $>
+	<table id='${id}_select' class='Z<$=buttonClass$>Table Z<$=buttonClass$>Border ZWidgetTable ZWidgetBorder'>
+		<tr>
+			<td id='${id}_left_icon' class='ZLeftIcon ZWidgetIcon'></td>
+			<td id='${id}_title' class='ZWidgetTitle'></td>
+			<td id='${id}_right_icon' class='ZRightIcon ZWidgetIcon'></td>
+		</tr>
+	</table>
 </template>
 
 <template id='dwt.Widgets#ZTabFloat' class='ZWidget'>
@@ -511,8 +505,8 @@ NOTE: The outer table/tr is a necessary hack. It is NOT inserted in the
 <template id='dwt.Widgets#DwtListView-NoResults'>
 	<table width='100%'>
 		<tr>
-			<td class='NoResults'>
-				${message}
+			<td class='NoResults' valign='top'>
+				<br><br>${message}
 			</td>
 		</tr>
 	</table>
@@ -655,19 +649,3 @@ NOTE: The outer table/tr is a necessary hack. It is NOT inserted in the
 	</table>
 </template>
 
-<template id='dwt.Widgets#SVGGradient'>
-	<?xml version="1.0" ?>
-	<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%"
-	     viewBox="0 0 1 1" preserveAspectRatio="none">
-		<linearGradient id="thegradient"
-		                gradientUnits="userSpaceOnUse"
-		                x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}">
-			<stop offset="0%" stop-color="${startColor}"
-			            stop-opacity="1"/>
-			<stop offset="100%" stop-color="${endColor}"
-			            stop-opacity="1"/>
-		</linearGradient>
-		<rect x="0" y="0" width="1" height="1"
-		fill="url(#thegradient)" />
-	</svg>
-</template>

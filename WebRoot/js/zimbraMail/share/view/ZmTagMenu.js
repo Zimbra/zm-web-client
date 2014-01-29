@@ -134,35 +134,30 @@ ZmTagMenu.prototype._getAddRemove =
 function(items, tagList) {
 	// find out how many times each tag shows up in the items
 	var tagCount = {};
-	var tagRemoveHash = {};
 	for (var i = 0; i < items.length; i++) {
 		var item = items[i];
-		if (!item.tags) {
+		if (!item || !item.tags || !item.tags.length) {
 			continue;
 		}
 		for (var j = 0; j < item.tags.length; j++) {
 			var tagName = item.tags[j];
 			tagCount[tagName] = tagCount[tagName] || 0;
-			tagRemoveHash[tagName]  = true;
-			//NOTE hasTag and canAddTag are not interchangeable - for Conv it's possible you can both add the tag and remove (if only some messages are tagged)
-			if (!item.canAddTag(tagName)) {
-				tagCount[tagName] += 1;
-			}
+			tagCount[tagName] += 1;
 		}
 	}
-	var add = [];
+	var add = {};
 	var remove = [];
 	// any tag held by fewer than all the items can be added
 	var a = tagList.children.getArray();
-	for (i = 0; i < a.length; i++) {
-		var tag = a[i];
-		tagName = tag.name;
+	for (var i = 0; i < a.length; i++) {
+		var tagName = a[i].name;
 		if (!tagCount[tagName] || (tagCount[tagName] < items.length)) {
-			add.push(tag);
+			add[tagName] = true;
 		}
-		if (tagRemoveHash[tagName]) {
-			remove.push(tag);
-		}
+	}
+	// any tag we saw can be removed
+	for (var tagName in tagCount) {
+		remove.push(tagName);
 	}
 
 	return {add: add, remove: remove};
@@ -173,12 +168,17 @@ function(items, tagList) {
 ZmTagMenu.prototype._render =
 function(tagList, addRemove) {
 
-	for (var i = 0; i < addRemove.add.length; i++) {
-		var tag = addRemove.add[i];
-		this._addNewTag(this, tag, true, null, this._addHash);
+	var sz = tagList.size();
+	var a = tagList.children.getArray();
+	for (var i = 0; i < sz; i++) {
+		var tag = a[i];
+		var tagName = tag.name;
+		if (addRemove.add[tagName]) {
+			this._addNewTag(this, tag, true, null, this._addHash);
+		}
 	}
 
-	if (addRemove.add.length) {
+	if (this._tagList.size()) {
 		new DwtMenuItem({parent:this, style:DwtMenuItem.SEPARATOR_STYLE});
 	}
 
@@ -211,7 +211,7 @@ function(tagList, addRemove) {
 					miRemove.setMenu(removeMenu);
                     removeMenu.setHtmlElementId('REMOVE_TAG_MENU_' + this.getHTMLElId());
 				}
-				var tag = removeList[i];
+				var tag = tagList.getByNameOrRemote(removeList[i]);
                 var tagHtmlId = 'Remove_tag_' + i;
 				this._addNewTag(removeMenu, tag, false, null, this._removeHash, tagHtmlId);
 			}
@@ -226,7 +226,7 @@ function(tagList, addRemove) {
 			mi.addSelectionListener(new AjxListener(this, this._menuItemSelectionListener), 0);
 		}
 		else {
-			var tag = removeList[0];
+			var tag = tagList.getByNameOrRemote(removeList[0]);
 			miRemove.setData(ZmTagMenu.KEY_TAG_EVENT, ZmEvent.E_TAGS);
 			miRemove.setData(ZmTagMenu.KEY_TAG_ADDED, false);
 			miRemove.setData(Dwt.KEY_OBJECT, tag);

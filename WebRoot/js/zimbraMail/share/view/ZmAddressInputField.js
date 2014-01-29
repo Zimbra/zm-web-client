@@ -551,12 +551,10 @@ ZmAddressInputField.expandBubble =
 function(bubbleId, email) {
 
 	var bubble = document.getElementById(bubbleId);
-	if (bubble) {
-		var parentId = bubble._aifId || ZmAddressInputField.BUBBLE_OBJ_ID[bubbleId];
-		var addrInput = bubble && DwtControl.ALL_BY_ID[parentId];
-		if (addrInput && addrInput.getEnabled()) {
-			addrInput.expandBubble(bubbleId, email);
-		}
+	var parentId = bubble._aifId || ZmAddressInputField.BUBBLE_OBJ_ID[bubbleId];
+	var addrInput = bubble && DwtControl.ALL_BY_ID[parentId];
+	if (addrInput && addrInput.getEnabled()) {
+		addrInput.expandBubble(bubbleId, email);
 	}
 };
 
@@ -578,8 +576,6 @@ function(params) {
 	this._inputId = params.inputId || Dwt.getNextId();
 	this._dragInsertionBarId = Dwt.getNextId();
 	var data = {
-		inputTagName:		AjxEnv.isIE || AjxEnv.isModernIE ?
-								'textarea' : 'input',
 		holderId:			this._holderId,
 		inputId:			this._inputId,
 		dragInsertionBarId:	this._dragInsertionBarId
@@ -646,13 +642,14 @@ function() {
 ZmAddressInputField.prototype._setInputValue =
 function(value) {
 	DBG.println("aif", "SET input value to: " + AjxStringUtil.htmlEncode(value));
-	this._input.value = value && value.replace(/\s+/g, ' ');
+	this._input.value = value;
 	this._resizeInput();
 };
 
 // Handles key events that occur in the INPUT.
 ZmAddressInputField.prototype._keyDownCallback =
 function(ev, aclv) {
+
 	ev = DwtUiEvent.getEvent(ev);
 	var key = DwtKeyEvent.getCharCode(ev);
 	var propagate;
@@ -755,7 +752,7 @@ function(ev) {
 		actionMenu.getOp(ZmOperation.CONTACT).setVisible(false);
 		actionMenu.getOp(ZmOperation.EXPAND).setVisible(false);
 
-		this._setContactText(null);
+		this._setContactText(false);
 		menu.popup(0, ev.docX, ev.docY);
 	}
 
@@ -800,7 +797,6 @@ function() {
 			menu.addSelectionListener(menuItem, this._listeners[menuItem]);
 		}
 	}
-	menu.addPopupListener(this._menuPopupListener.bind(this));
 	menu.addPopdownListener(this._menuPopdownListener.bind(this));
 
 	if (this._bubbleMenuCreatedCallback) {
@@ -818,7 +814,6 @@ function() {
 		var sel = this.getSelection();
 		var bubble = (sel.length == 1) ? sel[0] : null;
 		menu.enable(ZmOperation.DELETE, sel.length > 0);
-		menu.enable(ZmOperation.COPY, sel.length > 0);
 		menu.enable(ZmOperation.EDIT, Boolean(bubble));
 		var email = bubble && bubble.email;
 		var ac = window.parentAppCtxt || window.appCtxt;
@@ -827,15 +822,7 @@ function() {
 		//not sure this is %100 good, since isExpandableDL returns false also if EXPAND_DL_ENABLED setting is false.
 		//but I tried to do this in _setContactText by passing in the contact we get (using getContactByEmail) - but that contact somehow doesn't
 		//have isGal set or type "group" (the type is "contact"), thus isDistributionList returns null. Not sure what this inconsistency comes from.
-
-		//so this is messy and I just try to do the best with information - see the comment above - so I use isExpandableDl as indication of DL (sometimes it's false despite it being an expandable DL)
-		//and I also use isDL as another way to try to know if it's a DL (by trying to find the contact from the contactsApp cache - sometimes it's there, sometimes not (it's there
-		//after you go to the DL folder).
-		var contactsApp = appCtxt.getApp(ZmApp.CONTACTS);
-		var contact = contactsApp && contactsApp.getContactByEmail(email);
-		var isDL = contact && contact.isDistributionList();
-		var canEdit = !(isDL || isExpandableDl) || (contact && contact.dlInfo && contact.dlInfo.isOwner);
-		menu.enable(ZmOperation.CONTACT, canEdit);
+		menu.enable(ZmOperation.CONTACT, !isExpandableDl);
 
 	}
 
@@ -846,29 +833,27 @@ function() {
 
 ZmAddressInputField.prototype._getActionMenuOps =
 function() {
-
-	var ops = [ZmOperation.DELETE];
-	if (AjxClipboard.isSupported()) {
-		// we use Zero Clipboard (a Flash hack) to copy address
-		ops.push(ZmOperation.COPY);
-	};
-	ops.push(ZmOperation.EDIT);
-	ops.push(ZmOperation.EXPAND);
-	ops.push(ZmOperation.CONTACT);
-	
-	return ops;
+	return [
+		ZmOperation.DELETE,
+		ZmOperation.EDIT,
+		ZmOperation.EXPAND,
+		ZmOperation.CONTACT
+	];
 };
 
 ZmAddressInputField.prototype._handleResponseGetContact =
 function(ev, contact) {
 	ZmAddressInputField.menuContext.contact = contact;
-	this._setContactText(contact);
+	this._setContactText(contact != null);
 	this.getActionMenu().popup(0, ev.docX, ev.docY);
 };
 
 ZmAddressInputField.prototype._setContactText =
-function(contact) {
-	ZmListController.setContactTextOnMenus(contact, this.getActionMenu());
+function(isContact) {
+	var actionMenu = this.getActionMenu();
+	var newOp = isContact ? ZmOperation.EDIT_CONTACT : ZmOperation.NEW_CONTACT;
+	var newText = isContact ? null : ZmMsg.AB_ADD_CONTACT;
+	ZmOperation.setOperation(actionMenu, ZmOperation.CONTACT, newOp, newText);
 };
 
 ZmAddressInputField.prototype._deleteListener =
@@ -925,7 +910,7 @@ function() {
 	var contact = ZmAddressInputField.menuContext.contact;
 	if (contact) {
 		if (contact.isLoaded) {
-			ctlr.show(contact);
+			ctlr.show(contact, true);
 		} else {
 			var callback = this._loadContactCallback.bind(this);
 			contact.load(callback);
@@ -946,30 +931,6 @@ function(resp, contact) {
 	var ctlr = window.parentAppCtxt ? window.parentAppCtxt.getApp(ZmApp.CONTACTS).getContactController() :
 									  AjxDispatcher.run("GetContactController");
 	ctlr.show(contact);
-};
-
-// Sets up our use of the clipboard to copy address via a menu item
-ZmAddressInputField.prototype._menuPopupListener =
-function() {
-
-	var clipboard = appCtxt.getClipboard();
-	if (clipboard) {
-		clipboard.addClient('ZmAddressInputField', this._actionMenu.getOp(ZmOperation.COPY), {
-			onMouseDown:    this._clipCopy.bind(this),
-			onComplete:     this._clipCopyComplete.bind(this)
-		});
-	}
-};
-
-// Copies address text from the active bubble to the clipboard.
-ZmAddressInputField.prototype._clipCopy =
-function(clip) {
-	clip.setText(ZmAddressInputField.menuContext.bubble.address + this._separator);
-};
-
-ZmAddressInputField.prototype._clipCopyComplete =
-function(clip) {
-	this._actionMenu.popdown();
 };
 
 ZmAddressInputField.prototype._menuPopdownListener =
@@ -1044,11 +1005,7 @@ function(restore) {
 ZmAddressInputField.prototype._resizeInput =
 function() {
 	var val = AjxStringUtil.htmlEncode(this._input.value);
-	var paddings = Dwt.getMargins(this._holder);
-	var margins = Dwt.getMargins(this._input);
-	var maxWidth = Dwt.getSize(this._holder).x - (this._input.offsetLeft + ((AjxEnv.isTrident) ? (margins.left + paddings.left) : 0) + paddings.right + margins.right + 1);
-	maxWidth = Math.max(maxWidth, 3); //don't get too small - minimum 3 - if it gets negative, the cursor would not show up before starting to type (bug 84924)
-
+	var holderWidth = Dwt.getSize(this._holder).x;
 	var inputFontSize = DwtCssStyle.getProperty(this._input, "font-size");
 	var strW = AjxStringUtil.getWidth(val, false, inputFontSize);
 	if (AjxEnv.isWindows && (AjxEnv.isFirefox || AjxEnv.isSafari || AjxEnv.isChrome) ){
@@ -1056,11 +1013,15 @@ function() {
 		strW = strW * 1.2;
 	}
 	var pad = this._editMode ? ZmAddressInputField.INPUT_EXTRA_SMALL : ZmAddressInputField.INPUT_EXTRA;
-	var inputWidth = Math.min(strW + pad, maxWidth);
+	var inputWidth = Math.min(strW, holderWidth) + pad;
 	if (this._editMode) {
 		inputWidth = Math.max(inputWidth, ZmAddressInputField.INPUT_EXTRA);
 	}
 	Dwt.setSize(this._input, inputWidth, Dwt.DEFAULT);
+
+	if (AjxEnv.isIE) {
+		// TODO: make the INPUT line up with the SPANs vertically
+	}
 };
 
 ZmAddressInputField.prototype.hasFocus =
@@ -1915,7 +1876,7 @@ function() {
 	var sel = this.getSelection();
 	var addrs = [];
 	for (var i = 0; i < sel.length; i++) {
-		addrs.push(sel[i].address);
+		addrs.push(sel[i].email);
 	}
 	var textarea = this._getTextarea();
 	textarea.value = addrs.join(this._separator) + this._separator;

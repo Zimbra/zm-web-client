@@ -131,7 +131,10 @@ ZmFolder.QUERY_NAME[ZmOrganizer.ID_BRIEFCASE]	= "briefcase";
 ZmFolder.QUERY_NAME[ZmFolder.ID_CHATS]			= "chats";
 ZmFolder.QUERY_NAME[ZmFolder.ID_SYNC_FAILURES]	= "Error Reports";
 
-ZmFolder.QUERY_ID = AjxUtil.valueHash(ZmFolder.QUERY_NAME);
+ZmFolder.QUERY_ID = {};
+for (var id in ZmFolder.QUERY_NAME) {
+	ZmFolder.QUERY_ID[ZmFolder.QUERY_NAME[id]] = id;
+}
 
 // order within the overview panel
 ZmFolder.SORT_ORDER = {};
@@ -310,7 +313,7 @@ function(newParent, noUndo, actionText, batchCmd) {
 	if (origName != name) {
 		this.rename(name);
 	}
-	ZmOrganizer.prototype.move.call(this, newParent, noUndo, batchCmd);
+	ZmOrganizer.prototype.move.call(this, newParent, noUndo, actionText, batchCmd);
 };
 
 /**
@@ -549,54 +552,49 @@ function(otherAccount) {
 };
 
 /**
- * Returns true if the given object(s) may be placed in this folder.
- *
- * If the object is a folder, check that:
- * <ul>
- * <li>We are not the immediate parent of the folder</li>
- * <li>We are not a child of the folder</li>
- * <li>We are not Spam or Drafts</li>
- * <li>We don't already have a child with the folder's name (unless we are in Trash)</li>
- * <li>We are not moving it into a folder of a different type</li>
- * <li>We are not moving a folder into itself</li>
- * </ul>
- *
- * If the object is an item or a list or items, check that:
- * <ul>
- * <li>We are not the Folders container</li>
- * <li>We are not a search folder</li>
- * <li>The items aren't already in this folder</li>
- * <li>A contact can only be moved to Trash</li>
- * <li> A draft can be moved to Trash or Drafts</li>
- * <li>Non-drafts cannot be moved to Drafts</li>
- * </ul>
- *
- * @param {Object}	what		the object(s) to possibly move into this folder (item or organizer)
- * @param {constant}	folderType	the contextual folder type (for tree view root items)
- * @param {boolean}	ignoreExisting  Set to true if checks for item presence in the folder should be skipped (e.g. when recovering deleted items)
- */
+* Returns true if the given object(s) may be placed in this folder.
+*
+* If the object is a folder, check that:
+* <ul>
+* <li>We are not the immediate parent of the folder</li>
+* <li>We are not a child of the folder</li>
+* <li>We are not Spam or Drafts</li>
+* <li>We don't already have a child with the folder's name (unless we are in Trash)</li>
+* <li>We are not moving a regular folder into a search folder</li>
+* <li>We are not moving a search folder into the Folders container</li>
+* <li>We are not moving a folder into itself</li>
+* </ul>
+*
+* If the object is an item or a list or items, check that:
+* <ul>
+* <li>We are not the Folders container</li>
+* <li>We are not a search folder</li>
+* <li>The items aren't already in this folder</li>
+* <li>A contact can only be moved to Trash</li>
+* <li> A draft can be moved to Trash or Drafts</li>
+* <li>Non-drafts cannot be moved to Drafts</li>
+* </ul>
+*
+* @param {Object}	what		the object(s) to possibly move into this folder (item or organizer)
+* @param {constant}	folderType	the contextual folder type (for tree view root items)
+* @param {boolean}	ignoreExisting  Set to true if checks for item presence in the folder should be skipped (e.g. when recovering deleted items)
+*/
 ZmFolder.prototype.mayContain =
 function(what, folderType, ignoreExisting) {
-
-	if (!what) {
-		return true;
-	}
-	if (this.isFeed() /*|| this.isSyncIssuesFolder()*/) {
-		return false;
-	}
-	// placeholder for showing a large number of folders
-	if (this.id === ZmFolder.ID_LOAD_FOLDERS) {
-		return false;
-	}
+	if (!what) { return true; }
+	if (this.isFeed() /*|| this.isSyncIssuesFolder()*/) { return false; }
 
 	var thisType = folderType || this.type;
 	var invalid = false;
 	if (what instanceof ZmFolder) {
-        invalid = ((what.parent === this && !ignoreExisting) || this.isChildOf(what) || this.nId === ZmFolder.ID_DRAFTS || this.nId === ZmFolder.ID_SPAM ||
+        invalid = ((what.parent == this && !ignoreExisting) || this.isChildOf(what) || this.nId == ZmFolder.ID_DRAFTS || this.nId == ZmFolder.ID_SPAM ||
 				   (!this.isInTrash() && this.hasChild(what.name) && !ignoreExisting) ||
-	               (what.type !== thisType) ||
-				   (what.id === this.id) ||
-				   (this.disallowSubFolder) ||
+				   (what.type == ZmOrganizer.FOLDER && thisType == ZmOrganizer.SEARCH) ||
+				   (what.type == ZmOrganizer.SEARCH && thisType == ZmOrganizer.FOLDER && this.nId == ZmOrganizer.ID_ROOT) ||
+                   (what.type == ZmOrganizer.TASKS && thisType == ZmOrganizer.SEARCH) ||
+                   (what.type == ZmOrganizer.ADDRBOOK && thisType == ZmOrganizer.SEARCH) ||
+				   (what.id == this.id) ||
+				   (what.disallowSubFolder) ||
 				   (appCtxt.multiAccounts && !this.mayContainFolderFromAccount(what.getAccount())) || // cannot move folders across accounts, unless the target is local
                    (this.isRemote() && !this._remoteMoveOk(what)) ||
 				   (what.isRemote() && !this._remoteMoveOk(what)));				// a remote folder can be DnD but not its children
@@ -605,18 +603,18 @@ function(what, folderType, ignoreExisting) {
 		var items = AjxUtil.toArray(what);
 		var item = items[0];
 
-        // container can only have folders/searches or calendars
-		if ((this.nId === ZmOrganizer.ID_ROOT && (what.type !== ZmOrganizer.CALENDAR)) ||
+            // container can only have folders/searches or calendars
+		if ((this.nId == ZmOrganizer.ID_ROOT && (what.type != ZmOrganizer.CALENDAR)) ||
              // nothing can be moved to outbox/sync failures folders
-			 this.nId === ZmOrganizer.ID_OUTBOX ||
-			 this.nId === ZmOrganizer.ID_SYNC_FAILURES)
+			 this.nId == ZmOrganizer.ID_OUTBOX ||
+			 this.nId == ZmOrganizer.ID_SYNC_FAILURES)
 		{
 			invalid = true;
-		} else if (thisType === ZmOrganizer.SEARCH) {
+		} else if (thisType == ZmOrganizer.SEARCH) {
 			invalid = true;														// can't drop items into saved searches
-		} else if (item && (item.type === ZmItem.CONTACT) && item.isGal) {
+		} else if (item && (item.type == ZmItem.CONTACT) && item.isGal) {
 			invalid = true;
-		} else if (item && (item.type === ZmItem.CONV) && item.list && item.list.search && (item.list.search.folderId === this.id)) {
+		} else if (item && (item.type == ZmItem.CONV) && item.list && item.list.search && (item.list.search.folderId == this.id)) {
 			invalid = true;														// convs which are a result of a search for this folder
 		} else {																// checks that need to be done for each item
 			for (var i = 0; i < items.length; i++) {
@@ -625,16 +623,22 @@ function(what, folderType, ignoreExisting) {
 					invalid = true;
 					break;
 				}
-				if (Dwt.instanceOf(childItem, "ZmBriefcaseFolderItem")) {
+				if (childItem == ZmItem.CONTACT) {
+					if (this.nId != ZmFolder.ID_TRASH) {
+						// can only move contacts into Trash
+						invalid = true;
+						break;
+					}
+				} else if (Dwt.instanceOf(childItem, "ZmBriefcaseFolderItem")) {
                      if (childItem.folder && childItem.folder.isRemote() && !childItem.folder.rid) {
                         invalid = true;
                         break;
                      }
-                } else if (item.type === ZmItem.MSG && childItem.isDraft && (this.nId !== ZmFolder.ID_TRASH && this.nId != ZmFolder.ID_DRAFTS && this.rid != ZmFolder.ID_DRAFTS)) {
+                } else if (item.type == ZmItem.MSG && childItem.isDraft && (this.nId != ZmFolder.ID_TRASH && this.nId != ZmFolder.ID_DRAFTS && this.rid != ZmFolder.ID_DRAFTS)) {
 					// can move drafts into Trash or Drafts
 					invalid = true;
 					break;
-				} else if ((this.nId === ZmFolder.ID_DRAFTS || this.rid === ZmFolder.ID_DRAFTS) && !childItem.isDraft)	{
+				} else if ((this.nId == ZmFolder.ID_DRAFTS || this.rid == ZmFolder.ID_DRAFTS) && !childItem.isDraft)	{
 					// only drafts can be moved into Drafts
 					invalid = true;
 					break;
@@ -646,8 +650,8 @@ function(what, folderType, ignoreExisting) {
 				// account when moving across accounts
 				var acct = this.getAccount();
 				if (acct && item.getAccount() != acct &&
-					(acct.type === ZmAccount.TYPE_MSE ||
-					 acct.type === ZmAccount.TYPE_EXCHANGE))
+					(acct.type == ZmAccount.TYPE_MSE ||
+					 acct.type == ZmAccount.TYPE_EXCHANGE))
 				{
 					invalid = true;
 				}
@@ -735,22 +739,14 @@ function(){
 ZmFolder.prototype._remoteMoveOk =
 function(folder) {
 	if (!this.isRemote() && folder.isMountpoint && folder.rid) { return true; }
-	if (!this.link || !folder.link || this.getOwner() !== folder.getOwner()) { return false; }
-	if (!this._folderActionOk(this, "isInsert")) {
-		return false;
-	}
-	return this._folderActionOk(folder, "isDelete");
+	if (!this.link || !folder.link || this.zid != folder.zid) { return false; }
+	if (this.id.split(":")[0] != folder.id.split(":")[0]) { return false; }
+	var share = this.shares && this.shares[0];
+	if (!(share && share.isInsert())) { return false; }
+	share = folder.shares && folder.shares[0];
+    return (share && share.isDelete());
 };
 
-ZmFolder.prototype._folderActionOk =
-function(folder, func) {
-	var share = folder.shares && folder.shares[0];
-	if (!share) {
-		//if shares is not set, default to readOnly.
-		return !folder.isReadOnly();
-	}
-	return share[func]();
-};
 /**
  * Returns true if this folder is for outbound mail.
  */

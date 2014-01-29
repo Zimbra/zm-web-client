@@ -648,7 +648,7 @@ function(startTime, endTime, params) {
     }
 
     //mini calendar suggestions should avoid collecting all computed information in array for optimiziation
-    if (!params.miniCalSuggestions) {
+    if(!params.miniCalSuggestions && fbInfo.availableUsers > 0) {
         var showOnlyGreenSuggestions = params.showOnlyGreenSuggestions;
         if(!showOnlyGreenSuggestions || (fbInfo.availableUsers == this._totalUsers)) {
             this._fbStat.add(fbInfo);

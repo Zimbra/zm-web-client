@@ -64,7 +64,6 @@ ZmZimletBase.prototype = new ZmObjectHandler();
  */
 ZmZimletBase.prototype._init =
 function(zimletContext, shell) {
-	DBG.println(AjxDebug.ZIMLET, "Creating zimlet " + zimletContext.name);
 	this._passRpcErrors = false;
 	this._zimletContext = zimletContext;
 	this._dwtShell = shell;
@@ -529,7 +528,6 @@ function(spanElement, contentObjText, matchContext, canvas) {
 	var c = this.xmlObj("contentObject");
 	if (c && c.toolTip) {
 		var obj = this._createContentObj(contentObjText, matchContext);
-
 		var txt;
 		if (c.toolTip instanceof Object &&
 		    c.toolTip.actionUrl) {
@@ -539,41 +537,9 @@ function(spanElement, contentObjText, matchContext, canvas) {
 		} else {
 			// If it's an email address just use the address value.
 			if (obj.objectContent instanceof AjxEmailAddress) {obj.objectContent = obj.objectContent.address;}
-			txt = this.xmlObj().process(c.toolTip, obj);
+			txt = this.xmlObj().processString(c.toolTip, obj);
 		}
 		canvas.innerHTML = txt;
-
-		Dwt.setSize(canvas, parseInt(c.toolTip.width) || Dwt.DEFAULT, parseInt(c.toolTip.height) || Dwt.DEFAULT);
-		
-		if (this._isTooltipSticky()) {
-			Dwt.setHandler(canvas, DwtEvent.ONCLICK, AjxCallback.simpleClosure(this.setTooltipSticky, this, [true]));
-
-			var omem = DwtOutsideMouseEventMgr.INSTANCE;
-			omem.startListening({
-				id: "ZimletTooltip",
-				elementId: canvas.id,
-				outsideListener: new AjxListener(this, this.setTooltipSticky, [false, true])
-			});
-
-		}
-	}
-};
-
-/**
- * This method is called when a sticky tooltip is clicked, when clicking outside
- * a sticky tooltip, or when a zimlet wants to stick or unstick a tooltip.
- * To explicitly dismiss a sticky tooltip, this method should be called with parameters (false, true)
- *
- * @param	{boolean}	sticky		Whether stickiness should be applied or removed
- * @param	{boolean}	popdown		(Optional) Pop down the tooltip after removing stickiness
- */
-ZmZimletBase.prototype.setTooltipSticky =
-function(sticky, popdown) {
-	var shell = DwtShell.getShell(window);
-	var tooltip = shell.getToolTip();
-	tooltip.setSticky(sticky);
-	if (!sticky && popdown) {
-		tooltip.popdown();
 	}
 };
 
@@ -588,11 +554,6 @@ function(sticky, popdown) {
  */
 ZmZimletBase.prototype.toolTipPoppedDown =
 function(spanElement, contentObjText, matchContext, canvas) {
-	var omem = DwtOutsideMouseEventMgr.INSTANCE;
-	omem.stopListening({
-		id: "ZimletTooltip",
-		elementId: canvas ? canvas.id : ""
-	});
 };
 
 /**
@@ -647,7 +608,7 @@ ZmZimletBase.prototype.createPropertyEditor =
 function(callback) {
 	var userprop = this.xmlObj().userProperties;
 
-	if (!userprop || !userprop.length) {return;}
+	if (!userprop) {return;}
 
     for (var i = 0; i < userprop.length; ++i) {
         userprop[i].label = this._zimletContext.processMessage(userprop[i].label);
@@ -1093,8 +1054,8 @@ function(object, context, x, y, span) {
 	var shell = DwtShell.getShell(window);
 	var tooltip = shell.getToolTip();
 	tooltip.setContent('<div id="zimletTooltipDiv"/>', true);
-	this.toolTipPoppedUp(span, object, context, document.getElementById("zimletTooltipDiv"), tooltip);
-	tooltip.popup(x, y, true, !this._isTooltipSticky(), null, null, new AjxCallback(this, this.hoverOut, object, context, span));
+	this.toolTipPoppedUp(span, object, context, document.getElementById("zimletTooltipDiv"));
+	tooltip.popup(x, y, true, new AjxCallback(this, this.hoverOut, object, context, span));
 };
 
 /**
@@ -1104,10 +1065,8 @@ ZmZimletBase.prototype.hoverOut =
 function(object, context, span) {
 	var shell = DwtShell.getShell(window);
 	var tooltip = shell.getToolTip();
-	if (!tooltip.getHovered()) {
-		tooltip.popdown();
-		this.toolTipPoppedDown(span, object, context, document.getElementById("zimletTooltipDiv"));
-	}
+	tooltip.popdown();
+	this.toolTipPoppedDown(span, object, context, document.getElementById("zimletTooltipDiv"));
 };
 
 /**
@@ -1166,7 +1125,6 @@ function(canvasData, url, x, y) {
 		if (canvasData.height)
 			view.setSize(Dwt.DEFAULT, canvasData.height);
 		var title = canvasData.title || ("Zimlet dialog (" + this.xmlObj("description") + ")");
-		title = this._zimletContext.processMessage(title);
 		canvas = this._createDialog({ view: view, title: title });
 		canvas.view = view;
 		if (url) {
@@ -1377,16 +1335,5 @@ function(callback, conv) {
 	if (callback) {
 		callback.run(ZmZimletContext._translateZMObject(conv.msgs.getArray()));
 	}
-};
-
-/**
- * @private
- *
- * Does the config say the tooltip should be sticky?
- */
-ZmZimletBase.prototype._isTooltipSticky =
-function() {
-	var c = this.xmlObj("contentObject");
-	return (c && c.toolTip && c.toolTip.sticky && c.toolTip.sticky.toLowerCase() === "true");
 };
 

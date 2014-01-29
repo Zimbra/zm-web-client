@@ -41,9 +41,6 @@ ZmNewWindow = function() {
 
 	//update body class to reflect user selected font
 	document.body.className = "user_font_" + appCtxt.get(ZmSetting.FONT_NAME);
-	//update root html elment class to reflect user selected font size
-	Dwt.addClass(document.documentElement, "user_font_size_" + appCtxt.get(ZmSetting.FONT_SIZE));
-
 
 	this._settings = appCtxt.getSettings();
 	this._settings.setReportScriptErrorsSettings(AjxException, ZmController.handleScriptError); //must set this for child window since AjxException is fresh for this window. Also must pass AjxException and the handler since we want it to update the one from this child window, and not the parent window
@@ -161,8 +158,8 @@ function(ev) {
  */
 ZmNewWindow.prototype.startup =
 function() {
+
 	// get params from parent window b/c of Safari bug #7162
-	// and in case of a refresh, our old window parameters are still stored there
 	if (window.parentController) {
 		var childWinObj = window.parentController.getChildWindow(window);
 		if (childWinObj) {
@@ -270,7 +267,7 @@ function() {
 		if (cmd == "compose") {
 			cc._setView(params);
 		} else {
-			AjxDispatcher.require(["MailCore", "ContactsCore", "CalendarCore"]);
+			AjxDispatcher.require(["CalendarCore"]);
 			var op = params.action || ZmOperation.NEW_MESSAGE;
 			if (params.msg && params.msg._mode) {
 				switch (params.msg._mode) {
@@ -304,7 +301,6 @@ function() {
 		//the user might of course click "reply to all" later in the window so I deep copy here in any case.
 		var msg = this._deepCopyMsg(params.msg);
 		msg.isRfc822 = params.isRfc822; //simpler
-		params.msg.addChangeListener(msg.detachedChangeListener.bind(msg));
 
 		var msgController = AjxDispatcher.run("GetMsgController");
 		appCtxt.msgCtlrSessionId = msgController.getSessionId();
@@ -313,11 +309,6 @@ function() {
 		startupFocusItem = msgController.getCurrentView();
 
 		target = "view-window";
-	} else if (cmd == 'documentEdit') {
-		AjxDispatcher.require(["Docs"]);
-		ZmDocsEditApp.setFile(params.id, params.name, params.folderId);
-		ZmDocsEditApp.restUrl = params.restUrl;
-		new ZmDocsEditApp();
 	} else if (cmd == "shortcuts") {
 		var panel = appCtxt.getShortcutsPanel();
 		panel.popup(params.cols);
@@ -658,16 +649,6 @@ function(msg) {
 		newMsg.share = msg.share;
 	}
 
-	// TODO: When/if you get rid of this function, also remove the cloneOf uses in:
-	//		ZmBaseController.prototype._tagListener
-	//		ZmBaseController.prototype._setTagMenu
-	//		ZmMailMsgView.prototype._setTags
-	//		ZmMailMsgView.prototype._handleResponseSet
-	//		ZmMailListController.prototype._handleResponseFilterListener
-	//		ZmMailListController.prototype._handleResponseNewApptListener
-	//		ZmMailListController.prototype._handleResponseNewTaskListener
-	newMsg.cloneOf = msg;
-
 	return newMsg;
 };
 
@@ -679,20 +660,13 @@ function(msg) {
  */
 ZmNewWindow._confirmExitMethod =
 function(ev) {
-	if (!appCtxt.get(ZmSetting.WARN_ON_EXIT) || !window.parentController)
-		return;
-
-	var cmd = window.newWindowCommand;
-
-	if (cmd == "compose" || cmd == "composeDetach")	{
+	if (appCtxt.get(ZmSetting.WARN_ON_EXIT) && window.parentController &&
+		(window.newWindowCommand == "compose" || window.newWindowCommand == "composeDetach"))
+	{
 		var cc = AjxDispatcher.run("GetComposeController", appCtxt.composeCtlrSessionId);
 		// only show native confirmation dialog if compose view is dirty
 		if (cc && cc._composeView && cc._composeView.isDirty()) {
 			return ZmMsg.newWinComposeExit;
 		}
-	} else if (cmd == 'documentEdit') {
-		var ctrl = ZmDocsEditApp._controller;
-		var msg = ctrl.checkForChanges();
-		return msg || ctrl.exit();
 	}
 };
