@@ -2417,13 +2417,14 @@ ZmComposeController.prototype._warnUserAboutChanges =
 function(op, okCallback, cancelCallback) {
 
 	var cv = this._composeView;
+	var switchToText = (op === ZmOperation.FORMAT_TEXT &&
+	                    !AjxUtil.isEmpty(this._getBodyContent()));
 	var willLoseChanges = cv.componentContentChanged(ZmComposeView.BC_SIG_PRE) ||
 						  cv.componentContentChanged(ZmComposeView.BC_DIVIDER) ||
 						  cv.componentContentChanged(ZmComposeView.BC_HEADERS) ||
 						  cv.componentContentChanged(ZmComposeView.BC_SIG_POST) ||
 						  !cv.canPreserveQuotedText(op) ||
-						  (op === ZmOperation.FORMAT_TEXT &&
-						   !AjxUtil.isEmpty(this._getBodyContent()));
+						  switchToText;
 	if (willLoseChanges) {
 		var callbacks = {};
 		callbacks[DwtDialog.OK_BUTTON] = okCallback;
