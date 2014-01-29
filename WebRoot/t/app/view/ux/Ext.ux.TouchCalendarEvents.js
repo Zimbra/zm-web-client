@@ -269,7 +269,11 @@ Ext.define('Ext.ux.TouchCalendarEvents', {
 		    this.calendar.getScrollable().getScroller().scrollTo(0,0);
 	    }
 
-	    this.removeEvents();
+        var store = this.calendar.eventStore;
+        //clear any previous filters applied on the store
+        store.clearFilter();
+
+        this.removeEvents();
         
         this.getViewModeProcessor().generateEventBars(); // in turn calls this.renderEventBars(this.eventBarStore);
         

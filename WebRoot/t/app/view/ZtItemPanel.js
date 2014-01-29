@@ -96,11 +96,18 @@ Ext.define('ZCS.view.ZtItemPanel', {
 			cls: 'zcs-conv-title-bar'
 		};
 
-		this.add([
-			toolbar,
-			titleBar,
-			itemView
-		]);
+        if (app !== ZCS.constant.APP_CALENDAR) {
+            this.add([
+                toolbar,
+                titleBar,
+                itemView
+            ]);
+        } else {
+            this.add([
+                toolbar,
+                itemView
+            ]);
+        }
 
 		if (app === ZCS.constant.APP_MAIL && ZCS.constant.IS_ENABLED[ZCS.constant.FEATURE_QUICK_REPLY]) {
 			var quickReply = {

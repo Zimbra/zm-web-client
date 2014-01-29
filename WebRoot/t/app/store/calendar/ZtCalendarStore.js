@@ -20,7 +20,7 @@
  */
 Ext.define('ZCS.store.calendar.ZtCalendarStore', {
 
-    extend: 'Ext.data.Store',
+    extend: 'ZCS.store.ZtItemStore',
 
     config: {
         model: 'ZCS.model.calendar.ZtCalendar',

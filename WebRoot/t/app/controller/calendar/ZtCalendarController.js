@@ -61,7 +61,8 @@ Ext.define('ZCS.controller.calendar.ZtCalendarController', {
         control: {
             calendarView: {
                 eventtap: 'onEventTap',
-                periodchange: 'onPeriodChange'
+                selectionchange: 'onTimeSlotChange'
+//                periodchange: 'onPeriodChange'
             },
             appointmentView: {
                 inviteReply: 'doInviteReply'
@@ -178,6 +179,10 @@ Ext.define('ZCS.controller.calendar.ZtCalendarController', {
         return this.apptViewPanel;
     },
 
+    onTimeSlotChange: function(view, newDate, oldDate) {
+        //Switch to the day view if user taps on a particular date in month view
+        ZCS.app.getCalendarController().toggleCalView('day', newDate);
+    },
 
     /**
      * Handler for the calendar's periodchange event.
@@ -187,17 +192,17 @@ Ext.define('ZCS.controller.calendar.ZtCalendarController', {
      * @param {Date} maxDate The max date of the new period
      * @param {String} direction The direction the period change moved.
      */
-    onPeriodChange: function(view, minDate, maxDate, direction) {
-        this.getStore().load({
-            calStart: minDate.getTime(),
-            calEnd: maxDate.getTime(),
-            callback: function(records, operation, success) {
-                if (success) {
-                    view.refresh();
-                }
-            }
-        });
-    },
+//    onPeriodChange: function(view, minDate, maxDate, direction) {
+//        this.getStore().load({
+//            calStart: minDate.getTime(),
+//            calEnd: maxDate.getTime(),
+//            callback: function(records, operation, success) {
+//                if (success) {
+//                    view.refresh();
+//                }
+//            }
+//        });
+//    },
 
     getDefaultQuery: function() {
         return 'in:calendar';
