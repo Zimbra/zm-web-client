@@ -30,7 +30,6 @@ UT.test("Remove Conditions", {
 		testRule.addCondition(ZmFilterRule.TEST_RANKING, null, null, "contacts");
 		testRule.addCondition(ZmFilterRule.TEST_FACEBOOK);
 		testRule.addCondition(ZmFilterRule.TEST_LINKEDIN);
-		testRule.addCondition(ZmFilterRule.TEST_SOCIALCAST);
 		testRule.addCondition(ZmFilterRule.TEST_TWITTER);
 		testRule.addCondition(ZmFilterRule.TEST_BULK, ZmFilterRule.OP_NOT_CONV);
 	    var resultRule = priorityMessageDialog._removeCondition(testRule, ZmFilterRule.TEST_FACEBOOK, null, null);
@@ -39,7 +38,6 @@ UT.test("Remove Conditions", {
 		UT.equal(resultRule.conditions[ZmFilterRule.TEST_CONVERSATIONS].length, 1, "has TEST_CONVERSATIONS");
 		UT.equal(resultRule.conditions[ZmFilterRule.TEST_RANKING].length, 1, "has TEST_RANKING");
 		UT.equal(resultRule.conditions[ZmFilterRule.TEST_LINKEDIN].length, 1, "has TEST_LINKEDIN");
-		UT.equal(resultRule.conditions[ZmFilterRule.TEST_SOCIALCAST].length, 1, "has TEST_SOCIALCAST");
 		UT.equal(resultRule.conditions[ZmFilterRule.TEST_TWITTER].length, 1, "has TEST_TWITTER");
 		UT.equal(resultRule.conditions[ZmFilterRule.TEST_BULK].length, 1, "has TEST_BULK");
 		

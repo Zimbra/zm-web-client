@@ -305,6 +305,9 @@ function(data, test, isCondition, rowId) {
 	var conf;
 	if (isCondition) {
 		conf = this._getConditionFromTest(test, data);
+		if (!conf) {
+			return ""; //see bug 85825 - encountered such a case if I had a socialcast filter before I removed socialcast code.
+		}
 	} else {
 		var actionId = ZmFilterRule.A_VALUE_MAP[test];
 		conf = ZmFilterRule.ACTIONS[actionId];
@@ -390,7 +393,6 @@ function(test, data) {
 		case ZmFilterRule.TEST_CONVERSATIONS:	condition = ZmFilterRule.C_CONV; break;
 		case ZmFilterRule.TEST_SOCIAL:			condition = ZmFilterRule.C_SOCIAL; break;
 		case ZmFilterRule.TEST_FACEBOOK:		condition = ZmFilterRule.C_SOCIAL; break;
-		case ZmFilterRule.TEST_SOCIALCAST:		condition = ZmFilterRule.C_SOCIAL; break;
 		case ZmFilterRule.TEST_TWITTER:			condition = ZmFilterRule.C_SOCIAL; break;
 		case ZmFilterRule.TEST_LINKEDIN:		condition = ZmFilterRule.C_SOCIAL; break;
 		case ZmFilterRule.TEST_LIST:			condition = ZmFilterRule.C_CONV; break;
@@ -683,7 +685,6 @@ function(isMainSelect, testType, field, rowData) {
 			case ZmFilterRule.TEST_CONVERSATIONS:	dataValue = ZmFilterRule.C_CONV; break;
 			case ZmFilterRule.TEST_SOCIAL:			dataValue = ZmFilterRule.C_SOCIAL; break;
 			case ZmFilterRule.TEST_FACEBOOK:		dataValue = ZmFilterRule.C_SOCIAL; break;
-			case ZmFilterRule.TEST_SOCIALCAST:		dataValue = ZmFilterRule.C_SOCIAL; break;
 			case ZmFilterRule.TEST_TWITTER:			dataValue = ZmFilterRule.C_SOCIAL; break;
 			case ZmFilterRule.TEST_LINKEDIN:		dataValue = ZmFilterRule.C_SOCIAL; break;
 			case ZmFilterRule.TEST_ADDRESS:
@@ -821,17 +822,6 @@ function(isMainSelect, testType, field, rowData) {
 			else if (field == "valueMod") {
 				dataValue = rowData.flagName;
 			}
-		}
-		else if (testType == ZmFilterRule.TEST_SOCIALCAST) {
-			if (field == "ops") {
-				dataValue = ZmFilterRule.OP_SOCIAL_SOCIALCAST;
-			}
-			else if (field == "value") {
-				dataValue = (rowData.negative == "1") ? 
-							ZmFilterRule.IS_NOT_SOCIAL : 
-							ZmFilterRule.IS_SOCIAL;	
-			}
-						
 		}
 		else if (testType == ZmFilterRule.TEST_FACEBOOK) {
 			if (field == "ops") {

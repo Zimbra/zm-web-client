@@ -113,8 +113,7 @@ ZmFilterRule.C_ADDRBOOK		= "ADDRBOOK";
 ZmFilterRule.C_INVITE		= "INVITE";
 ZmFilterRule.C_FACEBOOK     = "FACEBOOK";
 ZmFilterRule.C_LINKEDIN     = "LINKEDIN";
-ZmFilterRule.C_SOCIALCAST   = "SOCIALCAST";
-ZmFilterRule.C_TWITTER      = "TWITTER"
+ZmFilterRule.C_TWITTER      = "TWITTER";
 ZmFilterRule.C_CONV         = "CONVERSATIONS";
 ZmFilterRule.C_BULK         = "BULK";
 ZmFilterRule.C_LIST         = "LIST";
@@ -173,7 +172,6 @@ ZmFilterRule.TEST_INVITE						= "inviteTest";
 ZmFilterRule.TEST_FACEBOOK                      = "facebookTest";
 ZmFilterRule.TEST_LINKEDIN                      = "linkedinTest";
 ZmFilterRule.TEST_TWITTER                       = "twitterTest";
-ZmFilterRule.TEST_SOCIALCAST                    = "socialcastTest";
 ZmFilterRule.TEST_CONVERSATIONS                 = "conversationTest";
 ZmFilterRule.TEST_BULK                          = "bulkTest";
 ZmFilterRule.TEST_LIST                          = "listTest";
@@ -203,7 +201,6 @@ ZmFilterRule.C_TEST_MAP[ZmFilterRule.C_INVITE]		= ZmFilterRule.TEST_INVITE;
 ZmFilterRule.C_TEST_MAP[ZmFilterRule.C_FACEBOOK]    = ZmFilterRule.TEST_FACEBOOK;
 ZmFilterRule.C_TEST_MAP[ZmFilterRule.C_LINKEDIN]    = ZmFilterRule.TEST_LINKEDIN;
 ZmFilterRule.C_TEST_MAP[ZmFilterRule.C_TWITTER]     = ZmFilterRule.TEST_TWITTER;
-ZmFilterRule.C_TEST_MAP[ZmFilterRule.C_SOCIALCAST]  = ZmFilterRule.TEST_SOCIALCAST;
 ZmFilterRule.C_TEST_MAP[ZmFilterRule.C_CONV]        = ZmFilterRule.TEST_CONVERSATIONS;
 ZmFilterRule.C_TEST_MAP[ZmFilterRule.C_BULK]        = ZmFilterRule.TEST_BULK;
 ZmFilterRule.C_TEST_MAP[ZmFilterRule.C_SOCIAL]      = ZmFilterRule.TEST_SOCIAL;
@@ -245,7 +242,6 @@ ZmFilterRule.OP_SOCIAL_FROM     = "SOCIAL_FROM"; //not an operator
 ZmFilterRule.OP_SOCIAL_FACEBOOK = "SOCIAL_FACEBOOK";
 ZmFilterRule.OP_SOCIAL_TWITTER  = "SOCIAL_TWITTER";
 ZmFilterRule.OP_SOCIAL_LINKEDIN = "SOCIAL_LINKEDIN";
-ZmFilterRule.OP_SOCIAL_SOCIALCAST = "SOCIAL_SOCIALCAST";
 ZmFilterRule.OP_IS_ME           = "IS_ME";
 ZmFilterRule.OP_NOT_ME          = "IS_NOT_ME";
 
@@ -284,7 +280,6 @@ ZmFilterRule.OP_VALUE[ZmFilterRule.OP_SOCIAL_FROM]  = "socialFrom";
 ZmFilterRule.OP_VALUE[ZmFilterRule.OP_SOCIAL_FACEBOOK] = "socialFacebook";
 ZmFilterRule.OP_VALUE[ZmFilterRule.OP_SOCIAL_TWITTER] = "socialTwitter";
 ZmFilterRule.OP_VALUE[ZmFilterRule.OP_SOCIAL_LINKEDIN] = "socialLinkedIn";
-ZmFilterRule.OP_VALUE[ZmFilterRule.OP_SOCIAL_SOCIALCAST] = "socialSocialCast";
 ZmFilterRule.OP_VALUE[ZmFilterRule.OP_IS_ME]        = "isMe";
 ZmFilterRule.OP_VALUE[ZmFilterRule.OP_NOT_CONV]     = "convNot";
 
@@ -294,7 +289,6 @@ ZmFilterRule.OP_SOCIAL_MAP = {};
 ZmFilterRule.OP_SOCIAL_MAP[ZmFilterRule.OP_SOCIAL_FACEBOOK] = ZmFilterRule.TEST_FACEBOOK;
 ZmFilterRule.OP_SOCIAL_MAP[ZmFilterRule.OP_SOCIAL_LINKEDIN] = ZmFilterRule.TEST_LINKEDIN;
 ZmFilterRule.OP_SOCIAL_MAP[ZmFilterRule.OP_SOCIAL_TWITTER] = ZmFilterRule.TEST_TWITTER;
-ZmFilterRule.OP_SOCIAL_MAP[ZmFilterRule.OP_SOCIAL_SOCIALCAST] = ZmFilterRule.TEST_SOCIALCAST;
 
 // operation labels
 ZmFilterRule.OP_LABEL = {};
@@ -330,7 +324,6 @@ ZmFilterRule.OP_LABEL[ZmFilterRule.OP_SOCIAL_FROM]  = ZmMsg.from;;
 ZmFilterRule.OP_LABEL[ZmFilterRule.OP_SOCIAL_FACEBOOK] = ZmMsg.facebook;
 ZmFilterRule.OP_LABEL[ZmFilterRule.OP_SOCIAL_TWITTER] = ZmMsg.twitter;
 ZmFilterRule.OP_LABEL[ZmFilterRule.OP_SOCIAL_LINKEDIN] = ZmMsg.linkedin;
-ZmFilterRule.OP_LABEL[ZmFilterRule.OP_SOCIAL_SOCIALCAST] = ZmMsg.socialcast;
 ZmFilterRule.OP_LABEL[ZmFilterRule.OP_IS_ME]        = ZmMsg.isMeLabel;
 ZmFilterRule.OP_LABEL[ZmFilterRule.OP_NOT_ME]       = ZmMsg.isNotMeLabel;
 
@@ -463,7 +456,7 @@ ZmFilterRule.CONDITIONS[ZmFilterRule.C_CONV] = {
 };
 ZmFilterRule.CONDITIONS[ZmFilterRule.C_SOCIAL] = {
 		ops:        ZmFilterRule.TYPE_SELECT,
-		opsOptions: [ZmFilterRule.OP_SOCIAL_FACEBOOK, ZmFilterRule.OP_SOCIAL_TWITTER, ZmFilterRule.OP_SOCIAL_LINKEDIN, ZmFilterRule.OP_SOCIAL_SOCIALCAST],
+		opsOptions: [ZmFilterRule.OP_SOCIAL_FACEBOOK, ZmFilterRule.OP_SOCIAL_TWITTER, ZmFilterRule.OP_SOCIAL_LINKEDIN],
 	    value:      ZmFilterRule.TYPE_SELECT,
 		vOptions:   [{label: ZmMsg.socialFilterOp, value: "social"}, 
 			         {label: ZmMsg.socialFilterOpNegative, value: "not_social"}]
@@ -706,9 +699,6 @@ function() {
 			else if (socialFilters[i].toLowerCase() == ZmFilterRule.C_LINKEDIN.toLowerCase()) {
 				ops.push(ZmFilterRule.OP_SOCIAL_LINKEDIN);
 			}
-			else if (socialFilters[i].toLowerCase() == ZmFilterRule.C_SOCIALCAST.toLowerCase()) {
-				ops.push(ZmFilterRule.OP_SOCIAL_SOCIALCAST);
-			}
 		}
 	}
 	return ops;
@@ -884,7 +874,6 @@ function(testType, comparator, value, subjectMod, caseSensitive) {
 	
 	if (value == ZmFilterRule.IS_NOT_SOCIAL && 
 		(testType == ZmFilterRule.TEST_FACEBOOK  ||
-		 testType == ZmFilterRule.TEST_SOCIALCAST || 
 		 testType == ZmFilterRule.TEST_TWITTER ||
 		 testType == ZmFilterRule.TEST_LINKEDIN)) {
 		conditionData.negative = "1";
