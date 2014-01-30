@@ -50,6 +50,11 @@ Ext.application({
     name: 'ZCS',
 
 	requires: [
+		'Ext.viewport.Viewport',
+		'Ext.event.*',
+		'Ext.event.publisher.*',
+		'Ext.event.recognizer.*',
+		'Ext.chart.series.ItemPublisher',
 		'Ext.MessageBox',
 		'ZCS.common.ZtTapRecognizer',
 		'ZCS.common.ZtEdgeSwipeRecognizer',
