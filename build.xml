@@ -65,6 +65,7 @@
     <property name='img.dir' value='${web.dir}/img'/>
     <property name='touch.dir' value='${web.dir}/t'/>
     <property name='touch.prod.dir' value='${web.dir}/t/build'/>
+    <property name='touch.app.name' value='t'/>
 
     <property name='webinf.dir' value='${web.dir}/WEB-INF'/>
     <property name='webinf.lib.dir' value='${webinf.dir}/lib'/>
@@ -1276,7 +1277,7 @@ if (ext == null) ext = "";
 
         <!--Copy the production dir-->
         <copy todir='${build.touch.dir}'>
-            <fileset dir='${touch.prod.dir}/${touch.prod.build.mode}'/>
+            <fileset dir='${touch.prod.dir}/${touch.prod.build.mode}/${touch.app.name}'/>
         </copy>
 
         <!--Copy the templates dir-->
@@ -1298,7 +1299,7 @@ if (ext == null) ext = "";
 
         <!--Copy the production dir-->
         <copy todir='${webapp.dir}/t'>
-            <fileset dir='${touch.prod.dir}/production'/>
+            <fileset dir='${touch.prod.dir}/production/${touch.app.name}'/>
         </copy>
 
         <!--Copy the templates dir-->
