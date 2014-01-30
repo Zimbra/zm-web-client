@@ -318,7 +318,7 @@ function() {
 
 ZmComposeController.prototype.popShield =
 function() {
-	var dirty = this._composeView.isDirty();
+	var dirty = this._composeView.isDirty(true, true);
 	if (!dirty && (this._draftType != ZmComposeController.DRAFT_TYPE_AUTO)) {
 		return true;
 	}
@@ -380,7 +380,7 @@ function(view, force) {
 
 ZmComposeController.prototype._preUnloadCallback =
 function(view) {
-	return !this._composeView.isDirty();
+	return !this._composeView.isDirty(true, true);
 };
 
 
@@ -1643,7 +1643,7 @@ function(ev) {
 
 ZmComposeController.prototype._cancelCompose =
 function() {
-	var dirty = this._composeView.isDirty();
+	var dirty = this._composeView.isDirty(true, true);
 	var needPrompt = dirty || (this._draftType == ZmComposeController.DRAFT_TYPE_AUTO);
 	if (!needPrompt) {
 		this._composeView.reset(true);
@@ -1772,7 +1772,7 @@ function(ev) {
 
 ZmComposeController.prototype._autoSaveCallback =
 function(idle) {
-    if (idle && !DwtBaseDialog.getActiveDialog() && !this._composeView.getHtmlEditor().isSpellCheckMode() && this._composeView.isDirty()) {
+    if (idle && !DwtBaseDialog.getActiveDialog() && !this._composeView.getHtmlEditor().isSpellCheckMode() && this._composeView.isDirty(true, true)) {
 		this.saveDraft(ZmComposeController.DRAFT_TYPE_AUTO);
 	}
 };

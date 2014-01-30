@@ -2130,6 +2130,7 @@ ZmHtmlEditor.prototype.isDirty = function(){
             return editor.isDirty();
         }
     }
+    return false;
 };
 
 /**

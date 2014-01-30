@@ -1598,36 +1598,16 @@ function(identity, action) {
 ZmComposeView.prototype.isDirty =
 function(incAddrs, incSubject) {
 
-	// reply/forward and empty body => not dirty
-	var content = this._getEditorContent();
-	if ((this._action !== ZmOperation.NEW_MESSAGE) && (content.match(ZmComposeView.EMPTY_FORM_RE))) {
-		return false;
-	}
-
 	if (this._isDirty) {
 		return true;
 	}
 
+    // Addresses, Subject, non-html mode edit content
 	var curFormValue = this._formValue(incAddrs, incSubject);
-	var htmlMode = (this._composeMode === Dwt.HTML);
-		
-	// empty subject and body => not dirty
-	if (curFormValue.match(ZmComposeView.EMPTY_FORM_RE) || (htmlMode && !this._htmlEditor.isDirty())) {
-		return false;
-	}
+    // Html editor content changed
+    var htmlEditorDirty =  this._htmlEditor && this._htmlEditor.isDirty();
 
-	if (htmlMode) {
-		var lower = function(match) {
-			return match.toLowerCase();
-		};
-
-		var origFormValue = AjxStringUtil.trim(this._origFormValue.replace(ZmComposeView.HTML_TAG_RE, lower)); // Make sure HTML tag names & parameters are lowercase for both values in the comparison
-		curFormValue = AjxStringUtil.trim(curFormValue.replace(ZmComposeView.HTML_TAG_RE, lower)); // so that <SPAN> and <span> are still equal, but <span>FOO</span> and <span>foo</span> are not.
-
-		return curFormValue !== origFormValue;
-	}
-
-	return curFormValue !== this._origFormValue;
+	return (curFormValue !== this._origFormValue) || htmlEditorDirty;
 };
 
 ZmComposeView.prototype._setDNDTipVisible = function(show) {
@@ -3724,10 +3704,17 @@ function(incAddrs, incSubject) {
 	if (incSubject) {
 		vals.push(this._subjectField.value);
 	}
-	var content = this._getEditorContent();
-	vals.push(content);
+    var htmlMode = (this._composeMode === Dwt.HTML);
+    if (!htmlMode) {
+        var content = this._getEditorContent();
+        vals.push(content);
+    }
 	var str = vals.join("|");
 	str = str.replace(/\|+/, "|");
+    if (str === "|") {
+        // No content gets reduced to a single divider, return an empty string
+        str = "";
+    }
 	return str;
 };
 
@@ -3987,13 +3974,16 @@ function(msgDialog, ev) {
 
 ZmComposeView.prototype._setFormValue =
 function() {
-	this._origFormValue = this._formValue();
+	this._origFormValue = this._formValue(true, true);
 };
 
 ZmComposeView.prototype._clearFormValue =
 function() {
 	this._origFormValue = "";
 	this._isDirty = false;
+    if (this._htmlEditor) {
+        this._htmlEditor.clearDirty();
+    }
 };
 
 ZmComposeView.prototype._focusHtmlEditor =
