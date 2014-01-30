@@ -518,7 +518,8 @@
 
 <template id="share.Dialogs#ZmNewOrgDialogFolder">
 	<tr>
-		<td class='Label' colspan=2>${label}</td>
+		<td class='Label' id='${id}_parentLabel'></td>
+		<td id='${id}_parentValue'></td>
 	</tr>
 	<tr>
 		<td colspan=2 id='${id}_folderTree'></td>

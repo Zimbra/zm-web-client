@@ -445,10 +445,7 @@ function(ev, op) {
 		// new organizers
 		case ZmOperation.NEW_FOLDER: {
 			// note that this shortcut only happens if mail app is around - it means "new mail folder"
-			var treeCtlr = appCtxt.getOverviewController().getTreeController(ZmOrganizer.FOLDER);
-			var treeView = treeCtlr && treeCtlr.getTreeView(appCtxt.getApp(ZmApp.MAIL).getOverviewId());
-			var currentFolder = treeView && treeView.getSelected();
-			ZmController.showDialog(appCtxt.getNewFolderDialog(), this.getNewFolderCallback(), currentFolder);
+			ZmController.showDialog(appCtxt.getNewFolderDialog(), this.getNewFolderCallback());
 			break;
 		}
 		case ZmOperation.NEW_TAG: {

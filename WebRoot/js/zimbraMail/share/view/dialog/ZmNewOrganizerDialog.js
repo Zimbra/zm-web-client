@@ -59,34 +59,57 @@ ZmNewOrganizerDialog.prototype._folderNameAlreadyExistsMsg = ZmMsg.errorAlreadyE
  */
 ZmNewOrganizerDialog.prototype.popup =
 function(params, account) {
+
     var folder = params instanceof ZmOrganizer ? params : (params && params.organizer);
-	if (this._folderTreeCellId) {
-		var overviewParams = {
-			overviewId:		this.toString(),
-			treeIds:		this._treeIds,
-			omit:			this._omit,
-			fieldId:		this._folderTreeCellId,
-			overviewTrees:	[this._organizerType],
-            treeStyle:      this._treeStyle
-		};
-		this._setOverview(overviewParams);
 
-		if (this._folderTreeView) {
-			// bug #18533 - always make sure header item is visible in "New" dialog
-			this._folderTreeView.getHeaderItem().setVisible(true, true);
+	var parentLabelCell = document.getElementById(this._htmlElId + '_parentLabel');
+	var parentValueCell = document.getElementById(this._htmlElId + '_parentValue');
+	this._parentFolder = null;
 
-			if (!folder || this._omit[folder.nId] || folder.nId == ZmOrganizer.ID_ROOT) {
-				folder = appCtxt.getFolderTree().root; //default to root if no folder passed, the folder is omitted from the overview. (I don't get the last option, but it was there so I keep it - it's already root)
+	// if the user has already implicitly selected a parent folder, don't show overview
+	if (folder && folder.id != ZmOrganizer.ID_ROOT) {
+		this._parentFolder = folder;
+		this._makeOverviewVisible();    // hide all overviews
+		if (parentLabelCell) {
+			parentLabelCell.colSpan = 1;
+			parentLabelCell.innerHTML = ZmMsg.parentFolderLabel;
+			parentValueCell.innerHTML = folder.getName();
+		}
+	}
+	else {
+		if (this._folderTreeCellId) {
+			if (parentLabelCell) {
+				parentLabelCell.innerHTML = this._folderLocationLabel;
+				parentLabelCell.colSpan = 2;
+				parentValueCell.innerHTML = '';
 			}
-			var ti = this._folderTreeView.getTreeItemById(folder.id);
-			if (ti) {
-				this._folderTreeView.setSelection(ti);
-			}
-			if (folder.nId == ZmOrganizer.ID_ROOT) {
-				var sid = ZmOrganizer.getSystemId(folder.id);
-				var ti = this._folderTreeView.getTreeItemById(sid);
+			var overviewParams = {
+				overviewId:		this.toString(),
+				treeIds:		this._treeIds,
+				omit:			this._omit,
+				fieldId:		this._folderTreeCellId,
+				overviewTrees:	[this._organizerType],
+	            treeStyle:      this._treeStyle
+			};
+			this._setOverview(overviewParams);
+
+			if (this._folderTreeView) {
+				// bug #18533 - always make sure header item is visible in "New" dialog
+				this._folderTreeView.getHeaderItem().setVisible(true, true);
+
+				if (!folder || this._omit[folder.nId] || folder.nId == ZmOrganizer.ID_ROOT) {
+					folder = appCtxt.getFolderTree().root; //default to root if no folder passed, the folder is omitted from the overview. (I don't get the last option, but it was there so I keep it - it's already root)
+				}
+				var ti = this._folderTreeView.getTreeItemById(folder.id);
 				if (ti) {
-					ti.setExpanded(true);
+					this._folderTreeView.setSelection(ti);
+				}
+				if (folder.nId == ZmOrganizer.ID_ROOT) {
+					var sid = ZmOrganizer.getSystemId(folder.id);
+					var ti = this._folderTreeView.getTreeItemById(sid);
+					if (ti) {
+						ti.setExpanded(true);
+					}
 				}
 			}
 		}
@@ -233,7 +256,7 @@ function(html, idx) {
 ZmNewOrganizerDialog.prototype._createFolderContentHtml =
 function(html, idx) {
 	this._folderTreeCellId = this._htmlElId + "_folderTree";
-	html[idx++] = AjxTemplate.expand("share.Dialogs#ZmNewOrgDialogFolder", {id:this._htmlElId, label:this._folderLocationLabel});
+	html[idx++] = AjxTemplate.expand("share.Dialogs#ZmNewOrgDialogFolder", {id:this._htmlElId});
 	return idx;
 };
 
@@ -333,7 +356,7 @@ function() {
 	// make sure a parent was selected
 	var ov = this._getOverviewOrOverviewContainer();
 
-	var parentFolder = ov && ov.getSelected() || appCtxt.getFolderTree(this._account).root;
+	var parentFolder = this._parentFolder || (ov && ov.getSelected()) || appCtxt.getFolderTree(this._account).root;
 
 	if (this._isGlobalSearch) {
 		//special case for global search (only possible if this is ZmNewSearchDialog
