@@ -104,6 +104,10 @@
             "update": "full",
             "platform": ["safari","chrome","ie10","firefox","ios","blackberry"]
         }, {
+            "path": "resources/css/android.css",
+            "update": "full",
+            "platform": ["android"]
+        }, {
             "path": "resources/css/msgbody.css",
             "update": "full"
         }
