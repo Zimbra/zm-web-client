@@ -2,7 +2,7 @@
     /**
      * The application's namespace, used by Sencha Command to generate classes
      */
-    "name": "ZCS",
+    "name": "t",
 
     /**
      * The file path to this application's front HTML document, relative to this app.json file
@@ -103,10 +103,6 @@
             "path": "resources/css/app.css",
             "update": "full",
             "platform": ["safari","chrome","ie10","firefox","ios","blackberry"]
-        }, {
-            "path": "resources/css/android.css",
-            "update": "full",
-            "platform": ["android"]
         }, {
             "path": "resources/css/msgbody.css",
             "update": "full"
