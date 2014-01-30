@@ -1084,6 +1084,7 @@ function(active, viewId) {
 		this.setOverviewPanelContent();
 		this.stopAlert();
         this.enableFeatures();
+		this._setRefreshButtonTooltip();
 	}
 };
 
@@ -1156,6 +1157,20 @@ function() {
 	if (this._alert) {
 		this._alert.stop();
 	}
+};
+
+ZmApp.prototype._setRefreshButtonTooltip =
+function() {
+	appCtxt.refreshButton.setToolTipContent(this._getRefreshButtonTooltip());
+};
+
+/**
+ * this is the default refresh button tooltip. overridden in Calendar. (see bug 85965)
+ * @private
+ */
+ZmApp.prototype._getRefreshButtonTooltip =
+function() {
+	 return ZmMsg.checkMailPrefUpdate;
 };
 
 /**

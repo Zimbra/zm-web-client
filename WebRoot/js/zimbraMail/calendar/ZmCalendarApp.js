@@ -577,6 +577,11 @@ function() {
 							  });
 };
 
+ZmCalendarApp.prototype._getRefreshButtonTooltip =
+function() {
+	return ZmMsg.showAllEventsFromSelectedCalendars;
+};
+
 // App API
 
 ZmCalendarApp.prototype.startup =
