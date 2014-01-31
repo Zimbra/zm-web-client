@@ -1331,6 +1331,7 @@ function(msg, container) {
 	var options = {};
 	options.shortAddress = appCtxt.get(ZmSetting.SHORT_ADDRESS);
 	
+	/* Do not turn date in headers to objects. See bug 76514.
 	if (this._objectManager) {
 		this._lazyCreateObjectManager();
 		// zimlets notified above in _getAddrInfo(), be careful not to do it again
@@ -1341,7 +1342,7 @@ function(msg, container) {
 											this._dateObjectHandlerDate);
 
 		dateString	= this._objectManager.findObjects(dateString, true, ZmObjectManager.DATE);
-	}
+	}*/
 
 	var attachmentsCount = msg.getAttachmentCount(true);
 
