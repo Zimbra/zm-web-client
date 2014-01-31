@@ -310,6 +310,13 @@ function() {
 	}
 };
 
+ZmOverview.prototype.clearSelection =
+function() {
+	if (this._selectedTreeItem) {
+		this._selectedTreeItem._tree.deselectAll();
+	}
+};
+
 /**
  * @private
  */

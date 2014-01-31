@@ -871,6 +871,10 @@ function(ev) {
 	this._refreshMaintenance = true;
     this.searchInProgress = false;
 	this._refreshAction(false);
+
+	var overview = appCtxt.getOverviewController().getOverview(appCtxt.getApp(ZmApp.CALENDAR).getOverviewId());
+	overview.clearSelection();
+
 };
 
 // Move button has been pressed, show the dialog.
