@@ -30,7 +30,7 @@ $contactButtonSize: $contactImageSize/1.5;
 $contactGutter: 2em;
 $contactFieldTopOffset: $contactImageSize + $contactStdMargin*3;
 $contactFieldWidth: 21em; //optimized intially for iPad in landscape
-$contactFormButtonMinHeight: 40px;
+$contactFormButtonMinHeight: 2.5em;
 
 
 /* Contact Image Base Classes */
@@ -194,6 +194,10 @@ $contactFormButtonMinHeight: 40px;
 			@include opacity(.5);
 			text-align: right;
 			width: $contactImageSize;
+
+			&:after {
+				content: ":";
+			}
 		}
 
 		.zcs-contactview-fields {
@@ -287,7 +291,7 @@ $contactBorderColor: $light-grey;
 .zcs-contact-form {
 	background-color: #dddddd;
 	background-image: none;
-	font-size: 1rem;
+	font-size: 1.2rem;
 	min-height: 1.8em;
 
 	.x-form-inner {
@@ -354,8 +358,17 @@ $contactBorderColor: $light-grey;
 		}*/
 	}
 
-	.x-form .x-scroll-container {
-		background-color: #dddddd;
+	.x-form {
+
+		.x-scroll-container {
+			background-color: #DDD;
+		}
+
+		.x-input-el {
+			font-size: 1.1em;
+			font-weight: normal;
+			padding: 0.4em;
+		}
 	}
 }
 
@@ -370,7 +383,7 @@ $contactBorderColor: $light-grey;
 
 .x-webkit .x-layout-box.x-vertical>.x-layout-box-item.x-flexed.zcs-contact-spacer {
 	background-color: #dddddd;
-	height: 5px !important;
+	height: 1em !important;
 	width: 100% !important;
 	border: none;
 }
@@ -458,32 +471,38 @@ $zcsMemberImageSize: 4em;
 	}
 }
 
-.contact-form-remove-field-button{
-    border: none;
-    -webkit-border-radius: initial;
-            border-radius: initial;
-    min-height: $contactFormButtonMinHeight;
-    .x-button-icon:before{
-        color: red;
-    }
+$fieldButtonSize: 1.4rem;
+$fieldButtonLabelSize: 1.2rem;
+
+.contact-form-remove-field-button {
+	@include border-radius(initial);
+	border: none;
+	height: auto;
+	min-height: $contactFormButtonMinHeight;
+	padding-left: 5px;
+
+	.x-button-icon:before{
+		color: red;
+		font-size: $fieldButtonSize;
+	}
 }
 
-.contact-form-add-field-button{
-    border: none;
-    -webkit-border-radius: 0px;
-            border-radius: 0px;
-    min-height: $contactFormButtonMinHeight;
-    .x-button-label{
-        text-align: left;
-        font-weight: bold;
-        
-        .contact-form-add-field-button-text:before{
-            margin-right: 10px;
-            font-size: 1.4em;
-            text-align: center;
-            font-family: "pictos";
-            content: "+";
-            color: #159c1f;
-        }
-    }
+.contact-form-add-field-button {
+	@include border-radius(0);
+	border: none;
+	min-height: $contactFormButtonMinHeight;
+
+	.x-button-label {
+		font-size: $fieldButtonLabelSize;
+		text-align: left;
+
+		.contact-form-add-field-button-text:before {
+			color: green;
+			content: "+";
+			font-family: "pictos";
+			font-size: $fieldButtonSize;
+			margin-right: 10px;
+			text-align: center;
+		}
+	}
 }
