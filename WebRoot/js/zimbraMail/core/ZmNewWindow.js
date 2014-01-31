@@ -208,7 +208,9 @@ function() {
 
 	// inherit parent's identity collection
 	var parentPrefsApp = parentAppCtxt.getApp(ZmApp.MAIL);
-	appCtxt.getApp(ZmApp.MAIL)._identityCollection = parentPrefsApp.getIdentityCollection();
+    if (parentPrefsApp) {
+        appCtxt.getApp(ZmApp.MAIL)._identityCollection = parentPrefsApp.getIdentityCollection();
+    }
 
 	// Find target first.
 	var target;

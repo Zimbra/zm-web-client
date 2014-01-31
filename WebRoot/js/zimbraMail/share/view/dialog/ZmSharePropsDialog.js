@@ -591,15 +591,30 @@ ZmSharePropsDialog.prototype._handleShareWith = function(type) {
 
 	this._granteeInput.setValidatorFunction(null, isGuestShare ? DwtInputField.validateEmail : DwtInputField.validateAny);
 
-	this._rolesGroup.setVisible(isUserShare);
+    // TODO - Currently external sharing is enabled for briefcase only.
+    var guestRadioLabelEl = document.getElementById("LblShareWith_external");
+
+    if (appCtxt.getCurrentApp().getName() === ZmId.APP_BRIEFCASE) {
+        this._rolesGroup.setVisible(isUserShare || isGuestShare);
+        guestRadioLabelEl.innerText = ZmMsg.shareWithExternalGuest;
+    }
+    else {
+	    this._rolesGroup.setVisible(isUserShare);
+        guestRadioLabelEl.innerText = ZmMsg.shareWithGuest;
+    }
 	this._messageGroup.setVisible(!isPublicShare);
 	this._privatePermission.setVisible(this._privatePermissionEnabled && !isPublicShare);
+
+    var adminRadioRow = document.getElementById("ShareRole_Row_" + ZmShare.ROLE_ADMIN);
+
     if (isGuestShare) {
         this._reply && this._reply.setReplyOptions(ZmShareReply.EXTERNAL_USER_OPTIONS);
+        adminRadioRow.style.display = 'none';
     }
     else {
         this._reply && this._reply.setReplyOptions(ZmShareReply.DEFAULT_OPTIONS);
         this._reply.setReplyType(ZmShareReply.STANDARD);
+        adminRadioRow.style.display = '';
     }
 	this._props.setPropertyVisible(this._shareWithOptsId, !isPublicShare);
 	//this._shareWithOptsProps.setPropertyVisible(this._passwordId, isGuestShare);
@@ -652,13 +667,13 @@ function() {
 
 	var shareWith = new DwtPropertySheet(this, null, null, DwtPropertySheet.RIGHT);
 	var shareWithProperties = [
-		{ label: "<label for='ShareWith_user' >" +  ZmMsg.shareWithUserOrGroup + "</label>",
+		{ label: "<label id='LblShareWith_user' for='ShareWith_user' >" +  ZmMsg.shareWithUserOrGroup + "</label>",
 		  field: ["<input type='radio' id='ShareWith_user' name='",shareWithRadioName,"' value='",ZmShare.TYPE_USER,"'>"].join("")
 		},
-		{ label: "<label for='ShareWith_external' >" + ZmMsg.shareWithGuest + "</label>",
+		{ label: "<label id='LblShareWith_external' for='ShareWith_external' >" + ZmMsg.shareWithGuest + "</label>",
 		  field: ["<input type='radio' id='ShareWith_external' name='",shareWithRadioName,"' value='",ZmShare.TYPE_GUEST,"'>"].join("")
 		},
-		{ label: "<label for='ShareWith_public' >" + ZmMsg.shareWithPublicLong + "</label>",
+		{ label: "<label id='LblShareWith_public' for='ShareWith_public' >" + ZmMsg.shareWithPublicLong + "</label>",
 		  field: ["<input type='radio' id='ShareWith_public' name='",shareWithRadioName,"' value='",ZmShare.TYPE_PUBLIC,"'>"].join("")
 		}
 	];
@@ -719,7 +734,9 @@ function() {
 	for (var i = 0; i < roles.length; i++) {
 		var role = roles[i];
 
-		html[idx++] = "<tr><td style='padding-left:10px; vertical-align:top;'><input type='radio' name='";
+		html[idx++] = "<tr id='ShareRole_Row_";
+        html[idx++] = role;
+        html[idx++] = "'><td style='padding-left:10px; vertical-align:top;'><input type='radio' name='";
 		html[idx++] = roleRadioName;
 		html[idx++] = "' value='";
 		html[idx++] = role;

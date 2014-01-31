@@ -331,6 +331,12 @@ function(params, callback) {
 	this._setLaunchTime(this.toString(), new Date());
 	var loadCallback = this._handleLoadLaunch.bind(this, callback);
 	AjxDispatcher.require(["BriefcaseCore","Briefcase"], true, loadCallback, null, true);
+
+    // In case of external sharing we replace drop down button options with New Document button
+    if (appCtxt.isExternalAccount()) {
+        var newButton = appCtxt.getAppController().getNewButton();
+        newButton.removePullDownMenuOptions();
+    }
 };
 
 ZmBriefcaseApp.prototype._handleLoadLaunch =

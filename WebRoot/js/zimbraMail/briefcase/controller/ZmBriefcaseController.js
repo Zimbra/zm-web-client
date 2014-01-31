@@ -137,7 +137,6 @@ function() {
 ZmBriefcaseController.prototype._getSecondaryToolBarOps =
 function() {
 	var list = [];
-    if (appCtxt.isExternalAccount()) { return list; }
 	if (appCtxt.get(ZmSetting.MAIL_ENABLED)) {
 		list.push(ZmOperation.SEND_FILE, ZmOperation.SEND_FILE_AS_ATT, ZmOperation.SEP);
 	}
@@ -351,24 +350,44 @@ function(parent, num) {
         parent.enable(ZmOperation.NEW_DOC, isDocOpEnabled);
     }
 
-    if(appCtxt.isExternalAccount()) {
-        parent.enable ([ZmOperation.SEND_FILE,
-                        ZmOperation.SEND_FILE_AS_ATT,
-                        ZmOperation.RENAME_FILE,
-                        ZmOperation.MOVE,
-                        ZmOperation.MOVE_MENU,
-                        ZmOperation.NEW_FILE,
-                        ZmOperation.TAG_MENU,
-                        ZmOperation.EDIT_FILE,
-                        ZmOperation.OPEN_FILE,
-                        ZmOperation.CHECKIN,
-                        ZmOperation.CHECKOUT,
-                        ZmOperation.DISCARD_CHECKOUT,
-                        ZmOperation.RESTORE_VERSION,
-                        ZmOperation.NEW_BRIEFCASE_WIN,
-                        ZmOperation.DELETE
-                        ], false);
-        parent.setItemVisible(ZmOperation.TAG_MENU, false);
+    // ZmShare is not present when the virtual account loads
+    AjxPackage.require("zimbraMail.share.model.ZmShare");
+
+    if (appCtxt.isExternalAccount() && items.length && isItemSelected) {
+
+        var roleFromPerm = ZmShare.getRoleFromPerm(briefcase.perm);
+
+        if (roleFromPerm === ZmShare.ROLE_NONE) {
+            parent.enable ([ZmOperation.SEND_FILE,
+                ZmOperation.SEND_FILE_AS_ATT,
+                ZmOperation.RENAME_FILE,
+                ZmOperation.MOVE,
+                ZmOperation.MOVE_MENU,
+                ZmOperation.NEW_FILE,
+                ZmOperation.TAG_MENU,
+                ZmOperation.EDIT_FILE,
+                ZmOperation.OPEN_FILE,
+                ZmOperation.CHECKIN,
+                ZmOperation.CHECKOUT,
+                ZmOperation.DISCARD_CHECKOUT,
+                ZmOperation.RESTORE_VERSION,
+                ZmOperation.NEW_BRIEFCASE_WIN,
+                ZmOperation.DELETE
+            ], false);
+            parent.setItemVisible(ZmOperation.TAG_MENU, false);
+        }
+        else if (roleFromPerm === ZmShare.ROLE_MANAGER) {
+            parent.enable ([
+                ZmOperation.RENAME_FILE,
+                ZmOperation.NEW_FILE,
+                ZmOperation.OPEN_FILE,
+                ZmOperation.CHECKIN,
+                ZmOperation.CHECKOUT,
+                ZmOperation.DISCARD_CHECKOUT,
+                ZmOperation.NEW_BRIEFCASE_WIN,
+                ZmOperation.DELETE
+            ], true);
+        }
     }
 };
 
@@ -808,13 +827,17 @@ function(){
 
 ZmBriefcaseController.prototype._getActionMenuOps =
 function() {
-	var list = [
-		ZmOperation.OPEN_FILE,
-		ZmOperation.SAVE_FILE,
-        ZmOperation.EDIT_FILE,            
-		ZmOperation.SEND_FILE,
-		ZmOperation.SEND_FILE_AS_ATT
-	];	
+    var list = [
+        ZmOperation.OPEN_FILE,
+        ZmOperation.SAVE_FILE,
+        ZmOperation.EDIT_FILE
+    ];
+
+    if (!appCtxt.isExternalAccount()) {
+        list.push(ZmOperation.SEND_FILE);
+        list.push(ZmOperation.SEND_FILE_AS_ATT);
+    }
+
     list.push(ZmOperation.SEP);
     list.push(ZmOperation.CHECKOUT, ZmOperation.CHECKIN, ZmOperation.DISCARD_CHECKOUT, ZmOperation.RESTORE_VERSION/*, ZmOperation.DELETE_VERSION*/);
 
