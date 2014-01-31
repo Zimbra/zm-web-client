@@ -530,7 +530,7 @@ function(htmlArr, idx, imageInfo, id, classes) {
 
 ZmListView.prototype._getClasses =
 function(field, classes) {
-	if (this.isMultiColumn && this.isMultiColumn()) {
+	if (this.isMultiColumn && this.isMultiColumn() && this._headerHash[field]) {
 		classes = classes || [];
 		classes = [this._headerHash[field]._cssClass];
 	}

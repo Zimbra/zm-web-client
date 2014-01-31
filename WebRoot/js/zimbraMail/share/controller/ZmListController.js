@@ -1216,9 +1216,28 @@ function(view) {
 	var se = this._getNavStartEnd(view);
 	if (!se) { return ""; }
 
-	var total = this._getNumTotal();
-	var msgText = total ? ZmMsg.navText2 : ZmMsg.navText1;
-	return AjxMessageFormat.format(msgText, [se.start, se.end, total]);
+    var size  = se.size;
+    var msg   = "";
+    if (size === 0) {
+        msg = AjxMessageFormat.format(ZmMsg.navTextNoItems, ZmMsg[ZmApp.NAME[ZmApp.TASKS]]);
+    } else if (size === 1) {
+        msg = AjxMessageFormat.format(ZmMsg.navTextOneItem, ZmMsg[ZmItem.MSG_KEY[ZmItem.TASK]]);
+    } else {
+        // Multiple items
+        var lv    = this._view[view];
+        var limit = se.limit;
+        if (size < limit) {
+            // We have the exact size of the filtered items
+            msg = AjxMessageFormat.format(ZmMsg.navTextWithTotal, [se.start, se.end, size]);
+        } else {
+            // If it's more than the limit, we don't have an exact count
+            // available from the server
+            var sizeText = this._getUpperLimitSizeText(size);
+            var msgText = sizeText ? ZmMsg.navTextWithTotal : ZmMsg.navTextRange;
+            msg = AjxMessageFormat.format(msgText, [se.start, se.end, sizeText]);
+        }
+    }
+    return msg;
 };
 
 /**
@@ -1237,7 +1256,7 @@ function(view) {
 		end = Math.min(lv.offset + limit, size);
 	}
 
-	return (start && end) ? {start:start, end:end} : null;
+	return (start && end) ? {start:start, end:end, size:size, limit:limit} : null;
 };
 
 /**
@@ -1288,7 +1307,7 @@ ZmListController.prototype._getItemCountText =
 function() {
 
 	var size = this._getItemCount();
-	if (size == null) { return ""; }
+	if (size == 0) { return ""; }
 
 	var lv = this._view[this._currentViewId],
 		list = lv && lv._list,
@@ -1301,21 +1320,32 @@ function() {
 	if (total && (size != total)) {
 		return AjxMessageFormat.format(ZmMsg.itemCount1, [size, total, typeText]);
 	} else {
-		var sizeText = size;
-		if (this._list.hasMore()) {
-			//show 4+, 5+, 10+, 20+, 100+, 200+
-			var granularity = size < 10 ? 1	: size < 100 ? 10 : 100;
-			sizeText = (Math.floor(size / granularity)) * granularity + "+"; //round down to the chosen granularity
-		}
+		var sizeText = this._getUpperLimitSizeText(size);
 		return AjxMessageFormat.format(ZmMsg.itemCount, [sizeText, typeText]);
 	}
 };
+
+ZmListController.prototype._getUpperLimitSizeText =
+function(size) {
+    var sizeText = size;
+    if (this._list.hasMore()) {
+        //show 4+, 5+, 10+, 20+, 100+, 200+
+        var granularity = size < 10 ? 1	: size < 100 ? 10 : 100;
+        sizeText = (Math.floor(size / granularity)) * granularity + "+"; //round down to the chosen granularity
+    }
+    return sizeText;
+
+}
+
+
 
 ZmListController.prototype._getItemCount =
 function() {
 	var lv = this.getListView();
 	var list = lv && lv._list;
-	if (!list) { return null; }
+	if (!list) {
+        return 0;
+    }
 	return list.size();
 };
 
