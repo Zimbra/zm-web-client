@@ -481,10 +481,14 @@ $contact-suggest-radius: $floating-list-radius;
 				left: 0;
 			}
 
-			&:active,
-			&.x-item-pressed,
+//			&:active,
+			&.x-item-pressed {
+				background-color: darken($zcs-button-active-bkgd-color,15) !important;
+				color: $zcs-button-active-color;
+			}
+
 			&.x-list-item-selected.x-list-item-tpl {
-				background-color: $zcs-button-active-bkgd-color;
+				background-color: $zcs-button-active-bkgd-color !important;
 				color: $zcs-button-active-color;
 			}
 		}
@@ -583,7 +587,15 @@ $contact-suggest-radius: $floating-list-radius;
 .x-msgbox {
 	background-color: $white;
 
+	.x-msgbox-text {
+		font-size: 1em;
+	}
+
 	.x-msgbox-buttons .x-toolbar-inner .x-button {
 		border-left-width: 0px;
+
+		.x-button-label {
+			font-size: 1.1em;
+		}
 	}
 }
