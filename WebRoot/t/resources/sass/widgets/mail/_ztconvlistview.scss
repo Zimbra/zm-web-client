@@ -19,16 +19,13 @@ $zcs-mail-topline3: 3.5em;
 $zcs-mail-dateWidth: 5.5em;
 
 
-
 .zcs-mail-list-slideable {
-	width: 200%;
+	background: transparent;
 	overflow: hidden;
 	position: absolute;
-
-	background: transparent;
+	width: 200%;
 
 	.zcs-mail-list-entry {
-		background: white;
 		height: 90px;
 		width: 50%;
 		float: left;
@@ -41,19 +38,32 @@ $zcs-mail-dateWidth: 5.5em;
 	}
 }
 
-.zcs-conv-list {
-	.x-list-item {
-		border-top: none !important;
-		background-color: #DCDCDC !important;
-		&.delete-active {
-			background-color: #CE2A26 !important;
-		}
+.zcs-conv-list .x-list-item {
+//	background-color: #DCDCDC !important;
+	border-top: none !important;
 
-		.x-innerhtml {
-			padding: 0px !important;
-		}
+	&.x-item-pressed .zcs-mail-list-entry {
+		background: lighten($list-active-color,10);
+		color: $primary-text-color;
+	}
 
-		.x-innerhtml:before {
+	&.x-item-selected .zcs-mail-list-entry {
+		background: $list-active-color;
+		color: $white;
+	}
+
+	&.x-list-item-tpl:before {
+		border-bottom: none;
+	}
+
+	&.delete-active {
+		background-color: #CE2A26 !important; // red
+	}
+
+	.x-innerhtml {
+		padding: 0px !important;
+
+		&:before {
 			position: absolute;
 			right: 30px;
 			text-align: center;
@@ -63,27 +73,14 @@ $zcs-mail-dateWidth: 5.5em;
 			line-height: 90px;
 			font-size: 3em;
 		}
+	}
 
-		&.x-item-selected .zcs-mail-list-entry {
-			background: $list-active-color;
-			color: $white;
-		}
-		&.x-item-pressed .zcs-mail-list-entry {
-			background: #F3F3F3;
-			color: black;
-		}
-
-		&.x-list-item-tpl:before {
-			border-bottom: none;
-		}
-
-		.zcs-mail-listitem-deleted {
-			height: 90px;
-			background: white;
-			line-height: 90px;
-			text-align: center;
-			font-size: 1.2em;
-		}
+	.zcs-mail-listitem-deleted {
+		height: 90px/2;
+		background: $light-grey;
+		line-height: 90px/2;
+		text-align: center;
+		font-size: 1.2em;
 	}
 }
 
@@ -98,7 +95,6 @@ $zcs-mail-dateWidth: 5.5em;
 .zcs-mail-list-item {
 	position: absolute;
 }
-
 
 .zcs-mail-list-item-icon {
 	@extend .zcs-mail-list-item;
