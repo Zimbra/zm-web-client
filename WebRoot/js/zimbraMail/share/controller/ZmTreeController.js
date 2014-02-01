@@ -1135,10 +1135,15 @@ function(parentNode, node, fields, organizer, treeView) {
 	node.setText(organizer.getName(treeView._showUnread));
 	if (fields && fields[ZmOrganizer.F_NAME]) {
 		if (parentNode && (parentNode.getNumChildren() > 1)) {
+			var nodeSelected = node._selected;
 			// remove and re-insert the node (if parent has more than one child)
 			node.dispose();
 			var idx = ZmTreeView.getSortIndex(parentNode, organizer, eval(ZmTreeView.COMPARE_FUNC[organizer.type]));
 			node = treeView._addNew(parentNode, organizer, idx);
+			if (nodeSelected) {
+				//if it was selected, re-select it so it is highlighted. No need for notifications.
+				treeView.setSelected(organizer, true);
+			}
 		} else {
 			node.setDndText(organizer.getName());
 		}
