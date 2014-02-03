@@ -101,6 +101,8 @@ Ext.define('ZCS.controller.mail.ZtMsgController', {
 		actionMenuContainer.show();
 		actionMenu.show();
 		button.hide();
+
+		msgView.up('list').resetScrollHack();
 	},
 
 	onMsgActionsCancelTap: function (button, e) {
@@ -111,6 +113,8 @@ Ext.define('ZCS.controller.mail.ZtMsgController', {
 		actionMenuButton.show();
 		actionMenu.hide();
 		// container hide is done in actionMenu hide listener
+
+		msgView.up('list').resetScrollHack();
 	},
 
 	onMsgActionsButtonTap: function (button, e) {
@@ -203,6 +207,8 @@ Ext.define('ZCS.controller.mail.ZtMsgController', {
 				msgView.updateHeight();
 			}
 		}
+
+		msgView.up('list').resetScrollHack();
 	},
 
 	/**
