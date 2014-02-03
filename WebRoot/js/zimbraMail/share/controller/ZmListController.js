@@ -1167,7 +1167,13 @@ function(toolbar, view) {
 ZmListController.prototype._resetNavToolBarButtons =
 function(view) {
 
-	var lv = view ? this._view[view] : this.getListView();
+	var lv;
+    if (view) {
+        lv = this._view[view];
+    } else {
+        lv = this.getListView();
+        view = this._currentViewId;
+    }
 	if (!lv) { return; }
 
 	if (lv._isPageless) {

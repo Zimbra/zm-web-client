@@ -837,6 +837,7 @@ function(ev) {
             this.checkTaskReplenishListView();
         }
 		this._controller._resetToolbarOperations(this.view);
+        this._controller._resetNavToolBarButtons();
 		if(this._controller.isReadingPaneOn()) {
 			this._controller.getTaskMultiView().getTaskView().reset();
 		}
