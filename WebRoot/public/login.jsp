@@ -25,9 +25,9 @@
 <c:set var="useTablet" value="${ua.isTouchiPad or (ua.isOsAndroid and not ua.isMobile)}"/>
 <c:set var="trimmedUserName" value="${fn:trim(param.username)}"/>
 
-<c:if test="${useTablet}">
-    <jsp:forward page="/public/loginTouch.jsp"/>
-</c:if>
+<%--<c:if test="${useTablet}">--%>
+    <%--<jsp:forward page="/public/loginTouch.jsp"/>--%>
+<%--</c:if>--%>
 
 <%--'virtualacctdomain' param is set only for external virtual accounts--%>
 <c:if test="${not empty param.username and not empty param.virtualacctdomain}">
