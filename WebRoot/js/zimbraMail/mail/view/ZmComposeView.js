@@ -2862,6 +2862,7 @@ function(composeMode) {
 			posStyle: DwtControl.RELATIVE_STYLE,
 			mode: this._composeMode,
 			initCallback: this._controlListener.bind(this),
+			pasteCallback: this._uploadDoneCallback.bind(this),
 			attachmentCallback: attmcallback
 		});
 	this._bodyFieldId = this._htmlEditor.getBodyFieldId();
@@ -3209,7 +3210,7 @@ function(err) {
 ZmComposeView.prototype._uploadDoneCallback =
 function(resp) {
 	var response = resp && resp.length && resp[2];
-	this._controller.saveDraft(ZmComposeController.DRAFT_TYPE_AUTO, response, null, callback);
+	this._controller.saveDraft(ZmComposeController.DRAFT_TYPE_AUTO, response);
 };
 
 

@@ -24,6 +24,7 @@
  * @param {Boolean}		parentElement
  * @param {String}		textAreaId
  * @param {Function}	attachmentCallback		callback to create image attachment
+ * @param {Function}	pasteCallback			callback invoked when data is pasted and uploaded to the server
  * @param {Function}	initCallback			callback invoked when the editor is fully initialized
  *
  * @author Satish S
@@ -46,6 +47,7 @@ ZmHtmlEditor = function() {
     this._bodyTextAreaId = params.textAreaId;
 	this._initCallbacks = [];
 	this._attachmentCallback = params.attachmentCallback;
+	this._pasteCallback = params.pasteCallback;
 	this._onContentInitializeCallbacks = []
 	this.initTinyMCEEditor(params);
     this._ignoreWords = {};
@@ -722,6 +724,7 @@ function(id, content) {
         language: tinyMCE.getlanguage(appCtxt.get(ZmSetting.LOCALE_NAME)),
         directionality : appCtxt.get(ZmSetting.COMPOSE_INIT_DIRECTION),
         paste_retain_style_properties : "all",
+		paste_data_images: true,
         paste_remove_styles_if_webkit : false,
         paste_preprocess : ZmHtmlEditor.pastePreProcess,
         paste_postprocess : ZmHtmlEditor.pastePostProcess,
@@ -753,42 +756,58 @@ function(id, content) {
 };
 
 ZmHtmlEditor.prototype.onPaste = function(ev) {
-    var data = ev.clipboardData,
-        items,
-        blob,
-        req,
+    if (!this._pasteCallback)
+        return;
+
+    var items = ((ev.clipboardData &&
+                  (ev.clipboardData.items || ev.clipboardData.files)) ||
+                 (window.clipboardData && clipboardData.files)),
+        item = items && items[0],
+        file, name, type,
         view;
 
-    if (!data) {
-        return;
+	if (item && item.getAsFile) {
+		file = item.getAsFile();
+		name = file && file.fileName;
+		type = file && file.type;
+	} else if (item && item.type) {
+		file = item;
+		name = file.name;
+		type = file.type;
+	}
+
+	if (file) {
+		var headers = {
+			"Cache-Control": "no-cache",
+			"X-Requested-With": "XMLHttpRequest",
+			"Content-Type": type,
+			//For paste from clipboard filename is undefined
+			"Content-Disposition": 'attachment; filename="' + (name ? AjxUtil.convertToEntities(name) : ev.timeStamp || new Date().getTime()) + '"'
+		};
+		var url = (appCtxt.get(ZmSetting.CSFE_ATTACHMENT_UPLOAD_URI) +
+				   "?fmt=extended,raw");
+
+		var fn = AjxRpc.invoke.bind(AjxRpc, file, url, headers,
+		                            this._handlePasteUpload.bind(this),
+		                            AjxRpcRequest.HTTP_POST);
+
+		// IE11 appears to disallow AJAX requests within the event handler
+		if (AjxEnv.isTrident) {
+			setTimeout(fn, 0);
+		} else {
+			fn();
+		}
     }
-    items = data.items;
-    if (!items) {
-        return;
-    }
-    view = this.parent;
-    if (view && view.toString() !== "ZmComposeView") {
-        return;
-    }
-    blob = items[0].getAsFile();
-    if (blob) {
-        req = new XMLHttpRequest();
-        req.open("POST", appCtxt.get(ZmSetting.CSFE_ATTACHMENT_UPLOAD_URI)+"?fmt=extended,raw", true);
-        req.setRequestHeader("Cache-Control", "no-cache");
-        req.setRequestHeader("X-Requested-With", "XMLHttpRequest");
-        req.setRequestHeader("Content-Type", blob.type);
-        req.setRequestHeader("Content-Disposition", 'attachment; filename="' + (blob.fileName ? AjxUtil.convertToEntities(blob.fileName) : ev.timeStamp || new Date().getTime()) + '"');//For paste from clipboard filename is undefined
-        req.onreadystatechange = function(){
-            if(req.readyState === 4 && req.status === 200) {
-                var resp = eval("["+req.responseText+"]");
-                if(resp.length === 3) {
-                    resp[2].clipboardPaste = true;
-                    view.getController().saveDraft(ZmComposeController.DRAFT_TYPE_AUTO, resp[2]);
-                }
-            }
-        }
-        req.send(blob);
-    }
+};
+
+ZmHtmlEditor.prototype._handlePasteUpload = function(r) {
+	if (r && r.success) {
+		var resp = eval("["+r.text+"]");
+		if(resp.length === 3) {
+			resp[2].clipboardPaste = true;
+		}
+		this._pasteCallback(resp);
+	}
 };
 
 
