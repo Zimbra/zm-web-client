@@ -90,7 +90,7 @@ FORM {
 .form INPUT[type='password']:focus 	{ border:1px solid @SelC@; 					}
 .form SELECT 						{ height:20px; width:165px; 				}
 .form .submitTD 					{ text-align:left; 							}
-.form .ZLoginButton					{ @LoginButton@ float:right; font-size:11px;}
+.form .ZLoginButton					{ @LoginButton@ float:right; font-size:1em;}
 .form HR { 
 	border-color:transparent transparent @LoginLabelColor@; 
 	height:0px;
@@ -101,7 +101,7 @@ FORM {
 }
 .LoginScreen #ZLoginWhatsThisAnchor {
 	color:@LoginLabelColor@;
-	font-size:10px;
+	font-size:.9em;
 	margin-left:5px;
 }
 .LoginScreen #ZLoginWhatsThis {
