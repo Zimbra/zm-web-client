@@ -394,6 +394,17 @@ function(params) {
 				this._appViewMgr.loadingView.setVisible(false);
 			});
 		this.addPostRenderCallback(callback, 0, 0, true);
+
+		// wait half a minute and load TinyMCE
+		var callback = new AjxCallback(this, function() {
+			AjxDispatcher.require("Startup2");
+
+			var timer = new DwtIdleTimer(30 * 1000, function() {
+				AjxDispatcher.require('TinyMCE', true);
+				timer.kill();
+			});
+		});
+		this.addPostRenderCallback(callback, 0, 0, true);
 	}
 
     // NOTE: We must go through the request mgr for default handling
