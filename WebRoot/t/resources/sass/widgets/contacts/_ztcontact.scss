@@ -22,12 +22,12 @@ $contactListRightIndent: $contactListStdMargin;
 $contactListTopOffset: 0.5rem;
 
 $contactBaseFontSize: 1rem;
-$contactImageSize: 7em;
+$contactGutter: 1.5em;
+$contactImageSize: 10em - $contactGutter;
 $contactEditImageSize: 5em;
 $contactStdMargin: 0.7em;
 $contactListImageTopOffset: $contactListHeight/2 - $contactListImageSize/2;
 $contactButtonSize: $contactImageSize/1.5;
-$contactGutter: 2em;
 $contactFieldTopOffset: $contactImageSize + $contactStdMargin*3;
 $contactFieldWidth: 21em; //optimized intially for iPad in landscape
 $contactFormButtonMinHeight: 2.5em;
@@ -118,7 +118,7 @@ $contactFormButtonMinHeight: 2.5em;
 		background-color: $contactBkgdColor;
 
 		.x-innerhtml {
-			padding: 4.5em 2em 2em;  // Larger top padding accounts for titlebar height
+			padding: $contactGutter+2.5em $contactGutter/2 $contactGutter;  // Larger top padding accounts for titlebar height
 		}
 	}
 }
@@ -136,6 +136,7 @@ $contactFormButtonMinHeight: 2.5em;
 	.zcs-contactview-personalInfo {
 		@extend .zcs-floatLeft;
 		margin-left: $contactGutter;
+		width: 80%;
 
 		SPAN {
 			@extend .zcs-newLine;
@@ -167,16 +168,24 @@ $contactFormButtonMinHeight: 2.5em;
 		width: $contactImageSize/2;
 	}
 
-	.zcs-contactview-personalInfo SPAN {
-		max-width: $contactFieldWidth*0.95;  // Tested iPod Touch - gen 5 - may need to be smaller for pre-gen 5
-		min-width: $contactFieldWidth*0.5;
+	.zcs-contactview-personalInfo {
+		width: 100%;
+
+		SPAN {
+			max-width: $contactFieldWidth*0.95;  // Tested iPod Touch - gen 5 - may need to be smaller for pre-gen 5
+			min-width: $contactFieldWidth*0.5;
+		}
 	}
 }
 
 .x-phone.x-portrait .zcs-contactview-header {
-	.zcs-contactview-personalInfo SPAN {
-		max-width: $contactFieldWidth*0.6;  // Tested iPod Touch - gen 5
-		min-width: $contactFieldWidth*0.4;
+	.zcs-contactview-personalInfo {
+		width: 70%;
+
+		SPAN {
+			max-width: $contactFieldWidth*0.6;  // Tested iPod Touch - gen 5
+			min-width: $contactFieldWidth*0.4;
+		}
 	}
 }
 
@@ -274,13 +283,6 @@ $contactBorderColor: $light-grey;
 			display: none;
 		}
 	}
-}
-
-.zcs-contact-personalinfo {
-	width: 80%;
-}
-.x-phone .zcs-contactview-personalInfo {
-	width: 100%;
 }
 
 .zcs-contact-formline {
