@@ -1025,7 +1025,8 @@ function() {
 	var msg = this.getMsg();
 	if (!msg) { return; }
 
-	var msgFetchUrl = appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI) + "&id=" + msg.id;
+	var msgFetchUrl = appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI) + "&view=text&id=" + msg.id + (msg.partId ? "&part=" + msg.partId : "");
+
 	// create a new window w/ generated msg based on msg id
 	window.open(msgFetchUrl, "_blank", "menubar=yes,resizable=yes,scrollbars=yes");
 };
