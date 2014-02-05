@@ -113,7 +113,6 @@ $contactFormButtonMinHeight: 2.5em;
 /* Contact View Classes */
 
 .zcs-item-panel {
-
 	.zcs-contactview {
 		background-color: $contactBkgdColor;
 
@@ -133,10 +132,10 @@ $contactFormButtonMinHeight: 2.5em;
 		width: $contactImageSize;
 	}
 
-	.zcs-contactview-personalInfo {
+	.zcs-contactview-personalInfo {					// Tested iPad Mini
 		@extend .zcs-floatLeft;
 		margin-left: $contactGutter;
-		width: 80%;
+		width: 77%;
 
 		SPAN {
 			@extend .zcs-newLine;
@@ -153,13 +152,29 @@ $contactFormButtonMinHeight: 2.5em;
 	}
 }
 
+// iOS - TABLET - PORTRAIT
+// Tested iPad Mini
 .x-portrait .zcs-contactview-header {
-	.zcs-contactview-personalInfo SPAN {
-		max-width: $contactFieldWidth*1.1; // Tested iPad Mini
-		min-width: $contactFieldWidth/2;
+	.zcs-contactview-personalInfo {
+		width: 78%;
+
+		SPAN {
+			max-width: $contactFieldWidth*1.1;
+			min-width: $contactFieldWidth/2;
+		}
 	}
 }
 
+// ANDROID - TABLET - PORTRAIT
+// Tested Nexus 7 and Nexus 10
+.x-android.x-portrait .zcs-contactview-header {
+	.zcs-contactview-personalInfo {
+		width: 72%;
+	}
+}
+
+// iOS - PHONE - LANDSCAPE
+// Tested iPod Touch - gen 5 - may need to be smaller for pre-gen 5
 .x-phone .zcs-contactview-header {
 	font-size: $contactBaseFontSize*0.9;
 
@@ -169,23 +184,41 @@ $contactFormButtonMinHeight: 2.5em;
 	}
 
 	.zcs-contactview-personalInfo {
-		width: 100%;
+		width: 85%;
 
 		SPAN {
-			max-width: $contactFieldWidth*0.95;  // Tested iPod Touch - gen 5 - may need to be smaller for pre-gen 5
+			max-width: $contactFieldWidth*0.95;
 			min-width: $contactFieldWidth*0.5;
 		}
 	}
 }
 
+// iOS - PHONE - PORTRAIT
+// Tested iPod Touch - gen 5
 .x-phone.x-portrait .zcs-contactview-header {
 	.zcs-contactview-personalInfo {
 		width: 70%;
 
 		SPAN {
-			max-width: $contactFieldWidth*0.6;  // Tested iPod Touch - gen 5
+			max-width: $contactFieldWidth*0.6;
 			min-width: $contactFieldWidth*0.4;
 		}
+	}
+}
+
+// ANDROID - PHONE - LANDSCAPE
+// Tested Samsung Galaxy Nexus
+.x-android.x-phone .zcs-contactview-header {
+	.zcs-contactview-personalInfo {
+		// No change - width: 85%;
+	}
+}
+
+// ANDROID - PHONE - PORTRAIT
+// Tested Samsung Galaxy Nexus
+.x-android.x-phone .zcs-contactview-header {
+	.zcs-contactview-personalInfo {
+		width: 75%;
 	}
 }
 
