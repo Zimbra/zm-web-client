@@ -309,6 +309,8 @@
             language : tinyMCE.getlanguage("${mailbox.prefs.locale}"),
             paste_retain_style_properties : "all",
             paste_remove_styles_if_webkit : false,
+            submit_patch : false,
+            add_form_submit_trigger: false,
             setup : function(ed) {
                 ed.on('init', onTinyMCEEditorInit);
                 ed.on('LoadContent', handleContentLoad);
@@ -356,10 +358,10 @@
     function prepToSend (){
        for(var j = 0 ;j < sigcount ; j++) {
           if(myEdit[j] != null) {
-            myEdit[j].save();
+            myEdit[j].save({format:"raw"});
           }
        }
-       myEditor.save();
+       myEditor.save({format:"raw"});
        return true;
     }
 

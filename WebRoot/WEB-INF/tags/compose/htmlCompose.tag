@@ -29,7 +29,7 @@
 var myEditor;
 
     var saveContentToTextarea = function(){
-        myEditor.save();
+        myEditor.save({format:"raw"});
         var _htmlval = document.getElementById("body").value;
         var stripHTML = /<\S[^><]*>/g;
         var stripNBSP  = /&nbsp;/g
@@ -38,7 +38,7 @@ var myEditor;
     };
 
     var saveToTextareaToSend = function(){
-        myEditor.save();
+        myEditor.save({format:"raw"});
         var _htmlval = document.getElementById("body").value;
         var stripHTML = /<\S[^><]*>/g;
         var stripNBSP  = /&nbsp;/g
@@ -164,6 +164,8 @@ var myEditor;
             language : tinyMCE.getlanguage("${mailbox.prefs.locale}"),
             paste_retain_style_properties : "all",
             paste_remove_styles_if_webkit : false,
+            submit_patch : false,
+            add_form_submit_trigger: false,
             setup : function(ed) {
                 ed.on('init', onTinyMCEEditorInit);
                 ed.on('LoadContent', handleContentLoad);
