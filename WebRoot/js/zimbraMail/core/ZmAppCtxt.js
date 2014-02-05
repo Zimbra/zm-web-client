@@ -1169,6 +1169,14 @@ function(account) {
 	return context.AjxDispatcher.run("GetSignatureCollection", account);
 };
 
+
+ZmAppCtxt.prototype.killMarkReadTimer =
+function() {
+	if (this.markReadActionId > 0) {
+		AjxTimedAction.cancelAction(this.markReadActionId);
+		this.markReadActionId = -1;
+	}
+};
 /**
  * Gets the organizer tree.
  * 

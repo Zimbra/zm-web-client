@@ -1069,6 +1069,9 @@ function() {
 
 ZmMailListController.prototype._markUnreadListener =
 function(ev) {
+
+	appCtxt.killMarkReadTimer();
+
 	this._doMarkRead(this._listView[this._currentViewId].getSelection(), false);
 };
 

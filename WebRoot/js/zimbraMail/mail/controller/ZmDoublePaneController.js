@@ -323,10 +323,7 @@ function(item) {
 	if (!item._loaded) { return; }
 
 	// cancel timed mark read action on previous msg
-	if (appCtxt.markReadActionId > 0) {
-		AjxTimedAction.cancelAction(appCtxt.markReadActionId);
-		appCtxt.markReadActionId = -1;
-	}
+	appCtxt.killMarkReadTimer();
 
 	this._doublePaneView.setItem(item);
 	this._handleMarkRead(item);
@@ -343,10 +340,7 @@ function(msg) {
 ZmDoublePaneController.prototype._preHideCallback =
 function() {
 	// cancel timed mark read action on view change
-	if (appCtxt.markReadActionId > 0) {
-		AjxTimedAction.cancelAction(appCtxt.markReadActionId);
-		appCtxt.markReadActionId = -1;
-	}
+	appCtxt.killMarkReadTimer();
 	return ZmController.prototype._preHideCallback.call(this);
 };
 
