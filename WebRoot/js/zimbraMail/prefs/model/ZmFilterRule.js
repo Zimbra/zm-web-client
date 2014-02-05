@@ -97,11 +97,11 @@ ZmFilterRule.RANKING            = "ranking";
 
 
 // Conditions (subjects)
-ZmFilterRule.C_FROM			= "FROM";
-ZmFilterRule.C_TO			= "TO";
-ZmFilterRule.C_CC			= "CC";
+ZmFilterRule.C_FROM			= AjxEmailAddress.FROM;
+ZmFilterRule.C_TO			= AjxEmailAddress.TO;
+ZmFilterRule.C_CC			= AjxEmailAddress.CC;
 ZmFilterRule.C_TO_CC		= "TO_CC";
-ZmFilterRule.C_BCC          = "BCC";
+ZmFilterRule.C_BCC          = AjxEmailAddress.BCC;
 ZmFilterRule.C_SUBJECT		= "SUBJECT";
 ZmFilterRule.C_HEADER		= "HEADER";
 ZmFilterRule.C_SIZE			= "SIZE";
