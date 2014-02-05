@@ -151,6 +151,8 @@ var myEditor;
             theme_advanced_show_current_color : true,
             paste_retain_style_properties : "all",
             paste_remove_styles_if_webkit : false,
+            submit_patch : false,
+            add_form_submit_trigger: false,
             setup : function(ed) {
                 ed.onInit.add(onTinyMCEEditorInit);
                 ed.onLoadContent.add(handleContentLoad);

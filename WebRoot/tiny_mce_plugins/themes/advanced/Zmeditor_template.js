@@ -460,7 +460,7 @@ Zmeditor_template.getFontSize = function(value){
         saveHTML : function(){
             var ele = this.getElement();
             if(ele && ele.nodeName === "TEXTAREA"){
-                ele.value = this.getContent();
+                ele.value = this.getContent({format:"raw"});
             }
         }
     });
