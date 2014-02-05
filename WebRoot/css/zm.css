@@ -6165,3 +6165,6 @@ RBC, RTC {
 	font-size:@UserFontSize-larger@
 }
 
+.mce-container.mce-menu {
+	@MenuContainer@
+}
