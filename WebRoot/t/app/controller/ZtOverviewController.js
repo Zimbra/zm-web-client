@@ -381,12 +381,16 @@ Ext.define('ZCS.controller.ZtOverviewController', {
 					if (buttonId === 'yes') {
 						options.del = true;
 						folder.save(options);
+                        this.hideEditPanel();
+                        this.toggleEditState();
 					}
 				}, this);
 			}
 			else {
 				options.trash = true;
 				folder.save(options);
+                this.hideEditPanel();
+                this.toggleEditState();
 			}
 		}
 	},
@@ -402,11 +406,11 @@ Ext.define('ZCS.controller.ZtOverviewController', {
 				if (buttonId === 'yes') {
 					options.del = true;
 					tag.save(options);
+                    this.hideEditPanel();
+                    this.toggleEditState();
 				}
 			}, this);
 		}
-
-		this.hideEditPanel();
 	},
 
 	handleOrganizerCreate: function(folder, notification) {
