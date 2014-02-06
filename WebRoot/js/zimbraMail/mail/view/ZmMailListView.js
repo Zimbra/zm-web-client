@@ -816,6 +816,8 @@ function(params) {
 		else if (appCtxt.get(ZmSetting.SHOW_FRAGMENTS)) {
 		    tooltip = AjxStringUtil.htmlEncode(item.fragment || ZmMsg.fragmentIsEmpty);
         }
+        // Strip surrounding whitespace from the tooltip
+        tooltip = AjxStringUtil.trim(tooltip, false, "\\s");
 	}
 	else if (field === ZmItem.F_FOLDER) {
 		var folder = appCtxt.getById(item.folderId);
@@ -832,8 +834,7 @@ function(params) {
 	else {
 		tooltip = ZmListView.prototype._getToolTip.apply(this, arguments);
 	}
-	
-	return tooltip;
+    return tooltip;
 };
 
 /**
