@@ -2307,8 +2307,8 @@ function(parent, parentElement, adminUrl) {
 	    mi.addSelectionListener(new AjxListener(null, ZmZimbraMail.adminLinkCallback, adminUrl));
 	}
 
-	mi = menu.createMenuItem("standardHtmlLink", {text: ZmMsg.htmlClient});
-	mi.addSelectionListener(ZmZimbraMail.standardHtmlLinkCallback);
+    mi = menu.createMenuItem("standardHtmlLink", {text: ZmMsg.htmlClient});
+    mi.addSelectionListener(ZmZimbraMail.standardHtmlLinkCallback);
 
 	menu.createSeparator();
 
@@ -2329,10 +2329,12 @@ function(parent, parentElement, adminUrl) {
 
     menu.createSeparator();
 
-    mi = menu.createMenuItem("offlineSettings", {text: ZmMsg.offlineSettings});
-    mi.addSelectionListener(new AjxListener(this, this._offlineSettingsListener));
+    if (!appCtxt.isExternalAccount()) {
+        mi = menu.createMenuItem("offlineSettings", {text: ZmMsg.offlineSettings});
+        mi.addSelectionListener(new AjxListener(this, this._offlineSettingsListener));
+    }
 
-	if (AjxEnv.isFirefox && AjxEnv.browserVersion >= 23.0) {
+	if (AjxEnv.isFirefox && (AjxEnv.browserVersion >= 23.0) && !appCtxt.isExternalAccount()) {
 		menu.createSeparator();
 
 		mi = menu.createMenuItem("socialfoxSettings", {text: ZmMsg.socialfoxEnableSidebar});
