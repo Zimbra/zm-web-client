@@ -161,6 +161,10 @@ Ext.define('ZCS.controller.ZtOverviewController', {
 
 	showEdit: function(organizer, list) {
 
+		if (organizer && organizer.isSystem()) {
+			return false;
+		}
+
 		var type = organizer.get('type'),
 			isTag = (type === ZCS.constant.ORG_TAG),
 			organizerEditPanel = this.getOrganizerEditPanel(),
