@@ -25,9 +25,9 @@
 <c:set var="useTablet" value="${ua.isTouchiPad or (ua.isOsAndroid and not ua.isMobile)}"/>
 <c:set var="trimmedUserName" value="${fn:trim(param.username)}"/>
 
-<%--<c:if test="${useTablet}">--%>
-    <%--<jsp:forward page="/public/loginTouch.jsp"/>--%>
-<%--</c:if>--%>
+<c:if test="${param.client eq 'touch'}">
+    <jsp:forward page="/public/loginTouch.jsp"/>
+</c:if>
 
 <%--'virtualacctdomain' param is set only for external virtual accounts--%>
 <c:if test="${not empty param.username and not empty param.virtualacctdomain}">
@@ -44,7 +44,7 @@
         <c:set var="errorCode" value="${error.code}"/>
         <fmt:message bundle="${zmsg}" var="errorMessage" key="${errorCode}"/>
         <zm:logout/>
-    </c:if>    
+    </c:if>
 </c:if>
 
 <c:catch var="loginException">
@@ -447,7 +447,7 @@ if (application.getInitParameter("offlineMode") != null)  {
                                             <option value="preferred" <c:if test="${client eq 'preferred'}">selected</c:if> > <fmt:message key="clientPreferred"/></option>
                                             <option value="advanced"  <c:if test="${client eq 'advanced'}">selected</c:if>> <fmt:message key="clientAdvanced"/></option>
                                             <option value="standard"  <c:if test="${client eq 'standard'}">selected</c:if>> <fmt:message key="clientStandard"/></option>
-                                            <option value="mobile"  <c:if test="${client eq 'mobile'}">selected</c:if>> <fmt:message key="clientMobile"/></option>
+                                            <option value="mobile"    <c:if test="${client eq 'mobile'}">selected</c:if>> <fmt:message key="clientMobile"/></option>
                                             <%--<option value="touch"  <c:if test="${client eq 'touch'}">selected</c:if>> <fmt:message key="clientTouch"/></option>--%>
 
                                         </select>
