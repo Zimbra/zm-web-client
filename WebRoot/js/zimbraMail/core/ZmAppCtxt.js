@@ -52,10 +52,10 @@ ZmAppCtxt = function() {
 	this._acCache			= {};	// autocomplete
 	this._isExpandableDL	= {};	// distribution lists
 
-	this._setAuthTokenWarning();
+	this._checkAuthTokenWarning();
 };
 
-ZmAppCtxt.ONE_MINUTE = 60 * 1000;
+ZmAppCtxt.ONE_MINUTE  = 60 * 1000;
 ZmAppCtxt.MAX_TIMEOUT_VALUE = 2147483647;
 
 ZmAppCtxt._ZIMLETS_EVENT = 'ZIMLETS';
@@ -76,9 +76,13 @@ function() {
 	return "ZmAppCtxt";
 };
 
-ZmAppCtxt.prototype._setAuthTokenWarning =
+ZmAppCtxt.prototype._checkAuthTokenWarning =
 function() {
-	window.setInterval(this._authTokenWarningTimeout.bind(this), ZmAppCtxt.ONE_MINUTE);
+	this._authIntervalId = window.setInterval(this._authTokenWarningTimeout.bind(this), ZmAppCtxt.ONE_MINUTE);
+};
+ZmAppCtxt.prototype._setAuthTokenWarning =
+function(delay) {
+    window.setTimeout(this._authTokenWarningTimeout.bind(this), delay);
 };
 
 /**
@@ -114,9 +118,18 @@ function () {
 
 	var now = new Date().getTime();
 	var millisToLive = window.authTokenExpires - now;
-	var minutesToLive = Math.floor(millisToLive / ZmAppCtxt.ONE_MINUTE);
+    var minutesToLive = Math.round(millisToLive / ZmAppCtxt.ONE_MINUTE);
+    var delay;
 
-	if (minutesToLive > 5 || minutesToLive <= 0) {
+	if (minutesToLive > 5 || millisToLive <= 0) {
+        // Outside the times to issue warnings
+        if (minutesToLive === 6) {
+            // Line up the timer to go off at exactly 5 minutes (or as exact as we can make it), which is
+            // when we start issuing warnings
+            window.clearInterval(this._authIntervalId);
+            delay = millisToLive - (5 * ZmAppCtxt.ONE_MINUTE);
+            this._setAuthTokenWarning(delay);
+        }
 		return;
 	}
 
@@ -125,13 +138,45 @@ function () {
 		this._evtMgr.notifyListeners(ZmAppCtxt._AUTHTOKEN_EVENT, event);
 	}
 
-	var msg = AjxMessageFormat.format(ZmMsg.authTokenExpirationWarning, [minutesToLive, minutesToLive  > 1 ? ZmMsg.minutes : ZmMsg.minute]);
+	var msg;
+    var decaSecondsToLive = 0;
+    var toastDuration;
+    if (minutesToLive > 1) {
+        msg = AjxMessageFormat.format(ZmMsg.authTokenExpirationWarning, [minutesToLive, ZmMsg.minutes]);
+        toastDuration = ZmAppCtxt.ONE_MINUTE / 4;
+    } else {
+        // Get the number of 10-second intervals remaining - used once we are within 1 minute
+        decaSecondsToLive =  Math.round(millisToLive / 10000);
+        toastDuration = 8000;
+        if (decaSecondsToLive >= 6) {
+            // 1 minute+ to go.  But should be pretty close to 1 minute
+            msg = AjxMessageFormat.format(ZmMsg.authTokenExpirationWarning, [1, ZmMsg.minute]);
+        } else {
+            // Seconds remain
+            msg = AjxMessageFormat.format(ZmMsg.authTokenExpirationWarning, [decaSecondsToLive * 10, ZmMsg.seconds]);
+        }
+    }
+
 	var params = {
-		msg: msg,
-		level: ZmStatusView.LEVEL_WARNING,
-		transitions: [{type: "fade-in", duration: 500}, {type: "pause", duration: ZmAppCtxt.ONE_MINUTE / 4}, {type: "fade-out", duration: 500} ]
+		msg:    msg,
+		level:  ZmStatusView.LEVEL_WARNING,
+		transitions: [{type: "fade-in", duration: 500}, {type: "pause", duration: toastDuration}, {type: "fade-out", duration: 500} ]
 	};
 	this.setStatusMsg(params);
+
+    if (minutesToLive > 1) {
+        var floorMinutesToLive = Math.floor(millisToLive / ZmAppCtxt.ONE_MINUTE);
+        if (floorMinutesToLive === minutesToLive) {
+            floorMinutesToLive--;
+        }
+        delay = millisToLive - (floorMinutesToLive * ZmAppCtxt.ONE_MINUTE);
+    }  else {
+        decaSecondsToLive--;
+        delay = millisToLive - (decaSecondsToLive * 10000);
+    }
+    if (delay > 0) {
+        this._setAuthTokenWarning(delay);
+    }
 };
 
 /**
