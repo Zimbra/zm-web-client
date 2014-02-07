@@ -12,7 +12,7 @@ and the container element is replaced with that control.
 -->
 
 <template id='prefs.Pages#General'>
-    <div class='prefHeader'><$=ZmMsg.loginOptions$></div>
+	<div class='prefHeader'><$=ZmMsg.loginOptions$></div>
 	<table class='ZOptionsSectionTable' width=100%>
 		<tr>
 			<td class='ZOptionsSectionMain'>
@@ -29,10 +29,16 @@ and the container element is replaced with that control.
 						<td class='ZOptionsField'><div id='${id}_CLIENT_TYPE' tabindex='20'></div></td>
 					</tr>
 				<$ } $>
-				
-				<$ if (!appCtxt.isOffline) { $>
-					<tr><td colspan=2><hr></td></tr>
-				<$ } $>
+				</table>
+			</td>
+		</tr>
+	</table>
+
+	<div class='prefHeader'><$=ZmMsg.appearance$></div>
+	<table class='ZOptionsSectionTable' width=100%>
+		<tr>
+			<td class='ZOptionsSectionMain'>
+				<table width=100% class='ZPropertySheet' cellspacing='6'>
 				
 				<$ if (data.isEnabled(ZmSetting.SKIN_CHANGE_ENABLED) && appCtxt.get(ZmSetting.AVAILABLE_SKINS).length > 1) { $>
 					<tr>
@@ -40,11 +46,43 @@ and the container element is replaced with that control.
 						<td class='ZOptionsField'><div id='${id}_SKIN_NAME' tabindex='30'></div></td>
 					</tr>
 				<$ } $>
-				
+
+					<tr>
+						<td class='ZOptionsLabel'><$=ZmMsg.fontLabel$></td>
+						<td class='ZOptionsField'><div id='${id}_FONT_NAME' tabindex='42'></div></td>
+					</tr>
+
+					<tr>
+						<td class='ZOptionsLabel'><$=ZmMsg.fontSizeLabel$></td>
+						<td class='ZOptionsField'><div id='${id}_FONT_SIZE' tabindex='43'></div></td>
+					</tr>
+
+					<tr>
+						<td class='ZOptionsLabel'><$=ZmMsg.printFontSizeLabel$></td>
+						<td class='ZOptionsField'><select id='${id}_DEFAULT_PRINTFONTSIZE' tabindex='130'></select></td>
+					</tr>
+
+				</table>
+			</td>
+		</tr>
+	</table>
+
+	<div class='prefHeader'><$=ZmMsg.timezoneLanguage$></div>
+	<table class='ZOptionsSectionTable' width=100%>
+		<tr>
+			<td class='ZOptionsSectionMain'>
+				<table width=100% class='ZPropertySheet' cellspacing='6'>
+
+					<tr>
+						<td class='ZOptionsLabel'><$=ZmMsg.defaultTimezone$></td>
+						<td class='ZOptionsField'><div id='${id}_DEFAULT_TIMEZONE' tabindex='45'></div></td>
+					</tr>
+
 					<tr>
 						<td class='ZOptionsLabel'><$=ZmMsg.languageLabel$></td>
 						<td class='ZOptionsField'><div id='${id}_LOCALE_NAME' tabindex='35'></div></td>
 					</tr>
+
 					<tr>
 						<td class='ZOptionsLabel'><$=ZmMsg.composeDirectionLabel$></td>
 						<td class='ZOptionsField'>
@@ -63,27 +101,12 @@ and the container element is replaced with that control.
 						</td>
 					</tr>
 
-					<tr>
-						<td class='ZOptionsLabel'><$=ZmMsg.fontLabel$></td>
-						<td class='ZOptionsField'><div id='${id}_FONT_NAME' tabindex='42'></div></td>
-					</tr>
-
-                    <tr>
-    				    <td class='ZOptionsLabel'><$=ZmMsg.fontSizeLabel$></td>
-               			<td class='ZOptionsField'><div id='${id}_FONT_SIZE' tabindex='43'></div></td>
-               		</tr>
-
-					<tr>
-						<td class='ZOptionsLabel'><$=ZmMsg.defaultTimezone$></td>
-						<td class='ZOptionsField'><div id='${id}_DEFAULT_TIMEZONE' tabindex='45'></div></td>
-					</tr>
-
 				</table>
 			</td>
 		</tr>
 	</table>
 
-    <div class='prefHeader'><$=ZmMsg.searches$></div>
+	<div class='prefHeader'><$=ZmMsg.searchOptions$></div>
 	<table class='ZOptionsSectionTable' width=100%>
 		<tr>
 			<td class='ZOptionsSectionMain'>
@@ -127,7 +150,7 @@ and the container element is replaced with that control.
 		</tr>
 	</table>
 
-    <div class='prefHeader'><$=ZmMsg.other$></div>
+	<div class='prefHeader'><$=ZmMsg.other$></div>
 	<table class='ZOptionsSectionTable' width=100%>
 		<tr>
 			<td class='ZOptionsSectionMain'>
@@ -136,38 +159,39 @@ and the container element is replaced with that control.
 						<td class='ZOptionsLabel'><$=ZmMsg.pageSizeLabel$></td>
 						<td class='ZOptionsField'><table><tr><td><div id='${id}_PAGE_SIZE' tabindex='90'></div></td><td style="padding-left:4px;"><$=ZmMsg.pageSizeDesc$></td></tr></table></td>
 					</tr>
+
 					<tr>
 						<td class='ZOptionsLabel'><$=ZmMsg.selectionLabel$></td>
 						<td class='ZOptionsField'><div id='${id}_SHOW_SELECTION_CHECKBOX' tabindex='95'></div></td>
 					</tr>
+
+					<tr>
+						<td class='ZOptionsLabel'><$=ZmMsg.emailAddrs$></td>
+						<td class='ZOptionsField'><div id='${id}_SHORT_ADDRESS' tabindex='140'></div></td>
+					</tr>
+
+					<!-- The following 3 items are specific to Zimbra Desktop -->
+					<$ if (appCtxt.isOffline) { $>
+						<tr><td colspan=2><hr></td></tr>
+						<tr>
+							<td class='ZOptionsLabel'><$=ZmMsg.offlineUpdateNotifyLabel$></td>
+							<td class='ZOptionsField'><select id='${id}_OFFLINE_UPDATE_NOTIFY' tabindex='160'></select></td>
+						</tr>
+					<$ } $>
+
+					<$ if (data.isEnabled(ZmSetting.OFFLINE_SUPPORTS_MAILTO)) { $>
+						<tr>
+							<td class='ZOptionsLabel'><$=ZmMsg.systemDefaults$></td>
+							<td class='ZOptionsField'><div id='${id}_OFFLINE_IS_MAILTO_HANDLER' tabindex='110'></div></td>
+						</tr>
+					<$ } $>
+
 					<$ if (appCtxt.isOffline && appCtxt.accountList.size() > 2) { $>
 						<tr>
 							<td class='ZOptionsLabel'></td>
 							<td class='ZOptionsField'><div id='${id}_OFFLINE_SHOW_ALL_MAILBOXES' tabindex='100'></div></td>
 						</tr>
 					<$ } $>
-					<$ if (data.isEnabled(ZmSetting.OFFLINE_SUPPORTS_MAILTO)) { $>
-						<tr><td colspan=2><hr></td></tr>
-						<tr>
-							<td class='ZOptionsLabel'><$=ZmMsg.systemDefaults$></td>
-							<td class='ZOptionsField'><div id='${id}_OFFLINE_IS_MAILTO_HANDLER' tabindex='110'></div></td>
-						</tr>
-					<$ } $>
-					<tr>
-						<td class='ZOptionsLabel'><$=ZmMsg.printFontSizeLabel$></td>
-						<td class='ZOptionsField'><select id='${id}_DEFAULT_PRINTFONTSIZE' tabindex='130'></select></td>
-					</tr>
-					<tr>
-						<td class='ZOptionsLabel'><$=ZmMsg.emailAddrs$></td>
-						<td class='ZOptionsField'><div id='${id}_SHORT_ADDRESS' tabindex='140'></div></td>
-					</tr>
-
-				<$ if (appCtxt.isOffline) { $>
-					<tr>
-						<td class='ZOptionsLabel'><$=ZmMsg.offlineUpdateNotifyLabel$></td>
-						<td class='ZOptionsField'><select id='${id}_OFFLINE_UPDATE_NOTIFY' tabindex='160'></select></td>
-					</tr>
-				<$ } $>
 
 				</table>
 			</td>
@@ -178,7 +202,7 @@ and the container element is replaced with that control.
 <template id='prefs.Pages#Mail'>
 
 	<$ if (!appCtxt.multiAccounts || data.activeAccount.isMain) { $>
-    	<div class='prefHeader'><$=ZmMsg.displayMessages$></div>
+		<div class='prefHeader'><$=ZmMsg.displayMessages$></div>
 		<table class='ZOptionsSectionTable' width=100%>
 			<tr>
 				<td class='ZOptionsSectionMain'>
@@ -246,7 +270,7 @@ and the container element is replaced with that control.
 			var size = appCtxt.accountList.size();
 			if ((size > 2 && !appCtxt.get(ZmSetting.OFFLINE_SHOW_ALL_MAILBOXES)) || size == 2) {
 	$>
-    			<div class='prefHeader'><$=ZmMsg.displayMessages$></div>
+				<div class='prefHeader'><$=ZmMsg.displayMessages$></div>
 				<table class='ZOptionsSectionTable' width=100%>
 					<tr>
 						<td class='ZOptionsSectionMain'>
@@ -262,7 +286,7 @@ and the container element is replaced with that control.
 		<$ } $>
 	<$ } $>
 
-    <div class='prefHeader'><$=ZmMsg.messagesReceiving$></div>
+	<div class='prefHeader'><$=ZmMsg.messagesReceiving$></div>
 	<table class='ZOptionsSectionTable' width=100%>
 		<tr>
 			<td class='ZOptionsSectionMain'>
@@ -382,7 +406,7 @@ and the container element is replaced with that control.
 		</tr>
 	</table>
 
-    <div class='prefHeader'><$=ZmMsg.composingMessages$></div>
+	<div class='prefHeader'><$=ZmMsg.composingMessages$></div>
 	<table class='ZOptionsSectionTable' width=100%>
 		<tr>
 			<td class='ZOptionsSectionMain'>
@@ -540,7 +564,7 @@ and the container element is replaced with that control.
 
 	<$ if (!appCtxt.multiAccounts || appCtxt.isFamilyMbox || (!data.activeAccount.isMain && data.activeAccount.isZimbraAccount)) { $>
 		<$ if (appCtxt.get(ZmSetting.MAIL_BLACKLIST_MAX_NUM_ENTRIES) > 0 || appCtxt.get(ZmSetting.MAIL_WHITELIST_MAX_NUM_ENTRIES) > 0) { $>
-    		<div class='prefHeader'><$=ZmMsg.junkMailOptions$></div>
+			<div class='prefHeader'><$=ZmMsg.junkMailOptions$></div>
 			<table class='ZOptionsSectionTable' width=100%>
 				<tr>
 					<td class='ZOptionsSectionMain'>
@@ -561,7 +585,7 @@ and the container element is replaced with that control.
 	<$ } $>
 
 	<$ if (data.isEnabled(ZmSetting.POP_ENABLED)) { $>
-    	<div class='prefHeader'><$=ZmMsg.externalAccess$></div>
+		<div class='prefHeader'><$=ZmMsg.externalAccess$></div>
 		<table class='ZOptionsSectionTable' width=100%>
 			<tr>
 				<td class='ZOptionsSectionMain'>
@@ -637,7 +661,7 @@ and the container element is replaced with that control.
 </template>
 
 <template id='prefs.Pages#Trusted'>
-    <div class='prefHeader'><$=ZmMsg.trustedAddrsDomains$></div>
+	<div class='prefHeader'><$=ZmMsg.trustedAddrsDomains$></div>
 	<table class='ZOptionsSectionTable' width=100%>
 		<tr>
 			<td class='ZOptionsSectionMain'>
@@ -651,7 +675,7 @@ and the container element is replaced with that control.
 
 <template id='prefs.Pages#Signatures'>
 
-    <div class='prefHeader'><$=ZmMsg.signatures$></div>
+	<div class='prefHeader'><$=ZmMsg.signatures$></div>
 	<table class='ZOptionsSectionTable' width=100%>
 		<tr>
 			<td class='ZOptionsSectionMain'>
@@ -907,9 +931,9 @@ and the container element is replaced with that control.
 						<td class='ZOptionsField'>
 							<table>
 								<tr>
-                                    <$ if (appCtxt.get(ZmSetting.FROM_DISPLAY_ENABLED)) { $>
-    									<td style='padding-right:.5em;'><input id='${id}_PRIMARY_FROM_NAME' tabindex='1030' size=30></td>
-                                    <$ } $>
+									<$ if (appCtxt.get(ZmSetting.FROM_DISPLAY_ENABLED)) { $>
+										<td style='padding-right:.5em;'><input id='${id}_PRIMARY_FROM_NAME' tabindex='1030' size=30></td>
+									<$ } $>
 									<td><select id='${id}_PRIMARY_FROM_EMAIL' tabindex='1035' size=40></select></td>
 								</tr>
 							</table>
