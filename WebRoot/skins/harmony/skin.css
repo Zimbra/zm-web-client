@@ -127,7 +127,7 @@
 }
 
 .ZNewButton .ImgSelectPullDownArrow {
-	background-image:url(@AppContextPath@/skins/@SkinName@/img/harmony/ImgNewSelectPullDownArrow.png);
+	background-image:url(@AppContextPath@/skins/@SkinName@/img/harmony/ImgNewSelectPullDownArrow.png?v=@jsVersion@);
 	background-position:0px 0px;
 }
 

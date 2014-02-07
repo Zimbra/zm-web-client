@@ -2360,8 +2360,13 @@ ZmMailApp.prototype.enableFeatures =
 function() {
     ZmApp.prototype.enableFeatures.apply(this);
     //Refreshing the mail list both for online and offline mode
-    this.refresh();
     var enable   = !appCtxt.isWebClientOffline();
+    if (enable) {
+        this.refresh();
+    }
+    else {
+        this.mailSearch();
+    }
 	var folders = appCtxt.getFolderTree().getByType(ZmOrganizer.FOLDER);
 	var overview = this.getOverview();
 	if (folders && overview) {

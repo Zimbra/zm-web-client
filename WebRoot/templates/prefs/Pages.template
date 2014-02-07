@@ -2376,10 +2376,9 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 		<div><$=ZmMsg.offlineDescription$></div>
 		<div class='horizSep'></div>
 		<div class='ZmOfflineItem'>
-			<$ var offlineEnabled = appCtxt.get(ZmSetting.WEBCLIENT_OFFLINE_ENABLED); $>
 			<table class='ZRadioButtonTable'><tr>
 				<td><input id='${id}_ENABLE_OFFLINE_RADIO' type=radio name='${id}_OFFLINE_SETTING'
-					<$ if (offlineEnabled) { $>
+					<$ if (data.isWebClientOfflineSupported) { $>
 						checked
 					<$ } $> ></td>
 				<td><label for='${id}_ENABLE_OFFLINE_RADIO' class='Text'><$=ZmMsg.enableOffline$></label></td>
@@ -2389,7 +2388,7 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 		<div class='ZmOfflineItem'>
 			<table class='ZRadioButtonTable'><tr>
 				<td><input id='${id}_DISABLE_OFFLINE_RADIO' type=radio name='${id}_OFFLINE_SETTING'
-					<$ if (!offlineEnabled) { $>
+					<$ if (!data.isWebClientOfflineSupported) { $>
 						checked
 					<$ } $> ></td>
 				<td><label for='${id}_DISABLE_OFFLINE_RADIO' class='Text'><$=ZmMsg.disableOffline$></label></td>

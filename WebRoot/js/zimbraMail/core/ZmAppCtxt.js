@@ -45,12 +45,6 @@ ZmAppCtxt = function() {
     this.sendAsEmails = [];
     this.sendOboEmails = [];
 
-    // HTML-5 offline-specific
-    this.isWebClientOfflineSupported = AjxEnv.isOfflineSupported && window.isWebClientOfflineEnabled;
-    if (this.isWebClientOfflineSupported) {
-        this.webClientOfflineHandler = new ZmOffline();
-    }
-
 	this._evtMgr = new AjxEventMgr();
 
 	this._itemCache			= {};
@@ -1323,19 +1317,29 @@ function() {
 	return this._uploadManagerIframeId;
 };
 
-ZmAppCtxt.prototype.reloadOfflineAppCache =
-function(locale, skin, reload){
-    if (this.isWebClientOfflineSupported) {
-        var appCacheManifest= appContextPath + "/appcache/images,common,dwt,msgview,login,zm,spellcheck,skin.appcache?";
+ZmAppCtxt.prototype.reloadAppCache =
+function(force) {
+    if (this.isWebClientOfflineSupported || force) {
+        document.cookie = "ZM_CACHE_NEW_LANG = " + this.get(ZmSetting.LOCALE_NAME);
+        document.cookie = "ZM_CACHE_NEW_SKIN = " + this.get(ZmSetting.SKIN_NAME);
+        document.cookie = "ZM_CACHE_RELOAD = " + new Date().getTime();
+        var manifestURL = appContextPath + "/appcache/images,common,dwt,msgview,login,zm,spellcheck,skin.appcache?";
         var urlParams = [];
-        window.cacheKillerVersion && urlParams.push("v=" + window.cacheKillerVersion);
-        urlParams.push("debug="+window.appDevMode);
+        urlParams.push("v=" + window.cacheKillerVersion);
+        urlParams.push("debug=" + window.appDevMode);
         urlParams.push("compress=" + !(window.appDevMode === true));
         urlParams.push("templates=only");
-        var manifestUrl = encodeURIComponent(appCacheManifest + urlParams.join('&'));
-        document.cookie = "ZM_CACHE_NEW_LANG = " + locale ;
-        document.cookie = "ZM_CACHE_NEW_SKIN = " + skin ;
-        $("#offlineIframe").attr('src', 'public/Offline.jsp/?url=' + manifestUrl + '&reload=' + reload);
+        manifestURL = encodeURIComponent(manifestURL + urlParams.join('&'));
+        var offlineIframe = document.getElementById("offlineIframe");
+        if (!offlineIframe) {
+            offlineIframe = document.createElement("iframe");
+            offlineIframe.id = "offlineIframe";
+            offlineIframe.style.display = "none";
+            document.body.appendChild(offlineIframe);
+        }
+        if (offlineIframe) {
+            offlineIframe.src = "public/Offline.jsp?url=" + manifestURL;
+        }
     }
 };
 
@@ -2095,8 +2099,17 @@ function() {
 };
 
 ZmAppCtxt.prototype.initWebOffline =
-function(params) {
-	this.webClientOfflineHandler.init(params);
+function() {
+    this.isWebClientOfflineSupported = false;
+    if (!AjxEnv.isOfflineSupported || !appCtxt.get(ZmSetting.WEBCLIENT_OFFLINE_ENABLED)) {
+        return;
+    }
+    var offlineBrowserKey = appCtxt.get(ZmSetting.WEBCLIENT_OFFLINE_BROWSER_KEY);
+    var localOfflineBrowserKey = localStorage.getItem(ZmSetting.WEBCLIENT_OFFLINE_BROWSER_KEY);
+    if (offlineBrowserKey && offlineBrowserKey.indexOf(localOfflineBrowserKey) !== -1) {
+        this.isWebClientOfflineSupported = true;
+        this.webClientOfflineHandler = new ZmOffline();
+    }
 };
 
 /**

@@ -143,7 +143,6 @@
     pageContext.setAttribute("isCoverage", isCoverage);
     pageContext.setAttribute("isPerfMetric", isPerfMetric);
     pageContext.setAttribute("isLocaleId", localeId != null);
-    pageContext.setAttribute("isWebClientOfflineEnabled", "TRUE".equals(authResult.getPrefs().get("zimbraPrefWebClientOfflineAccessEnabled").get(0)));
 %>
 <html class="user_font_size_normal">
 <head>
@@ -219,7 +218,6 @@
     window.appCoverageMode		= ${isCoverage};
     window.isScriptErrorOn		= ${isScriptErrorOn};
     window.isPerfMetric			= ${isPerfMetric};
-    window.isWebClientOfflineEnabled = ${isWebClientOfflineEnabled};
 	window.authTokenExpires = <%= authResult.getExpires()%>;
 </script>
 <noscript>
@@ -227,9 +225,6 @@
 </noscript>
 </head>
 <body>
-
-<iframe id="offlineIframe" style="display: none">
-</iframe>
 
 <c:if test="${ua.isChrome or ua.isSafari}">
     <%

@@ -17,23 +17,24 @@
 <html manifest="<%=request.getParameter("url")%>">
 <head>
     <script>
-        window.onload = function(){
-            if (navigator.onLine){
-                if (<%=request.getParameter("reload")%>){
-                    window.applicationCache.addEventListener('updateready', function(e) {
-                        if (window.applicationCache.status == window.applicationCache.UPDATEREADY) {
-                            window.parent.location.reload();
-                        }
-                    }, false);
-                }
-                window.applicationCache.addEventListener('cached', function(e) {
-                    window.parent.ZmOffline._checkAppCacheDone();
-                }, false);
-                window.applicationCache.addEventListener('noupdate', function(e) {
-                    window.parent.ZmOffline._checkAppCacheDone();
-                }, false);
-            }
-        }
+        window.addEventListener('load', function(e) {
+            var appCache = window.applicationCache;
+            // Fired after the first cache of the manifest.
+            appCache.addEventListener('cached', function() {
+                window.parent.ZmOffline.setAppCacheStatus(true);
+            }, false);
+
+            // Fired after the first download of the manifest.
+            appCache.addEventListener('noupdate', function() {
+                window.parent.ZmOffline.setAppCacheStatus(true);
+            }, false);
+
+            // The manifest returns 404 or 410, the download failed,
+            // or the manifest changed while the download was in progress.
+            appCache.addEventListener('error', function() {
+                window.parent.ZmOffline.setAppCacheStatus(false);
+            }, false);
+        }, false);
 </script>
 </head>
     <body></body>
