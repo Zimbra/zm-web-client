@@ -447,7 +447,10 @@ function(htmlArr, idx, item, field, colIdx, params, classes) {
 			htmlArr[idx++] = "</div>";
 		}
 		else if (field === ZmItem.F_SUBJECT) {
-			var subj = ZmMailMsg.stripSubjectPrefixes(item.subject || ZmMsg.noSubject);
+			var subj = item.subject || ZmMsg.noSubject;
+			if (item.numMsgs > 1) {
+				subj = ZmMailMsg.stripSubjectPrefixes(subj);
+			}
 			htmlArr[idx++] = "<div id='" + this._getFieldId(item, field) + "' " + AjxUtil.getClassAttr(classes) + ">";
 			htmlArr[idx++] = "<span>";
 			htmlArr[idx++] = AjxStringUtil.htmlEncode(subj, true) + "</span>";

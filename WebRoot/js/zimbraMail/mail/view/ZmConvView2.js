@@ -882,7 +882,10 @@ function() {
 ZmConvView2Header.prototype._setSubject =
 function() {
 	var subject = this._item.subject || ZmMsg.noSubject;
-	this._subjectSpan.innerHTML = AjxStringUtil.htmlEncode(ZmMailMsg.stripSubjectPrefixes(subject));
+	if (this._item.numMsgs > 1) {
+		subject = ZmMailMsg.stripSubjectPrefixes(subject);
+	}
+	this._subjectSpan.innerHTML = AjxStringUtil.htmlEncode(subject);
 	this._subjectSpan.title = subject;
 };
 
