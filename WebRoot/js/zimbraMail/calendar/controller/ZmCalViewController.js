@@ -873,7 +873,9 @@ function(ev) {
 	this._refreshAction(false);
 
 	var overview = appCtxt.getOverviewController().getOverview(appCtxt.getApp(ZmApp.CALENDAR).getOverviewId());
-	overview.clearSelection();
+	if (overview) {
+		overview.clearSelection();
+	}
 
 };
 
