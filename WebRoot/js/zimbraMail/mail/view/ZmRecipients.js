@@ -118,10 +118,10 @@ function(parent, viewId, htmlElId, fieldNames, bccToggleId) {
 		var aifParams = {
 			parent:								parent,
 			autocompleteListView:				this._acAddrSelectList,
-			bubbleAddedCallback:				(new AjxCallback(this, this._bubblesChangedCallback)),
-			bubbleRemovedCallback:				(new AjxCallback(this, this._bubblesChangedCallback)),
-			bubbleMenuCreatedCallback:			(new AjxCallback(this, this._bubbleMenuCreated)),
-			bubbleMenuResetOperationsCallback:	(new AjxCallback(this, this._bubbleMenuResetOperations)),
+			bubbleAddedCallback:				this._bubblesChangedCallback.bind(this),
+			bubbleRemovedCallback:				this._bubblesChangedCallback.bind(this),
+			bubbleMenuCreatedCallback:			this._bubbleMenuCreated.bind(this),
+			bubbleMenuResetOperationsCallback:	this._bubbleMenuResetOperations.bind(this),
 			inputId:							inputId,
 			type:								type
 		}

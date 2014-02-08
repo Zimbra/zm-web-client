@@ -2227,7 +2227,8 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 	<table>
 		<tr id='${id}_name_row'>
 			<td class="Label" style="padding-right:10px"><$=ZmMsg.emailLabel$></td>
-			<td><input id='${id}_name' class="Field" type="text" autocomplete="off"></td>
+			<td id="${id}_name_cell">
+			</td>
 		</tr>
 		<tr>
 			<td class="Label">&nbsp;</td>

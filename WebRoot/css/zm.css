@@ -1389,6 +1389,10 @@ INPUT[type="text"].search_input-expanded {
 	min-height:2rem;
 }
 
+.ZmGrantRightsDialog .addrBubbleContainer {
+    width: 290px;
+}
+
 .addrBubbleContainerPending {
 	background-color:#FFC;
 }

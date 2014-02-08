@@ -1466,7 +1466,7 @@ ZmAddressBubble.prototype.toString = function() { return "ZmAddressBubble"; };
 
 ZmAddressBubble.prototype._createElement =
 function() {
-	return document.createElement("SPAN")
+	return document.createElement("SPAN");
 };
 
 ZmAddressBubble.prototype._createHtml =
