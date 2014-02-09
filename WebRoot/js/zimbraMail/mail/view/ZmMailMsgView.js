@@ -1277,7 +1277,7 @@ ZmMailMsgView.prototype._getBubbleHtml = function(addr, options) {
 	var canExpand = addr.isGroup && addr.canExpand && appCtxt.get("EXPAND_DL_ENABLED"),
 		ctlr = this._controller;
 
-	if (canExpand && !this._dlAutocompleteListView) {
+	if (canExpand && !this._aclv) {
 		// create a hidden ZmAutocompleteListView to handle DL expansion
 		var aclvParams = {
 			dataClass:		    appCtxt.getAutocompleter(),
@@ -1286,7 +1286,7 @@ ZmMailMsgView.prototype._getBubbleHtml = function(addr, options) {
 			selectionCallback:	ctlr._dlAddrSelected.bind(ctlr),
 			contextId:		    this.toString()
 		};
-		this._dlAutocompleteListView = new ZmAutocompleteListView(aclvParams);
+		this._aclv = new ZmAutocompleteListView(aclvParams);
 	}
 
 	// We'll be creating controls (bubbles) later, so we provide the tooltip now and let the control manage
