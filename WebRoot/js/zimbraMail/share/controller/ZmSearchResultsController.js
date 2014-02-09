@@ -169,6 +169,10 @@ function(search, resultsCtlr) {
 		menuItem.setText(ZmMsg.pinned);
 		menuItem.addSelectionListener(this._pinnedListener.bind(this));
 	}
+
+	if (search && search.query) {
+		this._filterPanel.resetBasicFiltersToQuery(search.query);
+	}
 	
 	if (search && search.origin == ZmId.SEARCH) {
 		this._toolbar.setSearch(search);

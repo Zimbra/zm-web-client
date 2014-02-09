@@ -396,6 +396,21 @@ function() {
 	}
 };
 
+ZmSearchResultsFilterPanel.prototype.resetBasicFiltersToQuery =
+function(query) {
+	var filtersIds = ZmSearchResultsFilterPanel.BASIC_FILTER_LIST;
+	for (var i = 0; i < filtersIds.length; i++) {
+		var id = filtersIds[i];
+		cb = this._checkbox[id];
+		if (!cb) {
+			continue;
+		}
+		var filter = ZmSearchResultsFilterPanel.BASIC_FILTER[id];
+		//checked if query has the filter term in it.
+		cb.setSelected(query.indexOf(filter.term.toString()) !== -1);
+	}
+};
+
 ZmSearchResultsFilterPanel.prototype._areExclusiveTerms =
 function(termA, termB, hasOr) {
 	termA = this._translateTerm(termA);
