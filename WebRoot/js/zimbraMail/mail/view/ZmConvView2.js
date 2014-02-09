@@ -147,10 +147,8 @@ ZmConvView2.prototype._renderConv =
 function(conv) {
 
 	this._now = new Date();
-	appCtxt.notifyZimlets("onConvStart", [this]);
 	this._header.set(this._item);
 	var firstExpanded = this._renderMessages(conv, this._messagesDiv);
-	appCtxt.notifyZimlets("onConvEnd", [this]);
 	DBG.println("cv2", "Conv render time: " + ((new Date()).getTime() - this._now.getTime()));
 
 	this._header._setExpandIcon();
@@ -971,7 +969,6 @@ ZmConvReplyView.ADDR_TYPES = [AjxEmailAddress.TO, AjxEmailAddress.CC];
 ZmConvReplyView.prototype.set =
 function(msg, msgView, op) {
 
-	appCtxt.notifyZimlet("com_zimbra_email", "onFindMsgObjects");
 	this.action = op;
 	AjxDispatcher.require("Mail");
 	
@@ -1003,9 +1000,6 @@ function(msg, msgView, op) {
 	this.reparentHtmlElement(this._convView._messagesDiv, index);
 	msgView.addClassName("Reply");
 
-	// Argghhh - it's very messed up that we have to go through a zimlet to create bubbles
-	// Notify only the email zimlet, since other zimlets either hit an error or do something unneeded
-	appCtxt.notifyZimlet("com_zimbra_email", "onMsgView");
 	this.setVisible(true);
 	Dwt.scrollIntoView(this.getHtmlElement(), this._convView._messagesDiv);
 	appCtxt.getKeyboardMgr().grabFocus(this._input);
@@ -1228,17 +1222,6 @@ function() {
 	this.setClassName(classes.join(" "));
 };
 
-/**
- * We override this function to ignore notifying Zimlets as onMsgView is
- * not supported in this view @see http://bugzilla.zimbra.com/show_bug.cgi?id=68170
- * @param msg
- * @param oldMsg
- */
-ZmMailMsgCapsuleView.prototype._notifyZimletsNewMsg =
-function(msg, oldMsg) {
-    appCtxt.notifyZimlets("onConvView", [msg, oldMsg, this]);
-};
-
 ZmMailMsgCapsuleView.prototype.set =
 function(msg, force) {
 	if (this._controller.isSearchResults) {
@@ -1425,12 +1408,12 @@ function(msg, container, callback) {
 
 ZmMailMsgCapsuleView.prototype._handleResponseLoadMessage =
 function(msg, container, callback) {
+
 	// Take care of a race condition, where this view may be deleted while
 	// a ZmMailMsg.fetch (that references this function via a callback) is
 	// still in progress
 	if (this.isDisposed()) { return; }
 
-	appCtxt.notifyZimlets("onConvStart", [this]);
 	this._header.set(this._expanded ? ZmMailMsgCapsuleViewHeader.EXPANDED : ZmMailMsgCapsuleViewHeader.COLLAPSED);
 	var respCallback = this._handleResponseLoadMessage1.bind(this, msg, container, callback);
 	this._renderMessageBody(msg, container, respCallback);
@@ -1441,7 +1424,6 @@ ZmMailMsgCapsuleView.prototype._handleResponseLoadMessage1 =
 function(msg, container, callback) {
 	this._renderMessageFooter(msg, container);
 	this._controller._handleMarkRead(msg);	// in case we need to mark read after a delay
-	appCtxt.notifyZimlets("onConvEnd", [this]);
 	if (callback) {
 		callback.run();
 	}
@@ -1864,8 +1846,7 @@ function(expanded) {
 	}
 
 	if (this._expanded) {
-		// create bubbles
-		this._notifyZimletsNewMsg(this._msg);
+		this._createBubbles();
 		if (this._controller._checkKeepReading) {
 			this._controller._checkKeepReading();
 		}

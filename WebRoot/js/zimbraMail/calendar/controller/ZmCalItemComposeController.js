@@ -137,8 +137,17 @@ function() {
 };
 
 /**
- * Gets the toolbar.
+ * Gets the appt view.
  * 
+ * @return	{ZmApptView}	the appt view
+ */
+ZmCalItemComposeController.prototype.getItemView = function() {
+	return this._composeView;
+};
+
+/**
+ * Gets the toolbar.
+ *
  * @return	{ZmButtonToolBar}	the toolbar
  */
 ZmCalItemComposeController.prototype.getToolbar =

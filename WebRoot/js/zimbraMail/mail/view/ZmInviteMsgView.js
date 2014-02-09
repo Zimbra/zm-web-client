@@ -87,8 +87,11 @@ function() {
 
 ZmInviteMsgView.prototype.set =
 function(msg) {
+
 	this._msg = msg;
 	var invite = this._invite = msg.invite;
+
+	this.parent._lazyCreateObjectManager();
 
     // Can operate the toolbar if user is the invite recipient, or invite is in a
     // non-trash shared folder with admin/workflow access permissions
@@ -100,9 +103,7 @@ function(msg) {
         var enabled  = (admin || workflow) &&
                        (ZmOrganizer.normalizeId(msg.folderId) != ZmFolder.ID_TRASH);
     }
-	if (invite && invite.hasAcceptableComponents() &&
-		msg.folderId != ZmFolder.ID_SENT)
-	{
+	if (invite && invite.hasAcceptableComponents() && msg.folderId != ZmFolder.ID_SENT)	{
 		if (msg.isInviteCanceled()) {
 			//appointment was canceled (not necessarily on this instance, but by now it is canceled. Do not show the toolbar.
 			return;
@@ -243,7 +244,7 @@ function(callback, dayViewCallback, result) {
 			var at = attendees[i];
 			var subs = {
 				icon: ZmCalItem.getParticipationStatusIcon(at.ptst),
-				attendee: (om ? om.findObjects((new AjxEmailAddress(at.a)), true, ZmObjectManager.EMAIL, false, options) : at.a)
+				attendee: this.parent._getBubbleHtml(new AjxEmailAddress(at.a), options)
 			};
 			html[idx++] = AjxTemplate.expand("mail.Message#InviteHeaderPtst", subs);
 		}
@@ -483,6 +484,7 @@ ZmInviteMsgView.PTST_MSG[ZmCalBaseItem.PSTATUS_TENTATIVE] = {msg: AjxMessageForm
 
 ZmInviteMsgView.prototype.addSubs =
 function(subs, sentBy, sentByAddr, obo) {
+
     AjxDispatcher.require(["MailCore", "CalendarCore", "Calendar"]);
 	subs.invite = this._invite;
 
@@ -559,16 +561,16 @@ function(subs, sentBy, sentByAddr, obo) {
 	var om = this.parent._objectManager;
 	// organizer
 	var org = new AjxEmailAddress(this._invite.getOrganizerEmail(), null, this._invite.getOrganizerName());
-	subs.invOrganizer = om ? om.findObjects(org, true, ZmObjectManager.EMAIL, false, options) : org.toString();
+	subs.invOrganizer = this.parent._getBubbleHtml(org, options);
 
-    if(obo) {
-        subs.obo = om ? om.findObjects(obo, true, ZmObjectManager.EMAIL) : obo.toString();
+    if (obo) {
+	    subs.obo = this.parent._getBubbleHtml(obo, options);
     }
 
 	// sent-by
 	var sentBy = this._invite.getSentBy();
 	if (sentBy) {
-		subs.invSentBy = om ? om.findObjects(sentBy, true, ZmObjectManager.EMAIL, false, options) : sentBy.toString();
+		subs.invSentBy = this.parent._getBubbleHtml(sentBy, options);
 	}
 
     if(this._msg.cif) {
@@ -607,7 +609,7 @@ function(subs, sentBy, sentByAddr, obo) {
 
 	// duration text
 	var durText = this._invite.getDurationText(null, null, null, true, sd, ed);
-	subs.invDate = om ? om.findObjects(durText, true, ZmObjectManager.DATE) : durText;
+	subs.invDate = durText;
 
 	// recurrence
 	if (this._invite.isRecurring()) {

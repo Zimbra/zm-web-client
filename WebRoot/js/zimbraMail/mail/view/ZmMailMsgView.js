@@ -416,24 +416,15 @@ function(buttonIds, toolbarType, listener) {
 	return toolbar;
 };
 
-ZmMailMsgView.prototype._notifyZimletsNewMsg =
-function(msg, oldMsg) {
-	// notify zimlets that a new message has been opened
-	appCtxt.notifyZimlets("onMsgView", [msg, oldMsg, this]);
-};
-
 ZmMailMsgView.prototype._handleResponseSet =
 function(msg, oldMsg, dayViewCallback) {
 
-	var notifyZimletsInShowMore = false;
+	var bubblesCreated = false;
 	if (this._inviteMsgView) {
-		// always show F/B view if in stand-alone message view otherwise, check
-		// if reading pane is on
-		if (this._inviteMsgView.isActive() &&
-			(this._controller.isReadingPaneOn() || (this._controller instanceof ZmMsgController)))
-		{
-			notifyZimletsInShowMore = true;
-			this._inviteMsgView.showMoreInfo(this._notifyZimletsNewMsg.bind(this, msg, oldMsg), dayViewCallback);
+		// always show F/B view if in stand-alone message view otherwise, check if reading pane is on
+		if (this._inviteMsgView.isActive() && (this._controller.isReadingPaneOn() || (this._controller.isZmMsgController))) {
+			bubblesCreated = true;
+			this._inviteMsgView.showMoreInfo(this._createBubbles.bind(this), dayViewCallback);
 		}
 		else {
 			// resize the message view without F/B view
@@ -477,8 +468,8 @@ function(msg, oldMsg, dayViewCallback) {
 
 	}
 
-	if (!notifyZimletsInShowMore) {
-		this._notifyZimletsNewMsg(msg, oldMsg);
+	if (!bubblesCreated) {
+		this._createBubbles();
 	}
 
 	if (!msg.isDraft && msg.readReceiptRequested) {
@@ -1210,12 +1201,16 @@ function() {
 
 ZmMailMsgView.showMore =
 function(elementId, type) {
-	var showMore = document.getElementById(this._getShowMoreId(elementId, type));
-	var more = document.getElementById(this._getMoreId(elementId, type));
-	Dwt.setVisible(showMore, false);
-	more.style.display = "inline";
-};
 
+	var showMore = document.getElementById(this._getShowMoreId(elementId, type));
+	if (showMore) {
+		Dwt.setVisible(showMore, false);
+	}
+	var more = document.getElementById(this._getMoreId(elementId, type));
+	if (more) {
+		more.style.display = "inline";
+	}
+};
 
 ZmMailMsgView._getShowMoreId =
 function(elementId, type) {
@@ -1226,7 +1221,6 @@ ZmMailMsgView._getMoreId =
 function(elementId, type) {
 	return elementId + 'more_addrs_' + type;
 };
-
 
 /**
  *
@@ -1240,11 +1234,12 @@ function(elementId, type) {
  *
  * returns object with the html and ShowMore link id
  */
-ZmMailMsgView.getAddressesFieldHtmlHelper =
-function(addrs, options, type, om, htmlElId) {
+ZmMailMsgView.prototype.getAddressesFieldHtmlHelper =
+function(addrs, options, type) {
+
 	var addressInfo = {};
-	var idx = 0;
-	var parts = [];
+	var idx = 0, parts = [];
+
 	for (var i = 0; i < addrs.length; i++) {
 		if (i > 0) {
 			// no need for separator since we're showing addr bubbles
@@ -1252,19 +1247,17 @@ function(addrs, options, type, om, htmlElId) {
 		}
 
 		if (i == ZmMailMsgView.MAX_ADDRESSES_IN_FIELD) {
-			var showMoreId = ZmMailMsgView._getShowMoreId(htmlElId, type);
+			var showMoreId = ZmMailMsgView._getShowMoreId(this._htmlElId, type);
 			addressInfo.showMoreLinkId = showMoreId + "_link";
 			var moreId = ZmMailMsgView._getMoreId(htmlElId, type);
 			parts[idx++] = "<span id='" + showMoreId + "' style='white-space:nowrap'>&nbsp;";
-			parts[idx++] = "<a id='" + addressInfo.showMoreLinkId + "' href='' onclick='ZmMailMsgView.showMore(\"" + htmlElId + "\", \"" + type + "\"); return false;'>";
+			parts[idx++] = "<a id='" + addressInfo.showMoreLinkId + "' href='' onclick='ZmMailMsgView.showMore(\"" + this._htmlElId + "\", \"" + type + "\"); return false;'>";
 			parts[idx++] = ZmMsg.showMore;
 			parts[idx++] = "</a></span><span style='display:none;' id='" + moreId + "'>";
 		}
 		var email = addrs[i];
 		if (email.address) {
-			parts[idx++] = om
-				? (om.findObjects(email, true, ZmObjectManager.EMAIL, false, options))
-				: AjxStringUtil.htmlEncode(email.address);
+			parts[idx++] = this._getBubbleHtml(email, options);
 		}
 		else {
 			parts[idx++] = AjxStringUtil.htmlEncode(email.name);
@@ -1277,6 +1270,78 @@ function(addrs, options, type, om, htmlElId) {
 	return addressInfo;
 };
 
+ZmMailMsgView.prototype._getBubbleHtml = function(addr, options) {
+
+	options = options || {};
+
+	var canExpand = addr.isGroup && addr.canExpand && appCtxt.get("EXPAND_DL_ENABLED"),
+		ctlr = this._controller;
+
+	if (canExpand && !this._dlAutocompleteListView) {
+		// create a hidden ZmAutocompleteListView to handle DL expansion
+		var aclvParams = {
+			dataClass:		    appCtxt.getAutocompleter(),
+			matchValue:		    ZmAutocomplete.AC_VALUE_FULL,
+			options:		    { massDLComplete:true },
+			selectionCallback:	ctlr._dlAddrSelected.bind(ctlr),
+			contextId:		    this.toString()
+		};
+		this._dlAutocompleteListView = new ZmAutocompleteListView(aclvParams);
+	}
+
+	// We'll be creating controls (bubbles) later, so we provide the tooltip now and let the control manage
+	// it instead of the zimlet framework.
+	var id = ZmId.create({
+		app:            ZmId.APP_MAIL,
+		containingView: this._viewId,
+		field:          ZmId.FLD_PARTICIPANT
+	});
+
+	var bubbleParams = {
+		parent:		appCtxt.getShell(),
+		parentId:	this._htmlElId,
+		addrObj:	addr,
+		id:			id,
+		canExpand:	canExpand,
+		email:		addr.address
+	};
+	ZmAddressInputField.BUBBLE_OBJ_ID[id] = this._htmlElId;	// pretend to be a ZmAddressInputField for DL expansion
+	this._bubbleParams[id] = bubbleParams;
+
+	return "<span id='" + id + "'></span>";
+};
+
+ZmMailMsgView.prototype._clearBubbles = function() {
+
+	if (this._bubbleList) {
+		this._bubbleList.clear();
+	}
+	this._bubbleList = new ZmAddressBubbleList();
+	var ctlr = this._controller;
+	this._bubbleList.addSelectionListener(ctlr._bubbleSelectionListener.bind(ctlr));
+	this._bubbleList.addActionListener(ctlr._bubbleActionListener.bind(ctlr));
+	this._bubbleParams = {};
+};
+
+ZmMailMsgView.prototype._createBubbles = function() {
+
+	for (var id in this._bubbleParams) {
+		// make sure SPAN was actually added to DOM (may have been ignored by template, for example)
+		if (!document.getElementById(id)) {
+			continue;
+		}
+		var bubbleParams = this._bubbleParams[id];
+		if (bubbleParams.created) {
+			continue;
+		}
+		bubbleParams.created = true;
+		var bubble = new ZmAddressBubble(bubbleParams);
+		bubble.replaceElement(id);
+		if (this._bubbleList) {
+			this._bubbleList.add(bubble);
+		}
+	}
+};
 
 /**
  *
@@ -1290,7 +1355,7 @@ function(addrs, options, type, om, htmlElId) {
  */
 ZmMailMsgView.prototype.getAddressesFieldInfo =
 function(addrs, options, type, htmlElId) {
-	return ZmMailMsgView.getAddressesFieldHtmlHelper(addrs, options, type, this._objectManager, htmlElId || this._htmlElId);
+	return this.getAddressesFieldHtmlHelper(addrs, options, type, this._objectManager, htmlElId || this._htmlElId);
 };
 
 ZmMailMsgView.prototype._renderMessage =
@@ -1304,10 +1369,10 @@ function(msg, container, callback) {
 
 ZmMailMsgView.prototype._renderMessageHeader =
 function(msg, container) {
-	
+
 	this._renderInviteToolbar(msg, container);
 	
-	var ai = this._getAddrInfo(msg, true);
+	var ai = this._getAddrInfo(msg);
 	
 	var subject = AjxStringUtil.htmlEncode(msg.subject || ZmMsg.noSubject);
 	var dateFormatter = AjxDateFormat.getDateTimeInstance(AjxDateFormat.LONG, AjxDateFormat.SHORT);
@@ -1331,19 +1396,6 @@ function(msg, container) {
 	var options = {};
 	options.shortAddress = appCtxt.get(ZmSetting.SHORT_ADDRESS);
 	
-	/* Do not turn date in headers to objects. See bug 76514.
-	if (this._objectManager) {
-		this._lazyCreateObjectManager();
-		// zimlets notified above in _getAddrInfo(), be careful not to do it again
-//		appCtxt.notifyZimlets("onFindMsgObjects", [msg, this._objectManager, this]);
-
-		this._objectManager.setHandlerAttr(ZmObjectManager.DATE,
-											ZmObjectManager.ATTR_CURRENT_DATE,
-											this._dateObjectHandlerDate);
-
-		dateString	= this._objectManager.findObjects(dateString, true, ZmObjectManager.DATE);
-	}*/
-
 	var attachmentsCount = msg.getAttachmentCount(true);
 
 	// do we add a close button in the header section?
@@ -1442,12 +1494,11 @@ function(msg, container) {
 		topToolbar.reparentHtmlElement(container);
 		topToolbar.setVisible(Dwt.DISPLAY_BLOCK);
 	}
-
 };
 
 // Returns a hash with what we need to show the message's address headers
 ZmMailMsgView.prototype._getAddrInfo =
-function(msg, notifyZimlets) {
+function(msg) {
 	
 	var acctId = appCtxt.getActiveAccount().id;
 	var cl;
@@ -1508,21 +1559,10 @@ function(msg, notifyZimlets) {
 	var options = {};
 	options.shortAddress = appCtxt.get(ZmSetting.SHORT_ADDRESS);
 	
-	if (this._objectManager) {
-		this._lazyCreateObjectManager();
-
-		if (notifyZimlets) {
-			appCtxt.notifyZimlets("onFindMsgObjects", [msg, this._objectManager, this]);
-		}
-
-		sentBy = this._objectManager.findObjects(sentBy, true, ZmObjectManager.EMAIL, false, options);
-		obo = obo && this._objectManager.findObjects(fromAddr, true, ZmObjectManager.EMAIL, false, options);
-		bwo = bwo && this._objectManager.findObjects(bwo, true, ZmObjectManager.EMAIL, false, options);
-	} else {
-		sentBy = AjxStringUtil.htmlEncode(sentBy.toString());
-		obo = obo && AjxStringUtil.htmlEncode(obo.toString());
-		bwo = bwo && AjxStringUtil.htmlEncode(bwo.toString());
-	}
+	this._clearBubbles();
+	sentBy = this._getBubbleHtml(sentBy);
+	obo = obo && this._getBubbleHtml(fromAddr);
+	bwo = bwo && this._getBubbleHtml(bwo);
 
 	var showMoreIds = {};
 	var addressTypes = [], participants = {};
@@ -2651,23 +2691,6 @@ function(msgId, msgPartId, parentController) {
 	ZmMailMsg.fetchMsg(params);
 };
 
-ZmMailMsgView.contactIconCallback =
-function(addr, icon) {
-	if (icon == "Contact") {
-		var params = {
-			action: ZmOperation.NEW_MESSAGE,
-			toOverride: (addr + AjxEmailAddress.SEPARATOR)
-		};
-		AjxDispatcher.run("Compose", params);
-	} else {
-		AjxDispatcher.require(["ContactsCore", "Contacts"], false);
-		var contact = new ZmContact(null);
-		var email = AjxEmailAddress.parse(addr);
-		contact.initFromEmail(email);
-		AjxDispatcher.run("GetContactController").show(contact, true);
-	}
-};
-
 ZmMailMsgView.vcardCallback =
 function(msgId, partId) {
 	ZmZimbraMail.unloadHackCallback();
@@ -2681,7 +2704,6 @@ function(downloadUrl) {
 	ZmZimbraMail.unloadHackCallback();
 	location.href = downloadUrl;
 };
-
 
 ZmMailMsgView.prototype.removeAttachmentCallback =
 function(partIds) {

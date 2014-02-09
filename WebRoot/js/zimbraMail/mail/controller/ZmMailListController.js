@@ -935,24 +935,9 @@ function(ev) {
 		var imItem = this._participantActionMenu.getOp(ZmOperation.IM);
 		var contactsApp = appCtxt.getApp(ZmApp.CONTACTS);
 		if (contactsApp) {
-			// first check if contact is cached, and no server call is needed
-			var contact = contactsApp.getContactByEmail(email);
-			if (contact) {
-				this._handleResponseGetContact(imItem, address, ev, contact);
-			} else {
-				this._participantActionMenu.getOp(ZmOperation.CONTACT).setText(ZmMsg.loading);
-				if (imItem) {
-					if (ZmImApp.updateImMenuItemByAddress(imItem, address, false)) {
-						imItem.setText(ZmMsg.loading);
-					} else {
-						imItem = null;	// done updating item, didn't need server call
-					}
-				}
-				this._participantActionMenu.popup(0, ev.docX, ev.docY);
-				var respCallback = new AjxCallback(this, this._handleResponseGetContact, [imItem, address, ev]);
-				contactsApp.getContactByEmail(email, respCallback);
-			}
-		} else if (imItem) {
+			this._loadContactForMenu(this._participantActionMenu, address, ev, imItem);
+		}
+		else if (imItem) {
 			// since contacts app is disabled, we won't be making a server call
 			ZmImApp.updateImMenuItemByAddress(imItem, address, true);
 			this._participantActionMenu.popup(0, ev.docX, ev.docY);
@@ -994,22 +979,6 @@ function(ev) {
         ZmOperation.setOperation(this._participantActionMenu.getSearchMenu(), ZmOperation.SEARCH_TO, ZmOperation.SEARCH_TO, ZmMsg.findEmailToSender);
         ZmOperation.setOperation(this._participantActionMenu.getSearchMenu(), ZmOperation.SEARCH, ZmOperation.SEARCH, ZmMsg.findEmailFromSender);
     }
-};
-
-ZmMailListController.prototype._handleResponseGetContact =
-function(imItem, address, ev, contact) {
-
-	this._actionEv.contact = contact;
-	this._setContactText(contact);
-
-	if (imItem) {
-		if (contact) {
-			ZmImApp.updateImMenuItemByContact(imItem, contact, address);
-		} else {
-			ZmImApp.handleResponseGetContact(imItem, address, true);
-		}
-	}
-	this._participantActionMenu.popup(0, ev.docX, ev.docY);
 };
 
 // Operation listeners
@@ -2134,12 +2103,6 @@ function(view, menu) {
 			mi.setChecked(true, true);
 		}
 	}
-};
-
-// Handle participant menu.
-ZmMailListController.prototype._setContactText =
-function(contact) {
-	ZmListController.prototype._setContactText.call(this, contact, this._participantActionMenu);
 };
 
 ZmMailListController.prototype._setReplyText =

@@ -104,25 +104,6 @@ function(type, inclDispName) {
 };
 
 /**
- * Gets the attendee as text by role.
- *
- * @param	{constant}		type		the type
- * @param	{constant}		role		defines the role of the attendee (required/optional)
- * @param	{Boolean} collapseLongList - if true, long lists have a "show more" link that expands.
- * @param	{String}  htmlElId - required if collapseLongList is true - identifier for this view
- *
- * @return	{String}	the attendee string by role
- */
-ZmAppt.prototype.getAttendeesTextByRole =
-function(type, role, collapseLongList, objectManager, htmlElId) {
-	if (collapseLongList) {
-		return ZmApptViewHelper.getAttendeesByRoleCollapsed(this.getAttendees(type), type, role, objectManager, htmlElId);
-	}
-	return ZmApptViewHelper.getAttendeesByRole(this.getAttendees(type), type, role);
-};
-
-
-/**
  * Checks if the appointment has attendees of the specified type.
  * 
  * @param	{constant}		type		the type
@@ -1615,4 +1596,4 @@ ZmAppt.prototype.checkDSTChangeOnEndDate = function(){
     var prevDayOffset = prevDay.getTimezoneOffset();
     var diffOffset = prevDayOffset - eOffset;
     return diffOffset;
-}
+};

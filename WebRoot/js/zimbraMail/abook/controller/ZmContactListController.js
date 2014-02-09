@@ -302,7 +302,7 @@ function(actionCode) {
 
 		case ZmKeyMap.NEW_MESSAGE:
             if (isExternalAccount) { break; }
-			this._participantComposeListener();
+			this._composeListener();
 			break;
 
 		default:
@@ -797,7 +797,7 @@ function(parent, num) {
 ZmContactListController.prototype._getActionContact = function(isToolbar) {
 
 	/*
-	if you read this and don't understand why I don't do the same as in _participantComposeListener. It's because
+	if you read this and don't understand why I don't do the same as in _composeListener. It's because
 	in DwtListView.prototype.getSelection, the _rightSelItem is not set for a submenu, so the right clicked item is not the selection returned.
 	This approach of specifically specifying if it's from the toolbar (isToolbar) is more explicit, less fragile and works.
 	 */
@@ -819,31 +819,22 @@ ZmContactListController.prototype._getActionContact = function(isToolbar) {
  *
  * @private
  */
-ZmContactListController.prototype._participantSearchListener = function(isToolbar, ev) {
+ZmContactListController.prototype._searchListener = function(addrType, isToolbar, ev) {
 
 	var contact = this._getActionContact(isToolbar);
 	if (!contact) {
 		return;
 	}
 
-	var addresses = contact.getEmails();
-	appCtxt.getSearchController().fromSearch(addresses);
-};
+	var addresses = contact.getEmails(),
+		srchCtlr = appCtxt.getSearchController();
 
-/**
- * To Search based on email address.
- *
- * @private
- */
-ZmContactListController.prototype._participantSearchToListener =
-function(isToolbar, ev) {
-	var contact = this._getActionContact(isToolbar);
-	if (!contact) {
-		return;
+	if (addrType === AjxEmailAddress.FROM) {
+		srchCtlr.fromSearch(addresses);
 	}
-
-	var addresses = contact.getEmails();
-	appCtxt.getSearchController().toSearch(addresses);
+	else if (addrType === AjxEmailAddress.TO) {
+		srchCtlr.toSearch(addresses);
+	}
 };
 
 /**
@@ -881,7 +872,7 @@ function(ev, op, params) {
 	if (!ev && !op) { return; }
 	op = op || ev.item.getData(ZmOperation.KEY_ID);
 	if (op == ZmOperation.NEW_MESSAGE) {
-		this._participantComposeListener(ev);
+		this._composeListener(ev);
 	}else{
         ZmListController.prototype._newListener.call(this, ev, op, params);
     }
@@ -892,7 +883,7 @@ function(ev, op, params) {
  * 
  * @private
  */
-ZmContactListController.prototype._participantComposeListener =
+ZmContactListController.prototype._composeListener =
 function(ev) {
 
     var selection = this._listView[this._currentViewId].getSelection();

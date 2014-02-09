@@ -2546,31 +2546,30 @@ function(appt, all, result) {
 	}
 
 	if (all) {
-		var reqAddressArray = appt.getAttendeesTextByRole(ZmCalBaseItem.PERSON, ZmCalItem.ROLE_REQUIRED).split(/;\s*/);
-		var optAddressArray = appt.getAttendeesTextByRole(ZmCalBaseItem.PERSON, ZmCalItem.ROLE_OPTIONAL).split(/;\s*/);
-		
-		for (var i=0; i<reqAddressArray.length; i++) {
-			if (reqAddressArray[i]) {
-				var address = AjxEmailAddress.parse(reqAddressArray[i]);
-				if (address.getAddress() != self && address.getAddress() != organizerAddress.getAddress()) {
-					address.setType(AjxEmailAddress.FROM);
-					msg.addAddress(address);
-				}
-			}
-		}
-		for (var i=0; i<optAddressArray.length; i++) {
-			if (optAddressArray[i]) {
-				var address = AjxEmailAddress.parse(optAddressArray[i]);
-				if (address.getAddress() != self && address.getAddress() != organizerAddress.getAddress()) {
-					address.setType(AjxEmailAddress.CC);
-					msg.addAddress(address);
-				}
-			}
-		}
+		var omit = AjxUtil.arrayAsHash([ self, organizerAddress.getAddress() ]),
+			attendees = appt.getAttendees(ZmCalBaseItem.PERSON);
+
+		this._addAttendeesToReply(attendees, msg, ZmCalItem.ROLE_REQUIRED, AjxEmailAddress.FROM, omit);
+		this._addAttendeesToReply(attendees, msg, ZmCalItem.ROLE_OPTIONAL, AjxEmailAddress.CC, omit);
 	}
 	
 	var data = {action: all ? ZmOperation.CAL_REPLY_ALL : ZmOperation.CAL_REPLY, msg: msg};
 	AjxDispatcher.run("GetComposeController").doAction(data);
+};
+
+ZmCalViewController.prototype._addAttendeesToReply = function(attendees, msg, role, addrType, omit) {
+
+	var attendeesByRole = ZmApptViewHelper.getAttendeesArrayByRole(attendees, role),
+		ln = attendeesByRole.length, i, addr;
+
+	for (i = 0; i < ln; i++) {
+		addr = attendeesByRole[i].getAttendeeText(ZmCalBaseItem.PERSON);
+		if (addr && !omit[addr]) {
+			var addrObj = new AjxEmailAddress(addr);
+			addrObj.setType(addrType);
+			msg.addAddress(addrObj);
+		}
+	}
 };
 
 ZmCalViewController.prototype._forwardAppointment =
