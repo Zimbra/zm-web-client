@@ -44,7 +44,7 @@
         </c:choose>
     <c:set var="workDays" value="${zm:getWorkDays(wdays)}"/>
     <c:choose>
-        <c:when test="${requestScope.zimbra_freebusy}">
+        <c:when test="${zm:boolean(equestScope.zimbra_freebusy)}">
             <zm:getFreeBusyAppointments box="${mailbox}"
                                         email="${requestScope.zimbra_target_account_name}"
                                         var="appts"

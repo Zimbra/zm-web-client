@@ -40,7 +40,7 @@
     <c:set var="currentDay" value="${zm:getFirstDayOfMonthView(date, firstDOW)}"/>
 
     <c:choose>
-        <c:when test="${requestScope.zimbra_freebusy}">
+        <c:when test="${zm:boolean(requestScope.zimbra_freebusy)}">
             <zm:getFreeBusyAppointments box="${mailbox}"
                                         email="${requestScope.zimbra_target_account_name}"
                                         var="appts"
