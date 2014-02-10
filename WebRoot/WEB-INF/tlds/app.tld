@@ -912,6 +912,12 @@
         <path>/WEB-INF/tags/voice/getCallFeatures.tag</path>
     </tag-file>
 
+    <function>
+        <name>boolean</name>
+        <function-class>java.lang.Boolean</function-class>
+        <function-signature>java.lang.Boolean valueOf(java.lang.String)</function-signature>
+    </function>
+
 </taglib>
 
         

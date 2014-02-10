@@ -40,7 +40,7 @@
 <c:set var="phoneticFirstName" value="${not empty contact ? contact.phoneticFirstName : phoneticFirstName}" />
 <c:set var="phoneticLastName" value="${not empty contact ? contact.phoneticLastName : phoneticLastName}" />
 <c:set var="phoneticCompany" value="${not empty contact ? contact.phoneticCompany : phoneticCompany}" />
-<c:if test="${ruby}">
+<c:if test="${zm:boolean(ruby)}">
     <c:set var="firstName"><app:ruby base="${firstName}" text="${phoneticFirstName}" /></c:set>
     <c:set var="lastName"><app:ruby base="${lastName}" text="${phoneticLastName}" /></c:set>
     <c:set var="company"><app:ruby base="${company}" text="${phoneticCompany}" /></c:set>
@@ -102,7 +102,7 @@
     <c:otherwise>
         <c:choose>
             <c:when test="${contact.isGalContact and not empty fullName}">${fullName}</c:when>
-            <c:when test="${contact.isGalContact}">${fn:escapeXml(contact.email)}</c:when>
+            <c:when test="${zm:boolean(contact.isGalContact)}">${fn:escapeXml(contact.email)}</c:when>
             <c:otherwise>
                 <% set("text", fileAsLastFirst(firstName, lastName, fullName, nickname)); %>
                 ${text}

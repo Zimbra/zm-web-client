@@ -25,7 +25,7 @@
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
 
 <c:set var="done" value="${false}"/>
-<zm:forEachFolder var="folder" skiproot="${skiproot}" parentid="${parentid}" skipsystem="${skipsystem}" expanded="${sessionScope.expanded}" skiptopsearch="${skiptopsearch}">
+<zm:forEachFolder var="folder" skiproot="${skiproot}" parentid="${parentid}" skipsystem="${skipsystem}" expanded="${sessionScope.expanded}" skiptopsearch="${zm:boolean(skiptopsearch)}">
     <c:if test="${not folder.isSystemFolder and (folder.isNullView or folder.isUnknownView or folder.isMessageView or folder.isConversationView)}">
 
         <c:set var="validFolder" value="${not folder.isSearchFolder or (folder.isSearchFolder and folder.depth gt 0)}"/>

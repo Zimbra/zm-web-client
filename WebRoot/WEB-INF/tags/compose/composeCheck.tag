@@ -22,7 +22,7 @@
 <app:handleError>
 <zm:composeUploader var="uploader"/>
 <c:set var="needComposeView" value="${param.action eq 'compose'}"/>
-<c:if test="${param.cancelConfirmed }">
+<c:if test="${zm:boolean(param.cancelConfirmed)}">
     <c:set var="needComposeView" value="${false}"/>
     <c:if test="${not empty sessionScope.temp_draftid}">
         <zm:deleteMessage var="result" id="${sessionScope.temp_draftid}"/>

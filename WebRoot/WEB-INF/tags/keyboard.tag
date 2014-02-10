@@ -58,7 +58,7 @@
                 var el = YAHOO.util.Event.getTarget(ev);
                 if (el == null || (el.nodeName == 'INPUT' && el.type != 'checkbox') || el.nodeName == 'TEXTAREA') {
                 <c:choose>
-                <c:when test="${passspecial}">
+                <c:when test="${zm:boolean(passspecial)}">
                     if (!(ev.ctrlKey || ev.altKey || ev.metaKey)) return;
                 </c:when>
                 <c:otherwise>
@@ -109,11 +109,11 @@
             }
             YAHOO.util.Event.addListener(window, "load", init);
 
-            <c:if test="${globals}">
+            <c:if test="${zm:boolean(globals)}">
             <zm:bindKey message="global.NewMessage" id="TAB_COMPOSE"/>
             <zm:bindKey message="global.GoToMail" id="TAB_MAIL"/>
             <zm:bindKey message="global.GoToOptions" id="TAB_OPTIONS"/>
-            <c:if test="${folders}">
+            <c:if test="${zm:boolean(folders)}">
             <zm:bindKey message="overview.folders" id="MFOLDERS"/>
             <zm:bindKey message="mfolders.NewFolder" url="mfolders?actionNewFolder"/>
             <zm:bindKey message="mail.GoToFolder" alias="gotofolder"/>
@@ -121,14 +121,14 @@
             <zm:bindKey message="global.SavedSearch" alias="search"/>
             </c:if>
             </c:if>
-            <c:if test="${tags and mailbox.features.tagging}">
+            <c:if test="${zm:boolean(tags) and mailbox.features.tagging}">
             <zm:bindKey message="overview.tags" id="MTAGS"/>
             <zm:bindKey message="global.GoToTag" alias="gototag"/>
             </c:if>
             <c:if test="${mailbox.features.calendar}">
             <zm:bindKey message="calendar.GoToCalendar" id="TAB_CALENDAR"/>
             <zm:bindKey message="calendar.NewAppointment" url="calendar?action=new"/>
-            <c:if test="${calendars}">
+            <c:if test="${zm:boolean(calendars)}">
             <zm:bindKey message="overview.calendars" url="mcalendars"/>
             </c:if>
             </c:if>
@@ -138,7 +138,7 @@
             <c:if test="${mailbox.features.contacts}">
             <zm:bindKey message="contacts.NewContact" url="search?st=contact&action=newcontact"/>
             <zm:bindKey message="contacts.GoToContacts" id="TAB_ADDRESSBOOK"/>
-            <c:if test="${contacts}">
+            <c:if test="${zm:boolean(contacts)}">
             <zm:bindKey message="overview.addressbooks" id="MADDRBOOKS"/>
             </c:if>
             </c:if>

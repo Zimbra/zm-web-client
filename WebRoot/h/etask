@@ -99,7 +99,7 @@
                                         <app:button id="OPSAVE" name="actionSave" src="common/ImgSave.png" tooltip="save" text="save"/>
                                         <td><div class='vertSep'></div></td>
                                         <c:choose>
-                                            <c:when test="${isNewAppt}">
+                                            <c:when test="${zm:boolean(isNewAppt)}">
                                                 <app:button id="OPCANCEL" name="actionCancel" src="common/ImgCancel.png" tooltip="cancel" text="cancel"/>
                                             </c:when>
                                             <c:otherwise>

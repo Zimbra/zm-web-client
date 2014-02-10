@@ -54,7 +54,7 @@
             <tr>
                 <td class='ZhAppContent'>
                     <table width="100%">
-                        <c:if test="${isInstance}">
+                        <c:if test="${zm:boolean(isInstance)}">
                             <tr>
                                 <td>
                                     <table width="100%">

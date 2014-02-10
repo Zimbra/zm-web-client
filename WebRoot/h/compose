@@ -279,7 +279,7 @@
 <input type="hidden" name="crumb" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
 <%--input element used to set the draftid during autosave--%>
 <c:choose>
-    <c:when test="${message.isDraft}">
+    <c:when test="${zm:boolean(message.isDraft)}">
        <input type="hidden" name="draftid" value="${message.id}"/>
     </c:when>
     <c:otherwise>

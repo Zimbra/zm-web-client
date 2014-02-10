@@ -34,7 +34,7 @@
 </c:if>
 <script>
 var dismissMsg = function(){
-	<c:if test="${statusBlocking}">
+	<c:if test="${zm:boolean(statusBlocking)}">
 	try{document.getElementById("app_st_block_div").style.display='none';} catch(ex) {}
 	</c:if>
 	try{document.getElementById("app_st_msg_div").style.display='none';return false;} catch(ex) {return true;}

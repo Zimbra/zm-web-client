@@ -318,7 +318,7 @@
     <tr>
         <td id="iframeBody" class=MsgBody>
             <c:choose>
-                <c:when test="${body.isTextHtml}">
+                <c:when test="${zm:boolean(body.isTextHtml)}">
                     <c:url var="iframeUrl" value="/h/imessage">
                         <c:param name="id" value="${message.id}"/>
                         <c:param name="part" value="${message.partName}"/>
