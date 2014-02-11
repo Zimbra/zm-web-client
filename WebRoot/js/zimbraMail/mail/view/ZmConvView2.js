@@ -2066,7 +2066,7 @@ function(state, force) {
 	
 	var id = this._htmlElId;
 	var msg = this._msg;
-	var ai = this._msgView._getAddrInfo(msg, true);
+	var ai = this._msgView._getAddrInfo(msg);
 	this._showMoreIds = ai.showMoreIds;
 
 	var folder = appCtxt.getById(msg.folderId);

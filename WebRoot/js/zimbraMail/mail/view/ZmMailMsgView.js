@@ -424,6 +424,7 @@ function(msg, oldMsg, dayViewCallback) {
 		// always show F/B view if in stand-alone message view otherwise, check if reading pane is on
 		if (this._inviteMsgView.isActive() && (this._controller.isReadingPaneOn() || (this._controller.isZmMsgController))) {
 			bubblesCreated = true;
+			appCtxt.notifyZimlets("onMsgView", [msg, oldMsg, this]);
 			this._inviteMsgView.showMoreInfo(this._createBubbles.bind(this), dayViewCallback);
 		}
 		else {
@@ -470,6 +471,7 @@ function(msg, oldMsg, dayViewCallback) {
 
 	if (!bubblesCreated) {
 		this._createBubbles();
+		appCtxt.notifyZimlets("onMsgView", [msg, oldMsg, this]);
 	}
 
 	if (!msg.isDraft && msg.readReceiptRequested) {
@@ -1558,7 +1560,12 @@ function(msg) {
 
 	var options = {};
 	options.shortAddress = appCtxt.get(ZmSetting.SHORT_ADDRESS);
-	
+
+	if (this._objectManager) {
+		this._lazyCreateObjectManager();
+		appCtxt.notifyZimlets("onFindMsgObjects", [msg, this._objectManager, this]);
+	}
+
 	this._clearBubbles();
 	sentBy = this._getBubbleHtml(sentBy);
 	obo = obo && this._getBubbleHtml(fromAddr);

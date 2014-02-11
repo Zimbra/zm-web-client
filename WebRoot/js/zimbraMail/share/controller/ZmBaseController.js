@@ -134,6 +134,13 @@ function() {
 };
 
 /**
+ * Returns the view used to display a single item, if any.
+ */
+ZmBaseController.prototype.getItemView = function() {
+	return null;
+};
+
+/**
  * Gets the current tool bar.
  * 
  * @return	{ZmButtonToolbar}		the toolbar
@@ -1210,11 +1217,11 @@ ZmBaseController.prototype._bubbleSelectionListener = function(ev) {
 	}
 };
 
-ZmBaseController.prototype._bubbleActionListener = function(ev) {
+ZmBaseController.prototype._bubbleActionListener = function(ev, addr) {
 
 	this._actionEv = ev;
 	var bubble = this._actionEv.bubble = ev.item,
-		address = this._actionEv.address = bubble.addrObj || bubble.address,
+		address = this._actionEv.address = addr || bubble.addrObj || bubble.address,
 		menu = this._getBubbleActionMenu();
 
 	if (menu) {
@@ -1294,10 +1301,15 @@ ZmBaseController.prototype._clipCopyComplete = function(clip) {
 // we can run this function on a timer.
 ZmBaseController.prototype._bubbleMenuPopdownListener = function() {
 
-	var bubbleList = this.getItemView()._bubbleList;
+	var itemView = this.getItemView(),
+		bubbleList = itemView._bubbleList,
+		bubble = this._actionEv && this._actionEv.bubble;
+
 	if (bubbleList) {
 		bubbleList.clearRightSelection();
-		this._actionEv.bubble.setClassName(bubbleList._normalClass);
+		if (bubble) {
+			bubble.setClassName(bubbleList._normalClass);
+		}
 	}
 	this._actionEv.bubble = null;
 };
@@ -1310,8 +1322,9 @@ ZmBaseController.prototype._dlAddrSelected = function(match, ev) {
 
 ZmBaseController.prototype._loadContactForMenu = function(menu, address, ev, imItem) {
 
-	var contactsApp = appCtxt.getApp(ZmApp.CONTACTS);
-	var email = address && address.getAddress();
+	var contactsApp = appCtxt.getApp(ZmApp.CONTACTS),
+		address = address.isAjxEmailAddress ? address : new AjxEmailAddress(address),
+		email = address.getAddress();
 
 	// first check if contact is cached, and no server call is needed
 	var contact = contactsApp.getContactByEmail(email);
@@ -1456,9 +1469,9 @@ ZmBaseController.prototype._searchListener = function(addrType, isToolbar, ev) {
  *
  * @private
  */
-ZmBaseController.prototype._composeListener = function(ev) {
+ZmBaseController.prototype._composeListener = function(ev, addr) {
 
-	var addr = this._actionEv && this._actionEv.address,
+	var addr = addr || (this._actionEv && this._actionEv.address),
 		email = addr && addr.toString();
 
 	if (email) {

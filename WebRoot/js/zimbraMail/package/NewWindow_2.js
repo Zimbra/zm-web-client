@@ -47,6 +47,8 @@ AjxPackage.require("ajax.dwt.widgets.DwtMessageComposite");
 
 AjxPackage.require("ajax.util.AjxDateUtil");
 AjxPackage.require("ajax.util.AjxPluginDetector");
+AjxPackage.require("ajax.3rdparty.zeroclipboard.ZeroClipboard");
+AjxPackage.require("ajax.util.AjxClipboard");
 
 AjxPackage.require("zimbra.csfe.ZmBatchCommand");
 AjxPackage.require("zimbra.csfe.ZmCsfeCommand");
@@ -173,6 +175,7 @@ AjxPackage.require("zimbraMail.mail.view.ZmMailRedirectDialog");
 
 
 AjxPackage.require("zimbraMail.mail.view.object.ZmImageAttachmentObjectHandler");
+AjxPackage.require("zimbraMail.share.zimlet.handler.ZmEmailObjectHandler");
 
 AjxPackage.require("zimbra.common.ZmErrorDialog");
 AjxPackage.require("zimbraMail.offline.ZmOffline");

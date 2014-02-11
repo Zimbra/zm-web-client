@@ -1638,20 +1638,23 @@ function(params) {
 
 ZmMailListController.prototype._filterListener =
 function() {
-	var respCallback = new AjxCallback(this, this._handleResponseFilterListener);
-	var msg = this._getLoadedMsg(null, respCallback);
+
+	if (this._actionEv.handler) {
+		this._handleResponseFilterListener(this._actionEv.address);
+	}
+	else {
+		this._getLoadedMsg(null, this._handleResponseFilterListener.bind(this));
+	}
 };
 
 ZmMailListController.prototype._createApptListener =
 function() {
-	var respCallback = new AjxCallback(this, this._handleResponseNewApptListener);
-	var msg = this._getLoadedMsg(null, respCallback);
+	this._getLoadedMsg(null, this._handleResponseNewApptListener.bind(this));
 };
 
 ZmMailListController.prototype._createTaskListener =
 function() {
-	var respCallback = new AjxCallback(this, this._handleResponseNewTaskListener);
-	var msg = this._getLoadedMsg(null, respCallback);
+	this._getLoadedMsg(null, this._handleResponseNewTaskListener.bind(this));
 };
 
 ZmMailListController.prototype._handleResponseNewApptListener =
@@ -1678,58 +1681,72 @@ function(msg) {
 };
 
 ZmMailListController.prototype._handleResponseFilterListener =
-function(msg) {
-	if (!msg) { return; }
-	if (msg.cloneOf) {
+function(msgOrAddr) {
+
+	if (!msgOrAddr) {
+		return;
+	}
+
+	// arg can be ZmMailMsg or String (address)
+	var msg = msgOrAddr.isZmMailMsg ? msgOrAddr : null;
+
+	if (msg && msg.cloneOf) {
 		msg = msg.cloneOf;
 	}
 	if (appCtxt.isChildWindow) {
 		var mailListController = window.opener.AjxDispatcher.run("GetMailListController");
-		mailListController._handleResponseFilterListener(msg);
+		mailListController._handleResponseFilterListener(msgOrAddr);
 		return;
 	}
 	
 	AjxDispatcher.require(["PreferencesCore", "Preferences"]);
 	var rule = new ZmFilterRule();
 
-	var listId = msg.getListIdHeader();
-	if (listId) {
-		rule.addCondition(ZmFilterRule.TEST_HEADER, ZmFilterRule.OP_CONTAINS, listId, ZmMailMsg.HDR_LISTID);
-	}
-	else {
-		var from = msg.getAddress(AjxEmailAddress.FROM);
-		if (from) {
-			var subjMod = ZmFilterRule.C_ADDRESS_VALUE[ZmFilterRule.C_FROM];
-			rule.addCondition(ZmFilterRule.TEST_ADDRESS, ZmFilterRule.OP_CONTAINS, from.address, subjMod);
+	if (msg) {
+		var listId = msg.getListIdHeader();
+		if (listId) {
+			rule.addCondition(ZmFilterRule.TEST_HEADER, ZmFilterRule.OP_CONTAINS, listId, ZmMailMsg.HDR_LISTID);
 		}
-		var cc = msg.getAddress(AjxEmailAddress.CC);
-		if (cc)	{
-			var subjMod = ZmFilterRule.C_ADDRESS_VALUE[ZmFilterRule.C_CC];
-			rule.addCondition(ZmFilterRule.TEST_ADDRESS, ZmFilterRule.OP_CONTAINS, cc.address, subjMod);
-		}
-		var xZimbraDL = msg.getXZimbraDLHeader();
-		if (xZimbraDL && xZimbraDL.good) {
-			var arr = xZimbraDL.good.getArray();
-			var max = arr.length < 5 ? arr.length : 5; //limit number of X-Zimbra-DL ids
-			for (var i=0; i < max; i++) {
-				rule.addCondition(ZmFilterRule.TEST_HEADER, ZmFilterRule.OP_CONTAINS, arr[i].address, ZmMailMsg.HDR_XZIMBRADL);
+		else {
+			var from = msg.getAddress(AjxEmailAddress.FROM);
+			if (from) {
+				var subjMod = ZmFilterRule.C_ADDRESS_VALUE[ZmFilterRule.C_FROM];
+				rule.addCondition(ZmFilterRule.TEST_ADDRESS, ZmFilterRule.OP_CONTAINS, from.address, subjMod);
+			}
+			var cc = msg.getAddress(AjxEmailAddress.CC);
+			if (cc)	{
+				var subjMod = ZmFilterRule.C_ADDRESS_VALUE[ZmFilterRule.C_CC];
+				rule.addCondition(ZmFilterRule.TEST_ADDRESS, ZmFilterRule.OP_CONTAINS, cc.address, subjMod);
+			}
+			var xZimbraDL = msg.getXZimbraDLHeader();
+			if (xZimbraDL && xZimbraDL.good) {
+				var arr = xZimbraDL.good.getArray();
+				var max = arr.length < 5 ? arr.length : 5; //limit number of X-Zimbra-DL ids
+				for (var i=0; i < max; i++) {
+					rule.addCondition(ZmFilterRule.TEST_HEADER, ZmFilterRule.OP_CONTAINS, arr[i].address, ZmMailMsg.HDR_XZIMBRADL);
+				}
+			}
+			var subj = msg.subject;
+			if (subj) {
+				var subjMod = ZmFilterRule.C_HEADER_VALUE[ZmFilterRule.C_SUBJECT];
+				rule.addCondition(ZmFilterRule.TEST_HEADER, ZmFilterRule.OP_IS, subj, subjMod);
 			}
 		}
-		var subj = msg.subject;
-		if (subj) {
-			var subjMod = ZmFilterRule.C_HEADER_VALUE[ZmFilterRule.C_SUBJECT];
-			rule.addCondition(ZmFilterRule.TEST_HEADER, ZmFilterRule.OP_IS, subj, subjMod);
-		}
 	}
+	else {
+		var subjMod = ZmFilterRule.C_ADDRESS_VALUE[ZmFilterRule.C_FROM];
+		rule.addCondition(ZmFilterRule.TEST_ADDRESS, ZmFilterRule.OP_CONTAINS, msgOrAddr, subjMod);
+	}
+
 	rule.addAction(ZmFilterRule.A_KEEP);
 	rule.setGroupOp(ZmFilterRule.GROUP_ALL);
 
-	var accountName = appCtxt.multiAccounts && msg.getAccount().name;
-	var outgoing = AjxUtil.indexOf(ZmFolder.OUTBOUND, msg.getFolderId()) != -1;
+	var accountName = appCtxt.multiAccounts && msg && msg.getAccount().name,
+		folder = msg && appCtxt.getById(msg.getFolderId()),
+		outgoing = !!(folder && folder.isOutbound());
 
 	appCtxt.getFilterRuleDialog().popup(rule, null, null, accountName, outgoing);
 };
-
 
 /**
  * Returns the selected msg, ensuring that it's loaded.
@@ -2239,7 +2256,6 @@ function(parent, num) {
 
 	this._cleanupToolbar(parent);
 };
-
 
 ZmMailListController.prototype._showMailItem =
 function() {

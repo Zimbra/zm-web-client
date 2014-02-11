@@ -531,11 +531,10 @@ function(spanElement, contentObjText, matchContext, canvas) {
 		var obj = this._createContentObj(contentObjText, matchContext);
 
 		var txt;
-		if (c.toolTip instanceof Object &&
-		    c.toolTip.actionUrl) {
+		if (c.toolTip instanceof Object && c.toolTip.actionUrl) {
 		    this.xmlObj().handleActionUrl(c.toolTip.actionUrl, [{type:"tooltip"}], obj, canvas);
 		    // XXX the tooltip needs "some" text on it initially, otherwise it wouldn't resize afterwards.
-		    txt = "fetching data...";
+		    txt = ZmMsg.zimletFetchingTooltipData;
 		} else {
 			// If it's an email address just use the address value.
 			if (obj.objectContent instanceof AjxEmailAddress) {obj.objectContent = obj.objectContent.address;}

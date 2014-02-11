@@ -27,6 +27,7 @@ AjxPackage.require("zimbraMail.mail.model.ZmMimePart");
 AjxPackage.require("zimbraMail.mail.model.ZmMailList");
 
 AjxPackage.require("zimbraMail.mail.view.object.ZmImageAttachmentObjectHandler");
+AjxPackage.require("zimbraMail.share.zimlet.handler.ZmEmailObjectHandler");
 
 AjxPackage.require("zimbraMail.mail.view.ZmMailListView");
 AjxPackage.require("zimbraMail.mail.view.ZmMailItemView");
