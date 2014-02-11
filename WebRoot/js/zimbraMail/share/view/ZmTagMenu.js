@@ -150,18 +150,16 @@ function(items, tagList) {
 			}
 		}
 	}
+	var remove = AjxUtil.keys(tagRemoveHash);
+
 	var add = [];
-	var remove = [];
 	// any tag held by fewer than all the items can be added
 	var a = tagList.children.getArray();
 	for (i = 0; i < a.length; i++) {
 		var tag = a[i];
 		tagName = tag.name;
 		if (!tagCount[tagName] || (tagCount[tagName] < items.length)) {
-			add.push(tag);
-		}
-		if (tagRemoveHash[tagName]) {
-			remove.push(tag);
+			add.push(tagName);
 		}
 	}
 
@@ -174,8 +172,8 @@ ZmTagMenu.prototype._render =
 function(tagList, addRemove) {
 
 	for (var i = 0; i < addRemove.add.length; i++) {
-		var tag = addRemove.add[i];
-		this._addNewTag(this, tag, true, null, this._addHash);
+		var tagName = addRemove.add[i];
+		this._addNewTag(this, tagName, tagList, true, null, this._addHash);
 	}
 
 	if (addRemove.add.length) {
@@ -211,9 +209,9 @@ function(tagList, addRemove) {
 					miRemove.setMenu(removeMenu);
                     removeMenu.setHtmlElementId('REMOVE_TAG_MENU_' + this.getHTMLElId());
 				}
-				var tag = removeList[i];
+				var tagName = removeList[i];
                 var tagHtmlId = 'Remove_tag_' + i;
-				this._addNewTag(removeMenu, tag, false, null, this._removeHash, tagHtmlId);
+				this._addNewTag(removeMenu, tagName, tagList, false, null, this._removeHash, tagHtmlId);
 			}
 			// if multiple removable tags, offer "Remove All"
 			new DwtMenuItem({parent:removeMenu, style:DwtMenuItem.SEPARATOR_STYLE});
@@ -226,7 +224,7 @@ function(tagList, addRemove) {
 			mi.addSelectionListener(new AjxListener(this, this._menuItemSelectionListener), 0);
 		}
 		else {
-			var tag = removeList[0];
+			var tag = tagList.getByNameOrRemote(removeList[0]);
 			miRemove.setData(ZmTagMenu.KEY_TAG_EVENT, ZmEvent.E_TAGS);
 			miRemove.setData(ZmTagMenu.KEY_TAG_ADDED, false);
 			miRemove.setData(Dwt.KEY_OBJECT, tag);
@@ -238,7 +236,8 @@ function(tagList, addRemove) {
 
 ZmTagMenu.tagNameLength = 20;
 ZmTagMenu.prototype._addNewTag =
-function(menu, newTag, add, index, tagHash, tagHtmlId) {
+function(menu, newTagName, tagList, add, index, tagHash, tagHtmlId) {
+	var newTag = tagList.getByNameOrRemote(newTagName);
 	var mi = new DwtMenuItem({parent:menu, index:index, id:tagHtmlId});
     var tagName = AjxStringUtil.clipByLength(newTag.getName(false),ZmTagMenu.tagNameLength);
 	var nameText = newTag.notLocal ? AjxMessageFormat.format(ZmMsg.tagNotLocal, tagName) : tagName;
