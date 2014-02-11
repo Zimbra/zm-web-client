@@ -102,13 +102,21 @@ function() {
 
 ZmOffline.prototype._onLoad =
 function() {
-    this.initOfflineFolders();
     if (appCtxt.isWebClientOffline()) {
-		this._onZWCOffline();
-	}
-	else {
+        this.initOfflineFolders();
+        this._onZWCOffline();
+    }
+    //Have some delay for offline sync process
+    var ta = new AjxTimedAction(this, ZmOffline.prototype._onAfterLoad);
+    AjxTimedAction.scheduleAction(ta, 5000);
+};
+
+ZmOffline.prototype._onAfterLoad =
+function() {
+    if (!appCtxt.isWebClientOffline()) {
+        this.initOfflineFolders();
         appCtxt.reloadAppCache();
-	}
+    }
     ZmOffline.updateOutboxFolderCount();
 };
 
@@ -901,6 +909,7 @@ ZmOffline.deleteOfflineData =
 function() {
     DBG.println(AjxDebug.DBG1, "ZmOffline.deleteOfflineData");
     ZmOfflineDB.deleteDB();
+    localStorage.clear();
 };
 
 ZmOffline.generateMsgResponse =

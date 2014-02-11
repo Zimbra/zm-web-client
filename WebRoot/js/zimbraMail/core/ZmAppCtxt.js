@@ -1799,6 +1799,7 @@ function(event, args, options) {
 ZmAppCtxt.prototype.getCalManager =
 function() {
 	if (!this._calMgr) {
+        AjxDispatcher.require("Startup2");
 		this._calMgr = new ZmCalMgr(this._shell);
 	}
 	return this._calMgr;
