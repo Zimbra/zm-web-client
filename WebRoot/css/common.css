@@ -39,6 +39,9 @@
 	@FontFamily-system@
 }
 
+.user_font_size_small {
+	font-size:@UserFontSize-small@
+}
 .user_font_size_normal {
 	font-size:@UserFontSize-normal@
 }

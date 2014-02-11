@@ -6139,33 +6139,37 @@ RBC, RTC {
 
 /* TinyMCE customizations */
 
-.user_font_modern .mce-widget button span,
-.user_font_modern .mce-menu-item span {
+.user_font_modern .mce-widget button SPAN,
+.user_font_modern .mce-menu-item SPAN {
 	@FontFamily-modern@
 }
-.user_font_classic .mce-widget button span,
-.user_font_classic .mce-menu-item span {
+.user_font_classic .mce-widget button SPAN,
+.user_font_classic .mce-menu-item SPAN {
 	@FontFamily-classic@
 }
-.user_font_wide .mce-widget button span,
-.user_font_wide .mce-menu-item span {
+.user_font_wide .mce-widget button SPAN,
+.user_font_wide .mce-menu-item SPAN {
 	@FontFamily-wide@
 }
-.user_font_system .mce-widget button span,
-.user_font_system .mce-menu-item span {
+.user_font_system .mce-widget button SPAN,
+.user_font_system .mce-menu-item SPAN {
 	@FontFamily-system@
 }
 
-.user_font_size_normal .mce-widget button span,
-.user_font_size_normal .mce-menu-item span {
+.user_font_size_small .mce-widget button SPAN,
+.user_font_size_small .mce-menu-item SPAN {
+	font-size:@UserFontSize-small@
+}
+.user_font_size_normal .mce-widget button SPAN,
+.user_font_size_normal .mce-menu-item SPAN {
 	font-size:@UserFontSize-normal@
 }
-.user_font_size_large .mce-widget button span,
-.user_font_size_large .mce-menu-item span {
+.user_font_size_large .mce-widget button SPAN,
+.user_font_size_large .mce-menu-item SPAN {
 	font-size:@UserFontSize-large@
 }
-.user_font_size_larger .mce-widget button span,
-.user_font_size_larger .mce-menu-item span {
+.user_font_size_larger .mce-widget button SPAN,
+.user_font_size_larger .mce-menu-item SPAN {
 	font-size:@UserFontSize-larger@
 }
 

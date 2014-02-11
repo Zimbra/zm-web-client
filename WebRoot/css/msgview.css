@@ -78,6 +78,9 @@ body.MsgBody {
 .MsgBody .QuotedText1 { color: green; }
 .MsgBody .QuotedText2 { color: red; }
 
+.user_font_size_small {
+	font-size:@UserFontSize-small@
+}
 .user_font_size_normal {
 	font-size:@UserFontSize-normal@
 }

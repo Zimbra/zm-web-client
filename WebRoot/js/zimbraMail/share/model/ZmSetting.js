@@ -255,6 +255,7 @@ ZmSetting.FONT_WIDE		= "wide";
 ZmSetting.FONT_SYSTEM	= "system";
 
 //user selected font size
+ZmSetting.FONT_SIZE_SMALL = "small";
 ZmSetting.FONT_SIZE_NORMAL = "normal";
 ZmSetting.FONT_SIZE_LARGE = "large";
 ZmSetting.FONT_SIZE_LARGER = "larger";

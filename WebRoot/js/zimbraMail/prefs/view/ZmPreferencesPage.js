@@ -1292,6 +1292,7 @@ ZmPreferencesPage._createMenuItem(ZmSetting.FONT_WIDE, ZmMsg.fontWide, ZmPrefere
 
 ZmPreferencesPage.fontSizeMap = {};
 
+ZmPreferencesPage._createMenuItem(ZmSetting.FONT_SIZE_SMALL, ZmMsg.fontSizeSmall, ZmPreferencesPage.fontSizeMap);
 ZmPreferencesPage._createMenuItem(ZmSetting.FONT_SIZE_NORMAL, ZmMsg.fontSizeNormal, ZmPreferencesPage.fontSizeMap);
 ZmPreferencesPage._createMenuItem(ZmSetting.FONT_SIZE_LARGE, ZmMsg.fontSizeLarge, ZmPreferencesPage.fontSizeMap);
 ZmPreferencesPage._createMenuItem(ZmSetting.FONT_SIZE_LARGER, ZmMsg.fontSizeExtraLarge, ZmPreferencesPage.fontSizeMap);
