@@ -162,12 +162,6 @@ ZmMailListView.prototype.handleKeyAction =
 function(actionCode, ev) {
 
 	switch (actionCode) {
-		// Block widget shortcut for space since we want to handle it as app shortcut.
-		case DwtKeyMap.SELECT_NEXT:
-			if (ev.charCode == 32) {
-				return false;
-			}
-		
 		case DwtKeyMap.SELECT_ALL:
 			DwtListView.prototype.handleKeyAction.apply(this, arguments);
 			var ctlr = this._controller;
@@ -176,6 +170,10 @@ function(actionCode, ev) {
 
 		case DwtKeyMap.SELECT_NEXT:
 		case DwtKeyMap.SELECT_PREV:
+			// Block widget shortcut for space since we want to handle it as app shortcut.
+			if (ev.charCode === 32) {
+				return false;
+			}
 			this._controller.lastListAction = actionCode;
 		
 		default:
