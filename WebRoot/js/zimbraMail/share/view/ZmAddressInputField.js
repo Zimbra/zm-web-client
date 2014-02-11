@@ -501,6 +501,11 @@ function(ev) {
 	var addrInput = ZmAddressInputField._getAddrInputFromEvent(ev);
 	if (addrInput) {
 		addrInput.focus();
+
+		// bug 85036: ensure caret visibility on IE by resetting the selection
+		var input = addrInput.getInputElement();
+		Dwt.setSelectionRange(input, Dwt.getSelectionStart(input),
+		                      Dwt.getSelectionEnd(input));
 	}
 };
 
