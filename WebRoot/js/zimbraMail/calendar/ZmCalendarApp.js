@@ -743,6 +743,7 @@ function(params, callback) {
 	if (callback) {
 		callback.run();
 	}
+	this._setRefreshButtonTooltip();
 };
 
 ZmCalendarApp.prototype.getNewButtonProps =

@@ -1161,7 +1161,9 @@ function() {
 
 ZmApp.prototype._setRefreshButtonTooltip =
 function() {
-	appCtxt.refreshButton.setToolTipContent(this._getRefreshButtonTooltip());
+	if (appCtxt.refreshButton) {
+		appCtxt.refreshButton.setToolTipContent(this._getRefreshButtonTooltip());
+	}
 };
 
 /**
