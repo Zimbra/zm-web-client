@@ -54,6 +54,7 @@ ZmAddressInputField = function(params) {
 	this.type = params.type;
 	this._strictMode = (params.strictMode !== false);
 	this._noOutsideListening = params.noOutsideListening;
+	this._singleBubble = params.singleBubble;
 
     this._bubbleAddedCallback = params.bubbleAddedCallback;
     this._bubbleRemovedCallback = params.bubbleRemovedCallback;
@@ -214,7 +215,9 @@ function(params) {
 ZmAddressInputField.prototype._addBubble =
 function(bubble, index, noFocus) {
 
-	if (!bubble) { return; }
+	if (!bubble || (this._singleBubble && this._numBubbles > 0)) {
+		return;
+	}
 	
 	DBG.println("aif1", "ADD bubble: " + AjxStringUtil.htmlEncode(bubble.address));
 	bubble.setDropTarget(this.getDropTarget());
@@ -227,6 +230,10 @@ function(bubble, index, noFocus) {
 
 	if (!noFocus) {
 		this.focus();
+	}
+
+	if (this._singleBubble) {
+		this._setInputEnabled(false);
 	}
 };
 
@@ -273,6 +280,10 @@ function(bubbleId, skipNotify) {
 
 	if (this._bubbleRemovedCallback && !skipNotify) {
 		this._bubbleRemovedCallback.run(bubble, false);
+	}
+
+	if (this._singleBubble && this._numBubbles === 0) {
+		this._setInputEnabled(true);
 	}
 };
 
@@ -537,6 +548,16 @@ function() {
 ZmAddressInputField.prototype.setEnabled =
 function(enabled) {
 	DwtControl.prototype.setEnabled.call(this, enabled);
+	this._input.disabled = !enabled;
+};
+
+/**
+ * Enables or disables the input without affecting the bubbles.
+ *
+ * @param {boolean} enabled		enable input if true, disable if false
+ */
+ZmAddressInputField.prototype._setInputEnabled =
+function(enabled) {
 	this._input.disabled = !enabled;
 };
 
@@ -989,6 +1010,10 @@ function(bubble) {
 			this.focus();
 			this._input.select();
 		}), 20);
+
+	if (this._singleBubble) {
+		this._setInputEnabled(true);
+	}
 };
 
 ZmAddressInputField.prototype._leaveEditMode =
