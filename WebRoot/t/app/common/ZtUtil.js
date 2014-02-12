@@ -31,11 +31,24 @@ Ext.define('ZCS.common.ZtUtil', {
 
 
 	/**
-	 * TODO: Conrad to fill this in from web client
+	 * Returns a display string in either KB, MB or GB, depending on file size.
 	 *
+	 * @param {Number} byes The number of bytes in the file.
 	 */
 	getDisplayForBytes: function (bytes) {
-		return (parseInt(bytes, 10) / 1025) + "Kb"
+		var bytesValue = parseInt(bytes, 10);
+		bytesValue /= 1024;
+		if (bytesValue < 1024) {
+			return bytesValue.toFixed(1) + "K";
+		} else {
+			bytesValue /= 1024;
+			if (bytesValue < 1024) {
+				return bytesValue.toFixed(1) + "M";
+			} else {
+				bytesValue /= 1024;
+				return bytesValue.toFixed(1) + "G";
+			}
+		}
 	},
 
 	/**
