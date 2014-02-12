@@ -52,6 +52,7 @@ ZmMailMsgView = function(params) {
 
 	this.noTab = true;
     this._attachmentLinkIdToFileNameMap = null;
+	this._bubbleParams = {};
 };
 
 ZmMailMsgView.prototype = new ZmMailItemView;
@@ -1370,7 +1371,11 @@ function(msg, container, callback) {
 };
 
 ZmMailMsgView.prototype._renderMessageHeader =
-function(msg, container) {
+function(msg, container, doNotClearBubbles) {
+
+	if (!doNotClearBubbles) {
+		this._clearBubbles();
+	}
 
 	this._renderInviteToolbar(msg, container);
 	
@@ -1566,7 +1571,6 @@ function(msg) {
 		appCtxt.notifyZimlets("onFindMsgObjects", [msg, this._objectManager, this]);
 	}
 
-	this._clearBubbles();
 	sentBy = this._getBubbleHtml(sentBy);
 	obo = obo && this._getBubbleHtml(fromAddr);
 	bwo = bwo && this._getBubbleHtml(bwo);

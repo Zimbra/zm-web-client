@@ -1503,7 +1503,7 @@ function(msg, container, callback, index) {
     }
 
 	if (isCalendarInvite || isSubscribeReq) {
-		ZmMailMsgView.prototype._renderMessageHeader.apply(this, arguments);
+		ZmMailMsgView.prototype._renderMessageHeader.call(this, msg, container, true);
 	}
 	
 	var params = {
@@ -1527,8 +1527,9 @@ function(msg, container, callback, index) {
 			toolbar.reparentHtmlElement(bodyEl, 0);
 		}
 		// invite header
-		if (this._headerElement)
+		if (this._headerElement) {
 			bodyEl.insertBefore(this._headerElement.parentNode, bodyEl.firstChild);
+		}
 	}
 	
 	this._beenHere = true;
@@ -2083,7 +2084,16 @@ function(state, force) {
 	this._readIconId = id + "_read";
 	this._readCellId = id + "_readCell";
 
-	var subs, html;
+	var html;
+
+	var subs = {
+		readCellId:		this._readCellId,
+		date:			dateString,
+		dateCellId:		this._dateCellId,
+		dateTooltip:	dateTooltip
+
+	};
+
 	if (!isExpanded) {
 		var fromId = id + "_0";
 		this._idToAddr[fromId] = ai.fromAddr;
@@ -2093,14 +2103,11 @@ function(state, force) {
 			ZmZimbraMail.DEFAULT_CONTACT_ICON_SMALL;
 
 		subs = {
-			readCellId:		this._readCellId,
-			from:			ai.from,
-			fromId:			fromId,
-			fragment:		AjxStringUtil.htmlEncode(msg.fragment),
-			imageURL:		imageURL,
-			date:			dateString,
-			dateCellId:		this._dateCellId,
-			dateTooltip:	dateTooltip
+			imageURL:	imageURL,
+			from:		ai.from,
+			fromId:		fromId,
+			fragment:	AjxStringUtil.htmlEncode(msg.fragment),
+			isInvite:   this.parent._isCalendarInvite
 		};
 		html = AjxTemplate.expand("mail.Message#Conv2MsgHeader-collapsed", subs);
 	}
@@ -2111,7 +2118,7 @@ function(state, force) {
 
 		subs = {
 			hdrTableId:		this._msgView._hdrTableId = id + "_hdrTable",
-			readCellId:		this._readCellId,
+			imageURL:		imageURL,
 			sentBy:			ai.sentBy,
 			sentByAddr:		ai.sentByAddr,
 			obo:			ai.obo,
@@ -2120,10 +2127,6 @@ function(state, force) {
 			bwoAddr:		ai.bwoAddr,
 			addressTypes:	ai.addressTypes,
 			participants:	ai.participants,
-			imageURL:		imageURL,
-			date:			dateString,
-			dateCellId:		this._dateCellId,
-			dateTooltip:	dateTooltip,
 			isOutDated:		msg.invite && msg.invite.isEmpty()
 		};
 		html = AjxTemplate.expand("mail.Message#Conv2MsgHeader-expanded", subs);
