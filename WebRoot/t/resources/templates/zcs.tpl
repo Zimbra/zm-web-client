@@ -122,7 +122,7 @@
 	<div class='zcs-mail-msgHdr detailed'>
 		<div class='zcs-msgHdr-person' style='{imageStyle}'></div>
 		{[this.includeTpl('SentBy', values)]}
-		<tpl for='addrs.FROM'>
+		<tpl for='addrs.from'>
 			<div class='zcs-msgHdr-from'>
 				<span>{[ZtMsg.from]} {address}</span>
 			</div>
@@ -130,21 +130,21 @@
 		<div class='zcs-msgHdr-date'><span>{fullDateStr}</span></div>
 		<a class='zcs-msgHdr-link' onClick='return false;'>{[ZtMsg.hideDetails]}</a>
 	</div>
-	<tpl if='addrs.TO'>
+	<tpl if='addrs.to'>
 		<div class='zcs-mail-dtlMsgHdr'>
 			<div class='zcs-msgHdr-label'>{[ZtMsg.toHdr]}</div>
 			<div class='zcs-msgHdr-field'>
-			<tpl for='addrs.TO'>
+			<tpl for='addrs.to'>
 				<span class='zcs-contact-name' id='{id}'>{name}</span>
 			</tpl>
 			</div>
 		</div>
 	</tpl>
-	<tpl if='addrs.CC'>
+	<tpl if='addrs.cc'>
 		<div class='zcs-mail-dtlMsgHdr'>
 			<div class='zcs-msgHdr-label'>{[ZtMsg.ccHdr]}</div>
 			<div class='zcs-msgHdr-field'>
-			<tpl for='addrs.CC'>
+			<tpl for='addrs.cc'>
 				<span class='zcs-contact-name' id='{id}'>{name}</span>
 			</tpl>
 			</div>

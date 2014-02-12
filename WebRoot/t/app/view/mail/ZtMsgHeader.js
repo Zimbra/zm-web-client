@@ -99,8 +99,8 @@ Ext.define('ZCS.view.mail.ZtMsgHeader', {
 		data.byWayOfName = (byWayOf && byWayOf.address !== from.address) ? byWayOf.name : '';
 		data.byWayOfNameId = data.byWayOfNameName ? byWayOfName.id : '';
 
-		if (state === ZCS.constant.HDR_EXPANDED) {
-			data.recipients = Ext.Array.map(Ext.Array.clean([].concat(data.addrs.TO, data.addrs.CC)), function(addr) {
+		if (state === ZCS.constant.HDR_EXPANDED || state === ZCS.constant.HDR_DETAILED) {
+			data.recipients = Ext.Array.map(Ext.Array.clean([].concat(data.addrs.to, data.addrs.cc)), function(addr) {
 				return addr.name;
 			}).join(', ');
 		}
