@@ -65,30 +65,11 @@ function(ev) {
     var enableRadioBtn = document.getElementById(this._enableRadioBtnId),
         disableRadioBtn = document.getElementById(this._disableRadioBtnId);
 
-    var existingBrowserKey = appCtxt.get(ZmSetting.WEBCLIENT_OFFLINE_BROWSER_KEY);
-    if (existingBrowserKey) {
-        existingBrowserKey = existingBrowserKey.split(",");
-    }
     if (enableRadioBtn && enableRadioBtn.checked) {
-        appCtxt.set(ZmSetting.WEBCLIENT_OFFLINE_ENABLED, true);
-        var browserKey = new Date().getTime().toString();
-        localStorage.setItem(ZmSetting.WEBCLIENT_OFFLINE_BROWSER_KEY, browserKey);
-        if (existingBrowserKey) {
-            AjxUtil.arrayAdd(existingBrowserKey, browserKey);
-        }
-        else {
-            existingBrowserKey = [].concat(browserKey);
-        }
+        ZmOfflineSettingsDialog._modifySetting(true);
     }
     else if (disableRadioBtn && disableRadioBtn.checked) {
-        appCtxt.set(ZmSetting.WEBCLIENT_OFFLINE_ENABLED, false);
-        if (existingBrowserKey) {
-            AjxUtil.arrayRemove(existingBrowserKey, localStorage.getItem(ZmSetting.WEBCLIENT_OFFLINE_BROWSER_KEY));
-        }
-        localStorage.removeItem(ZmSetting.WEBCLIENT_OFFLINE_BROWSER_KEY);
-    }
-    if (existingBrowserKey) {
-        appCtxt.set(ZmSetting.WEBCLIENT_OFFLINE_BROWSER_KEY, existingBrowserKey.join());
+        ZmOfflineSettingsDialog._modifySetting(false);
     }
     DwtDialog.prototype._buttonListener.call(this, ev);
 };
@@ -112,4 +93,63 @@ function() {
         disableRadioBtn && (disableRadioBtn.checked = true);
     }
     DwtDialog.prototype.popdown.call(this);
+};
+
+/**
+ * Gets the sign out confirmation dialog if webclient offline is enabled
+ *
+ * @return	{dialog}
+ */
+ZmOfflineSettingsDialog.showConfirmSignOutDialog =
+function() {
+    var dialog = appCtxt.getYesNoMsgDialog();
+    dialog.reset();
+    dialog.registerCallback(DwtDialog.YES_BUTTON, ZmOfflineSettingsDialog._modifySetting.bind(null, false, true, dialog));
+    dialog.setMessage(ZmMsg.offlineSignOutWarning, DwtMessageDialog.WARNING_STYLE);
+    dialog.popup();
+};
+
+ZmOfflineSettingsDialog._modifySetting =
+function(offlineEnable, logOff, dialog) {
+    if (logOff) {
+        dialog.popdown();
+        var setting = appCtxt.getSettings().getSetting(ZmSetting.WEBCLIENT_OFFLINE_BROWSER_KEY);
+        if (setting) {
+            setting.addChangeListener(ZmOfflineSettingsDialog._handleLogOff);
+        }
+        else {
+            ZmOfflineSettingsDialog._handleLogOff();
+        }
+    }
+    var existingBrowserKey = appCtxt.get(ZmSetting.WEBCLIENT_OFFLINE_BROWSER_KEY);
+    if (existingBrowserKey) {
+        existingBrowserKey = existingBrowserKey.split(",");
+    }
+    if (offlineEnable) {
+        appCtxt.set(ZmSetting.WEBCLIENT_OFFLINE_ENABLED, true);
+        var browserKey = new Date().getTime().toString();
+        localStorage.setItem(ZmSetting.WEBCLIENT_OFFLINE_BROWSER_KEY, browserKey);
+        if (existingBrowserKey) {
+            AjxUtil.arrayAdd(existingBrowserKey, browserKey);
+        }
+        else {
+            existingBrowserKey = [].concat(browserKey);
+        }
+    }
+    else {
+        appCtxt.set(ZmSetting.WEBCLIENT_OFFLINE_ENABLED, false);
+        if (existingBrowserKey) {
+            AjxUtil.arrayRemove(existingBrowserKey, localStorage.getItem(ZmSetting.WEBCLIENT_OFFLINE_BROWSER_KEY));
+        }
+        localStorage.removeItem(ZmSetting.WEBCLIENT_OFFLINE_BROWSER_KEY);
+    }
+    if (existingBrowserKey) {
+        appCtxt.set(ZmSetting.WEBCLIENT_OFFLINE_BROWSER_KEY, existingBrowserKey.join());
+    }
+};
+
+ZmOfflineSettingsDialog._handleLogOff =
+function() {
+    appCtxt.isWebClientOfflineSupported = false;
+    setTimeout(ZmZimbraMail.logOff, 2500);//Give some time for deleting indexeddb data and application cache data
 };

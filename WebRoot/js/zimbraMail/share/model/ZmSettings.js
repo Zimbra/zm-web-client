@@ -1227,5 +1227,6 @@ function() {
     else {
         ZmOffline.deleteOfflineData();
         appCtxt.reloadAppCache(true);
+        appCtxt.initWebOffline();// To reset the property isWebClientOfflineSupported
     }
 };

@@ -2656,6 +2656,9 @@ function(ev, relogin) {
 		window.close();
 		return;
 	}
+    if (appCtxt.isWebClientOfflineSupported) {
+        return ZmOfflineSettingsDialog.showConfirmSignOutDialog();
+    }
 
 	ZmZimbraMail._isLogOff = true;
 
