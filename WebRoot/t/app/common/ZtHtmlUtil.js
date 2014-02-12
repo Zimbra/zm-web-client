@@ -223,6 +223,7 @@ Ext.define('ZCS.common.ZtHtmlUtil', {
 	 */
 	trimHtml: function(html) {
 
+		var trimmedHtml = html;
 		if (!html) {
 			return '';
 		}
@@ -230,39 +231,38 @@ Ext.define('ZCS.common.ZtHtmlUtil', {
 		// remove doc-level tags if they don't have attributes
 		Ext.each(['html', 'head', 'body'], function(node) {
 			var nodeLc = '<' + node + '>',
-				nodeUc = '<' + node.toUpperCase + '>',
+				nodeUc = '<' + node.toUpperCase() + '>',
 				regex;
-			if (html.indexOf(nodeLc) !== -1 || html.indexOf(nodeUc) !== -1) {
+			if (trimmedHtml.indexOf(nodeLc) !== -1 || trimmedHtml.indexOf(nodeUc) !== -1) {
 				regex = new RegExp('<\\/?' + node + '>', 'gi');
-				html = html.replace(regex, '');
+				trimmedHtml = trimmedHtml.replace(regex, '');
 			}
 		});
 
 		// some editors like to put every <br> in a <div>
-		html = html.replace(/<div><br ?\/?><\/div>/gi, '<br>');
+		trimmedHtml = trimmedHtml.replace(/<div><br ?\/?><\/div>/gi, '<br>');
 
-		// remove empty surrounding <div> containers, and leading/trailing <br>
+		// remove leading/trailing <br>
 		var len = 0;
-		while ((html.length !== len) &&
-			((/^<?div>/i.test(html) && /<\/div>$/i.test(html)) ||
-				/^<br ?\/?>/i.test(html) || /<br ?\/?>$/i.test(html))) {
+		while ((trimmedHtml.length !== len) &&
+			(/^<br ?\/?>/i.test(trimmedHtml) || /<br ?\/?>$/i.test(trimmedHtml))) {
 
-			len = html.length;	// loop prevention
-			html = html.replace(/^<div>/i, "").replace(/<\/div>$/i, '');
-			html = html.replace(/^<br ?\/?>/i, "").replace(/<br ?\/?>$/i, '');
+			len = trimmedHtml.length;	// loop prevention
+			trimmedHtml = trimmedHtml.replace(/^<div>/i, "").replace(/<\/div>$/i, '');
+			trimmedHtml = trimmedHtml.replace(/^<br ?\/?>/i, "").replace(/<br ?\/?>$/i, '');
 		}
 
 		// remove trailing <br> trapped in front of closing tags
-		var m = html && html.match(/((<br ?\/?>)+)((<\/\w+>)+)$/i);
+		var m = trimmedHtml && trimmedHtml.match(/((<br ?\/?>)+)((<\/\w+>)+)$/i);
 		if (m && m.length) {
 			var regex = new RegExp(m[1] + m[3] + '$', 'i');
-			html = html.replace(regex, m[3]);
+			trimmedHtml = trimmedHtml.replace(regex, m[3]);
 		}
 
 		// remove empty internal <div> containers
-		html = html.replace(/(<div><\/div>)+/gi, '');
+		trimmedHtml = trimmedHtml.replace(/(<div><\/div>)+/gi, '');
 
-		return Ext.String.trim(html);
+		return Ext.String.trim(trimmedHtml);
 	},
 
 	/**
