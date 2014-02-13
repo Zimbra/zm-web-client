@@ -1851,7 +1851,7 @@ function() {
 							 orgClass:			"ZmFolder",
 							 orgPackage:		"MailCore",
 							 treeController:	"ZmMailFolderTreeController",
-							 labelKey:			"folders",
+							 labelKey:			"mailFolders",
 							 itemsKey:			"messages",
 							 hasColor:			true,
 							 defaultColor:		ZmOrganizer.C_NONE,

@@ -138,7 +138,7 @@ function() {
 							 orgClass       : "ZmBriefcase",
 							 orgPackage     : "BriefcaseCore",
 							 treeController : "ZmBriefcaseTreeController",
-							 labelKey       : "folders",
+							 labelKey       : "briefcaseFolders",
 							 itemsKey       : "files",
 							 treeType       : ZmOrganizer.FOLDER,
 							 views          : ["document"],

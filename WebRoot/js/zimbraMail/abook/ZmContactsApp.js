@@ -275,7 +275,7 @@ function() {
 							 orgClass:			"ZmAddrBook",
 							 orgPackage:		"ContactsCore",
 							 treeController:	"ZmAddrBookTreeController",
-							 labelKey:			"addressBooks",
+							 labelKey:			"contactLists",
 							 itemsKey:			"contacts",
 							 hasColor:			true,
 							 defaultColor:		ZmOrganizer.C_NONE,

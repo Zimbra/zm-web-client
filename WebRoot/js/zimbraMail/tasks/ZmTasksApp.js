@@ -115,7 +115,7 @@ function() {
 							 orgClass:			"ZmTaskFolder",
 							 orgPackage:		"TasksCore",
 							 treeController:	"ZmTaskTreeController",
-							 labelKey:			"tasks",
+							 labelKey:			"taskLists",
 							 itemsKey:			"tasks",
                              folderKey:			"tasksFolder",   
                              hasColor:			true,
