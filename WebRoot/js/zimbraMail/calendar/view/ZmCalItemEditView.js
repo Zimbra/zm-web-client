@@ -59,6 +59,8 @@ ZmCalItemEditView = function(parent, attendees, controller, dateInfo, posStyle, 
 
     this._customRecurDialogCallback = null;
     this._enableCustomRecurCallback = true;
+
+	this.addControlListener(this._controlListener.bind(this));
 };
 
 ZmCalItemEditView.prototype = new DwtComposite;
@@ -68,7 +70,6 @@ ZmCalItemEditView.prototype.toString =
 function() {
 	return "ZmCalItemEditView";
 };
-
 
 // Consts
 
@@ -81,8 +82,7 @@ ZmCalItemEditView._REPEAT_CHANGE = "REPEAT_CHANGE";
 
 ZmCalItemEditView.prototype.show =
 function() {
-	var pSize = this.parent.getSize();
-	this.resize(pSize.x, pSize.y);
+	this.resize();
 };
 
 ZmCalItemEditView.prototype.isRendered =
@@ -219,7 +219,7 @@ function(composeMode) {
 	this._composeMode = composeMode || this._composeMode;
     this._notesHtmlModeFirstTime = !this._notesHtmlEditor.isHtmlModeInited();
 	this._notesHtmlEditor.setMode(this._composeMode, true);
-	this._resizeNotes();
+	this.resize();
 };
 
 ZmCalItemEditView.prototype.reEnableDesignMode =
@@ -338,41 +338,15 @@ function(inputEl, sizeEl){
 };
 
 ZmCalItemEditView.prototype.resize =
-function(newWidth, newHeight) {
+function() {
 	if (!this._rendered) { return; }
-
-	if (newWidth) {
-		this.setSize(newWidth);
-		Dwt.setSize(this.getHtmlElement().firstChild, newWidth);
-	}
-
-	if (newHeight) {
-		this.setSize(Dwt.DEFAULT, newHeight);
-	}
 
     this._resizeNotes();
 
-    //If scrollbar handle it
-    var size = Dwt.getSize(this.getHtmlElement());
-    var topSize = Dwt.getSize(this._topContainer);
-    var notesSize = Dwt.getSize(this._notesContainer);
-    if(((topSize.y + notesSize.y) > ( size.y + 5 ))) {
-        newWidth = size.x  - 15;
-        Dwt.setSize(this.getHtmlElement().firstChild, newWidth);
-        this._notesHtmlEditor.setSize(newWidth - 10);
-        if(!this._scrollHandled){
-            Dwt.setScrollStyle(this.getHtmlElement(), Dwt.SCROLL_Y);
-            this._scrollHandled = true;
-        }
-    }else{
-        if(this._scrollHandled){
-            Dwt.setScrollStyle(this.getHtmlElement(), Dwt.CLIP);
-            newWidth = size.x;
-            Dwt.setSize(this.getHtmlElement().firstChild, newWidth);
-            this._notesHtmlEditor.setSize(newWidth - 10);
-        }
-        this._scrollHandled = false;
-    }
+	var subjectContainer = this._subjectField.getHtmlElement().parentNode;
+	this._subjectField.setSize(0, Dwt.DEFAULT);
+	var containerBounds = Dwt.getInsetBounds(subjectContainer);
+	this._subjectField.setSize(containerBounds.width - 20, Dwt.DEFAULT);
 };
 
 ZmCalItemEditView.prototype.getHtmlEditor =
@@ -783,7 +757,7 @@ function(width) {
     this._topContainer = document.getElementById(this._htmlElId + "_top");
 
     this._notesHtmlEditor = new ZmHtmlEditor(this, null, null, this._composeMode, null, this._htmlElId + "_notes");
-    this._notesHtmlEditor.addOnContentInitializedListener(new AjxCallback(this,this._resizeNotes));
+    this._notesHtmlEditor.addOnContentInitializedListener(new AjxCallback(this,this.resize));
 };
 
 ZmCalItemEditView.prototype._handleReminderOnBlur =
@@ -952,6 +926,11 @@ function(excludeAttendees) {
 	// override
 };
 
+ZmCalItemEditView.prototype._getComponents =
+function() {
+	return { above: [this._topContainer], aside: [] };
+};
+
 ZmCalItemEditView.prototype._resizeNotes =
 function() {
 	var bodyFieldId = this._notesHtmlEditor.getBodyFieldId();
@@ -960,26 +939,26 @@ function() {
 		this._bodyField = document.getElementById(this._bodyFieldId);
 	}
 
-	var size = this.getSize();
-	if (size.x <= 0 || size.y <= 0) { return; }
+	var editorBounds = this.boundsForChild(this._notesHtmlEditor);
 
-	var topDiv = document.getElementById(this._htmlElId + "_top");
-    var topSize = Dwt.getSize(topDiv);
-	//var topHeight = topSize.y;
-	var rowHeight = size.y - topSize.y;
-    var rowWidth = size.x;
-	//var hFudge = (this._composeMode == Dwt.HTML) ? 30 : 15;
-	//var wFudge = ( AjxEnv.isIE || AjxEnv.isWebKitBased ? 20 : 0 );
-    //rowHeight = rowHeight - hFudge;
-    //rowWidth = rowWidth - wFudge
-    if(AjxEnv.isIE)
-        rowHeight = rowHeight - 10;
-    
-    if(rowHeight < 100){
-        rowHeight = 100;
-    }
-    
-    this._notesHtmlEditor.setSize(rowWidth-10, rowHeight -5);
+	var rowWidth = editorBounds.width;
+	var rowHeight = editorBounds.height;
+
+	var components = this._getComponents();
+
+	AjxUtil.foreach(components.above, function(c) {
+		rowHeight -= Dwt.getOuterSize(c).y || 0;
+	});
+
+	AjxUtil.foreach(components.aside, function(c) {
+		rowWidth -= Dwt.getOuterSize(c).x || 0;
+	});
+
+	if (rowWidth > 0 && rowHeight > 0) {
+		this._notesHtmlEditor.setSize(rowWidth, rowHeight);
+	}
+
+	Dwt.setSize(this._topContainer, rowWidth, Dwt.CLEAR);
 };
 
 ZmCalItemEditView.prototype._handleRepeatDescFieldHover =
@@ -1230,6 +1209,11 @@ function(ev) {
 	// reset the selected option to whatever it was before user canceled
 	this._repeatSelect.setSelectedValue(this._oldRepeatValue);
 	this._recurDialog.popdown();
+};
+
+ZmCalItemEditView.prototype._controlListener =
+function(ev) {
+	this.resize();
 };
 
 

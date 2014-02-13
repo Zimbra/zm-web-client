@@ -33,7 +33,16 @@
  */
 ZmApptEditView = function(parent, attendees, controller, dateInfo) {
 
-	ZmCalItemEditView.call(this, parent, attendees, controller, dateInfo, null, "ZmApptEditView");
+	var idParams = {
+		skinComponent:  ZmId.SKIN_APP_MAIN,
+		app:            ZmId.APP_CALENDAR,
+		componentType:  ZmId.WIDGET_VIEW,
+		componentName:  ZmId.VIEW_APPOINTMENT
+	};
+
+	var domId = ZmId.create(idParams, "An appointment editing view");
+
+	ZmCalItemEditView.call(this, parent, attendees, controller, dateInfo, null, "ZmApptEditView", domId);
 
 	// cache so we dont keep calling appCtxt
 	this.GROUP_CALENDAR_ENABLED = appCtxt.get(ZmSetting.GROUP_CALENDAR_ENABLED);
@@ -1191,6 +1200,9 @@ function(width) {
     // add location input field
 	this._locationInputField = this._createInputField("_location", ZmCalBaseItem.LOCATION, {strictMode:false, noAddrBubbles:!appCtxt.get(ZmSetting.GAL_ENABLED)});
 
+    this._mainId = this._htmlElId + "_main";
+    this._main   = document.getElementById(this._mainId);
+
     this._mainTableId = this._htmlElId + "_table";
     this._mainTable   = document.getElementById(this._mainTableId);
 
@@ -1235,9 +1247,6 @@ function(width) {
     this._locationStatusActionId = this._htmlElId + "_location_status_action";
     this._locationStatusAction   = document.getElementById(this._locationStatusActionId);
     Dwt.setVisible(this._locationStatusAction, false);
-
-    this._notesContainerId = this._htmlElId + "_notes_container";
-    this._notesContainer = document.getElementById(this._notesContainerId);
 
 	this._schedulerOptions = document.getElementById(this._htmlElId + "_scheduler_option");
 
@@ -1414,9 +1423,9 @@ function() {
     Dwt.setVisible(this._suggestTime, false);
     Dwt.setVisible(this._suggestLocation, !this._isProposeTime && appCtxt.get(ZmSetting.GAL_ENABLED));
     this._scheduleAssistant.show(true);
-    // Resize horizontally
-    this._resizeNotes();
     this._scheduleAssistant.suggestAction(true, false);
+
+    this.resize();
 };
 
 ZmApptEditView.prototype._showLocationSuggestions =
@@ -1426,9 +1435,9 @@ function() {
     Dwt.setVisible(this._suggestLocation, false);
     Dwt.setVisible(this._suggestTime, true);
     this._scheduleAssistant.show(false);
-    // Resize horizontally
-    this._resizeNotes();
     this._scheduleAssistant.suggestAction(true, false);
+
+    this.resize();
 };
 
 ZmApptEditView.prototype._showLocationStatusAction =
@@ -1461,7 +1470,7 @@ function(forceShow) {
 
     var inputEl = this._attInputField[ZmCalBaseItem.OPTIONAL_PERSON].getInputElement();
     Dwt.setVisible(inputEl, Boolean(this._optionalAttendeesShown));
-    this.autoSize();
+    this.resize();
 };
 
 ZmApptEditView.prototype._toggleResourcesField =
@@ -1471,14 +1480,14 @@ function(forceShow) {
 
     var inputEl = this._attInputField[ZmCalBaseItem.EQUIPMENT].getInputElement();
     Dwt.setVisible(inputEl, Boolean(this._resourcesShown));
-    this.autoSize();
+    this.resize();
 };
 
 ZmApptEditView.prototype.showResourceField =
 function(show){
     this._showResources.innerHTML = show ? ZmMsg.hideEquipment : ZmMsg.showEquipment;
     Dwt.setVisible(this._resourcesContainer, Boolean(show))
-    this.autoSize();
+    this.resize();
 };
 
 
@@ -1493,7 +1502,7 @@ function() {
     this._schImage.className = "ImgSelectPullDownArrow";
     if(this._scheduleView) {
         this._scheduleView.setVisible(false);
-        this.autoSize();
+        this.resize();
     }
 };
 
@@ -1518,7 +1527,7 @@ function(forceShow) {
     scheduleView.resetPagelessMode(false);
     scheduleView.showMe();
 
-    this.autoSize();
+    this.resize();
 };
 
 ZmApptEditView.prototype.getScheduleView =
@@ -2661,7 +2670,7 @@ function(type, attendees) {
     var organizer = this._isProposeTime ? this.getCalItemOrganizer() : this.getOrganizer();
     if(this._schedulerOpened) {
         this._scheduleView.update(this._dateInfo, organizer, this._attendees);
-        this.autoSize();
+        this.resize();
     }else {
         if(this._schedulerOpened == null && attendees.length > 0 && !this._isForward) {
             this._toggleInlineScheduler(true);
@@ -2828,90 +2837,25 @@ function(ev) {
 	}
 };
 
-ZmApptEditView.prototype._resizeNotes =
+ZmApptEditView.prototype._getComponents =
 function() {
-	var bodyFieldId = this._notesHtmlEditor.getBodyFieldId();
-	if (this._bodyFieldId != bodyFieldId) {
-		this._bodyFieldId = bodyFieldId;
-		this._bodyField = document.getElementById(this._bodyFieldId);
-	}
+	var components =
+		ZmCalItemEditView.prototype._getComponents.call(this);
 
-    var node = this.getHtmlElement();
-    if (node && node.parentNode)
-        node.style.height = node.parentNode.style.height;
+	components.above.push(this._schedulerOptions);
+	components.aside.push(this._suggestions);
 
-    var size = this.getSize();
-    var topDiv = document.getElementById(this._htmlElId + "_top");
-    var topDivSize = Dwt.getSize(topDiv);
-    var topSizeHeight = this._getComponentsHeight(true);
-    var notesEditorHeight = (this._notesHtmlEditor && this._notesHtmlEditor.getHtmlElement()) ? this._notesHtmlEditor.getHtmlElement().clientHeight:0;
-	var rowHeight = (size.y - topSizeHeight) + notesEditorHeight ;
-	var rowWidth = this.boundsForChild(this._notesHtmlEditor).width;
-
-	if (Dwt.getVisible(this._suggestions))
-		rowWidth -= Dwt.getSize(this._suggestions).x;
-
-	rowHeight = AjxEnv.isIE ? rowHeight - 10 : rowHeight + 12;
-
-    if(rowHeight < 350){
-        rowHeight = 350;
-    }
-
-    this._notesHtmlEditor.setSize(rowWidth, rowHeight);
-};
-
-ZmApptEditView.prototype._getComponentsHeight =
-function(excludeNotes) {
-    var components = [this._topContainer, document.getElementById(this._htmlElId + "_scheduler_option")];
-    if(!excludeNotes) components.push(this._notesContainer);
-
-    var compSize;
-    var compHeight= 10; //message label height
-    for(var i=0; i<components.length; i++) {
-        compSize= Dwt.getSize(components[i]);
-        compHeight += compSize.y;
-    }
-
-    return compHeight;
-};
-
-ZmApptEditView.prototype.autoSize =
-function() {
-    var size = Dwt.getSize(this.getHtmlElement());
-    mainTableSize = Dwt.getSize(this._mainTable);
-    this.resize(mainTableSize.x, size.y);
+	return components;
 };
 
 ZmApptEditView.prototype.resize =
-function(newWidth, newHeight) {
-	if (!this._rendered) { return; }
+function() {
+	ZmCalItemEditView.prototype.resize.apply(this, arguments);
 
-	if (newHeight) {
-		this.setSize(Dwt.DEFAULT, newHeight);
+	if (this._scheduleAssistant) {
+		var bounds = this.boundsForChild(this._scheduleAssistant);
+		this._scheduleAssistant.setSize(Dwt.CLEAR, bounds.height);
 	}
-
-    this._resizeNotes();
-    //this._scheduleAssistant.resizeTimeSuggestions();
-
-    //If scrollbar handle it
-    // Sizing based on the internal table now.  Scrolling bar will be external and accounted for already
-    var size = Dwt.getSize(this.getHtmlElement());
-    var mainTableSize = Dwt.getSize(this._mainTable);
-    var compHeight= this._getComponentsHeight();
-    if(compHeight > ( size.y + 5 )) {
-        Dwt.setSize(this.getHtmlElement().firstChild, size.x-15);
-
-        if(!this._scrollHandled){
-            Dwt.setScrollStyle(this.getHtmlElement(), Dwt.SCROLL_Y);
-            this._scrollHandled = true;
-        }
-    }else{
-        if(this._scrollHandled){
-            Dwt.setScrollStyle(this.getHtmlElement(), Dwt.CLIP);
-            Dwt.setSize(this.getHtmlElement().firstChild, size.x);
-        }
-        this._scrollHandled = false;
-    }
 };
 
 ZmApptEditView.prototype._initAttachContainer =

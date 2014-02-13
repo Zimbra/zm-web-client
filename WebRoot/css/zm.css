@@ -2855,6 +2855,10 @@ HTML>BODY .appt-selected .appt_allday_body
 	text-align:right;
 }
 
+.ZmApptEditView > DIV {
+	display: inline-block;
+}
+
 /* Label for appt edit form */
 /* ??? RENAME TO ZmFieldLabelRight ? */
 .ZmApptTabViewPageField {
@@ -5918,10 +5922,12 @@ DIV .SuggestBtn {
 	background-color:@darken(AppC,20)@;
 	border-color:@darken(AppC,30)@;
 	border-style:solid;
-	border-width:1px 0px 0px 1px;
-	height:100%;
+	border-width:1px;
 	vertical-align:top;
 	width:180px;
+#IFNDEF MSIE_LOWER_THAN_9
+	margin: 0px 8px 8px 0px;
+#ENDIF
 }
 
 .DwtDialog .ZmSuggestView {

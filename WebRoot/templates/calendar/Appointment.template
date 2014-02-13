@@ -12,6 +12,7 @@
 </template>
 
 <template id='calendar.Appointment#ComposeView'>
+  <div id='${id}_main'>
     <$ var labelStyle = "width:"+(AjxEnv.isIE ? 30 : 32)+"px; overflow:visible; white-space:nowrap"; $>
     <$ var inputStyle = AjxEnv.isSafari && !AjxEnv.isSafariNightly ? "height:52px;" : "height:21px; overflow:hidden" $>
     <div id='${id}_top'>
@@ -182,22 +183,20 @@
                     <td colspan='5' id='${id}_scheduler'></td>
                 </tr>
 
-                <tr><td id='${id}_notes_container' colspan='5'>
-                    <!-- appointment notes -->
-                    <div id='${id}_notes' style='padding:5px;' class='calendar_edit_notes_separator'></div>
-                </td></tr>
-
                 </table>
 
 
             </td>
             <td width="8"></td>
-            <td id='${id}_suggestions' class='ZmSuggestView'>
-            </td>
             </tr>
 
         </table>
     </div>
+
+    <!-- appointment notes -->
+    <div id='${id}_notes' style='padding:5px;' class='calendar_edit_notes_separator'></div>
+  </div>
+  <div id='${id}_suggestions' class='ZmSuggestView'> </div>
 </template>
 
 

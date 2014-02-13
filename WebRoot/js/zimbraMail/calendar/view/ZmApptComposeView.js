@@ -419,6 +419,10 @@ function() {
     this._apptEditView = new ZmApptEditView(this, this._attendees, this._controller, this._dateInfo);
 	this._apptEditView.addRepeatChangeListener(new AjxListener(this, this._repeatChangeListener));
 	this.addControlListener(new AjxListener(this, this._controlListener));
+
+	// make the appointment edit view take up the full size of this view
+	var bounds = this.getInsetBounds();
+	this._apptEditView.setSize(bounds.width, bounds.height);
 };
 
 ZmApptComposeView.prototype.getApptEditView =
@@ -447,12 +451,11 @@ function() {
 
 ZmApptComposeView.prototype._controlListener =
 function(ev) {
-	var newWidth = (ev.oldWidth == ev.newWidth) ? null : ev.newWidth;
-	var newHeight = (ev.oldHeight == ev.newHeight) ? null : ev.newHeight;
-
-	if (!(newWidth || newHeight)) return;
-
-	this._apptEditView.resize(newWidth, newHeight);
+	if (ev && ev.type === DwtControlEvent.RESIZE) {
+	    // make the appointment edit view take up the full size of this view
+	    var bounds = this.getInsetBounds();
+	    this._apptEditView.setSize(bounds.width, bounds.height);
+	}
 };
 
 ZmApptComposeView.prototype.deactivate =
