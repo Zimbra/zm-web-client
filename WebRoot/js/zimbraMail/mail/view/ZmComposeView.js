@@ -3150,13 +3150,13 @@ function(files,index, aid) {
 };
 
 ZmComposeView.prototype.enableToolbarButtons =
-function(controller, value) {
-	if (appCtxt.get(ZmSetting.MAIL_SEND_LATER_ENABLED))
-		controller._toolbar.getButton("SEND_MENU").setEnabled(value);
-	else
-		controller._toolbar.getButton("SEND").setEnabled(value);
-	if (controller._toolbar.getButton("SAVE_DRAFT"))
-		controller._toolbar.getButton("SAVE_DRAFT").setEnabled(value);
+function(controller, enabled) {
+	var toolbar = controller._toolbar;
+	var sendLater = appCtxt.get(ZmSetting.MAIL_SEND_LATER_ENABLED);
+	toolbar.getButton(sendLater ? ZmId.OP_SEND_MENU : ZmId.OP_SEND).setEnabled(enabled);
+	toolbar.getButton(ZmId.OP_SAVE_DRAFT).setEnabled(enabled);
+
+	appCtxt.notifyZimlets("enableComposeToolbarButtons", [toolbar, enabled]);
 };
 
 ZmComposeView.prototype.enableAttachButton =
