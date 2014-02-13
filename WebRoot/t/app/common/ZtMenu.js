@@ -72,7 +72,7 @@ Ext.define('ZCS.common.ZtMenu', {
 		if (me.config.showCancelButton) {
 			me.add({
 				xtype: 'button',
-				text: 'Cancel',
+				text: ZtMsg.cancel,
 				handler: function () {
 					me.hide();
 				}

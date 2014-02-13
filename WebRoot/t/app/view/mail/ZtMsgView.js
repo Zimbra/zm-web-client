@@ -70,7 +70,7 @@ Ext.define('ZCS.view.mail.ZtMsgView', {
 					},
 					items: [{
 						xtype: 'button',
-						text: 'Cancel',
+						text: ZtMsg.cancel,
 						action: 'cancel'
 					}, {
 						xtype: 'spacer'
