@@ -307,11 +307,14 @@ Ext.define('ZCS.controller.mail.ZtMsgController', {
 	},
 
 	doAddContact: function(actionParams) {
-		ZCS.app.getContactController().showContactForm(ZCS.constant.OP_COMPOSE, ZCS.model.contacts.ZtContact.fromEmailObj(actionParams.addrObj));
+		var addrObj = actionParams.addrObj || Ext.create('ZCS.model.mail.ZtEmailAddress', { email: actionParams.address });
+		ZCS.app.getContactController().showContactForm(ZCS.constant.OP_COMPOSE, ZCS.model.contacts.ZtContact.fromEmailObj(addrObj));
 	},
 
     doEditContact: function(actionParams) {
-        var contact = ZCS.cache.get(actionParams.addrObj.get('email'), 'email'),
+
+        var email = actionParams.addrObj ? actionParams.addrObj.get('email') : actionParams.address,
+	        contact = ZCS.cache.get(email, 'email'),
             contactCtrl = ZCS.app.getContactController();
         contactCtrl.setItem(contact);
         contactCtrl.showContactForm(ZCS.constant.OP_EDIT, contact);
