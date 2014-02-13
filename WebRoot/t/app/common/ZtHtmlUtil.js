@@ -526,6 +526,8 @@ Ext.define('ZCS.common.ZtHtmlUtil', {
 			});
 
 			// mark up email addresses so we can handle them on tap
+			// 86566 - comment out since it's too easy to inadvertently tap address
+/*
 			content = content.replace(ZCS.constant.REGEX_EMAIL, function(m, mailto, addr) {
 				if (mailto) {
 					return Ext.String.format(" href='#' addr='{0}'", addr);
@@ -534,6 +536,7 @@ Ext.define('ZCS.common.ZtHtmlUtil', {
 					return Ext.String.format("<a href='#' addr='{0}'>{0}</a>", addr);
 				}
 			});
+*/
 		}
 
 		else {
