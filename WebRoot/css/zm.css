@@ -1069,7 +1069,7 @@ INPUT[type="text"].search_input-expanded {
 
 .Conv2MsgHeader .date {
 	background:none repeat scroll 0 0 white;
-	padding:1px 7px 0px 5px;
+	padding:1px 7px 0.6em 5px;
 	position:absolute;
 	right:0px;
 	top:5px;
@@ -1078,6 +1078,10 @@ INPUT[type="text"].search_input-expanded {
 	right:1px;
 	top:1px;
 #ENDIF
+}
+
+.Collapsed .Conv2MsgHeader .date {
+	padding-bottom:0px;
 }
 
 .ZmMailMsgCapsuleView .Link, .Conv2Reply .Link {
