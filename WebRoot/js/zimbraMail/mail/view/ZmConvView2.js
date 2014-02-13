@@ -2102,13 +2102,13 @@ function(state, force) {
 			ai.sentByContact.getImageUrl(32, 32) ||
 			ZmZimbraMail.DEFAULT_CONTACT_ICON_SMALL;
 
-		subs = {
+		AjxUtil.hashUpdate(subs, {
 			imageURL:	imageURL,
 			from:		ai.from,
 			fromId:		fromId,
 			fragment:	AjxStringUtil.htmlEncode(msg.fragment),
 			isInvite:   this.parent._isCalendarInvite
-		};
+		});
 		html = AjxTemplate.expand("mail.Message#Conv2MsgHeader-collapsed", subs);
 	}
 	else {
@@ -2116,7 +2116,7 @@ function(state, force) {
 			ai.sentByContact.getImageUrl(48, 48) ||
 			ZmZimbraMail.DEFAULT_CONTACT_ICON;
 
-		subs = {
+		AjxUtil.hashUpdate(subs, {
 			hdrTableId:		this._msgView._hdrTableId = id + "_hdrTable",
 			imageURL:		imageURL,
 			sentBy:			ai.sentBy,
@@ -2128,7 +2128,7 @@ function(state, force) {
 			addressTypes:	ai.addressTypes,
 			participants:	ai.participants,
 			isOutDated:		msg.invite && msg.invite.isEmpty()
-		};
+		});
 		html = AjxTemplate.expand("mail.Message#Conv2MsgHeader-expanded", subs);
 	}
 
