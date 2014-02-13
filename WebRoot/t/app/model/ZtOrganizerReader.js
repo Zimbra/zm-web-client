@@ -46,6 +46,10 @@ Ext.define('ZCS.model.ZtOrganizerReader', {
 			isMountpoint = true;
 		}
 
+		var localId = ZCS.util.parseId(node.id).localId,
+			key = ZCS.constant.MSG_KEY[localId],
+			orgName = key ? ZtMsg[key] : node.name;
+
 		var data = {
 
 			// global
@@ -53,8 +57,8 @@ Ext.define('ZCS.model.ZtOrganizerReader', {
 			parentZcsId:        node.l || ZCS.constant.ID_ROOT,
 			type:               type,
 			folderType:         isFolder ? ZCS.constant.FOLDER_TYPE[node.view] : null,
-			name:               node.name,
-			displayName:        Ext.String.htmlEncode(node.name),
+			name:               orgName,
+			displayName:        Ext.String.htmlEncode(orgName),
 			path:               isFolder ? node.absFolderPath || node.name : '',
 			color:              node.color,
 			rgb:                node.rgb,
