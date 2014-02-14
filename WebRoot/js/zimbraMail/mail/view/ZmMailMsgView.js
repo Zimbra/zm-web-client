@@ -1252,7 +1252,7 @@ function(addrs, options, type) {
 		if (i == ZmMailMsgView.MAX_ADDRESSES_IN_FIELD) {
 			var showMoreId = ZmMailMsgView._getShowMoreId(this._htmlElId, type);
 			addressInfo.showMoreLinkId = showMoreId + "_link";
-			var moreId = ZmMailMsgView._getMoreId(htmlElId, type);
+			var moreId = ZmMailMsgView._getMoreId(this._htmlElId, type);
 			parts[idx++] = "<span id='" + showMoreId + "' style='white-space:nowrap'>&nbsp;";
 			parts[idx++] = "<a id='" + addressInfo.showMoreLinkId + "' href='' onclick='ZmMailMsgView.showMore(\"" + this._htmlElId + "\", \"" + type + "\"); return false;'>";
 			parts[idx++] = ZmMsg.showMore;
