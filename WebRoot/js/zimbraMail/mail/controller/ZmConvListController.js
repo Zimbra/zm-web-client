@@ -418,7 +418,10 @@ ZmConvListController.prototype._resetOperations = function(parent, num) {
 			canForwardConv = true;
 		}
 	}
-	parent.enable(ZmOperation.FORWARD_CONV, canForwardConv);
+	var op = parent.getOp(ZmOperation.FORWARD_CONV);
+	if (op) {
+		op.setVisible(canForwardConv);
+	}
 };
 
 ZmConvListController.prototype._forwardListener = function(ev) {
