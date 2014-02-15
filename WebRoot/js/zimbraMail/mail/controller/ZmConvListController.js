@@ -208,10 +208,6 @@ function(actionCode, ev) {
 				itemView._cancelListener();
 				break;
 			}
-            else{
-                this._backListener();  //Bug: 83244 - need to close conv window after pressing 'Esc' key.
-                break;
-            }
 
 		default:
 			return ZmDoublePaneController.prototype.handleKeyAction.apply(this, arguments);
