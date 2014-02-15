@@ -411,16 +411,26 @@ ZmConvListController.prototype._resetOperations = function(parent, num) {
 
 	ZmDoublePaneController.prototype._resetOperations.apply(this, arguments);
 
-	var canForwardConv = false;
+	var canForwardConv = false,
+		couldForwardConv = true;
+
 	if (num === 1) {
-		var clv = this._mailListView;
-		if (clv._getDisplayedMsgCount(clv.getSelection()[0]) > 1) {
-			canForwardConv = true;
+		var clv = this._mailListView,
+			item = clv.getSelection()[0];
+
+		if (item && item.type === ZmItem.CONV) {
+			if (clv._getDisplayedMsgCount(item) > 1) {
+				canForwardConv = true;
+			}
+		}
+		else {
+			couldForwardConv = false;
 		}
 	}
 	var op = parent.getOp(ZmOperation.FORWARD_CONV);
 	if (op) {
-		op.setVisible(canForwardConv);
+		op.setVisible(couldForwardConv);
+		parent.enable(op, canForwardConv);
 	}
 };
 
