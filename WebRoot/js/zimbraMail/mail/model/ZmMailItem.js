@@ -159,7 +159,12 @@ function(node) {
 	if (type == AjxEmailAddress.READ_RECEIPT) {
 		this.readReceiptRequested = true;
 	} else {
-		var addr = new AjxEmailAddress(node.a, type, node.p, node.d);
+		// if we can find the person in contacts, use the name from there
+		var contactList = AjxDispatcher.run("GetContacts"),
+			contact = contactList && contactList.getContactByEmail(node.a),
+			fullName = contact && contact.getFullName();
+
+		var addr = new AjxEmailAddress(node.a, type, fullName || node.p, node.d);
 		addr.isGroup = node.isGroup;
 		addr.canExpand = node.isGroup && node.exp;
 		var ac = window.parentAppCtxt || window.appCtxt;
