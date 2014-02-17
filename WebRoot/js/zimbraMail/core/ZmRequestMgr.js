@@ -285,6 +285,9 @@ function(params, result) {
 
             if (ex.code === ZmCsfeException.EMPTY_RESPONSE && params.offlineCallback) {
                 params.offlineCallback(params);
+				if (appCtxt.isWebClientOffline() && !params.noBusyOverlay) {
+					this._shell.setBusy(false, params.reqId); // remove busy overlay
+				}
                 ignore = true;
             }
 			if (!ignore)

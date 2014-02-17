@@ -102,22 +102,23 @@ function() {
 
 ZmOffline.prototype._onLoad =
 function() {
-    if (appCtxt.isWebClientOffline()) {
-        this.initOfflineFolders();
-        this._onZWCOffline();
-    }
-    //Have some delay for offline sync process
-    var ta = new AjxTimedAction(this, ZmOffline.prototype._onAfterLoad);
-    AjxTimedAction.scheduleAction(ta, 5000);
+	//Chrome fires onload event little bit early. Have some delay.
+	var ta = new AjxTimedAction(this, this._onAfterLoad);
+	AjxTimedAction.scheduleAction(ta, 2000);
 };
 
 ZmOffline.prototype._onAfterLoad =
 function() {
-    if (!appCtxt.isWebClientOffline()) {
-        this.initOfflineFolders();
-        appCtxt.reloadAppCache();
-    }
-    ZmOffline.updateOutboxFolderCount();
+	this.initOfflineFolders();
+	if (appCtxt.isWebClientOffline()) {
+		this._onZWCOffline();
+	}
+	else {
+		//Start fetching appcache after some delay giving enough time for fetching other resources.
+		var ta = new AjxTimedAction(appCtxt, appCtxt.reloadAppCache);
+		AjxTimedAction.scheduleAction(ta, 3000);
+	}
+	ZmOffline.updateOutboxFolderCount();
 };
 
 ZmOffline.prototype._enableApps =
@@ -1174,8 +1175,13 @@ function(img, obj, msg, template, uploadResponse) {
     }
 };
 
+/**
+ * Fires a head request to find whether server is reachable or not
+ * @param {Boolean} [doStop] will not fire a second head request to confirm the server reachability
+ * @param {Boolean} [doNotTrigger] Do not trigger online/offline events
+ */
 ZmOffline.checkServerStatus =
-function(doStop) {
+function(doStop, doNotTrigger) {
     $.ajax({
         type: "HEAD",
         url: "/public/blank.html",
@@ -1185,10 +1191,12 @@ function(doStop) {
                     if (doStop) {
                         // Reset here - state must be correct for functions triggered by ZWCOffline
                         ZmOffline.isServerReachable = false;
-                        $.event.trigger({
-                            type: "ZWCOffline"
-                        });
-                    }
+						if (!doNotTrigger) {
+							$.event.trigger({
+								type: "ZWCOffline"
+							});
+						}
+					}
                     else {
                         return ZmOffline.checkServerStatus(true);
                     }
@@ -1200,10 +1208,12 @@ function(doStop) {
                     if (doStop) {
                         // Reset here - state must be correct for functions triggered by ZWCOnline
                         ZmOffline.isServerReachable = true;
-                        $.event.trigger({
-                            type: "ZWCOnline"
-                        });
-                    }
+						if (!doNotTrigger) {
+							$.event.trigger({
+								type: "ZWCOnline"
+							});
+						}
+					}
                     else {
                         return ZmOffline.checkServerStatus(true);
                     }
@@ -1213,7 +1223,7 @@ function(doStop) {
         }
     });
 };
-ZmOffline.checkServerStatus();
+ZmOffline.checkServerStatus(true, true);
 
 ZmOffline.isOnlineMode =
 function() {
