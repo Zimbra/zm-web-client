@@ -504,9 +504,10 @@ Ext.define('ZCS.common.ZtUtil', {
 	 *
 	 * @param {String} pattern
 	 * @param {Object} value - This could be a Number/String/Array object
+     * @param {Boolean} isSpecificDay - This is optional
 	 * @return {String}
 	 */
-	formatRecurMsg: function(pattern, value) {
+	formatRecurMsg: function(pattern, value, isSpecificDay) {
 		switch (pattern) {
 			case ZtMsg.recurStart:
 				return Ext.String.format(pattern, Ext.Date.format(value, 'F j, Y'));
@@ -545,17 +546,21 @@ Ext.define('ZCS.common.ZtUtil', {
 			case ZtMsg.recurYearlyEveryDate:
 				return Ext.String.format(pattern, Ext.Date.format(value[0], 'F'), value[1]);
 
-			case ZtMsg.recurYearlyEveryMonthWeekDays:
-				return Ext.String.format(pattern, this.getOrdinal(value[0]), this.getDayType(value[1]), Ext.Date.format(value[2], 'F'));
+			case ZtMsg.recurYearlyEveryMonth:
+                if (isSpecificDay) {
+                    return Ext.String.format(pattern, this.getOrdinal(value[0]), this.getDayType(value[1]), Ext.Date.format(value[2], 'F'));
+                }
+                else {
+                    return Ext.String.format(pattern, this.getOrdinal(value[0]), Ext.Date.format(value[1], 'l'), Ext.Date.format(value[2], 'F'));
+                }
 
-			case ZtMsg.recurYearlyEveryMonthNumDay:
-				return Ext.String.format(pattern, this.getOrdinal(value[0]), Ext.Date.format(value[1], 'l'), Ext.Date.format(value[2], 'F'));
-
-			case ZtMsg.recurMonthlyEveryNumMonthsNumDay:
-				return Ext.String.format(pattern, this.getOrdinal(value[0]), Ext.Date.format(value[1], 'l'), value[2]);
-
-			case ZtMsg.recurMonthlyEveryNumMonthsWeekDays:
-				return Ext.String.format(pattern, this.getOrdinal(value[0]), this.getDayType(value[1]), value[2]);
+			case ZtMsg.recurMonthly:
+                if (isSpecificDay) {
+                    return Ext.String.format(pattern, this.getOrdinal(value[0]), this.getDayType(value[1]), value[2]);
+                }
+                else {
+                    return Ext.String.format(pattern, this.getOrdinal(value[0]), Ext.Date.format(value[1], 'l'), value[2]);
+                }
 
 			case ZtMsg.recurMonthlyEveryNumMonthsDate:
 				return Ext.String.format(pattern, value[0], value[1]);
