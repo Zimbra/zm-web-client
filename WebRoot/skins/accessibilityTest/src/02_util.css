@@ -1,0 +1,28 @@
+/* http://snook.ca/archives/html_and_css/hiding-content-for-accessibility */
+.a11yHidden {
+	position: absolute;
+	clip: rect(1px, 1px, 1px, 1px);
+	padding: 0;
+	border: 0;
+	width: 1px;
+	height: 1px;
+	overflow: hidden;
+}
+
+label.a11yHidden {
+	font-size: 0;
+	overflow: auto;
+}
+
+/* Let a h1 impersonate a div */
+h1.a11yTransparent {
+	display: block;
+	font-size: 11px;
+	-webkit-margin-before: 0;
+	-webkit-margin-after: 0;
+	-webkit-margin-start: 0;
+	-webkit-margin-end: 0;
+	margin: 0;
+	font-weight: normal;
+}
+

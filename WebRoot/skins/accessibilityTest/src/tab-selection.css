@@ -1,0 +1,103 @@
+.ZmMailMsgCapsuleView .footer {
+	visibility: visible !important;
+	opacity: 1 !important;
+}
+
+.ZmOverview.TabFocused,
+.ZToolbar.TabFocused,
+.ZToolbarButton.TabFocused.ZDisabled .ZToolbarButtonBorder,
+.ZSelectAutoSizingContainer.TabFocused .ZSelect,
+.DwtChooserListView.TabFocused,
+a.TabFocused,
+.Object.TabFocused,
+iframe.TabFocused,
+span.ZmAttachDialog-removeLink.TabFocused,
+span.SpellCheckLink.TabFocused,
+.MsgBody.TabFocused,
+.ZmShortcutsPanel .TabFocused,
+.ZmShortcutsWindow .TabFocused,
+.TabFocused[role=link] {
+	outline: 1px solid #0073AE !important;
+}
+
+.mceDialog input.TabFocused,
+.mceDialog select.TabFocused,
+.mceDialog a.pickcolor.TabFocused span,
+.mceDialog li.TabFocused {
+	outline: 1px solid #0073AE !important;
+}
+
+.TabFocused .ImgButton_L{
+	background-image: none !important;
+	background-color: #FFE61E !important;
+	height: 20px;
+	width: 6px;
+}
+
+.TabFocused .ImgButton_R{
+	background-image: none !important;
+	background-color: #FFE61E !important;
+	height: 20px;
+	width: 6px;
+}
+
+.TabFocused .ImgButton{
+	background-image: none !important;
+	background-color: #FFE61E !important;
+	color: #313131 !important;
+	height: 20px;
+}
+
+.ZmAppChooser .ZButton.ZSelected.TabFocused .ButtonText {
+	color: #0073AE !important;
+}
+
+.ZmMailMsgView.TabFocused,
+.ZmConvView2.TabFocused,
+.ZmMailMsgCapsuleView.TabFocused,
+.mceToolbar .TabFocused,
+.DwtListView.TabFocused {
+	border: 1px solid #0073AE !important;
+}
+
+.HighContrastMode .DwtTreeItem-Text {
+	font-weight: normal;
+}
+
+.HighContrastMode .DwtTreeItem-Text-focused,
+.HighContrastMode .TabFocused,
+.HighContrastMode .TabFocused table,
+.HighContrastMode .TabFocusedBorder,
+.HighContrastMode .TabFocusedBorder table,
+.HighContrastMode .Row-focused,
+.HighContrastMode .Row-focused table,
+.HighContrastMode .ZFocused,
+.HighContrastMode .ZFocused table,
+.HighContrastMode .TabFocusedOutlineParent,
+.HighContrastMode .TabFocusedOutlineParent table,
+.HighContrastMode .TabFocusedOutlineParent .ZSelect,
+.HighContrastMode .TabFocusedOutlineParent .ZSelect table {
+	font-style: italic !important;
+}
+
+.mceToolbar div:focus,
+.mceToolbar a:focus,
+.mceToolbar span:focus table {
+	border: 1px solid #0073AE !important;
+}
+
+.mceMenuItem a:focus {
+	border: 1px solid #0073AE !important;
+}
+
+
+a.emoticon_link {
+	display: inline-block;
+	height: 18px;
+}
+
+/*DE2822*/
+.DwtDialog input.TabFocused {
+	outline:1px solid #0073AE;
+}
+

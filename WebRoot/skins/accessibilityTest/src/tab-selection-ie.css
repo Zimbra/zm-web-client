@@ -1,0 +1,67 @@
+.ZmMailMsgCapsuleView .footer {
+	visibility: visible !important;
+	opacity: 1 !important;
+}
+
+.mceMenuItem a:focus,
+.mceFocus {
+	border: 1px solid #0073AE !important;
+}
+
+.TabFocusedOutline,
+.TabFocusedOutlineParent .ZToolbarButtonBorder,
+.TabFocusedOutlineParent .ZSelect,
+.TabFocusedOutlineParent span {			
+	border: 1px solid #0073AE !important;
+}
+
+.TabFocusedOutlineParent .ImgButton_L{
+	background-image:none !important;
+	background-color:#FFE61E !important;
+	height:20px;
+	width:6px;
+}
+
+.TabFocusedOutlineParent .ImgButton_R{
+	background-image:none !important;
+	background-color:#FFE61E !important;
+	height:20px;
+	width:6px;
+}
+
+.TabFocusedOutlineParent .ImgButton{
+	background-image:none !important;
+	background-color:#FFE61E !important;
+	color:#313131 !important;
+	height:20px;
+}
+
+.TabFocusedColor,
+.TabFocusedColorParent .ButtonText {
+	color: #0073AE !important;
+}
+
+.TabFocusedBorder {
+	border: 1px solid #0073AE !important;
+}
+
+.HighContrastMode .DwtTreeItem-Text {
+	font-weight: normal;
+}
+
+.HighContrastMode .DwtTreeItem-Text-focused,
+.HighContrastMode .TabFocused,
+.HighContrastMode .TabFocused table,
+.HighContrastMode .TabFocusedBorder,
+.HighContrastMode .TabFocusedBorder table,
+.HighContrastMode .Row-focused,
+.HighContrastMode .Row-focused table,
+.HighContrastMode .ZFocused,
+.HighContrastMode .ZFocused table,
+.HighContrastMode .TabFocusedOutlineParent,
+.HighContrastMode .TabFocusedOutlineParent table,
+.HighContrastMode .TabFocusedOutlineParent .ZSelect,
+.HighContrastMode .TabFocusedOutlineParent .ZSelect table {
+	font-style: italic !important;
+}
+

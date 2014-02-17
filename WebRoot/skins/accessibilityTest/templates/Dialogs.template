@@ -1,0 +1,15 @@
+<template id="share.Dialogs#ZmAttachDialog-MyComputerTab-AddAttachment">
+	<table class='ZPropertySheet' cellspacing='6'>
+		<tr>
+			<td>
+				<div class='attachText'><$= ZmMsg.attach $>:</div>
+			</td>
+			<td class='nobreak'>
+				<label id='${id}_input_label' style='display:none' for='${id}_input'><$= ZmMsg.browseUploadSpace $></label>
+				<input id='${id}_input' type='file' multiple name='<$= data.uploadName $>'/>&nbsp;
+				<span id='${id}_remove' style="cursor:pointer" class="ZmAttachDialog-removeLink" role='link' aria-label='<$= ZmMsg.removeUpload $>'><$= ZmMsg.remove $></span>
+                <span id='${id}_size'>&nbsp;</span>
+			</td>
+		</tr>
+	</table>
+</template>

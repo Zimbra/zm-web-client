@@ -1,0 +1,22 @@
+<template id="share.App#Loading">
+	<table style='width:100%; height=100%' role="presentation">
+		<tr>
+			<td align='center' valign='middle'>
+				<br><br><br>
+				<$= ZmMsg.loading $>
+				<br><br>
+				<div class='Imgwait_64'></div>
+				<br><br><br>
+			</td>
+		</tr>
+		<tr>
+			<td style='height:100%'>&nbsp;</td>
+		</tr>
+	</table>
+</template>
+
+<template id="share.App#Banner">
+	<table style='width:100%; height:100%' role="presentation">
+		<tr><td align='center' valign='middle'><a<$ if (data.url && data.url != '') { $> href='${url}' target='_blank'<$ } $>><div class='ImgAppBanner' <$ if (data.isOffline) { $> style='width:220px;' <$ } $>></div></a></td></tr>
+	</table>
+</template>
