@@ -327,9 +327,8 @@ function() {
 	
 	this._appViewMgr.loadingView.setVisible(false);
 
-	var kbMgr = appCtxt.getKeyboardMgr();
-	kbMgr.setTabGroup(rootTg);
-	kbMgr.grabFocus(startupFocusItem);
+	this._kbMgr.setTabGroup(rootTg);
+	this._kbMgr.grabFocus(startupFocusItem);
 };
 
 /**
@@ -496,7 +495,7 @@ ZmNewWindow.prototype.setActiveApp = function() {};
  */
 ZmNewWindow.prototype.getKeyMapMgr =
 function() {
-	return this._kbMgr;
+	return this._kbMgr.__keyMapMgr;
 };
 
 /**
