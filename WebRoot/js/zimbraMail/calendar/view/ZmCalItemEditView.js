@@ -1000,9 +1000,6 @@ function(ev) {
 	// if date was input by user and its foobar, reset to today's date
 	if (calDate == null || isNaN(calDate)) {
 		calDate = new Date();
-		var field = ev.item == this._startDateButton
-			? this._startDateField : this._endDateField;
-		field.value = AjxDateUtil.simpleComputeDateStr(calDate);
 	}
 
 	// always reset the date to current field's date
@@ -1049,11 +1046,13 @@ function(ev) {
 	this._oldEndDate = AjxDateUtil.simpleParseDateStr(this._endDateField.value);	
 
 	// change the start/end date if they mismatch
+    var calItem = this._calItem;
 	if (parentButton == this._startDateButton) {
 		var ed = AjxDateUtil.simpleParseDateStr(this._endDateField.value);
 		if (ed && (ed.valueOf() < ev.detail.valueOf())) {
 			this._endDateField.value = newDate;
-        }else if(this._oldEndDate && this._endDateField.value != newDate) {
+        } else if (this._oldEndDate && this._endDateField.value != newDate && (calItem.type === ZmItem.APPT)) {
+            // Only preserve duration for Appts
             var delta = this._oldEndDate.getTime() - this._oldStartDate.getTime();
             this._endDateField.value = AjxDateUtil.simpleComputeDateStr(new Date(ev.detail.getTime() + delta));
         }
@@ -1064,7 +1063,6 @@ function(ev) {
 			this._startDateField.value = newDate;
 		this._endDateField.value = newDate;
 	}
-	var calItem = this._calItem;
 
     if(this._hasRepeatSupport) {
         var repeatType = this._repeatSelect.getValue();
