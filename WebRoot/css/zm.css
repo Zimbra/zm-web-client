@@ -1322,6 +1322,8 @@ INPUT[type="text"].search_input-expanded {
 .attBubbleContainer INPUT {
 	background-color:transparent;
 	border-width:0px !important;
+    box-sizing: content-box;
+    -webkit-box-sizing: content-box;
 	font-size:1rem;
 	height:1.6rem;
 	outline:none !important;
@@ -1393,7 +1395,8 @@ INPUT[type="text"].search_input-expanded {
 	min-height:2rem;
 }
 
-.ZmGrantRightsDialog .addrBubbleContainer {
+.ZmGrantRightsDialog .addrBubbleContainer,
+.ZmPreferencesPage .addrBubbleContainer {
     width: 290px;
 }
 

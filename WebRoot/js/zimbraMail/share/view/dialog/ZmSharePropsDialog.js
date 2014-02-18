@@ -31,8 +31,20 @@ ZmSharePropsDialog = function(shell, className) {
 	className = className || "ZmSharePropsDialog";
 	DwtDialog.call(this, {parent:shell, className:className, title:ZmMsg.shareProperties, id:"ShareDialog"});
 	this.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._handleOkButton));
-	
-	// create auto-completer	
+
+	var aifParams = {
+		parent:		this,
+		inputId:	"ShareDialog_grantee"
+	}
+
+	this._grantee = new ZmAddressInputField(aifParams);
+	this._grantee.setData(Dwt.KEY_OBJECT, this);
+	Dwt.associateElementWithObject(this._grantee, this);
+
+	this._granteeInput = this._grantee.getInputElement();
+	this._granteeInputId = this._grantee._htmlElId;
+
+	// create auto-completer
 	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED) || appCtxt.get(ZmSetting.GAL_ENABLED)) {
 		var params = {
 			dataClass:		appCtxt.getAutocompleter(),
@@ -42,6 +54,8 @@ ZmSharePropsDialog = function(shell, className) {
 			contextId:		this.toString()
 		};
 		this._acAddrSelectList = new ZmAutocompleteListView(params);
+		this._acAddrSelectList.handle(this._granteeInput, this._granteeInputId);
+		this._grantee.setAutocompleteListView(this._acAddrSelectList);
 	}
 
 	// set view
@@ -126,8 +140,9 @@ function(mode, object, share) {
 			password = share.grantee.id;
 		}
 	}
-	this._granteeInput.setValue(grantee, true);
-	this._granteeInput.setEnabled(isNewShare);
+	this._grantee.clear();
+	this._grantee.setValue(grantee, true);
+	this._grantee.setEnabled(isNewShare);
 
 	// Make all the properties visible so that their elements are in the
 	// document. Otherwise, we won't be able to get a handle on them to perform
@@ -135,8 +150,6 @@ function(mode, object, share) {
 	this._props.setPropertyVisible(this._shareWithOptsId, true);
 	//this._shareWithOptsProps.setPropertyVisible(this._passwordId, true);
 	this._props.setPropertyVisible(this._shareWithBreakId, true);
-
-	this._granteeInput.setValidatorFunction(null, isGuestShare ? DwtInputField.validateEmail : DwtInputField.validateAny);
 
 	//this._passwordButton.setVisible(!isNewShare);
 	//this._shareWithOptsProps.setPropertyVisible(this._passwordId, isGuestShare);
@@ -147,7 +160,7 @@ function(mode, object, share) {
 	}
 
 	if (!this._tabGroupComplete) {
-		this._tabGroup.addMember(this._granteeInput, 0);
+		this._tabGroup.addMember(this._grantee, 0);
 		this._tabGroupComplete = true;
 	}
 
@@ -184,14 +197,14 @@ function(mode, object, share) {
 	this._populateUrls();
 
 	var size = this.getSize();
-	Dwt.setSize(this._granteeInput.getInputElement(), 0.6*size.x);
+	Dwt.setSize(this._granteeInput, 0.6*size.x);
 	//Dwt.setSize(this._passwordInput.getInputElement(), 0.6*size.x);
 
 	DwtDialog.prototype.popup.call(this);
 	this.setButtonEnabled(DwtDialog.OK_BUTTON, false);
 	if (isNewShare) {
 		this._userRadioEl.checked = true;
-		this._granteeInput.focus();
+		this._grantee.focus();
 	}
 
 	if (appCtxt.multiAccounts) {
@@ -291,21 +304,32 @@ function(event) {
 	var isGuestShare = this._guestRadioEl.checked;
 	var isPublicShare = this._publicRadioEl.checked;
 	var shareWithMyself = false;
-	
+
+	var parsedEmailsFromText = AjxEmailAddress.parseEmailString(this._granteeInput.value);
+	var goodEmailsFromText = parsedEmailsFromText.good.getArray();
+	var goodEmailsFromBubbles =  this._grantee.getAddresses();
+
+	var goodEmails = goodEmailsFromBubbles.concat(goodEmailsFromText);
+	var badEmails = parsedEmailsFromText.bad.getArray();
+
 	// validate input
 	if (!isPublicShare) {
 		var error;
-		if (this._granteeInput.isValid() == null) {
-			error = this._granteeInput.getValue() ? AjxMsg.invalidEmailAddr : AjxMsg.valueIsRequired;
+		if (badEmails.length) {
+			error = AjxMessageFormat.format(AjxMsg.invalidEmailAddrValue, this._granteeInput.value);
 		}
-		/*if (!error && isGuestShare && this._passwordInput.isValid() == null) {
+		else if (!goodEmails.length) {
 			error = AjxMsg.valueIsRequired;
-		}*/
+		}
+
 		if (error) {
 			var dialog = appCtxt.getErrorDialog();
 			dialog.setMessage(error);
 			dialog.popup(null, true);
-			return;
+
+			if (!goodEmails.length) {
+				return;
+			}
 		}
 	}
 
@@ -318,28 +342,21 @@ function(event) {
 	if (this._shareMode == ZmSharePropsDialog.NEW) {
 		var type = this._getType(isUserShare, isGuestShare, isPublicShare);
 		if (!isPublicShare) {
-			var addrs = AjxEmailAddress.split(this._granteeInput.getValue());
-			if (addrs && addrs.length) {
-				for (var i = 0; i < addrs.length; i++) {
-					// bug fix #26428 - exclude me from list of addresses
-					var addr = addrs[i];
-					var email = AjxEmailAddress.parse(addr);
-					if (email) {
-						addr = email.getAddress();
-					}
-                    //bug#66610: allow Calendar Sharing with addresses present in zimbraAllowFromAddress
-                    var allowLocal;
-                    var excludeAllowFromAddress = true;
-					if (appCtxt.isMyAddress(addr, allowLocal, excludeAllowFromAddress)) { 
-						shareWithMyself = true;
-						continue;
-					}
-
-					var share = this._setUpShare();
-					share.grantee.name = addr;
-					share.grantee.type = type;
-					shares.push(share);
+			for (var i = 0; i < goodEmails.length; i++) {
+				// bug fix #26428 - exclude me from list of addresses
+				var addr = goodEmails[i];
+				//bug#66610: allow Calendar Sharing with addresses present in zimbraAllowFromAddress
+				var allowLocal;
+				var excludeAllowFromAddress = true;
+				if (appCtxt.isMyAddress(addr, allowLocal, excludeAllowFromAddress)) {
+					shareWithMyself = true;
+					continue;
 				}
+
+				var share = this._setUpShare();
+				share.grantee.name = addr;
+				share.grantee.type = type;
+				shares.push(share);
 			}
 		} else {
 			var share = this._setUpShare();
@@ -565,7 +582,7 @@ function(dialog) {
 
 	dialog._privatePermission.setVisible(dialog._privatePermissionEnabled && !dialog._noneRadioEl.checked && !isPublicShare);
 
-	var hasEmail = AjxStringUtil.trim(dialog._granteeInput.getValue()) != "";
+	var hasEmail = AjxStringUtil.trim(dialog._grantee.getValue()) != "";
 	//var hasPassword = AjxStringUtil.trim(dialog._passwordInput.getValue()) != "";
 
 	var enabled = isEdit ||
@@ -588,8 +605,6 @@ ZmSharePropsDialog.prototype._handleShareWith = function(type) {
 	var isUserShare = type == ZmShare.TYPE_USER;
 	var isGuestShare = type == ZmShare.TYPE_GUEST;
 	var isPublicShare = type == ZmShare.TYPE_PUBLIC;
-
-	this._granteeInput.setValidatorFunction(null, isGuestShare ? DwtInputField.validateEmail : DwtInputField.validateAny);
 
     // TODO - Currently external sharing is enabled for briefcase only.
     var guestRadioLabelEl = document.getElementById("LblShareWith_external");
@@ -682,11 +697,6 @@ function() {
 		var propId = shareWith.addProperty(property.label, property.field);
 	}
 
-	this._granteeInput = new DwtInputField({parent: this, id:"ShareDialog_grantee"});
-	this._granteeInput.setData(Dwt.KEY_OBJECT, this);
-	this._granteeInput.setRequired(true);
-	Dwt.associateElementWithObject(this._granteeInput.getInputElement(), this);
-
 	//var password = new DwtComposite(this);
 	//this._passwordInput = new DwtInputField({parent: password, id:"ShareDialog_password"});
 	//this._passwordInput.setData(Dwt.KEY_OBJECT, this);
@@ -697,7 +707,7 @@ function() {
 	//Dwt.associateElementWithObject(this._passwordInput.getInputElement(), this);
 
 	this._shareWithOptsProps = new DwtPropertySheet(this);
-	this._shareWithOptsProps.addProperty(ZmMsg.emailLabel, this._granteeInput);
+	this._shareWithOptsProps.addProperty(ZmMsg.emailLabel, this._grantee);
 	//this._passwordId = this._shareWithOptsProps.addProperty(ZmMsg.passwordLabel, password);
 
 	var otherHtml = [
@@ -831,11 +841,10 @@ function() {
 
 ZmSharePropsDialog.prototype._setAutoComplete =
 function(disabled) {
-    var inputEl = this._granteeInput.getInputElement();
 	if (!disabled && this._acAddrSelectList) {
-		this._acAddrSelectList.handle(inputEl);
+		this._acAddrSelectList.handle(this._granteeInput);
 	}
 	else {
-		Dwt.setHandler(inputEl, DwtEvent.ONKEYUP, ZmSharePropsDialog._handleKeyUp);
+		Dwt.setHandler(this._granteeInput, DwtEvent.ONKEYUP, ZmSharePropsDialog._handleKeyUp);
 	}
 };

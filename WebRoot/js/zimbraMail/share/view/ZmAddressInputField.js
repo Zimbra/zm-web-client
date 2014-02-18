@@ -303,7 +303,7 @@ function(skipNotify) {
  */
 ZmAddressInputField.prototype.getValue =
 function() {
-	var list = [].concat(this.getAddresses());
+	var list = this.getAddresses();
 	if (this._input.value) {
 		list.push(this._input.value);
 	}
