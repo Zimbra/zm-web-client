@@ -671,7 +671,9 @@ function(inputEl, attendee, useException) {
             if (!curAttendee) {
 				// user added attendee in empty slot
 				var value = this._emptyRowIndex = this._addAttendeeRow(false, null, true, null, true, true); // add new empty slot
-                if(this.isComposeMode) this._editView.autoSize();
+                if (this.isComposeMode) {
+                    this._editView.resize();
+                }
                 return value;
 			}
 		} else {
@@ -849,7 +851,9 @@ function(list, updateCycle) {
         this.addAttendee(att, type, isOrganizer, emails);
     }
     
-    if(this.isComposeMode) this._editView.autoSize();
+    if (this.isComposeMode) {
+        this._editView.resize();
+    }
     this.batchUpdateSequence(list, updateCycle+1);
 };
 
