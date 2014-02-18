@@ -501,7 +501,7 @@ function() {
 	html[i++] = this._repeatEndName;
 	html[i++] = "' id='";
 	html[i++] = this._endAfterRadioId;
-	html[i++] = "'></td><td colspan=2><nobr>";
+	html[i++] = "'></td><td colspan=2>";
 	html[i++] = "<table><tr>";
 	var formatter = new AjxMessageFormat(ZmMsg.recurEndNumber);
 	var segments = formatter.getSegments();

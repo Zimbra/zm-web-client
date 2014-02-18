@@ -293,7 +293,7 @@ function() {
 				"</tr>",
 				"<tr>",
 					"<td>",
-						"<nobr id='",urlInputId,"'></nobr>",
+						"<span style='white-space:nowrap' id='",urlInputId,"'></span>",
 					"</td>",
 				"</tr>",
 			"</table>"

@@ -167,9 +167,9 @@ function(html, idx, item, field, colIdx) {
 	if (field == ZmItem.F_TYPE) {
 		html[idx++] = AjxImg.getImageHtml(item.icon);
 	} else if (field == ZmItem.F_NAME) {
-		html[idx++] = "<nobr>";
+		html[idx++] = '<span style="white-space:nowrap">';
 		html[idx++] = AjxStringUtil.htmlEncode(item.name || ZmMsg.noName);
-		html[idx++] = "</nobr>";
+		html[idx++] = "</span>";
 	} else if (field == ZmItem.F_EMAIL) {
 		html[idx++] = AjxStringUtil.htmlEncode(item.address);
 	} else if (field == ZmItem.F_DEPARTMENT) {

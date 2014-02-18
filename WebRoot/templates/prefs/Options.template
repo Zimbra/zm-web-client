@@ -192,7 +192,7 @@
 		</tr>
 
 		<tr><td class='ZCheckboxCell'><input id='${id}_setReplyToCheckbox' type='checkbox'></td>
-			<td class='ZCheckboxLabelCell'><nobr><label for='${id}_setReplyToCheckbox'><$= ZmMsg.setReplyTo $></label></nobr></td>
+			<td class='ZCheckboxLabelCell'><span style='white-space:nowrap'><label for='${id}_setReplyToCheckbox'><$= ZmMsg.setReplyTo $></label></span></td>
 			<td><input id='${id}_setReplyToName' style='width:100%'></td>
 			<td><select id='${id}_setReplyToAddress' style='width:90%'><option>bob@zimbra.com</option></select></td>
 		</tr>
