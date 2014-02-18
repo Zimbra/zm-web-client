@@ -3,7 +3,7 @@
 	var util = comcast.access.util;
 	var log = util.logger(comcast.access.debug.logTabSelection);
 
-	util.addStylesheet("/skins/velodrome2/tab-selection"+(AjxEnv.isIE?"-ie":"")+".css");
+	util.addStylesheet("/skins/accessibilityTest/tab-selection"+(AjxEnv.isIE?"-ie":"")+".css");
 
 	var getHtmlElement = function(item) {
 		if (item instanceof DwtControl) {

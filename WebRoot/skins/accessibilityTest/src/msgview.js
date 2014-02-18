@@ -200,7 +200,7 @@
 
 			var doc = (this.getIframe() && (this.getIframe().contentDocument || this.getIframe().contentWindow.document));
 			if (doc) {
-				util.addStylesheet("/skins/velodrome2/tab-selection"+(AjxEnv.isIE?"-ie":"")+".css", doc);
+				util.addStylesheet("/skins/accessibilityTest/tab-selection"+(AjxEnv.isIE?"-ie":"")+".css", doc);
 			}
 		}
 		if (this._usingIframe) {

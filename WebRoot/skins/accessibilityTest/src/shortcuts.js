@@ -31,7 +31,7 @@
 	skin.override('ZmShortcutsPanel.prototype._createHtml', function() {
 		if (appCtxt.isChildWindow) {
 			Dwt.setSize(appCtxt.getShell().getHtmlElement(), Dwt.DEFAULT, Dwt.CLEAR);
-			skin.includeCSS("/skins/velodrome2/print-keys.css", {media:"print"});
+			skin.includeCSS("/skins/accessibilityTest/print-keys.css", {media:"print"});
 		}
 
 		var id = this.getHTMLElId(),

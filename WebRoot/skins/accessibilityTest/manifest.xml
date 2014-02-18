@@ -57,6 +57,7 @@
             <file>src/statusview.js</file>
             <file>src/tab-selection.js</file>
             <file>src/text.js</file>
+            <file>src/tinymce.js</file>
             <file>src/toolbar.js</file>
             <file>src/tooltip.js</file>
             <file>src/trees.js</file>
@@ -68,11 +69,11 @@
 			<file>../_base/base3/splash.html</file>
 		</html>
         <templates>
-            <file>templates/App.template</file>
-            <file>templates/Dialogs.template</file>
-            <file>templates/Message.template</file>
-            <file>templates/Pages.template</file>
-            <file>templates/Widgets.template</file>
+            <!-- <file>templates/App.template</file> -->
+            <!-- <file>templates/Dialogs.template</file> -->
+            <!-- <file>templates/Message.template</file> -->
+            <!-- <file>templates/Pages.template</file> -->
+            <!-- <file>templates/Widgets.template</file> -->
         </templates>
 	</advanced>
 	<standard>
