@@ -69,7 +69,7 @@ Ext.define('ZCS.view.ZtOverview', {
 		// create the nested list that contains the grouped organizers
 		var organizerList = Ext.create('ZCS.view.ZtOrganizerList', {
 			flex:           1,
-			title:          app.charAt(0).toUpperCase() + app.slice(1),
+			title:          ZCS.constant.APP_NAME[app],
 			displayField:   'displayName',
 			store:          organizerStore,
 			grouped:        true,

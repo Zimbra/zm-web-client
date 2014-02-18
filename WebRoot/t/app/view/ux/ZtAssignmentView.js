@@ -143,7 +143,7 @@ Ext.define('ZCS.view.ux.ZtAssignmentView', {
 						{xtype: 'spacer'}, {
 						xtype: 'button',
 						ui: 'neutral',
-						text: 'Cancel',
+						text: ZtMsg.cancel,
 						handler: function () {
 							this.up('.assignmentview').onClose();
 						}
