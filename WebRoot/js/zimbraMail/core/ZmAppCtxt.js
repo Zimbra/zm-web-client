@@ -1084,20 +1084,6 @@ function() {
 };
 
 /**
- * Gets the address selection dialog.
- *
- * @return	{ZmSelectAddrDialog}		the address selection dialog
- */
-ZmAppCtxt.prototype.getAddrSelectDialog =
-function() {
-	if (!this._addrSelectDialog) {
-		AjxDispatcher.require(["Startup2", "MailCore", "Mail"]);
-		this._addrSelectDialog = new ZmSelectAddrDialog(this._shell);
-	}
-	return this._addrSelectDialog;
-};
-
-/**
  * Gets the debug log dialog.
  *
  * @return	{ZmDebugLogDialog}		the debug log dialog

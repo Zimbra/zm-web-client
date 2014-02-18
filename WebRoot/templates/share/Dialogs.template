@@ -527,19 +527,6 @@
 </template>
 
 
-<template id="share.Dialogs#ZmSelectAddrDialog">
-	<tr>
-		<td colspan=2>&nbsp;</td>
-	</tr>
-	<tr>
-		<td class="Label" style="padding-right:5px">Addresses: </td>
-		<td id='${id}_addrListTd'></td>
-	</tr>
-	<tr>
-	    <td colspan='2'><input id='${id}_cboxFind' type='checkbox' name='cbFind' checked></td>
-	</tr>
-</template>
-
 <!-- calendar dialog template -->
 <template id="share.Dialogs#ZmNewCalDialogFreeBusy">
 	<tr>
