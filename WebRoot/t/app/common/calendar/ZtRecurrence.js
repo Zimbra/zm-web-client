@@ -177,13 +177,15 @@ Ext.define('ZCS.common.calendar.ZtRecurrence', {
                             dayType = 0;
                         }
 
-                        every.push(ZCS.util.formatRecurMsg(ZtMsg.recurMonthlyEveryNumMonthsWeekDays, [bysetpos || ordinal, dayType, count]));
+	                    // Fix for bug: 86571. Passing isSpecificDay = true
+                        every.push(ZCS.util.formatRecurMsg(ZtMsg.recurMonthlyEveryNumMonthsWeekDays, [bysetpos || ordinal, dayType, count], true));
                     }
                     else {
                         var day = new Date();
                         day.setDate(day.getDate() - day.getDay() + dayofweek);
 
-                        every.push(ZCS.util.formatRecurMsg(ZtMsg.recurMonthlyEveryNumMonthsNumDay, [bysetpos || ordinal, day, count]));
+	                    // Fix for bug: 86571. Passing isSpecificDay = false
+                        every.push(ZCS.util.formatRecurMsg(ZtMsg.recurMonthlyEveryNumMonthsWeekDays, [bysetpos || ordinal, day, count], false));
                     }
                 }
                 break;
@@ -217,13 +219,15 @@ Ext.define('ZCS.common.calendar.ZtRecurrence', {
                             dayType = 0;
                         }
 
-                        every.push(ZCS.util.formatRecurMsg(ZtMsg.recurYearlyEveryMonthWeekDays, [bysetpos || ordinal, dayType, month]));
+	                    // Fix for bug: 86571. Passing isSpecificDay = true
+                        every.push(ZCS.util.formatRecurMsg(ZtMsg.recurYearlyEveryMonthWeekDays, [bysetpos || ordinal, dayType, month], true));
                     }
                     else {
                         var day = new Date();
                         day.setDate(day.getDate() - day.getDay() + dayofweek);
 
-                        every.push(ZCS.util.formatRecurMsg(ZtMsg.recurYearlyEveryMonthNumDay, [bysetpos || ordinal, day, month]));
+	                    // Fix for bug: 86571. Passing isSpecificDay = false
+                        every.push(ZCS.util.formatRecurMsg(ZtMsg.recurYearlyEveryMonthWeekDays, [bysetpos || ordinal, day, month], false));
                     }
                 }
                 break;
