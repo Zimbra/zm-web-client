@@ -340,6 +340,17 @@ ZCS.constant.ID_DLS         = '-18';    // distribution lists
 // An ID less than this indicates a system folder
 ZCS.constant.MAX_SYSTEM_ID = 255;
 
+// Names for system folders
+ZCS.constant.MSG_KEY = {};
+ZCS.constant.MSG_KEY[ZCS.constant.ID_INBOX]		= 'folderInbox';
+ZCS.constant.MSG_KEY[ZCS.constant.ID_TRASH]		= 'folderTrash';
+ZCS.constant.MSG_KEY[ZCS.constant.ID_JUNK]		= 'folderJunk';
+ZCS.constant.MSG_KEY[ZCS.constant.ID_SENT]		= 'folderSent';
+ZCS.constant.MSG_KEY[ZCS.constant.ID_DRAFTS]	= 'folderDrafts';
+ZCS.constant.MSG_KEY[ZCS.constant.ID_CONTACTS]  = 'folderContacts';
+ZCS.constant.MSG_KEY[ZCS.constant.ID_EMAILED]	= 'folderEmailedContacts';
+ZCS.constant.MSG_KEY[ZCS.constant.ID_CALENDAR]	= 'folderCalendar';
+
 // When showing a conv, don't show messages in these folders
 ZCS.constant.CONV_HIDE = ZCS.util.arrayAsLookupHash([
 	ZCS.constant.ID_TRASH,
