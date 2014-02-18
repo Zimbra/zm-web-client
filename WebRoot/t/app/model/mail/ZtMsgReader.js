@@ -54,8 +54,10 @@ Ext.define('ZCS.model.mail.ZtMsgReader', {
 
 		data.addresses = ZCS.model.mail.ZtMailItem.convertAddressJsonToModel(node.e);
 
-		data.dateStr = ZCS.util.getRelativeDateString(node.d);
-		data.fullDateStr = Ext.Date.format(new Date(node.d), 'F j, Y g:i:s A');
+		if (node.d) {
+			data.dateStr = ZCS.util.getRelativeDateString(node.d);
+			data.fullDateStr = Ext.Date.format(new Date(node.d), ZtMsg.msgDetailHdrFormat);
+		}
 
 		data.tags = ZCS.model.ZtItem.parseTags(node.t, ZCS.constant.APP_MAIL);
 

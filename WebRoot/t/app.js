@@ -58,6 +58,7 @@ Ext.application({
 		'Ext.MessageBox',
 		'ZCS.common.ZtTapRecognizer',
 		'ZCS.common.ZtEdgeSwipeRecognizer',
+		'ZCS.common.ZtDateUtil',
 		'ZCS.common.ZtHtmlUtil',
 		'ZCS.common.mail.ZtMailUtil',
 		'ZCS.common.ZtConstants',
