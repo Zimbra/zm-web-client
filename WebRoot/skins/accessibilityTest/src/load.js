@@ -16,12 +16,6 @@
 	/* apply overrides to some pre-existing elements */
 	var overrides = [
 		{
-			id: 'xcnavbar',
-			role: 'banner',
-			label: ZmMsg.bannerTitle
-		},
-
-		{
 			id: ZmId.SKIN_QUOTA_INFO,
 			role: 'contentinfo',
 			label: ZmMsg.quota
@@ -37,16 +31,6 @@
 			id: ZmId.SKIN_SEARCH,
 			role: 'search'
 		},
-
-		{
-			id: 'comcast-adsrvc',
-			hidden: true
-		},
-
-		{
-			id: 'skin_td_tree_bottom_ad',
-			hidden: true
-		}
 	];
 
 	AjxUtil.foreach(overrides, function(cfg) {
@@ -72,7 +56,10 @@
 
 	skin.appCtxtListener(new AjxCallback(skin, function () {
 		var callback = new AjxCallback(this, function () {
-			setTimeout(function() { util.say(ZmMsg.a11yWelcomeMessage); }, 5000);
+			var msg = AjxMessageFormat.format(ZmMsg.a11yWelcomeMessage,
+			                                  ZmMsg.zimbraTitle);
+
+			setTimeout(function() { util.say(msg); }, 5000);
 		});
 
 		if (appCtxt.inStartup) {
