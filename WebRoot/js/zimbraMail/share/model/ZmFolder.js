@@ -64,6 +64,8 @@ ZmOrganizer.ORG_CLASS[ZmId.ORG_FOLDER] = "ZmFolder";
 ZmFolder.SEP 									= "/";							// path separator
 
 // system folders (see Mailbox.java in ZimbraServer for positive int consts)
+// Note: since these are defined as Numbers, and IDs come into our system as Strings,
+// we need to use == for comparisons (instead of ===, which will fail)
 ZmFolder.ID_LOAD_FOLDERS						= -3;							// special "Load remaining folders" placeholder
 ZmFolder.ID_OTHER								= -2;							// used for tcon value (see below)
 ZmFolder.ID_SEP									= -1;							// separator
@@ -585,7 +587,7 @@ function(what, folderType, ignoreExisting) {
 		return false;
 	}
 	// placeholder for showing a large number of folders
-	if (this.id === ZmFolder.ID_LOAD_FOLDERS) {
+	if (this.id == ZmFolder.ID_LOAD_FOLDERS) {
 		return false;
 	}
 

@@ -1,4 +1,3 @@
-
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
@@ -1933,13 +1932,13 @@ function(params, jsonObj) {
         }
     }
     else {
-        if (this.folderId !== ZmFolder.ID_OUTBOX) {
+        if (this.folderId != ZmFolder.ID_OUTBOX) {
             folderArray.push({
                 id : ZmFolder.ID_OUTBOX,
                 n : appCtxt.getById(ZmFolder.ID_OUTBOX).numTotal + 1
             });
         }
-        if (this.folderId === ZmFolder.ID_DRAFTS) {
+        if (this.folderId == ZmFolder.ID_DRAFTS) {
             folderArray.push({
                 id : ZmFolder.ID_DRAFTS,
                 n : appCtxt.getById(ZmFolder.ID_DRAFTS).numTotal - 1

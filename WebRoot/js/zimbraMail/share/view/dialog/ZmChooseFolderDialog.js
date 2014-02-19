@@ -546,7 +546,7 @@ function(ev) {
 	}
 
 	var organizer = ev.item && ev.item.getData(Dwt.KEY_OBJECT);
-	if (organizer.id === ZmFolder.ID_LOAD_FOLDERS) {
+	if (organizer.id == ZmFolder.ID_LOAD_FOLDERS) {
 		return;
 	}
 	var value = organizer ? organizer.getName(null, null, true) : ev.item.getText();

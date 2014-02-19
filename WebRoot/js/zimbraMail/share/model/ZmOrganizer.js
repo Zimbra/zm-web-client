@@ -122,6 +122,8 @@ ZmOrganizer.MOUNTPOINT			= ZmEvent.S_MOUNTPOINT;
 ZmOrganizer.ZIMLET				= ZmEvent.S_ZIMLET;
 
 // folder IDs defined in com.zimbra.cs.mailbox.Mailbox
+// Note: since these are defined as Numbers, and IDs come into our system as Strings,
+// we need to use == for comparisons (instead of ===, which will fail)
 ZmOrganizer.ID_ROOT				= 1;
 ZmOrganizer.ID_INBOX			= 2;
 ZmOrganizer.ID_TRASH			= 3;

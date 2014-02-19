@@ -519,7 +519,7 @@ function(ev) {
 	}
 
 	// TODO: not sure what SPAM is doing in here - can you delete it?
-	if (organizer.nId === ZmFolder.ID_SPAM || organizer.isInTrash() || (trashFolder && trashFolder.disallowSubFolder)) {
+	if (organizer.nId == ZmFolder.ID_SPAM || organizer.isInTrash() || (trashFolder && trashFolder.disallowSubFolder)) {
 		this._pendingActionData = organizer;
 		var ds = this._deleteShield = appCtxt.getOkCancelMsgDialog();
 		ds.reset();
@@ -529,10 +529,10 @@ function(ev) {
 		if (organizer.type === ZmOrganizer.SEARCH) {
 			confirm = ZmMsg.confirmDeleteSavedSearch;
 		}
-		else if (organizer.nId === ZmFolder.ID_TRASH) {
+		else if (organizer.nId == ZmFolder.ID_TRASH) {
 			confirm = ZmMsg.confirmEmptyTrashFolder;
 		}
-		else if (organizer.nId === ZmFolder.ID_SPAM) {
+		else if (organizer.nId == ZmFolder.ID_SPAM) {
 			confirm = ZmMsg.confirmEmptyFolder;
 		}
 		else {
