@@ -69,7 +69,7 @@ Ext.define('ZCS.view.ux.ZtBubbleDropdown', {
 
 		listeners: {
 			inputKeyup: function (e, el) {
-				var value = el.value;
+				var value = el.value.trim();
 				this.showMenu(value);
 			},
 			inputBlur: function (e, el) {
@@ -135,11 +135,10 @@ Ext.define('ZCS.view.ux.ZtBubbleDropdown', {
 					if (value.length) {
 						if (this.getRemoteFilter()) {
 							this.configureStore(value, this.getMenuStore());
-
 							this.getMenuStore().load({
 								callback: function () {
 									//only show the menu if the response we are getting is still the value of the input.
-									if (value === this.getInput().getValue()) {
+									if (value === this.getInput().getValue().trim()) {
 										this.loadMenuFromStore.call(this);
 									}
 								},
@@ -271,11 +270,11 @@ Ext.define('ZCS.view.ux.ZtBubbleDropdown', {
             me.addBubble(emailRecord);
         }
 
-		me.getInput().dom.value = '';
+		me.clearInput();
 		me.focusInput();
 		list.hide();
 
 		e.preventDefault();
- 		e.stopPropagation();
+		e.stopPropagation();
 	}
 });
