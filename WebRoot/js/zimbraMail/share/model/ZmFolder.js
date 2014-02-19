@@ -592,9 +592,9 @@ function(what, folderType, ignoreExisting) {
 	var thisType = folderType || this.type;
 	var invalid = false;
 	if (what instanceof ZmFolder) {
-        invalid = ((what.parent === this && !ignoreExisting) || this.isChildOf(what) || this.nId === ZmFolder.ID_DRAFTS || this.nId === ZmFolder.ID_SPAM ||
+        invalid = ((what.parent === this && !ignoreExisting) || this.isChildOf(what) || this.nId == ZmFolder.ID_DRAFTS || this.nId == ZmFolder.ID_SPAM ||
 				   (!this.isInTrash() && this.hasChild(what.name) && !ignoreExisting) ||
-	               (what.type !== thisType) ||
+	               (what.type !== thisType && this.nId != ZmFolder.ID_TRASH) ||
 				   (what.id === this.id) ||
 				   (this.disallowSubFolder) ||
 				   (appCtxt.multiAccounts && !this.mayContainFolderFromAccount(what.getAccount())) || // cannot move folders across accounts, unless the target is local
@@ -630,11 +630,11 @@ function(what, folderType, ignoreExisting) {
                         invalid = true;
                         break;
                      }
-                } else if (item.type === ZmItem.MSG && childItem.isDraft && (this.nId !== ZmFolder.ID_TRASH && this.nId != ZmFolder.ID_DRAFTS && this.rid != ZmFolder.ID_DRAFTS)) {
-					// can move drafts into Trash or Drafts
+                } else if (item.type === ZmItem.MSG && childItem.isDraft && (this.nId != ZmFolder.ID_TRASH && this.nId != ZmFolder.ID_DRAFTS && this.rid != ZmFolder.ID_DRAFTS)) {
+					// can move drafts only into Trash or Drafts
 					invalid = true;
 					break;
-				} else if ((this.nId === ZmFolder.ID_DRAFTS || this.rid === ZmFolder.ID_DRAFTS) && !childItem.isDraft)	{
+				} else if ((this.nId == ZmFolder.ID_DRAFTS || this.rid == ZmFolder.ID_DRAFTS) && !childItem.isDraft)	{
 					// only drafts can be moved into Drafts
 					invalid = true;
 					break;
