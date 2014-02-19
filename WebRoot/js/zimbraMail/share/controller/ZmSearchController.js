@@ -211,9 +211,6 @@ function() {
 
 	// Button listeners
 	this._searchToolBar.addSelectionListener(ZmSearchToolBar.SEARCH_BUTTON, this._searchButtonListener.bind(this));
-	if (appCtxt.get(ZmSetting.SAVED_SEARCHES_ENABLED)) {
-		this._searchToolBar.addSelectionListener(ZmSearchToolBar.SAVE_BUTTON, this._saveButtonListener.bind(this));
-	}
 };
 
 /**
@@ -793,23 +790,6 @@ function(params) {
 		};
 		this.search(searchParams);
 	}
-};
-
-/**
- * @private
- */
-ZmSearchController.prototype._saveButtonListener =
-function(ev) {
-	var stc = appCtxt.getOverviewController().getTreeController(ZmOrganizer.SEARCH);
-	if (!stc._newCb) {
-		stc._newCb = stc._newCallback.bind(stc);
-	}
-
-	var params = {
-		search: this._results && this._results.search,
-		showOverview: (this._searchFor == ZmId.SEARCH_MAIL)
-	};
-	ZmController.showDialog(stc._getNewDialog(), stc._newCb, params);
 };
 
 /**

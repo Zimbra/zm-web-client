@@ -63,50 +63,54 @@ ZmSearchFolder.ID_ROOT = ZmOrganizer.ID_ROOT;
  * 
  * @param	{Hash}	params		a hash of parameters
  */
-ZmSearchFolder.create =
-function(params) {
-	var soapDoc = AjxSoapDoc.create("CreateSearchFolderRequest", "urn:zimbraMail");
-	var searchNode = soapDoc.set("search");
-	searchNode.setAttribute("name", params.name);
-	searchNode.setAttribute("query", params.search.query);
-	if (params.search.types) {
-		var a = params.search.types.getArray();
+ZmSearchFolder.create = function(params) {
+
+	params = params || {};
+
+	var search = params.search,
+		jsonObj = { CreateSearchFolderRequest: { _jsns:"urn:zimbraMail" } },
+		searchNode = jsonObj.CreateSearchFolderRequest.search = {};
+
+	searchNode.name = params.name;
+	searchNode.query = search.query;
+	searchNode.l = params.l;
+	if (params.sortBy) {
+		searchNode.sortBy = params.sortBy;
+	}
+
+	if (search && search.types) {
+		var a = search.types.getArray();
 		if (a.length) {
 			var typeStr = [];
 			for (var i = 0; i < a.length; i++) {
 				typeStr.push(ZmSearch.TYPE[a[i]]);
 			}
-			searchNode.setAttribute("types", typeStr.join(","));
+			searchNode.types = typeStr.join(",");
 		}
 	}
-	if (params.search.sortBy) {
-		searchNode.setAttribute("sortBy", params.search.sortBy);
-	}
-
-	var accountName;
-	if (params.isGlobal) {
-		searchNode.setAttribute("f", "g");
-		accountName = appCtxt.accountList.mainAccount.name;
-	}
-
-	searchNode.setAttribute("l", params.l);
 
 	if (params.rgb) {
-		searchNode.setAttribute("rgb", params.rgb);
+		searchNode.rgb = params.rgb;
 	}
 	else if (params.color) {
 		var color = ZmOrganizer.getColorValue(params.color, params.type);
 		if (color) {
-			searchNode.setAttribute("color", color);
+			searchNode.color = color;
 		}
 	}
 
-	appCtxt.getAppController().sendRequest({
-		soapDoc: soapDoc,
-		asyncMode: true,
-		accountName: accountName,
-		callback: ZmSearchFolder._handleCreate,
-		errorCallback: (new AjxCallback(null, ZmOrganizer._handleErrorCreate, params))
+	var accountName;
+	if (params.isGlobal) {
+		searchNode.f = 'g';
+		accountName = appCtxt.accountList.mainAccount.name;
+	}
+
+	return appCtxt.getAppController().sendRequest({
+		jsonObj:        jsonObj,
+		asyncMode:      params.asyncMode !== false,
+		accountName:    accountName,
+		callback:       ZmSearchFolder._handleCreate,
+		errorCallback:  params.errorCallback || ZmOrganizer._handleErrorCreate.bind(null)
 	});
 };
 

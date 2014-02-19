@@ -51,8 +51,7 @@ ZmNewSearchDialog.prototype._folderLocationLabel = ZmMsg.newSearchParent;
  * 
  * @param	{Hash}	params		a hash of parameters
  * @param	{String}	params.search		the search
- * @param	{Boolean}	params.showOverview	if <code>true</code>, make the overview visible
- * 
+ *
  */
 ZmNewSearchDialog.prototype.popup =
 function(params) {
@@ -62,7 +61,6 @@ function(params) {
 
 	var ov = this._getOverviewOrOverviewContainer();
 	
-	this._folderTreeView = ov.getTreeView(ZmOrganizer.FOLDER);
 	this._searchTreeView = ov.getTreeView(ZmOrganizer.SEARCH);
 	this._search = params.search;
 	this._searchTreeView.setSelected(appCtxt.getFolderTree(account).root, true);
@@ -75,11 +73,9 @@ function(params) {
 
 	var overviewDiv = document.getElementById(this._folderTreeCellId);
 	if (overviewDiv) {
-		Dwt.setVisible(overviewDiv, (params.showOverview && !this._isGlobalSearch));
+		Dwt.setVisible(overviewDiv, !this._isGlobalSearch);
 	}
-
 };
-
 
 ZmNewSearchDialog.prototype._getFolderData =
 function() {
@@ -102,7 +98,7 @@ function() {
 ZmNewSearchDialog.prototype._setupFolderControl =
 function(){
     ZmNewOrganizerDialog.prototype._setupFolderControl.call(this);
-	this._treeIds = [ZmOrganizer.FOLDER, ZmOrganizer.SEARCH];
+	this._treeIds = [ ZmOrganizer.SEARCH ];
 };
 
 // NOTE: don't show remote checkbox

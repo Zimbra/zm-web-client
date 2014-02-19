@@ -254,7 +254,14 @@ function(ex) {
 // pops up a dialog to save the search
 ZmSearchResultsController.prototype._saveListener =
 function(ev) {
-	appCtxt.getSearchController()._saveButtonListener(ev);
+
+	var stc = appCtxt.getOverviewController().getTreeController(ZmOrganizer.SEARCH);
+	if (!stc._newCb) {
+		stc._newCb = stc._newCallback.bind(stc);
+	}
+
+	var params = { search: this._curSearch };
+	ZmController.showDialog(stc._getNewDialog(), stc._newCb, params);
 };
 
 // toggles the pinned state of this tab
