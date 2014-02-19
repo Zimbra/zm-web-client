@@ -38,7 +38,8 @@ Ext.define('ZCS.common.ZtLogger', {
 	extend: 'Ext.log.Logger',
 	requires: [
 		'Ext.log.writer.Console',
-		'Ext.log.formatter.Default'
+		'Ext.log.formatter.Default',
+		'ZCS.common.ZtUserSession'
 	],
 
 	statics: {
@@ -56,8 +57,10 @@ Ext.define('ZCS.common.ZtLogger', {
 	},
 
 	log: function(message, priority, callerId) {
-
-		var custom = ZCS.session.getDebugLevel(),
+		//There is no guarentee ZCS.session exists, in one particular instance,
+		//Ios.js, this will be invoked extremely early in the app initialization process
+		//and ZCS.session won't exist.
+		var custom = ZCS.session ? ZCS.session.getDebugLevel() : null,
 			priorities = Ext.log.Logger.priorities,
 			priorityValue = priorities[priority];
 
