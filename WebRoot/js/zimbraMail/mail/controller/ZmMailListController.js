@@ -1639,7 +1639,7 @@ function(params) {
 ZmMailListController.prototype._filterListener =
 function() {
 
-	if (this._actionEv.handler) {
+	if (this._actionEv.address) {
 		this._handleResponseFilterListener(this._actionEv.address);
 	}
 	else {
@@ -1735,7 +1735,7 @@ function(msgOrAddr) {
 	}
 	else {
 		var subjMod = ZmFilterRule.C_ADDRESS_VALUE[ZmFilterRule.C_FROM];
-		rule.addCondition(ZmFilterRule.TEST_ADDRESS, ZmFilterRule.OP_CONTAINS, msgOrAddr, subjMod);
+		rule.addCondition(ZmFilterRule.TEST_ADDRESS, ZmFilterRule.OP_CONTAINS, msgOrAddr.isAjxEmailAddress ? msgOrAddr.address : msgOrAddr, subjMod);
 	}
 
 	rule.addAction(ZmFilterRule.A_KEEP);
@@ -2698,7 +2698,3 @@ function(dialog, callback) {
     dialog.popdown();
     callback.run();
 };
-
-
-
-
