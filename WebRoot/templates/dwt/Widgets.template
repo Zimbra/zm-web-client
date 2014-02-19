@@ -1,11 +1,11 @@
 <template id='dwt.Widgets#DwtAlert'>
-	<table width=100%>
+	<table role="presentation" width=100%>
 		<tr>
 			<td width=1%>
 				<div id='${id}_icon' style='margin-right:5px;'></div>
 			</td>
 			<td width=99%>
-				<table>
+				<table role="presentation">
 					<tr>
 						<td id='${id}_title' class='DwtAlertTitle'></td>
 					</tr>
@@ -22,7 +22,7 @@
 </template>
 
 <template id='dwt.Widgets#DwtCheckbox'>
-<table class='ZCheckboxTable'>
+<table role="presentation" class='ZCheckboxTable'>
 		<tr>
 			<td>
 				<label id='${id}_text_left' for='${id}_input' class='Text' style='text-align:right'></label>
@@ -38,7 +38,7 @@
 </template>
 
 <template id='dwt.Widgets#DwtRadioButton'>
-	<table class='ZRadioButtonTable'>
+	<table role="presentation" class='ZRadioButtonTable'>
 		<tr>
 			<td>
 				<label id='${id}_text_left' for='${id}_input' class='Text' style='text-align:right'></label>
@@ -55,7 +55,7 @@
 
 <template id='dwt.Widgets#DwtBaseDialog' width='20' height='32'>
 	<div class='DwtDialog WindowOuterContainer'>
-		<table>
+		<table role="presentation">
 			<tr id='${dragId}'>
 				<td class='minWidth'>${icon}</td>
 				<td id='${id}_title' class='DwtDialogTitle'>${title}</td>
@@ -85,7 +85,7 @@
 
 <template id='dwt.Widgets#DwtSemiModalDialog' width='20' height='32'>
 	<div class='DwtDialog LightWindowOuterContainer'>
-		<table style='cursor:move;'>
+		<table role="presentation" style='cursor:move;'>
 			<tr id='${dragId}'>
 				<td class='minWidth'>${icon}</td>
 				<td id='${id}_title' class='DwtDialogTitle'>${title}</td>
@@ -122,7 +122,7 @@
 
 <template id='dwt.Widgets#DwtHorizontalSash' width='0' height='0'>
 	<div class='DwtHorizontalSash'>
-		<table height='100%'>
+		<table role="presentation" height='100%'>
 			<tr>
 				<td height='100%' valign='middle'><div class='ImgHSash_thumb'></div></td>
 			</tr>
@@ -131,7 +131,7 @@
 </template>
 
 <template id='dwt.Widgets#DwtMissingSoundPlayer'>
-	<table class='DwtMissingSoundPlayer'>
+	<table role="presentation" class='DwtMissingSoundPlayer'>
 		<tr>
 			<td nowrap class='ImgCritical'>&nbsp;</td>
 			<td nowrap><$= ZmMsg.missingPlugin $></td>
@@ -157,7 +157,7 @@
 </template>
 
 <template id='dwt.Widgets#ZLabel' class='ZWidget'>
-	<table class='ZWidgetTable ZLabelBorder'>
+	<table role="presentation" class='ZWidgetTable ZLabelBorder'>
 		<tr>
 			<td id='${id}_left_icon'  	class='ZLeftIcon ZWidgetIcon'></td>
 			<td id='${id}_title'		class='ZWidgetTitle'></td>
@@ -168,7 +168,7 @@
 
 <template id='dwt.Widgets#ZButton' class='ZWidget'>
 	<$ var buttonClass = data.buttonClass || "Button"; $>
-	<table class='ZWidgetTable Z<$=buttonClass$>Table Z<$=buttonClass$>Border' style='table-layout:auto;' cellspacing='0'>
+	<table role="presentation" class='ZWidgetTable Z<$=buttonClass$>Table Z<$=buttonClass$>Border' style='table-layout:auto;' cellspacing='0'>
 		<tr>
 			<td id='${id}_left_icon'  	class='ZLeftIcon ZWidgetIcon'></td>
 			<td id='${id}_title'		class='ZWidgetTitle'></td>
@@ -189,7 +189,7 @@
 
 <template id='dwt.Widgets#ZBorderlessButton' class='ZWidget'>
 	<$ var buttonClass = data.buttonClass || "Button"; $>
-	<table class='ZWidgetTable Z<$=buttonClass$>Table' style='table-layout:auto;'>
+	<table role="presentation" class='ZWidgetTable Z<$=buttonClass$>Table' style='table-layout:auto;'>
 		<tr>
 			<td id='${id}_left_icon'  	class='ZLeftIcon ZWidgetIcon'></td>
 			<td id='${id}_title'		class='ZWidgetTitle'></td>
@@ -204,7 +204,7 @@
 		<a href='javascript:;' onclick='return false;' id='${id}_title'></a>
 	<$ }
 	   else { $>
-	<table class='DwtLinkButtonTable' style='table-layout:auto;'>
+	<table role="presentation" class='DwtLinkButtonTable' style='table-layout:auto;'>
 		<tr>
 			<td class='ZWidgetTitle'><a href='javascript:;' onclick='return false;' id='${id}_title'></a></td>
 			<td id='${id}_dropdown' class='DwtLinkButtonDropDownArrowTd'>
@@ -228,7 +228,7 @@
 
 
 <template id='dwt.Widgets#DwtComboBox' class='DwtComboBox'>
-	<table>
+	<table role="presentation">
 		<tr>
 			<td width=*><div id='${id}_input'></div></td>
 			<td><div id='${id}_button'></div></td>
@@ -238,7 +238,7 @@
 
 <template id='dwt.Widgets#DwtComboBoxButton' class='ZWidget'>
 	<$ var buttonClass = data.buttonClass || "Button"; $>
-	<table class='Z<$=buttonClass$>Border'>
+	<table role="presentation" class='Z<$=buttonClass$>Border'>
 		<tr>
 			<td id='${id}_dropdown' class='ZDropDown'></td>
 		</tr>
@@ -251,7 +251,7 @@
 </template>
 
 <template id='dwt.Widgets#ZTabBar' class='ZWidget'>
-	<table width='100%'>
+	<table role="presentation" width='100%'>
 		<tr valign='bottom' id='${id}_items'>
 			<$= AjxTemplate.expand("#ZTabBarPrefix", data) $>
 			<$= AjxTemplate.expand("#ZTabBarSuffix", data) $>
@@ -269,7 +269,7 @@
 
 <template id='dwt.Widgets#ZTab' class='ZWidget'>
 	<$ var buttonClass = data.buttonClass || "Tab" $>
-	<table id='${id}_select' class='Z<$=buttonClass$>Table Z<$=buttonClass$>Border ZWidgetTable ZWidgetBorder'>
+	<table role="presentation" id='${id}_select' class='Z<$=buttonClass$>Table Z<$=buttonClass$>Border ZWidgetTable ZWidgetBorder'>
 		<tr>
 			<td id='${id}_left_icon' class='ZLeftIcon ZWidgetIcon'></td>
 			<td id='${id}_title' class='ZWidgetTitle'></td>
@@ -296,7 +296,7 @@
 
 <template id='dwt.Widgets#ZTabFloat' class='ZWidget'>
 	<$ var buttonClass = data.buttonClass || "Tab" $>
-	<table id='${id}_select' class='Z<$=buttonClass$>Table Z<$=buttonClass$>Border ZWidgetBorder'>
+	<table role="presentation" id='${id}_select' class='Z<$=buttonClass$>Table Z<$=buttonClass$>Border ZWidgetBorder'>
 		<tr>
 			<td id='${id}_left_icon' class='ZLeftIcon ZWidgetIcon'></td>
 			<td id='${id}_title' class='ZWidgetTitle'></td>
@@ -315,7 +315,7 @@ NOTE: Do NOT override this template! This is used internally by the
       the select to the width of the widest option.
 -->
 <template id='dwt.Widgets#ZSelectAutoSizingContainer'>
-	<table>
+	<table role="presentation">
 		<tr>
 			<td id="${id}_select_container">
 				<$= AjxTemplate.expand(data.selectTemplateId, data.selectData) $>
@@ -323,7 +323,7 @@ NOTE: Do NOT override this template! This is used internally by the
 		</tr>
 		<tr>
 			<td>
-				<table id="${id}_pseudoitems_container"></table>
+				<table role="presentation" id="${id}_pseudoitems_container"></table>
 			</td>
 		</tr>
 	</table>
@@ -342,7 +342,7 @@ NOTE: Do NOT override this template! This is used internally by the
 </template>
 
 <template id='dwt.Widgets#ZToolbar' class='ZWidget'>
-	<table class='ZToolbarTable'>
+	<table role="presentation" class='ZToolbarTable'>
 		<tr id='${id}_items'>
 			<$= AjxTemplate.expand("#ZToolbarPrefix", data) $>
 			<$= AjxTemplate.expand("#ZToolbarSuffix", data) $>
@@ -358,7 +358,7 @@ NOTE: The outer table/tr is a necessary hack. It is NOT inserted in the
       destination; only the element with ${itemId} identifier is inserted.
 -->
 <template id='dwt.Widgets#ZToolbarItem'>
-	<table>
+	<table role="presentation">
 		<tr>
 			<td id='${itemId}'></td>
 		</tr>
@@ -366,7 +366,7 @@ NOTE: The outer table/tr is a necessary hack. It is NOT inserted in the
 </template>
 
 <template id='dwt.Widgets#ZToolbarSeparator'>
-	<table>
+	<table role="presentation">
 		<tr>
 			<td id='${itemId}' class='ZToolbarSeparator'>&nbsp;</td>
 		</tr>
@@ -374,7 +374,7 @@ NOTE: The outer table/tr is a necessary hack. It is NOT inserted in the
 </template>
 
 <template id='dwt.Widgets#ZToolbarSpacer'>
-	<table>
+	<table role="presentation">
 		<tr>
 			<td id='${itemId}' class='ZToolbarSpacer'>&nbsp;</td>
 		</tr>
@@ -382,7 +382,7 @@ NOTE: The outer table/tr is a necessary hack. It is NOT inserted in the
 </template>
 
 <template id='dwt.Widgets#ZToolbarFiller'>
-	<table>
+	<table role="presentation">
 		<tr>
 			<td id='${itemId}' class='ZToolbarFiller' width='100%'>&nbsp;</td>
 		</tr>
@@ -395,7 +395,7 @@ NOTE: The outer table/tr is a necessary hack. It is NOT inserted in the
 
 <template id='dwt.Widgets#ZTreeItem'>
 	<div class='${divClassName}' id='${id}_div'>
-		<table id='${id}_table' style="table-layout:fixed; width:100%">
+		<table role="presentation" id='${id}_table' style="table-layout:fixed; width:100%">
 			<tr>
 				<td style="width:20px" align=center nowrap id='${id}_nodeCell'></td>
 				<$ if (data.isCheckedStyle) { $>
@@ -417,7 +417,7 @@ NOTE: The outer table/tr is a necessary hack. It is NOT inserted in the
 
 <template id='dwt.Widgets#ZHeaderTreeItem'>
 	<div class='${divClassName}' id='${id}_div'>
-		<table id='${id}_table'>
+		<table role="presentation" id='${id}_table'>
 			<tr>
 				<$ if (!data.noNodeCell) { $>
 					<td align=center nowrap id='${id}_nodeCell'></td>
@@ -432,14 +432,14 @@ NOTE: The outer table/tr is a necessary hack. It is NOT inserted in the
 
 <template id='dwt.Widgets#ZAccordion'>
 	<div id='${id}_div'>
-		<table class='ZAccordionTable ZWidget' id='${id}_accordion_table'>
+		<table role="presentation" class='ZAccordionTable ZWidget' id='${id}_accordion_table'>
 		</table>
 	</div>
 </template>
 
 <template id='dwt.Widgets#ZAccordionItem'>
 	<div id='${id}_header_${itemNum}' class='ZAccordionHeader'>
-		<table class='ZAccordionHeaderBorder ZWidgetTable'>
+		<table role="presentation" class='ZAccordionHeaderBorder ZWidgetTable'>
 		<tr>
 			<td><div class='${icon}' id='${id}_icon_${itemNum}'></div></td>
 			<td><div class='ZAccordionTitle' id='${id}_title_${itemNum}'>${title}</div></td>
@@ -452,7 +452,7 @@ NOTE: The outer table/tr is a necessary hack. It is NOT inserted in the
 </template>
 
 <template id='dwt.Widgets#DwtTabView'>
-	<table width='100%' backgroundColor='${bgcolor}'>
+	<table role="presentation" width='100%' backgroundColor='${bgcolor}'>
 		<tr align='left' valign='middle'>
 			<td id='${id}_tabs' class='DwtTabTable' nowrap align='left' valign='middle' width='100%'></td>
 		</tr>
@@ -464,7 +464,7 @@ NOTE: The outer table/tr is a necessary hack. It is NOT inserted in the
 </template>
 
 <template id='dwt.Widgets#DwtTabSpacer'>
-	<table width='100%'>
+	<table role="presentation" width='100%'>
 		<tr></tr>
 		<tr></tr>
 		<tr>
@@ -478,7 +478,7 @@ NOTE: The outer table/tr is a necessary hack. It is NOT inserted in the
 </template>
 
 <template id='dwt.Widgets#ZMenuItem' class='ZWidget'>
-	<table class='ZWidgetTable ZMenuItemTable ZMenuItemBorder'>
+	<table role="presentation" class='ZWidgetTable ZMenuItemTable ZMenuItemBorder'>
 		<tr>
 			<td id='${id}_check' class='ZCheckIcon'><div></div></td>
 			<td id='${id}_left_icon' class='ZLeftIcon ZWidgetIcon'></td>
@@ -489,7 +489,7 @@ NOTE: The outer table/tr is a necessary hack. It is NOT inserted in the
 </template>
 
 <template id='dwt.Widgets#ZMenuItemSeparator' class='ZWidget'>
-	<table class='ZWidgetTable ZMenuItemTable ZMenuItemBorder ZMenuItemSeparatorBorder'>
+	<table role="presentation" class='ZWidgetTable ZMenuItemTable ZMenuItemBorder ZMenuItemSeparatorBorder'>
 		<tr>
 			<td id='${id}_title' class='ZWidgetTitle'><div class='ZMenuItem-Separator'></div></td>
 		</tr>
@@ -509,7 +509,7 @@ NOTE: The outer table/tr is a necessary hack. It is NOT inserted in the
 </template>
 
 <template id='dwt.Widgets#DwtListView-NoResults'>
-	<table width='100%'>
+	<table role="presentation" width='100%'>
 		<tr>
 			<td class='NoResults'>
 				${message}
@@ -519,7 +519,7 @@ NOTE: The outer table/tr is a necessary hack. It is NOT inserted in the
 </template>
 
 <template id='dwt.Widgets#DwtPasswordField'>
-	<table>
+	<table role="presentation">
 		<tr>
 			<td><div id='${id}_input'></div></td>
 			<td><div id='${id}_show_password'></div></td>
@@ -528,13 +528,13 @@ NOTE: The outer table/tr is a necessary hack. It is NOT inserted in the
 </template>
 
 <template id="dwt.Widgets#DwtFormRows">
-	<table class="ZPropertySheet" cellspacing="6">
+	<table role="presentation" class="ZPropertySheet" cellspacing="6">
 		<tbody id="${id}_rows" tabindex="100"></tbody>
 	</table>
 </template>
 
 <template id="dwt.Widgets#DwtFormRow">
-	<table>
+	<table role="presentation">
 		<tr id="${id}_row" class="DwtFormRow">
 			<td><div id="${id}" tabindex="100"></div></td>
 			<td><div id="${id}_add" class="DwtFormRowAdd" tabindex="200"></div></td>
@@ -627,12 +627,12 @@ NOTE: The outer table/tr is a necessary hack. It is NOT inserted in the
     <$ } $>
     <$ if (data.allowColorInput) { $>
         <div class='Text' style='margin-top:4px;'>
-            <table border="0" width='100%'>
+            <table role="presentation" border="0" width='100%'>
                 <tr><td><div id='${id}_input'></div></td>
                     <td><div id='${id}_button'></div></td>
                 </tr>
             </table>
-            <table class='DwtColorPickerLabel' border="0">
+            <table role="presentation" class='DwtColorPickerLabel' border="0">
 		<tr><td><div><$=AjxMsg.previewResult$></div></td>
 		    <td><div id='${id}_preview' class='Color'></div></td>
 		    <td><div id='${id}_error'></div></td>
@@ -643,7 +643,7 @@ NOTE: The outer table/tr is a necessary hack. It is NOT inserted in the
 </template>
 
 <template id='dwt.Widgets#DwtColorPickerButton' class='ZWidget'>
-	<table class='ZWidgetTable ZMenuItemTable ZMenuItemBorder'>
+	<table role="presentation" class='ZWidgetTable ZMenuItemTable ZMenuItemBorder'>
 		<tr>
 			<td><div id='${id}_color' class='Color'></div></td>
 			<td id='${id}_title' class='ZWidgetTitle'

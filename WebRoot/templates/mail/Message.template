@@ -1,13 +1,13 @@
 <template id='mail.Message#MessageHeader'>
 	<div><!-- empty container DIV here so Dwt.parseHtmlFragment returns the infoBar div below -->
-		<table class='MsgHeaderTable' id='${id}_headerElement' width=100%>
+		<table role="presentation" class='MsgHeaderTable' id='${id}_headerElement' width=100%>
 			<tr>
 				<td class='MsgHeaderContactContainer'>
 					<img class='MsgHeaderContactImage' src="${imageURL}" />
 				</td>
 				<td>
 					<div>
-						<table width=100%>
+						<table role="presentation" width=100%>
 							<tr id='${hdrTableTopRowId}'>
 								<$ if (data.isSyncFailureMsg) { $>
 									<td>&nbsp;</td>
@@ -27,17 +27,17 @@
 								<td>&nbsp;</td>
 							</tr>
 						</table>
-						<table id='${hdrTableId}' class='ZPropertySheet' cellspacing='6' style='margin:0 7px;'>
+						<table role="presentation" id='${hdrTableId}' class='ZPropertySheet' cellspacing='6' style='margin:0 7px;'>
 							<tr id='${expandRowId}'>
 								<td>
-									<table align=right>
+									<table role="presentation" align=right>
 										<tr>
 											<td class='LabelColName' style='padding-left:7px;'><$= ZmMsg.fromLabel $></td>
 										</tr>
 									</table>
 								</td>
 								<td valign=top colspan=10>
-									<table>
+									<table role="presentation">
 										<tr id="OBJ_PREFIX_<$=Dwt.getNextId()$>_from">
 											<td id="OBJ_PREFIX_<$=Dwt.getNextId()$>_from" class='LabelColValue' style='white-space:nowrap'>
 												<$= AjxTemplate.expand("#SentBy", data) $>
@@ -100,7 +100,7 @@
 
 <template id='mail.Message#InviteNotCurrent'>
 	<div class="InviteOutDated">
-		<table class='ZPropertySheet' cellspacing='6'>
+		<table role="presentation" class='ZPropertySheet' cellspacing='6'>
 			<tr>
 				<td><$= AjxImg.getImageHtml("Warning") $></td>
 				<td><$= ZmMsg.inviteNotCurrent $></td>
@@ -142,7 +142,7 @@
 		
 <template id='mail.Message#InviteHeader'>
 	<div><!-- empty container DIV here so Dwt.parseHtmlFragment returns the infoBar div below -->
-		<table class='InvHeaderTable' id='${id}_headerElement'>
+		<table role="presentation" class='InvHeaderTable' id='${id}_headerElement'>
 			<tr>
 				<$ if (!data.noTopHeader) { $>
 				<td class='InvHeaderContactContainer'>
@@ -152,7 +152,7 @@
 				<td>
 					<div class='InvHeaderDiv'>
 						<$ if (!data.noTopHeader) { $>
-						<table width=100% class='ZPropertySheet' cellspacing='6'>
+						<table role="presentation" width=100% class='ZPropertySheet' cellspacing='6'>
 							<tr id='${hdrTableTopRowId}'>
 							<$ if (data.closeBtnCellId) { $>
 								<td id='${closeBtnCellId}'></td>
@@ -165,12 +165,12 @@
 						</table>
 						<$ } $>
 
-						<table id='${hdrTableId}' width=100% class='ZPropertySheet' cellspacing='6'>
+						<table role="presentation" id='${hdrTableId}' width=100% class='ZPropertySheet' cellspacing='6'>
 							<$ if (data.counterInvMsg) { $>
 								<tr>
 									<td class='LabelColValue' colspan=2>
 										<div class='InvCounter'>
-											<table width='100%' class='ZPropertySheet' cellspacing='6'>
+											<table role="presentation" width='100%' class='ZPropertySheet' cellspacing='6'>
 												<tr>
 													<td width=20><$= AjxImg.getImageHtml("Information") $></td>
 													<td class='LabelColValue'><$= data.counterInvMsg $></td>
@@ -259,7 +259,7 @@
 						<$ } $>
 					</div>
 					<div id='${ptstMsgBannerId}' class='${ptstClassName}' <$ if (!data.ptstMsg) { $> style='display:none;' <$ } $> >
-						<table class='ZPropertySheet' cellspacing='6'>
+						<table role="presentation" class='ZPropertySheet' cellspacing='6'>
 							<tr>
 								<td id="${ptstMsgIconId}"><$= AjxImg.getImageHtml(data.ptstIcon) $></td>
 								<td id="${ptstMsgId}">${ptstMsg}</td>
@@ -268,7 +268,7 @@
 					</div>
 				<$ if (data.intendedForMsg) { $>
 					<div class="${intendedForClassName}">
-						<table class='ZPropertySheet' cellspacing='6'>
+						<table role="presentation" class='ZPropertySheet' cellspacing='6'>
 							<tr>
 								<td><$= AjxImg.getImageHtml("Information") $></td>
 								<td>${intendedForMsg}</td>
@@ -288,7 +288,7 @@
 </template>
 
 <template id='mail.Message#InviteHeaderPtst'>
-	<table class='ZPropertySheet' cellspacing='6'>
+	<table role="presentation" class='ZPropertySheet' cellspacing='6'>
 		<tr>
 			<td><$= AjxImg.getImageHtml(data.icon) $></td>
 			<td class='LabelColValue'>${attendee}</td>
@@ -297,7 +297,7 @@
 </template>
 
 <template id='mail.Message#AttachmentsView'>
-	<table width='100%' height='100%'>
+	<table role="presentation" width='100%' height='100%'>
 		<tr>
 			<td width='20%'><div id='${id}_filters'></div></td>
 			<td><div id='${id}_results'>Loading...</div></td>
@@ -306,7 +306,7 @@
 </template>
 
 <template id='mail.Message#MessageListHeader'>
-	<table class='SubjectBar' width=100%>
+	<table role="presentation" class='SubjectBar' width=100%>
 		<tr>
 			<td id='${id}_closeBtnCell' width='1%' style='padding-right:10px;'></td>
 			<td width='1%'><$= AjxImg.getImageHtml("ConversationView") $></td>
@@ -322,7 +322,7 @@
 
 <template id='mail.Message#InformationBar'>
 	<div id='${id}' class='DisplayImages'>
-		<table width='100%'>
+		<table role="presentation" width='100%'>
 			<tr>
 				<td width='1%' style='padding:0 1em;'><$= AjxImg.getImageHtml("Warning") $></td>
 				<td>${text} <span id='${id}_link' class='FakeAnchor'>${link}</span></td>
@@ -333,7 +333,7 @@
 
 <template id='mail.Message#ExtImageInformationBar'>
 	<div id='${id}' class='DisplayImages'>
-		<table width='100%'><tr>
+		<table role="presentation" width='100%'><tr>
 			<td width='1%' style='padding:0 1em;'><$= AjxImg.getImageHtml("Warning") $></td>
 			<td>
 				<div><span>${text}</span>&nbsp; 
@@ -350,7 +350,7 @@
 </template>
 
 <template id='mail.Message#AllAttachments'>
-	<table style='margin:5px 0 1px'>
+	<table role="presentation" style='margin:5px 0 1px'>
 		<$ if (data.viewAllUrl && !appCtxt.get(ZmSetting.ATTACHMENTS_BLOCKED)) { $>
 			<tr>
 				<td width='1%' style='padding-right:3px;'>
@@ -424,7 +424,7 @@
 	<$ var labelStyle = data.labelStyle = "width:"+(AjxEnv.isIE ? 60 : 64)+"px; overflow:visible; white-space:nowrap"; $>
 	<$ var inputStyle = data.inputStyle = AjxEnv.isSafari && !AjxEnv.isSafariNightly ? "height:52px;" : "height:21px; overflow:hidden" $>
 	<!-- header -->
-	<table id='${headerId}' width=100% class='ZPropertySheet' cellspacing='6'>
+	<table role="presentation" id='${headerId}' width=100% class='ZPropertySheet' cellspacing='6'>
 		<$ if (appCtxt.multiAccounts) { $>
 			<tr>
 				<td width='1%' align=right valign=top style='<$=labelStyle$>'>
@@ -452,7 +452,7 @@
 		<tr id='${subjectRowId}'>
 			<td width='1%' align=right style='<$=labelStyle$>'><$=ZmMsg.subjectLabel$></td>
 			<td>
-				<table width='100%'>
+				<table role="presentation" width='100%'>
 				<tr>
 					<td style='padding-right:4px;'>
 						<input id='${subjectInputId}' class='subjectField' autocomplete=off>
@@ -462,7 +462,7 @@
 			</td>
 			<td nowrap width='1%'>
 			<$ if (appCtxt.get(ZmSetting.MAIL_PRIORITY_ENABLED)) { $>
-				<table>
+				<table role="presentation">
 					<tr>
 						<td align=right style='<$=labelStyle$>' nowrap="nowrap"><$=ZmMsg.priorityLabel$>&nbsp;</td>
 						<td id="${priorityId}"></td>
@@ -473,7 +473,7 @@
 		</tr>
 		<tr id='${attRowId}'>
 			<td width='1%' style='vertical-align:top; <$=labelStyle$>'>
-				<table width='100%'>
+				<table role="presentation" width='100%'>
 					<tr>
 						<td align=right id='${attBtnId}'></td>
 					</tr>
@@ -502,7 +502,7 @@
 <template id='mail.Message#RedirectDialog'>
 	<$ var labelStyle = data.labelStyle = "width:"+(AjxEnv.isIE ? 60 : 64)+"px; overflow:visible; white-space:nowrap;" $>
 	<$ var inputStyle = data.inputStyle = AjxEnv.isSafari && !AjxEnv.isSafariNightly ? "height:52px;" : "height:21px; overflow:hidden;" $>
-	<table width=500 class="ZPropertySheet" cellspacing="6">
+	<table role="presentation" width=500 class="ZPropertySheet" cellspacing="6">
 		<$= AjxTemplate.expand("#To_Recipient", data) $>
 		<tr>
 			<td align=right valign=top colspan=3><$= ZmMsg.redirectExplanation $></td>
@@ -511,7 +511,7 @@
 </template>
 
 <template id='mail.Message#ForwardMessages'>
-	<table width=100%>
+	<table role="presentation" width=100%>
 		<$ var id = Dwt.getNextId(data.rowId) $>
 		<tr '<$= id $>' style="display:table-row;">
 			<td width="96%" colspan="2">
@@ -537,7 +537,7 @@
 </template>
 
 <template id='mail.Message#ForwardOneMessage'>
-	<table width=100%>
+	<table role="presentation" width=100%>
 		<$ var id = Dwt.getNextId(data.rowId) $>
 		<$ var message = data.message; $>
 		<tr id='<$= id $>' style="display:table-row;">
@@ -558,7 +558,7 @@
 </template>
 
 <template id='mail.Message#UploadProgress'>
-	<table width=100%>
+	<table role="presentation" width=100%>
 		<$ var id = Dwt.getNextId(data.rowId) $>
 		<tr '<$= id $>' style="display:table-row;">
 			<td width="96%" colspan="2">
@@ -577,7 +577,7 @@
 </template>
 
 <template id='mail.Message#ForwardAttachments'>
-	<table width=100%>
+	<table role="presentation" width=100%>
 		<$ var id = Dwt.getNextId(data.rowId) $>
 		<tr '<$= id $>' style="display:table-row;">
 			<td width="96%" colspan="2">
@@ -625,7 +625,7 @@
 </template>
 
 <template id='mail.Message#ZmMailConfirmView'>
-	<table width=100%>
+	<table role="presentation" width=100%>
 		<tr>
 			<td valign=top id='${id}_confirm'>
 				<div id='${id}_loading'><$= ZmMsg.loading $></div>
@@ -657,7 +657,7 @@
 
 <template id='mail.Message#ZmMailConfirmViewNewAddress'>
 	<div id="${id}_CHECKBOX" tabindex='10'></div>
-	<table style="margin-bottom:3px">
+	<table role="presentation" style="margin-bottom:3px">
 		<tr>
 			<td><div id="${id}_FIRST" tabindex='20'/></td>
 			<td><div id="${id}_LAST" tabindex='30'/></td>
@@ -670,7 +670,7 @@
 </template>
 
 <template id='mail.Message#viewMessage'>
-	<table width='100%'>
+	<table role="presentation" width='100%'>
 		<tr>
 			<td class='NoResults'><$= (data && data.isConv) ? ZmMsg.viewConversation : ZmMsg.viewMessage $></td>
 		</tr>
@@ -678,7 +678,7 @@
 </template>
 
 <template id='mail.Message#EmptyMessage'>
-	<table width='100%'>
+	<table role="presentation" width='100%'>
 		<tr>
 			<td class='NoResults'>
 				<$= ZmMsg.messageEmptyTextContent $>
@@ -710,7 +710,7 @@
 </template>
 
 <template id='mail.Message#Conv2ReplyTable'>
-	<table>
+	<table role="presentation">
 		<$= AjxTemplate.expand("#Conv2MsgAddressRow", data) $>
 	</table>
 </template>
@@ -732,7 +732,7 @@
 		 <img src="${imageURL}" />
 	</div>
 	<div class='info'>
-		<table id='${hdrTableId}' class='ZPropertySheet' cellspacing='6'>
+		<table role="presentation" id='${hdrTableId}' class='ZPropertySheet' cellspacing='6'>
 			<tr>
 			<td class='LabelColName'><$= ZmMsg.fromLabel $></td>
 			<td class='LabelColValue' style='white-space:nowrap'>
@@ -764,14 +764,14 @@
 
 <template id='mail.Message#VacationRemindDialog'>
 	<div style='width:350px;' id='${id}_question'>
-		<table align='center' cellspacing='6' class="ZPropertySheet">
+		<table role="presentation" align='center' cellspacing='6' class="ZPropertySheet">
 			<tr>
 				<td><$= AjxImg.getImageHtml(DwtMessageDialog.ICON[DwtMessageDialog.INFO_STYLE]) $></td>
 				<td id='${id}_dontRemindMsg'><$=ZmMsg.outOfOfficeRemindQuestion$></td>
 			</tr>
 		</table>
 	</div>
-	<table align='center'>
+	<table role="presentation" align='center'>
 		<tr>
 			<td><input checked value='0' type='checkbox' id='${id}_dontRemind' name='${id}_dontRemind'></td>
 			<td style='white-space:nowrap'><label id='${id}_dontRemindMsg' for='${id}_dontRemind'><$=ZmMsg.dontRemind$></label></td>

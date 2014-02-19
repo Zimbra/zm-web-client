@@ -14,7 +14,7 @@
  */
 <template id='calendar.Calendar#calendar_appt' width='10' height='7'>
 	<div id='${id}_body' class='appt_body ${bodyColor} ${boxBorder}'>
-		<table id='${id}_tableBody' style="width:100%; height:100%;${bodyStyle}">
+		<table role="presentation" id='${id}_tableBody' style="width:100%; height:100%;${bodyStyle}">
 		    <$ if(data.headerStyle) {$>
 			<tr style="${headerStyle}">
 			<$ }else { $>
@@ -22,7 +22,7 @@
 			<$ } $>
                 <td style="${showAsColor}" width=4 rowspan="<$= data.hideTime ? 2 : 3 $>"></td>
 				<td class='appt${newState}_time'>
-					<table style='background: none repeat scroll 0 0 transparent;border:0;border-collapse:collapse;border-spacing:0;width:100%'>
+					<table role="presentation" style='background: none repeat scroll 0 0 transparent;border:0;border-collapse:collapse;border-spacing:0;width:100%'>
                         <tr>
                             <td id='${id}_st' style='padding-right:3px;white-space:nowrap;'>${starttime}</td>
                             <$ if (data.icon) { $>
@@ -82,7 +82,7 @@
 
 <template id='calendar.Calendar#calendar_appt_bottom_only' width='10' height='7'>
 	<div id='${id}_body' class='appt_body ${bodyColor} ${boxBorder}'>
-		<table id='${id}_tableBody' style="width:100%;height:100%;${bodyStyle}">
+		<table role="presentation" id='${id}_tableBody' style="width:100%;height:100%;${bodyStyle}">
 			<tr valign=top>
 				<td width='4px' style='${showAsColor}' ></td>
 				<td class=appt${newState}_name style='height:100%'>
@@ -101,7 +101,7 @@
 
 <template id='calendar.Calendar#calendar_appt_30' width='4' height='4'>
 	<div id='${id}_body' class='appt_30_body  ${headerColor} ${boxBorder}'>
-		<table id='${id}_tableBody' width=100% style="width:100%;height:100%;${headerStyle}">
+		<table role="presentation" id='${id}_tableBody' width=100% style="width:100%;height:100%;${headerStyle}">
             <$ if(data.headerStyle) {$>
             <tr style="${headerStyle}">
             <$ }else { $>
@@ -130,7 +130,7 @@
 
 <template id='calendar.Calendar#calendar_appt_allday' width='4' height='4'>
 	<div id='${id}_body' class='appt_allday_body ${headerColor} ${boxBorder}'>
-		<table id='${id}_tableBody' style="table-layout:fixed;height:100%;${headerStyle}${borderLeft}${borderRight}">
+		<table role="presentation" id='${id}_tableBody' style="table-layout:fixed;height:100%;${headerStyle}${borderLeft}${borderRight}">
             <$ if(data.headerStyle) {$>
             <tr style="${headerStyle}">
             <$ }else { $>
@@ -164,7 +164,7 @@
 	<$ var continued = data.multiday && !data.first; $>
 	<$ var style = continues ? "padding-right:14px;" : ""; $>
 	<div id='${id}_body' style='position:relative;'>
-        <table id='${id}_tableBody' width=100% style="table-layout:fixed; ${headerStyle}">
+        <table role="presentation" id='${id}_tableBody' width=100% style="table-layout:fixed; ${headerStyle}">
         <tr>
             <td width='4px' style="${showAsColor}" ></td>
             <td width=100%><div id='${id}_st_su' style='overflow:hidden;white-space:nowrap; <$=style$>'>
@@ -189,7 +189,7 @@
 
 <template id='calendar.Calendar#TypeDialog'>
 	<div style='width:274px' id='${id}_question'></div><p>
-	<table align=center width=1%>
+	<table role="presentation" align=center width=1%>
 		<tr>
 			<td width=1%><input checked value='1' type='radio' id='${id}_defaultRadio' name='${id}_instSeriesName'></td>
 			<td style='white-space:nowrap'><label id='${id}_instanceMsg' for='${id}_defaultRadio'> </label></td>
@@ -203,13 +203,13 @@
 
 <template id='calendar.Calendar#PrintDialog'>
 	<div id='${id}_printDialogContainer'>
-	    <table align=center width=600>
+	    <table role="presentation" align=center width=600>
             <tr>
                 <td width=30% valign=top><div id='${id}_calTreeContainer' style="margin-right:5px;"></div></td>
                 <td width=70% valign=top>
                     <div id='${id}_printErrorMsgContainer'></div>
                     <div id='${id}_printOptionsContainer'>
-                        <table class="ZPropertySheet" cellspacing="6">
+                        <table role="presentation" class="ZPropertySheet" cellspacing="6">
                             <tr>
                                 <td width=25><input checked value='sel_date' type='radio' id='${id}_selDateRadio' name='${id}_selDateRange'></td>
                                 <td width=80><label for='${id}_selDateRadio'> <$= ZmMsg.calPrintSelDate $></label></td>
@@ -226,7 +226,7 @@
                             </tr>
                         </table>
                         <div class="horizSep"></div>
-                        <table class="ZPropertySheet" cellspacing="6" width=100%>
+                        <table role="presentation" class="ZPropertySheet" cellspacing="6" width=100%>
                             <tr style='display:block;'>
                                 <td align=right width=111><$= ZmMsg.calPrintView $></td>
                                 <td colspan=4><div id='${id}_printViewContainer'></div></td>
@@ -241,7 +241,7 @@
                             <tr style='display:block;'>
                                 <td align=right valign=top width=111><$= ZmMsg.calPrintOptions $></td>
                                 <td colspan=4>
-                                    <table class="ZCheckboxTable" width=100%>
+                                    <table role="presentation" class="ZCheckboxTable" width=100%>
                                         <tr id='${id}_workDaysOnlyContainer'>
                                             <td><input value="1" type='checkbox' id='${id}_workDaysOnly' name='${id}_workDaysOnly'></td>
                                             <td><label for='${id}_workDaysOnly'><$= ZmMsg.calPrintWorkDaysOnly $></label></td>
@@ -271,11 +271,11 @@
 
 <template id='calendar.Calendar#SharedCalendarDialog'>
 <div id='${id}_shareCalendarView1'>
-    <table width=300>
+    <table role="presentation" width=300>
         <tr>
             <td valign=top align=right><$= ZmMsg.sourceLabel $></td>
             <td>
-                <table class="ZRadioButtonTable" width=100%>
+                <table role="presentation" class="ZRadioButtonTable" width=100%>
                     <tr>
                         <td width="5"><input type="radio" name="extCalType" id="${id}_shareRadioYahoo"></td>
                         <td align=left><label for="${id}_shareRadioYahoo"><$= ZmMsg.sharedCalTitleYahoo $></label></td>
@@ -290,11 +290,11 @@
     </table>
 </div>
 <div id='${id}_shareCalendarView2'>
-    <table width=300>
+    <table role="presentation" width=300>
         <tr>
             <td>&nbsp;</td>
             <td>
-                <table class="ZPropertySheet" cellspacing="6" width=100%>
+                <table role="presentation" class="ZPropertySheet" cellspacing="6" width=100%>
                     <tr>
                         <td align=right width=80><$= ZmMsg.sharedCalTypeLabel $></td>
                         <td id="${id}_syncType"></td>
@@ -330,7 +330,7 @@
 
 <template id='calendar.Calendar#ApptDragProxy'>
 	<div class='${color}'>
-		<table>
+		<table role="presentation">
 			<tr>
 				<td rowspan=2><$= AjxImg.getImageHtml("Appointment") $></td>
 				<td><b>${shortDate}</b> ${dur}</td>
@@ -343,7 +343,7 @@
 </template>
 
 <template id='calendar.Calendar#ListViewFolder'>
-	<table>
+	<table role="presentation">
 		<tr>
 			<td width=16 id="${id}_image"><$= AjxImg.getImageHtml(data.folder.getIconWithColor()) $></td>
 			<td width=100% id="${id}_name">${folderName}</td>
@@ -352,7 +352,7 @@
 </template>
 
 <template id='calendar.Calendar#ListViewSearchBar'>
-	<table width=100%>
+	<table role="presentation" width=100%>
 		<tr><td id="${id}_searchBarControls"></td>
             <td id="${id}_searchBarDate" class='calendar_date_search-dateRange'></td>
         </tr>
@@ -360,7 +360,7 @@
 </template>
 
 <template id='calendar.Calendar#ListViewSearchBarInput'>
-	<table width=100%>
+	<table role="presentation" width=100%>
 		<tr><td class='calendar_date_search_td'><input autocomplete='off' style='height:22px;' type='text' size=14 id='${id}DateInput' value='${value}'></td>
 			<td class="miniCalendarButton" id='${id}MiniCal'></td>
 		</tr>
@@ -398,10 +398,10 @@
 			</div>
 		</td>
 		<td valign=top align=right>
-			<table style="margin-left:15px;">
+			<table role="presentation" style="margin-left:15px;">
 				<tr id='${actionsRowId}'>
 					<td valign=top align=right>
-						<table class='ZPropertySheet' cellspacing='6'>
+						<table role="presentation" class='ZPropertySheet' cellspacing='6'>
 							<tr>
 								<td valign=top id='${snoozeSelectInputId}' style="padding-right:0;"></td>
 								<td valign=top id='${snoozeSelectBtnId}' style="padding-left:0" width="1%"></td>
@@ -426,7 +426,7 @@
 </template>
 
 <template id='calendar.Calendar#ReminderDialogAllSection'>
-	<table class='ZPropertySheet' cellspacing='6' cellpadding=0 border=0 width="100%">
+	<table role="presentation" class='ZPropertySheet' cellspacing='6' cellpadding=0 border=0 width="100%">
 		<tr>
 			<td width=100% valign=middle align=right>
 				<span id='${snoozeAllLabelId}'></span>
@@ -443,7 +443,7 @@
 
 
 <template id='calendar.Appointment#DnDProxy'>
-    <table class="dnd_calendar_month_day_table">
+    <table role="presentation" class="dnd_calendar_month_day_table">
         <tr></tr>
     </table>
 </template>
