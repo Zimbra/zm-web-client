@@ -69,11 +69,9 @@
 			<file>../_base/base3/splash.html</file>
 		</html>
         <templates>
-            <!-- <file>templates/App.template</file> -->
-            <!-- <file>templates/Dialogs.template</file> -->
-            <!-- <file>templates/Message.template</file> -->
-            <!-- <file>templates/Pages.template</file> -->
-            <!-- <file>templates/Widgets.template</file> -->
+            <file>templates/Dialogs.template</file>
+            <file>templates/Message.template</file>
+            <file>templates/Pages.template</file>
         </templates>
 	</advanced>
 	<standard>

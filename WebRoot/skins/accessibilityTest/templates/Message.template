@@ -1,128 +1,17 @@
-
-
-<template id='mail.Message#Compose'>
-	<$ var labelStyle = data.labelStyle = "width:92px; height: 32px; overflow:visible; white-space:nowrap; float: left; padding: 6px; text-align:right;"; $>
-
-	<$ var fieldStyle = data.fieldStyle = "padding: 6px; margin-left: 92px"; $>
-
-	<$ var inputStyle = data.inputStyle = AjxEnv.isSafari && !AjxEnv.isSafariNightly ? "height:52px;" : "height:21px; overflow:hidden" $>
-	<!-- header -->
-	<div id='${headerId}' width=100% class='ZPropertySheet'>
-		<$ if (appCtxt.multiAccounts) { $>
-			<div>
-				<div align=right valign=top style='<$=labelStyle$>' id='${fromSelectId}_label'>
-					<$=ZmMsg.fromLabel$>
-				</div>
-				<div width='96%' style="float:left">
-					<div id='${fromSelectId}'></div>
-				</div>
-			</div>
-		<$ } else {$>
-			<div id='${identityRowId}' style='display:none;width:100%;'>
-				<div style='<$=labelStyle$>;padding-top:9px' id='${fromSelectId}_label'>
-					<$=ZmMsg.fromLabel$>
-				</div>
-				<div style="<$=fieldStyle$>">
-					<div id='${identitySelectId}'></div>
-				</div>
-			</div>
-		<$ } $>
-		<$= AjxTemplate.expand("#To_Recipient", data) $>
-		<$= AjxTemplate.expand("#CC_Recipient", data) $>
-		<$= AjxTemplate.expand("#BCC_Recipient", data) $>
-		<div id='${subjectRowId}'>
-			<div align=right style='<$=labelStyle$>;padding-top:9px' id='${subjectInputId}_label'>
-				<$=ZmMsg.subjectLabel$>
-			</div>
-			<div style="<$=fieldStyle$>">
-				<div width='100%' role='presentation'>
-				<div>
-					<span style='padding-right:4px;'>
-						<input id='${subjectInputId}' class='subjectField' autocomplete=off style="width:99%;text-align:left">
-					</span>
-					<$ if (appCtxt.get(ZmSetting.MAIL_PRIORITY_ENABLED)) { $>
-					<span nowrap width='1%'>
-						<div role='presentation'>
-							<div>
-								<span align=right style='<$=labelStyle$>' nowrap="nowrap" id="${priorityId}_label"><$=ZmMsg.priorityLabel$>&nbsp;</span>
-								<span id="${priorityId}"></span>
-							</div>
-						</div>
-					</span>
-					<$ } $>
-				</div>
-				</div>
-			</div>
-		</div>
-		<div>
-			<span colspan='10'>
-				<div width='100%' role='presentation'>
-					<div id='${attRowId}'>
-						<span style='vertical-align:top;'>
-							<div width='100%' role='presentation'>
-								<div>
-									<span align=right id='${attBtnId}'></span>
-								</div>
-							</div>
-						</span>
-						<span colspan=2>
-							<span id='${zdndToolTipId}' class='zdnd_tooltip'>
-								<$=ZmMsg.dndTooltip$>
-							</span>
-							<span id='${attDivId}'></span>
-						</span>
-					</div>
-				</div>
-			</span>
-		</div>
-		<div id='${replyAttRowId}' style='display:none;'>
-			<span></span>
-			<span colspan="2">
-				<a class='FakeAnchor' onclick="window.appCtxt.getCurrentView()._addReplyAttachments()">
-					<$=ZmMsg.replyAttach$>
-				</a>
-			</span>
-		</div>
-	</div>
-	<!-- compose editor is automatically appended below the header -->
-</template>
-
-
-
-<template id='mail.Message#viewMessage'>
-	<table width='100%' role="presentation">
-		<tr>
-			<td class='NoResults'><br><$= (data && data.isConv) ? ZmMsg.viewConversation : ZmMsg.viewMessage $></td>
-		</tr>
-	</table>
-</template>
-
-<template id='mail.Message#EmptyMessage'>
-	<table width='100%' role="presentation">
-		<tr>
-			<td class='NoResults' style="text-align:center;">
-				<br>
-				<$= ZmMsg.messageEmptyTextContent $>
-			</td>
-		</tr>
-	</table>
-</template>
-
 <template id='mail.Message#ExtImageInformationBar'>
 	<div id='${id}' class='DisplayImages'>
-		<table width='100%'><tr>
+		<table role="presentation" width='100%'><tr>
 			<td width='1%' style='padding:0 1em;'><$= AjxImg.getImageHtml("Warning") $></td>
 			<td>
 				<div><span>${text}</span>&nbsp; 
-				<a href='javascript:void(0);' id='${id}_dispImgs' aria-label='${text} ${link}'>${link}</a></div>
+				<a href="javascript:void(0);" id='${id}_dispImgs' aria-label='${text} ${link}'>${link}</a></div>
 			<$ if (data.domain || data.email){ $>
 				<div><span>${alwaysText}</span>&nbsp; 
-				<a href='javascript:void(0);' id='${id}_domain' aria-label='${alwaysText} ${domain}'>${domain}</a> 
+				<a href="javascript:void(0);" id='${id}_domain' aria-label='${alwaysText} ${domain}'>${domain}</a> 
 				${or} 
-				<a href='javascript:void(0);' id='${id}_email' aria-label='${alwaysText} ${domain}'>${email}</a></div>
+				<a href="javascript:void(0);" id='${id}_email' aria-label='${alwaysText} ${email}'>${email}</a></div>
 			<$}$></td>
-			<td width='1%' style='padding:0 1em;'><div class='ImgClose' id='${id}_close'></div></td>
+			<td width='1%' style='padding:0 1em;'><div class="ImgClose" id='${id}_close'></div></td>
 		</tr></table>
 	</div>
 </template>
-
