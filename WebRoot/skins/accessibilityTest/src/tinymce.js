@@ -591,7 +591,7 @@ skin.override("tinymce.InlineWindowManager.prototype.open", function(f,p) {
 					iframe.detachEvent("onload", load);
 				}
 
-				util.addStylesheet("/skins/accessibilityTest/tab-selection"+(AjxEnv.isIE?"-ie":"")+".css", doc);
+				util.addStylesheet("/skins/accessibilityTest/src/tab-selection"+(AjxEnv.isIE?"-ie":"")+".css", doc);
 			};
 
 			if (iframe.addEventListener) {

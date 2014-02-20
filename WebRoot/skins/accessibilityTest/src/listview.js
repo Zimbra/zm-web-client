@@ -223,7 +223,7 @@
 						}
 					}
 
-					if (item.hasAttachment) {
+					if (item.hasAttach) {
 						label = ZmMsg.hasAttachment;
 					}
 
@@ -581,20 +581,22 @@
 
 		itemel.setAttribute('aria-label', getitemstring(item));
 
-		var table = itemel.firstChild;
+		if (!this.useListElement()) {
+			var table = itemel.firstChild;
 
-		util.setElementRole(table, 'presentation');
-		table.setAttribute('aria-hidden', true);
+			util.setElementRole(table, 'presentation');
+			table.setAttribute('aria-hidden', true);
 
-		AjxUtil.foreach(table.rows[0].cells, function(cell, idx) {
-			util.setElementRole(cell, 'button');
-			focusableIds.push(util.getElementID(cell));
+			AjxUtil.foreach(table.rows[0].cells, function(cell, idx) {
+				util.setElementRole(cell, 'button');
+				focusableIds.push(util.getElementID(cell));
 
-			if (cell.firstChild && cell.firstChild.tagName == 'DIV' &&
-				cell.firstChild.firstChild &&
-				cell.firstChild.firstChild.tagName == 'TABLE')
-				util.setElementRole(div.firstChild, 'presentation');
-		});
+				if (cell.firstChild && cell.firstChild.tagName == 'DIV' &&
+					cell.firstChild.firstChild &&
+					cell.firstChild.firstChild.tagName == 'TABLE')
+					util.setElementRole(div.firstChild, 'presentation');
+			});
+		}
 
 		if (util.isInstance(this, "ZmListView")) {
 			processItemFields.call(this, item, itemel);

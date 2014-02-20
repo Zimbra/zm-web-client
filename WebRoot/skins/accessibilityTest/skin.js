@@ -76,7 +76,7 @@ VelodromeSkin.prototype.setTreeWidth = function(width) {
 VelodromeSkin.prototype._setContainerSizes = function(containerName, width, height) {
 	var containers = this.hints[containerName].resizeContainers || this.hints[containerName].containers;
 	for (var i = 0; i < containers.length; i++) {
-		this._setSize(containers[i], width, null);
+		Dwt.setSize(containers[i], width, null);
 	}
 };
 

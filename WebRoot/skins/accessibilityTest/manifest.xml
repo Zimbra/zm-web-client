@@ -46,7 +46,7 @@
             <file>src/htmleditor.js</file>
             <file>src/keyboardmgr.js</file>
             <file>src/labels.js</file>
-            <!-- file>src/listview.js</file -->
+            <file>src/listview.js</file>
             <file>src/load.js</file>
             <file>src/menus.js</file>
             <file>src/msgview.js</file>
