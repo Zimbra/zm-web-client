@@ -55,22 +55,12 @@ Ext.define('ZCS.controller.ZtAppViewController', {
 
 		Ext.each(ZCS.constant.APPS, function(app) {
 			if (ZCS.util.isAppEnabled(app)) {
-				//Init our bookkeeping object.
-                if (app !== ZCS.constant.APP_CALENDAR) {
-                    this.appViews[app] = {
-                        itemPanel: null,
-                        overviewPanel: null,
-                        listPanel: null,
-                        positioningConfig: null
-                    };
-                }
-                else {
-                    this.appViews[app] = {
-                        itemPanel: null,
-                        overviewPanel: null,
-                        positioningConfig: null
-                    };
-                }
+				this.appViews[app] = {
+                    itemPanel: null,
+                    overviewPanel: null,
+                    listPanel: null,
+                    positioningConfig: null
+                };
 			}
 		}, this);
 
@@ -230,7 +220,10 @@ Ext.define('ZCS.controller.ZtAppViewController', {
         var width = '100%',
             navigationWidth;
 
-        if (appview.getApp() !== ZCS.constant.APP_CALENDAR) {
+        //If the app has a list panel, then we may need a placeHolder for it, and the width
+        //of the item panel may need to be adjusted, if it does not, then the item panel
+        //will assume 100% width.
+        if (this.appViews[appview.getApp()].listPanel) {
 
             width = this.getItemPanelWidth(positioningConfig);
             navigationWidth = this.getNavigationWidth(positioningConfig);
@@ -308,7 +301,9 @@ Ext.define('ZCS.controller.ZtAppViewController', {
 			appViewConfig = this.appViews[activeApp],
 			itemPanel = appViewConfig.itemPanel;
 
-		if (!this.showPlaceholder(appViewConfig.positioningConfig)) {
+		//If the app has a list panel, and it is not already reserving space via a placeholder
+		//then show the button to expose it.
+		if (!this.showPlaceholder(appViewConfig.positioningConfig) && appViewConfig.listPanel) {
 			itemPanel.updatelistpanelToggle(buttonText);
 		} else {
 			itemPanel.updatelistpanelToggle(null);
@@ -326,19 +321,23 @@ Ext.define('ZCS.controller.ZtAppViewController', {
 			var overlayModalness = !this.showPlaceholder(appViewConfig.positioningConfig),
 				overlayWidth = this.getNavigationWidth(appViewConfig.positioningConfig, width),
 				overviewHeight = this.getOverviewPanelHeight(),
-				itemPanelWidth = this.getItemPanelWidth(appViewConfig.positioningConfig, width);
+				itemPanelWidth = '100%';
 
-			appViewConfig.itemPanel.setWidth(itemPanelWidth);
+			if (appViewConfig.listPanel) {
+				itemPanelWidth = this.getItemPanelWidth(appViewConfig.positioningConfig, width);
+			}
 
 			//Resize the height and width of these panels because
 			//they are not controlled by a layout manager.
+			
+			appViewConfig.itemPanel.setWidth(itemPanelWidth);
+
 			appViewConfig.overviewPanel.setWidth(overlayWidth);
 			if (appViewConfig.placeHolder) {
 				appViewConfig.placeHolder.setWidth(overlayWidth);
 			}
 
 			appViewConfig.overviewPanel.setHeight(overviewHeight);
-
 
 			newDimensions[app] = {
 				listPanel: {
