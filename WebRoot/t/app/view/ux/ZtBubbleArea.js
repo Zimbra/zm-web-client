@@ -232,6 +232,7 @@ Ext.define('ZCS.view.ux.ZtBubbleArea', {
      */
     clearInput: function() {
         this.getInput().dom.value = ' ';
+        this.getInput().lastLength = 1;
     },
 
     /**
