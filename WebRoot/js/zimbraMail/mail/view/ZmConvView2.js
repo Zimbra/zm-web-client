@@ -1360,6 +1360,7 @@ ZmMailMsgCapsuleView.prototype._renderMessage =
 function(msg, container, callback) {
 	
 	msg = this._msg;
+	this._clearBubbles();
 	this._createMessageHeader();
 	if (this._expanded) {
 		this._renderMessageBodyAndFooter(msg, container, callback);
