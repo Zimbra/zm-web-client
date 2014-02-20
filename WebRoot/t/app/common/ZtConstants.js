@@ -631,6 +631,9 @@ ZCS.constant.PATH_MSG_FETCH = '/service/home/~/';
 ZCS.constant.ATTACHMENT_UPLOAD = '/service/upload';
 ZCS.constant.IMAGE_URL_BASE = '/img/zimbra/Img';
 
+// Property used to store src attribute of images before they were fixed so they can be unfixed for sending
+ZCS.constant.ORIGINAL_SRC_ATTRIBUTE = 'origSrc';
+
 // Default height of IFRAME element
 ZCS.constant.DEFAULT_IFRAME_HEIGHT = 150;
 
@@ -726,6 +729,12 @@ ZCS.constant.CONTACT_TEMPLATE_FIELDS = [
 	'members', 'isOwner', 'isMember'
 ];
 
+// Contact fields that appear on the form
+ZCS.constant.CONTACT_FORM_FIELDS = [
+	'email', 'phone', 'address', 'url', 'name', 'company'
+];
+ZCS.constant.IS_CONTACT_FORM_FIELD = ZCS.util.arrayAsLookupHash(ZCS.constant.CONTACT_FORM_FIELDS);
+
 // Contact fields that can have multiple values
 ZCS.constant.CONTACT_MULTI_FIELDS = [
 	'email', 'phone', 'address', 'url'
@@ -786,9 +795,28 @@ ZCS.constant.EXTRA_NAME_FIELDS = [
 ];
 ZCS.constant.IS_EXTRA_NAME_FIELD = ZCS.util.arrayAsLookupHash(ZCS.constant.EXTRA_NAME_FIELDS);
 
+// the order in which NAME fields are arranged vertically on the contact form
+ZCS.constant.NAME_FIELDS_ORDER = {
+	'namePrefix': 1,
+	'firstName': 2,
+	'middleName': 3,
+	'maidenName': 4,
+	'lastName': 5,
+	'nameSuffix': 6,
+	'nickname': 7
+};
+
 ZCS.constant.EXTRA_JOB_FIELDS = [
 	'jobTitle', 'department'
 ];
+
+// the order in which NAME fields are arranged vertically on the contact form
+ZCS.constant.COMPANY_FIELDS_ORDER = {
+	'jobTitle': 1,
+	'department': 2,
+	'company': 3,
+};
+
 ZCS.constant.IS_EXTRA_JOB_FIELD = ZCS.util.arrayAsLookupHash(ZCS.constant.EXTRA_JOB_FIELDS);
 
 // Server errors that should force a logout
