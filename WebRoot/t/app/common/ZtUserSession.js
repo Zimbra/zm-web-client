@@ -37,7 +37,6 @@ Ext.define('ZCS.common.ZtUserSession', {
 		accountName:            '',
 		accountId:              '',
 		initialSearchResults:   null,
-		debugLevel:             '',
 		organizerRoot:          null,           // Root for canonical tree of organizers (unsorted)
 		activeApp:              '',
 		version:                '[unknown]',
@@ -93,8 +92,6 @@ Ext.define('ZCS.common.ZtUserSession', {
 	},
 
 	initSession: function(data) {
-
-		this.setDebugLevel(data.debugLevel);
 
 		// session handling
 		this.staleSessions = {};

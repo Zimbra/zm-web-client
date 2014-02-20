@@ -60,7 +60,7 @@ Ext.define('ZCS.common.ZtLogger', {
 		//There is no guarentee ZCS.session exists, in one particular instance,
 		//Ios.js, this will be invoked extremely early in the app initialization process
 		//and ZCS.session won't exist.
-		var custom = ZCS.session ? ZCS.session.getDebugLevel() : null,
+		var custom = window.inlineData && window.inlineData.debugLevel,
 			priorities = Ext.log.Logger.priorities,
 			priorityValue = priorities[priority];
 
