@@ -71,7 +71,8 @@ $zcs-detailBtn-offset: 0.15em;
 }
 
 .zcs-conv-title-bar {
-	background-color: transparent;
+	background-color: #808080;
+	background-image: none;
 	color: white;
 	font-size: 1.5em;
 	min-height: 2em;
@@ -79,6 +80,11 @@ $zcs-detailBtn-offset: 0.15em;
 	position: absolute;
 	width: 100%;
 	z-index: 1;
+}
+
+.x-android .zcs-conv-title-bar,
+.x-ios-7 .zcs-conv-title-bar {
+	background-color: transparent;
 	@include background-image(linear-gradient(#808080 25%, rgba(#808080, .5)));
 }
 
