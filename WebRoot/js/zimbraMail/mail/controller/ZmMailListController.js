@@ -1553,7 +1553,7 @@ function(view, btn) {
 	if (appCtxt.get(ZmSetting.CONVERSATIONS_ENABLED)) {
 		this._setupGroupByMenuItems(view, menu);
 	}
-	this._setupReadingPaneMenuItems(view, menu, this.isReadingPaneOn());
+	this._setupReadingPaneMenuItems(view, menu);
 	if (!isExternalAccount && appCtxt.get(ZmSetting.CONVERSATIONS_ENABLED)) {
 		this._setupConvOrderMenuItems(view, menu);
 	}

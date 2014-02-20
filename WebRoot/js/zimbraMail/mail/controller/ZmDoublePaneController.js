@@ -346,7 +346,7 @@ function() {
 
 // Adds a "Reading Pane" checked menu item to a view menu
 ZmDoublePaneController.prototype._setupReadingPaneMenuItems =
-function(view, menu, checked) {
+function(view, menu) {
 
 	if (menu.getItemCount() > 0) {
 		new DwtMenuItem({parent:menu, style:DwtMenuItem.SEPARATOR_STYLE});
