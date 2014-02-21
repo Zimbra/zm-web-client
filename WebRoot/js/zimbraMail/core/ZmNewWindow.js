@@ -317,9 +317,10 @@ function() {
 		target = "view-window";
 	} else if (cmd == 'documentEdit') {
 		AjxDispatcher.require(["Docs"]);
-		ZmDocsEditApp.setFile(params.id, params.name, params.folderId);
+ 		ZmDocsEditApp.setFile(params.id, params.name, params.folderId);
 		ZmDocsEditApp.restUrl = params.restUrl;
 		new ZmDocsEditApp();
+		Dwt.setTitle(params.name);
 	} else if (cmd == "shortcuts") {
 		var panel = appCtxt.getShortcutsPanel();
 		panel.popup(params.cols);
