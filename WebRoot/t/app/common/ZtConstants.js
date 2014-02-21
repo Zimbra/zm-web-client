@@ -831,7 +831,7 @@ ZCS.constant.EXTRA_JOB_FIELDS = [
 ZCS.constant.COMPANY_FIELDS_ORDER = {
 	'jobTitle': 1,
 	'department': 2,
-	'company': 3,
+	'company': 3
 };
 
 ZCS.constant.IS_EXTRA_JOB_FIELD = ZCS.util.arrayAsLookupHash(ZCS.constant.EXTRA_JOB_FIELDS);

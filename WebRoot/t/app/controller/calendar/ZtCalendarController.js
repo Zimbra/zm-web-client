@@ -90,7 +90,7 @@ Ext.define('ZCS.controller.calendar.ZtCalendarController', {
 			}
         },
 
-        app: ZCS.constant.APP_CALENDAR,
+        app: ZCS.constant.APP_CALENDAR
     },
 
     launch: function() {
