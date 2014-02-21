@@ -51,7 +51,8 @@ Ext.define('ZCS.model.mail.ZtInvite', {
             { name: 'attendeeResponse',     type: 'string' },
             { name: 'attendeeResponseMsg',  type: 'string' },
             { name: 'reminderAlert',        type: 'string'},
-            { name: 'recurrence',           type: 'string' }
+            { name: 'recurrence',           type: 'string' },
+			{ name:	'fb', 					type: 'string'}
 		],
 
 		msgId: ''
@@ -78,7 +79,8 @@ Ext.define('ZCS.model.mail.ZtInvite', {
 				location:       comp.loc,
 				isAllDay:       !!comp.allDay,
 				method:         comp.method,
-				apptFolderId:   comp.ciFolder
+				apptFolderId:   comp.ciFolder,
+				fb:				comp.fb
 			});
 
 			var	start = comp.s && comp.s[0],

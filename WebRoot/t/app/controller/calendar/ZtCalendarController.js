@@ -33,7 +33,7 @@ Ext.define('ZCS.controller.calendar.ZtCalendarController', {
         'Ext.ux.TouchCalendarView',
         'Ext.ux.TouchCalendar',
         'ZCS.view.calendar.ZtCalendarToolbar',
-        'ZCS.view.calendar.ZtAppointmentView'
+        'ZCS.view.calendar.ZtAppointmentForm'
     ],
 
     config: {
@@ -55,22 +55,42 @@ Ext.define('ZCS.controller.calendar.ZtCalendarController', {
             calDayView: 'appview #' + ZCS.constant.APP_CALENDAR + 'itempanel #calDayView',
             itemPanelTitleBar: 'appview #' + ZCS.constant.APP_CALENDAR + 'itempanel titlebar',
             calToolbar: 'appview #' + ZCS.constant.APP_CALENDAR + 'itempanel caltoolbar',
-            appointmentView : ZCS.constant.APP_CALENDAR + 'appointmentview'
-        },
+            appointmentPanel : 'appointmentpanel',
+			appointmentTitleBar:  'appointmentpanel #apptTitleOnlyBar',
+			appointmentToolbar: 'appointmentpanel #apptToolbar',
+			appointmentView : 'appointmentpanel #apptDetails',
+			calendarAddressActionsMenu: 'list[itemId=calendarAddressActionsMenu]',
+			inviteReplyActionsMenu: 'list[itemId=inviteReplyActionsMenu]',
+			appointmentActionsMenu: 'list[itemId=apptActionsMenu]'
+		},
 
         control: {
             calendarView: {
                 eventtap: 'onEventTap',
                 selectionchange: 'onTimeSlotChange'
-//                periodchange: 'onPeriodChange'
-            },
-            appointmentView: {
-                inviteReply: 'doInviteReply'
-            }
+			},
+			appointmentPanel: {
+				cancel:             'doCancel',
+				contactTap:         'showMenu'
+			},
+			'appointmentpanel toolbar button[iconCls=reply]': {
+				tap: 'onApptActionsButtonTap'
+			},
+			'appointmentpanel toolbar button[iconCls=arrow_down]': {
+				tap: 'onApptActionsButtonTap'
+			},
+			calendarAddressActionsMenu: {
+				itemtap:            'onMenuItemSelect'
+			},
+			inviteReplyActionsMenu: {
+				itemtap:            'onMenuItemSelect'
+			},
+			apptActionsMenu: {
+				itemtap:            'onMenuItemSelect'
+			}
         },
 
         app: ZCS.constant.APP_CALENDAR,
-        invite: null
     },
 
     launch: function() {
@@ -157,52 +177,87 @@ Ext.define('ZCS.controller.calendar.ZtCalendarController', {
      */
 
     showItem: function(msg, event) {
-        var panel = this.getApptViewPanel();
+		var panel = this.getAppointmentPanel(),
+            invite = msg.get('invite'),
+            title = Ext.String.htmlEncode(invite.get('subject') || ZtMsg.noSubject);
+
         panel.setPanel(msg, event);
+        this.updateToolbar({isOrganizer: invite.get('isOrganizer')});
         panel.show({
             type:       'slide',
             direction:  'up',
             duration:   250
         });
-        this.setInvite(msg.get('invite'));
+	    this.updateTitle({title:title});
     },
 
-    /**
-     * Creates a ZtAppointmentView panel which can be used to view the appointment details
-     * @returns {ZCS.view.calendar.ZtAppointmentView}
-     */
-    getApptViewPanel: function() {
-        if (!this.apptViewPanel) {
-            this.apptViewPanel = Ext.create('ZCS.view.calendar.ZtAppointmentView');
-            Ext.Viewport.add(this.apptViewPanel);
-        }
-        return this.apptViewPanel;
+    updateToolbar: function(params) {
+
+        params = params || {};
+		var app = ZCS.util.getAppFromObject(this),
+			hideAll = !this.getItem() || params.hideAll || params.isOrganizer;
+
+		Ext.each(ZCS.constant.ITEM_BUTTONS[app], function(button) {
+			this.showButton(button.op, !hideAll);
+		}, this);
+
+		// Show the ATD options only in case of attendees
+		if (params.isOrganizer) {
+			Ext.getCmp('editAppt').show();
+			Ext.getCmp('inviteActionsAppt').hide();
+		} else {
+			Ext.getCmp('inviteActionsAppt').show();
+			Ext.getCmp('editAppt').hide();
+		}
     },
+
+	updateTitle: function(params) {
+		var apptTitleBar = this.getAppointmentTitleBar(),
+			apptView = this.getAppointmentView(),
+			apptViewInner = apptView.element.down('.x-innerhtml');
+
+		if (apptTitleBar && params && params.title != null) {
+			apptTitleBar.setHtml(params.title);
+			if (params.title) {
+				apptTitleBar.show();
+			} else {
+				apptTitleBar.hide();
+			}
+		}
+		apptViewInner.addCls('top-padding-' + apptTitleBar.element.getHeight());
+	},
+
+	/**
+	 * Make sure the action menu shows the appropriate action based on the unread status of this conversation.
+	 * The action will be either Mark Read or Mark Unread.
+	 */
+	updateMenuLabels: function(menuButton, params, menu) {
+
+		var menuName = params.menuName;
+
+		if (menuName === ZCS.constant.MENU_CALENDAR_ADDRESS) {
+			// Hiding/showing address listitems instead of changing labels
+			menu.hideItem(ZCS.constant.OP_ADD_CONTACT, true);
+			menu.hideItem(ZCS.constant.OP_EDIT, true);
+
+			// Pick which listitem to show, only if contacts app is enabled
+			if (ZCS.constant.IS_ENABLED[ZCS.constant.APP_CONTACTS]) {
+				var addr = params.addrObj,
+					cachedAddr = ZCS.cache.get(addr && addr.get('email'), 'email');
+
+				if (cachedAddr) {
+					menu.hideItem(ZCS.constant.OP_EDIT, false);
+				} else {
+					menu.hideItem(ZCS.constant.OP_ADD_CONTACT, false);
+				}
+			}
+		}
+	},
 
     onTimeSlotChange: function(view, newDate, oldDate) {
         //Switch to the day view if user taps on a particular date in month view
         ZCS.app.getCalendarController().toggleCalView('day', newDate);
     },
-
-    /**
-     * Handler for the calendar's periodchange event.
-     *
-     * @param {Ext.ux.TouchCalendarView} view The underlying Ext.ux.TouchCalendarView instance
-     * @param {Date} minDate The min date of the new period
-     * @param {Date} maxDate The max date of the new period
-     * @param {String} direction The direction the period change moved.
-     */
-//    onPeriodChange: function(view, minDate, maxDate, direction) {
-//        this.getStore().load({
-//            calStart: minDate.getTime(),
-//            calEnd: maxDate.getTime(),
-//            callback: function(records, operation, success) {
-//                if (success) {
-//                    view.refresh();
-//                }
-//            }
-//        });
-//    },
 
     getDefaultQuery: function() {
         return 'in:calendar';
@@ -307,11 +362,23 @@ Ext.define('ZCS.controller.calendar.ZtCalendarController', {
         });
     },
 
+	doAccept: function(actionParams) {
+		this.doInviteReply(ZCS.constant.OP_ACCEPT, actionParams.appt);
+	},
+
+	doTentative: function(actionParams) {
+		this.doInviteReply(ZCS.constant.OP_TENTATIVE, actionParams.appt);
+	},
+
+	doDecline: function(actionParams) {
+		this.doInviteReply(ZCS.constant.OP_DECLINE, actionParams.appt);
+	},
     /**
      * Sends the attendee response as a notification to the organizer
      */
-    doInviteReply: function(invId, action) {
-        var invite = this.getInvite(),
+    doInviteReply: function(action, appt) {
+        var invite = appt.get('invite'),
+			invId =  appt.get('id'),
             msg = Ext.create('ZCS.model.mail.ZtMailMsg');
 
         msg.set('origId', invId);  //not sure if origId should be set to invite id
@@ -340,9 +407,79 @@ Ext.define('ZCS.controller.calendar.ZtCalendarController', {
         msg.save({
             isInviteReply: true,
             success: function () {
-                me.getApptViewPanel().hide();
+                me.getAppointmentPanel().hide();
                 ZCS.app.fireEvent('showToast', ZtMsg.invReplySent);
             }
         });
-    }
+    },
+
+	doDelete: function(actionParams) {
+		console.log("TODO: Delete the appt");
+	},
+
+	doMove: function(actionParams) {
+		console.log("TODO: Move!!");
+	},
+
+	doTag: function(actionParams) {
+		console.log("TODO: Tag!!");
+	},
+
+	/**
+	 * Starts a new compose session.
+	 *
+	 * @param {String}  addr    email address of recipient (To: field)
+	 */
+	doCompose: function(actionParams) {
+		var	toAddr = ZCS.model.mail.ZtEmailAddress.fromEmail(actionParams.address);
+		this.getAppointmentPanel().hide();
+		ZCS.app.getComposeController().showComposeForm([toAddr]);
+	},
+
+	doAddContact: function(actionParams) {
+		var contactCtrl = ZCS.app.getContactController(),
+			contact = ZCS.model.contacts.ZtContact.fromEmailObj(actionParams.addrObj);
+		this.getAppointmentPanel().hide();
+		contactCtrl.showContactForm(ZCS.constant.OP_COMPOSE, contact);
+	},
+
+	doEditContact: function(actionParams) {
+		var contact = ZCS.cache.get(actionParams.addrObj.get('email'), 'email'),
+			contactCtrl = ZCS.app.getContactController();
+		contactCtrl.setItem(contact);
+		this.getAppointmentPanel().hide();
+		contactCtrl.showContactForm(ZCS.constant.OP_EDIT, contact);
+	},
+
+	doCancel: function() {
+		if (Ext.os.deviceType === "Phone") {
+			this.getAppointmentPanel().element.dom.style.setProperty('display', 'none');
+		} else {
+			this.getAppointmentPanel().hide({
+				type: 'fadeOut',
+				duration: 250
+			});
+		}
+		var apptTitleBar = this.getAppointmentTitleBar(),
+			apptView = this.getAppointmentView(),
+			apptViewInner = apptView.element.down('.x-scroll-view .x-innerhtml');
+
+		apptViewInner.removeCls('top-padding-' + apptTitleBar.element.getHeight());
+		apptTitleBar.setHtml("");
+		apptTitleBar.hide();
+	},
+
+	onApptActionsButtonTap: function (button, e) {
+		var apptPanel = this.getAppointmentPanel(),
+			appt = apptPanel.getAppt();
+
+		if (button.get('iconCls') == 'trash') {
+			this.doDelete({appt: appt});
+		} else {
+			this.showMenu(button, {
+				menuName:   button.initialConfig ? button.initialConfig.menuName : undefined,
+				appt:       appt
+			});
+		}
+	}
 });

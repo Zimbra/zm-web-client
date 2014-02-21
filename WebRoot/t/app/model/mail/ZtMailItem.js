@@ -88,7 +88,8 @@ Ext.define('ZCS.model.mail.ZtMailItem', {
 									objType:    ZCS.constant.OBJ_ADDRESS,
 									address:    addr.get('email'),
 									name:       ZCS.mailutil.getDisplayName(addr),
-									addrObj:    addr
+									addrObj:    addr,
+									ptst:		addr.ptst //will be populated only in case of invites
 								};
 							addrData.id = ZCS.util.getUniqueId(addrData);
 							return addrData;

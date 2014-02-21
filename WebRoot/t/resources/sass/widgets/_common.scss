@@ -56,3 +56,17 @@ $linkTextSize: 0.9em;
  		margin: 10px 0px 10px;
  	}
 }
+
+/**
+ * Helper classes to maintain vertical rhythm, considering 0.5em as a multiple
+ */
+
+.row-space-1{
+  margin-top: 0.5rem;
+}
+.row-space-2{
+  margin-top: 1rem;
+}
+.row-space-3{
+  margin-top: 1.5rem;
+}
