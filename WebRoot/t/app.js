@@ -32,7 +32,6 @@ Ext.Loader.setPath({
 // Load utils and templates
 Ext.require([
 	'ZCS.common.ZtUtil',
-	'ZCS.common.ZtUserSession',
 	'ZCS.common.ZtTemplate',
 	'ZCS.common.ZtViewport',
     'ZCS.common.ZtAndroidViewport',
@@ -65,6 +64,7 @@ Ext.application({
 		'ZCS.common.ZtConstants',
 		'ZCS.common.ZtTemplate',
 		'ZCS.common.ZtItemCache',
+		'ZCS.common.ZtUserSession',
 		'ZCS.common.ZtTimezone',
 		'ZCS.common.calendar.ZtRecurrence'
 	],
