@@ -37,7 +37,6 @@ AjxPackage.require("ajax.dwt.widgets.DwtGrouper");
 AjxPackage.require("ajax.dwt.widgets.DwtProgressBar");
 AjxPackage.require("ajax.dwt.widgets.DwtPropertyEditor");
 AjxPackage.require("ajax.dwt.widgets.DwtConfirmDialog");
-AjxPackage.require("ajax.dwt.widgets.DwtChooser");
 AjxPackage.require("ajax.dwt.widgets.DwtSpinner");
 AjxPackage.require("ajax.dwt.widgets.DwtButtonColorPicker");
 AjxPackage.require("ajax.dwt.widgets.DwtMessageComposite");

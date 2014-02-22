@@ -380,11 +380,7 @@ function(parent, id, opHash, index, htmlElId) {
 	}
 	var callback = ZmOperation.CALLBACK[id];
 	if (callback) {
-		if (callback.isAjxCallback) {
-			callback.run(opHash[id]);
-		} else {
-			callback(opHash[id]);
-		}
+		callback.run(opHash[id]);
 	}
 };
 

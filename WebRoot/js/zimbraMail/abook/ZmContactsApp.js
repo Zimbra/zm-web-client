@@ -1042,7 +1042,7 @@ function(callback) {
 	var acctId = appCtxt.getActiveAccount().id;
 	this.contactsLoaded[acctId] = true;
 
-	if (callback && callback.isAjxCallback) {
+	if (callback) {
 		callback.run(this._contactList[acctId]);
 	}
 };

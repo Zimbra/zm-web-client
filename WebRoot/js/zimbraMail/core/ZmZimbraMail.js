@@ -295,6 +295,7 @@ function() {
  */
 ZmZimbraMail.prototype.startup =
 function(params) {
+
 	if (appCtxt.isOffline) {
 		this.sendClientEventNotify(ZmZimbraMail.UI_LOAD_BEGIN);
 	}
@@ -589,7 +590,17 @@ function() {
  */
 ZmZimbraMail.prototype._handleResponseGetMetaData =
 function(params) {
-    this._handleResponseLoadUserSettings(params);
+
+	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
+		var method = appCtxt.multiAccounts ? "GetContactsForAllAccounts" : "GetContacts";
+		AjxDispatcher.run({
+			method:     method,
+			callback:   this._handleResponseLoadUserSettings.bind(this, params)
+		});
+	}
+	else {
+		this._handleResponseLoadUserSettings(params);
+	}
 };
 
 /**
@@ -622,16 +633,6 @@ function() {
 	var taskMgr = appCtxt.getTaskManager();
 	var taskReminderController = taskMgr.getReminderController();
 	taskReminderController.refresh();
-};
-
-/**
- * @private
- */
-ZmZimbraMail.prototype._handleErrorStartup =
-function(params, ex) {
-	ZmZimbraMail.killSplash();
-	appCtxt.inStartup = false;
-	return false;
 };
 
 ZmZimbraMail.prototype._isProtocolHandlerAccessed =
@@ -765,10 +766,6 @@ function(params, result) {
 				sc.resetSearchToolbar();
 			}
 
-			if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
-				AjxDispatcher.run(appCtxt.multiAccounts ? "GetContactsForAllAccounts" : "GetContacts");
-			}
-	
 			if (appCtxt.get(ZmSetting.OFFLINE_SUPPORTS_MAILTO) && appCtxt.isOffline) {
 				this.handleOfflineMailTo(location.search);
 			}

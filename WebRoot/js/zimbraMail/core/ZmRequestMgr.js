@@ -266,7 +266,7 @@ function(params, result) {
 		DBG.println("req", "Request " + params.reqId + " got an exception");
 		var ecb = params.errorCallback;
 		if (ecb) {
-            var handled = ecb.isAjxCallback ? ecb.run(ex, params) : ecb(ex, params);
+            var handled = ecb.run(ex, params);
 			if (!handled) {
 				this._handleException(ex, params);
 			}
@@ -315,8 +315,7 @@ function(params, result) {
 	var methodName = ZmCsfeCommand.getMethodName(params.jsonObj || params.soapDoc);
 	if (params.asyncMode && params.callback) {
 		DBG.println(AjxDebug.DBG1, "------------------------- Running response callback for " + methodName);
-		var cb = params.callback;
-		cb.isAjxCallback ? cb.run(result) : cb(result);
+		params.callback.run(result);
 	}
 
 	DBG.println(AjxDebug.DBG1, "------------------------- Processing notifications for " + methodName);
