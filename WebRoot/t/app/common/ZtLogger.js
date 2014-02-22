@@ -38,8 +38,7 @@ Ext.define('ZCS.common.ZtLogger', {
 	extend: 'Ext.log.Logger',
 	requires: [
 		'Ext.log.writer.Console',
-		'Ext.log.formatter.Default',
-		'ZCS.common.ZtUserSession'
+		'Ext.log.formatter.Default'
 	],
 
 	statics: {
