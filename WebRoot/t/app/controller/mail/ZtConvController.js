@@ -764,8 +764,12 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 	 */
 	getAllNames: function(nameField) {
 
-		var activeMsg = this.getActiveMsg(),
-			action = ZCS.constant.OP_REPLY_ALL,
+		var activeMsg = this.getActiveMsg();
+		if (!activeMsg) {
+			return '';
+		}
+
+		var	action = ZCS.constant.OP_REPLY_ALL,
 			addrs = ZCS.app.getComposeController().getReplyAddresses(activeMsg, action),
 			recips = Ext.Array.clean(addrs[ZCS.constant.TO].concat(addrs[ZCS.constant.CC])),
 			names = [], nameString, nameField = nameField || 'shortName';
