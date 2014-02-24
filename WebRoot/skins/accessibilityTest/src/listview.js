@@ -1126,7 +1126,8 @@
 		var view = this._mailListView;
 		if (!this._optionsMenu) {
 			this._optionsMenu = new ZmActionMenu({
-				parent: this._actionMenu,
+				//parent: this._actionMenu,     TODO double check this
+				parent: this._shell,
 				style: DwtMenu.DROPDOWN_STYLE,
 				controller: this,
 				menuItems: [

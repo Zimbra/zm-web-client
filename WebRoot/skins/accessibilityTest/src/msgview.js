@@ -31,12 +31,12 @@
 		this._notifyZimletsNewMsg(this._msg);
 	});
 
-	skin.override("ZmMailMsgView.prototype.getTabGroupMember", function(){
+	/*skin.override("ZmMailMsgView.prototype.getTabGroupMember", function(){
 		if (!this._tabGroupMember) {
 			this._tabGroupMember = new DwtTabGroup("ZmMailMsgView");
 		}
 		return this._tabGroupMember;
-	});
+	});*/
 
 
 
@@ -200,7 +200,7 @@
 
 			var doc = (this.getIframe() && (this.getIframe().contentDocument || this.getIframe().contentWindow.document));
 			if (doc) {
-				util.addStylesheet("/skins/accessibilityTest/src/tab-selection"+(AjxEnv.isIE?"-ie":"")+".css", doc);
+				util.addStylesheet("/skins/accessibilityTest/src/tab-selection" + (AjxEnv.isIE?"-ie":"") + ".css", doc);
 			}
 		}
 		if (this._usingIframe) {
@@ -292,7 +292,17 @@
 		if (!AjxUtil.isArray(items)) {
 			items = [];
 		}
-		
+
+		var headerElement = this._headerElement || this._header.getHtmlElement();
+		if (headerElement) {
+			headerElement.setAttribute("aria-label", util.stripHTML(headerElement.innerHTML));
+			if (this._header) {
+				items.push(this._header);
+			}
+			headerElement.a11yFocusable = true;
+			util.makeFocusable(headerElement);
+		}
+
 		//var containers = [Dwt.byId(this._htmlElId + ZmId.MV_HDR_TABLE),
 		//					Dwt.byId(this._displayImagesId)];
 		var containers = this._getTabItemContainers();

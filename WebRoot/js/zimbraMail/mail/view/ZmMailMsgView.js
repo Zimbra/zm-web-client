@@ -319,6 +319,14 @@ function(listener) {
 	this.addListener(ZmMailMsgView.SUBSCRIBE_EVENT, listener);
 };
 
+ZmMailMsgView.prototype.getTabGroupMember =
+function() {
+	if (!this._tabGroupMember) {
+		this._tabGroupMember = new DwtTabGroup("ZmMailMsgView");
+	}
+	return this._tabGroupMember;
+};
+
 ZmMailMsgView.prototype.setVisible =
 function(visible, readingPaneOnRight,msg) {
 	DwtComposite.prototype.setVisible.apply(this, arguments);

@@ -137,7 +137,7 @@
 	});
 	
 	skin.override("ZmMailMsgCapsuleView.prototype.getHeaderTabGroup", function(items){
-		if (!AjxUtil.isArray(items)) {
+		/*if (!AjxUtil.isArray(items)) {
 			items = [];
 		}
 		
@@ -145,7 +145,7 @@
 		if (header) {
 			header.getHtmlElement().setAttribute("aria-label", util.stripHTML(header.getHtmlElement().innerHTML));
 			items.push(header);
-		}
+		}*/
 
 		return ZmMailMsgView.prototype.getHeaderTabGroup.call(this, items);
 	});
