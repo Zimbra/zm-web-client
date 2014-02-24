@@ -35,11 +35,11 @@ Ext.define('ZCS.view.ZtAppsMenu', {
                 }
         });
 
-        menuItems.push(/*{
+        menuItems.push({
             app: 'settings',
             text: ZtMsg.settings,
             group: ZtMsg.otherGroup
-        }, */{
+        }, {
             app: 'signout',
             text: ZtMsg.logout,
             group: ZtMsg.otherGroup

@@ -137,7 +137,7 @@ function(focusOnSuggestion, showAllSuggestions) {
     };
 
     this._currentSuggestions.setLoadingHtml();
-    if ((this._resources.length == 0) && !this._suggestTime) {
+    if(this._resources.length == 0 && !this._suggestTime) {
         this.searchCalendarResources(new AjxCallback(this, this._findFreeBusyInfo, [params]));
     } else {
         this._findFreeBusyInfo(params);
@@ -562,8 +562,8 @@ function(enable) {
 
 ZmScheduleAssistantView.prototype.isSuggestRooms =
 function() {
-    // Assume desire room checking if it is possible
-    return appCtxt.get(ZmSetting.GAL_ENABLED);
+    // Keep for the moment - no preference now, but may need some sort of function
+    return true;
 };
 
 ZmScheduleAssistantView.prototype.getAttendees =
@@ -648,7 +648,7 @@ function(startTime, endTime, params) {
     }
 
     //mini calendar suggestions should avoid collecting all computed information in array for optimiziation
-    if (!params.miniCalSuggestions) {
+    if(!params.miniCalSuggestions && fbInfo.availableUsers > 0) {
         var showOnlyGreenSuggestions = params.showOnlyGreenSuggestions;
         if(!showOnlyGreenSuggestions || (fbInfo.availableUsers == this._totalUsers)) {
             this._fbStat.add(fbInfo);
@@ -946,7 +946,9 @@ function(params) {
             fbStat = this.computeAvailability(dayStartTime, dayStartTime + duration, params);
             dayStartTime += AjxDateUtil.MSEC_PER_HALF_HOUR;
 
-            if(fbStat && fbStat.availableUsers == this._totalUsers) {
+            var roomsAvailable = (fbStat.availableLocations > 0);
+            var includeRooms   = this.isSuggestRooms();
+            if(fbStat && fbStat.availableUsers == this._totalUsers && (!includeRooms || roomsAvailable)) {
                 this._addColorCode(params, startTime, ZmMiniCalendar.COLOR_GREEN);
                 freeSlotFound = true;
                 //found atleast one free slot that can accomodate all attendees and atleast one recources

@@ -53,7 +53,6 @@ ZmTreeController = function(type) {
 	this._listeners[ZmOperation.SYNC_ALL]		= new AjxListener(this, this._syncAllListener);
 	this._listeners[ZmOperation.EDIT_PROPS]		= new AjxListener(this, this._editPropsListener);
 	this._listeners[ZmOperation.EMPTY_FOLDER]   = new AjxListener(this, this._emptyListener);
-	this._listeners[ZmOperation.FIND_SHARES]	= this._findSharesListener.bind(this);
 
 	// drag-and-drop
 	this._dragSrc = new DwtDragSource(Dwt.DND_DROP_MOVE);
@@ -158,56 +157,6 @@ function (parent, isTrash) {
 	op.setEnabled(isTrash);
 };
 
-ZmTreeController.prototype._findSharesListener =
-function(ev) {
-	var folder = this._getActionedOrganizer(ev);
-	var account = folder.getAccount();
-
-	if (appCtxt.multiAccounts && account && account.isZimbraAccount) {
-		appCtxt.accountList.setActiveAccount(account);
-	}
-	var dialog = appCtxt.getShareSearchDialog();
-	var addCallback = this._handleAddShare.bind(this);
-	dialog.popup(folder.type, addCallback);
-};
-
-ZmTreeController.prototype._handleAddShare = function () {
-	var dialog = appCtxt.getShareSearchDialog();
-	var shares = dialog.getShares();
-	dialog.popdown();
-	if (shares.length === 0) {
-		return;
-	}
-
-	AjxDispatcher.require("Share");
-	var requests = [];
-	for (var i = 0; i < shares.length; i++) {
-		var share = shares[i];
-		requests.push({
-			_jsns: "urn:zimbraMail",
-			link: {
-				l: ZmOrganizer.ID_ROOT,
-				name: share.defaultMountpointName,
-				view: share.view,
-				zid: share.ownerId,
-				rid: share.folderId
-			}
-		});
-	}
-
-	var params = {
-		jsonObj: {
-			BatchRequest: {
-				_jsns: "urn:zimbra",
-				CreateMountpointRequest: requests
-			}
-		},
-		asyncMode: true
-	};
-	appCtxt.getAppController().sendRequest(params);
-};
-
-
 
 
 
@@ -273,6 +222,7 @@ function(params) {
 		this._treeViewCreated = true;
 		this._postSetup(id, params.account);
 	}
+
 	return this._treeView[id];
 };
 
@@ -739,23 +689,16 @@ function(organizer) {
 ZmTreeController.prototype._doEmpty =
 function(organizer) {
     var recursive = false;
-    organizer.empty(recursive, null, this._doEmptyHandler.bind(this, organizer));
-};
-
-ZmTreeController.prototype._doEmptyHandler =
-function(organizer) {
-	appCtxt.setStatusMsg({msg: AjxMessageFormat.format(ZmMsg.folderEmptied, organizer.getName())});
+    organizer.empty(recursive);
 	var ctlr = appCtxt.getCurrentController();
-	if (!ctlr || !ctlr._getSearchFolderId || !ctlr.getListView) {
-		return;
+	if (ctlr && ctlr._getSearchFolderId && ctlr.getListView) {
+		var folderId = ctlr._getSearchFolderId();
+		if (folderId && (folderId == organizer.id)) {
+			var view = ctlr.getListView();
+			view._resetList();
+			view._setNoResultsHtml();
+		}
 	}
-	var folderId = ctlr._getSearchFolderId();
-	if (folderId !== organizer.id) {
-		return;
-	}
-	var view = ctlr.getListView();
-	view._resetList();
-	view._setNoResultsHtml();
 };
 
 /**
@@ -780,8 +723,8 @@ function(organizer, name) {
  * @private
  */
 ZmTreeController.prototype._doMove =
-function(organizer, folder) {
-	organizer.move(folder);
+function(organizer, folder, folderName) {
+	organizer.move(folder, false, null, null, folderName);
 };
 
 /**
@@ -1135,15 +1078,10 @@ function(parentNode, node, fields, organizer, treeView) {
 	node.setText(organizer.getName(treeView._showUnread));
 	if (fields && fields[ZmOrganizer.F_NAME]) {
 		if (parentNode && (parentNode.getNumChildren() > 1)) {
-			var nodeSelected = node._selected;
 			// remove and re-insert the node (if parent has more than one child)
 			node.dispose();
 			var idx = ZmTreeView.getSortIndex(parentNode, organizer, eval(ZmTreeView.COMPARE_FUNC[organizer.type]));
 			node = treeView._addNew(parentNode, organizer, idx);
-			if (nodeSelected) {
-				//if it was selected, re-select it so it is highlighted. No need for notifications.
-				treeView.setSelected(organizer, true);
-			}
 		} else {
 			node.setDndText(organizer.getName());
 		}

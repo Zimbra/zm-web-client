@@ -77,8 +77,7 @@ if (/^SmartZone/.test(ZmMsg.zimbraTitle)) {
         ZmImAddress.IM_SERVICES.splice(0, 1);
 }
 
-AjxUtil.foreach(ZmImAddress.IM_SERVICES, function(service) {
-	ZmImAddress.REGEXP.push(service.value);
-});
+for (var i = 0; i < ZmImAddress.IM_SERVICES.length; ++i)
+        ZmImAddress.REGEXP.push(ZmImAddress.IM_SERVICES[i].value);
 
 ZmImAddress.REGEXP = new RegExp("^(" + ZmImAddress.REGEXP.join("|") + ")://([^\\s]+)$", "i");

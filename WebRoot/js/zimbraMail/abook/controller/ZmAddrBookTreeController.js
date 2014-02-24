@@ -153,28 +153,6 @@ function(parent, type, id) {
 	this._resetButtonPerSetting(parent, ZmOperation.SHARE_ADDRBOOK, appCtxt.get(ZmSetting.SHARING_ENABLED));
 };
 
-/**
- * override to take care of not allowing dropping DLs do folders
- * @param ev
- * @private
- */
-ZmAddrBookTreeController.prototype._dropListener =
-function(ev) {
-	var items = AjxUtil.toArray(ev.srcData.data);
-	for (var i = 0; i < items.length; i++) {
-		var item = items[i];
-		if (!item.isZmContact) {
-			continue;
-		}
-		if (item.isDistributionList()) {
-			ev.doIt = false;
-			return;
-		}
-	}
-	// perform default action
-	ZmFolderTreeController.prototype._dropListener.apply(this, arguments);
-};
-
 
 // Protected methods
 
@@ -203,7 +181,7 @@ ZmAddrBookTreeController.prototype._getHeaderActionMenuOps =
 function() {
 	var ops = null;
 	if (appCtxt.get(ZmSetting.NEW_ADDR_BOOK_ENABLED)) {
-		ops = [ZmOperation.NEW_ADDRBOOK, ZmOperation.FIND_SHARES];
+		ops = [ZmOperation.NEW_ADDRBOOK];
 	}
 	return ops;
 };
@@ -330,7 +308,7 @@ function(folder, result) {
 	// bug fix #19307 - Trash is special when in Contacts app since it
 	// is a FOLDER type in ADDRBOOK tree. So reset selection if clicked
 	if (folder.nId == ZmFolder.ID_TRASH) {
-		this._treeView[this._app.getOverviewId()].setSelected(folder, true);
+		this._treeView[this._app.getOverviewId()].setSelected(ZmFolder.ID_TRASH, true);
 	}
 };
 

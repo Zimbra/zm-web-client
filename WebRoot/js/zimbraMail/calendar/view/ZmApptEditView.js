@@ -33,16 +33,7 @@
  */
 ZmApptEditView = function(parent, attendees, controller, dateInfo) {
 
-	var idParams = {
-		skinComponent:  ZmId.SKIN_APP_MAIN,
-		app:            ZmId.APP_CALENDAR,
-		componentType:  ZmId.WIDGET_VIEW,
-		componentName:  ZmId.VIEW_APPOINTMENT
-	};
-
-	var domId = ZmId.create(idParams, "An appointment editing view");
-
-	ZmCalItemEditView.call(this, parent, attendees, controller, dateInfo, null, "ZmApptEditView", domId);
+	ZmCalItemEditView.call(this, parent, attendees, controller, dateInfo, null, "ZmApptEditView");
 
 	// cache so we dont keep calling appCtxt
 	this.GROUP_CALENDAR_ENABLED = appCtxt.get(ZmSetting.GROUP_CALENDAR_ENABLED);
@@ -58,6 +49,8 @@ ZmApptEditView = function(parent, attendees, controller, dateInfo) {
     this._locationTextMap = {};
     this._attendeePicker = {};
     this._pickerButton = {};
+
+	this._useAcAddrBubbles = appCtxt.get(ZmSetting.USE_ADDR_BUBBLES);
 
     //used to preserve original attendees while forwarding appt
     this._fwdApptOrigAttendees = [];
@@ -80,7 +73,7 @@ ZmApptEditView = function(parent, attendees, controller, dateInfo) {
     // Free busy info that excludes the current appointment.  So the cache information cannot
     // be shared across appointments.
     //this._fbCache = app.getFreeBusyCache();
-    AjxDispatcher.require(["MailCore", "CalendarCore"]);
+    AjxDispatcher.require("CalendarCore");
     this._fbCache = new ZmFreeBusyCache(app);
 
     this._customRecurDialogCallback = this._recurChangeForLocationConflict.bind(this);
@@ -163,7 +156,7 @@ function() {
         this.setSchedulerVisibility(false);
     }
 
-    if (!appCtxt.get(ZmSetting.GAL_ENABLED)) {
+    if(!appCtxt.get(ZmSetting.GAL_ENABLED) && this._useAcAddrBubbles){
         Dwt.setSize(this._attInputField[ZmCalBaseItem.LOCATION]._input, "100%");
     }
 
@@ -473,6 +466,8 @@ function() {
 		this._attendeesInputField.clear();
 		this._optAttendeesInputField.clear();
         this._forwardToField.clear();
+        this._adjustAddrHeight(this._attendeesInputField.getInputElement());
+        this._adjustAddrHeight(this._optAttendeesInputField.getInputElement());
 	}
     this._attInputField[ZmCalBaseItem.LOCATION].clear();
 	this._locationTextMap = {};
@@ -496,7 +491,7 @@ function() {
 		this._acLocationsList.show(false);
 	}
 
-	if (this.GROUP_CALENDAR_ENABLED) {
+	if (this._useAcAddrBubbles && this.GROUP_CALENDAR_ENABLED) {
 		for (var attType in this._attInputField) {
 			this._attInputField[attType].clear();
 		}
@@ -1200,9 +1195,6 @@ function(width) {
     // add location input field
 	this._locationInputField = this._createInputField("_location", ZmCalBaseItem.LOCATION, {strictMode:false, noAddrBubbles:!appCtxt.get(ZmSetting.GAL_ENABLED)});
 
-    this._mainId = this._htmlElId + "_main";
-    this._main   = document.getElementById(this._mainId);
-
     this._mainTableId = this._htmlElId + "_table";
     this._mainTable   = document.getElementById(this._mainTableId);
 
@@ -1248,13 +1240,16 @@ function(width) {
     this._locationStatusAction   = document.getElementById(this._locationStatusActionId);
     Dwt.setVisible(this._locationStatusAction, false);
 
+    this._notesContainerId = this._htmlElId + "_notes_container";
+    this._notesContainer = document.getElementById(this._notesContainerId);
+
 	this._schedulerOptions = document.getElementById(this._htmlElId + "_scheduler_option");
 
 	// show-as DwtSelect
 	this._showAsSelect = new DwtSelect({parent:this, parentElement: (this._htmlElId + "_showAsSelect")});
 	for (var i = 0; i < ZmApptViewHelper.SHOWAS_OPTIONS.length; i++) {
 		var option = ZmApptViewHelper.SHOWAS_OPTIONS[i];
-		this._showAsSelect.addOption(option.label, option.selected, option.value, "ShowAs" + option.value);
+		this._showAsSelect.addOption(option.label, option.selected, option.value, "showAs" + option.value);
 	}
 
 	this._showAsSelect.addChangeListener(new AjxListener(this, this.setShowAsFlag, [true]));
@@ -1354,7 +1349,7 @@ function(idTag, attType, params) {
 	var inputId = this.parent._htmlElId + idTag + "_input";
 	var cellId = this._htmlElId + idTag;
 	var input;
-	if (!params.noAddrBubbles) {
+	if (!params.noAddrBubbles && this._useAcAddrBubbles) {
 		var aifParams = {
 			autocompleteListView:	this._acAddrSelectList,
 			inputId:				inputId,
@@ -1423,9 +1418,9 @@ function() {
     Dwt.setVisible(this._suggestTime, false);
     Dwt.setVisible(this._suggestLocation, !this._isProposeTime && appCtxt.get(ZmSetting.GAL_ENABLED));
     this._scheduleAssistant.show(true);
+    // Resize horizontally
+    this._resizeNotes();
     this._scheduleAssistant.suggestAction(true, false);
-
-    this.resize();
 };
 
 ZmApptEditView.prototype._showLocationSuggestions =
@@ -1435,9 +1430,9 @@ function() {
     Dwt.setVisible(this._suggestLocation, false);
     Dwt.setVisible(this._suggestTime, true);
     this._scheduleAssistant.show(false);
+    // Resize horizontally
+    this._resizeNotes();
     this._scheduleAssistant.suggestAction(true, false);
-
-    this.resize();
 };
 
 ZmApptEditView.prototype._showLocationStatusAction =
@@ -1470,7 +1465,6 @@ function(forceShow) {
 
     var inputEl = this._attInputField[ZmCalBaseItem.OPTIONAL_PERSON].getInputElement();
     Dwt.setVisible(inputEl, Boolean(this._optionalAttendeesShown));
-    this.resize();
 };
 
 ZmApptEditView.prototype._toggleResourcesField =
@@ -1480,14 +1474,12 @@ function(forceShow) {
 
     var inputEl = this._attInputField[ZmCalBaseItem.EQUIPMENT].getInputElement();
     Dwt.setVisible(inputEl, Boolean(this._resourcesShown));
-    this.resize();
 };
 
 ZmApptEditView.prototype.showResourceField =
 function(show){
     this._showResources.innerHTML = show ? ZmMsg.hideEquipment : ZmMsg.showEquipment;
     Dwt.setVisible(this._resourcesContainer, Boolean(show))
-    this.resize();
 };
 
 
@@ -1502,7 +1494,7 @@ function() {
     this._schImage.className = "ImgSelectPullDownArrow";
     if(this._scheduleView) {
         this._scheduleView.setVisible(false);
-        this.resize();
+        this.autoSize();
     }
 };
 
@@ -1527,7 +1519,7 @@ function(forceShow) {
     scheduleView.resetPagelessMode(false);
     scheduleView.showMe();
 
-    this.resize();
+    this.autoSize();
 };
 
 ZmApptEditView.prototype.getScheduleView =
@@ -1657,8 +1649,10 @@ function(ev) {
 	}
 
 	var addrList = {};
+	var addrs = !this._useAcAddrBubbles && this._collectForwardAddrs();
 	var type = AjxEmailAddress.TO;
-	addrList[type] = this._forwardToField.getAddresses(true);
+	addrList[type] = this._useAcAddrBubbles ? this._forwardToField.getAddresses(true) :
+											  addrs[type] && addrs[type].good.getArray();
 
     var str = (this._forwardToField.getValue() && !(addrList[type] && addrList[type].length)) ? this._forwardToField.getValue() : "";
 	this._contactPicker.popup(type, addrList, str);
@@ -1681,9 +1675,11 @@ function(addrType, ev) {
 	}
 
 	var addrList = {};
+	var addrs = !this._useAcAddrBubbles && this._collectAddrs(inputObj.getValue());
 	var type = AjxEmailAddress.TO;
-	addrList[type] = this._attInputField[addrType].getAddresses(true);
-
+	addrList[type] = this._useAcAddrBubbles ? this._attInputField[addrType].getAddresses(true) :
+											  addrs[type] && addrs[type].good.getArray();
+		
     var str = (inputObj.getValue() && !(addrList[type] && addrList[type].length)) ? inputObj.getValue() : "";
 	contactPicker.popup(type, addrList, str);
 };
@@ -1746,39 +1742,57 @@ function(addrInput, addrs, type, shortForm) {
 		addrs = result.good;
 	}
 
-	if (addrs.isAjxVector) {
-		//todo - why aren't we using ZmRecipients way more here? We probably could use a refactoring to unite this code with the
-		//mail compose recipients case - same thing as attendees, more or less.
-		addrs = ZmRecipients.expandAddrs(addrs);  //expand groups to their individual emails (not DLs).
-	}
-
 	// make sure we have an array to deal with
 	addrs = (addrs instanceof AjxVector) ? addrs.getArray() : (typeof addrs == "string") ? [addrs] : addrs;
 
-	addrInput.clear();
-	if (addrs && addrs.length) {
-        var len = addrs.length;
-		for (var i = 0; i < len; i++) {
-			var addr = addrs[i];
-			if (addr) {
-				var addrStr, email, match;
-				if (typeof addr == "string") {
-					addrStr = addr;
+	if (this._useAcAddrBubbles) {
+		addrInput.clear();
+		if (addrs && addrs.length) {
+            var len = addrs.length;
+			for (var i = 0; i < len; i++) {
+				var addr = addrs[i];
+				if (addr) {
+					var addrStr, email, match;
+					if (typeof addr == "string") {
+						addrStr = addr;
+					}
+					else if (addr.isAjxEmailAddress) {
+						addrStr = addr.toString(shortForm);
+						match = {isDL: addr.isGroup && addr.canExpand, email: addrStr};
+					}
+					else if (addr instanceof ZmContact) {
+						email = addr.getEmail(true);
+                        //bug: 57858 - give preference to lookup email address if its present
+                        //bug:60427 to show display name format the lookupemail
+                        addrStr = addr.getLookupEmail() ? (new AjxEmailAddress(addr.getLookupEmail(),null,addr.getFullNameForDisplay())).toString() : ZmApptViewHelper.getAttendeesText(addr, type);
+                        match = {isDL: addr.isGroup && addr.canExpand, email: addrStr};
+					}
+					addrInput.addBubble({address:addrStr, match:match, skipNotify:true});
 				}
-				else if (addr.isAjxEmailAddress) {
-					addrStr = addr.toString(shortForm);
-					match = {isDL: addr.isGroup && addr.canExpand, email: addrStr};
-				}
-				else if (addr instanceof ZmContact) {
-					email = addr.getEmail(true);
-                    //bug: 57858 - give preference to lookup email address if its present
-                    //bug:60427 to show display name format the lookupemail
-                    addrStr = addr.getLookupEmail() ? (new AjxEmailAddress(addr.getLookupEmail(),null,addr.getFullNameForDisplay())).toString() : ZmApptViewHelper.getAttendeesText(addr, type);
-                    match = {isDL: addr.isGroup && addr.canExpand, email: addrStr};
-				}
-				addrInput.addBubble({address:addrStr, match:match, skipNotify:true});
 			}
 		}
+	}
+	else {
+		var list = [];
+		if (addrs && addrs.length) {
+			for (var i = 0, len = addrs.length; i < len; i++) {
+				var addr = addrs[i];
+				if (addr) {
+					if (typeof addr == "string") {
+						list.push(addr);
+					}
+					else if (addr.isAjxEmailAddress) {
+						list.push(addr.toString(shortForm));
+					}
+					else if (addr instanceof ZmContact) {
+						var email = addr.getEmail(true);
+						list.push(email.toString(shortForm));
+					}
+				}
+			}
+		}
+		var addrStr = (list.length > 0) ? list.join(AjxEmailAddress.SEPARATOR) + AjxEmailAddress.SEPARATOR : "";
+		addrInput.setValue(addrStr || "");
 	}
 };
 
@@ -1922,7 +1936,10 @@ function() {
 		this.setSchedulerVisibility(currAcct.isZimbraAccount && !currAcct.isMain);
 	}
 
-	var isEnabled = !appCtxt.isRemoteId(cal.id) || cal.hasPrivateAccess();
+	var acct = appCtxt.getActiveAccount();
+	var id = String(cal.id);
+	var isRemote = (id.indexOf(":") != -1) && (id.indexOf(acct.id) != 0);
+	var isEnabled = !isRemote || cal.hasPrivateAccess();
 
     this._privateCheckbox.disabled = !isEnabled;
 
@@ -1954,11 +1971,13 @@ function(enabled) {
 	var attField = this._attInputField[ZmCalBaseItem.PERSON];
 	if (attField) {
 		attField.setEnabled(enabled);
+        this._adjustAddrHeight(attField.getInputElement());
 	}
 
 	attField = this._attInputField[ZmCalBaseItem.OPTIONAL_PERSON];
 	if (attField) {
 		attField.setEnabled(enabled);
+        this._adjustAddrHeight(attField.getInputElement());
 	}
 };
 
@@ -1989,7 +2008,8 @@ function() {
 		dataClass:			appCtxt.getAutocompleter(),
 		matchValue:			ZmAutocomplete.AC_VALUE_FULL,
 		compCallback:		acCallback,
-		keyPressCallback:	keyPressCallback
+		keyPressCallback:	keyPressCallback,
+		options:			{addrBubbles:this._useAcAddrBubbles}
 	};
 
 	// autocomplete for attendees (required and optional) and forward recipients
@@ -2007,7 +2027,8 @@ function() {
 		// autocomplete for locations		
 		params.keyUpCallback = this._handleLocationChange.bind(this);
         //params.matchValue = ZmAutocomplete.AC_VALUE_NAME;
-		params.options = { type: ZmAutocomplete.AC_TYPE_LOCATION };
+		params.options = {addrBubbles:	this._useAcAddrBubbles,
+						  type:			ZmAutocomplete.AC_TYPE_LOCATION};
 		if (AjxEnv.isIE) {
 			params.keyDownCallback = this._resetKnownLocation.bind(this);
 		}
@@ -2021,7 +2042,8 @@ function() {
 		var app = appCtxt.getApp(ZmApp.CALENDAR);
         params.keyUpCallback = this._handleResourceChange.bind(this);
         //params.matchValue = ZmAutocomplete.AC_VALUE_NAME;
-        params.options = { type:ZmAutocomplete.AC_TYPE_EQUIPMENT };
+        params.options = {addrBubbles:	this._useAcAddrBubbles,
+                          type:ZmAutocomplete.AC_TYPE_EQUIPMENT};		
 		params.contextId = [this._controller.getCurrentViewId(), ZmCalBaseItem.EQUIPMENT].join("-");
 		var aclv = this._acResourcesList = new ZmAutocompleteListView(params);
         this._setAutocompleteHandler(aclv, ZmCalBaseItem.EQUIPMENT);
@@ -2042,8 +2064,12 @@ ZmApptEditView.prototype._setAutocompleteHandler =
 function(aclv, attType, input) {
 
 	input = input || this._attInputField[attType];
-	input.setAutocompleteListView(aclv);
-	aclv.handle(input.getInputElement(), input._htmlElId);
+	var aifId = null;
+	if (this._useAcAddrBubbles) {
+		aifId = input._htmlElId;
+		input.setAutocompleteListView(aclv);
+	}
+	aclv.handle(input.getInputElement(), aifId);
 
 	this._acList[attType] = aclv;
 };
@@ -2670,7 +2696,7 @@ function(type, attendees) {
     var organizer = this._isProposeTime ? this.getCalItemOrganizer() : this.getOrganizer();
     if(this._schedulerOpened) {
         this._scheduleView.update(this._dateInfo, organizer, this._attendees);
-        this.resize();
+        this.autoSize();
     }else {
         if(this._schedulerOpened == null && attendees.length > 0 && !this._isForward) {
             this._toggleInlineScheduler(true);
@@ -2837,25 +2863,102 @@ function(ev) {
 	}
 };
 
-ZmApptEditView.prototype._getComponents =
+ZmApptEditView.prototype._resizeNotes =
 function() {
-	var components =
-		ZmCalItemEditView.prototype._getComponents.call(this);
+	var bodyFieldId = this._notesHtmlEditor.getBodyFieldId();
+	if (this._bodyFieldId != bodyFieldId) {
+		this._bodyFieldId = bodyFieldId;
+		this._bodyField = document.getElementById(this._bodyFieldId);
+	}
 
-	components.above.push(this._schedulerOptions);
-	components.aside.push(this._suggestions);
+    var node = this.getHtmlElement();
+    if (node && node.parentNode)
+        node.style.height = node.parentNode.style.height;
 
-	return components;
+    var size = this.getSize();
+    // Size x by the containing table (excluding the suggestion panel)
+    var mainTableSize = Dwt.getSize(this._mainTable);
+    if (mainTableSize.x <= 0 || size.y <= 0) { return; }
+
+    var topDiv = document.getElementById(this._htmlElId + "_top");
+    var topDivSize = Dwt.getSize(topDiv);
+    var topSizeHeight = this._getComponentsHeight(true);
+    var notesEditorHeight = (this._notesHtmlEditor && this._notesHtmlEditor.getHtmlElement()) ? this._notesHtmlEditor.getHtmlElement().clientHeight:0;
+	var rowHeight = (size.y - topSizeHeight) + notesEditorHeight ;
+    var rowWidth = mainTableSize.x;
+    if(AjxEnv.isIE)
+        rowHeight = rowHeight - 10;
+    else {
+        var adj = (appCtxt.isTinyMCEEnabled()) ? 12 : 38;
+        rowHeight = rowHeight + adj;
+    }
+
+    if(rowHeight < 350){
+        rowHeight = 350;
+    }
+
+    if( appCtxt.isTinyMCEEnabled() ) {
+        this._notesHtmlEditor.setSize(rowWidth-5, rowHeight);
+    }else {
+        this._notesHtmlEditor.setSize(rowWidth-10, rowHeight-25);
+    }
+};
+
+ZmApptEditView.prototype._getComponentsHeight =
+function(excludeNotes) {
+    var components = [this._topContainer, document.getElementById(this._htmlElId + "_scheduler_option")];
+    if(!excludeNotes) components.push(this._notesContainer);
+
+    var compSize;
+    var compHeight= 10; //message label height
+    for(var i=0; i<components.length; i++) {
+        compSize= Dwt.getSize(components[i]);
+        compHeight += compSize.y;
+    }
+
+    if(this._schedulerOpened) compHeight += this._scheduleView.getSize().y;
+    return compHeight;
+};
+
+ZmApptEditView.prototype.autoSize =
+function() {
+    var size = Dwt.getSize(this.getHtmlElement());
+    mainTableSize = Dwt.getSize(this._mainTable);
+    this.resize(mainTableSize.x, size.y);
 };
 
 ZmApptEditView.prototype.resize =
-function() {
-	ZmCalItemEditView.prototype.resize.apply(this, arguments);
+function(newWidth, newHeight) {
+	if (!this._rendered) { return; }
 
-	if (this._scheduleAssistant) {
-		var bounds = this.boundsForChild(this._scheduleAssistant);
-		this._scheduleAssistant.setSize(Dwt.CLEAR, bounds.height);
+	if (newHeight) {
+		this.setSize(Dwt.DEFAULT, newHeight);
 	}
+
+    this._resizeNotes();
+    //this._scheduleAssistant.resizeTimeSuggestions();
+
+    //If scrollbar handle it
+    // Sizing based on the internal table now.  Scrolling bar will be external and accounted for already
+    var size = Dwt.getSize(this.getHtmlElement());
+    var mainTableSize = Dwt.getSize(this._mainTable);
+    var compHeight= this._getComponentsHeight();
+    if(compHeight > ( size.y + 5 )) {
+        Dwt.setSize(this.getHtmlElement().firstChild, size.x-15);
+
+        this._notesHtmlEditor.setSize(mainTableSize.x - 10);
+        if(!this._scrollHandled){
+            Dwt.setScrollStyle(this.getHtmlElement(), Dwt.SCROLL_Y);
+            this._scrollHandled = true;
+        }
+    }else{
+        if(this._scrollHandled){
+            Dwt.setScrollStyle(this.getHtmlElement(), Dwt.CLIP);
+            Dwt.setSize(this.getHtmlElement().firstChild, size.x);
+            this._notesHtmlEditor.setSize(mainTableSize.x - 10);
+        }
+        this._scrollHandled = false;
+    }
 };
 
 ZmApptEditView.prototype._initAttachContainer =
@@ -2887,6 +2990,9 @@ function(ev) {
 
     var key = DwtKeyEvent.getCharCode(ev);
     var _nodeName = el.nodeName;
+    if (_nodeName && _nodeName.toLowerCase() === "textarea") {
+        this._adjustAddrHeight(el);
+    }
     if (appCtxt.get(ZmSetting.CONTACTS_ENABLED) ){
         ZmAutocompleteListView.onKeyUp(ev);
     }
@@ -2907,6 +3013,48 @@ function(ev) {
         AjxTimedAction.cancelAction(this._schedActionId);
     }
     this._schedActionId = AjxTimedAction.scheduleAction(new AjxTimedAction(this, this._handleAttendeeField, ZmCalBaseItem.PERSON), 300);
+};
+
+ZmApptEditView.prototype._adjustAddrHeight =
+function(textarea) {
+
+	if (this._useAcAddrBubbles || !textarea) { return; }
+
+	if (textarea.value.length == 0) {
+		textarea.style.height = "21px";
+		if (AjxEnv.isIE) {
+			// for IE use overflow-y
+			textarea.style.overflowY = "hidden";
+		}
+		else {
+			textarea.style.overflow = "hidden";
+		}
+		return;
+	}
+
+	var sh = textarea.scrollHeight;
+	if (sh > textarea.clientHeight) {
+		var taHeight = parseInt(textarea.style.height) || 0;
+		if (taHeight <= 65) {
+			if (sh >= 65) {
+				sh = 65;
+				if (AjxEnv.isIE)
+					textarea.style.overflowY = "scroll";
+				else
+					textarea.style.overflow = "auto";
+			}
+			textarea.style.height = sh + 13;
+		} else {
+			if (AjxEnv.isIE) {
+				// for IE use overflow-y
+				textarea.style.overflowY = "scroll";
+			}
+			else {
+				textarea.style.overflow = "auto";
+			}
+			textarea.scrollTop = sh;
+		}
+	}
 };
 
 ZmApptEditView.prototype.loadPreference =
@@ -2959,6 +3107,7 @@ function() {
                 }
             }
 
+            if (!this._useAcAddrBubbles) { continue; }
             // Color the address bubble or reset to default
             color = isFree ? "" : conflictColor;
             addressElId = this._attInputField[type].getAddressBubble(email);

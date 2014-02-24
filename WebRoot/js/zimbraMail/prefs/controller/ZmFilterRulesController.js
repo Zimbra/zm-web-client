@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
@@ -411,21 +411,6 @@ function(dialog, folderList) {
 	var filterSel = listView && listView.getSelection();
 	if (!(filterSel && filterSel.length)) {
 		return;
-	}
-
-	// Bug 78392: We need the selection sorted
-	if (filterSel.length > 1) {
-		var list = this._listView.getList().getArray();
-		var selectedIds = {}, sortedSelection = [];
-		for (var i=0; i<filterSel.length; i++) {
-			selectedIds[filterSel[i].id] = true;
-		}
-		for (var i=0; i<list.length; i++) {
-			if (selectedIds[list[i].id]) {
-				sortedSelection.push(list[i]);
-			}
-		}
-		filterSel = sortedSelection;
 	}
 
 	var work = new ZmFilterWork(filterSel, this._outgoing);

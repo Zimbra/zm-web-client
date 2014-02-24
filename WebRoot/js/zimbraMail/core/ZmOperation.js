@@ -109,11 +109,10 @@ function() {
 	ZmOperation.registerOp(ZmId.OP_CLEAR_ALL, {textKey:"clearAll", image:"Cancel"});
 	ZmOperation.registerOp(ZmId.OP_CLOSE, {textKey:"close", tooltipKey:"closeTooltip", image:"Close", shortcut:ZmKeyMap.CANCEL});
 	ZmOperation.registerOp(ZmId.OP_COMPOSE_FORMAT, {textKey:"format", tooltipKey:"formatTooltip", image:"SwitchFormat", shortcut:ZmKeyMap.HTML_FORMAT}, ZmSetting.HTML_COMPOSE_ENABLED);
-	ZmOperation.registerOp(ZmId.OP_CONTACTGROUP_MENU, {textKey: "AB_CONTACT_GROUP", tooltipKey:"contactGroupTooltip", image:"Group"}, null,
+	ZmOperation.registerOp(ZmId.OP_CONTACTGROUP_MENU, {textKey: "AB_CONTACT_GROUP", tooltipKey:"contactGroupTooltip", image:"Group"}, ZmSetting.TAGGING_ENABLED,
 		AjxCallback.simpleClosure(function(parent) {
 			ZmOperation.addDeferredMenu(ZmOperation.addContactGroupMenu, parent, true);
 	}));
-	ZmOperation.registerOp(ZmId.OP_COPY, {textKey:"copy", image:"Copy"});
 	ZmOperation.registerOp(ZmId.OP_DELETE, {textKey:"del", tooltipKey:"deleteTooltip", image:"Delete", shortcut:ZmKeyMap.DEL, textPrecedence:60});
 	ZmOperation.registerOp(ZmId.OP_DELETE_WITHOUT_SHORTCUT, {textKey:"del", tooltipKey:"deleteTooltip", image:"Delete", textPrecedence:60});
 	ZmOperation.registerOp(ZmId.OP_DETACH, {textKey:"detachTT", tooltipKey:"detachTT", image:"OpenInNewWindow", showImageInToolbar: true});
@@ -157,8 +156,6 @@ function() {
 	ZmOperation.registerOp(ZmId.OP_PAGE_FORWARD, {image:"RightArrow", shortcut:ZmKeyMap.NEXT_PAGE});
 	ZmOperation.registerOp(ZmId.OP_PRINT, {textKey:"print", tooltipKey:"printTooltip", image:"Print", shortcut:ZmKeyMap.PRINT, textPrecedence:30, showImageInToolbar: true}, ZmSetting.PRINT_ENABLED);
     ZmOperation.registerOp(ZmId.OP_PRIORITY_FILTER, {image:"Priority", textKey:"activityStream"}, ZmSetting.PRIORITY_INBOX_ENABLED);
-	ZmOperation.registerOp(ZmId.OP_FIND_SHARES, {image:"Group", textKey:"findShares"}, ZmSetting.SHARING_ENABLED);
-
 	//ZmOperation.registerOp(ZmId.OP_QUICK_COMMANDS, {textKey:"quickCommands", image:"QuickCommand"});
 	ZmOperation.registerOp(ZmId.OP_RECOVER_DELETED_ITEMS, {textKey:"recoverDeletedItems", image:"Trash", tooltipKey:"recoverDeletedItems"}, ZmSetting.DUMPSTER_ENABLED);
     ZmOperation.registerOp(ZmId.OP_REFRESH, {textKey:"refresh", tooltipKey:"refreshTooltip"});
@@ -208,24 +205,6 @@ function() {
 	ZmOperation.registerOp(ZmId.OP_VIEW, {textKey:"view", image:"SplitView"});
 	ZmOperation.registerOp(ZmId.OP_VIEW_MENU, {tooltipKey:"viewTooltip", textKey:"view", image:"SplitPane", textPrecedence:80, showImageInToolbar: true, showTextInToolbar: true});
 	ZmOperation.registerOp(ZmId.OP_ZIMLET, {image:"ZimbraIcon"});
-
-	// invites - needed for both Mail and Calendar
-	ZmOperation.registerOp(ZmId.OP_ACCEPT_PROPOSAL, {textKey:"replyAccept", image:"Check"});
-	ZmOperation.registerOp(ZmId.OP_DECLINE_PROPOSAL, {textKey:"replyDecline", image:"Cancel"});
-	ZmOperation.registerOp(ZmId.OP_CAL_REPLY, {textKey:"reply", tooltipKey:"replyTooltip", image:"Reply", shortcut:ZmKeyMap.REPLY});
-	ZmOperation.registerOp(ZmId.OP_CAL_REPLY_ALL, {textKey:"replyAll", tooltipKey:"replyAllTooltip", image:"ReplyAll", shortcut:ZmKeyMap.REPLY_ALL});
-	ZmOperation.registerOp(ZmId.OP_REPLY_ACCEPT, {textKey:"replyAccept", image:"Check", showTextInToolbar: true, showImageInToolbar: true});
-	ZmOperation.registerOp(ZmId.OP_REPLY_ACCEPT_NOTIFY, {textKey:"notifyOrganizerLabel", image:"Check"});
-	ZmOperation.registerOp(ZmId.OP_REPLY_ACCEPT_IGNORE, {textKey:"dontNotifyOrganizerLabel", image:"Check"});
-	ZmOperation.registerOp(ZmId.OP_REPLY_CANCEL);
-	ZmOperation.registerOp(ZmId.OP_REPLY_DECLINE, {textKey:"replyDecline", image:"Cancel", showTextInToolbar: true, showImageInToolbar: true});
-	ZmOperation.registerOp(ZmId.OP_REPLY_DECLINE_NOTIFY, {textKey:"notifyOrganizerLabel", image:"Cancel"});
-	ZmOperation.registerOp(ZmId.OP_REPLY_DECLINE_IGNORE, {textKey:"dontNotifyOrganizerLabel", image:"Cancel"});
-	ZmOperation.registerOp(ZmId.OP_REPLY_MODIFY);
-	ZmOperation.registerOp(ZmId.OP_REPLY_NEW_TIME, {textKey:"replyNewTime", image:"NewTime"});
-	ZmOperation.registerOp(ZmId.OP_REPLY_TENTATIVE, {textKey:"replyTentative", image:"QuestionMark", showTextInToolbar: true, showImageInToolbar: true});
-	ZmOperation.registerOp(ZmId.OP_REPLY_TENTATIVE_NOTIFY, {textKey:"notifyOrganizerLabel", image:"QuestionMark"});
-	ZmOperation.registerOp(ZmId.OP_REPLY_TENTATIVE_IGNORE, {textKey:"dontNotifyOrganizerLabel", image:"QuestionMark"});
 
 	ZmOperation.NEW_ORG_OPS.push(ZmOperation.NEW_FOLDER, ZmOperation.NEW_TAG);
 	ZmOperation.NEW_ORG_KEY[ZmOperation.NEW_FOLDER]	= "folder";
@@ -380,7 +359,11 @@ function(parent, id, opHash, index, htmlElId) {
 	}
 	var callback = ZmOperation.CALLBACK[id];
 	if (callback) {
-		callback.run(opHash[id]);
+		if (callback.isAjxCallback) {
+			callback.run(opHash[id]);
+		} else {
+			callback(opHash[id]);
+		}
 	}
 };
 
@@ -409,12 +392,9 @@ function(addMenuFunc, parent /* ... */) {
  */
 ZmOperation.removeOperation =
 function(parent, id, opHash) {
-	var op = parent.getOp(id);
-	if (op) {
-		op.dispose();
-		delete opHash[id];
-	}
-};
+	parent.getOp(id).dispose();
+	delete opHash[id];
+}
 
 /**
  * Replaces the attributes of one operation with those of another, wholly or in part.

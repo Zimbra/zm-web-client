@@ -109,12 +109,11 @@ ZmMailApp.INC_MAP[ZmSetting.INC_SMART_HDR]		= [ZmSetting.INC_SMART, false, true]
 ZmMailApp.INC_MAP[ZmSetting.INC_SMART_PRE_HDR]	= [ZmSetting.INC_SMART, true, true];
 
 ZmMailApp.INC_MAP_REV = {};
-
-AjxUtil.foreach(ZmMailApp.INC_MAP, function(v, i) {
-	var key = (i == ZmSetting.INC_NONE || i == ZmSetting.INC_ATTACH) ?
-		v[0] : v.join("|");
+for (var i in ZmMailApp.INC_MAP) {
+	var key = (i == ZmSetting.INC_NONE || i == ZmSetting.INC_ATTACH) ? ZmMailApp.INC_MAP[i][0] :
+			  														   ZmMailApp.INC_MAP[i].join("|");
 	ZmMailApp.INC_MAP_REV[key] = i;
-});
+}
 
 ZmMailApp._setGroupByMaps =
 function() {
@@ -201,7 +200,6 @@ function(settings) {
 	settings.registerSetting("MAIL_NOTIFY_TOASTER",				{name:"zimbraPrefMailToasterEnabled", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false, isGlobal:true});
 	settings.registerSetting("MAIL_PRIORITY_ENABLED",			{name:"zimbraFeatureMailPriorityEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	settings.registerSetting("MAIL_READ_RECEIPT_ENABLED",		{name:"zimbraFeatureReadReceiptsEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
-	settings.registerSetting("MAIL_SEND_LATER_ENABLED",			{name:"zimbraFeatureMailSendLaterEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	settings.registerSetting("MAIL_SEND_READ_RECEIPTS",			{name:"zimbraPrefMailSendReadReceipts", type:ZmSetting.T_PREF, dataType:ZmSetting.D_STRING, defaultValue:"never"});
 	settings.registerSetting("MAIL_WHITELIST",					{type: ZmSetting.T_PREF, dataType: ZmSetting.D_LIST});
 	settings.registerSetting("MAIL_WHITELIST_MAX_NUM_ENTRIES",	{name:"zimbraMailWhitelistMaxNumEntries", type: ZmSetting.T_COS, dataType: ZmSetting.D_INT, defaultValue:100});
@@ -837,12 +835,16 @@ function(checked) {
  */
 ZmMailApp.prototype._registerOperations =
 function() {
-	ZmOperation.registerOp(ZmId.OP_ADD_FILTER_RULE, {textKey:"createFilter", image:"Plus"}, ZmSetting.FILTERS_ENABLED);
+    ZmOperation.registerOp(ZmId.OP_ACCEPT_PROPOSAL, {textKey:"replyAccept", image:"Check"});
+	ZmOperation.registerOp(ZmId.OP_ADD_FILTER_RULE, {textKey:"newFilter", image:"Plus"}, ZmSetting.FILTERS_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_ADD_SIGNATURE, {textKey:"signature", image:"AddSignature", tooltipKey:"chooseSignature"}, ZmSetting.SIGNATURES_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_CHECK_MAIL, {textKey:"checkMail", tooltipKey:"checkMailPrefDefault", image:"Refresh", textPrecedence:90, showImageInToolbar: true});
+	ZmOperation.registerOp(ZmId.OP_CHECK_MAIL_DEFAULT, {textKey:"checkMailDefault"});
+	ZmOperation.registerOp(ZmId.OP_CHECK_MAIL_UPDATE, {textKey:"checkMailUpdate"});
 	ZmOperation.registerOp(ZmId.OP_COMPOSE_OPTIONS, {textKey:"options", image:"Preferences"});
 	ZmOperation.registerOp(ZmId.OP_CREATE_APPT, {textKey:"createAppt", image:"NewAppointment"}, ZmSetting.CALENDAR_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_CREATE_TASK, {textKey:"createTask", image:"NewTask"}, ZmSetting.TASKS_ENABLED);
+    ZmOperation.registerOp(ZmId.OP_DECLINE_PROPOSAL, {textKey:"replyDecline", image:"Cancel"});
 	ZmOperation.registerOp(ZmId.OP_DELETE_CONV, {textKey:"delConv", image:"DeleteConversation"}, ZmSetting.CONVERSATIONS_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_DELETE_MSG, {textKey:"delMsg", image:"DeleteMessage"});
 	ZmOperation.registerOp(ZmId.OP_DELETE_MENU, {textKey:"del", image:"Delete", tooltipKey:"deleteTooltip"});
@@ -851,7 +853,6 @@ function() {
 	ZmOperation.registerOp(ZmId.OP_EDIT_FILTER_RULE, {textKey:"filterEdit", image:"Edit"}, ZmSetting.FILTERS_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_FORWARD, {textKey:"forward", tooltipKey:"forwardTooltip", image:"Forward", shortcut:ZmKeyMap.FORWARD, textPrecedence:46});
 	ZmOperation.registerOp(ZmId.OP_FORWARD_ATT, {textKey:"forwardAtt", tooltipKey:"forwardAtt", image:"Forward"});
-	ZmOperation.registerOp(ZmId.OP_FORWARD_CONV, {textKey:"forwardConv", tooltipKey:"forwardConv", image:"Forward"});
 	ZmOperation.registerOp(ZmId.OP_FORWARD_INLINE, {textKey:"forwardInline", tooltipKey:"forwardTooltip", image:"Forward"});
 	ZmOperation.registerOp(ZmId.OP_IM, {textKey:"newIM", image:"ImStartChat", tooltipKey:"imNewChat"}, ZmSetting.IM_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_INC_ATTACHMENT, {textKey:"includeMenuAttachment"});
@@ -862,8 +863,6 @@ function() {
 	ZmOperation.registerOp(ZmId.OP_KEEP_READING, {textKey:"keepReading", tooltipKey:"keepReadingTooltip", shortcut:ZmKeyMap.KEEP_READING});
 	ZmOperation.registerOp(ZmId.OP_MARK_READ, {textKey:"markAsRead", image:"ReadMessage", shortcut:ZmKeyMap.MARK_READ});
 	ZmOperation.registerOp(ZmId.OP_MARK_UNREAD, {textKey:"markAsUnread", image:"UnreadMessage", shortcut:ZmKeyMap.MARK_UNREAD});
-	ZmOperation.registerOp(ZmId.OP_FLAG, {textKey:"flag", image:"FlagRed", shortcut:ZmKeyMap.FLAG});
-	ZmOperation.registerOp(ZmId.OP_UNFLAG, {textKey:"unflag", image:"FlagDis", shortcut:ZmKeyMap.FLAG});
 	ZmOperation.registerOp(ZmId.OP_MOVE_DOWN_FILTER_RULE, {textKey:"filterMoveDown", image:"DownArrow"}, ZmSetting.FILTERS_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_MOVE_TO_BCC, {textKey:"moveToBcc"});
 	ZmOperation.registerOp(ZmId.OP_MOVE_TO_CC, {textKey:"moveToCc"});
@@ -872,9 +871,17 @@ function() {
 	ZmOperation.registerOp(ZmId.OP_NEW_MESSAGE, {textKey:"newEmail", tooltipKey:"newMessageTooltip", image:"NewMessage", shortcut:ZmKeyMap.NEW_MESSAGE});
 	ZmOperation.registerOp(ZmId.OP_NEW_MESSAGE_WIN, {textKey:"newEmail", tooltipKey:"newMessageTooltip", image:"NewMessage", shortcut:ZmKeyMap.NEW_MESSAGE_WIN});
 	ZmOperation.registerOp(ZmId.OP_REMOVE_FILTER_RULE, {textKey:"filterRemove", image:"Delete"}, ZmSetting.FILTERS_ENABLED);
+    ZmOperation.registerOp(ZmId.OP_CAL_REPLY, {textKey:"reply", tooltipKey:"replyTooltip", image:"Reply", shortcut:ZmKeyMap.REPLY});
+    ZmOperation.registerOp(ZmId.OP_CAL_REPLY_ALL, {textKey:"replyAll", tooltipKey:"replyAllTooltip", image:"ReplyAll", shortcut:ZmKeyMap.REPLY_ALL});
     ZmOperation.registerOp(ZmId.OP_REDIRECT, {textKey:"mailRedirect", tooltipKey:"mailRedirectTooltip", image:"Redirect"});
 	ZmOperation.registerOp(ZmId.OP_REPLY, {textKey:"reply", tooltipKey:"replyTooltip", image:"Reply", shortcut:ZmKeyMap.REPLY, textPrecedence:50});
+	ZmOperation.registerOp(ZmId.OP_REPLY_ACCEPT, {textKey:"replyAccept", image:"Check"});
 	ZmOperation.registerOp(ZmId.OP_REPLY_ALL, {textKey:"replyAll", tooltipKey:"replyAllTooltip", image:"ReplyAll", shortcut:ZmKeyMap.REPLY_ALL, textPrecedence:48});
+	ZmOperation.registerOp(ZmId.OP_REPLY_CANCEL);	// semantic op for appt delete
+	ZmOperation.registerOp(ZmId.OP_REPLY_DECLINE, {textKey:"replyDecline", image:"Cancel"});
+	ZmOperation.registerOp(ZmId.OP_REPLY_MODIFY);	// for future use (bug 6523)
+	ZmOperation.registerOp(ZmId.OP_REPLY_NEW_TIME, {textKey:"replyNewTime", image:"NewTime"});
+	ZmOperation.registerOp(ZmId.OP_REPLY_TENTATIVE, {textKey:"replyTentative", image:"QuestionMark"});
 	ZmOperation.registerOp(ZmId.OP_REQUEST_READ_RECEIPT, {textKey:"requestReadReceipt", image:"ReadMessage"});
 	ZmOperation.registerOp(ZmId.OP_RESET, {textKey:"reset", image:"Refresh", tooltipKey: "refreshFilters"});
 	ZmOperation.registerOp(ZmId.OP_RUN_FILTER_RULE, {textKey:"filterRun", image:"SwitchFormat"}, ZmSetting.FILTERS_ENABLED);
@@ -896,6 +903,7 @@ function() {
 	ZmItem.registerItem(ZmItem.CONV,
 						{app:			ZmApp.MAIL,
 						 nameKey:		"conversation",
+						 countKey:	    "typeConversation",
 						 icon:			"Conversation",
 						 soapCmd:		"ConvAction",
 						 itemClass:		"ZmConv",
@@ -913,6 +921,7 @@ function() {
 	ZmItem.registerItem(ZmItem.MSG,
 						{app:			ZmApp.MAIL,
 						 nameKey:		"message",
+						 countKey:  	"typeMessage",
 						 icon:			"Message",
 						 soapCmd:		"MsgAction",
 						 itemClass:		"ZmMailMsg",
@@ -1314,6 +1323,13 @@ function(creates, list, controller, last) {
 	var convs = {};
 	var msgs = {};
 
+	// make sure current search is matchable (conv can just match on cid)
+	if (!(list.search && list.search.isMatchable()) && (controller == this._tradController)) {
+		var query = list.search ? list.search.query : "";
+		AjxDebug.println(AjxDebug.NOTIFY, "ZmMailApp: search not matchable: " + query);
+		return;
+	}
+
 	var sortBy = list.search.sortBy;
 
 	var convResults = this._checkType(creates, ZmItem.CONV, convs, list, sortBy, null, last);
@@ -1603,7 +1619,7 @@ function(params, callback) {
 ZmMailApp.prototype._handleLoadLaunch =
 function(params, callback) {
 	// set type for initial search
-	this._groupBy = (appCtxt.isWebClientOffline()) ? ZmSetting.GROUP_BY_MESSAGE : appCtxt.get(ZmSetting.GROUP_MAIL_BY);
+	this._groupBy = appCtxt.get(ZmSetting.GROUP_MAIL_BY);
 
 	var query;
 	params = params || {};
@@ -1711,9 +1727,8 @@ function(query, callback, response, type) {
 	}
 	else if(appCtxt.isExternalAccount()) {
         query = "inid:" + this.getDefaultFolderId();
-    } else if (appCtxt.isWebClientOffline()) {
-        query = query || "in:inbox";
-    } else {
+    }
+    else {
 		query = query || appCtxt.get(ZmSetting.INITIAL_SEARCH, null, account);
 	}
 
@@ -1729,7 +1744,6 @@ function(query, callback, response, type) {
 		limit:				this.getLimit(),
 		getHtml:			appCtxt.get(ZmSetting.VIEW_AS_HTML, null, account),
 		noUpdateOverview:	noUpdateOverview,
-        offlineCache:       true,
 		accountName:		(account && account.name),
 		callback:			callback,
 		response:			response,
@@ -1745,6 +1759,8 @@ function(params) {
 	if (!appCtxt.inStartup && (appCtxt.get(ZmSetting.READING_PANE_LOCATION) != ZmSetting.RP_OFF)) {
 		params.fetch = true;
 	}
+	AjxDispatcher.require("MailCore");
+    params.headers = ZmMailMsg.requestHeaders;
 	return params;
 };
 
@@ -1765,7 +1781,7 @@ ZmMailApp.prototype._handleLoadShowSearchResults =
 function(results, callback, searchResultsController) {
 
 	var sessionId = searchResultsController ? searchResultsController.getCurrentViewId() : ZmApp.MAIN_SESSION;
-	var controller = ((results.type == ZmItem.MSG) || !appCtxt.get(ZmSetting.CONVERSATIONS_ENABLED)) ? this.getTradController(sessionId, searchResultsController) :
+	var controller = (results.type == ZmItem.MSG) ? this.getTradController(sessionId, searchResultsController) :
 													this.getConvListController(sessionId, searchResultsController);
 	controller.show(results);
 	this._setLoadedTime(this.toString(), new Date());
@@ -1960,7 +1976,7 @@ function(sessionId) {
  */
 ZmMailApp.prototype.getMailListController =
 function() {
-	var groupMailBy = appCtxt.get(ZmSetting.GROUP_MAIL_BY) ;
+	var groupMailBy = appCtxt.get(ZmSetting.GROUP_MAIL_BY);
 	return (groupMailBy == ZmSetting.GROUP_BY_CONV) ? AjxDispatcher.run("GetConvListController") :
 													  AjxDispatcher.run("GetTradController");
 };
@@ -2349,42 +2365,4 @@ ZmMailApp.prototype._checkVacationReplyEnabled = function(){
 	ynDialog.registerCallback(DwtDialog.YES_BUTTON, ZmMailApp._handleOOORemindResponse, null, [ynDialog, true]);
 	ynDialog.registerCallback(DwtDialog.NO_BUTTON, ZmMailApp._handleOOORemindResponse, null, [ynDialog, false]);
 	ynDialog.popup();
-};
-
-ZmMailApp.prototype._createVirtualFolders =
-function() {
-    ZmOffline.addOutboxFolder();
-};
-
-ZmMailApp.prototype.resetWebClientOfflineOperations =
-function() {
-	ZmApp.prototype.resetWebClientOfflineOperations.apply(this);
-    //Refreshing the mail list both for online and offline mode
-	var isWebClientOnline = !appCtxt.isWebClientOffline();
-	if (isWebClientOnline) {
-        this.refresh();
-    }
-    else {
-        this.mailSearch();
-    }
-	var folders = appCtxt.getFolderTree().getByType(ZmOrganizer.FOLDER);
-	var overview = this.getOverview();
-	if (folders && overview) {
-		for (var i = 0; i < folders.length; i++) {
-			var folder = folders[i];
-			var treeItem = folder && overview.getTreeItemById(folder.id);
-			if (!treeItem) {
-				continue;
-			}
-			if (isWebClientOnline) {
-				treeItem.setVisible(true);
-			}
-			else {
-				//Don't hide ROOT folder and OUTBOX folder
-				if (folder.id != ZmFolder.ID_ROOT && folder.id != ZmFolder.ID_OUTBOX && folder.webOfflineSyncDays === 0) {
-					treeItem.setVisible(false);
-				}
-			}
-		}
-	}
 };

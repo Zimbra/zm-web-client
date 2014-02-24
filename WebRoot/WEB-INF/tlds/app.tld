@@ -567,11 +567,6 @@
 		<path>/WEB-INF/tags/infra/skinAndRedirect.tag</path>
 	</tag-file>
 
-	<tag-file>
-		<name>loadTinyMCE</name>
-		<path>/WEB-INF/tags/infra/loadTinyMCE.tag</path>
-	</tag-file>
-
     <tag-file>
         <name>button</name>
         <path>/WEB-INF/tags/button.tag</path>
@@ -911,12 +906,6 @@
         <name>getCallFeatures</name>
         <path>/WEB-INF/tags/voice/getCallFeatures.tag</path>
     </tag-file>
-
-    <function>
-        <name>boolean</name>
-        <function-class>java.lang.Boolean</function-class>
-        <function-signature>java.lang.Boolean valueOf(java.lang.String)</function-signature>
-    </function>
 
 </taglib>
 

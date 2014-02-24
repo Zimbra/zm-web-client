@@ -52,7 +52,6 @@ ZmMailPrefsPage.prototype.reset =
 function(useDefaults) {
     ZmPreferencesPage.prototype.reset.apply(this, arguments);
 
-    this._duration = 0;
     var noDuration = true;
     if (this._startDateVal) {
         noDuration = (this._startDateVal.value == null || this._startDateVal.value == "");
@@ -135,7 +134,7 @@ function() {
 
 ZmMailPrefsPage.prototype._createControls =
 function() {
-    AjxDispatcher.require(["MailCore", "CalendarCore"]);
+    AjxDispatcher.require(["CalendarCore"]);
 	ZmPreferencesPage.prototype._createControls.apply(this, arguments);
 
 	this._sId = this._htmlElId + "_startMiniCal";
@@ -279,8 +278,6 @@ function() {
     endDate.setHours(23,59,0,0);
     this._initDateTimeDisplayField(this._endDateVal, this._endTimeSelect,
         this._endDateField, endDate);
-
-    this._calcDuration();
 }
 
 ZmMailPrefsPage.prototype._initDateTimeDisplayField =
@@ -338,8 +335,8 @@ function(ev) {
 		this._endDateField.value = newDate;
 	}
 
-    var sd = this._fixAndGetValidDateFromField(this._startDateField);
-    var ed = this._fixAndGetValidDateFromField(this._endDateField);
+	var sd = this._fixAndGetValidDateFromField(this._startDateField);
+	var ed = this._fixAndGetValidDateFromField(this._endDateField);
     if(this._startTimeSelect && this._endTimeSelect){
         sd = this._startTimeSelect.getValue(sd);
         ed = this._endTimeSelect.getValue(ed);
@@ -347,27 +344,12 @@ function(ev) {
 
 	
 	this._fixDates(sd, ed, parentButton == this._endDateButton);
-    this._calcDuration();
 
 	if (this._durationCheckbox.isSelected()) {
 		this._startDateVal.value = this._formatter.format(sd);
         this._endDateVal.value = this._formatter.format(ed);
 	}
 };
-
-ZmMailPrefsPage.prototype._calcDuration =
-function() {
-    var sd = this._fixAndGetValidDateFromField(this._startDateField);
-    var ed = this._fixAndGetValidDateFromField(this._endDateField);
-
-    var sdDay = new Date(sd.getTime());
-    var edDay = new Date(ed.getTime());
-    sdDay.setHours(0, 0, 0, 0);
-    edDay.setHours(0, 0, 0, 0);
-    this._duration = edDay.getTime() - sdDay.getTime();
-    DBG.println(AjxDebug.DBG3, "ZmMailPrefsPage._calcDuration: Start=" + AjxDateUtil.simpleComputeDateStr(sdDay) +
-                ", End=" + AjxDateUtil.simpleComputeDateStr(edDay) + ", duration=" + this._duration);
-}
 
 ZmMailPrefsPage.prototype._dateFieldListener =
 function(ev) {
@@ -378,7 +360,6 @@ function(ev) {
         ed = this._endTimeSelect.getValue(ed);
     }
     this._fixDates(sd, ed, DwtUiEvent.getTarget(ev) == this._endDateField);
-    this._calcDuration();
     this._startDateVal.value = this._formatter.format(AjxDateUtil.simpleParseDateStr(this._startDateField.value));
     this._endDateVal.value = this._formatter.format(AjxDateUtil.simpleParseDateStr(this._endDateField.value));
 };
@@ -396,28 +377,21 @@ function(ev) {
 /* Fixes the field values so that end date always is later than or equal to start date
  * @param startDate	{Date}	The value of the start date field or calendar selection
  * @param endDate	{Date}	The value of the end date field or calendar selection
- * @param endModified {boolean}	endDate was changed - don't preserve the duration
+ * @param modifyStart {boolean}	Whether to modify the start date or end date when dates overlap. true for start date, false for end date
 */
-ZmMailPrefsPage.prototype._fixDates =
-function(startDate, endDate, endModified) {
-    var startDateNoTimeOffset = new Date(startDate.getTime());
-    startDateNoTimeOffset.setHours(0,0,0,0);
-    var endDateNoTimeOffset   = new Date(endDate.getTime());
-    endDateNoTimeOffset.setHours(0,0,0,0);
 
-	if (startDateNoTimeOffset >= endDateNoTimeOffset) {
-        // Start date after end date
-		if (endModified) {
-            // EndDate was set to be prior to the startDate - set them to be equal
+ZmMailPrefsPage.prototype._fixDates =
+function(startDate, endDate, modifyStart) {
+	if (startDate > endDate) {
+		// Mismatch; start date is after end date
+		if (modifyStart) {
+			// Set them to be equal
 			this._startDateField.value = AjxDateUtil.simpleComputeDateStr(endDate);
-            DBG.println(AjxDebug.DBG3, "ZmMailPrefsPage._fixDates: endModified, set start == end");
 		} else {
-			// StartDate modified - preserve the duration
-            var newEndDate = new Date(startDateNoTimeOffset.getTime() + this._duration);
-			this._endDateField.value = AjxDateUtil.simpleComputeDateStr(newEndDate);
-            DBG.println(AjxDebug.DBG3, "ZmMailPrefsPage._fixDates: Start=" + AjxDateUtil.simpleComputeDateStr(startDate) +
-                ", End=" + AjxDateUtil.simpleComputeDateStr(newEndDate) + ", duration=" + this._duration);
+			// Put endDate a bit into the future
+			this._endDateField.value = AjxDateUtil.simpleComputeDateStr(AjxDateUtil.getDateForNextDay(startDate,AjxDateUtil.FRIDAY));
 		}
+
 	}
 };
 

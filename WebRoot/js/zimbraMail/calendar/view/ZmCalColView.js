@@ -350,20 +350,16 @@ function(resetLeft) {
 	ZmCalColView._inSyncScroll = true;
 
 	try {
-		var bodyElement = document.getElementById(this._bodyDivId),
-		    hourElement = document.getElementById(this._hoursScrollDivId),
-		    alldayElement = document.getElementById(this._allDayScrollDivId),
-		    unionGridScrollElement = document.getElementById(this._unionGridScrollDivId),
-		    alldayApptElement = document.getElementById(this._allDayApptScrollDivId),
-            allDayHeadingDivId = document.getElementById(this._tabsContainerDivId); // Fix for bug: 66603. Assign this a scroll handler
-
+		var bodyElement = document.getElementById(this._bodyDivId);
+		var hourElement = document.getElementById(this._hoursScrollDivId);
+		var alldayElement = document.getElementById(this._allDayScrollDivId);
+		var unionGridScrollElement = document.getElementById(this._unionGridScrollDivId);
+		var alldayApptElement = document.getElementById(this._allDayApptScrollDivId);
 		hourElement.scrollTop = bodyElement.scrollTop;
 		hourElement.scrollLeft = bodyElement.scrollLeft;
 		if (resetLeft) bodyElement.scrollLeft = 0;
 		alldayElement.scrollLeft = bodyElement.scrollLeft;
 		alldayApptElement.scrollLeft = bodyElement.scrollLeft;
-        // Fix for bug: 66603. Assign this a scroll handler
-        bodyElement.scrollLeft = allDayHeadingDivId.scrollLeft;
 		if (unionGridScrollElement) unionGridScrollElement.scrollTop = bodyElement.scrollTop;
         this._checkForOffscreenAppt(bodyElement);
 
@@ -663,9 +659,7 @@ function(appt) {
 	if (is30 &&
 		(this.view != ZmId.VIEW_CAL_DAY) )
 	{
-        // Fix for bug: 57930. Adjust the width of appointment based on duration text.
-        var adjustWidth = appt.getDurationText(true, true).length * 2;
-		var widthLimit = Math.floor(adjustWidth * apptWidthPercent);
+		var widthLimit = Math.floor(8 * apptWidthPercent)
 		if (apptName.length > widthLimit) {
 			apptName = apptName.substring(0, widthLimit) + "...";
 		}
@@ -825,8 +819,6 @@ function(abook) {
     this._hourColDivId = Dwt.getNextId();
     this._startLimitIndicatorDivId = Dwt.getNextId();
     this._endLimitIndicatorDivId = Dwt.getNextId();
-    // Fix for bug: 66603. Reference to parent container of _allDayHeadingDivId
-    this._tabsContainerDivId = Dwt.getNextId();
 
 
 	if (this._scheduleMode) {
@@ -896,8 +888,6 @@ function(abook) {
 	html.append("<div id='", this._allDayScrollDivId, "' style='position:absolute; overflow:hidden;'>");
 
 	// all day headings
-    // Fix for bug: 66603. Adding a container to calendar headings
-    html.append("<div id='", this._tabsContainerDivId, "' name='_tabsContainerDivId' style='position:absolute;height:25px;bottom:0px;top:0px'>");
 	html.append("<div id='", this._allDayHeadingDivId, "' class='calendar_heading' style='", headerStyle,	"'>");
 	if (!this._scheduleMode) {
 		for (var i =0; i < this.numDays; i++) {
@@ -905,8 +895,6 @@ function(abook) {
 		}
 	}
 	html.append("</div>");
-    // Fix for bug: 66603
-    html.append("</div>");
 
 	// divs to separate day headings
 	if (!this._scheduleMode) {
@@ -974,8 +962,6 @@ function(abook) {
     var func = AjxCallback.simpleClosure(ZmCalColView.__onScroll, ZmCalColView, this);
 	document.getElementById(this._bodyDivId).onscroll = func;
 	document.getElementById(this._allDayApptScrollDivId).onscroll = func;
-    // Fix for bug: 66603. Adding a handler to enable scrolling.
-    document.getElementById(this._tabsContainerDivId).onscroll = func;
 
 	var ids = [this._apptBodyDivId, this._bodyHourDivId, this._allDayDivId, this._allDaySepDivId];
 	var types = [ZmCalBaseView.TYPE_APPTS_DAYGRID, ZmCalBaseView.TYPE_HOURS_COL, ZmCalBaseView.TYPE_ALL_DAY, ZmCalBaseView.TYPE_DAY_SEP];
@@ -991,13 +977,16 @@ ZmCalColView.prototype.updateTimeIndicator=function(force){
     var min = curDate.getMinutes();
     var curHourDiv = document.getElementById(this._hourColDivId+"_"+hr);
     var curTimeHourIndicator = document.getElementById(this._curTimeIndicatorHourDivId);
+    curTimeHourIndicator.style.left=curHourDiv.offsetParent.offsetLeft;
     var currentTopPosition = Math.round((ZmCalColView._HOUR_HEIGHT/60)*min)+parseInt(curHourDiv.offsetParent.offsetTop);
-    Dwt.setLocation(curTimeHourIndicator, curHourDiv.offsetParent.offsetLeft, currentTopPosition+3);
+    curTimeHourIndicator.style.top=(currentTopPosition+3)+"px";
     var calendarStrip = document.getElementById(this._curTimeIndicatorGridDivId);
     Dwt.setVisibility(calendarStrip,true);
     var todayColDiv = document.getElementById(this._calendarTodayHeaderDivId);
     if (todayColDiv && (force || this._isValidIndicatorDuration)){
-        Dwt.setBounds(calendarStrip, todayColDiv.offsetLeft, currentTopPosition, todayColDiv.offsetWidth, null);
+     calendarStrip.style.left=todayColDiv.offsetLeft;
+     calendarStrip.style.top=currentTopPosition+"px";
+     calendarStrip.style.width=todayColDiv.offsetWidth;
     }
     else{Dwt.setVisibility(calendarStrip,false);}
     return this.setTimer(1);
@@ -2212,18 +2201,16 @@ function(ev, div) {
 			}
 			break;
 		case ZmCalBaseView.TYPE_APPTS_DAYGRID:
-            if (!appCtxt.isWebClientOffline()) {
-                this._timeSelectionAction(ev, div, false);
-                if (ev.button == DwtMouseEvent.LEFT) {
-                    // save grid location here, since timeSelection might move the time selection div
-                    var gridLoc = Dwt.toWindow(ev.target, ev.elementX, ev.elementY, div, true);
-                    return this._gridMouseDownAction(ev, div, gridLoc);
-                } else if (ev.button == DwtMouseEvent.RIGHT) {
-                    DwtUiEvent.copy(this._actionEv, ev);
-                    this._actionEv.item = this;
-                    this._evtMgr.notifyListeners(ZmCalBaseView.VIEW_ACTION, this._actionEv);
-                }
-            }
+			this._timeSelectionAction(ev, div, false);
+			if (ev.button == DwtMouseEvent.LEFT) {
+				// save grid location here, since timeSelection might move the time selection div
+				var gridLoc = Dwt.toWindow(ev.target, ev.elementX, ev.elementY, div, true);
+				return this._gridMouseDownAction(ev, div, gridLoc);
+			} else if (ev.button == DwtMouseEvent.RIGHT) {
+				DwtUiEvent.copy(this._actionEv, ev);
+				this._actionEv.item = this;
+				this._evtMgr.notifyListeners(ZmCalBaseView.VIEW_ACTION, this._actionEv);
+			}
 			break;
 		case ZmCalBaseView.TYPE_ALL_DAY:
 			this._timeSelectionAction(ev, div, false);

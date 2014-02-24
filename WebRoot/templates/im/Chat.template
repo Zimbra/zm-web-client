@@ -16,7 +16,7 @@
   <$ if (data.displayName && !data.isSystem) { $>
     <div class="from">${displayName}</div>
   <$ } $>
-  <table role="presentation" style="width:100%"><tr>
+  <table style="width:100%"><tr>
 	<td class="body">${body}</td>
 	<td class="time" nowrap>${shortTime}</td>
   </tr></table>
@@ -38,7 +38,7 @@
 </template>
 
 <template id="im.Chat#RosterItemTooltip">
-  <table role="presentation"><tr><td>
+  <table><tr><td>
 
     <!-- display contact toolipt first if available -->
     <$ if (data.contact) { $>
@@ -47,11 +47,11 @@
     <$ } $>
 
     <!-- buddy tooltip -->
-    <table role="presentation" align="center" width="100%">
+    <table align="center" width="100%">
       <tr valign="middle">
         <td colspan="2" align="left">
           <div style="border-bottom:1px solid black;">
-            <table role="presentation" width="100%">
+            <table width="100%">
               <tr valign="middle">
                 <td valign="middle"><$= AjxImg.getImageHtml(data.buddy.getPresence().getIcon()) $></td>
                 <td valign="middle" align="center">
@@ -77,9 +77,9 @@
 </template>
 
 <template id="im.Chat#RosterItemsTooltip">
-  <table role="presentation"><tr><td>
+  <table><tr><td>
 
-    <table role="presentation" class="ZPropertySheet" cellspacing="6" align="center" width="100%">
+    <table class="ZPropertySheet" cellspacing="6" align="center" width="100%">
       <$
         for (var i = 0, count = data.buddies.length; i < count; i++) {
         var buddy = data.buddies[i];
@@ -90,7 +90,7 @@
           <$ } else { $>
 			<td colspan="2" align="left">
 		  <$ } $>
-			  <table role="presentation" width="100%">
+			  <table width="100%">
                 <tr valign="middle">
                   <td valign="middle" width="20px"><$= AjxImg.getImageHtml(buddy.getPresence().getIcon()) $></td>
                   <td valign="middle" align="left">&nbsp;&nbsp;
@@ -129,7 +129,7 @@
 </template>
 
 <template id="im.Chat#GatewayLoginDlg">
-  <table role="presentation">
+  <table>
     <tr>
       <td style="text-align:right; white-space:nowrap;"><$= ZmMsg.imGatewayLabel $></td>
       <td id="${id}_gatewayLayout"></td>
@@ -146,7 +146,7 @@
 </template>
 
 <template id="im.Chat#NewRosterItemDlg">
-  <table role="presentation" style="width:305px">
+  <table style="width:305px">
     <tr id="${id}_serviceParent">
       <td class="ZmChatDialogField"><$= ZmMsg.imGatewayLabel $></td>
       <td id="${id}_serviceType"></td>
@@ -166,7 +166,7 @@
     </tr>
     <tr>
 		<td colspan=3 align=right>
-			<table role="presentation"><tr>
+			<table><tr>
 				<td align="right" id="${id}_okButton"></td>
 				<td align="right" id="${id}_cancelButton"></td>
 			</tr></table>
@@ -176,7 +176,7 @@
 </template>
 
 <template id="im.Chat#SubscribeAuthDlg">
-  <table role="presentation" width="250px">
+  <table width="250px">
     <tr>
       <td style="text-align:center; padding-bottom:10px">
         <$= AjxMessageFormat.format(ZmMsg.imSubscribeAuthRequest, [ data.buddy ]) $>
@@ -184,7 +184,7 @@
     </tr>
     <tr>
       <td>
-        <table role="presentation" align="center">
+        <table align="center">
           <tr>
             <$ if (!data.inList) { $>
             <td id="${id}_acceptAndAdd"></td>
@@ -199,7 +199,7 @@
 </template>
 
 <template id="im.Chat#InviteNotification">
-  <table role="presentation" width="100%">
+  <table width="100%">
     <tr>
       <td style="text-align:center; font-weight:bold; padding-bottom:10px;" id="${id}_title"></td>
     </tr>
@@ -208,7 +208,7 @@
     </tr>
     <tr>
       <td style="text-align:center; padding-top:10px;">
-        <table role="presentation" align="center" style="width:5em">
+        <table align="center" style="width:5em">
           <tr>
             <td style="padding-right:5px" id="${id}_buttonOK"></td>
             <td id="${id}_buttonCancel"></td>
@@ -220,7 +220,7 @@
 </template>
 
 <template id="im.Chat#JiveNotification">
-  <table role="presentation">
+  <table>
     <tr>
       <td nowrap style="text-align:center"><span class="ImgImStartChat inlineIcon">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><$= ZmMsg.imPoweredBy $></td>
     </tr>
@@ -239,7 +239,7 @@
   </fieldset>
   <fieldset>
     <legend><$= ZmMsg.contacts $></legend>
-    <table role="presentation">
+    <table>
       <tr>
         <td><label for="${id}_entry"><$= ZmMsg.searchLabel $></label></td>
         <td id="${id}_entryCell"></td>
@@ -262,7 +262,7 @@
 </template>
 
 <template id='im.Chat#ZmNewConferenceRoomDialog'>
-	<table role="presentation" width='360px' class='ZPropertySheet' cellspacing='6'>
+	<table width='360px' class='ZPropertySheet' cellspacing='6'>
 		<tr>
 			<td class="ZmChatDialogField"><$= ZmMsg.imRoomNameLabel $></td>
 			<td class="ZmChatDialogInputCell"><div id="${id}_NAME" tabindex='10'/></td>
@@ -301,7 +301,7 @@
 
 <template id='im.Chat#ZmInfoTreeItem'>
 	<div class='${divClassName}' id='${id}_div' style="height:auto;">
-		<table role="presentation" id='${id}_table'>
+		<table id='${id}_table'>
 			<tr>
 				<td class='${textClassName}' id='${id}_textCell'></td>
 			</tr>
@@ -310,7 +310,7 @@
 </template>
 
 <template id='im.Chat#ZmChatWidgetEditor'>
-	<table role="presentation">
+	<table>
 		<tr><td id='${id}_toolBar' colspan=2 /></tr>
 		<tr><td style='width:100%' id='${id}_textarea' /> <td style='width:60px' id='${id}_send'/></tr>
 	</table>
@@ -321,7 +321,7 @@
 		<div id='${id}_notLoggedIn' style='display:block'>
 			<$=ZmMsg.imGatewayNotLoggedInHeader $><br>
 			<br>
-			<table role="presentation" class="ZPropertySheet" cellspacing="6">
+			<table class="ZPropertySheet" cellspacing="6">
 				<tr>
 					<td class="ImYahooLoginLabel"><$=ZmMsg.imScreenNameYahoo $></td>
 					<td class="ImYahooLoginValue"><input type="text" id="${id}_nameField" size="25"/>
@@ -339,10 +339,10 @@
 		</div>
 		<div id='${id}_loggedIn' style='display:block'>
 			<span id="${id}_loggedInHeader"></span><br>
-			<table role="presentation" class="ZPropertySheet" cellspacing="6">
+			<table class="ZPropertySheet" cellspacing="6">
 				<tr>
 					<td colspan=2 align="right" style="padding-top:3px">
-						<table role="presentation"><tr>
+						<table><tr>
 							<td><div id="${id}_logoutButton"/></td>
 							<td><div id="${id}_loginDifferent"/></td>
 						</tr></table>
@@ -352,10 +352,10 @@
 		</div>
 		<div id='${id}_disconnected' style='display:block'>
 			<$=ZmMsg.imGatewayDisconnectedHeader $><br>
-			<table role="presentation" class="ZPropertySheet" cellspacing="6">
+			<table class="ZPropertySheet" cellspacing="6">
 				<tr>
 					<td colspan=2 align="right" style="padding-top:3px">
-						<table role="presentation"><tr>
+						<table><tr>
 							<td><div id="${id}_disconnectedLogoutButton"/></td>
 							<td><div id="${id}_reconnectButton"/></td>
 						</tr></table>

@@ -292,18 +292,12 @@ function(ev) {
     if(key == DwtKeyEvent.KEY_ENTER){
         var fileName = this._renameField.getValue();
         if(fileName != '' && fileName != item.name){
-            var warning = appCtxt.getMsgDialog();
-
             if(this._checkDuplicate(fileName)){
                 this._redrawItem(item);
+                var warning = appCtxt.getMsgDialog();
                 warning.setMessage(AjxMessageFormat.format(ZmMsg.itemWithFileNameExits, fileName), DwtMessageDialog.CRITICAL_STYLE, ZmMsg.briefcase);
                 warning.popup();
-            }else if(ZmAppCtxt.INVALID_NAME_CHARS_RE.test(fileName)) {
-                //Bug fix # 79986 show warning popup in case of invalid filename
-                warning.setMessage(AjxMessageFormat.format(ZmMsg.errorInvalidName, AjxStringUtil.htmlEncode(fileName)), DwtMessageDialog.WARNING_STYLE, ZmMsg.briefcase);
-                warning.popup();
-            }
-            else {
+            }else{
                 item.rename(fileName, new AjxCallback(this, this.resetRenameFile));
             }
         }else{

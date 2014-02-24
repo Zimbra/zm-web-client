@@ -119,6 +119,26 @@ Ext.define('ZCS.common.ZtUserSession', {
 		this.createSettings(Ext.Object.merge({}, gir.attrs._attrs, gir.prefs._attrs, identityAttrs));
 		this.setSetting(ZCS.constant.SETTING_REST_URL, gir.rest);
 
+        //Check for query string params to override calendar state ref Bug: 83049
+        var qs = location.search.substring(1);
+
+        if (qs) {
+            var qsArgs = qs.split('&'),
+                i,
+                pair,
+                qsArgsLen = qsArgs.length;
+
+            for (i = 0; i < qsArgsLen; i++) {
+                pair = qsArgs[i].split('=');
+
+                if (decodeURIComponent(pair[0]) == 'touchcal' && decodeURIComponent(pair[1]) == 'true') {
+                    //Override the calendar settings
+                    ZCS.constant.IS_ENABLED[ZCS.constant.APP_CALENDAR] = true;
+                    ZCS.session.setSetting(ZCS.constant.SETTING_CALENDAR_ENABLED, "TRUE" && ZCS.constant.IS_ENABLED[ZCS.constant.APP_CALENDAR]);
+                }
+            }
+        }
+
 		// name of logged-in account
 		this.setAccountName(gir.name);
 
@@ -456,6 +476,10 @@ Ext.define('ZCS.common.ZtUserSession', {
 		// Contacts app needs to be enabled by us and the user
 		var contactsSetting = ZCS.constant.SETTING_CONTACTS_ENABLED;
 		this.setSetting(contactsSetting, this.getSetting(contactsSetting) && ZCS.constant.IS_ENABLED[ZCS.constant.APP_CONTACTS]);
+
+        // Calendar app needs to be enabled by us and the user
+        var calendarSetting = ZCS.constant.SETTING_CALENDAR_ENABLED;
+        this.setSetting(calendarSetting, this.getSetting(calendarSetting) && ZCS.constant.IS_ENABLED[ZCS.constant.APP_CALENDAR]);
 	},
 
 	/**

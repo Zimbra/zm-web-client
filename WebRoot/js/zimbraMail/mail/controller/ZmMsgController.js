@@ -360,10 +360,6 @@ function (msg) {
 	this._msg = msg;
 };
 
-ZmMsgController.prototype.getItemView = function() {
-	return this._view[this._currentViewId];
-};
-
 // No-op replenishment
 ZmMsgController.prototype._checkReplenish =
 function(params) {
@@ -373,9 +369,7 @@ function(params) {
 
 ZmMsgController.prototype._checkItemCount =
 function() {
-	if (!appCtxt.isChildWindow) {
-		this._backListener();
-	}
+	this._backListener();
 };
 
 ZmMsgController.prototype._getDefaultFocusItem = 

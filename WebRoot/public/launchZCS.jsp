@@ -39,7 +39,7 @@
 	}
 
     ZAuthResult authResult = (ZAuthResult) request.getAttribute("authResult");
-    String skin = authResult.getPrefs().get("zimbraPrefSkin").get(0);
+    String skin = authResult.getSkin();
 %>
 <app:skinAndRedirect defaultSkin="${skin}" />
 <%
@@ -51,13 +51,28 @@
 
 	// Set standard HTTP/1.0 no-cache header.
 	response.setHeader("Pragma", "no-cache");
-
-	// Prevent IE from ever going into compatibility/quirks mode.
-	response.setHeader("X-UA-Compatible", "IE=edge");
 %>
 
-<!DOCTYPE html>
 <zm:getUserAgent var="ua" session="false"/>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<meta http-equiv="X-UA-Compatible" content="IE=EmulateIE9" />
+<html>
+<head>
+<!--
+ launchZCS.jsp
+ * ***** BEGIN LICENSE BLOCK *****
+ * Zimbra Collaboration Suite Web Client
+ * Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * 
+ * The contents of this file are subject to the Zimbra Public License
+ * Version 1.4 ("License"); you may not use this file except in
+ * compliance with the License.  You may obtain a copy of the License at
+ * http://www.zimbra.com/license.
+ * 
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * ***** END LICENSE BLOCK *****
+-->
 <%	java.util.List<String> localePref = authResult.getPrefs().get("zimbraPrefLocale");
 	if (localePref != null && localePref.size() > 0) {
 		request.setAttribute("localeId", localePref.get(0));
@@ -103,6 +118,7 @@
 	String vers = getAttribute(request, "version", "");
 
 	String prodMode = getAttribute(request, "prodMode", "");
+	String editor = getParameter(request, "editor", "");
 
 	String ext = getAttribute(request, "fileExtension", null);
 	if (ext == null || isDevMode || isCoverage) ext = "";
@@ -140,28 +156,11 @@
 	pageContext.setAttribute("isLeakDetectorOn", isLeakDetectorOn);
 	pageContext.setAttribute("unitTest", unitTest);
 	pageContext.setAttribute("preset", preset);
-    pageContext.setAttribute("isCoverage", isCoverage);
-    pageContext.setAttribute("isPerfMetric", isPerfMetric);
-    pageContext.setAttribute("isLocaleId", localeId != null);
+	pageContext.setAttribute("editor", editor);
+        pageContext.setAttribute("isCoverage", isCoverage);
+        pageContext.setAttribute("isPerfMetric", isPerfMetric);
+        pageContext.setAttribute("isLocaleId", localeId != null);
 %>
-<html class="user_font_size_normal">
-<head>
-<!--
- launchZCS.jsp
- * ***** BEGIN LICENSE BLOCK *****
- * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
- * 
- * The contents of this file are subject to the Zimbra Public License
- * Version 1.4 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
- * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * ***** END LICENSE BLOCK *****
--->
-
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
 <meta http-equiv="cache-control" content="no-cache"/>
 <meta http-equiv="Pragma" content="no-cache"/>
@@ -177,7 +176,7 @@
 <title><fmt:message key="zimbraTitle"/></title>
 <link href="<c:url value="/css/images,common,dwt,msgview,login,zm,spellcheck,skin.css">
 	<c:param name="v" value="${vers}" />
-	<c:param name='debug' value='${isDebug}' />
+	<c:param name="debug" value='${isDebug?"1":""}' />
 	<c:param name="skin" value="${skin}" />
 	<c:param name="locale" value="${locale}" />
 	<c:if test="${not empty param.customerDomain}">
@@ -187,7 +186,7 @@
 <c:if test="${ua.isIE7up}">
     <link href="<c:url value="/css/ie-custom-icons.css">
     <c:param name="v" value="${vers}" />
-	<c:param name='debug' value='${isDebug}' />
+    <c:param name="debug" value='${isDebug?"1":""}' />
     <c:param name="skin" value="${skin}" />
     <c:param name="locale" value="${locale}" />
     <c:if test="${not empty param.customerDomain}">
@@ -210,22 +209,23 @@
 </c:if>
 <link rel="SHORTCUT ICON" href="<c:url value='${favIconUrl}'/>">
 <script>
-	window.appContextPath		= "${zm:jsEncode(contextPath)}";
-	window.appCurrentSkin		= "${zm:jsEncode(skin)}";
-	window.appExtension			= "${zm:jsEncode(ext)}";
-	window.appRequestLocaleId	= "${locale}";
-	window.appDevMode			= ${isDevMode};
-    window.appCoverageMode		= ${isCoverage};
-    window.isScriptErrorOn		= ${isScriptErrorOn};
-    window.isPerfMetric			= ${isPerfMetric};
-	window.authTokenExpires = <%= authResult.getExpires()%>;
+	appContextPath = "${zm:jsEncode(contextPath)}";
+	appCurrentSkin = "${zm:jsEncode(skin)}";
+	appExtension   = "${zm:jsEncode(ext)}";
+	appRequestLocaleId = "${locale}";
+	window.appDevMode     = ${isDevMode};
+    window.appCoverageMode = ${isCoverage};
+    window.isScriptErrorOn   = ${isScriptErrorOn};
+    window.isPerfMetric = ${isPerfMetric};
+
+    window.authTokenExpires = <%= authResult.getExpires()%>;
+
 </script>
 <noscript>
 <meta http-equiv="Refresh" content="0;url=public/noscript.jsp" >
 </noscript>
 </head>
 <body>
-
 <c:if test="${ua.isChrome or ua.isSafari}">
     <%
         /*preloading splash screen images to avoid latency*/
@@ -246,6 +246,8 @@
       <%if(splashLocation.equals("lemongrass")){%>
         <img src="<%=contextPath%>/skins/<%=splashLocation%>/img/bg_lemongrass.png?v=${vers}" alt=""/>
       <%}%>
+      <%if(splashLocation.equals("twilight")||splashLocation.equals("waves")){%><img src="<%=contextPath%>/skins/<%=splashLocation%>/img/skins/login_bg.png?v=${vers}" alt=""/><%}%>
+      <%if(splashLocation.equals("steel")){%><img src="<%=contextPath%>/skins/<%=splashLocation%>/img/SkinOuter.repeat.gif?v=${vers}" alt=""/><%}%>
       <%if(splashLocation.equals("waves")){%>
         <img src="<%=contextPath%>/skins/<%=splashLocation%>/img/login_bg.png?v=${vers}" alt=""/>
         <img src="<%=contextPath%>/skins/<%=splashLocation%>/img/login_page_bg.png?v=${vers}" alt=""/>
@@ -256,13 +258,16 @@
 <jsp:include page="Resources.jsp">
 	<jsp:param name="res" value="I18nMsg,AjxMsg,ZMsg,ZmMsg,AjxKeys,ZmKeys,ZdMsg,AjxTemplateMsg" />
 	<jsp:param name="skin" value="${skin}" />
-    <jsp:param name="localeId" value="${locale}" />
 </jsp:include>
 
 <!--
-    ################
-    #  BEGIN SKIN  #
-    ################
+  --
+  --
+  --
+  	BEGIN SKIN
+  --
+  --
+  --
   -->
 
 <%-- NOTE: servlet path is needed because the servlet sees it as /public/launchZCS.jsp --%>
@@ -276,15 +281,19 @@
 </jsp:include>
 
 <!--
-    ##############
-    #  END SKIN  #
-    ##############
+  --
+  --
+  --
+  	END SKIN
+  --
+  --
+  --
   -->
 <div style='display:none;'>
 <jsp:include page="Boot.jsp"/>
 <script>
 	AjxEnv.DEFAULT_LOCALE = "${zm:javaLocaleId(locale)}";
-    virtualAcctDomain = "<%= (virtualAcctDomain != null) ? virtualAcctDomain : "" %>";
+    var virtualAcctDomain = "<%= (virtualAcctDomain != null) ? virtualAcctDomain : "" %>";
     function killSplashScreenSwitch() {
         if (!virtualAcctDomain) {
             return false;
@@ -295,18 +304,16 @@
         }
     }
 	function switchToStandardClient() {
-		document.location = window.appContextPath + "/?client=standard";
+		document.location = appContextPath + "/?client=standard";
 	}
     killSplashScreenSwitch();
 	<c:set var="enforceMinDisplay" value="${requestScope.authResult.prefs.zimbraPrefAdvancedClientEnforceMinDisplay[0]}"/>
 	<c:if test="${param.client ne 'advanced'}">
-		enforceMinDisplay = ${enforceMinDisplay ne 'FALSE'};
-		unsupported = (screen && (screen.width <= 800 && screen.height <= 600) && !${isOfflineMode}) || (AjxEnv.isSafari && !AjxEnv.isSafari4up);
+		var enforceMinDisplay = ${enforceMinDisplay ne 'FALSE'};
+		var unsupported = (screen && (screen.width <= 800 && screen.height <= 600) && !${isOfflineMode}) || (AjxEnv.isSafari && !AjxEnv.isSafari4up);
 		if (enforceMinDisplay && unsupported) {
 			switchToStandardClient();
 		}
-		delete enforceMinDisplay;
-		delete unsupported;
 	</c:if>
 </script>
 <%@ include file="loadImgData.jsp" %>
@@ -318,7 +325,7 @@
 	String allPackages = "Startup1_1,Startup1_2";
     if (extraPackages != null) {
     	if (extraPackages.equals("dev")) {
-            extraPackages = "Startup2,MailCore,Mail,ContactsCore,CalendarCore,Calendar,CalendarAppt,Contacts,BriefcaseCore,Briefcase,PreferencesCore,Preferences,TasksCore,Tasks,Extras,Share,Zimlet,ZimletApp,Alert,ImportExport,BrowserPlus,Voicemail";
+            extraPackages = "Startup2,CalendarCore,Calendar,CalendarAppt,ContactsCore,Contacts,MailCore,Mail,BriefcaseCore,Briefcase,PreferencesCore,Preferences,TasksCore,Tasks,Extras,Share,Zimlet,ZimletApp,Alert,ImportExport,BrowserPlus,Voicemail";
     	}
     	allPackages += "," + BeanUtils.cook(extraPackages);;
     }
@@ -368,16 +375,14 @@
 </c:if>
 <script>
 // compile locale specific templates
-for (pkg in window.AjxTemplateMsg) {
-	text = AjxTemplateMsg[pkg];
+for (var pkg in window.AjxTemplateMsg) {
+	var text = AjxTemplateMsg[pkg];
 	AjxTemplate.compile(pkg, true, false, text);
 }
-delete pkg;
-delete text;
 </script>
 
 <script>
-	window.cacheKillerVersion = "${zm:jsEncode(vers)}";
+	var cacheKillerVersion = "${zm:jsEncode(vers)}";
 	function launch() {
 		// quit if this function has already been called
 		if (arguments.callee.done) {return;}
@@ -386,9 +391,9 @@ delete text;
 		arguments.callee.done = true;
 
 		// kill the timer
-		if (window._timer) {
-			clearInterval(window._timer);
-			delete _timer;
+		if (_timer) {
+			clearInterval(_timer);
+			_timer = null;
 		}
 
 		var prodMode = ${isProdMode};
@@ -415,12 +420,16 @@ delete text;
         <c:set var="types" value="${requestScope.authResult.attrs.zimbraFeatureConversationsEnabled[0] eq 'FALSE' ? 'message' : requestScope.authResult.prefs.zimbraPrefGroupMailBy[0]}"/>
 		<c:set var="numItems" value="${requestScope.authResult.prefs.zimbraPrefItemsPerVirtualPage[0]}"/>
 
-        <zm:getInfoJSON var="getInfoJSON" authtoken="${requestScope.authResult.authToken}" dosearch="${not empty app and app ne 'mail' or isOfflineMode ? false : true}" itemsperpage="${numItems * 2}" types="${types}" folderpath="${path}" sortby="${sortOrder}" fullconversation="true"/>
+        <zm:getInfoJSON var="getInfoJSON" authtoken="${requestScope.authResult.authToken}" dosearch="${not empty app and app ne 'mail' or isOfflineMode ? false : true}" itemsperpage="${numItems * 2}" types="${types}" folderpath="${path}" sortby="${sortOrder}"/>
         var batchInfoResponse = ${getInfoJSON};
 
         <c:if test="${not empty app and app eq 'calendar'}">
         <zm:calSearchJSON var="calSearchJSON" authtoken="${requestScope.authResult.authToken}" timezone="${requestScope.tz}" itemsperpage="500" types="appointment"/>
         window.inlineCalSearchResponse = ${calSearchJSON};
+        </c:if>
+        <%-- Support for tinymce suspended --%>
+        <c:if test="${editor eq 'tinymce'}">
+            //window.isTinyMCE = true;
         </c:if>
 		<c:if test="${isLeakDetectorOn}">
 		AjxLeakDetector.begin();
@@ -458,8 +467,6 @@ delete text;
 			noSplashScreen:noSplashScreen, unitTest:"${unitTest}", preset:"${preset}", virtualAcctDomain : virtualAcctDomain
 		};
 		ZmZimbraMail.run(params);
-		
-		delete virtualAcctDomain;
 	}
 
     //	START DOMContentLoaded
@@ -481,7 +488,7 @@ delete text;
     }
 
     if (/(WebKit|khtml)/i.test(navigator.userAgent)) { // sniff
-        window._timer = setInterval(function() {
+        var _timer = setInterval(function() {
             if (/loaded|complete/.test(document.readyState)) {
                 launch();
                 // call the onload handler

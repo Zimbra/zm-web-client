@@ -409,7 +409,7 @@ Ext.define('ZCS.model.mail.ZtMailMsg', {
 			return '';
 		}
 
-		key = ZCS.constant.HDR_KEY[header] + ': ';
+		key = ZCS.constant.HDR_KEY[header] + ' ';
 		key = '<b>' + key + '</b>';
 		value = ZCS.mailutil.textToHtml(value);
 

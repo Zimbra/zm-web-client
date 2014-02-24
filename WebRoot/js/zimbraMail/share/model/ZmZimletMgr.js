@@ -30,7 +30,6 @@ ZmZimletMgr = function() {
 	this._CONTENT_ZIMLETS = [];
 	this._serviceZimlets = [];
 	this._requestNotHandledByAnyZimlet = [];
-	this.loaded = false;
 };
 
 ZmZimletMgr.prototype.constructor = ZmZimletMgr;
@@ -92,7 +91,7 @@ function() {
 ZmZimletMgr.prototype.loadZimlets =
 function(zimletArray, userProps, target, callback, sync) {
 	var href = window.location.href.toLowerCase();
-	if(href.indexOf("zimlets=none") > 0 || appCtxt.isWebClientOffline()) {
+	if(href.indexOf("zimlets=none") > 0) {
 		return;
 	} else if(href.indexOf("zimlets=core") > 0) {
 		zimletArray = this._getCoreZimlets(zimletArray);
@@ -103,6 +102,11 @@ function(zimletArray, userProps, target, callback, sync) {
 	if(isMixedMode && !appCtxt.isOffline && !showAllZimlets && isHttp
 			&& appCtxt.get(ZmSetting.DISABLE_SENSITIVE_ZIMLETS_IN_MIXED_MODE) == "TRUE") {
 		zimletArray = this._getNonSensitiveZimlets(zimletArray);
+	}
+	if (!zimletArray || !zimletArray.length) {
+		this.loaded = true;
+		this._resetOverviewTree();
+		return;
 	}
 	var packageCallback = callback ? new AjxCallback(this, this._loadZimlets, [zimletArray, userProps, target, callback, sync]) : null;
 	AjxPackage.require({ name: "Zimlet", callback: packageCallback });
@@ -411,7 +415,7 @@ function(event, args) {
 	var handled = false;
 	for (var i = 0; i < this._ZIMLETS.length; ++i) {
 		var z = this._ZIMLETS[i].handlerObject;
-		if (z && z.isZmObjectHandler && z.getEnabled() && (typeof z[event] == "function")) {
+		if (z && (z instanceof ZmZimletBase) && z.getEnabled() && (typeof z[event] == "function")) {
 			var result = args ? z[event].apply(z, args) : z[event].apply(z);	// IE cannot handle empty args
 			handled = handled || result;
 		}
@@ -424,7 +428,7 @@ ZmZimletMgr.prototype.notifyZimlet =
 function(zimletName, event, args) {
 	var zimlet = this.getZimletByName(zimletName);
 	var z = zimlet && zimlet.handlerObject;
-	if (z && z.isZmObjectHandler && z.getEnabled() && (typeof z[event] == "function")) {
+	if (z && (z instanceof ZmZimletBase) && z.getEnabled() && (typeof z[event] == "function")) {
 		return (args ? z[event].apply(z, args) : z[event].apply(z));	// IE cannot handle empty args
 	}
 };

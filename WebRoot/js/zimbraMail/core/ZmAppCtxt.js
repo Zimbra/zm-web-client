@@ -52,19 +52,14 @@ ZmAppCtxt = function() {
 	this._acCache			= {};	// autocomplete
 	this._isExpandableDL	= {};	// distribution lists
 
-	this._checkAuthTokenWarning();
+	this._setAuthTokenWarning();
 };
 
-ZmAppCtxt.ONE_MINUTE  = 60 * 1000;
+ZmAppCtxt.ONE_MINUTE = 60 * 1000;
 ZmAppCtxt.MAX_TIMEOUT_VALUE = 2147483647;
 
 ZmAppCtxt._ZIMLETS_EVENT = 'ZIMLETS';
 ZmAppCtxt._AUTHTOKEN_EVENT = 'AUTHTOKEN';
-
-//Regex constants
-//Bug fix # 79986, #81095. Invalid file names are < > , ? | / \ * :
-ZmAppCtxt.INVALID_NAME_CHARS = "[\\|?<>:*\",\\\\\/]";
-ZmAppCtxt.INVALID_NAME_CHARS_RE = new RegExp(ZmAppCtxt.INVALID_NAME_CHARS);
 
 /**
  * Returns a string representation of the application context.
@@ -76,13 +71,9 @@ function() {
 	return "ZmAppCtxt";
 };
 
-ZmAppCtxt.prototype._checkAuthTokenWarning =
-function() {
-	this._authIntervalId = window.setInterval(this._authTokenWarningTimeout.bind(this), ZmAppCtxt.ONE_MINUTE);
-};
 ZmAppCtxt.prototype._setAuthTokenWarning =
-function(delay) {
-    window.setTimeout(this._authTokenWarningTimeout.bind(this), delay);
+function() {
+	window.setInterval(this._authTokenWarningTimeout.bind(this), ZmAppCtxt.ONE_MINUTE);
 };
 
 /**
@@ -112,24 +103,11 @@ function(listener) {
 ZmAppCtxt.prototype._authTokenWarningTimeout =
 function () {
 
-	if (!window.authTokenExpires) {
-		return; //for cases we the auth token expires is not available. (e.g. some new windows we didn't set it for yet, or for saved rest URLs
-	}
-
 	var now = new Date().getTime();
 	var millisToLive = window.authTokenExpires - now;
-    var minutesToLive = Math.round(millisToLive / ZmAppCtxt.ONE_MINUTE);
-    var delay;
+	var minutesToLive = Math.floor(millisToLive / ZmAppCtxt.ONE_MINUTE);
 
-	if (minutesToLive > 5 || millisToLive <= 0) {
-        // Outside the times to issue warnings
-        if (minutesToLive === 6) {
-            // Line up the timer to go off at exactly 5 minutes (or as exact as we can make it), which is
-            // when we start issuing warnings
-            window.clearInterval(this._authIntervalId);
-            delay = millisToLive - (5 * ZmAppCtxt.ONE_MINUTE);
-            this._setAuthTokenWarning(delay);
-        }
+	if (minutesToLive > 5 || minutesToLive <= 0) {
 		return;
 	}
 
@@ -138,45 +116,13 @@ function () {
 		this._evtMgr.notifyListeners(ZmAppCtxt._AUTHTOKEN_EVENT, event);
 	}
 
-	var msg;
-    var decaSecondsToLive = 0;
-    var toastDuration;
-    if (minutesToLive > 1) {
-        msg = AjxMessageFormat.format(ZmMsg.authTokenExpirationWarning, [minutesToLive, ZmMsg.minutes]);
-        toastDuration = ZmAppCtxt.ONE_MINUTE / 4;
-    } else {
-        // Get the number of 10-second intervals remaining - used once we are within 1 minute
-        decaSecondsToLive =  Math.round(millisToLive / 10000);
-        toastDuration = 8000;
-        if (decaSecondsToLive >= 6) {
-            // 1 minute+ to go.  But should be pretty close to 1 minute
-            msg = AjxMessageFormat.format(ZmMsg.authTokenExpirationWarning, [1, ZmMsg.minute]);
-        } else {
-            // Seconds remain
-            msg = AjxMessageFormat.format(ZmMsg.authTokenExpirationWarning, [decaSecondsToLive * 10, ZmMsg.seconds]);
-        }
-    }
-
+	var msg = AjxMessageFormat.format(ZmMsg.authTokenExpirationWarning, [minutesToLive, minutesToLive  > 1 ? ZmMsg.minutes : ZmMsg.minute]);
 	var params = {
-		msg:    msg,
-		level:  ZmStatusView.LEVEL_WARNING,
-		transitions: [{type: "fade-in", duration: 500}, {type: "pause", duration: toastDuration}, {type: "fade-out", duration: 500} ]
+		msg: msg,
+		level: ZmStatusView.LEVEL_WARNING,
+		transitions: [{type: "fade-in", duration: 500}, {type: "pause", duration: ZmAppCtxt.ONE_MINUTE / 4}, {type: "fade-out", duration: 500} ]
 	};
 	this.setStatusMsg(params);
-
-    if (minutesToLive > 1) {
-        var floorMinutesToLive = Math.floor(millisToLive / ZmAppCtxt.ONE_MINUTE);
-        if (floorMinutesToLive === minutesToLive) {
-            floorMinutesToLive--;
-        }
-        delay = millisToLive - (floorMinutesToLive * ZmAppCtxt.ONE_MINUTE);
-    }  else {
-        decaSecondsToLive--;
-        delay = millisToLive - (decaSecondsToLive * 10000);
-    }
-    if (delay > 0) {
-        this._setAuthTokenWarning(delay);
-    }
 };
 
 /**
@@ -465,19 +411,6 @@ function() {
 };
 
 /**
- * Gets the message dialog with a help button.
- *
- * @return	{DwtMessageDialog}	the message dialog
- */
-ZmAppCtxt.prototype.getHelpMsgDialog =
-	function() {
-		if (!this._helpMsgDialog) {
-			this._helpMsgDialog = new DwtMessageDialog({parent:this._shell, helpText:ZmMsg.help, id: "ZmHelpMsgDialog"});
-		}
-		return this._helpMsgDialog;
-	};
-
-/**
  * Gets the yes/no message dialog.
  * 
  * @return	{DwtMessageDialog}	the message dialog
@@ -634,7 +567,7 @@ function() {
 ZmAppCtxt.prototype.getNewCalendarDialog =
 function() {
 	if (!this._newCalendarDialog) {
-		AjxDispatcher.require(["MailCore", "CalendarCore", "Calendar", "CalendarAppt"]);
+		AjxDispatcher.require(["CalendarCore", "Calendar", "CalendarAppt"]);
 		this._newCalendarDialog = new ZmNewCalendarDialog(this._shell);
 	}
 	return this._newCalendarDialog;
@@ -662,7 +595,7 @@ function() {
 ZmAppCtxt.prototype.getSuggestionPreferenceDialog =
 function() {
 	if (!this._suggestionPrefDialog) {
-		AjxDispatcher.require(["MailCore", "CalendarCore", "Calendar"]);
+		AjxDispatcher.require(["CalendarCore", "Calendar"]);
         this._suggestionPrefDialog = new ZmTimeSuggestionPrefDialog(this._shell);
     }
     return this._suggestionPrefDialog;
@@ -1084,6 +1017,20 @@ function() {
 };
 
 /**
+ * Gets the address selection dialog.
+ *
+ * @return	{ZmSelectAddrDialog}		the address selection dialog
+ */
+ZmAppCtxt.prototype.getAddrSelectDialog =
+function() {
+	if (!this._addrSelectDialog) {
+		AjxDispatcher.require(["Startup2", "MailCore", "Mail"]);
+		this._addrSelectDialog = new ZmSelectAddrDialog(this._shell);
+	}
+	return this._addrSelectDialog;
+};
+
+/**
  * Gets the debug log dialog.
  *
  * @return	{ZmDebugLogDialog}		the debug log dialog
@@ -1194,14 +1141,6 @@ function(account) {
 	return context.AjxDispatcher.run("GetSignatureCollection", account);
 };
 
-
-ZmAppCtxt.prototype.killMarkReadTimer =
-function() {
-	if (this.markReadActionId > 0) {
-		AjxTimedAction.cancelAction(this.markReadActionId);
-		this.markReadActionId = -1;
-	}
-};
 /**
  * Gets the organizer tree.
  * 
@@ -1346,32 +1285,6 @@ function() {
 		this._uploadManagerIframeId = iframeId;
 	}
 	return this._uploadManagerIframeId;
-};
-
-ZmAppCtxt.prototype.reloadAppCache =
-function(force) {
-    if (this.isWebClientOfflineSupported || force) {
-        document.cookie = "ZM_CACHE_NEW_LANG = " + this.get(ZmSetting.LOCALE_NAME);
-        document.cookie = "ZM_CACHE_NEW_SKIN = " + this.get(ZmSetting.SKIN_NAME);
-        document.cookie = "ZM_CACHE_RELOAD = " + new Date().getTime();
-        var manifestURL = appContextPath + "/appcache/images,common,dwt,msgview,login,zm,spellcheck,skin.appcache?";
-        var urlParams = [];
-        urlParams.push("v=" + window.cacheKillerVersion);
-        urlParams.push("debug=" + window.appDevMode);
-        urlParams.push("compress=" + !(window.appDevMode === true));
-        urlParams.push("templates=only");
-        manifestURL = encodeURIComponent(manifestURL + urlParams.join('&'));
-        var offlineIframe = document.getElementById("offlineIframe");
-        if (!offlineIframe) {
-            offlineIframe = document.createElement("iframe");
-            offlineIframe.id = "offlineIframe";
-            offlineIframe.style.display = "none";
-            document.body.appendChild(offlineIframe);
-        }
-        if (offlineIframe) {
-            offlineIframe.src = "public/Offline.jsp?url=" + manifestURL;
-        }
-    }
 };
 
 /**
@@ -1528,10 +1441,8 @@ function(fullVersion, width, height, name) {
     if (window.appCoverageMode) {
         url[i++] = "&coverage=1";
     }
-	this.__childWindowId = (this.__childWindowId+1) || 0;
-	url[i++] = "&childId=" + this.__childWindowId;
+     name = name || "_blank";
 
-    name = name || "_blank";
 	width = width || 705;
 	height = height || 465;
 	var args = ["height=", height, ",width=", width, ",location=no,menubar=no,resizable=yes,scrollbars=no,status=yes,toolbar=no"].join("");
@@ -1542,7 +1453,7 @@ function(fullVersion, width, height, name) {
 	this.handlePopupBlocker(newWin);
 	if(newWin) {
 		// add this new window to global list so parent can keep track of child windows!
-		return this.getAppController().addChildWindow(newWin, this.__childWindowId);
+		return this.getAppController().addChildWindow(newWin);
 	}
 };
 
@@ -1785,7 +1696,6 @@ function(event, args, options) {
 ZmAppCtxt.prototype.getCalManager =
 function() {
 	if (!this._calMgr) {
-        AjxDispatcher.require("Startup2");
 		this._calMgr = new ZmCalMgr(this._shell);
 	}
 	return this._calMgr;
@@ -1890,13 +1800,12 @@ function(ev) {
     			proto = switchMode ? proto : parts.protocol;
     			port = switchMode ? port : parts.port;
     		}
-			var qsArgs = {skin: appCurrentSkin};
-    		url = AjxUtil.formatUrl({protocol: proto, port: port, path: path, qsReset: true, qsArgs: qsArgs});
+    		url = AjxUtil.formatUrl({protocol:proto, port:port, path:path, qsReset:true});
     	}
 
     	var args  = "height=465,width=705,location=no,menubar=no,resizable=yes,scrollbars=no,status=yes,toolbar=no";
     	window.open(url,'ChangePasswordWindow', args);
-};
+}
 
 /**
  * Gets the skin hint for the given argument(s), which will be used to look
@@ -2108,73 +2017,28 @@ function() {
 };
 
 /**
+ * Returns true for enabling tinymce editor
+*/
+ZmAppCtxt.prototype.isTinyMCEEnabled =
+function() {
+    return true;
+};
+
+/**
  * When using pre-auth window.opener.appCtxt may not be accessible.  This function
  * handles appCtxt assignment to avoid a permission denied error
  * @return {Object} ZmAppCtxt
  */
 ZmAppCtxt.handleWindowOpener = 
 function() {
-	try {
-		return window.opener && window.opener.appCtxt || appCtxt;
+	var aCtxt = appCtxt;
+	if (window.opener) {
+		try {
+			aCtxt = window.opener.appCtxt;
+		}
+		catch (ex) {
+			aCtxt = appCtxt;
+		}
 	}
-	catch (ex) {
-		return appCtxt;
-	}
-};
-
-ZmAppCtxt.prototype.isWebClientOffline =
-function() {
-    if (this.isWebClientOfflineSupported) {
-        return ZmOffline.isServerReachable === false;
-    }
-    return false;
-};
-
-ZmAppCtxt.prototype.initWebOffline =
-function() {
-    this.isWebClientOfflineSupported = false;
-    if (!AjxEnv.isOfflineSupported || !appCtxt.get(ZmSetting.WEBCLIENT_OFFLINE_ENABLED)) {
-        return;
-    }
-    var offlineBrowserKey = appCtxt.get(ZmSetting.WEBCLIENT_OFFLINE_BROWSER_KEY);
-    var localOfflineBrowserKey = localStorage.getItem(ZmSetting.WEBCLIENT_OFFLINE_BROWSER_KEY);
-    if (offlineBrowserKey && offlineBrowserKey.indexOf(localOfflineBrowserKey) !== -1) {
-        this.isWebClientOfflineSupported = true;
-        this.webClientOfflineHandler = new ZmOffline();
-    }
-};
-
-/**
- * Gets the offline settings dialog.
- *
- * @return	{ZmOfflineSettingsDialog}	offline settings dialog
- */
-ZmAppCtxt.prototype.getOfflineSettingsDialog =
-function() {
-    if (!this._offlineSettingsDialog) {
-        this._offlineSettingsDialog = new ZmOfflineSettingsDialog();
-    }
-    return this._offlineSettingsDialog;
-};
-
-/**
- * Returns true if the given ID is not local. That's the case if the ID has
- * an account part that is not the active account.
- *
- * @param {String|Number}   id
- * @returns {Boolean}   true if the given ID is not local
- */
-ZmAppCtxt.prototype.isRemoteId = function(id) {
-	id = String(id);
-	var acct = appCtxt.getActiveAccount();
-	return (id.indexOf(":") !== -1) && (id.indexOf(acct.id) !== 0);
-};
-
-/**
- * Returns the singleton AjxClipboard instance, if it is supported.
- *
- * @returns {AjxClipboard}
- */
-ZmAppCtxt.prototype.getClipboard = function() {
-	return AjxClipboard.isSupported() ? new AjxClipboard() : null;
+	return aCtxt;
 };

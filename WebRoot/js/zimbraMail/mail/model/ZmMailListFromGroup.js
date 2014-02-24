@@ -42,22 +42,25 @@ function(sortAsc) {
  */
 ZmMailListFromGroup.prototype.addMsgToSection =
 function(msg, item){
-    var email = null;
-    var fromParticipant =  msg.getAddress(AjxEmailAddress.FROM);
-    if (fromParticipant) {
-        email = fromParticipant.getAddress();
-        if (this._section.hasOwnProperty(email)) {
-            this._section[email].push(item);
-        } else {
-            this._section[email] = [];
-            this._section[email].push(item);
-            var title = this._getSectionTitle(fromParticipant);
-            this._sectionTitle[email] = {addr: email, title:title};
-        }
-    }
-    return email;
+   var emails =  msg.getEmails();
+   var participants = msg.participants ? msg.participants.getArray() : null;
+   if (emails) {
+	    emails = emails.getArray();
+	    var email = emails[0];
+		if (this._section.hasOwnProperty(email)) {
+			this._section[email].push(item);
+			return email;
+		}
+		else {
+			this._section[email] = [];
+			this._section[email].push(item);
+			var title = participants ? this._getSectionTitle(participants[0]) : email;
+			this._sectionTitle[email] = {addr: email, title:title};
+			return email;
+		}
+   }
+   return false;
 };
-
 
 /**
  * Determines if message is in group

@@ -86,7 +86,7 @@
         </table>
         <input type="hidden" name="doBriefcaseAction" value="1"/>
         <input type="hidden" name="sendUID" value="${fn:escapeXml(compose.sendUID)}"/>
-        <c:if test="${zm:boolean(message.isDraft)}">
+        <c:if test="${message.isDraft}">
             <input type="hidden" name="draftid" value="${message.id}"/>
         </c:if>
     </form>

@@ -31,7 +31,7 @@ ZmConvView2 = function(params) {
 	params.className = params.className || "ZmConvView2";
 	ZmMailItemView.call(this, params);
 
-	this._mode = params.mode;
+	this._mode = ZmId.VIEW_CONV2;
 	this._controller = params.controller;
 	this._convChangeHandler = this._convChangeListener.bind(this);
 	this._listChangeListener = this._msgListChangeListener.bind(this);
@@ -147,8 +147,10 @@ ZmConvView2.prototype._renderConv =
 function(conv) {
 
 	this._now = new Date();
+	appCtxt.notifyZimlets("onConvStart", [this]);
 	this._header.set(this._item);
 	var firstExpanded = this._renderMessages(conv, this._messagesDiv);
+	appCtxt.notifyZimlets("onConvEnd", [this]);
 	DBG.println("cv2", "Conv render time: " + ((new Date()).getTime() - this._now.getTime()));
 
 	this._header._setExpandIcon();
@@ -172,7 +174,7 @@ function(conv, container) {
 
 	this._msgViews = {};
 	this._msgViewList = [];
-	var msgs = conv.getMsgList(0, false, this._controller.getFoldersToOmit());
+	var msgs = conv.getMsgList();
 	
 	// base the ordering off a list of msg IDs
 	var idList = [], idHash = {};
@@ -571,9 +573,8 @@ function(msg) {
 	if (this._isStandalone()) {
 		this._selectedMsg = msg;
 	}
-	var mlv = this._controller._mailListView;
-	if (mlv) {
-		mlv._selectedMsg = msg;
+	else if (this._controller._mailListView) {
+		this._controller._mailListView._selectedMsg = msg;
 	}
 };
 
@@ -612,7 +613,7 @@ function(params) {
 	params.hideView = params.sendNow;
 	var composeCtlr = AjxDispatcher.run("GetComposeController", params.hideView ? ZmApp.HIDDEN_SESSION : null);
 	params.composeMode = composeCtlr._getComposeMode(msg, composeCtlr._getIdentity(msg));
-	var htmlMode = (params.composeMode == Dwt.HTML);
+	var htmlMode = (params.composeMode == DwtHtmlEditor.HTML);
 	params.toOverride = this._replyView.getAddresses(AjxEmailAddress.TO);
 	params.ccOverride = this._replyView.getAddresses(AjxEmailAddress.CC);
 	var value = this._replyView.getValue();
@@ -709,11 +710,6 @@ function(newMsg) {
 };
 
 
-ZmConvView2.prototype.isWaitOnMarkRead =
-function() {
-	return this._item && this._item.waitOnMarkRead;
-};
-
 // Following two overrides are a hack to allow this view to pretend it's a list view
 ZmConvView2.prototype.getSelection =
 function() {
@@ -786,9 +782,9 @@ ZmConvView2.prototype.isActiveQuickReply = function() {
  * Creates an object manager and returns findObjects content
  * @param view    {Object} the view used by ZmObjectManager to set mouse events
  * @param content {String} content to scan
- * @param htmlEncode {boolean}
+ * @param htmlEncode {boolean} 
  */
-ZmConvView2.prototype.renderObjects =
+ZmConvView2.prototype.renderObjects = 
 function(view, content, htmlEncode) {
 	if (this._objectManager) {
 		this._lazyCreateObjectManager(view || this);
@@ -801,7 +797,7 @@ function(view, content, htmlEncode) {
 ZmConvView2Header = function(params) {
 
 	params.className = params.className || "Conv2Header";
-	DwtComposite.call(this, params);
+	DwtControl.call(this, params);
 
 	this._setEventHdlrs([DwtEvent.ONMOUSEDOWN, DwtEvent.ONMOUSEUP, DwtEvent.ONDBLCLICK]);
 	
@@ -846,7 +842,6 @@ function() {
 	this.setVisible(false);
 	if (this._subjectSpan && this._infoDiv) {
 		this._subjectSpan.innerHTML = this._infoDiv.innerHTML = "";
-        this._subjectSpan.title = "";
 	}
 };
 
@@ -879,12 +874,8 @@ function() {
 
 ZmConvView2Header.prototype._setSubject =
 function() {
-	var subject = this._item.subject || ZmMsg.noSubject;
-	if (this._item.numMsgs > 1) {
-		subject = ZmMailMsg.stripSubjectPrefixes(subject);
-	}
-	this._subjectSpan.innerHTML = AjxStringUtil.htmlEncode(subject);
-	this._subjectSpan.title = subject;
+	var subject = this._convView.renderObjects(this, ZmMailMsg.stripSubjectPrefixes(this._item.subject ||ZmMsg.noSubject), true);
+	this._subjectSpan.innerHTML = subject;
 };
 
 ZmConvView2Header.prototype._setInfo =
@@ -928,7 +919,7 @@ ZmConvView2Header.prototype._dblClickListener =
 function(ev) {
 	if (this._convView._isStandalone()) { return; }
 	var conv = ev.dwtObj && ev.dwtObj.parent && ev.dwtObj.parent._item;
-	if (conv && ev.target !== this._subjectSpan) {
+	if (conv) {
 		AjxDispatcher.run("GetConvController", conv.id).show(conv, this._controller);
 	}
 };
@@ -969,6 +960,7 @@ ZmConvReplyView.ADDR_TYPES = [AjxEmailAddress.TO, AjxEmailAddress.CC];
 ZmConvReplyView.prototype.set =
 function(msg, msgView, op) {
 
+	appCtxt.notifyZimlet("com_zimbra_email", "onFindMsgObjects");
 	this.action = op;
 	AjxDispatcher.require("Mail");
 	
@@ -1000,6 +992,9 @@ function(msg, msgView, op) {
 	this.reparentHtmlElement(this._convView._messagesDiv, index);
 	msgView.addClassName("Reply");
 
+	// Argghhh - it's very messed up that we have to go through a zimlet to create bubbles
+	// Notify only the email zimlet, since other zimlets either hit an error or do something unneeded
+	appCtxt.notifyZimlet("com_zimbra_email", "onMsgView");
 	this.setVisible(true);
 	Dwt.scrollIntoView(this.getHtmlElement(), this._convView._messagesDiv);
 	appCtxt.getKeyboardMgr().grabFocus(this._input);
@@ -1083,10 +1078,8 @@ function() {
 };
 
 ZmConvReplyView.prototype._moreOptions =
-function(ev) {
-	var mouseEv = DwtShell.mouseEvent;
-	mouseEv.setFromDhtmlEvent(ev);
-	this._convView._compose({msg:this._msg, action:this.action, ev:mouseEv});
+function() {
+	this._convView._compose({msg:this._msg, action:this.action});
 	this.reset();
 };
 
@@ -1097,6 +1090,7 @@ function(msg, msgView, op) {
 	var addresses = ZmComposeView.getReplyAddresses(op, msg, msg);
 	
 	var options = {};
+	options.addrBubbles = appCtxt.get(ZmSetting.USE_ADDR_BUBBLES);
 	options.shortAddress = appCtxt.get(ZmSetting.SHORT_ADDRESS);
 
 	var showMoreIds = {};
@@ -1187,6 +1181,7 @@ ZmMailMsgCapsuleView = function(params) {
 	// cache text and HTML versions of original content
 	this._origContent = {};
 
+	this.addListener(ZmMailMsgView._TAG_CLICK, this._msgTagClicked.bind(this));
 	this.addListener(ZmInviteMsgView.REPLY_INVITE_EVENT, this._convView._inviteReplyListener);
 	this.addListener(ZmMailMsgView.SHARE_EVENT, this._convView._shareListener);
 	this.addListener(ZmMailMsgView.SUBSCRIBE_EVENT, this._convView._subscribeListener);
@@ -1220,6 +1215,17 @@ function() {
 		classes.push("Last");
 	}
 	this.setClassName(classes.join(" "));
+};
+
+/**
+ * We override this function to ignore notifying Zimlets as onMsgView is
+ * not supported in this view @see http://bugzilla.zimbra.com/show_bug.cgi?id=68170
+ * @param msg
+ * @param oldMsg
+ */
+ZmMailMsgCapsuleView.prototype._notifyZimletsNewMsg =
+function(msg, oldMsg) {
+    appCtxt.notifyZimlets("onConvView", [msg, oldMsg, this]);
 };
 
 ZmMailMsgCapsuleView.prototype.set =
@@ -1266,86 +1272,49 @@ function() {
  * Resize IFRAME to match its content. IFRAMEs have a default height of 150, so we need to
  * explicitly set the correct height if the content is smaller. The easiest way would be
  * to measure the height of the HTML or BODY element, but some browsers (mainly IE) report
- * that to be 150. So as a backup we sum the height of the BODY element's child nodes. To
- * get the true height of an element we use its computed style object to add together the
- * vertical measurements of height, padding, and margins.
+ * that to be 150. So we end up trying these ways in order to get an accurate height:
+ *		- height of BODY
+ *		- height from BODY's computed style object
+ *		- cumulative height of BODY's child nodes
  */
 ZmMailMsgCapsuleView.prototype._resize =
 function() {
 
 	this._resizePending = false;
-	if (!this._expanded || !this._usingIframe) {
-		return;
-	}
+	if (!this._expanded || !this._usingIframe || this._hasBeenSized) { return; }
 	
 	var body = this.getContentContainer();
-	if (!body) {
-		return;
-	}
-
-	// Height from getSize() will either be correct or too small. If it's over 150,
-	// we don't need to resize. Bail so we save the effort of messing with the computed style.
-	if (Dwt.getSize(body).y > 150) {
-		return;
-	}
-
-	var height = ZmMailMsgCapsuleView._heightCache[this._msgId];
-
-	if (!height) {
-		// Get height from computed style, which seems to be the most reliable source.
-		height = this._getHeightFromComputedStyle(body);
-
-		// We didn't get a believable height. Try moving the BODY's children into a DIV
-		// and measuring that. Previously, we tried measuring the height of the children,
-		// but that's unreliable since an element such as BR reports 0 height even though
-		// it takes up vertical space. Since we know the height is under 150, there shouldn't
-		// be a lot of elements getting moved around.
-		if (height === 0 || height === 150) {
-			var div = ZmMailMsgCapsuleView._testDiv;
-			if (!div) {
-				div = ZmMailMsgCapsuleView._testDiv = document.createElement('DIV');
-				div.style.position = Dwt.ABSOLUTE_STYLE;
-				var shellEl = DwtShell.getShell(window).getHtmlElement();
-				shellEl.appendChild(div);
-				Dwt.setLocation(div, Dwt.LOC_NOWHERE, Dwt.LOC_NOWHERE);
-			}
-			while (body.hasChildNodes()) {
-				div.appendChild(body.firstChild);
-			}
-			height = this._getHeightFromComputedStyle(div);
-			while (div.hasChildNodes()) {
-				body.appendChild(div.firstChild);
-			}
+	if (!body) { return; }
+	
+	var height = Dwt.getSize(body).y;
+	if (!height || height == 150) {
+		var styleObj = DwtCssStyle.getComputedStyleObject(body);
+		if (styleObj && styleObj.height) {
+			height = parseInt(styleObj.height);
 		}
 	}
-
-	// If the content height is less than 150, then resize the IFRAME to fit it.
+	if (!height || height == 150) {
+		height = 0;
+		for (var i = 0, len = body.childNodes.length; i < len; i++) {
+			var el = body.childNodes[i];
+			if (!el || el.nodeType != AjxUtil.ELEMENT_NODE) {
+				height = -1;
+				break;
+			}
+			height += Dwt.getSize(el).y;
+			var styleObj = DwtCssStyle.getComputedStyleObject(el);
+			if (!styleObj) {
+				return;
+			}
+			height += parseInt(styleObj.marginTop) + parseInt(styleObj.marginBottom);
+		}
+	}
 	if (height > 0 && height < 150) {
-		ZmMailMsgCapsuleView._heightCache[this._msgId] = height;
-		height += 20;	// account for 10px of top and bottom padding for class MsgBody-html
+		height += 12;	// fudge to make sure nothing is cut off
 		DBG.println(AjxDebug.DBG1, "resizing capsule msg view IFRAME height to " + height);
 		Dwt.setSize(this.getIframeElement(), Dwt.DEFAULT, height);
+		this._hasBeenSized = true;
 	}
-};
-
-// Cache msg view iframe heights by msg ID
-ZmMailMsgCapsuleView._heightCache = {};
-
-// Look in the computed style object for height, padding, and margins.
-ZmMailMsgCapsuleView.prototype._getHeightFromComputedStyle =
-function(el) {
-
-	var styleObj = DwtCssStyle.getComputedStyleObject(el),
-		height = 0;
-
-	if (styleObj && styleObj.height) {
-		var props = [ 'height', 'marginTop', 'marginBottom', 'paddingTop', 'paddingBottom' ];
-		for (var i = 0; i < props.length; i++) {
-			var h = parseInt(styleObj[props[i]]);
-			height += isNaN(h) ? 0 : h;
-		}
-	}
-	return height;
 };
 
 ZmMailMsgCapsuleView.prototype._scheduleResize =
@@ -1360,7 +1329,6 @@ ZmMailMsgCapsuleView.prototype._renderMessage =
 function(msg, container, callback) {
 	
 	msg = this._msg;
-	this._clearBubbles();
 	this._createMessageHeader();
 	if (this._expanded) {
 		this._renderMessageBodyAndFooter(msg, container, callback);
@@ -1403,18 +1371,19 @@ function(msg, container, callback) {
 		this._showEntireMsg = false;
 	}
 	else {
+		msg.waitOnMarkRead = this._convView._item.waitOnMarkRead;
 		this._handleResponseLoadMessage(msg, container, callback);
 	}
 };
 
 ZmMailMsgCapsuleView.prototype._handleResponseLoadMessage =
 function(msg, container, callback) {
-
 	// Take care of a race condition, where this view may be deleted while
 	// a ZmMailMsg.fetch (that references this function via a callback) is
 	// still in progress
 	if (this.isDisposed()) { return; }
 
+	appCtxt.notifyZimlets("onConvStart", [this]);
 	this._header.set(this._expanded ? ZmMailMsgCapsuleViewHeader.EXPANDED : ZmMailMsgCapsuleViewHeader.COLLAPSED);
 	var respCallback = this._handleResponseLoadMessage1.bind(this, msg, container, callback);
 	this._renderMessageBody(msg, container, respCallback);
@@ -1425,6 +1394,7 @@ ZmMailMsgCapsuleView.prototype._handleResponseLoadMessage1 =
 function(msg, container, callback) {
 	this._renderMessageFooter(msg, container);
 	this._controller._handleMarkRead(msg);	// in case we need to mark read after a delay
+	appCtxt.notifyZimlets("onConvEnd", [this]);
 	if (callback) {
 		callback.run();
 	}
@@ -1442,23 +1412,24 @@ function(isTextMsg, html, isTruncated) {
 	// Code below attempts to determine if we can display an HTML msg in a DIV. If there are
 	// issues with the msg DOM being part of the window DOM, we may want to just always return
 	// true from this function.
-	var result = AjxStringUtil.checkForCleanHtml(html, ZmMailMsgView.TRUSTED_TAGS, ZmMailMsgView.UNTRUSTED_ATTRS);
-	if (!result.useIframe) {
+	var result = AjxStringUtil.checkForCleanHtml(html, ZmMailMsgView.TRUSTED_TAGS, ZmMailMsgView.UNTRUSTED_ATTRS, ZmMailMsgView.BAD_STYLES);
+	if (result.html) {
 		this._cleanedHtml = result.html;
 		this._contentWidth = result.width;
 		return false;
 	}
 	else {
-        this._cleanedHtml = result.html;
 		return true;
 	}
 };
 
 ZmMailMsgCapsuleView.prototype._renderMessageBody =
 function(msg, container, callback, index) {
-
-	this._addLine(); //separator between header and message body
-
+	
+	if (!this._beenHere) {
+		this._addLine();
+	}
+	
 	this._msgBodyDivId = [this._htmlElId, ZmId.MV_MSG_BODY].join("_");
 	var autoSendTime = AjxUtil.isDate(msg.autoSendTime) ? AjxDateFormat.getDateTimeInstance(AjxDateFormat.FULL, AjxDateFormat.MEDIUM).format(msg.autoSendTime) : null;
 	if (autoSendTime) {
@@ -1504,7 +1475,7 @@ function(msg, container, callback, index) {
     }
 
 	if (isCalendarInvite || isSubscribeReq) {
-		ZmMailMsgView.prototype._renderMessageHeader.call(this, msg, container, true);
+		ZmMailMsgView.prototype._renderMessageHeader.apply(this, arguments);
 	}
 	
 	var params = {
@@ -1528,19 +1499,11 @@ function(msg, container, callback, index) {
 			toolbar.reparentHtmlElement(bodyEl, 0);
 		}
 		// invite header
-		if (this._headerElement) {
+		if (this._headerElement)
 			bodyEl.insertBefore(this._headerElement.parentNode, bodyEl.firstChild);
-		}
 	}
 	
 	this._beenHere = true;
-};
-
-ZmMailMsgCapsuleView.prototype._getInviteSubs =
-function(subs) {
-	ZmMailMsgView.prototype._getInviteSubs.apply(this, arguments);
-
-    subs.noTopHeader = true;
 };
 
 ZmMailMsgCapsuleView.prototype._addLine =
@@ -1569,7 +1532,7 @@ function(bodyPart) {
 	var content = (this._showingQuotedText || this._forceOriginal || this._isMatchingMsg || !origContent) ? bodyPart.getContent() : origContent;
 	content = content || "";
 	// remove trailing blank lines
-	content = isHtml ? AjxStringUtil.trimHtml(content) : AjxStringUtil.trim(content);
+	content = isHtml ? AjxStringUtil.removeTrailingBR(content) : AjxStringUtil.trim(content);
 	return content;
 };
 
@@ -1821,14 +1784,12 @@ function(expanded) {
 	}
 	else {
 		// hide or show everything below the header
-        var children = this.getHtmlElement().childNodes;
-        for (var i = 0; i < children.length; i++) {
-                if (children[i].className !== 'Conv2MsgHeader'){
-                var child = children[i];
-                var show = (child && (child.id == this._displayImagesId)) ? this._expanded && this._needToShowInfoBar : this._expanded;
-                Dwt.setVisible(child, show);
-      	    }
-        }
+		var children = this.getHtmlElement().childNodes;
+		for (var i = 1; i < children.length; i++) {
+			var child = children[i];
+			var show = (child && (child.id == this._displayImagesId)) ? this._expanded && this._needToShowInfoBar : this._expanded;
+			Dwt.setVisible(child, show);
+		}
 		this._header.set(this._expanded ? ZmMailMsgCapsuleViewHeader.EXPANDED : ZmMailMsgCapsuleViewHeader.COLLAPSED);
 		if (this._expanded) {
 			this._setTags(this._msg);
@@ -1848,7 +1809,8 @@ function(expanded) {
 	}
 
 	if (this._expanded) {
-		this._createBubbles();
+		// create bubbles
+		this._notifyZimletsNewMsg(this._msg);
 		if (this._controller._checkKeepReading) {
 			this._controller._checkKeepReading();
 		}
@@ -1887,25 +1849,15 @@ function(table, tagCellId) {
 	return tagCell;
 };
 
+ZmMailMsgCapsuleView.prototype._getTagAttrHtml =
+function(tag) {
+	return "notoggle=1";
+};
+
 // Msg view header has been left-clicked
 ZmMailMsgCapsuleView.prototype._selectionListener =
 function(ev) {
-
 	this._toggleExpansion();
-
-	// Remember the last msg view that the user collapsed. Expanding any msg view clears that.
-	var convView = this._convView,
-		lastCollapsedMsgView = convView._lastCollapsedId && convView._msgViews[convView._lastCollapsedId];
-
-	if (lastCollapsedMsgView) {
-		lastCollapsedMsgView._lastCollapsed = false;
-		lastCollapsedMsgView._setHeaderClass();
-	}
-	var isCollapsed = !this.isExpanded();
-	this._lastCollapsed = isCollapsed;
-	convView._lastCollapsedId = isCollapsed && this._msgId;
-	this._setHeaderClass();
-
 	return true;
 };
 
@@ -2068,7 +2020,7 @@ function(state, force) {
 	
 	var id = this._htmlElId;
 	var msg = this._msg;
-	var ai = this._msgView._getAddrInfo(msg);
+	var ai = this._msgView._getAddrInfo(msg, true);
 	this._showMoreIds = ai.showMoreIds;
 
 	var folder = appCtxt.getById(msg.folderId);
@@ -2081,45 +2033,29 @@ function(state, force) {
 	var dateFormatter = AjxDateFormat.getDateTimeInstance(AjxDateFormat.LONG, AjxDateFormat.SHORT);
 	this._fullDateString = dateFormatter.format(new Date(date));
 	var dateTooltip = this._browserToolTip ? this._fullDateString : "";
-
+	
 	this._readIconId = id + "_read";
 	this._readCellId = id + "_readCell";
 
-	var html;
-
-	var subs = {
-		readCellId:		this._readCellId,
-		date:			dateString,
-		dateCellId:		this._dateCellId,
-		dateTooltip:	dateTooltip
-
-	};
-
+	var subs, html;
 	if (!isExpanded) {
 		var fromId = id + "_0";
 		this._idToAddr[fromId] = ai.fromAddr;
-
-		var imageURL = ai.sentByContact &&
-			ai.sentByContact.getImageUrl(32, 32) ||
-			ZmZimbraMail.DEFAULT_CONTACT_ICON_SMALL;
-
-		AjxUtil.hashUpdate(subs, {
-			imageURL:	imageURL,
-			from:		ai.from,
-			fromId:		fromId,
-			fragment:	AjxStringUtil.htmlEncode(msg.fragment),
-			isInvite:   this.parent._isCalendarInvite
-		});
+		subs = {
+			readCellId:		this._readCellId,
+			from:			ai.from,
+			fromId:			fromId,
+			fragment:		AjxStringUtil.htmlEncode(msg.fragment),
+			date:			dateString,
+			dateCellId:		this._dateCellId,
+			dateTooltip:	dateTooltip
+		};
 		html = AjxTemplate.expand("mail.Message#Conv2MsgHeader-collapsed", subs);
 	}
 	else {
-		var imageURL = ai.sentByContact &&
-			ai.sentByContact.getImageUrl(48, 48) ||
-			ZmZimbraMail.DEFAULT_CONTACT_ICON;
-
-		AjxUtil.hashUpdate(subs, {
+		subs = {
 			hdrTableId:		this._msgView._hdrTableId = id + "_hdrTable",
-			imageURL:		imageURL,
+			readCellId:		this._readCellId,
 			sentBy:			ai.sentBy,
 			sentByAddr:		ai.sentByAddr,
 			obo:			ai.obo,
@@ -2128,8 +2064,11 @@ function(state, force) {
 			bwoAddr:		ai.bwoAddr,
 			addressTypes:	ai.addressTypes,
 			participants:	ai.participants,
+			date:			dateString,
+			dateCellId:		this._dateCellId,
+			dateTooltip:	dateTooltip,
 			isOutDated:		msg.invite && msg.invite.isEmpty()
-		});
+		};
 		html = AjxTemplate.expand("mail.Message#Conv2MsgHeader-expanded", subs);
 	}
 
@@ -2229,7 +2168,21 @@ function(ev) {
 	}
 	
 	if (ev.button == DwtMouseEvent.LEFT) {
-		return msgView._selectionListener(ev);
+		var returnValue = msgView._selectionListener(ev);
+		msgView._lastCollapsed = false;
+		if (!msgView.isExpanded()) {
+			if (convView._lastCollapsedId) {
+				var lastMsgView = convView._msgViews[convView._lastCollapsedId];
+				if (lastMsgView) {
+					lastMsgView._lastCollapsed = false;
+					lastMsgView._setHeaderClass();
+				}
+			}
+			msgView._lastCollapsed = true;
+			convView._lastCollapsedId = msgView._msgId;
+		}
+		msgView._setHeaderClass();
+		return returnValue;
 	}
 	else if (ev.button == DwtMouseEvent.RIGHT) {
 		return msgView._actionListener(ev);

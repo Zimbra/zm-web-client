@@ -75,19 +75,6 @@ function(results, resultsCtlr) {
 	this.inactive = true;	// search tabs can always be reused (unless pinned)
 };
 
-/**
- * Shows the overview or the filter panel. The overview is showing during a DnD operation.
- *
- * @param {Boolean}     show    if true, show the overview; if false, show the filter panel
- */
-ZmSearchResultsController.prototype.showOverview =
-function(show) {
-	var overview = this._resultsApp.getOverview();
-	if (overview) {
-		appCtxt.getAppViewMgr().setViewComponents(this.viewId, { tree: show ? overview : this._filterPanel }, true);
-	}
-};
-
 // creates the toolbar and filter panel
 ZmSearchResultsController.prototype._initialize =
 function() {
@@ -128,7 +115,6 @@ function(search, resultsCtlr) {
 					resultsApp:	resultsCtlr.getApp().getName()
 				});
 	}
-
 	this._resultsController = resultsCtlr;
 	if (appCtxt.getCurrentViewId().indexOf(this._currentViewId) !== -1) {
 		var elements = {};
@@ -152,7 +138,6 @@ function(search, resultsCtlr) {
 								tabParams:	this._getTabParams()});
 		this._app.pushView(this._currentViewId);
 		this._filterPanel.reset();
-
 		// search tab button menu
 		var button = appCtxt.getAppChooser().getButton(this.tabId);
 		var menu = new DwtMenu({ parent: button	});
@@ -168,10 +153,6 @@ function(search, resultsCtlr) {
 		menuItem = new DwtMenuItem({ parent:menu, style:DwtMenuItem.CHECK_STYLE });
 		menuItem.setText(ZmMsg.pinned);
 		menuItem.addSelectionListener(this._pinnedListener.bind(this));
-	}
-
-	if (search && search.query) {
-		this._filterPanel.resetBasicFiltersToQuery(search.query);
 	}
 	
 	if (search && search.origin == ZmId.SEARCH) {
@@ -244,24 +225,15 @@ function(ev, zimletEvent) {
 
 // Note the error and then eat it - we don't want to show toast or clear out results
 ZmSearchResultsController.prototype._errorCallback =
-function(ex) {
-	var msg = ZmCsfeException.getErrorMsg(ex.code);
-	msg = msg || ZmMsg.unknownError;
-	this._toolbar.setLabel(msg, true);
+function(ev) {
+	this._toolbar.setLabel(ZmMsg.invalidSearch, true);
 	return true;
 };
 
 // pops up a dialog to save the search
 ZmSearchResultsController.prototype._saveListener =
 function(ev) {
-
-	var stc = appCtxt.getOverviewController().getTreeController(ZmOrganizer.SEARCH);
-	if (!stc._newCb) {
-		stc._newCb = stc._newCallback.bind(stc);
-	}
-
-	var params = { search: this._curSearch };
-	ZmController.showDialog(stc._getNewDialog(), stc._newCb, params);
+	appCtxt.getSearchController()._saveButtonListener(ev);
 };
 
 // toggles the pinned state of this tab

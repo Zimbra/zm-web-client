@@ -554,15 +554,6 @@ ZCS.quoted.HEADER          = 'HEADER';
 ZCS.quoted.LINE            = 'LINE';
 ZCS.quoted.SIG_SEP         = 'SIG_SEP';
 
-ZCS.quoted.HEADERS = [];
-(function() {
-	var headerKeys = [ 'fromHdr', 'toHdr', 'ccHdr', 'dateHdr', 'subjectHdr', 'sentHdr' ],
-		ln = headerKeys.length, i;
-	for (i = 0; i < ln; i++) {
-		ZCS.quoted.HEADERS.push(ZtMsg[headerKeys[i]] + ':');
-	}
-})();
-
 // Regexes for figuring out block type
 ZCS.quoted.REGEXES = [
 	{
@@ -583,7 +574,7 @@ ZCS.quoted.REGEXES = [
 	{
 		// one of the commonly quoted email headers
 		type:	ZCS.quoted.HEADER,
-		regex:	new RegExp('^\\s*(' + ZCS.quoted.HEADERS.join('|') + ')', 'i')
+		regex:	new RegExp('^\\s*(' + [ZtMsg.fromHdr, ZtMsg.toHdr, ZtMsg.subjectHdr, ZtMsg.dateHdr, ZtMsg.sentHdr, ZtMsg.ccHdr].join('|') + ')', 'i')
 	},
 	{
 		// some clients use a series of underscores as a text-mode separator (text version of <hr>)

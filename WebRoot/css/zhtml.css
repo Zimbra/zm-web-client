@@ -13,10 +13,6 @@
  * ***** END LICENSE BLOCK *****
  */
 
-HTML {
-	font-size:12px;  /* resets 1rem to 12px */
-}
-
 IMG {
 	border: none;
 	vertical-align: middle;
@@ -241,7 +237,7 @@ SUBMIT,
 	padding-right: 6px;    
 }
 
-A:visited { @Text-link@ }
+A:visited { color: blue; }
 
 
 
@@ -403,7 +399,7 @@ A:visited { @Text-link@ }
 }
 
 .MsgOps {
-	@ToolbarBg@
+	@ToolbarBg@;
 /*    background-color: @HeaderColor@;*/
 }
 
@@ -714,7 +710,7 @@ A:visited { @Text-link@ }
 	vertical-align:top;
 	@SeparatorBorder@
 	font-weight:bold;
-	@Text-disabled@
+	@Text-disabled@;
 }
 
 .shortcutDescription {
@@ -776,7 +772,7 @@ A:visited { @Text-link@ }
 }
 
 .ZhCalType, .ZhABType, .ZhFolderType {
-@Text-disabled@
+@Text-disabled@;
 }
 
 .ZhCalMonthHeaderRow {
@@ -881,7 +877,7 @@ A:visited { @Text-link@ }
 
 .ZhCalMiniContainer {
 	@AppBg@ @NormalOutsetBorder@
-    height: 142px;
+    height: 135px;
 	padding-bottom: 5px;
 }
 
@@ -1256,7 +1252,7 @@ padding: 0 @BoxPaddingSize@ 0 @BoxPaddingSize@;
 }
 
 .ZOptionsHint {
-	@Text-disabled@
+	@Text-disabled@;
 }
 
 .ZOptionsSectionMain {
@@ -1275,6 +1271,10 @@ padding: 0 @BoxPaddingSize@ 0 @BoxPaddingSize@;
 	line-height:20px;
 }
 
+.ZOptionsSectionTable LABEL {
+	white-space:nowrap;
+}
+
 .ZOptionsLabelTop {
 	vertical-align:top;
 	line-height:20px;
@@ -1289,7 +1289,7 @@ padding: 0 @BoxPaddingSize@ 0 @BoxPaddingSize@;
 }
 
 .ZhDateHint {
-	@Text-disabled@
+	@Text-disabled@;
     padding-left: 5px;
 }
 

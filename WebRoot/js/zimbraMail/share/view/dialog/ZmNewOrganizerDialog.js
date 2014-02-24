@@ -31,9 +31,9 @@
  */
 ZmNewOrganizerDialog = function(parent, className, title, type, extraButtons) {
 	if (arguments.length == 0) return;
-
-	this._organizerType = type;
+	
 	ZmDialog.call(this, {parent:parent, className:className, title:title, id:"CreateNewFolderDialog", extraButtons: extraButtons});
+	this._organizerType = type;
 	this._setupControls();
 };
 
@@ -59,57 +59,34 @@ ZmNewOrganizerDialog.prototype._folderNameAlreadyExistsMsg = ZmMsg.errorAlreadyE
  */
 ZmNewOrganizerDialog.prototype.popup =
 function(params, account) {
-
     var folder = params instanceof ZmOrganizer ? params : (params && params.organizer);
+	if (this._folderTreeCellId) {
+		var overviewParams = {
+			overviewId:		this.toString(),
+			treeIds:		this._treeIds,
+			omit:			this._omit,
+			fieldId:		this._folderTreeCellId,
+			overviewTrees:	[this._organizerType],
+            treeStyle:      this._treeStyle
+		};
+		this._setOverview(overviewParams);
 
-	var parentLabelCell = document.getElementById(this._htmlElId + '_parentLabel');
-	var parentValueCell = document.getElementById(this._htmlElId + '_parentValue');
-	this._parentFolder = null;
+		if (this._folderTreeView) {
+			// bug #18533 - always make sure header item is visible in "New" dialog
+			this._folderTreeView.getHeaderItem().setVisible(true, true);
 
-	// if the user has already implicitly selected a parent folder, don't show overview
-	if (folder && folder.id != ZmOrganizer.ID_ROOT) {
-		this._parentFolder = folder;
-		this._makeOverviewVisible();    // hide all overviews
-		if (parentLabelCell) {
-			parentLabelCell.colSpan = 1;
-			parentLabelCell.innerHTML = ZmMsg.parentFolderLabel;
-			parentValueCell.innerHTML = folder.getName();
-		}
-	}
-	else {
-		if (this._folderTreeCellId) {
-			if (parentLabelCell) {
-				parentLabelCell.innerHTML = this._folderLocationLabel;
-				parentLabelCell.colSpan = 2;
-				parentValueCell.innerHTML = '';
+			if (!folder || this._omit[folder.nId] || folder.nId == ZmOrganizer.ID_ROOT) {
+				folder = appCtxt.getFolderTree().root; //default to root if no folder passed, the folder is omitted from the overview. (I don't get the last option, but it was there so I keep it - it's already root)
 			}
-			var overviewParams = {
-				overviewId:		this.toString(),
-				treeIds:		this._treeIds,
-				omit:			this._omit,
-				fieldId:		this._folderTreeCellId,
-				overviewTrees:	[this._organizerType],
-	            treeStyle:      this._treeStyle
-			};
-			this._setOverview(overviewParams);
-
-			if (this._folderTreeView) {
-				// bug #18533 - always make sure header item is visible in "New" dialog
-				this._folderTreeView.getHeaderItem().setVisible(true, true);
-
-				if (!folder || this._omit[folder.nId] || folder.nId == ZmOrganizer.ID_ROOT) {
-					folder = appCtxt.getFolderTree().root; //default to root if no folder passed, the folder is omitted from the overview. (I don't get the last option, but it was there so I keep it - it's already root)
-				}
-				var ti = this._folderTreeView.getTreeItemById(folder.id);
+			var ti = this._folderTreeView.getTreeItemById(folder.id);
+			if (ti) {
+				this._folderTreeView.setSelection(ti);
+			}
+			if (folder.nId == ZmOrganizer.ID_ROOT) {
+				var sid = ZmOrganizer.getSystemId(folder.id);
+				var ti = this._folderTreeView.getTreeItemById(sid);
 				if (ti) {
-					this._folderTreeView.setSelection(ti);
-				}
-				if (folder.nId == ZmOrganizer.ID_ROOT) {
-					var sid = ZmOrganizer.getSystemId(folder.id);
-					var ti = this._folderTreeView.getTreeItemById(sid);
-					if (ti) {
-						ti.setExpanded(true);
-					}
+					ti.setExpanded(true);
 				}
 			}
 		}
@@ -126,7 +103,7 @@ function(params, account) {
         }
 
         var icon = null;
-        var orgType = this._organizerType;
+        var orgType = this._organizerType; 
         var orgClass = ZmOrganizer.ORG_CLASS[orgType];
         if (orgClass) {
 			//to fix bug 55320 - got rid of the calling getIcon on the prototype hack - that caused isRemote to set _isRemote on the prototype thus causing every object to have it by default set.
@@ -203,7 +180,8 @@ ZmNewOrganizerDialog.prototype._contentHtml =
 function() {
 	var html = [];
 	var idx = 0;
-	html[idx++] = "<table class='ChooserDialog ZPropertySheet' cellspacing='6' >";
+	html[idx++] = "<table class='ZPropertySheet' cellspacing='6' ";
+	html[idx++] = (AjxEnv.isSafari) ? " width='300'>" : ">";
 	idx = this._createStandardContentHtml(html, idx);
 	idx = this._createExtraContentHtml(html, idx);
 	html[idx++] = "</table>";
@@ -213,9 +191,7 @@ function() {
 ZmNewOrganizerDialog.prototype._createStandardContentHtml =
 function(html, idx) {
 	idx = this._createNameContentHtml(html, idx);
-	if (this._organizerType != ZmOrganizer.FOLDER || (this._organizerType == ZmOrganizer.FOLDER && appCtxt.get(ZmSetting.MAIL_FOLDER_COLORS_ENABLED))) {
-		idx = this._createColorContentHtml(html, idx);
-	}
+	idx = this._createColorContentHtml(html, idx);
 	return idx;
 };
 
@@ -256,7 +232,7 @@ function(html, idx) {
 ZmNewOrganizerDialog.prototype._createFolderContentHtml =
 function(html, idx) {
 	this._folderTreeCellId = this._htmlElId + "_folderTree";
-	html[idx++] = AjxTemplate.expand("share.Dialogs#ZmNewOrgDialogFolder", {id:this._htmlElId});
+	html[idx++] = AjxTemplate.expand("share.Dialogs#ZmNewOrgDialogFolder", {id:this._htmlElId, label:this._folderLocationLabel});
 	return idx;
 };
 
@@ -356,7 +332,7 @@ function() {
 	// make sure a parent was selected
 	var ov = this._getOverviewOrOverviewContainer();
 
-	var parentFolder = this._parentFolder || (ov && ov.getSelected()) || appCtxt.getFolderTree(this._account).root;
+	var parentFolder = ov && ov.getSelected() || appCtxt.getFolderTree(this._account).root;
 
 	if (this._isGlobalSearch) {
 		//special case for global search (only possible if this is ZmNewSearchDialog

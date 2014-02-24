@@ -47,7 +47,7 @@ ZmCalItemEditView = function(parent, attendees, controller, dateInfo, posStyle, 
 	var bComposeEnabled = appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED);
 	var composeFormat = appCtxt.get(ZmSetting.COMPOSE_AS_FORMAT);
 	this._composeMode = bComposeEnabled && composeFormat == ZmSetting.COMPOSE_HTML
-		? Dwt.HTML : Dwt.TEXT;
+		? DwtHtmlEditor.HTML : DwtHtmlEditor.TEXT;
 
 	this._repeatSelectDisabled = false;
 	this._attachCount = 0;
@@ -59,8 +59,6 @@ ZmCalItemEditView = function(parent, attendees, controller, dateInfo, posStyle, 
 
     this._customRecurDialogCallback = null;
     this._enableCustomRecurCallback = true;
-
-	this.addControlListener(this._controlListener.bind(this));
 };
 
 ZmCalItemEditView.prototype = new DwtComposite;
@@ -70,6 +68,7 @@ ZmCalItemEditView.prototype.toString =
 function() {
 	return "ZmCalItemEditView";
 };
+
 
 // Consts
 
@@ -82,7 +81,8 @@ ZmCalItemEditView._REPEAT_CHANGE = "REPEAT_CHANGE";
 
 ZmCalItemEditView.prototype.show =
 function() {
-	this.resize();
+	var pSize = this.parent.getSize();
+	this.resize(pSize.x, pSize.y);
 };
 
 ZmCalItemEditView.prototype.isRendered =
@@ -219,12 +219,12 @@ function(composeMode) {
 	this._composeMode = composeMode || this._composeMode;
     this._notesHtmlModeFirstTime = !this._notesHtmlEditor.isHtmlModeInited();
 	this._notesHtmlEditor.setMode(this._composeMode, true);
-	this.resize();
+	this._resizeNotes();
 };
 
 ZmCalItemEditView.prototype.reEnableDesignMode =
 function() {
-	if (this._composeMode == Dwt.HTML)
+	if (this._composeMode == DwtHtmlEditor.HTML)
 		this._notesHtmlEditor.reEnableDesignMode();
 };
 
@@ -321,8 +321,8 @@ function(inputEl, sizeEl){
     for(var i=0; i<files.length;i++){
         var file = files[i];
         var size = file.size || file.fileSize /*Safari*/;
-        if ((-1 /* means unlimited */ != appCtxt.get(ZmSetting.MESSAGE_SIZE_LIMIT)) &&
-            (size > appCtxt.get(ZmSetting.MESSAGE_SIZE_LIMIT))) {
+        if ((-1 /* means unlimited */ != appCtxt.get(ZmSetting.ATTACHMENT_SIZE_LIMIT)) &&
+            (size > appCtxt.get(ZmSetting.ATTACHMENT_SIZE_LIMIT))) {
             className = "RedC";
         }
         totalSize += size;
@@ -338,15 +338,41 @@ function(inputEl, sizeEl){
 };
 
 ZmCalItemEditView.prototype.resize =
-function() {
+function(newWidth, newHeight) {
 	if (!this._rendered) { return; }
+
+	if (newWidth) {
+		this.setSize(newWidth);
+		Dwt.setSize(this.getHtmlElement().firstChild, newWidth);
+	}
+
+	if (newHeight) {
+		this.setSize(Dwt.DEFAULT, newHeight);
+	}
 
     this._resizeNotes();
 
-	var subjectContainer = this._subjectField.getHtmlElement().parentNode;
-	this._subjectField.setSize(0, Dwt.DEFAULT);
-	var containerBounds = Dwt.getInsetBounds(subjectContainer);
-	this._subjectField.setSize(containerBounds.width - 20, Dwt.DEFAULT);
+    //If scrollbar handle it
+    var size = Dwt.getSize(this.getHtmlElement());
+    var topSize = Dwt.getSize(this._topContainer);
+    var notesSize = Dwt.getSize(this._notesContainer);
+    if(((topSize.y + notesSize.y) > ( size.y + 5 ))) {
+        newWidth = size.x  - 15;
+        Dwt.setSize(this.getHtmlElement().firstChild, newWidth);
+        this._notesHtmlEditor.setSize(newWidth - 10);
+        if(!this._scrollHandled){
+            Dwt.setScrollStyle(this.getHtmlElement(), Dwt.SCROLL_Y);
+            this._scrollHandled = true;
+        }
+    }else{
+        if(this._scrollHandled){
+            Dwt.setScrollStyle(this.getHtmlElement(), Dwt.CLIP);
+            newWidth = size.x;
+            Dwt.setSize(this.getHtmlElement().firstChild, newWidth);
+            this._notesHtmlEditor.setSize(newWidth - 10);
+        }
+        this._scrollHandled = false;
+    }
 };
 
 ZmCalItemEditView.prototype.getHtmlEditor =
@@ -459,7 +485,7 @@ function(calItem) {
 
 	// set the notes parts (always add text part)
 	var top = new ZmMimePart();
-	if (this._composeMode == Dwt.HTML) {
+	if (this._composeMode == DwtHtmlEditor.HTML) {
 		top.setContentType(ZmMimeTable.MULTI_ALT);
 
 		// create two more mp's for text and html content types
@@ -557,8 +583,6 @@ function(calItem) {
 ZmCalItemEditView.prototype._setRepeatDesc =
 function(calItem) {
 	if (calItem.isCustomRecurrence()) {
-        //Bug fix # 58493 - Set the classname if for the first time directly custom weekly/monthly/yearly repetition is selected
-        this._repeatDescField.className = "FakeAnchor";
 		this._repeatDescField.innerHTML = calItem.getRecurBlurb();
 	} else {
 		this._repeatDescField.innerHTML = (calItem.getRecurType() != "NON")
@@ -588,7 +612,7 @@ function(calItem, mode) {
     }
 
     this._controller.setFormatBtnItem(true, isSavedinHTML ? ZmMimeTable.TEXT_HTML : ZmMimeTable.TEXT_PLAIN);
-    this.setComposeMode(isSavedinHTML ? Dwt.HTML : Dwt.TEXT);
+    this.setComposeMode(isSavedinHTML ? DwtHtmlEditor.HTML : DwtHtmlEditor.TEXT);
 
     if(this._isForward /* && !calItem.isOrganizer() */) {
         var preface = [ZmMsg.DASHES, " ", ZmMsg.originalAppointment, " ", ZmMsg.DASHES].join("");
@@ -615,11 +639,9 @@ function(body, composingHtml) {
     var includePref = appCtxt.get(ZmSetting.FORWARD_INCLUDE_ORIG);
     if (includePref == ZmSetting.INCLUDE_PREFIX || includePref == ZmSetting.INCLUDE_PREFIX_FULL) {
         var preface = (composingHtml ? '<br>' : '\n');
-		var wrapParams = {
-			text:				body,
-			htmlMode:			composingHtml,
-			preserveReturns:	true
-		}
+		var wrapParams = ZmHtmlEditor.getWrapParams(composingHtml);
+		wrapParams.text = body;
+		wrapParams.preserveReturns = true;
         body = preface + AjxStringUtil.wordWrap(wrapParams);
     }
     return body;
@@ -686,7 +708,7 @@ function(width) {
 	};
 	this._subjectField = new DwtInputField(params);
 	this._subjectField.setRequired();
-	Dwt.setSize(this._subjectField.getInputElement(), "100%", "2rem");
+	Dwt.setSize(this._subjectField.getInputElement(), "100%", "22px");
 
 	// CalItem folder DwtSelect
 	this._folderSelect = new DwtSelect({parent:this, parentElement:(this._htmlElId + "_folderSelect")});
@@ -721,12 +743,11 @@ function(width) {
 			type: DwtInputField.STRING,
 			errorIconStyle: DwtInputField.ERROR_ICON_NONE,
 			validationStyle: DwtInputField.CONTINUAL_VALIDATION,
-			className: "DwtInputField ReminderInput"
+            className: "DwtInputField ReminderInput"
 		};
 		this._reminderSelectInput = new DwtInputField(params);
 		var reminderInputEl = this._reminderSelectInput.getInputElement();
-        // Fix for bug: 83100. Fix adapted from ZmReminderDialog::_createButtons
-		Dwt.setSize(reminderInputEl, "120px", "2rem");
+		Dwt.setSize(reminderInputEl, Dwt.DEFAULT, "22px");
 		reminderInputEl.onblur = AjxCallback.simpleClosure(this._handleReminderOnBlur, this, reminderInputEl);
 
 		var reminderButtonListener = new AjxListener(this, this._reminderButtonListener);
@@ -756,8 +777,15 @@ function(width) {
     this._notesContainer = document.getElementById(this._htmlElId + "_notes");
     this._topContainer = document.getElementById(this._htmlElId + "_top");
 
-    this._notesHtmlEditor = new ZmHtmlEditor(this, null, null, this._composeMode, null, this._htmlElId + "_notes");
-    this._notesHtmlEditor.addOnContentInitializedListener(new AjxCallback(this,this.resize));
+    if( appCtxt.isTinyMCEEnabled() ) {
+        this._notesHtmlEditor = new ZmAdvancedHtmlEditor(this, null, null, this._composeMode, null, this._htmlElId + "_notes");
+        this._notesHtmlEditor.addOnContentInitializedListener(new AjxCallback(this,this._resizeNotes));
+    } else {
+        this._notesHtmlEditor = new ZmHtmlEditor(this, null, null, this._composeMode);
+        this._notesHtmlEditor.reparentHtmlElement(this._htmlElId + "_notes");
+        // bug: 19079 to avoid access denied exception set some content which corrects the doc domain
+        this._notesHtmlEditor.setContent("");
+    }
 };
 
 ZmCalItemEditView.prototype._handleReminderOnBlur =
@@ -926,11 +954,6 @@ function(excludeAttendees) {
 	// override
 };
 
-ZmCalItemEditView.prototype._getComponents =
-function() {
-	return { above: [this._topContainer], aside: [] };
-};
-
 ZmCalItemEditView.prototype._resizeNotes =
 function() {
 	var bodyFieldId = this._notesHtmlEditor.getBodyFieldId();
@@ -939,26 +962,30 @@ function() {
 		this._bodyField = document.getElementById(this._bodyFieldId);
 	}
 
-	var editorBounds = this.boundsForChild(this._notesHtmlEditor);
+	var size = this.getSize();
+	if (size.x <= 0 || size.y <= 0) { return; }
 
-	var rowWidth = editorBounds.width;
-	var rowHeight = editorBounds.height;
-
-	var components = this._getComponents();
-
-	AjxUtil.foreach(components.above, function(c) {
-		rowHeight -= Dwt.getOuterSize(c).y || 0;
-	});
-
-	AjxUtil.foreach(components.aside, function(c) {
-		rowWidth -= Dwt.getOuterSize(c).x || 0;
-	});
-
-	if (rowWidth > 0 && rowHeight > 0) {
-		this._notesHtmlEditor.setSize(rowWidth, rowHeight);
-	}
-
-	Dwt.setSize(this._topContainer, rowWidth, Dwt.CLEAR);
+	var topDiv = document.getElementById(this._htmlElId + "_top");
+    var topSize = Dwt.getSize(topDiv);
+	//var topHeight = topSize.y;
+	var rowHeight = size.y - topSize.y;
+    var rowWidth = size.x;
+	//var hFudge = (this._composeMode == DwtHtmlEditor.HTML) ? 30 : 15;
+	//var wFudge = ( AjxEnv.isIE || AjxEnv.isWebKitBased ? 20 : 0 );
+    //rowHeight = rowHeight - hFudge;
+    //rowWidth = rowWidth - wFudge
+    if(AjxEnv.isIE)
+        rowHeight = rowHeight - 10;
+    
+    if(rowHeight < 100){
+        rowHeight = 100;
+    }
+    
+    //	if(window.isTinyMCE) {
+    //        this._notesHtmlEditor.setSize(rowWidth-5, rowHeight)
+    //    }else {
+        this._notesHtmlEditor.setSize(rowWidth-10, rowHeight -5);
+    //    }
 };
 
 ZmCalItemEditView.prototype._handleRepeatDescFieldHover =
@@ -1000,6 +1027,9 @@ function(ev) {
 	// if date was input by user and its foobar, reset to today's date
 	if (calDate == null || isNaN(calDate)) {
 		calDate = new Date();
+		var field = ev.item == this._startDateButton
+			? this._startDateField : this._endDateField;
+		field.value = AjxDateUtil.simpleComputeDateStr(calDate);
 	}
 
 	// always reset the date to current field's date
@@ -1046,13 +1076,11 @@ function(ev) {
 	this._oldEndDate = AjxDateUtil.simpleParseDateStr(this._endDateField.value);	
 
 	// change the start/end date if they mismatch
-    var calItem = this._calItem;
 	if (parentButton == this._startDateButton) {
 		var ed = AjxDateUtil.simpleParseDateStr(this._endDateField.value);
 		if (ed && (ed.valueOf() < ev.detail.valueOf())) {
 			this._endDateField.value = newDate;
-        } else if (this._oldEndDate && this._endDateField.value != newDate && (calItem.type === ZmItem.APPT)) {
-            // Only preserve duration for Appts
+        }else if(this._oldEndDate && this._endDateField.value != newDate) {
             var delta = this._oldEndDate.getTime() - this._oldStartDate.getTime();
             this._endDateField.value = AjxDateUtil.simpleComputeDateStr(new Date(ev.detail.getTime() + delta));
         }
@@ -1063,6 +1091,7 @@ function(ev) {
 			this._startDateField.value = newDate;
 		this._endDateField.value = newDate;
 	}
+	var calItem = this._calItem;
 
     if(this._hasRepeatSupport) {
         var repeatType = this._repeatSelect.getValue();
@@ -1209,11 +1238,6 @@ function(ev) {
 	this._recurDialog.popdown();
 };
 
-ZmCalItemEditView.prototype._controlListener =
-function(ev) {
-	this.resize();
-};
-
 
 // Callbacks
 
@@ -1247,9 +1271,13 @@ function(status, attId) {
 		this._controller._handleException(ex, {continueCallback:callback});
 	} else {
 		// bug fix #2131 - handle errors during attachment upload.
-		this._controller.popupUploadErrorDialog(ZmItem.APPT, status,
-		                                        ZmMsg.errorTryAgain);
-		this._controller.enableToolbar(true);
+		var msg = AjxMessageFormat.format(ZmMsg.errorAttachment, (status || AjxPost.SC_NO_CONTENT));
+		switch (status) {
+			// add other error codes/message here as necessary
+			case AjxPost.SC_REQUEST_ENTITY_TOO_LARGE: 	msg += " " + ZmMsg.errorAttachmentTooBig + "<br><br>"; break;
+			default: 									msg += " "; break;
+		}
+		this._controller.showErrorMessage(msg + ZmMsg.errorTryAgain);
 	}
 };
 

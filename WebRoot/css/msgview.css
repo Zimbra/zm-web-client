@@ -33,11 +33,6 @@
 /* entire message body */
 .MsgBody {
 	@MailMsgBody@
-
-    /* restrict selection to the message element - only supported by Gecko
-       and Trident as of 2013 */
-    -moz-user-select: element;
-    -ms-user-select: element;
 }
 
 /* text message font (eg: not HTML) */
@@ -78,18 +73,6 @@ body.MsgBody {
 .MsgBody .QuotedText1 { color: green; }
 .MsgBody .QuotedText2 { color: red; }
 
-.user_font_size_small {
-	font-size:@UserFontSize-small@
-}
-.user_font_size_normal {
-	font-size:@UserFontSize-normal@
-}
-.user_font_size_large {
-	font-size:@UserFontSize-large@
-}
-.user_font_size_larger {
-	font-size:@UserFontSize-larger@
-}
 
 .MsgBody .Object {
 	@Anchor@

@@ -90,23 +90,6 @@ Ext.define('ZCS.view.ZtAppView', {
 					{ label: ZtMsg.tag,         action: ZCS.constant.OP_TAG,        handlerName: 'doTag' },
 					{ label: ZtMsg.del,         action: ZCS.constant.OP_DELETE,     handlerName: 'doDelete' }
 				]
-			},
-			calendar: {
-				calendarAddressActions: [
-					{ label: ZtMsg.editContact, action: ZCS.constant.OP_EDIT,           handlerName:   'doEditContact'},
-					{ label: ZtMsg.addContact,  action: ZCS.constant.OP_ADD_CONTACT,    handlerName:   'doAddContact'},
-					{ label: ZtMsg.newMessage,  action: ZCS.constant.OP_COMPOSE,        handlerName:   'doCompose' }
-				],
-				inviteReplyActions: [
-					{ label: ZtMsg.acceptAction,      action: ZCS.constant.OP_ACCEPT,      handlerName: 'doAccept' },
-					{ label: ZtMsg.tentativeAction,   action: ZCS.constant.OP_TENTATIVE,  handlerName: 'doTentative' },
-					{ label: ZtMsg.declineAction,     action: ZCS.constant.OP_DECLINE,    handlerName: 'doDecline' }
-				],
-				apptActions: [
-					{ label: ZtMsg.move,        action: ZCS.constant.OP_MOVE,       handlerName: 'doMove' },
-					{ label: ZtMsg.tag,         action: ZCS.constant.OP_TAG,        handlerName: 'doTag' },
-					{ label: ZtMsg.del,    action: ZCS.constant.OP_DELETE,       handlerName: 'doDelete' }
-				]
 			}
 		}
 	},

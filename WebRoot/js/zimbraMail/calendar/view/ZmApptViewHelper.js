@@ -349,7 +349,7 @@ function(folderSelect, folderRow, calendarOrgs, calItem) {
     //todo: new ui hide folder select if there is only one folder
 };
 
-/**
+/*
  * Takes a string, AjxEmailAddress, or contact/resource and returns
  * a ZmContact or a ZmResource. If the attendee cannot be found in
  * contacts, locations, or equipment, a new contact or
@@ -546,20 +546,22 @@ function(attendee, type, shortForm) {
 ZmApptViewHelper.getAttendeesByRoleCollapsed =
 function(list, type, role, objectManager, htmlElId) {
     if (!(list && list.length)) return "";
-	var attendees = ZmApptViewHelper.getAttendeesArrayByRole(list, role);
+	var attendees = ZmApptViewHelper.getAttendeesArrayByRole(list, type, role);
 
 	var emails = [];
 	for (var i = 0; i < attendees.length; i++) {
 		var att = attendees[i];
-		emails.push(new AjxEmailAddress(att.getEmail(), type, att.getFullName(), att.getFullName()));
+		emails.push(new AjxEmailAddress(att.getEmail(), type, att.getFullName(), att.getFullName())); 
 	}
 
 	var options = {};
+	options.addrBubbles = false; //todo - do we really want false here? why not use bubbles?
 	options.shortAddress = appCtxt.get(ZmSetting.SHORT_ADDRESS);
 	var addressInfo = ZmMailMsgView.getAddressesFieldHtmlHelper(emails, options,
 		role, objectManager, htmlElId);
 	return addressInfo.html;
 };
+
 
 /**
 * Creates a string of attendees by role. this allows to show only count elements, with "..." appended.
@@ -575,9 +577,9 @@ function(list, type, role, count) {
 
 	var res = [];
 
-	var attendees = ZmApptViewHelper.getAttendeesArrayByRole(list, role);
-	for (var i = 0; i < attendees.length; i++) {
-		if (count && i > count) {
+	var attendees = ZmApptViewHelper.getAttendeesArrayByRole(list, type, role);
+	for (i = 0; i < attendees.length; i++) {
+		if (i > count) {
 			res.push(" ...");
 			break;
 		}
@@ -595,24 +597,23 @@ function(list, type, role, count) {
 * returns array of attendees by role.
 *
 * @param list					[array]			list of attendees (ZmContact or ZmResource)
+* @param type					[constant]		attendee type
 * @param role      		        [constant]      attendee role
 */
 ZmApptViewHelper.getAttendeesArrayByRole =
-function(list, role, count) {
-
-    if (!(list && list.length)) {
-	    return [];
-    }
+function(list, type, role, count) {
+    if (!(list && list.length)) return "";
 
     var a = [];
     for (var i = 0; i < list.length; i++) {
         var attendee = list[i];
-        var attendeeRole = attendee.getParticipantRole() || ZmCalItem.ROLE_REQUIRED;
-        if (attendeeRole === role){
+        var _attendeeRole = attendee.getParticipantRole() || ZmCalItem.ROLE_REQUIRED;
+        if (_attendeeRole == role){
             a.push(attendee);
         }
     }
 	return a;
+
 };
 
 ZmApptViewHelper._allDayItemHtml =
@@ -620,7 +621,7 @@ function(appt, id, controller, first, last) {
 	var isNew = appt.ptst == ZmCalBaseItem.PSTATUS_NEEDS_ACTION;
 	var isAccepted = appt.ptst == ZmCalBaseItem.PSTATUS_ACCEPT;
 	var calendar = appt.getFolder();
-    AjxDispatcher.require(["MailCore", "CalendarCore", "Calendar"]);
+    AjxDispatcher.require(["CalendarCore", "Calendar"]);
 
     var tagNames  = appt.getVisibleTags();
     var tagIcon = last ? appt.getTagImageFromNames(tagNames) : null;

@@ -86,6 +86,7 @@ function(view) {
 
 ZmCalItemComposeController.prototype._preShowCallback =
 function() {
+	this._setSearchToolbarVisibilityPerSkin(false);
 	return true;
 };
 
@@ -98,6 +99,7 @@ function(view, force) {
 ZmCalItemComposeController.prototype._postHideCallback =
 function() {
 	// overload me
+	this._setSearchToolbarVisibilityPerSkin(true);
 };
 
 ZmCalItemComposeController.prototype.popShield =
@@ -137,17 +139,8 @@ function() {
 };
 
 /**
- * Gets the appt view.
- * 
- * @return	{ZmApptView}	the appt view
- */
-ZmCalItemComposeController.prototype.getItemView = function() {
-	return this._composeView;
-};
-
-/**
  * Gets the toolbar.
- *
+ * 
  * @return	{ZmButtonToolBar}	the toolbar
  */
 ZmCalItemComposeController.prototype.getToolbar =
@@ -250,12 +243,12 @@ function(actionCode) {
 		case ZmKeyMap.HTML_FORMAT:
 			if (appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED)) {
 				var mode = this._composeView.getComposeMode();
-				var newMode = (mode == Dwt.TEXT) ? Dwt.HTML : Dwt.TEXT;
+				var newMode = (mode == DwtHtmlEditor.TEXT) ? DwtHtmlEditor.HTML : DwtHtmlEditor.TEXT;
 				this._formatListener(null, newMode);
 				// reset the radio button for the format button menu
 				var formatBtn = this._toolbar.getButton(ZmOperation.COMPOSE_OPTIONS);
 				if (formatBtn) {
-					formatBtn.getMenu().checkItem(ZmHtmlEditor.VALUE, newMode, true);
+					formatBtn.getMenu().checkItem(ZmHtmlEditor._VALUE, newMode, true);
 				}
 			}
 			break;
@@ -291,14 +284,14 @@ function(skipNotify, composeMode) {
 		var bComposeEnabled = appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED);
 		var composeFormat = appCtxt.get(ZmSetting.COMPOSE_AS_FORMAT);
 		mode = (bComposeEnabled && composeFormat == ZmSetting.COMPOSE_HTML)
-			? Dwt.HTML : Dwt.TEXT;
+			? DwtHtmlEditor.HTML : DwtHtmlEditor.TEXT;
 	}
 
 	var formatBtn = this._toolbar.getButton(ZmOperation.COMPOSE_OPTIONS);
 	if (formatBtn) {
         var menu = formatBtn.getMenu ? formatBtn.getMenu() : null;
         if(menu) {
-		    menu.checkItem(ZmHtmlEditor.VALUE, mode, skipNotify);
+		    menu.checkItem(ZmHtmlEditor._VALUE, mode, skipNotify);
         }
 	}
 };
@@ -312,12 +305,12 @@ function(skipNotify, composeMode) {
 		var bComposeEnabled = appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED);
 		var composeFormat = appCtxt.get(ZmSetting.COMPOSE_AS_FORMAT);
 		mode = (bComposeEnabled && composeFormat == ZmSetting.COMPOSE_HTML)
-			? Dwt.HTML : Dwt.TEXT;
+			? DwtHtmlEditor.HTML : DwtHtmlEditor.TEXT;
 	}
 
 	var formatBtn = this._toolbar.getButton(ZmOperation.COMPOSE_OPTIONS);
 	if (formatBtn) {
-		formatBtn.getMenu().checkItem(ZmHtmlEditor.VALUE, mode, skipNotify);
+		formatBtn.getMenu().checkItem(ZmHtmlEditor._VALUE, mode, skipNotify);
 	}
 };
 
@@ -374,13 +367,7 @@ function() {
 	}
 	buttons.push(ZmOperation.SEP, ZmOperation.COMPOSE_OPTIONS);
 
-	this._toolbar = new ZmButtonToolBar({
-		parent:     this._container,
-		buttons:    buttons,
-		overrides:  this._getButtonOverrides(buttons),
-		context:    this._currentViewId,
-		controller: this
-	});
+	this._toolbar = new ZmButtonToolBar({parent:this._container, buttons:buttons, context:this._currentViewId, controller:this});
 	this._toolbar.addSelectionListener(ZmOperation.SAVE, new AjxListener(this, this._saveListener));
 	this._toolbar.addSelectionListener(ZmOperation.CANCEL, new AjxListener(this, this._cancelListener));
 
@@ -415,13 +402,13 @@ function() {
 		var mi = new DwtMenuItem({parent:m, style:DwtMenuItem.RADIO_STYLE, id:[ZmId.WIDGET_MENU_ITEM,this._currentViewId,ZmOperation.FORMAT_HTML].join("_")});
 		mi.setImage("HtmlDoc");
 		mi.setText(ZmMsg.formatAsHtml);
-		mi.setData(ZmHtmlEditor.VALUE, Dwt.HTML);
+		mi.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.HTML);
         mi.addSelectionListener(new AjxListener(this, this._formatListener));
 
 		mi = new DwtMenuItem({parent:m, style:DwtMenuItem.RADIO_STYLE, id:[ZmId.WIDGET_MENU_ITEM,this._currentViewId,ZmOperation.FORMAT_TEXT].join("_")});
 		mi.setImage("GenericDoc");
 		mi.setText(ZmMsg.formatAsText);
-		mi.setData(ZmHtmlEditor.VALUE, Dwt.TEXT);
+		mi.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.TEXT);
         mi.addSelectionListener(new AjxListener(this, this._formatListener));
 	}
 
@@ -579,10 +566,10 @@ ZmCalItemComposeController.prototype._formatListener =
 function(ev, mode) {
 	if (!mode && !(ev && ev.item.getChecked())) return;
 
-	mode = mode || ev.item.getData(ZmHtmlEditor.VALUE);
+	mode = mode || ev.item.getData(ZmHtmlEditor._VALUE);
 	if (mode == this._composeView.getComposeMode()) return;
 
-	if (mode == Dwt.TEXT) {
+	if (mode == DwtHtmlEditor.TEXT) {
 		// if formatting from html to text, confirm w/ user!
 		if (!this._textModeOkCancel) {
 			var dlgId = this._composeView.getHTMLElId() + "_formatWarning";
@@ -674,7 +661,7 @@ function() {
 ZmCalItemComposeController.prototype._textModeOkCallback =
 function(ev) {
 	this._textModeOkCancel.popdown();
-	this._composeView.setComposeMode(Dwt.TEXT);
+	this._composeView.setComposeMode(DwtHtmlEditor.TEXT);
 };
 
 ZmCalItemComposeController.prototype._textModeCancelCallback =
@@ -683,7 +670,7 @@ function(ev) {
 	// reset the radio button for the format button menu
 	var formatBtn = this._toolbar.getButton(ZmOperation.COMPOSE_OPTIONS);
 	if (formatBtn) {
-		formatBtn.getMenu().checkItem(ZmHtmlEditor.VALUE, Dwt.HTML, true);
+		formatBtn.getMenu().checkItem(ZmHtmlEditor._VALUE, DwtHtmlEditor.HTML, true);
 	}
 	this._composeView.reEnableDesignMode();
 };
