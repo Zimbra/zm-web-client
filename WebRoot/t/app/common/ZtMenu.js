@@ -26,7 +26,7 @@ Ext.define('ZCS.common.ZtMenu', {
 		bottom: 0,
 		cls: 'zcs-floating-list',
 		// TODO: would be nicer to have it autosize to width of longest item
-		width: Ext.os.deviceType === "Phone" ? Ext.Viewport.element.getWidth() : 320,
+		width: 320,
 		hidden: true,
 		modal: true,
 		hideOnMaskTap: true,
@@ -62,6 +62,9 @@ Ext.define('ZCS.common.ZtMenu', {
 
 	initialize: function() {
 		var me = this;
+        if (Ext.os.deviceType === "Phone") {
+            this.setWidth(Ext.Viewport.element.getWidth());
+        }
 		ZCS.app.on('orientationChange', function () {
 			if (this.isHidden() !== null && !this.isHidden()) {
 				this.rePosition();
