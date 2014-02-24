@@ -628,6 +628,10 @@ function(search, noRender, callback, noUpdateOverview, result) {
  */
 ZmSearchController.prototype._handleOfflineDoSearch =
 function(search, callback) {
+	//force webclient offline mode into msg view for mail search
+	if (search.types && search.types.replaceObject(ZmItem.CONV, ZmItem.MSG)) {
+		search.isDefaultToMessageView = true;
+	}
     var respCallback = this._handleOfflineResponseDoSearch.bind(this, search, callback);
     ZmOfflineDB.search(search, respCallback);
 };

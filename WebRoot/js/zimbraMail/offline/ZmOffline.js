@@ -134,7 +134,7 @@ function() {
 
     // Enable features for the current app
     var app = appCtxt.getCurrentApp();
-    app.enableFeatures();
+	app.resetWebClientOfflineOperations();
  };
 
 ZmOffline.prototype._disableApps =
@@ -152,7 +152,7 @@ function() {
 
     // Disable features for the current app
     var app = appCtxt.getCurrentApp();
-    app.enableFeatures();
+	app.resetWebClientOfflineOperations();
 };
 
 ZmOffline.prototype.initOfflineFolders =

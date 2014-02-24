@@ -1083,7 +1083,9 @@ function(active, viewId) {
 		appCtxt.getAppController().setNewButtonProps(this.getNewButtonProps());
 		this.setOverviewPanelContent();
 		this.stopAlert();
-        this.enableFeatures();
+		if (appCtxt.isWebClientOfflineSupported) {
+			this.resetWebClientOfflineOperations();
+		}
 		this._setRefreshButtonTooltip();
 	}
 };
@@ -1092,29 +1094,29 @@ function(active, viewId) {
  * Handle the common aspects of a transition from online to offline and offline to online, and also do so
  * when an app is activated
  */
-ZmApp.prototype.enableFeatures =
+ZmApp.prototype.resetWebClientOfflineOperations =
 function() {
-    var overview = this.getOverview();
-	if (overview) {
-		var enable = !appCtxt.isWebClientOffline();
-		var zimletTreeView = overview.getTreeView(ZmOrganizer.ZIMLET);
-		if (zimletTreeView) {
-			zimletTreeView.setVisible(enable);
+	var overview = this.getOverview();
+	if (!overview) {
+		return;
+	}
+	var isWebClientOnline = !appCtxt.isWebClientOffline();
+	var zimletTreeView = overview.getTreeView(ZmOrganizer.ZIMLET);
+	if (zimletTreeView) {
+		zimletTreeView.setVisible(isWebClientOnline);
+	}
+	// enable/disable right click
+	overview.actionSupported = isWebClientOnline;
+	// enable/disable drag and drop
+	overview.dndSupported = isWebClientOnline;
+	// new button enable/disable
+	var newButton = appCtxt.getAppController().getNewButton();
+	if (newButton) {
+		if (ZmController._defaultNewId === ZmOperation.NEW_MESSAGE) {
+			newButton._setDropDownCellMouseHandlers(isWebClientOnline);
 		}
-		// enable/disable
-		// right click
-		overview.actionSupported = enable;
-		// drag and drop
-		overview.dndSupported = enable;
-		// new buttons
-		var newButton = appCtxt.getAppController().getNewButton();
-		if (newButton) {
-			if (ZmController._defaultNewId === ZmOperation.NEW_MESSAGE) {
-				newButton._setDropDownCellMouseHandlers(enable);
-			}
-			else {
-				newButton.setEnabled(enable);
-			}
+		else {
+			newButton.setEnabled(isWebClientOnline);
 		}
 	}
 };

@@ -1142,18 +1142,17 @@ function(contact, doDelete) {
 /**
  * Online to Offline or Offline to Online; Called from ZmApp.activate and from ZmOffline.enableApps, disableApps
  */
-ZmContactsApp.prototype.enableFeatures =
+ZmContactsApp.prototype.resetWebClientOfflineOperations =
 function() {
-    ZmApp.prototype.enableFeatures.apply(this);
+	ZmApp.prototype.resetWebClientOfflineOperations.apply(this);
 	var contactListController = this.getContactListController();
     var currentToolbar = contactListController && contactListController.getCurrentToolbar();
     if (contactListController && currentToolbar) {
 	    contactListController._resetOperations(currentToolbar);
     }
-	var enable = !appCtxt.isWebClientOffline();
 	var overview = this.getOverview();
 	var distributionList = overview && overview.getTreeItemById(ZmFolder.ID_DLS);// Distribution Lists folder Id
 	if (distributionList) {
-		distributionList.setVisible(enable);
+		distributionList.setVisible(!appCtxt.isWebClientOffline());
 	}
 };

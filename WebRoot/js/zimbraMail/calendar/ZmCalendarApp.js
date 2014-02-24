@@ -779,20 +779,15 @@ function(active, viewId) {
 };
 
 // Online to Offline or Offline to Online; Called from ZmApp.activate and from ZmOffline.enableApps, disableApps
-ZmCalendarApp.prototype.enableFeatures =
+ZmCalendarApp.prototype.resetWebClientOfflineOperations =
 function() {
-    ZmApp.prototype.enableFeatures.apply(this);
-    var controller = this.getCalController();
-    if (controller) {
-        controller._resetToolbarOperations();
-        controller._clearViewActionMenu();
-    }
-}
-
-
-
-
-
+	ZmApp.prototype.resetWebClientOfflineOperations.apply(this);
+	var controller = this.getCalController();
+	if (controller) {
+		controller._resetToolbarOperations();
+		controller._clearViewActionMenu();
+	}
+};
 
 /**
  * Shows the mini-calendar.

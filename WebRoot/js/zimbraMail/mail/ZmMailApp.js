@@ -2356,12 +2356,12 @@ function() {
     ZmOffline.addOutboxFolder();
 };
 
-ZmMailApp.prototype.enableFeatures =
+ZmMailApp.prototype.resetWebClientOfflineOperations =
 function() {
-    ZmApp.prototype.enableFeatures.apply(this);
+	ZmApp.prototype.resetWebClientOfflineOperations.apply(this);
     //Refreshing the mail list both for online and offline mode
-    var enable   = !appCtxt.isWebClientOffline();
-    if (enable) {
+	var isWebClientOnline = !appCtxt.isWebClientOffline();
+	if (isWebClientOnline) {
         this.refresh();
     }
     else {
@@ -2376,7 +2376,7 @@ function() {
 			if (!treeItem) {
 				continue;
 			}
-			if (enable) {
+			if (isWebClientOnline) {
 				treeItem.setVisible(true);
 			}
 			else {
@@ -2387,11 +2387,4 @@ function() {
 			}
 		}
 	}
-    if (enable) {
-        var controller = this.getMailListController();
-        var setting = appCtxt.getSettings().getSetting(ZmSetting.GROUP_MAIL_BY);
-        if (controller && setting && setting.getOrigValue() === "conversation") {
-            controller.switchView(ZmId.VIEW_CONVLIST);
-        }
-    }
 };
