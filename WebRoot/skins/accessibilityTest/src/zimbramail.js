@@ -14,7 +14,7 @@
 		// Save all existing members at this point (usually just the main listview), for injection later (see below)
 		var rootTg = appCtxt.getRootTabGroup(),
 			focusMember = rootTg.__currFocusMember || appCtxt.getKeyboardMgr().getFocusObj(),
-			existing = [].concat(rootTg.__members.getArray());
+			existing = rootTg.__members.clone();
 
 		rootTg.removeAllMembers();
 
@@ -34,17 +34,21 @@
 		}
 		this._components[ZmAppViewMgr.C_APP_CHOOSER].noFocus = true;
 
-
 		// Chooser
 		rootTg.addMember(appCtxt.getAppChooser().getTabGroupMember());
 
+		// Refresh button
+		rootTg.addMember(appCtxt.refreshButton);
+
+		// New button
+		rootTg.addMember(appCtxt.getAppController().getNewButton());
 
 		// Overview
 		var curApp = appCtxt.getCurrentApp(),
 			ovId = curApp && curApp.getOverviewId(),
 			overview = ovId && appCtxt.getOverviewController().getOverview(ovId);
 		if (overview) {
-			rootTg.addMemberAfter(overview.getTabGroupMember(), appCtxt.getAppChooser().getTabGroupMember());
+			rootTg.addMember(overview.getTabGroupMember());
 			ZmController._currentOverview = overview;
 		}
 	
@@ -54,7 +58,7 @@
 		var mainTabGroup = this.getMainTabGroup();
 		rootTg.addMember(mainTabGroup);
 		rootTg.mainMember = mainTabGroup;
-		mainTabGroup.addMember(existing);
+		mainTabGroup.addMember(existing.getArray());
 
 		rootTg.setFocusMember(focusMember);
 
