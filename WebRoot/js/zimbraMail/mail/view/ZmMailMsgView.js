@@ -129,7 +129,6 @@ function() {
 	}
 	if (this._inviteMsgView) {
 		this._inviteMsgView.reset(true);
-		this._inviteMsgView = null;
 	}
 	
 	var el = this.getHtmlElement();
@@ -339,9 +338,10 @@ function(visible, readingPaneOnRight,msg) {
 	if (visible && this._msg) {
 		if (this._msg != msg) {
 			var dayView = inviteMsgView.getDayView();
-			if (dayView) {
-				dayView.setIsRight(readingPaneOnRight);
+			if (!dayView) {
+				return;
 			}
+			dayView.setIsRight(readingPaneOnRight);
 
 			inviteMsgView.set(this._msg);
 			inviteMsgView.repositionCounterToolbar(this._hdrTableId);
