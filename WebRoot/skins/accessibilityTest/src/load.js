@@ -30,7 +30,7 @@
 		{
 			id: ZmId.SKIN_SEARCH,
 			role: 'search'
-		},
+		}
 	];
 
 	AjxUtil.foreach(overrides, function(cfg) {
