@@ -55,7 +55,7 @@ $zcs-detailBtn-offset: 0.15em;
 		.zcs-msg-actions-toolbar {
 			background: $medium-grey;
 			@include border-radius(0 0 $zcs-msgview-radius $zcs-msgview-radius);
-			font-size:1.2rem;
+			font-size: 1.2rem;
 
 			.x-button {
 				.x-button-label {
@@ -63,7 +63,7 @@ $zcs-detailBtn-offset: 0.15em;
 				}
 				.x-button-icon {
 					color: $dark-grey;
-					font-size:1.4rem;
+					font-size: 1.4rem;
 				}
 			}
 		}
@@ -138,8 +138,18 @@ $msgHdrTopOffset3: $msgHdrTextSize * 3 + $msgHdrTopOffset1;
 	position: relative;
 }
 
-.x-portrait .zcs-mail-msgHdr.detailed {
+.x-phone.x-portrait .zcs-mail-msgHdr.detailed {
 	min-height: $msgHdrTextSize*6;
+
+	.zcs-msgHdr-date {
+		left: $msgHdrLeftIndent;
+		right: inherit;
+		top: $msgHdrTopOffset3;
+	}
+
+	.zcs-msgHdr-link {
+		top: $msgHdrTopOffset1 / 4;
+	}
 }
 
 .zcs-msgHdr-element {
@@ -155,7 +165,7 @@ $msgHdrTopOffset3: $msgHdrTextSize * 3 + $msgHdrTopOffset1;
 	left: $msgHdrStdMargin;
 	top: $msgHdrTopOffset1;
 	width: $msgHdrImageSize;
-	@include border-radius($msgHdrImageSize/2);
+	@include border-radius($msgHdrImageSize / 2);
 }
 
 .zcs-msgHdr-fromContainer {
@@ -174,7 +184,15 @@ $msgHdrTopOffset3: $msgHdrTextSize * 3 + $msgHdrTopOffset1;
 		color: $primary-text-color;
 		font-size: 0.8em;
 		line-height: 1em;
-		padding: 0 .25em;
+		padding: 0 0.25em;
+	}
+}
+
+.collapsed {
+	.zcs-msgHdr-fromContainer {
+		.zcs-msgHdr-fromBubble {
+			color: $primary-text-color;
+		}
 	}
 }
 
@@ -224,8 +242,11 @@ $msgHdrTopOffset3: $msgHdrTextSize * 3 + $msgHdrTopOffset1;
 
 // Has to be more specific than ".x-html A"
 .x-html A.zcs-msgHdr-link {
-	@extend .zcs-msgHdr-element;
 	@extend .zcs-link;
+}
+
+.zcs-msgHdr-link {
+	@extend .zcs-msgHdr-element;
 	line-height: 1em;
 	right: $msgHdrRightIndent;
 	top: $msgHdrTopOffset2;
@@ -264,8 +285,8 @@ $msgHdrTopOffset3: $msgHdrTextSize * 3 + $msgHdrTopOffset1;
 /* BEGIN MSG BODY */
 .zcs-msg-body {
 	margin: $msgHdrStdMargin;
-	margin-bottom: $msgHdrStdMargin*3;
-	padding: $msgHdrStdMargin/2;
+	margin-bottom: $msgHdrStdMargin * 3;
+	padding: $msgHdrStdMargin / 2;
 	-webkit-user-select: text;
 }
 
@@ -324,7 +345,7 @@ $attachTextColor: #333;
 
 		DIV {
 			margin-right: .5em;
-			vertical-align: -.4em;
+			vertical-align: -0.4em;
 		}
 
 		A:link, A:visited {
