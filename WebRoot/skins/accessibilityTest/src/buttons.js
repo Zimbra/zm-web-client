@@ -34,17 +34,6 @@
 		this.updateAriaLabeling();
 	});
 
-	// Fix an issue in zimbra (bug 81638) where down arrow key doesn't pop up the menu
-	skin.override.append("DwtButton.prototype._emulateDropDownClick", function() {
-		var htmlEl = util.isInstance(this,"DwtSelect") ? this.getHtmlElement() : this._dropDownEl;
-		if (htmlEl) {
-			var p = Dwt.toWindow(htmlEl);
-			var mev = new DwtMouseEvent();
-			this._setMouseEvent(mev, {dwtObj:this, target:htmlEl, button:DwtMouseEvent.LEFT, docX:p.x, docY:p.y});
-			DwtButton._dropDownCellMouseUpHdlr(mev);
-		}
-	});
-
 	skin.override.append("DwtButton.prototype.__initCtrl", function() {
 		this._setEventHdlrs([DwtEvent.ONCLICK]);
 		// Announce button when it's pressed (DE2965)
