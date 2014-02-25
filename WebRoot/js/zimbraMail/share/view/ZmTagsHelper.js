@@ -47,7 +47,9 @@ function(view) {
 ZmTagsHelper.getTagsHtml =
 function(item, view) {
 
-	if (!appCtxt.get(ZmSetting.TAGGING_ENABLED)) { return ""; }
+	if (!appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
+		return "";
+	}
 
 	var tags = item && item.getSortedTags();
 	if (!(tags && tags.length)) {
@@ -57,14 +59,29 @@ function(item, view) {
 	var html = [], i = 0;
 	for (var j = 0; j < tags.length; j++) {
 		var tag = tags[j];
-		if (!tag) { continue; }
-		i = ZmTagsHelper._getTagHtml(tag, html, i, view);
+		if (!tag) {
+			continue;
+		}
+		var tagParams = {
+			tag:		tag,
+			html:		html,
+			i:			i,
+			view:		view,
+			readOnly:	item.isReadOnly()
+		};
+		i = ZmTagsHelper._getTagHtml(tagParams);
 	}
 	return html.join("");
 };
 
 ZmTagsHelper._getTagHtml =
-function(tag, html, i, view) {
+function(params) {
+	params = params || {};
+	var tag			= params.tag;
+	var html		= params.html;
+	var i			= params.i;
+	var view		= params.view;
+	var readOnly	= params.readOnly;
 
 	var tagClick = ['ZmTagsHelper._tagClick("', view._htmlElId, '","', AjxStringUtil.encodeQuotes(tag.name), '");'].join("");
 	var removeClick = ['ZmTagsHelper._removeTagClick("', view._htmlElId, '","', AjxStringUtil.encodeQuotes(tag.name), '");'].join("");
@@ -83,10 +100,12 @@ function(tag, html, i, view) {
 	html[i++] = AjxStringUtil.htmlEncodeSpace(tag.name);
 	html[i++] = "&nbsp;</span>";
 
-	html[i++] = "<span class='ImgBubbleDelete' onclick='";
-	html[i++] = removeClick;
-	html[i++] = "'>";
-	html[i++] = "</span>";
+    if (!readOnly) {
+        html[i++] = "<span class='ImgBubbleDelete' onclick='";
+        html[i++] = removeClick;
+        html[i++] = "'>";
+        html[i++] = "</span>";
+    }
 	html[i++] = "</span>";
 
 	return i;
