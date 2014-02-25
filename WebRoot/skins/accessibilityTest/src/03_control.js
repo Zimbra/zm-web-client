@@ -38,12 +38,6 @@
 		}
 	});
 
-	/* mark tables with the ZWidgetTable class as
-	 * presentational */
-	skin.override.append('DwtControl.prototype._createHtmlFromTemplate', function() {
-		util.setTableRolePresentation(this.getHtmlElement()/*,'ZWidgetTable'*/);
-	});
-
 	/* detect disabled elements */
 	skin.override('DwtControl.prototype.setDisplayState', function(state) {
 		var a = [];
