@@ -129,6 +129,7 @@ function() {
 	}
 	if (this._inviteMsgView) {
 		this._inviteMsgView.reset(true);
+		this._inviteMsgView = null;
 	}
 	
 	var el = this.getHtmlElement();
