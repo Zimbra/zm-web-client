@@ -55,6 +55,8 @@ ZmDetailListView = 	function(parent, controller, dropTgt) {
 		this._dropTgt.addDropListener(this._dropListener.bind(this));
 		this.setDropTarget(this._dropTgt);
 	}
+    // Finder to DetailView drag and drop
+    this._initDragAndDrop();
 };
 
 ZmDetailListView.prototype = new ZmBriefcaseBaseView;
@@ -635,3 +637,16 @@ function(htmlArr, idx, headerCol, i, numCols, id, defaultColumnSort) {
 		return DwtListView.prototype._createHeader.apply(this, arguments);
 	}
 };
+
+ZmDetailListView.prototype._initDragAndDrop =
+function() {
+    this._dnd = new ZmDragAndDrop(this);
+};
+
+ZmDetailListView.prototype._submitMyComputerAttachments =
+function(files, node, isInline) {
+	var selectionCallback = this._controller._uploadFileListener.bind(this._controller);
+	var briefcaseApp = appCtxt.getApp(ZmApp.BRIEFCASE);
+	briefcaseApp.initExternalDndUpload(files, node, isInline, selectionCallback);
+};
+

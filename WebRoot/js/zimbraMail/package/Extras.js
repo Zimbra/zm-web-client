@@ -30,6 +30,7 @@ AjxPackage.require("ajax.util.AjxDlgUtil");
 
 AjxPackage.require("zimbraMail.core.ZmClientCmdHandler");
 
+AjxPackage.require("zimbraMail.share.ZmUploadManager");
 AjxPackage.require("zimbraMail.share.view.dialog.ZmChooseFolderDialog");
 AjxPackage.require("zimbraMail.share.view.dialog.ZmChooseAccountDialog");
 AjxPackage.require("zimbraMail.share.view.dialog.ZmDumpsterDialog");

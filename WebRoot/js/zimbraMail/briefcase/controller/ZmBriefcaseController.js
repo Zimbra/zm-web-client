@@ -537,6 +537,10 @@ function(results) {
 	this._resetNavToolBarButtons();
 };
 
+ZmBriefcaseController.getFolderId = function() {
+	return this._folderId;
+}
+
 /**
  * Change how briefcase items are displayed.
  * 
@@ -596,8 +600,7 @@ function(title, callback) {
     if(this.chkFolderPermission(folderId)){
         var cFolder = appCtxt.getById(folderId);
 		var uploadDialog = appCtxt.getUploadDialog();
-        uploadDialog.setConflictAction(ZmUploadDialog.ACTION_KEEP_MINE);
-        uploadDialog.popup(cFolder, callback, title, null, false, true, true);
+         uploadDialog.popup(cFolder, callback, title, null, false, true, true, ZmBriefcaseApp.ACTION_KEEP_MINE);
     }	
 };
 
@@ -1038,14 +1041,16 @@ function() {
     this.__popupUploadDialog(ZmMsg.uploadFileToBriefcase, new AjxCallback(this, this._handlePostUpload));
 };
 
-ZmBriefcaseController.prototype._handlePostUpload =
-function(folder, filenames, files){
-     var msg = ZmMsg.successfullyUploaded;
-     if(files.length > 1){
-         msg = AjxMessageFormat.format(ZmMsg.successfullyUploadedFiles, files.length);
-     }
-     appCtxt.setStatusMsg(msg, ZmStatusView.LEVEL_INFO);    
-};
+ZmBriefcaseController.prototype.resetSelection = function() {
+	var view = this._listView[this._currentViewId];
+	if (view) {
+		view.deselectAll();
+	}
+	var lv = this.getCurrentView();
+	if (lv) {
+		lv._selectFirstItem()
+	}
+}
 
 ZmBriefcaseController.prototype._sendFileListener =
 function(event) {

@@ -1379,7 +1379,7 @@ function(force) {
  * 
  * @return	{Object}		the upload manager
  */
-ZmAppCtxt.prototype.getUploadManager = 
+ZmAppCtxt.prototype.getUploadManager =
 function() {
 	if (!this._uploadManager) {
 		// Create upload manager (for sending attachments)
@@ -1387,6 +1387,16 @@ function() {
 	}
 	return this._uploadManager;
 };
+
+ZmAppCtxt.prototype.getZmUploadManager =
+    function() {
+        if (!this._zmUploadManager) {
+            // Create upload manager (for sending attachments)
+            AjxDispatcher.require("Extras");
+            this._zmUploadManager = new ZmUploadManager();
+        }
+        return this._zmUploadManager;
+    };
 
 /**
  * Gets the current search.

@@ -2260,115 +2260,57 @@ function (imgArray, length, callback) {
 
 ZmComposeController.prototype._initUploadMyComputerFile =
 function(files) {
-    // Do a SaveDraft at the start, since we will suppress autosave during the upload
-    var uploadCallback = this._uploadMyComputerFile.bind(this, files, null, 0);
-    this.saveDraft(ZmComposeController.DRAFT_TYPE_AUTO, null, null, uploadCallback);
-}
-
-ZmComposeController.prototype._uploadMyComputerFile =
-    function(files, prevData, start){
-        if (appCtxt.isWebClientOffline()) {
-            return this._handleOfflineUpload(files);
-        }
-
-    try {
-
+    if (appCtxt.isWebClientOffline()) {
+        return this._handleOfflineUpload(files);
+    } else {
         var curView = this._composeView;
-        if (!curView){
-            return;
-        }
-
-        this.upLoadC = this.upLoadC + 1;
-        var file = files[start];
-        var fileName = file.name || file.fileName;
-
-        if (!prevData) {
-            // First file to upload
-            prevData = [];
-            start = 0;
-            // The initial save draft will have cleared the attachment display - restore it
-            curView._initProgressSpan(fileName);
-            // Disable autosave while uploading
-            if (this._autoSaveTimer) {
-                this._autoSaveTimer.kill();
+        if (curView) {
+            var params = {
+                files:                 files,
+                notes:                 "",
+                allResponses:          null,
+                start:                 0,
+                curView:               this._composeView,
+                preAllCallback:        this._preUploadAll.bind(this),
+                initOneUploadCallback: curView._startUploadAttachment.bind(curView),
+                progressCallback:      curView._uploadFileProgress.bind(curView),
+                errorCallback:         curView._resetUpload(curView, true),
+                completeOneCallback:   curView.updateAttachFileNode.bind(curView),
+                completeAllCallback:   this._completeAllUpload.bind(this)
             }
+
+            // Do a SaveDraft at the start, since we will suppress autosave during the upload
+            var uploadManager = appCtxt.getZmUploadManager();
+            var uploadCallback = uploadManager.upload.bind(uploadManager, params);
+            this.saveDraft(ZmComposeController.DRAFT_TYPE_AUTO, null, null, uploadCallback);
         }
-
-        var req = new XMLHttpRequest(); // we do not call this function in IE
-        req.open("POST", appCtxt.get(ZmSetting.CSFE_ATTACHMENT_UPLOAD_URI)+"?fmt=extended,raw", true);
-        req.setRequestHeader("Cache-Control", "no-cache");
-        req.setRequestHeader("X-Requested-With", "XMLHttpRequest");
-        req.setRequestHeader("Content-Type",  (file.type || "application/octet-stream") + ";");
-        req.setRequestHeader("Content-Disposition", 'attachment; filename="'+ AjxUtil.convertToEntities(fileName) + '"');
-
-	    curView._startUploadAttachment();
-        DBG.println(AjxDebug.DBG1,"Uploading file: "  + fileName + " file type" + (file.type || "application/octet-stream") );
-        this._uploadAttReq = req;
-	    if (AjxEnv.supportsHTML5File) {
-        	req.upload.addEventListener("progress", function(evt){
-                   curView._uploadFileProgress(evt)
-            }, false);
-	    }
-		else {
-            var progress = function (obj) {
-                var viewObj = obj;
-		        viewObj.si = window.setInterval (function(){viewObj._progress();}, 500);
-	        };
-            progress(curView);
-        }
-
-	    req.onreadystatechange = this._handleUploadResponse.bind(this, req, prevData, start, files, fileName);
-        req.send(file);
-        delete req;
-    } catch(exp) {
-        DBG.println("Error while uploading file: "  + fileName);
-        DBG.println("Exception: "  + exp);
-	    this._composeView._resetUpload(true);
-		this._showMsgDialog(ZmComposeController.MSG_DIALOG_1, ZmMsg.importErrorUpload, DwtMessageDialog.CRITICAL_STYLE);
-        this.upLoadC = this.upLoadC - 1;
-        return false;
     }
-
 };
 
-
-ZmComposeController.prototype._handleUploadResponse =
-function(req, prevData, start, files, fileName){
+ZmComposeController.prototype._preUploadAll =
+function(fileName) {
     var curView = this._composeView;
-    if (req.readyState === 4) {
-        var resp = (req.status === 200) && eval("["+req.responseText+"]");
-        var response = (req.status === 200 ) && resp.length && resp[2];
-        if (response || this._uploadAttReq.aborted) {
-            prevData.push((response && response[0]) || null);
-			if (response && response.length){
-		    	DBG.println(AjxDebug.DBG1,"Uploaded file: "  + fileName + "Successfully.");
-			}
-            if (start < files.length - 1) {
-                curView.updateAttachFileNode(files, start + 1, (response && response[0] && response[0].aid));
-                this._uploadMyComputerFile(files, prevData, start + 1);
-            }
-			else {
-                var callback = curView._resetUpload.bind(curView);
-                // Init autosave, otherwise saveDraft thinks this is a suppressed autosave, and aborts w/o saving
-                this._initAutoSave();
-                this.saveDraft(ZmComposeController.DRAFT_TYPE_AUTO, this._syncPrevData(prevData), null, callback);
-            }
-        }
-		else {
-            DBG.println("Error while uploading file: "  + fileName + " response is null.");
-            var callback = curView._resetUpload.bind(curView);
-            // Init autosave, otherwise saveDraft thinks this is a suppressed autosave, and aborts w/o saving
-            this._initAutoSave();
-            this.saveDraft(ZmComposeController.DRAFT_TYPE_AUTO, this._syncPrevData(prevData), null, callback);
-            var msgDlg = appCtxt.getMsgDialog();
-            this.upLoadC = this.upLoadC - 1;
-            msgDlg.setMessage(ZmMsg.importErrorUpload, DwtMessageDialog.CRITICAL_STYLE);
-            msgDlg.popup();
-            return false;
-        }
+    if (!curView) {
+        return;
     }
-
+    curView._initProgressSpan(fileName);
+    // Disable autosave while uploading
+    if (this._autoSaveTimer) {
+        this._autoSaveTimer.kill();
+    }
 };
+
+ZmComposeController.prototype._completeAllUpload =
+function(allResponses) {
+    var curView = this._composeView;
+    if (!curView){
+        return;
+    }
+    var callback = curView._resetUpload.bind(curView);
+    // Init autosave, otherwise saveDraft thinks this is a suppressed autosave, and aborts w/o saving
+    this._initAutoSave();
+    this.saveDraft(ZmComposeController.DRAFT_TYPE_AUTO, this._syncPrevData(allResponses), null, callback);
+}
 
 ZmComposeController.prototype._syncPrevData =
 function(attaData){

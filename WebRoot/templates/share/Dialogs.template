@@ -621,7 +621,7 @@
 				</td>
 			</tr>
 			<tr><td colspan="2" id="${id}_info"></td></tr>
-			<tr><td colspan="2" id="${id}_msg"></td></tr>
+			<tr><td colspan="2" id="${id}_msg" style="width:450px;"></td></tr>
 		</table>
 	</div>
 </template>

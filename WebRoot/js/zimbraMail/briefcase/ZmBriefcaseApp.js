@@ -463,3 +463,351 @@ function(type) {
 	AjxPackage.require("BriefcaseCore");
 	ZmApp.prototype._createDeferredFolders.call(this, type);
 };
+
+
+
+// --- Briefcase External DnD upload initiation
+
+ZmBriefcaseApp.prototype.initExternalDndUpload = function(files, node, isInline, selectionCallback, folderId) {
+	var name = "";
+
+	if (!AjxEnv.supportsHTML5File) {
+		// IE, FF 3.5 and lower - use the File browser
+		if (selectionCallback) {
+			selectionCallback.run();
+		}
+		return;
+	}
+
+	if (!files) {
+		files = node.files;
+	}
+
+	var size = 0;
+	if (files) {
+		var file;
+		var docFiles = [];
+		var errors   = {};
+		var aCtxt    = ZmAppCtxt.handleWindowOpener();
+		var maxSize  = aCtxt.get(ZmSetting.DOCUMENT_SIZE_LIMIT);
+		var briefcaseController = AjxDispatcher.run("GetBriefcaseController");
+
+		if (!folderId) {
+			folderId = briefcaseController.getFolderId();
+			if(!folderId || folderId == ZmOrganizer.ID_TRASH) {
+				folderId = ZmOrganizer.ID_BRIEFCASE;
+			}
+		}
+
+		if(this.chkFolderPermission(folderId)){
+			var cFolder = appCtxt.getById(folderId);
+			var uploadManager = appCtxt.getZmUploadManager();
+
+			var errors = [];
+			for (var i = 0; i < files.length; i++){
+				var newError = uploadManager.getErrors(files[i], maxSize);
+				if (newError) {
+					errors.push(newError);
+				}
+			}
+			if (errors.length > 0) {
+				var errorMsg = uploadManager.createUploadErrorMsg(errors, maxSize, "<br>");
+				var msgDlg = appCtxt.getMsgDialog();
+				msgDlg.setMessage(errorMsg, DwtMessageDialog.WARNING_STYLE);
+				msgDlg.popup();
+			} else {
+				var params = {
+					uploadFolder:            cFolder,
+					files:                   files,
+					notes:                   "",
+					allResponses:            null,
+					start:                   0,
+					curView:                 null,
+					preAllCallback:          null,
+					initOneUploadCallback:   null,
+					progressCallback:        null,
+					errorCallback:           null,
+					completeOneCallback:     null,
+					completeAllCallback:     this.uploadSaveDocs.bind(this),
+					completeDocSaveCallback: this._finishUpload.bind(this)
+				}
+				uploadManager.upload(params);
+			}
+		}
+	}
+};
+
+ZmBriefcaseApp.prototype.chkFolderPermission = function(folderId){
+	var briefcase = appCtxt.getById(folderId);
+	if(briefcase.isRemote() && briefcase.isReadOnly()){
+		var dialog = appCtxt.getMsgDialog();
+		dialog.setMessage(ZmMsg.errorPermissionCreate, DwtMessageDialog.WARNING_STYLE);
+		dialog.popup();
+		return false;
+	}
+	return true;
+};
+
+// --- Briefcase Upload Completion - SaveDocuments and Conflict resolution ------
+
+/**
+ * uploadSaveDocs performs SaveDocument calls, creating a document with an associated uploadId.  If the file
+ * already exists, conflict resolution is performed.
+ *
+ * @param	{object}	params		params to customize the upload flow:
+ *      uploadFolder                Folder to save associated document into
+ *      files:                      raw File object from the external HTML5 drag and drop
+ *      notes:                      Notes associated with each of the files being added
+ *      allResponses:               All the server responses.  Contains the uploadId (guid) for a file
+ *      errorCallback:              Run upon an error
+ *      conflictAction			    If specified, the action used to resolve a file conflict
+ *      preResolveConflictCallback: Standard processing (SaveDocument), Run prior to conflict resolution
+ *      completeDocSaveCallback:    Standard processing (SaveDocument), Run when all documents have been saved
+ *
+ */
+ZmBriefcaseApp.prototype.uploadSaveDocs = function(allResponses, params, status, guids) {
+	if (status != AjxPost.SC_OK) {
+		appCtxt.getAppController().popupUploadErrorDialog(ZmItem.BRIEFCASE, status);
+	} else {
+		var docFiles;
+		if (allResponses) {
+			// External DnD files
+		    docFiles = [];
+			var files    = params.files;
+			if (allResponses.length === files.length) {
+				for (var i = 0; i < files.length; i++){
+					var file = files[i];
+					var response = allResponses[i];
+					var aid = (response && response.aid);
+					docFiles.push(
+						{name:     file.name,
+						 fullname: file.name,
+						 notes:    params.notes,
+						 guid:     aid});
+				}
+				params.docFiles = docFiles;
+			}
+		} else {
+			// AjxPost callback, providing the guids separately
+			docFiles = params.docFiles;
+			if (guids) {
+				guids = guids.split(",");
+				for (var i = 0; i < docFiles.length; i++) {
+					DBG.println("guids[" + i + "]: " + guids[i] + ", files[" + i + "]: " + docFiles[i]);
+					docFiles[i].guid = guids[i];
+				}
+			}
+		}
+		if (params.uploadFolder) {
+			this._uploadSaveDocs2(params);
+		} else {
+			this._completeUpload(params);
+		}
+	}
+};
+
+ZmBriefcaseApp.prototype._popupErrorDialog = function(message) {
+	var dialog = appCtxt.getMsgDialog();
+	dialog.setMessage(message, DwtMessageDialog.CRITICAL_STYLE);
+	dialog.popup();
+};
+
+ZmBriefcaseApp.prototype._uploadSaveDocs2 = function(params) {
+
+	// create document wrappers
+	var request = [];
+	var foundOne = false;
+	var docFiles = params.docFiles;
+	for (var i = 0; i < docFiles.length; i++) {
+		var file = docFiles[i];
+		if (file.done) {
+			continue;
+		}
+		foundOne = true;
+
+		var SaveDocumentRequest = { _jsns: "urn:zimbraMail", requestId: i, doc: {}}
+		var doc = SaveDocumentRequest.doc;
+		if (file.id) {
+			doc.id = file.id;
+			doc.ver = file.version;
+		} else {
+			doc.l = params.uploadFolder.id;
+		}
+		if (file.notes) {
+			doc.desc = file.notes;
+		}
+		doc.upload = {
+			id: file.guid
+		}
+		request.push(SaveDocumentRequest);
+	}
+
+	if (foundOne) {
+		var json = {
+			BatchRequest: {
+				_jsns: "urn:zimbra",
+				onerror: "continue",
+				SaveDocumentRequest: ( (request.length == 1) ? request[0] : request )
+			}
+		};
+		var callback = this._uploadSaveDocsResponse.bind(this, params);
+		var saveDocParams = {
+			jsonObj:  json,
+			asyncMode:true,
+			callback: callback
+		};
+		var appController = appCtxt.getAppController();
+		appController.sendRequest(saveDocParams);
+	}
+	else {
+		// This calls the callback of the client - e.g. ZmHtmlEditor.prototype._imageUploaded since
+		// _uploadSaveDocsResponse is not called in this case, we still need the client callback since the
+		// user chose the "old" version of the image
+		this._completeUpload(params);
+	}
+};
+
+ZmBriefcaseApp.prototype._uploadSaveDocsResponse = function(params, response) {
+	var resp = response && response._data && response._data.BatchResponse;
+	var docFiles = params.docFiles;
+
+	// mark successful uploads
+	if (resp && resp.SaveDocumentResponse) {
+		for (var i = 0; i < resp.SaveDocumentResponse.length; i++) {
+			var saveDocResp = resp.SaveDocumentResponse[i];
+			docFiles[saveDocResp.requestId].done    = true;
+			docFiles[saveDocResp.requestId].name    = saveDocResp.doc[0].name;
+			docFiles[saveDocResp.requestId].id      = saveDocResp.doc[0].id;
+			docFiles[saveDocResp.requestId].ver     = saveDocResp.doc[0].ver;
+			docFiles[saveDocResp.requestId].version = saveDocResp.doc[0].ver;
+		}
+	}
+
+	// check for conflicts
+	var conflicts = [];
+	if (resp && resp.Fault) {
+		var errors = [], mailboxQuotaExceeded=false, isItemLocked=false;
+		for (var i = 0; i < resp.Fault.length; i++) {
+			var fault = resp.Fault[i];
+			var error = fault.Detail.Error;
+			var code = error.Code;
+			var attrs = error.a;
+			isItemLocked = (code == ZmCsfeException.LOCKED);
+			if (code == ZmCsfeException.MAIL_ALREADY_EXISTS ||
+				code == ZmCsfeException.MODIFY_CONFLICT) {
+				var file = docFiles[fault.requestId];
+				for (var p in attrs) {
+					var attr = attrs[p];
+					switch (attr.n) {
+						case "itemId" : { file.id      = attr._content; break }
+						case "id":      { file.id      = attr._content; break; }
+						case "ver":     { file.version = attr._content; break; }
+						case "name":    { file.name    = attr._content; break; }
+					}
+				}
+				file.version = file.version || 1;
+				conflicts.push(file);
+			}else {
+				DBG.println("Unknown error occurred: " + code);
+				if (code == ZmCsfeException.MAIL_QUOTA_EXCEEDED) {
+					mailboxQuotaExceeded = true;
+				}
+				errors[fault.requestId] = fault;
+			}
+		}
+		// TODO: What to do about other errors?
+		if (mailboxQuotaExceeded) {
+			this._popupErrorDialog(ZmMsg.errorQuotaExceeded);
+			return;
+		}
+		else if (isItemLocked) {
+			this._popupErrorDialog(ZmMsg.errorItemLocked);
+			return;
+		}
+		else if (code==ZmCsfeException.SVC_PERM_DENIED) {
+			this._popupErrorDialog(ZmMsg.errorPermissionDenied);
+			if (params.errorCallback) {
+				params.errorCallback.run();
+			}
+			return;
+		}
+	}
+
+	// dismiss dialog
+	if (params.preResolveConflictCallback) {
+		params.preResolveConflictCallback.run();
+	}
+
+	// resolve conflicts
+	var conflictCount = conflicts.length;
+
+	// **** HARDCODE to ASK for Now:  ****
+	//     Need to move selector set up (old one is in ZmUploadDialog)
+	//     Move to ZmConflictDialog, hide other controls unless 'ASK' chosen
+	params.conflictAction = ZmBriefcaseApp.ACTION_ASK;
+	// ****
+
+	var action = params.conflictAction || this._selector.getValue();
+	if (conflictCount > 0 && action == ZmBriefcaseApp.ACTION_ASK) {
+		var dialog = appCtxt.getUploadConflictDialog();
+		dialog.popup(params.uploadFolder, conflicts, this._uploadSaveDocs2.bind(this, params));
+	}
+
+	// keep mine
+	else if (conflictCount > 0 && action == ZmBriefcaseApp.ACTION_KEEP_MINE) {
+		if (params.conflictAction) {
+			this._shieldSaveDocs(params);
+		} else {
+			this._uploadSaveDocs2(params);
+		}
+	} else {
+		this._completeUpload(params);
+	}
+};
+
+ZmBriefcaseApp.prototype._shieldSaveDocs = function(params) {
+	var dlg = appCtxt.getYesNoMsgDialog();
+	dlg.reset();
+	dlg.setButtonListener(DwtDialog.YES_BUTTON, new AjxListener(this, this._shieldSaveDocsYesCallback, [dlg, params]));
+	dlg.setMessage(ZmMsg.uploadConflictShield, DwtMessageDialog.WARNING_STYLE, ZmMsg.uploadConflict);
+	dlg.popup();
+};
+
+ZmBriefcaseApp.prototype._shieldSaveDocsYesCallback = function(dlg, params) {
+	this._uploadSaveDocs2(params);
+	dlg.popdown();
+};
+
+ZmBriefcaseApp.prototype._completeUpload = function(params) {
+	if (params.completeDocSaveCallback) {
+		params.completeDocSaveCallback.run(params.docFiles, params.uploadFolder);
+	}
+};
+
+ZmBriefcaseApp.prototype._finishUpload = function(docFiles, uploadFolder) {
+	var filenames = [];
+	for (var i in docFiles) {
+		var name = docFiles[i].name;
+		filenames.push(name);
+	}
+	this._handlePostUpload(uploadFolder, filenames, docFiles);
+};
+
+ZmBriefcaseApp.prototype._handlePostUpload = function(folder, filenames, files) {
+	var msg = ZmMsg.successfullyUploaded;
+	if(files.length > 1){
+		msg = AjxMessageFormat.format(ZmMsg.successfullyUploadedFiles, files.length);
+	}
+	appCtxt.setStatusMsg(msg, ZmStatusView.LEVEL_INFO);
+	// Remove the previous selection(s)
+	var briefcaseController = AjxDispatcher.run("GetBriefcaseController");
+	briefcaseController.resetSelection();
+};
+
+
+
+ZmBriefcaseApp.ACTION_KEEP_MINE = "mine";
+ZmBriefcaseApp.ACTION_KEEP_THEIRS = "theirs";
+ZmBriefcaseApp.ACTION_ASK = "ask";
+
+

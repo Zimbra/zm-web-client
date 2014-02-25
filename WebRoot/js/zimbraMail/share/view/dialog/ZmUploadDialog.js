@@ -42,10 +42,6 @@ ZmUploadDialog.prototype.constructor = ZmUploadDialog;
 
 // Constants
 
-ZmUploadDialog.ACTION_KEEP_MINE = "mine";
-ZmUploadDialog.ACTION_KEEP_THEIRS = "theirs";
-ZmUploadDialog.ACTION_ASK = "ask";
-
 ZmUploadDialog.UPLOAD_FIELD_NAME = "uploadFile";
 ZmUploadDialog.UPLOAD_TITLE_FIELD_NAME = "uploadFileTitle";
 
@@ -97,9 +93,10 @@ function(notes){
 };
 
 ZmUploadDialog.prototype.popup =
-function(folder, callback, title, loc, oneFileOnly, noResolveAction, showNotes, isImage) {
-	this._uploadFolder = folder;
+function(folder, callback, title, loc, oneFileOnly, noResolveAction, showNotes, isImage, conflictAction) {
+	this._uploadFolder   = folder;
 	this._uploadCallback = callback;
+	this._conflictAction = conflictAction;
 	var aCtxt = ZmAppCtxt.handleWindowOpener();
 
     this._supportsHTML5 = AjxEnv.supportsHTML5File && !this._showLinkTitleText && (aCtxt.get(ZmSetting.DOCUMENT_SIZE_LIMIT) != null);
@@ -176,19 +173,41 @@ function() {
     this._notes.removeAttribute("disabled");
     this.setNotes("");
     this._msgInfo.innerHTML = "";
+	this._conflictAction = null;
     
 	DwtDialog.prototype.popdown.call(this);
 };
 
-//to give explicitly the uploadForm, files to upload and folderId used for breifcase
+ZmUploadManager.prototype._popupErrorDialog = function(message) {
+	this.setButtonEnabled(DwtDialog.OK_BUTTON, true);
+	this.setButtonEnabled(DwtDialog.CANCEL_BUTTON, true);
+
+	var dialog = appCtxt.getMsgDialog();
+	dialog.setMessage(message, DwtMessageDialog.CRITICAL_STYLE, this._title);
+	dialog.popup();
+};
+
+//to give explicitly the uploadForm, files to upload and folderId used for briefcase
 ZmUploadDialog.prototype.uploadFiles =
-function(files,uploadForm,folder) {
+function(files, uploadForm, folder) {
 
     if (files.length == 0) {
 		return;
 	}
     this._uploadFolder = folder;
-    var callback = new AjxCallback(this, this._uploadSaveDocs, [files]);
+
+    var popDownCallback = this.popdown.bind(this);
+    var uploadParams = {
+        uploadFolder: folder,
+        preResolveConflictCallback: popDownCallback,
+        errorCallback: popDownCallback,
+        finalCallback: this._finishUpload.bind(this),
+        docFiles: files
+    }
+
+	var aCtxt = appCtxt.isChildWindow ? parentAppCtxt : appCtxt;
+	var briefcaseApp = aCtxt.getApp(ZmApp.BRIEFCASE);
+    var callback =  briefcaseApp.uploadSaveDocs.bind(briefcaseApp, null, uploadParams);
 
     var uploadMgr = appCtxt.getUploadManager();
 	  window._uploadManager = uploadMgr;
@@ -206,317 +225,110 @@ function(files,uploadForm,folder) {
 
 // Protected methods
 ZmUploadDialog.prototype._upload = function(){
-	var form = this._uploadForm;
-	var files = [];
-    this._linkText = {};
-	var elements = form.elements;
-	for (var i = 0; i < elements.length; i++) {
-		var element = form.elements[i];
-		if (element.name != ZmUploadDialog.UPLOAD_FIELD_NAME) continue;
-		if (!element.value) continue;
-		if (!this._checkExtension(element.value)) {
-			var params = [ this._extensions.join(", ") ];
-			var message = AjxMessageFormat.format(ZmMsg.errorNotAllowedFile, params);
-			this._popupErrorDialog(message);
-			return;
-		}
+    var form         	= this._uploadForm;
+    var uploadFiles  	= [];
+    var errors       	= {};
+    this._linkText   	= {};
+    var aCtxt        	= ZmAppCtxt.handleWindowOpener();
+    var maxSize      	=  aCtxt.get(ZmSetting.DOCUMENT_SIZE_LIMIT);
+    var elements     	= form.elements;
+    var notes           = this.getNotes();
+	var fileObj 		= [];
+	var zmUploadManager = appCtxt.getZmUploadManager();
+	var file;
+    var msgFormat;
+    var errorFilenames;
+	var newError;
+    for (var i = 0; i < elements.length; i++) {
+        var element = form.elements[i];
+        if ((element.name != ZmUploadDialog.UPLOAD_FIELD_NAME) || !element.value)  continue;
+
         this._msgInfo.innerHTML = "";
-        var notes = this.getNotes();
+		var errors = [];
         if(this._supportsHTML5){
-            if(this._validateSize()){
-                var f = element.files;
-                for(var j=0; j<f.length; j++){
-                    //Bug fix #79986 Check for invalid filename before upload
-                    if(!ZmAppCtxt.INVALID_NAME_CHARS_RE.test(f[j].name)) {
-                        files.push({name:f[j].name, fullname: f[j].name, notes: notes});
-                    }
-                    else {
-                        //Bug fix # 79986 show warning in the upload dialog
-                        var aCtxt = ZmAppCtxt.handleWindowOpener();
-                        this._msgInfo.innerHTML = AjxMessageFormat.format(ZmMsg.errorInvalidName, AjxStringUtil.htmlEncode(f[j].name));
-                        return;
-                    }
+            var files = element.files;
+			var errors = [];
+            for (var i = 0; i < files.length; i++){
+                file = files[i];
+                fileObj.push(file);
+                newError = zmUploadManager.getErrors(file, maxSize);
+				if (newError) {
+					errors.push(newError);
+				} else {
+                    uploadFiles.push({name: file.name, fullname: file.name, notes: notes});
                 }
-            }else{
-	            var aCtxt = ZmAppCtxt.handleWindowOpener();
-                this._msgInfo.innerHTML = AjxMessageFormat.format(ZmMsg.attachmentSizeError, AjxUtil.formatSize(aCtxt.get(ZmSetting.DOCUMENT_SIZE_LIMIT)));
-                return;
             }
-        }else{
-            var file = {
-                fullname: element.value,
-                name: element.value.replace(/^.*[\\\/:]/, ""),
-                notes: notes
-            };
-            files.push(file);
+        } else {
+            file = { name: element.value };
+			newError = zmUploadManager.getErrors(file, maxSize);
+			if (newError) {
+				errors.push(newError);
+			} else {
+                uploadFiles.push({ fullname: element.value, name: element.value.replace(/^.*[\\\/:]/, ""), notes: notes});
+			}
         }
-        if(this._showLinkTitleText) {
-            var id = element.id;
-            id = id.replace("_input", "") + "_titleinput";
-            var txtElement = document.getElementById(id);
-            if(txtElement) {
-                this._linkText[file.name] = txtElement.value;
-            }
-        }
-
-	}
-	if (files.length == 0) {
-		return;
-	}
-    
-	this.setButtonEnabled(DwtDialog.OK_BUTTON, false);
-	this.setButtonEnabled(DwtDialog.CANCEL_BUTTON, false);
-
-	var callback = new AjxCallback(this, this._uploadSaveDocs, [files]);	
-	var uploadMgr = appCtxt.getUploadManager();
-	window._uploadManager = uploadMgr;
-	try {
-		uploadMgr.execute(callback, this._uploadForm);
-	} catch (ex) {
-		if (ex.msg) {
-			this._popupErrorDialog(ex.msg);
-		} else {
-			this._popupErrorDialog(ZmMsg.unknownError);
-		}
-	}
-};
-
-ZmUploadDialog.prototype._checkExtension = function(filename) {
-	if (!this._extensions) return true;
-	var ext = filename.replace(/^.*\./,"").toUpperCase();
-	for (var i = 0; i < this._extensions.length; i++) {
-		if (this._extensions[i] == ext) {
-			return true;
-		}
-	}
-	return false;
-};
-
-ZmUploadDialog.prototype._validateSize =
-function(){
-
-    var atts = document.getElementsByName(ZmUploadDialog.UPLOAD_FIELD_NAME);
-    var file, size;
-	for (var i = 0; i < atts.length; i++){
-        file = atts[i].files;
-        if(!file || file.length == 0) continue;
-        for(var j=0; j<file.length;j++){
-            var f = file[j];
-            size = f.size || f.fileSize /*Safari*/;
-	        var aCtxt = ZmAppCtxt.handleWindowOpener();
-            if(size > aCtxt.get(ZmSetting.DOCUMENT_SIZE_LIMIT)){
-                return false;
-            }
-        }
-    }
-	return true;        
-};
-
-ZmUploadDialog.prototype._popupErrorDialog = function(message) {
-	this.setButtonEnabled(DwtDialog.OK_BUTTON, true);
-	this.setButtonEnabled(DwtDialog.CANCEL_BUTTON, true);
-
-	var dialog = appCtxt.getMsgDialog();
-	dialog.setMessage(message, DwtMessageDialog.CRITICAL_STYLE, this._title);
-	dialog.popup();
-};
-
-ZmUploadDialog.prototype._uploadSaveDocs = function(files, status, guids) {
-	if (status != AjxPost.SC_OK) {
-		appCtxt.getAppController().popupUploadErrorDialog(ZmItem.BRIEFCASE,
-		                                                  status);
-	} else {
-		guids = guids.split(",");
-		for (var i = 0; i < files.length; i++) {
-			DBG.println("guids["+i+"]: "+guids[i]+", files["+i+"]: "+files[i]);
-			files[i].guid = guids[i];
-		}
-		if (this._uploadFolder) {
-			this._uploadSaveDocs2(files, status, guids);
-		}
-		else {
-			this._finishUpload(files, status, guids);
-		}
-	}
-};
-
-ZmUploadDialog.prototype._uploadSaveDocs2 =
-function(files, status, guids) {
-	// create document wrappers
-    var request = [];
-    var foundOne = false;
-	for (var i = 0; i < files.length; i++) {
-         var file = files[i];
-		if (file.done) { continue; }
-		foundOne = true;
-
-        var  SaveDocumentRequest = {
-            _jsns: "urn:zimbraMail",
-            requestId: i,
-            doc: {}
-        }
-
-        var doc = SaveDocumentRequest.doc;
-        if(file.id){
-            doc.id = file.id;
-            doc.ver = file.version;
-        }else{
-            doc.l = this._uploadFolder.id;
-        }
-        if(file.notes){
-            doc.desc = file.notes;
-        }
-        doc.upload = {
-            id: file.guid
-        }
-        request.push(SaveDocumentRequest);
-    }
-
-    if (foundOne) {
-        var json = {
-            BatchRequest: {
-                _jsns: "urn:zimbra",
-                onerror: "continue",
-                SaveDocumentRequest: ( (request.length == 1) ? request[0] : request )
-            }
-        };
-		var callback = new AjxCallback(this, this._uploadSaveDocsResponse, [ files, status, guids ]);
-		var params = {
-			jsonObj: json,
-			asyncMode:true,
-			callback:callback
-		};
-		var appController = appCtxt.getAppController();
-		appController.sendRequest(params);
-	}
-	else {
-		this._finishUpload(files); //this calls the callback of the client - e.g. ZmHtmlEditor.prototype._imageUploaded since _uploadSaveDocsResponse is not called in this case, we still need the client callback since the user chose the "old" version of the image
-	}
-};
-
-ZmUploadDialog.prototype._uploadSaveDocsResponse =
-function(files, status, guids, response) {
-	var resp = response && response._data && response._data.BatchResponse;
-
-	// mark successful uploads
-	if (resp && resp.SaveDocumentResponse) {
-		for (var i = 0; i < resp.SaveDocumentResponse.length; i++) {
-			var saveDocResp = resp.SaveDocumentResponse[i];
-			files[saveDocResp.requestId].done = true;
-			files[saveDocResp.requestId].name = saveDocResp.doc[0].name;
-            files[saveDocResp.requestId].id   = saveDocResp.doc[0].id;
-            files[saveDocResp.requestId].ver   = saveDocResp.doc[0].ver;
-            files[saveDocResp.requestId].version   = saveDocResp.doc[0].ver;
-		}
-	}
-
-	// check for conflicts
-	var conflicts = [];
-	if (resp && resp.Fault) {
-		var errors = [], mailboxQuotaExceeded=false, isItemLocked=false;
-		for (var i = 0; i < resp.Fault.length; i++) {
-			var fault = resp.Fault[i];
-			var error = fault.Detail.Error;
-			var code = error.Code;
-			var attrs = error.a;
-            isItemLocked = (code==ZmCsfeException.LOCKED);
-			if (code == ZmCsfeException.MAIL_ALREADY_EXISTS ||
-				code == ZmCsfeException.MODIFY_CONFLICT) {
-				var file = files[fault.requestId];
-				for (var p in attrs) {
-					var attr = attrs[p];
-					switch (attr.n) {
-                        case "itemId" : { file.id = attr._content; break }
-						case "id": { file.id = attr._content; break; }
-						case "ver": { file.version = attr._content; break; }
-						case "name": { file.name = attr._content; break; }
-					}
-				}
-                file.version = file.version || 1;
-				conflicts.push(file);
-			}else {
-				DBG.println("Unknown error occurred: "+code);
-                if(code == ZmCsfeException.MAIL_QUOTA_EXCEEDED){
-                    mailboxQuotaExceeded = true;
-                }
-				errors[fault.requestId] = fault;
+		if(this._showLinkTitleText) {
+			var id = element.id;
+			id = id.replace("_input", "") + "_titleinput";
+			var txtElement = document.getElementById(id);
+			if(txtElement) {
+				this._linkText[file.name] = txtElement.value;
 			}
 		}
-		// TODO: What to do about other errors?
-        if(mailboxQuotaExceeded){
-            this._popupErrorDialog(ZmMsg.errorQuotaExceeded);
-            return;
-        }
-        else if(isItemLocked){
-            this._popupErrorDialog(ZmMsg.errorItemLocked);
-            return;
-        }
-        else if(code==ZmCsfeException.SVC_PERM_DENIED){
-            this._popupErrorDialog(ZmMsg.errorPermissionDenied);
-            this.popdown();
-            return;
-        }
-	}
 
-	// dismiss dialog
-	this.popdown();
-
-	// resolve conflicts
-	var conflictCount = conflicts.length;
-	var action = this._conflictAction || this._selector.getValue();
-	if (conflictCount > 0 && action == ZmUploadDialog.ACTION_ASK) {
-        var dialog = appCtxt.getUploadConflictDialog();
-		dialog.popup(this._uploadFolder, conflicts,
-                             new AjxCallback(this, this._uploadSaveDocs2, [ files, status, guids ]));
     }
 
-	// keep mine
-	else if (conflictCount > 0 && action == ZmUploadDialog.ACTION_KEEP_MINE) {
-        if(this._conflictAction){
-            this._shieldSaveDocs(files, status, guids);
-        }else{
-		    this._uploadSaveDocs2(files, status, guids);
+	if (errors.length > 0) {
+		this._msgInfo.innerHTML = zmUploadManager.createUploadErrorMsg(errors, maxSize, "<br>");
+	} else if (uploadFiles.length > 0) {
+        this.setButtonEnabled(DwtDialog.OK_BUTTON, false);
+        this.setButtonEnabled(DwtDialog.CANCEL_BUTTON, false);
+
+		var briefcaseApp = aCtxt.getApp(ZmApp.BRIEFCASE);
+        var popDownCallback = this.popdown.bind(this);
+        var uploadParams = {
+            files:                      fileObj,
+            notes:                      notes,
+            allResponses:               null,
+            start:                      0,
+            uploadFolder:               this._uploadFolder,
+			completeAllCallback:        briefcaseApp.uploadSaveDocs.bind(briefcaseApp),
+			conflictAction:				this._conflictAction,
+            preResolveConflictCallback: popDownCallback,
+            errorCallback:              popDownCallback,
+            completeDocSaveCallback:    this._finishUpload.bind(this),
+            docFiles:                   uploadFiles
         }
-	}
-	// perform callback
-	else if (this._uploadCallback) {
-		this._finishUpload(files, status, guids);
-	}else{
-        this._conflictAction = null;
+
+        try {
+            if (this._supportsHTML5) {
+                zmUploadManager.upload(uploadParams);
+            } else {
+                var callback =  zmUploadManager.uploadSaveDocs.bind(zmUploadManager, null, uploadParams);
+                var uploadMgr = appCtxt.getUploadManager();
+                window._uploadManager = uploadMgr;
+                uploadMgr.execute(callback, this._uploadForm);
+            }
+        } catch (ex) {
+            if (ex.msg) {
+                this._popupErrorDialog(ex.msg);
+            } else {
+                this._popupErrorDialog(ZmMsg.unknownError);
+            }
+        }
     }
 };
 
-ZmUploadDialog.prototype._shieldSaveDocs =
-function(files, status, guids){
-    var dlg = appCtxt.getYesNoMsgDialog();
-    dlg.reset();
-    dlg.setButtonListener(DwtDialog.YES_BUTTON, new AjxListener(this, this._shieldSaveDocsYesCallback, [dlg, files, status, guids]));
-    dlg.setMessage(ZmMsg.uploadConflictShield, DwtMessageDialog.WARNING_STYLE, ZmMsg.uploadConflict);
-    dlg.popup();
-};
-
-ZmUploadDialog.prototype._shieldSaveDocsYesCallback =
-function(dlg, files, status, guids){
-    this._uploadSaveDocs2(files, status, guids);
-    dlg.popdown();
-};
-
-ZmUploadDialog.prototype.setConflictAction =
-function(conflictAction){
-     this._conflictAction = conflictAction;
-};
-
-ZmUploadDialog.prototype._finishUpload = function(files, status, guids) {
-	var filenames = [];
-	for (var i in files) {
-        var name = files[i].name;
+ZmUploadDialog.prototype._finishUpload = function(docFiles, uploadFolder) {
+    var filenames = [];
+    for (var i in docFiles) {
+        var name = docFiles[i].name;
         if(this._linkText[name]) {
-            files[i].linkText = this._linkText[name]; 
+            docFiles[i].linkText = this._linkText[name];
         }
-		filenames.push(name);
-	}
-	this._uploadCallback.run(this._uploadFolder, filenames, files);
-    this._conflictAction = null;
+        filenames.push(name);
+    }
+    this._uploadCallback.run(uploadFolder, filenames, docFiles);
 };
 
 ZmUploadDialog.prototype._addFileInputRow = function(oneInputOnly) {
@@ -675,13 +487,13 @@ ZmUploadDialog.prototype._createUploadHtml = function() {
     this._msgInfo = document.getElementById((id+"_msg"));
     this._notes = document.getElementById((id+"_notes"));
 
-
     //Conflict Selector
-    this._selector = new DwtSelect({parent:this});
-	this._selector.addOption(ZmMsg.uploadActionKeepMine, false, ZmUploadDialog.ACTION_KEEP_MINE);
-	this._selector.addOption(ZmMsg.uploadActionKeepTheirs, false, ZmUploadDialog.ACTION_KEEP_THEIRS);
-	this._selector.addOption(ZmMsg.uploadActionAsk, true, ZmUploadDialog.ACTION_ASK);
-    this._selector.reparentHtmlElement((id+"_conflict"));
+    // **** Disabled, will move in next CL
+    //this._selector = new DwtSelect({parent:this});
+	//this._selector.addOption(ZmMsg.uploadActionKeepMine, false, ZmUploadDialog.ACTION_KEEP_MINE);
+	//this._selector.addOption(ZmMsg.uploadActionKeepTheirs, false, ZmUploadDialog.ACTION_KEEP_THEIRS);
+	//this._selector.addOption(ZmMsg.uploadActionAsk, true, ZmUploadDialog.ACTION_ASK);
+    //this._selector.reparentHtmlElement((id+"_conflict"));
     
     //Info Section
     var docSizeInfo = document.getElementById((id+"_info"));
