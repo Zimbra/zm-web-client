@@ -930,9 +930,11 @@ INPUT[type="text"].search_input-expanded {
 	height:100%;
 }
 
+#IFDEF MSIE
 .Conv2Messages {
 	width:100%;
 }
+#ENDIF
 
 .Conv2Messages-bottom {
 	height:100%;
