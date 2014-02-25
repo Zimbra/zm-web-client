@@ -2074,6 +2074,11 @@ function(view) {
 
 	this._activeTabId = null;	// app is active; tab IDs are for non-apps
 
+	if (appName === ZmApp.SEARCH) {
+		//this is a special case - the search tab - set the new button based on type by using the results type app to get the button props.
+		this._setSearchTabNewButtonProps(view.controller._resultsController);
+	}
+
 	if (this._activeApp != appName) {
 		// deactivate previous app
 	    if (this._activeApp) {
@@ -2135,6 +2140,25 @@ function(view) {
 	else if (this._activeApp && this._apps[this._activeApp]) {
 		this._apps[this._activeApp].stopAlert();
 	}
+};
+
+ZmZimbraMail.prototype._setSearchTabNewButtonProps =
+function(resultsController) {
+	var resultsApp;
+	if (resultsController.isZmCalViewController) {
+		//calendar search is different, no _currentSearch unfortunately.
+		resultsApp = appCtxt.getApp(ZmApp.CALENDAR);
+	}
+	else {
+		var currentSearch = resultsController._currentSearch;
+		var types = currentSearch && currentSearch.types;
+		var searchType = types && types.size() > 0 && types.get(0);
+		resultsApp = searchType && appCtxt.getApp(ZmItem.APP[searchType]);
+	}
+	if (resultsApp) {
+		appCtxt.getAppController().setNewButtonProps(resultsApp.getNewButtonProps());
+	}
+
 };
 
 /**
