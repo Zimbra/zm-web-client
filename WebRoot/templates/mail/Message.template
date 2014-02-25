@@ -1,6 +1,6 @@
 <template id='mail.Message#MessageHeader'>
 	<div><!-- empty container DIV here so Dwt.parseHtmlFragment returns the infoBar div below -->
-		<table class='MsgHeaderTable' id='${id}_headerElement' width=100%>
+		<table role="application" class='MsgHeaderTable' id='${id}_headerElement' width=100%>
 			<tr>
 				<td class='MsgHeaderContactContainer'>
 					<img class='MsgHeaderContactImage' src="${imageURL}" />
@@ -142,7 +142,7 @@
 		
 <template id='mail.Message#InviteHeader'>
 	<div><!-- empty container DIV here so Dwt.parseHtmlFragment returns the infoBar div below -->
-		<table role="presentation" class='InvHeaderTable' id='${id}_headerElement'>
+		<table role="application" class='InvHeaderTable' id='${id}_headerElement'>
 			<tr>
 				<$ if (!data.noTopHeader) { $>
 				<td class='InvHeaderContactContainer'>
@@ -424,7 +424,7 @@
 	<$ var labelStyle = data.labelStyle = "width:"+(AjxEnv.isIE ? 60 : 64)+"px; overflow:visible; white-space:nowrap"; $>
 	<$ var inputStyle = data.inputStyle = AjxEnv.isSafari && !AjxEnv.isSafariNightly ? "height:52px;" : "height:21px; overflow:hidden" $>
 	<!-- header -->
-	<table role="presentation" id='${headerId}' width=100% class='ZPropertySheet' cellspacing='6'>
+	<table role="application" id='${headerId}' width=100% class='ZPropertySheet' cellspacing='6'>
 		<$ if (appCtxt.multiAccounts) { $>
 			<tr>
 				<td width='1%' align=right valign=top style='<$=labelStyle$>'>

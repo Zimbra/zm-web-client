@@ -594,8 +594,6 @@ skin.override.append("ZmComposeView.prototype._createHtmlFromTemplate", function
 			Dwt.byId(id).innerHTML = ZmMsg.dndTooltip;
 		},0);
 	}
-
-	util.setElementRole(this._headerEl,"application");
 });
 
 skin.override.append(["ZmHtmlEditor.prototype.initTinyMCEEditor"], function(){

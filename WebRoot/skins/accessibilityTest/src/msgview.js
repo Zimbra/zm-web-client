@@ -18,7 +18,6 @@
 				el.href = document.location.hash || "#";
 			}
 		}
-		util.setElementRole(skin.byClass("MsgHeaderTable", el), "application");
 	});
 
 	skin.override.append("ZmMailMsgView.prototype.reparent", function(){

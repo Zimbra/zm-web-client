@@ -48,14 +48,6 @@
 			htmlel.setAttribute('aria-labelledby', this._textCell.id);
 		}
 
-		// not entirely certain about this one...
-		var treeItemTableEl = Dwt.byId(this._htmlElId +"_table");
-		if (treeItemTableEl) {
-			util.setElementRole(treeItemTableEl, 'presentation');
-		}
-
-		//this.parent.getTabGroupMember().addMember(this.getTabGroupMember());
-
 		return r;
 	});
 

@@ -165,7 +165,7 @@ function(cols) {
 	var html = [];
 	var i = 0;
 	html[i++] = "<div class='ZmShortcutList'>";
-    html[i++] = "<table cellspacing=10 cellpadding=0 border=0>";
+    html[i++] = "<table role='presentation' cellspacing=10 cellpadding=0 border=0>";
 	if (cols[0].title) {
 		html[i++] = "<tr>";
 		var style = ZmShortcutList._getClass("shortcutListType", this._style);
