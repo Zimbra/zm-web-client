@@ -537,7 +537,7 @@ function(results) {
 	this._resetNavToolBarButtons();
 };
 
-ZmBriefcaseController.getFolderId = function() {
+ZmBriefcaseController.prototype.getFolderId = function() {
 	return this._folderId;
 }
 

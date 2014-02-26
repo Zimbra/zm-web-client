@@ -73,7 +73,9 @@ ZmTreeView = function(params) {
 	this.dynamicWidth = this._overview.dynamicWidth;
 
 	this._dataTree = null;
-	this._treeItemHash = {};	// map organizer to its corresponding tree item by ID
+	this._treeItemHash  = {};	// map organizer to its corresponding tree item by ID
+	this._idToOrganizer = {};	// map DwtControl htmlElId to the organizer for external Drag and Drop
+
 };
 
 ZmTreeView.KEY_TYPE	= "_type_";
@@ -444,6 +446,7 @@ function(org, child) {
 ZmTreeView.prototype._addNew =
 function(parentNode, organizer, index, noTooltips, omit) {
 	var ti;
+	var parentControlId;
 	// check if we're adding a datasource folder
 	var dsColl = (organizer.type == ZmOrganizer.FOLDER) && appCtxt.getDataSourceCollection();
 	var dss = dsColl && dsColl.getByFolderId(organizer.nId);
@@ -466,6 +469,7 @@ function(parentNode, organizer, index, noTooltips, omit) {
 			}
 			while (parentOrganizer = stack.pop()) {
 				parentNode = this.getTreeItemById(parentOrganizer.parent.id);
+				parentControlId = ZmId.getTreeItemId(this.overviewId, parentOrganizer.id);
 				parentNode = new DwtTreeItem({
 					parent:					parentNode,
 					text:					parentOrganizer.getName(),
@@ -475,13 +479,14 @@ function(parentNode, organizer, index, noTooltips, omit) {
 					dynamicWidth:			this.dynamicWidth,
 					dndScrollCallback:		this._overview && this._overview._dndScrollCallback,
 					dndScrollId:			this._overview && this._overview._scrollableContainerId,
-					id:						ZmId.getTreeItemId(this.overviewId, parentOrganizer.id)
+					id:						parentControlId
 				});
 				parentNode.setData(Dwt.KEY_ID, parentOrganizer.id);
 				parentNode.setData(Dwt.KEY_OBJECT, parentOrganizer);
 				parentNode.setData(ZmTreeView.KEY_ID, this.overviewId);
 				parentNode.setData(ZmTreeView.KEY_TYPE, parentOrganizer.type);
 				this._treeItemHash[parentOrganizer.id] = parentNode;
+				this._idToOrganizer[parentControlId] = parentOrganizer.id;
 			}
 		}
 		var params = {
@@ -497,6 +502,7 @@ function(parentNode, organizer, index, noTooltips, omit) {
 		};
 		// now add item
 		ti = new DwtTreeItem(params);
+		this._idToOrganizer[params.id] = organizer.id;
 	}
 
 	if (appCtxt.multiAccounts &&
@@ -650,4 +656,3 @@ function() {
 	}
 	return null;
 };
-

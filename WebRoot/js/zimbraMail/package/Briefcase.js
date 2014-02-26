@@ -26,6 +26,7 @@ AjxPackage.require("zimbraMail.briefcase.view.ZmBriefcaseIconView");
 AjxPackage.require("zimbraMail.briefcase.view.ZmDetailListView");
 AjxPackage.require("zimbraMail.briefcase.view.ZmPreviewPaneView");
 AjxPackage.require("zimbraMail.briefcase.view.ZmNewBriefcaseDialog");
+AjxPackage.require("zimbraMail.briefcase.view.ZmBriefcaseTreeView");
 AjxPackage.require("zimbraMail.briefcase.view.dialog.ZmBriefcaseTabView");
 AjxPackage.require("zimbraMail.briefcase.view.dialog.ZmCheckinDialog");
 AjxPackage.require("zimbraMail.briefcase.controller.ZmBriefcaseController");

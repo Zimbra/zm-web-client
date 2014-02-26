@@ -18,8 +18,6 @@
  * Provides a framework for uploading multiple files; the callbacks allow the upload to be stored as an
  * attachment or saved document.
  *
- * The default behaviour is to save as a document (for the briefcase).  This will trigger the conflict checking
- * and resolution.
  */
 
 /**
@@ -45,10 +43,6 @@ function() {
 };
 
 // Constants
-
-//ZmUploadManager.ACTION_KEEP_MINE = "mine";
-//ZmUploadManager.ACTION_KEEP_THEIRS = "theirs";
-//ZmUploadManager.ACTION_ASK = "ask";
 
 ZmUploadManager.ERROR_INVALID_SIZE      = "invalidSize";
 ZmUploadManager.ERROR_INVALID_EXTENSION = "invalidExtension";

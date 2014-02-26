@@ -242,8 +242,23 @@ function(params) {
 	params.include = {};
 	params.include[ZmFolder.ID_TRASH] = true;
     params.showUnread = false;
-    return ZmFolderTreeController.prototype.show.call(this, params);
+    var treeView = ZmFolderTreeController.prototype.show.call(this, params);
+
+    treeView._controller = this;
+    // Finder to BriefcaseTreeView drag and drop
+    this._initDragAndDrop(treeView);
+
+    return treeView;
 };
+
+
+/**
+ * @private
+ */
+ZmBriefcaseTreeController.prototype._createTreeView = function(params) {
+	return new ZmBriefcaseTreeView(params);
+};
+
 
 ZmBriefcaseTreeController.prototype._handleSearchResponse =
 function(folder, result) {
@@ -252,4 +267,9 @@ function(folder, result) {
     if (folder.nId == ZmFolder.ID_TRASH) {
         this._treeView[this._app.getOverviewId()].setSelected(ZmFolder.ID_TRASH, true);
     }
+};
+
+
+ZmBriefcaseTreeController.prototype._initDragAndDrop = function(treeView) {
+	this._dnd = new ZmDragAndDrop(treeView);
 };

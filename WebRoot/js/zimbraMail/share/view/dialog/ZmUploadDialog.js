@@ -293,7 +293,7 @@ ZmUploadDialog.prototype._upload = function(){
             start:                      0,
             uploadFolder:               this._uploadFolder,
 			completeAllCallback:        briefcaseApp.uploadSaveDocs.bind(briefcaseApp),
-			conflictAction:				this._conflictAction,
+			conflictAction:				this._conflictAction || this._selector.getValue(),
             preResolveConflictCallback: popDownCallback,
             errorCallback:              popDownCallback,
             completeDocSaveCallback:    this._finishUpload.bind(this),
@@ -488,12 +488,11 @@ ZmUploadDialog.prototype._createUploadHtml = function() {
     this._notes = document.getElementById((id+"_notes"));
 
     //Conflict Selector
-    // **** Disabled, will move in next CL
-    //this._selector = new DwtSelect({parent:this});
-	//this._selector.addOption(ZmMsg.uploadActionKeepMine, false, ZmUploadDialog.ACTION_KEEP_MINE);
-	//this._selector.addOption(ZmMsg.uploadActionKeepTheirs, false, ZmUploadDialog.ACTION_KEEP_THEIRS);
-	//this._selector.addOption(ZmMsg.uploadActionAsk, true, ZmUploadDialog.ACTION_ASK);
-    //this._selector.reparentHtmlElement((id+"_conflict"));
+	this._selector = new DwtSelect({parent:this});
+	this._selector.addOption(ZmMsg.uploadActionKeepMine, false, ZmBriefcaseApp.ACTION_KEEP_MINE);
+	this._selector.addOption(ZmMsg.uploadActionKeepTheirs, false, ZmBriefcaseApp.ACTION_KEEP_THEIRS);
+	this._selector.addOption(ZmMsg.uploadActionAsk, true, ZmBriefcaseApp.ACTION_ASK);
+	this._selector.reparentHtmlElement((id+"_conflict"));
     
     //Info Section
     var docSizeInfo = document.getElementById((id+"_info"));

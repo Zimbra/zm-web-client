@@ -493,7 +493,9 @@ ZmBriefcaseApp.prototype.initExternalDndUpload = function(files, node, isInline,
 		var briefcaseController = AjxDispatcher.run("GetBriefcaseController");
 
 		if (!folderId) {
-			folderId = briefcaseController.getFolderId();
+			if (briefcaseController) {
+				folderId = briefcaseController.getFolderId();
+			}
 			if(!folderId || folderId == ZmOrganizer.ID_TRASH) {
 				folderId = ZmOrganizer.ID_BRIEFCASE;
 			}
@@ -741,20 +743,11 @@ ZmBriefcaseApp.prototype._uploadSaveDocsResponse = function(params, response) {
 	// resolve conflicts
 	var conflictCount = conflicts.length;
 
-	// **** HARDCODE to ASK for Now:  ****
-	//     Need to move selector set up (old one is in ZmUploadDialog)
-	//     Move to ZmConflictDialog, hide other controls unless 'ASK' chosen
-	params.conflictAction = ZmBriefcaseApp.ACTION_ASK;
-	// ****
-
-	var action = params.conflictAction || this._selector.getValue();
+	var action = params.conflictAction || ZmBriefcaseApp.ACTION_KEEP_MINE;
 	if (conflictCount > 0 && action == ZmBriefcaseApp.ACTION_ASK) {
 		var dialog = appCtxt.getUploadConflictDialog();
 		dialog.popup(params.uploadFolder, conflicts, this._uploadSaveDocs2.bind(this, params));
-	}
-
-	// keep mine
-	else if (conflictCount > 0 && action == ZmBriefcaseApp.ACTION_KEEP_MINE) {
+	} else if (conflictCount > 0 && action == ZmBriefcaseApp.ACTION_KEEP_MINE) {
 		if (params.conflictAction) {
 			this._shieldSaveDocs(params);
 		} else {
