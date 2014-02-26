@@ -320,7 +320,9 @@ function() {
  		ZmDocsEditApp.setFile(params.id, params.name, params.folderId);
 		ZmDocsEditApp.restUrl = params.restUrl;
 		new ZmDocsEditApp();
-		Dwt.setTitle(params.name);
+		if (params.name) {
+			Dwt.setTitle(params.name);
+		}
 	} else if (cmd == "shortcuts") {
 		var panel = appCtxt.getShortcutsPanel();
 		panel.popup(params.cols);
