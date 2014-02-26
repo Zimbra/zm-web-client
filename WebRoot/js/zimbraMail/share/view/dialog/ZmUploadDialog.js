@@ -178,7 +178,7 @@ function() {
 	DwtDialog.prototype.popdown.call(this);
 };
 
-ZmUploadManager.prototype._popupErrorDialog = function(message) {
+ZmUploadDialog.prototype._popupErrorDialog = function(message) {
 	this.setButtonEnabled(DwtDialog.OK_BUTTON, true);
 	this.setButtonEnabled(DwtDialog.CANCEL_BUTTON, true);
 
