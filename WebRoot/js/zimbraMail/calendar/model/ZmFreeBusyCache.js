@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2010, 2011, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
@@ -162,8 +162,7 @@ function(params) {
                                      fbCallback,
                                      fbErrorCallback,
                                      params.noBusyOverlay,
-                                     params.account,
-                                     params.excludedId);
+                                     params.account);
     }else {
         if(params.callback) {
             params.callback.run();
@@ -206,14 +205,11 @@ function(params, result) {
 };
 
 ZmFreeBusyCache.prototype._getFreeBusyInfo =
-function(startTime, endTime, emailList, callback, errorCallback, noBusyOverlay, acct, excludedId) {
+function(startTime, endTime, emailList, callback, errorCallback, noBusyOverlay, acct) {
 	var soapDoc = AjxSoapDoc.create("GetFreeBusyRequest", "urn:zimbraMail");
 	soapDoc.setMethodAttribute("s", startTime);
 	soapDoc.setMethodAttribute("e", endTime);
 	soapDoc.setMethodAttribute("uid", emailList);
-	if (excludedId) {
-		soapDoc.setMethodAttribute("excludeUid", excludedId);
-	}
 
 	return appCtxt.getAppController().sendRequest({
 		soapDoc: soapDoc,
@@ -229,7 +225,7 @@ function(startTime, endTime, emailList, callback, errorCallback, noBusyOverlay, 
 ZmFreeBusyCache.prototype.getWorkingHours =
 function(params) {
 
-    var requiredEmails = [], whKey, emails = params.emails || [];
+    var requiredEmails = [], whKey, emails = params.emails;
     for (var i = emails.length; --i >= 0;) {
         whKey = this.getWorkingHoursKey(emails[i], (new Date(params.startTime)).getDay());
         //check local cache

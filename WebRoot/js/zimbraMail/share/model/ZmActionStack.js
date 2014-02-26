@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2010, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2010, 2011, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
@@ -55,64 +55,44 @@ ZmActionStack.prototype.toString = function() {
  * @param {String}	[id] 		id of item to perform the action for, if there is only one. Accomplishes the same as putting the id in an array and giving it as [ids].
  */
 ZmActionStack.prototype.logAction = function(params) {
-
-	var op = params.op,
-	    items = [];
-
+	var op = params.op;
+	var items = [];
 	if (params.items) {
-		for (var i = 0; i < params.items.length; i++) {
+		for (var i=0; i<params.items.length; i++) {
 			var item = params.items[i];
-			if (item && this._isValidType(item.type)) {
+			if (item && (!ZmActionStack.validTypes || AjxUtil.indexOf(ZmActionStack.validTypes, item.type)!=-1)) {
 				items.push(item);
 			}
 		}
-	}
-	else if (params.item) {
-		if (params.item && this._isValidType(params.item.type)) {
+	} else if (params.item) {
+		if (params.item && (!ZmActionStack.validTypes || AjxUtil.indexOf(ZmActionStack.validTypes, params.item.type)!=-1)) {
 			items.push(params.item);
 		}
-	}
-	else if (params.ids) {
-		for (var i = 0; i < params.ids.length; i++) {
+	} else if (params.ids) {
+		for (var i=0; i<params.ids.length; i++) {
 			var item = appCtxt.getById(params.ids[i]);
-			if (item && this._isValidType(item.type)) {
+			if (item && (!ZmActionStack.validTypes || AjxUtil.indexOf(ZmActionStack.validTypes, item.type)!=-1)) {
 				items.push(item);
 			}
 		}
-	}
-	else if (params.id) {
+	} else if (params.id) {
 		var item = appCtxt.getById(params.id);
-		if (item && this._isValidType(item.type)) {
+		if (item && (!ZmActionStack.validTypes || AjxUtil.indexOf(ZmActionStack.validTypes, item.type)!=-1)) {
 			items.push(item);
 		}
 	}
-
-	var attrs = params.attrs;
-
-	// for a conv, create a list of undoable msg moves so msgs can be restored to their disparate original folders
-	for (var i = 0; i < items.length; i++) {
-		var item = items[i];
-		if (item.type === ZmItem.CONV) {
-			var tcon = attrs && attrs.tcon;
-			for (var msgId in item.msgFolder) {
-				var folderId = item.msgFolder[msgId],
-					tconCode = ZmFolder.TCON_CODE[folderId];
-
-				// if tcon kept us from moving a msg, no need to undo it
-				if (!tcon || tcon.indexOf(tconCode) === -1) {
-					items.push({
-						isConvMsg:  true,
-						id:         msgId,
-						type:       ZmItem.MSG,
-						folderId:   folderId,
-						list:       { type: ZmItem.MSG }    // hack to expose item.list.type
-					});
+	for (var i=0; i<items.length; i++) {
+		if (items[i] instanceof ZmConv) { // For conversation moves, also log the messages within
+			var msgs = items[i].getMsgList();
+			for (var j=0; j<msgs.length; j++) {
+				if (AjxUtil.indexOf(msgs[j])==-1) {
+					items.push(msgs[j]);
 				}
 			}
 		}
 	}
-
-	var multi = items.length > 1;
+	var attrs = params.attrs;
+	var multi = items.length>1;
 
 	var action = null;
 	var folderId;
@@ -136,30 +116,20 @@ ZmActionStack.prototype.logAction = function(params) {
 			case "move":
 			case "spam":
 			case "!spam":
-				for (var i = 0; i < items.length; i++) {
+				for (var i=0; i<items.length; i++) {
 					var item = items[i];
 					var moveAction;
 				
 					if (item instanceof ZmItem) {
-						if (item.type !== ZmItem.CONV) {
-							if (!item.isShared()) { // Moving shared items is not undoable
-								moveAction = new ZmItemMoveAction(item, item.getFolderId(), folderId, op);
-							}
-						}
-					}
-					else if (item instanceof ZmOrganizer) {
-						if (!item.isRemote()) { // Moving remote organizers is not undoable
+						if (!item.isShared()) // Moving shared items is not undoable
+							moveAction = new ZmItemMoveAction(item, item.getFolderId(), folderId, op);
+					} else if (item instanceof ZmOrganizer) {
+						if (!item.isRemote()) // Moving remote organizers is not undoable
 							moveAction = new ZmOrganizerMoveAction(item, item.parent.id, folderId, op);
-						}
-					}
-					else if (item.isConvMsg) {
-						if (!appCtxt.isRemoteId(item.id)) {
-							moveAction = new ZmItemMoveAction(item, item.folderId, folderId, op);
-						}
 					}
 					if (moveAction) {
 						if (multi) {
-							if (!action) action = new ZmCompositeAction(folderId);
+							if (!action) action = new ZmCompositeAction();
 							action.addAction(moveAction);
 						} else {
 							action = moveAction;
@@ -188,24 +158,6 @@ ZmActionStack.prototype.canUndo = function() {
  */
 ZmActionStack.prototype.canRedo = function() {
 	return this._pointer < this._stack.length - 1;
-};
-
-
-/**
- * Returns whether the next undo action has completed
- */
-ZmActionStack.prototype.actionIsComplete = function() {
-	return this.canUndo() && this._current().getComplete();
-};
-
-/**
- * Attaches a completion callback to the current action
- */
-ZmActionStack.prototype.onComplete = function(callback) {
-	var action = this._current();
-	if (action) {
-		action.onComplete(callback);
-	}
 };
 
 /**
@@ -251,18 +203,4 @@ ZmActionStack.prototype._push = function(action) {
  */
 ZmActionStack.prototype._pop = function() {
 	return this.canUndo() ? this._stack[this._pointer--] : null;
-};
-
-/**
- * Returns the action at the current position, does not move the pointer
- */
-ZmActionStack.prototype._current = function() {
-	return this.canUndo() ? this._stack[this._pointer] : null;
-};
-
-/**
- * Returns true if the given type is valid.
- */
-ZmActionStack.prototype._isValidType = function(type) {
-	return !ZmActionStack.validTypes || AjxUtil.indexOf(ZmActionStack.validTypes, type) !== -1;
 };

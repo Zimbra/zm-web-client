@@ -19,7 +19,7 @@
     
     <fmt:message var="title" key="attachFiles"/>
 
-    <c:set var="attachSize" value="${zm:displaySize(pageContext, mailbox.accountInfo.attachmentSizeLimit div mailbox.base64ToNormalRatio)}"/>
+    <c:set var="attachSize" value="${zm:displaySize(pageContext, mailbox.accountInfo.attachmentSizeLimit)}"/>
     
     <zm:composeUploader var="uploader"/>
     <c:set var="compose" value="${uploader.compose}"/>

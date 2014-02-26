@@ -87,29 +87,26 @@ function() {
  * handled the exception, and false if standard exception handling should still
  * be performed.
  *
- * @param {Hash}		params				a hash of parameters
- * @param {AjxSoapDoc}	soapDoc				the SOAP document that represents the request
- * @param {Object}		jsonObj				the JSON object that represents the request (alternative to soapDoc)
- * @param {Boolean}		asyncMode			if <code>true</code>, request will be made asynchronously
- * @param {AjxCallback}	callback			the next callback in chain for async request
- * @param {AjxCallback}	errorCallback		the callback to run if there is an exception
- * @param {AjxCallback}	continueCallback	the callback to run after user re-auths
- * @param {AjxCallback}	offlineCallback	    the callback to run if the user is offline
- * @param {int}			timeout				the timeout value (in seconds)
- * @param {Boolean}		noBusyOverlay		if <code>true</code>, don't use the busy overlay
- * @param {String}		accountName			the name of account to execute on behalf of
- * @param {Object}		response			the pre-determined response (no request will be made)
- * @param {Boolean}		skipAuthCheck		if <code>true</code>, do not check if auth token has changed
- * @param {constant}	resend				the reason for resending request
- * @param {Boolean}		sensitive			if <code>true</code>, attempt to use secure conn to protect data
- * @param {Boolean}		noSession			if <code>true</code>, no session info is included
- * @param {String}		restUri				the REST URI to send the request to
- * @param {boolean}		emptyResponseOkay	if true, empty or no response from server is not an erro
- * @param {boolean}		offlineRequest	    if true, request will not be send to server
- * @param {boolean}		useChangeToken	    if true, request will try to use change token in header
+ * @param {Hash}	params				a hash of parameters
+ * @param {AjxSoapDoc}	params.soapDoc				the SOAP document that represents the request
+ * @param {Object}	params.jsonObj				the JSON object that represents the request (alternative to soapDoc)
+ * @param {Boolean}	params.asyncMode				if <code>true</code>, request will be made asynchronously
+ * @param {AjxCallback}	params.callback				the next callback in chain for async request
+ * @param {AjxCallback}	params.errorCallback			the callback to run if there is an exception
+ * @param {AjxCallback}	params.continueCallback		the callback to run after user re-auths
+ * @param {int}	params.timeout				the timeout value (in seconds)
+ * @param {Boolean}	params.noBusyOverlay			if <code>true</code>, don't use the busy overlay
+ * @param {String}	params.accountName			the name of account to execute on behalf of
+ * @param {Object}	params.response				the pre-determined response (no request will be made)
+ * @param {Boolean}	params.skipAuthCheck			if <code>true</code>, do not check if auth token has changed
+ * @param {constant}	params.resend				the reason for resending request
+ * @param {Boolean}	params.sensitive				if <code>true</code>, attempt to use secure conn to protect data
+ * @param {Boolean}	params.noSession				if <code>true</code>, no session info is included
+ * @param {String}	params.restUri				the REST URI to send the request to
  */
 ZmRequestMgr.prototype.sendRequest =
 function(params) {
+
 	var response = params.response;
 	if (response) {
 		if (params.reqId) {
@@ -119,16 +116,9 @@ function(params) {
 		params.asyncMode = true;	// canned response set up async style
 		return this._handleResponseSendRequest(params, new ZmCsfeResult(response));
 	}
-	if (params.offlineRequest || appCtxt.isWebClientOffline()) {
-		if (params.offlineCallback) {
-			params.offlineCallback(params);
-		}
-		return;
-	}
 	
 	var reqId = params.reqId = ("Req_"+ZmRequestMgr._nextReqId++);
-	DBG.println("req", "assign req ID: " + reqId);
-	var timeout = params.timeout = (params.timeout != null) ? params.timeout : this._stdTimeout;
+	var timeout = (params.timeout != null) ? params.timeout : this._stdTimeout;
 	if (timeout) {
 		timeout = timeout * 1000; // convert seconds to ms
 	}
@@ -143,22 +133,64 @@ function(params) {
 		//       was loaded using http.
 		var isHttp = document.location.protocol == ZmSetting.PROTO_HTTP;
 		var isMixedMode = appCtxt.get(ZmSetting.PROTOCOL_MODE) == ZmSetting.PROTO_MIXED;
-		if(isHttp && isMixedMode) {
-			return this._sensitiveRequest(params, reqId);
+		if (isHttp && isMixedMode) {
+			DBG.println(AjxDebug.DBG2, "sending request securely");
+			// adjust command parameters
+			// TODO: Because of timing issues, should we not use session info?
+			// TODO: But for batch commands, some updates would not be seen immediately.
+			// TODO: To avoid security warning, send response in URL; so limit length
+			params.noSession = true;
+
+			// information
+			var requestStr = ZmCsfeCommand.getRequestStr(params);
+			var loc = document.location;
+			var port = appCtxt.get(ZmSetting.HTTPS_PORT);
+			if (port && port != ZmSetting.DEFAULT_HTTPS_PORT) {
+				port = ":"+port;
+			}
+
+			// create iframe
+			var iframe = document.createElement("IFRAME");
+			iframe.style.display = "none";
+			iframe.id = Dwt.getNextId();
+			document.body.appendChild(iframe);
+
+			// set contents
+			var iframeDoc = Dwt.getIframeDoc(iframe);
+			iframeDoc.write(
+				"<form ",
+					"id=",iframe.id,"-form ",
+					"target=",iframe.id,"-iframe ",
+					"method=POST ",
+					"action='https://",loc.hostname,port,appContextPath,"/public/secureRequest.jsp'",
+				">",
+					"<input type=hidden name=reqId value='",reqId,"'>",
+					"<textarea name=data>",
+						AjxStringUtil.htmlEncode(requestStr),
+					"</textarea>",
+				"</form>",
+				"<iframe name=",iframe.id,"-iframe></iframe>"
+			);
+			iframeDoc.close();
+
+			// save the params for the response
+			params.iframeId = iframe.id;
+			this._pendingRequests[reqId] = params;
+
+			// submit form
+			var form = iframeDoc.getElementById(iframe.id+"-form");
+			form.submit();
+			return;
 		}
 	}
 
 	var command = new ZmCsfeCommand();
-	// bug fix #10652, 82704 - dont set change token if accountName is not main account or is not specified
+	// bug fix #10652 - dont set change token if accountName is specified
 	// (since we're executing on someone else's mbox)
 	var accountName = params.accountName;
 	if (!accountName) {
 		var acct = appCtxt.getActiveAccount();
 		accountName = (acct && acct.id != ZmAccountList.DEFAULT_ID) ? acct.name : null;
-	}
-	var changeToken = null;
-	if (params.useChangeToken && (!accountName || (accountName === appCtxt.accountList.mainAccount.name))) {
-		changeToken = this._changeToken;
 	}
 	var cmdParams, methodName;
 
@@ -172,7 +204,7 @@ function(params) {
 						soapDoc:			params.soapDoc,
 						accountName:		accountName,
 						useXml:				this._useXml,
-						changeToken:		changeToken,
+						changeToken:		(accountName ? null : this._changeToken),
 						asyncMode:			params.asyncMode,
 						callback:			asyncCallback,
 						logRequest:			this._logRequest,
@@ -180,21 +212,19 @@ function(params) {
 						noAuthToken:		true,	// browser will handle auth token cookie
 						skipAuthCheck:		params.skipAuthCheck,
 						resend:				params.resend,
-						noSession:			params.noSession,
-						useStringify1:		(AjxEnv.isIE || AjxEnv.isModernIE) && params.fromChildWindow,
-						emptyResponseOkay:	params.emptyResponseOkay
+						noSession:			params.noSession
 					};
 		methodName = params.methodName = ZmCsfeCommand.getMethodName(cmdParams.jsonObj || cmdParams.soapDoc);
 	}
 
 	appCtxt.currentRequestParams = params;
-	DBG.println("req", "send request " + reqId + ": " + methodName);
+	DBG.println(AjxDebug.DBG1, "sendRequest(" + reqId + "): " + methodName);
 	var cancelParams = timeout ? [reqId, params.errorCallback, params.noBusyOverlay] : null;
 	if (!params.noBusyOverlay) {
 		var cancelCallback = null;
 		var showBusyDialog = false;
 		if (timeout) {
-			DBG.println("req", "ZmRequestMgr.sendRequest: timeout for " + reqId + " is " + timeout);
+			DBG.println(AjxDebug.DBG1, "ZmRequestMgr.sendRequest: timeout for " + reqId + " is " + timeout);
 			cancelCallback = new AjxCallback(this, this.cancelRequest, cancelParams);
 			this._shell.setBusyDialogText(ZmMsg.askCancel);
 			showBusyDialog = true;
@@ -204,17 +234,14 @@ function(params) {
 	} else if (timeout) {
 		var action = new AjxTimedAction(this, this.cancelRequest, cancelParams);
 		this._cancelActionId[reqId] = AjxTimedAction.scheduleAction(action, timeout);
-		DBG.println("req", "schedule cancel action for reqId " + reqId + ": " + this._cancelActionId[reqId]);
 	}
 
 	this._pendingRequests[reqId] = command;
 
 	try {
-		DBG.println("req", "invoke req: " + params.reqId);
 		var response = params.restUri ? command.invokeRest(cmdParams) : command.invoke(cmdParams);
 		command.state = ZmRequestMgr._SENT;
 	} catch (ex) {
-		DBG.println("req", "caught exception on invoke of req: " + params.reqId);
 		this._handleResponseSendRequest(params, new ZmCsfeResult(ex, true));
 		return;
 	}
@@ -224,26 +251,27 @@ function(params) {
 
 /**
  * @private
- * @param {Array}	params.ignoreErrs	list of error codes that can be ignored, when params.errorCallback does not exists.
  */
 ZmRequestMgr.prototype._handleResponseSendRequest =
 function(params, result) {
-	DBG.println("req", "ZmRequestMgr.handleResponseSendRequest for req: " + params.reqId);
 	var isCannedResponse = (params.response != null);
-	if (!isCannedResponse && !appCtxt.isWebClientOffline()) {
+	if (!isCannedResponse) {
 		if (!this._pendingRequests[params.reqId]) {
-			DBG.println("req", "ZmRequestMgr.handleResponseSendRequest no pending request for " + params.reqId);
+			DBG.println(AjxDebug.DBG2, "ZmRequestMgr.handleResponseSendRequest no pendingRequest entry for " + params.reqId);
 			return;
 		}
 		if (this._pendingRequests[params.reqId].state == ZmRequestMgr._CANCEL) {
-			DBG.println("req", "ZmRequestMgr.handleResponseSendRequest state=CANCEL for " + params.reqId);
+			DBG.println(AjxDebug.DBG2, "ZmRequestMgr.handleResponseSendRequest state=CANCEL for " + params.reqId);
 			return;
 		}
-	
+		DBG.println(AjxDebug.DBG1, "ZmRequestMgr - handling resp for ("+params.reqId+")");
 		this._pendingRequests[params.reqId].state = ZmRequestMgr._RESPONSE;
 	
 		if (!params.noBusyOverlay) {
 			this._shell.setBusy(false, params.reqId); // remove busy overlay
+		} else if (params.timeout) {
+			AjxTimedAction.cancelAction(this._cancelActionId[params.reqId]);
+			this._cancelActionId[params.reqId] = -1;
 		}
 	}
 
@@ -263,35 +291,14 @@ function(params, result) {
 			refreshBlock = this._handleHeader(response.Header);
 		}
 	} catch (ex) {
-		DBG.println("req", "Request " + params.reqId + " got an exception");
-		var ecb = params.errorCallback;
-		if (ecb) {
-            var handled = ecb.run(ex, params);
+		DBG.println(AjxDebug.DBG2, "Request " + params.reqId + " got an exception");
+		if (params.errorCallback) {
+			var handled = params.errorCallback.run(ex);
 			if (!handled) {
 				this._handleException(ex, params);
 			}
 		} else {
-			var ignore = function(ignoreErrs, errCode){
-			/*
-				Checks errCode exits in ignoreErrs
-			*/
-				if (ignoreErrs && (ignoreErrs.length > 0)){
-					for (var val in ignoreErrs)
-						if (ignoreErrs[val] == errCode) 
-							return true;
-				}
-				return false;
-			}(params.ignoreErrs, ex.code)
-
-            if (ex.code === ZmCsfeException.EMPTY_RESPONSE && params.offlineCallback) {
-                params.offlineCallback(params);
-				if (appCtxt.isWebClientOffline() && !params.noBusyOverlay) {
-					this._shell.setBusy(false, params.reqId); // remove busy overlay
-				}
-                ignore = true;
-            }
-			if (!ignore)
-				this._handleException(ex, params);
+			this._handleException(ex, params);
 		}
 		var hdr = result.getHeader();
 		if (hdr) {
@@ -302,8 +309,8 @@ function(params, result) {
 		return;
 	}
 
-    if (params.asyncMode && !params.restUri) {
-	    result.set(response.Body);
+	if (params.asyncMode && !params.restUri) {
+		result.set(response.Body);
 	}
 
     // if we didn't get an exception, then we should make sure that the
@@ -312,7 +319,7 @@ function(params, result) {
 		this._controller._kickPolling(true);
 	}
 
-	var methodName = ZmCsfeCommand.getMethodName(params.jsonObj || params.soapDoc);
+	var methodName = (DBG && DBG.getDebugLevel() > 0) ? ZmCsfeCommand.getMethodName(params.jsonObj || params.soapDoc) : "";
 	if (params.asyncMode && params.callback) {
 		DBG.println(AjxDebug.DBG1, "------------------------- Running response callback for " + methodName);
 		params.callback.run(result);
@@ -330,12 +337,6 @@ function(params, result) {
 	if (!params.asyncMode) {
 		return response.Body;
 	}
-	
-	var ctlr = this._controller;
-	if (ctlr._evtMgr && ctlr._evtMgr.isListenerRegistered(ZmAppEvent.RESPONSE)) {
-		ctlr._evt.request = methodName;
-		ctlr.notify(ZmAppEvent.RESPONSE);
-	}
 };
 
 /**
@@ -347,7 +348,6 @@ function(params, result) {
  */
 ZmRequestMgr.prototype.cancelRequest =
 function(reqId, errorCallback, noBusyOverlay) {
-	DBG.println("req", "ZmRequestMgr.cancelRequest: " + reqId);
 	if (!this._pendingRequests[reqId]) { return; }
 	if (this._pendingRequests[reqId].state == ZmRequestMgr._RESPONSE) { return; }
 
@@ -355,12 +355,11 @@ function(reqId, errorCallback, noBusyOverlay) {
 	if (!noBusyOverlay) {
 		this._shell.setBusy(false, reqId);
 	}
-	DBG.println("req", "canceling the XHR");
+	DBG.println(AjxDebug.DBG1, "ZmRequestMgr.cancelRequest: " + reqId);
 	this._pendingRequests[reqId].cancel();
 	if (errorCallback) {
-		DBG.println("req", "calling the error callback");
 		var ex = new AjxException("Request canceled", AjxException.CANCELED, "ZmRequestMgr.prototype.cancelRequest");
-		errorCallback.isAjxCallback ? errorCallback.run(ex) : errorCallback(ex);
+		errorCallback.run(ex);
 	}
 	this._clearPendingRequest(reqId);
 };
@@ -379,12 +378,6 @@ function(reqId) {
 			}
 		}
 		delete this._pendingRequests[reqId];
-	}
-	var cancelId = this._cancelActionId[reqId];
-	if (cancelId && cancelId != -1) {
-		DBG.println("req", "unschedule cancel action for reqId " + reqId + ": " + cancelId);
-		AjxTimedAction.cancelAction(cancelId);
-		this._cancelActionId[reqId] = -1;
 	}
 };
 
@@ -427,7 +420,6 @@ function(hdr) {
 	if (ctxt.refresh) {
 		this._controller.runAppFunction("_clearDeferredFolders");
 		this._loadTrees(ctxt.refresh);
-		this._controller.runAppFunction("_createVirtualFolders");
 		this._highestNotifySeen = 0;
 	}
 
@@ -553,10 +545,16 @@ function(hdr) {
 			var sid = hdr.context && ZmCsfeCommand.extractSessionId(hdr.context.session);
             if (notify.seq > this._highestNotifySeen && !(sid && ZmCsfeCommand._staleSession[sid])) {
                 DBG.println(AjxDebug.DBG1, "Handling notification[" + i + "] seq=" + seq);
+                if (window.isNotifyDebugOn) {
+                    appCtxt.setNotifyDebug(["Handling NOTIFY: [" + i + "] in _handleNotifications seq=", seq].join(""));
+                }
                 this._highestNotifySeen = seq;
                 this._notifyHandler(notify);
             } else {
             	DBG.println(AjxDebug.DBG1, "SKIPPING notification[" + i + "] seq=" + seq + " highestNotifySeen=" + this._highestNotifySeen);
+                if (window.isNotifyDebugOn) {
+                    appCtxt.setNotifyDebug(["Handling NOTIFY: Skipping notification[", i, "] seq=", seq, " highestNotifySeen=", this._highestNotifySeen].join(""));
+                }
 	      	}
     	}
 	}
@@ -684,6 +682,11 @@ function(type, unread, obj, objType, account) {
 ZmRequestMgr.prototype._notifyHandler =
 function(notify) {
 	DBG.println(AjxDebug.DBG1, "Handling NOTIFY");
+    if (window.isNotifyDebugOn) {
+        var notifyStr = AjxStringUtil.objToString(notify);
+        appCtxt.setNotifyDebug("Handling NOTIFY: in ZmRequestMgr _notifyHandler");
+        appCtxt.setNotifyDebug(notifyStr);
+    }
 	AjxDebug.println(AjxDebug.NOTIFY, "Notification block:");
 	AjxDebug.dumpObj(AjxDebug.NOTIFY, notify);
 	this._controller.runAppFunction("preNotify", false, notify);
@@ -696,10 +699,6 @@ function(notify) {
 	if (notify.modified) {
 		this._handleModifies(notify.modified);
 	}
-
-    if (ZmOffline.isOnlineMode() && (notify.deleted || notify.created || notify.modified)) {
-        appCtxt.webClientOfflineHandler.sendSyncRequest();
-    }
 	this._controller.runAppFunction("postNotify", false, notify);
 };
 
@@ -745,30 +744,31 @@ function(creates) {
 	this._controller.runAppFunction("createNotify", false, creates);
 
 	for (var name in creates) {
-        if (creates.hasOwnProperty(name)) {
-            var list = creates[name];
-            for (var i = 0; i < list.length; i++) {
-                var create = list[i];
-                if (create._handled) { continue; }
-                // ignore create notif for item we already have (except tags, which can reuse IDs)
-                if (appCtxt.cacheGet(create.id) && name != "tag") { continue; }
-
-                DBG.println(AjxDebug.DBG1, "ZmRequestMgr: handling CREATE for node: " + name);
-                if (name == "tag") {
-                    var account = appCtxt.multiAccounts && ZmOrganizer.parseId(create.id).account;
-                    var tagTree = appCtxt.getTagTree(account);
-                    if (tagTree) {
-                        tagTree.root.notifyCreate(create);
-                    }
-                } else if (name == "folder" || name == "search" || name == "link") {
-                    var parentId = create.l;
-                    var parent = appCtxt.getById(parentId);
-                    if (parent && parent.notifyCreate && parent.type != ZmOrganizer.TAG) { // bug #37148
-                        parent.notifyCreate(create, name);
-                    }
-                }
+		var list = creates[name];
+		for (var i = 0; i < list.length; i++) {
+			var create = list[i];
+			if (create._handled) { continue; }
+			// ignore create notif for item we already have (except tags, which can reuse IDs)
+			if (appCtxt.cacheGet(create.id) && name != "tag") { continue; }
+	
+			DBG.println(AjxDebug.DBG1, "ZmRequestMgr: handling CREATE for node: " + name);
+            if (window.isNotifyDebugOn) {
+    			appCtxt.setNotifyDebug(["Handling NOTIFY: in ZmRequestMgr - _handleCreates handling CREATE for node: ", name].join(""));
             }
-        }
+			if (name == "tag") {
+				var account = appCtxt.multiAccounts && ZmOrganizer.parseId(create.id).account;
+				var tagTree = appCtxt.getTagTree(account);
+				if (tagTree) {
+					tagTree.root.notifyCreate(create);
+				}
+			} else if (name == "folder" || name == "search" || name == "link") {
+				var parentId = create.l;
+				var parent = appCtxt.getById(parentId);
+				if (parent && parent.notifyCreate && parent.type != ZmOrganizer.TAG) { // bug #37148
+					parent.notifyCreate(create, name);
+				}
+			}
+		}
 	}
 };
 
@@ -854,54 +854,4 @@ function(ev) {
 			}
 		}
 	}
-};
-
-ZmRequestMgr.prototype._sensitiveRequest =
-function(params, reqId) {
-	DBG.println(AjxDebug.DBG2, "sending request securely");
-	// adjust command parameters
-	// TODO: Because of timing issues, should we not use session info?
-	// TODO: But for batch commands, some updates would not be seen immediately.
-	// TODO: To avoid security warning, send response in URL; so limit length
-	params.noSession = true;
-
-	// information
-	var requestStr = ZmCsfeCommand.getRequestStr(params);
-	var loc = document.location;
-	var port = appCtxt.get(ZmSetting.HTTPS_PORT);
-	if (port && port != ZmSetting.DEFAULT_HTTPS_PORT) {
-		port = ":"+port;
-	}
-
-	// create iframe
-	var iframe = document.createElement("IFRAME");
-	iframe.style.display = "none";
-	iframe.id = Dwt.getNextId();
-	document.body.appendChild(iframe);
-
-	// set contents
-	var iframeDoc = Dwt.getIframeDoc(iframe);
-	iframeDoc.write(
-		"<form ",
-			"id=",iframe.id,"-form ",
-			"target=",iframe.id,"-iframe ",
-			"method=POST ",
-			"action='https://",loc.hostname,port,appContextPath,"/public/secureRequest.jsp'",
-		">",
-			"<input type=hidden name=reqId value='",reqId,"'>",
-			"<textarea name=data>",
-				AjxStringUtil.htmlEncode(requestStr),
-			"</textarea>",
-		"</form>",
-		"<iframe name=",iframe.id,"-iframe></iframe>"
-	);
-	iframeDoc.close();
-
-	// save the params for the response
-	params.iframeId = iframe.id;
-	this._pendingRequests[reqId] = params;
-
-	// submit form
-	var form = iframeDoc.getElementById(iframe.id+"-form");
-	form.submit();
 };

@@ -51,10 +51,7 @@
     </c:when>
     <c:when test="${uploader.isUpload and !empty message}">
         <c:if test="${!requestScope.uploadError}">
-            <zm:fixupMessageCompose message="${message}" compose="${compose}" newattachments="${uploader.isContactDone or uploader.isContactCancel
-                                                        or uploader.isAttachCancel or uploader.compose.hasFileItems
-                                                        or not empty uploader.compose.uploadedAttachment
-                                                        or uploader.isDraft}"/>
+            <zm:fixupMessageCompose message="${message}" compose="${compose}" newattachments="${uploader.compose.hasFileItems or not empty uploader.compose.uploadedAttachment or uploader.isDraft}"/>
         </c:if>
     </c:when>
 </c:choose>
@@ -80,13 +77,13 @@
           onload="var e=document.getElementById('${focusField}'); if (e) {e.focus(); if (e.setSelectionRange) e.setSelectionRange(0,0);}" >
 <body class="yui-skin-sam">
 <form action="" method="post" name="composeForm" enctype="multipart/form-data" accept-charset="utf-8">
-<table width="100%">
+<table width="100%" cellpadding="0" cellspacing="0">
 <tr>
     <td class='TbTop'>
-        <table width="100%">
+        <table width="100%" cellspacing="0" cellpadding="0">
             <tr valign='middle'>
                 <td align=left class="TbBt">
-                    <table class='Tb'>
+                    <table cellspacing="0" cellpadding="0" class='Tb'>
                         <tr>
                             <app:button id="OPSEND" name="actionSend" src="mail/ImgSend.png" tooltip="send" text="send"/>
                             <td><div class='vertSep'></div></td>
@@ -109,19 +106,19 @@
 <tr>
 <td class='ZhAppContent'>
 <div>
-<table style="height:80%;" width="100%" class='ZPropertySheet' cellspacing="6">
+<table cellpadding="2" cellspacing="5" style="height:80%;" width="100%" class='Compose' border="0">
 <tr>
     <app:button id="tobutton" name="actionContactAdd" width="1%" clazz="tobutton" tooltip="addFromContacts" text="to"/>
     <td colspan="2" nowrap>
         <div class="ZhAC ZhACTo">
-            <textarea id="toField" rows="2" style='width:99%;height:40px;position:relative;' cols="80" onkeydown="return handleEnter(event, this);"
+            <textarea  id="toField" rows="2" style='width:99%;height:40px;position:relative;' cols="80" onkeydown="return handleEnter(event, this);"
                        onkeypress="return handleEnter(event, this);" name="to" >${compose.to eq 'toAddresses' ? (fn:escapeXml(sessionScope.toAddresses)):(fn:escapeXml(compose.to))}</textarea>
             <br><div class='ZhACCont' id="toContainer" style='width:99%;top:3em;'></div></div>
     </td>
 </tr>
 <tr>
     <app:button id="ccbutton"  name="actionContactAdd" width="1%" clazz="tobutton" tooltip="addFromContacts" text="cc"/>
-    <td nowrap>
+    <td  nowrap>
         <div class="ZhAC ZhACCc">
             <textarea id="ccField" rows="2" style='width:99%;height:40px;position:relative;' cols='80' name="cc">${fn:escapeXml(compose.cc)}</textarea>
             <br><div class='ZhACCont' id="ccContainer" style='width:99%;'></div>
@@ -207,7 +204,7 @@
                     value="${zm:cook(param.attachId)}" name="uploadedAttachment"/>
 </c:if>
 <tr>
-    <td colspan="3"  width="100%" <c:if test="${isHtml}">style="background-color: #FFFFFF;"</c:if>>
+    <td colspan="3"  width="100%" >
         <c:set var="isHTMLContType" value="${compose.contentType eq 'text/html'}" />
         <c:set var="isHtmlCont" value="${not empty compose.htmlContent}" />
         <c:set var="theBody" value="${fn:escapeXml(isHtml ? (empty compose.htmlContent ? (isHTMLContType or isHtml ? compose.content : zm:cook(compose.content)) : compose.htmlContent) : compose.content)}"/>
@@ -241,10 +238,10 @@
 </tr>
 <tr>
     <td class='TbBottom'>
-        <table width="100%">
+        <table width="100%" cellspacing="0" cellpadding="0">
             <tr valign='middle'>
                 <td align=left class="TbBt">
-                    <table class='Tb'>
+                    <table cellspacing="0" cellpadding="0" class='Tb'>
                         <tr>
                             <app:button id="DOPSEND" name="actionSend" src="mail/ImgSend.png" tooltip="send" text="send"/>
                             <td><div class='vertSep'></div></td>
@@ -279,7 +276,7 @@
 <input type="hidden" name="crumb" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
 <%--input element used to set the draftid during autosave--%>
 <c:choose>
-    <c:when test="${zm:boolean(message.isDraft)}">
+    <c:when test="${message.isDraft}">
        <input type="hidden" name="draftid" value="${message.id}"/>
     </c:when>
     <c:otherwise>
@@ -301,7 +298,7 @@
     initAuto("bccField","bccContainer");
 </app:autoComplete>
 
-<c:if test="${isHtml}" >
+<c:if test="${(isHtml)}" >
 <app:htmlCompose isHtmlCont="${isHtmlCont}" mailbox="${mailbox}" />
 </c:if>
 

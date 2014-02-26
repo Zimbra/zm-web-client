@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2007, 2008, 2009, 2010, 2011, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
@@ -34,9 +34,8 @@ ZmDetailListView = 	function(parent, controller, dropTgt) {
     this._controller = controller;
 
 	var headerList = this._getHeaderList(parent);
-
 	var params = {parent:parent, className:"ZmBriefcaseDetailListView",
-				  view: controller.getCurrentViewId(),
+				  view:ZmId.VIEW_BRIEFCASE_DETAIL,
 				  controller:controller, headerList:headerList, dropTgt:dropTgt};
 	ZmBriefcaseBaseView.call(this, params);
 
@@ -45,18 +44,14 @@ ZmDetailListView = 	function(parent, controller, dropTgt) {
     this._expanded = {};
     this._itemRowIdList = {};
 
-	if (controller.supportsDnD()) {
-		this._dragSrc = new DwtDragSource(Dwt.DND_DROP_MOVE);
-		this._dragSrc.addDragListener(this._dragListener.bind(this));
-		this.setDragSource(this._dragSrc);
-	
-		this._dropTgt = new DwtDropTarget("ZmDetailListView");
-		this._dropTgt.markAsMultiple();
-		this._dropTgt.addDropListener(this._dropListener.bind(this));
-		this.setDropTarget(this._dropTgt);
-	}
-    // Finder to DetailView drag and drop
-    this._initDragAndDrop();
+    this._dragSrc = new DwtDragSource(Dwt.DND_DROP_MOVE);
+	this._dragSrc.addDragListener(new AjxListener(this, this._dragListener));
+	this.setDragSource(this._dragSrc);
+
+    this._dropTgt = new DwtDropTarget("ZmDetailListView");
+	this._dropTgt.markAsMultiple();
+	this._dropTgt.addDropListener(new AjxListener(this, this._dropListener));
+	this.setDropTarget(this._dropTgt);
 };
 
 ZmDetailListView.prototype = new ZmBriefcaseBaseView;
@@ -135,7 +130,7 @@ function(parent) {
                 name:ZmMsg.tag}));
         }
         headers.push(
-                new DwtListHeaderItem({field:ZmItem.F_LOCK, icon: "Padlock", width:ZmDetailListView.COLWIDTH_ICON, name:ZmMsg.lock}),
+                new DwtListHeaderItem({field:ZmItem.F_LOCK, icon: "PadLock", width:ZmDetailListView.COLWIDTH_ICON, name:ZmMsg.lock}),
                 new DwtListHeaderItem({field:ZmItem.F_TYPE, icon:"GenericDoc", width:ZmDetailListView.COLWIDTH_ICON, name:ZmMsg.icon}),
                 new DwtListHeaderItem({field:ZmItem.F_NAME, text:ZmMsg._name, sortable:ZmItem.F_NAME}),
                 new DwtListHeaderItem({field:ZmItem.F_FILE_TYPE, text:ZmMsg.type, width:ZmMsg.COLUMN_WIDTH_TYPE_DLV}),
@@ -218,7 +213,7 @@ function(htmlArr, idx, item, field, colIdx, params) {
 	} else if (field == ZmItem.F_TYPE) {
 		htmlArr[idx++] = AjxImg.getImageHtml(item.getIcon());
 	} else if (field == ZmItem.F_LOCK) {
-		idx = this._getImageHtml(htmlArr, idx, (item.locked ? "Padlock" : "Blank_16") , this._getFieldId(item, field)); //AjxImg.getImageHtml(item.locked ? "Padlock" : "Blank_16");
+		idx = this._getImageHtml(htmlArr, idx, (item.locked ? "PadLock" : "Blank_16") , this._getFieldId(item, field)); //AjxImg.getImageHtml(item.locked ? "PadLock" : "Blank_16");
 	} else if (field == ZmItem.F_VERSION) {
 		htmlArr[idx++] = item.version;
 	} else if (field == ZmItem.F_NAME || field == ZmItem.F_SUBJECT) {
@@ -233,8 +228,8 @@ function(htmlArr, idx, item, field, colIdx, params) {
 	} else if (field == ZmItem.F_SIZE) {
 	    htmlArr[idx++] = item.isFolder ? ZmMsg.folder : AjxUtil.formatSize(item.size);
 	} else if (field == ZmItem.F_DATE) {
-		if (item.modifyDate || item.createDate) {
-			htmlArr[idx++] = AjxDateUtil.simpleComputeDateStr(item.modifyDate ? item.modifyDate : item.createDate);
+		if (item.modifyDate) {
+			htmlArr[idx++] = AjxDateUtil.simpleComputeDateStr(item.modifyDate);
 		}
 	} else if (field == ZmItem.F_FROM) {
         var creator = item.modifier || item.creator;
@@ -247,7 +242,7 @@ function(htmlArr, idx, item, field, colIdx, params) {
 				cname = creator.join("@");
 			}
 		}
-		htmlArr[idx++] = "<span style='white-space:nowrap'>";
+		htmlArr[idx++] = "<span style='white-space: nowrap'>";
 		htmlArr[idx++] = cname;
 		htmlArr[idx++] = "</span>";
 	} else if (field == ZmItem.F_FOLDER) {
@@ -267,7 +262,7 @@ ZmDetailListView.prototype._getDisplayName =
 function(item){
     var subject;
     if(item.isRevision){
-        subject = (item.subject);
+        subject = ("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + item.subject );
     }else if(parseInt(item.version) > 1){
         subject = AjxMessageFormat.format(ZmMsg.briefcaseFileVersion, [AjxStringUtil.htmlEncode(item.name), item.version])
     }
@@ -278,42 +273,41 @@ ZmDetailListView.prototype._getAbridgedContent =
 function(item, colIdx) {
 
     var idx=0, html=[];
-	var width = (AjxEnv.isIE || AjxEnv.isSafari) ? 22 : 16;
-	
-    html[idx++] = "<table width=100% class='TopRow'><tr>";
+	idx = this._getTable(html, idx, item);
+	idx = this._getRow(html, idx, item);
 
     if(this._revisionView){
-        html[idx++] = "<td width=" + width + " id='" + this._getFieldId(item, ZmItem.F_FOLDER) + "'><center>";
+        html[idx++] = "<td style='vertical-align:middle;' width=16 id='" + this._getFieldId(item, ZmItem.F_FOLDER) + "'><center>";
         idx = this._getCellContents(html, idx, item, ZmItem.F_EXPAND, colIdx);
         html[idx++] = "</center></td>";
     }
 
-	html[idx++] = "<td width=20 id='" + this._getFieldId(item, ZmItem.F_FOLDER) + "'><center>";
+	html[idx++] = "<td style='vertical-align:middle;' width=20 id='" + this._getFieldId(item, ZmItem.F_FOLDER) + "'><center>";
 	html[idx++] = AjxImg.getImageHtml(item.getIcon());
 	html[idx++] = "</center></td>";
-	html[idx++] = "<td style='vertical-align:middle;' width=100% id='" + this._getFieldId(item, ZmItem.F_NAME) + "'>";
-    html[idx++] = this._getDisplayName(item);
+	html[idx++] = "<td style='vertical-align:middle;' width='100%' id='" + this._getFieldId(item, ZmItem.F_NAME) + "'>";
+    html[idx++] = "&nbsp;"+ this._getDisplayName(item);
 	html[idx++] = "</td>";
 
-    html[idx++] = "<td style='vertical-align:middle;text-align:right;' width=40 id='" + this._getFieldId(item, ZmItem.F_SIZE) + "'>";
+    html[idx++] = "<td style='vertical-align:middle;text-align:left;' width=40 id='" + this._getFieldId(item, ZmItem.F_SIZE) + "'>";
 	idx = this._getCellContents(html, idx, item, ZmItem.F_SIZE, colIdx);
 	html[idx++] = "</td>";
 
-    html[idx++] = "<td style='text-align:right' width=" + width + " >";
+    html[idx++] = "<td style='vertical-align:middle;' width='16' align='right' id='" + this._getFieldId(item, ZmItem.F_TAG)+"'>";
     idx = this._getImageHtml(html, idx, item.getTagImageInfo(), this._getFieldId(item, ZmItem.F_TAG));
 	html[idx++] = "</td>";
 
 	html[idx++] = "</tr>";
     html[idx++] = "</table>";
 
-    html[idx++] = "<table width=100% class='BottomRow'><tr>";
-    html[idx++] = "<td style='vertical-align:middle;padding-left:50px;'>";
+    html[idx++] = "<table width='100%' border='0' cellpadding=0 cellspacing=0><tr>";
+    html[idx++] = "<td style='text-align:center'>";
     idx = this._getCellContents(html, idx, item, ZmItem.F_FROM, colIdx);
-    html[idx++] = "<td style='vertical-align:middle;text-align:right;'>";
+    html[idx++] = "<td style='text-align:right;padding-right:50px;'>";
     idx = this._getCellContents(html, idx, item, ZmItem.F_DATE, colIdx);
     html[idx++] = "</td>";
-    html[idx++] = "<td style='text-align:center;' width=" + width + " id='" + this._getFieldId(item, ZmItem.F_LOCK)+"'> ";
-    idx =   this._getImageHtml(html, idx, (item.locked ? "Padlock" : "Blank_16") , this._getFieldId(item, ZmItem.F_LOCK));
+    html[idx++] = "<td style='vertical-align:middle;' width='16' align='right' id='" + this._getFieldId(item, ZmItem.F_LOCK)+"' ";
+    idx =   this._getImageHtml(html, idx, (item.locked ? "PadLock" : "Blank_16") , this._getFieldId(item, ZmItem.F_LOCK));
 	html[idx++] = "</td>";
     html[idx++] = "</tr></table>";
 
@@ -610,13 +604,13 @@ function(htmlArr, idx, headerCol, i, numCols, id, defaultColumnSort) {
 
 	if (headerCol._field == ZmItem.F_SORTED_BY) {
 		var field = headerCol._field;
-		var textTdId = this._itemCountTextTdId = DwtId.makeId(this.view, ZmSetting.RP_RIGHT, "td");
+		var textTdId = this._itemCountTextTdId = DwtId._makeId(this.view, ZmSetting.RP_RIGHT, "td");
 		htmlArr[idx++] = "<td id='";
 		htmlArr[idx++] = id;
 		htmlArr[idx++] = "' class='";
 		htmlArr[idx++] = (id == this._currentColId)	? "DwtListView-Column DwtListView-ColumnActive'" :
 													  "DwtListView-Column'";
-		htmlArr[idx++] = " width='auto'><table width='100%'><tr><td id='";
+		htmlArr[idx++] = " width='auto'><table border=0 cellpadding=0 cellspacing=0 width='100%'><tr><td id='";
 		htmlArr[idx++] = DwtId.getListViewHdrId(DwtId.WIDGET_HDR_LABEL, this._view, field);
 		htmlArr[idx++] = "' class='DwtListHeaderItem-label'>";
 		htmlArr[idx++] = headerCol._label;
@@ -637,16 +631,3 @@ function(htmlArr, idx, headerCol, i, numCols, id, defaultColumnSort) {
 		return DwtListView.prototype._createHeader.apply(this, arguments);
 	}
 };
-
-ZmDetailListView.prototype._initDragAndDrop =
-function() {
-    this._dnd = new ZmDragAndDrop(this);
-};
-
-ZmDetailListView.prototype._submitMyComputerAttachments =
-function(files, node, isInline) {
-	var selectionCallback = this._controller._uploadFileListener.bind(this._controller);
-	var briefcaseApp = appCtxt.getApp(ZmApp.BRIEFCASE);
-	briefcaseApp.initExternalDndUpload(files, node, isInline, selectionCallback);
-};
-

@@ -369,13 +369,13 @@ hr{
 
 .cal_prev{
     width:25px;
-    background:url("@AppContextPath@/img/zimbra/ImgPreviousPage.png?v=@jsVersion@") 50% 50% no-repeat;
+    background:url("@AppContextPath@/img/zimbra/ImgPreviousPage.png") 50% 50% no-repeat;
     display:inline-block;
 }
 
 .cal_next{
     width:25px;
-    background:url("@AppContextPath@/img/zimbra/ImgNextPage.png?v=@jsVersion@") 50% 50% no-repeat;
+    background:url("@AppContextPath@/img/zimbra/ImgNextPage.png") 50% 50% no-repeat;
     display:inline-block;
 }
 

@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
@@ -75,16 +75,15 @@ function() {
 
 	// create list view
 	var listViewEl = Dwt.byId(data.id + "_list");
-	// add chooser
-	this._chooser = new ZmFilterRulesChooser(this._controller, {parent:this});
-	this._chooser.reparentHtmlElement(listViewEl + "_chooser");
-	var width = this._chooser.getWidth(this.parent);
-	var height = this._chooser.getHeight(this.parent);
-	this._chooser.resize(width, height); //still call this so the height is set correctly, but let's set the width to non specific values, to work better on resize:
-	//remove the width explicit setting and keep the current height setting.
-	this._chooser.sourceListView.setSize(Dwt.CLEAR, Dwt.DEFAULT);
-	this._chooser.targetListView.setSize(Dwt.CLEAR, Dwt.DEFAULT);
-	this._controller.initialize(this._toolbar, this._chooser.activeListView, this._chooser.notActiveListView);
+	if (listViewEl) {
+		this._listView = new ZmFilterListView(this, this._controller);
+		this._listView.replaceElement(listViewEl);
+		this._tabGroup.addMember(this._listView);
+	}
+
+	// initialize controller
+	this._controller.initialize(this._toolbar, this._listView);
+
 	this.hasRendered = true;
 };
 
@@ -137,96 +136,107 @@ function() {
 };
 
 /**
- * Creates a filter rule chooser.
+ * Creates the filter list view.
  * @class
- * This class creates a specialized chooser for the filter rule list view.
+ * This class represents the filter list view.
  *
- * @param {ZmController}	controller			the filter rule controller
- * @param {hash}		params		chooser params
+ * @param	{DwtComposite}	parent		the parent widget
+ * @param	{ZmController}	controller	the controller
  * 
- * @extends		DwtChooser
+ * @extends		DwtListView
  * 
  * @private
  */
-ZmFilterRulesChooser = function(controller, params) {
-	this._controller = controller;
-	DwtChooser.call(this, params);
+ZmFilterListView = function(parent, controller) {
+	var headerList = this._getHeaderList();
+	DwtListView.call(this, {parent:parent, className:"ZmFilterListView", headerList:headerList,
+							view:ZmId.VIEW_FILTER_RULES});
+
 	this._rules = AjxDispatcher.run(controller.isOutgoing() ? "GetOutgoingFilterRules" : "GetFilterRules");
+
+	this._controller = controller;
 	this._rules.addChangeListener(new AjxListener(this, this._changeListener));
+	this._internalId = AjxCore.assignId(this);
 };
 
-ZmFilterRulesChooser.prototype = new DwtChooser;
-ZmFilterRulesChooser.prototype.constructor = ZmFilterRulesChooser;
-ZmFilterRulesChooser.MOVE_UP_BTN_ID = "__moveUp__";
-ZmFilterRulesChooser.MOVE_DOWN_BTN_ID = "__moveDown__";
-ZmFilterRulesChooser.CHOOSER_HEIGHT = 300;
-ZmFilterRulesChooser.CHOOSER_WIDTH = 300;
-ZmFilterRulesChooser.WIDTH_FUDGE = 111; //if button size not this sets the correct width
-ZmFilterRulesChooser.HEIGHT_FUDGE = 200;
-/**
- * @private
- */
-ZmFilterRulesChooser.prototype._createSourceListView =
+ZmFilterListView.COL_ACTIVE	= "ac";
+ZmFilterListView.COL_NAME	= "na";
+ZmFilterListView.CHECKBOX_PREFIX = "_ruleCheckbox";
+
+ZmFilterListView.prototype = new DwtListView;
+ZmFilterListView.prototype.constructor = ZmFilterListView;
+
+ZmFilterListView.prototype.toString =
 function() {
-	return new ZmFilterChooserNotActiveListView(this);
+	return "ZmFilterListView";
 };
 
 /**
+ * Only show rules that have at least one valid action (eg, if the only action
+ * is "tag" and tagging is disabled, don't show the rule).
+ *
+ * @param list
+ * 
  * @private
  */
-ZmFilterRulesChooser.prototype._createTargetListView =
-function() {
-	return new ZmFilterChooserActiveListView(this);
+ZmFilterListView.prototype.set =
+function(list) {
+	this._checkboxIds = [];
+	var list1 = new AjxVector();
+	var len = list.size();
+	for (var i = 0; i < len; i++) {
+		var rule = list.get(i);
+		if (rule.hasValidAction()) {
+			list1.add(rule);
+		}
+	}
+	DwtListView.prototype.set.call(this, list1);
+
+	for (var i = 0, len = list1.size(); i < len; i++) {
+		var rule = list1.get(i);
+		var checkbox = Dwt.byId(ZmFilterListView._getCheckboxIdForRule(rule));
+		if (checkbox) {
+			Dwt.setHandler(checkbox, DwtEvent.ONCHANGE, AjxCallback.simpleClosure(this._activeStateChange, this));
+		}
+	}
 };
 
-ZmFilterRulesChooser.prototype._initialize = 
+ZmFilterListView.prototype._getHeaderList =
 function() {
-	DwtChooser.prototype._initialize.call(this);
-	this._moveUpButtonId = Dwt.getNextId();
-	this._moveUpButton = this._setupButton(ZmFilterRulesChooser.MOVE_UP_BTN_ID, this._moveUpButtonId, this._moveUpButtonDivId, ZmMsg.filterMoveUp);
-	this._moveUpButton.addSelectionListener(new AjxListener(this._controller, this._controller.moveUpListener));
-	this._moveUpButton.setImage("UpArrow");
-	this._moveUpButton.setEnabled(false);
-	this._moveDownButtonId = Dwt.getNextId();
-	this._moveDownButton = this._setupButton(ZmFilterRulesChooser.MOVE_DOWN_BTN_ID, this._moveDownButtonId, this._moveDownButtonDivId, ZmMsg.filterMoveDown);
-	this._moveDownButton.addSelectionListener(new AjxListener(this._controller, this._controller.moveDownListener));
-	this._moveDownButton.setImage("DownArrow");
-	this._moveDownButton.setEnabled(false);
-	this._removeButton.setEnabled(false);
-	this._removeButton.setAlign(DwtLabel.IMAGE_RIGHT);
-	this._removeButton.setImage("RightDoubleArrow");
-	this._removeButton.setEnabled(false);
-	this._transferButton =  this._button[this._buttonInfo[0].id];
-	this._transferButton.setImage("LeftDoubleArrow");
-	this._transferButton.setEnabled(false);
-	this.notActiveListView = this.sourceListView;
-	this.activeListView = this.targetListView;
-    AjxUtil.foreach([this._moveUpButton, this._moveDownButton, this._removeButton, this._transferButton],
-    function(item){
-            var htmlElement = item.getHtmlElement();
-            if (htmlElement && htmlElement.firstChild) htmlElement.firstChild.style.width = "100%";
-    });
+	return [
+		(new DwtListHeaderItem({field:ZmFilterListView.COL_ACTIVE, text:ZmMsg.active, width:ZmMsg.COLUMN_WIDTH_ACTIVE})),
+		(new DwtListHeaderItem({field:ZmFilterListView.COL_NAME, text:ZmMsg.filterName}))
+	];
 };
 
-ZmFilterRulesChooser.prototype._createHtml = 
-function() {
+ZmFilterListView._getCheckboxIdForRule =
+function(rule) {
+	return ZmFilterListView.CHECKBOX_PREFIX + rule.id;
+};
 
-	this._sourceListViewDivId	= Dwt.getNextId();
-	this._targetListViewDivId	= Dwt.getNextId();
-	this._buttonsDivId			= Dwt.getNextId();
-	this._removeButtonDivId		= Dwt.getNextId();
-	this._moveUpButtonDivId		= Dwt.getNextId();
-	this._moveDownButtonDivId	= Dwt.getNextId();
-	var data = {
-		        targetDivId: this._targetListViewDivId,
-		        sourceDivId: this._sourceListViewDivId,
-				buttonsDivId: this._buttonsDivId,
-				transferButtonId: this._buttonDivId[this._buttonInfo[0].id],
-				removeButtonId: this._removeButtonDivId,
-				moveUpButtonId: this._moveUpButtonDivId,
-				moveDownButtonId: this._moveDownButtonDivId
-				};
-	this.getHtmlElement().innerHTML = AjxTemplate.expand("prefs.Pages#MailFilterListView", data);
+ZmFilterListView.prototype._getCellClass =
+function(item, field, params) {
+	if (field == ZmFilterListView.COL_ACTIVE) {
+		return "FilterActiveCell";
+	}
+	return DwtListView.prototype._getCellClass.call(this, item, field, params);
+};
+
+ZmFilterListView.prototype._getCellContents =
+function(html, idx, item, field, colIdx, params) {
+	if (field == ZmFilterListView.COL_ACTIVE) {
+		html[idx++] = "<input type='checkbox' ";
+		html[idx++] = item.active ? "checked " : "";
+		html[idx++] = "id='";
+		html[idx++] = ZmFilterListView._getCheckboxIdForRule(item);
+		html[idx++] = "' _flvId='";
+		html[idx++] = this._internalId;
+		html[idx++] = "'>";
+	} else if (field == ZmFilterListView.COL_NAME) {
+		html[idx++] = AjxStringUtil.htmlEncode(item.name);
+	}
+
+	return idx;
 };
 
 /**
@@ -237,7 +247,7 @@ function() {
  * 
  * @private
  */
-ZmFilterRulesChooser.prototype._changeListener =
+ZmFilterListView.prototype._changeListener =
 function(ev) {
 	if (ev.type != ZmEvent.S_FILTER) {
 		AjxDebug.println(AjxDebug.FILTER, "FILTER RULES: ev.type is not S_FILTER; ev.type == " + ev.type);
@@ -247,369 +257,58 @@ function(ev) {
 	if (ev.event == ZmEvent.E_MODIFY) {
 		this._controller.resetListView(ev.getDetail("index"));
 		AjxDebug.println(AjxDebug.FILTER, "FILTER RULES: MODIFY event, called resetListview");
-		if (ev.source && ev.source.getNumberOfRules() == 0) {
-			this._enableButtons(); //disable transfer buttons
-		}
 	}
 };
 
 /**
- * Clicking a transfer button moves selected items to the target list.
+ * Handles click of 'active' checkbox by toggling the rule's active state.
  *
- * @param {DwtEvent}		ev		the click event
+ * @param {DwtEvent}	ev		the event
  * 
  * @private
  */
-ZmFilterRulesChooser.prototype._transferButtonListener =
+ZmFilterListView.prototype._activeStateChange =
 function(ev) {
-	var button = DwtControl.getTargetControl(ev);
-	var sel = this.notActiveListView.getSelection();
-	if (sel && sel.length) {
-		this.transfer(sel);
-		var list = this.notActiveListView.getList();
-		if (list && list.size()) {
-			this._selectFirst(DwtChooserListView.SOURCE);
-		} else {
-			this._enableButtons();
-		}
-	} 
-};
-
-/**
-* Moves or copies items from the source list to the target list, paying attention
-* to current mode.
-*
-* @param {AjxVector|array|Object|hash} list a list of items or hash of lists
-* @param {string} id the ID of the transfer button that was used
-* @param {boolean} skipNotify if <code>true</code>, do not notify listeners
-*/
-ZmFilterRulesChooser.prototype.transfer =
-function(list, id, skipNotify) {
-	DwtChooser.prototype.transfer.call(this, list, id, skipNotify);
-	for (var i=0; i<list.length; i++) {
-		var rule = this._rules.getRuleByName(list[i].name);
-		if (rule) {
-			rule.active = true;
-			this._rules.moveToBottom(rule, true);
-		}
-	}
-	this._rules.saveRules(0, true);
-};
-
-/**
- * Removes items from target list, paying attention to current mode. Also handles button state.
- *
- * @param {AjxVector|array|Object|hash}	list			a list of items or hash of lists
- * @param {boolean}	skipNotify	if <code>true</code>, do not notify listeners
- */
-ZmFilterRulesChooser.prototype.remove =
-function(list, skipNotify) {
-	DwtChooser.prototype.remove.call(this, list, skipNotify);
-	for (var i=0; i<list.length; i++) {
-		var rule = this._rules.getRuleByName(list[i].name);
-		if (rule) {
-			rule.active = false;
-			this._rules.moveToBottom(rule, true);
-		}
-	}
-	this._rules.saveRules(0, true);
-};
-
-/**
- * Removes an item from the target list.
- *
- * @param {Object}	item		the item to remove
- * @param {boolean}	skipNotify	if <code>true</code>, don't notify listeners
- * 
- * @private
- */
-ZmFilterRulesChooser.prototype._removeFromTarget =
-function(item, skipNotify) {
-	if (!item) return;
-	var list = this.activeListView.getList();
-	if (!list) return;
-	if (!list.contains(item)) return;
-
-	this.activeListView.removeItem(item, skipNotify);
-};
-
-/**
- * Enable/disable buttons as appropriate.
- *
- * @private
- */
-ZmFilterRulesChooser.prototype._enableButtons =
-function(sForce, tForce) {
-	DwtChooser.prototype._enableButtons.call(this, sForce, tForce);
-	
-	var activeEnabled = (sForce || (this.activeListView.getSelectionCount() > 0));
-	var availableEnabled = (tForce || (this.notActiveListView.getSelectionCount() > 0));
-	
-	var listView = activeEnabled ? this.activeListView : this.notActiveListView;
-	if (listView.getSelectionCount() > 1 || listView._list.size() <= 1) {
-		this._moveUpButton.setEnabled(false);
-		this._moveDownButton.setEnabled(false);
-	}
-	else if (listView.getSelectionCount() == 1) {
-		var sel = listView.getSelection();
-		var firstItem = listView._list.get(0);
-		var lastItem = listView._list.get(listView._list.size()-1);
-		if (firstItem && firstItem.id == sel[0].id) {
-			this._moveUpButton.setEnabled(false);
-			this._moveDownButton.setEnabled(true);
-		}
-		else if (lastItem && lastItem.id == sel[0].id) {
-			this._moveDownButton.setEnabled(false);
-			this._moveUpButton.setEnabled(true);
-		}
-		else {
-			this._moveDownButton.setEnabled(true);
-			this._moveUpButton.setEnabled(true);
+	var target = DwtUiEvent.getTarget(ev);
+	var flvId = target.getAttribute("_flvId");
+	var flv = AjxCore.objectWithId(flvId);
+	var ruleId = target.id.substring(13);
+	var rule = flv._rules.getRuleById(ruleId);
+	if (rule) {
+		var active = target.checked;
+		if (active != rule.active) {
+			var okCallback = new AjxCallback(flv._rules, flv._rules.setActive, [rule, active]);
+			var cancelCallback = new AjxCallback(this, function(){target.checked = false;});
+			if (active) {
+				this._controller.handleBeforeFilterChange(okCallback, cancelCallback);
+			} else {
+				okCallback.run();
+			}
 		}
 	}
 };
 
-
 /**
- * Single-click selects an item, double-click adds selected items to target list.
+ * Override so that we don't change selection when the 'active' checkbox is clicked.
+ * Also contains a hack for IE for handling a click of the 'active' checkbox, because
+ * the ONCHANGE handler was only getting invoked on every other checkbox click for IE.
  *
- * @param {DwtEvent}	ev		the click event
+ * @param {Element}	clickedEl	the list DIV that received the click
+ * @param {DwtEvent}	ev			the click event
+ * @param {constant}	button		the button that was clicked
  * 
  * @private
  */
-ZmFilterRulesChooser.prototype._sourceListener =
-function(ev) {
-	if (this._activeButtonId == DwtChooser.REMOVE_BTN_ID) {
-		// single-click activates appropriate transfer button if needed
-		var id = this._lastActiveTransferButtonId ? this._lastActiveTransferButtonId : this._buttonInfo[0].id;
-		this._setActiveButton(id);
-	}
-	this.targetListView.deselectAll();
-	this._enableButtons();
-};
+ZmFilterListView.prototype._allowLeftSelection =
+function(clickedEl, ev, button) {
+	// We only care about mouse events
+	if (!(ev instanceof DwtMouseEvent)) { return true; }
 
-/**
- * Single-click selects an item, double-click removes it from the target list.
- *
- * @param {DwtEvent}		ev		the click event
- * 
- * @private
- */
-ZmFilterRulesChooser.prototype._targetListener =
-function(ev) {
-	this._setActiveButton(DwtChooser.REMOVE_BTN_ID);
-	this.sourceListView.deselectAll();
-	this._enableButtons();
-
-};
-
-/**
- * Calculates the chooser height based on the parent element height
- * @param parent    {DwtControl} parent
- * @return {int} height
- */
-ZmFilterRulesChooser.prototype.getHeight = 
-function(parent) {
-	if (!parent) {
-		return ZmFilterRulesChooser.CHOOSER_HEIGHT;
-	}
-	var height = parseInt(parent.getHtmlElement().style.height);
-	return height - ZmFilterRulesChooser.HEIGHT_FUDGE;
-};
-
-/**
- * calculates chooser width based on parent element width.
- * @param parent {DwtControl} parent
- * @return {int} width
- */
-ZmFilterRulesChooser.prototype.getWidth = 
-function(parent) {
-	if (!parent) {
-		return ZmFilterRulesChooser.CHOOSER_WIDTH;
+	var target = DwtUiEvent.getTarget(ev);
+	var isInput = (target.id.indexOf(ZmFilterListView.CHECKBOX_PREFIX) == 0);
+	if (isInput) {
+		this._activeStateChange(ev);
 	}
 
-	var widthFudge = ZmFilterRulesChooser.WIDTH_FUDGE;
-	var width = parseInt(parent.getHtmlElement().style.width);
-	var buttonsDiv = document.getElementById(this._buttonsDivId);
-	if (buttonsDiv) {
-		var btnSz = Dwt.getSize(buttonsDiv); 
-		if (btnSz && btnSz.x > 0) {
-			widthFudge = ZmFilterRulesChooser.WIDTH_FUDGE - btnSz.x;
-		}
-	}
-	
-	return width - widthFudge;	
-};		
-
-/**
- * Creates a source list view.
- * @class
- * This class creates a specialized source list view for the contact chooser.
- * 
- * @param {DwtComposite}	parent			the contact picker
- * 
- * @extends		DwtChooserListView
- * 
- * @private
- */
-ZmFilterChooserActiveListView = function(parent) {
-	DwtChooserListView.call(this, {parent:parent, type:DwtChooserListView.SOURCE});
-	this.setScrollStyle(Dwt.CLIP);
-};
-
-ZmFilterChooserActiveListView.prototype = new DwtChooserListView;
-ZmFilterChooserActiveListView.prototype.constructor = ZmFilterChooserActiveListView;
-
-/**
- * Returns a string representation of the object.
- * 
- * @return		{String}		a string representation of the object
- * @private
- */
-ZmFilterChooserActiveListView.prototype.toString =
-function() {
-	return "ZmFilterChooserActiveListView";
-};
-
-ZmFilterChooserActiveListView.prototype._getCellContents = 
-function(html, idx, item, field, colIdx, params) {
-	if (AjxEnv.isIE) {
-		var maxWidth = AjxStringUtil.getWidth(item);
-		html[idx++] = "<div style='float; left; overflow: visible; width: " + maxWidth + ";'>";
-		html[idx++] = AjxStringUtil.htmlEncode(item.name);
-		html[idx++] = "</div>";		
-	}
-	else {
-		html[idx++] = AjxStringUtil.htmlEncode(item.name);
-	}
-	return idx;
-};
-
-/**
- * Only show active rules that have at least one valid action (eg, if the only action
- * is "tag" and tagging is disabled, don't show the rule).
- *
- * @param list
- * 
- * @private
- */
-ZmFilterChooserActiveListView.prototype.set =
-function(list) {
-	var list1 = new AjxVector();
-	var len = list.size();
-	for (var i = 0; i < len; i++) {
-		var rule = list.get(i);
-		if (rule.hasValidAction() && rule.active) {
-			list1.add(rule);
-		}
-	}
-	DwtListView.prototype.set.call(this, list1);
-};
-
-ZmFilterChooserActiveListView.prototype._getHeaderList =
-function() {
-	return [(new DwtListHeaderItem({text: ZmMsg.activeFilters}))];
-};
-
-
-/**
- * Returns a string of any extra attributes to be used for the TD.
- *
- * @param item		[object]	item to render
- * @param field		[constant]	column identifier
- * @param params	[hash]*		hash of optional params
- * 
- * @private
- */
-ZmFilterChooserActiveListView.prototype._getCellAttrText =
-function(item, field, params) {
-	return "style='position: relative; overflow: visible;'";
-};
-
-/**
- * Creates the target list view.
- * @class
- * This class creates a specialized target list view for the contact chooser.
- * 
- * @param {DwtComposite}	parent			the contact picker
- * @extends		DwtChooserListView
- * 
- * @private
- */
-ZmFilterChooserNotActiveListView = function(parent) {
-	DwtChooserListView.call(this, {parent:parent, type:DwtChooserListView.TARGET});
-	this.setScrollStyle(Dwt.CLIP);
-};
-
-ZmFilterChooserNotActiveListView.prototype = new DwtChooserListView;
-ZmFilterChooserNotActiveListView.prototype.constructor = ZmFilterChooserNotActiveListView;
-
-/**
- * Returns a string representation of the object.
- * 
- * @return		{String}		a string representation of the object
- */
-ZmFilterChooserNotActiveListView.prototype.toString =
-function() {
-	return "ZmFilterChooserNotActiveListView";
-};
-
-ZmFilterChooserNotActiveListView.prototype._getCellContents = 
-function(html, idx, item, field, colIdx, params) {
-	html[idx++] = AjxStringUtil.htmlEncode(item.name);
-	return idx;
-};
-
-ZmFilterChooserNotActiveListView.prototype._getHeaderList =
-function() {
-	return [(new DwtListHeaderItem({text: ZmMsg.availableFilters}))];
-};
-
-/**
- * Only show non-active rules that have at least one valid action (eg, if the only action
- * is "tag" and tagging is disabled, don't show the rule).
- *
- * @param list
- * 
- * @private
- */
-ZmFilterChooserNotActiveListView.prototype.set =
-function(list) {
-	var list1 = new AjxVector();
-	var len = list.size();
-	for (var i = 0; i < len; i++) {
-		var rule = list.get(i);
-		if (rule.hasValidAction() && !rule.active) {
-			list1.add(rule);
-		}
-	}
-	DwtListView.prototype.set.call(this, list1);
-};
-
-ZmFilterChooserNotActiveListView.prototype._getCellContents = 
-function(html, idx, item, field, colIdx, params) {
-	if (AjxEnv.isIE) {
-		var maxWidth = AjxStringUtil.getWidth(item);
-		html[idx++] = "<div style='float; left; overflow: visible; width: " + maxWidth + ";'>";
-		html[idx++] = AjxStringUtil.htmlEncode(item.name);
-		html[idx++] = "</div>";		
-	}
-	else {
-		html[idx++] = AjxStringUtil.htmlEncode(item.name);
-	}
-	return idx;
-};
-
-/**
- * Returns a string of any extra attributes to be used for the TD.
- *
- * @param item		[object]	item to render
- * @param field		[constant]	column identifier
- * @param params	[hash]*		hash of optional params
- * 
- * @private
- */
-ZmFilterChooserNotActiveListView.prototype._getCellAttrText =
-function(item, field, params) {
-	return "style='position: relative; overflow: visible;'";
+	return !isInput;
 };

@@ -37,10 +37,8 @@
 * @param {constant}	params.color		the color for this organizer
 * @param {String}	params.rgb		the color for this organizer, as HTML RGB value
 * @param {Boolean}	params.link		<code>true</code> if this organizer is shared
-* @param {Boolean}	params.broken		<code>true</code> if this link is broken
 * @param {int}	params.numUnread	the number of unread items for this organizer
 * @param {int}	params.numTotal	the number of items for this organizer
-* @param {Boolean}	params.noTooltip	do not show tooltip 
 * @param {int}	params.sizeTotal	the total size of organizer's items
 * @param {String}	params.url		the URL for this organizer's feed
 * @param {String}	params.owner		the owner for this organizer
@@ -64,7 +62,6 @@ ZmOrganizer = function(params) {
 	this.tree = params.tree;
 	this.numUnread = params.numUnread || 0;
 	this.numTotal = params.numTotal || 0;
-	this.noTooltip = params.noTooltip;
 	this.sizeTotal = params.sizeTotal || 0;
 	this.url = params.url;
 	this.owner = params.owner;
@@ -76,10 +73,8 @@ ZmOrganizer = function(params) {
 	this.restUrl = params.restUrl;
 	this.account = params.account;
     this.perm = params.perm;
-	this.noSuchFolder = params.broken; // Is this a link to some folder that ain't there.
+	this.noSuchFolder = false; // Is this a link to some folder that ain't there.
 	this._isAdmin = this._isReadOnly = this._hasPrivateAccess = null;
-    this.retentionPolicy = params.retentionPolicy;
-    this.webOfflineSyncDays = params.webOfflineSyncDays || 0;
 
 	this.color =
         params.color ||
@@ -89,7 +84,6 @@ ZmOrganizer = function(params) {
         ZmOrganizer.DEFAULT_COLOR[this.type] ||
         ZmOrganizer.C_NONE
     ;
-	this.isColorCustom = params.rgb != null; //set so we know if the user chose a custom color (to distiguish from basic color or none
 	this.rgb =
         params.rgb ||
         ZmOrganizer.COLOR_VALUES[this.color] ||
@@ -111,9 +105,6 @@ ZmOrganizer = function(params) {
 	this.children = new AjxVector();
 };
 
-ZmOrganizer.prototype.isZmOrganizer = true;
-ZmOrganizer.prototype.toString = function() { return "ZmOrganizer"; };
-
 // global organizer types
 ZmOrganizer.TAG					= ZmEvent.S_TAG;
 ZmOrganizer.SEARCH				= ZmEvent.S_SEARCH;
@@ -122,14 +113,13 @@ ZmOrganizer.MOUNTPOINT			= ZmEvent.S_MOUNTPOINT;
 ZmOrganizer.ZIMLET				= ZmEvent.S_ZIMLET;
 
 // folder IDs defined in com.zimbra.cs.mailbox.Mailbox
-// Note: since these are defined as Numbers, and IDs come into our system as Strings,
-// we need to use == for comparisons (instead of ===, which will fail)
 ZmOrganizer.ID_ROOT				= 1;
 ZmOrganizer.ID_INBOX			= 2;
 ZmOrganizer.ID_TRASH			= 3;
 ZmOrganizer.ID_SPAM				= 4;
 ZmOrganizer.ID_ADDRBOOK			= 7;
 ZmOrganizer.ID_CALENDAR			= 10;
+ZmOrganizer.ID_NOTEBOOK			= 12;
 ZmOrganizer.ID_AUTO_ADDED 		= 13;
 ZmOrganizer.ID_CHATS			= 14;
 ZmOrganizer.ID_TASKS			= 15;
@@ -142,7 +132,6 @@ ZmOrganizer.ID_ZIMLET			= -1000;	// zimlets need a range.  start from -1000 incr
 ZmOrganizer.ID_ROSTER_LIST		= -11;
 ZmOrganizer.ID_ROSTER_TREE_ITEM	= -13;
 ZmOrganizer.ID_ATTACHMENTS		= -17;		// Attachments View
-ZmOrganizer.ID_DLS				= -18;
 
 // fields that can be part of a displayed organizer
 ZmOrganizer.F_NAME				= "name";
@@ -206,7 +195,7 @@ ZmOrganizer.C_PINK				= 7;
 ZmOrganizer.C_GRAY				= 8;
 ZmOrganizer.C_ORANGE			= 9;
 ZmOrganizer.MAX_COLOR			= ZmOrganizer.C_ORANGE;
-ZmOrganizer.ORG_DEFAULT_COLOR 	= ZmOrganizer.C_GRAY;
+ZmOrganizer.ORG_DEFAULT_COLOR 	= ZmOrganizer.C_ORANGE;
 
 ZmOrganizer.COLOR_VALUES = [
 	null,
@@ -274,7 +263,6 @@ ZmOrganizer.OPEN_SETTING	= {};		// setting that controls whether the tree view i
 ZmOrganizer.NEW_OP			= {};		// name of operation for new button in tree header (optional)
 ZmOrganizer.DISPLAY_ORDER	= {};		// sort number to determine order of tree view (optional)
 ZmOrganizer.HIDE_EMPTY		= {};		// if true, hide tree header if tree is empty
-ZmOrganizer.SHAREABLE 		= {};		// allow share or not
 
 ZmOrganizer.APP2ORGANIZER	= {};		// organizer types, keyed by app name
 ZmOrganizer.APP2ORGANIZER_R = {};		// app names, keyed by app organizer type
@@ -287,10 +275,6 @@ ZmOrganizer.PERM_DELETE		= "d";
 ZmOrganizer.PERM_ADMIN		= "a";
 ZmOrganizer.PERM_WORKFLOW	= "x";
 ZmOrganizer.PERM_PRIVATE	= "p";
-
-// Retention Policy Elements - Keep or Purge
-ZmOrganizer.RETENTION_KEEP  = "keep";
-ZmOrganizer.RETENTION_PURGE = "purge";
 
 // Abstract methods
 
@@ -354,7 +338,6 @@ function(org, params) {
 	if (params.newOp)			{ ZmOrganizer.NEW_OP[org]				= params.newOp; }
 	if (params.displayOrder)	{ ZmOrganizer.DISPLAY_ORDER[org]		= params.displayOrder; }
 	if (params.hideEmpty)		{ ZmOrganizer.HIDE_EMPTY[org]			= params.hideEmpty; }
-	ZmOrganizer.SHAREABLE[org]	= !params.disableShare; 
 
 	if (!appCtxt.isChildWindow || params.childWindow ) {
 		if (params.compareFunc)		{ ZmTreeView.COMPARE_FUNC[org]			= params.compareFunc; }
@@ -391,20 +374,6 @@ function(org, params) {
 ZmOrganizer.sortCompare = function(organizerA, organizerB) {};
 
 /**
- * nulls value that is the default color for the type.
- * @param value
- */
-ZmOrganizer.getColorValue =
-function(value, type) {
-	// no need to save color if missing or default
-	if (value == ZmOrganizer.DEFAULT_COLOR[type]) {
-		return null;
-	}
-
-	return value;
-};
-
-/**
  * Creates an organizer via <code>&lt;CreateFolderRequest&gt;</code>. Attribute pairs can
  * be passed in and will become attributes of the folder node in the request.
  * 
@@ -423,19 +392,21 @@ function(params) {
 		if (i == "type" || i == "errorCallback" || i == "account") { continue; }
 
 		var value = params[i];
+		if (i == "color") {
+			// no need to save color if missing or default
+			if (!value || (value == ZmOrganizer.DEFAULT_COLOR[type])) {
+				value = null;
+			}
+		}
 		if (value) {
 			folder[i] = value;
 		}
 	}
-	//adding support to asyncMode == false didn't eventually help me, but why not keep it?
-	var asyncMode = params.asyncMode === undefined ? true : params.asyncMode; //default is true
 
 	return appCtxt.getAppController().sendRequest({
 		jsonObj: jsonObj,
-		asyncMode: asyncMode,
+		asyncMode: true,
 		accountName: (params.account && params.account.name),
-		callback: params.callback,
-		callbackAfterNotifications: params.callbackAfterNotifications, 
 		errorCallback: errorCallback
 	});
 };
@@ -449,8 +420,7 @@ function(params, ex) {
 	
 	var msg;
 	if (params.name && (ex.code == ZmCsfeException.MAIL_ALREADY_EXISTS)) {
-		var type = appCtxt.getFolderTree(appCtxt.getActiveAccount()).getFolderTypeByName(params.name);
-        msg = AjxMessageFormat.format(ZmMsg.errorAlreadyExists, [params.name, type.toLowerCase()]);
+		msg = AjxMessageFormat.format(ZmMsg.errorAlreadyExists, [params.name]);
 	} else if (params.url) {
 		var errorMsg = (ex.code == ZmCsfeException.SVC_RESOURCE_UNREACHABLE) ? ZmMsg.feedUnreachable : ZmMsg.feedInvalid;
 		msg = AjxMessageFormat.format(errorMsg, params.url);
@@ -545,22 +515,6 @@ function(organizerType) {
 };
 
 /**
- * Checks an organizer (folder or tag) offlineSyncInterval for validity.
- *
- * @param {String}	value		offlineSyncInterval
- * @return	{String}	<code>null</code> if the offlineSyncInterval is valid or an error message if the name is invalid
- */
-ZmOrganizer.checkWebOfflineSyncDays =
-function(value) {
-    if (isNaN(value)) {	return ZmMsg.invalidFolderSyncInterval; }
-    var interval = parseInt(value);
-	if (interval < 0 ||  interval > 30) {
-		return ZmMsg.invalidFolderSyncInterval;
-	}
-	return null;
-};
-
-/**
  * Checks an organizer (folder or tag) name for validity.
  *
  * @param {String}	name		an organizer name
@@ -575,7 +529,7 @@ function(name) {
 	}
 
 	if (!ZmOrganizer.VALID_NAME_RE.test(name)) {
-		return AjxMessageFormat.format(ZmMsg.errorInvalidName, name);
+		return AjxMessageFormat.format(ZmMsg.errorInvalidName, AjxStringUtil.htmlEncode(name));
 	}
 
 	return null;
@@ -672,14 +626,23 @@ function(id, result) {
 		result.account = ac.accountList.mainAccount;
 		result.id = id;
 	} else {
-		result.acctId = id.substring(0, idx);
-		result.account = ac.accountList.getAccount(result.acctId);
+		result.account = ac.accountList.getAccount(id.substring(0, idx));
 		result.id = id.substr(idx + 1);
 	}
 	return result;
 };
 
 // Public methods
+
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
+ZmOrganizer.prototype.toString = 
+function() {
+	return "ZmOrganizer";
+};
 
 /**
 * Gets the name of this organizer.
@@ -691,11 +654,10 @@ function(id, result) {
 * @return	{String}	the name
 */
 ZmOrganizer.prototype.getName = 
-function(showUnread, maxLength, noMarkup, useSystemName, useOwnerName, defaultRootType) {
+function(showUnread, maxLength, noMarkup, useSystemName, useOwnerName) {
 	if (this.nId == ZmFolder.ID_ROOT) {
-		var type = defaultRootType || this.type;
-		return (ZmOrganizer.LABEL[type])
-			? ZmMsg[ZmOrganizer.LABEL[type]] : "";
+		return (ZmOrganizer.LABEL[this.type])
+			? ZmMsg[ZmOrganizer.LABEL[this.type]] : "";
 	}
 	var name = (useSystemName && this._systemName) || (useOwnerName && this.oname) || this.name || "";
 	if (ZmOrganizer.PATH_IN_NAME[this.type] && this.path) {
@@ -729,20 +691,16 @@ function(includeRoot, showUnread, maxLength, noMarkup, useSystemName, useOwnerNa
 };
 
 /**
- * Gets the tooltip. The tooltip shows number of unread items, total messages and the total size.
+ * Gets the tooltip. The tooltip shows number of items and total size.
  *
  * @param {Boolean}	force		if <code>true</code>, don't use cached tooltip
  * @return	{String}	the tooltip
  */
 ZmOrganizer.prototype.getToolTip =
 function(force) {
-	if (this.noTooltip) {
-		return null;
-	}
-    if (!this._tooltip || force) {
+	if (!this._tooltip || force) {
 		var itemText = this._getItemsText();
-		var unreadLabel = this._getUnreadLabel();
-		var subs = {name:this.name, itemText:itemText, numTotal:this.numTotal, sizeTotal:this.sizeTotal, numUnread:this.numUnread, unreadLabel:unreadLabel};
+		var subs = {itemText:itemText, numTotal:this.numTotal, sizeTotal:this.sizeTotal};
 		this._tooltip = AjxTemplate.expand("share.App#FolderTooltip", subs);
 	}
 	return this._tooltip;
@@ -797,14 +755,6 @@ function() {
 };
 
 /**
- * returns the local part of the ID. In case of local folder it's the same as ID, but for remote, it's the "rid").
- */
-ZmOrganizer.prototype.getLocalId =
-function() {
-	return this.isRemote() ? this.rid : this.id;
-};
-
-/**
  * Gets the REST URL.
  * 
  * @return	{String}	the URL
@@ -814,7 +764,7 @@ function(noRemote) {
 
 	var restUrl = appCtxt.get(ZmSetting.REST_URL);
 	if (restUrl && (!this.isRemote() || noRemote)) { //for remote - this does not work. either use this.restUrl (if set, which is for shared folder, but not for sub-folders) or call _generateRestUrl which seems to work for subfodlers of shared as well.
-		var path = AjxStringUtil.urlEncode(this.getSearchPath()).replace("#","%23").replace(";", "%3B"); // User may type in a # in a folder name, but that's not ok for our urls
+		var path = AjxStringUtil.urlEncode(this.getSearchPath()).replace("#","%23"); // User may type in a # in a folder name, but that's not ok for our urls
 		// return REST URL as seen by the GetInfoResponse
 		return ([restUrl, "/", path].join(""));
 	}
@@ -1000,17 +950,6 @@ function() {
 ZmOrganizer.prototype.getIcon = function() {};
 
 /**
- * Gets the color of the organizer
- *
- * @return	{String}	the color
- */
-ZmOrganizer.prototype.getColor =
-function() {
-    return this.rgb || ZmOrganizer.COLOR_VALUES[this.color];
-}
-
-
-/**
  * Gets the icon with color
  * 
  * @return	{String}	the icon
@@ -1018,7 +957,7 @@ function() {
 ZmOrganizer.prototype.getIconWithColor =
 function() {
 	var icon = this.getIcon() || "";
-	var color = this.getColor();
+	var color = this.rgb || ZmOrganizer.COLOR_VALUES[this.color];
 	return color ? [icon,color].join(",color=") : icon;
 };
 
@@ -1046,182 +985,35 @@ function(name, callback, errorCallback, batchCmd) {
 };
 
 /**
- * Sets the web offline sync interval.
- *
- * @param	{String}	        interval		the web offline sync interval
- * @param	{AjxCallback}	    callback		the callback
- * @param	{AjxCallback}	    errorCallback   the error callback
- * @param   {ZmBatchCommand}    batchCmd        optional batch command
- */
-ZmOrganizer.prototype.setOfflineSyncInterval =
-function(interval, callback, errorCallback, batchCmd) {
-	if (this.webOfflineSyncDays == interval) { return; }
-
-	this._organizerAction({action: "webofflinesyncdays", attrs: {numDays: interval}, callback: callback,
-                           errorCallback: errorCallback, batchCmd: batchCmd});
-};
-
-/**
  * Sets the color.
  * 
- * @param	{String}	        color		    the color
- * @param	{AjxCallback}	    callback		the callback
- * @param	{AjxCallback}	    errorCallback   the error callback
- * @param   {ZmBatchCommand}    batchCmd        optional batch command
+ * @param	{String}	color		the color
+ * @param	{AjxCallback}	callback		the callback
+ * @param	{AjxCallback}	errorCallback		the error callback
  */
 ZmOrganizer.prototype.setColor =
-function(color, callback, errorCallback, batchCmd) {
+function(color, callback, errorCallback) {
 	var color = ZmOrganizer.checkColor(color);
-	if (!this.isColorChanged(color)) { return; }
+	if (this.color == color) { return; }
 
-	this._organizerAction({action: "color", attrs: {color: color}, callback: callback,
-                           errorCallback: errorCallback, batchCmd: batchCmd});
+	this._organizerAction({action: "color", attrs: {color: color}, callback: callback, errorCallback: errorCallback});
 };
 
 /**
  * Sets the RGB color.
  * 
- * @param	{Object}	        rgb		        the rgb
- * @param	{AjxCallback}	    callback		the callback
- * @param	{AjxCallback}	    errorCallback	the error callback
- * @param   {ZmBatchCommand}    batchCmd        optional batch command
+ * @param	{Object}	rgb		the rgb
+ * @param	{AjxCallback}	callback		the callback
+ * @param	{AjxCallback}	errorCallback		the error callback
  */
-ZmOrganizer.prototype.setRGB = function(rgb, callback, errorCallback, batchCmd) {
-	if (!this.isColorChanged(rgb)) { return; }
-	this._organizerAction({action: "color", attrs: {rgb: rgb}, callback: callback,
-                           errorCallback: errorCallback, batchCmd: batchCmd});
-};
-
-
-ZmOrganizer.prototype.getRetentionPolicy =
-function(policyElement) {
-    var policy = null;
-    if (this.retentionPolicy && this.retentionPolicy[0] && this.retentionPolicy[0][policyElement] &&
-        this.retentionPolicy[0][policyElement][0]       && this.retentionPolicy[0][policyElement][0].policy &&
-        this.retentionPolicy[0][policyElement][0].policy[0]) {
-        policy = this.retentionPolicy[0][policyElement][0].policy[0];
-    }
-    return policy;
-}
-
-ZmOrganizer.prototype.getRetentionPolicyLifetimeMsec =
-function(policy) {
-    if (policy) {
-        // Apply the keep (retention) period
-        var lifetime = policy.lifetime;
-        var amount = parseInt(lifetime);
-        // Intervals taken from DateUtil.java.
-        var interval = lifetime.slice(lifetime.length-1);
-        var lifetimeMsec = 0;
-        switch (interval) {
-            case  "d": lifetimeMsec = amount * AjxDateUtil.MSEC_PER_DAY;    break;
-            case  "h": lifetimeMsec = amount * AjxDateUtil.MSEC_PER_HOUR;   break;
-            case  "m": lifetimeMsec = amount * AjxDateUtil.MSEC_PER_MINUTE; break;
-            case  "s": lifetimeMsec = amount * 1000; break;
-            case "ms": lifetimeMsec = amount;  break;
-            default  : lifetimeMsec = amount * 1000; break;
-        }
-    }
-    return lifetimeMsec;
-}
-
-/**
- * Sets the Retention Policy.
- *
- * @param	{Object}	        retentionPolicy     the new retention policy
- * @param	{AjxCallback}	    callback		    the callback
- * @param	{AjxCallback}	    errorCallback	    the error callback
- * @param   {ZmBatchCommand}    batchCmd            optional batch command
- */
-ZmOrganizer.prototype.setRetentionPolicy = function(newRetentionPolicy, callback, errorCallback, batchCmd) {
-    var keepPolicy  = this.getRetentionPolicy(ZmOrganizer.RETENTION_KEEP);
-    var purgePolicy = this.getRetentionPolicy(ZmOrganizer.RETENTION_PURGE);
-    if (!this.policiesDiffer(keepPolicy,  newRetentionPolicy.keep) &&
-        !this.policiesDiffer(purgePolicy, newRetentionPolicy.purge)) {
-        // No updated policy specified or no changes.
-        return;
-    }
-
-	var cmd = ZmOrganizer.SOAP_CMD[this.type] + "Request";
-	var request = {
-		_jsns: "urn:zimbraMail",
-		action : {
-			op: "retentionpolicy",
-			id: this.id,
-			retentionPolicy: {
-				keep: {},
-				purge: {}
-			}
-		}
-	};
-	var jsonObj = {};
-	jsonObj[cmd] = request;
-
-	var retentionNode = request.action.retentionPolicy;
-
-    if (newRetentionPolicy.keep) {
-        this._addPolicy(retentionNode.keep, newRetentionPolicy.keep);
-    }
-    if (newRetentionPolicy.purge) {
-        this._addPolicy(retentionNode.purge, newRetentionPolicy.purge);
-    }
-
-	if (batchCmd) {
-        batchCmd.addRequestParams(jsonObj, callback, errorCallback);
- 	}
-	else {
-		var accountName;
-		if (appCtxt.multiAccounts) {
-			accountName = (this.account)
-				? this.account.name : appCtxt.accountList.mainAccount.name;
-		}
-		appCtxt.getAppController().sendRequest({
-			jsonObj:       jsonObj,
-			asyncMode:     true,
-			accountName:   accountName,
-			callback:      callback,
-			errorCallback: errorCallback
-		});
-	}
-
-};
-
-ZmOrganizer.prototype.policiesDiffer =
-function(policyA, policyB) {
-    var differ = false;
-    if ((policyA && !policyB) || (!policyA && policyB)) {
-        differ = true;
-    } else if (policyA) {
-        // Old and new specified
-        if (policyA.type != policyB.type) {
-            differ = true;
-        } else {
-            if (policyA.type == "user") {
-                differ = policyA.lifetime != policyB.lifetime;
-            } else {
-                // System policy
-                differ = policyA.id != policyB.id;
-            }
-        }
-    }
-    return differ;
-}
-
-ZmOrganizer.prototype._addPolicy =
-function(node, policy) {
-	var policyNode = node.policy = {};
-	for (var attr in policy) {
-		if (AjxEnv.isIE) {
-			policy[attr] += ""; //To string
-		}
-
-		policyNode[attr] = policy[attr];
-	}
+ZmOrganizer.prototype.setRGB = function(rgb, callback, errorCallback) {
+	if (this.rgb == rgb) { return; }
+	this._organizerAction({action: "color", attrs: {rgb: rgb}, callback: callback, errorCallback: errorCallback});
 };
 
 /**
  * Returns color number b/w 0-9 for a given color code
- *
+ * 
  * @param	{String}	color	The color (usually in #43eded format
  * @return {int} Returns 0-9 for a standard color and returns -1 for custom color
  */
@@ -1242,33 +1034,6 @@ function(color) {
 };
 
 /**
- * Returns true if the color is changed
- *
- * @param	{String/int}	color	The color (usually in #rgb format or numeric color code
- * @return {Boolean} Returns true if the color is changed
- */
-ZmOrganizer.prototype.isColorChanged =
-function(color) {
-    var isNewColorCustom = ZmOrganizer.getStandardColorNumber(color) === -1,
-        isPrevColorCustom = this.isColorCustom;
-    if ((isNewColorCustom && !isPrevColorCustom) ||
-        (!isNewColorCustom && isPrevColorCustom) ) {
-        //Custom changed to standard or standard changed to custom
-        return true;
-    }
-    else if (isNewColorCustom && isPrevColorCustom) {
-        //If both are custom colors check the rgb codes
-        return color != this.rgb;
-    }
-    else if (!isNewColorCustom && !isPrevColorCustom){
-        //If both are standard check the numeric color codes
-        return color != this.color;
-    }
-    //default fallback
-    return false;
-};
-
-/**
  * Updates the folder. Although it is possible to use this method to change just about any folder
  * attribute, it should only be used to set multiple attributes at once since it
  * has extra overhead on the server.
@@ -1283,12 +1048,12 @@ function(attrs) {
 /**
  * Assigns the organizer a new parent, moving it within its tree.
  *
- * @param {ZmOrganizer}	newParent		the new parent of this organizer
+ * @param {ZmOrganizer}		newParent		the new parent of this organizer
  * @param {boolean}		noUndo			if true, action is not undoable
+ * @param {String}	actionText		optional custom action text to display as summary
  */
 ZmOrganizer.prototype.move =
-function(newParent, noUndo, batchCmd) {
-
+function(newParent, noUndo, actionText, batchCmd) {
 	var newId = (newParent.nId > 0)
 		? newParent.id
 		: ZmOrganizer.getSystemId(ZmOrganizer.ID_ROOT);
@@ -1300,11 +1065,8 @@ function(newParent, noUndo, batchCmd) {
 		return;
 	}
 	var params = {};
-	params.batchCmd = batchCmd;
-	params.actionTextKey = 'actionMoveOrganizer';
-	params.orgName = this.getName(false, false, true, false, false, this.type);
+    params.batchCmd = batchCmd;
 	if (newId == ZmOrganizer.ID_TRASH) {
-		params.actionArg = ZmMsg.trash;
 		params.action = "trash";
 		params.noUndo = noUndo;
 	}
@@ -1312,7 +1074,8 @@ function(newParent, noUndo, batchCmd) {
 		if (newParent.account && newParent.account.isLocal()) {
 			newId = [ZmAccount.LOCAL_ACCOUNT_ID, newId].join(":");
 		}
-		params.actionArg = newParent.getName(false, false, true, false, false, this.type);
+		params.actionText = actionText || ZmMsg.actionMove;
+		params.actionArg = newParent.getName(false, false, true);
 		params.action = "move";
 		params.attrs = {l: newId};
 		params.noUndo = noUndo;
@@ -1325,11 +1088,11 @@ function(newParent, noUndo, batchCmd) {
  * subfolders. If the organizer is "Trash" or "Spam", the server deletes and re-creates the
  * folder. In that case, we do not bother to remove it from the UI (and we ignore
  * creates on system folders).
- *
+ * 
  */
 ZmOrganizer.prototype._delete =
 function(batchCmd) {
-	DBG.println(AjxDebug.DBG1, "deleting: " + AjxStringUtil.htmlEncode(this.name) + ", ID: " + this.id);
+	DBG.println(AjxDebug.DBG1, "deleting: " + this.name + ", ID: " + this.id);
 	var isEmptyOp = ((this.type == ZmOrganizer.FOLDER || this.type == ZmOrganizer.ADDRBOOK || this.type == ZmOrganizer.BRIEFCASE) &&
 					 (this.nId == ZmFolder.ID_SPAM || this.nId == ZmFolder.ID_TRASH));
 	// make sure we're not deleting a system object (unless we're emptying SPAM or TRASH)
@@ -1341,13 +1104,12 @@ function(batchCmd) {
 
 /**
  * Empties the organizer.
- *
+ * 
  * @param	{Boolean}	doRecursive		<code>true</code> to recursively empty the organizer
  * @param	{ZmBatchCommand}	batchCmd	the batch command
- * @param	{Object}	callback
  */
-ZmOrganizer.prototype.empty =
-function(doRecursive, batchCmd, callback) {
+ZmOrganizer.prototype.empty = 
+function(doRecursive, batchCmd) {
 	doRecursive = doRecursive || false;
 
 	var isEmptyOp = ((this.type == ZmOrganizer.FOLDER || this.type == ZmOrganizer.ADDRBOOK) &&
@@ -1359,7 +1121,7 @@ function(doRecursive, batchCmd, callback) {
 	// make sure we're not emptying a system object (unless it's SPAM/TRASH/SYNCFAILURES)
 	if (this.isSystem() && !isEmptyOp) { return; }
 
-	var params = {action: "empty", batchCmd: batchCmd, callback: callback};
+	var params = {action:"empty", batchCmd:batchCmd};
 	params.attrs = (this.nId == ZmFolder.ID_TRASH)
 		? {recursive:true}
 		: {recursive:doRecursive};
@@ -1373,7 +1135,7 @@ function(doRecursive, batchCmd, callback) {
 
 /**
  * Marks all items as "read".
- *
+ * 
  * @param	{ZmBatchCommand}	batchCmd	the batch command
  */
 ZmOrganizer.prototype.markAllRead =
@@ -1384,7 +1146,7 @@ function(batchCmd) {
 
 /**
  * Synchronizes the organizer.
- *
+ * 
  */
 ZmOrganizer.prototype.sync =
 function() {
@@ -1395,7 +1157,7 @@ function() {
 
 /**
  * Handles delete notification.
- *
+ * 
  */
 ZmOrganizer.prototype.notifyDelete =
 function() {
@@ -1408,7 +1170,7 @@ function() {
 	var organizers = treeView && treeView.getSelected();
 	if (organizers) {
 		if (!(organizers instanceof Array)) organizers = [organizers];
-		for (var i = 0; i <  organizers.length; i++) {
+		for (var i in organizers) {
 			var organizer = organizers[i];
 			if (organizer && (organizer == this || organizer.isChildOf(this))) {
 				var folderId = this.parent.id;
@@ -1472,12 +1234,16 @@ function(obj, details) {
 		doNotify = true;
 	}
 	if ((obj.rgb != null || obj.color != null) && !obj._isRemote) {
-        var color = obj.color || obj.rgb;
-		if (this.isColorChanged(color)) {
-			this.isColorCustom = obj.rgb != null;
-			this.color = obj.color;
-            this.rgb = obj.rgb || ZmOrganizer.COLOR_VALUES[color];
+		var color = ZmOrganizer.checkColor(obj.color) || ZmOrganizer.DEFAULT_COLOR[this.type] || ZmOrganizer.ORG_DEFAULT_COLOR;
+		if (color != this.color) {
+			this.color = color;
 			fields[ZmOrganizer.F_COLOR] = true;
+            fields[ZmOrganizer.F_RGB] = true;
+		}
+        var rgb = obj.rgb || ZmOrganizer.COLOR_VALUES[color];
+		if (rgb != this.rgb) {
+			this.rgb = rgb;
+            fields[ZmOrganizer.F_COLOR] = true;
             fields[ZmOrganizer.F_RGB] = true;
 		}
 		doNotify = true;
@@ -1516,15 +1282,6 @@ function(obj, details) {
 		// clear acl-related flags so they are recalculated
 		this._isAdmin = this._isReadOnly = this._hasPrivateAccess = null;
 	}
-    if (obj.retentionPolicy) {
-        // Only displayed in a modal dialog - no need to doNotify
-        if (obj.retentionPolicy[0].keep || obj.retentionPolicy[0].purge) {
-            this.retentionPolicy = obj.retentionPolicy;
-        } else {
-            this.retentionPolicy = null;
-        }
-    }
-    this.webOfflineSyncDays = obj.webOfflineSyncDays || 0;
 
 	// Send out composite MODIFY change event
 	if (doNotify) {
@@ -1548,14 +1305,14 @@ function(obj, details) {
 
 /**
  * Deletes the organizer (local). Cleans up a deleted organizer:
- *
+ * 
  * <ul>
  * <li>remove from parent's list of children</li>
  * <li>remove from item cache</li>
  * <li>perform above two steps for each child</li>
  * <li>clear list of children</li>
  * </ul>
- *
+ * 
  */
 ZmOrganizer.prototype.deleteLocal =
 function() {
@@ -1588,7 +1345,7 @@ function(name) {
 */
 ZmOrganizer.prototype.getChild =
 function(name) {
-	name = name ? name.toLowerCase() : "";
+	name = name.toLowerCase();
 	var a = this.children.getArray();
 	var sz = this.children.size();
 	for (var i = 0; i < sz; i++) {
@@ -1637,7 +1394,7 @@ function(path) {
 /**
  * Changes the parent of this organizer. Note that the new parent passed
  * in may be <code>null</code>, which makes this organizer an orphan.
- *
+ * 
  * @param {ZmOrganizer}	newParent		the new parent
  */
 ZmOrganizer.prototype.reparent =
@@ -1727,7 +1484,7 @@ function(type, list) {
  *
  * @param {String}	path			the path to search for
  * @param {Boolean}	useSystemName	if <code>true</code>, use untranslated version of system folder names
- * @return	{ZmOrganizer}	the organizer
+ * @return	{ZmOrganizer}	the organizer	
  */
 ZmOrganizer.prototype.getByPath =
 function(path, useSystemName) {
@@ -1736,7 +1493,7 @@ function(path, useSystemName) {
 
 /**
  * Test the path of this folder and then descendants against the given path, case insensitively.
- *
+ * 
  * @private
  */
 ZmOrganizer.prototype._getByPath =
@@ -1746,7 +1503,7 @@ function(path, useSystemName) {
 	if (path == this.getPath(false, false, null, true, useSystemName).toLowerCase()) {
 		return this;
 	}
-
+		
 	var a = this.children.getArray();
 	for (var i = 0; i < a.length; i++) {
 		var organizer = a[i]._getByPath(path, useSystemName);
@@ -1759,7 +1516,7 @@ function(path, useSystemName) {
 
 /**
  * Gets the number of children of this organizer.
- *
+ * 
  * @return	{int}	the size
  */
 ZmOrganizer.prototype.size =
@@ -1790,7 +1547,7 @@ function (organizer) {
  *
  * @param {int}	parentId	the ID of the organizer to find
  * @return	{ZmOrganizer}	the organizer
- *
+ * 
  * @private
  */
 ZmOrganizer.prototype._getNewParent =
@@ -1800,7 +1557,7 @@ function(parentId) {
 
 /**
  * Checks if the organizer with the given ID is under this organizer.
- *
+ * 
  * @param	{String}	id		the ID
  * @return	{Boolean}	<code>true</code> if the organizer is under this organizer
  */
@@ -1821,7 +1578,7 @@ function(id) {
 
 /**
  * Checks if this organizer is in "Trash".
- *
+ * 
  * @return	{Boolean}	<code>true</code> if in "Trash"
  */
 ZmOrganizer.prototype.isInTrash =
@@ -1831,7 +1588,7 @@ function() {
 
 /**
  * Checks if permissions are allowed.
- *
+ * 
  * @return	{Boolean}	<code>true</code> if permissions are allowed
  */
 ZmOrganizer.prototype.isPermAllowed =
@@ -1845,7 +1602,7 @@ function(perm) {
 
 /**
  * Checks if the organizer is read-only.
- *
+ * 
  * @return	{Boolean}	<code>true</code> if read-only
  */
 ZmOrganizer.prototype.isReadOnly =
@@ -1861,7 +1618,7 @@ function() {
 
 /**
  * Checks if admin.
- *
+ * 
  * @return	{Boolean}	<code>true</code> if this organizer is admin
  */
 ZmOrganizer.prototype.isAdmin =
@@ -1877,7 +1634,7 @@ function() {
 
 /**
  * Checks if the organizer has private access.
- *
+ * 
  * @return	{Boolean}	<code>true</code> if has private access
  */
 ZmOrganizer.prototype.hasPrivateAccess =
@@ -1894,7 +1651,7 @@ function() {
 /**
  * Checks if the organizer is "remote". That applies to mountpoints (links),
  * the folders they represent, and any subfolders we know about.
- *
+ * 
  * @return	{Boolean}	<code>true</code> if the organizer is "remote"
  */
 ZmOrganizer.prototype.isRemote =
@@ -1927,7 +1684,7 @@ function() {
 
 /**
  * Checks if the organizer is a system tag or folder.
- *
+ * 
  * @return	{Boolean}	<code>true</code> if system tag or folder
  */
 ZmOrganizer.prototype.isSystem =
@@ -1937,7 +1694,7 @@ function () {
 
 /**
  * Checks if the organizer gets its contents from an external feed.
- *
+ * 
  * @return	{Boolean}	<code>true</code>  if from external feed
  */
 ZmOrganizer.prototype.isFeed =
@@ -1952,7 +1709,7 @@ ZmOrganizer.prototype.hasFeeds = function() { return false; };
  * Checks if this folder maps to a datasource. If type is given, returns
  * true if folder maps to a datasource *and* is of the given type.
  *
- * @param	{constant}	type			the type (see {@link ZmAccount.TYPE_POP} or {@link ZmAccount.TYPE_IMAP})
+ * @param	{int}	type			the type (see {@link ZmAccount.TYPE_POP} or {@link ZmAccount.TYPE_IMAP})
  * @param	{Boolean}	checkParent		if <code>true</code>, walk-up the parent chain
  * @return	{Boolean}	<code>true</code> if this folder maps to a datasource
  */
@@ -1967,7 +1724,7 @@ function(type, checkParent) {
  * returns non-null result only if folder maps to datasource(s) *and* is of the
  * given type.
  *
- * @param	{constant}	type			the type (see {@link ZmAccount.TYPE_POP} or {@link ZmAccount.TYPE_IMAP})
+ * @param	{int}	type			the type (see {@link ZmAccount.TYPE_POP} or {@link ZmAccount.TYPE_IMAP})
  * @param	{Boolean}	checkParent		if <code>true</code>, walk-up the parent chain
  * @return	{Array}	the data sources this folder maps to or <code>null</code> for none
  */
@@ -1989,7 +1746,7 @@ function(type, checkParent) {
 
 /**
  * Gets the owner.
- *
+ * 
  * @return	{String}	the owner
  */
 ZmOrganizer.prototype.getOwner =
@@ -1999,7 +1756,7 @@ function() {
 
 /**
  * Gets the sort index.
- *
+ * 
  * @return	{int}	the sort index
  */
 ZmOrganizer.getSortIndex =
@@ -2024,44 +1781,36 @@ function(child, sortFunction) {
  * @param {String}	action		the operation to perform
  * @param {Hash}	attrs		a hash of additional attributes to set in the request
  * @param {ZmBatchCommand}	batchCmd	the batch command that contains this request
- *
+ * 
  * @private
  */
 ZmOrganizer.prototype._organizerAction =
 function(params) {
-
-	var cmd = ZmOrganizer.SOAP_CMD[this.type] + "Request";
-	var request = {
-		_jsns: "urn:zimbraMail",
-		action : {
-			op: params.action,
-			id: params.id || this.id
-		}
-	};
-	var jsonObj = {};
-	jsonObj[cmd] = request;
-
+	var cmd = ZmOrganizer.SOAP_CMD[this.type];
+	var soapDoc = AjxSoapDoc.create(cmd + "Request", "urn:zimbraMail");
+	var actionNode = soapDoc.set("action");
+	actionNode.setAttribute("op", params.action);
+	actionNode.setAttribute("id", params.id || this.id);
 	for (var attr in params.attrs) {
 		if (AjxEnv.isIE) {
 			params.attrs[attr] += ""; //To string
 		}
-		request.action[attr] = params.attrs[attr];
+		actionNode.setAttribute(attr, params.attrs[attr]);
 	}
 	var actionController = appCtxt.getActionController();
 	actionController.dismiss();
 	var actionLogItem = (!params.noUndo && actionController && actionController.actionPerformed({op: params.action, id: params.id || this.id, attrs: params.attrs})) || null;
 	var respCallback = new AjxCallback(this, this._handleResponseOrganizerAction, [params, actionLogItem]);
 	if (params.batchCmd) {
-        params.batchCmd.addRequestParams(jsonObj, respCallback, params.errorCallback);
- 	}
-	else {
+		params.batchCmd.addRequestParams(soapDoc, respCallback, params.errorCallback);
+	} else {
 		var accountName;
 		if (appCtxt.multiAccounts) {
-			accountName = (this.account)
+			accountName = (this.account) 
 				? this.account.name : appCtxt.accountList.mainAccount.name;
 		}
 		appCtxt.getAppController().sendRequest({
-			jsonObj: jsonObj,
+			soapDoc: soapDoc,
 			asyncMode: true,
 			accountName: accountName,
 			callback: respCallback,
@@ -2075,22 +1824,16 @@ function(params) {
  */
 ZmOrganizer.prototype._handleResponseOrganizerAction =
 function(params, actionLogItem, result) {
-
 	if (actionLogItem) {
 		actionLogItem.setComplete();
 	}
 	if (params.callback) {
 		params.callback.run(result);
 	}
-	if (params.actionTextKey) {
+	if (params.actionText) {
 		var actionController = appCtxt.getActionController();
-		var summary = ZmOrganizer.getActionSummary({
-			actionTextKey:  params.actionTextKey,
-			numItems:       params.numItems || 1,
-			type:           this.type,
-			orgName:        params.orgName,
-			actionArg:      params.actionArg
-		});
+		var summary = ZmOrganizer.getActionSummary(params.actionText, params.numItems || 1, this.type, params.actionArg);
+		summary = AjxStringUtil.htmlEncode(summary); //encode html special chars such as < and > so won't be interpreted as html (both for security and for not losing visibility of characters)
 		var undoLink = actionLogItem && actionController && actionController.getUndoLink(actionLogItem);
 		if (undoLink && actionController) {
 			actionController.onPopup();
@@ -2101,31 +1844,11 @@ function(params, actionLogItem, result) {
 	}
 };
 
-/**
- * Returns a string describing an action, intended for display as toast to tell the
- * user what they just did.
- *
- * @param   {Object}        params          hash of params:
- *          {String}        type            organizer type (ZmOrganizer.*)
- *          {String}        actionTextKey   ZmMsg key for text string describing action
- *          {String}        orgName         name of the organizer that was affected
- *          {String}        actionArg       (optional) additional argument
- *
- * @return {String}     action summary
- */
 ZmOrganizer.getActionSummary =
-function(params) {
-
-	var type = params.type,
-		typeKey = ZmOrganizer.FOLDER_KEY[type],
-		typeText = ZmMsg[typeKey],
-		capKey = AjxStringUtil.capitalize(typeKey),
-		alternateKey = params.actionTextKey + capKey,
-		text = ZmMsg[alternateKey] || ZmMsg[params.actionTextKey],
-		orgName = AjxStringUtil.htmlEncode(params.orgName),
-		arg = AjxStringUtil.htmlEncode(params.actionArg);
-
-	return AjxMessageFormat.format(text, [ typeText, orgName, arg ]);
+function(text, num, type, arg) {
+	var typeTextAuto = ZmMsg[ZmOrganizer.MSG_KEY[type]];
+	var typeTextSingular = ZmMsg[ZmOrganizer.MSG_KEY[type]];
+	return AjxMessageFormat.format(text, [num, typeTextAuto, arg, typeTextSingular]);
 };
 
 /**
@@ -2228,7 +1951,7 @@ function(obj) {
  */
 ZmOrganizer.prototype._notify =
 function(event, details) {
-
+    appCtxt.setNotifyDebug("ZmOrganizer notify called. --- This should update the folder tree");
 	if (details) {
 		details.organizers = [this];
 	} else {
@@ -2274,9 +1997,4 @@ function() {
 		result = ZmMsg.items;
 	}
 	return result;
-};
-
-ZmOrganizer.prototype._getUnreadLabel = 
-function() {
-	return ZmMsg.unread;	
 };

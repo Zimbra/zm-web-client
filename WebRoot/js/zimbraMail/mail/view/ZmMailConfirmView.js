@@ -26,7 +26,7 @@
  */
 ZmMailConfirmView = function(parent, controller) {
 
-	this._view = controller.getCurrentViewId();
+	this._view = ZmId.VIEW_MAIL_CONFIRM + controller.sessionId;
 	DwtComposite.call(this, {parent:parent, className:"ZmMailConfirmView", posStyle:Dwt.ABSOLUTE_STYLE,
 							 id:ZmId.getViewId(this._view)});
 

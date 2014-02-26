@@ -12,11 +12,21 @@ and the container element is replaced with that control.
 -->
 
 <template id='prefs.Pages#General'>
-	<div class='prefHeader'><$=ZmMsg.loginOptions$></div>
-	<table role="presentation" class='ZOptionsSectionTable' width=100%>
+	<div align=right style='margin-right: 20px; margin-bottom: 10px;'>
+			<div id='${id}_REVERT_PAGE' tabindex='10' style='margin-right: 25px;'></div>
+	</div>
+
+	<table border=0 cellspacing=0 cellpadding=0 width=100%>
+		<tr class='ZOptionsHeaderRow'>
+			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
+			<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.loginOptions$></td>
+			<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
+		</tr>
+	</table>
+	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
 		<tr>
 			<td class='ZOptionsSectionMain'>
-				<table role="presentation" width=100% class='ZPropertySheet' cellspacing='6'>
+				<table width=100%>
 				<$ if (!appCtxt.isOffline) { $>
 					<$ if (data.isEnabled(ZmSetting.CHANGE_PASSWORD_ENABLED)) { $>
 					<tr id='prefs.Pages#General_PASSWORD_LABEL'>
@@ -29,18 +39,11 @@ and the container element is replaced with that control.
 						<td class='ZOptionsField'><div id='${id}_CLIENT_TYPE' tabindex='20'></div></td>
 					</tr>
 				<$ } $>
-				</table>
-			</td>
-		</tr>
-	</table>
-
-	<div class='prefHeader'><$=ZmMsg.appearance$></div>
-	<table role="presentation" class='ZOptionsSectionTable' width=100%>
-		<tr>
-			<td class='ZOptionsSectionMain'>
-				<table role="presentation" width=100% class='ZPropertySheet' cellspacing='6'>
-				
-				<$ if (data.isEnabled(ZmSetting.SKIN_CHANGE_ENABLED) && appCtxt.get(ZmSetting.AVAILABLE_SKINS).length > 1) { $>
+				<$ if (!appCtxt.isOffline) { $>
+					<tr><td colspan=2><hr></td></tr>
+					
+				<$ } $>
+				<$ if (data.isEnabled(ZmSetting.SKIN_CHANGE_ENABLED)) { $>
 					<tr>
 						<td class='ZOptionsLabel'><$=ZmMsg.themeLabel$></td>
 						<td class='ZOptionsField'><div id='${id}_SKIN_NAME' tabindex='30'></div></td>
@@ -48,99 +51,56 @@ and the container element is replaced with that control.
 				<$ } $>
 
 					<tr>
-						<td class='ZOptionsLabel'><$=ZmMsg.fontLabel$></td>
-						<td class='ZOptionsField'><div id='${id}_FONT_NAME' tabindex='42'></div></td>
+						<td class='ZOptionsLabel'><$=ZmMsg.languageLabel$></td>
+						<td class='ZOptionsField'><div id='${id}_LOCALE_NAME' tabindex='40'></div></td>
 					</tr>
-
-					<tr>
-						<td class='ZOptionsLabel'><$=ZmMsg.fontSizeLabel$></td>
-						<td class='ZOptionsField'><div id='${id}_FONT_SIZE' tabindex='43'></div></td>
-					</tr>
-
-					<tr>
-						<td class='ZOptionsLabel'><$=ZmMsg.printFontSizeLabel$></td>
-						<td class='ZOptionsField'><select id='${id}_DEFAULT_PRINTFONTSIZE' tabindex='130'></select></td>
-					</tr>
-
-				</table>
-			</td>
-		</tr>
-	</table>
-
-	<div class='prefHeader'><$=ZmMsg.timezoneLanguage$></div>
-	<table role="presentation" class='ZOptionsSectionTable' width=100%>
-		<tr>
-			<td class='ZOptionsSectionMain'>
-				<table role="presentation" width=100% class='ZPropertySheet' cellspacing='6'>
 
 					<tr>
 						<td class='ZOptionsLabel'><$=ZmMsg.defaultTimezone$></td>
 						<td class='ZOptionsField'><div id='${id}_DEFAULT_TIMEZONE' tabindex='45'></div></td>
 					</tr>
-
-					<tr>
-						<td class='ZOptionsLabel'><$=ZmMsg.languageLabel$></td>
-						<td class='ZOptionsField'><div id='${id}_LOCALE_NAME' tabindex='35'></div></td>
-					</tr>
-
-					<tr>
-						<td class='ZOptionsLabel'><$=ZmMsg.composeDirectionLabel$></td>
-						<td class='ZOptionsField'>
-							<table role="presentation">
-								<tbody>
-									<tr>
-										<td>
-											<div id='${id}_COMPOSE_INIT_DIRECTION' tabindex='37'></div>
-										</td>
-										<td>
-											<div id='${id}_SHOW_COMPOSE_DIRECTION_BUTTONS' tabindex='40'></div>
-										</td>
-									</tr>
-								</tbody>
-							</table>
-						</td>
-					</tr>
-
+                
 				</table>
 			</td>
 		</tr>
 	</table>
 
-	<div class='prefHeader'><$=ZmMsg.searchOptions$></div>
-	<table role="presentation" class='ZOptionsSectionTable' width=100%>
+	<table border=0 cellspacing=0 cellpadding=0 width=100%>
+		<tr class='ZOptionsHeaderRow'>
+			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
+			<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.searches$></td>
+			<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
+		</tr>
+	</table>
+
+	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
 		<tr>
 			<td class='ZOptionsSectionMain'>
-				<table role="presentation" width=100% class='ZPropertySheet' cellspacing='6'>
-					<$ if (data.isEnabled(ZmSetting.SEARCH_INCLUDES_SPAM, ZmSetting.SEARCH_INCLUDES_TRASH, ZmSetting.SHARING_ENABLED)) {
-						var labelShown = false;
-					$>
+				<table width=100%>
+					<$ if (data.isEnabled(ZmSetting.SEARCH_INCLUDES_SPAM, ZmSetting.SEARCH_INCLUDES_TRASH)) { $>
 						<$ if (data.isEnabled(ZmSetting.SEARCH_INCLUDES_SPAM)) { $>
 							<tr>
-								<$ var settingsLabel = labelShown ? "&nbsp;" : ZmMsg.searchSettingsLabel; labelShown = true; $>
-								<td class='ZOptionsLabel'><$=settingsLabel$></td>
+								<td class='ZOptionsLabel'><$=ZmMsg.searchSettingsLabel$></td>
 								<td class='ZOptionsField'><div id='${id}_SEARCH_INCLUDES_SPAM' tabindex='60'></div></td>
 							</tr>
 						<$ } $>
 
 						<$ if (data.isEnabled(ZmSetting.SEARCH_INCLUDES_TRASH)) { $>
 							<tr>
-								<$ var settingsLabel = labelShown ? "&nbsp;" : ZmMsg.searchSettingsLabel; labelShown = true; $>
-								<td class='ZOptionsLabel'><$=settingsLabel$></td>
+								<td class='ZOptionsLabel'>
+									<$ if (!data.isEnabled(ZmSetting.SEARCH_INCLUDES_SPAM)) { $>
+										<$=ZmMsg.searchSettingsLabel$>
+									<$ } else { $>
+										&nbsp;
+									<$ } $>
+								</td>
 								<td class='ZOptionsField'><div id='${id}_SEARCH_INCLUDES_TRASH' tabindex='70'></div></td>
 							</tr>
 						<$ } $>
 
-						<$ if (data.isEnabled(ZmSetting.SHARING_ENABLED)) { $>
-							<tr>
-								<$ var settingsLabel = labelShown ? "&nbsp;" : ZmMsg.searchSettingsLabel; labelShown = true; $>
-								<td class='ZOptionsLabel'><$=settingsLabel$></td>
-								<td class='ZOptionsField'><div id='${id}_SEARCH_INCLUDES_SHARED' tabindex='70'></div></td>
-							</tr>
-						<$ } $>
-					
 						<tr><td colspan=2><hr></td></tr>
 					<$ } $>
-					
+
 					<tr>
 						<td class='ZOptionsLabel'><$=ZmMsg.searchLanguageLabel$></td>
 						<td class='ZOptionsField'><div id='${id}_SHOW_SEARCH_STRING' tabindex='80'></div></td>
@@ -150,49 +110,63 @@ and the container element is replaced with that control.
 		</tr>
 	</table>
 
-	<div class='prefHeader'><$=ZmMsg.other$></div>
-	<table role="presentation" class='ZOptionsSectionTable' width=100%>
+	<table border=0 cellspacing=0 cellpadding=0 width=100%>
+		<tr class='ZOptionsHeaderRow'>
+			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
+			<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.other$></td>
+			<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
+		</tr>
+	</table>
+
+	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
 		<tr>
 			<td class='ZOptionsSectionMain'>
-				<table role="presentation" width=100% class='ZPropertySheet' cellspacing='6'>
+				<table width=100%>
 					<tr>
 						<td class='ZOptionsLabel'><$=ZmMsg.pageSizeLabel$></td>
-						<td class='ZOptionsField'><table role="presentation"><tr><td><div id='${id}_PAGE_SIZE' tabindex='90'></div></td><td style="padding-left:4px;"><$=ZmMsg.pageSizeDesc$></td></tr></table></td>
+						<td class='ZOptionsField'><table cellspacing=0 cellpadding=0 border=0><tr><td><div id='${id}_PAGE_SIZE' tabindex='90'></div></td><td style="padding-left:4px;"><$=ZmMsg.pageSizeDesc$></td></tr></table></td>
 					</tr>
-
 					<tr>
-						<td class='ZOptionsLabel'><$=ZmMsg.selectionLabel$></td>
+						<td class='ZOptionsLabel'><$=ZmMsg.selection$></td>
 						<td class='ZOptionsField'><div id='${id}_SHOW_SELECTION_CHECKBOX' tabindex='95'></div></td>
 					</tr>
-
-					<tr>
-						<td class='ZOptionsLabel'><$=ZmMsg.emailAddrs$></td>
-						<td class='ZOptionsField'><div id='${id}_SHORT_ADDRESS' tabindex='140'></div></td>
-					</tr>
-
-					<!-- The following 3 items are specific to Zimbra Desktop -->
-					<$ if (appCtxt.isOffline) { $>
-						<tr><td colspan=2><hr></td></tr>
-						<tr>
-							<td class='ZOptionsLabel'><$=ZmMsg.offlineUpdateNotifyLabel$></td>
-							<td class='ZOptionsField'><select id='${id}_OFFLINE_UPDATE_NOTIFY' tabindex='160'></select></td>
-						</tr>
-					<$ } $>
-
-					<$ if (data.isEnabled(ZmSetting.OFFLINE_SUPPORTS_MAILTO)) { $>
-						<tr>
-							<td class='ZOptionsLabel'><$=ZmMsg.systemDefaults$></td>
-							<td class='ZOptionsField'><div id='${id}_OFFLINE_IS_MAILTO_HANDLER' tabindex='110'></div></td>
-						</tr>
-					<$ } $>
-
 					<$ if (appCtxt.isOffline && appCtxt.accountList.size() > 2) { $>
 						<tr>
 							<td class='ZOptionsLabel'></td>
 							<td class='ZOptionsField'><div id='${id}_OFFLINE_SHOW_ALL_MAILBOXES' tabindex='100'></div></td>
 						</tr>
 					<$ } $>
-
+					<$ if (data.isEnabled(ZmSetting.OFFLINE_SUPPORTS_MAILTO)) { $>
+						<tr><td colspan=2><hr></td></tr>
+						<tr>
+							<td class='ZOptionsLabel'><$=ZmMsg.systemDefaults$></td>
+							<td class='ZOptionsField'><div id='${id}_OFFLINE_IS_MAILTO_HANDLER' tabindex='110'></div></td>
+						</tr>
+					<$ } $>
+					<$ if (appCtxt.isOffline && appCtxt.accountList.accountTypeExists(ZmAccount.TYPE_ZIMBRA)) { $>
+						<tr>
+							<td class='ZOptionsLabel'></td>
+							<td class='ZOptionsField'><div id='${id}_OFFLINE_NOTEBOOK_SYNC_ENABLED' tabindex='120'></div></td>
+						</tr>
+					<$ } $>
+                    <tr>
+                       	<td class='ZOptionsLabel'><$=ZmMsg.printFontSizeLabel$></td>
+						<td class='ZOptionsField'><select id='${id}_DEFAULT_PRINTFONTSIZE' tabindex='130'></select></td>
+					</tr>
+					<tr>
+						<td class='ZOptionsLabel'><$=ZmMsg.emailAddrs$></td>
+						<td class='ZOptionsField'><div id='${id}_SHORT_ADDRESS' tabindex='140'></div></td>
+					</tr>
+					<tr>
+						<td class='ZOptionsLabel'><$=ZmMsg.bubbles$></td>
+						<td class='ZOptionsField'><div id='${id}_USE_ADDR_BUBBLES' tabindex='150'></div></td>
+					</tr>
+                    <$ if (appCtxt.isOffline) { $>
+                    <tr>
+						<td class='ZOptionsLabel'><$=ZmMsg.offlineUpdateNotifyLabel$></td>
+						<td class='ZOptionsField'><select id='${id}_OFFLINE_UPDATE_NOTIFY' tabindex='160'></select></td>
+					</tr>
+                    <$ } $>
 				</table>
 			</td>
 		</tr>
@@ -200,19 +174,33 @@ and the container element is replaced with that control.
 </template>
 
 <template id='prefs.Pages#Mail'>
+	<div align=right style='margin-right: 20px; margin-bottom: 10px;'>
+		<div id='${id}_REVERT_PAGE' tabindex='10' style='margin-right: 25px;'></div>
+	</div>
 
 	<$ if (!appCtxt.multiAccounts || data.activeAccount.isMain) { $>
-		<div class='prefHeader'><$=ZmMsg.displayMessages$></div>
-		<table role="presentation" class='ZOptionsSectionTable' width=100%>
+		<table border=0 cellspacing=0 cellpadding=0 width=100%>
+			<tr class='ZOptionsHeaderRow'>
+				<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
+				<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.displayMessages$></td>
+				<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
+			</tr>
+		</table>
+		<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
 			<tr>
 				<td class='ZOptionsSectionMain'>
-					<table role="presentation" width=100% class='ZPropertySheet' cellspacing='6'>
+					<table width=100%>
 						<$ if (!appCtxt.isOffline && data.isEnabled(ZmSetting.POLLING_INTERVAL_ENABLED)) { $>
 							<tr>
 								<td class='ZOptionsLabel'><$=ZmMsg.pollingIntervalLabel$></td>
 								<td class='ZOptionsField'><div id='${id}_POLLING_INTERVAL' tabindex='40' size='3' /></td>
 							</tr>
 						<$ } $>
+
+						<tr>
+							<td class='ZOptionsLabelTop'><$= appCtxt.isOffline ? ZmMsg.checkMailPrefLabelOffline : ZmMsg.checkMailPrefLabel $></td>
+							<td class='ZOptionsField'><div id='${id}_GET_MAIL_ACTION' tabindex='45'></div></td>
+						</tr>
 
 						<tr>
 							<td class='ZOptionsLabelTop'><$=ZmMsg.displayMail$></td>
@@ -246,11 +234,6 @@ and the container element is replaced with that control.
 							<td class='ZOptionsField'><div id='${id}_SELECT_AFTER_DELETE' tabindex='97'></div></td>
 						</tr>
 
-						<tr>
-							<td class='ZOptionsLabel'><$=ZmMsg.messageColorLabel$></td>
-							<td class='ZOptionsField'><div id='${id}_COLOR_MESSAGES' tabindex='110'></div></td>
-						</tr>
-
 						<$ if (!appCtxt.isOffline) { $>
 							<tr><td colspan=2><hr></td></tr>
 
@@ -270,11 +253,17 @@ and the container element is replaced with that control.
 			var size = appCtxt.accountList.size();
 			if ((size > 2 && !appCtxt.get(ZmSetting.OFFLINE_SHOW_ALL_MAILBOXES)) || size == 2) {
 	$>
-				<div class='prefHeader'><$=ZmMsg.displayMessages$></div>
-				<table role="presentation" class='ZOptionsSectionTable' width=100%>
+				<table border=0 cellspacing=0 cellpadding=0 width=100%>
+					<tr class='ZOptionsHeaderRow'>
+						<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
+						<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.displayMessages$></td>
+						<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
+					</tr>
+				</table>
+				<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
 					<tr>
 						<td class='ZOptionsSectionMain'>
-							<table role="presentation" width=100%>
+							<table width=100%>
 								<tr>
 									<td class='ZOptionsLabel'><$=ZmMsg.initialMailSearchLabel$></td>
 									<td class='ZOptionsField'><div id='${id}_INITIAL_SEARCH' tabindex='100'></div></td>
@@ -286,48 +275,46 @@ and the container element is replaced with that control.
 		<$ } $>
 	<$ } $>
 
-	<div class='prefHeader'><$=ZmMsg.messagesReceiving$></div>
-	<table role="presentation" class='ZOptionsSectionTable' width=100%>
+	<table border=0 cellspacing=0 cellpadding=0 width=100%>
+		<tr class='ZOptionsHeaderRow'>
+			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
+			<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.messagesReceiving$></td>
+			<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
+		</tr>
+	</table>
+	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
 		<tr>
 			<td class='ZOptionsSectionMain'>
-				<$
-					var messageArrivalLabelDisplayed = false;
-					var showMessageArrivalLabel = function() {
-						var ret = messageArrivalLabelDisplayed ? "&nbsp;" : ZmMsg.messageArrivalLabel;
-						messageArrivalLabelDisplayed = true;
-						return ret;
-					};
-				$>
-				<table role="presentation" width=100% class='ZPropertySheet' cellspacing='6'>
+				<table width=100%>
 					<$ if (data.isEnabled(ZmSetting.MAIL_NOTIFY_SOUNDS)) { $>
 						<tr>
-							<td class='ZOptionsLabel'><$=showMessageArrivalLabel() $></td>
+							<td class='ZOptionsLabel'><$=ZmMsg.messageArrivalLabel$></td>
 							<td class='ZOptionsField'><div id='${id}_MAIL_NOTIFY_SOUNDS' tabindex='105' type=checkbox /></td>
 						</tr>
 					<$ } $>
 
 					<$ if (data.isEnabled(ZmSetting.MAIL_NOTIFY_APP)) { $>
 						<tr>
-							<td class='ZOptionsLabel'><$=showMessageArrivalLabel() $></td>
+							<td class='ZOptionsLabel'>&nbsp;</td>
 							<td class='ZOptionsField'><div id='${id}_MAIL_NOTIFY_APP' tabindex='106' type=checkbox /></td>
 						</tr>
 					<$ } $>
 
 					<$ if (data.isEnabled(ZmSetting.MAIL_NOTIFY_BROWSER)) { $>
 						<tr>
-							<td class='ZOptionsLabel'><$=showMessageArrivalLabel() $></td>
+							<td class='ZOptionsLabel'>&nbsp;</td>
 							<td class='ZOptionsField'><div id='${id}_MAIL_NOTIFY_BROWSER' tabindex='107' type=checkbox /></td>
 						</tr>
 					<$ } $>
 
 					<$ if (data.isEnabled(ZmSetting.MAIL_NOTIFY_TOASTER)) { $>
 						<tr>
-							<td class='ZOptionsLabel'><$=showMessageArrivalLabel() $></td>
+							<td class='ZOptionsLabel'>&nbsp;</td>
 							<td class='ZOptionsField'>
-								<table role="presentation">
+								<table cellspacing=0 cellpadding=0>
 									<tr>
 										<td><div id='${id}_MAIL_NOTIFY_TOASTER' tabindex='108'></div></td>
-										<td class='Text'>&nbsp;<$=ZmDesktopAlert.getInstance().getLinkText() $></td>
+										<td><$=ZmDesktopAlert.getInstance().getLinkText() $></td>
 									</tr>
 								</table>
 							</td>
@@ -336,7 +323,7 @@ and the container element is replaced with that control.
 
 					<$ if (appCtxt.isOffline) { $>
 						<tr>
-							<td class='ZOptionsLabel'><$=showMessageArrivalLabel() $></td>
+							<td class='ZOptionsLabel'>&nbsp;</td>
 							<td class='ZOptionsField'><div id='${id}_OFFLINE_NOTIFY_NEWMAIL_ON_INBOX' tabindex='109' /></td>
 						</tr>
 					<$ } $>
@@ -344,7 +331,13 @@ and the container element is replaced with that control.
 					<$ if (!appCtxt.multiAccounts || appCtxt.isFamilyMbox || (!data.activeAccount.isMain && data.activeAccount.isZimbraAccount)) { $>
 						<$ if (data.isEnabled(ZmSetting.MAIL_FORWARDING_ENABLED)) { $>
 							<tr>
-								<td class='ZOptionsLabel'><$=showMessageArrivalLabel() $></td>
+								<td class='ZOptionsLabel'>
+									<$ if (!data.isEnabled(ZmSetting.MAIL_NOTIFY_SOUNDS)) { $>
+										<$=ZmMsg.messageArrivalLabel$>
+									<$ } else { $>
+										&nbsp;
+									<$ } $>
+								</td>
 								<td class='ZOptionsField'><$=ZmMsg.forwardCopyTo$></td>
 							</tr>
 							<tr>
@@ -362,7 +355,13 @@ and the container element is replaced with that control.
 								<tr><td>&nbsp;</td><td><hr></td></tr>
 							<$ } $>
 							<tr>
-								<td class='ZOptionsLabel'><$=showMessageArrivalLabel() $></td>
+								<td class='ZOptionsLabel'>
+							<$ if (!data.isEnabled(ZmSetting.MAIL_FORWARDING_ENABLED)) { $>
+								<$=ZmMsg.messageArrivalLabel$>
+							<$ } else { $>
+								&nbsp;
+							<$ } $>
+								</td>
 							<td class='ZOptionsField'><input id='${id}_NOTIF_ENABLED' tabindex='130' type=checkbox></td>
 						</tr>
 						<tr>
@@ -373,8 +372,56 @@ and the container element is replaced with that control.
 						</tr>
 						<$ } $>
 
-						<$ if (data.isEnabled(ZmSetting.MAIL_READ_RECEIPT_ENABLED)) { $>
+						<$ if (data.isEnabled(ZmSetting.VACATION_MSG_FEATURE_ENABLED)) { $>
+							<$ if (data.isEnabled(ZmSetting.MAIL_FORWARDING_ENABLED,ZmSetting.NOTIF_FEATURE_ENABLED)) { $>
+								<tr><td>&nbsp;</td><td><hr></td></tr>
+							<$ } $>
+							<tr><td class='ZOptionsLabel'>
+							<$ if (!data.isEnabled(ZmSetting.MAIL_FORWARDING_ENABLED) && !data.isEnabled(ZmSetting.NOTIF_FEATURE_ENABLED)) { $>
+								<$=ZmMsg.messageArrivalLabel$>
+							<$ } else { $>
+								&nbsp;
+							<$ } $>
+							</td>
+							<td class='ZOptionsField'><input id='${id}_VACATION_MSG_ENABLED' tabindex='150' type=checkbox></td>
+						</tr>
+						<tr>
+							<td class='ZOptionsLabel'>&nbsp;</td>
+							<td class='ZOptionsField' style='padding-left:2em;'>
+								<table border="0">
+									<tr>
+										<td>
+											<textarea id='${id}_VACATION_MSG' tabindex='160' rows=3 cols=70></textarea>
+											<span style="display:none">
+												<input type="hidden" name="st_dt" id="${id}_VACATION_FROM"/>
+												<input type="hidden" name="ed_dt" id="${id}_VACATION_UNTIL"/>
+											</span>
+										</td>
+									</tr>
+									<tr>
+										<td>
+											<table>
+												<tr>
+													<td><input type="checkbox" id="${id}_START_DATE_ENABLED"></td>
+													<td><input style='height:22px;' type='text' autocomplete='off' size=14 maxlength=10 id='${id}_VACATION_FROM1'></td>
+													<td id='${id}_startMiniCal'></td>
+												</tr>
+												<tr>
+													<td><input type="checkbox" id="${id}_END_DATE_ENABLED"></td>
+													<td><input style='height:22px;' type='text' autocomplete='off' size=14 maxlength=10 id='${id}_VACATION_UNTIL1'></td>
+													<td id='${id}_endMiniCal'></td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+								</table>
+							</td>
+						</tr>
+						<$ } $>
+
+					    <$ if (data.isEnabled(ZmSetting.MAIL_READ_RECEIPT_ENABLED)) { $>
 						<tr><td colspan=2><hr></td></tr>
+
 						<tr>
 							<td class='ZOptionsLabel'><$=ZmMsg.readReceipt$></td>
 							<td class='ZOptionsField'><$=ZmMsg.readReceiptPref$></td>
@@ -383,8 +430,9 @@ and the container element is replaced with that control.
 							<td class='ZOptionsLabel'>&nbsp;</td>
 							<td class='ZOptionsField'><div id='${id}_MAIL_SEND_READ_RECEIPTS' tabindex='170'></div></td>
 						</tr>
+
 						<tr><td colspan=2><hr></td></tr>
-						<$ } $>
+                        <$ } $>
 
 						<tr>
 							<td class='ZOptionsLabel'><$=ZmMsg.removeDupesToSelfLabel$></td>
@@ -394,30 +442,158 @@ and the container element is replaced with that control.
 							<td class='ZOptionsLabel'>&nbsp;</td>
 							<td class='ZOptionsField'><div id='${id}_DEDUPE_MSG_TO_SELF' tabindex='180'></div></td>
 						</tr>
-						<tr><td colspan=2><hr></td></tr>
-						<tr>
-							<td class='ZOptionsLabel'><$=ZmMsg.duplicateMessageLabel$></td>
-							<td class='ZOptionsField'><div id='${id}_DEDUPE_MSG_ENABLED' tabindex='105' type=checkbox /></td>
-						</tr>
-						
+
 					<$ } $>
 				</table>
 			</td>
 		</tr>
 	</table>
 
-	<div class='prefHeader'><$=ZmMsg.composingMessages$></div>
-	<table role="presentation" class='ZOptionsSectionTable' width=100%>
+	<$ if (!appCtxt.multiAccounts || appCtxt.isFamilyMbox || (!data.activeAccount.isMain && data.activeAccount.isZimbraAccount)) { $>
+		<$ if (appCtxt.get(ZmSetting.MAIL_BLACKLIST_MAX_NUM_ENTRIES) > 0 || appCtxt.get(ZmSetting.MAIL_WHITELIST_MAX_NUM_ENTRIES) > 0) { $>
+			<table border=0 cellspacing=0 cellpadding=0 width=100%>
+				<tr class='ZOptionsHeaderRow'>
+					<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
+					<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.junkMailOptions$></td>
+					<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
+				</tr>
+			</table>
+			<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
+				<tr>
+					<td class='ZOptionsSectionMain'>
+						<table width=100%>
+							<tr>
+								<td class='ZOptionsLabel' style='text-align:left'><$=ZmMsg.blackListLabel$></td>
+								<td class='ZOptionsLabel' style='text-align:left'><$=ZmMsg.whiteListLabel$></td>
+							</tr>
+							<tr>
+								<td class='ZOptionsField'><div id='${id}_MAIL_BLACKLIST'></div></td>
+								<td class='ZOptionsField'><div id='${id}_MAIL_WHITELIST'></div></td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</table>
+		<$ } $>
+	<$ } $>
+
+	<$ if (data.isEnabled(ZmSetting.POP_ENABLED)) { $>
+		<table border=0 cellspacing=0 cellpadding=0 width=100%>
+			<tr class='ZOptionsHeaderRow'>
+				<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
+				<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.externalAccess$></td>
+				<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
+			</tr>
+		</table>
+		<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
+			<tr>
+				<td class='ZOptionsSectionMain'>
+					<table width=100%>
+						<tr>
+							<td class='ZOptionsLabelTop'><$=ZmMsg.externalAccessPop$></td>
+							<td class='ZOptionsField'><input id='${id}_POP_DOWNLOAD_SINCE' tabindex='200' type=radio></td>
+						</tr>
+						<tr>
+							<td></td>
+							<td class='ZOptionsInfo'><span id='${id}_POP_DOWNLOAD_SINCE_VALUE'></span></td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+		</table>
+	<$ } $>
+</template>
+
+<!-- NOTE: we have two separate templates for white/black lists for tabbing support -->
+<template id='prefs.Pages#BlackList'>
+	<table border=0>
+		<tr>
+			<td id='${id}_EMAIL_ADDRESS' tabindex='182'></div></td>
+			<td id='${id}_ADD_BUTTON' valign=top tabindex='184'></td>
+		</tr>
+		<tr>
+			<td id='${id}_LISTVIEW' tabindex='186'></td>
+			<td id='${id}_REMOVE_BUTTON' valign=top tabindex='188'></td>
+		</tr>
+	</table>
+	<div class='ZOptionsInfo' id='${id}_NUM_USED'></div>
+</template>
+<template id='prefs.Pages#WhiteList'>
+	<table border=0>
+		<tr>
+			<td id='${id}_EMAIL_ADDRESS' tabindex='190'></div></td>
+			<td id='${id}_ADD_BUTTON' valign=top tabindex='192'></td>
+		</tr>
+		<tr>
+			<td id='${id}_LISTVIEW' tabindex='194'></td>
+			<td id='${id}_REMOVE_BUTTON' valign=top tabindex='196'></td>
+		</tr>
+	</table>
+	<div class='ZOptionsInfo' id='${id}_NUM_USED'></div>
+</template>
+<template id='prefs.Pages#TrustedList'>
+	<table border=0>
+		<tr>
+			<td id='${id}_EMAIL_ADDRESS' tabindex='190'></div></td>
+			<td id='${id}_ADD_BUTTON' valign=top tabindex='192'></td>
+		</tr>
+		<tr>
+			<td id='${id}_LISTVIEW' tabindex='194'></td>
+			<td id='${id}_REMOVE_BUTTON' valign=top tabindex='196'></td>
+		</tr>
+	</table>
+	<div class='ZOptionsInfo' id='${id}_NUM_USED'></div>
+</template>
+
+<template id='prefs.Pages#Trusted'>
+	<div align=right style='margin-right: 20px; margin-bottom: 10px;'>
+			<div id='${id}_REVERT_PAGE' tabindex='10' style='margin-right: 25px;'></div>
+	</div>
+
+
+	<table border=0 cellspacing=0 cellpadding=0 width=100%>
+		<tr class='ZOptionsHeaderRow'>
+			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
+			<!-- TODO: What about intersection with notebook page compose? -->
+			<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.trustedAddrsDomains$></td>
+			<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
+		</tr>
+	</table>
+	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
 		<tr>
 			<td class='ZOptionsSectionMain'>
-				<table role="presentation" width=100% class='ZPropertySheet' cellspacing='6'>
+			    <div><$=ZmMsg.trustedAddrHeaderMsg$></div>
+			    <div id='${id}_TRUSTED_ADDR_LIST' tabindex='65' />
+            </td>
+        </td>
+    </table>
+</template>
+
+<template id='prefs.Pages#Composing'>
+	<div align=right style='margin-right: 20px; margin-bottom: 10px;'>
+			<div id='${id}_REVERT_PAGE' tabindex='10' style='margin-right: 25px;'></div>
+	</div>
+
+
+	<table border=0 cellspacing=0 cellpadding=0 width=100%>
+		<tr class='ZOptionsHeaderRow'>
+			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
+			<!-- TODO: What about intersection with notebook page compose? -->
+			<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.composingMessages$></td>
+			<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
+		</tr>
+	</table>
+	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
+		<tr>
+			<td class='ZOptionsSectionMain'>
+				<table width=100%>
 
 				<$ var isHtmlCompose = data.isEnabled(ZmSetting.HTML_COMPOSE_ENABLED); $>
 				<$ if (isHtmlCompose) { $>
 					<tr>
 						<td class='ZOptionsLabel' valign=top><$=ZmMsg.composeLabel$></td>
 						<td class='ZOptionsNestedTable'>
-							<table role="presentation" class='ZPropertySheet' cellspacing='6'>
+							<table>
 								<colgroup>
 									<col width=1>
 									<col width=1>
@@ -428,7 +604,7 @@ and the container element is replaced with that control.
 									<col> <!-- color -->
 								</colgroup>
 								<tr valign=top>
-									<td class='ZOptionsFieldTop' style="white-space:nowrap"><div id='${id}_COMPOSE_AS_FORMAT' tabindex='20'></div></td>
+									<td class='ZOptionsFieldTop'><div id='${id}_COMPOSE_AS_FORMAT' tabindex='20'></div></td>
 									<td class='ZOptionsLabelTop ZOptionsLabelNarrow'><$=ZmMsg.fFamilyLabel$></td>
 									<td class='ZOptionsField'><select id='${id}_COMPOSE_INIT_FONT_FAMILY' tabindex='30'></select></td>
 									<td class='ZOptionsLabelTop ZOptionsLabelNarrow'><$=ZmMsg.fSizeLabel$></td>
@@ -445,13 +621,6 @@ and the container element is replaced with that control.
 					<td class='ZOptionsLabel' valign=top><$=ZmMsg.settingsLabel$></td>
 					<td class='ZOptionsField'>
 						<div id='${id}_AUTO_SAVE_DRAFT_INTERVAL' tabindex='65' />
-					</td>
-				</tr>
-
-				<tr>
-					<td>&nbsp;</td>
-					<td class='ZOptionsField'>
-						<div id='${id}_AUTO_READ_RECEIPT_ENABLED' tabindex='66' />
 					</td>
 				</tr>
 
@@ -498,8 +667,12 @@ and the container element is replaced with that control.
 
 					<tr>
 						<td class='ZOptionsLabel'><$=ZmMsg.composeReplyLabel$></td>
+						<td class='ZOptionsField'><$=ZmMsg.composeReplyEmail$></td>
+					</tr>
+					<tr>
+						<td>&nbsp;</td>
 						<td class='ZOptionsField'>
-							<table role="presentation">
+							<table>
 								<tr>
 									<td>
 										<div id='${id}_REPLY_INCLUDE_WHAT' tabindex='70' />
@@ -514,11 +687,17 @@ and the container element is replaced with that control.
 							</table>
 						</td>
 					</tr>
+
 					<tr><td colspan=2></td></tr>
+
 					<tr>
 						<td class='ZOptionsLabel'><$=ZmMsg.forwardingLabel$></td>
+						<td class='ZOptionsField'><$=ZmMsg.forwardingEmail$></td>
+					</tr>
+					<tr>
+						<td>&nbsp;</td>
 						<td class='ZOptionsField'>
-							<table role="presentation">
+							<table>
 								<tr>
 									<td>
 										<div id='${id}_FORWARD_INCLUDE_WHAT' tabindex='80' />
@@ -533,7 +712,9 @@ and the container element is replaced with that control.
 							</table>
 						</td>
 					</tr>
+
 					<tr><td colspan=2></td></tr>
+
 					<tr>
 						<td class='ZOptionsLabel'><$=ZmMsg.prefixLabel$></td>
 						<td class='ZOptionsField'><$=ZmMsg.prefixTextWith$></td>
@@ -552,134 +733,33 @@ and the container element is replaced with that control.
 
 				<$ if (!appCtxt.isOffline) { $>
 					<tr><td colspan=2><hr></td></tr>
+
 					<tr>
 						<td colspan=2><b><$=ZmMsg.composeMoreOptions$></b></td>
 					</tr>
 				<$ } $>
-
 				</table>
 			</td>
 		</tr>
 	</table>
-
-	<$ if (!appCtxt.multiAccounts || appCtxt.isFamilyMbox || (!data.activeAccount.isMain && data.activeAccount.isZimbraAccount)) { $>
-		<$ if (appCtxt.get(ZmSetting.MAIL_BLACKLIST_MAX_NUM_ENTRIES) > 0 || appCtxt.get(ZmSetting.MAIL_WHITELIST_MAX_NUM_ENTRIES) > 0) { $>
-			<div class='prefHeader'><$=ZmMsg.junkMailOptions$></div>
-			<table role="presentation" class='ZOptionsSectionTable' width=100%>
-				<tr>
-					<td class='ZOptionsSectionMain'>
-						<table role="presentation" width=100%>
-							<tr>
-								<td class='ZOptionsLabel' style='text-align:left'><$=ZmMsg.blackListLabel$></td>
-								<td class='ZOptionsLabel' style='text-align:left'><$=ZmMsg.whiteListLabel$></td>
-							</tr>
-							<tr>
-								<td class='ZOptionsField'><div id='${id}_MAIL_BLACKLIST'></div></td>
-								<td class='ZOptionsField'><div id='${id}_MAIL_WHITELIST'></div></td>
-							</tr>
-						</table>
-					</td>
-				</tr>
-			</table>
-		<$ } $>
-	<$ } $>
-
-	<$ if (data.isEnabled(ZmSetting.POP_ENABLED)) { $>
-		<div class='prefHeader'><$=ZmMsg.externalAccess$></div>
-		<table role="presentation" class='ZOptionsSectionTable' width=100%>
-			<tr>
-				<td class='ZOptionsSectionMain'>
-					<table role="presentation" width=100% class='ZPropertySheet' cellspacing='6'>
-						<tr>
-							<td class='ZOptionsLabel'><$=ZmMsg.externalAccessPop$></td>
-							<td></td>
-						</tr>
-						<tr><td colspan=2><hr></td></tr>
-						<tr>
-							<td class='ZOptionsLabelTop'><$=ZmMsg.downloadPop$></td>
-							<td class='ZOptionsField'>
-								<div id='${id}_POP_DOWNLOAD_SINCE' tabindex='200'></div>
-								<div id='${id}_POP_DOWNLOAD_SINCE_VALUE'></div>
-							</td>
-						</tr>
-						<tr><td colspan=2>&nbsp;</td></tr>
-						<tr>
-							<td class='ZOptionsLabelTop'><$=ZmMsg.incomingPOPJunk$></td>
-							<td class='ZOptionsField'><div id='${id}_POP_INCLUDE_SPAM' tabindex='210'></div></td>
-						</tr>
-						<tr><td colspan=2>&nbsp;</td></tr>
-						<tr>
-							<td class='ZOptionsLabelTop'><$=ZmMsg.incomingPOPDeleted$></td>
-							<td class='ZOptionsField'><div id='${id}_POP_DELETE_OPTION' tabindex='220'></div></td>
-						</tr>
-					</table>
-				</td>
-			</tr>
-		</table>
-	<$ } $>
 </template>
-
-<!-- NOTE: we have two separate templates for white/black lists for tabbing support -->
-<template id='prefs.Pages#BlackList'>
-	<table role="presentation" class='ZPropertySheet' cellspacing='6'>
-		<tr>
-			<td id='${id}_EMAIL_ADDRESS' tabindex='182'></div></td>
-			<td id='${id}_ADD_BUTTON' valign=top tabindex='184'></td>
-		</tr>
-		<tr>
-			<td id='${id}_LISTVIEW' tabindex='186'></td>
-			<td id='${id}_REMOVE_BUTTON' valign=top tabindex='188'></td>
-		</tr>
-	</table>
-	<div class='ZOptionsInfo' id='${id}_NUM_USED'></div>
-</template>
-<template id='prefs.Pages#WhiteList'>
-	<table role="presentation" class='ZPropertySheet' cellspacing='6'>
-		<tr>
-			<td id='${id}_EMAIL_ADDRESS' tabindex='190'></div></td>
-			<td id='${id}_ADD_BUTTON' valign=top tabindex='192'></td>
-		</tr>
-		<tr>
-			<td id='${id}_LISTVIEW' tabindex='194'></td>
-			<td id='${id}_REMOVE_BUTTON' valign=top tabindex='196'></td>
-		</tr>
-	</table>
-	<div class='ZOptionsInfo' id='${id}_NUM_USED'></div>
-</template>
-<template id='prefs.Pages#TrustedList'>
-	<table role="presentation" class='ZPropertySheet' cellspacing='6'>
-		<tr>
-			<td id='${id}_EMAIL_ADDRESS' tabindex='190'></div></td>
-			<td id='${id}_ADD_BUTTON' valign=top tabindex='192'></td>
-		</tr>
-		<tr>
-			<td id='${id}_LISTVIEW' tabindex='194'></td>
-			<td id='${id}_REMOVE_BUTTON' valign=top tabindex='196'></td>
-		</tr>
-	</table>
-	<div class='ZOptionsInfo' id='${id}_NUM_USED'></div>
-</template>
-
-<template id='prefs.Pages#Trusted'>
-	<div class='prefHeader'><$=ZmMsg.trustedAddrsDomains$></div>
-	<table role="presentation" class='ZOptionsSectionTable' width=100%>
-		<tr>
-			<td class='ZOptionsSectionMain'>
-				<div><$=ZmMsg.trustedAddrHeaderMsg$></div>
-				<div id='${id}_TRUSTED_ADDR_LIST' tabindex='65' />
-			</td>
-		</td>
-	</table>
-</template>
-
 
 <template id='prefs.Pages#Signatures'>
+	<div align=right style='margin-right: 20px; margin-bottom: 10px;'>
+			<div id='${id}_REVERT_PAGE' tabindex='10' style='margin-right: 25px;'></div>
+	</div>
 
-	<div class='prefHeader'><$=ZmMsg.signatures$></div>
-	<table role="presentation" class='ZOptionsSectionTable' width=100%>
+	<table border=0 cellspacing=0 cellpadding=0 width=100%>
+		<tr class='ZOptionsHeaderRow'>
+			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
+			<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.signatures$></td>
+			<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
+		</tr>
+	</table>
+	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
 		<tr>
 			<td class='ZOptionsSectionMain'>
-				<table role="presentation" width=100%>
+				<table width=100% cellspacing=0>
 					<tr>
 						<td><div id='${id}_SIGNATURES' tabindex='20'></div></td>
 					</tr>
@@ -688,11 +768,17 @@ and the container element is replaced with that control.
 		</tr>
 	</table>
 
-	<div class='prefHeader'><$=ZmMsg.signaturesUsing$></div>
-	<table role="presentation" class='ZOptionsSectionTable' width=100%>
+	<table border=0 cellspacing=0 cellpadding=0 width=100%>
+		<tr class='ZOptionsHeaderRow'>
+			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
+			<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.signaturesUsing$></td>
+			<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
+		</tr>
+		</table>
+		<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
 		<tr>
 			<td class='ZOptionsSectionMain'>
-				<table role="presentation" id='${id}_SIG_TABLE' class='ZPropertySheet' cellspacing='6'>
+				<table id='${id}_SIG_TABLE' border=0 cellpadding=0 cellspacing=10>
 					<tr>
 						<td>&nbsp;</td>
 						<td><$=ZmMsg.newMessages$></td>
@@ -700,7 +786,7 @@ and the container element is replaced with that control.
 					</tr>
 				</table>
 				<hr>
-				<table role="presentation" width=100% class='ZPropertySheet' cellspacing='6'>
+				<table width=100% cellspacing=0>
 					<tr>
 						<td class='ZOptionsLabel'><$=ZmMsg.placeSignature$></td>
 						<td class='ZOptionsInfo'><div id='${id}_SIGNATURE_STYLE' tabindex='40'></div></td>
@@ -712,11 +798,11 @@ and the container element is replaced with that control.
 </template>
 
 <template id="prefs.Pages#SignatureSplitView">
-	<table role="presentation" width='100%'>
+    <table border=0 cellpadding=0 cellspacing=0 width='100%'>
 		<tr>
 			<td>&nbsp;</td>
 			<td>
-				<table role="presentation" width="100%">
+				<table border=0 cellpadding=0 cellspacing=0 width="100%">
 					<tr>
 						<td class="Label"><$=ZmMsg.nameLabel$></td>
 						<td class='ZOptionsField'><input id='${id}_SIG_NAME' tabindex='50' size=30></td>
@@ -727,7 +813,7 @@ and the container element is replaced with that control.
 			</td>
 		</tr>
 		<tr>
-			<td width=180 height=200 valign='top'>
+			<td width=180 height=150 valign='top'>
 				<div id='${id}_SIG_LIST' width='100%' tabindex='40'></div>
 			</td>
 			<td>
@@ -736,7 +822,7 @@ and the container element is replaced with that control.
 		</tr>
 		<tr>
 			<td>
-				<table role="presentation">
+				<table>
 					<tr>
 						<td class="ZOptionsField"><div id='${id}_SIG_NEW' tabIndex='86'></div></td>
 						<td class='ZOptionsField'>&nbsp;</td>
@@ -745,7 +831,7 @@ and the container element is replaced with that control.
 				</table>
 			</td>
 			<td align='right'>
-				<table role="presentation">
+				<table border=0 cellpadding=0 cellspacing=0>
 					<tr>
 						<td class="Label"><$=ZmMsg.signatureVcardLabel$></td>
 						<td class='ZOptionsField'><input id='${id}_SIG_VCARD' tabindex='85' size=30></td>
@@ -759,20 +845,27 @@ and the container element is replaced with that control.
 </template>
 
 <template id='prefs.Pages#Contacts'>
+	<!-- REVERT_PAGE (button) -->
+	<div align=right style='margin-right: 20px; margin-bottom: 10px;'>
+			<div id='${id}_REVERT_PAGE' tabindex='10' style='margin-right: 25px;'></div>
+	</div>
 
 	<$ if (data.activeAccount.isMain) { $>
-		<div class='prefHeader'><$=ZmMsg.options$></div>
-		<table role="presentation" class='ZOptionsSectionTable' width=100%>
+		<table border=0 cellspacing=0 cellpadding=0 width=100%>
+			<tr class='ZOptionsHeaderRow'>
+				<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
+				<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.options$></td>
+				<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
+			</tr>
+		</table>
+		<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
 			<tr>
 				<td class='ZOptionsSectionMain'>
-					<table role="presentation" width=100% class='ZPropertySheet' cellspacing='6'>
-					<$ var settingLabelled = false; $>
+					<table width=100%>
+
 					<$ if (!appCtxt.multiAccounts || data.activeAccount.isMain) { $>
 						<tr>
-							<td class='ZOptionsLabel'>
-								<$= settingLabelled ? "&nbsp;" : ZmMsg.settingsLabel; $>
-								<$  settingLabelled = true; $>
-							</td>
+							<td class='ZOptionsLabel'><$=ZmMsg.settingsLabel$></td>
 							<td class='ZOptionsField'><input id='${id}_AUTO_ADD_ADDRESS' tabindex='40' type=checkbox></td>
 						</tr>
 					<$ } $>
@@ -780,57 +873,8 @@ and the container element is replaced with that control.
 					<$ if (!appCtxt.multiAccounts || (appCtxt.isFamilyMbox && data.activeAccount.isMain) || (!data.activeAccount.isMain && data.activeAccount.isZimbraAccount)) { $>
 						<$ if (data.isEnabled(ZmSetting.INITIALLY_SEARCH_GAL)) { $>
 							<tr>
-								<td class='ZOptionsLabel'>
-									<$= settingLabelled ? "&nbsp;" : ZmMsg.settingsLabel; $>
-									<$  settingLabelled = true; $>
-								</td>
+								<td class='ZOptionsLabel'>&nbsp;</td>
 								<td class='ZOptionsField'><input id='${id}_INITIALLY_SEARCH_GAL' tabindex='50' type=checkbox></td>
-							</tr>
-						<$ } $>
-					<$ } $>
-
-					<$ if (settingLabelled) { $>
-						<tr><td colspan=2><hr></td></tr>
-					<$ } $>
-
-					<$ var autocompleteLabelled = false; $>
-					<$ var autocompleteLabel = ZmMsg.autocomplete + ":"; $>
-					<$ if (!appCtxt.multiAccounts || (appCtxt.isFamilyMbox && data.activeAccount.isMain) || !data.activeAccount.isMain) {$>
-						<$ if (appCtxt.isOffline && !data.activeAccount.isMain) { $>
-							<tr>
-								<td class='ZOptionsLabel'>
-									<$= autocompleteLabelled ? "&nbsp;" : autocompleteLabel; $>
-									<$  autocompleteLabelled = true; $>
-								</td>
-								<$ var autocompleteLabelled = true; $>
-								<td class='ZOptionsField'><input id='${id}_AUTOCOMPLETE_SHARE' tabindex='55' type=checkbox></td>
-							</tr>
-						<$ } $>
-						<$ if (data.activeAccount.isZimbraAccount) { $>
-							<$ if (data.isEnabled(ZmSetting.GAL_ENABLED) && data.isEnabled(ZmSetting.GAL_AUTOCOMPLETE_ENABLED)) { $>
-								<tr>
-									<td class='ZOptionsLabel'>
-										<$= autocompleteLabelled ? "&nbsp;" : autocompleteLabel; $>
-										<$  autocompleteLabelled = true; $>
-									</td>
-									<td class='ZOptionsField'><input id='${id}_GAL_AUTOCOMPLETE' tabindex='60' type=checkbox></td>
-								</tr>
-							<$ } $>
-							<$ if (data.isEnabled(ZmSetting.SHARING_ENABLED)) { $>
-								<tr>
-									<td class='ZOptionsLabel'>
-										<$= autocompleteLabelled ? "&nbsp;" : autocompleteLabel; $>
-										<$  autocompleteLabelled = true; $>
-									</td>
-									<td class='ZOptionsField'><div id='${id}_AUTOCOMPLETE_SHARED_ADDR_BOOKS' tabindex='70'></div></td>
-								</tr>
-							<$ } $>
-							<tr>
-								<td class='ZOptionsLabel'>
-									<$= autocompleteLabelled ? "&nbsp;" : autocompleteLabel; $>
-									<$  autocompleteLabelled = true; $>
-								</td>
-								<td class='ZOptionsField'><div id='${id}_AUTOCOMPLETE_ON_COMMA' tabindex='80'></div></td>
 							</tr>
 						<$ } $>
 					<$ } $>
@@ -839,34 +883,98 @@ and the container element is replaced with that control.
 			</tr>
 		</table>
 	<$ } $>
+
+	<$ if (!appCtxt.multiAccounts || (appCtxt.isFamilyMbox && data.activeAccount.isMain) || !data.activeAccount.isMain) {$>
+		<table border=0 cellspacing=0 cellpadding=0 width=100%>
+			<tr class='ZOptionsHeaderRow'>
+				<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
+				<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.autocomplete$></td>
+				<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
+			</tr>
+		</table>
+		<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
+			<tr>
+				<td class='ZOptionsSectionMain'>
+					<table width=100%>
+						<$ if (appCtxt.isOffline && !data.activeAccount.isMain) { $>
+							<tr>
+								<td class='ZOptionsLabel'>&nbsp;</td>
+								<td class='ZOptionsField'><input id='${id}_AUTOCOMPLETE_SHARE' tabindex='55' type=checkbox></td>
+							</tr>
+						<$ } $>
+						<$ if (data.activeAccount.isZimbraAccount) { $>
+							<$ if (data.isEnabled(ZmSetting.GAL_ENABLED) && data.isEnabled(ZmSetting.GAL_AUTOCOMPLETE_ENABLED)) { $>
+								<tr>
+									<td class='ZOptionsLabel'>&nbsp;</td>
+									<td class='ZOptionsField'><input id='${id}_GAL_AUTOCOMPLETE' tabindex='60' type=checkbox></td>
+								</tr>
+							<$ } $>
+							<$ if (data.isEnabled(ZmSetting.SHARING_ENABLED)) { $>
+								<tr>
+									<td class='ZOptionsLabel'>&nbsp;</td>
+									<td class='ZOptionsField'><div id='${id}_AUTOCOMPLETE_SHARED_ADDR_BOOKS' tabindex='70'></div></td>
+								</tr>
+							<$ } $>
+							<tr>
+								<td class='ZOptionsLabel'>&nbsp;</td>
+								<td class='ZOptionsField'><div id='${id}_AUTOCOMPLETE_ON_COMMA' tabindex='80'></div></td>
+							</tr>
+						<tr>
+							<td class='ZOptionsLabel'>&nbsp;</td>
+							<td class='ZOptionsField'><div id='${id}_AUTOCOMPLETE_NO_GROUP_MATCH' tabindex='90'></div></td>
+						</tr>
+						<$ } $>
+					</table>
+				</td>
+			</tr>
+		</table>
+	<$ } $>
 </template>
 
 <template id='prefs.Pages#Accounts'>
+	<div align=right style='margin-right: 20px; margin-bottom: 10px;'>
+		<div id='${id}_REVERT_PAGE' tabindex='10' style='margin-right: 25px;'></div>
+	</div>
 
-	<div class='prefHeader'><$=ZmMsg.accounts$></div>
-	<table role="presentation" class='ZOptionsSectionTable' width=100%>
+	<table border=0 cellspacing=0 cellpadding=0 width=100%>
+		<tr class='ZOptionsHeaderRow'>
+			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
+			<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.accounts$></td>
+			<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
+		</tr>
+	</table>
+	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
 		<tr>
 			<td class='ZOptionsSectionMain'>
-				<table role="presentation" width=100% class='ZPropertySheet' cellspacing='6'>
+				<table width=100%>
 					<tr>
-						<td>
+						<td style='padding:0;margin:0;border:solid 1px silver'> <!-- TODO: correct border color -->
 							<div id='${id}_ACCOUNTS' tabindex='20'></div>
 						</td>
 					</tr>
 					<tr>
-						<td colspan="10">
-							<table role="presentation" class="ZPropertySheet" cellspacing='6' width=100%>
-								<tr>
-									<$ if (!appCtxt.isOffline && (data.isEnabled(ZmSetting.POP_ACCOUNTS_ENABLED) || data.isEnabled(ZmSetting.IMAP_ACCOUNTS_ENABLED))) { $>
-										<td><button id='${id}_ADD_EXTERNAL' tabindex='40'><$=ZmMsg.addExternalAccount$></button> </td>
-									<$ } $>
-									<$ if (data.isEnabled(ZmSetting.IDENTITIES_ENABLED)) { $>
-										<td><button id='${id}_ADD_PERSONA' tabindex='50'><$=ZmMsg.addPersona$></button> </td>
-									<$ } $>
-									<td><button id='${id}_DELETE' tabindex='30'><$=ZmMsg.del$></button></td>
-									<td width="100%"></td>
-								</tr>
-							</table>
+						<td>
+							<table width=100%>
+							<colgroup>
+								<col width=1>
+								<col width=*>
+								<col width=1>
+								<col width=1>
+							</colgroup>
+							<tr>
+								<td align=left><button id='${id}_DELETE' tabindex='30'><$=ZmMsg.del$></button></td>
+								<td>&nbsp;</td>
+								<td align=right>
+								<$ if (!appCtxt.isOffline && (data.isEnabled(ZmSetting.POP_ACCOUNTS_ENABLED) || data.isEnabled(ZmSetting.IMAP_ACCOUNTS_ENABLED))) { $>
+									<button id='${id}_ADD_EXTERNAL' tabindex='40'><$=ZmMsg.addExternalAccount$></button>
+								<$ } $>
+								</td>
+								<td align=right>
+								<$ if (data.isEnabled(ZmSetting.IDENTITIES_ENABLED)) { $>
+									<button id='${id}_ADD_PERSONA' tabindex='50'><$=ZmMsg.addPersona$></button>
+								<$ } $>
+								</td>
+							</tr></table>
 						</td>
 					</tr>
 				</table>
@@ -901,11 +1009,17 @@ and the container element is replaced with that control.
 </template>
 
 <template id='prefs.Pages#PrimaryAccount'>
-	<div class='prefHeader'><$=ZmMsg.accountHeaderPrimary$></div>
-	<table role="presentation" class='ZOptionsSectionTable' width=100%>
+	<table border=0 cellspacing=0 cellpadding=0 width=100%>
+		<tr class='ZOptionsHeaderRow'>
+			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
+			<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.accountHeaderPrimary$></td>
+			<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
+		</tr>
+	</table>
+	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
 		<tr>
 			<td class='ZOptionsSectionMain'>
-				<table role="presentation" width=100% class='ZPropertySheet' cellspacing='6'>
+				<table width=100%>
 					<tr>
 						<td class='ZOptionsLabel'><$=ZmMsg.emailAddrLabel$></td>
 						<td class='ZOptionsField'><span id='${id}_PRIMARY_EMAIL' tabindex='1010'></span></td>
@@ -920,7 +1034,9 @@ and the container element is replaced with that control.
 							<td class='ZOptionsField'><span id='${id}_PRIMARY_VISIBLE' tabindex='1021'></span></td>
 						</tr>
 					<$ } $>
+
 					<tr><td colspan=2><hr></td></tr>
+
 					<tr><td style='text-align:left' colspan=2><b><$=ZmMsg.accountFromPrompt$></b></td></tr>
 					<tr>
 						<td class='ZOptionsLabel'><$=ZmMsg.fromLabel$></td>
@@ -929,11 +1045,9 @@ and the container element is replaced with that control.
 					<tr>
 						<td class='ZOptionsLabel'>&nbsp;</td>
 						<td class='ZOptionsField'>
-							<table role="presentation">
+							<table>
 								<tr>
-									<$ if (appCtxt.get(ZmSetting.FROM_DISPLAY_ENABLED)) { $>
-										<td style='padding-right:.5em;'><input id='${id}_PRIMARY_FROM_NAME' tabindex='1030' size=30></td>
-									<$ } $>
+									<td style='padding-right:.5em;'><input id='${id}_PRIMARY_FROM_NAME' tabindex='1030' size=30></td>
 									<td><select id='${id}_PRIMARY_FROM_EMAIL' tabindex='1035' size=40></select></td>
 								</tr>
 							</table>
@@ -946,54 +1060,17 @@ and the container element is replaced with that control.
 					<tr>
 						<td class='ZOptionsLabel'>&nbsp;</td>
 						<td class='ZOptionsField'>
-							<table role="presentation">
+							<table cellpadding='0' cellspacing='0' border='0'>
 								<tr>
 									<td style='padding-right:.5em;'><input id='${id}_PRIMARY_REPLY_TO_NAME' tabindex='1050' size=30></td>
-									<td class='ZmSelector'>
-										<select id='${id}_PRIMARY_REPLY_TO_EMAIL' tabindex='1060'></select>
-									</td>
+									<td><select id='${id}_PRIMARY_REPLY_TO_EMAIL' tabindex='1060'></select></td>
 								</tr>
 							</table>
 						</td>
 					</tr>
 					<tr valign=top>
 						<td class='ZOptionsLabel'><$=ZmMsg.signatureLabel$></td>
-						<td class='ZOptionsField' valign='middle'><$=ZmMsg.manageSignatures$></td>
-					</tr>
-					<tr><td colspan=2><hr></td></tr>
-					<tr><td style='text-align:left' colspan=2><b><$=ZmMsg.delegateRightsPrompt$></b></td></tr>
-					<tr>
-					<$ if (AjxEnv.isIE && !AjxEnv.isIE9up) { // bug 75482 $>
-						<td></td>
-						<td>
-					<$ } else { $>
-						<td colspan=2>
-					<$ } $>
-							<table role="presentation" width=100% class='ZPropertySheet' cellspacing='6'>
-								<tr>
-									<td colspan='4'><div id='${id}_DELEGATE_RIGHTS'></div></td>
-								</tr>
-							</table>
-						</td>
-					</tr>
-					<tr>
-					<$ if (AjxEnv.isIE && !AjxEnv.isIE9up) { // bug 75482 $>
-						<td></td>
-						<td>
-					<$ } else { $>
-						<td colspan=2>
-					<$ } $>
-							<table role="presentation" class="ZPropertySheet" cellspacing="6">
-								<tbody>
-									<tr>
-										<td><button id='${id}_ADD_DELEGATE' tabindex='70'><$=ZmMsg.addDelegate$></button></td>
-										<td><button id='${id}_EDIT_DELEGATE' tabindex='80'><$=ZmMsg.editPermissions$></button></td>
-										<td><button id='${id}_REMOVE_DELEGATE' tabindex='100'><$=ZmMsg.remove$></button></td>
-										<td width='100%'></td>
-									</tr>
-								</tbody>
-							</table>
-						</td>
+						<td class='ZOptionsField'><$=ZmMsg.manageSignatures$></td>
 					</tr>
 				</table>
 			</td>
@@ -1002,25 +1079,35 @@ and the container element is replaced with that control.
 </template>
 
 <template id='prefs.Pages#ExternalAccount'>
-	<div class='prefHeader'><$=ZmMsg.accountHeaderExternal$></div>
-	<table role="presentation" class='ZOptionsSectionTable' width=100%>
+	<table border=0 cellspacing=0 cellpadding=0 width=100%>
+		<tr class='ZOptionsHeaderRow'>
+			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
+			<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.accountHeaderExternal$></td>
+			<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
+		</tr>
+	</table>
+	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
 		<tr>
 			<td class='ZOptionsSectionMain'>
-				<table role="presentation" width=100% class="ZPropertySheet" cellspacing='6'>
+				<table width=100%>
 					<tr>
 						<td colspan=2><div id='${id}_EXTERNAL_ALERT'></div></td>
 					</tr>
+
 					<tr>
 						<td class='ZOptionsLabel'><$=ZmMsg.emailAddrLabel$></td>
 						<td class='ZOptionsField'>
 							<input id='${id}_EXTERNAL_EMAIL' tabindex='2010' size=30>
 						</td>
 					</tr>
+
 					<tr>
 						<td class='ZOptionsLabel'><$=ZmMsg.accountNameLabel$></td>
 						<td class='ZOptionsField'><div id='${id}_EXTERNAL_NAME' tabindex='2020' size=30></div></td>
 					</tr>
+
 					<tr><td colspan=2><hr></td></tr>
+
 					<tr>
 						<td class='ZOptionsLabel'><$=ZmMsg.accountTypeLabel$></td>
 						<$ if (data.isEnabled(ZmSetting.POP_ACCOUNTS_ENABLED) && data.isEnabled(ZmSetting.IMAP_ACCOUNTS_ENABLED)) { $>
@@ -1031,16 +1118,19 @@ and the container element is replaced with that control.
 							<td class='ZOptionsField'>IMAP</td>
 						<$ } $>
 					</tr>
+
 					<tr>
 						<td class='ZOptionsLabel'><$=ZmMsg.accountUsernameLabel$></td>
 						<td class='ZOptionsField'><input id='${id}_EXTERNAL_USERNAME' tabindex='2040' size=30></td>
 					</tr>
+
 					<tr>
 						<td class='ZOptionsLabel'><$=ZmMsg.accountServerLabel$></td>
 						<td class='ZOptionsField'>
 							<input id='${id}_EXTERNAL_HOST' tabindex='2050' size=30>
 						</td>
 					</tr>
+
 					<tr>
 						<td class='ZOptionsLabel'><$=ZmMsg.passwordLabel$></td>
 						<td class='ZOptionsField'>
@@ -1048,10 +1138,11 @@ and the container element is replaced with that control.
 							<input id='${id}_EXTERNAL_PASSWORD' tabindex='2060' type=password>
 						</td>
 					</tr>
+
 					<tr>
 						<td class='ZOptionsLabel'><$=ZmMsg.advancedSettingsLabel$></td>
 						<td class='ZOptionsField'>
-							<table role="presentation">
+							<table cellpadding='0' cellspacing='0' border='0'>
 								<tr>
 									<td><input id='${id}_EXTERNAL_CHANGE_PORT' tabindex='2070' type=checkbox></td>
 									<td><input id='${id}_EXTERNAL_PORT' tabindex='2080' size=4></td>
@@ -1060,66 +1151,81 @@ and the container element is replaced with that control.
 							</table>
 						</td>
 					</tr>
+
 					<tr>
 						<td class='ZOptionsLabel'>&nbsp;</td>
 						<td class='ZOptionsField'><input id='${id}_EXTERNAL_SSL' tabindex='2090' type=checkbox></td>
 					</tr>
+
 					<tr>
 						<td class='ZOptionsLabel'>&nbsp;</td>
 						<td class='ZOptionsField'>
-							<table role="presentation">
+							<table>
 								<tr>
 									<td><div id='${id}_EXTERNAL_TEST' tabindex='2100'></div></td>
 								</tr>
 							</table>
 						</td>
 					</tr>
+
 					<tr><td colspan=2><hr></td></tr>
+
 					<tr>
 						<td class='ZOptionsLabelTop'><$=ZmMsg.accountDownloadToLabel$></td>
 						<td class='ZOptionsField'><div id='${id}_EXTERNAL_DOWNLOAD_TO' tabindex='2110'></div></td>
 					</tr>
+
 					<tr>
 						<td class='ZOptionsLabel'>&nbsp;</td>
 						<td class='ZOptionsField'><hr></td>
 					</tr>
+
 					<tr>
 						<td class='ZOptionsLabel'>&nbsp;</td>
 						<td class='ZOptionsField'><input id='${id}_EXTERNAL_DELETE_AFTER_DOWNLOAD' tabindex='2120' type=checkbox></td>
 					</tr>
+
 					<tr><td colspan=2><hr></td></tr>
+
 					<tr>
 						<td class='ZOptionsLabel' style='text-align:left' colspan=2><$=ZmMsg.accountFromPrompt$></td>
 					</tr>
+
 					<tr>
 						<td class='ZOptionsLabel'><$=ZmMsg.fromLabel$></td>
 						<td class='ZOptionsField'><$=ZmMsg.fromDetail$></td>
 					</tr>
+
 					<tr>
 						<td class='ZOptionsLabel'>&nbsp;</td>
 						<td class='ZOptionsField'>
-							<table role="presentation">
+							<table>
 								<tr>
 									<td style='padding-right:.5em;'>
 										<input id='${id}_EXTERNAL_FROM_NAME' tabindex='2130' size=30>
+									</td>
+									<td>
+										<select id='${id}_EXTERNAL_FROM_EMAIL' tabindex='2135' size=40></select>
 									</td>
 								</tr>
 							</table>
 						</td>
 					</tr>
+
 					<tr>
 						<td class='ZOptionsLabel'><$=ZmMsg.setReplyTo$></td>
 						<td class='ZOptionsField'><input id='${id}_EXTERNAL_REPLY_TO' tabindex='2140' type=checkbox></td>
 					</tr>
+
 					<tr>
 						<td class='ZOptionsLabel'>&nbsp;</td>
 						<td class='ZOptionsField'>
-							<table role="presentation">
+							<table cellpadding='0' cellspacing='0' border='0'>
 								<tr>
 									<td style='padding-right:.5em;'>
 										<input id='${id}_EXTERNAL_REPLY_TO_NAME' tabindex='2150' size=30>
 									</td>
-									<td class='ZmSelector'>
+									<td>
 										<select id='${id}_EXTERNAL_REPLY_TO_EMAIL' tabindex='2160'></select>
 									</td>
 								</tr>
@@ -1128,7 +1234,7 @@ and the container element is replaced with that control.
 					</tr>
 					<tr>
 						<td class='ZOptionsLabel'><$=ZmMsg.signatureLabel$></td>
-						<td class='ZOptionsField' valign='middle'><$=ZmMsg.manageSignatures$></td>
+						<td class='ZOptionsField'><$=ZmMsg.manageSignatures$></td>
 					</tr>
 				</table>
 			</td>
@@ -1137,31 +1243,42 @@ and the container element is replaced with that control.
 </template>
 
 <template id='prefs.Pages#Persona'>
-	<div class='prefHeader'><$=ZmMsg.personaSettings$></div>
-	<table role="presentation" class='ZOptionsSectionTable' width=100%>
+	<table border=0 cellspacing=0 cellpadding=0 width=100%>
+		<tr class='ZOptionsHeaderRow'>
+			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
+			<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.personaSettings$></td>
+			<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
+		</tr>
+	</table>
+	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
 		<tr>
 			<td class='ZOptionsSectionMain'>
-				<table role="presentation" width=100% class="ZPropertySheet" cellspacing='6'>
+				<table width=100%>
 					<tr>
 						<td class='ZOptionsLabel'>&nbsp;</td>
 						<td class='ZOptionsField'><$=ZmMsg.accountPersonaInstructions$></td>
 					</tr>
+
 					<tr>
 						<td class='ZOptionsLabel'><$=ZmMsg.accountPersonaLabel$></td>
 						<td class='ZOptionsField'><div id='${id}_PERSONA_NAME' tabindex='3010'></div></td>
 					</tr>
+
 					<tr><td colspan=2><hr></td></tr>
+
 					<tr>
 						<td class='ZOptionsLabel' style='text-align:left' colspan=2><$=ZmMsg.accountFromPrompt$></td>
 					</tr>
+
 					<tr>
 						<td class='ZOptionsLabel'><$=ZmMsg.fromLabel$></td>
 						<td class='ZOptionsField'><$=ZmMsg.fromDetail$></td>
 					</tr>
+
 					<tr>
 						<td class='ZOptionsLabel'>&nbsp;</td>
 						<td class='ZOptionsField' style='padding-left:2em;'>
-							<table role="presentation">
+							<table>
 								<tr>
 									<td style='padding-right:.5em;'>
 										<input id='${id}_PERSONA_FROM_NAME' tabindex='3020' size=30>
@@ -1173,52 +1290,61 @@ and the container element is replaced with that control.
 							</table>
 						</td>
 					</tr>
+
 					<tr>
 						<td class='ZOptionsLabel'><$=ZmMsg.setReplyTo$></td>
 						<td class='ZOptionsField'><input id='${id}_PERSONA_REPLY_TO' tabindex='3040' type=checkbox></td>
 					</tr>
+
 					<tr>
 						<td class='ZOptionsLabel'>&nbsp;</td>
 						<td class='ZOptionsField' style='padding-left:2em;'>
-							<table role="presentation">
+							<table>
 								<tr>
 									<td style='padding-right:.5em;'>
 										<input id='${id}_PERSONA_REPLY_TO_NAME' tabindex='3050' size=30>
 									</td>
-									<td class='ZmSelector'>
+									<td>
 										<select id='${id}_PERSONA_REPLY_TO_EMAIL' tabindex='3060' size=40></select>
 									</td>
 								</tr>
 							</table>
 						</td>
 					</tr>
+
 					<tr valign=top>
 						<td class='ZOptionsLabel'><$=ZmMsg.signatureLabel$></td>
-						<td class='ZOptionsField' valign='middle'><$=ZmMsg.manageSignatures$></td>
+						<td class='ZOptionsField'><$=ZmMsg.manageSignatures$></td>
 					</tr>
+
 					<tr><td colspan=2><hr></td></tr>
+
 					<tr>
 						<td class='ZOptionsLabel'><$=ZmMsg.accountPersonaUseLabel$></td>
 						<td class='ZOptionsField'><input id='${id}_PERSONA_WHEN_SENT_TO' tabindex='3080' type=checkbox></td>
 					</tr>
+
 					<tr>
 						<td class='ZOptionsLabel'>&nbsp;</td>
 						<td class='ZOptionsInfo' style='padding-left:2em;'>
 							<input id='${id}_PERSONA_WHEN_SENT_TO_LIST' tabindex='3085' size=80>
 						</td>
 					</tr>
+
 					<tr>
 						<td class='ZOptionsLabel'>&nbsp;</td>
 						<td class='ZOptionsInfo' style='padding-left:2em;'><$=ZmMsg.whenSentToHint$></td>
 					</tr>
+
 					<tr>
 						<td class='ZOptionsLabel'>&nbsp;</td>
 						<td class='ZOptionsField'><input id='${id}_PERSONA_WHEN_IN_FOLDER' tabindex='3090' type=checkbox></td>
 					</tr>
+
 					<tr>
 						<td class='ZOptionsLabel'>&nbsp;</td>
 						<td class='ZOptionsField' style='padding-left:2em;'>
-							<table role="presentation">
+							<table>
 								<tr>
 									<td><input id='${id}_PERSONA_WHEN_IN_FOLDER_LIST' tabindex='3100' size=60></td>
 									<td><div id='${id}_PERSONA_WHEN_IN_FOLDER_BUTTON' tabindex='3110'></div></td>
@@ -1226,6 +1352,7 @@ and the container element is replaced with that control.
 							</table>
 						</td>
 					</tr>
+
 					<tr>
 						<td class='ZOptionsLabel'>&nbsp;</td>
 						<td class='ZOptionsInfo' style='padding-left:2em;'><$=ZmMsg.whenInFolderHint$></td>
@@ -1238,23 +1365,10 @@ and the container element is replaced with that control.
 
 <template id='prefs.Pages#MailFilters'>
 	<div class="rightAlign"><$=ZmMsg.filterRuleChangesSavedImmediately$></div>
-	<$ if (appCtxt.get(ZmSetting.PRIORITY_INBOX_ENABLED)) { $>
-	<div>
-		<fieldset>
-			<legend><$=ZmMsg.activityStreamFilterTitle$></legend>
-			<table role="presentation">
-				<tr>
-				<td style='padding:5px'><div id='${id}_ACTIVITY_STREAM_BUTTON'></div></td>
-				<td><$=ZmMsg.activityStreamFilterMsg$></td>
-				</tr>
-			</table>
-		</fieldset>
-	</div>
-	<$ }$>
-	<table role="presentation" width=100%>
+	<table border=0 cellspacing=0 cellpadding=0 width=100%>
 		<tr>
 			<td class='ZOptionsSectionTabView'>
-				<table role="presentation" width=100%>
+				<table width=100% cellspacing=0 cellpadding=0>
 					<tr>
 						<td><div id='${id}_tabview' tabindex='20'></div></td>
 					</tr>
@@ -1265,10 +1379,10 @@ and the container element is replaced with that control.
 </template>
 
 <template id='prefs.Pages#MailFilter'>
-	<table role="presentation" class='ZOptionsSectionTable' width=100%>
+	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
 		<tr>
 			<td class='ZOptionsSectionMain'>
-				<table role="presentation" width=100%>
+				<table width=100% cellpadding=0>
 					<tr>
 						<td><div id='${id}_toolbar' tabindex='20'></div></td>
 					</tr>
@@ -1285,31 +1399,36 @@ and the container element is replaced with that control.
 NOTE: The tables inside of the filter rule sections MUST contain a tbody element!
 -->
 <template id='prefs.Pages#MailFilterRule'>
+	<table width='100%'>
+		<tr>
+            <td width='1%' nowrap><$=ZmMsg.filterNameLabel$></td>
+			<td>
+				<input id='${id}_name' type='text' width=100 tabindex='10'>
+			</td>
+			<td width='1%' style='text-align:right; white-space:nowrap;'>
+				<input id='${id}_active' type='checkbox' name='cbActive' checked tabindex='20'>
+				<$=ZmMsg.active$>
+			</td>
+		</tr>
+	</table>
 
-	<table role="presentation" width='100%' style='margin-bottom:.75em; min-width:450px;'><tr>
-		<td><table role="presentation" width='100%' class='ZPropertySheet' cellspacing='6'><tr>
-			<td width='1%' style='white-space:nowrap;'> <$=ZmMsg.filterNameLabel$> </td>
-			<td width='99%'> <input id='${id}_name' type='text' tabindex='10' style='width:100%;'> </td>
-		</tr></table></td>
-		<td width='1%'><table role="presentation" class='ZCheckboxTable' style='margin-left:1em;'><tr>
-			<td> <input id='${id}_active' type='checkbox' name='cbActive' checked tabindex='20'> </td>
-			<td><label for='${id}_active'> <$=ZmMsg.active$> </label></td>
-		</tr></table></td>
-	</tr></table>
+	<br>
 
-	<div id='${id}_condition' tabindex='30'></div>
+	<div style='color:#555555'><div id='${id}_condition' tabindex='30'></div></div>
 	<fieldset class='FilterRuleSection'>
-		<div style='overflow-x:hidden;overflow-y:auto;height:145px;'>
-			<table role="presentation" id='${id}_conditions' width='100%' tabindex='40' class='ZPropertySheet' cellspacing='6'>
+		<div style='overflow-x:hidden;overflow-y:scroll;height:145px;'>
+			<table id='${id}_conditions' width='100%' border=0 cellpadding=0 cellspacing=0 tabindex='40'>
 				<tbody></tbody>
 			</table>
 		</div>
 	</fieldset>
 
-	<div><$=ZmMsg.filterActions$></div>
-	<fieldset class='FilterActionSection'>
-		<div style='overflow-x:hidden;overflow-y:auto;height:82px'>
-			<table role="presentation" id='${id}_actions' width='100%' tabindex='50' class='ZPropertySheet' cellspacing='6'>
+	<br>
+
+	<div style='color:#555555'><$=ZmMsg.filterActions$></div>
+	<fieldset class='FilterRuleSection'>
+		<div style='overflow-x:hidden;overflow-y:scroll;height:82px'>
+			<table id='${id}_actions' width='100%' border=0 cellpadding=0 cellspacing=0 tabindex='50'>
 				<tbody></tbody>
 			</table>
 		</div>
@@ -1319,107 +1438,137 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 </template>
 
 <template id='prefs.Pages#Calendar'>
+	<div align=right style='margin-right: 20px; margin-bottom: 10px;'>
+		<div id='${id}_REVERT_PAGE' tabindex='10' style='margin-right: 25px;'></div>
+	</div>
 
 	<$ if (data.activeAccount.isMain) { $>
-		<div class='prefHeader'><$=ZmMsg.general$></div>
-		<table role="presentation" class='ZOptionsSectionTable' width=100%>
+		<table border=0 cellspacing=0 cellpadding=0 width=100%>
+			<tr class='ZOptionsHeaderRow'>
+				<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
+				<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.general$></td>
+				<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
+			</tr>
+		</table>
+		<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
 			<tr>
 				<td class='ZOptionsSectionMain'>
-					<table role="presentation" width=100% class="ZPropertySheet" cellspacing='6'>
+					<table width=100%>
 						<tr>
 							<td class='ZOptionsLabel'><$=ZmMsg.defaultViewLabel$></td>
 							<td class='ZOptionsField'><select id='${id}_CALENDAR_INITIAL_VIEW' tabindex='20'></select></td>
 						</tr>
+
 						<tr>
 							<td class='ZOptionsLabel'><$=ZmMsg.calendarStartWeekLabel$></td>
 							<td class='ZOptionsField'><select id='${id}_CAL_FIRST_DAY_OF_WEEK' tabindex='30'></select></td>
 						</tr>
+
 						<tr>
 							<td class='ZOptionsLabel'><$=ZmMsg.calendarInitialApptVisibility $></td>
 							<td class='ZOptionsField'><select id='${id}_CAL_APPT_VISIBILITY' tabindex='35'></select></td>
 						</tr>
+
 						<tr>
 							<td class='ZOptionsLabel'>&nbsp;</td>
 							<td class='ZOptionsField'><input id='${id}_CAL_ALWAYS_SHOW_MINI_CAL' tabindex='40' type=checkbox></td>
 						</tr>
+
 						<tr>
 							<td class='ZOptionsLabel'>&nbsp;</td>
 							<td class='ZOptionsField'><input id='${id}_CAL_SHOW_CALENDAR_WEEK' tabindex='40' type=checkbox></td>
 						</tr>
 
-					<$ if (!appCtxt.multiAccounts) { $>
-						<tr>
-							<td class='ZOptionsLabel'>&nbsp;</td>
-							<td class='ZOptionsField'><input id='${id}_CAL_AUTO_ADD_INVITES' tabindex='40' type=checkbox></td>
-						</tr>
-					<$ } $>
+						<$ if (!appCtxt.multiAccounts) { $>
+							<tr>
+								<td class='ZOptionsLabel'>&nbsp;</td>
+								<td class='ZOptionsField'><input id='${id}_CAL_AUTO_ADD_INVITES' tabindex='40' type=checkbox></td>
+							</tr>
+						<$ } $>
+                        <tr><td colspan=2><hr></td></tr>
 
-						<tr>
-							<td class='ZOptionsLabel'>&nbsp;</td>
-							<td class='ZOptionsField'><input id='${id}_CAL_SHOW_DECLINED_MEETINGS' tabindex='55' type=checkbox></td>
-						</tr>
-						<tr><td colspan=2><hr></td></tr>
 						<tr>
 							<td class='ZOptionsLabel'><$=ZmMsg.deleteInviteOnReplyLabel$></td>
 							<td class='ZOptionsField'><input id='${id}_DELETE_INVITE_ON_REPLY' tabindex='50' type=checkbox></td>
 						</tr>
-						<tr><td colspan=2><hr></td></tr>
+
+                        <tr><td colspan=2><hr></td></tr>
+
 						<tr>
 							<td class='ZOptionsLabel'><$=ZmMsg.forwardInvitesToLabel$></td>
-							<td class='ZOptionsField'><$=ZmMsg.forwardInvitesTo$> <input id='${id}_CAL_INV_FORWARDING_ADDRESS' tabindex='110'></td>
+							<td class='ZOptionsField' style='padding-left:2em;'><$=ZmMsg.forwardInvitesTo$> <input id='${id}_CAL_INV_FORWARDING_ADDRESS' tabindex='110'></td>
 						</tr>
+
 						<tr><td colspan=2><hr></td></tr>
+
 						<tr>
 							<td class='ZOptionsLabel'><$=ZmMsg.apptReminderLabel$></td>
 							<td class='ZOptionsField'><select id='${id}_CAL_REMINDER_WARNING_TIME' tabindex='60'></select></td>
 						</tr>
+
 						<tr>
 							<td class='ZOptionsLabel'>&nbsp;</td>
 							<td class='ZOptionsField'><input id='${id}_CAL_SHOW_PAST_DUE_REMINDERS' tabindex='59' type=checkbox></td>
 						</tr>
+
 						<tr>
 							<td class='ZOptionsLabel'>&nbsp;</td>
 							<td class='ZOptionsField'><input id='${id}_CAL_REMINDER_NOTIFY_SOUNDS' tabindex='65' type=checkbox></td>
 						</tr>
+
 						<tr>
 							<td class='ZOptionsLabel'>&nbsp;</td>
 							<td class='ZOptionsField'><input id='${id}_CAL_REMINDER_NOTIFY_BROWSER' tabindex='68' type=checkbox></td>
 						</tr>
+
 						<tr>
 							<td class='ZOptionsLabel'>&nbsp;</td>
 							<td class='ZOptionsField'>
-								<table role="presentation"><tr>
+								<table cellspacing=0 cellpadding=0><tr>
 									<td><div id='${id}_CAL_REMINDER_NOTIFY_TOASTER' tabindex='69'></div></td>
-									<td class='Text'>&nbsp;<$=ZmDesktopAlert.getInstance().getLinkText() $></td>
+									<td><$=ZmDesktopAlert.getInstance().getLinkText() $></td>
 								</tr></table>
 							</td>
-						</tr>
-						<tr><td colspan=2><hr></td></tr>
-						<tr>
-							<td class='ZOptionsLabel'><$=ZmMsg.defaultApptDuration$></td>
-							<td class='ZOptionsField'><table role="presentation"><tr><td><select id='${id}_CAL_DEFAULT_APPT_DURATION' tabindex='70'></select></td><td style="padding-left:4px;"><$=ZmMsg.minutes$></td></tr></table></td>
 						</tr>
 					</table>
 				</td>
 			</tr>
 		</table>
-		<div class='prefHeader'><$=ZmMsg.calendarWorkHoursHeader$></div>
-		<table role="presentation" class='ZOptionsSectionTable' width=100%>
+		<table border=0 cellspacing=0 cellpadding=0 width=100%>
+			<tr class='ZOptionsHeaderRow'>
+				<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
+				<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.calendarWorkHoursHeader$></td>
+				<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
+			</tr>
+		</table>
+
+		<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
 			<tr>
 				<td class='ZOptionsSectionMain' id='${id}_CAL_WORKING_HOURS'></td>
 			</tr>
 		</table>
-		<div class='prefHeader'><$=ZmMsg.apptCreating$></div>
-		<table role="presentation" class='ZOptionsSectionTable' width=100%>
+
+		<table border=0 cellspacing=0 cellpadding=0 width=100%>
+			<tr class='ZOptionsHeaderRow'>
+				<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
+				<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.apptCreating$></td>
+				<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
+			</tr>
+		</table>
+
+		<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
 			<tr>
 				<td class='ZOptionsSectionMain'>
-					<table role="presentation" width=100% class='ZPropertySheet' cellspacing='6'>
+					<table width=100%>
 						<tr>
-							<td class='ZOptionsLabel'><$=ZmMsg.quickAddPrefLabel$>:</td>
-							<td class='ZOptionsField'><input id='${id}_CAL_USE_QUICK_ADD' tabindex='72' type=checkbox></td>
+							<td class='ZOptionsLabel'>&nbsp;</td>
+							<td class='ZOptionsField'><input id='${id}_CAL_USE_QUICK_ADD' tabindex='70' type=checkbox></td>
 						</tr>
+
+						<tr><td colspan=2><hr></td></tr>
+
 						<tr>
-							<td class='ZOptionsLabel'><$=ZmMsg.timezonePrefLabel$>:</td>
+							<td class='ZOptionsLabel'>&nbsp;</td>
 							<td class='ZOptionsField'><input id='${id}_CAL_SHOW_TIMEZONE' tabindex='80' type=checkbox></td>
 						</tr>
 					</table>
@@ -1433,11 +1582,17 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 			appCtxt.getSettings(data.activeAccount).attrExists(ZmSetting.CAL_AUTO_ADD_INVITES))
 	{
 	$>
-		<div class='prefHeader'><$=ZmMsg.general$></div>
-		<table role="presentation" class='ZOptionsSectionTable' width=100%>
+		<table border=0 cellspacing=0 cellpadding=0 width=100%>
+			<tr class='ZOptionsHeaderRow'>
+				<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
+				<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.general$></td>
+				<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
+			</tr>
+		</table>
+		<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
 			<tr>
 				<td class='ZOptionsSectionMain'>
-					<table role="presentation" width=100%>
+					<table width=100%>
 						<tr>
 							<td class='ZOptionsLabel'>&nbsp;</td>
 							<td class='ZOptionsField'><input id='${id}_CAL_AUTO_ADD_INVITES' tabindex='81' type=checkbox></td>
@@ -1449,15 +1604,23 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 	<$ } $>
 
 	<$ if (data.isAclSupported) { $>
-		<div class='prefHeader'><$=ZmMsg.calPerms$></div>
-		<table role="presentation" class='ZOptionsSectionTable' width=100%>
+		<table border=0 cellspacing=0 cellpadding=0 width=100%>
+			<tr class='ZOptionsHeaderRow'>
+				<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
+				<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.calPerms$></td>
+				<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
+			</tr>
+		</table>
+		<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
 			<tr>
 				<td class='ZOptionsSectionMain'>
-					<table role="presentation">
+					<table width=100%>
 						<tr>
 							<td colspan=2><$= AjxMessageFormat.format(ZmMsg.calPermsNote, data.domain) $></td>
 						</tr>
+
 						<tr><td colspan=2>&nbsp;</td></tr>
+
 						<tr>
 							<td class='ZOptionsLabelTop'><$=ZmMsg.freeBusyLabel$></td>
 							<td class='ZOptionsField'><div id='${id}_CAL_FREE_BUSY_ACL' tabindex='82'></div></td>
@@ -1483,227 +1646,268 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 			</tr>
 		</table>
 	<$ } $>
-	<div class='prefHeader'>Apple iCal</div>
-	<table role="presentation" class='ZOptionsSectionTable' width=100%>
-		<tr>
-			<td class='ZOptionsSectionMain'>
-				<table role="presentation" width=100% class='ZPropertySheet' cellspacing='6'>
-					<tr>
-						<td colspan=2><$=ZmMsg.calAppleICalNote $></td>
-					</tr>
-					<tr>
-						<td class='ZOptionsLabel'>&nbsp;</td>
-						<td class='ZOptionsField'><input id='${id}_ENABLE_APPL_ICAL_DELEGATION' tabindex='50' type=checkbox></td>
-					</tr>
-				</table>
-			</td>
-		</tr>
-	</table>
+
+
+
+    <table border=0 cellspacing=0 cellpadding=0 width=100%>
+        <tr class='ZOptionsHeaderRow'>
+            <td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
+            <td class='ZOptionsHeader ImgPrefsHeader'>Apple iCal</td>
+            <td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
+        </tr>
+    </table>
+    <table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
+        <tr>
+            <td class='ZOptionsSectionMain'>
+                <table width=100%>
+                    <tr>
+                        <td colspan=2><$=ZmMsg.calAppleICalNote $></td>
+                    </tr>
+                    <tr><td colspan=2>&nbsp;</td></tr>
+                    <tr>
+                        <td class='ZOptionsLabel'>&nbsp;</td>
+                        <td class='ZOptionsField'><input id='${id}_ENABLE_APPL_ICAL_DELEGATION' tabindex='50' type=checkbox></td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+
+
 </template>
 
 <template id='prefs.Pages#WorkHours'>
-	<table role="presentation" width=100%>
-		<tr>
-			<td class='ZOptionsLabel'><$=ZmMsg.calendarWorkWeek $></td>
-			<td class='ZOptionsField'>
-				<table role="presentation" class='ZPropertySheet' cellspacing='6'>
-					<tr>
-						<td id='${id}_CAL_WORKING_DAY_0' tabindex='41'></td>
-						<td id='${id}_CAL_WORKING_DAY_1' tabindex='42'></td>
-						<td id='${id}_CAL_WORKING_DAY_2' tabindex='43'></td>
-						<td id='${id}_CAL_WORKING_DAY_3' tabindex='44'></td>
-						<td id='${id}_CAL_WORKING_DAY_4' tabindex='45'></td>
-						<td id='${id}_CAL_WORKING_DAY_5' tabindex='46'></td>
-						<td id='${id}_CAL_WORKING_DAY_6' tabindex='47'></td>
-					</tr>
-				</table>
-			</td>
-		</tr>
-		<tr>
-			<td class='ZOptionsLabel'><$=ZmMsg.calendarWorkHours $></td>
-			<td class='ZOptionsField'>
-				<table role="presentation" class='ZPropertySheet' cellspacing='6'>
-					<tr>
-						<td id='${id}_CAL_WORKING_HOURS_NORMAL'><td>
-						<td> <$=ZmMsg.calendarWorkHoursNormal $> <td>
-						<td id='${id}_CAL_WORKING_START_TIME' tabindex='48'></td>
-						<td> <$=ZmMsg.calendarWorkHoursDelimiter $> </td>
-						<td id='${id}_CAL_WORKING_END_TIME' tabindex='49'></td>
-						<td id='${id}_CAL_WORKING_HOURS_CUSTOM'><td>
-						<td> <$=ZmMsg.calendarWorkHoursCustom $> <td>
-						<td id='${id}_CAL_CUSTOM_WORK_HOURS'></td>
-					</tr>
-				</table>
-			</td>
-		</tr>
-		<tr>
-			<td class='ZOptionsLabel'>&nbsp;</td>
-			<td class='ZOptionsField'><$=ZmMsg.calendarWorkHoursDisclaimer $> <$=AjxTimezone.getMediumName(appCtxt.get(ZmSetting.DEFAULT_TIMEZONE)) $></td>
-		</tr>
-	</table>
+<table border=0 cellspacing=0 cellpadding=0 width=100%>
+    <tr>
+        <td class='ZOptionsLabel'><$=ZmMsg.calendarWorkWeek $></td>
+        <td class='ZOptionsField'>
+            <table>
+                <tr>
+                    <td id='${id}_CAL_WORKING_DAY_0' tabindex='41'></td>
+                    <td id='${id}_CAL_WORKING_DAY_1' tabindex='42'></td>
+                    <td id='${id}_CAL_WORKING_DAY_2' tabindex='43'></td>
+                    <td id='${id}_CAL_WORKING_DAY_3' tabindex='44'></td>
+                    <td id='${id}_CAL_WORKING_DAY_4' tabindex='45'></td>
+                    <td id='${id}_CAL_WORKING_DAY_5' tabindex='46'></td>
+                    <td id='${id}_CAL_WORKING_DAY_6' tabindex='47'></td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+
+    <tr>
+        <td class='ZOptionsLabel'><$=ZmMsg.calendarWorkHours $></td>
+        <td class='ZOptionsField'>
+            <table>
+                <tr>
+                    <td id='${id}_CAL_WORKING_HOURS_NORMAL'><td>
+                    <td> <$=ZmMsg.calendarWorkHoursNormal $> <td>
+                    <td id='${id}_CAL_WORKING_START_TIME' tabindex='48'></td>
+                    <td> <$=ZmMsg.calendarWorkHoursDelimiter $> </td>
+                    <td id='${id}_CAL_WORKING_END_TIME' tabindex='49'></td>
+                    <td id='${id}_CAL_WORKING_HOURS_CUSTOM'><td>
+                    <td> <$=ZmMsg.calendarWorkHoursCustom $> <td>
+                    <td id='${id}_CAL_CUSTOM_WORK_HOURS'></td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+    <tr>
+        <td class='ZOptionsLabel'>&nbsp;</td>
+        <td class='ZOptionsField'><$=ZmMsg.calendarWorkHoursDisclaimer $> <$=AjxTimezone.getMediumName(appCtxt.get(ZmSetting.DEFAULT_TIMEZONE)) $></td>
+    </tr>
+</table>
 </template>
 
 <template id='prefs.Pages#CustomWorkHoursDlg'>
-<table role="presentation" class='ZPropertySheet' cellspacing='6' width=300>
-	<tr>
-		<td id='${id}_CAL_WORKING_DAY_0' tabindex='10'></td>
-		<td id='${id}_CAL_WORKING_START_TIME_0' tabindex='20'></td>
-		<td> <$=ZmMsg.calendarWorkHoursDelimiter $> </td>
-		<td id='${id}_CAL_WORKING_END_TIME_0' tabindex='30'></td>
+<table border=0 cellspacing=2 cellpadding=2 width=300>
+    <tr>
+        <td id='${id}_CAL_WORKING_DAY_0' tabindex='10'></td>
+        <td id='${id}_CAL_WORKING_START_TIME_0' tabindex='20'></td>
+        <td> <$=ZmMsg.calendarWorkHoursDelimiter $> </td>
+        <td id='${id}_CAL_WORKING_END_TIME_0' tabindex='30'></td>
+    </tr>
+    <tr>
+        <td id='${id}_CAL_WORKING_DAY_1' tabindex='40'></td>
+        <td id='${id}_CAL_WORKING_START_TIME_1' tabindex='50'></td>
+        <td> <$=ZmMsg.calendarWorkHoursDelimiter $> </td>
+        <td id='${id}_CAL_WORKING_END_TIME_1' tabindex='60'></td>
+    </tr>
+    <tr>
+        <td id='${id}_CAL_WORKING_DAY_2' tabindex='70'></td>
+        <td id='${id}_CAL_WORKING_START_TIME_2' tabindex='80'></td>
+        <td> <$=ZmMsg.calendarWorkHoursDelimiter $> </td>
+        <td id='${id}_CAL_WORKING_END_TIME_2' tabindex='90'></td>
+    </tr>
+    <tr>
+        <td id='${id}_CAL_WORKING_DAY_3' tabindex='100'></td>
+        <td id='${id}_CAL_WORKING_START_TIME_3' tabindex='110'></td>
+        <td> <$=ZmMsg.calendarWorkHoursDelimiter $> </td>
+        <td id='${id}_CAL_WORKING_END_TIME_3' tabindex='120'></td>
+    </tr>
+    <tr>
+        <td id='${id}_CAL_WORKING_DAY_4' tabindex='130'></td>
+        <td id='${id}_CAL_WORKING_START_TIME_4' tabindex='140'></td>
+        <td> <$=ZmMsg.calendarWorkHoursDelimiter $> </td>
+        <td id='${id}_CAL_WORKING_END_TIME_4' tabindex='150'></td>
+    </tr>
+    <tr>
+        <td id='${id}_CAL_WORKING_DAY_5' tabindex='160'></td>
+        <td id='${id}_CAL_WORKING_START_TIME_5' tabindex='170'></td>
+        <td> <$=ZmMsg.calendarWorkHoursDelimiter $> </td>
+        <td id='${id}_CAL_WORKING_END_TIME_5' tabindex='180'></td>
+    </tr>
+    <tr>
+        <td id='${id}_CAL_WORKING_DAY_6' tabindex='190'></td>
+        <td id='${id}_CAL_WORKING_START_TIME_6' tabindex='200'></td>
+        <td> <$=ZmMsg.calendarWorkHoursDelimiter $> </td>
+        <td id='${id}_CAL_WORKING_END_TIME_6' tabindex='210'></td>
+    </tr>
+    <tr>
+        <td colspan="4"><$=ZmMsg.calendarWorkHoursDisclaimer $> <$=AjxTimezone.getMediumName(appCtxt.get(ZmSetting.DEFAULT_TIMEZONE)) $></td>
+    </tr>
+</table>
+</template>
+
+<template id='prefs.Pages#IM'>
+<div align=right style='margin-right: 20px; margin-bottom: 10px;'>
+			<div id='${id}_REVERT_PAGE' tabindex='10' style='margin-right: 25px;'></div>
+	</div>
+
+
+<table border=0 cellspacing=0 cellpadding=0 width=100%>
+	<tr class='ZOptionsHeaderRow'>
+		<td class='ZOptionsHeaderL'>
+			<div class='ImgPrefsHeader_L'></div>
+		</td>
+		<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.options$></td>
+		<td class='ZOptionsHeaderR'>
+			<div class='ImgPrefsHeader_R'></div>
+		</td>
 	</tr>
+</table>
+<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
 	<tr>
-		<td id='${id}_CAL_WORKING_DAY_1' tabindex='40'></td>
-		<td id='${id}_CAL_WORKING_START_TIME_1' tabindex='50'></td>
-		<td> <$=ZmMsg.calendarWorkHoursDelimiter $> </td>
-		<td id='${id}_CAL_WORKING_END_TIME_1' tabindex='60'></td>
-	</tr>
-	<tr>
-		<td id='${id}_CAL_WORKING_DAY_2' tabindex='70'></td>
-		<td id='${id}_CAL_WORKING_START_TIME_2' tabindex='80'></td>
-		<td> <$=ZmMsg.calendarWorkHoursDelimiter $> </td>
-		<td id='${id}_CAL_WORKING_END_TIME_2' tabindex='90'></td>
-	</tr>
-	<tr>
-		<td id='${id}_CAL_WORKING_DAY_3' tabindex='100'></td>
-		<td id='${id}_CAL_WORKING_START_TIME_3' tabindex='110'></td>
-		<td> <$=ZmMsg.calendarWorkHoursDelimiter $> </td>
-		<td id='${id}_CAL_WORKING_END_TIME_3' tabindex='120'></td>
-	</tr>
-	<tr>
-		<td id='${id}_CAL_WORKING_DAY_4' tabindex='130'></td>
-		<td id='${id}_CAL_WORKING_START_TIME_4' tabindex='140'></td>
-		<td> <$=ZmMsg.calendarWorkHoursDelimiter $> </td>
-		<td id='${id}_CAL_WORKING_END_TIME_4' tabindex='150'></td>
-	</tr>
-	<tr>
-		<td id='${id}_CAL_WORKING_DAY_5' tabindex='160'></td>
-		<td id='${id}_CAL_WORKING_START_TIME_5' tabindex='170'></td>
-		<td> <$=ZmMsg.calendarWorkHoursDelimiter $> </td>
-		<td id='${id}_CAL_WORKING_END_TIME_5' tabindex='180'></td>
-	</tr>
-	<tr>
-		<td id='${id}_CAL_WORKING_DAY_6' tabindex='190'></td>
-		<td id='${id}_CAL_WORKING_START_TIME_6' tabindex='200'></td>
-		<td> <$=ZmMsg.calendarWorkHoursDelimiter $> </td>
-		<td id='${id}_CAL_WORKING_END_TIME_6' tabindex='210'></td>
-	</tr>
-	<tr>
-		<td colspan="4"><$=ZmMsg.calendarWorkHoursDisclaimer $>
-			<$=AjxTimezone.getMediumName(appCtxt.get(ZmSetting.DEFAULT_TIMEZONE)) $>
+		<td class='ZOptionsSectionMain'>
+			<table width=100%>
+				<$ if (data.isEnabled(ZmSetting.IM_PREF_AUTO_LOGIN)) { $>
+				<tr>
+					<td class='ZOptionsLabel'><$=ZmMsg.imLoginLabel$></td>
+					<td class='ZOptionsField'>
+						<div id='${id}_IM_PREF_AUTO_LOGIN' tabindex='20'></div>
+					</td>
+				</tr>
+
+				<tr>
+					<td colspan=2>
+						<hr>
+					</td>
+				</tr>
+				<$ } $>
+
+				<$ if (data.isEnabled(ZmSetting.IM_PREF_INSTANT_NOTIFY)) { $>
+				<tr>
+					<td class='ZOptionsLabel'><$=ZmMsg.imNotificationsLabel$></td>
+					<td class='ZOptionsField'>
+						<div id='${id}_IM_PREF_INSTANT_NOTIFY' tabindex='30'></div>
+					</td>
+				</tr>
+				<$ } $>
+
+				<tr>
+					<td class='ZOptionsLabel'><$= data.isEnabled(ZmSetting.IM_PREF_INSTANT_NOTIFY) ? "&nbsp;" : ZmMsg.imNotificationsLabel $></td>
+					<td class='ZOptionsField'>
+						<div id='${id}_IM_PREF_NOTIFY_PRESENCE' tabindex='50'></div>
+					</td>
+				</tr>
+
+				<tr>
+					<td class='ZOptionsLabel'>&nbsp;</td>
+					<td class='ZOptionsField'>
+						<div id='${id}_IM_PREF_NOTIFY_STATUS' tabindex='60'></div>
+					</td>
+				</tr>
+
+				<tr>
+					<td colspan=2>
+						<hr>
+					</td>
+				</tr>
+
+				<tr>
+					<td class='ZOptionsLabel'><$=ZmMsg.imArrivalLabel$></td>
+					<td class='ZOptionsField'>
+						<div id='${id}_IM_PREF_NOTIFY_SOUNDS' tabindex='35'></div>
+					</td>
+				</tr>
+
+				<tr>
+					<td class='ZOptionsLabel'>&nbsp;</td>
+					<td class='ZOptionsField'>
+						<div id='${id}_IM_PREF_FLASH_BROWSER' tabindex='40'></div>
+					</td>
+				</tr>
+
+				<tr>
+					<td class='ZOptionsLabel'>&nbsp;</td>
+					<td class='ZOptionsField'>
+						<table cellspacing=0 cellpadding=0><tr>
+							<td><div id='${id}_IM_PREF_DESKTOP_ALERT' tabindex='40'></div></td>
+							<td><$=ZmMsg.showPopupBrowserPlusLink $></td>
+						</tr></table>
+					</td>
+				</tr>
+
+				<tr>
+					<td colspan=2>
+						<hr>
+					</td>
+				</tr>
+
+				<tr>
+					<td class='ZOptionsLabel'><$=ZmMsg.imChat $></td>
+					<td class='ZOptionsField'>
+						<div id='${id}_IM_PREF_LOGCHATS_ENABLED' tabindex='70'></div>
+					</td>
+				</tr>
+
+				<tr>
+					<td class='ZOptionsLabel'>&nbsp;</td>
+					<td class='ZOptionsField'>
+						<table cellspacing="0" cellpadding="0">
+							<tr>
+								<td colspan="2">
+									<div id='${id}_IM_PREF_REPORT_IDLE' tabindex='70'></div>
+								</td>
+							</tr>
+							<tr>
+								<td style="padding-left: 10px; text-align: right;">
+									<$=ZmMsg.imPrefIdleTimeoutLabel $>
+								</td>
+								<td style="padding: 3px">
+									<div id='${id}_IM_PREF_IDLE_TIMEOUT' tabindex='80'></div>
+								</td>
+							</tr>
+							<tr>
+								<td style="padding-left: 10px; text-align: right;">
+									<$=ZmMsg.imPrefIdleStatusLabel $>
+								</td>
+								<td style="padding: 3px">
+									<div id='${id}_IM_PREF_IDLE_STATUS' tabindex='90'></div>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+
+			</table>
 		</td>
 	</tr>
 </table>
 </template>
 
-<template id='prefs.Pages#IM'>
-	<div class='prefHeader'><$=ZmMsg.options$></div>
-	<table role="presentation" class='ZOptionsSectionTable' width=100%>
-		<tr>
-			<td class='ZOptionsSectionMain'>
-				<table role="presentation" width=100% class='ZPropertySheet' cellspacing='6'>
-
-				<$ if (data.isEnabled(ZmSetting.IM_PREF_AUTO_LOGIN)) { $>
-					<tr>
-						<td class='ZOptionsLabel'><$=ZmMsg.imLoginLabel$></td>
-						<td class='ZOptionsField'>
-							<div id='${id}_IM_PREF_AUTO_LOGIN' tabindex='20'></div>
-						</td>
-					</tr>
-					<tr>
-						<td colspan=2><hr></td>
-					</tr>
-				<$ } $>
-
-				<$ if (data.isEnabled(ZmSetting.IM_PREF_INSTANT_NOTIFY)) { $>
-					<tr>
-						<td class='ZOptionsLabel'><$=ZmMsg.imNotificationsLabel$></td>
-						<td class='ZOptionsField'>
-							<div id='${id}_IM_PREF_INSTANT_NOTIFY' tabindex='30'></div>
-						</td>
-					</tr>
-				<$ } $>
-
-					<tr>
-						<td class='ZOptionsLabel'><$= data.isEnabled(ZmSetting.IM_PREF_INSTANT_NOTIFY) ? "&nbsp;" : ZmMsg.imNotificationsLabel $></td>
-						<td class='ZOptionsField'>
-							<div id='${id}_IM_PREF_NOTIFY_PRESENCE' tabindex='50'></div>
-						</td>
-					</tr>
-					<tr>
-						<td class='ZOptionsLabel'>&nbsp;</td>
-						<td class='ZOptionsField'>
-							<div id='${id}_IM_PREF_NOTIFY_STATUS' tabindex='60'></div>
-						</td>
-					</tr>
-					<tr>
-						<td colspan=2><hr></td>
-					</tr>
-					<tr>
-						<td class='ZOptionsLabel'><$=ZmMsg.imArrivalLabel$></td>
-						<td class='ZOptionsField'>
-							<div id='${id}_IM_PREF_NOTIFY_SOUNDS' tabindex='35'></div>
-						</td>
-					</tr>
-					<tr>
-						<td class='ZOptionsLabel'>&nbsp;</td>
-						<td class='ZOptionsField'>
-							<div id='${id}_IM_PREF_FLASH_BROWSER' tabindex='40'></div>
-						</td>
-					</tr>
-					<tr>
-						<td class='ZOptionsLabel'>&nbsp;</td>
-						<td class='ZOptionsField'>
-							<table role="presentation"><tr>
-								<td><div id='${id}_IM_PREF_DESKTOP_ALERT' tabindex='40'></div></td>
-								<td><$=ZmMsg.showPopupBrowserPlusLink $></td>
-							</tr></table>
-						</td>
-					</tr>
-					<tr>
-						<td colspan=2><hr></td>
-					</tr>
-					<tr>
-						<td class='ZOptionsLabel'><$=ZmMsg.imChat $></td>
-						<td class='ZOptionsField'>
-							<div id='${id}_IM_PREF_LOGCHATS_ENABLED' tabindex='70'></div>
-						</td>
-					</tr>
-					<tr>
-						<td class='ZOptionsLabel'>&nbsp;</td>
-						<td class='ZOptionsField'>
-							<table role="presentation">
-								<tr>
-									<td colspan="2">
-										<div id='${id}_IM_PREF_REPORT_IDLE' tabindex='70'></div>
-									</td>
-								</tr>
-								<tr>
-									<td style="padding-left:10px; text-align:right;">
-										<$=ZmMsg.imPrefIdleTimeoutLabel $>
-									</td>
-									<td style="padding:3px">
-										<div id='${id}_IM_PREF_IDLE_TIMEOUT' tabindex='80'></div>
-									</td>
-								</tr>
-								<tr>
-									<td style="padding-left:10px; text-align:right;">
-										<$=ZmMsg.imPrefIdleStatusLabel $>
-									</td>
-									<td style="padding:3px">
-										<div id='${id}_IM_PREF_IDLE_STATUS' tabindex='90'></div>
-									</td>
-								</tr>
-							</table>
-						</td>
-					</tr>
-				</table>
-			</td>
-		</tr>
-	</table>
-</template>
-
 <template id='prefs.Pages#ImAccountLabel'>
-	<table role="presentation" class="ImAccountLabel">
+	<table class="ImAccountLabel">
 		<tr>
 			<td>${name}</td>
 			<td style='width:1%;'><img src="<$=appContextPath$>/public/tmp/${nameLower}.png"/></td>
@@ -1712,10 +1916,10 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 </template>
 
 <template id='prefs.Pages#ZmImAccountRow'>
-	<table role="presentation">
+	<table>
 		<tr>
 			<td class="ZOptionsLabel" style="vertical-align:top;">
-				<table role="presentation" class="ImAccountLabel">
+				<table class="ImAccountLabel">
 					<tr>
 						<td>${name}</td>
 						<td style='width:1%;'><img src="<$=appContextPath$>/public/tmp/${nameLower}.png"/></td>
@@ -1732,7 +1936,7 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 </template>
 
 <template id='prefs.Pages#ZmImGatewayControl'>
-	<table role="presentation">
+	<table>
 		<tr>
 			<td class="ImAccountGatewayLabel">${nameLabel}</td>
 			<td class="ImAccountGatewayValue"><div id='${id}_nameField'/></td>
@@ -1752,8 +1956,14 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 
 
 <template id='prefs.Pages#Shortcuts'>
-		<div class='prefHeader'><$=ZmMsg.keyboardShortcuts$></div>
-		<table role="presentation" class='ZOptionsSectionTable' width=100%>
+		<table border=0 cellspacing=0 cellpadding=0 width=100%>
+			<tr class='ZOptionsHeaderRow'>
+				<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
+				<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.keyboardShortcuts$></td>
+				<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
+			</tr>
+		</table>
+		<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
 			<tr>
 				<td class='ZOptionsSectionMain'>
 					<div align="right">
@@ -1766,7 +1976,7 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 </template>
 
 <template id='prefs.Pages#AccountTestContent'>
-	<table role="presentation" id='${id}_accts' class='ZmDataSourceTestTable ZPropertySheet' cellspacing='6'>
+	<table id='${id}_accts' class='ZmDataSourceTestTable' border=0 cellspacing=0 cellpadding=3>
 		<tr><th><$=ZmMsg.account$></th><th><$=ZmMsg.status$></th></tr>
 		<$ for (var i = 0; i < data.accounts.length; i++) { $>
 			<$= AjxTemplate.expand("#AccountTestItem", { id: data.id, account: data.accounts[i] }) $>
@@ -1781,7 +1991,7 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 	</tr>
 	<tr id='${account.id}_test_details' style='display:none'>
 		<td>
-		<table role="presentation" border='0'>
+		<table border='0'>
 			<tr valign='top'>
 				<td class='ZmTestError'><$=ZmMsg.errorLabel$></td>
 				<td id='${account.id}_test_error' class='ZmTestError'></td>
@@ -1797,16 +2007,16 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 
 <!-- NOTE: This is just for backwards compatibility. -->
 <template id='prefs.Pages#Import'>
-	<table role="presentation" class='ZPropertySheet' cellspacing='6'>
+	<table border=0 cellpadding=3 cellspacing=3>
 		<tr>
 		<td class='ZOptionsLabel'>${label}</td>
 			<td class='ZOptionsInfo'>
 			<form id='${id}_form'
-				action='${action}' method='POST' enctype='multipart/form-data'
-				style='margin:0; padding:0;'>
+				  action='${action}' method='POST' enctype='multipart/form-data'
+				  style='margin: 0px; padding: 0px;'>
 					<input id='${id}_input' tabindex='10'
-						type='file' name='${name}'
-						style='font-family:Tahoma; font-size:10px'>
+					   type='file' name='${name}'
+					   style='font-family:Tahoma; font-size:10px'>
 			</form>
 		</td>
 		</tr>
@@ -1819,7 +2029,7 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 
 <!-- NOTE: This is just for backwards compatibility. -->
 <template id='prefs.Pages#Export'>
-	<table role="presentation" class='ZPropertySheet' cellspacing='6'>
+	<table border=0 cellpadding=3 cellspacing=3>
 		<tr>
 			<td class='ZOptionsLabel'>&nbsp;</td>
 			<td class='ZOptionsInfo'><div id='${id}_options' tabindex="10"></div></td>
@@ -1829,14 +2039,26 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 </template>
 
 <template id='prefs.Pages#Zimlets'>
-	<div class='prefHeader'><$=ZmMsg.zimlets$></div>
-	<table role="presentation" class='ZOptionsSectionTable' width=100%>
-		<tr>
+	<div align=right style='margin-right: 20px; margin-bottom: 10px;'>
+			<div id='${id}_REVERT_PAGE' tabindex='10' style='margin-right: 25px;'></div>
+	</div>
+
+	<table border=0 cellspacing=0 cellpadding=0 width=100%>
+		<tr class='ZOptionsHeaderRow'>
+			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
+			<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.zimlets$></td>
+			<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
+		</tr>
+	</table>
+    <table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
+        <tr>
 			<td class='ZOptionsSectionMain'>
-				<table role="presentation" width=100% class='ZPropertySheet' cellspacing='6'>
-					<tr>
-						<td><div style='margin-bottom:1em;'><$=ZmMsg.zimletsPrefsMsg$></div></td>
-					</tr>
+				<table width=100%>
+                    <tr>
+                        <td>
+                            <div><$=ZmMsg.zimletsPrefsMsg$></div><br/>
+                        </td>
+                    </tr>
 					<tr>
 						<td><div id='${id}_CHECKED_ZIMLETS' tabindex='30'></div></td>
 					</tr>
@@ -1846,11 +2068,17 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 	</table>
 
 	<$ if (appCtxt.isOffline) { $>
-		<div class='prefHeader'><$=ZmMsg.zimletInstall$></div>
-		<table role="presentation" class='ZOptionsSectionTable' width=100%>
+		<table border=0 cellspacing=0 cellpadding=0 width=100%>
+			<tr class='ZOptionsHeaderRow'>
+				<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
+				<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.zimletInstall$></td>
+				<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
+			</tr>
+		</table>
+		<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
 			<tr>
 				<td class='ZOptionsSectionMain'>
-					<table role="presentation" width=100%>
+					<table width=100%>
 						<tr>
 							<td>
 								<div><$=ZmMsg.zimletsPrefsUpload$></div><br/>
@@ -1858,7 +2086,7 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 						</tr>
 						<tr>
 							<td>
-								<table role="presentation" class='ZPropertySheet' cellspacing='6'>
+								<table border=0>
 									<tr>
 										<td class='ZOptionsLabel'><$=ZmMsg.fileLabel$></td>
 										<td>
@@ -1878,80 +2106,109 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 				</td>
 			</tr>
 		</table>
-		<div class='prefHeader'><$=ZmMsg.zimletSyncData$></div>
-		<table role="presentation" class='ZOptionsSectionTable' width=100%>
-			<tr>
-				<td class='ZOptionsSectionMain'>
-					<table role="presentation" width=100%><tr><td>
-						<select id='${id}_OFFLINE_ZIMLET_SYNC_ACCOUNT_ID' tabindex='130'></select>
-					</td></tr></table>
-				</td>
-			</tr>
-		</table>
+        <table border=0 cellspacing=0 cellpadding=0 width=100%>
+            <tr class='ZOptionsHeaderRow'>
+                <td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
+                <td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.zimletSyncData$></td>
+                <td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
+            </tr>
+        </table>
+        <table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
+            <tr>
+                <td class='ZOptionsSectionMain'>
+                    <table width=100%>
+                        <tr>
+                            <td><select id='${id}_OFFLINE_ZIMLET_SYNC_ACCOUNT_ID' tabindex='130'></select>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
 	<$ } $>
 </template>
 
 <template id='prefs.Pages#BackUp'>
-	<div class='prefHeader'><$=ZmMsg.offlineBackupHeader$></div>
-	<table role="presentation" class='ZOptionsSectionTable' width=100%>
+	<table border=0 cellspacing=0 cellpadding=0 width=100%>
+		<tr class='ZOptionsHeaderRow'>
+			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
+			<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.offlineBackupHeader$></td>
+			<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
+		</tr>
+	</table>
+    <table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
 		<tr>
-			<td class='ZOptionsSectionMain'>
-				<table role="presentation" width=100% class='ZPropertySheet' cellspacing='6'>
+		    <td class='ZOptionsSectionMain'>
+				<table width=100% cellpadding=5>
+                    <tr>
+                        <td class='ZOptionsLabel'></td>
+                    	<td class='ZOptionsField' colspan=2><div id='${id}_button' tabindex='200'></div></td>
+                    </tr>
+
+                    <tr>
+					    <td class='ZOptionsLabel'><$=ZmMsg.offlineBackUpAccounts$></td>
+				    	<td class='ZOptionsField' colspan=2><div id='${id}_OFFLINE_BACKUP_ACCOUNT_ID' tabindex='200'></div></td>
+					</tr>
+
 					<tr>
-						<td class='ZOptionsLabel'></td>
-						<td class='ZOptionsField' colspan=2><div id='${id}_button' tabindex='200'></div></td>
+					    <td class='ZOptionsLabel'><$=ZmMsg.offlineBackUpInterval$></td>
+				    	<td class='ZOptionsField' colspan=2><div id='${id}_OFFLINE_BACKUP_INTERVAL' tabindex='200'></div></td>
 					</tr>
 					<tr>
-						<td class='ZOptionsLabel'><$=ZmMsg.offlineBackUpAccounts$></td>
-						<td class='ZOptionsField' colspan=2><div id='${id}_OFFLINE_BACKUP_ACCOUNT_ID' tabindex='200'></div></td>
+					    <td class='ZOptionsLabel'><$=ZmMsg.offlineBackUpPath$></td>
+				    	<td class='ZOptionsField' colspan=2>
+				    	    <div id='${id}_OFFLINE_BACKUP_PATH' tabindex='210'></div>
+				    	</td>
 					</tr>
 					<tr>
-						<td class='ZOptionsLabel'><$=ZmMsg.offlineBackUpInterval$></td>
-						<td class='ZOptionsField' colspan=2><div id='${id}_OFFLINE_BACKUP_INTERVAL' tabindex='200'></div></td>
-					</tr>
-					<tr>
-						<td class='ZOptionsLabel'><$=ZmMsg.offlineBackUpPath$></td>
-						<td class='ZOptionsField' colspan=2>
-							<div id='${id}_OFFLINE_BACKUP_PATH' tabindex='210'></div>
-						</td>
-					</tr>
-					<tr>
-						<td class='ZOptionsLabel'><$=ZmMsg.offlineBackUpRetention$></td>
-						<td class='ZOptionsField' width="2%">
-							<div id='${id}_OFFLINE_BACKUP_KEEP' tabindex='230'></div>
-						</td>
-						<td><$=ZmMsg.offlineBackUpKeep$></td>
+					    <td class='ZOptionsLabel'><$=ZmMsg.offlineBackUpRetention$></td>
+				    	<td class='ZOptionsField' width="2%">
+				    	    <div id='${id}_OFFLINE_BACKUP_KEEP' tabindex='230'></div>
+				    	</td>
+				    	<td><$=ZmMsg.offlineBackUpKeep$></td>
 					</tr>
 				</table>
 			</td>
 		</tr>
 	</table>
-	<div class='prefHeader'><$=ZmMsg.offlineBackUpRestore$></div>
-	<table role="presentation" class='ZOptionsSectionTable' width=100%>
-		<tr>
-			<td class='ZOptionsSectionMain'>
-				<table role="presentation" width=100% class='ZPropertySheet' cellspacing='6'>
-					<tr>
-						<td class='ZOptionsField' colspan=2><div id='${id}_OFFLINE_BACKUP_RESTORE' tabindex='300'></div></td>
-					</tr>
-					<tr>
-						<td class='ZOptionsField'><div id='${id}_restore_button' tabindex='320'></div></td>
-						<td>&nbsp;</td>
-					</tr>
-				</table>
-			</td>
+	<table border=0 cellspacing=0 cellpadding=0 width=100%>
+		<tr class='ZOptionsHeaderRow'>
+			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
+			<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.offlineBackUpRestore$></td>
+			<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
 		</tr>
 	</table>
+    <table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
+    		<tr>
+    		    <td class='ZOptionsSectionMain'>
+    				<table width=100% cellpadding=5>
+    				    <tr>
+    				    	<td class='ZOptionsField' colspan=2><div id='${id}_OFFLINE_BACKUP_RESTORE' tabindex='300'></div></td>
+    					</tr>
+                        <tr>
+                            <td class='ZOptionsField'><div id='${id}_restore_button' tabindex='320'></div></td>
+                            <td>&nbsp;</td>
+                        </tr>
+    				</table>
+    			</td>
+    		</tr>
+    </table>
 </template>
 
 
 <template id='prefs.Pages#SharingPrefPage'>
-	<div class="rightAlign prefHeaderComment"><$=ZmMsg.sharingChangesSavedImmediately$></div>
-	<div class='prefHeader'><$=ZmMsg.pendingSharesTitle$></div>
-	<table role="presentation" class='ZOptionsSectionTable' width=100%>
+
+	<table border=0 cellspacing=0 cellpadding=0 width=100%>
+		<tr class='ZOptionsHeaderRow'>
+			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
+			<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.pendingSharesTitle$></td>
+			<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
+		</tr>
+	</table>
+	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
 		<tr>
 			<td class='ZOptionsSectionMain'>
-				<table role="presentation" width=100% class='ZPropertySheet' cellspacing='6'>
+				<table width=100%>
 					<tr><td><div id='${id}_shareForm'></div></td></tr>
 				</table>
 			</td>
@@ -1964,8 +2221,16 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 			</td>
 		</tr>
 	</table>
-	<div class='prefHeader'><$=ZmMsg.mountedSharesTitle$></div>
-	<table role="presentation" class='ZOptionsSectionTable' width=100%>
+
+	<table border=0 cellspacing=0 cellpadding=0 width=100%>
+		<tr class='ZOptionsHeaderRow'>
+			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
+			<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.mountedSharesTitle$></td>
+			<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
+		</tr>
+	</table>
+
+	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
 		<tr>
 			<td class='ZOptionsSectionMain'>
 				<div>
@@ -1974,8 +2239,15 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 			</td>
 		</tr>
 	</table>
-	<div class='prefHeader'><$=ZmMsg.sharingByMe$></div>
-	<table role="presentation" class='ZOptionsSectionTable' width=100%>
+
+	<table border=0 cellspacing=0 cellpadding=0 width=100%>
+		<tr class='ZOptionsHeaderRow'>
+			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
+			<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.sharingByMe$></td>
+			<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
+		</tr>
+	</table>
+	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
 		<tr>
 			<td class='ZOptionsSectionMain'>
 				<div id='${id}_sharesBy'></div>
@@ -1983,17 +2255,18 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 		</tr>
 		<tr>
 			<td class='ZOptionsSectionMain'>
-				<table role="presentation" width=100%>
+				<table width=100%>
 					<tr><td><div class="sharingPageListTitle"><$=ZmMsg.shareAFolder$></div></td></tr>
 					<tr><td><div id='${id}_grantForm'></div></td></tr>
 				</table>
 			</td>
 		</tr>
 	</table>
+
 </template>
 
 <template id='prefs.Pages#ShareForm'>
-	<table role="presentation">
+	<table>
 		<tr><td colspan=3><div id="${id}_group" class="ZOptionsInfo" tabindex='5'></div></td></tr>
 		<tr><td><div id="${id}_user" class="ZOptionsInfo" tabindex='10'></div></td>
 			<td><div id="${id}_owner" class="ZOptionsInfo" tabindex='20'></div></td>
@@ -2005,7 +2278,7 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 <template id='prefs.Pages#GrantForm'>
 	<div><$=ZmMsg.grantFormText$></div>
 	<br/>
-	<table role="presentation" class='ZPropertySheet' cellspacing='6'>
+	<table cellspacing=5>
 		<tr><td><$=ZmMsg.folderType$></td>
 			<td><div id='${id}_folderType' tabindex='40'></div></td>
 			<td><div id='${id}_shareButton' tabindex='50'></div></td></tr>
@@ -2014,26 +2287,33 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 </template>
 
 <template id='prefs.Pages#MobileDevices'>
-	<div class="rightAlign prefHeaderComment"><$=ZmMsg.mobileDeviceChangesSavedImmediately$></div>
-	<div class='prefHeader'><$=ZmMsg.sharingByMe$></div>
-	<table role="presentation" class='ZOptionsSectionTable' width=100%>
+	<table border=0 cellspacing=0 cellpadding=0 width=100%>
+		<tr class='ZOptionsHeaderRow'>
+			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
+			<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.mobileDevices$></td>
+			<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
+		</tr>
+	</table>
+	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
 		<tr>
 			<td class='ZOptionsSectionMain'>
-				<table role="presentation" width=100% class='ZPropertySheet' cellspacing='6'>
+				<table width=100%>
 					<tr>
-						<td><div id='${id}_deviceList' tabindex='20'></div></td>
+						<td><div id='${id}_deviceToolbar' tabindex='20'></div></td>
 					</tr>
 					<tr>
-						<td><div id='${id}_deviceToolbar' tabindex='30'></div></td>
+						<td><div id='${id}_deviceList' tabindex='30'></div></td>
 					</tr>
 				</table>
 			</td>
 		</tr>
 	</table>
+
+	<$=ZmMsg.mobileDeviceChangesSavedImmediately$><br>
 </template>
 
 <template id='prefs.Pages#MobileDeviceInfo'>
-	<table role="presentation">
+	<table border=0>
 		<tr>
 			<td><$=ZmMsg.mobileDevice$>:</td>
 			<td><$=data.device.type$></td>
@@ -2087,10 +2367,21 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 </template>
 
 <template id='prefs.Pages#Notifications'>
-	<div class='prefHeader'><$=ZmMsg.notificationsEmail$></div>
-	<table role="presentation" class='ZOptionsSectionTable' width=100%>
+	<!-- REVERT_PAGE (button) -->
+	<div align=right style='margin-right: 20px; margin-bottom: 10px;'>
+			<div id='${id}_REVERT_PAGE' tabindex='10' style='margin-right: 25px;'></div>
+	</div>
+
+	<table border=0 cellspacing=0 cellpadding=0 width=100%>
+		<tr class='ZOptionsHeaderRow'>
+			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
+			<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.notificationsEmail$></td>
+			<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
+		</tr>
+	</table>
+	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
 		<tr><td class='ZOptionsSectionMain'>
-				<table role="presentation" width=100% class='ZPropertySheet' cellspacing='6'>
+				<table width=100%>
 					<!--<tr><td class='ZOptionsLabel'><$=ZmMsg.emailNotificationsLabel$></td>-->
 						<!--<td class='ZOptionsField'><input id='${id}_EMAIL_ENABLED' tabindex='100' type='checkbox'></td>-->
 					<!--</tr>-->
@@ -2101,330 +2392,65 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 			</td>
 		</tr>
 	</table>
-
-<$ if (appCtxt.get(ZmSetting.CAL_DEVICE_EMAIL_REMINDERS_ENABLED)) { $>
-	<div class='prefHeader'><$=ZmMsg.notificationsDeviceEmail$></div>
-	<table role="presentation" class='ZOptionsSectionTable ZDeviceOptionsTable' width='100%'>
-		<tr><td class='ZOptionsSectionMain'>
-				<table role="presentation" width=100% class='ZPropertySheet' cellspacing='6'>
-					<tr><td class='ZOptionsLabel'><$=ZmMsg.deviceEmailNotificationsRegionLabel$></td>
-						<td class='ZOptionsField' colspan="4">
-							<table role="presentation"><tr><td>
-							<div id='${id}_DEVICE_EMAIL_REGION' tabindex='400'></div>
-							</td></tr></table>
-						</td>
-					</tr>
-					<tr><td class='ZOptionsLabel'><$=ZmMsg.deviceEmailNotificationsCarrierLabel$></td>
-						<td class='ZOptionsField' colspan="4">
-							<div id='${id}_DEVICE_EMAIL_CARRIER' tabindex='500'></div>
-						</td>
-					</tr>
-					<tr id='${id}_DEVICE_EMAIL_PHONE_row'>
-						<td class='ZOptionsLabel'><$=ZmMsg.deviceEmailNotificationsPhoneNumberLabel$></td>
-						<td class='ZOptionsField' colspan="3">
-							<div id='${id}_DEVICE_EMAIL_PHONE' tabindex='600'></div>
-						</td>
-						<td class="ZOptionsField"><div id="${id}_DEVICE_EMAIL_PHONE_SEND_CODE" tabindex='610'></div></td>
-					</tr>
-					<tr id="${id}_DEVICE_EMAIL_CUSTOM_NUMBER_row">
-						<td class='ZOptionsLabel'><$=ZmMsg.deviceEmailNotificationsCustomeEmailLabel$></td>
-						<td class='ZOptionsField'><div id='${id}_DEVICE_EMAIL_CUSTOM_NUMBER' tabindex='700'></div></td>
-						<td class="ZOptionsField">@</td>
-						<td class='ZOptionsField'><div id='${id}_DEVICE_EMAIL_CUSTOM_ADDRESS' tabindex='710'></div></td>
-						<td class="ZOptionsField"><div id="${id}_DEVICE_EMAIL_CUSTOM_SEND_CODE" tabindex='720'></div></td>
-					</tr>
-					<tr id='${id}_DEVICE_EMAIL_PHONE_HINT_row'>
-						<td></td>
-						<td class="ZOptionsInfo" colspan="4">
-							<div id="${id}_DEVICE_EMAIL_PHONE_HINT"></div>
-						</td>
-					</tr>
-					<tr><td class='ZOptionsLabel'><$=ZmMsg.deviceEmailNotificationsVerificationCodeLabel$></td>
-						<td class='ZOptionsField' colspan="3"><div id='${id}_DEVICE_EMAIL_CODE' tabindex='800'></div></td>
-						<td class="ZOptionsField"><div id="${id}_DEVICE_EMAIL_CODE_VALIDATE" tabindex='810'></div></td>
-					</tr>
-					<tr><td class='ZOptionsLabel'><$=ZmMsg.deviceEmailNotificationsVerificationStatusLabel$></td>
-						<td class='ZOptionsField' colspan="3">
-							<div id='${id}_DEVICE_EMAIL_CODE_STATUS' tabindex='900'></div>
-						</td>
-						<td class="ZOptionsField"><div id="${id}_DEVICE_EMAIL_CODE_INVALIDATE" tabindex='910'></div></td>
-					</tr>
-				</table>
-			</td>
-		</tr>
-	</table>
-<$ } $>
-	
-</template>
-<!--
-<template id='prefs.Pages#QuickCommandList'>
-	<div class='prefHeader'><$=ZmMsg.quickCommands$></div>
-	<table role="presentation" class='ZOptionsSectionTable' width=100%>
-		<tr>
-			<td class='ZOptionsSectionMain'>
-				<table role="presentation" width=100% >
-					<tr>
-						<td><div id='${id}_toolbar' tabindex='20'></div></td>
-					</tr>
-					<tr>
-						<td><div id='${id}_list' tabindex='30'></div></td>
-					</tr>
-				</table>
-			</td>
-		</tr>
-	</table>
-</template>
-
-<template id='prefs.Pages#QuickCommandDialog'>
-	<div style="height:400px; width:450px">
-		<table role="presentation" style='width:100%; height:100px'>
-			<tr>
-				<td width='1%' nowrap><$=ZmMsg.quickCommandNameLabel$></td>
-				<td>
-					<input id='${id}_name' type='text' style="width:185px" tabindex='10' maxlength='25'>
-				</td>
-				<td width='1%' style='text-align:right; white-space:nowrap;'>
-					<input id='${id}_active' type='checkbox' name='cbActive' tabindex='20'>
-					<label for='${id}_active'><$=ZmMsg.active$></label>
-				</td>
-			</tr>
-			<tr>
-				<td width='1%' nowrap><$=ZmMsg.description$></td>
-				<td colspan="2"><input id='${id}_description' type='text' style="width:250px" tabindex='15'maxlength='100'></td>
-			</tr>
-			<tr>
-				<td width='1%' nowrap><$=ZmMsg.itemType$></td>
-				<td colspan="2" id="${id}_itemTypeContainer"></td>
-			</tr>
-		</table>
-		<div style='height:350px'>
-			<div style='margin-bottom:5px; vertical-align:bottom'>
-				<p style='color:#555555; float:left'><$=ZmMsg.quickCommandActions$></p>
-				<div id="${id}_addButtonContainer" style='float:right'></div>
-			</div>
-		
-			<fieldset class='FilterRuleSection' style='width:417px; height:250px; clear:both'>
-				<div style='overflow-x:hidden; overflow-y:scroll; height:100%'>
-					<table role="presentation" id='${id}_actions' width='100%' tabindex='50'>
-						<tbody id="${id}_actionsTbody"></tbody>
-					</table>
-				</div>
-			</fieldset>
-		</div>
-	</div>
-</template>
-
-<template id='prefs.Pages#QuickCommandDialogActionRow'>
-	<tr style='width:100%' id='${id}'>
-		<td id='${id}_activeContainer' style='padding:3px'></td>
-		<td id='${id}_typeContainer' style='padding:3px'></td>
-		<td id='${id}_valueContainer' style='padding:3px'></td>
-		<td id='${id}_buttonsContainer' style='padding:3px' nowrap=nowrap'></td>
-	</tr>
-</template>
--->
-<template id='prefs.Pages#GrantRightsDialog'>
-	<table role="presentation">
-		<tr id='${id}_name_row'>
-			<td class="Label" style="padding-right:10px"><$=ZmMsg.emailLabel$></td>
-			<td id="${id}_name_cell">
-			</td>
-		</tr>
-		<tr>
-			<td class="Label">&nbsp;</td>
-			<td>
-				<table role="presentation">
-					<tr>
-						<td><input type="checkbox" id='${id}_sendAs'></td>
-						<td><label class="Text" for='${id}_sendAs'
-							style="text-align:left"><$=ZmMsg.sendAs$></label></td>
-					</tr>
-					<tr>
-						<td><input type="checkbox" id='${id}_sendObo'></td>
-						<td><label class="Text" for='${id}_sendObo'
-							style="text-align:left"><$=ZmMsg.sendOnBehalfOflbl$></label></td>
-					</tr>
-				</table>
-			</td>
-		</tr>
-	</table>
-</template>
-
-<template id='prefs.Pages#ActivityStreamPrompt'>
-	<table role="presentation" width=100% class='ZPropertySheet' cellspacing='6'>
-		<tr>
-			<td colspan='2'><div class='horizSep'></div></td>
-		</tr>
-		<tr>
-			<td class='ZOptionsLabelLeft'><div id='${id}_SENTTO'></div></td>
-			<td class='ZOptionsField'><div id='${id}_TO'></div></td>
-		</tr>
-		<tr>
-			<td class='ZOptionsLabelLeft'><div id='${id}_RECEIVED'></div></td>
-			<td class='ZOptionsField'><div id='${id}_FROM'></div></td>
-		</tr>
-		<tr>
-			<td class='ZOptionsLabelLeft'><div id='${id}_SUBJECT'></div></td>
-			<td class='ZOptionsField'><div id='${id}_CONTAINS'></div></td>
-		</tr>
-	</table>
-</template>
-
-<template id='prefs.Pages#PriorityMessageFilterPrompt'>
-	<div style='width:475px;'><$=ZmMsg.priorityFilterDescription$></div>
-	<div class='horizSep'></div>
-	<div id='${id}_MOVE_MSG_STREAM'></div>
-	<div class="ZmActivityStreamFilterList">
-		<div id='${id}_DL_SUBSCRIBED'></div>
-		<div id='${id}_MASS_MARKETING'></div>
-		<table role="presentation"><tr>
-			<td><div id='${id}_NOT_TO_ME'></div></td>
-			<td><div id='${id}_SELECT_FIELD' style='margin:0 .5em;'></div></td>
-			<td><div id='${id}_NOT_TO_ME_CONT'><$=ZmMsg.field$></div></td>
-		</tr></table>
-		<div id='${id}_NOT_IN_ADDR'></div>
-	</div>
-</template>
-
-<template id='prefs.Pages#PriorityMessageRunNowPrompt'>
-	<div style='width:350px;' id='${id}'>
-		<div style='float:left; padding-right:10px; height:50px'><$=AjxImg.getImageHtml("Warning")$></div>
-		<div><$=ZmMsg.runPriorityFilterPrompt$></div>
-	</div>
-</template>
-
-<template id='prefs.Pages#MailFilterListView'>
-	<table role="presentation" width='100%' align='center'>
-		<tr>
-			<td id='${targetDivId}' width="45%"></td>
-			<td valign='top' id='${buttonsDivId}'>
-				<div id='${transferButtonId}'	style='padding:30px 0 5px'></div>
-				<div id='${removeButtonId}'		style='padding-bottom:20px'></div>
-				<div id='${moveUpButtonId}'		style='padding-bottom:5px'></div>
-				<div id='${moveDownButtonId}'	style='padding-bottom:20px'></div>
-			</td>
-			<td id='${sourceDivId}' width="45%"></td>
-		</tr>
-	</table>
-</template>
-
-<template id='prefs.Pages#OutOfOffice'>
-	<div class='prefHeader'><$=ZmMsg.outOfOffice$></div>
-	<table role="presentation" class='ZOptionsSectionTable' width=100%>
-		<tr>
-			<td class='ZOptionsSectionMain'>
-				<table role="presentation" width='100%' class='ZPropertySheet' cellspacing='6'>
-					<tr>
-						<td class="ZOptionsLabel" style="vertical-align:top;width:inherit;"><$=ZmMsg.outOfOfficeLabel$></td>
-						<td class='ZOptionsField'>
-							<div id='${id}_VACATION_MSG_ENABLED' tabindex='150'></div>
-						</td>
-					</tr>
-					<tr>
-						<td class="ZOptionsLabel" style="vertical-align:top;width:inherit;"><$=ZmMsg.autoReplyLabel$></td>
-						<td class='ZOptionsField'>
-							<table role="presentation" class="ZPropertySheet" cellspacing='6'>
-								<tr><td>
-									<textarea id='${id}_VACATION_MSG' tabindex='160' rows=6 cols=70></textarea>
-									<span style="display:none">
-										<input type="hidden" name="st_dt" id="${id}_VACATION_FROM"/>
-										<input type="hidden" name="ed_dt" id="${id}_VACATION_UNTIL"/>
-									</span>
-								</td></tr>
-							</table>
-						</td>
-					<tr>
-					<tr>
-						<td class="ZOptionsLabel" style="vertical-align:top;width:inherit;"><$=ZmMsg.timePeriodLabel$></td>
-						<td>
-							<table role="presentation">
-								<tr><td>
-									<input type="checkbox" id="${id}_VACATION_DURATION_ENABLED" tabindex='170'>
-								</td></tr>
-								<tr><td>
-									<table role="presentation" class='ZPropertySheet' cellspacing='6'>
-										<tr>
-											<td align="right"><$=ZmMsg.startLabel$></td>
-											<td class='ZmOOODuration' >
-												<table role="presentation"><tr>
-													<td><input style='height:22px;' type='text' autocomplete='off' size=14 maxlength=10 id='${id}_VACATION_FROM1'></td>
-													<td class="miniCalendarButton" id='${id}_startMiniCal'></td>
-												</tr></table>
-											</td>
-											<td id='${id}_VACATION_FROM_TIME' class='ZmOOODuration' ></td>
-											<td><div id='${id}_VACATION_DURATION_ALL_DAY' class='ZmOOODuration' ></div></td>
-										</tr>
-										<tr>
-											<td align="right"><$=ZmMsg.endLabel$></td>
-											<td class='ZmOOODuration'>
-												<table role="presentation"><tr>
-													<td><input style='height:22px;' type='text' autocomplete='off' size=14 maxlength=10 id='${id}_VACATION_UNTIL1'></td>
-													<td class="miniCalendarButton" id='${id}_endMiniCal'></td>
-												</tr></table>
-											</td>
-											<td colspan="2" class='ZmOOODuration' id='${id}_VACATION_UNTIL_TIME'></td>
-										</tr>
-										<tr>
-											<td align="right"><$=ZmMsg.calendarLabel$></td>
-											<td colspan="3">
-												<table role="presentation"><tr>
-													<td class='ZmOOOCalendar'><div id='${id}_VACATION_CALENDAR_ENABLED' tabindex='180'></div></td>
-													<td class='ZmOOOCalendar'><div id='${id}_VACATION_CALENDAR_TYPE' tabindex='190' size='3' /></td>
-												</tr></table>
-											</td>
-										</tr>
-									</table>
-								</td></tr>
-							</table>
-						</td>
-					</tr>
-					<tr>
-						<td class="ZOptionsLabel" style="vertical-align:top;width:inherit;"><$=ZmMsg.externalSendersLabel$></td>
-						<td class='ZOptionsField'>
-							<table role="presentation">
-								<tr>
-									<td><input id='${id}_VACATION_EXTERNAL_MSG_ENABLED' tabindex='200' type=checkbox></td>
-									<td><div id='${id}_VACATION_EXTERNAL_TYPE' tabindex='210' size='3' /></td>
-								</tr>
-							</table>
-							<textarea id='${id}_VACATION_EXTERNAL_MSG' tabindex='220' rows=6 cols=70 onfocus="this.rows=10;"></textarea>
-						</td>
-					</tr>
-				</table>
-			</td>
-		</tr>
-	</table>
-</template>
-
-<template id='prefs.Pages#OfflineSettings'>
-	<div style='width:475px;'>
-		<div><$=ZmMsg.offlineDescription$></div>
-		<div class='horizSep'></div>
-		<div class='ZmOfflineItem'>
-			<table role="presentation" class='ZRadioButtonTable'><tr>
-				<td><input id='${id}_ENABLE_OFFLINE_RADIO' type=radio name='${id}_OFFLINE_SETTING'
-					<$ if (data.isWebClientOfflineSupported) { $>
-						checked
-					<$ } $> ></td>
-				<td><label for='${id}_ENABLE_OFFLINE_RADIO' class='Text'><$=ZmMsg.enableOffline$></label></td>
-			</tr></table>
-			<div class='ZmOfflineDetails'><$=ZmMsg.enableOfflineDetails$></div>
-		</div>
-		<div class='ZmOfflineItem'>
-			<table role="presentation" class='ZRadioButtonTable'><tr>
-				<td><input id='${id}_DISABLE_OFFLINE_RADIO' type=radio name='${id}_OFFLINE_SETTING'
-					<$ if (!data.isWebClientOfflineSupported) { $>
-						checked
-					<$ } $> ></td>
-				<td><label for='${id}_DISABLE_OFFLINE_RADIO' class='Text'><$=ZmMsg.disableOffline$></label></td>
-			<tr></table>
-			<div class='ZmOfflineDetails'><$=ZmMsg.disableOfflineDetails$></div>
-		</div>
-	</div>
-</template>
-
-<template id='prefs.Pages#SocialfoxSettings'>
-	<div style='width:475px;'>
-		<div><$=ZmMsg.socialfoxSettingsDescription$></div>
-	</div>
+    
+    <$ if (appCtxt.get(ZmSetting.CAL_DEVICE_EMAIL_REMINDERS_ENABLED)) { $>
+    <table border=0 cellspacing=0 cellpadding=0 width=100%>
+        <tr class='ZOptionsHeaderRow'>
+            <td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
+            <td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.notificationsDeviceEmail$></td>
+            <td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
+        </tr>
+    </table>
+    <div class='ZOptionsSectionMain' style="width:100%;padding:0px;">
+        <table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0>
+            <tr><td class='ZOptionsSectionMain'>
+                <table width=100%>
+                    <tr><td class='ZOptionsLabel'><$=ZmMsg.deviceEmailNotificationsRegionLabel$></td>
+                        <td class='ZOptionsField' colspan="4">
+                            <table border="0" cellpadding="0" cellspacing="0"><tr><td>
+                            <div id='${id}_DEVICE_EMAIL_REGION' tabindex='400'></div>
+                            </td></tr></table>
+                        </td>
+                    </tr>
+                    <tr><td class='ZOptionsLabel'><$=ZmMsg.deviceEmailNotificationsCarrierLabel$></td>
+                        <td class='ZOptionsField' colspan="4">
+                            <div id='${id}_DEVICE_EMAIL_CARRIER' tabindex='500'></div>
+                        </td>
+                    </tr>
+                    <tr id='${id}_DEVICE_EMAIL_PHONE_row'>
+                        <td class='ZOptionsLabel'><$=ZmMsg.deviceEmailNotificationsPhoneNumberLabel$></td>
+                        <td class='ZOptionsField' colspan="3">
+                            <div id='${id}_DEVICE_EMAIL_PHONE' tabindex='600'></div>
+                        </td>
+                        <td class="ZOptionsField"><div id="${id}_DEVICE_EMAIL_PHONE_SEND_CODE" tabindex='610'></div></td>
+                    </tr>
+                    <tr id="${id}_DEVICE_EMAIL_CUSTOM_NUMBER_row">
+                        <td class='ZOptionsLabel'><$=ZmMsg.deviceEmailNotificationsCustomeEmailLabel$></td>
+                        <td class='ZOptionsField'><div id='${id}_DEVICE_EMAIL_CUSTOM_NUMBER' tabindex='700'></div></td>
+                        <td class="ZOptionsField">@</td>
+                        <td class='ZOptionsField'><div id='${id}_DEVICE_EMAIL_CUSTOM_ADDRESS' tabindex='710'></div></td>
+                        <td class="ZOptionsField"><div id="${id}_DEVICE_EMAIL_CUSTOM_SEND_CODE" tabindex='720'></div></td>
+                    </tr>
+                    <tr id='${id}_DEVICE_EMAIL_PHONE_HINT_row'>
+                        <td></td>
+                        <td class="ZOptionsInfo" colspan="4">
+                            <div id="${id}_DEVICE_EMAIL_PHONE_HINT"></div>
+                        </td>
+                    </tr>
+                    <tr><td class='ZOptionsLabel'><$=ZmMsg.deviceEmailNotificationsVerificationCodeLabel$></td>
+                        <td class='ZOptionsField'><div id='${id}_DEVICE_EMAIL_CODE' tabindex='800'></div></td>
+                        <td class="ZOptionsField" colspan="3"><div id="${id}_DEVICE_EMAIL_CODE_VALIDATE" tabindex='810'></div></td>
+                    </tr>
+                    <tr><td class='ZOptionsLabel'><$=ZmMsg.deviceEmailNotificationsVerificationStatusLabel$></td>
+                        <td class='ZOptionsField'>
+                            <div id='${id}_DEVICE_EMAIL_CODE_STATUS' tabindex='900'></div>
+                        </td>
+                        <td class="ZOptionsField" colspan="3"><div id="${id}_DEVICE_EMAIL_CODE_INVALIDATE" tabindex='910'></div></td>
+                    </tr>
+                </table>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <$ } $>
 </template>

@@ -32,15 +32,14 @@ ZmSkin.hints = {
 	presence:	  	{ width:"40px", height: "24px" },
 	appView:		{ position:"static" },
 
-	searchResultsToolbar:	{ containers: ["skin_tr_search_results_toolbar"] },
+	searchBuilder:  { containers: ["skin_tr_search_builder"] },
 	
-	newButton:		{ containers: ["skin_td_new_button"] },
-	tree:			{ minWidth:"@TreeMinWidth@", maxWidth:"@TreeMaxWidth@",
+	tree:			{ minWidth:parseInt("@TreeMinWidth@"), maxWidth:parseInt("@TreeMaxWidth@"), 
 					  containers: ["skin_td_tree","skin_td_tree_app_sash"],
 					  resizeContainers : ["skin_td_tree"]
 					},
 	
-	topToolbar:	 	{ containers: "skin_spacing_app_top_toolbar" },
+	topToolbar:	 	{ containers: "skin_tr_top_toolbar" },
 
 	treeFooter:	 	{ containers: "skin_tr_tree_footer" },
 
@@ -50,6 +49,9 @@ ZmSkin.hints = {
 	treeTopAd:		{ containers: "skin_tr_tree_top_ad" },
 	treeBottomAd:	{ containers: "skin_tr_tree_bottom_ad" },
 	
+
+	
+
 	// specific components
 	helpButton:		{ style: "link", container: "quota", url: "@HelpAdvancedURL@" },		/*** TODO: this 'container' should be removed ??? ***/
 	logoutButton: 	{ style: "link", container: "quota" },		/*** TODO: this 'container' should be removed ??? ***/
@@ -61,6 +63,7 @@ ZmSkin.hints = {
               				{ type: "fade-out", step: -10, duration: 500 }
 						] 
 					},
+	fullScreen:     { containers : ["!skin_td_tree", "!skin_td_tree_app_sash"] },
 	
 	allAds :		{ containers: ["skin_tr_top_ad", "skin_td_sidebar_ad", "skin_tr_bottom_ad", "skin_tr_tree_top_ad", "skin_tr_tree_bottom_ad"] },
 
@@ -81,7 +84,7 @@ ZmSkin.prototype = {
 	//
 	// Public methods
 	//
-	show : function(name, state, noReflow) {
+	show : function(name, state) {
 		var containers = this.hints[name] && this.hints[name].containers;
 		if (containers) {
 			if (typeof containers == "function") {
@@ -92,23 +95,18 @@ ZmSkin.prototype = {
 			if (typeof containers == "string") {
 				containers = [ containers ];
 			}
-			var changed = false;
 			for (var i = 0; i < containers.length; i++) {
 				var ocontainer = containers[i];
 				var ncontainer = ocontainer.replace(/^!/,"");
 				var inverse = ocontainer != ncontainer;
-				if (this._showEl(ncontainer, inverse ? !state : state)) {
-					changed = true;
-				}
+				this._showEl(ncontainer, inverse ? !state : state);
 			}
-			if (changed && !noReflow) {
-				skin._reflowApp();
-			}
+			skin._reflowApp();
 		}
 	},
 
-	hide : function(name, noReflow) {
-	    this.show(name, false, noReflow);
+	hide : function(name) {
+	    this.show(name, false);
 	},
 
 	gotoApp : function(appId, callback) {
@@ -160,9 +158,8 @@ ZmSkin.prototype = {
 	
 	
 	showTopAd : function(state) {
-		if (skin._showEl("skin_tr_top_ad", state)) {
-			skin._reflowApp();
-		}
+		skin._showEl("skin_tr_top_ad", state);
+		skin._reflowApp();
 	},
 	hideTopAd : function() {	
 		skin.showTopAd(false);	
@@ -173,30 +170,18 @@ ZmSkin.prototype = {
 	
 	showSidebarAd : function(width) {
 		var id = "skin_td_sidebar_ad";
-		if (width != null) Dwt.setSize(id, width);
-		if (skin._showEl(id)) {
-			skin._reflowApp();
-		}
+		if (width != null) skin._setSize(id, width);
+		skin._showEl(id);
+		skin._reflowApp();
 	},
 	hideSidebarAd : function() {
 		var id = "skin_td_sidebar_ad";
-		if (skin._hideEl(id)) {
-			skin._reflowApp();
-		}
+		skin._hideEl(id);
+		skin._reflowApp();
 	},
 	getSidebarAdContainer : function() {
 		return this._getEl("skin_container_sidebar_ad");
 	},
-
-	handleNotification : function(event, args) {
-		/*
-			Override me in individual skins
-			@param [String] event		The event type, e.g. "onAction", "onSelectApp", "initializeToolbar", ...
-										basically anything that would get passed into appCtxt.notifyZimlets()
-			@param [Array]	args		Array of the arguments that get passed to appCtxt.notifyZimlets()
-		*/
-	},
-
 	
 	//
 	// Protected methods
@@ -220,17 +205,11 @@ ZmSkin.prototype = {
 			else if (tagName == "TR" && !document.all) 	value = "table-row";
 			else value = "block";
 		}
-		if (value != el.style.display) {
-			el.style.display = value;
-			return true;
-		}
-		else {
-			return false;
-		}
+		el.style.display = value;
 	},
 	
 	_hideEl : function(id) {
-		return this._showEl(id, false);
+		this._showEl(id, false);
 	},
 	
 	_reparentEl : function(id, containerId) {
@@ -241,10 +220,17 @@ ZmSkin.prototype = {
 		}
 	},
 	
+	_setSize : function(id, width, height) {
+		var el = this._getEl(id);
+		if (!el) return;
+		if (width != null) el.style.width = width;
+		if (height != null) el.style.height = height;
+	},
+	
 	_setContainerSizes : function(containerName, width, height) {
 		var containers = this.hints[containerName].resizeContainers || this.hints[containerName].containers;
 		for (var i = 0; i < containers.length; i++) {
-			Dwt.setSize(containers[i], width, null);
+			this._setSize(containers[i], width, null);
 		}
 	},
 	

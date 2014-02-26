@@ -17,8 +17,6 @@
             <fmt:setLocale value='${pageContext.request.locale}' scope='request' />
         </c:otherwise>
     </c:choose>
-    <c:remove var="skin" scope="session"/>
-    <app:skin mailbox="${mailbox}"/>
     <fmt:setBundle basename="/messages/ZhMsg" scope="request"/>
     <c:set var="contactIds" value="${fn:join(paramValues.id, ',')}"/>
     <c:if test="${param.st eq 'gal'}">                  <%-- gal contact id contains , so will replace the id's , with | to avoid the conflict with delimiter , used for forEach--%>
@@ -28,7 +26,7 @@
     </c:if>
 </app:handleError>
 <html>
-<app:head mailbox="${mailbox}" print="true"/>
+<app:head mailbox="${mailbox}"/>
 <body style='background:white;'>
 <style>
     .ZhCallListPrintView td, .zPrintMsgs *{

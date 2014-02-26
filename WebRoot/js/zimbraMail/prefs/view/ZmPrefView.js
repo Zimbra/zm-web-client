@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
@@ -43,7 +43,6 @@ ZmPrefView = function(params) {
 	this.hasRendered = false;
 
 	this.setVisible(false);
-	this.setScrollStyle(Dwt.CLIP);
 	this.getTabBar().setVisible(false);
     this.addStateChangeListener(new AjxListener(this, this._stateChangeListener));
 };
@@ -175,7 +174,7 @@ function(section, index) {
 	this.prefView[section.id] = view;
 	
 	// add section as a tab
-	var tabButtonId = ZmId.getTabId(this._controller.getCurrentViewId(), ZmId.getPrefPageId(section.id));
+	var tabButtonId = ZmId.getTabId(this._controller._currentView, ZmId.getPrefPageId(section.id));
 	var tabId = this.addTab(section.title, view, tabButtonId, index);
 	this._tabId[section.id] = tabId;
 	this._sectionId[tabId] = section.id;
@@ -331,9 +330,9 @@ function(dirtyCheck, noValidation, batchCommand) {
 				viewPage.addCommand(batchCommand);
 			}
 		}
-        var isSaveCommand = (batchCommand) ? true : false;
+
 		try {
-			var result = this._checkSection(section, viewPage, dirtyCheck, noValidation, list, errors, view, isSaveCommand);
+			var result = this._checkSection(section, viewPage, dirtyCheck, noValidation, list, errors, view);
 		} catch (e) {
 			throw(e);
 		}
@@ -350,15 +349,13 @@ function(dirtyCheck, noValidation, batchCommand) {
 };
 
 ZmPrefView.prototype._checkSection =
-function(section, viewPage, dirtyCheck, noValidation, list, errors, view, isSaveCommand) {
+function(section, viewPage, dirtyCheck, noValidation, list, errors, view) {
 	var settings = appCtxt.getSettings();
 	var prefs = section && section.prefs;
-	var isAllDayVacation = false;
 	for (var j = 0, count = prefs ? prefs.length : 0; j < count; j++) {
 		var id = prefs[j];
 		if (!viewPage._prefPresent || !viewPage._prefPresent[id]) { continue; }
 		var setup = ZmPref.SETUP[id];
-        var defaultError = setup.errorMessage;
 		if (!this._controller.checkPreCondition(setup)) { continue; }
 
 		var type = setup ? setup.displayContainer : null;
@@ -366,9 +363,8 @@ function(section, viewPage, dirtyCheck, noValidation, list, errors, view, isSave
 		if (type == ZmPref.TYPE_PASSWORD || type == ZmPref.TYPE_CUSTOM) { continue;	}
 
 		// check if value has changed
-		var value;
 		try {
-			value = viewPage.getFormValue(id);
+			var value = viewPage.getFormValue(id);
 		} catch (e) {
 			if (dirtyCheck) {
 				return true;
@@ -387,30 +383,8 @@ function(section, viewPage, dirtyCheck, noValidation, list, errors, view, isSave
 				origValue = setup.valueFunction(origValue);
 			}
 		}
-
-        if (pref.name == "zimbraPrefAutoSaveDraftInterval"){
-          // We are checking if zimbraPrefAutoSaveDraftInterval is set or not
-          var orig = !(!origValue);
-          var current  = !(!value);
-          if (orig == current)
-              origValue = value;
-        }
-
-		//this is ugly but it's all due to keeping the information on whether the duration is all-day by setting end hour to 23:59:59, instead of having a separate flag on the server. See Bug 80059.
-		//the field does not support seconds so we set to 23:59 and so we need to take care of it not to think the vacation_until has changed.
-		if (id === "VACATION_DURATION_ALL_DAY") {
-			isAllDayVacation = value; //keep this info for the iteration that checks VACATION_UNTIL (luckily it's after... a bit hacky to rely on it maybe).
-		}
-		var comparableValue = value;
-		var comparableOrigValue = origValue;
-		if (id === "VACATION_UNTIL" && isAllDayVacation) {
-			//for comparing, compare just the dates (e.g. 20130214) since it's an all day, so only significant change is the date, not the time. See bug 80059
-			comparableValue = value.substr(0, 8);
-			comparableOrigValue = origValue.substr(0, 8);
-		}
-
-
-		if (this._prefChanged(pref.dataType, comparableOrigValue, comparableValue)) {
+		
+		if (this._prefChanged(pref.dataType, origValue, value)) {
 			var isValid = true;
 			if (!noValidation) {
 				var maxLength = setup ? setup.maxLength : null;
@@ -422,7 +396,7 @@ function(section, viewPage, dirtyCheck, noValidation, list, errors, view, isSave
 				}
 			}
 			if (isValid) {
-                if (!dirtyCheck && isSaveCommand) {
+                if (!dirtyCheck) {
                     if (setup.setFunction) {
                         setup.setFunction(pref, value, list);
                     } else {
@@ -431,13 +405,9 @@ function(section, viewPage, dirtyCheck, noValidation, list, errors, view, isSave
                             list.push(pref);
                         }
                     }
-                } else if (!dirtyCheck) {
-                    //for logging
-                    list.push({name: section.title + "." + id, origValue: origValue, value:value});
                 }
 			} else {
 				errors.push(AjxMessageFormat.format(setup.errorMessage, AjxStringUtil.htmlEncode(value)));
-                setup.errorMessage = defaultError;
 			}
 			this._controller.setDirty(view, true);
 			if (dirtyCheck) {
@@ -473,31 +443,7 @@ function(type, origValue, value) {
  */
 ZmPrefView.prototype.isDirty =
 function() {
-	try {
-		var printPref = function(pref) {
-			if (AjxUtil.isArray(pref)) {
-				return AjxUtil.map(pref, printPref).join("<br>");
-			}
-			return [pref.name, ": from ", (pref.origValue!=="" ? pref.origValue : "[empty]"), " to ", (pref.value!=="" ? pref.value : "[empty]")].join("");
-		}
-
-		var changed = this.getChangedPrefs(false, true); // Will also update this._controller._dirty
-		if (changed && changed.length) {
-			AjxDebug.println(AjxDebug.PREFS, "Dirty preferences:<br>" + printPref(changed));
-			return true;
-		}
-
-		var dirtyViews = AjxUtil.keys(this._controller._dirty, function(key,obj){return obj[key]});
-		if (dirtyViews.length) {
-			AjxDebug.println(AjxDebug.PREFS, "Dirty preference views:<br>" + dirtyViews.join("<br>"));
-			return true;
-		}
-
-		return false;
-	} catch (e) {
-		AjxDebug.println(AjxDebug.PREFS, "Exception in preferences: " + e.name + ": " + e.message);
-		return true;
-	}
+	return this.getChangedPrefs(true, true);
 };
 
 /**
@@ -525,7 +471,9 @@ ZmPrefView.prototype._stateChangeListener =
 function(ev) {
   if (ev && ev.item && ev.item instanceof ZmPrefView) {
       var view = ev.item.getActiveView();
-      view._controller._stateChangeListener(ev);
+      if (view instanceof ZmFilterPage) {
+          view._controller._stateChangeListener(ev);
+      }
   }
 
 };

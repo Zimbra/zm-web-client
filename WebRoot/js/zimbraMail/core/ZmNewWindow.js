@@ -39,12 +39,6 @@ ZmNewWindow = function() {
 
 	appCtxt.setAppController(this);
 
-	//update body class to reflect user selected font
-	document.body.className = "user_font_" + appCtxt.get(ZmSetting.FONT_NAME);
-	//update root html elment class to reflect user selected font size
-	Dwt.addClass(document.documentElement, "user_font_size_" + appCtxt.get(ZmSetting.FONT_SIZE));
-
-
 	this._settings = appCtxt.getSettings();
 	this._settings.setReportScriptErrorsSettings(AjxException, ZmController.handleScriptError); //must set this for child window since AjxException is fresh for this window. Also must pass AjxException and the handler since we want it to update the one from this child window, and not the parent window
 
@@ -64,8 +58,15 @@ ZmNewWindow = function() {
 ZmNewWindow.prototype = new ZmController;
 ZmNewWindow.prototype.constructor = ZmNewWindow;
 
-ZmNewWindow.prototype.isZmNewWindow = true;
-ZmNewWindow.prototype.toString = function() { return "ZmNewWindow"; };
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
+ZmNewWindow.prototype.toString =
+function() {
+	return "ZmNewWindow";
+};
 
 // Public methods
 
@@ -98,9 +99,7 @@ function() {
 	appCtxt.setSettings(parentAppCtxt.getSettings());
 	appCtxt.isOffline = parentAppCtxt.isOffline;
 	appCtxt.multiAccounts = parentAppCtxt.multiAccounts;
-    appCtxt.sendAsEmails = parentAppCtxt.sendAsEmails;
-    appCtxt.sendOboEmails = parentAppCtxt.sendOboEmails;
-    window.ZmSetting = winOpener.ZmSetting;
+	window.ZmSetting = winOpener.ZmSetting;
 
 	ZmOperation.initialize();
 	ZmApp.initialize();
@@ -112,10 +111,6 @@ function() {
 	// create new window and Go!
 	var newWindow = new ZmNewWindow();
     newWindow.startup();
-	
-	if (winOpener.onkeydown) {
-		window.onkeydown = winOpener.onkeydown;
-	}
 };
 
 /**
@@ -161,8 +156,8 @@ function(ev) {
  */
 ZmNewWindow.prototype.startup =
 function() {
+
 	// get params from parent window b/c of Safari bug #7162
-	// and in case of a refresh, our old window parameters are still stored there
 	if (window.parentController) {
 		var childWinObj = window.parentController.getChildWindow(window);
 		if (childWinObj) {
@@ -191,16 +186,12 @@ function() {
 	var rootTg = appCtxt.getRootTabGroup();
 
 	var apps = {};
-	apps[ZmApp.SEARCH] = true;
 	apps[ZmApp.MAIL] = true;
 	apps[ZmApp.CONTACTS] = true;
 	// only load calendar app if we're dealing with an invite
 	var msg = (cmd == "msgViewDetach") ? params.msg : null;
-	if (msg &&
-        (msg.isInvite() || this._checkShareType(msg.share, "appointment"))) {
+	if (msg && msg.isInvite()) {
 		apps[ZmApp.CALENDAR] = true;
-	} else if (msg && this._checkShareType(msg.share, "task")) {
-		apps[ZmApp.TASKS] = true;
 	}
 	apps[ZmApp.PREFERENCES] = true;
     apps[ZmApp.BRIEFCASE] = true;  //Need this for both Compose & Msg View detach window.
@@ -208,9 +199,7 @@ function() {
 
 	// inherit parent's identity collection
 	var parentPrefsApp = parentAppCtxt.getApp(ZmApp.MAIL);
-    if (parentPrefsApp) {
-        appCtxt.getApp(ZmApp.MAIL)._identityCollection = parentPrefsApp.getIdentityCollection();
-    }
+	appCtxt.getApp(ZmApp.MAIL)._identityCollection = parentPrefsApp.getIdentityCollection();
 
 	// Find target first.
 	var target;
@@ -219,10 +208,6 @@ function() {
 	} else if (cmd == "msgViewDetach") {
 		target = "view-window";
 	}
-
-	ZmZimbraMail.prototype._registerOrganizers.call(this);
-	ZmZimbraMail.registerViewsToTypeMap();
-
     
 	// setup zimlets, Load it first becoz.. zimlets has to get processed first.
 	if (target) {
@@ -245,10 +230,6 @@ function() {
 /**
  * @private
  */
-ZmNewWindow.prototype._checkShareType =
-function(share, type) {
-    return share && share.link && (type === share.link.view);
-};
 ZmNewWindow.prototype._createView =
 function() {
 
@@ -265,14 +246,14 @@ function() {
 	// depending on the command, do the right thing
 	if (cmd == "compose" || cmd == "composeDetach") {
 		var cc = AjxDispatcher.run("GetComposeController");	// get a new compose ctlr
-		appCtxt.composeCtlrSessionId = cc.getSessionId();
+		appCtxt.composeCtlrSessionId = cc.sessionId;
 		if (params.action == ZmOperation.REPLY_ALL) {
 			params.msg = this._deepCopyMsg(params.msg);
 		}
 		if (cmd == "compose") {
 			cc._setView(params);
 		} else {
-			AjxDispatcher.require(["MailCore", "ContactsCore", "CalendarCore"]);
+			AjxDispatcher.require(["CalendarCore"]);
 			var op = params.action || ZmOperation.NEW_MESSAGE;
 			if (params.msg && params.msg._mode) {
 				switch (params.msg._mode) {
@@ -304,32 +285,23 @@ function() {
 	} else if (cmd == "msgViewDetach") {
 		//bug 52366 - not sure why only REPLY_ALL causes the problem (and not REPLY for example), but in this case the window is opened first for view. But
 		//the user might of course click "reply to all" later in the window so I deep copy here in any case.
-		var msg = this._deepCopyMsg(params.msg);
-		msg.isRfc822 = params.isRfc822; //simpler
-		params.msg.addChangeListener(msg.detachedChangeListener.bind(msg));
-
+		params.msg = this._deepCopyMsg(params.msg);
+		
 		var msgController = AjxDispatcher.run("GetMsgController");
-		appCtxt.msgCtlrSessionId = msgController.getSessionId();
-		msgController.show(msg, params.parentController);
+		appCtxt.msgCtlrSessionId = msgController.sessionId;
+		msgController.show(params.msg, params.mode);
 		rootTg.addMember(msgController.getTabGroup());
 		startupFocusItem = msgController.getCurrentView();
 
 		target = "view-window";
-	} else if (cmd == 'documentEdit') {
-		AjxDispatcher.require(["Docs"]);
- 		ZmDocsEditApp.setFile(params.id, params.name, params.folderId);
-		ZmDocsEditApp.restUrl = params.restUrl;
-		new ZmDocsEditApp();
-		Dwt.setTitle(params.name);
 	} else if (cmd == "shortcuts") {
 		var panel = appCtxt.getShortcutsPanel();
 		panel.popup(params.cols);
 	}
-	
-	this._appViewMgr.loadingView.setVisible(false);
 
-	this._kbMgr.setTabGroup(rootTg);
-	this._kbMgr.grabFocus(startupFocusItem);
+	var kbMgr = appCtxt.getKeyboardMgr();
+	kbMgr.setTabGroup(rootTg);
+	kbMgr.grabFocus(startupFocusItem);
 };
 
 /**
@@ -402,7 +374,6 @@ function(params) {
     window.onbeforeunload = null;
 	// bypass error callback to get control over exceptions in the childwindow.
 	params.errorCallback = new AjxCallback(this, this._handleException, [( params.errorCallback || null )]);
-	params.fromChildWindow = true;
 	return window.parentController ? window.parentController.sendRequest(params) : null;
 };
 
@@ -459,6 +430,12 @@ ZmNewWindow.prototype.setStatusMsg =
 function(params) {
 	// bug: 26478. Changed status msg to be displayed within the child window.
 	params = Dwt.getParams(arguments, ZmStatusView.MSG_PARAMS);
+	/*if (AjxEnv.isIE) {
+		if (typeof params == "string") {
+			params = {msg: params};
+		}
+		params.transitions = [ZmToast.SHOW, ZmToast.PAUSE];
+	}*/
 	this._statusView.setStatusMsg(params);
 };
 
@@ -496,7 +473,7 @@ ZmNewWindow.prototype.setActiveApp = function() {};
  */
 ZmNewWindow.prototype.getKeyMapMgr =
 function() {
-	return this._kbMgr.__keyMapMgr;
+	return this._kbMgr;
 };
 
 /**
@@ -510,7 +487,7 @@ function() {
 	if (ctlr && ctlr.getKeyMapName) {
 		return ctlr.getKeyMapName();
 	}
-	return ZmKeyMap.MAP_GLOBAL;
+	return "Global";
 };
 
 /**
@@ -573,12 +550,11 @@ ZmNewWindow.prototype._createApp =
 function(appName) {
 	if (this._apps[appName]) return;
 	var appClass = eval(ZmApp.CLASS[appName]);
-	this._apps[appName] = appClass && new appClass(this._shell, window.parentController);
+	this._apps[appName] = new appClass(this._shell, window.parentController);
 };
 
 /**
  * @private
- * TODO: get rid of this function
  */
 ZmNewWindow.prototype._deepCopyMsg =
 function(msg) {
@@ -597,7 +573,7 @@ function(msg) {
 		// manually add objects since they are no longer recognizable
 		newSearch.types = new AjxVector();
 		var types = oldSearch.types.getArray();
-		for (var i = 0;  i < types.length; i++) {
+		for (var i in types) {
 			newSearch.types.add(types[i]);
 		}
 	}
@@ -620,23 +596,19 @@ function(msg) {
 	// manually add any objects since they are no longer recognizable
 	for (var i in msg._addrs) {
 		var addrs = msg._addrs[i].getArray();
-		for (var j = 0; j < addrs.length; j++) {
+		for (var j in addrs) {
 			newMsg._addrs[i].add(addrs[j]);
 		}
 	}
 
 	if (msg.attachments && msg.attachments.length > 0) {
-		for (var i = 0; i < msg.attachments.length; i++) {
+		for (var i in msg.attachments) {
 			newMsg.attachments.push(msg.attachments[i]);
 		}
 	}
 
-	for (var i = 0; i < msg._bodyParts.length; i++) {
+	for (var i in msg._bodyParts) {
 		newMsg._bodyParts.push(msg._bodyParts[i]);
-	}
-	
-	for (var ct in msg._contentType) {
-		newMsg._contentType[ct] = true;
 	}
 
 	if (msg._topPart) {
@@ -647,10 +619,14 @@ function(msg) {
 			newMsg._topPart[i] = msg._topPart[i];
 		}
 		var children = msg._topPart.children.getArray();
-		for (var i = 0; i < children.length; i++) {
+		for (var i in children) {
 			newMsg._topPart.children.add(children[i]);
 		}
 	}
+
+	ZmZimbraMail.prototype._registerOrganizers.call(this);
+	ZmZimbraMail.registerViewsToTypeMap();
+
 
 	if (msg.invite) {
 		newMsg.invite = msg.invite;
@@ -659,16 +635,6 @@ function(msg) {
 	if (msg.share) {
 		newMsg.share = msg.share;
 	}
-
-	// TODO: When/if you get rid of this function, also remove the cloneOf uses in:
-	//		ZmBaseController.prototype._tagListener
-	//		ZmBaseController.prototype._setTagMenu
-	//		ZmMailMsgView.prototype._setTags
-	//		ZmMailMsgView.prototype._handleResponseSet
-	//		ZmMailListController.prototype._handleResponseFilterListener
-	//		ZmMailListController.prototype._handleResponseNewApptListener
-	//		ZmMailListController.prototype._handleResponseNewTaskListener
-	newMsg.cloneOf = msg;
 
 	return newMsg;
 };
@@ -681,20 +647,13 @@ function(msg) {
  */
 ZmNewWindow._confirmExitMethod =
 function(ev) {
-	if (!appCtxt.get(ZmSetting.WARN_ON_EXIT) || !window.parentController)
-		return;
-
-	var cmd = window.newWindowCommand;
-
-	if (cmd == "compose" || cmd == "composeDetach")	{
+	if (window.parentController &&
+		(window.newWindowCommand == "compose" || window.newWindowCommand == "composeDetach"))
+	{
 		var cc = AjxDispatcher.run("GetComposeController", appCtxt.composeCtlrSessionId);
 		// only show native confirmation dialog if compose view is dirty
 		if (cc && cc._composeView && cc._composeView.isDirty()) {
 			return ZmMsg.newWinComposeExit;
 		}
-	} else if (cmd == 'documentEdit') {
-		var ctrl = ZmDocsEditApp._controller;
-		var msg = ctrl.checkForChanges();
-		return msg || ctrl.exit();
 	}
 };

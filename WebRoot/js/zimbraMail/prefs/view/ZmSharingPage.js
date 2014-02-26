@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2009, 2010, 2011, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
@@ -36,8 +36,10 @@ ZmSharingPage = function(parent, section, controller) {
 ZmSharingPage.prototype = new ZmPreferencesPage;
 ZmSharingPage.prototype.constructor = ZmSharingPage;
 
-ZmSharingPage.prototype.isZmSharingPage = true;
-ZmSharingPage.prototype.toString = function () { return "ZmSharingPage"; };
+ZmSharingPage.prototype.toString =
+function () {
+    return "ZmSharingPage";
+};
 
 ZmSharingPage.prototype.getShares =
 function(type, owner, callback) {
@@ -77,11 +79,6 @@ function() {
 	if (appCtxt.multiAccounts && this._acAddrSelectList) {
 		this._acAddrSelectList.setActiveAccount(appCtxt.getActiveAccount());
 	}
-};
-
-ZmSharingPage.prototype.hasResetButton =
-function() {
-	return false;
 };
 
 
@@ -392,9 +389,9 @@ function() {
 	params.form = {
 		items: [
 			{ id: ZmSharingView.ID_RADIO, type: "DwtRadioButtonGroup", onclick: this._onClick, items: [
-			{ id: ZmSharingView.ID_GROUP, type: "DwtRadioButton", value: ZmSharingView.ID_GROUP, label: ZmMsg.showGroupShares, checked: true },
-			{ id: ZmSharingView.ID_USER, type: "DwtRadioButton", value: ZmSharingView.ID_USER, label: ZmMsg.showUserShares }]},
-			{ id: ZmSharingView.ID_OWNER, type: "ZmAddressInputField", validator: this._validateOwner, params: { singleBubble: true } },
+				{ id: ZmSharingView.ID_GROUP, type: "DwtRadioButton", value: ZmSharingView.ID_GROUP, label: ZmMsg.showGroupShares, checked: true },
+				{ id: ZmSharingView.ID_USER, type: "DwtRadioButton", value: ZmSharingView.ID_USER, label: ZmMsg.showUserShares }]},
+			{ id: ZmSharingView.ID_OWNER, type: "DwtInputField", cols: 40, validator: this._validateOwner },
 			{ id: ZmSharingView.ID_FIND_BUTTON, type: "DwtButton", label: ZmMsg.findShares, onclick: this._onClick }
 		]
 	};
@@ -428,9 +425,6 @@ function() {
 	var grantFormDiv = document.getElementById(this._pageId + "_grantForm");
 	grantFormDiv.appendChild(this._grantForm.getHtmlElement());
 
-	var folderTypeSelect = this._grantForm._items.folderType.control;
-	folderTypeSelect.fixedButtonWidth();
-
 	// list views of shares and grants
 	this._pendingShareListView = new ZmSharingListView({parent:this, type:ZmShare.SHARE,
 		status:ZmSharingView.PENDING, sharingView:this, view:ZmId.VIEW_SHARE_PENDING});
@@ -449,13 +443,11 @@ function() {
 			dataClass:		appCtxt.getAutocompleter(),
 			matchValue:		ZmAutocomplete.AC_VALUE_EMAIL,
 			separator:		"",
-			keyUpCallback:	this._enterCallback.bind(this),
-			contextId:		this.toString()
+			enterCallback:	new AjxCallback(this, this._enterCallback)
 		};
 		this._acAddrSelectList = new ZmAutocompleteListView(params);
 		var inputCtrl = this._shareForm.getControl(ZmSharingView.ID_OWNER);
-		this._acAddrSelectList.handle(inputCtrl.getInputElement(), inputCtrl._htmlElId);
-		inputCtrl.setAutocompleteListView(this._acAddrSelectList);
+		this._acAddrSelectList.handle(inputCtrl.getInputElement());
 	}
 
 	appCtxt.getFolderTree().addChangeListener(new AjxListener(this, this._folderTreeChangeListener));
@@ -493,12 +485,8 @@ function(id) {
 
 ZmSharingView.prototype._enterCallback =
 function(ev) {
-	var key = DwtKeyEvent.getCharCode(ev);
-	if (key == 3 || key == 13) {
-		this._onClick.call(this._shareForm, ZmSharingView.ID_FIND_BUTTON);
-		return false;
-	}
-	return true;
+	this._onClick.call(this._shareForm, ZmSharingView.ID_FIND_BUTTON);
+	return false;
 };
 
 ZmSharingView.prototype._showChooser =
@@ -522,15 +510,12 @@ function(orgType) {
 	if (appCtxt.multiAccounts) {
 		overviewId = [overviewId, "-", this.toString(), "-", appCtxt.getActiveAccount().name].join("");
 	}
-	var omit = {};
-	omit[ZmFolder.ID_TRASH] = true;
 	var params = {
 		treeIds: [orgType],
 		overviewId: overviewId,
 		title: ZmMsg.chooseFolder,
 		skipReadOnly: true,
 		skipRemote: true,
-		omit: omit,
 		hideNewButton: true,
 		appName: ZmOrganizer.APP[orgType],
 		noRootSelect: true,
@@ -757,8 +742,13 @@ function(item) {
 
 ZmSharingListView.prototype._getCellId =
 function(item, field, params) {
-    var rowId = this._getItemId(item);
-    return [rowId, field].join("_");
+
+	if (field == ZmSharingView.F_ROLE || field == ZmSharingView.F_ITEM || field == ZmSharingView.F_FOLDER) {
+		var rowId = this._getItemId(item);
+		return [this._getItemId(item), field].join("_");
+	} else {
+		return null;
+	}
 };
 
 ZmSharingListView.prototype._getCellContents =
@@ -790,8 +780,7 @@ function(html, idx, item, field, colIdx, params) {
 	} else if (field == ZmSharingView.F_ACTIONS) {
 		if (this.type == ZmShare.SHARE) {
 			var id = this._getItemId(item);
-            var linkId = [id, ZmShare.ACCEPT].join("_");
-			html[idx++] = "<a href='javascript:;' id='" + linkId + "' onclick='ZmSharingView._handleAcceptLink(" + '"' + id + '"' + ");'>" + ZmMsg.accept + "</a>";
+			html[idx++] = "<a href='javascript:;' onclick='ZmSharingView._handleAcceptLink(" + '"' + id + '"' + ");'>" + ZmMsg.accept + "</a>";
 		} else {
 			idx = this._addActionLinks(item, html, idx);
 		}
@@ -882,12 +871,11 @@ function(share, html, idx) {
 	for (var i = 0; i < actions.length; i++) {
 
 		var action = actions[i];
-        var linkId = [share.domId, action].join("_");
+
 		// public shares have no editable fields, and sent no mail
-		if (share.isGuest() && action == "edit") { continue; }
 		if ((share.isPublic() || share.invalid) && (action == "edit" || action == "resend")) { continue; }
 
-		html[idx++] = "<a href='javascript:;' id='" + linkId + "' onclick='ZmSharingView._handleShareAction(" + '"' + share.domId + '", "' + handlers[i] + '"' + ");'>" + ZmMsg[action] + "</a> ";
+		html[idx++] = "<a href='javascript:;' onclick='ZmSharingView._handleShareAction(" + '"' + share.domId + '", "' + handlers[i] + '"' + ");'>" + ZmMsg[action] + "</a> ";
 	}
 
 	return idx;

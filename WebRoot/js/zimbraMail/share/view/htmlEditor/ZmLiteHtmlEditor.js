@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2007, 2008, 2009, 2010, 2011, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
@@ -51,7 +51,6 @@ ZmLiteHtmlEditor.UNDERLINE_STYLE = "underline";
 
 ZmLiteHtmlEditor.FONT_SIZE_STYLE = "fontsize";
 ZmLiteHtmlEditor.FONT_FAMILY_STYLE = "fontfamily";
-ZmLiteHtmlEditor.FONT_SIZE_VALUES = ["8pt", "10pt", "12pt", "14pt", "18pt", "24pt", "36pt"];
 
 ZmLiteHtmlEditor.FONT_COLOR = "fontcolor";
 
@@ -269,7 +268,7 @@ ZmLiteHtmlEditor.prototype._initEditor = function(){
 	var html = [
 			"<textarea id='",
 			this._textAreaId,
-			"' class='ZmHtmlEditorTextArea' style='width:100%;'></textarea>"
+			"' class='DwtHtmlEditorTextArea' style='width:100%;'></textarea>"
 	].join("");
 	htmlEl.innerHTML = html; 
 	return Dwt.byId(this._textAreaId);
@@ -411,13 +410,13 @@ function(tb) {
 	var menu = new ZmPopupMenu(this._fontSizeButton);
 	var listener = new AjxListener(this, this._fontSizeListener);
 
-	for (var i = 0; i < ZmLiteHtmlEditor.FONT_SIZE_VALUES.length; i++) {
-		var item = ZmLiteHtmlEditor.FONT_SIZE_VALUES[i];
+	for (var i = 0; i < ZmHtmlEditor.FONT_SIZE_VALUES.length; i++) {
+		var item = ZmHtmlEditor.FONT_SIZE_VALUES[i];
 		var num = i+1;
 		var text = num + " (" + item + ")";
 		var mi = menu.createMenuItem(i, {text:text});
 		mi.addSelectionListener(listener);
-		mi.setData(ZmHtmlEditor.VALUE, num);
+		mi.setData(ZmHtmlEditor._VALUE, num);
 		if(i == 0){
 				this._fontSizeButton.setText(text);
 		}
@@ -447,7 +446,7 @@ function(ev) {
 ZmLiteHtmlEditor.prototype._fontStyleListener =
 function(ev) {
 
-	var styleType = ev.item.getData(ZmHtmlEditor.VALUE);
+	var styleType = ev.item.getData(ZmHtmlEditor._VALUE);
 	var style = ZmLiteHtmlEditor.STYLE[styleType];
 	if(!style) return;
 

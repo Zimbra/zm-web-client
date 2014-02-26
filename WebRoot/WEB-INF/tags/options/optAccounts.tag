@@ -1,7 +1,7 @@
 <%--
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2007, 2008, 2009, 2010, 2011, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
@@ -20,26 +20,32 @@
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 
-<table width="100%">
+<table border="0" cellpadding="10" cellspacing="10" width="100%">
     <tr>
         <td>
-            <table class="ZOptionsSectionTable" width="100%">
+            <table class="ZOptionsSectionTable" border="0" cellpadding="0" cellspacing="0" width="100%">
                 <tr class="ZOptionsHeaderRow">
-                    <td class="ImgPrefsHeader_L">&nbsp;</td>
+                    <td class="ImgPrefsHeader_L">
+                        &nbsp;
+                    </td>
                     <td class='ZOptionsHeader ImgPrefsHeader' >
                         <fmt:message key="optionsAccounts"/>
                     </td>
-                    <td class="ImgPrefsHeader_R">&nbsp;</td>
+                    <td class="ImgPrefsHeader_R">
+                        &nbsp;
+                    </td>
                 </tr>
             </table>
-            <table width="100%" class="ZOptionsSectionMain" cellspacing="6">
+            <table cellpadding="3" cellspacing="0" width="100%" class="ZOptionsSectionMain">
                 <tr>
-                    <td colspan="3">&nbsp;</td>
+                    <td colspan="3">
+                        &nbsp;
+                    </td>
                 </tr>
                 <tr>
                     <td width="10%">&nbsp;</td>
                     <td class='List' valign='top'>
-                        <table width="100%">
+                        <table width="100%" cellpadding="2" cellspacing="0">
                             <tr>
                                 <th nowrap>&nbsp;
                                 <th nowrap><fmt:message key="optionsAccountName"/>
@@ -59,23 +65,30 @@
                     <td width="10%">&nbsp;</td>
                 </tr>
                 <tr>
-                    <td colspan="3">&nbsp;</td>
+                    <td colspan="3">
+                        &nbsp;
+                    </td>
                 </tr>
             </table>
             <br/>
-            <table class="ZOptionsSectionTable" width="100%">
+            <table class="ZOptionsSectionTable" border="0" cellpadding="0" cellspacing="0" width="100%">
                 <tr class="ZOptionsHeaderRow">
-                    <td class="ImgPrefsHeader_L">&nbsp;</td>
+                    <td class="ImgPrefsHeader_L">
+                        &nbsp;
+                    </td>
                     <td class='ZOptionsHeader ImgPrefsHeader' >
                         <fmt:message key="optionsAccountPrimarySettings"/>
                     </td>
-                    <td class="ImgPrefsHeader_R">&nbsp;</td>
+                    <td class="ImgPrefsHeader_R">
+                        &nbsp;
+                    </td>
                 </tr>
              </table>
-            <table width="100%" class="ZOptionsSectionMain" cellspacing="6">
+            <table cellpadding="3" cellspacing="0" width="100%" class="ZOptionsSectionMain">
             <tr>
+
                 <td class='ZOptionsTableLabel'>
-                    <label><fmt:message key="optionsAccountEmail"/>:</label>
+                    <fmt:message key="optionsAccountEmail"/>
                 </td>
                 <td class='ZOptionsHint'>
                     ${fn:escapeXml(mailbox.name)}
@@ -83,38 +96,39 @@
             </tr>
             <tr>
                 <td class='ZOptionsTableLabel'>
-                    <label><fmt:message key="optionsAccountName"/>:</label>
+                    <fmt:message key="optionsAccountName"/>
                 </td>
                 <td>
-                    <input id="zimbraPrefIdentityName" size="40" type="text" name='zimbraPrefIdentityName' 
-						value="${fn:escapeXml(mailbox.defaultIdentity.name)}">
+                    <input id="zimbraPrefIdentityName" size="40" type="text" name='zimbraPrefIdentityName' value="${fn:escapeXml(mailbox.defaultIdentity.name)}">
                 </td>
             </tr>
             <tr><td colspan="2"><hr></td></tr>
             <tr>
                 <td class='ZOptionsTableLabel'>
-                    <label><fmt:message key="optionsAccountFrom"/>:</label>
+                    <fmt:message key="optionsAccountFrom"/> :
                 </td>
                 <td>
-                    <label><fmt:message key="optionsAccountFromChoose"/>:</label>
+                    <fmt:message key="optionsAccountFromChoose"/>
+                    :
                 </td>
             </tr>
             <tr>
-                <td class='ZOptionsTableLabel'>&nbsp;</td>
+                <td class='ZOptionsTableLabel'>
+                    &nbsp;
+                </td>
                 <td style='padding-left:20px'>
-                    <table>
+                    <table border="0" cellpadding="0" cellspacing="2">
                         <tr>
                             <td>
-                                <input id="mailFrom" size="30" type="text" name='zimbraPrefFromDisplay' 
-									value="${fn:escapeXml(mailbox.defaultIdentity.fromDisplay)}">
+                                <input id="mailFrom" size="30" type="text" name='zimbraPrefFromDisplay' value="${fn:escapeXml(mailbox.defaultIdentity.fromDisplay)}">
                             </td>
                             <td style='padding-left:10px'>
                                 <select name="zimbraPrefFromAddress">
                                     <c:set var="fromAddr" value="${fn:toLowerCase(mailbox.defaultIdentity.fromAddress)}"/>
                                     <c:forEach var="address" items="${mailbox.accountInfo.emailAddresses}">
-                                        <option value="${fn:escapeXml(address)}"
-											<c:if test="${fn:toLowerCase(address) eq fromAddr}"> selected</c:if> >
-											${fn:escapeXml(address)}
+                                        <option
+                                                <c:if test="${fn:toLowerCase(address) eq fromAddr}"> selected</c:if> value="${fn:escapeXml(address)}">
+                                                ${fn:escapeXml(address)}
                                         </option>
                                     </c:forEach>
                                 </select>
@@ -136,31 +150,26 @@
                     <fmt:message key="optionsAccountReplyTo"/>:
                 </td>
                 <td>
-                    <table>
+                    <table cellspacing="0" cellpadding="0">
                         <tr>
-                            <td>
-								<input type="checkbox" id="REPLYCHECKED" name='zimbraPrefReplyToEnabled' value="TRUE" 
-									<c:if test="${mailbox.defaultIdentity.replyToEnabled}">checked</c:if>>
-							</td>
-                            <td style='padding-left:5px' nowrap align=right>
-								<label for="REPLYCHECKED"><fmt:message key="optionsAccountReplyToSet"/>:</label>
-							</td>
+                            <td><input type="checkbox" id="REPLYCHECKED" name='zimbraPrefReplyToEnabled' value="TRUE" <c:if test="${mailbox.defaultIdentity.replyToEnabled}">checked</c:if>></td>
+                            <td style='padding-left:5px' nowrap align=right><label for="REPLYCHECKED"><fmt:message key="optionsAccountReplyToSet"/>:</label></td>
                         </tr>
                     </table>
                 </td>
             </tr>
             <tr>
-                <td class='ZOptionsTableLabel'>&nbsp;</td>
+                <td class='ZOptionsTableLabel'>
+                    &nbsp;
+                </td>
                 <td style='padding-left:20px'>
-                    <table>
+                    <table border="0" cellpadding="0" cellspacing="2">
                         <tr>
                             <td>
-                                <input id="replyToDisplay" size="30" type="text" name='zimbraPrefReplyToDisplay' 
-									value="${fn:escapeXml(mailbox.defaultIdentity.replyToDisplay)}">
+                                <input id="replyToDisplay" size="30" type="text" name='zimbraPrefReplyToDisplay' value="${fn:escapeXml(mailbox.defaultIdentity.replyToDisplay)}">
                             </td>
                             <td style='padding-left:10px'>
-                                <input id="replyToAddress" size="30" type="text" name='zimbraPrefReplyToAddress' 
-									value="${fn:escapeXml(mailbox.defaultIdentity.replyToAddress)}">
+                                <input id="replyToAddress" size="30" type="text" name='zimbraPrefReplyToAddress' value="${fn:escapeXml(mailbox.defaultIdentity.replyToAddress)}">
                             </td>
                         </tr>
                         <tr>
@@ -179,7 +188,8 @@
                 <tr><td colspan="2"><hr></td></tr>
                 <tr>
                     <td class='ZOptionsTableLabel'>
-                        <label for="signatureSelect"><fmt:message key="optionsAccountSignature"/>:</label>
+                        <label for="signatureSelect"><fmt:message key="optionsAccountSignature"/>
+                            :</label>
                     </td>
                     <td>
                         <select name="zimbraPrefDefaultSignatureId" id="signatureSelect">
@@ -198,7 +208,9 @@
                     </td>
                 </tr>
                 <tr>
-                    <td class='ZOptionsTableLabel'>&nbsp;</td>
+                    <td class='ZOptionsTableLabel'>
+                        &nbsp;
+                    </td>
                     <td>
                         <fmt:message key="optionsManageSignatures">
                             <fmt:param><fmt:message key="optionsManageSignaturesPre"/></fmt:param>
@@ -210,6 +222,6 @@
             </c:if>
             <tr><td colspan="2">&nbsp;</td></tr>
             </table>
-		</td>
-	</tr>
+</td>
+</tr>
 </table>

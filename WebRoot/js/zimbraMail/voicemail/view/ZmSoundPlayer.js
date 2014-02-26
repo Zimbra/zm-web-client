@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2007, 2008, 2009, 2010, 2011, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
@@ -213,9 +213,8 @@ function() {
 ZmSoundPlayer.prototype._setPlayState =
 function(state) {
 	if (this._isScriptable) {
-		this._playButton.setVisible(state != ZmSoundPlayer._PLAYING)
-		this._pauseButton.setVisible(state == ZmSoundPlayer._PLAYING);
-		
+		this._playButton.setSelected(state == ZmSoundPlayer._PLAYING);
+		this._pauseButton.setSelected(state == ZmSoundPlayer._PAUSED);
 	}
 };
 
@@ -260,14 +259,6 @@ function(event) {
 		}
 	}
 	this.notifyListeners(DwtEvent.ONCHANGE, event);
-};
-
-/**
- * Set player to finished state
- */
-ZmSoundPlayer.prototype.setFinished = 
-function() {
-	this._setPlayState(ZmSoundPlayer._NONE);	
 };
 
 ZmSoundPlayer.prototype._getPlugin =
@@ -318,13 +309,8 @@ function() {
 	
 		this._statusId = id + "_status";
 	
-		this._timeSlider = new DwtSlider(this, null, "ZmHorizontalSlider", Dwt.RELATIVE_STYLE);
-		this._timeSlider.setScrollStyle(Dwt.CLIP);
+		this._timeSlider = new DwtSlider(this, null, null, Dwt.RELATIVE_STYLE);
 		this._timeSlider.replaceElement(id + "_postition");
-		var el = this._timeSlider.getHtmlElement();
-		if (el) {
-			el.style.marginTop = "-3px";
-		}
 		this._timeSlider.addChangeListener(new AjxListener(this, this._timeSliderListener));
     } else {
 		this._statusId = id + "_status";

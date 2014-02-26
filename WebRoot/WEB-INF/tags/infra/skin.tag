@@ -1,7 +1,7 @@
 <%--
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2008, 2009, 2010, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2008, 2009, 2010, 2011, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
@@ -24,8 +24,8 @@
 	<c:set var="sessionScope_skin" value="${sessionScope.skin}" />
 </c:catch>
 
-<%-- set default values, respect the defaultSkin param if sent --%>
-<c:set var="skin" value="${param.skin ? param.skin : defaultSkin}" />
+<%-- set default values --%>
+<c:set var="skin" value="${param.skin}" />
 <c:set var="availableSkins" value="" />
 <c:set var="defaultSkin" value="${initParam.zimbraDefaultSkin}" />
 <%-- use current session skin value --%>

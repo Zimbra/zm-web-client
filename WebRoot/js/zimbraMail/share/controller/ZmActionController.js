@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2010, 2011, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
@@ -48,16 +48,12 @@ function() {
  * @param {String}	[id] 		id of item to perform the action for, if there is only one. Accomplishes the same as putting the id in an array and giving it as [ids].
  */
 ZmActionController.prototype.actionPerformed = function(params) {
+	this.dismiss();
 	var logElement = this._actionStack.logAction(params);
 	if (logElement) {
-		this.dismiss();
-		logElement.onComplete(new AjxCallback(this, this._handleActionComplete));
+		this._active = true;
 	}
 	return logElement;
-};
-
-ZmActionController.prototype._handleActionComplete = function(action) {
-	this._active = true;
 };
 
 /**
@@ -88,19 +84,10 @@ ZmActionController.prototype.undo = function(action) {
 };
 
 ZmActionController.prototype.undoCurrent = function() {
-	if (this._actionStack.canUndo()) {
-		if (this._actionStack.actionIsComplete()) {
-			if (this._active) {
-				this.dismiss();
-			}
-			this._actionStack.undo();
-		} else {
-			this._actionStack.onComplete(new AjxCallback(this,function(action) {
-				// We must call this.undo on a timeout to allow the status message to transition in before dismissing
-				setTimeout(AjxCallback.simpleClosure(this.undo, this, action), 0);
-			}));
-		}
+	if (this._active) {
+		this.dismiss();
 	}
+	this._actionStack.undo();
 };
 
 ZmActionController.prototype.onPopup = function() {

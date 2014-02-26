@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
@@ -33,27 +33,14 @@ ZmSearchFolder = function(params) {
 	
 	if (params.query) {
 		var searchParams = {
-			query:			params.query,
-			types:			params.types,
-			checkTypes:		true,
-			sortBy:			params.sortBy,
-			searchId:		params.id,
-			accountName:	(params.account && params.account.name)
+			query:params.query,
+			types:params.types,
+			sortBy:params.sortBy,
+			searchId:params.id,
+			accountName:(params.account && params.account.name)
 		};
 		this.search = new ZmSearch(searchParams);
 	}
-};
-
-ZmSearchFolder.prototype = new ZmFolder;
-ZmSearchFolder.prototype.constructor = ZmSearchFolder;
-
-/**
- * Returns a string representation of the object.
- *
- * @return		{String}		a string representation of the object
- */
-ZmSearchFolder.prototype.toString =	function() {
-	return "ZmSearchFolder";
 };
 
 ZmSearchFolder.ID_ROOT = ZmOrganizer.ID_ROOT;
@@ -63,110 +50,52 @@ ZmSearchFolder.ID_ROOT = ZmOrganizer.ID_ROOT;
  * 
  * @param	{Hash}	params		a hash of parameters
  */
-ZmSearchFolder.create = function(params) {
-
-	params = params || {};
-
-	var search = params.search,
-		jsonObj = { CreateSearchFolderRequest: { _jsns:"urn:zimbraMail" } },
-		searchNode = jsonObj.CreateSearchFolderRequest.search = {};
-
-	searchNode.name = params.name;
-	searchNode.query = search.query;
-	searchNode.l = params.l;
-	if (params.sortBy) {
-		searchNode.sortBy = params.sortBy;
-	}
-
-	if (search && search.types) {
-		var a = search.types.getArray();
+ZmSearchFolder.create =
+function(params) {
+	var soapDoc = AjxSoapDoc.create("CreateSearchFolderRequest", "urn:zimbraMail");
+	var searchNode = soapDoc.set("search");
+	searchNode.setAttribute("name", params.name);
+	searchNode.setAttribute("query", params.search.query);
+	if (params.search.types) {
+		var a = params.search.types.getArray();
 		if (a.length) {
 			var typeStr = [];
 			for (var i = 0; i < a.length; i++) {
 				typeStr.push(ZmSearch.TYPE[a[i]]);
 			}
-			searchNode.types = typeStr.join(",");
+			searchNode.setAttribute("types", typeStr.join(","));
 		}
 	}
-
-	if (params.rgb) {
-		searchNode.rgb = params.rgb;
-	}
-	else if (params.color) {
-		var color = ZmOrganizer.getColorValue(params.color, params.type);
-		if (color) {
-			searchNode.color = color;
-		}
+	if (params.search.sortBy) {
+		searchNode.setAttribute("sortBy", params.search.sortBy);
 	}
 
 	var accountName;
 	if (params.isGlobal) {
-		searchNode.f = 'g';
+		searchNode.setAttribute("f", "g");
 		accountName = appCtxt.accountList.mainAccount.name;
 	}
 
-	return appCtxt.getAppController().sendRequest({
-		jsonObj:        jsonObj,
-		asyncMode:      params.asyncMode !== false,
-		accountName:    accountName,
-		callback:       ZmSearchFolder._handleCreate,
-		errorCallback:  params.errorCallback || ZmOrganizer._handleErrorCreate.bind(null)
+	searchNode.setAttribute("l", params.parent.id);
+	appCtxt.getAppController().sendRequest({
+		soapDoc: soapDoc,
+		asyncMode: true,
+		accountName: accountName,
+		errorCallback: (new AjxCallback(null, ZmOrganizer._handleErrorCreate, params))
 	});
 };
 
-ZmSearchFolder._handleCreate =
-function(params) {
-	appCtxt.setStatusMsg(ZmMsg.searchSaved);
-};
+ZmSearchFolder.prototype = new ZmFolder;
+ZmSearchFolder.prototype.constructor = ZmSearchFolder;
 
 /**
- * Sets the underlying search query.
- *
- * @param	{String}	    query		    search query
- * @param	{AjxCallback}	callback		the callback
- * @param	{AjxCallback}	errorCallback		the error callback
- * @param	{ZmBatchCommand}	batchCmd		the batch command
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
  */
-ZmSearchFolder.prototype.setQuery = function(query, callback, errorCallback, batchCmd) {
-
-	if (query === this.search.query) {
-		return;
-	}
-
-	var params = {
-		callback:       callback,
-		errorCallback:  errorCallback,
-		batchCmd:       batchCmd
-	};
-
-	var cmd = "ModifySearchFolderRequest";
-	var request = {
-		_jsns: "urn:zimbraMail",
-		search: {
-			query:  query,
-			id:     params.id || this.id
-		}
-	};
-	var jsonObj = {};
-	jsonObj[cmd] = request;
-
-	var respCallback = this._handleResponseOrganizerAction.bind(this, params);
-	if (params.batchCmd) {
-		params.batchCmd.addRequestParams(jsonObj, respCallback, params.errorCallback);
-	}
-	else {
-		var accountName;
-		if (appCtxt.multiAccounts) {
-			accountName = this.account ? this.account.name : appCtxt.accountList.mainAccount.name;
-		}
-		appCtxt.getAppController().sendRequest({
-			jsonObj:        jsonObj,
-			asyncMode:      true,
-			accountName:    accountName,
-			callback:       respCallback,
-			errorCallback:  params.errorCallback
-		});
-	}
+ZmSearchFolder.prototype.toString =
+function() {
+	return "ZmSearchFolder";
 };
 
 /**
@@ -204,19 +133,4 @@ function(parentId) {
 	}
 	
 	return appCtxt.getById(parentId);
-};
-
-// Handle a change to the underlying search query
-ZmSearchFolder.prototype.notifyModify =	function(obj) {
-
-	if (obj.query && obj.query !== this.search.query && obj.id === this.id) {
-		this.search.query = obj.query;
-		var fields = {};
-		fields[ZmOrganizer.F_QUERY] = true;
-		this._notify(ZmEvent.E_MODIFY, {
-			fields: fields
-		});
-		obj.query = null;
-	}
-	ZmFolder.prototype.notifyModify.apply(this, [obj]);
 };

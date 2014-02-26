@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
@@ -22,23 +22,22 @@
  * are not added until the page becomes visible.
  *
  * @author Conrad Damon
- *
+ * 
  * @param {DwtControl}	parent			the containing widget
  * @param {object}	section			the page
  * @param {ZmPrefController}	controller		the prefs controller
- *
+ * 
  * @extends		DwtTabViewPage
  */
-ZmPreferencesPage = function(parent, section, controller, id) {
+ZmPreferencesPage = function(parent, section, controller) {
 	if (arguments.length == 0) return;
-	id = id || ("Prefs_Pages_" + section.id);
-	DwtTabViewPage.call(this, parent, "ZmPreferencesPage", null, id);
-
+	DwtTabViewPage.call(this, parent, "ZmPreferencesPage");
+	
 	this._section = section;
 	this._controller = controller;
 
-	this.setScrollStyle(Dwt.SCROLL_Y);
-
+	this.setScrollStyle(DwtControl.SCROLL);
+	
 	this._title = [ZmMsg.zimbraTitle, controller.getApp().getDisplayName(), section.title].join(": ");
 
 	this._dwtObjects = {};
@@ -130,7 +129,7 @@ function(elemOrId) {
  * Fills the page with preferences that belong to this page, if that has not been done
  * already. Note this method is only called when the tab
  * is selected and the page becomes visible.
- *
+ * 
  */
 ZmPreferencesPage.prototype.showMe =
 function() {
@@ -245,20 +244,7 @@ function() {
 				control = this._setupColor(id, setup, value);
 			}
 			else if (type == ZmPref.TYPE_LOCALES) {
-                //Fix for bug# 80762 - Based on multiple locale availability set the view as dropdown or label
-                if(ZmLocale.hasChoices()) {
-                    control = this._setupLocales(id, setup, value);
-                }
-                else {
-                    //Part of bug# 80762. Sets view for a single locale and displays as a label
-                    control = this._setupLocaleLabel(id, setup, value);
-                }
-			}
-			else if (type == ZmPref.TYPE_FONT) {
-				control = this._setupMenuButton(id, value, ZmPreferencesPage.fontMap);
-			}
-			else if (type == ZmPref.TYPE_FONT_SIZE) {
-				control = this._setupMenuButton(id, value, ZmPreferencesPage.fontSizeMap);
+				control = this._setupLocales(id, setup, value);
 			}
 			else if (type == ZmPref.TYPE_PASSWORD) {
 				this._addButton(elem, setup.displayName, 50, new AjxListener(this, this._changePasswordListener), "CHANGE_PASSWORD");
@@ -293,6 +279,11 @@ function() {
 		var defaultsRestore = document.getElementById([this._htmlElId,"DEFAULTS_RESTORE"].join("_"));
 		if (defaultsRestore) {
 			this._addButton(defaultsRestore, ZmMsg.restoreDefaults, 110, new AjxListener(this, this._resetListener));
+		}
+
+		var revertPage = document.getElementById([this._htmlElId,"REVERT_PAGE"].join("_"));
+		if (revertPage) {
+			this._addButton(revertPage, ZmMsg.restorePage, 110, new AjxListener(this, this._resetPageListener));
 		}
 
 		// create tab-group for all controls on the page
@@ -349,8 +340,7 @@ function(id, setup, control) {
 	if (type == ZmPref.TYPE_SELECT || type == ZmPref.TYPE_COMBOBOX ||
 		type == ZmPref.TYPE_CHECKBOX ||
 		type == ZmPref.TYPE_RADIO_GROUP || type == ZmPref.TYPE_COLOR ||
-		type == ZmPref.TYPE_INPUT || type == ZmPref.TYPE_LOCALES ||
-		type === ZmPref.TYPE_FONT || type === ZmPref.TYPE_FONT_SIZE) {
+		type == ZmPref.TYPE_INPUT || type == ZmPref.TYPE_LOCALES) {
 		var object = control || this.getFormObject(id);
 		if (object) {
 			if (type == ZmPref.TYPE_COLOR) {
@@ -370,9 +360,6 @@ function(id, setup, control) {
 			}
 			else if (type == ZmPref.TYPE_LOCALES) {
 				value = object._localeId;
-			}
-			else if (type === ZmPref.TYPE_FONT || type === ZmPref.TYPE_FONT_SIZE) {
-				value = object._itemId;
 			}
 			else if (type == ZmPref.TYPE_COMBOBOX) {
 				value = object.getValue() || object.getText();
@@ -461,14 +448,6 @@ function(id, value, setup, control) {
 		var object = this._dwtObjects[ZmSetting.LOCALE_NAME];
 		if (!object) { return value; }
 		this._showLocale(value, object);
-	} else if (type == ZmPref.TYPE_FONT) {
-		var object = this._dwtObjects[ZmSetting.FONT_NAME];
-		if (!object) { return value; }
-		this._showItem(value, ZmPreferencesPage.fontMap, object);
-	} else if (type == ZmPref.TYPE_FONT_SIZE) {
-		var object = this._dwtObjects[ZmSetting.FONT_SIZE];
-		if (!object) { return value; }
-		this._showItem(value, ZmPreferencesPage.fontSizeMap, object);
 	} else {
 		var prefId = [this._htmlElId, id].join("_");
 		var element = control || document.getElementById(prefId);
@@ -481,19 +460,13 @@ function(id, value, setup, control) {
 
 /**
  * Gets the title.
- *
+ * 
  * @return	{String}	the title
  */
 ZmPreferencesPage.prototype.getTitle =
 function() {
 	return this._title;
 };
-
-ZmPreferencesPage.prototype.hasResetButton =
-function() {
-	return true;
-};
-
 
 ZmPreferencesPage.prototype.getTabGroupMember =
 function() {
@@ -515,10 +488,6 @@ function(useDefaults) {
 		var newValue = this._getPrefValue(id, useDefaults);
 		this.setFormValue(id, newValue);
 	}
-
-	if (!useDefaults) {
-		this._controller.setDirty(this._section.id, false);
-	}
 };
 
 ZmPreferencesPage.prototype.resetOnAccountChange =
@@ -528,7 +497,7 @@ function() {
 
 /**
  * Checks if the data is dirty.
- *
+ * 
  * @return	{Boolean}	<code>true</code> if the data is dirty
  */
 ZmPreferencesPage.prototype.isDirty = function() { return false; };
@@ -536,7 +505,7 @@ ZmPreferencesPage.prototype.validate = function() {	return true; };
 
 /**
  * Adds the modify command to the given batch command.
- *
+ * 
  * @param	{ZmBatchCommand}		batchCmd		the batch command
  */
 ZmPreferencesPage.prototype.addCommand = function(batchCmd) {};
@@ -557,7 +526,7 @@ function(templateId, data) {
  *
  * @param id			[constant]		pref ID
  * @param useDefault	[boolean]		if true, use pref's default value
- *
+ * 
  * @private
  */
 ZmPreferencesPage.prototype._getPrefValue =
@@ -610,7 +579,7 @@ ZmPreferencesPage.prototype._setupSelect =
 function(id, setup, value) {
 	value = this._prepareValue(id, setup, value);
 
-	var params = {parent: this, id: "Prefs_Select_" + id};
+	var params = {parent:this};
 	for (var p in setup.displayParams) {
 		params[p] = setup.displayParams[p];
 	}
@@ -630,7 +599,6 @@ function(id, setup, value) {
 
 	selObj.setName(id);
 	selObj.setSelectedValue(value);
-    selObj.dynamicButtonWidth();
 
 	return selObj;
 };
@@ -639,9 +607,7 @@ ZmPreferencesPage.prototype._setupComboBox =
 function(id, setup, value) {
 	value = this._prepareValue(id, setup, value);
 
-	var params = {parent: this, id: "Prefs_ComboBox_" + id};
-
-	var cboxObj = new DwtComboBox(params);
+	var cboxObj = new DwtComboBox({parent:this});
 	this.setFormObject(id, cboxObj);
 
 	var options = setup.options || setup.displayOptions || setup.choices || [];
@@ -662,8 +628,7 @@ ZmPreferencesPage.prototype._setupRadioGroup =
 function(id, setup, value) {
 	value = this._prepareValue(id, setup, value);
 
-	var params = {parent: this, id: "Prefs_RadioGroup_" + id};
-	var container = new DwtComposite(params);
+	var container = new DwtComposite(this);
 
 	// build horizontally-oriented radio group, if needed
 	var orient = setup.orientation || ZmPref.ORIENT_VERTICAL;
@@ -685,8 +650,8 @@ function(id, setup, value) {
 	var options = setup.options || setup.displayOptions || setup.choices;
 	var isChoices = setup.choices;
 	var isDisplayString = AjxUtil.isString(setup.displayOptions);
-	var inputId = setup.inputId;
-	
+    var inputId = setup.inputId;
+    
 	var radioIds = {};
 	var selectedId;
 	var name = Dwt.getNextId();
@@ -696,7 +661,7 @@ function(id, setup, value) {
 		optLabel = ZmPreferencesPage.__formatLabel(optLabel, optValue);
 		var isSelected = value == optValue;
 
-		var automationId  = AjxUtil.isArray(inputId) && inputId[i] ? inputId[i] : Dwt.getNextId();
+        var automationId  = AjxUtil.isArray(inputId) && inputId[i] ? inputId[i] : Dwt.getNextId();
 		var radioBtn = new DwtRadioButton({parent:container, name:name, checked:isSelected, id: automationId});
 		radioBtn.setText(optLabel);
 		radioBtn.setValue(optValue);
@@ -743,8 +708,7 @@ function(radioIds) {
 
 ZmPreferencesPage.prototype._setupCheckbox =
 function(id, setup, value) {
-	var params = {parent: this, checked: value, id: "Prefs_Checkbox_" + id};
-	var checkbox = new DwtCheckbox(params);
+	var checkbox = new DwtCheckbox({parent:this, checked:value});
 	this.setFormObject(id, checkbox);
 	var text = setup.displayFunc ? setup.displayFunc() : setup.displayName;
 	var cboxLabel = ZmPreferencesPage.__formatLabel(text, value);
@@ -768,8 +732,7 @@ function(id, setup, value) {
 	value = this._prepareValue(id, setup, value);
 	var params = {
 		parent: this, type: setup.type ? setup.type : DwtInputField.STRING, initialValue: value, size: setup.cols || 40,
-		rows: setup.rows, wrap: setup.wrap, maxLen:setup.maxLen, hint:setup.hint,
-		id: "Prefs_Input_" + id
+		rows: setup.rows, wrap: setup.wrap, maxLen:setup.maxLen, hint:setup.hint
 	};
 	var input = new DwtInputField(params);
 	this.setFormObject(id, input);
@@ -835,9 +798,7 @@ function(tabGroup) {
 
 ZmPreferencesPage.prototype._setupColor =
 function(id, setup, value) {
-
-	var params = {parent: this, id: "Prefs_ColorPicker_" + id};
-	var picker = new DwtButtonColorPicker(params);
+	var picker = new DwtButtonColorPicker({parent:this});
 	picker.setImage("FontColor");
 	picker.showColorDisplay(true);
 	picker.setToolTipContent(ZmMsg.fontColor);
@@ -878,8 +839,7 @@ function(id, setup, value) {
 
 ZmPreferencesPage.prototype._setupLocales =
 function(id, setup, value) {
-	var params = {parent: this, id: "Prefs_Locale_" + id};
-	var button = new DwtButton(params);
+	var button = new DwtButton({parent:this});
 	button.setSize(60, Dwt.DEFAULT);
 	button.setMenu(new AjxListener(this, this._createLocalesMenu, [setup]));
 	this._showLocale(value, button);
@@ -889,48 +849,12 @@ function(id, setup, value) {
 	return button;
 };
 
-//Part of bug# 80762 - Display the single locale item as a read-only label
-ZmPreferencesPage.prototype._setupLocaleLabel =
-function(id, setup, value) {
-    var label = new DwtLabel({parent:this});
-    label.setSize(60, Dwt.DEFAULT);
-    this._showLocale(value, label);
-    this._dwtObjects[id] = label;
-    return label;
-};
-
-ZmPreferencesPage.prototype._setupMenuButton =
-function(id, value, itemMap) {
-	var button = new DwtButton({parent:this});
-	button.setSize(60, Dwt.DEFAULT);
-	button.setMenu(new AjxListener(this, this._createMenu, [button, itemMap]));
-	this._showItem(value, itemMap, button);
-
-	this._dwtObjects[id] = button;
-
-	return button;
-};
-
 ZmPreferencesPage.prototype._showLocale =
 function(localeId, button) {
-	var locale = ZmLocale.localeMap[localeId] || ZmLocale.localeMap[localeId.substr(0, 2)];
+	var locale = ZmLocale.localeMap[localeId];
 	button.setImage(locale ? locale.getImage() : null);
-	button.setText(locale ? locale.getNativeAndLocalName() : "");
+	button.setText(locale ? locale.name : "");
 	button._localeId = localeId;
-};
-
-ZmPreferencesPage.prototype._createMenu =
-function(button, itemMap) {
-
-	var menu = new DwtMenu({parent:button});
-
-	var listener = this._itemSelectionListener.bind(this, button, itemMap);
-
-	for (var id in itemMap) {
-		var item = itemMap[id];
-		this._createMenuItem(menu, item.id, item.name, listener);
-	}
-	return menu;
 };
 
 ZmPreferencesPage.prototype._createLocalesMenu =
@@ -942,57 +866,32 @@ function(setup) {
 	var listener = new AjxListener(this, this._localeSelectionListener);
 	for (var language in ZmLocale.languageMap) {
 		var languageObj = ZmLocale.languageMap[language];
-		var locales = languageObj.locales;
-		if (!locales) {
-			this._createLocaleItem(result, languageObj, listener);
-		}
-		else if (locales.length > 0) {
-			/* show submenu even if just one item, for cases such as Portugeuse (Brasil), since we want country (locale) specific items in the submenu level */
+		var array = languageObj.locales;
+		if (array && array.length == 1) {
+			this._createLocaleItem(result, array[0], listener);
+		} else if (array && array.length > 1) {
 			var menuItem = new DwtMenuItem({parent:result, style:DwtMenuItem.CASCADE_STYLE});
-			menuItem.setText(ZmLocale.languageMap[language].getNativeAndLocalName());
+			menuItem.setText(ZmLocale.languageMap[language].name);
 			var subMenu = new DwtMenu({parent:result, style:DwtMenu.DROPDOWN_STYLE});
 			menuItem.setMenu(subMenu);
-			for (var i = 0, count = locales.length; i < count; i++) {
-				this._createLocaleItem(subMenu, locales[i], listener);
+			for (var i = 0, count = array.length; i < count; i++) {
+				this._createLocaleItem(subMenu, array[i], listener);
 			}
+		} else {
+			this._createLocaleItem(result, languageObj, listener);
 		}
 	}
 	return result;
-};
-
-ZmPreferencesPage.prototype._createMenuItem =
-function(parent, id, text, listener) {
-	var item = new DwtMenuItem({parent:parent});
-	item.setText(text);
-	item._itemId = id;
-	item.addSelectionListener(listener);
-	return item;
 };
 
 ZmPreferencesPage.prototype._createLocaleItem =
 function(parent, locale, listener) {
 	var result = new DwtMenuItem({parent:parent});
-	result.setText(locale.getNativeAndLocalName());
-	if (locale.getImage()) {
-		result.setImage(locale.getImage());
-	}
+	result.setText(locale.name);
+	result.setImage(locale.getImage());
 	result._localeId = locale.id;
 	result.addSelectionListener(listener);
 	return result;
-};
-
-ZmPreferencesPage.prototype._showItem =
-function(itemId, itemMap, button) {
-	var item = itemMap[itemId];
-	button.setImage(item && item.image || null);
-	button.setText(item && item.name || "");
-	button._itemId = itemId;
-};
-
-ZmPreferencesPage.prototype._itemSelectionListener =
-function(button, itemMap, ev) {
-	var item = ev.dwtObj;
-	this._showItem(item._itemId, itemMap, button);
 };
 
 ZmPreferencesPage.prototype._localeSelectionListener =
@@ -1000,7 +899,6 @@ function(ev) {
 	var item = ev.dwtObj;
 	var button = this._dwtObjects[ZmSetting.LOCALE_NAME];
 	this._showLocale(item._localeId, button);
-    this._showComposeDirection(item._localeId);
 };
 
 ZmPreferencesPage.prototype._handleDontKeepCopyChange = function(ev) {
@@ -1023,7 +921,28 @@ function(ev) {
 // Popup the change password dialog.
 ZmPreferencesPage.prototype._changePasswordListener =
 function(ev) {
-	appCtxt.getChangePasswordWindow(ev);
+
+	var url = appCtxt.get(ZmSetting.CHANGE_PASSWORD_URL);
+
+	if (!url) {
+		var isHttp	= appCtxt.get(ZmSetting.PROTOCOL_MODE) == ZmSetting.PROTO_HTTP;
+		var proto	= isHttp ? ZmSetting.PROTO_HTTP : ZmSetting.PROTO_HTTPS;
+		var port	= appCtxt.get(isHttp ? ZmSetting.HTTP_PORT : ZmSetting.HTTPS_PORT);
+		var path	= appContextPath+"/h/changepass";
+
+		var publicUrl = appCtxt.get(ZmSetting.PUBLIC_URL);
+		if (publicUrl) {
+			var parts = AjxStringUtil.parseURL(publicUrl);
+			path = parts.path + "/h/changepass";
+			var switchMode = (parts.protocol == "http" && proto == ZmSetting.PROTO_HTTPS);
+			proto = switchMode ? proto : parts.protocol;
+			port = switchMode ? port : parts.port;
+		}
+		url = AjxUtil.formatUrl({protocol:proto, port:port, path:path, qsReset:true});
+	}
+
+	var args  = "height=465,width=705,location=no,menubar=no,resizable=yes,scrollbars=no,status=yes,toolbar=no";
+	window.open(url, "_blank", args);
 };
 
 ZmPreferencesPage.prototype._exportButtonListener =
@@ -1051,7 +970,7 @@ function(format, formatSelectObj, ev) {
 					  appName:			ZmApp.CONTACTS,
 					  description:		ZmMsg.chooseAddrBookToExport});
 	} else {
-		AjxDispatcher.require(["MailCore", "CalendarCore", "Calendar", "CalendarAppt"]);
+		AjxDispatcher.require(["CalendarCore", "Calendar", "CalendarAppt"]);
 		dialog.popup({treeIds:			[ZmOrganizer.CALENDAR],
 					  overviewId:		overviewId,
 					  omit:				omit,
@@ -1083,7 +1002,7 @@ function(ev) {
 			dialog.popup({treeIds:[ZmOrganizer.ADDRBOOK], title:ZmMsg.chooseAddrBook, overviewId: overviewId,
 						  description:ZmMsg.chooseAddrBookToImport, skipReadOnly:true, hideNewButton:noNew, omit:omit});
 		} else {
-			AjxDispatcher.require(["MailCore", "CalendarCore", "Calendar"]);
+			AjxDispatcher.require(["CalendarCore", "Calendar"]);
 			dialog.popup({treeIds:[ZmOrganizer.CALENDAR], title:ZmMsg.chooseCalendar, overviewId: overviewId, description:ZmMsg.chooseCalendarToImport, skipReadOnly:true});
 		}
 	}
@@ -1219,6 +1138,14 @@ function(ev) {
 	appCtxt.setStatusMsg(ZmMsg.defaultsRestored);
 };
 
+/** Reset the form values to the last save. */
+ZmPreferencesPage.prototype._resetPageListener =
+function(ev) {
+	this.reset(false);
+	this._controller.setDirty(this._section.id, false);
+	appCtxt.setStatusMsg(ZmMsg.defaultsPageRestore);
+};
+
 /**
  * Returns true if any of the specified prefs are enabled (or have no
  * preconditions).
@@ -1248,19 +1175,6 @@ function(data, prefId) {
 	return AjxTemplate.expand(templateId, data);
 };
 
-ZmPreferencesPage.prototype._showComposeDirection =
-function(localeId) {
-    var button = this._dwtObjects[ZmSetting.COMPOSE_INIT_DIRECTION];
-    var checkbox = this._dwtObjects[ZmSetting.SHOW_COMPOSE_DIRECTION_BUTTONS];
-    if ( ZmLocale.RTLLANGUAGES.hasOwnProperty(localeId) ){
-        button.setSelectedValue(ZmSetting.RTL);
-        checkbox.setSelected(true);
-    }
-    else {
-        button.setSelectedValue(ZmSetting.LTR);
-        checkbox.setSelected(false);
-    }
-};
 //
 // Private functions
 //
@@ -1269,7 +1183,7 @@ function(localeId) {
  * Formats a label. If the label contains a replacement parameter (e.g. {0}),
  * then it is formatted using AjxMessageFormat with the current value for this
  * label.
- *
+ * 
  * @private
  */
 ZmPreferencesPage.__formatLabel =
@@ -1277,22 +1191,3 @@ function(prefLabel, prefValue) {
 	prefLabel = prefLabel || "";
 	return prefLabel.match(/\{/) ? AjxMessageFormat.format(prefLabel, prefValue) : prefLabel;
 };
-
-ZmPreferencesPage.fontMap = {};
-
-ZmPreferencesPage._createMenuItem =
-function(id, name, itemMap) {
-	return itemMap[id] = {id: id, name: name};
-};
-
-ZmPreferencesPage._createMenuItem(ZmSetting.FONT_SYSTEM, ZmMsg.fontSystem, ZmPreferencesPage.fontMap);
-ZmPreferencesPage._createMenuItem(ZmSetting.FONT_MODERN, ZmMsg.fontModern, ZmPreferencesPage.fontMap);
-ZmPreferencesPage._createMenuItem(ZmSetting.FONT_CLASSIC, ZmMsg.fontClassic, ZmPreferencesPage.fontMap);
-ZmPreferencesPage._createMenuItem(ZmSetting.FONT_WIDE, ZmMsg.fontWide, ZmPreferencesPage.fontMap);
-
-ZmPreferencesPage.fontSizeMap = {};
-
-ZmPreferencesPage._createMenuItem(ZmSetting.FONT_SIZE_SMALL, ZmMsg.fontSizeSmall, ZmPreferencesPage.fontSizeMap);
-ZmPreferencesPage._createMenuItem(ZmSetting.FONT_SIZE_NORMAL, ZmMsg.fontSizeNormal, ZmPreferencesPage.fontSizeMap);
-ZmPreferencesPage._createMenuItem(ZmSetting.FONT_SIZE_LARGE, ZmMsg.fontSizeLarge, ZmPreferencesPage.fontSizeMap);
-ZmPreferencesPage._createMenuItem(ZmSetting.FONT_SIZE_LARGER, ZmMsg.fontSizeExtraLarge, ZmPreferencesPage.fontSizeMap);

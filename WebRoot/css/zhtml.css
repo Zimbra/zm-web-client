@@ -13,10 +13,6 @@
  * ***** END LICENSE BLOCK *****
  */
 
-HTML {
-	font-size:12px;  /* resets 1rem to 12px */
-}
-
 IMG {
 	border: none;
 	vertical-align: middle;
@@ -148,28 +144,28 @@ SUBMIT,
 
 /* ------- list --------------- */
 
-.List, TD.List {
+.List {
 	@SkinBorderApp@
-	border-width:1px;
+	border-top-width:0px;
 }
 
 .ZhRow TD {
 	@ListItemContainer@
 	@ListItemContainer-normal@
-	padding-right: 6px;
+    padding-right: 6px;
 }
 
 .ZhRowOdd TD {
-	@ListItemContainer@
+   	@ListItemContainer@
 	@ListItemContainer-alt@
-	padding-right: 6px;
+    padding-right: 6px;
 }
 
 .List TH {
 	text-align: left;
 	@ListColHeaderContainer@
 	@ListColHeaderContainer-normal@
-/*	padding: 5px 5px 5px 0; */
+/*    padding: 5px 5px 5px 0; */
 }
 
 .List A:link, .List A:visited  {
@@ -183,22 +179,22 @@ SUBMIT,
 
 .List .Img {
 	width: 20px;
-	padding-right:0;
+	padding-right: 0px;
 }
 
 .List .ImgNarrow {
 	width: 12px;
-	padding-right:0;
+	padding-right: 0px;
 }
 
 .List .CB {
 	width: 20px;
-	padding-right:0;
+	padding-right: 0px;
 }
 
 .List .Radio {
 	width: 20px;
-	padding-right:0;
+	padding-right: 0px;
 	text-align: center;
 }
 
@@ -241,7 +237,7 @@ SUBMIT,
 	padding-right: 6px;    
 }
 
-A:visited { @Text-link@ }
+A:visited { color: blue; }
 
 
 
@@ -257,9 +253,7 @@ A:visited { @Text-link@ }
 }
 
 
-.Tree .ZhTreeEdit a:link, 
-.Tree .ZhTreeEdit a:visited { @Text@ text-decoration: underline; }
-
+.Tree .ZhTreeEdit a:link, .Tree .ZhTreeEdit a:visited { @Text@ text-decoration: underline; }
 .ZhTreeEdit {
 	@Text-light@
 	@FontSize-normal@
@@ -279,7 +273,6 @@ A:visited { @Text-link@ }
 
 .ZhAppContent {
 	@SkinBorderApp@
-    border-width:1px;
 }
 
 .ZhAppColContent {
@@ -290,6 +283,7 @@ A:visited { @Text-link@ }
 .ZhAppViewContent {
 	@AppBg@
 	@NormalOutsetBorder@
+	border-top-width:0px;
 }
 
 .SearchBar {
@@ -403,7 +397,7 @@ A:visited { @Text-link@ }
 }
 
 .MsgOps {
-	@ToolbarBg@
+	@ToolbarBg@;
 /*    background-color: @HeaderColor@;*/
 }
 
@@ -480,14 +474,6 @@ A:visited { @Text-link@ }
 	@WordWrapPRE@
 }
 
-.MsgBody-plain-tab {
-    display:inline;
-    word-wrap:break-word !important;
-#IFDEF MSIE
-    @WordWrapPRE@
-#ENDIF
-}
-
 .MsgCompose {
 	@FontFamily-fixed@
 	@FontSize-big@
@@ -509,10 +495,6 @@ A:visited { @Text-link@ }
 .contactImage {
     max-width: 48px;
     max-height: 48px;
-}
-
-.IEcontactImage {
-    height: 48px;
 }
 
 .editContactLabel {
@@ -607,10 +589,10 @@ A:visited { @Text-link@ }
     border-left:3px solid darkred;
 }
 .ZmScheduler-F 		{	background-color: #FFFFFF;	}
-.ZmScheduler-B 		{	background-color: #4AA6F1;	}
-.ZmScheduler-T 		{	background-color: #B9EDED;	}
-.ZmScheduler-O 		{	background-color: #8854AB;	}
-.ZmScheduler-U 		{	background-color: #FFF5CC;	}
+.ZmScheduler-B 		{	background-color: #990000;	}
+.ZmScheduler-T 	    {	background-color: #FF3300;	}
+.ZmScheduler-O      {	background-color: #FFCC00;	}
+.ZmScheduler-U 	    {	background-color: #FFF5CC;	}
 .keyDiv{
     width:13px;
     height:13px;
@@ -714,7 +696,7 @@ A:visited { @Text-link@ }
 	vertical-align:top;
 	@SeparatorBorder@
 	font-weight:bold;
-	@Text-disabled@
+	@Text-disabled@;
 }
 
 .shortcutDescription {
@@ -776,7 +758,7 @@ A:visited { @Text-link@ }
 }
 
 .ZhCalType, .ZhABType, .ZhFolderType {
-@Text-disabled@
+@Text-disabled@;
 }
 
 .ZhCalMonthHeaderRow {
@@ -881,7 +863,7 @@ A:visited { @Text-link@ }
 
 .ZhCalMiniContainer {
 	@AppBg@ @NormalOutsetBorder@
-    height: 142px;
+    height: 135px;
 	padding-bottom: 5px;
 }
 
@@ -970,7 +952,7 @@ padding: 0 @BoxPaddingSize@ 0 @BoxPaddingSize@;
 }
 
 .ZhCalDayAllDayAppt, .ZhCalDayAllDayApptNew {
-	/*padding: 1 @BoxPaddingSize@ 1 @BoxPaddingSize@;*/
+	padding: 1 @BoxPaddingSize@ 1 @BoxPaddingSize@;
     cursor: pointer;
 }
 
@@ -1055,13 +1037,6 @@ padding: 0 @BoxPaddingSize@ 0 @BoxPaddingSize@;
 
 .apptHeaderRow {
 	height:28px;
-}
-
-/* used for labels in tables in eappt, etask, task, addattendees */
-.editViewLabel {
-    width: 1%;
-    @Text@ white-space: nowrap;
-    text-align: right;
 }
 
 .apptHeader {
@@ -1256,7 +1231,7 @@ padding: 0 @BoxPaddingSize@ 0 @BoxPaddingSize@;
 }
 
 .ZOptionsHint {
-	@Text-disabled@
+	@Text-disabled@;
 }
 
 .ZOptionsSectionMain {
@@ -1275,6 +1250,10 @@ padding: 0 @BoxPaddingSize@ 0 @BoxPaddingSize@;
 	line-height:20px;
 }
 
+.ZOptionsSectionTable LABEL {
+	white-space:nowrap;
+}
+
 .ZOptionsLabelTop {
 	vertical-align:top;
 	line-height:20px;
@@ -1289,7 +1268,7 @@ padding: 0 @BoxPaddingSize@ 0 @BoxPaddingSize@;
 }
 
 .ZhDateHint {
-	@Text-disabled@
+	@Text-disabled@;
     padding-left: 5px;
 }
 

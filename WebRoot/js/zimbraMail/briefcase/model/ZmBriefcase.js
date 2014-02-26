@@ -181,7 +181,7 @@ function(what, targetFolderType) {
                  || (what.id == this.id)
                  || (this.isRemote() && !this._remoteMoveOk(what))
                  || (what.isRemote() && !this._remoteMoveOk(what))
-                 ||  this.disallowSubFolder
+                 ||  what.disallowSubFolder
                  );
     } else { //ZmBriefcaseItem
         var items = AjxUtil.toArray(what);

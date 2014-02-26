@@ -63,10 +63,8 @@ function(params) {
 	appCtxt.getAppController().sendRequest({
 		jsonObj: jsonObj,
 		asyncMode: true,
-        offlineCache: true,
 		callback: (new AjxCallback(this, this._getMiniCalResponse, [params])),
 		errorCallback: (new AjxCallback(this, this._handleMiniCalResponseError, [params])),
-        offlineCallback: this._getMiniCalOfflineResponse.bind(this, params),
 		noBusyOverlay: params.noBusyOverlay,
 		accountName: (appCtxt.multiAccounts ? appCtxt.accountList.mainAccount.name : null)
 	});
@@ -168,29 +166,6 @@ function(params, result) {
 	return data;
 };
 
-ZmMiniCalCache.prototype._getMiniCalOfflineResponse =
-function(params) {
-
-    var calMgr = appCtxt.getCalManager();
-    var calViewController = calMgr && calMgr.getCalViewController();
-    if (calViewController) {
-        var apptCache = calViewController.getApptCache();
-        if (apptCache) {
-            var folderIds = calViewController.getMainAccountCheckedCalendarIds();
-            var searchParams = { folderIds: folderIds,
-                                 start: params.start,
-                                 end: params.end
-                               };
-            var apptList = apptCache.setSearchParams(searchParams);
-            if (apptList) {
-                apptCache.processOfflineMiniCal(params, apptList);
-            } else {
-                apptCache.offlineSearchAppts(searchParams, params, null);
-            }
-        }
-    }
-}
-
 ZmMiniCalCache.prototype.processBatchResponse =
 function(miniCalResponse, data) {
 	if (!miniCalResponse) { return; }
@@ -227,7 +202,7 @@ function(errors) {
 
 ZmMiniCalCache.prototype.highlightMiniCal =
 function(dateArr) {
-	var highlight = {};
+	var highlight = [];
 	for (var i = 0; i < dateArr.length; i++) {
 		if (dateArr[i]) {
 			highlight[dateArr[i]] = AjxDateFormat.parse("yyyyMMdd", dateArr[i]);

@@ -82,8 +82,8 @@ ZmShare = function(params) {
 // Constants
 
 ZmShare.URI = "urn:zimbraShare";
-ZmShare.VERSION = "0.2";
-ZmShare.PREV_VERSION = "0.1"; // keep this till it's no longer supported
+ZmShare.VERSION = "0.1";
+ZmShare.NEXT_VERSION = "0.2";
 
 // actions
 /**
@@ -325,8 +325,7 @@ ZmShare.getDefaultMountpointName = function(owner, name) {
     if (!ZmShare._defaultNameFormatter) {
         ZmShare._defaultNameFormatter = new AjxMessageFormat(ZmMsg.shareNameDefault);
     }
-    var defaultName = ZmShare._defaultNameFormatter.format([owner, name]);
-	return defaultName.replace(/\//g," ");
+    return ZmShare._defaultNameFormatter.format([owner, name]);
 };
 
 /**
@@ -385,7 +384,7 @@ function(doc) {
 
 	var shareNode = doc.documentElement;
 	share.version = shareNode.getAttribute("version");
-	if (share.version != ZmShare.VERSION && share.version != ZmShare.PREV_VERSION) { //support previous version here for smooth transition. 
+	if (share.version != ZmShare.VERSION && share.version != ZmShare.NEXT_VERSION) { //support next version version here accepting shared sent from 8.0 (specifically for ZD that is 7)
 		throw "Zimbra share version must be " + ZmShare.VERSION;
 	}
 	share.action = shareNode.getAttribute("action");
@@ -613,45 +612,23 @@ function() {
  * 
  * @param	{constant}	perm	the permission (see <code>ZmShare.PERM_</code> constants)
  * @param	{String}	pw		
- * @param	{constant}	replyType		ZmShareReply.NONE, ZmShareReply.STANDARD or ZmShareReply.QUICK
- * @param	{constant}	shareAction		the share action, e.g. ZmShare.NEW or ZmShare.EDIT
  * @param	{ZmBatchCommand}	batchCmd	the batch command
  */
 ZmShare.prototype.grant =
-function(perm, pw, notes, replyType, shareAction, batchCmd) {
+function(perm, pw, batchCmd) {
 	this.link.perm = perm;
-	var respCallback = new AjxCallback(this, this._handleResponseGrant, [notes, replyType, shareAction]);
-	this._shareAction("grant", null, {perm: perm, pw: pw}, respCallback, batchCmd, notes);
+	var respCallback = new AjxCallback(this, this._handleResponseGrant);
+	this._shareAction("grant", null, {perm: perm, pw: pw}, respCallback, batchCmd);
 };
 
 /**
  * @private
  */
 ZmShare.prototype._handleResponseGrant =
-function(notes, replyType, shareAction, result) {
+function(result) {
 	var action = result.getResponse().FolderActionResponse.action;
 	this.grantee.id = action.zid;
 	this.grantee.email = action.d;
-    if(replyType != ZmShareReply.NONE && action.d && action.zid) {
-        this._sendShareNotification(this.grantee.email, action.id,
-		                            notes, shareAction);
-    }
-};
-
-/**
- * @private
- */
-ZmShare.prototype._sendShareNotification =
-function(userEmail, folderId, notes, action, callback) {
-    var soapDoc = AjxSoapDoc.create("SendShareNotificationRequest", "urn:zimbraMail");
-    if (action != ZmShare.NEW)
-        soapDoc.setMethodAttribute("action", action);
-    var itemNode = soapDoc.set("item");
-    itemNode.setAttribute("id", folderId);
-    var emailNode = soapDoc.set("e");
-    emailNode.setAttribute("a",userEmail);
-    soapDoc.set("notes", notes);
-    appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, callback: callback});
 };
 
 /**
@@ -730,9 +707,13 @@ function(replyType, notes, callback, owner) {
 		callback.run();
 	}
 
-	// check if we need to send message
+	// check if we need to send message or bring up compose window
 	if (replyType != ZmShareReply.NONE) {
-		this.sendMessage(ZmShare.ACCEPT, null, owner);
+		if (replyType == ZmShareReply.COMPOSE) {
+			this.composeMessage(ZmShare.ACCEPT, null, owner);
+		} else {
+			this.sendMessage(ZmShare.ACCEPT, null, owner);
+		}
 	}
 };
 
@@ -752,11 +733,38 @@ function(mode, addrs, owner, batchCmd) {
 		addrs = new AjxVector();
 		addrs.add(new AjxEmailAddress(email, AjxEmailAddress.TO));
 	}
-	var msg = this._createMsg(mode, addrs, owner);
+	var msg = this._createMsg(mode, false, addrs, owner);
 	var accountName = appCtxt.multiAccounts ? (this.object ? (this.object.getAccount().name) : null ) : null;
 
 	// send message
 	msg.send(false, null, null, accountName, false, false, batchCmd);
+};
+
+/**
+ * Composes a message.
+ * 
+ * @param	{constant}	mode	the request mode
+ * @param	{AjxVector}	addrs	a vector of {@link AjxEmailAddress} objects or <code>null</code> to send to the grantee
+ * @param	{String}	owner	the message owner
+ */
+ZmShare.prototype.composeMessage =
+function(mode, addrs, owner) {
+	// generate message
+	if (!addrs) {
+		var email = this.grantee.email;
+		addrs = new AjxVector();
+		addrs.add(new AjxEmailAddress(email, AjxEmailAddress.TO));
+	}
+
+	var msg = this._createMsg(mode, true, addrs, owner);
+
+	// NOTE: Assumes text, html, and xml parts are in the top part
+	var parts = msg._topPart.children;
+	var textPart = parts.get(0);
+	var htmlPart = parts.get(1);
+	var xmlPart = parts.get(2);
+	msg.setBodyParts([ textPart.node, htmlPart.node, xmlPart.node ]);
+	AjxDispatcher.run("Compose", {action: ZmOperation.SHARE, inNewWindow: true, msg: msg});
 };
 
 
@@ -841,7 +849,7 @@ function() {
  * @private
  */
 ZmShare.prototype._shareAction =
-function(operation, actionAttrs, grantAttrs, callback, batchCmd, notes) {
+function(operation, actionAttrs, grantAttrs, callback, batchCmd) {
 	var soapDoc = AjxSoapDoc.create("FolderActionRequest", "urn:zimbraMail");
 
 	var actionNode = soapDoc.set("action");
@@ -869,7 +877,7 @@ function(operation, actionAttrs, grantAttrs, callback, batchCmd, notes) {
 		}
 	}
 	var respCallback = new AjxCallback(this, this._handleResponseShareAction, [callback]);
-	var errorCallback = this._handleErrorShareAction.bind(this, notes);
+	var errorCallback = new AjxCallback(this, this._handleErrorShareAction);
 	
 	if (batchCmd) {
 		batchCmd.addRequestParams(soapDoc, respCallback, errorCallback);
@@ -932,9 +940,9 @@ function(callback, result) {
  * @private
  */
 ZmShare.prototype._handleErrorShareAction =
-function(notes, ex) {
+function(ex) {
 	var message = ZmMsg.unknownError;
-	if (ex.isZmCsfeException && ex.code == "account.NO_SUCH_ACCOUNT") {
+	if (ex instanceof ZmCsfeException && ex.code == "account.NO_SUCH_ACCOUNT") {
 		if (!this._unknownUserFormatter) {
 			this._unknownUserFormatter = new AjxMessageFormat(ZmMsg.unknownUser);
 		}
@@ -942,73 +950,19 @@ function(notes, ex) {
 		// NOTE: This prevents details from being shown
 		ex = null;
 	}
-    if (ex.isZmCsfeException && ex.code == "service.PERM_DENIED") {
-        //bug:67698 Displaying proper error message when grantee is owner
-        if(this.object.getOwner() == this.grantee.name){
-            message = ZmMsg.cannotGrantAccessToOwner;
-            ex = null;
-        }
-        else{
-            message = ZmMsg.errorPermission;
-        }
-	}
-	if (ex.isZmCsfeException && ex.code == "mail.GRANT_EXISTS") {
-		this._popupAlreadySharedWarningDialog(notes);
-		return true;
-	}
 
-	appCtxt.getAppController().popupErrorDialog(message, ex, null, true, null, null, true);
+	appCtxt.getAppController().popupErrorDialog(message, ex, null, true);
 	return true;
 };
-
-
-ZmShare.prototype._popupAlreadySharedWarningDialog =
-function(notes) {
-    var isPublic = this.isPublic(),
-        fmtMsg,
-        message,
-        dialog;
-	if (!this._shareExistsFormatter) {
-        fmtMsg = isPublic ? ZmMsg.shareExistsPublic : ZmMsg.shareExists;
-		this._shareExistsFormatter = new AjxMessageFormat(fmtMsg);
-	}
-	message = this._shareExistsFormatter.format(AjxStringUtil.htmlEncode(this.grantee.name));
-
-	//creating a dialog for each one of those instead of re-using the singleton dialog from appCtxt for the case you are re-sharing with multiple users already shared. It's not ideal but it would have a warning for each. Since it's rare I think it's good enough for simplicity.
-	dialog = new DwtMessageDialog({parent:appCtxt._shell, buttons:[DwtDialog.OK_BUTTON, DwtDialog.CANCEL_BUTTON], id:"ResendCancel"});
-	dialog.getButton(DwtDialog.OK_BUTTON).setText(ZmMsg.resend);
-	dialog.reset();
-	dialog.setMessage(message, DwtMessageDialog.WARNING_STYLE);
-	var dialogcallback = this._sendAnyway.bind(this, notes, ZmShare.NEW,
-	                                           dialog);
-	dialog.registerCallback(DwtDialog.OK_BUTTON, dialogcallback);
-    dialog.setButtonEnabled(DwtDialog.OK_BUTTON, !isPublic);
-	dialog.associateEnterWithButton(DwtDialog.OK_BUTTON);
-	dialog.popup(null, DwtDialog.OK_BUTTON);
-};
-
-ZmShare.prototype._sendAnyway =
-function(notes, action, dialog) {
-	dialog.popdown();
-	var callback = this._sendAnywayCallback.bind(this);
-	this._sendShareNotification(this.grantee.name, this.object.id,
-	                            notes, action, callback);
-};
-
-ZmShare.prototype._sendAnywayCallback =
-function() {
-	appCtxt.setStatusMsg(ZmMsg.notificationSent, ZmStatusView.LEVEL_INFO);
-};
-
 
 /**
  * @private
  */
 ZmShare.prototype._createMsg =
-function(mode, addrs, owner) {
+function(mode, isCompose, addrs, owner) {
 	// generate message
-	var textPart = this._createTextPart(mode);
-	var htmlPart = this._createHtmlPart(mode);
+	var textPart = this._createTextPart(mode, isCompose);
+	var htmlPart = this._createHtmlPart(mode, isCompose);
 
 	var topPart = new ZmMimePart();
 	topPart.setContentType(ZmMimeTable.MULTI_ALT);
@@ -1045,10 +999,10 @@ function(mode, addrs, owner) {
  * @private
  */
 ZmShare.prototype._createTextPart =
-function(mode) {
+function(mode, isCompose) {
 	var formatter = ZmShare._getText(mode);
 	var content = this._createContent(formatter);
-	if (this.notes) {
+	if (this.notes || isCompose) {
 		var notes = this.notes;
 		content = [content, ZmItem.NOTES_SEPARATOR, notes].join("\n");
 	}
@@ -1064,10 +1018,10 @@ function(mode) {
  * @private
  */
 ZmShare.prototype._createHtmlPart =
-function(mode) {
+function(mode, isCompose) {
 	var formatter = ZmShare._getHtml(mode);
 	var content = this._createContent(formatter);
-	if (this.notes) {
+	if (this.notes || isCompose) {
 		formatter = ZmShare._getHtmlNote();
 		var notes = AjxStringUtil.nl2br(AjxStringUtil.htmlEncode(this.notes));
 		content = [content, formatter.format(notes)].join("");
@@ -1086,7 +1040,7 @@ function(mode) {
 ZmShare.prototype._createXmlPart =
 function(mode) {
 	var folder = (appCtxt.isOffline) ? appCtxt.getFolderTree().getByPath(this.link.name) : null;
-	var linkId = (folder) ? folder.id : this.link.id;
+	var linkId = (folder) ? folder.nId : this.link.id;
 	var params = [
 		ZmShare.URI, 
 		ZmShare.VERSION, 
@@ -1118,10 +1072,10 @@ function(mode) {
 ZmShare.prototype._createContent =
 function(formatter) {
 	var role = ZmShare.getRoleFromPerm(this.link.perm);
-	var owner = this.object ? (this.object.owner || this.grantor.name) : this.grantor.name;
+	var owner = this.object ?  (this.object.owner || this.grantor.name) : this.grantor.name;
 	owner = AjxStringUtil.htmlEncode(owner);
 	var params = [
-		AjxStringUtil.htmlEncode(this.link.name),
+		AjxStringUtil.htmlEncode(this.link.name), 
 		"(" + ZmShare._getFolderType(this.link.view) + ")",
 		owner,
 		AjxStringUtil.htmlEncode(this.grantee.name),

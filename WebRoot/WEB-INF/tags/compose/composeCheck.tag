@@ -22,7 +22,7 @@
 <app:handleError>
 <zm:composeUploader var="uploader"/>
 <c:set var="needComposeView" value="${param.action eq 'compose'}"/>
-<c:if test="${zm:boolean(param.cancelConfirmed)}">
+<c:if test="${param.cancelConfirmed }">
     <c:set var="needComposeView" value="${false}"/>
     <c:if test="${not empty sessionScope.temp_draftid}">
         <zm:deleteMessage var="result" id="${sessionScope.temp_draftid}"/>
@@ -144,6 +144,11 @@
                 </c:choose>
                 <%-- TODO: check for errors, etc, set success message var and forward to prev page, or set error message and continue --%>
                 <app:status><fmt:message key="messageSent"/></app:status>
+                <c:if test="${!empty uploader.compose.draftId}">
+                    <c:catch>
+                        <zm:deleteMessage var="actionResult" id="${uploader.compose.draftId}"/>
+                    </c:catch>
+                </c:if>
                 <c:set var="needComposeView" value="${false}"/>
                 <c:set var="noComposeView" scope="session" value="${true}"/>
             </app:handleError>

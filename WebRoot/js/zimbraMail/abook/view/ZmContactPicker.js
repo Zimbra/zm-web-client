@@ -40,11 +40,10 @@ ZmContactPicker = function(buttonInfo) {
 
 	this._buttonInfo = buttonInfo;
 	this._initialized = false;
-	this._emailListOffset = 0; //client side paginating over email list. Offset of current page of email addresses. Quite different than _lastServerOffset if contacts have 0 or more than 1 email addresses.
-	this._serverContactOffset = 0; //server side paginating over contact list. Offset of last contact block we got from the server (each contact could have 0, 1, or more emails so we have to keep track of this separate from the view offset.
-	this._ascending = true; //asending or descending search. Keep it stored for pagination to do the right sort.
-	this._emailList = new AjxVector();
-	this._detailedSearch = appCtxt.get(ZmSetting.DETAILED_CONTACT_SEARCH_ENABLED);
+	this._offset = 0;
+	this._defaultQuery = ".";
+	this._list = new AjxVector();
+	this._detailed = appCtxt.get(ZmSetting.DETAILED_CONTACT_SEARCH_ENABLED);
 	this._searchCleared = {};
 	this._ignoreSetDragBoundries = true;
 
@@ -108,9 +107,9 @@ function(buttonId, addrs, str, account) {
 		this._account = account;
 		this._resetSelectDiv();
 	}
-	this._emailListOffset = 0;
+	this._offset = 0;
 
-	var searchFor = this._searchInSelect ? this._searchInSelect.getValue() : ZmContactsApp.SEARCHFOR_CONTACTS;
+	var searchFor = this._selectDiv ? this._selectDiv.getValue() : ZmContactsApp.SEARCHFOR_CONTACTS;
 
 	// reset column sorting preference
 	this._chooser.sourceListView.setSortByAsc(ZmItem.F_NAME, true);
@@ -148,25 +147,17 @@ function(buttonId, addrs, str, account) {
 	this._prevButton.setEnabled(false);
 	this._nextButton.setEnabled(false);
 
-	this.search(null, true, true);
+	this.search(null, null, true);
 
 	DwtDialog.prototype.popup.call(this);
-    if ((this.getLocation().x < 0 ||  this.getLocation().y < 0) ){
-                // parent window size is smaller than Dialog size
-                this.setLocation(0,30);
-                var size = Dwt.getWindowSize();
-                var currentSize = this.getSize();
-                var dragElement = document.getElementById(this._dragHandleId);
-                DwtDraggable.setDragBoundaries(dragElement, 100 - currentSize.x, size.x - 100, 0, size.y - 100);
-    }
-};
-
-
-ZmContactPicker.prototype._resetResults =
-function() {
-	this._emailList.removeAll();
-	this._serverContactOffset = 0;
-	this._emailListOffset = 0;
+	if ((this.getLocation().x < 0 ||  this.getLocation().y < 0) ){
+		// parent window size is smaller than Dialog size
+		this.setLocation(0,30);
+		var size = Dwt.getWindowSize();
+		var currentSize = this.getSize();
+		var dragElement = document.getElementById(this._dragHandleId);
+		DwtDraggable.setDragBoundaries(dragElement, 100 - currentSize.x, size.x - 100, 0, size.y - 100);
+	}
 };
 
 /**
@@ -182,7 +173,7 @@ function() {
 	}
 
 	this._contactSource = null;
-	this._resetResults();
+	this._list.removeAll();
 
 	DwtDialog.prototype.popdown.call(this);
 };
@@ -193,31 +184,22 @@ function() {
  * @private
  */
 ZmContactPicker.prototype.search =
-function(colItem, ascending, firstTime, lastId, lastSortVal, offset) {
-	if (offset == undefined) {
-		//this could be a call from DwtChooserListView.prototype._sortColumn, which means we have to reset the result and both server and client pagination.
-		//In any case the results should be reset or are already reset so doesn't hurt to reset.
-		this._resetResults();
+function(colItem, ascending, firstTime, lastId, lastSortVal) {
+	if (!AjxUtil.isSpecified(ascending)) {
+		ascending = true;
 	}
 
-	if (ascending === null || ascending === undefined) {
-		ascending = this._ascending;
-	}
-	else {
-		this._ascending = ascending;
-	}
-	
 	var query;
 	var queryHint = [];
 	var emailQueryTerm = "";
 	var phoneticQueryTerms = [];  // Should be ORed with nameQuery if both are present
 	var conds = [];
-	if (this._detailedSearch) {
+	if (this._detailed) {
 		var nameQuery = this.getSearchFieldValue(ZmContactPicker.SEARCH_NAME);
 		var emailQuery = this.getSearchFieldValue(ZmContactPicker.SEARCH_EMAIL);
 		var deptQuery = this.getSearchFieldValue(ZmContactPicker.SEARCH_DEPT);
 		var phoneticQuery = this.getSearchFieldValue(ZmContactPicker.SEARCH_PHONETIC);
-		var isGal = this._searchInSelect && (this._searchInSelect.getValue() == ZmContactsApp.SEARCHFOR_GAL);
+		var isGal = this._selectDiv && (this._selectDiv.getValue() == ZmContactsApp.SEARCHFOR_GAL);
 		query = nameQuery || "";
 		if (emailQuery) {
 			if (isGal) {
@@ -257,14 +239,14 @@ function(colItem, ascending, firstTime, lastId, lastSortVal, offset) {
 	}
 	
 
-	if (this._searchInSelect) {
-		var searchFor = this._searchInSelect.getValue();
+	if (this._selectDiv) {
+		var searchFor = this._selectDiv.getValue();
 		this._contactSource = (searchFor == ZmContactsApp.SEARCHFOR_CONTACTS || searchFor == ZmContactsApp.SEARCHFOR_PAS)
 			? ZmItem.CONTACT
 			: ZmId.SEARCH_GAL;
 
 		if (searchFor == ZmContactsApp.SEARCHFOR_PAS) {
-			queryHint.push(ZmSearchController.generateQueryForShares(ZmId.ITEM_CONTACT) || "is:local");
+			queryHint.push(ZmSearchController.generateQueryForShares([ZmId.ITEM_CONTACT]) || "is:local");
 		} else if (searchFor == ZmContactsApp.SEARCHFOR_CONTACTS) {
 			queryHint.push("is:local");
 		} else if (searchFor == ZmContactsApp.SEARCHFOR_GAL) {
@@ -278,6 +260,10 @@ function(colItem, ascending, firstTime, lastId, lastSortVal, offset) {
 		if (this._contactSource == ZmItem.CONTACT) {
 			queryHint.push("is:local");
 		}
+	}
+
+    if (!query.length && this._contactSource == ZmId.SEARCH_GAL) {
+		query = this._defaultQuery;
 	}
 
     if (this._contactSource == ZmItem.CONTACT && query != "") {
@@ -295,14 +281,10 @@ function(colItem, ascending, firstTime, lastId, lastSortVal, offset) {
 		query = query + " " + emailQueryTerm;  // MUST match email term, hence AND rather than OR
 	}
 
-	if (this._searchIcon) { //does not exist in ZmGroupView case
-		this._searchIcon.className = "DwtWait16Icon";
-	}
+	this._searchIcon.className = "DwtWait16Icon";
 
 	// XXX: line below doesn't have intended effect (turn off column sorting for GAL search)
-	if (this._chooser) { //_chooser not defined in ZmGroupView but we also do not support sorting there anyway
-		this._chooser.sourceListView.sortingEnabled = (this._contactSource == ZmItem.CONTACT);
-	}
+	this._chooser.sourceListView.sortingEnabled = (this._contactSource == ZmItem.CONTACT);
 
 	var params = {
 		obj:			this,
@@ -310,7 +292,7 @@ function(colItem, ascending, firstTime, lastId, lastSortVal, offset) {
 		query:			query,
 		queryHint:		queryHint.join(" "),
 		conds:			conds,
-		offset:			offset || 0,
+		offset:			this._list.size(),
 		lastId:			lastId,
 		lastSortVal:	lastSortVal,
 		respCallback:	(new AjxCallback(this, this._handleResponseSearch, [firstTime])),
@@ -327,28 +309,30 @@ function(colItem, ascending, firstTime, lastId, lastSortVal, offset) {
 ZmContactPicker.prototype._contentHtml =
 function(account) {
 	var showSelect;
-	if (appCtxt.multiAccounts) {
-		var list = appCtxt.accountList.visibleAccounts;
+	var context = appCtxt.isChildWindow ? parentAppCtxt : appCtxt;
+
+	if (context.multiAccounts) {
+		var list = context.accountList.visibleAccounts;
 		for (var i = 0; i < list.length; i++) {
 			var account = list[i];
-			if (appCtxt.get(ZmSetting.CONTACTS_ENABLED, null, account) &&
-				(appCtxt.get(ZmSetting.GAL_ENABLED, null, account) ||
-				 appCtxt.get(ZmSetting.SHARING_ENABLED, null, account)))
+			if (context.get(ZmSetting.CONTACTS_ENABLED, null, account) &&
+				(context.get(ZmSetting.GAL_ENABLED, null, account) ||
+				 context.get(ZmSetting.SHARING_ENABLED, null, account)))
 			{
 				showSelect = true;
 				break;
 			}
 		}
 	} else {
-		showSelect = (appCtxt.get(ZmSetting.CONTACTS_ENABLED) &&
-					  (appCtxt.get(ZmSetting.GAL_ENABLED) ||
-					   appCtxt.get(ZmSetting.SHARING_ENABLED)));
+		showSelect = (context.get(ZmSetting.CONTACTS_ENABLED) &&
+					  (context.get(ZmSetting.GAL_ENABLED) ||
+					   context.get(ZmSetting.SHARING_ENABLED)));
 	}
 
 	var subs = {
 		id: this._htmlElId,
 		showSelect: showSelect,
-		detailed: this._detailedSearch
+		detailed: this._detailed
 	};
 
 	return (AjxTemplate.expand("abook.Contacts#ZmContactPicker", subs));
@@ -359,64 +343,24 @@ function(account) {
  */
 ZmContactPicker.prototype._resetSelectDiv =
 function() {
-    this._searchInSelect.clearOptions();
+	this._selectDiv.clearOptions();
 
-    if (appCtxt.multiAccounts) {
-        var accts = appCtxt.accountList.visibleAccounts;
-        var org = ZmOrganizer.ITEM_ORGANIZER;
-        org = ZmOrganizer.ITEM_ORGANIZER[ZmItem.CONTACT];
+	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED, null, this._account)) {
+		this._selectDiv.addOption(ZmMsg.contacts, false, ZmContactsApp.SEARCHFOR_CONTACTS);
 
-        for (var i = 0; i < accts.length; i++) {
-            this._searchInSelect.addOption(accts[i].displayName, false, accts[i].id);
-            var folderTree = appCtxt.getFolderTree(accts[i]);
-            var data = [];
-            data = data.concat(folderTree.getByType(org));
-            for (var j = 0; j < data.length; j++) {
-                var addrsbk = data[j];
-                if(addrsbk.noSuchFolder) { continue; }
-                this._searchInSelect.addOption(addrsbk.getName(), false, addrsbk.id, "ImgContact");
-            }
-            if(accts[i].isZimbraAccount && !accts[i].isMain) {
-                if (appCtxt.get(ZmSetting.CONTACTS_ENABLED, null, this._account)) {
-                    if (appCtxt.get(ZmSetting.SHARING_ENABLED, null, this._account))
-                        this._searchInSelect.addOption(ZmMsg.searchPersonalSharedContacts, false, ZmContactsApp.SEARCHFOR_PAS, "ImgContact");
-                }
+		if (appCtxt.get(ZmSetting.SHARING_ENABLED, null, this._account))
+			this._selectDiv.addOption(ZmMsg.searchPersonalSharedContacts, false, ZmContactsApp.SEARCHFOR_PAS);
+	}
 
-                if (appCtxt.get(ZmSetting.GAL_ENABLED, null, this._account)) {
-                    this._searchInSelect.addOption(ZmMsg.GAL, true, ZmContactsApp.SEARCHFOR_GAL, "ImgContact");
-                }
+	if (appCtxt.get(ZmSetting.GAL_ENABLED, null, this._account)) {
+		this._selectDiv.addOption(ZmMsg.GAL, true, ZmContactsApp.SEARCHFOR_GAL);
+	}
 
-                if (!appCtxt.get(ZmSetting.INITIALLY_SEARCH_GAL, null, this._account) ||
-                        !appCtxt.get(ZmSetting.GAL_ENABLED, null, this._account))
-                {
-                    this._searchInSelect.setSelectedValue(ZmContactsApp.SEARCHFOR_CONTACTS);
-                }
-            }
-        }
-
-        for (var k = 0; k < accts.length; k++) {
-            this._searchInSelect.enableOption(accts[k].id, false);
-        }
-    } else {
-
-        if (appCtxt.get(ZmSetting.CONTACTS_ENABLED, null, this._account)) {
-            this._searchInSelect.addOption(ZmMsg.contacts, false, ZmContactsApp.SEARCHFOR_CONTACTS);
-
-            if (appCtxt.get(ZmSetting.SHARING_ENABLED, null, this._account))
-                this._searchInSelect.addOption(ZmMsg.searchPersonalSharedContacts, false, ZmContactsApp.SEARCHFOR_PAS);
-        }
-
-        if (appCtxt.get(ZmSetting.GAL_ENABLED, null, this._account)) {
-            this._searchInSelect.addOption(ZmMsg.GAL, true, ZmContactsApp.SEARCHFOR_GAL);
-        }
-
-        if (!appCtxt.get(ZmSetting.INITIALLY_SEARCH_GAL, null, this._account) ||
-                !appCtxt.get(ZmSetting.GAL_ENABLED, null, this._account))
-        {
-            this._searchInSelect.setSelectedValue(ZmContactsApp.SEARCHFOR_CONTACTS);
-        }
-
-    }
+	if (!appCtxt.get(ZmSetting.INITIALLY_SEARCH_GAL, null, this._account) ||
+		!appCtxt.get(ZmSetting.GAL_ENABLED, null, this._account))
+	{
+		this._selectDiv.setSelectedValue(ZmContactsApp.SEARCHFOR_CONTACTS);
+	}
 };
 
 ZmContactPicker.prototype.clearSearch =
@@ -436,9 +380,8 @@ function(el) {
 
 ZmContactPicker.prototype.getSearchFieldValue =
 function(fieldId) {
-	if (!fieldId && !this._detailedSearch) {
+	if (!fieldId && !this._detailed)
 		fieldId = ZmContactPicker.SEARCH_BASIC;
-	}
 	var field = this._searchField[fieldId];
 	return (this._searchCleared[fieldId] && field) ? AjxStringUtil.trim(field.value) : "";
 };
@@ -465,9 +408,9 @@ function(account) {
 	var selectCellId = this._htmlElId + "_listSelect";
 	var selectCell = document.getElementById(selectCellId);
 	if (selectCell) {
-		this._searchInSelect = new DwtSelect({parent:this, parentElement:selectCellId, id: Dwt.getNextId("ZmContactPickerSelect_")});
+		this._selectDiv = new DwtSelect({parent:this, parentElement:selectCellId, id: Dwt.getNextId("ZmContactPickerSelect_")});
 		this._resetSelectDiv();
-		this._searchInSelect.addChangeListener(new AjxListener(this, this._searchTypeListener));
+		this._selectDiv.addChangeListener(new AjxListener(this, this._searchTypeListener));
 	} else {
 		this.setSize("600");
 	}
@@ -498,34 +441,10 @@ function(account) {
 	this.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._okButtonListener));
 	this.setButtonListener(DwtDialog.CANCEL_BUTTON, new AjxListener(this, this._cancelButtonListener));
 
-	var fieldMap = {};
-	var rowMap = {};
-	this.mapFields(fieldMap, rowMap);
-
 	this._searchField = {};
-	for (var fieldId in fieldMap) {
-		var field = Dwt.byId(fieldMap[fieldId]);
-		if (field) {
-			this._searchField[fieldId] = field;
-			Dwt.setHandler(field, DwtEvent.ONKEYUP, ZmContactPicker._keyPressHdlr);
-			Dwt.setHandler(field, DwtEvent.ONCLICK, ZmContactPicker._onclickHdlr);
-		}
-	}
-
 	this._searchRow = {};
-	for (var rowId in rowMap) {
-		row = Dwt.byId(rowMap[rowId]);
-		if (row) {
-			this._searchRow[rowId] = row;
-		}
-	}
-	this._updateSearchRows(this._searchInSelect && this._searchInSelect.getValue() || ZmContactsApp.SEARCHFOR_CONTACTS);
-	this._keyPressCallback = new AjxCallback(this, this._searchButtonListener);
-};
-
-ZmContactPicker.prototype.mapFields =
-function(fieldMap, rowMap) {
-	if (this._detailedSearch) {
+	var fieldMap = {}, field, rowMap = {};
+	if (this._detailed) {
 		fieldMap[ZmContactPicker.SEARCH_NAME] = this._htmlElId + "_searchNameField";
 		fieldMap[ZmContactPicker.SEARCH_EMAIL] = this._htmlElId + "_searchEmailField";
 		fieldMap[ZmContactPicker.SEARCH_DEPT] = this._htmlElId + "_searchDepartmentField";
@@ -534,12 +453,27 @@ function(fieldMap, rowMap) {
 		rowMap[ZmContactPicker.SEARCH_PHONETIC] = this._htmlElId + "_searchPhoneticRow";
 		rowMap[ZmContactPicker.SEARCH_EMAIL] = this._htmlElId + "_searchEmailRow";
 		rowMap[ZmContactPicker.SEARCH_DEPT] = this._htmlElId + "_searchDepartmentRow";
-	}
-	else {
+	} else {
 		fieldMap[ZmContactPicker.SEARCH_BASIC] = this._htmlElId + "_searchField";
 		rowMap[ZmContactPicker.SEARCH_BASIC] = this._htmlElId + "_searchRow";
 	}
-};		
+	for (var fieldId in fieldMap) {
+		field = Dwt.byId(fieldMap[fieldId]);
+		if (field) {
+			this._searchField[fieldId] = field;
+			Dwt.setHandler(field, DwtEvent.ONKEYUP, ZmContactPicker._keyPressHdlr);
+			Dwt.setHandler(field, DwtEvent.ONCLICK, ZmContactPicker._onclickHdlr);
+		}
+	}
+	for (var rowId in rowMap) {
+		row = Dwt.byId(rowMap[rowId]);
+		if (row) {
+			this._searchRow[rowId] = row;
+		}
+	}
+	this._updateSearchRows(this._selectDiv && this._selectDiv.getValue() || ZmContactsApp.SEARCHFOR_CONTACTS);
+	this._keyPressCallback = new AjxCallback(this, this._searchButtonListener);
+};
 
 // Listeners
 
@@ -548,7 +482,8 @@ function(fieldMap, rowMap) {
  */
 ZmContactPicker.prototype._searchButtonListener =
 function(ev) {
-	this._resetResults();
+	this._offset = 0;
+	this._list.removeAll();
 	this.search();
 };
 
@@ -558,16 +493,15 @@ function(ev) {
 ZmContactPicker.prototype._handleResponseSearch =
 function(firstTime, result) {
 	var resp = result.getResponse();
-	var serverHasMore = resp.getAttribute("more");
-	var serverPaginationSupported = resp.getAttribute("paginationSupported") !== false; //if it's not specified (such as the case of SearchResponse, i.e. not Gal) it IS supported.
-	this._serverHasMoreAndPaginationSupported = serverHasMore && serverPaginationSupported;
+	var more = resp.getAttribute("more");
 	var offset = resp.getAttribute("offset");
-	this._serverContactOffset = offset || 0;
+	var isPagingSupported = AjxUtil.isSpecified(offset);
 	var info = resp.getAttribute("info");
 	var expanded = info && info[0].wildcard[0].expanded == "0";
 
-	//the check for firstTime is so when the picker is popped up we probably don't want to overwhelm them with a warning message. So only show it if the user plays with the picker, using the drop-down or the search box.
-	if (!firstTime && !serverPaginationSupported && (serverHasMore || expanded)) { //no idea what the expanded case is
+	if (!firstTime && !isPagingSupported &&
+		(expanded || (this._contactSource == ZmId.SEARCH_GAL && more)))
+	{
 		var d = appCtxt.getMsgDialog();
 		d.setMessage(ZmMsg.errorSearchNotExpanded);
 		d.popup();
@@ -576,81 +510,86 @@ function(firstTime, result) {
 
 	// this method will expand the list depending on the number of email
 	// addresses per contact.
-	var emailArray = ZmContactsHelper._processSearchResponse(resp, this._includeContactsWithNoEmail); //this._includeContactsWithNoEmail - true in the ZmGroupView case 
-	var emailList = AjxVector.fromArray(emailArray);
+	var list = AjxVector.fromArray(ZmContactsHelper._processSearchResponse(resp));
 
-	if (serverPaginationSupported) {
-		this._emailList.addList(emailArray); //this internally calls concat. we do not need "merge" here because we use the _serverContactOffset as a marker of where to search next, never searching a block we already did.
+	if (isPagingSupported) {
+		this._list.merge(offset, list);
+		this._list.hasMore = more;
+	} else {
+		this._list = list;
+	}
+
+	if (list.size() == 0 && firstTime) {
+		this._chooser.sourceListView._setNoResultsHtml();
+	}
+
+	// if we don't get a full number of addresses in the results, repeat the search.
+	// Could search several times.
+	if (((this._list.size() - this._offset) < ZmContactsApp.SEARCHFOR_MAX) && more) {
+		// We want to base our search off the ID of the last contact in the response,
+		// NOT the last contact with an email address
+		var vec = resp.getResults(ZmItem.CONTACT);
+
+		var email = (vec.size() > 0) ? vec.getVector().getLast() : null;
+		if (email) {
+			if (email.__contact) {
+				lastId = email.__contact.id;
+				lastSortVal = email.__contact.sf;
+			} else {
+				lastId = email.id;
+				lastSortVal = email.sf;
+			}
+		}
+        if (!lastSortVal && isPagingSupported) {
+			// BAIL. Server didn't send us enough info to make the next request
+			this._searchIcon.className = "ImgSearch";
+			return;
+		}
+        else if (!lastSortVal && !isPagingSupported) {
+            //paging not supported, show what we have
+            this._showResults(isPagingSupported, more, this.getSubList());
+        }
+        else {
+            this.search(null, null, null, lastId, lastSortVal);
+        }
 	}
 	else {
-		this._emailList = emailList;
+		list = this.getSubList();
+		// If the AB ends with a long list of contacts w/o addresses,
+		// we may never get a list back.  If that's the case, roll back the offset
+		// and refetch, should disable the "next page" button.
+		if (!list) {
+			this._offset -= ZmContactsApp.SEARCHFOR_MAX;
+			if (this._offset < 0) {
+				this._offset = 0;
+			}
+			list = this.getSubList();
+		}
+		if (!more) {
+			more = (this._offset+ZmContactsApp.SEARCHFOR_MAX) < this._list.size();
+		}
+		this._showResults(isPagingSupported, more, list);
 	}
-
-	this._showResults();
 
 };
 
 ZmContactPicker.prototype._showResults =
-function() {
-
-	var list = this.getSubList();
-
-	// special case 1 - search forward another server block, to fill up a page. Could search several times.
-	if (list.size() < ZmContactsApp.SEARCHFOR_MAX && this._serverHasMoreAndPaginationSupported) {
-		this.search(null, null, null, null, null, this._serverContactOffset + ZmContactsApp.SEARCHFOR_MAX); //search another page
-		return;
-	}
-
-	if (this._searchIcon) { //does not exist in ZmGroupView case
-		this._searchIcon.className = "ImgSearch";
-	}
-	this._searchButton.setEnabled(true);
-
-	// special case 2 - no results, and no more to search (that was covered in special case 1) - so display the "no results" text.
-	if (list.size() == 0 && this._emailListOffset == 0) {
-		this._setResultsInView(list); //empty the list
-		this._nextButton.setEnabled(false);
+function(isPagingSupported, more, list) {
+	// if offset is returned, then this account support gal paging
+	if (this._contactSource == ZmId.SEARCH_GAL && !isPagingSupported) {
 		this._prevButton.setEnabled(false);
-		this._setNoResultsHtml();
-		return;
+		this._nextButton.setEnabled(false);
+	} else {
+		this._prevButton.setEnabled(this._offset > 0);
+		this._nextButton.setEnabled(more);
 	}
 
-	// special case 3 - If the AB ends with a long list of contacts w/o addresses,
-	// we may get an empty list.  If that's the case, roll back the offset
-	// not 100% sure this case could still happen after all my changes but it was there in the code, so I keep it just in case.
-	if (list.size() == 0) {
-		this._emailListOffset -= ZmContactsApp.SEARCHFOR_MAX;
-		this._emailListOffset  = Math.max(0, this._emailListOffset);
-	}
-
-	var more = this._serverHasMoreAndPaginationSupported  //we can get more from the server
-				|| (this._emailListOffset + ZmContactsApp.SEARCHFOR_MAX) < this._emailList.size(); //or we have more on the client we didn't yet show
-	this._prevButton.setEnabled(this._emailListOffset > 0);
-	this._nextButton.setEnabled(more);
-
-	this._resetSearchColHeaders(); // bug #2269 - enable/disable sort column per type of search
-	this._setResultsInView(list);
-
-};
-
-/**
- * extracted this so it can be used in ZmGroupView where this is different.
- * @param list
- */
-ZmContactPicker.prototype._setResultsInView =
-function(list) {
+	this._resetColHeaders(); // bug #2269 - enable/disable sort column per type of search
 	this._chooser.setItems(list);
-};
 
-/**
- * extracted this so it can be used in ZmGroupView where this is different.
- * @param list
- */
-ZmContactPicker.prototype._setNoResultsHtml =
-function(list) {
-	this._chooser.sourceListView._setNoResultsHtml();
+	this._searchIcon.className = "ImgSearch";
+	this._searchButton.setEnabled(true);
 };
-
 
 ZmContactPicker.prototype._updateSearchRows =
 function(searchFor) {
@@ -683,13 +622,35 @@ function() {
 ZmContactPicker.prototype._pageListener =
 function(ev) {
 	if (ev.item == this._prevButton) {
-		this._emailListOffset -= ZmContactsApp.SEARCHFOR_MAX;
-		this._emailListOffset  = Math.max(0, this._emailListOffset);
+		this._offset -= ZmContactsApp.SEARCHFOR_MAX;
+		if (this._offset < 0) {
+			this._offset = 0;
+		}
+		this._showResults(true, true, this.getSubList()); // show cached results
 	}
 	else {
-		this._emailListOffset += ZmContactsApp.SEARCHFOR_MAX;
+		var lastId;
+		var lastSortVal;
+		this._offset += ZmContactsApp.SEARCHFOR_MAX;
+		var list = this.getSubList();
+		if (!list || ((list.size() < ZmContactsApp.SEARCHFOR_MAX) && this._list.hasMore)) {
+			if (!list) {
+				list = this._chooser.sourceListView.getList();
+			}
+			var email = (list.size() > 0) ? list.getLast() : null;
+			if (email) {
+				lastId = email.__contact.id;
+				lastSortVal = email.__contact.sf;
+			}
+			this.search(null, null, null, lastId, lastSortVal);
+		} else {
+			var more = this._list.hasMore;
+			if (!more) {
+				more = (this._offset+ZmContactsApp.SEARCHFOR_MAX) < this._list.size();
+			}
+			this._showResults(true, more, list); // show cached results
+		}
 	}
-	this._showResults();
 };
 
 /**
@@ -699,16 +660,16 @@ function(ev) {
  */
 ZmContactPicker.prototype.getSubList =
 function() {
-	var size = this._emailList.size();
+	var size = this._list.size();
 
-	var end = this._emailListOffset + ZmContactsApp.SEARCHFOR_MAX;
+	var end = this._offset+ZmContactsApp.SEARCHFOR_MAX;
 
 	if (end > size) {
 		end = size;
 	}
 
-	var a = (this._emailListOffset < end) ? this._emailList.getArray().slice(this._emailListOffset, end) : [];
-	return AjxVector.fromArray(a);
+	return (this._offset < end)
+		? (AjxVector.fromArray(this._list.getArray().slice(this._offset, end))) : null;
 };
 
 /**
@@ -728,13 +689,13 @@ function(ev) {
 /**
  * @private
  */
-ZmContactPicker.prototype._resetSearchColHeaders =
+ZmContactPicker.prototype._resetColHeaders =
 function () {
     var slv = this._chooser.sourceListView;
     var tlv = this._chooser.targetListView;
     slv.headerColCreated = false;
     tlv.headerColCreated = false;
-    var isGal = this._searchInSelect && (this._searchInSelect.getValue() == ZmContactsApp.SEARCHFOR_GAL);
+    var isGal = this._selectDiv && (this._selectDiv.getValue() == ZmContactsApp.SEARCHFOR_GAL);
 
     // find the participant column
     var part = 0;
@@ -744,7 +705,7 @@ function () {
             part = i;
         }
         if (field == ZmItem.F_DEPARTMENT) {
-            slv._headerList[i]._visible = isGal && this._detailedSearch;
+            slv._headerList[i]._visible = isGal && this._detailed;
         }
     }
 
@@ -754,7 +715,7 @@ function () {
 
     for (i = 0; i < tlv._headerList.length; i++) {
         if (tlv._headerList[i]._field == ZmItem.F_DEPARTMENT) {
-            tlv._headerList[i]._visible = isGal && this._detailedSearch;
+            tlv._headerList[i]._visible = isGal && this._detailed;
         }
     }
     tlv.createHeaderHtml();
@@ -870,7 +831,7 @@ function(item, list) {
  * @private
  */
 ZmContactChooserSourceListView = function(parent) {
-	DwtChooserListView.call(this, {parent:parent, type:DwtChooserListView.SOURCE});
+	DwtChooserListView.call(this, {parent:parent, type:DwtChooserListView.SOURCE, view:ZmId.VIEW_CONTACT_SRC});
 	this.setScrollStyle(Dwt.CLIP);
 };
 
@@ -1019,7 +980,8 @@ function(item, field, params) {
 ZmContactChooserTargetListView = function(parent, showType) {
 	this._showType = showType; // call before base class since base calls getHeaderList
 
-	DwtChooserListView.call(this, {parent:parent, type:DwtChooserListView.TARGET});
+	DwtChooserListView.call(this, {parent:parent, type:DwtChooserListView.TARGET,
+								   view:ZmId.VIEW_CONTACT_TGT});
 
 	this.setScrollStyle(Dwt.CLIP);
 };

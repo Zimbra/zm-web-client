@@ -23,7 +23,7 @@
     <c:when test="${(type eq 'folder' or type eq 'remote folder') and (view eq 'appointment')}">
         <rest:calendar mailbox="${mailbox}" timezone="${timezone}"/>
     </c:when>
-    <c:when test="${zm:boolean(requestScope.zimbra_freebusy)}">
+    <c:when test="${requestScope.zimbra_freebusy}">
         <rest:calendar mailbox="${mailbox}" timezone="${timezone}"/>
     </c:when>
     <c:when test="${(type eq 'document')}">

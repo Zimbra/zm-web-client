@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
@@ -14,1196 +14,182 @@
  */
 
 /**
- * HTML editor which wraps TinyMCE
+ * Html Editor
  *
- * @param {Hash}		params				a hash of parameters:
- * @param {constant}	posStyle				new message, reply, forward, or an invite action
- * @param {Object}		content
- * @param {constant}	mode
- * @param {Boolean}		withAce
- * @param {Boolean}		parentElement
- * @param {String}		textAreaId
- * @param {Function}	attachmentCallback		callback to create image attachment
- * @param {Function}	pasteCallback			callback invoked when data is pasted and uploaded to the server
- * @param {Function}	initCallback			callback invoked when the editor is fully initialized
- *
- * @author Satish S
- * @private
+ * @author Ross Dargahi
+ * @class
+ * @constructor
  */
-ZmHtmlEditor = function() {
-	if (arguments.length == 0) { return; }
+ZmHtmlEditor = function(parent, posStyle, content, mode, withAce, enablePaste) {
+	if (arguments.length == 0) return;
+	this._toolbars = [];
 
-	var params = Dwt.getParams(arguments, ZmHtmlEditor.PARAMS);
+	// ACE?
+	this.ACE_ENABLED = !!withAce;
+	this.ACE_DEBUG = false;
 
-	if (!params.className) {
-		params.className = 'ZmHtmlEditor';
+	if (this.ACE_ENABLED) {
+		this._ace_componentsLoading = 0;
 	}
 
-    DwtControl.call(this, params);
+    if(enablePaste){
+        this._isPasteEnabled = enablePaste;
+    }
 
-	this.isTinyMCE = window.isTinyMCE;
-	this._mode = params.mode;
-	this._hasFocus = {};
-    this._bodyTextAreaId = params.textAreaId;
-	this._initCallbacks = [];
-	this._attachmentCallback = params.attachmentCallback;
-	this._pasteCallback = params.pasteCallback;
-	this._onContentInitializeCallbacks = []
-	this.initTinyMCEEditor(params);
-    this._ignoreWords = {};
+	DwtHtmlEditor.call(this, {parent:parent, className:"ZmHtmlEditor", posStyle:posStyle,
+							  content:content, mode:mode});
 
-    if (params.initCallback)
-        this._initCallbacks.push(params.initCallback);
+	this.addStateChangeListener(new AjxListener(this, this._rteStateChangeListener));
 
-    var settings = appCtxt.getSettings();
-    var listener = new AjxListener(this, this._settingChangeListener);
-    settings.getSetting(ZmSetting.COMPOSE_INIT_FONT_COLOR).addChangeListener(listener);
-    settings.getSetting(ZmSetting.COMPOSE_INIT_FONT_FAMILY).addChangeListener(listener);
-    settings.getSetting(ZmSetting.COMPOSE_INIT_FONT_SIZE).addChangeListener(listener);
-    settings.getSetting(ZmSetting.COMPOSE_INIT_DIRECTION).addChangeListener(listener);
-    settings.getSetting(ZmSetting.SHOW_COMPOSE_DIRECTION_BUTTONS).addChangeListener(listener);
+	var settings = appCtxt.getSettings();
+	var listener = new AjxListener(this, this._settingChangeListener);
+	settings.getSetting(ZmSetting.COMPOSE_INIT_FONT_COLOR).addChangeListener(listener);
+	settings.getSetting(ZmSetting.COMPOSE_INIT_FONT_FAMILY).addChangeListener(listener);
+	settings.getSetting(ZmSetting.COMPOSE_INIT_FONT_SIZE).addChangeListener(listener);
 
-	this.addControlListener(this._resetSize.bind(this));
-
-	this.addListener(DwtEvent.ONFOCUS, this._onFocus.bind(this));
-	this.addListener(DwtEvent.ONBLUR, this._onBlur.bind(this));
+	this._ignoreWords = {};
 };
 
-ZmHtmlEditor.PARAMS = [
-	'parent',
-	'posStyle',
-	'content',
-	'mode',
-	'withAce',
-	'parentElement',
-	'textAreaId',
-	'attachmentCallback',
-	'initCallback'
-];
-
-ZmHtmlEditor.prototype = new DwtControl();
+ZmHtmlEditor.prototype = new DwtHtmlEditor;
 ZmHtmlEditor.prototype.constructor = ZmHtmlEditor;
 
-ZmHtmlEditor.prototype.isZmHtmlEditor = true;
-ZmHtmlEditor.prototype.isInputControl = true;
-ZmHtmlEditor.prototype.toString = function() { return "ZmHtmlEditor"; };
 
-ZmHtmlEditor.TINY_MCE_PATH = "/js/ajax/3rdparty/tinymce";
+// Consts
+ZmHtmlEditor._VALUE = "value";
+ZmHtmlEditor.FONT_SIZE_VALUES = ["8pt", "10pt", "12pt", "14pt", "18pt", "24pt", "36pt"];
+ZmHtmlEditor.__makeFontName = function(value) {
+	return value.replace(/,.*/,"").replace(/[']/g,"").replace(/\b[a-z]/g, ZmHtmlEditor.__toUpperCase);
+};
+ZmHtmlEditor.__toUpperCase = function(s) {
+	return s.toUpperCase();
+};
 
-// used as a data key (mostly for menu items)
-ZmHtmlEditor.VALUE = "value";
+// Big ugly RegExp, looking for iframe tags where the id starts with "ACE-"
+ZmHtmlEditor.ACE_IFRAME_RE = new RegExp("<iframe\\s+.*?\\bid\\s*=\\s*[\"']?(ace-[^\"'\\s]*).*?>.*?</iframe(\\s.*?)?>", "ig");
 
-ZmHtmlEditor._INITDELAY = 50;
 
-ZmHtmlEditor.prototype.getEditor =
+
+// Public methods
+
+ZmHtmlEditor.prototype.toString =
 function() {
-	return  (window.tinyMCE) ? tinyMCE.get(this._bodyTextAreaId) : null;
+	return "ZmHtmlEditor";
+};
+
+ZmHtmlEditor.prototype.isHtmlEditingSupported =
+function() {
+	var isSupported = DwtHtmlEditor.prototype.isHtmlEditingSupported.call(this);
+	if (isSupported) {
+		// browser supports html edit but check if user pref allows it
+		isSupported = appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED);
+	}
+
+	return isSupported;
+};
+
+ZmHtmlEditor.prototype.setContent = function(content) {
+	DwtHtmlEditor.prototype.setContent.apply(this, arguments);
+	this._ignoreWords = {};
+};
+
+ZmHtmlEditor.prototype.setMode =
+function(mode, convert, convertor) {
+	this.discardMisspelledWords();
+
+	DwtHtmlEditor.prototype.setMode.call(this, mode, convert, convertor);
+
+	if (mode == DwtHtmlEditor.HTML) {
+		this._createToolbars();
+	}
+
+	// show/hide toolbars based on mode
+	for (var i = 0; i < this._toolbars.length; i++) {
+		var toolbar = this._toolbars[i];
+		toolbar.setVisible(mode == DwtHtmlEditor.HTML);
+	}
+
+	appCtxt.notifyZimlets("on_htmlEditor_setMode", [this, mode]);
 };
 
 ZmHtmlEditor.prototype.getBodyFieldId =
 function() {
-	if (this._mode == Dwt.HTML) {
-		var editor = this.getEditor();
-		return editor ? this._bodyTextAreaId + '_ifr' : this._bodyTextAreaId;
-	}
-
-	return this._bodyTextAreaId;
+	return this._mode == DwtHtmlEditor.HTML ? this._iFrameId : this._textAreaId;
 };
 
-ZmHtmlEditor.prototype.getBodyField =
-function() {
-	return document.getElementById(this.getBodyFieldId());
+// returns the text version of the html message
+ZmHtmlEditor.prototype.getTextVersion =
+function(convertor) {
+	return this._mode == DwtHtmlEditor.HTML
+		? this._convertHtml2Text(convertor)
+		: this.getContent();
 };
 
-ZmHtmlEditor.prototype._resetSize =
-function() {
-	var field = this.getContentField();
-
-	if (field) {
-		var bounds = this.boundsForChild(field);
-		Dwt.setSize(field, bounds.width, bounds.height);
-	}
-
-	var editor = this.getEditor();
-
-	if (!editor || !editor.getContentAreaContainer()) {
-		return;
-	}
-
-	var bounds = this.boundsForChild(editor.getContentAreaContainer());
-	var x = bounds.width, y = bounds.height;
-
-	if (x <= 0 || y <= 0) {
-		return;
-	}
-
-    //Subtracting editor toolbar heights
-    AjxUtil.foreach(Dwt.byClassName('mce-toolbar',
-                                    editor.getContainer()),
-                    function(elem) {
-                        y -= Dwt.getSize(elem).y;
-                    });
-
-    //Subtracting spellcheckmodediv height
-    var spellCheckModeDiv = this._spellCheckModeDivId && document.getElementById(this._spellCheckModeDivId);
-    if (spellCheckModeDiv && spellCheckModeDiv.style.display !== "none") {
-        y = y - Dwt.getSize(spellCheckModeDiv).y;
-    }
-
-    editor.theme.resizeTo(Math.max(0, x), Math.max(0, y));
-};
-
-ZmHtmlEditor.prototype.focus =
-function(editor) {
-    var currentObj = this,
-        bodyField;
-
-    if (currentObj._mode === Dwt.HTML) {
-        editor = editor || currentObj.getEditor();
-        if (currentObj._editorInitialized && editor) {
-            if (AjxEnv.isWebKitBased) {
-                Dwt.getElement(currentObj._iFrameId).focus();
-            }
-            else {
-                editor.focus();
-            }
-            currentObj.setFocusStatus(true);
-        }
-        else {
-            currentObj._initCallbacks.push(currentObj.focus.bind(currentObj, editor));
-        }
-    }
-    else {
-        bodyField = currentObj.getContentField();
-        if (bodyField) {
-            bodyField.focus();
-            currentObj.setFocusStatus(true, true);
-        }
-    }
-};
-
-/**
- * Restores the focus. For IE selecting bookmark and for other browsers calling focus will place the cursor in the last edited position
- * @param editor object
- * @param {Boolean} collapse whether to collapse selection or not for IE html mode
- */
-ZmHtmlEditor.prototype.restoreFocus =
-function(editor, collapse) {
-    var currentObj = this,
-        windowManager,
-        selection;
-
-    if (AjxEnv.isIE && currentObj._mode === Dwt.HTML) {
-        editor = editor || currentObj.getEditor();
-        if (editor) {
-            windowManager = editor.windowManager;
-            selection = editor.selection;
-            if (selection && windowManager && windowManager.bookmark) {
-                selection.moveToBookmark(windowManager.bookmark);
-                delete windowManager.bookmark;
-                (collapse) && selection.collapse(false);
-                return;
-            }
-        }
-    }
-    currentObj.focus(editor);
-};
-
-/**
- * @param	{Boolean}	keepModeDiv	if <code>true</code>, _spellCheckModeDiv is not removed
- */
-ZmHtmlEditor.prototype.getTextVersion = function (convertor, keepModeDiv) {
-    this.discardMisspelledWords(keepModeDiv);
-    return this._mode === Dwt.HTML
-        ? this._convertHtml2Text(convertor)
-        : this.getContentField().value;
-};
-
-/**
- * Returns the content of the editor.
- * 
- * @param {boolean}		insertFontStyle		if true, add surrounding DIV with font settings
- * @param {boolean}		onlyInnerContent	if true, do not surround with HTML and BODY
- */
-ZmHtmlEditor.prototype.getContent =
-function(insertFontStyle, onlyInnerContent) {
-
-    this.discardMisspelledWords();
-    
-	var field = this.getContentField();
-
-	var content = "";
-	if (this._mode == Dwt.HTML) {
-		var editor = this.getEditor(),
-            content1 = "";
-        if (editor) {
-            content1 = editor.getContent({format:"raw"});
-        }
-        else {
-            content1 = field.value || "";
-        }
-        if (content1 && (/\S+/.test(AjxStringUtil.convertHtml2Text(content1)) || content1.match(/<img/i)) ) {
-			content = this._embedHtmlContent(content1, insertFontStyle, onlyInnerContent);
-		}
-	}
-	else {
-		if (/\S+/.test(field.value)) {
-			content = field.value;
-		}
-	}
-
-	return content;
-};
-
-ZmHtmlEditor.prototype._embedHtmlContent =
-function(html, insertFontStyle, onlyInnerContent) {
-
-	html = html || "";
-	if (insertFontStyle) {
-		html = ZmHtmlEditor._getFontStyle(html);
-	}
-	return onlyInnerContent ? html : [ "<html><body>", html, "</body></html>" ].join("");
-};
-ZmHtmlEditor._embedHtmlContent = ZmHtmlEditor.prototype._embedHtmlContent;
-
-ZmHtmlEditor._getFontStyle =
-function(html) {
-	return ZmHtmlEditor._getFontStylePrefix() + html + ZmHtmlEditor._getFontStyleSuffix();
-};
-
-ZmHtmlEditor._getFontStylePrefix =
-function() {
-	var a = [], i = 0;
-	a[i++] = '<div style="font-family: ';
-	a[i++] = appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_FAMILY);
-	a[i++] = '; font-size: ';
-	a[i++] = appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_SIZE);
-	a[i++] = '; color: ';
-	a[i++] = appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_COLOR);
-	a[i++] = '"';
-    if (appCtxt.get(ZmSetting.COMPOSE_INIT_DIRECTION) === ZmSetting.RTL) {
-        a[i++] = ' dir="' + ZmSetting.RTL + '"';
-    }
-    a[i++] = ">";
-	return a.join("");
-};
-
-ZmHtmlEditor._getFontStyleSuffix =
-function() {
-	return "</div>";
-};
-
-/*
- If editor is not initialized and mode is HTML, tinymce will automatically initialize the editor with the content in textarea
- */
-ZmHtmlEditor.prototype.setContent = function (content) {
-    if (this._mode === Dwt.HTML && this._editorInitialized) {
-        this.getEditor().setContent(content, {format:'raw'});
-    } else {
-        this.getContentField().value = content;
-    }
-    this._ignoreWords = {};
-};
-
+// Re-sets design mode for buggy gecko-based browser
 ZmHtmlEditor.prototype.reEnableDesignMode =
 function() {
-	// tinyMCE doesn't need to handle this
-};
-
-ZmHtmlEditor.prototype.getMode =
-function() {
-	return this._mode;
-};
-
-ZmHtmlEditor.prototype.isHtmlModeInited =
-function() {
-	return Boolean(this.getEditor());
-};
-
-ZmHtmlEditor.prototype._convertHtml2Text = function (convertor) {
-    var editor = this.getEditor(),
-        body;
-    if (editor) {
-        body = editor.getBody();
-        if (body) {
-            return (AjxStringUtil.convertHtml2Text(body, convertor, true));
-        }
-    }
-    return "";
-};
-
-ZmHtmlEditor.prototype.moveCaretToTop =
-function(offset) {
-	if (this._mode == Dwt.TEXT) {
-		var control = this.getContentField();
-		if (control.createTextRange) { // IE
-			var range = control.createTextRange();
-			if (offset) {
-				range.move('character', offset);
-			}
-			else {
-				range.collapse(true);
-			}
-			range.select();
-		} else if (control.setSelectionRange) { // FF
-			offset = offset || 0;
-            //If display is none firefox will throw the following error
-            //Error: Component returned failure code: 0x80004005 (NS_ERROR_FAILURE) [nsIDOMHTMLTextAreaElement.setSelectionRange]
-            //checking offsetHeight to check whether it is rendered or not
-            if (control.offsetHeight) {
-                control.setSelectionRange(offset, offset);
-            }
-		}
-	} else {
-		this._moveCaretToTopHtml(true, offset);
+	if (AjxEnv.isGeckoBased || AjxEnv.isSafari) {
+		this._enableDesignMode(this._getIframeDoc());
 	}
 };
 
-ZmHtmlEditor.prototype._moveCaretToTopHtml =
-function(tryOnTimer, offset) {
-	var editor = this.getEditor();
-	var body = editor && editor.getDoc().body;
-	var success = false;
-	if (AjxEnv.isIE) {
-		if (body) {
-			var range = body.createTextRange();
-			if (offset) {
-				range.move('character', offset);
-			} else {
-				range.collapse(true);
-			}
-			success = true;
-		}
-	} else {
-		var selection = editor && editor.selection ? editor.selection.getSel() : "";
-		if (selection) {
-            if (offset) { // if we get an offset, use it as character count into text node
-                var target = body.firstChild;
-                while (target) {
-                    if (offset === 0) {
-                        selection.collapse(target, offset);
-                        break;
-                    }
-                    if (target.nodeName === "#text") {
-                        var textLength = target.length;
-                        if (offset > textLength) {
-                            offset = offset - textLength;
-                        } else {
-                            selection.collapse(target, offset);
-                            break;
-                        }
-                    } else if (target.nodeName === "BR") {//text.length is also including \n count. so if there is br reduce offset by 1
-                        offset = offset - 1;
-                    }
-                    target = target.nextSibling;
-                }
-            }
-            else {
-                selection.collapse(body, 0);
-            }
-          success = true;
-        }
+ZmHtmlEditor.prototype.addEventCallback =
+function(callback) {
+	this._eventCallback = callback;
+};
+
+ZmHtmlEditor.prototype._onContentInitialized =
+function() {
+	DwtHtmlEditor.prototype._onContentInitialized.call(this);
+	this._loadExternalStyle("/css/editor.css");
+	this._setFontStyles();
+	if (this.ACE_ENABLED && this._mode == DwtHtmlEditor.HTML) {
+		setTimeout(AjxCallback.simpleClosure(this._deserializeAceObjects, this), 100);
 	}
-
-	if (success) {
-		editor.focus();
-	} else if (tryOnTimer) {
-		if (editor) {
-			var action = new AjxTimedAction(this, this._moveCaretToTopHtml);
-			AjxTimedAction.scheduleAction(action, ZmHtmlEditor._INITDELAY + 1);
-		} else {
-			var cb = ZmHtmlEditor.prototype._moveCaretToTopHtml;
-			this._initCallbacks.push(cb.bind(this, tryOnTimer, offset));
-		}
-	}
-};
-
-ZmHtmlEditor.prototype.hasFocus =
-function() {
-	return Boolean(this._hasFocus[this._mode]);
-};
-
-/*ZmSignature editor contains getIframeDoc method dont want to break the existing code*/
-ZmHtmlEditor.prototype._getIframeDoc = ZmHtmlEditor.prototype.getIframeDoc =
-function() {
-	var editor = this.getEditor();
-	return editor ? editor.getDoc() : null;
-};
-
-ZmHtmlEditor.prototype._getIframeWin =
-function() {
-	var editor = this.getEditor();
-	return editor ? editor.getWin() : null;
-};
-
-ZmHtmlEditor.prototype.clear =
-function() {
-	var editor = this.getEditor();
-    if (editor && this._editorInitialized) {
-        editor.undoManager && editor.undoManager.clear();
-        this.clearDirty();
-	}
-    var field = this.getContentField();
-    if(field){
-        var textEl = field.cloneNode(false);
-        field.parentNode.replaceChild(textEl, field);//To clear undo/redo queue of textarea
-        //cloning and replacing node will remove event handlers and hence adding it once again
-        Dwt.setHandler(textEl, DwtEvent.ONFOCUS, this.setFocusStatus.bind(this, true, true));
-        Dwt.setHandler(textEl, DwtEvent.ONBLUR, this.setFocusStatus.bind(this, false, true));
-    }
-};
-
-ZmHtmlEditor.prototype.getInputElement =
-function() {
-	return document.getElementById(this._bodyTextAreaId);
-};
-
-ZmHtmlEditor.prototype.initTinyMCEEditor =
-function(params) {
-	var htmlEl = this.getHtmlElement();
-
-    if( this._mode === Dwt.HTML ){
-        Dwt.setVisible(htmlEl, false);
-    }
-	//textarea on which html editor is constructed
-    var id = this._bodyTextAreaId = this._bodyTextAreaId || this.getHTMLElId() + "_content";
-	var textEl = document.createElement("textarea");
-	textEl.setAttribute("id", id);
-	textEl.setAttribute("name", id);
-    if( appCtxt.get(ZmSetting.COMPOSE_INIT_DIRECTION) === ZmSetting.RTL ){
-        textEl.setAttribute("dir", ZmSetting.RTL);
-    }
-	textEl.className = "ZmHtmlEditorTextArea";
-    if ( params.content !== null ) {
-        textEl.value = params.content;
-    }
-	htmlEl.appendChild(textEl);
-	this._textAreaId = id;
-
-    Dwt.setHandler(textEl, DwtEvent.ONFOCUS, this.setFocusStatus.bind(this, true, true));
-    Dwt.setHandler(textEl, DwtEvent.ONBLUR, this.setFocusStatus.bind(this, false, true));
-	this.setFocusMember(textEl);
-
-	if (!window.tinyMCE) {
-        window.tinyMCEPreInit = {};
-        window.tinyMCEPreInit.suffix = '';
-        window.tinyMCEPreInit.base = appContextPath + ZmHtmlEditor.TINY_MCE_PATH; // SET PATH TO TINYMCE HERE
-        // Tell TinyMCE that the page has already been loaded
-        window.tinyMCE_GZ = {};
-        window.tinyMCE_GZ.loaded = true;
-
-		var callback = new AjxCallback(this, this.initEditorManager, [id, params.content]);
-        AjxDispatcher.require(["TinyMCE"], true, callback);
-	} else {
-		this.initEditorManager(id, params.mode, params.content);
+	if (this._onContentInitializeCallback) {
+		AjxDebug.println(AjxDebug.REPLY, "ZmHtmlEditor::_onContentInitialized - run callback");
+		this._onContentInitializeCallback.run();
 	}
 };
 
 ZmHtmlEditor.prototype.addOnContentInitializedListener =
 function(callback) {
-	this._onContentInitializeCallbacks.push(callback);
+	this._onContentInitializeCallback = callback;
 };
 
-ZmHtmlEditor.prototype.clearOnContentInitializedListeners =
+ZmHtmlEditor.prototype.removeOnContentInitializedListener =
 function() {
 	this._onContentInitializeCallback = null;
 };
 
-ZmHtmlEditor.prototype._handleEditorKeyEvent =
-function(ev) {
-	var ed = this.getEditor();
-	var retVal = true;
-
-    if (DwtKeyboardMgr.isPossibleInputShortcut(ev)) {
-        // pass to keyboard mgr for kb nav
-        retVal = DwtKeyboardMgr.__keyDownHdlr(ev);
-    }
-    else if (ev.keyCode === 9) { //Tab key handling
-        ed.execCommand("mceInsertContent", false, "&nbsp;&nbsp;&nbsp;&nbsp;");
-        ev.preventDefault();
-    }
-    else if (ev.keyCode === 13) { // enter key
-        var parent,
-            selection,
-            startContainer,
-            editorDom,
-            uniqueId,
-            blockquote,
-            nextSibling,
-            divElement,
-            splitElement;
-
-        if (ev.shiftKey) {
-            return;
-        }
-
-        selection = ed.selection;
-        parent = startContainer = selection.getRng(true).startContainer;
-        if (!startContainer) {
-            return;
-        }
-
-        editorDom = ed.dom;
-        //Gets all parent block elements
-        blockquote = editorDom.getParents(startContainer, "blockquote", ed.getBody());
-        if (!blockquote) {
-            return;
-        }
-
-        blockquote = blockquote.pop();//Gets the last blockquote element
-        if (!blockquote || !blockquote.style.borderLeft) {//Checking blockquote left border for verifying it is reply blockquote
-            return;
-        }
-
-        uniqueId = editorDom.uniqueId();
-        ed.undoManager.add();
-        try {
-            selection.setContent("<div id='" + uniqueId + "'><br></div>");
-        }
-        catch (e) {
-            return;
-        }
-
-        divElement = ed.getDoc().getElementById(uniqueId);
-        if (divElement) {
-            divElement.removeAttribute("id");
-        }
-        else {
-            return;
-        }
-
-        nextSibling = divElement.nextSibling;
-        if (nextSibling && nextSibling.nodeName === "BR") {
-            nextSibling.parentNode.removeChild(nextSibling);
-        }
-
-        try {
-            splitElement = editorDom.split(blockquote, divElement);
-            if (splitElement) {
-                selection.select(splitElement);
-                selection.collapse(true);
-                ev.preventDefault();
-            }
-        }
-        catch (e) {
-        }
-    }
-
-	if (window.DwtIdleTimer) {
-		DwtIdleTimer.resetIdle();
-	}
-
-	if (window.onkeydown) {
-		window.onkeydown.call(this);
-	}
-	
-	return retVal;
-};
-
-//Notifies mousedown event in tinymce editor to ZCS
-ZmHtmlEditor.prototype._handleEditorMouseDownEvent =
-function(ev) {
-    DwtOutsideMouseEventMgr.forwardEvent(ev);
-};
-
-ZmHtmlEditor.prototype.onLoadContent =
-function(ev) {
-	if (this._onContentInitializeCallbacks) {
-		AjxDebug.println(AjxDebug.REPLY, "ZmHtmlEditor::onLoadContent - run callbacks");
-		AjxUtil.foreach(this._onContentInitializeCallbacks,
-		                function(fn) { fn.run() });
-	}
-};
-
-ZmHtmlEditor.prototype.setFocusStatus =
-function(hasFocus, isTextModeFocus) {
-	var mode = isTextModeFocus ? Dwt.TEXT : Dwt.HTML;
-	this._hasFocus[mode] = hasFocus;
-
-	if (!isTextModeFocus) {
-		Dwt.condClass(this.getEditor().getBody(), hasFocus,
-		              'mce-active-editor', 'mce-inactive-editor');
-	}
-};
-
-ZmHtmlEditor.prototype.initEditorManager =
-function(id, content) {
-
-	var obj = this;
-
-    if (!window.tinyMCE) {//some problem in loading TinyMCE files
-        return;
-    }
-
-	var urlParts = AjxStringUtil.parseURL(location.href);
-
-	//important: tinymce doesn't handle url parsing well when loaded from REST URL - override baseURL/baseURI to fix this
-	tinymce.baseURL = appContextPath + ZmHtmlEditor.TINY_MCE_PATH;
-
-	if (tinymce.EditorManager) {
-		tinymce.EditorManager.baseURI = new tinymce.util.URI(urlParts.protocol + "://" + urlParts.authority + tinymce.baseURL);
-	}
-
-	if (tinymce.dom) {
-		tinymce.DOM = new tinymce.dom.DOMUtils(document, {process_html : 0});
-	}
-
-	if (tinymce.dom && tinymce.dom.Event) {
-		tinymce.dom.Event.domLoaded = true;
-	}
-
-	var toolbarbuttons = [
-		'fontselect fontsizeselect formatselect |',
-		'bold italic underline strikethrough removeformat |',
-		'forecolor backcolor |',
-		'outdent indent bullist numlist blockquote |',
-		'alignleft aligncenter alignright alignjustify |',
-		this._attachmentCallback ? 'zimage' : 'image',
-		'link zemoticons charmap hr table |',
-		appCtxt.get(ZmSetting.SHOW_COMPOSE_DIRECTION_BUTTONS) ? 'ltr rtl |' : '',
-		'undo redo |',
-		'pastetext code'
-	];
-
-	var plugins = [
-		"zemoticons",
-		"table", "paste", "directionality", "textcolor", "lists", "advlist",
-		"link", "hr", "charmap", "code"
-	];
-
-	if (this._attachmentCallback) {
-		tinymce.PluginManager.add('zimage', function(editor) {
-			editor.addButton('zimage', {
-                icon: 'image',
-                tooltip: ZmMsg.insertImage,
-                onclick: obj._attachmentCallback,
-                stateSelector: 'img:not([data-mce-object])'
-			});
-		});
-
-		plugins.push('zimage');
-	} else {
-		plugins.push('image');
-	}
-
-    var fonts = [];
-	var KEYS = [ "fontFamilyIntl", "fontFamilyBase" ];
-	var i, j, key, value, name;
-	for (j = 0; j < KEYS.length; j++) {
-		for (i = 1; value = AjxMsg[KEYS[j]+i+".css"]; i++) {
-			if (value.match(/^#+$/)) break;
-			value = value.replace(/,\s/g,",");
-			name = AjxMsg[KEYS[j]+i+".display"];
-			fonts.push(name+"="+value);
-		}
-	}
-
-    var tinyMCEInitObj = {
-        // General options
-		mode :  (this._mode == Dwt.HTML)? "exact" : "none",
-		elements:  id,
-        plugins : plugins.join(' '),
-		toolbar: toolbarbuttons.join(' '),
-		toolbar_items_size: 'small',
-		statusbar: false,
-		menubar: false,
-		ie7_compat: false,
-		object_resizing : true,
-        font_formats : fonts.join(";"),
-        fontsize_formats : AjxMsg.fontSizes || '',
-		convert_urls : false,
-		verify_html : false,
-		gecko_spellcheck : true,
-        content_css : appContextPath + '/css/tinymce-content.css?v=' + cacheKillerVersion,
-        dialog_type : "modal",
-        forced_root_block : "div",
-        width: "100%",
-        height: "auto",
-        table_default_cellpadding : 3,
-        table_default_border: 1,
-        language: tinyMCE.getlanguage(appCtxt.get(ZmSetting.LOCALE_NAME)),
-        directionality : appCtxt.get(ZmSetting.COMPOSE_INIT_DIRECTION),
-        paste_retain_style_properties : "all",
-		paste_data_images: true,
-        paste_remove_styles_if_webkit : false,
-        paste_preprocess : ZmHtmlEditor.pastePreProcess,
-        paste_postprocess : ZmHtmlEditor.pastePostProcess,
-		setup : function(ed) {
-            ed.on('LoadContent', obj.onLoadContent.bind(obj));
-            ed.on('PostRender', obj.onPostRender.bind(obj));
-            ed.on('init', obj.onInit.bind(obj));
-            ed.on('keydown', obj._handleEditorKeyEvent.bind(obj));
-            ed.on('MouseDown', obj._handleEditorMouseDownEvent.bind(obj));
-            ed.on('paste', obj.onPaste.bind(obj));
-            ed.on('BeforeExecCommand', obj.onBeforeExecCommand.bind(obj));
-            ed.on('BeforeSetContent', obj.onBeforeSetContent.bind(obj));
-
-            ed.on('contextmenu',
-                  obj.notifyListeners.bind(obj, DwtEvent.ONCONTEXTMENU));
-		}
-    };
-
-	if( this._mode === Dwt.HTML ){
-        Dwt.setVisible(obj.getHtmlElement(), false);
-    }
-    else{
-        Dwt.setVisible(obj.getHtmlElement(), true);
-    }
-
-    this._iFrameId = this._bodyTextAreaId + "_ifr";
-	tinyMCE.init(tinyMCEInitObj);
-	this._editor = this.getEditor();
-};
-
-ZmHtmlEditor.prototype.onPaste = function(ev) {
-    if (!this._pasteCallback)
-        return;
-
-    var items = ((ev.clipboardData &&
-                  (ev.clipboardData.items || ev.clipboardData.files)) ||
-                 (window.clipboardData && clipboardData.files)),
-        item = items && items[0],
-        file, name, type,
-        view;
-
-	if (item && item.getAsFile) {
-		file = item.getAsFile();
-		name = file && file.fileName;
-		type = file && file.type;
-	} else if (item && item.type) {
-		file = item;
-		name = file.name;
-		type = file.type;
-	}
-
-	if (file) {
-		var headers = {
-			"Cache-Control": "no-cache",
-			"X-Requested-With": "XMLHttpRequest",
-			"Content-Type": type,
-			//For paste from clipboard filename is undefined
-			"Content-Disposition": 'attachment; filename="' + (name ? AjxUtil.convertToEntities(name) : ev.timeStamp || new Date().getTime()) + '"'
-		};
-		var url = (appCtxt.get(ZmSetting.CSFE_ATTACHMENT_UPLOAD_URI) +
-				   "?fmt=extended,raw");
-
-		var fn = AjxRpc.invoke.bind(AjxRpc, file, url, headers,
-		                            this._handlePasteUpload.bind(this),
-		                            AjxRpcRequest.HTTP_POST);
-
-		// IE11 appears to disallow AJAX requests within the event handler
-		if (AjxEnv.isTrident) {
-			setTimeout(fn, 0);
-		} else {
-			fn();
-		}
-    }
-};
-
-ZmHtmlEditor.prototype._handlePasteUpload = function(r) {
-	if (r && r.success) {
-		var resp = eval("["+r.text+"]");
-		if(resp.length === 3) {
-			resp[2].clipboardPaste = true;
-		}
-		this._pasteCallback(resp);
-	}
-};
-
-
-ZmHtmlEditor.prototype.onPostRender = function(ev) {
-	var ed = this.getEditor();
-
-    this._resetSize();
-
-    ed.dom.setStyles(ed.getBody(), {"font-family" : appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_FAMILY),
-                                    "font-size"   : appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_SIZE),
-                                    "color"       : appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_COLOR)
-                                   });
-
-    Dwt.setVisible(this.getHtmlElement(), true);
-};
-
-ZmHtmlEditor.prototype.onInit = function(ev) {
-	var ed = this.getEditor();
-    var obj = this,
-        tinymceEvent = tinymce.dom.Event,
-        doc = ed.getDoc(),
-        win = ed.getWin(),
-        view = obj.parent;
-
-    obj.setFocusStatus(false);
-
-    tinymceEvent.bind(win, 'focus', function(e) {
-        obj.setFocusStatus(true);
-    });
-    tinymceEvent.bind(win, 'blur', function(e) {
-        obj.setFocusStatus(false);
-    });
-    // Sets up the a range for the current ins point or selection. This is IE only because the iFrame can
-    // easily lose focus (e.g. by clicking on a button in the toolbar) and we need to be able to get back
-    // to the correct insertion point/selection.
-    // Here we are registering this dedicated event to store the bookmark which will fire when focus moves outside the editor
-    if(AjxEnv.isIE){
-        tinymceEvent.bind(doc, 'beforedeactivate', function(e) {
-            if(ed.windowManager){
-                ed.windowManager.bookmark = ed.selection.getBookmark(1);
-            }
-        });
-    }
-
-    obj.setFocusMember(obj.restoreFocus.bind(obj, ed));
-
-    // must be assigned on init, to ensure that our handlers are called after
-    // in TinyMCE's in 'FormatControls.js'.
-    ed.on('nodeChange', obj.onNodeChange.bind(obj));
-
-    ed.on('open', ZmHtmlEditor.onPopupOpen);
-    if (view && view.toString() === "ZmComposeView" && ZmDragAndDrop.isSupported()) {
-        var dnd = view._dnd;
-        tinymceEvent.bind(doc, 'dragenter', this._onDragEnter.bind(this));
-        tinymceEvent.bind(doc, 'dragleave', this._onDragLeave.bind(this));
-        tinymceEvent.bind(doc, 'dragover', this._onDragOver.bind(this, dnd));
-        tinymceEvent.bind(doc, 'drop', this._onDrop.bind(this, dnd));
-    }
-
-    obj._editorInitialized = true;
-
-    // issue the resize call five times in order to ensure that we get it right
-    // on all browsers
-    for (var i = 0; i < 5; i++) {
-        setTimeout(this._resetSize.bind(this), i * 200);
-    }
-
-    AjxUtil.foreach(this._initCallbacks, function(fn) { fn.run() });
-};
-
-ZmHtmlEditor.prototype._onFocus = function() {
-	var editor = this.getEditor();
-
-	if (this._mode === Dwt.HTML && editor) {
-		editor.fire('focus', {focusedEditor: editor});
-	}
-};
-
-ZmHtmlEditor.prototype._onBlur = function() {
-	var editor = this.getEditor();
-
-	if (this._mode === Dwt.HTML && editor) {
-		editor.fire('blur', {focusedEditor: null});
-	}
-};
-
-
-ZmHtmlEditor.prototype.__getEditorControl = function(type, tooltip) {
-	// This method provides a naive emulation of the control manager offered in
-	// TinyMCE 3.x. We assume that there's only one control of a given type
-	// with a given tooltip in the entire TinyMCE control hierarchy. Hopefully,
-	// this heuristic won't prove too fragile.
-	var ed = this.getEditor();
-
-	function finditem(item) {
-		// the tooltip in settings appears constant and unlocalized
-		if (item.type === type && item.settings.tooltip === tooltip)
-			return item;
-
-		if (typeof item.items === 'function') {
-			var items = item.items();
-
-			for (var i = 0; i < items.length; i++) {
-				var r = finditem(items[i]);
-				if (r)
-					return r;
-			}
-		}
-
-		if (typeof item.menu === 'object') {
-			return finditem(item.menu);
-		}
-	};
-
-	return finditem(ed.theme.panel);
-};
-
-
-ZmHtmlEditor.prototype.onNodeChange = function(event) {
-	// Firefox fires NodeChange events whether the editor is visible or not
-	if (this._mode !== Dwt.HTML) {
-		return;
-	}
-
-	// update the font size box -- TinyMCE only checks for it on SPANs
-	var fontsizebtn = this.__getEditorControl('listbox', 'Font Sizes');
-	var found = false;
-
-	var normalize = function(v) {
-		return Math.round(DwtCssStyle.asPixelCount(v));
-	};
-
-	for (var i = 0; !found && i < event.parents.length; i++) {
-		var fontsize =
-			normalize(DwtCssStyle.getProperty(event.parents[i], 'font-size'));
-
-		for (var j = 0; !found && j < fontsizebtn._values.length; j++) {
-			var value = fontsizebtn._values[j].value;
-
-			if (normalize(value) === fontsize) {
-				fontsizebtn.value(value);
-				found = true;
-			}
-		}
-	}
-
-	// update the font family box -- TinyMCE only checks for it on SPANs
-	var fontfamilybtn = this.__getEditorControl('listbox', 'Font Family');
-	var found = false;
-
-	var normalize = function(v) {
-		return v.replace(/,\s+/g, ',').replace(/[\'\"]/g, '');
-	};
-
-	for (var i = 0; !found && i < event.parents.length; i++) {
-		var fontfamily =
-			normalize(DwtCssStyle.getProperty(event.parents[i], 'font-family'));
-
-		for (var j = 0; !found && j < fontfamilybtn._values.length; j++) {
-			var value = fontfamilybtn._values[j].value;
-
-			if (normalize(value) === fontfamily) {
-				fontfamilybtn.value(value);
-				found = true;
-			}
-		}
-	}
-};
-
-
-/*
-**   TinyMCE will fire onBeforeExecCommand before executing all commands
- */
-ZmHtmlEditor.prototype.onBeforeExecCommand = function(ev) {
-    if (ev.command === "mceImage") {
-        this.onBeforeInsertImage(ev);
-    }
-    else if (ev.command === "mceRepaint") { //img src modified
-        this.onBeforeRepaint(ev);
-    }
-};
-
-ZmHtmlEditor.prototype.onBeforeInsertImage = function(ev) {
-    var element = ev.target.selection.getNode();
-    if (element && element.nodeName === "IMG") {
-        element.setAttribute("data-mce-src", element.src);
-        element.setAttribute("data-mce-zsrc", element.src);//To find out whether src is modified or not set a dummy attribute
-    }
-};
-
-ZmHtmlEditor.prototype.onBeforeRepaint = function(ev) {
-    var element = ev.target.selection.getNode();
-    if (element && element.nodeName === "IMG") {
-        if (element.src !== element.getAttribute("data-mce-zsrc")) {
-            element.removeAttribute("dfsrc");
-        }
-        element.removeAttribute("data-mce-zsrc");
-    }
-};
-
-ZmHtmlEditor._TABLE_RE = /^<table><tbody>(<tr>(<td>(<br>| )<\/td>)*<\/tr>)*<\/tbody><\/table>$/;
-
-ZmHtmlEditor.prototype.onBeforeSetContent = function(ev) {
-	if (ZmHtmlEditor._TABLE_RE.test(ev.content)) {
-		ev.content = ev.content.replace(/<table>/,
-		                                '<table style="width: 90%">');
-	}
-};
-
-ZmHtmlEditor.prototype._onDragEnter = function() {
-    Dwt.addClass(Dwt.getElement(this._iFrameId), "DropTarget");
-};
-
-ZmHtmlEditor.prototype._onDragLeave = function() {
-    Dwt.delClass(Dwt.getElement(this._iFrameId), "DropTarget");
-};
-
-ZmHtmlEditor.prototype._onDragOver = function(dnd, ev) {
-    dnd._onDragOver(ev);
-};
-
-ZmHtmlEditor.prototype._onDrop = function(dnd, ev) {
-    dnd._onDrop(ev, true);
-    Dwt.delClass(Dwt.getElement(this._iFrameId), "DropTarget");
-};
-
-ZmHtmlEditor.prototype.setMode = function (mode, convert, convertor) {
-    this.discardMisspelledWords();
-    if (mode === this._mode || (mode !== Dwt.HTML && mode !== Dwt.TEXT)) {
-        return;
-    }
-    this._mode = mode;
-    if (mode === Dwt.HTML) {
-        if (convert) {
-            var textarea = this.getContentField();
-            textarea.value = AjxStringUtil.convertToHtml(textarea.value, true);
-        }
-        if (this._editorInitialized) {
-            tinyMCE.execCommand('mceToggleEditor', false, this._bodyTextAreaId);//tinymce will automatically toggles the editor and sets the corresponding content.
-        }
-        else {
-            //switching from plain text to html using tinymces mceToggleEditor method is always using the last editor creation setting. Due to this current ZmHtmlEditor object always point to last ZmHtmlEditor object. Hence initializing the tinymce editor again for the first time when mode is switched from plain text to html.
-            this.initEditorManager(this._bodyTextAreaId);
-        }
-    } else {
-        if (convert) {
-            var content;
-            if (this._editorInitialized) {
-                content = this._convertHtml2Text(convertor);
-            }
-            else {
-                content = AjxStringUtil.convertHtml2Text(this.getContentField().value);
-            }
-        }
-        if (this._editorInitialized) {
-            tinyMCE.execCommand('mceToggleEditor', false, this._bodyTextAreaId);//tinymce will automatically toggles the editor and sets the corresponding content.
-        }
-        if (convert) {//tinymce will set html content directly in textarea. Resetting the content after removing the html tags.
-            this.setContent(content);
-        }
-        if (!window.tinyMCE) {
-            //if tinymce is not loading in certain edge cases, user can switch to plain text mode
-            Dwt.setVisible(this.getHtmlElement(), true);
-        }
-    }
-    this._resetSize();
-};
-
-ZmHtmlEditor.prototype.getContentField =
-function() {
-	return document.getElementById(this._bodyTextAreaId);
-};
-
-ZmHtmlEditor.prototype.insertImage =
-function(src, dontExecCommand, width, height, dfsrc) {
-
-	var html = [];
-	var idx= 0 ;
-
-	html[idx++] = "<img";
-	html[idx++] = " src='";
-	html[idx++] = src;
-	html[idx++] = "'";
-
-    if ( dfsrc != null) {
-        html[idx++] = " dfsrc='";
-        html[idx++] = dfsrc;
-	    html[idx++] = "'";
-    }
-	if (width != null) {
-		html[idx++] = " width='" + width + "'";
-	}
-	if (height != null) {
-		html[idx++] = " height='" + height + "'";
-	}
-	html[idx++] = ">";
-
-	var ed = this.getEditor();
-
-    this.restoreFocus(ed);
-
-	//tinymce modifies the source when using mceInsertContent
-    //ed.execCommand('mceInsertContent', false, html.join(""), {skip_undo : 1});
-    ed.execCommand('mceInsertRawHTML', false, html.join(""), {skip_undo : 1});
-};
-
-ZmHtmlEditor.prototype.replaceImage =
-function(id, src){
-    var doc = this.getEditor().getDoc();
-    if(doc){
-        var img = doc.getElementById(id);
-        if( img && img.getAttribute("data-zim-uri") === id ){
-            img.src = src;
-            img.removeAttribute("id");
-            img.removeAttribute("data-mce-src");
-            img.removeAttribute("data-zim-uri");
-        }
-    }
-};
-
-/*
-This function will replace all the img elements matching src
- */
-ZmHtmlEditor.prototype.replaceImageSrc =
-function(src, newsrc){
-	var doc = this.getEditor().getDoc();
-	if(doc){
-		var images = doc.getElementsByTagName('img');
-		if (images && images.length > 0) {
-			AjxUtil.foreach(images,function(img) {
-				try {
-					var imgsrc = img && img.src;
-				} catch(e) {
-					//IE8 throws invalid pointer exception for src attribute when src is a data uri
-					return;
-				}
-				if (imgsrc && imgsrc == src) {
-					img.src = newsrc;
-					img.removeAttribute("id");
-					img.removeAttribute("data-mce-src");
-					img.removeAttribute("data-zim-uri");
-				}
-			});
-		}
-	}
-};
-
-ZmHtmlEditor.prototype.addCSSForDefaultFontSize =
-function(editor) {
-	var selectorText = "body,td,pre";
-	var ruleText = [
-			"font-family:", appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_FAMILY),";",
-			"font-size:", appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_SIZE),";",
-			"color:", appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_COLOR),";"
-	].join("");
-	var doc = editor ? editor.getDoc() : null;
-	if (doc) {
-		this.insertDefaultCSS(doc, selectorText, ruleText);
-	}
-};
-
-ZmHtmlEditor.prototype.insertDefaultCSS =
-function(doc, selectorText, ruleText) {
-	var sheet, styleElement;
-	if (doc.createStyleSheet) {
-		sheet = doc.createStyleSheet();
-	} else {
-		styleElement = doc.createElement("style");
-		doc.getElementsByTagName("head")[0].appendChild(styleElement);
-		sheet = styleElement.styleSheet ? styleElement.styleSheet : styleElement.sheet;
-	}
-
-	if (!sheet && styleElement) {
-		//remove braces
-		ruleText = ruleText.replace(/^\{?([^\}])/, "$1");
-		styleElement.innerHTML = selectorText + ruleText;
-	} else if (sheet.addRule) {
-		//remove braces
-		ruleText = ruleText.replace(/^\{?([^\}])/, "$1");
-		DBG.println("ruleText:" + ruleText + ",selector:" + selectorText);
-		sheet.addRule(selectorText, ruleText);
-	} else if (sheet.insertRule) {
-		//need braces
-		if (!/^\{[^\}]*\}$/.test(ruleText)) ruleText = "{" + ruleText + "}";
-		sheet.insertRule(selectorText + " " + ruleText, sheet.cssRules.length);
-	}
-};
-
-ZmHtmlEditor.prototype.resetSpellCheck =
-function() {
-	//todo: remove this when spellcheck is disabled
+ZmHtmlEditor.prototype.getContent =
+function(insertFontStyle, onlyInnerContent ) {
 	this.discardMisspelledWords();
-	this._spellCheckHideModeDiv();
-};
 
-/**SpellCheck modules**/
+	// NOTE: this code is same as base class except we use insertFontStyle
+	// (which shouldnt be in base).
+	var content;
+	if (this._mode == DwtHtmlEditor.HTML) {
+		AjxDebug.println(AjxDebug.REPLY, "ZmHtmlEditor::getContent - in HTML mode");
+		var iframeDoc = this._getIframeDoc();
+
+		var html = (iframeDoc && iframeDoc.body && iframeDoc.body.innerHTML) || "";
+		AjxDebug.println(AjxDebug.REPLY, "content from iframe body: " + AjxStringUtil.htmlEncode(html.substr(0,200)));
+		this._blankDiv = this._blankDiv || this._getFontStyle("");
+		this._blankHtml = this._blankHtml || this._embedHtmlContent("", true);
+		if (this._pendingContent && (!html || html == this._blankDiv || html == this._blankHtml)) {
+			html = this._pendingContent;
+			AjxDebug.println(AjxDebug.REPLY, "using pending content: " + AjxStringUtil.htmlEncode(html.substr(0,200)));
+		}
+		content = this._embedHtmlContent(html, insertFontStyle, onlyInnerContent);
+		if (this.ACE_ENABLED) {
+			content = this._serializeAceObjects(content);
+		}
+	} else {
+		content = document.getElementById(this._textAreaId).value;
+	}
+
+	return content;
+};
 
 ZmHtmlEditor.prototype.checkMisspelledWords =
 function(callback, onExitCallback, errCallback){
@@ -1228,8 +214,8 @@ function(callback, onExitCallback, errCallback){
 };
 
 ZmHtmlEditor.prototype.spellCheck =
-function(callback, keepModeDiv) {
-	var text = this.getTextVersion(null, keepModeDiv);
+function(callback) {
+	var text = this.getTextVersion();
 
 	if (/\S/.test(text)) {
 		AjxDispatcher.require("Extras");
@@ -1239,7 +225,7 @@ function(callback, keepModeDiv) {
 		if (!this.onExitSpellChecker) {
 			this.onExitSpellChecker = callback;
 		}
-        var params = {
+		var params = {
 			text: text,
 			ignore: AjxUtil.keys(this._ignoreWords).join()
 		};
@@ -1250,331 +236,18 @@ function(callback, keepModeDiv) {
 	return false;
 };
 
-ZmHtmlEditor.prototype._spellCheckCallback =
-function(words) {
-    // Remove the below comment for hard coded spell check response for development
-    //words = {"misspelled":[{"word":"onee","suggestions":"one,nee,knee,once,ones,one's"},{"word":"twoo","suggestions":"two,too,woo,twos,two's"},{"word":"fourrr","suggestions":"Fourier,furor,furry,firer,fuhrer,fore,furrier,four,furrow,fora,fury,fours,ferry,foray,flurry,four's"}],"available":true};
-	var wordsFound = false;
-
-	if (words && words.available) {
-		var misspelled = words.misspelled;
-		if (misspelled == null || misspelled.length == 0) {
-			appCtxt.setStatusMsg(ZmMsg.noMisspellingsFound, ZmStatusView.LEVEL_INFO);
-		} else {
-			var msg = AjxMessageFormat.format(ZmMsg.misspellingsResult, misspelled.length);
-			appCtxt.setStatusMsg(msg, ZmStatusView.LEVEL_WARNING);
-
-			this.highlightMisspelledWords(misspelled);
-			wordsFound = true;
-		}
-	} else {
-		appCtxt.setStatusMsg(ZmMsg.spellCheckUnavailable, ZmStatusView.LEVEL_CRITICAL);
-	}
-
-	if (AjxEnv.isGeckoBased && this._mode == Dwt.HTML) {
-		setTimeout(AjxCallback.simpleClosure(this.focus, this), 10);
-	}
-
-	if (this.onExitSpellChecker) {
-		this.onExitSpellChecker.run(wordsFound);
-	}
-};
-
-ZmHtmlEditor.prototype._spellCheckSuggestionListener =
-function(ev) {
-	var self = this;
-	var item = ev.item;
-	var orig = item.getData("orig");
-	if (!orig) { return; }
-
-	var val = item.getData(ZmHtmlEditor.VALUE);
-	var plainText = this._mode == Dwt.TEXT;
-	var fixall = item.getData("fixall");
-	var doc = plainText ? document : this._getIframeDoc();
-	var span = doc.getElementById(item.getData("spanId"));
-	var action = item.getData(ZmPopupMenu.MENU_ITEM_ID_KEY);
-	switch (action) {
-		case "ignore":
-			val = orig;
-			this._ignoreWords[val] = true;
-//			if (fixall) {
-				// TODO: visually "correct" all of them
-//			}
-			break;
-		case "add":
-			val = orig;
-			// add word to user's personal dictionary
-			var soapDoc = AjxSoapDoc.create("ModifyPrefsRequest", "urn:zimbraAccount");
-			var prefEl = soapDoc.set("pref", val);
-			prefEl.setAttribute("name", "+zimbraPrefSpellIgnoreWord");
-			var params = {
-				soapDoc: soapDoc,
-				asyncMode: true,
-				callback: new AjxCallback(appCtxt, appCtxt.setStatusMsg, [ZmMsg.wordAddedToDictionary])
-			};
-			appCtxt.getAppController().sendRequest(params);
-			this._ignoreWords[val] = true;
-			break;
-		default: break;
-	}
-
-	if (plainText && val == null) {
-		this._editWord(fixall, span);
-	}
-	else {
-		var spanEls = fixall ? this._spellCheck.wordIds[orig] : span;
-		this._editWordFix(spanEls, val);
-	}
-    
-	this._handleSpellCheckerEvents(null);
-};
-
-ZmHtmlEditor.prototype._getEditorDocument = function() {
-	var plainText = this._mode == Dwt.TEXT;
-	return plainText ? document : this._getIframeDoc();
-};
-
-ZmHtmlEditor.prototype._editWord = function(fixall, spanEl) {
-	// edit clicked
-	var doc = this._getEditorDocument();
-	var input = doc.createElement("input");
-	input.type = "text";
-	input.value = AjxUtil.getInnerText(spanEl);
-	input.className = "SpellCheckInputField";
-	input.style.left = spanEl.offsetLeft - 2 + "px";
-	input.style.top = spanEl.offsetTop - 2 + "px";
-	input.style.width = spanEl.offsetWidth + 4 + "px";
-	var div = doc.getElementById(this._spellCheckDivId);
-	var scrollTop = div.scrollTop;
-	div.appendChild(input);
-	div.scrollTop = scrollTop; // this gets resetted when we add an input field (at least Gecko)
-	input.setAttribute("autocomplete", "off");
-	input.focus();
-	if (!AjxEnv.isGeckoBased)
-		input.select();
-	else
-		input.setSelectionRange(0, input.value.length);
-	var inputListener = AjxCallback.simpleClosure(this._editWordHandler, this, fixall, spanEl);
-	input.onblur = inputListener;
-	input.onkeydown = inputListener;
-};
-
-ZmHtmlEditor.prototype._editWordHandler = function(fixall, spanEl, ev) {
-	// the event gets lost after 20 milliseconds so we need
-	// to save the following :(
-	setTimeout(AjxCallback.simpleClosure(this._editWordHandler2, this, fixall, spanEl, ev), 20);
-};
-ZmHtmlEditor.prototype._editWordHandler2 = function(fixall, spanEl, ev) {
-	ev = DwtUiEvent.getEvent(ev);
-	var evType = ev.type;
-	var evKeyCode = ev.keyCode;
-	var evCtrlKey = ev.ctrlKey;
-	var input = DwtUiEvent.getTarget(ev);
-	var keyEvent = /key/.test(evType);
-	var removeInput = true;
-	if (/blur/.test(evType) || (keyEvent && evKeyCode == 13)) {
-		if (evCtrlKey)
-			fixall =! fixall;
-		var orig = AjxUtil.getInnerText(spanEl);
-		var spanEls = fixall ? this._spellCheck.wordIds[orig] : spanEl;
-		this._editWordFix(spanEls, input.value);
-	} else if (keyEvent && evKeyCode == 27 /* ESC */) {
-		this._editWordFix(spanEl, AjxUtil.getInnerText(spanEl));
-	} else {
-		removeInput = false;
-	}
-	if (removeInput) {
-		input.onblur = null;
-		input.onkeydown = null;
-		if (input.parentNode) {
-			input.parentNode.removeChild(input);
-		}
-	}
-	this._handleSpellCheckerEvents(null);
-};
-
-ZmHtmlEditor.prototype._editWordFix = function(spanEls, value) {
-	spanEls = spanEls instanceof Array ? spanEls : [ spanEls ];
-	var doc = this._getEditorDocument();
-	for (var i = spanEls.length - 1; i >= 0; i--) {
-		var spanEl = spanEls[i];
-		if (typeof spanEl == "string") {
-			spanEl = doc.getElementById(spanEl);
-		}
-		if (spanEl) {
-			spanEl.innerHTML = value;
-		}
-	}
-};
-
-ZmHtmlEditor.prototype._getParentElement =
-function() {
-	var ed = this.getEditor();
-	if (ed.selection) {
-		return ed.selection.getNode();
-	} else {
-		var doc = this._getIframeDoc();
-		return doc ? doc.body : null;
-	}
-};
-
-ZmHtmlEditor.prototype._handleSpellCheckerEvents =
-function(ev) {
-	var plainText = this._mode == Dwt.TEXT;
-	var p = plainText ? (ev ? DwtUiEvent.getTarget(ev) : null) : this._getParentElement(),
-		span, ids, i, suggestions,
-		self = this,
-		sc = this._spellCheck,
-		doc = plainText ? document : this._getIframeDoc(),
-		modified = false,
-		word = "";
-	if (ev && /^span$/i.test(p.tagName) && /ZM-SPELLCHECK/.test(p.className)) {
-		// stuff.
-		word = p.getAttribute("word");
-		// FIXME: not sure this is OK.
-		window.status = "Suggestions: " + sc.suggestions[word].join(", ");
-		modified = word != AjxUtil.getInnerText(p);
-	}
-
-	// <FIXME: there's plenty of room for optimization here>
-	ids = sc.spanIds;
-	for (i in ids) {
-		span = doc.getElementById(i);
-		if (span) {
-			if (ids[i] != AjxUtil.getInnerText(span) || this._ignoreWords[ids[i]])
-				span.className = "ZM-SPELLCHECK-FIXED";
-			else if (ids[i] == word)
-				span.className = "ZM-SPELLCHECK-MISSPELLED2";
-			else
-				span.className = "ZM-SPELLCHECK-MISSPELLED";
-		}
-	}
-	// </FIXME>
-
-	// Dismiss the menu if it is present AND:
-	//   - we have no event, OR
-	//   - it's a mouse(down|up) event, OR
-	//   - it's a KEY event AND there's no word under the caret, OR the word was modified.
-	// I know, it's ugly.
-	if (sc.menu &&
-		(!ev || ( /click|mousedown|mouseup|contextmenu/.test(ev.type)
-			  || ( /key/.test(ev.type)
-			   && (!word || modified) )
-			)))
-	{
-		sc.menu.dispose();
-		sc.menu = null;
-		window.status = "";
-	}
-	// but that's even uglier:
-	if (ev && word && (suggestions = sc.suggestions[word]) &&
-		(/mouseup|contextmenu/i.test(ev.type) ||
-		 (plainText && /(click|mousedown|contextmenu)/i.test(ev.type))) && 
-		(word == AjxUtil.getInnerText(p) && !this._ignoreWords[word]))
-	{
-		sc.menu = this._spellCheckCreateMenu(this.parent, 0, suggestions, word, p.id, modified);
-		var pos, ms = sc.menu.getSize(), ws = this.shell.getSize();
-		if (!plainText) {
-			// bug fix #5857 - use Dwt.toWindow instead of Dwt.getLocation so we can turn off dontIncScrollTop
-			pos = Dwt.toWindow(document.getElementById(this._iFrameId), 0, 0, null, true);
-			var pos2 = Dwt.toWindow(p, 0, 0, null, true);
-			pos.x += pos2.x
-				- (doc.documentElement.scrollLeft || doc.body.scrollLeft);
-			pos.y += pos2.y
-				- (doc.documentElement.scrollTop || doc.body.scrollTop);
-		} else {
-			// bug fix #5857
-			pos = Dwt.toWindow(p, 0, 0, null, true);
-			var div = document.getElementById(this._spellCheckDivId);
-			pos.x -= div.scrollLeft;
-			pos.y -= div.scrollTop;
-		}
-		pos.y += p.offsetHeight;
-		// let's make sure we look nice, shall we.
-		if (pos.y + ms.y > ws.y)
-			pos.y -= ms.y + p.offsetHeight;
-		sc.menu.popup(0, pos.x, pos.y);
-		ev._stopPropagation = true;
-		ev._returnValue = false;
-	}
-};
-
-ZmHtmlEditor.prototype._spellCheckCreateMenu = function(parent, fixall, suggestions, word, spanId, modified) {
-    
-	var menu = new ZmPopupMenu(parent);
-//	menu.dontStealFocus();
-
-	if (modified) {
-		var txt = "<b>" + word + "</b>";
-		this._spellCheckCreateMenuItem(menu, "orig", {text:txt}, fixall, word, word, spanId);
-	}
-
-	if (suggestions.length > 0) {
-		for (var i = 0; i < suggestions.length; ++i) {
-			this._spellCheckCreateMenuItem(
-				menu, "sug-"+i, {text:suggestions[i], className: ""},
-				fixall, suggestions[i], word, spanId
-			);
-		}
-		if (!(parent instanceof DwtMenuItem) && this._spellCheck.wordIds[word].length > 1) {
-			if (!this._replaceAllFormatter) {
-				this._replaceAllFormatter = new AjxMessageFormat(ZmMsg.replaceAllMenu);
-			}
-			var txt = "<i>"+this._replaceAllFormatter.format(this._spellCheck.wordIds[word].length)+"</i>";
-			var item = menu.createMenuItem("fixall", {text:txt});
-			var submenu = this._spellCheckCreateMenu(item, 1, suggestions, word, spanId, modified);
-			item.setMenu(submenu);
-		}
-	}
-	else {
-		var item = this._spellCheckCreateMenuItem(menu, "noop", {text:ZmMsg.noSuggestions}, fixall, "", word, spanId);
-		item.setEnabled(false);
-		this._spellCheckCreateMenuItem(menu, "clear", {text:"<i>"+ZmMsg.clearText+"</i>" }, fixall, "", word, spanId);
-	}
-
-    var plainText = this._mode == Dwt.TEXT;
-    if (!fixall || plainText) {
-        menu.createSeparator();
-    }
-
-	if (plainText) {
-		// in plain text mode we want to be able to edit misspelled words
-		var txt = fixall ? ZmMsg.editAll : ZmMsg.edit;
-		this._spellCheckCreateMenuItem(menu, "edit", {text:txt}, fixall, null, word, spanId);
-	}
-
-	if (!fixall) {
-		this._spellCheckCreateMenuItem(menu, "ignore", {text:ZmMsg.ignoreWord}, 0, null, word, spanId);
-//		this._spellCheckCreateMenuItem(menu, "ignore", {text:ZmMsg.ignoreWordAll}, 1, null, word, spanId);
-	}
-
-	if (!fixall && appCtxt.get(ZmSetting.SPELL_CHECK_ADD_WORD_ENABLED)) {
-		this._spellCheckCreateMenuItem(menu, "add", {text:ZmMsg.addWord}, fixall, null, word, spanId);
-	}
-
-	return menu;
-};
-
-ZmHtmlEditor.prototype._spellCheckCreateMenuItem =
-function(menu, id, params, fixall, value, word, spanId, listener) {
-	if (params.className == null) {
-		params.className = "ZMenuItem ZmSpellMenuItem";
-	}
-	var item = menu.createMenuItem(id, params);
-	item.setData("fixall", fixall);
-	item.setData("value", value);
-	item.setData("orig", word);
-	item.setData("spanId", spanId);
-	item.addSelectionListener(listener || this._spellCheckSuggestionListenerObj);
-	return item;
+ZmHtmlEditor.prototype.resetSpellCheck =
+function(){
+	if (!this._spellCheck) { return; }
+	this.discardMisspelledWords();
+	this._spellCheckHideModeDiv();
 };
 
 ZmHtmlEditor.prototype.discardMisspelledWords =
 function(keepModeDiv) {
 	if (!this._spellCheck) { return; }
 
-    var size = this.getSize();
-	if (this._mode == Dwt.HTML) {
+	if (this._mode == DwtHtmlEditor.HTML) {
 		var doc = this._getIframeDoc();
 		doc.body.style.display = "none";
 
@@ -1605,7 +278,7 @@ function(keepModeDiv) {
 
 		doc.body.style.display = "";
 		this._unregisterEditorEventHandler(doc, "contextmenu");
-        size.y = size.y - (keepModeDiv ? 0 : 2);
+
 	} else if (this._spellCheckDivId != null) {
 		var div = document.getElementById(this._spellCheckDivId);
 		var scrollTop = div.scrollTop;
@@ -1624,7 +297,6 @@ function(keepModeDiv) {
 		div.parentNode.removeChild(div);
 		textArea.style.display = "";
 		textArea.scrollTop = scrollTop;
-        size.y = size.y + (keepModeDiv ? 2 : 0);
 	}
 
 	this._spellCheckDivId = this._spellCheck = null;
@@ -1637,65 +309,68 @@ function(keepModeDiv) {
 	if (this.onExitSpellChecker) {
 		this.onExitSpellChecker.run();
 	}
-    this._resetSize();
 };
 
-ZmHtmlEditor.prototype._spellCheckShowModeDiv =
+ZmHtmlEditor.prototype._resetFormatControls =
 function() {
-	var size = this.getSize();
 
-	if (!this._spellCheckModeDivId) {
-		var div = document.createElement("div");
-		div.className = "SpellCheckModeDiv";
-		div.id = this._spellCheckModeDivId = Dwt.getNextId();
-		var html = new Array();
-		var i = 0;
-		html[i++] = "<table border=0 cellpadding=0 cellspacing=0><tr><td style='width:25'>";
-		html[i++] = AjxImg.getImageHtml("SpellCheck");
-		html[i++] = "</td><td style='white-space:nowrap'><span class='SpellCheckLink'>";
-		html[i++] = ZmMsg.resumeEditing;
-		html[i++] = "</span> | <span class='SpellCheckLink'>";
-		html[i++] = ZmMsg.checkAgain;
-		html[i++] = "</span></td></tr></table>";
-		div.innerHTML = html.join("");
+	this._resetFormatControlDefaults();
 
-		//var editable = document.getElementById((this._spellCheckDivId || this.getBodyFieldId()));
-		//editable.parentNode.insertBefore(div, editable);
-		var container = this.getHtmlElement();
-		container.insertBefore(div, container.firstChild);
+	setTimeout(AjxCallback.simpleClosure(this._loadExternalStyle, this, "/css/editor.css"), 250);
+	setTimeout(AjxCallback.simpleClosure(this._setFontStyles, this), 250);
+};
 
-		var el = div.getElementsByTagName("span");
-		Dwt.associateElementWithObject(el[0], this);
-		Dwt.setHandler(el[0], "onclick", ZmHtmlEditor._spellCheckResumeEditing);
-		Dwt.associateElementWithObject(el[1], this);
-		Dwt.setHandler(el[1], "onclick", ZmHtmlEditor._spellCheckAgain);
+ZmHtmlEditor.prototype._resetFormatControlDefaults =
+function() {
+	this._fontFamilyButton && this._fontFamilyButton.setText(DwtHtmlEditor._normalizeFontName(appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_FAMILY)));
+	this._fontSizeButton && this._fontSizeButton.setText(this._getFontSizeLabel(appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_SIZE)));
+	this._fontColorButton && this._fontColorButton.setColor(appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_COLOR));
+	this._styleMenu && this._styleMenu.checkItem(ZmHtmlEditor._VALUE, DwtHtmlEditor.PARAGRAPH, true);
+	this._justifyMenu && this._justifyMenu.checkItem(ZmHtmlEditor._VALUE, DwtHtmlEditor.JUSTIFY_LEFT, true);
+};
+
+ZmHtmlEditor.prototype._loadExternalStyle =
+function(path) {
+	var doc = this._getIframeDoc();
+	// check if already loaded
+	var style = doc.getElementById(path);
+	if (!style) {
+		style = doc.createElement("link");
+		style.id = path;
+		style.rel = "stylesheet";
+		style.type = "text/css";
+		var style_url = appContextPath + path + "?v=" + cacheKillerVersion;
+		if (AjxEnv.isGeckoBased || AjxEnv.isSafari) {
+			style_url = document.baseURI.replace(
+					/^(https?:\x2f\x2f[^\x2f]+).*$/, "$1") + style_url;
+		}
+		// servlet caches CSS unless there's a debug param
+		var debugLevel = DBG && DBG.getDebugLevel();
+		if (debugLevel) {
+			style_url = style_url + "&debug=" + debugLevel;
+		}
+		style.href = style_url;
+		var head = doc.getElementsByTagName("head")[0];
+		if (!head) {
+			head = doc.createElement("head");
+			var docEl = doc.documentElement;
+			if (docEl) {
+				docEl.insertBefore(head, docEl.firstChild);
+			}
+		}
+		head.appendChild(style);
 	}
-	else {
-		document.getElementById(this._spellCheckModeDivId).style.display = "";
+};
+
+ZmHtmlEditor.prototype._setFontStyles =
+function() {
+	var doc = this._getIframeDoc();
+	var style = doc.body && doc.body.style;
+	if (style) {
+		style.fontFamily = DwtHtmlEditor._normalizeFontValue(appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_FAMILY));
+		style.fontSize = appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_SIZE);
+		style.color = appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_COLOR);
 	}
-    this._resetSize();
-};
-
-ZmHtmlEditor._spellCheckResumeEditing =
-function() {
-	var editor = Dwt.getObjectFromElement(this);
-	editor.discardMisspelledWords();
-    editor.restoreFocus(0, true);
-};
-
-ZmHtmlEditor._spellCheckAgain =
-function() {
-    Dwt.getObjectFromElement(this).spellCheck(null, true);
-};
-
-
-ZmHtmlEditor.prototype._spellCheckHideModeDiv =
-function() {
-	var size = this.getSize();
-	if (this._spellCheckModeDivId) {
-		document.getElementById(this._spellCheckModeDivId).style.display = "none";
-	}
-    this._resetSize();
 };
 
 ZmHtmlEditor.prototype.highlightMisspelledWords =
@@ -1776,7 +451,7 @@ function(words, keepModeDiv) {
 	rec = function(node) {
 		switch (node.nodeType) {
 			case 1: /* ELEMENT */
-				for (var i = node.firstChild; i; i = rec(i)) {}
+				for (var i = node.firstChild; i; i = rec(i));
 				node = node.nextSibling;
 				break;
 			case 3: /* TEXT */
@@ -1828,7 +503,7 @@ function(words, keepModeDiv) {
 		return node;
 	};
 
-	if (this._mode == Dwt.HTML) {
+	if (this._mode == DwtHtmlEditor.HTML) {
 		// HTML mode; See the "else" branch for the TEXT mode--code differs
 		// quite a lot.  We should probably implement separate functions as
 		// this already becomes long.
@@ -1853,12 +528,7 @@ function(words, keepModeDiv) {
 			body.innerHTML = body.innerHTML;
 		}
 		body.style.display = ""; // redisplay the body
-
-		var ed = this.getEditor();
-		ed.on('ContextMenu', this._handleEditorEvent.bind(this));
-		ed.on('MouseUp', this._handleEditorEvent.bind(this));
-
-		//this._registerEditorEventHandler(doc, "contextmenu");
+		this._registerEditorEventHandler(doc, "contextmenu");
 	}
 	else { // TEXT mode
 		var textArea = document.getElementById(this._textAreaId);
@@ -1874,6 +544,7 @@ function(words, keepModeDiv) {
 			size.x -= 4;
 			size.y -= 6;
 		}
+		div.style.width = size.x + "px";
 		div.style.height = size.y + "px";
 
 		div.innerHTML = AjxStringUtil.convertToHtml(this.getContent());
@@ -1896,92 +567,877 @@ function(words, keepModeDiv) {
 	};
 };
 
-/**
- * Returns true if editor content is spell checked
- */
-ZmHtmlEditor.prototype.isSpellCheckMode = function() {
-    return Boolean( this._spellCheck );
-};
+ZmHtmlEditor.prototype.setSize =
+function(x, y) {
+	var div = this._spellCheckDivId && document.getElementById(this._spellCheckDivId);
+	var main = document.getElementById(this.getBodyFieldId());
 
-ZmHtmlEditor.prototype._loadExternalStyle =
-function(path) {
-	var doc = this._getIframeDoc();
-	// check if already loaded
-	var style = doc.getElementById(path);
-	if (!style) {
-		style = doc.createElement("link");
-		style.id = path;
-		style.rel = "stylesheet";
-		style.type = "text/css";
-		var style_url = appContextPath + path + "?v=" + cacheKillerVersion;
-		if (AjxEnv.isGeckoBased || AjxEnv.isSafari) {
-			style_url = document.baseURI.replace(
-					/^(https?:\x2f\x2f[^\x2f]+).*$/, "$1") + style_url;
+	// FUDGE: we must substract borders and paddings - yuck.
+	var delta = this._mode == DwtHtmlEditor.HTML ? 8 : 10;
+
+
+	if (x == Dwt.CLEAR) {
+		main.style.width = null;
+		if (div) div.style.width = null;
+	} else if (x == Dwt.DEFAULT) {
+		main.style.width = "auto";
+		if (div) div.style.width = "auto";
+	} else if (typeof(x) == "number") {
+		x -= delta + 4;
+
+		// bug fix #6786 - normalize width/height if less than zero
+		if (x < 0) x = 0;
+
+		main.style.width = x + 5 + "px";
+		if (div) {
+			if (!AjxEnv.isIE) {
+				x = x > 4 ? (x-4) : x;
+			}
+			div.style.width = x + "px";
 		}
-		style.href = style_url;
-		var head = doc.getElementsByTagName("head")[0];
-		if (!head) {
-			head = doc.createElement("head");
-			var docEl = doc.documentElement;
-			if (docEl) {
-				docEl.insertBefore(head, docEl.firstChild);
+	}
+
+
+	if (y == Dwt.CLEAR) {
+		main.style.height = null;
+		if (div) div.style.height = null;
+	} else if (y == Dwt.DEFAULT) {
+		main.style.height = "auto";
+		if (div) div.style.height = "auto";
+	} else if (typeof(y) == "number") {
+
+		// subtract spellchecker DIV if applicable
+		if (this._spellCheckModeDivId) {
+			var spellCheckDivHeight = document.getElementById(this._spellCheckModeDivId).offsetHeight;
+			y -= (isNaN(spellCheckDivHeight) ? 0 : spellCheckDivHeight);
+		}
+		if (this._mode == DwtHtmlEditor.HTML && this._toolbars.length > 0) {
+			for (var i = 0; i < this._toolbars.length; i++) {
+				var toolbar = this._toolbars[i];
+				y -= toolbar.getHtmlElement().offsetHeight;
 			}
 		}
-		head.appendChild(style);
+
+		// subtract fudge factor
+		y -= delta;
+		if (y < 0) y = 0;
+
+		main.style.height = y + "px";
+		if (div) {
+			if (!AjxEnv.isIE) {
+				y = y > 4 ? (y-4) : y;
+			} else {
+				y += 2;
+			}
+			div.style.height = y + "px";
+		}
 	}
 };
 
-ZmHtmlEditor.prototype._registerEditorEventHandler =
-function(iFrameDoc, name) {
-	if (AjxEnv.isIE) {
-		iFrameDoc.attachEvent("on" + name, this.__eventClosure);
-	} else {
-		iFrameDoc.addEventListener(name, this.__eventClosure, true);
+
+// Private / protected methods
+
+ZmHtmlEditor.prototype._initialize =
+function() {
+	if (this._mode == DwtHtmlEditor.HTML) {
+		this._createToolbars();
 	}
+	DwtHtmlEditor.prototype._initialize.call(this);
 };
 
-ZmHtmlEditor.prototype._unregisterEditorEventHandler =
-function(iFrameDoc, name) {
-	if (AjxEnv.isIE) {
-		iFrameDoc.detachEvent("on" + name, this.__eventClosure);
-	} else {
-		iFrameDoc.removeEventListener(name, this.__eventClosure, true);
-	}
-};
-
-ZmHtmlEditor.prototype.__eventClosure =
+ZmHtmlEditor.prototype._styleListener =
 function(ev) {
-	this._handleEditorEvent(AjxEnv.isIE ? this._getIframeWin().event : ev);
-	return tinymce.dom.Event.cancel(ev);
+	this.setStyle(ev.item.getData(ZmHtmlEditor._VALUE));
 };
 
+ZmHtmlEditor.prototype._fontFamilyListener =
+function(ev) {
+	this.setFont(DwtHtmlEditor._normalizeFontValue(ev.item.getData(ZmHtmlEditor._VALUE)));
+	//this._fontFamilyButton.setText(DwtHtmlEditor.FONT_FAMILY[id] && DwtHtmlEditor.FONT_FAMILY[id].name || ZmHtmlEditor.__makeFontName(id));
+};
+
+ZmHtmlEditor.prototype._fontSizeListener =
+function(ev) {
+	this.setFont(null, null, ev.item.getData(ZmHtmlEditor._VALUE));
+};
+
+ZmHtmlEditor.prototype._indentListener =
+function(ev) {
+	this.setIndent(ev.item.getData(ZmHtmlEditor._VALUE));
+};
+
+ZmHtmlEditor.prototype._insertLinkListener =
+function() {
+	var dlg = this._insertLinkDialog;
+	if (!dlg) {
+		dlg = this._insertLinkDialog = new DwtDialog({parent:DwtShell.getShell(window), title:ZmMsg.linkProperties});
+		var id = dlg.base_id = Dwt.getNextId();
+		var html = AjxTemplate.expand("share.Dialogs#EditorInsertLink", {id:id});
+		dlg.setContent(html);
+
+		dlg.linkText = new DwtInputField({ parent        : dlg,
+										   size          : 40,
+										   parentElement : id + "_linkTextCont" });
+
+		dlg.linkTarget = new DwtInputField({ parent        : dlg,
+											 size          : 40,
+											 parentElement : id + "_linkTargetCont" });
+
+		function getURL() {
+				var url = dlg.linkTarget.getValue();
+                if (url && !/^(https?|ftp|notes|cid):\x2f\x2f/i.test(url) && !/^mailto:([a-zA-Z0-9_.-])+@([a-zA-Z0-9_.-])+\.([a-zA-Z])+([a-zA-Z])+/i.test(url)){
+					url = "http://" + url;
+					dlg.linkTarget.setValue(url);
+				}
+				return url;
+		};
+
+		var btn = new DwtButton({ parent: dlg, parentElement: id + "_testBtnCont" });
+		btn.setText(ZmMsg.testUrl);
+		btn.setToolTipContent(ZmMsg.testUrlTooltip);
+		btn.addSelectionListener(new AjxListener(this, function() {
+			var url = getURL();
+			if (url) {
+				window.open(url);
+			}
+		}));
+
+		dlg._tabGroup.addMember(dlg.linkText, 0);
+		dlg._tabGroup.addMember(dlg.linkTarget, 1);
+		dlg._tabGroup.addMember(btn, 2);
+
+		dlg.registerCallback(DwtDialog.OK_BUTTON, new AjxListener(this, function(){
+			var url = getURL();
+            var img = this.getNearestElement("img");
+            var text = dlg.linkText.getValue() || url;
+            if(img) {
+                var text = dlg.linkText.getValue();
+            }
+			dlg.popdown();
+			this.insertLink({ text : text, url  : url });
+		}));
+	}
+	var link = this.getLinkProps();
+	dlg.linkText.setValue(link.text || "");
+	dlg.linkTarget.setValue(link.url || "");
+	dlg.popup();
+	if (/\S/.test(link.text)) {
+		dlg.linkTarget.focus();
+	} else {
+		dlg.linkText.focus();
+	}
+};
+
+ZmHtmlEditor.prototype._insElementListener =
+function(ev) {
+	this.insertElement(ev.item.getData(ZmHtmlEditor._VALUE));
+};
+
+ZmHtmlEditor.prototype._justificationListener =
+function(ev) {
+	this.setJustification(ev.item.getData(ZmHtmlEditor._VALUE));
+};
+
+ZmHtmlEditor.prototype._fontStyleListener =
+function(ev) {
+	this.setFont(null, ev.item.getData(ZmHtmlEditor._VALUE));
+};
+
+ZmHtmlEditor.prototype._fontColorListener =
+function(ev) {
+	this.setFont(null, null, null, ev.detail || "#000000");
+};
+
+ZmHtmlEditor.prototype._fontHiliteListener =
+function(ev) {
+	this.setFont(null, null, null, null, ev.detail || "#ffffff");
+};
+
+ZmHtmlEditor.prototype._createToolbars =
+function(dontCreateButtons) {
+	// NOTE: overload this method to place toolbars differently.
+	if (!this._toolbar1) {
+		var tb = this._toolbar1 = new DwtToolBar({parent:this, className:"ZToolbar",
+												  posStyle:DwtControl.RELATIVE_STYLE, cellSpacing:2, index:0});
+		tb.setVisible(this._mode == DwtHtmlEditor.HTML);
+
+		// Default is to have ONE toolbar now
+		if (!dontCreateButtons) {
+			this._createToolBar1(tb);
+			new DwtControl({parent:tb, className:"vertSep"});
+			this._createToolBar2(tb);
+			this._resetFormatControls();
+		}
+
+		this._toolbars.push(tb);
+	}
+};
+
+ZmHtmlEditor.prototype._createToolBar1 =
+function(tb) {
+	this._createFontFamilyMenu(tb);
+	this._createFontSizeMenu(tb);
+	this._createStyleMenu(tb);
+	this._createJustifyMenu(tb);
+	new DwtControl({parent:tb, className:"vertSep"});
+	this._createListMenu(tb);
+	this._createIndentMenu(tb);
+	new DwtControl({parent:tb, className:"vertSep"});
+	this._createBUIButtons(tb);
+
+	appCtxt.notifyZimlets("on_htmlEditor_createToolbar1", [this, tb]);
+};
+
+ZmHtmlEditor.prototype._createToolBar2 =
+function(tb) {
+	this._createFontColorButtons(tb);
+	new DwtControl({parent:tb, className:"vertSep"});
+	this._createHorizRuleButton(tb);
+	this._createUrlButton(tb);
+	this._createTableMenu(tb);
+	if (this.ACE_ENABLED) {
+		this._createSpreadSheetButton(tb);
+	}
+
+	appCtxt.notifyZimlets("on_htmlEditor_createToolbar2", [this, tb]);
+};
+
+ZmHtmlEditor.prototype.__createTableOperationItems =
+function(menu) {
+	var tblListener = new AjxListener(this, this._tableOperationsListener);
+	var tblCommands = [ "tableProperties...", "cellProperties...", null,
+			    "insertRowAbove", "insertRowUnder", "deleteRow", null,
+			    "insertColumnBefore", "insertColumnAfter", "deleteColumn", null ];
+	if (AjxEnv.isGeckoBased)
+		tblCommands.push("mergeCells", "splitCells", null);
+	tblCommands.push("deleteTable");
+	var tblIcons = [ "TableProperties", "CellProperties", null,
+			 "InsertRowBefore", "InsertRowAfter", "DeleteRow", null,
+			 "InsertColBefore", "InsertColAfter", "DeleteCol", null,
+			 "MergeCells", "SplitCells", null,
+			 "DeleteTable" ];
+	menu._tblItems = {};
+	for (var i = 0; i < tblCommands.length; ++i) {
+		var cmd = tblCommands[i];
+		if (cmd == null)
+			new DwtMenuItem({parent:menu, style:DwtMenuItem.SEPARATOR_STYLE});
+		else {
+			var dots = "";
+			if (/\.\.\.$/.test(cmd)) {
+				cmd = cmd.substr(0, cmd.length - 3);
+				dots = "&hellip;";
+			}
+			var item = new DwtMenuItem({parent:menu});
+			menu._tblItems[cmd] = item;
+			var txt = ZmMsg[cmd] || cmd;
+			item.setText(txt + dots);
+			if (tblIcons[i])
+				item.setImage(tblIcons[i]);
+			item.setData("TableOperations", cmd);
+			item.addSelectionListener(tblListener);
+		}
+	}
+	menu.addPopupListener(new AjxListener(this, this.__onTableOperationsPopup));
+};
+
+ZmHtmlEditor.prototype.__onTableOperationsPopup =
+function(menu) {
+	this.focus();
+	var table = this.getNearestElement("table");
+	var items = menu._tblItems;
+	for (var i in items) {
+		items[i].setEnabled(!!table);
+	}
+	if (!table) { return; }
+
+	menu.setData("table", table);
+
+	if (!AjxEnv.isIE) {
+		// Can we split? (the cell has to be a merged cell)
+		var td = this.getNearestElement("td");
+		var splitEnabled = td && ((td.colSpan && td.colSpan > 1) || (td.rowSpan && td.rowSpan > 1));
+		if (items.splitCells) { //this is only if geckoBased
+			items.splitCells.setEnabled(splitEnabled);
+		}
+
+		// Can we merge? (multiple cells are selected and none of them is previously merged)
+		var a = this.getSelectedCells();
+		var canMerge = true;
+		var howMany = 0;
+		try {
+			for (var i = a.length; --i >= 0;) {
+				var r = a[i];
+				for (var j = r.length; --j >= 0;) {
+					var td = r[j];
+					++howMany;
+					if (td.rowSpan > 1 || td.colSpan > 1) {
+						throw "can't merge";
+					}
+				}
+			}
+		} catch(ex) {
+			canMerge = false;
+		}
+		if (howMany < 2)
+			canMerge = false;
+		if (items.mergeCells) { //this is only if geckoBased
+			items.mergeCells.setEnabled(canMerge);
+		}
+	}
+};
+
+ZmHtmlEditor.prototype._tableOperationsListener =
+function(ev) {
+	var item = ev.item;
+	var table = item.parent.getData("table");
+	var data = item.getData("TableOperations");
+	this.focus();
+	switch (data) {
+		case "tableProperties":
+			AjxDispatcher.require("Extras");
+			var dlg = ZmTableEditor.getTablePropsDialog(this, this.getNearestElement("table"));
+			dlg.popup();
+		break;
+
+		case "cellProperties":
+			AjxDispatcher.require("Extras");
+			var dlg = ZmTableEditor.getCellPropsDialog(this, this.getNearestElement("table"), this.getSelectedCells());
+			dlg.popup();
+			break;
+
+		default:
+			this.doTableOperation(data, { table: table, cells: this.getSelectedCells() });
+	}
+};
+
+ZmHtmlEditor.prototype._createTableListener =
+function(ev) {
+	var size = ev.detail;
+	this.insertTable(size.rows, size.cols, "90%", null, 3, "center");
+};
+
+ZmHtmlEditor.prototype._menu_insertObject =
+function(ev){
+	var item = ev.item;
+	var data = item.getData("ACE");
+	this.insertObject(data);
+};
+
+ZmHtmlEditor.prototype.insertObject =
+function(name, target, data) {
+	var toplevel_url = document.URL
+		.replace(/^(https?:\x2f\x2f[^\x2f]+\x2f?).*$/i, "$1")
+		.replace(/\x2f*$/, "");
+	var component_url = null;
+
+	// REVISIT: object factory needed when there'll be many components to chose from.
+	switch (name) {
+		case "ZmSpreadSheet":
+			component_url = [toplevel_url, appContextPath, "/public/Spreadsheet.jsp?localeId=", AjxEnv.DEFAULT_LOCALE].join("");
+			break;
+	}
+
+	if (component_url) {
+		// var outer = this.getIframe();
+		// outer.style.display = "none";
+		var doc = this._getIframeDoc();
+		this.focus();
+		++this._ace_componentsLoading;
+		if (AjxEnv.isGeckoBased) {
+			Dwt.enableDesignMode(doc, false);
+		}
+		var ifr = doc.createElement("iframe");
+		ifr.id = "ACE-" + Dwt.getNextId();
+		ifr.frameBorder = 0;
+		ifr.src = component_url;
+		ifr.style.width = "100%";
+		ifr.style.height = "400px";
+		// Avoid bug 8523 in IE.
+		ifr.ondragstart = AjxCallback.returnFalse;
+		if (!target) {
+			// embed it into 2 paragraphs to make it easy
+			// to type text before or after the
+			// spreadsheet
+			var p = doc.createElement("br");
+			var df = doc.createDocumentFragment();
+			df.appendChild(p);
+			df.appendChild(ifr);
+			df.appendChild(p.cloneNode(true));
+			this._insertNodeAtSelection(df);
+		} else {
+			target.parentNode.replaceChild(ifr, target);
+		}
+		var handler = AjxCallback.simpleClosure(this._ace_finishedLoading, this, ifr, name, data);
+		if (AjxEnv.isIE) {
+			ifr.onreadystatechange = handler;
+		} else {
+			ifr.addEventListener("load", handler, true);
+		}
+	}
+};
+
+ZmHtmlEditor.prototype._ace_finishedLoading = function(ifr, name, data) {
+	// We have to delay execution (bug 12870).  Seems to affect
+	// Firefox only.  10ms should be quite enough.
+	var self = this;
+	if (!AjxEnv.isIE || ifr.readyState == "complete") {
+		setTimeout(function() {
+			try {
+				var win = Dwt.getIframeWindow(ifr);
+				win.ZmACE = true;
+				win.ZmACE_COMPONENT_NAME = name;
+				ifr.onload = null;
+				ifr.onreadystatechange = null;
+				win.create(data);
+				--self._ace_componentsLoading;
+			} catch(ex) {
+				--self._ace_componentsLoading;
+				// throw new DwtException("Can't deserialize ALE component", DwtException.INTERNAL_ERROR, ex);
+				var dlg = appCtxt.getErrorDialog();
+				dlg.setMessage(ZmMsg.aleError, ex.msg || ex.toString(), DwtMessageDialog.WARNING_STYLE, "ALE error");
+				dlg.popup(null, true);
+			}
+		}, 10);
+	}
+};
+
+// Returns an array of embedded objects (each one is a reference to its containing IFRAME)
+ZmHtmlEditor.prototype._getAceObjects =
+function() {
+	var tmp = this._getIframeDoc().getElementsByTagName("iframe");
+	var a = new Array(tmp.length);
+	for (var i = tmp.length; --i >= 0;) {
+		a[i] = tmp[i];
+	}
+	return a;
+};
+
+ZmHtmlEditor.prototype._embedHtmlContent =
+function(html, insertFontStyle, onlyInnerContent) {
+	if (!insertFontStyle && !onlyInnerContent) {
+		if (!(this.ACE_ENABLED && this._headContent))
+			return DwtHtmlEditor.prototype._embedHtmlContent.call(this, html);
+	}
+
+	if (insertFontStyle) {
+		html = this._getFontStyle(html);
+	}
+
+	if (onlyInnerContent) {
+		return html;
+	}
+
+	var headContent = this._headContent ? this._headContent.join("") : "";
+
+	var p_style = "<style type='text/css'>p { margin: 0; }</style>"; // bug 3264
+
+	return [
+		"<html><head>",
+		p_style, headContent,
+		"</head><body>",
+		html,
+		"</body></html>"
+	].join("");
+};
+
+ZmHtmlEditor.prototype._getFontStyle =
+function(html) {
+	var a = [], i = 0;
+	a[i++] = "<div style='font-family: ";
+	a[i++] = DwtHtmlEditor._normalizeFontValue(appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_FAMILY));
+	a[i++] = "; font-size: ";
+	a[i++] = appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_SIZE);
+	a[i++] = "; color: ";
+	a[i++] = appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_COLOR);
+	a[i++] = "'>";
+	a[i++] = html;
+	a[i++] = "</div>";
+	return a.join("");
+};
+
+ZmHtmlEditor.prototype._serializeAceObjects =
+function(content) {
+	this._headContent = [];
+	var done = {};
+	var replaceCallback = AjxCallback.simpleClosure(this._replaceAceIframes, this, done);
+	return content.replace(ZmHtmlEditor.ACE_IFRAME_RE, replaceCallback);
+};
+
+ZmHtmlEditor.prototype._replaceAceIframes =
+function(done, match, iframeId) {
+	var iframe = this._getIframeDoc().getElementById(iframeId);
+	var win = Dwt.getIframeWindow(iframe);
+	var html = win.getHTML();
+	var data = win.serialize()
+		.replace(/&/g, "&amp;")
+		.replace(/>/g, "&gt;");
+	var component_name = win.ZmACE_COMPONENT_NAME;
+	if (!done[component_name] && typeof win.getHeadHTML == "function") {
+		done[component_name] = true;
+		this._headContent.push(win.getHeadHTML());
+	}
+	return [
+		"<div class=\"ACE ",
+		component_name,
+		"\">",
+		html,
+		"<!--",
+		"ACE[",
+		component_name,
+		"]:",
+		data,
+		"-->",
+		"</div>"
+	].join("");
+};
+
+ZmHtmlEditor.prototype._deserializeAceObjects =
+function() {
+	var divs = this._getIframeDoc().getElementsByTagName("div");
+	var tmp = new Array(divs.length);
+	for (var i = 0; i < divs.length; ++i) {
+		tmp[i] = divs.item(i);
+	}
+	divs = tmp;
+	for (var i = 0; i < divs.length; ++i) {
+		var holder = divs[i];
+		if (/^ACE\s+([^\s]+)/.test(holder.className)) {
+			var component_name = RegExp.$1;
+			var data = holder.lastChild;
+			if (data.nodeType == 8 /* Node.COMMENT_NODE */) {
+				data = data.data;
+				var header = "ACE[" + component_name + "]:";
+				if (data.indexOf(header) == 0) {
+					data = data.substr(header.length)
+						.replace(/&gt;/g, ">")
+						.replace(/&amp;/g, "&");
+					this.insertObject(component_name, holder, data);
+				}
+			}
+		}
+	}
+};
+
+//Editor Buttons
+
+ZmHtmlEditor.prototype._createBUIButtons =
+function(tb) {
+	var params = {parent:tb, style:DwtButton.TOGGLE_STYLE};
+	var listener = new AjxListener(this, this._fontStyleListener);
+	this._boldButton = new DwtToolBarButton(params);
+	this._boldButton.setImage("Bold");
+	this._boldButton.setToolTipContent(appCtxt.getShortcutHint("editor", DwtKeyMap.TEXT_BOLD));
+	this._boldButton.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.BOLD_STYLE);
+	this._boldButton.addSelectionListener(listener);
+
+	this._italicButton = new DwtToolBarButton(params);
+	this._italicButton.setImage("Italics");
+	this._italicButton.setToolTipContent(appCtxt.getShortcutHint("editor", DwtKeyMap.TEXT_ITALIC));
+	this._italicButton.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.ITALIC_STYLE);
+	this._italicButton.addSelectionListener(listener);
+
+	this._underlineButton = new DwtToolBarButton(params);
+	this._underlineButton.setImage("Underline");
+	this._underlineButton.setToolTipContent(appCtxt.getShortcutHint("editor", DwtKeyMap.TEXT_UNDERLINE));
+	this._underlineButton.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.UNDERLINE_STYLE);
+	this._underlineButton.addSelectionListener(listener);
+
+};
+
+ZmHtmlEditor.prototype._createFontColorButtons =
+function(tb) {
+	this._fontColorButton = new ZmHtmlEditorColorPicker(tb,null,"ZToolbarButton");
+	this._fontColorButton.dontStealFocus();
+	this._fontColorButton.setImage("FontColor");
+	this._fontColorButton.showColorDisplay(true);
+	this._fontColorButton.setToolTipContent(ZmMsg.fontColor);
+	this._fontColorButton.addSelectionListener(new AjxListener(this, this._fontColorListener));
+
+	this._fontBackgroundButton = new ZmHtmlEditorColorPicker(tb, null, "ZToolbarButton");
+	this._fontBackgroundButton.dontStealFocus();
+	this._fontBackgroundButton.setImage("FontBackground");
+	this._fontBackgroundButton.showColorDisplay(true);
+	this._fontBackgroundButton.setToolTipContent(ZmMsg.fontBackground);
+	this._fontBackgroundButton.addSelectionListener(new AjxListener(this, this._fontHiliteListener));
+};
+
+ZmHtmlEditor.prototype._createHorizRuleButton =
+function(tb) {
+	var params = {parent:tb};
+	this._horizRuleButton = new DwtToolBarButton(params);
+	this._horizRuleButton.setImage("HorizRule");
+	this._horizRuleButton.setToolTipContent(ZmMsg.horizRule);
+	this._horizRuleButton.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.HORIZ_RULE);
+	this._horizRuleButton.addSelectionListener(new AjxListener(this, this._insElementListener));
+};
+
+ZmHtmlEditor.prototype._createUrlButton =
+function(tb) {
+	var params = {parent:tb};
+	this._insertLinkButton = new DwtToolBarButton(params);
+	this._insertLinkButton.setImage("URL");
+	this._insertLinkButton.setToolTipContent(ZmMsg.insertLink);
+	this._insertLinkButton.addSelectionListener(new AjxListener(this, this._insertLinkListener));
+};
+
+ZmHtmlEditor.prototype._createTableMenu =
+function(tb) {
+	var params = {parent:tb};
+	// BEGIN: Table operations
+	var b = this._tableMenu = new DwtToolBarButton(params);
+	b.setToolTipContent(ZmMsg.insertTable);
+	b.dontStealFocus();
+	b.setImage("Table");
+	var menu = new DwtMenu({parent:b});
+	b.setMenu(menu);
+
+	var item = new DwtMenuItem({parent:menu});
+	item.setText(ZmMsg.insertTable);
+	var grid_menu = new DwtMenu({parent:item, style:DwtMenu.GENERIC_WIDGET_STYLE});
+	var grid = new DwtGridSizePicker(grid_menu, ZmMsg.tableSize);
+	grid.addSelectionListener(new AjxListener(this, this._createTableListener));
+	item.setMenu(grid_menu);
+	item.setImage("InsertTable");
+
+	new DwtMenuItem({parent:menu, style:DwtMenuItem.SEPARATOR_STYLE});
+	this.__createTableOperationItems(menu);
+	// END: table operations
+};
+
+ZmHtmlEditor.prototype._createSpreadSheetButton =
+function(tb) {
+	new DwtControl({parent:tb, className:"vertSep"});
+
+	var params = {parent:tb, style:0};
+	var b = new DwtToolBarButton(params);
+	b.setImage("SpreadSheet");
+	b.setData("ACE", "ZmSpreadSheet");
+	b.setToolTipContent(ZmMsg.insertSpreadsheet);
+	b.addSelectionListener(new AjxListener(this, this._menu_insertObject));
+};
+
+ZmHtmlEditor.prototype._createStyleMenu =
+function(tb) {
+	var s = new DwtToolBarButton({parent:tb});
+	// minor hack to set section symbol - avoids d/l'ing an icon :]
+	s.setText("x");
+	s._textEl.innerHTML = "<span style='font-size:13px'>&sect;</span>";
+	s.setToolTipContent(ZmMsg.sections);
+	s.dontStealFocus();
+	var menu = this._styleMenu = new ZmPopupMenu(s);
+	var listener = new AjxListener(this, this._styleListener);
+	var menuItems = [
+		{ label:ZmMsg.normal,		id:DwtHtmlEditor.PARAGRAPH},
+		{ label:ZmMsg.heading1, 	id:DwtHtmlEditor.H1},
+		{ label:ZmMsg.heading2, 	id:DwtHtmlEditor.H2},
+		{ label:ZmMsg.heading3, 	id:DwtHtmlEditor.H3},
+		{ label:ZmMsg.heading4, 	id:DwtHtmlEditor.H4},
+		{ label:ZmMsg.heading5, 	id:DwtHtmlEditor.H5},
+		{ label:ZmMsg.heading6, 	id:DwtHtmlEditor.H6},
+		{ label:ZmMsg.address,		id:DwtHtmlEditor.ADDRESS},
+		{ label:ZmMsg.preformatted,	id:DwtHtmlEditor.PREFORMATTED} ];
+
+	for (var i = 0; i < menuItems.length; i++) {
+		var item = menuItems[i];
+		var mi = menu.createMenuItem(item.id, {text:item.label, style:DwtMenuItem.RADIO_STYLE});
+		mi.addSelectionListener(listener);
+		mi.setData(ZmHtmlEditor._VALUE, item.id);
+		if (i == 0)
+			mi.setChecked(true, true);
+	}
+
+	s.setMenu(menu);
+};
+
+ZmHtmlEditor.prototype._createListMenu =
+function(tb) {
+	var b = this._listMenuButton = new DwtToolBarButton({parent:tb});
+	b.dontStealFocus();
+	b.setImage("BulletedList");
+	b.setToolTipContent(ZmMsg.bulletedList);
+
+	var listListener = new AjxListener(this, this._insElementListener);
+	var menu = this._listMenu = new ZmPopupMenu(b);
+	var bulletListMenu = this._bulletListMenuItem = menu.createMenuItem(DwtHtmlEditor.UNORDERED_LIST, {image:"BulletedList", style:DwtMenuItem.SELECT_STYLE});
+	bulletListMenu.addSelectionListener(listListener);
+	bulletListMenu.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.UNORDERED_LIST);
+
+	var numberListMenu = this._numberListMenuItem = menu.createMenuItem(DwtHtmlEditor.ORDERED_LIST, {image:"NumberedList", style:DwtMenuItem.SELECT_STYLE});
+	numberListMenu.addSelectionListener(listListener);
+	numberListMenu.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.ORDERED_LIST);
+
+	b.setMenu(menu);
+};
+
+ZmHtmlEditor.prototype._createIndentMenu =
+function(tb) {
+	var b = this._indentMenuButton = new DwtToolBarButton({parent:tb});
+	b.dontStealFocus();
+	b.setImage("Outdent");
+	b.setToolTipContent(ZmMsg.indentTooltip);
+
+	var listener = new AjxListener(this, this._indentListener);
+	var menu = this._indentMenu = new ZmPopupMenu(b);
+
+	var indentMenu = this._indentMenuItem = menu.createMenuItem(DwtHtmlEditor.OUTDENT, {image:"Outdent", style:DwtMenuItem.SELECT_STYLE});
+	indentMenu.addSelectionListener(listener);
+	indentMenu.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.OUTDENT);
+
+	var outdentMenu = this._outdentMenuItem = menu.createMenuItem(DwtHtmlEditor.INDENT, {image:"Indent", style:DwtMenuItem.SELECT_STYLE});
+	outdentMenu.addSelectionListener(listener);
+	outdentMenu.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.INDENT);
+
+	b.setMenu(menu);
+};
+
+ZmHtmlEditor.prototype._createJustifyMenu =
+function(tb) {
+	var b = new DwtToolBarButton({parent:tb});
+	b.dontStealFocus();
+	b.setImage("LeftJustify");
+	b.setToolTipContent(ZmMsg.alignment);
+	var menu = this._justifyMenu = new ZmPopupMenu(b);
+	var listener = new AjxListener(this, this._justificationListener);
+	var menuItems = [
+		{ image:"LeftJustify",		id:DwtHtmlEditor.JUSTIFY_LEFT},
+		{ image:"CenterJustify",	id:DwtHtmlEditor.JUSTIFY_CENTER},
+		{ image:"RightJustify",		id:DwtHtmlEditor.JUSTIFY_RIGHT},
+		{ image:"FullJustify",		id:DwtHtmlEditor.JUSTIFY_FULL} ];
+
+	for (var i = 0; i < menuItems.length; i++) {
+		var item = menuItems[i];
+		var mi = menu.createMenuItem(item.id, {image:item.image, style:DwtMenuItem.RADIO_STYLE});
+		mi.addSelectionListener(listener);
+		mi.setData(ZmHtmlEditor._VALUE, item.id);
+		if (i == 0) {
+			mi.setChecked(true, true);
+		}
+	}
+
+	b.setMenu(menu, false, DwtMenuItem.RADIO_STYLE);
+};
+
+ZmHtmlEditor.prototype._createFontFamilyMenu =
+function(tb) {
+	this._fontFamilyButton = new DwtToolBarButton({parent:tb});
+	this._fontFamilyButton.dontStealFocus();
+	this._fontFamilyButton.setSize(Dwt.DEFAULT);
+	this._fontFamilyButton.setAlign(DwtLabel.ALIGN_LEFT);
+	var menu = new ZmPopupMenu(this._fontFamilyButton);
+	var listener = new AjxListener(this, this._fontFamilyListener);
+
+	for (var id in DwtHtmlEditor.FONT_FAMILY) {
+		var name = DwtHtmlEditor.FONT_FAMILY[id] && DwtHtmlEditor.FONT_FAMILY[id].name || ZmHtmlEditor.__makeFontName(id);
+		var mi = menu.createMenuItem(name, {text:name});
+		mi.addSelectionListener(listener);
+		mi.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.FONT_FAMILY[id] && DwtHtmlEditor.FONT_FAMILY[id].value || ZmHtmlEditor.__makeFontName(id));
+	}
+
+	this._fontFamilyButton.setMenu(menu);
+};
+
+ZmHtmlEditor.prototype._createFontSizeMenu =
+function(tb) {
+	this._fontSizeButton = new DwtToolBarButton({parent:tb});
+	this._fontSizeButton.dontStealFocus();
+	var menu = new ZmPopupMenu(this._fontSizeButton);
+	var listener = new AjxListener(this, this._fontSizeListener);
+
+	for (var i = 0; i < ZmHtmlEditor.FONT_SIZE_VALUES.length; i++) {
+		var item = ZmHtmlEditor.FONT_SIZE_VALUES[i];
+		var num = i+1;
+		var text = num + " (" + item + ")";
+		var mi = menu.createMenuItem(i, {text:text});
+		mi.addSelectionListener(listener);
+		mi.setData(ZmHtmlEditor._VALUE, num);
+	}
+
+	this._fontSizeButton.setMenu(menu);
+};
+
+ZmHtmlEditor.prototype._getFontSizeLabel =
+function(fontSize) {
+	for (var i = 0; i < ZmHtmlEditor.FONT_SIZE_VALUES.length; i++) {
+		var item = ZmHtmlEditor.FONT_SIZE_VALUES[i];
+		if (fontSize == item) {
+			return ((i+1) + " (" + item + ")");
+		}
+	}
+	// return "12pt" by default (yuck)
+	return "3 (12pt)";
+};
+
+ZmHtmlEditor.prototype._rteStateChangeListener =
+function(ev) {
+	this._boldButton.setSelected(ev.isBold);
+	this._underlineButton.setSelected(ev.isUnderline);
+	this._italicButton.setSelected(ev.isItalic);
+	if (this._strikeThruButton) {
+		this._strikeThruButton.setSelected(ev.isStrikeThru);
+	}
+	if (this._subscriptButton) {
+		this._subscriptButton.setSelected(ev.isSubscript);
+	}
+	if (this._superscriptButton) {
+		this._superscriptButton.setSelected(ev.isSuperscript);
+	}
+	if (ev.color) {
+		this._fontColorButton.setColor(ev.color);
+	}
+	if (ev.backgroundColor) {
+		this._fontBackgroundButton.setColor(ev.backgroundColor);
+	}
+	if (ev.style) {
+		this._styleMenu.checkItem(ZmHtmlEditor._VALUE, ev.style, true);
+	}
+
+	if (!AjxEnv.isIE) {
+		// Bug 20171
+		// For reasons not known to humanity, the following code resets the undo stack in IE.
+		// It seems to have something to do with modifying the DOM.  The setText() calls use
+		// innerHTML, but it's not about innerHTML, since I tried using DOM methods as well
+		// to modify the text (createTextNode/removeChild/appendChild).  Nothing works.
+		// I therefore disable this code for IE, trusting it's better to have working undo
+		// and an un-updated toolbar, rather than the other way around.
+
+		if (ev.fontFamily) {
+			this._fontFamilyButton.setText(DwtHtmlEditor._normalizeFontName(ev.fontFamily));
+		}
+
+		if (ev.fontSize) {
+			var mi = this._fontSizeButton.getMenu().getItem(parseInt(ev.fontSize)-1);
+			if (mi)
+				this._fontSizeButton.setText(mi.getText());
+		}
+	}
+
+	this._justifyMenu.checkItem(ZmHtmlEditor._VALUE, ev.justification, true);
+};
+
+ZmHtmlEditor.prototype._settingChangeListener =
+function(ev) {
+	if (ev.type != ZmEvent.S_SETTING) { return; }
+
+	var id = ev.source.id;
+	if (id == ZmSetting.COMPOSE_INIT_FONT_COLOR ||
+		id == ZmSetting.COMPOSE_INIT_FONT_FAMILY ||
+		id == ZmSetting.COMPOSE_INIT_FONT_SIZE)
+	{
+		this._resetFormatControlDefaults();
+		this._fontStyle = null;
+	}
+};
 
 ZmHtmlEditor.prototype._handleEditorEvent =
 function(ev) {
-	var ed = this.getEditor();
-	var retVal = true;
-
-	if (ev.type == "contextmenu") {
-		// context menu event; we want to translate the event
-		// coordinates from iframe to parent document coords,
-		// before notifying listeners.
-		var mouseEv = DwtShell.mouseEvent;
-		mouseEv.setFromDhtmlEvent(ev);
-		var pos = Dwt.getLocation(document.getElementById(this._iFrameId));
-		if (!AjxEnv.isIE) {
-			var doc = this._getIframeDoc();
-			var sl = doc.documentElement.scrollLeft || doc.body.scrollLeft;
-			var st = doc.documentElement.scrollTop || doc.body.scrollTop;
-			pos.x -= sl;
-			pos.y -= st;
-		}
-		mouseEv.docX += pos.x;
-		mouseEv.docY += pos.y;
-		DwtControl.__mouseEvent(ev, DwtEvent.ONCONTEXTMENU, this, mouseEv);
-		retVal = mouseEv._returnValue;
+	var rv = this._eventCallback ? this._eventCallback.run(ev) : true;
+	if (rv) {
+		rv = DwtHtmlEditor.prototype._handleEditorEvent.call(this, ev);
 	}
 
-
+	if (this._TIMER_spell) {
+		clearTimeout(this._TIMER_spell);
+	}
 	var self = this;
 	if (this._spellCheck) {
 		var dw;
@@ -1996,345 +1452,903 @@ function(ev) {
 			self._handleSpellCheckerEvents(dw);
 			this._TIMER_spell = null;
 		}, 100);
-		return tinymce.dom.Event.cancel(ev);
 	}
 
-	return retVal;
+	if (/keydown/i.test(ev.type)) {
+		if (ev.keyCode==13) { // Enter
+			var element = this._getParentElement();
+			var ancestor = element;
+
+			while (ancestor) {
+				var tagname = Dwt.getAttr(ancestor, "tagName");
+				if (tagname && tagname.toLowerCase() === "blockquote")
+					break;
+				ancestor = ancestor.parentNode;
+			}
+
+			if (ancestor) {
+				this._splitBlockquote(ancestor, element);
+				rv = false;
+			}
+		}
+
+		if (ev.keyCode==8 || ev.keyCode==46) { // Backspace or delete
+			setTimeout(AjxCallback.simpleClosure(function() { // Waiting for the other event handlers (including the browser's own) to finish tends to clean up the DOM for us
+				var blockquote1, blockquote2;
+				for (var child=this._getIframeDoc().body.firstChild; child && child.nextSibling; child=child.nextSibling) {
+					var child2 = child.nextSibling;
+					if (child2 && child2.tagName && child2.tagName.toLowerCase()=="p" && this._elementIsIEFiller(child2.firstChild))
+						child2 = child2.nextSibling;
+
+					if (child2 && child.tagName && child2.tagName && child.tagName.toLowerCase()=="blockquote" && child2.tagName.toLowerCase()=="blockquote") {
+						this._mergeBlockquotes(child, child2);
+					}
+				}
+			}, this), 5);
+			if (ev.keyCode==46) {
+				if (!AjxEnv.isIE) {
+					var range = this._getRange();
+					var el = range.startContainer.childNodes[range.startOffset];
+					if (el && el.tagName && el.tagName.toLowerCase()=="br") {
+						this._removeElement(el);
+                        if (ev.preventDefault)
+                                ev.preventDefault();
+                        rv=false;
+					}
+				}
+			}
+
+		}
+	}
+	return rv;
 };
 
-ZmHtmlEditor.prototype._getSelection =
-function() {
+ZmHtmlEditor.prototype._splitBlockquote =
+function(blockquote, element) {
+	var range, el, offset=null, coffset=null;
+	var text1,text2;
+
+	// Get range, el, text and offset
 	if (AjxEnv.isIE) {
-		return this._getIframeDoc().selection;
+		var iFrameDoc = this._getIframeDoc();
+		range = iFrameDoc.selection.createRange();
+		range.collapse(false);
+		el = element;
+
+		// IE doesn't let us get the offset directly, so we count the number of times we can use moveStart() until we're out of the containing element
+		var dummy = "###"+Dwt.getNextId()+"###";
+		range.pasteHTML(dummy);
+		offset = el.innerHTML.indexOf(dummy);
+		el.innerHTML = el.innerHTML.replace(dummy,"");
+		text1 = offset ? el.innerHTML.substring(0, offset) : ""; // Extract text before and after breakpoint
+		text2 = el.innerHTML.substring(offset);
+
 	} else {
-		return this._getIframeWin().getSelection();
+		range = this._getRange();
+		range.collapse(false);
+		var type = range.startContainer.nodeType;
+		if (type==3 || type==4 || type==8) {
+			offset = range.startOffset;
+			el = range.startContainer.parentNode;
+			text1 = offset ? range.startContainer.textContent.substring(0, offset) : ""; // Extract text before and after breakpoint
+			text2 = range.startContainer.textContent.substring(offset);
+			var _el = range.startContainer.previousSibling;
+			while (_el) {
+				text1 = this._getElementHTML(_el) + text1; // offset is relative to local TextNode, but we need to use the entire text of the surrounding element
+				_el = _el.previousSibling; // so we extract the text from all siblings and put it together
+			}
+			_el = range.startContainer.nextSibling;
+			while (_el) {
+				text2 = text2 + this._getElementHTML(_el); // Same for text after the breakpoint
+				_el = _el.nextSibling;
+			}
+		} else {
+			coffset = range.startOffset; // Breakpoint is not inside a TextNode, store the element offset instead
+			el = range.startContainer;
+		}
+	}
+
+
+	var id = el.id = el.id || Dwt.getNextId();
+	var blockquote2 = blockquote.cloneNode(true); // Create an orphaned clone of the blockquote. This will be meddled with before getting attached to the DOM tree
+	var el1 = el;
+	var el2 = Dwt.byId(id, blockquote2); // Can't use document.getElementById on orphaned trees
+	el2.removeAttribute("id");
+
+	if (offset!==null) {
+		el1.innerHTML = text1; // Insert the text we extracted earlier
+		el2.innerHTML = text2;
+	} else if (coffset!==null) {
+		this._removeNextSiblings(el1.childNodes[coffset]); // cut away all siblings after breakpoint for el1
+		var c2 = el2.childNodes[coffset];
+		this._removePreviousSiblings(c2); // and all sibling before breakpoint for el2
+		this._removeElement(c2);
+	}
+
+	// Prune off all "later" siblings in the blockquote tree
+	while (el1 != blockquote) {
+		this._removeNextSiblings(el1);
+		el1 = el1.parentNode;
+	}
+
+	// Prune off all "prior" siblings in the blockquote2 tree
+	while (el2 != blockquote2) {
+		this._removePreviousSiblings(el2);
+		el2 = el2.parentNode;
+	}
+
+	// Now we've effectively cut the original blockquote in half, with the second half present in blockquote2
+	if (blockquote.nextSibling) {
+		blockquote.parentNode.insertBefore(blockquote2, blockquote.nextSibling);
+	} else {
+		blockquote.parentNode.appendChild(blockquote2);
+	}
+
+	if (AjxEnv.isIE) {
+		// Hack to get IE to properly place the cursor between the two blockquotes
+		var p = document.createElement("p");
+		var span1 = document.createElement("span");
+		var span2 = document.createElement("span");
+		var br = document.createElement("br");
+		span1.appendChild(span2);
+		span1.appendChild(br);
+		p.appendChild(span1);
+		blockquote2.parentNode.insertBefore(p, blockquote2);
+		this._setCursor(span2);
+		this._setIEFiller(span1); // We need to remove this element when we want to reconnect the blockquotes, so give it something we can find again
+		span2.parentNode.removeChild(span2);
+	} else {
+		if (AjxEnv.isSafari) {
+			var t = this;
+			setTimeout(function(){
+				var p;
+				if (blockquote.lastChild && blockquote.lastChild.childElementCount==1 && blockquote.lastChild.firstChild instanceof HTMLBRElement)
+					p = blockquote.lastChild;
+				else if (blockquote2.firstChild && blockquote2.firstChild.childElementCount==1 && blockquote2.firstChild.firstChild instanceof HTMLBRElement)
+					p = blockquote2.firstChild;
+				if (p) {
+					blockquote.parentNode.insertBefore(p, blockquote2);
+					range.setStart(p,0);
+					var sel = t._getSelection();
+					sel.removeAllRanges();
+					sel.addRange(range);
+				}
+			},5);
+		}
+		range.setStartAfter(blockquote); // Set the breakpoint between the blockquotes (which is immediately after the first one, duh)
+		var sel = this._getSelection();
+		sel.removeAllRanges();
+		sel.addRange(range);
 	}
 };
 
-/*
- * Returns toolbar row of tinymce
- *
- *  @param {Number}	Toolbar Row Number 1,2
- *  @param {object}	tinymce editor
- *  @return	{Toolbar HTML Element}
- */
-ZmHtmlEditor.prototype.getToolbar =
-function(number, editor) {
-    var controlManager,
-        toolbar;
-
-    editor = editor || this.getEditor();
-    if (editor && number) {
-        controlManager = editor.controlManager;
-        if (controlManager) {
-            toolbar = controlManager.get("toolbar"+number);
-            if (toolbar && toolbar.id) {
-                return document.getElementById(toolbar.id);
-            }
-        }
-    }
+// Basically yields the same as el.outerHTML, but for all browsers
+ZmHtmlEditor.prototype._getElementHTML = function(el) {
+	if (AjxEnv.isIE) return el.outerHTML;
+	var parent = document.createElement(el.parentNode && el.parentNode.tagName || "span");
+	parent.appendChild(el.cloneNode(true));
+	return parent.innerHTML;
 };
 
-/*
- *  Returns toolbar button of tinymce
- *
- *  @param {String}	button name
- *  @param {object}	tinymce editor
- *  @return	{Toolbar Button HTML Element}
- */
-ZmHtmlEditor.prototype.getToolbarButton =
-function(buttonName, editor) {
-    var controlManager,
-        toolbarButton;
-
-    if (editor && buttonName) {
-        controlManager = editor.controlManager;
-        if (controlManager) {
-            toolbarButton = controlManager.get(buttonName);
-            if (toolbarButton && toolbarButton.id) {
-                return document.getElementById(toolbarButton.id);
-            }
-        }
-    }
-};
-
-/*
- *  Inserting image for signature
- */
-ZmHtmlEditor.prototype.insertImageDoc =
-function(file) {
-    var src = file.rest;
-    if (!src) { return; }
-    var path = appCtxt.get(ZmSetting.REST_URL) + ZmFolder.SEP;
-    var dfsrc = file.docpath;
-    if (dfsrc && dfsrc.indexOf("doc:") == 0) {
-        var url = [path, dfsrc.substring(4)].join('');
-        src = AjxStringUtil.fixCrossDomainReference(url, false, true);
-    }
-    this.insertImage(src, null, null, null, dfsrc);
-};
-
-/*
- *  Insert image callback
- */
-ZmHtmlEditor.prototype._imageUploaded = function(folder, fileNames, files) {
-
-	for (var i = 0; i < files.length; i++) {
-		var file = files[i];
-		var path = appCtxt.get(ZmSetting.REST_URL) + ZmFolder.SEP;
-		var docPath = folder.getRestUrl() + ZmFolder.SEP + file.name;
-		file.docpath = ["doc:", docPath.substr(docPath.indexOf(path) + path.length)].join("");
-		file.rest = folder.getRestUrl() + ZmFolder.SEP + AjxStringUtil.urlComponentEncode(file.name);
-
-		this.insertImageDoc(file);
+// Removes the element from its parent
+ZmHtmlEditor.prototype._removeElement = function(el) {
+	if (el && el.parentNode) {
+		el.parentNode.removeChild(el);
 	}
 };
 
-/**
- * This will be fired before every popup open
- *
- * @param {windowManager} tinymce window manager for popups
- * @param {popupWindow}	contains tinymce popup info or popup DOM Window
- *
- */
-ZmHtmlEditor.onPopupOpen = function(windowManager, popupWindow) {
-    if (!popupWindow) {
-        return;
-    }
-    if (popupWindow.resizable) {
-        popupWindow.resizable = 0;
-    }
-
-    var popupIframe = popupWindow.frameElement,
-        popupIframeLoad;
-
-    if (popupIframe && popupIframe.src && popupIframe.src.match("/table.htm")) {//Table dialog
-        popupIframeLoad = function(popupWindow, popupIframe) {
-            var doc,align,width;
-            if (popupWindow.action === "insert") {//Insert Table Action
-                doc = popupWindow.document;
-                if (doc) {
-                    align = doc.getElementById("align");
-                    width = doc.getElementById("width");
-                    align && (align.value = "center");
-                    width && (width.value = "90%");
-                }
-            }
-            if (this._popupIframeLoad) {
-                popupIframe.detachEvent("onload", this._popupIframeLoad);
-                delete this._popupIframeLoad;
-            }
-            else {
-                popupIframe.onload = null;
-            }
-        };
-
-        if (popupIframe.attachEvent) {
-            this._popupIframeLoad = popupIframeLoad.bind(this, popupWindow, popupIframe);
-            popupIframe.attachEvent("onload", this._popupIframeLoad);
-        }
-        else {
-            popupIframe.onload = popupIframeLoad.bind(this, popupWindow, popupIframe);
-        }
-    }
+// Removes all sibling elements coming before el
+ZmHtmlEditor.prototype._removePreviousSiblings = function(el) {
+	if (el && el.parentNode) {
+		while (el.previousSibling) {
+			this._removeElement(el.previousSibling);
+		}
+	}
+};
+// Removes all sibling elements coming after el
+ZmHtmlEditor.prototype._removeNextSiblings = function(el) {
+	if (el && el.parentNode) {
+		while (el.nextSibling) {
+			this._removeElement(el.nextSibling);
+		}
+	}
 };
 
-/**
- * Returns true if editor content is modified
- */
-ZmHtmlEditor.prototype.isDirty = function(){
-    if( this._mode === Dwt.HTML ){
-        var editor = this.getEditor();
-        if (editor) {
-            return editor.isDirty();
-        }
-    }
-    return false;
+ZmHtmlEditor.prototype._selectNode = function(el) {
+	var set;
+	var range = this._getRange();
+	while (!set && el) {
+		try {
+			range.setStartBefore(el);
+			set = true;
+		} catch (ex) {
+			el = el.parentNode;
+			set = false;
+		}
+	}
 };
 
-/**
- * Mark the editor content as unmodified; e.g. as freshly saved.
- */
-ZmHtmlEditor.prototype.clearDirty = function(){
-	var ed = this.getEditor();
-    if (ed) {
-        this.getEditor().isNotDirty = true;
-    }
+ZmHtmlEditor.prototype._nextElement = function(el) {
+	if (el.childNodes && el.childNodes.length)
+		return el.childNodes[0];
+	if (el.nextSibling)
+		return el.nextSibling;
+	var p = el.parentNode;
+	while (!el.nextSibling) {
+		el = el.parentNode;
+		if (!el) return null;
+	}
+	return el.nextSibling;
+}
+
+ZmHtmlEditor.prototype._elementIsIEFiller =
+function(el) {
+	if (el && el.attributes) {
+		for (var i=0; i<el.attributes.length; i++) {
+			if (el.attributes[i].name=="_ieFiller") {
+				return true;
+			}
+		}
+	}
 };
 
-/**
- * Listen for change in fontfamily, fontsize, fontcolor, direction and showing compose direction buttons preference and update the corresponding one.
- */
-ZmHtmlEditor.prototype._settingChangeListener = function(ev) {
-    if (ev.type != ZmEvent.S_SETTING) { return; }
-
-    var id = ev.source.id,
-        editor,
-        body,
-        textArea,
-        direction,
-        showDirectionButtons,
-        ltrButton;
-
-    if (id === ZmSetting.COMPOSE_INIT_DIRECTION) {
-        textArea = this.getContentField();
-        direction = appCtxt.get(ZmSetting.COMPOSE_INIT_DIRECTION);
-        if (direction === ZmSetting.RTL) {
-            textArea.setAttribute("dir", ZmSetting.RTL);
-        }
-        else{
-            textArea.removeAttribute("dir");
-        }
-    }
-
-    editor = this.getEditor();
-    body = editor ? editor.getBody() : null;
-    if(!body)
-        return;
-
-    if (id === ZmSetting.COMPOSE_INIT_FONT_FAMILY) {
-        body.style.fontFamily = appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_FAMILY);
-    }
-    else if (id === ZmSetting.COMPOSE_INIT_FONT_SIZE) {
-        body.style.fontSize = appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_SIZE);
-    }
-    else if (id === ZmSetting.COMPOSE_INIT_FONT_COLOR) {
-        body.style.color = appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_COLOR);
-    }
-    else if (id === ZmSetting.SHOW_COMPOSE_DIRECTION_BUTTONS) {
-        showDirectionButtons = appCtxt.get(ZmSetting.SHOW_COMPOSE_DIRECTION_BUTTONS);
-        ltrButton = this.getToolbarButton("ltr", editor).parentNode;
-        if (ltrButton) {
-            Dwt.setVisible(ltrButton, showDirectionButtons);
-            Dwt.setVisible(ltrButton.previousSibling, showDirectionButtons);
-        }
-        Dwt.setVisible(this.getToolbarButton("rtl", editor).parentNode, showDirectionButtons);
-    }
-    else if (id === ZmSetting.COMPOSE_INIT_DIRECTION) {
-        if (direction === ZmSetting.RTL) {
-            body.dir = ZmSetting.RTL;
-        }
-        else{
-            body.removeAttribute("dir");
-        }
-    }
-    editor.nodeChanged && editor.nodeChanged();//update the toolbar state
+ZmHtmlEditor.prototype._setIEFiller = function(el) {
+	if (el) el.setAttribute("_ieFiller","");
 };
 
-/**
- * This will be fired after every tinymce menu open. Listen for outside events happening in ZCS
- *
- * @param {menu} tinymce menu object
- */
-ZmHtmlEditor.onShowMenu =
-function(menu) {
-    if (menu && menu.isMenuVisible) {
-        var omemParams = {
-            id:					"ZmHtmlEditor",
-            elementId:			(menu.classPrefix === "mceMenu") ? ("menu_" + menu.id) : (menu.id + "_menu"),
-            outsideListener:	function(){
-                                    this.hideMenu();
-                                }.bind(menu)
-        };
-        appCtxt.getOutsideMouseEventMgr().startListening(omemParams);
-        ZmHtmlEditor.isListening = 1;
-    }
+ZmHtmlEditor.prototype._removeIEFiller = function(el) {
+	if (el) {
+		if (this._elementIsIEFiller(el)) {
+			el.parentNode.removeChild(el);
+		}
+		for (var i=0; i<el.children.length; i++) {
+			this._removeIEFiller(el.children[i]);
+		}
+	}
 };
 
-/**
- * This will be fired after every tinymce menu hide. Removing the outside event listener registered in onShowMenu
- *
- * @param {menu} tinymce menu object
- */
-ZmHtmlEditor.onHideMenu =
-function(menu) {
-    if (menu && menu.isMenuVisible === 0 && ZmHtmlEditor.isListening) {
-        var omemParams = {
-            id:					"ZmHtmlEditor",
-            elementId:			(menu.classPrefix === "mceMenu") ? ("menu_" + menu.id) : (menu.id + "_menu")
-        };
-        appCtxt.getOutsideMouseEventMgr().stopListening(omemParams);
-        delete ZmHtmlEditor.isListening;
-    }
+ZmHtmlEditor.prototype._mergeBlockquotes =
+function(blockquote1, blockquote2) {
+
+	if (AjxEnv.isIE) {
+		this._removeIEFiller(blockquote1.lastChild);
+	}
+
+	var el1 = blockquote1;
+	var depth1 = 0;
+	while (el1.childNodes.length) { // Descend into blockquote1, finding the very last leaf node in the tree
+		el1 = el1.childNodes[el1.childNodes.length-1];
+		while (el1.previousSibling && el1.tagName=="BR")
+			el1 = el1.previousSibling;
+		depth1++;
+	}
+
+	var el2 = blockquote2;
+	var depth2 = 0;
+	while (el2.childNodes.length) { // Descend into blockquote2, finding the very first leaf node in the tree
+		el2 = el2.childNodes[0];
+		depth2++;
+	}
+
+	if (el1.nodeType==3) { // If it's a TextNode, go one up
+		el1 = el1.parentNode;
+		depth1--;
+	}
+	if (el2.nodeType==3) {
+		el2 = el2.parentNode;
+		depth2--;
+	}
+	var range = (AjxEnv.isIE) ? this._getIframeDoc().selection.createRange() : this._getRange();
+
+	if (depth1==depth2) { // Simplest case, just append the contents of el2 to el1.
+		var text = [el1.innerHTML, el2.innerHTML];
+		var dummy = "###"+Dwt.getNextId()+"###";
+		el1.innerHTML = text.join(dummy);
+		var offset = el1.innerHTML.replace(/<br>/ig," ").replace(/<\/?[^>]+>/g,"").indexOf(dummy);
+		el1.innerHTML = text.join("");
+		if (AjxEnv.isIE) {
+			range.moveToElementText(el1);
+			range.moveStart("character", offset);
+		} else {
+			var p;
+			for (var p = el1; p != null && offset > 0; p = this._nextElement(p)) { // Walk through elements, decrementing offset as we go, and set the range when we find an element where the remaining offset fits
+				var type = p.nodeType;
+				var textContent = p.textContent || p.innerText || p.innerHTML || "";
+
+				if (type==3 || type==4 || type==8) {
+					if (offset <= textContent.length)
+						break;
+					offset -= textContent.length;
+				} else {
+					if (p.tagName.toLowerCase()=="br")
+						offset--;
+					if (offset==0)
+						break;
+				}
+			}
+			range.setStart(p, offset);
+		}
+	} else if (depth1==depth2+1) { // We're merging at a node border, append all children of el2 to el1's parent (making them siblings of el1)
+		while (el2.firstChild) {
+			el1.parentNode.appendChild(el2.firstChild);
+		}
+		if (AjxEnv.isIE) {
+			var type = p.nodeType;
+			var offset = 1;
+			if (type==3 || type==4 || type==8) {
+				offset = p.length;
+				p = p.parentNode;
+			}
+			range.moveToElementText(p);
+			range.moveStart("character",offset);
+		} else {
+			if (el1.tagName && el1.tagName.toLowerCase()=="br")
+				range.setStartBefore(el1);
+			else
+				range.setStartAfter(el1);
+		}
+		el1 = el1.parentNode;
+	} else if (depth1+1==depth2) { // We're merging at a node border, append el2 and all its siblings to el1 (making them children of el1)
+		var p = el1.childNodes.length ? el1.childNodes[el1.childNodes.length-1] : el1;
+		el2 = el2.parentNode;
+		while (el2.firstChild) {
+			el1.appendChild(el2.firstChild);
+		}
+		if (AjxEnv.isIE) {
+			var type = p.nodeType;
+			var offset = 1;
+			if (type==3 || type==4 || type==8) {
+				offset = p.length;
+				p = p.parentNode;
+			}
+			range.moveToElementText(p);
+			range.moveStart("character",offset);
+		} else {
+			if (p.tagName && p.tagName.toLowerCase()=="br")
+				range.setStartBefore(p);
+			else
+				range.setStartAfter(p);
+		}
+	} else { // We don't handle nodes that are further apart
+		return;
+	}
+	while (el1 != blockquote1 && el2 != blockquote2) { // Ascend up the tree, appending nodes from blockquote2's tree to blockquotes1's tree
+		while (el2.nextSibling) {
+			el1.parentNode.appendChild(el2.nextSibling);
+		}
+		el1 = el1.parentNode;
+		el2 = el2.parentNode;
+	}
+	this._removeElement(blockquote2); // All significant contents have been transferred, kill blockquote2
+
+	range.collapse(true);
+	if (AjxEnv.isIE) {
+		range.select();
+	} else {
+		var sel = this._getSelection();
+		sel.removeAllRanges();
+		sel.addRange(range);
+	}
 };
 
-/*
- * TinyMCE paste preprocess Callback function which will be executed first before the default preprocess function
- */
-ZmHtmlEditor.pastePreProcess =
-function(pl, o) {
-    if (!pl || !o) {
-        return;
-    }
-    // Detect Word content and process it more aggressive
-    // copied from plugins/paste/editor_plugin_src.js 393
-    if (/class="?Mso|style="[^"]*\bmso-|w:WordDocument/i.test(o.content) || o.wordContent) {
-        var dom = pl.editor.dom;
-        if (!o.node) {
-            // Create DOM structure
-            o.node = dom.create('div', 0, o.content);
-        }
-        dom.remove(dom.select("style", o.node));//Remove the style tags in the pasted content if it is copied from word
-        o.content = o.node.innerHTML;
-    }
-};
+// Spell checker methods
 
-/*
- * TinyMCE paste Callback function to execute after the contents has been converted into a DOM structure.
- */
-ZmHtmlEditor.pastePostProcess =
-function(pl, o) {
-    if (!pl || !o || !o.node || !o.target) {
-        return;
-    }
-    //Finding all tables in the pasted content and set the border as 1 if it is 0
-    var editor = o.target,
-        dom = editor.dom,
-        tableArray = dom.select("table", o.node),
-        i = 0,
-        length = tableArray.length,
-        table,
-        children = o.node.children,
-        lastChildren = children[children.length - 1];
-
-    for (; i < length; i++) {
-        table = tableArray[i];
-        //set the table border as 1 if it is 0
-        if (table && table.border === "0") {
-            table.border = 1;
-        }
-    }
-
-    //If the pasted content's last children is table then append "<div><br></div>" so that focus can be set outside the table
-    if (lastChildren && lastChildren.nodeName.toLowerCase() === "table") {
-        var doc = editor.getDoc(),
-            div = doc.createElement("div");
-        lastChildren.parentNode.appendChild(div);
-    }
-
-    //Finding all paragraphs in the pasted content and set the margin as 0
-    dom.setStyle(dom.select("p", o.node), "margin", "0");
-
-    //Bug fix for 71074
-    if (editor.undoManager) {
-        editor.undoManager.add();
-    }
-};
-
-ZmHtmlEditor.prototype.setFocusMember =
-function(member) {
-	this._focusMember = member;
-};
-
-ZmHtmlEditor.prototype._focus =
+ZmHtmlEditor._spellCheckResumeEditing =
 function() {
-    var focusMember = this._focusMember;
-    if (focusMember) {
-        if (focusMember.nodeName === "TEXTAREA") {
-            focusMember.focus();
-        }
-        else {
-            focusMember();
-        }
-    }
+	var editor = Dwt.getObjectFromElement(this);
+	editor.discardMisspelledWords();
 };
+
+ZmHtmlEditor._spellCheckAgain =
+function() {
+	var editor = Dwt.getObjectFromElement(this);
+	editor.discardMisspelledWords();
+	editor.spellCheck();
+};
+
+ZmHtmlEditor.prototype._spellCheckShowModeDiv =
+function() {
+	var size = this.getSize();
+
+	if (!this._spellCheckModeDivId) {
+		var div = document.createElement("div");
+		div.className = "SpellCheckModeDiv";
+		div.id = this._spellCheckModeDivId = Dwt.getNextId();
+		var html = new Array();
+		var i = 0;
+		html[i++] = "<table border=0 cellpadding=0 cellspacing=0><tr><td style='width:25'>";
+		html[i++] = AjxImg.getImageHtml("SpellCheck");
+		html[i++] = "</td><td style='white-space:nowrap'><span class='SpellCheckLink'>";
+		html[i++] = ZmMsg.resumeEditing;
+		html[i++] = "</span> | <span class='SpellCheckLink'>";
+		html[i++] = ZmMsg.checkAgain;
+		html[i++] = "</span></td></tr></table>";
+		div.innerHTML = html.join("");
+
+		var editable = document.getElementById((this._spellCheckDivId || this.getBodyFieldId()));
+		editable.parentNode.insertBefore(div, editable);
+
+		var el = div.getElementsByTagName("span");
+		Dwt.associateElementWithObject(el[0], this);
+		Dwt.setHandler(el[0], "onclick", ZmHtmlEditor._spellCheckResumeEditing);
+		Dwt.associateElementWithObject(el[1], this);
+		Dwt.setHandler(el[1], "onclick", ZmHtmlEditor._spellCheckAgain);
+	}
+	else {
+		document.getElementById(this._spellCheckModeDivId).style.display = "";
+	}
+	this.setSize(size.x, size.y + (this._mode == DwtHtmlEditor.TEXT ? 1 : 2));
+};
+
+ZmHtmlEditor.prototype._spellCheckHideModeDiv =
+function() {
+	var size = this.getSize();
+	if (this._spellCheckModeDivId) {
+		document.getElementById(this._spellCheckModeDivId).style.display = "none";
+	}
+	this.setSize(size.x, size.y + (this._mode == DwtHtmlEditor.TEXT ? 1 : 2));
+};
+
+ZmHtmlEditor.prototype._spellCheckSuggestionListener =
+function(ev) {
+	var item = ev.item;
+	var orig = item.getData("orig");
+	if (!orig) { return; }
+
+	var val = item.getData("value");
+	var plainText = this._mode == DwtHtmlEditor.TEXT;
+	var fixall = item.getData("fixall");
+	var doc = plainText ? document : this._getIframeDoc();
+	var spanEl = doc.getElementById(item.getData("spanId"));
+
+	var action = item.getData(ZmPopupMenu.MENU_ITEM_ID_KEY);
+	switch (action) {
+		case "ignore":
+			val = orig;
+			this._ignoreWords[val] = true;
+			if (fixall) {
+				// TODO: visually "correct" all of them
+			}
+			break;
+		case "add":
+			val = orig;
+			// add word to user's personal dictionary
+			var soapDoc = AjxSoapDoc.create("ModifyPrefsRequest", "urn:zimbraAccount");
+			var prefEl = soapDoc.set("pref", val);
+			prefEl.setAttribute("name", "+zimbraPrefSpellIgnoreWord");
+			var params = {
+				soapDoc: soapDoc,
+				asyncMode: true,
+				callback: new AjxCallback(appCtxt, appCtxt.setStatusMsg, [ZmMsg.wordAddedToDictionary])
+			};
+			appCtxt.getAppController().sendRequest(params);
+			this._ignoreWords[val] = true;
+			break;
+		default: break;
+	}
+
+	if (plainText && val == null) {
+		this._editWord(fixall, spanEl);
+	}
+	else {
+		var spanEls = fixall ? this._spellCheck.wordIds[orig] : spanEl;
+		this._editWordFix(spanEls, val);
+	}
+	this._handleSpellCheckerEvents(null);
+};
+
+ZmHtmlEditor.prototype._getEditorDocument = function() {
+	var plainText = this._mode == DwtHtmlEditor.TEXT;
+	return plainText ? document : this._getIframeDoc();
+};
+
+ZmHtmlEditor.prototype._editWord = function(fixall, spanEl) {
+	// edit clicked
+	var doc = this._getEditorDocument();
+	var input = doc.createElement("input");
+	input.type = "text";
+	input.value = AjxUtil.getInnerText(spanEl);
+	input.className = "SpellCheckInputField";
+	input.style.left = spanEl.offsetLeft - 2 + "px";
+	input.style.top = spanEl.offsetTop - 2 + "px";
+	input.style.width = spanEl.offsetWidth + 4 + "px";
+	var div = doc.getElementById(this._spellCheckDivId);
+	var scrollTop = div.scrollTop;
+	div.appendChild(input);
+	div.scrollTop = scrollTop; // this gets resetted when we add an input field (at least Gecko)
+	input.setAttribute("autocomplete", "off");
+	input.focus();
+	if (!AjxEnv.isGeckoBased)
+		input.select();
+	else
+		input.setSelectionRange(0, input.value.length);
+	var inputListener = AjxCallback.simpleClosure(this._editWordHandler, this, fixall, spanEl);
+	input.onblur = inputListener;
+	input.onkeydown = inputListener;
+};
+
+ZmHtmlEditor.prototype._editWordHandler = function(fixall, spanEl, ev) {
+	// the event gets lost after 20 milliseconds so we need
+	// to save the following :(
+    // bug 48471: IE loses the window.event object outside this call scope. So we fake it.
+    ev = DwtUiEvent.getEvent(ev);
+    ev = { type:ev.type, keyCode:ev.keyCode, ctrlKey:ev.ctrlKey, target:DwtUiEvent.getTarget(ev) };
+	setTimeout(AjxCallback.simpleClosure(this._editWordHandler2, this, fixall, spanEl, ev), 20);
+};
+ZmHtmlEditor.prototype._editWordHandler2 = function(fixall, spanEl, ev) {
+	ev = DwtUiEvent.getEvent(ev);
+	var evType = ev.type;
+	var evKeyCode = ev.keyCode;
+	var evCtrlKey = ev.ctrlKey;
+	var input = DwtUiEvent.getTarget(ev);
+	var keyEvent = /key/.test(evType);
+	var removeInput = true;
+	if (/blur/.test(evType) || (keyEvent && evKeyCode == 13)) {
+		if (evCtrlKey)
+			fixall =! fixall;
+		var orig = AjxUtil.getInnerText(spanEl);
+		var spanEls = fixall ? this._spellCheck.wordIds[orig] : spanEl;
+		this._editWordFix(spanEls, input.value);
+	} else if (keyEvent && evKeyCode == 27 /* ESC */) {
+		this._editWordFix(spanEl, AjxUtil.getInnerText(spanEl));
+	} else {
+		removeInput = false;
+	}
+	if (removeInput) {
+		input.onblur = null;
+		input.onkeydown = null;
+		if (input.parentNode) {
+			input.parentNode.removeChild(input);
+		}
+	}
+	this._handleSpellCheckerEvents(null);
+};
+
+ZmHtmlEditor.prototype._editWordFix = function(spanEls, value) {
+	spanEls = spanEls instanceof Array ? spanEls : [ spanEls ];
+	var doc = this._getEditorDocument();
+	for (var i = spanEls.length - 1; i >= 0; i--) {
+		var spanEl = spanEls[i];
+		if (typeof spanEl == "string") {
+			spanEl = doc.getElementById(spanEl);
+		}
+		if (spanEl) {
+			spanEl.innerHTML = value;
+		}
+	}
+};
+
+ZmHtmlEditor.prototype._handleSpellCheckerEvents =
+function(ev) {
+	var plainText = this._mode == DwtHtmlEditor.TEXT;
+	var p = plainText ? (ev ? DwtUiEvent.getTarget(ev) : null) : this._getParentElement(),
+		span, ids, i, suggestions,
+		sc = this._spellCheck,
+		doc = this._getEditorDocument(),
+		modified = false,
+		word = "";
+	if (ev && /^span$/i.test(p.tagName) && /ZM-SPELLCHECK/.test(p.className)) {
+		// stuff.
+		word = p.getAttribute("word");
+		// FIXME: not sure this is OK.
+//		window.status = "Suggestions: " + sc.suggestions[word].join(", ");
+		modified = word != AjxUtil.getInnerText(p);
+	}
+
+	// <FIXME: there's plenty of room for optimization here>
+	ids = sc.spanIds;
+	for (i in ids) {
+		span = doc.getElementById(i);
+		if (span) {
+			if (ids[i] != AjxUtil.getInnerText(span) || this._ignoreWords[ids[i]])
+				span.className = "ZM-SPELLCHECK-FIXED";
+			else if (ids[i] == word)
+				span.className = "ZM-SPELLCHECK-MISSPELLED2";
+			else
+				span.className = "ZM-SPELLCHECK-MISSPELLED";
+		}
+	}
+	// </FIXME>
+
+	// Dismiss the menu if it is present AND:
+	//   - we have no event, OR
+	//   - it's a mouse(down|up) event, OR
+	//   - it's a KEY event AND there's no word under the caret, OR the word was modified.
+	// I know, it's ugly.
+	if (sc.menu &&
+	    (!ev || ( /click|mousedown|mouseup|contextmenu/.test(ev.type)
+		      || ( /key/.test(ev.type)
+			   && (!word || modified) )
+		    )))
+	{
+		// sc.menu.popdown();
+		// FIXME: menu.dispose() should remove any submenus that may be
+		//        present in its children; fix should go directly in DwtMenu.js
+		if (sc.menu._menuItems.fixall)
+			sc.menu._menuItems.fixall.getMenu().dispose();
+		sc.menu.dispose();
+		sc.menu = null;
+		window.status = "";
+	}
+	// but that's even uglier:
+	if (ev && word && (suggestions = sc.suggestions[word]) &&
+	    (/mouseup|contextmenu/i.test(ev.type) ||
+	     (plainText && /(click|mousedown|contextmenu)/i.test(ev.type))) &&
+		(word == AjxUtil.getInnerText(p) && !this._ignoreWords[word]))
+	{
+		sc.menu = this._spellCheckCreateMenu(this, 0, suggestions, word, p.id, modified);
+
+		var pos, ms = sc.menu.getSize(), ws = this.shell.getSize();
+		if (!plainText) {
+			// bug fix #5857 - use Dwt.toWindow instead of Dwt.getLocation so we can turn off dontIncScrollTop
+			pos = Dwt.toWindow(document.getElementById(this._iFrameId), 0, 0, null, true);
+			var pos2 = Dwt.toWindow(p, 0, 0, null, true);
+			pos.x += pos2.x
+				- (doc.documentElement.scrollLeft || doc.body.scrollLeft);
+			pos.y += pos2.y
+				- (doc.documentElement.scrollTop || doc.body.scrollTop);
+		} else {
+			// bug fix #5857
+			pos = Dwt.toWindow(p, 0, 0, null, true);
+			var div = document.getElementById(this._spellCheckDivId);
+			pos.x -= div.scrollLeft;
+			pos.y -= div.scrollTop;
+		}
+		pos.y += p.offsetHeight;
+		// let's make sure we look nice, shall we.
+		if (pos.y + ms.y > ws.y)
+			pos.y -= ms.y + p.offsetHeight;
+		sc.menu.popup(0, pos.x, pos.y);
+		ev._stopPropagation = true;
+		ev._returnValue = false;
+	}
+};
+
+ZmHtmlEditor.prototype._spellCheckCreateMenu = function(parent, fixall, suggestions, word, spanId, modified) {
+	var menu = new ZmPopupMenu(parent);
+//	menu.dontStealFocus();
+
+	if (modified) {
+		var txt = "<b>" + word + "</b>";
+		this._spellCheckCreateMenuItem(menu, "orig", {text:txt}, fixall, word, word, spanId);
+	}
+
+	if (suggestions.length > 0) {
+		for (var i = 0; i < suggestions.length; ++i) {
+			this._spellCheckCreateMenuItem(
+				menu, "sug-"+i, {text:suggestions[i], className: ""},
+				fixall, suggestions[i], word, spanId
+			);
+		}
+		if (!(parent instanceof DwtMenuItem) && this._spellCheck.wordIds[word].length > 1) {
+			if (!this._replaceAllFormatter) {
+				this._replaceAllFormatter = new AjxMessageFormat(ZmMsg.replaceAllMenu);
+			}
+			var txt = "<i>"+this._replaceAllFormatter.format(this._spellCheck.wordIds[word].length)+"</i>";
+			var item = menu.createMenuItem("fixall", {text:txt});
+			var submenu = this._spellCheckCreateMenu(item, 1, suggestions, word, spanId, modified);
+			item.setMenu(submenu);
+		}
+	}
+	else {
+		var item = this._spellCheckCreateMenuItem(menu, "noop", {text:ZmMsg.noSuggestions}, fixall, "", word, spanId);
+		item.setEnabled(false);
+		this._spellCheckCreateMenuItem(menu, "clear", {text:"<i>"+ZmMsg.clearText+"</i>" }, fixall, "", word, spanId);
+	}
+
+	menu.createSeparator();
+
+	var plainText = this._mode == DwtHtmlEditor.TEXT;
+	if (plainText) {
+		// in plain text mode we want to be able to edit misspelled words
+		var txt = fixall ? ZmMsg.editAll : ZmMsg.edit;
+		this._spellCheckCreateMenuItem(menu, "edit", {text:txt}, fixall, null, word, spanId);
+	}
+
+	if (!fixall) {
+		this._spellCheckCreateMenuItem(menu, "ignore", {text:ZmMsg.ignoreWord}, 0, null, word, spanId);
+//		this._spellCheckCreateMenuItem(menu, "ignore", {text:ZmMsg.ignoreWordAll}, 1, null, word, spanId);
+	}
+
+	if (!fixall && appCtxt.get(ZmSetting.SPELL_CHECK_ADD_WORD_ENABLED)) {
+		this._spellCheckCreateMenuItem(menu, "add", {text:ZmMsg.addWord}, fixall, null, word, spanId);
+	}
+
+	return menu;
+};
+
+ZmHtmlEditor.prototype._spellCheckCreateMenuItem =
+function(menu, id, params, fixall, value, word, spanId, listener) {
+	if (params.className == null) {
+		params.className = "ZMenuItem ZmSpellMenuItem";
+	}
+	var item = menu.createMenuItem(id, params);
+	item.setData("fixall", fixall);
+	item.setData("value", value);
+	item.setData("orig", word);
+	item.setData("spanId", spanId);
+	item.addSelectionListener(listener || this._spellCheckSuggestionListenerObj);
+	return item;
+};
+
+ZmHtmlEditor.prototype._spellCheckCallback =
+function(words) {
+	var wordsFound = false;
+
+	if (words && words.available) {
+		var misspelled = words.misspelled;
+		if (misspelled == null || misspelled.length == 0) {
+			appCtxt.setStatusMsg(ZmMsg.noMisspellingsFound, ZmStatusView.LEVEL_INFO);
+		} else {
+			var msg = AjxMessageFormat.format(ZmMsg.misspellingsResult, misspelled.length);
+			appCtxt.setStatusMsg(msg, ZmStatusView.LEVEL_WARNING);
+
+			this.highlightMisspelledWords(misspelled);
+			wordsFound = true;
+		}
+	} else {
+		appCtxt.setStatusMsg(ZmMsg.spellCheckUnavailable, ZmStatusView.LEVEL_CRITICAL);
+	}
+
+	if (AjxEnv.isGeckoBased && this._mode == DwtHtmlEditor.HTML)
+		setTimeout(AjxCallback.simpleClosure(this.focus, this), 10);
+
+	if (this.onExitSpellChecker)
+		this.onExitSpellChecker.run(wordsFound);
+};
+
+/**
+ * Returns true if editor content is spell checked
+ */
+ZmHtmlEditor.prototype.isSpellCheckMode = function() {
+    return Boolean( this._spellCheck );
+};
+
+// overwrites the base class' _enableDesignMode in order to work around Gecko problems
+ZmHtmlEditor.prototype._enableDesignMode =
+function(doc) {
+	if (!doc) { return; }
+
+	if (!(AjxEnv.isGeckoBased && this.ACE_ENABLED)) {
+		return DwtHtmlEditor.prototype._enableDesignMode.call(this, doc);
+	}
+	// Gecko needs special attention here. (https://bugzilla.mozilla.org/show_bug.cgi?id=326600)
+
+	if (!this._hasGeckoFocusHacks) {
+		this.__enableGeckoFocusHacks();
+	}
+
+	// -- findings suggest that Firefox loses these events on certain
+	//    occasions (i.e. iframe.style.display = "none"), so we DO need to
+	//    add them multiple times.  Crap.
+	this._getIframeWin().addEventListener("blur", this._designModeHack_blur, true);
+	this._getIframeWin().addEventListener("focus", this._designModeHack_focus, true);
+};
+
+// this should be called ONLY ONCE (if !this._hasGeckoFocusHacks)
+ZmHtmlEditor.prototype.__enableGeckoFocusHacks = function() {
+	var bookmark = null;
+	var state = 0;
+	this._hasGeckoFocusHacks = true;
+
+	function enableToolbars(enable) {
+		var a = [];
+		for (var i = 0; i < this._toolbars.length; i++)
+			a = a.concat(this._toolbars[i].getChildren());
+		for (var i = 0; i < a.length; ++i)
+			a[i].setEnabled(enable);
+	};
+
+	this._designModeHack_blur = AjxCallback.simpleClosure(
+		function(ev) {
+			if (state < 0) { return; }
+
+			//console.log("BLUR!");
+			var enableFocus = false;
+			var dwtev = DwtShell.mouseEvent;
+			dwtev.setFromDhtmlEvent(ev, true);
+
+			//bug: 24782 - we dont have option to get info related to toolbar button selection
+			var kbMgr = appCtxt.getKeyboardMgr();
+			if (kbMgr && kbMgr.__focusObj) {
+				for (var i = 0; i < this._toolbars.length; i++) {
+					if ((kbMgr.__focusObj == this._toolbars[i]) ||
+						(kbMgr.__focusObj.parent == this._toolbars[i]))
+					{
+						enableFocus = true;
+						break;
+					}
+				}
+			}
+			enableToolbars.call(this, enableFocus);
+
+			var doc = this._getIframeDoc();
+			Dwt.enableDesignMode(doc, false);
+			state = -1;
+			if (this._ace_componentsLoading > 0) { return; }
+
+			try {
+				var sel = this._getIframeWin().getSelection();
+				var i = 0, r;
+				try {
+					bookmark = [];
+					while (r = sel.getRangeAt(i++))
+						bookmark.push(r);
+				} catch(ex) {};
+				sel.removeAllRanges();
+			} catch(ex) {
+				bookmark = null;
+			}
+		}, this);
+
+	// bug 8508 - start off with disabled toolbars
+	enableToolbars.call(this, false);
+
+	this._designModeHack_focus = AjxCallback.simpleClosure(
+		function(ev) {
+			if (state > 0)
+				return;
+			// console.log("FOCUS!");
+			var doc = this._getIframeDoc();
+			var sel = this._getIframeWin().getSelection();
+			enableToolbars.call(this, true);
+			if (this._ace_componentsLoading > 0) { return; }
+
+			Dwt.enableDesignMode(doc, true);
+			if (!bookmark || bookmark.length == 0) {
+				r = doc.createRange();
+				r.selectNodeContents(doc.body);
+				r.collapse(true);
+				bookmark = [ r ];
+			}
+			sel.removeAllRanges();
+			for (var i = 0; i < bookmark.length; ++i) {
+				sel.addRange(bookmark[i]);
+			}
+			bookmark = null;
+			state = 1;
+		}, this);
+};
+
+ZmHtmlEditor.WRAP_LENGTH		= 72;
+ZmHtmlEditor.HTML_QUOTE_PREFIX_PRE		= '<blockquote style="border-left:2px solid ' +
+									 AjxStringUtil.HTML_QUOTE_COLOR +
+									 ';margin-left:5px;padding-left:5px;'+
+									 AjxStringUtil.HTML_QUOTE_STYLE +
+									 '">';
+ZmHtmlEditor.HTML_QUOTE_PREFIX_POST	= '</blockquote><br/>';
+ZmHtmlEditor.HTML_QUOTE_NONPREFIX_PRE		= '<div style="' +
+									 AjxStringUtil.HTML_QUOTE_STYLE +
+									 '">';
+ZmHtmlEditor.HTML_QUOTE_NONPREFIX_POST	= '</div><br/>';
+
+// returns a standard set of params for wrapping text of HTML content
+ZmHtmlEditor.getWrapParams =
+function(htmlMode, incOptions) {
+
+	incOptions = incOptions || {};
+	var params = {};
+
+	params.htmlMode	= htmlMode;
+	params.len		= ZmHtmlEditor.WRAP_LENGTH;
+	params.eol		= htmlMode ? '<br/>' : '\n';
+	params.pre		= (htmlMode || !incOptions.prefix) ? "" : appCtxt.get(ZmSetting.REPLY_PREFIX) + " ";
+	params.before	= (htmlMode) ? ((incOptions.prefix) ? ZmHtmlEditor.HTML_QUOTE_PREFIX_PRE : ZmHtmlEditor.HTML_QUOTE_NONPREFIX_PRE) : "";
+	params.after	= (htmlMode) ? ((incOptions.prefix) ? ZmHtmlEditor.HTML_QUOTE_PREFIX_POST : ZmHtmlEditor.HTML_QUOTE_NONPREFIX_POST) : "";
+
+	return params;
+};
+
+ZmHtmlEditor.prototype._updateState =
+function() {
+	var defaultFontSize = appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_SIZE);
+	DwtHtmlEditor.prototype._updateState.call(this, defaultFontSize);
+};
+
+ZmHtmlEditorColorPicker = function(parent,style,className) {
+	DwtButtonColorPicker.call(this, parent,style,className);
+};
+ZmHtmlEditorColorPicker.prototype = new DwtButtonColorPicker;
+ZmHtmlEditorColorPicker.prototype.constructor = ZmHtmlEditorColorPicker;
+
+ZmHtmlEditorColorPicker.prototype.TEMPLATE = "dwt.Widgets#ZToolbarButton";

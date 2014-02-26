@@ -39,16 +39,16 @@
 </table>
 <c:choose>
     <c:when test="${contact.isGroup or isgroup}">
-        <table width="100%">
+        <table border="0" cellpadding="0" cellspacing="3" width="100%">
         <tr><td>
-                <table class="ZPropertySheet" cellspacing="6" width="100%">
+                <table border="0" cellpadding="0" cellspacing="3" width="100%">
                     <tr>
                         <td class="editContactGroupLabel"><label for="nickname"><fmt:message key="AB_GROUP_NAME"/>:</label>
                             <input name='isgroup' type='hidden' value="true"/>
                             <input name='nickname' id="nickname" type='text' autocomplete='off' size='35' value="${fn:escapeXml(not empty param.nickname ? param.nickname : contact.nickname)}">
                         </td>
 						<td align=right>
-							<table>
+							<table  border="0" cellspacing='5'>
 								<tbody>
 									<tr>
 										<td valign='center' class="editContactLabel"><label for="folderSelect"><fmt:message key="addressBook"/> :</label></td>
@@ -57,10 +57,8 @@
 											<select name="folderid" id="folderSelect">
 												<zm:forEachFolder var="folder">
 													<c:if test="${folder.isContactCreateTarget}">
-														<option <c:if test="${(empty contact and ((context.selectedId eq folder.id)
-														or (empty context.selectedId and folder.isContacts)))
-														or (!empty contact and (contact.folderId eq folder.canonicalId))}">selected </c:if> value="${folder.id}" />
-														${zm:getFolderName(pageContext, folder.id)}
+														<option <c:if test="${(empty contact and ((context.selectedId eq folder.id) or (empty context.selectedId and folder.isContacts))) or (!empty contact and contact.folderId eq folder.id)}">selected </c:if> value="${folder.id}" />
+														${zm:cook(zm:getFolderName(pageContext, folder.id))}
 													</c:if>
 												</zm:forEachFolder>
 											</select>
@@ -75,7 +73,7 @@
         </tr>
         <tr><td class="List">
                 <c:set var="contactValues" value="${empty paramValues.dlist ? contact.groupMembers : paramValues.dlist}"/>
-                <table class="topborder" width="100%">
+                <table class="topborder" cellpadding="2" cellspacing="0" width="100%">
                     <tr valign="top">
                         <th width="4%">
                               &nbsp;&nbsp;
@@ -85,45 +83,17 @@
                         </th>
                     </tr>
                     <c:forEach var="gMember" items="${requestScope.groupSearchContacts}">
-                        <tr>
-                            <c:set var="contactInfo" value='${fn:split(gMember,";")}'/>
-                            <td><input checked name="dlist" value='${fn:escapeXml(gMember)}' type="checkbox"></td>
-                            <td>${fn:escapeXml(contactInfo[0])}</td>
-                            <input type=hidden name="dlistId" value="${contactInfo[1]}"/>
-                            <input type=hidden name="dlistType" value="${contactInfo[2]}"/>
-                        </tr>
+                    <tr>
+                        <td><input checked name="dlist" value="${fn:escapeXml(gMember)}" type="checkbox"></td>
+                        <td>${fn:escapeXml(gMember)}</td>
+                    </tr>
                     </c:forEach>
-                    <c:forEach var="gMember" items="${paramValues.dlist}">
-                        <c:set var="contactInfo" value='${fn:split(gMember,";")}'/>
-                        <tr>
-                            <td><input checked name="dlist" value='${fn:escapeXml(gMember)}' type="checkbox"></td>
-                            <td>${fn:escapeXml(contactInfo[0])}</td>
-                            <input type=hidden name="dlistId" value="${contactInfo[1]}"/>
-                            <input type=hidden name="dlistType" value="${contactInfo[2]}"/>
-                        </tr>
+                    <c:forEach var="gMember" items="${contactValues}">
+                    <tr>
+                        <td><input checked name="dlist" value="${fn:escapeXml(gMember)}" type="checkbox"></td>
+                        <td>${fn:escapeXml(gMember)}</td>
+                    </tr>
                     </c:forEach>
-                    <c:if test="${not empty contact}">
-                        <%--
-                        Display the existing memebers of the contact group
-                        --%>
-                        <c:forEach var="gMember" items="${contact.groupMembers}">
-                            <c:set var="memberContact" value="${zm:groupMemberById(contact, gMember)}"/>
-                            <tr>
-                                <td><input checked name="dlist1" value='${fn:escapeXml(gMember)}' type="checkbox"></td>
-                                <c:choose>
-                                    <c:when test="${memberContact.isTypeI}">
-                                        <td>${fn:escapeXml(memberContact.id)}</td>
-                                    </c:when>
-                                    <c:otherwise>
-                                        <td>${fn:escapeXml(memberContact.fullAddress)}</td>
-                                    </c:otherwise>
-                                </c:choose>
-                                <input type=hidden name="dlistId1" value="${gMember}"/>
-                                <input type=hidden name="dlistType1" value="${memberContact.isGalContact ? "G" : memberContact.isTypeI ? "I" : "C"}"/>
-                            </tr>
-                        </c:forEach>
-                    </c:if>
-                    <input type=hidden name="fileAs" value="8"/>
                 </table>
                 <c:if test="${empty contactValues and empty requestScope.groupSearchContacts}">
                     <div class="NoResults"><fmt:message key="addMembers"/></div>
@@ -142,20 +112,20 @@
     <c:otherwise>
         <input type="hidden" name="fullName" value="${fn:escapeXml(not empty contact ? contact.fullName : '')}" />
         <input type="hidden" name="nickname" value="${fn:escapeXml(not empty contact ? contact.nickname : '')}" />
-        <table class="ZPropertySheet" cellspacing="6" width="100%">
-        <tr><td valign='center' class="editContactLabel"><label for="folderIdSelect"><fmt:message key="addressBook"/>:</label></td>
+        <table border="0" cellpadding="0" cellspacing="3" width="100%">
+        <tr><td valign='center' class="editContactLabel"><label for="folderIdSelect"><fmt:message key="addressBook"/> :</label></td>
             <td><input type="hidden" name="origFolderId" value="${empty contact ? '': contact.folderId}"/>
                 <select name="folderid" id="folderIdSelect" tabindex=100>
                     <zm:forEachFolder var="folder">
                         <c:if test="${folder.isContactCreateTarget}">
-                            <option <c:if test="${(empty contact and ((context.selectedId eq folder.id) or (empty context.selectedId and folder.isContacts)))
-                            or (!empty contact and (contact.folderId eq folder.canonicalId))}">selected </c:if> value="${folder.id}">
-                            ${zm:getFolderName(pageContext, folder.id) }</option>
+                            <option <c:if test="${(empty contact and ((context.selectedId eq (folder.isMountPoint ? folder.canonicalId : folder.id)) or (empty context.selectedId and folder.isContacts)))
+                            or (!empty contact and (contact.folderId eq (folder.isMountPoint ? folder.canonicalId : folder.id)))}">selected </c:if> value="${folder.id}">
+                            ${zm:cook(zm:getFolderName(pageContext, folder.id))}</option>
                         </c:if>
                     </zm:forEachFolder>
                 </select>
             </td>
-            <td valign='center' class="editContactLabel"><label for="fileAs"><fmt:message key="fileAs"/>:</label></td>
+            <td valign='center' class="editContactLabel"><label for="fileAs"><fmt:message key="fileAs"/> :</label></td>
             <td><c:set var="selected" value="${empty contact? '1' : contact.fileAs}"/>
                 <select name="fileAs" id="fileAs" tabindex=150>
                     <option <c:if test="${selected eq '1'}">selected</c:if> value="1"><fmt:message key="AB_FILE_AS_lastFirst"/></option>

@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2010, 2011, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
@@ -254,7 +254,7 @@ ZmPeopleAutocompleteListView.prototype._peopleItemListener =
             break;
 
         case "NewAppt":
-            AjxDispatcher.require(["MailCore", "CalendarCore", "Calendar", "CalendarAppt"]);
+            AjxDispatcher.require(["CalendarCore", "Calendar", "CalendarAppt"]);
 			var cc = AjxDispatcher.run("GetCalController");
 			var appt = cc.newApptObject((new Date()));
 			appt.setAttendees([this._activeContact.getEmail()], ZmCalBaseItem.PERSON);

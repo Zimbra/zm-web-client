@@ -1,7 +1,7 @@
 <!--
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2008, 2009, 2010, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2008, 2009, 2010, 2011, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
@@ -63,9 +63,6 @@
 	String port = httpPort != null && !httpPort.equals("80") ? ":"+httpPort : "";
 	String url = "http://"+server+port+request.getContextPath()+"/public/insecureResponse.jsp";
 
-    String HEADER_X_FRAME_OPTIONS = "X-Frame-Options";
-    String X_FRAME_OPTIONS_VALUE = "ALLOWFORTHISFRAME";  // Any random value to override the inherited x-frame-options from the parent.
-
 	pageContext.setAttribute("data", data);
 	pageContext.setAttribute("encodedData", encodedData);
 	pageContext.setAttribute("server", server);
@@ -74,7 +71,6 @@
 	pageContext.setAttribute("millis", System.currentTimeMillis());
 
 	// no cache
-    response.setHeader(HEADER_X_FRAME_OPTIONS, X_FRAME_OPTIONS_VALUE);
 	response.addHeader("Vary", "User-Agent");
 	response.setHeader("Expires", "Tue, 24 Jan 2000 17:46:50 GMT");
 	response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0");
@@ -245,17 +241,6 @@ else {
 			}
 			return len;
 		}
-        public boolean isReady() {
-            return true;
-            //TODO: this isn't right, just stubbed for now so we can build
-        }
-        public void setReadListener(ReadListener listener) {
-            //TODO: this isn't right, just stubbed for now so we can build
-        }
-        public boolean isFinished() {
-            return false;
-            //TODO: this isn't right, just stubbed for now so we can build
-        }
 	}
 	static class WrappedOutputStream extends ServletOutputStream {
 		// Data
@@ -284,12 +269,5 @@ else {
 		public void println(int i) throws IOException { print(i);println(); }
 		public void println(long l) throws IOException { print(l);println(); }
 		public void println(String s) throws IOException { print(s);println(); }
-        public boolean isReady() {
-            return true;
-            //TODO: this isn't right, just stubbed for now so we can build
-        }
-        public void setWriteListener(WriteListener listener) {
-            //TODO: this isn't right, just stubbed for now so we can build
-        }
 	}
 %>

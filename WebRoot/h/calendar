@@ -161,22 +161,6 @@
 
     <c:set var="view" value="${not empty param.view ? zm:cook(param.view) : mailbox.prefs.calendarInitialView}"/>
     <c:set var="checkedCalendars" value="${zm:getCheckedCalendarFolderIds(mailbox)}"/>
-    <c:if test="${view eq 'list'}">
-        <fmt:message var="dateFormat" key="CAL_APPT_EDIT_DATE_FORMAT"/>
-        <c:if test="${not empty param.startDate}">
-            <fmt:parseDate pattern="${dateFormat}" value="${param.startDate}" var="parsedStartDate" timeZone="${tz}"/>
-            <fmt:formatDate value="${parsedStartDate}" pattern="yyyyMMdd'T'HHmmss" var="fmtStartDate" timeZone="${tz}"/>
-            <fmt:parseDate value="${fmtStartDate}" pattern="yyyyMMdd'T'HHmmss" var="start" timeZone="${tz}" />
-            <c:set scope="request" var="startDateContext" value="${zm:getCalendar(start.time, tz)}"/>
-        </c:if>
-
-        <c:if test="${not empty param.endDate}">
-            <fmt:parseDate pattern="${dateFormat}" value="${param.endDate}" var="parsedEndDate" timeZone="${tz}"/>
-            <fmt:formatDate value="${parsedEndDate}" pattern="yyyyMMdd'T'HHmmss" var="fmtEndDate" timeZone="${tz}"/>
-            <fmt:parseDate value="${fmtEndDate}" pattern="yyyyMMdd'T'HHmmss" var="end" timeZone="${tz}"/>
-            <c:set scope="request" var="endDateContext" value="${zm:getCalendar(end.time, tz)}"/>
-        </c:if>
-    </c:if>
 </app:handleError>
 
 <app:handleError>
@@ -185,23 +169,20 @@
     <c:when test="${param.action eq 'compose' and noComposeView eq false}">
         <%--do nothing--%>
     </c:when>
-    <c:when test="${zm:boolean(needViewAppt)}">
+    <c:when test="${needViewAppt}">
         <app:apptView/>
     </c:when>
     <c:when test="${view eq 'day'}">
         <app:multiDayView timezone="${tz}" date="${dateContext}" view='${view}' numdays="${not empty param.numdays ? param.numdays : 1}"/>
     </c:when>
     <c:when test="${view eq 'workWeek'}">
-        <app:multiDayView timezone="${tz}" date="${dateContext}" view='${view}' numdays="7"/>
+        <app:multiDayView timezone="${tz}" date="${dateContext}" view='${view}' numdays="5"/>
     </c:when>
     <c:when test="${view eq 'week'}">
         <app:multiDayView timezone="${tz}" date="${dateContext}" view='${view}' numdays="7"/>
     </c:when>
     <c:when test="${view eq 'schedule'}">
         <app:multiDayView timezone="${tz}" date="${dateContext}" numdays="1" view="${view}"/>
-    </c:when>
-    <c:when test="${view eq 'list'}">
-        <app:listView timezone="${tz}" date="${not empty param.startDate? startDateContext : dateContext}" endDate="${not empty param.endDate ? endDateContext : ''}" view="${view}" numdays="7"/>
     </c:when>
     <c:otherwise>
         <app:monthView timezone="${tz}" date="${dateContext}"/>
@@ -210,13 +191,6 @@
 </app:handleError>
 <script type="text/javascript">
     <!--
-    var zprint = function(){
-        try{ var idex = 0; var c =""; while (idex <= zrc ) { if(document.getElementById("C"+idex).checked) { cid = document.getElementById("C"+idex).value; c += cid + ","; } idex++ ; } }catch(ex){ }
-        if (${view eq 'list'}) {
-            window.open("/h/printcalendar?view=${view}&l=${checkedCalendars}&date=${fmtStartDate}&endDate=${fmtEndDate}&action=print&imc=true");
-        } else {
-            window.open("/h/printcalendar?view=${view}&l=${checkedCalendars}&date=${zm:cook(param.date)}&action=print&imc=true");
-        }
-    };
+    var zprint = function(){ try{ var idex = 0; var c =""; while (idex <= zrc ) { if(document.getElementById("C"+idex).checked) { cid = document.getElementById("C"+idex).value; c += cid + ","; } idex++ ; } }catch(ex){ } window.open("/h/printcalendar?view=${view}&l=${checkedCalendars}&date=${zm:cook(param.date)}&action=print"); }
         //-->
 </script>

@@ -54,18 +54,12 @@ ZmFolder = function(params) {
 ZmFolder.prototype = new ZmOrganizer;
 ZmFolder.prototype.constructor = ZmFolder;
 
-ZmFolder.prototype.isZmFolder = true;
-ZmFolder.prototype.toString = function() { return "ZmFolder"; };
-
-
 // needed to construct USER_ROOT if mail disabled
 ZmOrganizer.ORG_CLASS[ZmId.ORG_FOLDER] = "ZmFolder";
 
 ZmFolder.SEP 									= "/";							// path separator
 
 // system folders (see Mailbox.java in ZimbraServer for positive int consts)
-// Note: since these are defined as Numbers, and IDs come into our system as Strings,
-// we need to use == for comparisons (instead of ===, which will fail)
 ZmFolder.ID_LOAD_FOLDERS						= -3;							// special "Load remaining folders" placeholder
 ZmFolder.ID_OTHER								= -2;							// used for tcon value (see below)
 ZmFolder.ID_SEP									= -1;							// separator
@@ -83,7 +77,6 @@ ZmFolder.ID_SYNC_FAILURES						= ZmOrganizer.ID_SYNC_FAILURES;
 ZmFolder.ID_OUTBOX	 							= ZmOrganizer.ID_OUTBOX;
 ZmFolder.ID_CHATS	 							= ZmOrganizer.ID_CHATS;
 ZmFolder.ID_ATTACHMENTS                         = ZmOrganizer.ID_ATTACHMENTS;
-ZmFolder.ID_DLS									= ZmOrganizer.ID_DLS;
 
 // system folder names
 ZmFolder.MSG_KEY = {};
@@ -97,6 +90,7 @@ ZmFolder.MSG_KEY[ZmFolder.ID_AUTO_ADDED]		= "emailedContacts";
 ZmFolder.MSG_KEY[ZmFolder.ID_TASKS]				= "tasks";
 ZmFolder.MSG_KEY[ZmFolder.ID_TAGS]				= "tags";
 ZmFolder.MSG_KEY[ZmOrganizer.ID_CALENDAR]		= "calendar";
+ZmFolder.MSG_KEY[ZmOrganizer.ID_NOTEBOOK]		= "notebook";
 ZmFolder.MSG_KEY[ZmOrganizer.ID_BRIEFCASE]		= "briefcase";
 ZmFolder.MSG_KEY[ZmOrganizer.ID_CHATS]			= "chats";
 ZmFolder.MSG_KEY[ZmOrganizer.ID_ALL_MAILBOXES]	= "allMailboxes";
@@ -125,15 +119,18 @@ ZmFolder.QUERY_NAME[ZmFolder.ID_SPAM]			= "junk";
 ZmFolder.QUERY_NAME[ZmFolder.ID_SENT]			= "sent";
 ZmFolder.QUERY_NAME[ZmFolder.ID_OUTBOX]			= "outbox";
 ZmFolder.QUERY_NAME[ZmFolder.ID_DRAFTS]			= "drafts";
-ZmFolder.QUERY_NAME[ZmOrganizer.ID_CALENDAR]	= "calendar";
 ZmFolder.QUERY_NAME[ZmFolder.ID_CONTACTS]		= "contacts";
 ZmFolder.QUERY_NAME[ZmFolder.ID_TASKS]			= "tasks";
 ZmFolder.QUERY_NAME[ZmFolder.ID_AUTO_ADDED]		= "Emailed Contacts";
+ZmFolder.QUERY_NAME[ZmOrganizer.ID_NOTEBOOK]	= "notebook";
 ZmFolder.QUERY_NAME[ZmOrganizer.ID_BRIEFCASE]	= "briefcase";
 ZmFolder.QUERY_NAME[ZmFolder.ID_CHATS]			= "chats";
 ZmFolder.QUERY_NAME[ZmFolder.ID_SYNC_FAILURES]	= "Error Reports";
 
-ZmFolder.QUERY_ID = AjxUtil.valueHash(ZmFolder.QUERY_NAME);
+ZmFolder.QUERY_ID = {};
+for (var id in ZmFolder.QUERY_NAME) {
+	ZmFolder.QUERY_ID[ZmFolder.QUERY_NAME[id]] = id;
+}
 
 // order within the overview panel
 ZmFolder.SORT_ORDER = {};
@@ -155,7 +152,6 @@ ZmFolder.TCON_CODE[ZmFolder.ID_TRASH]			= "t";
 ZmFolder.TCON_CODE[ZmFolder.ID_SYNC_FAILURES]	= "o";
 ZmFolder.TCON_CODE[ZmFolder.ID_SPAM]			= "j";
 ZmFolder.TCON_CODE[ZmFolder.ID_SENT]			= "s";
-ZmFolder.TCON_CODE[ZmFolder.ID_DRAFTS]			= "d";
 ZmFolder.TCON_CODE[ZmFolder.ID_OTHER]			= "o";
 
 // folders that look like mail folders that we don't want to show
@@ -269,9 +265,9 @@ function(name, parent) {
 				return ZmMsg.folderNameReserved;
 			}
 		}
-		/*if (lname == ZmFolder.SYNC_ISSUES.toLowerCase()) {
+		if (lname == ZmFolder.SYNC_ISSUES.toLowerCase()) {
 			return ZmMsg.folderNameReserved;
-		}*/
+		}
 	}
 
 	return null;
@@ -295,6 +291,16 @@ function(folderName) {
 };
 
 /**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
+ZmFolder.prototype.toString =
+function() {
+	return "ZmFolder";
+};
+
+/**
  * Moves a folder. A user can move a folder to "Trash" even if there is already a folder in "Trash" with the
  * same name. A new name will be generated for this folder and a rename is performed before the move.
  * 
@@ -312,7 +318,7 @@ function(newParent, noUndo, actionText, batchCmd) {
 	if (origName != name) {
 		this.rename(name);
 	}
-	ZmOrganizer.prototype.move.call(this, newParent, noUndo, batchCmd);
+	ZmOrganizer.prototype.move.call(this, newParent, noUndo, actionText, batchCmd);
 };
 
 /**
@@ -386,13 +392,14 @@ function(id) {
 };
 
 /**
- * Checks if the folder supports public access. Override this method if you dont want a folder to be accessed publicly
+ * Checks if the folder supports public access.
  * 
- * @return	{Boolean}	always returns <code>true</code>
+ * @return	{Boolean}	always returns <code>false</code>
  */
 ZmFolder.prototype.supportsPublicAccess =
 function() {
-	return true;
+	// mail folders cannot be accessed outside of ZCS
+	return false;
 };
 
 /**
@@ -470,7 +477,7 @@ function(obj) {
 ZmFolder.prototype.createQuery =
 function(pathOnly) {
 	if (!this.isRemote() && this.isSystem()) {
-		var qName = ZmFolder.QUERY_NAME[this.nId] || this.getName(false, null, true, true);
+		var qName = ZmFolder.QUERY_NAME[this.nId];
 		return pathOnly
 			? qName
 			: ("in:\"" + (qName || this.name)+'"');
@@ -479,7 +486,7 @@ function(pathOnly) {
 	var path = this.isSystem() ? ZmFolder.QUERY_NAME[this.nId] : this.name;
 	var f = this.parent;
 	while (f && (f.nId != ZmFolder.ID_ROOT) && f.name.length) {
-		var name = (f.isSystem() && ZmFolder.QUERY_NAME[f.nId]) || f.name;
+		var name = f.isSystem() ? ZmFolder.QUERY_NAME[f.nId] : f.name;
 		path = name + "/" + path;
 		f = f.parent;
 	}
@@ -551,74 +558,65 @@ function(otherAccount) {
 };
 
 /**
- * Returns true if the given object(s) may be placed in this folder.
- *
- * If the object is a folder, check that:
- * <ul>
- * <li>We are not the immediate parent of the folder</li>
- * <li>We are not a child of the folder</li>
- * <li>We are not Spam or Drafts</li>
- * <li>We don't already have a child with the folder's name (unless we are in Trash)</li>
- * <li>We are not moving it into a folder of a different type</li>
- * <li>We are not moving a folder into itself</li>
- * </ul>
- *
- * If the object is an item or a list or items, check that:
- * <ul>
- * <li>We are not the Folders container</li>
- * <li>We are not a search folder</li>
- * <li>The items aren't already in this folder</li>
- * <li>A contact can only be moved to Trash</li>
- * <li> A draft can be moved to Trash or Drafts</li>
- * <li>Non-drafts cannot be moved to Drafts</li>
- * </ul>
- *
- * @param {Object}	what		the object(s) to possibly move into this folder (item or organizer)
- * @param {constant}	folderType	the contextual folder type (for tree view root items)
- * @param {boolean}	ignoreExisting  Set to true if checks for item presence in the folder should be skipped (e.g. when recovering deleted items)
- */
+* Returns true if the given object(s) may be placed in this folder.
+*
+* If the object is a folder, check that:
+* <ul>
+* <li>We are not the immediate parent of the folder</li>
+* <li>We are not a child of the folder</li>
+* <li>We are not Spam or Drafts</li>
+* <li>We don't already have a child with the folder's name (unless we are in Trash)</li>
+* <li>We are not moving a regular folder into a search folder</li>
+* <li>We are not moving a search folder into the Folders container</li>
+* <li>We are not moving a folder into itself</li>
+* </ul>
+*
+* If the object is an item or a list or items, check that:
+* <ul>
+* <li>We are not the Folders container</li>
+* <li>We are not a search folder</li>
+* <li>The items aren't already in this folder</li>
+* <li>A contact can only be moved to Trash</li>
+* <li> A draft can be moved to Trash or Drafts</li>
+* <li>Non-drafts cannot be moved to Drafts</li>
+* </ul>
+*
+* @param {Object}	what		the object(s) to possibly move into this folder (item or organizer)
+* @param {constant}	folderType	the contextual folder type (for tree view root items)
+* @param {boolean}	ignoreExisting  Set to true if checks for item presence in the folder should be skipped (e.g. when recovering deleted items)
+*/
 ZmFolder.prototype.mayContain =
 function(what, folderType, ignoreExisting) {
-
-	if (!what) {
-		return true;
-	}
-	if (this.isFeed() /*|| this.isSyncIssuesFolder()*/) {
-		return false;
-	}
-	// placeholder for showing a large number of folders
-	if (this.id == ZmFolder.ID_LOAD_FOLDERS) {
-		return false;
-	}
+	if (!what) { return true; }
+	if (this.isFeed() || this.isSyncIssuesFolder()) { return false; }
 
 	var thisType = folderType || this.type;
 	var invalid = false;
 	if (what instanceof ZmFolder) {
-        invalid = ((what.parent === this && !ignoreExisting) || this.isChildOf(what) || this.nId == ZmFolder.ID_DRAFTS || this.nId == ZmFolder.ID_SPAM ||
+		invalid = ((what.parent == this && !ignoreExisting) || this.isChildOf(what) || this.nId == ZmFolder.ID_DRAFTS || this.nId == ZmFolder.ID_SPAM ||
 				   (!this.isInTrash() && this.hasChild(what.name) && !ignoreExisting) ||
-	               (what.type !== thisType && this.nId != ZmFolder.ID_TRASH) ||
-				   (what.id === this.id) ||
-				   (this.disallowSubFolder) ||
+				   (what.type == ZmOrganizer.FOLDER && thisType == ZmOrganizer.SEARCH) ||
+				   (what.type == ZmOrganizer.SEARCH && thisType == ZmOrganizer.FOLDER && this.nId == ZmOrganizer.ID_ROOT) ||
+				   (what.id == this.id) ||
+				   (what.disallowSubFolder) ||
 				   (appCtxt.multiAccounts && !this.mayContainFolderFromAccount(what.getAccount())) || // cannot move folders across accounts, unless the target is local
                    (this.isRemote() && !this._remoteMoveOk(what)) ||
 				   (what.isRemote() && !this._remoteMoveOk(what)));				// a remote folder can be DnD but not its children
-    } else {
+	} else {
 		// An item or an array of items is being moved
 		var items = AjxUtil.toArray(what);
 		var item = items[0];
 
-        // container can only have folders/searches or calendars
-		if ((this.nId === ZmOrganizer.ID_ROOT && (what.type !== ZmOrganizer.CALENDAR)) ||
-             // nothing can be moved to outbox/sync failures folders
-			 this.nId === ZmOrganizer.ID_OUTBOX ||
-			 this.nId === ZmOrganizer.ID_SYNC_FAILURES)
+		if (this.nId == ZmOrganizer.ID_ROOT ||									// container can only have folders/searches
+			this.nId == ZmOrganizer.ID_OUTBOX ||								// nothing can be moved to outbox/sync failures folders
+			this.nId == ZmOrganizer.ID_SYNC_FAILURES)
 		{
 			invalid = true;
-		} else if (thisType === ZmOrganizer.SEARCH) {
+		} else if (thisType == ZmOrganizer.SEARCH) {
 			invalid = true;														// can't drop items into saved searches
-		} else if (item && (item.type === ZmItem.CONTACT) && item.isGal) {
+		} else if (item && (item.type == ZmItem.CONTACT) && item.isGal) {
 			invalid = true;
-		} else if (item && (item.type === ZmItem.CONV) && item.list && item.list.search && (item.list.search.folderId === this.id)) {
+		} else if (item && (item.type == ZmItem.CONV) && item.list && item.list.search && (item.list.search.folderId == this.id)) {
 			invalid = true;														// convs which are a result of a search for this folder
 		} else {																// checks that need to be done for each item
 			for (var i = 0; i < items.length; i++) {
@@ -627,13 +625,19 @@ function(what, folderType, ignoreExisting) {
 					invalid = true;
 					break;
 				}
-				if (Dwt.instanceOf(childItem, "ZmBriefcaseFolderItem")) {
+				if (childItem == ZmItem.CONTACT) {
+					if (this.nId != ZmFolder.ID_TRASH) {
+						// can only move contacts into Trash
+						invalid = true;
+						break;
+					}
+				} else if (Dwt.instanceOf(childItem, "ZmBriefcaseFolderItem")) {
                      if (childItem.folder && childItem.folder.isRemote() && !childItem.folder.rid) {
                         invalid = true;
                         break;
                      }
-                } else if (item.type === ZmItem.MSG && childItem.isDraft && (this.nId != ZmFolder.ID_TRASH && this.nId != ZmFolder.ID_DRAFTS && this.rid != ZmFolder.ID_DRAFTS)) {
-					// can move drafts only into Trash or Drafts
+                } else if (childItem.isDraft && (this.nId != ZmFolder.ID_TRASH && this.nId != ZmFolder.ID_DRAFTS && this.rid != ZmFolder.ID_DRAFTS)) {
+					// can move drafts into Trash or Drafts
 					invalid = true;
 					break;
 				} else if ((this.nId == ZmFolder.ID_DRAFTS || this.rid == ZmFolder.ID_DRAFTS) && !childItem.isDraft)	{
@@ -648,8 +652,8 @@ function(what, folderType, ignoreExisting) {
 				// account when moving across accounts
 				var acct = this.getAccount();
 				if (acct && item.getAccount() != acct &&
-					(acct.type === ZmAccount.TYPE_MSE ||
-					 acct.type === ZmAccount.TYPE_EXCHANGE))
+					(acct.type == ZmAccount.TYPE_MSE ||
+					 acct.type == ZmAccount.TYPE_EXCHANGE))
 				{
 					invalid = true;
 				}
@@ -673,7 +677,7 @@ function(what, folderType, ignoreExisting) {
 			// can't move items to folder they're already in; we're okay if we
 			// have one item from another folder
 			if (!invalid && !ignoreExisting) {
-				if (item && item.folderId) {
+				if (item.folderId) {
 					invalid = true;
 					for (var i = 0; i < items.length; i++) {
 						if (items[i].folderId != this.id) {
@@ -696,13 +700,10 @@ function(what, folderType, ignoreExisting) {
  * 
  * @return	{Boolean}	<code>true</code> if the folder is the one dealing with Outlook sync issues
  */
-
-//Bug#68799 Removing special handling of the folder named "Sync Issues"
-
-/*ZmFolder.prototype.isSyncIssuesFolder =
+ZmFolder.prototype.isSyncIssuesFolder =
 function() {
 	return (this.name == ZmFolder.SYNC_ISSUES);
-};*/
+};
 
 /**
  * Checks if this folder required hard delete.
@@ -737,22 +738,14 @@ function(){
 ZmFolder.prototype._remoteMoveOk =
 function(folder) {
 	if (!this.isRemote() && folder.isMountpoint && folder.rid) { return true; }
-	if (!this.link || !folder.link || this.getOwner() !== folder.getOwner()) { return false; }
-	if (!this._folderActionOk(this, "isInsert")) {
-		return false;
-	}
-	return this._folderActionOk(folder, "isDelete");
+	if (!this.link || !folder.link || this.zid != folder.zid) { return false; }
+	if (this.id.split(":")[0] != folder.id.split(":")[0]) { return false; }
+	var share = this.shares && this.shares[0];
+	if (!(share && share.isInsert())) { return false; }
+	share = folder.shares && folder.shares[0];
+    return (share && share.isDelete());
 };
 
-ZmFolder.prototype._folderActionOk =
-function(folder, func) {
-	var share = folder.shares && folder.shares[0];
-	if (!share) {
-		//if shares is not set, default to readOnly.
-		return !folder.isReadOnly();
-	}
-	return share[func]();
-};
 /**
  * Returns true if this folder is for outbound mail.
  */
@@ -764,26 +757,4 @@ function() {
 		}
 	}
 	return false;
-};
-
-
-/**
- * Sets the Global Mark Read flag.  When the user sets this flag, read flags are global for all
- * shared instances of the folder. When not set, each user accessing the shared folder will maintain
- * their own read/unread flag.
- *
- * @param	{Object}	        globalMarkRead		the globalMarkRead boolean flag
- * @param	{AjxCallback}	    callback		    the callback
- * @param	{AjxCallback}	    errorCallback		the error callback
- * @param   {ZmBatchCommand}    batchCmd            optional batch command
- */
-ZmOrganizer.prototype.setGlobalMarkRead = function(globalMarkRead, callback, errorCallback, batchCmd) {
-	if (this.globalMarkRead == globalMarkRead) { return; }
-    // TODO: Bug 59559, awaiting server side implementation (Bug 24567)
-    // TODO: - For ZmFolderPropsDialog and ZmSharePropsDialog:
-    // TODO:     Make sure that the attrName is indeed globalMarkRead - used in the dialogs
-    // TODO:     Make the globalMarkRead labels and controls visible.
-    // TODO: - Uncomment this once the server call is ready, make sure action/attrs are correct
-	//this._organizerAction({action: "globalMarkRead", attrs: {globalMarkRead: globalMarkRead}, callback: callback,
-    //                       errorCallback: errorCallback, batchCmd: batchCmd});
 };

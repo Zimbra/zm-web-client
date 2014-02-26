@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2007, 2008, 2009, 2010, 2011, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
@@ -27,37 +27,25 @@ AjxPackage.require("zimbraMail.mail.model.ZmMimePart");
 AjxPackage.require("zimbraMail.mail.model.ZmMailList");
 
 AjxPackage.require("zimbraMail.mail.view.object.ZmImageAttachmentObjectHandler");
-AjxPackage.require("zimbraMail.share.zimlet.handler.ZmEmailObjectHandler");
 
 AjxPackage.require("zimbraMail.mail.view.ZmMailListView");
-AjxPackage.require("zimbraMail.mail.view.ZmMailItemView");
 AjxPackage.require("zimbraMail.mail.view.ZmDoublePaneView");
 AjxPackage.require("zimbraMail.mail.view.ZmTradView");
 AjxPackage.require("zimbraMail.mail.view.ZmInviteMsgView");
 AjxPackage.require("zimbraMail.mail.view.ZmMailMsgView");
 AjxPackage.require("zimbraMail.mail.view.ZmMailMsgListView");
 AjxPackage.require("zimbraMail.mail.view.ZmConvListView");
-AjxPackage.require("zimbraMail.mail.view.ZmMailListSectionHeader");
-AjxPackage.require("zimbraMail.mail.view.ZmConvView2");
-AjxPackage.require("zimbraMail.mail.view.ZmRecipients");
-AjxPackage.require("zimbraMail.mail.view.ZmMailRedirectDialog");
 
 AjxPackage.require("zimbraMail.mail.controller.ZmMailFolderTreeController");
 AjxPackage.require("zimbraMail.mail.controller.ZmMailListController");
 AjxPackage.require("zimbraMail.mail.controller.ZmDoublePaneController");
 AjxPackage.require("zimbraMail.mail.controller.ZmConvListController");
 AjxPackage.require("zimbraMail.mail.controller.ZmTradController");
-AjxPackage.require("zimbraMail.mail.controller.ZmMsgController");
 
 AjxPackage.require("zimbraMail.mail.model.ZmIdentity");
 AjxPackage.require("zimbraMail.mail.model.ZmIdentityCollection");
 AjxPackage.require("zimbraMail.mail.model.ZmDataSource");
 AjxPackage.require("zimbraMail.mail.model.ZmDataSourceCollection");
-AjxPackage.require("zimbraMail.mail.model.ZmMailListGroup");
-AjxPackage.require("zimbraMail.mail.model.ZmMailListDateGroup");
-AjxPackage.require("zimbraMail.mail.model.ZmMailListFromGroup");
-AjxPackage.require("zimbraMail.mail.model.ZmMailListPriorityGroup");
-AjxPackage.require("zimbraMail.mail.model.ZmMailListSizeGroup");
 AjxPackage.require("zimbraMail.mail.model.ZmPopAccount");
 AjxPackage.require("zimbraMail.mail.model.ZmImapAccount");
 AjxPackage.require("zimbraMail.mail.model.ZmSignature");

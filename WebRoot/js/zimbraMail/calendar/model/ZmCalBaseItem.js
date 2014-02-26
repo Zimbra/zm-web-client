@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2008, 2009, 2010, 2011, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
@@ -183,13 +183,6 @@ ZmCalBaseItem.prototype.getEndTime 		= function() { return this.endDate.getTime(
 ZmCalBaseItem.prototype.getStartTime 	= function() { return this.startDate.getTime(); }; 	// start time in ms
 
 /**
- * Gets the alarm instance start time
- *
- * @return	{Date}	the alarmInst time
- */
-ZmCalBaseItem.prototype.getAlarmInstStart = function() { return this._alarmInstStart; }; 	// alarm inst time in ms
-
-/**
  * Gets the duration.
  * 
  * @return	{int}	the duration (in milliseconds)
@@ -338,14 +331,11 @@ function(s, tzo) {
  */
 ZmCalBaseItem.prototype.isAlarmInstance =
 function() {
-    var alarmData = this.alarmData ? this.alarmData[0] : null;
+    if (!this.alarmData) { return false; }
 
-    if (!alarmData ||
-        !alarmData.alarmInstStart ||
-        !this.startDate) {
-        return false;
-    }
+    var alarmData = this.alarmData[0];
     this._alarmInstStart = this.adjustMS(alarmData.alarmInstStart, this.tzo);
+
     return (this._alarmInstStart == this.startDate.getTime());
 };
 
@@ -385,14 +375,10 @@ function(calItemNode, instNode) {
 	}
 
 	this.alarm 			= this._getAttr(calItemNode, instNode, "alarm");
-	this.alarmData 		= this._getAttr(calItemNode, instNode, "alarmData");
-    if (!this.alarmData && this.isException) {
-        this.alarmData  = calItemNode.alarmData;
-    }
+	this.alarmData 		= this._getAttr(calItemNode, instNode, "alarmData");	
 	this.priority 		= parseInt(this._getAttr(calItemNode, instNode, "priority"));
 
 	this.recurring 		= instNode.recur != null ? instNode.recur : calItemNode.recur; // TEST for null since recur can be FALSE
-    this.ridZ 			= this.recurring && instNode && instNode.ridZ;
 
 	this.fba = this._getAttr(calItemNode, instNode, "fba");
 
@@ -434,9 +420,9 @@ function(calItem, inst, name) {
 /**
  * @private
  */
-ZmCalBaseItem.prototype._addLocationToRequest =
+ZmCalBaseItem.prototype._addLocationToSoap =
 function(inv) {
-    inv.loc = this.getLocation();
+	inv.setAttribute("loc", this.getLocation());
 };
 
 /**
@@ -466,7 +452,7 @@ function() {
 
 /**
  * Gets alarm info
- *
+ * 
  * @return	{Object}    the alarm information
  */
 ZmCalBaseItem.prototype.getAlarmData =
@@ -476,7 +462,7 @@ function() {
 
 /**
  * Checks if the alarm is old (based on current time).
- * 
+ *
  * @return	{Boolean}	<code>true</code> if the alarm is old
  */
 ZmCalBaseItem.prototype.isAlarmOld =

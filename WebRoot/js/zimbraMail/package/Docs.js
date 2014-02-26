@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2008, 2009, 2010, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2008, 2009, 2010, 2011, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
@@ -13,13 +13,17 @@
  * ***** END LICENSE BLOCK *****
  */
 /*
- * Package: Docs
+ * Package: Slides
  *
- * Supports: The document editing application
+ * Supports: The powerpoint (slides) application
  *
  */
 
 AjxPackage.require("zimbraMail.docs.ZmDocsEditApp");
+
+AjxPackage.require("zimbraMail.docs.view.ZmDocsEditor");
 AjxPackage.require("zimbraMail.docs.view.ZmDocsEditView");
+
 AjxPackage.require("zimbraMail.docs.controller.ZmDocsEditController");
+
 AjxPackage.require("zimbraMail.briefcase.model.ZmDocletMgr");

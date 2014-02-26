@@ -171,31 +171,32 @@ function(isStart, ev) {
 		calDate = cal.getDate() || new Date();
 		this.setValue(field, AjxDateUtil.simpleComputeDateStr(calDate));
 	} else {
-                if (calDate)
-                        cal.setDate(calDate);
-                else
-                        this.setValue(field, null);
+		if (calDate)
+			cal.setDate(calDate);
+		else
+			this.setValue(field, null);
 	}
 };
+
+
 
 ZmExportView.prototype._dateCalSelectionListener = 
 function(isStart, ev) {
 	var sd = AjxDateUtil.simpleParseDateStr(this.getValue("startDateField"));
 	var ed = AjxDateUtil.simpleParseDateStr(this.getValue("endDateField"));
 	var newDate = AjxDateUtil.simpleComputeDateStr(ev.detail);
+
 	// change the start/end date if they mismatch
 	if (isStart) {
 		if (ed && (ed.valueOf() < ev.detail.valueOf())) {
 			this.setValue("endDateField", newDate);
-			this.getControl("endMiniCal").setDate(ev.detail);
 		}
-		this.setValue("startDateField", newDate);
+			this.setValue("startDateField", newDate);
 	} else {
 		if (sd && (sd.valueOf() > ev.detail.valueOf())) {
 			this.setValue("startDateField", newDate);
-			this.getControl("startMiniCal").setDate(ev.detail);
 		}
-		this.setValue("endDateField", newDate);
+			this.setValue("endDateField", newDate);
 	}
 };
 

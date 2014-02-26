@@ -274,6 +274,7 @@ ZmDataSourceCollection.prototype.__gotoPrefSection = function(prefSectionId) {
 	controller.getPrefsView().selectSection(prefSectionId);
 };
 
+
 /**
  * Periocially check status of the import
  * @param {Object} sourceMap map of accounts

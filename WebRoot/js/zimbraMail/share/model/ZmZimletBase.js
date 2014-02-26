@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
@@ -64,7 +64,6 @@ ZmZimletBase.prototype = new ZmObjectHandler();
  */
 ZmZimletBase.prototype._init =
 function(zimletContext, shell) {
-	DBG.println(AjxDebug.ZIMLET, "Creating zimlet " + zimletContext.name);
 	this._passRpcErrors = false;
 	this._zimletContext = zimletContext;
 	this._dwtShell = shell;
@@ -177,7 +176,7 @@ function() {
  * in the panel. This method is only called for the valid types that the
  * Zimlet accepts as defined by the <code>&lt;dragSource&gt;</code> Zimlet Definition File XML.
  *
- * @param	{ZmAppt|ZmConv|ZmContact|ZmFolder|ZmMailMsg|ZmTask}	zmObject		the dragged object
+ * @param	{ZmAppt|ZmConv|ZmContact|ZmFolder|ZmMailMsg|ZmNotebook|ZmTask}	zmObject		the dragged object
  * @return	{boolean}	<code>true</code> if the drag should be allowed; otherwise, <code>false</code>
  */
 ZmZimletBase.prototype.doDrag =
@@ -188,7 +187,7 @@ function(zmObject) {
 /**
  * This method is called when an item is dropped on the Zimlet in the panel.
  * 
- * @param	{ZmAppt|ZmConv|ZmContact|ZmFolder|ZmMailMsg|ZmTask}	zmObject		the dropped object
+ * @param	{ZmAppt|ZmConv|ZmContact|ZmFolder|ZmMailMsg|ZmNotebook|ZmTask}	zmObject		the dropped object
  */
 ZmZimletBase.prototype.doDrop =
 function(zmObject) {};
@@ -529,50 +528,18 @@ function(spanElement, contentObjText, matchContext, canvas) {
 	var c = this.xmlObj("contentObject");
 	if (c && c.toolTip) {
 		var obj = this._createContentObj(contentObjText, matchContext);
-
 		var txt;
-		if (c.toolTip instanceof Object && c.toolTip.actionUrl) {
+		if (c.toolTip instanceof Object &&
+		    c.toolTip.actionUrl) {
 		    this.xmlObj().handleActionUrl(c.toolTip.actionUrl, [{type:"tooltip"}], obj, canvas);
 		    // XXX the tooltip needs "some" text on it initially, otherwise it wouldn't resize afterwards.
-		    txt = ZmMsg.zimletFetchingTooltipData;
+		    txt = "fetching data...";
 		} else {
 			// If it's an email address just use the address value.
 			if (obj.objectContent instanceof AjxEmailAddress) {obj.objectContent = obj.objectContent.address;}
-			txt = this.xmlObj().process(c.toolTip, obj);
+			txt = this.xmlObj().processString(c.toolTip, obj);
 		}
 		canvas.innerHTML = txt;
-
-		Dwt.setSize(canvas, parseInt(c.toolTip.width) || Dwt.DEFAULT, parseInt(c.toolTip.height) || Dwt.DEFAULT);
-		
-		if (this._isTooltipSticky()) {
-			Dwt.setHandler(canvas, DwtEvent.ONCLICK, AjxCallback.simpleClosure(this.setTooltipSticky, this, [true]));
-
-			var omem = DwtOutsideMouseEventMgr.INSTANCE;
-			omem.startListening({
-				id: "ZimletTooltip",
-				elementId: canvas.id,
-				outsideListener: new AjxListener(this, this.setTooltipSticky, [false, true])
-			});
-
-		}
-	}
-};
-
-/**
- * This method is called when a sticky tooltip is clicked, when clicking outside
- * a sticky tooltip, or when a zimlet wants to stick or unstick a tooltip.
- * To explicitly dismiss a sticky tooltip, this method should be called with parameters (false, true)
- *
- * @param	{boolean}	sticky		Whether stickiness should be applied or removed
- * @param	{boolean}	popdown		(Optional) Pop down the tooltip after removing stickiness
- */
-ZmZimletBase.prototype.setTooltipSticky =
-function(sticky, popdown) {
-	var shell = DwtShell.getShell(window);
-	var tooltip = shell.getToolTip();
-	tooltip.setSticky(sticky);
-	if (!sticky && popdown) {
-		tooltip.popdown();
 	}
 };
 
@@ -587,11 +554,6 @@ function(sticky, popdown) {
  */
 ZmZimletBase.prototype.toolTipPoppedDown =
 function(spanElement, contentObjText, matchContext, canvas) {
-	var omem = DwtOutsideMouseEventMgr.INSTANCE;
-	omem.stopListening({
-		id: "ZimletTooltip",
-		elementId: canvas ? canvas.id : ""
-	});
 };
 
 /**
@@ -646,7 +608,7 @@ ZmZimletBase.prototype.createPropertyEditor =
 function(callback) {
 	var userprop = this.xmlObj().userProperties;
 
-	if (!userprop || !userprop.length) {return;}
+	if (!userprop) {return;}
 
     for (var i = 0; i < userprop.length; ++i) {
         userprop[i].label = this._zimletContext.processMessage(userprop[i].label);
@@ -890,10 +852,10 @@ function(icon) {
         var container = appCtxt.getCurrentApp().getOverviewContainer();
         var overviewId = appCtxt.getOverviewId([container.containerId, ZmOrganizer.LABEL[ZmOrganizer.ZIMLET]], null);
         var ov = container.getOverview(overviewId);
-        treeItem = ov && ov.getTreeItemById && ov.getTreeItemById(this.xmlObj().getOrganizer().id);
+        treeItem = ov && ov.getTreeItemById(this.xmlObj().getOrganizer().id);
     } else {
-        var treeView = appCtxt.getAppViewMgr().getViewComponent(ZmAppViewMgr.C_TREE);
-        treeItem = treeView && treeView.getTreeItemById && treeView.getTreeItemById(this.xmlObj().getOrganizer().id);
+        var treeView = appCtxt.getAppViewMgr().getCurrentViewComponent(ZmAppViewMgr.C_TREE);
+        treeItem = treeView && treeView.getTreeItemById(this.xmlObj().getOrganizer().id);
     }
 
 	if (treeItem) {
@@ -1092,8 +1054,8 @@ function(object, context, x, y, span) {
 	var shell = DwtShell.getShell(window);
 	var tooltip = shell.getToolTip();
 	tooltip.setContent('<div id="zimletTooltipDiv"/>', true);
-	this.toolTipPoppedUp(span, object, context, document.getElementById("zimletTooltipDiv"), tooltip);
-	tooltip.popup(x, y, true, !this._isTooltipSticky(), null, null, new AjxCallback(this, this.hoverOut, object, context, span));
+	this.toolTipPoppedUp(span, object, context, document.getElementById("zimletTooltipDiv"));
+	tooltip.popup(x, y, true, new AjxCallback(this, this.hoverOut, object, context, span));
 };
 
 /**
@@ -1103,10 +1065,8 @@ ZmZimletBase.prototype.hoverOut =
 function(object, context, span) {
 	var shell = DwtShell.getShell(window);
 	var tooltip = shell.getToolTip();
-	if (!tooltip.getHovered()) {
-		tooltip.popdown();
-		this.toolTipPoppedDown(span, object, context, document.getElementById("zimletTooltipDiv"));
-	}
+	tooltip.popdown();
+	this.toolTipPoppedDown(span, object, context, document.getElementById("zimletTooltipDiv"));
 };
 
 /**
@@ -1165,7 +1125,6 @@ function(canvasData, url, x, y) {
 		if (canvasData.height)
 			view.setSize(Dwt.DEFAULT, canvasData.height);
 		var title = canvasData.title || ("Zimlet dialog (" + this.xmlObj("description") + ")");
-		title = this._zimletContext.processMessage(title);
 		canvas = this._createDialog({ view: view, title: title });
 		canvas.view = view;
 		if (url) {
@@ -1233,11 +1192,10 @@ function(xsltUrl, doc) {
  * @param	{string}	image	the image (style class) to use on the application tab
  * @param	{string}	tooltip	the tool tip to display when hover-over the application tab
  * @param	{number}		[index]	the index to insert the tab (must be > 0). 0 is first location. Default is last location.
- * @param	{constant}	style	the button positioning style (see {@link DwtControl})
  * @return	{string}	the name of the newly created application
  */
 ZmZimletBase.prototype.createApp =
-function(label, image, tooltip, index, style) {
+function(label, image, tooltip, index) {
 
 	AjxDispatcher.require("ZimletApp");
 
@@ -1247,8 +1205,7 @@ function(label, image, tooltip, index, style) {
 	var params = {
 			text:label,
 			image:image,
-			tooltip:tooltip,
-			style: style
+			tooltip:tooltip
 		};
 	
 	if (index != null && index >= 0)
@@ -1376,16 +1333,5 @@ function(callback, conv) {
 	if (callback) {
 		callback.run(ZmZimletContext._translateZMObject(conv.msgs.getArray()));
 	}
-};
-
-/**
- * @private
- *
- * Does the config say the tooltip should be sticky?
- */
-ZmZimletBase.prototype._isTooltipSticky =
-function() {
-	var c = this.xmlObj("contentObject");
-	return (c && c.toolTip && c.toolTip.sticky && c.toolTip.sticky.toLowerCase() === "true");
 };
 

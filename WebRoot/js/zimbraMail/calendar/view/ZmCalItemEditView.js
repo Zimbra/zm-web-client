@@ -47,7 +47,7 @@ ZmCalItemEditView = function(parent, attendees, controller, dateInfo, posStyle, 
 	var bComposeEnabled = appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED);
 	var composeFormat = appCtxt.get(ZmSetting.COMPOSE_AS_FORMAT);
 	this._composeMode = bComposeEnabled && composeFormat == ZmSetting.COMPOSE_HTML
-		? Dwt.HTML : Dwt.TEXT;
+		? DwtHtmlEditor.HTML : DwtHtmlEditor.TEXT;
 
 	this._repeatSelectDisabled = false;
 	this._attachCount = 0;
@@ -56,11 +56,6 @@ ZmCalItemEditView = function(parent, attendees, controller, dateInfo, posStyle, 
 	this._kbMgr = appCtxt.getKeyboardMgr();
     this._isForward = false;
     this._isProposeTime = false;
-
-    this._customRecurDialogCallback = null;
-    this._enableCustomRecurCallback = true;
-
-	this.addControlListener(this._controlListener.bind(this));
 };
 
 ZmCalItemEditView.prototype = new DwtComposite;
@@ -70,6 +65,7 @@ ZmCalItemEditView.prototype.toString =
 function() {
 	return "ZmCalItemEditView";
 };
+
 
 // Consts
 
@@ -82,7 +78,8 @@ ZmCalItemEditView._REPEAT_CHANGE = "REPEAT_CHANGE";
 
 ZmCalItemEditView.prototype.show =
 function() {
-	this.resize();
+	var pSize = this.parent.getSize();
+	this.resize(pSize.x, pSize.y);
 };
 
 ZmCalItemEditView.prototype.isRendered =
@@ -131,7 +128,7 @@ function() {
 
 	// clear out all input fields
 	this._subjectField.setValue("");
-    this._notesHtmlEditor.clear();
+	this._notesHtmlEditor.setContent("");
 
     if(this._hasRepeatSupport) {
         this._repeatDescField.innerHTML = "";
@@ -219,12 +216,12 @@ function(composeMode) {
 	this._composeMode = composeMode || this._composeMode;
     this._notesHtmlModeFirstTime = !this._notesHtmlEditor.isHtmlModeInited();
 	this._notesHtmlEditor.setMode(this._composeMode, true);
-	this.resize();
+	this._resizeNotes();
 };
 
 ZmCalItemEditView.prototype.reEnableDesignMode =
 function() {
-	if (this._composeMode == Dwt.HTML)
+	if (this._composeMode == DwtHtmlEditor.HTML)
 		this._notesHtmlEditor.reEnableDesignMode();
 };
 
@@ -262,16 +259,16 @@ function(calItem, attach) {
 
 	// add file input field
 	var div = document.createElement("div");
-    var id = this._htmlElId;
-	var attachRemoveId = id + "_att_" + Dwt.getNextId();
-	var attachInputId = id + "_att_" + Dwt.getNextId();
-    var sizeContId = id + "_att_" + Dwt.getNextId();
+
+	var attachRemoveId = "_att_" + Dwt.getNextId();
+	var attachInputId = "_att_" + Dwt.getNextId();
+    var sizeContId = "_att_" + Dwt.getNextId();
 
 	if (attach) {
-		div.innerHTML = ZmApptViewHelper.getAttachListHtml(calItem, attach, true);
+		div.innerHTML = calItem.getAttachListHtml(attach, true);
 	} else {
 		var subs = {
-			id: id,
+			id: this._htmlElId,
 			attachInputId: attachInputId,
 			attachRemoveId: attachRemoveId,
             sizeId: sizeContId,
@@ -321,10 +318,8 @@ function(inputEl, sizeEl){
     for(var i=0; i<files.length;i++){
         var file = files[i];
         var size = file.size || file.fileSize /*Safari*/;
-        if ((-1 /* means unlimited */ != appCtxt.get(ZmSetting.MESSAGE_SIZE_LIMIT)) &&
-            (size > appCtxt.get(ZmSetting.MESSAGE_SIZE_LIMIT))) {
+        if(size > appCtxt.get(ZmSetting.ATTACHMENT_SIZE_LIMIT))
             className = "RedC";
-        }
         totalSize += size;
     }
 
@@ -338,15 +333,41 @@ function(inputEl, sizeEl){
 };
 
 ZmCalItemEditView.prototype.resize =
-function() {
+function(newWidth, newHeight) {
 	if (!this._rendered) { return; }
+
+	if (newWidth) {
+		this.setSize(newWidth);
+		Dwt.setSize(this.getHtmlElement().firstChild, newWidth);
+	}
+
+	if (newHeight) {
+		this.setSize(Dwt.DEFAULT, newHeight);
+	}
 
     this._resizeNotes();
 
-	var subjectContainer = this._subjectField.getHtmlElement().parentNode;
-	this._subjectField.setSize(0, Dwt.DEFAULT);
-	var containerBounds = Dwt.getInsetBounds(subjectContainer);
-	this._subjectField.setSize(containerBounds.width - 20, Dwt.DEFAULT);
+    //If scrollbar handle it
+    var size = Dwt.getSize(this.getHtmlElement());
+    var topSize = Dwt.getSize(this._topContainer);
+    var notesSize = Dwt.getSize(this._notesContainer);
+    if(((topSize.y + notesSize.y) > ( size.y + 5 ))) {
+        newWidth = size.x  - 15;
+        Dwt.setSize(this.getHtmlElement().firstChild, newWidth);
+        this._notesHtmlEditor.setSize(newWidth - 10);
+        if(!this._scrollHandled){
+            Dwt.setScrollStyle(this.getHtmlElement(), Dwt.SCROLL_Y);
+            this._scrollHandled = true;
+        }
+    }else{
+        if(this._scrollHandled){
+            Dwt.setScrollStyle(this.getHtmlElement(), Dwt.CLIP);
+            newWidth = size.x;
+            Dwt.setSize(this.getHtmlElement().firstChild, newWidth);
+            this._notesHtmlEditor.setSize(newWidth - 10);
+        }
+        this._scrollHandled = false;
+    }
 };
 
 ZmCalItemEditView.prototype.getHtmlEditor =
@@ -395,10 +416,14 @@ function(calItem, mode, firstTime) {
 
     this._resetReminders();
 
-    // Delay of 500ms to call the finishReset
-    // It should be called only when all the items are loaded properly including the scheduler
-    var ta = new AjxTimedAction(this, this._finishReset);
-    AjxTimedAction.scheduleAction(ta, 500);
+	// if first time reset'ing, delay saving form value since all widgets
+	// (i.e. html editor) may not have finished initializing yet.
+    if (firstTime || this._notesHtmlModeFirstTime) {   // Also, handling HTML mode specially as it takes some time to initialize.
+		var ta = new AjxTimedAction(this, this._finishReset);
+		AjxTimedAction.scheduleAction(ta, 500);
+	} else {
+		this._finishReset();
+	}
 };
 
 ZmCalItemEditView.prototype._resetReminders = function() {
@@ -459,7 +484,7 @@ function(calItem) {
 
 	// set the notes parts (always add text part)
 	var top = new ZmMimePart();
-	if (this._composeMode == Dwt.HTML) {
+	if (this._composeMode == DwtHtmlEditor.HTML) {
 		top.setContentType(ZmMimeTable.MULTI_ALT);
 
 		// create two more mp's for text and html content types
@@ -516,7 +541,7 @@ function(calItem, mode) {
 	this._subjectField.setValue(subject);
     if(subject) {
         buttonText = subject.substr(0, ZmAppViewMgr.TAB_BUTTON_MAX_TEXT);
-        appCtxt.getAppViewMgr().setTabTitle(this._controller.getCurrentViewId(), buttonText);
+        appCtxt.getAppViewMgr().setTabTitle(this._controller.viewId, buttonText);
     }
     if (this._hasRepeatSupport) {
         this._repeatSelect.setSelectedValue(calItem.getRecurType());
@@ -557,8 +582,6 @@ function(calItem) {
 ZmCalItemEditView.prototype._setRepeatDesc =
 function(calItem) {
 	if (calItem.isCustomRecurrence()) {
-        //Bug fix # 58493 - Set the classname if for the first time directly custom weekly/monthly/yearly repetition is selected
-        this._repeatDescField.className = "FakeAnchor";
 		this._repeatDescField.innerHTML = calItem.getRecurBlurb();
 	} else {
 		this._repeatDescField.innerHTML = (calItem.getRecurType() != "NON")
@@ -569,26 +592,49 @@ function(calItem) {
 ZmCalItemEditView.prototype._setContent =
 function(calItem, mode) {
 
-    var isSavedinHTML = false,
-        notesHtmlPart = calItem.getNotesPart(ZmMimeTable.TEXT_HTML),
-        notesPart;
-
-    if (calItem.notesTopPart) { //Already existing appointment
-        var pattern = /<([A-Z][A-Z0-9]*)\b[^>]*>(.*?)<\/\1>/ig; // improved regex to parse html tags
-        if (notesHtmlPart && notesHtmlPart.match(pattern)) {
-            isSavedinHTML = true;
+    //TODO: remove the commented lines once the review is passed.
+	// set notes/content (based on compose mode per user prefs)
+	/*if (appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED) && (appCtxt.get(ZmSetting.COMPOSE_AS_FORMAT) == ZmSetting.COMPOSE_HTML))
+	{
+		this._controller.setFormatBtnItem(true, DwtHtmlEditor.HTML);
+		this.setComposeMode(DwtHtmlEditor.HTML);
+        var notesPart = calItem.getNotesPart(ZmMimeTable.TEXT_HTML)
+        if(this._isForward && !calItem.isOrganizer()) {
+            var preface = [ZmMsg.DASHES, " ", ZmMsg.originalAppointment, " ", ZmMsg.DASHES].join("");
+            var crlf2 = "<br><br>";
+            var crlf = "<br>";
+            notesPart = crlf2 + preface + crlf + calItem.getInviteDescription(true);
+            notesPart = this.formatContent(notesPart, true);
         }
-    }
-    else if (appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED) && (appCtxt.get(ZmSetting.COMPOSE_AS_FORMAT) === ZmSetting.COMPOSE_HTML)) {
-        isSavedinHTML = true;
-    }
+		this._notesHtmlEditor.setContent(notesPart);
+	}
+	else {
+		this._controller.setFormatBtnItem(true, ZmMimeTable.TEXT_PLAIN);
+		this.setComposeMode(DwtHtmlEditor.TEXT);
+        var notesPart = calItem.getNotesPart(ZmMimeTable.TEXT_PLAIN);
+        if(this._isForward && !calItem.isOrganizer()) {
+            var preface = [ZmMsg.DASHES, " ", ZmMsg.originalAppointment, " ", ZmMsg.DASHES].join("");
+            var crlf2 = ZmMsg.CRLF2;
+            var crlf = ZmMsg.CRLF;
+            notesPart = crlf2 + preface + crlf + calItem.getInviteDescription(false);
+            notesPart = this.formatContent(notesPart, false);
+        }
+		this._notesHtmlEditor.setContent(notesPart);
+	} */
+    //bug:60541 determining the notes format based on content
+    var notesPart = calItem.getNotesPart(ZmMimeTable.TEXT_PLAIN);
 
-    if( !isSavedinHTML ){
-        notesPart = calItem.getNotesPart(ZmMimeTable.TEXT_PLAIN);
+    var notesHtmlPart = calItem.getNotesPart(ZmMimeTable.TEXT_HTML);
+    var pattern = /<div(.*?)>[\S\s]*?<\/div>/gi;
+    var pMatch = notesHtmlPart.match(pattern);
+    var isSavedinHTML = false;
+
+    if(pMatch != null && pMatch[0] != null) {
+       isSavedinHTML = true;
     }
 
     this._controller.setFormatBtnItem(true, isSavedinHTML ? ZmMimeTable.TEXT_HTML : ZmMimeTable.TEXT_PLAIN);
-    this.setComposeMode(isSavedinHTML ? Dwt.HTML : Dwt.TEXT);
+    this.setComposeMode(isSavedinHTML ? DwtHtmlEditor.HTML : DwtHtmlEditor.TEXT);
 
     if(this._isForward /* && !calItem.isOrganizer() */) {
         var preface = [ZmMsg.DASHES, " ", ZmMsg.originalAppointment, " ", ZmMsg.DASHES].join("");
@@ -604,7 +650,6 @@ function(calItem, mode) {
             notesPart = this.formatContent(notesPart, false);
         }
     }
-    if (isSavedinHTML && notesHtmlPart) notesHtmlPart = AjxStringUtil.defangHtmlContent(notesHtmlPart);
 
     this._notesHtmlEditor.setContent(isSavedinHTML ? notesHtmlPart : notesPart);
 };
@@ -615,20 +660,13 @@ function(body, composingHtml) {
     var includePref = appCtxt.get(ZmSetting.FORWARD_INCLUDE_ORIG);
     if (includePref == ZmSetting.INCLUDE_PREFIX || includePref == ZmSetting.INCLUDE_PREFIX_FULL) {
         var preface = (composingHtml ? '<br>' : '\n');
-		var wrapParams = {
-			text:				body,
-			htmlMode:			composingHtml,
-			preserveReturns:	true
-		}
+		var wrapParams = ZmHtmlEditor.getWrapParams(composingHtml);
+		wrapParams.text = body;
+		wrapParams.preserveReturns = true;
         body = preface + AjxStringUtil.wordWrap(wrapParams);
     }
     return body;
 };
-
-ZmCalItemEditView.prototype.getRepeatType =
-function() {
-    return this._repeatSelectDisabled ? "NON" : this._repeatSelect.getValue();
-}
 
 /**
  * sets any recurrence rules w/in given ZmCalItem object
@@ -679,14 +717,13 @@ function(width) {
 	var params = {
 		parent: this,
 		parentElement: (this._htmlElId + "_subject"),
-		inputId: this._htmlElId + "_subject_input",
 		type: DwtInputField.STRING,
 		errorIconStyle: DwtInputField.ERROR_ICON_NONE,
 		validationStyle: DwtInputField.CONTINUAL_VALIDATION
 	};
 	this._subjectField = new DwtInputField(params);
 	this._subjectField.setRequired();
-	Dwt.setSize(this._subjectField.getInputElement(), "100%", "2rem");
+	Dwt.setSize(this._subjectField.getInputElement(), "100%", "22px");
 
 	// CalItem folder DwtSelect
 	this._folderSelect = new DwtSelect({parent:this, parentElement:(this._htmlElId + "_folderSelect")});
@@ -721,12 +758,11 @@ function(width) {
 			type: DwtInputField.STRING,
 			errorIconStyle: DwtInputField.ERROR_ICON_NONE,
 			validationStyle: DwtInputField.CONTINUAL_VALIDATION,
-			className: "DwtInputField ReminderInput"
+            className: "DwtInputField ReminderInput"
 		};
 		this._reminderSelectInput = new DwtInputField(params);
 		var reminderInputEl = this._reminderSelectInput.getInputElement();
-        // Fix for bug: 83100. Fix adapted from ZmReminderDialog::_createButtons
-		Dwt.setSize(reminderInputEl, "120px", "2rem");
+		Dwt.setSize(reminderInputEl, Dwt.DEFAULT, "22px");
 		reminderInputEl.onblur = AjxCallback.simpleClosure(this._handleReminderOnBlur, this, reminderInputEl);
 
 		var reminderButtonListener = new AjxListener(this, this._reminderButtonListener);
@@ -756,8 +792,20 @@ function(width) {
     this._notesContainer = document.getElementById(this._htmlElId + "_notes");
     this._topContainer = document.getElementById(this._htmlElId + "_top");
 
-    this._notesHtmlEditor = new ZmHtmlEditor(this, null, null, this._composeMode, null, this._htmlElId + "_notes");
-    this._notesHtmlEditor.addOnContentInitializedListener(new AjxCallback(this,this.resize));
+	// notes ZmHtmlEditor
+    //	if (window.isTinyMCE) {
+    //		this._notesHtmlEditor = new ZmAdvancedHtmlEditor(this, null, null, this._composeMode);
+    //		this._notesHtmlEditor.addOnContentInitializedListener(new AjxCallback(this,this.resizeNotesEditor));
+    //        //tinymce editor issue: reparenting the container breaks the editor
+    //		//this._notesHtmlEditor.reparentHtmlElement(this._htmlElId + "_notes");
+    //		// bug: 19079 to avoid access denied exception set some content which corrects the doc domain
+    //		this._notesHtmlEditor.setContent("");
+    //	} else {
+		this._notesHtmlEditor = new ZmHtmlEditor(this, null, null, this._composeMode);
+		this._notesHtmlEditor.reparentHtmlElement(this._htmlElId + "_notes");
+		// bug: 19079 to avoid access denied exception set some content which corrects the doc domain
+		this._notesHtmlEditor.setContent("");
+    //	}
 };
 
 ZmCalItemEditView.prototype._handleReminderOnBlur =
@@ -792,11 +840,7 @@ ZmCalItemEditView.prototype._initAttachContainer =
 function() {
 	// create new table row which will contain parent fieldset
 	var table = document.getElementById(this._htmlElId + "_table");
-    this._attachmentRow = document.getElementById(this._htmlElId + "_attachment_container");
-    if (!this._attachmentRow){
-       this._attachmentRow = table.insertRow(-1);
-       this._attachmentRow.id = this._htmlElId + "_attachment_container";
-    }
+	this._attachmentRow = table.insertRow(-1);
 	var cell = this._attachmentRow.insertCell(-1);
 	cell.colSpan = 2;
 
@@ -815,14 +859,10 @@ function() {
 // Returns true if any of the attachment fields are populated
 ZmCalItemEditView.prototype._gotAttachments =
 function() {
-    var id = this._htmlElId;
-    if(!this._attachCount || !this._attachDiv) {
-        return false;
-    }
 	var atts = document.getElementsByName(ZmCalItemEditView.UPLOAD_FIELD_NAME);
 
 	for (var i = 0; i < atts.length; i++) {
-		if (atts[i].id.indexOf(id) === 0 && atts[i].value.length)
+		if (atts[i].value.length)
 			return true;
 	}
 
@@ -870,8 +910,6 @@ function(removeId) {
 ZmCalItemEditView.prototype._removeAllAttachments =
 function() {
 	if (this._attachCount == 0) { return; }
-    var attachRow = document.getElementById(this._htmlElId + "_attachment_container");
-    if (attachRow)  Dwt.removeChildren(attachRow);
 
 	// let's be paranoid and really cleanup
 	delete this._uploadFormId;
@@ -879,8 +917,10 @@ function() {
 	delete this._attachRemoveId;
 	delete this._attachDiv;
 	this._attachDiv = this._attachRemoveId = this._attachDivId = this._uploadFormId = null;
-
-	if (this._attachmentRow) delete this._attachmentRow;
+	// finally, nuke the whole table row
+	var table = document.getElementById(this._htmlElId + "_table");
+	table.deleteRow(table.rows.length-1);
+	delete this._attachmentRow;
 	this._attachmentRow = null;
 	// reset any attachment related vars
 	this._attachCount = 0;
@@ -926,9 +966,10 @@ function(excludeAttendees) {
 	// override
 };
 
-ZmCalItemEditView.prototype._getComponents =
+ZmCalItemEditView.prototype.resizeNotesEditor =
 function() {
-	return { above: [this._topContainer], aside: [] };
+    this._notesHtmlEditor.resizeWidth('100%');
+    this._resizeNotes();
 };
 
 ZmCalItemEditView.prototype._resizeNotes =
@@ -939,26 +980,30 @@ function() {
 		this._bodyField = document.getElementById(this._bodyFieldId);
 	}
 
-	var editorBounds = this.boundsForChild(this._notesHtmlEditor);
+	var size = this.getSize();
+	if (size.x <= 0 || size.y <= 0) { return; }
 
-	var rowWidth = editorBounds.width;
-	var rowHeight = editorBounds.height;
-
-	var components = this._getComponents();
-
-	AjxUtil.foreach(components.above, function(c) {
-		rowHeight -= Dwt.getOuterSize(c).y || 0;
-	});
-
-	AjxUtil.foreach(components.aside, function(c) {
-		rowWidth -= Dwt.getOuterSize(c).x || 0;
-	});
-
-	if (rowWidth > 0 && rowHeight > 0) {
-		this._notesHtmlEditor.setSize(rowWidth, rowHeight);
-	}
-
-	Dwt.setSize(this._topContainer, rowWidth, Dwt.CLEAR);
+	var topDiv = document.getElementById(this._htmlElId + "_top");
+    var topSize = Dwt.getSize(topDiv);
+	//var topHeight = topSize.y;
+	var rowHeight = size.y - topSize.y;
+    var rowWidth = size.x;
+	//var hFudge = (this._composeMode == DwtHtmlEditor.HTML) ? 30 : 15;
+	//var wFudge = ( AjxEnv.isIE || AjxEnv.isWebKitBased ? 20 : 0 );
+    //rowHeight = rowHeight - hFudge;
+    //rowWidth = rowWidth - wFudge
+    if(AjxEnv.isIE)
+        rowHeight = rowHeight - 10;
+    
+    if(rowHeight < 100){
+        rowHeight = 100;
+    }
+    
+    //	if(window.isTinyMCE) {
+    //        this._notesHtmlEditor.setSize(rowWidth-5, rowHeight)
+    //    }else {
+        this._notesHtmlEditor.setSize(rowWidth-10, rowHeight -5);
+    //    }
 };
 
 ZmCalItemEditView.prototype._handleRepeatDescFieldHover =
@@ -1000,6 +1045,9 @@ function(ev) {
 	// if date was input by user and its foobar, reset to today's date
 	if (calDate == null || isNaN(calDate)) {
 		calDate = new Date();
+		var field = ev.item == this._startDateButton
+			? this._startDateField : this._endDateField;
+		field.value = AjxDateUtil.simpleComputeDateStr(calDate);
 	}
 
 	// always reset the date to current field's date
@@ -1046,13 +1094,11 @@ function(ev) {
 	this._oldEndDate = AjxDateUtil.simpleParseDateStr(this._endDateField.value);	
 
 	// change the start/end date if they mismatch
-    var calItem = this._calItem;
 	if (parentButton == this._startDateButton) {
 		var ed = AjxDateUtil.simpleParseDateStr(this._endDateField.value);
 		if (ed && (ed.valueOf() < ev.detail.valueOf())) {
 			this._endDateField.value = newDate;
-        } else if (this._oldEndDate && this._endDateField.value != newDate && (calItem.type === ZmItem.APPT)) {
-            // Only preserve duration for Appts
+        }else if(this._oldEndDate && this._endDateField.value != newDate) {
             var delta = this._oldEndDate.getTime() - this._oldStartDate.getTime();
             this._endDateField.value = AjxDateUtil.simpleComputeDateStr(new Date(ev.detail.getTime() + delta));
         }
@@ -1063,6 +1109,7 @@ function(ev) {
 			this._startDateField.value = newDate;
 		this._endDateField.value = newDate;
 	}
+	var calItem = this._calItem;
 
     if(this._hasRepeatSupport) {
         var repeatType = this._repeatSelect.getValue();
@@ -1072,11 +1119,7 @@ function(ev) {
         {
             this._checkRecurrenceValidity = true;
             this._initRecurDialog(repeatType);
-            // Internal call of the custom recurrence dialog code -
-            // Suppress the callback function
-            this._enableCustomRecurCallback = false;
             this._recurOkListener();
-            this._enableCustomRecurCallback = true;
         }
         else
         {
@@ -1115,8 +1158,8 @@ function(ev) {
 	var popdown = true;
 	this._recurDialogRepeatValue = this._recurDialog.getSelectedRepeatValue();
 	if (this._recurDialogRepeatValue == "NON") {
-        this._repeatSelect.setSelectedValue(this._recurDialogRepeatValue);
-        this._repeatDescField.innerHTML = "";
+		this._repeatSelect.setSelectedValue(this._recurDialogRepeatValue);
+		this._repeatDescField.innerHTML = "";
 	} else {
 		if (this._recurDialog.isValid()) {
 			this._repeatSelect.setSelectedValue("CUS");
@@ -1154,9 +1197,6 @@ function(ev) {
 	if (popdown) {
 		this._recurDialog.popdown();
 	}
-    if (this._customRecurDialogCallback && this._enableCustomRecurCallback) {
-        this._customRecurDialogCallback.run();
-    }
 };
 
 ZmCalItemEditView.prototype.validateRecurrence =
@@ -1209,11 +1249,6 @@ function(ev) {
 	this._recurDialog.popdown();
 };
 
-ZmCalItemEditView.prototype._controlListener =
-function(ev) {
-	this.resize();
-};
-
 
 // Callbacks
 
@@ -1247,9 +1282,13 @@ function(status, attId) {
 		this._controller._handleException(ex, {continueCallback:callback});
 	} else {
 		// bug fix #2131 - handle errors during attachment upload.
-		this._controller.popupUploadErrorDialog(ZmItem.APPT, status,
-		                                        ZmMsg.errorTryAgain);
-		this._controller.enableToolbar(true);
+		var msg = AjxMessageFormat.format(ZmMsg.errorAttachment, (status || AjxPost.SC_NO_CONTENT));
+		switch (status) {
+			// add other error codes/message here as necessary
+			case AjxPost.SC_REQUEST_ENTITY_TOO_LARGE: 	msg += " " + ZmMsg.errorAttachmentTooBig + "<br><br>"; break;
+			default: 									msg += " "; break;
+		}
+		this._controller.showErrorMessage(msg + ZmMsg.errorTryAgain);
 	}
 };
 
@@ -1301,11 +1340,7 @@ function(sd) {
 		this._oldEndDate = temp._endDate;
 		this._checkRecurrenceValidity = true;
 		this._initRecurDialog(repeatType);
-		// Internal call of the custom recurrence dialog code -
-		// Suppress the callback function
-		this._enableCustomRecurCallback = false;
-		this._recurOkListener();
-		this._enableCustomRecurCallback = true;
+		this._recurOkListener();		
 	}
 	else
 	{

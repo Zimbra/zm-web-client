@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2010, 2011, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
@@ -50,6 +50,7 @@ ZmContactSearch = function(params) {
 	DwtComposite.call(this, params);
 
 	this._options = params.options;
+	this._defaultQuery = ".";
 	this._initialized = false;
 	this._searchErrorCallback = new AjxCallback(this, this._handleErrorSearch);
 	if (!ZmContactSearch._controller) {
@@ -92,6 +93,9 @@ function(ascending, firstTime, lastId, lastSortVal) {
 	}
 
 	var query = this._searchCleared ? AjxStringUtil.trim(this._searchField.value) : "";
+	if (!query.length) {
+		query = this._defaultQuery;
+	}
 
 	var queryHint;
 	if (this._selectDiv) {
@@ -101,7 +105,7 @@ function(ascending, firstTime, lastId, lastSortVal) {
 			: ZmId.SEARCH_GAL;
 
 		if (searchFor == ZmContactsApp.SEARCHFOR_PAS) {
-			queryHint = ZmSearchController.generateQueryForShares(ZmId.ITEM_CONTACT) || "is:local";
+			queryHint = ZmSearchController.generateQueryForShares([ZmId.ITEM_CONTACT]) || "is:local";
 		} else if (searchFor == ZmContactsApp.SEARCHFOR_CONTACTS) {
 			queryHint = "is:local";
 		} else if (searchFor == ZmContactsApp.SEARCHFOR_GAL) {
@@ -312,9 +316,9 @@ function() {
 		this._selectDiv.setSelectedValue(ZmContactsApp.SEARCHFOR_CONTACTS);
 	}
 
-	// TODO
-//	if (sfh[ZmContactsApp.SEARCHFOR_FOLDERS]) {
-//	}
+	if (sfh[ZmContactsApp.SEARCHFOR_FOLDERS]) {
+		// TODO
+	}
 };
 
 /**

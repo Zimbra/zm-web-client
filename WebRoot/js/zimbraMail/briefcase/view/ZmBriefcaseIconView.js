@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2008, 2009, 2010, 2011, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
@@ -80,13 +80,9 @@ function(item, params) {
 		}
 	}
 	
-	htmlArr[idx++] = "<table><tr>";
-    if (appCtxt.get(ZmSetting.SHOW_SELECTION_CHECKBOX)) {
-        htmlArr[idx++] = "<td>";
-        idx = this._getImageHtml(htmlArr, idx, "CheckboxUnchecked", this._getFieldId(item, ZmItem.F_SELECTION));
-        htmlArr[idx++] = "</td>";
-    }
-    htmlArr[idx++] = "<td><div class='Img";
+	htmlArr[idx++] = "<table><tr><td>";
+    idx = this._getImageHtml(htmlArr, idx, "CheckboxUnchecked", this._getFieldId(item, ZmItem.F_SELECTION));
+    htmlArr[idx++] = "</td><td><div class='Img";
 	htmlArr[idx++] = icon;
 	htmlArr[idx++] = "'></div></td><td nowrap>";
 	htmlArr[idx++] = AjxStringUtil.htmlEncode(item.name);

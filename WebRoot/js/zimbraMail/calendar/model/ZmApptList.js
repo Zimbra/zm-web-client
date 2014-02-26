@@ -28,8 +28,10 @@ ZmApptList = function() {
 ZmApptList.prototype = new ZmList;
 ZmApptList.prototype.constructor = ZmApptList;
 
-ZmApptList.prototype.isZmApptList = true;
-ZmApptList.prototype.toString = function() { return "ZmApptList"; };
+ZmApptList.prototype.toString = 
+function() {
+	return "ZmApptList";
+};
 
 ZmApptList.prototype.loadFromSummaryJs =
 function(appts) {
@@ -122,13 +124,16 @@ function(orig, result, startTime, endTime, fanoutAllDay, includeReminders) {
 		origEndTime = origEndDate.getTime();
 	}
 
-    //while (appt.isInRange(startTime,endTime) || (appt.isAlarmInRange() && includeReminders)) {
-    while (orig.isInRange(startTime,endTime) || (appt.isAlarmInRange() && includeReminders)) {
+	while (appt.isInRange(startTime,endTime) || (appt.isAlarmInRange() && includeReminders)) {
 		if (appt.isMultiDay()) {
 			var apptStartTime = appt.getStartTime();
 			// bug 12205: If someone mistypes "2007" as "200", we get into
 			//            a seemingly never-ending loop trying to fanout
 			//            every day even *before* the startTime of the view.
+			var outOfBounds = apptStartTime < startTime;
+			if (outOfBounds) {
+				apptStartTime = startTime;
+			}
 			var nextDay = new Date(apptStartTime);
 			nextDay.setDate(nextDay.getDate()+1);
 			if (origEndTime < nextDay.getTime()) {
@@ -139,21 +144,25 @@ function(orig, result, startTime, endTime, fanoutAllDay, includeReminders) {
                 AjxDateUtil.rollToNextDay(nextDay);
             }
 
-            var slice = ZmAppt.quickClone(appt);
-            slice._fanoutFirst = (fanoutNum == 0);
-            slice._orig = orig;
-            slice.setEndDate(nextDay);
-            slice._fanoutLast = (slice.getEndTime() == origEndTime);
-            slice._fanoutNum = fanoutNum;
-            slice.uniqStartTime = slice.getStartTime();					// need to construct uniq id later
-            result.add(slice);
-
+			if (AjxDateUtil.isInRange(apptStartTime, nextDay.getTime(), startTime, endTime)) {
+				var slice = ZmAppt.quickClone(appt);
+				if (outOfBounds) {
+					slice.startDate = new Date(startTime);
+				}
+				slice._fanoutFirst = (fanoutNum == 0);
+				slice._orig = orig;
+				slice.setEndDate(nextDay);
+				slice._fanoutLast = (slice.getEndTime() == origEndTime);
+				slice._fanoutNum = fanoutNum;
+				slice.uniqStartTime = slice.getStartTime();					// need to construct uniq id later
+				result.add(slice);
+			}
 			fanoutNum++;
 			appt.setStartDate(nextDay);
 			if (appt.getStartTime() >= appt.getEndTime())
 				break;
 		} else {
-			if (orig.isInRange(startTime,endTime)  || (appt.isAlarmInRange() && includeReminders) ) {
+			if (appt.isInRange(startTime,endTime)  || (appt.isAlarmInRange() && includeReminders) ) {
 				appt._fanoutFirst = fanoutNum == 0;
 				appt._fanoutLast = appt.getEndTime() == origEndTime;
 				if (!appt._fanoutFirst)
@@ -203,23 +212,23 @@ function(startTime, endTime) {
  * @param	{ZmFolder}		params.folder			the destination folder
  * @param	{Hash}			params.attrs			the additional attrs for SOAP command
  * @param	{AjxCallback}	params.callback			the callback to run after each sub-request
- * @param	{closure}		params.finalCallback	the callback to run after all items have been processed
+ * @param	{AjxCallback}	params.finalCallback	the callback to run after all items have been processed
  * @param	{int}			params.count			the starting count for number of items processed
  * @param	{boolean}		params.noUndo			true if the action is not undoable (e.g. performed as an undo)
- * @param	{String}		params.actionTextKey	key for optional text to display in the confirmation toast instead of the default summary. May be set explicitly to null to disable the confirmation toast entirely
+ * @param	{String}		params.actionText		optional text to display in the confirmation toast instead of the default summary. May be set explicitly to null to disable the confirmation toast entirely
  */
 ZmApptList.prototype.moveItems =
 function(params) {
-	params = Dwt.getParams(arguments, ["items", "folder", "attrs", "callback", "errorCallback" ,"finalCallback", "noUndo", "actionTextKey"]);
+	params = Dwt.getParams(arguments, ["items", "folder", "attrs", "callback", "errorCallback" ,"finalCallback", "noUndo", "actionText"]);
 
 	var params1 = AjxUtil.hashCopy(params);
 	params1.items = AjxUtil.toArray(params.items);
 	params1.attrs = params.attrs || {};
 	if (params1.folder.id == ZmFolder.ID_TRASH) {
-		params1.actionTextKey = (params.actionTextKey !== null) ? (params.actionTextKey || 'actionTrash') : null;
+		params1.actionText = (params.actionText !== null) ? (params.actionText || ZmMsg.actionTrash) : null;
 		params1.action = "trash";
         //This code snippet differs from the ZmList.moveItems
-        var currentView = appCtxt.getCurrentView();
+        var currentView = appCtxt.getAppViewMgr().getCurrentView();
         if(currentView) {
             var viewController = currentView.getController();
             if(viewController) {
@@ -228,7 +237,7 @@ function(params) {
             }
         }
 	} else {
-		params1.actionTextKey = (params.actionTextKey !== null) ? (params.actionTextKey || 'actionMove') : null;
+		params1.actionText = (params.actionText !== null) ? (params.actionText || ZmMsg.actionMove) : null;
 		params1.actionArg = params.folder.getName(false, false, true);
 		params1.action = "move";
 		params1.attrs.l = params.folder.id;

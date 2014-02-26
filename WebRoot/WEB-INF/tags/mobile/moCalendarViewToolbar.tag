@@ -1,7 +1,7 @@
 <%--
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2007, 2008, 2009, 2010, 2011, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
@@ -62,21 +62,21 @@
         <option value="null">${checkedInUI}</option><c:set var="count" value="${0}"/>
         <zm:forEachFolder var="fldr" skiproot="true">
             <c:if test="${count lt sessionScope.F_LIMIT and fldr.isCalendar || fldr.isAppointmentView}">
-                <option ${param.sfi eq fldr.id || sessionScope.calendar.id eq fldr.id ? 'selected=selected' : ''} value="${fldr.id}">${zm:cook(zm:truncateFixed(zm:getUncookedFolderName(pageContext,fldr.id),12,true))}</option><c:set var="count" value="${count+1}"/>
+                <option ${param.sfi eq fldr.id || sessionScope.calendar.id eq fldr.id ? 'selected=selected' : ''} value="${fldr.id}">${fn:escapeXml(zm:truncateFixed(zm:getFolderName(pageContext,fldr.id),12,true))}</option><c:set var="count" value="${count+1}"/>
             </c:if>
         </zm:forEachFolder>
         </select>
         </c:if>
     </div></div></div>
 </c:if>
-<c:url var='eaction' value="?st=newappt&date=${dateDf}">
+<c:url var='eaction' value="?st=newappt&date=${dateDf}">                
 <c:if test="${empty invId}">
     <c:param name="_replaceDate" value="1"/>    
 </c:if>
 <c:if test="${not empty invId}">
 	<c:param name="useInstance" value="0"/>
 	<c:param name="invId" value="${invId}"/>
-    <c:param name="_ajxnoca" value="1"/>
+    <c:param name="_ajxnoca" value="1"/>    
 </c:if>
 <c:if test="${not empty param.bt}">
 	<c:param name="bt" value="${param.bt}"/>
@@ -88,21 +88,9 @@
     <c:if test="${view ne 'appt'}"><a ${list} class='prev_button ${view!=null && view=='list'?'zo_button_disabled':'zo_button'}'><fmt:message key="calViewListShort"/></a><a ${day} class='next_button ${view!=null && view=='day'?'zo_button_disabled':'zo_button'}'><fmt:message key="calViewDayShort"/></a><a ${month} class='next_button ${view!=null && view=='month'?'zo_button_disabled':'zo_button'}'><fmt:message key="calViewMonthShort"/></a></c:if>
     <c:if test="${view eq 'appt'}"><mo:calendarUrl var="backurl" action="${null}"/><a href="${backurl}" class="zo_button prev_button"><fmt:message key="back"/></a></c:if>
     </span>
-    <c:if test="${view ne 'appt'}">
-    <span>
-         <a accesskey="${requestScope.mainaction_accesskey}" href="${eaction}" class='zo_button'><fmt:message key="add"/></a>
+	<span>
+         <a accesskey="${requestScope.mainaction_accesskey}" href="${eaction}" class='zo_button'><fmt:message key="${empty invId ? 'add' : 'edit'}"/></a>
     </span>
-    </c:if>
-    <c:if test="${view eq 'appt'}">
-        <c:if test="${not empty invId}">
-            <span>
-                <a accesskey="${requestScope.mainaction_accesskey}" href="${eaction}" class='zo_button'><fmt:message key="edit"/></a>
-            </span>
-        </c:if>
-        <span>
-             <input class="zo_button" name="actionApptDelete" type="submit" value="<fmt:message key="delete"/>">
-        </span>
-    </c:if>
 </span></span></div>
 </c:if>    
 <c:if test="${!isTop && '1' eq btm_stb}">
@@ -116,7 +104,7 @@
         <option value="null">${checkedInUI}</option><c:set var="count" value="${0}"/>
         <zm:forEachFolder var="fldr" skiproot="true">
             <c:if test="${count lt sessionScope.F_LIMIT and fldr.isCalendar || fldr.isAppointmentView}">
-                <option ${param.sfi eq fldr.id || sessionScope.calendar.id eq fldr.id ? 'selected=selected' : ''} value="${fldr.id}">${zm:cook(zm:truncateFixed(zm:getFolderName(pageContext,fldr.id),12,true))}</option><c:set var="count" value="${count+1}"/>
+                <option ${param.sfi eq fldr.id || sessionScope.calendar.id eq fldr.id ? 'selected=selected' : ''} value="${fldr.id}">${fn:escapeXml(zm:truncateFixed(zm:getFolderName(pageContext,fldr.id),12,true))}</option><c:set var="count" value="${count+1}"/>
             </c:if>
         </zm:forEachFolder>
         </select>

@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2008, 2009, 2010, 2011, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
@@ -17,7 +17,7 @@
  * Creates a Zimlets preference page.
  * @constructor
  * @class ZmZimletsPage
- * This class represents a page that allows the user to enable/disable available
+ * This class represents a page that allows the user to enable/disable availbale
  * zimlets. User can see all the simlets those are enabled by admin for his account.
  * Out of these available zimlets user can choose some or all for his account.
  *
@@ -65,7 +65,8 @@ function () {
 
 ZmZimletsPage.prototype.reset =
 function(){
-	var arr = this.getZimletsArray();
+	var zimlets = this.getZimlets();
+	var arr = zimlets._vector.getArray();
 	for (var i = 0; i < arr.length; i++) {
 		arr[i].restoreStatus();
 	}
@@ -73,19 +74,11 @@ function(){
 };
 
 ZmZimletsPage.prototype.showMe =
-function(deferred){
+function(){
 	ZmPreferencesPage.prototype.showMe.call(this);
-	var zimlets = this.getZimlets();
-	if (zimlets.size() === 0) {
-		this._zimlets = null; //otherwise it would stay cached and would not update when this method is calledback.
-		if (!deferred) {
-			appCtxt.getAppController().addListener(ZmAppEvent.POST_STARTUP, new AjxListener(this, this.showMe, [true]));
-		}
-		return;
-	}
 	if (this._listView) {
 		var s = this._listView.getSelection();
-		this._listView.set(zimlets.clone());
+		this._listView.set(this.getZimlets()._vector.clone());
 		if (s && s[0]) {
 			this._listView.setSelection(s[0]);
 		}
@@ -328,11 +321,11 @@ function(zimletName, result) {
 	}
 
 	// remove the uninstalled zimlet from the listview
-    var zimletsCtxt = this.getZimletsCtxt();
-	var zimlet = zimletsCtxt.getPrefZimletByName(zimletName);
+    var zimlets = this.getZimlets();
+	var zimlet = zimlets.getPrefZimletByName(zimletName);
 	if (zimlet) {
-		zimletsCtxt.removePrefZimlet(zimlet);
-		this._listView.set(zimletsCtxt.getZimlets().clone());
+		zimlets.removePrefZimlet(zimlet);
+		this._listView.set(zimlets._vector.clone());
 	}
 
 	// prompt user to resart client
@@ -348,7 +341,7 @@ ZmZimletsPage.prototype.addCommand  =
 function(batchCommand) {
 	var soapDoc = AjxSoapDoc.create("ModifyZimletPrefsRequest", "urn:zimbraAccount");
 	// LDAP supports multi-valued attrs, so don't serialize list
-	var zimlets = this.getZimletsArray();
+	var zimlets = this.getZimlets()._vector.getArray();
 	var settingsObj = appCtxt.getSettings();
 	var setting = settingsObj.getSetting(ZmSetting.CHECKED_ZIMLETS);
 	var checked = [];
@@ -367,7 +360,7 @@ function(batchCommand) {
 ZmZimletsPage.prototype._reloadZimlets =
 function() {
 	// reset all zimlets origStatus
-	var zimlets = this.getZimletsArray();
+	var zimlets = this.getZimlets()._vector.getArray();
 	for (var i = 0; i < zimlets.length; i++) {
 		zimlets[i].resetStatus();
 	}
@@ -392,34 +385,22 @@ function() {
 
 ZmZimletsPage.prototype._isChecked =
 function(name) {
-	var z = this.getZimletsCtxt().getPrefZimletByName(name);
+	var z = this.getZimlets().getPrefZimletByName(name);
 	return (z && z.active);
 };
 
 ZmZimletsPage.prototype.isDirty =
 function() {
-	var dirty = false;
-	var arr = this.getZimletsArray();
-	var dirtyZimlets = [];
-
-	var printZimlet = function(zimlet) {
-		if (AjxUtil.isArray(zimlet)) {
-			return AjxUtil.map(zimlet, printZimlet).join("\n");
-		}
-		return [zimlet.name," (from ",zimlet._origStatus," to ",zimlet.active,")"].join("");
-	}
-
+	var allZimlets = this.getZimlets();
+	var r = false;
+	var arr = allZimlets._vector.getArray();
 	for (var i = 0; i < arr.length; i++) {
 		if (arr[i]._origStatus != arr[i].active) {
-			dirty = true;
-			dirtyZimlets.push(arr[i]);
+			r = true;
+			break;
 		}
 	}
-
-	if (dirty) {
-		AjxDebug.println(AjxDebug.PREFS, "Dirty preferences:\n" + "Dirty zimlets:\n" + printZimlet(dirtyZimlets));
-	}
-	return dirty;
+	return r;
 };
 
 /**
@@ -429,24 +410,13 @@ function() {
  * 
  * @private
  */
-ZmZimletsPage.prototype.getZimletsCtxt =
+ZmZimletsPage.prototype.getZimlets =
 function() {
 	if (!this._zimlets) {
 		this._zimlets = ZmZimletsPage._getZimlets();
 	}
 	return this._zimlets;
 };
-
-ZmZimletsPage.prototype.getZimlets =
-function() {
-	return this.getZimletsCtxt().getZimlets();
-};
-
-ZmZimletsPage.prototype.getZimletsArray =
-function() {
-	return this.getZimlets().getArray();
-};
-
 
 ZmZimletsPage._getZimlets =
 function() {
@@ -470,6 +440,7 @@ function() {
 	zimlets.sortByName();
 	return zimlets;
 };
+
 
 /**
  * ZmPrefZimletListView
@@ -521,7 +492,7 @@ function(list) {
 
 ZmPrefZimletListView.prototype._handleZimletsLoaded = function(evt) {
     this._zimletsLoaded = true;
-    var array = this.parent.getZimletsArray();
+    var array = this.parent.getZimlets()._vector.getArray();
     for (var i = 0; i < array.length; i++) {
         var item = array[i];
         var label = item.label || item.name.replace(/^.*_/,"");
@@ -630,7 +601,7 @@ function(ev) {
 	var flvId = target.getAttribute("_flvId");
 	var flv = AjxCore.objectWithId(flvId);
 	var name = target.getAttribute("_name");
-	var z = flv.parent.getZimletsCtxt().getPrefZimletByName(name);
+	var z = flv.parent.getZimlets().getPrefZimletByName(name);
 	if (z) {
 		z.active = !z.active;
 	}
@@ -672,11 +643,6 @@ ZmPrefZimlets.prototype.constructor = ZmPrefZimlets;
 ZmPrefZimlets.prototype.toString =
 function() {
 	return "ZmPrefZimlets";
-};
-
-ZmPrefZimlets.prototype.getZimlets =
-function() {
-	return this._vector;
 };
 
 ZmPrefZimlets.prototype.addPrefZimlet =

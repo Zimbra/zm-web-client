@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
@@ -29,43 +29,35 @@
  * @author Roland Schemers
  * @author Conrad Damon
  * 
- * @param {DwtControl}					container					the containing shell
- * @param {ZmApp}						app							the containing application
- * @param {constant}					type						type of controller
- * @param {string}						sessionId					the session id
- * @param {ZmSearchResultsController}	searchResultsController		containing controller
+ * @param {DwtControl}		container	the containing shell
+ * @param {ZmApp}		app		the containing application
  * 
  * @extends	ZmListController
  */
-ZmContactListController = function(container, contactsApp, type, sessionId, searchResultsController) {
+ZmContactListController = function(container, contactsApp) {
 
 	if (arguments.length == 0) { return; }
-	ZmListController.apply(this, arguments);
+	ZmListController.call(this, container, contactsApp);
 
 	this._viewFactory = {};
 	this._viewFactory[ZmId.VIEW_CONTACT_SIMPLE] = ZmContactSplitView;
 
-	if (this.supportsDnD()) {
-		this._dragSrc = new DwtDragSource(Dwt.DND_DROP_MOVE);
-		this._dragSrc.addDragListener(this._dragListener.bind(this));
-	}
+	this._dragSrc = new DwtDragSource(Dwt.DND_DROP_MOVE);
+	this._dragSrc.addDragListener(new AjxListener(this, this._dragListener));
 
-	this._listChangeListener = this._handleListChange.bind(this);
+	this._listChangeListener = new AjxListener(this, this._handleListChange);
 
-	this._listeners[ZmOperation.EDIT]			= this._editListener.bind(this);
-	this._listeners[ZmOperation.PRINT]			= null; // override base class to do nothing
-	this._listeners[ZmOperation.PRINT_CONTACT]	= this._printListener.bind(this);
-	this._listeners[ZmOperation.PRINT_ADDRBOOK]	= this._printAddrBookListener.bind(this);
-	this._listeners[ZmOperation.NEW_GROUP]		= this._groupListener.bind(this);
+	this._listeners[ZmOperation.EDIT] = new AjxListener(this, this._editListener);
+	this._listeners[ZmOperation.PRINT] = null; // override base class to do nothing
+	this._listeners[ZmOperation.PRINT_CONTACT] = new AjxListener(this, this._printListener);
+	this._listeners[ZmOperation.PRINT_ADDRBOOK] = new AjxListener(this, this._printAddrBookListener);
+    this._listeners[ZmOperation.CHECK_MAIL] = new AjxListener(this, this._syncAllListener);
 
 	this._parentView = {};
 };
 
 ZmContactListController.prototype = new ZmListController;
 ZmContactListController.prototype.constructor = ZmContactListController;
-
-ZmContactListController.prototype.isZmContactListController = true;
-ZmContactListController.prototype.toString = function() { return "ZmContactListController"; };
 
 ZmContactListController.ICON = {};
 ZmContactListController.ICON[ZmId.VIEW_CONTACT_SIMPLE]		= "ListView";
@@ -80,6 +72,16 @@ ZmContactListController.SEARCH_TYPE_ANYWHERE	= 1 << 3;
 
 ZmContactListController.VIEWS = [ZmId.VIEW_CONTACT_SIMPLE];
 
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
+ZmContactListController.prototype.toString =
+function() {
+	return "ZmContactListController";
+};
+
 // Public methods
 
 /**
@@ -91,7 +93,6 @@ ZmContactListController.VIEWS = [ZmId.VIEW_CONTACT_SIMPLE];
  */
 ZmContactListController.prototype.show =
 function(searchResult, isGalSearch, folderId) {
-
 	this._searchType = isGalSearch
 		? ZmContactListController.SEARCH_TYPE_GAL
 		: ZmContactListController.SEARCH_TYPE_CANONICAL;
@@ -99,27 +100,31 @@ function(searchResult, isGalSearch, folderId) {
 	this._folderId = folderId;
 	var selectedContacts;
 	
-	if (searchResult.isZmContactList) {
-		this.setList(searchResult);			// set as canonical list of contacts
+	if (searchResult instanceof ZmContactList) {
+		this._list = searchResult;			// set as canonical list of contacts
 		this._list._isShared = false;		// this list is not a search of shared items
-		selectedContacts = this._listView[this._currentViewId] && this._listView[this._currentViewId].getSelection();
+		if (!this._currentView) {
+			this._currentView = this._defaultView();
+		}
+		selectedContacts = this._listView[this._currentView] && this._listView[this._currentView].getSelection();
 		this._contactSearchResults = false;
-    }
-	else if (searchResult.isZmSearchResult) {
+    } else if (searchResult instanceof ZmSearchResult) {
 		this._searchType |= ZmContactListController.SEARCH_TYPE_NEW;
-		this.setList(searchResult.getResults(ZmItem.CONTACT));
+		this._list = searchResult.getResults(ZmItem.CONTACT);
 
 		// HACK - find out if user did a "is:anywhere" search (for printing)
-		if (searchResult.search && searchResult.search.isAnywhere()) {
+		if (searchResult.search && searchResult.search.isAnywhere) {
 			this._searchType |= ZmContactListController.SEARCH_TYPE_ANYWHERE;
 		}
 
-		if (searchResult.search && searchResult.search.userText && this.getCurrentView()) {
-			this.getCurrentView().getAlphabetBar().reset();
+		if (searchResult.search && searchResult.search.userText && this.getParentView()) {
+			this.getParentView().getAlphabetBar().reset();
 		}
 
 		if (isGalSearch) {
-			this._list = this._list || new ZmContactList(searchResult.search, true);
+			if (this._list == null) {
+				this._list = new ZmContactList(searchResult.search, true);
+			}
 			this._list._isShared = false;
 			this._list.isGalPagingSupported = AjxUtil.isSpecified(searchResult.getAttribute("offset"));
 		} else {
@@ -130,13 +135,13 @@ function(searchResult, isGalSearch, folderId) {
 
 		this._list.setHasMore(searchResult.getAttribute("more"));
 
-		selectedContacts = this._listView[this._currentViewId] && this._listView[this._currentViewId].getSelection();
-		ZmListController.prototype.show.apply(this, [searchResult, this._currentViewId]);
+		selectedContacts = this._listView[this._currentView] && this._listView[this._currentView].getSelection();
+		ZmListController.prototype.show.apply(this, [searchResult, this._currentView]);
 		this._contactSearchResults = true;
 	}
 
 	// reset offset if list view has been created
-	var view = this._currentViewId;
+	var view = this._currentView;
 	if (this._listView[view]) {
 		this._listView[view].offset = 0;
 	}
@@ -146,8 +151,6 @@ function(searchResult, isGalSearch, folderId) {
 		this._listView[view].setSelection(selectedContacts[0]);
 	}
 };
-
-
 
 /**
  * Change how contacts are displayed. There are two views: the "simple" view
@@ -161,30 +164,23 @@ function(searchResult, isGalSearch, folderId) {
  */
 ZmContactListController.prototype.switchView =
 function(view, force, initialized, stageView) {
-	if (view && ((view != this._currentViewId) || force)) {
-		this._currentViewId = view;
+	if (view && ((view != this._currentView) || force)) {
+		this._currentView = view;
 		DBG.timePt("setting up view", true);
 		this._setup(view);
 		DBG.timePt("done setting up view");
 
-		var elements = this.getViewElements(view, this._parentView[view]);
+		var elements = {};
+		elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[view];
+		elements[ZmAppViewMgr.C_APP_CONTENT] = this._parentView[view];
 
 		// call initialize before _setView since we havent set the new view yet
 		if (!initialized) {
 			this._initializeAlphabetBar(view);
 		}
 
-		this._setView({ view:		view,
-						viewType:	this._currentViewType,
-						noPush:		this.isSearchResults,
-						elements:	elements,
-						isAppView:	true,
-						stageView:	stageView});
-		if (this.isSearchResults) {
-			// if we are switching views, make sure app view mgr is up to date on search view's components
-			appCtxt.getAppViewMgr().setViewComponents(this.searchResultsController.getCurrentViewId(), elements, true);
-		}
-		this._resetNavToolBarButtons();
+		this._setView({view:view, elements:elements, isAppView:true, stageView:stageView});
+		this._resetNavToolBarButtons(view);
 
 		// HACK: reset search toolbar icon (its a hack we're willing to live with)
 		if (this.isGalSearch() && !this._list.isGalPagingSupported) {
@@ -228,15 +224,14 @@ function() {
 };
 
 /**
- * Returns the split view.
+ * Gets the parent view.
  * 
- * @return	{ZmContactSplitView}	the split view
+ * @return	{DwtComposite}	the view
  */
-ZmContactListController.prototype.getCurrentView =
+ZmContactListController.prototype.getParentView =
 function() {
-	return this._parentView[this._currentViewId];
+	return this._parentView[this._currentView];
 };
-ZmContactListController.prototype.getParentView = ZmContactListController.prototype.getCurrentView;
 
 /**
  * Search the alphabet.
@@ -255,7 +250,7 @@ function(letter, endLetter) {
 			query: query,
 			types: [ZmItem.CONTACT],
 			offset: 0,
-			limit: (this._listView[this._currentViewId].getLimit()),
+			limit: (this._listView[this._currentView].getLimit()),
 			lastId: 0,
 			lastSortVal: letter,
 			endSortVal: endLetter
@@ -274,17 +269,16 @@ function(params) {
 
 ZmContactListController.prototype.getKeyMapName =
 function() {
-	return ZmKeyMap.MAP_CONTACTS;
+	return "ZmContactListController";
 };
 
 ZmContactListController.prototype.handleKeyAction =
 function(actionCode) {
 	DBG.println(AjxDebug.DBG3, "ZmContactListController.handleKeyAction");
-    var isExternalAccount = appCtxt.isExternalAccount();
+
 	switch (actionCode) {
 
 		case ZmKeyMap.EDIT:
-            if (isExternalAccount) { break; }
 			this._editListener();
 			break;
 
@@ -298,11 +292,6 @@ function(actionCode) {
 			if (appCtxt.get(ZmSetting.PRINT_ENABLED)) {
 				this._printAddrBookListener();
 			}
-			break;
-
-		case ZmKeyMap.NEW_MESSAGE:
-            if (isExternalAccount) { break; }
-			this._composeListener();
 			break;
 
 		default:
@@ -328,35 +317,17 @@ function(map) {
  */
 ZmContactListController.prototype._getToolBarOps =
 function() {
-    var toolbarOps =  [];
+    var toolbarOps =  [ZmOperation.NEW_MENU, ZmOperation.SEP];
+    if(appCtxt.isOffline) {
+        /* Add a send/recieve button *only* for ZD */
+        toolbarOps.push(ZmOperation.CHECK_MAIL, ZmOperation.SEP);
+    }
     toolbarOps.push(ZmOperation.EDIT,
             ZmOperation.SEP,
-            ZmOperation.DELETE, ZmOperation.SEP,
-			ZmOperation.MOVE_MENU, ZmOperation.TAG_MENU, ZmOperation.SEP,
-			ZmOperation.PRINT);
+            ZmOperation.DELETE, ZmOperation.MOVE, ZmOperation.PRINT,
+            ZmOperation.SEP,
+            ZmOperation.TAG_MENU);
     return toolbarOps;
-};
-
-/**
- * @private
- */
-ZmContactListController.prototype._getSecondaryToolBarOps =
-function() {
-    if (appCtxt.isExternalAccount()) { return []; }
-	var list = [ZmOperation.SEARCH_MENU];
-
-	if (appCtxt.get(ZmSetting.MAIL_ENABLED)) {
-		list.push(ZmOperation.NEW_MESSAGE);
-	}
-
-	if (appCtxt.get(ZmSetting.IM_ENABLED)) {
-		list.push(ZmOperation.IM);
-	}
-
-	list.push(ZmOperation.SEP, ZmOperation.CONTACTGROUP_MENU);
-//    list.push(ZmOperation.QUICK_COMMANDS);
-
-	return list;
 };
 
 /**
@@ -366,21 +337,28 @@ ZmContactListController.prototype._getActionMenuOps =
 function() {
 	var list = this._participantOps();
 	list.push(ZmOperation.SEP,
-				ZmOperation.CONTACTGROUP_MENU,
 				ZmOperation.TAG_MENU,
 				ZmOperation.DELETE,
 				ZmOperation.MOVE,
 				ZmOperation.PRINT_CONTACT);
-//    list.push(ZmOperation.QUICK_COMMANDS);
-
 	return list;
 };
 
-ZmContactListController.getDefaultViewType =
+/**
+ * @private
+ */
+ZmContactListController.prototype._getViewType =
+function() {
+	return this._currentView;
+};
+
+/**
+ * @private
+ */
+ZmContactListController.prototype._defaultView =
 function() {
 	return ZmId.VIEW_CONTACT_SIMPLE;
 };
-ZmContactListController.prototype.getDefaultViewType = ZmContactListController.getDefaultViewType;
 
 /**
  * @private
@@ -389,12 +367,9 @@ ZmContactListController.prototype._createNewView =
 function(view) {
 	var params = {parent:this._container, posStyle:Dwt.ABSOLUTE_STYLE,
 				  controller:this, dropTgt:this._dropTgt};
-	var viewType = this.getCurrentViewType();
-	this._parentView[view] = new this._viewFactory[viewType](params);
+	this._parentView[view] = new this._viewFactory[view](params);
 	var listView = this._parentView[view].getListView();
-	if (this._dragSrc) {
-		listView.setDragSource(this._dragSrc);
-	}
+	listView.setDragSource(this._dragSrc);
 
 	return listView;
 };
@@ -404,7 +379,7 @@ function(view) {
  */
 ZmContactListController.prototype._getTagMenuMsg =
 function(num) {
-	return AjxMessageFormat.format(ZmMsg.AB_TAG_CONTACTS, num);
+	return (num == 1) ? ZmMsg.AB_TAG_CONTACT : ZmMsg.AB_TAG_CONTACTS;
 };
 
 /**
@@ -412,7 +387,7 @@ function(num) {
  */
 ZmContactListController.prototype._getMoveDialogTitle =
 function(num) {
-	return AjxMessageFormat.format(ZmMsg.AB_MOVE_CONTACTS, num);
+	return (num == 1) ? ZmMsg.AB_MOVE_CONTACT : ZmMsg.AB_MOVE_CONTACTS;
 };
 
 /**
@@ -453,12 +428,17 @@ ZmContactListController.prototype._initializeToolBar =
 function(view) {
 	if (!this._toolbar[view]) {
 		ZmListController.prototype._initializeToolBar.call(this, view);
-		var tb = this._toolbar[view];
 //		this._setupViewMenu(view, true);
+		this._setNewButtonProps(view, ZmMsg.createNewContact, "NewContact", "NewContactDis", ZmOperation.NEW_CONTACT);
+        if(appCtxt.isOffline) {
+            this._setupSendRecieveButton(view);
+            if (appCtxt.accountList.size() > 2) {
+                this._setupSendReceiveMenu(view);
+            }
+        }
 		this._setupPrintMenu(view);
-		tb.addFiller();
+		this._toolbar[view].addFiller();
 		this._initializeNavToolBar(view);
-		this._setupContactGroupMenu(tb);
 		appCtxt.notifyZimlets("initializeToolbar", [this._app, this._toolbar[view], this, view], {waitUntilLoaded:true});
 	} else {
 //		this._setupViewMenu(view, false);
@@ -488,18 +468,13 @@ function(view) {
 	}
 
 	ZmOperation.setOperation(this._actionMenu, ZmOperation.CONTACT, ZmOperation.EDIT_CONTACT);
-	this._setupContactGroupMenu(this._actionMenu);
+    if (this._actionMenu.getSearchMenu()){
+       if (this._actionMenu.getSearchMenu().getOp("SEARCH_TO"))
+        ZmOperation.setOperation(this._actionMenu.getSearchMenu(), ZmOperation.SEARCH_TO, ZmOperation.SEARCH_TO, ZmMsg.findEmailToContact);
+       if (this._actionMenu.getSearchMenu().getOp("SEARCH"))
+        ZmOperation.setOperation(this._actionMenu.getSearchMenu(), ZmOperation.SEARCH, ZmOperation.SEARCH, ZmMsg.findEmailFromContact);
+    }   
 
-};
-
-ZmContactListController.prototype.getSearchFromText =
-function() {
-	return ZmMsg.findEmailFromContact;
-};
-
-ZmContactListController.prototype.getSearchToText =
-function() {
-	return ZmMsg.findEmailToContact;
 };
 
 /**
@@ -507,9 +482,9 @@ function() {
  */
 ZmContactListController.prototype._initializeAlphabetBar =
 function(view) {
-	if (view == this._currentViewId) { return; }
+	if (view == this._currentView) { return; }
 
-	var pv = this._parentView[this._currentViewId];
+	var pv = this._parentView[this._currentView];
 	var alphaBar = pv ? pv.getAlphabetBar() : null;
 	var current = alphaBar ? alphaBar.getCurrent() : null;
 	var idx = current ? current.getAttribute("_idx") : null;
@@ -530,13 +505,38 @@ function(view) {
 	DBG.timePt("setting list");
 	this._list.removeChangeListener(this._listChangeListener);
 	this._list.addChangeListener(this._listChangeListener);
-	this._listView[view].set(this._list, null, this._folderId, this.isSearchResults);
+	this._listView[view].set(this._list, null, this._folderId);
 	DBG.timePt("done setting list");
+};
+
+/**
+ *  Create a Send/Recieve Button and add listeners
+ *  *only* for ZD
+ *  @private
+ */
+ZmContactListController.prototype._setupSendRecieveButton =
+function(view) {
+    var checkMailBtn = this._toolbar[view].getButton(ZmOperation.CHECK_MAIL);
+    var checkMailMsg = appCtxt.isOffline ? ZmMsg.sendReceive : ZmMsg.checkMail;
+    checkMailBtn.setText(checkMailMsg);
+
+    var tooltip;
+    if (appCtxt.isOffline) {
+        tooltip = ZmMsg.sendReceive;
+    } else {
+        tooltip = (appCtxt.get(ZmSetting.GET_MAIL_ACTION) == ZmSetting.GETMAIL_ACTION_DEFAULT)
+                ? ZmMsg.checkMailPrefDefault : ZmMsg.checkMailPrefUpdate;
+    }
+    checkMailBtn.setToolTipContent(tooltip);
 };
 
 ZmContactListController.prototype._handleSyncAll =
 function() {
-	//doesn't do anything now after I removed the appCtxt.get(ZmSetting.GET_MAIL_ACTION) == ZmSetting.GETMAIL_ACTION_DEFAULT preference stuff
+    if (appCtxt.get(ZmSetting.OFFLINE_SHOW_ALL_MAILBOXES) &&
+        appCtxt.get(ZmSetting.GET_MAIL_ACTION) == ZmSetting.GETMAIL_ACTION_DEFAULT)
+    {
+        this._app.getOverviewContainer().highlightAllMboxes();
+    }
 };
 
 ZmContactListController.prototype._syncAllListener =
@@ -545,17 +545,38 @@ function(view) {
     appCtxt.accountList.syncAll(callback);
 };
 
-ZmContactListController.prototype.runRefresh =
-function() {
-	
-	if (!appCtxt.isOffline) {
-		return;
-	}
-	//should only happen in ZD
+/**
+ *  Create menu for Send/Recieve button and add listeners
+ *  *only* for ZD
+ *  @private
+ */
 
-	this._syncAllListener();
+ZmContactListController.prototype._setupSendReceiveMenu =
+function(view) {
+    var btn = this._toolbar[view].getButton(ZmOperation.CHECK_MAIL);
+    if (!btn) { return; }
+    btn.setMenu(new AjxCallback(this, this._setupSendReceiveMenuItems, [this._toolbar, btn]));
 };
 
+ZmContactListController.prototype._setupSendReceiveMenuItems =
+function(toolbar, btn) {
+    var menu = new ZmPopupMenu(btn, null, null, this);
+    btn.setMenu(menu);
+
+    var listener = new AjxListener(this, this._sendReceiveListener);
+    var list = appCtxt.accountList.visibleAccounts;
+    for (var i = 0; i < list.length; i++) {
+        var acct = list[i];
+        if (acct.isMain) { continue; }
+
+        var id = [ZmOperation.CHECK_MAIL, acct.id].join("-");
+        var mi = menu.createMenuItem(id, {image:acct.getIcon(), text:acct.getDisplayName()});
+        mi.setData(ZmOperation.MENUITEM_ID, acct.id);
+        mi.addSelectionListener(listener);
+    }
+
+    return menu;
+};
 
 ZmContactListController.prototype._sendReceiveListener =
 function(ev) {
@@ -568,17 +589,9 @@ function(ev) {
 ZmContactListController.prototype._handleListChange =
 function(ev) {
 	if (ev.event == ZmEvent.E_MODIFY || ev.event == ZmEvent.E_CREATE) {
-		if (!ev.getDetail("visible")) {
-			return;
-		}
-		var items = ev.getDetail("items");
-		var item = items && items.length && items[0];
-		if (item instanceof ZmContact && this._currentViewType == ZmId.VIEW_CONTACT_SIMPLE && item.folderId == this._folderId) {
-			var alphaBar = this._parentView[this._currentViewId].getAlphabetBar();
-			//only set the view if the contact is in the list
-			if(!alphaBar || alphaBar.isItemInAlphabetLetter(item)) {
-				this._parentView[this._currentViewId].setContact(item, this.isGalSearch());
-			}
+		var item = ev && ev._details && ev._details.items && ev._details.items.length && ev._details.items[0];
+		if (item instanceof ZmContact && this._currentView == ZmId.VIEW_CONTACT_SIMPLE && item.folderId == this._folderId) {
+			this._parentView[this._currentView].setContact(item, this.isGalSearch());
 		}
 	}
 };
@@ -652,9 +665,6 @@ function(view) {
  */
 ZmContactListController.prototype._resetOperations =
 function(parent, num) {
-
-	ZmBaseController.prototype._resetOperations.call(this, parent, num);
-
 	var printMenuItem;
 	if (parent instanceof ZmButtonToolBar) {
 		var printButton = parent.getButton(ZmOperation.PRINT);
@@ -665,37 +675,23 @@ function(parent, num) {
 		}
 	}
 
-	this._setContactGroupMenu(parent);
-
 	var printOp = (parent instanceof ZmActionMenu) ? ZmOperation.PRINT_CONTACT : ZmOperation.PRINT;
 
-
-	var isDl = this._folderId  == ZmFolder.ID_DLS ||
-			num == 1 && this._listView[this._currentViewId].getSelection()[0].isDistributionList();
-
-	parent.enable(printOp, !isDl);
-
-	parent.enable(ZmOperation.NEW_MESSAGE, num > 0 && !appCtxt.isExternalAccount());
-
-	var folder = this._folderId && appCtxt.getById(this._folderId);
-
-	parent.enable([ZmOperation.CONTACTGROUP_MENU], num > 0 && !isDl && !appCtxt.isExternalAccount());
-	var contactGroupMenu = this._getContactGroupMenu(parent);
-	if (contactGroupMenu) {
-		contactGroupMenu.setNewDisabled(folder && folder.isReadOnly());
-	}
-	appCtxt.notifyZimlets("resetContactListToolbarOperations",[parent, num]);
+    
 	if (!this.isGalSearch()) {
 		parent.enable([ZmOperation.SEARCH_MENU, ZmOperation.BROWSE, ZmOperation.NEW_MENU, ZmOperation.VIEW_MENU], true);
+		parent.enable(printOp, num > 0);
+        appCtxt.notifyZimlets("resetToolbarOperations",[parent, num]);
 
 		// a valid folderId means user clicked on an addrbook
-		if (folder) {
-			var isShare = folder.link;
-			var isInTrash = folder.isInTrash();
-			var canEdit = !folder.isReadOnly();
+		if (this._folderId) {
+			var folder = appCtxt.getById(this._folderId);
+			var isShare = folder && folder.link;
+			var isInTrash = folder && folder.isInTrash();
+			var canEdit = (folder == null || !folder.isReadOnly());
 
-			parent.enable([ZmOperation.TAG_MENU], canEdit && num > 0);
-			parent.enable([ZmOperation.DELETE, ZmOperation.MOVE, ZmOperation.MOVE_MENU], canEdit && num > 0);
+			parent.enable([ZmOperation.TAG_MENU], (!isShare && num > 0));
+			parent.enable([ZmOperation.DELETE, ZmOperation.MOVE], canEdit && num > 0);
 			parent.enable([ZmOperation.EDIT, ZmOperation.CONTACT], canEdit && num == 1 && !isInTrash);
 
 
@@ -705,136 +701,40 @@ function(parent, num) {
 			}
 		} else {
 			// otherwise, must be a search
-			var contact = this._listView[this._currentViewId].getSelection()[0];
+			var contact = this._listView[this._currentView].getSelection()[0];
 			var canEdit = (num == 1 && !contact.isReadOnly() && !ZmContact.isInTrash(contact));
-			parent.enable([ZmOperation.DELETE, ZmOperation.MOVE, ZmOperation.MOVE_MENU, ZmOperation.TAG_MENU], num > 0);
+			parent.enable([ZmOperation.DELETE, ZmOperation.MOVE, ZmOperation.TAG_MENU], num > 0);
 			parent.enable([ZmOperation.EDIT, ZmOperation.CONTACT], canEdit);
 		}
 	} else {
 		// gal contacts cannot be tagged/moved/deleted
-		parent.enable([ZmOperation.PRINT, ZmOperation.PRINT_CONTACT, ZmOperation.MOVE, ZmOperation.MOVE_MENU, ZmOperation.TAG_MENU], false);
+		parent.enableAll(false);
 		parent.enable([ZmOperation.SEARCH_MENU, ZmOperation.BROWSE, ZmOperation.NEW_MENU, ZmOperation.VIEW_MENU], true);
+		parent.enable([ZmOperation.NEW_MESSAGE, printOp], num > 0);
 		parent.enable(ZmOperation.CONTACT, num == 1);
-		var selection = this._listView[this._currentViewId].getSelection();
-		var canEdit = false;
-		if (num == 1) {
-			var contact = selection[0];
-			var isDL = contact && contact.isDistributionList();
-			canEdit = isDL && contact.dlInfo && contact.dlInfo.isOwner;
-		}
-		parent.enable([ZmOperation.EDIT], canEdit);  //not sure what is this ZmOperation.CONTACT exactly, but it's used as the "edit group" below. 
-		parent.enable([ZmOperation.CONTACT], isDL ? canEdit : num == 1);
-		var canDelete = ZmContactList.deleteGalItemsAllowed(selection);
-
-		parent.enable([ZmOperation.DELETE], canDelete);
-	}
-
-    //this._resetQuickCommandOperations(parent);
-
-	var selection = this._listView[this._currentViewId].getSelection();
-	var contact = (selection.length == 1) ? selection[0] : null;
-
-	var searchEnabled = num === 1 && !appCtxt.isExternalAccount() && !contact.isGroup() && contact.getEmail(); //contact.getEmail() comes from bug 72446. I had to refactor but want to keep reference to bug in this comment
-	parent.enable([ZmOperation.SEARCH_MENU, ZmOperation.BROWSE], searchEnabled);
-
-	if (parent instanceof ZmPopupMenu) {
-		this._setContactText(contact);
-		if (appCtxt.get(ZmSetting.IM_ENABLED)) {
-			var imItem = parent.getOp(ZmOperation.IM);
-			ZmImApp.updateImMenuItemByContact(imItem, contact);
-		}
-
-		var tagMenu = parent.getMenuItem(ZmOperation.TAG_MENU);
-		if (tagMenu) {
-			tagMenu.setText(contact && contact.isGroup() ? ZmMsg.AB_TAG_GROUP : ZmMsg.AB_TAG_CONTACT);
-		}
-	}
-
-    if (appCtxt.isExternalAccount()) {
-        parent.enable(
-                        [
-                            ZmOperation.MOVE,
-                            ZmOperation.EDIT,
-                            ZmOperation.CONTACT,
-                            ZmOperation.MOVE_MENU,
-                            ZmOperation.CONTACTGROUP_MENU,
-                            ZmOperation.DELETE,
-                            ZmOperation.SEARCH_MENU,
-                            ZmOperation.NEW_MESSAGE
-                        ],
-                        false
-                    );
-        parent.setItemVisible(ZmOperation.TAG_MENU, false);
-    }
-
-	if (appCtxt.isWebClientOffline()) {
-		parent.enable(
-			[
-				ZmOperation.MOVE,
-				ZmOperation.EDIT,
-				ZmOperation.CONTACT,
-				ZmOperation.MOVE_MENU,
-				ZmOperation.CONTACTGROUP_MENU,
-				ZmOperation.DELETE,
-				ZmOperation.TAG_MENU,
-				ZmOperation.PRINT,
-				ZmOperation.PRINT_CONTACT
-			],
-			false
-		);
 	}
 };
 
 
 // List listeners
 
-
 /**
  * @private
- * return the contact for which to do the action
- * @param {Boolean} isToolbar - true if the action is from the toolbar.  false/null if it's from right-click action
  */
-ZmContactListController.prototype._getActionContact = function(isToolbar) {
-
-	/*
-	if you read this and don't understand why I don't do the same as in _composeListener. It's because
-	in DwtListView.prototype.getSelection, the _rightSelItem is not set for a submenu, so the right clicked item is not the selection returned.
-	This approach of specifically specifying if it's from the toolbar (isToolbar) is more explicit, less fragile and works.
-	 */
-	if (isToolbar) {
-		var selection = this._listView[this._currentViewId].getSelection();
-		if (selection.length != 1) {
-			return null;
-		}
-		return selection[0];
-	}
-	if (this._actionEv) {
-		return this._actionEv.contact;
-	}
+ZmContactListController.prototype._participantSearchListener = function(ev) {
+	var addresses = this._actionEv.contact.getEmails();
+	appCtxt.getSearchController().fromSearch(addresses);
 };
 
-
 /**
- * From Search based on email address
+ * To Search based on email address.
  *
  * @private
  */
-ZmContactListController.prototype._searchListener = function(addrType, isToolbar, ev) {
-
-	var contact = this._getActionContact(isToolbar);
-	if (!contact) {
-		return;
-	}
-
-	var addresses = contact.getEmails(),
-		srchCtlr = appCtxt.getSearchController();
-
-	if (addrType === AjxEmailAddress.FROM) {
-		srchCtlr.fromSearch(addresses);
-	}
-	else if (addrType === AjxEmailAddress.TO) {
-		srchCtlr.toSearch(addresses);
-	}
+ZmContactListController.prototype._participantSearchToListener =
+function(ev) {
+	var name = this._actionEv.address.getAddress();
+	appCtxt.getSearchController().toSearch(name);
 };
 
 /**
@@ -844,21 +744,17 @@ ZmContactListController.prototype._searchListener = function(addrType, isToolbar
  */
 ZmContactListController.prototype._listSelectionListener =
 function(ev) {
-	Dwt.setLoadingTime("ZmContactItem");
+	Dwt.setLoadingTime("ZmContactItem", new Date());
 	ZmListController.prototype._listSelectionListener.call(this, ev);
 
 	if (ev.detail == DwtListView.ITEM_SELECTED)	{
-		this._resetNavToolBarButtons();
-		if (this._currentViewType == ZmId.VIEW_CONTACT_SIMPLE) {
-			this._parentView[this._currentViewId].setContact(ev.item, this.isGalSearch());
-		}	
+		this._resetNavToolBarButtons(this._currentView);
+		if (this._currentView == ZmId.VIEW_CONTACT_SIMPLE) {
+			this._parentView[this._currentView].setContact(ev.item, this.isGalSearch());
+		}
 	} else if (ev.detail == DwtListView.ITEM_DBL_CLICKED) {
 		var folder = appCtxt.getById(ev.item.folderId);
-		if (ev.item.isDistributionList() && ev.item.dlInfo.isOwner) {
-			this._editListener.call(this, ev);
-			return;
-		}
-		if (!this.isGalSearch() && (!folder || (!folder.isReadOnly() && !folder.isInTrash())) && !appCtxt.isWebClientOffline()) {
+		if (!this.isGalSearch() && (!folder || (!folder.isReadOnly() && !folder.isInTrash()))) {
 			AjxDispatcher.run("GetContactController").show(ev.item);
 		}
 	}
@@ -872,7 +768,7 @@ function(ev, op, params) {
 	if (!ev && !op) { return; }
 	op = op || ev.item.getData(ZmOperation.KEY_ID);
 	if (op == ZmOperation.NEW_MESSAGE) {
-		this._composeListener(ev);
+		this._participantComposeListener(ev);
 	}else{
         ZmListController.prototype._newListener.call(this, ev, op, params);
     }
@@ -883,17 +779,17 @@ function(ev, op, params) {
  * 
  * @private
  */
-ZmContactListController.prototype._composeListener =
+ZmContactListController.prototype._participantComposeListener =
 function(ev) {
 
-    var selection = this._listView[this._currentViewId].getSelection();
+    var selection = this._listView[this._currentView].getSelection();
     if (selection.length == 0 && this._actionEv) {
         selection.push(this._actionEv.contact);
     }
     var emailStr = '', contact, email;
     for (var i = 0; i < selection.length; i++){
         contact = selection[i];
-		if (contact.isGroup() && !contact.isDistributionList()) {
+		if (contact.isGroup()) {
 			var members = contact.getGroupMembers().good;
 			if (members.size()) {
 				emailStr += members.toString(AjxEmailAddress.SEPARATOR) + AjxEmailAddress.SEPARATOR;
@@ -917,14 +813,28 @@ function(ev) {
 ZmContactListController.prototype._listActionListener =
 function(ev) {
 	ZmListController.prototype._listActionListener.call(this, ev);
-	this._actionEv.contact = ev.item;
+	var contact = this._actionEv.contact = ev.item;
+	var email = contact.isGroup()
+		? contact.getGroupMembers().good : contact.getEmail();
+	this._actionEv.address = contact.isGroup()
+		? email : new AjxEmailAddress(email);
+	// enable/disable New Email menu item per valid email found for this contact
+	var enableNewEmail = email != null && this._listView[this._currentView].getSelectionCount() == 1;
 	var actionMenu = this.getActionMenu();
-	if (!this._actionEv.contact.getEmail()  && actionMenu) {
-		var menuItem = actionMenu.getMenuItem(ZmOperation.SEARCH_MENU);
-		if (menuItem) {
-			menuItem.setEnabled(false);
+	actionMenu.enable([ZmOperation.SEARCH_MENU, ZmOperation.BROWSE], enableNewEmail);
+
+	if (contact.isGroup()) {
+		actionMenu.enable([ZmOperation.SEARCH_MENU, ZmOperation.BROWSE], false);
+		ZmOperation.setOperation(actionMenu, ZmOperation.CONTACT, ZmOperation.EDIT_CONTACT, ZmMsg.AB_EDIT_GROUP);
+	} else {
+		this._setContactText(!this.isGalSearch());
+		if (appCtxt.get(ZmSetting.IM_ENABLED)) {
+			var imItem = actionMenu.getOp(ZmOperation.IM);
+			ZmImApp.updateImMenuItemByContact(imItem, contact);
 		}
 	}
+	ZmOperation.setOperation(actionMenu, ZmOperation.TAG_MENU, ZmOperation.TAG_MENU, contact.isGroup() ? ZmMsg.AB_TAG_GROUP : ZmMsg.AB_TAG_CONTACT);
+
 	actionMenu.popup(0, ev.docX, ev.docY);
 	if (ev.ersatz) {
 		// menu popped up via keyboard nav
@@ -932,16 +842,13 @@ function(ev) {
 	}
 };
 
-
 /**
  * @private
  */
 ZmContactListController.prototype._dropListener =
 function(ev) {
-	var view = this._listView[this._currentViewId];
-	//var item = view.getTargetItem(ev); - this didn't seem to return any item in my tests, while the below (copied from ZmListController.prototype._dropListener) does, and thus solves the gal issue for DLs as well.
-	var div = view.getTargetItemDiv(ev.uiEvent);
-	var item = view.getItemFromElement(div);
+	var view = this._listView[this._currentView];
+	var item = view.getTargetItem(ev);
 
 	// only tags can be dropped on us
 	if (ev.action == DwtDropEvent.DRAG_ENTER) {
@@ -958,8 +865,8 @@ function(ev) {
  * @private
  */
 ZmContactListController.prototype._editListener =
-function(ev, contact) {
-	contact = contact || this._listView[this._currentViewId].getSelection()[0];
+function(ev) {
+	var contact = this._listView[this._currentView].getSelection()[0];
 	AjxDispatcher.run("GetContactController").show(contact, false);
 };
 
@@ -968,19 +875,11 @@ function(ev, contact) {
  */
 ZmContactListController.prototype._printListener =
 function(ev) {
-
-	var contacts = this._listView[this._currentViewId].getSelection();
+	var contacts = this._listView[this._currentView].getSelection();
 	var ids = [];
 	for (var i = 0; i < contacts.length; i++) {
-		if (contacts[i].isDistributionList()) {
-			continue; //don't print DLs
-		}
 		ids.push(contacts[i].id);
 	}
-	if (ids.length == 0) {
-		return;
-	}
-
 	var url = "/h/printcontacts?id=" + ids.join(",");
 	if (this.isGalSearch()) {
 		url = "/h/printcontacts?id=" + ids.join("&id=");
@@ -1086,19 +985,17 @@ function(items, folder, attrs, isShiftKey) {
 	var moveOutFolder = appCtxt.getById(this.getFolderId());
 	var outOfTrash = (moveOutFolder && moveOutFolder.isInTrash() && !folder.isInTrash());
 
-    var allDoneCallback = this._getAllDoneCallback();
+    var allDoneCallback = new AjxCallback(this, this._checkItemCount);
 	if (move.length) {
         var params = {items:move, folder:folder, attrs:attrs, outOfTrash:outOfTrash};
-		var list = params.list = this._getList(params.items);
-        this._setupContinuation(this._doMove, [folder, attrs, isShiftKey], params, allDoneCallback);
+        var list = this._setupContinuation(this._doMove, [folder, attrs, isShiftKey], params, allDoneCallback);
         list = outOfTrash ? this._list : list;
 		list.moveItems(params);
 	}
 
 	if (copy.length) {
         var params = {items:copy, folder:folder, attrs:attrs};
-		var list = params.list = this._getList(params.items);
-        this._setupContinuation(this._doMove, [folder, attrs, isShiftKey], params, allDoneCallback);
+        var list = this._setupContinuation(this._doMove, [folder, attrs, isShiftKey], params, allDoneCallback);
         list = outOfTrash ? this._list : list;
 		list.copyItems(params);
 	}
@@ -1132,17 +1029,15 @@ function(result) {
 ZmContactListController.prototype._doDelete =
 function(items, hardDelete, attrs) {
 	ZmListController.prototype._doDelete.call(this, items, hardDelete, attrs);
-	for (var i=0; i<items.length; i++) {
-		appCtxt.getApp(ZmApp.CONTACTS).updateIdHash(items[i], true);
-	}
+
 	// if more contacts to show,
-	var size = this._listView[this._currentViewId].getSelectedItems().size();
+	var size = this._listView[this._currentView].getSelectedItems().size();
 	if (size == 0) {
 		// and if in split view allow split view to clear
-		if (this._currentViewType == ZmId.VIEW_CONTACT_SIMPLE)
-			this._listView[this._currentViewId].parent.clear();
+		if (this._currentView == ZmId.VIEW_CONTACT_SIMPLE)
+			this._listView[this._currentView].parent.clear();
 
-		this._resetOperations(this._toolbar[this._currentViewId], 0);
+		this._resetOperations(this._toolbar[this._currentView], 0);
 	}
 };
 
@@ -1160,241 +1055,9 @@ function(ev) {
 ZmContactListController.prototype._checkReplenish =
 function() {
 	// reset the listview
-	var lv = this._listView[this._currentViewId];
+	var lv = this._listView[this._currentView];
 	lv.set(this._list);
 	lv._setNextSelection();
 };
 
 
-ZmContactListController.prototype._getContactGroupMenu =
-function(parent) {
-	var menu = parent instanceof ZmButtonToolBar ? parent.getActionsMenu() : parent;
-	return menu ? menu.getContactGroupMenu() : null;
-};
-
-
-ZmContactListController.prototype._setContactGroupMenu =
-function(parent) {
-	if (!parent || appCtxt.isExternalAccount()) { return; }
-
-	var groupMenu = this._getContactGroupMenu(parent);
-	if (!groupMenu) {
-		return;
-	}
-	var items = this.getItems();
-	items = AjxUtil.toArray(items);
-	var contacts = this._getContactsFromCache();
-	var contactGroups = this._filterGroups(contacts);
-	var sortedGroups = this._sortContactGroups(contactGroups);
-	groupMenu.set(items, sortedGroups, this._folderId == ZmFolder.ID_DLS); //disabled "new" from this for DLs folder.
-};
-
-ZmContactListController.prototype._setupContactGroupMenu =
-function(parent) {
-	if (!parent) return;
-	var groupMenu = this._getContactGroupMenu(parent);
-	if (groupMenu) {
-		groupMenu.addSelectionListener(this._listeners[ZmOperation.NEW_GROUP]);
-	}
-};
-
-/**
- * handles updating the group item data
- * @param ev
- */
-ZmContactListController.prototype._contactListChange =
-function(ev) {
-	if (ev && ev.source && ev.type == ZmId.ITEM_CONTACT) {
-			var item = ev.source;
-			var id = DwtId.WIDGET_ITEM + "__" + this._currentViewId + "__" + ev.source.id;
-			var view = this._listView[this._currentViewId];
-			view._setItemData(null, "item", item, id);
-	}
-
-
-};
-
-ZmContactListController.prototype._groupListener =
-function(ev, items) {
-
-	if (this.isCurrent()) {
-		var groupEvent = ev.getData(ZmContactGroupMenu.KEY_GROUP_EVENT);
-		var groupAdded = ev.getData(ZmContactGroupMenu.KEY_GROUP_ADDED);
-		items = items || this.getItems();
-		if (groupEvent == ZmEvent.E_MODIFY) {
-			var mods = {};
-			var groupId = ev.getData(Dwt.KEY_OBJECT).id;
-			var group = appCtxt.getApp(ZmApp.CONTACTS).getContactList().getById(groupId);
-			if (group) {
-				group.addChangeListener(this._contactListChange.bind(this), 0);//update the group data
-				var modifiedGroups = this._getGroupMembers(items, group);
-				if (modifiedGroups) {
-					mods[ZmContact.F_groups] = modifiedGroups;
-				}
-				this._doModify(group, mods);
-				this._menuPopdownActionListener();
-				var idx = this._list.getIndexById(group.id);
-				if (idx != null) {
-					this._resetSelection(idx);
-				}
-			}
-		}
-		else if (groupEvent == ZmEvent.E_CREATE) {
-			this._pendingActionData = items;
-			var newContactGroupDialog = appCtxt.getNewContactGroupDialog();
-			if (!this._newContactGroupCb) {
-				this._newContactGroupCb = new AjxCallback(this, this._newContactGroupCallback);
-			}
-			ZmController.showDialog(newContactGroupDialog, this._newContactGroupCb);
-			newContactGroupDialog.registerCallback(DwtDialog.CANCEL_BUTTON, this._clearDialog, this, newContactGroupDialog);
-		}
-	}
-};
-
-ZmContactListController.prototype._newContactGroupCallback =
-function(params) {
-	var groupName = params.name;
-	appCtxt.getNewContactGroupDialog().popdown();
-	var items = this.getItems();
-	var mods = {};
-	mods[ZmContact.F_groups] = this._getGroupMembers(items);
-	mods[ZmContact.F_folderId] = this._folderId;
-	mods[ZmContact.F_fileAs] = ZmContact.computeCustomFileAs(groupName);
-	mods[ZmContact.F_nickname] = groupName;
-	mods[ZmContact.F_type] = "group";
-	this._doCreate(this._list, mods);
-	this._pendingActionData = null;
-	this._menuPopdownActionListener();
-};
-
-//methods for dealing with contact groups
-ZmContactListController.prototype._getGroupMembers =
-function(items, group) {
-	var mods = {};
-	var newMembers = {};
-	var groupId = [];
-	var memberType;
-	var obj = {};
-	var id, contact;
-	
-	for (var i=0; i<items.length; i++) {
-		if (items[i].isDistributionList() || !items[i].isGroup()) {
-			obj = this._createContactRefObj(items[i], group);
-			if (obj.value) {
-				newMembers[obj.value] = obj;
-			}		
-		}
-		else {
-			var groups = items[i].attr[ZmContact.F_groups];  //getAttr only returns first value in array
-			if (!groups) {
-				obj = this._createContactRefObj(items[i], group);
-				if (obj.value) {
-					newMembers[obj.value] = obj;
-				}
-			}
-			else {
-				for (var j=0; j <groups.length; j++) {
-					id = groups[j].value;
-					contact = ZmContact.getContactFromCache(id);
-					if (contact) {
-						memberType = contact.isGal ? ZmContact.GROUP_GAL_REF : ZmContact.GROUP_CONTACT_REF;
-						obj = {value : contact.isGal ? contact.ref : id, type : memberType};
-						if (group) {
-							obj.op = "+";
-						} 
-						newMembers[id] = obj;
-					}
-					else if (groups[j].type == ZmContact.GROUP_INLINE_REF) {
-						obj = {value: groups[j].value, type : ZmContact.GROUP_INLINE_REF};
-						if (group) {
-							obj.op = "+";
-						}
-						newMembers[id] = obj;				
-					}
-				}
-			}
-		}
-	}
-	var newMembersArr = [];
-	for (var id in newMembers) {
-		newMembersArr.push(newMembers[id]);
-	}
-	if (group) {
-		//handle potential duplicates
-		var groupArr = group.attr[ZmContact.F_groups];
-		var noDups = [];
-		var found = false;
-		for (var i=0; i<newMembersArr.length; i++) {
-			found = false;
-			for (var j=0; j<groupArr.length && !found; j++) {				
-				if (newMembersArr[i].value == groupArr[j].value) {
-					found = true;	
-				}
-			}
-			if (!found) {
-				noDups.push(newMembersArr[i]);
-			}
-		}
-		return noDups;
-	}
-	else {
-		return newMembersArr;
-	}
-};
-
-ZmContactListController.prototype._createContactRefObj = 
-function(contactToAdd, group) {
-	var obj = {};
-	var memberType = contactToAdd.isGal ? ZmContact.GROUP_GAL_REF : ZmContact.GROUP_CONTACT_REF;
-	var id = memberType == ZmContact.GROUP_CONTACT_REF ? contactToAdd.getId(true) : (contactToAdd.ref || contactToAdd.id);
-	if (id) {
-		var obj = {value: id, type: memberType};
-		if (group) {
-			obj.op = "+"; //modifying group with new member	
-		}
-	}
-	return obj;
-	
-};
-
-ZmContactListController.prototype._getContactsFromCache =
-function() {
-	var contactList = appCtxt.getApp(ZmApp.CONTACTS).getContactList();
-	if (contactList){
-		return contactList.getIdHash();
-	}
-	return {};
-};
-
-ZmContactListController.prototype._sortContactGroups =
-function(contactGroups) {
-	var sortByNickname = function(a, b) {
-		var aNickname = ZmContact.getAttr(a, "nickname");
-		var bNickname = ZmContact.getAttr(b, "nickname");
-
-		if (!aNickname || !bNickname) {
-			return 0;
-		}
-
-		if (aNickname.toLowerCase() > bNickname.toLowerCase())
-			return 1;
-		if (aNickname.toLowerCase() < bNickname.toLowerCase())
-			return -1;
-
-		return 0;
-	};
-
-	return contactGroups.sort(sortByNickname);
-};
-
-ZmContactListController.prototype._filterGroups =
-function(contacts) {
-	var groups = [];
-	for (var id in contacts) {
-		var typeAttr = ZmContact.getAttr(contacts[id], "type");
-		if (typeAttr && typeAttr.toUpperCase() == ZmItem.GROUP.toUpperCase()) {
-			groups.push(contacts[id]);
-		}
-	}
-	return groups;
-};

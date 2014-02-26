@@ -1,0 +1,39 @@
+/** Tree **/
+
+.ZOptionsSectionMain{
+	background: #fff;
+	padding:1em;
+}
+
+.TabNormal a:link, .TabNormal a:visited, .Tab a:link, .Tab a:visited{
+	color: white !important;
+}
+
+.TabFiller{
+ @AppTabBorder-normal@
+}
+
+.TabSelected{
+	@tlRadius@: 3px;
+	@trRadius@: 3px; 
+}
+
+ #skin_container_tree_top td{
+ 	color: white;
+ }
+ 
+ .Tb a:link, .Tb a:visited,.TbTop input, .TbBottom input,.Paging, .Tb td{
+	color: white;
+	border-style: none;
+}
+ 
+
+#caltb.TbBt a:link, #caltb.TbBt a:visited, .TbBt a, .TbTop{
+	color: white;
+} 
+ 
+.Tab{
+	height: 28px;
+} 
+
+  

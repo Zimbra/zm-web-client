@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
@@ -23,27 +23,20 @@
  *
  * @author Parag Shah
  * 
- * @param {DwtControl}					container					the containing shell
- * @param {ZmApp}						mailApp						the containing application
- * @param {constant}					type						type of controller
- * @param {string}						sessionId					the session id
- * @param {ZmSearchResultsController}	searchResultsController		containing controller
+ * @param {ZmComposite}	container	the containing shell
+ * @param {ZmMailApp}	mailApp			the containing app
  * 
  * @extends		ZmDoublePaneController
  * 
  * @private
  */
-ZmTradController = function(container, mailApp, type, sessionId, searchResultsController) {
-	ZmDoublePaneController.apply(this, arguments);
-
-	this._listeners[ZmOperation.SHOW_CONV] = this._showConvListener.bind(this);
+ZmTradController = function(container, mailApp) {
+	ZmDoublePaneController.call(this, container, mailApp);
+	this._msgControllerMode = ZmId.VIEW_TRAD;
 };
 
 ZmTradController.prototype = new ZmDoublePaneController;
 ZmTradController.prototype.constructor = ZmTradController;
-
-ZmTradController.prototype.isZmTradController = true;
-ZmTradController.prototype.toString = function() { return "ZmTradController"; };
 
 ZmMailListController.GROUP_BY_ITEM[ZmId.VIEW_TRAD]		= ZmItem.MSG;
 ZmMailListController.GROUP_BY_SETTING[ZmId.VIEW_TRAD]	= ZmSetting.GROUP_BY_MESSAGE;
@@ -56,39 +49,19 @@ ZmMailListController.GROUP_BY_VIEWS.push(ZmId.VIEW_TRAD);
 
 // Public methods
 
-ZmTradController.getDefaultViewType =
+ZmTradController.prototype.toString = 
 function() {
-	return ZmId.VIEW_TRAD;
+	return "ZmTradController";
 };
-ZmTradController.prototype.getDefaultViewType = ZmTradController.getDefaultViewType;
 
-/**
- * Displays the given message list in a two-pane view.
- *
- * @param {ZmSearchResult}	searchResults		the current search results
- */
 ZmTradController.prototype.show =
-function(searchResults) {
-	ZmDoublePaneController.prototype.show.call(this, searchResults, searchResults.getResults(ZmItem.MSG));
-	if (!appCtxt.isExternalAccount() && !this.isSearchResults && !(searchResults && searchResults.search && searchResults.search.isDefaultToMessageView)) {
-		appCtxt.set(ZmSetting.GROUP_MAIL_BY, ZmSetting.GROUP_BY_MESSAGE);
-	}
+function(search) {
+	this._list = search.getResults(ZmItem.MSG);
+
+	// call base class
+	ZmDoublePaneController.prototype.show.call(this, search, this._list);
+	appCtxt.set(ZmSetting.GROUP_MAIL_BY, ZmSetting.GROUP_BY_MESSAGE);
 	this._resetNavToolBarButtons(ZmId.VIEW_TRAD);
-};
-
-ZmTradController.prototype.handleKeyAction =
-function(actionCode, ev) {
-
-	DBG.println(AjxDebug.DBG3, "ZmTradController.handleKeyAction");
-
-	switch (actionCode) {
-		case ZmKeyMap.KEEP_READING:
-			return this._keepReading(false, ev);
-			break;
-
-		default:
-			return ZmDoublePaneController.prototype.handleKeyAction.apply(this, arguments);
-	}
 };
 
 // Private methods
@@ -99,22 +72,20 @@ function() {
 							controller:this, dropTgt:this._dropTgt}));
 };
 
-ZmTradController.prototype._resetOperations = 
-function(parent, num) {
-	ZmDoublePaneController.prototype._resetOperations.apply(this, arguments);
-	parent.enable(ZmOperation.SHOW_CONV, (num == 1));
+ZmTradController.prototype._getViewType =
+function() {
+	return ZmId.VIEW_TRAD;
 };
 
 ZmTradController.prototype._paginate = 
 function(view, bPageForward, convIdx, limit) {
-	view = view || this._currentViewId;
+	view = view ? view : this._currentView;
 	return ZmDoublePaneController.prototype._paginate.call(this, view, bPageForward, convIdx, limit);
 };
 
 ZmTradController.prototype._resetNavToolBarButtons = 
 function(view) {
 
-	view = view || this.getCurrentViewId();
 	ZmDoublePaneController.prototype._resetNavToolBarButtons.call(this, view);
 	if (!this._navToolBar[view]) { return; }
 
@@ -137,40 +108,8 @@ function(ev) {
 	if (!handled && ev.detail == DwtListView.ITEM_DBL_CLICKED) {
 		var respCallback = new AjxCallback(this, this._handleResponseListSelectionListener, item);
 		var ctlr = AjxDispatcher.run("GetMsgController", item.nId);
-		ctlr.show(item, this, respCallback, true);
+		ctlr.show(item, this._msgControllerMode, respCallback, true);
 	}
-};
-
-ZmTradController.prototype._keepReading = 
-function(check, ev) {
-	
-	if (!this.isReadingPaneOn() || !this._itemViewCurrent()) { return false; }
-	var mlv = this._mailListView;
-	if (!mlv || mlv.getSelectionCount() != 1) { return false; }
-	
-	var itemView = this.getItemView();
-	var result = itemView && itemView._keepReading(check);
-	if (check) {
-		result = result || !!(this._getUnreadItem(DwtKeyMap.SELECT_NEXT));
-	}
-	else {
-		result = result || this.handleKeyAction(ZmKeyMap.NEXT_UNREAD, ev);
-		if (result) {
-			this._checkKeepReading();
-		}
-	}
-	return result;
-};
-
-ZmTradController.prototype._showConvListener =
-function() {
-	var msg = this.getMsg();
-	if (!msg) { return; }
-
-	var list = new ZmMailList(ZmItem.CONV);
-	list.search = msg.list.search;
-	var conv = ZmConv.createFromMsg(msg, {list: list});
-	AjxDispatcher.run("GetConvController").show(conv, null, null, null, msg);
 };
 
 // Callbacks

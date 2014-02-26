@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
@@ -50,20 +50,8 @@ function () {
     return "ZmShortcutsPage";
 };
 
-ZmShortcutsPage.prototype.hasResetButton =
-function() {
-	return false;
-};
-
 ZmShortcutsPage.prototype._createControls =
-function(deferred) {
-
-	if (!appCtxt.getKeyboardMgr().__keyMapMgr) {
-		if (!deferred) {
-			appCtxt.getAppController().addListener(ZmAppEvent.POST_STARTUP, new AjxListener(this, this._createControls, [true]));
-		}
-		return;
-	}
+function() {
 
 	var button = new DwtButton({parent:this});
 	button.setText(ZmMsg.print);
@@ -165,7 +153,7 @@ function(cols) {
 	var html = [];
 	var i = 0;
 	html[i++] = "<div class='ZmShortcutList'>";
-    html[i++] = "<table role='presentation' cellspacing=10 cellpadding=0 border=0>";
+    html[i++] = "<table cellspacing=10 cellpadding=0 border=0>";
 	if (cols[0].title) {
 		html[i++] = "<tr>";
 		var style = ZmShortcutList._getClass("shortcutListType", this._style);
@@ -211,7 +199,8 @@ function(params, html, i) {
 
 		if (action && (map != ZmKeyMap.MAP_CUSTOM)) {
 			// make sure shortcut is defined && available
-			var ks = kmm.getKeySequences(map, action);
+			var mapInt = ZmKeyMap.MAP_NAME[map] || DwtKeyMap.MAP_NAME[map];
+			var ks = kmm.getKeySequences(mapInt, action);
 			if (!(ks && ks.length)) { continue; }
 		}
 		if (field == "description") {
@@ -298,7 +287,7 @@ function(ks, style) {
 	var i = 0;
 	html[i++] = "<span class='" + ZmShortcutList._getClass("shortcutKeyCombo", style) + "'>";
 
-	var keys = ((ks[ks.length - 1] != DwtKeyMap.SEP) && (ks != DwtKeyMap.SEP)) ? ks.split(DwtKeyMap.SEP) : [ks];
+	var keys = (ks[ks.length - 1] != DwtKeyMap.SEP) ? ks.split(DwtKeyMap.SEP) : [ks];
 	for (var j = 0; j < keys.length; j++) {
 		var key = keys[j];
 		var parts = key.split(DwtKeyMap.JOIN);
@@ -348,7 +337,7 @@ ZmShortcutsPanel = function() {
 
 	this._createHtml();
 
-	this._tabGroup = new DwtTabGroup(this.toString());
+	this._tabGroup = new DwtTabGroup(this.toString(), true);
 	this._tabGroup.addMember(this);
 };
 

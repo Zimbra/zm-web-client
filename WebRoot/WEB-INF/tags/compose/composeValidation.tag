@@ -1,7 +1,7 @@
 <%--
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2008, 2009, 2010, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2008, 2009, 2010, 2011, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
@@ -34,7 +34,7 @@
     var cancelOnbeforeUnload = function(){
         window.onbeforeunload = null;
         /* do save to textearea before quitting the page */
-    <c:if test="${isHtml}" >
+    <c:if test="${(isHtml)}" >
         saveContentToTextarea();
     </c:if>
     }
@@ -42,7 +42,7 @@
     var prepToSend = function(){
         window.onbeforeunload = null;
         /*process HTML before sending*/
-    <c:if test="${isHtml}" >
+    <c:if test="${(isHtml)}" >
         saveToTextareaToSend();
     </c:if>
         return checkSubject();
@@ -79,15 +79,15 @@
                 _fields[_el[_i].name] = _el[_i].value;
             }
         }
-    <c:if test="${isHtml}" >
+    <c:if test="${(isHtml)}" >
         setTimeout(function() {
             try{
-                myEditor.save();
+                myEditor.saveHTML();
                 _fields["body"] = trim(document.getElementById("body").value);
             }catch(ex){// we may come here if editor is not yet loaded
                 setTimeout(function() {
                     try{
-                        myEditor.save();
+                        myEditor.saveHTML();
                         _fields["body"] = trim(document.getElementById("body").value);
                     }catch(ex1){}
                 },4000);//wait for 4 more seconds
@@ -107,8 +107,8 @@
                 if(_fields[_el[_i].name] != undefined && _fields[_el[_i].name] != _el[_i].value) { _checkFail = true; }
             }
         }
-    <c:if test="${isHtml}">
-        myEditor.save();
+    <c:if test="${(isHtml)}">
+        myEditor.saveHTML();
         _bodyVal = trim(document.getElementById("body").value);
         if(trim(_fields["body"]) != _bodyVal) {
             _checkFail = true;

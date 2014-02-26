@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2005, 2006, 2007, 2009, 2010, 2011, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
@@ -14,22 +14,13 @@
  */
 
 ZmNewCalendarDialog = function(parent, className) {
-    if (arguments.length == 0) { return; }
 	var title = ZmMsg.createNewCalendar;
 	var type = ZmOrganizer.CALENDAR;
-    var back = new DwtDialog_ButtonDescriptor(ZmNewCalendarDialog.BACK_BUTTON, ZmMsg.back , DwtDialog.ALIGN_LEFT);
-	ZmNewOrganizerDialog.call(this, parent, className, title, type, [back]);
-    this.setButtonListener(ZmNewCalendarDialog.BACK_BUTTON, this._backButtonListener.bind(this));
-    this.getButton(ZmNewCalendarDialog.BACK_BUTTON).setVisibility(false);
+	ZmNewOrganizerDialog.call(this, parent, className, title, type);
 };
 
 ZmNewCalendarDialog.prototype = new ZmNewOrganizerDialog;
 ZmNewCalendarDialog.prototype.constructor = ZmNewCalendarDialog;
-
-
-
-
-ZmNewCalendarDialog.BACK_BUTTON = ++DwtDialog.LAST_BUTTON;
 
 ZmNewCalendarDialog.prototype.toString = 
 function() {
@@ -37,7 +28,6 @@ function() {
 };
 
 // Public methods
-
 
 ZmNewCalendarDialog.prototype.reset =
 function(account) {
@@ -66,7 +56,7 @@ function(html, idx) {
 };
 
 // NOTE: new calendar dialog doesn't show overview
-ZmNewCalendarDialog.prototype._createFolderContentHtml =
+ZmNewCalendarDialog.prototype._createFolderContentHtml = 
 function(html, idx) {
 	return idx;
 };
@@ -108,26 +98,9 @@ function() {
 	var data = ZmNewOrganizerDialog.prototype._getFolderData.call(this);
 	if (data) {
 		data.f = this._excludeFbCheckbox.checked ? "b#" : "#";
-        var url =  this._iCalData ? this._iCalData.url : "";
-        if(url) {
-            data.url = url;
-            this._iCalData = null;
-            delete this._iCalData;
-        }
 	}
 	return data;
 };
-
-ZmNewCalendarDialog.prototype._createRemoteContentHtml =
-function(html, idx) {
-	return idx;
-};
-
-ZmNewCalendarDialog.prototype.setICalData =
-function(iCalData) {
-	this._iCalData = iCalData;
-};
-
 
 /**
  * @Override Added for tabindexing checkboxes.
@@ -145,9 +118,4 @@ function() {
 		list.push(this._remoteCheckboxField);
 	}
     return list;
-};
-
-ZmNewCalendarDialog.prototype._backButtonListener =
-function() {
-    this.popdown();
 };

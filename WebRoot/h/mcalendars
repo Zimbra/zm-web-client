@@ -41,8 +41,8 @@
     <c:set var="sendFreeBusy" value="${not empty uploader.params.actionSendFreeBusyLink}"/>
 
     <c:if test="${sendFreeBusy}" >
-        <c:set var="calName" value="/${mailbox.calendar.name}"/>
-        <c:set var="bodyCont" value="${fn:substringBefore(fn:escapeXml(zm:getFolderRestURL(mailbox, mailbox.calendar)), calName)}" />
+        <c:set var="calName" value="/${selectedFolder.name}"/>
+        <c:set var="bodyCont" value="${fn:substringBefore(fn:escapeXml(zm:getFolderRestURL(mailbox, selectedFolder)), calName)}" />
         <c:set var="bodyCont" value="${bodyCont}?fmt=freebusy" />
           <c:redirect url="/h/search?action=compose">
 			  <c:param name="body" value="${bodyCont}" />
@@ -86,10 +86,8 @@
                                         <app:button id="OPNEWCAL" name="actionNewCalendar" src="calendar/ImgNewAppointment.png" tooltip="calendarNew" text="calendarNew"/>
                                         <td><div class='vertSep'></div></td>
                                         <app:button id="OPNEWSUB" name="actionNewSubscribedCalendar" src="calendar/ImgNewAppointment.png" tooltip="calendarNewSubscribed" text="calendarNewSubscribed"/>
-                                        <c:if test="${mailbox.features.sharing}">
-                                            <td><div class='vertSep'></div></td>
-                                            <app:button id="OPNEWLINK" name="actionNewSharedCalendar" src="calendar/ImgNewAppointment.png" tooltip="calendarNewShared" text="calendarNewShared"/>
-                                        </c:if>
+                                        <td><div class='vertSep'></div></td>
+                                        <app:button id="OPNEWLINK" name="actionNewSharedCalendar" src="calendar/ImgNewAppointment.png" tooltip="calendarNewShared" text="calendarNewShared"/>
                                         <td><div class='vertSep'></div></td>
                                         <app:button id="OPFREEBUSYLINK" name="actionSendFreeBusyLink" src="calendar/ImgNewAppointment.png" tooltip="sendFreeBusyLink" text="sendFreeBusyLink"/>
                                     </tr>
@@ -108,9 +106,8 @@
                                 <table width="100%" cellpadding="2" cellspacing="0">
                                     <c:set var="index" value="${0}"/>
                                     <zm:forEachFolder var="folder">
-                                        <fmt:message var="colorMsg" key="${folder.rgbColorMsg}"/>
                                         <c:if test="${folder.isAppointmentView}">
-                                            <c:set var="rowColor" value="${zm:lightenColor(not empty folder.rgb ? folder.rgb : colorMsg)}"/>
+                                            <c:set var="rowColor" value="${zm:lightenColor(not empty folder.rgb ? folder.rgb : folder.rgbColor)}"/>
                                             <c:set var="selected" value="${selectedFolder.id eq folder.id and not newCalendar}"/>
                                             <c:if test="${selected}"><c:set var="selectedRow" value="${index}"/></c:if>                                            
                                             <tr>
@@ -124,7 +121,7 @@
                                                     </c:url>
                                                     <a id="A${index}" href="${selectUrl}">
                                                         <app:img src="${folder.image}" alt="folder"/>
-                                                        <span <c:if test="${selected}">class='ZhTISelected'</c:if> style='vertical-align:middle'>${label}</span>
+                                                        <span <c:if test="${selected}">class='ZhTISelected'</c:if> style='vertical-align:middle'>${fn:escapeXml(label)}</span>
                                                     </a>
                                                 </td>
                                             </tr>

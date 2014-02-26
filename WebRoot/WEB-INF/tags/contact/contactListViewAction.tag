@@ -40,7 +40,7 @@
             <fmt:message key="noContactGroupName"/>
         </app:status>
     </c:when>
-    <c:when test="${ (zm:actionSet(param, 'actionCreate') or zm:actionSet(param, 'actionModify')) and (param.isgroup and empty fn:trim(param.dlist1) and empty fn:trim(param.dlist))}">
+    <c:when test="${ (zm:actionSet(param, 'actionCreate') or zm:actionSet(param, 'actionModify')) and (param.isgroup and empty fn:trim(param.dlist))}">
         <c:set var="contactError" value="true"/>
         <app:status>
             <fmt:message key="noContactGroupMembers"/>
@@ -76,13 +76,13 @@
     <c:when test="${zm:actionSet(param, 'actionCreate') and not contactError}">
         <zm:checkCrumb crumb="${param.crumb}"/>
         <app:editContactAction id="${param.id}"/>
-        <app:status><fmt:message key="${(not empty param.dlist or not empty param.dlist1) and param.isgroup ? 'contactGroupCreated' :'contactCreated'}"/></app:status>
+        <app:status><fmt:message key="${not empty param.dlist and param.isgroup ? 'contactGroupCreated' :'contactCreated'}"/></app:status>
         <zm:clearSearchCache type="contact"/>
     </c:when>
     <c:when test="${zm:actionSet(param, 'actionModify') and not contactError}">
         <zm:checkCrumb crumb="${param.crumb}"/>
         <app:editContactAction id="${param.id}"/>
-        <app:status><fmt:message key="${(not empty param.dlist or not empty param.dlist1) and param.isgroup ? 'contactGroupModified' :'contactModified'}"/></app:status>
+        <app:status><fmt:message key="${not empty param.dlist and param.isgroup ? 'contactGroupModified' :'contactModified'}"/></app:status>
     </c:when>
     <c:when test="${zm:actionSet(param, 'actionCancelCreate')}">
         <app:status style="Warning"><fmt:message key="contactCancelCreate"/></app:status>
@@ -161,17 +161,7 @@
                             <c:set var="emailIds" value="" />
                             <c:forEach var="member" items="${contact.groupMembers}">
                                 <c:if test="${not empty emailIds}"><c:set var="grpsep" value=", " /></c:if>
-                                <c:set var="memberContact" value="${zm:groupMemberById(contact, member)}"/>
-                                <%--check for inline contact--%>
-                                <c:choose>
-                                    <c:when test="${memberContact.isTypeI}">
-                                        <c:set var="memberContactFullAddress" value="${memberContact.id}"/>
-                                    </c:when>
-                                    <c:otherwise>
-                                        <c:set var="memberContactFullAddress" value="${memberContact.fullAddress}"/>
-                                    </c:otherwise>
-                                </c:choose>
-                                <c:set var="emailIds" value="${emailIds}${grpsep}${memberContactFullAddress}" />
+                                <c:set var="emailIds" value="${emailIds}${grpsep}${member}" /> 
                                 </tr>
                             </c:forEach>
                         </c:when>

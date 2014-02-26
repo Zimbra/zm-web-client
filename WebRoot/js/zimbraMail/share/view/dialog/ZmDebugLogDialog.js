@@ -86,7 +86,7 @@ function(event) {
 	var div = document.getElementById(this._contentDivId);
 	var text = AjxStringUtil.convertHtml2Text(div);
 	var params = {action:ZmOperation.NEW_MESSAGE, subjOverride:ZmMsg.debugLogEmailSubject,
-				  composeMode: Dwt.TEXT, extraBodyText:text};
+				  composeMode: DwtHtmlEditor.TEXT, extraBodyText:text};
 	appCtxt.getApp(ZmApp.MAIL).compose(params);
 };
 

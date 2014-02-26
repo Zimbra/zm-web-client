@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2010, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2010, 2011, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
@@ -40,11 +40,6 @@ function () {
 
 ZmFilterPage.prototype._createControls =
 function() {
-	if (appCtxt.get(ZmSetting.PRIORITY_INBOX_ENABLED)) {
-		this._activityStreamsButton = new DwtButton({parent:this, parentElement: this._htmlElId+"_ACTIVITY_STREAM_BUTTON" });
-		this._activityStreamsButton.setText(ZmMsg.activityStreamSettings);
-		this._activityStreamsButton.addSelectionListener(new AjxListener(this, this._activityStreamDialog));
-	}
 	this._tabView = new DwtTabView({parent:this, posStyle:Dwt.STATIC_STYLE});
 	this._tabView.reparentHtmlElement(this._htmlElId+"_tabview");
 	var incomingController = this._controller.getIncomingFilterRulesController();
@@ -54,24 +49,12 @@ function() {
 	this.setVisible(true);
 	
 	this.hasRendered = true;
-};
-
-ZmFilterPage.prototype.reset =
-function() {
-	ZmPreferencesPage.prototype.reset.apply(this, arguments);
-	this._controller._stateChangeListener();
-};
+}
 
 ZmFilterPage.prototype.getTabView =
 function () {
 	return this._tabView;
 };
-
-ZmFilterPage.prototype.hasResetButton =
-function() {
-	return false;
-};
-
 
 //
 // Protected methods
@@ -84,7 +67,3 @@ ZmFilterPage.prototype._setupCustom = function(id, setup, value) {
 	return ZmPreferencesPage.prototype._setupCustom.apply(this, arguments);
 };
 
-ZmFilterPage.prototype._activityStreamDialog = function() {
-	var priorityFilterDialog = appCtxt.getPriorityMessageFilterDialog();
-	ZmController.showDialog(priorityFilterDialog);
-};

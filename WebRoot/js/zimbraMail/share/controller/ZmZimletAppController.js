@@ -26,9 +26,8 @@
  * This class represents a zimlet application controller.
  * 
  * @param	{String}	name		the application name
- * @param	{DwtShell}	container	the container
+ * @param	{ZmComposite}	container	the container
  * @param	{ZmApp}		app			the app
- * 
  * @extends		ZmController
  */
 ZmZimletAppController = function(name, container, app) {
@@ -40,24 +39,18 @@ ZmZimletAppController = function(name, container, app) {
 ZmZimletAppController.prototype = new ZmController;
 ZmZimletAppController.prototype.constructor = ZmZimletAppController;
 
-ZmZimletAppController.prototype.isZmZimletAppController = true;
-ZmZimletAppController.prototype.toString = function() { return "ZmZimletAppController"; };
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
+ZmZimletAppController.prototype.toString = function() {
+	return "ZmZimletAppController";
+};
 
 //
 // Public methods
 //
-
-// Note: If there's ever a need to make this a session controller (unlikely), we'll have to figure
-// out some way to return an appropriate view type in a static context.
-ZmZimletAppController.getDefaultViewType =
-function() {
-	return "zimlet";
-};
-
-ZmZimletAppController.prototype.getDefaultViewType =
-function() {
-	return this._name;
-};
 
 /**
  * Gets the view.
@@ -72,8 +65,9 @@ function() {
 		this._toolbar = new ZmToolBar({parent:DwtShell.getShell(window)});
 
 		// setup app elements
-		var elements = this.getViewElements(null, this._view, this._toolbar);
-
+		var elements = {};
+		elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar;
+		elements[ZmAppViewMgr.C_APP_CONTENT] = this._view;
 
 		// create callbacks
 		var callbacks = {};
@@ -83,12 +77,7 @@ function() {
 //		callbacks[ZmAppViewMgr.CB_POST_HIDE] = new AjxCallback(this, this._postHideCallback);
 
 		// create app view
-	    this._app.createView({	viewId:			this.getDefaultViewType(),
-								elements:		elements,
-								controller:		this,
-								callbacks:		callbacks,
-								isAppView:		true,
-								isTransient:	true});
+	    this._app.createView({viewId:this._getViewType(), elements:elements, callbacks:callbacks, isAppView:true, isTransient:true});
 	}
 	return this._view;
 };
@@ -110,5 +99,16 @@ ZmZimletAppController.prototype.getToolbar = function() {
  */
 ZmZimletAppController.prototype.show = function() {
 	this.getView();
-	return this._app.pushView(this.getDefaultViewType());
+	return this._app.pushView(this._getViewType());
+};
+
+//
+// Protected methods
+//
+
+/**
+ * @private
+ */
+ZmZimletAppController.prototype._getViewType = function() {
+	return this._name;
 };

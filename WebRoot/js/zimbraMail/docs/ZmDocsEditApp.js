@@ -15,6 +15,8 @@
 
 ZmDocsEditApp = function(){
 
+    appCtxt.setAppController(this);
+
     this._init();
     this.startup();
 
@@ -31,16 +33,8 @@ ZmDocsEditApp.prototype.toString = function(){
 };
 
 ZmDocsEditApp.prototype._init = function(){
-    this._controller =
-        ZmDocsEditApp._controller || new ZmDocsEditController(appCtxt.getShell());
-
-    if (!ZmDocsEditApp._controller) {
-        ZmDocsEditApp._controller = this._controller;
-    }
-
-    if (!appCtxt.getAppController()) {
-        appCtxt.setAppController(this._controller);
-    }
+    ZmDocsEditApp._controller = this._controller = new ZmDocsEditController(appCtxt.getShell());
+    appCtxt.setAppController(this._controller);    
 };
 
 ZmDocsEditApp.prototype.startup = function(){
@@ -96,4 +90,21 @@ ZmDocsEditApp.setFile = function(fileId, fileName, folderId){
        version: 1,
        descEnabled: true
    };
+};
+
+ZmDocsEditApp._beforeUnload =
+function(){
+    var appCtrl = appCtxt.getAppController();
+    var msg = appCtrl.checkForChanges();
+    if(msg) {
+        return msg;
+    }
+    return appCtrl.exit();
+};
+
+window.onload = function() {
+    setTimeout(function() {
+            ZmDocsEditApp.launch();
+            window.onbeforeunload = ZmDocsEditApp._beforeUnload;
+    }, 200);
 };

@@ -1,7 +1,7 @@
 <%--
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2007, 2008, 2009, 2010, 2011, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
@@ -62,7 +62,7 @@
 <div class="View address">
     <span class='label'><fmt:message key="fromLabel"/></span>
     <span id="d_from">${fn:escapeXml(from)}</span>
-    <span id="d_btn_td" <c:if test="${empty param.ajax}">style="display:none;"</c:if>>
+    <span style="float:right;" id="d_btn_td" <c:if test="${empty param.ajax}">style="display:none;"</c:if>>
         <a id='d_btn' onclick="return toggleElem('d_div',this,'<fmt:message key="MO_hideDetails"/>','<fmt:message key="MO_showDetails"/>')"><fmt:message key="MO_showDetails"/></a>
     </span>    
 </div>
@@ -143,7 +143,7 @@ elem = document.getElementById('inboxUnread'); var unreadCount = ${mailbox.inbox
 <c:if test="${not empty externalImageUrl and (message.externalImageCount gt 0)}">
     <div class='zo_dispimages'><fmt:message key="externalImages"/>&nbsp;<a id="DISPEXTIMG" href="${fn:escapeXml(externalImageUrl)}"><fmt:message key="displayExternalImages"/></a></div>
 </c:if>
-<div id="iframeBody${counter}" class="msgwrap">
+<div id="iframeBody${counter}" class="zo_mv_body">
     <mo:body message="${message}" body="${body}" theBody="${theBody}" mailbox="${mailbox}" counter="${counter}"/>
     <c:set var="bodies" value="${zm:getAdditionalBodies(body,message)}"/>
     <c:if test="${not empty bodies}">

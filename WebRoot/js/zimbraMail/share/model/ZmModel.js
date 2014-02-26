@@ -36,8 +36,15 @@ ZmModel = function(type) {
 	this._evtMgr = new AjxEventMgr();
 }
 
-ZmModel.prototype.isZmModel = true;
-ZmModel.prototype.toString = function() { return "ZmModel"; }
+/**
+ * Returns a string representation of the zimlet.
+ * 
+ * @return		{String}		a string representation of the zimlet
+ */
+ZmModel.prototype.toString = 
+function() {
+	return "ZmModel";
+}
 
 /**
 * Adds a change listener.

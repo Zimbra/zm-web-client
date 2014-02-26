@@ -1,7 +1,7 @@
 <%--
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2007, 2008, 2009, 2010, 2011, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
@@ -20,13 +20,12 @@
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <fmt:setBundle basename='/messages/AjxMsg' var='AjxMsg' scope='request' />
-<app:loadTinyMCE />
 
 <body class="yui-skin-sam">
-<table width="100%">
+<table width="100%" cellpadding="10" cellspacing="10">
 <tr>
 <td>
-<table class="ZOptionsSectionTable" width="100%">
+<table class="ZOptionsSectionTable" border="0" cellpadding="0" cellspacing="0" width="100%">
 <tr class="ZOptionsHeaderRow">
     <td class="ImgPrefsHeader_L">
         &nbsp;
@@ -39,7 +38,7 @@
     </td>
 </tr>
 </table>
-<table width="100%"  class="ZOptionsSectionMain" cellspacing="6">
+<table cellpadding="3" width="100%"  class="ZOptionsSectionMain">
     <c:set var="numSigs" value="${0}"/>
     <zm:forEachSignature var="signature">
         <c:if test="${numSigs gt 0}">
@@ -72,7 +71,7 @@
                 <fmt:message key="optionsSignature"/>
                 :
             </td>
-            <td colspan=2 <c:if test="${isHtml}">style="background-color:white;"</c:if>>
+            <td colspan=2>
                 <input type="hidden" id="signatureType${numSigs}" name="signatureType${numSigs}" value="${fn:escapeXml(signature.type)}"/>
                 <input type="hidden" name="origSignatureValue${numSigs}" value="${fn:escapeXml(signature.value)}"/>
                 <textarea style='width:100%' id="signatureValue${numSigs}" name='signatureValue${numSigs}' cols='80' rows='5' style='<c:if test="${isHtml}">visibility:hidden;</c:if>width:100%'>${fn:escapeXml(signature.value)}</textarea>
@@ -98,7 +97,7 @@
             </tr>
             <tr>
                 <td class='ZOptionsTableLabel'>
-                    <label><fmt:message key="optionsSignatureName"/>:</label>
+                    <fmt:message key="optionsSignatureName"/>:
                 </td>
                 <td>
                     <input type="hidden" name="newSignature" value="TRUE"/>
@@ -115,10 +114,9 @@
                 <td class='ZOptionsTableLabel' style='vertical-align:top;' valign='top'>
                     <fmt:message key="optionsSignature"/>:
                 </td>
-                <td colspan=2 style="background-color: #FFFFFF;">
+                <td colspan=2>
                     <input type="hidden" id="newSignatureType" name="newSignatureType" value="text/html"/>
-                    <textarea style='width:100%' id="newSignatureValue" name='newSignatureValue' cols='80'rows='5' 
-						style='visibility:hidden;width:100%'>${fn:escapeXml(param.newSignatureValue)}</textarea>
+                    <textarea style='width:100%' id="newSignatureValue" name='newSignatureValue' cols='80'rows='5' style='visibility:hidden;width:100%'>${fn:escapeXml(param.newSignatureValue)}</textarea>
                 </td>
                 <td width="20%">&nbsp;</td>
             </tr>
@@ -143,11 +141,13 @@
         <td colspan="3"><fmt:message key="optionsSignatureMaxNumber"><fmt:param value="${maxSigs}"></fmt:param></fmt:message></td>
     </tr>
     <tr>
-        <td colspan="4">&nbsp;</td>
+        <td colspan="4">
+            &nbsp;
+        </td>
     </tr>
 </table>
 <br/>
-<table class="ZOptionsSectionTable" width="100%">
+<table class="ZOptionsSectionTable" border="0" cellpadding="0" cellspacing="0" width="100%">
     <tr class="ZOptionsHeaderRow">
         <td class="ImgPrefsHeader_L">
             &nbsp;
@@ -160,23 +160,28 @@
         </td>
     </tr>
 </table>
-<table width="100%" class="ZOptionsSectionMain" cellspacing="6">
+<table cellpadding="3" width="100%" class="ZOptionsSectionMain">
     <tr>
         <td class='ZOptionsTableLabel'>
-            <label><fmt:message key="optionsSignaturePlacement"/>:</label>
+            <fmt:message key="optionsSignaturePlacement"/>
+            :
         </td>
         <td>
-            <label><fmt:message key="optionsSignaturePlaceTheSignature"/>:</label>
+            <fmt:message key="optionsSignaturePlaceTheSignature"/>
+            :
         </td>
     </tr>
     <tr>
-        <td class='ZOptionsTableLabel'>&nbsp;</td>
+        <td class='ZOptionsTableLabel'>
+            &nbsp;
+        </td>
         <td>
-            <table>
+            <table border="0" cellpadding="0" cellspacing="3">
                 <tr>
                     <td>
                         <input id="placeAbove" type="radio" name="zimbraPrefMailSignatureStyle" value="outlook"
-							<c:if test="${mailbox.prefs.signatureStyleTop}">checked</c:if> />
+                                <c:if test="${mailbox.prefs.signatureStyleTop}">checked</c:if>
+                                />
                     </td>
                     <td>
                         <label for="placeAbove">
@@ -185,7 +190,8 @@
                     </td>
                     <td>
                         <input id="placeBelow" type="radio" name="zimbraPrefMailSignatureStyle" value="internet"
-							<c:if test="${mailbox.prefs.signatureStyleBottom}">checked</c:if> />
+                                <c:if test="${mailbox.prefs.signatureStyleBottom}">checked</c:if>
+                                />
                     </td>
                     <td>
                         <label for="placeBelow">
@@ -202,7 +208,7 @@
         </td>
     </tr>
     <tr>
-		<td colspan='4' class='ZOptionsTableField' style='text-align:center;font-weight:bold;width:auto;'>
+        <td colspan=2 style='text-align:left;font-weight:bold;'>
             <fmt:message key="optionsManageAccounts">
                 <fmt:param><fmt:message key="optionsSigManageAccountsPre"/></fmt:param>
                 <fmt:param><a href="options?selected=accounts"><fmt:message key="optionsManageAccountsLink"/></a></fmt:param>
@@ -211,7 +217,9 @@
         </td>
     </tr>
     <tr>
-        <td colspan="4">&nbsp;</td>
+        <td colspan="4">
+            &nbsp;
+        </td>
     </tr>
 </table>
 </td>
@@ -220,130 +228,98 @@
 
 <script type="text/javascript">
 
-    (function(){
-        <%-- Get font definitions from AjxMsg --%>
-        var fonts = [];
-        <c:forEach var="KEY" items="fontFamilyIntl,fontFamilyBase">
-            <c:forEach var="i" begin="1" end="30">
-                <fmt:message var="style" bundle='${AjxMsg}' key="${KEY}${i}.css"/>
-                <c:choose>
-                    <c:when test="${fn:startsWith(style, '#') or fn:startsWith(style, '?')}">
-                    <%-- Do nothing --%>
-                    </c:when>
-                    <c:otherwise>
-                        <c:set var="style" value="${fn:replace(style,', ',',')}"/>
-                            <fmt:message var="name" bundle='${AjxMsg}' key="${KEY}${i}.display"/>
-                        <c:set var="selected" value="${fn:replace(mailbox.prefs.htmlEditorDefaultFontFamily,', ',',') eq style}"/>
-                            fonts.push("${name}=${style}");
-                    </c:otherwise>
-                </c:choose>
-            </c:forEach>
-        </c:forEach>
+    <%-- Get font definitions from AjxMsg --%>
+    var fonts = [];
+    var defaultFont;
+    <c:forEach var="KEY" items="fontFamilyIntl,fontFamilyBase">
+    <c:forEach var="i" begin="1" end="30">
+        <fmt:message var="style" bundle='${AjxMsg}' key="${KEY}${i}.css"/>
+        <c:choose>
+            <c:when test="${fn:startsWith(style, '#') or fn:startsWith(style, '?')}">
+                <%-- Do nothing --%>
+            </c:when>
+            <c:otherwise>
+                <c:set var="style" value="${fn:replace(style,', ',',')}"/>
+                <fmt:message var="name" bundle='${AjxMsg}' key="${KEY}${i}.display"/>
+                <c:set var="selected" value="${fn:replace(mailbox.prefs.htmlEditorDefaultFontFamily,', ',',') eq style}"/>
+                fonts.push({text:"${name}",value:"${style}"<c:if test="${selected}">,checked:true</c:if>});
+                <c:if test="${selected}">
+                defaultFont="${name}";
+                </c:if>
+            </c:otherwise>
+        </c:choose>
+    </c:forEach>
+    </c:forEach>
 
-        var onTinyMCEEditorInit = function(ev){
-            var ed = ev.target;
 
-            ed.dom.setStyles( ed.getBody(), {
-                "font-family" : "${mailbox.prefs.htmlEditorDefaultFontFamily}",
-                "font-size"   : "${mailbox.prefs.htmlEditorDefaultFontSize}",
-                "color"       : "${mailbox.prefs.htmlEditorDefaultFontColor}"
+    var sigcount = ${numSigs};
+    var myEdit = new Array();
+    for(var i = 0 ;i < sigcount ; i++) {
+        var sigTextAreaId = "signatureValue"+i;
+        var sigType = document.getElementById("signatureType"+i).value;
+        if(sigType == 'text/html') {
+            myEdit[i] = new YAHOO.widget.SimpleEditor(sigTextAreaId, {
+                height: '100px',
+                width: '100%',
+                dompath: false, //Turns on the bar at the bottom
+                animate: true, //Animates the opening, closing and moving of Editor windows
+                plainText: false,
+                focusAtStart: true,
+                collapse: true,
+                draggable: false,
+                fonts: fonts,
+                defaultFont: defaultFont
             });
-            if( ed.id === "newSignatureValue"){
-                myEditor = ed;
-                ed.focus();
-            }
-            else{
-                myEdit.push(ed);
-            }
-        };
-
-        var handleContentLoad = function(ev){
-            var ed = ev.target;
-
-            var imageArray = ed.dom.select("img[dfsrc^='doc:']"),
-                    path = ["/home/", "${mailbox.accountInfo.name}", "/"].join(""),
-                    image;
-
-            while( image = imageArray.shift() ){
-                image.src = [path, image.getAttribute("dfsrc").substring(4)].join('');
-            }
-        };
-
-        var toolbarbuttons = [
-            'fontselect fontsizeselect formatselect |',
-            'bold italic underline strikethrough |',
-            'forecolor backcolor |',
-            'removeformat |',
-            'outdent indent bullist numlist blockquote |',
-            'alignleft aligncenter alignright alignjustify |',
-            'image link zemoticons charmap hr table |',
-            'undo redo |',
-            'pastetext code'
-        ];
-
-        var plugins = [
-            "zemoticons",
-            "table", "paste", "directionality", "textcolor", "lists", "advlist",
-            "link", "hr", "charmap", "contextmenu", "code"
-        ];
-
-        var tinyMCEInitObj = {
-            mode : "none",
-            height : "200px",
-            width : "100%",
-            plugins : plugins.join(' '),
-            theme : "modern",
-            toolbar_items_size: 'small',
-            toolbar : toolbarbuttons.join(' '),
-            font_formats : fonts.join(";"),
-            statusbar : false,
-            menubar : false,
-            convert_urls : false,
-            verify_html : false,
-            gecko_spellcheck : true,
-            dialog_type : "modal",
-            forced_root_block : "div",
-            table_default_cellpadding : 3,
-            table_default_border: 1,
-            content_css : false,
-            language : tinyMCE.getlanguage("${mailbox.prefs.locale}"),
-            paste_retain_style_properties : "all",
-            paste_remove_styles_if_webkit : false,
-            submit_patch : false,
-            add_form_submit_trigger: false,
-            setup : function(ed) {
-                ed.on('init', onTinyMCEEditorInit);
-                ed.on('LoadContent', handleContentLoad);
-                ed.on('SaveContent', function(ev) {
-                    var ed = ev.target;
-
-                    if (!ed.isDirty() && ed.getContent() == "<div></div>") {
-                        ed.content = "";
+            /*enable buttons that are disabled by default */
+            myEdit[i].on('afterNodeChange', function() {
+                    this.toolbar.enableAllButtons();
+            });
+            /* Fix signature image src url*/
+            myEdit[i].on('editorContentLoaded', function() {
+                var _edit = arguments[1];
+                var idoc = _edit._getDoc();
+                if (idoc) {
+                    var images = idoc.getElementsByTagName("img");
+                    var path = ["/home/","${mailbox.accountInfo.name}", "/"].join("");
+                    var img;
+                    for (var i = 0; i < images.length; i++) {
+                        img = images[i];
+                        var dfsrc = img.getAttribute("dfsrc");
+                        if (dfsrc && dfsrc.indexOf("doc:") == 0) {
+                            img.src = [path, dfsrc.substring(4)].join('');
+                        }
                     }
-                });
-                ed.on('BeforeSetContent', function(ed) {
-                    // Replaces all double br elements for avoiding enter issue
-                    ed.content = ed.content.replace(/<br><br>/ig, '<br><div><br></div>');
-                });
-            }
-        };
-        window.tinyMCE && window.tinyMCE.init(tinyMCEInitObj);
+                }
+            }, myEdit[i], true);
 
-        window.sigcount = ${numSigs};
-        window.myEdit = [];
-
-        for(var i = 0 ;i < sigcount ; i++) {
-            var sigType = document.getElementById("signatureType"+i).value;
-            if(sigType == 'text/html') {
-                window.tinyMCE && window.tinyMCE.execCommand('mceAddEditor', false, "signatureValue"+i);
-            }
-            else if(sigType == 'text/plain') {
-                myEdit[i] == null;
-            }
+            myEdit[i]._defaultToolbar.titlebar = false;
+            myEdit[i].render();
+        } else if(sigType == 'text/plain') {
+            myEdit[i] == null;
         }
+    }
 
-        window.tinyMCE && window.tinyMCE.execCommand('mceAddEditor', false, "newSignatureValue");
-    }());
+    var myEditor = new YAHOO.widget.SimpleEditor("newSignatureValue", {
+        height: '100px',
+        width: '100%',
+        dompath: false, //Turns on the bar at the bottom
+        animate: true, //Animates the opening, closing and moving of Editor windows
+        plainText: false,
+        focusAtStart: true,
+        collapse: true,
+        draggable: false,
+        fonts: fonts,
+        defaultFont: defaultFont
+    });
+
+	/*enable buttons that are disabled by default */
+    myEditor.on('afterNodeChange', function() {
+         this.toolbar.enableAllButtons();
+    });
+
+    /*hide titlebar*/
+    myEditor._defaultToolbar.titlebar = false;
+    myEditor.render();
 
     /* List of elements that has to be handled for send */
     var sendElemts = new Array("SOPSEND","IOPSEND");
@@ -358,10 +334,10 @@
     function prepToSend (){
        for(var j = 0 ;j < sigcount ; j++) {
           if(myEdit[j] != null) {
-            myEdit[j].save({format:"raw"});
+            myEdit[j].saveHTML();
           }
        }
-       myEditor.save({format:"raw"});
+       myEditor.saveHTML();
        return true;
     }
 

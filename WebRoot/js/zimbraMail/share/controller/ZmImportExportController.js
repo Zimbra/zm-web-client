@@ -85,11 +85,12 @@ ZmImportExportController.TYPE_EXTS[ZmImportExportController.TYPE_ICS] = [ "ics" 
 ZmImportExportController.TYPE_EXTS[ZmImportExportController.TYPE_TGZ] = [ "tgz", "zip" ];
 
 ZmImportExportController.EXTS_TYPE = {};
-AjxUtil.foreach(ZmImportExportController.TYPE_EXTS, function(exts, p) {
-	for (var i = 0; i < exts.length; i++) {
-		ZmImportExportController.EXTS_TYPE[exts[i]] = p;
+for (var p in ZmImportExportController.TYPE_EXTS) {
+	for (var i = 0; i < ZmImportExportController.TYPE_EXTS[p].length; i++) {
+		ZmImportExportController.EXTS_TYPE[ZmImportExportController.TYPE_EXTS[p][i]] = p;
 	}
-});
+}
+delete p; delete i;
 
 ZmImportExportController.__FAULT_ARGS_MAPPING = {
 	"formatter.INVALID_FORMAT": [ "filename" ],
@@ -147,14 +148,14 @@ function(params) {
 	}
 
 	params.ext = params.filename.replace(/^.*\./,"").toLowerCase();
-    if (!ZmImportExportController.EXTS_TYPE[params.ext]) {
-        var params = {
-            msg:	AjxMessageFormat.format(ZmMsg.importErrorTypeNotSupported, params.ext),
-            level:	ZmStatusView.LEVEL_CRITICAL
-        };
-        appCtxt.setStatusMsg(params);
-        return false;
-    }
+	if (!ZmImportExportController.EXTS_TYPE[params.ext]) {
+		var params = {
+			msg:	AjxMessageFormat.format(ZmMsg.importErrorTypeNotSupported, params.ext),
+			level:	ZmStatusView.LEVEL_CRITICAL
+		};
+		appCtxt.setStatusMsg(params);
+		return false;
+	}
 	params.defaultType = params.type || ZmImportExportController.EXTS_TYPE[params.ext] || ZmImportExportController.TYPE_DEFAULT;
 	var isZimbra = ZmImportExportController.EXTS_TYPE[params.defaultType] == ZmImportExportController.TYPE_TGZ;
 	var folder = appCtxt.getById(folderId);
@@ -271,7 +272,7 @@ function(params) {
 		});
 	}
 	else if (type == ZmImportExportController.TYPE_ICS) {
-		AjxDispatcher.require(["MailCore", "CalendarCore", "Calendar"]);
+		AjxDispatcher.require(["CalendarCore", "Calendar"]);
 		dialog.popup({
 			treeIds: [ZmOrganizer.CALENDAR],
 			title: ZmMsg.chooseCalendar,
@@ -358,15 +359,7 @@ function(funcName, params, type, fault1 /* , ... , faultN */) {
 			for (var i = 0; i < formatArgs.length; i++) {
 				formatArgs[i] = args[mappings[i]];
 			}
-			var errorMsg = ZMsg[code] ? AjxMessageFormat.format(ZMsg[code], formatArgs) : "";
-			// be a little more verbose if there was a failure
-			if (type == "fail") {
-				errorMsg = message ? errorMsg + '<br><br>' + AjxStringUtil.htmlEncode(message) : errorMsg;
-			}
-			else if (type == "warn") {
-				errorMsg = errorMsg || message;
-			}
-			messages.push(errorMsg);
+			messages.push(ZMsg[code] ? AjxMessageFormat.format(ZMsg[code], formatArgs) : message);
 		}
 	}
 	// show success or failure
@@ -526,7 +519,7 @@ function(errorCallback, message) {
 	if (errorCallback) {
 		errorCallback.run(false);
 	}
-	var msg = message || ZmMsg.importFailed;
+	var msg = AjxStringUtil.htmlEncode(message) || ZmMsg.importFailed; 
 	ZmImportExportController.__showMessage(msg, DwtMessageDialog.CRITICAL_STYLE);
 	return true;
 };
@@ -599,18 +592,12 @@ function(form, onload, onerror) {
 	var id = Dwt.getNextId() + "_iframe";
 	var iframe;
 	if (AjxEnv.isIE) {
-        try {
-            // NOTE: This has to be done because IE doesn't recognize the name
-            //       attribute if set programmatically. And without that, the
-            //       form target will cause it to return in a new window which
-            //       breaks the callback.
-            var html = [ "<IFRAME id='",id,"' name='",id,"'>" ].join("");
-            iframe = document.createElement(html);
-        } catch (e) {
-            // Unless its IE9+ in non-quirks mode, then the above throws an exception
-            iframe = document.createElement("IFRAME");
-            iframe.name = iframe.id = id;
-        }
+		// NOTE: This has to be done because IE doesn't recognize the name
+		//       attribute if set programmatically. And without that, the
+		//       form target will cause it to return in a new window which
+		//       breaks the callback.
+		var html = [ "<IFRAME id='",id,"' name='",id,"'>" ].join("");
+		iframe = document.createElement(html);
 	}
 	else {
 		iframe = document.createElement("IFRAME");

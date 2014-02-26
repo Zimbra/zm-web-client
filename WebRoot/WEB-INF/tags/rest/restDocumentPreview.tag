@@ -1,7 +1,7 @@
 <%--
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2010, 2011, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
@@ -23,10 +23,9 @@
     <fmt:getLocale var="locale"/>
     <fmt:setLocale value="${not empty param.localeId ? param.localeId : (not empty requestScope.zimbra_target_account_prefLocale ? requestScope.zimbra_target_account_prefLocale : locale)}"/>
     <zm:getDocument var="doc" box="${mailbox}" id="${requestScope.zimbra_target_account_id}:${requestScope.zimbra_target_item_id}"/>
-    <fmt:setBundle basename="/messages/ZhMsg" scope='request'/> 
+    <fmt:setBundle basename="/messages/ZhMsg" scope='request'/>
 </rest:handleError>
 <c:set var="isViewOnly" value="${not empty param.viewonly}" scope="request"/>
-<!DOCTYPE html>
 <html>
     <head>
 
@@ -75,7 +74,7 @@
 
         <!-- CSS -->
         <c:set value="/img" var="iconPath" scope="request"/>
-        <c:url var='cssurl' value='/css/images,common,skin,docs.css'>
+        <c:url var='cssurl' value='/css/images,common,login,skin,docs.css'>
             <c:param name="client"	value="standard" />
             <c:param name="skin"	value="${skin}" />
             <c:param name="v"		value="${initParam.zimbraCacheBusterVersion}" />
@@ -123,42 +122,45 @@
 
     </head>
     <body>
-        <c:choose>
-        <c:when test="${not isViewOnly}">
-        <div class="TbTop" style="height:40px; width: 100%; position: absolute;">
-            <table width="100%" height="100%" cellpadding="0" cellspacing="5">
-                <tr>
-                    <td>
-                        <span style="font-size:18px;"><b>${zm:cook(doc.name)}</b></span>
-                    </td>
-                    <td>
-                        &nbsp;
-                    </td>
-                </tr>
-                <tr>
-                    <td><fmt:message key="labelBy"/>&nbsp;${doc.creator}</td>
-                    <td align="right"><fmt:message key="labelVersion"/>: <span id="version_cont">${doc.version}</span>  |  <fmt:message key="labelModifiedOn"/>: <span id="date_container">&nbsp;</span></td>
-                </tr>
-            </table>
-        </div>
-        <div style="width: 100%; position: absolute; height: 100%; padding-top: 40px;">
-        </c:when>
-        <c:otherwise>
-        <div style="width: 100%; height: 100%">
-        </c:otherwise>
-        </c:choose>
-            <table width="100%" height="100%" cellpadding="5" cellspacing="5">
-                <tbody>
+    <table width="100%" height="100%" cellspacing="0" cellpadding="0">
+        <tbody>
+            <c:if test="${not isViewOnly}">
+            <tr>
+                <td class="TbTop" style="height:40px;">
+                    <table width="100%" height="100%" cellpadding="0" cellspacing="5">
                     <tr>
-                        <td class="ZhAppContent" style="border-width:1px; vertical-align: baseline">
-                            <div style="width:100%; height:100%;" id="zdocument">
-                                <!-- document content -->
-                            </div>
+                        <td>
+                            <span style="font-size:18px;"><b>${zm:cook(doc.name)}</b></span>
+                        </td>
+                        <td>
+                            &nbsp;
                         </td>
                     </tr>
-                </tbody>
-            </table>
-        </div>
+                    <tr>
+                        <td><fmt:message key="labelBy"/>&nbsp;${doc.creator}</td>
+                        <td align="right"><fmt:message key="labelVersion"/>: <span id="version_cont">${doc.version}</span>  |  <fmt:message key="labelModifiedOn"/>: <span id="date_container">&nbsp;</span></td>
+                    </tr>
+                    </table>
+                </td>
+            </tr>
+            </c:if>
+            <tr>
+                <td align="top">
+                    <table width="100%" height="100%" cellpadding="5" cellspacing="5">
+                        <tbody>
+                            <tr>
+                                <td class="ZhAppContent" style="border-width:1px;">
+                                <div style="width:100%; height:100%;" id="zdocument">
+                                   <!-- document content -->
+                                </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
+        </tbody>
+    </table>
     <script type="text/javascript">
         window.DBG = new AjxDebug(AjxDebug.NONE, null, false);
         ZmDocsPreview.launch('zdocument', {

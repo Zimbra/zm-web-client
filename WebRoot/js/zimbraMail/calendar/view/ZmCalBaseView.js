@@ -16,7 +16,7 @@
 ZmCalBaseView = function(parent, className, posStyle, controller, view, readonly) {
 	if (arguments.length == 0) { return; }
 
-	DwtComposite.call(this, {parent:parent, className:className, posStyle:posStyle, id:ZmId.getViewId(view)});
+	DwtComposite.call(this, {parent:parent, className:className, posStyle:posStyle});
 
 	this._isReadOnly = readonly;
 
@@ -111,39 +111,6 @@ ZmCalBaseView._getColors = function(color) {
 
 	return { standard: { header: hs, body: bs }, deeper: { header: hd, body: bd } };
 };
-
-/**
- * Gets the key map name.
- *
- * @return	{String}	the key map name
- */
-ZmCalBaseView.prototype.getKeyMapName =
-    function() {
-        return DwtKeyMap.MAP_MENU;
-    };
-
-/**
- * Handles the key action.
- *
- * @param	{constant}		actionCode		the action code
- * @param	{Object}	ev		the event
- * @see		ZmApp.ACTION_CODES_R
- * @see		ZmKeyMap
- * @see     DwtControl
- */
-ZmCalBaseView.prototype.handleKeyAction =
-    function(actionCode, ev) {
-        switch (actionCode) {
-            //Gets the Esc key handle
-            case DwtKeyMap.CANCEL:
-                this.deselectAppt();
-                return true;
-
-            default:
-                return false;
-        }
-        return true;
-    };
 
 ZmCalBaseView._toColorsCss =
 function(object) {
@@ -423,12 +390,6 @@ function(ev) {
 	return item.getToolTip(this._controller);
 };
 
-// tooltip position will be based on cursor
-ZmCalBaseView.prototype.getTooltipBase =
-function(hoverEv) {
-	return null;
-};
-
 ZmCalBaseView.prototype.getApptDetails =
 function(appt, callback, uid) {
 	if (this._currentMouseOverApptId &&
@@ -516,6 +477,7 @@ function(ev, div) { return true; };
 ZmCalBaseView.prototype._doubleClickListener =
 function(ev) {
 	var div = this.getTargetItemDiv(ev);
+	
 	if (!div) { return;	}
 		
 	if (this._getItemData(div, "type") == ZmCalBaseView.TYPE_APPT) {
@@ -537,18 +499,19 @@ function(clickedEl, ev) {
 	var i;
 	var a = this._selectedItems.getArray();
 	var numSelectedItems = this._selectedItems.size();
+
 	// is this element currently in the selected items list?
-    var clickedElSet = this._getItemClickedSet(clickedEl);
-    // If one of a click set is contained, all should be.  Handles sliced up multi-day appts
-	var bContained = this._selectedItems.contains(clickedElSet[0]);
+	var bContained = this._selectedItems.contains(clickedEl);
 
 	DwtUiEvent.copy(this._selEv, ev);
-	var item = this._selEv.item = this.getItemFromElement(clickedElSet[0]);
-	var type = this._getItemData(clickedElSet[0], "type");
+	var item = this._selEv.item = this.getItemFromElement(clickedEl);
+	var type = this._getItemData(clickedEl, "type");
 
 	if (ev.shiftKey && bContained) {
-        //Deselect the current selected appointment
-        this.deselectAppt(clickedElSet);
+		this._selectedItems.remove(clickedEl);
+		clickedEl.className = this._getStyle(type);
+		this._selEv.detail = DwtListView.ITEM_DESELECTED;
+		this._evtMgr.notifyListeners(DwtEvent.SELECTION, this._selEv);
 	} else if (!bContained) {
 		// clear out old left click selection(s)
 		for (i = 0; i < numSelectedItems; i++) {
@@ -557,11 +520,9 @@ function(clickedEl, ev) {
 		this._selectedItems.removeAll();
 
 		// save new left click selection
-        for (var i = 0; i < clickedElSet.length; i++) {
-            this._selectedItems.add(clickedElSet[i]);
-		    clickedElSet[i].className = this._getStyle(type, true, !this.getEnabled(), item);
-        }
-        this._selEv.detail = DwtListView.ITEM_SELECTED;
+		this._selectedItems.add(clickedEl);
+		clickedEl.className = this._getStyle(type, true, !this.getEnabled(), item);
+		this._selEv.detail = DwtListView.ITEM_SELECTED;
 		this._evtMgr.notifyListeners(DwtEvent.SELECTION, this._selEv);
 	}
 
@@ -571,12 +532,6 @@ function(clickedEl, ev) {
 		this._evtMgr.notifyListeners(DwtEvent.ACTION, this._actionEv);
 	}
 };
-
-
-ZmCalBaseView.prototype._getItemClickedSet =
-function(clickedEl) {
-    return [clickedEl];
-}
 
 // YUCK: ZmListView overloads b/c ZmListController thinks its always dealing w/ ZmListView's
 ZmCalBaseView.prototype.setSelectionCbox = function(obj, bContained) {};
@@ -630,22 +585,6 @@ function() {
 ZmCalBaseView.prototype.handleActionPopdown = 
 function(ev) {
 	// clear out old right click selection
-    ZmCalViewController._contextMenuOpened = false;
-
-    if(ev && ev._ev && ev._ev.type === "mousedown"){//Only check for mouse events
-        var htmlEl = DwtUiEvent.getTarget(ev._ev),
-            element = document.getElementById(this._bodyDivId) || document.getElementById(this._daysId);
-
-        if(element){
-            while (htmlEl !== null) {
-                if(htmlEl === element){
-                    ZmCalViewController._contextMenuOpened = true;
-                    break;
-                }
-                htmlEl = htmlEl.parentNode;
-            }
-        }
-    }
 };
 
 // END LIST-RELATED
@@ -667,7 +606,7 @@ function(refresh) {
 
 ZmCalBaseView.prototype._getItemId =
 function(item) {
-	return item ? (DwtId.getListViewItemId(DwtId.WIDGET_ITEM, this.view, item.getUniqueId())) : null;
+	return item ? (this._htmlElId + DwtId.SEP + DwtId.getListViewItemId(DwtId.WIDGET_ITEM, this.view, item.getUniqueId())) : null;
 };
 
 ZmCalBaseView.prototype.addTimeSelectionListener = 
@@ -779,10 +718,7 @@ ZmCalBaseView.prototype._updateRange =
 function() { 
 	this._updateDays();
 	this._timeRangeStart = this._days[0].date.getTime();
-	//this._timeRangeEnd = this._days[this.numDays-1].date.getTime() + AjxDateUtil.MSEC_PER_DAY;
-    var endDate = this._days[this.numDays-1].date;
-    endDate.setHours(23, 59, 59, 999);
-	this._timeRangeEnd = endDate.getTime();
+	this._timeRangeEnd = this._days[this.numDays-1].date.getTime() + AjxDateUtil.MSEC_PER_DAY;
 };
 
 // override 
@@ -794,7 +730,6 @@ function(ao) {
 	var item = this._createItemHtml(ao);
 	var div = this._getDivForAppt(ao);
 	if (div) div.appendChild(item);
-
 	this._postApptCreate(ao,div);	
 };
 
@@ -813,15 +748,12 @@ function(list) {
 	}
 	this._resetList();
 	this._list = newList;	
-    var showDeclined = appCtxt.get(ZmSetting.CAL_SHOW_DECLINED_MEETINGS);
-    if (list) {
+	if (list) {
 		var size = list.size();
 		if (size != 0) {
 			for (var i=0; i < size; i++) {
 				var ao = list.get(i);
-                if (showDeclined || (ao.ptst != ZmCalBaseItem.PSTATUS_DECLINED)) {
-				    this.addAppt(ao);
-                }
+				this.addAppt(ao);
 			}
 		}
 	}
@@ -929,10 +861,6 @@ function(appt) {};
 ZmCalBaseView.prototype._createHtml =
 function() {};
 
-// override
-ZmCalBaseView.prototype.checkIndicatorNeed =
-function(viewId, startDate) {};
-
 ZmCalBaseView.prototype._controlListener =
 function(ev) {
 	if ((ev.oldWidth != ev.newWidth) ||
@@ -960,424 +888,4 @@ function(date, duration, isDblClick, allDay, folderId, shiftKey) {
 	sev.shiftKey = shiftKey;
 	this.notifyListeners(ZmCalBaseView.TIME_SELECTION, this._selectionEvent);
 	sev._isDblClick = false;
-};
-
-
-ZmCalBaseView._setApptOpacity =
-function(appt, div) {
-    var opacity = this.getApptOpacity(appt);
-	Dwt.setOpacity(div, opacity);
-};
-
-ZmCalBaseView.getApptOpacity =
-function(appt) {
-    var opacity = 100;
-
-    switch (appt.ptst) {
-		case ZmCalBaseItem.PSTATUS_DECLINED:	opacity = ZmCalColView._OPACITY_APPT_DECLINED;  break;
-		case ZmCalBaseItem.PSTATUS_TENTATIVE:	opacity = ZmCalColView._OPACITY_APPT_TENTATIVE; break;
-		default:								opacity = ZmCalColView._OPACITY_APPT_NORMAL;    break;
-	}
-
-	// obey free busy status for organizer's appts
-	if (appt.fba && appt.isOrganizer()) {
-		 switch (appt.fba) {
-			case "F":	opacity = ZmCalColView._OPACITY_APPT_FREE; break;
-			case "B":	opacity = ZmCalColView._OPACITY_APPT_BUSY; break;
-			case "T":	opacity = ZmCalColView._OPACITY_APPT_TENTATIVE; break;
-		 }
-	}
-    return opacity;
-};
-
-ZmCalBaseView._emptyHdlr =
-function(ev) {
-	var mouseEv = DwtShell.mouseEvent;
-	mouseEv.setFromDhtmlEvent(ev);
-	mouseEv._stopPropagation = true;
-	mouseEv._returnValue = false;
-	mouseEv.setToDhtmlEvent(ev);
-	return false;
-};
-
-
-ZmCalBaseView.prototype._apptMouseDownAction =
-function(ev, apptEl, appt) {
-	if (ev.button != DwtMouseEvent.LEFT) { return false; }
-
-    if (!appt) {
-        appt = this.getItemFromElement(apptEl);
-    }
-	var calendar = appCtxt.getById(appt.folderId);
-	var isRemote = Boolean(calendar.url);
-    if (appt.isReadOnly() || isRemote || appCtxt.isWebClientOffline()) return false;
-
-	var apptOffset = Dwt.toWindow(ev.target, ev.elementX, ev.elementY, apptEl, false);
-
-	var data = {
-		dndStarted: false,
-		appt: appt,
-		view: this,
-		apptEl: apptEl,
-		apptOffset: apptOffset,
-		docX: ev.docX,
-		docY: ev.docY
-	};
-
-	var capture = new DwtMouseEventCapture({
-		targetObj:data,
-		mouseOverHdlr:ZmCalBaseView._emptyHdlr,
-		mouseDownHdlr:ZmCalBaseView._emptyHdlr, // mouse down (already handled by action)
-		mouseMoveHdlr:ZmCalBaseView._apptMouseMoveHdlr,
-		mouseUpHdlr:  ZmCalBaseView._apptMouseUpHdlr,
-		mouseOutHdlr: ZmCalBaseView._emptyHdlr
-	});
-    DBG.println(AjxDebug.DBG3,"data.docX,Y: " + data.docX + "," + data.docY);
-
-    this._createContainerRect(data);
-    // Problem with Month View ??
-    this._controller.setCurrentListView(this);
-
-	capture.capture();
-	return false;
-};
-
-
-
-ZmCalBaseView.prototype._getApptDragProxy =
-function(data) {
-	// set icon
-	var icon;
-	if (this._apptDragProxyDivId == null) {
-		icon = document.createElement("div");
-		icon.id = this._apptDragProxyDivId = Dwt.getNextId();
-		Dwt.setPosition(icon, Dwt.ABSOLUTE_STYLE);
-		this.shell.getHtmlElement().appendChild(icon);
-		Dwt.setZIndex(icon, Dwt.Z_DND);
-	} else {
-		icon = document.getElementById(this._apptDragProxyDivId);
-	}
-	icon.className = DwtCssStyle.NOT_DROPPABLE;
-
-	var appt = data.appt;
-	var formatter = AjxDateFormat.getDateInstance(AjxDateFormat.SHORT);
-	var color = ZmCalendarApp.COLORS[this._controller.getCalendarColor(appt.folderId)];
-	if (appt.ptst != ZmCalBaseItem.PSTATUS_NEEDS_ACTION) {
-		color += "Bg";
-	}
-
-	var proxyData = {
-		shortDate: formatter.format(appt.startDate),
-		dur: appt.getShortStartHour(),
-		color: color,
-		apptName: AjxStringUtil.htmlEncode(appt.getName())
-	};
-
-	icon.innerHTML = AjxTemplate.expand("calendar.Calendar#ApptDragProxy", proxyData);
-
-	var imgHtml = AjxImg.getImageHtml("RoundPlus", "position:absolute; top:30; left:-11; visibility:hidden");
-	icon.appendChild(Dwt.parseHtmlFragment(imgHtml));
-
-	return icon;
-};
-
-
-
-ZmCalBaseView._apptMouseMoveHdlr =
-function(ev) {
-    var data = DwtMouseEventCapture.getTargetObj();
-    if (!data) return false;
-
-	var mouseEv = DwtShell.mouseEvent;
-	mouseEv.setFromDhtmlEvent(ev, true);
-    var view = data.view;
-
-	var deltaX = mouseEv.docX - data.docX;
-	var deltaY = mouseEv.docY - data.docY;
-    DBG.println(AjxDebug.DBG3,"_apptMouseMoveHdlr mouseEv.docY: " + mouseEv.docY + ",   data.docY: " + data.docY);
-
-	if (!data.dndStarted) {
-		var withinThreshold = (Math.abs(deltaX) < ZmCalColView.DRAG_THRESHOLD && Math.abs(deltaY) < ZmCalColView.DRAG_THRESHOLD);
-		if (withinThreshold || !view._apptDndBegin(data)) {
-			mouseEv._stopPropagation = true;
-			mouseEv._returnValue = false;
-			mouseEv.setToDhtmlEvent(ev);
-			return false;
-		}
-	}
-
-	if (view._apptDraggedOut(mouseEv.docX, mouseEv.docY)) {
-		// simulate DND
-        DBG.println(AjxDebug.DBG3,"MouseMove DragOut");
-        view._dragOut(mouseEv, data);
-	}
-	else
-	{
-		if (data._lastDraggedOut) {
-			data._lastDraggedOut = false;
-			if (data.icon) {
-				Dwt.setVisible(data.icon, false);
-			}
-            view._restoreHighlight(data);
-		}
-        var obj = data.dndObj;
-		obj._lastDestDwtObj = null;
-        if (!data.disableScroll) {
-            var scrollOffset = view._handleApptScrollRegion(mouseEv.docX, mouseEv.docY, ZmCalColView._HOUR_HEIGHT, data);
-            if (scrollOffset != 0) {
-                deltaY += scrollOffset;
-            }
-        }
-
-		// snap new location to grid
-        view._doApptMove(data, deltaX, deltaY);
-	}
-	mouseEv._stopPropagation = true;
-	mouseEv._returnValue = false;
-	mouseEv.setToDhtmlEvent(ev);
-	return false;
-};
-
-
-
-ZmCalBaseView.prototype._dragOut =
-function(mouseEv, data) {
-    // simulate DND
-    var obj = data.dndObj;
-    if (!data._lastDraggedOut) {
-        data._lastDraggedOut = true;
-        this._clearSnap(data.snap);
-        data.startDate = new Date(data.appt.getStartTime());
-        this._restoreApptLoc(data);
-        if (!data.icon) {
-            data.icon = this._getApptDragProxy(data);
-        }
-        Dwt.setVisible(data.icon, true);
-    }
-    Dwt.setLocation(data.icon, mouseEv.docX+5, mouseEv.docY+5);
-    var destDwtObj = mouseEv.dwtObj;
-    var obj = data.dndObj;
-
-    if (destDwtObj && destDwtObj._dropTarget)
-    {
-        if (destDwtObj != obj._lastDestDwtObj ||
-            destDwtObj._dropTarget.hasMultipleTargets())
-        {
-            //DBG.println("dwtObj = "+destDwtObj._dropTarget);
-            if (destDwtObj._dropTarget._dragEnter(Dwt.DND_DROP_MOVE, destDwtObj, {data: data.appt}, mouseEv, data.icon)) {
-                //obj._setDragProxyState(true);
-                data.icon.className = DwtCssStyle.DROPPABLE;
-                obj._dropAllowed = true;
-                destDwtObj._dragEnter(mouseEv);
-            } else {
-                //obj._setDragProxyState(false);
-                data.icon.className = DwtCssStyle.NOT_DROPPABLE;
-                obj._dropAllowed = false;
-            }
-        } else if (obj._dropAllowed) {
-            destDwtObj._dragOver(mouseEv);
-        }
-    } else {
-        data.icon.className = DwtCssStyle.NOT_DROPPABLE;
-        //obj._setDragProxyState(false);
-    }
-
-    if (obj._lastDestDwtObj &&
-        obj._lastDestDwtObj != destDwtObj &&
-        obj._lastDestDwtObj._dropTarget &&
-        obj._lastDestDwtObj != obj)
-    {
-        obj._lastDestDwtObj._dragLeave(mouseEv);
-        obj._lastDestDwtObj._dropTarget._dragLeave();
-    }
-    obj._lastDestDwtObj = destDwtObj;
-
-}
-
-ZmCalBaseView.prototype._apptDraggedOut =
-function(docX, docY) {
-    var draggedOut = this._containerRect ? true : false;
-    return draggedOut &&
-           ((docY < this._containerRect.y) ||
-            (docY > (this._containerRect.y + this._containerRect.height)) ||
-            (docX < this._containerRect.x) ||
-            (docX > (this._containerRect.x + this._containerRect.width)));
-};
-
-ZmCalBaseView._apptMouseUpHdlr =
-function(ev) {
-	//DBG.println("ZmCalBaseView._apptMouseUpHdlr: "+ev.shiftKey);
-	var data = DwtMouseEventCapture.getTargetObj();
-
-
-	var mouseEv = DwtShell.mouseEvent;
-    if (ev && mouseEv) {
-	    mouseEv.setFromDhtmlEvent(ev, true);
-    }
-	DwtMouseEventCapture.getCaptureObj().release();
-
-	var draggedOut = data.view._apptDraggedOut(mouseEv.docX, mouseEv.docY);
-
-	if (data.dndStarted && data.appt) {
-        data.view._deselectDnDHighlight(data);
-		//notify Zimlet when an appt is dragged.
- 		appCtxt.notifyZimlets("onApptDrag", [data]);
-		if (data.startDate.getTime() != data.appt._orig.getStartTime() && !draggedOut) {
-			if (data.icon) Dwt.setVisible(data.icon, false);
-			// save before we muck with start/end dates
-			var origDuration = data.appt._orig.getDuration();
-			data.view._autoScrollDisabled = true;
-			var cc = appCtxt.getCurrentController();
-			var endDate = new Date(data.startDate.getTime() + origDuration);
-			var errorCallback = new AjxCallback(null, ZmCalColView._handleDnDError, data);
-			var sdOffset = data.startDate ? (data.startDate.getTime() - data.appt._orig.getStartTime()) : null;
-			var edOffset = endDate ? (endDate.getTime() - data.appt._orig.getEndTime() ) : null;
-			cc.dndUpdateApptDate(data.appt._orig, sdOffset, edOffset, null, errorCallback, mouseEv);
-		} else {
-            data.view._restoreAppt(data);
-		}
-
-		if (draggedOut) {
-			var obj = data.dndObj;
-			obj._lastDestDwtObj = null;
-			var destDwtObj = mouseEv.dwtObj;
-			if (destDwtObj != null &&
-				destDwtObj._dropTarget != null &&
-				obj._dropAllowed &&
-				destDwtObj != obj)
-			{
-				destDwtObj._drop(mouseEv);
-				var srcData = {
-					data: data.appt,
-					controller: data.view._controller
-				};
-				destDwtObj._dropTarget._drop(srcData, mouseEv);
-				obj._dragging = DwtControl._NO_DRAG;
-				if (data.icon) Dwt.setVisible(data.icon, false);
-			}
-			else {
-				// The following code sets up the drop effect for when an
-				// item is dropped onto an invalid target. Basically the
-				// drag icon will spring back to its starting location.
-				var bd = data.view._badDrop = { dragEndX: mouseEv.docX, dragEndY: mouseEv.docY, dragStartX: data.docX, dragStartY: data.docY };
-				bd.icon = data.icon;
-				if (data.view._badDropAction == null) {
-					data.view._badDropAction = new AjxTimedAction(data.view, data.view._apptBadDropEffect);
-				}
-
-				// Line equation is y = mx + c. Solve for c, and set up d (direction)
-				var m = (bd.dragEndY - bd.dragStartY) / (bd.dragEndX - bd.dragStartX);
-				data.view._badDropAction.args = [m, bd.dragStartY - (m * bd.dragStartX), (bd.dragStartX - bd.dragEndX < 0) ? -1 : 1];
-				AjxTimedAction.scheduleAction(data.view._badDropAction, 0);
-			}
-		}
-	}
-
-    if (mouseEv) {
-        mouseEv._stopPropagation = true;
-        mouseEv._returnValue = false;
-        if (ev) {
-            mouseEv.setToDhtmlEvent(ev);
-        }
-    }
-	return false;
-};
-
-ZmCalBaseView.prototype._deselectDnDHighlight =
-function(data) {
-}
-ZmCalBaseView.prototype._restoreAppt =
-function(data) {
-}
-
-
-ZmCalBaseView.prototype._apptBadDropEffect =
-function(m, c, d) {
-	var usingX = (Math.abs(m) <= 1);
-	// Use the bigger delta to control the snap effect
-	var bd = this._badDrop;
-	var delta = usingX ? bd.dragStartX - bd.dragEndX : bd.dragStartY - bd.dragEndY;
-	if (delta * d > 0) {
-		if (usingX) {
-			bd.dragEndX += (30 * d);
-			bd.icon.style.top = m * bd.dragEndX + c;
-			bd.icon.style.left = bd.dragEndX;
-		} else {
-			bd.dragEndY += (30 * d);
-			bd.icon.style.top = bd.dragEndY;
-			bd.icon.style.left = (bd.dragEndY - c) / m;
-		}
-		AjxTimedAction.scheduleAction(this._badDropAction, 0);
-	} else {
-		Dwt.setVisible(bd.icon, false);
-		bd.icon = null;
-	}
-};
-
-// --- Functions to be overridden for DnD
-ZmCalBaseView.prototype._createContainerRect =
-function(data) {
-    this._containerRect = new DwtRectangle(0,0,0,0);
-}
-
-ZmCalBaseView.prototype._clearSnap =
-function(snap) { }
-
-ZmCalBaseView.prototype._apptDndBegin =
-function(data) {
-    return  false;
-}
-
-ZmCalBaseView.prototype._restoreHighlight =
-function(data) { }
-
-ZmCalBaseView.prototype._doApptMove =
-function(data, deltaX, deltaY) { }
-
-ZmCalBaseView.prototype._restoreApptLoc =
-function(data) { }
-
-ZmCalBaseView.prototype._cancelNewApptDrag =
-function(data) {
-    if (data && data.newApptDivEl) {
-        // ESC key is pressed while dragging the mouse
-        // Undo the drag event and hide the new appt div
-        data.gridEl.style.cursor = 'auto';
-        var col = data.view._getColFromX(data.gridX);
-	    data.folderId = col ? (col.cal ? col.cal.id : null) : null;
-		Dwt.setVisible(data.newApptDivEl, false);
-    }
-};
-
-ZmCalBaseView.prototype._handleApptScrollRegion =
-function(docX, docY, incr, data) {  }
-
-ZmCalBaseView.prototype.startIndicatorTimer=function() { };
-
-ZmCalBaseView.prototype.setTimer=function(min){
-    var period = min*60*1000;
-    return AjxTimedAction.scheduleAction(new AjxTimedAction(this, this.updateTimeIndicator), period);
-};
-
-ZmCalBaseView.prototype.updateTimeIndicator=function() { };
-
-/**
- * De-selects a selected appointment
- *
- * @param   {array}  clickedAppts an array of appointments
- */
-ZmCalBaseView.prototype.deselectAppt =
-function (clickedAppts) {
-    clickedAppts = clickedAppts || this._selectedItems.getArray();
-
-    if(clickedAppts.length > 0) {
-        var type = this._getItemData(this._getItemClickedSet(clickedAppts), "type");
-
-        for(var i = 0; i < clickedAppts.length; i++) {
-            clickedAppts[i].className = this._getStyle(type);
-            this._selectedItems.remove(clickedAppts[i]);
-        }
-        this._selEv.detail = DwtListView.ITEM_DESELECTED;
-        this._evtMgr.notifyListeners(DwtEvent.SELECTION, this._selEv);
-    }
 };

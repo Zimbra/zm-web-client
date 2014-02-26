@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
@@ -56,9 +56,6 @@ ZmApptComposeView = function(parent, className, calApp, controller) {
 	this._attendeeKeys[ZmCalBaseItem.PERSON]	= {};
 	this._attendeeKeys[ZmCalBaseItem.LOCATION]	= {};
 	this._attendeeKeys[ZmCalBaseItem.EQUIPMENT]	= {};
-
-	// Email to type map
-	this._attendeeType = {};
 
 	// for attendees change events
 	this._evt = new ZmEvent(ZmEvent.S_CONTACT);
@@ -164,11 +161,11 @@ function() {
 	return this._apptEditView.getComposeMode();
 };
 
-// Sets the mode the editor should be in.
+// Sets the mode ZmHtmlEditor should be in.
 ZmApptComposeView.prototype.setComposeMode = 
 function(composeMode) {
-	if (composeMode == Dwt.TEXT ||
-		(composeMode == Dwt.HTML && appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED)))
+	if (composeMode == DwtHtmlEditor.TEXT || 
+		(composeMode == DwtHtmlEditor.HTML && appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED)))
 	{
 		this._apptEditView.setComposeMode(composeMode);
 	}
@@ -214,11 +211,6 @@ function() {
 
 ZmApptComposeView.prototype.getAppt = 
 function(attId) {
-	return this.getCalItem(attId);
-};
-
-ZmApptComposeView.prototype.getCalItem =
-function(attId) {
 	return this._apptEditView.getCalItem(attId);
 };
 
@@ -237,21 +229,6 @@ function() {
 	return this._apptEditView.getHtmlEditor();
 };
 
-ZmApptComposeView.prototype.getNumLocationConflictRecurrence =
-function() {
-    return this._apptEditView.getNumLocationConflictRecurrence();
-}
-
-ZmApptComposeView.prototype.cancelLocationRequest =
-function() {
-    return this._apptEditView.cancelLocationRequest();
-}
-
-ZmApptComposeView.prototype.setLocationConflictCallback =
-function(locationConflictCallback) {
-    this._locationConflictCallback   = locationConflictCallback;
-};
-
 /**
  * Updates the set of attendees for this appointment, by adding attendees or by
  * replacing the current list (with a clone of the one passed in).
@@ -268,61 +245,31 @@ function(attendees, type, mode, index) {
 	attendees = (attendees instanceof AjxVector) ? attendees.getArray() :
 				(attendees instanceof Array) ? attendees : [attendees];
 	mode = mode || ZmApptComposeView.MODE_REPLACE;
-	// Note whether any of the attendees changed.  Needed to decide
-	// for Locations whether or not to check for conflicts
-	var changed = false;
-	var key;
 	if (mode == ZmApptComposeView.MODE_REPLACE) {
 		this._attendees[type] = new AjxVector();
-		var oldKeys = this._attendeeKeys[type];
 		this._attendeeKeys[type] = {};
 		for (var i = 0; i < attendees.length; i++) {
 			var attendee = attendees[i];
 			this._attendees[type].add(attendee);
-			key = this._addAttendeeKey(attendee, type);
-			this._attendeeType[key] = type;
-			if (key && !oldKeys[key]) {
-				// New key that was not in the old set
-				changed = true;
-			}
-		}
-		if ((type == ZmCalBaseItem.LOCATION) && this._locationConflictCallback) {
-			for (key in oldKeys) {
-				if (key && !this._attendeeKeys[type][key]) {
-					// Old location key that is not in the new set
-					changed = true;
-					break;
-				}
-			}
+			this._addAttendeeKey(attendee, type);
 		}
 	} else if (mode == ZmApptComposeView.MODE_ADD) {
 		for (var i = 0; i < attendees.length; i++) {
 			var attendee = attendees[i];
-			key = this._getAttendeeKey(attendee);
-			this._attendeeType[key] = type;
+			var key = this._getAttendeeKey(attendee);
 			if (!this._attendeeKeys[type][key] === true) {
 				this._attendees[type].add(attendee, index);
 				this._addAttendeeKey(attendee, type);
-				changed = true;
 			}
 		}
 	} else if (mode == ZmApptComposeView.MODE_REMOVE) {
 		for (var i = 0; i < attendees.length; i++) {
 			var attendee = attendees[i];
-			key = this._removeAttendeeKey(attendee, type);
-			delete this._attendeeType[key];
+			this._removeAttendeeKey(attendee, type);
 			this._attendees[type].remove(attendee);
-			if (key) {
-				changed = true;
-			}
 		}
 	}
-
-    if (changed && (type == ZmCalBaseItem.LOCATION) && this._locationConflictCallback) {
-        this._locationConflictCallback.run(this._attendees[ZmCalBaseItem.LOCATION]);
-    }
 };
-
 
 ZmApptComposeView.prototype.setApptMessage =
 function(msg){
@@ -357,7 +304,6 @@ function(attendee, type) {
 	if (key) {
 		this._attendeeKeys[type][key] = true;
 	}
-	return key;
 };
 
 ZmApptComposeView.prototype._removeAttendeeKey =
@@ -366,13 +312,7 @@ function(attendee, type) {
 	if (key) {
 		delete this._attendeeKeys[type][key];
 	}
-	return key;
 };
-
-ZmApptComposeView.prototype.getAttendeeType =
-function(email) {
-    return this._attendeeType[email];
-}
 
 /**
 * Adds a change listener.
@@ -419,10 +359,6 @@ function() {
     this._apptEditView = new ZmApptEditView(this, this._attendees, this._controller, this._dateInfo);
 	this._apptEditView.addRepeatChangeListener(new AjxListener(this, this._repeatChangeListener));
 	this.addControlListener(new AjxListener(this, this._controlListener));
-
-	// make the appointment edit view take up the full size of this view
-	var bounds = this.getInsetBounds();
-	this._apptEditView.setSize(bounds.width, bounds.height);
 };
 
 ZmApptComposeView.prototype.getApptEditView =
@@ -451,11 +387,12 @@ function() {
 
 ZmApptComposeView.prototype._controlListener =
 function(ev) {
-	if (ev && ev.type === DwtControlEvent.RESIZE) {
-	    // make the appointment edit view take up the full size of this view
-	    var bounds = this.getInsetBounds();
-	    this._apptEditView.setSize(bounds.width, bounds.height);
-	}
+	var newWidth = (ev.oldWidth == ev.newWidth) ? null : ev.newWidth;
+	var newHeight = (ev.oldHeight == ev.newHeight) ? null : ev.newHeight;
+
+	if (!(newWidth || newHeight)) return;
+
+	this._apptEditView.resize(newWidth, newHeight);
 };
 
 ZmApptComposeView.prototype.deactivate =
@@ -463,8 +400,8 @@ function() {
 	this._controller.inactive = true;
 
     //clear the free busy cache if the last tabbed compose view session is closed
-    //var activeComposeSesions = this._app.getNumSessionControllers(ZmId.VIEW_APPOINTMENT);
-    //if(activeComposeSesions == 0) this._app.getFreeBusyCache().clearCache();
+    var activeComposeSesions = this._app.getNumSessionControllers(ZmId.VIEW_APPOINTMENT);
+    if(activeComposeSesions == 0) this._app.getFreeBusyCache().clearCache();
 
 };
 

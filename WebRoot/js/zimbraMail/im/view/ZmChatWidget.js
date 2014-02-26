@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2007, 2008, 2009, 2010, 2011, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
@@ -64,6 +64,15 @@ ZmChatWidget.prototype._setChat = function(chat) {
 	}
 	var listItem = AjxDispatcher.run("GetRoster").getRosterItem(item.getAddress());
 	this._setAddBuddyVisible(!listItem);
+	if (chat.isZimbraAssistant()) {
+		// disallow HTML mode for assistant chats.  FIXME:
+		// clean this up.  If we're chatting with Zimbra
+		// Assistant, we should never even create the HTML
+		// toolbar in the first place.  Add a parameter to
+		// ZmLiteHtmlEditor for this (but we should have
+		// this.chat before _init()).
+		this._changEditorModeBtn.setVisible(false);
+	}
 };
 
 ZmChatWidget.prototype._setAddBuddyVisible = function(visible) {
@@ -561,7 +570,9 @@ ZmChatWidget.prototype.focus = function() {
 };
 
 ZmChatWidget.prototype._removeUnreadStatus = function() {
-	this.chat.resetUnread();
+	if (!this.chat.isZimbraAssistant()) {
+		this.chat.resetUnread();
+	}
 };
 
 ZmChatWidget.prototype.select = function() {
@@ -703,7 +714,7 @@ ZmChatWidget.prototype._dropOnTitleListener = function(ev) {
 
 ZmChatWidget.prototype._sendByEmailListener = function() {
         var mode = this._liteEditor.getMode() == ZmLiteHtmlEditor.HTML
-                ? Dwt.HTML : Dwt.TEXT;
+                ? DwtHtmlEditor.HTML : DwtHtmlEditor.TEXT;
 	this.chat.sendByEmail(mode);
 };
 
