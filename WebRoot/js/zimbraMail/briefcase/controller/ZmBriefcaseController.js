@@ -470,8 +470,11 @@ function(view) {
 
 ZmBriefcaseController.prototype._setViewContents =
 function(view) {
-	var bcv = this._parentView[view];    
-	bcv.set(this._list, this._switchView);
+	// If the controller is being used via the ZmBriefcaseTabView (for attaching briefcase files
+	// to a mail message), then there is only a list view in use, not a parent with multiple views.
+	if (this._parentView[view]) {
+		this._parentView[view].set(this._list, this._switchView);
+	}
     this._switchView = false;
 };
 

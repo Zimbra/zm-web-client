@@ -99,6 +99,7 @@ function() {
     var params = {parent:bc._container, className:"BriefcaseTabBox BriefcaseList", view:this.view,
 				  controller:bc};
     var lv = this._listView = this._controller._listView[this.view] = new ZmBriefcaseIconView(params);
+	this._controller._currentViewId = this.view;
     lv.reparentHtmlElement(this._folderListId);
     Dwt.setPosition(lv.getHtmlElement(),Dwt.RELATIVE_STYLE);
 };
