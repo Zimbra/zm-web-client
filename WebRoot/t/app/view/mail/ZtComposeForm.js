@@ -112,7 +112,7 @@ Ext.define('ZCS.view.mail.ZtComposeForm', {
 						addressType: ZCS.constant.TO,
 						flex: 1,
 						label: ZtMsg.toHdr,
-						labelWidth: '3em'
+						labelWidth: '4em'
 					}]
 				}, {
 					xtype: 'contactfield',
@@ -121,7 +121,7 @@ Ext.define('ZCS.view.mail.ZtComposeForm', {
 					addressType: ZCS.constant.CC,
 					hidden: true,
 					label: ZtMsg.ccHdr,
-					labelWidth: '5.5em'
+					labelWidth: '6.5em'
 				}, {
 					xtype: 'contactfield',
 					name: ZCS.constant.BCC,
@@ -129,7 +129,7 @@ Ext.define('ZCS.view.mail.ZtComposeForm', {
 					addressType: ZCS.constant.BCC,
 					hidden: true,
 					label: ZtMsg.bccHdr,
-					labelWidth: '5.5em'
+					labelWidth: '6.5em'
 				}, {
 					cls: 'zcs-subjectline',
 					layout: {
@@ -141,7 +141,7 @@ Ext.define('ZCS.view.mail.ZtComposeForm', {
 						name: 'subject',
 						flex: 1,
 						label: ZtMsg.subjectHdr,
-						labelWidth: '5.5em',
+						labelWidth: '6.5em',
 						listeners: {
 							blur: function () {
 								//Because this panel is floating, and a keystroke may have forced the whole window to scroll,
