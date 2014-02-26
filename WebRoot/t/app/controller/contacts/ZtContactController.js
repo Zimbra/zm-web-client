@@ -230,12 +230,32 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
 	            folderId:   folderId
             };
 
+        var contactName = Ext.String.htmlEncode(contact.get('longName')),
+            allowPermDelete = false;
+
+        if (op === 'move') {
+            this.doActualDelete(contact, data, toastMsg);
+        } else if (op === 'delete') {
+            var deleteMsg = Ext.String.format(ZtMsg.hardDeleteContactText, contactName);
+
+            Ext.Msg.confirm(ZtMsg.hardDeleteContactTitle, deleteMsg, function(buttonId) {
+                if (buttonId === 'yes') {
+                    this.doActualDelete(contact, data, toastMsg);
+                }
+            }, this);
+        }
+    },
+
+    /**
+     * Performs move or delete operation on a contact.
+     */
+    doActualDelete: function(contact, data, toastMsg) {
         this.performOp(contact, data, function() {
             ZCS.app.fireEvent('showToast', toastMsg);
             ZCS.app.getContactListController().removeContact(contact);
-	        contact.destroy();
         });
     },
+
 
 	/**
 	 * Launches a move assignment view.
