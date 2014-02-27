@@ -14,8 +14,6 @@
 
 	// Add ARIA attributes
 	skin.override("DwtTreeItem.prototype._initialize", function(index, realizeDeferred, forceNode) {
-		this._textClassName = "DwtTreeItem-Text";
-
 		var r = arguments.callee.func.apply(this, arguments);
 
 		var htmlel = this.getHtmlElement();
@@ -74,44 +72,16 @@
 
 	// Add ARIA attributes
 	skin.override("DwtTreeItem.prototype._addItem", function(item, index, realizeDeferred) {
+		arguments.callee.func.apply(this, arguments);
 
-		if (!this._children.contains(item)) {
-			this._children.add(item, index);
-		}
-
-		if (this._childDiv == null) {
-			this._childDiv = document.createElement("div");
-			this._childDiv.className = (this.parent != this._tree)
-				? "DwtTreeItemChildDiv" : "DwtTreeItemLevel1ChildDiv";
+        if (!this._childDiv.role) {
 			util.setElementRole(this._childDiv, "group");
 			this._childDiv.setAttribute("aria-labelledby",util.getElementID(this._itemDiv));
 
 			var thisEl = this.getHtmlElement();
 			thisEl.parentNode.insertBefore(this._childDiv, thisEl.nextSibling);
 			thisEl.setAttribute("aria-owns", util.getElementID(this._childDiv));
-
-			if (!this._expanded) {
-				this._childDiv.style.display = "none";
 			}
-		}
-
-		if (realizeDeferred && this._nodeCell) {
-			if (AjxImg.getImageClass(this._nodeCell) == AjxImg.getClassForImage("Blank_16")) {
-				AjxImg.setImage(this._nodeCell, this._expanded ? this._expandNodeImage : this._collapseNodeImage);
-				var imgEl = AjxImg.getImageElement(this._nodeCell);
-				if (imgEl) {
-					Dwt.setHandler(imgEl, DwtEvent.ONMOUSEDOWN, DwtTreeItem._nodeIconMouseDownHdlr);
-				}
-			}
-		}
-
-		var childDiv = this._childDiv;
-		var numChildren = childDiv.childNodes.length;
-		if (index == null || index >= numChildren || numChildren == 0) {
-			childDiv.appendChild(item.getHtmlElement());
-		} else {
-			childDiv.insertBefore(item.getHtmlElement(), childDiv.childNodes[index]);
-		}
 
 	});
 
@@ -347,113 +317,4 @@
 		appCtxt.getCurrentApp()._forceMsgView = true;
 		arguments.callee.func.apply(this,arguments);
 	});
-
-
-
-
-
-
-
-
-	// DE3004: Let user keyboard-navigate to imap folders
-	skin.override("ZmTreeView.prototype._addNew", function(parentNode, organizer, index, noTooltips, omit) {
-		var ti;
-		// check if we're adding a datasource folder
-		var dsColl = (organizer.type == ZmOrganizer.FOLDER) && appCtxt.getDataSourceCollection();
-		var dss = dsColl && dsColl.getByFolderId(organizer.nId);
-		var ds = (dss && dss.length > 0) ? dss[0] : null;
-
-		if (ds && ds.type == ZmAccount.TYPE_IMAP) {
-			var cname = appCtxt.isFamilyMbox ? null : this._headerClass;
-			var icon =  "Folder";
-			ti = new DwtTreeItem({parent:this, text:organizer.getName(), className:cname, imageInfo:icon, selectable: true}); // Changed from false to true. This is our only modification
-		} else {
-			// create parent chain
-			if (!parentNode) {
-				var stack = [];
-				var parentOrganizer = organizer.parent;
-				if (parentOrganizer) {
-					while ((parentNode = this.getTreeItemById(parentOrganizer.id)) == null) {
-						stack.push(parentOrganizer);
-						parentOrganizer = parentOrganizer.parent;
-					}
-				}
-				while (parentOrganizer = stack.pop()) {
-					parentNode = this.getTreeItemById(parentOrganizer.parent.id);
-					parentNode = new DwtTreeItem({
-						parent:					parentNode,
-						text:					parentOrganizer.getName(),
-						imageInfo:				parentOrganizer.getIconWithColor(),
-						forceNotifySelection:	true,
-						dndScrollCallback:		this._overview && this._overview._dndScrollCallback,
-						dndScrollId:			this._overview && this._overview._scrollableContainerId,
-						id:						ZmId.getTreeItemId(this.overviewId, parentOrganizer.id)
-					});
-					parentNode.setData(Dwt.KEY_ID, parentOrganizer.id);
-					parentNode.setData(Dwt.KEY_OBJECT, parentOrganizer);
-					parentNode.setData(ZmTreeView.KEY_ID, this.overviewId);
-					parentNode.setData(ZmTreeView.KEY_TYPE, parentOrganizer.type);
-					this._treeItemHash[parentOrganizer.id] = parentNode;
-				}
-			}
-			if (this._addShareLink && this._addShareLink.parent == parentNode) {
-				var addShareIndex = parentNode.getChildIndex(this._addShareLink);
-				if (addShareIndex >= 0 && (!index || index > addShareIndex))
-					index = addShareIndex; // Bug 52053: We must make sure nothing has a higher index than that of this._addShareLink
-			}
-			var params = {
-				parent:				parentNode,
-				index:				index,
-				text:				organizer.getName(this._showUnread),
-				dndScrollCallback:	this._overview && this._overview._dndScrollCallback,
-				dndScrollId:		this._overview && this._overview._scrollableContainerId,
-				imageInfo:			organizer.getIconWithColor(),
-				id:					ZmId.getTreeItemId(this.overviewId, organizer.id)
-			};
-			// now add item
-			ti = new DwtTreeItem(params);
-		}
-
-		if (appCtxt.multiAccounts &&
-			(organizer.type == ZmOrganizer.SEARCH ||
-			 organizer.type == ZmOrganizer.TAG))
-		{
-			ti.addClassName("DwtTreeItemChildDiv");
-		}
-
-		ti.setDndText(organizer.getName());
-		ti.setData(Dwt.KEY_ID, organizer.id);
-		ti.setData(Dwt.KEY_OBJECT, organizer);
-		ti.setData(ZmTreeView.KEY_ID, this.overviewId);
-		ti.setData(ZmTreeView.KEY_TYPE, organizer.type);
-		if (!noTooltips) {
-			var tooltip = organizer.getToolTip();
-			if (tooltip) {
-				ti.setToolTipContent(tooltip);
-			}
-		}
-		if (this._dragSrc) {
-			ti.setDragSource(this._dragSrc);
-		}
-		if (this._dropTgt) {
-			ti.setDropTarget(this._dropTgt);
-		}
-		this._treeItemHash[organizer.id] = ti;
-
-		if (ZmTreeView.ADD_SEP[organizer.nId]) {
-			parentNode.addSeparator();
-		}
-
-		// recursively add children
-		if (organizer.children && organizer.children.size()) {
-			this._render({treeNode:ti, organizer:organizer, omit:omit});
-		}
-
-		if (ds && ds.type == ZmAccount.TYPE_IMAP) {
-			ti.setExpanded(!appCtxt.get(ZmSetting.COLLAPSE_IMAP_TREES));
-		}
-
-		return ti;
-	});
-
 })();
