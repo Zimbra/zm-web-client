@@ -917,7 +917,7 @@
 
 	var headersHasActionMenu = function(listview, hasActionMenu) {
 		var headers = listview._headerList;
-		for (var i=0; i<headers.length; i++) {
+		for (var i=0; headers && i < headers.length; i++) {
 			var el = headers[i] && headers[i]._id && Dwt.byId(headers[i]._id);
 			if (el) {
 				util.setHasActionMenu(el, hasActionMenu);
