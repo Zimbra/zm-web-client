@@ -1,6 +1,4 @@
 (function() {
-	var util = comcast.access.util;
-
 	skin.classListener('ZmAppChooser', function() {
 		ZmAppChooser.prototype.a11yFocusable = true;
 		ZmAppChooser.prototype.a11yRole = 'tablist';
@@ -16,7 +14,7 @@
 	skin.override.append('ZmAppChooser.prototype.__initCtrl', function() {
 		var navctrl = new DwtComposite({parent: this.parent, className: 'A11yNavigationContainer'});
 		var navel = navctrl.getHtmlElement();
-		util.setElementRole(navel, 'navigation');
+		A11yUtil.setElementRole(navel, 'navigation');
 		navel.setAttribute('aria-label', ZmMsg.appChooserTitle);
 		this.reparent(navctrl);
 	});
@@ -24,7 +22,7 @@
 	skin.override.append('ZmAppChooser.prototype._createHtmlFromTemplate', function() {
 		var firstchild = this.getHtmlElement().firstChild;
 		if (firstchild && firstchild.tagName == 'TABLE') {
-			util.setElementRole(firstchild, 'presentation');
+			A11yUtil.setElementRole(firstchild, 'presentation');
 		}
 	});
 
@@ -41,9 +39,9 @@
 
 	skin.override.append('ZmAppButton.prototype.setHoverImage', function(imageinfo) {
 		// NB: actually implemented in DwtLabel
-		if (imageinfo === 'Close' && util.isHighContrastMode()) {
+		if (imageinfo === 'Close' && A11yUtil.isHighContrastMode()) {
 			var textnode =
-				document.createTextNode(util.DINGBATS.BALLOT.CROSSED);
+				document.createTextNode(A11yUtil.DINGBATS.BALLOT.CROSSED);
 			this._getIconEl().firstChild.appendChild(textnode);
 		}
 	});
@@ -61,7 +59,7 @@
 		}
 
 		if (!appCtxt.inStartup) {
-			util.say(AjxMessageFormat.format(ZmMsg.a11yCloseTabMessage, button.getText()), 'assertive');
+			A11yUtil.say(AjxMessageFormat.format(ZmMsg.a11yCloseTabMessage, button.getText()), 'assertive');
 		}
 
 		return arguments.callee.func.apply(this, arguments);

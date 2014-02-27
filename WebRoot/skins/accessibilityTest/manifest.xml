@@ -20,7 +20,7 @@
 		</substitutions>
 		<css>
 			<file>../_base/base3/skin.css</file>
-            <file>src/02_util.css</file>
+            <file>src/02_A11yUtil.css</file>
             <file>src/shortcuts.css</file>
             <file>src/tab-selection-ie.css</file>
             <file>src/tab-selection.css</file>
@@ -31,8 +31,7 @@
 	    <script>
             <file>../_base/base3/ZmSkin.js</file>
     	    <file>skin.js</file>
-            <file>src/01_core.js</file>
-            <file>src/02_util.js</file>
+            <file>src/02_A11yUtil.js</file>
             <file>src/03_control.js</file>
             <file>src/appchooser.js</file>
             <file>src/appviewmgr.js</file>

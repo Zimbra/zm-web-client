@@ -1,6 +1,4 @@
 (function(){
-	var util = comcast.access.util;
-
 	skin.classListener('DwtButton', function() {
 		DwtButton.prototype.a11yRole = 'button';
 		DwtButton.prototype.a11yFocusable = true;
@@ -22,8 +20,8 @@
 
 	skin.override.append('DwtButton.prototype.setMenu', function() {
 		this.setHasActionMenu(!!this._menu);
-		if (util.isHighContrastMode() && this._dropDownEl) {
-			var textnode = document.createTextNode(util.DINGBATS.TRIANGLE.DOWN);
+		if (A11yUtil.isHighContrastMode() && this._dropDownEl) {
+			var textnode = document.createTextNode(A11yUtil.DINGBATS.TRIANGLE.DOWN);
 			Dwt.removeChildren(this._dropDownEl);
 			this._dropDownEl.appendChild(textnode);
 		}
@@ -38,7 +36,7 @@
 		this._setEventHdlrs([DwtEvent.ONCLICK]);
 		// Announce button when it's pressed (DE2965)
 		this._sayListener = new AjxListener(this, function(){
-			util.say(this.getText(), util.SAY_ASSERTIVELY);
+			A11yUtil.say(this.getText(), A11yUtil.SAY_ASSERTIVELY);
 		});
 		this.addSelectionListener(this._sayListener);
 	});
@@ -77,7 +75,7 @@
 
 	skin.override('DwtButton.prototype.setText', function(text) {
 		// always show text in high contrast mode
-		if (this.whatToShow && util.isHighContrastMode()) {
+		if (this.whatToShow && A11yUtil.isHighContrastMode()) {
 			this.whatToShow.showText = true;
 		}
 

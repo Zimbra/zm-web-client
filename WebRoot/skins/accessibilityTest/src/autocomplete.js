@@ -1,7 +1,4 @@
 (function(){
-
-var util = comcast.access.util;
-
 skin.classListener("ZmAutocompleteListView", function(){
 	ZmAutocompleteListView.prototype._clearInputOnUpdate = true;
 });
@@ -27,7 +24,7 @@ skin.override("ZmAutocompleteListView.prototype._set", function(list, context) {
 			row.className = this._origClass;
 			row.id = rowId;
 			row.tabIndex = 0;
-			util.setElementRole(row, 'option');
+			A11yUtil.setElementRole(row, 'option');
 			var html = [], idx = 0;
 			var cell = row.insertCell(-1);
 			cell.className = "Icon";
@@ -116,7 +113,7 @@ skin.override.append("ZmAutocompleteListView.prototype._setSelected", function(i
 
 var setInputValue = function(element, value) {
 	var control = element && DwtControl.findControl(element);
-	if (util.isInstance(control, "ZmAddressInputField")) {
+	if (A11yUtil.isInstance(control, "ZmAddressInputField")) {
 		control._setInputValue(value);
 	} else if (element) {
 		element.value = value;
@@ -159,7 +156,7 @@ skin.override("ZmRecipients.prototype._acSelectHandler", function(selected, elem
 					text,
 					AjxMessageFormat.format(ZmMsg.autocompleteGroupLabelAfter,[membertext])].join(" ");
 		}
-		util.say(text,util.SAY_ASSERTIVELY);
+		A11yUtil.say(text,A11yUtil.SAY_ASSERTIVELY);
 	}
 });
 
@@ -181,7 +178,7 @@ skin.override.append("ZmRecipients.prototype.createRecipientHtml", function(){
 
 skin.override.append("ZmAutocompleteListView.prototype.handle", function(element){
 	element.setAttribute("aria-autocomplete","list");
-	element.setAttribute("aria-owns", util.getElementID(this.getHtmlElement()));
+	element.setAttribute("aria-owns", A11yUtil.getElementID(this.getHtmlElement()));
 });
 
 skin.override.append("ZmAddressInputField.prototype._keyUpCallback", function(ev, aclv, result, element){
@@ -248,12 +245,12 @@ skin.override.append("ZmAutocompleteListView.prototype.show", function(show) {
 		input.setAttribute("aria-expanded", !!show);
 	}
 	if (show) {
-		util.say(ZmMsg.autoCompletedOptionsAvailable,util.SAY_ASSERTIVELY);
+		A11yUtil.say(ZmMsg.autoCompletedOptionsAvailable,A11yUtil.SAY_ASSERTIVELY);
 	}
 });
 
 skin.override.append(["ZmAutocompleteListView.prototype.setWaiting","ZmAutocompleteListView.prototype._getTable"],function(){
-	util.setTableRolePresentation(this.getHtmlElement());
+	A11yUtil.setTableRolePresentation(this.getHtmlElement());
 });
 
 })();

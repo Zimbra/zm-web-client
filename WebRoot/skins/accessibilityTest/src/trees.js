@@ -1,6 +1,4 @@
 (function() {
-	var util = comcast.access.util;
-
 	skin.classListener('DwtTree', function () {
 		DwtTree.prototype.a11yRole = 'tree';
 		DwtTree.prototype.a11yFocusable = false;
@@ -75,12 +73,12 @@
 		arguments.callee.func.apply(this, arguments);
 
         if (!this._childDiv.role) {
-			util.setElementRole(this._childDiv, "group");
-			this._childDiv.setAttribute("aria-labelledby",util.getElementID(this._itemDiv));
+			A11yUtil.setElementRole(this._childDiv, "group");
+			this._childDiv.setAttribute("aria-labelledby", A11yUtil.getElementID(this._itemDiv));
 
 			var thisEl = this.getHtmlElement();
 			thisEl.parentNode.insertBefore(this._childDiv, thisEl.nextSibling);
-			thisEl.setAttribute("aria-owns", util.getElementID(this._childDiv));
+			thisEl.setAttribute("aria-owns", A11yUtil.getElementID(this._childDiv));
 			}
 
 	});
@@ -216,7 +214,7 @@
 			case DwtKeyMap.DELETE: {
 				var item = this.getData(Dwt.KEY_OBJECT),
 					type = this.getData(ZmTreeView.KEY_TYPE);
-				if (util.isInstance(item,"ZmOrganizer")) {
+				if (A11yUtil.isInstance(item,"ZmOrganizer")) {
 					var controller = this._tree.parent._controller.getTreeController(type); // ZmTreeController
 					controller._deleteListener({item:this});
 				}

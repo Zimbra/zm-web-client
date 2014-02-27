@@ -1,6 +1,4 @@
 (function(){
-	var util = comcast.access.util;
-
 	skin.classListener('DwtControl', function() {
 		DwtControl.prototype.a11yRole = null;
 		DwtControl.prototype.a11yFocusable = false;
@@ -8,15 +6,15 @@
 		DwtControl.prototype.a11yReadOnly = null;
 
 		DwtControl.prototype.setRole = function(role) {
-			util.setElementRole(this.getHtmlElement(), role);
+			A11yUtil.setElementRole(this.getHtmlElement(), role);
 		};
 
 		if (AjxUtil.indexOf(DwtEvent.MOUSE_EVENTS, DwtEvent.ONCLICK) === -1) {
 			DwtEvent.MOUSE_EVENTS.push(DwtEvent.ONCLICK);
 		}
 
-		for (var eventkey in util.EVENT_HANDLERS)
-			DwtControl.__HANDLER[eventkey] = util.EVENT_HANDLERS[eventkey];
+		for (var eventkey in A11yUtil.EVENT_HANDLERS)
+			DwtControl.__HANDLER[eventkey] = A11yUtil.EVENT_HANDLERS[eventkey];
 
 	});
 
@@ -26,7 +24,7 @@
 		}
 
 		if (this.a11yFocusable) {
-			util.makeFocusable(this);
+			A11yUtil.makeFocusable(this);
 		}
 
 		if (this.a11yTitle !== null) {
@@ -138,7 +136,7 @@
 			var r = arguments.callee.func.apply(this, arguments);
 			if (this.a11yFocusable && !this.a11yFocusesChild) {
 				if (this.getHtmlElement()) {
-					util.focus(this.getHtmlElement());
+					A11yUtil.focus(this.getHtmlElement());
 				} else if (window.console) {
 					console.warn("%s has no element? id=%s",
 								 this, this.getHTMLElId());
@@ -187,13 +185,13 @@
 
 /*
 	skin.override("DwtControl.prototype.setDescribedBy", function(labelText){
-		return util.setDescribedBy(this.getHtmlElement(), labelText);
+		return A11yUtil.setDescribedBy(this.getHtmlElement(), labelText);
 	});
 	skin.override("DwtControl.prototype.getDescribedBy", function(){
-		return util.getDescribedBy(this.getHtmlElement());
+		return A11yUtil.getDescribedBy(this.getHtmlElement());
 	});
 	skin.override("DwtControl.prototype.clearDescribedBy", function(){
-		return util.clearDescribedBy(this.getHtmlElement());
+		return A11yUtil.clearDescribedBy(this.getHtmlElement());
 	});*/
 /*
 	skin.override("DwtControl.prototype.updateAriaLabeling", function(){
@@ -204,17 +202,17 @@
 			}
 			if (this.__hasMenu) {
 				text.push(ZmMsg.opensMenu);
-				if (util.isInstance(this, "DwtMenuItem")) {
+				if (A11yUtil.isInstance(this, "DwtMenuItem")) {
 					text.push(ZmMsg.useKeyRightMenu);
-				} else if (util.isInstance(this, "DwtButton")) {
+				} else if (A11yUtil.isInstance(this, "DwtButton")) {
 					text.push(ZmMsg.useKeyDownMenu);
 				}
-				util.setHasActionMenu(this.getHtmlElement(), true);
+				A11yUtil.setHasActionMenu(this.getHtmlElement(), true);
 			}
 			this.setDescribedBy(text.join(", "));
 		} else {
 			this.clearDescribedBy();
-			util.setHasActionMenu(this.getHtmlElement(), false);
+			A11yUtil.setHasActionMenu(this.getHtmlElement(), false);
 		}
 	});*/
 

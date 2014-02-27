@@ -1,6 +1,4 @@
 (function(){
-	var util = comcast.access.util;
-
 	var parentHasClass = function(el, className) {
 		do {
 			if (el.className && Dwt.hasClass(el, className)) {
@@ -81,8 +79,8 @@
 				continue;
 			}
 
-			if (el && util.isInstance(handler,"ZmZimletBase") && handler._zimletContext._contentActionMenu) {
-				util.setHasActionMenu(el, true);
+			if (el && A11yUtil.isInstance(handler,"ZmZimletBase") && handler._zimletContext._contentActionMenu) {
+				A11yUtil.setHasActionMenu(el, true);
 			}
 
 			if (el) {
@@ -91,8 +89,8 @@
 				if (parentWithClass && !(childWithClass && childWithClass.length)) {
 					var label = parentWithClass.previousSibling;
 					if (Dwt.hasClass(label, "LabelColName")) {
-						var newlabel = util.stripHTML(label.innerHTML).replace(/&[^;]*;/,"").replace(/:|;/,"") + " ";
-						el.insertBefore(util.createHiddenTextNode(newlabel,"span"), el.firstChild);
+						var newlabel = A11yUtil.stripHTML(label.innerHTML).replace(/&[^;]*;/,"").replace(/:|;/,"") + " ";
+						el.insertBefore(A11yUtil.createHiddenTextNode(newlabel,"span"), el.firstChild);
 					}
 				}
 			}

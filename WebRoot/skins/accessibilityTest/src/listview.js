@@ -1,6 +1,4 @@
 (function(){
-	var util = comcast.access.util;
-
 	skin.classListener('DwtListView', function(){
 		DwtListView.prototype.a11yRole = 'tree';
 		DwtListView.prototype.a11yItemRole = 'treeitem';
@@ -52,7 +50,7 @@
 		}
 
 		// Do the manual focusing here
-		if (util.isVisible(this)) {
+		if (A11yUtil.isVisible(this)) {
 			appCtxt.getKeyboardMgr().grabFocus(this);
 		}
 	});
@@ -62,7 +60,7 @@
 
 		if (type == ZmItem.CONV && item.msgIds.length == 1) {
 			type = ZmItem.MSG;
-		} else if (util.isInstance(item, "AjxEmailAddress")) {
+		} else if (A11yUtil.isInstance(item, "AjxEmailAddress")) {
 			return (item.getDispName() || item.getName()) + " " + item.getAddress();
 		}
 		return ZmMsg[ZmItem.MSG_KEY[type]] || "";
@@ -74,13 +72,13 @@
 		} else if (clv._isExpandable(item)) {
 			var expanded = Boolean(clv.isExpanded(item));
 			var glyph = expanded ?
-				util.DINGBATS.TRIANGLE.DOWN : util.DINGBATS.TRIANGLE.RIGHT;
+				A11yUtil.DINGBATS.TRIANGLE.DOWN : A11yUtil.DINGBATS.TRIANGLE.RIGHT;
 
-			util.setElementRole(button, 'button');
+			A11yUtil.setElementRole(button, 'button');
 			button.setAttribute('aria-expanded', Boolean(expanded));
-			util.setFallbackText(button, glyph, getitemstring(item));
+			A11yUtil.setFallbackText(button, glyph, getitemstring(item));
 		} else {
-			util.setFallbackText(button, '', getitemstring(item));
+			A11yUtil.setFallbackText(button, '', getitemstring(item));
 			button.setAttribute('aria-disabled', true);
 		}
 	}
@@ -101,7 +99,7 @@
 			var arrowel = Dwt.byId(arrowid);
 
 			if (arrowel) {
-				util.setFallbackText(arrowel, '');
+				A11yUtil.setFallbackText(arrowel, '');
 			}
 		}
 	}
@@ -124,8 +122,8 @@
 
 			if (arrowel) {
 				var arrowglyph = this._bSortAsc ?
-					util.DINGBATS.TRIANGLE.UP : util.DINGBATS.TRIANGLE.DOWN;
-				util.setFallbackText(arrowel, arrowglyph, '');
+					A11yUtil.DINGBATS.TRIANGLE.UP : A11yUtil.DINGBATS.TRIANGLE.DOWN;
+				A11yUtil.setFallbackText(arrowel, arrowglyph, '');
 			}
 		}
 	}
@@ -197,7 +195,7 @@
 				case ZmItem.F_READ: {
 					if (elem && elem.nodeType==1) {
 						var msg = item.isUnread ? ZmMsg.unread : ZmMsg.read;
-						util.setFallbackText(elem, msg);
+						A11yUtil.setFallbackText(elem, msg);
 					}
 
 					break;
@@ -217,9 +215,9 @@
 				case ZmItem.F_ATTACHMENT: {
 					if (elem) {
 						if (item.hasAttach) {
-							util.setFallbackText(elem, ZmMsg.hasAttachment);
+							A11yUtil.setFallbackText(elem, ZmMsg.hasAttachment);
 						} else {
-							util.setFallbackText(elem, '', ZmMsg.noAttachment);
+							A11yUtil.setFallbackText(elem, '', ZmMsg.noAttachment);
 						}
 					}
 
@@ -246,7 +244,7 @@
 					var itemtext = getitemstring(item);
 
 					if (elem) {
-						util.setFallbackText(elem,
+						A11yUtil.setFallbackText(elem,
 											 statustext,
 											 statustext || itemtext);
 					}
@@ -278,12 +276,12 @@
 
 					if (item.isLowPriority) {
 						if (elem) {
-							util.setFallbackText(elem, ZmMsg.low);
+							A11yUtil.setFallbackText(elem, ZmMsg.low);
 						}
 						label = ZmMsg.lowPriority;
 					} else if (item.isHighPriority) {
 						if (elem) {
-							util.setFallbackText(elem, ZmMsg.high);
+							A11yUtil.setFallbackText(elem, ZmMsg.high);
 						}
 						label = ZmMsg.highPriority;
 					}
@@ -295,11 +293,11 @@
 					if (item.tags.length > 0) {
 						tags = item.tags.join(' & ');
 						if (elem) {
-							util.setFallbackText(elem, tags);
+							A11yUtil.setFallbackText(elem, tags);
 						}
 						label = AjxMessageFormat.format(ZmMsg.taggedAs, [tags]);
 					} else if (elem) {
-						util.setFallbackText(elem, '', ZmMsg.none);
+						A11yUtil.setFallbackText(elem, '', ZmMsg.none);
 					}
 
 					break;
@@ -335,7 +333,7 @@
 			}
 		}
 
-		if (util.isInstance(item, "ZmConv")) {
+		if (A11yUtil.isInstance(item, "ZmConv")) {
 			labels["conv"] = ZmMsg.conversation;
 		}
 
@@ -355,9 +353,9 @@
 
 	function fixCheckboxItem(cbelem, ischecked)
 	{
-		if (util.setElementRole(cbelem, 'checkbox')) {
+		if (A11yUtil.setElementRole(cbelem, 'checkbox')) {
 			if (cbelem.tabIndex !== 0) {
-				util.makeFocusable(cbelem);
+				A11yUtil.makeFocusable(cbelem);
 			}
 
 			if (ischecked === undefined) {
@@ -374,20 +372,20 @@
 
 			// add a Unicode ballot box glyph
 			var hctext = ischecked ?
-				util.DINGBATS.BALLOT.CROSSED : util.DINGBATS.BALLOT.EMPTY;
+				A11yUtil.DINGBATS.BALLOT.CROSSED : A11yUtil.DINGBATS.BALLOT.EMPTY;
 
-			util.setFallbackText(cbelem, hctext, hiddentext);
+			A11yUtil.setFallbackText(cbelem, hctext, hiddentext);
 		}
 	}
 
 	// redirect clicks on high contrast fallbacks to their parent node
 	skin.override('ZmListView.prototype._itemClicked', function(el, ev) {
-		if (el && Dwt.hasClass(el, util.HIGH_CONTRAST_FALLBACK_CLASS_NAME)) {
+		if (el && Dwt.hasClass(el, A11yUtil.HIGH_CONTRAST_FALLBACK_CLASS_NAME)) {
 			arguments[0] = el = el.parentNode;
 		}
 
 		if (ev && ev.target &&
-			Dwt.hasClass(ev.target, util.HIGH_CONTRAST_FALLBACK_CLASS_NAME)) {
+			Dwt.hasClass(ev.target, A11yUtil.HIGH_CONTRAST_FALLBACK_CLASS_NAME)) {
 			ev.target = ev.target.parentNode;
 		}
 
@@ -398,7 +396,7 @@
 		var maintbl = this.getHtmlElement().firstChild;
 
 		if (maintbl && maintbl.tagName === 'TABLE') {
-			util.setElementRole(maintbl, 'presentation');
+			A11yUtil.setElementRole(maintbl, 'presentation');
 
 			// work around a bug in JAWS where the above role of
 			// presentation isn't correctly passed down to the
@@ -410,7 +408,7 @@
 				for (var j = 0; j < row.cells.length; j++) {
 					var cell = row.cells[j];
 
-					util.setElementRole(cell, 'presentation');
+					A11yUtil.setElementRole(cell, 'presentation');
 				}
 			}
 
@@ -463,7 +461,7 @@
 
 		// changes for high contrast mode: don't waste space on the
 		// icon and always provide a label
-		if (this._headerList && util.isHighContrastMode()) {
+		if (this._headerList && A11yUtil.isHighContrastMode()) {
 			for (var i = 0; i < this._headerList.length; i++) {
 				var col = this._headerList[i];
 
@@ -475,7 +473,7 @@
 					col._label = ZmMsg.read;
 
 				// suppress non-checkbox icons
-				if (util.isHighContrastMode() && !isCheckboxHeader(col._field))
+				if (A11yUtil.isHighContrastMode() && !isCheckboxHeader(col._field))
 					delete col._iconInfo;
 
 				// fix widths
@@ -503,15 +501,15 @@
 			if (window.console)
 				console.warn("%s don't have a header table!", this);
 		} else {
-			util.setElementRole(headertbl, 'presentation');
+			A11yUtil.setElementRole(headertbl, 'presentation');
 
 			for (var i = 0, cell;
 				 cell = headertbl.rows[0].cells[i]; i++) {
 				var col = this._headerList[i];
 				var field = col._field;
 
-				util.setElementRole(cell, 'button');
-				util.makeFocusable(cell);
+				A11yUtil.setElementRole(cell, 'button');
+				A11yUtil.makeFocusable(cell);
 
 				if (col._sortable) {
 					clearSortedColumn.call(this, cell.id);
@@ -523,7 +521,7 @@
 
 				if (!label) {
 					var name = col._name;
-					label = util.createHiddenTextNode(name);
+					label = A11yUtil.createHiddenTextNode(name);
 					label.id = labelid;
 					cell.appendChild(label);
 				}
@@ -539,7 +537,7 @@
 					var table = cell.firstChild.firstChild;
 
 					if (table && table.tagName == 'TABLE')
-						util.setElementRole(table,
+						A11yUtil.setElementRole(table,
 											'presentation');
 				}
 
@@ -548,7 +546,7 @@
 				var sash = Dwt.byId(sashid);
 
 				if (sash && sash.tagName === 'TABLE') {
-					util.setElementRole(sash, 'presentation');
+					A11yUtil.setElementRole(sash, 'presentation');
 					sash.setAttribute('aria-hidden', true);
 				}
 			}
@@ -575,30 +573,30 @@
 
 		var itemel = div.firstChild;
 
-		util.setElementRole(itemel, this.a11yItemRole);
+		A11yUtil.setElementRole(itemel, this.a11yItemRole);
 		itemel.tabIndex = 0;
-		focusableIds.push(util.getElementID(itemel));
+		focusableIds.push(A11yUtil.getElementID(itemel));
 
 		itemel.setAttribute('aria-label', getitemstring(item));
 
 		if (!this.useListElement()) {
 			var table = itemel.firstChild;
 
-			util.setElementRole(table, 'presentation');
+			A11yUtil.setElementRole(table, 'presentation');
 			table.setAttribute('aria-hidden', true);
 
 			AjxUtil.foreach(table.rows[0].cells, function(cell, idx) {
-				util.setElementRole(cell, 'button');
-				focusableIds.push(util.getElementID(cell));
+				A11yUtil.setElementRole(cell, 'button');
+				focusableIds.push(A11yUtil.getElementID(cell));
 
 				if (cell.firstChild && cell.firstChild.tagName == 'DIV' &&
 					cell.firstChild.firstChild &&
 					cell.firstChild.firstChild.tagName == 'TABLE')
-					util.setElementRole(div.firstChild, 'presentation');
+					A11yUtil.setElementRole(div.firstChild, 'presentation');
 			});
 		}
 
-		if (util.isInstance(this, "ZmListView")) {
+		if (A11yUtil.isInstance(this, "ZmListView")) {
 			processItemFields.call(this, item, itemel);
 		} else if (item.isAjxEmailAddress) {
 			itemel.setAttribute('aria-label', item.toString(false, true));
@@ -609,7 +607,7 @@
 			for (var i=0; i<focusableIds.length; i++) {
 				var el = Dwt.byId(focusableIds[i]);
 				if (el) {
-					util.makeFocusable(el);
+					A11yUtil.makeFocusable(el);
 				}
 			}
 		},0);
@@ -662,7 +660,7 @@
 		var after = this.getSelectionCount();
 
 		if (before != after) {
-			util.say(AjxMessageFormat.format(ZmMsg.itemsSelected, [after]))
+			A11yUtil.say(AjxMessageFormat.format(ZmMsg.itemsSelected, [after]))
 		}
 
 		return r;
@@ -674,12 +672,12 @@
 		if (kbAnchor == document.activeElement) {
 			return;
 
-		} else if (!util.isDescendant(appCtxt.getKeyboardMgr().__focusObj, this)) {
+		} else if (!A11yUtil.isDescendant(appCtxt.getKeyboardMgr().__focusObj, this)) {
 			// Don't steal focus if we're not already selected
 			return;
 
 		} else if (kbAnchor.tabIndex === 0) {
-			util.focus(kbAnchor);
+			A11yUtil.focus(kbAnchor);
 
 			// now, tell the keyboard manager...
 			var kbMgr = DwtShell.getShell(window).getKeyboardMgr();
@@ -694,7 +692,7 @@
 
 	// If a row in this list has focus, we have focus
 	skin.override("DwtListView.prototype.hasFocus", function(){
-		return arguments.callee.func.apply(this) || util.isDescendant(document.activeElement, this);
+		return arguments.callee.func.apply(this) || A11yUtil.isDescendant(document.activeElement, this);
 	});
 
 	// ensure that the focused element has browser focus
@@ -702,7 +700,7 @@
 		var r = arguments.callee.func.apply(this, arguments);
 
 		// Right-clicks don't count; they grab focus from the popup menu
-		var rightClicked = ev && util.isInstance(ev,"DwtMouseEvent") && ev.button === DwtMouseEvent.RIGHT;
+		var rightClicked = ev && A11yUtil.isInstance(ev,"DwtMouseEvent") && ev.button === DwtMouseEvent.RIGHT;
 
 		if (!rightClicked) {
 			updateListViewFocus.call(this);
@@ -806,7 +804,7 @@
 		var isrow = function(el) {
 			return el.getAttribute('role') === this.a11yItemRole;
 		};
-		var row = util.getAncestor(this._kbAnchor, isrow.bind(this));
+		var row = A11yUtil.getAncestor(this._kbAnchor, isrow.bind(this));
 
 		var colcount = row.firstChild.rows[0].cells.length;
 		var rowcount = this.size() + 1;
@@ -920,7 +918,7 @@
 		for (var i=0; headers && i < headers.length; i++) {
 			var el = headers[i] && headers[i]._id && Dwt.byId(headers[i]._id);
 			if (el) {
-				util.setHasActionMenu(el, hasActionMenu);
+				A11yUtil.setHasActionMenu(el, hasActionMenu);
 			}
 		}
 	};
@@ -929,7 +927,7 @@
 		for (var i=0; i<rows.length; i++) {
 			var row = rows[i];
 			if (row && Dwt.hasClass(row, "Row")) {
-				util.setHasActionMenu(rows[i], hasActionMenu);
+				A11yUtil.setHasActionMenu(rows[i], hasActionMenu);
 			}
 		}*/
 	};
@@ -942,7 +940,7 @@
 
 	skin.override.append("DwtListView.prototype.createHeaderHtml", function(){
 		headersHasActionMenu(this, this._evtMgr.isListenerRegistered(DwtEvent.ACTION));
-		util.setTableRolePresentation(this._listColDiv);
+		A11yUtil.setTableRolePresentation(this._listColDiv);
 	});
 
 	skin.override.append("DwtListView.prototype._renderList", function(list){
@@ -1029,16 +1027,16 @@
 
 
 	skin.override.append("ZmMailListController.prototype._detachListener", function(){
-		util.say(ZmMsg.openingNewWindow);
+		A11yUtil.say(ZmMsg.openingNewWindow);
 	});
 
 	skin.override.append("ZmMailListController.prototype._checkMailListener", function(){
-		util.say(ZmMsg.gettingMail);
+		A11yUtil.say(ZmMsg.gettingMail);
 	});
 
 	skin.override("ZmMailListController.prototype.switchView", function(view){
 		if ((view == ZmId.VIEW_TRAD || view == ZmId.VIEW_CONVLIST) && view != this.getCurrentViewType()) {
-			util.say(AjxMessageFormat.format(ZmMsg.viewMailBy, [(view == ZmId.VIEW_TRAD) ? ZmMsg.message : ZmMsg.conversation]));
+			A11yUtil.say(AjxMessageFormat.format(ZmMsg.viewMailBy, [(view == ZmId.VIEW_TRAD) ? ZmMsg.message : ZmMsg.conversation]));
 		}
 		arguments.callee.func.apply(this,arguments);
 	});
@@ -1293,7 +1291,7 @@
 			this.getHtmlElement().tabIndex = 0;
 			this.setAriaLabel(this.a11yTitleEmpty);
 		}
-		util.say(this._getNoResultsMessage());
+		A11yUtil.say(this._getNoResultsMessage());
 	});   
 
 	skin.override.append("DwtListView.prototype._resetList", function(){

@@ -1,6 +1,4 @@
 (function(){
-	var util = comcast.access.util;
-
 	skin.classListener('AjxKeys', function(){
 		var removal = [];
 		var tokenSeparator = ".";
@@ -106,14 +104,14 @@
 		if (this._detachLink) {
 			headerLinks.push(this._detachLink);
 		}
-		util.setElementRole(headerLinks, "link");
+		A11yUtil.setElementRole(headerLinks, "link");
 		kbItems.push(headerLinks);
 
 		kbItems = kbItems.concat(Dwt.byClassName(ZmShortcutsPanel.tabItemClass, this._contentDiv));
 
 		for (var i=0; i<kbItems.length; i++) {
 			var item = kbItems[i];
-			util.makeFocusable(item);
+			A11yUtil.makeFocusable(item);
 			this._tabGroup.addMember(item);
 		}
 		this._tabGroup.resetFocusMember(true);

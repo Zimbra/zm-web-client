@@ -1,7 +1,4 @@
 /*(function(){
-
-	var util = comcast.access.util;
-
 	var dialogOperationStrings = 
 		[ZmId.OP_NEW_FOLDER, ZmId.OP_RENAME_FOLDER, ZmId.OP_EDIT_PROPS, ZmId.OP_SHARE_FOLDER, ZmId.OP_MOVE,
 			ZmId.OP_NEW_TAG, ZmId.OP_RENAME_TAG, 
@@ -11,7 +8,7 @@
 
 	dialogOperations[ZmId.OP_DELETE] = dialogOperations[ZmId.OP_DELETE_WITHOUT_SHORTCUT] = function(item,op){
 		var thisMenu = item && item.parent;
-		if (util.isInstance(thisMenu, "ZmActionMenu")) {
+		if (A11yUtil.isInstance(thisMenu, "ZmActionMenu")) {
 			var overviewTypesRequiringDialog = [ZmOrganizer.TAG],
 				overviewController = appCtxt.getOverviewController();
 			for (var i=0; i<overviewTypesRequiringDialog.length; i++) {
@@ -63,7 +60,7 @@
 	// New folder button in overview
 	skin.override("ZmTreeController.prototype.show",function(params) {
 		var treeView = arguments.callee.func.apply(this,arguments);
-		if (util.isInstance(this,"ZmMailFolderTreeController")) {
+		if (A11yUtil.isInstance(this,"ZmMailFolderTreeController")) {
 			var headerItem = treeView && treeView._headerItem;
 			if (headerItem) {
 				var button = headerItem._optButtonItem;

@@ -1,14 +1,10 @@
 (function(){
-
-	var util = comcast.access.util;
-	var log = util.logger(comcast.access.debug.logTabSelection);
-
-	util.addStylesheet("/skins/accessibilityTest/src/tab-selection" + (AjxEnv.isIE?"-ie":"") + ".css");
+	A11yUtil.addStylesheet("/skins/accessibilityTest/src/tab-selection" + (AjxEnv.isIE?"-ie":"") + ".css");
 
 	var getHtmlElement = function(item) {
 		if (item instanceof DwtControl) {
 			return item.getHtmlElement();
-		} else if (util.isElement(item)) {
+		} else if (A11yUtil.isElement(item)) {
 			return item;
 		}
 	};
@@ -97,7 +93,8 @@
 		var oldFocusMember = this.__currFocusMember;
 		var newFocusMember = arguments.callee.func.apply(this, arguments);
 		if (newFocusMember) {
-			log("__newFocusMember: ", newFocusMember.getTabGroupMember ? newFocusMember.getTabGroupMember() : newFocusMember, getHtmlElement(newFocusMember));
+			DBG.println(AjxDebug.ACCESSIBILITY, "__newFocusMember:",
+						newFocusMember.getTabGroupMember ? newFocusMember.getTabGroupMember() : newFocusMember, getHtmlElement(newFocusMember));
 			addFocusedClass(getHtmlElement(newFocusMember));
 			if (oldFocusMember && oldFocusMember !== newFocusMember) {
 				removeFocusedClass(getHtmlElement(oldFocusMember));
@@ -115,7 +112,7 @@
 		var success = arguments.callee.func.apply(this,arguments);
 		if (success) {
 			var newFocusMember = this.__currFocusMember;
-			log("newFocusMember: ",newFocusMember.getTabGroupMember ? newFocusMember.getTabGroupMember() : newFocusMember, getHtmlElement(newFocusMember));
+			DBG.println(AjxDebug.ACCESSIBILITY, "newFocusMember: ",newFocusMember.getTabGroupMember ? newFocusMember.getTabGroupMember() : newFocusMember, getHtmlElement(newFocusMember));
 			addFocusedClass(getHtmlElement(newFocusMember));
 			if (oldFocusMember && oldFocusMember !== newFocusMember) {
 				removeFocusedClass(getHtmlElement(oldFocusMember));
@@ -173,20 +170,20 @@
 	skin.override('DwtTabGroup.prototype.__checkEnabled',function(member, checkEnabled) {
 		if (!checkEnabled) return true;
 		if (!member || member.noTab) {
-			log(member,"failed","(!",!!member," || ",member&&member.noTab,")");
+			DBG.println(AjxDebug.ACCESSIBILITY, member,"failed","(!",!!member," || ",member&&member.noTab,")");
 			return false;
 		}
 		if (member instanceof DwtControl) {
-			log(member,(member.getEnabled() && member.getVisible())?"succeeded":"failed","(",member.getEnabled()," && ",member.getVisible(),")");
-			return (util.isVisible(member)/* && member.getEnabled()*/);
+			DBG.println(AjxDebug.ACCESSIBILITY, member,(member.getEnabled() && member.getVisible())?"succeeded":"failed","(",member.getEnabled()," && ",member.getVisible(),")");
+			return (A11yUtil.isVisible(member)/* && member.getEnabled()*/);
 		} else {
-			log(member,(!member.disabled && Dwt.getVisible(member))?"succeeded":"failed","(!",!!member.disabled," && ",Dwt.getVisible(member),")");
-			return (util.isVisible(member)/* && !member.disabled && !Dwt.hasClass(member,"mceButtonDisabled")*/)
+			DBG.println(AjxDebug.ACCESSIBILITY, member,(!member.disabled && Dwt.getVisible(member))?"succeeded":"failed","(!",!!member.disabled," && ",Dwt.getVisible(member),")");
+			return (A11yUtil.isVisible(member)/* && !member.disabled && !Dwt.hasClass(member,"mceButtonDisabled")*/)
 		}
 	});
 
 	skin.override("DwtTabGroup.prototype.__getNextMember",function(member, checkEnabled) {
-		log("Find next member after ",member,"in",this);
+		DBG.println(AjxDebug.ACCESSIBILITY, "Find next member after ",member,"in",this);
 		var members = this.__members;
 		var sz = members.size();
 		// Start working from the member to the immediate right of <member> rightwards
@@ -197,25 +194,25 @@
 					//If the sibling is a tab group, get its leftmost member.
 					nextMember = nextMember.__getLeftMostMember(checkEnabled);
 					if (nextMember && this.__checkEnabled(nextMember, checkEnabled)) {
-						log("found ",nextMember.toString());
+						DBG.println(AjxDebug.ACCESSIBILITY, "found ",nextMember.toString());
 						return nextMember;
 					} else {
-						log("skipping ",nextMember,", it is not enabled");
+						DBG.println(AjxDebug.ACCESSIBILITY, "skipping ",nextMember,", it is not enabled");
 					}
 				} else {
 					// if sibling is not a tab group, then it is the next child.
 					if (this.__checkEnabled(nextMember, checkEnabled)) {
-						log("found ",nextMember.outerHTML);
+						DBG.println(AjxDebug.ACCESSIBILITY, "found ",nextMember.outerHTML);
 						return nextMember;
 					} else {
-						log("skipping ",nextMember,", it is not enabled");
+						DBG.println(AjxDebug.ACCESSIBILITY, "skipping ",nextMember,", it is not enabled");
 					}
 				}
 			} else {
-				log("skipping empty member");
+				DBG.println(AjxDebug.ACCESSIBILITY, "skipping empty member");
 			}
 		}
-		log("no siblings or children found, ascending");
+		DBG.println(AjxDebug.ACCESSIBILITY, "no siblings or children found, ascending");
 
 		/* If we have fallen through to here it is because the tab group only has 
 		 * one member or we are at the end of the list. So we roll up to the parent, 
@@ -224,7 +221,7 @@
 	});
 
 	skin.override("DwtTabGroup.prototype.__getPrevMember",function(member, checkEnabled) {
-		log("Find prev member before ",member,"in",this);
+		DBG.println(AjxDebug.ACCESSIBILITY, "Find prev member before ",member,"in",this);
 		var members = this.__members;
 		// Start working from the member to the immediate left of <member> rightwards
 		for (var i = members.indexOf(member) - 1; i >= 0; i--) {
@@ -235,37 +232,37 @@
 					//If the sibling is a tab group, get its rightmost member.
 					prevMember = prevMember.__getRightMostMember(checkEnabled);
 					if (prevMember && this.__checkEnabled(prevMember, checkEnabled)) {
-						log("found ",prevMember);
+						DBG.println(AjxDebug.ACCESSIBILITY, "found ",prevMember);
 						return prevMember;
 					} else {
-						log("skipping ",prevMember,", it is not enabled");
+						DBG.println(AjxDebug.ACCESSIBILITY, "skipping ",prevMember,", it is not enabled");
 					}
 				} else {
 					// if sibling is not a tab group, then it is the next child.
 					if (this.__checkEnabled(prevMember, checkEnabled)) {
-						log("found ",prevMember);
+						DBG.println(AjxDebug.ACCESSIBILITY, "found ",prevMember);
 						return prevMember;
 					} else {
-						log("skipping ",prevMember,", it is not enabled");
+						DBG.println(AjxDebug.ACCESSIBILITY, "skipping ",prevMember,", it is not enabled");
 					}
 				}
 			} else {
-				log("skipping empty member");
+				DBG.println(AjxDebug.ACCESSIBILITY, "skipping empty member");
 			}
 		}
-		log("no siblings or children found, ascending");
+		DBG.println(AjxDebug.ACCESSIBILITY, "no siblings or children found, ascending");
 
 		/* If we have fallen through to here it is because the tab group only has 
 		 * one member or we are at the end of the list. So we roll up to the parent, 
 		 * unless we are at the root in which case we return null. */
-		//log("going to parent...");
+		//DBG.println(AjxDebug.ACCESSIBILITY, "going to parent...");
 		return this.__parent ? this.__parent.__getPrevMember(this, checkEnabled) : null;
 	});
 
 	// When opening a draft (or otherwise changing view from a mail list), the old controller has a timeout on grabbing the tabgroup again
 	// Require that a controller is current before letting it put its tabgroup into root, and see if we don't already have focus
 	skin.override("ZmController.prototype._restoreFocus",function(focusItem, noFocus){
-		var controller = util.isInstance(this,"ZmSearchResultsController") && this._resultsController || this;
+		var controller = A11yUtil.isInstance(this,"ZmSearchResultsController") && this._resultsController || this;
 		if (controller === appCtxt.getCurrentController()) {
 			var currentFocus = appCtxt.getRootTabGroup().getFocusMember(),
 				currentFocusControl = currentFocus && ((currentFocus instanceof DwtControl) ? currentFocus : DwtControl.findControl(currentFocus)) || null;
@@ -284,7 +281,7 @@
 				}
 
 				var member = controller.getTabGroup();
-				log("focusItem = ",focusItem," || ",controller._savedFocusMember," || ",controller._getDefaultFocusItem()," || ",rootTg.getFocusMember());
+				DBG.println(AjxDebug.ACCESSIBILITY, "focusItem = ",focusItem," || ",controller._savedFocusMember," || ",controller._getDefaultFocusItem()," || ",rootTg.getFocusMember());
 				focusItem = focusItem || controller._savedFocusMember || controller._getDefaultFocusItem() || rootTg.getFocusMember();
 				noFocus = noFocus || ZmController.noFocus;
 				ZmController.noFocus = false;
@@ -297,17 +294,17 @@
 				if (focusItem && !noFocus) {
 					setTimeout(function(){
 						appCtxt.getKeyboardMgr().grabFocus(focusItem);
-						if (util.isInstance(controller, "ZmComposeController")) {
+						if (A11yUtil.isInstance(controller, "ZmComposeController")) {
 							controller._doRestoreFocus(focusItem);
 						}
 					},10);
 				}
 
 			} else {
-				log("not focusing view; controller ",controller," already has focus");
+				DBG.println(AjxDebug.ACCESSIBILITY, "not focusing view; controller ",controller," already has focus");
 			}
 		} else {
-			log("not focusing view; controller ",controller," is not current");
+			DBG.println(AjxDebug.ACCESSIBILITY, "not focusing view; controller ",controller," is not current");
 		}
 	});
 
@@ -322,7 +319,7 @@
 			if (m && m.getTabGroupMember && m.getTabGroupMember() !== m) {
 				m = m.getTabGroupMember(); // Add tabGroupMember whenever possible
 			}
-			var element = util.getElement(m);
+			var element = A11yUtil.getElement(m);
 			if (element && element.nodeName==="IFRAME") {
 				m = this.__addIframe(element);
 			}
@@ -344,7 +341,7 @@
 			levelIndent += "    ";
 		}
 	
-		log(levelIndent + " TABGROUP: " + this.__name);
+		DBG.println(AjxDebug.ACCESSIBILITY, levelIndent + " TABGROUP: " + this.__name);
 		levelIndent += "    ";
 	
 		var sz = this.__members.size();
@@ -355,9 +352,9 @@
 				member.__dump(debugLevel, level + 1);
 			} else {
 				if (appCtxt.getRootTabGroup().getFocusMember() == member) {
-					log(levelIndent.replace(/\s/g,">"), member, ((member instanceof DwtControl) ? member.getHTMLElId() : member.id));
+					DBG.println(AjxDebug.ACCESSIBILITY, levelIndent.replace(/\s/g,">"), member, ((member instanceof DwtControl) ? member.getHTMLElId() : member.id));
 				} else {
-					log(levelIndent, member, ((member instanceof DwtControl) ? member.getHTMLElId() : member.id));
+					DBG.println(AjxDebug.ACCESSIBILITY, levelIndent, member, ((member instanceof DwtControl) ? member.getHTMLElId() : member.id));
 				}
 			}
 		}
@@ -383,9 +380,9 @@
 
 	skin.override("DwtTabGroup.prototype.__addIframe",function(member){
 		if (AjxEnv.isIE) {
-			var element = util.getElement(member);
+			var element = A11yUtil.getElement(member);
 			if (element.nodeName==="IFRAME") {
-				var tg = new DwtTabGroup(util.getElementID(member)+"_group");
+				var tg = new DwtTabGroup(A11yUtil.getElementID(member)+"_group");
 
 				var frontguard = document.createElement("span");
 				frontguard.tabIndex = 0;

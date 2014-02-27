@@ -1,6 +1,4 @@
 (function() {
-	var util = comcast.access.util;
-
 	var LIST_ITEM_CLASS = 'A11yListItem';
 
 	skin.classListener('ZmConvView2', function() {
@@ -12,26 +10,26 @@
 		var el = this.getHtmlElement();
 		el.setAttribute('aria-labelledby', this._header._convSubjectId);
 
-		util.setElementRole(this._header._subjectSpan, 'heading');
+		A11yUtil.setElementRole(this._header._subjectSpan, 'heading');
 		this._header._subjectSpan.setAttribute('aria-level', 1);
 	});
 
 	skin.override.append('ZmConvDoublePaneView.prototype.setReadingPane', function() {
 		// Avoid conv view expanding the main view
 		this.setScrollStyle(Dwt.CLIP);
-		util.mustNotScroll(this.getHtmlElement());
+		A11yUtil.mustNotScroll(this.getHtmlElement());
 	});
 
 	skin.override('ZmConvView2.prototype._renderMessages', function(conv, container) {
-		util.setElementRole(container, 'list');
+		A11yUtil.setElementRole(container, 'list');
 		this.getTabGroupMember().removeAllMembers();
 		return arguments.callee.func.apply(this,arguments);
 	});
 
 	skin.override('ZmConvView2.prototype._renderMessage', function(msg, params) {
 		var listitem = document.createElement('div');
-		util.setElementRole(listitem, 'listitem');
-		util.makeFocusable(listitem);
+		A11yUtil.setElementRole(listitem, 'listitem');
+		A11yUtil.makeFocusable(listitem);
 		listitem.className = LIST_ITEM_CLASS;
 		params.parentElement.appendChild(listitem);
 		params.parentElement = listitem;
@@ -45,7 +43,7 @@
 		var label = AjxMessageFormat.format(ZmMsg.itemCount1,
 											[msgidx + 1, msgcount, messages]);
 		listitem.setAttribute('aria-label', label);
-		listitem.appendChild(util.createHiddenHeader(label, 2));
+		listitem.appendChild(A11yUtil.createHiddenHeader(label, 2));
 
 		arguments.callee.func.call(this, msg, params);
 		this._tabGroupMember.addMember(this._msgViews[msg.id].getTabGroupMember());
@@ -124,7 +122,7 @@
 	});
 
 	skin.override.append("ZmMailMsgCapsuleViewHeader.prototype.set",function(){
-		util.setElementRole(this.getHtmlElement().firstChild, "application");
+		A11yUtil.setElementRole(this.getHtmlElement().firstChild, "application");
 	});
 
 	skin.override("ZmMailMsgCapsuleView.prototype._getTabItemContainers", function(){
@@ -143,7 +141,7 @@
 		
 		var header = this._header;
 		if (header) {
-			header.getHtmlElement().setAttribute("aria-label", util.stripHTML(header.getHtmlElement().innerHTML));
+			header.getHtmlElement().setAttribute("aria-label", A11yUtil.stripHTML(header.getHtmlElement().innerHTML));
 			items.push(header);
 		}*/
 
@@ -155,8 +153,8 @@
 		var items = footer && Dwt.byTag("a", footer) || [];
 		var tabGroup = new DwtTabGroup(this.getHTMLElId() + "_footer");
 		if (items) {
-			util.setElementRole(items,"link");
-			util.makeFocusable(items, null, true);
+			A11yUtil.setElementRole(items,"link");
+			A11yUtil.makeFocusable(items, null, true);
 			tabGroup.addMember(items);
 			for (var i=0; i<items.length; i++) {
 				Dwt.setHandler(items[i],DwtEvent.ONMOUSEDOWN, function(){
@@ -223,7 +221,7 @@
 			var children = this.getCurrentView().getChildren();
 			for (var i=0; i<children.length; i++) {
 				var child = children[i];
-				if (util.isInstance(child, "ZmMailMsgCapsuleView") && child.isExpanded()) {
+				if (A11yUtil.isInstance(child, "ZmMailMsgCapsuleView") && child.isExpanded()) {
 					msgView = child;
 					break;
 				}

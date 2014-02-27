@@ -1,6 +1,4 @@
 (function(){
-	var util = comcast.access.util;
-
 	var prefix = " <span class='a11yHidden'>",
 		suffix = "</span>";
 	var textPruner = function(text) {
@@ -27,9 +25,9 @@
 			}
 			if (this.__hasMenu) {
 				extraText.push(ZmMsg.opensMenu);
-				if (util.isInstance(this, "DwtMenuItem")) {
+				if (A11yUtil.isInstance(this, "DwtMenuItem")) {
 					extraText.push(ZmMsg.useKeyRightMenu);
-				} else if (util.isInstance(this, "DwtButton")) {
+				} else if (A11yUtil.isInstance(this, "DwtButton")) {
 					extraText.push(ZmMsg.useKeyDownMenu);
 				}
 			}
@@ -41,7 +39,7 @@
 			//arguments.callee.func.call(this, text);
 			var el = this.getHtmlElement();
 			this._textEl.innerHTML = text || "";
-			this.getHtmlElement().setAttribute("aria-labelledby",util.getElementID(this._textEl));
+			this.getHtmlElement().setAttribute("aria-labelledby",A11yUtil.getElementID(this._textEl));
 			this.__toolTipContent = this.__tooltip || el.getAttribute("title");
 			this.getHtmlElement().removeAttribute("title");
 			this._browserToolTip = false;
@@ -58,7 +56,7 @@
 
 	// When buttons subsequently have their tooltips updated, pass the update to the description as well
 	skin.override.append("DwtLabel.prototype.setToolTipContent",function(tooltip) {
-		this.__tooltip = util.cleanDescription(tooltip);
+		this.__tooltip = A11yUtil.cleanDescription(tooltip);
 		this.updateAriaLabeling();
 	});
 

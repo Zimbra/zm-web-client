@@ -1,6 +1,4 @@
 (function() {
-	var util = comcast.access.util;
-
 	skin.classListener('DwtMenu', function(){
 		DwtMenu.prototype.a11yRole = 'menu';
 	});
@@ -27,7 +25,7 @@
 		}
 
 		var menuItem = ev.dwtObj;
-		if (util.isVisible(menuItem)) {
+		if (A11yUtil.isVisible(menuItem)) {
 			DwtKeyboardMgr.__shell.getKeyboardMgr().grabFocus(menuItem);
 		}
 	}, function(){
@@ -43,10 +41,10 @@
 	});
 
 	skin.override('DwtMenu.prototype.popup', function() {
-		util.say(ZmMsg.a11yMenuOpenMessage, util.SAY_ASSERTIVELY);
+		A11yUtil.say(ZmMsg.a11yMenuOpenMessage, A11yUtil.SAY_ASSERTIVELY);
 
 		if (this._table) {
-			util.setElementRole(this._table, 'presentation');
+			A11yUtil.setElementRole(this._table, 'presentation');
 		}
 
 		if (!this.__createdTabGroup) {
@@ -55,7 +53,7 @@
 			tg.removeMember(this);
 			for (var i=0; i<items.length; i++) {
 				var item = items[i];
-				if (! (util.isInstance(item, "DwtLabel") && item.isStyle(DwtMenuItem.SEPARATOR_STYLE)) ) {
+				if (! (A11yUtil.isInstance(item, "DwtLabel") && item.isStyle(DwtMenuItem.SEPARATOR_STYLE)) ) {
 					tg.addMember(item.getTabGroupMember());
 				}
 			}
@@ -125,11 +123,11 @@
 		}
 		if (next === false && !hasPriorEnabledItems) {
 			var parentButton = this.parentButton || this.parent;
-			if (!util.isInstance(parentButton, "DwtMenuItem")) {
+			if (!A11yUtil.isInstance(parentButton, "DwtMenuItem")) {
 				this.popdown();
-				if (util.isInstance(parentButton, "DwtButton")) {
+				if (A11yUtil.isInstance(parentButton, "DwtButton")) {
 					appCtxt.getKeyboardMgr().grabFocus(parentButton);
-					var tgMember = parentButton && (util.isInstance(parentButton, "DwtToolBarButton") ? (parentButton.parent || parentButton) : parentButton);
+					var tgMember = parentButton && (A11yUtil.isInstance(parentButton, "DwtToolBarButton") ? (parentButton.parent || parentButton) : parentButton);
 					if (tgMember && appCtxt.getRootTabGroup().contains(tgMember)) {
 						appCtxt.getRootTabGroup().setFocusMember(tgMember);
 					}
@@ -184,13 +182,13 @@
 
 			if (checked) {
 				if (this.isStyle(DwtMenuItem.RADIO_STYLE)) {
-					widget = util.DINGBATS.BLACK_CIRCLE;
+					widget = A11yUtil.DINGBATS.BLACK_CIRCLE;
 				} else if (this.isStyle(DwtMenuItem.CHECK_STYLE)) {
-					widget = util.DINGBATS.CHECKMARK;
+					widget = A11yUtil.DINGBATS.CHECKMARK;
 				}
 			}
 
-			util.setFallbackText(this._checkEl, widget, '');
+			A11yUtil.setFallbackText(this._checkEl, widget, '');
 		}
 	});
 

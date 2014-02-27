@@ -1,6 +1,4 @@
 (function() {
-	var util = comcast.access.util;
-
 	skin.classListener('ZmMailMsgView', function() {
 		ZmMailMsgView.prototype.a11yRole = 'article';
 		ZmMailMsgView.prototype.a11yFocusable = true;
@@ -9,7 +7,7 @@
 	skin.override.append('ZmMailMsgView.prototype._renderMessageHeader', function(msg){
 		var el = this.getHtmlElement();
 		el.setAttribute('aria-label', ZmMsg.message);
-		el.appendChild(util.createHiddenHeader(ZmMsg.message, 1));
+		el.appendChild(A11yUtil.createHiddenHeader(ZmMsg.message, 1));
 
 		for (var i = 0; i < ZmMailMsg.ADDRS.length; i++) {
 			var id = ZmMailMsgView._getShowMoreId(this._htmlElId, ZmMailMsg.ADDRS[i]) + "_link",
@@ -100,8 +98,8 @@
 			if (!this.__shadowLabel) {
 				var html = params.html || this._cleanedHtml;
 				html = html.replace(/<style>(.|\n|\r)*<\/style>/ig, "");
-				html = util.stripHTML(html);
-				var shadowLabel = this.__shadowLabel = util.createHiddenElement("div");
+				html = A11yUtil.stripHTML(html);
+				var shadowLabel = this.__shadowLabel = A11yUtil.createHiddenElement("div");
 				shadowLabel.id = Dwt.getNextId();
 				shadowLabel.innerHTML = html;
 				this.getHtmlElement().appendChild(shadowLabel);
@@ -160,7 +158,7 @@
 				Dwt.setHandler(frame, DwtEvent.ONFOCUS, function(){
 					setTimeout(function(){
 						if (document.activeElement !== tabMember) {
-							util.focus(tabMember);
+							A11yUtil.focus(tabMember);
 						}
 					},0);
 				});
@@ -189,7 +187,7 @@
 		if (element) {
 			// Let our message iframe be focusable, so we can tab to it
 			element.a11yFocusable = true;
-			util.makeFocusable(element);
+			A11yUtil.makeFocusable(element);
 
 			/*if (AjxEnv.isChrome) {
 				element.setAttribute("role","document");
@@ -199,7 +197,7 @@
 
 			var doc = (this.getIframe() && (this.getIframe().contentDocument || this.getIframe().contentWindow.document));
 			if (doc) {
-				util.addStylesheet("/skins/accessibilityTest/src/tab-selection" + (AjxEnv.isIE?"-ie":"") + ".css", doc);
+				A11yUtil.addStylesheet("/skins/accessibilityTest/src/tab-selection" + (AjxEnv.isIE?"-ie":"") + ".css", doc);
 			}
 		}
 		if (this._usingIframe) {
@@ -209,10 +207,10 @@
 				element.onTabFocus = function(){
 					var idoc = frame.contentDocument,
 						container = idoc.getElementById(IFRAME_BODY_CONTAINER_ID);
-					util.focus(container);
+					A11yUtil.focus(container);
 					setTimeout(function(){
 						if (idoc.activeElement !== container) {
-							util.focus(container);
+							A11yUtil.focus(container);
 						}
 					},0);
 				};
@@ -240,8 +238,8 @@
 			}
 
 			var items = Dwt.byTag("a", parent).concat(Dwt.byClassName("Object", parent));
-				items = skin.sortElements(util.pruneObjects(items));
-			util.makeFocusable(items);
+				items = skin.sortElements(A11yUtil.pruneObjects(items));
+			A11yUtil.makeFocusable(items);
 
 			this._bodyTabGroupMember.removeAllMembers();
 
@@ -257,7 +255,7 @@
 				var el = items[i];
 				if (el && el.nodeName!=="A") {
 					var w = window.parent || window;
-					util.setElementRole(el, "link");
+					A11yUtil.setElementRole(el, "link");
 
 					Dwt.setHandler(el, DwtEvent.ONKEYDOWN, function(ev){
 						ev = DwtUiEvent.getEvent(ev, this);
@@ -294,12 +292,12 @@
 
 		var headerElement = this._headerElement || this._header.getHtmlElement();
 		if (headerElement) {
-			headerElement.setAttribute("aria-label", util.stripHTML(headerElement.innerHTML));
+			headerElement.setAttribute("aria-label", A11yUtil.stripHTML(headerElement.innerHTML));
 			if (this._header) {
 				items.push(this._header);
 			}
 			headerElement.a11yFocusable = true;
-			util.makeFocusable(headerElement);
+			A11yUtil.makeFocusable(headerElement);
 		}
 
 		//var containers = [Dwt.byId(this._htmlElId + ZmId.MV_HDR_TABLE),
@@ -339,7 +337,7 @@
 			}
 			if (ok) {
 				if (thisMember.tagName !== "A") {
-					util.setElementRole(thisMember,"link");
+					A11yUtil.setElementRole(thisMember,"link");
 				}
 				good.push(thisMember);
 			}
@@ -353,7 +351,7 @@
 		}
 
 		var tabGroup = new DwtTabGroup(this.getHTMLElId() + "_header");
-		util.makeFocusable(items, null, true);
+		A11yUtil.makeFocusable(items, null, true);
 		tabGroup.addMember(items);
 		return tabGroup;
 	});

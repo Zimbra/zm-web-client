@@ -1,6 +1,4 @@
 (function(){
-	var util = comcast.access.util;
-
 	skin.classListener('DwtBaseDialog', function(){
 		DwtBaseDialog.prototype.a11yRole = 'dialog';
 	});
@@ -24,14 +22,14 @@
 		var msgAreaId = this._msgCellId + "_Msg";
 		var msgArea = Dwt.byId(msgAreaId);
 		if (msgArea) {
-			util.setElementRole(msgArea, 'document');
+			A11yUtil.setElementRole(msgArea, 'document');
 			msgArea.tabIndex = 0;
 		}
-		this.getHtmlElement().setAttribute('aria-labelledby', util.getElementID(this._titleEl) + " " + this._msgCellId + "_Msg");
+		this.getHtmlElement().setAttribute('aria-labelledby', A11yUtil.getElementID(this._titleEl) + " " + this._msgCellId + "_Msg");
 	});
 	skin.override.append("DwtMessageDialog.prototype.setTitle", function(title){
 		if (this._titleEl) {
-			this.getHtmlElement().setAttribute('aria-labelledby', util.getElementID(this._titleEl) + " " + this._msgCellId + "_Msg");
+			this.getHtmlElement().setAttribute('aria-labelledby', A11yUtil.getElementID(this._titleEl) + " " + this._msgCellId + "_Msg");
 		}
 	});
 
@@ -114,8 +112,8 @@
 			var addMembers = function(el){
 				var member = self.eligibleTabGroupMember(el);
 				if (member) {
-					if (member instanceof DwtControl || util.isElement(member)) {
-						util.makeFocusable(member, []);
+					if (member instanceof DwtControl || A11yUtil.isElement(member)) {
+						A11yUtil.makeFocusable(member, []);
 					}
 					members.push(member);
 				} else {
@@ -209,10 +207,10 @@
 			args = skin.arrayLikeToArray(arguments);
 		var cb = new AjxCallback(this, function(){
 			this.resetTabGroup(); // Nuke the tabgroup; we don't want any fuss about updated content not updating the tabgroup
-			if (util.isInstance(this, "DwtMessageDialog")) {
+			if (A11yUtil.isInstance(this, "DwtMessageDialog")) {
 				var msgEl = Dwt.byId(this._msgCellId +"_Msg");
 				if (msgEl) {
-					util.say(util.stripHTML(msgEl.innerHTML));
+					A11yUtil.say(A11yUtil.stripHTML(msgEl.innerHTML));
 				}
 			}
 			return func.apply(this,args);
@@ -273,13 +271,13 @@
 	// Adding and removing rows in the attach dialog should update the tab group
 	skin.override.append("ZmMyComputerTabViewPage.prototype._addAttachmentField", function(){
 		var dialog = this.parent;
-		if (util.isInstance(dialog, "ZmAttachDialog")) {
+		if (A11yUtil.isInstance(dialog, "ZmAttachDialog")) {
 			dialog.resetTabGroup();
 		}
 	});
 	skin.override("ZmMyComputerTabViewPage.prototype._removeAttachmentField", function(row){
 		var dialog = this.parent;
-		if (util.isInstance(dialog, "ZmAttachDialog")) {
+		if (A11yUtil.isInstance(dialog, "ZmAttachDialog")) {
 			var tg = dialog && dialog._tabGroup,
 				input = row.getElementsByTagName("input")[0],
 				span = row.getElementsByTagName("span")[0];
@@ -315,7 +313,7 @@
 
 
 	skin.override.append("ZmMyComputerTabViewPage.prototype._createHtml", function() {
-		util.setElementRole(this.attachmentTable, "presentation");
+		A11yUtil.setElementRole(this.attachmentTable, "presentation");
 	});
 
 	// When getting the computer view (list of attachment inputs), postpone the tabgroup build until
@@ -328,8 +326,8 @@
 		this.enableAutoTabGroup(true);
 		this.resetTabGroup();
 		this.setFooter("");
-		util.setElementRole(this._getContentDiv(), "application");
-		util.setElementRole(this._buttonsEl, "application");
+		A11yUtil.setElementRole(this._getContentDiv(), "application");
+		A11yUtil.setElementRole(this._buttonsEl, "application");
 		return returnValue;
 	});
 

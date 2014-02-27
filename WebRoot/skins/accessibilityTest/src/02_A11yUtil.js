@@ -1,5 +1,4 @@
-(function(){
-var util = comcast.access.util = {
+A11yUtil = {
 
 	DINGBATS: {
 		CHECKMARK: '\u221A',
@@ -110,13 +109,11 @@ var util = comcast.access.util = {
 	},
 
 	createHiddenHeader: function(text, level) {
-		var util = comcast.access.util;
-
 		if (level >= 1 && level <= 6) {
-			return util.createHiddenTextNode(text, 'h' + level);
+			return A11yUtil.createHiddenTextNode(text, 'h' + level);
 		} else {
-			var header = util.createHiddenTextNode(text);
-			util.setElementRole(header, 'heading');
+			var header = A11yUtil.createHiddenTextNode(text);
+			A11yUtil.setElementRole(header, 'heading');
 			header.setAttribute('aria-level', level);
 
 			return header;
@@ -239,7 +236,7 @@ var util = comcast.access.util = {
 			if (this.isElement(el)) {
 				AjxUtil.foreach(el.getElementsByTagName('table'), function(table) {
 					if (!mandatoryClass || Dwt.hasClass(table, mandatoryClass)) {
-						util.setElementRole(table, 'presentation');
+						A11yUtil.setElementRole(table, 'presentation');
 					}
 				});
 			}
@@ -293,34 +290,33 @@ var util = comcast.access.util = {
 				this.makeFocusable(item[i], handlers, ignoreErrors);
 			}
 		} else {
-			var util = comcast.access.util;
-
 			if (!handlers)
-				handlers = AjxUtil.keys(util.EVENT_HANDLERS);
+				handlers = AjxUtil.keys(A11yUtil.EVENT_HANDLERS);
 
 			if (item instanceof DwtControl) {
 				item._setEventHdlrs(handlers);
 				item.getHtmlElement().tabIndex = 0;
 
-			} else if (util.isElement(item)) {
+			} else if (A11yUtil.isElement(item)) {
 				if (!item.a11yfocused) {
 					AjxUtil.foreach(handlers, function(key) {
-						var handler = util.EVENT_HANDLERS[key];
+						var handler = A11yUtil.EVENT_HANDLERS[key];
 						Dwt.setHandler(item, key, handler);
 					});
 
 					item.tabIndex = 0;
 					item.a11yfocused = true;
 
-				} else if (window.console && comcast.access.debug.logMakeFocusable) {
-					console.log('skipping already focusable element:', item);
+				} else {
+					DBG.println(AjxDebug.ACCESSIBILITY,
+					            'not focusing already focusable element: ' + item);
 				}
 			} else if (!ignoreErrors) {
 				var msg = 'can only make elements and controls focusable';
 				var detail = msg + ', not ' + typeof item + ' - ' + String(item);
 
 				throw new AjxException(msg, AjxException.UNSUPPORTED,
-									   'comcast.access.util.makeFocusable',
+									   'A11yUtil.makeFocusable',
 									   detail);
 			}
 		}
@@ -511,31 +507,6 @@ var util = comcast.access.util = {
 
 //------------------------------------------------------------------------------
 
-	// Returns a function that will log to the console depending on an enabler
-	// If the enabler is a function, we call it with the arguments and will only log if it returns a true value
-	// If the enabler is not a function, it is simply evaluated as true/false, and we log on a true value
-	// For example: var log = util.logger(comcast.access.debug.printFoobars);
-	// log("foobar")
-	// Or: var log = util.logger(function(){return comcast.access.debug.printFoobars});
-	// log("foobar")
-	logger: function(enabler) {
-		if (!AjxUtil.isFunction(enabler)) {
-			var bEnabler = !!enabler;
-			enabler = function(){return bEnabler};
-		}
-		return function() {
-			if (window.console && enabler.apply(window,arguments)) {
-				var args = Array.prototype.slice.call(arguments);
-				var c = window.console;
-				if (typeof c == 'object' && c.log && c.log.apply) {
-					c.log.apply(c, args);
-				}
-			}
-		};
-	},
-
-//------------------------------------------------------------------------------
-
 
 	_createLiveRegions: function(){
 		if (AjxEnv.isFirefox || AjxEnv.isSafari) {
@@ -618,9 +589,9 @@ var util = comcast.access.util = {
 				assertiveness = this.SAY_ASSERTIVELY;
 			}
 
-			if (window.console && comcast.access.debug.logSay) {
-				console.log("SAYING %s (%s)", text, assertiveness);
-			}
+			DBG.println(AjxDebug.ACCESSIBILITY,
+			            AjxMessageFormat.format('SAYING {0} ({1})',
+			                                    text, assertiveness));
 
 			if (false && AjxEnv.isChrome) {
 				// Chrome requires some text be present in the region
@@ -746,8 +717,7 @@ var util = comcast.access.util = {
 	}
 };
 
-// Put the comcast.access.util._doOverrides function on a listener for each and every package.
-// Then every time a package is loaded, we perform any eligible overrides.
+skin.appCtxtListener(new AjxCallback(A11yUtil, A11yUtil._createLiveRegions));
 
-skin.appCtxtListener(new AjxCallback(util, util._createLiveRegions));
-})();
+AjxDebug.ACCESSIBILITY = "a11y";
+AjxDebug.BUFFER_MAX[AjxDebug.ACCESSIBILITY] = 200;

@@ -1,7 +1,4 @@
 (function(){
-
-	var util = comcast.access.util;
-
 	// Fix up tabgroup for search toolbar; the previous setup just didn't work
 	// because DwtInputField._focusHdlr set itself as focused member while the inner
 	// field was the real tabgroupmember
@@ -11,7 +8,7 @@
 
 	skin.override.append("ZmMainSearchToolBar.prototype._createHtml", function(){
 		if (this._searchField) {
-			util.setLabel(this._searchField.getInputElement(), ZmMsg.searchQuery || "Search query");
+			A11yUtil.setLabel(this._searchField.getInputElement(), ZmMsg.searchQuery || "Search query");
 			this._searchField._validationStyle = DwtInputField.MANUAL_VALIDATION;
 		}
 		this._button[ZmSearchToolBar.TYPES_BUTTON].a11yLabelPrefix = "Search in: ";

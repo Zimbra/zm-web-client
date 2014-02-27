@@ -1,6 +1,4 @@
 (function() {
-	var util = comcast.access.util;
-
 	skin.override("ZmNewWindow.prototype.getKeyMapMgr", function() {
 		return this._kbMgr.__keyMapMgr;
 	});
@@ -60,17 +58,17 @@
 				DwtKeyboardMgr.__onFocusHdlr();
 				// input -> ctrl: set browser focus to keyboard input field
 				if (this.__enabled) {
-				//	util.focus(this._kbFocusField);
+				//	A11yUtil.focus(this._kbFocusField);
 				}
 			}
 		}
 		if (this.__focusObj instanceof DwtControl && this.__focusObj.a11yFocusable) {
-			util.focus(this.__focusObj.getHtmlElement());
+			A11yUtil.focus(this.__focusObj.getHtmlElement());
 		}
 	});
 
 	skin.override("DwtKeyboardMgr.__syncFocus", function(kbMgr, obj) {
-		if (util.isFocusable(kbMgr.__focusObj)) {
+		if (A11yUtil.isFocusable(kbMgr.__focusObj)) {
 			return true;
 		}
 	
@@ -127,7 +125,7 @@
 
 		// Enter on a focusable non-control (e.g. span.fakeAnchor or zimlet span object)
 		var target = kev.target;
-		if (kev.charCode == 13 && util.isFocusable(target) && !DwtControl.fromElement(target) && (target.getAttribute("role")==="link" || target.nodeName.toLowerCase()==="a")) {
+		if (kev.charCode == 13 && A11yUtil.isFocusable(target) && !DwtControl.fromElement(target) && (target.getAttribute("role")==="link" || target.nodeName.toLowerCase()==="a")) {
 			kev.target.click();
 			DwtUiEvent.setBehaviour(ev, true, false, true);
 			return false;
@@ -135,25 +133,4 @@
 
 		return arguments.callee.func.apply(this,arguments);
 	});
-
-
-	// Remove all non-ctrl and non-arrow key shortcuts
-	if (comcast.access.debug.disableHotkeys) {
-		skin.appCtxtListener(function(){
-			var keyMapMgr = appCtxt.getKeyboardMgr().__keyMapMgr;
-			for (var mapName in keyMapMgr._map) {
-				var map = keyMapMgr._map[mapName],
-					newMap = {};
-				for (var keySeq in map) {
-					if (keySeq.indexOf("Ctrl")===0 ||
-						keySeq=="37" || keySeq=="38" || keySeq=="39" || keySeq=="40") {
-						newMap[keySeq] = map[keySeq];
-					}
-				}
-				keyMapMgr._map[mapName] = newMap;
-				keyMapMgr.reloadMap(mapName);
-			}
-		});
-	}
-
 })();

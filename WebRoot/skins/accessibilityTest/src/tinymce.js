@@ -1,7 +1,4 @@
 (function(){
-
-var util = comcast.access.util;
-
     // these TinyMCE customizations all apply to 3.5 -- disable them
     // for now
     return;
@@ -31,12 +28,12 @@ skin.override("tinymce.ui.KeyboardNavigation", function(settings, dom) {
 	rootFocussed = function(evt) {
 		var item = dom.get(focussedId);
 		//dom.setAttrib(item, 'tabindex', '0');
-		util.focus(item);
+		A11yUtil.focus(item);
 		Dwt.addClass(item,"mceFocus");
 	};
 	
 	t.focus = function() {
-		util.focus(dom.get(focussedId));
+		A11yUtil.focus(dom.get(focussedId));
 	};
 
 	t.destroy = function() {
@@ -62,7 +59,7 @@ skin.override("tinymce.ui.KeyboardNavigation", function(settings, dom) {
 
 		var visibleItems = [];
 		each(items, function(item, index) {
-			if (util.isVisible(Dwt.byId(item.id))) {
+			if (A11yUtil.isVisible(Dwt.byId(item.id))) {
 				visibleItems.push(item);
 			}
 		});
@@ -88,7 +85,7 @@ skin.override("tinymce.ui.KeyboardNavigation", function(settings, dom) {
 		Dwt.delClass(Dwt.byId(focussedId), "mceFocus");
 		Dwt.addClass(Dwt.byId(newFocus.id), "mceFocus");
 
-		util.focus(dom.get(newFocus.id));
+		A11yUtil.focus(dom.get(newFocus.id));
 		if (settings.actOnFocus) {
 			settings.onAction(newFocus.id);
 		}
@@ -96,7 +93,7 @@ skin.override("tinymce.ui.KeyboardNavigation", function(settings, dom) {
 
 		var win = evt.view;
 		if (!win) {
-			for (var el = evt.target; util.isElement(el); el = el.parentNode) {}
+			for (var el = evt.target; A11yUtil.isElement(el); el = el.parentNode) {}
 			var win = el.parentWindow;
 		}
 		var tg = win && win.tabgroup || appCtxt.getRootTabGroup();
@@ -317,7 +314,7 @@ skin.override("tinymce.ui.ColorSplitButton.prototype.showMenu", function(){
 			}
 		});
 
-		util.focus(allItems[0]); // Select first link
+		A11yUtil.focus(allItems[0]); // Select first link
 	}
 
 	var moreId = t.id + '_menu';
@@ -478,7 +475,7 @@ skin.override("tinymce.ui.Toolbar.prototype.renderHTML", function() {
 });
 
 skin.override("tinymce.ui.ListBox.prototype.renderHTML", function() {
-	var DOM = tinymce.DOM, Event = tinymce.dom.Event, each = tinymce.each, Dispatcher = tinymce.util.Dispatcher, undef;
+	var DOM = tinymce.DOM, Event = tinymce.dom.Event, each = tinymce.each, Dispatcher = tinymce.A11yUtil.Dispatcher, undef;
 	var h = '', t = this, s = t.settings, cp = t.classPrefix;
 
 	h = '<span id="' + t.id + '" role="listbox" aria-haspopup="true" aria-labelledby="' + t.id +'_voiceDesc" aria-describedby="' + t.id + '_voiceDesc">';
@@ -568,7 +565,7 @@ skin.override("tinymce.InlineWindowManager.prototype.open", function(f,p) {
 				for (var c=0; c<focusable.length; c++) {
 					var found = false;
 					for (var p=0; p<c; p++) {
-						if (util.isDescendant(focusable[c], focusable[p])) {
+						if (A11yUtil.isDescendant(focusable[c], focusable[p])) {
 							found = true;
 							break;
 						}
@@ -580,7 +577,7 @@ skin.override("tinymce.InlineWindowManager.prototype.open", function(f,p) {
 
 				Dwt.addClass(body, "mceDialog");
 
-				util.makeFocusable(focusable1);
+				A11yUtil.makeFocusable(focusable1);
 				tabgroup.addMember(focusable1);
 				tabgroup.setFocusMember(doc.activeElement);
 				ready();
@@ -591,7 +588,7 @@ skin.override("tinymce.InlineWindowManager.prototype.open", function(f,p) {
 					iframe.detachEvent("onload", load);
 				}
 
-				util.addStylesheet("/skins/accessibilityTest/src/tab-selection"+(AjxEnv.isIE?"-ie":"")+".css", doc);
+				A11yUtil.addStylesheet("/skins/accessibilityTest/src/tab-selection"+(AjxEnv.isIE?"-ie":"")+".css", doc);
 			};
 
 			if (iframe.addEventListener) {

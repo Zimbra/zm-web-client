@@ -1,7 +1,4 @@
 (function(){
-
-var util = comcast.access.util;
-
 skin.classListener('ZmAddressBubble', function() {
 	ZmAddressBubble.prototype.a11yFocusable = true;
 	ZmAddressBubble.prototype.a11yRole = "application";
@@ -33,7 +30,7 @@ skin.override("ZmComposeController.prototype._setComposeTabGroup", function() {
 		tg.addMember(view.getRecipientButton(type));
 		tg.addMember(view.getRecipientField(type));
 	}
-	util.makeFocusable(view.getToggleBcc());
+	A11yUtil.makeFocusable(view.getToggleBcc());
 	tg.addMemberBefore(view.getToggleBcc(), view.getRecipientButton(AjxEmailAddress.BCC));
 	tg.addMember(view._subjectField);
 	tg.addMember(view.getPriorityButton());
@@ -49,7 +46,7 @@ skin.override("ZmComposeController.prototype._setComposeTabGroup", function() {
 		for (var i=0; i<links.length; i++) {
 			var link = links[i];
 			link.tabIndex=-1; // Let's force the focusable method
-			util.makeFocusable(link);
+			A11yUtil.makeFocusable(link);
 			tg.addMember(link);
 			if (link.onclick) {
 				Dwt.setHandler(link,DwtEvent.ONKEYUP, function(ev){
@@ -123,7 +120,7 @@ skin.override.append(["ZmComposeView.prototype._showForwardField","ZmComposeView
 
 	for (var i=0; i<bubbles.length; i++) {
 		var bubble = bubbles[i];
-		util.makeFocusable(bubble);
+		A11yUtil.makeFocusable(bubble);
 		tg.addMember(bubble);
 
 		var links = Dwt.byClassName("AttLink", bubble);
@@ -253,8 +250,8 @@ skin.override("ZmHtmlEditor.prototype._spellCheckShowModeDiv", function(){
 			spellCheckDiv = Dwt.byId(this._spellCheckModeDivId),
 			spellCheckButtons = Dwt.byClassName("SpellCheckLink", spellCheckDiv);
 		if (tabGroup && spellCheckButtons.length) {
-			util.makeFocusable(spellCheckButtons);
-			util.setElementRole(spellCheckButtons, "link");
+			A11yUtil.makeFocusable(spellCheckButtons);
+			A11yUtil.setElementRole(spellCheckButtons, "link");
 			tabGroup.addMember(spellCheckButtons);
 		}
 	}
@@ -262,7 +259,7 @@ skin.override("ZmHtmlEditor.prototype._spellCheckShowModeDiv", function(){
 
 skin.override.append("ZmAddressBubble.prototype._createHtml", function(){
 	var el = this.getHtmlElement();
-	el.setAttribute("aria-labelledby",util.getElementID(el.firstChild));
+	el.setAttribute("aria-labelledby",A11yUtil.getElementID(el.firstChild));
 	el.setAttribute("aria-hidden","true");
 });
 
@@ -274,7 +271,7 @@ skin.override("ZmAddressBubbleList.prototype.selectAddressText", function(){
 	for (var i = 0; i < sel.length; i++) {
 		text.push(sel[i].address.replace(email_re,"").replace(trim_re,""));
 	}
-	util.say(text.join(" "));
+	A11yUtil.say(text.join(" "));
 
 	var sel = this.getSelection();
 	var addrs = [];
@@ -371,7 +368,7 @@ skin.override("ZmRecipients.prototype._contactPickerOkCallback", function(addrs)
 		for (var key in addrInput._bubble) {
 			var bubble = addrInput._bubble[key],
 				addrObj = bubble && bubble.addrObj;
-			if (util.isInstance(addrObj,"AjxEmailAddress")) {
+			if (A11yUtil.isInstance(addrObj,"AjxEmailAddress")) {
 				existing[addrObj.address] = addrObj;
 			}
 		}
@@ -379,7 +376,7 @@ skin.override("ZmRecipients.prototype._contactPickerOkCallback", function(addrs)
 		var addrVec = this._expandAddrs((this._fieldNames.length == 1) ? addrs : addrs[type]);
 		for (var j=0; j<addrVec.size(); j++) {
 			var addrObj = addrVec.get(j);
-			if (util.isInstance(addrObj,"AjxEmailAddress")) {
+			if (A11yUtil.isInstance(addrObj,"AjxEmailAddress")) {
 				adding[addrObj.address] = addrObj;
 			}
 		}
@@ -398,14 +395,14 @@ skin.override("ZmRecipients.prototype._contactPickerOkCallback", function(addrs)
 skin.override.append("ZmAddressInputField.prototype._addBubble", function(bubble){
 	var existing = this.__existingAddresses || {},
 		addrObj = bubble.addrObj;
-	if (util.isInstance(addrObj,"AjxEmailAddress") && existing[addrObj.address]) {
+	if (A11yUtil.isInstance(addrObj,"AjxEmailAddress") && existing[addrObj.address]) {
 		//console.log(addrObj,"already exists, not announcing addition");
 	} else {
 		var type = this.type,
 			bubbleText = addrObj.name || addrObj.address;
 		if (bubbleText) {
 			setTimeout(function(){ // Needs timeout for some browsers (e.g. chrome) to actually say it
-				comcast.access.util.say(AjxMessageFormat.format(ZmMsg.addedBubble, [bubbleText, type]));
+				A11yUtil.say(AjxMessageFormat.format(ZmMsg.addedBubble, [bubbleText, type]));
 			},0);
 		}
 	}
@@ -419,14 +416,14 @@ skin.override("ZmAddressInputField.prototype.removeBubble", function(id){
 
 	arguments.callee.func.apply(this,arguments);
 
-	if (util.isInstance(addrObj,"AjxEmailAddress") && adding[addrObj.address]) {
+	if (A11yUtil.isInstance(addrObj,"AjxEmailAddress") && adding[addrObj.address]) {
 		//console.log(addrObj,"scheduled for adding, not announcing removal");
 	} else {
 		var type = this.type,
 			bubbleText = addrObj.name || addrObj.address;
 		if (bubbleText) {
 			setTimeout(function(){ // Needs timeout for some browsers (e.g. chrome) to actually say it
-				comcast.access.util.say(AjxMessageFormat.format(ZmMsg.removedBubble, [bubbleText, type]));
+				A11yUtil.say(AjxMessageFormat.format(ZmMsg.removedBubble, [bubbleText, type]));
 			},1);
 		}
 	}
@@ -501,7 +498,7 @@ skin.override("ZmAddressInputField.prototype.handleDelete", function(checkInput)
 
 	if (bubbles.length) {
 		if (!this._selectAdjacentBubble()) {
-			util.focus(this._input);
+			A11yUtil.focus(this._input);
 		}
 		for (var i = 0, len = bubbles.length; i < len; i++) {
 			if (bubbles[i]) {
@@ -562,7 +559,7 @@ skin.override.append("ZmRecipients.prototype.createRecipientHtml", function(){
 			field = this._addrInputField[type],
 			button = this._pickerButton[type];
 		if (field && button) {
-			util.setLabel(field, button.getText());
+			A11yUtil.setLabel(field, button.getText());
 		}
 		if (button) {
 			button.setShortcut(ZmKeys["compose.AddressPicker.display"]);
@@ -632,7 +629,7 @@ skin.override("ZmHtmlEditor.prototype._initEditorManager", function(){
 		var buttons = self.getHTMLEditorToolbar();
 		if (buttons) {
 			tg.addMember(buttons);
-			util.makeFocusable(buttons);
+			A11yUtil.makeFocusable(buttons);
 		}
 	},0);
 
@@ -650,7 +647,7 @@ skin.override.append("ZmHtmlEditor.prototype.setFocusStatus", function(focus){
 });
 
 skin.override.append("ZmComposeController.prototype.detach", function(){
-	util.say(ZmMsg.openingNewWindow);
+	A11yUtil.say(ZmMsg.openingNewWindow);
 });
 
 var actionMessage = {};
@@ -672,7 +669,7 @@ skin.override("ZmComposeController.prototype.doAction", function(params){
 	var action = params.action || ZmOperation.NEW_MESSAGE,
 		message = actionMessage[action];
 	if (message) {
-		util.say(message);
+		A11yUtil.say(message);
 	}
 	var id = DwtButton.setNoFocus(),
 		r = arguments.callee.func.apply(this,arguments);

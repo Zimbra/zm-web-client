@@ -1,6 +1,4 @@
 (function(){
-	var util = comcast.access.util;
-
 	skin.override(['ZmAppViewMgr.prototype.setViewComponents', 'ZmAppViewMgr.prototype.addComponents'], function(viewId, components, show, app) {
 
 		var r = arguments.callee.func.apply(this,arguments);
@@ -18,7 +16,7 @@
 		if (!components.tab) {
 			var tab = new DwtComposite({ parent: this._shell,
 										 className: 'A11yMainPanel' });
-			util.setElementRole(tab.getHtmlElement(), 'main');
+			A11yUtil.setElementRole(tab.getHtmlElement(), 'main');
 			tab.getHtmlElement().setAttribute('aria-labelledby', labelid);
 
 			components.tab = tab;
@@ -87,12 +85,12 @@
 		return r;
 	});
 
-	util.mustNotScroll(Dwt.byId("skin_outer"));
+	A11yUtil.mustNotScroll(Dwt.byId("skin_outer"));
 
 	skin.override("ZmAppCtxt.prototype.setShell", function(shell){
 		arguments.callee.func.apply(this,arguments);
-		util.mustNotScroll(shell.getHtmlElement());
-		util.setTableRolePresentation([shell._busyOverlay, shell._veilOverlay, shell._curtainOverlay]);
+		A11yUtil.mustNotScroll(shell.getHtmlElement());
+		A11yUtil.setTableRolePresentation([shell._busyOverlay, shell._veilOverlay, shell._curtainOverlay]);
 	});
 
 	skin.override("ZmAppViewMgr.prototype.pushView", function(viewId, force) {
@@ -106,7 +104,7 @@
 	});
 
 	skin.override("ZmAppViewMgr.prototype._fitToContainer", function() {
-		util.normalizeScrolls();
+		A11yUtil.normalizeScrolls();
 		arguments.callee.func.apply(this,arguments);
 	});
 

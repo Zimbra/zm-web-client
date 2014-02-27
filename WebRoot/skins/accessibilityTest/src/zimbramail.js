@@ -1,11 +1,9 @@
 (function(){
-	var util = comcast.access.util;
-
 	skin.override.append('ZmZimbraMail.prototype.setQuotaInfo', function() {
 		var quotafield = this._usedQuotaField.getHtmlElement(),
 			tables = quotafield.getElementsByTagName('table');
 		for (var i = 0; i < tables.length; tables++) {
-			util.setElementRole(tables[i], 'presentation');
+			A11yUtil.setElementRole(tables[i], 'presentation');
 		}
 	});
 
@@ -23,7 +21,7 @@
 		header = Dwt.byId("xcnavbar");
 		if (header) {
 			var iframes = Dwt.byTag("iframe", header);
-			util.makeFocusable(iframes);
+			A11yUtil.makeFocusable(iframes);
 			headerTabGroup.addMember(iframes);
 		}
 		rootTg.addMember(headerTabGroup);

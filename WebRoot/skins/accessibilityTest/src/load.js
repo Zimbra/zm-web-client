@@ -1,6 +1,4 @@
 (function() {
-	var util = comcast.access.util;
-
 	// mark all tables in the skin structure that either have no ID or
 	// are of type skin_table as presentational
 	var skin_shell = Dwt.byId(ZmId.SKIN_SHELL);
@@ -8,7 +6,7 @@
 		AjxUtil.foreach(skin_shell.getElementsByTagName('TABLE'),
 					function(table) {
 						if (!table.id || Dwt.hasClass(table, 'skin_table')) {
-							util.setElementRole(table, 'presentation');
+							A11yUtil.setElementRole(table, 'presentation');
 						}
 					});
 	}
@@ -38,7 +36,7 @@
 
 		if (el) {
 			if (cfg.role) {
-				util.setElementRole(el, cfg.role);
+				A11yUtil.setElementRole(el, cfg.role);
 			}
 
 			if (cfg.label) {
@@ -59,7 +57,7 @@
 			var msg = AjxMessageFormat.format(ZmMsg.a11yWelcomeMessage,
 			                                  ZmMsg.zimbraTitle);
 
-			setTimeout(function() { util.say(msg); }, 5000);
+			setTimeout(function() { A11yUtil.say(msg); }, 5000);
 		});
 
 		if (appCtxt.inStartup) {

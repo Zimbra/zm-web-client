@@ -1,6 +1,4 @@
 (function() {
-	var util = comcast.access.util;
-
 	skin.classListener('DwtToolBar', function() {
 		DwtToolBar.prototype.a11yRole = 'toolbar';
 		DwtToolBar.prototype.a11yFocusable = true;
@@ -65,7 +63,7 @@
 	skin.override.append("ZmButtonToolBar.prototype.addChild", function(child, index){
 		if (!this.singleTabStop) {
 			var tg = this.getTabGroupMember();
-			if (util.isInstance(child, "DwtToolBarButton") && !tg.contains(child.getTabGroupMember())) {
+			if (A11yUtil.isInstance(child, "DwtToolBarButton") && !tg.contains(child.getTabGroupMember())) {
 				tg.addMember(child.getTabGroupMember(), this._children.indexOf(child));
 			}
 		}
