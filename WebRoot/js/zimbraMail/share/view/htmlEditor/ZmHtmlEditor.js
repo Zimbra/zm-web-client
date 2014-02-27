@@ -808,6 +808,7 @@ ZmHtmlEditor.prototype.onInit = function(ev) {
     obj.setFocusStatus(false);
 
     tinymceEvent.bind(win, 'focus', function(e) {
+        appCtxt.getKeyboardMgr().inputGotFocus(obj);
         obj.setFocusStatus(true);
     });
     tinymceEvent.bind(win, 'blur', function(e) {
