@@ -39,18 +39,25 @@ ZmHtmlEditor = function() {
 		params.className = 'ZmHtmlEditor';
 	}
 
+	if (!params.id) {
+		params.id = Dwt.getNextId('ZmHtmlEditor');
+	}
+
     DwtControl.call(this, params);
 
 	this.isTinyMCE = window.isTinyMCE;
 	this._mode = params.mode;
 	this._hasFocus = {};
-    this._bodyTextAreaId = params.textAreaId;
+	this._bodyTextAreaId = params.textAreaId || this.getHTMLElId() + '_body';
+	this._iFrameId = this._bodyTextAreaId + "_ifr";
 	this._initCallbacks = [];
 	this._attachmentCallback = params.attachmentCallback;
 	this._pasteCallback = params.pasteCallback;
 	this._onContentInitializeCallbacks = []
 	this.initTinyMCEEditor(params);
     this._ignoreWords = {};
+
+    this.getTabGroupMember().addMember(Dwt.byId(this._bodyTextAreaId));
 
     if (params.initCallback)
         this._initCallbacks.push(params.initCallback);
@@ -104,7 +111,7 @@ ZmHtmlEditor.prototype.getBodyFieldId =
 function() {
 	if (this._mode == Dwt.HTML) {
 		var editor = this.getEditor();
-		return editor ? this._bodyTextAreaId + '_ifr' : this._bodyTextAreaId;
+		return editor ? this._iFrameId : this._bodyTextAreaId;
 	}
 
 	return this._bodyTextAreaId;
@@ -161,12 +168,7 @@ function(editor) {
     if (currentObj._mode === Dwt.HTML) {
         editor = editor || currentObj.getEditor();
         if (currentObj._editorInitialized && editor) {
-            if (AjxEnv.isWebKitBased) {
-                Dwt.getElement(currentObj._iFrameId).focus();
-            }
-            else {
-                editor.focus();
-            }
+            editor.focus();
             currentObj.setFocusStatus(true);
         }
         else {
@@ -180,33 +182,6 @@ function(editor) {
             currentObj.setFocusStatus(true, true);
         }
     }
-};
-
-/**
- * Restores the focus. For IE selecting bookmark and for other browsers calling focus will place the cursor in the last edited position
- * @param editor object
- * @param {Boolean} collapse whether to collapse selection or not for IE html mode
- */
-ZmHtmlEditor.prototype.restoreFocus =
-function(editor, collapse) {
-    var currentObj = this,
-        windowManager,
-        selection;
-
-    if (AjxEnv.isIE && currentObj._mode === Dwt.HTML) {
-        editor = editor || currentObj.getEditor();
-        if (editor) {
-            windowManager = editor.windowManager;
-            selection = editor.selection;
-            if (selection && windowManager && windowManager.bookmark) {
-                selection.moveToBookmark(windowManager.bookmark);
-                delete windowManager.bookmark;
-                (collapse) && selection.collapse(false);
-                return;
-            }
-        }
-    }
-    currentObj.focus(editor);
 };
 
 /**
@@ -455,7 +430,7 @@ function() {
 
 ZmHtmlEditor.prototype.getInputElement =
 function() {
-	return document.getElementById(this._bodyTextAreaId);
+	return this.getBodyField();
 };
 
 ZmHtmlEditor.prototype.initTinyMCEEditor =
@@ -482,7 +457,6 @@ function(params) {
 
     Dwt.setHandler(textEl, DwtEvent.ONFOCUS, this.setFocusStatus.bind(this, true, true));
     Dwt.setHandler(textEl, DwtEvent.ONBLUR, this.setFocusStatus.bind(this, false, true));
-	this.setFocusMember(textEl);
 
 	if (!window.tinyMCE) {
         window.tinyMCEPreInit = {};
@@ -750,7 +724,6 @@ function(id, content) {
         Dwt.setVisible(obj.getHtmlElement(), true);
     }
 
-    this._iFrameId = this._bodyTextAreaId + "_ifr";
 	tinyMCE.init(tinyMCEInitObj);
 	this._editor = this.getEditor();
 };
@@ -852,7 +825,13 @@ ZmHtmlEditor.prototype.onInit = function(ev) {
         });
     }
 
-    obj.setFocusMember(obj.restoreFocus.bind(obj, ed));
+    var tg = obj.getTabGroupMember();
+    var firstbutton = this.__getEditorControl('listbox', 'Font Family');
+
+    tg.removeAllMembers();
+    tg.addMember(Dwt.byId(this._bodyTextAreaId));
+    tg.addMember(Dwt.byId(this._iFrameId));
+    tg.addMember(firstbutton.getEl());
 
     // must be assigned on init, to ensure that our handlers are called after
     // in TinyMCE's in 'FormatControls.js'.
@@ -1107,7 +1086,7 @@ function(src, dontExecCommand, width, height, dfsrc) {
 
 	var ed = this.getEditor();
 
-    this.restoreFocus(ed);
+    ed.focus();
 
 	//tinymce modifies the source when using mceInsertContent
     //ed.execCommand('mceInsertContent', false, html.join(""), {skip_undo : 1});
@@ -1680,7 +1659,7 @@ ZmHtmlEditor._spellCheckResumeEditing =
 function() {
 	var editor = Dwt.getObjectFromElement(this);
 	editor.discardMisspelledWords();
-    editor.restoreFocus(0, true);
+    editor.focus();
 };
 
 ZmHtmlEditor._spellCheckAgain =
@@ -2321,20 +2300,10 @@ function(pl, o) {
     }
 };
 
-ZmHtmlEditor.prototype.setFocusMember =
-function(member) {
-	this._focusMember = member;
-};
+ZmHtmlEditor.prototype.getTabGroupMember = function() {
+	if (!this.__tabGroup) {
+		this.__tabGroup = new DwtTabGroup(this.toString());
+	}
 
-ZmHtmlEditor.prototype._focus =
-function() {
-    var focusMember = this._focusMember;
-    if (focusMember) {
-        if (focusMember.nodeName === "TEXTAREA") {
-            focusMember.focus();
-        }
-        else {
-            focusMember();
-        }
-    }
+	return this.__tabGroup;
 };

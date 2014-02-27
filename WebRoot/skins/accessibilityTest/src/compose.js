@@ -62,8 +62,7 @@ skin.override("ZmComposeController.prototype._setComposeTabGroup", function() {
 		}
 	}
 
-	var mode = view.getComposeMode();
-	tg.addMember(mode === Dwt.TEXT ? view._bodyField : this);
+	tg.addMember(view.getHtmlEditor());
 
 	if (!this.spellcheckTabGroup) {
 		this.spellcheckTabGroup = new DwtTabGroup("composeSpellcheck");
@@ -166,7 +165,7 @@ skin.override("ZmComposeController.prototype._getDefaultFocusItem", function() {
 	}
 	return (this._composeView.getComposeMode() == Dwt.TEXT)
 		? this._composeView._bodyField
-		: this._composeView._htmlEditor.getEditorContainer().getTabGroupMember();
+		: this._composeView.getHtmlEditor().getTabGroupMember();
 });
 
 
@@ -602,33 +601,6 @@ skin.override.append(["ZmHtmlEditor.prototype.initTinyMCEEditor"], function(){
 	if (textArea) {
 		textArea.setAttribute('aria-label', "Message body ");
 	}
-});
-
-// For the editorcontainer, we create a dummy for the compose body; a control that is put into the
-// tabgroup, but redirects focus when it is tabbed to.
-// We also extract the toolbar buttons from TinyMCE and put them in the tabgroup as well.
-skin.override("ZmEditorContainer.prototype.getTabGroupMember", function(){
-	if (!this._tabGroupMember) {
-		var tg = this._tabGroupMember = new DwtTabGroup("editorContainer"),
-			dummy = this._dummyElement = new DwtControl(this), // Stand-in for the compose body
-			self = this,
-			htmlEditor = this.parent.getHtmlEditor();
-		tg.addMember(dummy);
-
-		dummy._focus = function(){
-			var focusMember = self._focusMember;
-			if (focusMember) {
-				if (focusMember.nodeName === "TEXTAREA") {
-					focusMember.focus();
-				} else if (AjxUtil.isFunction(focusMember)) {
-					setTimeout(function(){
-						focusMember();
-					},0);
-				}
-			}
-		};
-	}
-	return this._tabGroupMember;
 });
 
 skin.override("ZmHtmlEditor.prototype._initEditorManager", function(){

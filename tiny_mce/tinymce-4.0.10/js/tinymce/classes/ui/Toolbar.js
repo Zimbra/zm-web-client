@@ -51,6 +51,7 @@ define("tinymce/ui/Toolbar", [
 
 			self.keyNav = new KeyboardNavigation({
 				root: self,
+				allowTabEscape: true,
 				enableLeftRight: true
 			});
 

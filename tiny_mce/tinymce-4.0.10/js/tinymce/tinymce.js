@@ -22810,11 +22810,13 @@ define("tinymce/ui/KeyboardNavigation", [
 	 * @setting {Function} onAction (optional) the action handler to call when the user activates an item.
 	 * @setting {Boolean} enableLeftRight (optional, default) when true, the up/down arrows move through items.
 	 * @setting {Boolean} enableUpDown (optional) when true, the up/down arrows move through items.
+	 * @setting {Boolean} allowTabEscape (optional) when true, tabbing doesn't stay within the items
 	 * Note for both up/down and left/right explicitly set both enableLeftRight and enableUpDown to true.
 	 */
 	return function(settings) {
 		var root = settings.root, enableUpDown = settings.enableUpDown !== false;
 		var enableLeftRight = settings.enableLeftRight !== false;
+		var allowTabEscape = settings.allowTabEscape;
 		var items = settings.items, focussedId;
 
 		/**
@@ -22944,8 +22946,10 @@ define("tinymce/ui/KeyboardNavigation", [
 		 *
 		 * @method moveFocus
 		 * @param {Number} dir Direction for move -1 or 1.
+		 * @param {Boolean} nowrap Whether to allow wrapping.
+		 * @return {Boolean} True on success.
 		 */
-		function moveFocus(dir) {
+		function moveFocus(dir, nowrap) {
 			var idx = -1, focusElm, i;
 			var visibleItems = [];
 
@@ -22982,7 +22986,10 @@ define("tinymce/ui/KeyboardNavigation", [
 			}
 
 			idx += dir;
-			if (idx < 0) {
+
+			if (nowrap && (idx < 0 || idx >= visibleItems.length)) {
+				return false;
+			} else if (idx < 0) {
 				idx = visibleItems.length - 1;
 			} else if (idx >= visibleItems.length) {
 				idx = 0;
@@ -22995,6 +23002,8 @@ define("tinymce/ui/KeyboardNavigation", [
 			if (settings.actOnFocus) {
 				action();
 			}
+
+			return true;
 		}
 
 		/**
@@ -23075,13 +23084,10 @@ define("tinymce/ui/KeyboardNavigation", [
 					break;
 
 				case DOM_VK_TAB:
-					preventDefault = true;
-
-					if (e.shiftKey) {
-						moveFocus(-1);
-					} else {
-						moveFocus(1);
-					}
+					// allow tab presses to propagate to the next listener
+					// rather than wrapping
+					preventDefault = moveFocus(e.shiftKey ? -1 : 1,
+					                           allowTabEscape);
 					break;
 
 				case DOM_VK_ESCAPE:
@@ -29977,7 +29983,7 @@ define("tinymce/ui/ColorButton", [
 			var image = self.settings.image ? ' style="background-image: url(\'' + self.settings.image + '\')"' : '';
 
 			return (
-				'<div id="' + id + '" class="' + self.classes() + '">' +
+				'<div id="' + id + '" class="' + self.classes() + '" tabindex="-1">' +
 					'<button role="presentation" hidefocus type="button" tabindex="-1">' +
 						(icon ? '<i class="' + icon + '"' + image + '></i>' : '') +
 						'<span id="' + id + '-preview" class="' + prefix + 'preview"></span>' +
@@ -32316,6 +32322,7 @@ define("tinymce/ui/Toolbar", [
 
 			self.keyNav = new KeyboardNavigation({
 				root: self,
+				allowTabEscape: true,
 				enableLeftRight: true
 			});
 
@@ -33380,7 +33387,7 @@ define("tinymce/ui/SplitButton", [
 			var icon = self.settings.icon ? prefix + 'ico ' + prefix + 'i-' + self.settings.icon : '';
 
 			return (
-				'<div id="' + id + '" class="' + self.classes() + '">' +
+				'<div id="' + id + '" class="' + self.classes() + '" tabindex="-1">' +
 					'<button type="button" hidefocus tabindex="-1">' +
 						(icon ? '<i class="' + icon + '"></i>' : '') +
 						(self._text ? (icon ? ' ' : '') + self._text : '') +

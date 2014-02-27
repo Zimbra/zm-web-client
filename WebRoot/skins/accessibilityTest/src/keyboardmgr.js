@@ -34,7 +34,7 @@
 				(AjxEnv.isIE && focusObj.focus && !el.disabled && Dwt.getVisible(el))) {
 				// ignore exception - IE sometimes still throws error, don't know why
 				try {
-					util.focus(focusObj);
+					el.focus();
 				} catch(ex) {}
 			}
 		} else {

@@ -3,7 +3,8 @@
  * This is a modified copy of that function, changed to remove capturing TAB.
  * This makes TAB-navigation work
 */
-skin.override('ZmAdvancedHtmlEditor.prototype._handleEditorKeyEvent', function(ed, ev) {
+skin.override('ZmHtmlEditor.prototype._handleEditorKeyEvent', function(ev) {
+	var ed = this.getEditor();
 	var retVal = true;
 
 	if (DwtKeyboardMgr.isPossibleInputShortcut(ev)) {
@@ -21,7 +22,7 @@ skin.override('ZmAdvancedHtmlEditor.prototype._handleEditorKeyEvent', function(e
 	return retVal;
 });
 
-skin.override(['ZmAdvancedHtmlEditor._spellCheckAgain', 'ZmHtmlEditor._spellCheckAgain'], function() {
+skin.override(['ZmHtmlEditor._spellCheckAgain', 'ZmLiteHtmlEditor._spellCheckAgain'], function() {
 	var editor = Dwt.getObjectFromElement(this);
 	editor._spellCheckHideModeDiv();
 	return arguments.callee.func.apply(this, arguments);
