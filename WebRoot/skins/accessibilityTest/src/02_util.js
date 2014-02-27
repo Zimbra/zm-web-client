@@ -442,9 +442,8 @@ var util = comcast.access.util = {
 	},
 
 	isElement: function(el){
-		return typeof(window.HTMLElement) === "object" ?
-			(el instanceof HTMLElement) :
-			(el && typeof el === "object" && el.nodeType === 1 && typeof el.nodeName==="string");
+		return (el && typeof el === "object" && el.nodeType === 1 &&
+		        typeof el.nodeName === "string");
 	},
 
 	isInstance: function(aThing, aClass) {
