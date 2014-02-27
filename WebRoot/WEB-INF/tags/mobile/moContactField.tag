@@ -42,12 +42,12 @@
         <span class='label' width="20%">${fn:escapeXml(label)}</span>
         <span class="value">
             <c:choose>
-                <c:when test="${isurl}">
+                <c:when test="${zm:boolean(isurl)}">
                     <c:set var="prefix" value="${fn:contains(value,'//') ? '' : 'http://'}"/>
                     <c:url var="url" value="${prefix}${value}"/>
                     <a target="_new" href="${fn:escapeXml(url)}">${fn:escapeXml(value)}</a>
                 </c:when>
-                <c:when test="${isaddress}">
+                <c:when test="${zm:boolean(isaddress)}">
                     <c:url var="gmaps" value="http://maps.google.com/maps">
                         <c:param name="q" value="${street} ${city} ${state} ${postalcode} ${country}"/>
                     </c:url>
@@ -63,11 +63,11 @@
                         <c:if test="${not empty country}">,&nbsp;${fn:escapeXml(country)}</c:if>
                     </a>
                 </c:when>
-                <c:when test="${isphone}">
+                <c:when test="${zm:boolean(isphone)}">
                     <c:url var="url" value="tel:${value}"/>
                     <a target="_new" href="${fn:escapeXml(url)}">${fn:escapeXml(value)}</a>
                 </c:when>
-                <c:when test="${isemail}">
+                <c:when test="${zm:boolean(isemail)}">
                     <c:url value="${context_url}" var="url">
                         <c:param name="st" value="newmail"/>
                         <c:param name="to" value="${value}"/>
