@@ -87,7 +87,7 @@
 
 			if (el) {
 				var parentWithClass = parentHasClass(el, "LabelColValue");
-				var childWithClass = skin.byClass("a11yHidden", el);
+				var childWithClass = Dwt.byClassName("a11yHidden", el);
 				if (parentWithClass && !(childWithClass && childWithClass.length)) {
 					var label = parentWithClass.previousSibling;
 					if (Dwt.hasClass(label, "LabelColName")) {

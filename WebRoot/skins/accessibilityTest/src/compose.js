@@ -90,7 +90,7 @@ skin.override("ZmComposeView.prototype.cleanupAttachments", function(all) {
 
 skin.override.append(["ZmComposeView.prototype._showForwardField","ZmComposeView.prototype._removeAttachedFile"], function(){
 	var attachDiv = this._attcDiv;
-	var bubbles = skin.byClass("attachmentBubble", attachDiv);
+	var bubbles = Dwt.byClassName("attachmentBubble", attachDiv);
 	if (!this._controller.attachmentTabGroup) {
 		this._controller.attachmentTabGroup = new DwtTabGroup("composeAttachments");
 	}
@@ -113,7 +113,7 @@ skin.override.append(["ZmComposeView.prototype._showForwardField","ZmComposeView
 			DwtUiEvent.setBehaviour(ev, true, false, true);
 			return false;
 		} else if (keyCode == 13 || keyCode == 32) {
-			var links = skin.byClass("AttLink", this);
+			var links = Dwt.byClassName("AttLink", this);
 			if (links && links.length) {
 				links[0].click();
 			}
@@ -127,7 +127,7 @@ skin.override.append(["ZmComposeView.prototype._showForwardField","ZmComposeView
 		util.makeFocusable(bubble);
 		tg.addMember(bubble);
 
-		var links = skin.byClass("AttLink", bubble);
+		var links = Dwt.byClassName("AttLink", bubble);
 		if (links && links.length) {
 			bubble.setAttribute("aria-labelledby", links[0].id);
 		}
@@ -252,7 +252,7 @@ skin.override("ZmHtmlEditor.prototype._spellCheckShowModeDiv", function(){
 			controller = view && view.getController(),
 			tabGroup = controller && controller.spellcheckTabGroup,
 			spellCheckDiv = Dwt.byId(this._spellCheckModeDivId),
-			spellCheckButtons = skin.byClass("SpellCheckLink", spellCheckDiv);
+			spellCheckButtons = Dwt.byClassName("SpellCheckLink", spellCheckDiv);
 		if (tabGroup && spellCheckButtons.length) {
 			util.makeFocusable(spellCheckButtons);
 			util.setElementRole(spellCheckButtons, "link");

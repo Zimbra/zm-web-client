@@ -22,7 +22,7 @@
 		var headerTabGroup = new DwtTabGroup("header"),
 		header = Dwt.byId("xcnavbar");
 		if (header) {
-			var iframes = skin.arrayLikeToArray(header.getElementsByTagName("iframe"));
+			var iframes = Dwt.byTag("iframe", header);
 			util.makeFocusable(iframes);
 			headerTabGroup.addMember(iframes);
 		}

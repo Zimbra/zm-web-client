@@ -109,7 +109,7 @@
 		util.setElementRole(headerLinks, "link");
 		kbItems.push(headerLinks);
 
-		kbItems = kbItems.concat(skin.byClass(ZmShortcutsPanel.tabItemClass, this._contentDiv));
+		kbItems = kbItems.concat(Dwt.byClassName(ZmShortcutsPanel.tabItemClass, this._contentDiv));
 
 		for (var i=0; i<kbItems.length; i++) {
 			var item = kbItems[i];

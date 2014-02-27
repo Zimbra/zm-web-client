@@ -596,42 +596,6 @@ skin.override("ZmZimbraMail.prototype._createEnabledApps", function() {
 	skin._appCreateListenersRun = true;
 });
 
-
-VelodromeSkin.prototype.byClass = function(className, ancestor, firstOnly) {
-	if (!ancestor) {
-		if (document.getElementsByClassName) {
-			var matches = document.getElementsByClassName(className);
-			return (matches && firstOnly) ? (matches[0] || null) : this.arrayLikeToArray(matches);
-		} else {
-			ancestor = document.body;
-		}
-	}
-	if (ancestor.getElementsByClassName) {
-		var matches = ancestor.getElementsByClassName(className);
-		return (matches && firstOnly) ? (matches[0] || null) : this.arrayLikeToArray(matches);
-	}
-	var items = [];
-	var recurse = function(el) {
-		if (el && el.children) {
-			for (var i=0; i<el.children.length; i++) {
-				var child = el.children[i];
-				if (Dwt.hasClass(child, className)) {
-					items.push(child);
-					if (firstOnly) {
-						break;
-					}
-				}
-				recurse(child);
-				if (firstOnly && items.length) {
-					break;
-				}
-			}
-		}
-	};
-	recurse(ancestor);
-	return (items && firstOnly) ? (items[0] || null) : items;
-};
-
 VelodromeSkin.prototype.sortElements = function(elements) {
 	return elements.sort(function(a,b){
 		if (a.compareDocumentPosition) {

@@ -52,7 +52,7 @@
 	});
 
 	skin.override.append("ZmMailMsgCapsuleView.prototype._renderMessageFooter", function(){
-		var matches = skin.byClass("footer", this.getHtmlElement());
+		var matches = Dwt.byClassName("footer", this.getHtmlElement());
 		if (matches && matches.length) {
 			var footer = matches[0];
 			footer.id = footer.id || this._footerId;
@@ -152,7 +152,7 @@
 
 	skin.override("ZmMailMsgCapsuleView.prototype.getFooterTabGroup", function(){
 		var footer = Dwt.byId(this._footerId);
-		var items = footer && skin.arrayLikeToArray(footer.getElementsByTagName("a")) || [];
+		var items = footer && Dwt.byTag("a", footer) || [];
 		var tabGroup = new DwtTabGroup(this.getHTMLElId() + "_footer");
 		if (items) {
 			util.setElementRole(items,"link");

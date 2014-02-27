@@ -239,7 +239,7 @@
 				parent = parent.body;
 			}
 
-			var items = skin.arrayLikeToArray(parent.getElementsByTagName("a")).concat(skin.arrayLikeToArray(skin.byClass("Object", parent)));
+			var items = Dwt.byTag("a", parent).concat(Dwt.byClassName("Object", parent));
 				items = skin.sortElements(util.pruneObjects(items));
 			util.makeFocusable(items);
 
@@ -314,7 +314,7 @@
 		for (var i=0; i<containers.length; i++) {
 			var container = containers[i];
 			if (container) {
-				members = members.concat(skin.arrayLikeToArray(skin.byClass("Object",container)),skin.arrayLikeToArray(container.getElementsByTagName("a")));
+				members = members.concat(Dwt.byClassName("Object",container), Dwt.byTag("a", container));
 				if (container === placardPos) {
 					placardTabGroupPosition = members[members.length-1];
 				}
