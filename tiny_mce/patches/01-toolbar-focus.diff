@@ -1,0 +1,136 @@
+# HG changeset patch
+# User Dan Villiom Podlaski Christiansen <dan@cabo.dk>
+# Date 1393341535 -3600
+#      Tue Feb 25 16:18:55 2014 +0100
+# Node ID b659eca5753a92ed70b4bd10b6028effdc3aa111
+# Parent  1160b95b4d78790b1dd2cbbfcd2b9eb001fa3e95
+No tab sinks, please.
+
+diff --git a/js/tinymce/classes/ui/FloatPanel.js b/js/tinymce/classes/ui/FloatPanel.js
+--- a/js/tinymce/classes/ui/FloatPanel.js
++++ b/js/tinymce/classes/ui/FloatPanel.js
+@@ -30,6 +30,10 @@ define("tinymce/ui/FloatPanel", [
+ 
+ 	var FloatPanel = Panel.extend({
+ 		Mixins: [Movable, Resizable],
++		Defaults: {
++			tabSink: true,
++			ariaRoot: true
++		},
+ 
+ 		/**
+ 		 * Constructs a new control instance with the specified settings.
+@@ -363,4 +367,4 @@ define("tinymce/ui/FloatPanel", [
+ 	}
+ 
+ 	return FloatPanel;
+-});
+\ No newline at end of file
++});
+diff --git a/js/tinymce/classes/ui/KeyboardNavigation.js b/js/tinymce/classes/ui/KeyboardNavigation.js
+--- a/js/tinymce/classes/ui/KeyboardNavigation.js
++++ b/js/tinymce/classes/ui/KeyboardNavigation.js
+@@ -211,8 +211,9 @@ define("tinymce/ui/KeyboardNavigation", 
+ 		 * @private
+ 		 * @param {Number} dir Direction to move in positive means forward, negative means backwards.
+ 		 * @param {Array} elements Optional array of elements to move within defaults to the current navigation roots elements.
++		 * @param {Boolean} nowrap If true, don't wrap the element.
+ 		 */
+-		function moveFocus(dir, elements) {
++		function moveFocus(dir, elements, nowrap) {
+ 			var idx = -1, navigationRoot = getNavigationRoot();
+ 
+ 			elements = elements || getFocusElements(navigationRoot.getEl());
+@@ -224,7 +225,13 @@ define("tinymce/ui/KeyboardNavigation", 
+ 			}
+ 
+ 			idx += dir;
+-			navigationRoot.lastAriaIndex = moveFocusToIndex(idx, elements);
++
++			if (nowrap && (idx < 0 || idx >= elements.length)) {
++				return false;
++			} else {
++				navigationRoot.lastAriaIndex = moveFocusToIndex(idx, elements);
++				return true;
++			}
+ 		}
+ 
+ 		/**
+@@ -302,8 +309,11 @@ define("tinymce/ui/KeyboardNavigation", 
+ 				if (elm) {
+ 					elm.focus();
+ 				}
++
++				return true;
+ 			} else {
+-				moveFocus(e.shiftKey ? -1 : 1);
++				var tabSink = getNavigationRoot().settings.tabSink;
++				return moveFocus(e.shiftKey ? -1 : 1, null, !tabSink);
+ 			}
+ 		}
+ 
+@@ -373,6 +383,7 @@ define("tinymce/ui/KeyboardNavigation", 
+ 				case 9: // DOM_VK_TAB
+ 					if (tab(e) !== false) {
+ 						e.preventDefault();
++						e.stopPropagation();
+ 					}
+ 					break;
+ 			}
+@@ -387,4 +398,4 @@ define("tinymce/ui/KeyboardNavigation", 
+ 			focusFirst: focusFirst
+ 		};
+ 	};
+-});
+\ No newline at end of file
++});
+diff --git a/js/tinymce/classes/ui/Menu.js b/js/tinymce/classes/ui/Menu.js
+--- a/js/tinymce/classes/ui/Menu.js
++++ b/js/tinymce/classes/ui/Menu.js
+@@ -28,8 +28,7 @@ define("tinymce/ui/Menu", [
+ 			border: 1,
+ 			layout: 'stack',
+ 			role: 'application',
+-			bodyRole: 'menu',
+-			ariaRoot: true
++			bodyRole: 'menu'
+ 		},
+ 
+ 		/**
+@@ -137,4 +136,4 @@ define("tinymce/ui/Menu", [
+ 	});
+ 
+ 	return Menu;
+-});
+\ No newline at end of file
++});
+diff --git a/js/tinymce/classes/ui/MenuBar.js b/js/tinymce/classes/ui/MenuBar.js
+--- a/js/tinymce/classes/ui/MenuBar.js
++++ b/js/tinymce/classes/ui/MenuBar.js
+@@ -30,4 +30,4 @@ define("tinymce/ui/MenuBar", [
+ 			}
+ 		}
+ 	});
+-});
+\ No newline at end of file
++});
+diff --git a/js/tinymce/classes/ui/Toolbar.js b/js/tinymce/classes/ui/Toolbar.js
+--- a/js/tinymce/classes/ui/Toolbar.js
++++ b/js/tinymce/classes/ui/Toolbar.js
+@@ -51,4 +51,4 @@ define("tinymce/ui/Toolbar", [
+ 			return self._super();
+ 		}
+ 	});
+-});
+\ No newline at end of file
++});
+diff --git a/js/tinymce/classes/ui/Window.js b/js/tinymce/classes/ui/Window.js
+--- a/js/tinymce/classes/ui/Window.js
++++ b/js/tinymce/classes/ui/Window.js
+@@ -370,4 +370,4 @@ define("tinymce/ui/Window", [
+ 	});
+ 
+ 	return Window;
+-});
+\ No newline at end of file
++});
