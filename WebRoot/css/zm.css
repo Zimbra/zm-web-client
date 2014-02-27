@@ -930,7 +930,7 @@ INPUT[type="text"].search_input-expanded {
 	height:100%;
 }
 
-#IFDEF MSIE
+#IFDEF MSIE_LOWER_THAN_9
 .Conv2Messages {
 	width:100%;
 }
