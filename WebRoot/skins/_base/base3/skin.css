@@ -80,6 +80,7 @@ BODY									{	margin:0px; 	}
 #skin_dropMenu							{	font-size:14px; padding:0px 10px 0px 3px; text-align:center; vertical-align:middle; @Text-contrast@ @ActiveCursor@ 	}
 #skin_dropMenu .DwtLinkButtonDropDownArrowTd			{	border-left:0px; opacity:.75; padding-left:0px;	}
 #skin_dropMenu .ZHover .DwtLinkButtonDropDownArrowTd	{	opacity:1; 	}
+#skin_container_global_buttons			{	display:table-row;	}
 #skin_container_global_buttons>DIV		{	display:table-cell; padding-top:2px; 	}
 /** Tree Toolbar a.k.a.  "current app" **/
 #skin_spacing_current_app				{}
@@ -115,6 +116,20 @@ BODY									{	margin:0px; 	}
 	@AppTabChooser@
 }
 #skin_container_app_chooser>DIV>TABLE	{ @AppTabTable@		}
+
+/** webclient offline sync notification **/
+#skin_container_global_buttons .offline {
+	width:16px;
+	height:16px;
+	float:left;
+}
+.offline_sync {
+	background-image:url("@SkinAnimatedImgDir@/ImgOfflineSync.gif?v=@jsVersion@");
+}
+
+.offline_disconnect {
+	background-image:url("/img/offline/ImgDisconnect.png?v=@jsVersion@");
+}
 
 /** reset styles on app row toolbar buttons **/
 #skin_container_global_buttons .ZToolbarButton,

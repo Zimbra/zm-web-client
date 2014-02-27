@@ -82,41 +82,32 @@ function() {
     $(window).on("online offline", ZmOffline.checkServerStatus);
     $(document).on("ZWCOffline", this._onZWCOffline.bind(this));
     $(document).on("ZWCOnline", this._onZWCOnline.bind(this));
-    $(window).load(this._onLoad.bind(this));
+	ZmZimbraMail.addListener(ZmAppEvent.POST_STARTUP, this._onPostStartup.bind(this));
     setInterval(ZmOffline.checkServerStatus, 10000);
 };
 
 ZmOffline.prototype._onZWCOffline =
 function() {
-    appCtxt.setStatusMsg(ZmMsg.OfflineServerNotReachable);
+	ZmOffline.refreshStatusIcon();
     this._disableApps();
 };
 
 ZmOffline.prototype._onZWCOnline =
 function() {
-    appCtxt.setStatusMsg(ZmMsg.OfflineServerReachable);
+	ZmOffline.refreshStatusIcon();
     this._enableApps();
     this._replayOfflineRequest();
     appCtxt.reloadAppCache();
 };
 
-ZmOffline.prototype._onLoad =
+ZmOffline.prototype._onPostStartup =
 function() {
-	//Chrome fires onload event little bit early. Have some delay.
-	var ta = new AjxTimedAction(this, this._onAfterLoad);
-	AjxTimedAction.scheduleAction(ta, 2000);
-};
-
-ZmOffline.prototype._onAfterLoad =
-function() {
-	this.initOfflineFolders();
+	this._initOfflineFolders();
 	if (appCtxt.isWebClientOffline()) {
 		this._onZWCOffline();
 	}
 	else {
-		//Start fetching appcache after some delay giving enough time for fetching other resources.
-		var ta = new AjxTimedAction(appCtxt, appCtxt.reloadAppCache);
-		AjxTimedAction.scheduleAction(ta, 3000);
+		this._cacheStaticResources();
 	}
 	ZmOffline.updateOutboxFolderCount();
 };
@@ -155,7 +146,7 @@ function() {
 	app.resetWebClientOfflineOperations();
 };
 
-ZmOffline.prototype.initOfflineFolders =
+ZmOffline.prototype._initOfflineFolders =
 function() {
 	var folderTree = appCtxt.getFolderTree();
 	if (folderTree) {
@@ -194,10 +185,10 @@ function() {
 	}
 };
 
-ZmOffline.prototype._cacheOfflineData =
-function(){
-    appCtxt.setStatusMsg(ZmMsg.offlineCachingSync, ZmStatusView.LEVEL_INFO);
-    this.sendSyncRequest();
+ZmOffline.prototype._cacheStaticResources =
+function() {
+	var callback = appCtxt.reloadAppCache.bind(appCtxt);
+	AjxDispatcher.require(["Contacts", "TinyMCE", "Extras"], true, callback);
 };
 
 ZmOffline.prototype._downloadCalendar =
@@ -410,6 +401,7 @@ function(folderName){
 
 ZmOffline.prototype.sendSyncRequest =
 function() {
+	ZmOffline.refreshStatusIcon(true);
 	var syncToken = localStorage.getItem("SyncToken");
 	if (syncToken) {
 		this._sendDeltaSyncRequest(syncToken);
@@ -504,13 +496,13 @@ function(downloadCalendar, result) {
 		appCtxt.getRequestMgr().sendRequest(params);
 	}
 	if (downloadCalendar) {
-		this._downloadCalendar(null, null, null, null, true, null);
+		this._downloadCalendar(null, null, null, callback, true, null);
 	}
 };
 
 ZmOffline.prototype._handleInitialSyncError =
 function() {
-
+	ZmOffline.refreshStatusIcon();
 };
 
 ZmOffline.prototype._sendDeltaSyncRequest =
@@ -518,16 +510,17 @@ function(syncToken) {
 	var params = {
 		jsonObj : {SyncRequest:{_jsns:"urn:zimbraMail", token:syncToken, typed:1}},
 		asyncMode : true,
-		callback : this._handleDeltaSyncResponse.bind(this),
+		callback : this._handleDeltaSyncResponse.bind(this, syncToken),
 		errorCallback : this._handleDeltaSyncError.bind(this)
 	};
 	appCtxt.getRequestMgr().sendRequest(params);
 };
 
 ZmOffline.prototype._handleDeltaSyncResponse =
-function(result) {
+function(syncToken, result) {
 	var syncResponse = result && result.getResponse().SyncResponse;
-	if (!syncResponse) {
+	if (!syncResponse || syncResponse.token === syncToken) {
+		ZmOffline.refreshStatusIcon();
 		return;
 	}
 	var callback = this._storeSyncToken.bind(this, syncResponse.token);
@@ -657,6 +650,7 @@ function(folders) {
 
 ZmOffline.prototype._storeSyncToken =
 function(syncToken) {
+	ZmOffline.refreshStatusIcon();
 	localStorage.setItem("SyncToken", syncToken);
 };
 
@@ -695,7 +689,7 @@ function(item, type, callback) {
 	if (type === ZmApp.MAIL) {
 		this._fetchMsgAttachments(item);
 	}
-    appCtxt.setStatusMsg(ZmMsg.offlineCachingDone, ZmStatusView.LEVEL_INFO);
+	ZmOffline.refreshStatusIcon();
 };
 
 ZmOffline.prototype._handleGetError =
@@ -1247,8 +1241,10 @@ function(messages) {
 ZmOffline.prototype._saveAttachments =
 function(attachments) {
     if (!attachments || attachments.length === 0) {
+	    ZmOffline.refreshStatusIcon();
         return;
     }
+	ZmOffline.refreshStatusIcon(true);
     var attachment = attachments.shift();
     var callback = this._isAttachmentSavedinIndexedDBCallback.bind(this, attachment, attachments);
     ZmOffline.isAttachmentSavedinIndexedDB(attachment, callback);
@@ -1421,8 +1417,30 @@ function(contact) {
 
 ZmOffline.setAppCacheStatus =
 function(status) {
-    ZmOffline.appCacheDone = status;
-    if (status) {
-        appCtxt.webClientOfflineHandler._cacheOfflineData();
-    }
+	if (status && appCtxt.isWebClientOfflineSupported && appCtxt.webClientOfflineHandler) {
+		appCtxt.webClientOfflineHandler.sendSyncRequest();
+	}
+	else {
+		ZmOffline.refreshStatusIcon();
+	}
+};
+
+ZmOffline.refreshStatusIcon =
+function(isSyncing) {
+	if (appCtxt.isWebClientOffline()) {
+		$("#" + ZmId.SKIN_OFFLINE_STATUS).addClass("offline_disconnect")
+			.removeClass("offline_sync")
+			.attr("title", ZmMsg.OfflineServerNotReachable);
+	}
+	else {
+		if (isSyncing) {
+			$("#" + ZmId.SKIN_OFFLINE_STATUS).addClass("offline_sync")
+				.removeClass("offline_disconnect")
+				.attr("title", ZmMsg.offlineCachingSync);
+		}
+		else {
+			$("#" + ZmId.SKIN_OFFLINE_STATUS).removeClass("offline_sync offline_disconnect")
+				.attr("title", ZmMsg.offlineCachingDone);
+		}
+	}
 };

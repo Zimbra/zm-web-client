@@ -16,26 +16,46 @@
 -->
 <html manifest="<%=request.getParameter("url")%>">
 <head>
-    <script>
-        window.addEventListener('load', function(e) {
-            var appCache = window.applicationCache;
-            // Fired after the first cache of the manifest.
-            appCache.addEventListener('cached', function() {
-                window.parent.ZmOffline.setAppCacheStatus(true);
-            }, false);
-
-            // Fired after the first download of the manifest.
-            appCache.addEventListener('noupdate', function() {
-                window.parent.ZmOffline.setAppCacheStatus(true);
-            }, false);
-
-            // The manifest returns 404 or 410, the download failed,
-            // or the manifest changed while the download was in progress.
-            appCache.addEventListener('error', function() {
-                window.parent.ZmOffline.setAppCacheStatus(false);
-            }, false);
-        }, false);
-</script>
+	<script>
+		window.addEventListener('load', function(e) {
+			var appCache = window.applicationCache;
+			var parent = window.parent;
+			var ZmOffline = parent.ZmOffline;
+			var AjxDebug = parent.AjxDebug;
+			// Checking for an update. Always the first event fired in the sequence.
+			appCache.addEventListener('checking', function() {
+				ZmOffline.refreshStatusIcon(true);
+				AjxDebug.println(AjxDebug.OFFLINE, "Application Cache :: checking");
+			}, false);
+			// Fired after the first cache of the manifest.
+			appCache.addEventListener('cached', function() {
+				ZmOffline.setAppCacheStatus(true);
+				AjxDebug.println(AjxDebug.OFFLINE, "Application Cache :: cached");
+			}, false);
+			// Fired when the manifest resources have been newly redownloaded.
+			appCache.addEventListener('updateready', function() {
+				ZmOffline.setAppCacheStatus(true);
+				AjxDebug.println(AjxDebug.OFFLINE, "Application Cache :: updateready");
+			}, false);
+			// Fired after the first download of the manifest.
+			appCache.addEventListener('noupdate', function() {
+				ZmOffline.setAppCacheStatus(true);
+				AjxDebug.println(AjxDebug.OFFLINE, "Application Cache :: noupdate");
+			}, false);
+			// The manifest returns 404 or 410, the download failed,
+			// or the manifest changed while the download was in progress.
+			appCache.addEventListener('error', function() {
+				ZmOffline.setAppCacheStatus(false);
+				AjxDebug.println(AjxDebug.OFFLINE, "Application Cache :: error");
+			}, false);
+			// Fired if the manifest file returns a 404 or 410.
+			// This results in the application cache being deleted.
+			appCache.addEventListener('obsolete', function() {
+				ZmOffline.setAppCacheStatus(false);
+				AjxDebug.println(AjxDebug.OFFLINE, "Application Cache :: obsolete");
+			}, false);
+		}, false);
+	</script>
 </head>
     <body></body>
 </html>

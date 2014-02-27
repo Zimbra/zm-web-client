@@ -121,7 +121,7 @@ function(params) {
 	}
 	if (params.offlineRequest || appCtxt.isWebClientOffline()) {
 		if (params.offlineCallback) {
-			params.offlineCallback(params);
+			params.offlineCallback.run(params);
 		}
 		return;
 	}
