@@ -3151,7 +3151,7 @@ function(ev) {
 				appCtxt.getZimletMgr().notifyZimlets("onSelectApp", id);
 			}
 		} else {
-			var isCloseButton = (DwtUiEvent.getTargetWithProp(ev, "id") == ev.item._getIconEl());
+			var isCloseButton = (DwtUiEvent.getTargetWithProp(ev, "id") == ev.item._getIconEl(DwtLabel.RIGHT));
 			if (isCloseButton) {
 				this._appViewMgr.popView(false, id);
 			}

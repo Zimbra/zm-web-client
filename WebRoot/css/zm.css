@@ -5200,6 +5200,10 @@ HTML>BODY .appt-selected .appt_allday_body
 .ZSelected.ZAppTab							{	@AppTabSelected@						}
 .ZSelected .ZAppTabBorder					{	@grad(AppTabColor,AppC,linear-vertical)@ 	}
 
+.SearchTabButton .ZAppTabBorder .ZLeftIcon DIV {
+	display:block;
+}
+
 
 
 /***************

@@ -648,7 +648,7 @@ function(viewId, force) {
 			var button = ac.getButton(tp.id);
 			if (!button) {
 				button = ac.addButton(tp.id, tp);
-				button.setHoverImage("Close");
+				button.setHoverImage("Close", "right");
 			}
 		}
 	}

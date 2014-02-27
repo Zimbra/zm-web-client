@@ -39,14 +39,37 @@
  */
 ZmAppButton = function(params) {
 
-	if (arguments.length == 0) { return; }
+	if (arguments.length == 0) {
+		return;
+	}
 
     params.style = params.style ? params.style : DwtLabel.IMAGE_LEFT;
 	params.posStyle = DwtControl.RELATIVE_STYLE;
     DwtButton.call(this, params);
 
-    this.setImage(params.image);
-    this.setHoverImage(params.hoverImage);
+	if (params.image) {
+		this.setImage(params.image);
+	}
+	else {
+		if (params.leftImage) {
+			this.setImage(	params.leftImage, DwtLabel.LEFT);
+		}
+		if (params.rightImage) {
+			this.setImage(params.rightImage, DwtLabel.RIGHT);
+		}
+	}
+
+	if (params.hoverImage) {
+		this.setHoverImage(params.hoverImage);
+	}
+	else {
+		if (params.leftHoverImage) {
+			this.setHoverImage(params.leftHoverImage, DwtLabel.LEFT);
+		}
+		if (params.rightHoverImage) {
+			this.setHoverImage(params.rightHoverImage, DwtLabel.RIGHT);
+		}
+	}
     this.setText(params.text);
 };
 

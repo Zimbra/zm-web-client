@@ -153,21 +153,9 @@ function(search, resultsCtlr) {
 		this._app.pushView(this._currentViewId);
 		this._filterPanel.reset();
 
-		// search tab button menu
 		var button = appCtxt.getAppChooser().getButton(this.tabId);
-		var menu = new DwtMenu({ parent: button	});
-		button.setMenu(menu);
-		var menuItem;
-		menuItem = new DwtMenuItem({ parent:menu });
-		menuItem.setText(ZmMsg.saveCurrentSearch);
-		menuItem.addSelectionListener(this._saveListener.bind(this));
-		menuItem = new DwtMenuItem({ parent:menu });
-		menuItem.setText(ZmMsg.close);
-		menuItem.addSelectionListener(this._closeListener.bind(this));
-		menuItem = new DwtMenuItem({ parent:menu, style: DwtMenuItem.SEPARATOR_STYLE });
-		menuItem = new DwtMenuItem({ parent:menu, style:DwtMenuItem.CHECK_STYLE });
-		menuItem.setText(ZmMsg.pinned);
-		menuItem.addSelectionListener(this._pinnedListener.bind(this));
+		Dwt.addClass(button.getHtmlElement(), "SearchTabButton");
+		button.addSelectionListener(this._pinnedListener.bind(this));
 	}
 
 	if (search && search.query) {
@@ -199,13 +187,14 @@ function() {
 ZmSearchResultsController.prototype._getTabParams =
 function() {
 	return {
-		id:				this.tabId,
-		image:          "CloseGray",
-        hoverImage:     "Close",
-		text:			ZmSearchResultsController.DEFAULT_TAB_TEXT,
-		textPrecedence:	90,
-		tooltip:		ZmSearchResultsController.DEFAULT_TAB_TEXT,
-        style:          DwtLabel.IMAGE_RIGHT
+		id:					this.tabId,
+		leftImage:			"Pin",
+		rightImage:			"CloseGray",
+        rightHoverImage:	"Close",
+		text:				ZmSearchResultsController.DEFAULT_TAB_TEXT,
+		textPrecedence:		90,
+		tooltip:			ZmSearchResultsController.DEFAULT_TAB_TEXT,
+		style:          	DwtLabel.IMAGE_BOTH
 	};
 };
 
@@ -267,7 +256,12 @@ function(ev) {
 // toggles the pinned state of this tab
 ZmSearchResultsController.prototype._pinnedListener =
 function(ev) {
+	if (!Dwt.hasClass(ev.target, "ImgPin") && !Dwt.hasClass(ev.target, "ImgUnpin")) {
+		return;
+	}
 	this.isPinned = !this.isPinned;
+	var button = appCtxt.getAppChooser().getButton(this.tabId);
+	button.setImage(this.isPinned ? "Unpin" : "Pin", DwtLabel.LEFT);
 };
 
 ZmSearchResultsController.prototype._closeListener =
