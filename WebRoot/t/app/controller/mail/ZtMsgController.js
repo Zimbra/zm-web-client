@@ -163,12 +163,6 @@ Ext.define('ZCS.controller.mail.ZtMsgController', {
 
 		msgView.setState(newState);
 
-		if (newState === ZCS.constant.HDR_COLLAPSED) {
-			msgToolbarBtn.hide();
-		} else {
-			msgToolbarBtn.show();
-		}
-
 		//<debug>
         Ext.Logger.info("Header state: " + newState + " (" + newExpanded + ")");
         //</debug>
