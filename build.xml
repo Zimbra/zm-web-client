@@ -1335,6 +1335,30 @@ if (ext == null) ext = "";
 
     </target>
 
+    <!-- Use this target to have an un-obfusicated version of the source code that runs in production -->
+    <target name="touch-testing-deploy" depends="init">
+
+        <exec executable="/bin/bash">
+            <arg value="${this.zwc.basedir}/build-prod-touch.sh"/>
+            <arg value="testing"/>
+        </exec>
+
+        <delete dir="${webapp.dir}/t"/>
+
+        <!--Copy the testing dir-->
+        <copy todir='${webapp.dir}/t'>
+            <fileset dir='${touch.prod.dir}/testing/${touch.app.name}'/>
+        </copy>
+
+        <!--Copy the templates dir-->
+        <fileset id="templates.fileset" dir="${touch.dir}/resources/templates" casesensitive="yes"/>
+
+        <copy todir="${webapp.dir}/t/resources/templates" verbose="true">
+            <fileset refid="templates.fileset"/>
+        </copy>
+
+    </target>
+
     <target name="touch-dev-deploy" depends="init">
 
         <antcall target="compile.sass"/>
