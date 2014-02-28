@@ -107,7 +107,7 @@ function() {
 		this._onZWCOffline();
 	}
 	else {
-		this._cacheStaticResources();
+		this._initStaticResources();
 	}
 	ZmOffline.updateOutboxFolderCount();
 };
@@ -185,10 +185,32 @@ function() {
 	}
 };
 
-ZmOffline.prototype._cacheStaticResources =
+ZmOffline.prototype._initStaticResources =
 function() {
-	var callback = appCtxt.reloadAppCache.bind(appCtxt);
-	AjxDispatcher.require(["Contacts", "TinyMCE", "Extras"], true, callback);
+	ZmOffline.refreshStatusIcon(true);
+	var staticURLs = [];
+	staticURLs.push("/css/msgview.css");
+	staticURLs.push("/img/large.png");
+	staticURLs.push("/img/large/ImgPerson_48.png");
+	staticURLs.push("/img/arrows/ImgSashArrowsUp.png");
+	staticURLs.push("/img/arrows.png");
+	staticURLs.push("/img/calendar/ImgCalendarDayGrid.repeat.gif");
+	staticURLs.push("/img/offline/ImgDisconnect.png");
+	staticURLs.push("/img/animated/ImgOfflineSync.gif");
+	this._cacheStaticResources(staticURLs);
+};
+
+ZmOffline.prototype._cacheStaticResources =
+function(staticURLs) {
+	if (staticURLs && staticURLs.length > 0) {
+		var url = staticURLs.shift() + "?v=" + cacheKillerVersion;
+		var callback = this._cacheStaticResources.bind(this, staticURLs);
+		AjxRpc.invoke(null, url, null, callback, true);
+	}
+	else {
+		var callback = appCtxt.reloadAppCache.bind(appCtxt);
+		AjxDispatcher.require(["Contacts", "TinyMCE", "Extras"], true, callback);
+	}
 };
 
 ZmOffline.prototype._downloadCalendar =
@@ -1179,6 +1201,7 @@ function(doStop, doNotTrigger) {
     $.ajax({
         type: "HEAD",
         url: "/public/blank.html",
+		cache: false,
         statusCode: {
             0: function() {
                 if (ZmOffline.isServerReachable === true) {

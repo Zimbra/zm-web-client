@@ -213,6 +213,7 @@
 	window.appContextPath		= "${zm:jsEncode(contextPath)}";
 	window.appCurrentSkin		= "${zm:jsEncode(skin)}";
 	window.appExtension			= "${zm:jsEncode(ext)}";
+	window.cacheKillerVersion	= "${zm:jsEncode(vers)}";
 	window.appRequestLocaleId	= "${locale}";
 	window.appDevMode			= ${isDevMode};
     window.appCoverageMode		= ${isCoverage};
@@ -377,7 +378,6 @@ delete text;
 </script>
 
 <script>
-	window.cacheKillerVersion = "${zm:jsEncode(vers)}";
 	function launch() {
 		// quit if this function has already been called
 		if (arguments.callee.done) {return;}

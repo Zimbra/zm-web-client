@@ -2382,6 +2382,7 @@ function() {
 			else {
 				//Don't hide ROOT folder and OUTBOX folder
 				if (folder.id != ZmFolder.ID_ROOT && folder.id != ZmFolder.ID_OUTBOX && folder.webOfflineSyncDays === 0) {
+					AjxDebug.println(AjxDebug.OFFLINE, "Hiding folder :: " + folder.name + " :: " + folder.id);
 					treeItem.setVisible(false);
 				}
 			}
