@@ -316,7 +316,7 @@ Ext.define('ZCS.view.ux.ZtIframe', {
             delegateEvent = function (ev) {
                 var clonedEvent;
 
-                if (ev.srcElement.nodeName === 'A' && !Ext.fly(ev.srcElement).getAttribute("addr")) {
+                if (ev.srcElement.nodeName === 'A') {
                     return false;
                 }
 
@@ -371,11 +371,11 @@ Ext.define('ZCS.view.ux.ZtIframe', {
                         component.fireEvent('inviteReply', idParams.msgId, idParams.action);
                     }
 
-                    delegateEvent(ev);
-
-                    // Don't let the iframe move - only let the parent list scroll
-                    ev.preventDefault();
-                    return false;
+                    if (delegateEvent(ev)) {
+                        // Don't let the iframe move - only let the parent list scroll
+                        ev.preventDefault();
+                        return false;
+                    }
 
                 } else {
                     //<debug>
