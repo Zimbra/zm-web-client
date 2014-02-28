@@ -41,7 +41,7 @@
            <c:set var="theBody" value="${fn:replace(theBody,cid,imageUrl)}"/>
         </c:forEach>
         <c:choose>
-            <c:when test="${isPrintView}">
+            <c:when test="${zm:boolean(isPrintView)}">
                 <%-- Render inline for printview bug #34780 --%>
                 <div id="iframeBody${counter}" class="MsgBody-html">
                 ${theBody}
