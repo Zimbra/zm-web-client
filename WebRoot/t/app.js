@@ -150,7 +150,10 @@ Ext.application({
 		//</debug>
 
 		// Process the inline data (GetInfoResponse and SearchResponse)
-		ZCS.common.ZtUserSession.initSession(window.inlineData);
+		ZCS.session.initSession(window.inlineData);
+
+		// Make sure message boxes (confirms, alerts, warnings) have translated button strings
+		ZCS.util.patchSenchaStrings();
 
 		//<debug>
 		Ext.Logger.info('STARTUP: app launch');

@@ -614,5 +614,23 @@ Ext.define('ZCS.common.ZtUtil', {
 
 	capitalizeString: function(aString){
 	    return aString.replace(/(?:^|\s)\S/g, function(aString) { return aString.toUpperCase(); });
+	},
+
+	/**
+	 * Sencha has its own I18N system to handle strings used by Ext.MessageBox. Since we just want to use a single
+	 * strings file (ZtMsg), we copy our strings over theirs. The strings involved are: Yes No OK Cancel
+	 */
+	patchSenchaStrings: function() {
+		Ext.each(Ext.Object.getKeys(Ext.MessageBox), function(key) {
+			// strings are in static objects like OKCANCEL
+			if (key === key.toUpperCase()) {
+				Ext.each(Ext.MessageBox[key], function(obj) {
+					if (obj.text) {
+						// we need to use the keys: yes no ok cancel
+						obj.text = ZtMsg[obj.text.toLowerCase()];
+					}
+				});
+			}
+		});
 	}
 });
