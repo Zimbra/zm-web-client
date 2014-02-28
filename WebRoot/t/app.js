@@ -31,6 +31,7 @@ Ext.Loader.setPath({
 
 // Load utils and templates
 Ext.require([
+    'ZCS.common.ZtListScrollHack',
 	'ZCS.common.ZtUtil',
 	'ZCS.common.ZtTemplate',
 	'ZCS.common.ZtViewport',

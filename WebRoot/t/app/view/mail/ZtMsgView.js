@@ -264,7 +264,5 @@ Ext.define('ZCS.view.mail.ZtMsgView', {
 				listRef.refreshScroller(listRef.getScrollable().getScroller());
 			}
 		}
-
-		this.up('list').resetScrollHack();
 	}
 });
