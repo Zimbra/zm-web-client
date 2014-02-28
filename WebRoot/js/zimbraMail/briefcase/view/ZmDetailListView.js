@@ -372,13 +372,22 @@ function(item, revisions){
 
 ZmDetailListView.prototype.collapse =
 function(item, clear){
-     var rowIds = this._itemRowIdList[item.id];
-     this._showRows(rowIds, false);
-     this._setImage(item, ZmItem.F_EXPAND, "NodeCollapsed");
-	 this._expanded[item.id] = false;
-     if(clear){
-         this._itemRowIdList[item.id] = null;
-     }
+	var rowIds = this._itemRowIdList[item.id];
+	this._showRows(rowIds, false);
+	this._setImage(item, ZmItem.F_EXPAND, "NodeCollapsed");
+	this._expanded[item.id] = false;
+	if(clear && rowIds){
+		var divId;
+		var el;
+		for (var i = 0; i < rowIds.length; i++) {
+			divId = rowIds[i];
+			el = document.getElementById(divId);
+			if (el && el.parentNode) {
+				el.parentNode.removeChild(el);
+			}
+		}
+		this._itemRowIdList[item.id] = null;
+	}
 };
 
 ZmDetailListView.prototype.collapseAll =
@@ -650,3 +659,57 @@ function(files, node, isInline) {
 	briefcaseApp.initExternalDndUpload(files, node, isInline, selectionCallback);
 };
 
+
+ZmDetailListView.prototype._handleRename = function(item) {
+	// Always collapse - should be harmless if already collapsed or has no versions.  We need
+	// to insure any divs created for revisions are removed before moving the item - otherwise
+	// they will be reused in their old location.
+	this.collapse(item, true);
+
+	this.removeItem(item);
+	var indices = this._sortIndex(this._list, item);
+	if (indices) {
+		this.addItem(item, indices.displayIndex, false, indices.listIndex);
+	}
+	item._nameUpdated = false;
+};
+
+
+/**
+ * Override the sorted Index calculation.  The DetailListView has a mismatch between its list
+ * and the actual displayed rows, which can contain versions of a file.
+ *
+ * @param	{AjxVector}			list		  vector containing the file entries
+ * @param	{ZmBriefcaseItem}	item		  file entry - find the position to insert it
+ *
+ * @return	Object                            See DwtListView.addItem
+ *			{number}			displayIndex  the index at which to add item to list view
+ *			{number}			listIndex	  index at which to add item to list
+ */
+ZmDetailListView.prototype._sortIndex = function(list, item){
+	if (!list) {
+		return null;
+	}
+
+	var lItem;
+	var rowIds;
+	var a = list.getArray();
+	var displayIndex = 0;
+	var itemName = item.name.toLowerCase();
+	var i;
+	for (i = 0; i < a.length; i++) {
+		lItem = a[i];
+		if (!lItem.isFolder && (itemName < lItem.name.toLowerCase())) {
+			break;
+		}
+		rowIds = this._itemRowIdList[lItem.id];
+		if (rowIds && rowIds.length) {
+			displayIndex += rowIds.length + 1;
+		} else {
+			displayIndex++;
+		}
+	}
+	// listIndex = insertion into the underlying list vector.
+	// displayIndex:
+	return { listIndex: i, displayIndex: displayIndex};
+};

@@ -40,6 +40,9 @@ ZmBriefcaseBaseItem = function(id, list, noCache, type) {
 ZmBriefcaseBaseItem.prototype = new ZmItem;
 ZmBriefcaseBaseItem.prototype.constructor = ZmBriefcaseBaseItem;
 
+// Constants
+ZmBriefcaseBaseItem.NAME_UPDATED = "nameUpdated";
+
 //Public methods
 
 /**
@@ -323,10 +326,16 @@ function(obj, batchMode) {
 
     var modified = false, doNotify = true, fields=[];    
     //Updating modified attributes
+	var nameUpdated = false;
+	if (obj.name && (obj.name !== this.name)) {
+		nameUpdated = true;
+	}
     this.set(obj);
 
     if (doNotify) {
-		this._notify(ZmEvent.E_MODIFY, {fields: fields});
+		var details = {fields: fields};
+		details[ZmBriefcaseBaseItem.NAME_UPDATED] = nameUpdated;
+		this._notify(ZmEvent.E_MODIFY, details);
 	}
 	
 };

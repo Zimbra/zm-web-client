@@ -54,7 +54,7 @@ function() {
 ZmBriefcaseBaseView.prototype._sortIndex =
 function(list, item){
     if(!list){
-        return 0;
+        return null;
     }
     var a = list.getArray(), index = a.length;
 	for(var i = 0; i < a.length; i++) {
@@ -65,7 +65,7 @@ function(list, item){
 		}
 
 	}
-	return index;
+	return { listIndex: index, displayIndex: index};
 };
 
 ZmBriefcaseBaseView.prototype._changeListener =
@@ -76,31 +76,37 @@ function(ev) {
 	var items = ev.getDetail("items");
 
 	if (ev.event == ZmEvent.E_CREATE) {
+		var indices;
 		for (var i = 0; i < items.length; i++) {
 			var item = items[i];
 			if (this._list && this._list.contains(item)) { continue; }			// skip if we already have it
-			this.addItem(item, this._sortIndex(this._list, item));
-            this.scrollToItem(item);
-            if(this.getSelection().length > 0){
-                this.selectItem(item, true);
-            }else{
-                this.setSelection(item);
-            }
+			indices = this._sortIndex(this._list, item);
+			if (indices) {
+				this.addItem(item, indices.displayIndex, false, indices.listIndex);
+				this.scrollToItem(item);
+				if(this.getSelection().length > 0){
+					this.selectItem(item, true);
+				}else{
+					this.setSelection(item);
+				}
+			}
 		}
 	}
 
-    if(ev.event == ZmEvent.E_MODIFY){
-        for (var i = 0; i < items.length; i++) {
-			var item = items[i];
+    if (ev.event == ZmEvent.E_MODIFY) {
+		var updateList = false;
+		var item;
+		var nameUpdated;
+		for (var i = 0; i < items.length; i++) {
+			item = items[i];
 			if (this._list && this._list.contains(item)) {
-                this._redrawItem(item);
-                if (this._expanded && this._expanded[item.id]){
-                    //if already expanded, update revisions row
-                    this.parent._expand(item);
-
-                }
-
-            }
+				nameUpdated = ev.getDetail(ZmBriefcaseBaseItem.NAME_UPDATED);
+				if (nameUpdated) {
+					this._handleRename(item);
+				} else {
+					this._handleModified(item);
+				}
+			}
 		}
     }
 
@@ -115,6 +121,18 @@ function(ev) {
         }
     }
 
+};
+
+ZmBriefcaseBaseView.prototype._handleRename = function(item) {
+	this._handleModified(item);
+};
+
+ZmBriefcaseBaseView.prototype._handleModified = function(item) {
+	this._redrawItem(item);
+	if (this._expanded && this._expanded[item.id]) {
+		//if already expanded, update revisions row
+		this.parent._expand(item);
+	}
 };
 
 
@@ -305,7 +323,7 @@ function(ev) {
             }
             else {
                 item.rename(fileName, new AjxCallback(this, this.resetRenameFile));
-            }
+			}
         }else{
             this.redrawItem(item);
         }
