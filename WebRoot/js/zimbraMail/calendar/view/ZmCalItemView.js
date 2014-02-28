@@ -32,10 +32,14 @@
  * 
  * @private
  */
-ZmCalItemView = function(parent, posStyle, controller) {
+ZmCalItemView = function(parent, posStyle, controller, id) {
 	if (arguments.length == 0) return;
 
-	ZmMailMsgView.call(this, {parent:parent, posStyle:posStyle, controller:controller});
+	params = {parent: parent, posStyle: posStyle, controller: controller};
+	if (id) {
+		params.id = id;
+	}
+	ZmMailMsgView.call(this, params);
 };
 
 ZmCalItemView.prototype = new ZmMailMsgView;

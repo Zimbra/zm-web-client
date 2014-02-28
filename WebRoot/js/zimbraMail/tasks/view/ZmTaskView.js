@@ -29,7 +29,8 @@
 */
 ZmTaskView = function(parent, posStyle, controller) {
 
-	ZmCalItemView.call(this, parent, posStyle, controller);
+	var id = ZmId.getViewId(ZmId.VIEW_TASK, null, parent._htmlElId);
+	ZmCalItemView.call(this, parent, posStyle, controller, id);
 };
 
 ZmTaskView.prototype = new ZmCalItemView;
