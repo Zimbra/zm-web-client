@@ -2124,8 +2124,10 @@ function(state, force) {
 			sentByAddr:		ai.sentByAddr,
 			obo:			ai.obo,
 			oboAddr:		ai.oboAddr,
+			oboId:			id +  ZmId.CMP_OBO_SPAN,
 			bwo:			ai.bwo,
 			bwoAddr:		ai.bwoAddr,
+			bwoId:			id +  ZmId.CMP_BWO_SPAN,
 			addressTypes:	ai.addressTypes,
 			participants:	ai.participants,
 			isOutDated:		msg.invite && msg.invite.isEmpty()

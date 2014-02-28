@@ -88,11 +88,11 @@
 		var useBwo = data.bwo && (data.bwoAddr != data.sentByAddr);
 		if (useObo) {
 			$><span style='margin:0 .5em;'><$= ZmMsg.onBehalfOfMidLabel $></span>
-			<span><$= data.obo $></span><$
+			<span id="${oboId}"><$= data.obo $></span><$
 		}
 		if (useBwo) {
 			$><span style='margin:0 .5em;'><$= ZmMsg.byWayOfMidLabel $></span>
-			<span><$= data.bwo $></span><$
+			<span id="${bwoId}"><$= data.bwo $></span><$
 		}
 	$>
 </template>

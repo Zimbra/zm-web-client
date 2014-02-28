@@ -1443,7 +1443,8 @@ function(msg, container, doNotClearBubbles) {
 		hasAttachments:		(attachmentsCount != 0),
 		attachmentsCount:	attachmentsCount,
 		bwo:                ai.bwo,
-		bwoAddr:            ai.bwoAddr
+		bwoAddr:            ai.bwoAddr,
+		bwoId:              ZmId.getViewId(this._viewId, ZmId.CMP_BWO_SPAN, this._mode)
 	};
 
 	if (msg.isHighPriority || msg.isLowPriority) {
@@ -1462,6 +1463,7 @@ function(msg, container, doNotClearBubbles) {
 		subs.sentByAddr = ai.sentByAddr;
 		subs.obo = ai.obo;
 		subs.oboAddr = ai.oboAddr;
+		subs.oboId = ZmId.getViewId(this._viewId, ZmId.CMP_OBO_SPAN, this._mode)
 		subs.addressTypes = ai.addressTypes;
 		subs.participants = ai.participants;
 		subs.reportBtnCellId = reportBtnCellId;
