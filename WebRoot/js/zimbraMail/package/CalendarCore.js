@@ -30,6 +30,7 @@ AjxPackage.require("zimbraMail.calendar.model.ZmAppt");
 AjxPackage.require("zimbraMail.calendar.model.ZmApptList");
 AjxPackage.require("zimbraMail.calendar.model.ZmApptCache");
 AjxPackage.require("zimbraMail.calendar.model.ZmFreeBusyCache");
+AjxPackage.require("zimbraMail.abook.model.ZmContact");
 AjxPackage.require("zimbraMail.calendar.model.ZmResource");
 AjxPackage.require("zimbraMail.calendar.model.ZmResourceList");
 AjxPackage.require("zimbraMail.calendar.view.ZmApptViewHelper");
