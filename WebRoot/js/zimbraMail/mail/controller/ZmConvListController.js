@@ -481,10 +481,17 @@ function(switchingView, callback) {
 	this._popShield.popdown();
 	if (switchingView) {
 		// attempt to switch to TV was canceled - need to undo changes
-		this._updateViewMenu(ZmId.VIEW_TRAD);
+		this._updateViewMenu(ZmId.VIEW_CONVLIST);
 		if (!appCtxt.isExternalAccount() && !this.isSearchResults && !this._currentSearch.isDefaultToMessageView) {
-			this._app.setGroupMailBy(ZmMailListController.GROUP_BY_SETTING[ZmId.VIEW_TRAD]);
+			this._app.setGroupMailBy(ZmMailListController.GROUP_BY_SETTING[ZmId.VIEW_CONVLIST], true);
 		}
+	}
+	//check if this is due to new selected item and it's different than current - if so we need to revert in the list.
+	var selection = this.getSelection();
+	var listSelectedItem = selection && selection.length && selection[0];
+	var conv = this._convView._item;
+	if (conv.id !== listSelectedItem.id) {
+		this.getListView().setSelection(conv, true); //skip notification so item is not re-set in the reading pane (or infinite pop shield loop :) )
 	}
 	appCtxt.getKeyboardMgr().grabFocus(this._convView._replyView._input);
 };

@@ -2077,9 +2077,9 @@ function() {
 };
 
 ZmMailApp.prototype.setGroupMailBy =
-function(groupBy) {
+function(groupBy, skipNotify) {
 	this._groupBy = groupBy;
-	appCtxt.set(ZmSetting.GROUP_MAIL_BY, groupBy);
+	appCtxt.set(ZmSetting.GROUP_MAIL_BY, groupBy, null, false, skipNotify);
 };
 
 // return enough for us to get a scroll bar since we are pageless
