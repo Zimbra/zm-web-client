@@ -240,7 +240,7 @@ function(bubble, index, noFocus) {
 ZmAddressInputField.prototype.getAddressBubble =
 function(email) {
     return this._addressHash[email];
-}
+};
 
 ZmAddressInputField.prototype._hasValidAddress =
 function(params) {
@@ -695,6 +695,9 @@ function(ev, aclv) {
 // need to do this on keyup, after character has appeared in the INPUT
 ZmAddressInputField.prototype._keyUpCallback =
 function(ev, aclv) {
+	if (!this._input.value && this._editMode) {
+		this._leaveEditMode();
+	}
 	this._resizeInput();
 };
 
