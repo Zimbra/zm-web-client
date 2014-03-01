@@ -1150,7 +1150,7 @@ INPUT[type="text"].search_input-expanded {
 /* "Display Images" button in mail message view to show hidden images */
 /* ??? "Displayimages" CLASS REALLY SHOULD BE SHARED WITH "SpellCheckModeDiv"  */
 /* CLASS DEFINED IN spellcheck.css SINCE THEY SHOULD HAVE THE SAME VISUAL LOOK */
-.Displayimages {
+.DisplayImages {
 	@WarningContainer@
 	@WarningText@
 	@BottomSeparator@

@@ -321,7 +321,7 @@
 </template>
 
 <template id='mail.Message#InformationBar'>
-	<div id='${id}' class='Displayimages'>
+	<div id='${id}' class='DisplayImages'>
 		<table role="presentation" width='100%'>
 			<tr>
 				<td width='1%' style='padding:0 1em;'><$= AjxImg.getImageHtml("Warning") $></td>
@@ -332,7 +332,7 @@
 </template>
 
 <template id='mail.Message#ExtImageInformationBar'>
-	<div id='${id}' class='Displayimages'>
+	<div id='${id}' class='DisplayImages'>
 		<table role="presentation" width='100%'><tr>
 			<td width='1%' style='padding:0 1em;'><$= AjxImg.getImageHtml("Warning") $></td>
 			<td>
