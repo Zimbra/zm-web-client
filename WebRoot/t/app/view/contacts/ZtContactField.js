@@ -65,16 +65,25 @@ Ext.define('ZCS.view.contacts.ZtContactField', {
 	 */
 	getValue: function () {
 		var bubbles = this.getBubbles(),
+			type = this.getAddressType(),
 			returnBubbles = [];
 
 		//TODO, remove this when what is in the store is the desired ZtEmailAddress.
 		Ext.each(bubbles, function (bubbleModel) {
 			returnBubbles.push(Ext.create('ZCS.model.mail.ZtEmailAddress', {
-				type: this.getAddressType(),
+				type: type,
 				name: bubbleModel.get('name'),
 				email: bubbleModel.get('email')
  			}));
 		}, this);
+
+		// see if there is a valid email string in the input
+		var inputText = this.element.down('input').getValue(),
+			email = ZCS.model.mail.ZtEmailAddress.fromEmail(inputText, type);
+
+		if (email) {
+			returnBubbles.push(email);
+		}
 
 		return returnBubbles;
 	},
