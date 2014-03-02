@@ -434,29 +434,6 @@ function() {
 	return toolbarOps;
 };
 
-ZmTaskListController.prototype._getButtonOverrides =
-function(buttons) {
-
-	if (!(buttons && buttons.length)) { return; }
-
-	var overrides = {};
-	var idParams = {
-		skinComponent:  ZmId.SKIN_APP_TOP_TOOLBAR,
-		componentType:  ZmId.WIDGET_BUTTON,
-		app:            ZmId.APP_TASKS,
-		containingView: ZmId.VIEW_TASKLIST
-	};
-	for (var i = 0; i < buttons.length; i++) {
-		var buttonId = buttons[i];
-		overrides[buttonId] = {};
-		idParams.componentName = buttonId;
-		var item = (buttonId === ZmOperation.SEP) ? "Separator" : buttonId + " button";
-		var description = item + " on top toolbar for task list view";
-		overrides[buttonId].domId = ZmId.create(idParams, description);
-	}
-	return overrides;
-};
-
 ZmTaskListController.prototype._getRightSideToolBarOps =
 function(noViewMenu) {
 	return [ZmOperation.VIEW_MENU];
@@ -754,11 +731,7 @@ function(tasks) {
 };
 
 ZmTaskListController.prototype._handleDeleteResponse = function(tasks, resp) {
-    var summary = ZmList.getActionSummary({
-	    actionTextKey:  'actionDelete',
-	    numItems:       tasks.length,
-	    type:           ZmItem.TASK
-    });
+    var summary = ZmList.getActionSummary(ZmMsg.actionDelete, tasks.length, ZmItem.TASK);
     appCtxt.setStatusMsg(summary);
 };
 
@@ -823,11 +796,7 @@ function(tasks) {
 	}
 	var actionLogItem = (actionController && actionController.actionPerformed({op: "trash", ids: idList, attrs: {l: ZmOrganizer.ID_TRASH}})) || null;
 	batchCmd.run();
-
-    // Mark the action as complete, so that the undo in the toast message will work
-    actionLogItem.setComplete();
-
-    var summary = ZmList.getActionSummary({type:ZmItem.TASK, actionTextKey:"actionTrash", numItems:tasks.length});
+	var summary = ZmList.getActionSummary(ZmMsg.actionTrash, tasks.length, ZmItem.TASK);
 	
 	var undoLink = actionLogItem && actionController && actionController.getUndoLink(actionLogItem);
 	if (undoLink && actionController) {
@@ -1020,11 +989,7 @@ function(ev) {
 			this._doCheckCompleted(items[i],fItem);
 		}	
 	}
-    var summary = ZmList.getActionSummary({
-        actionTextKey:  'actionCompleted',
-        numItems:       items.length,
-        type:           ZmItem.TASK
-    });
+    var summary = ZmList.getActionSummary(ZmMsg.actionCompleted, items.length, ZmItem.TASK);
     appCtxt.setStatusMsg(summary);
 };
 

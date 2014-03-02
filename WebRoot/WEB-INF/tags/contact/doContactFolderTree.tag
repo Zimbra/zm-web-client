@@ -1,7 +1,7 @@
 <%--
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010, 2011, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
@@ -24,7 +24,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
 
-<zm:forEachFolder var="folder" skiproot="${skiproot}" parentid="${parentid}" skipsystem="${skipsystem}" expanded="${sessionScope.expanded}" skiptopsearch="${zm:boolean(skiptopsearch)}" skiptrash="${zm:boolean(skiptrash)}">
+<zm:forEachFolder var="folder" skiproot="${skiproot}" parentid="${parentid}" skipsystem="${skipsystem}" expanded="${sessionScope.expanded}" skiptopsearch="${skiptopsearch}" skiptrash="${skiptrash}">
     <c:if test="${!folder.isSearchFolder and (folder.isContactView or folder.isUnknownView or folder.isNullView)}">
         <app:contactFolder folder="${folder}"/>
     </c:if>

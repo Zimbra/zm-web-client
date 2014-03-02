@@ -32,8 +32,6 @@ ZmApptAssistantView = function(parent, controller, apptView, closeCallback) {
 
 	DwtComposite.call(this, {parent: parent, posStyle: DwtControl.RELATIVE_STYLE, className: "ZmScheduleAssistantView"});
 
-	this.setScrollStyle(Dwt.SCROLL_Y);
-
 	this._controller    = controller;
 	this._apptView      = apptView;
     this._prefDialog    = appCtxt.getSuggestionPreferenceDialog();

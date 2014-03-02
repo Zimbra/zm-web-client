@@ -1,7 +1,7 @@
 <%--
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
@@ -27,7 +27,7 @@
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <c:if test="${not empty altkey}"><fmt:message key="${altkey}" var="alt"/></c:if>
 <c:if test="${not empty title and not rawtitle}"><fmt:message key="${title}" var="title"/></c:if> 
-<c:if test="${zm:boolean(disabled)}"><c:set var="clazz" value="${clazz} ImgDisabled"/></c:if>
+<c:if test="${disabled}"><c:set var="clazz" value="${clazz} ImgDisabled"/></c:if>
 <app:imginfo var="info" value="${src}" />
 <zm:getUserAgent var="ua" session="false" /><img <c:choose>
         <c:when test="${fn:endsWith(fn:toLowerCase(src),'.png') and ua.isIE and not ua.isIE7up}"> 

@@ -98,10 +98,12 @@ ZCS.constant.FEATURE_FIND_OBJECTS   = 'find_objects';   // look for URLs and ema
 ZCS.constant.IS_ENABLED = {};
 ZCS.constant.IS_ENABLED[ZCS.constant.APP_MAIL]                  = true;
 ZCS.constant.IS_ENABLED[ZCS.constant.APP_CONTACTS]              = true;
-ZCS.constant.IS_ENABLED[ZCS.constant.APP_CALENDAR]              = true;
+ZCS.constant.IS_ENABLED[ZCS.constant.APP_CALENDAR]              = false;
 ZCS.constant.IS_ENABLED[ZCS.constant.FEATURE_ADD_ATTACHMENT]    = true;
 ZCS.constant.IS_ENABLED[ZCS.constant.FEATURE_QUICK_REPLY]       = true;
 ZCS.constant.IS_ENABLED[ZCS.constant.FEATURE_FIND_OBJECTS]      = true;
+// Keep calendar disabled by default ref Bug: 83049
+ZCS.constant.IS_ENABLED[ZCS.constant.APP_CALENDAR]  = false;
 
 // Text to show in overview toolbar if we're showing search results (not a folder, saved search, or tag)
 ZCS.constant.DEFAULT_OVERVIEW_TITLE = ZtMsg.searchResults;
@@ -135,9 +137,6 @@ ZCS.constant.MENU_ADDRESS   = 'addressActions';
 ZCS.constant.MENU_CONTACT   = 'contactActions';
 ZCS.constant.MENU_ORIG_ATT  = 'originalAttachment';
 ZCS.constant.MENU_RECIPIENT = 'recipientActions';
-ZCS.constant.MENU_CALENDAR_ADDRESS   = 'calendarAddressActions';
-ZCS.constant.MENU_INVITE_ACTIONS = 'inviteReplyActions';
-ZCS.constant.MENU_APPT_ACTIONS = 'apptActions';
 
 // Operations (generally tied to dropdown menu items)
 ZCS.constant.OP_COMPOSE     = 'COMPOSE';
@@ -157,9 +156,6 @@ ZCS.constant.OP_ADD_CONTACT = 'ADD_CONTACT';
 ZCS.constant.OP_EDIT        = 'EDIT';
 ZCS.constant.OP_MENU        = 'MENU';
 ZCS.constant.OP_SEARCH      = 'SEARCH';
-ZCS.constant.OP_ACCEPT      = 'ACCEPT';
-ZCS.constant.OP_TENTATIVE   = 'TENTATIVE';
-ZCS.constant.OP_SEARCH      = 'DECLINE';
 
 // Buttons in toolbar at top of item panel
 ZCS.constant.ITEM_BUTTONS = {};
@@ -173,12 +169,6 @@ ZCS.constant.ITEM_BUTTONS[ZCS.constant.APP_CONTACTS]    = [
     { op: ZCS.constant.OP_EDIT,     icon: 'edit',       event: 'edit' },
 	{ op: ZCS.constant.OP_MENU,     icon: 'arrow_down', event: 'showMenu', menuName: ZCS.constant.MENU_CONTACT }
 ];
-ZCS.constant.ITEM_BUTTONS[ZCS.constant.APP_CALENDAR]        = [
-    { op: ZCS.constant.OP_EDIT,         icon: 'edit',         event: 'edit',        hidden: true },
-    { op: ZCS.constant.OP_REPLY,        icon: 'reply',        event: 'showMenu',    menuName: ZCS.constant.MENU_CONV_REPLY },
-    { op: ZCS.constant.OP_MENU,         icon: 'arrow_down',   event: 'showMenu',    menuName: ZCS.constant.MENU_CONV }
-];
-
 
 // Display states for a message view header
 ZCS.constant.HDR_COLLAPSED  = 'collapsed';
@@ -714,13 +704,6 @@ ZCS.constant.INVITE_REPLY_TEXT[ZCS.constant.OP_ACCEPT]      = ZtMsg.invReplyAcce
 ZCS.constant.INVITE_REPLY_TEXT[ZCS.constant.OP_TENTATIVE]   = ZtMsg.invReplyTentativeText;
 ZCS.constant.INVITE_REPLY_TEXT[ZCS.constant.OP_DECLINE]     = ZtMsg.invReplyDeclineText;
 
-ZCS.constant.SHOWAS_OPTIONS = [
-	{ label: ZtMsg.free, 				value: "F", 	selected: false },
-	{ label: ZtMsg.tentative, 			value: "T", 	selected: false },
-	{ label: ZtMsg.busy, 				value: "B", 	selected: true  },
-	{ label: ZtMsg.outOfOffice,			value: "O", 	selected: false }
-];
-
 // Invite attendee (calendar user) types
 ZCS.constant.CUTYPE_INDIVIDUAL	= 'IND';
 ZCS.constant.CUTYPE_GROUP		= 'GRO';
@@ -831,7 +814,7 @@ ZCS.constant.EXTRA_JOB_FIELDS = [
 ZCS.constant.COMPANY_FIELDS_ORDER = {
 	'jobTitle': 1,
 	'department': 2,
-	'company': 3
+	'company': 3,
 };
 
 ZCS.constant.IS_EXTRA_JOB_FIELD = ZCS.util.arrayAsLookupHash(ZCS.constant.EXTRA_JOB_FIELDS);

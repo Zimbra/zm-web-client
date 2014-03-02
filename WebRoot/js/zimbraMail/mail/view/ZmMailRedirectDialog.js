@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2011, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2011, 2012, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
@@ -40,8 +40,9 @@ ZmMailRedirectDialog = function(parent, className) {
 	recipParams.contextId					= this.toString();
     this._recipients = new ZmRecipients(recipParams);
 
+    this._useAcAddrBubbles = appCtxt.get(ZmSetting.USE_ADDR_BUBBLES);
     this._fieldNames = [AjxEmailAddress.TO];
-    var data = { id : this._htmlElId };
+    var data = { id : this._htmlElId, acAddrBubbles : this._useAcAddrBubbles};
 
     for (var i = 0; i < this._fieldNames.length; i++) {
         var typeStr = AjxEmailAddress.TYPE_STRING[this._fieldNames[i]];

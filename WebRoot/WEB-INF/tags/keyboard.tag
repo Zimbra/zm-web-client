@@ -1,7 +1,7 @@
 <%--
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2007, 2008, 2009, 2010, 2012, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
@@ -58,7 +58,7 @@
                 var el = YAHOO.util.Event.getTarget(ev);
                 if (el == null || (el.nodeName == 'INPUT' && el.type != 'checkbox') || el.nodeName == 'TEXTAREA') {
                 <c:choose>
-                <c:when test="${zm:boolean(passspecial)}">
+                <c:when test="${passspecial}">
                     if (!(ev.ctrlKey || ev.altKey || ev.metaKey)) return;
                 </c:when>
                 <c:otherwise>
@@ -109,11 +109,11 @@
             }
             YAHOO.util.Event.addListener(window, "load", init);
 
-            <c:if test="${zm:boolean(globals)}">
+            <c:if test="${globals}">
             <zm:bindKey message="global.NewMessage" id="TAB_COMPOSE"/>
             <zm:bindKey message="global.GoToMail" id="TAB_MAIL"/>
             <zm:bindKey message="global.GoToOptions" id="TAB_OPTIONS"/>
-            <c:if test="${zm:boolean(folders)}">
+            <c:if test="${folders}">
             <zm:bindKey message="overview.folders" id="MFOLDERS"/>
             <zm:bindKey message="mfolders.NewFolder" url="mfolders?actionNewFolder"/>
             <zm:bindKey message="mail.GoToFolder" alias="gotofolder"/>
@@ -121,14 +121,14 @@
             <zm:bindKey message="global.SavedSearch" alias="search"/>
             </c:if>
             </c:if>
-            <c:if test="${zm:boolean(tags) and mailbox.features.tagging}">
+            <c:if test="${tags and mailbox.features.tagging}">
             <zm:bindKey message="overview.tags" id="MTAGS"/>
             <zm:bindKey message="global.GoToTag" alias="gototag"/>
             </c:if>
             <c:if test="${mailbox.features.calendar}">
             <zm:bindKey message="calendar.GoToCalendar" id="TAB_CALENDAR"/>
             <zm:bindKey message="calendar.NewAppointment" url="calendar?action=new"/>
-            <c:if test="${zm:boolean(calendars)}">
+            <c:if test="${calendars}">
             <zm:bindKey message="overview.calendars" url="mcalendars"/>
             </c:if>
             </c:if>
@@ -138,7 +138,7 @@
             <c:if test="${mailbox.features.contacts}">
             <zm:bindKey message="contacts.NewContact" url="search?st=contact&action=newcontact"/>
             <zm:bindKey message="contacts.GoToContacts" id="TAB_ADDRESSBOOK"/>
-            <c:if test="${zm:boolean(contacts)}">
+            <c:if test="${contacts}">
             <zm:bindKey message="overview.addressbooks" id="MADDRBOOKS"/>
             </c:if>
             </c:if>

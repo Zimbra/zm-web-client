@@ -54,6 +54,7 @@ ZmMailListController.GROUP_BY_MSG_KEY[ZmId.VIEW_CONVLIST]	= "byConversation";
 ZmMailListController.GROUP_BY_SHORTCUT[ZmId.VIEW_CONVLIST]	= ZmKeyMap.VIEW_BY_CONV;
 ZmMailListController.GROUP_BY_VIEWS.push(ZmId.VIEW_CONVLIST);
 
+
 // Public methods
 
 ZmConvListController.getDefaultViewType =
@@ -112,7 +113,7 @@ function(view, force) {
 // Internally we manage two maps, one for CLV and one for CV2 (if applicable)
 ZmConvListController.prototype.getKeyMapName =
 function() {
-	if (this._convView && this._convView.isActiveQuickReply()) { //if user is quick replying, don't use the mapping of conv/mail list - so Ctrl+Z works
+	if (this._convView.isActiveQuickReply()) { //if user is quick replying, don't use the mapping of conv/mail list - so Ctrl+Z works
 		return ZmKeyMap.MAP_QUICK_REPLY;
 	}
 	return ZmKeyMap.MAP_CONVERSATION_LIST;
@@ -194,21 +195,20 @@ function(actionCode, ev) {
 			return DwtListView.prototype.handleKeyAction.apply(mlv, arguments);
 
 		// these are for quick reply
+		case ZmKeyMap.CANCEL:
+			var itemView = this.getItemView();
+			if (itemView && itemView._cancelListener) {
+				itemView._cancelListener();
+			}
+			break;
+		
 		case ZmKeyMap.SEND:
 			var itemView = this.getItemView();
 			if (itemView && itemView._sendListener) {
 				itemView._sendListener();
 			}
 			break;
-
-		// do this last since we want CANCEL to bubble up if not handled
-		case ZmKeyMap.CANCEL:
-			var itemView = this.getItemView();
-			if (itemView && itemView._cancelListener && itemView._replyView && itemView._replyView.getVisible()) {
-				itemView._cancelListener();
-				break;
-			}
-
+			
 		default:
 			return ZmDoublePaneController.prototype.handleKeyAction.apply(this, arguments);
 	}
@@ -381,60 +381,6 @@ function(viewId, force, newViewId) {
 	return force ? true : this.popShield(viewId, null, newViewId);
 };
 
-ZmConvListController.prototype._getActionMenuOps = function() {
-
-	var list = ZmDoublePaneController.prototype._getActionMenuOps.apply(this, arguments),
-		index = AjxUtil.indexOf(list, ZmOperation.FORWARD);
-
-	if (index !== -1) {
-		list.splice(index + 1, 0, ZmOperation.FORWARD_CONV);
-	}
-	return list;
-};
-
-ZmConvListController.prototype._getSecondaryToolBarOps = function() {
-
-	var list = ZmDoublePaneController.prototype._getSecondaryToolBarOps.apply(this, arguments),
-		index = AjxUtil.indexOf(list, ZmOperation.EDIT_AS_NEW);
-
-	if (index !== -1 && appCtxt.get(ZmSetting.FORWARD_MENU_ENABLED)) {
-		list.splice(index + 1, 0, ZmOperation.FORWARD_CONV);
-	}
-	return list;
-};
-
-ZmConvListController.prototype._resetOperations = function(parent, num) {
-
-	ZmDoublePaneController.prototype._resetOperations.apply(this, arguments);
-
-	var canForwardConv = false,
-		couldForwardConv = true;
-
-	if (num === 1) {
-		var clv = this._mailListView,
-			item = clv.getSelection()[0];
-
-		if (item && item.type === ZmItem.CONV) {
-			if (clv._getDisplayedMsgCount(item) > 1) {
-				canForwardConv = true;
-			}
-		}
-		else {
-			couldForwardConv = false;
-		}
-	}
-	var op = parent.getOp(ZmOperation.FORWARD_CONV);
-	if (op) {
-		op.setVisible(couldForwardConv);
-		parent.enable(op, canForwardConv);
-	}
-};
-
-ZmConvListController.prototype._forwardListener = function(ev) {
-	var action = ev.item.getData(ZmOperation.KEY_ID);
-	this._doAction({ev:ev, action:action, foldersToOmit:this.getFoldersToOmit(ZmMailListController.REPLY_FOLDERS_TO_OMIT)});
-};
-
 /**
  * Figure out if the given view change is destructive. If so, put up pop shield.
  * 
@@ -481,17 +427,10 @@ function(switchingView, callback) {
 	this._popShield.popdown();
 	if (switchingView) {
 		// attempt to switch to TV was canceled - need to undo changes
-		this._updateViewMenu(ZmId.VIEW_CONVLIST);
+		this._updateViewMenu(ZmId.VIEW_TRAD);
 		if (!appCtxt.isExternalAccount() && !this.isSearchResults && !this._currentSearch.isDefaultToMessageView) {
-			this._app.setGroupMailBy(ZmMailListController.GROUP_BY_SETTING[ZmId.VIEW_CONVLIST], true);
+			this._app.setGroupMailBy(ZmMailListController.GROUP_BY_SETTING[ZmId.VIEW_TRAD]);
 		}
-	}
-	//check if this is due to new selected item and it's different than current - if so we need to revert in the list.
-	var selection = this.getSelection();
-	var listSelectedItem = selection && selection.length && selection[0];
-	var conv = this._convView._item;
-	if (conv.id !== listSelectedItem.id) {
-		this.getListView().setSelection(conv, true); //skip notification so item is not re-set in the reading pane (or infinite pop shield loop :) )
 	}
 	appCtxt.getKeyboardMgr().grabFocus(this._convView._replyView._input);
 };
@@ -574,7 +513,7 @@ function() {
 				var terms = ["underid:" + rootFolderId];
 				var search = this._currentSearch;
 				if (search) {
-					var foldersToExclude = ZmMailListController.FOLDERS_TO_OMIT;
+					var foldersToExclude = [ZmFolder.ID_TRASH, ZmFolder.ID_SPAM];
 					for (var i = 0; i < foldersToExclude.length; i++) {
 						var folderId = foldersToExclude[i];
 						if (acctId) {
@@ -924,10 +863,8 @@ function(items, method, args) {
 };
 
 ZmConvListController.prototype._doFlag =
-function(items, on) {
-	if (on !== true && on !== false) {
-		on = !items[0].isFlagged;
-	}
+function(items) {
+	var on = !items[0].isFlagged;
 	this._applyAction(items, "_doFlag", [on]);
 };
 

@@ -254,7 +254,7 @@
     <tr>
         <td id="iframeBody" class=MsgBody>
             <c:choose>
-                <c:when test="${zm:boolean(body.isTextHtml)}">
+                <c:when test="${body.isTextHtml}">
                     <c:url var="iframeUrl" value="">
                         <c:param name="action" value="imessage"/>
                         <c:param name="im_id" value="${message.id}"/>

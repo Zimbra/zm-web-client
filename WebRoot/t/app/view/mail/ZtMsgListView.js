@@ -2,12 +2,12 @@
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2012, 2013 Zimbra Software, LLC.
- *
+ * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- *
+ * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
@@ -38,7 +38,6 @@ Ext.define('ZCS.view.mail.ZtMsgListView', {
 		itemCls:              'zcs-msgview',
 		cls:                  'zcs-msglist',
 		allowTaps:            true,
-        emptyText:            ZtMsg.selectConv,
 		deferEmptyText:       false,
 		infinite:             false,
 		scrollable: {
@@ -166,12 +165,6 @@ Ext.define('ZCS.view.mail.ZtMsgListView', {
 
 			swipe: function(e) {
 
-                //If this is a vertical swipe, do nothing, so we don't
-                //slow down scrolling.
-                if (e.direction === "up" || e.direction === "down") {
-                    return;
-                }
-
 				var iframe = this.down('[xtype=iframe]'),
 					iframeDom,
 					scrollLeftMax,
@@ -207,60 +200,60 @@ Ext.define('ZCS.view.mail.ZtMsgListView', {
 			scope: this
 		});
 
-	    var interactionStart = function (e) {
+		var interactionStart = function (e) {
 
-			this.lastPageX = e.pageX;
-			var iframe = this.down('[xtype=iframe]'),
-				iframeDom;
-
-			this.scrollIsEnabled = true;
-
-			if (iframe) {
-				iframeDom = iframe.element.dom;
-				var scrollLeft = iframeDom.scrollLeft,
-					scrollLeftMax = iframeDom.scrollWidth - iframeDom.clientWidth;
-
-				// We only want to touch the dom in touchmove if scrolling is possible
-				// even a no-op could hurt scroll performance.
-				if (scrollLeftMax > 0) {
-					this.scrollIsPossible = true;
-				} else {
-					this.scrollIsPossible = false;
-				}
-
-				// Decide if left swiping or right swiping should be allowed based on the current swipe state of
-				// the message.  We don't want a scroll and wipe to happen in the same gesture
-				if (!this.scrollIsPossible) {
-					iframeDom.leftSwipeAllowed = true;
-					iframeDom.rightSwipeAllowed = true;
-				} else if (scrollLeft === 0) {
-					iframeDom.leftSwipeAllowed = false;
-					iframeDom.rightSwipeAllowed = true;
-				} else if (scrollLeft === scrollLeftMax) {
-					iframeDom.rightSwipeAllowed = false;
-					iframeDom.leftSwipeAllowed = true;
-				} else {
-					iframeDom.leftSwipeAllowed = false;
-					iframeDom.rightSwipeAllowed = false;
-				}
-			}
-		},
-
-		interactionMove = function (e) {
-
-			if (this.scrollIsPossible && this.scrollIsEnabled) {
-				var xDifferential = e.pageX - this.lastPageX;
-				if (xDifferential !== 0) {
-					this.down('[xtype=iframe]').element.dom.scrollLeft -= xDifferential;
-				}
 				this.lastPageX = e.pageX;
-			}
-		},
+				var iframe = this.down('[xtype=iframe]'),
+					iframeDom;
 
-		interactionEnd = function () {
+				this.scrollIsEnabled = true;
 
-			this.scrollIsEnabled = false;
-		};
+				if (iframe) {
+					iframeDom = iframe.element.dom;
+					var scrollLeft = iframeDom.scrollLeft,
+						scrollLeftMax = iframeDom.scrollWidth - iframeDom.clientWidth;
+
+					// We only want to touch the dom in touchmove if scrolling is possible
+					// even a no-op could hurt scroll performance.
+					if (scrollLeftMax > 0) {
+						this.scrollIsPossible = true;
+					} else {
+						this.scrollIsPossible = false;
+					}
+
+					// Decide if left swiping or right swiping should be allowed based on the current swipe state of
+					// the message.  We don't want a scroll and wipe to happen in the same gesture
+					if (!this.scrollIsPossible) {
+						iframeDom.leftSwipeAllowed = true;
+						iframeDom.rightSwipeAllowed = true;
+					} else if (scrollLeft === 0) {
+						iframeDom.leftSwipeAllowed = false;
+						iframeDom.rightSwipeAllowed = true;
+					} else if (scrollLeft === scrollLeftMax) {
+						iframeDom.rightSwipeAllowed = false;
+						iframeDom.leftSwipeAllowed = true;
+					} else {
+						iframeDom.leftSwipeAllowed = false;
+						iframeDom.rightSwipeAllowed = false;
+					}
+				}
+			},
+
+			interactionMove = function (e) {
+
+				if (this.scrollIsPossible && this.scrollIsEnabled) {
+					var xDifferential = e.pageX - this.lastPageX;
+					if (xDifferential !== 0) {
+						this.down('[xtype=iframe]').element.dom.scrollLeft -= xDifferential;
+					}
+					this.lastPageX = e.pageX;
+				}
+			},
+
+			interactionEnd = function () {
+
+				this.scrollIsEnabled = false;
+			};
 
 		// Allow swipes to happen at the beginning or end of a touch move.  But not in the middle.
 		this.element.on({
@@ -274,9 +267,30 @@ Ext.define('ZCS.view.mail.ZtMsgListView', {
 			scope: this
 		});
 
-		var scroller = this.getScrollable().getScroller();
+		var scroller = this.getScrollable();
 
-        scroller.getTranslatable().getElement().engageScrollHack();
+		// Start the list scroll off by not using absolute positioning.
+		scroller.getScroller().on('scrollstart', function () {
+			//<debug>
+			Ext.Logger.iframe('Scroll start on list');
+			//</debug>
+		 	this.doIframeProofPositioning(true);
+		}, this);
+
+		scroller.getScroller().on('scrollend', function () {
+			//<debug>
+			Ext.Logger.iframe('Scoll end on list');
+			//</debug>
+			this.doIframeProofPositioning();
+		}, this);
+	},
+
+	doIframeProofPositioning: function(noAbsolute) {
+		if (!noAbsolute) {
+			this.setScrollHack();
+		} else {
+			this.resetScrollHack();
+		}
 	},
 
 	setReadOnly: function (isReadOnly) {
@@ -338,5 +352,23 @@ Ext.define('ZCS.view.mail.ZtMsgListView', {
 				totalHeight += msgViewHeight;
 			}
 		}
+	},
+
+	setScrollHack: function () {
+		var scroller = this.getScrollable().getScroller(),
+			lastY = this.getScrollable().getScroller().getTranslatable().lastY;
+			
+		scroller.getElement().dom.style.position = "absolute";
+		scroller.getElement().dom.style.top = lastY + "px";
+		scroller.getElement().dom.style.webkitTransform = 'translate3d(0px, 0px, 0px)';
+	},
+
+	resetScrollHack: function () {
+		var scroller = this.getScrollable().getScroller(),
+			lastY = this.getScrollable().getScroller().getTranslatable().lastY;
+
+		scroller.getElement().dom.style.position = "relative";
+		scroller.getElement().dom.style.top = "0px";
+		scroller.getElement().dom.style.webkitTransform = 'translate3d(0px, ' + lastY + 'px, 0px)';
 	}
 });

@@ -279,7 +279,7 @@
 <input type="hidden" name="crumb" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
 <%--input element used to set the draftid during autosave--%>
 <c:choose>
-    <c:when test="${zm:boolean(message.isDraft)}">
+    <c:when test="${message.isDraft}">
        <input type="hidden" name="draftid" value="${message.id}"/>
     </c:when>
     <c:otherwise>
@@ -301,7 +301,7 @@
     initAuto("bccField","bccContainer");
 </app:autoComplete>
 
-<c:if test="${isHtml}" >
+<c:if test="${(isHtml)}" >
 <app:htmlCompose isHtmlCont="${isHtmlCont}" mailbox="${mailbox}" />
 </c:if>
 

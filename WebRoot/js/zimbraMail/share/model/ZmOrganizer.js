@@ -79,7 +79,6 @@ ZmOrganizer = function(params) {
 	this.noSuchFolder = params.broken; // Is this a link to some folder that ain't there.
 	this._isAdmin = this._isReadOnly = this._hasPrivateAccess = null;
     this.retentionPolicy = params.retentionPolicy;
-    this.webOfflineSyncDays = params.webOfflineSyncDays || 0;
 
 	this.color =
         params.color ||
@@ -122,8 +121,6 @@ ZmOrganizer.MOUNTPOINT			= ZmEvent.S_MOUNTPOINT;
 ZmOrganizer.ZIMLET				= ZmEvent.S_ZIMLET;
 
 // folder IDs defined in com.zimbra.cs.mailbox.Mailbox
-// Note: since these are defined as Numbers, and IDs come into our system as Strings,
-// we need to use == for comparisons (instead of ===, which will fail)
 ZmOrganizer.ID_ROOT				= 1;
 ZmOrganizer.ID_INBOX			= 2;
 ZmOrganizer.ID_TRASH			= 3;
@@ -423,6 +420,9 @@ function(params) {
 		if (i == "type" || i == "errorCallback" || i == "account") { continue; }
 
 		var value = params[i];
+		if (i == "color") {
+			value = ZmOrganizer.getColorValue(value, type);
+		}
 		if (value) {
 			folder[i] = value;
 		}
@@ -542,22 +542,6 @@ function(callback, batchCmd) {
 ZmOrganizer.getViewName =
 function(organizerType) {
 	return ZmOrganizer.VIEWS[organizerType][0];
-};
-
-/**
- * Checks an organizer (folder or tag) offlineSyncInterval for validity.
- *
- * @param {String}	value		offlineSyncInterval
- * @return	{String}	<code>null</code> if the offlineSyncInterval is valid or an error message if the name is invalid
- */
-ZmOrganizer.checkWebOfflineSyncDays =
-function(value) {
-    if (isNaN(value)) {	return ZmMsg.invalidFolderSyncInterval; }
-    var interval = parseInt(value);
-	if (interval < 0 ||  interval > 30) {
-		return ZmMsg.invalidFolderSyncInterval;
-	}
-	return null;
 };
 
 /**
@@ -691,11 +675,10 @@ function(id, result) {
 * @return	{String}	the name
 */
 ZmOrganizer.prototype.getName = 
-function(showUnread, maxLength, noMarkup, useSystemName, useOwnerName, defaultRootType) {
+function(showUnread, maxLength, noMarkup, useSystemName, useOwnerName) {
 	if (this.nId == ZmFolder.ID_ROOT) {
-		var type = defaultRootType || this.type;
-		return (ZmOrganizer.LABEL[type])
-			? ZmMsg[ZmOrganizer.LABEL[type]] : "";
+		return (ZmOrganizer.LABEL[this.type])
+			? ZmMsg[ZmOrganizer.LABEL[this.type]] : "";
 	}
 	var name = (useSystemName && this._systemName) || (useOwnerName && this.oname) || this.name || "";
 	if (ZmOrganizer.PATH_IN_NAME[this.type] && this.path) {
@@ -794,14 +777,6 @@ function() {
 			: this.id;
 	}
 	return this._remoteId;
-};
-
-/**
- * returns the local part of the ID. In case of local folder it's the same as ID, but for remote, it's the "rid").
- */
-ZmOrganizer.prototype.getLocalId =
-function() {
-	return this.isRemote() ? this.rid : this.id;
 };
 
 /**
@@ -1046,22 +1021,6 @@ function(name, callback, errorCallback, batchCmd) {
 };
 
 /**
- * Sets the web offline sync interval.
- *
- * @param	{String}	        interval		the web offline sync interval
- * @param	{AjxCallback}	    callback		the callback
- * @param	{AjxCallback}	    errorCallback   the error callback
- * @param   {ZmBatchCommand}    batchCmd        optional batch command
- */
-ZmOrganizer.prototype.setOfflineSyncInterval =
-function(interval, callback, errorCallback, batchCmd) {
-	if (this.webOfflineSyncDays == interval) { return; }
-
-	this._organizerAction({action: "webofflinesyncdays", attrs: {numDays: interval}, callback: callback,
-                           errorCallback: errorCallback, batchCmd: batchCmd});
-};
-
-/**
  * Sets the color.
  * 
  * @param	{String}	        color		    the color
@@ -1283,12 +1242,12 @@ function(attrs) {
 /**
  * Assigns the organizer a new parent, moving it within its tree.
  *
- * @param {ZmOrganizer}	newParent		the new parent of this organizer
+ * @param {ZmOrganizer}		newParent		the new parent of this organizer
  * @param {boolean}		noUndo			if true, action is not undoable
+ * @param {String}	actionText		optional custom action text to display as summary
  */
 ZmOrganizer.prototype.move =
-function(newParent, noUndo, batchCmd) {
-
+function(newParent, noUndo, actionText, batchCmd, organizerName) {
 	var newId = (newParent.nId > 0)
 		? newParent.id
 		: ZmOrganizer.getSystemId(ZmOrganizer.ID_ROOT);
@@ -1301,8 +1260,7 @@ function(newParent, noUndo, batchCmd) {
 	}
 	var params = {};
 	params.batchCmd = batchCmd;
-	params.actionTextKey = 'actionMoveOrganizer';
-	params.orgName = this.getName(false, false, true, false, false, this.type);
+	params.actionText = actionText || ZmMsg.actionMove;
 	if (newId == ZmOrganizer.ID_TRASH) {
 		params.actionArg = ZmMsg.trash;
 		params.action = "trash";
@@ -1312,7 +1270,7 @@ function(newParent, noUndo, batchCmd) {
 		if (newParent.account && newParent.account.isLocal()) {
 			newId = [ZmAccount.LOCAL_ACCOUNT_ID, newId].join(":");
 		}
-		params.actionArg = newParent.getName(false, false, true, false, false, this.type);
+		params.actionArg = organizerName || newParent.getName(false, false, true);
 		params.action = "move";
 		params.attrs = {l: newId};
 		params.noUndo = noUndo;
@@ -1344,10 +1302,9 @@ function(batchCmd) {
  *
  * @param	{Boolean}	doRecursive		<code>true</code> to recursively empty the organizer
  * @param	{ZmBatchCommand}	batchCmd	the batch command
- * @param	{Object}	callback
  */
 ZmOrganizer.prototype.empty =
-function(doRecursive, batchCmd, callback) {
+function(doRecursive, batchCmd) {
 	doRecursive = doRecursive || false;
 
 	var isEmptyOp = ((this.type == ZmOrganizer.FOLDER || this.type == ZmOrganizer.ADDRBOOK) &&
@@ -1359,7 +1316,7 @@ function(doRecursive, batchCmd, callback) {
 	// make sure we're not emptying a system object (unless it's SPAM/TRASH/SYNCFAILURES)
 	if (this.isSystem() && !isEmptyOp) { return; }
 
-	var params = {action: "empty", batchCmd: batchCmd, callback: callback};
+	var params = {action:"empty", batchCmd:batchCmd};
 	params.attrs = (this.nId == ZmFolder.ID_TRASH)
 		? {recursive:true}
 		: {recursive:doRecursive};
@@ -1472,9 +1429,9 @@ function(obj, details) {
 		doNotify = true;
 	}
 	if ((obj.rgb != null || obj.color != null) && !obj._isRemote) {
+		this.isColorCustom = obj.rgb != null;
         var color = obj.color || obj.rgb;
 		if (this.isColorChanged(color)) {
-			this.isColorCustom = obj.rgb != null;
 			this.color = obj.color;
             this.rgb = obj.rgb || ZmOrganizer.COLOR_VALUES[color];
 			fields[ZmOrganizer.F_COLOR] = true;
@@ -1524,7 +1481,6 @@ function(obj, details) {
             this.retentionPolicy = null;
         }
     }
-    this.webOfflineSyncDays = obj.webOfflineSyncDays || 0;
 
 	// Send out composite MODIFY change event
 	if (doNotify) {
@@ -1588,7 +1544,7 @@ function(name) {
 */
 ZmOrganizer.prototype.getChild =
 function(name) {
-	name = name ? name.toLowerCase() : "";
+	name = name.toLowerCase();
 	var a = this.children.getArray();
 	var sz = this.children.size();
 	for (var i = 0; i < sz; i++) {
@@ -1952,7 +1908,7 @@ ZmOrganizer.prototype.hasFeeds = function() { return false; };
  * Checks if this folder maps to a datasource. If type is given, returns
  * true if folder maps to a datasource *and* is of the given type.
  *
- * @param	{constant}	type			the type (see {@link ZmAccount.TYPE_POP} or {@link ZmAccount.TYPE_IMAP})
+ * @param	{int}	type			the type (see {@link ZmAccount.TYPE_POP} or {@link ZmAccount.TYPE_IMAP})
  * @param	{Boolean}	checkParent		if <code>true</code>, walk-up the parent chain
  * @return	{Boolean}	<code>true</code> if this folder maps to a datasource
  */
@@ -1967,7 +1923,7 @@ function(type, checkParent) {
  * returns non-null result only if folder maps to datasource(s) *and* is of the
  * given type.
  *
- * @param	{constant}	type			the type (see {@link ZmAccount.TYPE_POP} or {@link ZmAccount.TYPE_IMAP})
+ * @param	{int}	type			the type (see {@link ZmAccount.TYPE_POP} or {@link ZmAccount.TYPE_IMAP})
  * @param	{Boolean}	checkParent		if <code>true</code>, walk-up the parent chain
  * @return	{Array}	the data sources this folder maps to or <code>null</code> for none
  */
@@ -1996,6 +1952,8 @@ ZmOrganizer.prototype.getOwner =
 function() {
 	return this.owner || (this.parent && this.parent.getOwner()) || appCtxt.get(ZmSetting.USERNAME);
 };
+
+
 
 /**
  * Gets the sort index.
@@ -2029,7 +1987,6 @@ function(child, sortFunction) {
  */
 ZmOrganizer.prototype._organizerAction =
 function(params) {
-
 	var cmd = ZmOrganizer.SOAP_CMD[this.type] + "Request";
 	var request = {
 		_jsns: "urn:zimbraMail",
@@ -2075,22 +2032,15 @@ function(params) {
  */
 ZmOrganizer.prototype._handleResponseOrganizerAction =
 function(params, actionLogItem, result) {
-
 	if (actionLogItem) {
 		actionLogItem.setComplete();
 	}
 	if (params.callback) {
 		params.callback.run(result);
 	}
-	if (params.actionTextKey) {
+	if (params.actionText) {
 		var actionController = appCtxt.getActionController();
-		var summary = ZmOrganizer.getActionSummary({
-			actionTextKey:  params.actionTextKey,
-			numItems:       params.numItems || 1,
-			type:           this.type,
-			orgName:        params.orgName,
-			actionArg:      params.actionArg
-		});
+		var summary = ZmOrganizer.getActionSummary(params.actionText, params.numItems || 1, this.type, params.actionArg);
 		var undoLink = actionLogItem && actionController && actionController.getUndoLink(actionLogItem);
 		if (undoLink && actionController) {
 			actionController.onPopup();
@@ -2101,31 +2051,11 @@ function(params, actionLogItem, result) {
 	}
 };
 
-/**
- * Returns a string describing an action, intended for display as toast to tell the
- * user what they just did.
- *
- * @param   {Object}        params          hash of params:
- *          {String}        type            organizer type (ZmOrganizer.*)
- *          {String}        actionTextKey   ZmMsg key for text string describing action
- *          {String}        orgName         name of the organizer that was affected
- *          {String}        actionArg       (optional) additional argument
- *
- * @return {String}     action summary
- */
 ZmOrganizer.getActionSummary =
-function(params) {
-
-	var type = params.type,
-		typeKey = ZmOrganizer.FOLDER_KEY[type],
-		typeText = ZmMsg[typeKey],
-		capKey = AjxStringUtil.capitalize(typeKey),
-		alternateKey = params.actionTextKey + capKey,
-		text = ZmMsg[alternateKey] || ZmMsg[params.actionTextKey],
-		orgName = AjxStringUtil.htmlEncode(params.orgName),
-		arg = AjxStringUtil.htmlEncode(params.actionArg);
-
-	return AjxMessageFormat.format(text, [ typeText, orgName, arg ]);
+function(text, num, type, arg) {
+	var typeTextAuto = ZmMsg[ZmOrganizer.MSG_KEY[type]];
+	var typeTextSingular = ZmMsg[ZmOrganizer.MSG_KEY[type]];
+	return AjxMessageFormat.format(text, [num, typeTextAuto, AjxStringUtil.htmlEncode(arg), typeTextSingular]);
 };
 
 /**

@@ -20,7 +20,7 @@
  * This class manages message composition.
  *
  * @author Conrad Damon
- *
+ * 
  * @param {DwtShell}	container	the containing shell
  * @param {ZmApp}		mailApp		the containing app
  * @param {constant}	type		controller type
@@ -95,17 +95,13 @@ ZmComposeController.DEFAULT_TAB_TEXT = ZmMsg.compose;
 ZmComposeController.NEW_WINDOW_WIDTH = 975;
 ZmComposeController.NEW_WINDOW_HEIGHT = 475;
 
-// Message dialogs
-ZmComposeController.MSG_DIALOG_1	= 1;	// OK
-ZmComposeController.MSG_DIALOG_2	= 2;	// OK Cancel
-
 ZmComposeController._setStatics =
 function() {
 
 	if (ZmComposeController.SETTINGS) { return; }
 
 	// settings whose changes affect us (so we add a listener to them)
-	ZmComposeController.SETTINGS = [ ZmSetting.SHOW_BCC ];
+	ZmComposeController.SETTINGS = [ZmSetting.SHOW_BCC, ZmSetting.USE_ADDR_BUBBLES];
 
 	// radio groups for options items
 	ZmComposeController.RADIO_GROUP = {};
@@ -216,21 +212,29 @@ function() {
 ZmComposeController.prototype.doAction =
 function(params) {
 
-	params = params || {};
+	AjxDebug.println(AjxDebug.REPLY, "-------------- " + params.action + " ----------------------------------");
 	var ac = window.parentAppCtxt || window.appCtxt;
+	if (params.action == ZmOperation.REPLY || params.action == ZmOperation.REPLY_ALL) {
+		var str = ["Browser: " + AjxEnv.browser,
+				   "Offline: " + Boolean(ac.isOffline),
+				   "Multi accts: " + ac.multiAccounts,
+				   "New Window: " + params.inNewWindow,
+				   "Reading pane location: " + ac.get(ZmSetting.READING_PANE_LOCATION)].join(" / ");
+		AjxDebug.println(AjxDebug.REPLY, str);
+	}
 	
 	// in zdesktop, it's possible there are no accounts that support smtp
 	if (ac.isOffline && !ac.get(ZmSetting.OFFLINE_COMPOSE_ENABLED)) {
-		this._showMsgDialog(ZmComposeController.MSG_DIALOG_1, ZmMsg.composeDisabled, DwtMessageDialog.CRITICAL_STYLE);
+		var d = ac.getMsgDialog();
+		d.setMessage(ZmMsg.composeDisabled, DwtMessageDialog.CRITICAL_STYLE);
+		d.popup();
 		return;
 	}
 
-	params.action = params.action || ZmOperation.NEW_MESSAGE;
-	params.inNewWindow = params.inNewWindow || this._app._inNewWindow(params.ev);
 	this._msgSent = false;
 	if (params.inNewWindow) {
         var msgId = params.msg ? params.msg.nId : (this._msg ? this._msg.nId : Dwt.getNextId());
-		var newWinObj = ac.getNewWindow(false, ZmComposeController.NEW_WINDOW_WIDTH, ZmComposeController.NEW_WINDOW_HEIGHT, ZmId.VIEW_COMPOSE + "_" + msgId.replace(/\s|\-/g, '_'));
+		var newWinObj = ac.getNewWindow(false, ZmComposeController.NEW_WINDOW_WIDTH, ZmComposeController.NEW_WINDOW_HEIGHT, ZmId.VIEW_COMPOSE + "_" + msgId);
 
 		// this is how child window knows what to do once loading:
 		newWinObj.command = "compose";
@@ -268,7 +272,7 @@ function() {
 	this._toolbar.enable(ZmOperation.DETACH_COMPOSE, false);
 
 	var view = this._composeView;
-	var msg = view._msg || view._origMsg;
+	var msg = view._msg;
 	var subj = view._subjectField.value;
 	var forAttHtml = view._attcDiv.innerHTML;
 	var msgAttId = view._msgAttId; //include original as attachment
@@ -282,14 +286,15 @@ function() {
     var selectedIdentityIndex = view.identitySelect && view.identitySelect.getSelectedIndex();
 
 	var addrList = {};
+	var addrs = !view._useAcAddrBubbles && view.getRawAddrFields();
 	for (var i = 0; i < ZmMailMsg.COMPOSE_ADDRS.length; i++) {
 		var type = ZmMailMsg.COMPOSE_ADDRS[i];
-		addrList[type] = view.getAddrInputField(type).getAddresses(true);
+		addrList[type] = view._useAcAddrBubbles ? view.getAddrInputField(type).getAddresses(true) : addrs[type];
 	}
 
 	// this is how child window knows what to do once loading:
     var msgId = (msg && msg.nId) || Dwt.getNextId();
-	var newWinObj = appCtxt.getNewWindow(false, ZmComposeController.NEW_WINDOW_WIDTH, ZmComposeController.NEW_WINDOW_HEIGHT, ZmId.VIEW_COMPOSE + "_" + msgId.replace(/\s|\-/g, '_'));
+	var newWinObj = appCtxt.getNewWindow(false, ZmComposeController.NEW_WINDOW_WIDTH, ZmComposeController.NEW_WINDOW_HEIGHT, ZmId.VIEW_COMPOSE + "_" + msgId);
     if (newWinObj.win) {
         newWinObj.win.focus();
     }
@@ -318,14 +323,14 @@ function() {
 
 ZmComposeController.prototype.popShield =
 function() {
-	var dirty = this._composeView.isDirty(true, true);
+	var dirty = this._composeView.isDirty();
 	if (!dirty && (this._draftType != ZmComposeController.DRAFT_TYPE_AUTO)) {
 		return true;
 	}
 
 	var ps = this._popShield = appCtxt.getYesNoCancelMsgDialog();
 	if (this._draftType == ZmComposeController.DRAFT_TYPE_AUTO) {
-		// Message has been saved, but never explicitly by the user.
+		// Messsage has been saved, but never explicitly by the user.
 		// Ask if he wants to keep the autosaved draft.
 		ps.reset();
 		ps.setMessage(ZmMsg.askSaveAutosavedDraft, DwtMessageDialog.WARNING_STYLE);
@@ -349,7 +354,7 @@ function() {
 		ps.registerCallback(DwtDialog.NO_BUTTON, this._popShieldDismissCallback, this);
 	}
 	ps.addPopdownListener(this._dialogPopdownListener);
-	ps.popup();
+	ps.popup(this._composeView._getDialogXY());
 
 	return false;
 };
@@ -380,12 +385,13 @@ function(view, force) {
 
 ZmComposeController.prototype._preUnloadCallback =
 function(view) {
-	return !this._composeView.isDirty(true, true);
+	return !this._composeView.isDirty();
 };
 
 
 ZmComposeController.prototype._preShowCallback =
 function() {
+	this._setSearchToolbarVisibilityPerSkin(false);
 	return true;
 };
 
@@ -406,8 +412,14 @@ function() {
 		this._action != ZmOperation.FORWARD_INLINE &&
 		this._action != ZmOperation.FORWARD_ATT)
 	{
-		if (composeMode == Dwt.HTML) {
-            view._focusHtmlEditor();
+		if (composeMode == DwtHtmlEditor.HTML) {
+            if(view.isTinyMCEEnabled()) {
+                view._focusHtmlEditor();
+            }
+            else{
+                var ta = new AjxTimedAction(view, view._focusHtmlEditor);
+                AjxTimedAction.scheduleAction(ta, 10);
+            }
 		}
 		this._composeView._setBodyFieldCursor();
 	}
@@ -425,6 +437,7 @@ function() {
 		return;
 	}
 
+	this._setSearchToolbarVisibilityPerSkin(true);
 };
 
 /**
@@ -446,7 +459,7 @@ function(params) {
 	ps.registerCallback(DwtDialog.NO_BUTTON, this._popShieldNoCallback, this, params);
 	ps.registerCallback(DwtDialog.CANCEL_BUTTON, this._popShieldDismissCallback, this);
 	ps.addPopdownListener(this._dialogPopdownListener);
-	ps.popup();
+	ps.popup(this._composeView._getDialogXY());
 
 	return true;
 };
@@ -604,7 +617,7 @@ function(draftType, msg, callback, result) {
 	this._initAutoSave();
 	var needToPop = this._processSendMsg(draftType, msg, resp);
 
-//	this._msg = msg;
+	this._msg = msg;
 
 	if (callback) {
 		callback.run(result);
@@ -624,13 +637,14 @@ function(draftType, msg, callback, result) {
 
 ZmComposeController.prototype._handleResponseCancelOrModifyAppt =
 function() {
+	AjxDebug.println(AjxDebug.REPLY, "Reset compose view: _handleResponseCancelOrModifyAppt");
 	this._composeView.reset(false);
 	this._app.popView(true);
     appCtxt.setStatusMsg(ZmMsg.messageSent);
 };
 
 ZmComposeController.prototype._handleErrorSendMsg =
-function(draftType, msg, ex, params) {
+function(draftType, msg, ex) {
 	if (draftType != ZmComposeController.DRAFT_TYPE_NONE &&
 		!AjxUtil.isUndefined(this._wasDirty)) {
 		this._composeView._isDirty = this._wasDirty;
@@ -646,19 +660,18 @@ function(draftType, msg, ex, params) {
     appCtxt.notifyZimlets("onSendMsgFailure", [this, ex, msg]);//notify Zimlets on failure
     if (ex && ex.code) {
 	
-        var errorMsg = null;
+        var msg = null;
         var showMsg = false;
-		var style = null;
         if (ex.code == ZmCsfeException.MAIL_SEND_ABORTED_ADDRESS_FAILURE) {
             var invalid = ex.getData ? ex.getData(ZmCsfeException.MAIL_SEND_ADDRESS_FAILURE_INVALID) : null;
             var invalidMsg = (invalid && invalid.length)
                 ? AjxMessageFormat.format(ZmMsg.sendErrorInvalidAddresses, invalid.join(", ")) : null;
-            errorMsg = ZmMsg.sendErrorAbort + "<br/>" +  AjxStringUtil.htmlEncode(invalidMsg);
-            this.popupErrorDialog(errorMsg, ex, true, true, false, true);
+            msg = ZmMsg.sendErrorAbort + "<br/>" +  AjxStringUtil.htmlEncode(invalidMsg);
+            this.popupErrorDialog(msg, ex, true, true, false, true);
             retVal = true;
         } else if (ex.code == ZmCsfeException.MAIL_SEND_PARTIAL_ADDRESS_FAILURE) {
             var invalid = ex.getData ? ex.getData(ZmCsfeException.MAIL_SEND_ADDRESS_FAILURE_INVALID) : null;
-            errorMsg = (invalid && invalid.length)
+            msg = (invalid && invalid.length)
                 ? AjxMessageFormat.format(ZmMsg.sendErrorPartial, AjxStringUtil.htmlEncode(invalid.join(", ")))
                 : ZmMsg.sendErrorAbort;
             showMsg = true;
@@ -679,33 +692,22 @@ function(draftType, msg, ex, params) {
                     }
                 }
             }
-            errorMsg = ZmMsg.cancelSendMsgWarning;
+            msg = ZmMsg.cancelSendMsgWarning;
             this._composeView.setBackupForm();
             retVal = true;
         } else if (ex.code == ZmCsfeException.MAIL_QUOTA_EXCEEDED) {
-            errorMsg = ZmMsg.errorQuotaExceeded;
-        }
+		    msg = ZmMsg.errorQuotaExceeded;
+	    }
 
         if (this._uploadingProgress){
-            this._initAutoSave();
 		    this._composeView._resetUpload(true);
-			if (ex.code === ZmCsfeException.MAIL_MESSAGE_TOO_BIG) {
-				errorMsg = AjxMessageFormat.format(ZmMsg.attachmentSizeError, AjxUtil.formatSize(appCtxt.get(ZmSetting.MESSAGE_SIZE_LIMIT)));
-				style = DwtMessageDialog.WARNING_STYLE;
-                showMsg = true;
-			}
-			else if (ex.code == ZmCsfeException.MAIL_NO_SUCH_MSG) {
-                // The message was deleted while upload was in progress (likely a discarded draft). Ignore the error.
-                DBG.println(AjxDebug.DBG1, "Message was deleted while uploading a file; ignore the SaveDraft 'No Such Message' error." );
-                retVal  = true;
-                showMsg = false;
-            } else {
-				errorMsg = errorMsg || ZmMsg.attachingFilesError + "<br>" + (ex.msg || "");
-                showMsg = true;
-			}
+		    msg = ZmMsg.attachingFilesError + (ex.msg || "");
+            showMsg = true;
         }
-        if (errorMsg && showMsg) {
-			this._showMsgDialog(ZmComposeController.MSG_DIALOG_1, errorMsg, style || DwtMessageDialog.CRITICAL_STYLE, null, true);
+        if (msg && showMsg) {
+            var msgDialog = appCtxt.getMsgDialog();
+            msgDialog.setMessage(msg, DwtMessageDialog.CRITICAL_STYLE);
+            msgDialog.popup();
             retVal = true;
         }
     }
@@ -715,7 +717,6 @@ function(draftType, msg, ex, params) {
     this._initAutoSave();
     return retVal;
 };
-
 
 /**
  * Creates a new ZmComposeView if one does not already exist
@@ -745,7 +746,7 @@ function() {
 								tabParams:	this._getTabParams()});
 
 		if (this._composeView.identitySelect) {
-			this._composeView.identitySelect.addChangeListener(this._identityChangeListener.bind(this));
+			this._composeView.identitySelect.addChangeListener(new AjxListener(this, this._identityChangeListener, [true]));
 		}
 	}
 	else {
@@ -765,87 +766,37 @@ function(oldView, newView) {
 };
 
 ZmComposeController.prototype._identityChangeListener =
-function(event) {
+function(setSignature, event) {
 
-	var cv = this._composeView;
-	var signatureId = cv._getSignatureIdForAction(null, this._action);
+	var signatureId = this._composeView._getSignatureIdForAction(null, this._action);
 
 	// don't do anything if signature is same
 	if (signatureId == this._currentSignatureId) { return; }
 
-	var okCallback = this._switchIdentityOkCallback.bind(this);
-	var cancelCallback = this._switchIdentityCancelCallback.bind(this, cv.identitySelect.getValue());
-	if (!this._warnUserAboutChanges(ZmId.OP_ADD_SIGNATURE, okCallback, cancelCallback)) {
-		this._switchIdentityOkCallback();
-	}
+	// apply settings
+	this._applyIdentityToBody(setSignature);
+	this._currentSignatureId = signatureId;
 };
 
-ZmComposeController.prototype._switchIdentityOkCallback =
-function() {
-    if(this._currentDlg) {
-	    this._currentDlg.popdown();
-    }
-	this._switchIdentity();
-};
-
-ZmComposeController.prototype._switchIdentityCancelCallback =
-function(identityId) {
-	this._currentDlg.popdown();
-	this._composeView.identitySelect.setSelectedValue(this._currentIdentityId);
-};
-
-ZmComposeController.prototype._switchIdentity =
-function() {
+ZmComposeController.prototype._applyIdentityToBody =
+function(setSignature) {
 	var identity = this._composeView.getIdentity();
-	var sigId = this._composeView._getSignatureIdForAction(identity);
-	this.setSelectedSignature(sigId);
-	var params = {
-		action:			this._action,
-		msg:			this._msg,
-		extraBodyText:	this._composeView.getUserText(),
-		op:				ZmId.OP_ADD_SIGNATURE
- 	};
-	this._composeView.resetBody(params);
-	this._setAddSignatureVisibility();
-	if (identity) {
-		this.resetIdentity(identity.id);
+	if (setSignature) {
+		var sigId = this._composeView._getSignatureIdForAction(identity);
+		this.setSelectedSignature(sigId);
 	}
-	this.resetSignature(sigId);
+	var newMode = this._getComposeMode(this._msg, identity);
+	if (newMode != this._composeView.getComposeMode()) {
+		this._composeView.setComposeMode(newMode);
+	}
+	this._composeView.applySignature(this._getBodyContent(), this._currentSignatureId);
+	this._setAddSignatureVisibility();
 };
 
 ZmComposeController.prototype._handleSelectSignature =
 function(ev) {
-
 	var sigId = ev.item.getData(ZmComposeController.SIGNATURE_KEY);
-	var okCallback = this._switchSignatureOkCallback.bind(this, sigId);
-	var cancelCallback = this._switchSignatureCancelCallback.bind(this);
-	if (!this._warnUserAboutChanges(ZmId.OP_ADD_SIGNATURE, okCallback, cancelCallback)) {
-		this._switchSignature(sigId);
-	}
-};
-
-ZmComposeController.prototype._switchSignatureOkCallback =
-function(sigId) {
-	this._currentDlg.popdown();
-	this._switchSignature(sigId);
-};
-
-ZmComposeController.prototype._switchSignatureCancelCallback =
-function() {
-	this._currentDlg.popdown();
-	this.setSelectedSignature(this._currentSignatureId);
-};
-
-ZmComposeController.prototype._switchSignature =
-function(sigId) {
 	this.setSelectedSignature(sigId);
-	var params = {
-		action:			this._action,
-		msg:			this._msg,
-		extraBodyText:	this._composeView.getUserText(),
-		op:				ZmId.OP_ADD_SIGNATURE
-	};
-	this._composeView.resetBody(params);
 	this.resetSignature(sigId);
 };
 
@@ -867,7 +818,7 @@ function() {
 	}
 	tg.addMember(this._composeView._subjectField);
 	var mode = this._composeView.getComposeMode();
-	var member = (mode === Dwt.TEXT) ? this._composeView._bodyField : this._composeView.getHtmlEditor();
+	var member = (mode === DwtHtmlEditor.TEXT) ? this._composeView._bodyField : this._composeView.getHtmlEditor().getEditorContainer();
 	tg.addMember(member);
 };
 
@@ -880,6 +831,8 @@ ZmComposeController.prototype.handleKeyAction =
 function(actionCode) {
 	switch (actionCode) {
 		case ZmKeyMap.CANCEL:
+			DBG.println("aif1", "Compose ctlr: CANCEL");
+			AjxDebug.println(AjxDebug.REPLY, "Reset compose view: handleKeyAction");
 			this._cancelCompose();
 			break;
 
@@ -906,7 +859,7 @@ function(actionCode) {
 		case ZmKeyMap.HTML_FORMAT:
 			if (appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED)) {
 				var mode = this._composeView.getComposeMode();
-				var newMode = (mode == Dwt.TEXT) ? Dwt.HTML : Dwt.TEXT;
+				var newMode = (mode == DwtHtmlEditor.TEXT) ? DwtHtmlEditor.HTML : DwtHtmlEditor.TEXT;
 				this._setFormat(newMode);
 				this._setOptionsMenu(newMode);
 			}
@@ -967,21 +920,14 @@ function(value) {
 	var button = this._getSignatureButton();
 	var menu = button ? button.getMenu() : null;
 	if (menu) {
-        if (value === ZmIdentity.SIG_ID_NONE) {
-            value = "";
-        }
 		menu.checkItem(ZmComposeController.SIGNATURE_KEY, value, true);
 	}
 };
 
 ZmComposeController.prototype.resetSignature =
-function(sigId) {
+function(sigId, account) {
+	this._composeView.applySignature(this._getBodyContent(), this._currentSignatureId, account);
 	this._currentSignatureId = sigId;
-};
-
-ZmComposeController.prototype.resetIdentity =
-function(identityId) {
-	this._currentIdentityId = identityId;
 };
 
 //
@@ -1024,12 +970,9 @@ function(params) {
 		this._autoSaveTimer.kill();
 	}
 
-	// msg is the original msg for a reply or when editing a draft (not a newly saved draft or sent msg)
-	var msg = this._msg = params.msg;
-	if (msg && msg.isInvite() && ZmComposeController.IS_FORWARD[params.action]) {
-		params.action = ZmOperation.FORWARD_INLINE;
-	}
+	// save args in case we need to re-display (eg go from Reply to Reply All)
 	var action = this._action = params.action;
+	var msg = this._msg = params.msg;
 	
 	this._toOverride = params.toOverride;
 	this._ccOverride = params.ccOverride;
@@ -1040,17 +983,24 @@ function(params) {
 	var identity = params.identity = this._getIdentity(msg);
 
 	this._composeMode = params.composeMode || this._getComposeMode(msg, identity, params);
+	AjxDebug.println(AjxDebug.REPLY, "ZmComposeController::_setView - Compose mode: " + this._composeMode);
 	
+	if (this._needComposeViewRefresh) {
+		this._composeView.dispose();
+		this._composeView = null;
+		this._needComposeViewRefresh = false;
+	}
+
 	var cv = this._composeView;
 	if (!cv) {
 		this.initComposeView();
 		cv = this._composeView;
 	} else {
-		cv.setComposeMode(this._composeMode, true);
+		cv.setComposeMode(this._composeMode, false, true);
 	}
 
 	if (identity) {
-		this.resetSignature(cv._getSignatureIdForAction(identity, action));
+		this._currentSignatureId = cv._getSignatureIdForAction(identity, action);
 	}
 
 	if (!this.isHidden) {
@@ -1067,7 +1017,7 @@ function(params) {
 		this._setAddSignatureVisibility();
 		if (params.sigId) {
 			this.setSelectedSignature(params.sigId);
-			this.resetSignature(params.sigId);
+			this._currentSignatureId = params.sigId;
 		}
 
 		if (params.readReceipt) {
@@ -1090,19 +1040,17 @@ function(params) {
 		if (msg && (action == ZmOperation.DRAFT)) {
 			this._draftType = ZmComposeController.DRAFT_TYPE_MANUAL;
 			if (msg.autoSendTime) {
-				this.saveDraft(ZmComposeController.DRAFT_TYPE_MANUAL, null, null, msg.setAutoSendTime.bind(msg));
-				this._showMsgDialog(ZmComposeController.MSG_DIALOG_1, ZmMsg.messageAutoSaveAborted);
+				this.saveDraft(ZmComposeController.DRAFT_TYPE_MANUAL, null, null, new AjxCallback(msg, msg.setAutoSendTime, null));
+				if (!this._autoSendHaltedDialog) {
+					this._autoSendHaltedDialog = new DwtMessageDialog({parent:this._shell, buttons:[DwtDialog.OK_BUTTON]});
+					this._autoSendHaltedDialog.setMessage(ZmMsg.messageAutoSaveAborted, DwtMessageDialog.WARNING_STYLE);
+				}
+				this._autoSendHaltedDialog.popup(cv._getDialogXY());
 			}
 		} else {
 			this._draftType = ZmComposeController.DRAFT_TYPE_NONE;
 		}
 	}
-
-
-    if (params && params.isEditAsNew){ // bug: 79175 - edit as new should clear "in reply to" field
-        cv._msg = null; //clear _msg in cv so during send we don't use it for "in reply to"
-    }
-
 
     cv.checkAttachments();
     this.sendMsgCallback = params.sendMsgCallback;
@@ -1158,7 +1106,7 @@ function() {
 
 	if (appCtxt.get(ZmSetting.SIGNATURES_ENABLED) || appCtxt.multiAccounts) {
 		var sc = appCtxt.getSignatureCollection();
-		sc.addChangeListener(this._signatureChangeListener.bind(this));
+		sc.addChangeListener(new AjxListener(this, this._signatureChangeListener));
 
 		var button = tb.getButton(ZmOperation.ADD_SIGNATURE);
 		if (button) {
@@ -1224,7 +1172,6 @@ function() {
 	return menu && menu.getItemById(ZmPopupMenu.MENU_ITEM_ID_KEY, ZmOperation.ADD_SIGNATURE);
 };
 
-// only show signature submenu if the account has at least one signature
 ZmComposeController.prototype._setAddSignatureVisibility =
 function(account) {
 	var ac = window.parentAppCtxt || window.appCtxt;
@@ -1238,23 +1185,6 @@ function(account) {
 		button.setVisible(visible);
 		button.parent.cleanupSeparators();
 	}
-	this._setOptionsVisibility();
-};
-
-ZmComposeController.prototype._setOptionsVisibility =
-function() {
-
-	var button = this._toolbar.getButton(ZmOperation.COMPOSE_OPTIONS);
-	var menu = button.getMenu(),
-		opList = menu && menu.opList,
-		optionsEmpty = !opList || opList.length === 0;
-
-	if (opList && opList.length === 1 && opList[0] === ZmOperation.ADD_SIGNATURE) {
-		//this is kinda ugly, special case for the signature menu that is empty. It gets hidden instead of removed so it's still here.
-		var sigButton = this._getSignatureButton();
-		optionsEmpty = !sigButton.getVisible();
-	}
-	button.setVisible(!optionsEmpty);
 };
 
 ZmComposeController.prototype._createOptionsMenu =
@@ -1291,7 +1221,11 @@ function(action) {
 
 	// add read receipt
 	if (ac.get(ZmSetting.MAIL_READ_RECEIPT_ENABLED, null, ac.getActiveAccount())) {
-		list.push(ZmOperation.SEP, ZmOperation.REQUEST_READ_RECEIPT);
+		var fid = this._msg && this._msg.folderId;
+		var folder = fid ? ac.getById(fid) : null;
+		if (!folder || (folder && !folder.isRemote())) {
+			list.push(ZmOperation.SEP, ZmOperation.REQUEST_READ_RECEIPT);
+		}
 	}
 
 	var button = this._toolbar.getButton(ZmOperation.COMPOSE_OPTIONS);
@@ -1320,9 +1254,9 @@ function(action) {
 		var mi = menu.getOp(op);
 		if (!mi) { continue; }
 		if (op == ZmOperation.FORMAT_HTML) {
-			mi.setData(ZmHtmlEditor.VALUE, Dwt.HTML);
+			mi.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.HTML);
 		} else if (op == ZmOperation.FORMAT_TEXT) {
-			mi.setData(ZmHtmlEditor.VALUE, Dwt.TEXT);
+			mi.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.TEXT);
 		}
 		mi.setData(ZmOperation.KEY_ID, op);
 		mi.addSelectionListener(this._listeners[ZmOperation.COMPOSE_OPTIONS]);
@@ -1345,7 +1279,7 @@ function(composeMode, incOptions) {
 	if (!menu) { return; }
 
 	if (ac.get(ZmSetting.HTML_COMPOSE_ENABLED)) {
-		menu.checkItem(ZmHtmlEditor.VALUE, composeMode, true);
+		menu.checkItem(ZmHtmlEditor._VALUE, composeMode, true);
 	}
 
 	if (ac.get(ZmSetting.MAIL_READ_RECEIPT_ENABLED) || ac.multiAccounts) {
@@ -1374,7 +1308,6 @@ function(composeMode, incOptions) {
 	this._setDependentOptions(incOptions);
 
 	button.setMenu(menu);
-	this._setOptionsVisibility();
 };
 
 ZmComposeController.prototype._setDependentOptions =
@@ -1399,23 +1332,6 @@ function(incOptions) {
 		mi.setEnabled(allowOptions);
 		mi.setChecked(incOptions.headers, true);
 	}
-	//If we attach multiple messages, disable changing from "include as attachment" to "include original" (inc_body, a.k.a. include inline). Bug 74467
-	var incOptionsDisabled = this._msgIds && this._msgIds.length > 1;
-	mi = menu.getOp(ZmOperation.INC_BODY);
-	if (mi) {
-		mi.setEnabled(!incOptionsDisabled);
-	}
-	mi = menu.getOp(ZmOperation.INC_ATTACHMENT);
-	if (mi) {
-		mi.setEnabled(!incOptionsDisabled);
-	}
-	mi = menu.getOp(ZmOperation.REQUEST_READ_RECEIPT);
-	if (mi) {
-		var fid = this._msg && this._msg.folderId;
-		var ac = window.parentAppCtxt || window.appCtxt;
-		var folder = fid ? ac.getById(fid) : null;
-		mi.setEnabled(!folder || (folder && !folder.isRemote()));
-	}
 };
 
 /**
@@ -1438,29 +1354,29 @@ ZmComposeController.prototype._getComposeMode =
 function(msg, identity, params) {
 
 	// depending on COS/user preference set compose format
-	var composeMode = Dwt.TEXT;
+	var composeMode = DwtHtmlEditor.TEXT;
     var ac = window.parentAppCtxt || window.appCtxt;
 	if (ac.get(ZmSetting.HTML_COMPOSE_ENABLED)) {
         if (this._action == ZmOperation.NEW_MESSAGE) {
             if (ac.get(ZmSetting.COMPOSE_AS_FORMAT) == ZmSetting.COMPOSE_HTML) {
-                composeMode = Dwt.HTML;
+                composeMode = DwtHtmlEditor.HTML;
             }
         } 
 		else if (this._action == ZmOperation.DRAFT) {
             if (params && params.isEditAsNew) { //For Edit As New option Bug:73479
                 if (ac.get(ZmSetting.COMPOSE_AS_FORMAT) === ZmSetting.COMPOSE_HTML) {
-                    composeMode = Dwt.HTML;
+                    composeMode = DwtHtmlEditor.HTML;
                 }
             }
             else if (msg && msg.isHtmlMail()) {
-                composeMode = Dwt.HTML;
+                composeMode = DwtHtmlEditor.HTML;
             }
 		}
 		else if (identity) {
 			var sameFormat = ac.get(ZmSetting.COMPOSE_SAME_FORMAT);
 			var asFormat = ac.get(ZmSetting.COMPOSE_AS_FORMAT);
 			if ((!sameFormat && asFormat == ZmSetting.COMPOSE_HTML) ||  (sameFormat && msg && msg.isHtmlMail())) {
-				composeMode = Dwt.HTML;
+				composeMode = DwtHtmlEditor.HTML;
 			}
 		}
 	}
@@ -1477,13 +1393,21 @@ ZmComposeController.prototype._setFormat =
 function(mode) {
 
 	var curMode = this._composeView.getComposeMode();
-	if (mode === curMode) { return false; }
+	if (mode == curMode) { return; }
 
-	var op = (mode === Dwt.HTML) ? ZmOperation.FORMAT_HTML : ZmOperation.FORMAT_TEXT;
-	var okCallback = this._formatOkCallback.bind(this, mode);
-	var cancelCallback = this._formatCancelCallback.bind(this, curMode);
-	if (!this._warnUserAboutChanges(op, okCallback, cancelCallback)) {
-		this._composeView.setComposeMode(mode);
+	var cv = this._composeView;
+	var dirty = cv.isDirty();
+	if (!AjxUtil.isEmpty(this._getBodyContent()) && mode == DwtHtmlEditor.TEXT) {
+		if (!this._formatWarningDialog) {
+			this._formatWarningDialog = new DwtMessageDialog({parent:this._shell, buttons:[DwtDialog.OK_BUTTON, DwtDialog.CANCEL_BUTTON]});
+		}
+		var fwDlg = this._formatWarningDialog;
+		fwDlg.registerCallback(DwtDialog.OK_BUTTON, this._formatOkCallback, this, [mode]);
+		fwDlg.registerCallback(DwtDialog.CANCEL_BUTTON, this._formatCancelCallback, this, [curMode]);
+		fwDlg.setMessage(ZmMsg.switchToText, DwtMessageDialog.WARNING_STYLE);
+		fwDlg.popup(cv._getDialogXY());
+	} else {
+		cv.setComposeMode(mode, true);
 		return true;
 	}
 
@@ -1527,6 +1451,7 @@ function(draftType, msg, resp) {
 		}
 
 		if (resp || !appCtxt.get(ZmSetting.SAVE_TO_SENT)) {
+			AjxDebug.println(AjxDebug.REPLY, "Reset compose view: _processSendMsg");
 			this._composeView.reset(false);
 
 			// bug 36341
@@ -1574,7 +1499,6 @@ function(draftType, msg, resp) {
 			var transitions = [ ZmToast.FADE_IN, ZmToast.IDLE, ZmToast.PAUSE, ZmToast.FADE_OUT ];
 			appCtxt.setStatusMsg(ZmMsg.draftSaved, ZmStatusView.LEVEL_INFO, null, transitions);
 		}
-		this._draftMsg = msg;
 		this._composeView.processMsgDraft(msg);
 		// TODO - disable save draft button indicating a draft was saved
 
@@ -1597,7 +1521,7 @@ function(draftType, msg, resp) {
 	if (isScheduled) {
 		if (appCtxt.isChildWindow) {
 			var pAppCtxt = window.parentAppCtxt;
-			if (pAppCtxt.getAppViewMgr().getAppView(ZmApp.MAIL)) {
+			if(pAppCtxt.getAppViewMgr().getAppView(ZmApp.MAIL)) {
 				var listController = pAppCtxt.getApp(ZmApp.MAIL).getMailListController();
 				if (listController && listController._draftSaved) {
 					//Pass the mail response to the parent window such that the ZmMailMsg obj is created in the parent window.
@@ -1619,7 +1543,6 @@ function(draftType, msg, resp) {
 // Send button was pressed
 ZmComposeController.prototype._sendListener =
 function(ev) {
-	appCtxt.notifyZimlets("onSendButtonClicked", [this, this._msg]);
 	this._send();
 };
 
@@ -1638,14 +1561,16 @@ function(ev) {
 // Cancel button was pressed
 ZmComposeController.prototype._cancelListener =
 function(ev) {
+	AjxDebug.println(AjxDebug.REPLY, "ZmComposeController: _cancelListener");
 	this._cancelCompose();
 };
 
 ZmComposeController.prototype._cancelCompose =
 function() {
-	var dirty = this._composeView.isDirty(true, true);
+	var dirty = this._composeView.isDirty();
 	var needPrompt = dirty || (this._draftType == ZmComposeController.DRAFT_TYPE_AUTO);
 	if (!needPrompt) {
+		AjxDebug.println(AjxDebug.REPLY, "Reset compose view: _cancelCompose");
 		this._composeView.reset(true);
 	} else {
 		this._composeView.enableInputs(false);
@@ -1657,9 +1582,41 @@ function() {
 // Attachment button was pressed
 ZmComposeController.prototype._attachmentListener =
 function(isInline) {
-	var type =
-		isInline ? ZmComposeView.UPLOAD_INLINE : ZmComposeView.UPLOAD_COMPUTER;
-	this._composeView.showAttachmentDialog(type);
+
+    var view = this._composeView,
+        fileInputElement;
+
+    if (isInline && AjxEnv.supportsHTML5File && !view._attcBtnInlineFileInpId) {
+        view.collapseAttMenu();//This will create the attach menu options
+    }
+
+	if (!this._detachOkCancel) {
+		// detach ok/cancel dialog is only necessary if user clicked on the add attachments button
+		this._detachOkCancel = new DwtMessageDialog({parent:this._shell, buttons:[DwtDialog.OK_BUTTON, DwtDialog.CANCEL_BUTTON]});
+		this._detachOkCancel.setMessage(ZmMsg.detachAnyway, DwtMessageDialog.WARNING_STYLE);
+		this._detachOkCancel.registerCallback(DwtDialog.OK_BUTTON, this._detachCallback, this);
+	}
+    if (AjxEnv.supportsHTML5File) {
+        if (isInline) {
+            if (view._attcBtnInlineFileInpId) {
+                fileInputElement = document.getElementById(view._attcBtnInlineFileInpId);
+            }
+        }
+        else {
+            if (view._attcBtnFileInpId) {
+                fileInputElement = document.getElementById(view._attcBtnFileInpId);
+            }
+        }
+        if (fileInputElement && fileInputElement.click) {
+            try {
+                fileInputElement.click();
+                return;
+            }
+            catch(e) {
+            }
+        }
+    }
+    view.showAttachmentDialog(ZmMsg.myComputer);
 };
 
 ZmComposeController.prototype._optionsListener =
@@ -1692,7 +1649,7 @@ function(ev) {
             this._msg._resetAllInlineAttachments();
         }
 
-		this._setFormat(ev.item.getData(ZmHtmlEditor.VALUE));
+		this._setFormat(ev.item.getData(ZmHtmlEditor._VALUE));
 	} else if (op != ZmOperation.ADD_SIGNATURE) {
 		// at this point we assume the op is related to include options
 		if (this._setInclude(op)) {
@@ -1705,10 +1662,22 @@ function(ev) {
 ZmComposeController.prototype._setInclude =
 function(op) {
 
-	// Only give warning if user has typed text that can't be preserved
-	var okCallback = this._switchIncludeOkCallback.bind(this, op);
-	var cancelCallback = this._switchIncludeCancelCallback.bind(this, AjxUtil.hashCopy(this._curIncOptions));
-	return (!this._warnUserAboutChanges(op, okCallback, cancelCallback));
+	var what = this._curIncOptions.what;
+	var canInclude = (what == ZmSetting.INC_BODY || what == ZmSetting.INC_SMART);
+	if (this._composeView.isDirty() && canInclude) {
+		// warn user of possible lost content
+		if (!this._switchIncludeDialog) {
+			this._switchIncludeDialog = new DwtMessageDialog({parent:this._shell, buttons:[DwtDialog.OK_BUTTON, DwtDialog.CANCEL_BUTTON]});
+			this._switchIncludeDialog.setMessage(ZmMsg.switchIncludeWarning, DwtMessageDialog.WARNING_STYLE);
+		}
+		this._switchIncludeDialog.registerCallback(DwtDialog.OK_BUTTON, this._switchIncludeOkCallback, this, [op]);
+		var origIncOptions = AjxUtil.hashCopy(this._curIncOptions);
+		this._switchIncludeDialog.registerCallback(DwtDialog.CANCEL_BUTTON, this._switchIncludeCancelCallback, this, [origIncOptions]);
+		this._switchIncludeDialog.popup(this._composeView._getDialogXY());
+		return false;
+	} else {
+		return true;
+	}
 };
 
 ZmComposeController.prototype._switchInclude =
@@ -1731,7 +1700,7 @@ function(op) {
 
 	var cv = this._composeView;
 	if (op != ZmOperation.FORMAT_HTML && op != ZmOperation.FORMAT_TEXT) {
-		if (cv._composeMode == Dwt.TEXT) {
+		if (cv._composeMode == DwtHtmlEditor.TEXT) {
 			AjxTimedAction.scheduleAction(new AjxTimedAction(this, function() { cv.getHtmlEditor().moveCaretToTop(); }), 200);
 		}
 	}    
@@ -1745,20 +1714,16 @@ function(op) {
 		this._action = ZmOperation.FORWARD_INLINE;
 	}
 
-	var params = {
-		action:			this._action,
-		msg:			this._msg,
-		extraBodyText:	this._composeView.getUserText(),
-		op:				op
-	};
-	this._composeView.resetBody(params);
+	var unquotedContent = cv.getUnQuotedContent();
+
+	cv.resetBody(this._action, this._msg, unquotedContent);
 };
 
 ZmComposeController.prototype._detachListener =
 function(ev) {
 	var atts = this._composeView.getAttFieldValues();
 	if (atts.length) {
-		this._showMsgDialog(ZmComposeController.MSG_DIALOG_2, ZmMsg.importErrorUpload, null, this._detachCallback.bind(this));
+		this._detachOkCancel.popup(this._composeView._getDialogXY());
 	} else {
 		this.detach();
 	}
@@ -1772,7 +1737,7 @@ function(ev) {
 
 ZmComposeController.prototype._autoSaveCallback =
 function(idle) {
-    if (idle && !DwtBaseDialog.getActiveDialog() && !this._composeView.getHtmlEditor().isSpellCheckMode() && this._composeView.isDirty(true, true)) {
+    if (idle && !DwtBaseDialog.getActiveDialog() && !this._composeView.getHtmlEditor().isSpellCheckMode() && this._composeView.isDirty()) {
 		this.saveDraft(ZmComposeController.DRAFT_TYPE_AUTO);
 	}
 };
@@ -1796,21 +1761,17 @@ function(draftType, attId, docIds, callback, contactId) {
 };
 
 ZmComposeController.prototype._handleResponseSaveDraftListener =
-function(draftType, callback, result) {
+function(draftType, callback) {
 	if (draftType == ZmComposeController.DRAFT_TYPE_AUTO &&
 		this._draftType == ZmComposeController.DRAFT_TYPE_NONE) {
 		this._draftType = ZmComposeController.DRAFT_TYPE_AUTO;
 	} else if (draftType == ZmComposeController.DRAFT_TYPE_MANUAL) {
 		this._draftType = ZmComposeController.DRAFT_TYPE_MANUAL;
 	}
-//	this._action = ZmOperation.DRAFT;
-
-	if (draftType === ZmComposeController.DRAFT_TYPE_MANUAL) {
-		this._setCancelText(ZmMsg.close)
-	}
+	this._action = ZmOperation.DRAFT;
 
 	if (callback) {
-		callback.run(result);
+		callback.run();
 	}
 };
 
@@ -1836,15 +1797,18 @@ function(ev) {
 	if (id == ZmSetting.SHOW_BCC) {
 		//Handle, if SHOW_BCC setting is changed, need to do when we come up with a COS Preference.
 	}
+	else if (id == ZmSetting.USE_ADDR_BUBBLES) {
+		this._needComposeViewRefresh = true;
+	}
 };
 
 ZmComposeController.prototype.showDelayDialog =
 function() {
 	if (!this._delayDialog) {
 		this._delayDialog = new ZmTimeDialog({parent:this._shell, buttons:[DwtDialog.OK_BUTTON, DwtDialog.CANCEL_BUTTON]});
-		this._delayDialog.setButtonListener(DwtDialog.OK_BUTTON, this._handleDelayDialog.bind(this));
+		this._delayDialog.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._handleDelayDialog));
 	}
-	this._delayDialog.popup();
+	this._delayDialog.popup(this._composeView._getDialogXY());
 };
 
 ZmComposeController.prototype._handleDelayDialog =
@@ -1874,23 +1838,33 @@ function() {
 
 ZmComposeController.prototype.showDelayPastDialog =
 function() {
-	this._showMsgDialog(ZmComposeController.MSG_DIALOG_2, ZmMsg.sendLaterPastError, null, this._handleDelayPastDialog.bind(this));
+	if (!this._delayPastDialog) {
+		this._delayPastDialog = new DwtMessageDialog({parent:this._shell, buttons:[DwtDialog.OK_BUTTON, DwtDialog.CANCEL_BUTTON], id: "ShowDelayPastDialog"});
+		this._delayPastDialog.setMessage(ZmMsg.sendLaterPastError, DwtMessageDialog.WARNING_STYLE);
+		this._delayPastDialog.registerCallback(DwtDialog.OK_BUTTON, this._handleDelayPastDialog, this, []);
+	}
+	this._delayPastDialog.popup();
 };
 
 ZmComposeController.prototype.showInvalidDateDialog =
 function() {
-	this._showMsgDialog(ZmComposeController.MSG_DIALOG_1, ZmMsg.invalidDateFormat, DwtMessageDialog.CRITICAL_STYLE, this._handleInvalidDateDialog.bind(this));
+	if (!this._invalidDateDialog) {
+		this._invalidDateDialog = new DwtMessageDialog({parent:this._shell, buttons:[DwtDialog.OK_BUTTON], id: "ShowDelayPastDialog"});
+		this._invalidDateDialog.setMessage(ZmMsg.invalidDateFormat, DwtMessageDialog.CRITICAL_STYLE);
+		this._invalidDateDialog.registerCallback(DwtDialog.OK_BUTTON, this._handleInvalidDateDialog, this, []);
+	}
+	this._invalidDateDialog.popup();
 };
 
 ZmComposeController.prototype._handleInvalidDateDialog =
 function() {
-	this._currentDlg.popdown();
+    this._invalidDateDialog.popdown();
     this._sendLaterListener();
 }
 
 ZmComposeController.prototype._handleDelayPastDialog =
 function() {
-	this._currentDlg.popdown();
+	this._delayPastDialog.popdown();
 	this._send();
 };
 
@@ -1905,24 +1879,24 @@ ZmComposeController.prototype._detachCallback =
 function() {
 	// get rid of any lingering attachments since they cannot be detached
 	this._composeView.cleanupAttachments();
-	this._currentDlg.popdown();
+	this._detachOkCancel.popdown();
 	this.detach();
 };
 
 ZmComposeController.prototype._formatOkCallback =
 function(mode) {
-	this._currentDlg.popdown();
-	this._composeView.setComposeMode(mode);
+	this._formatWarningDialog.popdown();
+	this._composeView.setComposeMode(mode, true);
 	this._composeView._isDirty = true;
 };
 
 ZmComposeController.prototype._formatCancelCallback =
 function(mode) {
-	this._currentDlg.popdown();
+	this._formatWarningDialog.popdown();
 
 	// reset the radio button for the format button menu
 	var menu = this._toolbar.getButton(ZmOperation.COMPOSE_OPTIONS).getMenu();
-	menu.checkItem(ZmHtmlEditor.VALUE, mode, true);
+	menu.checkItem(ZmHtmlEditor._VALUE, mode, true);
 
 	this._composeView.reEnableDesignMode();
 };
@@ -1949,6 +1923,7 @@ function(mailtoParams) {
 		if (appCtxt.isChildWindow && window.parentController) {
 			window.onbeforeunload = null;
 		} else {
+			AjxDebug.println(AjxDebug.REPLY, "Reset compose view: _popShieldYesCallback");
 			this._composeView.reset(false);
 		}
 		if (mailtoParams) {
@@ -1976,6 +1951,7 @@ function(mailtoParams) {
 			window.onbeforeunload = null;
 		}
 
+		AjxDebug.println(AjxDebug.REPLY, "Reset compose view: _popShieldNoCallback");
         this._composeView.reset(false);
 
 		if (!mailtoParams) {
@@ -1995,7 +1971,7 @@ function(mailtoParams) {
 
 ZmComposeController.prototype._popShieldDiscardCallback =
 function() {
-	this._deleteDraft(this._draftMsg);
+	this._deleteDraft(this._composeView._msg);
 	this._dontSavePreHide = true; //do not save dirty state to a draft in pre hide
 	this._popShieldNoCallback();
 };
@@ -2012,14 +1988,14 @@ function() {
 
 ZmComposeController.prototype._switchIncludeOkCallback =
 function(op) {
-	this._currentDlg.popdown();
+	this._switchIncludeDialog.popdown();
 	this._switchInclude(op);
 	this._setDependentOptions();
 };
 
 ZmComposeController.prototype._switchIncludeCancelCallback =
 function(origIncOptions) {
-	this._currentDlg.popdown();
+	this._switchIncludeDialog.popdown();
 	this._setOptionsMenu(null, origIncOptions);
 };
 
@@ -2048,7 +2024,7 @@ function() {
 		return this._composeView.getRecipientField(AjxEmailAddress.TO);
 	}
 
-	return (this._composeView.getComposeMode() == Dwt.TEXT)
+	return (this._composeView.getComposeMode() == DwtHtmlEditor.TEXT)
 		? this._composeView._bodyField
 		: this._composeView._htmlEditor;
 };
@@ -2064,7 +2040,7 @@ function(button, account) {
 	var options = appCtxt.getSignatureCollection(account).getSignatureOptions();
 	if (options.length > 0) {
 		menu = new DwtMenu({parent:button});
-		var listener = this._handleSelectSignature.bind(this);
+		var listener = new AjxListener(this, this._handleSelectSignature);
 		var radioId = this._composeView._htmlElId + "_sig";
 		for (var i = 0; i < options.length; i++) {
 			var option = options[i];
@@ -2093,13 +2069,7 @@ function(ev) {
 ZmComposeController.prototype.resetSignatureToolbar =
 function(selected, account) {
 	var button = this._getSignatureButton();
-	if (!button) {
-		return;
-	}
-	var previousMenu = button.getMenu();
-	previousMenu &&	previousMenu.dispose();
-
-	var menu = this._createSignatureMenu(null, account);
+	var menu = button && this._createSignatureMenu(null, account);
 	if (menu) {
 		button.setMenu(menu);
 		this.setSelectedSignature(selected || "");
@@ -2119,16 +2089,11 @@ function() {
 	} else {
         this._composeView.enableAttachButton(true);
     }
-
-	this._setCancelText(this._action === ZmId.OP_DRAFT ? ZmMsg.close : ZmMsg.cancel);
-
+	var op = this._toolbar.getOp(ZmOperation.COMPOSE_OPTIONS);
+	if (op) {
+		op.setVisible(appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED));
+	}
 	appCtxt.notifyZimlets("resetToolbarOperations", [this._toolbar, 1]);
-};
-
-ZmComposeController.prototype._setCancelText =
-function(text) {
-	var cancel = this._toolbar.getButton(ZmOperation.CANCEL);
-	cancel.setText(text);
 };
 
 ZmComposeController.prototype._canSaveDraft =
@@ -2171,7 +2136,7 @@ function(){
     return false;
 };
 
-/**
+/*
  * Return ZmMailMsg object
  * @return {ZmMailMsg} message object
  */
@@ -2217,131 +2182,203 @@ function(callback){
     return this._processDataURIImages(imgArray, length, callback);
 };
 
-ZmComposeController.prototype._processDataURIImages =
-function (imgArray, length, callback) {
+ZmComposeController.prototype._processDataURIImages = function(imgArray, length, callback){
 
-    if ( !(typeof window.atob === "function" && typeof window.Blob === "function") || appCtxt.isWebClientOffline()) {
+    if (!window.atob) {
         return;
     }
 
-    for (var i = 0, blobArray = []; i < length; i++) {
-        var img = imgArray[i];
-        if (img) {
-            var imgSrc = img.src;
-            if (imgSrc && imgSrc.indexOf("data:") !== -1) {
-                var blob = AjxUtil.dataURItoBlob(imgSrc);
-                if (blob) {
-                    //setting data-zim-uri attribute for image replacement in callback
-                    var id = Dwt.getNextId();
-                    img.setAttribute("id", id);
-                    img.setAttribute("data-zim-uri", id);
-                    blob.id = id;
-                    blobArray.push(blob);
+    var BlobBuilder = window.MozBlobBuilder || window.WebKitBlobBuilder || window.MSBlobBuilder || window.BlobBuilder;
+    if (typeof (BlobBuilder || window.Blob) !== "function") {
+        return;
+    }
+
+    //converts datauri string to blob object used for uploading the image
+    //dataURI format  data:image/png;base64,iVBORw0
+    var dataURItoBlob = function( dataURI ){
+        if( dataURI ){
+            var dataURIArray = dataURI.split(",");
+            if( dataURIArray.length === 2 ){
+                if (dataURIArray[0].indexOf('base64') === -1){
+                    return;
+                }
+                // convert base64 to raw binary data held in a string
+                // doesn't handle URLEncoded DataURIs
+                try{
+                    var byteString = window.atob( dataURIArray[1] );
+                }
+                catch(e){
+                    return;
+                }
+                if( !byteString ){
+                    return;
+                }
+                // separate out the mime component
+                var mimeString = dataURIArray[0].split(':');
+                if( !mimeString[1] ){
+                    return;
+                }
+                mimeString = mimeString[1].split(';')[0];
+                if(mimeString){
+                    // write the bytes of the string to an ArrayBuffer
+                    var byteStringLength = byteString.length;
+                    var ab = new ArrayBuffer( byteStringLength );
+                    var ia = new Uint8Array(ab);
+                    for (var i = 0; i < byteStringLength; i++) {
+                        ia[i] = byteString.charCodeAt(i);
+                    }
+                    var blob;
+                    // write the ArrayBuffer to a blob, and you're done
+                    if (typeof window.Blob === "function") {
+                        blob = new Blob([ab], {"type" : mimeString});
+                    }
+                    else {
+                        var blobbuilder = new BlobBuilder();
+                        blobbuilder.append(ab);
+
+                        blob = blobbuilder.getBlob(mimeString);
+                        blob.type = mimeString;
+                        blob.name = blob.name || new Date().getTime();
+                    }
+                    return blob;
                 }
             }
         }
-    }
+    };
 
+    var blobArray = [];//Array containing blob objects used for uploading images
+    for(var i = 0; i < length; i++ ){
+        var imgSrc = imgArray[i].src;
+        if(imgSrc && imgSrc.indexOf("data:") !== -1){
+            var blob = dataURItoBlob(imgSrc);
+            if(blob){
+                //setting data-zim-uri attribute for image replacement in callback
+                var id = Dwt.getNextId();
+                imgArray[i].setAttribute("id", id);
+                imgArray[i].setAttribute("data-zim-uri", id);
+                blob.id = id;
+                blobArray.push(blob);
+            }
+        }
+    }
     length = blobArray.length;
-    if (length === 0) {
+    if(length === 0){
         return;
     }
 
     this._uploadedImageArray = [];
     this._dataURIImagesLength = length;
-
-    for (i = 0; i < length; i++) {
+    for( i = 0; i < length ; i++ ){
         var blob = blobArray[i];
         var uploadImageCallback = this._handleUploadImage.bind(this, callback, blob.id);
-        this._uploadImage(blob, uploadImageCallback);
+        this._uploadImage( blob, uploadImageCallback);
     }
     return true;
 };
 
-ZmComposeController.prototype._initUploadMyComputerFile =
-function(files) {
-    if (appCtxt.isWebClientOffline()) {
-        return this._handleOfflineUpload(files);
-    } else {
+ZmComposeController.prototype._uploadMyComputerFile =
+    function(files, prevData, start){
+    try {
+        var req = new XMLHttpRequest(); // we do not call this function in IE
         var curView = this._composeView;
-        if (curView) {
-            var params = {
-                files:                 files,
-                notes:                 "",
-                allResponses:          null,
-                start:                 0,
-                curView:               this._composeView,
-                preAllCallback:        this._preUploadAll.bind(this),
-                initOneUploadCallback: curView._startUploadAttachment.bind(curView),
-                progressCallback:      curView._uploadFileProgress.bind(curView),
-                errorCallback:         curView._resetUpload(curView, true),
-                completeOneCallback:   curView.updateAttachFileNode.bind(curView),
-                completeAllCallback:   this._completeAllUpload.bind(this)
-            }
-
-            // Do a SaveDraft at the start, since we will suppress autosave during the upload
-            var uploadManager = appCtxt.getZmUploadManager();
-            var uploadCallback = uploadManager.upload.bind(uploadManager, params);
-            this.saveDraft(ZmComposeController.DRAFT_TYPE_AUTO, null, null, uploadCallback);
+        if (!curView){
+            return;
         }
-    }
-};
+        this.upLoadC = this.upLoadC + 1;
+        var controller = this;
 
-ZmComposeController.prototype._preUploadAll =
-function(fileName) {
-    var curView = this._composeView;
-    if (!curView) {
-        return;
-    }
-    curView._initProgressSpan(fileName);
-    // Disable autosave while uploading
-    if (this._autoSaveTimer) {
-        this._autoSaveTimer.kill();
-    }
-};
-
-ZmComposeController.prototype._completeAllUpload =
-function(allResponses) {
-    var curView = this._composeView;
-    if (!curView){
-        return;
-    }
-    var callback = curView._resetUpload.bind(curView);
-    // Init autosave, otherwise saveDraft thinks this is a suppressed autosave, and aborts w/o saving
-    this._initAutoSave();
-    this.saveDraft(ZmComposeController.DRAFT_TYPE_AUTO, this._syncPrevData(allResponses), null, callback);
-}
-
-ZmComposeController.prototype._syncPrevData =
-function(attaData){
-    var result = []
-    for (var i=0;i < attaData.length  ; i++){
-        if (attaData[i] && (i === attaData.length -1 || document.getElementById(attaData[i].aid))){
-            result.push(attaData[i]);
+        if (!prevData){
+            prevData = [];
+            start = 1;
+        } else {
+            start++;
         }
-    }
 
-    return result;
+
+        var file = files[start-1];
+
+        var fileName = file.name || file.fileName;
+
+
+        req.open("POST", appCtxt.get(ZmSetting.CSFE_ATTACHMENT_UPLOAD_URI)+"?fmt=extended,raw", true);
+        req.setRequestHeader("Cache-Control", "no-cache");
+        req.setRequestHeader("X-Requested-With", "XMLHttpRequest");
+        req.setRequestHeader("Content-Type",  (file.type || "application/octet-stream") + ";");
+        req.setRequestHeader("Content-Disposition", 'attachment; filename="'+ AjxUtil.convertToEntities(fileName) + '"');
+
+	    curView._startUploadAttachment();
+        DBG.println(AjxDebug.DBG1,"Uploading file: "  + fileName + " file type" + (file.type || "application/octet-stream") );
+        this._uploadAttReq = req;
+	    if (AjxEnv.supportsHTML5File){
+        	req.upload.addEventListener("progress", function(evt){
+                   curView._uploadFileProgress(evt)
+            }, false);
+	    }else{
+            var progress = function (obj) {
+                var viewObj = obj;
+		        viewObj.si = window.setInterval (function(){viewObj._progress();}, 500);
+	        };
+            progress(curView);
+        }
+	    req.onreadystatechange = this._handleUploadResponse.bind(this, req, prevData, start, files, fileName);
+        req.send(file);
+        delete req;
+    } catch(exp) {
+        DBG.println("Error while uploading file: "  + fileName);
+        DBG.println("Exception: "  + exp);
+	    this._composeView._resetUpload(true);
+        var msgDlg = appCtxt.getMsgDialog();
+        this.upLoadC = this.upLoadC - 1;
+        msgDlg.setMessage(ZmMsg.importErrorUpload, DwtMessageDialog.CRITICAL_STYLE);
+        msgDlg.popup();
+        return false;
+    }
 };
 
-ZmComposeController.prototype._uploadImage = function(blob, callback, errorCallback){
+ZmComposeController.prototype._handleUploadResponse =
+function(req, prevData, start, files, fileName){
+    var curView = this._composeView;
+    this._initAutoSave()
+		    if(req.readyState === 4 && req.status === 200) {
+			    var resp = eval("["+req.responseText+"]");
+			    var response = resp.length && resp[2];
+			    if (response){
+                    DBG.println(AjxDebug.DBG1,"Uploaded file: "  + fileName + "Successfully.");
+                    prevData.push(response[0]);
+                    if (start < files.length){
+                        curView.updateAttachFileNode(files, start);
+                        this._uploadMyComputerFile(files, prevData, start )
+                    }else {
+				        var callback = curView._resetUpload.bind(curView);
+				        this.saveDraft(ZmComposeController.DRAFT_TYPE_AUTO, prevData, null, callback);
+                    }
+			    }else {
+                    DBG.println("Error while uploading file: "  + fileName + " response is null.");
+				    var callback = curView._resetUpload.bind(curView);
+				    this.saveDraft(ZmComposeController.DRAFT_TYPE_AUTO, prevData, null, callback);
+				    var msgDlg = appCtxt.getMsgDialog();
+				    this.upLoadC = this.upLoadC - 1;
+				    msgDlg.setMessage(ZmMsg.importErrorUpload, DwtMessageDialog.CRITICAL_STYLE);
+				    msgDlg.popup();
+				    return false;
+			    }
+		    }
+
+};
+
+ZmComposeController.prototype._uploadImage = function(blob, callback){
     var req = new XMLHttpRequest();
     req.open("POST", appCtxt.get(ZmSetting.CSFE_ATTACHMENT_UPLOAD_URI)+"?fmt=extended,raw", true);
     req.setRequestHeader("Cache-Control", "no-cache");
     req.setRequestHeader("X-Requested-With", "XMLHttpRequest");
     req.setRequestHeader("Content-Type", blob.type);
     req.setRequestHeader("Content-Disposition", 'attachment; filename="' + AjxUtil.convertToEntities(blob.name) + '"');
-    req.onreadystatechange = function() {
-        if (req.readyState === 4) {
-            if (req.status === 200) {
-                var resp = eval("["+req.responseText+"]");
-                callback.run(resp[2]);
-            }
-            else {
-                errorCallback && errorCallback();
-            }
+    req.onreadystatechange = function(){
+        if(req.readyState === 4 && req.status === 200) {
+            var resp = eval("["+req.responseText+"]");
+            callback.run(resp[2]);
         }
-    };
+    }
     req.send(blob);
 };
 
@@ -2368,132 +2405,3 @@ ZmComposeController.prototype._handleUploadImage = function(callback, id, respon
     }
 };
 
-ZmComposeController.prototype._warnUserAboutChanges =
-function(op, okCallback, cancelCallback) {
-
-	var cv = this._composeView;
-	var switchToText = (op === ZmOperation.FORMAT_TEXT &&
-	                    !AjxUtil.isEmpty(this._getBodyContent()));
-	var willLoseChanges = cv.componentContentChanged(ZmComposeView.BC_SIG_PRE) ||
-						  cv.componentContentChanged(ZmComposeView.BC_DIVIDER) ||
-						  cv.componentContentChanged(ZmComposeView.BC_HEADERS) ||
-						  cv.componentContentChanged(ZmComposeView.BC_SIG_POST) ||
-						  !cv.canPreserveQuotedText(op) ||
-						  switchToText;
-	if (willLoseChanges) {
-		var callbacks = {};
-		callbacks[DwtDialog.OK_BUTTON] = okCallback;
-		callbacks[DwtDialog.CANCEL_BUTTON] = cancelCallback;
-		var msg = (willLoseChanges && switchToText) ? ZmMsg.switchIncludeAndFormat : 
-				willLoseChanges ? ZmMsg.switchIncludeWarning : ZmMsg.switchToText;
-		this._showMsgDialog(ZmComposeController.MSG_DIALOG_2, msg, null, callbacks);
-		return true;
-	}
-
-	return false;
-};
-
-ZmComposeController.prototype._showMsgDialog =
-function(dlgType, msg, style, callbacks) {
-
-	var ac = window.appCtxt;
-	var dlg = this._currentDlg = (dlgType === ZmComposeController.MSG_DIALOG_1) ? ac.getMsgDialog() :
-								 (dlgType === ZmComposeController.MSG_DIALOG_2) ? ac.getOkCancelMsgDialog() : ac.getYesNoCancelMsgDialog();
-	dlg.reset();
-	if (msg) {
-		dlg.setMessage(msg, style || DwtMessageDialog.WARNING_STYLE);
-	}
-	if (callbacks) {
-		if (typeof callbacks === "function") {
-			var cb = {};
-			cb[DwtDialog.OK_BUTTON] = callbacks;
-			callbacks = cb;
-		}
-		for (var buttonId in callbacks) {
-			dlg.registerCallback(buttonId, callbacks[buttonId]);
-		}
-	}
-	dlg.popup();
-};
-
-ZmComposeController.prototype._handleOfflineUpload =
-function(files) {
-    var callback = this._readFilesAsDataURLCallback.bind(this);
-    ZmComposeController.readFilesAsDataURL(files, callback);
-};
-
-/**
- * Read files in DataURL Format and execute the callback with param dataURLArray.
- *
- * dataURLArray is an array of objects, with each object containing name, type, size and data in data-url format for an file.
- *
- * @param {FileList} files                  Object containing one or more files
- * @param {AjxCallback/Bound} callback	    the success callback
- * @param {AjxCallback/Bound} errorCallback the error callback
- *
- * @public
- */
-ZmComposeController.readFilesAsDataURL =
-function(files, callback, errorCallback) {
-    var i = 0,
-        filesLength = files.length,
-        dataURLArray = [],
-        fileReadErrorCount = 0;
-
-    if (!window.FileReader || filesLength === 0) {
-        if (errorCallback) {
-            errorCallback.run(dataURLArray, fileReadErrorCount);
-        }
-        return;
-    }
-
-    for (; i < filesLength; i++) {
-
-        var file = files[i],
-            reader = new FileReader();
-
-        reader.onload = function(file, ev) {
-            dataURLArray.push(
-                {
-                    filename : file.name,
-                    ct : file.type,
-                    s : file.size,
-                    data : ev.target.result,
-                    aid : new Date().getTime().toString(),
-                    isOfflineUploaded : true
-                }
-            );
-        }.bind(null, file);
-
-        reader.onerror = function() {
-            fileReadErrorCount++;
-        };
-
-        //Called when the read is completed, whether successful or not. This is called after either onload or onerror.
-        reader.onloadend = function() {
-            if ((dataURLArray.length + fileReadErrorCount) === filesLength) {
-                if (fileReadErrorCount > 0 && errorCallback) {
-                    errorCallback.run(dataURLArray, fileReadErrorCount);
-                }
-                if (callback) {
-                    callback.run(dataURLArray, fileReadErrorCount);
-                }
-            }
-        };
-
-        reader.readAsDataURL(file);
-    }
-};
-
-ZmComposeController.prototype._readFilesAsDataURLCallback =
-function(filesArray) {
-    for (var j = 0; j < filesArray.length; j++) {
-        var file = filesArray[j];
-        if (file) {
-            appCtxt.cacheSet(file.aid, file);
-        }
-    }
-    var curView = this._composeView,
-        callback = curView._resetUpload.bind(curView);
-    this.saveDraft(ZmComposeController.DRAFT_TYPE_AUTO, filesArray, null, callback);
-};

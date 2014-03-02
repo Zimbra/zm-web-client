@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2008, 2009, 2010, 2011, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
@@ -99,7 +99,6 @@ function() {
     var params = {parent:bc._container, className:"BriefcaseTabBox BriefcaseList", view:this.view,
 				  controller:bc};
     var lv = this._listView = this._controller._listView[this.view] = new ZmBriefcaseIconView(params);
-	this._controller._currentViewId = this.view;
     lv.reparentHtmlElement(this._folderListId);
     Dwt.setPosition(lv.getHtmlElement(),Dwt.RELATIVE_STYLE);
 };

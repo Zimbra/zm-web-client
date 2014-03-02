@@ -78,8 +78,7 @@ function(results, mailList, callback, markRead) {
 	// if search was run as a result of a <refresh> block rather than by the user, preserve
 	// what's in the reading pane as long as it's still in the list of results
 	var s = results && results.search;
-	var isRefresh = s && (s.isRefresh || s.isRedo);
-	var refreshSelItem = (isRefresh && mlv && mlv.hasItem(s.selectedItem) && s.selectedItem);
+	var refreshSelItem = (s && s.isRefresh && mlv && mlv.hasItem(s.selectedItem) && s.selectedItem);
 	if (this._doublePaneView) {
 		if (!refreshSelItem) {
 			this._doublePaneView._itemView.reset();
@@ -94,7 +93,6 @@ function(results, mailList, callback, markRead) {
 
 	if (refreshSelItem) {
 		mlv.setSelection(refreshSelItem, true);
-		this._resetOperations(this._toolbar[this._currentViewId], 1)
 	}
 	else {
 		var dpv = this._doublePaneView;
@@ -240,23 +238,29 @@ function() {
 
 ZmDoublePaneController.prototype._getActionMenuOps =
 function() {
-	var list = [];
+	var list = this._flagOps();
+	list.push(ZmOperation.SEP);
 	list = list.concat(this._msgOps());
     list.push(ZmOperation.REDIRECT);
     list.push(ZmOperation.EDIT_AS_NEW);		// bug #28717
 	list.push(ZmOperation.SEP);
-	list = list.concat(this._deleteOps());
-	list.push(ZmOperation.SEP);
 	list = list.concat(this._standardActionMenuOps());
-	list.push(ZmOperation.SEP);
-	list = list.concat(this._flagOps());
-	list.push(ZmOperation.SEP);
-	list = list.concat(this._createOps());
-	list.push(ZmOperation.SEP);
-	list = list.concat(this._otherOps());
+	if (!appCtxt.isChildWindow && appCtxt.get(ZmSetting.DETACH_MAILVIEW_ENABLED)) {
+		list.push(ZmOperation.SEP, ZmOperation.DETACH);
+	}
+	list.push(ZmOperation.SHOW_ORIG);
 	if (this.getCurrentViewType() == ZmId.VIEW_TRAD) {
 		list.push(ZmOperation.SHOW_CONV);
 	}
+	if (appCtxt.get(ZmSetting.FILTERS_ENABLED)) {
+		list.push(ZmOperation.ADD_FILTER_RULE);
+	}
+    if(appCtxt.get(ZmSetting.CALENDAR_ENABLED)) {
+        list.push(ZmOperation.CREATE_APPT);
+    }
+    if(appCtxt.get(ZmSetting.TASKS_ENABLED)) {
+        list.push(ZmOperation.CREATE_TASK);        
+    }
     //list.push(ZmOperation.QUICK_COMMANDS);
 	return list;
 };
@@ -323,7 +327,10 @@ function(item) {
 	if (!item._loaded) { return; }
 
 	// cancel timed mark read action on previous msg
-	appCtxt.killMarkReadTimer();
+	if (appCtxt.markReadActionId > 0) {
+		AjxTimedAction.cancelAction(appCtxt.markReadActionId);
+		appCtxt.markReadActionId = -1;
+	}
 
 	this._doublePaneView.setItem(item);
 	this._handleMarkRead(item);
@@ -340,13 +347,16 @@ function(msg) {
 ZmDoublePaneController.prototype._preHideCallback =
 function() {
 	// cancel timed mark read action on view change
-	appCtxt.killMarkReadTimer();
+	if (appCtxt.markReadActionId > 0) {
+		AjxTimedAction.cancelAction(appCtxt.markReadActionId);
+		appCtxt.markReadActionId = -1;
+	}
 	return ZmController.prototype._preHideCallback.call(this);
 };
 
 // Adds a "Reading Pane" checked menu item to a view menu
 ZmDoublePaneController.prototype._setupReadingPaneMenuItems =
-function(view, menu) {
+function(view, menu, checked) {
 
 	if (menu.getItemCount() > 0) {
 		new DwtMenuItem({parent:menu, style:DwtMenuItem.SEPARATOR_STYLE});
@@ -470,7 +480,7 @@ function(parent, num) {
 
 ZmDoublePaneController.prototype._resetOperation = 
 function(parent, op, num) {
-	if (parent && op == ZmOperation.KEEP_READING) {
+	if (op == ZmOperation.KEEP_READING) {
 		parent.enable(ZmOperation.KEEP_READING, this._keepReading(true));
 	}
 };
@@ -551,6 +561,7 @@ function(ev) {
 		}
 	}
 	return handled;
+	DBG.timePt("***** CONV: msg selection");
 };
 
 ZmDoublePaneController.prototype._handleResponseListSelectionListener =

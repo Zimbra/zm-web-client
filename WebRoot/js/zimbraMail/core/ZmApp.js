@@ -550,14 +550,12 @@ function(overviewId) {
 		for (var i = 0; i < len; i++) {
 			var treeId = treeIds[i];
 			var treeView = overview.getTreeView(treeId);
-			if (treeView) {
-				var items = treeView.getTreeItemList();
-				var len1 = items.length;
-				for (var j = 0; j < len1; j++) {
-					var treeItem = items[j];
-					if (treeItem._expanded) {
-						expIds.push(treeItem._htmlElId);
-					}
+			var items = treeView.getTreeItemList();
+			var len1 = items.length;
+			for (var j = 0; j < len1; j++) {
+				var treeItem = items[j];
+				if (treeItem._expanded) {
+					expIds.push(treeItem._htmlElId);
 				}
 			}
 		}
@@ -1083,41 +1081,6 @@ function(active, viewId) {
 		appCtxt.getAppController().setNewButtonProps(this.getNewButtonProps());
 		this.setOverviewPanelContent();
 		this.stopAlert();
-		if (appCtxt.isWebClientOfflineSupported) {
-			this.resetWebClientOfflineOperations();
-		}
-		this._setRefreshButtonTooltip();
-	}
-};
-
-/**
- * Handle the common aspects of a transition from online to offline and offline to online, and also do so
- * when an app is activated
- */
-ZmApp.prototype.resetWebClientOfflineOperations =
-function() {
-	var overview = this.getOverview();
-	if (!overview) {
-		return;
-	}
-	var isWebClientOnline = !appCtxt.isWebClientOffline();
-	var zimletTreeView = overview.getTreeView(ZmOrganizer.ZIMLET);
-	if (zimletTreeView) {
-		zimletTreeView.setVisible(isWebClientOnline);
-	}
-	// enable/disable right click
-	overview.actionSupported = isWebClientOnline;
-	// enable/disable drag and drop
-	overview.dndSupported = isWebClientOnline;
-	// new button enable/disable
-	var newButton = appCtxt.getAppController().getNewButton();
-	if (newButton) {
-		if (ZmController._defaultNewId === ZmOperation.NEW_MESSAGE) {
-			newButton._setDropDownCellMouseHandlers(isWebClientOnline);
-		}
-		else {
-			newButton.setEnabled(isWebClientOnline);
-		}
 	}
 };
 
@@ -1159,22 +1122,6 @@ function() {
 	if (this._alert) {
 		this._alert.stop();
 	}
-};
-
-ZmApp.prototype._setRefreshButtonTooltip =
-function() {
-	if (appCtxt.refreshButton) {
-		appCtxt.refreshButton.setToolTipContent(this._getRefreshButtonTooltip());
-	}
-};
-
-/**
- * this is the default refresh button tooltip. overridden in Calendar. (see bug 85965)
- * @private
- */
-ZmApp.prototype._getRefreshButtonTooltip =
-function() {
-	 return ZmMsg.checkMailPrefUpdate;
 };
 
 /**
@@ -1233,10 +1180,7 @@ function(appName, date) {
 		div.innerHTML = date.getTime();
 		div.style.display = "none";
 		document.body.appendChild(div);
-	}
-	if (window.appDevMode) {
-		console.profile(id);
-	}
+	}	
 };
 
 /**
@@ -1260,8 +1204,5 @@ function(appName, date) {
 		div.innerHTML = date.getTime();
 		div.style.display = "none";
 		document.body.appendChild(div);
-	}
-	if (window.appDevMode) {
-		console.profileEnd();
 	}
 };

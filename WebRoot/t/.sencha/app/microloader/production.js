@@ -620,7 +620,7 @@
                 asset.content = content;
 
                 if (--updatingCount == 0) {
-                    if (appCache.status == appCache.IDLE || appCache.status === appCache.UNCACHED) {
+                    if (appCache.status == appCache.IDLE) {
                         doUpdate();
                     }
                     else {

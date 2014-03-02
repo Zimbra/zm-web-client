@@ -2,12 +2,12 @@
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2012, 2013 Zimbra Software, LLC.
- *
+ * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- *
+ * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
@@ -222,6 +222,11 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 		// So manually reset it here.
 		msgListView.topItemIndex = 0;
 		msgListView.getScrollable().getScroller().getTranslatable().y = 0;
+
+		//Additionally, reset our own hacks which prevent bugs with iframes that have parents with
+		//translate3d.  Removing this will cause the msg list view to retain its old scroll position
+		//when it should not.
+     	msgListView.resetScrollHack();
 
 		store.load({
 			convId: conv.getId(),
@@ -679,7 +684,7 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 
 		// Handle visual experience of delete
 		Ext.defer(function () {
-
+			
 			storeStillHasItem = deletedId === listStore.getAt(itemIndex).get('zcsId');
 			if (storeStillHasItem) {
 				// Suspend events so list doesn't re-order during animation
@@ -758,12 +763,9 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 	 * separated, with TO addresss first: "User1, CCUser1, and CCUser2"
 	 */
 	getAllNames: function(nameField) {
-		var activeMsg = this.getActiveMsg();
-		if (!activeMsg) {
-			return '';
-		}
 
-		var	action = ZCS.constant.OP_REPLY_ALL,
+		var activeMsg = this.getActiveMsg(),
+			action = ZCS.constant.OP_REPLY_ALL,
 			addrs = ZCS.app.getComposeController().getReplyAddresses(activeMsg, action),
 			recips = Ext.Array.clean(addrs[ZCS.constant.TO].concat(addrs[ZCS.constant.CC])),
 			names = [], nameString, nameField = nameField || 'shortName';
@@ -774,14 +776,14 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 
 		if (names.length < 3) {
 			nameString = names.join(' ' + ZtMsg.and + ' ');
-		} else {
+		}
+		else {
 			nameString = names.join(', ');
 			nameString = nameString.replace(/,\s([^,]+)$/, ', ' + ZtMsg.and + ' $1');
 		}
 
 		return nameString;
 	},
-
 
 	/**
 	 * Sets the placeholder text in the quick reply textarea.

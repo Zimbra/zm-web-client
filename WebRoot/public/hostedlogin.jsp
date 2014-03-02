@@ -7,10 +7,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
-<%
-    // Prevent IE from ever going into compatibility/quirks mode.
-    response.setHeader("X-UA-Compatible", "IE=edge");
-%><!DOCTYPE html>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <fmt:setLocale value='${pageContext.request.locale}' scope='request' />
 <fmt:setBundle basename="/messages/ZmMsg" scope="request"/>
 <fmt:setBundle basename="/messages/ZMsg" var="zmsg" scope="request"/>
@@ -144,7 +141,7 @@ if (application.getInitParameter("offlineMode") != null)  {
  login.jsp
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2009, 2010, 2011, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in

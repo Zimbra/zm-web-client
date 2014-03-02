@@ -50,10 +50,13 @@ ZmBriefcaseController = function(container, app, type, sessionId, searchResultsC
 	this._listeners[ZmOperation.SEND_FILE_AS_ATT]	= this._sendFileAsAttachmentListener.bind(this);
 	this._listeners[ZmOperation.NEW_FILE]			= this._uploadFileListener.bind(this);
 	this._listeners[ZmOperation.VIEW_FILE_AS_HTML]	= this._viewAsHtmlListener.bind(this);
+	this._listeners[ZmOperation.CREATE_SLIDE_SHOW]	= this._createSlideShow.bind(this);
     this._listeners[ZmOperation.EDIT_FILE]			= this._editFileListener.bind(this);
     this._listeners[ZmOperation.RENAME_FILE]		= this._renameFileListener.bind(this);
     this._listeners[ZmOperation.NEW_BRIEFCASE_WIN]	= this._newWinListener.bind(this);
 
+	this._listeners[ZmOperation.NEW_SPREADSHEET]	= this._handleDoc.bind(this, ZmOperation.NEW_SPREADSHEET);
+	this._listeners[ZmOperation.NEW_PRESENTATION]	= this._handleDoc.bind(this, ZmOperation.NEW_PRESENTATION);
 	this._listeners[ZmOperation.NEW_DOC]			= this._handleDoc.bind(this, ZmOperation.NEW_DOC);
 
     this._listeners[ZmOperation.CHECKIN]			= this._handleCheckin.bind(this);
@@ -137,8 +140,15 @@ function() {
 ZmBriefcaseController.prototype._getSecondaryToolBarOps =
 function() {
 	var list = [];
+    if (appCtxt.isExternalAccount()) { return list; }
 	if (appCtxt.get(ZmSetting.MAIL_ENABLED)) {
 		list.push(ZmOperation.SEND_FILE, ZmOperation.SEND_FILE_AS_ATT, ZmOperation.SEP);
+	}
+	if (appCtxt.get(ZmSetting.SPREADSHEET_ENABLED)) {
+		list.push(ZmOperation.NEW_SPREADSHEET,ZmOperation.SEP);
+	}
+	if (appCtxt.get(ZmSetting.SLIDES_ENABLED)) {
+		list.push(ZmOperation.NEW_PRESENTATION,ZmOperation.SEP);
 	}
 	list.push(ZmOperation.NEW_BRIEFCASE_WIN, ZmOperation.SEP);
 
@@ -279,7 +289,7 @@ function(parent, num) {
 	parent.enable([ZmOperation.SEND_FILE, ZmOperation.SEND_FILE_AS_ATT], (isZimbraAccount && isMailEnabled && isItemSelected && !isMultiFolder && !isFolderSelected));
 	parent.enable(ZmOperation.TAG_MENU, (!isReadOnly && isItemSelected && !isFolderSelected && !isOldRevision));
 	parent.enable([ZmOperation.NEW_FILE, ZmOperation.VIEW_MENU], true);
-	parent.enable([ZmOperation.NEW_DOC], true);
+	parent.enable([ZmOperation.NEW_SPREADSHEET, ZmOperation.NEW_PRESENTATION, ZmOperation.NEW_DOC], true);
 	parent.enable([ZmOperation.MOVE, ZmOperation.MOVE_MENU], ( isItemSelected &&  !isReadOnly && !isShared && !isOldRevision));
     parent.enable(ZmOperation.NEW_FILE, !(isTrash || isReadOnly));
     parent.enable(ZmOperation.NEW_BRIEFCASE_WIN, (isItemSelected && !isFolderSelected && num==1));
@@ -349,45 +359,32 @@ function(parent, num) {
     if (appCtxt.get(ZmSetting.DOCS_ENABLED)) {
         parent.enable(ZmOperation.NEW_DOC, isDocOpEnabled);
     }
+    if (appCtxt.get(ZmSetting.SPREADSHEET_ENABLED)) {
+        parent.enable(ZmOperation.NEW_SPREADSHEET, isDocOpEnabled);
+    }
+    if (appCtxt.get(ZmSetting.SLIDES_ENABLED)) {
+        parent.enable(ZmOperation.NEW_PRESENTATION, isDocOpEnabled);
+        parent.enable(ZmOperation.CREATE_SLIDE_SHOW, isDocOpEnabled && isItemSelected);
+    }
 
-    // ZmShare is not present when the virtual account loads
-    AjxPackage.require("Briefcase");
-
-    if (appCtxt.isExternalAccount() && items.length && isItemSelected) {
-
-        var roleFromPerm = ZmShare.getRoleFromPerm(briefcase.perm);
-
-        if (roleFromPerm === ZmShare.ROLE_NONE) {
-            parent.enable ([ZmOperation.SEND_FILE,
-                ZmOperation.SEND_FILE_AS_ATT,
-                ZmOperation.RENAME_FILE,
-                ZmOperation.MOVE,
-                ZmOperation.MOVE_MENU,
-                ZmOperation.NEW_FILE,
-                ZmOperation.TAG_MENU,
-                ZmOperation.EDIT_FILE,
-                ZmOperation.OPEN_FILE,
-                ZmOperation.CHECKIN,
-                ZmOperation.CHECKOUT,
-                ZmOperation.DISCARD_CHECKOUT,
-                ZmOperation.RESTORE_VERSION,
-                ZmOperation.NEW_BRIEFCASE_WIN,
-                ZmOperation.DELETE
-            ], false);
-            parent.setItemVisible(ZmOperation.TAG_MENU, false);
-        }
-        else if (roleFromPerm === ZmShare.ROLE_MANAGER) {
-            parent.enable ([
-                ZmOperation.RENAME_FILE,
-                ZmOperation.NEW_FILE,
-                ZmOperation.OPEN_FILE,
-                ZmOperation.CHECKIN,
-                ZmOperation.CHECKOUT,
-                ZmOperation.DISCARD_CHECKOUT,
-                ZmOperation.NEW_BRIEFCASE_WIN,
-                ZmOperation.DELETE
-            ], true);
-        }
+    if(appCtxt.isExternalAccount()) {
+        parent.enable ([ZmOperation.SEND_FILE,
+                        ZmOperation.SEND_FILE_AS_ATT,
+                        ZmOperation.RENAME_FILE,
+                        ZmOperation.MOVE,
+                        ZmOperation.MOVE_MENU,
+                        ZmOperation.NEW_FILE,
+                        ZmOperation.TAG_MENU,
+                        ZmOperation.EDIT_FILE,
+                        ZmOperation.OPEN_FILE,
+                        ZmOperation.CHECKIN,
+                        ZmOperation.CHECKOUT,
+                        ZmOperation.DISCARD_CHECKOUT,
+                        ZmOperation.RESTORE_VERSION,
+                        ZmOperation.NEW_BRIEFCASE_WIN,
+                        ZmOperation.DELETE
+                        ], false);
+        parent.setItemVisible(ZmOperation.TAG_MENU, false);
     }
 };
 
@@ -470,11 +467,8 @@ function(view) {
 
 ZmBriefcaseController.prototype._setViewContents =
 function(view) {
-	// If the controller is being used via the ZmBriefcaseTabView (for attaching briefcase files
-	// to a mail message), then there is only a list view in use, not a parent with multiple views.
-	if (this._parentView[view]) {
-		this._parentView[view].set(this._list, this._switchView);
-	}
+	var bcv = this._parentView[view];    
+	bcv.set(this._list, this._switchView);
     this._switchView = false;
 };
 
@@ -540,10 +534,6 @@ function(results) {
 	this._resetNavToolBarButtons();
 };
 
-ZmBriefcaseController.prototype.getFolderId = function() {
-	return this._folderId;
-}
-
 /**
  * Change how briefcase items are displayed.
  * 
@@ -603,7 +593,8 @@ function(title, callback) {
     if(this.chkFolderPermission(folderId)){
         var cFolder = appCtxt.getById(folderId);
 		var uploadDialog = appCtxt.getUploadDialog();
-         uploadDialog.popup(cFolder, callback, title, null, false, true, true, ZmBriefcaseApp.ACTION_KEEP_MINE);
+        uploadDialog.setConflictAction(ZmUploadDialog.ACTION_KEEP_MINE);
+        uploadDialog.popup(cFolder, callback, title, null, false, true, true);
     }	
 };
 
@@ -636,6 +627,7 @@ function(ev) {
         //added for bug: 45150
         restUrl = AjxStringUtil.fixCrossDomainReference(restUrl);
         if (item.isWebDoc()) {
+			restUrl = ZmBriefcaseApp.addEditorParam(restUrl);
             restUrl += (restUrl.match(/\?/) ? "&" : "?") + "localeId=" + AjxEnv.DEFAULT_LOCALE;
 
 		}
@@ -833,17 +825,16 @@ function(){
 
 ZmBriefcaseController.prototype._getActionMenuOps =
 function() {
-    var list = [
-        ZmOperation.OPEN_FILE,
-        ZmOperation.SAVE_FILE,
-        ZmOperation.EDIT_FILE
-    ];
-
-    if (!appCtxt.isExternalAccount()) {
-        list.push(ZmOperation.SEND_FILE);
-        list.push(ZmOperation.SEND_FILE_AS_ATT);
-    }
-
+	var list = [
+		ZmOperation.OPEN_FILE,
+		ZmOperation.SAVE_FILE,
+        ZmOperation.EDIT_FILE,            
+		ZmOperation.SEND_FILE,
+		ZmOperation.SEND_FILE_AS_ATT
+	];	
+    if (appCtxt.get(ZmSetting.SLIDES_ENABLED)) {
+		list.push(ZmOperation.CREATE_SLIDE_SHOW);
+	}
     list.push(ZmOperation.SEP);
     list.push(ZmOperation.CHECKOUT, ZmOperation.CHECKIN, ZmOperation.DISCARD_CHECKOUT, ZmOperation.RESTORE_VERSION/*, ZmOperation.DELETE_VERSION*/);
 
@@ -893,16 +884,16 @@ function(items){
     items = AjxUtil.toArray(items);
     for (var i = 0; i < items.length; i++) {
         var item = items[i];
-        if (item.isWebDoc()) {
-			var win = appCtxt.getNewWindow(false, null, null,
-										   this._getWindowName(item.name));
-            win.command = "documentEdit";
-            win.params = {
-				restUrl: item.getRestUrl(),
-				id: item.id,
-				name: item.name,
-				folderId: item.folderId
-			};
+        var restUrl = item.getRestUrl(false, false, true); //get the URL with version number so even on IE9 it would always be the latest.
+        if (restUrl) {
+
+            if (item.isWebDoc()) {
+                //added for bug: 45150
+                restUrl = AjxStringUtil.fixCrossDomainReference(restUrl);
+                restUrl = ZmBriefcaseApp.addEditorParam(restUrl);
+                restUrl += (restUrl.match(/\?/) ? '&' : '?') + "action=edit&localeId=" + AjxEnv.DEFAULT_LOCALE;
+                window.open(restUrl, this._getWindowName(item.name), "");
+            }
         }
     }
 };
@@ -937,6 +928,7 @@ function(items){
 		restUrl = AjxStringUtil.fixCrossDomainReference(restUrl);
 		if (item.isWebDoc()) {
 			//added for bug: 45150
+			restUrl = ZmBriefcaseApp.addEditorParam(restUrl);
 			restUrl += (restUrl.match(/\?/) ? "&" : "?") + "localeId=" + AjxEnv.DEFAULT_LOCALE;
 		} else {
             // do not try to
@@ -946,16 +938,27 @@ function(items){
 			}
         }
 
-		var win = window.open(restUrl, this._getWindowName(item.name), item.isWebDoc() ? "" : ZmBriefcaseApp.getDocWindowFeatures());
-        appCtxt.handlePopupBlocker(win);
-
-        // avoid losing focus in IE8 and earlier (bug 52206)
-        if (win && AjxEnv.isIE && !AjxEnv.isIE9up) {
-		    var ta = new AjxTimedAction(win, win.focus);
-		    AjxTimedAction.scheduleAction(ta, 100);
+        
+        this._fileInfo={
+            "restUrl":restUrl,
+            "name":this._getWindowName(item.name),
+            "features":item.isWebDoc() ? "" : ZmBriefcaseApp.getDocWindowFeatures()
         }
+
+		var ta = new AjxTimedAction(this, this._openChild);
+		AjxTimedAction.scheduleAction(ta, 100);
+
 	}
 };
+
+ZmBriefcaseController.prototype._openChild =
+function(){
+    if(this._fileInfo){
+     var opener = window.open(this._fileInfo.restUrl, this._fileInfo.name, this._fileInfo.features);
+     opener.focus();
+    }
+    this._fileInfo = null;
+}
 
 ZmBriefcaseController.prototype._saveFileListener =
 function() {
@@ -1044,16 +1047,14 @@ function() {
     this.__popupUploadDialog(ZmMsg.uploadFileToBriefcase, new AjxCallback(this, this._handlePostUpload));
 };
 
-ZmBriefcaseController.prototype.resetSelection = function() {
-	var view = this._listView[this._currentViewId];
-	if (view) {
-		view.deselectAll();
-	}
-	var lv = this.getCurrentView();
-	if (lv) {
-		lv._selectFirstItem()
-	}
-}
+ZmBriefcaseController.prototype._handlePostUpload =
+function(folder, filenames, files){
+     var msg = ZmMsg.successfullyUploaded;
+     if(files.length > 1){
+         msg = AjxMessageFormat.format(ZmMsg.successfullyUploadedFiles, files.length);
+     }
+     appCtxt.setStatusMsg(msg, ZmStatusView.LEVEL_INFO);    
+};
 
 ZmBriefcaseController.prototype._sendFileListener =
 function(event) {
@@ -1360,6 +1361,26 @@ function() {
 	}
 };
 
+ZmBriefcaseController.prototype._createSlideShow =
+function() {
+	var importSlidesQueue = [];
+	var view = this._listView[this._currentViewId];
+	var items = view.getSelection();
+	if (!items) { return; }
+
+	items = AjxUtil.toArray(items);
+	for (var i = 0; i < items.length; i++) {
+		var item = items[i];
+		var restUrl = item.getRestUrl();
+		if(item && !item.isFolder && restUrl != null) {
+			importSlidesQueue.push(restUrl);
+		}
+	}
+	window.importSlides = true;
+	window.importSlidesQueue = importSlidesQueue;
+	this._app.handleOp(ZmOperation.NEW_PRESENTATION);
+};
+
 // item count doesn't include subfolders
 ZmBriefcaseController.prototype._getItemCount =
 function() {
@@ -1487,10 +1508,8 @@ function(msgId, partId, name, folder, results) {
     var folderId = (!folder.account || folder.account == appCtxt.getActiveAccount() || (folder.id.indexOf(":") != -1)) ? folder.id : [folder.account.id, folder.id].join(":");
     if(itemFound){
         var dlg = this._conflictDialog = this._getFileConflictDialog();
-        dlg.setButtonListener(DwtDialog.OK_BUTTON, this._handleConflictDialog.bind(this, msgId, partId, name, folderId, itemFound));
-		dlg.setEnterListener(DwtDialog.OK_BUTTON, this._handleConflictDialog.bind(this, msgId, partId, name, folderId, itemFound));
-	    this._renameField.value = "";
-	    dlg.popup();
+        dlg.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._handleConflictDialog, [msgId, partId, name, folderId, itemFound]))
+		dlg.popup();
     }else{
        this._createFromAttachment(msgId, partId, name, folderId);
     }
@@ -1499,24 +1518,13 @@ function(msgId, partId, name, folder, results) {
         this._saveAttDialog.popdown();
 };
 
-ZmBriefcaseController.prototype._popupConflictDialog = 
-function(dlg) {
-	if (dlg) {
-		dlg.popdown();
-	}
-	if (!this._conflictDialog) {
-		this._conflictDialog = this._getFileConflictDialog();
-	}
-	this._conflictDialog.popup();
-};
-
 ZmBriefcaseController.prototype._handleConflictDialog =
 function(msgId, partId, name, folderId, itemFound){
 
     var attribs = {};
     if(this._renameRadio.checked){
         var newName = this._renameField.value;
-        var errorMsg = this.checkInvalidFileName(newName, itemFound && itemFound.name);
+        var errorMsg = this.checkInvalidFileName(newName);
         if(errorMsg){
 		    var dialog = appCtxt.getMsgDialog();
 		    dialog.setMessage(errorMsg, DwtMessageDialog.WARNING_STYLE);
@@ -1528,27 +1536,22 @@ function(msgId, partId, name, folderId, itemFound){
         attribs.id = itemFound.id;
         attribs.version = itemFound.version;
     }
-	this._conflictDialog.popdown(); //hide dialog so user doesn't get it into a state that can be hung
+
     this._createFromAttachment(msgId, partId, name, folderId, attribs);
 };
 
 ZmBriefcaseController.prototype.checkInvalidFileName =
-function(fileName, itemFound) {
+function(fileName) {
 
     var message;
     fileName = fileName.replace(/^\s+/,"").replace(/\s+$/,"");
 
     if(fileName == ""){
         message = ZmMsg.emptyDocName;
-    }
-    else if (!ZmOrganizer.VALID_NAME_RE.test(fileName)) {
+    }else if (!ZmOrganizer.VALID_NAME_RE.test(fileName)) {
         message = AjxMessageFormat.format(ZmMsg.errorInvalidName, AjxStringUtil.htmlEncode(fileName));
-    } 
-    else if (fileName.length > ZmOrganizer.MAX_NAME_LENGTH){
+    } else if ( fileName.length > ZmOrganizer.MAX_NAME_LENGTH){
         message = AjxMessageFormat.format(ZmMsg.nameTooLong, ZmOrganizer.MAX_NAME_LENGTH);
-    }
-	else if (itemFound === fileName) {
-	    message = AjxMessageFormat.format(ZmMsg.errorFileExistsWarning, AjxStringUtil.htmlEncode(fileName));
     }
 
     return message;
@@ -1561,7 +1564,7 @@ function(msgId, partId, name, folderId, attribs){
     if(attribs.id || attribs.rename)
         attribs.callback = new AjxCallback(this, this._handleSuccessCreateFromAttachment, [msgId, partId, name, folderId]);
     if(attribs.rename)
-        attribs.errorCallback = new AjxCallback(this, this._handleErrorCreateFromAttachment, [msgId, partId, attribs.rename, folderId]);
+        attribs.errorCallback = new AjxCallback(this, this._handleErrorCreateFromAttachment, [msgId, partId, name, folderId]);
 
     var srcData = new ZmBriefcaseItem();
     srcData.createFromAttachment(msgId, partId, name, folderId, attribs);
@@ -1583,7 +1586,6 @@ function(msgId, partId, name, folderId, ex){
         handled = true;
         var dlg = appCtxt.getMsgDialog();
         dlg.setMessage(AjxMessageFormat.format(ZmMsg.errorFileExistsWarning, name), DwtMessageDialog.WARNING_STYLE);
-	    dlg.setButtonListener(DwtDialog.OK_BUTTON, this._popupConflictDialog.bind(this, dlg));
         dlg.popup();
     }
 
@@ -1591,22 +1593,19 @@ function(msgId, partId, name, folderId, ex){
 };
 
 ZmBriefcaseController.prototype._getFileConflictDialog =
-    function(){
-        if(!this._nameConflictDialog){
+function(){
+    if(!this._nameConflictDialog){
+       var dlg = this._nameConflictDialog = new DwtDialog({parent:appCtxt.getShell()});
+       var id = this._nameConflictId = Dwt.getNextId();
+       dlg.setContent(AjxTemplate.expand("briefcase.Briefcase#NameConflictDialog", {id: id}));
+       dlg.setTitle(ZmMsg.addToBriefcaseTitle);
 
-            var dlg = new DwtMessageDialog({parent:appCtxt.getShell(), buttons:[DwtDialog.OK_BUTTON, DwtDialog.CANCEL_BUTTON],
-                id: "Briefcase_FileConflictDialog"});
-            this._nameConflictDialog = dlg;
-            var id = this._nameConflictId = Dwt.getNextId();
-            dlg.setTitle(ZmMsg.addToBriefcaseTitle);
-            dlg.setContent(AjxTemplate.expand("briefcase.Briefcase#NameConflictDialog", {id: id}));
+       this._renameRadio = document.getElementById(id+'_rename');
+       this._renameField = document.getElementById(id+'_newname');
 
-            this._renameRadio = document.getElementById(id+'_rename');
-            this._renameField = document.getElementById(id+'_newname');
-
-        }
-        return this._nameConflictDialog;
-    };
+    }
+    return this._nameConflictDialog;
+};
 
 ZmBriefcaseController.prototype.getKeyMapName =
 function() {

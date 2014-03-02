@@ -231,6 +231,11 @@ UT.test("ZmFilterRule.addCondition: test social filters",
 		UT.equal(isLinkedIn, true, "testSocial should be of testType linkedInTest");
 		UT.notEqual(cData.negative, "1", "testSocial should not be negative");
 		
+		var cData3 = testRule.addCondition(ZmFilterRule.TEST_SOCIAL, ZmFilterRule.OP_SOCIAL_SOCIALCAST, "not_social");
+		var isSocialcast = testRule.conditions[ZmFilterRule.TEST_SOCIALCAST].length == 1;
+		UT.equal(isSocialcast, true, "testSocial should be of testType socialcastTest");
+		UT.equal(cData3.negative, "1", "testSocial should be negative");
+		
 		var cData4 = testRule.addCondition(ZmFilterRule.TEST_SOCIAL, ZmFilterRule.OP_SOCIAL_TWITTER);
 		var isTwitter = testRule.conditions[ZmFilterRule.TEST_TWITTER].length == 1;
 		UT.equal(isTwitter, true, "testSocial should be of testType twitterTest");

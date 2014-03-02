@@ -228,7 +228,7 @@
                         placeholder="<fmt:message key="username"/>" autocapitalize="off" autocorrect="off"/></div>
                     <div class='zLoginFieldDiv'><input id="password" class="zLoginField" name="password"
                         onkeyup="enableSignIn();" type="password" value="" size="25"
-                        placeholder="<fmt:message key="password"/>" /></div>
+                        placeholder="<fmt:message key="password"/>" autocomplete="off"/></div>
                     <div class='LoginButtonDiv'><input type="submit" id="loginBtn" class="LoginButton"
                         value="<fmt:message key="login"/>" /></div>
                 </div>

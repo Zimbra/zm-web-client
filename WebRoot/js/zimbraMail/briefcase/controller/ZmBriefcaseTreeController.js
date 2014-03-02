@@ -83,7 +83,7 @@ function(actionMenu, type, id) {
             actionMenu.getOp(ZmOperation.EMPTY_FOLDER).setText(ZmMsg.emptyTrash);            
         } else {
             actionMenu.enableAll(true);
-            var showEditMenu = (!isLinkOrRemote || !isReadOnly || (isLink && isTopLevel) || ZmBriefcaseTreeController.__isAllowed(briefcase.parent, ZmShare.PERM_DELETE));
+            var showEditMenu = !appCtxt.isExternalAccount() && (!isLinkOrRemote || !isReadOnly || (isLink && isTopLevel) || ZmBriefcaseTreeController.__isAllowed(briefcase.parent, ZmShare.PERM_DELETE));
             actionMenu.enable(ZmOperation.DELETE_WITHOUT_SHORTCUT, showEditMenu && !isBriefcase);
             actionMenu.enable(ZmOperation.EDIT_PROPS, showEditMenu);
 
@@ -91,7 +91,7 @@ function(actionMenu, type, id) {
             menuItem = actionMenu.getMenuItem(ZmOperation.NEW_BRIEFCASE);
             menuItem.setText(ZmMsg.newFolder);
             menuItem.setImage("NewFolder");
-            menuItem.setEnabled((!isLinkOrRemote || ZmBriefcaseTreeController.__isAllowed(briefcase, ZmShare.PERM_CREATE_SUBDIR) || briefcase.isAdmin() || ZmShare.getRoleFromPerm(briefcase.perm) == ZmShare.ROLE_MANAGER));
+            menuItem.setEnabled(!appCtxt.isExternalAccount() && (!isLinkOrRemote || ZmBriefcaseTreeController.__isAllowed(briefcase, ZmShare.PERM_CREATE_SUBDIR) || briefcase.isAdmin() || ZmShare.getRoleFromPerm(briefcase.perm) == ZmShare.ROLE_MANAGER));
 
             if (appCtxt.get(ZmSetting.SHARING_ENABLED)) {
                 isBriefcase = (!isRoot && briefcase.parent.id == rootId) || type==ZmOrganizer.BRIEFCASE;
@@ -152,9 +152,6 @@ function() {
         ops.push(ZmOperation.NEW_BRIEFCASE);
     }
     ops.push(ZmOperation.EXPAND_ALL);
-	if (!appCtxt.isExternalAccount()) {
-		ops.push(ZmOperation.FIND_SHARES);
-	}
 	return ops;
 };
 
@@ -242,23 +239,8 @@ function(params) {
 	params.include = {};
 	params.include[ZmFolder.ID_TRASH] = true;
     params.showUnread = false;
-    var treeView = ZmFolderTreeController.prototype.show.call(this, params);
-
-    treeView._controller = this;
-    // Finder to BriefcaseTreeView drag and drop
-    this._initDragAndDrop(treeView);
-
-    return treeView;
+    return ZmFolderTreeController.prototype.show.call(this, params);
 };
-
-
-/**
- * @private
- */
-ZmBriefcaseTreeController.prototype._createTreeView = function(params) {
-	return new ZmBriefcaseTreeView(params);
-};
-
 
 ZmBriefcaseTreeController.prototype._handleSearchResponse =
 function(folder, result) {
@@ -267,9 +249,4 @@ function(folder, result) {
     if (folder.nId == ZmFolder.ID_TRASH) {
         this._treeView[this._app.getOverviewId()].setSelected(ZmFolder.ID_TRASH, true);
     }
-};
-
-
-ZmBriefcaseTreeController.prototype._initDragAndDrop = function(treeView) {
-	this._dnd = new ZmDragAndDrop(treeView);
 };

@@ -230,12 +230,12 @@
     </app:status>
 </c:if>
 <c:choose>
-<c:when test="${zm:boolean(param.actionMessageMovedTrash)}" >
+<c:when test="${param.actionMessageMovedTrash}" >
     <app:status>
         <fmt:message key="actionMessageDeleted"/>
     </app:status>
 </c:when>
-<c:when test="${zm:boolean(param.actionMessageMoved)}" >
+<c:when test="${param.actionMessageMoved}" >
     <app:status>
         <fmt:message  key="actionSingleMessageMoved">
             <fmt:param value="${param.movedFolderName}"/>

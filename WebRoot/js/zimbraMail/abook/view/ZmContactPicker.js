@@ -43,6 +43,7 @@ ZmContactPicker = function(buttonInfo) {
 	this._emailListOffset = 0; //client side paginating over email list. Offset of current page of email addresses. Quite different than _lastServerOffset if contacts have 0 or more than 1 email addresses.
 	this._serverContactOffset = 0; //server side paginating over contact list. Offset of last contact block we got from the server (each contact could have 0, 1, or more emails so we have to keep track of this separate from the view offset.
 	this._ascending = true; //asending or descending search. Keep it stored for pagination to do the right sort.
+	this._defaultQuery = ".";
 	this._emailList = new AjxVector();
 	this._detailedSearch = appCtxt.get(ZmSetting.DETAILED_CONTACT_SEARCH_ENABLED);
 	this._searchCleared = {};
@@ -264,7 +265,7 @@ function(colItem, ascending, firstTime, lastId, lastSortVal, offset) {
 			: ZmId.SEARCH_GAL;
 
 		if (searchFor == ZmContactsApp.SEARCHFOR_PAS) {
-			queryHint.push(ZmSearchController.generateQueryForShares(ZmId.ITEM_CONTACT) || "is:local");
+			queryHint.push(ZmSearchController.generateQueryForShares([ZmId.ITEM_CONTACT]) || "is:local");
 		} else if (searchFor == ZmContactsApp.SEARCHFOR_CONTACTS) {
 			queryHint.push("is:local");
 		} else if (searchFor == ZmContactsApp.SEARCHFOR_GAL) {
@@ -278,6 +279,10 @@ function(colItem, ascending, firstTime, lastId, lastSortVal, offset) {
 		if (this._contactSource == ZmItem.CONTACT) {
 			queryHint.push("is:local");
 		}
+	}
+
+    if (!query.length && this._contactSource == ZmId.SEARCH_GAL) {
+		query = this._defaultQuery;
 	}
 
     if (this._contactSource == ZmItem.CONTACT && query != "") {
@@ -729,35 +734,26 @@ function(ev) {
  * @private
  */
 ZmContactPicker.prototype._resetSearchColHeaders =
-function () {
-    var slv = this._chooser.sourceListView;
-    var tlv = this._chooser.targetListView;
-    slv.headerColCreated = false;
-    tlv.headerColCreated = false;
-    var isGal = this._searchInSelect && (this._searchInSelect.getValue() == ZmContactsApp.SEARCHFOR_GAL);
+function() {
+	var slv = this._chooser.sourceListView;
+	slv.headerColCreated = false;
+	var isGal = this._searchInSelect && (this._searchInSelect.getValue() == ZmContactsApp.SEARCHFOR_GAL);
 
-    // find the participant column
-    var part = 0;
-    for (var i = 0; i < slv._headerList.length; i++) {
-        var field = slv._headerList[i]._field;
-        if (field == ZmItem.F_NAME) {
-            part = i;
-        }
-        if (field == ZmItem.F_DEPARTMENT) {
-            slv._headerList[i]._visible = isGal && this._detailedSearch;
-        }
-    }
+	// find the participant column
+	var part = 0;
+	for (var i = 0; i < slv._headerList.length; i++) {
+		var field = slv._headerList[i]._field;
+		if (field == ZmItem.F_NAME) {
+			part = i;
+		}
+		if (field == ZmItem.F_DEPARTMENT) {
+			slv._headerList[i]._visible = isGal && this._detailedSearch;
+		}
+	}
 
-    var sortable = isGal ? null : ZmItem.F_NAME;
-    slv._headerList[part]._sortable = sortable;
-    slv.createHeaderHtml(sortable);
-
-    for (i = 0; i < tlv._headerList.length; i++) {
-        if (tlv._headerList[i]._field == ZmItem.F_DEPARTMENT) {
-            tlv._headerList[i]._visible = isGal && this._detailedSearch;
-        }
-    }
-    tlv.createHeaderHtml();
+	var sortable = isGal ? null : ZmItem.F_NAME;
+	slv._headerList[part]._sortable = sortable;
+	slv.createHeaderHtml(sortable);
 };
 
 /**
@@ -1048,8 +1044,7 @@ function() {
 		headerList.push(new DwtListHeaderItem({field:ZmItem.F_TYPE, icon:"ContactsPicker", width:ZmMsg.COLUMN_WIDTH_TYPE_CN}));
 	}
 	headerList.push(new DwtListHeaderItem({field:ZmItem.F_NAME, text:ZmMsg._name, width:ZmMsg.COLUMN_WIDTH_NAME_CN, resizeable: true}));
-    headerList.push(new DwtListHeaderItem({field:ZmItem.F_DEPARTMENT, text:ZmMsg.department, width:ZmMsg.COLUMN_WIDTH_DEPARTMENT_CN, resizeable: true}));
-    headerList.push(new DwtListHeaderItem({field:ZmItem.F_EMAIL, text:ZmMsg.email, resizeable: true}));
+	headerList.push(new DwtListHeaderItem({field:ZmItem.F_EMAIL, text:ZmMsg.email, resizeable: true}));
 
 	return headerList;
 };

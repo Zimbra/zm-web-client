@@ -14,16 +14,5 @@
  * ***** END LICENSE BLOCK *****
 -->
 <Configure class="org.eclipse.jetty.webapp.WebAppContext">
-  <Get name="securityHandler">
-    <Set name="loginService">
-      <New class="com.zimbra.cs.servlet.ZimbraLoginService">
-        <Set name="name">Zimbra</Set>
-      </New>
-    </Set>
-    <Set name="authenticatorFactory">
-      <New class="com.zimbra.cs.servlet.ZimbraAuthenticatorFactory">
-        <Set name="urlPattern">/downloads/*</Set>
-      </New>
-    </Set>
-  </Get>
+
 </Configure>

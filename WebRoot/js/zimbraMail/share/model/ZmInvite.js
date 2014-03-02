@@ -195,29 +195,6 @@ function(compNum) {
 };
 
 /**
- * Checks if the invite has other individual (non-location & resource) attendees.
- *
- * @param	{int}	compNum		the component number
- * @return	{Boolean}	<code>true</code> if the invite has more than one other individual attendee
- */
-ZmInvite.prototype.hasOtherIndividualAttendees =
-function(compNum) {
-    var cn  = compNum || 0;
-    var att = this.components[cn].at;
-    var otherFound = false;
-
-    if (att && att.length) {
-        for (var i = 0; i < att.length; i++) {
-            if (!att[i].cutype || (att[i].cutype == ZmCalendarApp.CUTYPE_INDIVIDUAL)) {
-                otherFound = true;
-                break;
-            }
-        }
-    }
-    return otherFound;
-};
-
-/**
  * Gets the event name.
  *  
  * @param	{int}	compNum		the component number
@@ -904,7 +881,7 @@ function() {
 	idx = this._addEntryRow(ZmMsg.when, when, html, idx, false, null, true);
 	if (this.isRecurring(compNum)) {
 		if (!this._recurBlurb) {
-			AjxDispatcher.require(["MailCore", "CalendarCore"]);
+			AjxDispatcher.require("CalendarCore");
 			var recur = new ZmRecurrence();
 			recur.parse(this.getRecurrenceRules(compNum));
 			this._recurBlurb = recur.getBlurb();
@@ -931,7 +908,7 @@ function(isHtml) {
 	var appt;
 
 	if (msg) {
-		AjxDispatcher.require(["MailCore", "CalendarCore"]);
+		AjxDispatcher.require("CalendarCore");
 		appt = new ZmAppt();
 		appt.setFromMessage(msg);
 	}
@@ -949,7 +926,7 @@ ZmInvite.prototype.getSummary =
 function(isHtml) {
 	if (this.isRecurring()) {
 		if (!this._recurBlurb) {
-			AjxDispatcher.require(["MailCore", "CalendarCore"]);
+			AjxDispatcher.require("CalendarCore");
 			var recur = new ZmRecurrence();
 			recur.setRecurrenceRules(this.getRecurrenceRules(), this.getServerStartDate());
 			this._recurBlurb = recur.getBlurb();

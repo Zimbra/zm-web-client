@@ -323,8 +323,8 @@
             </table>
             <c:set var="date" value="${zm:addDay(date, 1)}"/>
             <br/>
-            <c:if test="${zm:boolean(param.od)}">
-                <p style="page-break-before: always"></p>
+            <c:if test="${param.od}">
+                <p style="page-break-before: always">
             </c:if>
         </c:forEach>
     </c:when>
@@ -499,8 +499,8 @@
         <c:set var="beginLoop" value="${endLoop+1}"/>
         <c:set var="endLoop" value="${beginLoop+6}"/>
         <br/>
-        <c:if test="${zm:boolean(param.ow)}">
-           <p style="page-break-before: always"></p>
+        <c:if test="${param.od}">
+           <p style="page-break-before: always">
         </c:if>
         </c:forEach>
     </c:otherwise>

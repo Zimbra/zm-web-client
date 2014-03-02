@@ -392,9 +392,9 @@ function() {
 	params.form = {
 		items: [
 			{ id: ZmSharingView.ID_RADIO, type: "DwtRadioButtonGroup", onclick: this._onClick, items: [
-			{ id: ZmSharingView.ID_GROUP, type: "DwtRadioButton", value: ZmSharingView.ID_GROUP, label: ZmMsg.showGroupShares, checked: true },
-			{ id: ZmSharingView.ID_USER, type: "DwtRadioButton", value: ZmSharingView.ID_USER, label: ZmMsg.showUserShares }]},
-			{ id: ZmSharingView.ID_OWNER, type: "ZmAddressInputField", validator: this._validateOwner, params: { singleBubble: true } },
+				{ id: ZmSharingView.ID_GROUP, type: "DwtRadioButton", value: ZmSharingView.ID_GROUP, label: ZmMsg.showGroupShares, checked: true },
+				{ id: ZmSharingView.ID_USER, type: "DwtRadioButton", value: ZmSharingView.ID_USER, label: ZmMsg.showUserShares }]},
+			{ id: ZmSharingView.ID_OWNER, type: "DwtInputField", cols: 40, validator: this._validateOwner },
 			{ id: ZmSharingView.ID_FIND_BUTTON, type: "DwtButton", label: ZmMsg.findShares, onclick: this._onClick }
 		]
 	};
@@ -454,8 +454,7 @@ function() {
 		};
 		this._acAddrSelectList = new ZmAutocompleteListView(params);
 		var inputCtrl = this._shareForm.getControl(ZmSharingView.ID_OWNER);
-		this._acAddrSelectList.handle(inputCtrl.getInputElement(), inputCtrl._htmlElId);
-		inputCtrl.setAutocompleteListView(this._acAddrSelectList);
+		this._acAddrSelectList.handle(inputCtrl.getInputElement());
 	}
 
 	appCtxt.getFolderTree().addChangeListener(new AjxListener(this, this._folderTreeChangeListener));

@@ -85,11 +85,12 @@ ZmImportExportController.TYPE_EXTS[ZmImportExportController.TYPE_ICS] = [ "ics" 
 ZmImportExportController.TYPE_EXTS[ZmImportExportController.TYPE_TGZ] = [ "tgz", "zip" ];
 
 ZmImportExportController.EXTS_TYPE = {};
-AjxUtil.foreach(ZmImportExportController.TYPE_EXTS, function(exts, p) {
-	for (var i = 0; i < exts.length; i++) {
-		ZmImportExportController.EXTS_TYPE[exts[i]] = p;
+for (var p in ZmImportExportController.TYPE_EXTS) {
+	for (var i = 0; i < ZmImportExportController.TYPE_EXTS[p].length; i++) {
+		ZmImportExportController.EXTS_TYPE[ZmImportExportController.TYPE_EXTS[p][i]] = p;
 	}
-});
+}
+delete p; delete i;
 
 ZmImportExportController.__FAULT_ARGS_MAPPING = {
 	"formatter.INVALID_FORMAT": [ "filename" ],
@@ -271,7 +272,7 @@ function(params) {
 		});
 	}
 	else if (type == ZmImportExportController.TYPE_ICS) {
-		AjxDispatcher.require(["MailCore", "CalendarCore", "Calendar"]);
+		AjxDispatcher.require(["CalendarCore", "Calendar"]);
 		dialog.popup({
 			treeIds: [ZmOrganizer.CALENDAR],
 			title: ZmMsg.chooseCalendar,

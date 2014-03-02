@@ -32,14 +32,10 @@
  * 
  * @private
  */
-ZmCalItemView = function(parent, posStyle, controller, id) {
+ZmCalItemView = function(parent, posStyle, controller) {
 	if (arguments.length == 0) return;
 
-	params = {parent: parent, posStyle: posStyle, controller: controller};
-	if (id) {
-		params.id = id;
-	}
-	ZmMailMsgView.call(this, params);
+	ZmMailMsgView.call(this, {parent:parent, posStyle:posStyle, controller:controller});
 };
 
 ZmCalItemView.prototype = new ZmMailMsgView;
@@ -92,7 +88,7 @@ function(calItem, prevView, mode) {
 	                              viewMgr.getCurrentViewName() : this._prevView);
 
 	this.reset();
-	this._calItem = this._item = calItem;
+	this._calItem = calItem;
 	this._mode = mode;
 	this._renderCalItem(calItem, true);
 };
@@ -100,7 +96,7 @@ function(calItem, prevView, mode) {
 ZmCalItemView.prototype.reset =
 function() {
 	ZmMailMsgView.prototype.reset.call(this);
-	this._calItem = this._item = null;
+	this._calItem = null;    
 };
 
 ZmCalItemView.prototype.close = function() {}; // override
@@ -278,11 +274,11 @@ function(x, y, width, height) {
 
 ZmApptView.prototype._renderCalItem =
 function(calItem) {
-
 	this._lazyCreateObjectManager();
 
 	var subs = this._getSubs(calItem);
 	this._hdrTableId = this._htmlElId + "_hdrTable";
+
 
     var calendar = calItem.getFolder();
     var isReadOnly = calendar.isReadOnly() || calendar.isInTrash();
@@ -291,9 +287,8 @@ function(calItem) {
 	var el = this.getHtmlElement();
 	el.innerHTML = AjxTemplate.expand("calendar.Appointment#ReadOnlyView", subs);
 
-	this._createBubbles();
 
-    var selParams = {parent: this, id: Dwt.getNextId('ZmNeedActionSelect_')};
+    var selParams = {parent: this};
     var statusSelect = new DwtSelect(selParams);
 
     var ptst = {};
@@ -310,7 +305,7 @@ function(calItem) {
     for (var stat in ptst) {
         //stat = ptst[index];
         if (stat === ZmCalBaseItem.PSTATUS_NEEDS_ACTION && calItemPtst !== ZmCalBaseItem.PSTATUS_NEEDS_ACTION) { continue; }
-        data = new DwtSelectOptionData(stat, ZmCalItem.getLabelForParticipationStatus(stat), false, null, ZmCalItem.getParticipationStatusIcon(stat), Dwt.getNextId('ZmNeedActionOption_' + stat + '_'));
+        data = new DwtSelectOptionData(stat, ZmCalItem.getLabelForParticipationStatus(stat), false, null, ZmCalItem.getParticipationStatusIcon(stat));
         statusSelect.addOption(data);
         if (stat == calItemPtst){
             statusSelect.setSelectedValue(stat);
@@ -348,82 +343,60 @@ function(calItem) {
 	var equipment = calItem.getAttendeesText(ZmCalBaseItem.EQUIPMENT, true);
 	var isException = calItem._orig.isException;
 	var dateStr = this._getTimeString(calItem);
-
-	this._clearBubbles();
-	var reqAttendees = this._getAttendeesByRoleCollapsed(calItem.getAttendees(ZmCalBaseItem.PERSON), ZmCalBaseItem.PERSON, ZmCalItem.ROLE_REQUIRED);
-	var optAttendees = this._getAttendeesByRoleCollapsed(calItem.getAttendees(ZmCalBaseItem.PERSON), ZmCalBaseItem.PERSON, ZmCalItem.ROLE_OPTIONAL);
-	var hasAttendees = reqAttendees || optAttendees;
-
-	var organizer, obo;
+	//var attendees = calItem.getAttendeesText(ZmCalBaseItem.PERSON);
+    var isAttendees = false;
+    var reqAttendees = calItem.getAttendeesTextByRole(ZmCalBaseItem.PERSON, ZmCalItem.ROLE_REQUIRED, true, this._objectManager, this._htmlElId);
+    var optAttendees = calItem.getAttendeesTextByRole(ZmCalBaseItem.PERSON, ZmCalItem.ROLE_OPTIONAL, true, this._objectManager, this._htmlElId);
+    if(reqAttendees || optAttendees) isAttendees = true;
+	var org, obo;
 	var recurStr = calItem.isRecurring() ? calItem.getRecurBlurb() : null;
 	var attachStr = ZmCalItemView._getAttachString(calItem);
 
-	if (hasAttendees) { // I really don't know why this check here but it's the way it was before so keeping it. (I just renamed the var)
-		organizer = new AjxEmailAddress(calItem.getOrganizer(), null, calItem.getOrganizerName());
-
+	if (isAttendees) {
+		var organizer = org = calItem.getOrganizer();
 		var sender = calItem.message.getAddress(AjxEmailAddress.SENDER);
 		var from = calItem.message.getAddress(AjxEmailAddress.FROM);
 		var address = sender || from;
-		if (!organizer && address)	{
-			organizer = address.toString();
-		}
-		if (sender && organizer) {
-			obo = from ? new AjxEmailAddress(from.toString()) : organizer;
-		}
+        if(!org && address)	org = address.toString();
+		if (sender && organizer)
+			obo = from ? from.toString() : organizer;
 	}
 
-	organizer = organizer && this._getBubbleHtml(organizer);
-	obo = obo && this._getBubbleHtml(obo);
+	if (this._objectManager) {
+		this._objectManager.setHandlerAttr(ZmObjectManager.DATE,
+											ZmObjectManager.ATTR_CURRENT_DATE,
+											calItem.startDate);
+
+		subject = this._objectManager.findObjects(subject, true);
+		location = this._objectManager.findObjects(location, true);
+		equipment = this._objectManager.findObjects(equipment, true);
+		dateStr = this._objectManager.findObjects(dateStr, true);
+		if (org) org = this._objectManager.findObjects(org, true, ZmObjectManager.EMAIL);
+		if (obo) obo = this._objectManager.findObjects(obo, true, ZmObjectManager.EMAIL);
+	}
 
 	return {
-		id:             this._htmlElId,
-		subject:        subject,
-		location:       location,
-		equipment:      equipment,
-		isException:    isException,
-		dateStr:        dateStr,
-        isAttendees:    hasAttendees,
-        reqAttendees:   reqAttendees,
-		optAttendees:   optAttendees,
-		org:            organizer,
-		obo:            obo,
-		recurStr:       recurStr,
-		attachStr:      attachStr,
-		folder:         appCtxt.getTree(ZmOrganizer.CALENDAR).getById(calItem.folderId),
-		folderLabel:    ZmMsg.calendar,
-		reminderLabel:  ZmMsg.reminder,
-		alarm:          calItem.alarm,
-		isAppt:         true,
-        _infoBarId:     this._infoBarId
+		id: this._htmlElId,
+		subject: subject,
+		location: location,
+		equipment: equipment,
+		isException: isException,
+		dateStr: dateStr,
+        isAttendees: isAttendees,
+        reqAttendees: reqAttendees,
+		optAttendees: optAttendees,
+		org: org,
+		obo: obo,
+		recurStr: recurStr,
+		attachStr: attachStr,
+		folder: appCtxt.getTree(ZmOrganizer.CALENDAR).getById(calItem.folderId),
+		//folders: String(calItem.id).match(/:/) ? [] : this._controller.getCalendars(),
+		folderLabel: ZmMsg.calendar,
+		reminderLabel: ZmMsg.reminder,
+		alarm: calItem.alarm,
+		isAppt: true,
+        _infoBarId:this._infoBarId
 	};
-};
-
-/**
- * Creates a string of attendees by role. If an item doesn't have a name, its address is used.
- *
- * calls common code from mail msg view to get the collapse/expand "show more" funcitonality for large lists.
- *
- * @param list					[array]			list of attendees (ZmContact or ZmResource)
- * @param type					[constant]		attendee type
- * @param role      		        [constant]      attendee role
- */
-ZmApptView.prototype._getAttendeesByRoleCollapsed = function(list, type, role) {
-
-	if (!(list && list.length)) {
-		return "";
-	}
-	var attendees = ZmApptViewHelper.getAttendeesArrayByRole(list, role);
-
-	var emails = [];
-	for (var i = 0; i < attendees.length; i++) {
-		var att = attendees[i];
-		emails.push(new AjxEmailAddress(att.getEmail(), type, att.getFullName(), att.getFullName()));
-	}
-
-	var options = {};
-	options.shortAddress = appCtxt.get(ZmSetting.SHORT_ADDRESS);
-	var addressInfo = this.getAddressesFieldHtmlHelper(emails, options, role);
-	return addressInfo.html;
 };
 
 ZmApptView.prototype._getTimeString =
@@ -465,7 +438,7 @@ function(calItem) {
 ZmApptView.prototype.set =
 function(appt, mode) {
 	this.reset();
-	this._calItem = this._item = appt;
+	this._calItem = appt;
 	this._mode = mode;
 	this._renderCalItem(appt, false);
 };

@@ -99,8 +99,6 @@ function(params) {
 	if (tags.length == 1) {
 		this._tagTreeView.setSelected(tags[0], true, true);
 	}
-	this.setButtonEnabled(DwtDialog.OK_BUTTON, this._tagTreeView.getSelected());
-
 	ZmDialog.prototype.popup.apply(this, arguments);
 };
 
@@ -160,11 +158,7 @@ function(ev) {
 
 ZmPickTagDialog.prototype._okButtonListener = 
 function(ev) {
-	var selectedTag = this._tagTreeView.getSelected();
-	if (!selectedTag) {
-		return;
-	}
-	DwtDialog.prototype._buttonListener.call(this, ev, [selectedTag]);
+	DwtDialog.prototype._buttonListener.call(this, ev, [this._tagTreeView.getSelected()]);
 };
 
 ZmPickTagDialog.prototype._handleKeyUp =
@@ -196,11 +190,6 @@ function(ev) {
 	if (firstMatch) {
 		this._tagTreeView.setSelected(appCtxt.getById(firstMatch), true, true);
 	}
-	else {
-		this._tagTreeView.deselectAll();
-	}
-	this.setButtonEnabled(DwtDialog.OK_BUTTON, firstMatch);
-
 	this._lastVal = value;
 };
 
@@ -220,23 +209,10 @@ function() {
 ZmPickTagDialog.prototype._treeViewSelectionListener =
 function(ev) {
 
-	if (ev.detail === DwtTree.ITEM_DESELECTED) {
-		this._inputField.setValue("");
-		this.setButtonEnabled(DwtDialog.OK_BUTTON, false);
-		return;
-	}
-
-	if (ev.detail !== DwtTree.ITEM_SELECTED && ev.detail !== DwtTree.ITEM_DBL_CLICKED){
-		return;
-	}
-
-	if (!ev.item.isSelectionEnabled()) {
-		return;
-	}
+	if (ev.detail != DwtTree.ITEM_SELECTED && ev.detail != DwtTree.ITEM_DBL_CLICKED)	{ return; }
 
 	var tag = ev.item.getData(Dwt.KEY_OBJECT);
 	if (tag) {
-		this.setButtonEnabled(DwtDialog.OK_BUTTON, true);
 		var value = tag.getName(false, null, true, true);
 		this._lastVal = value.toLowerCase();
 		this._inputField.setValue(value);

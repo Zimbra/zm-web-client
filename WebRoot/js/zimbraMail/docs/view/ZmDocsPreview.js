@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2010, 2011, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2010, 2011, 2012, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
@@ -31,7 +31,7 @@ ZmDocsPreview = function(container, params){
 
 ZmDocsPreview.prototype.constructor = ZmDocsPreview;
 
-//TODO: Make ZmPreview base class sto isolate all the common methods for Documents
+//TODO: Make ZmPreview base class sto isolate all the common methods for Documents/Spreadsheets/Slides
 //ZmDocsPreview.prototype = new ZmPreview
 
 ZmDocsPreview.launch =

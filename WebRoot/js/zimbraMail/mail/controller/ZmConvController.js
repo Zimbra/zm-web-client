@@ -28,15 +28,15 @@
  * @param {constant}		type				type of controller
  * @param {string}			sessionId			the session id
  *
- * @extends		ZmConvListController
+ * @extends		ZmMailListController
  */
 ZmConvController = function(container, mailApp, type, sessionId) {
 
-	ZmConvListController.apply(this, arguments);
+	ZmMailListController.apply(this, arguments);
 	this._elementsToHide = ZmAppViewMgr.LEFT_NAV;
 };
 
-ZmConvController.prototype = new ZmConvListController;
+ZmConvController.prototype = new ZmMailListController;
 ZmConvController.prototype.constructor = ZmConvController;
 
 ZmConvController.prototype.isZmConvController = true;
@@ -172,7 +172,7 @@ function(view) {
 			parent:		this._container,
 			id:			ZmId.getViewId(ZmId.VIEW_CONV2, null, view),
 			posStyle:	Dwt.ABSOLUTE_STYLE,
-			mode:		view,
+			mode:		ZmId.VIEW_CONV2,
 			standalone:	true, //double-clicked stand-alone view of the conv (not within the double pane)
 			controller:	this
 		};
@@ -186,8 +186,16 @@ function(view) {
 ZmConvController.prototype._getToolBarOps =
 function() {
 	var list = [ZmOperation.CLOSE, ZmOperation.SEP];
-	list = list.concat(ZmConvListController.prototype._getToolBarOps.call(this));
+	list = list.concat(ZmMailListController.prototype._getToolBarOps.call(this));
 	return list;
+};
+
+ZmConvController.prototype._initializeToolBar = 
+function(view) {
+	if (!this._toolbar[view]) {
+		ZmMailListController.prototype._initializeToolBar.call(this, view);
+	}
+	this._setupSpamButton(this._toolbar[view]);
 };
 
 // conv view has arrows to go to prev/next conv, so needs regular nav toolbar
@@ -218,6 +226,10 @@ function(ev) {
 	}
 };
 
+ZmConvController.prototype._setupConvOrderMenuItems =
+function(view, menu) {
+	ZmConvListController.prototype._setupConvOrderMenuItems.apply(this, arguments);
+};
 
 ZmConvController.prototype._setupGroupByMenuItems = function(view, menu) {};
 
@@ -232,6 +244,11 @@ function(view) {
 	// bug fix #7389 - do nothing!
 };
 
+// Handle change of msg order within conv
+ZmConvController.prototype.switchView =
+function(view, force) {
+	ZmConvListController.prototype.switchView.apply(this, arguments);
+};
 
 ZmConvController.prototype.getItemView = 
 function() {
@@ -241,7 +258,7 @@ function() {
 // if going from msg to conv view, don't have server mark stuff read (we'll just expand the one msg view)
 ZmConvController.prototype._handleMarkRead =
 function(item, check) {
-	return this._relatedMsg ? false : ZmConvListController.prototype._handleMarkRead.apply(this, arguments);
+	return this._relatedMsg ? false : ZmMailListController.prototype._handleMarkRead.apply(this, arguments);
 };
 
 // Operation listeners
@@ -335,7 +352,7 @@ function(actionCode) {
 			break;
 
 		default:
-			return ZmConvListController.prototype.handleKeyAction.call(this, actionCode);
+			return ZmMailListController.prototype.handleKeyAction.call(this, actionCode);
 	}
 	return true;
 };
@@ -355,11 +372,6 @@ function() {
 ZmConvController.prototype.getMsg =
 function(params) {
 	return ZmConvListController.prototype.getMsg.call(this, params); //we need to get the first hot message from the conv.
-};
-
-ZmConvController.prototype._getLoadedMsg =
-function(params, callback) {
-	callback.run(this.getMsg());
 };
 
 // overloaded...
@@ -413,44 +425,16 @@ function() {
 	this._backListener();
 };
 
-/**
- * have to do this since we don't want what is from ZmDoublePaneController, and ZmConvListController extends ZmDoublePaneController... (unlike
- * ZmMailListController - ZmDoublePaneController extends ZmMailLitController actually).
- * @returns {Array}
- * @private
- */
-ZmConvController.prototype._getRightSideToolBarOps =
-function() {
-	return [ZmOperation.VIEW_MENU];
-};
-
-/**
- * have to do this since otherwise we get the one from ZmDoublePaneController and that's not good.
- * @private
- */
-ZmConvController.prototype._setupReadingPaneMenuItems = function() {
-};
-
-/**
- * this is called sometimes as a result of stuf in ZmConvListController - but this view has no next item so override to just return null
- * @returns {null}
- * @private
- */
-ZmConvController.prototype._getNextItemToSelect =
-function() {
-	return null;
-};
-
 ZmConvController.prototype._doMove =
 function() {
 	this._selectNextItemInParentListView();
-	ZmConvListController.prototype._doMove.apply(this, arguments);
+	ZmMailListController.prototype._doMove.apply(this, arguments);
 };
 
 ZmConvController.prototype._doSpam =
 function() {
 	this._selectNextItemInParentListView();
-	ZmConvListController.prototype._doSpam.apply(this, arguments);
+	ZmMailListController.prototype._doSpam.apply(this, arguments);
 };
 
 ZmConvController.prototype._msgViewCurrent =

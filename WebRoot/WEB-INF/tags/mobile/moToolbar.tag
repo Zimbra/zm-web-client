@@ -74,7 +74,7 @@
             <option value="actionMarkUnread"><fmt:message key="MO_unread"/></option>
             <c:if test="${mailbox.features.spam}">
             <c:choose>
-            <c:when test="${zm:boolean(context.folder.isSpam)}"><option value="actionMarkUnspam"><fmt:message key="actionNotSpam"/></option></c:when>
+            <c:when test="${context.folder.isSpam}"><option value="actionMarkUnspam"><fmt:message key="actionNotSpam"/></option></c:when>
             <c:otherwise><option value="actionMarkSpam"><fmt:message key="actionSpam"/></option></c:otherwise>
             </c:choose>
             </c:if>
@@ -144,7 +144,7 @@
 <div class="tr"><span class="td" id="fbtd"><span id="sc"></span>
 <c:if test="${not context.isContactSearch}">
 <span class="zo_button_group delete_button">
-<input type='button' class='zo_button prev_button' name='actionJunk' value='<fmt:message key="${zm:boolean(context.folder.isSpam) ? 'actionNotSpam' : 'actionSpam'}"/>' onclick="$('zForm').anAction[0].value='actionMark${zm:boolean(context.folder.isSpam) ? 'Unspam' : 'Spam' }';submitForm($('zForm'));">
+<input type='button' class='zo_button prev_button' name='actionJunk' value='<fmt:message key="${context.folder.isSpam ? 'actionNotSpam' : 'actionSpam'}"/>' onclick="$('zForm').anAction[0].value='actionMark${context.folder.isSpam ? 'Unspam' : 'Spam' }';submitForm($('zForm'));">
 <input type='submit' class='zo_button next_button' name='action${context.folder.isInTrash ? 'Hard' : ''}Delete' value='<fmt:message key="delete"/>'>
 </span>
 </c:if>
@@ -168,7 +168,7 @@
             <option value="actionMarkUnread"><fmt:message key="MO_unread"/></option>
             <c:if test="${mailbox.features.spam}">
             <c:choose>
-            <c:when test="${zm:boolean(context.folder.isSpam)}"><option value="actionMarkUnspam"><fmt:message key="actionNotSpam"/></option></c:when>
+            <c:when test="${context.folder.isSpam}"><option value="actionMarkUnspam"><fmt:message key="actionNotSpam"/></option></c:when>
             <c:otherwise><option value="actionMarkSpam"><fmt:message key="actionSpam"/></option></c:otherwise>
             </c:choose>
             </c:if>

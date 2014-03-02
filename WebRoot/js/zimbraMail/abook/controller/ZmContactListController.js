@@ -147,6 +147,13 @@ function(searchResult, isGalSearch, folderId) {
 	}
 };
 
+ZmContactListController.prototype._dragListener =
+function(ev) {
+	ZmListController.prototype._dragListener.call(this, ev);
+	if (ev.srcControl && ev.srcControl && ev.srcControl._folderId && ev.srcControl._folderId == ZmFolder.ID_DLS) {
+		return;
+	}
+};
 
 
 /**
@@ -216,6 +223,142 @@ ZmContactListController.prototype.getFolderId =
 function() {
 	return this._folderId;
 };
+
+
+
+
+ZmContactListController.prototype.gatherContactExtraDlStuff =
+function(contact, callback) {
+	if (contact.dlInfo && !contact.dlInfo.isMinimal) {
+		//already there, skip to next step, loading DL Members
+		this.loadDlMembers(contact, callback);
+		return;
+	}
+	var callbackFromGettingInfo = this._handleGetDlInfoResponse.bind(this, contact, callback);
+	contact.loadDlInfo(callbackFromGettingInfo);
+};
+
+ZmContactListController.prototype._handleGetDlInfoResponse =
+function(contact, callback, result) {
+	var response = result._data.GetDistributionListResponse;
+	var dl = response.dl[0];
+	var attrs = dl._attrs;
+	var isMember = dl.isMember;
+	var isOwner = dl.isOwner;
+	var mailPolicySpecificMailers = [];
+	contact.dlInfo = {	isMember: isMember,
+						isOwner: isOwner,
+						subscriptionPolicy: attrs.zimbraDistributionListSubscriptionPolicy,
+						unsubscriptionPolicy: attrs.zimbraDistributionListUnsubscriptionPolicy,
+						description: attrs.description || "",
+						displayName: attrs.displayName || "",
+						notes: attrs.zimbraNotes || "",
+						hideInGal: attrs.zimbraHideInGal == "TRUE",
+						mailPolicy: isOwner && this._getMailPolicy(dl, mailPolicySpecificMailers, contact),
+						owners: isOwner && this._getOwners(dl)};
+
+	contact.dlInfo.mailPolicySpecificMailers = mailPolicySpecificMailers;
+
+	this._resetOperations(this._toolbar[this._currentViewId], 1); // now that we got the dlInfo we can know better how to set the "edit" button.
+	this.loadDlMembers(contact, callback);
+};
+
+ZmContactListController.prototype.loadDlMembers =
+function(contact, callback) {
+	if ((!appCtxt.get("EXPAND_DL_ENABLED") || contact.dlInfo.hideInGal) && !contact.dlInfo.isOwner) {
+		// can't get members if dl has zimbraHideInGal true, and not owner
+		//also, if zimbraFeatureDistributionListExpandMembersEnabled is false - also do not show the members (again unless it's the owner)
+		contact.dlMembers = [];
+		if (callback) {
+			callback();
+		}
+		return;
+	}
+	if (contact.dlMembers) {
+		//already there - just callback
+		if (callback) {
+			callback();
+		}
+		return;
+	}
+	var respCallback = this._handleGetDlMembersResponse.bind(this, contact, callback);
+	contact.getAllDLMembers(respCallback);
+};
+
+
+
+ZmContactListController.prototype._getOwners =
+function(dl) {
+	var owners = dl.owners[0].owner;
+	var ownersArray = [];
+	for (var i = 0; i < owners.length; i++) {
+		var owner = owners[i].name;
+		ownersArray.push(owner); //just the email address, I think and hope.
+	}
+	return ownersArray;
+};
+
+ZmContactListController.prototype._getMailPolicy =
+function(dl, specificMailers, contact) {
+	var mailPolicy;
+
+	var rights = dl.rights[0].right;
+	var right = rights[0];
+	var grantees = right.grantee;
+	if (!grantees) {
+		return ZmGroupView.MAIL_POLICY_ANYONE;
+	}
+	for (var i = 0; i < grantees.length; i++) {
+		var grantee = grantees[i];
+
+		mailPolicy = ZmGroupView.GRANTEE_TYPE_TO_MAIL_POLICY_MAP[grantee.type];
+		
+		if (mailPolicy == ZmGroupView.MAIL_POLICY_SPECIFIC) {
+			specificMailers.push(grantee.name);
+		}
+		else if (mailPolicy == ZmGroupView.MAIL_POLICY_ANYONE) {
+			break;
+		}
+		else if (mailPolicy == ZmGroupView.MAIL_POLICY_INTERNAL) {
+			break;
+		}
+		else if (mailPolicy == ZmGroupView.MAIL_POLICY_MEMBERS) {
+			if (grantee.name == contact.getEmail()) {
+				break;
+			}
+			else {
+				mailPolicy = null;
+				//ignore permission of other groups since we don't allow in our UI
+			}
+		}
+	}
+	mailPolicy = mailPolicy || ZmGroupView.MAIL_POLICY_ANYONE;
+
+	return mailPolicy;
+};
+
+
+ZmContactListController.prototype._handleGetDlMembersResponse =
+function(contact, callback, result) {
+	var list = result.list;
+	if (!list) {
+		contact.dlMembers = [];
+		callback();
+		return;
+	}
+	var members = [];
+	for (var i = 0; i < list.length; i++) {
+		members.push({type: ZmContact.GROUP_INLINE_REF,
+						value: list[i],
+						address: list[i]});
+	}
+
+	contact.dlMembers =	members;
+	callback();
+};
+
+
+
 
 /**
  * Checks if the search is a GAL search.
@@ -302,7 +445,7 @@ function(actionCode) {
 
 		case ZmKeyMap.NEW_MESSAGE:
             if (isExternalAccount) { break; }
-			this._composeListener();
+			this._participantComposeListener();
 			break;
 
 		default:
@@ -530,7 +673,7 @@ function(view) {
 	DBG.timePt("setting list");
 	this._list.removeChangeListener(this._listChangeListener);
 	this._list.addChangeListener(this._listChangeListener);
-	this._listView[view].set(this._list, null, this._folderId, this.isSearchResults);
+	this._listView[view].set(this._list, null, this._folderId);
 	DBG.timePt("done setting list");
 };
 
@@ -682,11 +825,11 @@ function(parent, num) {
 	parent.enable([ZmOperation.CONTACTGROUP_MENU], num > 0 && !isDl && !appCtxt.isExternalAccount());
 	var contactGroupMenu = this._getContactGroupMenu(parent);
 	if (contactGroupMenu) {
-		contactGroupMenu.setNewDisabled(folder && folder.isReadOnly());
+		contactGroupMenu.setNewDisabled(!folder || (folder && folder.isReadOnly()));	
 	}
-	appCtxt.notifyZimlets("resetContactListToolbarOperations",[parent, num]);
 	if (!this.isGalSearch()) {
 		parent.enable([ZmOperation.SEARCH_MENU, ZmOperation.BROWSE, ZmOperation.NEW_MENU, ZmOperation.VIEW_MENU], true);
+        appCtxt.notifyZimlets("resetToolbarOperations",[parent, num]);
 
 		// a valid folderId means user clicked on an addrbook
 		if (folder) {
@@ -733,17 +876,27 @@ function(parent, num) {
 
 	var selection = this._listView[this._currentViewId].getSelection();
 	var contact = (selection.length == 1) ? selection[0] : null;
+	parent.enable([ZmOperation.SEARCH_MENU, ZmOperation.BROWSE], num == 1 && !appCtxt.isExternalAccount());
 
-	var searchEnabled = num === 1 && !appCtxt.isExternalAccount() && !contact.isGroup() && contact.getEmail(); //contact.getEmail() comes from bug 72446. I had to refactor but want to keep reference to bug in this comment
-	parent.enable([ZmOperation.SEARCH_MENU, ZmOperation.BROWSE], searchEnabled);
-
-	if (parent instanceof ZmPopupMenu) {
-		this._setContactText(contact);
-		if (appCtxt.get(ZmSetting.IM_ENABLED)) {
-			var imItem = parent.getOp(ZmOperation.IM);
-			ZmImApp.updateImMenuItemByContact(imItem, contact);
+	if (num == 1 && contact.isGroup()) {
+		parent.enable([ZmOperation.SEARCH_MENU, ZmOperation.BROWSE], false);
+		if (parent instanceof ZmPopupMenu) {
+			ZmOperation.setOperation(parent, ZmOperation.CONTACT, ZmOperation.EDIT_CONTACT, ZmMsg.AB_EDIT_GROUP);
 		}
-
+	}
+	else if (num == 1 && !contact.getEmail()) {
+		parent.enable([ZmOperation.SEARCH_MENU], false);	
+	}
+	else {
+		if (parent instanceof ZmPopupMenu) {
+			this._setContactText(!this.isGalSearch());
+			if (appCtxt.get(ZmSetting.IM_ENABLED)) {
+				var imItem = parent.getOp(ZmOperation.IM);
+				ZmImApp.updateImMenuItemByContact(imItem, contact);
+			}
+		}
+	}
+	if (parent instanceof ZmPopupMenu) {
 		var tagMenu = parent.getMenuItem(ZmOperation.TAG_MENU);
 		if (tagMenu) {
 			tagMenu.setText(contact && contact.isGroup() ? ZmMsg.AB_TAG_GROUP : ZmMsg.AB_TAG_CONTACT);
@@ -766,23 +919,6 @@ function(parent, num) {
                     );
         parent.setItemVisible(ZmOperation.TAG_MENU, false);
     }
-
-	if (appCtxt.isWebClientOffline()) {
-		parent.enable(
-			[
-				ZmOperation.MOVE,
-				ZmOperation.EDIT,
-				ZmOperation.CONTACT,
-				ZmOperation.MOVE_MENU,
-				ZmOperation.CONTACTGROUP_MENU,
-				ZmOperation.DELETE,
-				ZmOperation.TAG_MENU,
-				ZmOperation.PRINT,
-				ZmOperation.PRINT_CONTACT
-			],
-			false
-		);
-	}
 };
 
 
@@ -797,7 +933,7 @@ function(parent, num) {
 ZmContactListController.prototype._getActionContact = function(isToolbar) {
 
 	/*
-	if you read this and don't understand why I don't do the same as in _composeListener. It's because
+	if you read this and don't understand why I don't do the same as in _participantComposeListener. It's because
 	in DwtListView.prototype.getSelection, the _rightSelItem is not set for a submenu, so the right clicked item is not the selection returned.
 	This approach of specifically specifying if it's from the toolbar (isToolbar) is more explicit, less fragile and works.
 	 */
@@ -819,22 +955,31 @@ ZmContactListController.prototype._getActionContact = function(isToolbar) {
  *
  * @private
  */
-ZmContactListController.prototype._searchListener = function(addrType, isToolbar, ev) {
+ZmContactListController.prototype._participantSearchListener = function(isToolbar, ev) {
 
 	var contact = this._getActionContact(isToolbar);
 	if (!contact) {
 		return;
 	}
 
-	var addresses = contact.getEmails(),
-		srchCtlr = appCtxt.getSearchController();
+	var addresses = contact.getEmails();
+	appCtxt.getSearchController().fromSearch(addresses);
+};
 
-	if (addrType === AjxEmailAddress.FROM) {
-		srchCtlr.fromSearch(addresses);
+/**
+ * To Search based on email address.
+ *
+ * @private
+ */
+ZmContactListController.prototype._participantSearchToListener =
+function(isToolbar, ev) {
+	var contact = this._getActionContact(isToolbar);
+	if (!contact) {
+		return;
 	}
-	else if (addrType === AjxEmailAddress.TO) {
-		srchCtlr.toSearch(addresses);
-	}
+
+	var addresses = contact.getEmails();
+	appCtxt.getSearchController().toSearch(addresses);
 };
 
 /**
@@ -858,7 +1003,7 @@ function(ev) {
 			this._editListener.call(this, ev);
 			return;
 		}
-		if (!this.isGalSearch() && (!folder || (!folder.isReadOnly() && !folder.isInTrash())) && !appCtxt.isWebClientOffline()) {
+		if (!this.isGalSearch() && (!folder || (!folder.isReadOnly() && !folder.isInTrash()))) {
 			AjxDispatcher.run("GetContactController").show(ev.item);
 		}
 	}
@@ -872,7 +1017,7 @@ function(ev, op, params) {
 	if (!ev && !op) { return; }
 	op = op || ev.item.getData(ZmOperation.KEY_ID);
 	if (op == ZmOperation.NEW_MESSAGE) {
-		this._composeListener(ev);
+		this._participantComposeListener(ev);
 	}else{
         ZmListController.prototype._newListener.call(this, ev, op, params);
     }
@@ -883,7 +1028,7 @@ function(ev, op, params) {
  * 
  * @private
  */
-ZmContactListController.prototype._composeListener =
+ZmContactListController.prototype._participantComposeListener =
 function(ev) {
 
     var selection = this._listView[this._currentViewId].getSelection();
@@ -893,7 +1038,7 @@ function(ev) {
     var emailStr = '', contact, email;
     for (var i = 0; i < selection.length; i++){
         contact = selection[i];
-		if (contact.isGroup() && !contact.isDistributionList()) {
+		if (contact.isGroup()) {
 			var members = contact.getGroupMembers().good;
 			if (members.size()) {
 				emailStr += members.toString(AjxEmailAddress.SEPARATOR) + AjxEmailAddress.SEPARATOR;
@@ -958,8 +1103,15 @@ function(ev) {
  * @private
  */
 ZmContactListController.prototype._editListener =
-function(ev, contact) {
+function(ev, isBack, contact) {
 	contact = contact || this._listView[this._currentViewId].getSelection()[0];
+	if (contact.isDistributionList() && !isBack) {
+		//load the full DL info available for the owner, for edit.
+		var callback = this._editListener.bind(this, ev, true, contact); //callback HERE
+		contact.clearDlInfo();
+		this.gatherContactExtraDlStuff(contact, callback);
+		return;
+	}
 	AjxDispatcher.run("GetContactController").show(contact, false);
 };
 

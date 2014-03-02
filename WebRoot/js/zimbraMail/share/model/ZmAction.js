@@ -56,28 +56,12 @@ ZmAction.prototype.redo = function() {
 };
 
 ZmAction.prototype.setComplete = function() {
-	if (!this._complete) {
-		this._complete = true;
-		this._notify(ZmEvent.E_COMPLETE);
-	}
+	this._complete = true;
+	this._notify(ZmEvent.E_COMPLETE);
 };
 
 ZmAction.prototype.getComplete = function() {
 	return this._complete;
-};
-
-ZmAction.prototype.onComplete = function(callback) {
-	if (this._complete) {
-		callback.run(this);
-	} else {
-		this.addChangeListener(new AjxListener(this, this._handleComplete, [callback]));
-	}
-};
-
-ZmAction.prototype._handleComplete = function(callback, event) {
-	if (event.event===ZmEvent.E_COMPLETE) {
-		callback.run(this);
-	}
 };
 
 /**
@@ -191,16 +175,14 @@ ZmItemMoveAction.prototype.getToFolderId = function() {
 };
 
 ZmItemMoveAction.prototype._doMove = function(callback, errorCallback, folderId) {
-
-	var items = ZmItemMoveAction._realizeItems(this._item), // probably unnecessary since conv forces multipleUndo
-		list = items[0] && items[0].list;
-
-	list.moveItems({
-		items:			items,
+	this._item.list.moveItems({
+		items:			[this._item],
 		folder:			appCtxt.getById(folderId),
 		noUndo:			true,
 		finalCallback:	this._handleDoMove.bind(this, this._item.folderId, folderId),
-		fromFolderId:   this._toFolderId
+		actionText:		ZmItemMoveAction.UNDO_MSG[this._op],
+
+		fromFolderId: this._toFolderId
 	});
 };
 
@@ -230,9 +212,9 @@ ZmItemMoveAction.prototype.redo = function(callback, errorCallback) {
 };
 
 ZmItemMoveAction.multipleUndo = function(actions, redo, fromFolderId) {
-
+	var masterAction = actions && actions.length && actions[0];
 	var sortingTable = {};
-	for (var i = 0; i < actions.length; i++) {
+	for (var i=0; i<actions.length; i++) {
 		var action = actions[i];
 		if (action instanceof ZmItemMoveAction) {
 			var from = action.getFromFolderId();
@@ -245,26 +227,35 @@ ZmItemMoveAction.multipleUndo = function(actions, redo, fromFolderId) {
 			sortingTable[from][to][type].push(action);
 		}
 	}
-
 	for (var from in sortingTable) {
 		for (var to in sortingTable[from]) {
 			for (var type in sortingTable[from][to]) {
 				var subset = sortingTable[from][to][type];
 				var items = [];
 				var list = null;
-				for (var i = 0; i < subset.length; i++) {
+				var hasMasterAction = false;
+				var commonop;
+				for (var i=0; i<subset.length; i++) {
 					var action = subset[i];
+					if (action == masterAction)
+						hasMasterAction = true;
 					var item = action.getItem();
 					items.push(item);
+					if (!list && item.list)
+						list = item.list;
+					var op = action.getOp && action.getOp();
+					if (!commonop)
+						commonop = op;
+					else if (commonop != op)
+						commonop = "move";
 				}
-				items = ZmItemMoveAction._realizeItems(items);
-				list = items[0] && items[0].list;
 				if (list) {
 					list.moveItems({
-						items:          items,
-						folder:         appCtxt.getById(redo ? to : from),
-						noUndo:         true,
-						fromFolderId:   fromFolderId
+						items: items,
+						folder: appCtxt.getById(redo ? to : from),
+						noUndo: true,
+						fromFolderId: fromFolderId,
+						actionText: hasMasterAction ? (commonop && ZmItemMoveAction.UNDO_MSG[commonop]) : null
 					});
 				}
 			}
@@ -274,23 +265,6 @@ ZmItemMoveAction.multipleUndo = function(actions, redo, fromFolderId) {
 
 ZmItemMoveAction.multipleRedo = function(actions) {
 	ZmItemMoveAction.multipleUndo(actions, true);
-};
-
-// Creates ZmMailMsg out of anonymous msg-like objects
-ZmItemMoveAction._realizeItems = function(items) {
-
-	var list, msg;
-	return AjxUtil.map(AjxUtil.toArray(items), function(item) {
-		if (item.isConvMsg) {
-			list = list || new ZmMailList(ZmItem.MSG);
-			msg = new ZmMailMsg(item.id, list, true);
-			msg.folderId = item.folderId;
-			return msg;
-		}
-		else {
-			return item;
-		}
-	});
 };
 
 /**
@@ -331,7 +305,7 @@ ZmOrganizerMoveAction.prototype.getToFolderId = function() {
 ZmOrganizerMoveAction.prototype._doMove = function(callback, errorCallback, folderId) {
 	var folder = appCtxt.getById(folderId);
 	if (folder) {
-		this._organizer.move(folder, true);
+		this._organizer.move(folder, true, ZmMsg.actionUndoMove);
 	}
 };
 

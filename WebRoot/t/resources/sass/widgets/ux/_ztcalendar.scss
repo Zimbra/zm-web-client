@@ -41,8 +41,7 @@ div.more-events {
 }
 
 .view-appt-header {
-  padding-left: 1em;
-  padding-right: 0.7em;
+  padding: 0.7em 0.7em 0em 0.7em;
   font-weight:bold;
 }
 
@@ -51,11 +50,9 @@ div.more-events {
 }
 
 .view-appt-ptst {
+  float:right;
   width: 30%;
   padding-left: 1.8em;
-
-  // nudged a little to the left to align the text with icons
-  margin-left: -0.9em;
 }
 
 .view-appt-accepted {
@@ -82,19 +79,4 @@ div.more-events {
   @extend .zcs-link;
   padding-left: 0.5em;
   padding-right: 0.5em;
-}
-
-.view-appt-name {
-  color: $base-color;
-  display: block;
-  margin-bottom: 0.5em;
-}
-
-/*
-* helper class to make tables align the labels with the top margin
-*/
-.zcs-table-vtop{
-  td{
-    vertical-align: top;
-  }
 }

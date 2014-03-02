@@ -2,12 +2,12 @@
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2013 Zimbra Software, LLC.
- *
+ * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- *
+ * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
@@ -230,32 +230,12 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
 	            folderId:   folderId
             };
 
-        var contactName = Ext.String.htmlEncode(contact.get('longName')),
-            allowPermDelete = false;
-
-        if (op === 'move') {
-            this.doActualDelete(contact, data, toastMsg);
-        } else if (op === 'delete') {
-            var deleteMsg = Ext.String.format(ZtMsg.hardDeleteContactText, contactName);
-
-            Ext.Msg.confirm(ZtMsg.hardDeleteContactTitle, deleteMsg, function(buttonId) {
-                if (buttonId === 'yes') {
-                    this.doActualDelete(contact, data, toastMsg);
-                }
-            }, this);
-        }
-    },
-
-    /**
-     * Performs move or delete operation on a contact.
-     */
-    doActualDelete: function(contact, data, toastMsg) {
         this.performOp(contact, data, function() {
             ZCS.app.fireEvent('showToast', toastMsg);
             ZCS.app.getContactListController().removeContact(contact);
+	        contact.destroy();
         });
     },
-
 
 	/**
 	 * Launches a move assignment view.

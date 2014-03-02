@@ -193,7 +193,7 @@ function(ev) {
 		ZmOperation.setOperation(actionMenu, ZmOperation.CONTACT, newOp, newText);
 		var contacts = AjxDispatcher.run("GetContacts");
 		this._actionEv.contact = contact;
-		this._setContactText(contact);
+		this._setContactText(contact != null);
 	}
 
 	actionMenu.popup(0, ev.docX, ev.docY);

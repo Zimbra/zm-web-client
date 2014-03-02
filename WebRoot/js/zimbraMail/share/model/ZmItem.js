@@ -58,10 +58,6 @@ ZmItem = function(type, id, list, noCache) {
 	var curItem = appCtxt.getById(id);
 	if (curItem) {
 		this._list = AjxUtil.hashCopy(curItem._list);
-        if (!list) {
-            // No list specified, preserve the previous list
-            this.list = curItem.list;
-        }
 	}
 	if (list) {
 		this._list[list.id] = true;
@@ -81,6 +77,7 @@ ZmItem.prototype.toString = function() { return "ZmItem"; };
 
 ZmItem.APP 				= {};	// App responsible for item
 ZmItem.MSG_KEY 			= {};	// Type names
+ZmItem.COUNT_KEY    	= {};	// msg key that handles plural
 ZmItem.ICON 			= {};	// Representative icons
 ZmItem.RESULTS_LIST 	= {};	// Function for creating search results list
 
@@ -148,7 +145,6 @@ ZmItem.FLAG_LOW_PRIORITY		= "?";
 ZmItem.FLAG_HIGH_PRIORITY		= "!";
 ZmItem.FLAG_PRIORITY            = "+"; //msg prioritization
 ZmItem.FLAG_NOTE                = "t"; //specially for notes
-ZmItem.FLAG_OFFLINE_CREATED     = "o";
 
 ZmItem.ALL_FLAGS = [
 	ZmItem.FLAG_FLAGGED,
@@ -164,8 +160,7 @@ ZmItem.ALL_FLAGS = [
 	ZmItem.FLAG_HIGH_PRIORITY,
 	ZmItem.FLAG_LOW_PRIORITY,
 	ZmItem.FLAG_PRIORITY,
-    ZmItem.FLAG_NOTE,
-    ZmItem.FLAG_OFFLINE_CREATED
+    ZmItem.FLAG_NOTE
 ];
 
 // Map flag to item property
@@ -184,7 +179,6 @@ ZmItem.FLAG_PROP[ZmItem.FLAG_LOW_PRIORITY]		= "isLowPriority";
 ZmItem.FLAG_PROP[ZmItem.FLAG_HIGH_PRIORITY]		= "isHighPriority";
 ZmItem.FLAG_PROP[ZmItem.FLAG_PRIORITY]          = "isPriority";
 ZmItem.FLAG_PROP[ZmItem.FLAG_NOTE]              = "isNote";
-ZmItem.FLAG_PROP[ZmItem.FLAG_OFFLINE_CREATED]   = "isOfflineCreated";
 
 // DnD actions this item is allowed
 
@@ -221,6 +215,7 @@ ZmItem.NOTES_SEPARATOR			= "*~*~*~*~*~*~*~*~*~*";
  * @param	{Hash}	params			a hash of parameters
  * @param {constant}	params.app			the app that handles this item type
  * @param {String}		params.nameKey		the message key for item name
+ * @param {String}		params.countKey 	the message key for plural of item name
  * @param {String}		params.icon			the name of item icon class
  * @param {String}		params.soapCmd		the SOAP command for acting on this item
  * @param {String}		params.itemClass	the name of class that represents this item
@@ -233,6 +228,7 @@ ZmItem.registerItem =
 function(item, params) {
 	if (params.app)				{ ZmItem.APP[item]					= params.app; }
 	if (params.nameKey)			{ ZmItem.MSG_KEY[item]				= params.nameKey; }
+	if (params.countKey)	    { ZmItem.COUNT_KEY[item]		    = params.countKey; }
 	if (params.icon)			{ ZmItem.ICON[item]					= params.icon; }
 	if (params.soapCmd)			{ ZmItem.SOAP_CMD[item]				= params.soapCmd; }
 	if (params.itemClass)		{ ZmList.ITEM_CLASS[item]			= params.itemClass; }
@@ -361,17 +357,6 @@ ZmItem.prototype.hasTag =
 function(tagName) {
 	return (this.tagHash[tagName] == true);
 };
-
-/**
- * is it possible to add a tag to this item?
- * @param tagName
- * @returns {boolean}
- */
-ZmItem.prototype.canAddTag =
-function(tagName) {
-	return !this.hasTag(tagName);
-};
-
 
 /**
 * Gets the folder id that contains this item, if available.
@@ -518,10 +503,12 @@ function() {
 ZmItem.prototype.isShared =
 function() {
 	if (this._isShared == null) {
-		if (this.id === -1) {
+		if (this.id == -1) {
 			this._isShared = false;
 		} else {
-			this._isShared = appCtxt.isRemoteId(this.id);
+			var acct = appCtxt.getActiveAccount();
+			var id = String(this.id);
+			this._isShared = ((id.indexOf(":") != -1) && (id.indexOf(acct.id) != 0));
 		}
 	}
 	return this._isShared;
@@ -819,32 +806,18 @@ function(str) {
  */
 ZmItem.prototype._notify =
 function(event, details) {
-	this._doNotify(event, details);
-};
-
-ZmItem.prototype._setupNotify =
-function() {
-    this._doNotify();
-}
-
-ZmItem.prototype._doNotify =
-function(event, details) {
-    this._evt.item = this;
-    if (event != null) {
-        ZmModel.prototype._notify.call(this, event, details);
-    }
-    if (this.list) {
-        this.list._evt.item = this;
-        this.list._evt.items = [this];
-        if (event != null) {
-            if (details) {
-                details.items = [this];
-            } else {
-                details = {items: [this]};
-            }
-            this.list._notify(event, details);
-        }
-    }
+	this._evt.item = this;
+	ZmModel.prototype._notify.call(this, event, details);
+	if (this.list) {
+		if (details) {
+			details.items = [this];
+		} else {
+			details = {items: [this]};
+		}
+		this.list._evt.item = this;
+		this.list._evt.items = [this];
+		this.list._notify(event, details);
+	}
 };
 
 /**

@@ -43,7 +43,7 @@
             <c:if test="${voice}">
                 <c:set var="query"/>
             </c:if>
-            <c:if test="${zm:boolean(param.hideSearchString)}">
+            <c:if test="${param.hideSearchString}">
                 <c:set var="query" value=""/>
             </c:if>
             <table width="100%" cellpadding="0" cellspacing="0" border="0">
@@ -63,23 +63,23 @@
                 <c:otherwise><c:set var="isMail" value="${true}"/></c:otherwise>
             </c:choose>
             <select name="st">
-                <c:if test="${zm:boolean(web)}">
+                <c:if test="${web}">
                     <option value="web"/><fmt:message key="searchWeb"/>
                 </c:if>
                 <c:if test="${zm:isMailEnabled(mailbox)}">
-                    <option <c:if test="${zm:boolean(isMail)}">selected </c:if>value="${mailbox.features.conversations ? mailbox.prefs.groupMailBy : 'message'}"/><fmt:message key="searchMail"/>
+                    <option <c:if test="${isMail}">selected </c:if>value="${mailbox.features.conversations ? mailbox.prefs.groupMailBy : 'message'}"/><fmt:message key="searchMail"/>
                 </c:if>
                 <c:if test="${mailbox.features.contacts}">
-                    <option <c:if test="${zm:boolean(isContact)}">selected </c:if>value="contact"/><fmt:message key="searchPersonalContacts"/>
+                    <option <c:if test="${isContact}">selected </c:if>value="contact"/><fmt:message key="searchPersonalContacts"/>
                 </c:if>
                 <c:if test="${mailbox.features.gal}">
                     <option <c:if test="${param.st eq 'gal'}">selected </c:if>value="gal"/><fmt:message key="GAL"/>
                 </c:if>
                 <c:if test="${mailbox.features.calendar}">
-                    <option <c:if test="${zm:boolean(calendars)}">selected </c:if> value="appointment"/><fmt:message key="searchPersonalCalendars"/>
+                    <option <c:if test="${calendars}">selected </c:if> value="appointment"/><fmt:message key="searchPersonalCalendars"/>
                 </c:if>
                 <c:if test="${mailbox.features.tasks}">
-                    <option <c:if test="${zm:boolean(tasks)}">selected </c:if> value="task"/><fmt:message key="searchPersonalTaskLists"/>
+                    <option <c:if test="${tasks}">selected </c:if> value="task"/><fmt:message key="searchPersonalTaskLists"/>
                 </c:if>
             </select>
             </td>

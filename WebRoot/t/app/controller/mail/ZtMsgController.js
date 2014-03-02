@@ -2,12 +2,12 @@
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2013 Zimbra Software, LLC.
- *
+ * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- *
+ * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
@@ -101,6 +101,8 @@ Ext.define('ZCS.controller.mail.ZtMsgController', {
 		actionMenuContainer.show();
 		actionMenu.show();
 		button.hide();
+
+		msgView.up('list').resetScrollHack();
 	},
 
 	onMsgActionsCancelTap: function (button, e) {
@@ -111,6 +113,8 @@ Ext.define('ZCS.controller.mail.ZtMsgController', {
 		actionMenuButton.show();
 		actionMenu.hide();
 		// container hide is done in actionMenu hide listener
+
+		msgView.up('list').resetScrollHack();
 	},
 
 	onMsgActionsButtonTap: function (button, e) {
@@ -163,6 +167,12 @@ Ext.define('ZCS.controller.mail.ZtMsgController', {
 
 		msgView.setState(newState);
 
+		if (newState === ZCS.constant.HDR_COLLAPSED) {
+			msgToolbarBtn.hide();
+		} else {
+			msgToolbarBtn.show();
+		}
+
 		//<debug>
         Ext.Logger.info("Header state: " + newState + " (" + newExpanded + ")");
         //</debug>
@@ -197,6 +207,8 @@ Ext.define('ZCS.controller.mail.ZtMsgController', {
 				msgView.updateHeight();
 			}
 		}
+
+		msgView.up('list').resetScrollHack();
 	},
 
 	/**

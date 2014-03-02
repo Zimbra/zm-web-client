@@ -265,7 +265,7 @@ function(ev) {
 	var button = DwtControl.getTargetControl(ev);
 	var sel = this.notActiveListView.getSelection();
 	if (sel && sel.length) {
-		this.transfer(sel);
+		this.transfer(sel, id);
 		var list = this.notActiveListView.getList();
 		if (list && list.size()) {
 			this._selectFirst(DwtChooserListView.SOURCE);
