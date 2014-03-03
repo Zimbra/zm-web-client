@@ -313,11 +313,14 @@ VelodromeSkin.prototype._doOverrides = function() {
 VelodromeSkin.prototype.override.append = function(functionString, newfunc, callback, returnOrig) {
 	var f = newfunc,
 		r = returnOrig !== false;
-	skin.override(functionString, function(){
+	var func = function(){
 		var origReturn = arguments.callee.func.apply(this,arguments);
 		var newReturn = f.apply(this,arguments);
 		return r ? origReturn : newReturn;
-	}, callback);
+	};
+	func.displayName = 'extension for ' + functionString;
+
+	skin.override(functionString, func, callback);
 };
 
 //------------------------------------------------------------------------------
