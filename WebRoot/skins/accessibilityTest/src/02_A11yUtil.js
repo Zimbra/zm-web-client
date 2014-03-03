@@ -213,11 +213,10 @@ A11yUtil = {
 			} else {
 				cause = 'not an element';
 			}
-		
-			var msg = 'failed to set role of ' + el + ' to ' + role + ': ' + cause + '!';
 
 			if (window.console) {
-				console.warn(msg);
+				console.error('failed to set role of %s to %s: %s!',
+				              el && el.id || el, role, cause);
 			}
 		}
 
