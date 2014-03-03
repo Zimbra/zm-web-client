@@ -38,7 +38,8 @@ Ext.define('ZCS.view.ZtOrganizerList', {
 		grouped: true,
 
 		listConfig: {
-			itemTpl: '<div class="zcs-menu-icon {type}"></div><div class="zcs-menu-label">{title}</div>'
+			itemTpl: '<div class="zcs-menu-icon <tpl if="folderType">{folderType}\"<tpl else>{type}\"</tpl>></div>' +
+				'<div class="zcs-menu-label">{title}</div>'
 		},
 
 		listeners  : {

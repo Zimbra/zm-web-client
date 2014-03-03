@@ -341,6 +341,15 @@ $zcs-overview-text-color: $light-grey;
 			.zcs-menu-icon.tag:before {
 				content: "t";
 			}
+            .zcs-menu-icon.mailFolder:before {
+              content: "M";
+            }
+            .zcs-menu-icon.addressBook:before {
+              content: "N";
+            }
+            .zcs-menu-icon.calendarFolder:before {
+              content: "L";
+            }
 		}
 	}
 }
