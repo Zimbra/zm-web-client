@@ -49,6 +49,7 @@ AjxPackage.require("ajax.util.AjxDateUtil");
 AjxPackage.require("ajax.util.AjxPluginDetector");
 AjxPackage.require("ajax.3rdparty.zeroclipboard.ZeroClipboard");
 AjxPackage.require("ajax.util.AjxClipboard");
+AjxPackage.require("ajax.util.AjxSHA1");
 
 AjxPackage.require("zimbra.csfe.ZmBatchCommand");
 AjxPackage.require("zimbra.csfe.ZmCsfeCommand");
