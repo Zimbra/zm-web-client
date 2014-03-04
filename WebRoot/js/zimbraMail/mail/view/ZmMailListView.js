@@ -1122,7 +1122,9 @@ function(ev) {
 		// we handle is where the user is on the first page.
 		//
 		// TODO: handle other sort orders, arbitrary insertion points
-		if ((this._isPageless || this.offset == 0) && (!this._sortByString || this._sortByString == ZmSearch.DATE_DESC)) {
+		//about the above - for now we insert new items on top (index would be 0 if not sorted by date).
+		// I believe that way the users won't lose new messages if they are sorted by a different order.
+		if (this._isPageless || this.offset == 0) {
 			var sortIndex = ev.getDetail("sortIndex") || 0;
 			AjxDebug.println(AjxDebug.NOTIFY, "ZmMailListView: adding item " + item.id + " at index " + sortIndex);
 			this.addItem(item, sortIndex);
