@@ -99,6 +99,7 @@ AjxPackage.require("ajax.dwt.widgets.DwtChooser");
 AjxPackage.require("ajax.dwt.widgets.DwtPropertySheet");
 AjxPackage.require("ajax.dwt.widgets.DwtPropertyPage");
 AjxPackage.require("ajax.dwt.widgets.DwtTabView");
+AjxPackage.require("ajax.dwt.widgets.DwtTimeSelect");
 AjxPackage.require("ajax.3rdparty.jquery.jquery");
 
 AjxPackage.require("zimbraMail.share.view.ZmTagsHelper");

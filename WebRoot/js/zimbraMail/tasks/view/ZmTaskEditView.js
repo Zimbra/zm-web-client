@@ -255,14 +255,14 @@ function() {
         } else {
             var startDate = AjxStringUtil.trim(this._startDateField.value);
             var endDate =   AjxStringUtil.trim(this._endDateField.value);
-            if (startDate.length > 0 && (!ZmTimeSelect.validStartEnd(this._startDateField, this._endDateField))) {
+            if (startDate.length > 0 && (!DwtTimeSelect.validStartEnd(this._startDateField, this._endDateField))) {
                 if(endDate.length <= 0) {
                     errorMsg = ZmMsg.errorEmptyTaskDueDate;
                 } else {
                     errorMsg = ZmMsg.errorInvalidDates;
                 }
             }
-            var remindTime =  ZmTimeSelect.parse(this._remindTimeSelect.getInputField().getValue());
+            var remindTime =  DwtTimeSelect.parse(this._remindTimeSelect.getInputField().getValue());
             if (!remindTime) {
                 errorMsg = AjxMsg.invalidTimeString;
             }
@@ -460,8 +460,8 @@ function(width) {
         this._remindDateButton = ZmCalendarApp.createMiniCalButton(this, this._htmlElId + "_remindMiniCalBtn", remindDateBtnListener, remindDateCalSelectionListener);
         this._remindDateButton.reparentHtmlElement(this._htmlElId + "_remindMiniCalBtn");
 
-        // time ZmTimeSelect
-        this._remindTimeSelect = new ZmTimeInput(this, ZmTimeInput.START);
+        // time DwtTimeSelect
+        this._remindTimeSelect = new DwtTimeInput(this, DwtTimeInput.START);
         this._remindTimeSelect.reparentHtmlElement(this._htmlElId + "_remindTimeSelect");
 
         this._reminderEmailCheckbox = new DwtCheckbox({parent: this});

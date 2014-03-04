@@ -1554,8 +1554,8 @@ function(dateInfo) {
         endDate.setHours(23,59,59,999);
         this._endDate   = endDate;
     } else {
-        this._startDate = ZmTimeInput.getDateFromFields(dateInfo.startTimeStr,startDate);
-        this._endDate   = ZmTimeInput.getDateFromFields(dateInfo.endTimeStr,  endDate);
+        this._startDate = DwtTimeInput.getDateFromFields(dateInfo.startTimeStr,startDate);
+        this._endDate   = DwtTimeInput.getDateFromFields(dateInfo.endTimeStr,  endDate);
     }
 }
 

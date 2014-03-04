@@ -566,7 +566,7 @@ function() {
     //bug: 49990 subject can be empty while proposing new time
 	if ((subj && subj.length) || this._isProposeTime) {
 		var allDay = this._allDayCheckbox.checked;
-		if (!ZmTimeInput.validStartEnd(this._startDateField, this._endDateField, (allDay ? null : this._startTimeSelect), (allDay ? null : this._endTimeSelect))) {
+		if (!DwtTimeInput.validStartEnd(this._startDateField, this._endDateField, (allDay ? null : this._startTimeSelect), (allDay ? null : this._endTimeSelect))) {
 				errorMsg.push(ZmMsg.errorInvalidDates);
 		}
 
@@ -1262,13 +1262,13 @@ function(width) {
 
     this._privateCheckbox = document.getElementById(this._htmlElId + "_privateCheckbox");
 
-	// time ZmTimeSelect
+	// time DwtTimeSelect
 	var timeSelectListener = new AjxListener(this, this._timeChangeListener);
-	this._startTimeSelect = new ZmTimeInput(this, ZmTimeInput.START);
+	this._startTimeSelect = new DwtTimeInput(this, DwtTimeInput.START);
 	this._startTimeSelect.reparentHtmlElement(this._htmlElId + "_startTimeSelect");
 	this._startTimeSelect.addChangeListener(timeSelectListener);
 
-	this._endTimeSelect = new ZmTimeInput(this, ZmTimeInput.END);
+	this._endTimeSelect = new DwtTimeInput(this, DwtTimeInput.END);
 	this._endTimeSelect.reparentHtmlElement(this._htmlElId + "_endTimeSelect");
 	this._endTimeSelect.addChangeListener(timeSelectListener);
 
@@ -2339,7 +2339,7 @@ function() {
 
 ZmApptEditView.prototype._timeChangeListener =
 function(ev, id) {
-	ZmTimeInput.adjustStartEnd(ev, this._startTimeSelect, this._endTimeSelect, this._startDateField, this._endDateField, this._dateInfo, id);
+	DwtTimeInput.adjustStartEnd(ev, this._startTimeSelect, this._endTimeSelect, this._startDateField, this._endDateField, this._dateInfo, id);
 	var oldTimeInfo = this._getDateTimeText();
 
     ZmApptViewHelper.getDateInfo(this, this._dateInfo);

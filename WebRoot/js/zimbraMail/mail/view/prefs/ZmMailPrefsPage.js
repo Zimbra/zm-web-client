@@ -158,9 +158,9 @@ function() {
 		this._formatter = new AjxDateFormat("yyyyMMddHHmmss'Z'");
 
 	    var timeSelectListener = new AjxListener(this, this._timeChangeListener);
-	    this._startTimeSelect = new ZmTimeInput(this, ZmTimeInput.START);
+	    this._startTimeSelect = new DwtTimeInput(this, DwtTimeInput.START);
 	    this._startTimeSelect.reparentHtmlElement(this._htmlElId + "_VACATION_FROM_TIME");
-	    this._endTimeSelect = new ZmTimeInput(this, ZmTimeInput.END);
+	    this._endTimeSelect = new DwtTimeInput(this, DwtTimeInput.END);
 	    this._endTimeSelect.reparentHtmlElement(this._htmlElId + "_VACATION_UNTIL_TIME");
         this._startTimeSelect.addChangeListener(timeSelectListener);
         this._endTimeSelect.addChangeListener(timeSelectListener);

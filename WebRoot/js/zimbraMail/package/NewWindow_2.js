@@ -104,7 +104,6 @@ AjxPackage.require("zimbraMail.share.view.ZmOverviewContainer");
 AjxPackage.require("zimbraMail.share.view.ZmAccountOverviewContainer");
 AjxPackage.require("zimbraMail.share.view.ZmOverview");
 AjxPackage.require("zimbraMail.share.view.ZmTreeView");
-AjxPackage.require("zimbraMail.share.view.ZmTimeSelect");
 AjxPackage.require("zimbraMail.share.view.ZmColorMenu");
 AjxPackage.require("zimbraMail.share.view.ZmColorButton");
 

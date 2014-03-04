@@ -111,6 +111,7 @@ AjxPackage.require("ajax.dwt.widgets.DwtIframe");
 AjxPackage.require("ajax.dwt.widgets.DwtForm");
 AjxPackage.require("ajax.dwt.widgets.DwtMessageDialog");
 AjxPackage.require("ajax.dwt.widgets.DwtChooser");
+AjxPackage.require("ajax.dwt.widgets.DwtTimeSelect");
 
 AjxPackage.require("ajax.3rdparty.jquery.jquery");
 

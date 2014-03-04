@@ -727,13 +727,13 @@ function(templateId) {
     this.getHtmlElement().innerHTML = AjxTemplate.expand("prefs.Pages#"+templateId, {id:this._htmlElId});
     //fill the containers for the work days and work time
     el = document.getElementById(this._htmlElId + "_CAL_WORKING_START_TIME");
-    startTimeSelect = new ZmTimeInput(this, ZmTimeInput.START, el);
+    startTimeSelect = new DwtTimeInput(this, DwtTimeInput.START, el);
     startTimeSelect.set(this._startTime);
     startTimeSelect.setEnabled(!isCustom);
     this._startTimeSelect = startTimeSelect;
 
     el = document.getElementById(this._htmlElId + "_CAL_WORKING_END_TIME");
-    endTimeSelect = new ZmTimeInput(this, ZmTimeInput.END, el);
+    endTimeSelect = new DwtTimeInput(this, DwtTimeInput.END, el);
     endTimeSelect.set(this._endTime);
     endTimeSelect.setEnabled(!isCustom);
     this._endTimeSelect = endTimeSelect;
@@ -806,7 +806,7 @@ ZmCustomWorkHoursDlg.prototype.initialize = function(workHours) {
     for (i=0;i<AjxDateUtil.WEEKDAY_MEDIUM.length; i++) {
         //fill the containers for the work days and work time
         el = document.getElementById(this._htmlElId + "_CAL_WORKING_START_TIME_"+i);
-        startTimeSelect = new ZmTimeInput(this, ZmTimeInput.START, el);
+        startTimeSelect = new DwtTimeInput(this, DwtTimeInput.START, el);
         inputTime = new Date();
         inputTime.setHours(workHours[i].startTime/100, workHours[i].startTime%100, 0);
         startTimeSelect.set(inputTime);
@@ -817,7 +817,7 @@ ZmCustomWorkHoursDlg.prototype.initialize = function(workHours) {
         inputTime = new Date();
         inputTime.setHours(workHours[i].endTime/100, workHours[i].endTime%100, 0);
         el = document.getElementById(this._htmlElId + "_CAL_WORKING_END_TIME_"+i);
-        endTimeSelect = new ZmTimeInput(this, ZmTimeInput.END, el);
+        endTimeSelect = new DwtTimeInput(this, DwtTimeInput.END, el);
         endTimeSelect.set(inputTime);
         endTimeSelect.setEnabled(workHours[i].isWorkingDay);
         this._endTimeSelect.push(endTimeSelect);

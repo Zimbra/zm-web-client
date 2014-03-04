@@ -116,7 +116,7 @@ function() {
 	// create selects for Time section
 	var timeSelectListener = new AjxListener(this, this._timeChangeListener);
 	
-	this._timeSelect = new ZmTimeInput(this, ZmTimeInput.START);
+	this._timeSelect = new DwtTimeInput(this, DwtTimeInput.START);
 	this._timeSelect.addChangeListener(timeSelectListener);
 	this._timeSelect.reparentHtmlElement(this._htmlElId + "_time");
 

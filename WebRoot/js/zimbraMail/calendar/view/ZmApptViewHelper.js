@@ -80,10 +80,10 @@ function(tabView, dateInfo) {
     if (tabView._allDayCheckbox && tabView._allDayCheckbox.checked) {
 		dateInfo.showTime = false;
 
-        //used by ZmTimeInput - advanced time picker
+        //used by DwtTimeInput - advanced time picker
         dateInfo.startTimeStr = dateInfo.endTimeStr = null;
 
-        //used by ZmTimeSelect
+        //used by DwtTimeSelect
         dateInfo.startHourIdx = dateInfo.startMinuteIdx = dateInfo.startAmPmIdx =
 		dateInfo.endHourIdx = dateInfo.endMinuteIdx = dateInfo.endAmPmIdx = null;
 
@@ -91,7 +91,7 @@ function(tabView, dateInfo) {
     } else {
 		dateInfo.showTime = true;
 
-        if(tabView._startTimeSelect instanceof ZmTimeSelect) {
+        if(tabView._startTimeSelect instanceof DwtTimeSelect) {
             dateInfo.startHourIdx = tabView._startTimeSelect.getSelectedHourIdx();
             dateInfo.startMinuteIdx = tabView._startTimeSelect.getSelectedMinuteIdx();
             dateInfo.startAmPmIdx = tabView._startTimeSelect.getSelectedAmPmIdx();
@@ -103,7 +103,7 @@ function(tabView, dateInfo) {
             dateInfo.endHourIdx = dateInfo.endMinuteIdx = dateInfo.endAmPmIdx = null;            
         }
 
-        if(tabView._startTimeSelect instanceof ZmTimeInput) {
+        if(tabView._startTimeSelect instanceof DwtTimeInput) {
             dateInfo.startTimeStr = tabView._startTimeSelect.getTimeString();
             dateInfo.endTimeStr = tabView._endTimeSelect.getTimeString();
         }else {

@@ -155,8 +155,8 @@ function() {
 
     this._viewSelect.addChangeListener(new AjxListener(this, this._setViewOptions));
 
-    this._fromTimeSelect = new ZmTimeInput(this, ZmTimeInput.START, this._htmlElId + "_fromHoursContainer");
-	this._toTimeSelect = new ZmTimeInput(this, ZmTimeInput.END, this._htmlElId + "_toHoursContainer");
+    this._fromTimeSelect = new DwtTimeInput(this, DwtTimeInput.START, this._htmlElId + "_fromHoursContainer");
+	this._toTimeSelect = new DwtTimeInput(this, DwtTimeInput.END, this._htmlElId + "_toHoursContainer");
     this._printErrorMsgContainer = document.getElementById(this._htmlElId + "_printErrorMsgContainer");
 
     dateRangeRadio.onclick = radioListener;
