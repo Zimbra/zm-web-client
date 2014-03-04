@@ -245,6 +245,9 @@
 	width:60px;
 }
 
+.DwtTimeSelect .ZSelectAutoSizingContainer {
+	height: auto;
+}
 
 .admin_xform_number_input {
 	width:5em;
