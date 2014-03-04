@@ -156,12 +156,22 @@
 	background-color:@darken(AppC,5)@;
 	border-bottom-width:0px;
 }
+
 .Conv2Header {
 	height:2.2em;
 }
+
 .Conv2Header .subject,
 .Conv2Header .info {
 	color:@TxtC@;
+}
+
+.Conv2MsgHeader .image {
+	@roundCorners(24px)@
+}
+
+.Collapsed .Conv2MsgHeader .image {
+	@roundCorners(16px)@
 }
 
 /* Table header styling */
@@ -285,7 +295,12 @@ TD.DwtListView-ColumnActive  {
 	border-color:transparent;
 	margin: .25em 0px;
 	@roundCorners(3px)@
+}
 
+/* make contact images round */
+.ZmContactInfoView .contactHeaderTable IMG,
+.ZmContactInfoView .contactHeaderTable .ImgPerson_48 {
+	@roundCorners(24px)@
 }
 
 /* Double-row styling*/
