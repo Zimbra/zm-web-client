@@ -119,7 +119,7 @@ Ext.define('ZCS.model.ZtSoapProxy', {
 			ZCS.app.getMainController().schedulePoll();
 		}
 		else {
-			ZCS.app.fireEvent('serverError', (data.Body && data.Body.Fault) || data.statusText || "Unknown error");
+			ZCS.app.fireEvent('serverError', data);
 		}
 	},
 

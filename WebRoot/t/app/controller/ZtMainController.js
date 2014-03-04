@@ -147,20 +147,36 @@ Ext.define('ZCS.controller.ZtMainController', {
 	 *
 	 * @param {Object}  fault       fault object from server
 	 */
-	handleError: function(fault) {
+	handleError: function(data) {
 
-		var error = fault && fault.Detail && fault.Detail.Error,
+		data = data || {};
+
+		var fault = data.Body && data.Body.Fault,
+			error = fault && fault.Detail && fault.Detail.Error,
 			code = error && error.Code,
-			info = error && error.a,
-			msg = ZtMsg[code] || ZtMsg.unknownError,
-			title = ZtMsg[code + '_title'] || ZtMsg.error,
-			args;
+			info = error && error.a;
+
+		var	title = (code && ZtMsg[code + '_title']) || ZtMsg.error,
+			args, msg;
 
 		// Propagate any error-related info into args for the error msg. See soap.txt for details.
 		if (info && info.length) {
 			args = Ext.Array.map(info, function(node) {
 				return node._content;
 			});
+		}
+
+		if (data.timedout) {
+			msg = ZtMsg.errorTimeout;
+		}
+		else if (code && ZtMsg[code]) {
+			msg = ZtMsg[code];
+		}
+		else if (args && args.length) {
+			msg = ZtMsg.unknownErrorWithMsg;
+		}
+		else {
+			msg = ZtMsg.unknownError;
 		}
 
 		var text = args ? Ext.String.format(msg, args) : msg;
