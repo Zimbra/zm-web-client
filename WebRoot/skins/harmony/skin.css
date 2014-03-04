@@ -454,6 +454,10 @@ TD.DwtListView-ColumnActive  {
 	max-width:22em;
 }
 
+.ZmScheduleAssistantView {
+	background-color:white;
+}
+
 /* Task styling */
 .ZmTaskMultiView .DwtListView-Column {
 	background-color:transparent;
