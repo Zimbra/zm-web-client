@@ -1283,6 +1283,8 @@ ZmMailMsgView.prototype._getBubbleHtml = function(addr, options) {
 
 	options = options || {};
 
+	addr = addr.isAjxEmailAddress ? addr : new AjxEmailAddress(addr);
+
 	var canExpand = addr.isGroup && addr.canExpand && appCtxt.get("EXPAND_DL_ENABLED"),
 		ctlr = this._controller;
 
