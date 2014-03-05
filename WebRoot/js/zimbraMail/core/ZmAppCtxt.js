@@ -1351,8 +1351,6 @@ function() {
 ZmAppCtxt.prototype.reloadAppCache =
 function(force) {
     if (this.isWebClientOfflineSupported || force) {
-        document.cookie = "ZM_CACHE_NEW_LANG = " + this.get(ZmSetting.LOCALE_NAME);
-        document.cookie = "ZM_CACHE_NEW_SKIN = " + this.get(ZmSetting.SKIN_NAME);
         document.cookie = "ZM_CACHE_RELOAD = " + new Date().getTime();
         var manifestURL = appContextPath + "/appcache/images,common,dwt,msgview,login,zm,spellcheck,skin.appcache?";
         var urlParams = [];
