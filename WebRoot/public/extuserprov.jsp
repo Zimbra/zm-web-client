@@ -114,7 +114,7 @@
 
 		<div class="copyright">
 			<c:choose>
-				<c:when test="${useMobile}">
+				<c:when test="${zm:boolean(useMobile)}">
 					<fmt:message bundle="${zhmsg}" key="splashScreenCopyright"/>
 				</c:when>
 				<c:otherwise>
