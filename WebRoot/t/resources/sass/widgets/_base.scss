@@ -464,46 +464,6 @@ $contact-suggest-radius: $floating-list-radius;
 	}
 }
 
-
-/* List Panel */
-
-.zcs-list-panel {
-	@extend .zcs-side-panel;
-
-	.zcs-list-titlebar {
-		font-size: $zcs-titlebar-fontsize;
-		border: none;
-		@include border-radius(0);
-
-		.x-title {
-			font-size: $zcs-title-fontsize;
-			font-weight: normal;
-			color: $primary-text-color;
-		}
-	}
-
-	.x-list {
-		font-size: $zcs-list-fontsize;
-
-		.x-list-item {
-			&.x-list-item-tpl::before {
-				left: 0;
-			}
-
-//			&:active,
-			&.x-item-pressed {
-				background-color: darken($zcs-button-active-bkgd-color,15) !important;
-				color: $zcs-button-active-color;
-			}
-
-			&.x-list-item-selected.x-list-item-tpl {
-				background-color: $zcs-button-active-bkgd-color !important;
-				color: $zcs-button-active-color;
-			}
-		}
-	}
-}
-
 /* List Panel - Search */
 
 .zcs-list-search {

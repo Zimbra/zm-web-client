@@ -55,33 +55,6 @@ $zcs-mail-dateWidth: 5.5em;
 	&.x-list-item-tpl:before {
 		border-bottom: none;
 	}
-
-	&.delete-active {
-		background-color: #CE2A26 !important; // red
-	}
-
-	.x-innerhtml {
-		padding: 0px !important;
-
-		&:before {
-			position: absolute;
-			right: 30px;
-			text-align: center;
-			font-family: "ZimbraTouch";
-			content: "T";
-			color: $white;
-			line-height: 90px;
-			font-size: 3em;
-		}
-	}
-
-	.zcs-mail-listitem-deleted {
-		height: 90px/2;
-		background: $light-grey;
-		line-height: 90px/2;
-		text-align: center;
-		font-size: 1.2em;
-	}
 }
 
 /*

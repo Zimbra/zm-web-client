@@ -109,7 +109,8 @@ Ext.define('ZCS.controller.mail.ZtConvListController', {
 			this.currentSlidingEl = convItem.element.down('.zcs-mail-list-slideable');
 			this.currentSlidingItem = convItem;
 
-			convItem.addCls('x-item-pressed');
+			convItem.addCls('x-item-swiping');
+			convItem.removeCls('x-item-pressed');
 
 			list.setScrollable(false);
 			list.container.innerElement.on({
@@ -126,15 +127,27 @@ Ext.define('ZCS.controller.mail.ZtConvListController', {
 
 		// Apply delete style at halfway
 		if (newX <= this.deleteThreshold) {
-			this.currentSlidingEl.setX(newX);
-			this.currentSlidingItem.addCls('delete-active');
+			this.currentSlidingEl.translate(newX);
+            this.currentSlidingEl.slideOffset = newX;
+            
+            if (!this.currentSlidingItem.deleteActive) {
+				this.currentSlidingItem.addCls('delete-active');
+				//Save state so we don't keep re-applying this class and hitting the dom
+				this.currentSlidingItem.deleteActive = true;
+			}
 		// Don't let item move right past start
 		} else if (newX > 0) {
-			this.currentSlidingEl.setX(0);
+			this.currentSlidingEl.translate(0);
+            this.currentSlidingEl.slideOffset = 0;
 		// Only take action if X movement is not 0
 		} else if (moveDistance != 0) {
-			this.currentSlidingEl.setX(newX);
-			this.currentSlidingItem.removeCls('delete-active');
+			this.currentSlidingEl.translate(newX);
+            this.currentSlidingEl.slideOffset = newX;
+
+            if (this.currentSlidingItem.deleteActive) {
+				this.currentSlidingItem.removeCls('delete-active');
+				this.currentSlidingItem.deleteActive = false;
+			}
 		}
 		this.listItemLastMouseX = e.pageX;
 		this.listItemLastX = newX;
@@ -148,11 +161,15 @@ Ext.define('ZCS.controller.mail.ZtConvListController', {
 			scope: this
 		});
 		list.setScrollable(true);
-		if (slidingEl.getX() <= this.deleteThreshold) {
+		if (slidingEl.slideOffset <= this.deleteThreshold) {
 			ZCS.app.fireEvent('swipeDeleteMailItem', record, list, convItem);
+		} else {
+			convItem.removeCls('delete-active');
+	        convItem.removeCls('x-item-pressed');
+	        convItem.removeCls('x-item-swiping');
 		}
-		slidingEl.setX(0);
-		convItem.removeCls('x-item-pressed');
+		slidingEl.translate(0);
+		convItem.deleteActive = false;
 	},
 
 	/**
@@ -172,7 +189,7 @@ Ext.define('ZCS.controller.mail.ZtConvListController', {
 
 		var curSearch = ZCS.session.getSetting(ZCS.constant.SETTING_CUR_SEARCH, this.getApp()),
 			curFolder = this.getFolder() || ZCS.session.getCurrentSearchOrganizer(),
-			isOutbound = curFolder && ZCS.util.isOutboundFolderId(curFolder.get('zcsId'));
+			isOutbound = ZCS.util.isOutboundFolderId(curFolder.get('zcsId'));
 
 		// gather up the conv's msgs from their create nodes (typically just one msg)
 		for (i = 0; i < ln; i++) {
