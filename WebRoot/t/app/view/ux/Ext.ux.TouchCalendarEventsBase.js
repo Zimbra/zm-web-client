@@ -203,6 +203,9 @@ Ext.define('Ext.ux.TouchCalendarEventsBase', {
 		// create the event bar
 		var eventBar = Ext.DomHelper.append(this.getPlugin().getEventWrapperEl(), {
 			tag: 'div',
+			style: {
+				'background-color': eventRecord.get('color')
+			},
 			html: this.getPlugin().getEventBarTpl().apply(eventRecord.data),
 			eventID: record.get('EventID'),
 			cls: cssClasses.join(' ')

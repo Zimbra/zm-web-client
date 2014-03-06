@@ -65,6 +65,9 @@ Ext.define('ZCS.controller.calendar.ZtCalendarController', {
 		},
 
         control: {
+			overview: {
+				search: 'doSearch'
+			},
             calendarView: {
                 eventtap: 'onEventTap',
                 selectionchange: 'onTimeSlotChange'
@@ -203,11 +206,11 @@ Ext.define('ZCS.controller.calendar.ZtCalendarController', {
 
 		// Show the ATD options only in case of attendees
 		if (params.isOrganizer) {
-			Ext.getCmp('editAppt').show();
+//			Ext.getCmp('editAppt').show();
 			Ext.getCmp('inviteActionsAppt').hide();
 		} else {
 			Ext.getCmp('inviteActionsAppt').show();
-			Ext.getCmp('editAppt').hide();
+//			Ext.getCmp('editAppt').hide();
 		}
     },
 
@@ -260,7 +263,18 @@ Ext.define('ZCS.controller.calendar.ZtCalendarController', {
     },
 
     getDefaultQuery: function() {
-        return 'in:calendar';
+		var folders = ZCS.session.getOrganizerData(ZCS.constant.APP_CALENDAR, ZCS.constant.ORG_FOLDER),
+		 	calFolders = [];
+
+		Ext.each(folders, function(folder) {
+			calFolders.push("inid:" + folder.zcsId);
+			Ext.each(folder.items, function(child) {
+				//subfolders, if any
+				calFolders.push("inid:" + child.zcsId)
+			}, this);
+		} , this);
+
+		return calFolders.join(' OR ');
     },
 
     createToolbar: function() {
@@ -481,5 +495,38 @@ Ext.define('ZCS.controller.calendar.ZtCalendarController', {
 				appt:       appt
 			});
 		}
+	},
+
+	/**
+	 * Searches for appointments in a particular calendar folder.
+	 */
+	doSearch: function(query, folder) {
+		var me = this;
+
+		//<debug>
+		Ext.Logger.info('SearchRequest: ' + query);
+		//</debug>
+
+		this.getStore().currentPage = 1;
+
+		//Set the proxy's params so this parameter persists between paging requests.
+		this.getStore().getProxy().setExtraParams({
+			query:  query
+		});
+
+		this.getStore().load({
+            calStart: this.getMonthStartTime(),
+            calEnd: this.getMonthEndTime(),
+			query:      query,
+			folder:     folder,
+			scope:      this,
+			callback: function(records, operation, success) {
+				if (success) {
+					me.refreshCurrentView();
+				}
+			}
+		});
+
+		ZCS.app.fireEvent('hideOverviewPanel');
 	}
 });

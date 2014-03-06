@@ -85,7 +85,8 @@ Ext.define('ZCS.view.calendar.ZtAppointmentForm', {
                     iconCls: 'arrow_down',
 					id: 'apptActions',
 					disabled: true,
-					menuName: ZCS.constant.MENU_APPT_ACTIONS,
+                    hidden: true,
+                    menuName: ZCS.constant.MENU_APPT_ACTIONS,
 					handler: function() {
 						this.up('appointmentpanel').fireEvent('onButtonTap');
 					}
@@ -118,8 +119,18 @@ Ext.define('ZCS.view.calendar.ZtAppointmentForm', {
             recurrence = invite.get('recurrence'),
             myResponse = invite.get('myResponse'),
             apptTitle = invite.get('subject'),
-			displayStatus = this.getShowAsOptionLabel(invite.get('fb')),
-            idParams = {
+            displayStatus = this.getShowAsOptionLabel(invite.get('fb')),
+            apptColor, apptRgbColor, calFolderName;
+
+        var calFolder = ZCS.cache.get(event.get('folderId'));
+
+        if (calFolder) {
+			apptColor = calFolder.get('color');
+		    apptRgbColor = calFolder.get('rgb');
+            calFolderName = calFolder.get('displayName');
+        }
+
+		var idParams = {
                 objType:    ZCS.constant.OBJ_INVITE,
                 msgId:      msg.get('id')
             },
@@ -132,7 +143,9 @@ Ext.define('ZCS.view.calendar.ZtAppointmentForm', {
                 attendees: ZCS.model.mail.ZtMailItem.convertAddressModelToObject(invite.get('attendees')),
                 optAttendees: ZCS.model.mail.ZtMailItem.convertAddressModelToObject(invite.get('optAttendees')),
                 myResponse: myResponse ? ZCS.constant.PSTATUS_TEXT[myResponse] : '',
-                calendar: null /* TODO: After other calendar folders are shown in touch client */,
+                calendar: calFolderName,
+				color: apptColor ? apptColor : (apptRgbColor ? '' : '1'),
+				rgb: apptRgbColor,
                 reminder: reminder ? reminder : "", /* TODO: Get strings similar to Ajax Client */
                 recurrence: recurrence ? recurrence : "",
 				displayStatus: displayStatus,

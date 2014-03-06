@@ -86,7 +86,8 @@ ZCS.constant.IS_APP = ZCS.util.arrayAsLookupHash(ZCS.constant.APPS);
 // Apps here support editing of their overviews (add, modify, delete folders)
 ZCS.constant.EDITABLE_OVERVIEW_APPS = [
     ZCS.constant.APP_MAIL,
-	ZCS.constant.APP_CONTACTS
+	ZCS.constant.APP_CONTACTS,
+	ZCS.constant.APP_CALENDAR
 ];
 
 // Turn features on/off
@@ -110,7 +111,7 @@ ZCS.constant.DEFAULT_OVERVIEW_TITLE = ZtMsg.searchResults;
 ZCS.constant.OVERVIEW_TITLE = {};
 ZCS.constant.OVERVIEW_TITLE[ZCS.constant.APP_MAIL]       = ZtMsg.folders;
 ZCS.constant.OVERVIEW_TITLE[ZCS.constant.APP_CONTACTS]   = ZtMsg.addrbooks;
-ZCS.constant.OVERVIEW_TITLE[ZCS.constant.APP_CALENDAR]   = ZtMsg.calendar;
+ZCS.constant.OVERVIEW_TITLE[ZCS.constant.APP_CALENDAR]   = ZtMsg.calendars;
 
 // Icon for button that creates a new item
 ZCS.constant.NEW_ITEM_ICON = {};
@@ -173,12 +174,6 @@ ZCS.constant.ITEM_BUTTONS[ZCS.constant.APP_CONTACTS]    = [
     { op: ZCS.constant.OP_EDIT,     icon: 'edit',       event: 'edit' },
 	{ op: ZCS.constant.OP_MENU,     icon: 'arrow_down', event: 'showMenu', menuName: ZCS.constant.MENU_CONTACT }
 ];
-ZCS.constant.ITEM_BUTTONS[ZCS.constant.APP_CALENDAR]        = [
-    { op: ZCS.constant.OP_EDIT,         icon: 'edit',         event: 'edit',        hidden: true },
-    { op: ZCS.constant.OP_REPLY,        icon: 'reply',        event: 'showMenu',    menuName: ZCS.constant.MENU_CONV_REPLY },
-    { op: ZCS.constant.OP_MENU,         icon: 'arrow_down',   event: 'showMenu',    menuName: ZCS.constant.MENU_CONV }
-];
-
 
 // Display states for a message view header
 ZCS.constant.HDR_COLLAPSED  = 'collapsed';
@@ -224,7 +219,7 @@ ZCS.constant.ORG_MOUNTPOINT     = 'link';
 // Folder sub-types
 ZCS.constant.ORG_MAIL_FOLDER        = 'mailFolder';
 ZCS.constant.ORG_ADDRESS_BOOK       = 'addressBook';
-ZCS.constant.ORG_CALENDAR           = 'calendar';
+ZCS.constant.ORG_CALENDAR           = 'calendarFolder';
 
 // Organizer list types
 ZCS.constant.ORG_LIST_OVERVIEW      = 'overview';
@@ -310,7 +305,7 @@ ZCS.constant.APP_FOLDER = ZCS.util.getBackMap(ZCS.constant.FOLDER_APP);
 ZCS.constant.FOLDER_VIEW = {};
 ZCS.constant.FOLDER_VIEW[ZCS.constant.APP_MAIL]     = 'message';
 ZCS.constant.FOLDER_VIEW[ZCS.constant.APP_CONTACTS] = 'contact';
-ZCS.constant.FOLDER_VIEW[ZCS.constant.APP_CALENDAR] = 'calendar';
+ZCS.constant.FOLDER_VIEW[ZCS.constant.APP_CALENDAR] = 'appointment';
 
 // Folder type by organizer view (from JSON)
 ZCS.constant.FOLDER_TYPE = {};
@@ -324,7 +319,7 @@ ZCS.constant.ORG_NAME[ZCS.constant.ORG_MAIL_FOLDER]     = ZtMsg.folders;
 ZCS.constant.ORG_NAME[ZCS.constant.ORG_ADDRESS_BOOK]    = ZtMsg.addressBooks;
 ZCS.constant.ORG_NAME[ZCS.constant.ORG_SEARCH]          = ZtMsg.searches;
 ZCS.constant.ORG_NAME[ZCS.constant.ORG_TAG]             = ZtMsg.tags;
-ZCS.constant.ORG_NAME[ZCS.constant.ORG_CALENDAR]        = ZtMsg.calendar;
+ZCS.constant.ORG_NAME[ZCS.constant.ORG_CALENDAR]        = ZtMsg.calendars;
 
 // Order in which organizers should appear grouped in overview
 ZCS.constant.ORG_SORT_VALUE = {};
@@ -926,3 +921,40 @@ ZCS.constant.SEARCH_FLAG['sent']		= "item.get('isSent')";
 ZCS.constant.SEARCH_FLAG['draft']		= "item.get('isDraft')";
 ZCS.constant.SEARCH_FLAG['replied']		= "item.get('isReplied')";
 ZCS.constant.SEARCH_FLAG['unreplied']	= "!item.get('isReplied')";
+
+// color constants (server stores a number)
+ZCS.constant.C_NONE				= 0;
+ZCS.constant.C_BLUE				= 1;
+ZCS.constant.C_CYAN				= 2;
+ZCS.constant.C_GREEN			= 3;
+ZCS.constant.C_PURPLE			= 4;
+ZCS.constant.C_RED				= 5;
+ZCS.constant.C_YELLOW			= 6;
+ZCS.constant.C_PINK				= 7;
+ZCS.constant.C_GRAY				= 8;
+ZCS.constant.C_ORANGE			= 9;
+ZCS.constant.ORG_DEFAULT_COLOR 	= ZCS.constant.C_GRAY;
+
+// rgb codes for folder colors
+ZCS.constant.COLOR_BLUE   = "#5b9bf2"
+ZCS.constant.COLOR_CYAN   = "#43eded"
+ZCS.constant.COLOR_GREEN  = "#6acb9e"
+ZCS.constant.COLOR_PURPLE = "#ba86e5"
+ZCS.constant.COLOR_RED    = "#f66666"
+ZCS.constant.COLOR_YELLOW = "#f8fa33"
+ZCS.constant.COLOR_PINK   = "#fe98d3"
+ZCS.constant.COLOR_GRAY   = "#bebebe"
+ZCS.constant.COLOR_ORANGE = "#fdbc55"
+
+ZCS.constant.COLOR_VALUES = [
+	null,
+    ZCS.constant.COLOR_BLUE,
+    ZCS.constant.COLOR_CYAN,
+    ZCS.constant.COLOR_GREEN,
+    ZCS.constant.COLOR_PURPLE,
+    ZCS.constant.COLOR_RED,
+    ZCS.constant.COLOR_YELLOW,
+    ZCS.constant.COLOR_PINK,
+    ZCS.constant.COLOR_GRAY,
+    ZCS.constant.COLOR_ORANGE
+];

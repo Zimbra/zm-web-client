@@ -34,7 +34,7 @@ Ext.define('ZCS.controller.ZtAppViewController', {
 				showAppsMenu: 'doShowAppsMenu'
 			},
 			'caltoolbar': {
-				showAppsMenu: 'doShowAppsMenu'
+				showAppsMenu: 'showOverviewPanel'
 			},
 			'appsmenu list': {
 				itemtap: 'onAppMenuItemTap'
@@ -260,10 +260,12 @@ Ext.define('ZCS.controller.ZtAppViewController', {
 	 */
 	showOverviewPanel: function () {
 		var activeApp = ZCS.session.getActiveApp(),
-			appViewConfig = this.appViews[activeApp],
-			listPanelZIndex = appViewConfig.listPanel.getZIndex();
+			appViewConfig = this.appViews[activeApp];
 
-		appViewConfig.overviewPanel.setZIndex(listPanelZIndex + 1);
+		if (activeApp !== ZCS.constant.APP_CALENDAR) {
+			var listPanelZIndex = appViewConfig.listPanel.getZIndex();
+			appViewConfig.overviewPanel.setZIndex(listPanelZIndex + 1);
+		}
 
 		appViewConfig.overviewPanel.show();
 	},

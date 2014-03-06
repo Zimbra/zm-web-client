@@ -56,7 +56,11 @@ Ext.define('ZCS.model.calendar.ZtCalendar', {
             {
                 name: 'isAllDay',
                 type: 'boolean'
-            }
+            },
+			{
+				name: 'color',
+				type: 'string'
+			}
         ],
 
         proxy: {

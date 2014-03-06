@@ -28,7 +28,7 @@ Ext.define('ZCS.controller.ZtOverviewController', {
 
         refs: {
             // event handlers
-            folderList:             'overview nestedlist',
+			folderList:             'overview nestedlist',
             folderSelector:         'organizeredit nestedlist',
 	        newFolderBtn:           'overview button[action=newFolder]',
 	        newTagBtn:              'overview button[action=newTag]',
@@ -48,6 +48,7 @@ Ext.define('ZCS.controller.ZtOverviewController', {
 
         control: {
             folderList: {
+				search: 'doSearch',
                 edititemtap:    'showEdit'
             },
             folderSelector: {
@@ -478,5 +479,16 @@ Ext.define('ZCS.controller.ZtOverviewController', {
 		}
 
 		return null;
+	},
+
+	doSearch: function(query, folder) {
+		/**
+		 * Search for other apps is handled generically in the list controller. Since list controller is
+		 * not registered in case of calendar, override it specifically in calendar controller.
+		 */
+		if (ZCS.session.getActiveApp() === ZCS.constant.APP_CALENDAR) {
+			ZCS.app.getCalendarController().doSearch(query, folder);
+		}
 	}
 });
+

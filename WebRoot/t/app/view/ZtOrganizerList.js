@@ -39,7 +39,10 @@ Ext.define('ZCS.view.ZtOrganizerList', {
 
 		listConfig: {
 			itemTpl: '<div class="zcs-menu-icon <tpl if="folderType">{folderType}\"<tpl else>{type}\"</tpl>></div>' +
-				'<div class="zcs-menu-label">{title}</div>'
+				'<div class="zcs-menu-label"><tpl if="folderType === ZCS.constant.ORG_CALENDAR">' +
+				'<tpl if="zcsId == \'10\'">' +
+				'<span class="zcs-menu-color-block zcs-tag-1"></span><tpl else>' +
+				'<span class="zcs-menu-color-block zcs-tag-{color}" style="background-color: {rgb};"></span></tpl></tpl>{title}</div>'
 		},
 
 		listeners  : {

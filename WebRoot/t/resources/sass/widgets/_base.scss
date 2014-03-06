@@ -97,6 +97,14 @@ $zcs-overview-edit-color: lighten($zcs-overview-base-color, 10%);
 $zcs-overview-category-color: darken($dark-grey, 10%);
 $zcs-overview-text-color: $light-grey;
 
+.zcs-color-block{
+  display: inline-block;
+  height: 1.1em;
+  width: 1.1em;
+  vertical-align: top;
+  border: 1px solid #969696;
+}
+
 .zcs-overview-toolbar {
 	border: none;
 	background-image: none;
@@ -349,6 +357,10 @@ $zcs-overview-text-color: $light-grey;
             }
             .zcs-menu-icon.calendarFolder:before {
               content: "L";
+            }
+            .zcs-menu-color-block {
+              @extend .zcs-color-block;
+              margin-right: 0.5em;
             }
 		}
 	}

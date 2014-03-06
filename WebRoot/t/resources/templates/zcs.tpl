@@ -619,6 +619,7 @@
 				<tr>
 					<td class='zcs-invite-label'>Calendar</td>
 					<td>
+					   <span class="view-appt-color-block zcs-tag-{color}" style="background-color: {rgb};"></span>
 					   <span>{calendar}</span>
 					</td>
 				</tr>

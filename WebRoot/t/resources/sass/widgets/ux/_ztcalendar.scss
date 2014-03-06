@@ -55,7 +55,7 @@ div.more-events {
   padding-left: 1.8em;
 
   // nudged a little to the left to align the text with icons
-  margin-left: -0.9em;
+  margin-left: -0.4em;
 }
 
 .view-appt-accepted {
@@ -90,6 +90,10 @@ div.more-events {
   margin-bottom: 0.5em;
 }
 
+.view-appt-color-block{
+  @extend .zcs-color-block;
+  margin-right: 0.1em;
+}
 /*
 * helper class to make tables align the labels with the top margin
 */
