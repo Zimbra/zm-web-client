@@ -1252,7 +1252,7 @@ function(messages) {
     var attachments = [];
     messages = ZmOffline.recreateMsg(messages);
     messages.forEach(function(msg) {
-        var mailMsg = ZmMailMsg.createFromDom(msg, {'list':[]});
+        var mailMsg = ZmMailMsg.createFromDom(msg, {}, true);
         var attachInfo = mailMsg.getAttachmentInfo();
         attachInfo.forEach(function(attachment) {
             attachments.push(attachment);
