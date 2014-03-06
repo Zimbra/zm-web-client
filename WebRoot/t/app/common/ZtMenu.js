@@ -62,6 +62,7 @@ Ext.define('ZCS.common.ZtMenu', {
 
 	initialize: function() {
 		var me = this;
+
         if (Ext.os.deviceType === "Phone") {
             this.setWidth(Ext.Viewport.element.getWidth());
         }
@@ -113,7 +114,7 @@ Ext.define('ZCS.common.ZtMenu', {
 
 		if (actualHeight === 0) {
 			//The list hasn't actually rendered yet, lets do this again until it has been
-			Ext.defer(this.adjustHeight, 100);
+			Ext.defer(this.adjustHeight, 100, this);
 		} else {
 			var heightToUse = Math.min(this.getMaxHeight(), actualHeight);
 			list.setHeight(heightToUse + bufferHeight);
@@ -131,6 +132,11 @@ Ext.define('ZCS.common.ZtMenu', {
 		this.deselect(this.getSelection()); // clear the previous selection
 
 		if (Ext.os.deviceType === "Phone") {
+	        if (this.getParent() !== Ext.Viewport) {
+	            Ext.Viewport.add(this);
+	        }
+
+			// this.showBy(this.getReferenceComponent(), positioning || 'tr-br?');
 			this.show({
 				type: 'slide',
 				direction: 'up',
