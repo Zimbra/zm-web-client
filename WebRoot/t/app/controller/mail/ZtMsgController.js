@@ -392,7 +392,8 @@ Ext.define('ZCS.controller.mail.ZtMsgController', {
 			// Pick which listitem to show, only if contacts app is enabled
 			if (ZCS.constant.IS_ENABLED[ZCS.constant.APP_CONTACTS]) {
 				var fromAddr = message.getAddressByType(ZCS.constant.FROM),
-					cachedAddr = ZCS.cache.get(fromAddr && fromAddr.get('email'), 'email');
+					addrObj = params.addrObj,
+ 					cachedAddr = ZCS.cache.get(addrObj && addrObj.get('email'), 'email');
 
 				if (cachedAddr) {
 					menu.hideItem(ZCS.constant.OP_EDIT, false);
