@@ -944,6 +944,8 @@ ZmConvReplyView = function(params) {
 	
 	this._convView = params.parent;
 	this._objectManager = new ZmObjectManager(this);
+
+	this.addControlListener(this._resized.bind(this));
 };
 
 ZmConvReplyView.prototype = new DwtComposite;
@@ -994,11 +996,13 @@ function(msg, msgView, op) {
 	this._replyToDiv.innerHTML = AjxTemplate.expand(this.TABLE_TEMPLATE, ai.participants[AjxEmailAddress.TO]);
 	this._replyCcDiv.innerHTML = gotCc ? AjxTemplate.expand(this.TABLE_TEMPLATE, ai.participants[AjxEmailAddress.CC]) : "";
 	Dwt.setVisible(this._replyCcDiv, gotCc);
+	setTimeout(this._resized.bind(this), 0);
 
 	var index = this._convView.getMsgViewIndex(msgView);
 	index = this._index = (index != -1) ? index + 1 : null;
 	this.reparentHtmlElement(this._convView._messagesDiv, index);
 	msgView.addClassName("Reply");
+	msgView._createBubbles();
 
 	this.setVisible(true);
 	Dwt.scrollIntoView(this.getHtmlElement(), this._convView._messagesDiv);
@@ -1140,6 +1144,13 @@ function(addresses, type, addrs, used) {
 			}
 		}
 	}
+};
+
+ZmConvReplyView.prototype._resized =
+function() {
+	var bounds = this.boundsForChild(this._input);
+
+	Dwt.setSize(this._input, bounds.width, Dwt.CLEAR);
 };
 
 
