@@ -381,11 +381,11 @@ BODY									{	margin:0px; 	}
 #skin_container_logo A, #skin_container_logo A:hover, #skin_container_logo A:link {
 	background-color:transparent;}
 #ENDIF
+
 /* TO INTEGRATE */
-.DwtVerticalSash div {
-	position:relative;
-	top:1px;
-	margin-top:0px;
+/* Thumb between organizer and main panel needs tweak for thumb - not sure why */
+.console_inset_app_l .HSashThumb {
+	margin-left:-2px;
 }
 
 .UserInfoLink {

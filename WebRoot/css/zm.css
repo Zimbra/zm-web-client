@@ -1130,21 +1130,6 @@ INPUT[type="text"].search_input-expanded {
 #ENDIF
 }
 
-/* the sash next to overview does not need borders or a background color */
-.console_inset_app_l .DwtHorizontalSash {
-	border-width:0px;
-	background-color:transparent;
-	margin-left:1px;
-}
-
-/* Adding the margin values to the app sash so that it will be applicable to all apps */
-.AppSash-vert .DwtVerticalSash {
-	margin-top:1px;
-}
-
-.AppSash-horiz .DwtHorizontalSash {
-	margin-left:2px;
-}
 
 /* ??? MOVE ME */
 /* "Display Images" button in mail message view to show hidden images */

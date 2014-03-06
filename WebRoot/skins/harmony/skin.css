@@ -39,12 +39,18 @@
 }
 
 /* Major panel styling */
+
+.ZmOverview>DIV {
+	margin-right:2px;
+}
+
 #skin_container_tree,
 #skin_container_tree_footer,
 .DwtListView,
 .ZmConvView,
 .ZmConvView2 {
 	border-width:0px;
+	margin-left:3px;
 }
 
 .ZmConvView,
@@ -190,33 +196,14 @@ TD.DwtListView-ColumnActive  {
 	font-weight:bold;
 }
 
-.DwtVerticalSash,
-.DwtHorizontalSash,
-.console_inset_app_l .DwtHorizontalSash {
-	border-color:@darken(AppC,5)@;
-	border-style:solid;
+.console_inset_app_l {
+	z-index:599 !important;  /* 1 less than veil */
 }
 
-.DwtVerticalSash {
-	border-width:1px 0px;
+.console_inset_app_l .HSashThumb {
+	margin-left:0;
 }
 
-.DwtHorizontalSash,
-.console_inset_app_l .DwtHorizontalSash {
-	border-width:0px 1px;
-}
-
-.console_inset_app_l .DwtHorizontalSash {
-	margin-left:-1px;
-}
-
-.AppSash-horiz .DwtHorizontalSash {
-	margin-left:0px;
-}
-
-.DwtHorizontalSash DIV {
-	margin-left:1px;
-}
 
 /* Row styling */
 /* Moves major styling from outside container (Row) to inside container (Row>DIV) */
@@ -571,7 +558,7 @@ TD.DwtListView-ColumnActive  {
 
 /* mini-cal */
 .DwtCalendar {
-	border-top:1px solid @darken(AppC,50)@;
+	border-top:1px solid @darken(AppC,25)@;
 }
 
 /* Chooser styling */

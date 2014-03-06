@@ -114,19 +114,17 @@
 
 <template id='dwt.Widgets#DwtVerticalSash' width='0' height='0'>
 	<div class='DwtVerticalSash'>
-		<center>
-			<div class='ImgVSash_thumb'></div>
-		</center>
+		<div class='VSashContainer'>
+			<div class='VSashThumb ImgVSash_thumb'></div>
+		</div>
 	</div>
 </template>
 
 <template id='dwt.Widgets#DwtHorizontalSash' width='0' height='0'>
 	<div class='DwtHorizontalSash'>
-		<table role="presentation" height='100%'>
-			<tr>
-				<td height='100%' valign='middle'><div class='ImgHSash_thumb'></div></td>
-			</tr>
-		</table>
+		<div class='HSashContainer'>
+			<div class='HSashThumb ImgHSash_thumb'></div>
+		</div>
 	</div>
 </template>
 
