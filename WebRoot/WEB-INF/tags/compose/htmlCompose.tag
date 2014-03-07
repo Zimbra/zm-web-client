@@ -239,3 +239,11 @@ var myEditor;
 
 // -->
 </script>
+
+<script text="text/javascript">
+    <%--bug 85188: Put in a fix since YUI edior is broken on IE11--%>
+    var g = YAHOO.env.ua;
+    if (g.ie == 0 && navigator.userAgent.indexOf('Trident') != -1){
+        g.ie = 11;
+    }
+</script>
