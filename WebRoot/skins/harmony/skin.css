@@ -106,8 +106,13 @@
 }
 
 .ZNewButton .ZToolbarButtonBorder {
+#IFDEF MSIE_LOWER_THAN_9
+	background-color:rgb(243,138,108);
+	border-color:rgb(238,94,52);
+#ELSE
 	background-color:rgba(241,89,34,.7);
 	border-color:rgba(241,89,34,.9);
+#ENDIF
 }
 
 .ZNewButton.ZHover .ZToolbarButtonBorder,
