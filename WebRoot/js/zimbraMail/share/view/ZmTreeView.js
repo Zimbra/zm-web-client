@@ -416,19 +416,32 @@ function(params) {
  */
 ZmTreeView.prototype._isAllowed =
 function(org, child) {
+
 	if (!org) { //could happen, for example the Zimlets root doesn't have a parent.
 		return true; //seems returning true in this case works... what a mess.
 	}
+
+	// Within the Searches tree, only show saved searches that return a type that belongs to this app
+	if (this.type === ZmOrganizer.SEARCH && child.type === ZmOrganizer.SEARCH) {
+		var common = AjxUtil.intersection(child.search.types.getArray(), ZmApp.SEARCH_TYPES[this._overview.appName]);
+		if (common.length === 0) {
+			return false;
+		}
+	}
+
 	if (Number(org.nId) === ZmOrganizer.ID_ROOT) {
 		return this.allowedTypes[child.type];
 	}
+
 	//org is not root
 	if (this.allowedTypes[child.type]) {
 		return true; //optimization, end the recursion if we find a non root allowed ancestor.
 	}
+
 	if (this.allowedSubTypes[child.type]) {
 		return this._isAllowed(org.parent, org); //go up parent to see if eventually it's allowed.
 	}
+
 	return false;
 };
 

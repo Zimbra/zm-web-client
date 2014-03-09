@@ -1076,7 +1076,9 @@ function(ev, treeView, overviewId) {
 			if (parentNode && (ev.event == ZmEvent.E_CREATE)) {
 				// parent's tree controller should handle creates - root is shared by all folder types
 				var type = (organizer.parent.nId == ZmOrganizer.ID_ROOT) ? ev.type : organizer.parent.type;
-				if (type != this.type) { continue; }
+				if (type !== this.type || !treeView._isAllowed(organizer.parent, organizer)) {
+					continue;
+				}
 				if (organizer.isOfflineGlobalSearch) {
 					appCtxt.getApp(ZmApp.MAIL).getOverviewContainer().addSearchFolder(organizer);
 					return;

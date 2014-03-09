@@ -76,6 +76,7 @@ ZmOverview = function(params, controller) {
 	this.noTooltips			= params.noTooltips;
 	this.isAppOverview		= params.isAppOverview;
 	this.skipImplicit 		= params.skipImplicit;
+	this.appName            = params.appName;
 
 	this._treeIds			= [];
 	this._treeHash			= {};
