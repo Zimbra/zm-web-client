@@ -312,9 +312,16 @@ Ext.define('ZCS.common.ZtSearch', {
 			this.setTagId(tagId);
 		}
 
+		var func;
 		try {
-			this.setMatchFunction(new Function('item', func.join('')));
+			// Since we aren't able to parse every kind of search, some searches cannot
+			// be turned into a function and will throw a JS error here.
+			func = new Function('item', func.join(''));
 		} catch(ex) {}
+
+		if (func) {
+			this.setMatchFunction(func);
+		}
 	}
 });
 
