@@ -947,7 +947,9 @@ function(context, match) {
 					newValue += key;
 				}
 			}
-			newValue = AjxStringUtil.trim(newValue);
+			if (bubbleAdded) {
+				newValue = AjxStringUtil.trim(newValue);
+			}
 			if (el.value !== newValue) {
 				el.value = newValue;
 			}
