@@ -378,9 +378,13 @@ function(ev) {
 	else {
 		var lv = this._listView[this._currentViewId];
 		if (lv) {
-			if (appCtxt.get(ZmSetting.SHOW_SELECTION_CHECKBOX)) {
-				if (!ev.ctrlKey && lv.setSelectionHdrCbox) {
+			if (appCtxt.get(ZmSetting.SHOW_SELECTION_CHECKBOX) && !ev.ctrlKey) {
+				if (lv.setSelectionHdrCbox) {
 					lv.setSelectionHdrCbox(false);
+				}
+				if (lv.setSelectionCbox) {
+					// Keep the selection highlight and checkbox in sync
+					lv.setSelectionCbox(ev.item, false);
 				}
 			}
 			this._resetOperations(this.getCurrentToolbar(), lv.getSelectionCount());
