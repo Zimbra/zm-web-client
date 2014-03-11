@@ -51,7 +51,7 @@ ZmSearchResultsController.DEFAULT_TAB_TEXT = ZmMsg.search;
 
 ZmSearchResultsController.getDefaultViewType =
 function(params) {
-	return (params && params.appName) ? [ZmId.VIEW_SEARCH_RESULTS, params.appName].join("-") : ZmId.VIEW_SEARCH_RESULTS;
+	return ZmId.VIEW_SEARCH_RESULTS;
 };
 ZmSearchResultsController.prototype.getDefaultViewType = ZmSearchResultsController.getDefaultViewType;
 
@@ -64,8 +64,8 @@ ZmSearchResultsController.prototype.show =
 function(results, resultsCtlr) {
 	var resultsType = results.type;
 	results.search.sessionId = this.sessionId;	// in case we reuse this search (eg view switch)
+	var app = this._resultsApp = appCtxt.getApp(ZmItem.APP[resultsType]) || appCtxt.getCurrentApp();
 	if (!resultsCtlr) {
-		var app = this._resultsApp = appCtxt.getApp(ZmItem.APP[resultsType]) || appCtxt.getCurrentApp();
 		app.showSearchResults(results, this._displayResults.bind(this, results.search), this);
 	}
 	else {
@@ -137,7 +137,9 @@ function(search, resultsCtlr) {
 		appCtxt.getAppViewMgr().setViewComponents(this._currentViewId, elements, true);
 	}
 	else {
-		
+
+		var callbacks = {};
+		callbacks[ZmAppViewMgr.CB_POST_REMOVE]	= this._postRemoveCallback.bind(this);
 		var elements = {};
 		elements[ZmAppViewMgr.C_SEARCH_RESULTS_TOOLBAR] = this._toolbar;
 		elements[ZmAppViewMgr.C_TREE] = this._filterPanel;
@@ -147,15 +149,18 @@ function(search, resultsCtlr) {
 		this._app.createView({	viewId:		this._currentViewId,
 								viewType:	this._currentViewType,
 								elements:	elements,
+								callbacks:	callbacks,
 								controller:	this,
 								hide:		[ ZmAppViewMgr.C_TREE_FOOTER ],
 								tabParams:	this._getTabParams()});
 		this._app.pushView(this._currentViewId);
 		this._filterPanel.reset();
 
-		var button = appCtxt.getAppChooser().getButton(this.tabId);
-		Dwt.addClass(button.getHtmlElement(), "SearchTabButton");
-		button.addSelectionListener(this._pinnedListener.bind(this));
+		if (!this._button) {
+			this._button = appCtxt.getAppChooser().getButton(this.tabId);
+			Dwt.addClass(this._button.getHtmlElement(), "SearchTabButton");
+			this._button.addSelectionListener(this._pinnedListener.bind(this));
+		}
 	}
 
 	if (search && search.query) {
@@ -181,6 +186,15 @@ function(search, resultsCtlr) {
 
 ZmSearchResultsController.prototype._postHideCallback =
 function() {
+};
+
+ZmSearchResultsController.prototype._postRemoveCallback =
+function() {
+	this._app.deleteSessionController({
+		appName:	this._resultsApp.getName(),
+		controllerClass: "ZmSearchResultsController",
+		sessionId:	this.sessionId
+	});
 };
 
 // returns params for the search tab button

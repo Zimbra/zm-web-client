@@ -660,6 +660,25 @@ function(type) {
 };
 
 /**
+ * Evaluates the controller class and returns the default view type from that controller.
+ *
+ * @param	{hash}							params						hash of params:
+ * @param	{string}						controllerClass				string name of controller class
+ * @param	{string}						sessionId					unique identifier for this controller
+ * @param 	{ZmSearchResultsController}		searchResultsController		containing controller
+ *
+ * @returns	{string}													default view type
+ */
+ZmApp.prototype.getTypeFromController =
+function(params) {
+	var controller = eval(params.controllerClass);
+	if (!controller.getDefaultViewType) {
+		throw new AjxException("Session controller " + params.controllerClass + " must implement getDefaultViewType()");
+	}
+	return controller.getDefaultViewType(params);
+};
+
+/**
  * Returns a controller of the given type and class. If no sessionId is provided, then
  * the controller's session ID will be an incremental number. If a sessionId is given,
  * then a check is made for an existing controller with that session ID. If none is
@@ -672,15 +691,9 @@ function(type) {
  */
 ZmApp.prototype.getSessionController =
 function(params) {
-	
-	var type;
-	try {
-		type = eval(params.controllerClass).getDefaultViewType(params);
-	}
-	catch (ex) {
-		throw new AjxException("Session controller " + params.controllerClass + " must implement getDefaultViewType()");
-	}
-	
+
+	var type = this.getTypeFromController(params);
+
 	// track controllers of this type
 	if (!this._sessionController[type]) {
 		this._sessionController[type] = {};
@@ -716,6 +729,25 @@ function(params) {
 	controller.inactive = false;
 
 	return controller;
+};
+
+/**
+ * Deletes a controller of the given type, class, and sessionId.
+ *
+ * @param	{hash}							params						hash of params:
+ * @param	{string}						controllerClass				string name of controller class
+ * @param	{string}						sessionId					unique identifier for this controller
+ * @param 	{ZmSearchResultsController}		searchResultsController		containing controller
+ */
+ZmApp.prototype.deleteSessionController =
+function(params) {
+	var type		= this.getTypeFromController(params);
+	var sessionId	= params.sessionId;
+
+	if (!this._sessionController[type]) {
+		return;
+	}
+	delete this._sessionController[type][sessionId];
 };
 
 // returns the session ID of the most recently retrieved controller of the given type

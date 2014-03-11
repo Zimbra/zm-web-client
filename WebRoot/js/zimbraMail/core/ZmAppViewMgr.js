@@ -187,6 +187,7 @@ ZmAppViewMgr.CB_POST_HIDE	= "POST_HIDE";
 ZmAppViewMgr.CB_PRE_SHOW	= "PRE_SHOW";
 ZmAppViewMgr.CB_POST_SHOW	= "POST_SHOW";
 ZmAppViewMgr.CB_PRE_UNLOAD	= "PRE_UNLOAD";
+ZmAppViewMgr.CB_POST_REMOVE	= "POST_REMOVE";
 
 // used to continue when returning from callbacks
 ZmAppViewMgr.PENDING_VIEW = "ZmAppViewMgr.PENDING_VIEW";
@@ -782,6 +783,10 @@ function(force, viewId, skipHistory) {
 
 	if (curView.isTabView) {
 		appCtxt.getAppChooser().removeButton(curView.tabParams.id);
+		var callback = view.callback[ZmAppViewMgr.CB_POST_REMOVE];
+		if (callback) {
+			callback.run();
+		}
 	}
 	
 	if (noShow) {
