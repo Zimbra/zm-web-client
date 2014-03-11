@@ -670,12 +670,12 @@ function(type) {
  * @returns	{string}													default view type
  */
 ZmApp.prototype.getTypeFromController =
-function(params) {
-	var controller = eval(params.controllerClass);
+function(controllerClass) {
+	var controller = eval(controllerClass);
 	if (!controller.getDefaultViewType) {
-		throw new AjxException("Session controller " + params.controllerClass + " must implement getDefaultViewType()");
+		throw new AjxException("Session controller " + controllerClass + " must implement getDefaultViewType()");
 	}
-	return controller.getDefaultViewType(params);
+	return controller.getDefaultViewType();
 };
 
 /**
@@ -692,7 +692,7 @@ function(params) {
 ZmApp.prototype.getSessionController =
 function(params) {
 
-	var type = this.getTypeFromController(params);
+	var type = this.getTypeFromController(params.controllerClass);
 
 	// track controllers of this type
 	if (!this._sessionController[type]) {
@@ -741,7 +741,7 @@ function(params) {
  */
 ZmApp.prototype.deleteSessionController =
 function(params) {
-	var type		= this.getTypeFromController(params);
+	var type		= this.getTypeFromController(params.controllerClass);
 	var sessionId	= params.sessionId;
 
 	if (!this._sessionController[type]) {

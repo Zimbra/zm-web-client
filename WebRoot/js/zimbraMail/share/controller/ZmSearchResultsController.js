@@ -50,7 +50,7 @@ ZmSearchResultsController.prototype.toString = function() { return "ZmSearchResu
 ZmSearchResultsController.DEFAULT_TAB_TEXT = ZmMsg.search;
 
 ZmSearchResultsController.getDefaultViewType =
-function(params) {
+function() {
 	return ZmId.VIEW_SEARCH_RESULTS;
 };
 ZmSearchResultsController.prototype.getDefaultViewType = ZmSearchResultsController.getDefaultViewType;

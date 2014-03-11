@@ -64,8 +64,8 @@ ZmController.prototype._setView = function() {};
 /**
  * Returns the default view type
  */
-ZmController.getDefaultViewType	= function() {};	// needed by ZmApp::getSessionController
-ZmController.prototype.getDefaultViewType	= function() {};
+ZmController.getDefaultViewType = function() {};	// needed by ZmApp::getSessionController
+ZmController.prototype.getDefaultViewType = function() {};
 
 // _defaultView is DEPRECATED in 8.0
 ZmController.prototype._defaultView = ZmController.prototype.getDefaultViewType;
