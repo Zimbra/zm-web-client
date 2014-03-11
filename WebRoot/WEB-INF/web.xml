@@ -125,7 +125,19 @@
     
     <init-param>
       <param-name>mimeTypes</param-name>
-      <param-value>application/x-javascript,text/html,text/plain,text/css,application/soap+xml</param-value>
+      <param-value>application/soap+xml,
+      text/javascript,
+      application/x-javascript,
+      application/javascript,
+      text/html,
+      text/plain,
+      text/css,
+      text/xml,
+      image/png,
+      image/jpeg,
+      image/jpg,
+      image/gif
+      </param-value>
     </init-param>
     <init-param>
       <param-name>userAgent</param-name>
@@ -134,6 +146,10 @@
     <init-param>
       <param-name>excludedAgents</param-name>
       <param-value>MSIE 6.0</param-value>
+    </init-param>
+    <init-param>
+      <param-name>methods</param-name>
+      <param-value>GET,POST</param-value>
     </init-param>
     <init-param>
       <param-name>minGzipSize</param-name>
