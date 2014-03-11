@@ -17,6 +17,11 @@ $zcs-msgview-radius: 5px;
 $zcs-detailBtn-size: 2.5em;
 $zcs-detailBtn-offset: 0.15em;
 
+// TODO: logo path should be taken from LogoImgDir in skin.properties
+$watermarkBannerPath: "/skins/_base/logos/";
+$watermarkBannerImg: "TouchWatermarkBanner.png";
+
+$watermarkBanner: $watermarkBannerPath + $watermarkBannerImg;
 
 .zcs-item-panel {
 
@@ -106,7 +111,7 @@ $px-unit: 1px;
 
 	.x-body::after {
 		content: "";
-		background: url("../images/app_banner.png") no-repeat 98% 98%;
+		background: url($watermarkBanner) no-repeat 98% 98%;
 		opacity: 0.9;
 		top: 0;
 		left: 0;
