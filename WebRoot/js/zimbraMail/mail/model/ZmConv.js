@@ -404,6 +404,11 @@ function(search, defaultValue) {
 	return hasUnknown ? !!defaultValue : false;
 };
 
+ZmConv.prototype.containsMsg =
+function(msg) {
+	return this.msgIds && AjxUtil.arrayContains(this.msgIds, msg.id);
+};
+
 ZmConv.prototype.ignoreJunkTrash =
 function() {
 	return Boolean((this.numMsgs == 1) && this.folders &&

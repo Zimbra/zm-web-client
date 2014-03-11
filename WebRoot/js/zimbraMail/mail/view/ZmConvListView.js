@@ -964,7 +964,7 @@ function(ev) {
 			var conv = appCtxt.getById(item.cid);
 			handled = true;
 			if (conv) {
-				if (item.folderId == ZmFolder.ID_SPAM || ev.event == ZmEvent.E_DELETE) {
+				if (item.folderId == ZmFolder.ID_SPAM || item.folderId == ZmFolder.ID_TRASH || ev.event == ZmEvent.E_DELETE) {
 					// msg marked as Junk, or hard-deleted
 					// TODO: handle expandable msg removal
 					conv.removeMsg(item);
@@ -977,7 +977,19 @@ function(ev) {
 					this._controller._app._checkReplenishListView = this;
 					this._setNextSelection();
 				} else {
-					if (!(conv.hasMatchingMsg(this._controller._currentSearch, true))) {
+					if (!conv.containsMsg(item)) {
+						//the message was moved to this conv, most likely by "undo". (not sure if any other ways, probably not).
+						sortIndex = conv.msgs && conv.msgs._getSortIndex(item, ZmSearch.DATE_DESC);
+						conv.addMsg(item, sortIndex);
+						var expanded = this._expanded[conv.id];
+						//remove rows so will have to redraw them, reflecting the new item.
+						this._removeMsgRows(conv.id);
+						if (expanded) {
+							//expand if it was expanded before this undo.
+							this._expand(conv, null, true);
+						}
+					}
+					else if (!conv.hasMatchingMsg(this._controller._currentSearch, true)) {
 						this._list.remove(conv);				// view has sublist of controller list
 						this._controller._list.remove(conv);	// complete list
 						ev.item = item = conv;
@@ -986,9 +998,6 @@ function(ev) {
 					} else {
 						// normal case: just change folder name for msg
 						this._changeFolderName(item, ev.getDetail("oldFolderId"));
-						if (ev.event == ZmEvent.E_MOVE && (item.folderId == ZmFolder.ID_TRASH)) {
-							this._setNextSelection();
-						}
 					}
 				}
 			}
