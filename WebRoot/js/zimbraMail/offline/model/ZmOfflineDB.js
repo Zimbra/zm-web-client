@@ -843,16 +843,8 @@ function(search, callback, errorCallback) {
 		});
 
 		search.sortedResult = [];
-		var index = objectStore.index("fileasstr");
-		if (search.lastSortVal) {
-			var endSortVal = search.endSortVal || "a";
-			var range = IDBKeyRange.bound(search.lastSortVal, endSortVal, false, true);
-			var request = index.openKeyCursor(range);
-		}
-		else {
-			var request = index.openKeyCursor();
-		}
-		request.onsuccess = function(ev) {
+		var index = objectStore.index("lastname");
+		var successHandler = function(ev) {
 			var result = ev.target.result;
 			if (result) {
 				AjxDebug.println(AjxDebug.OFFLINE, result.key + " : " + result.primaryKey);
@@ -860,6 +852,18 @@ function(search, callback, errorCallback) {
 				result['continue']();
 			}
 		};
+		if (search.lastSortVal) {
+			var endSortVal = search.endSortVal || "a";
+			var rangeArray = [];
+			rangeArray.push(IDBKeyRange.bound(search.lastSortVal, endSortVal, false, true));
+			rangeArray.push(IDBKeyRange.bound(search.lastSortVal.toLowerCase(), endSortVal.toLowerCase(), false, true));
+			rangeArray.forEach(function(range) {
+				index.openKeyCursor(range).onsuccess = successHandler;
+			});
+		}
+		else {
+			index.openKeyCursor().onsuccess = successHandler;
+		}
 
 		transaction.oncomplete = function() {
 			ZmOfflineDB._searchCallback(search, callback, errorCallback);
