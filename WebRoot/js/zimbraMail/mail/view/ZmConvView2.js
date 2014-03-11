@@ -617,7 +617,7 @@ function(params) {
 	params.ccOverride = this._replyView.getAddresses(AjxEmailAddress.CC);
 	var value = this._replyView.getValue();
 	if (value) {
-		params.extraBodyText = htmlMode ? AjxStringUtil.htmlEncode(value) : value;
+		params.extraBodyText = htmlMode ? AjxStringUtil.convertToHtml(value) : value;
 	}
 
 	var what = appCtxt.get(ZmSetting.REPLY_INCLUDE_WHAT);
