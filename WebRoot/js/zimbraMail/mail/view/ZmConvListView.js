@@ -831,7 +831,7 @@ ZmConvListView.prototype._isExpandable =
 function(item) {
 	var expandable = false;
 	if (item.type == ZmItem.CONV) {
-		expandable = (item.numMsgs > 1);
+		expandable = (this._getDisplayedMsgCount(item) > 1);
 	} else {
 		var conv = appCtxt.getById(item.cid);
 		if (!conv) { return false; }
