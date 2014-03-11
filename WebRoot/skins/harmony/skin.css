@@ -202,7 +202,7 @@ TD.DwtListView-ColumnActive  {
 }
 
 .console_inset_app_l {
-	z-index:599 !important;  /* 1 less than veil */
+	z-index:499 !important;  /* 1 less than veil */
 }
 
 .console_inset_app_l .HSashThumb {
