@@ -943,6 +943,7 @@ INPUT[type="text"].search_input-expanded {
 }
 
 .Conv2Messages .InvHeaderTable {
+	background-color:@MailMsgBkgdColor@;
 	border-bottom-width:0px;
 }
 

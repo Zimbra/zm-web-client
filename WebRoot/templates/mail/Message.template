@@ -258,14 +258,6 @@
 							</div>
 						<$ } $>
 					</div>
-					<div id='${ptstMsgBannerId}' class='${ptstClassName}' <$ if (!data.ptstMsg) { $> style='display:none;' <$ } $> >
-						<table role="presentation" class='ZPropertySheet' cellspacing='6'>
-							<tr>
-								<td id="${ptstMsgIconId}"><$= AjxImg.getImageHtml(data.ptstIcon) $></td>
-								<td id="${ptstMsgId}">${ptstMsg}</td>
-							</tr>
-						</table>
-					</div>
 				<$ if (data.intendedForMsg) { $>
 					<div class="${intendedForClassName}">
 						<table role="presentation" class='ZPropertySheet' cellspacing='6'>
@@ -282,6 +274,14 @@
 				</td>
 			</tr>
 		</table>
+		<div id='${ptstMsgBannerId}' class='${ptstClassName}' <$ if (!data.ptstMsg) { $> style='display:none;' <$ } $> >
+			<table role="presentation" class='ZPropertySheet' cellspacing='6'>
+				<tr>
+					<td id="${ptstMsgIconId}"><$= AjxImg.getImageHtml(data.ptstIcon) $></td>
+					<td id="${ptstMsgId}">${ptstMsg}</td>
+				</tr>
+			</table>
+		</div>
 		<div id='${infoBarId}'></div>
 	</div>
 	<div class='separator'></div>
