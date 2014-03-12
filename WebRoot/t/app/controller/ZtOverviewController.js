@@ -286,7 +286,7 @@ Ext.define('ZCS.controller.ZtOverviewController', {
         if (folderList.editing) {
             folderList.editing = false;
             overview.removeCls('editing');
-            organizerListToolbar.setTitle(ZCS.util.capitalizeString(overview.getApp()));
+            organizerListToolbar.setTitle(ZCS.constant.APP_NAME[overview.getApp()]);
             editBtn.setText(ZtMsg.edit);
             appsBtn.show();
             organizerEditToolbar.hide();
