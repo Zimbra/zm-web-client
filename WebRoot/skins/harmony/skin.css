@@ -537,6 +537,12 @@ TD.DwtListView-ColumnActive  {
 	height:auto;
 }
 
+.ZmWhiteBlackList {
+	border:1px solid @darken(AppC,25)@;
+	margin-left:0px;
+	@roundCorners(0)@
+}
+
 .ZmFilterRulesView .ZOptionsSectionMain {
 	background-color:@AppC@;
 	@roundCorners(0)@
