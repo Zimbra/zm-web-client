@@ -2223,6 +2223,9 @@ ZmContact.NO_MAX_IMAGE_WIDTH = ZmContact.NO_MAX_IMAGE_HEIGHT = - 1;
 /**
  * Get the image URL.
  *
+ * Please note that maxWidth and maxHeight are hints, as they have no
+ * effect on Zimlet-supplied images.
+ *
  * maxWidth {int} max pixel width (optional - default 48, or pass ZmContact.NO_MAX_IMAGE_WIDTH if full size image is required)
  * maxHeight {int} max pixel height (optional - default to maxWidth, or pass ZmContact.NO_MAX_IMAGE_HEIGHT if full size image is required)
  * @return	{String}	the image URL
