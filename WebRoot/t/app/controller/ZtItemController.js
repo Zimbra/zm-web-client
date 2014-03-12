@@ -149,7 +149,7 @@ Ext.define('ZCS.controller.ZtItemController', {
 		var app = ZCS.util.getAppFromObject(this),
 			buttonConfig = ZCS.constant.ITEM_BUTTONS[app],
 			toolbar = this.getItemPanelToolbar(),
-			ln = buttonConfig.length, i;
+			ln = buttonConfig ? buttonConfig.length : 0, i;
 
 		if (toolbar) {
 			for (i = 0; i < ln; i++) {
