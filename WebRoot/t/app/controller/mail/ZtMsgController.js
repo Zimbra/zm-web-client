@@ -413,12 +413,10 @@ Ext.define('ZCS.controller.mail.ZtMsgController', {
 			isFeed = curFolder && curFolder.isFeed(),
 			isDrafts = ZCS.util.folderIs(curFolder, ZCS.constant.ID_DRAFTS);
 
-		if (menu && menu.getItem(ZCS.constant.OP_TAG)) {
-			var tags = ZCS.session.getOrganizerData(ZCS.constant.APP_MAIL, ZCS.constant.ORG_TAG);
-			menu.enableItem(ZCS.constant.OP_TAG, tags && tags.length > 0);
-		}
 		menu.enableItem(ZCS.constant.OP_REPLY, !isFeed);
 		menu.enableItem(ZCS.constant.OP_REPLY_ALL, !isFeed);
 		menu.enableItem(ZCS.constant.OP_SPAM, !isDrafts);
+
+        this.enableTagItem(menu);
 	}
 });

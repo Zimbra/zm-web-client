@@ -854,5 +854,13 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 
 		// Add padding inside scroll inner so items start below transparent titlebar
 		listScrollInner.addCls('top-padding-'+convTitleBar.element.getHeight());
-	}
+	},
+
+    /**
+    * Disable "Tag" action if user doesn't have any tags.
+    */
+    enableMenuItems: function(menu) {
+        this.enableTagItem(menu);
+    }
+
 });
