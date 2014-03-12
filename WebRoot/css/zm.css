@@ -236,6 +236,7 @@
 .ZmAppToolBar_cw {
 	@ToolbarContainer@
 	@FullWidth@
+	background-color:@AppC@;
 }
 
 #IFNDEF MSIE_LOWER_THAN_9
@@ -248,6 +249,7 @@
 .ZmMsgViewToolBar_cw {
 	@ToolbarContainer@
 	@FullWidth@
+	background-color:@AppC@;
 }
 
 /* toolbars in read message view that let you accept an appointment, share, etc (with no border) */
