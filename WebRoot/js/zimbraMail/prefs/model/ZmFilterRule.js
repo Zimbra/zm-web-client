@@ -320,10 +320,10 @@ ZmFilterRule.OP_LABEL[ZmFilterRule.OP_WHERE_PARTICIPATED] = ZmMsg.participatedLa
 ZmFilterRule.OP_LABEL[ZmFilterRule.OP_WHERE_STARTED] = ZmMsg.startedLabel;
 ZmFilterRule.OP_LABEL[ZmFilterRule.OP_CONV_IS]      = ZmMsg.isLabel;
 ZmFilterRule.OP_LABEL[ZmFilterRule.OP_NOT_CONV]     = ZmMsg.notIs;
-ZmFilterRule.OP_LABEL[ZmFilterRule.OP_SOCIAL_FROM]  = ZmMsg.from;;
-ZmFilterRule.OP_LABEL[ZmFilterRule.OP_SOCIAL_FACEBOOK] = ZmMsg.facebook;
-ZmFilterRule.OP_LABEL[ZmFilterRule.OP_SOCIAL_TWITTER] = ZmMsg.twitter;
-ZmFilterRule.OP_LABEL[ZmFilterRule.OP_SOCIAL_LINKEDIN] = ZmMsg.linkedin;
+ZmFilterRule.OP_LABEL[ZmFilterRule.OP_SOCIAL_FROM]  = ZmMsg.from;  //I don't think this is used. EY.
+ZmFilterRule.OP_LABEL[ZmFilterRule.OP_SOCIAL_FACEBOOK] = ZmMsg.facebookNotifications;
+ZmFilterRule.OP_LABEL[ZmFilterRule.OP_SOCIAL_TWITTER] = ZmMsg.twitterNotifications;
+ZmFilterRule.OP_LABEL[ZmFilterRule.OP_SOCIAL_LINKEDIN] = ZmMsg.linkedinMessagesConnections;
 ZmFilterRule.OP_LABEL[ZmFilterRule.OP_IS_ME]        = ZmMsg.isMeLabel;
 ZmFilterRule.OP_LABEL[ZmFilterRule.OP_NOT_ME]       = ZmMsg.isNotMeLabel;
 
@@ -456,10 +456,7 @@ ZmFilterRule.CONDITIONS[ZmFilterRule.C_CONV] = {
 };
 ZmFilterRule.CONDITIONS[ZmFilterRule.C_SOCIAL] = {
 		ops:        ZmFilterRule.TYPE_SELECT,
-		opsOptions: [ZmFilterRule.OP_SOCIAL_FACEBOOK, ZmFilterRule.OP_SOCIAL_TWITTER, ZmFilterRule.OP_SOCIAL_LINKEDIN],
-	    value:      ZmFilterRule.TYPE_SELECT,
-		vOptions:   [{label: ZmMsg.socialFilterOp, value: "social"}, 
-			         {label: ZmMsg.socialFilterOpNegative, value: "not_social"}]
+		opsOptions: [ZmFilterRule.OP_SOCIAL_FACEBOOK, ZmFilterRule.OP_SOCIAL_TWITTER, ZmFilterRule.OP_SOCIAL_LINKEDIN]
 };
 ZmFilterRule.CONDITIONS[ZmFilterRule.C_ADDRESS] = {
 		ops:		ZmFilterRule.TYPE_SELECT,
@@ -872,14 +869,6 @@ function(testType, comparator, value, subjectMod, caseSensitive) {
 		conditionData.negative = "1";
 	}
 	
-	if (value == ZmFilterRule.IS_NOT_SOCIAL && 
-		(testType == ZmFilterRule.TEST_FACEBOOK  ||
-		 testType == ZmFilterRule.TEST_TWITTER ||
-		 testType == ZmFilterRule.TEST_LINKEDIN)) {
-		conditionData.negative = "1";
-		value = null;
-	}
-
 	var compType = ZmFilterRule.COMP_TEST_MAP[testType];
 	if (compType) {
 		conditionData[compType] = ZmFilterRule.OP_VALUE[negativeOp || comparator];

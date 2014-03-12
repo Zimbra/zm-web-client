@@ -824,34 +824,13 @@ function(isMainSelect, testType, field, rowData) {
 			}
 		}
 		else if (testType == ZmFilterRule.TEST_FACEBOOK) {
-			if (field == "ops") {
-				dataValue = ZmFilterRule.OP_SOCIAL_FACEBOOK;
-			}
-			else if (field == "value") {
-				dataValue = (rowData.negative == "1") ? 
-							ZmFilterRule.IS_NOT_SOCIAL : 
-							ZmFilterRule.IS_SOCIAL;
-			}
+			dataValue = ZmFilterRule.OP_SOCIAL_FACEBOOK;
 		}
 		else if (testType == ZmFilterRule.TEST_TWITTER) {
-			if (field == "ops") {
-				dataValue = ZmFilterRule.OP_SOCIAL_TWITTER;
-			}
-			else if (field == "value") {
-				dataValue = (rowData.negative == "1") ? 
-							ZmFilterRule.IS_NOT_SOCIAL : 
-							ZmFilterRule.IS_SOCIAL;
-			}
+			dataValue = ZmFilterRule.OP_SOCIAL_TWITTER;
 		}
 		else if (testType == ZmFilterRule.TEST_LINKEDIN) {
-			if (field == "ops") {
-				dataValue = ZmFilterRule.OP_SOCIAL_LINKEDIN; 
-			}
-			else if (field == "value") {
-				dataValue = (rowData.negative == "1") ? 
-							ZmFilterRule.IS_NOT_SOCIAL : 
-							ZmFilterRule.IS_SOCIAL;
-			}
+			dataValue = ZmFilterRule.OP_SOCIAL_LINKEDIN;
 		}
 		else if (testType == ZmFilterRule.TEST_INVITE) {
 			if (field == "ops") {
