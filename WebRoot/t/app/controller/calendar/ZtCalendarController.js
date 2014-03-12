@@ -267,11 +267,13 @@ Ext.define('ZCS.controller.calendar.ZtCalendarController', {
 		 	calFolders = [];
 
 		Ext.each(folders, function(folder) {
-			calFolders.push("inid:" + folder.zcsId);
-			Ext.each(folder.items, function(child) {
-				//subfolders, if any
-				calFolders.push("inid:" + child.zcsId)
-			}, this);
+            if (folder.zcsId !== ZCS.constant.ID_TRASH) {
+                calFolders.push("inid:" + folder.zcsId);
+                Ext.each(folder.items, function(child) {
+                    //subfolders, if any
+                    calFolders.push("inid:" + child.zcsId)
+                }, this);
+            }
 		} , this);
 
 		return calFolders.join(' OR ');
@@ -348,7 +350,6 @@ Ext.define('ZCS.controller.calendar.ZtCalendarController', {
                     this.getCalToolbar().down('#monthBtn').removeCls('x-button-pressed');
                     weekView.hide();
                     this.getCalToolbar().down('#weekBtn').removeCls('x-button-pressed');
-                    this.setDayViewConfig(new Date().getTime());
                     break;
             }
         }
@@ -364,16 +365,7 @@ Ext.define('ZCS.controller.calendar.ZtCalendarController', {
     },
 
     setDayViewConfig: function(date) {
-        this.getCalDayView().setCustomView({
-            weekStart: 0,
-            currentDate: new Date(date),
-            viewMode: 'day',
-            eventStore: Ext.getStore('ZtCalendarStore'),
-            plugins: [Ext.create('Ext.ux.TouchCalendarEvents', {
-                eventHeight: 'auto',
-                eventBarTpl: '<div>{title}&nbsp;&nbsp;&nbsp;<i>{event}</i></div>'
-            })]
-        });
+        this.getCalDayView().updateViewMode('day', date);
     },
 
 	doAccept: function(actionParams) {

@@ -193,7 +193,6 @@ ZCS.constant.ITEM_CONVERSATION      = 'conversation';
 ZCS.constant.ITEM_MESSAGE           = 'message';
 ZCS.constant.ITEM_CONTACT           = 'contact';
 ZCS.constant.ITEM_APPOINTMENT       = 'appointment';
-ZCS.constant.ITEM_CALENDAR          = 'calendar';   // TODO: organizer, not item
 ZCS.constant.ITEM_MATCH             = 'match';      // autocomplete response JSON
 
 // Contact types
@@ -231,7 +230,7 @@ ZCS.constant.APP_FOR_TYPE = {};
 ZCS.constant.APP_FOR_TYPE[ZCS.constant.ITEM_CONVERSATION]  = ZCS.constant.APP_MAIL;
 ZCS.constant.APP_FOR_TYPE[ZCS.constant.ITEM_MESSAGE]       = ZCS.constant.APP_MAIL;
 ZCS.constant.APP_FOR_TYPE[ZCS.constant.ITEM_CONTACT]       = ZCS.constant.APP_CONTACTS;
-ZCS.constant.APP_FOR_TYPE[ZCS.constant.ITEM_CALENDAR]      = ZCS.constant.APP_CALENDAR;
+ZCS.constant.APP_FOR_TYPE[ZCS.constant.ITEM_APPOINTMENT]   = ZCS.constant.APP_CALENDAR;
 
 // Model class for each item type
 ZCS.constant.CLASS_FOR_TYPE = {};
@@ -239,7 +238,7 @@ ZCS.constant.CLASS_FOR_TYPE[ZCS.constant.ITEM_CONVERSATION] = 'ZCS.model.mail.Zt
 ZCS.constant.CLASS_FOR_TYPE[ZCS.constant.ITEM_MESSAGE]      = 'ZCS.model.mail.ZtMailMsg';
 ZCS.constant.CLASS_FOR_TYPE[ZCS.constant.ITEM_CONTACT]      = 'ZCS.model.contacts.ZtContact';
 ZCS.constant.CLASS_FOR_TYPE[ZCS.constant.ITEM_MATCH]        = 'ZCS.model.address.ZtAutoComplete';
-ZCS.constant.CLASS_FOR_TYPE[ZCS.constant.ITEM_CALENDAR]     = 'ZCS.model.calendar.ZtCalendar';
+ZCS.constant.CLASS_FOR_TYPE[ZCS.constant.ITEM_APPOINTMENT]     = 'ZCS.model.calendar.ZtCalendar';
 
 ZCS.constant.ORG_NODE_FIELD_HASH = ZCS.util.arrayAsLookupHash([
 	'name', 'absFolderPath', 'color', 'rgb', 'l', 'n', 'u', 'url', 'query', 'types'
@@ -275,7 +274,7 @@ ZCS.constant.ITEM_NODE[ZCS.constant.ITEM_CONVERSATION]      = ZCS.constant.NODE_
 ZCS.constant.ITEM_NODE[ZCS.constant.ITEM_MESSAGE]           = ZCS.constant.NODE_MESSAGE;
 ZCS.constant.ITEM_NODE[ZCS.constant.ITEM_CONTACT]           = ZCS.constant.NODE_CONTACT;
 ZCS.constant.ITEM_NODE[ZCS.constant.ITEM_MATCH]             = ZCS.constant.NODE_MATCH;
-ZCS.constant.ITEM_NODE[ZCS.constant.ITEM_CALENDAR]          = ZCS.constant.NODE_CALENDAR;
+ZCS.constant.ITEM_NODE[ZCS.constant.ITEM_APPOINTMENT]       = ZCS.constant.NODE_CALENDAR;
 
 // Item type based on JSON node name
 ZCS.constant.NODE_ITEM = ZCS.util.getBackMap(ZCS.constant.ITEM_NODE);

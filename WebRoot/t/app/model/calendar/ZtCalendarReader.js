@@ -72,14 +72,25 @@ Ext.define('ZCS.model.calendar.ZtCalendarReader', {
             eday = index ? new Date(node.inst[index].s + node.dur).getDate() : new Date(node.inst[0].s + node.dur).getDate(),
             ehour = index ? new Date(node.inst[index].s + node.dur).getHours() : new Date(node.inst[0].s + node.dur).getHours(),
             eminutes = index ? new Date(node.inst[index].s + node.dur).getMinutes() : new Date(node.inst[0].s + node.dur).getMinutes(),
-            data = {
-                type: ZCS.constant.ORG_CALENDAR,
-                event: shour + ':' + this.getPaddedDigits(sminutes) + ' - ' + ehour + ':' + this.getPaddedDigits(eminutes),
-                title: Ext.String.htmlEncode(node.name), //Fix for bug: 83580. Prevents XSS attacks.
-                start: new Date(syear, smonth, sday, shour, sminutes),
-                end: node.allDay ? new Date(new Date(syear, smonth, sday).setHours(23,59,59,999)) : new Date(eyear, emonth, eday, ehour, eminutes),
-                invId: node.invId
-            };
+            organizer = ZCS.cache.get(node.l),
+            color = ZCS.constant.ORG_DEFAULT_COLOR;
+        if (organizer) {
+            var folderColor = organizer.get('color');
+            color = ZCS.constant.COLOR_VALUES[folderColor];
+            if (!color) {
+                color = organizer.get('rgb');
+            }
+        }
+        var data = {
+            folderId: node.l,
+            type: ZCS.constant.ITEM_APPOINTMENT,
+            event: shour + ':' + this.getPaddedDigits(sminutes) + ' - ' + ehour + ':' + this.getPaddedDigits(eminutes),
+            title: Ext.String.htmlEncode(node.name), //Fix for bug: 83580. Prevents XSS attacks.
+            start: new Date(syear, smonth, sday, shour, sminutes),
+            end: node.allDay ? new Date(new Date(syear, smonth, sday).setHours(23,59,59,999)) : new Date(eyear, emonth, eday, ehour, eminutes),
+            invId: node.invId,
+            color: color
+        };
 
         return data;
     },
