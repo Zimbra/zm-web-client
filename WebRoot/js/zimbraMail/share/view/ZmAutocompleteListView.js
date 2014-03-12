@@ -135,7 +135,9 @@
  */
 ZmAutocompleteListView = function(params) {
 
-	if (arguments.length == 0) { return; }
+	if (arguments.length == 0) {
+		return;
+	}
 
 	params.parent = params.parent || appCtxt.getShell();
 	params.className = params.className || "ZmAutocompleteListView";
@@ -394,7 +396,9 @@ function(ev) {
 	DBG.println("ac", "scheduling autocomplete for: " + elId);
 
 	var aif = DwtControl.ALL_BY_ID[element._aifId];
-	if (aif && aif._editMode) { return false; }
+	if (aif && aif._editMode) {
+		return false;
+	}
 	
 	var acAction = new AjxTimedAction(aclv, aclv._autocompleteAction, [ev1]);
 	aclv._acActionId[elId] = AjxTimedAction.scheduleAction(acAction, aclv._acInterval);
@@ -711,7 +715,9 @@ function(key, isDelim, element) {
 		this._update();
 	} else if (key == 38 || key == 40) {
 		// handle up and down arrow keys
-		if (this.size() <= 1) { return; }
+		if (this.size() <= 1) {
+			return;
+		}
 		if (key == 40) {
 			this._setSelected(ZmAutocompleteListView.NEXT);
 		} else if (key == 38) {
@@ -777,7 +783,9 @@ function(element) {
 ZmAutocompleteListView.prototype.setWaiting =
 function(on, str) {
 
-	if (!on && !this._waitingDiv) { return; }
+	if (!on && !this._waitingDiv) {
+		return;
+	}
 
 	var div = this._waitingDiv;
 	if (!div) {
@@ -843,7 +851,9 @@ ZmAutocompleteListView.prototype._autocomplete =
 function(context) {
 
 	var str = AjxStringUtil.trim(context.str);
-	if (!str || !(this._dataAPI && this._dataAPI.autocompleteMatch)) { return; }
+	if (!str || !(this._dataAPI && this._dataAPI.autocompleteMatch)) {
+		return;
+	}
 	DBG.println("ac", "autocomplete: " + context.str);
 	
 	this._currentContext = context;	// so we can figure out where to pop up the "waiting" indicator
@@ -899,7 +909,9 @@ ZmAutocompleteListView.prototype._update =
 function(context, match) {
 
 	context = context || this._currentContext;
-	if (!context) { return; }
+	if (!context) {
+		return;
+	}
 	match = match || this._matchHash[this._selected];
 	
 	if (match && match.needDerefGroup) {
@@ -1009,7 +1021,9 @@ ZmAutocompleteListView.prototype._mouseDownListener =
 function(ev) {
 	ev = DwtUiEvent.getEvent(ev);
 	var row = DwtUiEvent.getTargetWithProp(ev, "id");
-	if (!row || !row.id || row.id.indexOf("Row") == -1) { return; }
+	if (!row || !row.id || row.id.indexOf("Row") === -1) {
+		return;
+	}
 	if (ev.button == DwtMouseEvent.LEFT) {
 		this._setSelected(row.id);
 		if (this.isListenerRegistered(DwtEvent.SELECTION)) {
@@ -1068,6 +1082,10 @@ function() {
 ZmAutocompleteListView.prototype._set =
 function(list, context) {
 
+	if (this.getVisible()) {
+		return;
+	}
+
 	this._removeAll();
 	var table = this._getTable();
 	this._matches = list;
@@ -1086,7 +1104,7 @@ function(list, context) {
 			var cell = row.insertCell(-1);
 			cell.className = "Icon";
 			if (match.icon) {
-				cell.innerHTML = (match.icon.indexOf('Dwt') != -1) ? ["<div class='", match.icon, "'></div>"].join("") :
+				cell.innerHTML = (match.icon.indexOf('Dwt') !== -1) ? ["<div class='", match.icon, "'></div>"].join("") :
 								 									 AjxImg.getImageHtml(match.icon);
 			} else {
 				cell.innerHTML = "&nbsp;";
@@ -1171,7 +1189,9 @@ function(hash, textHash, rowId, show) {
 ZmAutocompleteListView.prototype._popup =
 function(loc) {
 
-	if (this.getVisible()) { return; }
+	if (this.getVisible()) {
+		return;
+	}
 
 	loc = loc || this._getDefaultLoc();
 	var x = loc.x;
@@ -1226,7 +1246,9 @@ function() {
 	}
 	
 	var el = this._currentContext && this._currentContext.element;
-	if (!el) { return {}; }
+	if (!el) {
+		return {};
+	}
 	
 	var elLoc = Dwt.getLocation(el);
 	var elSize = Dwt.getSize(el);
@@ -1240,7 +1262,9 @@ function() {
 ZmAutocompleteListView.prototype._popdown = 
 function() {
 
-	if (!this.getVisible()) { return; }
+	if (!this.getVisible()) {
+		return;
+	}
 	DBG.println("out", "popdown " + this.toString() + ": " + this._htmlElId);
 
 	if (this._memberListView) {
@@ -1273,19 +1297,25 @@ function (availHeight){
 ZmAutocompleteListView.prototype._setSelected =
 function(id) {
 
-	if (id == this._selected) { return; }
+	if (id == this._selected) {
+		return;
+	}
 
 	DBG.println("ac", "setting selected id to " + id);
 	var table = document.getElementById(this._tableId);
 	var rows = table && table.rows;
-	if (!(rows && rows.length)) { return; }
+	if (!(rows && rows.length)) {
+		return;
+	}
 
 	var len = rows.length;
 
 	// handle selection of next/prev via arrow keys
 	if (id == ZmAutocompleteListView.NEXT || id == ZmAutocompleteListView.PREV) {
 		id = this._getRowId(rows, id, len);
-		if (!id) { return; }
+		if (!id) {
+			return;
+		}
 	}
 
 	// make sure the ID matches one of our rows
@@ -1296,7 +1326,9 @@ function(id) {
 			break;
 		}
 	}
-	if (!found) { return; }
+	if (!found) {
+		return;
+	}
 	
 	// select one row, deselect the rest
 	for (var i = 0; i < len; i++) {
@@ -1322,7 +1354,9 @@ function(id) {
 ZmAutocompleteListView.prototype._getRowId =
 function(rows, id, len) {
 
-	if (len <= 1) { return; }
+	if (len <= 1) {
+		return;
+	}
 
 	var idx = -1;
 	for (var i = 0; i < len; i++) {
@@ -1380,7 +1414,9 @@ function() {
 
 ZmAutocompleteListView.prototype._removeLinks =
 function(textHash) {
-	if (!textHash) { return; }
+	if (!textHash) {
+		return;
+	}
 	for (var id in textHash) {
 		var textCtrl = textHash[id];
 		if (textCtrl) {
@@ -1411,7 +1447,9 @@ function(ev) {
 
 ZmAutocompleteListView.prototype._settingChangeListener =
 function(ev) {
-	if (ev.type != ZmEvent.S_SETTING) { return; }
+	if (ev.type != ZmEvent.S_SETTING) {
+		return;
+	}
 	if (ev.source.id == ZmSetting.AUTOCOMPLETE_ON_COMMA) {
 		this._isDelim[','] = this._isDelimCode[188] = appCtxt.get(ZmSetting.AUTOCOMPLETE_ON_COMMA);
 	}
@@ -1449,7 +1487,9 @@ function(email, rowId) {
 ZmAutocompleteListView.prototype.expandDL =
 function(params) {
 
-	if (!this._dataAPI.expandDL) { return; }
+	if (!this._dataAPI.expandDL) {
+		return;
+	}
 
 	var mlv = this._memberListView;
 	if (mlv && mlv.getVisible() && params.textId && this._curExpanded == params.textId) {

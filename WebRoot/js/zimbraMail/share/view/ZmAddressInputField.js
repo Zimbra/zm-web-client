@@ -315,12 +315,14 @@ function() {
  * that we don't already have. Since text is passed in, we don't recognize expandable DLs.
  * A bubble may be added for a string even if it doesn't parse as an email address.
  *
- * @param {string}	text		email addresses
- * @param {boolean}	add			if true, control is not cleared first
- * @param {boolean}	skipNotify	if true, don't call bubbleAddedCallback
+ * @param {string}	text				email addresses
+ * @param {boolean}	add					if true, control is not cleared first
+ * @param {boolean}	skipNotify			if true, don't call bubbleAddedCallback
+ * @param {boolean}	invokeAutocomplete	if true, trigger autocomplete
+ * 										(useful in paste event when keyup/down events don't take place
  */
 ZmAddressInputField.prototype.setValue =
-function(text, add, skipNotify) {
+function(text, add, skipNotify, invokeAutocomplete) {
 
 	if (!add) {
 		this.clear();
@@ -337,12 +339,20 @@ function(text, add, skipNotify) {
 	for (var i = 0; i < good.length; i++) {
 		var addr = good[i];
 		if ((addr && !this._addressHash[addr.address])) {
-			this.addBubble({address:addr.toString(), addrObj:addr, index:(index != null) ? index + i : null, skipNotify:skipNotify});
+			this.addBubble({
+				address: addr.toString(),
+				addrObj: addr,
+				index: (index != null) ? index + i : null,
+				skipNotify: skipNotify
+			});
 		}
 	}
 
 	var bad = addrs.bad && addrs.bad.getArray();
 	this._setInputValue(bad.length ? bad.join(this._separator) : "");
+	if (invokeAutocomplete && bad.length) {
+		this._aclv.autocomplete(this.getInputElement());
+	}
 };
 
 /**
@@ -460,9 +470,17 @@ ZmAddressInputField.onPaste =
 function(ev) {
 	var addrInput = ZmAddressInputField._getAddrInputFromEvent(ev);
 	if (addrInput) {
+		// trigger autocomplete after paste to accommodate  mouse click pastes
+		var invokeAutocomplete = true;
 		// give browser time to update input - easier than dealing with clipboard
 		// will also resize the INPUT
-		AjxTimedAction.scheduleAction(new AjxTimedAction(addrInput, addrInput._checkInput), 100);
+		AjxTimedAction.scheduleAction(
+			new AjxTimedAction(
+				addrInput,
+				addrInput._checkInput,
+				[null, invokeAutocomplete]
+			), 100
+		);
 	}
 };
 
@@ -497,11 +515,11 @@ function(ev) {
 
 // looks for valid addresses in the input, and converts them to bubbles
 ZmAddressInputField.prototype._checkInput =
-function(text) {
+function(text, invokeAutocomplete) {
 	text = text || this._input.value;
 	DBG.println("aif", "CHECK input: " + AjxStringUtil.htmlEncode(text));
 	if (text) {
-		this.setValue(text, true);
+		this.setValue(text, true, false, invokeAutocomplete);
 	}
 };
 
