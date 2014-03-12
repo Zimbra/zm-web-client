@@ -472,18 +472,16 @@ function(htmlArr, idx, item, field, colIdx, params, classes) {
 				htmlArr[idx++] = "</div>";
 		}
 		else if (field === ZmItem.F_SIZE) {
-			if (item.type == ZmItem.CONV && visibleMsgCount > 1) {
-				htmlArr[idx++] = "<div id='" + this._getFieldId(item, field) + "' " + AjxUtil.getClassAttr(classes) + ">";
+			htmlArr[idx++] = "<div id='" + this._getFieldId(item, field) + "' " + AjxUtil.getClassAttr(classes) + ">";
+			if (item.size) {
+				htmlArr[idx++] = AjxUtil.formatSize(item.size);
+			}
+			else {
 				htmlArr[idx++] = "(";
 				htmlArr[idx++] = visibleMsgCount;
 				htmlArr[idx++] = ")";
-				htmlArr[idx++] = "</div>";
 			}
-			else if (item.size) {
-				htmlArr[idx++] =  "<div id='" + this._getFieldId(item, field) + "' " + AjxUtil.getClassAttr(classes) + ">";
-				htmlArr[idx++] = AjxUtil.formatSize(item.size);
-				htmlArr[idx++] = "</div>";
-			}
+			htmlArr[idx++] = "</div>";
 		}
 		else if (field === ZmItem.F_SORTED_BY) {
 			htmlArr[idx++] = this._getAbridgedContent(item, colIdx);

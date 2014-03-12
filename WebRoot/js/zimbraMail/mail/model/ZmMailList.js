@@ -547,6 +547,10 @@ function(convs, msgs) {
 						// recalculate conv's sort position since we changed its date
 						fields[ZmItem.F_DATE] = true;
 					}
+					if (conv.numMsgs === 1) {
+						//there is only one message in this conv so set the size of conv to msg size
+						conv.size = msg.size;
+					}
 					// conv gained a msg, may need to be moved to top/bottom
 					if (!newConvId[conv.id] && this._vector.contains(conv)) {
 						fields[ZmItem.F_INDEX] = true;
