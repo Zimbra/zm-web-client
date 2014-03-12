@@ -38,6 +38,7 @@ Ext.define('ZCS.view.mail.ZtMsgListView', {
 		itemCls:              'zcs-msgview',
 		cls:                  'zcs-msglist',
 		allowTaps:            true,
+		emptyText:            ZtMsg.selectConv,
 		deferEmptyText:       false,
 		infinite:             false,
 		scrollable: {
