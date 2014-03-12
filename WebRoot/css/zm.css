@@ -1014,6 +1014,7 @@ INPUT[type="text"].search_input-expanded {
 
 .Conv2MsgHeader {
 	@ActiveCursor@
+	min-height:54px; /* 48px + 6px padding */
 	white-space:nowrap;
 	-moz-user-select:text;
 }
@@ -1043,6 +1044,10 @@ INPUT[type="text"].search_input-expanded {
 .Conv2MsgHeader .image IMG {
 	max-width:48px;
 	max-height:48px;
+}
+
+.Collapsed .Conv2MsgHeader {
+	min-height:38px;  /* 32px + 6px padding */
 }
 
 .Collapsed .Conv2MsgHeader .image {
