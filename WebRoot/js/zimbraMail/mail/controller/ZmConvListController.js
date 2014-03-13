@@ -699,6 +699,9 @@ function(callback) {
 ZmConvListController.prototype._displayItem =
 function(item) {
 
+	// cancel timed mark read action on previous conv
+	appCtxt.killMarkReadTimer();
+
 	var curItem = this._doublePaneView.getItem();
 	item.waitOnMarkRead = true;
 	this._doublePaneView.setItem(item);
