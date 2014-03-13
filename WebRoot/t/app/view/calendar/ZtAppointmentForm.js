@@ -21,7 +21,7 @@ Ext.define('ZCS.view.calendar.ZtAppointmentForm', {
     initialize: function() {
 
 		this.element.on({
-			tap: function(e) { console.log('tapped!');
+			tap: function(e) {
 				var target = e.event.actionTarget || e.event.target,
 					elm = Ext.fly(target);
 
@@ -74,7 +74,7 @@ Ext.define('ZCS.view.calendar.ZtAppointmentForm', {
 				{
 
 					xtype: 'button',
-                    iconCls: 'reply',
+                    iconCls: 'inviteReply',
 					id: 'inviteActionsAppt',
                     menuName: ZCS.constant.MENU_INVITE_ACTIONS,
 					handler: function() {
@@ -115,10 +115,7 @@ Ext.define('ZCS.view.calendar.ZtAppointmentForm', {
             dateFormat = invite.get('isAllDay') ? ZtMsg.invDateFormat : ZtMsg.invDateTimeOnlyFormat,
             startTime = Ext.Date.format(event.get('start'), dateFormat),
             endTime = Ext.Date.format(event.get('end'), ZtMsg.invTimeOnlyFormat),
-            reminder = invite.get('reminderAlert'),
-            recurrence = invite.get('recurrence'),
             myResponse = invite.get('myResponse'),
-            apptTitle = invite.get('subject'),
             displayStatus = this.getShowAsOptionLabel(invite.get('fb')),
             apptColor, apptRgbColor, calFolderName;
 
@@ -135,7 +132,7 @@ Ext.define('ZCS.view.calendar.ZtAppointmentForm', {
                 msgId:      msg.get('id')
             },
             data = {
-                title:  apptTitle,
+                title:  invite.get('subject'),
                 start:  startTime + (invite.get('isAllDay') ? "" : " - " + endTime),
                 location: invite.get('location'),
 				isOrganizer: invite.get('isOrganizer'),
@@ -146,8 +143,8 @@ Ext.define('ZCS.view.calendar.ZtAppointmentForm', {
                 calendar: calFolderName,
 				color: apptColor ? apptColor : (apptRgbColor ? '' : '1'),
 				rgb: apptRgbColor,
-                reminder: reminder ? reminder : "", /* TODO: Get strings similar to Ajax Client */
-                recurrence: recurrence ? recurrence : "",
+                reminder: invite.get('reminderAlert'), /* TODO: Get strings similar to Ajax Client */
+                recurrence: invite.get('recurrence'),
 				displayStatus: displayStatus,
                 notes: invite.get('notes'),
                 invAcceptButtonId:     ZCS.util.getUniqueId(Ext.apply({}, { action: ZCS.constant.OP_ACCEPT }, idParams)),

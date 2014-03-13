@@ -76,7 +76,7 @@ Ext.define('ZCS.controller.calendar.ZtCalendarController', {
 				cancel:             'doCancel',
 				contactTap:         'showMenu'
 			},
-			'appointmentpanel toolbar button[iconCls=reply]': {
+			'appointmentpanel toolbar button[iconCls=inviteReply]': {
 				tap: 'onApptActionsButtonTap'
 			},
 			'appointmentpanel toolbar button[iconCls=arrow_down]': {

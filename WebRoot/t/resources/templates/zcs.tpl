@@ -641,6 +641,12 @@
 				</tr>
 			</tpl>
 
+			<tpl if='recurrence'>
+                <tr>
+                    <td class='zcs-invite-label'>{[ZtMsg.invRecurLabel]}</td>
+                    <td>{recurrence}</td>
+                </tr>
+            </tpl>
 		</table>
 
 		<tpl if='notes'>
