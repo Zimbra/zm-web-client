@@ -119,16 +119,7 @@ BODY									{	margin:0px; 	}
 
 /** webclient offline sync notification **/
 #skin_container_global_buttons .offline {
-	width:16px;
-	height:16px;
-	float:left;
-}
-.offline_sync {
-	background-image:url("@SkinAnimatedImgDir@/ImgOfflineSync.gif?v=@jsVersion@");
-}
-
-.offline_disconnect {
-	background-image:url("/img/offline/ImgDisconnect.png?v=@jsVersion@");
+	margin:0px 5px 0px 8px;   /* simulates same padding on toolbar button */
 }
 
 /** reset styles on app row toolbar buttons **/

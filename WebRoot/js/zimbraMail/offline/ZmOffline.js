@@ -1451,18 +1451,18 @@ function(status) {
 ZmOffline.refreshStatusIcon =
 function(isSyncing) {
 	if (appCtxt.isWebClientOffline()) {
-		$("#" + ZmId.SKIN_OFFLINE_STATUS).addClass("offline_disconnect")
-			.removeClass("offline_sync")
+		$("#" + ZmId.SKIN_OFFLINE_STATUS).addClass("ImgDisconnect")
+			.removeClass("ImgOfflineSync")
 			.attr("title", ZmMsg.OfflineServerNotReachable);
 	}
 	else {
 		if (isSyncing) {
-			$("#" + ZmId.SKIN_OFFLINE_STATUS).addClass("offline_sync")
-				.removeClass("offline_disconnect")
+			$("#" + ZmId.SKIN_OFFLINE_STATUS).addClass("ImgOfflineSync")
+				.removeClass("ImgDisconnect")
 				.attr("title", ZmMsg.offlineCachingSync);
 		}
 		else {
-			$("#" + ZmId.SKIN_OFFLINE_STATUS).removeClass("offline_sync offline_disconnect")
+			$("#" + ZmId.SKIN_OFFLINE_STATUS).removeClass("ImgOfflineSync ImgDisconnect")
 				.attr("title", ZmMsg.offlineCachingDone);
 		}
 	}
