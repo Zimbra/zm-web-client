@@ -35,6 +35,8 @@ Ext.define('ZCS.view.ZtOrganizerList', {
 
 		cls: 'zcs-organizer-list',
 
+		infinite: true,
+
 		grouped: true,
 
 		listConfig: {
