@@ -145,10 +145,10 @@
 
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black" />
-    <link rel="apple-touch-icon" sizes="57x57" href="/t/resources/icons/Icon.png" />
-    <link rel="apple-touch-icon" sizes="72x72" href="/t/resources/icons/Icon~ipad.png" />
-    <link rel="apple-touch-icon" sizes="114x114" href="/t/resources/icons/Icon@2x.png" />
-    <link rel="apple-touch-icon" sizes="144x144" href="/t/resources/icons/Icon~ipad@2x.png" />
+    <link rel="apple-touch-icon" sizes="57x57" href="/img/logo/Icon.png" />
+    <link rel="apple-touch-icon" sizes="72x72" href="/img/logo/Icon~ipad.png" />
+    <link rel="apple-touch-icon" sizes="114x114" href="/img/logo/Icon@2x.png" />
+    <link rel="apple-touch-icon" sizes="144x144" href="/img/logo/Icon~ipad@2x.png" />
 
     <title><fmt:message key="zimbraLoginTitle"/></title>
     <link rel="stylesheet" type="text/css" href="<c:url value='/css/ztouch.css'>
