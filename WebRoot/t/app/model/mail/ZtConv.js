@@ -127,6 +127,8 @@ Ext.define('ZCS.model.mail.ZtConv', {
 
 	handleModifyNotification: function(modify) {
 
+        this.disableDefaultStoreEvents();
+
 		this.callParent(arguments);
 
 		if (modify.n) {
@@ -138,5 +140,10 @@ Ext.define('ZCS.model.mail.ZtConv', {
 		if (modify.senders) {
 			this.set('senders', modify.senders);
 		}
+
+
+		this.updateDependentLists();
+
+		this.enableDefaultStoreEvents();
 	}
 });

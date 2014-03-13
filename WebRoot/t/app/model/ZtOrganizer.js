@@ -21,7 +21,7 @@
  */
 Ext.define('ZCS.model.ZtOrganizer', {
 
-	extend: 'Ext.data.Model',
+	extend: 'ZCS.model.ZtBaseItem',
 
 	requires: [
 		'ZCS.model.ZtOrganizerReader',
@@ -442,6 +442,8 @@ Ext.define('ZCS.model.ZtOrganizer', {
 
 	handleModifyNotification: function(modify) {
 
+        this.disableDefaultStoreEvents();
+
 		// Use reader to perform any needed data transformation
 		var reader = ZCS.model.ZtOrganizer.getProxy().getReader(),
 			app = this.get('app'),
@@ -455,6 +457,12 @@ Ext.define('ZCS.model.ZtOrganizer', {
 			this.set('parentItemId', ZCS.model.ZtOrganizer.getOrganizerId(data.parentZcsId, app, this.get('context')));
 			this.set('parentZcsId', data.parentZcsId);
 		}
+
+		//Update the unread count before the title since the title contains the unread count.
+		if (modify.u != null) {
+			this.set('unreadCount', data.unreadCount);
+		}
+
 		if (modify.name) {
 			this.set('name', data.name);
 			// need to do this because Sencha does not recalculate converted fields
@@ -463,16 +471,19 @@ Ext.define('ZCS.model.ZtOrganizer', {
 		if (modify.absFolderPath) {
 			this.set('path', data.path);
 		}
-		if (modify.u != null) {
-			this.set('unreadCount', data.unreadCount);
-		}
+
 		if (modify.color) {
 			this.set('color', data.color);
 		}
 		if (modify.rgb) {
 			this.set('rgb', data.rgb);
 		}
+
+		this.updateDependentLists();
+
+		this.enableDefaultStoreEvents();
 	},
+
 
 	/**
 	 * Returns true if this organizer is a valid assignment target for the given item (ie, the item

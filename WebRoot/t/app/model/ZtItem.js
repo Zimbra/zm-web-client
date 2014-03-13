@@ -20,7 +20,7 @@
  */
 Ext.define('ZCS.model.ZtItem', {
 
-	extend: 'Ext.data.Model',
+	extend: 'ZCS.model.ZtBaseItem',
 
 	requires: [
 		'ZCS.model.ZtSoapProxy'

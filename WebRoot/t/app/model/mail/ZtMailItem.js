@@ -201,6 +201,9 @@ Ext.define('ZCS.model.mail.ZtMailItem', {
 	},
 
 	handleModifyNotification: function(modify) {
+        var stores = this.stores;
+
+        this.disableDefaultStoreEvents();
 
 		this.callParent(arguments);
 
@@ -226,5 +229,8 @@ Ext.define('ZCS.model.mail.ZtMailItem', {
 		if (modify.fr) {
 			this.set('fragment', modify.fr);
 		}
+
+		this.enableDefaultStoreEvents();
+
 	}
 });
