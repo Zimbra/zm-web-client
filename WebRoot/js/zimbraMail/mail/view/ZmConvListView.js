@@ -969,8 +969,8 @@ function(ev) {
 					this.removeItem(item, true, ev.batchMode);	// remove msg row
 					var rowIds = this._msgRowIdList[conv.id];
 					if (this._expanded[conv.id] && rowIds && rowIds.length <= 1) {
-						this._setImage(conv, ZmItem.F_EXPAND, null, this._getClasses(ZmItem.F_EXPAND));
 						this._collapse(conv);
+						this._setImage(conv, ZmItem.F_EXPAND, null, this._getClasses(ZmItem.F_EXPAND));
 					}
 					this._controller._app._checkReplenishListView = this;
 					this._setNextSelection();
@@ -985,6 +985,10 @@ function(ev) {
 						if (expanded) {
 							//expand if it was expanded before this undo.
 							this._expand(conv, null, true);
+						}
+						else {
+							//the expand image might have been removed if this is undoing of removing the one before last message in the conv.
+							this._setImage(conv, ZmItem.F_EXPAND, "NodeCollapsed", this._getClasses(ZmItem.F_EXPAND));
 						}
 					}
 					else if (!conv.hasMatchingMsg(this._controller._currentSearch, true)) {
