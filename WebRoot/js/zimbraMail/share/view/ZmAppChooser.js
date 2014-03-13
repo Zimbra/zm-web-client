@@ -66,7 +66,7 @@ function(){
     if (this._leftOverflow) {
 		this._leftOverflow.onclick = this._showLeftTab.bind(this);
 	}
-	if (this._rightOverFlow) {
+	if (this._rightOverflow) {
     	this._rightOverflow.onclick = this._showRightTab.bind(this);
 	}
     this._leftBtnIndex = -1;
@@ -179,7 +179,9 @@ function(){
 
 ZmAppChooser.prototype._setArrowVisibility =
 function(element, option){
-		if (!element) return;
+	if (!element) {
+		return;
+	}
     element.style.display = option|| "";
     var display = ((this._leftOverflow && this._leftOverflow.style.display == "none") && 
 					(this._rightOverflow && this._rightOverflow.style.display == "none")) ? "none" : "";
@@ -276,7 +278,7 @@ ZmAppChooser.prototype._adjustWidth =
 function(){
     var container = this._refElement && this._refElement.parentNode;
 	if (container && container.offsetWidth >= 30) {
-    	this._refElement.style.maxWidth = this._refElement.style.width =  (container.offsetWidth - 30);
+    	this._refElement.style.maxWidth = this._refElement.style.width = container.offsetWidth - 30 + "px";
     	this._refElement.style.overflow = "hidden";
 	}
 
