@@ -449,7 +449,10 @@ function(tagIds) {
 
 ZmItem.prototype.getVisibleTags =
 function() {
-	return this.tags;
+    if(!appCtxt.get(ZmSetting.TAGGING_ENABLED)){
+        return [];
+    }
+    return this.tags;
 	//todo - do we need anything from this?
 //    var searchAll = appCtxt.getSearchController().searchAllAccounts;
 //    if (!searchAll && this.isShared()) {
