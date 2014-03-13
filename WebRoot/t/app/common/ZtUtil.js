@@ -628,5 +628,32 @@ Ext.define('ZCS.common.ZtUtil', {
 				});
 			}
 		});
+	},
+
+	/**
+	 * Tells whether appointment is multi-day or not
+	 *
+	 * @param {Date} startDate
+	 * @param {Date} endDate
+
+	 * @return {Boolean}
+	 * @adapts ZmCalBaseItem.prototype.isMultiDay
+	 */
+	isMultiDay: function(startDate, endDate) {
+
+		if (!startDate || !endDate) { return false; }
+
+		if (endDate.getHours() === 0 && endDate.getMinutes() === 0 && endDate.getSeconds() === 0) {
+			/* If appt ends at beginning of next day, though it crossed a day boundary
+			we do not consider it while painting the appt. We just consider it for labeling appt as multi-day.
+			Consider an edge case, appt ends at 12 AM next day, we just paint appt till 11:59:59 but technically
+			it crossed a day so the appt is multiday.
+			*/
+			endDate = new Date(endDate.getTime() - 2 * 3600000);
+		}
+
+		return (startDate.getDate() !== endDate.getDate()) ||
+			(startDate.getMonth() !== endDate.getMonth()) ||
+			(startDate.getFullYear() !== endDate.getFullYear());
 	}
 });

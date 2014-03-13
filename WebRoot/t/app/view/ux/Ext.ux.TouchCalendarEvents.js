@@ -563,9 +563,12 @@ Ext.define('Ext.ux.TouchCalendarEvents', {
             this.eventBarStore = null;
         }
     
-    if(this.droppable){
-      this.droppable = null;
-    }
+	    if(this.droppable){
+	      this.droppable = null;
+	    }
+	    // Clear all day appointment area
+	    var allDayApptRow = this.calendar.element.select('tr.allDayApptRow', this.calendar.element.dom).first();
+	    allDayApptRow && allDayApptRow.hide();
     },
 
 	applyEventBarTpl: function(tpl){

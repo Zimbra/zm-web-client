@@ -74,7 +74,7 @@ Ext.define('ZCS.view.calendar.ZtCalendarView', {
             hidden: true,
             value: new Date(),
             enableEventBars: {
-                eventBarTpl: '<div>{title}&nbsp;&nbsp;&nbsp;<i>{event}</i></div>'
+                eventBarTpl: '<tpl if="isAllDay"><div>{title}</div><tpl else><div>{title}&nbsp;&nbsp;&nbsp;<i>{event}</i></div></tpl>'
             },
             viewConfig: {
                 weekStart: 0, //TODO: This will be set as per User Preferences
