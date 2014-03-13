@@ -213,16 +213,6 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 			quickReply.show();
 		}
 
-		// Reset the translation on this list -- in the touch world, scrolling is done
-		// by using translate3d.  In Sencha's implementation, there is a scroller object (Ext.scroll.Scroller)
-		// and an underlying translation provider.  There appears to be a bug with the list
-		// in that if you fire a refresh event on the list, and you have its scrollToTopOnRefresh
-		// property set to true, it will tell the Scroller object to scroll, but if the translation
-		// object has an old y value, that never gets reset by the scroller.
-		// So manually reset it here.
-		msgListView.topItemIndex = 0;
-		msgListView.getScrollable().getScroller().getTranslatable().y = 0;
-
 		store.load({
 			convId: conv.getId(),
 			convQuery: convQueryTerms.join(' AND '),
@@ -691,6 +681,9 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 						duration: 2000,
 						scope: this,
 						after: function () {
+							convItem.removeCls('delete-active');
+					        convItem.removeCls('x-item-pressed');
+					        convItem.removeCls('x-item-swiping');
 							this.activeDeleteAnimCount--;
 							listStore.remove(placeholder);
 
@@ -703,7 +696,15 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 							}
 						}
 					});
+				} else if (convItem.element) {
+					convItem.removeCls('delete-active');
+			        convItem.removeCls('x-item-pressed');
+			        convItem.removeCls('x-item-swiping');
 				}
+			} else {
+				convItem.removeCls('delete-active');
+		        convItem.removeCls('x-item-pressed');
+		        convItem.removeCls('x-item-swiping');
 			}
 		}, 2000, this);
 
