@@ -41,7 +41,7 @@ ZmCalItemEditView = function(parent, attendees, controller, dateInfo, posStyle, 
 	this._controller = controller;
 	this._dateInfo = dateInfo;
 
-	this.setScrollStyle(DwtControl.CLIP);
+	this.setScrollStyle(DwtControl.SCROLL);
 	this._rendered = false;
 
 	var bComposeEnabled = appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED);
