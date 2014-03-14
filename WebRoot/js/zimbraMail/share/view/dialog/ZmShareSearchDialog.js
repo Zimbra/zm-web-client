@@ -93,7 +93,7 @@ ZmShareSearchDialog.prototype._collectShares = function(treeView, node, shares) 
         // NOTE: is not visible even if the user had checked it before
         // NOTE: applying a filter. Otherwise they would be left
         // NOTE: wondering why it was mounted.
-        if (treeItem.getChecked() && treeItem.getVisible()) {
+        if (treeItem && treeItem.getChecked() && treeItem.getVisible()) {
             shares.push(node.shareInfo);
         }
     }
