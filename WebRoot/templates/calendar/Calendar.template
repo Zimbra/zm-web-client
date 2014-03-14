@@ -136,7 +136,7 @@
             <$ }else { $>
             <tr class='${headerColor}'>         
             <$ } $>
-				<td width='4px' class='${showAsClass}' style="${showAsColor}" ></td>
+				<td class='${showAsClass}' style="min-width:4px; ${showAsColor}" ></td>
 				<td width=100% class=appt_allday${newState}_name>
 					<div style="overflow: hidden; white-space: nowrap;">${name}</div>
 				</td>
