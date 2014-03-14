@@ -115,7 +115,7 @@ Ext.define('ZCS.view.mail.ZtMsgHeader', {
 	}
 }, function (thisClass) {
 	thisClass.TEMPLATE = {};
-	thisClass.TEMPLATE[ZCS.constant.HDR_COLLAPSED] = ZCS.template.createNestableTemplate('CollapsedMsgHeader');
-	thisClass.TEMPLATE[ZCS.constant.HDR_EXPANDED] = ZCS.template.createNestableTemplate('ExpandedMsgHeader');
-	thisClass.TEMPLATE[ZCS.constant.HDR_DETAILED] = ZCS.template.createNestableTemplate('DetailedMsgHeader');
+	thisClass.TEMPLATE[ZCS.constant.HDR_COLLAPSED] = Ext.create('Ext.XTemplate', ZCS.template.CollapsedMsgHeader);
+	thisClass.TEMPLATE[ZCS.constant.HDR_EXPANDED] = Ext.create('Ext.XTemplate', ZCS.template.ExpandedMsgHeader);
+	thisClass.TEMPLATE[ZCS.constant.HDR_DETAILED] = Ext.create('Ext.XTemplate', ZCS.template.DetailedMsgHeader);
 });

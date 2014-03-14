@@ -78,7 +78,7 @@
 	<tpl>
 	<div class='zcs-mail-msgHdr collapsed'>
 		<div class='zcs-msgHdr-person' style='{imageStyle}'></div>
-		{[this.includeTpl('SentBy', values)]}
+		{[ZCS.template.includeTpl('SentBy', values)]}
 		<div class='zcs-msgHdr-date'><span>{dateStr}</span></div>
 		<div class='zcs-msgHdr-fragment'><span>{fragment:htmlEncode}</span></div>
 	</div>
@@ -89,7 +89,7 @@
 	<tpl>
 	<div class='zcs-mail-msgHdr expanded'>
 		<div class='zcs-msgHdr-person' style='{imageStyle}'></div>
-		{[this.includeTpl('SentBy', values)]}
+		{[ZCS.template.includeTpl('SentBy', values)]}
 		<div class='zcs-msgHdr-date'><span>{dateStr}</span></div>
 		<tpl if='recipients'>
 			<div class='zcs-msgHdr-to'>
@@ -121,7 +121,7 @@
 	<tpl>
 	<div class='zcs-mail-msgHdr detailed'>
 		<div class='zcs-msgHdr-person' style='{imageStyle}'></div>
-		{[this.includeTpl('SentBy', values)]}
+		{[ZCS.template.includeTpl('SentBy', values)]}
 		<tpl for='addrs.from'>
 			<div class='zcs-msgHdr-from'>
 				<span>{[ZtMsg.from]} {address}</span>
