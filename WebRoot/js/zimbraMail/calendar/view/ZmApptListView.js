@@ -204,7 +204,7 @@ ZmApptListView.prototype._getCellContents = function(htmlArr, idx, appt, field, 
 	if (field == ZmItem.F_RECURRENCE) {
 		var icon;
 		if (appt.isException) {
-			icon = "ApptException";
+			icon = "ApptExceptionIndicator";
 		}
         else if (appt.isRecurring()) {
 			icon = "ApptRecur";
