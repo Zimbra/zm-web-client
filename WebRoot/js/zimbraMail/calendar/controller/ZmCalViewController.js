@@ -3693,7 +3693,13 @@ function(params) {
 ZmCalViewController.prototype.handleUserSearch =
 function(params, callback) {
 	AjxDispatcher.require(["MailCore", "CalendarCore", "Calendar"]);
-	this.show(null, null, true);
+	//Calendar search is defaulted to list view when searched from the calendar app.
+	if (params.origin === ZmId.SEARCH) {
+		this.show(ZmId.VIEW_CAL_LIST, null, true);
+	}
+	else {
+		this.show(null, null, true);
+	}
 
 	this.apptCache.clearCache();
 	this._viewMgr.setNeedsRefresh();
