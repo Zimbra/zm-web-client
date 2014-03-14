@@ -1318,13 +1318,15 @@ function(attachment, attachments, count) {
 ZmOffline.prototype._handleAttachmentsForOfflineMode = function(attachments, getLinkIdCallback, linkIds) {
 	if (appCtxt.isWebClientOffline()) {
 		var keyArray = [];
-		attachments.forEach(function(attachment) {
-			var key = ZmOffline.createAttachmentKey(attachment);
-			keyArray.push(key);
-		});
-		if (keyArray.length > 0) {
-			var callback = this._handleAttachmentsForOfflineModeCallback.bind(this, attachments, getLinkIdCallback, linkIds);
-			ZmOfflineDB.getItem(keyArray, ZmOffline.ATTACHMENT, callback);
+		if (attachments) {
+			attachments.forEach(function(attachment) {
+				var key = ZmOffline.createAttachmentKey(attachment);
+				keyArray.push(key);
+			});
+			if (keyArray.length > 0) {
+				var callback = this._handleAttachmentsForOfflineModeCallback.bind(this, attachments, getLinkIdCallback, linkIds);
+				ZmOfflineDB.getItem(keyArray, ZmOffline.ATTACHMENT, callback);
+			}
 		}
 	}
 };
