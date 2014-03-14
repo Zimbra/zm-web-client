@@ -2186,7 +2186,13 @@ function() {
 			this._addClickHandler(att.part, ZmMailMsgView.ATT_LINK_REMOVE, this.removeAttachmentCallback, this, att.part);
 		}
 	}
-    this._handleAttachmentsForOfflineMode(attInfo);
+
+	var offlineHandler = appCtxt.webClientOfflineHandler;
+	if (offlineHandler) {
+		var getLinkIdCallback = this._getAttachmentLinkId.bind(this);
+		var linkIds = [ZmMailMsgView.ATT_LINK_MAIN, ZmMailMsgView.ATT_LINK_DOWNLOAD];
+		offlineHandler._handleAttachmentsForOfflineMode(attInfo, getLinkIdCallback, linkIds);
+	}
 
     // add handlers for "all attachments" links
 	if (allAttParams) {
@@ -2199,53 +2205,6 @@ function() {
 			removeAllLink.onclick = allAttParams.removeAllCallback;
 		}
 	}
-};
-
-ZmMailMsgView.prototype._handleAttachmentsForOfflineMode =
-function(attachments) {
-    if (appCtxt.isWebClientOffline()) {
-        var keyArray = [];
-        attachments.forEach(function(attachment) {
-            var key = "id=" + attachment.mid + "&part=" + attachment.part;
-            keyArray.push(key);
-        });
-        if (keyArray.length > 0) {
-            var callback = this._handleAttachmentsForOfflineModeCallback.bind(this, attachments);
-            ZmOfflineDB.getItem(keyArray, ZmOffline.ATTACHMENT, callback);
-        }
-    }
-};
-
-ZmMailMsgView.prototype._handleAttachmentsForOfflineModeCallback =
-function(attachments, resultArray) {
-    if (!resultArray) {
-        return;
-    }
-    var self = this;
-    attachments.forEach(function(attachment) {
-        resultArray.forEach(function(result) {
-            if (attachment.url === result.url) {
-                if (result.type && result.content) {
-                    var url = "data:" + result.type + ";base64," + result.content;
-                    //Attachment main link
-                    var id = self._getAttachmentLinkId(attachment.part, ZmMailMsgView.ATT_LINK_MAIN),
-                        link = document.getElementById(id);
-                    if (link) {
-                        link.href = url;
-                        link.onclick = null;
-                    }
-                    //download link
-                    id = self._getAttachmentLinkId(attachment.part, ZmMailMsgView.ATT_LINK_DOWNLOAD);
-                    link = document.getElementById(id);
-                    if (link) {
-                        link.href = url;
-                        link.download = attachment.label;
-                        link.onclick = null;
-                    }
-                }
-            }
-        });
-    });
 };
 
 /**

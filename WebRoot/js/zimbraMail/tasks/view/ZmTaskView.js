@@ -67,7 +67,7 @@ function(calItem) {
 	var status = calItem.status ? ZmCalItem.getLabelForStatus(calItem.status) : null;
 	var pComplete = calItem.pComplete;
 	var recurStr = calItem.isRecurring() ? calItem.getRecurBlurb() : null;
-	var attachStr = ZmCalItemView._getAttachString(calItem);
+	var attachStr = this._getAttachString(calItem);
     var alarm = calItem.alarm;
     var remindDate = calItem.remindDate ? AjxDateFormat.getDateInstance().format(calItem.remindDate) : null;
     var remindTime = calItem.remindDate ? AjxDateFormat.getTimeInstance(AjxDateFormat.SHORT).format(calItem.remindDate) : "";

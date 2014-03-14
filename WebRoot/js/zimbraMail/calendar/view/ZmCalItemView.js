@@ -125,6 +125,12 @@ function(calItem, renderButtons) {
 
 	var el = this.getHtmlElement();
 	el.innerHTML = AjxTemplate.expand("calendar.Appointment#ReadOnlyView", subs);
+	var offlineHandler = appCtxt.webClientOfflineHandler;
+	if (offlineHandler) {
+		var linkIds = [ZmCalItem.ATT_LINK_IMAGE, ZmCalItem.ATT_LINK_MAIN, ZmCalItem.ATT_LINK_DOWNLOAD];
+		var getLinkIdCallback = this._getAttachmentLinkId.bind(this);
+		offlineHandler._handleAttachmentsForOfflineMode(calItem.getAttachments(), getLinkIdCallback, linkIds);
+	}
 
     if (renderButtons) {
         // add the close button
@@ -189,15 +195,18 @@ function(sd, ed) {
 	return start.valueOf() == end.valueOf();
 };
 
-ZmCalItemView._getAttachString =
+
+
+ZmCalItemView.prototype._getAttachString =
 function(calItem) {
 	var str = [];
 	var j = 0;
 
 	var attachList = calItem.getAttachments();
 	if (attachList) {
+		var getLinkIdCallback = this._getAttachmentLinkId.bind(this);
 		for (var i = 0; i < attachList.length; i++) {
-			str[j++] = ZmApptViewHelper.getAttachListHtml(calItem, attachList[i]);
+			str[j++] = ZmApptViewHelper.getAttachListHtml(calItem, attachList[i], false, getLinkIdCallback);
 		}
 	}
 
@@ -290,6 +299,12 @@ function(calItem) {
 
 	var el = this.getHtmlElement();
 	el.innerHTML = AjxTemplate.expand("calendar.Appointment#ReadOnlyView", subs);
+	var offlineHandler = appCtxt.webClientOfflineHandler;
+	if (offlineHandler) {
+		var linkIds = [ZmCalItem.ATT_LINK_IMAGE, ZmCalItem.ATT_LINK_MAIN, ZmCalItem.ATT_LINK_DOWNLOAD];
+		var getLinkIdCallback = this._getAttachmentLinkId.bind(this);
+		offlineHandler._handleAttachmentsForOfflineMode(calItem.getAttachments(), getLinkIdCallback, linkIds);
+	}
 
 	this._createBubbles();
 
@@ -356,7 +371,7 @@ function(calItem) {
 
 	var organizer, obo;
 	var recurStr = calItem.isRecurring() ? calItem.getRecurBlurb() : null;
-	var attachStr = ZmCalItemView._getAttachString(calItem);
+	var attachStr = this._getAttachString(calItem);
 
 	if (hasAttendees) { // I really don't know why this check here but it's the way it was before so keeping it. (I just renamed the var)
 		organizer = new AjxEmailAddress(calItem.getOrganizer(), null, calItem.getOrganizerName());

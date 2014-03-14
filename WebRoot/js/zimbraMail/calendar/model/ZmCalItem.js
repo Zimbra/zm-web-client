@@ -181,6 +181,9 @@ ZmCalItem.ROLE_NON_PARTICIPANT		= "NON";
 ZmCalItem.SERVER_WEEK_DAYS			= ["SU", "MO", "TU", "WE", "TH", "FR", "SA"];
 
 ZmCalItem.ATTACHMENT_CHECKBOX_NAME	= "__calAttCbox__";
+ZmCalItem.ATT_LINK_IMAGE            = "mainImage";
+ZmCalItem.ATT_LINK_MAIN			    = "main";
+ZmCalItem.ATT_LINK_DOWNLOAD		    = "download";
 
 /**
  * Defines "minutes "reminder units.

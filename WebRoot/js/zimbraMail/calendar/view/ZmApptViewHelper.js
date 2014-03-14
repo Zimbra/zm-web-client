@@ -759,7 +759,7 @@ function(last, colors, tagNames, templateData, colorParam, clearParam, peelTopOf
  * TODO: replace string onclick handlers with funcs
  */
 ZmApptViewHelper.getAttachListHtml =
-function(calItem, attach, hasCheckbox) {
+function(calItem, attach, hasCheckbox, getLinkIdCallback) {
 	var msgFetchUrl = appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI);
 
 	// gather meta data for this attachment
@@ -786,13 +786,20 @@ function(calItem, attach, hasCheckbox) {
 		html[i++] = "'></td>";
 	}
 
-	var hrefRoot = ["href='", msgFetchUrl, "&id=", calItem.invId, "&amp;part="].join("");
+	var hrefRoot = ["href='", msgFetchUrl, "&id=", calItem.invId, "&amp;part=", attach.part].join("");
 	html[i++] = "<td width=20><a target='_blank' class='AttLink' ";
+	if (getLinkIdCallback) {
+		var imageLinkId = getLinkIdCallback(attach.part, ZmCalItem.ATT_LINK_IMAGE);
+		html[i++] = "id='";
+		html[i++] = imageLinkId;
+		html[i++] = "' ";
+	}
 	html[i++] = hrefRoot;
-	html[i++] = attach.part;
 	html[i++] = "'>";
 	html[i++] = AjxImg.getImageHtml(icon);
+
 	html[i++] = "</a></td><td><a target='_blank' class='AttLink' ";
+
 	if (appCtxt.get(ZmSetting.MAIL_ENABLED) && attach.ct == ZmMimeTable.MSG_RFC822) {
 		html[i++] = " href='javascript:;' onclick='ZmCalItemView.rfc822Callback(";
 		html[i++] = '"';
@@ -803,7 +810,12 @@ function(calItem, attach, hasCheckbox) {
 		html[i++] = "\"); return false;'";
 	} else {
 		html[i++] = hrefRoot;
-		html[i++] = attach.part;
+		html[i++] = "'";
+	}
+	if (getLinkIdCallback) {
+		var mainLinkId = getLinkIdCallback(attach.part, ZmCalItem.ATT_LINK_MAIN);
+		html[i++] = " id='";
+		html[i++] = mainLinkId;
 		html[i++] = "'";
 	}
 	html[i++] = ">";
@@ -819,18 +831,30 @@ function(calItem, attach, hasCheckbox) {
 			html[i++] = sizeText;
 			html[i++] = ") ";
 		}
+		var downloadLinkId = "";
+		if (getLinkIdCallback) {
+			downloadLinkId = getLinkIdCallback(attach.part, ZmCalItem.ATT_LINK_DOWNLOAD);
+		}
 		if (addHtmlLink) {
 			html[i++] = "<a style='text-decoration:underline' target='_blank' class='AttLink' ";
+			if (getLinkIdCallback) {
+				html[i++] = "id='";
+				html[i++] = downloadLinkId;
+				html[i++] = "' ";
+			}
 			html[i++] = hrefRoot;
-			html[i++] = attach.part;
 			html[i++] = "&view=html'>";
 			html[i++] = ZmMsg.preview;
 			html[i++] = "</a>&nbsp;";
 		}
 		if (attach.ct != ZmMimeTable.MSG_RFC822) {
 			html[i++] = "<a style='text-decoration:underline' class='AttLink' onclick='ZmZimbraMail.unloadHackCallback();' ";
+			if (getLinkIdCallback) {
+				html[i++] = " id='";
+				html[i++] = downloadLinkId;
+				html[i++] = "' ";
+			}
 			html[i++] = hrefRoot;
-			html[i++] = attach.part;
 			html[i++] = "&disp=a'>";
 			html[i++] = ZmMsg.download;
 			html[i++] = "</a>";
@@ -838,6 +862,12 @@ function(calItem, attach, hasCheckbox) {
 	}
 
 	html[i++] = "</td></tr></table>";
+
+	// Provide lookup id and label for offline mode
+	if (!attach.mid) {
+		attach.mid = calItem.invId;
+		attach.label = attach.filename;
+	}
 
 	return html.join("");
 };

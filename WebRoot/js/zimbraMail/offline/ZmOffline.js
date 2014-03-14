@@ -1275,9 +1275,13 @@ function(attachments) {
 
 ZmOffline.isAttachmentSavedinIndexedDB =
 function(attachment, callback, errorCallback) {
-    var key = "id=" + attachment.mid + "&part=" + attachment.part;
+    var key = ZmOffline.createAttachmentKey(attachment);
     ZmOfflineDB.getItemCount(key, ZmOffline.ATTACHMENT, callback, errorCallback);
 };
+
+ZmOffline.createAttachmentKey = function(attachment) {
+	return "id=" + attachment.mid + "&part=" + attachment.part;
+}
 
 ZmOffline.prototype._isAttachmentSavedinIndexedDBCallback =
 function(attachment, attachments, count) {
@@ -1290,14 +1294,15 @@ function(attachment, attachments, count) {
         });
 
         request.done(function(response) {
-            var key = "id=" + attachment.mid + "&part=" + attachment.part;
+            var key = ZmOffline.createAttachmentKey(attachment);
             var item = {
-                id : key,
-                mid : attachment.mid,
-                url : attachment.url,
+                id   : key,
+                mid  : attachment.mid,
+                url  : attachment.url,
                 type : attachment.ct,
                 name : attachment.label,
                 size : attachment.sizeInBytes,
+				part : attachment.part,
                 content : response
             };
             ZmOfflineDB.setItem(item, ZmOffline.ATTACHMENT, callback, callback);
@@ -1309,6 +1314,43 @@ function(attachment, attachments, count) {
         callback();
     }
 };
+
+ZmOffline.prototype._handleAttachmentsForOfflineMode = function(attachments, getLinkIdCallback, linkIds) {
+	if (appCtxt.isWebClientOffline()) {
+		var keyArray = [];
+		attachments.forEach(function(attachment) {
+			var key = ZmOffline.createAttachmentKey(attachment);
+			keyArray.push(key);
+		});
+		if (keyArray.length > 0) {
+			var callback = this._handleAttachmentsForOfflineModeCallback.bind(this, attachments, getLinkIdCallback, linkIds);
+			ZmOfflineDB.getItem(keyArray, ZmOffline.ATTACHMENT, callback);
+		}
+	}
+};
+
+ZmOffline.prototype._handleAttachmentsForOfflineModeCallback = function(attachments, getLinkIdCallback, linkIds, resultArray) {
+	if (!resultArray || !linkIds) {
+		return;
+	}
+	var self = this;
+	resultArray.forEach(function(result) {
+		if (result.type && result.content) {
+			var url = "data:" + result.type + ";base64," + result.content;
+			for (var i = 0; i < linkIds.length; i++) {
+				//Attachment main link
+				var id = getLinkIdCallback(result.part, linkIds[i]);
+				var link = document.getElementById(id);
+				if (link) {
+					link.href     = url;
+					link.onclick  = null;
+					link.download = result.name;
+				}
+			}
+		}
+	});
+};
+
 
 ZmOffline.modifyMsg =
 function(msg) {
