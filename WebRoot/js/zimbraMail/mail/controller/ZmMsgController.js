@@ -171,8 +171,9 @@ function(actionCode) {
 			break;
 		
 		default:
-			return ZmMailListController.prototype.handleKeyAction.call(this, actionCode);
-			break;
+			if (ZmMsgController.ALLOWED_SHORTCUT[actionCode]) {
+				return ZmMailListController.prototype.handleKeyAction.call(this, actionCode);
+			}
 	}
 	return true;
 };
@@ -455,4 +456,21 @@ function(ev) {
     ZmMailListController.prototype._acceptShareHandler.call(this, ev);
     //Close View
     appCtxt.getAppViewMgr().popView();
+};
+
+ZmMsgController.prototype._setStatics = function() {
+
+	if (!ZmMsgController.ALLOWED_SHORTCUT) {
+		ZmMsgController.ALLOWED_SHORTCUT = AjxUtil.arrayAsHash([
+			ZmKeyMap.FORWARD,
+			ZmKeyMap.REPLY,
+			ZmKeyMap.REPLY_ALL,
+			ZmKeyMap.SPAM,
+			ZmKeyMap.MARK_READ,
+			ZmKeyMap.MARK_UNREAD,
+			ZmKeyMap.FLAG
+		]);
+	}
+
+	ZmMailListController.prototype._setStatics();
 };
