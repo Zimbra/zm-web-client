@@ -637,10 +637,11 @@ function(parent, num) {
 		var isShare = folder && folder.link;
         var isTrash = folder && folder.id == ZmOrganizer.ID_TRASH;
 		var canEdit = !(folder && (folder.isReadOnly() || folder.isFeed()));
+		var task = this._listView[this._currentViewId].getSelection()[0];
 
 		parent.enable([ZmOperation.MOVE, ZmOperation.MOVE_MENU, ZmOperation.DELETE], canEdit && num > 0);
 		parent.enable(ZmOperation.EDIT, !isTrash && canEdit && num == 1);
-		parent.enable(ZmOperation.MARK_AS_COMPLETED, !isTrash && canEdit && num > 0);
+		parent.enable(ZmOperation.MARK_AS_COMPLETED, !isTrash && canEdit && num > 0 && task && !task.isComplete());
 		parent.enable(ZmOperation.TAG_MENU, (canEdit && num > 0));
 	} else {
       	var task = this._listView[this._currentViewId].getSelection()[0];
@@ -799,8 +800,9 @@ function(task) {
 
 ZmTaskListController.prototype._markAsCompletedResponse = 
 function(task,ftask) {
-	if (task && task._orig)
+	if (task && task._orig) {
 		task._orig.message = null;
+	}
 	//Cache the item for further processing
 	task.cache();
 	this._taskListView.updateListViewEl(task);
