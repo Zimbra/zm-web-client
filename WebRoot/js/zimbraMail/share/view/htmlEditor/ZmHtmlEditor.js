@@ -1240,6 +1240,7 @@ function(words) {
 		var misspelled = words.misspelled;
 		if (misspelled == null || misspelled.length == 0) {
 			appCtxt.setStatusMsg(ZmMsg.noMisspellingsFound, ZmStatusView.LEVEL_INFO);
+			this._spellCheckHideModeDiv();
 		} else {
 			var msg = AjxMessageFormat.format(ZmMsg.misspellingsResult, misspelled.length);
 			appCtxt.setStatusMsg(msg, ZmStatusView.LEVEL_WARNING);
