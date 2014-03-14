@@ -429,13 +429,11 @@ function(calItem) {
 	calItem.setViewMode(this._mode);
 
 	// bug fix #5617 - check if there are any existing attachments that were unchecked
-	if (this._mode != ZmCalItem.MODE_NEW) {
-		var attCheckboxes = document.getElementsByName(ZmCalItem.ATTACHMENT_CHECKBOX_NAME);
-		if (attCheckboxes && attCheckboxes.length > 0) {
-			for (var i = 0; i < attCheckboxes.length; i++) {
-				if (!attCheckboxes[i].checked)
-					calItem.removeAttachment(attCheckboxes[i].value);
-			}
+	var attCheckboxes = document.getElementsByName(ZmCalItem.ATTACHMENT_CHECKBOX_NAME);
+	if (attCheckboxes && attCheckboxes.length > 0) {
+		for (var i = 0; i < attCheckboxes.length; i++) {
+			if (!attCheckboxes[i].checked)
+				calItem.removeAttachment(attCheckboxes[i].value);
 		}
 	}
 
