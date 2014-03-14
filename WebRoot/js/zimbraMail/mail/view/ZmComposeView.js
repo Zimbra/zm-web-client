@@ -2008,7 +2008,7 @@ function(action, msg, extraBodyText, noEditorUpdate) {
 		compList = [ZmComposeView.BC_QUOTED_TEXT];
 	}
 	else if (action === ZmOperation.REPLY_CANCEL) {
-		compList = [ZmComposeView.BC_SIG_PRE, ZmComposeView.BC_SIG_POST];
+		compList = [ZmComposeView.BC_TEXT_PRE, ZmComposeView.BC_SIG_PRE, ZmComposeView.BC_SIG_POST];
 	}
 	else if (incOptions.what === ZmSetting.INC_NONE || incOptions.what === ZmSetting.INC_ATTACH) {
 		compList = [ZmComposeView.BC_NOTHING, ZmComposeView.BC_TEXT_PRE, ZmComposeView.BC_SIG_PRE, ZmComposeView.BC_SIG_POST];
