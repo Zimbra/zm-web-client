@@ -3440,23 +3440,26 @@ function() {
  */
 ZmZimbraMail.prototype._createUpsellView =
 function(appName) {
+
 	var viewName = [appName, "upsell"].join("_");
 	if (!this._upsellView[appName]) {
-		var upsellView = this._upsellView[appName] = new ZmUpsellView({parent:this._shell, posStyle:Dwt.ABSOLUTE_STYLE, className: 'ZmUpsellView'});
-		var upsellUrl = appCtxt.get(ZmApp.UPSELL_URL[appName]);
-		var el = upsellView.getHtmlElement();
-		var htmlArr = [];
-		var idx = 0;
-		htmlArr[idx++] = "<iframe id='iframe_" + upsellView.getHTMLElId() + "' width='100%' height='100%' frameborder='0' src='";
-		htmlArr[idx++] = upsellUrl;
-		htmlArr[idx++] = "'>";
-		el.innerHTML = htmlArr.join("");
-		var elements = {};
+		var isSocial = (appName === ZmApp.SOCIAL);  // assume Social is Zimbra Community for now
+		var upsellView = this._upsellView[appName] = new ZmUpsellView({
+			parent:     this._shell,
+			posStyle:   Dwt.ABSOLUTE_STYLE,
+			className:  'ZmUpsellView',
+			appName:    appName,
+			iframeId:   isSocial ? 'fragment-41812_iframe' : null
+			// for Zimbra Community, may need to add client_id and url IFRAME attrs for OAuth
+		});
+
+		var elements = {}, callbacks = {};
 		elements[ZmAppViewMgr.C_APP_CONTENT] = upsellView;
-		var callbacks = {};
 		callbacks[ZmAppViewMgr.CB_POST_SHOW] = this._displayUpsellView.bind(this);
+
 		var hide = [ ZmAppViewMgr.C_TREE, ZmAppViewMgr.C_TREE_FOOTER, ZmAppViewMgr.C_TOOLBAR_TOP,
-					 ZmAppViewMgr.C_NEW_BUTTON, ZmAppViewMgr.C_SASH ];
+			ZmAppViewMgr.C_NEW_BUTTON, ZmAppViewMgr.C_SASH ];
+
 		this._appViewMgr.createView({	viewId:			viewName,
 										appName:		appName,
 										controller:		this,

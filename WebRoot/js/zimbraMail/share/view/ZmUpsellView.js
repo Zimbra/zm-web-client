@@ -20,12 +20,28 @@
  */
 ZmUpsellView = function(params) {
 	DwtControl.call(this, params);
+	this._createView(params);
 }
 ZmUpsellView.prototype = new DwtControl;
 ZmUpsellView.prototype.constructor = ZmUpsellView;
 
-ZmUpsellView.prototype.toString = function() {
-	return "ZmUpsellView";
+ZmUpsellView.prototype.isZmUpsellView = true;
+ZmUpsellView.prototype.toString = function() { return "ZmUpsellView"; };
+
+ZmUpsellView.prototype._createView = function(params) {
+
+	params = params || {};
+
+	var upsellUrl = appCtxt.get(ZmApp.UPSELL_URL[params.appName]),
+		el = this.getHtmlElement(),
+		htmlArr = [],
+		idx = 0,
+		iframeId = params.iframeId || 'iframe_' + this.getHTMLElId();
+
+	htmlArr[idx++] = "<iframe id='" + iframeId + "' width='100%' height='100%' frameborder='0' src='";
+	htmlArr[idx++] = upsellUrl;
+	htmlArr[idx++] = "'>";
+	el.innerHTML = htmlArr.join("");
 };
 
 ZmUpsellView.prototype.setBounds =
