@@ -36,7 +36,7 @@ ZmSocialApp.prototype.toString = function() {	return "ZmSocialApp"; };
 
 ZmSocialApp.prototype._registerApp = function() {
 	ZmApp.registerApp(ZmApp.SOCIAL, {
-		nameKey:            "social",
+		nameKey:            "socialTabTitle",
 		icon:               "Globe",
 		chooserTooltipKey:  "goToSocial",
 		chooserSort:        50,
