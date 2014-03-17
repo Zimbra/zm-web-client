@@ -80,15 +80,20 @@ function(ev) {
 		for (var i = 0; i < items.length; i++) {
 			var item = items[i];
 			if (this._list && this._list.contains(item)) { continue; }			// skip if we already have it
-			indices = this._sortIndex(this._list, item);
-			if (indices) {
-				this.addItem(item, indices.displayIndex, false, indices.listIndex);
-				this.scrollToItem(item);
-				if(this.getSelection().length > 0){
-					this.selectItem(item, true);
-				}else{
-					this.setSelection(item);
+			if (this._list) {
+				indices = this._sortIndex(this._list, item);
+				if (indices) {
+					this.addItem(item, indices.displayIndex, false, indices.listIndex);
+					this.scrollToItem(item);
+					if(this.getSelection().length == 0) {
+						// Only select if nothing else is selected
+						this.setSelection(item);
+					}
 				}
+			} else {
+				// Create the list and add the item
+				this.addItem(item, 0, false, 0);
+				this.setSelection(item);
 			}
 		}
 	}
