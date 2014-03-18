@@ -714,6 +714,9 @@ function(ev, aclv) {
 ZmAddressInputField.prototype._keyUpCallback =
 function(ev, aclv) {
 	if (!this._input.value && this._editMode) {
+		if (this._bubbleRemovedCallback) {
+			this._bubbleRemovedCallback.run(this._editModeBubble, false);
+		}
 		this._leaveEditMode();
 	}
 	this._resizeInput();
