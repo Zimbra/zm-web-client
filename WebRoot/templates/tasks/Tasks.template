@@ -33,7 +33,7 @@
 			</td>
 		</tr>
 		<$ } $>
-		<$ if (data.attachStr) { $><$= AjxTemplate.expand("tasks.Tasks#AddEntry", {lbl:ZmMsg.attachments, val:data.attachStr}) $><$ } $>
+		<$ if (data.attachStr) { $><$= AjxTemplate.expand("tasks.Tasks#AddEntry", {lbl:ZmMsg.attachments, val:data.attachStr, id:'__at'}) $><$ } $>
 	</table>
     <div id='${_infoBarId}'></div>
 	</div>
