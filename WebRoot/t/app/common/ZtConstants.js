@@ -627,6 +627,7 @@ ZCS.constant.REGEX_EMAIL                = /(\s+href=["']mailto:)?\b([A-Z0-9\._%+
 ZCS.constant.REGEX_FOLDER_TAG_SEARCH    = /^(in|tag):["']?([^\x00-\x1F\x7F:\"]+)["']?$/;
 ZCS.constant.REGEX_CONTACT_ATTR         = /^([a-z]+)([a-zA-Z]+)(\d*)$/;
 ZCS.constant.REGEX_CONTACT_FIELD        = /^([a-z][a-zA-Z]+)(\d*)$/;
+ZCS.constant.REGEX_DOC_TAG              = /<\/?(html|head|body)>/gi;
 
 ZCS.constant.ORIGINAL_SRC_ATTRIBUTE = 'origSrc';
 

@@ -241,12 +241,11 @@ Ext.define('ZCS.common.mail.ZtQuotedContent', {
 
 	/**
 	 * For HTML, we strip off the html, head, and body tags and stick the rest in a temporary DOM node so that
-	 * we can walk the tree. Instead of going line by line, we go element by element. The easiest way is to figure
-	 * out which nodes we can remove if the message appears to have quoted and original content.
+	 * we can go element by element. If we find one that is recognized as a separator, we remove all subsequent elements.
 	 *
-	 * @param {string}	text		message body content
+	 * @param {String}	text		message body content
 	 *
-	 * @return	{string}	original content if quoted content was found, otherwise NULL
+	 * @return	{String}	original content if quoted content was found, otherwise null
 	 * @private
 	 */
 	getOriginalHtmlContent: function(text) {
@@ -256,236 +255,157 @@ Ext.define('ZCS.common.mail.ZtQuotedContent', {
 			text = text.replace(this.REGEX_SCRIPT, '');
 		}
 
-		var htmlNode = ZCS.htmlutil.getHtmlDom(text);
-		var ctxt = {
-			curType:	null,
-			count:		{},
-			level:		0,
-			toRemove:	[],
-			done:		false,
-			stop:		false,
-			hasQuoted:	false,
-			sepNode:	null,
-			nodeCount:  0,
-			results:	[]
-		};
-		this.traverseOriginalHtmlContent(htmlNode, ctxt);
+		var htmlNode = ZCS.htmlutil.getHtmlDom(text),
+			done = false, nodeList = [];
 
-		// check for special case of WROTE preceded by UNKNOWN, followed by mix of UNKNOWN and QUOTED (inline reply)
-		this.checkInlineWrote(ctxt.count, ctxt.results, true, ctxt);
+		ZCS.htmlutil.flatten(htmlNode, nodeList, ZCS.quoted.IGNORE_NODE);
 
-		// if there's one UNKNOWN section and some QUOTED, preserve the UNKNOWN
-		if (!ctxt.done) {
-			if (ctxt.count[this.UNKNOWN] === 1 && ctxt.hasQuoted) {
-				for (var i = 0; i < ctxt.toRemove.length; i++) {
-					var el = ctxt.toRemove[i];
-					if (el && el.parentNode) {
-						el.parentNode.removeChild(el);
+		var ln = nodeList.length, i, results = [], count = {}, el, prevEl, nodeName, type, prevType, sepNode;
+		for (i = 0; i < ln; i++) {
+			el = nodeList[i];
+			if (el.nodeType === Node.ELEMENT_NODE) {
+				el.normalize();
+			}
+			nodeName = el.nodeName.toLowerCase();
+			type = this.checkNode(nodeList[i]);
+
+			// Check for a multi-element "wrote:" attribution (usually a combo of #text and A nodes), for example:
+			//
+			//     On Feb 28, 2014, at 3:42 PM, Joe Smith &lt;<a href="mailto:jsmith@zimbra.com" target="_blank">jsmith@zimbra.com</a>&gt; wrote:
+
+			// If the current node is a #text with a date, find #text nodes within the next ten nodes, concatenate them, and check the result.
+			if (type === this.UNKNOWN && el.nodeName === '#text' && ZCS.quoted.REGEX_DATE.test(el.nodeValue)) {
+				var str = el.nodeValue,	j, el1;
+				for (j = 1; j < 10; j++) {
+					el1 = nodeList[i + j];
+					if (el1 && el1.nodeName === '#text') {
+						str += el1.nodeValue;
+						if (/:$/.test(str)) {
+							type = this.getLineType(Ext.String.trim(str));
+							if (type === this.WROTE_STRONG) {
+								i = i + j;
+								break;
+							}
+						}
 					}
 				}
-				ctxt.done = true;
+			}
+
+			if (type !== null) {
+				results.push({ type: type, node: el, nodeName: nodeName });
+				count[type] = count[type] ? count[type] + 1 : 1;
+				// definite separator
+				if (type === this.SEP_STRONG || type === this.WROTE_STRONG) {
+					sepNode = el;
+					done = true;
+					break;
+				}
+				// some sort of line followed by a header
+				if (type === this.HEADER && prevType === this.LINE) {
+					sepNode = prevEl;
+					done = true;
+					break;
+				}
+				prevEl = el;
+				prevType = type;
 			}
 		}
 
+		if (sepNode) {
+			ZCS.htmlutil.prune(sepNode, true);
+		}
+
 		// convert back to text, restoring html, head, and body nodes
-		var content = ctxt.done ? '<html>' + htmlNode.innerHTML + '</html>' : text;
+		var content = done ? '<html>' + htmlNode.innerHTML + '</html>' : text;
 		htmlNode.innerHTML = '';
 		return content;
 	},
 
+	/**
+	 * Tries to determine the type of the given node.
+	 *
+	 * @param {Element}     el      a DOM node
+	 * @return {String}     type, or null
+	 * @private
+	 */
+	checkNode: function(el) {
 
-	// Walk the tree, looking for a definitive delimiter and determining content types for nodes. If we find a node
-	// that's a delimiter, we clip it and all subsequent nodes at its level, and we're done.
-	traverseOriginalHtmlContent: function(el, ctxt) {
-
-		if (ctxt.done || !el || ctxt.stop) {
-			return;
+		if (!el) {
+			return null;
 		}
 
-		ctxt.nodeCount++;
-
-		var nodeType = el.nodeType,
-			nodeName = el.nodeName.toLowerCase(),
-			processChildren = true,
-			type, testLine;
-
-        //<debug>
-		Ext.Logger.verbose('html', Ext.String.repeat('&nbsp;&nbsp;&nbsp;&nbsp;', ctxt.level) + nodeName + ((nodeName === '#text' && /\S+/.test(el.nodeValue) ? ' - ' + el.nodeValue.substr(0, 20) : '')));
-        //</debug>
+		var nodeName = el.nodeName.toLowerCase(),
+			type = null;
 
 		// Text node: test against our regexes
-		if (nodeType === Node.TEXT_NODE) {
-			if (!ZCS.constant.REGEX_NON_WHITESPACE.test(el.nodeValue)) {
-				return;
-			}
-			testLine = Ext.String.trim(el.nodeValue);
-			type = this.getLineType(testLine);
-			if (type === this.SEP_STRONG || type === this.WROTE_STRONG) {
-				ctxt.sepNode = el;	// mark for removal
-			}
-			else if (type !== this.WROTE_STRONG) {
-				// Check for colon in case we have a "wrote:" line or a header
-				if (testLine.indexOf(':') !== -1 && el.parentNode) {
-					// what appears as a single "... wrote:" line may have multiple elements, so gather it all
-					// together into one line and test that
-					testLine = Ext.String.trim(Ext.String.htmlDecode(ZCS.htmlutil.stripTags(el.parentNode.innerHTML)));
-					type = this.getLineType(testLine);
-					if (type === this.WROTE_STRONG) {
-						// check for a multinode WROTE; if we find one, gather it into a SPAN so that we
-						// have a single node to deal with later
-						var pn = el.parentNode,
-							nodes = pn.childNodes,
-							startNodeIndex, stopNodeIndex;
-
-						for (var i = pn.childNodes.length - 1; i >= 0; i--) {
-							var childNode = pn.childNodes[i];
-							var text = childNode.nodeValue;
-							if (!text) {
-								continue;
-							}
-							if (text.match(/(\w+):$/)) {
-								stopNodeIndex = i;
-							}
-							else if ((stopNodeIndex !== null) && text.match(this.INTRO_RE)) {
-								startNodeIndex = i;
-								break;
-							}
-						}
-						if (startNodeIndex !== null && stopNodeIndex !== null) {
-							var span = document.createElement('span');
-							for (var i = 0; i < (stopNodeIndex - startNodeIndex) + 1; i++) {
-								span.appendChild(nodes[startNodeIndex]);
-							}
-							pn.insertBefore(span, nodes[startNodeIndex]);
-							ctxt.sepNode = span;
-						}
-					}
-					else if (type === this.HEADER) {
-						if (ctxt.results.length && ctxt.results[ctxt.results.length - 1].type === this.LINE && ctxt.lineNode) {
-							ctxt.sepNode = ctxt.lineNode;
-							ctxt.done = true;
-						}
-					}
-				}
+		if (nodeName === '#text') {
+			var content = Ext.String.trim(el.nodeValue);
+			if (ZCS.constant.REGEX_NON_WHITESPACE.test(content)) {
+				type = this.getLineType(content);
 			}
 		}
-		else if (nodeType === Node.ELEMENT_NODE) {
-			el.normalize();
-
-			// HR: look for a couple different forms that are used to delimit quoted content
-			if (nodeName === 'hr') {
-				// see if the HR is ours, or one commonly used by other mail clients such as Outlook
-				if (el.id === ZCS.quoted.HTML_SEP_ID || (el.size === '2' && el.width === '100%' && el.align === 'center')) {
-					type = this.SEP_STRONG;
-					ctxt.sepNode = el;	// mark for removal
-				}
-
-			// PRE: treat as one big line of text (should maybe go line by line)
-			} else if (nodeName === 'pre') {
-				var text = Ext.String.htmlDecode(ZCS.htmlutil.stripTags(el.innerHTML));
-				type = this.getLineType(text);
-
-			// BR: ignore
-			} else if (nodeName === 'br') {
-				return;
-
-			// DIV: check for Outlook class used as delimiter
-			} else if (nodeName === 'div') {
-				if (el.className === 'OutlookMessageHeader' || el.className === 'gmail_quote') {
-					type = this.SEP_STRONG;
-					ctxt.sepNode = el;	// mark for removal
-				}
-				else if (el.outerHTML.toLowerCase().indexOf('border-top') !== -1) {
-					var styleObj = window.getComputedStyle(el);
-					if (styleObj && styleObj.borderTopWidth && parseInt(styleObj.borderTopWidth) > 0) {
-						type = this.LINE;
-						ctxt.lineNode = el;
-					}
-				}
-
-			// SPAN: check for Outlook ID used as delimiter
-			} else if (nodeName === 'span') {
-				if (el.id === 'OLK_SRC_BODY_SECTION') {
-					type = this.SEP_STRONG;
-					ctxt.sepNode = el;	// mark for removal
-				}
-
-			// IMG: treat as original content
-			} else if (nodeName === 'img') {
-				type = this.UNKNOWN;
-
-			// BLOCKQUOTE: treat as quoted section
-			} else if (nodeName === 'blockquote') {
-				type = this.QUOTED;
-				ctxt.toRemove.push(el);
-				ctxt.hasQuoted = true;
-				processChildren = false;
-
-			} else if (nodeName === 'script') {
-				throw new Error('SCRIPT tag found in this.traverseOriginalHtmlContent');
-
-				// node types to ignore
-			} else if (this.IGNORE_NODE[nodeName]) {
-				return;
-			}
-		}
-
-		// see if we've found a new type
-		if (type) {
-			if (ctxt.curType) {
-				if (ctxt.curType !== type) {
-					ctxt.count[ctxt.curType] = ctxt.count[ctxt.curType] ? ctxt.count[ctxt.curType] + 1 : 1;
-					ctxt.results.push({type:ctxt.curType});
-					ctxt.curType = type;
-					ctxt.curBlock = [];
-				}
+		// HR: look for a couple different forms that are used to delimit quoted content
+		else if (nodeName === 'hr') {
+			// see if the HR is ours, or one commonly used by other mail clients such as Outlook
+			if (el.id === ZCS.quoted.HTML_SEP_ID || (el.size === '2' && el.width === '100%' && el.align === 'center')) {
+				type = this.SEP_STRONG;
 			}
 			else {
-				ctxt.curType = type;
+				type = this.LINE;
 			}
 		}
-
-		// if we find an UNKNOWN block after quoted content we may have inline comments, so stop
-		if (ctxt.hasQuoted && type === this.UNKNOWN && ctxt.count[this.WROTE_STRONG] === 1) {
-			ctxt.stop = true;
-			ctxt.sepNode = null;
-			return;
+		// PRE: treat as one big line of text (should maybe go line by line)
+		else if (nodeName === 'pre') {
+			type = this.checkNodeContent(el);
 		}
-
-		// if we found a recognized delimiter, set flag to clip it and subsequent nodes at its level
-		if (type === this.SEP_STRONG) {
-			ctxt.done = true;
-		}
-
-		if (!processChildren) {
-			return;	// don't visit node's children
-		}
-
-		ctxt.level++;
-
-		// any element that gets here will get recursed into
-		for (var i = 0, len = el.childNodes.length; i < len; i++) {
-			var childNode = el.childNodes[i];
-			if (ctxt.nodeCount > ZCS.quoted.MAX_NODES) {
-				ctxt.sepNode = null;
-				return;
+		// DIV: check for Outlook class used as delimiter, or a top border used as a separator, and finally just
+		// check the text content
+		else if (nodeName === 'div') {
+			if (el.className === 'OutlookMessageHeader' || el.className === 'gmail_quote') {
+				type = this.SEP_STRONG;
 			}
-			this.traverseOriginalHtmlContent(childNode, ctxt);
-			// see if we ran into a delimiter
-			if (ctxt.done) {
-				// clip all subsequent nodes
-				while (el && el.lastChild && el.lastChild !== childNode) {
-					el.removeChild(el.lastChild);
+			else if (el.style.borderTop) {
+				var styleObj = window.getComputedStyle(el);
+				if (styleObj && styleObj.borderTopWidth && parseInt(styleObj.borderTopWidth) === 1 && styleObj.borderTopColor) {
+					type = this.SEP_STRONG;
 				}
-				// clip the delimiter node
-				if (el && el.lastChild === ctxt.sepNode) {
-					el.removeChild(el.lastChild);
-				}
-				break;
 			}
+			type = type || this.checkNodeContent(el);
+		}
+		// SPAN: check for Outlook ID used as delimiter, then check text content
+		else if (nodeName === 'span') {
+			if (el.id === 'OLK_SRC_BODY_SECTION') {
+				type = this.SEP_STRONG;
+			}
+			type = type || this.checkNodeContent(el);
+		}
+		// IMG: treat as original content
+		else if (nodeName === 'img') {
+			type = this.UNKNOWN;
+		}
+		// BLOCKQUOTE: treat as quoted section
+		else if (nodeName === 'blockquote') {
+			type = this.QUOTED;
 		}
 
-		ctxt.level--;
+		return type;
+	},
+
+	/**
+	 * Checks innerText to see if it's a separator.
+	 * @param {Element} node
+	 * @return {String}
+	 * @private
+	 */
+	checkNodeContent: function(el) {
+
+		var content = el.innerText || '';
+		if (!ZCS.constant.REGEX_NON_WHITESPACE.test(content) || content.length > 200) {
+			return null;
+		}
+		// We're really only interested in SEP_STRONG and WROTE_STRONG
+		var type = this.getLineType(content);
+		return (type === this.SEP_STRONG || type === this.WROTE_STRONG) ? type : null;
 	},
 
 	/**
@@ -603,7 +523,7 @@ ZCS.quoted.REGEXES = [
 ];
 
 ZCS.quoted.REGEX_EMAIL    = /[^@\s]+@[A-Za-z0-9\-]{2,}(\.[A-Za-z0-9\-]{2,})+/;
-ZCS.quoted.REGEX_DATE     = /, 20\d\d/;
+ZCS.quoted.REGEX_DATE     = /(\/|, )20\d\d/;                                    // matches "03/07/2014" or "March 3, 2014" by looking for year 20xx
 ZCS.quoted.REGEX_INTRO    = new RegExp('^(-{2,}|' + ZtMsg.on + ')', 'i');
 
 ZCS.quoted.REGEX_SCRIPT = /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi;

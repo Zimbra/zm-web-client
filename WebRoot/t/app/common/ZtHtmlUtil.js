@@ -229,26 +229,15 @@ Ext.define('ZCS.common.ZtHtmlUtil', {
 		}
 
 		// remove doc-level tags if they don't have attributes
-		Ext.each(['html', 'head', 'body'], function(node) {
-			var nodeLc = '<' + node + '>',
-				nodeUc = '<' + node.toUpperCase() + '>',
-				regex;
-			if (trimmedHtml.indexOf(nodeLc) !== -1 || trimmedHtml.indexOf(nodeUc) !== -1) {
-				regex = new RegExp('<\\/?' + node + '>', 'gi');
-				trimmedHtml = trimmedHtml.replace(regex, '');
-			}
-		});
+		trimmedHtml = trimmedHtml.replace(ZCS.constant.REGEX_DOC_TAG, '');
 
 		// some editors like to put every <br> in a <div>
 		trimmedHtml = trimmedHtml.replace(/<div><br ?\/?><\/div>/gi, '<br>');
 
 		// remove leading/trailing <br>
 		var len = 0;
-		while ((trimmedHtml.length !== len) &&
-			(/^<br ?\/?>/i.test(trimmedHtml) || /<br ?\/?>$/i.test(trimmedHtml))) {
-
+		while (trimmedHtml.length !== len && (/^<br ?\/?>/i.test(trimmedHtml) || /<br ?\/?>$/i.test(trimmedHtml))) {
 			len = trimmedHtml.length;	// loop prevention
-			trimmedHtml = trimmedHtml.replace(/^<div>/i, "").replace(/<\/div>$/i, '');
 			trimmedHtml = trimmedHtml.replace(/^<br ?\/?>/i, "").replace(/<br ?\/?>$/i, '');
 		}
 
@@ -613,6 +602,53 @@ Ext.define('ZCS.common.ZtHtmlUtil', {
 		var ln = node.childNodes ? node.childNodes.length : 0, i;
 		for (i = 0; i < node.childNodes.length; i++){
 			this.findObjectsProcessNode(node.childNodes[i]);
+		}
+	},
+
+	/**
+	 * Traverse the given node depth-first to produce a list of descendant nodes. Some nodes are
+	 * ignored.
+	 *
+	 * @param {Element}     node        node
+	 * @param {Array}       list        result list which grows in place
+	 * @param {Object}      ignore      lookup hash of node names to ignore
+	 */
+	flatten: function(node, list, ignore) {
+
+		list.push(node);
+
+		var children = node.childNodes || [];
+		for (var i = 0; i < children.length; i++) {
+			var el = children[i],
+				nodeName = el.nodeName.toLowerCase();
+			if (nodeName !== 'blockquote' && (!ignore || !ignore[nodeName])) {
+				this.flatten(el, list, ignore);
+			}
+		}
+	},
+
+	/**
+	 * Removes all subsequent siblings of the given node, and then does the same for its parent.
+	 * The effect is that all nodes that come after the given node in a depth-first traversal of
+	 * the DOM will be removed.
+	 *
+	 * @param {Element}     node
+	 * @param {Boolean}     clipNode    if true, also remove the node
+	 */
+	prune: function(node, clipNode) {
+
+		var p = node && node.parentNode;
+		// clip all subsequent nodes
+		while (p && p.lastChild && p.lastChild !== node) {
+			p.removeChild(p.lastChild);
+		}
+		// clip the node if asked
+		if (clipNode && p && p.lastChild === node) {
+			p.removeChild(p.lastChild);
+		}
+		var nodeName = p && p.nodeName.toLowerCase();
+		if (p && nodeName !== 'body' && nodeName !== 'html') {
+			this.prune(p, false);
 		}
 	}
 });
