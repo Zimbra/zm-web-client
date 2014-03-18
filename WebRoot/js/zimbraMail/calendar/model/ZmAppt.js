@@ -277,14 +277,18 @@ function(controller, callback) {
 		var ptstStatus = {};
 		var statusAttendees;
 		var hideAttendees = true;
-		statusAttendees = ptstStatus[ZmMsg.ptstAccept] = this.getAttendeeToolTipString(this.ptstHashMap[ZmCalBaseItem.PSTATUS_ACCEPT]);
-		hideAttendees = hideAttendees && !statusAttendees;
-		statusAttendees = ptstStatus[ZmMsg.ptstDeclined] = this.getAttendeeToolTipString(this.ptstHashMap[ZmCalBaseItem.PSTATUS_DECLINED]);
-		hideAttendees = hideAttendees && !statusAttendees;
-		statusAttendees = ptstStatus[ZmMsg.ptstTentative] = this.getAttendeeToolTipString(this.ptstHashMap[ZmCalBaseItem.PSTATUS_TENTATIVE]);
-		hideAttendees = hideAttendees && !statusAttendees;
-		statusAttendees = ptstStatus[ZmMsg.ptstNeedsAction] = this.getAttendeeToolTipString(this.ptstHashMap[ZmCalBaseItem.PSTATUS_NEEDS_ACTION]);
-		hideAttendees = hideAttendees && !statusAttendees;
+
+		statusAttendees = ptstStatus[ZmMsg.ptstAccept] = this._getPtstStatus(ZmCalBaseItem.PSTATUS_ACCEPT);
+		hideAttendees = hideAttendees && !statusAttendees.count;
+
+		statusAttendees = ptstStatus[ZmMsg.ptstDeclined] = this._getPtstStatus(ZmCalBaseItem.PSTATUS_DECLINED);
+		hideAttendees = hideAttendees && !statusAttendees.count;
+
+		statusAttendees = ptstStatus[ZmMsg.ptstTentative] = this._getPtstStatus(ZmCalBaseItem.PSTATUS_TENTATIVE);
+		hideAttendees = hideAttendees && !statusAttendees.count;
+
+		statusAttendees = ptstStatus[ZmMsg.ptstNeedsAction] = this._getPtstStatus(ZmCalBaseItem.PSTATUS_NEEDS_ACTION);
+		hideAttendees = hideAttendees && !statusAttendees.count;
 		params.hideAttendees = hideAttendees;
 		params.ptstStatus = ptstStatus;
 
@@ -305,6 +309,16 @@ function(controller, callback) {
 	} else {
 		return toolTip;
 	}
+};
+
+ZmAppt.prototype._getPtstStatus =
+function(ptstHashKey) {
+	var ptstString = this.ptstHashMap[ptstHashKey];
+
+	return {
+		count: ptstString ? ptstString.length : 0,
+		attendees: this.getAttendeeToolTipString(ptstString)
+	};
 };
 
 ZmAppt.prototype.getAttendeeToolTipString =
