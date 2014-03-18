@@ -1082,10 +1082,6 @@ function() {
 ZmAutocompleteListView.prototype._set =
 function(list, context) {
 
-	if (this.getVisible()) {
-		return;
-	}
-
 	this._removeAll();
 	var table = this._getTable();
 	this._matches = list;
@@ -1296,10 +1292,6 @@ function (availHeight){
  */
 ZmAutocompleteListView.prototype._setSelected =
 function(id) {
-
-	if (id == this._selected) {
-		return;
-	}
 
 	DBG.println("ac", "setting selected id to " + id);
 	var table = document.getElementById(this._tableId);
