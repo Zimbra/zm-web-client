@@ -32,8 +32,12 @@ Ext.define('ZCS.model.ZtReader', {
 	 */
 	getResponseData: function(response) {
 
-		var data = this.callParent(arguments),
-			request = response.request,
+		var data = this.callParent(arguments);
+		if (!data) {
+			return;
+		}
+
+		var	request = response.request,
 			// see if we have a Request, or if we need to go digging in the Operation for it
 			requestObj = Ext.getClassName(response.request) ? request : request && request.options &&
 							request.options.operation && request.options.operation.getRequest(),
