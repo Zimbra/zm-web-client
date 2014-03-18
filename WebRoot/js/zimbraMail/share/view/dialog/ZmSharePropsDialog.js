@@ -235,7 +235,7 @@ function() {
 		text = text.substr(0, index) + "..." + text.substr(index + length);
 	}
 
-    var webcalURL = "webcal:" + url.substring((url.indexOf("//")));
+    var webcalURL = "webcals:" + url.substring((url.indexOf("//")));
     var webcalText = webcalURL;
     if (webcalText.length > 50) {
 		var length = webcalText.length - 50;
@@ -486,7 +486,7 @@ function(shares, result) {
                     }
 
                     //bug:34647 added webcal url for subscribing to outlook/ical on a click
-                    var webcalURL = "webcal:" + url.substring((url.indexOf("//")));
+                    var webcalURL = "webcals:" + url.substring((url.indexOf("//")));
 
                     //var password = this._passwordInput.getValue();
                     guestnotes = this._guestFormatter.format([url, webcalURL, email, "", notes]);
