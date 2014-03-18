@@ -4194,50 +4194,10 @@ function(actionCode) {
             }
 			break;
 
-		case ZmKeyMap.COPY:
-			this.clipboardCopy();
-			break;
-
-		case ZmKeyMap.PASTE:
-			this.clipboardPaste();
-			break;
-
 		default:
 			return ZmListController.prototype.handleKeyAction.call(this, actionCode);
 	}
 	return true;
-};
-
-ZmCalViewController.prototype.clipboardCopy =
-function() {
-	var items = this.getSelection();
-
-	if(items && items.length) {
-		this._clipBoardAppts = items;
-		appCtxt.setStatusMsg(ZmMsg.apptCopied);
-	}
-};
-
-ZmCalViewController.prototype.clipboardPaste =
-function() {
-	if(!this._clipBoardAppts) return;
-
-	var appt = this._clipBoardAppts[0];
-	var params = {};
-
-	if(appt && this._viewMgr && this._viewMgr.getDate()) {
-		var sd = this._viewMgr.getDate();
-		var dur = appt.getDuration();
-		params.startDate = sd;
-		params.endDate = new Date(sd.getTime() + dur);
-	}
-
-	if(appt) {
-		appCtxt.setStatusMsg({msg: ZmMsg.apptCreatingFromCopy, force: true});
-		this.duplicateAppt(appt, params);
-	}   
-
-	delete this._clipBoardAppts;
 };
 
 ZmCalViewController.prototype._getDefaultFocusItem =
