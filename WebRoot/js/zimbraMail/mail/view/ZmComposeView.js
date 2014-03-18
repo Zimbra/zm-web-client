@@ -1610,14 +1610,6 @@ function(incAddrs, incSubject) {
 	return (curFormValue !== this._origFormValue) || htmlEditorDirty;
 };
 
-ZmComposeView.prototype._setDNDTipVisible = function(show) {
-	// never show it unless the browser actually supports the required APIs
-	if (!AjxEnv.supportsHTML5File)
-		show = false;
-
-	Dwt.setVisible(ZmId.getViewId(this._view, ZmId.CMP_DND_TOOLTIP), show);
-};
-
 ZmComposeView.prototype._removeAttachedFile  =
 function(spanId, attachmentPart) {
 
@@ -1640,11 +1632,7 @@ function(spanId, attachmentPart) {
 	}
 
 	if (!parent.childNodes.length) {
-		this._attcDiv.innerHTML = "";
-		this._setDNDTipVisible(true);
-	}
-	else {
-		this._setDNDTipVisible(false);
+		this.cleanupAttachments(true);
 	}
 };
 
@@ -1675,7 +1663,11 @@ function(all) {
 	}
 
 	if (all) {
-		this._attcDiv.innerHTML = "";
+		var hint = AjxEnv.supportsHTML5File && !this._disableAttachments ?
+			ZmMsg.dndTooltip : "&nbsp;";
+
+		this._attcDiv.innerHTML =
+			AjxTemplate.expand('mail.Message#NoAttachments', { hint: hint });
 		this._attcDiv.style.height = "";
 		this._attachCount = 0;
 	}
@@ -2917,7 +2909,6 @@ function(templateId) {
 		attRowId:			ZmId.getViewId(this._view, ZmId.CMP_ATT_ROW),
 		attDivId:			ZmId.getViewId(this._view, ZmId.CMP_ATT_DIV),
 		attBtnId:			ZmId.getViewId(this._view, ZmId.CMP_ATT_BTN),
-		zdndToolTipId:		ZmId.getViewId(this._view, ZmId.CMP_DND_TOOLTIP)
 	};
 
 	this._createHtmlFromTemplate(templateId || this.TEMPLATE, data);
@@ -3116,13 +3107,11 @@ function() {
 	this._attButton.setEnabled(false);
 	this.enableToolbarButtons(this._controller, false);
 	this._controller._uploadingProgress = true;
-	this._setDNDTipVisible(false);
 };
 
 ZmComposeView.prototype.checkAttachments =
 function() {
 	if (!this._attachCount) { return; }
-	this._setDNDTipVisible(false);
 };
 
 ZmComposeView.prototype.updateAttachFileNode =
@@ -3171,7 +3160,6 @@ function(option) {
 	}
 
 	this._disableAttachments = !(option);
-	this._setDNDTipVisible(option);
 };
 
 
@@ -3540,7 +3528,7 @@ function(msg, action, incOptions, includeInlineImages, includeInlineAtts) {
 					this._originalAttachments[att.label][att.sizeInBytes] = true;
 				}
 			}
-			attIncludeOrigLinkId = ZmId.getViewId(this._view, ZmId.CMP_ATT_INCL_ORIG_LINK);
+			attIncludeOrigLinkId = Dwt.getNextId(ZmId.getViewId(this._view, ZmId.CMP_ATT_INCL_ORIG_LINK));
 
 
 			if (action === ZmComposeView.ADD_ORIG_MSG_ATTS) {
@@ -3588,7 +3576,12 @@ function(msg, action, incOptions, includeInlineImages, includeInlineAtts) {
 
 	this._originalAttachmentsInitialized  = true; //ok, done setting it for the first time.
 
-	this._attcDiv.innerHTML = html;
+	if (this._attachCount > 0) {
+		this._attcDiv.innerHTML = html;
+	} else if (!this._loadingSpan) {
+		this.cleanupAttachments(true);
+	}
+
 	// include original attachments
 	if (attIncludeOrigLinkId) {
 		this._attIncludeOrigLinkEl = document.getElementById(attIncludeOrigLinkId);

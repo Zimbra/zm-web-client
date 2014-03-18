@@ -480,9 +480,6 @@
 				</table>
 			</td>
 			<td>
-				<div id='${zdndToolTipId}' class='zdnd_tooltip'>
-					<$=ZmMsg.dndTooltip$>
-				</div>
 				<div id='${attDivId}'></div>
 			</td>
 			<td width='1%'></td>
@@ -515,8 +512,8 @@
 		<$ var id = Dwt.getNextId(data.rowId) $>
 		<tr '<$= id $>' style="display:table-row;">
 			<td width="96%" colspan="2">
-				<div class="attBubbleContainer" style="position:static; overflow:visible;">
-					<div class="attBubbleHolder" style="display:inline-block; border-radius:4px;">
+				<div class="attBubbleContainer">
+					<div class="attBubbleHolder">
 
 					<$ for (var i = 0; i < data.messages.length; i++) { $>
 					<$ var message = data.messages[i]; $>
@@ -542,8 +539,8 @@
 		<$ var message = data.message; $>
 		<tr id='<$= id $>' style="display:table-row;">
 			<td width="96%" colspan="2">
-				<div class="attBubbleContainer" style="position:static; overflow:visible;">
-					<div class="attBubbleHolder" style="display:inline-block; border-radius:4px;">
+				<div class="attBubbleContainer">
+					<div class="attBubbleHolder">
 						<$ var spanId = Dwt.getNextId(data.rowId)$>
 						<span id='<$= spanId $>' value='<$= message.id $>' class="AttachmentLoading attachmentBubble AttachmentSpan">
 							<a style="color:#336699; cursor:pointer; text-decoration:none;" > <$= (message ? AjxStringUtil.htmlEncode(message.subject) : null) || AjxStringUtil.htmlEncode(ZmMsg.noSubject) $></a>
@@ -562,8 +559,8 @@
 		<$ var id = Dwt.getNextId(data.rowId) $>
 		<tr '<$= id $>' style="display:table-row;">
 			<td width="96%" colspan="2">
-				<div class="attBubbleContainer" style="position:static; overflow:visible;">
-				<div class="attBubbleHolder" style="display:inline-block; border-radius:4px;">
+				<div class="attBubbleContainer">
+				<div class="attBubbleHolder">
 					<span class="AttachmentLoading attachmentBubble AttachmentSpan" name="mailAttUploadingSpan">
 						<span class="AttProgressSpan1">${fileName}</span>
 						<span class="AttProgressSpan2">${fileName}</span>
@@ -576,13 +573,27 @@
 	</table>
 </template>
 
+<template id='mail.Message#NoAttachments'>
+	<table role="presentation" width=100%>
+		<tr>
+			<td width="96%" colspan="2">
+				<div class="attBubbleContainer">
+					<div class="attBubbleHolder attPlaceholderHint">
+						${hint}
+					</div>
+				</div>
+			</td>
+		</tr>
+	</table>
+</template>
+
 <template id='mail.Message#ForwardAttachments'>
 	<table role="presentation" width=100%>
 		<$ var id = Dwt.getNextId(data.rowId) $>
 		<tr '<$= id $>' style="display:table-row;">
 			<td width="96%" colspan="2">
-				<div class="attBubbleContainer" style="position:static; overflow:visible;">
-				<div class="attBubbleHolder" style="display:inline-block; border-radius:4px;">
+				<div class="attBubbleContainer">
+				<div class="attBubbleHolder">
 
 				<$ for (var i = 0; i < data.attachments.length; i++) { $>
 					<$ var attachment = data.attachments[i]; $>
