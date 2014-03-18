@@ -51,7 +51,6 @@ Ext.define('ZCS.controller.calendar.ZtCalendarController', {
             itemPanel: 'appview #' + ZCS.constant.APP_CALENDAR + 'itempanel',
             calendarView: ZCS.constant.APP_CALENDAR + 'itemview',
             calMonthView: 'appview #' + ZCS.constant.APP_CALENDAR + 'itempanel #calMonthView',
-            calWeekView: 'appview #' + ZCS.constant.APP_CALENDAR + 'itempanel #calWeekView',
             calDayView: 'appview #' + ZCS.constant.APP_CALENDAR + 'itempanel #calDayView',
             itemPanelTitleBar: 'appview #' + ZCS.constant.APP_CALENDAR + 'itempanel titlebar',
             calToolbar: 'appview #' + ZCS.constant.APP_CALENDAR + 'itempanel caltoolbar',
@@ -72,6 +71,9 @@ Ext.define('ZCS.controller.calendar.ZtCalendarController', {
                 eventtap: 'onEventTap',
                 selectionchange: 'onTimeSlotChange'
 			},
+            calMonthView: {
+                periodchange: 'onPeriodChange'
+            },
 			appointmentPanel: {
 				cancel:             'doCancel',
 				contactTap:         'showMenu'
@@ -104,7 +106,7 @@ Ext.define('ZCS.controller.calendar.ZtCalendarController', {
 
         this.callParent();
 
-        //Create a toolbar with calendar view buttons - Month, Week, Day, Workweek and Today
+        //Create a toolbar with calendar view buttons - Month, Day and Today
         this.createToolbar();
     },
 
@@ -138,17 +140,13 @@ Ext.define('ZCS.controller.calendar.ZtCalendarController', {
      */
     refreshCurrentView: function() {
         var monthView = this.getCalMonthView(),
-            dayView = this.getCalDayView(),
-            weekView = this.getCalWeekView();
+            dayView = this.getCalDayView();
 
         if (!monthView.isHidden()) {
             monthView.view.refreshDelta(0);
         }
         else if (!dayView.isHidden()) {
             dayView.view.refreshDelta(0);
-        }
-        else if (!weekView.isHidden()) {
-            weekView.view.refreshDelta(0);
         }
     },
 
@@ -318,9 +316,28 @@ Ext.define('ZCS.controller.calendar.ZtCalendarController', {
         ).getTime();
     },
 
+    /**
+     * Handler for the calendar's periodchange event.
+     *
+     * @param {Ext.ux.TouchCalendarView} view The underlying Ext.ux.TouchCalendarView instance
+     * @param {Date} minDate The min date of the new period
+     * @param {Date} maxDate The max date of the new period
+     * @param {String} direction The direction the period change moved.
+     */
+    onPeriodChange: function(view, minDate, maxDate, direction) {
+        this.getStore().load({
+            calStart: minDate.getTime(),
+            calEnd: maxDate.getTime(),
+            callback: function(records, operation, success) {
+                if (success) {
+                    view.refresh();
+                }
+            }
+        });
+    },
+
     toggleCalView: function(viewToShow, date) {
         var monthView = this.getCalMonthView(),
-            weekView = this.getCalWeekView(),
             dayView = this.getCalDayView();
 
         if (!date) {
@@ -328,17 +345,6 @@ Ext.define('ZCS.controller.calendar.ZtCalendarController', {
                 case 'month':
                     monthView.show();
                     this.getCalToolbar().down('#monthBtn').setCls('x-button-pressed');
-                    weekView.hide();
-                    this.getCalToolbar().down('#weekBtn').removeCls('x-button-pressed');
-                    dayView.hide();
-                    this.getCalToolbar().down('#dayBtn').removeCls('x-button-pressed');
-                    break;
-
-                case 'week':
-                    weekView.show();
-                    this.getCalToolbar().down('#weekBtn').setCls('x-button-pressed');
-                    monthView.hide();
-                    this.getCalToolbar().down('#monthBtn').removeCls('x-button-pressed');
                     dayView.hide();
                     this.getCalToolbar().down('#dayBtn').removeCls('x-button-pressed');
                     break;
@@ -348,8 +354,6 @@ Ext.define('ZCS.controller.calendar.ZtCalendarController', {
                     this.getCalToolbar().down('#dayBtn').setCls('x-button-pressed');
                     monthView.hide();
                     this.getCalToolbar().down('#monthBtn').removeCls('x-button-pressed');
-                    weekView.hide();
-                    this.getCalToolbar().down('#weekBtn').removeCls('x-button-pressed');
                     break;
             }
         }
@@ -358,8 +362,6 @@ Ext.define('ZCS.controller.calendar.ZtCalendarController', {
             this.getCalToolbar().down('#dayBtn').setCls('x-button-pressed');
             monthView.hide();
             this.getCalToolbar().down('#monthBtn').removeCls('x-button-pressed');
-            weekView.hide();
-            this.getCalToolbar().down('#weekBtn').removeCls('x-button-pressed');
             this.setDayViewConfig(date);
         }
     },

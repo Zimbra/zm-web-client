@@ -79,20 +79,6 @@ Ext.define('ZCS.view.calendar.ZtCalendarToolbar', {
                     },
                     {
                         xtype: 'button',
-                        text: ZtMsg.calWorkWeekLabel,
-                        disabled: true
-                    },
-                    {
-                        xtype: 'button',
-                        itemId: 'weekBtn',
-                        text: ZtMsg.calWeekLabel,
-                        disabled: true,
-                        handler: function() {
-                            ZCS.app.getCalendarController().toggleCalView('week');
-                        }
-                    },
-                    {
-                        xtype: 'button',
                         itemId: 'monthBtn',
                         cls: 'x-button-pressed',
                         text: ZtMsg.calMonthLabel,
