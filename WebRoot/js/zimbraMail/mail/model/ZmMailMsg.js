@@ -1230,13 +1230,28 @@ function(edited, componentId, callback, errorCallback, instanceDate, accountName
 
 	var inv = this._origMsg.invite;
 	//update the ptst to new one (we currently don't use the rest of the info in "replies" so it's ok to remove it for now)
-	//note - this updated value is used later in _handleResponseSendInviteReply, and also in the list view when re-displaying the message (not reloaded from server)
+	//note - this updated value is used later in _handleResponseSendInviteReply, and also in the list view when
+	// re-displaying the message (not reloaded from server)
 	if (newPtst) {
 		inv.replies = [{
 			reply: [{
 				ptst: newPtst
 			}]
 		}];
+		if (appCtxt.isWebClientOffline()) {
+			// Update the offline entry and appt too.  Depending upon whether this is invoked from mail or appointments,
+			// msgId will either be a single id, or the composite msg-appt id
+			var msgId = inv.getMessageId();
+			var invId = msgId;
+			if (msgId.indexOf("-") >= 0) {
+				// Composite id
+				msgId = msgId.split("-")[1];
+			} else {
+				invId = [inv.getAppointmentId(), msgId].join("-");
+			}
+			var inviteUpdateCallback = this.applyPtstOffline.bind(this, msgId, newPtst);
+			appCtxt.updateOfflineAppt(invId, "ptst", newPtst, null, inviteUpdateCallback);
+		}
 	}
 	if (this.getAddress(AjxEmailAddress.TO) == null && !inv.isOrganizer()) {
 		var to = inv.getOrganizerEmail() || inv.getSentBy();
@@ -1280,6 +1295,39 @@ function(edited, componentId, callback, errorCallback, instanceDate, accountName
     if(ignoreNotify) needsRsvp = false;
 	this._sendInviteReplyContinue(jsonObj, needsRsvp ? "TRUE" : "FALSE", edited, callback, errorCallback, instanceDate, accountName, toastMessage);
 };
+
+ZmMailMsg.prototype.applyPtstOffline = function(msgId, newPtst) {
+	var applyPtstOfflineCallback = this._applyPtstOffline.bind(this, newPtst);
+	ZmOfflineDB.getItem(msgId, ZmApp.MAIL, applyPtstOfflineCallback);
+};
+ZmMailMsg.prototype._applyPtstOffline = function(newPtst, result) {
+	if (result && result[0] && result[0].inv && result[0].inv[0]) {
+		var inv = result[0].inv[0];
+		if (!inv.replies) {
+			// See _sendInviteReply - patch the invite status
+			inv.replies = [{
+				reply: [{
+					ptst: newPtst
+				}]
+			}];
+		} else {
+			inv.replies[0].reply[0].ptst = newPtst;
+		}
+		// Finally, Alter the offline folder - upon accepting an invite, it moves to the Trash folder
+		result[0].l = ZmFolder.ID_TRASH;
+		ZmOfflineDB.setItem(result, ZmApp.MAIL);
+
+		// With the Ptst of an invite altered offline, move the message to trash locally
+		var originalMsg = this._origMsg;
+		originalMsg.moveLocal(ZmFolder.ID_TRASH);
+		if (originalMsg.list) {
+			originalMsg.list.moveLocal([originalMsg], ZmFolder.ID_TRASH);
+		}
+		var details = {oldFolderId:originalMsg.folderId};
+		originalMsg._notify(ZmEvent.E_MOVE, details);
+
+	}
+}
 
 ZmMailMsg.prototype._sendInviteReplyContinue =
 function(jsonObj, updateOrganizer, edited, callback, errorCallback, instanceDate, accountName, toastMessage) {
@@ -1885,10 +1933,17 @@ function(params) {
 ZmMailMsg.prototype._handleOfflineResponseSendMessageCallback =
 function(params, jsonObj) {
 
+	var m = ZmOffline.generateMsgResponse(jsonObj);
     var data = {},
-        header = this._generateOfflineHeader(params, jsonObj),
+        header = this._generateOfflineHeader(params, jsonObj, m),
         notify = header.context.notify[0],
         result;
+	if (!params.isInvite) {
+		// If existing invite message - do not overwrite it.  The online code does not reload
+		// the invite msg, it just patches it in-memory.  When the cal item ptst is patched in the db, it will
+		// make a call to patch the invite too.
+		ZmOfflineDB.setItem(m, ZmApp.MAIL);
+	}
 
     data[jsonObj.methodName.replace("Request", "Response")] = notify.modified;
     result = new ZmCsfeResult(data, false, header);
@@ -1905,10 +1960,9 @@ function(params, jsonObj) {
 };
 
 ZmMailMsg.prototype._generateOfflineHeader =
-function(params, jsonObj) {
+function(params, jsonObj, m) {
 
-    var m = ZmOffline.generateMsgResponse(jsonObj),
-        folderArray = [],
+    var folderArray = [],
         header = {
             context : {
                 notify : [{
@@ -1944,12 +1998,6 @@ function(params, jsonObj) {
                 n : appCtxt.getById(ZmFolder.ID_DRAFTS).numTotal - 1
             });
         }
-    }
-    if (!params.isInvite) {
-        // If existing invite message - do not overwrite it.  The online code does not reload
-        // the invite msg, it just patches it in-memory.  When the cal item ptst is patched in the db, it will
-        // make a call to patch the invite too.
-        ZmOfflineDB.setItem(m, ZmApp.MAIL);
     }
     return header;
 };
@@ -3008,4 +3056,3 @@ function(req) {
 		}
 	}
 };
-

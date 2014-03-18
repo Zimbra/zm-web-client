@@ -1799,6 +1799,19 @@ function() {
 	return this._calMgr;
 };
 
+ZmAppCtxt.prototype.updateOfflineAppt = function(msgId, field, value, nullData, callback) {
+	var calMgr = appCtxt.getCalManager();
+	if (calMgr) {
+		var calViewController = calMgr && calMgr.getCalViewController();
+		if (calViewController) {
+			var apptCache = calViewController.getApptCache();
+			if (apptCache) {
+				apptCache.updateOfflineAppt(msgId, field, value, nullData, callback);
+			}
+		}
+	}
+}
+
 /**
  * Gets the task manager.
  *

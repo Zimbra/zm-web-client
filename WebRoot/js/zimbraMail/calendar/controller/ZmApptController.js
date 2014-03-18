@@ -316,6 +316,8 @@ function(ev) {
 
     var saveCallback = new AjxCallback(this, this._handleSaveResponse);
     var calViewCtrl = this._app.getCalController();
+	// This will trigger a call to  ZmMailMsg.sendInviteReply, which updates the offline appointment ptst field
+	// and the invite mail msg.
     var respCallback = new AjxCallback(calViewCtrl, calViewCtrl._handleResponseHandleApptRespondAction, [calItem, this.getOpValue(), op, saveCallback]);
 	calItem.getDetails(null, respCallback, this._errorCallback);
 
@@ -349,19 +351,6 @@ function(result, value) {
 
         // Update the version currently in use.  It may get updated again below, but it doesn't matter
         this.getCurrentView().setOrigPtst(value);
-
-        // This is awkward; better maybe to make the ApptCache be a child of CalMgr.  Later
-        // Upate the value in the indexedDB
-        var calMgr = appCtxt.getCalManager();
-        var calViewController = calMgr && calMgr.getCalViewController();
-        var apptCache = calViewController.getApptCache();
-
-        // MAYBE provide a callback (last param to this call) that reads the original email invite msg, and
-        // updates its indexedDB entry too (See ZmMailMsg line 1232, where it updates the in-memory info).  BUT, it
-        // doesn't seem to effect anything (at least with our read-only mode).  Anyway, the
-        // apptCache._updateOfflineAppt3 will call the passed callback, allowing additional read/update
-        // SO if necessary, add updateOfflineInvitePtsd.bind(this, result._data.m[0].id, value)
-        apptCache.updateOfflineAppt(result._data.m[0].id, "ptst", value);
     }
     if (this.isCloseAction()) {
         this._closeView();
