@@ -3,7 +3,7 @@
 		<table role="application" class='MsgHeaderTable' id='${id}_headerElement' width=100%>
 			<tr>
 				<td class='MsgHeaderContactContainer'>
-					<img class='MsgHeaderContactImage' src="${imageURL}" />
+					<img class='MsgHeaderContactImage' src="${imageURL}" onerror="this.style.visibility='hidden'"/>
 				</td>
 				<td>
 					<div>
@@ -146,7 +146,7 @@
 			<tr>
 				<$ if (!data.noTopHeader) { $>
 				<td class='InvHeaderContactContainer'>
-					<img class='InvHeaderContactImage' src="${imageURL}" />
+					<img class='InvHeaderContactImage' src="${imageURL}" onerror="this.style.visibility='hidden'"/>
 				</td>
 				<$ } $>
 				<td>

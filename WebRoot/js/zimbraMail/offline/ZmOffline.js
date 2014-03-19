@@ -195,16 +195,17 @@ function() {
 	staticURLs.push("/img/arrows/ImgSashArrowsUp.png");
 	staticURLs.push("/img/arrows.png");
 	staticURLs.push("/img/calendar/ImgCalendarDayGrid.repeat.gif");
-	staticURLs.push("/img/offline/ImgDisconnect.png");
-	staticURLs.push("/img/animated/ImgOfflineSync.gif");
 	this._cacheStaticResources(staticURLs);
 };
 
 ZmOffline.prototype._cacheStaticResources =
-function(staticURLs) {
+function(staticURLs, cachedURL, response) {
+	if (response && response.success && cachedURL && cachedURL.indexOf("css") !== -1) {
+		localStorage.setItem(cachedURL, response.text);
+	}
 	if (staticURLs && staticURLs.length > 0) {
 		var url = staticURLs.shift() + "?v=" + cacheKillerVersion;
-		var callback = this._cacheStaticResources.bind(this, staticURLs);
+		var callback = this._cacheStaticResources.bind(this, staticURLs, url);
 		AjxRpc.invoke(null, url, null, callback, true);
 	}
 	else {
