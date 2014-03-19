@@ -503,6 +503,7 @@ function(convs, msgs) {
 			AjxDebug.println(AjxDebug.NOTIFY, "ZmMailList: CLV msg matches: " + msgMatches);
 			var isActiveAccount = (!appCtxt.multiAccounts || (appCtxt.multiAccounts && msg.getAccount() == appCtxt.getActiveAccount()));
 			var conv = newConvId[cid] || this.getById(cid);
+			var updateConv = false;
 			if (msgMatches && isActiveAccount) {
 				if (!conv) {
 					// msg will have _convCreateNode if it is 2nd msg and caused promotion of virtual conv;
@@ -512,8 +513,18 @@ function(convs, msgs) {
 						if (msg._convCreateNode._newId) {
 							msg._convCreateNode.id = msg._convCreateNode._newId;
 						}
-						conv = ZmConv.createFromDom(msg._convCreateNode, args);
-					} else {
+						var cachedConv = appCtxt.getById(cid);
+						if (cachedConv) {
+							//add message to the cached conv (so we don't lose the previous (first) message!
+							cachedConv.addMsg(msg);
+							conv = cachedConv;
+							updateConv = true; //we need to update the fragment/date/etc below
+						}
+						else {
+							conv = ZmConv.createFromDom(msg._convCreateNode, args);
+						}
+					}
+					else {
 						conv = appCtxt.getById(cid) || ZmConv.createFromMsg(msg, args);
 					}
 					newConvId[cid] = conv;
@@ -523,7 +534,7 @@ function(convs, msgs) {
 				conv.list = this;
 			}
 			// make sure conv's msg list is up to date
-			if (conv && !(conv.msgs && conv.msgs.getById(id))) {
+			if (conv && (updateConv || !(conv.msgs && conv.msgs.getById(id)))) {
 				if (!conv.msgs) {
 					conv.msgs = new ZmMailList(ZmItem.MSG);
 					conv.msgs.addChangeListener(conv._listChangeListener);
@@ -748,7 +759,8 @@ function(items, sortBy, event, details) {
 			var doAdd = (itemType == this.type);
 			var listSortIndex = 0, viewSortIndex = 0;
 			if (this.type == ZmItem.CONV && itemType == ZmItem.MSG) {
-				var conv = this.getById(item.cid);
+				//Bug 87861 - we still want to add the message to the conv even if the conv is not in this view. So look for it in appCtxt cache too. (case in point - it's in "sent" folder)
+				var conv = this.getById(item.cid) || appCtxt.getById(item.cid);
 				if (conv) {
 					// server always orders msgs within a conv by DATE_DESC, so maintain that
 					listSortIndex = conv.msgs._getSortIndex(item, ZmSearch.DATE_DESC);
