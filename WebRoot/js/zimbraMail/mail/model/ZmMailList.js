@@ -182,9 +182,12 @@ function(params) {
 
 	params1.action = params.markAsSpam ? "spam" : "!spam";
 	params1.attrs = {};
-	var tcon = this._getTcon(params.items);
-	if (tcon) {
-		params1.attrs.tcon = tcon;
+	if (this.type === ZmItem.CONV) {
+		var tcon = this._getTcon(params.items);
+		//the reason not to set "" as tcon is from bug 58727. (though I think it should have been a server fix).
+		if (tcon) {
+			params1.attrs.tcon = tcon;
+		}
 	}
 	if (params.folder) {
 		params1.attrs.l = params.folder.id;
@@ -837,7 +840,8 @@ function(items, nFromFolderId) {
 			tcon.push(ZmFolder.TCON_CODE[specialFolderId]);
 			continue;
 		}
-		if (fromFolderId === specialFolderId) {
+		// == instead of === since we compare numbers to strings and want conversion.
+		if (fromFolderId == specialFolderId) {
 			continue; //we're moving out of the special folder - allow  items under it
 		}
         var specialFolder;
