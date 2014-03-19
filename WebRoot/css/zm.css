@@ -1045,6 +1045,7 @@ INPUT[type="text"].search_input-expanded {
 .Conv2MsgHeader .image IMG {
 	max-width:48px;
 	max-height:48px;
+	@Conv2MsgHeaderImageRadius@
 }
 
 .Collapsed .Conv2MsgHeader {
@@ -1059,6 +1060,7 @@ INPUT[type="text"].search_input-expanded {
 .Collapsed .Conv2MsgHeader .image IMG {
 	max-width: 32px;
 	max-height: 32px;
+	@Conv2MsgHeaderCollapsedImageRadius@
 }
 
 .Conv2MsgHeader .info {
@@ -1720,6 +1722,11 @@ INPUT[type="text"].search_input-expanded {
 .ZmContactInfoView .contactHeaderTable {
 	background-color:@darken(AppC,5)@;
 	border-bottom:1px solid @darken(AppC,50)@;
+}
+
+.ZmContactInfoView .contactHeaderTable IMG,
+.ZmContactInfoView .contactHeaderTable .ImgPerson_48 {
+	@ContactImageRadius@
 }
 
 .ZmContactView .contactHeaderSubTable,

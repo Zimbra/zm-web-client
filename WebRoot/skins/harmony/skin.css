@@ -289,12 +289,6 @@ TD.DwtListView-ColumnActive  {
 	@roundCorners(3px)@
 }
 
-/* make contact images round */
-.ZmContactInfoView .contactHeaderTable IMG,
-.ZmContactInfoView .contactHeaderTable .ImgPerson_48 {
-	@roundCorners(24px)@
-}
-
 /* Double-row styling*/
 .RowDouble {
 	border-top-color:transparent !important;
