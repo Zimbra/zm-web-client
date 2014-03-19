@@ -3645,7 +3645,7 @@ function(ev) {
 			var calendar = item.getFolder();
 			var isReadOnly = calendar ? calendar.isReadOnly() : false;
 			var isSynced = Boolean(calendar && calendar.url);
-			if (isSynced || isReadOnly  || !appCtxt.isWebClientOffline()) {
+			if (isSynced || isReadOnly  || appCtxt.isWebClientOffline()) {
 				ev.doIt = false; // can't tag a GAL or shared contact
 				view.dragSelect(div);
 				return;
