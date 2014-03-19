@@ -460,14 +460,11 @@ Ext.define('ZCS.controller.calendar.ZtCalendarController', {
 	},
 
 	doCancel: function() {
-		if (Ext.os.deviceType === "Phone") {
-			this.getAppointmentPanel().element.dom.style.setProperty('display', 'none');
-		} else {
-			this.getAppointmentPanel().hide({
-				type: 'fadeOut',
-				duration: 250
-			});
-		}
+        this.getAppointmentPanel().hide({
+            type: 'fadeOut',
+            duration: 250
+        });
+
 		var apptTitleBar = this.getAppointmentTitleBar(),
 			apptView = this.getAppointmentView(),
 			apptViewInner = apptView.element.down('.x-scroll-view .x-innerhtml');
