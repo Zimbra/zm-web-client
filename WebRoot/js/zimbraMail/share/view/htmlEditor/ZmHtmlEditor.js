@@ -170,6 +170,7 @@ function(editor) {
         if (currentObj._editorInitialized && editor) {
             editor.focus();
             currentObj.setFocusStatus(true);
+            editor.getWin().scrollTo(0,0);
         }
         else {
             currentObj._initCallbacks.push(currentObj.focus.bind(currentObj, editor));
