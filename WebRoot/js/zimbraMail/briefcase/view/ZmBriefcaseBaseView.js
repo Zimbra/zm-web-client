@@ -302,10 +302,18 @@ function(){
         this._renameField.setDisplay(Dwt.DISPLAY_NONE);
         this._renameField.setLocation("-10000px", "-10000px");
         this._renameField.addListener(DwtEvent.ONKEYUP, new AjxListener(this, this._handleKeyUp));
-        this.addSelectionListener(new AjxListener(this, this.cleanup));
     }
     return this._renameField;
 };
+
+ZmBriefcaseBaseView.prototype._mouseDownAction = function(mouseEv, div) {
+	if (this._renameField && this._renameField.getVisibility() && this._fileItem) {
+		this._doRename(this._fileItem);
+		this.resetRenameFile();
+	}
+	ZmListView.prototype._mouseDownAction(mouseEv, div);
+};
+
 
 ZmBriefcaseBaseView.prototype._handleKeyUp =
 function(ev) {
@@ -313,25 +321,7 @@ function(ev) {
 	var key = DwtKeyEvent.getCharCode(ev);
     var item = this._fileItem;
     if(key == DwtKeyEvent.KEY_ENTER){
-        var fileName = this._renameField.getValue();
-        if(fileName != '' && fileName != item.name){
-            var warning = appCtxt.getMsgDialog();
-
-            if(this._checkDuplicate(fileName)){
-                this._redrawItem(item);
-                warning.setMessage(AjxMessageFormat.format(ZmMsg.itemWithFileNameExits, fileName), DwtMessageDialog.CRITICAL_STYLE, ZmMsg.briefcase);
-                warning.popup();
-            }else if(ZmAppCtxt.INVALID_NAME_CHARS_RE.test(fileName)) {
-                //Bug fix # 79986 show warning popup in case of invalid filename
-                warning.setMessage(AjxMessageFormat.format(ZmMsg.errorInvalidName, AjxStringUtil.htmlEncode(fileName)), DwtMessageDialog.WARNING_STYLE, ZmMsg.briefcase);
-                warning.popup();
-            }
-            else {
-                item.rename(fileName, new AjxCallback(this, this.resetRenameFile));
-			}
-        }else{
-            this.redrawItem(item);
-        }
+        this._doRename(item);
         allowDefault = false;
     }else if( key == DwtKeyEvent.KEY_ESCAPE){
         this._redrawItem(item);
@@ -339,6 +329,27 @@ function(ev) {
     }
 	DwtUiEvent.setBehaviour(ev, true, allowDefault);
 };
+
+ZmBriefcaseBaseView.prototype._doRename = function(item) {
+	var fileName = this._renameField.getValue();
+	if (fileName != '' && (fileName != item.name)) {
+		var warning = appCtxt.getMsgDialog();
+		if (this._checkDuplicate(fileName)) {
+			this._redrawItem(item);
+			warning.setMessage(AjxMessageFormat.format(ZmMsg.itemWithFileNameExits, fileName), DwtMessageDialog.CRITICAL_STYLE, ZmMsg.briefcase);
+			warning.popup();
+		} else if(ZmAppCtxt.INVALID_NAME_CHARS_RE.test(fileName)) {
+			//Bug fix # 79986 show warning popup in case of invalid filename
+			warning.setMessage(AjxMessageFormat.format(ZmMsg.errorInvalidName, AjxStringUtil.htmlEncode(fileName)), DwtMessageDialog.WARNING_STYLE, ZmMsg.briefcase);
+			warning.popup();
+		} else {
+			item.rename(fileName, new AjxCallback(this, this.resetRenameFile));
+		}
+	} else {
+		this.redrawItem(item);
+	}
+}
+
 
 ZmBriefcaseBaseView.prototype.resetRenameFile =
 function(){
@@ -368,9 +379,9 @@ function(name){
     return false;   
 };
 
-ZmBriefcaseBaseView.prototype.cleanup =
-function(){
-    if(this._renameField)
+ZmBriefcaseBaseView.prototype.cleanup = function() {
+    if (this._renameField) {
         this.resetRenameFile();
+	}
 };
 
