@@ -953,6 +953,8 @@ function(ev) {
     var isMute = item.isMute ? item.isMute : false;
 	var sortBy = this._sortByString || ZmSearch.DATE_DESC;
 	var handled = false;
+	var forceUpdateConvSize = false; //in case of soft delete we don't get notification of size change from server so take care of this case outselves.
+	var convToUpdate = null; //in case this is a msg but we want to update the size field for a conv - this is the conv to use.
 	
 	// msg moved or deleted
 	if (!isConv && (ev.event == ZmEvent.E_MOVE || ev.event == ZmEvent.E_DELETE)) {
@@ -963,15 +965,14 @@ function(ev) {
 			handled = true;
 			if (conv) {
 				if (item.folderId == ZmFolder.ID_SPAM || item.folderId == ZmFolder.ID_TRASH || ev.event == ZmEvent.E_DELETE) {
+					if (item.folderId == ZmFolder.ID_TRASH) {
+						//only in this case we don't get size notification from server.
+						forceUpdateConvSize = true;
+						convToUpdate = conv;
+					}
 					// msg marked as Junk, or hard-deleted
-					// TODO: handle expandable msg removal
 					conv.removeMsg(item);
 					this.removeItem(item, true, ev.batchMode);	// remove msg row
-					var rowIds = this._msgRowIdList[conv.id];
-					if (this._expanded[conv.id] && rowIds && rowIds.length <= 1) {
-						this._collapse(conv);
-						this._setImage(conv, ZmItem.F_EXPAND, null, this._getClasses(ZmItem.F_EXPAND));
-					}
 					this._controller._app._checkReplenishListView = this;
 					this._setNextSelection();
 				} else {
@@ -979,16 +980,14 @@ function(ev) {
 						//the message was moved to this conv, most likely by "undo". (not sure if any other ways, probably not).
 						sortIndex = conv.msgs && conv.msgs._getSortIndex(item, ZmSearch.DATE_DESC);
 						conv.addMsg(item, sortIndex);
+						forceUpdateConvSize = true;
+						convToUpdate = conv;
 						var expanded = this._expanded[conv.id];
 						//remove rows so will have to redraw them, reflecting the new item.
 						this._removeMsgRows(conv.id);
 						if (expanded) {
 							//expand if it was expanded before this undo.
 							this._expand(conv, null, true);
-						}
-						else {
-							//the expand image might have been removed if this is undoing of removing the one before last message in the conv.
-							this._setImage(conv, ZmItem.F_EXPAND, "NodeCollapsed", this._getClasses(ZmItem.F_EXPAND));
 						}
 					}
 					else if (!conv.hasMatchingMsg(this._controller._currentSearch, true)) {
@@ -1114,13 +1113,19 @@ function(ev) {
 	}
 
 	// msg count in a conv changed - see if we need to add or remove an expand icon
-	if (isConv && (ev.event == ZmEvent.E_MODIFY) && (fields && fields[ZmItem.F_SIZE])) {
+	if (forceUpdateConvSize || (isConv && (ev.event === ZmEvent.E_MODIFY && fields && fields[ZmItem.F_SIZE]))) {
+		conv = convToUpdate || item;
+		var numDispMsgs = this._getDisplayedMsgCount(conv);
 		//redraw the item when redraw is requested or when the new msg count is set to 1(msg deleted) or 2(msg added)
-		if (item.redrawConvRow || item.numMsgs == 1 || item.numMsgs == 2) {
-			this.redrawItem(item);
+		//redrawConvRow is from bug 75301 - not sure this case is still needed after my fix but keeping it to be safe for now.
+		if (conv.redrawConvRow || numDispMsgs === 1 || numDispMsgs === 2) {
+			if (numDispMsgs === 1) {
+				this._collapse(conv); //collapse since it's only one message.
+			}
+			this._updateField(conv, ZmItem.F_EXPAND); //must be done AFTER the _collapse (since collapse would reset the "expand" even in case it's not expandable)
 		}
 		if (this.isMultiColumn()) {
-			this._updateField(item, ZmItem.F_SIZE);
+			this._updateField(conv, ZmItem.F_SIZE);
 		}
 	}
 
