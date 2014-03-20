@@ -3690,7 +3690,7 @@ HTML>BODY .appt-selected .appt_allday_body
 	@ListItemText-selected@
 }
 
-.ZmAutocompleteListView TD.Icon {
+.ZmAutocompleteListView TD.AutocompleteMatchIcon {
 	width:20px;
 }
 

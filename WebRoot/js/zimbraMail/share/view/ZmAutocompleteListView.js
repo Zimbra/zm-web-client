@@ -1098,7 +1098,7 @@ function(list, context) {
 			row.id = rowId;
 			var html = [], idx = 0;
 			var cell = row.insertCell(-1);
-			cell.className = "Icon";
+			cell.className = "AutocompleteMatchIcon";
 			if (match.icon) {
 				cell.innerHTML = (match.icon.indexOf('Dwt') !== -1) ? ["<div class='", match.icon, "'></div>"].join("") :
 								 									 AjxImg.getImageHtml(match.icon);
