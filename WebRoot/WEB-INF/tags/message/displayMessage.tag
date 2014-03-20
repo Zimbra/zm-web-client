@@ -209,7 +209,7 @@
                     <td nowrap align="left" style='padding-left: 5px'>
                         <table cellspacing="0" cellpadding="0" class='Tb'>
                             <tr>
-                                <c:if test="${showInviteReply}">
+                                <c:if test="${zm:boolean(showInviteReply)}">
                                     <td style='padding: 0 2px 0 2px'>
                                         <a <c:if test="${not isPart}">id="OPACCEPT"</c:if> href="${fn:escapeXml(composeUrl)}&amp;op=accept">
                                             <app:img src="common/ImgCheck.png" alt="check"/>
@@ -363,7 +363,7 @@
         </td>
         <c:if test="${needExtraCol}">
             <c:choose>
-                <c:when test="${showInviteReply}">
+                <c:when test="${zm:boolean(showInviteReply)}">
                     <td width="25%" valign="top"  class='ZhAppContent2'>
                         <c:catch>
                             <app:multiDay selectedId="${message.id}" date="${appt.start.calendar}" numdays="1" view="day" timezone="${mailbox.prefs.timeZone}"/>
