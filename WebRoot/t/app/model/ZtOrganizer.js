@@ -461,6 +461,9 @@ Ext.define('ZCS.model.ZtOrganizer', {
 		//Update the unread count before the title since the title contains the unread count.
 		if (modify.u != null) {
 			this.set('unreadCount', data.unreadCount);
+			// Unread count is factored into title
+			// need to do this because Sencha does not recalculate converted fields
+			this.set('title', this.get('title'));
 		}
 
 		if (modify.name) {

@@ -60,9 +60,9 @@ Ext.define('ZCS.model.ZtBaseItem', {
 
 			Ext.each(listItems, function (item) {
 				if (item._record === model) {
-					list.updateListItem(item, list.topRenderedIndex, list.getListItemInfo());
+					list.updateListItem(item, item.$dataIndex, list.getListItemInfo());
 				}
-			})
+			});
 		});
 	}
 
