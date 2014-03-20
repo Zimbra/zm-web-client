@@ -213,6 +213,8 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 			quickReply.show();
 		}
 
+		this.setHandleUpdateDataEvent(false);
+
 		store.load({
 			convId: conv.getId(),
 			convQuery: convQueryTerms.join(' AND '),
@@ -228,7 +230,7 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 						quickReply.down('titlebar').setTitle(this.getQuickReplyTitleText());
 					}
 
-					this.setHandleUpdateDataEvent(false);
+
 
 					// Hate to use a timer here, but couldn't find an event that fires after the msgListView has
 					// rendered. The Sencha List component doesn't fire 'show' or 'painted'.

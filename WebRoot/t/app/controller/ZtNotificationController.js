@@ -71,7 +71,9 @@ Ext.define('ZCS.controller.ZtNotificationController', {
 						//<debug>
 						Ext.Logger.info('Notification: ' + eventName);
 						//</debug>
-						ZCS.app.fireEvent(eventName, item, notification);
+						Ext.Function.defer(function () {
+							ZCS.app.fireEvent(eventName, item, notification);
+						}, 250);
 					}, this);
 				}
 			}
