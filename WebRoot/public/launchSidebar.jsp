@@ -170,7 +170,7 @@
         html.push("><div class='");
         html.push(unread ? "ImgMsgUnread":"ImgMsgRead");
         html.push(" Inline'></div><div class='From Inline'>");
-        html.push(msg.e[0].d); //use pretty name
+        html.push(AjxStringUtil.htmlEncode(msg.e[0].d)); //use pretty name
         html.push("</div><div class='Date Inline'>");
         html.push(AjxDateUtil.computeDateStr(new Date(), msg.d));
         html.push("</div></div><div class='Subject");
@@ -178,13 +178,13 @@
             html.push(" Unread");
         }
         html.push("'>");
-        html.push(msg.su);
+        html.push(AjxStringUtil.htmlEncode(msg.su));
         html.push("</div><div><div class='Flags ");
         if (attach) {
             html.push("ImgAttachment");
         }
         html.push(" Inline'></div><div class='Fragment Inline'>");
-        html.push(msg.fr);
+        html.push(AjxStringUtil.htmlEncode(msg.fr));
         html.push("</div></div>");
         html.push("</li>");
     }
