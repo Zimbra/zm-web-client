@@ -89,28 +89,30 @@ Ext.define('ZCS.model.ZtSoapProxy', {
 	 */
 	processResponse: function(success, operation, request, response, callback, scope) {
 
-		var query = operation.config.query;
-
-		if (query) {
-			var search = operation.config.search = Ext.create('ZCS.common.ZtSearch', {
-					query: query
-				}),
-				orgId = search.getOrganizerId(),
-				org = orgId && ZCS.cache.get(orgId),
-				app = (org && ZCS.constant.FOLDER_APP[org.get('type')]) || ZCS.session.getActiveApp();
-
-			ZCS.session.setSetting(ZCS.constant.SETTING_CUR_SEARCH, search, app);
-			if (ZCS.session.getSetting(ZCS.constant.SETTING_SHOW_SEARCH)) {
-				ZCS.session.getCurrentSearchField().setValue(query);
-			}
-		}
 		if (success) {
+			var query = operation.config.query;
+			if (query) {
+				var search = operation.config.search = Ext.create('ZCS.common.ZtSearch', {
+						query: query
+					}),
+					orgId = search.getOrganizerId(),
+					org = orgId && ZCS.cache.get(orgId),
+					app = (org && ZCS.constant.FOLDER_APP[org.get('type')]) || ZCS.session.getActiveApp();
+
+				ZCS.session.setSetting(ZCS.constant.SETTING_CUR_SEARCH, search, app);
+				if (ZCS.session.getSetting(ZCS.constant.SETTING_SHOW_SEARCH)) {
+					ZCS.session.getCurrentSearchField().setValue(query);
+				}
+			}
 			this.callParent(arguments);
 		}
-		this.processResponse1(success, response);
+
+		this.processResponse1(success, response, operation);
 	},
 
-	processResponse1: function(success, response) {
+	processResponse1: function(success, response, operation, options) {
+
+		options = options || (operation && operation.config) || {};
 
 		var data = this.getReader().getResponseData(response);
 
@@ -118,7 +120,10 @@ Ext.define('ZCS.model.ZtSoapProxy', {
 			this.processHeader(data.Header);
 			ZCS.app.getMainController().schedulePoll();
 		}
-		else {
+		else if (!options.isPoll) {
+			if (options.failure) {
+				Ext.callback(options.failure, operation.config.scope, data);
+			}
 			ZCS.app.fireEvent('serverError', data);
 		}
 	},
@@ -404,6 +409,6 @@ Ext.define('ZCS.model.ZtSoapProxy', {
 	},
 
 	processSoapResponse: function(options, success, response) {
-		this.processResponse1(success, response);
+		this.processResponse1(success, response, null, options);
 	}
 });

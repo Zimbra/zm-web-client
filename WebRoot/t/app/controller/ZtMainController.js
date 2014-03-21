@@ -134,8 +134,9 @@ Ext.define('ZCS.controller.ZtMainController', {
         //</debug>
 		var server = Ext.getStore('ZtConvStore').getProxy(),
 			options = {
-				url: ZCS.constant.SERVICE_URL_BASE + 'NoOpRequest',
-				jsonData: server.getWriter().getSoapEnvelope(null, null, 'NoOp')
+				url:        ZCS.constant.SERVICE_URL_BASE + 'NoOpRequest',
+				jsonData:   server.getWriter().getSoapEnvelope(null, null, 'NoOp'),
+				isPoll:     true
 			};
 
 		server.sendSoapRequest(options);
@@ -174,6 +175,9 @@ Ext.define('ZCS.controller.ZtMainController', {
 		}
 		else if (args && args.length) {
 			msg = ZtMsg.unknownErrorWithMsg;
+		}
+		else if (data.status === 0 && !data.responseText) {
+			msg = ZtMsg.errorServerUnavailable;
 		}
 		else {
 			msg = ZtMsg.unknownError;

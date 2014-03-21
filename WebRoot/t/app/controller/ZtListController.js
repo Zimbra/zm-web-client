@@ -177,6 +177,9 @@ Ext.define('ZCS.controller.ZtListController', {
 			query:      query,
 			folder:     folder,
 			callback:   this.storeLoaded,
+			failure: function() {
+				this.getListView().setMasked(false);
+			},
 			scope:      this
 		});
 

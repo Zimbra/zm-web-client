@@ -237,6 +237,9 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 					Ext.defer(msgListView.scrollToFirstExpandedMsg, 100, msgListView);
 				}
 			},
+			failure: function() {
+				this.getMsgListView().setMasked(false);
+			},
 			scope: this
 		});
 	},
