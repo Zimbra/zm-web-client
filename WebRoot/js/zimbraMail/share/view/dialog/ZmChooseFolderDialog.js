@@ -412,7 +412,7 @@ function() {
 					continue;
 				}
 				var folder = items[i].getData(Dwt.KEY_OBJECT);
-				if (!folder || folder.nId === ZmOrganizer.ID_ROOT) {
+				if (!folder || folder.nId == ZmOrganizer.ID_ROOT) {
 					continue;
 				}
 				var name = folder.getName(false, null, true, true).toLowerCase();

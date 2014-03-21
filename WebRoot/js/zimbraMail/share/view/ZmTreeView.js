@@ -429,7 +429,7 @@ function(org, child) {
 		}
 	}
 
-	if (Number(org.nId) === ZmOrganizer.ID_ROOT) {
+	if (org.nId == ZmOrganizer.ID_ROOT) {
 		return this.allowedTypes[child.type];
 	}
 

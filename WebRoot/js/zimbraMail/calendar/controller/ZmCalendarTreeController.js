@@ -348,7 +348,7 @@ function(organizer) {
             return;
         }
 
-        if (Number(organizer.nId) === ZmOrganizer.ID_TRASH) { //nId is String so change to Number so I can do === to compare to number. A bit messy but I prefer that over keeping ==.
+        if (organizer.nId == ZmOrganizer.ID_TRASH) {
 			return;
 		}
 

@@ -135,7 +135,7 @@ ZmShareSearchDialog.prototype._filterNode = function(treeView, node, text) {
 		var appMatches = !app || node.shareInfo && node.shareInfo.view === app;
 		matches = !isInfoNode && textMatches && appMatches;
 	}
-	matches = matches || node.id === ZmOrganizer.ID_ROOT;
+	matches = matches || node.id == ZmOrganizer.ID_ROOT;
 	nodeItem.setVisible(matches);
 	return matches;
 };

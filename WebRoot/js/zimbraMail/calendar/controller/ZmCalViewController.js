@@ -2047,7 +2047,7 @@ function(deleteList) {
 		return;
 	}
 	var calendar = deleteList[0].getFolder();
-	var isTrash = calendar && calendar.nId === ZmOrganizer.ID_TRASH;
+	var isTrash = calendar && calendar.nId == ZmOrganizer.ID_TRASH;
 	var msg = (isTrash) ? ZmMsg.confirmCancelApptListPermanently : ZmMsg.confirmCancelApptList;
 	var callback = this._handleMultiDelete.bind(this, deleteList, ZmCalItem.MODE_DELETE);
 	appCtxt.getConfirmationDialog().popup(msg, callback);

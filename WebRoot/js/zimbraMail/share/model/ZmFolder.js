@@ -608,10 +608,10 @@ function(what, folderType, ignoreExisting) {
 		var item = items[0];
 
         // container can only have folders/searches or calendars
-		if ((this.nId === ZmOrganizer.ID_ROOT && (what.type !== ZmOrganizer.CALENDAR)) ||
+		if ((this.nId == ZmOrganizer.ID_ROOT && (what.type !== ZmOrganizer.CALENDAR)) ||
              // nothing can be moved to outbox/sync failures folders
-			 this.nId === ZmOrganizer.ID_OUTBOX ||
-			 this.nId === ZmOrganizer.ID_SYNC_FAILURES)
+			 this.nId == ZmOrganizer.ID_OUTBOX ||
+			 this.nId == ZmOrganizer.ID_SYNC_FAILURES)
 		{
 			invalid = true;
 		} else if (thisType === ZmOrganizer.SEARCH) {
