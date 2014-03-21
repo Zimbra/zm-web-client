@@ -1294,53 +1294,60 @@ function() {
 		return;
 	}
 
+	var bodySize = Dwt.getSize(body);
+	var bodyWidth = bodySize.x;
+	var bodyHeight = bodySize.y;
+
 	// Height from getSize() will either be correct or too small. If it's over 150,
 	// we don't need to resize. Bail so we save the effort of messing with the computed style.
-	if (Dwt.getSize(body).y > 150) {
+	if (bodyHeight > 150) {
+		//we need to resize in case we already resized the iframe size here. (this happens when moving the sash).
+		//reset to the one from the trad MSG view that works for higher than 150 cases. This becomes hacky. Should we merge those 2 methods?
+		//actually we need to reset this on any resize of the reading pane as ZmMailMsgView._resetIframeHeight is not called on sash move. Don't know why.
+		this._resetIframeHeightOnTimer();
 		return;
 	}
 
-	var height = ZmMailMsgCapsuleView._heightCache[this._msgId];
+	// Get height from computed style, which seems to be the most reliable source.
+	var height = this._getHeightFromComputedStyle(body);
 
-	if (!height) {
-		// Get height from computed style, which seems to be the most reliable source.
-		height = this._getHeightFromComputedStyle(body);
+	// We didn't get a believable height. Try moving the BODY's children into a DIV
+	// and measuring that. Previously, we tried measuring the height of the children,
+	// but that's unreliable since an element such as BR reports 0 height even though
+	// it takes up vertical space. Since we know the height is under 150, there shouldn't
+	// be a lot of elements getting moved around.
+	if (height === 0 || height === 150) {
+		var div = ZmMailMsgCapsuleView._testDiv;
+		if (!div) {
+			div = ZmMailMsgCapsuleView._testDiv = document.createElement('DIV');
+			div.style.position = Dwt.ABSOLUTE_STYLE;
+			var shellEl = DwtShell.getShell(window).getHtmlElement();
+			shellEl.appendChild(div);
+			Dwt.setLocation(div, Dwt.LOC_NOWHERE, Dwt.LOC_NOWHERE);
+		}
 
-		// We didn't get a believable height. Try moving the BODY's children into a DIV
-		// and measuring that. Previously, we tried measuring the height of the children,
-		// but that's unreliable since an element such as BR reports 0 height even though
-		// it takes up vertical space. Since we know the height is under 150, there shouldn't
-		// be a lot of elements getting moved around.
-		if (height === 0 || height === 150) {
-			var div = ZmMailMsgCapsuleView._testDiv;
-			if (!div) {
-				div = ZmMailMsgCapsuleView._testDiv = document.createElement('DIV');
-				div.style.position = Dwt.ABSOLUTE_STYLE;
-				var shellEl = DwtShell.getShell(window).getHtmlElement();
-				shellEl.appendChild(div);
-				Dwt.setLocation(div, Dwt.LOC_NOWHERE, Dwt.LOC_NOWHERE);
-			}
-			while (body.hasChildNodes()) {
-				div.appendChild(body.firstChild);
-			}
-			height = this._getHeightFromComputedStyle(div);
-			while (div.hasChildNodes()) {
-				body.appendChild(div.firstChild);
-			}
+		var divWidth = bodyWidth - 20;	// account for 10px of left and right padding for class MsgBody-html
+		Dwt.setSize(div, divWidth, Dwt.DEFAULT);
+
+		while (body.hasChildNodes()) {
+			div.appendChild(body.firstChild);
+		}
+
+		height = this._getHeightFromComputedStyle(div);
+		height += 20;	// account for 10px of top and bottom padding for class MsgBody-html - todo this and the above divWdith adjustment should probably be calculated, not hardcoded?
+
+		while (div.hasChildNodes()) {
+			body.appendChild(div.firstChild);
 		}
 	}
 
 	// If the content height is less than 150, then resize the IFRAME to fit it.
-	if (height > 0 && height < 150) {
-		ZmMailMsgCapsuleView._heightCache[this._msgId] = height;
-		height += 20;	// account for 10px of top and bottom padding for class MsgBody-html
+	if (height > 20 && height < 150) {
 		DBG.println(AjxDebug.DBG1, "resizing capsule msg view IFRAME height to " + height);
 		Dwt.setSize(this.getIframeElement(), Dwt.DEFAULT, height);
 	}
 };
 
-// Cache msg view iframe heights by msg ID
-ZmMailMsgCapsuleView._heightCache = {};
 
 // Look in the computed style object for height, padding, and margins.
 ZmMailMsgCapsuleView.prototype._getHeightFromComputedStyle =
