@@ -105,7 +105,7 @@ ZmListView.COL_WIDTH_NARROW_ICON			= 11;
 
 // TD class for fields
 ZmListView.FIELD_CLASS = {};
-ZmListView.FIELD_CLASS[ZmItem.F_TYPE]		= "Icon";
+ZmListView.FIELD_CLASS[ZmItem.F_TYPE]		= "ListViewIcon";
 ZmListView.FIELD_CLASS[ZmItem.F_FLAG]		= "Flag";
 ZmListView.FIELD_CLASS[ZmItem.F_TAG]		= "Tag";
 ZmListView.FIELD_CLASS[ZmItem.F_ATTACHMENT]	= "Attach";
