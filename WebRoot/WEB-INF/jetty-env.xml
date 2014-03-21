@@ -22,7 +22,7 @@
     </Set>
     <Set name="authenticatorFactory">
       <New class="com.zimbra.cs.servlet.ZimbraAuthenticatorFactory">
-        <Set name="urlPattern">/downloads/*</Set>
+        <Set name="urlPattern">%%zimbraMailURL%%/downloads/*</Set>
       </New>
     </Set>
   </Get>

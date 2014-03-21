@@ -1407,6 +1407,7 @@ if (ext == null) ext = "";
     	<replace file="${webapp.dir}/WEB-INF/web.xml" token="zimbraHttpCompressionEnabled,-->%%" value="-->" />
     	<replace file="${webapp.dir}/WEB-INF/web.xml" token="%%comment VAR:zimbraHttpCompressionEnabled," value="" />
     	<replace file="${webapp.dir}/WEB-INF/web.xml" token="%%zimbraWebGzipEnabled%%" value="true"/>
+    	<replace file="${webapp.dir}/WEB-INF/jetty-env.xml" token="%%zimbraMailURL%%" value="${webxml.zimbraMailURL}" />
     </target>
 
     <target name='clean' depends='customer-init'>
