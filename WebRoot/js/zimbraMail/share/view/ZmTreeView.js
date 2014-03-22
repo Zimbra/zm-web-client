@@ -422,7 +422,7 @@ function(org, child) {
 	}
 
 	// Within the Searches tree, only show saved searches that return a type that belongs to this app
-	if (this.type === ZmOrganizer.SEARCH && child.type === ZmOrganizer.SEARCH) {
+	if (this.type === ZmOrganizer.SEARCH && child.type === ZmOrganizer.SEARCH && this._overview.appName) {
 		var common = AjxUtil.intersection(child.search.types.getArray(), ZmApp.SEARCH_TYPES[this._overview.appName]);
 		if (common.length === 0) {
 			return false;

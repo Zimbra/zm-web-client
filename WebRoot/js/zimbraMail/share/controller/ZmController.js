@@ -368,8 +368,10 @@ function(actionCode, ev) {
 			var searches = appCtxt.getFolderTree().getByType(ZmOrganizer.SEARCH);
 			if (searches && searches.length > 0) {
 				var dlg = appCtxt.getChooseFolderDialog();
+				// include app name in ID so we have one overview per app to show only its saved searches
 				var params = {treeIds:		[ZmOrganizer.SEARCH],
-							  overviewId:	dlg.getOverviewId(ZmOrganizer.SEARCH),
+							  overviewId:	dlg.getOverviewId(ZmOrganizer.SEARCH, this._app._name),
+							  appName:      this._app._name,
 							  title:		ZmMsg.selectSearch};
 				ZmController.showDialog(dlg, new AjxCallback(null, ZmController._searchSelectionCallback, [dlg]), params);
 			}

@@ -222,8 +222,8 @@ function(params) {
 
 
 ZmChooseFolderDialog.prototype.getOverviewId =
-function(part) {
-	return appCtxt.getOverviewId([this.toString(), part], null);
+function(part, appName) {
+	return appCtxt.getOverviewId([this.toString(), part, appName], null);
 };
 
 ZmChooseFolderDialog.prototype._resetTree =
