@@ -2960,7 +2960,7 @@ function(ex, continuation) {
 			}
 		}
 	}
-    else if (ex.code === ZmCsfeException.EMPTY_RESPONSE) {
+    else if (appCtxt.isWebClientOffline() && ex.code === ZmCsfeException.EMPTY_RESPONSE) {
         handled = true;
     }
 	if (!handled) {
