@@ -119,9 +119,11 @@
 
     <!-- MODERNIZR INTEGRATION -->
     <property name="modernizr.version" value="2.6.1"/>
+    <property name="modernizr.dir" value="${js.dir}/ajax/3rdparty/modernizr"/>
 
     <!-- jQuery INTEGRATION -->
     <property name="jquery.version" value="1.8.1"/>
+    <property name="jquery.dir" value="${js.dir}/ajax/3rdparty/jquery"/>
 
     <!-- Tasks -->
 
@@ -1415,6 +1417,10 @@ if (ext == null) ext = "";
         <delete dir='${build.dir}'/>
         <delete dir='${customer.build.dir}' />
         <delete dir="${touch.prod.dir}"/>
+        <delete dir="${jquery.dir}"/>
+        <delete dir="${modernizr.dir}"/>
+        <delete dir="${tinymce.dir}"/>
+        <delete dir="${sass.cache.dir}"/>
     </target>
 
 	<!-- JavaScript API Documentation Tasks -->
@@ -1791,16 +1797,19 @@ if (ext == null) ext = "";
     </target>
 
     <target name="modernizr">
-        <copy todir='${js.dir}/ajax/3rdparty/modernizr' file='${web.dir}/modernizr/${modernizr.version}/modernizr.js' verbose='${sync.verbose}'/>
+        <copy todir='${modernizr.dir}' file='${web.dir}/modernizr/${modernizr.version}/modernizr.js' verbose='${sync.verbose}'/>
     </target>
 
     <target name="jquery">
-        <copy todir='${js.dir}/ajax/3rdparty/jquery' file='${web.dir}/jquery/${jquery.version}/jquery.js' verbose='${sync.verbose}'/>
+        <copy todir='${jquery.dir}' file='${web.dir}/jquery/${jquery.version}/jquery.js' verbose='${sync.verbose}'/>
     </target>
     
     <!--Touch Client Targets-->
 
     <property name="app.root" value="${zwc.basedir}/WebRoot/t"/>
+    <property name="sass.dir" value="${app.root}/resources/sass" />
+    <property name="compass.dir" value="${app.root}/compass"/>
+    <property name="sass.cache.dir" value="${sass.dir}/.sass-cache"/>
 
     <!-- Include jruby-complete jar -->
     <path id="jruby.classpath">
@@ -1811,8 +1820,6 @@ if (ext == null) ext = "";
 
     <!--Compass compilation-->
     <target name='compile.sass'>
-        <property name="sass.dir" value="${app.root}/resources/sass" />
-        <property name="compass.dir" value="${app.root}/compass"/>
         <java classname="org.jruby.Main" fork="true" failonerror="true"
               classpathref="jruby.classpath">
             <arg line="${compass.dir}/compile.rb ${compass.dir} compile ${sass.dir}"/>
