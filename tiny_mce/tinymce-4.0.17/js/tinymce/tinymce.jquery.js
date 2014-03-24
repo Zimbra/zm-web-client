@@ -19303,9 +19303,8 @@ define("tinymce/ui/KeyboardNavigation", [
 		 * @private
 		 * @param {Number} dir Direction to move in positive means forward, negative means backwards.
 		 * @param {Array} elements Optional array of elements to move within defaults to the current navigation roots elements.
-		 * @param {Boolean} nowrap If true, don't wrap the element.
 		 */
-		function moveFocus(dir, elements, nowrap) {
+		function moveFocus(dir, elements) {
 			var idx = -1, navigationRoot = getNavigationRoot();
 
 			elements = elements || getFocusElements(navigationRoot.getEl());
@@ -19317,13 +19316,7 @@ define("tinymce/ui/KeyboardNavigation", [
 			}
 
 			idx += dir;
-
-			if (nowrap && (idx < 0 || idx >= elements.length)) {
-				return false;
-			} else {
-				navigationRoot.lastAriaIndex = moveFocusToIndex(idx, elements);
-				return true;
-			}
+			navigationRoot.lastAriaIndex = moveFocusToIndex(idx, elements);
 		}
 
 		/**
@@ -19401,11 +19394,8 @@ define("tinymce/ui/KeyboardNavigation", [
 				if (elm) {
 					elm.focus();
 				}
-
-				return true;
 			} else {
-				var tabSink = getNavigationRoot().settings.tabSink;
-				return moveFocus(e.shiftKey ? -1 : 1, null, !tabSink);
+				moveFocus(e.shiftKey ? -1 : 1);
 			}
 		}
 
@@ -19475,7 +19465,6 @@ define("tinymce/ui/KeyboardNavigation", [
 				case 9: // DOM_VK_TAB
 					if (tab(e) !== false) {
 						e.preventDefault();
-						e.stopPropagation();
 					}
 					break;
 			}
@@ -20659,10 +20648,6 @@ define("tinymce/ui/FloatPanel", [
 
 	var FloatPanel = Panel.extend({
 		Mixins: [Movable, Resizable],
-		Defaults: {
-			tabSink: true,
-			ariaRoot: true
-		},
 
 		/**
 		 * Constructs a new control instance with the specified settings.
@@ -31157,7 +31142,8 @@ define("tinymce/ui/Menu", [
 			border: 1,
 			layout: 'stack',
 			role: 'application',
-			bodyRole: 'menu'
+			bodyRole: 'menu',
+			ariaRoot: true
 		},
 
 		/**
