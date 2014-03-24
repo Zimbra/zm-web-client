@@ -1804,7 +1804,8 @@ function(draftType, callback, result) {
 		this._draftType = ZmComposeController.DRAFT_TYPE_MANUAL;
 	}
 //	this._action = ZmOperation.DRAFT;
-
+    // Notify the htmlEditor that the draft has been saved and is not dirty any more.
+    this._composeView._htmlEditor.clearDirty();
 	if (draftType === ZmComposeController.DRAFT_TYPE_MANUAL) {
 		this._setCancelText(ZmMsg.close)
 	}
