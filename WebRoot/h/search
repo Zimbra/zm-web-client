@@ -288,25 +288,25 @@
     <c:when test="${context.isConversationSearch and mailbox.prefs.readingPaneLocation eq 'off'}">
         <app:convListView context="${context}"/>
     </c:when>
-    <c:when test="${context.isMessageSearch and action eq 'view'}">
+    <c:when test="${zm:boolean(context.isMessageSearch) and action eq 'view'}">
         <app:messageView context="${context}"/>
     </c:when>
-    <c:when test="${context.isMessageSearch and mailbox.prefs.readingPaneLocation eq 'right' and action eq 'paneView'}">
+    <c:when test="${zm:boolean(context.isMessageSearch) and mailbox.prefs.readingPaneLocation eq 'right' and action eq 'paneView'}">
         <app:messageColumnView context="${context}"/>
     </c:when>
-    <c:when test="${context.isMessageSearch and mailbox.prefs.readingPaneLocation eq 'bottom' and action eq 'rowView'}">
+    <c:when test="${zm:boolean(context.isMessageSearch) and mailbox.prefs.readingPaneLocation eq 'bottom' and action eq 'rowView'}">
         <app:messageRowView context="${context}"/>
     </c:when>
-    <c:when test="${context.isMessageSearch and mailbox.prefs.readingPaneLocation eq 'off' and action eq 'view'}">
+    <c:when test="${zm:boolean(context.isMessageSearch) and mailbox.prefs.readingPaneLocation eq 'off' and action eq 'view'}">
         <app:messageView context="${context}"/>
     </c:when>
-    <c:when test="${context.isMessageSearch and mailbox.prefs.readingPaneLocation eq 'right'}">
+    <c:when test="${zm:boolean(context.isMessageSearch) and mailbox.prefs.readingPaneLocation eq 'right'}">
         <app:messageColumnView context="${context}"/>
     </c:when>
-    <c:when test="${context.isMessageSearch and mailbox.prefs.readingPaneLocation eq 'bottom'}">
+    <c:when test="${zm:boolean(context.isMessageSearch) and mailbox.prefs.readingPaneLocation eq 'bottom'}">
         <app:messageRowView context="${context}"/>
     </c:when>
-    <c:when test="${context.isMessageSearch}">
+    <c:when test="${zm:boolean(context.isMessageSearch)}">
         <app:messageListView context="${context}"/>
     </c:when>
     <c:when test="${context.isContactSearch and action eq 'view'}">
