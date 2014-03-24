@@ -44,7 +44,7 @@ Ext.define('ZCS.model.mail.ZtMsgWriter', {
 
 			var curFolder = ZCS.session.getCurrentSearchOrganizer(),
 				curFolderId = curFolder && curFolder.get('zcsId'),
-				fetch = (curFolderId === ZCS.constant.ID_DRAFTS) ? 'all' : 'u1';
+				fetch = (curFolderId === ZCS.constant.ID_DRAFTS) ? 'all' : 'u!';
 
 			Ext.apply(methodJson, {
 				cid:    convId,

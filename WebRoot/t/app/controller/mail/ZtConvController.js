@@ -189,21 +189,8 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 			store = this.getStore(),
 			isDraft = (curFolderId === ZCS.constant.ID_DRAFTS),
 			remoteAccountId = conv.get('isShared') && conv.get('accountId'),
-			convQueryTerms = [],
 			title = Ext.String.htmlEncode(conv.get('subject') || ZtMsg.noSubject),
 			msgListView = this.getMsgListView();
-
-		function makeFolderTerm(id) {
-			return 'underid:' + (remoteAccountId ? '"' + [ remoteAccountId, id ].join(':') + '"' : id);
-		}
-
-		convQueryTerms.push(makeFolderTerm(ZCS.constant.ID_ROOT));
-
-		Ext.each(Object.keys(ZCS.constant.CONV_HIDE), function(id) {
-			if (id !== curFolderId) {
-				convQueryTerms.push('NOT ' + makeFolderTerm(id));
-			}
-		}, this);
 
 		// Make sure the organizer button stays.
 		ZCS.app.fireEvent('updatelistpanelToggle', this.getOrganizerTitle(), ZCS.session.getActiveApp());
@@ -216,8 +203,8 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 		this.setHandleUpdateDataEvent(false);
 
 		store.load({
-			convId: conv.getId(),
-			convQuery: convQueryTerms.join(' AND '),
+			convId:     conv.getId(),
+			convQuery:  ZCS.session.getSetting(ZCS.constant.SETTING_CUR_SEARCH, this.getApp()).getQuery(),
 			callback: function(records, operation, success) {
 				if (success) {
 					this.updateToolbar({
@@ -230,8 +217,6 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 						quickReply.down('titlebar').setTitle(this.getQuickReplyTitleText());
 					}
 
-
-
 					// Hate to use a timer here, but couldn't find an event that fires after the msgListView has
 					// rendered. The Sencha List component doesn't fire 'show' or 'painted'.
 					Ext.defer(msgListView.scrollToFirstExpandedMsg, 100, msgListView);
@@ -240,7 +225,7 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 			failure: function() {
 				this.getMsgListView().setMasked(false);
 			},
-			scope: this
+			scope:  this
 		});
 	},
 
