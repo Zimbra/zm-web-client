@@ -175,7 +175,7 @@
 		</tpl>
 		<div class='zcs-contactList-text'>
 			<tpl if='isMultiple'>
-				<div class='zcs-contactList-name'>{nickname:htmlEncode}</div>
+				<div class='zcs-contactList-groupName'>{nickname:htmlEncode}</div>
 			<tpl else>
 				<div class='zcs-contactList-name'>{nameLastFirst:htmlEncode}</div>
 				<div class='zcs-contactList-title'>{job:htmlEncode}</div>

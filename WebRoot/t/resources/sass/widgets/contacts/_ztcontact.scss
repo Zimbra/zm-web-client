@@ -14,12 +14,14 @@
  */
 $contactBkgdColor: $white;
 
-$contactListStdMargin: 0.5rem;
-$contactListHeight: 3.6rem;  /* estimated */
-$contactListImageSize: 2.5rem;
-$contactListLeftIndent: $contactListImageSize + $contactListStdMargin*3;
+/* 1rem typically equals 16px */
+$listViewMargin: 0.5rem;
+$contactListHeight: 5rem;  /* 80px */
+$contactListImageSize: 2.5rem;  /* 40px */
+$contactListStdMargin: $contactListHeight / 2 - $contactListImageSize / 2;
+$contactListLeftIndent: $contactListImageSize + $contactListStdMargin * 2;
 $contactListRightIndent: $contactListStdMargin;
-$contactListTopOffset: 0.5rem;
+$contactListTopOffset: $contactListStdMargin - 0.25rem;
 
 $contactBaseFontSize: 1rem;
 $contactGutter: 1.5em;
@@ -35,20 +37,22 @@ $contactFormButtonMinHeight: 2.5em;
 
 /* Contact Image Base Classes */
 
-.zcs-contact {
+.zcs-contactImage {
 	background-position: center;
 	background-size: 100% auto;
 	background-repeat: no-repeat;
+	margin-left: $contactListStdMargin;
+	margin-top: $contactListHeight / 2 - $contactListImageSize/2;
 	@include border-radius($contactImageSize/2);
 }
 
-.zcs-contact-person {
-	@extend .zcs-contact;
+.zcs-contactImage-person {
+	@extend .zcs-contactImage;
 	background-image: url('../images/person.png');
 }
 
-.zcs-contact-group {
-	@extend .zcs-contact;
+.zcs-contactImage-group {
+	@extend .zcs-contactImage;
 	background-image: url('../images/group.png');
 }
 
@@ -69,8 +73,13 @@ $contactFormButtonMinHeight: 2.5em;
 
 /* Contact List Classes */
 
-.zcs-contactlist-item {
-	position: absolute;
+.zcs-list-panel .x-list .x-list-item .x-innerhtml:before {
+	content: "";
+}
+
+.zcs-contactListItem {
+	min-height: $contactListHeight - $listViewMargin * 2;
+	margin-top: 8px; // accounts for 7px padding and 1px top border
 }
 
 .zcs-contactlist-image {
@@ -80,21 +89,20 @@ $contactFormButtonMinHeight: 2.5em;
 
 .zcs-contactList-person {
 	@extend .zcs-contactlist-image;
-	@extend .zcs-contact-person;
-	margin: $contactListStdMargin*1.5 0;
+	@extend .zcs-contactImage-person;
 }
 
 .zcs-contactList-group {
 	@extend .zcs-contactlist-image;
-	@extend .zcs-contact-group;
+	@extend .zcs-contactImage-group;
 }
 
 .zcs-contactList-text {
-	@extend .zcs-contactlist-item;
-	bottom: $contactListTopOffset*2;
+	position: absolute;
+	bottom: $contactListTopOffset;
 	left: $contactListLeftIndent;
 	right: $contactListRightIndent;
-	top: $contactListTopOffset*2;
+	top: $contactListTopOffset;
 
 	DIV {
 		@include ellipsis();
@@ -104,10 +112,22 @@ $contactFormButtonMinHeight: 2.5em;
 	.zcs-contactList-name {
 		font-size: 1.2rem;
 	}
+	.zcs-contactList-groupName {
+		font-size: 1.2rem;
+//		margin-bottom: 0.6rem;
+		margin-top: 0.75rem;
+	}
 	.zcs-contactList-title {
 		@include opacity(.75);
 		font-size: 1rem;
 	}
+}
+
+.zcs-swipe-delete {
+	background-color: red;
+	border-color: darkred;
+	color: white;
+	@include box-shadow(white 0px 0px 5px 10px);
 }
 
 /* Contact View Classes */
@@ -127,7 +147,7 @@ $contactFormButtonMinHeight: 2.5em;
 
 	.zcs-contactview-image {
 		@extend .zcs-floatLeft;
-		@extend .zcs-contact-person;
+		@extend .zcs-contactImage-person;
 		height: $contactImageSize;
 		width: $contactImageSize;
 	}
@@ -156,7 +176,6 @@ $contactFormButtonMinHeight: 2.5em;
 // Tested iPad Mini
 .x-portrait .zcs-contactview-header {
 	.zcs-contactview-personalInfo {
-		width: 78%;
 
 		SPAN {
 			max-width: $contactFieldWidth*1.1;
@@ -234,6 +253,7 @@ $contactFormButtonMinHeight: 2.5em;
 			@extend .zcs-floatLeft;
 			@include ellipsis();
 			@include opacity(.5);
+			margin-left: 0.75em;
 			text-align: right;
 			width: $contactImageSize;
 
@@ -301,7 +321,7 @@ $contactBorderColor: $light-grey;
 	background-color: white;
 
 	.zcs-contact-image {
-		@extend .zcs-contact-person;
+		@extend .zcs-contactImage-person;
 		height: $contactEditImageSize;
 		margin: .5em auto auto;
 		width: $contactEditImageSize;
@@ -429,7 +449,7 @@ $contactBorderColor: $light-grey;
 
 	.zcs-contactgroupview-image {
 		@extend .zcs-floatLeft;
-		@extend .zcs-contact-group;
+		@extend .zcs-contactImage-group;
 		height: $contactImageSize;
 		width: $contactImageSize;
 	}
