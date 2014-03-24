@@ -364,13 +364,6 @@ function(view, menu) {
 // no support for showing total items, which are msgs
 ZmConvListController.prototype._getNumTotal = function() { return null; }
 
-ZmConvListController.prototype._getMoreSearchParams = 
-function(params) {
-	// OPTIMIZATION: find out if we need to pre-fetch the first hit message
-	params.fetch = this.isReadingPaneOn();
-	params.markRead = true;
-};
-
 ZmConvListController.prototype._preUnloadCallback =
 function(view) {
 	return !(this._convView && this._convView.isDirty());
@@ -504,7 +497,7 @@ function(ev) {
 	
 	this._mailListView._selectedMsg = null;
 	if (ev.field == ZmItem.F_EXPAND && this._mailListView._isExpandable(item)) {
-		this._toggle(item, false);
+		this._toggle(item);
 		return true;
 	} else {
 		var handled = ZmDoublePaneController.prototype._listSelectionListener.apply(this, arguments);
@@ -564,29 +557,11 @@ function() {
 			var convParams = {};
 			convParams.markRead = this._handleMarkRead(item, true);
 			if (this.isSearchResults) {
-				convParams.getMatches = true;
+				convParams.fetch = ZmSetting.CONV_FETCH_MATCHES;
 			}
 			else {
-				convParams.getUnreadOrFirstMsg = true;
-				// generalize query so if conv is read we get latest msg and not just latest matching msg
-				var acctId = item.isShared() && ZmOrganizer.parseId(item.id).acctId;
-				var rootFolderId = acctId ? ['"', acctId, ':1"'].join("") : "1";
-				var terms = ["underid:" + rootFolderId];
-				var search = this._currentSearch;
-				if (search) {
-					var foldersToExclude = ZmMailListController.FOLDERS_TO_OMIT;
-					for (var i = 0; i < foldersToExclude.length; i++) {
-						var folderId = foldersToExclude[i];
-						if (acctId) {
-							folderId = ['"', acctId, ":", folderId, '"'].join("");
-						}
-						// note that Trash and Spam cannot be shared
-						if (acctId || !search.hasFolderTerm(ZmFolder.QUERY_NAME[folderId])) {
-							terms.push("underid:" + folderId);
-						}
-					}
-				}
-				convParams.query = terms.join(" AND NOT ");
+				convParams.fetch = ZmSetting.CONV_FETCH_UNREAD_OR_FIRST;
+				convParams.query = this._currentSearch.query;
 			}
 			// if the conv's unread state changed, load it again so we get the correct expanded msg bodies
 			convParams.forceLoad = item.unreadHasChanged;
@@ -712,7 +687,7 @@ function(item) {
 };
 
 ZmConvListController.prototype._toggle =
-function(item, getFirstMsg) {
+function(item) {
 	if (this._mailListView.isExpanded(item)) {
 		this._collapse(item);
 	} else {
@@ -722,7 +697,11 @@ function(item, getFirstMsg) {
 			msg = item;
 			offset = this._mailListView._msgOffset[item.id];
 		}
-		this._expand({conv:conv, msg:msg, offset:offset, getFirstMsg:getFirstMsg});
+		this._expand({
+			conv:   conv,
+			msg:    msg,
+			offset: offset
+		});
 	}
 };
 
@@ -733,7 +712,6 @@ function(item, getFirstMsg) {
  *        conv			[ZmConv]		conv to expand
  *        msg			[ZmMailMsg]		msg to expand (get next page of msgs for conv)
  *        offset		[int]			index of msg in conv
- *        getFirstMsg	[boolean]		if true, fetch body of first msg
  *        callback		[AjxCallback]	callback to run when done
  */
 ZmConvListController.prototype._expand =
@@ -749,9 +727,7 @@ function(params) {
 			this._handleResponseLoadItem(params, new ZmCsfeResult(conv.msgs));
 		}
 	} else if (!conv._loaded) {
-		// no msgs have been loaded yet
-		var getFirstMsg = (params.getFirstMsg === false) ? false : this.isReadingPaneOn();
-		conv.load({getFirstMsg:getFirstMsg}, respCallback);
+		conv.load(null, respCallback);
 	} else {
 		// re-expanding first page of msgs
 		this._handleResponseLoadItem(params, new ZmCsfeResult(conv.msgs));
@@ -785,8 +761,7 @@ function(conv, offset, callback) {
 			offset = ((offset + limit) - max) + 1;
 		}
 		var respCallback = new AjxCallback(this, this._handleResponsePaginateConv, [conv, offset, callback]);
-		var getFirstMsg = this.isReadingPaneOn();
-		conv.load({offset:offset, limit:limit, getFirstMsg:getFirstMsg}, respCallback);
+		conv.load({offset:offset, limit:limit}, respCallback);
 		return false;
 	} else {
 		return true;

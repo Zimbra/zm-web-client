@@ -312,6 +312,7 @@ function(search, noRender, changes, callback, errorCallback) {
 	params.userInitiated = search.userInitiated;
 	params.sessionId	= search.sessionId;
     params.isEmpty      = search.isEmpty;
+	params.markRead     = search.markRead;
 
 	if (changes) {
 		for (var key in changes) {

@@ -557,7 +557,7 @@ function(callback, result) {
  * @param {Hash}		params				a hash of parameters:
  * @param {String}		params.cid			the conv ID
  * @param {AjxCallback}	params.callback		the callback to run with result
- * @param {String}		params.fetchId		the ID of msg to load
+ * @param {String}		params.fetch		which msg bodies to load (see soap.txt)
  * @param {Boolean}		params.markRead		if <code>true</code>, mark msg read
  * @param {Boolean}		params.noTruncate	if <code>true</code>, do not limit size of msg
  * @param {boolean}		params.needExp		if not <code>false</code>, have server check if addresses are DLs
@@ -570,8 +570,8 @@ function(params) {
 	var request = jsonObj.SearchConvRequest;
 	this._getStandardMethodJson(request);
 	request.cid = params.cid;
-	if (params.fetchId) {
-		request.fetch = params.fetchId;	// fetch content of this msg
+	if (params.fetch) {
+		request.fetch = params.fetch;
 		if (params.markRead) {
 			request.read = 1;			// mark that msg read
 		}

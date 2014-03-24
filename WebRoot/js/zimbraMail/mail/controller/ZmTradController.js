@@ -122,13 +122,6 @@ function(view) {
 	this._navToolBar[view].setToolTip(ZmOperation.PAGE_FORWARD, ZmMsg.nextPage);
 };
 
-ZmTradController.prototype._getMoreSearchParams = 
-function(params) {
-	// OPTIMIZATION: find out if we need to pre-fetch the first hit message
-	params.fetch = this.isReadingPaneOn();
-	params.markRead = true;
-};
-
 ZmTradController.prototype._listSelectionListener =
 function(ev) {
 	var item = ev.item;

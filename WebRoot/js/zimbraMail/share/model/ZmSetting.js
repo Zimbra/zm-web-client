@@ -203,6 +203,18 @@ ZmSetting.RP_RIGHT				= "right";
 ZmSetting.SIG_INTERNET			= "internet";				// zimbraPrefMailSignatureStyle
 ZmSetting.SIG_OUTLOOK			= "outlook";
 
+// values for the 'fetch' param of SearchConvRequest
+ZmSetting.CONV_FETCH_NONE                       = "0";
+ZmSetting.CONV_FETCH_FIRST_MATCHING             = "1";
+ZmSetting.CONV_FETCH_FIRST                      = "!";
+ZmSetting.CONV_FETCH_UNREAD                     = "u";
+ZmSetting.CONV_FETCH_UNREAD_OR_FIRST_MATCHING   = "u1";
+ZmSetting.CONV_FETCH_UNREAD_OR_FIRST            = "u!";
+ZmSetting.CONV_FETCH_UNREAD_OR_BOTH_FIRST       = "u1!";
+ZmSetting.CONV_FETCH_MATCHES                    = "hits";
+ZmSetting.CONV_FETCH_MATCHES_OR_FIRST           = "hits!";
+ZmSetting.CONV_FETCH_ALL                        = "all";
+
 // License status (network only)
 ZmSetting.LICENSE_GOOD			= "OK";
 ZmSetting.LICENSE_NOT_INSTALLED = "NOT_INSTALLED";

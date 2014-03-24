@@ -71,7 +71,7 @@ function(conv, parentController, callback, markRead, msg) {
 	if (!conv._loaded) {
 		var respCallback = this._handleResponseLoadConv.bind(this, conv, callback);
 		markRead = !msg && (markRead || (appCtxt.get(ZmSetting.MARK_MSG_READ) == ZmSetting.MARK_READ_NOW));
-		conv.load({getUnreadOrFirstMsg:true, markRead:markRead}, respCallback);
+		conv.load({fetch:ZmSetting.CONV_FETCH_UNREAD_OR_FIRST, markRead:markRead}, respCallback);
 	} else {
 		this._handleResponseLoadConv(conv, callback, conv._createResult());
 	}
@@ -368,8 +368,7 @@ function(view, offset, limit, callback) {
 	var params = {
 		sortBy: appCtxt.get(ZmSetting.SORTING_PREF, view),
 		offset: offset,
-		limit: limit,
-		getFirstMsg: this.isReadingPaneOn()
+		limit:  limit
 	};
 	this._conv.load(params, callback);
 };

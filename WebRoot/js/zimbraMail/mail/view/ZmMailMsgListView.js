@@ -428,7 +428,6 @@ function(columnItem, bSortAsc, callback) {
 			var conv = this._controller.getConv();
 			if (conv) {
 				var respCallback = new AjxCallback(this, this._handleResponseSortColumn, [conv, columnItem, this._controller, callback]);
-				params.getFirstMsg = this._controller.isReadingPaneOn();
 				conv.load(params, respCallback);
 			}
 		} else {

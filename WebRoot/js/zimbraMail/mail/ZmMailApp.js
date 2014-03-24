@@ -1739,15 +1739,6 @@ function(query, callback, response, type) {
 	sc.search(params);
 };
 
-ZmMailApp.prototype.getSearchParams =
-function(params) {
-	params = params || {};
-	if (!appCtxt.inStartup && (appCtxt.get(ZmSetting.READING_PANE_LOCATION) != ZmSetting.RP_OFF)) {
-		params.fetch = true;
-	}
-	return params;
-};
-
 /**
  * Shows the search results.
  * 

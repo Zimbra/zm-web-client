@@ -85,11 +85,7 @@ function(msg, args) {
  * @param {int}			params.offset				the position of first msg to return
  * @param {int}			params.limit				the number of msgs to return
  * @param {Boolean}		params.getHtml				if <code>true</code>, return HTML part for inlined msg
- * @param {Boolean}		params.getFirstMsg			if <code>true</code>, fetch the first matching msg in the conv
- * @param {Boolean}		params.getMatches			if <code>true</code>, fetch all matching msgs in the conv 
- * @param {Boolean}		params.getAllMsgs			if <code>true</code>, fetch all msgs in the conv 
- * @param {Boolean}		params.getUnreadMsgs		if <code>true</code>, fetch all unread msgs in the conv
- * @param {Boolean}		params.getUnreadOrFirstMsg	if <code>true</code>, fetch unread, or first if none are unread
+ * @param {String}		params.fetch				which msg bodies to fetch (see soap.txt under SearchConvRequest)
  * @param {Boolean}		params.markRead				if <code>true</code>, mark that msg read
  * @param {boolean}		params.needExp				if not <code>false</code>, have server check if addresses are DLs
  * @param {AjxCallback}	callback					the callback to run with results
@@ -143,17 +139,17 @@ function(params, callback) {
 			getHtml: (params.getHtml || this.isDraft || appCtxt.get(ZmSetting.VIEW_AS_HTML)),
 			accountName: (appCtxt.multiAccounts && this.getAccount().name)
 		};
-		var search = this.search = new ZmSearch(searchParams);
 
-		var fetchId = (params.getFirstMsg && "1") || (params.getMatches && "hits") || (params.getAllMsgs && "all") ||
-					  (params.getUnreadMsgs && "u") || (params.getUnreadOrFirstMsg && "u1") || "0";
-		var convParams = {
+		var search = this.search = new ZmSearch(searchParams),
+			fetch = (params.fetch === true) ? ZmSetting.CONV_FETCH_UNREAD_OR_FIRST : params.fetch || ZmSetting.CONV_FETCH_NONE;
+
+		var	convParams = {
 			cid:		this.id,
 			callback:	(new AjxCallback(this, this._handleResponseLoad, [params, callback])),
-			fetchId:	fetchId,
+			fetch:      fetch,
 			markRead:	params.markRead,
 			noTruncate:	params.noTruncate,
-			needExp:	Boolean(fetchId)
+			needExp:	fetch !== ZmSetting.CONV_FETCH_NONE
 		};
 		search.getConv(convParams);
 	}
@@ -646,7 +642,7 @@ function(params, callback) {
 			callback.run(msg);
 		} else {
 			var respCallback = new AjxCallback(this, this._handleResponseGetFirstHotMsg, [params, callback]);
-			params.getFirstMsg = true;
+			params.fetch = ZmSetting.CONV_FETCH_FIRST;
 			this.load(params, respCallback);
 		}
 	} else {
