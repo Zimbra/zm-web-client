@@ -309,28 +309,28 @@
     <c:when test="${zm:boolean(context.isMessageSearch)}">
         <app:messageListView context="${context}"/>
     </c:when>
-    <c:when test="${context.isContactSearch and action eq 'view'}">
+    <c:when test="${zm:boolean(context.isContactSearch) and action eq 'view'}">
         <app:contactView context="${context}"/>
     </c:when>
-    <c:when test="${context.isContactSearch or context.isGALSearch}">
+    <c:when test="${zm:boolean(context.isContactSearch) or context.isGALSearch}">
         <app:contactListView context="${context}"/>
     </c:when>
-    <c:when test="${context.isTaskSearch}">
+    <c:when test="${zm:boolean(context.isTaskSearch)}">
         <app:taskListView context="${context}"/>
     </c:when>
-	<c:when test="${context.isVoiceMailSearch and action eq 'listen'}">
+	<c:when test="${zm:boolean(context.isVoiceMailSearch) and action eq 'listen'}">
 		<app:voiceMailView context="${context}"/>
 	</c:when>
-    <c:when test="${context.isVoiceMailSearch}">
+    <c:when test="${zm:boolean(context.isVoiceMailSearch)}">
         <app:voiceMailListView context="${context}"/>
     </c:when>
-    <c:when test="${context.isCallSearch}">
+    <c:when test="${zm:boolean(context.isCallSearch)}">
         <app:callListView context="${context}"/>
     </c:when>
-    <c:when test="${context.isBriefcaseSearch and (param.view eq 'dv' or empty param.view)}">
+    <c:when test="${zm:boolean(context.isBriefcaseSearch) and (param.view eq 'dv' or empty param.view)}">
         <app:briefcaseListView context="${context}"/>
     </c:when>
-    <c:when test="${context.isBriefcaseSearch and param.view eq 'ev'}">
+    <c:when test="${zm:boolean(context.isBriefcaseSearch) and param.view eq 'ev'}">
         <app:briefcaseExplorerView context="${context}"/>
     </c:when>
     <%--bug:56196
