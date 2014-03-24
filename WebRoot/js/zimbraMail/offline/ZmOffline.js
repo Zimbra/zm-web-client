@@ -427,6 +427,7 @@ function() {
 	ZmOffline.refreshStatusIcon(true);
 	var syncToken = localStorage.getItem("SyncToken");
 	if (syncToken) {
+		AjxDebug.println(AjxDebug.OFFLINE, "syncToken :: "+syncToken);
 		this._sendDeltaSyncRequest(syncToken);
 	}
 	else {
@@ -824,71 +825,77 @@ function() {
 };
 
 ZmOffline.prototype._sendOfflineRequest =
-function(result) {
+function(result, skipOfflineAttachmentUpload) {
 
     if (!result || result.length === 0) {
         return;
     }
 
-    var obj = result.shift();
-
-    if (obj) {
-        var methodName = obj.methodName;
-        if (methodName) {
-            if (methodName === "SendMsgRequest" || methodName === "SaveDraftRequest") {
-                var msg = obj[methodName].m;
-                var flags = msg.f;
-                var attach = msg.attach;
-                if (attach) {
-                    for (var j in attach) {
-                        if (attach[j] && attach[j].isOfflineUploaded) {
-                            return this._uploadOfflineAttachments(obj, msg, result);
-                        }
-                    }
-                }
-                if (flags && flags.indexOf(ZmItem.FLAG_OFFLINE_CREATED) !== -1) {
-                    msg.f = flags.replace(ZmItem.FLAG_OFFLINE_CREATED, "");//Removing the offline created flag
-                    delete msg.id;//Removing the temporary id
-                    delete msg.did;//Removing the temporary draft id
-                }
-            }
-            var params = {
-                noBusyOverlay : true,
-                asyncMode : true,
-                callback : this._handleResponseSendOfflineRequest.bind(this, obj, result),
-                errorCallback : this._handleErrorResponseSendOfflineRequest.bind(this, obj, result),
-                jsonObj : {}
-            };
-            params.jsonObj[methodName] = obj[methodName];
-            return appCtxt.getRequestMgr().sendRequest(params);
-        }
-    }
-
-    this._sendOfflineRequest(result);
+	if (skipOfflineAttachmentUpload) {
+		var idArray = [];
+		var oidArray = [];
+		// Bundle it together in a batch request
+		var params = {
+			jsonObj : {BatchRequest:{_jsns:"urn:zimbra", onerror:"continue"}},
+			asyncMode : true
+		};
+		params.errorCallback = params.callback = this._handleResponseSendOfflineRequest.bind(this, idArray, oidArray);
+		var batchRequest = params.jsonObj.BatchRequest;
+		result.forEach(function(obj) {
+			var methodName = obj.methodName;
+			if (methodName === "BatchRequest") {
+				$.extend(true, batchRequest, obj[methodName]);
+			}
+			else {
+				if (!batchRequest[methodName]) {
+					batchRequest[methodName] = [];
+				}
+				batchRequest[methodName].push(obj[methodName]);
+			}
+			idArray.push(obj.id);
+			oidArray.push(obj.oid);
+		});
+		appCtxt.getRequestMgr().sendRequest(params);
+	}
+	else {
+		var offlineAttachments = [];
+		result.forEach(function(obj) {
+			var methodName = obj.methodName;
+			if (methodName === "SendMsgRequest" || methodName === "SaveDraftRequest") {
+				var msg = obj[methodName].m;
+				var attach = msg && msg.attach;
+				if (attach) {
+					for (var j in attach) {
+						var attachmentObj = attach[j];
+						if (attachmentObj && attachmentObj.isOfflineUploaded) {
+							offlineAttachments.push(attachmentObj);
+						}
+					}
+				}
+				var flags = msg && msg.f;
+				if (flags && flags.indexOf(ZmItem.FLAG_OFFLINE_CREATED) !== -1) {
+					msg.f = flags.replace(ZmItem.FLAG_OFFLINE_CREATED, "");//Removing the offline created flag
+					if (!msg.f) {
+						delete msg.f;
+					}
+					delete msg.id;//Removing the temporary id
+					delete msg.did;//Removing the temporary draft id
+				}
+			}
+		});
+		this._uploadOfflineAttachments(offlineAttachments, result);
+	}
 };
 
 ZmOffline.prototype._handleResponseSendOfflineRequest =
-function(obj, result) {
-    this._sendOfflineRequest(result);
-    var notify = {
-        deleted : {
-            id : obj.id.toString()
-        },
-        modified : {
-            folder : [{
-                id : ZmFolder.ID_OUTBOX,
-                n : appCtxt.getById(ZmFolder.ID_OUTBOX).numTotal - 1
-            }]
-        }
-    };
-    appCtxt.getRequestMgr()._notifyHandler(notify);
-    ZmOfflineDB.deleteItemInRequestQueue(obj.oid);
-};
-
-ZmOffline.prototype._handleErrorResponseSendOfflineRequest =
-function(obj, result) {
-    this._sendOfflineRequest(result);
-    return true;
+function(idArray, oidArray) {
+	if (idArray.length > 0) {
+		var callback = ZmOffline.updateOutboxFolderCount.bind(window, 0);
+		ZmOfflineDB.deleteItem(idArray, ZmApp.MAIL, callback);
+	}
+	if (oidArray.length > 0) {
+		ZmOfflineDB.deleteItemInRequestQueue(oidArray);
+	}
 };
 
 ZmOffline.prototype._getFolder =
@@ -1114,57 +1121,71 @@ function(count) {
 };
 
 ZmOffline.prototype._uploadOfflineAttachments =
-function (obj, msg, result) {
-    var attach = msg.attach,
-        aidArray = attach.aid.split(",");
-
-    for (var i = 0; i < aidArray.length; i++) {
-        var aid = aidArray[i],
-            attachment = attach[aid];
-        if (attachment && attachment.isOfflineUploaded) {
-            var blob = AjxUtil.dataURItoBlob(attachment.data);
-            if (blob) {
-                blob.name = attachment.filename;
-                var callback = this._uploadOfflineAttachmentsCallback.bind(this, attachment.aid, obj, msg, result);
-                var errorCallback = this._uploadOfflineAttachmentsErrorCallback.bind(this, attachment.aid, obj, msg, result);
-                ZmComposeController.prototype._uploadImage(blob, callback, errorCallback);
-            }
-        }
-    }
+function (attachments, result) {
+	var attachment = attachments.shift();
+	if (attachment) {
+		var blob = AjxUtil.dataURItoBlob(attachment.data);
+		if (blob) {
+			blob.name = attachment.filename;
+			var callback = this._uploadOfflineAttachmentsCallback.bind(this, attachments, result, attachment.aid);
+			var errorCallback = this._uploadOfflineAttachmentsErrorCallback.bind(this, attachments, result, attachment.aid);
+			ZmComposeController.prototype._uploadImage(blob, callback, errorCallback);
+		}
+	}
+	else {
+		this._sendOfflineRequest(result, true);
+	}
 };
 
 ZmOffline.prototype._uploadOfflineAttachmentsCallback =
-function(attachmentId, obj, msg, result, uploadResponse) {
-    var attach = msg.attach,
-        isOfflineUploaded = false;
-
-    delete attach[attachmentId];
-    attach.aid = attach.aid.replace(attachmentId, uploadResponse[0].aid);
-    for (var j in attach) {
-        if (attach[j] && attach[j].isOfflineUploaded) {
-            isOfflineUploaded = true;
-        }
-    }
-    if (isOfflineUploaded === false) {
-        this._sendOfflineRequest(result.concat(obj));
-    }
+function(attachments, result, attachmentAid, uploadResponse) {
+	for (var i = 0; i < result.length; i++) {
+		var obj = result[i];
+		if (!obj) {
+			continue;
+		}
+		var methodName = obj.methodName;
+		if (methodName === "SendMsgRequest" || methodName === "SaveDraftRequest") {
+			var msg = obj[methodName].m;
+			var attach = msg && msg.attach;
+			var aid = attach && attach.aid;
+			if (aid && aid.indexOf(attachmentAid) !== -1) {
+				attach.aid = aid.replace(attachmentAid, uploadResponse[0].aid);
+				delete attach[attachmentAid];
+				break;
+			}
+		}
+	}
+	this._uploadOfflineAttachments(attachments, result);
 };
 
 ZmOffline.prototype._uploadOfflineAttachmentsErrorCallback =
-function(attachmentId, obj, msg, result) {
-    var attach = msg.attach,
-        isOfflineUploaded = false;
-
-    delete attach[attachmentId];
-    AjxUtil.arrayRemove(attach.aid, attachmentId);
-    for (var j in attach) {
-        if (attach[j] && attach[j].isOfflineUploaded) {
-            isOfflineUploaded = true;
-        }
-    }
-    if (isOfflineUploaded === false) {
-        this._sendOfflineRequest(result.concat(obj));
-    }
+function(attachments, result, attachmentAid) {
+	for (var i = 0; i < result.length; i++) {
+		var obj = result[i];
+		if (!obj) {
+			continue;
+		}
+		var methodName = obj.methodName;
+		if (methodName === "SendMsgRequest" || methodName === "SaveDraftRequest") {
+			var msg = obj[methodName].m;
+			var attach = msg && msg.attach;
+			var aid = attach && attach.aid;
+			if (aid && aid.indexOf(attachmentAid) !== -1) {
+				var aidArray = aid.split(",");
+				AjxUtil.arrayRemove(aidArray, attachmentAid);
+				if (aidArray.length > 0) {
+					delete attach.aid;
+				}
+				else {
+					attach.aid = aidArray.join();
+				}
+				delete attach[attachmentAid];//deleting the offline created attachment in the message node
+				break;
+			}
+		}
+	}
+	this._uploadOfflineAttachments(attachments, result);
 };
 
 ZmOffline.prototype._uploadOfflineInlineAttachments =

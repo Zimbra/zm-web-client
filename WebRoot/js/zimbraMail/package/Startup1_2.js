@@ -105,5 +105,3 @@ AjxPackage.require("zimbraMail.abook.ZmContactsApp");
 AjxPackage.require("zimbraMail.im.ZmImApp");
 AjxPackage.require("zimbraMail.briefcase.ZmBriefcaseApp");
 AjxPackage.require("zimbraMail.voicemail.ZmVoiceApp");
-
-AjxPackage.require("zimbraMail.offline.ZmOffline");

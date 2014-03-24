@@ -1872,7 +1872,6 @@ function(params) {
 
     jsonObj.methodName = methodName;
     msgNode.d = currentTime; //for displaying date and time in the outbox/Drafts folder
-    msgNode.id = msgNode.id || (origMsg && origMsg.id);
 
     if (msgNodeAttach && msgNodeAttach.aid) {
         var msgNodeAttachIds = msgNodeAttach.aid.split(",");
