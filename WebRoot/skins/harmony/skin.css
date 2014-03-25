@@ -561,6 +561,13 @@ TD.DwtListView-ColumnActive  {
 	border:none;
 }
 
+/* Plain Text Compose */
+
+.ZmHtmlEditor .ZmHtmlEditorTextArea {
+	border:1px solid @darken(AppC,25)@;
+	padding:0.25em;
+}
+
 /* mini-cal */
 .DwtCalendar {
 	border-top:1px solid @darken(AppC,25)@;
