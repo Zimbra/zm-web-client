@@ -1991,7 +1991,7 @@ function(action, msg, extraBodyText, noEditorUpdate) {
 	this._msgAttId = null;
 
 	if (extraBodyText) {
-		this.setComponent(ZmComposeView.BC_TEXT_PRE, extraBodyText);
+		this.setComponent(ZmComposeView.BC_TEXT_PRE, this._normalizeText(extraBodyText, htmlMode));
 	}
 
 	var compList = ZmComposeView.BC_ALL_COMPONENTS;
@@ -2362,7 +2362,7 @@ function(text, isHtml) {
 		
 	text = AjxStringUtil.trim(text);
 	if (isHtml) {
-            text = AjxStringUtil.trimHtml(text);
+        text = AjxStringUtil.trimHtml(text);
 	}
 	else {
 		text = text.replace(/\u0001|\u0002|\u0003|\u0004|\u0005|\u0006/g, "");	// remove markers
