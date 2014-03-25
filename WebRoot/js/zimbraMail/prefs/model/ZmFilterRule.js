@@ -475,7 +475,7 @@ ZmFilterRule.CONDITIONS[ZmFilterRule.C_BULK] = {
 };
 
 // map config keys to fields in a ZmCondition
-ZmFilterRule.CONDITIONS_KEY = {"subjectMod": "subjectModifier", "ops": "comparator",
+ZmFilterRule.CONDITIONS_KEY = {"subjectMod": "subjectMod", "ops": "comparator",
 							   "value": "value" /*, "valueMod": "valueModifier"*/};   //valueModifier was in the old CONDITIONS_KEY that I revived, but no longer seemed to work at all... no references to it.
 
 // listed in order we want to display them in the SELECT
