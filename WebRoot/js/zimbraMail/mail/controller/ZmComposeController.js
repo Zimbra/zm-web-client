@@ -226,7 +226,7 @@ function(params) {
 	}
 
 	params.action = params.action || ZmOperation.NEW_MESSAGE;
-	params.inNewWindow = params.inNewWindow || this._app._inNewWindow(params.ev);
+	params.inNewWindow = !this.isHidden && (params.inNewWindow || this._app._inNewWindow(params.ev));
 	this._msgSent = false;
 	if (params.inNewWindow) {
         var msgId = params.msg ? params.msg.nId : (this._msg ? this._msg.nId : Dwt.getNextId());
