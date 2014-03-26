@@ -133,11 +133,15 @@ function() {
 
 	var editor = this.getEditor();
 
-	if (!editor || !editor.getContentAreaContainer()) {
+	if (!editor || !editor.getContentAreaContainer() || !editor.getBody()) {
+		if (this.getVisible()) {
+			setTimeout(ZmHtmlEditor.prototype._resetSize.bind(this), 100);
+		}
 		return;
 	}
 
-	var bounds = this.boundsForChild(editor.getContentAreaContainer());
+	var iframe = Dwt.byId(this._iFrameId);
+	var bounds = this.boundsForChild(iframe);
 	var x = bounds.width, y = bounds.height;
 
 	if (x <= 0 || y <= 0) {
@@ -145,7 +149,7 @@ function() {
 	}
 
     //Subtracting editor toolbar heights
-    AjxUtil.foreach(Dwt.byClassName('mce-toolbar',
+    AjxUtil.foreach(Dwt.byClassName('mce-toolbar-grp',
                                     editor.getContainer()),
                     function(elem) {
                         y -= Dwt.getSize(elem).y;
@@ -157,7 +161,20 @@ function() {
         y = y - Dwt.getSize(spellCheckModeDiv).y;
     }
 
-    editor.theme.resizeTo(Math.max(0, x), Math.max(0, y));
+	if (this.getVisible() && (x < 0 || y < 0)) {
+		setTimeout(ZmHtmlEditor.prototype._resetSize.bind(this), 100);
+		return;
+	}
+
+	Dwt.setSize(iframe, Math.max(0, x), Math.max(0, y));
+
+	var body = editor.getBody();
+	var bounds =
+		Dwt.insetBounds(Dwt.insetBounds({x: 0, y: 0, width: x, height: y},
+		                                Dwt.getMargins(body)),
+		                Dwt.getInsets(body));
+
+	Dwt.setSize(body, Math.max(0, bounds.width), Math.max(0, bounds.height));
 };
 
 ZmHtmlEditor.prototype.focus =
@@ -850,11 +867,7 @@ ZmHtmlEditor.prototype.onInit = function(ev) {
 
     obj._editorInitialized = true;
 
-    // issue the resize call five times in order to ensure that we get it right
-    // on all browsers
-    for (var i = 0; i < 5; i++) {
-        setTimeout(this._resetSize.bind(this), i * 200);
-    }
+    this._resetSize();
 
     AjxUtil.foreach(this._initCallbacks, function(fn) { fn.run() });
 };
