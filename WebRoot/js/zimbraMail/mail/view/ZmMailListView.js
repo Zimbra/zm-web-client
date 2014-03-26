@@ -198,6 +198,8 @@ function(newWidth, newHeight) {
 	this.setSize(newWidth, newHeight);
 	var height = (newHeight == Dwt.DEFAULT) ? newHeight : newHeight - DwtListView.HEADERITEM_HEIGHT;
 	Dwt.setSize(this._parentEl, newWidth, height);
+	//recalculate the css styles after resize
+	this.recalculateCssStyle();
 };
 
 ZmMailListView.prototype.calculateMaxEntries =
