@@ -39,7 +39,7 @@ ZmSocialApp.prototype._registerApp = function() {
 		nameKey:            "socialTabTitle",
 		icon:               "Globe",
 		chooserTooltipKey:  "goToSocial",
-		chooserSort:        50,
+		chooserSort:        32,
 		defaultSort:        100,
 		upsellUrl:			ZmSetting.SOCIAL_EXTERNAL_URL
 	});

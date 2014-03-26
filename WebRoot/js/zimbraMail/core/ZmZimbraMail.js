@@ -3474,8 +3474,6 @@ function(appName) {
 
 ZmZimbraMail.prototype._displayUpsellView =
 function(appName) {
-	var title = [ZmMsg.zimbraTitle, appName].join(": ");
-	Dwt.setTitle(title);
 	appCtxt.getApp(this._getDefaultStartAppName()).setOverviewPanelContent(false);
 };
 

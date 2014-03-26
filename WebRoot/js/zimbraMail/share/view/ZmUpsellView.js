@@ -20,6 +20,7 @@
  */
 ZmUpsellView = function(params) {
 	DwtControl.call(this, params);
+	this._appName = params.appName;
 	this._createView(params);
 }
 ZmUpsellView.prototype = new DwtControl;
@@ -68,4 +69,8 @@ function() {
 		return height;
 	}
 	return 0;
+};
+
+ZmUpsellView.prototype.getTitle = function() {
+	return [ ZmMsg.zimbraTitle, appCtxt.getApp(this._appName).getDisplayName() ].join(": ");
 };
