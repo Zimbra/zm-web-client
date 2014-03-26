@@ -39,6 +39,9 @@ Ext.define('ZCS.model.address.ZtAutoCompleteReader', {
             data.name = emailAddressObj.get('name');
             data.displayName = node.display || emailAddressObj.get('displayName');
         }
+		if (node.display) {
+			data.name = node.display;
+		}
 		data.isGroup = node.isGroup;
 		data.ranking = node.ranking;
         data.matchType = node.type;
