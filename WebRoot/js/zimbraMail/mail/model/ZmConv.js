@@ -221,6 +221,9 @@ function(callback, result) {
 		//don't recreate if it already exists, so we don't lose listeners.. (see ZmConvView2.prototype.set)
 		this.msgs.removeAllItems();
 	}
+	if (this.search && !this.msgs.search) {
+		this.msgs.search = this.search;
+	}
 	this.msgs.setHasMore(false);
 	this._loaded = true;
 
@@ -253,6 +256,9 @@ function(msg, index) {
 		this.msgs.convId = this.id;
 		this.msgs.addChangeListener(this._listChangeListener);
 		this.msgs.setHasMore(false);
+	}
+	if (this.search && !this.msgs.search) {
+		this.msgs.search = this.search;
 	}
 	this.msgs.add(msg, index);
 	this.msgIds = [];
@@ -649,7 +655,15 @@ function(params, callback) {
 		// do our best to return a "realized" message by checking cache
 		if (!msg && this.msgIds && this.msgIds.length) {
 			var id = this.msgIds[0];
-			msg = appCtxt.getById(id) || new ZmMailMsg(id);
+			msg = appCtxt.getById(id);
+			if (!msg) {
+				if (!this.msgs) {
+					this.msgs = new ZmMailList(ZmItem.MSG);
+					this.msgs.convId = this.id;
+					this.msgs.addChangeListener(this._listChangeListener);
+				}
+				msg = new ZmMailMsg(id, this.msgs);
+			}
 		}
 		return msg;
 	}
