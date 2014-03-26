@@ -552,7 +552,8 @@ function(params, noRender, callback, errorCallback) {
 	var search = new ZmSearch(params);
 
 	// force drafts folder into msg view
-	if (searchFor === ZmId.SEARCH_MAIL && !params.isViewSwitch && search.folderId && Number(search.folderId) == ZmFolder.ID_DRAFTS) {
+	//Also force dumpster search into msg view
+	if (searchFor === ZmId.SEARCH_MAIL && (params.inDumpster || (!params.isViewSwitch && search.folderId && search.folderId == ZmFolder.ID_DRAFTS))) {
 		search.types = AjxVector.fromArray([ZmItem.MSG]);
 		search.isDefaultToMessageView = true;
 	}
