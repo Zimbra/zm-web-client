@@ -397,29 +397,32 @@ ZmConvListController.prototype._getSecondaryToolBarOps = function() {
 };
 
 ZmConvListController.prototype._resetOperations = function(parent, num) {
-
 	ZmDoublePaneController.prototype._resetOperations.apply(this, arguments);
+	this._resetForwardConv(parent, num);
+};
 
-	var canForwardConv = false,
-		couldForwardConv = true;
+ZmConvListController.prototype._resetForwardConv = function(parent, num) {
 
-	if (num === 1) {
-		var clv = this._mailListView,
-			item = clv.getSelection()[0];
+	var doShow = true,      // show if 'forward conv' applies at all
+		doEnable = false;   // enable if conv has multiple msgs
+
+	if (num == null || num === 1) {
+
+		var item = this._conv || this._mailListView.getSelection()[0];
 
 		if (item && item.type === ZmItem.CONV) {
-			if (clv._getDisplayedMsgCount(item) > 1) {
-				canForwardConv = true;
+			if (this._mailListView && this._mailListView._getDisplayedMsgCount(item) > 1) {
+				doEnable = true;
 			}
 		}
 		else {
-			couldForwardConv = false;
+			doShow = false;
 		}
 	}
 	var op = parent.getOp(ZmOperation.FORWARD_CONV);
 	if (op) {
-		op.setVisible(couldForwardConv);
-		parent.enable(op, canForwardConv);
+		op.setVisible(doShow);
+		parent.enable(ZmOperation.FORWARD_CONV, doEnable);
 	}
 };
 
