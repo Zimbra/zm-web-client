@@ -843,7 +843,7 @@ function(search, callback, errorCallback) {
 		});
 
 		search.sortedResult = [];
-		var index = objectStore.index("lastname");
+		var index = objectStore.index("fileasstr");
 		var successHandler = function(ev) {
 			var result = ev.target.result;
 			if (result) {
@@ -852,11 +852,16 @@ function(search, callback, errorCallback) {
 				result['continue']();
 			}
 		};
-		if (search.lastSortVal) {
-			var endSortVal = search.endSortVal || "a";
+		var lastSortVal = search.lastSortVal;
+		if (lastSortVal) {
 			var rangeArray = [];
-			rangeArray.push(IDBKeyRange.bound(search.lastSortVal, endSortVal, false, true));
-			rangeArray.push(IDBKeyRange.bound(search.lastSortVal.toLowerCase(), endSortVal.toLowerCase(), false, true));
+			if (isNaN(lastSortVal)) {//For alphabet case
+				rangeArray.push(IDBKeyRange.bound(lastSortVal, lastSortVal + '\uffff'));
+				rangeArray.push(IDBKeyRange.bound(lastSortVal.toLowerCase(), lastSortVal.toLowerCase() + '\uffff'));
+			}
+			else { // for numerical case
+				rangeArray.push(IDBKeyRange.bound(lastSortVal, search.endSortVal, false, true));
+			}
 			rangeArray.forEach(function(range) {
 				index.openKeyCursor(range).onsuccess = successHandler;
 			});

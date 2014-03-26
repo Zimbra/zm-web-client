@@ -79,7 +79,7 @@ ZmOrganizer = function(params) {
 	this.noSuchFolder = params.broken; // Is this a link to some folder that ain't there.
 	this._isAdmin = this._isReadOnly = this._hasPrivateAccess = null;
     this.retentionPolicy = params.retentionPolicy;
-    this.webOfflineSyncDays = params.webOfflineSyncDays || 0;
+	this.webOfflineSyncDays = params.webOfflineSyncDays;
 
 	this.color =
         params.color ||
@@ -1524,7 +1524,9 @@ function(obj, details) {
             this.retentionPolicy = null;
         }
     }
-    this.webOfflineSyncDays = obj.webOfflineSyncDays || 0;
+	if (obj.hasOwnProperty("webOfflineSyncDays")) {
+		this.webOfflineSyncDays = obj.webOfflineSyncDays;
+	}
 
 	// Send out composite MODIFY change event
 	if (doNotify) {
