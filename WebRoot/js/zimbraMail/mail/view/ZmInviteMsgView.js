@@ -182,16 +182,6 @@ function(msg) {
 			this._inviteMoveSelect.setVisible(visible);
 		}
 	}
-
-    // Bug fix: 77237. If invite is cancelled and participation status is NE, force change it to DE
-    if (this._invite.components && this._invite.components[0].method === ZmId.OP_CANCEL) {
-        var attendeeCount = this._invite.components[0].at.length;
-        for (var i = 0; i < attendeeCount; i++) {
-            if (this._invite.components[0].at[i].ptst === ZmCalBaseItem.PSTATUS_NEEDS_ACTION) {
-                this._invite.components[0].at[i].ptst = ZmCalBaseItem.PSTATUS_DECLINED;
-            }
-        }
-    }
 };
 
 /**
@@ -512,8 +502,15 @@ function(subs, sentBy, sentByAddr, obo) {
         subs.counterInvMsg =  (!sentByAddr || sentByAddr == from) ?
             AjxMessageFormat.format(ZmMsg.counterInviteMsg, [from]):AjxMessageFormat.format(ZmMsg.counterInviteMsgOnBehalfOf, [sentByAddr, from]);
 	}
+	// Fix for bug: 88052 and 77237. Display cancellation banner to organizer or attendee
+	else if (isInviteCancelled) {
+		var organizer = this._invite.getOrganizerName() || this._invite.getOrganizerEmail();
+		subs.ptstMsg = AjxMessageFormat.format(ZmMsg.inviteMsgCancelled, organizer.split());
+		subs.ptstIcon = ZmCalItem.getParticipationStatusIcon(ZmCalBaseItem.PSTATUS_DECLINED);
+		subs.ptstClassName = "InviteStatusDecline";
+	}
 	// if this an action'ed invite, show the status banner
-	else if ((isOrganizer && this._invite.hasAttendeeResponse()) || isInviteCancelled) {
+	else if (isOrganizer && this._invite.hasAttendeeResponse()) {
 		var attendee = this._invite.getAttendees()[0];
 		var ptst = attendee && attendee.ptst;
 		if (ptst) {
@@ -530,13 +527,7 @@ function(subs, sentBy, sentByAddr, obo) {
 					subs.ptstClassName = "InviteStatusAccept";
 					break;
 				case ZmCalBaseItem.PSTATUS_DECLINED:
-                    if (isInviteCancelled) {
-                        var organizer = this._invite.getOrganizerName() || this._invite.getOrganizerEmail();
-                        subs.ptstMsg = AjxMessageFormat.format(ZmMsg.inviteMsgCancelled, organizer.split());
-                    }
-                    else {
-					    ptstStr = (!sentBy) ? ZmMsg.inviteMsgDeclined : ZmMsg.inviteMsgOnBehalfOfDeclined;
-                    }
+					ptstStr = (!sentBy) ? ZmMsg.inviteMsgDeclined : ZmMsg.inviteMsgOnBehalfOfDeclined;
 					subs.ptstClassName = "InviteStatusDecline";
 					break;
 				case ZmCalBaseItem.PSTATUS_TENTATIVE:
