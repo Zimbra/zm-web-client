@@ -754,7 +754,7 @@ function(msg, isDraft, bodyContent) {
 			htmlPart.setContent(bodyContent);
 		}
 
-		var content = AjxStringUtil.defangHtmlContent(htmlPart.getContent());
+		var content = "<html><body>" + AjxStringUtil.defangHtmlContent(htmlPart.getContent()) + "</body></html>";
 
 		htmlPart.setContent(content);
 
