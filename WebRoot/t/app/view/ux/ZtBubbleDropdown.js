@@ -160,7 +160,7 @@ Ext.define('ZCS.view.ux.ZtBubbleDropdown', {
 					} else {
 						this.menu.hide();
 					}
-				}, 100, this);
+				}, 750, this);
 			}
 		}
 	},
