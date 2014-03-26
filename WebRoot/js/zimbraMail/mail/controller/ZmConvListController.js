@@ -408,10 +408,11 @@ ZmConvListController.prototype._resetForwardConv = function(parent, num) {
 
 	if (num == null || num === 1) {
 
-		var item = this._conv || this._mailListView.getSelection()[0];
+		var mlv = this._mailListView,
+			item = this._conv || mlv.getSelection()[0];
 
 		if (item && item.type === ZmItem.CONV) {
-			if (this._mailListView && this._mailListView._getDisplayedMsgCount(item) > 1) {
+			if (mlv && mlv._getDisplayedMsgCount(item) > 1) {
 				doEnable = true;
 			}
 		}
