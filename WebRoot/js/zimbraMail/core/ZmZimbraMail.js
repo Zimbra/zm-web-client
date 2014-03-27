@@ -3443,14 +3443,11 @@ function(appName) {
 
 	var viewName = [appName, "upsell"].join("_");
 	if (!this._upsellView[appName]) {
-		var isSocial = (appName === ZmApp.SOCIAL);  // assume Social is Zimbra Community for now
 		var upsellView = this._upsellView[appName] = new ZmUpsellView({
 			parent:     this._shell,
 			posStyle:   Dwt.ABSOLUTE_STYLE,
 			className:  'ZmUpsellView',
-			appName:    appName,
-			iframeId:   isSocial ? 'fragment-41812_iframe' : null
-			// for Zimbra Community, may need to add client_id and url IFRAME attrs for OAuth
+			appName:    appName
 		});
 
 		var elements = {}, callbacks = {};

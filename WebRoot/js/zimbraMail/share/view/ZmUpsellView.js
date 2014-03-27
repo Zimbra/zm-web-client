@@ -20,29 +20,56 @@
  */
 ZmUpsellView = function(params) {
 	DwtControl.call(this, params);
-	this._appName = params.appName;
-	this._createView(params);
-}
+	this._createFrame(params);
+};
+
 ZmUpsellView.prototype = new DwtControl;
 ZmUpsellView.prototype.constructor = ZmUpsellView;
 
 ZmUpsellView.prototype.isZmUpsellView = true;
 ZmUpsellView.prototype.toString = function() { return "ZmUpsellView"; };
 
-ZmUpsellView.prototype._createView = function(params) {
+ZmUpsellView.prototype._createFrame = function(params) {
 
 	params = params || {};
 
-	var upsellUrl = appCtxt.get(ZmApp.UPSELL_URL[params.appName]),
-		el = this.getHtmlElement(),
+	var app = this._appName = params.appName;
+	var isSocial = (app === ZmApp.SOCIAL);  // assume Social is Zimbra Community
+	// Note: for Zimbra Community, may need to add client_id and url IFRAME attrs at some point for OAuth
+
+	var upsellUrl = appCtxt.get(ZmApp.UPSELL_URL[app]),
 		htmlArr = [],
-		idx = 0,
-		iframeId = params.iframeId || 'iframe_' + this.getHTMLElId();
+		idx = 0;
+
+	var	iframeId = this._iframeId = isSocial ? 'fragment-41812_iframe' : 'iframe_' + this.getHTMLElId();
 
 	htmlArr[idx++] = "<iframe id='" + iframeId + "' width='100%' height='100%' frameborder='0' src='";
 	htmlArr[idx++] = upsellUrl;
 	htmlArr[idx++] = "'>";
-	el.innerHTML = htmlArr.join("");
+	this.setContent(htmlArr.join(""));
+
+	var iframe = document.getElementById(iframeId);
+	if (iframe) {
+		var callback = ZmUpsellView.handleMessage.bind(null, this);
+		if (window.addEventListener) {
+			window.addEventListener('message', callback, false);
+		}
+		else if (window.attachEvent) {
+			window.attachEvent('onmessage', callback);
+		}
+	}
+};
+
+ZmUpsellView.handleMessage = function(view, event) {
+
+	var iframe = document.getElementById(view._iframeId);
+	if (iframe && event.source === iframe.contentWindow) {
+		var data = AjxStringUtil.parseQueryString(event.data || '');
+		var isUnread = (data.unread && data.unread.toLowerCase() === 'true');
+		if (data.type === 'community-notification' && isUnread) {
+			appCtxt.getApp(view._appName).startAlert();
+		}
+	}
 };
 
 ZmUpsellView.prototype.setBounds =
