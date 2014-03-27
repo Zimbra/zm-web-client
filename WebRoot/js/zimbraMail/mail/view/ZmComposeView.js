@@ -3477,9 +3477,11 @@ function(msg, action, incOptions, includeInlineImages, includeInlineAtts) {
 	var appCtxt = window.parentAppCtxt || window.appCtxt
 	var messages = [];
 
+	var hasAttachments = msg && msg.attachments && msg.attachments.length > 0;
+
 	if (!this._originalAttachmentsInitialized) {  //only the first time we determine which attachments are original
 		this._originalAttachments = []; //keep it associated by label and size (label => size => true) since that's the only way the client has to identify attachments from previous msg version.
-		this._hideOriginalAttachments = msg && msg.hasAttach && (action === ZmOperation.REPLY || action === ZmOperation.REPLY_ALL);
+		this._hideOriginalAttachments = msg && hasAttachments && (action === ZmOperation.REPLY || action === ZmOperation.REPLY_ALL);
 	}
 	if (!(this._msgIds && this._msgIds.length) &&
 		((incOptions && incOptions.what === ZmSetting.INC_ATTACH) || action === ZmOperation.FORWARD_ATT))
@@ -3487,7 +3489,7 @@ function(msg, action, incOptions, includeInlineImages, includeInlineAtts) {
 		html = AjxTemplate.expand("mail.Message#ForwardOneMessage", {message:msg});
 		this._attachCount = 1;
 	}
-	else if (msg && (msg.hasAttach || includeInlineImages || includeInlineAtts || (action === ZmComposeView.ADD_ORIG_MSG_ATTS)))
+	else if (msg && (hasAttachments || includeInlineImages || includeInlineAtts || (action === ZmComposeView.ADD_ORIG_MSG_ATTS)))
 	{
 		var attInfo = msg.getAttachmentInfo(false, includeInlineImages, includeInlineAtts);
 
