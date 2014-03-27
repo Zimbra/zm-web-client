@@ -718,8 +718,7 @@ function(id, content) {
         paste_retain_style_properties : "all",
 		paste_data_images: true,
         paste_remove_styles_if_webkit : false,
-        paste_preprocess : ZmHtmlEditor.pastePreProcess,
-        paste_postprocess : ZmHtmlEditor.pastePostProcess,
+        paste_postprocess : this.pastePostProcess.bind(this),
 		setup : function(ed) {
             ed.on('LoadContent', obj.onLoadContent.bind(obj));
             ed.on('PostRender', obj.onPostRender.bind(obj));
@@ -2254,30 +2253,9 @@ function(menu) {
 };
 
 /*
- * TinyMCE paste preprocess Callback function which will be executed first before the default preprocess function
- */
-ZmHtmlEditor.pastePreProcess =
-function(pl, o) {
-    if (!pl || !o) {
-        return;
-    }
-    // Detect Word content and process it more aggressive
-    // copied from plugins/paste/editor_plugin_src.js 393
-    if (/class="?Mso|style="[^"]*\bmso-|w:WordDocument/i.test(o.content) || o.wordContent) {
-        var dom = pl.editor.dom;
-        if (!o.node) {
-            // Create DOM structure
-            o.node = dom.create('div', 0, o.content);
-        }
-        dom.remove(dom.select("style", o.node));//Remove the style tags in the pasted content if it is copied from word
-        o.content = o.node.innerHTML;
-    }
-};
-
-/*
  * TinyMCE paste Callback function to execute after the contents has been converted into a DOM structure.
  */
-ZmHtmlEditor.pastePostProcess =
+ZmHtmlEditor.prototype.pastePostProcess =
 function(pl, o) {
     if (!pl || !o || !o.node || !o.target) {
         return;
@@ -2309,11 +2287,6 @@ function(pl, o) {
 
     //Finding all paragraphs in the pasted content and set the margin as 0
     dom.setStyle(dom.select("p", o.node), "margin", "0");
-
-    //Bug fix for 71074
-    if (editor.undoManager) {
-        editor.undoManager.add();
-    }
 };
 
 ZmHtmlEditor.prototype.getTabGroupMember = function() {
