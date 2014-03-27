@@ -23,10 +23,10 @@ tinyMCE.getlanguage = function(locale)
     if (tinymce.inArray(tinyMCE.locale_list, locale) >= 0)
         return locale;
 
-    var language = locale.substr(0, 2);
+    var language = locale.split('_', 1)[0];
 
     if (tinymce.inArray(tinyMCE.locale_list, language) >= 0)
-        return locale;
+        return language;
 
     // AFAICT both Taiwan and Hong-Kong use Traditional Chinese
     if (locale === "zh_HK" && tinymce.inArray(tinyMCE.locale_list, "zh_TW") >= 0)
