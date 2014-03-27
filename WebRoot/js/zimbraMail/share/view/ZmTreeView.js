@@ -423,7 +423,11 @@ function(org, child) {
 
 	// Within the Searches tree, only show saved searches that return a type that belongs to this app
 	if (this.type === ZmOrganizer.SEARCH && child.type === ZmOrganizer.SEARCH && this._overview.appName) {
-		var common = AjxUtil.intersection(child.search.types.getArray(), ZmApp.SEARCH_TYPES[this._overview.appName]);
+		var searchTypes = child.search.types && child.search.types.getArray();
+		if (!searchTypes || searchTypes.length === 0) {
+			searchTypes = [ ZmItem.MSG ];   // search with no types defaults to "message"
+		}
+		var common = AjxUtil.intersection(searchTypes, ZmApp.SEARCH_TYPES[this._overview.appName]);
 		if (common.length === 0) {
 			return false;
 		}
