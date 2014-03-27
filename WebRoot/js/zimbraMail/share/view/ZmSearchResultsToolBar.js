@@ -73,7 +73,8 @@ function() {
 			id:						DwtId.makeId(ZmId.WIDGET_INPUT, idContext),
 			bubbleAddedCallback:	this._bubbleChange.bind(this),
 			bubbleRemovedCallback:	this._bubbleChange.bind(this),
-			noOutsideListening:		true
+			noOutsideListening:		true,
+			type:					ZmId.SEARCH
 		}
 		var aif = this._searchField = new ZmAddressInputField(aifParams);
 		aif.reparentHtmlElement(inputFieldCell);

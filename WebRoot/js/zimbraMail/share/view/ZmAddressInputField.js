@@ -226,7 +226,7 @@ function(bubble, index, noFocus) {
 
 	var bubbleId = bubble._htmlElId;
 	this._bubble[bubbleId] = bubble;
-	this._addressHash[bubble.email] = bubbleId;
+	this._addressHash[bubble.hashKey] = bubbleId;
 
 	if (!noFocus) {
 		this.focus();
@@ -269,7 +269,7 @@ function(bubbleId, skipNotify) {
 
 	this._bubble[bubbleId] = null;
 	delete this._bubble[bubbleId];
-	delete this._addressHash[bubble.email];
+	delete this._addressHash[bubble.hashKey];
 	this._numBubbles--;
 
 	if (this._numBubbles == 0) {
@@ -327,7 +327,9 @@ function(text, add, skipNotify, invokeAutocomplete) {
 	if (!add) {
 		this.clear();
 	}
-	if (!text) { return; }
+	if (!text) {
+		return;
+	}
 
 	var index = null;
 	if (this._editModeIndex != null) {
@@ -335,7 +337,19 @@ function(text, add, skipNotify, invokeAutocomplete) {
 	}
 
 	var addrs = AjxEmailAddress.parseEmailString(text);
-	var good = addrs.good && addrs.good.getArray();
+	var good, bad;
+	if (this.type === ZmId.SEARCH) {
+		// search field query isn't supposed to be validated for emails
+		good = addrs.all.getArray();
+		bad = [];
+		// skip notify because we don't need to trigger search on text to bubble conversion
+		skipNotify = true;
+	}
+	else {
+		good = addrs.good.getArray();
+		bad = addrs.bad.getArray();
+	}
+
 	for (var i = 0; i < good.length; i++) {
 		var addr = good[i];
 		if ((addr && !this._addressHash[addr.address])) {
@@ -348,7 +362,6 @@ function(text, add, skipNotify, invokeAutocomplete) {
 		}
 	}
 
-	var bad = addrs.bad && addrs.bad.getArray();
 	this._setInputValue(bad.length ? bad.join(this._separator) : "");
 	if (invokeAutocomplete && bad.length) {
 		this._aclv.autocomplete(this.getInputElement());
@@ -1044,7 +1057,9 @@ ZmAddressInputField.prototype._leaveEditMode =
 function(restore) {
 
 	DBG.println("aif", "LEAVE edit mode");
-	if (!this._editMode) { return; }
+	if (!this._editMode) {
+		return;
+	}
 
 	if (this._holder.lastChild != this._input) {
 		this._holder.appendChild(this._input);
@@ -1453,6 +1468,8 @@ ZmAddressBubble = function(params) {
 	var addrObj = this.addrObj = params.addrObj || (addrContent && AjxEmailAddress.parse(addrContent));
 	this.address = params.address || (addrObj && addrObj.toString());
 	this.email = params.email = params.email || (addrObj && addrObj.getAddress()) || "";
+	// text search bubbles won't have anything in the "email" field so we need to use "address" for hash lookup
+	this.hashKey = this.type === ZmId.SEARCH ? this.address : this.email;
 	var ac = window.parentAppCtxt || window.appCtxt;
 	this.canExpand = params.canExpand = params.canExpand || ac.isExpandableDL(this.email);
 	
