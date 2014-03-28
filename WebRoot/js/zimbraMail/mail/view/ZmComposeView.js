@@ -817,7 +817,7 @@ ZmComposeView.prototype._getEditorContent =
 function(leaveMarkers) {
 	var content = "";
 	if (this._htmlEditor) {
-		content = this._htmlEditor.getContent();
+		content = this._htmlEditor.getContent(true);
 		if (!leaveMarkers && (this._composeMode === Dwt.TEXT)) {
 			content = content.replace(/\u0001|\u0002|\u0003|\u0004|\u0005|\u0006/g, "");	// remove markers
 		}
