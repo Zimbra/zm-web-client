@@ -398,7 +398,7 @@ function(hdr, htmlMode) {
 ZmMailMsg.prototype.isHtmlMail =
 function() {
     if (this.isInvite()) {
-        return this.invite.getComponentDescriptionHtml() != null;
+		return this.invite.isHtmlInvite();
     }
     else {
         return this.getBodyPart(ZmMimeTable.TEXT_HTML) != null;

@@ -1114,3 +1114,15 @@ function() {
 	var att = this.getAttendees();
 	return (att.length > 0 && att[0].ptst != ZmCalBaseItem.PSTATUS_NEEDS_ACTION);
 };
+
+/**
+ * Checks if this invite has html description.
+ *
+ * @return	{Boolean}	<code>true</code> if this invite has HTML description
+ */
+ZmInvite.prototype.isHtmlInvite =
+function() {
+	var comp = this.getComponent(0);
+	var htmlContent = comp && comp.descHtml;
+	return (htmlContent && htmlContent[0] && htmlContent[0]._content) ? true : false;
+};
