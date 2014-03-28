@@ -36,3 +36,27 @@ UtAjxStringUtil.urlDecode = function() {
 };
 
 UT.test("AjxStringUtil.urlDecode", UtAjxStringUtil.urlDecode);
+
+
+UtAjxStringUtil.clipFile = function() {
+	ZmUnitTestUtil.log("starting AjxStringUtil.clipFile test");
+
+	UT.expect(13);
+
+	UT.equal(AjxStringUtil.clipFile('kaflaflibob', 11), 'kaflaflibob');
+	UT.equal(AjxStringUtil.clipFile('kaflaflibob.', 12), 'kaflaflibob.');
+	UT.equal(AjxStringUtil.clipFile('kaflaflibob.flaf', 12), 'kaflaflibob.flaf');
+	UT.equal(AjxStringUtil.clipFile('kaflaflibob.flaf', 8), 'kafl\u2026bob.flaf');
+	UT.equal(AjxStringUtil.clipFile('kaflaflibob', 9), 'kafl\u2026ibob');
+	UT.equal(AjxStringUtil.clipFile('blyf.kaflaflibob.flaf', 8), 'blyf\u2026bob.flaf');
+	UT.equal(AjxStringUtil.clipFile('flaf.kaflaflibob', 8), 'flaf.kaflaflibob');
+	UT.equal(AjxStringUtil.clipFile('.kaflaflibob', 8), '.kaf\u2026bob');
+	UT.equal(AjxStringUtil.clipFile('kaflaflibob', 11).length, 11);
+	UT.equal(AjxStringUtil.clipFile('kaflaflibob', 9).length, 9);
+	UT.equal(AjxStringUtil.clipFile('kaflaflibob', 6).length, 6);
+	UT.equal(AjxStringUtil.clipFile('blyf.kaflaflibob.flaf', 8).length, 8 + 5);
+	UT.equal(AjxStringUtil.clipFile('.kaflaflibob', 8).length, 8);
+};
+
+UT.test("AjxStringUtil.clipFile", UtAjxStringUtil.clipFile);
+
