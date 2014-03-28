@@ -168,7 +168,9 @@ Ext.define('ZCS.controller.mail.ZtConvListController', {
 	        convItem.removeCls('x-item-pressed');
 	        convItem.removeCls('x-item-swiping');
 		}
-		slidingEl.translate(0);
+		if (this.lastItemLastX !== 0) {
+			slidingEl.translate(0);
+		}
 		convItem.deleteActive = false;
 	},
 

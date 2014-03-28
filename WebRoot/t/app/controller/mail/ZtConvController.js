@@ -182,23 +182,21 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 		Ext.Logger.info("conv controller: show conv " + conv.getId());
         //</debug>
 
-		this.callParent(arguments);
+        //Set item ourselves instead of using the parent function
+        //if we use the parent showItem, then it clears the toolbar
+        //Since we are going to update the toolbar anyway, don't clear it.
+		this.setItem(conv);
 
-		var curFolder = ZCS.session.getCurrentSearchOrganizer(),
+		var me = this,
+			curFolder = ZCS.session.getCurrentSearchOrganizer(),
 			curFolderId = curFolder && curFolder.get('zcsId'),
 			store = this.getStore(),
 			isDraft = (curFolderId === ZCS.constant.ID_DRAFTS),
 			remoteAccountId = conv.get('isShared') && conv.get('accountId'),
 			title = Ext.String.htmlEncode(conv.get('subject') || ZtMsg.noSubject),
-			msgListView = this.getMsgListView();
+			msgListView = this.getMsgListView(),
+			quickReply = this.getQuickReply();
 
-		// Make sure the organizer button stays.
-		ZCS.app.fireEvent('updatelistpanelToggle', this.getOrganizerTitle(), ZCS.session.getActiveApp());
-
-		var quickReply = this.getQuickReply();
-		if (quickReply) {
-			quickReply.show();
-		}
 
 		this.setHandleUpdateDataEvent(false);
 
@@ -215,11 +213,15 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 					if (quickReply) {
 						this.setQuickReplyPlaceholderText(this.getQuickReplyPlaceholderText());
 						quickReply.down('titlebar').setTitle(this.getQuickReplyTitleText());
+						quickReply.show();
 					}
 
 					// Hate to use a timer here, but couldn't find an event that fires after the msgListView has
 					// rendered. The Sencha List component doesn't fire 'show' or 'painted'.
 					Ext.defer(msgListView.scrollToFirstExpandedMsg, 100, msgListView);
+
+					// Make sure the organizer button stays.
+					ZCS.app.fireEvent('updatelistpanelToggle', me.getOrganizerTitle(), ZCS.session.getActiveApp());
 				}
 			},
 			failure: function() {
@@ -809,24 +811,32 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 
 		params = params || {};
 		var app = ZCS.util.getAppFromObject(this),
-			hideAll = !this.getItem() || params.hideAll;
+			hideAll = !this.getItem() || params.hideAll,
+			hideThisButton = true;
 
 		Ext.each(ZCS.constant.ITEM_BUTTONS[app], function(button) {
-			this.showButton(button.op, !hideAll);
+			showThisButton = !hideAll;
+
+			//If we have not been told to hide all buttons,
+			//then consider special cases for buttons
+			if (!hideAll) {
+				if (params.isDraft &&
+						(button.op === ZCS.constant.OP_REPLY || button.op === ZCS.constant.OP_REPLY_ALL)) {
+					showThisButton = false;
+				} else if (!params.isDraft && 
+						button.op === ZCS.constant.OP_EDIT) {
+					showThisButton = false;
+				}
+			}
+
+			this.showButton(button.op, showThisButton);
 		}, this);
 
 		if (hideAll) {
 			return;
 		}
 
-		if (params.isDraft) {
-			this.showButton(ZCS.constant.OP_REPLY, false);
-			this.showButton(ZCS.constant.OP_REPLY_ALL, false);
-		}
-		else {
-			this.showButton(ZCS.constant.OP_EDIT, false);
 
-		}
 	},
 
 	updateTitle: function (params) {
