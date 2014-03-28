@@ -992,7 +992,7 @@ ZmCalColView.prototype.updateTimeIndicator=function(force){
     var curHourDiv = document.getElementById(this._hourColDivId+"_"+hr);
     var curTimeHourIndicator = document.getElementById(this._curTimeIndicatorHourDivId);
     var currentTopPosition = Math.round((ZmCalColView._HOUR_HEIGHT/60)*min)+parseInt(curHourDiv.offsetParent.offsetTop);
-    Dwt.setLocation(curTimeHourIndicator, curHourDiv.offsetParent.offsetLeft, currentTopPosition+3);
+    Dwt.setLocation(curTimeHourIndicator, curHourDiv.offsetParent.offsetLeft, currentTopPosition - 5);
     var calendarStrip = document.getElementById(this._curTimeIndicatorGridDivId);
     Dwt.setVisibility(calendarStrip,true);
     var todayColDiv = document.getElementById(this._calendarTodayHeaderDivId);
