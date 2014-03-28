@@ -40,7 +40,7 @@ Ext.define('ZCS.common.ZtUserSession', {
 		organizerRoot:          null,           // Root for canonical tree of organizers (unsorted)
 		activeApp:              '',
 		version:                '[unknown]',
-		lastSearchOrganizer:    null            // Last organizer (folder/saved search/tag) visited
+		lastSearchOrganizerByApp:    {}            // Last organizer (folder/saved search/tag) visited
 	},
 
 	/**
@@ -92,6 +92,8 @@ Ext.define('ZCS.common.ZtUserSession', {
 	},
 
 	initSession: function(data) {
+
+		this.setLastSearchOrganizerByApp({});
 
 		// session handling
 		this.staleSessions = {};
@@ -481,10 +483,26 @@ Ext.define('ZCS.common.ZtUserSession', {
 
 		var organizer = orgId ? ZCS.cache.get(orgId) : null;
 		if (organizer) {
-			this.setLastSearchOrganizer(organizer);
+			this.setLastSearchOrganizer(app, organizer);
 		}
 
 		return organizer;
+	},
+
+	setLastSearchOrganizer: function (app, organizer) {
+		var map = this.getLastSearchOrganizerByApp();
+
+		app = app || this.getActiveApp();
+
+		map[app] = organizer;
+	},
+
+	getLastSearchOrganizer: function (app) {
+		var map = this.getLastSearchOrganizerByApp();
+ 
+		app = app || this.getActiveApp();
+
+		return map[app];
 	},
 
 	/**

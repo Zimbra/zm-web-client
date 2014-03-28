@@ -126,6 +126,14 @@ Ext.define('ZCS.controller.ZtAppViewController', {
                         ZCS.app.getContactListController().loadContacts();
                     }
                     newAppView.listPanel.show();
+
+	                if (ZCS.session.getCurrentSearchOrganizer(newApp)){
+						ZCS.app.fireEvent(
+							'updatelistpanelToggle',
+							ZCS.session.getCurrentSearchOrganizer(newApp).getTitle(), 
+							newApp
+						);
+					}
                 }
             }
             else {
