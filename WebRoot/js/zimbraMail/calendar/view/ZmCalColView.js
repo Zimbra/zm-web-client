@@ -985,23 +985,30 @@ function(abook) {
 	this._scrollToTime(8);
 };
 
-ZmCalColView.prototype.updateTimeIndicator=function(force){
+ZmCalColView.prototype.updateTimeIndicator = function(force) {
+	this._updateTimeIndicator(force);
+	return this.setTimer(1);
+}
+
+
+ZmCalColView.prototype._updateTimeIndicator = function(force) {
     var curDate = new Date();
-    var  hr = curDate.getHours();
+    var hr  = curDate.getHours();
     var min = curDate.getMinutes();
-    var curHourDiv = document.getElementById(this._hourColDivId+"_"+hr);
+    var curHourDiv = document.getElementById(this._hourColDivId + "_" + hr);
     var curTimeHourIndicator = document.getElementById(this._curTimeIndicatorHourDivId);
-    var currentTopPosition = Math.round((ZmCalColView._HOUR_HEIGHT/60)*min)+parseInt(curHourDiv.offsetParent.offsetTop);
+	var currentTopPosition = Math.round((ZmCalColView._HOUR_HEIGHT/60)*min)+parseInt(curHourDiv.offsetParent.offsetTop);
     Dwt.setLocation(curTimeHourIndicator, curHourDiv.offsetParent.offsetLeft, currentTopPosition - 5);
     var calendarStrip = document.getElementById(this._curTimeIndicatorGridDivId);
     Dwt.setVisibility(calendarStrip,true);
     var todayColDiv = document.getElementById(this._calendarTodayHeaderDivId);
-    if (todayColDiv && (force || this._isValidIndicatorDuration)){
+    if (todayColDiv && (force || this._isValidIndicatorDuration)) {
         Dwt.setBounds(calendarStrip, todayColDiv.offsetLeft, currentTopPosition, todayColDiv.offsetWidth, null);
-    }
-    else{Dwt.setVisibility(calendarStrip,false);}
-    return this.setTimer(1);
+    } else {
+		Dwt.setVisibility(calendarStrip,false);
+	}
 };
+
 
 ZmCalColView.prototype.startIndicatorTimer=function(force){
    if(force || !this._indicatorTimer){
@@ -2061,7 +2068,8 @@ function(ev) {
 	try {
 		if ((ev.oldWidth != ev.newWidth) || (ev.oldHeight != ev.newHeight)) {
 			this._layout(true);
-		}
+			this._updateTimeIndicator();
+	 	}
 	} catch(ex) {
 		DBG.dumpObj(ex);
 	}
