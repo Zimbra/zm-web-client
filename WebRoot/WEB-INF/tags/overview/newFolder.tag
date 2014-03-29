@@ -28,7 +28,7 @@
 
 
 <c:choose>
-    <c:when test="${calendar}">
+    <c:when test="${zm:boolean(calendar)}">
         <fmt:message var="label" key="calendarNew"/>
         <fmt:message var="createLabel" key="createCalendar"/>
         <c:set var="icon" value="${link ? 'calendar/ImgSharedCalendarFolder.png' : 'calendar/ImgCalendarFolder.png'}"/>
@@ -39,7 +39,7 @@
         <c:set var="newFolderCheckedFlag" value="${empty param.newFolderCheckedFlag ? '#' : param.newFolderCheckedFlag}"/>
         <fmt:message var="folderType" key="${url ? 'calendarSubscribed' : (link ? 'calendarShared' : 'calendarUser')}"/>
     </c:when>
-    <c:when test="${addressbook}">
+    <c:when test="${zm:boolean(addressbook)}">
         <fmt:message var="label" key="addressBookNew"/>
         <fmt:message var="createLabel" key="createAddressBook"/>
         <c:set var="icon" value="${link ? 'contacts/ImgSharedContactsFolder.png' : 'contacts/ImgContactsFolder.png'}"/>
@@ -48,7 +48,7 @@
         <c:set var="newFolderStyleMsg" value="${zm:getFolderRgbColorMsg(newFolderColor,'contact')}"/>
         <fmt:message var="newFolderStyleColor" key="${newFolderStyleMsg}"/>
     </c:when>
-    <c:when test="${tasklist}">
+    <c:when test="${zm:boolean(tasklist)}">
         <fmt:message var="label" key="taskListNew"/>
         <fmt:message var="createLabel" key="createTaskList"/>
         <c:set var="icon" value="${link ? 'zimbra/ImgSharedTaskList.png' : 'startup/ImgTaskList.png'}"/>
@@ -57,7 +57,7 @@
         <fmt:message var="newFolderStyleColor" key="${newFolderStyleMsg}"/>
         <fmt:message var="folderType" key="${link ? 'taskListShared' : 'taskListUser'}"/>
     </c:when>
-    <c:when test="${briefcase}">
+    <c:when test="${zm:boolean(briefcase)}">
         <fmt:message var="label" key="briefcaseNew"/>
         <fmt:message var="createLabel" key="createBriefcase"/>
         <c:set var="icon" value="${link ? 'startup/ImgFolder.png' : 'startup/ImgFolder.png'}"/>
@@ -71,12 +71,12 @@
 
         <c:set var="icon" value="${search ? 'startup/ImgSearchFolder.png' : (url ? 'startup/ImgRSS.png' : 'startup/ImgFolder.png')}"/>
         <c:choose>
-            <c:when test="${url}">
+            <c:when test="${zm:boolean(url)}">
                 <fmt:message var="label" key="folderNewRssAtomFeed"/>
                 <fmt:message var="folderType" key="folderSubscribed"/>
                 <fmt:message var="createLabel" key="folderCreateFeed"/>
             </c:when>
-            <c:when test="${search}">
+            <c:when test="${zm:boolean(search)}">
                 <fmt:message var="label" key="folderNewSearchFolder"/>
                 <fmt:message var="folderType" key="folderSearch"/>
                 <fmt:message var="createLabel" key="folderCreateSearch"/>
@@ -167,7 +167,7 @@
     </c:otherwise>
 </c:choose>
 
-    <c:if test="${url}">
+    <c:if test="${zm:boolean(url)}">
         <tr>
             <td nowrap align=right>
                 <label for="url"><fmt:message key="url"/>
@@ -187,7 +187,7 @@
     </c:if>
 
 
-    <c:if test="${link}">
+    <c:if test="${zm:boolean(link)}">
         <tr>
             <td nowrap align=right>
                 <label for="ownersEmail"><fmt:message key="ownersEmail"/>
@@ -198,7 +198,7 @@
                 <input name='newFolderOwnersEmailVisible' type='hidden' value='TRUE'/>
             </td>
         </tr>
-        <c:if test="${addressbook}">
+        <c:if test="${zm:boolean(addressbook)}">
          <tr>
             <td nowrap align=right>
                 <label for="ownersAbName"><fmt:message key="ownersAddressBookName"/>
@@ -210,7 +210,7 @@
             </td>
         </tr>
         </c:if>
-        <c:if test="${tasklist}">
+        <c:if test="${zm:boolean(tasklist)}">
          <tr>
             <td nowrap align=right>
                 <label for="ownersTlName"><fmt:message key="ownersTaskListName"/>
@@ -222,7 +222,7 @@
             </td>
         </tr>
         </c:if>
-        <c:if test="${briefcase}">
+        <c:if test="${zm:boolean(briefcase)}">
          <tr>
             <td nowrap align=right>
                 <label for="ownersBriefcaseName"><fmt:message key="ownersBriefcaseName"/>
@@ -234,7 +234,7 @@
             </td>
         </tr>
         </c:if>
-        <c:if test="${calendar}">
+        <c:if test="${zm:boolean(calendar)}">
             <tr>
                 <td nowrap align=right>
                     <label for="ownersCalName"><fmt:message key="ownersCalendarName"/>
@@ -270,7 +270,7 @@
         </tr>
     </c:if>
 
-    <c:if test="${calendar}">
+    <c:if test="${zm:boolean(calendar)}">
         <c:if test="${not link}">
         <tr>
               <td>&nbsp;</td>
@@ -307,7 +307,7 @@
           </tr>
     </c:if>
 
-    <c:if test="${search}">
+    <c:if test="${zm:boolean(search)}">
         <tr>
             <td nowrap align=right>
                 <label for="folderQuery"><fmt:message key="searchQuery"/>
