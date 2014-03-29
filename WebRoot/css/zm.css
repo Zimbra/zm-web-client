@@ -662,6 +662,7 @@ INPUT[type="text"].search_input-expanded {
 .MsgHeaderContactImage, .InvHeaderContactImage {
 	width:48px;
 	margin:4px;
+	@MailMsgHeaderImageRadius@
 }
 
 .MsgHeaderTable>TBODY>TR>TD, 
@@ -1082,7 +1083,7 @@ INPUT[type="text"].search_input-expanded {
 }
 
 .Conv2MsgHeader .info .ZmConvListFragment {
-	margin:2px 0px 1px 20px;
+	margin:2px 0px 1px;
 	overflow:hidden;
 }
 
@@ -1724,8 +1725,15 @@ INPUT[type="text"].search_input-expanded {
 	border-bottom:1px solid @darken(AppC,50)@;
 }
 
-.ZmContactInfoView .contactHeaderTable IMG,
-.ZmContactInfoView .contactHeaderTable .ImgPerson_48 {
+.ZmContactView .contactHeaderTableImage,
+.ZmContactInfoView .contactHeaderTableImage {
+	vertical-align:top;
+}
+
+.ZmContactView .contactHeaderTableImage IMG,
+.ZmContactInfoView .contactHeaderTableImage IMG,
+.ZmContactView .contactHeaderTableImage DIV,
+.ZmContactInfoView .contactHeaderTableImage DIV {
 	@ContactImageRadius@
 }
 
@@ -1748,6 +1756,10 @@ INPUT[type="text"].search_input-expanded {
 	text-align:center;
 	padding:1em 5px 0em;
 	height:70px;
+}
+
+.contactGroupTableImage IMG {
+	@ContactGroupImageRadius@
 }
 
 .contactGroupTableContent {
@@ -1783,6 +1795,11 @@ INPUT[type="text"].search_input-expanded {
 .ZmEditGroupContact .contactGroupTable {
 	float:none;
 	width:100%;
+}
+
+.ZmContactInfoView .contactHeaderTable .ImgGroupPerson_48,
+.ZmContactView .contactHeaderTable .ImgGroupPerson_48 {
+	@ContactImageRadius@
 }
 
 .ZmContactInfoView .contactHeader,
@@ -5563,6 +5580,7 @@ If you feel compelled to have a background color, please do so on a per skin lev
 .ZmEditContactView .contactHeaderTable {
 	background-color:@darken(AppC,20)@;
 }
+
 .ZmEditContactView .contactHeaderCell {
 	padding:.25em .5em;
 	border-bottom:solid 1px @darken(AppC,40)@;

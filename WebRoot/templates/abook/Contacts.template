@@ -350,7 +350,7 @@
 	<table role="presentation" width=100% class='contactHeaderTable <$= data.contactHdrClass $> ZPropertySheet' cellspacing='6'>
 		<tr>
 			<$ if (imageUrl) { $>
-				<td width='48' rowspan='2' style='vertical-align:top;'><img src='<$= imageUrl $>'
+				<td width='48' rowspan='2' class='contactHeaderTableImage'><img src='<$= imageUrl $>'
 				<$ if (AjxEnv.isIE) { $>
 					height='48'
 				<$ } else { $>
@@ -358,7 +358,7 @@
 				<$ } $>
 				 border=0></td>
 			<$ } else { $>
-				<td width='48' rowspan='2' style='vertical-align:top;'><$= AjxImg.getImageHtml(imgClassName) $></td>
+				<td width='48' rowspan='2' class='contactHeaderTableImage'><$= AjxImg.getImageHtml(imgClassName) $></td>
 			<$ } $>
 			<td>
 				<$= AjxTemplate.expand("#SplitView_headerName", data) $>
