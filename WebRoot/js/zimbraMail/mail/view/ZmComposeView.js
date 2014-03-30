@@ -1832,7 +1832,12 @@ function(action, msg, addrsMsg, identityId) {
 		var toAddrs = addrsMsg.getAddresses(AjxEmailAddress.FROM);
 		addresses[AjxEmailAddress.TO] = toAddrs ? toAddrs.getArray() : [];
 	}
-		
+
+	if (action === ZmOperation.DRAFT) {
+		//don't mess with draft addresses, this is what the user wanted, this is what they'll get, including duplicates.
+		return addresses;
+	}
+
 	// Make a pass to remove duplicate addresses
 	var addresses1 = {}, used = {};
 	for (var i = 0; i < ZmMailMsg.COMPOSE_ADDRS.length; i++) {
