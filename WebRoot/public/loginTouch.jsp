@@ -74,7 +74,7 @@
 </c:catch>
 
 <c:if test="${not empty authResult}">
-    <c:redirect url="${param.dev eq '1' ? '/tdebug' : '/t'}">
+    <c:redirect url="/">
         <c:forEach var="p" items="${paramValues}">
             <c:forEach var='value' items='${p.value}'>
                 <c:if test="${not fn:contains(ignoredQueryParams, p.key)}">

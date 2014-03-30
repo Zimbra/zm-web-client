@@ -23,10 +23,6 @@
 <c:set var="useTablet" value="${ua.isTouchiPad or (ua.isOsAndroid and not ua.isMobile)}"/>
 <c:set var="trimmedUserName" value="${fn:trim(param.username)}"/>
 
-<c:if test="${useTablet or useMobile}">
-    <jsp:forward page="/public/loginTouch.jsp"/>
-</c:if>
-
 <%--'virtualacctdomain' param is set only for external virtual accounts--%>
 <c:if test="${not empty param.username and not empty param.virtualacctdomain}">
 	<%--External login email address are mapped to internal virtual account--%>
@@ -102,125 +98,132 @@
 	</c:choose>
 </c:catch>
 
-<c:if test="${not empty authResult}">
-	<c:set var="refer" value="${authResult.refer}"/>
-	<c:set var="serverName" value="${pageContext.request.serverName}"/>
-	<c:choose>
-		<c:when test="${not empty postLoginUrl}">
-			<c:choose>
-				<c:when test="${not empty refer and not zm:equalsIgnoreCase(refer, serverName)}">
-					<%--
-					bug 63258: Need to redirect to a different server, avoid browser redirect to the post login URL.
-					Do a JSP redirect which will do a onload form submit with ZAuthToken as a hidden param.
-					In case of JS-disabled browser, make the user do a manual submit.
-					--%>
-					<jsp:forward page="/h/postLoginRedirect">
-						<jsp:param name="postLoginUrl" value="${postLoginUrl}"/>
-						<jsp:param name="zauthtoken" value="${authResult.authToken.value}"/>
-						<jsp:param name="client" value="${param.client}"/>
-					</jsp:forward>
-				</c:when>
-				<c:otherwise>
-					<c:choose>
-						<c:when test="${not empty param.client}">
-							<c:redirect url="${postLoginUrl}">
-								<c:param name="client" value="${param.client}"/>
-							</c:redirect>
-						</c:when>
-						<c:otherwise>
-							<c:redirect url="${postLoginUrl}"/>
-						</c:otherwise>
-					</c:choose>
-				</c:otherwise>
-			</c:choose>
-		</c:when>
-		<c:otherwise>
-			<c:set var="client" value="${param.client}"/>
-			<c:if test="${empty client and useMobile}"><c:set var="client" value="mobile"/></c:if>
-			<c:if test="${empty client and useTablet}"><c:set var="client" value="touch"/></c:if>
-			<c:if test="${empty client or client eq 'preferred'}">
-				<c:set var="client" value="${requestScope.authResult.prefs.zimbraPrefClientType[0]}"/>
-			</c:if>
-			<c:choose>
-				<c:when test="${client eq 'socialfox'}">
-						<c:set var="sbURL" value="/public/launchSidebar.jsp"/>
-						<c:redirect url="${sbURL}">
-							<c:forEach var="p" items="${paramValues}">
-								<c:forEach var='value' items='${p.value}'>
-									<c:if test="${not fn:contains(ignoredQueryParams, p.key)}">
-										<c:param name="${p.key}" value='${value}'/>
-									</c:if>
-								</c:forEach>
-							</c:forEach>
-					</c:redirect>
-				</c:when>
-				<c:when test="${client eq 'advanced'}">
-					<c:choose>
-						<c:when test="${(param.loginOp eq 'login') && !(empty param.username) && !(empty param.password)}">
-							<c:redirect url="/">
-								<c:forEach var="p" items="${paramValues}">
-									<c:forEach var='value' items='${p.value}'>
-										<c:if test="${not fn:contains(ignoredQueryParams, p.key)}">
-											<c:param name="${p.key}" value='${value}'/>
-										</c:if>
-									</c:forEach>
-								</c:forEach>
-								<c:if test="${param.client eq 'advanced'}">
-									<c:param name='client' value='advanced'/>
-								</c:if>
-							</c:redirect>
-						</c:when>
-						<c:otherwise>
-							<jsp:forward page="/public/launchZCS.jsp"/>
-						</c:otherwise>
-					</c:choose>
-				</c:when>
-				<c:when test="${client eq 'standard'}">
-					<c:redirect url="/h/search">
-						<c:param name="mesg" value='welcome'/>
-						<c:param name="init" value='true'/>
-						<c:if test="${not empty param.app}">
-							<c:param name="app" value='${param.app}'/>
-						</c:if>
-						<c:forEach var="p" items="${paramValues}">
-							<c:forEach var='value' items='${p.value}'>
-								<c:if test="${not fn:contains(ignoredQueryParams, p.key)}">
-									<c:param name="${p.key}" value='${value}'/>
-								</c:if>
-							</c:forEach>
-						</c:forEach>
-					</c:redirect>
-				</c:when>
-				<c:when test="${client eq 'mobile'}">
-						<c:set var="mobURL" value="/m/zmain"/>
-						<c:redirect url="${mobURL}">
-							<c:forEach var="p" items="${paramValues}">
-								<c:forEach var='value' items='${p.value}'>
-									<c:if test="${not fn:contains(ignoredQueryParams, p.key)}">
-										<c:param name="${p.key}" value='${value}'/>
-									</c:if>
-								</c:forEach>
-							</c:forEach>
-					</c:redirect>
-				</c:when>
-				<c:when test="${client eq 'touch'}">
-					<c:redirect url="${param.dev eq '1' ? '/tdebug' : '/t'}">
-						<c:forEach var="p" items="${paramValues}">
-							<c:forEach var='value' items='${p.value}'>
-								<c:if test="${not fn:contains(ignoredQueryParams, p.key)}">
-									<c:param name="${p.key}" value='${value}'/>
-								</c:if>
-							</c:forEach>
-						</c:forEach>
-					</c:redirect>
-				</c:when>
-				<c:otherwise>
-					<jsp:forward page="/public/launchZCS.jsp"/>
-				</c:otherwise>
-			</c:choose>
-		</c:otherwise>
-	</c:choose>
-</c:if>
+<c:choose>
+    <c:when test="${not empty authResult}">
+        <c:set var="refer" value="${authResult.refer}"/>
+        <c:set var="serverName" value="${pageContext.request.serverName}"/>
+        <c:choose>
+            <c:when test="${not empty postLoginUrl}">
+                <c:choose>
+                    <c:when test="${not empty refer and not zm:equalsIgnoreCase(refer, serverName)}">
+                        <%--
+                        bug 63258: Need to redirect to a different server, avoid browser redirect to the post login URL.
+                        Do a JSP redirect which will do a onload form submit with ZAuthToken as a hidden param.
+                        In case of JS-disabled browser, make the user do a manual submit.
+                        --%>
+                        <jsp:forward page="/h/postLoginRedirect">
+                            <jsp:param name="postLoginUrl" value="${postLoginUrl}"/>
+                            <jsp:param name="zauthtoken" value="${authResult.authToken.value}"/>
+                            <jsp:param name="client" value="${param.client}"/>
+                        </jsp:forward>
+                    </c:when>
+                    <c:otherwise>
+                        <c:choose>
+                            <c:when test="${not empty param.client}">
+                                <c:redirect url="${postLoginUrl}">
+                                    <c:param name="client" value="${param.client}"/>
+                                </c:redirect>
+                            </c:when>
+                            <c:otherwise>
+                                <c:redirect url="${postLoginUrl}"/>
+                            </c:otherwise>
+                        </c:choose>
+                    </c:otherwise>
+                </c:choose>
+            </c:when>
+            <c:otherwise>
+                <c:set var="client" value="${param.client}"/>
+                <c:if test="${empty client and (useTablet or useMobile)}"><c:set var="client" value="touch"/></c:if>
+                <c:if test="${empty client or client eq 'preferred'}">
+                    <c:set var="client" value="${requestScope.authResult.prefs.zimbraPrefClientType[0]}"/>
+                </c:if>
+                <c:choose>
+                    <c:when test="${client eq 'socialfox'}">
+                            <c:set var="sbURL" value="/public/launchSidebar.jsp"/>
+                            <c:redirect url="${sbURL}">
+                                <c:forEach var="p" items="${paramValues}">
+                                    <c:forEach var='value' items='${p.value}'>
+                                        <c:if test="${not fn:contains(ignoredQueryParams, p.key)}">
+                                            <c:param name="${p.key}" value='${value}'/>
+                                        </c:if>
+                                    </c:forEach>
+                                </c:forEach>
+                        </c:redirect>
+                    </c:when>
+                    <c:when test="${client eq 'advanced'}">
+                        <c:choose>
+                            <c:when test="${(param.loginOp eq 'login') && !(empty param.username) && !(empty param.password)}">
+                                <c:redirect url="/">
+                                    <c:forEach var="p" items="${paramValues}">
+                                        <c:forEach var='value' items='${p.value}'>
+                                            <c:if test="${not fn:contains(ignoredQueryParams, p.key)}">
+                                                <c:param name="${p.key}" value='${value}'/>
+                                            </c:if>
+                                        </c:forEach>
+                                    </c:forEach>
+                                    <c:if test="${param.client eq 'advanced'}">
+                                        <c:param name='client' value='advanced'/>
+                                    </c:if>
+                                </c:redirect>
+                            </c:when>
+                            <c:otherwise>
+                                <jsp:forward page="/public/launchZCS.jsp"/>
+                            </c:otherwise>
+                        </c:choose>
+                    </c:when>
+                    <c:when test="${client eq 'standard'}">
+                        <c:redirect url="/h/search">
+                            <c:param name="mesg" value='welcome'/>
+                            <c:param name="init" value='true'/>
+                            <c:if test="${not empty param.app}">
+                                <c:param name="app" value='${param.app}'/>
+                            </c:if>
+                            <c:forEach var="p" items="${paramValues}">
+                                <c:forEach var='value' items='${p.value}'>
+                                    <c:if test="${not fn:contains(ignoredQueryParams, p.key)}">
+                                        <c:param name="${p.key}" value='${value}'/>
+                                    </c:if>
+                                </c:forEach>
+                            </c:forEach>
+                        </c:redirect>
+                    </c:when>
+                    <c:when test="${client eq 'mobile'}">
+                            <c:set var="mobURL" value="/m/zmain"/>
+                            <c:redirect url="${mobURL}">
+                                <c:forEach var="p" items="${paramValues}">
+                                    <c:forEach var='value' items='${p.value}'>
+                                        <c:if test="${not fn:contains(ignoredQueryParams, p.key)}">
+                                            <c:param name="${p.key}" value='${value}'/>
+                                        </c:if>
+                                    </c:forEach>
+                                </c:forEach>
+                        </c:redirect>
+                    </c:when>
+                    <c:when test="${client eq 'touch'}">
+                        <c:redirect url="${param.dev eq '1' ? '/tdebug' : '/t'}">
+                            <c:forEach var="p" items="${paramValues}">
+                                <c:forEach var='value' items='${p.value}'>
+                                    <c:if test="${not fn:contains(ignoredQueryParams, p.key)}">
+                                        <c:param name="${p.key}" value='${value}'/>
+                                    </c:if>
+                                </c:forEach>
+                            </c:forEach>
+                        </c:redirect>
+                    </c:when>
+                    <c:otherwise>
+                        <jsp:forward page="/public/launchZCS.jsp"/>
+                    </c:otherwise>
+                </c:choose>
+            </c:otherwise>
+        </c:choose>
+    </c:when>
+    <c:otherwise>
+        <c:if test="${useTablet or useMobile}">
+            <jsp:forward page="/public/loginTouch.jsp"/>
+        </c:if>
+    </c:otherwise>
+</c:choose>
+
 
 <c:if test="${loginException != null}">
 	<zm:getException var="error" exception="${loginException}"/>
