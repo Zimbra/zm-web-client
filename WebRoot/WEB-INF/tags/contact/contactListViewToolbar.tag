@@ -89,7 +89,7 @@
                     <app:button id="${keys ? 'OPGO' : ''}" name="action" tooltip="actionContactGoTT" text="actionGo" />
                     </c:if>
                     </c:if>    
-                    <c:if test="${context.folder.isTrash}">
+                    <c:if test="${zm:boolean(context.folder.isTrash)}">
                         <td><div class='vertSep'></div><input type="hidden" name="contextFolderId" value="${context.selectedId}"></td>
                         <app:button extra="onclick='return validatefn();'" name="actionEmpty" tooltip="emptyTrash" text="emptyTrash"/>
                         <input type="hidden" name="confirmed" value="0"/>
