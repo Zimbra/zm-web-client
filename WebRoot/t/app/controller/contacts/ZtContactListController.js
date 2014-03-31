@@ -60,6 +60,9 @@ Ext.define('ZCS.controller.contacts.ZtContactListController', {
 	},
 
     launch: function() {
+
+        this.callParent();
+
         if (!ZCS.util.isAppEnabled(this.getApp())) {
             return;
         }

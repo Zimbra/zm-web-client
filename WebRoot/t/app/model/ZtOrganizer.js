@@ -482,6 +482,13 @@ Ext.define('ZCS.model.ZtOrganizer', {
 			this.set('rgb', data.rgb);
 		}
 
+        if (modify.n) {
+            this.set('itemCount', data.itemCount);
+            // Total item count is factored into title
+            // need to do this because Sencha does not recalculate converted fields
+            this.set('title', this.get('title'));
+        }
+
 		this.updateDependentLists();
 
 		this.enableDefaultStoreEvents();
