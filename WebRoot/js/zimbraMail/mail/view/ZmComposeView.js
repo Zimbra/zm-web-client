@@ -99,6 +99,7 @@ ZmComposeView.UPLOAD_FIELD_NAME			= "attUpload";
 ZmComposeView.FORWARD_ATT_NAME			= "ZmComposeView_forAttName";
 ZmComposeView.FORWARD_MSG_NAME			= "ZmComposeView_forMsgName";
 ZmComposeView.ADD_ORIG_MSG_ATTS			= "add_original_attachments";
+ZmComposeView.MAX_ATTM_NAME_LEN	= 30;
 
 // max # of attachments to show
 ZmComposeView.SHOW_MAX_ATTACHMENTS		= AjxEnv.is800x600orLower ? 2 : 3;
@@ -1831,7 +1832,12 @@ function(action, msg, addrsMsg, identityId) {
 		var toAddrs = addrsMsg.getAddresses(AjxEmailAddress.FROM);
 		addresses[AjxEmailAddress.TO] = toAddrs ? toAddrs.getArray() : [];
 	}
-		
+
+	if (action === ZmOperation.DRAFT) {
+		//don't mess with draft addresses, this is what the user wanted, this is what they'll get, including duplicates.
+		return addresses;
+	}
+
 	// Make a pass to remove duplicate addresses
 	var addresses1 = {}, used = {};
 	for (var i = 0; i < ZmMailMsg.COMPOSE_ADDRS.length; i++) {
@@ -3116,14 +3122,14 @@ function() {
 
 ZmComposeView.prototype.updateAttachFileNode =
 function(files,index, aid) {
-	var curFileName = AjxStringUtil.htmlEncode(files[index].name.substr(-32));
+	var curFileName = this._clipFile(this.files[index].name, true);
 
 	this._loadingSpan.firstChild.innerHTML = curFileName;
 	this._loadingSpan.firstChild.nextSibling.innerHTML = curFileName;
     // Set the next files progress back to 0
     this._setLoadingProgress(this._loadingSpan, 0);
     if (aid){
-        var prevFileName = AjxStringUtil.htmlEncode(files[index-1].name.substr(-32));
+        var prevFileName = this._clipFile(files[index-1].name, true);
         var element = document.createElement("span");
         element.innerHTML = AjxTemplate.expand("mail.Message#MailAttachmentBubble", {fileName:prevFileName, id:aid});
         var newSpan = element.firstChild;
@@ -3239,10 +3245,7 @@ function(loadingSpan, progress) {
 
 ZmComposeView.prototype._initProgressSpan =
 function(fileName) {
-	if (fileName.length > 35)
-		fileName = fileName.substr(-35);
-
-	fileName = AjxStringUtil.htmlEncode(fileName);
+	fileName = this._clipFile(fileName, true);
 
 	var node = this._attcDiv.getElementsByTagName("span") && this._attcDiv.getElementsByTagName("span")[0];
 	if (node) {
@@ -3292,6 +3295,12 @@ function(files, node, isInline) {
 
 	this._controller._initUploadMyComputerFile(files);
 
+};
+
+ZmComposeView.prototype._clipFile = function(name, encode) {
+	var r = AjxStringUtil.clipFile(name, ZmComposeView.MAX_ATTM_NAME_LEN);
+
+	return encode ? AjxStringUtil.htmlEncode(r) : r;
 };
 
 ZmComposeView.prototype._checkMenuItems =
@@ -3517,7 +3526,7 @@ function(msg, action, incOptions, includeInlineImages, includeInlineAtts) {
 				var params = {
 					att:		att,
 					id:			[this._view, att.part, ZmMailMsgView.ATT_LINK_MAIN].join("_"),
-					text:		AjxStringUtil.clipFile(att.label, 30),
+					text:		this._clipFile(att.label),
 					mid:		att.mid,
 					rfc822Part: att.rfc822Part
 				};
