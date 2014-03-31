@@ -3122,7 +3122,7 @@ function() {
 
 ZmComposeView.prototype.updateAttachFileNode =
 function(files,index, aid) {
-	var curFileName = this._clipFile(this.files[index].name, true);
+	var curFileName = this._clipFile(files[index].name, true);
 
 	this._loadingSpan.firstChild.innerHTML = curFileName;
 	this._loadingSpan.firstChild.nextSibling.innerHTML = curFileName;
