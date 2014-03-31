@@ -306,6 +306,13 @@ function(calItem) {
 		offlineHandler._handleAttachmentsForOfflineMode(calItem.getAttachments(), getLinkIdCallback, linkIds);
 	}
 
+	// Set tab name as Appointment subject
+	var subject = AjxStringUtil.trim(calItem.getName());
+	if (subject) {
+		var tabButtonText = subject.substring(0, ZmAppViewMgr.TAB_BUTTON_MAX_TEXT);
+		appCtxt.getAppViewMgr().setTabTitle(this._controller.getCurrentViewId(), tabButtonText);
+	}
+
 	this._createBubbles();
 
     var selParams = {parent: this, id: Dwt.getNextId('ZmNeedActionSelect_')};
