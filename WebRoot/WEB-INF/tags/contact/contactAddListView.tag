@@ -90,13 +90,13 @@
     </tr>
     <c:forEach items="${searchResult.hits}" var="hit" varStatus="status">
     <c:if test="${
-                groupMode or !fn:contains(uploader.pendingAttendees,hit.contactHit.displayEmail)
+                groupMode or hit.contactHit.isGroup or (!fn:contains(uploader.pendingAttendees,hit.contactHit.displayEmail)
                 and !fn:contains(uploader.compose.attendees,hit.contactHit.displayEmail)
                 and !fn:contains(uploader.pendingResources,hit.contactHit.displayEmail)
-                and !fn:contains(uploader.compose.resources,hit.contactHit.displayEmail)
+                and !fn:contains(uploader.compose.resources,hit.contactHit.displayEmail))
     }">   <%-- This condition is for not to list the contact/resource which has been already added --%>
     
-    <c:if test="${not empty hit.contactHit.displayEmail}">
+    <c:if test="${not empty hit.contactHit.displayEmail or hit.contactHit.isGroup}">
         <tr>
             <td width=1%>&nbsp;</td>
             <c:choose>
@@ -108,9 +108,14 @@
                     </td>
                 </c:when>
                 <c:otherwise>
-                    <td width=2% nowrap><input type=checkbox  name="addTo" value="${fn:escapeXml(hit.contactHit.fullAddress)}"></td>
-                    <td width=2% nowrap><input type=checkbox name="addCc" value="${fn:escapeXml(hit.contactHit.fullAddress)}"></td>
-                    <td width=2% nowrap><input type=checkbox  name="addBcc" value="${fn:escapeXml(hit.contactHit.fullAddress)}"></td>
+                    <c:set var="addresses" value="${fn:escapeXml(hit.contactHit.fullAddress)}"/>
+                    <c:if test="${hit.contactHit.isGroup}">
+                        <zm:getContact var="contactGroup" id="${hit.contactHit.id}"/>
+                        <c:set var="addresses" value="${fn:escapeXml(contactGroup.memberAddresses)}"/>
+                    </c:if>
+                    <td width=2% nowrap><input type=checkbox  name="addTo" value="${addresses}"></td>
+                    <td width=2% nowrap><input type=checkbox name="addCc" value="${addresses}"></td>
+                    <td width=2% nowrap><input type=checkbox  name="addBcc" value="${addresses}"></td>
                 </c:otherwise>
             </c:choose>
             <td width=1%><app:miniTagImage ids="${hit.contactHit.tagIds}"/></td>
