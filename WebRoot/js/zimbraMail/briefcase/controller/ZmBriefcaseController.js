@@ -352,7 +352,7 @@ function(parent, num) {
 
     // ZmShare is not present when the virtual account loads
     AjxPackage.require("Briefcase");
-	AjxPackage.require("zimbraMail.share.model.ZmShare");
+	AjxPackage.require("Share");
 
     if (appCtxt.isExternalAccount() && items.length && isItemSelected) {
 
