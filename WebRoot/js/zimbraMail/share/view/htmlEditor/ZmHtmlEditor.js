@@ -1005,8 +1005,8 @@ ZmHtmlEditor._TABLE_RE = /^<table><tbody>(<tr>(<td>(<br>| )<\/td>)*<\/tr>)*<\/tb
 
 ZmHtmlEditor.prototype.onBeforeSetContent = function(ev) {
 	if (ZmHtmlEditor._TABLE_RE.test(ev.content)) {
-		ev.content = ev.content.replace(/<table>/,
-		                                '<table style="width: 90%">');
+		var table = '<table style="width: 90%" border="1" cellspacing="0">';
+		ev.content = ev.content.replace('<table>', table);
 	}
 };
 
