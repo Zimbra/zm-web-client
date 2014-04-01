@@ -186,7 +186,7 @@ Ext.define('ZCS.controller.calendar.ZtCalendarController', {
         this.updateToolbar({isOrganizer: invite.get('isOrganizer')});
         panel.show({
             type:       'slide',
-            direction:  'up',
+            direction:  'left',
             duration:   250
         });
 	    this.updateTitle({title:title});
@@ -461,7 +461,8 @@ Ext.define('ZCS.controller.calendar.ZtCalendarController', {
 
 	doCancel: function() {
         this.getAppointmentPanel().hide({
-            type: 'fadeOut',
+            type:       'slide',
+            direction:  'right',
             duration: 250
         });
 

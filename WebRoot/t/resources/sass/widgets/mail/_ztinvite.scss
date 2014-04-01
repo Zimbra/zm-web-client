@@ -29,12 +29,13 @@ $invLabelTextSize: 0.9em;
 .zcs-invite-label {
 	width: 1%;
 	font-size: $invLabelTextSize;
+	line-height: 1.6em;
 	text-align: right;
 	color: #999;
 	//@include opacity(.75);
 
 	&:after {
-		content: ":";
+		//content: ":";
 	}
 }
 

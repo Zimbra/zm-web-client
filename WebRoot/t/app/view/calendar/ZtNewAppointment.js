@@ -29,13 +29,13 @@ Ext.define('ZCS.view.calendar.ZtNewAppointment', {
     xtype: 'newapptpanel',
 
     config: {
-        layout: 'fit',
-        width: '80%',
-        height: '100%',
-        scrollable: false,
-        hidden: true,
-        modal: true,
-        cls: 'zcs-appt-form'
+        layout:     'fit',
+        width:      '100%',
+        height:     '100%',
+        scrollable:  false,
+        hidden:      true,
+        modal:       true,
+        cls:        'zcs-appt-form'
     },
 
     statics: {
@@ -70,21 +70,21 @@ Ext.define('ZCS.view.calendar.ZtNewAppointment', {
 
         var newApptForm = this,
             toolbar = {
-                xtype: 'titlebar',
-                docked: 'top',
-                title: ZtMsg.apptCreate,
+                xtype:   'titlebar',
+                docked:  'top',
+                title:    ZtMsg.apptCreate,
                 items: [
                     {
-                        xtype: 'button',
-                        text: ZtMsg.cancel,
+                        xtype:  'button',
+                        text:    ZtMsg.cancel,
                         handler: function() {
                             this.up('newapptpanel').fireEvent('cancel');
                         }
                     },
                     {
-                        xtype: 'button',
-                        text: ZtMsg.create,
-                        align: 'right',
+                        xtype:      'button',
+                        text:        ZtMsg.create,
+                        align:      'right',
                         ui:         'green',
                         padding:    '0 2em',
                         handler: function() {
@@ -98,11 +98,11 @@ Ext.define('ZCS.view.calendar.ZtNewAppointment', {
                 cls:    'zcs-contact-spacer'
             },
             form = {
-                xtype: 'formpanel',
-                scrollable: false,
+                xtype:       'formpanel',
+                scrollable:   false,
                 defaults: {
-                    labelWidth: '80px',
-                    inputCls: 'zcs-form-input'
+                    labelWidth:  '80px',
+                    inputCls:    'zcs-form-input'
                 },
                 layout: {
                     type: 'vbox'
@@ -114,17 +114,17 @@ Ext.define('ZCS.view.calendar.ZtNewAppointment', {
                         },
                         items: [
                             {
-                                xtype: 'label',
-                                html:   ZtMsg.subjectLabel,
+                                xtype:  'label',
+                                html:    ZtMsg.subjectLabel,
                                 cls:    'zcs-appt-label',
                                 width:  '20%'
 
                             },
                             {
-                                xtype: 'textfield',
-                                name: 'subject',
-                                placeHolder: ZtMsg.placeholderSubject,
-                                width:  '80%'
+                                xtype:       'textfield',
+                                name:        'subject',
+                                width:       '80%',
+                                placeHolder:  ZtMsg.placeholderSubject
 
                             }
                         ]
@@ -135,26 +135,26 @@ Ext.define('ZCS.view.calendar.ZtNewAppointment', {
                         },
                         items: [
                             {
-                                xtype: 'label',
-                                html:   ZtMsg.locationLabel,
+                                xtype:  'label',
+                                html:    ZtMsg.locationLabel,
                                 cls:    'zcs-appt-label',
                                 width:  '20%'
 
                             },
                             {
-                                xtype: 'textfield',
-                                name: 'location',
-                                width: '80%',
-                                flex: 1,
-                                placeHolder: ZtMsg.placeholderLocation
+                                xtype:       'textfield',
+                                name:        'location',
+                                width:       '80%',
+                                flex:         1,
+                                placeHolder:  ZtMsg.placeholderLocation
                             },
                             {
-                                width: '5.5em',
-                                height: '2.5em',
-                                xtype: 'component',
-                                html: ZtMsg.equipmentLabel,
-                                itemId: 'equipmentFieldToggle',
-                                cls: 'x-form-label x-form-label-nowrap x-field zcs-toggle-field',
+                                width:    '5.5em',
+                                height:   '2.5em',
+                                xtype:    'component',
+                                html:      ZtMsg.equipmentLabel,
+                                itemId:   'equipmentFieldToggle',
+                                cls:      'x-form-label x-form-label-nowrap x-field zcs-toggle-field',
                                 listeners: {
                                     painted: function () {
                                         this.element.on('tap', function() {
@@ -170,20 +170,20 @@ Ext.define('ZCS.view.calendar.ZtNewAppointment', {
                         layout: 'hbox',
                         items:[
                             {
-                                xtype:  'label',
-                                html:    ZtMsg.equipmentLabel,
-                                itemId: 'equipmentLabel',
-                                hidden:  true,
-                                width: '20%',
-                                cls:    'zcs-appt-label'
+                                xtype:   'label',
+                                html:     ZtMsg.equipmentLabel,
+                                itemId:  'equipmentLabel',
+                                hidden:   true,
+                                width:   '20%',
+                                cls:     'zcs-appt-label'
 
                             },
                             {
-                                xtype:          'textfield',
-                                width: '80%',
-                                hidden:         true,
-                                flex:           1,
-                                name:           'equipment',
+                                xtype:       'textfield',
+                                width:       '80%',
+                                hidden:       true,
+                                flex:         1,
+                                name:        'equipment',
                                 placeHolder: ZtMsg.placeholderEquipment
                             }
                         ]
@@ -196,24 +196,24 @@ Ext.define('ZCS.view.calendar.ZtNewAppointment', {
                         },
                         items: [
                             {
-                                xtype: 'label',
-                                html:   ZtMsg.startLabel,
+                                xtype:  'label',
+                                html:    ZtMsg.startLabel,
                                 cls:    'zcs-appt-label',
                                 width:  '20%'
                             },
                             {
-                                xtype: 'datetimepickerfield',
-                                name: 'start',
-                                width: '80%',
+                                xtype:  'datetimepickerfield',
+                                name:   'start',
+                                width:  '80%',
                                 destroyPickerOnHide: true
                             },
                             {
-                                xtype: 'datepickerfield',
-                                name: 'startAllDay',
-                                itemId: 'startAllDay',
-                                width: '80%',
-                                hidden: true,
-                                dateFormat: ZtMsg.invDateFormat,
+                                xtype:      'datepickerfield',
+                                name:       'startAllDay',
+                                itemId:     'startAllDay',
+                                width:      '80%',
+                                hidden:      true,
+                                dateFormat:  ZtMsg.invDateFormat,
                                 listeners: {
                                     focus: function() {
                                         if (!this.getValue()) {
@@ -230,25 +230,25 @@ Ext.define('ZCS.view.calendar.ZtNewAppointment', {
                         },
                         items: [
                             {
-                                xtype: 'label',
-                                html:   ZtMsg.endLabel,
+                                xtype:  'label',
+                                html:    ZtMsg.endLabel,
                                 cls:    'zcs-appt-label',
                                 width:  '20%'
 
                             },
                             {
-                                xtype: 'datetimepickerfield',
-                                name: 'end',
-                                flex: 1,
-                                width: '80%',
-                                destroyPickerOnHide: true
+                                xtype:               'datetimepickerfield',
+                                name:                'end',
+                                flex:                 1,
+                                width:               '80%',
+                                destroyPickerOnHide:  true
                             },
                             {
-                                xtype: 'datepickerfield',
-                                name: 'endAllDay',
-                                width: '80%',
-                                hidden: true,
-                                dateFormat: ZtMsg.invDateFormat,
+                                xtype:       'datepickerfield',
+                                name:        'endAllDay',
+                                width:       '80%',
+                                hidden:       true,
+                                dateFormat:   ZtMsg.invDateFormat,
                                 listeners: {
                                     focus: function() {
                                         var start = Ext.ComponentQuery.query('#startAllDay')[0].getValue();
@@ -268,17 +268,17 @@ Ext.define('ZCS.view.calendar.ZtNewAppointment', {
                         },
                         items: [
                             {
-                                xtype: 'label',
-                                html:   ZtMsg.allDay,
+                                xtype:  'label',
+                                html:    ZtMsg.allDay,
                                 cls:    'zcs-appt-label',
                                 width:  '20%'
 
                             },
                             {
-                                xtype: 'togglefield',
-                                name: 'isAllDay',
-                                width:  '80%',
-                                flex: 1,
+                                xtype:     'togglefield',
+                                name:      'isAllDay',
+                                width:     '80%',
+                                flex:       1,
                                 listeners: {
                                     change: function(field, newValue) {
                                         if (field.getValue() == 1) {
@@ -305,23 +305,23 @@ Ext.define('ZCS.view.calendar.ZtNewAppointment', {
                         },
                         items: [
                             {
-                                xtype: 'label',
-                                html:   ZtMsg.repeatLabel,
-                                cls:    'zcs-appt-label',
-                                width:  '20%'
+                                xtype:   'label',
+                                html:     ZtMsg.repeatLabel,
+                                cls:     'zcs-appt-label',
+                                width:   '20%'
 
                             },
                             {
-                                xtype: 'selectfield',
-                                name: 'repeat',
-                                flex: 1,
-                                width: '80%',
+                                xtype:   'selectfield',
+                                name:    'repeat',
+                                flex:     1,
+                                width:   '80%',
                                 options: [
-                                    { text: ZtMsg.none, 				value: "NON"},
-                                    { text: ZtMsg.everyDay, 			value: "DAI"},
-                                    { text: ZtMsg.everyWeek, 			value: "WEE"},
-                                    { text: ZtMsg.everyMonth, 			value: "MON"},
-                                    { text: ZtMsg.everyYear, 			value: "YEA"}
+                                    { text: ZtMsg.none,                 value: "NON"},
+                                    { text: ZtMsg.everyDay,             value: "DAI"},
+                                    { text: ZtMsg.everyWeek,            value: "WEE"},
+                                    { text: ZtMsg.everyMonth,           value: "MON"},
+                                    { text: ZtMsg.everyYear,            value: "YEA"}
                                 ]
                             }
                         ]
@@ -333,17 +333,17 @@ Ext.define('ZCS.view.calendar.ZtNewAppointment', {
                         },
                         items: [
                             {
-                                xtype: 'label',
-                                html:   ZtMsg.reminderLabel,
+                                xtype:  'label',
+                                html:    ZtMsg.reminderLabel,
                                 cls:    'zcs-appt-label',
                                 width:  '20%'
 
                             },
                             {
-                                xtype: 'selectfield',
-                                name: 'reminder',
-                                flex: 1,
-                                width: '80%',
+                                xtype:   'selectfield',
+                                name:    'reminder',
+                                flex:     1,
+                                width:   '80%',
                                 options: [ { text: ZtMsg.apptRemindNever, value: 0} ] ,
                                 listeners: {
                                     painted: function() {
@@ -366,17 +366,17 @@ Ext.define('ZCS.view.calendar.ZtNewAppointment', {
                         },
                         items: [
                             {
-                                xtype: 'label',
-                                html:   ZtMsg.notes,
+                                xtype:  'label',
+                                html:    ZtMsg.notes,
                                 cls:    'zcs-appt-label',
                                 width:  '20%'
 
                             },
                             {
-                                xtype: 'textareafield',
-                                name: 'notes',
-                                maxRows: 5,
-                                width: '80%'
+                                xtype:    'textareafield',
+                                name:     'notes',
+                                maxRows:   5,
+                                width:    '80%'
                             }
                         ]
                     }

@@ -15,26 +15,30 @@
 
 @import 'widgets/base';
 @import 'widgets/common';
-
+//common
 @import 'widgets/zttag';
 @import 'widgets/zttoast';
 @import 'widgets/zticons';
 @import 'widgets/ztlistpanel';
+@import 'widgets/ux/ztbubblearea';
+@import 'widgets/ux/ztmenu';
+@import 'widgets/ux/ztlefttitlebar';
+@import 'widgets/ux/Ext.ux.ColorSelector';
+// mail
 @import 'widgets/mail/base';
 @import 'widgets/mail/ztassignmentview';
 @import 'widgets/mail/ztcomposeform';
 @import 'widgets/mail/ztconvlistview';
 @import 'widgets/mail/ztquickreply';
 @import 'widgets/mail/ztmsgview';
-@import 'widgets/ux/ztbubblearea';
-@import 'widgets/ux/ztmenu';
-@import 'widgets/ux/ztlefttitlebar';
+// contacts
 @import 'widgets/contacts/ztcontact';
+// calendar
 @import 'widgets/ux/skin1';
 @import 'widgets/ux/Ext.ux.TouchCalendarEvents';
 @import 'widgets/ux/Ext.ux.TouchCalendarView';
-@import 'widgets/ux/Ext.ux.ColorSelector';
-@import 'widgets/ux/ztcalendar';
+@import 'widgets/calendar/ztcalendar';
+
 
 // Your custom code goes here...
 // Import custom icon font

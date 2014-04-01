@@ -1,0 +1,230 @@
+/*
+ * ***** BEGIN LICENSE BLOCK *****
+ * Zimbra Collaboration Suite Web Client
+ * Copyright (C) 2013 Zimbra Software, LLC.
+ *
+ * The contents of this file are subject to the Zimbra Public License
+ * Version 1.4 ("License"); you may not use this file except in
+ * compliance with the License.  You may obtain a copy of the License at
+ * http://www.zimbra.com/license.
+ *
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * ***** END LICENSE BLOCK *****
+ */
+
+//Overriding the background color before import
+$bg-color: #B4CAEF;
+$more-events-color: blue;
+@import "../ux/Ext.ux.TouchCalendarEvents";
+
+%calendarTH {
+	background-color: white;
+	height: 4rem;
+}
+
+%calendarSPAN {
+	color: $primary-text-color;
+	font-size: 1.6rem;
+	font-weight: normal;
+	text-shadow: none;
+}
+
+%event {
+	border: none;
+	border-radius: 0;
+	font-size: 1.8em;
+	font-weight: normal;
+	height: 1.6em;
+	overflow: hidden;
+	padding: 0 0 0 8px;
+	position: absolute;
+	text-align: left;
+	text-shadow: none;
+	z-index: 100;
+}
+
+.zcs-item-panel .touch-calendar-view {
+
+	TABLE.month {
+		background-color: white;
+		border-collapse: collapse;
+		font-size: 1rem;
+
+		THEAD TH {
+			@extend %calendarTH;
+
+			&:first-child,
+			&:last-child {
+				background-color: white;
+			}
+
+			SPAN {
+				@extend %calendarSPAN;
+			}
+		}
+
+		TBODY TD {
+			font-size: 1.2em;
+			font-weight: normal;
+
+			&.today {
+				background-color: lighten(black, 95%);
+				border: inherit;
+			}
+
+			&.selected {
+				background-color: lighten($selection-color, 40%);
+				border: inherit;
+				color: white;
+
+				&.prev-month,
+				&.next-month {
+					color: white;
+				}
+			}
+		}
+
+/*		.time-block {
+			.simple-event-wrapper-multi {
+				SPAN.simple-event-multi {
+					height: 6px;
+					width: 6px;
+					border-radius: 3px;
+				}
+			}
+		} */
+	}
+
+	TABLE.day {
+		font-size: 1rem;
+
+		THEAD TH {
+			@extend %calendarTH;
+			border-bottom: none;
+
+			&:first-child,
+			&:last-child {
+				background-color: white;
+			}
+
+			SPAN {
+				@extend %calendarSPAN;
+			}
+		}
+
+		DIV.event-bar {
+			@extend %event;
+			background-color: $bg-color;
+			color: white;
+			opacity: 0.75;
+
+			&.event-bar-selected {
+				background-color: $selection-color;
+			}
+
+			&>DIV {
+				opacity: 1;
+
+				.event-time {
+					display: none;  // hide this for now
+					font-style: italic;
+					margin-left: 1em;
+					opacity: 0.8;
+				}
+			}
+		}
+
+		.time-slot-table {
+			.label {
+				padding-right: 0.5em;
+
+				SPAN {
+					position: relative;
+					top: -0.75em;
+				}
+
+				.am-pm {
+					top: -1.5em;
+				}
+			}
+
+			.time-block {
+				background-color: white;
+			}
+		}
+	}
+}
+
+DIV.more-events {
+	@extend %event;
+	background-color: transparent;
+	color: $more-events-color;
+	cursor: pointer;
+	text-decoration: underline;
+}
+
+.view-appt-time {
+	font-size: 1.2em;
+	padding-left: 1rem;
+	padding-right: 1rem;
+}
+
+.view-appt-location {
+	font-size: 1em;
+	padding-left: 1rem;
+	padding-right: 1rem;
+}
+
+.view-appt-notes {
+	padding: 0em 1rem 2.5em;
+}
+
+.view-appt-ptst {
+	padding-left: 1.8em;
+
+	// nudged a little to the left to align the text with icons
+	margin-left: -0.4em;
+}
+
+.view-appt-accepted {
+	@extend .view-appt-ptst;
+	@include background(url('/img/zimbra/ImgCheck.png') $invBtnIconPos);
+}
+
+.view-appt-declined {
+	@extend .view-appt-ptst;
+	@include background(url('/img/zimbra/ImgCancel.png') $invBtnIconPos);
+}
+
+.view-appt-tentative {
+	@extend .view-appt-ptst;
+	@include background(url('/img/zimbra/ImgQuestionMark.png') $invBtnIconPos);
+}
+
+.view-appt-noresponse {
+	@extend .view-appt-ptst;
+	@include background(url('/img/zimbra/ImgQuestionMark.png') $invBtnIconPos);
+}
+
+.view-appt-showDetails {
+	@extend .zcs-link;
+	padding-left: 0.5em;
+	padding-right: 0.5em;
+}
+
+.view-appt-name {
+	color: $base-color;
+	display: block;
+}
+
+.view-appt-color-block {
+	@extend .zcs-color-block;
+	margin-right: 0.1em;
+}
+/*
+* helper class to make tables align the labels with the top margin
+*/
+.zcs-table-vtop TD {
+	vertical-align: top;
+}

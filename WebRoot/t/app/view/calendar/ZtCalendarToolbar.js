@@ -61,22 +61,10 @@ Ext.define('ZCS.view.calendar.ZtCalendarToolbar', {
             {
                 xtype: 'panel',
                 layout: {
-                    type: 'hbox'
+                    type: 'hbox',
+                    align: 'center'
                 },
                 items: [
-                    {
-                        xtype: 'button',
-                        text: ZtMsg.calTodayLabel,
-                        disabled: true
-                    },
-                    {
-                        xtype: 'button',
-                        itemId: 'dayBtn',
-                        text: ZtMsg.calDayLabel,
-                        handler: function() {
-                            ZCS.app.getCalendarController().toggleCalView('day');
-                        }
-                    },
                     {
                         xtype: 'button',
                         itemId: 'monthBtn',
@@ -85,6 +73,26 @@ Ext.define('ZCS.view.calendar.ZtCalendarToolbar', {
                         handler: function() {
                             ZCS.app.getCalendarController().toggleCalView('month');
                         }
+                    },
+                    {
+                        xtype: 'button',
+                        itemId: 'dayBtn',
+                        text: ZtMsg.calDayLabel,
+                        handler: function() {
+                            ZCS.app.getCalendarController().toggleCalView('day');
+                        }
+                    }
+                ]
+            },
+            {
+                xtype: 'panel',
+                hidden: true,
+                align: 'right',
+                items: [
+                    {
+                        xtype: 'button',
+                        text: ZtMsg.calTodayLabel,
+                        disabled: true
                     }
                 ]
             }
