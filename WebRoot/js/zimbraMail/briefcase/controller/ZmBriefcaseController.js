@@ -892,6 +892,7 @@ function(items){
                 restUrl = AjxStringUtil.fixCrossDomainReference(restUrl);
                 restUrl = ZmBriefcaseApp.addEditorParam(restUrl);
                 restUrl += (restUrl.match(/\?/) ? '&' : '?') + "action=edit&localeId=" + AjxEnv.DEFAULT_LOCALE;
+				restUrl += "&authTokenExpires=" + window.authTokenExpires;
                 window.open(restUrl, this._getWindowName(item.name), "");
             }
         }
