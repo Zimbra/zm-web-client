@@ -272,7 +272,7 @@ function() {
 			icon: "MailApp",
 			templateId: "prefs.Pages#Mail",
 			priority: 10,
-			precondition: appCtxt.get(ZmSetting.MAIL_ENABLED),
+			precondition: appCtxt.get(ZmSetting.MAIL_ENABLED) || appCtxt.get(ZmSetting.ADMIN_DELEGATED),
 			prefs: [
 				ZmSetting.AUTO_READ_RECEIPT_ENABLED,
 				ZmSetting.DEDUPE_MSG_TO_SELF,
@@ -2378,4 +2378,16 @@ function() {
 			}
 		}
 	}
+};
+
+/*
+ * Enables Mail preferences in case of Admin viewing user account keeping Mail App is disabled.
+ */
+ZmMailApp.prototype.enableMailPrefs =
+function() {
+	// ZmPref is unavailable, hence we load it, register settings, operations & preferences.
+	AjxPackage.require("zimbraMail.prefs.model.ZmPref");
+	this._registerSettings();
+	this._registerOperations();
+	this._registerPrefs();
 };

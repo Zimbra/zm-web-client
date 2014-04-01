@@ -491,7 +491,7 @@ and the container element is replaced with that control.
 					</tr>
 				<$ } $>
 
-				<$ if (data.isEnabled(ZmSetting.MAIL_ENABLED)) { $>
+				<$ if (data.isEnabled(ZmSetting.MAIL_ENABLED) || data.isEnabled(ZmSetting.ADMIN_DELEGATED)) { $>
 					<$ if (isHtmlCompose || isNewWindow ) { $>
 						<tr><td colspan=2><hr></td></tr>
 					<$ } $>

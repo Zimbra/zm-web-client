@@ -320,6 +320,8 @@ ZmSettings.prototype.setUserSettings = function(params) {
     // admin mail enabled setting takes precedence if admin delegated
     if (this.get(ZmSetting.ADMIN_DELEGATED) && !this.get(ZmSetting.ADMIN_MAIL_ENABLED)) {
         this.getSetting(ZmSetting.MAIL_ENABLED).setValue(false);
+	    var mailApp = new ZmMailApp();
+	    mailApp.enableMailPrefs();
     }
 
     if (params.preInit) { return; }
