@@ -581,11 +581,17 @@ function(conv, fieldId) {
 			part1.push(p);
 		}
 	}
+	// Workaround for bug 87597: for "sent" folder, when no "to" fields were reported after notification,
+	// push all participants to part1 to trick origLen > 0
+	// then get recipients from msg.getAddresses below and overwrite part1
+	if (part1.length === 0 && isOutbound) {
+		part1 = part;
+	}
 	var origLen = part1 ? part1.length : 0;
 	if (origLen > 0) {
 
 		// bug 23832 - create notif for conv in sent gives us sender as participant, we want recip
-		if ((origLen === 1) && (part1[0].type === AjxEmailAddress.FROM) && conv.isZmConv && isOutbound) {
+		if (origLen == 1 && (part1[0].type === AjxEmailAddress.FROM) && conv.isZmConv && isOutbound) {
 			var msg = conv.getFirstHotMsg();
 			if (msg) {
 				var addrs = msg.getAddresses(AjxEmailAddress.TO).getArray();

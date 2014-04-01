@@ -2597,7 +2597,7 @@ function(addrNodes, type, isDraft) {
 	var num = addrs.size();
 	var contactsApp;
 	if (num) {
-	 if (appCtxt.isOffline) {
+		if (appCtxt.isOffline) {
             contactsApp = appCtxt.getApp(ZmApp.CONTACTS)
         } else {
 		    contactsApp = appCtxt.get(ZmSetting.CONTACTS_ENABLED) && appCtxt.getApp(ZmApp.CONTACTS);
