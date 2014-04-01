@@ -884,12 +884,18 @@ function(actionCode) {
 			break;
 
 		case ZmKeyMap.SAVE: // Save to draft
+			if (this._uploadingProgress) {
+				break;
+			}
 			if (this._canSaveDraft()) {
 				this.saveDraft();
 			}
 			break;
 
 		case ZmKeyMap.SEND: // Send message
+			if (this._uploadingProgress) {
+				break;
+			}
 			this._send();
 			break;
 
