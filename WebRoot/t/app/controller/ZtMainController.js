@@ -83,6 +83,12 @@ Ext.define('ZCS.controller.ZtMainController', {
 	 * Logs off the application
 	 */
 	doLogout: function() {
+
+		if (!window.navigator.onLine) {
+			this.handleError({ logoutNetworkError: true });
+			return;
+		}
+
         var qs = location.search;
         var pairs = [];
         var j = 0;
@@ -178,6 +184,9 @@ Ext.define('ZCS.controller.ZtMainController', {
 		}
 		else if (data.status === 0 && !data.responseText) {
 			msg = ZtMsg.errorServerUnavailable;
+		}
+		else if (data.logoutNetworkError) {
+			msg = ZtMsg.errorServerUnavailableLogout;
 		}
 		else {
 			msg = ZtMsg.unknownError;
