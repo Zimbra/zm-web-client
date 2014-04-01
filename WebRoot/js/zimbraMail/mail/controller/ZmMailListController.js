@@ -2226,16 +2226,6 @@ function(parent, num) {
         parent.setItemVisible(ZmOperation.TAG_MENU, false);
     }
 
-    if (appCtxt.isWebClientOffline()) {
-        parent.enable(
-                        [
-                            ZmOperation.ACTIONS_MENU,
-                            ZmOperation.VIEW_MENU
-                        ],
-                        false
-                    );
-    }
-
 	this._cleanupToolbar(parent);
 };
 
