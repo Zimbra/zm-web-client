@@ -139,8 +139,6 @@ ZmMailListController.ACTION_CODE_WHICH[ZmKeyMap.PREV_UNREAD]	= DwtKeyMap.SELECT_
 
 ZmMailListController.viewToTab = {};
 
-ZmMailListController.REPLY_FOLDERS_TO_OMIT = [ZmFolder.ID_DRAFTS, ZmFolder.ID_SENT, ZmFolder.ID_TRASH, ZmFolder.ID_SPAM];
-
 ZmMailListController.FOLDERS_TO_OMIT = [ZmFolder.ID_TRASH, ZmFolder.ID_SPAM, ZmFolder.ID_DRAFTS];
 
 // Public methods
@@ -264,7 +262,7 @@ function(actionCode, ev) {
 
 		case ZmKeyMap.FORWARD:
 			if (!isDrafts && !isExternalAccount) {
-				this._doAction({action:ZmOperation.FORWARD});
+				this._doAction({action:ZmOperation.FORWARD, foldersToOmit:this.getFoldersToOmit()});
 			}
 			break;
 
@@ -298,7 +296,7 @@ function(actionCode, ev) {
 		case ZmKeyMap.REPLY:
 		case ZmKeyMap.REPLY_ALL:
 			if (!isDrafts && !isExternalAccount && (num == 1) && !isSyncFailures && !isFeed) {
-				this._doAction({action:ZmMailListController.ACTION_CODE_TO_OP[actionCode]});
+				this._doAction({action:ZmMailListController.ACTION_CODE_TO_OP[actionCode], foldersToOmit:this.getFoldersToOmit()});
 			}
 			break;
 
@@ -1044,13 +1042,13 @@ function(ev) {
 		action = ZmOperation.REPLY;
 	}
 
-	this._doAction({ev:ev, action:action, foldersToOmit:this.getFoldersToOmit(ZmMailListController.REPLY_FOLDERS_TO_OMIT)});
+	this._doAction({ev:ev, action:action, foldersToOmit:this.getFoldersToOmit()});
 };
 
 ZmMailListController.prototype._forwardListener =
 function(ev) {
 	var action = ev.item.getData(ZmOperation.KEY_ID);
-	this._doAction({ev:ev, action:action, foldersToOmit:this.getFoldersToOmit(ZmMailListController.REPLY_FOLDERS_TO_OMIT)});
+	this._doAction({ev:ev, action:action, foldersToOmit:this.getFoldersToOmit()});
 };
 
 ZmMailListController.prototype._forwardConvListener = function(ev) {

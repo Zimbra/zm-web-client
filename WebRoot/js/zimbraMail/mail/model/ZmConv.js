@@ -617,9 +617,9 @@ function() {
 };
 
 /**
- * Gets the first matching msg of this conv, loading the conv msg list if necessary. If the
+ * Gets the first relevant msg of this conv, loading the conv msg list if necessary. If the
  * msg itself hasn't been loaded we also load the conv. The conv load is a SearchConvRequest
- * which fetches the content of the first matching msg and returns it via a callback. If no
+ * which fetches the content of the first msg and returns it via a callback. If no
  * callback is provided, the conv will not be loaded - if it already has a msg list, the msg
  * will come from there; otherwise, a skeletal msg with an ID is returned. Note that a conv
  * always has at least one msg.
@@ -646,12 +646,14 @@ function(params, callback) {
 	if (callback) {
 		if (msg && msg._loaded && !params.forceLoad) {
 			callback.run(msg);
-		} else {
-			var respCallback = new AjxCallback(this, this._handleResponseGetFirstHotMsg, [params, callback]);
+		}
+		else {
+			var respCallback = this._handleResponseGetFirstHotMsg.bind(this, params, callback);
 			params.fetch = ZmSetting.CONV_FETCH_FIRST;
 			this.load(params, respCallback);
 		}
-	} else {
+	}
+	else {
 		// do our best to return a "realized" message by checking cache
 		if (!msg && this.msgIds && this.msgIds.length) {
 			var id = this.msgIds[0];
@@ -669,20 +671,21 @@ function(params, callback) {
 	}
 };
 
-ZmConv.prototype._handleResponseGetFirstHotMsg =
-function(params, callback) {
+ZmConv.prototype._handleResponseGetFirstHotMsg = function(params, callback) {
+
 	var msg = this.msgs.getFirstHit(params.offset, params.limit);
 	// should have a loaded msg
 	if (msg && msg._loaded) {
 		if (callback) {
 			callback.run(msg);
 		}
-	} else {
+	}
+	else {
 		// desperate measures - get msg content from server
 		if (!msg && this.msgIds && this.msgIds.length) {
 			msg = new ZmMailMsg(this.msgIds[0]);
 		}
-		var respCallback = new AjxCallback(this, this._handleResponseLoadMsg, [msg, callback]);
+		var respCallback = this._handleResponseLoadMsg.bind(this, msg, callback);
 		msg.load({getHtml:params.getHtml, callback:respCallback});
 	}
 };

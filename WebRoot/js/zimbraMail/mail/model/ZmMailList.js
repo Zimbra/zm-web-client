@@ -678,8 +678,7 @@ function() {
 };
 
 /**
- * Gets the first msg in the list which was marked by the server as matching
- * the search used to create the list.
+ * Gets the first msg in the list that's not in one of the given folders (if any).
  * 
  * @param {int}	offset	the starting point within list
  * @param {int}	limit		the ending point within list
@@ -688,7 +687,10 @@ function() {
  */
 ZmMailList.prototype.getFirstHit =
 function(offset, limit, foldersToOmit) {
-	if (this.type != ZmItem.MSG) { return null; }
+
+	if (this.type !== ZmItem.MSG) {
+		return null;
+	}
 
 	var msg = null;	
 	offset = offset || 0;
@@ -699,13 +701,13 @@ function(offset, limit, foldersToOmit) {
 		var end = (offset + limit > numMsgs) ? numMsgs : offset + limit;
 		var list = this.getArray();
 		for (var i = offset; i < end; i++) {
-			if (!(foldersToOmit && list[i].folderId && foldersToOmit[list[i].folderId]) && list[i].inHitList) {
+			if (!(foldersToOmit && list[i].folderId && foldersToOmit[list[i].folderId])) {
 				msg = list[i];
 				break;
 			}
 		}
 		if (!msg) {
-			msg = list[0];	// no hot messages, use first msg
+			msg = list[0];	// no qualifying messages, use first msg
 		}
 	}
 	
