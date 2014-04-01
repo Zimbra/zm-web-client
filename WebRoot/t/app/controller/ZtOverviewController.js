@@ -332,6 +332,9 @@ Ext.define('ZCS.controller.ZtOverviewController', {
 		    if (newParentId !== folder.get('parentZcsId')) {
 			    options.parentId = newParentId;
 		    }
+		    if (!options.name && !options.parentId) {
+			    return ZtMsg.noChangesMade;
+		    }
 	    }
 	    folder.save(options);
 
@@ -364,6 +367,9 @@ Ext.define('ZCS.controller.ZtOverviewController', {
 		    }
 		    if (newTagColor !== tag.get('color')) {
 			    options.color = newTagColor;
+		    }
+		    if (!options.name && !options.color) {
+			    return ZtMsg.noChangesMade;
 		    }
 	    }
 	    tag.save(options);
