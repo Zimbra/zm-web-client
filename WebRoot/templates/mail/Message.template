@@ -109,7 +109,7 @@
 	</div>
 </template>
 
-		
+
 <template id='mail.Message#MailAttachmentBubble'>
 		<span id="${id}" class="AttachmentLoading attachmentBubble AttachmentSpan" name="mailAttUploadingSpan" style="max-width:235px; position:static; overflow:visible;padding:0 2px 4px">
 			<span class="AttProgressSpan1">${fileName}</span>
@@ -554,18 +554,13 @@
 	</table>
 </template>
 
-<template id='mail.Message#UploadProgress'>
+<template id='mail.Message#UploadProgressContainer'>
 	<table role="presentation" width=100%>
-		<$ var id = Dwt.getNextId(data.rowId) $>
-		<tr '<$= id $>' style="display:table-row;">
+		<tr style="display:table-row;">
 			<td width="96%" colspan="2">
 				<div class="attBubbleContainer">
 				<div class="attBubbleHolder">
-					<span class="AttachmentLoading attachmentBubble AttachmentSpan" name="mailAttUploadingSpan">
-						<span class="AttProgressSpan1">${fileName}</span>
-						<span class="AttProgressSpan2">${fileName}</span>
-						<span onclick="window.appCtxt.getCurrentView()._abortUploadFile()" class="ImgBubbleDelete AttachmentClose"></span>
-					</span>
+                    <$= AjxTemplate.expand("mail.Message#MailAttachmentBubble", data) $>
 				</div>
 				</div>
 			</td>

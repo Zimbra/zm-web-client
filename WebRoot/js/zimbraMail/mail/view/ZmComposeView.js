@@ -3139,7 +3139,7 @@ function(files,index, aid) {
             this._loadingSpan.parentNode.appendChild(element);
         }
         // Set the previous files progress to 100%
-        this._setLoadingProgress(newSpan, 100);
+        this._setLoadingProgress(newSpan, 1);
     }
 
 };
@@ -3212,10 +3212,8 @@ ZmComposeView.prototype._uploadFileProgress =
 function(progress) {
 	if (!this._loadingSpan ||  (!progress.lengthComputable) ) { 
 		return;
-		}
-	var span1 = this._loadingSpan.childNodes[0];
-	var span2 = this._loadingSpan.childNodes[1];
-	span1.style.width = ((span2.offsetWidth) *  (progress.loaded / progress.total)) + "px";
+	}
+	this._setLoadingProgress(this._loadingSpan, progress.loaded / progress.total);
 };
 
 ZmComposeView.prototype._abortUploadFile =
@@ -3235,25 +3233,31 @@ function() {
     }
 };
 
-// Set the loading progress to a specific percentage
+/*
+ Set the loading progress to a specific percentage
+ @param {Number} progress - fraction of progress (0 to 1, 1 is 100%).
+ */
 ZmComposeView.prototype._setLoadingProgress =
 function(loadingSpan, progress) {
-    var span1 = loadingSpan.childNodes[0];
-    var span2 = loadingSpan.childNodes[1];
-    span1.style.width = (span2.offsetWidth *  (progress/100)) + "px";
-}
+	var finishedSpan = loadingSpan.childNodes[0];
+	var allSpan = loadingSpan.childNodes[1];
+	finishedSpan.style.width = (allSpan.offsetWidth * progress) + "px";
+};
 
 ZmComposeView.prototype._initProgressSpan =
 function(fileName) {
 	fileName = this._clipFile(fileName, true);
 
-	var node = this._attcDiv.getElementsByTagName("span") && this._attcDiv.getElementsByTagName("span")[0];
-	if (node) {
-		var element = document.createElement("span");
-		element.innerHTML = AjxTemplate.expand("mail.Message#MailAttachmentBubble", {fileName:fileName});
-		node.parentNode.insertBefore(element.firstChild,node);
-	} else {
-		this._attcDiv.innerHTML = AjxTemplate.expand("mail.Message#UploadProgress",{fileName:fileName});
+	var firstBubble = this._attcDiv.getElementsByTagName("span")[0];
+	if (firstBubble) {
+		var tempBubbleWrapper = document.createElement("span");
+		tempBubbleWrapper.innerHTML = AjxTemplate.expand("mail.Message#MailAttachmentBubble", {fileName: fileName});
+		var newBubble = tempBubbleWrapper.firstChild;
+		firstBubble.parentNode.insertBefore(newBubble, firstBubble); //insert new bubble before first bubble.
+	}
+	else {
+		//first one is enclosed in a wrapper (the template already expands the mail.Message#MailAttachmentBubble template inside the wrapper)
+		this._attcDiv.innerHTML = AjxTemplate.expand("mail.Message#UploadProgressContainer", {fileName: fileName});
 	}
 	this._loadingSpan = this._attcDiv.getElementsByTagName("span")[0];
 };
