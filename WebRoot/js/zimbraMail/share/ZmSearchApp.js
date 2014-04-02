@@ -46,10 +46,12 @@ ZmApp.SEARCH					= ZmId.APP_SEARCH;
 ZmApp.CLASS[ZmApp.SEARCH]		= "ZmSearchApp";
 ZmApp.SETTING[ZmApp.SEARCH]		= ZmSetting.SEARCH_ENABLED;
 
+ZmSearchApp.CONTROLLER_CLASS = "ZmSearchResultsController";
+
 ZmSearchApp.prototype.getSearchResultsController =
 function(sessionId, appName) {
 	return this.getSessionController({
-				controllerClass:	"ZmSearchResultsController",
+				controllerClass:	ZmSearchApp.CONTROLLER_CLASS,
 				sessionId:			sessionId,
 				appName:			appName
 			});
@@ -59,4 +61,15 @@ function(sessionId, appName) {
 ZmSearchApp.prototype.activate =
 function(active) {
 	this._active = active;
+};
+
+// Not hooked up for activate, but it will affect all active Searches on a online/offline transition
+ZmSearchApp.prototype.resetWebClientOfflineOperations = function() {
+	var controllerType = this.getTypeFromController(ZmSearchApp.CONTROLLER_CLASS);
+	var controllers = this._sessionController[controllerType];
+	var controller;
+	for (var id in controllers) {
+		controller = controllers[id];
+		controller.activateButtons(appCtxt.isWebClientOffline());
+	}
 };

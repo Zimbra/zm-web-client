@@ -170,6 +170,9 @@ function(search, resultsCtlr) {
 	if (search && search.origin == ZmId.SEARCH) {
 		this._toolbar.setSearch(search);
 	}
+
+	this.activateButtons(appCtxt.isWebClientOffline());
+
 	// Tell the user how many results were found
 	var searchResult = resultsCtlr.getCurrentSearchResults && resultsCtlr.getCurrentSearchResults();
 	var results = (searchResult && searchResult.getResults()) || resultsCtlr.getList();
@@ -304,3 +307,11 @@ function(term, skipNotify) {
 	});
 	return terms;
 };
+
+ZmSearchResultsController.prototype.activateButtons = function(offline) {
+	// Only Save affected currently
+	var saveButton = this._toolbar.getButton(ZmSearchToolBar.SAVE_BUTTON);
+	if (saveButton) {
+		saveButton.setEnabled(!offline);
+	}
+}
