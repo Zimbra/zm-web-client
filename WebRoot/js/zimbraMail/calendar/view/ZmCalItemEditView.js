@@ -596,8 +596,8 @@ function(calItem, mode) {
             notesHtmlPart = crlf2 + preface + crlf + calItem.getInviteDescription(true);
             notesHtmlPart = this.formatContent(notesHtmlPart, true);
         } else {
-            var crlf2 = ZmMsg.CRLF2;
-            var crlf = ZmMsg.CRLF;
+            var crlf2 = AjxStringUtil.CRLF2;
+            var crlf = AjxStringUtil.CRLF;
             notesPart = crlf2 + preface + crlf + calItem.getInviteDescription(false);
             notesPart = this.formatContent(notesPart, false);
         }

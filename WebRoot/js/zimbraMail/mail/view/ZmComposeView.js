@@ -1950,8 +1950,8 @@ ZmComposeView.prototype._setReturns =
 function(mode) {
 	mode = mode || this._composeMode;
 	var htmlMode = (mode === Dwt.HTML);
-	this._crlf = htmlMode ? ZmMsg.CRLF_HTML : ZmMsg.CRLF;
-	this._crlf2 = htmlMode ? ZmMsg.CRLF2_HTML : ZmMsg.CRLF2;
+	this._crlf = htmlMode ? AjxStringUtil.CRLF_HTML : AjxStringUtil.CRLF;
+	this._crlf2 = htmlMode ? AjxStringUtil.CRLF2_HTML : AjxStringUtil.CRLF2;
 };
 
 // body components
@@ -2623,8 +2623,8 @@ ZmComposeView.prototype._getBodyContent =
 function(msg, htmlMode, incWhat) {
 
 	var body, bodyPart, hasInlineImages, hasInlineAtts;
-	var crlf = htmlMode ? ZmMsg.CRLF_HTML : ZmMsg.CRLF;
-	var crlf2 = htmlMode ? ZmMsg.CRLF2_HTML : ZmMsg.CRLF2;
+	var crlf = htmlMode ? AjxStringUtil.CRLF_HTML : AjxStringUtil.CRLF;
+	var crlf2 = htmlMode ? AjxStringUtil.CRLF2_HTML : AjxStringUtil.CRLF2;
 	var getOrig = (incWhat === ZmSetting.INC_SMART);
 
 	var content;

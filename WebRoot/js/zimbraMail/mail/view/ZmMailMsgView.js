@@ -1858,7 +1858,7 @@ function(msg, container, callback, index) {
 					var isTextMsg = true;
 					if (msg.hasNoViewableContent()) {
 						var empty = AjxTemplate.expand("mail.Message#EmptyMessage");
-						content = content ? [empty, content].join(ZmMsg.CRLF2) : empty;
+						content = content ? [empty, content].join(AjxStringUtil.CRLF2) : empty;
 						isTextMsg = false; //To make sure we display html content properly
 					}
 					if (bodyPart.format === ZmMimeTable.FORMAT_FLOWED) {
