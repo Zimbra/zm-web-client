@@ -39,7 +39,10 @@
 	}
 
     ZAuthResult authResult = (ZAuthResult) request.getAttribute("authResult");
-    String skin = authResult.getPrefs().get("zimbraPrefSkin").get(0);
+    String skin = authResult.getSkin();
+    if (skin == null) {
+        skin = authResult.getPrefs().get("zimbraPrefSkin").get(0);
+    }
 %>
 <app:skinAndRedirect defaultSkin="${skin}" />
 <%
