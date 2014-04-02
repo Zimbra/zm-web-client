@@ -19,6 +19,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
+<%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <app:skinAndRedirect />
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <fmt:setLocale value='${pageContext.request.locale}' scope='request' />
@@ -41,7 +42,7 @@
 	<meta name="viewport" content="width=320; initial-scale=1.0; maximum-scale=8.0; user-scalable=1;">
 	<meta name="description" content="<fmt:message bundle="${zmmsg}" key="zimbraLoginMetaDesc"/>">
 	<link  rel="stylesheet" type="text/css" href="<c:url value='/css/common,login,zhtml,skin.css'>
-		<c:param name="skin" value="${skin}" />
+		<c:param name="skin" value="${param.skin}" />
 		<c:param name="v" value="${version}" />
 	</c:url>">
 	<zm:getFavIcon request="${pageContext.request}" var="favIconUrl" />
