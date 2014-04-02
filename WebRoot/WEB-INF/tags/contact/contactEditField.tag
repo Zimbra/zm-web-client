@@ -22,6 +22,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
+<%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <c:if test="${empty label}">
     <c:set var="label" value="AB_FIELD_${field}" />
 </c:if>
@@ -32,7 +33,7 @@
     <label for="${field}">${fn:escapeXml(label)}:</label>
 </td>
 <td><c:choose>
-        <c:when test="${address}">
+        <c:when test="${zm:boolean(address)}">
             <textarea name='${field}' id='${field}' cols=32 rows='2' tabindex="${tabindex}">${fn:escapeXml(value)}</textarea>
         </c:when>
         <c:otherwise>
