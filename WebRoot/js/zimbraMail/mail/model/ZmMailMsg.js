@@ -765,14 +765,7 @@ function(params, callback, result) {
 
 	this._loadFromDom(response.m[0]);
 	if (!this.isReadOnly() && params.markRead) {
-        //For offline mode keep isUnread property as true so that additional MsgActionRequest gets fired.
-        //MsgActionRequest also gets stored in outbox queue and it also sends notify header for reducing the folder unread count.
-        if (appCtxt.isWebClientOffline()) {
-            this._markReadLocal(false);
-        }
-        else {
-            this._markReadLocal(true);
-        }
+        this.markRead();
 	} else {
         // Setup the _evt.item field and list._evt.item in order to insure proper notifications.
         this._setupNotify();
@@ -788,6 +781,14 @@ function(params, callback, result) {
 		this._loadCallback = null;
 	} else if (callback) {
 		callback.run(result);
+	}
+};
+
+ZmMailMsg.prototype.markRead = function() {
+	if (!this.isReadOnly()) {
+		//For offline mode keep isUnread property as true so that additional MsgActionRequest gets fired.
+		//MsgActionRequest also gets stored in outbox queue and it also sends notify header for reducing the folder unread count.
+		this._markReadLocal(!appCtxt.isWebClientOffline());
 	}
 };
 

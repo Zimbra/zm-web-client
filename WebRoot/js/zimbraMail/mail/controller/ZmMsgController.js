@@ -87,6 +87,8 @@ function(msg, parentController, callback, markRead, hidePagination, forceLoad, n
 			msg.load({callback:respCallback, markRead:markRead, forceLoad:forceLoad, noTruncate:noTruncate});
 		}
 	} else {
+		// May have been explicitly marked as unread
+		msg.markRead();
 		this._handleResponseShow(callback, hidePagination);
 	}
 };
