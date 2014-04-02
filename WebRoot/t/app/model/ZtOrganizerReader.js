@@ -37,16 +37,15 @@ Ext.define('ZCS.model.ZtOrganizerReader', {
 	 */
 	getDataFromNode: function(node, type) {
 
-		// give mountpoint a real type
-		var isFolder = (type === ZCS.constant.ORG_FOLDER),
-			isMountpoint = false;
-
+		var isMountpoint = false;
 		if (type === ZCS.constant.ORG_MOUNTPOINT) {
+			// give mountpoint a real type
 			type = ZCS.constant.ORG_FOLDER;
 			isMountpoint = true;
 		}
 
-		var localId = ZCS.util.parseId(node.id).localId,
+		var isFolder = (type === ZCS.constant.ORG_FOLDER),
+			localId = ZCS.util.parseId(node.id).localId,
 			key = ZCS.constant.MSG_KEY[localId],
 			orgName = key ? ZtMsg[key] : node.name;
 
@@ -69,7 +68,7 @@ Ext.define('ZCS.model.ZtOrganizerReader', {
 			// shared folders
 			isMountpoint:       isMountpoint,
 			remoteAccountId:    node.zid,
-			remoteFolderId:     node.rid,
+			remoteFolderId:     String(node.rid),
 
 			// other
 			url:                node.url,   // feeds
