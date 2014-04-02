@@ -86,13 +86,16 @@ Ext.define('ZCS.view.calendar.ZtCalendarToolbar', {
             },
             {
                 xtype: 'panel',
-                hidden: true,
                 align: 'right',
                 items: [
                     {
                         xtype: 'button',
-                        text: ZtMsg.calTodayLabel,
-                        disabled: true
+                        cls: 'zcs-flat',
+                        handler: function() {
+                            ZCS.app.getCalendarController().goToday();
+                        },
+                        iconCls: 'calendar',
+                        iconMask: true
                     }
                 ]
             }

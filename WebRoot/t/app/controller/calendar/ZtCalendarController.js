@@ -366,6 +366,16 @@ Ext.define('ZCS.controller.calendar.ZtCalendarController', {
         }
     },
 
+    goToday: function() {
+        var date = new Date(),
+            monthView = this.getCalMonthView();
+        if (monthView.getViewMode() === 'month') {
+            this.getCalMonthView().updateViewMode('month', date);
+        } else {
+            this.getCalDayView().updateViewMode('day', date);
+        }
+    },
+
     setDayViewConfig: function(date) {
         this.getCalDayView().updateViewMode('day', date);
     },
