@@ -140,7 +140,7 @@
         </td>
     </tr>
     </c:when>
-    <c:when test="${briefcase}">
+    <c:when test="${zm:boolean(briefcase)}">
     <tr>
         <td nowrap align='right'>
             <label for="parentFolder">
