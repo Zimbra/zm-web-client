@@ -17,43 +17,51 @@ $contactBkgdColor: $white;
 /* 1rem typically equals 16px */
 $listViewMargin: 0.5rem;
 $contactListHeight: 5rem;  /* 80px */
-$contactListImageSize: 2.5rem;  /* 40px */
+$contactListImageSize: 3.25rem;  /* 52px */
 $contactListStdMargin: $contactListHeight / 2 - $contactListImageSize / 2;
 $contactListLeftIndent: $contactListImageSize + $contactListStdMargin * 2;
 $contactListRightIndent: $contactListStdMargin;
 $contactListTopOffset: $contactListStdMargin - 0.25rem;
 
 $contactBaseFontSize: 1rem;
-$contactGutter: 1.5em;
-$contactImageSize: 10em - $contactGutter;
-$contactEditImageSize: 5em;
-$contactStdMargin: 0.7em;
-$contactListImageTopOffset: $contactListHeight/2 - $contactListImageSize/2;
-$contactButtonSize: $contactImageSize/1.5;
-$contactFieldTopOffset: $contactImageSize + $contactStdMargin*3;
-$contactFieldWidth: 21em; //optimized intially for iPad in landscape
-$contactFormButtonMinHeight: 2.5em;
+$contactTitleBarHeight: 2.5rem;
+$contactGutter: 1rem;
+$contactImageSize: 8rem - $contactGutter;
+$contactImageSizePhone: $contactImageSize * 0.5;
+$contactEditImageSize: 5rem;
+$contactStdMargin: 0.7rem;
+$contactListImageTopOffset: $contactListHeight / 2 - $contactListImageSize / 2;
+$contactButtonSize: $contactImageSize / 1.5;
+$contactFieldTopOffset: $contactImageSize + $contactStdMargin * 4;
+$contactFieldTopOffsetPhone: $contactImageSizePhone + $contactStdMargin * 6;
+$contactFieldWidth: 21rem; //optimized intially for iPad in landscape
+$contactFormButtonMinHeight: 2.5rem;
 
 
 /* Contact Image Base Classes */
 
-.zcs-contactImage {
+%zcs-contactImage {
 	background-position: center;
 	background-size: 100% auto;
 	background-repeat: no-repeat;
 	margin-left: $contactListStdMargin;
-	margin-top: $contactListHeight / 2 - $contactListImageSize/2;
-	@include border-radius($contactImageSize/2);
+	margin-top: $contactListHeight / 2 - $contactListImageSize / 2;
+	@include border-radius($contactImageSize / 2);
 }
 
-.zcs-contactImage-person {
-	@extend .zcs-contactImage;
+%zcs-contactImage-person {
+	@extend %zcs-contactImage; 
 	background-image: url('../images/person.png');
 }
 
-.zcs-contactImage-group {
-	@extend .zcs-contactImage;
+%zcs-contactImage-group {
+	@extend %zcs-contactImage; 
 	background-image: url('../images/group.png');
+}
+
+%zcs-contactlist-image {
+	height: $contactListImageSize;
+	width: $contactListImageSize;
 }
 
 /* Generic Classes */
@@ -82,19 +90,14 @@ $contactFormButtonMinHeight: 2.5em;
 	margin-top: 8px; // accounts for 7px padding and 1px top border
 }
 
-.zcs-contactlist-image {
-	height: $contactListImageSize;
-	width: $contactListImageSize;
-}
-
 .zcs-contactList-person {
-	@extend .zcs-contactlist-image;
-	@extend .zcs-contactImage-person;
+	@extend %zcs-contactlist-image;
+	@extend %zcs-contactImage-person;
 }
 
 .zcs-contactList-group {
-	@extend .zcs-contactlist-image;
-	@extend .zcs-contactImage-group;
+	@extend %zcs-contactlist-image;
+	@extend %zcs-contactImage-group;
 }
 
 .zcs-contactList-text {
@@ -137,7 +140,10 @@ $contactFormButtonMinHeight: 2.5em;
 		background-color: $contactBkgdColor;
 
 		.x-innerhtml {
-			padding: $contactGutter+2.5em $contactGutter/2 $contactGutter;  // Larger top padding accounts for titlebar height
+			padding-top: $contactTitleBarHeight + $contactGutter;
+			padding-right: $contactGutter / 2;
+			padding-bottom: $contactGutter;
+			padding-left: $contactGutter / 2;
 		}
 	}
 }
@@ -147,7 +153,7 @@ $contactFormButtonMinHeight: 2.5em;
 
 	.zcs-contactview-image {
 		@extend .zcs-floatLeft;
-		@extend .zcs-contactImage-person;
+		@extend %zcs-contactImage-person;
 		height: $contactImageSize;
 		width: $contactImageSize;
 	}
@@ -155,14 +161,14 @@ $contactFormButtonMinHeight: 2.5em;
 	.zcs-contactview-personalInfo {					// Tested iPad Mini
 		@extend .zcs-floatLeft;
 		margin-left: $contactGutter;
-		width: 77%;
+		width: 76%;
 
 		SPAN {
 			@extend .zcs-newLine;
 			//@include ellipsis();
 			margin-bottom:.25em;
 			max-width: $contactFieldWidth;
-			min-width: $contactFieldWidth/2;
+			min-width: $contactFieldWidth / 2;
 		}
 
 		SPAN[name=contactname] {
@@ -178,8 +184,8 @@ $contactFormButtonMinHeight: 2.5em;
 	.zcs-contactview-personalInfo {
 
 		SPAN {
-			max-width: $contactFieldWidth*1.1;
-			min-width: $contactFieldWidth/2;
+			max-width: $contactFieldWidth * 1.1;
+			min-width: $contactFieldWidth / 2;
 		}
 	}
 }
@@ -188,26 +194,26 @@ $contactFormButtonMinHeight: 2.5em;
 // Tested Nexus 7 and Nexus 10
 .x-android.x-portrait .zcs-contactview-header {
 	.zcs-contactview-personalInfo {
-		width: 72%;
+		width: 69%;
 	}
 }
 
 // iOS - PHONE - LANDSCAPE
 // Tested iPod Touch - gen 5 - may need to be smaller for pre-gen 5
 .x-phone .zcs-contactview-header {
-	font-size: $contactBaseFontSize*0.9;
+	font-size: $contactBaseFontSize * 0.9;
 
 	.zcs-contactview-image {
-		height: $contactImageSize/2;
-		width: $contactImageSize/2;
+		height: $contactImageSizePhone;
+		width: $contactImageSizePhone;
 	}
 
 	.zcs-contactview-personalInfo {
-		width: 85%;
+		width: 80%;
 
 		SPAN {
-			max-width: $contactFieldWidth*0.95;
-			min-width: $contactFieldWidth*0.5;
+			max-width: $contactFieldWidth * 0.95;
+			min-width: $contactFieldWidth * 0.5;
 		}
 	}
 }
@@ -216,11 +222,11 @@ $contactFormButtonMinHeight: 2.5em;
 // Tested iPod Touch - gen 5
 .x-phone.x-portrait .zcs-contactview-header {
 	.zcs-contactview-personalInfo {
-		width: 70%;
+		width: 64%;
 
 		SPAN {
-			max-width: $contactFieldWidth*0.6;
-			min-width: $contactFieldWidth*0.4;
+			max-width: $contactFieldWidth * 0.55;
+			min-width: $contactFieldWidth * 0.4;
 		}
 	}
 }
@@ -229,7 +235,7 @@ $contactFormButtonMinHeight: 2.5em;
 // Tested Samsung Galaxy Nexus
 .x-android.x-phone .zcs-contactview-header {
 	.zcs-contactview-personalInfo {
-		// No change - width: 85%;
+		// No change - width: 80%;
 	}
 }
 
@@ -258,7 +264,7 @@ $contactFormButtonMinHeight: 2.5em;
 			width: $contactImageSize;
 
 			&:after {
-				content: ":";
+//				content: ":";
 			}
 		}
 
@@ -269,7 +275,7 @@ $contactFormButtonMinHeight: 2.5em;
 				@extend .zcs-newLine;
 				@include ellipsis();
 				margin: 0 1em 1.5em $contactGutter;
-				max-width: $contactFieldWidth*2;
+				max-width: $contactFieldWidth * 2;
 				min-width: $contactFieldWidth;
 			}
 
@@ -293,23 +299,24 @@ $contactFormButtonMinHeight: 2.5em;
 }
 
 .x-phone .zcs-contactview-fieldSets {
-	font-size: $contactBaseFontSize*0.9;
+	font-size: $contactBaseFontSize * 0.9;
+	margin-top: $contactFieldTopOffsetPhone;
 
 	.zcs-contactview-label {
-		width: $contactImageSize/2;
+		width: $contactImageSizePhone;
 	}
 
 	.zcs-contactview-fields .zcs-contactview-field {
 		max-width: $contactFieldWidth;
-		min-width: $contactFieldWidth/2;
+		min-width: $contactFieldWidth * 0.5;
 	}
 
 }
 
 .x-phone.x-portrait {
 	.zcs-contactview-fieldSets .zcs-contactview-fields .zcs-contactview-field {
-		max-width: $contactFieldWidth*0.5;
-		min-width: $contactFieldWidth/3;
+		max-width: $contactFieldWidth * 0.57;
+		min-width: $contactFieldWidth * 0.43;
 	}
 }
 
@@ -321,7 +328,7 @@ $contactBorderColor: $light-grey;
 	background-color: white;
 
 	.zcs-contact-image {
-		@extend .zcs-contactImage-person;
+		@extend %zcs-contactImage-person;
 		height: $contactEditImageSize;
 		margin: .5em auto auto;
 		width: $contactEditImageSize;
@@ -449,7 +456,7 @@ $contactBorderColor: $light-grey;
 
 	.zcs-contactgroupview-image {
 		@extend .zcs-floatLeft;
-		@extend .zcs-contactImage-group;
+		@extend %zcs-contactImage-group;
 		height: $contactImageSize;
 		width: $contactImageSize;
 	}
@@ -462,7 +469,7 @@ $contactBorderColor: $light-grey;
 			@extend .zcs-newLine;
 			@include ellipsis();
 			margin-bottom:.25em;
-			max-width: $contactFieldWidth*1.5;
+			max-width: $contactFieldWidth * 1.5;
 			min-width: $contactFieldWidth;
 
 			&[name=contactname] {
@@ -503,7 +510,7 @@ $zcsMemberImageSize: 4em;
 		}
 
 		.zcs-contact-info {
-			left: $zcsMemberImageSize+$zcsMemberPadding*2;
+			left: $zcsMemberImageSize+$zcsMemberPadding * 2;
 			position: absolute;
 			right: 0;
 			top: $zcsMemberPadding;
