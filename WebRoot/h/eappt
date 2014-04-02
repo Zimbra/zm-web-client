@@ -56,8 +56,8 @@
                                inviteId="${empty param.invId? null : param.invId}"
                                exceptionInviteId="${empty param.exInvId? null : param.exInvId}"
                                useInstance="${param.useInstance eq '1'}"
-                               instanceStartTime="${param.instStartTime}"
-                               instanceDuration="${param.instDuration}"/>
+                               instanceStartTime="${zm:nonNull(param.instStartTime)}"
+                               instanceDuration="${zm:nonNull(param.instDuration)}"/>
         </c:when>
         <c:when test="${uploader.isUpload and not empty message}">
             <zm:fixupMessageCompose message="${message}" compose="${compose}" newattachments="${uploader.compose.hasFileItems}"/>
@@ -97,7 +97,7 @@
                             <app:button id="OPSAVE" name="actionSave" src="common/ImgSave.png" tooltip="save" text="save"/>
                             <td><div class='vertSep'></div></td>
                             <c:choose>
-                                <c:when test="${isNewAppt}">
+                                <c:when test="${zm:boolean(isNewAppt)}">
                                     <app:button name="actionCancel" id="OPCANCEL" src="common/ImgCancel.png" tooltip="cancel" text="cancel"/>
                                 </c:when>
                                 <c:otherwise>
