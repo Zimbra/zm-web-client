@@ -274,7 +274,9 @@ document.title = "<fmt:message key="zimbraTitleLabel"/>"+" "+"${fn:escapeXml(req
             <span class="quota-span"><fmt:message key="MO_quotaLabel"/>&nbsp;<c:set var="max" value="${mailbox.attrs.zimbraMailQuota[0]}"/><fmt:message var="unlimited" key="unlimited"/><fmt:message key="MO_quotaUsage"><fmt:param value="${zm:displaySizeFractions(pageContext, mailbox.size,2)}"/><fmt:param value="${max==0 ? unlimited : zm:displaySizeFractions(pageContext, max,2)}"/></fmt:message></span>
         </div>
     </div></div>
-    <div class="tbl container" style="height:32px;"><div class="tr"><div class="td fw list-row"><a href="?st=prefs"><fmt:message key="options"/></a></div></div></div>
+    <c:if test="${mailbox.features.options}">
+        <div class="tbl container" style="height:32px;"><div class="tr"><div class="td fw list-row"><a href="?st=prefs"><fmt:message key="options"/></a></div></div></div>
+    </c:if>
     <div class="tbl container" style="height:30px;"><div class="tr">
             <div class="td fw list-row"><c:set var="v" value="${ua.isiPhone || ua.isiPod || ua.isOsAndroid? 'iphone' : ( ua.isIE ? 'wm6' : 'xlite')}"/>
                 <fmt:message key="lowBandwidth" var="lbw"/>
