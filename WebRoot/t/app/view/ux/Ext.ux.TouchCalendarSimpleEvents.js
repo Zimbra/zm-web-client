@@ -75,7 +75,7 @@ Ext.define('Ext.ux.TouchCalendarSimpleEvents', {
 	 * @cfg {Boolean} multiEventDots True to display a dot for each event on a day. False to only show one dot regardless
 	 * of how many events there are
 	 */
-	multiEventDots: true,
+	multiEventDots: false,
 	
 	/**
 	 * @cfg {String} wrapperCls CSS class that is added to the event dots' wrapper element
