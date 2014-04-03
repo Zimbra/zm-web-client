@@ -21,7 +21,7 @@ TAR = tar
 ANT = ant -emacs
 P4 = p4
 PATCH = patch
-DIFF = diff -Naur
+DIFF = diff -aur
 
 TINYMCE_VERS := $(shell $(ANT) -q -f ../build.xml get-tinymce-version | head -1)
 TINYMCE_URL = https://github.com/tinymce/tinymce/archive/$(TINYMCE_VERS).tar.gz

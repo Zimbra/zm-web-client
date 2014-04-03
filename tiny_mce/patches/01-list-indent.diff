@@ -1,0 +1,62 @@
+diff -aur -x node_modules /tmp/tinymce-4.0.17/js/tinymce/plugins/lists/plugin.js tinymce-4.0.17/js/tinymce/plugins/lists/plugin.js
+--- /tmp/tinymce-4.0.17/js/tinymce/plugins/lists/plugin.js	2014-02-26 13:40:55.000000000 +0100
++++ tinymce-4.0.17/js/tinymce/plugins/lists/plugin.js	2014-04-02 15:16:10.873100422 +0200
+@@ -714,8 +714,17 @@
+ 			var ctrl = this;
+ 
+ 			editor.on('nodechange', function() {
+-				var li = editor.dom.getParent(editor.selection.getNode(), 'LI,UL,OL');
+-				ctrl.disabled(li && (li.nodeName != 'LI' || isFirstChild(li)));
++				var blocks = editor.selection.getSelectedBlocks();
++				var disable = false;
++
++				for (var i = 0, l = blocks.length; !disable && i < l; i++) {
++					var tag = blocks[i].nodeName;
++
++					disable = (tag == 'LI' && isFirstChild(blocks[i]) ||
++							   tag == 'UL' || tag == 'OL');
++				}
++
++				ctrl.disabled(disable);
+ 			});
+ 		}
+ 	});
+Only in tinymce-4.0.17/js/tinymce/plugins/paste: plugin.js
+Only in tinymce-4.0.17/js/tinymce/plugins/spellchecker: plugin.js
+Only in tinymce-4.0.17/js/tinymce/skins/lightgray: skin.dev.less
+Only in tinymce-4.0.17/js/tinymce/skins/lightgray: skin.ie7.less
+diff -aur -x node_modules /tmp/tinymce-4.0.17/tests/plugins/lists.html tinymce-4.0.17/tests/plugins/lists.html
+--- /tmp/tinymce-4.0.17/tests/plugins/lists.html	2014-02-26 13:40:55.000000000 +0100
++++ tinymce-4.0.17/tests/plugins/lists.html	2014-04-02 15:04:20.892958990 +0200
+@@ -1323,6 +1323,31 @@
+ 	equal(editor.selection.getNode().nodeName, 'LI');
+ });
+ 
++test('Indent second and third LI', function() {
++	editor.getBody().innerHTML = trimBrs(
++		'<ul>' +
++			'<li>a</li>' +
++			'<li>b</li>' +
++			'<li>c</li>' +
++		'</ul>'
++	);
++
++	editor.focus();
++	setSelection('li:nth-child(2)', 0, 'li:last', 0);
++	execCommand('Indent');
++
++	equal(editor.getContent(),
++		'<ul>' +
++			'<li>a' +
++				'<ul>' +
++					'<li>b</li>' +
++					'<li>c</li>' +
++				'</ul>' +
++			'</li>' +
++		'</ul>'
++	);
++});
++
+ // Backspace
+ 
+ test('Backspace at beginning of single LI in UL', function() {
