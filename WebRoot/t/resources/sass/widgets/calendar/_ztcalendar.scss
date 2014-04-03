@@ -18,19 +18,19 @@ $bg-color: #B4CAEF;
 $more-events-color: blue;
 @import "../ux/Ext.ux.TouchCalendarEvents";
 
-%calendarTH {
+.calendarTH {
 	background-color: white;
 	height: 4rem;
 }
 
-%calendarSPAN {
+.calendarSPAN {
 	color: $primary-text-color;
 	font-size: 1.6rem;
 	font-weight: normal;
 	text-shadow: none;
 }
 
-%event {
+.event {
 	border: none;
 	border-radius: 0;
 	font-size: 1.8em;
@@ -52,7 +52,7 @@ $more-events-color: blue;
 		font-size: 1rem;
 
 		THEAD TH {
-			@extend %calendarTH;
+			@extend .calendarTH;
 
 			&:first-child,
 			&:last-child {
@@ -60,7 +60,7 @@ $more-events-color: blue;
 			}
 
 			SPAN {
-				@extend %calendarSPAN;
+				@extend .calendarSPAN;
 			}
 		}
 
@@ -100,7 +100,7 @@ $more-events-color: blue;
 		font-size: 1rem;
 
 		THEAD TH {
-			@extend %calendarTH;
+			@extend .calendarTH;
 			border-bottom: none;
 
 			&:first-child,
@@ -109,12 +109,12 @@ $more-events-color: blue;
 			}
 
 			SPAN {
-				@extend %calendarSPAN;
+				@extend .calendarSPAN;
 			}
 		}
 
 		DIV.event-bar {
-			@extend %event;
+			@extend .event;
 			background-color: $bg-color;
 			color: white;
 			opacity: 0.75;
@@ -157,7 +157,7 @@ $more-events-color: blue;
 }
 
 DIV.more-events {
-	@extend %event;
+	@extend .event;
 	background-color: transparent;
 	color: $more-events-color;
 	cursor: pointer;

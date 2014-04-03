@@ -40,7 +40,7 @@ $contactFormButtonMinHeight: 2.5rem;
 
 /* Contact Image Base Classes */
 
-%zcs-contactImage {
+.zcs-contactImage {
 	background-position: center;
 	background-size: 100% auto;
 	background-repeat: no-repeat;
@@ -49,17 +49,17 @@ $contactFormButtonMinHeight: 2.5rem;
 	@include border-radius($contactImageSize / 2);
 }
 
-%zcs-contactImage-person {
-	@extend %zcs-contactImage; 
+.zcs-contactImage-person {
+	@extend .zcs-contactImage; 
 	background-image: url('../images/person.png');
 }
 
-%zcs-contactImage-group {
-	@extend %zcs-contactImage; 
+.zcs-contactImage-group {
+	@extend .zcs-contactImage; 
 	background-image: url('../images/group.png');
 }
 
-%zcs-contactlist-image {
+.zcs-contactlist-image {
 	height: $contactListImageSize;
 	width: $contactListImageSize;
 }
@@ -91,13 +91,13 @@ $contactFormButtonMinHeight: 2.5rem;
 }
 
 .zcs-contactList-person {
-	@extend %zcs-contactlist-image;
-	@extend %zcs-contactImage-person;
+	@extend .zcs-contactlist-image;
+	@extend .zcs-contactImage-person;
 }
 
 .zcs-contactList-group {
-	@extend %zcs-contactlist-image;
-	@extend %zcs-contactImage-group;
+	@extend .zcs-contactlist-image;
+	@extend .zcs-contactImage-group;
 }
 
 .zcs-contactList-text {
@@ -153,7 +153,7 @@ $contactFormButtonMinHeight: 2.5rem;
 
 	.zcs-contactview-image {
 		@extend .zcs-floatLeft;
-		@extend %zcs-contactImage-person;
+		@extend .zcs-contactImage-person;
 		height: $contactImageSize;
 		width: $contactImageSize;
 	}
@@ -328,7 +328,7 @@ $contactBorderColor: $light-grey;
 	background-color: white;
 
 	.zcs-contact-image {
-		@extend %zcs-contactImage-person;
+		@extend .zcs-contactImage-person;
 		height: $contactEditImageSize;
 		margin: .5em auto auto;
 		width: $contactEditImageSize;
@@ -456,7 +456,7 @@ $contactBorderColor: $light-grey;
 
 	.zcs-contactgroupview-image {
 		@extend .zcs-floatLeft;
-		@extend %zcs-contactImage-group;
+		@extend .zcs-contactImage-group;
 		height: $contactImageSize;
 		width: $contactImageSize;
 	}
