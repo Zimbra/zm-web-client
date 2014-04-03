@@ -64,7 +64,6 @@ Ext.define('ZCS.view.calendar.ZtAppointmentForm', {
 					xtype: 'spacer'
 				},
 				{
-
 					xtype: 'button',
 					iconCls: 'edit',
 					id: 'editAppt',
@@ -72,15 +71,15 @@ Ext.define('ZCS.view.calendar.ZtAppointmentForm', {
 					disabled: true
 				},
 				{
-
 					xtype: 'button',
-					iconCls: 'inviteReply',
+					iconCls: 'arrow_down',
 					id: 'inviteActionsAppt',
 					menuName: ZCS.constant.MENU_INVITE_ACTIONS,
 					handler: function() {
 						this.up('appointmentpanel').fireEvent('onButtonTap');
 					}
-				}, {
+				},
+				{
 					xtype: 'button',
 					iconCls: 'arrow_down',
 					id: 'apptActions',
