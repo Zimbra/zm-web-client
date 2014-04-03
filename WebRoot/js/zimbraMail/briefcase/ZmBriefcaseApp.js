@@ -519,6 +519,7 @@ ZmBriefcaseApp.prototype.initExternalDndUpload = function(files, node, isInline,
 				msgDlg.popup();
 			} else {
 				var params = {
+					attachment:              false,
 					uploadFolder:            cFolder,
 					files:                   files,
 					notes:                   "",

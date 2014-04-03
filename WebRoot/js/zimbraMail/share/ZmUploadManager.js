@@ -88,7 +88,8 @@ function(params) {
 
         // Initiate the first upload
         var req = new XMLHttpRequest(); // we do not call this function in IE
-        req.open("POST", appCtxt.get(ZmSetting.CSFE_ATTACHMENT_UPLOAD_URI)+"?fmt=extended,raw", true);
+		var uri = params.attachment ? (appCtxt.get(ZmSetting.CSFE_ATTACHMENT_UPLOAD_URI) + "?fmt=extended,raw") : appCtxt.get(ZmSetting.CSFE_UPLOAD_URI);
+        req.open("POST", uri, true);
         req.setRequestHeader("Cache-Control", "no-cache");
         req.setRequestHeader("X-Requested-With", "XMLHttpRequest");
         req.setRequestHeader("Content-Type",  (file.type || "application/octet-stream") + ";");
@@ -132,7 +133,6 @@ function(params) {
 
 };
 
-
 ZmUploadManager.prototype._handleUploadResponse =
 function(req, fileName, params){
     var curView      = params.curView;
@@ -140,14 +140,43 @@ function(req, fileName, params){
     var start        = params.start;
     var allResponses = params.allResponses;
     if (req.readyState === 4) {
-        var resp = (req.status === 200) && eval("["+req.responseText+"]");
-        var response = (req.status === 200 ) && resp.length && resp[2];
+		var response = null;
+		var aid      = null;
+		if (req.status === 200) {
+			if (params.attachment) {
+				// Sent via CSFE_ATTACHMENT_UPLOAD_URI
+				var resp = eval("["+req.responseText+"]");
+				response = resp.length && resp[2];
+				if (response) {
+					response = response[0];
+					if (response) {
+						aid = response.aid;
+					}
+				}
+			} else {
+				// Sent via CSFE_UPLOAD_URI
+				// <UGLY> - the server assumes the javascript object/function it will communicate with - AjxPost.  It invokes it with:
+				// function doit() { window.parent._uploadManager.loaded(200,'null','<uploadId>'); }  and then <body onload='doit()'>
+				// We need to extract the uploadId param from the function call
+				var functionStr = "loaded(";
+				var response    = req.responseText;
+				if (response) {
+					// Get the parameter text between 'loaded('  and  ')';
+					var paramText    = response.substr(response.indexOf(functionStr) + functionStr.length);
+					paramText        = paramText.substr(0, paramText.indexOf(")"));
+					// Convert to an array of params.  Third one is the upload id
+					var serverParams = paramText.split(',');
+					var serverParamArray =  eval( "["+ serverParams +"]" );
+					aid = serverParamArray && serverParamArray.length && serverParamArray[2];
+					response = { aid: aid };
+				}
+				// </UGLY>
+			}
+		}
         if (response || this._uploadAttReq.aborted) {
-            allResponses.push((response && response[0]) || null);
-            var aid = "";
-            if (response && response.length){
+			allResponses.push(response  || null);
+            if (aid) {
                 DBG.println(AjxDebug.DBG1,"Uploaded file: "  + fileName + "Successfully.");
-                aid = (response && response[0] && response[0].aid);
             }
             if (start < files.length - 1) {
                 // Still some file uploads to perform
@@ -171,7 +200,7 @@ function(req, fileName, params){
 
             var msgDlg = appCtxt.getMsgDialog();
             this.upLoadC = this.upLoadC - 1;
-            msgDlg.setMessage(ZmMsg.importErrorUpload, DwtMessageDialog.CRITICAL_STYLE);
+			msgDlg.setMessage(ZmMsg.importErrorUpload, DwtMessageDialog.CRITICAL_STYLE);
             msgDlg.popup();
             return false;
         }

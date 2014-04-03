@@ -248,8 +248,8 @@ ZmUploadDialog.prototype._upload = function(){
         if(this._supportsHTML5){
             var files = element.files;
 			var errors = [];
-            for (var i = 0; i < files.length; i++){
-                file = files[i];
+            for (var j = 0; j < files.length; j++){
+                file = files[j];
                 fileObj.push(file);
                 newError = zmUploadManager.getErrors(file, maxSize);
 				if (newError) {
@@ -287,6 +287,7 @@ ZmUploadDialog.prototype._upload = function(){
 		var briefcaseApp = aCtxt.getApp(ZmApp.BRIEFCASE);
         var popDownCallback = this.popdown.bind(this);
         var uploadParams = {
+			attachment:                 false,
             files:                      fileObj,
             notes:                      notes,
             allResponses:               null,

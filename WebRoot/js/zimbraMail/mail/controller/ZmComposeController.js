@@ -2273,6 +2273,7 @@ function(files) {
         var curView = this._composeView;
         if (curView) {
             var params = {
+				attachment:            true,
                 files:                 files,
                 notes:                 "",
                 allResponses:          null,
