@@ -132,7 +132,7 @@ elem = document.getElementById('inboxUnread'); var unreadCount = ${mailbox.inbox
 </div>
 <hr size="1"/>
 </c:if>
-<c:if test="${not hideops}"><c:if test="${showInviteReply}"><div class="tbl"><div class="tr"><div class="td">
+<c:if test="${not hideops}"><c:if test="${zm:boolean(showInviteReply)}"><div class="tbl"><div class="tr"><div class="td">
             <span class="${ua.isiPad eq true ? '' : 'Img ImgCalInviteAccepted'}">&nbsp;</span>
             <a <c:if test="${not isPart}">id="OPACCEPT"</c:if> href="?st=newmail&id=${message.id}&amp;op=accept" class="Action accept"><fmt:message key="replyAccept"/></a> &nbsp;
             <span class="${ua.isiPad eq true ? '' : 'Img ImgCalInviteTentative'}">&nbsp;</span>
