@@ -601,7 +601,11 @@ function(draftType, msg, callback, result) {
 	// Reset the autosave interval to the default
 	delete(this._autoSaveInterval);
 	// Re-enable autosave
-	this._initAutoSave();
+	if (draftType !== ZmComposeController.DRAFT_TYPE_NONE) {
+		//only re-init autosave if it's a draft, NOT if it's an actual message send. (user clicked "send").
+		//In order to avoid a potential race condition, and there's no reason to init auto save anyway.
+		this._initAutoSave();
+	}
 	var needToPop = this._processSendMsg(draftType, msg, resp);
 
 //	this._msg = msg;
@@ -664,6 +668,7 @@ function(draftType, msg, ex, params) {
             showMsg = true;
         } else if (ex.code == AjxException.CANCELED) {
             if (draftType == ZmComposeController.DRAFT_TYPE_AUTO) {
+				//note - this interval is not really used anymore. Only the idle timer is used. This is only used as a boolean checkbox now. I'm pretty sure.
                 if (!this._autoSaveInterval) {
                     // Request was cancelled due to a ZmRequestMgr send timeout.
                     // The server can either be hung or this particular message is taking
