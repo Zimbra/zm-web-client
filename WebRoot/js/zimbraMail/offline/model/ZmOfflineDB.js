@@ -805,7 +805,7 @@ function(search, callback, errorCallback) {
 				var indexArray = [];
 				var rangeArray = [];
 				if (indexName === "content") {
-					indexArray.push(objectStore.index("firstname"), objectStore.index("lastname"), objectStore.index("middlename"), objectStore.index("email"), objectStore.index("company"), objectStore.index("jobtitle"));
+					indexArray.push(objectStore.index("firstname"), objectStore.index("lastname"), objectStore.index("middlename"), objectStore.index("email"), objectStore.index("company"), objectStore.index("jobtitle"), objectStore.index("fileasstr"));
 					var capitalize = indexValue.charAt(0).toUpperCase() + indexValue.substr(1).toLowerCase();
 					var boundKeyRangeUpper = IDBKeyRange.bound(indexValue.toUpperCase(), capitalize + '\uffff');
 					var lowerCase = indexValue.charAt(0).toLowerCase() + indexValue.substr(1).toUpperCase();
@@ -901,7 +901,7 @@ function(searchStr, callback, errorCallback) {
 		var db = ZmOfflineDB.db;
 		var transaction = db.transaction(ZmApp.CONTACTS);
 		var objectStore = transaction.objectStore(ZmApp.CONTACTS);
-		var indexArray = [objectStore.index("firstname"), objectStore.index("email"), objectStore.index("middlename"), objectStore.index("lastname")];
+		var indexArray = [objectStore.index("firstname"), objectStore.index("email"), objectStore.index("middlename"), objectStore.index("lastname"), objectStore.index("fileasstr")];
 		var indexValue = searchStr;
 		var capitalize = indexValue.charAt(0).toUpperCase() + indexValue.substr(1).toLowerCase();
 		var boundKeyRangeUpper = IDBKeyRange.bound(indexValue.toUpperCase(), capitalize + '\uffff');

@@ -489,6 +489,7 @@ function(downloadCalendar, result) {
 			if (contactIds) {
 				var params = {
 					cn : {id : contactIds},
+					derefGroupMember : 1,
 					_jsns : "urn:zimbraMail"
 				};
 				contactIdsArray.push(params);
@@ -612,6 +613,7 @@ function(syncResponse, callback) {
 		contacts.forEach(function(contact) {
 			var params = {
 				cn : {id : contact.id},
+				derefGroupMember : 1,
 				_jsns : "urn:zimbraMail"
 			};
 			contactIdsArray.push(params);
@@ -1498,10 +1500,26 @@ function(contact) {
                 item._attrs.jobTitle = item._attrs.jobTitle.join(" ");
             }
         }
+		ZmOffline._cacheContactMember(item);
         return item;
     });
 
     return result;
+};
+
+/*
+** cache contact group members
+*/
+ZmOffline._cacheContactMember =
+function(contact) {
+	var contactMember = contact.m;
+	if (!contactMember || !Array.isArray(contactMember) || appCtxt.cacheGet(contact.id)) {
+		return;
+	}
+	var contactObj = ZmContact.createFromDom(contact, {});
+	var result = new ZmCsfeResult({GetContactsResponse : {cn : [contact]}});
+	//This method will do the caching of contact group member and update the cache
+	ZmContact.prototype._handleLoadResponse.call(contactObj, null, result);
 };
 
 ZmOffline.setAppCacheStatus =

@@ -208,35 +208,43 @@ function(search, callback, result) {
     var match = [];
     result.forEach(function(contact) {
         var attrs = contact._attrs;
-        if (attrs && attrs.email) {
-            var email = attrs.email;
-            if (attrs.fullName) {
-                var fullName = attrs.fullName;
-            }
-            else {
-                var fullName = [];
-                if (attrs.firstName) {
-                    fullName.push(attrs.firstName);
-                }
-                if (attrs.middleName) {
-                    fullName.push(attrs.middleName);
-                }
-                if (attrs.lastName) {
-                    fullName.push(attrs.lastName);
-                }
-                fullName = fullName.join(" ");
-            }
-            var obj = {
-                email : '"' + fullName + '" <' + email + '>'
-            };
-            match.push(obj);
-        }
+		if (attrs) {
+			var obj = {
+				id : contact.id,
+				l : contact.l
+			};
+			if (attrs.fullName) {
+				var fullName = attrs.fullName;
+			}
+			else {
+				var fullName = [];
+				if (attrs.firstName) {
+					fullName.push(attrs.firstName);
+				}
+				if (attrs.middleName) {
+					fullName.push(attrs.middleName);
+				}
+				if (attrs.lastName) {
+					fullName.push(attrs.lastName);
+				}
+				fullName = fullName.join(" ");
+			}
+			if (attrs.email) {
+				obj.email = '"' + fullName + '" <' + attrs.email + '>';
+			}
+			else if (attrs.type === "group") {
+				obj.display = fullName;
+				obj.type = ZmAutocomplete.AC_TYPE_CONTACT;
+				obj.exp = true;
+				obj.isGroup = true;
+			}
+			match.push(obj);
+		}
     });
     if (callback) {
         var zmSearchResult = new ZmSearchResult(search);
         var response = {
-            match : match,
-            canBeCached : true
+            match : match
         };
         zmSearchResult.set(response);
         var zmCsfeResult = new ZmCsfeResult(zmSearchResult);
