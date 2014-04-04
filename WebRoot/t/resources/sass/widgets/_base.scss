@@ -492,6 +492,18 @@ $contact-suggest-radius: $floating-list-radius;
 	}
 }
 
+// Base classes to be extended by apps
+
+.zcs-list-item-pressed {
+	background: lighten($list-active-color,10);
+	color: $primary-text-color;
+}
+
+.zcs-list-item-selected {
+	background: $list-active-color;
+	color: $white;
+}
+
 /* Not sure what this is supposed to do - commenting out for now */
 
 /*.x-sheet {

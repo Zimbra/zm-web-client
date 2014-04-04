@@ -39,17 +39,14 @@ $zcs-mail-dateWidth: 5.5em;
 }
 
 .zcs-conv-list .x-list-item {
-//	background-color: #DCDCDC !important;
 	border-top: none !important;
 
 	&.x-item-pressed .zcs-mail-list-entry {
-		background: lighten($list-active-color,10);
-		color: $primary-text-color;
+		@extend .zcs-list-item-pressed;
 	}
 
 	&.x-item-selected .zcs-mail-list-entry {
-		background: $list-active-color;
-		color: $white;
+		@extend .zcs-list-item-selected;
 	}
 
 	&.x-list-item-tpl:before {

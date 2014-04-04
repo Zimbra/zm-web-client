@@ -81,56 +81,72 @@ $contactFormButtonMinHeight: 2.5rem;
 
 /* Contact List Classes */
 
-.zcs-list-panel .x-list .x-list-item .x-innerhtml:before {
-	content: "";
-}
-
-.zcs-contactListItem {
-	min-height: $contactListHeight - $listViewMargin * 2;
-	margin-top: 8px; // accounts for 7px padding and 1px top border
-}
-
-.zcs-contactList-person {
-	@extend .zcs-contactlist-image;
-	@extend .zcs-contactImage-person;
-}
-
-.zcs-contactList-group {
-	@extend .zcs-contactlist-image;
-	@extend .zcs-contactImage-group;
-}
-
-.zcs-contactList-text {
-	position: absolute;
-	bottom: $contactListTopOffset;
-	left: $contactListLeftIndent;
-	right: $contactListRightIndent;
-	top: $contactListTopOffset;
-
-	DIV {
-		@include ellipsis();
-		line-height: 1.5rem;
-		width: 100%;
+.zcs-list-panel .x-list .x-list-item {
+	.x-innerhtml:before {
+		content: "";
 	}
-	.zcs-contactList-name {
-		font-size: 1.2rem;
-	}
-	.zcs-contactList-groupName {
-		font-size: 1.2rem;
-//		margin-bottom: 0.6rem;
-		margin-top: 0.75rem;
-	}
-	.zcs-contactList-title {
-		@include opacity(.75);
-		font-size: 1rem;
-	}
-}
 
-.zcs-swipe-delete {
-	background-color: red;
-	border-color: darkred;
-	color: white;
-	@include box-shadow(white 0px 0px 5px 10px);
+	&.x-item-pressed {
+		@extend .zcs-list-item-pressed;
+//		background: lighten($list-active-color,10);
+		border-top-color: lighten($list-active-color,10);
+//		color: $primary-text-color;
+	}
+
+	&.x-item-selected.x-list-item-tpl {
+		@extend .zcs-list-item-selected;
+//		background: $list-active-color;
+		border-top-color: $list-active-color;
+//		color: $white;
+	}
+
+	.zcs-contactListItem {
+		min-height: $contactListHeight - $listViewMargin * 2;
+		margin-top: 8px; // accounts for 7px padding and 1px top border
+	}
+
+	.zcs-contactList-person {
+		@extend .zcs-contactlist-image;
+		@extend .zcs-contactImage-person;
+	}
+
+	.zcs-contactList-group {
+		@extend .zcs-contactlist-image;
+		@extend .zcs-contactImage-group;
+	}
+
+	.zcs-contactList-text {
+		position: absolute;
+		bottom: $contactListTopOffset;
+		left: $contactListLeftIndent;
+		right: $contactListRightIndent;
+		top: $contactListTopOffset;
+
+		DIV {
+			@include ellipsis();
+			line-height: 1.5rem;
+			width: 100%;
+		}
+		.zcs-contactList-name {
+			font-size: 1.2rem;
+		}
+		.zcs-contactList-groupName {
+			font-size: 1.2rem;
+	//		margin-bottom: 0.6rem;
+			margin-top: 0.75rem;
+		}
+		.zcs-contactList-title {
+			@include opacity(.75);
+			font-size: 1rem;
+		}
+	}
+
+	.zcs-swipe-delete {
+		background-color: red;
+		border-color: darkred;
+		color: white;
+		@include box-shadow(white 0px 0px 5px 10px);
+	}
 }
 
 /* Contact View Classes */
