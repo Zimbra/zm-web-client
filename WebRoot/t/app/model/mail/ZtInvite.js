@@ -244,7 +244,7 @@ Ext.define('ZCS.model.mail.ZtInvite', {
 				sentBy:         ZCS.model.mail.ZtMailItem.convertAddressModelToObject(this.get('sentBy')),
 				attendees:      ZCS.model.mail.ZtMailItem.convertAddressModelToObject(this.get('attendees')),
 				optAttendees:   ZCS.model.mail.ZtMailItem.convertAddressModelToObject(this.get('optAttendees')),
-				intendedFor:    this.get('calendarIntendedFor'),
+				intendedFor:    ZCS.model.mail.ZtMailItem.convertAddressModelToObject(this.get('calendarIntendedFor')),
                 timezone:       this.get('timezone'),
                 recurrence:     this.get('recurrence'),
                 isOrganizer:    this.get('isOrganizer'),

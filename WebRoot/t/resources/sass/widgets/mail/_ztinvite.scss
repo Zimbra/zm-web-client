@@ -32,6 +32,7 @@ $invLabelTextSize: 0.9em;
 	line-height: 1.6em;
 	text-align: right;
 	color: #999;
+    white-space: nowrap;
 	//@include opacity(.75);
 
 	&:after {

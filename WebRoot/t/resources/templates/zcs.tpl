@@ -411,6 +411,10 @@
 						<tpl else>
 							<span class='zcs-invite-button zcs-invite-decline' id='{declineButtonId}'>{[ZtMsg.declineAction]}</span>
 						</tpl>
+
+						<tpl if='intendedFor'>
+                            <span class='zcs-invite-button' id='{intendedFor.id}'>{[ZtMsg.onBehalfOfMidLabel]} {intendedFor.name}</span>
+                        </tpl>
 					</td>
 				</tr>
 			</tpl>
@@ -419,7 +423,7 @@
 				<tr>
 					<td class='zcs-invite-label'>{[ZtMsg.invIntendedFor]}</td>
 					<td>
-						<span class='zcs-contact-name'>{intendedFor}</span>
+						<span class='zcs-contact-name' id='{intendedFor.id}'>{intendedFor.name}</span>
 					</td>
 				</tr>
 			</tpl>
