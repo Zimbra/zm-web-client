@@ -2716,12 +2716,16 @@ ZmMailMsgView.prototype._handleRemoveAttachment =
 function(result) {
 	var msgNode = result.getResponse().RemoveAttachmentsResponse.m[0];
 	var ac = window.parentAppCtxt || window.appCtxt;
-	var ctlr = ac.getApp(ZmApp.MAIL).getMailListController();
-	var msg = ZmMailMsg.createFromDom(msgNode, {list: ctlr.getList()}, true);
+	var listCtlr = ac.getApp(ZmApp.MAIL).getMailListController(); //todo - getting a list controller from appCtxt always seems suspicious to me (should we get the controller for the current view?)
+	var msg = ZmMailMsg.createFromDom(msgNode, {list: listCtlr.getList()}, true);
 	this._msg = this._item = null;
 	// cache this actioned ID so we can reset selection to it once the CREATE
 	// notifications have been processed.
-	ctlr.actionedMsgId = msgNode.id;
+	listCtlr.actionedMsgId = msgNode.id;
+	if (this._controller.setMsg) {
+		//for the ZmMsgController case. (standalone).
+		this._controller.setMsg(msg);
+	}
 	this.set(msg);
 };
 
