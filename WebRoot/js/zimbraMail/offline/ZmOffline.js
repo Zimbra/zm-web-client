@@ -1219,9 +1219,10 @@ function(img, obj, msg, template, uploadResponse) {
  * Fires a head request to find whether server is reachable or not
  * @param {Boolean} [doStop] will not fire a second head request to confirm the server reachability
  * @param {Boolean} [doNotTrigger] Do not trigger online/offline events
+ * @param {Function} [callback] Callback function to be called when the request finishes
  */
 ZmOffline.checkServerStatus =
-function(doStop, doNotTrigger) {
+function(doStop, doNotTrigger, callback) {
     $.ajax({
         type: "HEAD",
         url: "/public/blank.html",
@@ -1260,8 +1261,9 @@ function(doStop, doNotTrigger) {
                     }
                 }
                 ZmOffline.isServerReachable = true;
-            }
-        }
+			}
+		},
+		complete: callback
     });
 };
 ZmOffline.checkServerStatus(true, true);
