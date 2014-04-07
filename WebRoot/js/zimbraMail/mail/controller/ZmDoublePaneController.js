@@ -479,7 +479,8 @@ function(parent, num) {
 				ZmOperation.ADD_FILTER_RULE,
 				ZmOperation.CREATE_APPT,
 				ZmOperation.CREATE_TASK,
-				ZmOperation.CONTACT
+				ZmOperation.CONTACT,
+				ZmOperation.REDIRECT
 			],
 			false
 		);
