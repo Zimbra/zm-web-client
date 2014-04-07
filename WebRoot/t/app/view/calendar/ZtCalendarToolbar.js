@@ -94,7 +94,7 @@ Ext.define('ZCS.view.calendar.ZtCalendarToolbar', {
                         handler: function() {
                             ZCS.app.getCalendarController().goToday();
                         },
-                        iconCls: 'calendar',
+                        iconCls: 'today',
                         iconMask: true
                     }
                 ]
