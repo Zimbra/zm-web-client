@@ -106,6 +106,10 @@ Ext.define('ZCS.controller.calendar.ZtCalendarController', {
 
         this.callParent();
 
+        ZCS.app.on('notifyAppointmentDelete', this.handleDeleteNotification, this);
+        ZCS.app.on('notifyAppointmentChange', this.handleModifyNotification, this);
+        ZCS.app.on('notifyAppointmentCreate', this.handleCreateNotification, this)
+
         //Create a toolbar with calendar view buttons - Month, Day and Today
         this.createToolbar();
     },
@@ -530,5 +534,30 @@ Ext.define('ZCS.controller.calendar.ZtCalendarController', {
 		});
 
 		ZCS.app.fireEvent('hideOverviewPanel');
-	}
+	},
+
+    /**
+     * Refreshes the month and day view of calendar in case of a calendar
+     * notification,i.e; in case an appointment is created or modified or deleted
+     */
+    refreshCalendar: function() {
+        var monthView = this.getCalMonthView(),
+            dayView = this.getCalDayView();
+
+        monthView.view.refreshDelta(0);
+        dayView.view.refreshDelta(0);
+
+    },
+
+    handleModifyNotification: function(item, modify) {
+        this.refreshCalendar();
+    },
+
+    handleCreateNotification: function(item, create) {
+        this.refreshCalendar();
+    },
+
+    handleDeleteNotification: function(item) {
+        this.refreshCalendar();
+    }
 });

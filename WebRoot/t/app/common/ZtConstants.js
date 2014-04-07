@@ -257,6 +257,7 @@ ZCS.constant.NODES = [
 	ZCS.constant.NODE_CONVERSATION,
 	ZCS.constant.NODE_MESSAGE,
 	ZCS.constant.NODE_CONTACT,
+    ZCS.constant.NODE_CALENDAR,
 	ZCS.constant.ORG_FOLDER,
 	ZCS.constant.ORG_SEARCH,
 	ZCS.constant.ORG_TAG,
