@@ -58,6 +58,12 @@ ZmComposeController = function(container, mailApp, type, sessionId) {
 	this._autoSaveTimer = null;
 	this._draftType = ZmComposeController.DRAFT_TYPE_NONE;
 	this._elementsToHide = ZmAppViewMgr.LEFT_NAV;
+
+
+    //isSaveDraftInProgress => Keeps track of saveDraft call in order to prevent multiple simultaneous saveDraft calls.
+    //                         Because of simultaneous calls, multiple drafts of a message were getting saved(undosend zimlet).
+    this.isSaveDraftInProgress = false;
+
 };
 
 ZmComposeController.prototype = new ZmController();
@@ -1783,7 +1789,7 @@ function(ev) {
 
 ZmComposeController.prototype._autoSaveCallback =
 function(idle) {
-    if (idle && !DwtBaseDialog.getActiveDialog() && !this._composeView.getHtmlEditor().isSpellCheckMode() && this._composeView.isDirty(true, true)) {
+    if (idle && !DwtBaseDialog.getActiveDialog() && !this._composeView.getHtmlEditor().isSpellCheckMode() && this._composeView.isDirty(true, true) && !this.isSaveDraftInProgress) {
 		this.saveDraft(ZmComposeController.DRAFT_TYPE_AUTO);
 	}
 };
@@ -1796,7 +1802,7 @@ function(draftType, attId, docIds, callback, contactId) {
 	this._wasDirty = this._composeView._isDirty;
 	this._composeView._isDirty = false;
 	draftType = draftType || ZmComposeController.DRAFT_TYPE_MANUAL;
-
+    this.isSaveDraftInProgress = true;
 	var respCallback = this._handleResponseSaveDraftListener.bind(this, draftType, callback);
 	this._resetDelayTime();
 	if (!docIds) {
@@ -1808,6 +1814,7 @@ function(draftType, attId, docIds, callback, contactId) {
 
 ZmComposeController.prototype._handleResponseSaveDraftListener =
 function(draftType, callback, result) {
+    this.isSaveDraftInProgress = false;
 	if (draftType == ZmComposeController.DRAFT_TYPE_AUTO &&
 		this._draftType == ZmComposeController.DRAFT_TYPE_NONE) {
 		this._draftType = ZmComposeController.DRAFT_TYPE_AUTO;
