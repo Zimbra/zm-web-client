@@ -79,14 +79,6 @@ function(needsRefresh) {
 	this._needsRefresh = needsRefresh;
 };
 
-ZmCalListView.prototype.searchRefresh =
-function(timeRange) {
-	this._segmentedDates = [];
-    this._segmentDates(timeRange.start, timeRange.end);
-    this.set((new AjxVector()), null, true); // clear the current list
-    this._search();
-};
-
 ZmCalListView.prototype.createHeaderHtml =
 function(defaultColumnSort) {
 	DwtListView.prototype.createHeaderHtml.call(this, defaultColumnSort, true);
@@ -447,7 +439,8 @@ function() {
 		end: dates.endTime,
 		folderIds: this._controller.getCheckedCalendarFolderIds(),
 		callback: (new AjxCallback(this, this._handleSearchResponse)),
-		noBusyOverlay: true
+		noBusyOverlay: true,
+		query: this._controller._userQuery
 	};
 
 	this._controller.apptCache.getApptSummaries(params);

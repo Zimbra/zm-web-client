@@ -4099,28 +4099,22 @@ function() {
 		var view = this._viewMgr ? this._viewMgr.getView(this._currentViewId) : null;
 		if (view && view.needsRefresh()) {
             var rt = view.getTimeRange();
-            if (this._currentViewType == ZmId.VIEW_CAL_LIST) {
-                view.searchRefresh(rt);
-                this.searchInProgress = false;
-            }
-            else {
-                var params = {
-                    start: rt.start,
-                    end: rt.end,
-                    fanoutAllDay: view._fanoutAllDay(),
-                    callback: (new AjxCallback(this, this._maintGetApptCallback, [work, view])),
-                    accountFolderIds: ([].concat(this._checkedAccountCalendarIds)), // pass in a copy, not a reference
-                    query: this._userQuery
-                };
+			var params = {
+				start: rt.start,
+				end: rt.end,
+				fanoutAllDay: view._fanoutAllDay(),
+				callback: (new AjxCallback(this, this._maintGetApptCallback, [work, view])),
+				accountFolderIds: ([].concat(this._checkedAccountCalendarIds)), // pass in a copy, not a reference
+				query: this._userQuery
+			};
 
-                var reminderParams;
-                if (maintainRemainder) {
-                    reminderParams = this._app.getReminderController().getRefreshParams();
-                    reminderParams.callback = null;
-                }
+			var reminderParams;
+			if (maintainRemainder) {
+				reminderParams = this._app.getReminderController().getRefreshParams();
+				reminderParams.callback = null;
+			}
 
-                this.apptCache.batchRequest(params, this.getMiniCalendarParams(), reminderParams);
-            }
+			this.apptCache.batchRequest(params, this.getMiniCalendarParams(), reminderParams);
 			view.setNeedsRefresh(false);
 		} else {
 			this.searchInProgress = false;
@@ -4481,4 +4475,4 @@ function(startDate, endDate, allDay, respCallback){
        newAppt.message = appCtxt.get(ZmSetting.VACATION_MSG);
        newAppt.convertToLocalTimezone();
        newAppt.save(null, respCallback);
-}
+};
