@@ -191,7 +191,11 @@ function(identity) {
 		var addresses = identity.whenSentToAddresses;
 		for (var i = 0, count = addresses.length; i < count; i++) {
 			var address = addresses[i].toLowerCase();
-			this._addressToIdentity[address] = identity;
+			// External emails are added after other identities, potentially overwriting a persona which should have
+			// precedence.  Use the external identity only if the email address has not been assigned an identity.
+			if (!this._addressToIdentity[address] || !identity.isFromDataSource) {
+				this._addressToIdentity[address] = identity;
+			}
 		}
 	}
 
