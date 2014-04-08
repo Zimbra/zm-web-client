@@ -592,7 +592,7 @@
     </description>
     <env-entry-name>zimbraServicesEnabled</env-entry-name>
     <env-entry-type>java.lang.String</env-entry-type>
-    <env-entry-value>%%getZimbraServiceEnabled%%</env-entry-value>
+    <env-entry-value>%%list VAR:zimbraServiceEnabled , %%</env-entry-value>
   </env-entry>
 
   <env-entry>
