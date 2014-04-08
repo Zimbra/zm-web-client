@@ -92,7 +92,7 @@ Ext.define('Ext.ux.TouchCalendarSimpleEvents', {
 	 * @cfg {Number} dotWidth Width in pixels of the dots as defined by CSS. This is used for calculating the positions and
 	 * number of dots able to be shown.
 	 */
-	dotWidth: 6,
+	dotWidth: 16,
 	
 	/**
 	 * @cfg {String} eventTpl Template used to create the Event markup. Template is merged with the records left

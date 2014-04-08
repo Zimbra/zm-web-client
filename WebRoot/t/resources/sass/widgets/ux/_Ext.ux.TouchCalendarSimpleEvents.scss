@@ -1,5 +1,8 @@
 .touch-calendar-view
 {
+  $dot-color: #0087C3;
+  $dot-size: 16px;
+
   table {
   &.month
   {
@@ -11,31 +14,32 @@
 		{
 			position: absolute;
 			overflow: hidden;
+			margin-top: -33%;  //moves dot up
 		}
 
 		span.simple-event-multi
 		{
 			float: left;
-			height: 4px;
-			width: 4px;
-			-webkit-border-radius: 4px;
-			background-color: #3F4E5E;
+			height: $dot-size / 2;
+			width: $dot-size / 2;
+			-webkit-border-radius: $dot-size / 4;
+			background-color: $dot-color;
 			margin: 0 auto 0 2px;
 		}
 
 		span.simple-event
 		{
-			height: 6px;
-			width: 6px;
-			-webkit-border-radius: 6px;
-			background-color: #3F4E5E;
+			height: $dot-size;
+			width: $dot-size;
+			-webkit-border-radius: $dot-size / 2;
+			background-color: $dot-color;
 			margin: 0 auto;
 			display: block;
 		}
 
 		.selected span.simple-event, td.today span.simple-event
 		{
-			background-color: #FFF;
+			background-color: white;
 		}
 	}
   }
