@@ -51,6 +51,10 @@
 			.x-field-input {
 				@include border-radius(0);
 				border: none;
+
+				.x-input-text {
+					line-height: 1.7em;
+				}
 			}
 		}
 	}
