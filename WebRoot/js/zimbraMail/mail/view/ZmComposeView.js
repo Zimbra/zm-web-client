@@ -1463,7 +1463,7 @@ function(signatureId) {
 		}
 
 		//come back later and see if we need to save the draft
-		setTimeout(this._checkSaveDraft, 500);
+		AjxTimedAction.scheduleAction(this._checkSaveDraft.bind(this), 500);
 	}
 };
 
