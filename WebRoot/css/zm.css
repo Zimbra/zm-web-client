@@ -5961,6 +5961,7 @@ DIV .SuggestBtn {
 }
 
 .ZmSuggestView {
+	float: right;
 	background-color:@darken(AppC,20)@;
 	border-color:@darken(AppC,30)@;
 	border-style:solid;

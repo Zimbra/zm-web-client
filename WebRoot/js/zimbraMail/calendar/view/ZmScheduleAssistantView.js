@@ -101,6 +101,8 @@ function() {
 
     this._locationSuggestions = new ZmLocationSuggestionView(this, this._controller, this._apptView);
     this._locationSuggestions.reparentHtmlElement(this._suggestionsView);
+
+    this._resetSize();
 }
 
 ZmScheduleAssistantView.prototype.show =
@@ -122,6 +124,8 @@ function(suggestTime) {
         this._locationSuggestions.setVisible(true);
         this._currentSuggestions = this._locationSuggestions;
     }
+
+    this._resetSize();
 };
 
 ZmScheduleAssistantView.prototype.suggestAction =
@@ -276,6 +280,7 @@ function(date, attendees, forceRefresh) {
         if(!this.isSuggestionsEnabled()) {
            if(isGalEnabled) this._timeSuggestions.setShowSuggestionsHTML(this._date);
         }
+        this._resetSize();
         return;
     }
 
@@ -288,6 +293,8 @@ function(date, attendees, forceRefresh) {
         }
         if(forceRefresh) this.suggestAction(false, false);
     }
+
+    this._resetSize();
 };
 
 ZmScheduleAssistantView.prototype._miniCalDateRangeListener =
@@ -745,6 +752,7 @@ function(params) {
 
     this._currentSuggestions.set(params);
     if(params.focus) this._currentSuggestions.focus();
+    this._resetSize();
 };
 
 //modules for handling mini calendar suggestions
@@ -970,4 +978,22 @@ function(params, startTime, code) {
     var str = AjxDateFormat.format("yyyyMMdd", sd);
     params.dates[str] = sd;
     params.colors[str] = code;
+};
+
+ZmScheduleAssistantView.prototype._resetSize = function() {
+	ZmApptAssistantView.prototype._resetSize.call(this);
+
+    if (!this._currentSuggestions) {
+        return;
+    }
+
+    var width = this.boundsForChild(this._currentSuggestions).width;
+    width -= Dwt.getScrollbarSizes(this._suggestionsView).x;
+
+    if (AjxEnv.isIE || AjxEnv.isModernIE) {
+        var insets = this._currentSuggestions.getInsets();
+        width -= insets.left + insets.right;
+    }
+
+    this._currentSuggestions.setSize(width);
 };

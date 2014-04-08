@@ -2842,7 +2842,6 @@ function() {
 	var components =
 		ZmCalItemEditView.prototype._getComponents.call(this);
 
-	components.above.push(this._schedulerOptions);
 	components.aside.push(this._suggestions);
 
 	return components;
