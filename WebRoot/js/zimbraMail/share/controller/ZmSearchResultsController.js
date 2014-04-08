@@ -179,7 +179,7 @@ function(search, resultsCtlr) {
 	var size = results && results.size && results.size();
 	var plus = (results && results.hasMore && results.hasMore()) ? "+" : "";
 	var label = size ? AjxMessageFormat.format(ZmMsg.searchResultsLabel, [size, plus]) :
-					   ZmMsg.searchResultsLabelNone;
+					   search.isEmpty ? ZmMsg.searchResultsEnterSearch : ZmMsg.searchResultsLabelNone;
 	this._toolbar.setLabel(label, false);
     if (resultsCtlr && resultsCtlr.updateTimeIndicator) {
         resultsCtlr.updateTimeIndicator();

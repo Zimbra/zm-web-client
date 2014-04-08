@@ -363,6 +363,11 @@ function(actionCode, ev) {
 			}
 			break;
 
+	    case ZmKeyMap.NEW_SEARCH: {
+		    appCtxt.getSearchController().openNewSearchTab();
+		    break;
+	    }
+
 		case ZmKeyMap.SAVED_SEARCH:
             if (isExternalAccount) { break; }
 			var searches = appCtxt.getFolderTree().getByType(ZmOrganizer.SEARCH);

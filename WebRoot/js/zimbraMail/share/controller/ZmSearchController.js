@@ -673,6 +673,14 @@ function(results, search, noUpdateOverview) {
 	}
 };
 
+// Opens a new, empty search tab
+ZmSearchController.prototype.openNewSearchTab = function() {
+	this._toolbarSearch({
+		isEmpty:    true,
+		origin:     ZmId.SEARCH
+	});
+};
+
 /**
  * @private
  */
@@ -757,6 +765,7 @@ function(ev) {
  * @param {Event}		ev							browser event	
  * @param {string}		zimletEvent					type of notification to send zimlets
  * @param {string}		query						search string (optional, overrides input field)
+ * @param {Boolean}     isEmpty                     force a search for ""
  * @param {string}		origin						indicates what initiated the search
  * @param {string}		sessionId					session ID of search results tab (if search came from one)
  * @param {boolean}		skipUpdateSearchToolbar     don't update the search toolbar (e.g. from the ZmDumpsterDialog where the search is called from its own search toolbar
@@ -772,7 +781,7 @@ function(params) {
 	if (result && result.listener) {
 		result.listener.run(params.ev);
 	} else {
-		var queryString = params.query || this._searchToolBar.getSearchFieldValue();
+		var queryString = !params.isEmpty ? params.query || this._searchToolBar.getSearchFieldValue() : "";
 		var userText = (queryString.length > 0);
 		if (queryString) {
 			this._currentQuery = null;

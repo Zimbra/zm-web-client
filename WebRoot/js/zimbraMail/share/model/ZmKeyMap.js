@@ -151,6 +151,7 @@ ZmKeyMap.NEW_FOLDER				= "NewFolder";
 ZmKeyMap.NEW_MESSAGE			= "NewMessage";
 ZmKeyMap.NEW_MESSAGE_WIN		= "NewMessageWindow";
 ZmKeyMap.NEW_ROSTER_ITEM		= "NewRosterItem";
+ZmKeyMap.NEW_SEARCH				= "NewSearch";
 ZmKeyMap.NEW_TAG				= "NewTag";
 ZmKeyMap.NEW_TASK				= "NewTask";
 ZmKeyMap.NEW_WINDOW				= "NewWindow";
