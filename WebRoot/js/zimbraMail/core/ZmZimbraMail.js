@@ -3243,6 +3243,9 @@ function(actionCode, ev) {
 		DwtMenu.closeActiveMenu();
 
 		if (app == this.getActiveApp()) { return false; }
+		if (appCtxt.isWebClientOffline() && !AjxUtil.arrayContains(ZmOffline.SUPPORTED_APPS, app)) {
+			return false;
+		}
 		this.activateApp(app);
 		return true;
 	}
