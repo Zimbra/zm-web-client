@@ -42,7 +42,8 @@ $contactFormButtonMinHeight: 2.5rem;
 
 .zcs-contactImage {
 	background-position: center;
-	background-size: 100% auto;
+	background-position: center;
+	background-size: contain;
 	background-repeat: no-repeat;
 	margin-left: $contactListStdMargin;
 	margin-top: $contactListHeight / 2 - $contactListImageSize / 2;

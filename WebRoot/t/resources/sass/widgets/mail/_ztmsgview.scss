@@ -164,7 +164,8 @@ $msgHdrTopOffset3: $msgHdrTextSize * 3 + $msgHdrTopOffset1;
 .zcs-msgHdr-person {
 	@extend .zcs-msgHdr-element;
 	background-image: url('../images/person.png');
-	background-size: 100% auto;
+	background-position: center;
+	background-size: contain;
 	background-repeat: no-repeat;
 	height: $msgHdrImageSize;
 	left: $msgHdrStdMargin;
