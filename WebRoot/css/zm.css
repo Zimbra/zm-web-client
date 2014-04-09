@@ -844,6 +844,10 @@ INPUT[type="text"].search_input-expanded {
 	vertical-align:top;
 }
 
+.LabelColValue .ZmInviteToolBar {
+	white-space:nowrap;
+}
+
 .InvHeaderTable .SubjectCol {
 	@FontSize-biggest@
 }
