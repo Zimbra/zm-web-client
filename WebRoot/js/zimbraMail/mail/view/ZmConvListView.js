@@ -1130,9 +1130,7 @@ function(ev) {
 			}
 			this._updateField(conv, ZmItem.F_EXPAND); //must be done AFTER the _collapse (since collapse would reset the "expand" even in case it's not expandable)
 		}
-		if (this.isMultiColumn()) {
-			this._updateField(conv, ZmItem.F_SIZE);
-		}
+		this._updateField(conv, this.isMultiColumn() ? ZmItem.F_SIZE : ZmItem.F_FROM); //in reading pane on the right, the count appears in the "from".
 	}
 
 	if (ev.event == ZmEvent.E_MODIFY && (fields && fields[ZmItem.F_DATE])) {
