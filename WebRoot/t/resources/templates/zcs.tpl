@@ -506,15 +506,15 @@
 
 <template id="ApptViewDesc">
 	<tpl>
-        <tpl if='start'>
-        	<div class="view-appt-time row-space-2">{start}</div>
-   		</tpl>
+		<tpl if='start'>
+			<div class="view-appt-time row-space-2">{start}</div>
+		</tpl>
 		<tpl if='location'>
-  			<div class="view-appt-location row-space-2">{location}</div>
-        </tpl>
-        <tpl if='isException'>
-            <div class="view-appt-exception row-space-2">{[ZtMsg.apptExceptionNote]}</div>
-        </tpl>
+			<div class="view-appt-location row-space-2">{location}</div>
+		</tpl>
+		<tpl if='isException'>
+			<div class="view-appt-exception row-space-2"><span class="label">{[ZtMsg.apptExceptionNote]}</label></div>
+		</tpl>
 
 		<table class='zcs-invite zcs-table-vtop  row-space-2'>
 			<tpl if='organizer && !isOrganizer'>

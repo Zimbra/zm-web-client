@@ -177,10 +177,21 @@ DIV.more-events {
 }
 
 .view-appt-exception {
-    font-size: 1em;
-    padding-left: 2.5rem;
-    padding-right: 1rem;
-    @include background(url('/img/zimbra/ImgApptException.png') 1em center no-repeat);
+	font-size: 1em;
+	padding-left: 2.5rem;
+	padding-right: 1rem;
+
+	&:before {
+		color: #CE2A26;
+		content: "w"; //warning icon
+		font-family: "ZimbraTouch";
+	}
+
+	.label {
+		color: $primary-text-color;
+		font-style: italic;
+		padding-left: 0.5em;
+	}
 }
 
 .view-appt-notes {
