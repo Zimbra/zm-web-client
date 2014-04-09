@@ -425,29 +425,34 @@ ZmObjectManager.prototype.processObjectsInNode = function(doc, node){
 
 			if (next == null) {
 				if (/^(img|a)$/.test(tmp)) {
-                    var isMailTo = (tmp == 'a' && ZmMailMsgView._MAILTO_RE.test(node.href));
-					if (tmp == "a" && node.target
-					    && (isMailTo || ZmMailMsgView._URL_RE.test(node.href)))
-					{
-						// tricky.
-						var txt = isMailTo ? node.href :RegExp.$1 ;
-						tmp = doc.createElement("div");
-						tmp.innerHTML = objectManager.findObjects(AjxStringUtil.trim(txt));
-						tmp = tmp.firstChild;
-						if (tmp.nodeType == 3 /* Node.TEXT_NODE */) {
-							// probably no objects were found.  A warning would be OK here
-							// since the regexps guarantee that objects _should_ be found.
-							return tmp.nextSibling;
-						}
-						// here, tmp is an object span, but it
-						// contains the URL (href) instead of
-						// the original link text.
-						node.parentNode.insertBefore(tmp, node); // add it to DOM
-						tmp.innerHTML = "";
-						tmp.appendChild(node); // we have the original link now
-						return tmp.nextSibling;	// move on
-					}
-					handlers = false;
+                    try{
+                        var isMailTo = (tmp == 'a' && ZmMailMsgView._MAILTO_RE.test(node.href));
+                        if (tmp == "a" && node.target
+                            && (isMailTo || ZmMailMsgView._URL_RE.test(node.href)))
+                        {
+                            // tricky.
+                            var txt = isMailTo ? node.href :RegExp.$1 ;
+                            tmp = doc.createElement("div");
+                            tmp.innerHTML = objectManager.findObjects(AjxStringUtil.trim(txt));
+                            tmp = tmp.firstChild;
+                            if (tmp.nodeType == 3 /* Node.TEXT_NODE */) {
+                                // probably no objects were found.  A warning would be OK here
+                                // since the regexps guarantee that objects _should_ be found.
+                                return tmp.nextSibling;
+                            }
+                            // here, tmp is an object span, but it
+                            // contains the URL (href) instead of
+                            // the original link text.
+                            node.parentNode.insertBefore(tmp, node); // add it to DOM
+                            tmp.innerHTML = "";
+                            tmp.appendChild(node); // we have the original link now
+                            return tmp.nextSibling;	// move on
+                        }
+                        handlers = false;
+                    }
+					catch(e){
+                        //do nothing
+                    }
 				}
 			} else {
 				// consider processed
