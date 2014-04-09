@@ -528,7 +528,8 @@ TD.vSpace {
 .Row-selected .ZmListFlagsWrapper,
 .Row-selected .ZmMsgListDate,
 .Row-selected-disabled .ZmMsgListDate,
-.Row-selected-disabled .ZmListFlagsWrapper 	{	background-color:@ListItemBgColor-selected@;	}
+.Row-selected-disabled .ZmListFlagsWrapper 	{	background:@ListItemBgColor-selected@;	}
+/* must define on 'background', so it overrides both 'background-color' AND 'background-image' */
 
 /* .Row-matched, */
 .Row-matched-dragProxy 			{ 	@ListItemContainer-matched@		}
