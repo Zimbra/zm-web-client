@@ -373,10 +373,10 @@ Ext.define('ZCS.controller.calendar.ZtCalendarController', {
     goToday: function() {
         var date = new Date(),
             monthView = this.getCalMonthView(),
-            viewMode = monthView.getViewMode();
-        if (viewMode.toLowerCase() === 'month') {
+            dayView = this.getCalDayView();
+        if (!monthView.isHidden()) {
             this.getCalMonthView().updateViewMode('month', date);
-        } else {
+        } else if (!dayView.isHidden()) {
             this.getCalDayView().updateViewMode('day', date);
         }
     },
