@@ -118,7 +118,7 @@
      */
     "resources": [
         "resources/images",
-        "resources/icons",
+        "../img/logo",
         "resources/startup"
     ],
 
