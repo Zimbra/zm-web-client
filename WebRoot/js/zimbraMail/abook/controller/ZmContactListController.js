@@ -770,6 +770,7 @@ function(parent, num) {
 	if (appCtxt.isWebClientOffline()) {
 		parent.enable(
 			[
+				ZmOperation.ACTIONS_MENU,
 				ZmOperation.MOVE,
 				ZmOperation.EDIT,
 				ZmOperation.CONTACT,
@@ -778,7 +779,8 @@ function(parent, num) {
 				ZmOperation.DELETE,
 				ZmOperation.TAG_MENU,
 				ZmOperation.PRINT,
-				ZmOperation.PRINT_CONTACT
+				ZmOperation.PRINT_CONTACT,
+				ZmOperation.SEND_CONTACTS_IN_EMAIL
 			],
 			false
 		);
