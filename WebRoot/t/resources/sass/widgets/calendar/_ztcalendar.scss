@@ -176,6 +176,13 @@ DIV.more-events {
 	padding-right: 1rem;
 }
 
+.view-appt-exception {
+    font-size: 1em;
+    padding-left: 2.5rem;
+    padding-right: 1rem;
+    @include background(url('/img/zimbra/ImgApptException.png') 1em center no-repeat);
+}
+
 .view-appt-notes {
 	padding: 0em 1rem 2.5em;
 }

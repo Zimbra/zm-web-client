@@ -52,7 +52,8 @@ Ext.define('ZCS.model.mail.ZtInvite', {
             { name: 'attendeeResponseMsg',  type: 'string' },
             { name: 'reminderAlert',        type: 'string'},
             { name: 'recurrence',           type: 'string' },
-			{ name:	'fb', 					type: 'string'}
+			{ name:	'fb', 					type: 'string'},
+            { name: 'isException',          type: 'boolean'}
 		],
 
 		msgId: ''
@@ -106,6 +107,10 @@ Ext.define('ZCS.model.mail.ZtInvite', {
             if (comp.recur) {
                 //Fix for bug: 82159
                 invite.set('recurrence', ZCS.recur.getBlurb(comp));
+            }
+
+            if (comp.ex) {
+                invite.set('isException', true);
             }
 
 			if (comp.or) {
