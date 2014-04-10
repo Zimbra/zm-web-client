@@ -3091,6 +3091,7 @@ function(parent, num) {
 	/*if (currViewName == ZmId.VIEW_CAL_LIST) {
 		parent.enable(ZmOperation.PRINT_CALENDAR, num > 0);
 	} */
+	parent.enable(ZmOperation.PRINT_CALENDAR, !appCtxt.isWebClientOffline());
 
 	// disable button for current view
 	var op = ZmCalViewController.VIEW_TO_OP[currViewName];
@@ -3505,8 +3506,9 @@ function(appt, actionMenu) {
             ZmOperation.FORWARD_APPT_SERIES,
             ZmOperation.SHOW_ORIG,
             ZmOperation.DUPLICATE_APPT,
-            ZmOperation.MOVE,
-            ZmOperation.TAG_MENU,
+			ZmOperation.MOVE,
+			ZmOperation.PRINT,
+			ZmOperation.TAG_MENU,
             ZmOperation.MOVE_MENU];
         actionMenu.enable(disabledOps, false);
     } else {
