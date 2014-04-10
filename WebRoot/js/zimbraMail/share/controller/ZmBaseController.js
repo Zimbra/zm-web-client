@@ -481,6 +481,10 @@ function(ev, list) {
 		//need to update this._data so the chooser knows from which folder we are trying to move.
 		this._folderChooser.updateData(this._getMoveParams(this._folderChooser).data);
 	}
+	var newButton = this._folderChooser._getNewButton();
+	if (newButton) {
+		newButton.setVisible(!appCtxt.isWebClientOffline());
+	}
 	moveButton.popup();
 	moveButton.getMenu().getHtmlElement().style.width = "auto"; //reset the width so it's dynamic. without this it is set to 0, and in any case even if it was set to some other > 0 value, it needs to be dynamic due to collapse/expand (width changes)
 	this._folderChooser.focus();
