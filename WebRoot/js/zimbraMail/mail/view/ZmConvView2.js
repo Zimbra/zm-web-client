@@ -1295,7 +1295,6 @@ function() {
 	}
 
 	var bodySize = Dwt.getSize(body);
-	var bodyWidth = bodySize.x;
 	var bodyHeight = bodySize.y;
 
 	// Height from getSize() will either be correct or too small. If it's over 150,
@@ -1317,28 +1316,16 @@ function() {
 	// it takes up vertical space. Since we know the height is under 150, there shouldn't
 	// be a lot of elements getting moved around.
 	if (height === 0 || height === 150) {
-		var div = ZmMailMsgCapsuleView._testDiv;
-		if (!div) {
-			div = ZmMailMsgCapsuleView._testDiv = document.createElement('DIV');
-			div.style.position = Dwt.ABSOLUTE_STYLE;
-			var shellEl = DwtShell.getShell(window).getHtmlElement();
-			shellEl.appendChild(div);
-			Dwt.setLocation(div, Dwt.LOC_NOWHERE, Dwt.LOC_NOWHERE);
-		}
-
-		var divWidth = bodyWidth - 20;	// account for 10px of left and right padding for class MsgBody-html
-		Dwt.setSize(div, divWidth, Dwt.DEFAULT);
+		var div = document.createElement('DIV');
 
 		while (body.hasChildNodes()) {
 			div.appendChild(body.firstChild);
 		}
 
+		body.appendChild(div);
+
 		height = this._getHeightFromComputedStyle(div);
 		height += 20;	// account for 10px of top and bottom padding for class MsgBody-html - todo this and the above divWdith adjustment should probably be calculated, not hardcoded?
-
-		while (div.hasChildNodes()) {
-			body.appendChild(div.firstChild);
-		}
 	}
 
 	// If the content height is less than 150, then resize the IFRAME to fit it.
@@ -1361,7 +1348,7 @@ function(el) {
 		for (var i = 0; i < props.length; i++) {
 			var h = parseInt(styleObj[props[i]]);
 			height += isNaN(h) ? 0 : h;
-		}
+		}                                                                                                                                            nיש
 	}
 	return height;
 };
