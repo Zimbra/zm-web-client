@@ -198,8 +198,8 @@ Ext.define('ZCS.common.ZtHtmlUtil', {
 	 * @param {string}  html
 	 */
 	fixSmileys: function(html) {
-		return html.replace(/<span style=["']font-family:Wingdings["']>J<\/span>/gi, '\u263a')  // :)
-			.replace(/<span style=["']font-family:Wingdings["']>L<\/span>/gi, '\u2639'); // :(
+		return html.replace(/<span\s+[^>]*font-family:\s*Wingdings[^>]*>J<\/span>/gi, '\u263a')  // :)
+			.replace(/<span\s+[^>]*font-family:\s*Wingdings[^>]*>L<\/span>/gi, '\u2639'); // :(
 	},
 
 	/**
