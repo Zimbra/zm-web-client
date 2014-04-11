@@ -1128,19 +1128,18 @@ function(active, viewId) {
  */
 ZmApp.prototype.resetWebClientOfflineOperations =
 function() {
-	var overview = this.getOverview();
-	if (!overview) {
-		return;
-	}
 	var isWebClientOnline = !appCtxt.isWebClientOffline();
-	var zimletTreeView = overview.getTreeView(ZmOrganizer.ZIMLET);
-	if (zimletTreeView) {
-		zimletTreeView.setVisible(isWebClientOnline);
+	var overview = this.getOverview();
+	if (overview) {
+		var zimletTreeView = overview.getTreeView(ZmOrganizer.ZIMLET);
+		if (zimletTreeView) {
+			zimletTreeView.setVisible(isWebClientOnline);
+		}
+		// enable/disable right click
+		overview.actionSupported = isWebClientOnline;
+		// enable/disable drag and drop
+		overview.dndSupported = isWebClientOnline;
 	}
-	// enable/disable right click
-	overview.actionSupported = isWebClientOnline;
-	// enable/disable drag and drop
-	overview.dndSupported = isWebClientOnline;
 	// new button enable/disable
 	var newButton = appCtxt.getAppController().getNewButton();
 	if (newButton) {

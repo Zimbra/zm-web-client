@@ -63,13 +63,19 @@ function(active) {
 	this._active = active;
 };
 
-// Not hooked up for activate, but it will affect all active Searches on a online/offline transition
-ZmSearchApp.prototype.resetWebClientOfflineOperations = function() {
-	var controllerType = this.getTypeFromController(ZmSearchApp.CONTROLLER_CLASS);
-	var controllers = this._sessionController[controllerType];
-	var controller;
-	for (var id in controllers) {
-		controller = controllers[id];
-		controller.activateButtons(appCtxt.isWebClientOffline());
+// Not hooked up for activate, but it will be called after displaying the search results
+ZmSearchApp.prototype.resetWebClientOfflineOperations =
+function(searchResultsController) {
+	ZmApp.prototype.resetWebClientOfflineOperations.apply(this);
+	if (!searchResultsController) {
+		var controllerType = this.getTypeFromController(ZmSearchApp.CONTROLLER_CLASS);
+		var sessionId = this.getCurrentSessionId(controllerType);
+		searchResultsController = this.getSearchResultsController(sessionId);
+	}
+	// Only Save affected currently
+	var searchResultsToolBar = searchResultsController && searchResultsController._toolbar;
+	var saveButton = searchResultsToolBar && searchResultsToolBar.getButton(ZmSearchToolBar.SAVE_BUTTON);
+	if (saveButton) {
+		saveButton.setEnabled(!appCtxt.isWebClientOffline());
 	}
 };

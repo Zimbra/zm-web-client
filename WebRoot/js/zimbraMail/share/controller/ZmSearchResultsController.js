@@ -140,6 +140,7 @@ function(search, resultsCtlr) {
 
 		var callbacks = {};
 		callbacks[ZmAppViewMgr.CB_POST_REMOVE]	= this._postRemoveCallback.bind(this);
+		callbacks[ZmAppViewMgr.CB_POST_SHOW]    = this._postShowCallback.bind(this);
 		var elements = {};
 		elements[ZmAppViewMgr.C_SEARCH_RESULTS_TOOLBAR] = this._toolbar;
 		elements[ZmAppViewMgr.C_TREE] = this._filterPanel;
@@ -171,8 +172,6 @@ function(search, resultsCtlr) {
 		this._toolbar.setSearch(search);
 	}
 
-	this.activateButtons(appCtxt.isWebClientOffline());
-
 	// Tell the user how many results were found
 	var searchResult = resultsCtlr.getCurrentSearchResults && resultsCtlr.getCurrentSearchResults();
 	var results = (searchResult && searchResult.getResults()) || resultsCtlr.getList();
@@ -198,6 +197,13 @@ function() {
 		controllerClass: "ZmSearchResultsController",
 		sessionId:	this.sessionId
 	});
+};
+
+ZmSearchResultsController.prototype._postShowCallback =
+function() {
+	if (appCtxt.isWebClientOfflineSupported) {
+		this.getApp().resetWebClientOfflineOperations(this);
+	}
 };
 
 // returns params for the search tab button
@@ -307,11 +313,3 @@ function(term, skipNotify) {
 	});
 	return terms;
 };
-
-ZmSearchResultsController.prototype.activateButtons = function(offline) {
-	// Only Save affected currently
-	var saveButton = this._toolbar.getButton(ZmSearchToolBar.SAVE_BUTTON);
-	if (saveButton) {
-		saveButton.setEnabled(!offline);
-	}
-}
