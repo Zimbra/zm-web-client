@@ -257,13 +257,15 @@ TD.DwtListView-ColumnActive  {
 .Row-selected>TABLE,
 .Row-selected.RowDouble>TABLE,
 .Row-selected.RowDouble>.ZmRowDoubleHeader,
-.Row-selected.SimpleContact>DIV {
+.Row-selected.SimpleContact>DIV,
+.ZmSuggestResults .Row-selected TD {
 	background-color:@SelC@;
 	border:1px solid @SelC@;
 }
 
 .Row-focused>DIV,
-.Row-focused>TABLE {
+.Row-focused>TABLE,
+.ZmSuggestResults .Row-focused {
 	border:1px dotted @darken(AppC,30)@ !important;
 }
 
