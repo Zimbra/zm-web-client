@@ -856,6 +856,10 @@ function(folderId) {
 
 ZmCalViewController.prototype._refreshButtonListener =
 function(ev) {
+	//Return if a search is already in progress
+	if (this.searchInProgress) {
+		return;
+	}
     this.setCurrentListView(null);
     
 	// bug fix #33830 - force sync for calendar refresh
