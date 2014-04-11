@@ -356,7 +356,7 @@ function(actionCode, ev) {
 
 		case ZmKeyMap.NEW_FOLDER:
 		case ZmKeyMap.NEW_TAG:
-            if (isExternalAccount) { break; }
+            if (isExternalAccount || appCtxt.isWebClientOffline()) { break; }
 			var op = ZmApp.ACTION_CODES[actionCode];
 			if (op) {
 				this._newListener(null, op);

@@ -655,21 +655,23 @@ function(notify) {
 
 ZmCalendarApp.prototype.handleOp =
 function(op) {
-	switch (op) {
-		case ZmOperation.NEW_APPT: {
-			var loadCallback = new AjxCallback(this, this._handleLoadNewAppt);
-			AjxDispatcher.require(["MailCore", "CalendarCore", "Calendar"], false, loadCallback, null, true);
-			break;
-		}
-		case ZmOperation.NEW_CALENDAR: {
-			var loadCallback = new AjxCallback(this, this._handleLoadNewCalendar);
-			AjxDispatcher.require(["MailCore", "CalendarCore", "Calendar"], false, loadCallback, null, true);
-			break;
-		}
-        case ZmOperation.ADD_EXTERNAL_CALENDAR: {
-			var loadCallback = new AjxCallback(this, this._handleLoadExternalCalendar);
-			AjxDispatcher.require(["MailCore", "CalendarCore", "Calendar"], false, loadCallback, null, true);
-			break;
+	if (!appCtxt.isWebClientOffline()) {
+		switch (op) {
+			case ZmOperation.NEW_APPT: {
+				var loadCallback = new AjxCallback(this, this._handleLoadNewAppt);
+				AjxDispatcher.require(["MailCore", "CalendarCore", "Calendar"], false, loadCallback, null, true);
+				break;
+			}
+			case ZmOperation.NEW_CALENDAR: {
+				var loadCallback = new AjxCallback(this, this._handleLoadNewCalendar);
+				AjxDispatcher.require(["MailCore", "CalendarCore", "Calendar"], false, loadCallback, null, true);
+				break;
+			}
+			case ZmOperation.ADD_EXTERNAL_CALENDAR: {
+				var loadCallback = new AjxCallback(this, this._handleLoadExternalCalendar);
+				AjxDispatcher.require(["MailCore", "CalendarCore", "Calendar"], false, loadCallback, null, true);
+				break;
+			}
 		}
 	}
 };

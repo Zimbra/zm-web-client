@@ -433,19 +433,21 @@ function(notify) {
  */
 ZmContactsApp.prototype.handleOp =
 function(op) {
-	switch (op) {
-		case ZmOperation.NEW_CONTACT:
-		case ZmOperation.NEW_DISTRIBUTION_LIST:
-		case ZmOperation.NEW_GROUP: {
-			var type = (op == ZmOperation.NEW_CONTACT) ? null : ZmItem.GROUP;
-			var loadCallback = new AjxCallback(this, this._handleLoadNewItem, [type, op == ZmOperation.NEW_DISTRIBUTION_LIST]);
-			AjxDispatcher.require(["ContactsCore", "Contacts"], false, loadCallback, null, true);
-			break;
-		}
-		case ZmOperation.NEW_ADDRBOOK: {
-			var loadCallback = new AjxCallback(this, this._handleLoadNewAddrBook);
-			AjxDispatcher.require(["ContactsCore", "Contacts"], false, loadCallback, null, true);
-			break;
+	if (!appCtxt.isWebClientOffline()) {
+		switch (op) {
+			case ZmOperation.NEW_CONTACT:
+			case ZmOperation.NEW_DISTRIBUTION_LIST:
+			case ZmOperation.NEW_GROUP: {
+				var type = (op == ZmOperation.NEW_CONTACT) ? null : ZmItem.GROUP;
+				var loadCallback = new AjxCallback(this, this._handleLoadNewItem, [type, op == ZmOperation.NEW_DISTRIBUTION_LIST]);
+				AjxDispatcher.require(["ContactsCore", "Contacts"], false, loadCallback, null, true);
+				break;
+			}
+			case ZmOperation.NEW_ADDRBOOK: {
+				var loadCallback = new AjxCallback(this, this._handleLoadNewAddrBook);
+				AjxDispatcher.require(["ContactsCore", "Contacts"], false, loadCallback, null, true);
+				break;
+			}
 		}
 	}
 };
