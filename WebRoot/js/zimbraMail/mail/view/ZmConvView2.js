@@ -1348,7 +1348,7 @@ function(el) {
 		for (var i = 0; i < props.length; i++) {
 			var h = parseInt(styleObj[props[i]]);
 			height += isNaN(h) ? 0 : h;
-		}                                                                                                                                            nיש
+		}
 	}
 	return height;
 };
