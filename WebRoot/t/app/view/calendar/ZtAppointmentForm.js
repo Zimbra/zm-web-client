@@ -111,9 +111,9 @@ Ext.define('ZCS.view.calendar.ZtAppointmentForm', {
 
 	 setPanel: function(msg, event) {
 		var invite = msg.get('invite'),
-			dateFormat = invite.get('isAllDay') ? ZtMsg.invDateFormat : ZtMsg.invDateTimeOnlyFormat,
-			startTime = Ext.Date.format(event.get('start'), dateFormat),
-			endTime = Ext.Date.format(event.get('end'), ZtMsg.invTimeOnlyFormat),
+			startTime = Ext.Date.format(event.get('start'), ZtMsg.invTimeFormat),
+			endTime = Ext.Date.format(event.get('end'), ZtMsg.invTimeFormat),
+            eventDate = Ext.Date.format(event.get('start'),ZtMsg.invDateFormat),
 			myResponse = invite.get('myResponse'),
 			displayStatus = this.getShowAsOptionLabel(invite.get('fb')),
 			apptColor, apptRgbColor, calFolderName;
@@ -132,7 +132,7 @@ Ext.define('ZCS.view.calendar.ZtAppointmentForm', {
 			},
 			data = {
 				title:  invite.get('subject'),
-				start:  startTime + (invite.get('isAllDay') ? "" : " - " + endTime),
+				start:  invite.get('isAllDay') ? eventDate : (startTime + " - " + endTime + ", " + eventDate),
 				location: invite.get('location'),
 				isOrganizer: invite.get('isOrganizer'),
 				organizer: ZCS.model.mail.ZtMailItem.convertAddressModelToObject(invite.get('organizer')),
