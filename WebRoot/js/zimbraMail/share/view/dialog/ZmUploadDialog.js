@@ -35,6 +35,9 @@ ZmUploadDialog = function(shell, className) {
 	this._createUploadHtml();
     this._showLinkTitleText = false;
     this._linkText = {};
+	this._controller = null;
+
+	this._inprogress = false;
 }
 
 ZmUploadDialog.prototype = new DwtDialog;
@@ -92,8 +95,20 @@ function(notes){
     }
 };
 
+ZmUploadDialog.prototype.warnInProgress = function() {
+	var msgDlg = appCtxt.getMsgDialog();
+	msgDlg.setMessage(ZmMsg.uploadDisabledInProgress, DwtMessageDialog.WARNING_STYLE);
+	msgDlg.popup();
+}
+
 ZmUploadDialog.prototype.popup =
-function(folder, callback, title, loc, oneFileOnly, noResolveAction, showNotes, isImage, conflictAction) {
+function(controller, folder, callback, title, loc, oneFileOnly, noResolveAction, showNotes, isImage, conflictAction) {
+	if (this._inprogress) {
+		this.warnInProgress();
+		return;
+	}
+
+	this._controller     = controller;
 	this._uploadFolder   = folder;
 	this._uploadCallback = callback;
 	this._conflictAction = conflictAction;
@@ -110,10 +125,6 @@ function(folder, callback, title, loc, oneFileOnly, noResolveAction, showNotes, 
 		table.deleteRow(rows.length - 1);
 	}
 	this._addFileInputRow(oneFileOnly);
-
-	// enable buttons
-	this.setButtonEnabled(DwtDialog.OK_BUTTON, true);
-	this.setButtonEnabled(DwtDialog.CANCEL_BUTTON, true);
 
 	// hide/show elements
     var id = this._htmlElId;
@@ -179,9 +190,6 @@ function() {
 };
 
 ZmUploadDialog.prototype._popupErrorDialog = function(message) {
-	this.setButtonEnabled(DwtDialog.OK_BUTTON, true);
-	this.setButtonEnabled(DwtDialog.CANCEL_BUTTON, true);
-
 	var dialog = appCtxt.getMsgDialog();
 	dialog.setMessage(message, DwtMessageDialog.CRITICAL_STYLE, this._title);
 	dialog.popup();
@@ -190,6 +198,10 @@ ZmUploadDialog.prototype._popupErrorDialog = function(message) {
 //to give explicitly the uploadForm, files to upload and folderId used for briefcase
 ZmUploadDialog.prototype.uploadFiles =
 function(files, uploadForm, folder) {
+	if (this._inprogress) {
+		this.warnInProgress();
+		return;
+	}
 
     if (files.length == 0) {
 		return;
@@ -281,11 +293,19 @@ ZmUploadDialog.prototype._upload = function(){
 	if (errors.length > 0) {
 		this._msgInfo.innerHTML = zmUploadManager.createUploadErrorMsg(errors, maxSize, "<br>");
 	} else if (uploadFiles.length > 0) {
-        this.setButtonEnabled(DwtDialog.OK_BUTTON, false);
-        this.setButtonEnabled(DwtDialog.CANCEL_BUTTON, false);
-
-		var briefcaseApp = aCtxt.getApp(ZmApp.BRIEFCASE);
-        var popDownCallback = this.popdown.bind(this);
+		var briefcaseApp    = aCtxt.getApp(ZmApp.BRIEFCASE);
+		var shutDownCallback = null;
+		var uploadButton     = null;
+		if (this._controller == null) {
+			shutDownCallback = this.popdown.bind(this);
+		} else {
+			var toolbar = this._controller.getCurrentToolbar();
+			if (toolbar) {
+				uploadButton = toolbar.getOp(ZmOperation.NEW_FILE);
+			}
+			this.popdown();
+			shutDownCallback = this._enableUpload.bind(this, uploadButton);
+		}
         var uploadParams = {
 			attachment:                 false,
             files:                      fileObj,
@@ -295,11 +315,12 @@ ZmUploadDialog.prototype._upload = function(){
             uploadFolder:               this._uploadFolder,
 			completeAllCallback:        briefcaseApp.uploadSaveDocs.bind(briefcaseApp),
 			conflictAction:				this._conflictAction || this._selector.getValue(),
-            preResolveConflictCallback: popDownCallback,
-            errorCallback:              popDownCallback,
-            completeDocSaveCallback:    this._finishUpload.bind(this),
+            preResolveConflictCallback: shutDownCallback,
+            errorCallback:              shutDownCallback,
+            completeDocSaveCallback:    this._finishUpload.bind(this, uploadButton),
             docFiles:                   uploadFiles
         }
+		uploadParams.progressCallback = this._uploadFileProgress.bind(this, uploadButton, uploadParams);
 
         try {
             if (this._supportsHTML5) {
@@ -310,7 +331,15 @@ ZmUploadDialog.prototype._upload = function(){
                 window._uploadManager = uploadMgr;
                 uploadMgr.execute(callback, this._uploadForm);
             }
+
+			if (uploadButton) {
+				// The 16x16 upload image has ImgUpload0 (no fill) .. ImgUpload12 (completely filled) variants to give a
+				// gross idea of the progress.
+				ZmToolBar._setButtonStyle(uploadButton, null, ZmMsg.uploading, "Upload0");
+				this._inprogress = true;
+			}
         } catch (ex) {
+			this._enableUpload(uploadButton);
             if (ex.msg) {
                 this._popupErrorDialog(ex.msg);
             } else {
@@ -320,7 +349,37 @@ ZmUploadDialog.prototype._upload = function(){
     }
 };
 
-ZmUploadDialog.prototype._finishUpload = function(docFiles, uploadFolder) {
+ZmUploadDialog.prototype._uploadFileProgress =
+	function(uploadButton, params, progress) {
+		if (!uploadButton || !params || !progress.lengthComputable || !params.totalSize) return;
+
+		// The 16x16 upload image has ImgUpload0 (no fill) .. ImgUpload12 (completely filled) variants to give a
+		// gross idea of the progress.  A tooltip indicating the progress will be added too.
+		var progressFraction = (progress.loaded / progress.total);
+		var uploadedSize = params.uploadedSize + (params.currentFileSize * progressFraction);
+		var fractionUploaded = uploadedSize/params.totalSize;
+		if (fractionUploaded > 1) {
+			fractionUploaded = 1;
+		}
+		var progressBucket = Math.round(fractionUploaded * 12);
+		DBG.println(AjxDebug.DBG3,"Upload Progress: total=" + params.totalSize + ", uploadedSize=" + params.uploadedSize +
+					", currentSize="+ params.currentFileSize + ", progressFraction=" +
+					progressFraction + ", fractionUploaded=" + fractionUploaded + ", progressBucket=" + progressBucket);
+		ZmToolBar._setButtonStyle(uploadButton, null, ZmMsg.uploadNewFile, "Upload" + progressBucket.toString());
+
+		var tooltip = AjxMessageFormat.format(ZmMsg.uploadPercentComplete, [ Math.round(fractionUploaded * 100) ] )
+		uploadButton.setToolTipContent(tooltip, true);
+	};
+
+ZmUploadDialog.prototype._enableUpload = function(uploadButton) {
+	if (!uploadButton) return;
+
+	ZmToolBar._setButtonStyle(uploadButton, null, ZmMsg.uploadNewFile, null);
+	uploadButton.setToolTipContent(ZmMsg.uploadNewFile, true);
+	this._inprogress = false;
+};
+
+ZmUploadDialog.prototype._finishUpload = function(uploadButton, docFiles, uploadFolder) {
     var filenames = [];
     for (var i in docFiles) {
         var name = docFiles[i].name;
@@ -329,6 +388,8 @@ ZmUploadDialog.prototype._finishUpload = function(docFiles, uploadFolder) {
         }
         filenames.push(name);
     }
+	this._enableUpload(uploadButton);
+
     this._uploadCallback.run(uploadFolder, filenames, docFiles);
 };
 

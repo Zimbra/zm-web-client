@@ -79,7 +79,7 @@ function() {
 ZmBriefcaseApp.prototype._registerOperations =
 function() {
 	ZmOperation.registerOp(ZmId.OP_NEW_BRIEFCASE, {textKey:"newBriefcase", image:"NewFolder", tooltipKey:"newBriefcaseTooltip", shortcut:ZmKeyMap.NEW_BRIEFCASE});
-	ZmOperation.registerOp(ZmId.OP_NEW_FILE, {textKey:"uploadNewFile", tooltipKey:"uploadNewFile", image:"Upload", textPrecedence:70});
+	ZmOperation.registerOp(ZmId.OP_NEW_FILE, {textKey:"uploadNewFile", tooltipKey:"uploadNewFile", textPrecedence:70, showImageInToolbar:true, showTextInToolbar:true});
 	ZmOperation.registerOp(ZmId.OP_NEW_DOC, {textKey:"newDocument", tooltipKey:"newDocument", image:"NewDoc", shortcut:ZmKeyMap.NEW_DOC, textPrecedence:12});
 	ZmOperation.registerOp(ZmId.OP_SHARE_BRIEFCASE, {textKey:"shareFolder", image:"SharedMailFolder"}, ZmSetting.SHARING_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_OPEN_FILE, {textKey:"openFile", tooltipKey:"openFileTooltip", image:"NewDoc"});
@@ -687,13 +687,16 @@ ZmBriefcaseApp.prototype._uploadSaveDocsResponse = function(params, response) {
 	}
 
 	// check for conflicts
+	var mailboxQuotaExceeded = false;
+	var isItemLocked = false;
+	var code = 0;
 	var conflicts = [];
 	if (resp && resp.Fault) {
-		var errors = [], mailboxQuotaExceeded=false, isItemLocked=false;
+		var errors = [];
 		for (var i = 0; i < resp.Fault.length; i++) {
 			var fault = resp.Fault[i];
 			var error = fault.Detail.Error;
-			var code = error.Code;
+			code = error.Code;
 			var attrs = error.a;
 			isItemLocked = (code == ZmCsfeException.LOCKED);
 			if (code == ZmCsfeException.MAIL_ALREADY_EXISTS ||
@@ -718,27 +721,28 @@ ZmBriefcaseApp.prototype._uploadSaveDocsResponse = function(params, response) {
 				errors[fault.requestId] = fault;
 			}
 		}
-		// TODO: What to do about other errors?
-		if (mailboxQuotaExceeded) {
-			this._popupErrorDialog(ZmMsg.errorQuotaExceeded);
-			return;
-		}
-		else if (isItemLocked) {
-			this._popupErrorDialog(ZmMsg.errorItemLocked);
-			return;
-		}
-		else if (code==ZmCsfeException.SVC_PERM_DENIED) {
-			this._popupErrorDialog(ZmMsg.errorPermissionDenied);
-			if (params.errorCallback) {
-				params.errorCallback.run();
-			}
-			return;
-		}
 	}
 
-	// dismiss dialog
+	// dismiss dialog/enable the upload button
 	if (params.preResolveConflictCallback) {
 		params.preResolveConflictCallback.run();
+	}
+
+	// TODO: What to do about other errors?
+	if (mailboxQuotaExceeded) {
+		this._popupErrorDialog(ZmMsg.errorQuotaExceeded);
+		return;
+	}
+	else if (isItemLocked) {
+		this._popupErrorDialog(ZmMsg.errorItemLocked);
+		return;
+	}
+	else if (code == ZmCsfeException.SVC_PERM_DENIED) {
+		this._popupErrorDialog(ZmMsg.errorPermissionDenied);
+		if (params.errorCallback) {
+			params.errorCallback.run();
+		}
+		return;
 	}
 
 	// resolve conflicts

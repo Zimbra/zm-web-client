@@ -2914,7 +2914,7 @@ function(templateId) {
 		replyAttRowId:		ZmId.getViewId(this._view, ZmId.CMP_REPLY_ATT_ROW),
 		attRowId:			ZmId.getViewId(this._view, ZmId.CMP_ATT_ROW),
 		attDivId:			ZmId.getViewId(this._view, ZmId.CMP_ATT_DIV),
-		attBtnId:			ZmId.getViewId(this._view, ZmId.CMP_ATT_BTN),
+		attBtnId:			ZmId.getViewId(this._view, ZmId.CMP_ATT_BTN)
 	};
 
 	this._createHtmlFromTemplate(templateId || this.TEMPLATE, data);
@@ -3209,7 +3209,7 @@ function(resp) {
 
 
 ZmComposeView.prototype._uploadFileProgress =
-function(progress) {
+function(params, progress) {
 	if (!this._loadingSpan ||  (!progress.lengthComputable) ) { 
 		return;
 	}

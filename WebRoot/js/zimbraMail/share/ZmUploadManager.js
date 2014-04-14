@@ -53,6 +53,7 @@ ZmUploadManager.ERROR_INVALID_FILENAME  = "invalidFilename";
  * current view, if any.  Once all files are uploaded, a custom callback is run (if provided) to finish the upload.
  *
  * @param	{object}	params		params to customize the upload flow:
+ *      attachment				    True => Mail msg attachment, False => File Upload
  *      uploadFolder                Folder to save associated document into
  *      files:                      raw File object from the external HTML5 drag and drop
  *      notes:                      Notes associated with each of the files being added
@@ -75,16 +76,26 @@ function(params) {
 
     try {
         this.upLoadC = this.upLoadC + 1;
-        var file = params.files[params.start];
-        var fileName = file.name || file.fileName;
+		var file     = params.files[params.start];
+		var fileName = file.name || file.fileName;
 
-        if (!params.allResponses) {
+		if (!params.allResponses) {
             // First file to upload.  Do an preparation prior to uploading the files
             params.allResponses = [];
             if (params.preAllCallback) {
                 params.preAllCallback.run(fileName);
             }
-        }
+			// Determine the total number of bytes to be upload across all the files
+			params.totalSize = this._getTotalUploadSize(params);
+			params.uploadedSize = 0;
+		}
+
+		if (params.start > 0) {
+			// Increment the total number of bytes upload with the previous file that completed.
+			params.uploadedSize += params.currentFileSize;
+		}
+		// Set the upload size of the current file
+		params.currentFileSize = file.size || file.fileSize || 0;
 
         // Initiate the first upload
         var req = new XMLHttpRequest(); // we do not call this function in IE
@@ -132,6 +143,17 @@ function(params) {
     }
 
 };
+
+ZmUploadManager.prototype._getTotalUploadSize = function(params) {
+	// Determine the total number of bytes to be upload across all the files
+	var totalSize = 0;
+	for (var i = 0; i < params.files.length; i++) {
+		var file = params.files[i];
+		var size = file.size || file.fileSize || 0; // fileSize: Safari
+		totalSize += size;
+	}
+	return totalSize;
+}
 
 ZmUploadManager.prototype._handleUploadResponse =
 function(req, fileName, params){

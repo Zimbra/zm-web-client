@@ -685,7 +685,7 @@ function(ev) {
 	var callback = this._sigEditor._imageUploaded.bind(this._sigEditor);
 	var cFolder = appCtxt.getById(ZmOrganizer.ID_BRIEFCASE);
 	var dialog = appCtxt.getUploadDialog();
-	dialog.popup(cFolder, callback, ZmMsg.uploadImage, null, true);
+	dialog.popup(null, cFolder, callback, ZmMsg.uploadImage, null, true);
 };
 
 // Updates name and format of selected sig based on form fields

@@ -2293,13 +2293,14 @@ function(files) {
                 curView:               this._composeView,
                 preAllCallback:        this._preUploadAll.bind(this),
                 initOneUploadCallback: curView._startUploadAttachment.bind(curView),
-                progressCallback:      curView._uploadFileProgress.bind(curView),
                 errorCallback:         curView._resetUpload.bind(curView, true),
                 completeOneCallback:   curView.updateAttachFileNode.bind(curView),
                 completeAllCallback:   this._completeAllUpload.bind(this)
             }
+			params.progressCallback =  curView._uploadFileProgress.bind(curView, params);
 
-            // Do a SaveDraft at the start, since we will suppress autosave during the upload
+
+			// Do a SaveDraft at the start, since we will suppress autosave during the upload
             var uploadManager = appCtxt.getZmUploadManager();
             var uploadCallback = uploadManager.upload.bind(uploadManager, params);
             this.saveDraft(ZmComposeController.DRAFT_TYPE_AUTO, null, null, uploadCallback);

@@ -604,7 +604,7 @@ function(title, callback) {
     if(this.chkFolderPermission(folderId)){
         var cFolder = appCtxt.getById(folderId);
 		var uploadDialog = appCtxt.getUploadDialog();
-         uploadDialog.popup(cFolder, callback, title, null, false, true, true, ZmBriefcaseApp.ACTION_KEEP_MINE);
+         uploadDialog.popup(this, cFolder, callback, title, null, false, true, true, ZmBriefcaseApp.ACTION_KEEP_MINE);
     }	
 };
 
