@@ -1096,7 +1096,7 @@ ZmTaskListController.prototype._showTaskSource =
 function(task) {
     var apptFetchUrl = appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI)
                         + "&id=" + AjxStringUtil.urlComponentEncode(task.id || task.invId)
-                        +"&mime=text/plain&noAttach=1";
+                        +"&mime=text/plain&noAttach=1&icalAttach=none";
     // create a new window w/ generated msg based on msg id
     window.open(apptFetchUrl, "_blank", "menubar=yes,resizable=yes,scrollbars=yes");
 };

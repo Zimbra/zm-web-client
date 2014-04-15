@@ -449,10 +449,15 @@ function(params) {
 	].join("");
 
 	var formParams = { "fmt" : type };
-	if (isCSV) { formParams[type+"fmt"] = subType; }
+	if (isCSV) {
+        formParams[type+"fmt"] = subType;
+    }
 	var startDate = params.start ? AjxDateUtil.simpleParseDateStr(params.start) : null;
 	var endDate = params.end ? AjxDateUtil.simpleParseDateStr(params.end) : null;
 	if (isTGZ && params.views) { formParams["types"] = params.views; }
+    if (type == ZmImportExportController.TYPE_ICS) {
+        formParams["icalAttach"] = "inline";
+    }
     if(startDate) {
         formParams["start"] = startDate.getTime();
     }

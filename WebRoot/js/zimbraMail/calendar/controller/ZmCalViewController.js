@@ -4276,7 +4276,7 @@ ZmCalViewController.prototype._showApptSource =
 function(appt) {
     var apptFetchUrl = appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI)
                     + "&id=" + AjxStringUtil.urlComponentEncode(appt.id || appt.invId)
-                    +"&mime=text/plain&noAttach=1";
+                    +"&mime=text/plain&noAttach=1&icalAttach=none";
     // create a new window w/ generated msg based on msg id
     window.open(apptFetchUrl, "_blank", "menubar=yes,resizable=yes,scrollbars=yes");
 };
