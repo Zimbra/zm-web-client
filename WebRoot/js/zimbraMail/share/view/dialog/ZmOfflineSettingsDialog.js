@@ -151,5 +151,6 @@ function(offlineEnable, logOff, dialog) {
 ZmOfflineSettingsDialog._handleLogOff =
 function() {
     appCtxt.isWebClientOfflineSupported = false;
+	ZmOffline.deleteOfflineData();
     setTimeout(ZmZimbraMail.logOff, 2500);//Give some time for deleting indexeddb data and application cache data
 };
