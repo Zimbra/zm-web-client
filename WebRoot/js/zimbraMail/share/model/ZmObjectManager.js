@@ -425,34 +425,39 @@ ZmObjectManager.prototype.processObjectsInNode = function(doc, node){
 
 			if (next == null) {
 				if (/^(img|a)$/.test(tmp)) {
-                    try{
-                        var isMailTo = (tmp == 'a' && ZmMailMsgView._MAILTO_RE.test(node.href));
-                        if (tmp == "a" && node.target
-                            && (isMailTo || ZmMailMsgView._URL_RE.test(node.href)))
-                        {
-                            // tricky.
-                            var txt = isMailTo ? node.href :RegExp.$1 ;
-                            tmp = doc.createElement("div");
-                            tmp.innerHTML = objectManager.findObjects(AjxStringUtil.trim(txt));
-                            tmp = tmp.firstChild;
-                            if (tmp.nodeType == 3 /* Node.TEXT_NODE */) {
-                                // probably no objects were found.  A warning would be OK here
-                                // since the regexps guarantee that objects _should_ be found.
-                                return tmp.nextSibling;
-                            }
-                            // here, tmp is an object span, but it
-                            // contains the URL (href) instead of
-                            // the original link text.
-                            node.parentNode.insertBefore(tmp, node); // add it to DOM
-                            tmp.innerHTML = "";
-                            tmp.appendChild(node); // we have the original link now
-                            return tmp.nextSibling;	// move on
-                        }
-                        handlers = false;
+                    var href;
+                    try {
+                        // IE can throw an "Invalid Argument" error depending on value of href
+                        // e.g: http://0:0:0:0:0:0:0:1%0:7070/service/soap/ContactActionRequest:1331608015326:9c4f5868c5b0b4f2
+                        href = node.href;
                     }
-					catch(e){
+                    catch(e) {
                         //do nothing
                     }
+
+                    var isMailToLink = tmp === "a" && ZmMailMsgView._MAILTO_RE.test(href),
+                        isUrlLink = tmp === "a" && ZmMailMsgView._URL_RE.test(href);
+
+                    if ((isMailToLink || isUrlLink) && node.target){
+						// tricky.
+						var txt = isMailToLink ? href :RegExp.$1 ;
+						tmp = doc.createElement("div");
+						tmp.innerHTML = objectManager.findObjects(AjxStringUtil.trim(txt));
+						tmp = tmp.firstChild;
+						if (tmp.nodeType == 3 /* Node.TEXT_NODE */) {
+							// probably no objects were found.  A warning would be OK here
+							// since the regexps guarantee that objects _should_ be found.
+							return tmp.nextSibling;
+						}
+						// here, tmp is an object span, but it
+						// contains the URL (href) instead of
+						// the original link text.
+						node.parentNode.insertBefore(tmp, node); // add it to DOM
+						tmp.innerHTML = "";
+						tmp.appendChild(node); // we have the original link now
+						return tmp.nextSibling;	// move on
+					}
+					handlers = false;
 				}
 			} else {
 				// consider processed
