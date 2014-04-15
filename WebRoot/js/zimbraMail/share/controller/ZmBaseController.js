@@ -1074,7 +1074,7 @@ function(parent, items) {
 			tagMenu.parent.popup();
 
 			// bug #17584 - we currently don't support creating new tags in new window
-			if (appCtxt.isChildWindow) {
+			if (appCtxt.isChildWindow || appCtxt.isWebClientOffline()) {
 				var mi = tagMenu.getMenuItem(ZmTagMenu.MENU_ITEM_ADD_ID);
 				if (mi) {
 					mi.setVisible(false);

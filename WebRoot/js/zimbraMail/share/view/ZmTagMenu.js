@@ -191,6 +191,7 @@ function(tagList, addRemove) {
 	miNew.setShortcut(appCtxt.getShortcutHint(this._keyMap, ZmKeyMap.NEW_TAG));
 	miNew.setData(ZmTagMenu.KEY_TAG_EVENT, ZmEvent.E_CREATE);
 	miNew.addSelectionListener(new AjxListener(this, this._menuItemSelectionListener), 0);
+	miNew.setEnabled(!appCtxt.isWebClientOffline());
 
 	// add static "Remove Tag" menu item
 	var miRemove = this._menuItems[ZmTagMenu.MENU_ITEM_REM_ID] = new DwtMenuItem({parent:this, id: removeid});
