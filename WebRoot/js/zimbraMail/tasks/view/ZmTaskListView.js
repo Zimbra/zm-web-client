@@ -622,6 +622,8 @@ function(el) {
 		Dwt.setHandler(this._newTaskInputEl, DwtEvent.ONKEYPRESS, ZmTaskListView._handleKeyPress);
 		this.shell.getHtmlElement().appendChild(this._newTaskInputEl);
 
+		this._newTaskInputEl.style.padding  = "0px";
+		this._newTaskInputEl.style.borderWidth  = "0px";
 		this._resetInputSize(el);
 	} else {
         // Preserve any existing newTask text.  This will be cleared when
