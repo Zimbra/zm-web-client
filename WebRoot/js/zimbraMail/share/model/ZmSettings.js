@@ -1228,7 +1228,8 @@ function() {
     }
     else {
         ZmOffline.deleteOfflineData();
-        appCtxt.reloadAppCache(true);
         appCtxt.initWebOffline();// To reset the property isWebClientOfflineSupported
     }
+	//Always reload appcache whenever offline setting is enabled/disabled. Appcache will be updated/emptied depending upon the setting.
+	appCtxt.reloadAppCache(true);
 };
