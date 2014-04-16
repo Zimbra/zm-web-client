@@ -281,27 +281,28 @@ ZmContactListController.prototype.handleKeyAction =
 function(actionCode) {
 	DBG.println(AjxDebug.DBG3, "ZmContactListController.handleKeyAction");
     var isExternalAccount = appCtxt.isExternalAccount();
+	var isWebClientOffline = appCtxt.isWebClientOffline();
 	switch (actionCode) {
 
 		case ZmKeyMap.EDIT:
-            if (isExternalAccount) { break; }
+            if (isExternalAccount || isWebClientOffline) { break; }
 			this._editListener();
 			break;
 
 		case ZmKeyMap.PRINT:
-			if (appCtxt.get(ZmSetting.PRINT_ENABLED)) {
+			if (appCtxt.get(ZmSetting.PRINT_ENABLED) && !isWebClientOffline) {
 				this._printListener();
 			}
 			break;
 
 		case ZmKeyMap.PRINT_ALL:
-			if (appCtxt.get(ZmSetting.PRINT_ENABLED)) {
+			if (appCtxt.get(ZmSetting.PRINT_ENABLED) && !isWebClientOffline) {
 				this._printAddrBookListener();
 			}
 			break;
 
 		case ZmKeyMap.NEW_MESSAGE:
-            if (isExternalAccount) { break; }
+			if (isExternalAccount) { break; }
 			this._composeListener();
 			break;
 

@@ -4136,6 +4136,7 @@ function() {
 ZmCalViewController.prototype.handleKeyAction =
 function(actionCode) {
 	DBG.println(AjxDebug.DBG3, "ZmCalViewController.handleKeyAction");
+	var isWebClientOffline = appCtxt.isWebClientOffline();
 
 	switch (actionCode) {
 
@@ -4143,12 +4144,17 @@ function(actionCode) {
 		case ZmKeyMap.CAL_WEEK_VIEW:
 		case ZmKeyMap.CAL_WORK_WEEK_VIEW:
 		case ZmKeyMap.CAL_MONTH_VIEW:
-		case ZmKeyMap.CAL_LIST_VIEW:
 			this.show(ZmCalViewController.ACTION_CODE_TO_VIEW[actionCode]);
 			break;
 
+		case ZmKeyMap.CAL_LIST_VIEW:
+			if (!isWebClientOffline) {
+				this.show(ZmCalViewController.ACTION_CODE_TO_VIEW[actionCode]);
+			}
+			break;
+
         case ZmKeyMap.CAL_FB_VIEW:
-            if(appCtxt.get(ZmSetting.FREE_BUSY_VIEW_ENABLED)) {
+            if(appCtxt.get(ZmSetting.FREE_BUSY_VIEW_ENABLED) && !isWebClientOffline) {
                 this.show(ZmCalViewController.ACTION_CODE_TO_VIEW[actionCode]);
             }
 			break;
@@ -4162,19 +4168,21 @@ function(actionCode) {
 			break;
 
 		case ZmKeyMap.QUICK_ADD:
-			if (appCtxt.get(ZmSetting.CAL_USE_QUICK_ADD)) {
+			if (appCtxt.get(ZmSetting.CAL_USE_QUICK_ADD) && !isWebClientOffline) {
 				var date = this._viewMgr ? this._viewMgr.getDate() : new Date();
 				this.newAppointmentHelper(date, ZmCalViewController.DEFAULT_APPOINTMENT_DURATION);
 			}
 			break;
 
 		case ZmKeyMap.EDIT:
-			var appt = this.getSelection()[0];
-			if (appt) {
-				var ev = new DwtSelectionEvent();
-				ev.detail = DwtListView.ITEM_DBL_CLICKED;
-				ev.item = appt;
-				this._listSelectionListener(ev);
+			if (!isWebClientOffline) {
+				var appt = this.getSelection()[0];
+				if (appt) {
+					var ev = new DwtSelectionEvent();
+					ev.detail = DwtListView.ITEM_DBL_CLICKED;
+					ev.item = appt;
+					this._listSelectionListener(ev);
+				}
 			}
 			break;
 

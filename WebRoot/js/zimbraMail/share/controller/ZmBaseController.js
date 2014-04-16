@@ -182,7 +182,7 @@ function(actionCode, ev) {
 			break;
 
 		case ZmKeyMap.PRINT:
-			if (appCtxt.get(ZmSetting.PRINT_ENABLED)) {
+			if (appCtxt.get(ZmSetting.PRINT_ENABLED) && !appCtxt.isWebClientOffline()) {
 				this._printListener();
 			}
 			break;
