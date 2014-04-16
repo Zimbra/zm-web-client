@@ -358,6 +358,8 @@ Ext.define('ZCS.controller.calendar.ZtCalendarController', {
                     this.getCalToolbar().down('#dayBtn').setCls('x-button-pressed');
                     monthView.hide();
                     this.getCalToolbar().down('#monthBtn').removeCls('x-button-pressed');
+                    //Ensure that the day view is for the month user navigated to
+                    dayView.updateViewMode('day', monthView.view.currentDate);
                     break;
             }
         }
