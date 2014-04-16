@@ -438,6 +438,21 @@ Ext.define('ZCS.common.ZtUserSession', {
 			else if (setting.getType() === ZCS.constant.TYPE_BOOLEAN) {
 				value = Ext.isString(value) ? !!(value && value.toLowerCase() === 'true') : !!value;
 			}
+			else if (setting.getType() === ZCS.constant.TYPE_LDAP_TIME) {
+				var lastChar = (Ext.isString(value) &&
+								value.charAt(value.length-1).toLowerCase());
+				var num = parseInt(value);
+				// convert to seconds
+				if (lastChar == 'd') {
+					value = num * 24 * 60 * 60;
+				} else if (lastChar == 'h') {
+					value = num * 60 * 60;
+				} else if (lastChar == 'm') {
+					value = num * 60;
+				} else {
+					value = num;	// default
+				}
+			}
 
 			setting.setValue(value);
 			this._settings[setting.getName()] = setting;

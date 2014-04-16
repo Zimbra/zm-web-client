@@ -454,6 +454,7 @@ ZCS.constant.TYPE_NUMBER    = 'number';
 ZCS.constant.TYPE_BOOLEAN   = 'boolean';
 ZCS.constant.TYPE_ARRAY     = 'array';
 ZCS.constant.TYPE_HASH      = 'hash';
+ZCS.constant.TYPE_LDAP_TIME = 'ldap_time';
 
 // Content types
 ZCS.constant.TEXT_PLAIN = 'text/plain';
@@ -484,6 +485,7 @@ ZCS.constant.SETTING_SIGNATURE_ID       = 'zimbraPrefDefaultSignatureId';
 ZCS.constant.SETTING_REPLY_SIGNATURE_ID = 'zimbraPrefForwardReplySignatureId';
 ZCS.constant.SETTING_SIGNATURE_STYLE    = 'zimbraPrefMailSignatureStyle';
 ZCS.constant.SETTING_TRUSTED_SENDERS    = 'zimbraPrefMailTrustedSenderList';
+ZCS.constant.SETTING_AUTO_SAVE_INTERVAL = 'zimbraPrefAutoSaveDraftInterval';
 
 // Contacts
 ZCS.constant.SETTING_CONTACTS_ENABLED   = 'zimbraFeatureContactsEnabled';
@@ -521,6 +523,7 @@ ZCS.constant.SETTING_TYPE[ZCS.constant.SETTING_GET_NAME_FROM_CONTACTS]      = ZC
 ZCS.constant.SETTING_TYPE[ZCS.constant.SETTING_SHOW_DL_FOLDER]              = ZCS.constant.TYPE_BOOLEAN;
 ZCS.constant.SETTING_TYPE[ZCS.constant.SETTING_CUR_SEARCH]                  = ZCS.constant.TYPE_HASH;
 ZCS.constant.SETTING_TYPE[ZCS.constant.SETTING_CUR_SEARCH_ID]               = ZCS.constant.TYPE_HASH;
+ZCS.constant.SETTING_TYPE[ZCS.constant.SETTING_AUTO_SAVE_INTERVAL]          = ZCS.constant.TYPE_LDAP_TIME;
 
 // Forced setting values, which override user setting
 ZCS.constant.SETTING_VALUE = {};
@@ -532,6 +535,7 @@ ZCS.constant.SETTING_DEFAULT[ZCS.constant.SETTING_LOCALE]                   = 'e
 ZCS.constant.SETTING_DEFAULT[ZCS.constant.SETTING_GET_NAME_FROM_CONTACTS]   = true; // see bug 81656
 ZCS.constant.SETTING_DEFAULT[ZCS.constant.SETTING_SHOW_DL_FOLDER]           = true;
 ZCS.constant.SETTING_DEFAULT[ZCS.constant.SETTING_CONVERSATION_ORDER]       = ZCS.constant.DATE_DESC;
+ZCS.constant.SETTING_DEFAULT[ZCS.constant.SETTING_AUTO_SAVE_INTERVAL]       = 15;
 
 // Signature styles
 ZCS.constant.SIG_INTERNET   = 'internet';

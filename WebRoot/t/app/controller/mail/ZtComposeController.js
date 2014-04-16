@@ -83,6 +83,7 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 		action:     '',
 		origMsg:    null,   // reply/forward
 		draftId:    null,   // ID of existing draft to delete when edited version is sent
+		autoSaveActionId: null, // setInterval identifier used for the autosaving drafts
 		formHash:   ''      // used to perform dirty check
 	},
 
@@ -359,6 +360,12 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 		}
 		else {
 			this.endComposeSession();
+		}
+	},
+
+	doAutoSave: function() {
+		if (this.isDirty()) {
+			this.doSaveDraft();
 		}
 	},
 
@@ -799,9 +806,22 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 				duration: 250
 			});
 		}
+
+		// We cannot use Ext.util.DelayedTask for the draft timer, as it
+		// cancels itself _after_ invoking its function, preventing the
+		// function from restarting it.
+		var saveInterval =
+			ZCS.session.getSetting(ZCS.constant.SETTING_AUTO_SAVE_INTERVAL);
+
+		this.autoSaveActionId =
+			window.setInterval(Ext.Function.bind(this.doAutoSave, this),
+			                   saveInterval * 1000);
 	},
 
 	hideComposeForm: function () {
+		window.clearInterval(this.autoSaveActionId);
+		this.autoSaveActionId = null;
+
 		if (Ext.os.deviceType === "Phone") {
 			this.getComposePanel().element.dom.style.setProperty('display', 'none');
 		} else {
