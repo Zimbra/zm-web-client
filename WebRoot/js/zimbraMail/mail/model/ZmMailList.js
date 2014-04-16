@@ -516,14 +516,9 @@ function(convs, msgs) {
 						if (msg._convCreateNode._newId) {
 							msg._convCreateNode.id = msg._convCreateNode._newId;
 						}
-						var cachedConv = appCtxt.getById(cid);
-						if (cachedConv) {
-							//add message to the cached conv (so we don't lose the previous (first) message!
-							cachedConv.addMsg(msg);
-							conv = cachedConv;
-							updateConv = true; //we need to update the fragment/date/etc below
-						}
-						else {
+						//sometimes the conv is already in the app cache. Make sure not to re-create it and with the wrong msgs. This is slight improvement of bug 87861.
+						conv = appCtxt.getById(cid);
+						if (!conv) {
 							conv = ZmConv.createFromDom(msg._convCreateNode, args);
 						}
 					}
@@ -537,7 +532,7 @@ function(convs, msgs) {
 				conv.list = this;
 			}
 			// make sure conv's msg list is up to date
-			if (conv && (updateConv || !(conv.msgs && conv.msgs.getById(id)))) {
+			if (conv && !(conv.msgs && conv.msgs.getById(id))) {
 				if (!conv.msgs) {
 					conv.msgs = new ZmMailList(ZmItem.MSG);
 					conv.msgs.addChangeListener(conv._listChangeListener);
@@ -564,6 +559,16 @@ function(convs, msgs) {
 					if (conv.numMsgs === 1) {
 						//there is only one message in this conv so set the size of conv to msg size
 						conv.size = msg.size;
+					}
+					else {
+						//So it shows the message count, and not the size (see ZmConvListView.prototype._getCellContents)
+						//this size is no longer relevant (was set in the above if previously, see bug 87416)
+						conv.size = null;
+					}
+					if (msg._convCreateNode) {
+						//in case of single msg virtual conv promoted to a real conv - update the size
+						// (in other cases of size it's updated elsewhere - see ZmConv.prototype.notifyModify, the server sends the update notification for the conv size)
+						fields[ZmItem.F_SIZE] = true;
 					}
 					// conv gained a msg, may need to be moved to top/bottom
 					if (!newConvId[conv.id] && this._vector.contains(conv)) {
