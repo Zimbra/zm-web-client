@@ -1229,6 +1229,13 @@ ZmBaseController.prototype._bubbleActionListener = function(ev, addr) {
 		menu = this._getBubbleActionMenu();
 
 	if (menu) {
+		menu.enable(
+			[
+				ZmOperation.CONTACT,
+				ZmOperation.ADD_FILTER_RULE
+			],
+			!appCtxt.isWebClientOffline()
+		);
 		this._loadContactForMenu(menu, address, ev);
 	}
 };
@@ -1410,6 +1417,10 @@ ZmBaseController.setContactTextOnMenu = function(contact, menu) {
 	}
 
 	ZmOperation.setOperation(menu, ZmOperation.CONTACT, newOp, newText);
+
+	if (appCtxt.isWebClientOffline()) {
+		menu.enable(ZmOperation.CONTACT, false);
+	}
 };
 
 /**
