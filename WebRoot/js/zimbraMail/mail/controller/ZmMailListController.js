@@ -1619,7 +1619,7 @@ function(params) {
 ZmMailListController.prototype._filterListener =
 function() {
 
-	if (this._actionEv.address) {
+	if (this._actionEv && this._actionEv.address) {
 		this._handleResponseFilterListener(this._actionEv.address);
 	}
 	else {
