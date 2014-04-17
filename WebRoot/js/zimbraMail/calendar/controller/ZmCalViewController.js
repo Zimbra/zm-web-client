@@ -4087,8 +4087,7 @@ function(work, forceMaintenance) {
 
 ZmCalViewController.prototype._maintenanceAction =
 function() {
-    if (!navigator.onLine) return;
-	var work = this._pendingWork;
+ 	var work = this._pendingWork;
 	this.searchInProgress = true;
 	this._pendingWork = ZmCalViewController.MAINT_NONE;
 
