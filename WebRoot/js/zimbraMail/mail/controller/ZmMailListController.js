@@ -1490,7 +1490,7 @@ function(msg) {
 	var list = msg.list || this.getList();
 	var callback = (appCtxt.isChildWindow)
 		? (new AjxCallback(this, this._handleAcceptShareInNewWindow)) : null;
-	list.moveItems({items:[msg], folder:folder, callback:callback});
+	list.moveItems({items: [msg], folder: folder, callback: callback, closeChildWin: appCtxt.isChildWindow});
 };
 
 ZmMailListController.prototype._declineShareHandler = ZmMailListController.prototype._acceptShareHandler;
