@@ -71,7 +71,8 @@ ZmMailListController = function(container, mailApp, type, sessionId, searchResul
 	this._acceptShareListener = this._acceptShareHandler.bind(this);
 	this._declineShareListener = this._declineShareHandler.bind(this);
 
-	this._listeners[ZmOperation.ADD_FILTER_RULE]	= this._filterListener.bind(this);
+	this._listeners[ZmOperation.ADD_FILTER_RULE]	= this._filterListener.bind(this, false);
+	this._listeners[ZmOperation.ADD_FILTER_RULE_ADDRESS] = this._filterListener.bind(this, true);
 	this._listeners[ZmOperation.CREATE_APPT]		= this._createApptListener.bind(this);
 	this._listeners[ZmOperation.CREATE_TASK]		= this._createTaskListener.bind(this);
 
@@ -1617,9 +1618,9 @@ function(params) {
 };
 
 ZmMailListController.prototype._filterListener =
-function() {
+function(isAddress) {
 
-	if (this._actionEv && this._actionEv.address) {
+	if (isAddress) {
 		this._handleResponseFilterListener(this._actionEv.address);
 	}
 	else {

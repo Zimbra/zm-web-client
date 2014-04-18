@@ -1293,7 +1293,7 @@ ZmBaseController.prototype._getBubbleActionMenuOps = function() {
 	ops.push(ZmOperation.NEW_MESSAGE);
 	ops.push(ZmOperation.CONTACT);
 	if (appCtxt.get(ZmSetting.FILTERS_ENABLED) && this._filterListener) {
-		ops.push(ZmOperation.ADD_FILTER_RULE);
+		ops.push(ZmOperation.ADD_FILTER_RULE_ADDRESS);
 	}
 
 	return ops;
