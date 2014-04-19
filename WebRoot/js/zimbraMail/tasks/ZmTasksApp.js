@@ -179,7 +179,12 @@ function() {
 ZmTasksApp.prototype.postNotify =
 function(notify) {
 	if (this._checkReplenishListView) {
-		this._checkReplenishListView._checkReplenish();
+		var tasks = notify.modified && notify.modified.task;
+		var item;
+		if (tasks) {
+			item = tasks[0].items[0];
+		}
+		this._checkReplenishListView._checkReplenish(item, true);
 		this._checkReplenishListView = null;
 	}
 };

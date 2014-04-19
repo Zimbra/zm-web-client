@@ -384,20 +384,20 @@ function(ev) {
 };
 
 ZmListView.prototype._checkReplenish =
-function() {
-	var respCallback = new AjxCallback(this, this._handleResponseCheckReplenish);
+function(item, forceSelection) {
+	var respCallback = new AjxCallback(this, this._handleResponseCheckReplenish, [false, item, forceSelection]);
 	this._controller._checkReplenish(respCallback);
 };
 
 ZmListView.prototype._handleResponseCheckReplenish =
-function(skipSelection) {
+function(skipSelection, item, forceSelection) {
 	if (this.size() == 0) {
 		this._controller._handleEmptyList(this);
 	} else {
 		this._controller._resetNavToolBarButtons();
 	}
 	if (!skipSelection) {
-		this._setNextSelection();
+		this._setNextSelection(item, forceSelection);
 	}
 };
 
@@ -1310,17 +1310,16 @@ function(columnItem, bSortAsc, callback) {
 };
 
 ZmListView.prototype._setNextSelection =
-function() {
+function(item, forceSelection) {
 	// set the next appropriate selected item
 	if (this.firstSelIndex < 0) {
 		this.firstSelIndex = 0;
 	}
-    var item;
-    if (this._list) {
-	    item = this._list.get(this.firstSelIndex) || this._list.getLast();
+	if (this._list && !item) {
+		item = this._list.get(this.firstSelIndex) || this._list.getLast();
     }
 	if (item) {
-		this.setSelection(item, false);
+		this.setSelection(item, false, forceSelection);
 	}
 };
 

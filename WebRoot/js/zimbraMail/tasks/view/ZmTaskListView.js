@@ -764,6 +764,7 @@ function(ev) {
                 this._renderList(this.getList(),true,false);
                 if(this._list && this._list.size() == 1) { this.setSelection(this._list.get(0)); }
             }
+			this.checkTaskReplenishListView();
 		}
 	} else if (ev.event == ZmEvent.E_MODIFY) {
 		var task = items[0];
@@ -777,7 +778,6 @@ function(ev) {
                 // If task status is modified and item is not part of current view
                 var parentNode = div.parentNode;
                 parentNode && parentNode.removeChild(div);
-                this._controller._resetToolbarOperations(this.view);
                 if(this._controller.isReadingPaneOn()) {
                     this._controller.getTaskMultiView().getTaskView().reset();
                 }
@@ -838,7 +838,6 @@ function(ev) {
         if(needsSort) {
             this.checkTaskReplenishListView();
         }
-		this._controller._resetToolbarOperations(this.view);
         this._controller._resetNavToolBarButtons();
 		if(this._controller.isReadingPaneOn()) {
 			this._controller.getTaskMultiView().getTaskView().reset();
@@ -846,6 +845,7 @@ function(ev) {
 	} else {
 		ZmListView.prototype._changeListener.call(this, ev);
 	}
+	this._controller._resetToolbarOperations(this.view);
 
     //Handle Create Notification
     if(ev.event == ZmEvent.E_MOVE){
