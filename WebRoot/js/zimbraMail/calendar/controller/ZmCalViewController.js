@@ -186,6 +186,7 @@ function(viewId) {
 ZmCalViewController.prototype.show =
 function(viewId, startDate, skipMaintenance) {
 	AjxDispatcher.require(["MailCore", "CalendarCore", "Calendar"]);
+	DBG.println(AjxDebug.DBG1, "ZmCalViewController.show, viewId = " + viewId);
 	if (!viewId || viewId == ZmId.VIEW_CAL) {
 		viewId = this.getCurrentViewType() || this.getDefaultViewType();
 	}
@@ -253,6 +254,7 @@ function(viewId, startDate, skipMaintenance) {
 			? cv.getShortCalTitle()
 			: cv.getCalTitle();
 		this._navToolBar[ZmId.VIEW_CAL].setText(navText);
+		DBG.println(AjxDebug.DBG1, "ZmCalViewController.show, skipMaintenance = " + skipMaintenance);
 		if (!skipMaintenance) {
 			var work = ZmCalViewController.MAINT_VIEW;
 			if (window.inlineCalSearchResponse) {
@@ -4053,6 +4055,8 @@ ZmCalViewController.prototype.refreshCurrentView =
 ZmCalViewController.prototype._scheduleMaintenance =
 function(work, forceMaintenance) {
 
+	DBG.println(AjxDebug.DBG1, "ZmCalViewController._scheduleMaintenance, work = " + work + ", forceMaintenance = " + forceMaintenance);
+	DBG.println(AjxDebug.DBG1, "ZmCalViewController._scheduleMaintenance, searchInProgress = " + this.searchInProgress + ", pendingWork = " + this._pendingWork);
 	this.onErrorRecovery = new AjxCallback(this, this._errorRecovery, [work, forceMaintenance]);
 
 	// schedule timed action
@@ -4087,6 +4091,7 @@ function(work, forceMaintenance) {
 
 ZmCalViewController.prototype._maintenanceAction =
 function() {
+	DBG.println(AjxDebug.DBG1, "ZmCalViewController._maintenanceAction, work = " + this._pendingWork);
  	var work = this._pendingWork;
 	this.searchInProgress = true;
 	this._pendingWork = ZmCalViewController.MAINT_NONE;
@@ -4102,7 +4107,9 @@ function() {
 	else if (maintainMiniCal || maintainView || maintainRemainder) {
         // NOTE: It's important that we go straight to the view!
 		var view = this._viewMgr ? this._viewMgr.getView(this._currentViewId) : null;
-		if (view && view.needsRefresh()) {
+		var needsRefresh =  view && view.needsRefresh();
+		DBG.println(AjxDebug.DBG1, "ZmCalViewController._maintenanceAction, view = " + this._currentViewId + ", needsRefresh = " + needsRefresh);
+		if (needsRefresh) {
             var rt = view.getTimeRange();
 			var params = {
 				start: rt.start,
@@ -4119,6 +4126,7 @@ function() {
 				reminderParams.callback = null;
 			}
 
+			DBG.println(AjxDebug.DBG1, "ZmCalViewController._maintenanceAction, do apptCache.batchRequest");
 			this.apptCache.batchRequest(params, this.getMiniCalendarParams(), reminderParams);
 			view.setNeedsRefresh(false);
 		} else {
