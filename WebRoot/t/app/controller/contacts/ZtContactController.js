@@ -411,12 +411,17 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
 	            attrs:      changedAttrs
             };
 
-        this.performOp(contact, data, function() {
-	        me.hideContactForm();
-	        ZCS.app.fireEvent('showToast', ZtMsg.contactEdited);
-	        // Reload to show newly updated state of the contact
-            me.getStore().load();
-        });
+        //send Modify Contacts request only if something was changed
+        if (changedAttrs.length>0) {
+            this.performOp(contact, data, function() {
+                me.hideContactForm();
+                ZCS.app.fireEvent('showToast', ZtMsg.contactEdited);
+                // Reload to show newly updated state of the contact
+                me.getStore().load();
+            });
+        } else {
+            me.hideContactForm();
+        }
     },
 
     populateForm: function(contact) {
