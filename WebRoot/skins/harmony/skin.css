@@ -575,6 +575,10 @@ TD.DwtListView-ColumnActive  {
 	border-top:1px solid @darken(AppC,25)@;
 }
 
+.DwtMenu .DwtCalendar {
+	border-top-width:0px;
+}
+
 /* Chooser styling */
 .ZmContactPicker .DwtChooserListView {
 	background-color:white;
