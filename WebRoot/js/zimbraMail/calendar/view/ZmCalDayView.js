@@ -270,7 +270,8 @@ function(abook) {
 	}
 
 	// grid body
-	html.append("<div id='", this._bodyDivId, "' name='_bodyDivId' class=calendar_body style='position:absolute'>");
+    // Fix for bug: 66603. Removed horizontal scroll bar from grid body
+	html.append("<div id='", this._bodyDivId, "' name='_bodyDivId' class=calendar_body style='position:absolute; overflow-x:hidden;'>");
     html.append("<div id='", this._apptBodyDivId, "' name='_apptBodyDivId' class='ImgCalendarDayGrid' style='width:100%; height:1008px; position:absolute;background-color:#E3E3DC;'>");
 	html.append("<div id='", this._timeSelectionDivId, "' name='_timeSelectionDivId' class='calendar_time_selection' style='position:absolute; display:none;z-index:10;'></div>");
 	html.append("<div id='", this._newApptDivId, "' name='_newApptDivId' class='appt-Selected' style='position:absolute; display:none;'></div>");
@@ -295,11 +296,11 @@ function(abook) {
 	html.append("</div>");
 
     // all day headings
-	html.append("<div id='", this._tabsContainerDivId, "' name='_tabsContainerDivId' style='position:absolute;height:25px;bottom:0px;'>");
+    // Fix for bug: 66603. Separating merge/split button from tab container
     html.append("<div id='", this._toggleBtnContainerId, "' name='_toggleBtnContainerId' style='position:absolute;bottom:0px;'></div>");
-	html.append("<div id='", this._allDayHeadingDivId, "' name='_allDayHeadingDivId' style='", headerStyle,	"'>");
-
-	html.append("</div>");
+    // Fix for bug: 66603. Hide the overflow
+	html.append("<div id='", this._tabsContainerDivId, "' name='_tabsContainerDivId' style='position:absolute;height:45px;bottom:0px;overflow-y:hidden;'>");
+	html.append("<div id='", this._allDayHeadingDivId, "' name='_allDayHeadingDivId' style='", headerStyle,	"'></div>");
 	html.append("</div>");
     // end of all day headings
 
@@ -307,6 +308,8 @@ function(abook) {
     func = AjxCallback.simpleClosure(ZmCalColView.__onScroll, ZmCalColView, this);
 	document.getElementById(this._bodyDivId).onscroll = func;
 	document.getElementById(this._allDayApptScrollDivId).onscroll = func;
+    // Fix for bug: 66603. Attaching a scroll function.
+    document.getElementById(this._tabsContainerDivId).onscroll = func;
 
 	ids = [this._apptBodyDivId, this._bodyHourDivId, this._allDayDivId, this._allDaySepDivId];
 	types = [ZmCalBaseView.TYPE_APPTS_DAYGRID, ZmCalBaseView.TYPE_HOURS_COL, ZmCalBaseView.TYPE_ALL_DAY, ZmCalBaseView.TYPE_DAY_SEP];
@@ -366,7 +369,8 @@ function(refreshApptLayout) {
     }
 
 	// column headings
-	Dwt.setBounds(allDayHeadingDiv, ZmCalDayTabView._UNION_DIV_WIDTH+hoursWidth+1, 0, this._apptBodyDivWidth + scrollFudge, Dwt.DEFAULT);
+    // Fix for bug: 66603. Position - X set to 0 to adjust the scrolling and Position - Y to 2px.
+	Dwt.setBounds(allDayHeadingDiv, 0, 2, this._apptBodyDivWidth, Dwt.DEFAULT);
 	// div for all day appts
 	if (this._allDayApptsList && this._allDayApptsList.length > 0) {
         numRows++;
@@ -386,6 +390,9 @@ function(refreshApptLayout) {
 	this._setBounds(this._allDayApptScrollDivId, bodyX, allDayHeadingDivHeight+ZmCalDayTabView._TAB_BORDER_MARGIN, this._bodyDivWidth, this._allDayDivHeight+ZmCalDayTabView._TAB_BORDER_MARGIN);
 	this._setBounds(this._allDayDivId, 0, 0, this._apptBodyDivWidth + scrollFudge, this._allDayFullDivHeight+ZmCalDayTabView._TAB_BORDER_MARGIN);
 
+    // Fix for bug: 66603. Set the position-X, width and height for heading container.
+    this._setBounds(this._tabsContainerDivId, bodyX, Dwt.DEFAULT, this._bodyDivWidth, scrollFudge !== 0 ? 45 : 25);
+
 	this._allDayVerticalScrollbar(this._allDayDivHeight != this._allDayFullDivHeight);
 
 	// div under year
@@ -400,7 +407,8 @@ function(refreshApptLayout) {
 
 	bodyY =  (this._hideAllDayAppt ? ZmCalColView._DAY_HEADING_HEIGHT : allDayScrollHeight) + ZmCalColView._ALL_DAY_SEP_HEIGHT +  (AjxEnv.isIE ? 0 : 2);
 
-	this._bodyDivHeight = height - bodyY;
+    // Fix for bug: 66603. Adjusts the height of grid body.
+	this._bodyDivHeight = height - bodyY - scrollFudge;
 
 	// hours
 	this._setBounds(this._hoursScrollDivId, 0, bodyY, hoursWidth, this._bodyDivHeight);
@@ -457,7 +465,8 @@ function(workingHours){
 
 		// position day heading
 		var day = this._days[col.dayIndex];
-		this._setBounds(col.titleId, currentX+ZmCalDayTabView._TAB_BORDER_WIDTH+ZmCalDayTabView._TAB_SEP_WIDTH+2, Dwt.DEFAULT, Dwt.CLEAR, ZmCalColView._DAY_HEADING_HEIGHT);
+        // Fix for bug: 66603. Adjust position X & Y calendar title bubble
+		this._setBounds(col.titleId, currentX, Dwt.DEFAULT, dayWidth-ZmCalDayTabView._TAB_BORDER_MARGIN, ZmCalColView._DAY_HEADING_HEIGHT);
 		col.apptX = currentX + 2 ; //ZZZ
 		col.apptWidth = dayWidth - 3*this._daySepWidth - ZmCalDayTabView._TAB_SEP_WIDTH;  //ZZZZ
 		col.allDayX = col.apptX;
@@ -480,7 +489,8 @@ function(workingHours){
         }
         //set tab borders
         this._setBounds(col.borderTopDivId, currentX+this._bodyX, topBorderYPos, dayWidth-ZmCalDayTabView._TAB_BORDER_MARGIN, Dwt.CLEAR);
-        this._setBounds(col.borderBottomDivId, currentX+ZmCalDayTabView._TAB_BORDER_WIDTH+ZmCalDayTabView._TAB_SEP_WIDTH+2, 0, dayWidth-ZmCalDayTabView._TAB_BORDER_MARGIN, Dwt.CLEAR);
+        // Fix for bug: 66603. Adjust position X of title border separator
+        this._setBounds(col.borderBottomDivId, currentX, 0, dayWidth-ZmCalDayTabView._TAB_BORDER_MARGIN, Dwt.CLEAR);
         this._setBounds(col.borderLeftDivId, currentX, 0, ZmCalDayTabView._TAB_BORDER_WIDTH, this._apptBodyDivHeight);
         this._setBounds(col.borderRightDivId, currentX+dayWidth-ZmCalDayTabView._TAB_BORDER_WIDTH-ZmCalDayTabView._TAB_BORDER_MARGIN, 0, ZmCalDayTabView._TAB_BORDER_WIDTH, this._apptBodyDivHeight);
 
@@ -605,7 +615,8 @@ function() {
         div.setAttribute(ZmCalDayTabView.ATTR_CAL_ID, calId);
         this._createDivForColumn(col.borderBottomDivId, titleParentEl, "ZmDayTabSeparator", calColor, calColor);
 
-        div = this._createDivForColumn(col.titleId, titleParentEl, this._mergedView ? "" : "ZmCalDayTab", calColor, calColor);
+        // Fix for bug: 66603. The class adjusts width of calendar title bubbles
+        div = this._createDivForColumn(col.titleId, titleParentEl, this._mergedView ? "" : "ZmCalDayTab ZmCalDayMerged", calColor, calColor);
         div.style.top = ZmCalDayTabView._TAB_BORDER_WIDTH + 'px';
 		if (this._mergedView) {
             //var div = this._createDivForColumn(Dwt.getNextId(), titleParentEl, "ZmCalDayTab", calColor, calColor);
@@ -614,7 +625,8 @@ function() {
                 mergedCal = this._calendars[k];
                 calMergerdTabColor = mergedCal.rgb;
                 calName = AjxStringUtil.clipByLength(mergedCal.getName(), ZmCalDayTabView._TAB_TITLE_MAX_LENGTH);
-                html.push('<td class=ZmCalDayTab style="background-color: ', calMergerdTabColor, ';" valign="top">');
+                // Fix for bug: 66603. The class adjusts width of calendar title bubbles
+                html.push('<td class="ZmCalDayTab ZmCalDaySplit" style="background-color: ', calMergerdTabColor, ';" valign="top">');
                 html.push(calName);
                 html.push('</td>');
                 html.push('<td>&nbsp;</td>');
