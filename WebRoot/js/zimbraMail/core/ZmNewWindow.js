@@ -662,6 +662,8 @@ function(msg) {
 		newMsg.share = msg.share;
 	}
 
+	newMsg.subscribeReq = msg.subscribeReq;
+
 	// TODO: When/if you get rid of this function, also remove the cloneOf uses in:
 	//		ZmBaseController.prototype._tagListener
 	//		ZmBaseController.prototype._setTagMenu
