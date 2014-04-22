@@ -1289,50 +1289,20 @@ function() {
 		return;
 	}
 	
-	var body = this.getContentContainer();
-	if (!body) {
+	var contentContainer = this.getContentContainer();
+	if (!contentContainer) {
 		return;
 	}
 
-	var bodySize = Dwt.getSize(body);
-	var bodyHeight = bodySize.y;
-
-	// Height from getSize() will either be correct or too small. If it's over 150,
-	// we don't need to resize. Bail so we save the effort of messing with the computed style.
-	if (bodyHeight > 150) {
-		//we need to resize in case we already resized the iframe size here. (this happens when moving the sash).
-		//reset to the one from the trad MSG view that works for higher than 150 cases. This becomes hacky. Should we merge those 2 methods?
-		//actually we need to reset this on any resize of the reading pane as ZmMailMsgView._resetIframeHeight is not called on sash move. Don't know why.
-		this._resetIframeHeightOnTimer();
-		return;
-	}
+	//todo - combine this with _resetIframeOnTimer that is from the MSG view and also used here somehow in cases the Iframe is taller than 150 pixels.
 
 	// Get height from computed style, which seems to be the most reliable source.
-	var height = this._getHeightFromComputedStyle(body);
+	var height = this._getHeightFromComputedStyle(contentContainer);
+	height += 20;	// account for 10px of top and bottom padding for class MsgBody-html - todo adjustment should probably be calculated, not hardcoded?
 
-	// We didn't get a believable height. Try moving the BODY's children into a DIV
-	// and measuring that. Previously, we tried measuring the height of the children,
-	// but that's unreliable since an element such as BR reports 0 height even though
-	// it takes up vertical space. Since we know the height is under 150, there shouldn't
-	// be a lot of elements getting moved around.
-	if (height === 0 || height === 150) {
-		var div = document.createElement('DIV');
-
-		while (body.hasChildNodes()) {
-			div.appendChild(body.firstChild);
-		}
-
-		body.appendChild(div);
-
-		height = this._getHeightFromComputedStyle(div);
-		height += 20;	// account for 10px of top and bottom padding for class MsgBody-html - todo this and the above divWdith adjustment should probably be calculated, not hardcoded?
-	}
-
-	// If the content height is less than 150, then resize the IFRAME to fit it.
-	if (height > 20 && height < 150) {
-		DBG.println(AjxDebug.DBG1, "resizing capsule msg view IFRAME height to " + height);
-		Dwt.setSize(this.getIframeElement(), Dwt.DEFAULT, height);
-	}
+	// resize the IFRAME to fit content.
+	DBG.println(AjxDebug.DBG1, "resizing capsule msg view IFRAME height to " + height);
+	Dwt.setSize(this.getIframeElement(), Dwt.DEFAULT, height);
 };
 
 

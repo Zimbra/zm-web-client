@@ -291,7 +291,8 @@ ZmMailMsgView.prototype.getContentContainer =
 function() {
 	if (this._usingIframe) {
 		var idoc = this.getDocument();
-		return idoc && idoc.body;
+		var body = idoc && idoc.body;
+		return body.childNodes.length === 1 ? body.firstChild : body;
 	}
 	else {
 		return this._containerEl;
@@ -1025,7 +1026,7 @@ function(params) {
 			className:				this._getBodyClass(),
 			id:						this._msgBodyDivId,
 			hidden:					true,
-			html:					this._cleanedHtml || html,
+			html:					"<div>" + (this._cleanedHtml || html) + "</div>",
 			styles:					inner_styles,
 			noscroll:				!this._scrollWithIframe,
 			posStyle:				DwtControl.STATIC_STYLE,
