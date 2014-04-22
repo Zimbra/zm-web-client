@@ -580,6 +580,10 @@ Ext.define('ZCS.model.ZtOrganizer', {
 			if (isDraftsFolder && !isDraft) {
 				return false;
 			}
+            // disable Distribution lists if contact is being moved
+            if (ZCS.util.folderIs(this, ZCS.constant.ID_DLS) && what.get('type') === ZCS.constant.ITEM_CONTACT) {
+                return false;
+            }
 		}
 		else {
 			return false;
