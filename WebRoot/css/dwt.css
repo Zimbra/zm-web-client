@@ -928,9 +928,9 @@ UL.DwtListView-Rows {
 /* Container of the calendar titlebar (arrows and month label, not DOW labels) */
 .DwtCalendarTitlebar {
 	@MiniCalHeaderBg@
-#IFNDEF MSIE
-	height:1.8em;
-#ENDIF	
+#IFNDEF MSIE_LOWER_THAN_9
+	height:2rem;
+#ENDIF
 }
 
 /* Arrow buttons in the calendar titlebar in various states */
