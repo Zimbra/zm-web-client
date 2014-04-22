@@ -219,5 +219,15 @@ Ext.define('ZCS.controller.ZtItemController', {
 			var toastMsg = remove ? ZtMsg.tagRemoved : ZtMsg.tagAdded;
 			ZCS.app.fireEvent('showToast', Ext.String.format(toastMsg, tagName));
 		});
-	}
+	},
+
+    /**
+     * Disables "Tag" action if user doesn't have any tags.
+     */
+    enableTagItem: function(menu) {
+        if (menu && menu.getItem(ZCS.constant.OP_TAG)) {
+            var tags = ZCS.session.getOrganizerData(ZCS.constant.APP_MAIL, ZCS.constant.ORG_TAG);
+            menu.enableItem(ZCS.constant.OP_TAG, tags && tags.length > 0);
+        }
+    }
 });

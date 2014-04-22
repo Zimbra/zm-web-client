@@ -412,7 +412,7 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
             };
 
         //send Modify Contacts request only if something was changed
-        if (changedAttrs.length>0) {
+        if (changedAttrs.length > 0) {
             this.performOp(contact, data, function() {
                 me.hideContactForm();
                 ZCS.app.fireEvent('showToast', ZtMsg.contactEdited);
@@ -635,5 +635,12 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
 	 */
 	saveItemTag: function (tag, item) {
 		this.tagItem(item, tag.get('name'), false);
-	}
+	},
+
+    /**
+     * Disable "Tag" action if user doesn't have any tags.
+     */
+    enableMenuItems: function(menu) {
+        this.enableTagItem(menu);
+    }
 });
