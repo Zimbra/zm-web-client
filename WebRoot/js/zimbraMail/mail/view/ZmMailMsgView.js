@@ -292,7 +292,7 @@ function() {
 	if (this._usingIframe) {
 		var idoc = this.getDocument();
 		var body = idoc && idoc.body;
-		return body.childNodes.length === 1 ? body.firstChild : body;
+		return body && body.childNodes.length === 1 ? body.firstChild : body;
 	}
 	else {
 		return this._containerEl;
