@@ -326,6 +326,10 @@ Ext.define('ZCS.model.ZtSoapProxy', {
 				newToOldCid[mod.cid] = virtCid;
 				createdConv._wasVirtConv = true;
 				createdConv.fr = fragments[mod.cid];
+				msg = ZCS.cache.get(mod.id);
+				if (msg) {
+					msg.set('convId', mod.cid);
+				}
 			}
 		}, this);
 
@@ -384,7 +388,8 @@ Ext.define('ZCS.model.ZtSoapProxy', {
 			notification.newId = cid;
 			notification.type = ZCS.constant.NOTIFY_CHANGE;
 			notification.nodeType = ZCS.constant.NODE_CONVERSATION;
-			ZCS.app.fireEvent('notify', notification);
+			// call this directly since we want it to happen immediately, and fireEvent() doesn't guarantee that
+			ZCS.app.getConvController().handleConvChange(ZCS.cache.get(newToOldCid[cid]), notification);
 		}
 	},
 

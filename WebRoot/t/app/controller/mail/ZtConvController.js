@@ -392,14 +392,18 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 			var reader = ZCS.model.mail.ZtMailMsg.getProxy().getReader(),
 				data = reader.getDataFromNode(create),
 				store = this.getStore(),
-				msg = new ZCS.model.mail.ZtMailMsg(data, create.id);
+				msg = new ZCS.model.mail.ZtMailMsg(data, create.id),
+				messageList = item.getMessages();
 
 			if (ZCS.session.getSetting(ZCS.constant.SETTING_CONVERSATION_ORDER) === ZCS.constant.DATE_ASC) {
 				store.add(msg);
+				messageList.push(msg);
 			}
 			else {
 				store.insert(0, [msg]);
+				messageList.unshift(msg);
 			}
+			item.set('numMsgsShown', item.get('numMsgsShown'));
 		}
 	},
 
@@ -488,14 +492,12 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 	 */
 	handleConvChange: function(item, modify) {
 
-		if (modify.newId) {
-			var newConv = ZCS.cache.get(modify.newId),
-				curId = item.getId();
-
-			if (newConv && curId === modify.id) {
-				this.setItem(newConv);
-				ZCS.cache.remove(curId);
-			}
+		var newId = modify.newId;
+		if (newId && this.getItem() === item) {
+			item.setId(newId);
+			item.set('zcsId', newId);
+			ZCS.cache.remove(modify.id);
+			ZCS.cache.set(newId, item);
 		}
 	},
 
