@@ -1077,8 +1077,13 @@ ZmCalColView.prototype._checkForOffscreenAppt=function(bodyElement){
     }
 };
 
-ZmCalColView.__onScroll = function(myView) {
-    myView._syncScroll();
+ZmCalColView.__onScroll = 
+function(myView) {
+    if(this.__scrollActionId) {  // Fix for Bug 84928
+	AjxTimedAction.cancelAction(this.__scrollActionId);
+	delete this.__scrollActionId;
+    } 
+    this.__scrollActionId = AjxTimedAction.scheduleAction(new AjxTimedAction(myView,myView._syncScroll), 30); 
 };
 
 ZmCalColView.prototype._computeMaxCols =
