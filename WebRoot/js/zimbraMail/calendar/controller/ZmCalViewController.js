@@ -2535,6 +2535,7 @@ function(appt, all, result) {
 
 		msg.invite = orig.invite;
 		msg.id = orig.id;
+        msg.date = orig.date;
 	}
 	msg.setSubject(appt.name);
 
