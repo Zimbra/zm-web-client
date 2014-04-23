@@ -134,9 +134,13 @@ function(msg) {
 
 			// logic for showing calendar/folder chooser
 			var cc = AjxDispatcher.run("GetCalController");
+			//note that for a msg from a mountpoint, msgAcct returns the main account, so it's not really msgAcct.
 			var msgAcct = msg.getAccount();
 			var calendars = ac.get(ZmSetting.CALENDAR_ENABLED, null, msgAcct) && (!msg.cif)
 				? cc.getCalendars({includeLinks:true, account:msgAcct, onlyWritable:true}) : [];
+
+			var msgFolder = ac.getById(msg.getFolderId());
+			var msgAcctId = msgFolder && msgFolder.isMountpoint ? ZmOrganizer.parseId(msgFolder.id).acctId : msgAcct.id;
 
 			if (appCtxt.multiAccounts) {
 				var accounts = ac.accountList.visibleAccounts;
@@ -159,13 +163,22 @@ function(msg) {
 				this._inviteMoveSelect.clearOptions();
 				for (var i = 0; i < calendars.length; i++) {
 					var calendar = calendars[i];
-					var calAcct = calendar.getAccount();
-					var icon = appCtxt.multiAccounts ? calAcct.getIcon() : (calendar.getIcon() + ",color=" + calendar.color);
-					var name = appCtxt.multiAccounts
+					var calAcct = null;
+					var calAcctId;
+					if (calendar.isMountpoint) {
+						//we can't get account object for mountpoint, just get the ID.
+						calAcctId = ZmOrganizer.parseId(calendar.id).acctId;
+					}
+					else {
+						calAcct = calendar.getAccount();
+						calAcctId = calAcct.id;
+					}
+					var icon = (appCtxt.multiAccounts && calAcct) ? calAcct.getIcon() : (calendar.getIcon() + ",color=" + calendar.color);
+					var name = (appCtxt.multiAccounts && calAcct)
 						? ([calendar.name, " (", calAcct.getDisplayName(), ")"].join(""))
 						: calendar.name;
-					var isSelected = (calAcct && msgAcct)
-						? (calAcct == msgAcct && calendar.nId == ZmOrganizer.ID_CALENDAR)
+					var isSelected = (calAcctId && msgAcctId)
+						? (calAcctId == msgAcctId && calendar.nId == ZmOrganizer.ID_CALENDAR)
 						: calendar.nId == ZmOrganizer.ID_CALENDAR;
                     //bug: 57538 - this invite is intended for owner of shared calendar which should be selected
                     if(msg.cif && calendar.owner == msg.cif && calendar.rid == ZmOrganizer.ID_CALENDAR) isSelected = true;
