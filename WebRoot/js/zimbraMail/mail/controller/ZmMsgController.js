@@ -453,6 +453,13 @@ function(ev) {
     window.open(appContextPath+url, "_blank");
 };
 
+ZmMsgController.prototype._subscribeResponseHandler =
+function(statusMsg, ev) {
+    ZmMailListController.prototype._subscribeResponseHandler.call(this, statusMsg, ev);
+    //Close View
+    appCtxt.getAppViewMgr().popView();
+};
+
 ZmMsgController.prototype._acceptShareHandler =
 function(ev) {
     ZmMailListController.prototype._acceptShareHandler.call(this, ev);
