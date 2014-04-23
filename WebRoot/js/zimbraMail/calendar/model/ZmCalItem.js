@@ -1840,6 +1840,10 @@ function(mode, callback, msg, batchCmd, result) {
 				batchCmd.addRequestParams(jsonObj, callback);
 			}
             else {
+                e.push({
+                    a : this.getMailFromAddress(),
+                    t : AjxEmailAddress.toSoapType[AjxEmailAddress.FROM]
+                });
 				this._sendRequest(null, accountName, callback, null, jsonObj, requestName);
 			}
 		}
