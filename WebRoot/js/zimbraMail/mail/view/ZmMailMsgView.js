@@ -1730,8 +1730,8 @@ function(msg, container, callback, index) {
         var isTruncated = false;
 		for (var i = 0; i < len; i++) {
 			var bp = bodyParts[i];
-            if (bp.isTruncated){
-                isTruncated = true;
+			if (bp.isTruncated){
+                isTruncated = this.isTruncated(bp);
             }
 			var content = this._getBodyContent(bp);
 			if (ZmMimeTable.isRenderableImage(bp.contentType)) {
@@ -1828,7 +1828,7 @@ function(msg, container, callback, index) {
 				this._displayContent({	container:		el,
 										html:			content,
 										isTextMsg:		false,
-										isTruncated:	bodyPart.isTruncated,
+										isTruncated:	this.isTruncated(bodyPart),
 										index:			index
 									});
 			} else if (ZmMimeTable.isRenderableImage(bodyPart.contentType)) {
@@ -1873,7 +1873,7 @@ function(msg, container, callback, index) {
 					this._displayContent({	container:		el,
 											html:			content,
 											isTextMsg:		isTextMsg,
-											isTruncated:	bodyPart.isTruncated,
+											isTruncated:	this.isTruncated(bodyPart),
 											index:			index,
 											origText:		bodyPart.getContent()
 										});
@@ -1893,6 +1893,11 @@ function(msg, container, callback, index) {
 	}
 
 	this._completeMessageBody(callback);
+};
+
+ZmMailMsgView.prototype.isTruncated =
+function(part) {
+	return part.isTruncated;
 };
 
 ZmMailMsgView.prototype._completeMessageBody =

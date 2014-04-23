@@ -1971,7 +1971,16 @@ function() {
 	Dwt.setVisible(this._msgTruncatedId, false);
 };
 
-
+ZmMailMsgCapsuleView.prototype.isTruncated =
+function(part) {
+	/*
+	 There are 3 possible cases here
+	 1. Message does not have a quoted content - In this case use truncation information from the message part.
+	 2. Message has a quoted content which is visible - In this case use the truncation information from message part.
+	 3. Message has a quoted content which is hidden - In this case if the truncation happens it will always be in the quoted content which is hidden so return false.
+	 */
+	return (!this._hasOrigContent || this._showingQuotedText) ? part.isTruncated : false;
+};
 
 /**
  * The header bar of a capsule message view:
