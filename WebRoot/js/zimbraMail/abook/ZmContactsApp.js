@@ -60,6 +60,7 @@ ZmEvent.S_CONTACT				= ZmId.ITEM_CONTACT;
 ZmEvent.S_GROUP					= ZmId.ITEM_GROUP;
 ZmItem.CONTACT					= ZmEvent.S_CONTACT;
 ZmItem.GROUP					= ZmEvent.S_GROUP;
+ZmItem.GAL						= ZmId.ITEM_GAL_CONTACT;
 /**
  * Defines the "address book" organizer.
  */
@@ -256,6 +257,8 @@ function() {
 						 icon:		"Group",
 						 soapCmd:	"ContactAction"
 						});
+
+	ZmItem.registerItem(ZmItem.GAL, {app: ZmApp.CONTACTS});
 };
 
 /**
