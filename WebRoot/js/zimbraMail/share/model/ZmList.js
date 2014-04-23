@@ -649,12 +649,14 @@ function(params) {
 	// figure out which items should be moved to Trash, and which should actually be deleted
 	var toMove = [];
 	var toDelete = [];
-	if (items[0] && items[0] instanceof ZmItem) {
+	if (params.hardDelete) {
+		toDelete = items;
+	} else if (items[0] && items[0] instanceof ZmItem) {
 		for (var i = 0; i < items.length; i++) {
 			var item = items[i];
 			var folderId = item.getFolderId();
 			var folder = appCtxt.getById(folderId);
-			if (params.hardDelete || (folder && folder.isHardDelete())) {
+			if (folder && folder.isHardDelete()) {
 				toDelete.push(item);
 			} else {
 				toMove.push(item);

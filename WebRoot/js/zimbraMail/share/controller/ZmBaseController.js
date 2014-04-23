@@ -823,6 +823,15 @@ function(items, hardDelete, attrs, confirmDelete) {
 	items = AjxUtil.toArray(items);
 	if (!items.length) { return; }
 
+	// If the initial set of deletion items is incomplete (we will be using continuation) then if its deletion
+	// from the trash folder mark it as a hardDelete.  Otherwise, upon continuation the items will be moved
+	// (Trash to Trash) instead of deleted.
+	var folder = this._getSearchFolder();
+	var inTrashFolder = (folder && folder.nId == ZmFolder.ID_TRASH);
+	if (inTrashFolder) {
+		hardDelete = true;
+	}
+
 	var params = {
 		items:			items,
 		hardDelete:		hardDelete,
@@ -833,7 +842,7 @@ function(items, hardDelete, attrs, confirmDelete) {
 	};
 	var allDoneCallback = this._getAllDoneCallback();
 	var list = params.list = this._getList(params.items);
-	this._setupContinuation(this._doDelete, [hardDelete, attrs], params, allDoneCallback);
+	this._setupContinuation(this._doDelete, [hardDelete, attrs, true], params, allDoneCallback);
 	
 	if (!hardDelete) {
 		var anyScheduled = false;
