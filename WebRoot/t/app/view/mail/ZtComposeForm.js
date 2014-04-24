@@ -140,7 +140,8 @@ Ext.define('ZCS.view.mail.ZtComposeForm', {
 						cls: 'zcs-subject',
 						name: 'subject',
 						flex: 1,
-						label: ZtMsg.subjectHdr,
+						label: '',
+						placeHolder: ZtMsg.subjectHdr,
 						labelWidth: '6.5em',
 						listeners: {
 							blur: function () {
