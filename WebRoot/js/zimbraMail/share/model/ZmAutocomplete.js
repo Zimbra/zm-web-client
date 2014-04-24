@@ -94,7 +94,7 @@ ZmAutocomplete.prototype.toString =
  * @param {Boolean}					supportForget	allow user to reset ranking for a contact (defaults to true)
  */
 ZmAutocomplete.prototype.autocompleteMatch =
-		function(str, callback, aclv, options, account) {
+		function(str, callback, aclv, options, account, autocompleteType) {
 
 			str = str.toLowerCase().replace(/"/g, '');
 			this._curAcStr = str;
@@ -108,12 +108,12 @@ ZmAutocomplete.prototype.autocompleteMatch =
 			}
 			else {
 				aclv.setWaiting(true, str);
-				return this._doSearch(str, aclv, options, acType, callback, account);
+				return this._doSearch(str, aclv, options, acType, callback, account, autocompleteType);
 			}
 		};
 
 ZmAutocomplete.prototype._doSearch =
-		function(str, aclv, options, acType, callback, account) {
+		function(str, aclv, options, acType, callback, account, autocompleteType) {
 
 			var params = {query:str, isAutocompleteSearch:true};
 			if (acType != ZmAutocomplete.AC_TYPE_CONTACT) {
@@ -135,6 +135,9 @@ ZmAutocomplete.prototype._doSearch =
 				timeout:		ZmAutocomplete.AC_TIMEOUT,
 				noBusyOverlay:	true
 			};
+			if (autocompleteType) {
+				searchParams.autocompleteType = autocompleteType;
+			}
             searchParams.offlineCallback = this._handleOfflineDoAutocomplete.bind(this, str, search, searchParams.callback);
 			return search.execute(searchParams);
 		};

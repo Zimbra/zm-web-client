@@ -155,6 +155,7 @@ ZmAutocompleteListView = function(params) {
 	this._separator = (params.separator != null) ? params.separator : AjxEmailAddress.SEPARATOR;
     this._options = params.options || {};
 	this._locationCallback = params.locationCallback;
+	this._autocompleteType = params.autocompleteType;
 
 	this._callbacks = {};
 	for (var i = 0; i < ZmAutocompleteListView.CALLBACKS.length; i++) {
@@ -859,7 +860,7 @@ function(context) {
 	this._currentContext = context;	// so we can figure out where to pop up the "waiting" indicator
 	var respCallback = this._handleResponseAutocomplete.bind(this, context);
 	context.state = ZmAutocompleteListView.STATE_REQUEST;
-	context.reqId = this._dataAPI.autocompleteMatch(str, respCallback, this, this._options, this._activeAccount);
+	context.reqId = this._dataAPI.autocompleteMatch(str, respCallback, this, this._options, this._activeAccount, this._autocompleteType);
 	DBG.println("ac", "Request ID for " + context.element.id + " / '" + context.str + "': " + context.reqId);
 };
 

@@ -37,6 +37,7 @@
  * @param	{constant}	params.contactSource			where to search for contacts (GAL or personal)
  * @param	{Boolean}	params.isGalAutocompleteSearch	if <code>true</code>, autocomplete against GAL
  * @param	{constant}	params.galType					the type of GAL autocomplete (account or resource)
+ * @param	{constant}	params.autocompleteType			the type of autocomplete (account or resource or all)
  * @param	{int}		params.lastId					the ID of last item displayed (for pagination)
  * @param	{String}	params.lastSortVal				the value of sort field for above item
  * @param	{Boolean}	params.fetch					if <code>true</code>, fetch first hit message
@@ -359,6 +360,9 @@ function(params) {
 				request.limit = this.limit;
 			}
 			request.name = {_content:this.query};
+			if (params.autocompleteType) {
+				request.t = params.autocompleteType;
+			}
 		} else if (this.isGalAutocompleteSearch) {
 			jsonObj = {AutoCompleteGalRequest:{_jsns:"urn:zimbraAccount"}};
 			request = jsonObj.AutoCompleteGalRequest;

@@ -25,10 +25,11 @@ ZmShareSearchDialog = function(params) {
     // NOTE: that it is available when we initialize the email
     // NOTE: input field.
     var acparams = {
-        dataClass:		appCtxt.getAutocompleter(),
-        matchValue:		ZmAutocomplete.AC_VALUE_EMAIL,
-        keyUpCallback:	this._acKeyUpListener.bind(this),
-		contextId:		this.toString()
+        dataClass:		  appCtxt.getAutocompleter(),
+        matchValue:		  ZmAutocomplete.AC_VALUE_EMAIL,
+        keyUpCallback:	  this._acKeyUpListener.bind(this),
+		contextId:		  this.toString(),
+		autocompleteType: "all"
     };
     this._acAddrSelectList = new ZmAutocompleteListView(acparams);
     
