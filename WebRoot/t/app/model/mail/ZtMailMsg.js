@@ -571,7 +571,7 @@ Ext.define('ZCS.model.mail.ZtMailMsg', {
 				var info = {},
 					filename = attachment.get('name') || attachment.get('fileName') || Ext.String.format(ZtMsg.unknownAttType, type);
 
-				info.label = ZCS.util.trimFileName(filename, 30);
+				info.label = Ext.String.htmlEncode(ZCS.util.trimFileName(filename, 30));
 				info.icon = ZCS.mime.getIconClass(type);
 				info.size = ZCS.util.formatFileSize(attachment.get('size'));
 				info.url = (!part || ZCS.constant.REGEX_URL.test(contentLocation)) ? contentLocation : this.getPartUrl(part);
