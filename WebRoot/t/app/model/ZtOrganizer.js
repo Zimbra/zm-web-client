@@ -418,7 +418,7 @@ Ext.define('ZCS.model.ZtOrganizer', {
 	 */
 	getTitle: function(defaultText, showCount) {
 
-		var	organizerName = this.get('name'),
+		var	organizerName = Ext.String.htmlEncode(this.get('name')),
 			folderType = this.get('folderType'),
 			title = organizerName || defaultText || '';
 
