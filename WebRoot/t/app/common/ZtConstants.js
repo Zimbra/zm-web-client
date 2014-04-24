@@ -93,7 +93,8 @@ ZCS.constant.EDITABLE_OVERVIEW_APPS = [
 // Turn features on/off
 ZCS.constant.FEATURE_ADD_ATTACHMENT = 'add_attachment'; // attach file when composing
 ZCS.constant.FEATURE_QUICK_REPLY    = 'quick_reply';    // quick reply area for conv panel
-ZCS.constant.FEATURE_FIND_OBJECTS   = 'find_objects';   // look for URLs and email addrs in msg body, make them actionable
+ZCS.constant.FEATURE_FIND_OBJECTS   = 'find_objects';   // look for objects (eg URLs) in msg body, make them actionable
+ZCS.constant.FEATURE_FIND_EMAILS    = 'find_emails';    // look for email addresses in msg body
 
 // Global way to turn features on/off, regardless of user settings
 ZCS.constant.IS_ENABLED = {};
@@ -103,6 +104,7 @@ ZCS.constant.IS_ENABLED[ZCS.constant.APP_CALENDAR]              = true;
 ZCS.constant.IS_ENABLED[ZCS.constant.FEATURE_ADD_ATTACHMENT]    = true;
 ZCS.constant.IS_ENABLED[ZCS.constant.FEATURE_QUICK_REPLY]       = true;
 ZCS.constant.IS_ENABLED[ZCS.constant.FEATURE_FIND_OBJECTS]      = true;
+ZCS.constant.IS_ENABLED[ZCS.constant.FEATURE_FIND_EMAILS]       = false;
 
 // Text to show in overview toolbar if we're showing search results (not a folder, saved search, or tag)
 ZCS.constant.DEFAULT_OVERVIEW_TITLE = ZtMsg.searchResults;

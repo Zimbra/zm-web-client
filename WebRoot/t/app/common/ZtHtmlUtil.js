@@ -514,20 +514,18 @@ Ext.define('ZCS.common.ZtHtmlUtil', {
 				return Ext.String.format("<a href='{0}' target='_blank'>{0}</a>", m);
 			});
 
-			// mark up email addresses so we can handle them on tap
-			// 86566 - comment out since it's too easy to inadvertently tap address
-/*
-			content = content.replace(ZCS.constant.REGEX_EMAIL, function(m, mailto, addr) {
-				if (mailto) {
-					return Ext.String.format(" href='#' addr='{0}'", addr);
-				}
-				else {
-					return Ext.String.format("<a href='#' addr='{0}'>{0}</a>", addr);
-				}
-			});
-*/
+			if (ZCS.constant.IS_ENABLED[ZCS.constant.FEATURE_FIND_EMAILS]) {
+				// mark up email addresses so we can handle them on tap
+				content = content.replace(ZCS.constant.REGEX_EMAIL, function(m, mailto, addr) {
+					if (mailto) {
+						return Ext.String.format(" href='#' addr='{0}'", addr);
+					}
+					else {
+						return Ext.String.format("<a href='#' addr='{0}'>{0}</a>", addr);
+					}
+				});
+			}
 		}
-
 		else {
 			var htmlNode = ZCS.htmlutil.getHtmlDom(content);
 			this.findObjectsProcessNode(htmlNode);
@@ -578,7 +576,7 @@ Ext.define('ZCS.common.ZtHtmlUtil', {
 				parent.replaceChild(span, node);
 			}
 			// email address
-			else if (ZCS.constant.REGEX_EMAIL.test(value)) {
+			else if (ZCS.constant.IS_ENABLED[ZCS.constant.FEATURE_FIND_EMAILS] && ZCS.constant.REGEX_EMAIL.test(value)) {
 				var	before = RegExp.leftContext,
 					addr = RegExp.$2,
 					after = RegExp.rightContext,
