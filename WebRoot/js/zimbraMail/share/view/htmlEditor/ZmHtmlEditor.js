@@ -2082,6 +2082,11 @@ ZmHtmlEditor.prototype._imageUploaded = function(folder, fileNames, files) {
 
 		this.insertImageDoc(file);
 	}
+
+	//note - it's always one file so far even though the code above support a more than one item array.
+	//toast so the user understands uploading an image result in it being in the briefcase.
+	appCtxt.setStatusMsg(ZmMsg.imageUploadedToBriefcase);
+
 };
 
 /**
