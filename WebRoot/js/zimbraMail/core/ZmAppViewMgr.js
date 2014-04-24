@@ -1397,7 +1397,7 @@ function(delta) {
 		this.treeMinSize =
 			DwtCssStyle.asPixelCount(window.skin.hints.tree.minWidth || 150);
 		this.treeMaxSize =
-			DwtCssStyle.asPixelCount(window.skin.hints.tree.maxWidth || 300);
+			DwtCssStyle.asPixelCount(window.skin.hints.tree.maxWidth || 1000);
 	}
 
 	// pin the resize to the minimum and maximum allowable
