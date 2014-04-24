@@ -99,10 +99,18 @@ Ext.define('ZCS.view.mail.ZtMsgHeader', {
 		data.byWayOfName = (byWayOf && byWayOf.address !== from.address) ? byWayOf.name : '';
 		data.byWayOfNameId = data.byWayOfNameName ? byWayOfName.id : '';
 
-		if (state === ZCS.constant.HDR_EXPANDED || state === ZCS.constant.HDR_DETAILED) {
-			data.recipients = Ext.Array.map(Ext.Array.clean([].concat(data.addrs.to, data.addrs.cc)), function(addr) {
+		function getAddressList(addrs) {
+			return addrs ? Ext.Array.map(addrs, function(addr) {
 				return addr.name;
-			}).join(', ');
+			}).join(', ') : '';
+		}
+
+		if (state === ZCS.constant.HDR_EXPANDED) {
+			data.recipients = getAddressList(Ext.Array.clean([].concat(data.addrs.to, data.addrs.cc)));
+		}
+		else if (state === ZCS.constant.HDR_DETAILED) {
+			data.toList = getAddressList(data.addrs.to);
+			data.ccList = getAddressList(data.addrs.cc);
 		}
 
 		// Get contact image if it has one

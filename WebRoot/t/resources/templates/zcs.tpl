@@ -134,9 +134,7 @@
 		<div class='zcs-mail-dtlMsgHdr'>
 			<div class='zcs-msgHdr-label'>{[ZtMsg.toHdr]}</div>
 			<div class='zcs-msgHdr-field'>
-			<tpl for='addrs.to'>
-				<span class='zcs-contact-name' id='{id}'>{name}</span>
-			</tpl>
+			{toList}
 			</div>
 		</div>
 	</tpl>
@@ -144,9 +142,7 @@
 		<div class='zcs-mail-dtlMsgHdr'>
 			<div class='zcs-msgHdr-label'>{[ZtMsg.ccHdr]}</div>
 			<div class='zcs-msgHdr-field'>
-			<tpl for='addrs.cc'>
-				<span class='zcs-contact-name' id='{id}'>{name}</span>
-			</tpl>
+			{ccList}
 			</div>
 		</div>
 	</tpl>
