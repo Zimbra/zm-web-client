@@ -533,15 +533,11 @@ function(row, identity, signatures, sigType) {
 	select.reparentHtmlElement(cell);
 };
 
-// if we're adding to a reply select and the identity has no value for reply sig,
-// default it to the regular sig
+// Bug 86217, Don't apply any default to the Reply Signature if it is not set.
 ZmSignaturesPage.prototype._addUsageSelectOption =
 function(select, signature, sigType, identity) {
 
 	var curSigId = identity.getField(sigType);
-	if (!curSigId && sigType === ZmIdentity.REPLY_SIGNATURE) {
-		curSigId = identity.getField(ZmIdentity.SIGNATURE) || ZmIdentity.SIG_ID_NONE;
-	}
 	DBG.println(AjxDebug.DBG3, "Adding " + sigType + " option for " + identity.name + ": " + signature.name + " / " + signature.id + " (" + (curSigId === signature.id) + ")");
 	// a new signature starts with an empty name; use a space so that option gets added
 	select.addOption(signature.name || ' ', (curSigId === signature.id), signature.id);
