@@ -217,18 +217,18 @@
 				<span name="contactname">{fullName:htmlEncode}</span>
 				<tpl if='jobTitle'><span>{jobTitle:htmlEncode}</span></tpl>
 				<tpl if='company'><span>{company:htmlEncode}</span></tpl>
-			</div>
-		</div>
-		<tpl if='tags && tags.length'>
-			<div>
-				<tpl for='tags'>
-					<span class='zcs-area-bubble zcs-tag-bubble' id='{id}'>
-						<div class="zcs-tag-small zcs-tag-{color}" tagName="{name}" <tpl if='rgb'>style='background-color: {rgb};'</tpl>></div>
-						{displayName}
-					</span>
+				<tpl if='tags && tags.length'>
+					<div>
+						<tpl for='tags'>
+							<span class='zcs-area-bubble zcs-tag-bubble' id='{id}'>
+								<div class="zcs-tag-small zcs-tag-{color}" tagName="{name}" <tpl if='rgb'>style='background-color: {rgb};'</tpl>></div>
+								{displayName}
+							</span>
+						</tpl>
+					</div>
 				</tpl>
 			</div>
-		</tpl>
+		</div>
 		<div class='zcs-contactview-fieldSets'>
 			<tpl if='email'>
 				<div class='zcs-contactview-fieldSet'>
