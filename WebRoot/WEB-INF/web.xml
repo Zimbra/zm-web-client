@@ -636,7 +636,6 @@
     <env-entry-value>%%zimbraMailLocalBind%%</env-entry-value>
   </env-entry>
   
-  <!-- 
   <jsp-config>
     <jsp-property-group>
       <url-pattern>/h/ac</url-pattern>
@@ -718,7 +717,6 @@
       <url-pattern>/h/autoSaveDraft</url-pattern>
     </jsp-property-group>
   </jsp-config>
- -->
  
 <!-- REDIRECTBEGIN
     <security-constraint>
