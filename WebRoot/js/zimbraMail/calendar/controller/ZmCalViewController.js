@@ -3163,7 +3163,7 @@ function(ev) {
 		case ZmOperation.VIEW_APPT_SERIES:		mode = ZmCalItem.MODE_EDIT_SERIES; break;
 	}
 	
-	if (appt.isReadOnly() || isSynced || isTrash) {
+	if (appt.isReadOnly() || isSynced || isTrash || appCtxt.isWebClientOffline()) {
 		var clone = ZmAppt.quickClone(appt);
 		var callback = new AjxCallback(this, this._showApptReadOnlyView, [clone, mode]);
 		clone.getDetails(mode, callback, this._errorCallback);
@@ -3386,7 +3386,7 @@ function(recurrenceMode) {
 	var deleteOp = ZmOperation.DELETE;
 	var viewOp = ZmOperation.VIEW_APPOINTMENT;
 	var forwardOp = ZmOperation.FORWARD_APPT;
-	
+
 	if (recurrenceMode == ZmOperation.VIEW_APPT_INSTANCE) {
 		deleteOp = ZmOperation.DELETE_INSTANCE;
 		viewOp = ZmOperation.OPEN_APPT_INSTANCE;
