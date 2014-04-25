@@ -235,7 +235,8 @@ function() {
 		text = text.substr(0, index) + "..." + text.substr(index + length);
 	}
 
-    var webcalURL = "webcals:" + url.substring((url.indexOf("//")));
+	var proto = (location.protocol === ZmSetting.PROTO_HTTPS) ? "webcals:" : "webcal:";
+    var webcalURL = proto + url.substring((url.indexOf("//")));
     var webcalText = webcalURL;
     if (webcalText.length > 50) {
 		var length = webcalText.length - 50;
