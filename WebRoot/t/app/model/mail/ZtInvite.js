@@ -120,7 +120,11 @@ Ext.define('ZCS.model.mail.ZtInvite', {
 				}
 			}
 
-			if (comp.at && comp.at.length) {
+            if (comp.alarm) {
+                invite.set('reminderAlert',comp.alarm && comp.alarm[0] && comp.alarm[0].trigger[0].rel[0].m);
+            }
+
+            if (comp.at && comp.at.length) {
                 var attendees = [],
 					optAttendees = [],
 					ln = comp.at.length, i, att, attList, email;
@@ -136,8 +140,6 @@ Ext.define('ZCS.model.mail.ZtInvite', {
 				}
 				invite.set('attendees', attendees);
 				invite.set('optAttendees', optAttendees);
-
-                invite.set('reminderAlert',comp.alarm && comp.alarm[0] && comp.alarm[0].trigger[0].rel[0].m);
 
                 if (comp.method == "REPLY" && invite.get('isOrganizer')) {
                     var attendeeResponse = comp.at[0].ptst,

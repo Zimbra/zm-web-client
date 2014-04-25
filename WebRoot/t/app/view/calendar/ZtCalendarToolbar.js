@@ -98,6 +98,21 @@ Ext.define('ZCS.view.calendar.ZtCalendarToolbar', {
                         iconMask: true
                     }
                 ]
+            },
+            {
+                xtype: 'panel',
+                align: 'right',
+                items: [
+                    {
+                        xtype: 'button',
+                        cls: 'zcs-flat',
+                        handler: function() {
+                            ZCS.app.getAppointmentController().showNewApptForm();
+                        },
+                        iconCls: this.getNewButtonIcon(),
+                        iconMask: true
+                    }
+                ]
             }
         ]);
     }

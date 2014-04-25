@@ -100,7 +100,7 @@ Ext.application({
 		'ZCS.controller.contacts.ZtContactListController',
 		'ZCS.controller.contacts.ZtContactController',
 		'ZCS.controller.calendar.ZtCalendarController',
-		'ZCS.controller.calendar.ZtNewApptController'
+		'ZCS.controller.calendar.ZtNewAppointmentController'
 	],
 
 	views: ['ZtMain'],
@@ -214,7 +214,7 @@ Ext.application({
 	},
 
 	getAppointmentController: function() {
-        return this.getController('ZCS.controller.calendar.ZtNewApptController');
+        return this.getController('ZCS.controller.calendar.ZtNewAppointmentController');
     },
 
     getAssignmentController: function() {

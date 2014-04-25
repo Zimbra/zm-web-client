@@ -78,7 +78,9 @@ Ext.define('ZCS.view.ux.ZtBubbleDropdown', {
 				}
 			},
 			destroy: function () {
-				this.menu.destroy();
+                if (this.menu) {
+                    this.menu.destroy();
+                }
 				this.showMenu = null;
 			},
 			/**

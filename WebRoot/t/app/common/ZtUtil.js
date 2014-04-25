@@ -655,5 +655,27 @@ Ext.define('ZCS.common.ZtUtil', {
 		return (startDate.getDate() !== endDate.getDate()) ||
 			(startDate.getMonth() !== endDate.getMonth()) ||
 			(startDate.getFullYear() !== endDate.getFullYear());
-	}
+	},
+
+    /**
+     * Converts the given time to the next 15-minute slot
+     */
+    convertTime: function(currdate, isEndTime) {
+        var hours = currdate.getHours(),
+            minutes = currdate.getMinutes();
+
+        if (isEndTime) {
+            hours += 1;
+            if (hours === 24) {
+                hours = 0;
+            }
+        }
+        minutes = (Math.ceil(minutes / 15) * 15);
+        if (minutes < 10) {
+            minutes = "0" + minutes;
+        }
+        currdate.setHours(hours);
+        currdate.setMinutes(minutes);
+        return currdate;
+    }
 });

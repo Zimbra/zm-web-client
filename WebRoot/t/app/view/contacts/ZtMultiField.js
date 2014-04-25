@@ -34,10 +34,12 @@ Ext.define('ZCS.view.contacts.ZtMultiField', {
         // only used by "name" or "company" container type
         optionalFields: [],
         // only used by "name" or "company" container type
-        visibleFields: 	[]
+        visibleFields: 	[],
+        panel: 'contactpanel'
     },
 
 	initialize: function() {
+        var me = this;
 		// add a ZCS.view.contacts.ZtAddButton to the bottom of this container
 		var addButton = Ext.create('ZCS.view.contacts.ZtAddButton',{
 			text: [
@@ -50,8 +52,9 @@ Ext.define('ZCS.view.contacts.ZtMultiField', {
 		                type: this.getType(),
 		                action: 'add'
 		            }),
-	        handler: function(){
-	            this.up('contactpanel').fireEvent('multiAddRemove', this);
+	        handler: function() {
+                var panel = me.getPanel();
+	            this.up(panel).fireEvent('multiAddRemove', this);
 	        }
 		});
 
@@ -73,7 +76,7 @@ Ext.define('ZCS.view.contacts.ZtMultiField', {
     },
 
 	// Plus and minus buttons for adding/removing fields
-	getRemoveConfig: function(fieldId) {
+	getRemoveConfig: function(fieldId, panelName) {
 		return [
 			{
 				xtype:      'button',
@@ -89,7 +92,8 @@ Ext.define('ZCS.view.contacts.ZtMultiField', {
 				cls: 		"contact-form-remove-field-button", 
 
 				handler: function() {
-					this.up('contactpanel').fireEvent('multiAddRemove', this);
+                    var panel = panelName ? panelName : 'contactpanel';
+					this.up(panel).fireEvent('multiAddRemove', this);
 				}
 			}
 		];

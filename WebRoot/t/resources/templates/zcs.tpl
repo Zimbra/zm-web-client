@@ -509,7 +509,7 @@
 			<div class="view-appt-location row-space-2">{location}</div>
 		</tpl>
 		<tpl if='isException'>
-			<div class="view-appt-exception row-space-2"><span class="label">{[ZtMsg.apptExceptionNote]}</label></div>
+			<div class="view-appt-exception row-space-2"><span class="label">{[ZtMsg.appointmentExceptionNote]}</label></div>
 		</tpl>
 
 		<table class='zcs-invite zcs-table-vtop  row-space-2'>

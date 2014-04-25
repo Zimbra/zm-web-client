@@ -65,7 +65,6 @@ Ext.define('ZCS.model.calendar.ZtCalendarWriter', {
             var m = methodJson.m = {};
 
             m = this.populateAttrs(methodJson, appt);
-            m.l = itemData.folderId || ZCS.constant.ID_CALENDAR;
 
             Ext.apply(methodJson, {
                 m: m
@@ -83,7 +82,8 @@ Ext.define('ZCS.model.calendar.ZtCalendarWriter', {
             comps,
             comp,
             inv,
-            org;
+            org,
+            notifyList = appt.get('attendee');
 
         inv = m.inv = {};
         m.e = [];
@@ -102,9 +102,12 @@ Ext.define('ZCS.model.calendar.ZtCalendarWriter', {
         this._addDateTimeToRequest(request, comp, appt);
 
         // subject/location
-        m.su = appt.get('subject');
-        comp.name = appt.get('subject');
+        m.su = appt.get('title');
+        m.l = appt.get('calendarFolder');
+
+        comp.name = appt.get('title');
         comp.loc = appt.get('location');
+        comp.fb = appt.get('displayStatus');
 
         //recurrence
         this._setRecurrence(comp, appt);
@@ -113,10 +116,45 @@ Ext.define('ZCS.model.calendar.ZtCalendarWriter', {
         var reminderMinutes = appt.get('reminder');
         this._setAlarmData(comp, reminderMinutes);
 
+        //attendees
+        this._addAttendeesToRequest(comp, m, notifyList);
+
         // notes
         this._addNotesToRequest(m, appt);
 
         return m;
+    },
+
+    _addAttendeesToRequest : function(inv, m, notifyList) {
+        Ext.each(notifyList, function(attendee) {
+            var email = attendee.get('email'),
+                displayName = attendee.get('longName'),
+                e;
+
+            e = {
+                a : email,
+                t : "t"
+            };
+            if (displayName) {
+                e.p = displayName;
+            }
+            m.e.push(e);
+
+            if (inv) {
+                var at = {};
+
+                //TODO: add support for optional attendees
+                at.role = ZCS.constant.ROLE_REQUIRED;
+                at.ptst = ZCS.constant.PSTATUS_UNKNOWN;
+                at.rsvp = 1;
+                at.a = email;
+
+                if (displayName) {
+                    at.d = displayName;
+                }
+                inv.at.push(at);
+            }
+        }, this);
     },
 
     _addDateTimeToRequest : function(request, comp, appt) {
@@ -128,6 +166,8 @@ Ext.define('ZCS.model.calendar.ZtCalendarWriter', {
             sd,
             e,
             ed,
+            start = appt.get('startDate'),
+            end = appt.get('endDate'),
             timezone = ZCS.timezone.DEFAULT_TZ;
 
         if (timezone) {
@@ -135,10 +175,13 @@ Ext.define('ZCS.model.calendar.ZtCalendarWriter', {
         }
 
         // start date
-        if (appt.get('start') || appt.get('startAllDay')) {
+        if (start) {
             s = comp.s = {};
             if (!allDay) {
-                sd = Ext.Date.format(appt.get('start'), "Ymd\\THis");
+                var startTime = appt.get('startTime');
+                start.setHours(startTime.getHours());
+                start.setMinutes(startTime.getMinutes());
+                sd = Ext.Date.format(start, "Ymd\\THis");
                 // set timezone if not utc date/time
                 if (tz && tz.length) {
                     s.tz = tz;
@@ -146,15 +189,18 @@ Ext.define('ZCS.model.calendar.ZtCalendarWriter', {
                 s.d = sd;
             }
             else {
-                s.d = Ext.Date.format(appt.get('startAllDay'), "Ymd");
+                s.d = Ext.Date.format(start, "Ymd");
             }
         }
 
         // end date
-        if (appt.get('end') || appt.get('endAllDay')) {
+        if (end) {
             e = comp.e = {};
             if (!allDay) {
-                ed = Ext.Date.format(appt.get('end'), "Ymd\\THis");
+                var endTime = appt.get('endTime');
+                end.setHours(endTime.getHours());
+                end.setMinutes(endTime.getMinutes());
+                ed = Ext.Date.format(end, "Ymd\\THis");
 
                 // set timezone if not utc date/time
                 if (tz && tz.length) {
@@ -163,7 +209,7 @@ Ext.define('ZCS.model.calendar.ZtCalendarWriter', {
                 e.d = ed;
 
             } else {
-                e.d = Ext.Date.format(appt.get('endAllDay'), "Ymd");
+                e.d = Ext.Date.format(end, "Ymd");
             }
         }
     },
