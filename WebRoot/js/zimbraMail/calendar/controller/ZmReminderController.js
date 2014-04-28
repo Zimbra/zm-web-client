@@ -73,7 +73,7 @@ function() {
 ZmReminderController.prototype.refresh =
 function(retryCount) {
 	this._searchTimeRange = this.getSearchTimeRange();
-    AjxDebug.println(AjxDebug.REMINDER, "reminder search time range: " + this._searchTimeRange.start + " to " + this._searchTimeRange.end);
+    DBG.println(AjxDebug.DBG1, "reminder search time range: " + this._searchTimeRange.start + " to " + this._searchTimeRange.end);
 
 	try {
 		var params = this.getRefreshParams();
@@ -86,7 +86,7 @@ function(retryCount) {
 			setTimeout(this.refresh.bind(this, --retryCount), 1000);
 			return;
 		}
-		AjxDebug.println(AjxDebug.REMINDER, "Too many failures to get refresh params. Giving up.");
+		DBG.println(AjxDebug.DBG1, "Too many failures to get refresh params. Giving up.");
 		return;
 	}
 	this._calController.getApptSummaries(params);
@@ -95,7 +95,7 @@ function(retryCount) {
 	if (this._refreshActionId) {
 		AjxTimedAction.cancelAction(this._refreshActionId);
 	}
-    AjxDebug.println(AjxDebug.REMINDER, "reminder refresh");
+	DBG.println(AjxDebug.DBG1, "reminder refresh");
 	this._refreshActionId = AjxTimedAction.scheduleAction(this._refreshTimedAction, (AjxDateUtil.MSEC_PER_HOUR * ZmReminderController._CACHE_REFRESH));
 };
 

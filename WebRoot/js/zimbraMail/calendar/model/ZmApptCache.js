@@ -330,7 +330,7 @@ function(searchParams, miniCalParams, reminderSearchParams) {
 		}
 		searchParams.query = this._calViewController._userQuery;
 		apptVec = this.setSearchParams(searchParams);
-        //DBG.println(AjxDebug.DBG1, "_doBatchRequest searchParams key: " + searchParams.mergeKey + " , size = " + (apptVec ? apptVec.size().toString() : "null"));
+        DBG.println(AjxDebug.DBG1, "_doBatchRequest searchParams key: " + searchParams.mergeKey + " , size = " + (apptVec ? apptVec.size().toString() : "null"));
 
 		// search data in cache
 		if (apptVec) {
@@ -387,7 +387,7 @@ function(searchParams, miniCalParams, reminderSearchParams) {
 		else if (searchParams.callback) {
 			searchParams.callback.run(this._accountsSearchList);
 		}
-
+		DBG.println(AjxDebug.DBG1, "ZmApptCache._doBatchCommand, Search and Minical data cached, EXIT");
 		return;
 	}
 
@@ -408,8 +408,10 @@ function(searchParams, miniCalParams, reminderSearchParams) {
             noBusyOverlay: true,
 			accountName: accountName
 		};
+		DBG.println(AjxDebug.DBG1, "ZmApptCache._doBatchCommand, Send Async Request");
 		appCtxt.getAppController().sendRequest(params);
 	} else {
+		DBG.println(AjxDebug.DBG1, "ZmApptCache._doBatchCommand, Send Sync Request");
 		var response = appCtxt.getAppController().sendRequest({jsonObj:jsonObj});
 		var batchResp = (response && response.BatchResponse) ? response.BatchResponse : null;
 		return this.processBatchResponse(batchResp, searchParams, miniCalParams);
