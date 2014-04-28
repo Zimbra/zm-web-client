@@ -1976,9 +1976,11 @@ function(params, jsonObj, m) {
                 }]
             }
         };
+	var folderId = this.getFolderId();
 
     if (params.isDraft || params.isAutoSave) {
-        if (this.folderId !== ZmFolder.ID_DRAFTS) {
+		//For new auto save or draft folderId will not be equal to ZmFolder.ID_DRAFTS
+        if (folderId != ZmFolder.ID_DRAFTS) {
             folderArray.push({
                 id : ZmFolder.ID_DRAFTS,
                 n : appCtxt.getById(ZmFolder.ID_DRAFTS).numTotal + 1
@@ -1986,13 +1988,13 @@ function(params, jsonObj, m) {
         }
     }
     else {
-        if (this.folderId != ZmFolder.ID_OUTBOX) {
+        if (folderId != ZmFolder.ID_OUTBOX) {
             folderArray.push({
                 id : ZmFolder.ID_OUTBOX,
                 n : appCtxt.getById(ZmFolder.ID_OUTBOX).numTotal + 1
             });
         }
-        if (this.folderId == ZmFolder.ID_DRAFTS) {
+        if (folderId == ZmFolder.ID_DRAFTS) {
             folderArray.push({
                 id : ZmFolder.ID_DRAFTS,
                 n : appCtxt.getById(ZmFolder.ID_DRAFTS).numTotal - 1

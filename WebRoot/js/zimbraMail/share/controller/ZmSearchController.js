@@ -961,8 +961,8 @@ function(search, callback, result) {
     var zmCsfeResult = new ZmCsfeResult(searchResult);
     callback(zmCsfeResult);
 
-    if (search.folderId == ZmFolder.ID_OUTBOX) {
-        ZmOffline.updateOutboxFolderCountCallback(result.length);
+    if (search.folderId == ZmFolder.ID_OUTBOX || search.folderId == ZmFolder.ID_DRAFTS) {
+		ZmOffline.updateFolderCountCallback(search.folderId, result.length);
     }
 };
 

@@ -117,7 +117,7 @@ function() {
 	else {
 		this._initStaticResources();
 	}
-	ZmOffline.updateOutboxFolderCount();
+	ZmOffline.updateFolderCount();
 };
 
 ZmOffline.prototype._enableApps =
@@ -656,7 +656,7 @@ function(folders) {
 				var callback = function(result) {
 					ZmOfflineDB.deleteItem(result, ZmApp.MAIL);
 				};
-				ZmOfflineDB.doIndexSearch(folderId, ZmApp.MAIL, null, callback, null, "folder", true);
+				ZmOfflineDB.doIndexSearch([folderId.toString()], ZmApp.MAIL, null, callback, null, "folder", true);
 				delete ZmOffline.folders[folderId];
 			}
 			else if (!isExistingOfflineFolder || folder.webOfflineSyncDays != ZmOffline.folders[folderId].webOfflineSyncDays) {
@@ -901,7 +901,7 @@ function(result, skipOfflineAttachmentUpload) {
 ZmOffline.prototype._handleResponseSendOfflineRequest =
 function(idArray, oidArray) {
 	if (idArray.length > 0) {
-		var callback = ZmOffline.updateOutboxFolderCount.bind(window, 0);
+		var callback = ZmOffline.updateFolderCountCallback.bind(window, ZmFolder.ID_OUTBOX, 0);
 		ZmOfflineDB.deleteItem(idArray, ZmApp.MAIL, callback);
 	}
 	if (oidArray.length > 0) {
@@ -1117,18 +1117,24 @@ function() {
     root.children.add(folder);
 };
 
-ZmOffline.updateOutboxFolderCount =
+ZmOffline.updateFolderCount =
 function() {
-    var key = {methodName : "SendMsgRequest"};
-    ZmOfflineDB.getItemCountInRequestQueue(key, ZmOffline.updateOutboxFolderCountCallback);
+	var folders = [ZmFolder.ID_DRAFTS, ZmFolder.ID_OUTBOX];
+	for (var i = 0, length = folders.length; i < length; i++) {
+		var callback = ZmOffline.updateFolderCountCallback.bind(window, folders[i]);
+		ZmOfflineDB.doIndexSearch([folders[i].toString()], ZmApp.MAIL, null, callback, null, "folder", true);
+	}
 };
 
-ZmOffline.updateOutboxFolderCountCallback =
-function(count) {
-    var outboxFolder = appCtxt.getById(ZmFolder.ID_OUTBOX);
-    if (outboxFolder) {
-        outboxFolder.notifyModify({n : count});
-    }
+ZmOffline.updateFolderCountCallback =
+function(folderId, count) {
+	if (AjxUtil.isArray(count)) {
+		count = count.length;
+	}
+	var folder = appCtxt.getById(folderId);
+	if (folder) {
+		folder.notifyModify({n : count});
+	}
 };
 
 ZmOffline.prototype._uploadOfflineAttachments =
