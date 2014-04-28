@@ -39,21 +39,22 @@ Ext.define('ZCS.model.calendar.ZtCalendarReader', {
 
         Ext.each(root, function(node) {
 
-            records.push({
-                clientId: null,
-                id: node.id,
-                data: this.getDataFromNode(node, null),
-                node: node
-            });
-
             if (node.recur) {
-                for (var i = 1; i < node.inst.length; i++) {
+                for (var i = 0, nodeLen = node.inst.length; i < nodeLen; i++) {
                     records.push({
                         clientId: null,
                         data: this.getDataFromNode(node, i),
                         node: node
                     });
                 }
+            }
+	        else {
+	            records.push({
+		            clientId: null,
+		            id: node.id,
+		            data: this.getDataFromNode(node, null),
+		            node: node
+	            });
             }
         }, this);
 
@@ -62,23 +63,20 @@ Ext.define('ZCS.model.calendar.ZtCalendarReader', {
 
     getDataFromNode: function(node, index) {
         //TODO: After a fix from Swarm's touch calendar extension we would not need start and end year, month and day variables
-        var start = index ? node.inst[index].s : node.inst[0].s,
-            isException = index ? (node.inst[index].ex ? true: false) : false,
+        var start = index !== null ? node.inst[index].s : node.inst[0].s,
+	        tzo = index !== null ? node.inst[index].tzo : node.tzo,
+	        adjustMs = node.allDay ? (tzo + new Date(start).getTimezoneOffset() * 60 * 1000) : 0,
+			startTime = parseInt(start, 10) + adjustMs,
+	        startDate = new Date(startTime),
+            isException = index !== null ? (node.inst[index].ex ? true: false) : false,
             title = isException ? node.inst[index].name : node.name,
             invId = isException ? node.inst[index].invId : node.invId,
-            duration = (index && isException) ? node.inst[index].dur : node.dur,
-            syear = new Date(start).getFullYear(),
-            smonth = new Date(start).getMonth(),
-            sday = new Date(start).getDate(),
-            shour = new Date(start).getHours(),
-            sminutes = new Date(start).getMinutes(),
-            eyear = new Date(start + duration).getFullYear(),
-            emonth = new Date(start + duration).getMonth(),
-            eday = new Date(start + duration).getDate(),
-            ehour = new Date(start + duration).getHours(),
-            eminutes = new Date(start + duration).getMinutes(),
+            duration = (index !== null && isException) ? node.inst[index].dur : node.dur,
+	        endTime = startTime + (parseInt(duration)),
+	        endDate = new Date(endTime),
             organizer = ZCS.cache.get(node.l),
-            color = ZCS.constant.ORG_DEFAULT_COLOR;
+            color = ZCS.constant.ORG_DEFAULT_COLOR,
+	        ridZ = index !== null ? node.inst[index].ridZ : node.inst[0].ridZ;
 
         if (organizer) {
             var folderColor = organizer.get('color');
@@ -91,19 +89,18 @@ Ext.define('ZCS.model.calendar.ZtCalendarReader', {
         var data = {
             folderId: node.l,
             type: ZCS.constant.ITEM_APPOINTMENT,
-            event: shour + ':' + this.getPaddedDigits(sminutes) + ' - ' + ehour + ':' + this.getPaddedDigits(eminutes),
+	        event: Ext.Date.format(startDate, ZtMsg.invTimeFormat) + ' - ' + Ext.Date.format(endDate, ZtMsg.invTimeFormat),
             title: Ext.String.htmlEncode(title), //Fix for bug: 83580. Prevents XSS attacks.
-            start: node.allDay ? new Date(new Date(syear, smonth, sday).setHours(0, 0, 0, 0)) : new Date(syear, smonth, sday, shour, sminutes),
-            end: node.allDay ? new Date(new Date(syear, smonth, sday).setHours(23,59,59,999)) : new Date(eyear, emonth, eday, ehour, eminutes),
+	        start: startDate,
+	        end: node.allDay ? new Date(endDate - 600) : endDate,
             invId: invId,
             color: color,
-	        isAllDay: node.allDay
+	        isAllDay: node.allDay,
+	        isRecur: node.recur ? true : false,
+	        ridZ: ridZ,
+	        isException: isException
         };
 
         return data;
-    },
-
-    getPaddedDigits: function(number) {
-        return ('0' + number).slice(-2);
     }
 });

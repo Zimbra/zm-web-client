@@ -44,7 +44,8 @@ Ext.define('Ext.ux.TouchCalendarDayEvents', {
 			allDayApptContainer = this.getCalendar().element.select('div.allDayApptDiv', this.getCalendar().element.dom).first(),
 			hasAllDay = false,
 			allDayCount = 0,
-			eventBarLeft = 0;
+			eventBarLeft = 0,
+			pivotEventBars = [];
 
 		for (; i < l; i++) {
 			rec = store.getAt(i);
@@ -67,21 +68,29 @@ Ext.define('Ext.ux.TouchCalendarDayEvents', {
 				}
 
 				var eventBarTopPos = verticalPos - this.getCalendar().element.getY() + 4;
-				var eventBarTop = allDayCount > 1 ? eventBarTopPos + ((allDayCount - 1) * 22) : eventBarTopPos;
+				// Keeping a distance of 3px between every event bar.
+				var eventBarTop = allDayCount > 1 ? pivotEventBars[pivotEventBars.length - 1].getTop() + ((eventBar.getHeight()) + 3) : eventBarTopPos;
+
+				pivotEventBars.push(eventBar);
+
+				hasAllDay = true;
+				allDayApptRow.show();
+				allDayApptContainer.setHeight((eventBar.getHeight() * allDayCount) + 8);
 
 				eventBar.setTop(eventBarTop);
 				eventBar.setLeft(eventBarLeft);
 				eventBar.setWidth(eventWidth);
-
-				hasAllDay = true;
-
-				allDayApptContainer.setHeight((eventBar.getHeight() * allDayCount) + 5);
 			}
 			else {
 				eventWidth      = this.getEventBarWidth(rec, 50 + 10); // 50 = left margin, 10 = right margin TODO: make configurable
 				verticalPos     = this.getVerticalDayPosition(rec);
+
+				if (store.getAt(i + 1) && store.getAt(i + 1).getData().Record.getData().isAllDay) {
+					verticalPos += eventBar.getHeight();
+				}
+
 				horizontalPos   = this.getHorizontalDayPosition(rec, eventWidth);
-				eventHeight     = this.getEventBarHeight(rec);
+				eventHeight     = this.getEventBarHeight(rec) + 1;
 
 				eventBar.setLeft(horizontalPos);
 				eventBar.setTop(verticalPos - this.getCalendar().element.getY());
@@ -91,10 +100,7 @@ Ext.define('Ext.ux.TouchCalendarDayEvents', {
 			}
 		}
 
-		if (hasAllDay) {
-			allDayApptRow.show();
-		}
-		else {
+		if (!hasAllDay) {
 			allDayApptRow.hide();
 		}
 	},
