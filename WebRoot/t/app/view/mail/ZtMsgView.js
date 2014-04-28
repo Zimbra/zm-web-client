@@ -299,5 +299,5 @@ Ext.define('ZCS.view.mail.ZtMsgView', {
          * @param {Object} newData The new data.
          */
         me.fireEvent('updatedata', me, data);
-    },
+    }
 });
