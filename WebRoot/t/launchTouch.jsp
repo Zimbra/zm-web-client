@@ -38,7 +38,7 @@
 </c:catch>
 <c:if test="${not empty exception}">
 	<zm:getException var="error" exception="${exception}"/>
-	<c:redirect url="/?loginOp=relogin&client=touch&loginErrorCode=${error.code}"/>
+	<c:redirect url="/?loginOp=relogin&loginErrorCode=${error.code}"/>
 </c:if>
 
 <!DOCTYPE HTML>
