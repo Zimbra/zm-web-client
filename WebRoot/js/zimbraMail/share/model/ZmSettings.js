@@ -909,6 +909,7 @@ function() {
 	this.registerSetting("VIEW_ATTACHMENT_AS_HTML",			{name:"zimbraFeatureViewInHtmlEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	this.registerSetting("EXPAND_DL_ENABLED",				{name:"zimbraFeatureDistributionListExpandMembersEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
 	this.registerSetting("FORCE_CLEAR_COOKIES",				{name:"zimbraForceClearCookies", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
+	this.registerSetting("WEBCLIENT_OFFLINE_ENABLED",		{name:"zimbraFeatureWebClientOfflineAccessEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
 
 	// user metadata (included with COS since the user can't change them)
 	this.registerSetting("LICENSE_STATUS",					{type:ZmSetting.T_COS, defaultValue:ZmSetting.LICENSE_GOOD});
@@ -960,7 +961,7 @@ function() {
     this.registerSetting("COMPOSE_INIT_DIRECTION",			{name:"zimbraPrefComposeDirection", type:ZmSetting.T_PREF, defaultValue:ZmSetting.LTR, isGlobal:true});
     this.registerSetting("SHOW_COMPOSE_DIRECTION_BUTTONS",	{name:"zimbraPrefShowComposeDirection", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false, isGlobal:true});
 	this.registerSetting("DEFAULT_TIMEZONE",				{name:"zimbraPrefTimeZoneId", type:ZmSetting.T_PREF, dataType:ZmSetting.D_STRING, defaultValue:AjxTimezone.getServerId(AjxTimezone.DEFAULT), isGlobal:true});
-    this.registerSetting("WEBCLIENT_OFFLINE_ENABLED",		{name:"zimbraPrefWebClientOfflineAccessEnabled", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false, isImplicit:true});
+	this.registerSetting("WEBCLIENT_OFFLINE_PREF_ENABLED",	{name:"zimbraPrefWebClientOfflineAccessEnabled", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false, isImplicit:true});
     this.registerSetting("WEBCLIENT_OFFLINE_BROWSER_KEY",	{name:"zimbraPrefWebClientOfflineBrowserKey", type:ZmSetting.T_PREF, dataType:ZmSetting.D_STRING, isImplicit:true});
     this.registerSetting("DEFAULT_PRINTFONTSIZE",	    	{name:"zimbraPrefDefaultPrintFontSize", type:ZmSetting.T_PREF, dataType:ZmSetting.D_STRING, defaultValue:ZmSetting.PRINT_FONT_SIZE, isGlobal:true});
 	this.registerSetting("GROUPBY_HASH",                    {type: ZmSetting.T_PREF, dataType:ZmSetting.D_HASH});
@@ -1219,7 +1220,7 @@ ZmSettings.prototype._hasVoiceFeature = function() {
  */
 ZmSettings.prototype._offlineSettingsSaveCallback =
 function() {
-    if (appCtxt.get(ZmSetting.WEBCLIENT_OFFLINE_ENABLED)) {
+    if (appCtxt.get(ZmSetting.WEBCLIENT_OFFLINE_PREF_ENABLED)) {
         var cd = appCtxt.getYesNoMsgDialog();
         cd.reset();
         cd.registerCallback(DwtDialog.YES_BUTTON, this._refreshBrowserCallback, this, [cd]);

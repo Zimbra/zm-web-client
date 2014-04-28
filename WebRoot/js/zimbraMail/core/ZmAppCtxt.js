@@ -2154,7 +2154,7 @@ function() {
 ZmAppCtxt.prototype.initWebOffline =
 function() {
     this.isWebClientOfflineSupported = false;
-    if (!AjxEnv.isOfflineSupported || !appCtxt.get(ZmSetting.WEBCLIENT_OFFLINE_ENABLED)) {
+    if (!AjxEnv.isOfflineSupported || !appCtxt.get(ZmSetting.WEBCLIENT_OFFLINE_ENABLED) || !appCtxt.get(ZmSetting.WEBCLIENT_OFFLINE_PREF_ENABLED)) {
 		AjxDebug.println(AjxDebug.OFFLINE, "isWebClientOfflineSupported :: false");
         return;
     }

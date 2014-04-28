@@ -84,7 +84,7 @@ function() {
     var enableRadioBtn,
         disableRadioBtn;
 
-    if (appCtxt.get(ZmSetting.WEBCLIENT_OFFLINE_ENABLED)) {
+    if (appCtxt.get(ZmSetting.WEBCLIENT_OFFLINE_PREF_ENABLED)) {
         enableRadioBtn = document.getElementById(this._enableRadioBtnId);
         enableRadioBtn && (enableRadioBtn.checked = true);
     }
@@ -126,7 +126,7 @@ function(offlineEnable, logOff, dialog) {
         existingBrowserKey = existingBrowserKey.split(",");
     }
     if (offlineEnable) {
-        appCtxt.set(ZmSetting.WEBCLIENT_OFFLINE_ENABLED, true);
+        appCtxt.set(ZmSetting.WEBCLIENT_OFFLINE_PREF_ENABLED, true);
         var browserKey = new Date().getTime().toString();
         localStorage.setItem(ZmSetting.WEBCLIENT_OFFLINE_BROWSER_KEY, browserKey);
         if (existingBrowserKey) {
@@ -137,7 +137,7 @@ function(offlineEnable, logOff, dialog) {
         }
     }
     else {
-        appCtxt.set(ZmSetting.WEBCLIENT_OFFLINE_ENABLED, false);
+        appCtxt.set(ZmSetting.WEBCLIENT_OFFLINE_PREF_ENABLED, false);
         if (existingBrowserKey) {
             AjxUtil.arrayRemove(existingBrowserKey, localStorage.getItem(ZmSetting.WEBCLIENT_OFFLINE_BROWSER_KEY));
         }

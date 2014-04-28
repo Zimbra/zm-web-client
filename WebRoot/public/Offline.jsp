@@ -52,8 +52,8 @@
 			}, false);
 			// Fired for each resource listed in the manifest as it is being fetched.
 			appCache.addEventListener('progress', function(ev) {
-				if (ev && ev.lengthComputable) {
-					parent.AjxDebug.println(parent.AjxDebug.OFFLINE, "Application Cache :: progress :: loaded :: " + ev.loaded + " :: total :: " + ev.total);
+				if (ev && ev.lengthComputable && ev.loaded == ev.total) {
+					parent.AjxDebug.println(parent.AjxDebug.OFFLINE, "Application Cache :: progress :: loaded :: " + ev.loaded);
 				}
 			}, false);
 	</script>

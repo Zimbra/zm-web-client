@@ -678,6 +678,7 @@ ZmOffline.prototype._storeSyncToken =
 function(syncToken) {
 	ZmOffline.refreshStatusIcon();
 	localStorage.setItem("SyncToken", syncToken);
+	AjxDebug.println(AjxDebug.OFFLINE, "New syncToken :: "+syncToken);
 };
 
 ZmOffline.prototype._handleGetResponse =

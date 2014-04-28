@@ -2311,14 +2311,12 @@ function(parent, parentElement, adminUrl) {
 
     menu.createSeparator();
 
-    if (!appCtxt.isExternalAccount()) {
+	if (!appCtxt.isExternalAccount() && appCtxt.get(ZmSetting.WEBCLIENT_OFFLINE_ENABLED)) {
         mi = menu.createMenuItem("offlineSettings", {text: ZmMsg.offlineSettings});
         mi.addSelectionListener(new AjxListener(this, this._offlineSettingsListener));
     }
 
 	if (AjxEnv.isFirefox && (AjxEnv.browserVersion >= 23.0) && !appCtxt.isExternalAccount()) {
-		menu.createSeparator();
-
 		mi = menu.createMenuItem("socialfoxSettings", {text: ZmMsg.socialfoxEnableSidebar});
 		mi.addSelectionListener(this._socialfoxSettingsListener.bind(this));
 	}
