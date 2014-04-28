@@ -39,6 +39,7 @@ ZmZimbraMail = function(params) {
 
 	ZmController.call(this, null);
 
+	appCtxt.setZimbraMail(this);
     appCtxt.setAppController(this);
 
 	// ALWAYS set back reference into our world (also used by unload handler)
@@ -2306,7 +2307,7 @@ function(parent, parentElement, adminUrl) {
 
 	menu.createSeparator();
 
-	mi = menu.createMenuItem("about", {text: ZmMsg.about});
+	mi = menu.createMenuItem(ZmZimbraMail.HELP_MENU_ABOUT, {text: ZmMsg.about});
 	mi.addSelectionListener(new AjxListener(this, this._aboutListener));
 
     menu.createSeparator();
@@ -2326,12 +2327,34 @@ function(parent, parentElement, adminUrl) {
         mi.addSelectionListener(new AjxListener(this, this._changePasswordListener));
 	}
 
-    mi = menu.createMenuItem("logOff", {text: ZmMsg.logOff});
+    mi = menu.createMenuItem(ZmZimbraMail.HELP_MENU_LOGOFF, {text: ZmMsg.logOff});
 	mi.addSelectionListener(new AjxListener(null, ZmZimbraMail.logOff));
 
 	button.setMenu(menu);
+	this.setupHelpMenu(button);
 	return button;
 };
+
+ZmZimbraMail.HELP_MENU_ABOUT  = "about";
+ZmZimbraMail.HELP_MENU_LOGOFF = "logOff";
+
+
+ZmZimbraMail.prototype.setupHelpMenu = function(button) {
+	button = button || this._helpButton;
+	if (!button) return;
+
+	var menu = button.getMenu();
+	if (!menu) return;
+
+	var isOnline = !appCtxt.isWebClientOffline();
+	if (isOnline) {
+		menu.enableAll(true);
+	} else {
+		menu.enableAll(false);
+		var offlineEnabledIds = [ZmZimbraMail.HELP_MENU_ABOUT, ZmZimbraMail.HELP_MENU_LOGOFF]
+		menu.enable(offlineEnabledIds, true);
+	}
+}
 
 ZmZimbraMail.prototype.getNewButton =
 function() {

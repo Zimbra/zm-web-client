@@ -90,6 +90,10 @@ ZmOffline.prototype._onZWCOffline =
 function() {
 	ZmOffline.refreshStatusIcon();
     this._disableApps();
+	var zimbraMail = appCtxt.getZimbraMail();
+	if (zimbraMail) {
+		zimbraMail.setupHelpMenu();
+	}
 };
 
 ZmOffline.prototype._onZWCOnline =
@@ -98,6 +102,10 @@ function() {
     this._enableApps();
     this._replayOfflineRequest();
     appCtxt.reloadAppCache();
+	var zimbraMail = appCtxt.getZimbraMail();
+	if (zimbraMail) {
+		zimbraMail.setupHelpMenu();
+	}
 };
 
 ZmOffline.prototype._onPostStartup =

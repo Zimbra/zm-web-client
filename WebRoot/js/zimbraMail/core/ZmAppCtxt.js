@@ -179,6 +179,14 @@ function () {
     }
 };
 
+ZmAppCtxt.prototype.setZimbraMail = function(zimbraMail) {
+	this._zimbraMail = zimbraMail;
+}
+
+ZmAppCtxt.prototype.getZimbraMail = function() {
+	return this._zimbraMail;
+}
+
 /**
  * Sets the application controller.
  * 
