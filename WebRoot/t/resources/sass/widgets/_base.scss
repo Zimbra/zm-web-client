@@ -31,10 +31,6 @@
 	color: $base-color;
 }
 
-.zcs-form-input {
-	border-bottom: 1px solid #F7F7F7;
-}
-
 .zcs-offscreen {
 	position: absolute;
 	top: -10000px;
@@ -349,19 +345,19 @@ $zcs-overview-text-color: $light-grey;
 			.zcs-menu-icon.tag:before {
 				content: "t";
 			}
-            .zcs-menu-icon.mailFolder:before {
-              content: "M";
-            }
-            .zcs-menu-icon.addressBook:before {
-              content: "N";
-            }
-            .zcs-menu-icon.calendarFolder:before {
-              content: "L";
-            }
-            .zcs-menu-color-block {
-              @extend .zcs-color-block;
-              margin-right: 0.5em;
-            }
+			.zcs-menu-icon.mailFolder:before {
+			  content: "M";
+			}
+			.zcs-menu-icon.addressBook:before {
+			  content: "N";
+			}
+			.zcs-menu-icon.calendarFolder:before {
+			  content: "L";
+			}
+			.zcs-menu-color-block {
+			  @extend .zcs-color-block;
+			  margin-right: 0.5em;
+			}
 		}
 	}
 }
@@ -373,6 +369,7 @@ $zcs-overview-text-color: $light-grey;
 		background-color: $zcs-overview-edit-color;
 	}
 }
+
 
 /* Floating List */
 
@@ -564,6 +561,119 @@ $contact-suggest-radius: $floating-list-radius;
 		}
 	}
 
+}
+
+/* Form Editor Panel */
+
+$zcs-form-font-size: 1.2rem;
+$zcs-form-bg-color: #DDD;
+$zcs-form-height: 1.8rem;
+$zcs-form-multifield-radius: 0.5em;
+
+.zcs-formline {
+	min-height: $zcs-form-height;  //overrides 100% from sencha
+}
+
+.zcs-form {
+	font-size: $zcs-form-font-size;
+	min-height: $zcs-form-height;
+
+	.x-scroll-container {
+		background-color: $zcs-form-bg-color;
+
+		.x-form-inner {
+			@extend .zcs-formline;
+
+			.multifield {
+				margin-left: 10px;
+				margin-right: 10px;
+				overflow: hidden;
+				@include border-radius($zcs-form-multifield-radius);
+
+				.zcs-form-multifield-field {
+					border-bottom: 1px solid $zcs-form-bg-color;
+
+					.x-button {  // See Form Field Buttons for more
+						background-color: transparent;
+						height: 3.5rem;
+						left: 10px;
+						position: absolute;
+					}
+
+					.x-field {
+						padding-left: 2.8rem;
+
+						.x-input-el {  // Data text
+							color: $primary-text-color;
+							font-size: $zcs-form-font-size;
+							font-weight: normal;
+							padding: 0.8rem 0;
+						}
+					}
+				}
+			}
+
+			// Clear icons should only be shown on focus
+			// but can't use this easily until clear icon is font-based
+			/*.x-field {
+				.x-field-input .x-clear-icon {
+				}
+				&.x-field-focused {
+					.x-field-input .x-clear-icon {
+					}
+				}
+			}*/
+		}
+	}
+}
+
+.zcs-form-spacer {
+	border-bottom: 1px solid $light-grey;
+	margin-bottom: 1rem;
+}
+
+//.zcs-form-input {
+//	border-bottom: 1px solid #F7F7F7;
+//}
+
+
+/* Form Field Buttons */
+
+$fieldButtonSize: 1.4rem;
+$fieldButtonLabelSize: 1.2rem;
+
+.form-field-button {
+	@include border-radius(initial);
+	border: none;
+}
+
+.form-remove-field-button {
+	@extend .form-field-button;
+	height: auto;
+	padding-left: 5px;
+
+	.x-button-icon:before{
+		color: red;
+		font-size: $fieldButtonSize;
+	}
+}
+
+.form-add-field-button {
+	@extend .form-field-button;
+
+	.x-button-label {
+		font-size: $fieldButtonLabelSize;
+		text-align: left;
+
+		.form-add-field-button-text:before {
+			color: green;
+			content: "+";
+			font-family: "pictos";
+			font-size: $fieldButtonSize;
+			margin-right: 10px;
+			text-align: center;
+		}
+	}
 }
 
 

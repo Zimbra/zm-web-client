@@ -43,7 +43,7 @@ Ext.define('ZCS.view.contacts.ZtMultiField', {
 		// add a ZCS.view.contacts.ZtAddButton to the bottom of this container
 		var addButton = Ext.create('ZCS.view.contacts.ZtAddButton',{
 			text: [
-	            '<div class="contact-form-add-field-button-text">',
+	            '<div class="form-add-field-button-text">',
 	            	this.getAddButtonLabel(),
 	            '</div>'
 	        ].join(" "),
@@ -89,7 +89,7 @@ Ext.define('ZCS.view.contacts.ZtMultiField', {
 							}),
 				flex:       0,
 				align:      'left',
-				cls: 		"contact-form-remove-field-button", 
+				cls: 		"form-remove-field-button",
 
 				handler: function() {
                     var panel = panelName ? panelName : 'contactpanel';
@@ -111,7 +111,7 @@ Ext.define('ZCS.view.contacts.ZtMultiField', {
 			layout: 'hbox',
 			items:  items,
 			itemId: fieldId,
-			cls: 'zcs-contact-form-multifield-field',
+			cls: 'zcs-form-multifield-field',
 			opts: opts
 		};
 

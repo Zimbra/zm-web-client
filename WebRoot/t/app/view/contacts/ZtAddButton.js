@@ -34,7 +34,7 @@ Ext.define('ZCS.view.contacts.ZtAddButton', {
     xtype: 'addtionalFieldsAddButton',
 
     config: {
-        cls: 'contact-form-add-field-button',
+        cls: 'form-add-field-button',
         
         // this is set to true if the container's type is either "name" or "company"
         willShowOptionsOnTap: false,

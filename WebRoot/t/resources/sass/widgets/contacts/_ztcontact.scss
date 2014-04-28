@@ -37,6 +37,11 @@ $contactFieldTopOffsetPhone: $contactImageSizePhone + $contactStdMargin * 6;
 $contactFieldWidth: 21rem; //optimized intially for iPad in landscape
 $contactFormButtonMinHeight: 2.5rem;
 
+$contactGroupMemberWidth: 17em;
+$contactGroupMemberHeight: 6.5em;
+$contactGroupMemberPadding: 0.5em;
+$contactGroupMemberImageSize: 4em;
+
 
 /* Contact Image Base Classes */
 
@@ -339,15 +344,13 @@ $contactFormButtonMinHeight: 2.5rem;
 
 /* Create Contact Classes */
 
-$contactBorderColor: $light-grey;
-
 .zcs-contact-imgborder {
 	background-color: white;
 
 	.zcs-contact-image {
 		@extend .zcs-contactImage-person;
 		height: $contactEditImageSize;
-		margin: .5em auto auto;
+		margin: 0.5em auto auto;
 		width: $contactEditImageSize;
 	}
 }
@@ -362,106 +365,8 @@ $contactBorderColor: $light-grey;
 	}
 }
 
-.zcs-contact-formline {
-	border-bottom: none;
-	min-height: 1.8em;
-}
-
-.zcs-contact-form {
-	background-color: #dddddd;
-	background-image: none;
-	font-size: 1.2rem;
-	min-height: 1.8em;
-
-	.x-form-inner {
-		@extend .zcs-contact-formline;
-
-		.zcs-contact-label {
-			@extend .zcs-contact-form;
-			color: lighten($primary-text-color, 25%);
-			padding: .85em;
-			text-align: right;
-
-			&:after {
-				content: ":";
-			}
-		}
-
-		.x-button.zcs-contact-addremove {
-			@extend .zcs-contact-form;
-			color: $linkColor;
-			height: 2.9em;
-			padding-left: .5em;
-			@include border-radius(0);
-
-			&:active {
-				background-color: $light-grey;
-			}
-		}
-
-		.multifield{
-			margin-left: 10px;
-			margin-right: 10px;
-			
-			.zcs-contact-form-multifield-field{
-				min-height: "40px";
-				border-bottom: 1px solid #dddddd;
-			}
-
-			.first{
-				-webkit-border-top-left-radius: 4px;
-				        border-top-left-radius: 4px;
-			    -webkit-border-top-right-radius: 4px;
-				        border-top-right-radius: 4px;
-			    overflow: hidden;
-			}
-
-			.last{
-				-webkit-border-bottom-left-radius: 4px;
-				        border-bottom-left-radius: 4px;
-			    -webkit-border-bottom-right-radius: 4px;
-				        border-bottom-right-radius: 4px;
-			    overflow: hidden;
-			}
-		}
-
-		// Clear icons should only be shown on focus
-		// but can't use this easily until clear icon is font-based
-		/*.x-field {
-			.x-field-input .x-clear-icon {
-			}
-			&.x-field-focused {
-				.x-field-input .x-clear-icon {
-				}
-			}
-		}*/
-	}
-
-	.x-form {
-
-		.x-scroll-container {
-			background-color: #DDD;
-		}
-
-		.x-input-el {
-			font-size: 1.1em;
-			font-weight: normal;
-			padding: 0.4em;
-		}
-	}
-}
-
-.zcs-contact-field {
-	border-bottom: 1px solid $contactBorderColor;
-}
-
-.zcs-contact-spacer,
-.zcs-contact-addremove {
-	@extend .zcs-contact-field;
-}
-
 .x-webkit .x-layout-box.x-vertical>.x-layout-box-item.x-flexed.zcs-contact-spacer {
-	background-color: #dddddd;
+	background-color: #DDD;
 	height: 1em !important;
 	width: 100% !important;
 	border: none;
@@ -492,16 +397,11 @@ $contactBorderColor: $light-grey;
 			&[name=contactname] {
 				font-size: 1.4em;
 				font-weight: bold;
-				margin: .5em 0;
+				margin: 0.5em 0;
 			}
 		}
 	}
 }
-
-$zcsMemberWidth: 17em;
-$zcsMemberHeight: 6.5em;
-$zcsMemberPadding: .5em;
-$zcsMemberImageSize: 4em;
 
 .zcs-contactgroupview-members {
 	@extend .zcs-floatLeft;
@@ -511,26 +411,26 @@ $zcsMemberImageSize: 4em;
 	.zcs-contactgroupview-member {
 		@extend .zcs-floatLeft;
 		border: 1px solid rgba(0,0,0,.4);
-		min-height: $zcsMemberHeight;
+		min-height: $contactGroupMemberHeight;
 		margin: 0 1.5em 1em 0;
 		overflow: hidden;
-		padding: $zcsMemberPadding;
+		padding: $contactGroupMemberPadding;
 		position: relative;
-		width: $zcsMemberWidth;
+		width: $contactGroupMemberWidth;
 
 		.zcs-contact-image {
-			height: $zcsMemberImageSize;
-			left: $zcsMemberPadding;
+			height: $contactGroupMemberImageSize;
+			left: $contactGroupMemberPadding;
 			position:absolute;
 			top: .4em;
-			width: $zcsMemberImageSize;
+			width: $contactGroupMemberImageSize;
 		}
 
 		.zcs-contact-info {
-			left: $zcsMemberImageSize+$zcsMemberPadding * 2;
+			left: $contactGroupMemberImageSize+$contactGroupMemberPadding * 2;
 			position: absolute;
 			right: 0;
-			top: $zcsMemberPadding;
+			top: $contactGroupMemberPadding;
 
 			SPAN {
 				@extend .zcs-newLine;
@@ -550,38 +450,7 @@ $zcsMemberImageSize: 4em;
 	}
 }
 
-$fieldButtonSize: 1.4rem;
-$fieldButtonLabelSize: 1.2rem;
-
-.contact-form-remove-field-button {
-	@include border-radius(initial);
-	border: none;
-	height: auto;
-	min-height: $contactFormButtonMinHeight;
-	padding-left: 5px;
-
-	.x-button-icon:before{
-		color: red;
-		font-size: $fieldButtonSize;
-	}
-}
-
+.contact-form-remove-field-button,
 .contact-form-add-field-button {
-	@include border-radius(0);
-	border: none;
 	min-height: $contactFormButtonMinHeight;
-
-	.x-button-label {
-		font-size: $fieldButtonLabelSize;
-		text-align: left;
-
-		.contact-form-add-field-button-text:before {
-			color: green;
-			content: "+";
-			font-family: "pictos";
-			font-size: $fieldButtonSize;
-			margin-right: 10px;
-			text-align: center;
-		}
-	}
 }

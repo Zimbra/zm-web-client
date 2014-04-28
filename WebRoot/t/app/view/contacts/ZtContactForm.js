@@ -51,7 +51,7 @@ Ext.define('ZCS.view.contacts.ZtContactForm', {
         scrollable: false,
         hidden:     true,
         modal:      true,
-        cls:        'zcs-contact-form'
+        cls:        'zcs-form'
     },
 
     initialize: function() {
@@ -86,7 +86,7 @@ Ext.define('ZCS.view.contacts.ZtContactForm', {
 
             spacer = {
                 xtype:  'spacer',
-                cls:    'zcs-contact-spacer'
+                cls:    'zcs-form-spacer'
             },
 
             form = {
