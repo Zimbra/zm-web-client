@@ -1241,7 +1241,7 @@ ZmBaseController.prototype._bubbleActionListener = function(ev, addr) {
 		menu.enable(
 			[
 				ZmOperation.CONTACT,
-				ZmOperation.ADD_FILTER_RULE
+				ZmOperation.ADD_FILTER_RULE_ADDRESS
 			],
 			!appCtxt.isWebClientOffline()
 		);
