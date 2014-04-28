@@ -766,7 +766,9 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 	 */
 	isDirty: function() {
 
-		if (this.getComposePanel().isHidden()) {
+        //always do hash comparison on Android,
+        //since isHidden() method seems to return incorrect value on Android
+		if (this.getComposePanel().isHidden() && !Ext.os.is.Android) {
 			return false;
 		}
 		else {
