@@ -227,6 +227,9 @@ function(event) {
 	//Dwt.setVisible(this._globalMarkReadEl, organizer.type == ZmOrganizer.FOLDER);
     Dwt.setVisible(this._globalMarkReadEl, false);
 
+	if (this._offlineId) {
+		this._props.setPropertyVisible(this._offlineId, (this._organizer.type == ZmOrganizer.FOLDER));
+	}
 };
 
 
