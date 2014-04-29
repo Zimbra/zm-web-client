@@ -2556,7 +2556,7 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 												</tr></table>
 											</td>
 											<td id='${id}_VACATION_FROM_TIME' class='ZmOOODuration' ></td>
-											<td id='${id}_VACATION_DURATION_ALL_DAY' class='ZmOOODuration' ></td>
+											<td><div id='${id}_VACATION_DURATION_ALL_DAY' class='ZmOOODuration' ></div></td>
 										</tr>
 										<tr>
 											<td align="right"><$=ZmMsg.endLabel$></td>
