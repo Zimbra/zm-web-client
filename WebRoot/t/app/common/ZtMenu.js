@@ -60,7 +60,19 @@ Ext.define('ZCS.common.ZtMenu', {
 		actionParams: null
 	},
 
-	initialize: function() {
+	constructor: function (config) {
+        if (this.config.showCancelButton) {
+            config.data.push({
+                label: ZtMsg.cancel,
+                action : '',
+                handler : ''
+            });
+        }
+
+       this.callParent(arguments);
+	},
+
+	initialize: function () {
 		var me = this;
 
         if (Ext.os.deviceType === "Phone") {
@@ -73,15 +85,7 @@ Ext.define('ZCS.common.ZtMenu', {
 		}, this);
 
 		me.callParent(arguments);
-		if (me.config.showCancelButton) {
-			me.add({
-				xtype: 'button',
-				text: ZtMsg.cancel,
-				handler: function () {
-					me.hide();
-				}
-			});
-		}
+
 	},
 
 	/**
