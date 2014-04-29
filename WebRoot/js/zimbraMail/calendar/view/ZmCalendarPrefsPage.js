@@ -436,7 +436,7 @@ function() {
 		var contactsLoader = contactsClass.getContactList;
 		var params = {
 			dataClass:	appCtxt.getAutocompleter(),
-			separator:	"",
+			separator:	";",
 			matchValue:	ZmAutocomplete.AC_VALUE_EMAIL,
 			options:	{galOnly:true},
 			contextId:	this.toString()
