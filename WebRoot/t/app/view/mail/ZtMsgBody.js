@@ -94,8 +94,7 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 			count = store.getCount(),
 			msgIndex = store.indexOf(msg),
 			isAsc = (ZCS.session.getSetting(ZCS.constant.SETTING_CONVERSATION_ORDER) === ZCS.constant.DATE_ASC),
-			isOldest = isAsc ? msgIndex === 0 : msgIndex === count - 1,
-			markedUpHtml;
+			isOldest = isAsc ? msgIndex === 0 : msgIndex === count - 1;
 
 		var me = this,
 			isInvite = msg.get('isInvite'),
@@ -110,24 +109,19 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 		if (window.inlineData.debugLevel === 'orig') {
 			trimQuotedText = true;
 		}
-		var html = msg.getContentAsHtml(this.getId(), trimQuotedText),
-			hasQuotedContent = ZCS.model.mail.ZtMailMsg.hasQuotedContent[msgId];
+		var result = msg.getContentAsHtml(this.getId(), trimQuotedText),
+			hasQuotedContent = ZCS.model.mail.ZtMailMsg.hasQuotedContent[msgId],
+			html;
 
-			this.setMsg(msg);
+		this.setMsg(msg);
 
 		this.setUsingIframe(isHtml);
 
 		if (ZCS.constant.IS_ENABLED[ZCS.constant.FEATURE_FIND_OBJECTS]) {
-			markedUpHtml = ZCS.htmlutil.findObjects(html.content, isHtml);
-
-            if (isInvite && html.inviteDesc) {
-                markedUpHtml = html.inviteDesc + markedUpHtml;
+			html = ZCS.htmlutil.findObjects(result.content, isHtml);
+            if (isInvite && result.inviteDesc) {
+                html = result.inviteDesc + html;
             }
-			// If we added anchors for emails or links, make sure we're using an iframe
-			if (markedUpHtml.length !== html.length) {
-				this.setUsingIframe(true);
-				html = markedUpHtml;
-			}
 		}
 
 		this.resetExtraComponents();
