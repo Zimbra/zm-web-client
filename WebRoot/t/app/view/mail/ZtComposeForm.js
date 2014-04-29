@@ -174,17 +174,6 @@ Ext.define('ZCS.view.mail.ZtComposeForm', {
 								});
 							}
 						}
-					}, {
-						xtype: 'filefield',
-						hidden: true,
-						listeners: {
-							change: function (field, newValue, oldValue) {
-								//When the value of this field is reset, newValue is null.
-								if (newValue) {
-									composeForm.fireEvent('attachmentAdded', field, newValue, oldValue);
-								}
-							}
-						}
 					}]
 				}, {
 					xtype: 'component',
@@ -196,26 +185,54 @@ Ext.define('ZCS.view.mail.ZtComposeForm', {
 								bodyField = this.element.down('.zcs-body-field');
 
 							bodyField.setMinHeight(heightToSet);
+							bodyField.on('blur', function () {
+								ZCS.htmlutil.resetWindowScroll();
+							});
 						}
 					}
 				}]
 			};
 
 		if (ZCS.constant.IS_ENABLED[ZCS.constant.FEATURE_ADD_ATTACHMENT] && Ext.feature.has.XHR2) {
+			/**
+			 *
+			 * We overlay a transparent file input element over the label.  This is because you can't 
+			 * style the file input element directly.  Additionally, if you try and programmatically trigger
+			 * a click on the file input element, there are positioning bugs in iOS.  This is a hack,
+			 * but works.
+			 *
+			 */
 			form.items[3].items.push({
-				xtype: 'component',
-				cls: 'x-form-label x-form-label-nowrap x-field zcs-toggle-field',
-				itemId: 'attach',
-				html: ZtMsg.attach,
+				xtype: 'container',
 				width: 80,
-				listeners: {
-					initialize: function () {
-						var comp = this;
-						this.element.on('tap', function () {
-							composeForm.doAttach();
-						});
+				cls: 'zcs-attach-hack-container',
+				layout: 'auto',
+				items: [{
+					xtype: 'filefield',
+					width: 80,
+					opacity: 0.01,
+					cls: 'file-input-div',
+					// style:  "visibility:hidden;",
+					listeners: {
+						change: function (field, newValue, oldValue) {
+							//When the value of this field is reset, newValue is null.
+							if (newValue) {
+							 	composeForm.fireEvent('attachmentAdded', field, newValue, oldValue);
+							}
+						},
+						initialize: function (fileField) {
+							fileField.on('blur', function () {
+							 	ZCS.htmlutil.resetWindowScroll();
+							});		
+						}
 					}
-				}
+				}, {
+					xtype: 'component',
+					cls: 'x-form-label x-form-label-nowrap x-field zcs-toggle-field attach-label',
+					itemId: 'attach',
+					html: ZtMsg.attach,
+					width: 80
+				}]
 			});
 		}
 
@@ -237,10 +254,6 @@ Ext.define('ZCS.view.mail.ZtComposeForm', {
 			this.down('#bcc').hide();
 			this.down('#showcc').setIconCls('collapsed');
 		}
-	},
-
-	doAttach: function () {
-		this.down('filefield').element.down('input').dom.click();
 	},
 
 	resetForm: function () {

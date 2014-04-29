@@ -98,6 +98,30 @@ $compose-fieldheight: 2.5rem;
 			margin: $compose-padding;
 		}
 	}
+
+	.zcs-attach-hack-container {
+		.x-inner {
+			position: relative;
+
+			.file-input-div {
+				opacity: 0.01; 
+				top: 0px;
+				z-index: 1;
+				left:0px;
+				position:absolute;
+				height: 2.5rem;
+			}
+
+			.attach-label {
+				top:0px;
+				left:0px;
+				z-index: 0;
+				display:block !important;
+				position: absolute;
+				height: 2.5rem;
+			}
+		}
+	}
 }
 
 .zcs-auto-complete-name {

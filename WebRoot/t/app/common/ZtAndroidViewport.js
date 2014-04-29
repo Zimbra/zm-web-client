@@ -22,5 +22,19 @@ Ext.define('ZCS.common.ZtAndroidViewport', {
                 dummy.style.display = 'none';
             }, 100);
         }
+    },
+
+    doPreventZooming: function (e) {
+        // Don't prevent right mouse event
+        if ('button' in e && e.button !== 0) {
+            return;
+        }
+
+        var target = e.target,
+            targetIsEditable = Ext.fly(target).getAttribute('contenteditable');
+
+        if (target && target.nodeType === 1 && !this.isInputRegex.test(target.tagName) && !this.focusedElement && !targetIsEditable) {
+            e.preventDefault();
+        }
     }
 });
