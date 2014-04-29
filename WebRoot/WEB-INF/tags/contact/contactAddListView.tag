@@ -23,7 +23,7 @@
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
-<c:if test="${zm:boolean(ttendeeMode)}">
+<c:if test="${zm:boolean(attendeeMode)}">
 <c:set var="tz" value="${zm:getTimeZone(uploader.compose.timeZone)}"/>
 <c:set var="today" value="${zm:getCalendarMidnight(uploader.compose.apptStartCalendar.timeInMillis,tz)}"/>
 <c:set var="endDay" value="${zm:getCalendarMidnight(uploader.compose.apptEndCalendar.timeInMillis,tz)}"/>
@@ -127,7 +127,7 @@
             <td >&nbsp;${fn:escapeXml(hit.contactHit.displayEmail)}</td>
             <c:if test="${zm:boolean(attendeeMode)}">
             <td>
-               <zm:getFreeBusyAppointments varexception="exp" var="freeBusyAppts" start="${zm:nonNull(apptStartLong)}" end="${zm:nonNull(apptEndLong)}" email="${hit.contactHit.email}"/>
+               <zm:getFreeBusyAppointments varexception="exp" var="freeBusyAppts" start="${apptStartLong}" end="${apptEndLong}" email="${hit.contactHit.email}"/>
                <c:if test="${empty exp or exp eq null}">
                     <c:set var="freeBusyStatusKey" value="free"/>
                     <c:forEach items="${freeBusyAppts.appointments}" var="appt" >
@@ -186,7 +186,7 @@
             <td >&nbsp;${fn:escapeXml(hit.contactHit.email2)}</td>
             <c:if test="${zm:boolean(attendeeMode)}">
             <td>
-               <zm:getFreeBusyAppointments varexception="exp" var="freeBusyAppts" start="${zm:nonNull(apptStartLong)}" end="${zm:nonNull(apptEndLong)}" email="${hit.contactHit.email2}"/>
+               <zm:getFreeBusyAppointments varexception="exp" var="freeBusyAppts" start="${apptStartLong}" end="${apptEndLong}" email="${hit.contactHit.email2}"/>
                <c:if test="${empty exp or exp eq null}">
                     <c:set var="freeBusyStatusKey" value="free"/>
                     <c:forEach items="${freeBusyAppts.appointments}" var="appt" >
@@ -245,7 +245,7 @@
             <td >&nbsp;${fn:escapeXml(hit.contactHit.email3)}</td>
             <c:if test="${zm:boolean(attendeeMode)}">
             <td>
-               <zm:getFreeBusyAppointments varexception="exp" var="freeBusyAppts" start="${zm:nonNull(apptStartLong)}" end="${zm:nonNull(apptEndLong)}" email="${hit.contactHit.email3}"/>
+               <zm:getFreeBusyAppointments varexception="exp" var="freeBusyAppts" start="${apptStartLong}" end="${apptEndLong}" email="${hit.contactHit.email3}"/>
                <c:if test="${empty exp or exp eq null}">
                     <c:set var="freeBusyStatusKey" value="free"/>
                     <c:forEach items="${freeBusyAppts.appointments}" var="appt" >
@@ -304,7 +304,7 @@
             <td >&nbsp;${fn:escapeXml(hit.contactHit.workEmail1)}</td>
             <c:if test="${zm:boolean(attendeeMode)}">
             <td>
-               <zm:getFreeBusyAppointments varexception="exp" var="freeBusyAppts" start="${zm:nonNull(apptStartLong)}" end="${zm:nonNull(apptEndLong)}" email="${hit.contactHit.workEmail1}"/>
+               <zm:getFreeBusyAppointments varexception="exp" var="freeBusyAppts" start="${apptStartLong}" end="${apptEndLong}" email="${hit.contactHit.workEmail1}"/>
                <c:if test="${empty exp or exp eq null}">
                     <c:set var="freeBusyStatusKey" value="free"/>
                     <c:forEach items="${freeBusyAppts.appointments}" var="appt" >
@@ -363,7 +363,7 @@
             <td >&nbsp;${fn:escapeXml(hit.contactHit.workEmail2)}</td>
             <c:if test="${zm:boolean(attendeeMode)}">
             <td>
-               <zm:getFreeBusyAppointments varexception="exp" var="freeBusyAppts" start="${zm:nonNull(apptStartLong)}" end="${zm:nonNull(apptEndLong)}" email="${hit.contactHit.workEmail2}"/>
+               <zm:getFreeBusyAppointments varexception="exp" var="freeBusyAppts" start="${apptStartLong}" end="${apptEndLong}" email="${hit.contactHit.workEmail2}"/>
                <c:if test="${empty exp or exp eq null}">
                     <c:set var="freeBusyStatusKey" value="free"/>
                     <c:forEach items="${freeBusyAppts.appointments}" var="appt" >
@@ -422,7 +422,7 @@
             <td >&nbsp;${fn:escapeXml(hit.contactHit.workEmail3)}</td>
             <c:if test="${zm:boolean(attendeeMode)}">
             <td>
-               <zm:getFreeBusyAppointments varexception="exp" var="freeBusyAppts" start="${zm:nonNull(apptStartLong)}" end="${zm:nonNull(apptEndLong)}" email="${hit.contactHit.workEmail3}"/>
+               <zm:getFreeBusyAppointments varexception="exp" var="freeBusyAppts" start="${apptStartLong}" end="${apptEndLong}" email="${hit.contactHit.workEmail3}"/>
                <c:if test="${empty exp or exp eq null}">
                     <c:set var="freeBusyStatusKey" value="free"/>
                     <c:forEach items="${freeBusyAppts.appointments}" var="appt" >
@@ -500,7 +500,7 @@
             </c:if>
             <c:if test="${zm:boolean(attendeeMode)}">
             <td>
-                <zm:getFreeBusyAppointments varexception="exp" var="freeBusyAppts" start="${zm:nonNull(apptStartLong)}" end="${zm:nonNull(apptEndLong)}" email="${contact.email}"/>
+                <zm:getFreeBusyAppointments varexception="exp" var="freeBusyAppts" start="${apptStartLong}" end="${apptEndLong}" email="${contact.email}"/>
                <c:if test="${empty exp or exp eq null}">
                     <c:set var="freeBusyStatusKey" value="free"/>
                     <c:forEach items="${freeBusyAppts.appointments}" var="appt" >
