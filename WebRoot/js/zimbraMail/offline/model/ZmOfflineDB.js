@@ -664,7 +664,7 @@ function(search) {
 			}
 		}
 		else if (token.op === "after" || token.op === "before" || token.op === "date") {
-			var time = new Date(token.arg).getTime();
+			var time = new Date(token.arg.replace(/[<>=]/g, "")).getTime();
 			if (isNaN(time)) {
 				if (token.arg.indexOf("d") !== -1) {
 					var field = AjxDateUtil.DAY;
