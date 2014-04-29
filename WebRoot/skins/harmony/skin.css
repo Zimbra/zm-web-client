@@ -461,6 +461,15 @@ TD.DwtListView-ColumnActive  {
 	background-color:white;
 }
 
+.InvResponseBar {
+	background-color:@darken(AppC,10)@;
+	border-top-color:@darken(AppC,20)@;
+}
+
+.InvResponseBar .ZButtonBorder{
+	background-color:@AppC@;
+}
+
 /* Task styling */
 .ZmTaskMultiView .DwtListView-Column {
 	background-color:transparent;
