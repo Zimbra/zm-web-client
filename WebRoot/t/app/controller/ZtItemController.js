@@ -89,10 +89,11 @@ Ext.define('ZCS.controller.ZtItemController', {
 	doRemoveTag: function(tagParams) {
 
 		var item = tagParams.item || this.getItem(),
-			tagName = tagParams.tagName;
+			tagName = tagParams.tagName,
+			tag = ZCS.cache.get(tagName, 'tagName');
 
-		if (item && tagName) {
-			this.tagItem(item, tagName, true);
+		if (item && tag) {
+			this.tagItem(item, tag, true);
 		}
 	},
 
@@ -207,17 +208,17 @@ Ext.define('ZCS.controller.ZtItemController', {
 	 * Adds or removes a tag to/from the given item.
 	 *
 	 * @param {ZtMailItem}  item        item
-	 * @param {String}      tagName     name of tag to add or remove
+	 * @param {ZtOrganizer} tag         tag to add or remove
 	 * @param {Boolean}     remove      if true, remove the tag
 	 */
-	tagItem: function(item, tagName, remove) {
+	tagItem: function(item, tag, remove) {
 
 		this.performOp(item, {
 			op: remove ? '!tag' : 'tag',
-			tn: tagName
+			tn: tag.get('name')
 		}, function() {
 			var toastMsg = remove ? ZtMsg.tagRemoved : ZtMsg.tagAdded;
-			ZCS.app.fireEvent('showToast', Ext.String.format(toastMsg, tagName));
+			ZCS.app.fireEvent('showToast', Ext.String.format(toastMsg, tag.get('displayName')));
 		});
 	},
 
