@@ -50,10 +50,7 @@ Ext.define('ZCS.controller.contacts.ZtContactListController', {
 		control: {
 			listPanel: {
 				newItem: 'doNewContact'
-		    },
-            listView: {
-                itemswipe: 'handleSwipe'
-            }
+		    }
     	},
 
 		app: ZCS.constant.APP_CONTACTS
@@ -239,62 +236,6 @@ Ext.define('ZCS.controller.contacts.ZtContactListController', {
         }
         else {
             this.getItemController().clear();
-        }
-    },
-
-    handleSwipe: function(list, index, contactItem, record, e, eOpts) {
-        var contactEl = contactItem.element,
-            contactElBox = contactEl.getBox(),
-            buttonHeight = contactElBox.height,
-            buttonWidth = 120,
-            swipeElm = Ext.dom.Element.create({
-                html: ZCS.controller.contacts.ZtContactListController.swipeToDeleteTpl.apply({
-                    width: buttonWidth,
-                    height: buttonHeight
-                }),
-                "class": 'zcs-outer-swipe-elm'
-            }),
-            sameItemSwipeButton = contactEl.down('.zcs-outer-swipe-elm'),
-            anySwipeButton = list.element.down('.zcs-outer-swipe-elm');
-
-        e.preventDefault();
-
-        if (sameItemSwipeButton) {
-            sameItemSwipeButton.fadeAway();
-        } else {
-
-            if (anySwipeButton && !anySwipeButton.fading) {
-                anySwipeButton.fadeAway();
-            }
-
-            swipeElm.fadeAway = function () {
-                var fadingButton = swipeElm;
-                fadingButton.fading = true;
-                Ext.Anim.run(fadingButton, 'fade', {
-                    after: function() {
-                        fadingButton.destroy();
-                    },
-                    out: true
-                })
-            }
-
-            swipeElm.on('tap', function (event, node, options, eOpts) {
-                var el = Ext.fly(event.target);
-                if (el.hasCls('zcs-swipe-delete')) {
-                    ZCS.app.fireEvent('deleteContactItem', record);
-                    swipeElm.fadeAway();
-                }
-            });
-
-            swipeElm.on('swipe', function () {
-                swipeElm.fadeAway();
-            });
-
-            //Delay this so any scroll that occurs before a swiper has a chance to complete
-            Ext.defer(function () {
-                swipeElm.insertAfter(Ext.fly(contactEl.dom.children[0]));
-            }, 100);
-
         }
     }
 },
