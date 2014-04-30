@@ -2249,7 +2249,7 @@ function(params) {
 		html[i++] = params.rfc822Part;
 		html[i++] = "\"); return false;'";
 	}
-	html[i++] = "title='" + AjxStringUtil.htmlEncode(params.label || params.text);
+	html[i++] = "title='" + AjxStringUtil.encodeQuotes(AjxStringUtil.htmlEncode(params.label || params.text));
 	html[i++] = "'>" + AjxStringUtil.htmlEncode(params.text) + "</a>";
 
 	return html.join("");
