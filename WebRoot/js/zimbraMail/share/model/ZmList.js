@@ -525,6 +525,7 @@ function(params, params1) {
 
 	// Bug 26103: when deleting an item in a folder shared to us, save a copy in our own trash
 	if (params.folder && params.folder.id == ZmFolder.ID_TRASH) {
+		var fromFolder;
 		var toCopy = [];
 		for (var i = 0; i < params.items.length; i++) {
 			var item = params.items[i];
@@ -532,7 +533,11 @@ function(params, params1) {
 			if (index != -1) { //might be shared
 				var acctId = item.id.substring(0, index);
 				if (!appCtxt.accountList.getAccount(acctId)) {
-					toCopy.push(item);
+					fromFolder = appCtxt.getById(item.folderId);
+					// Don't do the copy if the source folder is shared with view only rights
+					if (fromFolder && !fromFolder.isReadOnly()) {
+						toCopy.push(item);
+					}
 				}
 			}
 		}
