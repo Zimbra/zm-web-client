@@ -33,7 +33,8 @@ Ext.define('ZCS.controller.calendar.ZtCalendarController', {
         'Ext.ux.TouchCalendarView',
         'Ext.ux.TouchCalendar',
         'ZCS.view.calendar.ZtCalendarToolbar',
-        'ZCS.view.calendar.ZtAppointmentForm'
+        'ZCS.view.calendar.ZtAppointmentForm',
+	    'ZCS.view.calendar.ZtAppointmentDialog'
     ],
 
     config: {
@@ -60,7 +61,8 @@ Ext.define('ZCS.controller.calendar.ZtCalendarController', {
 			appointmentView : 'appointmentpanel #apptDetails',
 			calendarAddressActionsMenu: 'list[itemId=calendarAddressActionsMenu]',
 			inviteReplyActionsMenu: 'list[itemId=inviteReplyActionsMenu]',
-			appointmentActionsMenu: 'list[itemId=apptActionsMenu]'
+			appointmentActionsMenu: 'list[itemId=apptActionsMenu]',
+	        appointmentDialog: 'appointmentdialog'
 		},
 
         control: {
@@ -76,7 +78,8 @@ Ext.define('ZCS.controller.calendar.ZtCalendarController', {
             },
 			appointmentPanel: {
 				cancel:             'doCancel',
-				contactTap:         'showMenu'
+				contactTap:         'showMenu',
+				delete:             'doDelete'
 			},
 			'appointmentpanel toolbar button[iconCls=inviteReply]': {
 				tap: 'onApptActionsButtonTap'
@@ -84,6 +87,9 @@ Ext.define('ZCS.controller.calendar.ZtCalendarController', {
 			'appointmentpanel toolbar button[iconCls=arrow_down]': {
 				tap: 'onApptActionsButtonTap'
 			},
+	        'appointmentpanel toolbar button[iconCls=trash]': {
+		        tap: 'onApptActionsButtonTap'
+	        },
 			calendarAddressActionsMenu: {
 				itemtap:            'onMenuItemSelect'
 			},
@@ -95,7 +101,11 @@ Ext.define('ZCS.controller.calendar.ZtCalendarController', {
 			}
         },
 
-        app: ZCS.constant.APP_CALENDAR
+        app: ZCS.constant.APP_CALENDAR,
+
+	    event: null,
+
+	    isSeries: false
     },
 
     launch: function() {
@@ -165,15 +175,23 @@ Ext.define('ZCS.controller.calendar.ZtCalendarController', {
             start = event.get('start'),
             me = this;
 
-        msg.save({
-            op: 'load',
-            id: inviteId,
-            apptView: true,
-            ridZ: start,
-            success: function(record) {
-                me.showItem(record, event);
-            }
-        });
+	    this.setEvent(event);
+
+	    if (!event.get('isException') && event.get('isRecur')) {
+		    var actionDialog = this.getAppointmentDialog();
+		    actionDialog.show();
+	    }
+	    else {
+		    msg.save({
+			    op: 'load',
+			    id: inviteId,
+			    apptView: true,
+			    ridZ: start,
+			    success: function(record) {
+				    me.showItem(record, event);
+			    }
+		    });
+	    }
     },
 
     /**
@@ -181,12 +199,14 @@ Ext.define('ZCS.controller.calendar.ZtCalendarController', {
      * @param {ZCS.model.calendar.ZtCalendar} event The Event record that was tapped
      */
 
-    showItem: function(msg, event) {
+    showItem: function(msg, event, isSeries) {
 		var panel = this.getAppointmentPanel(),
             invite = msg.get('invite'),
             title = Ext.String.htmlEncode(invite.get('subject') || ZtMsg.noSubject);
 
-        panel.setPanel(msg, event);
+	    this.setIsSeries(isSeries);
+
+        panel.setPanel(msg, event, isSeries);
         this.updateToolbar({isOrganizer: invite.get('isOrganizer')});
         panel.show({
             type:       'slide',
@@ -404,7 +424,8 @@ Ext.define('ZCS.controller.calendar.ZtCalendarController', {
     doInviteReply: function(action, appt) {
         var invite = appt.get('invite'),
 			invId =  appt.get('id'),
-            msg = Ext.create('ZCS.model.mail.ZtMailMsg');
+            msg = Ext.create('ZCS.model.mail.ZtMailMsg'),
+	        isSeries = this.getIsSeries();
 
         msg.set('origId', invId);  //not sure if origId should be set to invite id
         msg.set('inviteAction', action);
@@ -431,6 +452,8 @@ Ext.define('ZCS.controller.calendar.ZtCalendarController', {
         var me = this;
         msg.save({
             isInviteReply: true,
+	        isSeries: isSeries,
+	        ridZ: this.getEvent().get('ridZ'),
             success: function () {
                 me.getAppointmentPanel().hide();
                 ZCS.app.fireEvent('showToast', ZtMsg.invReplySent);
@@ -494,10 +517,11 @@ Ext.define('ZCS.controller.calendar.ZtCalendarController', {
 
 	onApptActionsButtonTap: function (button, e) {
 		var apptPanel = this.getAppointmentPanel(),
-			appt = apptPanel.getAppt();
+			appt = apptPanel.getAppt(),
+			msg = apptPanel.getMsg();
 
 		if (button.get('iconCls') == 'trash') {
-			this.doDelete({appt: appt});
+			this.doDelete({msg: msg});
 		} else {
 			this.showMenu(button, {
 				menuName:   button.initialConfig ? button.initialConfig.menuName : undefined,
@@ -562,5 +586,23 @@ Ext.define('ZCS.controller.calendar.ZtCalendarController', {
 
     handleDeleteNotification: function(item) {
         this.refreshCalendar();
-    }
+    },
+
+	appointmentDialogAction: function(isInstance) {
+		var msg = Ext.create('ZCS.model.mail.ZtMailMsg'),
+			event = this.getEvent(),
+			inviteId = event.get('invId'),
+			me = this,
+			isSeries = !isInstance;
+
+		msg.save({
+			op: 'load',
+			id: inviteId,
+			apptView: true,
+			ridZ: (isInstance ? event.get('ridZ') : null),
+			success: function(record) {
+				me.showItem(record, event, isSeries);
+			}
+		});
+	}
 });

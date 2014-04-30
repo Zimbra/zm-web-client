@@ -60,7 +60,27 @@ Ext.define('ZCS.model.calendar.ZtCalendar', {
 			{
 				name: 'color',
 				type: 'string'
-			}
+			},
+	        {
+		        name: 'isRecur',
+		        type: 'boolean'
+	        },
+	        {
+		        name: 'ridZ',
+		        type: 'string'
+	        },
+	        {
+		        name: 'isException',
+		        type: 'boolean'
+	        },
+	        {
+		        name: 'ms',
+		        type: 'string'
+	        },
+	        {
+		        name: 'rev',
+		        type: 'string'
+	        }
         ],
 
         proxy: {

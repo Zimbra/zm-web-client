@@ -277,3 +277,29 @@ DIV.more-events {
   padding: .85em;
 //  text-align: right;
 }
+
+.zcs-appt-dialog {
+  background-color: #808080;
+
+  .zcs-appt-dialogbtn {
+
+    @extend .create-appt-margin;
+
+    &.first {
+      @extend .no-bottom-round;
+      margin-top: 10px;
+      border-bottom: 1px solid #B6B6B4;
+    }
+
+    &.last {
+      @extend .no-top-round;
+      border-top: none;
+    }
+
+    &.zcs-appt-cancelbtn {
+      margin-top: 10px;
+      margin-bottom: 10px;
+    }
+  }
+}
+

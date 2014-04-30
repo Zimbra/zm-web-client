@@ -80,7 +80,10 @@ Ext.define('ZCS.model.mail.ZtMsgWriter', {
 				mime = msg.getMime(),
 				origAtt = msg.get('origAttachments'),
 				attachments = msg.get('attachments'),
-				draftId = msg.get('draftId');
+				draftId = msg.get('draftId'),
+				isSeries = itemData.isSeries,
+				ridZ = itemData.ridZ,
+				exceptId = {};
 
 			// recipient addresses
 			for (i = 0; i < ln; i++) {
@@ -142,13 +145,27 @@ Ext.define('ZCS.model.mail.ZtMsgWriter', {
 			}
 
 			if (itemData.isInviteReply) {
-				Ext.apply(methodJson, {
-					compNum:            0,
-					id:                 origId,
-					idnt:               identityId,
-					updateOrganizer:    'TRUE',
-					verb:               msg.get('inviteAction')
-				});
+
+				if (isSeries) {
+					Ext.apply(methodJson, {
+						compNum:            0,
+						id:                 origId,
+						idnt:               identityId,
+						updateOrganizer:    'TRUE',
+						verb:               msg.get('inviteAction')
+					});
+				}
+				else {
+					exceptId.d = ridZ;
+					Ext.apply(methodJson, {
+						compNum:            0,
+						exceptId:           exceptId,
+						id:                 origId,
+						idnt:               identityId,
+						updateOrganizer:    'TRUE',
+						verb:               msg.get('inviteAction')
+					});
+				}
 			}
 
 			if (draftId) {

@@ -15,7 +15,8 @@ Ext.define('ZCS.view.calendar.ZtAppointmentForm', {
 		style: 'background-color: white;',   // TODO: move styles to a class
 		title: null,
 		app: null,
-		appt: null
+		appt: null,
+		msg: null
 	},
 
 	initialize: function() {
@@ -71,6 +72,17 @@ Ext.define('ZCS.view.calendar.ZtAppointmentForm', {
 					disabled: true
 				},
 				{
+					xtype:'spacer'
+				},
+				{
+					xtype: 'button',
+					iconCls: 'trash',
+					id: 'deleteAppt',
+					handler: function() {
+						this.up('appointmentpanel').fireEvent('onButtonTap');
+					}
+				},
+				{
 					xtype: 'button',
 					iconCls: 'arrow_down',
 					id: 'inviteActionsAppt',
@@ -109,14 +121,16 @@ Ext.define('ZCS.view.calendar.ZtAppointmentForm', {
 		this.add([toolbar, titleBar, itemView]);
 	},
 
-	 setPanel: function(msg, event) {
+	 setPanel: function(msg, event, isSeries) {
 		var invite = msg.get('invite'),
 			startTime = Ext.Date.format(event.get('start'), ZtMsg.invTimeFormat),
 			endTime = Ext.Date.format(event.get('end'), ZtMsg.invTimeFormat),
-            eventDate = Ext.Date.format(event.get('start'),ZtMsg.invDateFormat),
+            eventDate = isSeries ? Ext.Date.format(invite.get('start'), ZtMsg.invDateFormat) : Ext.Date.format(event.get('start'),ZtMsg.invDateFormat),
 			myResponse = invite.get('myResponse'),
 			displayStatus = this.getShowAsOptionLabel(invite.get('fb')),
 			apptColor, apptRgbColor, calFolderName;
+
+		 this.setMsg(msg);
 
 		var calFolder = ZCS.cache.get(event.get('folderId'));
 
