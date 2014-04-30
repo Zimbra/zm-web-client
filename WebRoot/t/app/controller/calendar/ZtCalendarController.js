@@ -78,12 +78,14 @@ Ext.define('ZCS.controller.calendar.ZtCalendarController', {
             },
 			appointmentPanel: {
 				cancel:             'doCancel',
-				contactTap:         'showMenu',
-				delete:             'doDelete'
+				contactTap:         'showMenu'
 			},
 			'appointmentpanel toolbar button[iconCls=inviteReply]': {
 				tap: 'onApptActionsButtonTap'
 			},
+            'appointmentpanel toolbar button[iconCls=edit]': {
+                tap:       'onApptActionsButtonTap'
+            },
 			'appointmentpanel toolbar button[iconCls=arrow_down]': {
 				tap: 'onApptActionsButtonTap'
 			},
@@ -103,7 +105,7 @@ Ext.define('ZCS.controller.calendar.ZtCalendarController', {
 
         app: ZCS.constant.APP_CALENDAR,
 
-	    event: null,
+        event: null,
 
 	    isSeries: false
     },
@@ -118,7 +120,7 @@ Ext.define('ZCS.controller.calendar.ZtCalendarController', {
 
         ZCS.app.on('notifyAppointmentDelete', this.handleDeleteNotification, this);
         ZCS.app.on('notifyAppointmentChange', this.handleModifyNotification, this);
-        ZCS.app.on('notifyAppointmentCreate', this.handleCreateNotification, this)
+        ZCS.app.on('notifyAppointmentCreate', this.handleCreateNotification, this);
 
         //Create a toolbar with calendar view buttons - Month, Day and Today
         this.createToolbar();
@@ -188,7 +190,7 @@ Ext.define('ZCS.controller.calendar.ZtCalendarController', {
 			    apptView: true,
 			    ridZ: start,
 			    success: function(record) {
-				    me.showItem(record, event);
+				    me.showItem(record);
 			    }
 		    });
 	    }
@@ -199,14 +201,14 @@ Ext.define('ZCS.controller.calendar.ZtCalendarController', {
      * @param {ZCS.model.calendar.ZtCalendar} event The Event record that was tapped
      */
 
-    showItem: function(msg, event, isSeries) {
+    showItem: function(msg, isSeries, isEdit) {
 		var panel = this.getAppointmentPanel(),
             invite = msg.get('invite'),
             title = Ext.String.htmlEncode(invite.get('subject') || ZtMsg.noSubject);
 
 	    this.setIsSeries(isSeries);
 
-        panel.setPanel(msg, event, isSeries);
+        panel.setPanel(msg, isSeries, isEdit);
         this.updateToolbar({isOrganizer: invite.get('isOrganizer')});
         panel.show({
             type:       'slide',
@@ -461,6 +463,10 @@ Ext.define('ZCS.controller.calendar.ZtCalendarController', {
         });
     },
 
+    doEdit: function(actionParams) {
+        ZCS.app.getAppointmentController().showNewApptForm(ZCS.constant.OP_EDIT, actionParams.msg, actionParams.event);
+    },
+
 	doDelete: function(actionParams) {
 		console.log("TODO: Delete the appt");
 	},
@@ -517,12 +523,14 @@ Ext.define('ZCS.controller.calendar.ZtCalendarController', {
 
 	onApptActionsButtonTap: function (button, e) {
 		var apptPanel = this.getAppointmentPanel(),
-			appt = apptPanel.getAppt(),
-			msg = apptPanel.getMsg();
+			msg = apptPanel.getMsg(),
+            event = this.getEvent();
 
 		if (button.get('iconCls') == 'trash') {
 			this.doDelete({msg: msg});
-		} else {
+		} else if (button.get('iconCls') == 'edit') {
+            this.doEdit({msg:msg, event:event});
+        } else {
 			this.showMenu(button, {
 				menuName:   button.initialConfig ? button.initialConfig.menuName : undefined,
 				appt:       appt
@@ -601,7 +609,7 @@ Ext.define('ZCS.controller.calendar.ZtCalendarController', {
 			apptView: true,
 			ridZ: (isInstance ? event.get('ridZ') : null),
 			success: function(record) {
-				me.showItem(record, event, isSeries);
+				me.showItem(record, isSeries);
 			}
 		});
 	}

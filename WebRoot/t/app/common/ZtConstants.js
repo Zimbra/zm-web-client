@@ -797,17 +797,15 @@ ZCS.constant.CONTACT_FIELDS = [
 ];
 
 ZCS.constant.CALENDAR_FIELDS = [
-    'title',
+    'subject',
     'location',
-    'startDate',
-    'endDate',
-    'startTime',
-    'endTime',
+    'start',
+    'end',
     'isAllDay',
     'repeat',
-    'reminder',
-    'calendarFolder',
-    'displayStatus',
+    'reminderAlert',
+    'apptFolderId',
+    'fb',
     'attendee',
     'notes'
 ];

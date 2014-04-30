@@ -69,6 +69,29 @@ Ext.define('ZCS.model.calendar.ZtCalendarWriter', {
             Ext.apply(methodJson, {
                 m: m
             });
+        } else if (action === 'update') {
+            if (itemData.op === 'modify') {
+                var	invite = request.getRecords()[0];
+
+                if (invite.get('isOrganizer')) {
+                    //Organizer modifying
+                    json = this.getSoapEnvelope(request, data, 'ModifyAppointment');
+                    methodJson = json.Body.ModifyAppointmentRequest;
+
+                    var id = methodJson.id = itemData.id;
+                } else {
+                    //Attendee modifying - create a local copy
+                    json = this.getSoapEnvelope(request, data, 'CreateAppointment');
+                    methodJson = json.Body.CreateAppointmentRequest;
+                }
+                var m = methodJson.m = {};
+
+                m = this.populateAttrs(methodJson, invite, true);
+
+                Ext.apply(methodJson, {
+                    m: m
+                });
+            }
         }
 
         request.setJsonData(json);
@@ -76,14 +99,14 @@ Ext.define('ZCS.model.calendar.ZtCalendarWriter', {
         return request;
     },
 
-    populateAttrs: function(request, appt) {
+    populateAttrs: function(request, invite, isEdit) {
         var m = request.m = {},
             mailFromAddress,
             comps,
             comp,
             inv,
             org,
-            notifyList = appt.get('attendee');
+            notifyList = isEdit ? invite.get('attendees') : invite.get('attendee');
 
         inv = m.inv = {};
         m.e = [];
@@ -99,28 +122,28 @@ Ext.define('ZCS.model.calendar.ZtCalendarWriter', {
         org.d = mailFromAddress.get('name');
 
         //start end time
-        this._addDateTimeToRequest(request, comp, appt);
+        this._addDateTimeToRequest(request, comp, invite);
 
         // subject/location
-        m.su = appt.get('title');
-        m.l = appt.get('calendarFolder');
+        m.su = invite.get('subject');
+        m.l = invite.get('apptFolderId');
 
-        comp.name = appt.get('title');
-        comp.loc = appt.get('location');
-        comp.fb = appt.get('displayStatus');
+        comp.name = invite.get('subject');
+        comp.loc = invite.get('location');
+        comp.fb = invite.get('displayStatus');
 
         //recurrence
-        this._setRecurrence(comp, appt);
+        this._setRecurrence(comp, invite);
 
         //alarm
-        var reminderMinutes = appt.get('reminder');
+        var reminderMinutes = invite.get('reminderAlert');
         this._setAlarmData(comp, reminderMinutes);
 
         //attendees
         this._addAttendeesToRequest(comp, m, notifyList);
 
         // notes
-        this._addNotesToRequest(m, appt);
+        this._addNotesToRequest(m, invite);
 
         return m;
     },
@@ -157,8 +180,8 @@ Ext.define('ZCS.model.calendar.ZtCalendarWriter', {
         }, this);
     },
 
-    _addDateTimeToRequest : function(request, comp, appt) {
-        var allDay = appt.get('isAllDay') ? 1 : 0;
+    _addDateTimeToRequest : function(request, comp, invite) {
+        var allDay = invite.get('isAllDay') ? 1 : 0;
         comp.allDay = allDay + "";
 
         var tz,
@@ -166,8 +189,8 @@ Ext.define('ZCS.model.calendar.ZtCalendarWriter', {
             sd,
             e,
             ed,
-            start = appt.get('startDate'),
-            end = appt.get('endDate'),
+            start = invite.get('start'),
+            end = invite.get('end'),
             timezone = ZCS.timezone.DEFAULT_TZ;
 
         if (timezone) {
@@ -178,7 +201,7 @@ Ext.define('ZCS.model.calendar.ZtCalendarWriter', {
         if (start) {
             s = comp.s = {};
             if (!allDay) {
-                var startTime = appt.get('startTime');
+                var startTime = invite.get('startTime');
                 start.setHours(startTime.getHours());
                 start.setMinutes(startTime.getMinutes());
                 sd = Ext.Date.format(start, "Ymd\\THis");
@@ -197,7 +220,7 @@ Ext.define('ZCS.model.calendar.ZtCalendarWriter', {
         if (end) {
             e = comp.e = {};
             if (!allDay) {
-                var endTime = appt.get('endTime');
+                var endTime = invite.get('endTime');
                 end.setHours(endTime.getHours());
                 end.setMinutes(endTime.getMinutes());
                 ed = Ext.Date.format(end, "Ymd\\THis");
@@ -214,15 +237,15 @@ Ext.define('ZCS.model.calendar.ZtCalendarWriter', {
         }
     },
 
-    _setRecurrence: function(comp, appt) {
-        if (appt.get('repeat') === ZCS.recur.self.NONE) {
+    _setRecurrence: function(comp, invite) {
+        if (invite.get('repeat') === ZCS.recur.self.NONE) {
             return;
         }
         var recur = comp.recur = {},
             add = recur.add = {},
             rule = add.rule = {},
             interval = rule.interval = {};
-        rule.freq = appt.get('repeat');
+        rule.freq = invite.get('repeat');
         interval.ival = 1;
     },
 
@@ -247,9 +270,9 @@ Ext.define('ZCS.model.calendar.ZtCalendarWriter', {
 
     },
 
-    _addNotesToRequest : function(m, appt) {
+    _addNotesToRequest : function(m, invite) {
         var mp = m.mp = {"mp" : []},
-            content = appt.get('notes');
+            content = invite.get('notes');
 
         mp.ct = ZCS.mime.MULTI_ALT;
         mp.mp.push({

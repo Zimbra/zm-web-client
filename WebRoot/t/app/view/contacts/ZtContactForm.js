@@ -95,7 +95,7 @@ Ext.define('ZCS.view.contacts.ZtContactForm', {
                 itemId:     'formPanel',
                 scrollable: true,
                 defaults: {
-                    labelWidth: '100px',
+                    labelWidth: '5.5em',
                     inputCls:   'zcs-form-input'
                 },
                 items: [

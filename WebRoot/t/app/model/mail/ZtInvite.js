@@ -50,11 +50,27 @@ Ext.define('ZCS.model.mail.ZtInvite', {
             { name: 'timezone',             type: 'string' },
             { name: 'attendeeResponse',     type: 'string' },
             { name: 'attendeeResponseMsg',  type: 'string' },
-            { name: 'reminderAlert',        type: 'string'},
+            { name: 'reminderAlert',        type: 'string' },
             { name: 'recurrence',           type: 'string' },
-			{ name:	'fb', 					type: 'string'},
-            { name: 'isException',          type: 'boolean'}
+			{ name:	'fb', 					type: 'string' },
+            { name: 'isException',          type: 'boolean'},
+            //Needed in case of edit appointment
+            { name: 'recur',                type: 'auto' },
+            { name: 'startTime',            type: 'auto' },
+            { name: 'endTime',              type: 'auto' }
 		],
+
+        proxy: {
+            type: 'soapproxy',
+            api: {
+                read: urlBase + 'SearchRequest',
+                create: urlBase + 'CreateAppointmentRequest',
+                update  : urlBase + 'ModifyAppointmentRequest'
+            },
+
+            reader: 'calendarreader',
+            writer: 'calendarwriter'
+        },
 
 		msgId: ''
 	},
@@ -95,10 +111,12 @@ Ext.define('ZCS.model.mail.ZtInvite', {
 
 			if (start) {
 				invite.set('start', ZCS.model.mail.ZtInvite.getDateFromJson(start));
+                invite.set('startTime', ZCS.model.mail.ZtInvite.getDateFromJson(start))
 			}
 			if (end) {
 				invite.set('end', ZCS.model.mail.ZtInvite.getDateFromJson(end));
-			}
+                invite.set('endTime', ZCS.model.mail.ZtInvite.getDateFromJson(end));
+            }
 
             if (timezone) {
                 invite.set('timezone', timezone);
@@ -107,6 +125,7 @@ Ext.define('ZCS.model.mail.ZtInvite', {
             if (comp.recur) {
                 //Fix for bug: 82159
                 invite.set('recurrence', ZCS.recur.getBlurb(comp));
+                invite.set('recur', comp.recur)
             }
 
             if (comp.ex) {
@@ -131,12 +150,12 @@ Ext.define('ZCS.model.mail.ZtInvite', {
 
 				for (i = 0; i < ln; i++) {
 					att = comp.at[i];
-					if (!att.cutype || att.cutype === ZCS.constant.CUTYPE_INDIVIDUAL) {
+					if (!att.cutype) {
 						attList = (att.role === ZCS.constant.ROLE_OPTIONAL) ? optAttendees : attendees;
 						email = ZCS.model.mail.ZtEmailAddress.fromInviteNode(att);
                         email.ptst = att.ptst;
                         attList.push(email);
-					}
+                    }
 				}
 				invite.set('attendees', attendees);
 				invite.set('optAttendees', optAttendees);

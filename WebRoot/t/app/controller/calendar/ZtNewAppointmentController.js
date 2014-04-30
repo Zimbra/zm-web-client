@@ -1,7 +1,7 @@
 
 Ext.define('ZCS.controller.calendar.ZtNewAppointmentController', {
 
-    extend: 'Ext.app.Controller',
+    extend: 'ZCS.controller.ZtItemController',
 
     requires: [
         'ZCS.view.calendar.ZtNewAppointment',
@@ -27,25 +27,135 @@ Ext.define('ZCS.controller.calendar.ZtNewAppointmentController', {
             }
         },
 
-        models: [
-        ],
+        models: ['ZCS.model.mail.ZtInvite'],
 
-        stores: [
-        ],
+        stores: ['ZCS.store.calendar.ZtCalendarStore'],
+
+        composeMode:    null,
+
+        msg:  null,
+
+        event: null,
+
+        inviteId: null,
 
         action: null
     },
 
-    showNewApptForm: function() {
-        var panel = this.getNewApptPanel();
+    /**
+     * Displays the appointment form to either create a new appointment or edit an existing one.
+     */
+    showNewApptForm: function(mode, msg, event) {
+        var me = this,
+            panel = this.getNewApptPanel(),
+            isEdit = (mode === ZCS.constant.OP_EDIT);
 
+        this.setComposeMode(mode);
         panel.resetForm();
+
         Ext.fly(this.getEditor()).addCls('zcs-fully-editable');
 
-        panel.show({
-            type: 'slide',
-            direction: 'up'
-        });
+        // Set the title of the form
+        panel.down('titlebar').setTitle(isEdit ? ZtMsg.editAppointment : ZtMsg.createAppointment);
+
+        // Fill in form fields if we're handed a contact
+        if (isEdit) {
+            this.setMsg(msg);
+            this.setInviteId(event.get('invId'));
+            this.populateForm();
+        }
+
+        me.unhideAppointmentForm();
+    },
+
+    populateForm: function() {
+
+        var	panel = this.getNewApptPanel(),
+            form = panel.down('formpanel'),
+            value, formField,
+            msg = this.getMsg(),
+            invite = msg.get('invite');
+
+        // Create and populate the simple attrs
+        Ext.each(ZCS.constant.CALENDAR_FIELDS, function(attr) {
+            value = invite.get(attr);
+            if (value) {
+                formField = form.down('field[name=' + attr + ']');
+                if (formField) {
+                    formField.setValue(value);
+                }
+                if (attr == 'start' || attr == 'end') {
+                    formField = form.down('field[name=' + attr + 'Time]');
+                    if (formField) {
+                        formField.setValue(value);
+                    }
+                }
+            }
+        }, this);
+
+        // Create as many fields as we need for each multiple-occurring attribute (at least one will be added)
+        var data = invite.get('attendees'),
+            formField,
+            at = [],
+            container = panel.down('attendeecontainer');
+        Ext.each(data, function(field, index) {
+            if (field.get('type') === ZCS.constant.CUTYPE_INDIVIDUAL) {
+                container.addField();
+                at.push(field);
+            }
+        }, this);
+
+
+        formField = container.query('contactfield[name=attendee]');
+        Ext.each(formField, function(item, index) {
+                item.addBubble(at[index]);
+        }, this);
+
+        if (invite.get('recurrence')) {
+            formField = form.down('field[name=recurrence]');
+            if (formField) {
+                formField.setValue(invite.get('recurrence'));
+                formField.setHidden(false);
+                var repeatField = form.down('field[name=repeat]');
+                repeatField.setHidden(true);
+            }
+        }
+
+        var description = invite.get('notes');
+        if (description) {
+            var editor = this.getEditor();
+            editor.innerHTML = description;
+        }
+    },
+
+    unhideAppointmentForm: function () {
+        if (Ext.os.deviceType === "Phone") {
+            this.getNewApptPanel().element.dom.style.removeProperty('display');
+        } else {
+            this.getNewApptPanel().show({
+                type: 'fadeIn',
+                duration: 250
+            });
+        }
+    },
+
+    /**
+     * Hides the contact form.
+     */
+    hideAppointmentForm: function() {
+        var panel = this.getNewApptPanel();
+
+        if (Ext.os.deviceType === "Phone") {
+            panel.element.dom.style.setProperty('display', 'none');
+        } else {
+            panel.hide({
+                type: 'fadeOut',
+                duration: 250
+            });
+        }
+
+        panel.resetForm();
+        this.setComposeMode(null);
     },
 
     getNewApptPanel: function() {
@@ -61,47 +171,94 @@ Ext.define('ZCS.controller.calendar.ZtNewAppointmentController', {
      * @private
      */
     doCancel: function() {
-        var panel = this.getNewApptPanel();
-
-        if (Ext.os.deviceType === "Phone") {
-            panel.element.dom.style.setProperty('display', 'none');
-        } else {
-            panel.hide({
-                type: 'fadeOut',
-                duration: 250
-            });
-        }
-
-        panel.resetForm();
+        this.hideAppointmentForm();
     },
 
     doSave: function() {
-        var newAppt = this.getCalendarModel();
+        var newAppt = this.getCalendarModel(),
+            mode = this.getComposeMode();
         if (newAppt) {
-            if (!newAppt.get('title')) {
-                Ext.Msg.alert(ZtMsg.error, ZtMsg.errorMissingSubject);
-            } else if (!this.isValidTime(newAppt)) {
-                Ext.Msg.alert(ZtMsg.error, ZtMsg.errorInvalidApptEndBeforeStart);
+            if (mode === ZCS.constant.OP_EDIT) {
+                var msg = this.getMsg(),
+                    invite = msg.get('invite'),
+                    me = this;
+                Ext.each(ZCS.constant.CALENDAR_FIELDS, function(attr){
+                    invite.set(attr, newAppt.get(attr));
+                });
+                var att = this.setAttendees(invite.get('attendees'), newAppt.get('attendee'));
+                invite.set('attendees', att);
+                invite.set('startTime', newAppt.get('startTime'));
+                invite.set('endTime', newAppt.get('endTime'));
+                if (this.isValidAppt(invite)) {
+                    this.modifyAppt(invite);
+                }
             } else {
-                this.createAppt(newAppt);
+                if (this.isValidAppt(newAppt)) {
+                    this.createAppt(newAppt);
+                }
             }
         }
+    },
+
+    setAttendees: function(oldAttendees, newAttendees) {
+
+        var attendees = [];
+        if (newAttendees) {
+            for(var i = 0, len = newAttendees.length; i< len; i++){
+                var newAttendee = newAttendees[i];
+                var oldAttendeeInstance = findAttendee(newAttendee.get('email'));
+                if (oldAttendeeInstance) {
+                    newAttendee.ptst = oldAttendeeInstance.ptst || ZCS.constant.PSTATUS_UNKNOWN;
+                    newAttendee.set('type', (oldAttendeeInstance.get('type') || ZCS.constant.CUTYPE_INDIVIDUAL));
+                } else {
+                    newAttendee.ptst = ZCS.constant.PSTATUS_UNKNOWN;
+                    newAttendee.set('type', ZCS.constant.CUTYPE_INDIVIDUAL);
+                }
+                attendees.push(newAttendee);
+            }
+        }
+        return attendees;
+
+        function findAttendee(emailId){
+            if (oldAttendees) {
+                for(var i = 0, len = oldAttendees.length; i < len; i++){
+                    var oldAttendeeInstance = oldAttendees[i]
+                    if(oldAttendeeInstance.get('email') === emailId){
+                        var attendee = oldAttendees.splice(i,1);
+                        return attendee[0];
+                    }
+                }
+            }
+        }
+    },
+
+    isValidAppt: function(newAppt) {
+        if (!newAppt.get('subject')) {
+            Ext.Msg.alert(ZtMsg.error, ZtMsg.errorMissingSubject);
+        } else if (!this.isValidTime(newAppt)) {
+            Ext.Msg.alert(ZtMsg.error, ZtMsg.errorInvalidApptEndBeforeStart);
+        } else {
+            return true;
+        }
+        return false;
     },
 
     /**
      * @private
      */
     createAppt: function(appt, callback, scope) {
-        var folder = ZCS.session.getCurrentSearchOrganizer();
+        var folder = ZCS.session.getCurrentSearchOrganizer(),
+            me = this;
 
         appt.save({
             folderId: folder ? folder.get('zcsId') : null,
             success: function() {
-                this.getNewApptPanel().hide();
-                ZCS.app.fireEvent('showToast', ZtMsg.apptCreated);
+                me.hideAppointmentForm();
+                ZCS.app.fireEvent('showToast', ZtMsg.appointmentCreated);
                 if (callback) {
                     callback.apply(scope);
                 }
+                me.reloadCalendar(false);
             },
             failure: function() {
                 ZCS.app.fireEvent('showToast', ZtMsg.errorCreateAppt);
@@ -109,12 +266,39 @@ Ext.define('ZCS.controller.calendar.ZtNewAppointmentController', {
         }, this);
     },
 
+    modifyAppt: function(invite) {
+        var me = this,
+            data = {
+                op:         'modify',
+                id:         this.getInviteId()
+            };
+
+        this.performOp(invite, data, function() {
+            me.hideAppointmentForm();
+            ZCS.app.fireEvent('showToast', ZtMsg.appointmentEdited);
+            // Reload to show newly updated state of the appointment
+            me.reloadCalendar(true, invite);
+        });
+    },
+
+    reloadCalendar: function(isEdit, invite) {
+        var msg = this.getMsg();
+        if (isEdit) {
+            msg.set('invite', invite);
+            ZCS.app.getCalendarController().showItem(msg, isEdit);
+        }
+        this.getStore().load();
+        ZCS.app.getCalendarController().refreshCurrentView();
+    },
+
     getCalendarModel: function() {
-        var appt = Ext.create('ZCS.model.calendar.ZtCalendar'),
+        var appt = Ext.create('ZCS.model.mail.ZtInvite'),
             values = this.getNewApptForm().getValues(),
             editor = this.getEditor();
 
         ZCS.util.setFields(values, appt, ZCS.constant.CALENDAR_FIELDS);
+        appt.set('startTime', values['startTime']);
+        appt.set('endTime', values['endTime']);
         appt.set('notes', editor.innerHTML);
 
         return appt;
@@ -158,8 +342,8 @@ Ext.define('ZCS.controller.calendar.ZtNewAppointmentController', {
      * @returns {boolean}
      */
     isValidTime: function(newAppt) {
-        var startDate = newAppt.get('startDate'),
-            endDate = newAppt.get('endDate'),
+        var startDate = newAppt.get('start'),
+            endDate = newAppt.get('end'),
             startTime = newAppt.get('startTime'),
             endTime = newAppt.get('endTime');
 

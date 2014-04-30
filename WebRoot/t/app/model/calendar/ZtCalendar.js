@@ -87,7 +87,8 @@ Ext.define('ZCS.model.calendar.ZtCalendar', {
             type: 'soapproxy',
             api: {
                 read: urlBase + 'SearchRequest',
-                create: urlBase + 'CreateAppointmentRequest'
+                create: urlBase + 'CreateAppointmentRequest',
+                update  : urlBase + 'ModifyAppointmentRequest'
             },
 
             reader: 'calendarreader',

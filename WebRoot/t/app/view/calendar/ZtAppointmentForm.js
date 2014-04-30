@@ -15,7 +15,6 @@ Ext.define('ZCS.view.calendar.ZtAppointmentForm', {
 		style: 'background-color: white;',   // TODO: move styles to a class
 		title: null,
 		app: null,
-		appt: null,
 		msg: null
 	},
 
@@ -27,7 +26,6 @@ Ext.define('ZCS.view.calendar.ZtAppointmentForm', {
 					elm = Ext.fly(target);
 
 				var apptBody = Ext.getCmp(e.delegatedTarget.id),
-					appt = apptBody.getAppt(),
 				// Note: elm.getId() hits NPE trying to cache DOM ID, so use elm.dom.id
 					idParams = ZCS.util.getIdParams(elm.dom.id) || {};
 
@@ -68,8 +66,9 @@ Ext.define('ZCS.view.calendar.ZtAppointmentForm', {
 					xtype: 'button',
 					iconCls: 'edit',
 					id: 'editAppt',
-					hidden: true,
-					disabled: true
+                    handler: function() {
+                        this.up('appointmentpanel').fireEvent('onButtonTap');
+                    }
 				},
 				{
 					xtype:'spacer'
@@ -121,18 +120,18 @@ Ext.define('ZCS.view.calendar.ZtAppointmentForm', {
 		this.add([toolbar, titleBar, itemView]);
 	},
 
-	 setPanel: function(msg, event, isSeries) {
+	 setPanel: function(msg, isSeries, isEdit) {
 		var invite = msg.get('invite'),
-			startTime = Ext.Date.format(event.get('start'), ZtMsg.invTimeFormat),
-			endTime = Ext.Date.format(event.get('end'), ZtMsg.invTimeFormat),
-            eventDate = isSeries ? Ext.Date.format(invite.get('start'), ZtMsg.invDateFormat) : Ext.Date.format(event.get('start'),ZtMsg.invDateFormat),
+            event = ZCS.app.getCalendarController().getEvent(),
+			startTime = Ext.Date.format(invite.get('start'), ZtMsg.invTimeFormat),
+			endTime = Ext.Date.format(invite.get('end'), ZtMsg.invTimeFormat),
+            eventDate = isSeries ? Ext.Date.format(invite.get('start'), ZtMsg.invDateFormat) :
+                Ext.Date.format(event.get('start'),ZtMsg.invDateFormat),
 			myResponse = invite.get('myResponse'),
 			displayStatus = this.getShowAsOptionLabel(invite.get('fb')),
 			apptColor, apptRgbColor, calFolderName;
 
-		 this.setMsg(msg);
-
-		var calFolder = ZCS.cache.get(event.get('folderId'));
+		var calFolder = ZCS.cache.get(invite.get('apptFolderId'));
 
 		if (calFolder) {
 			apptColor = calFolder.get('color');
@@ -150,7 +149,7 @@ Ext.define('ZCS.view.calendar.ZtAppointmentForm', {
 				location: invite.get('location'),
 				isOrganizer: invite.get('isOrganizer'),
 				organizer: ZCS.model.mail.ZtMailItem.convertAddressModelToObject(invite.get('organizer')),
-				attendees: ZCS.model.mail.ZtMailItem.convertAddressModelToObject(invite.get('attendees')),
+                attendees: ZCS.model.mail.ZtMailItem.convertAddressModelToObject(invite.get('attendees')),
 				optAttendees: ZCS.model.mail.ZtMailItem.convertAddressModelToObject(invite.get('optAttendees')),
 				myResponse: myResponse ? ZCS.constant.PSTATUS_TEXT[myResponse] : '',
 				calendar: calFolderName,
@@ -172,7 +171,7 @@ Ext.define('ZCS.view.calendar.ZtAppointmentForm', {
 
 		var apptView = this.getInnerAt(1);
 		apptView.setHtml(html);
-		this.setAppt(msg);
+		this.setMsg(msg);
 	 },
 
 	getShowAsOptionLabel : function(value) {

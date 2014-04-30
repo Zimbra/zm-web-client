@@ -70,15 +70,15 @@ Ext.define('ZCS.view.calendar.ZtDateField', {
             items: [
                 {
                     xtype:  'datepickerfield',
-                    name:   'startDate',
+                    name:   'start',
                     flex:   2,
                     destroyPickerOnHide: true,
-                    dateFormat:  ZtMsg.invDateFormat,
+                    dateFormat:  ZtMsg.invShortDateFormat,
                     value: new Date(),
                     listeners: {
                         change: function(field) {
                             if (field.getValue()) {
-                                var endDate = Ext.ComponentQuery.query('#endDate')[0];
+                                var endDate = Ext.ComponentQuery.query('#end')[0];
                                 if (endDate)
                                     endDate.setValue(field.getValue());
                             }
@@ -113,8 +113,8 @@ Ext.define('ZCS.view.calendar.ZtDateField', {
             items: [
                 {
                     xtype:               'datepickerfield',
-                    name:                'endDate',
-                    itemId:              'endDate',
+                    name:                'end',
+                    itemId:              'end',
                     flex:                 2,
                     destroyPickerOnHide:  true,
                     dateFormat:  ZtMsg.invShortDateFormat,
@@ -132,7 +132,7 @@ Ext.define('ZCS.view.calendar.ZtDateField', {
                         change: function(field) {
                             var val = field.getValue();
                             if (val.getHours() === 0) {
-                                var endDate = Ext.ComponentQuery.query('#endDate')[0];
+                                var endDate = Ext.ComponentQuery.query('#end')[0];
                                 if (endDate) {
                                     var end = endDate.getValue(),
                                         dt = new Date(end.setDate(end.getDate() + 1));
@@ -169,6 +169,13 @@ Ext.define('ZCS.view.calendar.ZtDateField', {
                         { text: ZtMsg.everyMonth,           value: "MON"},
                         { text: ZtMsg.everyYear,            value: "YEA"}
                     ]
+                },
+                {
+                    xtype:   'textfield',
+                    name:    'recurrence',
+                    flex:     1,
+                    hidden: true,
+                    disabled: true
                 }
             ]
         }

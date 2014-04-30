@@ -38,7 +38,7 @@ Ext.define('ZCS.view.calendar.ZtStatusField', {
             },
             {
                 xtype: 'selectfield',
-                name:   'displayStatus',
+                name:   'fb',
                 flex:   1,
                 options: [ {text: ZtMsg.busy, value: "B"} ],
                 listeners: {

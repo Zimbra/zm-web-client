@@ -27,7 +27,7 @@ Ext.define('ZCS.view.calendar.ZtTitleField', {
         items: [
             {
                 xtype:       'textfield',
-                name:        'title',
+                name:        'subject',
                 placeHolder:  ZtMsg.titleLabel,
                 cls: 'create-appt-margin first'
             },

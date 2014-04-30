@@ -39,7 +39,7 @@ Ext.define('ZCS.view.calendar.ZtReminderField', {
             },
             {
                 xtype:   'selectfield',
-                name:    'reminder',
+                name:    'reminderAlert',
                 flex:     1,
                 options: [ { text: ZtMsg.apptRemindNever, value: 0} ] ,
                 listeners: {

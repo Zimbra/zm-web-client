@@ -39,7 +39,7 @@ Ext.define('ZCS.view.calendar.ZtFolderField', {
             },
             {
                 xtype: 'selectfield',
-                name:   'calendarFolder',
+                name:   'apptFolderId',
                 flex:   1,
                 options: [ {text: ZtMsg.folderCalendar, value: "10"} ],
                 listeners: {
