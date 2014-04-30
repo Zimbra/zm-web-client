@@ -26,6 +26,11 @@ Ext.define('ZCS.model.mail.ZtInvite', {
 
 	extend: 'Ext.data.Model',
 
+	requires: [
+		'ZCS.model.calendar.ZtCalendarReader',
+		'ZCS.model.calendar.ZtCalendarWriter'
+	],
+
 	config: {
 
 		fields: [
