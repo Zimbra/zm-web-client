@@ -660,7 +660,7 @@ function(id, content) {
 	var plugins = [
 		"zemoticons",
 		"table", "paste", "directionality", "textcolor", "lists", "advlist",
-		"link", "hr", "charmap", "code"
+		"link", "hr", "charmap", "code", "contextmenu", "image"
 	];
 
 	if (this._attachmentCallback) {
@@ -674,8 +674,6 @@ function(id, content) {
 		});
 
 		plugins.push('zimage');
-	} else {
-		plugins.push('image');
 	}
 
     var fonts = [];
@@ -702,6 +700,7 @@ function(id, content) {
 		ie7_compat: false,
 		object_resizing : true,
         font_formats : fonts.join(";"),
+        contextmenu: 'link image | inserttable tableprops deletetable | cell row column',
         fontsize_formats : AjxMsg.fontSizes || '',
 		convert_urls : false,
 		verify_html : false,
@@ -729,9 +728,9 @@ function(id, content) {
             ed.on('BeforeExecCommand', obj.onBeforeExecCommand.bind(obj));
             ed.on('BeforeSetContent', obj.onBeforeSetContent.bind(obj));
 
-            ed.on('contextmenu',
-                  obj.notifyListeners.bind(obj, DwtEvent.ONCONTEXTMENU));
-		}
+            ed.on('contextmenu', obj._handleEditorEvent.bind(obj));
+            ed.on('mouseup', obj._handleEditorEvent.bind(obj));
+        }
     };
 
 	if( this._mode === Dwt.HTML ){
@@ -1490,6 +1489,7 @@ function(ev) {
 		sc.menu.popup(0, pos.x, pos.y);
 		ev._stopPropagation = true;
 		ev._returnValue = false;
+		return false;
 	}
 };
 
@@ -1847,12 +1847,6 @@ function(words, keepModeDiv) {
 			body.innerHTML = body.innerHTML;
 		}
 		body.style.display = ""; // redisplay the body
-
-		var ed = this.getEditor();
-		ed.on('ContextMenu', this._handleEditorEvent.bind(this));
-		ed.on('MouseUp', this._handleEditorEvent.bind(this));
-
-		//this._registerEditorEventHandler(doc, "contextmenu");
 	}
 	else { // TEXT mode
 		var textArea = document.getElementById(this._textAreaId);
@@ -1972,12 +1966,13 @@ function(ev) {
 		mouseEv.docX += pos.x;
 		mouseEv.docY += pos.y;
 		DwtControl.__mouseEvent(ev, DwtEvent.ONCONTEXTMENU, this, mouseEv);
-		retVal = mouseEv._returnValue;
+		if (ev._stopPropagation) {
+			retVal = false;
+        }
 	}
 
-
 	var self = this;
-	if (this._spellCheck) {
+	if (this._spellCheck && ev.srcElement && ev.srcElement.id in this._spellCheck.spanIds) {
 		var dw;
 		// This probably sucks.
 		if (/mouse|context|click|select/i.test(ev.type)) {
@@ -1990,6 +1985,9 @@ function(ev) {
 			self._handleSpellCheckerEvents(dw);
 			this._TIMER_spell = null;
 		}, 100);
+		ev.stopImmediatePropagation();
+		ev.stopPropagation();
+		ev.preventDefault();
 		return tinymce.dom.Event.cancel(ev);
 	}
 
