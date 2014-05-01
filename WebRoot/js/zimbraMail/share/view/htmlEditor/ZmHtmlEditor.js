@@ -144,10 +144,6 @@ function() {
 	var bounds = this.boundsForChild(iframe);
 	var x = bounds.width, y = bounds.height;
 
-	if (x <= 0 || y <= 0) {
-		return;
-	}
-
     //Subtracting editor toolbar heights
     AjxUtil.foreach(Dwt.byClassName('mce-toolbar-grp',
                                     editor.getContainer()),
@@ -161,8 +157,10 @@ function() {
         y = y - Dwt.getSize(spellCheckModeDiv).y;
     }
 
-	if (this.getVisible() && (x < 0 || y < 0)) {
-		setTimeout(ZmHtmlEditor.prototype._resetSize.bind(this), 100);
+	if (isNaN(x) || x < 0 || isNaN(y) || y < 0) {
+		if (this.getVisible()) {
+			setTimeout(ZmHtmlEditor.prototype._resetSize.bind(this), 100);
+		}
 		return;
 	}
 
@@ -456,13 +454,14 @@ function(params) {
 	var htmlEl = this.getHtmlElement();
 
     if( this._mode === Dwt.HTML ){
-        Dwt.setVisible(htmlEl, false);
+        Dwt.setVisible(this.getContentField(), false);
     }
 	//textarea on which html editor is constructed
-    var id = this._bodyTextAreaId = this._bodyTextAreaId || this.getHTMLElId() + "_content";
+	var id = this._bodyTextAreaId;
 	var textEl = document.createElement("textarea");
 	textEl.setAttribute("id", id);
 	textEl.setAttribute("name", id);
+	Dwt.setVisible(textEl, this._mode === Dwt.TEXT);
     if( appCtxt.get(ZmSetting.COMPOSE_INIT_DIRECTION) === ZmSetting.RTL ){
         textEl.setAttribute("dir", ZmSetting.RTL);
     }
@@ -733,11 +732,8 @@ function(id, content) {
         }
     };
 
-	if( this._mode === Dwt.HTML ){
-        Dwt.setVisible(obj.getHtmlElement(), false);
-    }
-    else{
-        Dwt.setVisible(obj.getHtmlElement(), true);
+    if (this._mode === Dwt.HTML) {
+        Dwt.setVisible(obj.getContentField(), false);
     }
 
 	tinyMCE.init(tinyMCEInitObj);
@@ -803,14 +799,13 @@ ZmHtmlEditor.prototype._handlePasteUpload = function(r) {
 ZmHtmlEditor.prototype.onPostRender = function(ev) {
 	var ed = this.getEditor();
 
-    this._resetSize();
-
     ed.dom.setStyles(ed.getBody(), {"font-family" : appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_FAMILY),
                                     "font-size"   : appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_SIZE),
                                     "color"       : appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_COLOR)
                                    });
 
-    Dwt.setVisible(this.getHtmlElement(), true);
+    Dwt.setVisible(ed.getContainer(), true);
+    this._resetSize();
 };
 
 ZmHtmlEditor.prototype.onInit = function(ev) {
@@ -1060,11 +1055,10 @@ ZmHtmlEditor.prototype.setMode = function (mode, convert, convertor) {
         if (convert) {//tinymce will set html content directly in textarea. Resetting the content after removing the html tags.
             this.setContent(content);
         }
-        if (!window.tinyMCE) {
-            //if tinymce is not loading in certain edge cases, user can switch to plain text mode
-            Dwt.setVisible(this.getHtmlElement(), true);
-        }
+
+        Dwt.setVisible(this.getContentField(), true);
     }
+
     this._resetSize();
 };
 
