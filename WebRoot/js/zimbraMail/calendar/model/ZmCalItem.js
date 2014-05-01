@@ -211,6 +211,14 @@ ZmCalItem.ALARM_DISPLAY	= "DISPLAY";
 ZmCalItem.ALARM_EMAIL	= "EMAIL";
 ZmCalItem.ALARM_DEVICE_EMAIL = "DEVICE_EMAIL"; // SMS
 
+// Duration Checks
+ZmCalItem.MSEC_LIMIT_PER_WEEK  = AjxDateUtil.MSEC_PER_DAY * 7;
+// Because recurrences can be on the first (or 2nd, 3rd...) Day-of-week of a
+// month, play it safe and make the limit 5 weeks
+ZmCalItem.MSEC_LIMIT_PER_MONTH = AjxDateUtil.MSEC_PER_DAY * 7 * 5;
+ZmCalItem.MSEC_LIMIT_PER_YEAR  = AjxDateUtil.MSEC_PER_DAY * 366;
+
+
 // Getters
 
 /**
@@ -725,6 +733,33 @@ function(){
 
     return (startTime<=endTime);
 
+}
+/**
+ * Checks whether the duration of this item is valid with respect to the
+ * recurrence period.  For example, if the item repeats daily, its duration
+ * should not be longer than a day.
+ *
+ * This can get very complicated due to custom repeat rules.  So the
+ * limitation is just set on the repeat type.  The purpose is to prevent
+ * (as has happened) someone creating a repeating appt where they set the
+ * duration to be the span the appt is in effect over a year instead of its
+ * duration during the day.  For example, repeat daily, start = Jan 1 2014,
+ * end = July 1 2014.   See Bug 87993.
+ *
+ * @return	{Boolean}	<code>true</code> if the item possess valid duration.
+ */
+ZmCalItem.prototype.isValidDurationRecurrence = function() {
+	var valid     = true;
+	var recurType = this.getRecurType();
+	var duration  = this.getDuration();
+	switch (recurType) {
+		case ZmRecurrence.DAILY:   valid = duration <= AjxDateUtil.MSEC_PER_DAY;       break;
+		case ZmRecurrence.WEEKLY:  valid = duration <= ZmCalItem.MSEC_LIMIT_PER_WEEK;  break;
+		case ZmRecurrence.MONTHLY: valid = duration <= ZmCalItem.MSEC_LIMIT_PER_MONTH; break;
+		case ZmRecurrence.YEARLY:  valid = duration <= ZmCalItem.MSEC_LIMIT_PER_YEAR;  break;
+		default: break;
+	}
+	return valid;
 }
 
 /**

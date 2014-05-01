@@ -411,6 +411,13 @@ function(msg, style, cb, cbObj, cbArgs) {
         msgDlg.setTitle(ZmMsg.timezoneConflictTitle);
         msgDlg.popup();
 }
+ZmApptComposeView.prototype.showInvalidDurationRecurrenceMsg =
+	function() {
+		var msgDlg = appCtxt.getMsgDialog(true);
+		msgDlg.setMessage(ZmMsg.durationRecurrenceError, DwtMessageDialog.WARNING_STYLE);
+		msgDlg.setTitle(ZmMsg.durationRecurrenceErrorTitle);
+		msgDlg.popup();
+	}
 
 // Private / Protected methods
 

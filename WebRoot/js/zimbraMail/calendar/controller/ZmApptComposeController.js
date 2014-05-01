@@ -183,13 +183,18 @@ function(attId) {
         this._composeView.getNumLocationConflictRecurrence() :
         ZmTimeSuggestionPrefDialog.DEFAULT_NUM_RECURRENCE;
 
-    if (appt && !appt.isValidDuration()) {
-        this._composeView.showInvalidDurationMsg();
-        this.enableToolbar(true);
-        return false;
-    }
-
 	if (appt) {
+
+		if (!appt.isValidDuration()) {
+			this._composeView.showInvalidDurationMsg();
+			this.enableToolbar(true);
+			return false;
+		}
+		if (!appt.isValidDurationRecurrence()) {
+			this._composeView.showInvalidDurationRecurrenceMsg();
+			this.enableToolbar(true);
+			return false;
+		}
 
         if (appCtxt.get(ZmSetting.GROUP_CALENDAR_ENABLED)) {
             if (this._requestResponses)
