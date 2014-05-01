@@ -122,7 +122,7 @@ $px-unit: 1px;
 	}
 }
 
-/* BEGIN MSG HEADER */
+// BEGIN MSG HEADER
 
 $msgHdrTextSize: 1em;
 $msgHdrImageSize: 3em;
@@ -132,118 +132,16 @@ $msgHdrLeftIndent: $msgHdrImageSize + $msgHdrStdMargin*2;
 
 $msgHdrRightIndent: $msgHdrStdMargin;
 $msgHdrDetailToggle: 3.5em;  /* width set for english text */
+$msgHdrDateSmall: 3em;
 
 $msgHdrTopOffset1: $msgHdrStdMargin;
 $msgHdrTopOffset2: $msgHdrTextSize * 1.5 + $msgHdrTopOffset1;
 $msgHdrTopOffset3: $msgHdrTextSize * 3 + $msgHdrTopOffset1;
 
-.zcs-mail-msgHdr {
-	font-size: 1rem; /* reset font size for baseline */
-	min-height: $msgHdrTextSize*4.5;
-	position: relative;
-}
-
-.x-phone.x-portrait .zcs-mail-msgHdr.detailed {
-	min-height: $msgHdrTextSize*6;
-
-	.zcs-msgHdr-date {
-		left: $msgHdrLeftIndent;
-		right: inherit;
-		top: $msgHdrTopOffset3;
-	}
-
-	.zcs-msgHdr-link {
-		top: $msgHdrTopOffset1 / 4;
-	}
-}
+$msgHdrTopOffsetPhone: 1.5em;
 
 .zcs-msgHdr-element {
 	position: absolute;
-}
-
-.zcs-msgHdr-person {
-	@extend .zcs-msgHdr-element;
-	background-image: url('../images/person.png');
-	background-position: center;
-	background-size: contain;
-	background-repeat: no-repeat;
-	height: $msgHdrImageSize;
-	left: $msgHdrStdMargin;
-	top: $msgHdrTopOffset1;
-	width: $msgHdrImageSize;
-	@include border-radius($msgHdrImageSize / 2);
-}
-
-.zcs-msgHdr-fromContainer {
-	@extend .zcs-msgHdr-element;
-	font-size: $msgHdrTextSize;
-	left: $msgHdrLeftIndent;
-	top: $msgHdrTopOffset1;
-
-	.zcs-msgHdr-fromBubble {
-		color: $base-color;
-		font-size: 1.3em;
-		line-height: 1em;
-	}
-
-	.zcs-msgHdr-fromConnector {
-		color: $primary-text-color;
-		font-size: 0.8em;
-		line-height: 1em;
-		padding: 0 0.25em;
-	}
-}
-
-.collapsed {
-	.zcs-msgHdr-fromContainer {
-		.zcs-msgHdr-fromBubble {
-			color: $primary-text-color;
-		}
-	}
-}
-
-.zcs-msgHdr-from {
-	@extend .zcs-msgHdr-element;
-	left: $msgHdrLeftIndent;
-	line-height: 1.7em;
-	right: $msgHdrRightIndent;
-	top: $msgHdrTopOffset2;
-	@include ellipsis();
-}
-
-.zcs-msgHdr-fragment {
-	@extend .zcs-msgHdr-element;
-	left: $msgHdrLeftIndent;
-	right: $msgHdrRightIndent;
-	top: $msgHdrTopOffset2;
-	@include ellipsis();
-
-	SPAN {
-		@extend .zcs-fragment;
-	}
-}
-
-.zcs-msgHdr-date {
-	@extend .zcs-msgHdr-element;
-	right: $msgHdrRightIndent;
-	top: $msgHdrTopOffset1;
-	text-align: right;
-
-	SPAN {
-		@extend .zcs-date;
-		text-align: right;
-	}
-
-}
-
-.zcs-msgHdr-to {
-	@extend .zcs-msgHdr-element;
-	font-size: 1em;
-	left: $msgHdrLeftIndent;
-	line-height: 1.7em;
-	right: $msgHdrRightIndent+$msgHdrDetailToggle;
-	top: $msgHdrTopOffset2;
-	@include ellipsis();
 }
 
 // Has to be more specific than ".x-html A"
@@ -251,44 +149,185 @@ $msgHdrTopOffset3: $msgHdrTextSize * 3 + $msgHdrTopOffset1;
 	@extend .zcs-link;
 }
 
-.zcs-msgHdr-link {
-	@extend .zcs-msgHdr-element;
-	line-height: 1em;
-	right: $msgHdrRightIndent;
-	top: $msgHdrTopOffset2;
-	//padded out the size to increase the touch target area
-	margin-top: -0.5em;
-	padding: 1.25em 0 0.5em 1.5em;
-}
+.zcs-mail-msgHdr {
+	font-size: 1rem; /* reset font size for baseline */
+	min-height: $msgHdrTextSize*4.5;
+	position: relative;
 
-.zcs-msgHdr-label {
-	display: inline-block;
-	text-align: right;
-	width: $msgHdrLabelIndent;
-	@include opacity(.5);
+	.zcs-msgHdr-person {
+		@extend .zcs-msgHdr-element;
+		background-image: url('../images/person.png');
+		background-position: center;
+		background-size: contain;
+		background-repeat: no-repeat;
+		height: $msgHdrImageSize;
+		left: $msgHdrStdMargin;
+		top: $msgHdrTopOffset1;
+		width: $msgHdrImageSize;
+		@include border-radius($msgHdrImageSize / 2);
+	}
 
-	&:after {
-		content: ":";
+	.zcs-msgHdr-fromContainer {
+		@extend .zcs-msgHdr-element;
+		font-size: $msgHdrTextSize;
+		left: $msgHdrLeftIndent;
+		overflow: hidden;
+		right: $msgHdrDateSmall;
+		top: $msgHdrTopOffset1;
+		white-space: nowrap;
+		@include ellipsis();
+
+		.zcs-msgHdr-fromBubble {
+			color: $base-color;
+			font-size: 1.3em;
+			line-height: 1em;
+		}
+
+		.zcs-msgHdr-fromConnector {
+			color: $primary-text-color;
+			font-size: 0.8em;
+			line-height: 1em;
+			padding: 0 0.25em;
+		}
+	}
+
+	.zcs-msgHdr-from {
+		@extend .zcs-msgHdr-element;
+		left: $msgHdrLeftIndent;
+		line-height: 1.7em;
+		right: $msgHdrRightIndent;
+		top: $msgHdrTopOffset2;
+		@include ellipsis();
+	}
+
+	.zcs-msgHdr-date {
+		@extend .zcs-msgHdr-element;
+		right: $msgHdrRightIndent;
+		top: $msgHdrTopOffset1;
+		text-align: right;
+
+		SPAN {
+			@extend .zcs-date;
+			text-align: right;
+		}
+	}
+
+	.zcs-msgHdr-link {
+		@extend .zcs-msgHdr-element;
+		line-height: 1em;
+		right: $msgHdrRightIndent;
+		top: $msgHdrTopOffset2;
+		//padded out the size to increase the touch target area
+		margin-top: -0.5em;
+		padding: 1.25em 0 0.5em 1.5em;
+	}
+
+	.zcs-msgHdr-to {
+		@extend .zcs-msgHdr-element;
+		font-size: 1em;
+		left: $msgHdrLeftIndent;
+		line-height: 1.7em;
+		right: $msgHdrRightIndent+$msgHdrDetailToggle;
+		top: $msgHdrTopOffset2;
+		@include ellipsis();
 	}
 }
 
+.x-phone.x-portrait .zcs-mail-msgHdr {
+	min-height: $msgHdrTextSize*4.5 + $msgHdrTopOffsetPhone;
+
+	.zcs-msgHdr-link {
+		top: $msgHdrTopOffset1;
+		padding-top: 0.5em;
+	}
+
+	.zcs-msgHdr-person,
+	.zcs-msgHdr-fromContainer,
+	.zcs-msgHdr-date {
+		top: $msgHdrTopOffset1 + $msgHdrTopOffsetPhone;
+	}
+
+	.zcs-msgHdr-to {
+		top: $msgHdrTopOffset2 + $msgHdrTopOffsetPhone;
+		right: $msgHdrRightIndent;
+	}
+}
+
+.x-phone.x-portrait .zcs-mail-msgHdr.detailed {
+	min-height: $msgHdrTextSize*6 + $msgHdrTopOffsetPhone;
+
+	.zcs-msgHdr-fromContainer {
+		right: $msgHdrRightIndent;
+		top: $msgHdrTopOffset1 + $msgHdrTopOffsetPhone;
+	}
+
+	.zcs-msgHdr-from {
+		top: $msgHdrTopOffset2 + $msgHdrTopOffsetPhone;
+	}
+
+	.zcs-msgHdr-date {
+		left: $msgHdrLeftIndent;
+		right: inherit;
+		top: $msgHdrTopOffset3 + $msgHdrTopOffsetPhone;
+	}
+}
+
+.x-phone.x-portrait .zcs-mail-msgHdr.collapsed {
+	min-height: $msgHdrTextSize*4.5;
+
+	.zcs-msgHdr-person,
+	.zcs-msgHdr-fromContainer,
+	.zcs-msgHdr-date {
+		top: $msgHdrTopOffset1;
+	}
+}
+
+.zcs-mail-msgHdr.collapsed {
+	.zcs-msgHdr-fromContainer {
+		.zcs-msgHdr-fromBubble {
+			color: $primary-text-color;
+		}
+	}
+
+	.zcs-msgHdr-fragment {
+		@extend .zcs-msgHdr-element;
+		left: $msgHdrLeftIndent;
+		right: $msgHdrRightIndent;
+		top: $msgHdrTopOffset2;
+		@include ellipsis();
+
+		SPAN {
+			@extend .zcs-fragment;
+		}
+	}
+}
+// END MSG HEADER
+
+// BEGIN DETAILED MSG HEADER
 .zcs-mail-dtlMsgHdr {
 	font-size: 1rem;
 	margin-bottom: 0.3em;
 
 	.zcs-msgHdr-label {
+		display: inline-block;
 		line-height: 1.5em;
 		position: absolute;
+		text-align: right;
+		width: $msgHdrLabelIndent;
+		@include opacity(.5);
+
+		&:after {
+//			content: ":";
+		}
 	}
 
 	.zcs-msgHdr-field {
 		margin-left: $msgHdrLeftIndent;
 	}
 }
+// END DETAILED MSG HEADER
 
-/* END MSG HEADER */
-
-/* BEGIN MSG BODY */
+// BEGIN MSG BODY
 .zcs-msg-body {
 	margin: $msgHdrStdMargin;
 	margin-bottom: $msgHdrStdMargin * 3;
@@ -363,7 +402,7 @@ $attachTextColor: #333;
 
 @import 'widgets/mail/ztinvite';
 
-/* END MSG BODY */
+// END MSG BODY
 
 // Work around Sencha bug TOUCH-3894, where a 46-pixel empty DIV gets added between msg body and footer
 // http://www.sencha.com/forum/showthread.php?253388-List-with-useComponents-true-dosen-t-fire-the-itemtap-event
