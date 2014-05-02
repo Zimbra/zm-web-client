@@ -402,9 +402,7 @@
 		</td>
 		<td id='${ccCellId}'>
 		</td>
-		<td width='1%' style='white-space:nowrap;'>
-			<a href='#' id='${bccToggleId}'><$=ZmMsg.showBCC$></a>
-		</td>
+		<td width='1%'></td>
 	</tr>
 </template>
 
@@ -460,16 +458,7 @@
 				</tr>
 				</table>
 			</td>
-			<td nowrap width='1%'>
-			<$ if (appCtxt.get(ZmSetting.MAIL_PRIORITY_ENABLED)) { $>
-				<table role="presentation">
-					<tr>
-						<td align=right style='<$=labelStyle$>' nowrap="nowrap"><$=ZmMsg.priorityLabel$>&nbsp;</td>
-						<td id="${priorityId}"></td>
-					</tr>
-				</table>
-			<$ } $>
-			</td>
+			<td nowrap width='1%'></td>
 		</tr>
 		<tr id='${attRowId}'>
 			<td width='1%' style='vertical-align:top; <$=labelStyle$>'>

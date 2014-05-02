@@ -80,7 +80,7 @@ function(htmlElId, typeStr) {
 
 
 ZmRecipients.prototype.createRecipientHtml =
-function(parent, viewId, htmlElId, fieldNames, bccToggleId) {
+function(parent, viewId, htmlElId, fieldNames) {
 
     this._fieldNames = fieldNames;
 	var contactsEnabled = appCtxt.get(ZmSetting.CONTACTS_ENABLED);
@@ -165,15 +165,7 @@ function(parent, viewId, htmlElId, fieldNames, bccToggleId) {
 			}
 		}
 	}
-
-	// Toggle BCC
-    if (bccToggleId){
-        this._toggleBccEl = document.getElementById(bccToggleId);
-        if (this._toggleBccEl) {
-            Dwt.setHandler(this._toggleBccEl, DwtEvent.ONCLICK, AjxCallback.simpleClosure(this._toggleBccField, this));
-        }
-    }
-}
+};
 
 ZmRecipients.prototype.reset =
 function() {
@@ -213,32 +205,29 @@ function() {
     }
     if (this._field[AjxEmailAddress.BCC]) {
         //Set BCC Field to Default
-        this._toggleBccField(null, appCtxt.get(ZmSetting.SHOW_BCC));
+        this._toggleBccField(appCtxt.get(ZmSetting.SHOW_BCC));
     }
-}
+};
 
 ZmRecipients.prototype.getField =
 function(type) {
     return document.getElementById(this._fieldId[type]);
-}
-
+};
 
 ZmRecipients.prototype.getUsing =
 function(type) {
     return this._using[type];
-}
+};
 
 ZmRecipients.prototype.getACAddrSelectList =
 function() {
     return this._acAddrSelectList;
-}
+};
 
 ZmRecipients.prototype.getAddrInputField =
 function(type) {
     return this._addrInputField[type];
-}
-
-
+};
 
 // Adds the given addresses to the form. We need to add each address separately in case it's a DL.
 ZmRecipients.prototype.addAddresses =
@@ -438,9 +427,6 @@ function(type, show, skipNotify, skipFocus) {
 	if (setting) {
 		appCtxt.set(setting, show, null, false, skipNotify);
 	}
-	if ((type == AjxEmailAddress.BCC) && this._toggleBccEl) {
-		Dwt.setInnerHtml(this._toggleBccEl, show ? ZmMsg.hideBCC : ZmMsg.showBCC );
-	}
 	if (this._resetContainerSize) {
 		this._resetContainerSize();
 	}
@@ -615,7 +601,7 @@ function() {
 };
 
 ZmRecipients.prototype._toggleBccField =
-function(ev, force) {
+function(force) {
 	var isBccFieldVisible = Dwt.getVisible(this._divEl[AjxEmailAddress.BCC]);
 	if (typeof force != "undefined") {
 		isBccFieldVisible = !force;

@@ -200,18 +200,6 @@ function(params) {
 		this._isDirty = true;
 	}
 
-	if (appCtxt.get(ZmSetting.MAIL_PRIORITY_ENABLED)) {
-		var priority = "";
-		if (msg && (action === ZmOperation.DRAFT)) {
-			if (msg.isHighPriority) {
-				priority = ZmItem.FLAG_HIGH_PRIORITY;
-			} else if (msg.isLowPriority) {
-				priority = ZmItem.FLAG_LOW_PRIORITY;
-			}
-		}
-		this._setPriority(priority);
-	}
-
     //Force focus on body only for reply and replyAll
     if (ZmComposeController.IS_REPLY[action]) {
         this._moveCaretOnTimer(params.extraBodyText ? params.extraBodyText.length : 0);
@@ -694,7 +682,7 @@ function(attId, isDraft, dummyMsg, forceBail, contactId) {
 
 	msg.setMessageAttachmentId(forwardMsgIds);
 
-	var priority = this._getPriority();
+	var priority = this._controller._getPriority();
 	if (priority) {
 		msg.flagLocal(priority, true);
 	}
@@ -1047,7 +1035,7 @@ function(params) {
 	}
 
 	this._subjectField.value = params.subj || "";
-	this._setPriority(params.priority);
+	this._controller._setPriority(params.priority);
 	this.updateTabTitle();
 
 	var content = params.body || "";
@@ -2901,7 +2889,6 @@ function(templateId) {
 		bccRowId:			ZmId.getViewId(this._view, ZmId.CMP_BCC_ROW),
 		bccPickerId:		ZmId.getViewId(this._view, ZmId.CMP_BCC_PICKER),
 		bccInputId:			ZmId.getViewId(this._view, ZmId.CMP_BCC_INPUT),
-		bccToggleId:		ZmId.getViewId(this._view, ZmId.CMP_BCC_TOGGLE),
 		bccCellId:			ZmId.getViewId(this._view, ZmId.CMP_BCC_CELL),
 		subjectRowId:		ZmId.getViewId(this._view, ZmId.CMP_SUBJECT_ROW),
 		subjectInputId:		ZmId.getViewId(this._view, ZmId.CMP_SUBJECT_INPUT),
@@ -2910,7 +2897,6 @@ function(templateId) {
 		oboLabelId:			ZmId.getViewId(this._view, ZmId.CMP_OBO_LABEL),
 		identityRowId:		ZmId.getViewId(this._view, ZmId.CMP_IDENTITY_ROW),
 		identitySelectId:	ZmId.getViewId(this._view, ZmId.CMP_IDENTITY_SELECT),
-		priorityId:			ZmId.getViewId(this._view, ZmId.CMP_PRIORITY),
 		replyAttRowId:		ZmId.getViewId(this._view, ZmId.CMP_REPLY_ATT_ROW),
 		attRowId:			ZmId.getViewId(this._view, ZmId.CMP_ATT_ROW),
 		attDivId:			ZmId.getViewId(this._view, ZmId.CMP_ATT_DIV),
@@ -2950,7 +2936,7 @@ function(templateId, data) {
 	// global identifiers
 	this._identityDivId = data.identityRowId;
 
-	this._recipients.createRecipientHtml(this, this._view, data.id, ZmMailMsg.COMPOSE_ADDRS, data.bccToggleId);
+	this._recipients.createRecipientHtml(this, this._view, data.id, ZmMailMsg.COMPOSE_ADDRS);
 	this._acAddrSelectList = this._recipients.getACAddrSelectList();
 
 	// save reference to DOM objects per ID's
@@ -2994,13 +2980,6 @@ function(templateId, data) {
 		this._setIdentityVisible();
 	}
 
-	if (appCtxt.get(ZmSetting.MAIL_PRIORITY_ENABLED)) {
-		var buttonId = ZmId.getButtonId(this._view, ZmId.CMP_PRIORITY);
-		this._priorityButton = new DwtButton({parent:this, id:buttonId});
-		this._priorityButton.setMenu(new AjxCallback(this, this._priorityButtonMenuCallback));
-		this._priorityButton.reparentHtmlElement(data.priorityId);
-		this._priorityButton.setToolTipContent(ZmMsg.setPriority, true);
-	}
 	var attButtonId = ZmId.getButtonId(this._view, ZmId.CMP_ATT_BTN);
 	this._attButton = new DwtButton({parent:this, id:attButtonId});
 	this._attButton.setText(ZmMsg.attach);
@@ -3090,22 +3069,6 @@ function(menu, text, listner) {
 		item.addSelectionListener(listner);
 	}
 	return item;
-};
-ZmComposeView.prototype._createPriorityMenuItem =
-function(menu, text, flag) {
-	var item = DwtMenuItem.create({parent:menu, imageInfo:this._getPriorityImage(flag), text:text});
-	item._priorityFlag = flag;
-	item.addSelectionListener(this._priorityMenuListnerObj);
-};
-
-ZmComposeView.prototype._priorityButtonMenuCallback =
-function() {
-	var menu = new DwtMenu({parent:this._priorityButton});
-	this._priorityMenuListnerObj = new AjxListener(this, this._priorityMenuListner);
-	this._createPriorityMenuItem(menu, ZmMsg.high, ZmItem.FLAG_HIGH_PRIORITY);
-	this._createPriorityMenuItem(menu, ZmMsg.normal, "");
-	this._createPriorityMenuItem(menu, ZmMsg.low, ZmItem.FLAG_LOW_PRIORITY);
-	return menu;
 };
 
 ZmComposeView.prototype._startUploadAttachment =
@@ -3338,33 +3301,6 @@ function() {
 	appCtxt.notifyZimlets("initializeAttachPopup", [menu, this], {waitUntilLoaded:true});
 
 	return menu;
-};
-
-ZmComposeView.prototype._getPriorityImage =
-function(flag) {
-	if (flag === ZmItem.FLAG_HIGH_PRIORITY)	{ return "PriorityHigh_list"; }
-	if (flag === ZmItem.FLAG_LOW_PRIORITY)	{ return "PriorityLow_list"; }
-	return "PriorityNormal_list";
-};
-
-ZmComposeView.prototype._priorityMenuListner =
-function(ev) {
-	this._setPriority(ev.dwtObj._priorityFlag);
-};
-
-ZmComposeView.prototype._getPriority =
-function() {
-	return (this._priorityButton)
-		? (this._priorityButton._priorityFlag || "") : "";
-};
-
-ZmComposeView.prototype._setPriority =
-function(flag) {
-	if (this._priorityButton) {
-		flag = flag || "";
-		this._priorityButton.setImage(this._getPriorityImage(flag));
-		this._priorityButton._priorityFlag = flag;
-	}
 };
 
 ZmComposeView.prototype._getIdentityOptions =

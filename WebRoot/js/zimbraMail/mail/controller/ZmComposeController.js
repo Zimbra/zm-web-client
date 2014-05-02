@@ -147,6 +147,7 @@ function() {
 	ZmComposeController.OPTIONS_TT[ZmOperation.FORWARD_INLINE]	= "forwardOptions";
 
 	ZmComposeController.OP_CHECK = {};
+	ZmComposeController.OP_CHECK[ZmOperation.SHOW_BCC] 	            = true;
 	ZmComposeController.OP_CHECK[ZmOperation.REQUEST_READ_RECEIPT] 	= true;
 	ZmComposeController.OP_CHECK[ZmOperation.USE_PREFIX] 			= true;
 	ZmComposeController.OP_CHECK[ZmOperation.INCLUDE_HEADERS] 		= true;
@@ -171,6 +172,10 @@ function() {
 	ZmComposeController.IS_FORWARD = {};
 	ZmComposeController.IS_FORWARD[ZmOperation.FORWARD_INLINE]	= true;
 	ZmComposeController.IS_FORWARD[ZmOperation.FORWARD_ATT]	 	= true;
+
+	ZmComposeController.PRIORITY_FLAG_TO_OP = {};
+	ZmComposeController.PRIORITY_FLAG_TO_OP[ZmItem.FLAG_LOW_PRIORITY]   = ZmOperation.PRIORITY_LOW;
+	ZmComposeController.PRIORITY_FLAG_TO_OP[ZmItem.FLAG_HIGH_PRIORITY]  = ZmOperation.PRIORITY_HIGH;
 };
 
 //
@@ -1087,6 +1092,19 @@ function(params) {
 			this.resetSignature(params.sigId);
 		}
 
+		// preserve priority for drafts
+		if (appCtxt.get(ZmSetting.MAIL_PRIORITY_ENABLED)) {
+			if (msg && action === ZmOperation.DRAFT) {
+				var priority = msg.isHighPriority ? ZmItem.FLAG_HIGH_PRIORITY : msg.isLowPriority ? ZmItem.FLAG_LOW_PRIORITY : "";
+				if (priority) {
+					this._setPriority(priority);
+				}
+			}
+			else {
+				this._setPriority();
+			}
+		}
+
 		if (params.readReceipt) {
 			var menu = this._optionsMenu[action];
 			var mi = menu && menu.getOp(ZmOperation.REQUEST_READ_RECEIPT);
@@ -1291,13 +1309,17 @@ function(action) {
 	}
 	if (isInviteReply) { // Accept/decline/etc... an appointment invitation
 		list.push(ZmOperation.SEP, ZmOperation.INC_NONE, ZmOperation.INC_BODY, ZmOperation.INC_SMART);
-	} else if (isCalReply) { // Regular reply to an appointment
+	}
+	else if (isCalReply) { // Regular reply to an appointment
 		list.push(ZmOperation.SEP, ZmOperation.INC_NONE, ZmOperation.INC_BODY, ZmOperation.INC_SMART);
-	} else if (isReply) { // Message reply
+	}
+	else if (isReply) { // Message reply
         list.push(ZmOperation.SEP, ZmOperation.INC_NONE, ZmOperation.INC_BODY, ZmOperation.INC_SMART, ZmOperation.INC_ATTACHMENT);
-	} else if (isForward) { // Message forwarding
+	}
+	else if (isForward) { // Message forwarding
         list.push(ZmOperation.SEP, ZmOperation.INC_BODY, ZmOperation.INC_ATTACHMENT);
 	}
+
     if (isReply || isForward || isCalReply) {
         list.push(ZmOperation.SEP, ZmOperation.USE_PREFIX, ZmOperation.INCLUDE_HEADERS);
     }
@@ -1306,7 +1328,15 @@ function(action) {
 		list.push(ZmOperation.SEP, ZmOperation.ADD_SIGNATURE);
 	}
 
-	// add read receipt
+	list.push(ZmOperation.SEP, ZmOperation.SHOW_BCC);
+
+	if (appCtxt.get(ZmSetting.MAIL_PRIORITY_ENABLED)) {
+		list.push(ZmOperation.SEP);
+		list.push(ZmOperation.PRIORITY_HIGH);
+		list.push(ZmOperation.PRIORITY_NORMAL);
+		list.push(ZmOperation.PRIORITY_LOW);
+	}
+
 	if (ac.get(ZmSetting.MAIL_READ_RECEIPT_ENABLED, null, ac.getActiveAccount())) {
 		list.push(ZmOperation.SEP, ZmOperation.REQUEST_READ_RECEIPT);
 	}
@@ -1683,10 +1713,12 @@ ZmComposeController.prototype._optionsListener =
 function(ev) {
 
 	var op = ev.item.getData(ZmOperation.KEY_ID);
-	if (op == ZmOperation.REQUEST_READ_RECEIPT) { return; }
+	if (op === ZmOperation.REQUEST_READ_RECEIPT) {
+		return;
+	}
 
 	// Click on "Options" button.
-	if (op == ZmOperation.COMPOSE_OPTIONS && this._optionsMenu[this._action]) {
+	if (op === ZmOperation.COMPOSE_OPTIONS && this._optionsMenu[this._action]) {
 		var button = this._toolbar.getButton(ZmOperation.COMPOSE_OPTIONS);
 		var bounds = button.getBounds();
 		this._optionsMenu[this._action].popup(0, bounds.x, bounds.y + bounds.height, false);
@@ -1694,23 +1726,29 @@ function(ev) {
 	}
 
 	// ignore UNCHECKED for radio buttons
-	if (ev.detail != DwtMenuItem.CHECKED && !ZmComposeController.OP_CHECK[op]) { return; }
+	if (ev.detail !== DwtMenuItem.CHECKED && !ZmComposeController.OP_CHECK[op]) {
+		return;
+	}
 
-	if (op == ZmOperation.REPLY || op == ZmOperation.REPLY_ALL || op == ZmOperation.CAL_REPLY || op == ZmOperation.CAL_REPLY_ALL) {
+	if (op === ZmOperation.REPLY || op === ZmOperation.REPLY_ALL || op === ZmOperation.CAL_REPLY || op === ZmOperation.CAL_REPLY_ALL) {
 		var cv = this._composeView;
 		cv.setAddress(AjxEmailAddress.TO, "");
 		cv.setAddress(AjxEmailAddress.CC, "");
 		cv._setAddresses(op, AjxEmailAddress.TO, this._toOverride);
-		if (this._ccOverride && (op == ZmOperation.REPLY_ALL || op == ZmOperation.CAL_REPLY_ALL)) {
+		if (this._ccOverride && (op === ZmOperation.REPLY_ALL || op === ZmOperation.CAL_REPLY_ALL)) {
 			cv._setAddresses(op, AjxEmailAddress.CC, this._ccOverride);
 		}
-	} else if (op == ZmOperation.FORMAT_HTML || op == ZmOperation.FORMAT_TEXT) {
-        if (op == ZmOperation.FORMAT_TEXT && this._msg) {
+	}
+	else if (op === ZmOperation.FORMAT_HTML || op === ZmOperation.FORMAT_TEXT) {
+        if (op === ZmOperation.FORMAT_TEXT && this._msg) {
             this._msg._resetAllInlineAttachments();
         }
-
 		this._setFormat(ev.item.getData(ZmHtmlEditor.VALUE));
-	} else if (op != ZmOperation.ADD_SIGNATURE) {
+	}
+	else if (op === ZmOperation.SHOW_BCC) {
+		this._composeView._recipients._toggleBccField();
+	}
+	else if (op !== ZmOperation.ADD_SIGNATURE) {
 		// at this point we assume the op is related to include options
 		if (this._setInclude(op)) {
 			this._switchInclude(op);
@@ -1726,6 +1764,45 @@ function(op) {
 	var okCallback = this._switchIncludeOkCallback.bind(this, op);
 	var cancelCallback = this._switchIncludeCancelCallback.bind(this, AjxUtil.hashCopy(this._curIncOptions));
 	return (!this._warnUserAboutChanges(op, okCallback, cancelCallback));
+};
+
+/**
+ * Returns the priority flag corresponding to the currently selected priority option.
+ *
+ * @returns {string}
+ * @private
+ */
+ZmComposeController.prototype._getPriority = function() {
+
+	var menu = this._optionsMenu[this._action],
+		map = ZmComposeController.PRIORITY_FLAG_TO_OP;
+
+	for (var flag in map) {
+		var op = map[flag],
+			mi = menu && menu.getOp(op);
+		if (mi && mi.getChecked()) {
+			return flag;
+		}
+	}
+
+	return "";
+};
+
+/**
+ * Sets the priority option in the options menu that corresponds to the given priority flag.
+ *
+ * @param {String}  priority        ZmItem.FLAG_*_PRIORITY
+ * @private
+ */
+ZmComposeController.prototype._setPriority = function(priority) {
+
+	var op = priority ? ZmComposeController.PRIORITY_FLAG_TO_OP[priority] : ZmOperation.PRIORITY_NORMAL,
+		menu = this._optionsMenu[this._action],
+		mi = menu && menu.getOp(op);
+
+	if (mi) {
+		mi.setChecked(true, true);
+	}
 };
 
 ZmComposeController.prototype._switchInclude =
