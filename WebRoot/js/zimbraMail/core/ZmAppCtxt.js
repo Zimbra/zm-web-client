@@ -2177,9 +2177,14 @@ function() {
         this.webClientOfflineHandler = new ZmOffline();
     }
     else {
-	    //In offline mode if the user clicks sign out and again access zimbra URL it will be redirected to 404 error page.
 	    var callback = function() {
-		    if (ZmOffline.isServerReachable === false) {
+			if (ZmOffline.isServerReachable) {
+				//If the server is reachable set offline setting as false
+				localStorage.setItem(ZmSetting.WEBCLIENT_OFFLINE_BROWSER_KEY, localStorage.getItem(ZmOffline.BROWSER_KEY));
+				ZmOfflineSettingsDialog.modifySetting(false);
+			}
+			else {
+				//In offline mode if user clicks sign out and again access zimbra URL he will be redirected to 404 error page.
 			    location.href = "/public/404.html";
 		    }
 	    };

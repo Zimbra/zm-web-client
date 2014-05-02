@@ -21,14 +21,12 @@ ZmOffline = function() {
     this._addListeners();
 };
 
-ZmOffline.MESSAGE = "message";
 ZmOffline.appCacheDone = false;
 ZmOffline.messageNotShowed = true;
-ZmOffline.cacheMessageLimit = 1000;
 ZmOffline.cacheProgress = [];
 ZmOffline.syncStarted = false;
-ZmOffline._syncInProgress = false;
 ZmOffline.isServerReachable = true;
+ZmOffline.BROWSER_KEY = "BROWSER_KEY";
 
 ZmOffline.folders = {};
 ZmOffline.calendars = {};
@@ -51,30 +49,6 @@ function (){
         appCtxt.setStatusMsg(ZmMsg.offlineCachingDone, ZmStatusView.LEVEL_INFO);
         ZmOffline.messageNotShowed = false;
     }
-};
-
-ZmOffline._checkAppCacheDone =
-function (){
-    ZmOffline.appCacheDone = true;
-    ZmOffline._checkCacheDone();
-};
-
-ZmOffline.prototype.init =
-function(params) {
-    if (appCtxt.isWebClientOffline()) {
-		this._modifyInitParams(params);
-    }
-	else {
-        window.applicationCache.addEventListener('cached', function(e) {
-            ZmOffline._checkAppCacheDone();
-        }, false);
-
-        window.applicationCache.addEventListener('noupdate', function(e) {
-            ZmOffline._checkAppCacheDone();
-        }, false);
-    }
-    ZmOfflineDB.init();
-    this._addListeners();
 };
 
 ZmOffline.prototype._addListeners =
