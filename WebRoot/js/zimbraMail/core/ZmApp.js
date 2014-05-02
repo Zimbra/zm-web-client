@@ -1057,8 +1057,12 @@ function(mods) {
  */
 ZmApp.prototype._inNewWindow =
 function(ev) {
-	var setting = appCtxt.get(ZmSetting.NEW_WINDOW_COMPOSE);
-	return !ev ? setting : ((!setting && ev && ev.shiftKey) || (setting && ev && !ev.shiftKey));
+	if (appCtxt.isWebClientOffline()) {
+		return false;
+	}  else {
+		var setting = appCtxt.get(ZmSetting.NEW_WINDOW_COMPOSE);
+		return !ev ? setting : ((!setting && ev && ev.shiftKey) || (setting && ev && !ev.shiftKey));
+	}
 };
 
 /**

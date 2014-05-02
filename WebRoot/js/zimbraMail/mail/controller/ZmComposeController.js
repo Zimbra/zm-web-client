@@ -237,7 +237,7 @@ function(params) {
 	}
 
 	params.action = params.action || ZmOperation.NEW_MESSAGE;
-	params.inNewWindow = !this.isHidden && (params.inNewWindow || this._app._inNewWindow(params.ev));
+	params.inNewWindow = !appCtxt.isWebClientOffline() && !this.isHidden && (params.inNewWindow || this._app._inNewWindow(params.ev));
 	this._msgSent = false;
 	if (params.inNewWindow) {
         var msgId = params.msg ? params.msg.nId : (this._msg ? this._msg.nId : Dwt.getNextId());
@@ -1173,7 +1173,7 @@ function() {
 	}
 	buttons.push(ZmOperation.SEP, ZmOperation.COMPOSE_OPTIONS, ZmOperation.FILLER);
 
-	if (appCtxt.get(ZmSetting.DETACH_COMPOSE_ENABLED) && !appCtxt.isChildWindow) {
+	if (appCtxt.get(ZmSetting.DETACH_COMPOSE_ENABLED) && !appCtxt.isChildWindow && !appCtxt.isWebClientOffline()) {
 		buttons.push(ZmOperation.DETACH_COMPOSE);
 	}
 
@@ -1850,11 +1850,13 @@ function(op) {
 
 ZmComposeController.prototype._detachListener =
 function(ev) {
-	var atts = this._composeView.getAttFieldValues();
-	if (atts.length) {
-		this._showMsgDialog(ZmComposeController.MSG_DIALOG_2, ZmMsg.importErrorUpload, null, this._detachCallback.bind(this));
-	} else {
-		this.detach();
+	if (!appCtxt.isWebClientOffline()) {
+		var atts = this._composeView.getAttFieldValues();
+		if (atts.length) {
+			this._showMsgDialog(ZmComposeController.MSG_DIALOG_2, ZmMsg.importErrorUpload, null, this._detachCallback.bind(this));
+		} else {
+			this.detach();
+		}
 	}
 };
 

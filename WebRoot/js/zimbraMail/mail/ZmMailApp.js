@@ -1534,18 +1534,13 @@ ZmMailApp.prototype.handleOp =
 function(op, params) {
 	var inNewWindow = false;
 	var showLoadingPage = true;
-	switch (op) {
-		case ZmOperation.NEW_MESSAGE_WIN:
-			inNewWindow = true;
+	if ((op == ZmOperation.NEW_MESSAGE_WIN) || (op == ZmOperation.NEW_MESSAGE)) {
+		if (!appCtxt.isWebClientOffline()) {
+			inNewWindow = (op == ZmOperation.NEW_MESSAGE_WIN) ? true : this._inNewWindow(params && params.ev);
 			showLoadingPage = false;	// don't show "Loading ..." page since main window view doesn't change
-		case ZmOperation.NEW_MESSAGE:
-			if (!inNewWindow) {
-				inNewWindow = this._inNewWindow(params && params.ev);
-				showLoadingPage = false;
-			}
-			var loadCallback = new AjxCallback(this, this.compose, {action: ZmOperation.NEW_MESSAGE, inNewWindow:inNewWindow});
-			AjxDispatcher.require(["ContactsCore", "Contacts"], false, loadCallback, null, showLoadingPage);
-			break;
+		}
+		var loadCallback = new AjxCallback(this, this.compose, {action: ZmOperation.NEW_MESSAGE, inNewWindow:inNewWindow});
+		AjxDispatcher.require(["ContactsCore", "Contacts"], false, loadCallback, null, showLoadingPage);
 	}
 };
 
