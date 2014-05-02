@@ -420,9 +420,8 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 
 					me.doShowAllAttachments(attachments);
 
+					me.getComposePanel().resetFileField();
 				}
-
-				//Adds an attachment
 			},
 			failure: function(response) {
 				// ? what to do on file upload failure...

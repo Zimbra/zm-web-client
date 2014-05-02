@@ -207,26 +207,7 @@ Ext.define('ZCS.view.mail.ZtComposeForm', {
 				width: 80,
 				cls: 'zcs-attach-hack-container',
 				layout: 'auto',
-				items: [{
-					xtype: 'filefield',
-					width: 80,
-					opacity: 0.01,
-					cls: 'file-input-div',
-					// style:  "visibility:hidden;",
-					listeners: {
-						change: function (field, newValue, oldValue) {
-							//When the value of this field is reset, newValue is null.
-							if (newValue) {
-							 	composeForm.fireEvent('attachmentAdded', field, newValue, oldValue);
-							}
-						},
-						initialize: function (fileField) {
-							fileField.on('blur', function () {
-							 	ZCS.htmlutil.resetWindowScroll();
-							});		
-						}
-					}
-				}, {
+				items: [this.getFileFieldConfig(), {
 					xtype: 'component',
 					cls: 'x-form-label x-form-label-nowrap x-field zcs-toggle-field attach-label',
 					itemId: 'attach',
@@ -240,6 +221,43 @@ Ext.define('ZCS.view.mail.ZtComposeForm', {
 			toolbar,
 			form
 		]);
+	},
+
+	resetFileField: function () {
+		var existingFileField = this.down('filefield'),
+			parent = existingFileField.parent;
+
+		existingFileField.suspendEvents();
+		parent.remove(existingFileField, true);
+		parent.add(this.getFileFieldConfig());
+
+	},
+
+	getFileFieldConfig: function () {
+		var composeForm = this;
+
+		return {
+			xtype: 'filefield',
+			width: 80,
+			opacity: 0.01,
+			cls: 'file-input-div',
+			// style:  "visibility:hidden;",
+			listeners: {
+				change: function (field, newValue, oldValue) {
+					//When the value of this field is reset, newValue is null.
+					if (newValue) {
+					 	composeForm.fireEvent('attachmentAdded', field, newValue, oldValue);
+					} else {
+						ZCS.htmlutil.resetWindowScroll();
+					}
+				},
+				initialize: function (fileField) {
+					Ext.fly(fileField.element.down('input')).on('blur', function () {
+						ZCS.htmlutil.resetWindowScroll();
+					});
+				}
+			}
+		};
 	},
 
 	// TODO: Separate toggles for CC and BCC
@@ -265,5 +283,7 @@ Ext.define('ZCS.view.mail.ZtComposeForm', {
 		this.down('.formpanel').element.dom.reset();
 		//Reset this so we don't parse out old attachment info next time we come to the form.
 		this.down('#attachments').setHtml('');
+
+		ZCS.htmlutil.resetWindowScroll();
 	}
 });
