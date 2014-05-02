@@ -291,6 +291,8 @@ function(calItem) {
 	this._lazyCreateObjectManager();
 
 	var subs = this._getSubs(calItem);
+	subs.subject = AjxStringUtil.htmlEncode(subs.subject);
+
 	this._hdrTableId = this._htmlElId + "_hdrTable";
 
     var calendar = calItem.getFolder();
