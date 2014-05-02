@@ -49,12 +49,6 @@ ZmComposeController = function(container, mailApp, type, sessionId) {
 
 	this._dialogPopdownListener = this._dialogPopdownActionListener.bind(this);
 
-	var settings = appCtxt.getSettings();
-	var scl = this._settingChangeListener = this._handleSettingChange.bind(this);
-	for (var i = 0; i < ZmComposeController.SETTINGS.length; i++) {
-		settings.getSetting(ZmComposeController.SETTINGS[i]).addChangeListener(scl);
-	}
-
 	this._autoSaveTimer = null;
 	this._draftType = ZmComposeController.DRAFT_TYPE_NONE;
 	this._elementsToHide = ZmAppViewMgr.LEFT_NAV;
@@ -108,10 +102,9 @@ ZmComposeController.MSG_DIALOG_2	= 2;	// OK Cancel
 ZmComposeController._setStatics =
 function() {
 
-	if (ZmComposeController.SETTINGS) { return; }
-
-	// settings whose changes affect us (so we add a listener to them)
-	ZmComposeController.SETTINGS = [ ZmSetting.SHOW_BCC ];
+	if (ZmComposeController.RADIO_GROUP) {
+		return;
+	}
 
 	// radio groups for options items
 	ZmComposeController.RADIO_GROUP = {};
@@ -1923,16 +1916,6 @@ function(ev) {
 			this.toggleSpellCheckButton(false);
 	} else {
 		htmlEditor.discardMisspelledWords();
-	}
-};
-
-ZmComposeController.prototype._handleSettingChange =
-function(ev) {
-	if (ev.type != ZmEvent.S_SETTING) return;
-
-	var id = ev.source.id;
-	if (id == ZmSetting.SHOW_BCC) {
-		//Handle, if SHOW_BCC setting is changed, need to do when we come up with a COS Preference.
 	}
 };
 

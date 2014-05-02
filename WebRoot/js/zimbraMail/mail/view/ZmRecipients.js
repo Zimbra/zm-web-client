@@ -57,9 +57,6 @@ ZmRecipients.OP[AjxEmailAddress.TO]		= ZmId.CMP_TO;
 ZmRecipients.OP[AjxEmailAddress.CC]		= ZmId.CMP_CC;
 ZmRecipients.OP[AjxEmailAddress.BCC]	= ZmId.CMP_BCC;
 
-ZmRecipients.ADDR_SETTING = {};
-ZmRecipients.ADDR_SETTING[AjxEmailAddress.BCC]= ZmSetting.SHOW_BCC;
-
 ZmRecipients.BAD = "_bad_addrs_";
 
 
@@ -204,8 +201,7 @@ function() {
         this._showAddressField(AjxEmailAddress.CC, true, true, true);
     }
     if (this._field[AjxEmailAddress.BCC]) {
-        //Set BCC Field to Default
-        this._toggleBccField(appCtxt.get(ZmSetting.SHOW_BCC));
+        this._showAddressField(AjxEmailAddress.BCC, false, true, true);
     }
 };
 
@@ -423,10 +419,6 @@ function(type, show, skipNotify, skipFocus) {
 	Dwt.setVisible(this._divEl[type], show);
 	this._setAddrFieldValue(type, "");	 // bug fix #750 and #3680
 	this._field[type].noTab = !show;
-	var setting = ZmRecipients.ADDR_SETTING[type];
-	if (setting) {
-		appCtxt.set(setting, show, null, false, skipNotify);
-	}
 	if (this._resetContainerSize) {
 		this._resetContainerSize();
 	}
@@ -601,10 +593,6 @@ function() {
 };
 
 ZmRecipients.prototype._toggleBccField =
-function(force) {
-	var isBccFieldVisible = Dwt.getVisible(this._divEl[AjxEmailAddress.BCC]);
-	if (typeof force != "undefined") {
-		isBccFieldVisible = !force;
-	}
-	this._showAddressField(AjxEmailAddress.BCC, !isBccFieldVisible);
+function() {
+	this._showAddressField(AjxEmailAddress.BCC, !Dwt.getVisible(this._divEl[AjxEmailAddress.BCC]));
 };
