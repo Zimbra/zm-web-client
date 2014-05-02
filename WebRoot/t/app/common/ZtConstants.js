@@ -870,7 +870,7 @@ ZCS.constant.SIDE_MENU_CONFIG = {
             itemNavigationReservesSpace: false,
             itemNavigationAlwaysShown: false,
             hasOverviewNavigation: true,
-            navigationWidth: 0.8
+            navigationWidth: 1.0
 	    },
 	    portrait: {
             itemNavigationReservesSpace: false,

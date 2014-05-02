@@ -335,6 +335,7 @@ Ext.define('ZCS.controller.ZtAppViewController', {
 
 			if (appViewConfig.listPanel) {
 				itemPanelWidth = this.getItemPanelWidth(appViewConfig.positioningConfig, width);
+				appViewConfig.listPanel.setWidth(itemPanelWidth);
 			}
 
 			//Resize the height and width of these panels because
@@ -406,7 +407,8 @@ Ext.define('ZCS.controller.ZtAppViewController', {
             if (appViewConfig.listPanel) {
     			if (alwaysShowListPanel && app === ZCS.session.getActiveApp()) {
     				appViewConfig.listPanel.show();
-    			} else {
+    				//Only hide the list panel if it wasn't taking up the whole navigation space
+    			} else if (!appViewConfig.positioningConfig[ZCS.util.getDeviceType()].navigationWidth === 1.0 && !appViewConfig.listPanel.isHidden()) {
                     appViewConfig.listPanel.hide();
                 }
             }
