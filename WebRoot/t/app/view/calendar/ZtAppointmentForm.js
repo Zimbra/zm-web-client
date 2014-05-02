@@ -71,9 +71,6 @@ Ext.define('ZCS.view.calendar.ZtAppointmentForm', {
                     }
 				},
 				{
-					xtype:'spacer'
-				},
-				{
 					xtype: 'button',
 					iconCls: 'trash',
 					id: 'deleteAppt',
