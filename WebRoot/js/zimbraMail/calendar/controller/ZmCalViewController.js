@@ -2184,7 +2184,7 @@ function(appt, mode) {
         var msg = ZmMsg.confirmCancelAppt;
         if(appt.isRecurring()){
             msg = (mode == ZmCalItem.MODE_DELETE_INSTANCE)
-    			? AjxMessageFormat.format(ZmMsg.confirmCancelApptInst, appt.name)
+    			? AjxMessageFormat.format(ZmMsg.confirmCancelApptInst, AjxStringUtil.htmlEncode(appt.name))
     			: ZmMsg.confirmCancelApptSeries;
         }
         var msgDiv = document.getElementById(this._deleteNotifyDialog._confirmMessageDivId);
