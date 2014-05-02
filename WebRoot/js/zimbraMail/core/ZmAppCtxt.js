@@ -1360,6 +1360,10 @@ ZmAppCtxt.prototype.reloadAppCache =
 function(force) {
     if (this.isWebClientOfflineSupported || force) {
         document.cookie = "ZM_CACHE_RELOAD = " + new Date().getTime();
+		var localOfflineBrowserKey = localStorage.getItem(ZmSetting.WEBCLIENT_OFFLINE_BROWSER_KEY);
+		if (localOfflineBrowserKey) {
+			document.cookie = "ZM_OFFLINE_KEY = " + localOfflineBrowserKey;
+		}
         var manifestURL = appContextPath + "/appcache/images,common,dwt,msgview,login,zm,spellcheck,skin.appcache?";
         var urlParams = [];
         urlParams.push("v=" + window.cacheKillerVersion);
@@ -2162,7 +2166,7 @@ function() {
 ZmAppCtxt.prototype.initWebOffline =
 function() {
     this.isWebClientOfflineSupported = false;
-    if (!AjxEnv.isOfflineSupported || !appCtxt.get(ZmSetting.WEBCLIENT_OFFLINE_ENABLED) || !appCtxt.get(ZmSetting.WEBCLIENT_OFFLINE_PREF_ENABLED)) {
+	if (!AjxEnv.isOfflineSupported || !appCtxt.get(ZmSetting.WEBCLIENT_OFFLINE_ENABLED)) {
 		AjxDebug.println(AjxDebug.OFFLINE, "isWebClientOfflineSupported :: false");
         return;
     }

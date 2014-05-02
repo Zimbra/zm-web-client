@@ -81,15 +81,14 @@ function(ev) {
  */
 ZmOfflineSettingsDialog.prototype.popdown =
 function() {
-    var enableRadioBtn,
-        disableRadioBtn;
-
-    if (appCtxt.get(ZmSetting.WEBCLIENT_OFFLINE_PREF_ENABLED)) {
-        enableRadioBtn = document.getElementById(this._enableRadioBtnId);
+	var offlineBrowserKey = appCtxt.get(ZmSetting.WEBCLIENT_OFFLINE_BROWSER_KEY);
+	var localOfflineBrowserKey = localStorage.getItem(ZmSetting.WEBCLIENT_OFFLINE_BROWSER_KEY);
+	if (offlineBrowserKey && offlineBrowserKey.indexOf(localOfflineBrowserKey) !== -1) {
+        var enableRadioBtn = document.getElementById(this._enableRadioBtnId);
         enableRadioBtn && (enableRadioBtn.checked = true);
     }
     else {
-        disableRadioBtn = document.getElementById(this._disableRadioBtnId);
+        var disableRadioBtn = document.getElementById(this._disableRadioBtnId);
         disableRadioBtn && (disableRadioBtn.checked = true);
     }
     DwtDialog.prototype.popdown.call(this);
@@ -126,7 +125,6 @@ function(offlineEnable, logOff, dialog) {
         existingBrowserKey = existingBrowserKey.split(",");
     }
     if (offlineEnable) {
-        appCtxt.set(ZmSetting.WEBCLIENT_OFFLINE_PREF_ENABLED, true);
         var browserKey = new Date().getTime().toString();
         localStorage.setItem(ZmSetting.WEBCLIENT_OFFLINE_BROWSER_KEY, browserKey);
         if (existingBrowserKey) {
@@ -137,7 +135,6 @@ function(offlineEnable, logOff, dialog) {
         }
     }
     else {
-        appCtxt.set(ZmSetting.WEBCLIENT_OFFLINE_PREF_ENABLED, false);
         if (existingBrowserKey) {
             AjxUtil.arrayRemove(existingBrowserKey, localStorage.getItem(ZmSetting.WEBCLIENT_OFFLINE_BROWSER_KEY));
         }

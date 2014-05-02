@@ -961,7 +961,6 @@ function() {
     this.registerSetting("COMPOSE_INIT_DIRECTION",			{name:"zimbraPrefComposeDirection", type:ZmSetting.T_PREF, defaultValue:ZmSetting.LTR, isGlobal:true});
     this.registerSetting("SHOW_COMPOSE_DIRECTION_BUTTONS",	{name:"zimbraPrefShowComposeDirection", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false, isGlobal:true});
 	this.registerSetting("DEFAULT_TIMEZONE",				{name:"zimbraPrefTimeZoneId", type:ZmSetting.T_PREF, dataType:ZmSetting.D_STRING, defaultValue:AjxTimezone.getServerId(AjxTimezone.DEFAULT), isGlobal:true});
-	this.registerSetting("WEBCLIENT_OFFLINE_PREF_ENABLED",	{name:"zimbraPrefWebClientOfflineAccessEnabled", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false, isImplicit:true});
     this.registerSetting("WEBCLIENT_OFFLINE_BROWSER_KEY",	{name:"zimbraPrefWebClientOfflineBrowserKey", type:ZmSetting.T_PREF, dataType:ZmSetting.D_STRING, isImplicit:true});
     this.registerSetting("DEFAULT_PRINTFONTSIZE",	    	{name:"zimbraPrefDefaultPrintFontSize", type:ZmSetting.T_PREF, dataType:ZmSetting.D_STRING, defaultValue:ZmSetting.PRINT_FONT_SIZE, isGlobal:true});
 	this.registerSetting("GROUPBY_HASH",                    {type: ZmSetting.T_PREF, dataType:ZmSetting.D_HASH});
@@ -1137,7 +1136,7 @@ function(ev) {
 	}
 	if (ZmSetting.IS_IMPLICIT[id] && setting) {
         if (id === ZmSetting.WEBCLIENT_OFFLINE_BROWSER_KEY) {
-            var callback = this._offlineSettingsSaveCallback.bind(this);
+            var callback = this._offlineSettingsSaveCallback.bind(this, setting);
         }
 		this.save([setting], callback, null, appCtxt.getActiveAccount(), true);
 	}
@@ -1219,8 +1218,10 @@ ZmSettings.prototype._hasVoiceFeature = function() {
  * @private
  */
 ZmSettings.prototype._offlineSettingsSaveCallback =
-function() {
-    if (appCtxt.get(ZmSetting.WEBCLIENT_OFFLINE_PREF_ENABLED)) {
+function(setting) {
+	var offlineBrowserKey = setting.getValue();
+	var localOfflineBrowserKey = localStorage.getItem(ZmSetting.WEBCLIENT_OFFLINE_BROWSER_KEY);
+	if (offlineBrowserKey && offlineBrowserKey.indexOf(localOfflineBrowserKey) !== -1) {
         var cd = appCtxt.getYesNoMsgDialog();
         cd.reset();
         cd.registerCallback(DwtDialog.YES_BUTTON, this._refreshBrowserCallback, this, [cd]);
