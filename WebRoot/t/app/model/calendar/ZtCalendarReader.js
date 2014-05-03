@@ -98,7 +98,9 @@ Ext.define('ZCS.model.calendar.ZtCalendarReader', {
 	        isAllDay: node.allDay,
 	        isRecur: node.recur ? true : false,
 	        ridZ: ridZ,
-	        isException: isException
+	        isException: isException,
+	        ms: node.ms,
+	        rev: node.rev
         };
 
         return data;

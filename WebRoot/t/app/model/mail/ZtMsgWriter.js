@@ -201,6 +201,16 @@ Ext.define('ZCS.model.mail.ZtMsgWriter', {
 					}
 				});
 			}
+			else if (itemData.op === 'delete' && itemData.isApptRequest) {
+				var isHardDelete = itemData.hardDelete;
+
+				// TODO: Cancel appointment without notifying organizer
+				request.setUrl(ZCS.constant.SERVICE_URL_BASE + (isHardDelete ? 'ItemActionRequest' : 'CancelAppointmentRequest'));
+				json = this.getSoapEnvelope(request, data, isHardDelete ? 'ItemAction' : 'CancelAppointment');
+				methodJson = isHardDelete ? json.Body.ItemActionRequest : json.Body.CancelAppointmentRequest;
+
+				Ext.apply(methodJson, itemData.cancelReqObject);
+			}
 			else {
 				json = this.getActionRequest(request, itemData, 'MsgAction');
 			}

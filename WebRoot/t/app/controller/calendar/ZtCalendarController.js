@@ -468,7 +468,78 @@ Ext.define('ZCS.controller.calendar.ZtCalendarController', {
     },
 
 	doDelete: function(actionParams) {
-		console.log("TODO: Delete the appt");
+		var event = this.getEvent(),
+			isSeries = this.getIsSeries(),
+			isRecurring = event.get('isRecur'),
+			msg = actionParams.msg,
+			invite = msg.get('invite'),
+			isOrganizer = invite.get('isOrganizer'),
+			attendeeList = this.getAttendeeList(invite.get('attendees')),
+			cancelReqObject = {},
+			me = this,
+			inTrash = ZCS.util.curFolderIs(ZCS.constant.ID_TRASH),
+			inJunk = ZCS.util.curFolderIs(ZCS.constant.ID_JUNK),
+			isHardDelete = false,
+			isInstance = isRecurring && !isSeries;
+
+		if (inTrash || inJunk) {
+			cancelReqObject.action = {};
+			cancelReqObject.action.id = invite.get('id');
+			cancelReqObject.action.op = 'delete';
+			isHardDelete = true;
+		}
+		else {
+			// Common objects applicable to CancelAppointmentRequest
+			cancelReqObject.comp = "0";
+			cancelReqObject.id = event.get('invId');
+			cancelReqObject.m = {};
+			cancelReqObject.m.su = Ext.String.format(ZtMsg.apptCancelSubject, invite.get('subject'));
+			cancelReqObject.m.e = [];
+			cancelReqObject.m.mp = {};
+
+			if ((!isInstance && isOrganizer) || (!isRecurring && isOrganizer)) {
+				cancelReqObject.m.e = attendeeList;
+				cancelReqObject.ms = event.get('ms');
+				cancelReqObject.rev = event.get('rev');
+			}
+			else if ((!isInstance && !isOrganizer) || (!isRecurring && !isOrganizer)) {
+				cancelReqObject.ms = event.get('ms');
+				cancelReqObject.rev = event.get('rev');
+			}
+			else if (isInstance && isOrganizer) {
+				cancelReqObject.inst = {};
+				cancelReqObject.inst.d = event.get('ridZ');
+				cancelReqObject.inst.tz = ZCS.timezone.guessMachineTimezone().clientId;
+
+				cancelReqObject.ms = event.get('ms');
+				cancelReqObject.rev = event.get('rev');
+
+				cancelReqObject.s = event.get('start').getTime();
+
+				cancelReqObject.m.e = attendeeList;
+			}
+			else if (isInstance && !isOrganizer) {
+				cancelReqObject.inst = {};
+				cancelReqObject.inst.d = event.get('ridZ');
+				cancelReqObject.inst.tz = ZCS.timezone.guessMachineTimezone().clientId;
+
+				cancelReqObject.s = event.get('start').getTime();
+			}
+		}
+
+		msg.save({
+			op: 'delete',
+			hardDelete: isHardDelete,
+			isApptRequest: true,
+			cancelReqObject: cancelReqObject,
+			success: function () {
+				me.loadCalendar();
+				Ext.Function.defer(function() {
+					me.getAppointmentPanel().hide();
+				}, 100);
+				ZCS.app.fireEvent('showToast', isHardDelete ? ZtMsg.apptTrashDeleteToast : ZtMsg.apptCancelToast);
+			}
+		});
 	},
 
 	doMove: function(actionParams) {
@@ -612,5 +683,25 @@ Ext.define('ZCS.controller.calendar.ZtCalendarController', {
 				me.showItem(record, isSeries);
 			}
 		});
+	},
+
+	getAttendeeList: function(attendees) {
+		if (!attendees) {
+			return [];
+		}
+
+		var attendeeLen = attendees.length,
+			i,
+			attendeeList = [];
+
+		for (i = 0; i < attendeeLen; i++) {
+			attendeeList.push({
+				a: attendees[i].get('email'),
+				p: attendees[i].get('name'),
+				t: 't'
+			});
+		}
+
+		return attendeeList;
 	}
 });
