@@ -1774,7 +1774,9 @@ function(mode, callback, msg, batchCmd, result) {
         vector,
         count,
         addr,
-        subject;
+        subject,
+        mailFromAddress,
+        isOrganizer;
 
     if (folderId == ZmOrganizer.ID_TRASH) {
 		mode = ZmCalItem.MODE_PURGE;
@@ -1815,7 +1817,7 @@ function(mode, callback, msg, batchCmd, result) {
             };
 
 			this._addInviteAndCompNum(request);
-	
+
 			// Exceptions should be treated as instances (bug 15817)
 			if (mode == ZmCalItem.MODE_DELETE_INSTANCE || this.isException) {
                 request.s = this.getOrigStartTime();
@@ -1825,60 +1827,68 @@ function(mode, callback, msg, batchCmd, result) {
 				inst.d = format(this.getOrigStartDate());
 				if (!allDay && this.timezone) {
 					inst.tz = this.timezone;
-	
+
 					clientId = AjxTimezone.getClientId(this.timezone);
 					ZmTimezone.set(request, clientId, null, true);
 				}
 			}
             m = request.m = {};
             e = m.e = [];
-			if (this.isOrganizer() && !this.inviteNeverSent) {
-				// NOTE: We only use the explicit list of addresses if sending via
-				//       a message compose.
-				if (msg) {
-					for (i = 0; i < ZmMailMsg.ADDRS.length; i++) {
-						type = ZmMailMsg.ADDRS[i];
-	
-						// if on-behalf-of, dont set the from address and
-                        // don't set the reset-from (only valid when receiving a message)
-						if ((accountName && type == AjxEmailAddress.FROM) ||
-                            (type == AjxEmailAddress.RESENT_FROM)) { continue; }
-	
-						vector = msg.getAddresses(type);
-						count = vector.size();
-						for (j = 0; j < count; j++) {
-							addr = vector.get(j);
+            isOrganizer = this.isOrganizer();
+            if (isOrganizer) {
+                if (!this.inviteNeverSent) {
+                    // NOTE: We only use the explicit list of addresses if sending via
+                    //       a message compose.
+                    if (msg) {
+                        for (i = 0; i < ZmMailMsg.ADDRS.length; i++) {
+                            type = ZmMailMsg.ADDRS[i];
+
+                            // if on-behalf-of, dont set the from address and
+                            // don't set the reset-from (only valid when receiving a message)
+                            if ((accountName && type == AjxEmailAddress.FROM) ||
+                                (type == AjxEmailAddress.RESENT_FROM)) {
+                                continue;
+                            }
+
+                            vector = msg.getAddresses(type);
+                            count = vector.size();
+                            for (j = 0; j < count; j++) {
+                                addr = vector.get(j);
+                                e.push({
+                                    a: addr.getAddress(),
+                                    t: AjxEmailAddress.toSoapType[type]
+                                });
+                            }
+                        }
+
+                        // set from address to on-behalf-of if applicable
+                        if (accountName) {
                             e.push({
-                                a : addr.getAddress(),
-                                t : AjxEmailAddress.toSoapType[type]
+                                a: accountName,
+                                t: AjxEmailAddress.toSoapType[AjxEmailAddress.FROM]
                             });
-						}
-					}
-	
-					// set from address to on-behalf-of if applicable
-					if (accountName) {
-                        e.push({
-                            a : accountName,
-                            t : AjxEmailAddress.toSoapType[AjxEmailAddress.FROM]
-                        });
-					}
-				}
-				else {
-					this._addAttendeesToRequest(null, m, null, accountName);
-				}
-			}
+                        }
+                    }
+                    else {
+                        this._addAttendeesToRequest(null, m, null, accountName);
+                    }
+                }
+                mailFromAddress = this.getMailFromAddress();
+                if (mailFromAddress) {
+                    e.push({
+                        a : mailFromAddress,
+                        t : AjxEmailAddress.toSoapType[AjxEmailAddress.FROM]
+                    });
+                }
+            }
 	        subject = (msg && msg.subject) ? msg.subject : ([ZmMsg.cancelled, ": ", this.name].join(""));
             m.su = subject;
 			this._addNotesToRequest(m, true);
-	
+
 			if (batchCmd) {
 				batchCmd.addRequestParams(jsonObj, callback);
 			}
             else {
-                e.push({
-                    a : this.getMailFromAddress(),
-                    t : AjxEmailAddress.toSoapType[AjxEmailAddress.FROM]
-                });
 				this._sendRequest(null, accountName, callback, null, jsonObj, requestName);
 			}
 		}
