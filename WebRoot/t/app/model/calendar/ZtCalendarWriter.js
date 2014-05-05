@@ -292,7 +292,7 @@ Ext.define('ZCS.model.calendar.ZtCalendarWriter', {
     },
 
 	_addExceptionRequestSubs: function(m, invite) {
-		m.inv.comp[0].class = invite.get('class');
+		m.inv.comp[0]['class'] = invite.get('class'); // using ['class'] to avoid build error as class is reserved word
 		m.inv.comp[0].draft = 0;
 		m.inv.comp[0].exceptId = {};
 		m.inv.comp[0].exceptId.d = Ext.Date.format(invite.get('start'), 'Ymd\\THis');

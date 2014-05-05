@@ -196,8 +196,8 @@ Ext.define('ZCS.model.mail.ZtInvite', {
 				invite.set('status', comp.status);
 			}
 
-			if (comp.class) {
-				invite.set('class', comp.class);
+			if (comp['class']) { // using ['class'] to avoid build error as class is reserved word
+				invite.set('class', comp['class']);
 			}
 
 			if (comp.uid) {
