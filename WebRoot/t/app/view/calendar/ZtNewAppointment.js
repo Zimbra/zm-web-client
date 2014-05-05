@@ -77,7 +77,7 @@ Ext.define('ZCS.view.calendar.ZtNewAppointment', {
             },
             spacer = {
                 xtype:  'spacer',
-                cls:    'zcs-contact-spacer'
+                cls:    'zcs-form-spacer'
             },
             form = {
                 xtype:       'formpanel',

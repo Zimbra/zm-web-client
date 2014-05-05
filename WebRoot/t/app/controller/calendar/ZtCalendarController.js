@@ -410,22 +410,22 @@ Ext.define('ZCS.controller.calendar.ZtCalendarController', {
     },
 
 	doAccept: function(actionParams) {
-		this.doInviteReply(ZCS.constant.OP_ACCEPT, actionParams.appt);
+		this.doInviteReply(ZCS.constant.OP_ACCEPT, actionParams.msg);
 	},
 
 	doTentative: function(actionParams) {
-		this.doInviteReply(ZCS.constant.OP_TENTATIVE, actionParams.appt);
+		this.doInviteReply(ZCS.constant.OP_TENTATIVE, actionParams.msg);
 	},
 
 	doDecline: function(actionParams) {
-		this.doInviteReply(ZCS.constant.OP_DECLINE, actionParams.appt);
+		this.doInviteReply(ZCS.constant.OP_DECLINE, actionParams.msg);
 	},
     /**
      * Sends the attendee response as a notification to the organizer
      */
-    doInviteReply: function(action, appt) {
-        var invite = appt.get('invite'),
-			invId =  appt.get('id'),
+    doInviteReply: function(action, apptMsg) {
+        var invite = apptMsg.get('invite'),
+			invId =  apptMsg.get('id'),
             msg = Ext.create('ZCS.model.mail.ZtMailMsg'),
 	        isSeries = this.getIsSeries();
 
@@ -604,7 +604,7 @@ Ext.define('ZCS.controller.calendar.ZtCalendarController', {
         } else {
 			this.showMenu(button, {
 				menuName:   button.initialConfig ? button.initialConfig.menuName : undefined,
-				appt:       appt
+				msg:       msg
 			});
 		}
 	},

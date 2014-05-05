@@ -173,7 +173,7 @@ Ext.define('ZCS.view.calendar.ZtDateField', {
                 {
                     xtype:   'textfield',
                     name:    'recurrence',
-                    flex:     1,
+                    flex:     2,
                     hidden: true,
                     disabled: true
                 }
