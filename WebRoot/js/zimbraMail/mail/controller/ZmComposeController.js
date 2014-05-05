@@ -303,7 +303,7 @@ function() {
 		msg:			msg,
 		addrs:			addrList,
 		subj:			subj,
-		priority:		view._getPriority(),
+		priority:		this._getPriority(),
 		forwardHtml:	forAttHtml,
 		msgAttId:		msgAttId,
 		body:			body,
