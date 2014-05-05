@@ -382,25 +382,29 @@ function(test, data) {
 				condition = ZmFilterRule.C_ADDRESS;
 			}
 			break;
-		case ZmFilterRule.TEST_HEADER_EXISTS:	condition = ZmFilterRule.C_HEADER; break;
-		case ZmFilterRule.TEST_SIZE:			condition = ZmFilterRule.C_SIZE; break;
-		case ZmFilterRule.TEST_DATE:			condition = ZmFilterRule.C_DATE; break;
-		case ZmFilterRule.TEST_BODY:			condition = ZmFilterRule.C_BODY; break;
-		case ZmFilterRule.TEST_ATTACHMENT:		condition = ZmFilterRule.C_ATT; break;
-		case ZmFilterRule.TEST_MIME_HEADER:		condition = ZmFilterRule.C_MIME_HEADER; break;
-		case ZmFilterRule.TEST_ADDRBOOK:		condition = ZmFilterRule.C_ADDRBOOK; break;
-		case ZmFilterRule.TEST_INVITE:			condition = ZmFilterRule.C_INVITE; break;
-		case ZmFilterRule.TEST_CONVERSATIONS:	condition = ZmFilterRule.C_CONV; break;
-		case ZmFilterRule.TEST_SOCIAL:			condition = ZmFilterRule.C_SOCIAL; break;
-		case ZmFilterRule.TEST_FACEBOOK:		condition = ZmFilterRule.C_SOCIAL; break;
-		case ZmFilterRule.TEST_TWITTER:			condition = ZmFilterRule.C_SOCIAL; break;
-		case ZmFilterRule.TEST_LINKEDIN:		condition = ZmFilterRule.C_SOCIAL; break;
-		case ZmFilterRule.TEST_LIST:			condition = ZmFilterRule.C_CONV; break;
-		case ZmFilterRule.TEST_BULK:			condition = ZmFilterRule.C_CONV; break;
-		case ZmFilterRule.TEST_ME:				condition = ZmFilterRule.C_ADDRBOOK; break;
-		case ZmFilterRule.TEST_RANKING:			condition = ZmFilterRule.C_ADDRBOOK; break;
-		case ZmFilterRule.TEST_IMPORTANCE:		condition = ZmFilterRule.C_CONV; break;
-		case ZmFilterRule.TEST_FLAGGED:			condition = ZmFilterRule.C_CONV; break;
+		case ZmFilterRule.TEST_HEADER_EXISTS:	        condition = ZmFilterRule.C_HEADER; break;
+		case ZmFilterRule.TEST_SIZE:			        condition = ZmFilterRule.C_SIZE; break;
+		case ZmFilterRule.TEST_DATE:			        condition = ZmFilterRule.C_DATE; break;
+		case ZmFilterRule.TEST_BODY:			        condition = ZmFilterRule.C_BODY; break;
+		case ZmFilterRule.TEST_ATTACHMENT:		        condition = ZmFilterRule.C_ATT; break;
+		case ZmFilterRule.TEST_MIME_HEADER:		        condition = ZmFilterRule.C_MIME_HEADER; break;
+		case ZmFilterRule.TEST_ADDRBOOK:		        condition = ZmFilterRule.C_ADDRBOOK; break;
+		case ZmFilterRule.TEST_INVITE:			        condition = ZmFilterRule.C_INVITE; break;
+		case ZmFilterRule.TEST_CONVERSATIONS:	        condition = ZmFilterRule.C_CONV; break;
+		case ZmFilterRule.TEST_SOCIAL:			        condition = ZmFilterRule.C_SOCIAL; break;
+		case ZmFilterRule.TEST_FACEBOOK:		        condition = ZmFilterRule.C_SOCIAL; break;
+		case ZmFilterRule.TEST_TWITTER:			        condition = ZmFilterRule.C_SOCIAL; break;
+		case ZmFilterRule.TEST_LINKEDIN:		        condition = ZmFilterRule.C_SOCIAL; break;
+		case ZmFilterRule.TEST_COMMUNITY:		        condition = ZmFilterRule.C_COMMUNITY; break;
+		case ZmFilterRule.TEST_COMMUNITY_REQUESTS:		condition = ZmFilterRule.C_COMMUNITY; break;
+		case ZmFilterRule.TEST_COMMUNITY_CONTENT:		condition = ZmFilterRule.C_COMMUNITY; break;
+		case ZmFilterRule.TEST_COMMUNITY_CONNECTIONS:   condition = ZmFilterRule.C_COMMUNITY; break;
+		case ZmFilterRule.TEST_LIST:			        condition = ZmFilterRule.C_CONV; break;
+		case ZmFilterRule.TEST_BULK:			        condition = ZmFilterRule.C_CONV; break;
+		case ZmFilterRule.TEST_ME:				        condition = ZmFilterRule.C_ADDRBOOK; break;
+		case ZmFilterRule.TEST_RANKING:			        condition = ZmFilterRule.C_ADDRBOOK; break;
+		case ZmFilterRule.TEST_IMPORTANCE:		        condition = ZmFilterRule.C_CONV; break;
+		case ZmFilterRule.TEST_FLAGGED:			        condition = ZmFilterRule.C_CONV; break;
 		case ZmFilterRule.TEST_HEADER:
 			condition = ZmFilterRule.C_HEADER_MAP[data.header];
 			if (!condition) { // means custom header
@@ -576,15 +580,11 @@ function(conf, field, options, rowData, testType, rowId) {
 		for (var i = 0; i < options.length; i++) {
 			var o = options[i];
 			// skip if the action or this option is disabled
-			if (isMainSelect && !isCondition) {
-				if (!ZmFilterRule.checkPreconditions(ZmFilterRule.ACTIONS[o]) && o != ZmFilterRule.A_FORWARD) { continue; }
-			}
-			if (!ZmFilterRule.checkPreconditions(ZmFilterRule.ACTIONS[o]) &&  o != ZmFilterRule.A_FORWARD) { 
+			var okay = ZmFilterRule.checkPreconditions(ZmFilterRule.CONDITIONS[o] || ZmFilterRule.ACTIONS[o]);
+			if (!okay && (o !== ZmFilterRule.A_FORWARD || !rowData || !rowData.a)) {
 				continue;
 			}
-			else if (!ZmFilterRule.checkPreconditions(ZmFilterRule.ACTIONS[o]) && o == ZmFilterRule.A_FORWARD && (!rowData || !rowData.a)) {
-				continue;
-			}
+
 			var value, label;
 			if (isMainSelect) {
 				value = o;
@@ -674,31 +674,35 @@ function(isMainSelect, testType, field, rowData) {
 				dataValue = ZmFilterRule.C_HEADER;
 			}
 			break;
-			case ZmFilterRule.TEST_HEADER_EXISTS:	dataValue = ZmFilterRule.C_HEADER; break;
-			case ZmFilterRule.TEST_SIZE:			dataValue = ZmFilterRule.C_SIZE; break;
-			case ZmFilterRule.TEST_DATE:			dataValue = ZmFilterRule.C_DATE; break;
-			case ZmFilterRule.TEST_BODY:			dataValue = ZmFilterRule.C_BODY; break;
-			case ZmFilterRule.TEST_ATTACHMENT:		dataValue = ZmFilterRule.C_ATT; break;
-			case ZmFilterRule.TEST_MIME_HEADER:		dataValue = ZmFilterRule.C_MIME_HEADER; break;
-			case ZmFilterRule.TEST_ADDRBOOK:		dataValue = ZmFilterRule.C_ADDRBOOK; break;
-			case ZmFilterRule.TEST_INVITE:			dataValue = ZmFilterRule.C_INVITE; break;
-			case ZmFilterRule.TEST_CONVERSATIONS:	dataValue = ZmFilterRule.C_CONV; break;
-			case ZmFilterRule.TEST_SOCIAL:			dataValue = ZmFilterRule.C_SOCIAL; break;
-			case ZmFilterRule.TEST_FACEBOOK:		dataValue = ZmFilterRule.C_SOCIAL; break;
-			case ZmFilterRule.TEST_TWITTER:			dataValue = ZmFilterRule.C_SOCIAL; break;
-			case ZmFilterRule.TEST_LINKEDIN:		dataValue = ZmFilterRule.C_SOCIAL; break;
+			case ZmFilterRule.TEST_HEADER_EXISTS:	        dataValue = ZmFilterRule.C_HEADER; break;
+			case ZmFilterRule.TEST_SIZE:			        dataValue = ZmFilterRule.C_SIZE; break;
+			case ZmFilterRule.TEST_DATE:			        dataValue = ZmFilterRule.C_DATE; break;
+			case ZmFilterRule.TEST_BODY:			        dataValue = ZmFilterRule.C_BODY; break;
+			case ZmFilterRule.TEST_ATTACHMENT:		        dataValue = ZmFilterRule.C_ATT; break;
+			case ZmFilterRule.TEST_MIME_HEADER:		        dataValue = ZmFilterRule.C_MIME_HEADER; break;
+			case ZmFilterRule.TEST_ADDRBOOK:		        dataValue = ZmFilterRule.C_ADDRBOOK; break;
+			case ZmFilterRule.TEST_INVITE:			        dataValue = ZmFilterRule.C_INVITE; break;
+			case ZmFilterRule.TEST_CONVERSATIONS:	        dataValue = ZmFilterRule.C_CONV; break;
+			case ZmFilterRule.TEST_SOCIAL:			        dataValue = ZmFilterRule.C_SOCIAL; break;
+			case ZmFilterRule.TEST_FACEBOOK:		        dataValue = ZmFilterRule.C_SOCIAL; break;
+			case ZmFilterRule.TEST_TWITTER:			        dataValue = ZmFilterRule.C_SOCIAL; break;
+			case ZmFilterRule.TEST_LINKEDIN:		        dataValue = ZmFilterRule.C_SOCIAL; break;
+			case ZmFilterRule.TEST_COMMUNITY:		        dataValue = ZmFilterRule.C_COMMUNITY; break;
+			case ZmFilterRule.TEST_COMMUNITY_REQUESTS:		dataValue = ZmFilterRule.C_COMMUNITY; break;
+			case ZmFilterRule.TEST_COMMUNITY_CONTENT:		dataValue = ZmFilterRule.C_COMMUNITY; break;
+			case ZmFilterRule.TEST_COMMUNITY_CONNECTIONS:   dataValue = ZmFilterRule.C_COMMUNITY; break;
 			case ZmFilterRule.TEST_ADDRESS:
 				dataValue = ZmFilterRule.C_ADDRESS_MAP[rowData.header];
 				if (!dataValue) { 
 					dataValue = ZmFilterRule.C_ADDRESS;
 				}
 				break;
-			case ZmFilterRule.TEST_LIST:			dataValue = ZmFilterRule.C_CONV; break;
-			case ZmFilterRule.TEST_BULK:			dataValue = ZmFilterRule.C_CONV; break;
-			case ZmFilterRule.TEST_ME:				dataValue = ZmFilterRule.C_ADDRBOOK; break;
-			case ZmFilterRule.TEST_RANKING:			dataValue = ZmFilterRule.C_ADDRBOOK; break;
-			case ZmFilterRule.TEST_IMPORTANCE:		dataValue = ZmFilterRule.C_CONV; break;
-			case ZmFilterRule.TEST_FLAGGED:			dataValue = ZmFilterRule.C_CONV; break;
+			case ZmFilterRule.TEST_LIST:			        dataValue = ZmFilterRule.C_CONV; break;
+			case ZmFilterRule.TEST_BULK:			        dataValue = ZmFilterRule.C_CONV; break;
+			case ZmFilterRule.TEST_ME:				        dataValue = ZmFilterRule.C_ADDRBOOK; break;
+			case ZmFilterRule.TEST_RANKING:			        dataValue = ZmFilterRule.C_ADDRBOOK; break;
+			case ZmFilterRule.TEST_IMPORTANCE:		        dataValue = ZmFilterRule.C_CONV; break;
+			case ZmFilterRule.TEST_FLAGGED:			        dataValue = ZmFilterRule.C_CONV; break;
 			// default returns action type
 			default:								return ZmFilterRule.A_VALUE_MAP[testType];
 		}
@@ -914,6 +918,9 @@ function(isMainSelect, testType, field, rowData) {
 		}
 		else if (testType == ZmFilterRule.A_NAME_FORWARD) {
 			dataValue = rowData.a;
+		}
+		else if (ZmFilterRule.OP_COMMUNITY_MAP_R[testType]) {
+			dataValue = ZmFilterRule.OP_COMMUNITY_MAP_R[testType];
 		}
 	}
 
