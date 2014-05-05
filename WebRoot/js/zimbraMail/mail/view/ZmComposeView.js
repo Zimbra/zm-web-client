@@ -3296,7 +3296,9 @@ function() {
 		var listener =
 			this.showAttachmentDialog.bind(this,
 			                               ZmComposeView.UPLOAD_BRIEFCASE);
-		this._createAttachMenuItem(menu, ZmMsg.briefcase, listener);
+		var briefcaseItem = this._createAttachMenuItem(menu, ZmMsg.briefcase, listener);
+		briefcaseItem.setEnabled(!appCtxt.isWebClientOffline());
+
 	}
 	appCtxt.notifyZimlets("initializeAttachPopup", [menu, this], {waitUntilLoaded:true});
 
