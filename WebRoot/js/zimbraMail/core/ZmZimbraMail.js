@@ -2698,8 +2698,8 @@ function(ev, relogin) {
 		window.close();
 		return;
 	}
-    if (appCtxt.isWebClientOfflineSupported) {
-        return ZmOfflineSettingsDialog.showConfirmSignOutDialog();
+	if (ev && appCtxt.isWebClientOfflineSupported) {
+		return ZmOfflineSettingsDialog.showConfirmSignOutDialog();
     }
 
 	ZmZimbraMail._isLogOff = true;
