@@ -71,10 +71,11 @@ Ext.define('ZCS.model.calendar.ZtCalendarWriter', {
             });
         } else if (action === 'update') {
             if (itemData.op === 'modify') {
-                var	invite = request.getRecords()[0];
+                var	invite = request.getRecords()[0],
+	                isCreateException = itemData.createException;
 
-                json = this.getSoapEnvelope(request, data, 'ModifyAppointment');
-                methodJson = json.Body.ModifyAppointmentRequest;
+                json = this.getSoapEnvelope(request, data, isCreateException ? 'CreateAppointmentException' : 'ModifyAppointment');
+                methodJson = isCreateException? json.Body.CreateAppointmentExceptionRequest : json.Body.ModifyAppointmentRequest;
 
                 var id = methodJson.id = itemData.id;
                 methodJson.ms = invite.get('ms');
@@ -83,6 +84,13 @@ Ext.define('ZCS.model.calendar.ZtCalendarWriter', {
                 var m = methodJson.m = {};
 
                 m = this.populateAttrs(methodJson, invite, true);
+
+	            if (isCreateException) {
+		            this._addExceptionRequestSubs(m, invite);
+		            methodJson.comp = "0";
+		            methodJson.echo = "1";
+	            }
+
                 Ext.apply(methodJson, {
                     m: m
                 });
@@ -130,7 +138,7 @@ Ext.define('ZCS.model.calendar.ZtCalendarWriter', {
 
         comp.name = invite.get('subject');
         comp.loc = invite.get('location');
-        comp.fb = invite.get('displayStatus');
+        comp.fb = invite.get('fb');
 
         //recurrence
         this._setRecurrence(comp, invite);
@@ -281,6 +289,17 @@ Ext.define('ZCS.model.calendar.ZtCalendarWriter', {
             ct : ZCS.mime.TEXT_PLAIN
         });
         mp.mp[0].content = content;
-    }
+    },
+
+	_addExceptionRequestSubs: function(m, invite) {
+		m.inv.comp[0].class = invite.get('class');
+		m.inv.comp[0].draft = 0;
+		m.inv.comp[0].exceptId = {};
+		m.inv.comp[0].exceptId.d = Ext.Date.format(invite.get('start'), 'Ymd\\THis');
+		m.inv.comp[0].exceptId.tz = ZCS.timezone.guessMachineTimezone().clientId;
+		m.inv.comp[0].status = invite.get('status');
+		m.inv.comp[0].transp = invite.get('transp');
+		m.inv.uid = invite.get('uid');
+	}
 
 });

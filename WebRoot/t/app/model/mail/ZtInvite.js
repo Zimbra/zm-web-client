@@ -64,7 +64,11 @@ Ext.define('ZCS.model.mail.ZtInvite', {
             //Needed in case of edit appointment
             { name: 'recur',                type: 'auto' },
             { name: 'startTime',            type: 'auto' },
-            { name: 'endTime',              type: 'auto' }
+            { name: 'endTime',              type: 'auto' },
+			{ name: 'class',                type: 'string' },
+			{ name: 'uid',                  type: 'string' },
+			{ name: 'alarmData',            type: 'auto' },
+			{ name: 'transp',               type: 'string' }
 		],
 
         proxy: {
@@ -186,6 +190,26 @@ Ext.define('ZCS.model.mail.ZtInvite', {
 
                     invite.set('attendeeResponseMsg', Ext.String.format(inviteMsg, comp.at[0].d || comp.at[0].a)); // show address if display name is unavailable
                 }
+			}
+
+			if (comp.status) {
+				invite.set('status', comp.status);
+			}
+
+			if (comp.class) {
+				invite.set('class', comp.class);
+			}
+
+			if (comp.uid) {
+				invite.set('uid', comp.uid);
+			}
+
+			if (comp.alarm && comp.alarm.length) {
+				invite.set('alarmData', comp.alarm);
+			}
+
+			if (comp.transp) {
+				invite.set('transp', comp.transp);
 			}
 
 			var myResponse = node.replies && node.replies[0].reply[0].ptst;

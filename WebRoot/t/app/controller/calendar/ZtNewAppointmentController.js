@@ -62,34 +62,43 @@ Ext.define('ZCS.controller.calendar.ZtNewAppointmentController', {
         if (isEdit) {
             this.setMsg(msg);
             this.setInviteId(event.get('invId'));
-            this.populateForm();
+            this.populateForm(event);
         }
 
         me.unhideAppointmentForm();
     },
 
-    populateForm: function() {
-
+    populateForm: function(event) {
         var	panel = this.getNewApptPanel(),
             form = panel.down('formpanel'),
             value, formField,
             msg = this.getMsg(),
-            invite = msg.get('invite');
+            invite = msg.get('invite'),
+	        isSeries = ZCS.app.getCalendarController().getIsSeries();
 
         // Create and populate the simple attrs
         Ext.each(ZCS.constant.CALENDAR_FIELDS, function(attr) {
             value = invite.get(attr);
             if (value) {
                 formField = form.down('field[name=' + attr + ']');
-                if (formField) {
-                    formField.setValue(value);
-                }
-                if (attr == 'start' || attr == 'end') {
-                    formField = form.down('field[name=' + attr + 'Time]');
-                    if (formField) {
-                        formField.setValue(value);
-                    }
-                }
+
+	            if (formField) {
+		            if (attr == 'start' || attr == 'end') {
+
+			            var dateValue = isSeries ? invite.get(attr) : event.get(attr);
+			            //Set the date picker
+			            formField.setValue(dateValue);
+
+			            //Set the time picker
+			            formField = form.down('field[name=' + attr + 'Time]');
+			            if (formField) {
+				            formField.setValue(dateValue);
+			            }
+		            }
+		            else {
+			            formField.setValue(value);
+		            }
+	            }
             }
         }, this);
 
@@ -269,16 +278,24 @@ Ext.define('ZCS.controller.calendar.ZtNewAppointmentController', {
     modifyAppt: function(invite) {
         var me = this,
             data = {
-                op:         'modify',
-                id:         this.getInviteId()
-            };
+	            op:         'modify',
+	            id:         this.getInviteId()
+            },
+	        calController = ZCS.app.getCalendarController(),
+	        event = calController.getEvent(),
+	        isInstance = event.get('isRecur') && !calController.getIsSeries();
 
-        this.performOp(invite, data, function() {
-            me.hideAppointmentForm();
-            ZCS.app.fireEvent('showToast', ZtMsg.appointmentEdited);
-            // Reload to show newly updated state of the appointment
-            me.reloadCalendar(true, invite);
-        });
+	    if (isInstance) {
+		    data.createException = true;
+	    }
+
+	    this.performOp(invite, data, function() {
+		    me.reloadCalendar(true, invite); // Reload to show newly updated state of the appointment
+		    Ext.Function.defer(function() {
+			    me.hideAppointmentForm();
+		    }, 100);
+		    ZCS.app.fireEvent('showToast', ZtMsg.appointmentEdited);
+	    });
     },
 
     reloadCalendar: function(isEdit, invite) {
@@ -287,8 +304,7 @@ Ext.define('ZCS.controller.calendar.ZtNewAppointmentController', {
             msg.set('invite', invite);
             ZCS.app.getCalendarController().showItem(msg, isEdit);
         }
-        this.getStore().load();
-        ZCS.app.getCalendarController().refreshCurrentView();
+		ZCS.app.getCalendarController().loadCalendar();
     },
 
     getCalendarModel: function() {
