@@ -59,6 +59,8 @@ Ext.define('ZCS.model.mail.ZtInvite', {
             { name: 'recurrence',           type: 'string' },
 			{ name:	'fb', 					type: 'string' },
             { name: 'isException',          type: 'boolean'},
+            { name: 'ms',                   type: 'int'},
+            { name: 'rev',                  type: 'int'},
             //Needed in case of edit appointment
             { name: 'recur',                type: 'auto' },
             { name: 'startTime',            type: 'auto' },

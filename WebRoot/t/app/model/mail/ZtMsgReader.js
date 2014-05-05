@@ -97,6 +97,12 @@ Ext.define('ZCS.model.mail.ZtMsgReader', {
 			if (node.cif) {
 				data.invite.set('calendarIntendedFor', node.cif);
 			}
+            if (node.ms) {
+                data.invite.set('ms', node.ms);
+            }
+            if (node.rev) {
+                data.invite.set('rev', node.rev);
+            }
 		}
 
 		return data;

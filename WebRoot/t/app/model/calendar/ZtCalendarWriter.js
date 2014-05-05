@@ -73,21 +73,16 @@ Ext.define('ZCS.model.calendar.ZtCalendarWriter', {
             if (itemData.op === 'modify') {
                 var	invite = request.getRecords()[0];
 
-                if (invite.get('isOrganizer')) {
-                    //Organizer modifying
-                    json = this.getSoapEnvelope(request, data, 'ModifyAppointment');
-                    methodJson = json.Body.ModifyAppointmentRequest;
+                json = this.getSoapEnvelope(request, data, 'ModifyAppointment');
+                methodJson = json.Body.ModifyAppointmentRequest;
 
-                    var id = methodJson.id = itemData.id;
-                } else {
-                    //Attendee modifying - create a local copy
-                    json = this.getSoapEnvelope(request, data, 'CreateAppointment');
-                    methodJson = json.Body.CreateAppointmentRequest;
-                }
+                var id = methodJson.id = itemData.id;
+                methodJson.ms = invite.get('ms');
+                methodJson.rev = invite.get('rev');
+
                 var m = methodJson.m = {};
 
                 m = this.populateAttrs(methodJson, invite, true);
-
                 Ext.apply(methodJson, {
                     m: m
                 });
@@ -99,14 +94,15 @@ Ext.define('ZCS.model.calendar.ZtCalendarWriter', {
         return request;
     },
 
-    populateAttrs: function(request, invite, isEdit) {
+     populateAttrs: function(request, invite, isEdit) {
         var m = request.m = {},
             mailFromAddress,
             comps,
             comp,
             inv,
             org,
-            notifyList = isEdit ? invite.get('attendees') : invite.get('attendee');
+            notifyList = isEdit ? invite.get('attendees') : invite.get('attendee'),
+            isOrganizer = invite.get('isOrganizer');
 
         inv = m.inv = {};
         m.e = [];
@@ -116,8 +112,12 @@ Ext.define('ZCS.model.calendar.ZtCalendarWriter', {
         comp.at = [];
         org = comp.or = {};
 
-        //FROM Address
-        mailFromAddress =  ZCS.mailutil.getFromAddress();
+        if (isOrganizer) {
+            //FROM Address
+            mailFromAddress =  ZCS.mailutil.getFromAddress();
+        } else {
+            mailFromAddress = invite.get('organizer');
+        }
         org.a = mailFromAddress.get('email');
         org.d = mailFromAddress.get('name');
 
@@ -140,7 +140,7 @@ Ext.define('ZCS.model.calendar.ZtCalendarWriter', {
         this._setAlarmData(comp, reminderMinutes);
 
         //attendees
-        this._addAttendeesToRequest(comp, m, notifyList);
+        this._addAttendeesToRequest(comp, m, notifyList, isOrganizer);
 
         // notes
         this._addNotesToRequest(m, invite);
@@ -148,20 +148,22 @@ Ext.define('ZCS.model.calendar.ZtCalendarWriter', {
         return m;
     },
 
-    _addAttendeesToRequest : function(inv, m, notifyList) {
+    _addAttendeesToRequest : function(inv, m, notifyList, isOrganizer) {
         Ext.each(notifyList, function(attendee) {
             var email = attendee.get('email'),
                 displayName = attendee.get('longName'),
                 e;
 
-            e = {
-                a : email,
-                t : "t"
-            };
-            if (displayName) {
-                e.p = displayName;
+            if (isOrganizer) {
+                e = {
+                    a : email,
+                    t : "t"
+                };
+                if (displayName) {
+                    e.p = displayName;
+                }
+                m.e.push(e);
             }
-            m.e.push(e);
 
             if (inv) {
                 var at = {};
