@@ -32,19 +32,6 @@ ZmSocialApp.prototype.constructor = ZmSocialApp;
 ZmSocialApp.prototype.isZmSocialApp = true;
 ZmSocialApp.prototype.toString = function() {	return "ZmSocialApp"; };
 
-// Construction
-
-ZmSocialApp.prototype._registerApp = function() {
-	ZmApp.registerApp(ZmApp.SOCIAL, {
-		nameKey:            "socialTabTitle",
-		icon:               "Globe",
-		chooserTooltipKey:  "goToSocial",
-		chooserSort:        32,
-		defaultSort:        100,
-		upsellUrl:			ZmSetting.SOCIAL_EXTERNAL_URL
-	});
-};
-
 //
 // Constants
 //
@@ -54,3 +41,25 @@ ZmApp.CLASS[ZmApp.SOCIAL]		    = "ZmSocialApp";
 ZmApp.SETTING[ZmApp.SOCIAL]		    = ZmSetting.SOCIAL_ENABLED;
 ZmApp.UPSELL_SETTING[ZmApp.SOCIAL]	= ZmSetting.SOCIAL_EXTERNAL_ENABLED;
 ZmApp.LOAD_SORT[ZmApp.SOCIAL]	    = 100;
+
+ZmSocialApp.prototype._registerApp = function() {
+	ZmApp.registerApp(ZmApp.SOCIAL, {
+		nameKey:            "communityName",
+		icon:               "Globe",
+		chooserTooltipKey:  "goToSocial",
+		chooserSort:        32,
+		defaultSort:        100,
+		upsellUrl:			ZmSetting.SOCIAL_EXTERNAL_URL
+	});
+};
+
+// User has clicked refresh button
+ZmSocialApp.prototype.runRefresh = function() {
+
+	var mainCtlr = appCtxt.getAppController(),
+		communityView = mainCtlr._appIframeView[ZmApp.SOCIAL];
+
+	if (communityView) {
+		communityView.runRefresh();
+	}
+};

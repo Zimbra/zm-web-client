@@ -68,7 +68,8 @@ AjxPackage.require("zimbraMail.share.view.ZmStatusView");
 AjxPackage.require("zimbraMail.share.view.ZmOverviewContainer");
 AjxPackage.require("zimbraMail.share.view.ZmAccountOverviewContainer");
 AjxPackage.require("zimbraMail.share.view.ZmOverview");
-AjxPackage.require("zimbraMail.share.view.ZmUpsellView");
+AjxPackage.require("zimbraMail.share.view.ZmAppIframeView");
+AjxPackage.require("zimbraMail.share.view.ZmCommunityView");
 
 AjxPackage.require("zimbraMail.share.controller.ZmController");
 AjxPackage.require("zimbraMail.share.controller.ZmBaseController");

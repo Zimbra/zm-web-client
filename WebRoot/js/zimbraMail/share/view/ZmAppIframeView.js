@@ -14,65 +14,62 @@
  */
 
 /**
- * 
+ * A generic iframe view that can be associated with an app tab. One use is to display upsell content from an external
+ * URL if the user does not currently have the app enabled.
+ * @class
+ * This class displays an external URL in an iframe.
+ *
  * @extends		DwtControl
- * @private
+ *
+ * @author Conrad Damon
  */
-ZmUpsellView = function(params) {
-	DwtControl.call(this, params);
+ZmAppIframeView = function(params) {
+
+	if (arguments.length === 0) {
+		return;
+	}
+
+	DwtControl.call(this, {
+		parent:     appCtxt.getShell(),
+		posStyle:   Dwt.ABSOLUTE_STYLE,
+		className:  'ZmAppIframeView'
+	});
+
 	this._createFrame(params);
 };
 
-ZmUpsellView.prototype = new DwtControl;
-ZmUpsellView.prototype.constructor = ZmUpsellView;
+ZmAppIframeView.prototype = new DwtControl;
+ZmAppIframeView.prototype.constructor = ZmAppIframeView;
 
-ZmUpsellView.prototype.isZmUpsellView = true;
-ZmUpsellView.prototype.toString = function() { return "ZmUpsellView"; };
+ZmAppIframeView.prototype.isZmAppIframeView = true;
+ZmAppIframeView.prototype.toString = function() { return "ZmAppIframeView"; };
 
-ZmUpsellView.prototype._createFrame = function(params) {
+ZmAppIframeView.prototype._createFrame = function(params) {
 
 	params = params || {};
 
-	var app = this._appName = params.appName;
-	var isSocial = (app === ZmApp.SOCIAL);  // assume Social is Zimbra Community
-	// Note: for Zimbra Community, may need to add client_id and url IFRAME attrs at some point for OAuth
-
-	var upsellUrl = appCtxt.get(ZmApp.UPSELL_URL[app]),
+	var app = this._appName = params.appName,
+		iframeUrl = appCtxt.get(ZmApp.UPSELL_URL[app]),
 		htmlArr = [],
 		idx = 0;
 
-	var	iframeId = this._iframeId = isSocial ? 'fragment-41812_iframe' : 'iframe_' + this.getHTMLElId();
+	var	iframeId = this._iframeId = this._getIframeId();
 
 	htmlArr[idx++] = "<iframe id='" + iframeId + "' width='100%' height='100%' frameborder='0' src='";
-	htmlArr[idx++] = upsellUrl;
+	htmlArr[idx++] = iframeUrl;
 	htmlArr[idx++] = "'>";
 	this.setContent(htmlArr.join(""));
-
-	var iframe = document.getElementById(iframeId);
-	if (iframe) {
-		var callback = ZmUpsellView.handleMessage.bind(null, this);
-		if (window.addEventListener) {
-			window.addEventListener('message', callback, false);
-		}
-		else if (window.attachEvent) {
-			window.attachEvent('onmessage', callback);
-		}
-	}
 };
 
-ZmUpsellView.handleMessage = function(view, event) {
-
-	var iframe = document.getElementById(view._iframeId);
-	if (iframe && event.source === iframe.contentWindow) {
-		var data = AjxStringUtil.parseQueryString(event.data || '');
-		var isUnread = (data.unread && data.unread.toLowerCase() === 'true');
-		if (data.type === 'community-notification' && isUnread) {
-			appCtxt.getApp(view._appName).startAlert();
-		}
-	}
+ZmAppIframeView.prototype._getIframeId = function() {
+	return 'iframe_' + this.getHTMLElId();
 };
 
-ZmUpsellView.prototype.setBounds =
+ZmAppIframeView.prototype.activate = function(active) {};
+
+ZmAppIframeView.prototype.runRefresh = function() {};
+
+ZmAppIframeView.prototype.setBounds =
 function(x, y, width, height, showToolbar) {
     var deltaHeight = 0;
     if(!showToolbar) {
@@ -87,7 +84,7 @@ function(x, y, width, height, showToolbar) {
 	}
 };
 
-ZmUpsellView.prototype._getToolbarHeight =
+ZmAppIframeView.prototype._getToolbarHeight =
 function() {
     var topToolbar = appCtxt.getAppViewMgr().getViewComponent(ZmAppViewMgr.C_TOOLBAR_TOP);
 	if (topToolbar) {
@@ -98,6 +95,6 @@ function() {
 	return 0;
 };
 
-ZmUpsellView.prototype.getTitle = function() {
+ZmAppIframeView.prototype.getTitle = function() {
 	return [ ZmMsg.zimbraTitle, appCtxt.getApp(this._appName).getDisplayName() ].join(": ");
 };

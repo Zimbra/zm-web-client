@@ -231,7 +231,7 @@ function() {
 		for (var i = 0; i < apps.length; i++) {
 			var app = apps[i];
 			if (app.name == this._name) { continue; }
-			if (appCtxt.getApp(app.name).isUpsell) { continue; }
+			if (appCtxt.getApp(app.name).isIframe) { continue; }
 
 			appName = app.name;
 			break;

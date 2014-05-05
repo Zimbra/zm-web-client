@@ -82,7 +82,7 @@ ZmZimbraMail = function(params) {
 
     this._requestMgr = new ZmRequestMgr(this); // NOTE: requires settings to be initialized
 
-	this._upsellView = {};
+	this._appIframeView = {};
 	this._activeApp = null;
 	this._sessionTimer = new AjxTimedAction(null, ZmZimbraMail.executeSessionTimer);
 	this._sessionTimerId = -1;
@@ -936,7 +936,6 @@ function() {
 
 };
 
-
 /**
  * refresh button listener. call runRefresh() of all the enabled apps that have this method defined.
  */
@@ -944,8 +943,6 @@ ZmZimbraMail.prototype._refreshListener =
 function() {
 	this.runAppFunction("runRefresh");
 };
-
-
 
 // popup a warning dialog if there is a problem with the license
 ZmZimbraMail.prototype._checkLicense =
@@ -1076,7 +1073,7 @@ function(app) {
 	return !ZmApp.SETTING[app] || (appCtxt.get(ZmApp.SETTING[app], null, appCtxt.multiAccounts && appCtxt.accountList.mainAccount));
 };
 
-ZmZimbraMail.prototype._isUpsellApp =
+ZmZimbraMail.prototype._isIframeApp =
 function(app) {
 	return !this._isInternalApp(app) && appCtxt.get(ZmApp.UPSELL_SETTING[app]);
 };
@@ -1092,8 +1089,8 @@ function(params) {
 	if (params && params.app) {
 		startApp = ZmApp.QS_ARG_R[params.app.toLowerCase()];
 		// make sure app given in QS is actually enabled
-		// an app is valid if it's enabled as internal, upsell, or external
-		if (!this._isInternalApp(startApp) && !this._isUpsellApp(startApp)) {
+		// an app is valid if it's enabled as internal, iframe, or external
+		if (!this._isInternalApp(startApp) && !this._isIframeApp(startApp)) {
 			startApp = null;
 		}
 	}
@@ -1186,7 +1183,7 @@ function(funcName, force) {
 	}
 	for (var i = 0; i < ZmApp.APPS.length; i++) {
 		var appName = ZmApp.APPS[i];
-		var setting = ZmApp.SETTING[appName];
+		var setting = this._isIframeApp(appName) ? ZmApp.UPSELL_SETTING[appName] : ZmApp.SETTING[appName];
 		var account = appCtxt.multiAccounts && appCtxt.accountList.mainAccount;
 		if (!setting || appCtxt.get(setting, null, account) || force) {
 			var app = appCtxt.getApp(appName, null, account);
@@ -1221,15 +1218,15 @@ function(apps) {
 	});
 
 	// Instantiate enabled apps, which will invoke app registration.
-	// We also create "upsell" (external) apps, which will only show the content of a URL in an iframe.
+	// We also create iframed (external) apps, which will only show the content of a URL in an iframe.
 	for (var i = 0; i < ZmApp.APPS.length; i++) {
 		var app = ZmApp.APPS[i];
 		var isInternal = this._isInternalApp(app);
-		var isUpsell = this._isUpsellApp(app);
-		if (isInternal || isUpsell || app === ZmApp.BRIEFCASE) {
-			ZmApp.ENABLED_APPS[app] = isInternal || isUpsell;
+		var isIframe = this._isIframeApp(app);
+		if (isInternal || isIframe || app === ZmApp.BRIEFCASE) {
+			ZmApp.ENABLED_APPS[app] = isInternal || isIframe;
 			this._createApp(app);
-			this._apps[app].isUpsell = isUpsell;
+			this._apps[app].isIframe = isIframe;
 		}
 	}
 };
@@ -1994,14 +1991,14 @@ function(appName, force, callback, errorCallback, params) {
 	DBG.println(AjxDebug.DBG1, "activateApp: " + appName + ", current app = " + this._activeApp);
 
 	var account = appCtxt.multiAccounts && appCtxt.accountList.mainAccount;
-	var isUpsell = this._isUpsellApp(appName);
+	var isIframe = this._isIframeApp(appName);
 	var view = this._appViewMgr.getAppView(appName);
 	if (view && !force) {
 		// if the app has been launched, make its view the current one
 		DBG.println(AjxDebug.DBG3, "activateApp, current " + appName + " view: " + view);
 		if (this._appViewMgr.pushView(view)) {
 			this._appViewMgr.setAppView(appName, view);
-            if (isUpsell) {
+            if (isIframe) {
                 var title = [ZmMsg.zimbraTitle, appName].join(": ");
                 Dwt.setTitle(title);
             }            
@@ -2015,8 +2012,8 @@ function(appName, force, callback, errorCallback, params) {
 			this._createApp(appName);
 		}
 
-		if (isUpsell) {
-			this._createUpsellView(appName);
+		if (isIframe) {
+			this._createAppIframeView(appName);
 			if (callback) {
 				callback.run();
 			}
@@ -2069,7 +2066,7 @@ function(view) {
 		this._components[ZmAppViewMgr.C_APP_CHOOSER].setSelected(appName);
 	}
 
-	// app not actually enabled if this is result of upsell view push
+	// app not actually enabled if this is result of iframe view push
 	var account = appCtxt.multiAccounts && appCtxt.accountList.mainAccount;
 	var appEnabled = !ZmApp.SETTING[appName] || appCtxt.get(ZmApp.SETTING[appName], null, account);
 
@@ -3138,7 +3135,7 @@ function() {
 			continue;
 		}
 
-		if (this._isInternalApp(id) || this._isUpsellApp(id)) {
+		if (this._isInternalApp(id) || this._isIframeApp(id)) {
 			buttons.push(id);
 		}
 	}
@@ -3454,29 +3451,28 @@ function() {
 };
 
 /**
- * Creates an "upsell view", which is a placeholder view for an app that's not
- * enabled but which has a button so that it can be promoted. The app will have
- * a URL for its upsell content, which we put into an IFRAME.
+ * Creates an "iframe view", which is a placeholder view for an app that's not
+ * enabled but which has a tab. The app will have
+ * a URL for its external content, which we put into an IFRAME.
  *
  * @param {constant}	appName	the name of app
  * 
  * @private
  */
-ZmZimbraMail.prototype._createUpsellView =
+ZmZimbraMail.prototype._createAppIframeView =
 function(appName) {
 
-	var viewName = [appName, "upsell"].join("_");
-	if (!this._upsellView[appName]) {
-		var upsellView = this._upsellView[appName] = new ZmUpsellView({
-			parent:     this._shell,
-			posStyle:   Dwt.ABSOLUTE_STYLE,
-			className:  'ZmUpsellView',
-			appName:    appName
-		});
+	var viewName = [appName, "iframe"].join("_"),
+		isSocial = (appName === ZmApp.SOCIAL),
+		params = { appName: appName },
+		appIframeView = this._appIframeView[appName];
+
+	if (!appIframeView) {
+		appIframeView = this._appIframeView[appName] = isSocial ? new ZmCommunityView(params) : new ZmAppIframeView(params);
 
 		var elements = {}, callbacks = {};
-		elements[ZmAppViewMgr.C_APP_CONTENT] = upsellView;
-		callbacks[ZmAppViewMgr.CB_POST_SHOW] = this._displayUpsellView.bind(this);
+		elements[ZmAppViewMgr.C_APP_CONTENT] = appIframeView;
+		callbacks[ZmAppViewMgr.CB_POST_SHOW] = this._displayAppIframeView.bind(this);
 
 		var hide = [ ZmAppViewMgr.C_TREE, ZmAppViewMgr.C_TREE_FOOTER, ZmAppViewMgr.C_TOOLBAR_TOP,
 			ZmAppViewMgr.C_NEW_BUTTON, ZmAppViewMgr.C_SASH ];
@@ -3490,10 +3486,12 @@ function(appName) {
 										isFullScreen:	true,
 										callbacks:		callbacks});
 	}
+
 	this._appViewMgr.pushView(viewName);
+	appIframeView.activate(true);
 };
 
-ZmZimbraMail.prototype._displayUpsellView =
+ZmZimbraMail.prototype._displayAppIframeView =
 function(appName) {
 	appCtxt.getApp(this._getDefaultStartAppName()).setOverviewPanelContent(false);
 };
