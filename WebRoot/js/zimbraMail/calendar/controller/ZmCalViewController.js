@@ -2854,7 +2854,22 @@ function(appt, viewMode, startDateOffset, endDateOffset, callback, errorCallback
 		}
 		if (endDateOffset) {
 			var ed = (viewMode == ZmCalItem.MODE_EDIT_SINGLE_INSTANCE) ? appt.getUniqueEndDate() : new Date(appt.getEndTime());
-			appt.setEndDate(new Date(ed.getTime() + endDateOffset));
+            if(appt.allDayEvent){
+                //BUG: 87613
+                // For a given all day event, the appointment starts at 00:00 hrs of current day and ends at 00:00  of next day.
+                // e.g. start: 06 May 2014 00:00 end: 07 May 2014 00:00
+                // In DND the start and end dates are offsetted by the dragged amount.
+                // If date is dragged by 1 day in future the updated appt becomes -> start: 07 May 2014 00:00 end: 08 May 2014 00:00
+                // The dates sent to server become {s: 20140507, e: 20140508}. Thus tricking the server into making it a 2 day event.
+
+                // If this is modified using compose view the dates are picked from the calendar thus setting start and end as same date and yielding correct result.
+
+                // For all day event set the end date same as start date.
+                appt.setEndDate(appt.startDate);
+            }
+            else{
+                appt.setEndDate(new Date(ed.getTime() + endDateOffset));
+            }
 		}
 		if (viewMode == ZmCalItem.MODE_EDIT_SINGLE_INSTANCE) {
 			//bug: 32231 - use proper timezone while creating exceptions
