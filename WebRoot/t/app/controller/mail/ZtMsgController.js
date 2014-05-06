@@ -199,13 +199,6 @@ Ext.define('ZCS.controller.mail.ZtMsgController', {
 		}
 	},
 
-	/**
-	 * Starts a forward session with the active message as the original message.
-	 */
-	doForward: function(actionParams) {
-		ZCS.app.getComposeController().forward(actionParams.msg);
-	},
-
 	doComposeToAddress: function (address) {
 		var addressModel = ZCS.model.mail.ZtEmailAddress.fromEmail(address, ZCS.constant.TO);
 		ZCS.app.getComposeController().showComposeForm([addressModel]);
@@ -287,11 +280,40 @@ Ext.define('ZCS.controller.mail.ZtMsgController', {
 	},
 
 	doReply: function(actionParams) {
-		ZCS.app.getComposeController().reply(actionParams.msg);
+		this.composeAction(actionParams, 'reply');
 	},
 
 	doReplyAll: function(actionParams) {
-		ZCS.app.getComposeController().replyAll(actionParams.msg);
+		this.composeAction(actionParams, 'replyAll');
+	},
+
+	doForward: function(actionParams) {
+		this.composeAction(actionParams, 'forward');
+	},
+
+	/**
+	 * Replies to or forwards a message, making sure the message is loaded first so its content can be retrieved.
+	 *
+	 * @param {Object}  actionParams    params from menu action
+	 * @param {String}  method          method in ZtComposeController to invoke
+	 */
+	composeAction: function(actionParams, method) {
+
+		var msg = actionParams.msg,
+			ctlr = ZCS.app.getComposeController();
+
+		if (!msg.get('isLoaded')) {
+			msg.save({
+				op: 'load',
+				id: msg.getId(),
+				success: function() {
+					ctlr[method](msg);
+				}
+			});
+		}
+		else {
+			ctlr[method](msg);
+		}
 	},
 
 	doAddContact: function(actionParams) {
