@@ -60,10 +60,15 @@ Ext.define('ZCS.view.ZtToast', {
 		toast.setHtml(formattedTemplate);
 
 		toast.element.on('tap', me.handleTap);
-
 		me.doShow();
 
-		Ext.defer(me.hide, me.getMilliSecondsUntilHide(), me);
+		Ext.defer(function () {
+                me.hide();
+                if (Ext.os.is.Android) {
+                    me.setVisibility(false);
+                }
+            }
+            , me.getMilliSecondsUntilHide(), me);
 	},
 
 	doShow: function () {
@@ -87,7 +92,11 @@ Ext.define('ZCS.view.ZtToast', {
 			},
 			duration: 1000
 		});
-	},
+
+        if (Ext.os.is.Android) {
+            me.setVisibility(true);
+        }
+    },
 
 	reposition: function () {
 		var me = this,
