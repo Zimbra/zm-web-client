@@ -120,8 +120,8 @@ Ext.define('ZCS.model.calendar.ZtCalendarWriter', {
         comp.at = [];
         org = comp.or = {};
 
-        if (isOrganizer) {
-            //FROM Address
+        if (!isEdit || isOrganizer) {
+            //FROM Address - in case of create appt and organizer edit
             mailFromAddress =  ZCS.mailutil.getFromAddress();
         } else {
             mailFromAddress = invite.get('organizer');

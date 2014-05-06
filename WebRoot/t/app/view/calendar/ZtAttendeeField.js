@@ -27,7 +27,8 @@ Ext.define('ZCS.view.calendar.ZtAttendeeField', {
     config: {
         type: 'attendee',
         addButtonLabel: ZtMsg.addAttendeeLabel,
-        panel: 'newapptpanel'
+        panel: 'newapptpanel',
+        cls: 'create-appt-margin first last'
     },
 
     getFieldConfig: function(fieldId) {
