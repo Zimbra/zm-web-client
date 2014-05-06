@@ -64,8 +64,7 @@ Ext.define('ZCS.model.calendar.ZtCalendarReader', {
     getDataFromNode: function(node, index) {
         //TODO: After a fix from Swarm's touch calendar extension we would not need start and end year, month and day variables
         var start = index !== null ? node.inst[index].s : node.inst[0].s,
-	        tzo = index !== null ? node.inst[index].tzo : node.tzo,
-	        adjustMs = node.allDay ? (tzo + new Date(start).getTimezoneOffset() * 60 * 1000) : 0,
+	        adjustMs = node.allDay ? (node.tzo + new Date(start).getTimezoneOffset() * 60 * 1000) : 0,
 			startTime = parseInt(start, 10) + adjustMs,
 	        startDate = new Date(startTime),
             isException = index !== null ? (node.inst[index].ex ? true: false) : false,
