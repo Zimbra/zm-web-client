@@ -470,10 +470,12 @@ function(obj) {
 ZmFolder.prototype.createQuery =
 function(pathOnly) {
 	if (!this.isRemote() && this.isSystem()) {
-		var qName = ZmFolder.QUERY_NAME[this.nId] || this.getName(false, null, true, true);
+		var qName = ZmFolder.QUERY_NAME[this.nId] || this.getName(false, null, true, true) || this.name;
+		// put quotes around folder names that consist of multiple words or have special characters.
+		var quote = /^\w+$/.test(qName) ? "" : "\"";
 		return pathOnly
 			? qName
-			: ("in:\"" + (qName || this.name)+'"');
+			: ("in:" + quote + qName + quote);
 	}
 
 	var path = this.isSystem() ? ZmFolder.QUERY_NAME[this.nId] : this.name;
