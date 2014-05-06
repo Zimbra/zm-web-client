@@ -95,8 +95,8 @@ Ext.define('ZCS.controller.calendar.ZtNewAppointmentController', {
 				            formField.setValue(dateValue);
 			            }
 		            }
-		            else {
-			            formField.setValue(value);
+		            else if (attr !== 'repeat') {
+                        formField.setValue(value);
 		            }
 	            }
             }
@@ -113,7 +113,6 @@ Ext.define('ZCS.controller.calendar.ZtNewAppointmentController', {
                 at.push(field);
             }
         }, this);
-
 
         formField = container.query('contactfield[name=attendee]');
         Ext.each(formField, function(item, index) {
