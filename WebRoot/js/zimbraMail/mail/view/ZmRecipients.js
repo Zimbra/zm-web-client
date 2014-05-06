@@ -154,7 +154,7 @@ function(parent, viewId, htmlElId, fieldNames) {
 				// autocomplete-related handlers
 				if (contactsEnabled || appCtxt.isOffline) {
 					this._acAddrSelectList.handle(this._field[type], aifId);
- 				} else {
+				} else {
 					this._setEventHandler(this._fieldId[type], "onKeyUp");
 				}
 
@@ -370,6 +370,8 @@ function(bEnable) {
 // Address buttons invoke contact picker
 ZmRecipients.prototype.addressButtonListener =
 function(ev, addrType) {
+	if (appCtxt.isWebClientOffline()) return;
+
 	var obj = ev ? DwtControl.getTargetControl(ev) : null;
 	if (this._enableContainerInputs) {
 		this._enableContainerInputs(false);
