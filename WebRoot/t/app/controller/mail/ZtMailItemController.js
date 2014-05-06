@@ -116,7 +116,7 @@ Ext.define('ZCS.controller.mail.ZtMailItemController', {
 	 * @param {ZtMailitem}      item    item to tag or untag
 	 */
 	saveItemTag: function (tag, item) {
-		this.tagItem(item, tag.get('name'), false);
+		this.tagItem(item, tag, false);
 	},
 
 	/**

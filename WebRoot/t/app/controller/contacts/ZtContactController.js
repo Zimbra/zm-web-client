@@ -633,7 +633,7 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
 	 * @param {ZtMailitem}      item    item to tag or untag
 	 */
 	saveItemTag: function (tag, item) {
-		this.tagItem(item, tag.get('name'), false);
+		this.tagItem(item, tag, false);
 	},
 
     /**
