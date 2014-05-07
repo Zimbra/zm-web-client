@@ -517,7 +517,9 @@ function(params, noRender, callback, errorCallback) {
 	searchFor = this.getSearchForFromType(type);
 
 	//this makes sure for mail we get the type from the user's setting (CONV/MSG).
-	type = this.getTypeFromSearchFor(searchFor);
+	if (!params.types) {
+		type = this.getTypeFromSearchFor(searchFor);
+	}
 
 	var types = AjxVector.fromArray([type]); //need this Vector (one item) only for couple more usages below that I'm afraid to change now.
 
