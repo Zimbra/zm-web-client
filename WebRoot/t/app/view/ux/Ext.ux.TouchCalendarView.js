@@ -934,7 +934,7 @@ Ext.define('Ext.ux.TouchCalendarView', {
                                     '<th class="{[this.me.getPrevPeriodCls()]} style="display: block;">',
                                     '</th>',
                                     '<th>',
-                                        '<span>{[Ext.Date.format(values[0].date, ZtMsg.invDateOnlyFormat)]}</span>',
+                                        '<span>{[Ext.Date.format(values[0].date, ZtMsg.dayViewDateFormat)]}</span>',
                                     '</th>',
                                     '<th class="{[this.me.getNextPeriodCls()]} style="display: block;"">',
                                     '</th>',
