@@ -317,7 +317,7 @@ function(event) {
 	if (!isPublicShare) {
 		var error;
 		if (badEmails.length) {
-			error = AjxMessageFormat.format(AjxMsg.invalidEmailAddrValue, this._granteeInput.value);
+			error = AjxMessageFormat.format(AjxMsg.invalidEmailAddrValue, AjxStringUtil.htmlEncode(this._granteeInput.value));
 		}
 		else if (!goodEmails.length) {
 			error = AjxMsg.valueIsRequired;
