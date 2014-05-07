@@ -228,7 +228,11 @@ function(event) {
     Dwt.setVisible(this._globalMarkReadEl, false);
 
 	if (this._offlineId) {
-		this._props.setPropertyVisible(this._offlineId, (this._organizer.type == ZmOrganizer.FOLDER));
+		var enabled = false;
+		if (!organizer.isMountpoint) {
+			enabled = (this._organizer.type == ZmOrganizer.FOLDER);
+		}
+		this._props.setPropertyVisible(this._offlineId, enabled);
 	}
 };
 
