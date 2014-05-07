@@ -488,14 +488,19 @@ function(search, callback, errorCallback) {
 				token.result = [];
 				var indexArray = [];
 				var rangeArray = [];
-				if (indexName === "content") {
-					indexArray.push(objectStore.index("subject"), objectStore.index("fragment"));
+				if (indexName === "content" || indexName === "tag") {
+					if (indexName === "content") {
+						indexArray.push(objectStore.index("subject"), objectStore.index("fragment"));
+						isSearchAttachment = true;
+					}
+					else {
+						indexArray.push(objectStore.index(indexName));
+					}
 					var capitalize = indexValue.charAt(0).toUpperCase() + indexValue.substr(1).toLowerCase();
 					var boundKeyRangeUpper = IDBKeyRange.bound(indexValue.toUpperCase(), capitalize + '\uffff');
 					var lowerCase = indexValue.charAt(0).toLowerCase() + indexValue.substr(1).toUpperCase();
 					var boundKeyRangeLower = IDBKeyRange.bound(lowerCase, indexValue.toLowerCase() + '\uffff');
 					rangeArray.push(boundKeyRangeUpper, boundKeyRangeLower);
-					isSearchAttachment = true;
 				}
 				else if (indexName === "size") {
 					indexArray.push(objectStore.index(indexName));
