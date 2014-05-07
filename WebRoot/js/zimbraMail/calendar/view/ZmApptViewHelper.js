@@ -819,7 +819,7 @@ function(calItem, attach, hasCheckbox, getLinkIdCallback) {
 		html[i++] = "'";
 	}
 	html[i++] = ">";
-	html[i++] = attach.filename;
+	html[i++] = AjxStringUtil.htmlEncode(attach.filename);
 	html[i++] = "</a>";
 
 	var addHtmlLink = (appCtxt.get(ZmSetting.VIEW_ATTACHMENT_AS_HTML) &&
