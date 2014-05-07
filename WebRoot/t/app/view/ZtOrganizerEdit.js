@@ -156,7 +156,6 @@ Ext.define('ZCS.view.ZtOrganizerEdit', {
             displayField:       'displayName',
             store:              selectorStore,
             grouped:            true,
-            editing:            true,
             title:              ZtMsg.folderLocationLabel,
             toolbar: {
                 items : [{
@@ -171,6 +170,7 @@ Ext.define('ZCS.view.ZtOrganizerEdit', {
             useTitleAsBackText: false,
             type:               listType
         });
+	    selectorList.editing = true;
         folderLocationSelector.add(selectorList);
 
         this.setDimensions();
