@@ -141,7 +141,9 @@ function(focusOnSuggestion, showAllSuggestions) {
     };
 
     this._currentSuggestions.setLoadingHtml();
-    if ((this._resources.length == 0) && !this._suggestTime) {
+	// Location information is required even for a time search, since the time display indicates locations available
+	// at that time.  Use isSuggestRooms to only do so when GAL_ENABLED is true.
+    if ((this._resources.length == 0) && this.isSuggestRooms()) {
         this.searchCalendarResources(new AjxCallback(this, this._findFreeBusyInfo, [params]));
     } else {
         this._findFreeBusyInfo(params);
