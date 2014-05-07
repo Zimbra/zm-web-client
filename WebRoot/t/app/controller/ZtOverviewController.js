@@ -383,7 +383,7 @@ Ext.define('ZCS.controller.ZtOverviewController', {
 
 		if (folder) {
 			if (folder.deleteIsHard()) {
-				var deleteMsg = Ext.String.format(ZtMsg.hardDeleteFolderText, folder.get('name'));
+				var deleteMsg = Ext.String.format(ZtMsg.hardDeleteFolderText, Ext.String.htmlEncode(folder.get('name')));
 				Ext.Msg.confirm(ZtMsg.hardDeleteFolderTitle, deleteMsg, function(buttonId) {
 					if (buttonId === 'yes') {
 						options.del = true;
@@ -408,7 +408,7 @@ Ext.define('ZCS.controller.ZtOverviewController', {
 			options = {};
 
 		if (tag) {
-			var deleteMsg = Ext.String.format(ZtMsg.hardDeleteTagText, tag.get('name'));
+			var deleteMsg = Ext.String.format(ZtMsg.hardDeleteTagText, Ext.String.htmlEncode(tag.get('name')));
 			Ext.Msg.confirm(ZtMsg.hardDeleteTagTitle, deleteMsg, function(buttonId) {
 				if (buttonId === 'yes') {
 					options.del = true;

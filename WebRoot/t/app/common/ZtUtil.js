@@ -264,6 +264,17 @@ Ext.define('ZCS.common.ZtUtil', {
 	},
 
 	/**
+	 * Returns true if the current folder is the folder with the given ID, or is a descendant of it.
+	 *
+	 * @param {String}      folderId        folder ID to match against
+	 * @return {Boolean}        true if the current folder is under the one with the given ID
+	 */
+	curFolderIsUnder: function(folderId) {
+		var curFolder = ZCS.session.getCurrentSearchOrganizer();
+		return curFolder && curFolder.isUnder(folderId);
+	},
+
+	/**
 	 * Returns true if the given folder ID is for a folder that typically stores
 	 * outbound messages.
 	 *

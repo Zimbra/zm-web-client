@@ -624,11 +624,11 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 	doDelete: function(item, isSwipeDelete) {
 
 		var conv = item || this.getItem(),
-			inTrash = ZCS.util.curFolderIs(ZCS.constant.ID_TRASH),
+			inTrash = ZCS.util.curFolderIsUnder(ZCS.constant.ID_TRASH),
 			inJunk = ZCS.util.curFolderIs(ZCS.constant.ID_JUNK);
 
 		if (inTrash || inJunk) {
-			var folderName = ZCS.session.getCurrentSearchOrganizer().get('name'),
+			var folderName = Ext.String.htmlEncode(ZCS.session.getCurrentSearchOrganizer().get('name')),
 				deleteMsg = Ext.String.format(ZtMsg.hardDeleteConvText, folderName);
 
 			Ext.Msg.confirm(ZtMsg.hardDeleteConvTitle, deleteMsg, function(buttonId) {
