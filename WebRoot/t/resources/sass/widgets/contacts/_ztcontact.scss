@@ -38,9 +38,10 @@ $contactFieldWidth: 21rem; //optimized intially for iPad in landscape
 $contactFormButtonMinHeight: 2.5rem;
 
 $contactGroupMemberWidth: 17em;
-$contactGroupMemberHeight: 6.5em;
-$contactGroupMemberPadding: 0.5em;
-$contactGroupMemberImageSize: 4em;
+$contactGroupMemberHeight: $contactBaseFontSize * 5.25;
+$contactGroupMemberPadding: $contactBaseFontSize * 0.5;
+$contactGroupMemberImageSize: 3.25rem;
+$contactGroupMemberImageRadius: $contactGroupMemberImageSize / 2;
 
 
 /* Contact Image Base Classes */
@@ -50,8 +51,6 @@ $contactGroupMemberImageSize: 4em;
 	background-position: center;
 	background-size: contain;
 	background-repeat: no-repeat;
-	margin-left: $contactListStdMargin;
-	margin-top: $contactListHeight / 2 - $contactListImageSize / 2;
 	@include border-radius($contactImageSize / 2);
 }
 
@@ -65,8 +64,10 @@ $contactGroupMemberImageSize: 4em;
 	background-image: url('../images/group.png');
 }
 
-.zcs-contactlist-image {
+.zcs-contactListImage {
 	height: $contactListImageSize;
+	margin-left: $contactListStdMargin;
+	margin-top: $contactListHeight / 2 - $contactListImageSize / 2;
 	width: $contactListImageSize;
 }
 
@@ -112,12 +113,12 @@ $contactGroupMemberImageSize: 4em;
 	}
 
 	.zcs-contactList-person {
-		@extend .zcs-contactlist-image;
+		@extend .zcs-contactListImage;
 		@extend .zcs-contactImage-person;
 	}
 
 	.zcs-contactList-group {
-		@extend .zcs-contactlist-image;
+		@extend .zcs-contactListImage;
 		@extend .zcs-contactImage-group;
 	}
 
@@ -386,18 +387,19 @@ $contactGroupMemberImageSize: 4em;
 	.zcs-contactgroupview-personalInfo {
 		@extend .zcs-floatLeft;
 		margin-left: $contactGutter;
+		margin-top: $contactBaseFontSize * 1.5;
 
 		SPAN {
 			@extend .zcs-newLine;
 			@include ellipsis();
-			margin-bottom:.25em;
+			margin-bottom: 0.25rem;
 			max-width: $contactFieldWidth * 1.5;
 			min-width: $contactFieldWidth;
 
 			&[name=contactname] {
-				font-size: 1.4em;
+				font-size: 1.8rem;
 				font-weight: bold;
-				margin: 0.5em 0;
+				margin: 0.5rem 0;
 			}
 		}
 	}
@@ -405,45 +407,47 @@ $contactGroupMemberImageSize: 4em;
 
 .zcs-contactgroupview-members {
 	@extend .zcs-floatLeft;
-	margin-top: 1em;
+	margin-top: 1rem;
 	width: 100%;
 
 	.zcs-contactgroupview-member {
 		@extend .zcs-floatLeft;
 		border: 1px solid rgba(0,0,0,.4);
+		border-radius: $contactBaseFontSize / 2;
 		min-height: $contactGroupMemberHeight;
-		margin: 0 1.5em 1em 0;
+		margin: 0 1.5rem 1rem 0;
 		overflow: hidden;
-		padding: $contactGroupMemberPadding;
 		position: relative;
 		width: $contactGroupMemberWidth;
 
 		.zcs-contact-image {
+			@extend .zcs-contactImage-person;
+			border-radius: $contactGroupMemberImageRadius;
 			height: $contactGroupMemberImageSize;
 			left: $contactGroupMemberPadding;
 			position:absolute;
-			top: .4em;
+			top: $contactGroupMemberHeight / 2 - $contactGroupMemberImageSize /2;
 			width: $contactGroupMemberImageSize;
 		}
 
 		.zcs-contact-info {
-			left: $contactGroupMemberImageSize+$contactGroupMemberPadding * 2;
+			left: $contactGroupMemberImageSize + $contactGroupMemberPadding * 2;
 			position: absolute;
 			right: 0;
 			top: $contactGroupMemberPadding;
 
 			SPAN {
 				@extend .zcs-newLine;
-				font-size: .9em;
-				line-height: 1.4em;
+				font-size: $contactBaseFontSize * 0.9;
+				line-height: $contactBaseFontSize * 1.4;
 				width: 100%;
 				word-wrap: break-word;
 				@include ellipsis();
 
 				&[name=contactname] {
-					font-size: 1em;
+					font-size: $contactBaseFontSize;
 					font-weight: bold;
-					line-height: 1.5em;
+					line-height: $contactBaseFontSize * 1.5;
 				}
 			}
 		}
