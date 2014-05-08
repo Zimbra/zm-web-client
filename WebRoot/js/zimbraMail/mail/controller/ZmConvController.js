@@ -197,11 +197,6 @@ function(view) {
 //	this._itemCountText[ZmSetting.RP_BOTTOM] = this._navToolBar[view]._textButton;
 };
 
-ZmConvController.prototype._resetOperations = function(parent, num) {
-	// called without 'num' argument intentionally, so that single selection in list view is not enforced
-	ZmConvListController.prototype._resetOperations.call(this, parent);
-};
-
 ZmConvController.prototype._backListener =
 function(ev) {
 	if (!this.popShield(null, this._close.bind(this))) {
