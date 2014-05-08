@@ -282,9 +282,10 @@ Ext.define('ZCS.controller.calendar.ZtNewAppointmentController', {
             },
 	        calController = ZCS.app.getCalendarController(),
 	        event = calController.getEvent(),
-	        isInstance = event.get('isRecur') && !calController.getIsSeries();
+	        isInstance = event.get('isRecur') && !calController.getIsSeries(),
+	        isException = invite.get('isException');
 
-	    if (isInstance) {
+	    if (isInstance && !isException) {
 		    data.createException = true;
 	    }
 
