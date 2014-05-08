@@ -774,8 +774,10 @@ function(ev) {
 
 ZmInviteMsgView.prototype._dayResultsCallback =
 function(dayViewCallback, invitedHour, list, skipMiniCalUpdate, query) {
-    this._dayView.set(list, true);
-    this._dayView._scrollToTime(invitedHour);
+	if (this._dayView) {
+	    this._dayView.set(list, true);
+	    this._dayView._scrollToTime(invitedHour);
+	}
     if (dayViewCallback) {
         dayViewCallback.run();
     }
