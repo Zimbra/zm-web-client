@@ -227,7 +227,7 @@ Ext.define('ZCS.view.ux.ZtIframe', {
                     ev.target, 
                     eventPageX, 
                     eventPageY,
-                    ev.touches[0].id,
+                    null,
                     ev.ctrlKey, 
                     ev.altKey, 
                     ev.shiftKey, 
