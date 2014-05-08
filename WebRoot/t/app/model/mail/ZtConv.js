@@ -71,7 +71,7 @@ Ext.define('ZCS.model.mail.ZtConv', {
 
 		/**
 		 * Returns true if the message is not in one of the folders we normally omit from conversation viewing (unless
-		 * the user is currently viewing that folder).
+		 * the user is currently viewing that folder), or if it is the only msg in the conv.
 		 *
 		 * Note: for an unloaded conv, this relies on an 8.5+ server.
 		 *
@@ -83,9 +83,11 @@ Ext.define('ZCS.model.mail.ZtConv', {
 			var curFolder = ZCS.session.getCurrentSearchOrganizer(),
 				curFolderId = curFolder ? curFolder.get('zcsId') : '',
 				msgFolderId = msg instanceof ZCS.model.mail.ZtMailMsg ? msg.get('folderId') : msg.l,
-				localId = ZCS.util.localId(msgFolderId);
+				localId = ZCS.util.localId(msgFolderId),
+				conv = ZCS.cache.get(msg.cid),
+				isSolo = conv && conv.get('numMsgs') === 1;
 
-			return (msgFolderId === curFolderId) || !ZCS.constant.CONV_HIDE[localId];
+			return (msgFolderId === curFolderId) || !ZCS.constant.CONV_HIDE[localId] || isSolo;
 		}
 	},
 

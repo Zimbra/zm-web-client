@@ -74,6 +74,8 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 
 	activeDeleteAnimCount: 0,
 
+	quickReplyEnabled: true,
+
 	launch: function () {
 
 		ZCS.app.on('swipeDeleteMailItem', this.swipeDelete, this);
@@ -100,7 +102,7 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 				quickReplyTextarea.setHeight(ZCS.constant.QUICK_REPLY_LARGE);
 				quickReplyTitleBar.show();
 				quickReply.addCls('expanded');
-				if (!quickReplyTextarea.getValue()) {
+				if (!quickReplyTextarea.getValue() && this.quickReplyEnabled) {
 					this.setQuickReplyPlaceholderText('');
 				}
 			}, this);
@@ -108,7 +110,7 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 				quickReplyTextarea.setHeight(ZCS.constant.QUICK_REPLY_SMALL);
 				quickReplyTitleBar.hide();
 				quickReply.removeCls('expanded');
-				if (!quickReplyTextarea.getValue()) {
+				if (!quickReplyTextarea.getValue() && this.quickReplyEnabled) {
 					this.setQuickReplyPlaceholderText(this.getQuickReplyPlaceholderText());
 				}
 			}, this);
@@ -197,6 +199,15 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 			msgListView = this.getMsgListView(),
 			quickReply = this.getQuickReply();
 
+		this.quickReplyEnabled = !conv.get('isDraft');
+		if (quickReply) {
+			if (this.quickReplyEnabled) {
+				quickReply.show();
+			}
+			else {
+				quickReply.hide();
+			}
+		}
 
 		this.setHandleUpdateDataEvent(false);
 
@@ -210,7 +221,7 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 						isDraft:    isDraft
 					});
 
-					if (quickReply) {
+					if (quickReply && this.quickReplyEnabled) {
 						this.setQuickReplyPlaceholderText(this.getQuickReplyPlaceholderText());
 						quickReply.down('titlebar').setTitle(this.getQuickReplyTitleText());
 						quickReply.show();

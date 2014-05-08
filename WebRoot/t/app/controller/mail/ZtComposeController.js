@@ -184,6 +184,9 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 		}
 
 		var	replyAddr = msg.getReplyAddress();
+		if (!replyAddr) {
+			return {};
+		}
 
 		replyAddr.set('type', ZCS.constant.TO);
 		addrs[ZCS.constant.TO] = [ replyAddr ];

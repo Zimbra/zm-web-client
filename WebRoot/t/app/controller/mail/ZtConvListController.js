@@ -191,7 +191,7 @@ Ext.define('ZCS.controller.mail.ZtConvListController', {
 
 		var curSearch = ZCS.session.getSetting(ZCS.constant.SETTING_CUR_SEARCH, this.getApp()),
 			curFolder = this.getFolder() || ZCS.session.getCurrentSearchOrganizer(),
-			isOutbound = ZCS.util.isOutboundFolderId(curFolder.get('zcsId'));
+			isOutbound = curFolder && ZCS.util.isOutboundFolderId(curFolder.get('zcsId'));
 
 		// gather up the conv's msgs from their create nodes (typically just one msg)
 		for (i = 0; i < ln; i++) {
