@@ -492,9 +492,12 @@ Ext.define('ZCS.controller.ZtOverviewController', {
 		 * Search for other apps is handled generically in the list controller. Since list controller is
 		 * not registered in case of calendar, override it specifically in calendar controller.
 		 */
-		if (ZCS.session.getActiveApp() === ZCS.constant.APP_CALENDAR) {
-			ZCS.app.getCalendarController().doSearch(query, folder);
-		}
+        /**
+         * bug:88804 - Disable search on individual calendar folders till bug 88908 is fixed.
+         */
+//		if (ZCS.session.getActiveApp() === ZCS.constant.APP_CALENDAR) {
+//			ZCS.app.getCalendarController().doSearch(query, folder);
+//		}
 	}
 });
 
