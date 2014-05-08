@@ -113,12 +113,11 @@ function(offlineEnable, logOff, dialog) {
     if (logOff) {
         dialog.popdown();
         var setting = appCtxt.getSettings().getSetting(ZmSetting.WEBCLIENT_OFFLINE_BROWSER_KEY);
-		var localOfflineBrowserKey = localStorage.getItem(ZmSetting.WEBCLIENT_OFFLINE_BROWSER_KEY);
         if (setting) {
-			setting.addChangeListener(ZmOfflineSettingsDialog._handleLogOff.bind(window, localOfflineBrowserKey));
+			setting.addChangeListener(ZmOfflineSettingsDialog._handleLogOff.bind(window));
         }
         else {
-			ZmOfflineSettingsDialog._handleLogOff(localOfflineBrowserKey);
+			ZmOfflineSettingsDialog._handleLogOff();
         }
     }
     var existingBrowserKey = appCtxt.get(ZmSetting.WEBCLIENT_OFFLINE_BROWSER_KEY);
@@ -147,12 +146,7 @@ function(offlineEnable, logOff, dialog) {
 };
 
 ZmOfflineSettingsDialog._handleLogOff =
-function(browserKey) {
+function() {
 	ZmOffline.deleteOfflineData();
-	if (appCtxt.isWebClientOffline() && browserKey) {
-		//Store browser key during offline logout, so that disabled offline setting will be stored in the server if the user logs in from the same browser again.
-		localStorage.setItem(ZmOffline.BROWSER_KEY, browserKey);
-	}
-	appCtxt.isWebClientOfflineSupported = false;
 	setTimeout(ZmZimbraMail.logOff, 2500);//Give some time for deleting indexeddb data and application cache data
 };

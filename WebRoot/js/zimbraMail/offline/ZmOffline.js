@@ -26,7 +26,6 @@ ZmOffline.messageNotShowed = true;
 ZmOffline.cacheProgress = [];
 ZmOffline.syncStarted = false;
 ZmOffline.isServerReachable = true;
-ZmOffline.BROWSER_KEY = "BROWSER_KEY";
 
 ZmOffline.folders = {};
 ZmOffline.calendars = {};

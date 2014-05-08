@@ -2348,10 +2348,10 @@ ZmZimbraMail.prototype.setupHelpMenu = function(button) {
 		menu.enableAll(true);
 	} else {
 		menu.enableAll(false);
-		var offlineEnabledIds = [ZmZimbraMail.HELP_MENU_ABOUT, ZmZimbraMail.HELP_MENU_LOGOFF]
+		var offlineEnabledIds = [ZmZimbraMail.HELP_MENU_ABOUT];
 		menu.enable(offlineEnabledIds, true);
 	}
-}
+};
 
 ZmZimbraMail.prototype.getNewButton =
 function() {
