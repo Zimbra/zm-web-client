@@ -244,6 +244,11 @@ Ext.define('ZCS.model.ZtOrganizer', {
 		if (data.type === ZCS.constant.ORG_TAG) {
 			ZCS.cache.set(data.name, this, 'tagName');
 		}
+
+        if (data.isMountpoint) {
+            var mountId = data.remoteAccountId + ':' + data.remoteFolderId;
+            ZCS.cache.set(mountId, this);
+        }
 	},
 
 	/**
