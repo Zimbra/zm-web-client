@@ -113,7 +113,7 @@ Ext.define('ZCS.model.mail.ZtInvite', {
 
 			var	start = comp.s && comp.s[0],
 				end = comp.e && comp.e[0],
-				organizer = ZCS.model.mail.ZtEmailAddress.fromInviteNode(comp.or),
+				organizer,
                 defaultTz = ZCS.timezone.getServerId(ZCS.timezone.DEFAULT_TZ),
                 timezone = ZCS.timezone.getMediumName(defaultTz);
 
@@ -144,7 +144,8 @@ Ext.define('ZCS.model.mail.ZtInvite', {
             }
 
 			if (comp.or) {
-				invite.set('organizer', organizer);
+                organizer = ZCS.model.mail.ZtEmailAddress.fromInviteNode(comp.or);
+                invite.set('organizer', organizer);
 				if (comp.or.sentBy) {
 					invite.set('sentBy', ZCS.model.mail.ZtEmailAddress.fromEmail(comp.or.sentBy));
 				}

@@ -204,12 +204,14 @@ Ext.define('ZCS.controller.calendar.ZtCalendarController', {
     showItem: function(msg, isSeries, isEdit) {
 		var panel = this.getAppointmentPanel(),
             invite = msg.get('invite'),
-            title = Ext.String.htmlEncode(invite.get('subject') || ZtMsg.noSubject);
+            title = Ext.String.htmlEncode(invite.get('subject') || ZtMsg.noSubject),
+            calFolder = ZCS.cache.get(invite.get('apptFolderId')),
+            isFeed = calFolder && calFolder.isFeed();
 
 	    this.setIsSeries(isSeries);
 
         panel.setPanel(msg, isSeries, isEdit);
-        this.updateToolbar({isOrganizer: invite.get('isOrganizer')});
+        this.updateToolbar({isOrganizer: invite.get('isOrganizer'), isFeed: isFeed});
         panel.show({
             type:       'slide',
             direction:  'left',
@@ -230,12 +232,18 @@ Ext.define('ZCS.controller.calendar.ZtCalendarController', {
 
 		// Show the ATD options only in case of attendees
 		if (params.isOrganizer) {
-//			Ext.getCmp('editAppt').show();
 			Ext.getCmp('inviteActionsAppt').hide();
 		} else {
 			Ext.getCmp('inviteActionsAppt').show();
-//			Ext.getCmp('editAppt').hide();
 		}
+
+        if (params.isFeed) {
+            Ext.getCmp('editAppt').hide();
+            Ext.getCmp('deleteAppt').hide();
+        } else {
+            Ext.getCmp('editAppt').show();
+            Ext.getCmp('deleteAppt').show();
+        }
     },
 
 	updateTitle: function(params) {
