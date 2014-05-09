@@ -536,19 +536,17 @@ Ext.define('ZCS.common.ZtUtil', {
 				if (value[1].length === 0) {
 					return Ext.String.format(pattern, value[0], '');
 				}
-				else if (value[1].length === 1) {
-					return Ext.String.format(pattern, value[0], Ext.Date.format(value[0][0], 'l'));
+				else if (value[1].length >= 1) {
+					var daysLen = value[1].length,
+						i,
+						recurStr = "";
+
+					for (i = 0; i < daysLen; i++) {
+						recurStr += Ext.Date.format(value[1][i], 'l')  + (i !== daysLen - 1 ? ', ' : '');
+					}
+
+					return Ext.String.format(pattern, value[0], recurStr);
 				}
-
-				var weekDaysLen = value[1].length,
-					i,
-					msgStr = '';
-
-				for (i = 0; i < weekDaysLen; i++) {
-					msgStr += Ext.Date.format(value[1][i], 'l') + (i !== weekDaysLen - 1 ? ', ' : '');
-				}
-
-				return Ext.String.format(pattern, value[0], msgStr);
 			}
 
 			case ZtMsg.recurWeeklyEveryWeekday:
