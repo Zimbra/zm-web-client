@@ -652,12 +652,17 @@
             </tpl>
 		</table>
 
+		<tpl if='attachments">
+		    <tpl for='attachments'>
+		        <span class="view-appt-attachments zcs-area-bubble zcs-attachment-bubble" id="{id}" aid="{aid}" label="{label}" size="{size}">{label} <span>({size})</span></span>
+		    </tpl>
+		</tpl>
+
 		<tpl if='notes'>
-			<div class="view-appt-notes">
+		    <div class="view-appt-notes">
 				<hr>
 				<br>
 				{notes}
-
 			</div>
 		</tpl>
 	</tpl>

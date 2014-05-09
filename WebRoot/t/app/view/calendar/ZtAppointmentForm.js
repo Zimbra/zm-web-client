@@ -39,6 +39,12 @@ Ext.define('ZCS.view.calendar.ZtAppointmentForm', {
 					});
 					return true;
 				}
+                // attachment bubble
+                if (idParams.objType === ZCS.constant.OBJ_ATTACHMENT) {
+                    apptBody.fireEvent('attachmentTap', elm);
+                    return false;
+                }
+
 				//Stop this event from triggering a scroll reset.
 				e.preventDefault();
 				return false;
@@ -117,7 +123,7 @@ Ext.define('ZCS.view.calendar.ZtAppointmentForm', {
 		this.add([toolbar, titleBar, itemView]);
 	},
 
-	 setPanel: function(msg, isSeries, isEdit) {
+	setPanel: function(msg, isSeries, isEdit) {
 		var invite = msg.get('invite'),
             event = ZCS.app.getCalendarController().getEvent(),
 			startTime = Ext.Date.format(invite.get('start'), ZtMsg.invTimeFormat),
@@ -126,7 +132,8 @@ Ext.define('ZCS.view.calendar.ZtAppointmentForm', {
                 Ext.Date.format(event.get('start'),ZtMsg.invDateFormat),
 			myResponse = invite.get('myResponse'),
 			displayStatus = this.getShowAsOptionLabel(invite.get('fb')),
-			apptColor, apptRgbColor, calFolderName;
+			apptColor, apptRgbColor, calFolderName,
+            me = this;
 
 		var calFolder = ZCS.cache.get(invite.get('apptFolderId'));
 
@@ -159,17 +166,18 @@ Ext.define('ZCS.view.calendar.ZtAppointmentForm', {
 				invAcceptButtonId:	 ZCS.util.getUniqueId(Ext.apply({}, { action: ZCS.constant.OP_ACCEPT }, idParams)),
 				invTentativeButtonId:  ZCS.util.getUniqueId(Ext.apply({}, { action: ZCS.constant.OP_TENTATIVE }, idParams)),
 				invDeclineButtonId:	ZCS.util.getUniqueId(Ext.apply({}, { action: ZCS.constant.OP_DECLINE }, idParams)),
-                isException: invite.get('isException')
-			},
+                isException: invite.get('isException'),
+                attachments: me.fetchAttachments(msg)
+            },
 			tpl,html,me;
 
 		tpl = Ext.create('Ext.XTemplate', ZCS.template.ApptViewDesc);
 		html = tpl.apply(data);
 
-		var apptView = this.getInnerAt(1);
-		apptView.setHtml(html);
-		this.setMsg(msg);
-	 },
+        var apptView = this.getInnerAt(1);
+        apptView.setHtml(html);
+        this.setMsg(msg);
+    },
 
 	getShowAsOptionLabel : function(value) {
 		for (var i = 0; i < ZCS.constant.SHOWAS_OPTIONS.length; i++) {
@@ -178,5 +186,28 @@ Ext.define('ZCS.view.calendar.ZtAppointmentForm', {
 				return option.label;
 			}
 		}
-	}
+	},
+
+    /**
+     * Returns an array of attachments to be displayed below the appointment details.
+     */
+    fetchAttachments: function(msg) {
+        var attachments = msg.getAttachmentInfo(),
+            attachArr = [],
+            ln = attachments.length;
+
+        if (ln > 0) {
+            for (var i = 0; i < ln; i++) {
+                var attInfo = attachments[i],
+                    id = ZCS.util.getUniqueId({
+                        objType:    ZCS.constant.OBJ_ATTACHMENT,
+                        url:        attInfo.url
+                    });
+
+                attInfo.id = id;
+                attachArr.push(attInfo);
+            }
+        }
+        return attachArr;
+    }
 });

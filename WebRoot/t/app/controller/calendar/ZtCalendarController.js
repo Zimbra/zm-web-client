@@ -78,8 +78,9 @@ Ext.define('ZCS.controller.calendar.ZtCalendarController', {
             },
 			appointmentPanel: {
 				cancel:             'doCancel',
-				contactTap:         'showMenu'
-			},
+				contactTap:         'showMenu',
+                attachmentTap:      'doShowAttachment'
+            },
 			'appointmentpanel toolbar button[iconCls=inviteReply]': {
 				tap: 'onApptActionsButtonTap'
 			},
@@ -211,6 +212,7 @@ Ext.define('ZCS.controller.calendar.ZtCalendarController', {
 	    this.setIsSeries(isSeries);
 
         panel.setPanel(msg, isSeries, isEdit);
+
         this.updateToolbar({isOrganizer: invite.get('isOrganizer'), isFeed: isFeed});
         panel.show({
             type:       'slide',
@@ -601,7 +603,17 @@ Ext.define('ZCS.controller.calendar.ZtCalendarController', {
 		apptTitleBar.hide();
 	},
 
-	onApptActionsButtonTap: function (button, e) {
+    doShowAttachment: function(el) {
+
+        var idParams = ZCS.util.getIdParams(el.dom.id),
+            url = idParams && idParams.url;
+
+        if (url) {
+            window.open(url, '_blank');
+        }
+    },
+
+    onApptActionsButtonTap: function (button, e) {
 		var apptPanel = this.getAppointmentPanel(),
 			msg = apptPanel.getMsg(),
             event = this.getEvent();
