@@ -347,7 +347,7 @@ function(content, htmlEncode, type, isTextMsg, options) {
 			if (type == "email" || content instanceof AjxEmailAddress) {
 				if (lowestHandler) {
                     content = this._getAjxEmailAddress(content);
-					this.generateSpan(lowestHandler, html, idx, content, null, options);
+					this.generateSpan(lowestHandler, html, idx, content, lowestResult, options);
 				} else {
 					html[idx++] = AjxStringUtil.htmlEncode(content.toString());
 				}

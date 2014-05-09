@@ -344,14 +344,14 @@ function(controller, dropTgt) {
 	this._detailsId		= this._htmlElId + "_details";
 
 	// contact groups is not child of DwtTabGroup
-	this._contactGroupView = new ZmContactView(this);
+	this._contactGroupView = new ZmContactView({ parent: this, controller: this._controller });
 	this._contactGroupView.setVisible(false);
 	this._contactGroupView.reparentHtmlElement(this._contentId);
 	this._contactGroupView._setMouseEventHdlrs();
 	this._groupObjectManager = new ZmObjectManager(this._contactGroupView);
 
 	// create an empty slate
-	this._contactView = new ZmContactView(this);
+	this._contactView = new ZmContactView({ parent: this, controller: this._controller });
 	this._contactView.reparentHtmlElement(this._contentId);
 	this._contactView._setMouseEventHdlrs();
 	this._objectManager = new ZmObjectManager(this._contactView);
@@ -997,11 +997,14 @@ ZmContactSplitView.prototype._sashCallback = function(delta) {
 };
 
 /**
- * View for displaying the contact information. Provides events for enabling text selection. 
- * @param parent
+ * View for displaying the contact information. Provides events for enabling text selection.
+ * @param {Object}  params      hash of params:
+ *                  parent      parent control
+ *                  controller  owning controller
  */
-ZmContactView = function(parent) {
-	DwtComposite.call(this, {parent:parent});
+ZmContactView = function(params) {
+	DwtComposite.call(this, {parent:params.parent});
+	this._controller = params.controller;
 	this._setAllowSelection();
 	this.addListener(DwtEvent.ONSELECTSTART, this._selectStartListener.bind(this));
 };

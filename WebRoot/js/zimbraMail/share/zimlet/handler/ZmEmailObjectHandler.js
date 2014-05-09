@@ -72,7 +72,7 @@ ZmEmailObjectHandler.prototype.clicked = function(spanElement, contentObjText, m
 
 	var params = {
 		action:         ZmOperation.NEW_MESSAGE,
-		inNewWindow:    ctlr._app._inNewWindow(ev),
+		inNewWindow:    ctlr && ctlr._app && ctlr._app._inNewWindow(ev),
 		toOverride:     parts.to,
 		subjOverride:   parts.subject,
 		extraBodyText:  parts.body
