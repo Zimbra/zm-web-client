@@ -208,13 +208,14 @@ Ext.define('ZCS.controller.mail.ZtMsgController', {
 
 		var origMsg = ZCS.cache.get(origMsgId),
 			invite = origMsg.get('invite'),
-			msg = Ext.create('ZCS.model.mail.ZtMailMsg');
+			msg = Ext.create('ZCS.model.mail.ZtMailMsg'),
+			invReplySubject = ZCS.constant.INVITE_REPLY_PREFIX[action] + ": " + invite.get('subject');
 
 		msg.set('origId', origMsgId);
 		msg.set('inviteAction', action);
 		msg.set('replyType', 'r');
 
-		msg.set('subject', invite.get('subject'));
+		msg.set('subject', invReplySubject);
 
 		var from = ZCS.mailutil.getFromAddress();
 		msg.addAddresses(from);
