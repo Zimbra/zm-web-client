@@ -941,7 +941,9 @@ function() {
  */
 ZmZimbraMail.prototype._refreshListener =
 function() {
-	this.runAppFunction("runRefresh");
+	if (!appCtxt.isWebClientOffline()) {
+		this.runAppFunction("runRefresh");
+	}
 };
 
 // popup a warning dialog if there is a problem with the license
