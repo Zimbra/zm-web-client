@@ -698,6 +698,11 @@ ZCS.constant.OP_ACCEPT      = 'ACCEPT';
 ZCS.constant.OP_TENTATIVE   = 'TENTATIVE';
 ZCS.constant.OP_DECLINE     = 'DECLINE';
 
+ZCS.constant.INVITE_REPLY_PREFIX = {};
+ZCS.constant.INVITE_REPLY_PREFIX[ZCS.constant.OP_ACCEPT]    = ZtMsg.acceptAction;
+ZCS.constant.INVITE_REPLY_PREFIX[ZCS.constant.OP_TENTATIVE]      = ZtMsg.tentativeAction;
+ZCS.constant.INVITE_REPLY_PREFIX[ZCS.constant.OP_DECLINE]      = ZtMsg.declineAction;
+
 // Participation status (there are others we can add if needed)
 ZCS.constant.PSTATUS_ACCEPTED   = 'AC';
 ZCS.constant.PSTATUS_TENTATIVE  = 'TE';

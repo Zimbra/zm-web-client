@@ -435,13 +435,14 @@ Ext.define('ZCS.controller.calendar.ZtCalendarController', {
         var invite = apptMsg.get('invite'),
 			invId =  apptMsg.get('id'),
             msg = Ext.create('ZCS.model.mail.ZtMailMsg'),
-	        isSeries = this.getIsSeries();
+	        isSeries = this.getIsSeries(),
+	        invReplySubject = ZCS.constant.INVITE_REPLY_PREFIX[action] + ": " + invite.get('subject');
 
         msg.set('origId', invId);  //not sure if origId should be set to invite id
         msg.set('inviteAction', action);
         msg.set('replyType', 'r');
 
-        msg.set('subject', invite.get('subject'));
+        msg.set('subject', invReplySubject);
 
         var from = ZCS.mailutil.getFromAddress();
         msg.addAddresses(from);
