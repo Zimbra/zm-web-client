@@ -171,17 +171,6 @@ function(searchFolder) {
 	appCtxt.getSearchController().redoSearch(searchFolder.search, false, {getHtml: appCtxt.get(ZmSetting.VIEW_AS_HTML)});
 };
 
-/**
- * @private
- */
-ZmSearchTreeController.prototype._getMoveParams =
-function(dlg) {
-	var params = ZmTreeController.prototype._getMoveParams.apply(this, arguments);
-	params.overviewId = dlg.getOverviewId(this.type);
-	params.treeIds = [ZmOrganizer.FOLDER, ZmOrganizer.SEARCH];
-	return params;
-};
-
 // Miscellaneous
 
 /**

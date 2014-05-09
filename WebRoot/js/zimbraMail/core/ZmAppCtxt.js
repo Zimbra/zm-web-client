@@ -696,9 +696,12 @@ function(){
  */
 ZmAppCtxt.prototype.getNewSearchDialog =
 function() {
-	if (!this._newSearchDialog) {
-		this._newSearchDialog = new ZmNewSearchDialog(this._shell);
+	this._newSearchDialogs = this._newSearchDialogs || {};
+	this.searchAppName = this.searchAppName || ZmApp.MAIL;
+	if (!this._newSearchDialogs[this.searchAppName]) {
+		this._newSearchDialogs[this.searchAppName] = new ZmNewSearchDialog(this._shell);
 	}
+	this._newSearchDialog = this._newSearchDialogs[this.searchAppName];
 	return this._newSearchDialog;
 };
 
@@ -723,10 +726,13 @@ function() {
  */
 ZmAppCtxt.prototype.getChooseFolderDialog =
 function() {
-	if (!this._chooseFolderDialog) {
+	var currentAppName = this.getCurrentAppName();
+	this._chooseFolderDialogs = this._chooseFolderDialogs || {};
+	if (!this._chooseFolderDialogs[currentAppName]) {
 		AjxDispatcher.require("Extras");
-		this._chooseFolderDialog = new ZmChooseFolderDialog(this._shell);
+		this._chooseFolderDialogs[currentAppName] = new ZmChooseFolderDialog(this._shell);
 	}
+	this._chooseFolderDialog = this._chooseFolderDialogs[currentAppName];
 	return this._chooseFolderDialog;
 };
 

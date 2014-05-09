@@ -84,7 +84,8 @@ function(params, account) {
 				parentValueCell.innerHTML = '';
 			}
 			var overviewParams = {
-				overviewId:		this.toString(),
+				appName:		params.appName,
+				overviewId:		this.toString() + (params.appName || ""),
 				treeIds:		this._treeIds,
 				omit:			this._omit,
 				fieldId:		this._folderTreeCellId,

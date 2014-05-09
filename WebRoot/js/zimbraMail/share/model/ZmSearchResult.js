@@ -29,6 +29,7 @@ ZmSearchResult = function(search) {
 	if (!search) { return; }
 	this._results = {};
 	this.search = search;
+	this.type = search.searchFor;
 };
 
 ZmSearchResult.prototype.isZmSearchResult = true;

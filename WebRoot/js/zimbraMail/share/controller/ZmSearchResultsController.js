@@ -71,6 +71,7 @@ function(results, resultsCtlr) {
 	else {
 		this._displayResults(results.search, resultsCtlr);
 	}
+	appCtxt.searchAppName = app.getName();
 	this._curSearch = results.search;
 	this.inactive = true;	// search tabs can always be reused (unless pinned)
 };
@@ -272,7 +273,10 @@ function(ev) {
 		stc._newCb = stc._newCallback.bind(stc);
 	}
 
-	var params = { search: this._curSearch };
+	var params = {
+		search: this._curSearch,
+		appName: this._resultsApp.getName()
+	};
 	ZmController.showDialog(stc._getNewDialog(), stc._newCb, params);
 };
 

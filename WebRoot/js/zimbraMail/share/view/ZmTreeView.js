@@ -427,7 +427,8 @@ function(org, child) {
 		if (!searchTypes || searchTypes.length === 0) {
 			searchTypes = [ ZmItem.MSG ];   // search with no types defaults to "message"
 		}
-		var common = AjxUtil.intersection(searchTypes, ZmApp.SEARCH_TYPES[this._overview.appName]);
+		var common = AjxUtil.intersection(searchTypes,
+			ZmApp.SEARCH_TYPES[this._overview.appName] ||  ZmApp.SEARCH_TYPES[appCtxt.getCurrentAppName()]);
 		if (common.length === 0) {
 			return false;
 		}

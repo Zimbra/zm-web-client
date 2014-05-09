@@ -1279,7 +1279,7 @@ function(dlg) {
 	return {
 		data:			this._pendingActionData,
 		treeIds:		[this.type],
-		overviewId:		dlg.getOverviewId(ZmOrganizer.APP[this.type]),
+		overviewId:		dlg.getOverviewId(appCtxt.getCurrentAppName() + '_' + this.type),
 		omit:			omit,
 		title:			AjxStringUtil.htmlEncode(this._getMoveDialogTitle()),
 		description:	ZmMsg.targetFolder,
