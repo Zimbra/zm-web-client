@@ -193,12 +193,14 @@ Ext.define('ZCS.controller.calendar.ZtNewAppointmentController', {
                 Ext.each(ZCS.constant.CALENDAR_FIELDS, function(attr){
                     invite.set(attr, newAppt.get(attr));
                 });
-                var att = this.setAttendees(invite.get('attendees'), newAppt.get('attendee'));
+                var att = this.setAttendees(invite.get('attendees'), newAppt.get('attendee')),
+                    attachments = msg.getAttachmentInfo();
                 invite.set('attendees', att);
                 invite.set('startTime', newAppt.get('startTime'));
                 invite.set('endTime', newAppt.get('endTime'));
                 if (this.isValidAppt(invite)) {
-                    this.modifyAppt(invite);
+                    //Retain the attachments present in the original appt. 
+                    this.modifyAppt(invite, attachments);
                 }
             } else {
                 if (this.isValidAppt(newAppt)) {
@@ -274,11 +276,12 @@ Ext.define('ZCS.controller.calendar.ZtNewAppointmentController', {
         }, this);
     },
 
-    modifyAppt: function(invite) {
+    modifyAppt: function(invite, attachments) {
         var me = this,
             data = {
 	            op:         'modify',
-	            id:         this.getInviteId()
+	            id:         this.getInviteId(),
+                attachments: attachments
             },
 	        calController = ZCS.app.getCalendarController(),
 	        event = calController.getEvent(),

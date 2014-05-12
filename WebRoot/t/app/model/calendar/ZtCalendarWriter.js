@@ -77,7 +77,9 @@ Ext.define('ZCS.model.calendar.ZtCalendarWriter', {
                 json = this.getSoapEnvelope(request, data, isCreateException ? 'CreateAppointmentException' : 'ModifyAppointment');
                 methodJson = isCreateException? json.Body.CreateAppointmentExceptionRequest : json.Body.ModifyAppointmentRequest;
 
-                var id = methodJson.id = itemData.id;
+                var id = methodJson.id = itemData.id,
+                    attachments = itemData.attachments;
+
                 methodJson.ms = invite.get('ms');
                 methodJson.rev = invite.get('rev');
 
@@ -85,7 +87,9 @@ Ext.define('ZCS.model.calendar.ZtCalendarWriter', {
 
                 m = this.populateAttrs(methodJson, invite, true);
 
-	            if (isCreateException) {
+                this._addAttachmentsToRequest(m, invite, id, attachments);
+
+                if (isCreateException) {
 		            this._addExceptionRequestSubs(m, invite);
 		            methodJson.comp = "0";
 		            methodJson.echo = "1";
@@ -300,6 +304,22 @@ Ext.define('ZCS.model.calendar.ZtCalendarWriter', {
 		m.inv.comp[0].status = invite.get('status');
 		m.inv.comp[0].transp = invite.get('transp');
 		m.inv.uid = invite.get('uid');
-	}
+	},
+
+    _addAttachmentsToRequest: function(m, invite, id, validAttachments) {
+        var attachNode = m.attach = {},
+            validAttLen;
+
+        if (validAttachments) {
+            validAttLen = validAttachments.length;
+            attachNode.mp = [];
+            for (i = 0; i < validAttLen; i++) {
+                attachNode.mp.push({
+                    mid : id,
+                    part : validAttachments[i].part
+                });
+            }
+        }
+    }
 
 });
