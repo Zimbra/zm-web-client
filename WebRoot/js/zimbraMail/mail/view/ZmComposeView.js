@@ -1610,6 +1610,9 @@ function(spanId, attachmentPart) {
 		parent.removeChild(node);
 	}
 
+	/* Not sure about the purpose of below code so commenting it out instead of deleting.
+	When a attachment is removed it should not change the original message. See bug 76776.
+
 	if (attachmentPart) {
 	var numAttachments = (this._msg &&  this._msg.attachments && this._msg.attachments.length ) || 0;
 		for (var i = 0; i < numAttachments; i++) {
@@ -1618,7 +1621,7 @@ function(spanId, attachmentPart) {
 			   break;
 			}
 		}
-	}
+	}*/
 
 	if (!parent.childNodes.length) {
 		this.cleanupAttachments(true);
