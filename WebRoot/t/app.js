@@ -159,7 +159,21 @@ Ext.application({
 		//<debug>
 		Ext.Logger.info('STARTUP: app launch');
 
-		//</debug>
+        //turn off animation for show() and hide() on Android devices since
+        // Messagebox gets stuck on some OS versions - see Bug 89639 for details
+        if (Ext.os.is.Android) {
+            Ext.define('Ext.Component', {
+                override: 'Ext.Component',
+                show: function (animation) {
+                    return this.callParent([false]);
+                },
+                hide: function (animation) {
+                    return this.callParent([false]);
+                }
+            });
+        }
+
+        //</debug>
 		// Note: initial view created by ZtMainController
 	},
 
