@@ -60,6 +60,7 @@ ZmNewOrganizerDialog.prototype._folderNameAlreadyExistsMsg = ZmMsg.errorAlreadyE
 ZmNewOrganizerDialog.prototype.popup =
 function(params, account) {
 
+	params = params || {};
     var folder = params instanceof ZmOrganizer ? params : (params && params.organizer);
 
 	var parentLabelCell = document.getElementById(this._htmlElId + '_parentLabel');
