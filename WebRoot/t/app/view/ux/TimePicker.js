@@ -46,7 +46,9 @@ Ext.define( 'Ext.ux.field.TimePicker', {
          * The default time to be used when initilizing the field
          * Example: '8:00', '14:50'
          */
-        defaultTime: '8:00'
+        defaultTime: '8:00',
+
+        destroyPickerOnHide: false
     },
     applyValue: function( value ) {
         var date = new Date();
@@ -62,11 +64,28 @@ Ext.define( 'Ext.ux.field.TimePicker', {
         return value;
     },
     applyPicker: function( picker, pickerInstance ) {
-        picker = Ext.factory( picker, 'Ext.ux.picker.Time' );
-        picker.setHidden( true );
-        Ext.Viewport.add( picker );
+//        picker = Ext.factory( picker, 'Ext.ux.picker.Time' );
+//        picker.setHidden( true );
+//        picker.setZIndex(9999);
+//        Ext.Viewport.add( picker );
+//        return picker;
+        if (pickerInstance && pickerInstance.isPicker) {
+            picker = pickerInstance.setConfig(picker);
+        }
+
         return picker;
     },
+//    destroyPicker: function() {
+//        var me     = this,
+//            picker = me.getPicker();
+//
+//        if (me.getDestroyPickerOnHide() && picker) {
+//            picker.destroy();
+//            picker.setZIndex(0);
+//            Ext.Viewport.remove(picker);
+//            me._picker = me.getInitialConfig().picker || true;
+//        }
+//    },
     /**
      * @cfg {String} [dateFormat=Ext.util.Format.defaultDateFormat] The format to be used when displaying the time in this field.
      * Accepts any valid date/time format. You can view formats over in the {@link Ext.Date} documentation.
