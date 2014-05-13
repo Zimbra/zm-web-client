@@ -152,7 +152,7 @@ Ext.define('ZCS.model.calendar.ZtCalendarWriter', {
         this._setAlarmData(comp, reminderMinutes);
 
         //attendees
-        this._addAttendeesToRequest(comp, m, notifyList, isOrganizer);
+        this._addAttendeesToRequest(comp, m, notifyList, isOrganizer, isEdit);
 
         // notes
         this._addNotesToRequest(m, invite);
@@ -160,13 +160,13 @@ Ext.define('ZCS.model.calendar.ZtCalendarWriter', {
         return m;
     },
 
-    _addAttendeesToRequest : function(inv, m, notifyList, isOrganizer) {
+    _addAttendeesToRequest : function(inv, m, notifyList, isOrganizer, isEdit) {
         Ext.each(notifyList, function(attendee) {
             var email = attendee.get('email'),
                 displayName = attendee.get('longName'),
                 e;
 
-            if (isOrganizer) {
+            if (!isEdit || isOrganizer) {
                 e = {
                     a : email,
                     t : "t"
