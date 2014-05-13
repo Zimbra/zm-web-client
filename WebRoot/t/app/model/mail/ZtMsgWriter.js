@@ -146,26 +146,27 @@ Ext.define('ZCS.model.mail.ZtMsgWriter', {
 
 			if (itemData.isInviteReply) {
 
-				if (isSeries) {
-					Ext.apply(methodJson, {
-						compNum:            0,
-						id:                 origId,
-						idnt:               identityId,
-						updateOrganizer:    'TRUE',
-						verb:               msg.get('inviteAction')
-					});
+				var invReply = {
+					compNum:            0,
+					id:                 origId,
+					idnt:               identityId,
+					updateOrganizer:    'TRUE',
+					verb:               msg.get('inviteAction')
+				};
+
+				/* In case of accepting invite from Mail app, isSeries & ridZ would be undefined.
+				   While accepting an invite from Mail app, action is always on series.
+				   When user accepts an invite from calendar invite view, action can be taken on individual
+				   instance/exception or series.
+				 */
+				if (itemData.isCalApp) {
+					if (!isSeries) {
+						exceptId.d = ridZ;
+						invReply.exceptId = exceptId;
+					}
 				}
-				else {
-					exceptId.d = ridZ;
-					Ext.apply(methodJson, {
-						compNum:            0,
-						exceptId:           exceptId,
-						id:                 origId,
-						idnt:               identityId,
-						updateOrganizer:    'TRUE',
-						verb:               msg.get('inviteAction')
-					});
-				}
+
+				Ext.apply(methodJson, invReply);
 			}
 
 			if (draftId) {

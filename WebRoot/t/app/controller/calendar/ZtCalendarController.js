@@ -467,6 +467,7 @@ Ext.define('ZCS.controller.calendar.ZtCalendarController', {
             isInviteReply: true,
 	        isSeries: isSeries,
 	        ridZ: this.getEvent().get('ridZ'),
+	        isCalApp: true,
             success: function () {
                 me.getAppointmentPanel().hide();
                 ZCS.app.fireEvent('showToast', ZtMsg.invReplySent);
