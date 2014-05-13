@@ -126,7 +126,11 @@ function() {
 		id:		[this._htmlElId, ZmId.MV_MSG_HEADER].join("_")
 	});
 	this._header.replaceElement(headerDivId);
-	
+
+	if (this._controller && this._controller._checkKeepReading) {
+		Dwt.setHandler(this._messagesDiv, DwtEvent.ONSCROLL, ZmDoublePaneController.handleScroll);
+	}
+
 	this._initialized = true;
 };
 

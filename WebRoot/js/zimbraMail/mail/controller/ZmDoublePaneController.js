@@ -706,6 +706,16 @@ function() {
 	setTimeout(this._resetOperation.bind(this, this._toolbar[this._currentViewId], ZmOperation.KEEP_READING), 250);
 };
 
+ZmDoublePaneController.handleScroll =
+function(ev) {
+	var target = DwtUiEvent.getTarget(ev);
+	var messagesView = DwtControl.findControl(target);
+	var controller = messagesView && messagesView._controller;
+	if (controller && controller._checkKeepReading) {
+		controller._checkKeepReading();
+	}
+};
+
 ZmDoublePaneController.prototype._dragListener =
 function(ev) {
 	ZmListController.prototype._dragListener.call(this, ev);

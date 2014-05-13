@@ -53,6 +53,10 @@ ZmMailMsgView = function(params) {
 	this.noTab = true;
     this._attachmentLinkIdToFileNameMap = null;
 	this._bubbleParams = {};
+
+	if (this._controller && this._controller._checkKeepReading) {
+		Dwt.setHandler(this.getHtmlElement(), DwtEvent.ONSCROLL, ZmDoublePaneController.handleScroll);
+	};
 };
 
 ZmMailMsgView.prototype = new ZmMailItemView;
