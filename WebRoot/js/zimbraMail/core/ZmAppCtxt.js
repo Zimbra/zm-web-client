@@ -1364,11 +1364,11 @@ function() {
 
 ZmAppCtxt.prototype.reloadAppCache =
 function(force) {
+	AjxDebug.println(AjxDebug.OFFLINE, "reloadAppCache :: " + AjxDebug._getTimeStamp());
     if (this.isWebClientOfflineSupported || force) {
-        document.cookie = "ZM_CACHE_RELOAD = " + new Date().getTime();
 		var localOfflineBrowserKey = localStorage.getItem(ZmSetting.WEBCLIENT_OFFLINE_BROWSER_KEY);
 		if (localOfflineBrowserKey) {
-			document.cookie = "ZM_OFFLINE_KEY = " + localOfflineBrowserKey;
+			document.cookie = "ZM_OFFLINE_KEY = " + localOfflineBrowserKey + "," + new Date().getTime();
 		}
         var manifestURL = appContextPath + "/appcache/images,common,dwt,msgview,login,zm,spellcheck,skin.appcache?";
         var urlParams = [];
