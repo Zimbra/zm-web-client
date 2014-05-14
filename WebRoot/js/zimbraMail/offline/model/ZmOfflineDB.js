@@ -647,7 +647,7 @@ function(search) {
 		}
 		else if (token.op === "in") {
 			var folderTree = appCtxt.getFolderTree();
-			var folder = folderTree && (folderTree.getByName(token.arg) || folderTree.getByPath(token.arg));
+			var folder = folderTree && (folderTree.getByName(token.arg) || folderTree.getByPath(token.arg, true));
 			var folderId = folder && folder.id;
 			if (folderId) {
 				token.indexValue = folderId.toString();
