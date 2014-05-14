@@ -102,7 +102,7 @@ Ext.define('ZCS.model.mail.ZtInvite', {
 
 			var invite = new ZCS.model.mail.ZtInvite({
 				id:             comp.apptId,
-				subject:        Ext.String.htmlEncode(comp.name), //Fix for bug: 83580. Prevents XSS attacks.
+				subject:        comp.name,
 				isOrganizer:    !!comp.isOrg,
 				location:       comp.loc,
 				isAllDay:       !!comp.allDay,
