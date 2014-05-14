@@ -709,14 +709,14 @@ function(id, content) {
         forced_root_block : "div",
         width: "100%",
         height: "auto",
-        table_default_cellpadding : 3,
-        table_default_border: 1,
         language: tinyMCE.getlanguage(appCtxt.get(ZmSetting.LOCALE_NAME)),
         directionality : appCtxt.get(ZmSetting.COMPOSE_INIT_DIRECTION),
         paste_retain_style_properties : "all",
 		paste_data_images: true,
         paste_remove_styles_if_webkit : false,
-        paste_postprocess : this.pastePostProcess.bind(this),
+        // NB: we've patched default_table_* into TinyMCE
+        default_table_attributes: { cellpadding: '3px', border: '1px' },
+        default_table_styles: { width: '90%', tableLayout: 'fixed' },
 		setup : function(ed) {
             ed.on('LoadContent', obj.onLoadContent.bind(obj));
             ed.on('PostRender', obj.onPostRender.bind(obj));
@@ -724,8 +724,8 @@ function(id, content) {
             ed.on('keydown', obj._handleEditorKeyEvent.bind(obj));
             ed.on('MouseDown', obj._handleEditorMouseDownEvent.bind(obj));
             ed.on('paste', obj.onPaste.bind(obj));
+            ed.on('PastePostProcess', obj.pastePostProcess.bind(obj));
             ed.on('BeforeExecCommand', obj.onBeforeExecCommand.bind(obj));
-            ed.on('BeforeSetContent', obj.onBeforeSetContent.bind(obj));
 
             ed.on('contextmenu', obj._handleEditorEvent.bind(obj));
             ed.on('mouseup', obj._handleEditorEvent.bind(obj));
@@ -993,15 +993,6 @@ ZmHtmlEditor.prototype.onBeforeRepaint = function(ev) {
         }
         element.removeAttribute("data-mce-zsrc");
     }
-};
-
-ZmHtmlEditor._TABLE_RE = /^<table><tbody>(<tr>(<td>(<br>| )<\/td>)*<\/tr>)*<\/tbody><\/table>$/;
-
-ZmHtmlEditor.prototype.onBeforeSetContent = function(ev) {
-	if (ZmHtmlEditor._TABLE_RE.test(ev.content)) {
-		var table = '<table style="width: 90%" border="1" cellspacing="0">';
-		ev.content = ev.content.replace('<table>', table);
-	}
 };
 
 ZmHtmlEditor.prototype._onDragEnter = function() {
@@ -2253,18 +2244,19 @@ function(menu) {
  * TinyMCE paste Callback function to execute after the contents has been converted into a DOM structure.
  */
 ZmHtmlEditor.prototype.pastePostProcess =
-function(pl, o) {
-    if (!pl || !o || !o.node || !o.target) {
+function(ev) {
+    if (!ev || !ev.node || !ev.target) {
         return;
     }
+
     //Finding all tables in the pasted content and set the border as 1 if it is 0
-    var editor = o.target,
+    var editor = ev.target,
         dom = editor.dom,
-        tableArray = dom.select("table", o.node),
+        tableArray = dom.select("table", ev.node),
         i = 0,
         length = tableArray.length,
         table,
-        children = o.node.children,
+        children = ev.node.children,
         lastChildren = children[children.length - 1];
 
     for (; i < length; i++) {
@@ -2283,7 +2275,7 @@ function(pl, o) {
     }
 
     //Finding all paragraphs in the pasted content and set the margin as 0
-    dom.setStyle(dom.select("p", o.node), "margin", "0");
+    dom.setStyle(dom.select("p", ev.node), "margin", "0");
 };
 
 ZmHtmlEditor.prototype.getTabGroupMember = function() {
