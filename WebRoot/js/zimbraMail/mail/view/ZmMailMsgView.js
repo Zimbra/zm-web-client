@@ -2047,7 +2047,8 @@ function() {
 		
 		// add any discretionary links depending on the attachment and what's enabled
 		var linkCount = 0;
-		if (!appCtxt.isExternalAccount() && (att.size || att.links.html || att.links.vcard || att.links.download || att.links.briefcase || att.links.importICS)) {
+		var vCardLink = (att.links.vcard && !appCtxt.isWebClientOffline());
+		if (!appCtxt.isExternalAccount() && (att.size || att.links.html || vCardLink || att.links.download || att.links.briefcase || att.links.importICS)) {
 			// size
 			htmlArr[idx++] = "&nbsp;(";
 			if (att.size) {
@@ -2066,7 +2067,7 @@ function() {
 				linkCount++;
 			}
 			// save as vCard
-			else if (att.links.vcard) {
+			else if (vCardLink) {
 				var params = {
 					id:				this._getAttachmentLinkId(att.part, ZmMailMsgView.ATT_LINK_VCARD),
 					jsHref:			true,
