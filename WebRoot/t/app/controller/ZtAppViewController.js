@@ -335,7 +335,7 @@ Ext.define('ZCS.controller.ZtAppViewController', {
 
 			if (appViewConfig.listPanel) {
 				itemPanelWidth = this.getItemPanelWidth(appViewConfig.positioningConfig, width);
-				appViewConfig.listPanel.setWidth(itemPanelWidth);
+				appViewConfig.listPanel.setWidth(overlayWidth);
 			}
 
 			//Resize the height and width of these panels because
