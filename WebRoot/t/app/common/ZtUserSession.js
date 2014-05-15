@@ -560,11 +560,13 @@ Ext.define('ZCS.common.ZtUserSession', {
 			if (sig.name === 'Mobile') {
 				mobileSig = value;
 			}
-			else if (sig.id === defaultSigId) {
-				defaultSig = value;
-			}
-			else if (sig.id === replySigId) {
-				replySig = value;
+			else {
+				if (sig.id === defaultSigId) {
+					defaultSig = value;
+				}
+				if (sig.id === replySigId) {
+					replySig = value;
+				}
 			}
 		}
 
