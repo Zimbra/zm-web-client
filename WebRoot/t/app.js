@@ -67,7 +67,8 @@ Ext.application({
 		'ZCS.common.ZtItemCache',
 		'ZCS.common.ZtUserSession',
 		'ZCS.common.ZtTimezone',
-		'ZCS.common.calendar.ZtRecurrence'
+		'ZCS.common.calendar.ZtRecurrence',
+        'ZCS.common.Component'
 	],
 	//<feature logger>
 	logger: {
