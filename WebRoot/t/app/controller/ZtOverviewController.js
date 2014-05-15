@@ -49,11 +49,13 @@ Ext.define('ZCS.controller.ZtOverviewController', {
         control: {
             folderList: {
 				search: 'doSearch',
-                edititemtap:    'showEdit'
+                edititemtap:    'showEdit',
+                changeNode:     'subNodeChange'
             },
             folderSelector: {
                 edititemtap:        'assignParentFolder',
-                activeitemchange:   'filterFolderList'
+                activeitemchange:   'filterFolderList',
+                changeNode:     'subNodeChange'
             },
             editBtn: {
                 tap:            'toggleEditState'
@@ -299,6 +301,23 @@ Ext.define('ZCS.controller.ZtOverviewController', {
             editBtn.setText(ZtMsg.done);
             appsBtn.hide();
             organizerEditToolbar.show();
+        }
+    },
+
+    subNodeChange: function(node,isBack) {
+        var overview = this.getOverview(),
+            appsBtn = overview.down('#zcs-overview-apps-btn'),
+            organizerList = overview.down('organizerlist'),
+            backButton = organizerList.getBackButton(),
+            isChildOfRoot = node.parentNode && node.parentNode.isRoot(),
+            isBackToSubFolder = !(isChildOfRoot && isBack),
+            store = organizerList.getStore();
+
+        if (isBackToSubFolder) {
+            backButton.setText('');
+            appsBtn.hide();
+        } else {
+            appsBtn.show();
         }
     },
 

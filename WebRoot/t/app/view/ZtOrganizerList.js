@@ -73,8 +73,19 @@ Ext.define('ZCS.view.ZtOrganizerList', {
 			if (node.parentNode) {
 				node.parentNode.set('expanded', true);
 			}
+
+			list.up('organizerlist').fireEvent('changeNode', node, false);
 		}
 	},
+
+	onBackTap: function() {
+        var list = this.getActiveItem(),
+            store = list.getStore(),
+            node = store.getNode();
+
+        this.callParent(arguments);
+        list.up('organizerlist').fireEvent('changeNode', node, true);
+    },
 
 	/**
 	 * Runs a search that will show the folder's contents.
@@ -95,7 +106,6 @@ Ext.define('ZCS.view.ZtOrganizerList', {
 		} else {
 			this.fireEvent('edititemtap', folder, list);
 		}
-
 	},
 
 	/**

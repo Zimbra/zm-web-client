@@ -33,7 +33,11 @@ Ext.define('ZCS.store.ZtOrganizerStore', {
 		storeId:                'organizerStore',
 
 		grouper: function(record) {
-			return record.getGroupName();
+		    if (record.parentNode && record.parentNode.parentNode && !record.parentNode.parentNode.isRoot()) {
+		        return record.parentNode.parentNode.getTitle();
+		    } else {
+                return record.getGroupName();
+		    }
 		},
 
 		sorters: [
