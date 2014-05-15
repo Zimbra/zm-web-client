@@ -90,7 +90,7 @@ Ext.define('ZCS.model.calendar.ZtCalendarWriter', {
                 this._addAttachmentsToRequest(m, invite, id, attachments);
 
                 if (isCreateException) {
-		            this._addExceptionRequestSubs(m, invite);
+		            this._addExceptionRequestSubs(m, invite, new Date(itemData.instanceStartTime));
 		            methodJson.comp = "0";
 		            methodJson.echo = "1";
 	            }
@@ -295,11 +295,11 @@ Ext.define('ZCS.model.calendar.ZtCalendarWriter', {
         mp.mp[0].content = content;
     },
 
-	_addExceptionRequestSubs: function(m, invite) {
+	_addExceptionRequestSubs: function(m, invite, instanceStart) {
 		m.inv.comp[0]['class'] = invite.get('class'); // using ['class'] to avoid build error as class is reserved word
 		m.inv.comp[0].draft = 0;
 		m.inv.comp[0].exceptId = {};
-		m.inv.comp[0].exceptId.d = Ext.Date.format(invite.get('start'), 'Ymd\\THis');
+		m.inv.comp[0].exceptId.d = Ext.Date.format(instanceStart, 'Ymd\\THis');
 		m.inv.comp[0].exceptId.tz = ZCS.timezone.guessMachineTimezone().clientId;
 		m.inv.comp[0].status = invite.get('status');
 		m.inv.comp[0].transp = invite.get('transp');
