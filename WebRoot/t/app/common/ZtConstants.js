@@ -998,4 +998,6 @@ ZCS.constant.reminderTimeValues =
     [0, 1, 5, 10, 15, 30, 45, 60, 120, 180, 240, 300, 1080, 1440, 2880, 4320, 5760, 10080, 20160];
 
 ZCS.constant.reminderTimeLabels =
-    [0, 1, 5, 10, 15, 30, 45, 60, 2, 3, 4, 5, 18, 1, 2, 3, 4, 1, 2]
+    [0, 1, 5, 10, 15, 30, 45, 60, 2, 3, 4, 5, 18, 1, 2, 3, 4, 1, 2];
+
+ZCS.constant.defaultReminderValue = 5;

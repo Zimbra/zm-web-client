@@ -51,6 +51,7 @@ Ext.define('ZCS.view.calendar.ZtReminderField', {
                             arr.push(data);
                         }
                         this.setOptions(arr);
+	                    this.setValue(ZCS.constant.defaultReminderValue);
                     }
                 }
             }
