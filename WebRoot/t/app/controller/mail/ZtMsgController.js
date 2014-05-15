@@ -418,7 +418,7 @@ Ext.define('ZCS.controller.mail.ZtMsgController', {
 					addrObj = params.addrObj,
  					cachedAddr = ZCS.cache.get(addrObj && addrObj.get('email'), 'email');
 
-				if (cachedAddr) {
+				if (cachedAddr && cachedAddr.get('zcsId')) {
 					menu.hideItem(ZCS.constant.OP_EDIT, false);
 				} else {
 					menu.hideItem(ZCS.constant.OP_ADD_CONTACT, false);
