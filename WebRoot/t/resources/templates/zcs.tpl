@@ -299,7 +299,7 @@
 			<tpl if='start==end'>
 			<tr>
 				<td class='zcs-invite-label'>{[ZtMsg.invDateLabel]}</td>
-				<td>{start}</td>
+				<td>{start}&nbsp;<span class='zcs-invite-timezone'>({timezone})</span></td>
 			</tr>
 			<tpl else>
 			<tr>
