@@ -47,10 +47,20 @@ Ext.define('ZCS.controller.calendar.ZtNewAppointmentController', {
     /**
      * Displays the appointment form to either create a new appointment or edit an existing one.
      */
-    showNewApptForm: function(mode, msg, event) {
-        var me = this,
-            panel = this.getNewApptPanel(),
+    showNewApptForm: function(mode, msg, event, warningDone) {
+
+        var panel = this.getNewApptPanel(),
             isEdit = (mode === ZCS.constant.OP_EDIT);
+
+	    if (isEdit && !warningDone) {
+		    var invite = msg && msg.get('invite');
+		    if (invite && !invite.get('isOrganizer')) {
+			    Ext.Msg.alert(ZtMsg.warning, ZtMsg.attendeeEditWarning, function() {
+				    this.showNewApptForm(mode, msg, event, true);
+			    }, this);
+			    return;
+		    }
+	    }
 
         this.setComposeMode(mode);
         panel.resetForm();
@@ -67,7 +77,7 @@ Ext.define('ZCS.controller.calendar.ZtNewAppointmentController', {
             this.populateForm(event);
         }
 
-        me.unhideAppointmentForm();
+        this.unhideAppointmentForm();
     },
 
     populateForm: function(event) {
