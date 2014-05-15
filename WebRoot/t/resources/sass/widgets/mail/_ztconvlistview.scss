@@ -38,6 +38,22 @@ $zcs-mail-dateWidth: 6.7em;
 	}
 }
 
+.zcs-conv-list {
+	/*
+	 * Hack to get ios5 to use hardware acceleration and not render improperly.
+	 *
+	 *
+	 *
+	 */
+	.x-list-item-tpl * {
+		-webkit-transform: translate3d(0,0,0);
+	}
+
+	.x-list-item-tpl {
+		-webkit-transform: translate3d(0,0,0);	
+	}
+}
+
 .zcs-conv-list .x-list-item {
 	border-top: none !important;
 
@@ -54,13 +70,7 @@ $zcs-mail-dateWidth: 6.7em;
 	}
 }
 
-/*
- * Hack to get ios5 to use hardware acceleration and not render improperly.
 
-.zcs-mail-list * {
-	-webkit-transform: translate3d(0,0,0);
-}
- */
 
 .zcs-mail-list-item {
 	position: absolute;
