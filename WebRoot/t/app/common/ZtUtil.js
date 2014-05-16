@@ -686,5 +686,45 @@ Ext.define('ZCS.common.ZtUtil', {
         currdate.setHours(hours);
         currdate.setMinutes(minutes);
         return currdate;
-    }
+    },
+
+	/**
+	 * Returns a value for the brightness of the given color.
+	 *
+	 * @param   {string}    rgb     RGB value as #RRGGBB
+	 * @returns {number}    number between 0 and 255 (higher is brighter)
+	 */
+	getBrightness: function(rgb) {
+
+		var r, g, b;
+
+		if (rgb && rgb.length === 7 && rgb.indexOf('#') === 0) {
+			rgb = rgb.substr(1);
+		}
+		else {
+			return null;
+		}
+
+		r = parseInt(rgb.substr(0, 2), 16);
+		g = parseInt(rgb.substr(2, 2), 16);
+		b = parseInt(rgb.substr(4, 2), 16);
+
+		// http://alienryderflex.com/hsp.html
+		return Math.sqrt(
+			r * r * .299 +
+			g * g * .587 +
+			b * b * .114
+		);
+	},
+
+	/**
+	 * Returns the better foreground color based on contrast with the given background color.
+	 *
+	 * @param   {string}    bgColor     RGB value as #RRGGBB
+	 * @returns {string}    'black' or 'white'
+	 */
+	getForegroundColor: function(bgColor) {
+		var brightness = ZCS.util.getBrightness(bgColor);
+		return (brightness != null && brightness < 130) ? 'white' : 'black';
+	}
 });
