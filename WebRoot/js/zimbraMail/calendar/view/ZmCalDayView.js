@@ -533,8 +533,7 @@ function() {
         allDaySepEl = document.getElementById(this._allDaySepDivId),
         allDayDivEl = document.getElementById(this._allDayDivId),
         cal,
-        calName,
-        calColor,
+         calColor,
         mergedCal,
         calMergerdTabColor,
         col,
@@ -621,9 +620,8 @@ function() {
 
         // Fix for bug: 84268. Removed calendar titles from the merged view.
         if (!this._mergedView) {
-            calName = AjxStringUtil.clipByLength(cal.getName(), ZmCalDayTabView._TAB_TITLE_MAX_LENGTH);
             div.style.top = ZmCalDayTabView._TAB_BORDER_WIDTH + 'px';
-            div.innerHTML = calName;
+            div.innerHTML = cal.getName();
         }
 
         this._createDivForColumn(col.borderLeftAllDayDivId, allDayDivEl, "ZmDayTabSeparator", calColor, calColor);
