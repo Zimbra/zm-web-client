@@ -161,7 +161,8 @@ Ext.define('ZCS.controller.ZtMainController', {
 		var fault = data.Body && data.Body.Fault,
 			error = fault && fault.Detail && fault.Detail.Error,
 			code = error && error.Code,
-			info = error && error.a;
+			info = error && error.a,
+			reason = fault.Reason && fault.Reason.Text;
 
 		var	title = (code && ZtMsg[code + '_title']) || ZtMsg.error,
 			args, msg;
@@ -171,6 +172,9 @@ Ext.define('ZCS.controller.ZtMainController', {
 			args = Ext.Array.map(info, function(node) {
 				return node._content;
 			});
+		}
+		else if (reason) {
+			args = [ reason ];
 		}
 
 		if (data.timedout) {

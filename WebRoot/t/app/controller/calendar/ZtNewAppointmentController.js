@@ -272,12 +272,24 @@ Ext.define('ZCS.controller.calendar.ZtNewAppointmentController', {
      * @private
      */
     createAppt: function(appt, callback, scope) {
-        var folder = ZCS.session.getCurrentSearchOrganizer(),
-            me = this;
 
-        appt.save({
+        var folder = ZCS.session.getCurrentSearchOrganizer(),
+            me = this,
+	        panel = this.getNewApptPanel(),
+	        toolbar = panel && panel.down('titlebar'),
+	        buttons = toolbar && toolbar.query('button');
+
+	    // disable buttons during request
+	    Ext.each(buttons, function(button) {
+		    button.disable();
+	    }, this);
+
+	    appt.save({
             folderId: folder ? folder.get('zcsId') : null,
             success: function() {
+	            Ext.each(buttons, function(button) {
+		            button.enable();
+	            }, this);
                 me.hideAppointmentForm();
                 ZCS.app.fireEvent('showToast', ZtMsg.appointmentCreated);
                 if (callback) {
@@ -286,7 +298,10 @@ Ext.define('ZCS.controller.calendar.ZtNewAppointmentController', {
                 me.reloadCalendar(false);
             },
             failure: function() {
-                ZCS.app.fireEvent('showToast', ZtMsg.errorCreateAppt);
+	            Ext.each(buttons, function(button) {
+		            button.enable();
+	            }, this);
+	            ZCS.app.fireEvent('showToast', ZtMsg.errorCreateAppt);
             }
         }, this);
     },

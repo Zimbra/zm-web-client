@@ -502,12 +502,23 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
     createContact: function(contact, callback, scope) {
 
 	    var me = this,
+		    panel = this.getContactPanel(),
+		    toolbar = panel && panel.down('titlebar'),
+		    buttons = toolbar && toolbar.query('button'),
 		    curApp = ZCS.session.getActiveApp(),
 		    folder = (curApp === ZCS.constant.APP_CONTACTS) ? ZCS.session.getCurrentSearchOrganizer() : null;
 
-        contact.save({
+	    // disable buttons during request
+	    Ext.each(buttons, function(button) {
+		    button.disable();
+	    }, this);
+
+	    contact.save({
 	        folderId: folder ? folder.get('zcsId') : null,
             success: function() {
+	            Ext.each(buttons, function(button) {
+		            button.enable();
+	            }, this);
 	            me.hideContactForm();
                 ZCS.app.fireEvent('showToast', ZtMsg.contactCreated);
                 if (callback) {
@@ -515,7 +526,10 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
                 }
             },
             failure: function() {
-                ZCS.app.fireEvent('showToast', ZtMsg.errorCreateContact);
+	            Ext.each(buttons, function(button) {
+		            button.enable();
+	            }, this);
+	            ZCS.app.fireEvent('showToast', ZtMsg.errorCreateContact);
             }
         }, this);
     },

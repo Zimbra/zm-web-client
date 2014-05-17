@@ -462,18 +462,34 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 	 * but can also take a message created via quick reply and send that.
 	 */
 	sendMessage: function(msg, callback, scope) {
+
 		var me = this,
-			composePanel = this.getComposePanel();
+			panel = this.getComposePanel(),
+			toolbar = panel && panel.down('titlebar'),
+			buttons = toolbar && toolbar.query('button');
+
+		// disable buttons during request
+		Ext.each(buttons, function(button) {
+			button.disable();
+		}, this);
 
 		msg.save({
 			success: function() {
+				Ext.each(buttons, function(button) {
+					button.enable();
+				}, this);
 				ZCS.app.fireEvent('showToast', ZtMsg.messageSent);
 				ZCS.app.fireEvent('messageSent', this.getDraftId() != null);
-				me.endComposeSession();
+				this.endComposeSession();
 				if (callback) {
 					callback.apply(scope);
 				}
 				this.setFormHash('');
+			},
+			failure: function() {
+				Ext.each(buttons, function(button) {
+					button.enable();
+				}, this);
 			}
 		}, this);
 	},
