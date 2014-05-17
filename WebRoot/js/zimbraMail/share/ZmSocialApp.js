@@ -51,6 +51,12 @@ ZmSocialApp.prototype._registerApp = function() {
 		defaultSort:        100,
 		upsellUrl:			ZmSetting.SOCIAL_EXTERNAL_URL
 	});
+
+	// overwrite community name with value from settings, if any
+	var appName = appCtxt.get(ZmSetting.SOCIAL_NAME);
+	if (appName) {
+		ZmMsg[ZmApp.NAME[this._name]] = appName;
+	}
 };
 
 // User has clicked refresh button

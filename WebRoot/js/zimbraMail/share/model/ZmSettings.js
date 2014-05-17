@@ -853,6 +853,7 @@ function() {
 	this.registerSetting("SOCIAL_ENABLED",					{name:"zimbraFeatureSocialEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	this.registerSetting("SOCIAL_EXTERNAL_ENABLED",			{name:"zimbraFeatureSocialExternalEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	this.registerSetting("SOCIAL_EXTERNAL_URL",				{name:"zimbraFeatureSocialExternalURL", type:ZmSetting.T_COS});
+	this.registerSetting("SOCIAL_NAME",				        {name:"zimbraFeatureSocialName", type:ZmSetting.T_COS, defaultValue:ZmMsg.communityName});
 	this.registerSetting("TASKS_ENABLED",					{name:"zimbraFeatureTasksEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	this.registerSetting("VOICE_ENABLED",					{name:"zimbraFeatureVoiceEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	this.registerSetting("VOICE_UPSELL_ENABLED",			{name:"zimbraFeatureVoiceUpsellEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});

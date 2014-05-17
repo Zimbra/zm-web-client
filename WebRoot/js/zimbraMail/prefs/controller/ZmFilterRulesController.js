@@ -43,6 +43,9 @@ ZmFilterRulesController = function(container, prefsApp, prefsView, parent, outgo
 	this._buttonListeners[ZmOperation.REMOVE_FILTER_RULE] = new AjxListener(this, this._removeListener);
 	this._buttonListeners[ZmOperation.RUN_FILTER_RULE] = new AjxListener(this, this._runListener);
 	this._progressController = new ZmProgressController(container, prefsApp);
+
+	// reset community name since it gets its value from a setting
+	ZmFilterRule.C_LABEL[ZmFilterRule.C_COMMUNITY] = ZmMsg.communityName;
 };
 
 ZmFilterRulesController.prototype = new ZmController();
