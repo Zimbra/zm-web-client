@@ -11,7 +11,8 @@ Ext.define('ZCS.model.ZtBaseItem', {
         //if any single item in it changes.  This is wasteful, and very slow.
         //Instead, we will update single items as necessary.
         if (Ext.isArray(stores)) {
-        	Ext.each(stores, function (store) {
+        	Ext.each(stores, function (store) {	
+        		store.data._autoSort = false;
         		store.suspendEvents();
         	});
         }
@@ -25,6 +26,7 @@ Ext.define('ZCS.model.ZtBaseItem', {
         if (Ext.isArray(stores)) {
         	Ext.each(stores, function (store) {
         		store.resumeEvents(true);
+        		store.data._autoSort = true;
         	});
         }
 	},
