@@ -162,7 +162,8 @@ Ext.define('ZCS.model.mail.ZtInvite', {
 
 				for (i = 0; i < ln; i++) {
 					att = comp.at[i];
-					if (!att.cutype) {
+					if (!att.cutype || (att.cutype === ZCS.constant.CUTYPE_INDIVIDUAL
+                        || att.cutype === ZCS.constant.CUTYPE_RESOURCE || att.cutype === ZCS.constant.CUTYPE_ROOM)) {
 						attList = (att.role === ZCS.constant.ROLE_OPTIONAL) ? optAttendees : attendees;
 						email = ZCS.model.mail.ZtEmailAddress.fromInviteNode(att);
                         email.ptst = att.ptst;
