@@ -67,6 +67,7 @@ function() {
 	if (zimbraMail) {
 		zimbraMail.setupHelpMenu();
 	}
+	this._setSearchOfflineState(true);
 };
 
 ZmOffline.prototype._onZWCOnline =
@@ -79,7 +80,18 @@ function() {
 	if (zimbraMail) {
 		zimbraMail.setupHelpMenu();
 	}
+	this._setSearchOfflineState(false);
 };
+
+ZmOffline.prototype._setSearchOfflineState = function(offline) {
+	var searchController = appCtxt.getSearchController();
+	if (searchController) {
+		var searchToolbar = searchController.getSearchToolbar();
+		if (searchToolbar) {
+			searchToolbar.setOfflineState(offline);
+		}
+	}
+}
 
 ZmOffline.prototype._onPostStartup =
 function() {

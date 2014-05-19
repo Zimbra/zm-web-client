@@ -314,7 +314,8 @@ function() {
 								 tooltipKey:	"searchGALContacts",
 								 icon:			"GAL",
 								 setting:		ZmSetting.GAL_ENABLED,
-								 id:			ZmId.getMenuItemId(ZmId.SEARCH, ZmId.SEARCH_GAL)
+								 id:			ZmId.getMenuItemId(ZmId.SEARCH, ZmId.SEARCH_GAL),
+								 disableOffline:true
 								});
 };
 

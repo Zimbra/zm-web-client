@@ -138,7 +138,8 @@ function() {
 								 icon:			"TasksApp",
 								 shareIcon:		"SharedTaskList",
 								 setting:		ZmSetting.TASKS_ENABLED,
-								 id:			ZmId.getMenuItemId(ZmId.SEARCH, ZmId.ITEM_TASK)
+								 id:			ZmId.getMenuItemId(ZmId.SEARCH, ZmId.ITEM_TASK),
+								 disableOffline:true
 								});
 };
 

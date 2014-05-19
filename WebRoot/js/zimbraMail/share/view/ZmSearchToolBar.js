@@ -61,6 +61,7 @@ ZmSearchToolBar.TT_MSG_KEY 			= {};		// tooltip text for menu item
 ZmSearchToolBar.ICON 				= {};		// icon for menu item
 ZmSearchToolBar.SHARE_ICON			= {};		// icon for shared menu item
 ZmSearchToolBar.ID 					= {};		// ID for menu item
+ZmSearchToolBar.DISABLE_OFFLINE     = {};       // Disable when offline detected
 
 
 // Public static methods
@@ -75,12 +76,13 @@ ZmSearchToolBar.ID 					= {};		// ID for menu item
 ZmSearchToolBar.addMenuItem =
 function(id, params) {
 
-	if (params.msgKey)		{ ZmSearchToolBar.MSG_KEY[id]		= params.msgKey; }
-	if (params.tooltipKey)	{ ZmSearchToolBar.TT_MSG_KEY[id]	= params.tooltipKey; }
-	if (params.icon)		{ ZmSearchToolBar.ICON[id]			= params.icon; }
-	if (params.shareIcon)	{ ZmSearchToolBar.SHARE_ICON[id]	= params.shareIcon; }
-	if (params.setting)		{ ZmSearchToolBar.SETTING[id]		= params.setting; }
-	if (params.id)			{ ZmSearchToolBar.ID[id]			= params.id; }
+	if (params.msgKey)		   { ZmSearchToolBar.MSG_KEY[id]		 = params.msgKey; }
+	if (params.tooltipKey)	   { ZmSearchToolBar.TT_MSG_KEY[id]	 	 = params.tooltipKey; }
+	if (params.icon)		   { ZmSearchToolBar.ICON[id]			 = params.icon; }
+	if (params.shareIcon)	   { ZmSearchToolBar.SHARE_ICON[id]	 	 = params.shareIcon; }
+	if (params.setting)		   { ZmSearchToolBar.SETTING[id]		 = params.setting; }
+	if (params.id)			   { ZmSearchToolBar.ID[id]				 = params.id; }
+	if (params.disableOffline) { ZmSearchToolBar.DISABLE_OFFLINE[id] = params.disableOffline; }
 
 	if (params.index == null || params.index < 0 || params.index >= ZmSearchToolBar.MENU_ITEMS.length) {
 		ZmSearchToolBar.MENU_ITEMS.push(id);
@@ -289,15 +291,17 @@ ZmMainSearchToolBar = function(params) {
 
 	if (arguments.length == 0) { return; }
 
+
 	ZmSearchToolBar.apply(this, arguments);
 
 	// setup "include shared" menu item
 	var miParams = {
-		msgKey:		"searchShared",
-		tooltipKey:	"searchShared",
-		icon:		"Group",
-		setting:	ZmSetting.SHARING_ENABLED,
-		id:			ZmId.getMenuItemId(ZmId.SEARCH, ZmId.SEARCH_SHARED)
+		msgKey:			"searchShared",
+		tooltipKey:		"searchShared",
+		icon:			"Group",
+		setting:		ZmSetting.SHARING_ENABLED,
+		id:				ZmId.getMenuItemId(ZmId.SEARCH, ZmId.SEARCH_SHARED),
+		disableOffline: true
 	};
 	ZmSearchToolBar.addMenuItem(ZmId.SEARCH_SHARED, miParams);
 
@@ -438,6 +442,21 @@ function() {
 
 	return menu;
 };
+
+ZmMainSearchToolBar.prototype.setOfflineState = function(offline) {
+	var button   = this._button[ZmSearchToolBar.TYPES_BUTTON];
+	var menu     = button && button.getMenu();
+	var numItems = menu.getItemCount();
+	for (var i = 0; i < numItems; i++) {
+	    var item = menu.getItem(i);
+		if (item) {
+			var id   = item.getData(ZmSearchToolBar.MENUITEM_ID);
+			if (id && ZmSearchToolBar.DISABLE_OFFLINE[id])  {
+				item.setEnabled(!offline);
+			}
+		}
+	}
+}
 
 ZmMainSearchToolBar.prototype.getSearchType =
 function() {
