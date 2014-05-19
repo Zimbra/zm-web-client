@@ -600,7 +600,7 @@ function(attId, isDraft, dummyMsg, forceBail, contactId) {
 		this.sendUID = (new Date()).getTime();
 	}
 
-	// get list of message part id's for any forwarded attachements
+	// get list of message part id's for any forwarded attachments
 	var forwardAttIds = this._getForwardAttIds(ZmComposeView.FORWARD_ATT_NAME + this._sessionId, !isDraft && this._hideOriginalAttachments);
 	var forwardMsgIds = [];
 	if (this._msgIds) {
@@ -1455,6 +1455,60 @@ function(signatureId) {
 	}
 };
 
+ZmComposeView.prototype._updateSignatureVcard =
+function(oldSignatureId, newSignatureId) {
+
+	if (oldSignatureId) {
+		var hadVcard = false;
+		// uncheck box for previous vcard att so it gets removed
+		var oldSig = this.getSignatureById(oldSignatureId);
+		if (oldSig && oldSig.contactId) {
+			var vcardPart;
+			var atts = this._msg && this._msg.attachments;
+			if (atts && atts.length) {
+				//we need to figure out what input to uncheck
+				var sigContact;
+				var item = appCtxt.cacheGet(oldSig.contactId);
+				if (item && item.isZmContact) {
+					sigContact = item;
+				}
+				for (var i = 0; i < atts.length && !vcardPart; i++) {
+					if (atts[i].contentType === ZmMimeTable.TEXT_VCARD
+					|| atts[i].contentType === ZmMimeTable.TEXT_DIRECTORY) {
+						//we may have multiple vcards, determine which one to remove based on signature in cache
+						if (sigContact) {
+							//remove the file extension from fileName
+							var name = atts[i].fileName.substring(0, atts[i].fileName.length - 4);
+							if (name === sigContact._fileAs) {
+								vcardPart = atts[i].part;
+							}
+						}
+						else {
+							vcardPart = atts[i].part;
+						}
+						atts.splice(i, 1);
+					}
+				}
+			}
+			var inputs = document.getElementsByName(ZmComposeView.FORWARD_ATT_NAME + this._sessionId);
+			if (inputs && inputs.length) {
+				for (var i = 0; i < inputs.length; i++) {
+					if (inputs[i].value === vcardPart) {
+						var span = inputs[i].parentNode && inputs[i].parentNode.parentNode;
+						if (span && span.id) {
+							this._removeAttachedMessage(span.id, vcardPart);
+							hadVcard = true;
+						}
+					}
+				}
+			}
+		}
+		if (hadVcard && !newSignatureId) {
+			this._controller.saveDraft(ZmComposeController.DRAFT_TYPE_MANUAL);
+		}
+	}
+};
+
 ZmComposeView.prototype._checkSaveDraft =
 function() {
 	if (this._msg && this._msg._contactAttIds && this._msg._contactAttIds.length > 0) {
@@ -2043,7 +2097,7 @@ function(action, msg, extraBodyText, noEditorUpdate) {
 	if (sigId && !isDraft) {
 		this._attachSignatureVcard(sigId);
 	}
-		
+
 	if (!this._htmlEditor && htmlMode) {
 		// wrap <html> and <body> tags around content, and set font style
 		value = ZmHtmlEditor._embedHtmlContent(value, true);

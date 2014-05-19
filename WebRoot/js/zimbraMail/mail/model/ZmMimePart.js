@@ -228,7 +228,6 @@ function(node, ctxt) {
 			if (ctxt.attachments) {
 				ctxt.attachments.push(this);
 			}
-			isAtt = true;
 		}
 	}
 

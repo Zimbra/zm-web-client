@@ -854,6 +854,7 @@ function(sigId) {
 		extraBodyText:	this._composeView.getUserText(),
 		op:				ZmId.OP_ADD_SIGNATURE
 	};
+	this._composeView._updateSignatureVcard(this._currentSignatureId, sigId);
 	this._composeView.resetBody(params);
 	this.resetSignature(sigId);
 };
