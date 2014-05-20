@@ -495,6 +495,7 @@ ZCS.constant.SETTING_SHOW_DL_FOLDER     = 'zimbraFeatureDistributionListFolderEn
 
 // Calendar
 ZCS.constant.SETTING_CALENDAR_ENABLED   = 'zimbraFeatureCalendarEnabled';
+ZCS.constant.SETTING_REMINDER_TIME      = 'zimbraPrefCalendarApptReminderWarningTime';
 
 // Internal settings
 ZCS.constant.SETTING_CUR_SEARCH                 = 'CUR_SEARCH';
@@ -538,6 +539,7 @@ ZCS.constant.SETTING_DEFAULT[ZCS.constant.SETTING_GET_NAME_FROM_CONTACTS]   = tr
 ZCS.constant.SETTING_DEFAULT[ZCS.constant.SETTING_SHOW_DL_FOLDER]           = true;
 ZCS.constant.SETTING_DEFAULT[ZCS.constant.SETTING_CONVERSATION_ORDER]       = ZCS.constant.DATE_DESC;
 ZCS.constant.SETTING_DEFAULT[ZCS.constant.SETTING_AUTO_SAVE_INTERVAL]       = 15;
+ZCS.constant.SETTING_DEFAULT[ZCS.constant.SETTING_REMINDER_TIME]            = 5;
 
 // Signature styles
 ZCS.constant.SIG_INTERNET   = 'internet';
@@ -999,5 +1001,3 @@ ZCS.constant.reminderTimeValues =
 
 ZCS.constant.reminderTimeLabels =
     [0, 1, 5, 10, 15, 30, 45, 60, 2, 3, 4, 5, 18, 1, 2, 3, 4, 1, 2];
-
-ZCS.constant.defaultReminderValue = 5;
