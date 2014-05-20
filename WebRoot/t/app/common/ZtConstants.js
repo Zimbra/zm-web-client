@@ -529,7 +529,7 @@ ZCS.constant.SETTING_TYPE[ZCS.constant.SETTING_AUTO_SAVE_INTERVAL]          = ZC
 
 // Forced setting values, which override user setting
 ZCS.constant.SETTING_VALUE = {};
-ZCS.constant.SETTING_VALUE[ZCS.constant.SETTING_SHOW_SEARCH] = 'false';
+//ZCS.constant.SETTING_VALUE[ZCS.constant.SETTING_SHOW_SEARCH] = 'false';
 
 // Default values for settings
 ZCS.constant.SETTING_DEFAULT = {};

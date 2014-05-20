@@ -726,5 +726,23 @@ Ext.define('ZCS.common.ZtUtil', {
 	getForegroundColor: function(bgColor) {
 		var brightness = ZCS.util.getBrightness(bgColor);
 		return (brightness != null && brightness < 130) ? 'white' : 'black';
+	},
+
+	unquote: function(str) {
+
+		if (!str) {
+			return '';
+		}
+
+		var first = str.charAt(0);
+		if (first === '"') {
+			return str.replace(/^"/, '').replace(/"$/, '');
+		}
+		else if (first === "'") {
+			return str.replace(/^'/, '').replace(/'$/, '');
+		}
+		else {
+			return str;
+		}
 	}
 });

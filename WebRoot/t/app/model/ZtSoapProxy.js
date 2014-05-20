@@ -98,11 +98,13 @@ Ext.define('ZCS.model.ZtSoapProxy', {
 					orgId = search.getOrganizerId(),
 					org = orgId && ZCS.cache.get(orgId),
 					// get app from organizer except for Trash (cache lookup above will always return Mail's Trash)
-					app = (!ZCS.util.folderIs(org, ZCS.constant.ID_TRASH) && (org && org.get('app'))) || ZCS.session.getActiveApp();
+					app = (!ZCS.util.folderIs(org, ZCS.constant.ID_TRASH) && (org && org.get('app'))) || ZCS.session.getActiveApp(),
+					searchField = ZCS.session.getCurrentSearchField();
 
+				// show current search string if user wants to see it
 				ZCS.session.setSetting(ZCS.constant.SETTING_CUR_SEARCH, search, app);
-				if (ZCS.session.getSetting(ZCS.constant.SETTING_SHOW_SEARCH)) {
-					ZCS.session.getCurrentSearchField().setValue(query);
+				if (ZCS.session.getSetting(ZCS.constant.SETTING_SHOW_SEARCH) && app === ZCS.session.getActiveApp() && searchField) {
+					searchField.setValue(search.getQuery());
 				}
 			}
 			this.callParent(arguments);

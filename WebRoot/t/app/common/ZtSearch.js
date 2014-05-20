@@ -32,6 +32,33 @@ Ext.define('ZCS.common.ZtSearch', {
 	statics: {
 
 		/**
+		 * For simple in: and tag: searches, make it so that the term is quoted only if needed.
+		 *
+		 * @param   {String}    query   search string
+		 * @returns {String}    search string with quotes possibly removed from the term
+		 */
+		normalizeQuery: function(query) {
+
+			if (!query) {
+				return '';
+			}
+
+			var q = Ext.String.trim(query),
+				m = q.match(/^(in|tag):(.*)\s*$/),
+				op = m && m[1],
+				term = m && m[2];
+
+			if (term) {
+				var term1 = ZCS.util.unquote(term);
+				if (/^\w+$/.test(term1)) {
+					q = op + ':' + term1;
+				}
+			}
+
+			return q;
+		},
+
+		/**
 		 * Parses the given query into a list of search tokens.
 		 *
 		 * @param {String}  query   search query
@@ -214,6 +241,7 @@ Ext.define('ZCS.common.ZtSearch', {
 
 		this.initConfig(config);
 
+		this.setQuery(ZCS.common.ZtSearch.normalizeQuery(this.getQuery()));
 		this.setTokens(ZCS.common.ZtSearch.parseQuery(this.getQuery()));
 		this.generateMatchFunction();
 	},
