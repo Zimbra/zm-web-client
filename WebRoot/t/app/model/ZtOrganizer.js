@@ -459,17 +459,15 @@ Ext.define('ZCS.model.ZtOrganizer', {
 			this.set('parentZcsId', data.parentZcsId);
 		}
 
-		//Update the unread count before the title since the title contains the unread count.
+		// Update the unread count before the title since the title contains the unread count.
+		// Need to reset title because Sencha does not recalculate converted fields.
 		if (modify.u != null) {
 			this.set('unreadCount', data.unreadCount);
-			// Unread count is factored into title
-			// need to do this because Sencha does not recalculate converted fields
 			this.set('title', this.get('title'));
 		}
 
 		if (modify.name) {
 			this.set('name', data.name);
-			// need to do this because Sencha does not recalculate converted fields
 			this.set('title', this.get('title'));
 		}
 		if (modify.absFolderPath) {
@@ -485,9 +483,7 @@ Ext.define('ZCS.model.ZtOrganizer', {
 
         if (modify.n) {
             this.set('itemCount', data.itemCount);
-            // Total item count is factored into title
-            // need to do this because Sencha does not recalculate converted fields
-            this.set('title', this.get('title'));
+//            this.set('title', this.get('title'));
         }
 
 		this.updateDependentLists();

@@ -243,7 +243,9 @@ ZCS.constant.CLASS_FOR_TYPE[ZCS.constant.ITEM_MATCH]        = 'ZCS.model.address
 ZCS.constant.CLASS_FOR_TYPE[ZCS.constant.ITEM_APPOINTMENT]     = 'ZCS.model.calendar.ZtCalendar';
 
 ZCS.constant.ORG_NODE_FIELD_HASH = ZCS.util.arrayAsLookupHash([
-	'name', 'absFolderPath', 'color', 'rgb', 'l', 'n', 'u', 'url', 'query', 'types'
+//	'name', 'absFolderPath', 'color', 'rgb', 'l', 'n', 'u', 'url', 'query', 'types'
+	// handle notifications only if one of following fields has changed; these affect display of organizer item
+	'name', 'absFolderPath', 'l', 'u'
 ]);
 
 // Organizer name constraints
