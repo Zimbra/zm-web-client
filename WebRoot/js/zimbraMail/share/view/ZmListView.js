@@ -707,7 +707,7 @@ function(clickedEl, ev) {
 							return; //nothing else to do. It's already selected, and was the only selected one. Nothing to remove
 						}
 					} else {
-						if (selField && selField.className == ZmListView.UNCHECKED_CLASS) {
+						if (selField && !this._getItemData(sel, ZmListView.ITEM_CHECKED_ATT_NAME)) {
 							DwtListView.prototype.deselectAll.call(this);
 						}
 					}

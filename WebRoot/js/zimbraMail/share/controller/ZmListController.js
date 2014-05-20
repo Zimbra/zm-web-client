@@ -382,10 +382,6 @@ function(ev) {
 				if (lv.setSelectionHdrCbox) {
 					lv.setSelectionHdrCbox(false);
 				}
-				if (lv.setSelectionCbox) {
-					// Keep the selection highlight and checkbox in sync
-					lv.setSelectionCbox(ev.item, false);
-				}
 			}
 			this._resetOperations(this.getCurrentToolbar(), lv.getSelectionCount());
 		}
