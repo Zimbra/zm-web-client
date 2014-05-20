@@ -26,23 +26,28 @@ Ext.define('ZCS.view.ZtAppsMenu', {
 
         // Prepare menu items
         Ext.each(ZCS.constant.APPS, function(app) {
-                if (ZCS.util.isAppEnabled(app)) {
-                    menuItems.push({
-                        app:    app,
-                        text:   ZCS.constant.APP_NAME[app],
-                        group:  ZtMsg.applicationsGroup
-                    });
-                }
+            if (ZCS.util.isAppEnabled(app)) {
+                menuItems.push({
+                    app:        app,
+                    text:       ZCS.constant.APP_NAME[app],
+                    group:      ZtMsg.applicationsGroup,
+                    groupOrder: 1
+                });
+            }
         });
 
-        menuItems.push(/*{
-            app: 'settings',
-            text: ZtMsg.settings,
-            group: ZtMsg.otherGroup
-        }, */{
-            app: 'signout',
-            text: ZtMsg.logout,
-            group: ZtMsg.otherGroup
+        menuItems.push({
+        /*
+	            app:        'settings',
+	            text:       ZtMsg.settings,
+	            group:      ZtMsg.otherGroup,
+	            groupOrder: 2
+            },
+         */
+            app:        'signout',
+            text:       ZtMsg.logout,
+            group:      ZtMsg.otherGroup,
+	        groupOrder: 3
         });
 
         this.add([{
@@ -59,7 +64,8 @@ Ext.define('ZCS.view.ZtAppsMenu', {
                 grouper: {
                     groupFn: function (item) {
                         return item.get('group');
-                    }
+                    },
+	                sortProperty: 'groupOrder'
                 }
             }
         }]);
