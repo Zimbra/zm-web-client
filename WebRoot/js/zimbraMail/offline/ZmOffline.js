@@ -197,13 +197,26 @@ function(staticURLs, cachedURL, response) {
 		localStorage.setItem(cachedURL, response.text);
 	}
 	if (staticURLs && staticURLs.length > 0) {
-		var url = staticURLs.shift() + "?v=" + cacheKillerVersion;
+		var url = appContextPath + staticURLs.shift() + "?v=" + cacheKillerVersion;
 		var callback = this._cacheStaticResources.bind(this, staticURLs, url);
 		AjxRpc.invoke(null, url, null, callback, true);
 	}
 	else {
-		var callback = appCtxt.reloadAppCache.bind(appCtxt);
+		var callback = this._cacheStaticResourcesContinue.bind(this);
 		AjxDispatcher.require(["Contacts", "TinyMCE", "Extras"], true, callback);
+	}
+};
+
+ZmOffline.prototype._cacheStaticResourcesContinue =
+function() {
+	var callback = appCtxt.reloadAppCache.bind(appCtxt);
+	var tinyMCELocale = tinyMCE.getlanguage(appCtxt.get(ZmSetting.LOCALE_NAME));
+	if (tinyMCELocale === "en") {
+		callback();
+	}
+	else {
+		var url = appContextPath + "/js/ajax/3rdparty/tinymce/langs/" + tinyMCELocale + ".js";
+		AjxRpc.invoke(null, url, null, callback, true);
 	}
 };
 
