@@ -436,24 +436,27 @@ function(reset) {
  */
 ZmInviteMsgView.prototype.enableToolbarButtons =
 function(ptst) {
-	var disableButtonId;
+	var disableButtonIds = {};
 	switch (ptst) {
 		case ZmCalBaseItem.PSTATUS_ACCEPT:
-			disableButtonId = ZmOperation.REPLY_ACCEPT;
+			disableButtonIds[ZmOperation.REPLY_ACCEPT] = true;
 			break;
 		case ZmCalBaseItem.PSTATUS_DECLINED:
-			disableButtonId = ZmOperation.REPLY_DECLINE;
+			disableButtonIds[ZmOperation.REPLY_DECLINE] = true;
 			break;
 		case ZmCalBaseItem.PSTATUS_TENTATIVE:
-			disableButtonId = ZmOperation.REPLY_TENTATIVE;
+			disableButtonIds[ZmOperation.REPLY_TENTATIVE] = true;
 			break;
+	}
+	if (appCtxt.isWebClientOffline()) {
+		 disableButtonIds[ ZmOperation.PROPOSE_NEW_TIME] = true;
 	}
 	var inviteToolbar = this.getInviteToolbar();
 
 	var buttonIds = [ZmOperation.REPLY_ACCEPT, ZmOperation.REPLY_DECLINE, ZmOperation.REPLY_TENTATIVE, ZmOperation.PROPOSE_NEW_TIME];
 	for (var i = 0; i < buttonIds.length; i++) {
 		var buttonId = buttonIds[i];
-		inviteToolbar.getButton(buttonId).setEnabled(appCtxt.isExternalAccount() ? false : buttonId != disableButtonId);
+		inviteToolbar.getButton(buttonId).setEnabled(appCtxt.isExternalAccount() ? false : !disableButtonIds[buttonId]);
 	}
 };
 
