@@ -502,7 +502,7 @@ function(item, colIdx) {
 	var width = (AjxEnv.isIE || AjxEnv.isSafari) ? 22 : 16;
 
 	var isMsg = (item.type === ZmItem.MSG);
-	var isConv = (item.type === ZmItem.CONV && item.numMsgs > 1);
+	var isConv = (item.type === ZmItem.CONV && this._getDisplayedMsgCount(item) > 1);
 
 	var selectionCssClass = '';
 	for (var i = 0; i < this._headerList.length; i++) {
@@ -1128,7 +1128,9 @@ function(ev) {
 			if (numDispMsgs === 1) {
 				this._collapse(conv); //collapse since it's only one message.
 			}
-			this._updateField(conv, ZmItem.F_EXPAND); //must be done AFTER the _collapse (since collapse would reset the "expand" even in case it's not expandable)
+			//must redraw the line since the ZmItem.F_EXPAND field might not be there when switching from 1 message conv, so updateField does not work. And also we
+			//don't want it after deleting message(s) resulting in 1.
+			this.redrawItem(conv);
 		}
 		this._updateField(conv, this.isMultiColumn() ? ZmItem.F_SIZE : ZmItem.F_FROM); //in reading pane on the right, the count appears in the "from".
 	}
