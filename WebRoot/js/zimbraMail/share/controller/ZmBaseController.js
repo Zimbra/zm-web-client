@@ -1346,6 +1346,10 @@ ZmBaseController.prototype._loadContactForMenu = function(menu, address, ev, imI
 		address = address.isAjxEmailAddress ? address : new AjxEmailAddress(address),
 		email = address.getAddress();
 
+	if (!email) {
+		return;
+	}
+
 	// first check if contact is cached, and no server call is needed
 	var contact = contactsApp.getContactByEmail(email);
 	if (contact) {
