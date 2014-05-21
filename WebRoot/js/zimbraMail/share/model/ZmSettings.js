@@ -580,7 +580,7 @@ function(response) {
 			var locale = locales[i];
 			// bug: 38038
 			locale.id = locale.id.replace(/^in/,"id");
-			ZmLocale.create(locale.id, locale.name, ZmMsg["localeName_" + locale.id]);
+			ZmLocale.create(locale.id, locale.name, ZmMsg["localeName_" + locale.id] || locale.localName);
 		}
         if(locales.length === 1) {
             //Fix for bug# 80762 - Set the value to always true in case of only one language/locale present
