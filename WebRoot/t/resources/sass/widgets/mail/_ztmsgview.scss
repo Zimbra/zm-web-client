@@ -233,52 +233,60 @@ $msgHdrTopOffsetPhone: 1.5em;
 	}
 }
 
-.x-phone.x-portrait .zcs-mail-msgHdr {
-	min-height: $msgHdrTextSize*4.5 + $msgHdrTopOffsetPhone;
+.x-phone {
+	.zcs-mail-msgHdr {
+		min-height: $msgHdrTextSize*4.5 + $msgHdrTopOffsetPhone;
 
-	.zcs-msgHdr-link {
-		top: $msgHdrTopOffset1;
-		padding-top: 0.5em;
+		.zcs-msgHdr-link {
+			top: $msgHdrTopOffset1;
+			padding-top: 0.5em;
+		}
+
+		.zcs-msgHdr-person,
+		.zcs-msgHdr-fromContainer,
+		.zcs-msgHdr-date {
+			top: $msgHdrTopOffset1 + $msgHdrTopOffsetPhone;
+		}
+
+		.zcs-msgHdr-to {
+			top: $msgHdrTopOffset2 + $msgHdrTopOffsetPhone;
+			right: $msgHdrRightIndent;
+		}
 	}
 
-	.zcs-msgHdr-person,
-	.zcs-msgHdr-fromContainer,
-	.zcs-msgHdr-date {
-		top: $msgHdrTopOffset1 + $msgHdrTopOffsetPhone;
+	.zcs-mail-msgHdr.detailed {
+		min-height: $msgHdrTextSize*6 + $msgHdrTopOffsetPhone;
+
+		.zcs-msgHdr-fromContainer {
+			right: $msgHdrRightIndent;
+			top: $msgHdrTopOffset1 + $msgHdrTopOffsetPhone;
+		}
+
+		.zcs-msgHdr-from {
+			top: $msgHdrTopOffset2 + $msgHdrTopOffsetPhone;
+		}
+
+		.zcs-msgHdr-date {
+			left: $msgHdrLeftIndent;
+			right: inherit;
+			top: $msgHdrTopOffset3 + $msgHdrTopOffsetPhone;
+		}
 	}
 
-	.zcs-msgHdr-to {
-		top: $msgHdrTopOffset2 + $msgHdrTopOffsetPhone;
-		right: $msgHdrRightIndent;
+	.zcs-mail-msgHdr.collapsed {
+		min-height: $msgHdrTextSize*4.5;
+
+		.zcs-msgHdr-person,
+		.zcs-msgHdr-fromContainer,
+		.zcs-msgHdr-date {
+			top: $msgHdrTopOffset1;
+		}
 	}
 }
 
-.x-phone.x-portrait .zcs-mail-msgHdr.detailed {
-	min-height: $msgHdrTextSize*6 + $msgHdrTopOffsetPhone;
-
-	.zcs-msgHdr-fromContainer {
-		right: $msgHdrRightIndent;
-		top: $msgHdrTopOffset1 + $msgHdrTopOffsetPhone;
-	}
-
-	.zcs-msgHdr-from {
-		top: $msgHdrTopOffset2 + $msgHdrTopOffsetPhone;
-	}
-
-	.zcs-msgHdr-date {
-		left: $msgHdrLeftIndent;
-		right: inherit;
-		top: $msgHdrTopOffset3 + $msgHdrTopOffsetPhone;
-	}
-}
-
-.x-phone.x-portrait .zcs-mail-msgHdr.collapsed {
-	min-height: $msgHdrTextSize*4.5;
-
-	.zcs-msgHdr-person,
-	.zcs-msgHdr-fromContainer,
-	.zcs-msgHdr-date {
-		top: $msgHdrTopOffset1;
+.x-phone.x-landscape {
+	.zcs-mail-msgHdr .zcs-msgHdr-fromContainer {
+		right: 6em;
 	}
 }
 
