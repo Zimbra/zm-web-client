@@ -356,7 +356,7 @@ function(scrollMsgView) {
 	
 	if (this._msgViewList) {
 		for (var i = 0; i < this._msgViewList.length; i++) {
-			this._msgViews[this._msgViewList[i]]._scheduleResize();
+			this._msgViews[this._msgViewList[i]]._resetIframeHeightOnTimer();
 		}
 	}
 
@@ -697,7 +697,7 @@ function(ev) {
 		this._renderMessage(msg, params);
 		var msgView = this._msgViews && this._msgViews[msg.id];
 		if (msgView) {
-			msgView._scheduleResize();
+			msgView._resetIframeHeightOnTimer();
 		}
 	}
 	else {
@@ -1327,7 +1327,10 @@ function(el) {
 	return height;
 };
 
-ZmMailMsgCapsuleView.prototype._scheduleResize =
+/**
+ * override from ZmMailMsgView
+ */
+ZmMailMsgCapsuleView.prototype._resetIframeHeightOnTimer =
 function() {
 	if (!this._resizePending) {
 		window.setTimeout(this._resize.bind(this), 100);
@@ -1779,7 +1782,7 @@ function() {
 		return;
 	}
 	this._setExpansion(expanded);
-	this._scheduleResize();
+	this._resetIframeHeightOnTimer();
 };
 
 ZmMailMsgCapsuleView.prototype._setExpansion =
