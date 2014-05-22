@@ -88,8 +88,20 @@ function(msg, parentController, callback, markRead, hidePagination, forceLoad, n
 		}
 	} else {
 		// May have been explicitly marked as unread
-		msg.markRead();
-		this._handleResponseShow(callback, hidePagination);
+		var marked = false;
+		if (msg.isUnread && (appCtxt.get(ZmSetting.MARK_MSG_READ) != ZmSetting.MARK_READ_NONE)) {
+			if (msg.list) {
+				// Need to mark it on the server
+				marked = true;
+				var markCallback =  this._handleResponseShow.bind(this, callback, hidePagination);
+				msg.list.markRead({items: msg, value: true, callback: markCallback, noBusyOverlay: true});
+			}  else {
+				msg.markRead();
+			}
+		}
+		if (!marked) {
+			this._handleResponseShow(callback, hidePagination);
+		}
 	}
 };
 
