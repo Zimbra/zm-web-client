@@ -121,17 +121,20 @@ Ext.define('ZCS.controller.calendar.ZtNewAppointmentController', {
             formField,
             at = [],
             container = panel.down('attendeecontainer');
-        Ext.each(data, function(field, index) {
-            if (field.get('type') === ZCS.constant.CUTYPE_INDIVIDUAL) {
-                container.addField();
-                at.push(field);
-            }
-        }, this);
 
-        formField = container.query('contactfield[name=attendee]');
-        Ext.each(formField, function(item, index) {
-                item.addBubble(at[index]);
-        }, this);
+	    if (container) {
+	        Ext.each(data, function(field, index) {
+	            if (field.get('type') === ZCS.constant.CUTYPE_INDIVIDUAL) {
+	                container.addField();
+	                at.push(field);
+	            }
+	        }, this);
+
+	        formField = container.query('contactfield[name=attendee]');
+	        Ext.each(formField, function(item, index) {
+	                item.addBubble(at[index]);
+	        }, this);
+	    }
 
         if (invite.get('recurrence')) {
             formField = form.down('field[name=recurrence]');

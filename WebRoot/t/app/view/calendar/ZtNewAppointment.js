@@ -78,8 +78,25 @@ Ext.define('ZCS.view.calendar.ZtNewAppointment', {
             spacer = {
                 xtype:  'spacer',
                 cls:    'zcs-form-spacer'
-            },
-            form = {
+            };
+
+	        var items = [
+		        spacer,
+		        { xtype: 'titlecontainer' },
+		        spacer,
+		        { xtype: 'datecontainer' },
+		        spacer,
+		        { xtype: 'foldercontainer' },
+		        { xtype: 'fbstatuscontainer' },
+		        spacer,
+		        { xtype: 'remindercontainer' }
+		    ];
+	        if (ZCS.session.getSetting(ZCS.constant.SETTING_GROUP_CALENDAR_ENABLED)) {
+		        items.push(spacer, { xtype: 'attendeecontainer' });
+	        }
+	        items.push(spacer,  { xtype: 'descriptioncontainer' });
+
+            var form = {
                 xtype:       'formpanel',
                 layout: 'vbox',
                 scrollable:   true,
@@ -87,35 +104,7 @@ Ext.define('ZCS.view.calendar.ZtNewAppointment', {
                     labelWidth:  '5.5em',
                     inputCls:    'zcs-form-input'
                 },
-                items: [
-                    spacer,
-                    {
-                        xtype: 'titlecontainer'
-                    },
-                    spacer,
-                    {
-                        xtype: 'datecontainer'
-                    },
-                    spacer,
-                    {
-                        xtype: 'foldercontainer'
-                    },
-                    {
-                        xtype: 'fbstatuscontainer'
-                    },
-                    spacer,
-                    {
-                        xtype: 'remindercontainer'
-                    },
-                    spacer,
-                    {
-                        xtype: 'attendeecontainer'
-                    },
-                    spacer,
-                    {
-                        xtype: 'descriptioncontainer'
-                    }
-                ]
+                items: items
             };
 
         this.add([
@@ -127,7 +116,9 @@ Ext.define('ZCS.view.calendar.ZtNewAppointment', {
     resetForm: function() {
         this.down('titlebar').setTitle(ZtMsg.createAppointment);
         this.down('.formpanel').reset();
-
-        this.down('attendeecontainer').reset();
+	    var attendeesField = this.down('attendeecontainer');
+	    if (attendeesField) {
+		    attendeesField.reset();
+	    }
     }
 });

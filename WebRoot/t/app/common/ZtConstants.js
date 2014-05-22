@@ -502,8 +502,9 @@ ZCS.constant.SETTING_CONTACTS_ENABLED   = 'zimbraFeatureContactsEnabled';
 ZCS.constant.SETTING_SHOW_DL_FOLDER     = 'zimbraFeatureDistributionListFolderEnabled';
 
 // Calendar
-ZCS.constant.SETTING_CALENDAR_ENABLED   = 'zimbraFeatureCalendarEnabled';
-ZCS.constant.SETTING_REMINDER_TIME      = 'zimbraPrefCalendarApptReminderWarningTime';
+ZCS.constant.SETTING_CALENDAR_ENABLED       = 'zimbraFeatureCalendarEnabled';
+ZCS.constant.SETTING_GROUP_CALENDAR_ENABLED = 'zimbraFeatureGroupCalendarEnabled';
+ZCS.constant.SETTING_REMINDER_TIME          = 'zimbraPrefCalendarApptReminderWarningTime';
 
 // Internal settings
 ZCS.constant.SETTING_CUR_SEARCH                 = 'CUR_SEARCH';
@@ -539,6 +540,7 @@ ZCS.constant.SETTING_TYPE[ZCS.constant.SETTING_FLAGGING_ENABLED]            = ZC
 ZCS.constant.SETTING_TYPE[ZCS.constant.SETTING_TAGGING_ENABLED]             = ZCS.constant.TYPE_BOOLEAN;
 ZCS.constant.SETTING_TYPE[ZCS.constant.SETTING_SPAM_ENABLED]                = ZCS.constant.TYPE_BOOLEAN;
 ZCS.constant.SETTING_TYPE[ZCS.constant.SETTING_SIGNATURES_ENABLED]          = ZCS.constant.TYPE_BOOLEAN;
+ZCS.constant.SETTING_TYPE[ZCS.constant.SETTING_GROUP_CALENDAR_ENABLED]      = ZCS.constant.TYPE_BOOLEAN;
 
 // Forced setting values, which override user setting
 ZCS.constant.SETTING_VALUE = {};
