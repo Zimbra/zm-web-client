@@ -30,6 +30,7 @@
  * @param   {String}	params.query					the query string
  * @param	{String}	params.queryHint				the query string that gets appended to the query but not something the user needs to know about
  * @param	{AjxVector}	params.types					the item types to search for
+ * @param	{Boolean}	params.forceTypes				use the types we pass, do not override (in case of mail) to the current user's view pref (MSG vs. CONV).
  * @param	{constant}	params.sortBy					the sort order
  * @param	{int}		params.offset					the starting point within result set
  * @param	{int}		params.limit					the number of results to return

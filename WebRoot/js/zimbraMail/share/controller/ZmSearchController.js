@@ -296,6 +296,7 @@ function(search, noRender, changes, callback, errorCallback) {
 	params.query		= search.query;
 	params.queryHint	= search.queryHint;
 	params.types		= search.types;
+	params.forceTypes	= search.forceTypes;
 	params.sortBy		= search.sortBy;
 	params.offset		= search.offset;
 	params.limit		= search.limit;
@@ -477,6 +478,7 @@ function(type) {
  * @param {String}	params.query	the search query
  * @param {String}	params.userText	the user text
  * @param {Array}	params.type		an array of types
+ * @param {Boolean}	params.forceTypes	use the types we pass, do not override (in case of mail) to the current user's view pref (MSG vs. CONV).
  * @param {boolean}	params.inclSharedItems		overrides this._inclSharedItems - see ZmTagsHelper._tagClick
  * @param {boolean} params.forceSearch     Ignores special processing and just executes the search.
  * @param {Boolean}	noRender		if <code>true</code>, the search results will not be rendered
@@ -517,7 +519,7 @@ function(params, noRender, callback, errorCallback) {
 	searchFor = this.getSearchForFromType(type);
 
 	//this makes sure for mail we get the type from the user's setting (CONV/MSG).
-	if (!params.types) {
+	if (!params.forceTypes) {
 		type = this.getTypeFromSearchFor(searchFor);
 	}
 
