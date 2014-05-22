@@ -159,12 +159,8 @@ Ext.define('ZCS.controller.calendar.ZtCalendarController', {
         var monthView = this.getCalMonthView(),
             dayView = this.getCalDayView();
 
-        if (!monthView.isHidden()) {
-            monthView.view.refreshDelta(0);
-        }
-        else if (!dayView.isHidden()) {
-            dayView.view.refreshDelta(0);
-        }
+        monthView.view.refreshDelta(0);
+        dayView.view.refreshDelta(0);
     },
 
     /*
