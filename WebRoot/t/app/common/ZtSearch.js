@@ -92,7 +92,9 @@ Ext.define('ZCS.common.ZtSearch', {
 			}
 
 			function fail(reason, query) {
+				//<debug>
 				Ext.Logger.warn('ZmParsedQuery failure: ' + reason + '; query: [' + query + ']');
+				//</debug>
 				return null;
 			}
 

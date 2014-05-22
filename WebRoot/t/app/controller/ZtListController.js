@@ -237,7 +237,9 @@ Ext.define('ZCS.controller.ZtListController', {
 
 		var titlebar = this.getTitlebar();  // might not be available during startup
 		if (!titlebar) {
+			//<debug>
 			Ext.Logger.info('Titlebar not found');
+			//</debug>
 			return;
 		}
 
