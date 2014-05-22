@@ -46,10 +46,9 @@ Ext.define( 'Ext.ux.field.TimePicker', {
          * The default time to be used when initilizing the field
          * Example: '8:00', '14:50'
          */
-        defaultTime: '8:00',
-
-        destroyPickerOnHide: false
+        defaultTime: '8:00'
     },
+
     applyValue: function( value ) {
         var date = new Date();
         // if we have no value whatsoever, set a default
@@ -63,29 +62,28 @@ Ext.define( 'Ext.ux.field.TimePicker', {
         }
         return value;
     },
-    applyPicker: function( picker, pickerInstance ) {
-//        picker = Ext.factory( picker, 'Ext.ux.picker.Time' );
-//        picker.setHidden( true );
-//        picker.setZIndex(9999);
-//        Ext.Viewport.add( picker );
-//        return picker;
-        if (pickerInstance && pickerInstance.isPicker) {
-            picker = pickerInstance.setConfig(picker);
-        }
 
+    applyPicker: function( picker, pickerInstance ) {
+        picker = this._picker = Ext.create("Ext.ux.picker.Time", {
+                hidden: true,
+                zIndex: 9999
+        });
+        Ext.Viewport.add( picker );
         return picker;
     },
-//    destroyPicker: function() {
-//        var me     = this,
-//            picker = me.getPicker();
-//
-//        if (me.getDestroyPickerOnHide() && picker) {
-//            picker.destroy();
-//            picker.setZIndex(0);
-//            Ext.Viewport.remove(picker);
-//            me._picker = me.getInitialConfig().picker || true;
-//        }
-//    },
+
+    onPickerHide: function() {
+        var me     = this,
+            picker = me.getPicker();
+
+        if (picker) {
+            picker.setZIndex(0);
+            if (me.getDestroyPickerOnHide()) {
+                picker.destroy();
+            }
+        }
+    },
+
     /**
      * @cfg {String} [dateFormat=Ext.util.Format.defaultDateFormat] The format to be used when displaying the time in this field.
      * Accepts any valid date/time format. You can view formats over in the {@link Ext.Date} documentation.
@@ -96,16 +94,21 @@ Ext.define( 'Ext.ux.field.TimePicker', {
         }
         return this._value;
     },
+
     getPicker: function() {
         var picker = this._picker,
             value = this.getValue();
             
-        if ( picker && !picker.isPicker ) {
-            picker = Ext.factory( picker, Ext.ux.picker.Time );
+        if (picker && !picker.isPicker ) {
+            picker = Ext.create("Ext.ux.picker.Time", {
+                hidden: true
+            });
             if ( value != null ) {
                 picker.setValue( value );
             }
+            Ext.Viewport.add( picker );
         }
+        picker.setZIndex(9999);
         // add listeners
         picker.on({
             scope: this,

@@ -89,7 +89,7 @@ Ext.define('ZCS.view.calendar.ZtDateField', {
                     xtype:  'timepickerfield',
                     name:   'startTime',
                     flex:   1,
-                    destroyPickerOnHide: true,
+                    destroyPickerOnHide: false,
                     dateFormat:  ZtMsg.invTimeFormat,
                     value: ZCS.util.convertTime(new Date()),
                     listeners: {
@@ -125,7 +125,7 @@ Ext.define('ZCS.view.calendar.ZtDateField', {
                     name:   'endTime',
                     itemId:   'endTime',
                     flex:   1,
-                    destroyPickerOnHide: true,
+                    destroyPickerOnHide: false,
                     dateFormat:  ZtMsg.invTimeFormat,
                     value: ZCS.util.convertTime(new Date(), true),
                     listeners: {

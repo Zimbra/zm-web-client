@@ -90,7 +90,7 @@ Ext.define('ZCS.model.calendar.ZtCalendarWriter', {
                 this._addAttachmentsToRequest(m, invite, id, attachments);
 
                 if (isCreateException) {
-		            this._addExceptionRequestSubs(m, invite, new Date(itemData.instanceStartTime));
+		            this._addExceptionRequestSubs(m, invite, itemData.instanceStart);
 		            methodJson.comp = "0";
 		            methodJson.echo = "1";
 	            }
