@@ -621,6 +621,7 @@ function() {
         // Fix for bug: 84268. Removed calendar titles from the merged view.
         if (!this._mergedView) {
             div.style.top = ZmCalDayTabView._TAB_BORDER_WIDTH + 'px';
+			div.style.color = AjxUtil.getForegroundColor(calColor);
             div.innerHTML = cal.getName();
         }
 
