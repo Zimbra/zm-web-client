@@ -233,7 +233,6 @@ function(settings) {
 	settings.registerSetting("SAVE_TO_SENT",					{name:"zimbraPrefSaveToSent", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:true, isGlobal:true});
 	settings.registerSetting("SELECT_AFTER_DELETE",				{name:"zimbraPrefMailSelectAfterDelete", type:ZmSetting.T_PREF, defaultValue:ZmSetting.DELETE_SELECT_NEXT, isGlobal:true});
 	settings.registerSetting("SENT_FOLDER_NAME",				{name:"zimbraPrefSentMailFolder", type:ZmSetting.T_PREF, defaultValue:"sent"});
-	settings.registerSetting("SHOW_BCC",						{type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
     settings.registerSetting("SHOW_FRAGMENTS",					{name:"zimbraPrefShowFragments", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false, isGlobal:true});
 	settings.registerSetting("SHOW_MAIL_CONFIRM",				{name:"zimbraFeatureConfirmationPageEnabled", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	settings.registerSetting("SIGNATURE",						{name:"zimbraPrefMailSignature", type:ZmSetting.T_PREF});
@@ -863,8 +862,8 @@ function() {
 	ZmOperation.registerOp(ZmId.OP_KEEP_READING, {textKey:"keepReading", tooltipKey:"keepReadingTooltip", shortcut:ZmKeyMap.KEEP_READING});
 	ZmOperation.registerOp(ZmId.OP_MARK_READ, {textKey:"markAsRead", image:"ReadMessage", shortcut:ZmKeyMap.MARK_READ});
 	ZmOperation.registerOp(ZmId.OP_MARK_UNREAD, {textKey:"markAsUnread", image:"UnreadMessage", shortcut:ZmKeyMap.MARK_UNREAD});
-	ZmOperation.registerOp(ZmId.OP_FLAG, {textKey:"flag", image:"FlagRed", shortcut:ZmKeyMap.FLAG});
-	ZmOperation.registerOp(ZmId.OP_UNFLAG, {textKey:"unflag", image:"FlagDis", shortcut:ZmKeyMap.FLAG});
+	ZmOperation.registerOp(ZmId.OP_FLAG, {textKey:"flag", image:"FlagRed", shortcut:ZmKeyMap.FLAG}, ZmSetting.FLAGGING_ENABLED);
+	ZmOperation.registerOp(ZmId.OP_UNFLAG, {textKey:"unflag", image:"FlagDis", shortcut:ZmKeyMap.FLAG}, ZmSetting.FLAGGING_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_MOVE_DOWN_FILTER_RULE, {textKey:"filterMoveDown", image:"DownArrow"}, ZmSetting.FILTERS_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_MOVE_TO_BCC, {textKey:"moveToBcc"});
 	ZmOperation.registerOp(ZmId.OP_MOVE_TO_CC, {textKey:"moveToCc"});
@@ -1085,13 +1084,18 @@ function(notify) {
 				movedMsgs[id] = mod;
 				newToOldCid[mod.cid] = appCtxt.multiAccounts ? ZmOrganizer.getSystemId(virtCid) : virtCid;
 				createdConvs[mod.cid]._wasVirtConv = true;
-				createdConvs[mod.cid].m = [{id:id}];
 				// go ahead and update the msg cid, since it's used in
 				// notification processing for creates
-				var msg = appCtxt.getById(id);
+				var msg = appCtxt.getById(id),
+					folderId;
 				if (msg) {
 					msg.cid = mod.cid;
+					folderId = msg.folderId;
 				}
+				createdConvs[mod.cid].m = [{
+					id: id,
+					l:  folderId
+				}];
 			}
 		}
 	}
@@ -1128,7 +1132,7 @@ function(notify) {
 		delete notify.created.c;
 	}
 
-	// if the first msg matched the current search, we'll want to use the conv
+	// if the second msg matched the current search, we'll want to use the conv
 	// create node to create the conv later, so save it
 	for (var id in createdMsgs) {
 		var msgCreate = createdMsgs[id];
