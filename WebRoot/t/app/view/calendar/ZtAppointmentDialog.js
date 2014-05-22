@@ -28,7 +28,7 @@ Ext.define('ZCS.view.calendar.ZtAppointmentDialog', {
 	config: {
 		itemId: 'appointmentDialog',
 		bottom: 0,
-		height: '20%',
+		height: '30%',
 		width: '100%',
 		cls: 'zcs-appt-dialog',
 		hidden: true,
