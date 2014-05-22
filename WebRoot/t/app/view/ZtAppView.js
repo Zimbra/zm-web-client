@@ -144,8 +144,9 @@ Ext.define('ZCS.view.ZtAppView', {
 
 		for (var menuName in this.getMenuConfigs()[app]) {
 			Ext.create('ZCS.common.ZtMenu', {
-				itemId: menuName+'Menu',
-				data: this.getMenuConfigs()[app][menuName]
+				name:   menuName,
+				itemId: menuName + 'Menu',
+				data:   this.getMenuConfigs()[app][menuName]
 			});
 		}
 	},

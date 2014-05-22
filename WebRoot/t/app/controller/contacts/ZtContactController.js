@@ -73,6 +73,11 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
 	},
 
     launch: function() {
+
+	    if (!ZCS.util.isAppEnabled(this.getApp())) {
+		    return;
+	    }
+
         ZCS.app.on('deleteContactItem', this.doDelete, this);
 	    ZCS.app.on('notifyContactChange', this.handleModifyNotification, this);
     },

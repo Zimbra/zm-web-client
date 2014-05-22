@@ -58,13 +58,13 @@ Ext.define('ZCS.controller.contacts.ZtContactListController', {
 
     launch: function() {
 
-        this.callParent();
-
         if (!ZCS.util.isAppEnabled(this.getApp())) {
             return;
         }
 
-        ZCS.app.on('notifyContactCreate', this.handleCreateNotification, this);
+	    this.callParent();
+
+	    ZCS.app.on('notifyContactCreate', this.handleCreateNotification, this);
         ZCS.app.on('notifyContactChange', this.handleModifyNotification, this);
 
         if (ZCS.session.getSetting(ZCS.constant.SETTING_SHOW_DL_FOLDER)) {

@@ -217,8 +217,8 @@ Ext.define('ZCS.common.ZtSearch', {
 
 			// remove unnecessary enclosing parens from when a single compound term is expanded, for example when
 			// "subject:(foo bar)" is expanded into "(subject:foo subject:bar)"
-			if (tokens.length >= 3 && numParens === 1 && tokens[0].op === ZCS.constant.SEARCH_GROUP_OPEN &&
-				tokens[tokens.length - 1].op === ZCS.constant.SEARCH_GROUP_CLOSE) {
+			if (tokens.length >= 3 && numParens === 1 && tokens[0].getOp() === ZCS.constant.SEARCH_GROUP_OPEN &&
+				tokens[tokens.length - 1].getOp() === ZCS.constant.SEARCH_GROUP_CLOSE) {
 
 				tokens.shift();
 				tokens.pop();
@@ -319,7 +319,7 @@ Ext.define('ZCS.common.ZtSearch', {
 
 				// resolve implied "and"
 				var next = tokens[i + 1];
-				if (next && (next.type === ZCS.constant.SEARCH_TERM || next === ZCS.constant.SEARCH_COND_OP[ZCS.constant.SEARCH_COND_NOT] || next === ZCS.constant.SEARCH_GROUP_CLOSE)) {
+				if (next && (next.getType() === ZCS.constant.SEARCH_TERM || next.getOp() === ZCS.constant.SEARCH_COND_OP[ZCS.constant.SEARCH_COND_NOT] || next.getOp() === ZCS.constant.SEARCH_GROUP_CLOSE)) {
 					func.push(ZCS.constant.SEARCH_COND_OP[ZCS.constant.SEARCH_COND_AND]);
 				}
 			}
@@ -340,16 +340,11 @@ Ext.define('ZCS.common.ZtSearch', {
 			this.setTagId(tagId);
 		}
 
-		var func;
 		try {
 			// Since we aren't able to parse every kind of search, some searches cannot
 			// be turned into a function and will throw a JS error here.
-			func = new Function('item', func.join(''));
+			this.setMatchFunction(new Function('item', func.join('')));
 		} catch(ex) {}
-
-		if (func) {
-			this.setMatchFunction(func);
-		}
 	}
 });
 

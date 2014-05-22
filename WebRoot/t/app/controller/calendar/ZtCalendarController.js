@@ -278,7 +278,7 @@ Ext.define('ZCS.controller.calendar.ZtCalendarController', {
 			menu.hideItem(ZCS.constant.OP_EDIT, true);
 
 			// Pick which listitem to show, only if contacts app is enabled
-			if (ZCS.constant.IS_ENABLED[ZCS.constant.APP_CONTACTS]) {
+			if (ZCS.util.isAppEnabled(ZCS.constant.APP_CONTACTS)) {
 				var addr = params.addrObj,
 					cachedAddr = ZCS.cache.get(addr && addr.get('email'), 'email');
 

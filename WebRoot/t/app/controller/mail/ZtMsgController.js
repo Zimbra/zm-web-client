@@ -413,7 +413,7 @@ Ext.define('ZCS.controller.mail.ZtMsgController', {
 			menu.hideItem(ZCS.constant.OP_EDIT, true);
 
 			// Pick which listitem to show, only if contacts app is enabled
-			if (ZCS.constant.IS_ENABLED[ZCS.constant.APP_CONTACTS]) {
+			if (ZCS.util.isAppEnabled(ZCS.constant.APP_CONTACTS)) {
 				var fromAddr = message.getAddressByType(ZCS.constant.FROM),
 					addrObj = params.addrObj,
  					cachedAddr = ZCS.cache.get(addrObj && addrObj.get('email'), 'email');
@@ -432,14 +432,18 @@ Ext.define('ZCS.controller.mail.ZtMsgController', {
 	 */
 	enableMenuItems: function(menu) {
 
-		var curFolder = ZCS.session.getCurrentSearchOrganizer(),
-			isFeed = curFolder && curFolder.isFeed(),
-			isDrafts = ZCS.util.folderIs(curFolder, ZCS.constant.ID_DRAFTS);
+		var menuName = menu && menu.getName();
 
-		menu.enableItem(ZCS.constant.OP_REPLY, !isFeed);
-		menu.enableItem(ZCS.constant.OP_REPLY_ALL, !isFeed);
-		menu.enableItem(ZCS.constant.OP_SPAM, !isDrafts);
+		if (menuName === 'msgActions') {
+			var curFolder = ZCS.session.getCurrentSearchOrganizer(),
+				isFeed = curFolder && curFolder.isFeed(),
+				isDrafts = ZCS.util.folderIs(curFolder, ZCS.constant.ID_DRAFTS);
 
-        this.enableTagItem(menu);
+			menu.enableItem(ZCS.constant.OP_REPLY, !isFeed);
+			menu.enableItem(ZCS.constant.OP_REPLY_ALL, !isFeed);
+			menu.enableItem(ZCS.constant.OP_SPAM, !isDrafts);
+
+	        this.enableTagItem(menu);
+		}
 	}
 });

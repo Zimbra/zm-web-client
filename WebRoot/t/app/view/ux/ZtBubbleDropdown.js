@@ -92,6 +92,11 @@ Ext.define('ZCS.view.ux.ZtBubbleDropdown', {
 
 				this.showMenu = Ext.Function.createBuffered(function (value) {
 
+					// no autocomplete if contacts app is disabled
+					if (!ZCS.util.isAppEnabled(ZCS.constant.APP_CONTACTS)) {
+						return;
+					}
+
 					if (!this.menu) {
 						this.menu = Ext.create('Ext.dataview.List', {
 							cls: 'zcs-contact-suggest',

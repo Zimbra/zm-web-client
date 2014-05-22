@@ -162,7 +162,7 @@ Ext.define('ZCS.controller.ZtMainController', {
 			error = fault && fault.Detail && fault.Detail.Error,
 			code = error && error.Code,
 			info = error && error.a,
-			reason = fault.Reason && fault.Reason.Text;
+			reason = fault && fault.Reason && fault.Reason.Text;
 
 		var	title = (code && ZtMsg[code + '_title']) || ZtMsg.error,
 			args, msg;
