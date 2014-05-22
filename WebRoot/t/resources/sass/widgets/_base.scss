@@ -54,11 +54,14 @@
 	border-right: 1px solid $default-border-color;
 }
 
-$zcs-titlebar-fontsize: 1.2rem;       // for titlebar height, icons & labels
-$zcs-title-fontsize: 1.4rem;          // for titlebar text - slightly larger to stand out
+$zcs-titlebar-fontsize: 1.2rem;       // for titlebar icons & labels - base value in REM
+$zcs-titlebar-height: 2.8em;          // for titlebar height
+$zcs-title-fontsize: 1.2em;           // for titlebar text - slightly larger to stand out
+$zcs-textbutton-fontsize: 1em;            // for titlebar text button
 $zcs-list-header-fontsize: 0.9rem;    // for org list category header text
 $zcs-list-fontsize: 0.9rem;           // for typical list item text
 $zcs-list-item-fontsize: 1.2rem;      // for app menu list items
+$zcs-titlebar-phnLndscp: 0.75;        // multiplier for phone landscape view
 
 @mixin zimbra-button() {
 	background-image: none;
@@ -477,14 +480,19 @@ $contact-suggest-radius: $floating-list-radius;
 
 .zcs-list-search {
 	background-color: $list-bg-color;
-	padding: 8px;
+	padding: 0.4rem;
 
 	.x-form-fieldset-inner {
 		border: none;
 		background: transparent;
 
-		.x-field-search input {
-			padding: 0em .4em;
+		.x-field-search {
+			min-height: 2rem;
+
+			INPUT {
+				min-height: 2rem;
+				padding: 0 0.4rem;
+			}
 		}
 	}
 }
@@ -523,9 +531,11 @@ $contact-suggest-radius: $floating-list-radius;
 .zcs-item-titlebar {
 
 	&.x-toolbar {
-	font-size: $zcs-titlebar-fontsize;
-	border-color: transparent;
-	@include border-radius(0);
+		border-color: transparent;
+		font-size: $zcs-titlebar-fontsize;
+		height: $zcs-titlebar-height;
+		min-height: $zcs-titlebar-height;
+		@include border-radius(0);
 
 		.x-title {
 			font-size: $zcs-title-fontsize;
@@ -539,7 +549,7 @@ $contact-suggest-radius: $floating-list-radius;
 		.x-button-icon,
 		.x-button-label {
 			color: $base-color;
-			font-size: $zcs-titlebar-fontsize;
+			font-size: $zcs-textbutton-fontsize;
 		}
 
 		&:active,
@@ -560,7 +570,12 @@ $contact-suggest-radius: $floating-list-radius;
 			}
 		}
 	}
+}
 
+.x-phone.x-landscape {
+	.zcs-item-titlebar.x-toolbar {
+		font-size: $zcs-titlebar-fontsize * $zcs-titlebar-phnLndscp;
+	}
 }
 
 /* Form Editor Panel */

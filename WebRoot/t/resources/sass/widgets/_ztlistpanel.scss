@@ -4,14 +4,16 @@
 	@extend .zcs-side-panel;
 
 	.zcs-list-titlebar {
-		font-size: $zcs-titlebar-fontsize;
 		border: none;
+		font-size: $zcs-titlebar-fontsize;
+		height: $zcs-titlebar-height;
+		min-height: $zcs-titlebar-height;
 		@include border-radius(0);
 
 		.x-title {
+			color: $primary-text-color;
 			font-size: $zcs-title-fontsize;
 			font-weight: normal;
-			color: $primary-text-color;
 		}
 	}
 
@@ -43,28 +45,34 @@
 			}
 
 			.zcs-mail-listitem-deleted {
-				height: 90px/2;
-				line-height: 90px/2;
-				color: #fff;
-				text-align: center;
+				color: white;
 				font-size: 1.2em;
+				height: 90px / 2;
+				line-height: 90px / 2;
+				text-align: center;
 			}
 
 			.x-innerhtml {
 				padding: 0px !important;
 
 				&:before {
+					color: $white;
+					content: "T";
+					font-family: "ZimbraTouch";
+					font-size: 3em;
+					line-height: 90px;
 					position: absolute;
 					right: 30px;
 					text-align: center;
-					font-family: "ZimbraTouch";
-					content: "T";
-					color: $white;
-					line-height: 90px;
-					font-size: 3em;
 				}
 			}
 		}
 
+	}
+}
+
+.x-phone.x-landscape {
+	.zcs-list-panel .zcs-list-titlebar {
+		font-size: $zcs-titlebar-fontsize * $zcs-titlebar-phnLndscp;
 	}
 }
