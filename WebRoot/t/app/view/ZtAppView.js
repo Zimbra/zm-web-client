@@ -146,7 +146,7 @@ Ext.define('ZCS.view.ZtAppView', {
 			Ext.create('ZCS.common.ZtMenu', {
 				name:   menuName,
 				itemId: menuName + 'Menu',
-				data:   this.getMenuConfigs()[app][menuName]
+				data:   this.getFilteredMenuData(app, menuName)
 			});
 		}
 	},
@@ -161,5 +161,17 @@ Ext.define('ZCS.view.ZtAppView', {
 
 	registerItemPanel: function (itemPanelConfig) {
 		this.fireEvent('registerItemPanel', itemPanelConfig, this, ZCS.constant.SIDE_MENU_CONFIG);
+	},
+
+	// filters out ops that are not enabled by user settings
+	getFilteredMenuData: function(app, menuName) {
+
+		var menuItems = this.getMenuConfigs()[app][menuName],
+			precondition;
+
+		return Ext.Array.filter(menuItems, function(menuItem) {
+			precondition = ZCS.constant.OP_PRECONDITION[menuItem.action];
+			return (!precondition || ZCS.session.getSetting(precondition));
+		}, this);
 	}
 });

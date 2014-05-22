@@ -143,26 +143,28 @@ ZCS.constant.MENU_INVITE_ACTIONS = 'inviteReplyActions';
 ZCS.constant.MENU_APPT_ACTIONS = 'apptActions';
 
 // Operations (generally tied to dropdown menu items)
+ZCS.constant.OP_ADD_CONTACT = 'ADD_CONTACT';
 ZCS.constant.OP_COMPOSE     = 'COMPOSE';
 ZCS.constant.OP_DELETE      = 'DELETE';
+ZCS.constant.OP_EDIT        = 'EDIT';
+ZCS.constant.OP_FLAG        = 'FLAG';
 ZCS.constant.OP_FORWARD     = 'FORWARD';
 ZCS.constant.OP_LOGOUT      = 'LOGOUT';
 ZCS.constant.OP_MARK_READ   = 'MARK_READ';
+ZCS.constant.OP_MENU        = 'MENU';
+ZCS.constant.OP_MOVE        = 'MOVE';
+ZCS.constant.OP_REMOVE_ATT  = 'REMOVE_ATT';
+ZCS.constant.OP_REMOVE_TAG  = 'REMOVE_TAG';
 ZCS.constant.OP_REPLY       = 'REPLY';
 ZCS.constant.OP_REPLY_ALL   = 'REPLY_ALL';
-ZCS.constant.OP_SPAM        = 'SPAM';
-ZCS.constant.OP_MOVE        = 'MOVE';
-ZCS.constant.OP_FLAG        = 'FLAG';
-ZCS.constant.OP_TAG         = 'TAG';
-ZCS.constant.OP_REMOVE_TAG  = 'REMOVE_TAG';
-ZCS.constant.OP_REMOVE_ATT  = 'REMOVE_ATT';
-ZCS.constant.OP_ADD_CONTACT = 'ADD_CONTACT';
-ZCS.constant.OP_EDIT        = 'EDIT';
-ZCS.constant.OP_MENU        = 'MENU';
 ZCS.constant.OP_SEARCH      = 'SEARCH';
+ZCS.constant.OP_SPAM        = 'SPAM';
+ZCS.constant.OP_TAG         = 'TAG';
+
+// Invite response operations
 ZCS.constant.OP_ACCEPT      = 'ACCEPT';
+ZCS.constant.OP_DECLINE     = 'DECLINE';
 ZCS.constant.OP_TENTATIVE   = 'TENTATIVE';
-ZCS.constant.OP_SEARCH      = 'DECLINE';
 
 // Buttons in toolbar at top of item panel
 ZCS.constant.ITEM_BUTTONS = {};
@@ -467,10 +469,13 @@ ZCS.constant.TEXT_HTML  = 'text/html';
 // Names of user settings (LDAP attribute names)
 
 // General
+ZCS.constant.SETTING_FLAGGING_ENABLED   = 'zimbraFeatureFlaggingEnabled';
 ZCS.constant.SETTING_JSLOGGING_ENABLED  = 'zimbraTouchJSErrorTrackingEnabled';  // third-party logging service
 ZCS.constant.SETTING_JSLOGGING_KEY      = 'zimbraTouchJSErrorTrackingKey';      // third-party logging service
 ZCS.constant.SETTING_LOCALE             = 'zimbraPrefLocale';
 ZCS.constant.SETTING_SHOW_SEARCH        = 'zimbraPrefShowSearchString';
+ZCS.constant.SETTING_SPAM_ENABLED       = 'zimbraFeatureAntispamEnabled';
+ZCS.constant.SETTING_TAGGING_ENABLED    = 'zimbraFeatureTaggingEnabled';
 ZCS.constant.SETTING_TIMEZONE           = 'zimbraPrefTimeZoneId';
 
 // Mail
@@ -488,6 +493,7 @@ ZCS.constant.SETTING_REPLY_PREFIX       = 'zimbraPrefForwardReplyPrefixChar';
 ZCS.constant.SETTING_SIGNATURE_ID       = 'zimbraPrefDefaultSignatureId';
 ZCS.constant.SETTING_REPLY_SIGNATURE_ID = 'zimbraPrefForwardReplySignatureId';
 ZCS.constant.SETTING_SIGNATURE_STYLE    = 'zimbraPrefMailSignatureStyle';
+ZCS.constant.SETTING_SIGNATURES_ENABLED = 'zimbraFeatureSignaturesEnabled';
 ZCS.constant.SETTING_TRUSTED_SENDERS    = 'zimbraPrefMailTrustedSenderList';
 ZCS.constant.SETTING_AUTO_SAVE_INTERVAL = 'zimbraPrefAutoSaveDraftInterval';
 
@@ -529,6 +535,10 @@ ZCS.constant.SETTING_TYPE[ZCS.constant.SETTING_SHOW_DL_FOLDER]              = ZC
 ZCS.constant.SETTING_TYPE[ZCS.constant.SETTING_CUR_SEARCH]                  = ZCS.constant.TYPE_HASH;
 ZCS.constant.SETTING_TYPE[ZCS.constant.SETTING_CUR_SEARCH_ID]               = ZCS.constant.TYPE_HASH;
 ZCS.constant.SETTING_TYPE[ZCS.constant.SETTING_AUTO_SAVE_INTERVAL]          = ZCS.constant.TYPE_LDAP_TIME;
+ZCS.constant.SETTING_TYPE[ZCS.constant.SETTING_FLAGGING_ENABLED]            = ZCS.constant.TYPE_BOOLEAN;
+ZCS.constant.SETTING_TYPE[ZCS.constant.SETTING_TAGGING_ENABLED]             = ZCS.constant.TYPE_BOOLEAN;
+ZCS.constant.SETTING_TYPE[ZCS.constant.SETTING_SPAM_ENABLED]                = ZCS.constant.TYPE_BOOLEAN;
+ZCS.constant.SETTING_TYPE[ZCS.constant.SETTING_SIGNATURES_ENABLED]          = ZCS.constant.TYPE_BOOLEAN;
 
 // Forced setting values, which override user setting
 ZCS.constant.SETTING_VALUE = {};
@@ -542,6 +552,11 @@ ZCS.constant.SETTING_DEFAULT[ZCS.constant.SETTING_SHOW_DL_FOLDER]           = tr
 ZCS.constant.SETTING_DEFAULT[ZCS.constant.SETTING_CONVERSATION_ORDER]       = ZCS.constant.DATE_DESC;
 ZCS.constant.SETTING_DEFAULT[ZCS.constant.SETTING_AUTO_SAVE_INTERVAL]       = 15;
 ZCS.constant.SETTING_DEFAULT[ZCS.constant.SETTING_REMINDER_TIME]            = 5;
+
+ZCS.constant.OP_PRECONDITION = {};
+ZCS.constant.OP_PRECONDITION[ZCS.constant.OP_FLAG]  = ZCS.constant.SETTING_FLAGGING_ENABLED;
+ZCS.constant.OP_PRECONDITION[ZCS.constant.OP_SPAM]  = ZCS.constant.SETTING_SPAM_ENABLED;
+ZCS.constant.OP_PRECONDITION[ZCS.constant.OP_TAG]   = ZCS.constant.SETTING_TAGGING_ENABLED;
 
 // Signature styles
 ZCS.constant.SIG_INTERNET   = 'internet';
@@ -696,11 +711,6 @@ ZCS.constant.NUM_AUTOCOMPLETE_MATCHES = 20;
 
 // Invite-related constants
 ZCS.constant.INVITE_NOTES_SEPARATOR = '*~*~*~*~*~*~*~*~*~*';
-
-// Invite response actions
-ZCS.constant.OP_ACCEPT      = 'ACCEPT';
-ZCS.constant.OP_TENTATIVE   = 'TENTATIVE';
-ZCS.constant.OP_DECLINE     = 'DECLINE';
 
 ZCS.constant.INVITE_REPLY_PREFIX = {};
 ZCS.constant.INVITE_REPLY_PREFIX[ZCS.constant.OP_ACCEPT]    = ZtMsg.acceptAction;

@@ -101,7 +101,7 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 		var addresses = {},
 			subject = null,
 			body = null,
-			signature = ZCS.session.getSetting(ZCS.constant.SETTING_SIGNATURE);
+			signature = this.getSignature(false);
 
 		if (msg) {
 			Ext.each(ZCS.constant.RECIP_TYPES, function(type) {
@@ -216,6 +216,12 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 		}
 
 		return addrs;
+	},
+
+	// return appropriate signature, as long as signatures are enabled
+	getSignature: function(isReplyOrForward) {
+		return ZCS.session.getSetting(ZCS.constant.SETTING_SIGNATURES_ENABLED) ?
+			ZCS.session.getSetting(isReplyOrForward ? ZCS.constant.SETTING_REPLY_SIGNATURE : ZCS.constant.SETTING_SIGNATURE) : '';
 	},
 
 	/**
@@ -684,7 +690,7 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 
 		var	quoted = usePrefix ? this.quoteHtml(content) : content;
 
-		var signature = ZCS.session.getSetting(ZCS.constant.SETTING_REPLY_SIGNATURE),
+		var signature = this.getSignature(true),
 			sigStyle = ZCS.session.getSetting(ZCS.constant.SETTING_SIGNATURE_STYLE),
 			body = '';
 
