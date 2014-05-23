@@ -592,6 +592,7 @@ function(refresh) {
 					var msg = AjxMessageFormat.format(ZmMsg.versionChangeRestart, [curVersion, refresh.version]);
 					dlg.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
 					dlg.popup();
+					appCtxt.reloadAppCache(true);
 					return;
 				}
 			}
