@@ -183,15 +183,6 @@ Ext.define('ZCS.controller.calendar.ZtNewAppointmentController', {
         this.setComposeMode(null);
     },
 
-    getNewApptPanel: function() {
-        if (!this.newApptPanel) {
-            this.newApptPanel = Ext.create('ZCS.view.calendar.ZtNewAppointment');
-            Ext.Viewport.add(this.newApptPanel);
-        }
-
-        return this.newApptPanel;
-    },
-
     /**
      * @private
      */

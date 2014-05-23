@@ -29,45 +29,48 @@ Ext.define('ZCS.view.calendar.ZtFolderField', {
         cls: 'create-appt-margin first',
         layout: {
             type: 'hbox'
-        },
-        items: [
-            {
-                xtype:  'label',
-                html:    ZtMsg.folderCalendar,
-                cls:    'zcs-appt-label',
-                flex:   1
-            },
-            {
-                xtype: 'selectfield',
-                name:   'apptFolderId',
-                flex:   1,
-                options: [ {text: ZtMsg.folderCalendar, value: "10"} ],
-                listeners: {
-                    painted: function() {
-                        var arr = [],
-                        // get the organizer data for this app
-                            listType = ZCS.constant.ORG_LIST_SELECTOR,
-                            organizerData = {
-                                items: ZCS.session.getOrganizerData(ZCS.constant.APP_CALENDAR, null, listType)
-                            };
+        }
+    },
 
-                        Ext.each(organizerData.items, function(folder) {
-                            if (folder.zcsId !== ZCS.constant.ID_TRASH && folder.folderType === ZCS.constant.ORG_CALENDAR) {
-                                arr.push({text:folder.displayName, value:folder.zcsId});
-                                Ext.each(folder.items, function(child) {
-                                    //subfolders, if any
-                                    var data = {text: child.displayName, value:child.zcsId};
-                                    arr.push(data);
-                                }, this);
-                            }
-                        } , this);
+    initialize: function() {
+        var me = this;
+        this.callParent(arguments);
 
-                        this.setOptions(arr);
-                    }
-                }
+        this.add({
+            xtype:  'label',
+            html:    ZtMsg.folderCalendar,
+            cls:    'zcs-appt-label',
+            flex:   1
+        });
 
+        this.add({
+            xtype: 'selectfield',
+            name:   'apptFolderId',
+            flex:   1,
+            value: 10,
+            options: me.setCalendarFolders()
+        });
+    },
+
+    setCalendarFolders: function() {
+        var arr = [],
+        // get the organizer data for this app
+            listType = ZCS.constant.ORG_LIST_SELECTOR,
+            organizerData = {
+                items: ZCS.session.getOrganizerData(ZCS.constant.APP_CALENDAR, null, listType)
+            };
+
+        Ext.each(organizerData.items, function(folder) {
+            if (folder.zcsId !== ZCS.constant.ID_TRASH && folder.folderType === ZCS.constant.ORG_CALENDAR) {
+                arr.push({text:folder.displayName, value:folder.zcsId});
+                Ext.each(folder.items, function(child) {
+                    //subfolders, if any
+                    var data = {text: child.displayName, value:child.zcsId};
+                    arr.push(data);
+                }, this);
             }
-        ]
+        } , this);
+        return arr;
     }
 
 });

@@ -29,32 +29,37 @@ Ext.define('ZCS.view.calendar.ZtReminderField', {
         cls: 'create-appt-margin first last',
         layout: {
             type: 'hbox'
-        },
-        items: [
-            {
-                xtype:  'label',
-                html:    ZtMsg.reminderLabel,
-                cls:    'zcs-appt-label',
-                flex:   1
-            },
-            {
-                xtype:   'selectfield',
-                name:    'reminderAlert',
-                flex:     1,
-                options: [ { text: ZtMsg.apptRemindNever, value: 0} ] ,
-                listeners: {
-                    painted: function() {
-                        var arr = [];
-                        for (var i = 0; i < ZCS.constant.reminderTimeDisplayMsgs.length; i++) {
-                            var optLabel = Ext.String.format(ZCS.constant.reminderTimeDisplayMsgs[i], ZCS.constant.reminderTimeLabels[i]),
-                                data = {text: optLabel, value:ZCS.constant.reminderTimeValues[i]};
-                            arr.push(data);
-                        }
-                        this.setOptions(arr);
-	                    this.setValue(ZCS.session.getSetting(ZCS.constant.SETTING_REMINDER_TIME));
-                    }
-                }
-            }
-        ]
+        }
+    },
+
+    initialize: function() {
+        var me = this;
+        this.callParent(arguments);
+
+        this.add( {
+            xtype:  'label',
+            html:    ZtMsg.reminderLabel,
+            cls:    'zcs-appt-label',
+            flex:   1
+        });
+
+        this.add({
+            xtype:   'selectfield',
+            name:    'reminderAlert',
+            flex:     1,
+            value:    ZCS.session.getSetting(ZCS.constant.SETTING_REMINDER_TIME),
+            options:  me.setReminderOptions()
+        });
+    },
+
+    setReminderOptions: function() {
+        var arr = [];
+        for (var i = 0; i < ZCS.constant.reminderTimeDisplayMsgs.length; i++) {
+            var optLabel = Ext.String.format(ZCS.constant.reminderTimeDisplayMsgs[i], ZCS.constant.reminderTimeLabels[i]),
+                data = {text: optLabel, value:ZCS.constant.reminderTimeValues[i]};
+            arr.push(data);
+        }
+        return arr;
     }
+
 });

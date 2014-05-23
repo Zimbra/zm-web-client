@@ -65,6 +65,7 @@ Ext.define("ZCS.view.ZtMain", {
 		Ext.Viewport.add(Ext.create('ZCS.view.mail.ZtComposeForm'));
 		Ext.Viewport.add(Ext.create('ZCS.view.contacts.ZtContactForm'));
 		Ext.Viewport.add(Ext.create('ZCS.view.calendar.ZtAppointmentForm'));
-		Ext.Viewport.add(Ext.create('ZCS.view.calendar.ZtAppointmentDialog'));
+        Ext.Viewport.add(Ext.create('ZCS.view.calendar.ZtNewAppointment'));
+        Ext.Viewport.add(Ext.create('ZCS.view.calendar.ZtAppointmentDialog'));
 	}
 });

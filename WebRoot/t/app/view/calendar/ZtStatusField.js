@@ -28,31 +28,35 @@ Ext.define('ZCS.view.calendar.ZtStatusField', {
         cls: 'create-appt-margin last',
         layout: {
               type: 'hbox'
-        },
-        items: [
-            {
-                xtype:  'label',
-                html:    ZtMsg.display,
-                cls:    'zcs-appt-label',
-                flex:   1
-            },
-            {
-                xtype: 'selectfield',
-                name:   'fb',
-                flex:   1,
-                options: [ {text: ZtMsg.busy, value: "B"} ],
-                listeners: {
-                    painted: function() {
-                        var arr = [];
-                        for (var i = 0; i < ZCS.constant.SHOWAS_OPTIONS.length; i++) {
-                            var data = {text: ZCS.constant.SHOWAS_OPTIONS[i].label, value:ZCS.constant.SHOWAS_OPTIONS[i].value};
-                            arr.push(data);
-                        }
-                        this.setOptions(arr);
-                    }
-                }
+        }
+    },
 
-            }
-        ]
+    initialize: function() {
+        var me = this;
+        this.callParent(arguments);
+
+        this.add({
+            xtype:  'label',
+            html:    ZtMsg.display,
+            cls:    'zcs-appt-label',
+            flex:   1
+        });
+
+        this.add({
+            xtype: 'selectfield',
+            name:   'fb',
+            flex:   1,
+            value: 'B',
+            options: me.setStatusOptions()
+        });
+    },
+
+    setStatusOptions: function() {
+        var arr = [];
+        for (var i = 0; i < ZCS.constant.SHOWAS_OPTIONS.length; i++) {
+            var data = {text: ZCS.constant.SHOWAS_OPTIONS[i].label, value:ZCS.constant.SHOWAS_OPTIONS[i].value};
+            arr.push(data);
+        }
+        return arr;
     }
 });
