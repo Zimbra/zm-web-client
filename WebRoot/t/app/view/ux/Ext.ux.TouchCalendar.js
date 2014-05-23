@@ -258,8 +258,11 @@ Ext.define('Ext.ux.TouchCalendar',{
 
 			this.view = newCard;
 
-			var dateRange = this.view.getPeriodMinMaxDate();
-			this.fireEvent('periodchange', this.view, dateRange.min.get('date'), dateRange.max.get('date'), direction);
+            //Call refreshDelta() which evetually fires the 'periodchange' event
+            this.view.refreshDelta(0);
+
+//			var dateRange = this.view.getPeriodMinMaxDate();
+//			this.fireEvent('periodchange', this.view, dateRange.min.get('date'), dateRange.max.get('date'), direction);
 		}
 	}
     
