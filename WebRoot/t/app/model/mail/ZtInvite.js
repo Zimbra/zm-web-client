@@ -68,7 +68,8 @@ Ext.define('ZCS.model.mail.ZtInvite', {
 			{ name: 'class',                type: 'string' },
 			{ name: 'uid',                  type: 'string' },
 			{ name: 'alarmData',            type: 'auto' },
-			{ name: 'transp',               type: 'string' }
+			{ name: 'transp',               type: 'string' },
+			{ name: 'isHtml',               type: 'boolean' }
 		],
 
         proxy: {
@@ -120,9 +121,12 @@ Ext.define('ZCS.model.mail.ZtInvite', {
 			// Use HTML description if available
 			invite.set('notes', this.getNotes(comp));
 
+			// Set content type
+			invite.set('isHtml', !!(comp.descHtml && comp.descHtml[0] && comp.descHtml[0]._content));
+
 			if (start) {
 				invite.set('start', ZCS.model.mail.ZtInvite.getDateFromJson(start));
-                invite.set('startTime', ZCS.model.mail.ZtInvite.getDateFromJson(start))
+                invite.set('startTime', ZCS.model.mail.ZtInvite.getDateFromJson(start));
 			}
 			if (end) {
 				invite.set('end', ZCS.model.mail.ZtInvite.getDateFromJson(end));

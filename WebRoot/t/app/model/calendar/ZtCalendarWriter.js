@@ -289,10 +289,18 @@ Ext.define('ZCS.model.calendar.ZtCalendarWriter', {
             content = invite.get('notes');
 
         mp.ct = ZCS.mime.MULTI_ALT;
-        mp.mp.push({
-            ct : ZCS.mime.TEXT_PLAIN
-        });
-        mp.mp[0].content = content;
+
+	    mp.mp[0] = {
+		    ct: ZCS.mime.TEXT_PLAIN,
+		    content: ZCS.mailutil.htmlToText(content)
+	    };
+
+	    if (invite.get('isHtml')) {
+		    mp.mp[1] = {
+			    ct: ZCS.mime.TEXT_HTML,
+			    content: content
+		    };
+	    }
     },
 
 	_addExceptionRequestSubs: function(m, invite, instanceStart) {
