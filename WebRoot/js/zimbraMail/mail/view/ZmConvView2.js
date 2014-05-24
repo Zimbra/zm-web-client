@@ -1406,7 +1406,9 @@ function(msg, container, callback) {
 ZmMailMsgCapsuleView.prototype._handleResponseLoadMessage1 =
 function(msg, container, callback) {
 	this._renderMessageFooter(msg, container);
-	this._controller._handleMarkRead(msg);	// in case we need to mark read after a delay
+	if (appCtxt.get(ZmSetting.MARK_MSG_READ) !== ZmSetting.MARK_READ_NOW) {
+		this._controller._handleMarkRead(msg);	// in case we need to mark read after a delay  bug 73711
+	}
 	if (callback) {
 		callback.run();
 	}
