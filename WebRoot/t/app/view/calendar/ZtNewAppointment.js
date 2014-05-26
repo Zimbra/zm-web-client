@@ -120,5 +120,6 @@ Ext.define('ZCS.view.calendar.ZtNewAppointment', {
 	    if (attendeesField) {
 		    attendeesField.reset();
 	    }
+        this.down('#body').element.down('.zcs-body-field').setHtml('');
     }
 });
