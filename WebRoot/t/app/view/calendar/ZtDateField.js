@@ -94,11 +94,26 @@ Ext.define('ZCS.view.calendar.ZtDateField', {
                     value: ZCS.util.convertTime(new Date()),
                     listeners: {
                         change: function(field) {
-                            if (field.getValue()) {
-                                var endTime = Ext.ComponentQuery.query('#endTime')[0];
-                                if (endTime)
-                                    endTime.setValue(ZCS.util.convertTime(field.getValue(), true));
-                            }
+	                        var msg = ZCS.app.getAppointmentController().getMsg(),
+	                            endTime = Ext.ComponentQuery.query('#endTime')[0];
+
+	                        if (msg) {
+								var invite = msg.get('invite'),
+									invStart = invite.get('start'),
+									invEnd = invite.get('end'),
+									isStartEndSame = invStart.getTime() === invEnd.getTime(),
+									elapsedTime = isStartEndSame ? 0 : field.getValue().getTime() - invStart.getTime();
+
+		                        if (endTime) {
+			                        endTime.setValue(new Date(invEnd.getTime() + elapsedTime));
+		                        }
+	                        }
+	                        else {
+		                        if (field.getValue()) {
+			                        if (endTime)
+				                        endTime.setValue(ZCS.util.convertTime(field.getValue(), true));
+		                        }
+	                        }
                         }
                     }
                 }

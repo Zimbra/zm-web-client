@@ -74,6 +74,10 @@ Ext.define('ZCS.controller.calendar.ZtNewAppointmentController', {
             this.setInviteId(event.get('invId'));
             this.populateForm(event);
         }
+	    else {
+	        // helps in differentiating between edit & create in timepicker's change listener
+	        this.setMsg(null);
+        }
 
         this.unhideAppointmentForm();
     },
@@ -331,7 +335,7 @@ Ext.define('ZCS.controller.calendar.ZtNewAppointmentController', {
             msg.set('invite', invite);
             ZCS.app.getCalendarController().showItem(msg, isEdit);
         }
-		ZCS.app.getCalendarController().loadCalendar();
+		ZCS.app.getCalendarController().loadCalendar(true);
     },
 
     getCalendarModel: function() {
