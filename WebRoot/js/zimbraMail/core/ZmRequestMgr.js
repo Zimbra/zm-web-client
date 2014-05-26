@@ -319,7 +319,7 @@ function(params, result) {
 	}
 
 	DBG.println(AjxDebug.DBG1, "------------------------- Processing notifications for " + methodName);
-	this._handleNotifications(response.Header);
+	this._handleNotifications(response.Header, methodName);
 
 	this._clearPendingRequest(params.reqId);
 
@@ -543,7 +543,7 @@ function(ex, params) {
  * @private
  */
 ZmRequestMgr.prototype._handleNotifications =
-function(hdr) {
+function(hdr, methodName) {
 
 	if (hdr && hdr.context && hdr.context.notify) {
         for (var i = 0; i < hdr.context.notify.length; i++) {
@@ -554,7 +554,7 @@ function(hdr) {
             if (notify.seq > this._highestNotifySeen && !(sid && ZmCsfeCommand._staleSession[sid])) {
                 DBG.println(AjxDebug.DBG1, "Handling notification[" + i + "] seq=" + seq);
                 this._highestNotifySeen = seq;
-                this._notifyHandler(notify);
+                this._notifyHandler(notify, methodName);
             } else {
             	DBG.println(AjxDebug.DBG1, "SKIPPING notification[" + i + "] seq=" + seq + " highestNotifySeen=" + this._highestNotifySeen);
 	      	}
@@ -683,7 +683,7 @@ function(type, unread, obj, objType, account) {
  * @private
  */
 ZmRequestMgr.prototype._notifyHandler =
-function(notify) {
+function(notify, methodName) {
 	DBG.println(AjxDebug.DBG1, "Handling NOTIFY");
 	AjxDebug.println(AjxDebug.NOTIFY, "Notification block:");
 	AjxDebug.dumpObj(AjxDebug.NOTIFY, notify);
@@ -698,7 +698,7 @@ function(notify) {
 		this._handleModifies(notify.modified);
 	}
 
-    if (ZmOffline.isOnlineMode() && (notify.deleted || notify.created || notify.modified)) {
+    if (ZmOffline.isOnlineMode() && methodName !== "SyncRequest" && (notify.deleted || notify.created || notify.modified)) {
         appCtxt.webClientOfflineHandler.sendSyncRequest();
     }
 	this._controller.runAppFunction("postNotify", false, notify);

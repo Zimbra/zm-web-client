@@ -42,6 +42,8 @@ ZmOffline.MAIL_PROGRESS = "Mail";
 ZmOffline.CONTACTS_PROGRESS = "Contacts";
 ZmOffline.CALENDAR_PROGRESS = "Calendar Appointments";
 
+ZmOffline.MAX_REQUEST_IN_BATCH_REQUEST = 50;
+
 ZmOffline._checkCacheDone =
 function (){
     if (appCtxt.isWebClientOfflineSupported && ZmOffline.appCacheDone && ZmOffline.cacheProgress.length === 0 && ZmOffline.syncStarted && ZmOffline.messageNotShowed){
@@ -75,7 +77,6 @@ function() {
 	ZmOffline.refreshStatusIcon();
     this._enableApps();
     this._replayOfflineRequest();
-    appCtxt.reloadAppCache();
 	var zimbraMail = appCtxt.getZimbraMail();
 	if (zimbraMail) {
 		zimbraMail.setupHelpMenu();
@@ -209,7 +210,7 @@ function(staticURLs, cachedURL, response) {
 
 ZmOffline.prototype._cacheStaticResourcesContinue =
 function() {
-	var callback = appCtxt.reloadAppCache.bind(appCtxt);
+	var callback = this.sendSyncRequest.bind(this, appCtxt.reloadAppCache.bind(appCtxt));
 	var tinyMCELocale = tinyMCE.getlanguage(appCtxt.get(ZmSetting.LOCALE_NAME));
 	if (tinyMCELocale === "en") {
 		callback();
@@ -429,25 +430,25 @@ function(folderName){
 };
 
 ZmOffline.prototype.sendSyncRequest =
-function() {
+function(callback) {
 	ZmOffline.refreshStatusIcon(true);
 	var syncToken = localStorage.getItem("SyncToken");
 	if (syncToken) {
 		AjxDebug.println(AjxDebug.OFFLINE, "syncToken :: "+syncToken);
-		this._sendDeltaSyncRequest(syncToken);
+		this._sendDeltaSyncRequest(callback, syncToken);
 	}
 	else {
-		this._sendInitialSyncRequest();
+		this._sendInitialSyncRequest(callback);
 	}
 };
 
 ZmOffline.prototype._sendInitialSyncRequest =
-function() {
+function(callback) {
 	var syncRequestArray = [];
 	var keys = AjxUtil.keys(ZmOffline.folders);
 	for (var i = 0, length = keys.length; i < length; i++) {
 		var folder = ZmOffline.folders[keys[i]];
-		if (folder) {
+		if (folder && folder.id != ZmFolder.ID_OUTBOX) {
 			var params = {l:folder.id, _jsns:"urn:zimbraMail"};
 			if (folder.type === "FOLDER") {
 				//specify the start date for the mail to be synched
@@ -461,7 +462,7 @@ function() {
 		var params = {
 			jsonObj : {BatchRequest:{_jsns:"urn:zimbra", onerror:"continue", SyncRequest:syncRequestArray}},
 			asyncMode : true,
-			callback : this._handleInitialSyncResponse.bind(this, true),
+			callback : this._handleInitialSyncResponse.bind(this, true, callback),
 			errorCallback : this._handleInitialSyncError.bind(this)
 		};
 		appCtxt.getRequestMgr().sendRequest(params);
@@ -469,66 +470,58 @@ function() {
 };
 
 ZmOffline.prototype._handleInitialSyncResponse =
-function(downloadCalendar, result) {
+function(downloadCalendar, callback, result) {
 	var response = result && result.getResponse();
 	var batchResponse = response && response.BatchResponse;
 	var syncResponse = batchResponse && batchResponse.SyncResponse;
 	if (!syncResponse) {
 		return;
 	}
-	var msgIdArray = [];
+	var msgParamsArray = [];
 	var contactIdsArray = [];
 	var syncToken;
+	var more;
 	syncResponse.forEach(function(response) {
 		var folderInfo = response.folder && response.folder[0];
-		if (folderInfo.m) {
-			var msgIds = folderInfo.m[0].ids;
-			if (msgIds) {
-				msgIds.split(",").forEach(function(id) {
-					var params = {m:{id:id, html:1, needExp:1, max:25000}, _jsns:"urn:zimbraMail"};
-					msgIdArray.push(params);
-				});
+		if (folderInfo) {
+			if (folderInfo.m) {
+				var msgIds = folderInfo.m[0].ids;
+				if (msgIds) {
+					msgIds.split(",").forEach(function(id) {
+						var params = {
+							m : {id:id, html:1, needExp:1, max:25000},
+							_jsns : "urn:zimbraMail"
+						};
+						msgParamsArray.push(params);
+					});
+				}
+			}
+			else if (folderInfo.cn) {
+				var contactIds = folderInfo.cn[0].ids;
+				if (contactIds) {
+					contactIdsArray = contactIdsArray.concat(contactIds.split(","));
+				}
 			}
 		}
-		else if (folderInfo.cn) {
-			var contactIds = folderInfo.cn[0].ids;
-			if (contactIds) {
-				var params = {
-					cn : {id : contactIds},
-					derefGroupMember : 1,
-					_jsns : "urn:zimbraMail"
-				};
-				contactIdsArray.push(params);
-			}
-		}
-		if (!syncToken && response.token) {
-			syncToken = response.token;
-		}
+		syncToken = response.token;
+		more = response.more;
 	});
-	var callback = this._storeSyncToken.bind(this, syncToken);
-	if (msgIdArray.length > 0) {
-		var jsonObj = {BatchRequest:{_jsns:"urn:zimbra", onerror:"continue", GetMsgRequest:msgIdArray}};
-		var params = {
-			jsonObj : jsonObj,
-			asyncMode : true,
-			callback : this._handleGetResponse.bind(this, callback),
-			errorCallback : this._handleGetError.bind(this)
-		};
-		appCtxt.getRequestMgr().sendRequest(params);
+	var params = {
+		msgs : msgParamsArray,
+		contactIds : contactIdsArray
+	};
+	// if more="1" is specified on the sync response, the response does *not* bring the client completely up to date. more changes are still queued, and another SyncRequest (using the new returned token) is necessary.
+	if (more == 1) {
+		params.callback = this.sendSyncRequest.bind(this, callback);
 	}
-	if (contactIdsArray.length > 0) {
-		var jsonObj = {BatchRequest:{_jsns:"urn:zimbra", onerror:"continue", GetContactsRequest:contactIdsArray}};
-		var params = {
-			jsonObj : jsonObj,
-			asyncMode : true,
-			callback : this._handleGetResponse.bind(this, callback),
-			errorCallback : this._handleGetError.bind(this)
-		};
-		appCtxt.getRequestMgr().sendRequest(params);
+	else {
+		params.callback = callback;
 	}
+	this._sendGetRequest(params);
 	if (downloadCalendar) {
-		this._downloadCalendar(null, null, null, callback, true, null);
+		this._downloadCalendar(null, null, null, null, true, null);
 	}
+	this._storeSyncToken(syncToken);
 };
 
 ZmOffline.prototype._handleInitialSyncError =
@@ -536,49 +529,90 @@ function() {
 	ZmOffline.refreshStatusIcon();
 };
 
+ZmOffline.prototype._sendGetRequest =
+function(params) {
+	var msgs = params.msgs || [];
+	var contactIds = params.contactIds || [];
+	var msgsLength = msgs.length;
+	var contactIdsLength = contactIds.length;
+	if (msgsLength === 0 && contactIdsLength === 0) {
+		if (params.callback && !params.isCallbackExecuted) {
+			params.isCallbackExecuted = true;
+			params.callback();
+		}
+		ZmOffline.refreshStatusIcon();
+	}
+	else {
+		var getCallback = this._sendGetRequest.bind(this, params);
+		var newParams = {
+			jsonObj : {BatchRequest:{_jsns:"urn:zimbra", onerror:"continue"}},
+			asyncMode : true,
+			callback : this._handleGetResponse.bind(this, getCallback),
+			errorCallback : this._handleGetError.bind(this, getCallback)
+		};
+		var batchRequest = newParams.jsonObj.BatchRequest;
+		//Limit maximum number of request in batch request to ZmOffline.MAX_REQUEST_IN_BATCH_REQUEST property
+		var getMsgRequest = msgs.splice(0, ZmOffline.MAX_REQUEST_IN_BATCH_REQUEST);
+		if (getMsgRequest.length > 0) {
+			batchRequest.GetMsgRequest = getMsgRequest;
+		}
+		if (contactIdsLength > 0 && getMsgRequest.length < ZmOffline.MAX_REQUEST_IN_BATCH_REQUEST) {
+			batchRequest.GetContactsRequest = {_jsns:"urn:zimbraMail", derefGroupMember:1, cn:{id:contactIds.join()}};
+			contactIds.splice(0, contactIdsLength);
+		}
+		appCtxt.getRequestMgr().sendRequest(newParams);
+	}
+};
+
 ZmOffline.prototype._sendDeltaSyncRequest =
-function(syncToken) {
+function(callback, syncToken) {
 	var params = {
 		jsonObj : {SyncRequest:{_jsns:"urn:zimbraMail", token:syncToken, typed:1}},
 		asyncMode : true,
-		callback : this._handleDeltaSyncResponse.bind(this, syncToken),
+		callback : this._handleDeltaSyncResponse.bind(this, callback, syncToken),
 		errorCallback : this._handleDeltaSyncError.bind(this)
 	};
 	appCtxt.getRequestMgr().sendRequest(params);
 };
 
 ZmOffline.prototype._handleDeltaSyncResponse =
-function(syncToken, result) {
+function(callback, syncToken, result) {
+	ZmOffline.refreshStatusIcon();
 	var syncResponse = result && result.getResponse().SyncResponse;
 	if (!syncResponse || syncResponse.token === syncToken) {
-		ZmOffline.refreshStatusIcon();
+		if (callback) {
+			callback();
+		}
 		return;
 	}
-	var callback = this._storeSyncToken.bind(this, syncResponse.token);
+	this._storeSyncToken(syncResponse.token);
 	if (syncResponse.deleted) {
-		this._handleSyncDeletes(syncResponse.deleted, callback);
+		this._handleSyncDeletes(syncResponse.deleted);
 	}
 	if (syncResponse.m || syncResponse.cn) {
-		this._handleSyncUpdate(syncResponse, callback);
+		this._handleSyncUpdate(syncResponse);
 	}
 	if (syncResponse.appt) {
-		this._handleUpdateAppts(syncResponse.appt, callback);
+		this._handleUpdateAppts(syncResponse.appt);
 	}
 	if (syncResponse.folder) {
-		this._handleUpdateFolders(syncResponse.folder, callback);
+		this._handleUpdateFolders(syncResponse.folder);
 	}
     if (syncResponse.folder || syncResponse.search) {
         appCtxt.reloadAppCache();
     }
+	if (callback) {
+		callback();
+	}
 };
 
 ZmOffline.prototype._handleDeltaSyncError =
 function() {
-
+	ZmOffline.refreshStatusIcon();
 };
 
 ZmOffline.prototype._handleSyncDeletes =
-function(deletes, callback) {
+function(deletes) {
 	var deletedInfo = deletes[0];
 	if (!deletedInfo) {
 		return;
@@ -596,50 +630,32 @@ function(deletes, callback) {
 		}
 	}
 	if (deletedMsgIdArray && deletedMsgIdArray.length > 0) {
-		ZmOfflineDB.deleteItem(deletedMsgIdArray, ZmApp.MAIL, callback);
+		ZmOfflineDB.deleteItem(deletedMsgIdArray, ZmApp.MAIL);
 	}
 	if (deletedContactsIdArray && deletedContactsIdArray.length > 0) {
-		ZmOfflineDB.deleteItem(deletedContactsIdArray, ZmApp.CONTACTS, callback);
+		ZmOfflineDB.deleteItem(deletedContactsIdArray, ZmApp.CONTACTS);
 	}
 };
 
 ZmOffline.prototype._handleSyncUpdate =
-function(syncResponse, callback) {
+function(syncResponse) {
 	var msgs = syncResponse.m;
 	var contacts = syncResponse.cn;
-	var msgIdArray = [];
+	var msgParamsArray = [];
 	var contactIdsArray = [];
 	if (msgs) {
 		msgs.forEach(function(msg) {
 			var params = {m:{id:msg.id, html:1, needExp:1, max:25000}, _jsns:"urn:zimbraMail"};
-			msgIdArray.push(params);
+			msgParamsArray.push(params);
 		});
 	}
 	if (contacts) {
 		contacts.forEach(function(contact) {
-			var params = {
-				cn : {id : contact.id},
-				derefGroupMember : 1,
-				_jsns : "urn:zimbraMail"
-			};
-			contactIdsArray.push(params);
+			contactIdsArray.push(contact.id);
 		});
 	}
-	if (msgIdArray.length > 0 || contactIdsArray.length > 0) {
-		var params = {
-			jsonObj : {BatchRequest:{_jsns:"urn:zimbra", onerror:"continue"}},
-			asyncMode : true,
-			callback : this._handleGetResponse.bind(this, callback),
-			errorCallback : this._handleGetError.bind(this)
-		};
-		if (msgIdArray.length > 0) {
-			params.jsonObj.BatchRequest.GetMsgRequest = msgIdArray;
-		}
-		if (contactIdsArray.length > 0) {
-			params.jsonObj.BatchRequest.GetContactsRequest = contactIdsArray;
-		}
-		appCtxt.getRequestMgr().sendRequest(params);
-	}
+	ZmOffline.refreshStatusIcon(true);
+	this._sendGetRequest({msgs : msgParamsArray, contactIds : contactIdsArray});
 };
 
 ZmOffline.prototype._handleUpdateFolders =
@@ -674,17 +690,17 @@ function(folders) {
 		var params = {
 			jsonObj : {BatchRequest:{_jsns:"urn:zimbra", onerror:"continue", SyncRequest:syncRequestArray}},
 			asyncMode : true,
-			callback : this._handleInitialSyncResponse.bind(this, false)
+			callback : this._handleInitialSyncResponse.bind(this, false, false)
 		};
+		ZmOffline.refreshStatusIcon(true);
 		appCtxt.getRequestMgr().sendRequest(params);
 	}
 };
 
 ZmOffline.prototype._storeSyncToken =
 function(syncToken) {
-	ZmOffline.refreshStatusIcon();
+	AjxDebug.println(AjxDebug.OFFLINE, "New syncToken :: " + syncToken);
 	localStorage.setItem("SyncToken", syncToken);
-	AjxDebug.println(AjxDebug.OFFLINE, "New syncToken :: "+syncToken);
 };
 
 ZmOffline.prototype._handleGetResponse =
@@ -722,7 +738,6 @@ function(item, type, callback) {
 	if (type === ZmApp.MAIL) {
 		this._fetchMsgAttachments(item);
 	}
-	ZmOffline.refreshStatusIcon();
 };
 
 ZmOffline.prototype._handleGetError =
@@ -1535,16 +1550,6 @@ function(contact) {
 	var result = new ZmCsfeResult({GetContactsResponse : {cn : [contact]}});
 	//This method will do the caching of contact group member and update the cache
 	ZmContact.prototype._handleLoadResponse.call(contactObj, null, result);
-};
-
-ZmOffline.setAppCacheStatus =
-function(status) {
-	if (status && appCtxt.isWebClientOfflineSupported && appCtxt.webClientOfflineHandler) {
-		appCtxt.webClientOfflineHandler.sendSyncRequest();
-	}
-	else {
-		ZmOffline.refreshStatusIcon();
-	}
 };
 
 ZmOffline.refreshStatusIcon =
