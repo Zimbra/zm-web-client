@@ -130,9 +130,23 @@ Ext.define('ZCS.controller.calendar.ZtCalendarController', {
     /*
      * Loads the appointments on application switch
      */
-    loadCalendar: function() {
+    loadCalendar: function(loadRange) {
         var defaultQuery = this.getDefaultQuery(),
-            me = this;
+            me = this,
+	        loadRange = loadRange || false,
+	        currentEvent = this.getEvent(),
+	        rangeStart,
+	        rangeEnd;
+
+	    if (loadRange && currentEvent) {
+		    var eventStart = Ext.Date.getFirstDateOfMonth(currentEvent.get('start'));
+		    // Fetches events of past 1 month from current events start date
+			rangeStart = eventStart.setMonth(eventStart.getMonth() - 1);
+
+			var eventEnd = Ext.Date.getLastDateOfMonth(currentEvent.get('end'));
+		    // Fetches events of next 1 month from current events end date
+			rangeEnd = eventEnd.setMonth(eventEnd.getMonth() + 1);
+	    }
 
         //Set the proxies params so this parameter persists between paging requests.
         this.getStore().getProxy().setExtraParams({
@@ -140,8 +154,8 @@ Ext.define('ZCS.controller.calendar.ZtCalendarController', {
         });
 
         this.getStore().load({
-            calStart: this.getMonthStartTime(),
-            calEnd: this.getMonthEndTime(),
+            calStart: loadRange ? rangeStart : this.getMonthStartTime(),
+            calEnd: loadRange ? rangeEnd : this.getMonthEndTime(),
             query: defaultQuery,
             callback: function(records, operation, success) {
                 if (success) {
@@ -359,7 +373,7 @@ Ext.define('ZCS.controller.calendar.ZtCalendarController', {
     onPeriodChange: function(view, minDate, maxDate, direction) {
         this.getStore().load({
             calStart: minDate.getTime(),
-            calEnd: maxDate.getTime(),
+            calEnd: maxDate.getTime() + 172800000, // Fetch two days extra
             callback: function(records, operation, success) {
                 if (success) {
                     view.refresh();

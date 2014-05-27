@@ -524,8 +524,10 @@ Ext.define('Ext.ux.TouchCalendarView', {
 		this.refresh();
 		
 		var minMaxDate = this.getPeriodMinMaxDate();
-		
-		this.fireEvent('periodchange', this, minMaxDate.min.get('date'), minMaxDate.max.get('date'), (delta > 0 ? 'forward' : 'back'));
+
+		if (delta !== 0) {
+			this.fireEvent('periodchange', this, minMaxDate.min.get('date'), minMaxDate.max.get('date'), (delta > 0 ? 'forward' : 'back'));
+		}
 	},
 	
 	/**
