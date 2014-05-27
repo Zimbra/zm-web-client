@@ -68,6 +68,7 @@ Ext.define('ZCS.model.ZtOrganizer', {
 			{ name: 'isMountpoint',     type: 'boolean' },  // true if this is a link to a remote folder
 			{ name: 'remoteAccountId',  type: 'string' },   // account ID of shared folder
 			{ name: 'remoteFolderId',   type: 'string' },   // local ID of shared folder
+			{ name: 'permissions',      type: 'string' },   // permissions this user has on the remote folder (subset of "rwidaxp")
 
 			// mail folder fields
 			{ name: 'unreadCount',      type: 'int' },      // number of unread messages in this folder
@@ -555,6 +556,11 @@ Ext.define('ZCS.model.ZtOrganizer', {
 			if (isDraftsFolder || isJunkFolder) {
 				return false;
 			}
+
+			// Cannot move a folder into a mountpoint
+			if (this.get('isMountpoint')) {
+				return false;
+			}
 		}
 		else if (what instanceof ZCS.model.ZtItem) {
 
@@ -577,10 +583,16 @@ Ext.define('ZCS.model.ZtOrganizer', {
 			if (isDraftsFolder && !isDraft) {
 				return false;
 			}
+
             // disable Distribution lists if contact is being moved
             if (ZCS.util.folderIs(this, ZCS.constant.ID_DLS) && what.get('type') === ZCS.constant.ITEM_CONTACT) {
                 return false;
             }
+
+			// if this is a mountpoint, make sure we have write on remote folder
+			if (this.get('isMountpoint')) {
+				return this.hasPermission(ZCS.constant.PERM_WRITE);
+			}
 		}
 		else {
 			return false;
@@ -607,5 +619,21 @@ Ext.define('ZCS.model.ZtOrganizer', {
 	isDeletable: function () {
 		// TO DO - implement this
 		return !ZCS.util.folderIs(this, ZCS.constant.ID_TRASH);
+	},
+
+	/**
+	 * Returns true if this folder is a mountpoint and has the given permission, or if this folder is not a mountpoint.
+	 *
+	 * @param {String}  permission      one of rwidaxp
+	 * @returns {boolean}   true if perm is present, or this not a mountpoint
+	 */
+	hasPermission: function(permission) {
+
+		var perms = this.get('isMountpoint') && this.get('permissions');
+		if (!perms) {
+			return true;
+		}
+		perms = perms.replace(/-\w/g, '');  // remove negative perms
+		return perms.indexOf(permission) !== -1;
 	}
 });

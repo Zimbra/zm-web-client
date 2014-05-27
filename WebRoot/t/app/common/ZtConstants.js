@@ -333,6 +333,15 @@ ZCS.constant.ORG_SORT_VALUE[ZCS.constant.ORG_FOLDER]        = 1;
 ZCS.constant.ORG_SORT_VALUE[ZCS.constant.ORG_SEARCH]        = 2;
 ZCS.constant.ORG_SORT_VALUE[ZCS.constant.ORG_TAG]           = 3;
 
+// Organizer permissions
+ZCS.constant.PERM_READ      = 'r';
+ZCS.constant.PERM_WRITE     = 'w';
+ZCS.constant.PERM_INSERT    = 'i';
+ZCS.constant.PERM_DELETE    = 'd';
+ZCS.constant.PERM_ADMIN     = 'a';
+ZCS.constant.PERM_WORKFLOW  = 'x';
+ZCS.constant.PERM_PRIVATE   = 'p';
+
 // System folder IDs
 ZCS.constant.ID_ROOT        = '1';
 ZCS.constant.ID_INBOX       = '2';

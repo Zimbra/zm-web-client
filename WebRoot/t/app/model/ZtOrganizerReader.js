@@ -69,6 +69,7 @@ Ext.define('ZCS.model.ZtOrganizerReader', {
 			isMountpoint:       isMountpoint,
 			remoteAccountId:    node.zid,
 			remoteFolderId:     String(node.rid),
+			permissions:        node.perm,
 
 			// other
 			url:                node.url,   // feeds

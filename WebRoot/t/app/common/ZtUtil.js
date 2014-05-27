@@ -188,8 +188,7 @@ Ext.define('ZCS.common.ZtUtil', {
 
 		var result = {
 			accountId:  '',
-			localId:    '',
-			isRemote:   false
+			localId:    ''
 		};
 		if (!id) {
 			return result;
@@ -206,7 +205,6 @@ Ext.define('ZCS.common.ZtUtil', {
 			parts = id.split(':');
 			result.accountId = parts[0];
 			result.localId = parts[1];
-			result.isRemote = true;
 		}
 		else {
 			result.accountId = ZCS.session.getAccountId();
