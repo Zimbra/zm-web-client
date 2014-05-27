@@ -1666,7 +1666,8 @@ function(attr) {
 	return {
 		_jsns: "urn:zimbraAccount",
 		name: attr[ZmContact.F_email],
-		a: this._getDlAttributes(attr)
+		a: this._getDlAttributes(attr),
+		dynamic: false
 	};
 };
 
