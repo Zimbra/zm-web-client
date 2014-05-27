@@ -300,8 +300,9 @@ function() {
 	this._colorId = this._props.addProperty(ZmMsg.colorLabel,  this._color);
     if (appCtxt.isWebClientOfflineSupported) {
         this._offlineEl = document.createElement("DIV");
-        this._offlineId = this._props.addProperty(ZmMsg.offlineFolderSyncInterval,  this._offlineEl);
-        $(this._offlineEl).closest("tr").find(">:first-child").attr("colSpan", 2);
+		this._offlineEl.style.whiteSpace = "nowrap";
+		this._offlineEl.innerHTML = ZmMsg.offlineFolderSyncInterval;
+        this._offlineId = this._props.addProperty(ZmMsg.offlineLabel,  this._offlineEl);
     }
 
     var container = this.getHtmlElement();
