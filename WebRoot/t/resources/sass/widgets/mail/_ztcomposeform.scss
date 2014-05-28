@@ -27,6 +27,11 @@ $compose-fieldheight: 2.5rem;
 
 				.x-button-icon {
 					color: $dark-grey;
+
+					&:before{
+						font-size: 1.2em;
+						line-height: 1.6em;
+					}
 				}
 
 				&.x-item-disabled .x-button-icon {
@@ -49,10 +54,12 @@ $compose-fieldheight: 2.5rem;
 
 		.x-form-label {
 			color: $primary-text-color;
+			padding-left: 0;
+//			padding-right: 0;
 			text-align: right;
 
 			&:after {
-				content: ":";
+//				content: ":";
 			}
 
 			SPAN {
@@ -64,7 +71,7 @@ $compose-fieldheight: 2.5rem;
 			height: $compose-fieldheight;
 
 			.x-field-input {
-				font-size:.97em;  //fixes oveflowing input and hiding the bottom border
+				font-size: 0.97em;  //fixes oveflowing input and hiding the bottom border
 
 				.x-input-el {
 					font-weight: normal;
@@ -104,21 +111,28 @@ $compose-fieldheight: 2.5rem;
 			position: relative;
 
 			.file-input-div {
-				opacity: 0.01; 
+				height: 2.5rem;
+				left: 0px;
+				opacity: 0.01;
+				position: absolute;
 				top: 0px;
 				z-index: 1;
-				left:0px;
-				position:absolute;
-				height: 2.5rem;
 			}
 
 			.attach-label {
-				top:0px;
-				left:0px;
-				z-index: 0;
 				display:block !important;
-				position: absolute;
 				height: 2.5rem;
+				left: 0px;
+				position: absolute;
+				top: 0px;
+				text-align: center;
+				z-index: 0;
+
+				&:before {
+					color: $linkColor;
+					content: 'h'; // paperclip icon
+					font-family: ZimbraTouch;
+				}
 			}
 		}
 	}

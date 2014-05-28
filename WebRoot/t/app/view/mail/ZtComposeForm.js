@@ -112,7 +112,7 @@ Ext.define('ZCS.view.mail.ZtComposeForm', {
 						addressType: ZCS.constant.TO,
 						flex: 1,
 						label: ZtMsg.toHdr,
-						labelWidth: '2.7em'
+						labelWidth: '1.6em'
 					}]
 				}, {
 					xtype: 'contactfield',
@@ -121,7 +121,7 @@ Ext.define('ZCS.view.mail.ZtComposeForm', {
 					addressType: ZCS.constant.CC,
 					hidden: true,
 					label: ZtMsg.ccHdr,
-					labelWidth: '5.2em'
+					labelWidth: '4.1em'
 				}, {
 					xtype: 'contactfield',
 					name: ZCS.constant.BCC,
@@ -129,7 +129,7 @@ Ext.define('ZCS.view.mail.ZtComposeForm', {
 					addressType: ZCS.constant.BCC,
 					hidden: true,
 					label: ZtMsg.bccHdr,
-					labelWidth: '5.2em'
+					labelWidth: '4.1em'
 				}, {
 					cls: 'zcs-subjectline',
 					layout: {
@@ -204,15 +204,15 @@ Ext.define('ZCS.view.mail.ZtComposeForm', {
 			 */
 			form.items[3].items.push({
 				xtype: 'container',
-				width: 80,
+				width: 36,
 				cls: 'zcs-attach-hack-container',
 				layout: 'auto',
 				items: [this.getFileFieldConfig(), {
 					xtype: 'component',
 					cls: 'x-form-label x-form-label-nowrap x-field zcs-toggle-field attach-label',
 					itemId: 'attach',
-					html: ZtMsg.attach,
-					width: 80
+//					html: ZtMsg.attach,
+					width: 36
 				}]
 			});
 		}
@@ -238,7 +238,7 @@ Ext.define('ZCS.view.mail.ZtComposeForm', {
 
 		return {
 			xtype: 'filefield',
-			width: 80,
+			width: 36,
 			opacity: 0.01,
 			cls: 'file-input-div',
 			// style:  "visibility:hidden;",
