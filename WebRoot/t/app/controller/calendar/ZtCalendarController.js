@@ -271,7 +271,10 @@ Ext.define('ZCS.controller.calendar.ZtCalendarController', {
 				apptTitleBar.hide();
 			}
 		}
-		apptViewInner.addCls('top-padding-' + apptTitleBar.element.getHeight());
+
+		// Add padding inside scroll inner so items start below transparent titlebar
+		var titleHeight = apptTitleBar.element.getHeight();
+		apptViewInner.setStyle({ paddingTop: titleHeight + 'px' });
 	},
 
 	/**
@@ -605,11 +608,7 @@ Ext.define('ZCS.controller.calendar.ZtCalendarController', {
             duration: 250
         });
 
-		var apptTitleBar = this.getAppointmentTitleBar(),
-			apptView = this.getAppointmentView(),
-			apptViewInner = apptView.element.down('.x-scroll-view .x-innerhtml');
-
-		apptViewInner.removeCls('top-padding-' + apptTitleBar.element.getHeight());
+		var apptTitleBar = this.getAppointmentTitleBar();
 		apptTitleBar.setHtml("");
 		apptTitleBar.hide();
 	},

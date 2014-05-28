@@ -867,7 +867,8 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 		}
 
 		// Add padding inside scroll inner so items start below transparent titlebar
-		listScrollInner.addCls('top-padding-'+convTitleBar.element.getHeight());
+		var titleHeight = convTitleBar.element.getHeight();
+		listScrollInner.setStyle({ paddingTop: titleHeight + 'px' });
 	},
 
     /**

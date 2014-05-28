@@ -93,19 +93,6 @@ $watermarkBanner: $watermarkBannerPath + $watermarkBannerImg;
 	@include background-image(linear-gradient(#808080 25%, rgba(#808080, .5)));
 }
 
-
-$px-unit: 1px;
-@mixin top-padding($pixels) {
-
-	.top-padding-#{$pixels} {
-		padding-top: $pixels * $px-unit !important;
-	}
-}
-
-@for $i from 0 through 300 {
-	@include top-padding($i);
-}
-
 .zcs-msglist {
 	background-color: $list-bg-color;
 
