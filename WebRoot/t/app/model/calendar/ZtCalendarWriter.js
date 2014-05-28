@@ -70,9 +70,9 @@ Ext.define('ZCS.model.calendar.ZtCalendarWriter', {
                 m: m
             });
         } else if (action === 'update') {
+            var	invite = request.getRecords()[0];
             if (itemData.op === 'modify') {
-                var	invite = request.getRecords()[0],
-	                isCreateException = itemData.createException;
+	            var isCreateException = itemData.createException;
 
                 json = this.getSoapEnvelope(request, data, isCreateException ? 'CreateAppointmentException' : 'ModifyAppointment');
                 methodJson = isCreateException? json.Body.CreateAppointmentExceptionRequest : json.Body.ModifyAppointmentRequest;
@@ -82,21 +82,33 @@ Ext.define('ZCS.model.calendar.ZtCalendarWriter', {
 
                 methodJson.ms = invite.get('ms');
                 methodJson.rev = invite.get('rev');
+                methodJson.comp = "0";
 
                 var m = methodJson.m = {};
 
-                m = this.populateAttrs(methodJson, invite, true);
+                m = this.populateAttrs(methodJson, invite, itemData.isInterMailboxMove, true);
 
                 this._addAttachmentsToRequest(m, invite, id, attachments);
 
                 if (isCreateException) {
 		            this._addExceptionRequestSubs(m, invite, itemData.instanceStart);
-		            methodJson.comp = "0";
 		            methodJson.echo = "1";
 	            }
 
                 Ext.apply(methodJson, {
                     m: m
+                });
+            } else if (itemData.op === 'move') {
+                request.setUrl(ZCS.constant.SERVICE_URL_BASE + 'ItemAction');
+                json = this.getSoapEnvelope(request, data, 'ItemAction');
+                methodJson = json.Body.ItemActionRequest;
+
+                Ext.apply(methodJson, {
+                    action: {
+                        id: invite.get('id'),
+                        op: itemData.op,
+                         l: invite.get('apptFolderId')
+                    }
                 });
             }
         }
@@ -106,7 +118,7 @@ Ext.define('ZCS.model.calendar.ZtCalendarWriter', {
         return request;
     },
 
-     populateAttrs: function(request, invite, isEdit) {
+    populateAttrs: function(request, invite, isInterMailboxMove, isEdit) {
         var m = request.m = {},
             mailFromAddress,
             comps,
@@ -119,12 +131,21 @@ Ext.define('ZCS.model.calendar.ZtCalendarWriter', {
         inv = m.inv = {};
         m.e = [];
 
+        /**
+         * In case of mountpoints, the appt is modified in the local folder first and then moved
+         */
+        if (isInterMailboxMove) {
+            m.l = invite.get('oldCalFolderId');
+        } else {
+            m.l = invite.get('apptFolderId');
+        }
+
         comps = inv.comp = [];
         comp = comps[0] = {};
         comp.at = [];
         org = comp.or = {};
 
-        if (!isEdit || isOrganizer) {
+        if (!isEdit || (isOrganizer && !isInterMailboxMove)) {
             //FROM Address - in case of create appt and organizer edit
             mailFromAddress =  ZCS.mailutil.getFromAddress();
         } else {
@@ -138,12 +159,14 @@ Ext.define('ZCS.model.calendar.ZtCalendarWriter', {
 
         // subject/location
         m.su = invite.get('subject');
-        m.l = invite.get('apptFolderId');
 
         comp.name = invite.get('subject');
         comp.loc = invite.get('location');
         comp.fb = invite.get('fb');
 
+        if (isEdit) {
+            inv.uid = invite.get('uid');
+        }
         //recurrence
         this._setRecurrence(comp, invite);
 

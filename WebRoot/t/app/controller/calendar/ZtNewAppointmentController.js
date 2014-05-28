@@ -109,10 +109,6 @@ Ext.define('ZCS.controller.calendar.ZtNewAppointmentController', {
 				            formField.setValue(dateValue);
 			            }
                     }
-//		            } else if (attr === 'apptFolderId') {
-//                        var folderName = ZCS.cache.get(value).get('name');
-//                        formField.setOptions({text: folderName, value:value});
-//                    }
 		            else if (attr !== 'repeat') {
                         formField.setValue(value);
 		            }
@@ -202,6 +198,12 @@ Ext.define('ZCS.controller.calendar.ZtNewAppointmentController', {
                 var msg = this.getMsg(),
                     invite = msg.get('invite'),
                     me = this;
+                /**
+                 * Remember the original folder the appointment belongs to
+                 * before overwriting it with the new folder.
+                 */
+                var oldCalFolderId = invite.get('apptFolderId');
+                invite.set('oldCalFolderId', oldCalFolderId);
                 Ext.each(ZCS.constant.CALENDAR_FIELDS, function(attr){
                     invite.set(attr, newAppt.get(attr));
                 });
@@ -313,7 +315,17 @@ Ext.define('ZCS.controller.calendar.ZtNewAppointmentController', {
 	        calController = ZCS.app.getCalendarController(),
 	        event = calController.getEvent(),
 	        isInstance = event.get('isRecur') && !calController.getIsSeries(),
-	        isException = invite.get('isException');
+	        isException = invite.get('isException'),
+            calFolderId = invite.get('apptFolderId'),
+            calFolder = ZCS.cache.get(calFolderId),
+            oldCalFolderId = invite.get('oldCalFolderId'),
+            oldCalFolder = ZCS.cache.get(oldCalFolderId),
+            isInterMailboxMove;
+
+        if (calFolder || oldCalFolder) {
+            isInterMailboxMove = calFolder.get('isMountpoint') || oldCalFolder.get('isMountpoint');
+            data.isInterMailboxMove = isInterMailboxMove || false;
+        }
 
 	    if (isInstance && !isException) {
 		    data.createException = true;
@@ -321,12 +333,27 @@ Ext.define('ZCS.controller.calendar.ZtNewAppointmentController', {
 	    }
 
 	    this.performOp(invite, data, function() {
-		    me.reloadCalendar(true, invite); // Reload to show newly updated state of the appointment
-		    Ext.Function.defer(function() {
-			    me.hideAppointmentForm();
-		    }, 100);
-		    ZCS.app.fireEvent('showToast', ZtMsg.appointmentEdited);
+            if (isInterMailboxMove) {
+                data = {
+                    op: 'move'
+                };
+                //In case of mountpoints, fire an ItemActionRequest to move the appt from/to the mounted folder
+                me.performOp(invite, data, function() {
+                    me.onModifySuccess(invite);
+                })
+            } else {
+		        me.onModifySuccess(invite);
+            }
 	    });
+    },
+
+    onModifySuccess: function(invite) {
+        var me = this;
+        this.reloadCalendar(true, invite); // Reload to show newly updated state of the appointment
+        Ext.Function.defer(function() {
+            me.hideAppointmentForm();
+        }, 100);
+        ZCS.app.fireEvent('showToast', ZtMsg.appointmentEdited);
     },
 
     reloadCalendar: function(isEdit, invite) {

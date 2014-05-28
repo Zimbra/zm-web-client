@@ -69,7 +69,8 @@ Ext.define('ZCS.model.mail.ZtInvite', {
 			{ name: 'uid',                  type: 'string' },
 			{ name: 'alarmData',            type: 'auto' },
 			{ name: 'transp',               type: 'string' },
-			{ name: 'isHtml',               type: 'boolean' }
+			{ name: 'isHtml',               type: 'boolean' },
+            { name: 'oldCalFolderId',       type: 'string'} //Remember the folder the appt belonged to before moving
 		],
 
         proxy: {

@@ -62,10 +62,19 @@ Ext.define('ZCS.view.calendar.ZtFolderField', {
 
         Ext.each(organizerData.items, function(folder) {
             if (folder.zcsId !== ZCS.constant.ID_TRASH && folder.folderType === ZCS.constant.ORG_CALENDAR) {
-                arr.push({text:folder.displayName, value:folder.zcsId});
+                if (folder.isMountpoint) {
+                    arr.push({text:folder.displayName, value:folder.remoteAccountId + ':' + folder.remoteFolderId})
+                } else {
+                    arr.push({text:folder.displayName, value:folder.zcsId});
+                }
                 Ext.each(folder.items, function(child) {
                     //subfolders, if any
-                    var data = {text: child.displayName, value:child.zcsId};
+                    var data;
+                    if (child.isMountpoint) {
+                        data = {text: child.displayName, value:child.remoteAccountId + ':' + child.remoteFolderId}
+                    } else {
+                        data = {text: child.displayName, value:child.zcsId};
+                    }
                     arr.push(data);
                 }, this);
             }
