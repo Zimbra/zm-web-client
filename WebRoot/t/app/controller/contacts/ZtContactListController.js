@@ -237,7 +237,20 @@ Ext.define('ZCS.controller.contacts.ZtContactListController', {
         else {
             this.getItemController().clear();
         }
-    }
+    },
+
+     updateTitlebar: function(app) {
+         this.callParent(arguments);
+
+        //disable Add button for Contacts -> Distribution Lists
+         var titlebar = this.getTitlebar(),
+             addButton = titlebar && titlebar.down([ '#', ZCS.constant.APP_CONTACTS, '-newButton'].join('')),
+             curFolder = ZCS.session.getCurrentSearchOrganizer();
+
+         if (addButton) {
+             addButton.setVisibility(!ZCS.util.folderIs(curFolder, ZCS.constant.ID_DLS));
+         }
+     }
 },
     function (thisClass) {
         thisClass.swipeToDeleteTpl = Ext.create('Ext.XTemplate', ZCS.template.ConvListSwipeToDelete);
