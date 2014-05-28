@@ -54,6 +54,10 @@
 	border-right: 1px solid $default-border-color;
 }
 
+.x-scroll-scroller {
+	max-width: 100%;
+}
+
 $zcs-titlebar-fontsize: 1.2rem;       // for titlebar icons & labels - base value in REM
 $zcs-titlebar-height: 2.8em;          // for titlebar height
 $zcs-title-fontsize: 1.2em;           // for titlebar text - slightly larger to stand out
@@ -575,6 +579,80 @@ $contact-suggest-radius: $floating-list-radius;
 .x-phone.x-landscape {
 	.zcs-item-titlebar.x-toolbar {
 		font-size: $zcs-titlebar-fontsize * $zcs-titlebar-phnLndscp;
+	}
+}
+
+/* Form Display Panel */
+
+$formDisplayBaseFontSize: 1rem;
+$formDisplayLabelWidth: 7rem;
+$formDisplayLabelWidthPhone: $formDisplayLabelWidth * 0.5;
+
+$formDisplayGutter: 1rem;
+$formDisplayFieldWidth: 21rem; //optimized intially for iPad in landscape
+
+.zcs-fieldSets {
+	font-size: $formDisplayBaseFontSize;
+
+	.zcs-fieldSet {
+		@extend .zcs-newLine;
+		margin-bottom: 1em;
+
+		.zcs-label {
+			@extend .zcs-floatLeft;
+			@include ellipsis();
+			@include opacity(.5);
+			margin-left: 0.75em;
+			text-align: right;
+			width: $formDisplayLabelWidth;
+
+			&:after {
+				//				content: ":";
+			}
+		}
+
+		.zcs-fields {
+			@extend .zcs-floatLeft;
+
+			.zcs-field {
+				@extend .zcs-newLine;
+				@include ellipsis();
+				margin: 0 1em 1.5em $formDisplayGutter;
+				max-width: $formDisplayFieldWidth * 2;
+				min-width: $formDisplayFieldWidth;
+			}
+		}
+
+		.zcs-subLabel {
+			@extend .zcs-floatLeft;
+			@include ellipsis();
+			@include opacity(.4);
+		}
+	}
+}
+
+.x-portrait .zcs-fieldSets {
+	// tablet portrait
+}
+
+.x-phone .zcs-fieldSets {
+	font-size: $formDisplayBaseFontSize * 0.9;
+
+	.zcs-label {
+		width: $formDisplayLabelWidthPhone;
+	}
+
+	.zcs-fields .zcs-field {
+		max-width: $formDisplayFieldWidth;
+		min-width: $formDisplayFieldWidth * 0.5;
+	}
+
+}
+
+.x-phone.x-portrait {
+	.zcs-fieldSets .zcs-fields .zcs-field {
+		max-width: $formDisplayFieldWidth * 0.57;
+		min-width: $formDisplayFieldWidth * 0.43;
 	}
 }
 

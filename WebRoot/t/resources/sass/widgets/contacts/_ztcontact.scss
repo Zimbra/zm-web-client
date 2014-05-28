@@ -23,9 +23,9 @@ $contactListLeftIndent: $contactListImageSize + $contactListStdMargin * 2;
 $contactListRightIndent: $contactListStdMargin;
 $contactListTopOffset: $contactListStdMargin - 0.25rem;
 
-$contactBaseFontSize: 1rem;
+$contactBaseFontSize: $formDisplayBaseFontSize;
 $contactTitleBarHeight: 2.5rem;
-$contactGutter: 1rem;
+$contactGutter: $formDisplayGutter;
 $contactImageSize: 8rem - $contactGutter;
 $contactImageSizePhone: $contactImageSize * 0.5;
 $contactEditImageSize: 5rem;
@@ -34,7 +34,7 @@ $contactListImageTopOffset: $contactListHeight / 2 - $contactListImageSize / 2;
 $contactButtonSize: $contactImageSize / 1.5;
 $contactFieldTopOffset: $contactImageSize + $contactStdMargin * 4;
 $contactFieldTopOffsetPhone: $contactImageSizePhone + $contactStdMargin * 6;
-$contactFieldWidth: 21rem; //optimized intially for iPad in landscape
+$contactFieldWidth: $formDisplayFieldWidth;
 $contactFormButtonMinHeight: 2.5rem;
 
 $contactGroupMemberWidth: 17em;
