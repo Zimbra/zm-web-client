@@ -703,7 +703,7 @@ function(id, content) {
         fontsize_formats : AjxMsg.fontSizes || '',
 		convert_urls : false,
 		verify_html : false,
-		gecko_spellcheck : true,
+		browser_spellcheck : true,
         content_css : appContextPath + '/css/tinymce-content.css?v=' + cacheKillerVersion,
         dialog_type : "modal",
         forced_root_block : "div",
@@ -1935,6 +1935,11 @@ function(ev) {
 	var retVal = true;
 
 	if (ev.type == "contextmenu") {
+		// force use of the browser context menu when control is pressed
+		if (ev.ctrlKey) {
+			return;
+		}
+
 		// context menu event; we want to translate the event
 		// coordinates from iframe to parent document coords,
 		// before notifying listeners.
