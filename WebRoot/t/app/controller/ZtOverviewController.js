@@ -121,15 +121,21 @@ Ext.define('ZCS.controller.ZtOverviewController', {
 	},
 
     doSave: function() {
+        var me = this,
+        	saveCallback = function () {
+        		if (errorMsg) {
+				    Ext.Msg.alert(ZtMsg.error, errorMsg);
+				    return;
+			    }
 
-        var errorMsg = (this.getEditType() === ZCS.constant.ORG_TAG) ? this.saveTag() : this.saveFolder();
-	    if (errorMsg) {
-		    Ext.Msg.alert(ZtMsg.error, errorMsg);
-		    return;
-	    }
+		        me.hideEditPanel();
+		        me.toggleEditState();
+        	},
+        	errorMsg = (this.getEditType() === ZCS.constant.ORG_TAG) ? this.saveTag(saveCallback) : this.saveFolder(saveCallback);
 
-        this.hideEditPanel();
-        this.toggleEditState();
+        if (errorMsg) {
+        	saveCallback();
+        }
     },
 
 	showNewFolder: function () {
@@ -151,8 +157,7 @@ Ext.define('ZCS.controller.ZtOverviewController', {
 
 		if (isTag) {
 			this.getColorPicker().setColor(0);
-		}
-		else {
+		} else {
 			// assign a default parent folder
 			var list = this.getCurrentFolderList();
 			this.assignParentFolder(list.getLastNode(), list.getActiveItem());
@@ -269,8 +274,7 @@ Ext.define('ZCS.controller.ZtOverviewController', {
         if (folderList._lastNode !== rootNode) {
             // reset folder selector to top level which triggers activeitemchange
             folderList.goToNode(rootNode);
-        }
-        else {
+        } else {
             // if already on first card just update filter manually
             this.filterFolderList(folderList);
         }
@@ -293,8 +297,7 @@ Ext.define('ZCS.controller.ZtOverviewController', {
             editBtn.setText(ZtMsg.edit);
             appsBtn.show();
             organizerEditToolbar.hide();
-        }
-        else {
+        } else {
             folderList.editing = true;
             overview.addCls('editing');
             organizerListToolbar.setTitle([ZtMsg.edit,organizerListToolbar.getTitle()].join(" "));
@@ -321,7 +324,7 @@ Ext.define('ZCS.controller.ZtOverviewController', {
         }
     },
 
-    saveFolder: function() {
+    saveFolder: function(callback) {
 
         var organizerEditPanel = this.getOrganizerEditPanel(),
             folder = organizerEditPanel.getFolder(),
@@ -329,7 +332,10 @@ Ext.define('ZCS.controller.ZtOverviewController', {
             newParentFolder = organizerEditPanel.getParentFolder(),
 	        newParentId = (newParentFolder && newParentFolder.get('zcsId')) || ZCS.constant.ID_ROOT,
 	        app = ZCS.session.getActiveApp(),
-	        options = {};
+	        options = {
+	        	success: callback,
+	        	failure: callback
+	        };
 
 	    var errorMsg = this.checkName(newFolderName);
 	    if (errorMsg) {
@@ -357,16 +363,18 @@ Ext.define('ZCS.controller.ZtOverviewController', {
 	    }
 	    folder.save(options);
 
-        this.hideEditPanel();
     },
 
-    saveTag: function() {
+    saveTag: function(callback) {
 
         var organizerEditPanel = this.getOrganizerEditPanel(),
             tag = organizerEditPanel.getTag(),
 	        newTagName = organizerEditPanel.down('#tagName').getValue(),
 	        newTagColor = this.getColorPicker().getColor(),
-	        options = {};
+	        options = {
+	        	success: callback,
+	        	failure: callback
+	        };
 
 	    var errorMsg = this.checkName(newTagName);
 	    if (errorMsg) {
@@ -396,9 +404,19 @@ Ext.define('ZCS.controller.ZtOverviewController', {
 
 	deleteFolder: function() {
 
-		var organizerEditPanel = this.getOrganizerEditPanel(),
+		var me = this,
+			organizerEditPanel = this.getOrganizerEditPanel(),
 			folder = organizerEditPanel.getFolder(),
-			options = {};
+			onSaveFunction = function () {
+                me.hideEditPanel();
+                me.toggleEditState();
+                folder.enableDefaultStoreEvents();
+                folder.updateDependentLists();
+			},
+			options = {
+				success: onSaveFunction,
+				failure: onSaveFunction
+			};
 
 		if (folder) {
 			if (folder.deleteIsHard()) {
@@ -406,17 +424,15 @@ Ext.define('ZCS.controller.ZtOverviewController', {
 				Ext.Msg.confirm(ZtMsg.hardDeleteFolderTitle, deleteMsg, function(buttonId) {
 					if (buttonId === 'yes') {
 						options.del = true;
+						folder.disableDefaultStoreEvents();
 						folder.save(options);
-                        this.hideEditPanel();
-                        this.toggleEditState();
 					}
 				}, this);
 			}
 			else {
 				options.trash = true;
+				folder.disableDefaultStoreEvents();
 				folder.save(options);
-                this.hideEditPanel();
-                this.toggleEditState();
 			}
 		}
 	},
@@ -424,7 +440,15 @@ Ext.define('ZCS.controller.ZtOverviewController', {
 	deleteTag: function() {
 		var organizerEditPanel = this.getOrganizerEditPanel(),
 			tag = organizerEditPanel.getTag(),
-			options = {};
+			me = this,
+			onSaveFunction = function () {
+                me.hideEditPanel();
+                me.toggleEditState();
+			},
+			options = {
+				success: onSaveFunction,
+				failure: onSaveFunction
+			};
 
 		if (tag) {
 			var deleteMsg = Ext.String.format(ZtMsg.hardDeleteTagText, Ext.String.htmlEncode(tag.get('name')));
@@ -432,8 +456,6 @@ Ext.define('ZCS.controller.ZtOverviewController', {
 				if (buttonId === 'yes') {
 					options.del = true;
 					tag.save(options);
-                    this.hideEditPanel();
-                    this.toggleEditState();
 				}
 			}, this);
 		}

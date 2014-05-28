@@ -278,6 +278,10 @@ Ext.define('ZCS.view.mail.ZtMsgListView', {
         scroller.getTranslatable().getElement().engageScrollHack();
 	},
 
+	setMasked: function () {
+		return false;
+	},
+
 	setReadOnly: function (isReadOnly) {
 		var listRef = this;
 

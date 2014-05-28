@@ -31,20 +31,65 @@ Ext.define('ZCS.common.ZtOrganizerNotificationHandler', {
 	 * @param {Object}  notification    notification JSON
 	 */
 	addOrganizer: function(parentViews, notification) {
+		var me = this,
+			organizer, 
+			app;
 
 		parentViews = Ext.Array.from(parentViews);
-		var ln = parentViews.length, i, parentView, organizer, app;
 
-		for (i = 0; i < ln; i++) {
-			parentView = parentViews[i];
+		organizer = ZCS.model.ZtOrganizer.getProxy().getReader().getDataFromNode(notification, notification.itemType);
+
+		this.organizerUpdate(parentViews, organizer, function (parentView) {
+
 			app = (parentView.getApp && parentView.getApp()) || ZCS.session.getActiveApp();
 			organizer = ZCS.model.ZtOrganizer.getProxy().getReader().getDataFromNode(notification, notification.itemType);
 			if (ZCS.session.isValidOrganizer(organizer, app)) {
-				var list = this.getListFromView(parentView);
+				var list = me.getListFromView(parentView);
 				ZCS.model.ZtOrganizer.addOtherFields(organizer, app, list.getType(), false);
-				this.insertOrganizer(list, organizer, organizer.parentItemId, organizer.parentZcsId);
+				return me.insertOrganizer(list, organizer, organizer.parentItemId, organizer.parentZcsId);
 			}
-		}
+
+			return null;
+		});
+	},
+
+	/**
+	 * Removes an organizer from the stores for the given views.
+	 *
+	 * @param {Array}       parentViews     views that may need to be updated
+	 * @param {ZtOrganizer} organizer       organizer being deleted
+	 */
+	removeOrganizer: function(parentViews, organizer) {
+		var me = this;
+
+		me.organizerUpdate(parentViews, organizer, function (parentView) {
+			var index,
+				list = me.getListFromView(parentView),
+				store = list && list.getStore(),
+				parentNode = store.getNodeById(organizer.get('parentItemId'));
+			
+			//Don't touch any stores here, organizerUpdate will handle updating dependent stores and lists.
+			if (parentNode) {
+				parentNode.disableDefaultStoreEvents();
+
+				parentNode.removeChild(organizer, true);
+	
+				if (!(parentNode.childNodes && parentNode.childNodes.length > 0)) {
+					parentNode.set('disclosure', false);
+					parentNode.set('leaf', true);
+				}
+
+				parentNode.enableDefaultStoreEvents();
+
+				return {
+					oldParent: parentNode,
+					newChild: null,
+					deletedChild: organizer
+				};
+			}
+
+			return null;
+		});
 	},
 
 	/**
@@ -56,19 +101,17 @@ Ext.define('ZCS.common.ZtOrganizerNotificationHandler', {
 	 * @param {Object}      notification    notification JSON
 	 */
 	modifyOrganizer: function(parentViews, organizer, notification) {
-
+		var me = this;
 		parentViews = Ext.Array.from(parentViews);
-		var ln = parentViews.length, i, organizer;
 
-		for (i = 0; i < ln; i++) {
-			var parentView = parentViews[i],
-				app = (parentView.getApp && parentView.getApp()) || ZCS.session.getActiveApp();
+		me.organizerUpdate(parentViews, organizer, function (parentView) {
+			var app = (parentView.getApp && parentView.getApp()) || ZCS.session.getActiveApp();
 
 			// organizer has moved (has a new parent)
 			if (notification.l) {
 				var reader = ZCS.model.ZtOrganizer.getProxy().getReader(),
 					data = reader.getDataFromNode(notification, organizer.get('type'), app, []),
-					list = this.getListFromView(parentView),
+					list = me.getListFromView(parentView),
 					store = list && list.getStore(),
 					organizerId = organizer.getId();
 
@@ -78,44 +121,56 @@ Ext.define('ZCS.common.ZtOrganizerNotificationHandler', {
 						oldParentId = organizer.get('oldParentItemId'),
 						oldParentZcsId = organizer.get('oldParentZcsId');
 
-					this.insertOrganizer(list, organizer, newParentItemId, newParentZcsId, oldParentId, oldParentZcsId);
+					return me.insertOrganizer(list, organizer, newParentItemId, newParentZcsId, oldParentId, oldParentZcsId);
 				}
 			}
-		}
+		});
 	},
 
 	/**
-	 * Removes an organizer from the stores for the given views..
+	 * Handles the arrival of a <refresh> block by regenerating overviews.
 	 *
 	 * @param {Array}       parentViews     views that may need to be updated
-	 * @param {ZtOrganizer} organizer       organizer being deleted
 	 */
-	removeOrganizer: function(parentViews, organizer) {
+	reloadOverviews: function(parentViews) {
 
-		parentViews = Ext.Array.from(parentViews);
-		var ln = parentViews.length, i, organizer;
+		var ln = parentViews.length, i, app,
+			updates = []; 
 
 		for (i = 0; i < ln; i++) {
 			var parentView = parentViews[i],
+				app = (parentView.getApp && parentView.getApp()) || ZCS.session.getActiveApp(),
 				list = this.getListFromView(parentView),
-				store = list && list.getStore(),
-				parentNode = store.getNodeById(organizer.get('parentItemId'));
+				store = list && list.getStore();
 
-			// store.remove() doesn't work here (actually runs into JS error), so have the
-			// parent node do the removal
-			if (parentNode) {
-				parentNode.removeChild(organizer, true);
-				if (!(parentNode.childNodes && parentNode.childNodes.length > 0)) {
-					parentNode.set('disclosure', false);
-					parentNode.set('leaf', true);
-				}
-			}
+			store.data._autoSort = false;
+			store.suspendEvents();
+
+			store.setClearOnLoad(false);
+			store.setData({
+				items: ZCS.session.getOrganizerData(app, null, list.getType())
+			});
+
+			updates.push({
+				type: 'refresh',
+				root: store.getRoot()
+			});
+
+			store.data._autoSort = true;
+			store.resumeEvents(true);
 		}
+
+
+		this.doEfficientHandlingOfUpdates(updates);
 	},
 
 	/**
-	 * Adds a new child to the given parent, inserting it at the proper position within
-	 * the parent's children.
+	 * @private
+	 *
+	 * Adds a new child to the given parent and then run the parent's sorting function.
+	 * It would be nice to insert at the proper position, but the sorting function used
+	 * in Sencha's tree stores is harry, and finding the right insertion index would
+	 * amount to just doing a sort in the first place.
 	 *
 	 * @param {ZtOrganizer} organizer
 	 * @param {String}      parentId
@@ -128,69 +183,221 @@ Ext.define('ZCS.common.ZtOrganizerNotificationHandler', {
 			return;
 		}
 
-		var	parent = (!parentId || parentZcsId === ZCS.constant.ID_ROOT) ? store.getRoot() : store.getNodeById(parentId),
+		var	newChild,
+			parent = (!parentId || parentZcsId === ZCS.constant.ID_ROOT) ? store.getRoot() : store.getNodeById(parentId),
 			oldParent = (!oldParentId || oldParentZcsId === ZCS.constant.ID_ROOT) ? store.getRoot() : store.getNodeById(oldParentId);
 
-		if (parent && organizer) {
-			var index = this.getSortIndex(parent, organizer);
-			if (index === -1) {
-				parent.appendChild(organizer);
-			}
-			else {
-				parent.insertChild(index, organizer);
-			}
-			parent.set('disclosure', true);
-			parent.set('leaf', false);
+		if (parent && organizer) {			
+			//Disable default sencha touch events at this point to prevent excessive sorting and memory thrashing.
+			//The is caused by the store trying to determine the "insertionindex" of the newly added node several times
+			//On a tree store, to determine the insertion index, the parent node is sorted.  Since we have a flat tree,
+			//this results in all organizers being sorted multiple times.
+			parent.disableDefaultStoreEvents();
+			
+			newChild = parent.appendChild(organizer);
 
-			if (oldParent && !(oldParent.childNodes && oldParent.childNodes.length > 0)) {
+			//Sort the parent node's children, not firing any events
+			parent.sortWithoutEvents(store.data.getSortFn(), true);
+
+			if (!parent.get('disclosure')) {
+				parent.set('disclosure', true);
+			}
+			if (parent.get('leaf')) {
+				parent.set('leaf', false);
+			}
+
+			if (oldParent && (oldParent.childNodes && oldParent.childNodes.length === 0)) {
 				oldParent.set('disclosure', false);
 				oldParent.set('leaf', true);
 			}
+
+			parent.enableDefaultStoreEvents();
 		}
+
+		var updateInfo = {
+			"parent": parent,
+			"newChild": newChild,
+		};
+
+		if (organizer.getId) {
+			updateInfo.deletedChild = organizer;
+			updateInfo.oldParent = oldParent;
+		}
+
+		return updateInfo;
 	},
 
 	/**
-	 * Returns the index of the child within the parent's children, or -1 if there
-	 * are no children.
-	 *
-	 * @param {ZtOrganizer} parent
-	 * @param {ZtOrganizer} child
-	 * @return {Integer}    the sort index
 	 * @private
+	 *
+	 * Get an update information block using the update functino for
+	 * each parent view, and then do an efficient update of dependent stores and
+	 * lists.
 	 */
-	getSortIndex: function(parent, child) {
+	organizerUpdate: function (parentViews, organizer, updateFn) {
+		var ln = parentViews.length, 
+			i, 
+			parentView, 
+			updates = [],
+			updateInformation;
 
-		var ln = parent && parent.childNodes ? parent.childNodes.length : 0,
-			i, organizer;
 
 		for (i = 0; i < ln; i++) {
-			organizer = parent.childNodes[i];
-			if (ZCS.model.ZtOrganizer.compare(child, organizer) === -1) {
-				return i;
+			parentView = parentViews[i];
+			updateInformation = updateFn(parentView);
+			if (updateInformation) {
+				updates.push(updateInformation);
 			}
 		}
-		return -1;
+
+		this.doEfficientHandlingOfUpdates(updates);
 	},
 
-	/**
-	 * Handles the arrival of a <refresh> block by regenerating overviews.
+	/** 
+	 * @private
 	 *
-	 * @param {Array}       parentViews     views that may need to be updated
+	 * Takes the array of update information objects and efficiently updates
+	 * the dependent stores and lists.  This should result in one sort and one
+	 * refresh of each store/list that was effected.  Using the default sencha system
+	 * can lead to many sorts and list refreshes.
+	 * 
 	 */
-	reloadOverviews: function(parentViews) {
+	doEfficientHandlingOfUpdates: function (updates) {
+		var ln = updates.length, 
+			i, 
+			parentView, 
+			organizer, 
+			app, 
+			modelHash = {},
+			storesToUpdate = {},
+			storeToUpdate,
+			parentId,
+			newOrganizer,
+			deletedOrganizer,
+			storeId,
+			updates,
+			updateInformation,
+			parentInfo,
+			dependentLists = {};
+		for (i = 0; i < ln; i += 1) {
+			updateInformation = updates[i];
 
-		var ln = parentViews.length, i, app;
+			//Hash the update info by parent so we only end up updating for each parent once.
+			if (updateInformation) {
 
-		for (i = 0; i < ln; i++) {
-			var parentView = parentViews[i],
-				app = (parentView.getApp && parentView.getApp()) || ZCS.session.getActiveApp(),
-				list = this.getListFromView(parentView),
-				store = list && list.getStore();
+				if (updateInformation.newChild) {
 
-			store.setData({
-				items: ZCS.session.getOrganizerData(app, null, list.getType())
+					modelHash[updateInformation.parent.getId()] = {
+						node: updateInformation.parent,
+						updates: {}
+					};
+
+					//Hash by the update child id so we don't update for the same node twice.
+					modelHash[updateInformation.parent.getId()].updates[updateInformation.newChild.getId()] = {
+						type: 'add',
+						node: updateInformation.newChild
+					};
+				}
+
+				if (updateInformation.oldParent) {
+					modelHash[updateInformation.oldParent.getId()] = {
+						node: updateInformation.oldParent,
+						updates: {}
+					};
+
+					modelHash[updateInformation.oldParent.getId()].updates[updateInformation.deletedChild.getId()] = {
+						type: 'delete',
+						oldNode: updateInformation.deletedChild
+					};
+				}
+
+				if (updateInformation.root) {
+					modelHash[updateInformation.root.getId()] = {
+						node: updateInformation.root,
+						updates: {}
+					};
+
+					modelHash[updateInformation.root.getId()].updates[updateInformation.root.getId()] = {
+						type: 'refresh',
+						root: updateInformation.root
+					};
+				}
+			}
+		}
+
+		for (parentId in modelHash) {
+			parentInfo = modelHash[parentId];
+
+			//Hash the stores to sort so we only sort them once.
+			Ext.each(parentInfo.node.stores, function (store) {
+				if (!storesToUpdate[store.getId()]) {
+					storesToUpdate[store.getId()] = {
+						store: store,
+						updates: {}
+					};
+				}
+
+				//Make sure the store knows about every update that needs to occur to it
+				Ext.Object.each(parentInfo.updates, function (key, value) {
+					storesToUpdate[store.getId()].updates[key] = value;
+				});
 			});
 		}
+
+		/**
+		 *
+		 * At this point we have a hash of store ids to information about what needs to happen in each store
+		 * this allows us to make only a single update to make all updates to the store without
+		 * any events flying around.
+		 *
+		 * {
+		 *    'id': {
+		 *	      store: store,
+		 *	      updates: [{
+		 *		      type: 'remove',
+		 *		      node: node
+		 *	      }, {
+		 *		      type: 'add',
+		 *		      node: node
+		 *	      }]
+		 *    }
+		 * }
+		 */
+		for (storeId in storesToUpdate) {
+
+			var refreshIsRequired = false,
+				dependentListsForThisNode;
+
+			storeToUpdate = storesToUpdate[storeId].store;
+
+    		storeToUpdate.data._autoSort = false;
+    		storeToUpdate.suspendEvents();
+
+			Ext.Object.each(storesToUpdate[storeId].updates, function (key, value) {
+				if (value.type === 'add') {
+					storeToUpdate.add(value.node);
+
+					dependentListsForThisNode = value.node.getDependentLists();
+				} else if (value.type === 'delete') {
+					dependentListsForThisNode = value.oldNode.getDependentLists();
+					storeToUpdate.remove(value.oldNode);
+				} else if (value.type === 'refresh') {
+					storeToUpdate.sort();
+				}
+
+				Ext.Object.each(dependentListsForThisNode, function (key, list) {
+					dependentLists[list.getId()] = list;
+				});	
+			});
+
+    		storeToUpdate.data._autoSort = true;
+    		storeToUpdate.resumeEvents(true);
+		}
+
+		//Finally, force a hard refresh on all dependent lists since they had an item either added or removed.
+		Ext.Object.each(dependentLists, function (key, value) {
+			value.doRefresh();
+		});
 	},
 
 	/**

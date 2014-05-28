@@ -127,6 +127,7 @@ Ext.define('ZCS.view.ZtOrganizerList', {
 		var list = this.callParent(arguments);
 
 		list.xtype = 'organizersublist';
+		list.infinite = this.getInfinite();
 		list.grouped = this.getGrouped();
 		list.store.setGrouper(this.getStore().config.grouper);
 
