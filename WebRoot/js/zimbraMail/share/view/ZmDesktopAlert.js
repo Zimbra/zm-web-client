@@ -21,6 +21,8 @@
 ZmDesktopAlert = function() {
     if (window.webkitNotifications) {
         this.useWebkit = true;
+	} else if (window.Notification) {
+		this.useNotification = true;
     } else if (appCtxt.isOffline && window.platform && (AjxEnv.isWindows || AjxEnv.isMac)) {
         this.usePrism = true;
     } else {
@@ -46,7 +48,7 @@ function() {
  */
 ZmDesktopAlert.prototype.getDisplayText =
 function() {
-    if (this.useWebkit) {
+    if (this.useWebkit || this.useNotification) {
        return ZmMsg.showPopup;
     } else if (this.usePrism) {
 		return AjxEnv.isMac ? ZmMsg.showPopupMac : ZmMsg.showPopup;
@@ -68,6 +70,9 @@ function(title, message, sticky) {
     if (this.useWebkit) {
         var allowedCallback = this._showWebkitNotification.bind(this, title, message, sticky);
         this._checkWebkitPermission(allowedCallback);
+	} else if (this.useNotification) {
+		var notificationCallback = this._showNotification.bind(this, title, message, sticky);
+		this._checkNotificationPermission(notificationCallback);
     } else if (this.usePrism) {
 		if (AjxEnv.isMac) {
 			try {
@@ -82,8 +87,8 @@ function(title, message, sticky) {
 	} else {
 		AjxDispatcher.require([ "BrowserPlus" ]);
 		var serviceObj = { service: "Notify", version: "2", minversion: "2.0.9" };
-		var callback = new AjxCallback(this, this._notityServiceCallback, [title, message]);
-		var errorCallback = new AjxCallback(this, this._notityServiceErrorCallback);
+		var callback = new AjxCallback(this, this._notifyServiceCallback, [title, message]);
+		var errorCallback = new AjxCallback(this, this._notifyServiceErrorCallback);
 		ZmBrowserPlus.getInstance().require(serviceObj, callback, errorCallback);
 	}
 };
@@ -125,14 +130,64 @@ function(title, message, sticky) {
     }
 };
 
-ZmDesktopAlert.prototype._notityServiceCallback =
+/* Checks if we have permission to use the notification api. If so, or when the user
+ * grants permission, allowedCallback is called.
+ */
+ZmDesktopAlert.prototype._checkNotificationPermission = function(allowedCallback) {
+	var allowed = window.Notification.permission === 'granted';
+	if (allowed) {
+		allowedCallback();
+	} else if (!ZmDesktopAlert.requestedPermission) {
+		ZmDesktopAlert.requestedPermission = true; // Prevents multiple permission requests in one session.
+		// Currently, cannot directly call requestPermission.  Re-test when Chrome 37 is released
+		//window.Notification.requestPermission(this._checkNotificationPermission.bind(this, allowedCallback));
+		var requestCallback = this._checkNotificationPermission.bind(this, allowedCallback);
+		this.requestRequestPermission(requestCallback);
+	}
+};
+
+// Chrome Notification only allows requesting permission in response to a user action, not a programmatic call.
+// The issue may be fixed in Chrome 37, whenever that comes out.  See:
+//   https://code.google.com/p/chromium/issues/detail?id=274284
+ZmDesktopAlert.prototype.requestRequestPermission = function(requestCallback) {
+	var msgDialog = appCtxt.getYesNoMsgDialog();
+	var callback = 	this._doRequestPermission.bind(this, msgDialog, requestCallback);
+	msgDialog.registerCallback(DwtDialog.YES_BUTTON, callback);
+	msgDialog.setMessage(ZmMsg.notificationPermission, DwtMessageDialog.INFO_STYLE);
+	msgDialog.popup();
+};
+
+ZmDesktopAlert.prototype._doRequestPermission = function(msgDialog, requestCallback) {
+	msgDialog.popdown();
+	window.Notification.requestPermission(requestCallback);
+}
+
+ZmDesktopAlert.prototype._showNotification = function(title, message, sticky) {
+	var icon = skin.hints.notificationBanner;
+
+	var popup = new Notification(title, { body: message, icon: icon});
+	//popup.show();
+	popup.onclick = function() {popup.close();};
+	if (sticky) {
+		if (!ZmDesktopAlert.notificationArray) {
+			ZmDesktopAlert.notificationArray = [];
+		}
+		ZmDesktopAlert.notificationArray.push(popup);
+	}
+	else {
+		// Close the popup after 5 seconds.
+		setTimeout(popup.close.bind(popup), 5000);
+	}
+};
+
+ZmDesktopAlert.prototype._notifyServiceCallback =
 function(title, message, service) {
 	try {
 		service.show({ title: title, message: message }, function(){});
 	} catch (err) {}
 };
 
-ZmDesktopAlert.prototype._notityServiceErrorCallback =
+ZmDesktopAlert.prototype._notifyServiceErrorCallback =
 function(result) {
 	DBG.println(AjxDebug.DBG1, "BrowserPlus error: " + (result ? (result.error + " - " + result.verboseError) : result));
 };
