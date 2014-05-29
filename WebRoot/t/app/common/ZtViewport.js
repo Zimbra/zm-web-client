@@ -29,5 +29,28 @@ Ext.define('ZCS.common.ZtViewport', {
         if (target && target.nodeType === 1 && !this.isInputRegex.test(target.tagName) && !targetIsEditable) {
             e.preventDefault();
         }
+    },
+
+
+    onOrientationChange: function() {
+        var me = this;
+
+        setTimeout(function () {
+            var currentOrientation = me.getOrientation(),
+                newOrientation = me.determineOrientation();
+
+            if (newOrientation !== currentOrientation) {
+                me.fireOrientationChangeEvent(newOrientation, currentOrientation);
+            }
+        }, 250);
+        
+    },
+
+    getWindowHeight: function () {
+        return window.outerHeight;
+    },
+
+    getWindowWidth: function () {
+        return window.outerWidth;
     }
 });
