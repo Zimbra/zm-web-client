@@ -175,19 +175,37 @@ Ext.define('ZCS.view.ux.ZtAssignmentView', {
 			itemTpl: cfg.listItemTpl
 		});
 
+		if(me.isPhone) {
+            cfg.list.store.getRootNode().insertChild(0, {
+                'title':'Cancel',
+                'name':'Cancel',
+                'displayName':'Cancel',
+                'type':'tag',
+                'zcsId' : 'cancel',
+                'itemCount' : 0,
+                'path' : '',
+                'disclosure' : false,
+                'leaf'  : true
+            });
+        }
+ 
+
 		this.callParent(arguments);
 
 		var tapProducer = this.down('nestedlist') || this.down('list'),
 			item, eventName;
 
 		tapProducer.on('itemtap', function (list, index, target, organizer, e, eOpts) {
-			if (!target.getDisabled()) {
-				item = me.getRecord();
-				eventName = item.get('type') + 'Assignment';
-				me.fireEvent(eventName, organizer, item);
-				e.preventDefault();
-				me.onClose();
-			}
+  			item = me.getRecord();
+  			if (!target.getDisabled() && organizer.get('zcsId') !== 'cancel') {
+  				eventName = item.get('type') + 'Assignment';
+  				me.fireEvent(eventName, organizer, item);
+  				e.preventDefault();
+  				me.onClose();
+     		} else if(organizer.get('zcsId') === 'cancel') {
+ 			    e.preventDefault();
+                me.onClose();
+  			}
 		});
 
 		ZCS.app.on('orientationChange', function (newDimensions) {

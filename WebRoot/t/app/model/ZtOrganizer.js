@@ -145,6 +145,15 @@ Ext.define('ZCS.model.ZtOrganizer', {
 				return !organizer1 && !organizer2 ? 0 : organizer1 ? 1 : -1;
 			}
 
+
+			if(organizer1.get('zcsId') === 'cancel') {
+			    return -1;
+			}
+
+			if(organizer2.get('zcsId') === 'cancel') {
+				return 1;
+			}
+
 			// organizers may come to us as data or as instantiated ZtOrganizer objects
 			var get1 = !!organizer1.get,
 				get2 = !!organizer2.get,
