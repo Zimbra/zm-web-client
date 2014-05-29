@@ -156,6 +156,15 @@ $more-events-color: blue;
 	}
 }
 
+.x-phone.x-landscape {
+	.touch-calendar-view TABLE.month TD SPAN {
+		&.simple-event-wrapper,
+		&.simple-event-wrapper-multi {
+			margin-top: -10%;
+		}
+	}
+}
+
 $apptBaseFontSize: 1rem;
 $apptLabelWidth: 5rem;
 
