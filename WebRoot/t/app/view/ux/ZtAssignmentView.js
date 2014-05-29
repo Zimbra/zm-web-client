@@ -205,15 +205,15 @@ Ext.define('ZCS.view.ux.ZtAssignmentView', {
 		this.positionSheet();
 		this.show();
 
-		var fromBox = this.getAnimatedComponent().element.getPageBox(),
-			targetBox = this.down('#animationTarget').element.getPageBox(),
-			appDimensions = newDimensions[ZCS.session.getActiveApp()];
-
-		//TODO - determine how to make the dimensions to use generic.
-
-		this.originalDimensions = appDimensions.itemPanel;
-
+		
 		if (!this.isPhone) {
+			var targetBox = this.down('#animationTarget').element.getPageBox(),
+				appDimensions = newDimensions[ZCS.session.getActiveApp()];
+
+			//TODO - determine how to make the dimensions to use generic.
+
+			this.originalDimensions = appDimensions.itemPanel;
+
 			this.getAnimatedComponent().setWidth(targetBox.width);
 			this.getAnimatedComponent().setHeight(targetBox.height);
 			this.getAnimatedComponent().setLeft(targetBox.left);

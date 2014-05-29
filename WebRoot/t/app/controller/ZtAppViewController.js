@@ -256,10 +256,11 @@ Ext.define('ZCS.controller.ZtAppViewController', {
 	 * Shows the list panel for the currently active app view.
 	 */
 	showListPanel: function () {
-
 		var activeApp = ZCS.session.getActiveApp(),
-			appViewConfig = this.appViews[activeApp];
+			appViewConfig = this.appViews[activeApp],
+			itemPanelZIndex = appViewConfig.itemPanel.getZIndex();
 
+		appViewConfig.listPanel.setZIndex(itemPanelZIndex + 1);
 		appViewConfig.listPanel.show();
 	},
 
@@ -335,7 +336,6 @@ Ext.define('ZCS.controller.ZtAppViewController', {
 
 			if (appViewConfig.listPanel) {
 				itemPanelWidth = this.getItemPanelWidth(appViewConfig.positioningConfig, width);
-				appViewConfig.listPanel.setWidth(overlayWidth);
 			}
 
 			//Resize the height and width of these panels because
@@ -344,9 +344,14 @@ Ext.define('ZCS.controller.ZtAppViewController', {
 			appViewConfig.itemPanel.setWidth(itemPanelWidth);
 
 			appViewConfig.overviewPanel.setWidth(overlayWidth);
+
 			if (appViewConfig.placeHolder) {
 				appViewConfig.placeHolder.setWidth(overlayWidth);
 			}
+			
+			if (appViewConfig && appViewConfig.listPanel) {
+                appViewConfig.listPanel.setWidth(overlayWidth);
+ 			}
 
 			appViewConfig.overviewPanel.setHeight(overviewHeight);
 
