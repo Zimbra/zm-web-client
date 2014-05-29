@@ -102,6 +102,7 @@ function() {
 	}
 	this.getSetting(ZmSetting.POLLING_INTERVAL).addChangeListener(listener);
 	this.getSetting(ZmSetting.SKIN_NAME).addChangeListener(listener);
+	this.getSetting(ZmSetting.SHOW_SELECTION_CHECKBOX).addChangeListener(listener);
 	this.getSetting(ZmSetting.LOCALE_NAME).addChangeListener(listener);
 	this.getSetting(ZmSetting.FONT_NAME).addChangeListener(listener);
 	this.getSetting(ZmSetting.FONT_SIZE).addChangeListener(listener);
@@ -1064,28 +1065,31 @@ function() {
  */
 ZmSettings.prototype._changeListener =
 function(ev) {
-	if (ev.type != ZmEvent.S_SETTING) { return; }
 
-	var id = ev.source.id;
-	if (id == ZmSetting.QUOTA_USED) {
+	if (ev.type !== ZmEvent.S_SETTING) {
+		return;
+	}
+
+	var id = ev.source.id,
+		value = ev.source.getValue();
+
+	if (id === ZmSetting.QUOTA_USED) {
 		appCtxt.getAppController().setUserInfo();
-	} else if (id == ZmSetting.POLLING_INTERVAL) {
+	}
+	else if (id === ZmSetting.POLLING_INTERVAL) {
 		appCtxt.getAppController().setPollInterval();
-	} else if (id == ZmSetting.SKIN_NAME) {
-		var cd = appCtxt.getYesNoMsgDialog();
-		cd.reset();
-		var skin = ev.source.getValue();
-		cd.registerCallback(DwtDialog.YES_BUTTON, this._newSkinYesCallback, this, [skin, cd]);
-		cd.setMessage(ZmMsg.skinChangeRestart, DwtMessageDialog.WARNING_STYLE);
-		cd.popup();
+	}
+	else if (id === ZmSetting.SKIN_NAME) {
+		this._showConfirmDialog(ZmMsg.skinChangeRestart, this._refreshBrowserCallback.bind(this, { skin: value }));
         appCtxt.reloadAppCache();
-	} else if (id === ZmSetting.FONT_NAME || id === ZmSetting.FONT_SIZE) {
-		var cd = appCtxt.getYesNoMsgDialog();
-		cd.reset();
-		cd.registerCallback(DwtDialog.YES_BUTTON, this._refreshBrowserCallback, this, [cd]);
-		cd.setMessage(ZmMsg.fontChangeRestart, DwtMessageDialog.WARNING_STYLE);
-		cd.popup();
-	} else if (id == ZmSetting.LOCALE_NAME) {
+	}
+	else if (id === ZmSetting.SHOW_SELECTION_CHECKBOX) {
+		this._showConfirmDialog(value ? ZmMsg.checkboxChangeRestartShow : ZmMsg.checkboxChangeRestartHide, this._refreshBrowserCallback.bind(this));
+	}
+	else if (id === ZmSetting.FONT_NAME || id === ZmSetting.FONT_SIZE) {
+		this._showConfirmDialog(ZmMsg.fontChangeRestart, this._refreshBrowserCallback.bind(this));
+	}
+	else if (id === ZmSetting.LOCALE_NAME) {
 		// bug: 29786
 		if (appCtxt.isOffline && AjxEnv.isPrism) {
 			try {
@@ -1100,25 +1104,28 @@ function(ev) {
 				// do nothing for now
 			}
 		}
-		var cd = appCtxt.getYesNoMsgDialog();
-		cd.reset();
-		var skin = ev.source.getValue();
-		cd.registerCallback(DwtDialog.YES_BUTTON, this._refreshBrowserCallback, this, [cd]);
-		cd.setMessage(ZmMsg.localeChangeRestart, DwtMessageDialog.WARNING_STYLE);
-		cd.popup();
+		this._showConfirmDialog(ZmMsg.localeChangeRestart, this._refreshBrowserCallback.bind(this));
         appCtxt.reloadAppCache();
-	} else if (id == ZmSetting.CHILD_ACCTS_VISIBLE) {
-		var cd = appCtxt.getYesNoMsgDialog();
-		cd.reset();
-		cd.registerCallback(DwtDialog.YES_BUTTON, this._refreshBrowserCallback, this, [cd]);
-		cd.setMessage(ZmMsg.accountChangeRestart, DwtMessageDialog.WARNING_STYLE);
-		cd.popup();
-	} else if (appCtxt.isOffline && id == ZmSetting.OFFLINE_IS_MAILTO_HANDLER) {
+	}
+	else if (id === ZmSetting.CHILD_ACCTS_VISIBLE) {
+		this._showConfirmDialog(ZmMsg.accountChangeRestart, this._refreshBrowserCallback.bind(this));
+	}
+	else if (appCtxt.isOffline && id === ZmSetting.OFFLINE_IS_MAILTO_HANDLER) {
 		appCtxt.getAppController().registerMailtoHandler(true, ev.source.getValue());
-	} else if (appCtxt.isOffline && id == ZmSetting.OFFLINE_UPDATE_NOTIFY) {
+	}
+	else if (appCtxt.isOffline && id === ZmSetting.OFFLINE_UPDATE_NOTIFY) {
 		appCtxt.getAppController()._offlineUpdateChannelPref(ev.source.getValue());
 	}
+};
 
+// Shows a confirm dialog that asks the user if they want to reload ZCS to show the change they just made
+ZmSettings.prototype._showConfirmDialog = function(text, callback) {
+
+	var confirmDialog = appCtxt.getYesNoMsgDialog();
+	confirmDialog.reset();
+	confirmDialog.registerCallback(DwtDialog.YES_BUTTON, callback);
+	confirmDialog.setMessage(text, DwtMessageDialog.WARNING_STYLE);
+	confirmDialog.popup();
 };
 
 ZmSettings.prototype._implicitChangeListener =
@@ -1146,23 +1153,11 @@ function(ev) {
 /**
  * @private
  */
-ZmSettings.prototype._newSkinYesCallback =
-function(skin, dialog) {
-	dialog.popdown();
-	window.onbeforeunload = ZmZimbraMail.getConfirmExitMethod();
-	var url = AjxUtil.formatUrl({qsArgs:{skin:skin}});
-	DBG.println(AjxDebug.DBG1, "skin change, redirect to: " + url);
-	ZmZimbraMail.sendRedirect(url); // redirect to self to force reload
-};
-
-/**
- * @private
- */
 ZmSettings.prototype._refreshBrowserCallback =
-function(dialog) {
-	dialog.popdown();
+function(args) {
+	appCtxt.getYesNoMsgDialog().popdown();
 	window.onbeforeunload = ZmZimbraMail.getConfirmExitMethod();
-	var url = AjxUtil.formatUrl({});
+	var url = AjxUtil.formatUrl({ qsArgs: args || {} });
 	window.location.replace(url);
 };
 

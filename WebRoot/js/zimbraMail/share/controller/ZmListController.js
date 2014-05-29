@@ -350,11 +350,17 @@ function(menu) {
 
 ZmListController.prototype._menuPopdownActionListener =
 function(ev) {
+
+	var view = this.getListView();
 	if (!this._pendingActionData) {
-		var view = this.getListView();
 		if (view && view.handleActionPopdown) {
 			view.handleActionPopdown(ev);
 		}
+	}
+	// Reset back to item count unless there is multiple selection
+	var selCount = view ? view.getSelectionCount() : -1;
+	if (selCount <= 1) {
+		this._setItemCountText();
 	}
 };
 
@@ -384,6 +390,12 @@ function(ev) {
 				}
 			}
 			this._resetOperations(this.getCurrentToolbar(), lv.getSelectionCount());
+			if (ev.shiftKey) {
+				this._setItemSelectionCountText();
+			}
+			else {
+				this._setItemCountText();
+			}
 		}
 	}
 	return false;
@@ -410,6 +422,7 @@ function(ev) {
         this._setSearchMenu(actionMenu);
     }
 	this._resetOperations(actionMenu, this.getSelectionCount());
+	this._setItemSelectionCountText();
 };
 
 
@@ -1149,6 +1162,23 @@ function(text) {
 	if (field) {
 		field.setText(text);
 	}
+};
+
+// Returns text that describes how many items are selected for action
+ZmListController.prototype._getItemSelectionCountText = function() {
+
+	var lv = this._view[this._currentViewId],
+		list = lv && lv._list,
+		type = lv._getItemCountType(),
+		num = lv.getSelectionCount(),
+		countKey = 'type' + AjxStringUtil.capitalizeFirstLetter(ZmItem.MSG_KEY[type]),
+		typeText = type ? AjxMessageFormat.format(ZmMsg[countKey], num) : "";
+
+	return num > 0 ? AjxMessageFormat.format(ZmMsg.itemSelectionCount, [num, typeText]) : '';
+};
+
+ZmListController.prototype._setItemSelectionCountText = function() {
+	this._setItemCountText(this._getItemSelectionCountText());
 };
 
 /**

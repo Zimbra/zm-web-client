@@ -851,7 +851,7 @@ function(ev) {
 	ZmListController.prototype._listSelectionListener.call(this, ev);
 
 	if (ev.detail == DwtListView.ITEM_SELECTED)	{
-		this._resetNavToolBarButtons();
+//		this._resetNavToolBarButtons();
 		if (this._currentViewType == ZmId.VIEW_CONTACT_SIMPLE) {
 			this._parentView[this._currentViewId].setContact(ev.item, this.isGalSearch());
 		}	

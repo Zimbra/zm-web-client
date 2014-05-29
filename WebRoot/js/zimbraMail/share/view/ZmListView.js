@@ -714,6 +714,7 @@ function(clickedEl, ev) {
 				}
 				var bContained = this._selectedItems.contains(clickedEl);
 				this.setMultiSelection(clickedEl, bContained);
+				this._controller._setItemSelectionCountText();
 				return;	// do not call base class if "selection" field was clicked
 			}
 		} else if (ev.shiftKey) {
