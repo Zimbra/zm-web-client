@@ -104,6 +104,7 @@ function(results) {
 	}
 
 	this._listView.set(this._devices);
+	this._resetOperations(this._toolbar);
 };
 
 /**
@@ -215,6 +216,10 @@ function(parent, numSel) {
 					button.setImage("MobileWipe");
 				}
 			}
+			if (status === ZmMobileDevice.STATUS_REMOTE_WIPE_COMPLETE) {
+				parent.enable(ZmOperation.MOBILE_WIPE, false);
+			}
+
 		}
 
 		if (!item.provisionable) {
