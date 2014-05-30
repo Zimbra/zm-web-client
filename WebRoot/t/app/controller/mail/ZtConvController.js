@@ -313,7 +313,7 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 
 	/**
 	 * Returns the message that a conversation-level reply should use.
-	 * It will be the first msg not in Sent, Drafts, Trash, or Junk (unless the user
+	 * It will be the latest msg not in Sent, Drafts, Trash, or Junk (unless the user
 	 * is viewing one of those folders, in which case that one is okay).
 	 *
 	 * @param {Function}    callback    callback to run with result if msg needs to be loaded
@@ -321,38 +321,34 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 	 */
 	getActiveMsg: function(callback) {
 
-		var conv = this.getItem(),
-			msgs = conv && conv.getMessages(),
-			ln = msgs ? msgs.length : 0, i, msg, folderId,
-			curFolder = ZCS.session.getCurrentSearchOrganizer(),
+		var	curFolder = ZCS.session.getCurrentSearchOrganizer(),
 			curFolderId = curFolder && curFolder.get('zcsId'),
 			ignoreFolder = ZCS.constant.CONV_REPLY_OMIT,
-			lastMessage = null,
-			activeMsg = null;
+			store = this.getStore(),
+			activeMsg = null,
+			folderId,
+			maxDate = 0;
 
-		for (i = 0; i < ln; i++) {
-			msg = msgs[i];
-			folderId = msg.get('folderId');
-			if (!ignoreFolder[folderId] || (curFolderId === folderId)) {
-				if (!activeMsg) {
-					activeMsg = msg;
-				}
-				lastMessage = msg;
-
+		store.each(function(msg) {
+			var folderId = msg.get('folderId'),
+				msgDate = msg.get('date');
+			if ((!ignoreFolder[folderId] || (curFolderId === folderId)) && msgDate > maxDate) {
+				activeMsg = msg;
+				maxDate = msgDate;
 			}
-		}
-		activeMsg = activeMsg || (ln > 0 ? msgs[0] : null);
+		}, this);
+		activeMsg = activeMsg || store.getAt(0);
 
 		if (callback && activeMsg) {
 			if (activeMsg.get('isLoaded')) {
-				callback(activeMsg, lastMessage);
+				callback(activeMsg);
 			}
 			else {
 				activeMsg.save({
 					op: 'load',
 					id: activeMsg.getId(),
 					success: function() {
-						callback(activeMsg, lastMessage);
+						callback(activeMsg);
 					}
 				});
 			}
@@ -403,16 +399,13 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 			var reader = ZCS.model.mail.ZtMailMsg.getProxy().getReader(),
 				data = reader.getDataFromNode(create),
 				store = this.getStore(),
-				msg = new ZCS.model.mail.ZtMailMsg(data, create.id),
-				messageList = item.getMessages();
+				msg = new ZCS.model.mail.ZtMailMsg(data, create.id);
 
 			if (ZCS.session.getSetting(ZCS.constant.SETTING_CONVERSATION_ORDER) === ZCS.constant.DATE_ASC) {
 				store.add(msg);
-				messageList.push(msg);
 			}
 			else {
 				store.insert(0, [msg]);
-				messageList.unshift(msg);
 			}
 			item.set('numMsgsShown', item.get('numMsgsShown'));
 		}
@@ -524,7 +517,8 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 
 	/**
 	 * Handle message move/delete by checking to see if the conv still has at least one message in the folder
-	 * currently being viewed. If it doesn't, remove it from the list view.
+	 * currently being viewed. If it doesn't, remove it from the list view and clear it from the item panel,
+	 * then select the next conv and display it.
 	 *
 	 * @param {ZtMailMsg}   item        message
 	 * @param {Boolean}     isDelete    if true, this is a (hard) delete; otherwise it's a move
@@ -533,27 +527,28 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 	checkConv: function(item, isDelete) {
 
 		var convId = item.get('convId'),
+			conv = this.getItem(),
+			curId = item && item.getId(),
 			convListCtlr = ZCS.app.getConvListController(),
 			convStore = convListCtlr.getStore();
 
-		if (convStore.getById(convId)) {
-			var	conv = ZCS.cache.get(convId),
-				messages = conv && conv.getMessages(),
-				ln = messages ? messages.length : 0, i,
-				curFolder = ZCS.session.getCurrentSearchOrganizer(),
+		if (convId === curId && convStore.getById(convId)) {
+			var	curFolder = ZCS.session.getCurrentSearchOrganizer(),
 				curFolderId = curFolder && curFolder.get('zcsId'),
+				store = this.getStore(),
 				removeConv = true,
 				folderId, isGone, index, convListView, wasSelected;
 
+
 			if (curFolderId) {
-				for (i = 0; i < ln; i++) {
-					folderId = messages[i].get('folderId');
+				store.each(function(msg) {
+					folderId = msg.get('folderId');
 					isGone = (isDelete && folderId === ZCS.constant.ID_TRASH);
 					if (folderId === curFolderId && !isGone) {
 						removeConv = false;
-						break;
+						return false;
 					}
-				}
+				}, this);
 			}
 			else {
 				removeConv = false;
@@ -581,8 +576,8 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 			return;
 		}
 
-		this.getActiveMsg(function(originalMessage, lastMessage) {
-			ZCS.app.getComposeController().reply(originalMessage, lastMessage);
+		this.getActiveMsg(function(originalMessage) {
+			ZCS.app.getComposeController().reply(originalMessage);
 		});
 	},
 
@@ -592,8 +587,8 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 			return;
 		}
 
-		this.getActiveMsg(function(originalMessage, lastMessage) {
-			ZCS.app.getComposeController().replyAll(originalMessage, lastMessage);
+		this.getActiveMsg(function(originalMessage) {
+			ZCS.app.getComposeController().replyAll(originalMessage);
 		});
 	},
 
@@ -603,14 +598,14 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 			return;
 		}
 
-		this.getActiveMsg(function(originalMessage, lastMessage) {
-			ZCS.app.getComposeController().forward(originalMessage, lastMessage);
+		this.getActiveMsg(function(originalMessage) {
+			ZCS.app.getComposeController().forward(originalMessage);
 		});
 	},
 
 	doEdit: function() {
-		this.getActiveMsg(function(originalMessage, lastMessage) {
-			ZCS.app.getComposeController().compose(originalMessage, lastMessage);
+		this.getActiveMsg(function(originalMessage) {
+			ZCS.app.getComposeController().compose(originalMessage);
 		});
 	},
 

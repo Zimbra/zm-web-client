@@ -41,7 +41,7 @@ Ext.define('ZCS.model.mail.ZtConv', {
 				type:       'int',
 				convert:    function(value, record) {
 					var numMsgs = 0;
-					Ext.each(record.getMessages(), function(msg) {
+					Ext.each(record.getMessageInfo(), function(msg) {
 						if (ZCS.model.mail.ZtConv.shouldShowMessage(msg)) {
 							numMsgs++;
 						}
@@ -63,8 +63,8 @@ Ext.define('ZCS.model.mail.ZtConv', {
 			writer: 'convwriter'
 		},
 
-		messages:       [],
-		folderHash:     {}
+		messageInfo:    [],     // minimal info about each msg (ID and folder) we get from conv search results
+		folderHash:     {}      // lookup hash of folders that this conv spans
 	},
 
 	statics: {
@@ -75,14 +75,14 @@ Ext.define('ZCS.model.mail.ZtConv', {
 		 *
 		 * Note: for an unloaded conv, this relies on an 8.5+ server.
 		 *
-		 * @param   {ZtMailMsg}     msg
-		 * @returns {boolean}
+		 * @param   {Object}     msg        msg info (id and folderId)
+		 * @returns {boolean}   true if msg would be displayed in conv
 		 */
 		shouldShowMessage: function(msg) {
 
 			var curFolder = ZCS.session.getCurrentSearchOrganizer(),
 				curFolderId = curFolder ? curFolder.get('zcsId') : '',
-				msgFolderId = msg instanceof ZCS.model.mail.ZtMailMsg ? msg.get('folderId') : msg.l,
+				msgFolderId = msg.l,
 				localId = ZCS.util.localId(msgFolderId),
 				conv = ZCS.cache.get(msg.cid),
 				isSolo = conv && conv.get('numMsgs') === 1;
@@ -95,7 +95,7 @@ Ext.define('ZCS.model.mail.ZtConv', {
 
 		// do this first so that 'numMsgsShown' can be calculated during construction
 		if (data && data.msgs && data.msgs.length > 0) {
-			this.setMessages(data.msgs);
+			this.setMessageInfo(data.msgs);
 		}
 
 		// need to do this or get a JS error handling search results (see ZtItem ctor)
@@ -108,7 +108,7 @@ Ext.define('ZCS.model.mail.ZtConv', {
 			folderId;
 
 		Ext.each(messages, function(message) {
-			folderId = message.get('folderId');
+			folderId = message.l;
 			if (folderId) {
 				folderHash[folderId] = true;
 			}

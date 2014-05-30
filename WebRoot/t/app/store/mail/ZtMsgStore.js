@@ -25,8 +25,6 @@ Ext.define('ZCS.store.mail.ZtMsgStore', {
 	config: {
 		model: 'ZCS.model.mail.ZtMailMsg',
 
-//		remoteSort: true,
-
 		// We always ask for msgs in dateDesc order from server since we ask it to expand the first one and we want
 		// that to be the latest msg. The user may want msgs in dateAsc order, so we use a sorter here to take care
 		// of that.
@@ -40,35 +38,6 @@ Ext.define('ZCS.store.mail.ZtMsgStore', {
 					return isAsc ? date1 - date2 : date2 - date1;
 				}
 			}
-		],
-
-		listeners: {
-
-			// add the msgs that were just loaded to their owning conv
-			refresh: function(me, records, eOpts) {
-
-				if (!records || (records.getCount() === 0)) {
-					return;
-				}
-
-				var conv = ZCS.app.getConvController().getItem(),
-					convId = conv && conv.getId(),
-					messages = [];
-
-				records.each(function(msg) {
-					var cid = msg.get('convId');
-					if (cid === convId) {
-						messages.push(msg);
-					}
-					else if (cid && convId) {
-                        //<debug>
-						Ext.Logger.error('conv ID ' + cid + ' in msg does not match current conv ID ' + convId);
-                        //</debug>
-					}
-				}, this);
-
-				conv.setMessages(messages);
-			}
-		}
+		]
 	}
 });
