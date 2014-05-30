@@ -39,7 +39,9 @@ Ext.define('ZCS.controller.calendar.ZtNewAppointmentController', {
 
         inviteId: null,
 
-        action: null
+        action: null,
+
+        instanceStartTime: null
     },
 
     /**
@@ -89,6 +91,9 @@ Ext.define('ZCS.controller.calendar.ZtNewAppointmentController', {
             msg = this.getMsg(),
             invite = msg.get('invite'),
 	        isSeries = ZCS.app.getCalendarController().getIsSeries();
+
+        // Time doesn't get mutated after updating values of time picker fields
+        this.setInstanceStartTime(event.get('start').getTime());
 
         // Create and populate the simple attrs
         Ext.each(ZCS.constant.CALENDAR_FIELDS, function(attr) {
@@ -329,7 +334,7 @@ Ext.define('ZCS.controller.calendar.ZtNewAppointmentController', {
 
 	    if (isInstance && !isException) {
 		    data.createException = true;
-		    data.instanceStart = event.get('start');
+		    data.instanceStartTime = this.getInstanceStartTime();
 	    }
 
 	    this.performOp(invite, data, function() {
