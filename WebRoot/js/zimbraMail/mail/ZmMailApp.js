@@ -1606,7 +1606,7 @@ function(params, callback) {
 ZmMailApp.prototype._handleLoadLaunch =
 function(params, callback) {
 	// set type for initial search
-	this._groupBy = (appCtxt.isWebClientOffline()) ? ZmSetting.GROUP_BY_MESSAGE : appCtxt.get(ZmSetting.GROUP_MAIL_BY);
+	this._groupBy = appCtxt.get(ZmSetting.GROUP_MAIL_BY);
 
 	var query;
 	params = params || {};
@@ -2355,12 +2355,7 @@ function() {
 	ZmApp.prototype.resetWebClientOfflineOperations.apply(this);
     //Refreshing the mail list both for online and offline mode
 	var isWebClientOnline = !appCtxt.isWebClientOffline();
-	if (isWebClientOnline) {
-        this.refresh();
-    }
-    else {
-        this.mailSearch();
-    }
+	this.mailSearch();
 	var folders = appCtxt.getFolderTree().getByType(ZmOrganizer.FOLDER);
 	var overview = this.getOverview();
 	if (folders && overview) {
