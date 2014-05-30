@@ -77,15 +77,21 @@ function(results, resultsCtlr) {
 };
 
 /**
- * Shows the overview or the filter panel. The overview is showing during a DnD operation.
+ * Shows the overview or the filter panel, and the mini-calendar. The overview is shown during a DnD operation.
  *
  * @param {Boolean}     show    if true, show the overview; if false, show the filter panel
  */
 ZmSearchResultsController.prototype.showOverview =
 function(show) {
-	var overview = this._resultsApp.getOverview();
+
+	var overview = this._resultsApp.getOverview(),
+		avm = appCtxt.getAppViewMgr();
+
 	if (overview) {
-		appCtxt.getAppViewMgr().setViewComponents(this.viewId, { tree: show ? overview : this._filterPanel }, true);
+		var treeComp = {};
+		treeComp[ZmAppViewMgr.C_TREE] = show ? overview : this._filterPanel;
+		avm.setViewComponents(this.viewId, treeComp, true);
+		avm.displayComponent(ZmAppViewMgr.C_TREE_FOOTER, show, true);
 	}
 };
 
