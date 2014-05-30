@@ -1054,6 +1054,8 @@ function(ev) {
 			this._addRow(div, convIndex + msgIndex + 1);
 			rowIds.push(div.id);
 		}
+		forceUpdateConvSize = true;
+		convToUpdate = conv;
 		handled = ev.handled = true;
 	}
 
