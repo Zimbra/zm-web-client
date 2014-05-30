@@ -413,6 +413,9 @@ function(node, args) {
 		if (node.ref) {
 			contact.ref = node.ref;
 		}
+		if (node.tn) {
+			contact._parseTagNames(node.tn);
+		}
 		AjxUtil.hashUpdate(contact.attr, node._attrs);	// merge new attrs just in case we don't have them
 		contact.list = args.list || new ZmContactList(null);
 	}
