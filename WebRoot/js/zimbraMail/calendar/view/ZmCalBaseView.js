@@ -606,6 +606,10 @@ function(item, skipNotify) {
 	}
 };
 
+ZmCalBaseView.prototype._getItemCountType = function() {
+	return ZmId.ITEM_APPOINTMENT;
+};
+
 ZmCalBaseView.prototype.getSelectionCount =
 function() {
 	return this._selectedItems.size();
