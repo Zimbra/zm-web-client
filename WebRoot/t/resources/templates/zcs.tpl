@@ -28,7 +28,7 @@
 <template id="ConvListItem">
 	<tpl if="deletedIndicator">
 		<div class='zcs-mail-listitem-deleted'>
-			Conversation deleted
+			{[ZtMsg.convDeleted]}
 		</div>
 	<tpl else>
 		<div class='zcs-mail-list-slideable'>
@@ -311,7 +311,7 @@
 			</tr>
 			<tr>
 				<td class='zcs-invite-label'>{[ZtMsg.invEndLabel]}</td>
-				<td>{end}&nbsp;</td>
+				<td>{end}</td>
 			</tr>
 			</tpl>
 			<tpl if="location">
@@ -340,19 +340,20 @@
 			<tr>
 				<td class='zcs-invite-label'>{[ZtMsg.invAttendeesLabel]}</td>
 				<td>
-				<tpl for="attendees">
-					<span class='zcs-contact-name' id='{id}'>{name}</span>
-				</tpl>
+					<tpl for="attendees">
+						<span class='zcs-contact-name' id='{id}'>{name}</span>
+					</tpl>
 				</td>
 			</tr>
-
 			</tpl>
+
 			<tpl if="recurrence">
 			    <tr>
 			        <td class='zcs-invite-label'>{[ZtMsg.invRecurLabel]}</td>
 			        <td>{recurrence}</td>
 			    </tr>
 			</tpl>
+
 			<tpl if="attendeeResponse && attendeeResponseMsg">
 				<tr>
 					<tpl if="attendeeResponse == [ZCS.constant.PSTATUS_ACCEPTED]">
@@ -372,6 +373,7 @@
 					</tpl>
 				</tr>
 			</tpl>
+
 			<tpl if="optAttendees && optAttendees.length">
 				<tr>
 					<td class='zcs-invite-label'>{[ZtMsg.invOptionalAttendeesLabel]}</td>
@@ -382,6 +384,7 @@
 					</td>
 				</tr>
 			</tpl>
+
 			<tpl if="myResponse">
 				<tr>
 					<td class='zcs-invite-label'>{[ZtMsg.invStatusLabel]}</td>
@@ -508,9 +511,11 @@
 		<tpl if="start">
 			<div class='view-appt-time'><span>{start}</span></div>
 		</tpl>
+
 		<tpl if="location">
 			<div class='view-appt-location'><span>{location}</span></div>
 		</tpl>
+
 		<tpl if="isException">
 			<div class='view-appt-exception'><span>{[ZtMsg.appointmentExceptionNote]}</span></div>
 		</tpl>
@@ -526,6 +531,7 @@
 					</div>
 				</div>
 			</tpl>
+
 			<tpl if="attendees">
 				<div class='zcs-apptview-fieldSet'>
 					<div class='zcs-apptview-label'>{[ZtMsg.invAttendeesLabel]}</div>
@@ -552,7 +558,7 @@
 							</tpl>
 							<tpl else>
 								<tpl for="attendees">
-									<span id={id}>{name}</span>
+									<span class='view-appt-attendee' id={id}>{name}</span>
 								</tpl>
 							</tpl>
 						</div>
@@ -585,7 +591,7 @@
 								</tpl>
 							<tpl else>
 								<tpl for="optAttendees">
-									<span id={id}>{name}</span>
+									<span class='view-appt-attendee' id={id}>{name}</span>
 								</tpl>
 							</tpl>
 						</div>
@@ -620,7 +626,7 @@
 
 			<tpl if="calendar">
 				<div class='zcs-apptview-fieldSet'>
-					<div class='zcs-apptview-label'>Calendar</div>   <!-- TODO: Add as string -->
+					<div class='zcs-apptview-label'>{[ZtMsg.calendarLabel]}</div>
 					<div class='zcs-apptview-fields'>
 						<div class='zcs-apptview-field'>
 							<span class='view-appt-color-block zcs-tag-{color}' style='background-color:{rgb};'></span>
@@ -646,9 +652,7 @@
 					<div class='zcs-apptview-label'>{[ZtMsg.invReminderLabel]}</div>
 					<div class='zcs-apptview-fields'>
 						<div class='zcs-apptview-field'>
-							<tpl for="attendees">
-								<span>{reminder} {[ZtMsg.invReminderText]}</span>
-							</tpl>
+							<span>{reminder} {[ZtMsg.invReminderText]}</span>
 						</div>
 					</div>
 				</div>
@@ -659,9 +663,7 @@
 					<div class='zcs-apptview-label'>{[ZtMsg.invRecurLabel]}</div>
 					<div class='zcs-apptview-fields'>
 						<div class='zcs-apptview-field'>
-							<tpl for="attendees">
-								<span>{recurrence}</span>
-							</tpl>
+							<span>{recurrence}</span>
 						</div>
 					</div>
 				</div>
@@ -686,9 +688,11 @@
 	<tpl if="displayName">
 		<span class='zcs-auto-complete-name'>{displayName}</span>
 	</tpl>
+
 	<tpl if="name">
 		<span class='zcs-auto-complete-name'>{name}</span>
 	</tpl>
+
 	<tpl if="email">
 		<span class='zcs-auto-complete-email'>{email}</span>
 	</tpl>

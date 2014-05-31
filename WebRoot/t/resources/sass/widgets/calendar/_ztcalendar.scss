@@ -179,7 +179,9 @@ $apptLabelWidth: 5rem;
 			@extend .zcs-floatLeft;
 			@include ellipsis();
 			@include opacity(.5);
+			left: 0;
 			margin-left: 0.75em;
+			position: absolute;
 			text-align: right;
 			width: $apptLabelWidth;
 
@@ -198,11 +200,13 @@ $apptLabelWidth: 5rem;
 
 		.zcs-apptview-fields {
 			@extend .zcs-floatLeft;
+			margin-left: $apptLabelWidth + $formDisplayGutter;
 
 			.zcs-apptview-field {
 				@extend .zcs-newLine;
 				@include ellipsis();
 				margin: 0 1em 0.5em;
+				white-space: normal; //override
 			}
 		}
 
@@ -268,36 +272,49 @@ DIV.more-events {
 	padding-top: 1em;
 }
 
-.view-appt-ptst {
+.view-appt-attendee {
 	font-size: 1em;
-	// nudged a little to the left to align the text with icons
-	//margin-left: -0.4em;
+	white-space: nowrap;
+
+	&:after {
+		content: ',';
+	}
+
+	&:last-child:after {
+		content: '';
+	}
+}
+
+$responseIconPos: 0 center no-repeat;
+
+.view-appt-ptst {
+	@extend .view-appt-attendee;
+	padding-left: 1.5em;
+	padding-right: 1em;
 }
 
 .view-appt-accepted {
 	@extend .view-appt-ptst;
-	@include background(url('/img/zimbra/ImgCheck.png') $invBtnIconPos);
+	@include background(url('/img/zimbra/ImgCheck.png') $responseIconPos);
 }
 
 .view-appt-declined {
 	@extend .view-appt-ptst;
-	@include background(url('/img/zimbra/ImgCancel.png') $invBtnIconPos);
+	@include background(url('/img/zimbra/ImgCancel.png') $responseIconPos);
 }
 
 .view-appt-tentative {
 	@extend .view-appt-ptst;
-	@include background(url('/img/zimbra/ImgQuestionMark.png') $invBtnIconPos);
+	@include background(url('/img/zimbra/ImgQuestionMark.png') $responseIconPos);
 }
 
 .view-appt-noresponse {
 	@extend .view-appt-ptst;
-	@include background(url('/img/zimbra/ImgQuestionMark.png') $invBtnIconPos);
+	@include background(url('/img/zimbra/ImgQuestionMark.png') $responseIconPos);
 }
 
 .view-appt-showDetails {
 	@extend .zcs-link;
-//	padding-left: 0.5em;
-//	padding-right: 0.5em;
 }
 
 .view-appt-name {
