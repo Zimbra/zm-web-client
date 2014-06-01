@@ -25,8 +25,6 @@ ZmDesktopAlert = function() {
 		this.useNotification = true;
     } else if (appCtxt.isOffline && window.platform && (AjxEnv.isWindows || AjxEnv.isMac)) {
         this.usePrism = true;
-    } else {
-        this.useBrowserPlus = true;
     }
 };
 
@@ -52,17 +50,7 @@ function() {
        return ZmMsg.showPopup;
     } else if (this.usePrism) {
 		return AjxEnv.isMac ? ZmMsg.showPopupMac : ZmMsg.showPopup;
-	} else {
-		return ZmMsg.showPopupBrowserPlus;
 	}
-};
-
-/**
- * Returns any link text to show in a prefs page, for example a link to install browser plus if necessary.
- */
-ZmDesktopAlert.prototype.getLinkText =
-function() {
-	return this.useBrowserPlus ? ZmMsg.showPopupBrowserPlusLink : "";
 };
 
 ZmDesktopAlert.prototype.start =
@@ -84,12 +72,6 @@ function(title, message, sticky) {
 				window.platform.icon().showNotification(title, message, 5);
 			} catch (err) {}
 		}
-	} else {
-		AjxDispatcher.require([ "BrowserPlus" ]);
-		var serviceObj = { service: "Notify", version: "2", minversion: "2.0.9" };
-		var callback = new AjxCallback(this, this._notifyServiceCallback, [title, message]);
-		var errorCallback = new AjxCallback(this, this._notifyServiceErrorCallback);
-		ZmBrowserPlus.getInstance().require(serviceObj, callback, errorCallback);
 	}
 };
 
@@ -186,12 +168,6 @@ function(title, message, service) {
 		service.show({ title: title, message: message }, function(){});
 	} catch (err) {}
 };
-
-ZmDesktopAlert.prototype._notifyServiceErrorCallback =
-function(result) {
-	DBG.println(AjxDebug.DBG1, "BrowserPlus error: " + (result ? (result.error + " - " + result.verboseError) : result));
-};
-
 
 /**
  * Closes desktop notification if any during onbeforeunload event

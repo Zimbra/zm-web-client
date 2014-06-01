@@ -322,7 +322,7 @@
 	String allPackages = "Startup1_1,Startup1_2";
     if (extraPackages != null) {
     	if (extraPackages.equals("dev")) {
-            extraPackages = "Startup2,MailCore,Mail,ContactsCore,CalendarCore,Calendar,CalendarAppt,Contacts,BriefcaseCore,Briefcase,PreferencesCore,Preferences,TasksCore,Tasks,Extras,Share,Zimlet,ZimletApp,Alert,ImportExport,BrowserPlus,Voicemail";
+            extraPackages = "Startup2,MailCore,Mail,ContactsCore,CalendarCore,Calendar,CalendarAppt,Contacts,BriefcaseCore,Briefcase,PreferencesCore,Preferences,TasksCore,Tasks,Extras,Share,Zimlet,ZimletApp,Alert,ImportExport,Voicemail";
     	}
     	allPackages += "," + BeanUtils.cook(extraPackages);;
     }
