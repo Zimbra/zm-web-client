@@ -42,7 +42,8 @@ Ext.define('ZCS.view.mail.ZtMsgListView', {
 		infinite:             false,
 		scrollable: {
 			direction: 'vertical'
-		}
+		},
+		emptyText: ZtMsg.emptyConvPanel
 	},
 
 	lastPageX: 0,

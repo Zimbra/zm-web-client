@@ -291,6 +291,12 @@
 		</tpl>
 </template>
 
+<template id="EmptyContactView">
+	<div class="zcs-contactview-empty">
+		<div class="x-innerhtml">{[ZtMsg.emptyContactPanel]}</div>
+	</div>
+</template>
+
 #widgets/_assignmentview.scss
 <template id="TagAssignmentListItem">
 	<div class='zcs-tag zcs-tag-{color} zcs-tag-large' <tpl if="rgb">style='background-color:{rgb};'</tpl>></div>{displayName}

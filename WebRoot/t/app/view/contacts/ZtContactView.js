@@ -25,8 +25,9 @@ Ext.define('ZCS.view.contacts.ZtContactView', {
 	xtype: ZCS.constant.APP_CONTACTS + 'itemview',
 
 	config: {
-		tpl: Ext.create('Ext.XTemplate', ZCS.template.Contact),
-        cls: 'zcs-contactview',
+		tpl:        Ext.create('Ext.XTemplate', ZCS.template.Contact),
+		emptyTpl:   Ext.create('Ext.XTemplate', ZCS.template.EmptyContactView),
+        cls:        'zcs-contactview',
         scrollable: {
             direction: 'vertical',
             directionLock: true
@@ -81,6 +82,6 @@ Ext.define('ZCS.view.contacts.ZtContactView', {
 	},
 
 	clearItem: function() {
-		this.setHtml('');
+		this.setHtml(this.getEmptyTpl().apply({}));
 	}
 });

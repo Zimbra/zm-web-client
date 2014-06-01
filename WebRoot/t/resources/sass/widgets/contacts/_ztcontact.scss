@@ -458,3 +458,8 @@ $contactGroupMemberImageRadius: $contactGroupMemberImageSize / 2;
 .contact-form-add-field-button {
 	min-height: $contactFormButtonMinHeight;
 }
+
+.zcs-contactview-empty {
+  font-style: italic;
+  text-align: center;
+}

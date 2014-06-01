@@ -244,7 +244,7 @@ Ext.define('ZCS.model.ZtOrganizer', {
 		}
 
 		if (data.path) {
-			var sysId = ZCS.util.localId(this.get('zcsId')),
+			var sysId = ZCS.util.localId(data.zcsId),
 				sysName = ZCS.constant.FOLDER_SYSTEM_NAME[sysId],
 				path = sysName && this.isSystem() ? '/' + sysName : data.path;
 
