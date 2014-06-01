@@ -238,7 +238,7 @@
 					<div class='zcs-contactview-label'>{[ZtMsg.email]}</div>
 					<div class='zcs-contactview-fields'>
 						<tpl for="email">
-							<div class='zcs-contactview-field'>{email:htmlEncode}</div>
+							<div class='zcs-contactview-field zcs-contactview-email'><a href='#' id='{id}'>{email:htmlEncode}</a></div>
 							<div class='zcs-contactview-subLabel'>{typeStr}</div>
 						</tpl>
 					</div>

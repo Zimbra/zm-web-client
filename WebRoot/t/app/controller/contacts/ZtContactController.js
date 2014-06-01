@@ -61,7 +61,8 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
 		        contactAssignment: 'saveItemTag'
 	        },
 	        contactView: {
-		        tagTap:     'showMenu'
+		        tagTap:         'showMenu',
+		        addressTouch:   'doComposeToAddress'
 	        },
             contactActionsMenu: {
                 itemtap:    'onMenuItemSelect'
@@ -660,5 +661,9 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
      */
     enableMenuItems: function(menu) {
         this.enableTagItem(menu);
-    }
+    },
+
+	doComposeToAddress: function (address) {
+		ZCS.app.getMsgController().doComposeToAddress(address);
+	}
 });
