@@ -1322,7 +1322,7 @@ ZmBaseController.prototype._clipCopyComplete = function(clip) {
 ZmBaseController.prototype._bubbleMenuPopdownListener = function() {
 
 	var itemView = this.getItemView(),
-		bubbleList = itemView._bubbleList,
+		bubbleList = itemView && itemView._bubbleList,
 		bubble = this._actionEv && this._actionEv.bubble;
 
 	if (bubbleList) {
