@@ -106,7 +106,7 @@
 	exports.define = define;
 	exports.require = require;
 
-	expose(["tinymce/pasteplugin/Utils","tinymce/pasteplugin/Clipboard","tinymce/pasteplugin/WordFilter","tinymce/pasteplugin/Quirks","tinymce/pasteplugin/Plugin"]);
+	expose(["tinymce/pasteplugin/Utils","tinymce/pasteplugin/WordFilter"]);
 
 	load('classes/Utils.js');
 	load('classes/Clipboard.js');

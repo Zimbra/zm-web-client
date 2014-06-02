@@ -714,9 +714,8 @@ function(id, content) {
         paste_retain_style_properties : "all",
 		paste_data_images: true,
         paste_remove_styles_if_webkit : false,
-        // NB: we've patched default_table_* into TinyMCE
-        default_table_attributes: { cellpadding: '3px', border: '1px' },
-        default_table_styles: { width: '90%', tableLayout: 'fixed' },
+        table_default_attributes: { cellpadding: '3px', border: '1px' },
+        table_default_styles: { width: '90%', tableLayout: 'fixed' },
 		setup : function(ed) {
             ed.on('LoadContent', obj.onLoadContent.bind(obj));
             ed.on('PostRender', obj.onPostRender.bind(obj));

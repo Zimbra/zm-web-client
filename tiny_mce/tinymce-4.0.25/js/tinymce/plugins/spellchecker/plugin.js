@@ -931,5 +931,5 @@ define("tinymce/spellcheckerplugin/Plugin", [
 	});
 });
 
-expose(["tinymce/spellcheckerplugin/DomTextMatcher","tinymce/spellcheckerplugin/Plugin"]);
+expose(["tinymce/spellcheckerplugin/DomTextMatcher"]);
 })(this);

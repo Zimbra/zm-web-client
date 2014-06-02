@@ -1932,8 +1932,8 @@ define("tinymce/tableplugin/Plugin", [
 			var tableElm = editor.dom.get('__mce');
 			editor.dom.setAttrib(tableElm, 'id', null);
 
-			editor.dom.setAttribs(tableElm, editor.settings.default_table_attributes || {});
-			editor.dom.setStyles(tableElm, editor.settings.default_table_styles || {});
+			editor.dom.setAttribs(tableElm, editor.settings.table_default_attributes || {});
+			editor.dom.setStyles(tableElm, editor.settings.table_default_styles || {});
 
 			return tableElm;
 		}
@@ -2315,6 +2315,4 @@ define("tinymce/tableplugin/Plugin", [
 
 	PluginManager.add('table', Plugin);
 });
-
-expose(["tinymce/tableplugin/TableGrid","tinymce/tableplugin/Quirks","tinymce/tableplugin/CellSelection","tinymce/tableplugin/Plugin"]);
 })(this);
