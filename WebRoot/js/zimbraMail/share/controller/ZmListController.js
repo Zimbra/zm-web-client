@@ -1271,10 +1271,14 @@ function(params, actionParams) {
 			if (lv.allSelected) {
 				// items beyond page were acted on, give user a total count
 				if (actionParams.actionTextKey) {
+					var type = contResult.type;
+					if (type === ZmId.SEARCH_MAIL) {
+						type = this._list.type; //get the specific CONV/MSG type instead of the "searchFor" "MAIL".
+					}
 					actionParams.actionSummary = ZmList.getActionSummary({
 						actionTextKey:  actionParams.actionTextKey,
 						numItems:       this._continuation.totalItems,
-						type:           contResult.type,
+						type:           type,
 						actionArg:      actionParams.actionArg
 					});
 				}
