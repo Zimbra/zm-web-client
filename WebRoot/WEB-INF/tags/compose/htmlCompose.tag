@@ -135,7 +135,7 @@ var myEditor;
     	var plugins = [
     		"zemoticons",
     		"table", "paste", "directionality", "textcolor", "lists", "advlist",
-    		"link", "hr", "charmap", "contextmenu", "code"
+    		"link", "hr", "charmap", "code"
     	];
 
         var tinyMCEInitObj = {
@@ -155,7 +155,7 @@ var myEditor;
             menubar : false,
             convert_urls : false,
             verify_html : false,
-            gecko_spellcheck : true,
+            browser_spellcheck : true,
             dialog_type : "modal",
             forced_root_block : "div",
             table_default_attributes: { cellpadding: '3px', border: '1px' },

@@ -656,10 +656,11 @@ function(id, content) {
 		'pastetext code'
 	];
 
+	// NB: contextmenu plugin deliberately omitted; it's confusing
 	var plugins = [
 		"zemoticons",
 		"table", "paste", "directionality", "textcolor", "lists", "advlist",
-		"link", "hr", "charmap", "code", "contextmenu", "image"
+		"link", "hr", "charmap", "code", "image"
 	];
 
 	if (this._attachmentCallback) {
@@ -699,7 +700,6 @@ function(id, content) {
 		ie7_compat: false,
 		object_resizing : true,
         font_formats : fonts.join(";"),
-        contextmenu: 'link image | inserttable tableprops deletetable | cell row column',
         fontsize_formats : AjxMsg.fontSizes || '',
 		convert_urls : false,
 		verify_html : false,
@@ -1932,33 +1932,6 @@ ZmHtmlEditor.prototype._handleEditorEvent =
 function(ev) {
 	var ed = this.getEditor();
 	var retVal = true;
-
-	if (ev.type == "contextmenu") {
-		// force use of the browser context menu when control is pressed
-		if (ev.ctrlKey) {
-			return;
-		}
-
-		// context menu event; we want to translate the event
-		// coordinates from iframe to parent document coords,
-		// before notifying listeners.
-		var mouseEv = DwtShell.mouseEvent;
-		mouseEv.setFromDhtmlEvent(ev);
-		var pos = Dwt.getLocation(document.getElementById(this._iFrameId));
-		if (!AjxEnv.isIE) {
-			var doc = this._getIframeDoc();
-			var sl = doc.documentElement.scrollLeft || doc.body.scrollLeft;
-			var st = doc.documentElement.scrollTop || doc.body.scrollTop;
-			pos.x -= sl;
-			pos.y -= st;
-		}
-		mouseEv.docX += pos.x;
-		mouseEv.docY += pos.y;
-		DwtControl.__mouseEvent(ev, DwtEvent.ONCONTEXTMENU, this, mouseEv);
-		if (ev._stopPropagation) {
-			retVal = false;
-        }
-	}
 
 	var self = this;
 	if (this._spellCheck && ev.srcElement && ev.srcElement.id in this._spellCheck.spanIds) {
