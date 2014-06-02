@@ -414,6 +414,7 @@ Ext.define('ZCS.controller.calendar.ZtCalendarController', {
             dayView = this.getCalDayView();
         if (!monthView.isHidden()) {
             this.getCalMonthView().updateViewMode('month', date);
+	        this.loadCalendar();
         } else if (!dayView.isHidden()) {
             this.getCalDayView().updateViewMode('day', date);
         }
