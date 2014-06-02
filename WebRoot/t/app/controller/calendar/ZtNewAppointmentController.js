@@ -367,7 +367,7 @@ Ext.define('ZCS.controller.calendar.ZtNewAppointmentController', {
             msg.set('invite', invite);
             ZCS.app.getCalendarController().showItem(msg, isEdit);
         }
-		ZCS.app.getCalendarController().loadCalendar(true);
+		ZCS.app.getCalendarController().loadCalendar();
     },
 
     getCalendarModel: function() {

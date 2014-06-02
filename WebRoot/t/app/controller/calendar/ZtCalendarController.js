@@ -130,23 +130,9 @@ Ext.define('ZCS.controller.calendar.ZtCalendarController', {
     /*
      * Loads the appointments on application switch
      */
-    loadCalendar: function(loadRange) {
+    loadCalendar: function() {
         var defaultQuery = this.getDefaultQuery(),
-            me = this,
-	        loadRange = loadRange || false,
-	        currentEvent = this.getEvent(),
-	        rangeStart,
-	        rangeEnd;
-
-	    if (loadRange && currentEvent) {
-		    var eventStart = Ext.Date.getFirstDateOfMonth(currentEvent.get('start'));
-		    // Fetches events of past 1 month from current events start date
-			rangeStart = eventStart.setMonth(eventStart.getMonth() - 1);
-
-			var eventEnd = Ext.Date.getLastDateOfMonth(currentEvent.get('end'));
-		    // Fetches events of next 1 month from current events end date
-			rangeEnd = eventEnd.setMonth(eventEnd.getMonth() + 1);
-	    }
+            me = this;
 
         //Set the proxies params so this parameter persists between paging requests.
         this.getStore().getProxy().setExtraParams({
@@ -154,8 +140,8 @@ Ext.define('ZCS.controller.calendar.ZtCalendarController', {
         });
 
         this.getStore().load({
-            calStart: loadRange ? rangeStart : this.getMonthStartTime(),
-            calEnd: loadRange ? rangeEnd : this.getMonthEndTime(),
+            calStart: this.getMonthStartTime(),
+            calEnd: this.getMonthEndTime(),
             query: defaultQuery,
             callback: function(records, operation, success) {
                 if (success) {
@@ -374,9 +360,14 @@ Ext.define('ZCS.controller.calendar.ZtCalendarController', {
      * @param {String} direction The direction the period change moved.
      */
     onPeriodChange: function(view, minDate, maxDate, direction) {
+	    var minStart = minDate,
+		    minRange = minStart.setMonth(minStart.getMonth() - 1), // Fetches events of past 1 month from current events start date
+		    maxStart = maxDate,
+		    maxRange = maxStart.setMonth(maxStart.getMonth() + 1); // Fetches events of next 1 month from current events end date
+
         this.getStore().load({
-            calStart: minDate.getTime(),
-            calEnd: maxDate.getTime() + 172800000, // Fetch two days extra
+            calStart: minRange,
+            calEnd: maxRange,
             callback: function(records, operation, success) {
                 if (success) {
                     view.refresh();
