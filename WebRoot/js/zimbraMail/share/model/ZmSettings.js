@@ -1157,7 +1157,7 @@ ZmSettings.prototype._refreshBrowserCallback =
 function(args) {
 	appCtxt.getYesNoMsgDialog().popdown();
 	window.onbeforeunload = ZmZimbraMail.getConfirmExitMethod();
-	var url = AjxUtil.formatUrl({ qsArgs: args || {} });
+	var url = AjxUtil.formatUrl({qsArgs : args});
 	window.location.replace(url);
 };
 
