@@ -126,9 +126,12 @@ Ext.define('ZCS.view.calendar.ZtAppointmentForm', {
 	setPanel: function(msg, isSeries, isEdit) {
 		var invite = msg.get('invite'),
             event = ZCS.app.getCalendarController().getEvent(),
-			startTime = Ext.Date.format(invite.get('start'), ZtMsg.invTimeFormat),
-			endTime = Ext.Date.format(invite.get('end'), ZtMsg.invTimeFormat),
-            eventDate = isSeries ? Ext.Date.format(invite.get('start'), ZtMsg.invDateFormat) :
+			start = invite.get('start'),
+			startTime = Ext.Date.format(start, ZtMsg.invTimeFormat),
+			end = invite.get('end'),
+			// There might not be end date for all day events sync'd from external sources
+			endTime = end && Ext.Date.format(end, ZtMsg.invTimeFormat),
+            eventDate = isSeries ? Ext.Date.format(start, ZtMsg.invDateFormat) :
                 Ext.Date.format(event.get('start'),ZtMsg.invDateFormat),
 			myResponse = invite.get('myResponse'),
 			displayStatus = this.getShowAsOptionLabel(invite.get('fb')),

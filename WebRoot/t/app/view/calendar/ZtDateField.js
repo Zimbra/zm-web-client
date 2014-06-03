@@ -101,10 +101,10 @@ Ext.define('ZCS.view.calendar.ZtDateField', {
 								var invite = msg.get('invite'),
 									invStart = invite.get('start'),
 									invEnd = invite.get('end'),
-									isStartEndSame = invStart.getTime() === invEnd.getTime(),
+									isStartEndSame = invEnd && invStart.getTime() === invEnd.getTime(),
 									elapsedTime = isStartEndSame ? 0 : field.getValue().getTime() - invStart.getTime();
 
-		                        if (endTime) {
+		                        if (endTime && invEnd) {
 			                        endTime.setValue(new Date(invEnd.getTime() + elapsedTime));
 		                        }
 	                        }
