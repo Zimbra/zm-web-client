@@ -115,11 +115,22 @@ Ext.define('ZCS.view.calendar.ZtNewAppointment', {
 
     resetForm: function() {
         this.down('titlebar').setTitle(ZtMsg.createAppointment);
-        this.down('.formpanel').reset();
+
+	    var panel = this.down('.formpanel'),
+		    recurrenceField = panel.down('field[name=recurrence]'),
+		    repeatField = panel.down('field[name=repeat]');
+
+        panel.reset();
+
 	    var attendeesField = this.down('attendeecontainer');
 	    if (attendeesField) {
 		    attendeesField.reset();
 	    }
+
+	    recurrenceField.setValue('');
+	    recurrenceField.setHidden(true);
+	    repeatField.setHidden(false);
+
         this.down('#body').element.down('.zcs-body-field').setHtml('');
     }
 });

@@ -86,7 +86,7 @@ Ext.define('ZCS.model.calendar.ZtCalendarWriter', {
 
                 var m = methodJson.m = {};
 
-                m = this.populateAttrs(methodJson, invite, itemData.isInterMailboxMove, true);
+                m = this.populateAttrs(methodJson, invite, itemData.isInterMailboxMove, true, isCreateException);
 
                 this._addAttachmentsToRequest(m, invite, id, attachments);
 
@@ -118,7 +118,7 @@ Ext.define('ZCS.model.calendar.ZtCalendarWriter', {
         return request;
     },
 
-    populateAttrs: function(request, invite, isInterMailboxMove, isEdit) {
+    populateAttrs: function(request, invite, isInterMailboxMove, isEdit, isCreateException) {
         var m = request.m = {},
             mailFromAddress,
             comps,
@@ -163,6 +163,11 @@ Ext.define('ZCS.model.calendar.ZtCalendarWriter', {
         comp.name = invite.get('subject');
         comp.loc = invite.get('location');
         comp.fb = invite.get('fb');
+
+	    // Send recur object only in when series is edited
+	    if (invite.get('recur') && !isCreateException) {
+		    comp.recur = invite.get('recur');
+	    }
 
         if (isEdit) {
             inv.uid = invite.get('uid');
