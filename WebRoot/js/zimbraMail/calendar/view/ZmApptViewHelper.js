@@ -217,6 +217,7 @@ function(date, list, controller, noheader, emptyMsg, isMinical) {
 	
 	var size = list ? list.size() : 0;
 
+	var useEmptyMsg = true;
 	var dateTime = date.getTime();
 	for (var i = 0; i < size; i++) {
 		var ao = list.get(i);
@@ -228,6 +229,7 @@ function(date, list, controller, noheader, emptyMsg, isMinical) {
             apptDate.setHours(0,0,0,0);
             if (apptDate.getTime() != dateTime) continue;
 
+			useEmptyMsg = false;
             if(!isMinical && ao.toString() == "ZmAppt") {
                 html.append("<tr><td><div class=appt>");
                 html.append(ZmApptViewHelper.getApptToolTipText(ao, controller));
@@ -242,6 +244,7 @@ function(date, list, controller, noheader, emptyMsg, isMinical) {
             }
 		}
 	    else {
+			useEmptyMsg = false;
 		    if(!isMinical && ao.toString() == "ZmAppt") {
                 html.append("<tr><td><div class=appt>");
                 html.append(ZmApptViewHelper.getApptToolTipText(ao, controller));
@@ -267,7 +270,7 @@ function(date, list, controller, noheader, emptyMsg, isMinical) {
             }
 		}
 	}
-	if ( size == 0) {
+	if (useEmptyMsg) {
 		html.append("<tr><td>"+emptyMsg+"</td></tr>");
 	}
 	html.append("</table>");
