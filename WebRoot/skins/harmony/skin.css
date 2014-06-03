@@ -230,7 +230,8 @@ TD.DwtListView-ColumnActive  {
 
 .Row-selected,
 .Row-focused,
-.Row-selected-actioned {
+.Row-selected-actioned,
+.Row-selected-alt {
 	background-color:transparent !important;
 	border-color:inherit;
 }
@@ -253,14 +254,32 @@ TD.DwtListView-ColumnActive  {
 }
 
 .Row-selected>DIV,
+.Row-selected-actioned>DIV,
 .Row-selected.ZmConvExpanded>DIV,
+.Row-selected-actioned.ZmConvExpanded>DIV,
 .Row-selected>TABLE,
+.Row-selected-actioned>TABLE,
 .Row-selected.RowDouble>TABLE,
+.Row-selected-actioned.RowDouble>TABLE,
 .Row-selected.RowDouble>.ZmRowDoubleHeader,
+.Row-selected-actioned.RowDouble>.ZmRowDoubleHeader,
 .Row-selected.SimpleContact>DIV,
-.ZmSuggestResults .Row-selected TD {
+.Row-selected-actioned.SimpleContact>DIV,
+.ZmSuggestResults .Row-selected TD,
+.ZmSuggestResults .Row-selected-actioned TD {
 	background-color:@SelC@;
 	border:1px solid @SelC@;
+}
+
+.Row-selected-alt>DIV,
+.Row-selected-alt.ZmConvExpanded>DIV,
+.Row-selected-alt>TABLE,
+.Row-selected-alt.RowDouble>TABLE,
+.Row-selected-alt.RowDouble>.ZmRowDoubleHeader,
+.Row-selected-alt.SimpleContact>DIV,
+.ZmSuggestResults .Row-selected-alt TD {
+	background-color:@SelAltColor@;
+	border:1px solid @SelAltColor@;
 }
 
 .Row-focused>DIV,

@@ -526,9 +526,20 @@ TD.vSpace {
 .Row-selected-disabled			{	@ListItemContainer-selected@		}
 
 .Row-selected .ZmListFlagsWrapper,
+.Row-selected-disabled .ZmListFlagsWrapper,
 .Row-selected .ZmMsgListDate,
-.Row-selected-disabled .ZmMsgListDate,
-.Row-selected-disabled .ZmListFlagsWrapper 	{	background:@ListItemBgColor-selected@;	}
+.Row-selected-disabled .ZmMsgListDate 	{	background:@ListItemBgColor-selected@;	}
+/* must define on 'background', so it overrides both 'background-color' AND 'background-image' */
+
+.Row-selected-actioned .ZmListFlagsWrapper,
+.Row-selected-actioned .ZmMsgListDate 	{	background:@ListItemBgColor-actioned@;	}
+/* must define on 'background', so it overrides both 'background-color' AND 'background-image' */
+
+/* row selected only for reading pane, not actions */
+.Row-selected-alt				{	@ListItemContainer-sel-alt@		}
+
+.Row-selected-alt .ZmListFlagsWrapper,
+.Row-selected-alt .ZmMsgListDate 	{	background:@ListItemBgColor-sel-alt@;	}
 /* must define on 'background', so it overrides both 'background-color' AND 'background-image' */
 
 /* .Row-matched, */
