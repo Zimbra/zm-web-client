@@ -2104,7 +2104,7 @@ function(text, el, match) {
         
 	}else if(match.email){
         if((type == ZmCalBaseItem.PERSON || type == ZmCalBaseItem.OPTIONAL_PERSON) && this._scheduleAssistant) {
-            var attendees = this.getAttendeesFromString(ZmCalBaseItem.PERSON, this._attInputField[ZmCalBaseItem.PERSON].getValue());
+            var attendees = this.getAttendeesFromString(ZmCalBaseItem.PERSON, this._attInputField[type].getValue());
             this.setAttendeesRole(attendees, (type == ZmCalBaseItem.OPTIONAL_PERSON) ? ZmCalItem.ROLE_OPTIONAL : ZmCalItem.ROLE_REQUIRED);
             if (type == ZmCalBaseItem.OPTIONAL_PERSON) {
                 type = ZmCalBaseItem.PERSON;

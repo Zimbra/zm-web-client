@@ -120,7 +120,8 @@ ZmAutocomplete.prototype._doSearch =
 				params.isGalAutocompleteSearch = true;
 				params.isAutocompleteSearch = false;
 				params.limit = params.limit * 2;
-				params.types = AjxVector.fromArray([ZmItem.CONTACT]);
+				var searchType = ((acType === ZmAutocomplete.AC_TYPE_LOCATION) || (acType === ZmAutocomplete.AC_TYPE_EQUIPMENT)) ?  ZmItem.RESOURCE : ZmItem.CONTACT;
+				params.types = AjxVector.fromArray([searchType]);
 				params.galType = params.galType || ZmSearch.GAL_RESOURCE;
 				DBG.println("ac", "AutoCompleteGalRequest: " + str);
 			} else {
@@ -154,7 +155,7 @@ ZmAutocomplete.prototype._handleResponseDoAutocomplete =
 			var resultList, gotContacts = false, hasGal = false;
 			var resp = result.getResponse();
 			if (resp && resp.search && resp.search.isGalAutocompleteSearch) {
-				var cl = resp.getResults(ZmItem.CONTACT);
+				var cl = resp.getResults(resp.type);
 				resultList = (cl && cl.getArray()) || [];
 				gotContacts = hasGal = true;
 			} else {

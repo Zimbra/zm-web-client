@@ -146,6 +146,10 @@ function(respEl) {
 			if (!data && (type == ZmItem.MSG)) {
 				data = respEl["chat"];
 			}
+			// Likewise, a Resource is a Contact. Futz with the types to deal with this.
+			if (!data && (type == ZmItem.RESOURCE)) {
+				data = respEl[ZmList.NODE[ZmItem.CONTACT]];
+			}
 
 			// do a bunch of sanity checks
 			if (data && data.length) {
