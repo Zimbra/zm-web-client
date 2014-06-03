@@ -628,6 +628,9 @@ INPUT[type="text"].search_input-expanded {
 .TagImage {
 	display:inline-block; vertical-align:middle; padding-right:2px;
 }
+.TagImage IMG {
+	display: block;
+}
 
 /* Container for the view of one particular message
 	-- there can be two instances, one for "conversation" view and one for "messages" view */
