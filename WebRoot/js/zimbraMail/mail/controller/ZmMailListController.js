@@ -1528,7 +1528,7 @@ function(view) {
 ZmMailListController.prototype._setupViewMenuItems =
 function(view, btn) {
 
-	var menu = new ZmPopupMenu(btn, null, null, this);
+	var menu = this._viewMenu = new ZmPopupMenu(btn, null, null, this);
 	btn.setMenu(menu);
     var isExternalAccount = appCtxt.isExternalAccount();
 	if (appCtxt.get(ZmSetting.CONVERSATIONS_ENABLED)) {

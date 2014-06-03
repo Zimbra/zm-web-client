@@ -135,12 +135,27 @@ function() {
 
 ZmDoublePaneController.prototype.switchView =
 function(view, force) {
-	if (view == ZmSetting.RP_OFF ||	view == ZmSetting.RP_BOTTOM || view == ZmSetting.RP_RIGHT) {
+	if (view === ZmSetting.RP_OFF || view === ZmSetting.RP_BOTTOM || view === ZmSetting.RP_RIGHT) {
 		this._mailListView._colHeaderActionMenu = null;
 		var oldView = this._getReadingPanePref();
-		if (view != oldView) {
+		if (view !== oldView) {
+			var convView = this._convView;
+			var replyView = convView._replyView;
+			if (replyView && view === ZmSetting.RP_OFF) {
+				// reset the replyView with the warning before turning off the pane
+				if (!force && !convView._controller.popShield(null, this.switchView.bind(this, view, true))) {
+					// redo setChecked on the oldView menu item if user cancels
+					this._viewMenu.getMenuItem(oldView)._setChecked(true);
+					return;
+				}
+				this._viewMenu.getMenuItem(view)._setChecked(true);
+				replyView.reset();
+			}
 			this._setReadingPanePref(view);
-			this._doublePaneView.setReadingPane();
+			this._doublePaneView.setReadingPane(true);
+			if (replyView && view !== ZmSetting.RP_OFF) {
+				replyView._resized();
+			}
 		}
 	} else {
 		ZmMailListController.prototype.switchView.apply(this, arguments);
