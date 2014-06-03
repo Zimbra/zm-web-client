@@ -1119,12 +1119,12 @@ function(ev) {
 };
 
 // Shows a confirm dialog that asks the user if they want to reload ZCS to show the change they just made
-ZmSettings.prototype._showConfirmDialog = function(text, callback) {
+ZmSettings.prototype._showConfirmDialog = function(text, callback, style) {
 
 	var confirmDialog = appCtxt.getYesNoMsgDialog();
 	confirmDialog.reset();
 	confirmDialog.registerCallback(DwtDialog.YES_BUTTON, callback);
-	confirmDialog.setMessage(text, DwtMessageDialog.WARNING_STYLE);
+	confirmDialog.setMessage(text, style || DwtMessageDialog.WARNING_STYLE);
 	confirmDialog.popup();
 };
 
@@ -1218,11 +1218,7 @@ function(setting) {
 	var offlineBrowserKey = setting.getValue();
 	var localOfflineBrowserKey = localStorage.getItem(ZmSetting.WEBCLIENT_OFFLINE_BROWSER_KEY);
 	if (offlineBrowserKey && offlineBrowserKey.indexOf(localOfflineBrowserKey) !== -1) {
-        var cd = appCtxt.getYesNoMsgDialog();
-        cd.reset();
-        cd.registerCallback(DwtDialog.YES_BUTTON, this._refreshBrowserCallback, this, [cd]);
-        cd.setMessage(ZmMsg.offlineChangeRestart, DwtMessageDialog.WARNING_STYLE);
-        cd.popup();
+		this._showConfirmDialog(ZmMsg.offlineChangeRestart, this._refreshBrowserCallback.bind(this));
     }
     else {
         ZmOffline.deleteOfflineData();

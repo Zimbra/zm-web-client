@@ -269,11 +269,7 @@ function(dialog, aid, result) {
 			this._uploadButton.setEnabled(true);
 
 			var settings = appCtxt.getSettings(appCtxt.accountList.mainAccount);
-			var dialog = appCtxt.getYesNoMsgDialog();
-			dialog.reset();
-			dialog.registerCallback(DwtDialog.YES_BUTTON, settings._refreshBrowserCallback, settings, [dialog]);
-			dialog.setMessage(ZmMsg.zimletDeploySuccess, DwtMessageDialog.INFO_STYLE);
-			dialog.popup();
+			settings._showConfirmDialog(ZmMsg.zimletDeploySuccess, settings._refreshBrowserCallback.bind(settings), DwtMessageDialog.INFO_STYLE);
 		}
 	}
 };
@@ -335,13 +331,9 @@ function(zimletName, result) {
 		this._listView.set(zimletsCtxt.getZimlets().clone());
 	}
 
-	// prompt user to resart client
+	// prompt user to restart client
 	var settings = appCtxt.getSettings(appCtxt.accountList.mainAccount);
-	var dialog = appCtxt.getYesNoMsgDialog();
-	dialog.reset();
-	dialog.registerCallback(DwtDialog.YES_BUTTON, settings._refreshBrowserCallback, settings, [dialog]);
-	dialog.setMessage(ZmMsg.zimletUndeploySuccess, DwtMessageDialog.INFO_STYLE);
-	dialog.popup();
+	settings._showConfirmDialog(ZmMsg.zimletUndeploySuccess, settings._refreshBrowserCallback.bind(settings), DwtMessageDialog.INFO_STYLE);
 };
 
 ZmZimletsPage.prototype.addCommand  =
@@ -383,11 +375,8 @@ function() {
 
 	this._reloadZimlets();
 
-	var cd = appCtxt.getYesNoMsgDialog();
-	cd.reset();
-	cd.registerCallback(DwtDialog.YES_BUTTON, appCtxt.getSettings()._refreshBrowserCallback, appCtxt.getSettings(), [cd]);
-	cd.setMessage(ZmMsg.zimletChangeRestart, DwtMessageDialog.WARNING_STYLE);
-	cd.popup();
+	var settings = appCtxt.getSettings();
+	settings._showConfirmDialog(ZmMsg.zimletChangeRestart, settings._refreshBrowserCallback.bind(settings));
 };
 
 ZmZimletsPage.prototype._isChecked =

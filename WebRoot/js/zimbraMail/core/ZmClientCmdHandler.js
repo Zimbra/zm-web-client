@@ -439,10 +439,7 @@ function(cmdStr, searchController, cmdName, cmdArg1, cmdArg2 /* ..., cmdArgN */)
 		}
 	}
 
-	var dialog = appCtxt.getYesNoMsgDialog();
-	dialog.registerCallback(DwtDialog.YES_BUTTON, settings._refreshBrowserCallback, settings, [dialog]);
-	dialog.setMessage(ZmMsg.accountChangeRestart, DwtMessageDialog.WARNING_STYLE);
-	dialog.popup();
+	settings._showConfirmDialog(ZmMsg.accountChangeRestart, settings._refreshBrowserCallback.bind(settings));
 };
 
 /**
