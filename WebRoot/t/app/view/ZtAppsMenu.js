@@ -46,7 +46,8 @@ Ext.define('ZCS.view.ZtAppsMenu', {
          */
             app:        'signout',
             text:       ZtMsg.logout,
-            group:      ZtMsg.otherGroup,
+            //Use zero width unicode character to keep the section divider, but without visible label
+            group:      '\u200C',
 	        groupOrder: 3
         });
 
