@@ -1955,7 +1955,7 @@ function(asObj) {
 	if (asObj) {
 		email = AjxEmailAddress.parse(email);
         if(email){
-		    email.isGroup = this.isGroup;
+		    email.isGroup = this.isGroup();
 		    email.canExpand = this.canExpand;
         }
 	}
@@ -1991,7 +1991,7 @@ function(asObj) {
 
     if (asObj && email) {
         email = AjxEmailAddress.parse(email);
-        email.isGroup = this.isGroup;
+        email.isGroup = this.isGroup();
         email.canExpand = this.canExpand;
     }
 

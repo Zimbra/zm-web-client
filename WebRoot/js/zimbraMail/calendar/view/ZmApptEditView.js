@@ -1774,7 +1774,7 @@ function(addrInput, addrs, type, shortForm) {
                     //bug: 57858 - give preference to lookup email address if its present
                     //bug:60427 to show display name format the lookupemail
                     addrStr = addr.getLookupEmail() ? (new AjxEmailAddress(addr.getLookupEmail(),null,addr.getFullNameForDisplay())).toString() : ZmApptViewHelper.getAttendeesText(addr, type);
-                    match = {isDL: addr.isGroup && addr.canExpand, email: addrStr};
+                    match = {isDL: addr.isGroup() && addr.canExpand, email: addrStr};
 				}
 				addrInput.addBubble({address:addrStr, match:match, skipNotify:true});
 			}
