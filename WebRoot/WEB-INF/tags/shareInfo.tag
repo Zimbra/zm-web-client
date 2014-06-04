@@ -28,7 +28,7 @@
 
 <fmt:message var="createLabel" key="acceptShare"/>
 <c:choose>
-    <c:when test="${calendar}">
+    <c:when test="${zm:boolean(calendar)}">
         <fmt:message var="label" key="calendarNew"/>
         <c:set var="icon" value="calendar/ImgSharedCalendarFolder.png"/>
         <c:set var="newFolderColor" value="${empty param.newFolderColor ? 'blue' : param.newFolderColor}"/>
@@ -37,7 +37,7 @@
         <c:set var="newFolderCheckedFlag" value="${empty param.newFolderCheckedFlag ? '#' : param.newFolderCheckedFlag}"/>
         <fmt:message var="folderType" key="calendarShared"/>
     </c:when>
-    <c:when test="${addressbook}">
+    <c:when test="${zm:boolean(addressbook)}">
         <fmt:message var="label" key="addressBookNew"/>
         <c:set var="icon" value="contacts/ImgSharedContactsFolder.png"/>
         <fmt:message var="folderType" key="addressBookShared"/>
@@ -121,13 +121,13 @@
     </tr>
     <tr>
 <c:choose>
-    <c:when test="${addressbook}">
+    <c:when test="${zm:boolean(addressbook)}">
         <td nowrap align=right><fmt:message key="ownersAddressBookName"/>:</td>
         <td>
             <input name='newFolderOwnersAddressBook' disabled readonly type='text' autocomplete='off' size='35' value="${fn:escapeXml(share.link.name)}">
         </td>
         </c:when>
-    <c:when test="${calendar}">
+    <c:when test="${zm:boolean(calendar)}">
         <td nowrap align=right><fmt:message key="ownersCalendarName"/>:</td>
         <td>
             <input disabled readonly name='newFolderOwnersCalendar' type='text' autocomplete='off' size='35' value="${fn:escapeXml(share.link.name)}">
