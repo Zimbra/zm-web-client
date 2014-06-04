@@ -113,7 +113,7 @@ $watermarkBanner: $watermarkBannerPath + $watermarkBannerImg;
 
 $msgHdrTextSize: 1em;
 $msgHdrImageSize: 3em;
-$msgHdrStdMargin: 1em;
+$msgHdrStdMargin: $msgHdrTextSize;
 $msgHdrLabelIndent: $msgHdrImageSize + $msgHdrStdMargin;
 $msgHdrLeftIndent: $msgHdrImageSize + $msgHdrStdMargin*2;
 
@@ -121,11 +121,11 @@ $msgHdrRightIndent: $msgHdrStdMargin;
 $msgHdrDetailToggle: 3.5em;  /* width set for english text */
 $msgHdrDateSmall: 3em;
 
-$msgHdrTopOffset1: $msgHdrStdMargin;
+$msgHdrTopOffset1: $msgHdrStdMargin / 2 ;
 $msgHdrTopOffset2: $msgHdrTextSize * 1.5 + $msgHdrTopOffset1;
 $msgHdrTopOffset3: $msgHdrTextSize * 3 + $msgHdrTopOffset1;
 
-$msgHdrTopOffsetPhone: 1.5em;
+$msgHdrTopOffsetPhone: $msgHdrTopOffset1 + $msgHdrTextSize;
 
 .zcs-msgHdr-element {
 	position: absolute;
@@ -222,7 +222,7 @@ $msgHdrTopOffsetPhone: 1.5em;
 
 .x-phone {
 	.zcs-mail-msgHdr {
-		min-height: $msgHdrTextSize*4.5 + $msgHdrTopOffsetPhone;
+		min-height: $msgHdrTextSize * 4.5 + $msgHdrTopOffsetPhone;
 
 		.zcs-msgHdr-link {
 			top: $msgHdrTopOffset1;
@@ -242,7 +242,7 @@ $msgHdrTopOffsetPhone: 1.5em;
 	}
 
 	.zcs-mail-msgHdr.detailed {
-		min-height: $msgHdrTextSize*6 + $msgHdrTopOffsetPhone;
+		min-height: $msgHdrTextSize * 6 + $msgHdrTopOffsetPhone;
 
 		.zcs-msgHdr-fromContainer {
 			right: $msgHdrRightIndent;
@@ -261,7 +261,7 @@ $msgHdrTopOffsetPhone: 1.5em;
 	}
 
 	.zcs-mail-msgHdr.collapsed {
-		min-height: $msgHdrTextSize*4.5;
+		min-height: $msgHdrImageSize + $msgHdrStdMargin;
 
 		.zcs-msgHdr-person,
 		.zcs-msgHdr-fromContainer,
