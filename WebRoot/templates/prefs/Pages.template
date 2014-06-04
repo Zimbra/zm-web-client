@@ -1159,12 +1159,12 @@ and the container element is replaced with that control.
 					</tr>
 					<tr>
 						<td class='ZOptionsLabel'>&nbsp;</td>
-						<td class='ZOptionsField' style='padding-left:2em;'>
+						<td class='ZOptionsField'>
 							<table role="presentation">
 								<tr>
-									<td style='padding-right:.5em;'>
-										<input id='${id}_PERSONA_FROM_NAME' tabindex='3020' size=30>
-									</td>
+									<$ if (appCtxt.get(ZmSetting.FROM_DISPLAY_ENABLED)) { $>
+										<td style='padding-right:.5em;'><input id='${id}_PERSONA_FROM_NAME' tabindex='3020' size=30></td>
+									<$ } $>
 									<td>
 										<select id='${id}_PERSONA_FROM_EMAIL' tabindex='3030' size=40></select>
 									</td>
