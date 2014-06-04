@@ -349,6 +349,8 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 			me = this;
 
 		if (this.isDirty()) {
+			this.stopDraftTimer();
+
 			Ext.Msg.show({
 				title: ZtMsg.warning,
 				message: ZtMsg.saveDraftWarning,
@@ -363,6 +365,9 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 					}
 					else if (buttonId === 'no') {
 						me.endComposeSession();
+					}
+					else {
+						me.startDraftTimer();
 					}
 				}
 			});
@@ -812,15 +817,58 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 		var values = this.getComposeForm().getValues(),
 			editor = this.getEditor();
 
-		var parts = Ext.Array.map(ZCS.constant.RECIP_TYPES, function(type) {
-			return Ext.Array.map(values[type], function(addr) {
-				return addr.get('email');
-			}).join('\u001E');
+		// TODO: import AjxMD5 (or similar) to convert this to a proper hash
+		var parts = [];
+
+		Ext.iterate(values, function(type, value) {
+			parts.push(type);
+
+			if (value instanceof Array) {
+				Array.prototype.push.apply(parts, value);
+			} else {
+				parts.push(value);
+			}
 		});
 
-		parts.push(values.subject, editor ? editor.innerHTML.length : 0);  // MD5 of content would be better
+		parts.push(editor ? editor.innerHTML.length : 0);
 
-		return parts.join('\u001D');
+		var attBubbles = this.getAttachmentsField().element.query('.zcs-attachment-bubble');
+
+		Ext.Array.forEach(attBubbles, function(bubble) {
+			var idParams = ZCS.util.getIdParams(bubble.id);
+
+			if (idParams && idParams.objType === ZCS.constant.OBJ_ATTACHMENT) {
+				parts.push(bubble.getAttribute('aid') || idParams.url);
+			}
+		});
+
+		// individual chunks separated by a NUL
+		return parts.join('\u0000');
+	},
+
+	startDraftTimer: function() {
+		this.stopDraftTimer();
+
+		// We cannot use Ext.util.DelayedTask for the draft timer, as it
+		// cancels itself _after_ invoking its function, preventing the
+		// function from restarting it.
+		//
+		// Instead, we use an interval to ensures that we only ever have one
+		// single draft timer running.
+		var saveInterval =
+			ZCS.session.getSetting(ZCS.constant.SETTING_AUTO_SAVE_INTERVAL);
+
+		this.autoSaveActionId =
+			window.setInterval(Ext.Function.bind(this.doAutoSave, this),
+			                   saveInterval * 1000);
+	},
+
+	stopDraftTimer: function() {
+		if (this.autoSaveActionId != null) {
+			window.clearInterval(this.autoSaveActionId);
+
+			this.autoSaveActionId = null;
+		}
 	},
 
 	unhideComposeForm: function () {
@@ -833,20 +881,11 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 			});
 		}
 
-		// We cannot use Ext.util.DelayedTask for the draft timer, as it
-		// cancels itself _after_ invoking its function, preventing the
-		// function from restarting it.
-		var saveInterval =
-			ZCS.session.getSetting(ZCS.constant.SETTING_AUTO_SAVE_INTERVAL);
-
-		this.autoSaveActionId =
-			window.setInterval(Ext.Function.bind(this.doAutoSave, this),
-			                   saveInterval * 1000);
+		this.startDraftTimer();
 	},
 
 	hideComposeForm: function () {
-		window.clearInterval(this.autoSaveActionId);
-		this.autoSaveActionId = null;
+		this.stopDraftTimer();
 
 		if (Ext.os.deviceType === "Phone") {
 			this.getComposePanel().element.dom.style.setProperty('display', 'none');
