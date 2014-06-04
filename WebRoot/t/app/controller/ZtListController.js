@@ -184,6 +184,7 @@ Ext.define('ZCS.controller.ZtListController', {
 		});
 
 		ZCS.app.fireEvent('hideOverviewPanel');
+        ZCS.app.fireEvent('showListPanel');
 	},
 
 	/**
@@ -221,6 +222,7 @@ Ext.define('ZCS.controller.ZtListController', {
 				//make sure this element doesn't get focus due to an errant touch
 				this.getSearchBox().blur();
 			}
+
 		} else {
 			//<debug>
 			Ext.Logger.info('Parameters not present in storeLoaded');
