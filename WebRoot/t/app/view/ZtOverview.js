@@ -100,25 +100,32 @@ Ext.define('ZCS.view.ZtOverview', {
 		this.add(organizerList);
 
 		if (this.config.showEdit) {
-			var organizerEditToolbar = Ext.create('Ext.Toolbar', {
-				//height: 50,
-				docked: 'bottom',
-				hidden: true,
-				items: [{
-					xtype: 'spacer'
-				}, {
-					text:   ZtMsg.newFolder,
-					action: 'newFolder',
-					cls:    'zcs-text-btn'
-				}, {
+
+			var items = [{
+				xtype: 'spacer'
+			}, {
+				text:   ZtMsg.newFolder,
+				action: 'newFolder',
+				cls:    'zcs-text-btn'
+			}];
+			if (ZCS.session.getSetting(ZCS.constant.SETTING_TAGGING_ENABLED)) {
+				items.push({
 					xtype: 'spacer'
 				}, {
 					text:   ZtMsg.newTag,
 					action: 'newTag',
 					cls:    'zcs-text-btn'
-				}, {
-					xtype: 'spacer'
-				}]
+				});
+			}
+			items.push({
+				xtype: 'spacer'
+			});
+
+			var organizerEditToolbar = Ext.create('Ext.Toolbar', {
+				//height: 50,
+				docked: 'bottom',
+				hidden: true,
+				items:  items
 			});
 			this.add(organizerEditToolbar);
 		}

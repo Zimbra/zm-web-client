@@ -61,7 +61,12 @@ Ext.define('ZCS.view.mail.ZtMsgHeader', {
 		var data = msg.getData(),
 			tpl = ZCS.view.mail.ZtMsgHeader.TEMPLATE[state];
 
-		data.tags = ZCS.model.ZtItem.getTagData(data.tags);
+		if (ZCS.session.getSetting(ZCS.constant.SETTING_TAGGING_ENABLED)) {
+			data.tags = ZCS.model.ZtItem.getTagData(data.tags);
+		}
+		else {
+			data.tags = null;
+		}
 
 		this.setMsg(msg);
 

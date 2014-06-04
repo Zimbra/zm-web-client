@@ -76,7 +76,12 @@ Ext.define('ZCS.view.contacts.ZtContactView', {
 			email.id = ZCS.util.getUniqueId({ email: email.email });
 		}, this);
 
-		data.tags = ZCS.model.ZtItem.getTagData(contact.get('tags'));
+		if (ZCS.session.getSetting(ZCS.constant.SETTING_TAGGING_ENABLED)) {
+			data.tags = ZCS.model.ZtItem.getTagData(contact.get('tags'));
+		}
+		else {
+			data.tags = null;
+		}
 		data.imageStyle = imageUrl ? 'background-image: url(' + imageUrl + ')' : '';
 		this.setHtml(this.getTpl().apply(data));
 	},
