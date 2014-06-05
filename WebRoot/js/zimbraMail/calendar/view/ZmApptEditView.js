@@ -178,6 +178,8 @@ function() {
         this._pickAttendeesInfo(ZmCalBaseItem.PERSON);
         this._pickAttendeesInfo(ZmCalBaseItem.LOCATION);
     }
+
+    this.resize();
 };
 
 ZmApptEditView.prototype.initializeLocationConflictCheck =
@@ -1182,13 +1184,12 @@ function(width) {
 	this._attInputField = {};
 
 	if (this.GROUP_CALENDAR_ENABLED) {
-        var params = {
-            bubbleRemovedCallback: new AjxCallback(this, this._handleRemovedAttendees)
-        };
 		this._attendeesInputField = this._createInputField("_person", ZmCalBaseItem.PERSON, {
+		            bubbleAddedCallback: new AjxCallback(this, this._handleAddedAttendees, [ZmCalBaseItem.PERSON]),
 		            bubbleRemovedCallback: new AjxCallback(this, this._handleRemovedAttendees, [ZmCalBaseItem.PERSON])
 		        });
 		this._optAttendeesInputField = this._createInputField("_optional", ZmCalBaseItem.OPTIONAL_PERSON, {
+				            bubbleAddedCallback: new AjxCallback(this, this._handleAddedAttendees, [ZmCalBaseItem.OPTIONAL_PERSON]),
 				            bubbleRemovedCallback: new AjxCallback(this, this._handleRemovedAttendees, [ZmCalBaseItem.OPTIONAL_PERSON])
 				        });
         //add Resources Field
@@ -1341,6 +1342,7 @@ function(width) {
     this._inviteMsgContainer = document.getElementById(this._htmlElId + "_invitemsg_container");
     this._inviteMsg = document.getElementById(this._htmlElId + "_invitemsg");
 
+    this.resize();
 };
 
 ZmApptEditView.prototype._createInputField =
@@ -1358,6 +1360,7 @@ function(idTag, attType, params) {
 		var aifParams = {
 			autocompleteListView:	this._acAddrSelectList,
 			inputId:				inputId,
+            bubbleAddedCallback:	params.bubbleAddedCallback,
             bubbleRemovedCallback:  params.bubbleRemovedCallback,
 			type:					attType,
 			strictMode:				params.strictMode
@@ -1941,6 +1944,7 @@ ZmApptEditView.prototype.setSchedulerVisibility =
 function(visible) {
     Dwt.setVisible(this._schedulerOptions, visible);
     Dwt.setVisible(this._schedulerContainer, visible);
+    this.resize();
 };
 
 ZmApptEditView.prototype._resetFolderSelect =
@@ -2115,6 +2119,11 @@ function(text, el, match) {
     }
 
     this.updateToolbarOps();
+};
+
+ZmApptEditView.prototype._handleAddedAttendees =
+function(addrType) {
+    this.handleAttendeeChange();
 };
 
 ZmApptEditView.prototype._handleRemovedAttendees =
@@ -2672,18 +2681,11 @@ function(type, attendees) {
         this._scheduleView.update(this._dateInfo, organizer, this._attendees);
         this.resize();
     }else {
-        if(this._schedulerOpened == null && attendees.length > 0 && !this._isForward) {
-            this._toggleInlineScheduler(true);
-        }else {
-            // Update the schedule view even if it won't be visible - it generates
-            // Free/Busy info for other components
-            this._scheduleView.showMe();
-            this._scheduleView.update(this._dateInfo, organizer, this._attendees);
-            this.updateScheduleAssistant(attendees, type)
-        }
+        this._toggleInlineScheduler(true);
     };
 
     this.updateToolbarOps();
+    this.resize();
 };
 
 ZmApptEditView.prototype.updateScheduleAssistant =
@@ -2906,6 +2908,9 @@ function(ev) {
         AjxTimedAction.cancelAction(this._schedActionId);
     }
     this._schedActionId = AjxTimedAction.scheduleAction(new AjxTimedAction(this, this._handleAttendeeField, ZmCalBaseItem.PERSON), 300);
+
+    // attendee changes may cause our input fields to change their height
+    this.resize();
 };
 
 ZmApptEditView.prototype.loadPreference =
