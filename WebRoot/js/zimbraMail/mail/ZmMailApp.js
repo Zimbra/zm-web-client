@@ -2384,7 +2384,7 @@ function() {
 ZmMailApp.prototype.enableMailPrefs =
 function() {
 	// ZmPref is unavailable, hence we load it, register settings, operations & preferences.
-	AjxPackage.require("zimbraMail.prefs.model.ZmPref");
+	AjxDispatcher.require("PreferencesCore");
 	this._registerSettings();
 	this._registerOperations();
 	this._registerPrefs();
