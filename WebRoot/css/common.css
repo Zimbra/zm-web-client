@@ -536,10 +536,10 @@ TD.vSpace {
 /* must define on 'background', so it overrides both 'background-color' AND 'background-image' */
 
 /* row selected only for reading pane, not actions */
-.Row-selected-alt				{	@ListItemContainer-sel-alt@		}
+.Row-altSelected				{	@ListItemContainer-sel-alt@		}
 
-.Row-selected-alt .ZmListFlagsWrapper,
-.Row-selected-alt .ZmMsgListDate 	{	background:@ListItemBgColor-sel-alt@;	}
+.Row-altSelected .ZmListFlagsWrapper,
+.Row-altSelected .ZmMsgListDate 	{	background:@ListItemBgColor-sel-alt@;	}
 /* must define on 'background', so it overrides both 'background-color' AND 'background-image' */
 
 /* .Row-matched, */

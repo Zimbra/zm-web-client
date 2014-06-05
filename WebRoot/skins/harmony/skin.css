@@ -231,7 +231,7 @@ TD.DwtListView-ColumnActive  {
 .Row-selected,
 .Row-focused,
 .Row-selected-actioned,
-.Row-selected-alt {
+.Row-altSelected {
 	background-color:transparent !important;
 	border-color:inherit;
 }
@@ -271,13 +271,13 @@ TD.DwtListView-ColumnActive  {
 	border:1px solid @SelC@;
 }
 
-.Row-selected-alt>DIV,
-.Row-selected-alt.ZmConvExpanded>DIV,
-.Row-selected-alt>TABLE,
-.Row-selected-alt.RowDouble>TABLE,
-.Row-selected-alt.RowDouble>.ZmRowDoubleHeader,
-.Row-selected-alt.SimpleContact>DIV,
-.ZmSuggestResults .Row-selected-alt TD {
+.Row-altSelected>DIV,
+.Row-altSelected.ZmConvExpanded>DIV,
+.Row-altSelected>TABLE,
+.Row-altSelected.RowDouble>TABLE,
+.Row-altSelected.RowDouble>.ZmRowDoubleHeader,
+.Row-altSelected.SimpleContact>DIV,
+.ZmSuggestResults .Row-altSelected TD {
 	background-color:@SelAltColor@;
 	border:1px solid @SelAltColor@;
 }

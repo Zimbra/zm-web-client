@@ -708,7 +708,8 @@ function(clickedEl, ev) {
 						}
 					} else {
 						if (selField && !this._getItemData(sel, ZmListView.ITEM_CHECKED_ATT_NAME)) {
-							DwtListView.prototype.deselectAll.call(this);
+							this.deselectAll();
+							this._markUnselectedViewedItem(true);
 						}
 					}
 				}
@@ -950,6 +951,17 @@ function() {
 	this.setSelectionHdrCbox(false);
 	this._rendered = true;
 };
+
+/**
+ * override to call _resetToolbarOperations since we change the selection.
+ * @private
+ */
+ZmListView.prototype._clearRightSel =
+function() {
+	DwtListView.prototype._clearRightSel.call(this);
+	this._controller._resetToolbarOperations();
+};
+
 
 /*
  get sort menu for views that provide a right-click sort by menu in single-column view (currently mail and briefcase)
