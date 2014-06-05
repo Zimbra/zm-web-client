@@ -441,7 +441,7 @@ ZmApptView.prototype._getAttendeesByRoleCollapsed = function(list, type, role) {
 	var emails = [];
 	for (var i = 0; i < attendees.length; i++) {
 		var att = attendees[i];
-		emails.push(new AjxEmailAddress(att.getEmail(), type, att.getFullName(), att.getFullName()));
+		emails.push(new AjxEmailAddress(att.getEmail(), type, att.getFullName(), att.getFullName(), att.isGroup(), att.canExpand));
 	}
 
 	var options = {};

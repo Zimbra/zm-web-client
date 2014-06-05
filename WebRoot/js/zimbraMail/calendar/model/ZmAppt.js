@@ -749,9 +749,7 @@ function(message) {
 			var att = attendees[i];
 			var addr = att.a;
 			var name = att.d;
-			var email = new AjxEmailAddress(addr, null, name);
-			email.isGroup = att.isGroup;
-			email.canExpand = att.isGroup && att.exp;
+			var email = new AjxEmailAddress(addr, null, name, null, att.isGroup, att.isGroup && att.exp);
 			ac.setIsExpandableDL(att.a, email.canExpand);
             if (att.rsvp) {
 				rsvp = true;
