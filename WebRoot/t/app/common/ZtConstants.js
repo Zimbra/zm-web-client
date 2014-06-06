@@ -774,19 +774,19 @@ ZCS.constant.QUICK_REPLY_LARGE  = 80;
 ZCS.constant.CONTACT_TEMPLATE_FIELDS = [
 	'isGroup', 'isDistributionList', 'isMultiple',
 	'nameLastFirst', 'fullName', 'nickname', 'email', 'phone',
-	'address', 'url', 'jobTitle', 'company', 'tags',
+	'address', 'URL', 'jobTitle', 'company', 'tags',
 	'members', 'isOwner', 'isMember'
 ];
 
 // Contact fields that appear on the form
 ZCS.constant.CONTACT_FORM_FIELDS = [
-	'email', 'phone', 'address', 'url', 'name', 'company'
+	'email', 'phone', 'address', 'URL', 'name', 'company'
 ];
 ZCS.constant.IS_CONTACT_FORM_FIELD = ZCS.util.arrayAsLookupHash(ZCS.constant.CONTACT_FORM_FIELDS);
 
 // Contact fields that can have multiple values
 ZCS.constant.CONTACT_MULTI_FIELDS = [
-	'email', 'phone', 'address', 'url'
+	'email', 'phone', 'address', 'URL'
 ];
 ZCS.constant.IS_CONTACT_MULTI_FIELD = ZCS.util.arrayAsLookupHash(ZCS.constant.CONTACT_MULTI_FIELDS);
 
@@ -798,7 +798,7 @@ ZCS.constant.IS_ADDRESS_FIELD = ZCS.util.arrayAsLookupHash(ZCS.constant.ADDRESS_
 
 // Contact attributes that have variable type (home, work, etc)
 ZCS.constant.IS_PARSED_ATTR_FIELD = ZCS.util.arrayAsLookupHash([
-	'email', 'phone', 'url'
+	'email', 'phone', 'URL'
 ]);
 
 // Ordering for display of attribute types
@@ -1095,3 +1095,5 @@ ZCS.constant.reminderTimeValues =
 
 ZCS.constant.reminderTimeLabels =
     [0, 1, 5, 10, 15, 30, 45, 60, 2, 3, 4, 5, 18, 1, 2, 3, 4, 1, 2];
+
+ZCS.constant.MAX_URL_LENGTH = 30;

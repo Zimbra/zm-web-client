@@ -121,7 +121,7 @@ Ext.define('ZCS.view.contacts.ZtContactForm', {
                     },
                     spacer,
                     {
-                        xtype:      'urlcontainer'
+                        xtype:      'URLcontainer'
                     },
                     spacer
                 ]

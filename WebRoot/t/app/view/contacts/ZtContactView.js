@@ -83,6 +83,20 @@ Ext.define('ZCS.view.contacts.ZtContactView', {
 			data.tags = null;
 		}
 		data.imageStyle = imageUrl ? 'background-image: url(' + imageUrl + ')' : '';
+
+        //truncate the url text
+       Ext.each(data.URL, function(urlObj) {
+           urlObj.urlText = urlObj.URL.substring(0, Math.min(ZCS.constant.MAX_URL_LENGTH, urlObj.URL.length));
+                if (urlObj.URL.length > ZCS.constant.MAX_URL_LENGTH) {
+                    urlObj.urlText += '...';
+                }
+
+                //add http prefix if not present
+                if (!urlObj.URL.match(/^[a-zA-Z]+:\/\//)) {
+                    urlObj.URL = 'http://' + urlObj.URL;
+                }
+        }, this);
+
 		this.setHtml(this.getTpl().apply(data));
 	},
 

@@ -55,7 +55,7 @@ Ext.define('ZCS.model.contacts.ZtContact', {
 			{ name: 'email',        type: 'auto' },
 			{ name: 'phone',        type: 'auto' },
 			{ name: 'address',      type: 'auto' },
-			{ name: 'url',          type: 'auto' },
+			{ name: 'URL',          type: 'auto' },
 
 			// Below are fields created out of the simple fields above
 

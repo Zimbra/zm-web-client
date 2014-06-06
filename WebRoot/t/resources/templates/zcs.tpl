@@ -276,12 +276,12 @@
 					</div>
 				</div>
 			</tpl>
-			<tpl if="url">
+			<tpl if="URL">
 				<div class='zcs-contactview-fieldSet'>
 					<div class='zcs-contactview-label'>{[ZtMsg.url]}</div>
 					<div class='zcs-contactview-fields'>
-						<tpl for="url">
-							<div class='zcs-contactview-field'>{url:htmlEncode}</div>
+						<tpl for="URL">
+                            <div class='zcs-contactview-field'><a href='{URL}' target='_blank'>{urlText:htmlEncode}</a></div>
 							<div class='zcs-contactview-subLabel'>{typeStr}</div>
 						</tpl>
 					</div>

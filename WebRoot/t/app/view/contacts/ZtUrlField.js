@@ -22,10 +22,10 @@ Ext.define('ZCS.view.contacts.ZtUrlField', {
 
 	extend: 'ZCS.view.contacts.ZtMultiField',
 
-	xtype: 'urlcontainer',
+	xtype: 'URLcontainer',
 
 	config: {
-		type: 'url',
+		type: 'URL',
 		addButtonLabel: ZtMsg.contactFormButtonAddWebsiteURL
 	},
 
@@ -37,12 +37,12 @@ Ext.define('ZCS.view.contacts.ZtUrlField', {
 				{
 					xtype:          'urlfield',
 					placeHolder:    ZtMsg.url,
-					name:           'url',
+					name:           'URL',
 					flex:           3
 				},
 				{
 					xtype:      'selectfield',
-					name:       'urlType',
+					name:       'URLType',
 					flex:       1,
 					options:    [
 						{text: ZtMsg.home,  value: 'home'},
