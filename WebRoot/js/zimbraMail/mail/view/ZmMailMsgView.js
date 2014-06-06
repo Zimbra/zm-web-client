@@ -680,7 +680,9 @@ function(msg, parent) {
 			}
 		}
         else {
-            img.src = "/img/zimbra/1x1-trans.png";
+			img.src = "/img/zimbra/1x1-trans.png";
+			img.setAttribute('savedDisplayMode', img.style.display);
+			img.style.display = 'none';
         }
 		hasExternalImages = external || hasExternalImages;
 	}
@@ -854,6 +856,7 @@ function(msg, parent, id) {
 				} catch (ex) {
 					// do nothing
 				}
+				images[i].style.display = images[i].getAttribute('savedDisplayMode');
 			}
 		}
 		//determine if any tables or table cells have an external background image
