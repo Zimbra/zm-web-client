@@ -47,10 +47,20 @@ Ext.define('ZCS.common.ZtViewport', {
     },
 
     getWindowHeight: function () {
-        return window.outerHeight;
+        //Android/chrome appear to like outerHeight, where ios wants inner height.
+        if (Ext.os.is.Android || Ext.browser.is.ChromeMobile) {
+            return window.outerHeight;
+        } else {
+            return window.innerHeight;
+        }
     },
 
     getWindowWidth: function () {
-        return window.outerWidth;
+        //Android/chrome appear to like outerHeight, where ios wants inner height.
+        if (Ext.os.is.Android || Ext.browser.is.ChromeMobile) {
+            return window.outerWidth;
+        } else {
+            return window.innerWidth;
+        }
     }
 });
