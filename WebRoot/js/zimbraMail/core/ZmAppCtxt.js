@@ -726,7 +726,9 @@ function() {
  */
 ZmAppCtxt.prototype.getChooseFolderDialog =
 function() {
-	var currentAppName = this.getCurrentAppName();
+	var currentApp = this.getCurrentApp();
+	// this.getCurrentAppName() returns "Search" for search apps. Let's re-use dialogs from regular apps.
+	var currentAppName = currentApp.isZmSearchApp ? this.searchAppName : this.getCurrentAppName();
 	this._chooseFolderDialogs = this._chooseFolderDialogs || {};
 	if (!this._chooseFolderDialogs[currentAppName]) {
 		AjxDispatcher.require("Extras");
