@@ -670,7 +670,7 @@ function() {
                     if (!this._mergedView) {
                         var cal = this._getColForFolderId(appt.folderId);
                         this._positionAppt(div, cal.allDayX+0, rowY);
-                        this._sizeAppt(div, ((cal.allDayWidth + this._daySepWidth) * slot.data.numDays) - this._daySepWidth - 1 - ZmCalDayTabView._TAB_SEP_WIDTH,
+                        this._sizeAppt(div, (cal.allDayWidth + this._daySepWidth) - this._daySepWidth - 1 - ZmCalDayTabView._TAB_SEP_WIDTH,
                                      ZmCalColView._ALL_DAY_APPT_HEIGHT);
                     } else {
                         this._positionAppt(div, this._columns[j].allDayX+0, rowY);
