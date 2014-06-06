@@ -59,13 +59,5 @@ Ext.define("ZCS.view.ZtMain", {
 				me.add(mainView);
 			}
 		}, this);
-
-		Ext.Viewport.add(Ext.create('ZCS.view.ZtAppsMenu'));
-		Ext.Viewport.add(Ext.create('ZCS.view.ZtOrganizerEdit'));
-		Ext.Viewport.add(Ext.create('ZCS.view.mail.ZtComposeForm'));
-		Ext.Viewport.add(Ext.create('ZCS.view.contacts.ZtContactForm'));
-		Ext.Viewport.add(Ext.create('ZCS.view.calendar.ZtAppointmentForm'));
-        Ext.Viewport.add(Ext.create('ZCS.view.calendar.ZtNewAppointment'));
-        Ext.Viewport.add(Ext.create('ZCS.view.calendar.ZtAppointmentDialog'));
 	}
 });

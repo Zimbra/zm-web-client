@@ -234,7 +234,7 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 	 */
 	showComposeForm: function(addresses, subject, body, msg) {
 
-		var panel = this.getComposePanel(),
+		var panel = ZCS.util.getLazyReference('ZCS.view.mail.ZtComposeForm'),
 			form = panel.down('formpanel'),
 			formField = {},
 			subjectFld = form.down('field[name=subject]'),
@@ -794,13 +794,15 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 	 * @return {Boolean}    true if the contents of the form have changed since it was shown
 	 */
 	isDirty: function() {
+		var composePanel = this.getComposePanel();
 
         //always do hash comparison on Android,
         //since isHidden() method seems to return incorrect value on Android
-		if (this.getComposePanel().isHidden() && !Ext.os.is.Android) {
+		if (composePanel && composePanel.isHidden() && !Ext.os.is.Android) {
 			return false;
-		}
-		else {
+		} else if (!composePanel) {
+			return false;
+		} else {
 		    return this.getFormHash() != this.calculateFormHash();
 		}
 	},

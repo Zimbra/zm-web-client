@@ -201,7 +201,7 @@ Ext.define('ZCS.model.ZtOrganizer', {
 		 */
 		addOtherFields: function(organizer, app, context, hasChildren) {
 
-			app = organizer.app = app || ZCS.constant.FOLDER_APP[organizer.type] || 'default';
+			app = organizer.app = app || ZCS.constant.FOLDER_APP[organizer.folderType] || 'default';
 			organizer.context = context;
 			organizer.id = ZCS.model.ZtOrganizer.getOrganizerId(organizer.zcsId, app, context);
 			organizer.parentItemId = ZCS.model.ZtOrganizer.getOrganizerId(organizer.parentZcsId, app, context);
@@ -210,7 +210,55 @@ Ext.define('ZCS.model.ZtOrganizer', {
 				organizer.leaf = !hasChildren;
 				organizer.disclosure = hasChildren;
 			}
+		},
+
+		getNormalizedPath: function (data) {
+			var sysId,
+				sysName,
+				path,
+				pathToUse = data.path[0] === "/" ? data.path : "/" + data.path;
+
+			//If we have the luxury of knowing the zcsId, determine the path while
+			//considering the zcsId.
+			if (data.zcsId) {
+				sysId = ZCS.util.localId(data.zcsId);
+				sysName = ZCS.constant.FOLDER_SYSTEM_NAME[sysId];
+				path = sysName && ZCS.model.ZtOrganizer.isSystem(data) ? '/' + sysName : pathToUse;
+			} else {
+				//Otherwise, try to hash into system folder ids just by the provided path
+				sysId = ZCS.constant.FOLDER_SYSTEM_ID[data.path];
+
+				if (sysId) {
+					sysName = ZCS.constant.FOLDER_SYSTEM_NAME[sysId];
+					path = sysName ? '/' + sysName : pathToUse;
+				} else {
+					path = pathToUse;
+				}
+			}
+
+			return path;
+		},
+
+
+		/**
+		 * Returns true if this organizer is some type of folder (mail folder, address book, calendar, etc).
+		 *
+		 * @returns {boolean}   true if this organizer is some type of folder (mail folder, address book, calendar, etc)
+		 */
+		isFolder: function(data) {
+			return data.type === ZCS.constant.ORG_FOLDER;
+		},
+
+		/**
+		 * Returns true if this is a system folder (Inbox, Trash, Contacts, etc).
+		 *
+		 * @returns {boolean}   true if this is a system folder (Inbox, Trash, Contacts, etc)
+		 */
+		isSystem: function(data) {
+			return ZCS.model.ZtOrganizer.isFolder(data) && (ZCS.util.localId(data.zcsId) <= ZCS.constant.MAX_SYSTEM_ID);
 		}
+
+
 	},
 
 	constructor: function(data, id, raw) {
@@ -244,9 +292,7 @@ Ext.define('ZCS.model.ZtOrganizer', {
 		}
 
 		if (data.path) {
-			var sysId = ZCS.util.localId(data.zcsId),
-				sysName = ZCS.constant.FOLDER_SYSTEM_NAME[sysId],
-				path = sysName && this.isSystem() ? '/' + sysName : data.path;
+			var path = ZCS.model.ZtOrganizer.getNormalizedPath(data);
 
 			ZCS.cache.set(path, this, 'path');
 		}
@@ -305,24 +351,6 @@ Ext.define('ZCS.model.ZtOrganizer', {
 				reader: 'organizerreader'
 			});
 		}
-	},
-
-	/**
-	 * Returns true if this organizer is some type of folder (mail folder, address book, calendar, etc).
-	 *
-	 * @returns {boolean}   true if this organizer is some type of folder (mail folder, address book, calendar, etc)
-	 */
-	isFolder: function() {
-		return this.get('type') === ZCS.constant.ORG_FOLDER;
-	},
-
-	/**
-	 * Returns true if this is a system folder (Inbox, Trash, Contacts, etc).
-	 *
-	 * @returns {boolean}   true if this is a system folder (Inbox, Trash, Contacts, etc)
-	 */
-	isSystem: function() {
-		return this.isFolder() && (ZCS.util.localId(this.get('zcsId')) <= ZCS.constant.MAX_SYSTEM_ID);
 	},
 
 	/**
@@ -394,10 +422,10 @@ Ext.define('ZCS.model.ZtOrganizer', {
 
 		var type = this.get('type');
 
-		if (this.isFolder()) {
+		if (ZCS.model.ZtOrganizer.isFolder(this.data)) {
 			var path = this.get('path');
 
-			if (this.isSystem()) {
+			if (ZCS.model.ZtOrganizer.isSystem(this.data)) {
 				path = path.toLowerCase();
 			}
 			// normalize path to omit leading /

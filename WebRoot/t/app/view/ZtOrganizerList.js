@@ -157,6 +157,7 @@ Ext.define('ZCS.view.ZtOrganizerSubList', {
 	xtype: 'organizersublist',
 
 	config: {
+		infinite: true,
 		type: null      // ZCS.constant.ORG_LIST_*
 	},
 

@@ -29,6 +29,31 @@ Ext.define('ZCS.common.ZtUtil', {
 
 	idParams: {},
 
+	/**
+	 * Gets a reference to the single instance of the parameterized Ext.Component.
+	 * If an instance of the component does not exist, one is added to the viewport.
+	 * This method is not suited to adding classes which have multiple instances
+	 * or should be added to some level of the component hierarchy that is not
+	 * the viewport.
+	 *
+	 * @param {String}    className The name of a class extending from Ext.Component
+	 * @param {Object}    config    Config for the instance.
+	 *
+	 */
+	getLazyReference: function (className, config) {
+		var aliases = Ext.ClassManager.getAliasesByName(className), //get registered aliases for use in component query
+			alias = aliases[0],  //widget.component
+			queriableAliasName = alias.substring(alias.indexOf(".")), //.component
+			existingInstances = Ext.ComponentQuery.query(queriableAliasName),
+			existingInstance = existingInstances.length > 0 && existingInstances[0];
+
+		if (!existingInstance) {
+			return Ext.Viewport.add(Ext.create(className));
+		} else {
+			return existingInstance;
+		}
+	},
+
 
 	/**
 	 * Returns a display string in either KB, MB or GB, depending on file size.

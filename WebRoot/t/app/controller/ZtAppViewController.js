@@ -1,4 +1,4 @@
-/**
+ /**
  * Controller which manages the state of the app views in the application.
  * All hiding / showing  / positioning / sizing of the list, overview and item panels goes through this
  * controller.
@@ -76,11 +76,22 @@ Ext.define('ZCS.controller.ZtAppViewController', {
 		//of the list panel and overview panels.
 		Ext.Viewport.on('orientationchange', function (viewport, newOrientation, width, height) {
 			this.orientation = Ext.Viewport.getOrientation();
-			var newDimensions = this.resetPanelSize(width, height);
+			
+			var appsMenu = this.getAppsMenu(),
+				organizerEdit = this.getOrganizerEdit(),
+				newDimensions = this.resetPanelSize(width, height);
+
 			this.updateModalnessOfOverlays(newDimensions);
 			this.updatelistpanelToggle(this.overviewTitle);
-			this.getAppsMenu().setDimensions();
-			this.getOrganizerEdit().setDimensions();
+			
+			if (appsMenu) {
+				appsMenu.setDimensions();
+			}
+
+			if (organizerEdit) {
+				organizerEdit.setDimensions();
+			}
+			
 			ZCS.app.fireEvent('orientationChange', newDimensions);
 		}, this);
 
@@ -146,8 +157,11 @@ Ext.define('ZCS.controller.ZtAppViewController', {
 	},
 
 	doShowAppsMenu: function (button, e) {
+		var appsMenu = ZCS.util.getLazyReference('ZCS.view.ZtAppsMenu');
+
 		this.hideOverviewPanel();
-		this.getAppsMenu().show();
+		
+		appsMenu.show();
 	},
 
 	onAppMenuItemTap: function (list, index, target, record, e) {
@@ -165,7 +179,7 @@ Ext.define('ZCS.controller.ZtAppViewController', {
 	/**
 	 * Register an overview panel for the app view.
 	 */
-	doOverviewRegistration: function (config, appview, positioningConfig) {
+	doOverviewRegistration: function (config, app, positioningConfig) {
 		var width = this.getNavigationWidth(positioningConfig),
 			sheetConfig = this.getOverviewSheetConfig(config, positioningConfig);
 
@@ -183,7 +197,7 @@ Ext.define('ZCS.controller.ZtAppViewController', {
 		// AND the organizer list is in editing mode
 		// THEN we programmatically call ZtOverviewController::hideEditPanel()
 		// ON "hide" event of overviewPanel
-		if (config.showEdit){
+		if (config.showEdit) {
 			overviewPanel.on('hide',function () {
 				if (overviewPanel.down('organizerlist') && overviewPanel.down('organizerlist').editing) {
 					var overviewController = ZCS.app.getController('ZtOverviewController');
@@ -193,8 +207,8 @@ Ext.define('ZCS.controller.ZtAppViewController', {
 			});
 		}
 
-		this.appViews[appview.getApp()].overviewPanel = overviewPanel;
-		this.appViews[appview.getApp()].positioningConfig = positioningConfig;
+		this.appViews[app].overviewPanel = overviewPanel;
+		this.appViews[app].positioningConfig = positioningConfig;
 	},
 
 	/**
@@ -271,12 +285,32 @@ Ext.define('ZCS.controller.ZtAppViewController', {
 		var activeApp = ZCS.session.getActiveApp(),
 			appViewConfig = this.appViews[activeApp];
 
+		if (!appViewConfig.overviewPanel) {
+			this.createOverviewPanel(activeApp, appViewConfig);
+		}
+
 		if (activeApp !== ZCS.constant.APP_CALENDAR) {
 			var listPanelZIndex = appViewConfig.listPanel.getZIndex();
 			appViewConfig.overviewPanel.setZIndex(listPanelZIndex + 1);
 		}
 
 		appViewConfig.overviewPanel.show();
+	},
+
+	createOverviewPanel: function (app, appViewConfig) {
+
+		var overviewEditable = Ext.Array.contains(ZCS.constant.EDITABLE_OVERVIEW_APPS, app);
+
+		this.doOverviewRegistration({
+				xtype: 'overview',
+				itemId: app + 'overview',
+				app: app,
+				title: ZCS.constant.OVERVIEW_TITLE[app],
+				showEdit: overviewEditable
+			}, 
+			app,
+			ZCS.constant.SIDE_MENU_CONFIG
+		);
 	},
 
 	/**
@@ -286,7 +320,9 @@ Ext.define('ZCS.controller.ZtAppViewController', {
 		var activeApp = ZCS.session.getActiveApp(),
 			appViewConfig = this.appViews[activeApp];
 
-		appViewConfig.overviewPanel.hide();
+		if (appViewConfig.overviewPanel) {
+			appViewConfig.overviewPanel.hide();
+		}
 	},
 
 	/**
@@ -343,7 +379,9 @@ Ext.define('ZCS.controller.ZtAppViewController', {
 			
 			appViewConfig.itemPanel.setWidth(itemPanelWidth);
 
-			appViewConfig.overviewPanel.setWidth(overlayWidth);
+			if (appViewConfig.overviewPanel) {
+				appViewConfig.overviewPanel.setWidth(overlayWidth);
+			}
 
 			if (appViewConfig.placeHolder) {
 				appViewConfig.placeHolder.setWidth(overlayWidth);
@@ -353,7 +391,9 @@ Ext.define('ZCS.controller.ZtAppViewController', {
                 appViewConfig.listPanel.setWidth(overlayWidth);
  			}
 
-			appViewConfig.overviewPanel.setHeight(overviewHeight);
+ 			if (appViewConfig.overviewPanel) {
+				appViewConfig.overviewPanel.setHeight(overviewHeight);
+			}
 
 			newDimensions[app] = {
 				listPanel: {
@@ -393,8 +433,10 @@ Ext.define('ZCS.controller.ZtAppViewController', {
 				placeHolderPosition,
 				overviewPanelPosition;
 
-			appViewConfig.overviewPanel.setModal(true);
-			appViewConfig.overviewPanel.setHideOnMaskTap(true);
+			if (appViewConfig.overviewPanel) {
+				appViewConfig.overviewPanel.setModal(true);
+				appViewConfig.overviewPanel.setHideOnMaskTap(true);
+			}
 
 			if (appViewConfig.listPanel) {
 				appViewConfig.listPanel.setModal(overlayModalness);

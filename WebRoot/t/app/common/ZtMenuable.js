@@ -22,6 +22,7 @@
 
 Ext.define('ZCS.common.ZtMenuable', {
 
+
 	/**
 	 * Override this function to modify menu labels before menu pops up
 	 */
@@ -34,7 +35,18 @@ Ext.define('ZCS.common.ZtMenuable', {
 
 	showMenu: function (menuButton, params) {
 		var itemPanel,
-			menu = Ext.ComponentQuery.query('#' + params.menuName + 'Menu')[0];
+			menuQuery = '#' + params.menuName + 'Menu',
+			menu,
+			app = ZCS.session.getActiveApp();
+ 
+ 		menu = Ext.ComponentQuery.query(menuQuery)[0];
+
+		if (!menu) {
+			menu = Ext.create('ZCS.common.ZtMenu', {
+             	itemId: params.menuName + 'Menu',
+				data: this.getFilteredMenuData(app, params.menuName)
+			});
+		}
 
 		if (this.setActiveMailComponent) {
 			itemPanel = menuButton.up('.itempanel');
@@ -69,5 +81,18 @@ Ext.define('ZCS.common.ZtMenuable', {
 		}
 		e.preventDefault();
 		e.stopPropagation();
+	},
+
+
+	// filters out ops that are not enabled by user settings
+	getFilteredMenuData: function(app, menuName) {
+
+		var menuItems = ZCS.constant.MENU_CONFIGS[app][menuName],
+			precondition;
+
+		return Ext.Array.filter(menuItems, function(menuItem) {
+			precondition = ZCS.constant.OP_PRECONDITION[menuItem.action];
+			return (!precondition || ZCS.session.getSetting(precondition));
+		}, this);
 	}
 });

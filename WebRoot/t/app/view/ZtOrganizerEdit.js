@@ -156,6 +156,7 @@ Ext.define('ZCS.view.ZtOrganizerEdit', {
             displayField:       'displayName',
             store:              selectorStore,
             grouped:            true,
+            infinite:           true,
             title:              ZtMsg.folderLocationLabel,
             toolbar: {
                 items : [{

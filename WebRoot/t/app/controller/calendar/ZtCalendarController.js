@@ -177,10 +177,9 @@ Ext.define('ZCS.controller.calendar.ZtCalendarController', {
 	    this.setEvent(event);
 
 	    if (!event.get('isException') && event.get('isRecur')) {
-		    var actionDialog = this.getAppointmentDialog();
+		    var actionDialog = ZCS.util.getLazyReference('ZCS.view.calendar.ZtAppointmentDialog');
 		    actionDialog.show();
-	    }
-	    else {
+	    } else {
 		    msg.save({
 			    op: 'load',
 			    id: inviteId,
@@ -199,7 +198,7 @@ Ext.define('ZCS.controller.calendar.ZtCalendarController', {
      */
 
     showItem: function(msg, isSeries, isEdit) {
-		var panel = this.getAppointmentPanel(),
+		var panel = ZCS.util.getLazyReference('ZCS.view.calendar.ZtAppointmentForm'),
             invite = msg.get('invite'),
             title = Ext.String.htmlEncode(invite.get('subject') || ZtMsg.noSubject),
             calFolder = ZCS.cache.get(invite.get('apptFolderId')),
@@ -474,7 +473,10 @@ Ext.define('ZCS.controller.calendar.ZtCalendarController', {
 	        ridZ: this.getEvent().get('ridZ'),
 	        isCalApp: true,
             success: function () {
-                me.getAppointmentPanel().hide();
+                var appointmentPanel = me.getAppointmentPanel();
+                if (appointmentPanel) {
+                    appointmentPanel.hide();
+                }
                 ZCS.app.fireEvent('showToast', ZtMsg.invReplySent);
             }
         });
@@ -552,7 +554,9 @@ Ext.define('ZCS.controller.calendar.ZtCalendarController', {
 			success: function () {
 				me.loadCalendar();
 				Ext.Function.defer(function() {
-					me.getAppointmentPanel().hide();
+                    if (me.getAppointmentPanel()) {
+					   me.getAppointmentPanel().hide();
+                    }
 				}, 100);
 				ZCS.app.fireEvent('showToast', isHardDelete ? ZtMsg.apptTrashDeleteToast : ZtMsg.apptCancelToast);
 			}

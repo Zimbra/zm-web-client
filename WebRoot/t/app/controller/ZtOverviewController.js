@@ -175,7 +175,7 @@ Ext.define('ZCS.controller.ZtOverviewController', {
 
 		var type = organizer.get('type'),
 			isTag = (type === ZCS.constant.ORG_TAG),
-			organizerEditPanel = this.getOrganizerEditPanel(),
+			organizerEditPanel = ZCS.util.getLazyReference('ZCS.view.ZtOrganizerEdit'),
 			deleteBtn = isTag ? this.getDeleteTagBtn() : this.getDeleteFolderBtn();
 
 		//TODO: allow this to succeed once there is a search edit state.
@@ -286,7 +286,7 @@ Ext.define('ZCS.controller.ZtOverviewController', {
             organizerEditToolbar = overview.getDockedItems()[0],
             editBtn = overview.down('#zcs-overview-edit-btn'),
             appsBtn = overview.down('#zcs-overview-apps-btn'),
-            organizerEditPanel = this.getOrganizerEditPanel(),
+            organizerEditPanel = ZCS.util.getLazyReference('ZCS.view.ZtOrganizerEdit'),
             organizerListToolbar = overview.down('organizerlist').getToolbar(),
             folderList = this.getCurrentFolderList();
 
@@ -462,7 +462,9 @@ Ext.define('ZCS.controller.ZtOverviewController', {
 	},
 
 	handleOrganizerCreate: function(folder, notification) {
-		this.addOrganizer(this.getOrganizerEditPanel(), notification);
+		if (this.getOrganizerEditPanel()) {
+			this.addOrganizer(this.getOrganizerEditPanel(), notification);
+		}
 	},
 
 	/**
@@ -473,7 +475,9 @@ Ext.define('ZCS.controller.ZtOverviewController', {
 	 * @param {Object}          notification    JSON with new data
 	 */
 	handleOrganizerChange: function(folder, notification) {
-		this.modifyOrganizer(this.getOrganizerEditPanel(), folder, notification);
+		if (this.getOrganizerEditPanel()) {
+			this.modifyOrganizer(this.getOrganizerEditPanel(), folder, notification);
+		}
 	},
 
 	/**
@@ -482,14 +486,18 @@ Ext.define('ZCS.controller.ZtOverviewController', {
 	 * @param {ZtOrganizer}     folder          organizer that changed
 	 */
 	handleOrganizerDelete: function(folder) {
-		this.removeOrganizer(this.getOrganizerEditPanel(), folder);
+		if (this.getOrganizerEditPanel()) {
+			this.removeOrganizer(this.getOrganizerEditPanel(), folder);
+		}
 	},
 
 	/**
 	 * We got a <refresh> block. Reload the overviews.
 	 */
 	handleRefresh: function() {
-		this.reloadOverviews(this.getOrganizerEditPanel());
+		if (this.getOrganizerEditPanel()) {
+			this.reloadOverviews(this.getOrganizerEditPanel());
+		}
 	},
 
     onLocationSelectionCardShow: function(){

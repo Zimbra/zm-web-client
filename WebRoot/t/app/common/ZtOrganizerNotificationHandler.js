@@ -147,6 +147,7 @@ Ext.define('ZCS.common.ZtOrganizerNotificationHandler', {
 			store.suspendEvents();
 
 			store.setClearOnLoad(false);
+			store.getRoot().removeAll(true, true);
 			store.setData({
 				items: ZCS.session.getOrganizerData(app, null, list.getType())
 			});

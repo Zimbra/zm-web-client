@@ -165,7 +165,7 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
 	showContactForm: function(mode, contact) {
 
 		var me = this,
-			panel = this.getContactPanel(),
+			panel = ZCS.util.getLazyReference('ZCS.view.contacts.ZtContactForm'),
 			form = panel.down('formpanel'),
 			isEdit = (mode === ZCS.constant.OP_EDIT);
 
@@ -593,8 +593,9 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
 	 * @return {Boolean}    true if changes have been made
 	 */
 	isDirty: function() {
+		var contactPanel = this.getContactPanel();
 
-		if (this.getContactPanel().isHidden()) {
+		if (!contactPanel || contactPanel.isHidden()) {
 			return false;
 		}
 

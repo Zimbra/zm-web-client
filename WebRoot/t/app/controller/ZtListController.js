@@ -123,8 +123,7 @@ Ext.define('ZCS.controller.ZtListController', {
 		if (!curFolder && lastFolder) {
 			// user is looking at search results, tapped the Back button - show last organizer visited
 			this.doSearch(lastFolder.getQuery(), lastFolder);
-		}
-		else {
+		} else {
 			// user is looking at organizer contents, show the overview
 			ZCS.app.fireEvent('showOverviewPanel');
 		}
@@ -209,8 +208,7 @@ Ext.define('ZCS.controller.ZtListController', {
 				// If we got here via tap on a saved search in the overview, remember it so we can show its name
 				var searchId = (folder.get('type') === ZCS.constant.ORG_SEARCH) ? folder.get('zcsId') : null;
 				ZCS.session.setSetting(ZCS.constant.SETTING_CUR_SEARCH_ID, searchId, app);
-			}
-			else {
+			} else if (this.getFolderList()) {
 				// If the user ran a search, deselect the selected folder since it no longer matches results
 				this.getFolderList().getActiveItem().deselectAll();
 			}

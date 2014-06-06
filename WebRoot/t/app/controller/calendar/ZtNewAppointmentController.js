@@ -49,7 +49,7 @@ Ext.define('ZCS.controller.calendar.ZtNewAppointmentController', {
      */
     showNewApptForm: function(mode, msg, event, warningDone) {
 
-        var panel = this.getNewApptPanel(),
+        var panel = ZCS.util.getLazyReference('ZCS.view.calendar.ZtNewAppointment'),
             isEdit = (mode === ZCS.constant.OP_EDIT);
 
 	    if (isEdit && !warningDone) {
@@ -85,7 +85,7 @@ Ext.define('ZCS.controller.calendar.ZtNewAppointmentController', {
     },
 
     populateForm: function(event) {
-        var	panel = this.getNewApptPanel(),
+        var panel = ZCS.util.getLazyReference('ZCS.view.calendar.ZtNewAppointment'),
             form = panel.down('formpanel'),
             value, formField,
             msg = this.getMsg(),
@@ -279,7 +279,7 @@ Ext.define('ZCS.controller.calendar.ZtNewAppointmentController', {
 
         var folder = ZCS.session.getCurrentSearchOrganizer(),
             me = this,
-	        panel = this.getNewApptPanel(),
+	        panel = ZCS.util.getLazyReference('ZCS.view.calendar.ZtNewAppointment'),
 	        toolbar = panel && panel.down('titlebar'),
 	        buttons = toolbar && toolbar.query('button');
 
@@ -400,7 +400,7 @@ Ext.define('ZCS.controller.calendar.ZtNewAppointmentController', {
     },
 
     getEditor: function() {
-        var panel = this.getNewApptPanel(),
+        var panel = ZCS.util.getLazyReference('ZCS.view.calendar.ZtNewAppointment'),
             form = panel.down('formpanel'),
             bodyFld = form.down('#body'),
             editor = bodyFld.element.query('.zcs-editable')[0];

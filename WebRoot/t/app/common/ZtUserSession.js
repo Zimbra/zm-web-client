@@ -362,6 +362,44 @@ Ext.define('ZCS.common.ZtUserSession', {
 	},
 
 	/**
+	 * Returns a single organizer model based on the passed zcsId.  Since this class 
+	 * holds organizers as Object literals, we need a bit more logic to get a model of
+	 * a single organizer.
+	 *
+	 */
+	getOrganizerModel: function (zcsId) {
+		var organizerData = this.findOrganizerByAttribute("zcsId", zcsId);
+
+		if (organizerData) {
+			var organizerModel = Ext.create('ZCS.model.ZtOrganizer', organizerData);
+
+			ZCS.model.ZtOrganizer.addOtherFields(organizerModel.data);
+
+			return organizerModel;
+		}
+
+		return null;
+	},
+
+	/**
+	 * Returns a single organizer based on the attribute and value passed.
+	 *
+	 * @param {String} attribute   The property of the organizer to find by.
+	 * @param {String} value       The value for the property.
+	 *
+	 * @return {Object} A JavaScript object literal representing an organizer.
+	 */
+	findOrganizerByAttribute: function (attribute, value) {
+		var root = this.getOrganizerRoot();
+
+		return this.findOrganizerInRootByAttribute(
+			root,
+			attribute, 
+			value
+		);
+	},
+
+	/**
 	 * Finds the organizer with the given ID in the canonical organizer tree, and possibly
 	 * performs an action as a side effect.
 	 *
@@ -374,8 +412,37 @@ Ext.define('ZCS.common.ZtUserSession', {
 	 * @return {Object}     the organizer that was found, or null
 	 */
 	findOrganizer: function(org, id, doDelete, newChildOrg) {
+		return this.findOrganizerInRootByAttribute(
+			org,
+			"zcsId",
+			id,
+			doDelete, 
+			newChildOrg
+		);
+	},
 
-		if (org.zcsId === id) {
+	/** 
+	 * Finds the organizer with the given ID in the canonical organizer tree, and possibly
+	 * performs an action as a side effect.
+	 *
+	 * @param {Object}      org         root from which to start search
+	 * @param {String}      attr        The property of the organizer to find by.
+	 * @param {String}      value       The value for the property.
+	 * @param {Boolean}     doDelete    (optional) if true, remove the organizer
+	 * @param {Object}      newChildOrg (optional) if true, add this child to the organizer's child list
+	 *
+	 *
+	 * @private
+	 */
+	findOrganizerInRootByAttribute: function (org, attr, value, doDelete, newChildOrg) {
+		if (!org) {
+			return null;
+		}
+
+		var areStrings = org[attr] && value && Ext.isString(org[attr]) && Ext.isString(value);
+
+		if (org[attr] === value ||
+				(areStrings && org[attr].toLowerCase() === value.toLowerCase())) {
 			if (newChildOrg) {
 				org.items = org.items || [];
 				org.items.push(newChildOrg);
@@ -390,7 +457,7 @@ Ext.define('ZCS.common.ZtUserSession', {
 			i, childOrg;
 
 		for (i = 0; i < ln; i++) {
-			childOrg = this.findOrganizer(org.items[i], id, doDelete, newChildOrg);
+			childOrg = this.findOrganizerInRootByAttribute(org.items[i], attr, value, doDelete, newChildOrg);
 			if (childOrg) {
 				if (doDelete) {
 					list.splice(i, 1);
@@ -401,6 +468,7 @@ Ext.define('ZCS.common.ZtUserSession', {
 
 		return null;
 	},
+
 
 	/**
 	 * Returns the currently active (visible) search field. (Each app has its own.)
@@ -496,7 +564,7 @@ Ext.define('ZCS.common.ZtUserSession', {
 				orgId = search && search.getOrganizerId();
 		}
 
-		var organizer = orgId ? ZCS.cache.get(orgId) : null;
+		var organizer = orgId ? ZCS.session.getOrganizerModel(orgId) : null;
 		if (organizer) {
 			this.setLastSearchOrganizer(app, organizer);
 		}
