@@ -698,9 +698,9 @@ function(notify, methodName) {
 		this._handleModifies(notify.modified);
 	}
 
-    if (ZmOffline.isOnlineMode() && methodName !== "SyncRequest" && (notify.deleted || notify.created || notify.modified)) {
-        appCtxt.webClientOfflineHandler.sendSyncRequest();
-    }
+	if (ZmOffline.isOnlineMode() && (notify.deleted || notify.created || notify.modified)) {
+		appCtxt.webClientOfflineHandler.scheduleSyncRequest(notify, methodName);
+	}
 	this._controller.runAppFunction("postNotify", false, notify);
 };
 

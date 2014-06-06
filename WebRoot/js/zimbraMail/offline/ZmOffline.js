@@ -429,6 +429,23 @@ function(folderName){
 
 };
 
+ZmOffline.prototype.scheduleSyncRequest =
+function(notify, methodName) {
+	if (methodName === "SyncRequest") {
+		return;
+	}
+	var keys = Object.keys(notify.created || {});
+	keys = keys.concat(Object.keys(notify.modified || {}));
+	keys = keys.concat(Object.keys(notify.deleted || {}));
+	if (keys.length === 0) {
+		return;
+	}
+	if (this._syncRequestActionId) {
+		AjxTimedAction.cancelAction(this._syncRequestActionId);
+	}
+	this._syncRequestActionId = AjxTimedAction.scheduleAction(new AjxTimedAction(this, this.sendSyncRequest), 30000);
+};
+
 ZmOffline.prototype.sendSyncRequest =
 function(callback) {
 	ZmOffline.refreshStatusIcon(true);
