@@ -216,7 +216,7 @@ Ext.define('ZCS.common.ZtOrganizerNotificationHandler', {
 
 		var updateInfo = {
 			"parent": parent,
-			"newChild": newChild,
+			"newChild": newChild
 		};
 
 		if (organizer.getId) {
