@@ -47,6 +47,10 @@ Ext.define('ZCS.view.mail.ZtComposeForm', {
 
 	initialize: function() {
 
+		// Hack to set label width based on length of "To" when it is translated
+		var toLabelWidth = 1 + (0.3 * ZtMsg.toHdr.length),
+			ccBccLabelWidth = toLabelWidth + 2.5;
+
 		var composeForm = this,
 			isPhone = Ext.os.deviceType === "Phone",
 			toolbar = {
@@ -112,7 +116,7 @@ Ext.define('ZCS.view.mail.ZtComposeForm', {
 						addressType: ZCS.constant.TO,
 						flex: 1,
 						label: ZtMsg.toHdr,
-						labelWidth: '1.6em'
+						labelWidth: toLabelWidth + 'em'
 					}]
 				}, {
 					xtype: 'contactfield',
@@ -121,7 +125,7 @@ Ext.define('ZCS.view.mail.ZtComposeForm', {
 					addressType: ZCS.constant.CC,
 					hidden: true,
 					label: ZtMsg.ccHdr,
-					labelWidth: '4.1em'
+					labelWidth: ccBccLabelWidth + 'em'
 				}, {
 					xtype: 'contactfield',
 					name: ZCS.constant.BCC,
@@ -129,7 +133,7 @@ Ext.define('ZCS.view.mail.ZtComposeForm', {
 					addressType: ZCS.constant.BCC,
 					hidden: true,
 					label: ZtMsg.bccHdr,
-					labelWidth: '4.1em'
+					labelWidth: ccBccLabelWidth + 'em'
 				}, {
 					cls: 'zcs-subjectline',
 					layout: {
