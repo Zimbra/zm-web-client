@@ -70,22 +70,7 @@ Ext.define('ZCS.controller.ZtListController', {
 	 */
 	launch: function () {
 
-		var defaultQuery = this.getDefaultQuery();
-        //<debug>
-		Ext.Logger.verbose('STARTUP: list ctlr launch - ' + ZCS.util.getClassName(this));
-        //</debug>
 		this.callParent();
-
-		//Set the proxies params so this parameter persists between paging requests.
-		this.getStore().getProxy().setExtraParams({
-			query: defaultQuery
-		});
-
-		this.getStore().load({
-			query:      defaultQuery,
-			callback:   this.storeLoaded,
-			scope:      this
-		});
 
 		ZCS.app.on('applicationSwitch', function (newApp) {
 			if (this.getApp() === newApp) {

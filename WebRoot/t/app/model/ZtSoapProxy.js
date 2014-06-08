@@ -78,6 +78,10 @@ Ext.define('ZCS.model.ZtSoapProxy', {
 
 			// Erase the canned results since we only do this once.
 			ZCS.session.setInitialSearchResults(null);
+			// Also, we don't need inlineData any longer, so free the memory.
+			window.inlineData = null;
+			delete window.inlineData;
+
 		}
 		else {
 			return me.callParent(arguments);

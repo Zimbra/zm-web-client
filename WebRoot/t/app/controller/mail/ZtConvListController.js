@@ -64,12 +64,38 @@ Ext.define('ZCS.controller.mail.ZtConvListController', {
 
 		this.callParent();
 
+		var callback = this.showInitialResults.bind(this);
+		if (ZCS.util.isAppEnabled(ZCS.constant.APP_CONTACTS)) {
+			ZCS.app.getContactListController().loadAllContacts(callback);
+		}
+		else {
+			callback();
+		}
+
 		ZCS.app.on('notifyConversationDelete', this.handleDeleteNotification, this);
 		ZCS.app.on('notifyConversationCreate', this.handleConvCreateNotification, this);
 		ZCS.app.on('notifyMessageCreate', this.handleMsgCreateNotification, this);
 		ZCS.app.on('notifyConversationChange', this.handleModifyNotification, this);
 
 		ZCS.app.on('notifyRefresh', this.handleRefresh, this);
+	},
+
+	// Display the initial (inlined) search results.
+	showInitialResults: function() {
+
+		var defaultQuery = this.getDefaultQuery();
+
+		// Set the proxy's params so this parameter persists between paging requests.
+		this.getStore().getProxy().setExtraParams({
+			query: defaultQuery
+		});
+
+		this.getStore().load({
+			query:      defaultQuery,
+			callback:   this.storeLoaded,
+			scope:      this
+		});
+
 	},
 
 	doDelete: function (list, item, target, record) {

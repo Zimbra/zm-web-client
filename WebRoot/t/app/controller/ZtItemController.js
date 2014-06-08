@@ -230,5 +230,25 @@ Ext.define('ZCS.controller.ZtItemController', {
             var tags = ZCS.session.getOrganizerData(ZCS.constant.APP_MAIL, ZCS.constant.ORG_TAG);
             menu.enableItem(ZCS.constant.OP_TAG, tags && tags.length > 0);
         }
-    }
+    },
+
+	/**
+	 * Fetch the contact with the given email and use it to populate and edit form.
+	 *
+	 * @param {object}  actionParams    params with email address in some form
+	 */
+	doEditContact: function(actionParams) {
+
+		var email = actionParams.addrObj ? actionParams.addrObj.get('email') : actionParams.address;
+
+		ZCS.app.getContactListController().loadContactByEmail(email, function(contacts) {
+			var contactController = ZCS.app.getContactController(),
+				contact = contacts && contacts[0];
+
+			if (contact) {
+				contactController.setItem(contact);
+				contactController.showContactForm(ZCS.constant.OP_EDIT, contact);
+			}
+		});
+	}
 });

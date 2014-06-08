@@ -322,15 +322,6 @@ Ext.define('ZCS.controller.mail.ZtMsgController', {
 		ZCS.app.getContactController().showContactForm(ZCS.constant.OP_COMPOSE, ZCS.model.contacts.ZtContact.fromEmailObj(addrObj));
 	},
 
-    doEditContact: function(actionParams) {
-
-        var email = actionParams.addrObj ? actionParams.addrObj.get('email') : actionParams.address,
-	        contact = ZCS.cache.get(email, 'email'),
-            contactCtrl = ZCS.app.getContactController();
-        contactCtrl.setItem(contact);
-        contactCtrl.showContactForm(ZCS.constant.OP_EDIT, contact);
-    },
-
 	/**
 	 * Searches for mail from the given sender.
 	 */
@@ -414,13 +405,11 @@ Ext.define('ZCS.controller.mail.ZtMsgController', {
 
 			// Pick which listitem to show, only if contacts app is enabled
 			if (ZCS.util.isAppEnabled(ZCS.constant.APP_CONTACTS)) {
-				var fromAddr = message.getAddressByType(ZCS.constant.FROM),
-					addrObj = params.addrObj,
- 					cachedAddr = ZCS.cache.get(addrObj && addrObj.get('email'), 'email');
-
-				if (cachedAddr && cachedAddr.get('zcsId')) {
+				var	email = params.addrObj && params.addrObj.get('email');
+				if (email && ZCS.app.getContactListController().getDataFieldByEmail(email, 'exists')) {
 					menu.hideItem(ZCS.constant.OP_EDIT, false);
-				} else {
+				}
+				else {
 					menu.hideItem(ZCS.constant.OP_ADD_CONTACT, false);
 				}
 			}

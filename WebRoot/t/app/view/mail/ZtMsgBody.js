@@ -106,7 +106,7 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 			iframeWidth = this.element.getWidth() || (this.parent.getChildWidth() - 22),
 			iframe = this.iframe;
 
-		if (window.inlineData.debugLevel === 'orig') {
+		if (ZCS.session.getDebugLevel() === 'orig') {
 			trimQuotedText = true;
 		}
 		var result = msg.getContentAsHtml(this.getId(), trimQuotedText),

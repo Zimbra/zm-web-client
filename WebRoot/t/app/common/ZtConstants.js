@@ -275,7 +275,7 @@ ZCS.constant.NOTIFY_DELETE  = 'Delete';
 ZCS.constant.NOTIFY_CREATE  = 'Create';
 ZCS.constant.NOTIFY_CHANGE  = 'Change';
 
-// JSON node name for each item/org type
+// JSON node name for each item type (organizers have the same name for the node as our constants, eg 'folder')
 ZCS.constant.ITEM_NODE = {};
 ZCS.constant.ITEM_NODE[ZCS.constant.ITEM_CONVERSATION]      = ZCS.constant.NODE_CONVERSATION;
 ZCS.constant.ITEM_NODE[ZCS.constant.ITEM_MESSAGE]           = ZCS.constant.NODE_MESSAGE;
@@ -800,6 +800,11 @@ ZCS.constant.IS_ADDRESS_FIELD = ZCS.util.arrayAsLookupHash(ZCS.constant.ADDRESS_
 ZCS.constant.IS_PARSED_ATTR_FIELD = ZCS.util.arrayAsLookupHash([
 	'email', 'phone', 'URL'
 ]);
+
+// Contact fields we use from the initial REST load of all local contacts, which is stored as JSON data
+ZCS.constant.CONTACT_DATA_FIELDS = [
+	'id', 'firstName', 'lastName', 'nickname', 'imagepart'
+];
 
 // Ordering for display of attribute types
 ZCS.constant.ATTR_TYPE_SORT_VALUE = {

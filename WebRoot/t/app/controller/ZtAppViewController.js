@@ -270,12 +270,17 @@ Ext.define('ZCS.controller.ZtAppViewController', {
 	 * Shows the list panel for the currently active app view.
 	 */
 	showListPanel: function () {
+
 		var activeApp = ZCS.session.getActiveApp(),
 			appViewConfig = this.appViews[activeApp],
-			itemPanelZIndex = appViewConfig.itemPanel.getZIndex();
+			itemPanel = appViewConfig.itemPanel,
+			listPanel = appViewConfig.listPanel,
+			itemPanelZIndex = itemPanel.getZIndex();
 
-		appViewConfig.listPanel.setZIndex(itemPanelZIndex + 1);
-		appViewConfig.listPanel.show();
+		if (itemPanel && listPanel) {
+			listPanel.setZIndex(itemPanelZIndex + 1);
+			listPanel.show();
+		}
 	},
 
 	/**

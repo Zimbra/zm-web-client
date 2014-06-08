@@ -543,10 +543,7 @@ Ext.define('ZCS.common.mail.ZtMailUtil', {
 			email = addr.get('email');
 
 		if (ZCS.session.getSetting(ZCS.constant.SETTING_GET_NAME_FROM_CONTACTS)) {
-			var contact = ZCS.cache.get(email, 'email');
-			if (contact) {
-				contactName = contact.get(useShortName ? 'shortName' : 'longName');
-			}
+			contactName = ZCS.app.getContactListController().getDataFieldByEmail(email, useShortName ? 'shortName' : 'longName');
 		}
 		contactName = contactName || addr.get(useShortName ? 'shortName' : 'longName');
 

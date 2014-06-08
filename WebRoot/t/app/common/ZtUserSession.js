@@ -40,7 +40,8 @@ Ext.define('ZCS.common.ZtUserSession', {
 		organizerRoot:          null,           // Root for canonical tree of organizers (unsorted)
 		activeApp:              '',
 		version:                '[unknown]',
-		lastSearchOrganizerByApp:    {}            // Last organizer (folder/saved search/tag) visited
+		debugLevel:             '',             // custom debug level from QS arg in URL
+		lastSearchOrganizerByApp:    {}         // Last organizer (folder/saved search/tag) visited
 	},
 
 	/**
@@ -92,6 +93,10 @@ Ext.define('ZCS.common.ZtUserSession', {
 	},
 
 	initSession: function(data) {
+
+		if (data && data.debugLevel) {
+			this.setDebugLevel(data.debugLevel);
+		}
 
 		this.setLastSearchOrganizerByApp({});
 

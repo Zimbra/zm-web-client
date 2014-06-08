@@ -277,12 +277,11 @@ Ext.define('ZCS.controller.calendar.ZtCalendarController', {
 
 			// Pick which listitem to show, only if contacts app is enabled
 			if (ZCS.util.isAppEnabled(ZCS.constant.APP_CONTACTS)) {
-				var addr = params.addrObj,
-					cachedAddr = ZCS.cache.get(addr && addr.get('email'), 'email');
-
-				if (cachedAddr) {
+				var	email = params.addrObj && params.addrObj.get('email');
+				if (email && ZCS.app.getContactListController().getDataFieldByEmail(email, 'exists')) {
 					menu.hideItem(ZCS.constant.OP_EDIT, false);
-				} else {
+				}
+				else {
 					menu.hideItem(ZCS.constant.OP_ADD_CONTACT, false);
 				}
 			}
@@ -590,11 +589,8 @@ Ext.define('ZCS.controller.calendar.ZtCalendarController', {
 	},
 
 	doEditContact: function(actionParams) {
-		var contact = ZCS.cache.get(actionParams.addrObj.get('email'), 'email'),
-			contactCtrl = ZCS.app.getContactController();
-		contactCtrl.setItem(contact);
+		this.callParent(arguments);
 		this.getAppointmentPanel().hide();
-		contactCtrl.showContactForm(ZCS.constant.OP_EDIT, contact);
 	},
 
 	doCancel: function() {

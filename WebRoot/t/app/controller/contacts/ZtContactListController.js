@@ -56,7 +56,7 @@ Ext.define('ZCS.controller.contacts.ZtContactListController', {
 		app: ZCS.constant.APP_CONTACTS
 	},
 
-    launch: function() {
+	launch: function() {
 
         if (!ZCS.util.isAppEnabled(this.getApp())) {
             return;
@@ -80,8 +80,6 @@ Ext.define('ZCS.controller.contacts.ZtContactListController', {
             };
             ZCS.app.fireEvent('notify', dlFolder);
         }
-
-	    this.loadAllContacts();
     },
 
     /**
@@ -102,46 +100,78 @@ Ext.define('ZCS.controller.contacts.ZtContactListController', {
         });
     },
 
+	loadContactByEmail: function(email, callback) {
+		this.getStore().load({
+			field:      'email',
+			query:      email,
+			callback:   callback
+		});
+	},
+
     /**
      * Load local contacts via REST call so we can cache them.
      */
-    loadAllContacts: function() {
+    loadAllContacts: function(callback) {
 
         var store = this.getStore();
 
-        var restUri = ZCS.htmlutil.buildUrl({
-            path: '/home/' + ZCS.session.getAccountName() + '/Contacts',
-            qsArgs: {
-                fmt:    'cf',
-                t:      2,
-                all:    'all'
-            }
-        });
-
+	    var restUri = ZCS.htmlutil.buildUrl({
+                path:   '/home/' + ZCS.session.getAccountName() + '/Contacts',
+                qsArgs: {
+                    fmt:    'cf',
+                    t:      2,
+                    all:    'all'
+                }
+            });
 
         Ext.Ajax.request({
             url: restUri,
             success: function(response, options) {
+
+	            this.contactData = {};
+
                 var text = response.responseText,
                     contacts = text.split('\u001E'),
                     reader = ZCS.model.contacts.ZtContact.getProxy().getReader(),
-                    ln = contacts.length, i, fields, data, attrs, j, field, value,
-                    contactGroupIds = [];
+                    ln = contacts.length, i, fields, data, attrs, j, field, value, emails, field,
+                    contactGroupIds = [],
+	                dataFields = ZCS.constant.CONTACT_DATA_FIELDS,
+	                dataFieldsLn = dataFields.length;
 
                 for (i = 0; i < ln; i++) {
                     fields = contacts[i].split('\u001D');
                     attrs = {};
+	                emails = [];
+
+	                // first, find all the emails while remembering the other attr/value pairs
                     for (j = 0; j < fields.length; j += 2) {
-                        attrs[fields[j]] = fields[j + 1];
+	                    field = fields[j];
+	                    value = fields[j + 1];
+                        attrs[field] = value;
+	                    if (field.indexOf('email') === 0) {
+		                    emails.push(value);
+	                    }
                     }
-                    if (!ZCS.cache.get(attrs.id)) {
-                        data = reader.getDataFromNode({ _attrs: attrs });
-                        new ZCS.model.contacts.ZtContact(data, attrs.id);
-                    }
+
+	                // add an object with the attrs we need for each email we found
+	                if (emails.length > 0) {
+		                data = {};
+		                for (j = 0; j < dataFieldsLn; j++) {
+			                field = dataFields[j];
+			                if (attrs[field]) {
+			                    data[field] = attrs[field];
+			                }
+		                }
+		                for (j = 0; j < emails.length; j++) {
+		                    this.contactData[emails[j]] = data;
+		                }
+	                }
+
                     if (attrs.type === ZCS.constant.CONTACT_GROUP) {
                         contactGroupIds.push(attrs.id);
                     }
                 }
+
                 // if we got any contact groups, expand them now so that they're available for autocomplete
                 if (contactGroupIds.length > 0) {
                     store.load({
@@ -150,9 +180,47 @@ Ext.define('ZCS.controller.contacts.ZtContactListController', {
                         scope:          this
                     });
                 }
-            }
+
+	            if (callback) {
+		            callback();
+	            }
+            },
+	        scope: this
         });
     },
+
+	/**
+	 * Returns the value of the given field for the contact data object with the given email.
+	 *
+	 * @param {string}  email       email address
+	 * @param {string}  field       name of field
+	 * @param {int}     maxWidth    width of image (optional)
+	 *
+	 * @returns {string}    value of field
+	 */
+	getDataFieldByEmail: function(email, field, maxWidth) {
+
+		var data = this.contactData && this.contactData[email];
+		if (!data) {
+			return '';
+		}
+
+		var result = data[field];
+		if (field === 'shortName') {
+			result = data.nickname || data.firstName || email;
+		}
+		else if (field === 'longName') {
+			result = data.firstName && data.lastName ? [ data.firstName, data.lastName ].join(' ') : data.firstName || data.lastName || email;
+		}
+		else if (field === 'image' && data.imagepart) {
+			result = ZCS.model.contacts.ZtContact.getImageUrl({ imagepart: data.imagepart }, data.id, maxWidth);
+		}
+		else if (field === 'exists') {
+			result = 'true';    // return string that is truthy
+		}
+
+		return result || '';
+	},
 
     /**
      * Handle a newly created contact. Add it to view if is is in the currently viewed folder.

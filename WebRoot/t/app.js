@@ -157,10 +157,6 @@ Ext.application({
 		// Make sure message boxes (confirms, alerts, warnings) have translated button strings
 		ZCS.util.patchSenchaStrings();
 
-		//<debug>
-		Ext.Logger.info('STARTUP: app launch');
-
-		//</debug>
 		// Note: initial view created by ZtMainController
 	},
 
