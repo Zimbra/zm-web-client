@@ -171,6 +171,10 @@ function(outputType) {
         value = isHtml ? AjxStringUtil.convertHtml2Text(value) : AjxStringUtil.convertToHtml(value);
 	}
 
+	if (appCtxt.isWebClientOffline()) {
+		value = ZmOffline.modifySignature(value);
+	}
+
     return value;
 };
 

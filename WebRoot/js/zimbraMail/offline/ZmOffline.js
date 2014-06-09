@@ -211,14 +211,68 @@ function(staticURLs, cachedURL, response) {
 ZmOffline.prototype._cacheStaticResourcesContinue =
 function() {
 	var callback = this.sendSyncRequest.bind(this, appCtxt.reloadAppCache.bind(appCtxt));
+	var cacheSignatureImages = this._cacheSignatureImages.bind(this, callback);
 	var tinyMCELocale = tinyMCE.getlanguage(appCtxt.get(ZmSetting.LOCALE_NAME));
 	if (tinyMCELocale === "en") {
-		callback();
+		cacheSignatureImages();
 	}
 	else {
 		var url = appContextPath + "/js/ajax/3rdparty/tinymce/langs/" + tinyMCELocale + ".js";
-		AjxRpc.invoke(null, url, null, callback, true);
+		AjxRpc.invoke(null, url, null, cacheSignatureImages, true);
 	}
+};
+
+ZmOffline.prototype._cacheSignatureImages =
+function(callback) {
+	var signatures = appCtxt.getSignatureCollection().getSignatures();
+	if (!signatures || signatures.length === 0) {
+		return callback && callback();
+	}
+	var template = document.createElement("template");
+	var imgSrcArray = [];
+	signatures.forEach(function(signature) {
+		template.innerHTML = signature.getValue(ZmMimeTable.TEXT_HTML);
+		var imgNodeList = template.content.querySelectorAll("img[src]");
+		for (var i = 0; i < imgNodeList.length; i++) {
+			imgSrcArray.push(imgNodeList[i].getAttribute("src"));
+		}
+	});
+	this._storeSignatureImages(imgSrcArray, callback);
+};
+
+ZmOffline.prototype._storeSignatureImages =
+function(imgSrcArray, callback) {
+	if (!imgSrcArray || imgSrcArray.length === 0) {
+		return callback && callback();
+	}
+	var imgSrc = imgSrcArray.shift();
+	var request = $.ajax({
+		url: imgSrc,
+		dataType: "text",
+		headers: {'X-Zimbra-Encoding':'x-base64'}
+	});
+	request.done(function(imgSrc, response) {
+		var imgType = imgSrc.substr(imgSrc.lastIndexOf(".") + 1);
+		localStorage.setItem(imgSrc, "data:image/" + imgType + ";base64," + response);
+	}.bind(window, imgSrc));
+	request.always(this._storeSignatureImages.bind(this, imgSrcArray, callback));
+};
+
+ZmOffline.modifySignature =
+function(value) {
+	var template = document.createElement("template");
+	template.innerHTML = value;
+	var imgNodeList = template.content.querySelectorAll("img[src]");
+	for (var i = 0; i < imgNodeList.length; i++) {
+		var img = imgNodeList[i];
+		var dataURI = localStorage.getItem(img.getAttribute("src"));
+		if (dataURI) {
+			img.setAttribute("src", dataURI);
+			img.removeAttribute("dfsrc");
+			img.removeAttribute("data-mce-src");
+		}
+	}
+	return template.innerHTML;
 };
 
 ZmOffline.prototype._downloadCalendar =
