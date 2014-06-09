@@ -194,18 +194,7 @@ Ext.define('ZCS.model.contacts.ZtContact', {
 
     constructor: function(data, id) {
 
-        var contact = this.callParent(arguments) || this,
-            emails = data && data.email,
-            altKey;
-
-        if (emails) {
-            for (var i = 0, len = emails.length; i < len; i++) {
-                altKey = emails[i].email;
-                if (altKey) {
-                    ZCS.cache.set(altKey, this, 'email');
-                }
-            }
-        }
+        var contact = this.callParent(arguments) || this;
 
 	    // Compile a static list of fields that are converted (so they can be updated when
 	    // the contact model changes)

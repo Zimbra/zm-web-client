@@ -42,7 +42,6 @@ Ext.define('ZCS.common.ZtOrganizerNotificationHandler', {
 		this.organizerUpdate(parentViews, organizer, function (parentView) {
 
 			app = (parentView.getApp && parentView.getApp()) || ZCS.session.getActiveApp();
-			organizer = ZCS.model.ZtOrganizer.getProxy().getReader().getDataFromNode(notification, notification.itemType);
 			if (ZCS.session.isValidOrganizer(organizer, app)) {
 				var list = me.getListFromView(parentView);
 				ZCS.model.ZtOrganizer.addOtherFields(organizer, app, list.getType(), false);
@@ -160,7 +159,6 @@ Ext.define('ZCS.common.ZtOrganizerNotificationHandler', {
 			store.data._autoSort = true;
 			store.resumeEvents(true);
 		}
-
 
 		this.doEfficientHandlingOfUpdates(updates);
 	},
@@ -366,8 +364,7 @@ Ext.define('ZCS.common.ZtOrganizerNotificationHandler', {
 		 */
 		for (storeId in storesToUpdate) {
 
-			var refreshIsRequired = false,
-				dependentListsForThisNode;
+			var	dependentListsForThisNode;
 
 			storeToUpdate = storesToUpdate[storeId].store;
 
@@ -377,7 +374,6 @@ Ext.define('ZCS.common.ZtOrganizerNotificationHandler', {
 			Ext.Object.each(storesToUpdate[storeId].updates, function (key, value) {
 				if (value.type === 'add') {
 					storeToUpdate.add(value.node);
-
 					dependentListsForThisNode = value.node.getDependentLists();
 				} else if (value.type === 'delete') {
 					dependentListsForThisNode = value.oldNode.getDependentLists();

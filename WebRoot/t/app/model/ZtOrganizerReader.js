@@ -68,7 +68,7 @@ Ext.define('ZCS.model.ZtOrganizerReader', {
 			// shared folders
 			isMountpoint:       isMountpoint,
 			remoteAccountId:    node.zid,
-			remoteFolderId:     String(node.rid),
+			remoteFolderId:     node.rid ? String(node.rid) : '',
 			permissions:        node.perm,
 
 			// other

@@ -276,8 +276,7 @@ Ext.define('ZCS.model.mail.ZtMailMsg', {
 	},
 
 	/**
-	 * Returns the original content of this message, fetching it from the cache if this message
-	 * has already been processed.
+	 * Returns the original content of this message.
 	 *
 	 * @param {String}      content     content
 	 * @param {ZtMimePart}  bodyPart    body part
@@ -286,16 +285,11 @@ Ext.define('ZCS.model.mail.ZtMailMsg', {
 	getOriginalContent: function(content, bodyPart) {
 
 		var contentType = bodyPart.get('contentType'),
-			id = this.getId(),
-			cacheKey = [ id, bodyPart.get('part') ].join('|'),
-			origContent = ZCS.cache.get(cacheKey);
+			id = this.getId();
 
-		if (!origContent) {
-			origContent = ZCS.quoted.getOriginalContent(content, contentType === ZCS.mime.TEXT_HTML);
-			if (origContent.length !== content.length) {
-				ZCS.cache.set(cacheKey, origContent);
-				ZCS.model.mail.ZtMailMsg.hasQuotedContent[id] = true;
-			}
+		var	origContent = ZCS.quoted.getOriginalContent(content, contentType === ZCS.mime.TEXT_HTML);
+		if (origContent.length !== content.length) {
+			ZCS.model.mail.ZtMailMsg.hasQuotedContent[id] = true;
 		}
 
 		return origContent;
