@@ -217,12 +217,12 @@ Ext.define('ZCS.model.contacts.ZtContactReader', {
 			    data.longName = (attrs.firstName && attrs.lastName) ? [attrs.firstName, attrs.lastName].join(' ') : attrs.firstName || attrs.lastName || '';
 			    data.memberEmail = attrs.email || '';
 			    data.memberPhone = attrs.workPhone || attrs.homePhone || attrs.otherPhone || '';
-			    if (member.type === 'C' || member.type === 'G') {
-				    // TODO: what should we do here? will this happen?
-				    data.zcsId = member.value;
-			    }
                 data.memberImageUrl = ZCS.model.contacts.ZtContact.getImageUrl(attrs, member.value);
 			    group.push(data);
+		    }
+		    if (member.type === 'C' || member.type === 'G') {
+			    // TODO: what should we do here? will this happen?
+			    data.zcsId = member.value;
 		    }
 		    else if (member.type === 'I') {
 			    data.memberEmail = member.value;

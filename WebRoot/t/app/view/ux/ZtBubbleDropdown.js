@@ -197,6 +197,7 @@ Ext.define('ZCS.view.ux.ZtBubbleDropdown', {
 	 * Retrieve menu items based on the current menu store.
 	 */
 	getMenuItems: function () {
+
 		var menuRecords = [],
 			me = this,
 			label,
@@ -207,26 +208,15 @@ Ext.define('ZCS.view.ux.ZtBubbleDropdown', {
 				var name = record.get('longName'),
 					email = record.get('email');
 				label = (name || email) ? tpl.apply({ name:name, email:email }) : null;
-			} else {
+			}
+			else {
 				label = record.get(me.getDropdownDisplayField());
 			}
 
-			var groupMembers, contactGroup,
-				isGroup = record.get('isGroup');
-			if (isGroup) {
-				contactGroup = ZCS.cache.get(record.get('contactId'));
-				if (contactGroup) {
-					groupMembers = Ext.Array.clean(Ext.Array.map(contactGroup.get('members'), function(member) {
-						return ZCS.model.mail.ZtEmailAddress.fromEmail(member.memberEmail);
-					}));
-				}
-			}
-
 			menuRecords.push({
-				label: label,
-				isGroup: isGroup,
-				groupMembers: groupMembers,
-				emailRecord: record
+				label:              label,
+				isGroup:            record.get('isGroup'),
+				autocompleteRecord: record
 			});
 		});
 
@@ -240,6 +230,7 @@ Ext.define('ZCS.view.ux.ZtBubbleDropdown', {
 	 * Shows the menu ui element with the contents of the menu store.
 	 */
 	loadMenuFromStore: function () {
+
 		var menuItems,
 			menu = this.menu,
 			store = menu.getStore();
@@ -264,21 +255,31 @@ Ext.define('ZCS.view.ux.ZtBubbleDropdown', {
 	},
 
 	handleMenuItemTap: function (list, index, target, record, e, eOpts) {
-		var me = this,
-			isGroup = record.get('isGroup'),
-			groupMembers = record.get('groupMembers'),
-			gotGroupMembers = groupMembers && groupMembers.length > 0,
-			emailRecord = record.get('emailRecord');
 
-		me.clearInput();
-		 if (gotGroupMembers) {
-            me.addBubbles(groupMembers);
-        } else {
-            me.addBubble(emailRecord);
-        }
+		var acRecord = record.get('autocompleteRecord'),
+			contactId = acRecord && acRecord.get('contactId'),
+			me = this;
 
-		me.clearInput();
-		me.focusInput();
+		if (record.get('isGroup') && contactId) {
+			// expand contact group and add a bubble for each member
+			ZCS.app.getContactListController().loadGroupMembers(contactId, function(response) {
+				var contact = response[0],
+					members = contact && contact.get('members');
+
+				if (members) {
+					var groupMembers = Ext.Array.clean(Ext.Array.map(members, function(member) {
+						return ZCS.model.mail.ZtEmailAddress.fromEmail(member.memberEmail);
+					}));
+					me.addBubbles(groupMembers);
+				}
+			});
+		}
+		else {
+			this.addBubble(acRecord);
+		}
+
+		this.clearInput();
+		this.focusInput();
 		list.hide();
 
 		e.preventDefault();

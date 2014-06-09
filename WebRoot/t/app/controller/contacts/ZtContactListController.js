@@ -166,19 +166,6 @@ Ext.define('ZCS.controller.contacts.ZtContactListController', {
 		                    this.contactData[emails[j]] = data;
 		                }
 	                }
-
-                    if (attrs.type === ZCS.constant.CONTACT_GROUP) {
-                        contactGroupIds.push(attrs.id);
-                    }
-                }
-
-                // if we got any contact groups, expand them now so that they're available for autocomplete
-                if (contactGroupIds.length > 0) {
-                    store.load({
-                        contactId:      contactGroupIds,
-                        contactType:    ZCS.constant.CONTACT_GROUP,
-                        scope:          this
-                    });
                 }
 
 	            if (callback) {
@@ -188,6 +175,15 @@ Ext.define('ZCS.controller.contacts.ZtContactListController', {
 	        scope: this
         });
     },
+
+	// Go find the group members for the contact group with the given ID.
+	loadGroupMembers: function(contactId, callback) {
+		this.getStore().load({
+			contactId:      contactId,
+			contactType:    ZCS.constant.CONTACT_GROUP,
+			callback:       callback
+		});
+	},
 
 	/**
 	 * Returns the value of the given field for the contact data object with the given email.

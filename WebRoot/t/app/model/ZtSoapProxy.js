@@ -33,7 +33,7 @@ Ext.define('ZCS.model.ZtSoapProxy', {
 		var me = this,
 			inlineResults = ZCS.session.getInitialSearchResults();
 
-		if (inlineResults) {
+		if (inlineResults && operation.config.initialSearch) {
 
 			// cobble together the appropriate request so that we can pretend it was used to get
 			// these results

@@ -91,9 +91,10 @@ Ext.define('ZCS.controller.mail.ZtConvListController', {
 		});
 
 		this.getStore().load({
-			query:      defaultQuery,
-			callback:   this.storeLoaded,
-			scope:      this
+			query:          defaultQuery,
+			initialSearch:  true,
+			callback:       this.storeLoaded,
+			scope:          this
 		});
 
 	},
