@@ -140,16 +140,18 @@ function(view, force) {
 		var oldView = this._getReadingPanePref();
 		if (view !== oldView) {
 			var convView = this._convView;
-			var replyView = convView._replyView;
-			if (replyView && view === ZmSetting.RP_OFF) {
-				// reset the replyView with the warning before turning off the pane
-				if (!force && !convView._controller.popShield(null, this.switchView.bind(this, view, true))) {
-					// redo setChecked on the oldView menu item if user cancels
-					this._viewMenu.getMenuItem(oldView)._setChecked(true);
-					return;
+			if (convView) {
+				var replyView = convView._replyView;
+				if (replyView && view === ZmSetting.RP_OFF) {
+					// reset the replyView with the warning before turning off the pane
+					if (!force && !convView._controller.popShield(null, this.switchView.bind(this, view, true))) {
+						// redo setChecked on the oldView menu item if user cancels
+						this._viewMenu.getMenuItem(oldView)._setChecked(true);
+						return;
+					}
+					this._viewMenu.getMenuItem(view)._setChecked(true);
+					replyView.reset();
 				}
-				this._viewMenu.getMenuItem(view)._setChecked(true);
-				replyView.reset();
 			}
 			this._setReadingPanePref(view);
 			this._doublePaneView.setReadingPane(true);
