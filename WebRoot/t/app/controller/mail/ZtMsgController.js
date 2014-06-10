@@ -206,8 +206,12 @@ Ext.define('ZCS.controller.mail.ZtMsgController', {
 
 	doInviteReply: function(origMsgId, action) {
 
-		var origMsg = ZCS.cache.get(origMsgId),
-			invite = origMsg.get('invite'),
+		var	origMsg = ZCS.util.findItemInActiveStore(ZCS.constant.ITEM_MESSAGE, origMsgId);
+		if (!origMsg) {
+			return;
+		}
+
+		var	invite = origMsg.get('invite'),
 			msg = Ext.create('ZCS.model.mail.ZtMailMsg'),
 			invReplySubject = ZCS.constant.INVITE_REPLY_PREFIX[action] + ": " + invite.get('subject');
 

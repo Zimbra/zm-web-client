@@ -767,5 +767,21 @@ Ext.define('ZCS.common.ZtUtil', {
 		else {
 			return str;
 		}
+	},
+
+	// Looks for the item with the given ID in the store that matches its type.
+	findItemInActiveStore: function(itemType, zcsId) {
+
+		var store = Ext.StoreMgr.get(ZCS.constant.ITEM_STORE[itemType]);
+		return store ? this.findInStoreById(store, zcsId) : null;
+	},
+
+	// Finds an item in a store based on its zcsId.
+	findInStoreById: function(store, zcsId) {
+
+		var index = store.findBy(function(record) {
+			return record.get('zcsId') === zcsId;
+		});
+		return index !== -1 ? store.getAt(index) : null;
 	}
 });

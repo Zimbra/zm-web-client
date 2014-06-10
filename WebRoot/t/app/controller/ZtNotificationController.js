@@ -48,8 +48,9 @@ Ext.define('ZCS.controller.ZtNotificationController', {
 			return;
 		}
 
+		var itemType = notification.itemType = ZCS.constant.NODE_ITEM[notification.nodeType] || notification.nodeType;
+
 		if (notification.type === ZCS.constant.NOTIFY_CREATE) {
-			var itemType = notification.itemType = ZCS.constant.NODE_ITEM[notification.nodeType] || notification.nodeType;
 			if (itemType) {
 				var eventName = 'notify' + Ext.String.capitalize(itemType) + notification.type;
 				//<debug>
@@ -59,7 +60,8 @@ Ext.define('ZCS.controller.ZtNotificationController', {
 			}
 		}
 		else {
-			var result = ZCS.cache.get(notification.id, null, true);
+			// get organizers from the cache, items from store
+			var result = ZCS.constant.IS_ORGANIZER_TYPE[notification.nodeType] ? ZCS.cache.get(notification.id, null, true) : ZCS.util.findItemInActiveStore(itemType, notification.id);
 			if (result) {
 				var items = Array.isArray(result) ? result : [ result ],
 					item = items[0],

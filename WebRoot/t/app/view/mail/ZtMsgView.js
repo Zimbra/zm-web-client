@@ -137,7 +137,7 @@ Ext.define('ZCS.view.mail.ZtMsgView', {
 	doMsgViewUpdate: function (msgView, msgId, renderBody) {
 
 		var controller = ZCS.app.getConvController(),
-			msg = ZCS.cache.get(msgId),
+			msg = ZCS.util.findItemInActiveStore(ZCS.constant.ITEM_MESSAGE, msgId),
 			oldMsgView = controller.getMsgViewById(msgId),
 			shouldBeExpanded, modelState;
 

@@ -41,11 +41,16 @@ Ext.define('ZCS.model.mail.ZtConv', {
 				type:       'int',
 				convert:    function(value, record) {
 					var numMsgs = 0;
-					Ext.each(record.getMessageInfo(), function(msg) {
-						if (ZCS.model.mail.ZtConv.shouldShowMessage(msg)) {
-							numMsgs++;
-						}
-					});
+					if (record.get('numMsgs') === 1) {
+						numMsgs = 1;
+					}
+					else {
+						Ext.each(record.getMessageInfo(), function(msg) {
+							if (ZCS.model.mail.ZtConv.shouldShowMessage(msg)) {
+								numMsgs++;
+							}
+						});
+					}
 					return numMsgs;
 				}
 			}
@@ -83,11 +88,9 @@ Ext.define('ZCS.model.mail.ZtConv', {
 			var curFolder = ZCS.session.getCurrentSearchOrganizer(),
 				curFolderId = curFolder ? curFolder.get('zcsId') : '',
 				msgFolderId = msg.l,
-				localId = ZCS.util.localId(msgFolderId),
-				conv = ZCS.cache.get(msg.cid),
-				isSolo = conv && conv.get('numMsgs') === 1;
+				localId = ZCS.util.localId(msgFolderId);
 
-			return (msgFolderId === curFolderId) || !ZCS.constant.CONV_HIDE[localId] || isSolo;
+			return (msgFolderId === curFolderId) || !ZCS.constant.CONV_HIDE[localId];
 		}
 	},
 

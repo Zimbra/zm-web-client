@@ -219,6 +219,13 @@ ZCS.constant.ORG_SEARCH         = 'search';
 ZCS.constant.ORG_TAG            = 'tag';
 ZCS.constant.ORG_MOUNTPOINT     = 'link';
 
+ZCS.constant.IS_ORGANIZER_TYPE = ZCS.util.arrayAsLookupHash([
+	ZCS.constant.ORG_FOLDER,
+	ZCS.constant.ORG_SEARCH,
+	ZCS.constant.ORG_TAG,
+	ZCS.constant.ORG_MOUNTPOINT
+]);
+
 // Folder sub-types
 ZCS.constant.ORG_MAIL_FOLDER        = 'mailFolder';
 ZCS.constant.ORG_ADDRESS_BOOK       = 'addressBook';
@@ -286,17 +293,18 @@ ZCS.constant.ITEM_NODE[ZCS.constant.ITEM_APPOINTMENT]       = ZCS.constant.NODE_
 // Item type based on JSON node name
 ZCS.constant.NODE_ITEM = ZCS.util.getBackMap(ZCS.constant.ITEM_NODE);
 
-// Controller that handles create for each item type
-ZCS.constant.LIST_CONTROLLER = {};
-ZCS.constant.LIST_CONTROLLER[ZCS.constant.ITEM_CONVERSATION]    = 'ZCS.controller.mail.ZtConvListController';
-ZCS.constant.LIST_CONTROLLER[ZCS.constant.ITEM_MESSAGE]         = 'ZCS.controller.mail.ZtConvController';
-ZCS.constant.LIST_CONTROLLER[ZCS.constant.ITEM_CONTACT]         = 'ZCS.controller.contacts.ZtContactListController';
-
 // Store that holds items for list view
 ZCS.constant.STORE = {};
 ZCS.constant.STORE[ZCS.constant.APP_MAIL]       = 'ZtConvStore';
 ZCS.constant.STORE[ZCS.constant.APP_CONTACTS]   = 'ZtContactStore';
 ZCS.constant.STORE[ZCS.constant.APP_CALENDAR]   = 'ZtCalendarStore';
+
+// Store that holds each type of item
+ZCS.constant.ITEM_STORE = {};
+ZCS.constant.ITEM_STORE[ZCS.constant.ITEM_CONVERSATION] = 'ZtConvStore';
+ZCS.constant.ITEM_STORE[ZCS.constant.ITEM_MESSAGE]      = 'ZtMsgStore';
+ZCS.constant.ITEM_STORE[ZCS.constant.ITEM_CONTACT]      = 'ZtContactStore';
+ZCS.constant.ITEM_STORE[ZCS.constant.ITEM_APPOINTMENT]  = 'ZtCalendarStore';
 
 // App based on folder type
 ZCS.constant.FOLDER_APP = {};

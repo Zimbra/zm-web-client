@@ -609,10 +609,6 @@ Ext.define('ZCS.model.mail.ZtMailMsg', {
 			}
 		}
 		return false;
-	},
-
-	getConv: function() {
-		return ZCS.cache.get(this.get('convId'));
 	}
 },
 	function (thisClass) {

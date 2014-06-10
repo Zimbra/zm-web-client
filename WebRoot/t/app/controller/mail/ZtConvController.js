@@ -368,7 +368,7 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 		var item = this.getItem(),
 			curId = item && item.getId(),
 			convId = create.cid,
-			conv = ZCS.cache.get(convId),
+			conv = ZCS.util.findItemInActiveStore(ZCS.constant.ITEM_CONVERSATION, convId),
 			convListCtlr = ZCS.app.getConvListController(),
 			convStore = convListCtlr.getStore(),
 			curFolder = ZCS.session.getCurrentSearchOrganizer(),
@@ -454,7 +454,7 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 		if (modify.l) {
 
 			item.set('folderId', modify.l);
-			var conv = ZCS.cache.get(item.get('convId'));
+			var conv = ZCS.util.findItemInActiveStore(ZCS.constant.ITEM_CONVERSATION, item.get('convId'));
 			if (conv) {
 				conv.set('numMsgsShown', conv.get('numMsgsShown'));
 			}
@@ -500,8 +500,6 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 		if (newId && this.getItem() === item) {
 			item.setId(newId);
 			item.set('zcsId', newId);
-			ZCS.cache.remove(modify.id);
-			ZCS.cache.set(newId, item);
 		}
 	},
 

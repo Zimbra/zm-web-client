@@ -275,7 +275,7 @@ Ext.define('ZCS.model.contacts.ZtContactReader', {
 			}, this);
 
 			// get the DL ZtContact from when the list view was loaded so we can use its fields
-			var dl = ZCS.cache.get(options.dlId),
+			var dl = ZCS.util.findItemInActiveStore(ZCS.constant.ITEM_CONTACT, options.dlId),
 				recordData = ZCS.util.getFields(dl, ['nickname','isMember','isOwner']);
 
 			Ext.apply(recordData, {
