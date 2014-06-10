@@ -61,7 +61,7 @@ Ext.define('ZCS.controller.ZtNotificationController', {
 		}
 		else {
 			// get organizers from the cache, items from store
-			var result = ZCS.constant.IS_ORGANIZER_TYPE[notification.nodeType] ? ZCS.cache.get(notification.id, null, true) : ZCS.util.findItemInActiveStore(itemType, notification.id);
+			var result = ZCS.cache.get(notification.id) || ZCS.util.findItemInActiveStore(itemType, notification.id);
 			if (result) {
 				var items = Array.isArray(result) ? result : [ result ],
 					item = items[0],

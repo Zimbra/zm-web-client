@@ -257,8 +257,6 @@ Ext.define('ZCS.model.ZtOrganizer', {
 		isSystem: function(data) {
 			return ZCS.model.ZtOrganizer.isFolder(data) && (ZCS.util.localId(data.zcsId) <= ZCS.constant.MAX_SYSTEM_ID);
 		}
-
-
 	},
 
 	constructor: function(data, id, raw) {
@@ -422,10 +420,10 @@ Ext.define('ZCS.model.ZtOrganizer', {
 
 		var type = this.get('type');
 
-		if (ZCS.model.ZtOrganizer.isFolder(this.data)) {
+		if (this.isFolder()) {
 			var path = this.get('path');
 
-			if (ZCS.model.ZtOrganizer.isSystem(this.data)) {
+			if (this.isSystem()) {
 				path = path.toLowerCase();
 			}
 			// normalize path to omit leading /
@@ -672,5 +670,13 @@ Ext.define('ZCS.model.ZtOrganizer', {
 		}
 		perms = perms.replace(/-\w/g, '');  // remove negative perms
 		return perms.indexOf(permission) !== -1;
+	},
+
+	isFolder: function() {
+		return ZCS.model.ZtOrganizer.isFolder(this.data);
+	},
+
+	isSystem: function() {
+		return ZCS.model.ZtOrganizer.isSystem(this.data);
 	}
 });
