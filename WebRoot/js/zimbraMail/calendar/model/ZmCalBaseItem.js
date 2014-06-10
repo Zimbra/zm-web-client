@@ -77,6 +77,10 @@ ZmCalBaseItem.PERSON				= "PERSON";
  */
 ZmCalBaseItem.OPTIONAL_PERSON		= "OPT_PERSON";
 /**
+ * Defines the "group" resource type.
+ */
+ZmCalBaseItem.GROUP					= "GROUP";
+/**
  * Defines the "location" resource type.
  */
 ZmCalBaseItem.LOCATION				= "LOCATION";

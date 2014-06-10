@@ -754,7 +754,8 @@ function(message) {
             if (att.rsvp) {
 				rsvp = true;
 			}
-			var attendee = ZmApptViewHelper.getAttendeeFromItem(email, ZmCalBaseItem.PERSON);
+			var type = att.isGroup ? ZmCalBaseItem.GROUP : ZmCalBaseItem.PERSON;
+			var attendee = ZmApptViewHelper.getAttendeeFromItem(email, type);
 			if (attendee) {
 				attendee.setParticipantStatus(ptstReplies[addr] || att.ptst);
 				attendee.setParticipantRole(att.role || ZmCalItem.ROLE_REQUIRED);

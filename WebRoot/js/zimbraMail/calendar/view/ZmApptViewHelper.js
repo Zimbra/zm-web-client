@@ -397,18 +397,25 @@ function(item, type, strictText, strictEmail, checkForAvailability) {
 
 		// Bug 7837: preserve the email address as it was typed
 		//           instead of using the contact's primary email.
-		if (attendee && type == ZmCalBaseItem.PERSON) {
+		if (attendee && (type === ZmCalBaseItem.PERSON || type === ZmCalBaseItem.GROUP)) {
 			attendee = AjxUtil.createProxy(attendee);
 			attendee._inviteAddress = addr;
 			attendee.getEmail = function() {
 				return this._inviteAddress || this.constructor.prototype.getEmail.apply(this);
-			}
+			};
 		}
 
 		if (!checkForAvailability && !attendee && !strictEmail) {
 			// AjxEmailAddress has name and email, init a new contact/resource from those
-			attendee = (type == ZmCalBaseItem.PERSON) ? new ZmContact(null) :
-													new ZmResource(type);
+			if (type === ZmCalBaseItem.PERSON) {
+				attendee = new ZmContact(null, null, ZmItem.CONTACT);
+			}
+			else if (type === ZmCalBaseItem.GROUP) {
+				attendee = new ZmContact(null, null, ZmItem.GROUP);
+			}
+			else {
+				attendee = new ZmResource(type);
+			}
 			attendee.initFromEmail(item, true);
 		}
 		attendee.canExpand = item.canExpand;
@@ -424,20 +431,25 @@ function(item, type, strictText, strictEmail, checkForAvailability) {
 	 		// is it a contact/resource we already know about?
 			attendee = ZmApptViewHelper._getAttendeeFromAddr(addr, type);
 			if (!checkForAvailability && !attendee && !strictEmail) {
-				if (type == ZmCalBaseItem.PERSON || type == ZmCalBaseItem.FORWARD) {
-					attendee = new ZmContact(null);
-				} else if (type == ZmCalBaseItem.LOCATION) {
+				if (type === ZmCalBaseItem.PERSON || type === ZmCalBaseItem.FORWARD) {
+					attendee = new ZmContact(null, null, ZmItem.CONTACT);
+				}
+				else if (type === ZmCalBaseItem.GROUP) {
+					attendee = new ZmContact(null, null, ZmItem.GROUP);
+				}
+				else if (type === ZmCalBaseItem.LOCATION) {
 					attendee = new ZmResource(null, ZmApptViewHelper._locations, ZmCalBaseItem.LOCATION);
-				} else if (type == ZmCalBaseItem.EQUIPMENT) {
+				}
+				else if (type === ZmCalBaseItem.EQUIPMENT) {
 					attendee = new ZmResource(null, ZmApptViewHelper._equipment, ZmCalBaseItem.EQUIPMENT);
 				}
 				attendee.initFromEmail(email, true);
-			} else if (attendee && type == ZmCalBaseItem.PERSON) {
+			} else if (attendee && (type === ZmCalBaseItem.PERSON || type === ZmCalBaseItem.GROUP)) {
 				// remember actual address (in case it's email2 or email3)
 				attendee._inviteAddress = addr;
                 attendee.getEmail = function() {
 				    return this._inviteAddress || this.constructor.prototype.getEmail.apply(this);
-			    }
+			    };
 			}
 		}
 	}
@@ -448,7 +460,7 @@ ZmApptViewHelper._getAttendeeFromAddr =
 function(addr, type) {
 
 	var attendee = null;
-	if (type == ZmCalBaseItem.PERSON || type == ZmCalBaseItem.FORWARD) {
+	if (type === ZmCalBaseItem.PERSON || type === ZmCalBaseItem.GROUP || type === ZmCalBaseItem.FORWARD) {
 		var contactsApp = appCtxt.getApp(ZmApp.CONTACTS);
 		attendee = contactsApp && contactsApp.getContactByEmail(addr);
 	} else if (type == ZmCalBaseItem.LOCATION) {
@@ -527,7 +539,9 @@ function(attendee, type, shortForm) {
 
     //give preference to lookup email is the attendee object is located by looking up email address
     var lookupEmailObj = attendee.getLookupEmail(true);
-    if(lookupEmailObj) return lookupEmailObj.toString(shortForm || (type && type != ZmCalBaseItem.PERSON))
+    if(lookupEmailObj) {
+		return lookupEmailObj.toString(shortForm || (type && type !== ZmCalBaseItem.PERSON && type !== ZmCalBaseItem.GROUP));
+	}
 
     return attendee.getAttendeeText(type, shortForm);
 };
