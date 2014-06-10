@@ -121,7 +121,7 @@ ZmAddrBook.prototype.mayContain = function(what) {
 		return false;
 	}
 
-	if (!what.isZmAddrBook && item.type !== ZmItem.CONTACT && item.type !== ZmItem.GROUP) {
+	if (!what.isZmAddrBook && what.type !== ZmItem.CONTACT && what.type !== ZmItem.GROUP) {
 		// only contacts are valid for addr books.
 		return false;
 	}
