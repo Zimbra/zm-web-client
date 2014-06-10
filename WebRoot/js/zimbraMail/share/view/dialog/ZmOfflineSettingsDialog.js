@@ -139,6 +139,7 @@ function(offlineEnable, logOff, dialog) {
             AjxUtil.arrayRemove(existingBrowserKey, localStorage.getItem(ZmSetting.WEBCLIENT_OFFLINE_BROWSER_KEY));
         }
         localStorage.removeItem(ZmSetting.WEBCLIENT_OFFLINE_BROWSER_KEY);
+		AjxCookie.deleteCookie(document, "ZM_OFFLINE_KEY", "/");
     }
     if (existingBrowserKey) {
         appCtxt.set(ZmSetting.WEBCLIENT_OFFLINE_BROWSER_KEY, existingBrowserKey.join());

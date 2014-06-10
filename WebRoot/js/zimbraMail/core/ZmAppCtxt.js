@@ -1370,7 +1370,10 @@ function(force) {
     if (this.isWebClientOfflineSupported || force) {
 		var localOfflineBrowserKey = localStorage.getItem(ZmSetting.WEBCLIENT_OFFLINE_BROWSER_KEY);
 		if (localOfflineBrowserKey) {
-			document.cookie = "ZM_OFFLINE_KEY = " + localOfflineBrowserKey + "," + new Date().getTime();
+			var date = new Date();
+			var cookieValue = localOfflineBrowserKey + "_" + date.getTime();
+			date.setTime(date.getTime() + AjxDateUtil.MAX_DAYS_PER_MONTH * AjxDateUtil.MSEC_PER_DAY);
+			AjxCookie.setCookie(document, "ZM_OFFLINE_KEY", cookieValue, date, "/");
 		}
         var manifestURL = appContextPath + "/appcache/images,common,dwt,msgview,login,zm,spellcheck,skin.appcache?";
         var urlParams = [];
