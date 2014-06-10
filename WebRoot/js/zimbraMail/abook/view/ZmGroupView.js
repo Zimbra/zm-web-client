@@ -1536,6 +1536,7 @@ ZmGroupListView = function(parent) {
 	if (arguments.length == 0) { return; }
 	DwtListView.call(this, {parent:parent, className:"DwtChooserListView ZmEditGroupContact",
 							headerList:this._getHeaderList(parent), view:this._view, posStyle: Dwt.RELATIVE_STYLE});
+	Dwt.setScrollStyle(this._elRef, Dwt.CLIP);
 };
 
 ZmGroupListView.prototype = new DwtListView;
