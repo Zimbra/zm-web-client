@@ -159,7 +159,12 @@ $zcs-overview-text-color: $light-grey;
 			}
 		}
 		.x-button.x-button-back {
-			color:white;
+			margin: 0 5px;
+			min-width: 1.5em;
+
+			&:before {
+				color:white;
+			}
 		}
 	}
 
@@ -310,6 +315,20 @@ $zcs-overview-text-color: $light-grey;
 
 			&.x-list-item-tpl:before {
 				border-bottom: none;
+			}
+
+			/**
+			 * Making sure the disclosure icon for browser to sub folders is big enough
+			 * so that it is easily tappable on smaller form factors.
+			 */
+			.x-list-disclosure {
+				height: 100%;
+				margin: 10px 0px 10px;
+				min-width: 69px;
+
+				&:before {
+					font-size: 1.2em;
+				}
 			}
 
 			.x-innerhtml {

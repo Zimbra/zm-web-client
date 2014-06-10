@@ -46,18 +46,6 @@ $linkTextSize: 0.9em;
 }
 
 /**
- * Making sure the disclosure icon for browser to sub folders is big enough
- * so that it is easily tappable on smaller form factors.
- */
-.zcs-organizer-list{
- 	.x-list-disclosure{
- 		height: 100%;
- 		min-width: 69px;
- 		margin: 10px 0px 10px;
- 	}
-}
-
-/**
  * Helper classes to maintain vertical rhythm, considering 0.5em as a multiple
  */
 
