@@ -117,13 +117,23 @@ ZmAddrBook.prototype.mayContain = function(what) {
 		return true;
 	}
 
+	// Distribution Lists is a system-generated folder
 	if (this.id == ZmOrganizer.ID_DLS) {
 		return false;
 	}
 
-	if (!what.isZmAddrBook && what.type !== ZmItem.CONTACT && what.type !== ZmItem.GROUP) {
-		// only contacts are valid for addr books.
-		return false;
+	if (what.isZmAddrBook) {
+		return ZmFolder.prototype.mayContain.apply(this, arguments);
+	}
+
+	// An item or an array of items is being moved
+	var items = AjxUtil.toArray(what);
+	for (var i = 0; i < items.length; i++) {
+		var item = items[i];
+		if (item.type !== ZmItem.CONTACT && item.type !== ZmItem.GROUP) {
+			// only contacts are valid for addr books.
+			return false;
+		}
 	}
 
 	return ZmFolder.prototype.mayContain.apply(this, arguments);
