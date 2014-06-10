@@ -385,3 +385,13 @@ $responseIconPos: 0 center no-repeat;
 	}
 }
 
+.zcs-desc-field {
+  padding: 1.2rem;
+  min-height: 1.2rem;
+}
+
+.zcs-desc-field[data-placeholder]:not(:focus):not([data-div-placeholder-content]):before {
+  content: attr(data-placeholder);
+  color: #808080;
+  font-weight: 300;
+}

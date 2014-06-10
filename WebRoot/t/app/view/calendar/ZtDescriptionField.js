@@ -26,31 +26,15 @@ Ext.define('ZCS.view.calendar.ZtDescriptionField', {
 
     config: {
         cls: 'create-appt-margin first last',
-        layout: {
-            type: 'hbox'
-        },
+	    style: 'margin-bottom: 1rem;',
+        layout: 'fit',
         items: [
-            {
-                xtype:  'label',
-                html:    ZtMsg.notes,
-                cls:    'zcs-appt-label',
-                width:  '30%'
-
-            },
             {
                 xtype: 'component',
                 itemId: 'body',
                 name: 'notes',
-                width: '70%',
-                html: '<div contenteditable="true" class="zcs-compose-form zcs-editable zcs-body-field"></div>',
-                listeners: {
-                    painted: function () {
-                        var heightToSet = Math.max(this.up('container').element.getHeight(), this.element.down('.zcs-body-field').dom.scrollHeight),
-                            bodyField = this.element.down('.zcs-body-field');
-
-                        bodyField.setMinHeight(heightToSet);
-                    }
-                }
+                width: '100%',
+                html: '<div contenteditable="true" class="zcs-compose-form zcs-editable zcs-body-field zcs-desc-field" data-placeholder="' + ZtMsg.notes + '"></div>'
             }
         ]
     }

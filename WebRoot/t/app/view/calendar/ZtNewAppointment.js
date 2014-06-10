@@ -104,6 +104,18 @@ Ext.define('ZCS.view.calendar.ZtNewAppointment', {
                     labelWidth:  '5.5em',
                     inputCls:    'zcs-form-input'
                 },
+	            listeners: {
+		            initialize: function () {
+			            /**
+			             * Fixing dom bug caused by contenteditable where parent scroller
+			             * gets pushed outside its fit container. Manually making sure the
+			             * scroll container always fills its parent when scrolling starts.
+			             */
+			            this.getScrollable().getScroller().on('scrollstart', function () {
+				            this.container.dom.scrollIntoView(false);
+			            });
+		            }
+	            },
                 items: items
             };
 
