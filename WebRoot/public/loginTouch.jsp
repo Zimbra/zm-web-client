@@ -222,6 +222,7 @@
             </c:if>
             <form method="post" name="loginForm" action="${formActionUrl}" accept-charset="UTF-8">
                 <input type="hidden" name="loginOp" value="login"/>
+                <input type="hidden" name="zrememberme" value="1"/>
                 <div style='text-align: center;'>
                     <div class='zLoginFieldDiv'><input id="username" class="zLoginField" name="username"
                         onkeyup="enableSignIn();" type="text" value="${fn:escapeXml(param.username)}" size="25"
