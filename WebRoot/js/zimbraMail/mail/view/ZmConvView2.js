@@ -801,6 +801,10 @@ function(view, content, htmlEncode) {
 	return content;
 };
 
+ZmConvView2.prototype._getItemCountType = function() {
+	return ZmId.ITEM_MSG;
+};
+
 
 ZmConvView2Header = function(params) {
 
