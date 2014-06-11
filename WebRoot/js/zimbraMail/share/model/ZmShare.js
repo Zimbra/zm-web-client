@@ -703,9 +703,11 @@ function(name, color, replyType, notes, callback, owner) {
 		name: name,
 		zid: this.grantor.id,
 		rid: ZmOrganizer.normalizeId(this.link.id),
-		color: color,
 		view: this.link.view
 	};
+	if (color) {
+		params.color = color;
+	}
 
 	if (String(color).match(/^#/)) {
 		params.rgb = color;
