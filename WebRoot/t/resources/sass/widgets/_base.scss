@@ -329,14 +329,17 @@ $zcs-overview-text-color: $light-grey;
 				&:before {
 					font-size: 1.2em;
 				}
-			}
 
-			.x-innerhtml {
-				@include ellipsis();
+				&.x-item-hidden + .x-innerhtml .zcs-menu-label {
+					margin-right: 0;
+				}
 			}
 
 			.zcs-menu-label {
+				margin-right: 1.2em;
+				overflow: hidden;
 				padding-left: 2.2em;
+				@include ellipsis();
 			}
 
 			.zcs-menu-icon:before {
