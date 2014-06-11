@@ -118,10 +118,12 @@ Ext.define('ZCS.controller.ZtAssignmentController', {
 		var listItems = list.getViewItems(),
 			store = list.getStore();
 
+/*
 		store.each(function(organizer, index) {
 			organizer = organizer instanceof ZCS.model.ZtOrganizer ? organizer : ZCS.cache.get(organizer.getId());
 			listItems[index].setDisabled(!organizer.isValidAssignmentTarget(item));
 		}, this);
+*/
 
 		assignmentView.showWithComponent(itemPanel, item, contentHeight);
 
