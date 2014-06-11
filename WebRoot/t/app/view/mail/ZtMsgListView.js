@@ -66,36 +66,41 @@ Ext.define('ZCS.view.mail.ZtMsgListView', {
 				}
 
 				var msgHeader = this.down('#' + e.delegatedTarget.id),
+					msgView = msgHeader.parent,
+					expanded = msgView.getExpanded(),
 					msg = msgHeader.getMsg(),
 					// Note: elm.getId() hits NPE trying to cache DOM ID, so use elm.dom.id
 					idParams = ZCS.util.getIdParams(elm.dom.id) || {};
 
-				// address bubble
-				if (idParams.objType === ZCS.constant.OBJ_ADDRESS) {
-					msgHeader.fireEvent('contactTap', elm, {
-						menuName:   ZCS.constant.MENU_ADDRESS,
-						msg:		msg,
-						address:	idParams.address,
-						name:	   idParams.name,
-						addrObj:	idParams.addrObj
-					});
-					return true;
-				}
+				// the tap target is rather small when the message is
+				// collapsed, so we suppress individual tap targets and let all
+				// taps trigger an expand
+				if (expanded) {
+					// address bubble
+					if (idParams.objType === ZCS.constant.OBJ_ADDRESS) {
+						msgHeader.fireEvent('contactTap', elm, {
+							menuName:   ZCS.constant.MENU_ADDRESS,
+							msg:		msg,
+							address:	idParams.address,
+							name:	   idParams.name,
+							addrObj:	idParams.addrObj
+						});
+						return true;
+					}
 
-				// tag bubble
-				if (idParams.objType === ZCS.constant.OBJ_TAG) {
-					msgHeader.fireEvent('tagTap', elm, {
-						menuName:   ZCS.constant.MENU_TAG,
-						item:		msg,
-						tagName:	idParams.name
-					});
-					return true;
+					// tag bubble
+					if (idParams.objType === ZCS.constant.OBJ_TAG) {
+						msgHeader.fireEvent('tagTap', elm, {
+							menuName:   ZCS.constant.MENU_TAG,
+							item:		msg,
+							tagName:	idParams.name
+						});
+						return true;
+					}
 				}
 
 				// somewhere in the header that is not one of the above
-				if (msgHeader) {
-					msgHeader.fireEvent('toggleView', msgHeader, elm.hasCls('zcs-msgHdr-link'));
-				}
+				msgHeader.fireEvent('toggleView', msgHeader, elm.hasCls('zcs-msgHdr-link'));
 
 				//Stop this event from triggering a scroll reset.
 				e.preventDefault();
