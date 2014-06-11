@@ -1244,7 +1244,7 @@ function(idoc) {
 				img.setAttribute("doc", dfsrc.substring(4, dfsrc.length));
 			} else if (src && src.indexOf(appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI)) === 0) {
 				// bug 85129 - handle images copied from another mail
-				var qsparams = AjxStringUtil.parseQueryString(dfsrc);
+				var qsparams = AjxStringUtil.parseQueryString(src);
 
 				if (qsparams.id && qsparams.part) {
 					cid = "cid:" + this._generateCid();
