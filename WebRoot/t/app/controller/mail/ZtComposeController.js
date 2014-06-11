@@ -479,6 +479,8 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 			toolbar = panel && panel.down('titlebar'),
 			buttons = toolbar && toolbar.query('button');
 
+		this.stopDraftTimer();
+
 		// disable buttons during request
 		Ext.each(buttons, function(button) {
 			button.disable();
@@ -496,11 +498,14 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 					callback.apply(scope);
 				}
 				this.setFormHash('');
+				this.startDraftTimer();
+
 			},
 			failure: function() {
 				Ext.each(buttons, function(button) {
 					button.enable();
 				}, this);
+				this.startDraftTimer();
 			}
 		}, this);
 	},
@@ -860,9 +865,11 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 		var saveInterval =
 			ZCS.session.getSetting(ZCS.constant.SETTING_AUTO_SAVE_INTERVAL);
 
-		this.autoSaveActionId =
-			window.setInterval(Ext.Function.bind(this.doAutoSave, this),
-			                   saveInterval * 1000);
+		if (saveInterval) {
+			this.autoSaveActionId =
+				window.setInterval(Ext.Function.bind(this.doAutoSave, this),
+								   saveInterval * 1000);
+		}
 	},
 
 	stopDraftTimer: function() {
