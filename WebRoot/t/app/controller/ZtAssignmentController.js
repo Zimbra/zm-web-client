@@ -120,7 +120,7 @@ Ext.define('ZCS.controller.ZtAssignmentController', {
 
 /*
 		store.each(function(organizer, index) {
-			organizer = organizer instanceof ZCS.model.ZtOrganizer ? organizer : ZCS.cache.get(organizer.getId());
+			organizer = organizer instanceof ZCS.model.ZtOrganizer ? organizer : ZCS.session.getOrganizerModel(organizer.getId());
 			listItems[index].setDisabled(!organizer.isValidAssignmentTarget(item));
 		}, this);
 */

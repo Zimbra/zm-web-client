@@ -261,7 +261,7 @@ Ext.define('ZCS.common.ZtUtil', {
 	folderIs: function(folder, folderId) {
 
 		if (Ext.isString(folder)) {
-			folder = ZCS.cache.get(folder);
+			folder = ZCS.session.getOrganizerModel(folder);
 		}
 		return folder ? this.localId(folder.get('zcsId')) === folderId : false;
 	},

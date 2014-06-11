@@ -276,7 +276,7 @@ Ext.define('ZCS.controller.mail.ZtConvListController', {
 		// conv is already in the store, doesn't need to be added; just bump conv to top if msg matches
 		if (store.getById(msgCreate.cid)) {
 			if (msgMatches) {
-				var conv = ZCS.cache.get(msgCreate.cid);
+				var conv = ZCS.util.findItemInActiveStore(ZCS.constant.ITEM_CONVERSATION, msgCreate.cid);
 				if (conv && store.indexOf(conv) > 0) {
 					store.insert(0, [conv]);
 				}
@@ -324,7 +324,7 @@ Ext.define('ZCS.controller.mail.ZtConvListController', {
 		// virtual conv changes ID when it gets a second message; we can't just change the ID
 		// field since that breaks the connection to the list item in the UI
 		if (modify.newId) {
-			var oldConv = ZCS.cache.get(modify.id),
+			var oldConv = ZCS.util.findItemInActiveStore(ZCS.constant.ITEM_CONVERSATION, modify.id),
 				index = oldConv ? store.indexOf(oldConv) : -1,
 				newConv;
 

@@ -269,40 +269,6 @@ Ext.define('ZCS.model.ZtOrganizer', {
         this.callParent(arguments);
 
 		this.useSoapProxy(true);
-
-		if (!data) {
-			return;
-		}
-
-		var orgId = (data.id || data.zcsId) || id;
-		//console.log('Cache organizer "' + data.name + '" under key "' + orgId + '"');
-
-		if (orgId) {
-			ZCS.cache.set(orgId, this);
-			if (data.zcsId && data.zcsId !== orgId) {
-				var orgList = ZCS.cache.get(data.zcsId, null, true);
-				if (!orgList || !Array.isArray(orgList)) {
-					orgList = [];
-					ZCS.cache.set(data.zcsId, orgList);
-				}
-				orgList.push(this);
-			}
-		}
-
-		if (data.path) {
-			var path = ZCS.model.ZtOrganizer.getNormalizedPath(data);
-
-			ZCS.cache.set(path, this, 'path');
-		}
-
-		if (data.type === ZCS.constant.ORG_TAG) {
-			ZCS.cache.set(data.name, this, 'tagName');
-		}
-
-        if (data.isMountpoint) {
-            var mountId = data.remoteAccountId + ':' + data.remoteFolderId;
-            ZCS.cache.set(mountId, this);
-        }
 	},
 
 	/**
@@ -372,12 +338,12 @@ Ext.define('ZCS.model.ZtOrganizer', {
 			return true;
 		}
 
-		var folder = ZCS.cache.get(this.get('parentItemId'));
+		var folder = ZCS.session.getOrganizerModel(this.get('parentItemId'));
 		while (folder && folder.get('zcsId') !== ZCS.constant.ID_ROOT) {
 			if (ZCS.util.folderIs(folder, folderId)) {
 				return true;
 			}
-			folder = ZCS.cache.get(folder.get('parentItemId'));
+			folder = ZCS.session.getOrganizerModel(folder.get('parentItemId'));
 		}
 
 		return false;
@@ -395,7 +361,7 @@ Ext.define('ZCS.model.ZtOrganizer', {
 
 		while (folder && folder.get('zcsId') !== ZCS.constant.ID_ROOT) {
 			pathParts.unshift(folder.get('name'));
-			folder = ZCS.cache.get(folder.get('parentItemId'));
+			folder = ZCS.session.getOrganizerModel(folder.get('parentItemId'));
 		}
 
 		return '/' + pathParts.join('/');

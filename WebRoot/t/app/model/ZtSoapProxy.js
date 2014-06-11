@@ -100,7 +100,7 @@ Ext.define('ZCS.model.ZtSoapProxy', {
 						query: query
 					}),
 					orgId = search.getOrganizerId(),
-					org = orgId && ZCS.cache.get(orgId),
+					org = orgId && ZCS.session.getOrganizerModel(orgId),
 					// get app from organizer except for Trash (cache lookup above will always return Mail's Trash)
 					app = (!ZCS.util.folderIs(org, ZCS.constant.ID_TRASH) && (org && org.get('app'))) || ZCS.session.getActiveApp(),
 					searchField = ZCS.session.getCurrentSearchField();

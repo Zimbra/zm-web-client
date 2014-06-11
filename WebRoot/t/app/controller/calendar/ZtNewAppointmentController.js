@@ -322,9 +322,9 @@ Ext.define('ZCS.controller.calendar.ZtNewAppointmentController', {
 	        isInstance = event.get('isRecur') && !calController.getIsSeries(),
 	        isException = invite.get('isException'),
             calFolderId = invite.get('apptFolderId'),
-            calFolder = ZCS.cache.get(calFolderId),
+            calFolder = ZCS.session.getOrganizerModel(calFolderId),
             oldCalFolderId = invite.get('oldCalFolderId'),
-            oldCalFolder = ZCS.cache.get(oldCalFolderId),
+            oldCalFolder = ZCS.session.getOrganizerModel(oldCalFolderId),
             isInterMailboxMove;
 
         if (calFolder || oldCalFolder) {

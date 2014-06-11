@@ -60,8 +60,8 @@ Ext.define('ZCS.controller.ZtNotificationController', {
 			}
 		}
 		else {
-			// get organizers from the cache, items from store
-			var result = ZCS.cache.get(notification.id) || ZCS.util.findItemInActiveStore(itemType, notification.id);
+			// get organizers from the session, items from store
+			var result = ZCS.session.getOrganizerModel(notification.id) || ZCS.util.findItemInActiveStore(itemType, notification.id);
 			if (result) {
 				var items = Array.isArray(result) ? result : [ result ],
 					item = items[0],

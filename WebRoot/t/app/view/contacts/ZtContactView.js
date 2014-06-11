@@ -50,7 +50,7 @@ Ext.define('ZCS.view.contacts.ZtContactView', {
 					this.fireEvent('tagTap', elm, {
 						menuName:   ZCS.constant.MENU_TAG,
 						item:       this.getContact(),
-						tagName:    idParams.name
+						zcsId:      idParams.zcsId
 					});
 					return true;
 				}

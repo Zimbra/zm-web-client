@@ -340,10 +340,11 @@ Ext.define('ZCS.common.ZtUserSession', {
 
 	handleOrganizerDelete: function(organizer, notification) {
 
+		var org = this.getOrganizerModel(notification.id);
 		this.findOrganizer(this.getOrganizerRoot(), notification.id, true);
-		Ext.each(ZCS.cache.get(notification.id, null, true), function(org) {
+		if (org) {
 			org.handleDeleteNotification();
-		}, this);
+		}
 	},
 
 	handleOrganizerChange: function(organizer, notification) {
@@ -372,14 +373,12 @@ Ext.define('ZCS.common.ZtUserSession', {
 	 * a single organizer.
 	 *
 	 */
-	getOrganizerModel: function (zcsId) {
-		var organizerData = this.findOrganizerByAttribute("zcsId", zcsId);
+	getOrganizerModel: function (id) {
 
+		var organizerData = this.findOrganizerByAttribute(id && id.indexOf(':') !== -1 ? 'remoteId' : 'zcsId', id);
 		if (organizerData) {
 			var organizerModel = Ext.create('ZCS.model.ZtOrganizer', organizerData);
-
 			ZCS.model.ZtOrganizer.addOtherFields(organizerModel.data);
-
 			return organizerModel;
 		}
 

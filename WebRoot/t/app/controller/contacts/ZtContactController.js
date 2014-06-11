@@ -642,7 +642,8 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
 	processMove: function(item, folderId) {
 
 		var contactName = Ext.String.htmlEncode(item.get('longName')),
-			addressBook = ZCS.cache.get(folderId).get('displayName');
+			folder = ZCS.session.getOrganizerModel(folderId),
+			addressBook = folder ? folder.get('displayName') : ZtMsg.unknown;
 
 		ZCS.app.fireEvent('showToast', Ext.String.format(ZtMsg.moveContact, contactName, addressBook));
 	},

@@ -198,10 +198,11 @@ Ext.define('ZCS.controller.calendar.ZtCalendarController', {
      */
 
     showItem: function(msg, isSeries, isEdit) {
+
 		var panel = ZCS.util.getLazyReference('ZCS.view.calendar.ZtAppointmentForm'),
             invite = msg.get('invite'),
             title = Ext.String.htmlEncode(invite.get('subject') || ZtMsg.noSubject),
-            calFolder = ZCS.cache.get(invite.get('apptFolderId')),
+            calFolder = ZCS.session.getOrganizerModel(invite.get('apptFolderId')),
             isFeed = calFolder && calFolder.isFeed();
 
 	    this.setIsSeries(isSeries);

@@ -138,7 +138,7 @@ Ext.define('ZCS.view.calendar.ZtAppointmentForm', {
 			apptColor, apptRgbColor, calFolderName,
             me = this;
 
-		var calFolder = ZCS.cache.get(invite.get('apptFolderId'));
+		var calFolder = ZCS.session.getOrganizerModel(invite.get('apptFolderId'));
 
 		if (calFolder) {
 			apptColor = calFolder.get('color');

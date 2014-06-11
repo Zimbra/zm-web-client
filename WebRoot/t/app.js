@@ -64,12 +64,12 @@ Ext.application({
 		'ZCS.common.mail.ZtMailUtil',
 		'ZCS.common.ZtConstants',
 		'ZCS.common.ZtTemplate',
-		'ZCS.common.ZtItemCache',
 		'ZCS.common.ZtUserSession',
 		'ZCS.common.ZtTimezone',
 		'ZCS.common.calendar.ZtRecurrence',
         'ZCS.common.Component'
 	],
+
 	//<feature logger>
 	logger: {
 		enabled: true,

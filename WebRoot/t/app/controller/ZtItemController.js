@@ -90,7 +90,7 @@ Ext.define('ZCS.controller.ZtItemController', {
 
 		var item = tagParams.item || this.getItem(),
 			tagName = tagParams.tagName,
-			tag = ZCS.cache.get(tagName, 'tagName');
+			tag = ZCS.session.getOrganizerModel(tagParams.zcsId);
 
 		if (item && tag) {
 			this.tagItem(item, tag, true);

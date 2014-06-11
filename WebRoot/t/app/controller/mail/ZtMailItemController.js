@@ -190,7 +190,7 @@ Ext.define('ZCS.controller.mail.ZtMailItemController', {
 
 		var isConv = (item.get('type') === ZCS.constant.ITEM_CONVERSATION),
 			toastMsg = isConv ? ZtMsg.moveConversation : ZtMsg.moveMessage,
-			folder = ZCS.cache.get(folderId),
+			folder = ZCS.session.getOrganizerModel(folderId),
 			folderName = folder && folder.get('displayName');
 
 		if (isConv) {

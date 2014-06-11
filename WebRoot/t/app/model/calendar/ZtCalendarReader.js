@@ -73,7 +73,7 @@ Ext.define('ZCS.model.calendar.ZtCalendarReader', {
             duration = (index !== null && isException) ? node.inst[index].dur : node.dur,
 	        endTime = startTime + (parseInt(duration)),
 	        endDate = new Date(endTime),
-            organizer = ZCS.cache.get(node.l),
+            organizer = ZCS.session.getOrganizerModel(node.l),
             color = ZCS.constant.ORG_DEFAULT_COLOR,
 	        ridZ = index !== null ? node.inst[index].ridZ : node.inst[0].ridZ;
 

@@ -86,14 +86,12 @@ Ext.define('ZCS.model.ZtItem', {
 
 			return !tagIds ? [] : Ext.Array.map(tagIds.split(','), function(tagId) {
 
-				var tags = ZCS.cache.get(tagId),
-					tag = Array.isArray(tags) ? tags[0] : tags;
-
+				var tag = ZCS.session.getOrganizerModel(tagId);
 				if (tag) {
 					return tag.getData();
 				} else {
 					//<debug>
-                    Ext.Logger.warn('Could not find tag with ID ' + tagId + ' in the item cache');
+                    Ext.Logger.warn('Could not find tag with ID ' + tagId);
                     //</debug>
 				}
 			});

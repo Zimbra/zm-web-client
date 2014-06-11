@@ -142,7 +142,7 @@ Ext.define('ZCS.view.mail.ZtMsgView', {
 			shouldBeExpanded, modelState;
 
 		//<debug>
-		if (oldMsgView) {
+		if (msg && oldMsgView && msgView) {
 			Ext.Logger.info('updatedata for msg ' + msgId + ' ("' + msg.get('fragment') + '") from msg view ' + oldMsgView.getId() + ' into msg view ' + msgView.getId());
 		}
 		//</debug>
