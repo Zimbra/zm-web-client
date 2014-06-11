@@ -93,7 +93,7 @@ Ext.define('ZCS.model.ZtItem', {
 					return tag.getData();
 				} else {
 					//<debug>
-                    Ext.Logger.warn('Could not find tag with ID ' + id + ' in the item cache');
+                    Ext.Logger.warn('Could not find tag with ID ' + tagId + ' in the item cache');
                     //</debug>
 				}
 			});
