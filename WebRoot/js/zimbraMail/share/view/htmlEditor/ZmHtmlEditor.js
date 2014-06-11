@@ -151,6 +151,15 @@ function() {
                         y -= Dwt.getSize(elem).y;
                     });
 
+    // on Firefox, the toolbar is detected as unreasonably large during load;
+    // so start the timer for small sizes -- even in small windows, the toolbar
+    // should never be more than ~110px tall
+    if (bounds.height - y > 200) {
+        this._resetSizeAction =
+            setTimeout(ZmHtmlEditor.prototype._resetSize.bind(this), 100);
+        return;
+    }
+
     //Subtracting spellcheckmodediv height
     var spellCheckModeDiv = this._spellCheckModeDivId && document.getElementById(this._spellCheckModeDivId);
     if (spellCheckModeDiv && spellCheckModeDiv.style.display !== "none") {
