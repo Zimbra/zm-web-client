@@ -463,3 +463,7 @@ $contactGroupMemberImageRadius: $contactGroupMemberImageSize / 2;
   font-style: italic;
   text-align: center;
 }
+
+.x-tablet.x-portrait .zcs-contactview-empty {
+	margin-left: $organizer-width-tablet-portrait;
+}

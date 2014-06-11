@@ -13,6 +13,10 @@
  * ***** END LICENSE BLOCK *****
  */
 
+.x-tablet.x-portrait .zcs-msglist .x-list-emptytext {
+	margin-left: $organizer-width-tablet-portrait;
+}
+
 $zcs-msgview-radius: 5px;
 $zcs-detailBtn-size: 2.5em;
 $zcs-detailBtn-offset: 0.15em;
