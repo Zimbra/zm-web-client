@@ -85,7 +85,7 @@ Ext.define('ZCS.model.ZtOrganizer', {
 					return record.getTitle(null, true);
 				}
 			}
-		],
+		]
 	},
 	
 	statics: {

@@ -26,7 +26,7 @@ Ext.define('ZCS.model.ZtOrganizerReader', {
 	alias: 'reader.organizerreader',
 
 	config: {
-		model: 'ZCS.model.ZtOrganizer',
+		model: 'ZCS.model.ZtOrganizer'
 	},
 	
 	/**
