@@ -2355,7 +2355,7 @@ function() {
 	ZmApp.prototype.resetWebClientOfflineOperations.apply(this);
     //Refreshing the mail list both for online and offline mode
 	var isWebClientOnline = !appCtxt.isWebClientOffline();
-	this.mailSearch();
+	this.refresh();
 	var folders = appCtxt.getFolderTree().getByType(ZmOrganizer.FOLDER);
 	var overview = this.getOverview();
 	if (folders && overview) {
