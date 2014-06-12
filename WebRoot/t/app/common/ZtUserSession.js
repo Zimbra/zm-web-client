@@ -193,6 +193,7 @@ Ext.define('ZCS.common.ZtUserSession', {
 	 * @private
 	 */
 	splitDataIntoSeparateRoots: function (node, roots, parent, type) {
+
 		var	me = this,
 			childNodeNames = !type ? [ ZCS.constant.ORG_FOLDER, ZCS.constant.ORG_SEARCH, ZCS.constant.ORG_TAG, ZCS.constant.ORG_MOUNTPOINT ] :
 				(type === ZCS.constant.ORG_FOLDER) ? [ ZCS.constant.ORG_FOLDER, ZCS.constant.ORG_SEARCH, ZCS.constant.ORG_MOUNTPOINT ] : [ type ];
@@ -207,17 +208,17 @@ Ext.define('ZCS.common.ZtUserSession', {
 
 				Ext.data.NodeInterface.decorate(organizerModel);
 					
-				//If a parent is not explicitely set, then we should add to the appropriate place in the roots hash
-				//This is the case when an organizer is a direct descendant of an apps' root, for instance, the inbox organizer or a tag.
+				// If a parent is not explicitly set, then we should add to the appropriate place in the roots hash.
+				// This is the case when an organizer is a direct descendant of an apps' root, for instance, the inbox organizer or a tag.
 				if (!parent) {
 
 					Ext.each(ZCS.constant.APPS, function(app) {
-						//Tags and the trash organizer go in each app, 
-						//so we have to duplicate the model because a model can't have
-						//multiple parent nodes.
+						// Tags and the trash organizer go in each app,
+						// so we have to duplicate the model because a model can't have
+						// multiple parent nodes.
 						if (childType === 'tag' || organizerModel.get('zcsId') === ZCS.constant.ID_TRASH) {
 							
-							//Make sure that the trash folder will get grouped with the other folders for this app.
+							// Make sure that the trash folder will get grouped with the other folders for this app.
 							if (organizerModel.get('zcsId') === ZCS.constant.ID_TRASH) {
 								organizerModel.set('folderType', ZCS.constant.FOLDER_TYPE[ZCS.constant.FOLDER_VIEW[app]]);
 							}
@@ -237,13 +238,12 @@ Ext.define('ZCS.common.ZtUserSession', {
 				} else {
 
 					//For trash only, make sure the child is of a matching folder type
-					if (parent.get('zcsId') !== ZCS.constant.ID_TRASH ||
-							parent.get('folderType') === organizerModel.get('folderType')) {
+					if (parent.get('zcsId') !== ZCS.constant.ID_TRASH || parent.get('folderType') === organizerModel.get('folderType')) {
 						parent.set('leaf', false);
 						parent.set('disclosure', true);
 						parent.raw.leaf = false;
 						parent.raw.disclosure = true;
-						//Append the organizer to the specified parent.
+						// Append the organizer to the specified parent.
 						parent.appendChild(organizerModel);
 						this.splitDataIntoSeparateRoots(child, roots, organizerModel, childType);
 					}
@@ -309,7 +309,7 @@ Ext.define('ZCS.common.ZtUserSession', {
 	 *
 	 * @return {ZCS.model.ZtOrganizer}     Root node of ZtOrganizer
 	 */
-	getOrganizerData: function(app) {
+	getOrganizerRoot: function(app) {
 
 		app = app || ZCS.session.getActiveApp();
 
@@ -362,97 +362,58 @@ Ext.define('ZCS.common.ZtUserSession', {
 	 * Returns a single organizer model based on the passed zcsId.  Since this class 
 	 * holds organizers as Object literals, we need a bit more logic to get a model of
 	 * a single organizer.
-	 *
 	 */
 	getOrganizerModel: function (id, app) {
-		var organizerModel = this.findOrganizerByAttribute(id && id.indexOf(':') !== -1 ? 'remoteId' : 'zcsId', id, app);
-
-		return organizerModel;
+		return this.findOrganizerByAttribute(id && id.indexOf(':') !== -1 ? 'remoteId' : 'zcsId', id, app);
 	},
 
-	/**
-	 * Returns a single organizer based on the attribute and value passed.
-	 *
-	 * @param {String} attribute   The property of the organizer to find by.
-	 * @param {String} value       The value for the property.
-	 *
-	 * @return {Object} A JavaScript object literal representing an organizer.
-	 */
-	findOrganizerByAttribute: function (attribute, value, app) {
-		return this.findAnyOrganizerByAttribute(
-			attribute, 
-			value,
-			false,
-			false,
-			app
-		);
-	},
+	findOrganizersByAttribute: function (attr, value, app, firstOnly) {
 
-	/**
-	 * Finds the organizer with the given ID in the canonical organizer tree, and possibly
-	 * performs an action as a side effect.
-	 *
-	 * @param {Object}      org         root from which to start search
-	 * @param {String}      id          ID of organizer being sought
-	 * @param {Boolean}     doDelete    (optional) if true, remove the organizer
-	 * @param {Object}      newChildOrg (optional) if true, add this child to the organizer's child list
-	 *
-	 * @private
-	 * @return {Object}     the organizer that was found, or null
-	 */
-	findOrganizer: function(id, doDelete, newChildOrg, app) {
-		return this.findAnyOrganizerByAttribute(
-			"zcsId",
-			id,
-			doDelete, 
-			newChildOrg,
-			app
-		);
-	},
-
-	findAnyOrganizerByAttribute: function (attr, value, doDelete, newChildOrg, app) {
-		var organizer = null;
+		var organizer = null,
+			organizers = [];
 
 		if (app) {
-			organizer = this.findOrganizerInRootByAttribute(
+			organizer = this.traverseOrganizer(
 				this.roots[app], 
 				attr,
-				value, 
-				doDelete, 
-				newChildOrg
+				value,
+				firstOnly,
+				organizers
 			);
 		} else {
-			//Look through all the apps
+			// Look through all the apps
 			Ext.each(ZCS.constant.APPS, function(app) {
 				if (!organizer && ZCS.util.isAppEnabled(app)) {
-					organizer = this.findOrganizerInRootByAttribute(
+					organizer = this.traverseOrganizer(
 						this.roots[app], 
 						attr,
-						value, 
-						doDelete, 
-						newChildOrg
+						value,
+						firstOnly,
+						organizers
 					);
 				}
 			}, this);
 		}
 
-		return organizer;
+		return firstOnly ? organizer : organizers;
 	},
 
-	/** 
+	findOrganizerByAttribute: function (attr, value, app) {
+		return this.findOrganizersByAttribute(attr, value, app, true);
+	},
+
+	/**
 	 * Finds the organizer with the given ID in the canonical organizer tree, and possibly
 	 * performs an action as a side effect.
 	 *
 	 * @param {Object}      org         root from which to start search
 	 * @param {String}      attr        The property of the organizer to find by.
 	 * @param {String}      value       The value for the property.
-	 * @param {Boolean}     doDelete    (optional) if true, remove the organizer
-	 * @param {Object}      newChildOrg (optional) if true, add this child to the organizer's child list
-	 *
 	 *
 	 * @private
 	 */
-	findOrganizerInRootByAttribute: function (org, attr, value, doDelete, newChildOrg) {
+	traverseOrganizer: function (org, attr, value, firstOnly, organizers) {
+
 		if (!org) {
 			return null;
 		}
@@ -460,15 +421,9 @@ Ext.define('ZCS.common.ZtUserSession', {
 		var orgAttrValue = org.get(attr),
 			areStrings = orgAttrValue && value && Ext.isString(orgAttrValue) && Ext.isString(value);
 
-		if (orgAttrValue === value ||
-				(areStrings && orgAttrValue.toLowerCase() === value.toLowerCase())) {
-
-			if (newChildOrg) {
-				org.appendChild(newChildOrg);
-				org.set('leaf', false);
-				org.set('disclosure', true);
-			}
-
+		if (orgAttrValue === value || (areStrings && orgAttrValue.toLowerCase() === value.toLowerCase())) {
+			// Okay to return the org here if caller wants a list, since the only time the caller would get
+			// back the org is if root matched, and getOrganizerRoot() is the way to get the root.
 			return org;
 		}
 
@@ -477,12 +432,14 @@ Ext.define('ZCS.common.ZtUserSession', {
 			i, childOrg;
 
 		for (i = 0; i < ln; i++) {
-			childOrg = this.findOrganizerInRootByAttribute(childNodes[i], attr, value, doDelete, newChildOrg);
+			childOrg = this.traverseOrganizer(childNodes[i], attr, value, firstOnly, organizers);
 			if (childOrg) {
-				if (doDelete) {
-					org.removeChild(childOrg);
+				if (firstOnly) {
+					return childOrg;
 				}
-				return childOrg;
+				else {
+					organizers.push(childOrg);
+				}
 			}
 		}
 

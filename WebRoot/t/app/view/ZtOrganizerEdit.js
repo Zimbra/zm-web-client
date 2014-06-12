@@ -141,7 +141,7 @@ Ext.define('ZCS.view.ZtOrganizerEdit', {
             selectorStore;
 
         // Prepare a store for the folder-selector list
-        selectorRoot = ZCS.session.getOrganizerData(null, null, listType);
+        var selectorRoot = ZCS.session.getOrganizerRoot(null);
         
         selectorStore = Ext.create('ZCS.store.ZtOrganizerStore', {
             storeId:    'foldereditlocationselector',

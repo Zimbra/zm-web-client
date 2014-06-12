@@ -53,19 +53,19 @@ Ext.define('ZCS.view.ZtOverview', {
 		var me = this,
 			app = this.getApp(),
 			listType = ZCS.constant.ORG_LIST_OVERVIEW,
-			organizerData = ZCS.session.getOrganizerData(app, null, listType);
+			organizerRoot = ZCS.session.getOrganizerRoot(app);
 
 		// create a store for the organizers
 		var organizerStore = Ext.create('ZCS.store.ZtOrganizerStore', {
 			storeId:    [ app, listType ].join('-'),
-			root:       organizerData
+			root:       organizerRoot
 		});
 
 		organizerStore.doDefaultSorting();
 
 		//Because we instantiated the root with a model that already has model children,
 		//we have to force those children to get added to the store's collection.
-		// organizerStore.add(organizerStore.retrieveChildNodes(organizerData));
+		// organizerStore.add(organizerStore.retrieveChildNodes(organizerRoot));
 
 		// show the account name at the top of the overview
 		var accountName = ZCS.session.getAccountName();

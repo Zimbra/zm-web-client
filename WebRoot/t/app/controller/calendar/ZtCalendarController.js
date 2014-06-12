@@ -295,16 +295,14 @@ Ext.define('ZCS.controller.calendar.ZtCalendarController', {
     },
 
     getDefaultQuery: function() {
-		var folders = ZCS.session.getOrganizerData(ZCS.constant.APP_CALENDAR, ZCS.constant.ORG_FOLDER),
+
+		var folders = ZCS.session.findOrganizersByAttribute('folderType', ZCS.constant.ORG_CALENDAR, ZCS.constant.APP_CALENDAR),
 		 	calFolders = [];
 
 		Ext.each(folders, function(folder) {
-            if (folder.zcsId !== ZCS.constant.ID_TRASH) {
-                calFolders.push("inid:" + folder.zcsId);
-                Ext.each(folder.items, function(child) {
-                    //subfolders, if any
-                    calFolders.push("inid:" + child.zcsId)
-                }, this);
+			var zcsId = folder.get('zcsId');
+            if (zcsId !== ZCS.constant.ID_TRASH) {
+                calFolders.push('inid:' + zcsId);
             }
 		} , this);
 

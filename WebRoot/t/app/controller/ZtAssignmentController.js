@@ -69,7 +69,7 @@ Ext.define('ZCS.controller.ZtAssignmentController', {
 				targetElement:    targetComp.bodyElement,
 				record:           item,
 				listTitle:        isTags ? ZtMsg.tags : ZtMsg.folders,
-				organizerRoot:    ZCS.session.getOrganizerData(app, type, ZCS.constant.ORG_LIST_ASSIGNMENT),
+				organizerRoot:    ZCS.session.getOrganizerRoot(app),
 				app:              app,
 
 				onAssignmentComplete:   function (success) {

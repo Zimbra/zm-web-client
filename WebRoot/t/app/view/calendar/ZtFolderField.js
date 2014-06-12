@@ -57,7 +57,7 @@ Ext.define('ZCS.view.calendar.ZtFolderField', {
         // get the organizer data for this app
             listType = ZCS.constant.ORG_LIST_SELECTOR,
             organizerData = {
-                items: ZCS.session.getOrganizerData(ZCS.constant.APP_CALENDAR, null, listType)
+                items: ZCS.session.findOrganizersByAttribute('folderType', ZCS.constant.ORG_CALENDAR, ZCS.constant.APP_CALENDAR)
             };
 
         Ext.each(organizerData.items, function(folder) {

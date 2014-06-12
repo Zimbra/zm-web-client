@@ -227,7 +227,7 @@ Ext.define('ZCS.controller.ZtItemController', {
      */
     enableTagItem: function(menu) {
         if (menu && menu.getItem(ZCS.constant.OP_TAG)) {
-            var tags = ZCS.session.getOrganizerData(ZCS.constant.APP_MAIL, ZCS.constant.ORG_TAG);
+ 	        var tags = ZCS.session.findOrganizersByAttribute('type', ZCS.constant.ORG_TAG, ZCS.constant.APP_MAIL);
             menu.enableItem(ZCS.constant.OP_TAG, tags && tags.length > 0);
         }
     },
