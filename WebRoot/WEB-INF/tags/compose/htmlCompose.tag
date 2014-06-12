@@ -173,7 +173,7 @@ var myEditor;
                     var ed = ev.target;
 
                     if (!ed.isDirty() && ed.getContent() == "<div></div>") {
-                        ed.content = "";
+                        ev.content = "";
                     }
                 });
                 ed.on('BeforeSetContent', function(ed) {
