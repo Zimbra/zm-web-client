@@ -362,6 +362,8 @@ function() {
 // focus member, and we want to start over each time
 ZmComposeController.prototype._preHideCallback =
 function(view, force) {
+	var dontSave = this._dontSavePreHide;
+	this._dontSavePreHide = false;
 
 	if (this._autoSaveTimer) {
 		this._autoSaveTimer.kill();
@@ -369,14 +371,10 @@ function(view, force) {
 		//the following is a bit suspicous to me. I assume maybe this method might be called with force == true
 		//in a way that is not after the popShield was activated? That would be the only explanation to have this.
 		//I wonder if that's the case that leaves orphan drafts
-		if (force) {
+		if (force && !dontSave) {
 			// auto-save if we leave this compose tab and the message has not yet been sent
-			if (this._dontSavePreHide) {
-				this._dontSavePreHide = false;
-			}
-			else {
-				this._autoSaveCallback(true);
-			}
+			//this is a refactoring/fix of code initially from bug 72106 (since it's confusing I mention this bug to keep this knowledge)
+			this._autoSaveCallback(true);
 		}
 	}
 	return force ? true : this.popShield();
@@ -625,6 +623,7 @@ function(draftType, msg, callback, result) {
 	appCtxt.notifyZimlets("onSendMsgSuccess", [this, msg]);//notify Zimlets on success
 
 	if (needToPop) {
+		this._dontSavePreHide = true;
 		this._app.popView(true, this._currentView);
 	}
 	
