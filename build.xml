@@ -282,8 +282,15 @@
     </target>
 
     <target name="war"
-            depends="templates,timezones,images,styles,settings,jam-files,compress,help,touch,assemble-war"
+            depends="templates,timezones,images,styles,settings,jam-files,compress,help"
             description="Builds all dependencies and assembles the war file.">
+        <!--<if><isset property='build.network' />-->
+            <!--<then>-->
+                <!--<ant dir="${network.dir}/ZimbraTouch" target="touch"/>-->
+            <!--</then>-->
+        <!--</if>-->
+        <antcall target="touch"/>
+        <antcall target="assemble-war"/>
     </target>
 
     <target name="assemble-war" depends="webxml-package-replace" description="Assembles the war file.  Assumes that all dependencies have been built.  Octopus/ZimbraWebClient/build.xml calls the war target, modifies files in ZimbraWebClient/build, and then calls this target.">
