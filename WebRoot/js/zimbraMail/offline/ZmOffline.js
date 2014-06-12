@@ -365,6 +365,8 @@ function(startTime, endTime, callback, getMessages, previousMessageIds, apptIds,
         var apptContainer;
         var apptStartTime;
         var apptEndTime;
+        var msgIds = previousMessageIds ? previousMessageIds : [];
+        var uniqueMsgIds = {};
         for (var i = 0; i < numAppt; i++) {
             appt       = apptList.get(i);
             this._cleanApptForStorage(appt);
@@ -385,7 +387,17 @@ function(startTime, endTime, callback, getMessages, previousMessageIds, apptIds,
                                  endDate:    apptEndTime
                                 };
                 apptContainers.push(apptContainer);
+
+                // Accumulate the msgIds for reading the appt invites.  Do that here to pick up any series exceptions
+                // Note:  ZmCalItem.getDetails does:
+                //   var id = seriesMode ? (this.seriesInvId || this.invId || this.id) : this.invId;
+                // seriesInvId is the invId or null, constructed on dom load.  We want the actual invIds
+                var msgId = appt.invId || appt.id;
+                uniqueMsgIds[msgId] = true;
             }
+        }
+        for (var uniqueId in uniqueMsgIds) {
+            msgIds.push(uniqueId);
         }
 
         // Unfortunately, periodic appts have a cancel mode ('Delete this instance and any future
@@ -408,20 +420,8 @@ function(startTime, endTime, callback, getMessages, previousMessageIds, apptIds,
         ZmOfflineDB.setItem(apptContainers, ZmApp.CALENDAR, null, this.calendarDownloadErrorCallback.bind(this));
 
         // Now make a server read to get the detailed appt invites, for edit view and tooltips
-        var msgIds = previousMessageIds ? previousMessageIds : [];
         if (getMessages) {
-            if (searchResp.appt) {
-                for (var j = 0; j < searchResp.appt.length; j++) {
-                    // If present, accumulate both the series id and invId.  The user may ask for a series or
-                    // individual appt.  ZmCalItem.getDetails does:
-                    //   var id = seriesMode ? (this.seriesInvId || this.invId || this.id) : this.invId;
-                    rawAppt = searchResp.appt[j];
-                    var seriesId = rawAppt.seriesInvId || rawAppt.invId || rawAppt.id;
-                    msgIds.push(seriesId);
-                    if (seriesId !== rawAppt.invId) {
-                        msgIds.push(rawAppt.invId);
-                    }
-                }
+            if (msgIds.length > 0) {
                 var updateProgress = this._updateCacheProgress.bind(this, ZmOffline.CALENDAR_PROGRESS);
                 this._loadMessages(msgIds, updateProgress);
             } else {
