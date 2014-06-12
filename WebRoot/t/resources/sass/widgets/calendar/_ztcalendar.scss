@@ -121,6 +121,8 @@ $more-events-color: blue;
 
 			&.event-bar-selected {
 				background-color: $selection-color;
+                opacity: 1;
+                font-weight: bold;
 			}
 
 			&>DIV {

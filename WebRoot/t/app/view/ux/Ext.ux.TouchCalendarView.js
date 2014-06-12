@@ -598,7 +598,12 @@ Ext.define('Ext.ux.TouchCalendarView', {
 		    if(newDate.getTime() !== previousValue.getTime()){
 	            this.setValue(newDate);
             }
-	        this.fireEvent('selectionchange', this, newDate, previousValue);
+
+		    // Add a hack to fire selectionchange only for month view. If fired for day view
+		    // then repaints view and page scrolls to top.
+		    if (this.getViewMode().toLowerCase() === 'month') {
+	            this.fireEvent('selectionchange', this, newDate, previousValue);
+		    }
 	    }
     },
 

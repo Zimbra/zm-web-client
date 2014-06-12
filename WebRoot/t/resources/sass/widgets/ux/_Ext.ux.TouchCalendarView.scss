@@ -74,7 +74,7 @@
                     $c: #1980e5;
                     color: #FFFFFF;
                     text-shadow: #333 1px 1px 0px;
-                    border: 1px solid black;
+                    //border: 1px solid black;
                     background: $c;
                     @include background-gradient(lighten($c, 10%), 'glossy');
 
@@ -161,7 +161,7 @@
 			background: $c;
 			@include background-gradient(lighten($c, 10%), 'glossy');
             //ZCS - Fix for cell selection. Top border in the selection is lost.
-            border-top: 1px solid #000 !important;
+            //border-top: 1px solid #000 !important;
 		}
 
 		&.today.selected
