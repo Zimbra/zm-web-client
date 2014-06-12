@@ -271,6 +271,7 @@ Ext.define('ZCS.controller.ZtOverviewController', {
     },
 
     toggleEditState: function() {
+
 	    var overview = this.getOverview(),
             organizerEditToolbar = overview.getDockedItems()[0],
             editBtn = overview.down('#zcs-overview-edit-btn'),
@@ -279,23 +280,23 @@ Ext.define('ZCS.controller.ZtOverviewController', {
             folderList = this.getCurrentFolderList();
 
         if (folderList.editing) {
+	        // leaving edit mode
             folderList.editing = false;
             overview.removeCls('editing');
-            organizerListToolbar.setTitle(ZCS.constant.APP_NAME[overview.getApp()]);
             editBtn.setText(ZtMsg.edit);
-            appsBtn.show();
             organizerEditToolbar.hide();
-        } else {
+        }
+        else {
+	        // entering edit mode
             folderList.editing = true;
             overview.addCls('editing');
-            organizerListToolbar.setTitle([ZtMsg.edit,organizerListToolbar.getTitle()].join(" "));
             editBtn.setText(ZtMsg.done);
-            appsBtn.hide();
             organizerEditToolbar.show();
         }
     },
 
-    subNodeChange: function(node,isBack) {
+    subNodeChange: function(node, isBack) {
+
         var overview = this.getOverview(),
             appsBtn = overview.down('#zcs-overview-apps-btn'),
             organizerList = overview.down('organizerlist'),
