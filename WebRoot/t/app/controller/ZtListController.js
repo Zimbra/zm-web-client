@@ -180,7 +180,6 @@ Ext.define('ZCS.controller.ZtListController', {
 	 * @param {boolean}     success
 	 */
 	storeLoaded: function(records, operation, success) {
-
 		var app = this.getApp(),
 			folder = operation.config.folder;
 

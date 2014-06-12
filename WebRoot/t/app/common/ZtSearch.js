@@ -292,7 +292,7 @@ Ext.define('ZCS.common.ZtSearch', {
 					folderId = arg;
 					if (op === 'in') {
 						folder = ZCS.session.findOrganizerByAttribute('path', ZCS.model.ZtOrganizer.getNormalizedPath({path:arg}));
-						folderId = folder ? folder.zcsId : null;
+						folderId = folder ? folder.get('zcsId') : null;
 					}
 					if (folderId) {
 						func.push("item.isInFolder('" + folderId + "')");
@@ -300,7 +300,7 @@ Ext.define('ZCS.common.ZtSearch', {
 				}
 				else if (op === 'tag') {
 					tag = ZCS.session.findOrganizerByAttribute('tagName', arg);
-					tagId = tag ? tag.zcsId : null;
+					tagId = tag ? tag.get('zcsId') : null;
 					if (tagId) {
 						func.push("item.hasTag('" + arg + "')");
 					}

@@ -105,9 +105,6 @@ Ext.define('ZCS.common.ZtUserSession', {
 		this.setSessionId(data.header.context.session);
 		this.setNotifySeq(0);
 
-		// Load organizers
-		this.loadFolders(data.header.context.refresh);
-
 		// Find default identity, use it for account ID and prefs
 		var gir = data.response.GetInfoResponse[0],
 			identityAttrs;
@@ -125,6 +122,9 @@ Ext.define('ZCS.common.ZtUserSession', {
 		this._settings = {};
 		this.createSettings(Ext.Object.merge({}, gir.attrs._attrs, gir.prefs._attrs, identityAttrs));
 		this.setSetting(ZCS.constant.SETTING_REST_URL, gir.rest);
+
+		// Load organizers
+		this.loadFolders(data.header.context.refresh);
 
 		// name of logged-in account
 		this.setAccountName(gir.name);
@@ -159,13 +159,97 @@ Ext.define('ZCS.common.ZtUserSession', {
 
 		// parse organizer info from the {refresh} block
 		var folderRoot = refresh.folder[0],
-			tagRoot = refresh.tags;
+			tagRoot = refresh.tags,
+			apps = [],
+			fakeIndex = folderRoot.id;
+
+
+		Ext.each(ZCS.constant.APPS, function(app) {
+			if (ZCS.util.isAppEnabled(app)) {
+				apps.push(app);
+			}
+		});
+
+		this.roots = {};
+
+		Ext.each(apps, function (app) {
+			this.roots[app] =  ZCS.model.ZtOrganizer.singleInstanceProxy.getReader().getDataFromNode({id: fakeIndex + "", leaf: false}, ZCS.constant.ORG_FOLDER);
+			this.roots[app] =  Ext.create('ZCS.model.ZtOrganizer', this.roots[app]);
+			Ext.data.NodeInterface.decorate(this.roots[app]);
+			this.roots[app].raw.leaf = false;
+		}, this);
 
 		// move tags in with folders and searches
 		if (tagRoot) {
 			folderRoot[ZCS.constant.ORG_TAG] = tagRoot[ZCS.constant.ORG_TAG];
 		}
-		this.setOrganizerRoot(this.addOrganizer(folderRoot));
+
+		this.splitDataIntoSeparateRoots(folderRoot, this.roots, null, null);
+	},
+
+	/**
+	 * Splits the data into separate roots for each application.
+	 *
+	 * @private
+	 */
+	splitDataIntoSeparateRoots: function (node, roots, parent, type) {
+		var	me = this,
+			childNodeNames = !type ? [ ZCS.constant.ORG_FOLDER, ZCS.constant.ORG_SEARCH, ZCS.constant.ORG_TAG, ZCS.constant.ORG_MOUNTPOINT ] :
+				(type === ZCS.constant.ORG_FOLDER) ? [ ZCS.constant.ORG_FOLDER, ZCS.constant.ORG_SEARCH, ZCS.constant.ORG_MOUNTPOINT ] : [ type ];
+
+		Ext.each(childNodeNames, function(childType) {
+			Ext.each(node[childType], function(child) {
+
+				var organizerData = ZCS.model.ZtOrganizer.singleInstanceProxy.getReader().getDataFromNode(child, childType),
+					organizerModel = Ext.create('ZCS.model.ZtOrganizer', organizerData);
+
+				organizerModel.phantom = false;
+
+				Ext.data.NodeInterface.decorate(organizerModel);
+					
+				//If a parent is not explicitely set, then we should add to the appropriate place in the roots hash
+				//This is the case when an organizer is a direct descendant of an apps' root, for instance, the inbox organizer or a tag.
+				if (!parent) {
+
+					Ext.each(ZCS.constant.APPS, function(app) {
+						//Tags and the trash organizer go in each app, 
+						//so we have to duplicate the model because a model can't have
+						//multiple parent nodes.
+						if (childType === 'tag' || organizerModel.get('zcsId') === ZCS.constant.ID_TRASH) {
+							
+							//Make sure that the trash folder will get grouped with the other folders for this app.
+							if (organizerModel.get('zcsId') === ZCS.constant.ID_TRASH) {
+								organizerModel.set('folderType', ZCS.constant.FOLDER_TYPE[ZCS.constant.FOLDER_VIEW[app]]);
+							}
+
+							var copy = organizerModel.copy();
+							roots[app].appendChild(copy);
+							this.splitDataIntoSeparateRoots(child, roots, copy, childType);
+						} else {
+							if (ZCS.util.isAppEnabled(app)) {
+								if (me.isValidOrganizer(organizerModel.data, app, organizerModel.get('type'))) {
+									roots[app].appendChild(organizerModel);
+									this.splitDataIntoSeparateRoots(child, roots, organizerModel, childType);
+								}
+							}
+						}
+					}, this);
+				} else {
+
+					//For trash only, make sure the child is of a matching folder type
+					if (parent.get('zcsId') !== ZCS.constant.ID_TRASH ||
+							parent.get('folderType') === organizerModel.get('folderType')) {
+						parent.set('leaf', false);
+						parent.set('disclosure', true);
+						parent.raw.leaf = false;
+						parent.raw.disclosure = true;
+						//Append the organizer to the specified parent.
+						parent.appendChild(organizerModel);
+						this.splitDataIntoSeparateRoots(child, roots, organizerModel, childType);
+					}
+				}	
+			}, this);
+		}, this);
 	},
 
 	/**
@@ -217,77 +301,19 @@ Ext.define('ZCS.common.ZtUserSession', {
 	},
 
 	/**
-	 * Creates organizer data from the given node and adds it to the given list (of its
-	 * parent's children).
-	 * @private
-	 */
-	addOrganizer: function(node, list, type) {
-
-		var organizer = ZCS.model.ZtOrganizer.getProxy().getReader().getDataFromNode(node, type);
-		if (list) {
-			list.push(organizer);
-		}
-
-		var	childNodeNames = !type ? [ ZCS.constant.ORG_FOLDER, ZCS.constant.ORG_SEARCH, ZCS.constant.ORG_TAG, ZCS.constant.ORG_MOUNTPOINT ] :
-				(type === ZCS.constant.ORG_FOLDER) ? [ ZCS.constant.ORG_FOLDER, ZCS.constant.ORG_SEARCH, ZCS.constant.ORG_MOUNTPOINT ] : [ type ];
-
-		Ext.each(childNodeNames, function(childType) {
-			Ext.each(node[childType], function(child) {
-				this.addOrganizer(child, organizer.items, childType);
-			}, this);
-		}, this);
-
-		return organizer;
-	},
-
-	/**
 	 * Returns the tree for the given app, in a form that is consumable by a TreeStore. Note
 	 * that each organizer is copied, so we aren't returning references to the canonical organizer data
 	 * within the session.
 	 *
 	 * @param {string}  app     app name
-	 * @param {string}  type    organizer type
-	 * @return {object}     tree (each node is a ZtOrganizer)
+	 *
+	 * @return {ZCS.model.ZtOrganizer}     Root node of ZtOrganizer
 	 */
-	getOrganizerData: function(app, type, context) {
+	getOrganizerData: function(app) {
 
-		var root = this.addOrganizerData(this.getOrganizerRoot(), null, app, type, context);
+		app = app || ZCS.session.getActiveApp();
 
-		return root.items;
-	},
-
-	/**
-	 * Filter the given organizer and add it to the list if it passes. Then handle its children.
-	 * Currently we don't handle the situation where an organizer is missed because it has a
-	 * parent that got filtered out.
-	 * @private
-	 */
-	addOrganizerData: function(organizer, list, app, type, context) {
-
-		// Create a copy of the organizer data, since we don't want the caller to mess with the canonical data.
-		var org = {},
-			isTrash = (organizer.zcsId === ZCS.constant.ID_TRASH);
-
-		if (this.isValidOrganizer(organizer, app, type)) {
-			Ext.apply(org, organizer);
-			delete org.items;
-			ZCS.model.ZtOrganizer.addOtherFields(org, app, context, !!(organizer.items && organizer.items.length > 0));
-			if (isTrash) {
-				org.folderType = ZCS.constant.APP_FOLDER[app];
-			}
-			if (list) {
-				list.push(org);
-			}
-
-			if (organizer.items) {
-				org.items = [];
-				Ext.each(organizer.items, function(child) {
-					this.addOrganizerData(child, org.items, app, type, context);
-				}, this);
-			}
-		}
-
-		return org;
+		return this.roots[app];
 	},
 
 	/**
@@ -332,57 +358,16 @@ Ext.define('ZCS.common.ZtUserSession', {
 		return isValid;
 	},
 
-	handleOrganizerCreate: function(organizer, notification) {
-
-		var org = ZCS.model.ZtOrganizer.getProxy().getReader().getDataFromNode(notification, notification.itemType);
-		this.findOrganizer(this.getOrganizerRoot(), org.parentZcsId, false, org);
-	},
-
-	handleOrganizerDelete: function(organizer, notification) {
-
-		var org = this.getOrganizerModel(notification.id);
-		this.findOrganizer(this.getOrganizerRoot(), notification.id, true);
-		if (org) {
-			org.handleDeleteNotification();
-		}
-	},
-
-	handleOrganizerChange: function(organizer, notification) {
-
-		var root = this.getOrganizerRoot(),
-			org = this.findOrganizer(root, notification.id),
-			proxy, prop;
-
-		if (org) {
-			proxy = ZCS.model.ZtOrganizer.getProxy().getReader().getDataFromNode(notification, notification.itemType);
-			for (prop in proxy) {
-				if (proxy[prop] != null && org[prop] !== proxy[prop]) {
-					org[prop] = proxy[prop];
-				}
-			}
-			if (notification.l) {
-				org = this.findOrganizer(root, notification.id, true);
-				this.findOrganizer(root, notification.l, false, org);
-			}
-		}
-	},
-
 	/**
 	 * Returns a single organizer model based on the passed zcsId.  Since this class 
 	 * holds organizers as Object literals, we need a bit more logic to get a model of
 	 * a single organizer.
 	 *
 	 */
-	getOrganizerModel: function (id) {
+	getOrganizerModel: function (id, app) {
+		var organizerModel = this.findOrganizerByAttribute(id && id.indexOf(':') !== -1 ? 'remoteId' : 'zcsId', id, app);
 
-		var organizerData = this.findOrganizerByAttribute(id && id.indexOf(':') !== -1 ? 'remoteId' : 'zcsId', id);
-		if (organizerData) {
-			var organizerModel = Ext.create('ZCS.model.ZtOrganizer', organizerData);
-			ZCS.model.ZtOrganizer.addOtherFields(organizerModel.data);
-			return organizerModel;
-		}
-
-		return null;
+		return organizerModel;
 	},
 
 	/**
@@ -393,13 +378,13 @@ Ext.define('ZCS.common.ZtUserSession', {
 	 *
 	 * @return {Object} A JavaScript object literal representing an organizer.
 	 */
-	findOrganizerByAttribute: function (attribute, value) {
-		var root = this.getOrganizerRoot();
-
-		return this.findOrganizerInRootByAttribute(
-			root,
+	findOrganizerByAttribute: function (attribute, value, app) {
+		return this.findAnyOrganizerByAttribute(
 			attribute, 
-			value
+			value,
+			false,
+			false,
+			app
 		);
 	},
 
@@ -415,14 +400,43 @@ Ext.define('ZCS.common.ZtUserSession', {
 	 * @private
 	 * @return {Object}     the organizer that was found, or null
 	 */
-	findOrganizer: function(org, id, doDelete, newChildOrg) {
-		return this.findOrganizerInRootByAttribute(
-			org,
+	findOrganizer: function(id, doDelete, newChildOrg, app) {
+		return this.findAnyOrganizerByAttribute(
 			"zcsId",
 			id,
 			doDelete, 
-			newChildOrg
+			newChildOrg,
+			app
 		);
+	},
+
+	findAnyOrganizerByAttribute: function (attr, value, doDelete, newChildOrg, app) {
+		var organizer = null;
+
+		if (app) {
+			organizer = this.findOrganizerInRootByAttribute(
+				this.roots[app], 
+				attr,
+				value, 
+				doDelete, 
+				newChildOrg
+			);
+		} else {
+			//Look through all the apps
+			Ext.each(ZCS.constant.APPS, function(app) {
+				if (!organizer && ZCS.util.isAppEnabled(app)) {
+					organizer = this.findOrganizerInRootByAttribute(
+						this.roots[app], 
+						attr,
+						value, 
+						doDelete, 
+						newChildOrg
+					);
+				}
+			}, this);
+		}
+
+		return organizer;
 	},
 
 	/** 
@@ -443,28 +457,30 @@ Ext.define('ZCS.common.ZtUserSession', {
 			return null;
 		}
 
-		var areStrings = org[attr] && value && Ext.isString(org[attr]) && Ext.isString(value);
+		var orgAttrValue = org.get(attr),
+			areStrings = orgAttrValue && value && Ext.isString(orgAttrValue) && Ext.isString(value);
 
-		if (org[attr] === value ||
-				(areStrings && org[attr].toLowerCase() === value.toLowerCase())) {
+		if (orgAttrValue === value ||
+				(areStrings && orgAttrValue.toLowerCase() === value.toLowerCase())) {
+
 			if (newChildOrg) {
-				org.items = org.items || [];
-				org.items.push(newChildOrg);
-				org.leaf = false;
-				org.disclosure = true;
+				org.appendChild(newChildOrg);
+				org.set('leaf', false);
+				org.set('disclosure', true);
 			}
+
 			return org;
 		}
 
-		var list = org.items,
-			ln = list ? list.length : 0,
+		var childNodes = org.childNodes,
+			ln = childNodes ? childNodes.length : 0,
 			i, childOrg;
 
 		for (i = 0; i < ln; i++) {
-			childOrg = this.findOrganizerInRootByAttribute(org.items[i], attr, value, doDelete, newChildOrg);
+			childOrg = this.findOrganizerInRootByAttribute(childNodes[i], attr, value, doDelete, newChildOrg);
 			if (childOrg) {
 				if (doDelete) {
-					list.splice(i, 1);
+					org.removeChild(childOrg);
 				}
 				return childOrg;
 			}

@@ -22,146 +22,142 @@
 
 Ext.define('ZCS.common.ZtOrganizerNotificationHandler', {
 
+
+	handleOrganizerBatch: function (notifications) {
+		var updates = [];
+
+		Ext.each(notifications, function (notification) {
+
+
+
+			//Since an organizer can be duplicated across apps (tag/trash)
+			//Iterate over each app to get an organizer reference.
+			//Get updates
+			Ext.each(ZCS.constant.APPS, function(app) {
+				//If the notificaiton has a view specified, only consider the app specified in that view.
+				var notificationCanApplyToApp = notification.view ? app === ZCS.constant.VIEW_APP[notification.view] : true;
+				if (ZCS.util.isAppEnabled(app) && notificationCanApplyToApp) {
+					var organizer = ZCS.session.getOrganizerModel(notification.id, app),
+						parentOrganizer;
+
+					//Determine the parent organizer based on organizer type and operation type.
+					if (notification.nodeType === ZCS.constant.ORG_TAG) {
+						parentOrganizer = ZCS.session.getOrganizerModel(ZCS.constant.ID_ROOT, app);
+					} else {
+						if (notification.type === ZCS.constant.NOTIFY_CREATE) {
+							parentOrganizer = ZCS.session.getOrganizerModel(notification.l, app);
+						} else if (notification.type === ZCS.constant.NOTIFY_CHANGE) {
+							parentOrganizer = ZCS.session.getOrganizerModel(notification.parentZcsId, app);
+						}
+					}
+
+					if (organizer || parentOrganizer) {
+						if (notification.type === ZCS.constant.NOTIFY_CREATE) {
+							updates.push(this.addOrganizer(
+								notification,
+								parentOrganizer,
+								app
+							));
+						} else if (notification.type === ZCS.constant.NOTIFY_CHANGE) {
+							updates.push(this.modifyOrganizer(
+								organizer,
+								notification,
+								app
+							));
+						} else if (notification.type === ZCS.constant.NOTIFY_DELETE) {
+							updates.push(this.removeOrganizer(
+								organizer,
+								notification
+							));
+						}
+					}
+				}
+			}, this);
+		}, this);
+
+		this.doEfficientHandlingOfUpdates(updates);
+	},
+
+
 	/**
-	 * Adds an organizer to the given list of views. First, the organizer will be created from
-	 * the provided notification JSON, then it will be inserted into the proper position in
-	 * each organizer tree.
+	 * Adds an organizer to the appropriate place in the organizer model hierarchy.
 	 *
-	 * @param {Array}   parentViews     views that may need to be updated
 	 * @param {Object}  notification    notification JSON
 	 */
-	addOrganizer: function(parentViews, notification) {
+	addOrganizer: function(notification, parentOrganizer, app) {
 		var me = this,
-			organizer, 
-			app;
+			newOrganizer;
+		
+		newOrganizer = ZCS.model.ZtOrganizer.singleInstanceProxy.getReader().getDataFromNode(notification, notification.nodeType);
+		if (ZCS.session.isValidOrganizer(newOrganizer, app)) {
+			ZCS.model.ZtOrganizer.addOtherFields(newOrganizer, app, false);
+			return me.insertOrganizer(newOrganizer, app, parentOrganizer);
+		}
 
-		parentViews = Ext.Array.from(parentViews);
-
-		organizer = ZCS.model.ZtOrganizer.getProxy().getReader().getDataFromNode(notification, notification.itemType);
-
-		this.organizerUpdate(parentViews, organizer, function (parentView) {
-
-			app = (parentView.getApp && parentView.getApp()) || ZCS.session.getActiveApp();
-			if (ZCS.session.isValidOrganizer(organizer, app)) {
-				var list = me.getListFromView(parentView);
-				ZCS.model.ZtOrganizer.addOtherFields(organizer, app, list.getType(), false);
-				return me.insertOrganizer(list, organizer, organizer.parentItemId, organizer.parentZcsId);
-			}
-
-			return null;
-		});
+		return null;
 	},
 
 	/**
 	 * Removes an organizer from the stores for the given views.
 	 *
-	 * @param {Array}       parentViews     views that may need to be updated
 	 * @param {ZtOrganizer} organizer       organizer being deleted
 	 */
-	removeOrganizer: function(parentViews, organizer) {
+	removeOrganizer: function(organizer, notification) {
 		var me = this;
 
-		me.organizerUpdate(parentViews, organizer, function (parentView) {
-			var index,
-				list = me.getListFromView(parentView),
-				store = list && list.getStore(),
-				parentNode = store.getNodeById(organizer.get('parentItemId'));
+
+		parentNode = organizer.parentNode;
 			
-			//Don't touch any stores here, organizerUpdate will handle updating dependent stores and lists.
-			if (parentNode) {
-				parentNode.disableDefaultStoreEvents();
+		//Don't touch any stores here, just update the nodes.
+		if (parentNode) {
+			parentNode.disableDefaultStoreEvents();
 
-				parentNode.removeChild(organizer, true);
-	
-				if (!(parentNode.childNodes && parentNode.childNodes.length > 0)) {
-					parentNode.set('disclosure', false);
-					parentNode.set('leaf', true);
-				}
+			parentNode.removeChild(organizer, true);
 
-				parentNode.enableDefaultStoreEvents();
-
-				return {
-					oldParent: parentNode,
-					newChild: null,
-					deletedChild: organizer
-				};
+			if (!(parentNode.childNodes && parentNode.childNodes.length > 0)) {
+				parentNode.set('disclosure', false);
+				parentNode.set('leaf', true);
 			}
 
-			return null;
-		});
+			parentNode.enableDefaultStoreEvents();
+
+			organizer.destroy();
+
+			return {
+				oldParent: parentNode,
+				newChild: null,
+				deletedChild: organizer
+			};
+		}
+
+		organizer.destroy();
+
+		return null;
 	},
 
 	/**
 	 * Handles changes to an organizer. The changes are indicated by the notification JSON. If an
 	 * organizer has been moved, we need to move it from its old parent to its new parent.
 	 *
-	 * @param {Array}       parentViews     views that may need to be updated
 	 * @param {ZtOrganizer} organizer       organizer being modified
 	 * @param {Object}      notification    notification JSON
+ 	 * @param {String}      app
 	 */
-	modifyOrganizer: function(parentViews, organizer, notification) {
-		var me = this;
-		parentViews = Ext.Array.from(parentViews);
+	modifyOrganizer: function(organizer, notification, app) {
+		organizer.handleModifyNotification(notification);
 
-		me.organizerUpdate(parentViews, organizer, function (parentView) {
-			var app = (parentView.getApp && parentView.getApp()) || ZCS.session.getActiveApp();
+		if (notification.l) {
+			var me = this,
+				newParentItemId = organizer.get('parentItemId'),
+				newParentZcsId = organizer.get('parentZcsId'),
+				oldParentId = organizer.get('oldParentItemId'),
+				oldParentZcsId = organizer.get('oldParentZcsId'),
+				newParent = ZCS.session.getOrganizerModel(newParentZcsId, app);
 
-			// organizer has moved (has a new parent)
-			if (notification.l) {
-				var reader = ZCS.model.ZtOrganizer.getProxy().getReader(),
-					data = reader.getDataFromNode(notification, organizer.get('type'), app, []),
-					list = me.getListFromView(parentView),
-					store = list && list.getStore(),
-					organizerId = organizer.getId();
-
-				if (store.getNodeById(organizerId)) {
-					var	newParentItemId = organizer.get('parentItemId'),
-						newParentZcsId = organizer.get('parentZcsId'),
-						oldParentId = organizer.get('oldParentItemId'),
-						oldParentZcsId = organizer.get('oldParentZcsId');
-
-					return me.insertOrganizer(list, organizer, newParentItemId, newParentZcsId, oldParentId, oldParentZcsId);
-				}
-			}
-		});
-	},
-
-	/**
-	 * Handles the arrival of a <refresh> block by regenerating overviews.
-	 *
-	 * @param {Array}       parentViews     views that may need to be updated
-	 */
-	reloadOverviews: function(parentViews) {
-
-		var ln = parentViews.length, i, app,
-			updates = []; 
-
-		for (i = 0; i < ln; i++) {
-			var parentView = parentViews[i],
-				app = (parentView.getApp && parentView.getApp()) || ZCS.session.getActiveApp(),
-				list = this.getListFromView(parentView),
-				store = list && list.getStore();
-
-			store.data._autoSort = false;
-			store.suspendEvents();
-
-			store.setClearOnLoad(false);
-			store.getRoot().removeAll(true, true);
-			store.setData({
-				items: ZCS.session.getOrganizerData(app, null, list.getType())
-			});
-
-			updates.push({
-				type: 'refresh',
-				root: store.getRoot()
-			});
-
-			store.data._autoSort = true;
-			store.resumeEvents(true);
+			return me.insertOrganizer(organizer, app, newParent, oldParentId, oldParentZcsId);
 		}
-
-		this.doEfficientHandlingOfUpdates(updates);
 	},
+
 
 	/**
 	 * @private
@@ -172,19 +168,16 @@ Ext.define('ZCS.common.ZtOrganizerNotificationHandler', {
 	 * amount to just doing a sort in the first place.
 	 *
 	 * @param {ZtOrganizer} organizer
-	 * @param {String}      parentId
+	 * @param {String}      app
+ 	 * @param {ZtOrganizer} parent
+ 	 * @param {String}		oldParentId
+ 	 * @Param {String}      oldParentZcsId
 	 * @private
 	 */
-	insertOrganizer: function(list, organizer, parentId, parentZcsId, oldParentId, oldParentZcsId) {
-
-		var	store = list && list.getStore();
-		if (!store) {
-			return;
-		}
+	insertOrganizer: function(organizer, app, parent, oldParentId, oldParentZcsId) {
 
 		var	newChild,
-			parent = (!parentId || parentZcsId === ZCS.constant.ID_ROOT) ? store.getRoot() : store.getNodeById(parentId),
-			oldParent = (!oldParentId || oldParentZcsId === ZCS.constant.ID_ROOT) ? store.getRoot() : store.getNodeById(oldParentId);
+			oldParent = oldParentZcsId ? ZCS.session.getOrganizerModel(oldParentZcsId, app) : null;
 
 		if (parent && organizer) {			
 			//Disable default sencha touch events at this point to prevent excessive sorting and memory thrashing.
@@ -196,7 +189,9 @@ Ext.define('ZCS.common.ZtOrganizerNotificationHandler', {
 			newChild = parent.appendChild(organizer);
 
 			//Sort the parent node's children, not firing any events
-			parent.sortWithoutEvents(store.data.getSortFn(), true);
+			if (parent.stores.length > 0) {
+				parent.sortWithoutEvents(parent.stores[0].data.getSortFn(), false, true);
+			}
 
 			if (!parent.get('disclosure')) {
 				parent.set('disclosure', true);
@@ -226,31 +221,45 @@ Ext.define('ZCS.common.ZtOrganizerNotificationHandler', {
 		return updateInfo;
 	},
 
-	/**
-	 * @private
-	 *
-	 * Get an update information block using the update functino for
-	 * each parent view, and then do an efficient update of dependent stores and
-	 * lists.
-	 */
-	organizerUpdate: function (parentViews, organizer, updateFn) {
-		var ln = parentViews.length, 
-			i, 
-			parentView, 
-			updates = [],
-			updateInformation;
 
+	/**
+	 * Handles the arrival of a <refresh> block by regenerating overviews.
+	 *
+	 * @param {Array}       parentViews     views that may need to be updated
+	 */
+	reloadOverviews: function(parentViews) {
+
+		var ln = parentViews.length, i, app,
+			updates = []; 
 
 		for (i = 0; i < ln; i++) {
-			parentView = parentViews[i];
-			updateInformation = updateFn(parentView);
-			if (updateInformation) {
-				updates.push(updateInformation);
-			}
+			var parentView = parentViews[i],
+				app = (parentView.getApp && parentView.getApp()) || ZCS.session.getActiveApp(),
+				list = this.getListFromView(parentView),
+				store = list && list.getStore();
+
+			store.data._autoSort = false;
+			store.suspendEvents();
+
+			store.setClearOnLoad(false);
+			store.getRoot().removeAll(true, true);
+
+			store.setRoot(ZCS.session.getOrganizerData(app, null, list.getType()));
+
+			store.doDefaultSorting();
+
+			updates.push({
+				type: 'refresh',
+				root: store.getRoot()
+			});
+
+			store.data._autoSort = true;
+			store.resumeEvents(true);
 		}
 
 		this.doEfficientHandlingOfUpdates(updates);
 	},
+
 
 	/** 
 	 * @private
@@ -379,7 +388,17 @@ Ext.define('ZCS.common.ZtOrganizerNotificationHandler', {
 					dependentListsForThisNode = value.oldNode.getDependentLists();
 					storeToUpdate.remove(value.oldNode);
 				} else if (value.type === 'refresh') {
+
+				}
+
+				if (storeToUpdate.doDefaultSorting) {
+					storeToUpdate.doDefaultSorting();
+				} else {
+					storeToUpdate.data._autoSort = false;
+					storeToUpdate.suspendEvents();
 					storeToUpdate.sort();
+					storeToUpdate.data._autoSort = true;
+					storeToUpdate.resumeEvents(true);
 				}
 
 				Ext.Object.each(dependentListsForThisNode, function (key, list) {

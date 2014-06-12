@@ -55,7 +55,6 @@ Ext.define('ZCS.model.ZtOrganizer', {
 
 			// these fields are used to distinguish organizers that can appear in multiple stores
 			{ name: 'app',              type: 'string' },   // app to which this organizer belongs
-			{ name: 'context',          type: 'string' },   // context to which this organizer belongs (eg 'overview')
 
 			// these are internal fields used when a folder has been renamed
 			{ name: 'oldParentItemId',  type: 'string' },   // ID of former parent organizer
@@ -68,6 +67,7 @@ Ext.define('ZCS.model.ZtOrganizer', {
 			{ name: 'isMountpoint',     type: 'boolean' },  // true if this is a link to a remote folder
 			{ name: 'remoteAccountId',  type: 'string' },   // account ID of shared folder
 			{ name: 'remoteFolderId',   type: 'string' },   // local ID of shared folder
+			{ name: 'remoteId',   type: 'string' },         // joined zid and rid
 			{ name: 'permissions',      type: 'string' },   // permissions this user has on the remote folder (subset of "rwidaxp")
 
 			// mail folder fields
@@ -86,13 +86,8 @@ Ext.define('ZCS.model.ZtOrganizer', {
 				}
 			}
 		],
-
-		proxy: {
-			type:   'memory',
-			reader: 'organizerreader'
-		}
 	},
-
+	
 	statics: {
 
 		/**
@@ -101,12 +96,11 @@ Ext.define('ZCS.model.ZtOrganizer', {
 		 *
 		 * @param {String}      zcsId       organizer ID on ZCS server
 		 * @param {String}      app         ZCS.constant.APP_*
-		 * @param {String}      context     (optional) container (such as 'overview' or 'assignment')
 		 *
 		 * @return {String}     suitable ID for organizer within a Sencha store
 		 */
-		getOrganizerId: function(zcsId, app, context) {
-			return Ext.clean([ app, context, zcsId ]).join(ZCS.constant.ID_JOIN);
+		getOrganizerId: function(zcsId, app) {
+			return Ext.clean([ app, zcsId ]).join(ZCS.constant.ID_JOIN);
 		},
 
 		/**
@@ -196,15 +190,13 @@ Ext.define('ZCS.model.ZtOrganizer', {
 		 *
 		 * @param {Object}      organizer       anonymous object with organizer data
 		 * @param {String}      app             app (used to create unique ID)
-		 * @param {String}      context         context (used to create unique ID)
 		 * @param {Boolean}     hasChildren     true if organizer contains child organizers
 		 */
-		addOtherFields: function(organizer, app, context, hasChildren) {
+		addOtherFields: function(organizer, app, hasChildren) {
 
 			app = organizer.app = app || ZCS.constant.FOLDER_APP[organizer.folderType] || 'default';
-			organizer.context = context;
-			organizer.id = ZCS.model.ZtOrganizer.getOrganizerId(organizer.zcsId, app, context);
-			organizer.parentItemId = ZCS.model.ZtOrganizer.getOrganizerId(organizer.parentZcsId, app, context);
+			organizer.id = ZCS.model.ZtOrganizer.getOrganizerId(organizer.zcsId, app);
+			organizer.parentItemId = ZCS.model.ZtOrganizer.getOrganizerId(organizer.parentZcsId, app);
 
 			if (Ext.isBoolean(hasChildren)) {
 				organizer.leaf = !hasChildren;
@@ -279,42 +271,7 @@ Ext.define('ZCS.model.ZtOrganizer', {
 	 */
 	useSoapProxy: function(useSoap) {
 
-		if (useSoap) {
-			var urlBase = ZCS.constant.SERVICE_URL_BASE;
-			this.setProxy({
-				type:   'soapproxy',
-				// our server always wants us to POST for API calls
-				actionMethods: {
-					create  : 'POST',
-					read    : 'POST',
-					update  : 'POST',
-					destroy : 'POST'
-				},
-				headers: {
-					'Content-Type': 'application/soap+xml; charset=utf-8'
-				},
-				// prevent Sencha from adding junk to the URL
-				pageParam: false,
-				startParam: false,
-				limitParam: false,
-				noCache: false,
-
-				api: {
-					create:     urlBase + 'CreateFolderRequest',
-					read:       urlBase + 'GetFolderRequest',
-					update:     urlBase + 'FolderActionRequest',
-					destroy:    urlBase + 'FolderActionRequest'
-				},
-				reader: 'organizerreader',
-				writer: 'organizerwriter'
-			});
-		}
-		else {
-			this.setProxy({
-				type:   'memory',
-				reader: 'organizerreader'
-			});
-		}
+		this._proxy = ZCS.model.ZtOrganizer.singleInstanceProxy;
 	},
 
 	/**
@@ -448,7 +405,7 @@ Ext.define('ZCS.model.ZtOrganizer', {
         this.disableDefaultStoreEvents();
 
 		// Use reader to perform any needed data transformation
-		var reader = ZCS.model.ZtOrganizer.getProxy().getReader(),
+		var reader = ZCS.model.ZtOrganizer.singleInstanceProxy.getReader(),
 			app = this.get('app'),
 			data = reader.getDataFromNode(modify, this.get('type'), app, []);
 
@@ -457,7 +414,7 @@ Ext.define('ZCS.model.ZtOrganizer', {
 			this.set('oldParentItemId', this.get('parentItemId'));
 			this.set('oldParentZcsId', this.get('parentZcsId'));
 			// now we can update the current ID fields
-			this.set('parentItemId', ZCS.model.ZtOrganizer.getOrganizerId(data.parentZcsId, app, this.get('context')));
+			this.set('parentItemId', ZCS.model.ZtOrganizer.getOrganizerId(data.parentZcsId, app));
 			this.set('parentZcsId', data.parentZcsId);
 		}
 
@@ -487,8 +444,6 @@ Ext.define('ZCS.model.ZtOrganizer', {
             this.set('itemCount', data.itemCount);
 //            this.set('title', this.get('title'));
         }
-
-		this.updateDependentLists();
 
 		this.enableDefaultStoreEvents();
 	},
@@ -644,5 +599,44 @@ Ext.define('ZCS.model.ZtOrganizer', {
 
 	isSystem: function() {
 		return ZCS.model.ZtOrganizer.isSystem(this.data);
+	},
+
+	//This function causes alot of the sort thrashing, just neuter it and handle sorting ourselves.
+	afterEdit: function () {
+		this.disableStoreSorting();
+		this.callParent(arguments);
+		this.enableStoreSorting();
 	}
+}, function () {
+	var urlBase = ZCS.constant.SERVICE_URL_BASE;
+	
+	this.singleInstanceProxy = Ext.factory({
+		type:   'soapproxy',
+		// our server always wants us to POST for API calls
+		actionMethods: {
+			create  : 'POST',
+			read    : 'POST',
+			update  : 'POST',
+			destroy : 'POST'
+		},
+		headers: {
+			'Content-Type': 'application/soap+xml; charset=utf-8'
+		},
+		// prevent Sencha from adding junk to the URL
+		pageParam: false,
+		startParam: false,
+		limitParam: false,
+		noCache: false,
+
+		api: {
+			create:     urlBase + 'CreateFolderRequest',
+			read:       urlBase + 'GetFolderRequest',
+			update:     urlBase + 'FolderActionRequest',
+			destroy:    urlBase + 'FolderActionRequest'
+		},
+		reader: 'organizerreader',
+		writer: 'organizerwriter'
+	}, 'ZCS.model.ZtSoapProxy', null, 'proxy');
+
+	//Define a single soap proxy for organizers to use.
 });

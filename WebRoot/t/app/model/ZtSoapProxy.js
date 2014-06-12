@@ -167,22 +167,27 @@ Ext.define('ZCS.model.ZtSoapProxy', {
 	},
 
 	handleNotifications: function(notifications) {
+		var organizerNotifications = [];
 
 		Ext.each(notifications, function(notify) {
 			if (notify.seq > ZCS.session.getNotifySeq()) {
 				ZCS.session.setNotifySeq(notify.seq);
 				this.normalizeNotifications(notify);
 				if (notify.deleted) {
-					this.handleDeletes(notify.deleted);
+					organizerNotifications.push.apply(organizerNotifications, this.handleDeletes(notify.deleted));
 				}
 				if (notify.created) {
-					this.handleCreates(notify.created);
+					organizerNotifications.push.apply(organizerNotifications, this.handleCreates(notify.created));
 				}
 				if (notify.modified) {
-					this.handleModifies(notify.modified);
+					organizerNotifications.push.apply(organizerNotifications, this.handleModifies(notify.modified));
 				}
 			}
 		}, this);
+
+		ZCS.app.fireEvent('notifyOrganizerNotifications', organizerNotifications);
+
+		//do something special with organizer notifications.
 	},
 
 	/**
@@ -195,15 +200,28 @@ Ext.define('ZCS.model.ZtSoapProxy', {
 	handleDeletes: function(deleted) {
 
 		var ids = deleted.id && deleted.id.split(','),
-			notification;
+			notification,
+			type,
+			organizerNotifications = [],
+			object;
 
 		Ext.each(ids, function(id) {
+			
+			object = ZCS.session.getOrganizerModel(id);
+
 			notification = {
 				id:     id,
 				type:   ZCS.constant.NOTIFY_DELETE
 			};
-			ZCS.app.fireEvent('notify', notification);
+
+			if (organizerNotifications) {
+				organizerNotifications.push(notification);
+			} else {
+				ZCS.app.fireEvent('notify', notification);
+			}
 		}, this);
+
+		return organizerNotifications;
 	},
 
 	/**
@@ -212,15 +230,26 @@ Ext.define('ZCS.model.ZtSoapProxy', {
 	 * @param {Array}   creates     list of created item nodes
 	 */
 	handleCreates: function(creates) {
+		var organizerNotifications = [];
 
 		Ext.each(ZCS.constant.NODES, function(nodeType) {
 			Ext.each(creates[nodeType], function(notification) {
+
 				notification.type = ZCS.constant.NOTIFY_CREATE;
 				notification.nodeType = (nodeType === ZCS.constant.ORG_MOUNTPOINT) ? ZCS.constant.ORG_FOLDER : nodeType;
 				notification.creates = creates; // conv needs to know about msg creates
-				ZCS.app.fireEvent('notify', notification);
+				
+				if (nodeType === ZCS.constant.ORG_FOLDER ||
+						nodeType === ZCS.constant.ORG_SEARCH ||
+							nodeType === ZCS.constant.ORG_TAG) {
+					organizerNotifications.push(notification);
+				} else {
+					ZCS.app.fireEvent('notify', notification);
+				}
 			}, this);
 		}, this);
+
+		return organizerNotifications;
 	},
 
 	/**
@@ -230,14 +259,24 @@ Ext.define('ZCS.model.ZtSoapProxy', {
 	 * @param {Array}   modifies        list of modified item nodes
 	 */
 	handleModifies: function(modifies) {
+		var organizerNotifications = [];
 
 		Ext.each(ZCS.constant.NODES, function(nodeType) {
 			Ext.each(modifies[nodeType], function(notification) {
 				notification.type = ZCS.constant.NOTIFY_CHANGE;
 				notification.nodeType = (nodeType === ZCS.constant.ORG_MOUNTPOINT) ? ZCS.constant.ORG_FOLDER : nodeType;
-				ZCS.app.fireEvent('notify', notification);
+					
+				if (nodeType === ZCS.constant.ORG_FOLDER ||
+						nodeType === ZCS.constant.ORG_SEARCH ||
+							nodeType === ZCS.constant.ORG_TAG) {
+					organizerNotifications.push(notification);
+				} else {
+					ZCS.app.fireEvent('notify', notification);
+				}
 			}, this);
 		}, this);
+
+		return organizerNotifications;
 	},
 
 	/**

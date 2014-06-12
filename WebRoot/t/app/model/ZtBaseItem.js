@@ -20,6 +20,17 @@ Ext.define('ZCS.model.ZtBaseItem', {
         }
 	},
 
+	disableStoreSorting: function () {
+		var stores = this.stores;
+        if (Ext.isArray(stores)) {
+        	Ext.each(stores, function (store) {
+		        if (store.data) {
+	                store.data._autoSort = false;
+		        }
+        	});
+        }
+	},
+
 	/** 
 	  * Call this after updates to the model are done.
 	  */
@@ -29,6 +40,17 @@ Ext.define('ZCS.model.ZtBaseItem', {
         	Ext.each(stores, function (store) {
 		        if (store.data) {
 	                store.resumeEvents(true);
+	                store.data._autoSort = true;
+		        }
+        	});
+        }
+	},
+
+	enableStoreSorting: function () {
+		var stores = this.stores;
+        if (Ext.isArray(stores)) {
+        	Ext.each(stores, function (store) {
+		        if (store.data) {
 	                store.data._autoSort = true;
 		        }
         	});
@@ -67,8 +89,14 @@ Ext.define('ZCS.model.ZtBaseItem', {
 
     /**
      * 
-     * Modified from the base NodeInterface
-
+     * Modified from the base NodeInterface.
+     *
+	 * This is a sort that will sort the current model, and its children
+	 * without repeatedly firing events that will tell the store that it needs
+	 * to sort itself because a child node was sorted.  This basically resulted in N*N sorts where
+	 * N is the number of nodes. 
+	 *
+	 *
      * Sorts this nodes children using the supplied sort function.
      * @param {Function} sortFn A function which, when passed two Nodes, returns -1, 0 or 1 depending upon required sort order.
      * @param {Boolean} suppressEvent Set to true to not fire a sort event.
@@ -95,7 +123,7 @@ Ext.define('ZCS.model.ZtBaseItem', {
                 n.updateInfo(suppressEvent);
 
                 if (recursive && !n.isLeaf()) {
-                    n.sort(sortFn, true, true);
+                    n.sortWithoutEvents(sortFn, recursive, suppressEvent);
                 }
             }
         }

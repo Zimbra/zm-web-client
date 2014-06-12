@@ -25,6 +25,10 @@ Ext.define('ZCS.model.ZtOrganizerReader', {
 
 	alias: 'reader.organizerreader',
 
+	config: {
+		model: 'ZCS.model.ZtOrganizer',
+	},
+	
 	/**
 	 * Returns an anonymous object that can used to create a ZtOrganizer instance based
 	 * on the given JSON node. At this point, the only ID is the ZCS ID which the server

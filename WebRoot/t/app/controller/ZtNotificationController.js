@@ -27,6 +27,7 @@ Ext.define('ZCS.controller.ZtNotificationController', {
 
 	launch: function() {
 		ZCS.app.on('notify', this.doNotify, this);
+		ZCS.app.on('notifyOrganizerNotifications', this.doOrganizerNotify, this);
 	},
 
 	/**
@@ -80,6 +81,12 @@ Ext.define('ZCS.controller.ZtNotificationController', {
 				}
 			}
 		}
+	},
+
+	doOrganizerNotify: function (notifications) {
+		notifications = Ext.Array.filter(notifications, this.handleNotification);
+
+		ZCS.app.fireEvent('notifyOrganizerNotificationBatch', notifications);
 	},
 
 	// Returns true if we should handle the notification. We don't want to handle empty folder change notifications.

@@ -71,7 +71,12 @@ Ext.define('ZCS.view.ZtOrganizerList', {
 
 			nestedList.goToNode(node);
 			if (node.parentNode) {
+
+				//Changing this property kicks off a sorting storm, so make sure
+				//that doesn't happen.
+				node.parentNode.disableStoreSorting();
 				node.parentNode.set('expanded', true);
+				node.parentNode.enableStoreSorting();
 			}
 
 			list.up('organizerlist').fireEvent('changeNode', node, false);
@@ -84,6 +89,11 @@ Ext.define('ZCS.view.ZtOrganizerList', {
             node = store.getNode();
 
         this.callParent(arguments);
+
+        //Because we disabled sorting when we hit the disclosure, we have to manually
+        //sort once we go back.
+        this.getActiveItem().getStore().sort();
+        
         list.up('organizerlist').fireEvent('changeNode', node, true);
     },
 
@@ -129,6 +139,7 @@ Ext.define('ZCS.view.ZtOrganizerList', {
 		list.xtype = 'organizersublist';
 		list.infinite = this.getInfinite();
 		list.grouped = this.getGrouped();
+		list.store.setSorters(this.getStore().getSorters());
 		list.store.setGrouper(this.getStore().config.grouper);
 
 		return list;

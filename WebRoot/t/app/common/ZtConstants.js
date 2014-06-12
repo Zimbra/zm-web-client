@@ -321,6 +321,8 @@ ZCS.constant.FOLDER_VIEW[ZCS.constant.APP_MAIL]     = 'message';
 ZCS.constant.FOLDER_VIEW[ZCS.constant.APP_CONTACTS] = 'contact';
 ZCS.constant.FOLDER_VIEW[ZCS.constant.APP_CALENDAR] = 'appointment';
 
+ZCS.constant.VIEW_APP = ZCS.util.getBackMap(ZCS.constant.FOLDER_VIEW);
+
 // Folder type by organizer view (from JSON)
 ZCS.constant.FOLDER_TYPE = {};
 ZCS.constant.FOLDER_TYPE[ZCS.constant.ITEM_MESSAGE]     = ZCS.constant.ORG_MAIL_FOLDER;

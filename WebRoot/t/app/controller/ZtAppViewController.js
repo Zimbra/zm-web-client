@@ -278,7 +278,7 @@ Ext.define('ZCS.controller.ZtAppViewController', {
 			itemPanelZIndex = itemPanel.getZIndex();
 
 		if (itemPanel && listPanel) {
-			listPanel.setZIndex(itemPanelZIndex + 1);
+			listPanel.setZIndex(itemPanelZIndex + 2);
 			listPanel.show();
 		}
 	},
@@ -296,7 +296,7 @@ Ext.define('ZCS.controller.ZtAppViewController', {
 
 		if (activeApp !== ZCS.constant.APP_CALENDAR) {
 			var listPanelZIndex = appViewConfig.listPanel.getZIndex();
-			appViewConfig.overviewPanel.setZIndex(listPanelZIndex + 1);
+			appViewConfig.overviewPanel.setZIndex(listPanelZIndex + 2);
 		}
 
 		appViewConfig.overviewPanel.show();
