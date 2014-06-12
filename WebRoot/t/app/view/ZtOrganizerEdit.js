@@ -180,7 +180,8 @@ Ext.define('ZCS.view.ZtOrganizerEdit', {
         });
         
 	    selectorList.editing = true;
-        folderLocationSelector.add(selectorList);
+	    selectorList.getBackButton().setText('');
+	    folderLocationSelector.add(selectorList);
 
         this.setDimensions();
         this.callParent(arguments);

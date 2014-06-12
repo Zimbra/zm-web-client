@@ -101,6 +101,7 @@ Ext.define('ZCS.view.ZtOverview', {
 			}
 		});
 
+		organizerList.getBackButton().setText('');
 		this.add(organizerList);
 
 		if (this.config.showEdit) {

@@ -300,17 +300,34 @@ Ext.define('ZCS.controller.ZtOverviewController', {
         var overview = this.getOverview(),
             appsBtn = overview.down('#zcs-overview-apps-btn'),
             organizerList = overview.down('organizerlist'),
-            backButton = organizerList.getBackButton(),
             isChildOfRoot = node.parentNode && node.parentNode.isRoot(),
             isBackToSubFolder = !(isChildOfRoot && isBack),
             store = organizerList.getStore();
 
         if (isBackToSubFolder) {
-            backButton.setText('');
             appsBtn.hide();
         } else {
             appsBtn.show();
         }
+
+	    var backButton = organizerList.getBackButton(),
+		    hideCancelButtons = isBackToSubFolder && organizerList.editing,
+		    showCancelButtons = !isBackToSubFolder && organizerList.editing;
+
+	    // We don't need the text cluttering up the toolbar; the < icon is enough
+	    if (backButton) {
+	        backButton.setText('');
+	    }
+
+	    // Don't show Cancel button if we're also showing a back button
+	    Ext.each([ this.getCancelBtn(), this.getLocationSelectionCardCancelBtn() ], function(button) {
+		    if (button && hideCancelButtons) {
+			    button.hide();
+		    }
+		    else if (button && showCancelButtons) {
+			    button.show();
+		    }
+	    }, this);
     },
 
     saveFolder: function(callback) {
