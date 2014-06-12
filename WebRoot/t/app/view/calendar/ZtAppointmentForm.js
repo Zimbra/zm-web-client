@@ -131,12 +131,15 @@ Ext.define('ZCS.view.calendar.ZtAppointmentForm', {
 			end = invite.get('end'),
 			// There might not be end date for all day events sync'd from external sources
 			endTime = end && Ext.Date.format(end, ZtMsg.invTimeFormat),
-            eventDate = isSeries ? Ext.Date.format(start, ZtMsg.invDateFormat) :
-                Ext.Date.format(event.get('start'),ZtMsg.invDateFormat),
+            eventDate = isSeries ? Ext.Date.format(start, ZtMsg.dayViewDateFormat) :
+                Ext.Date.format(event.get('start'),ZtMsg.dayViewDateFormat),
 			myResponse = invite.get('myResponse'),
 			displayStatus = this.getShowAsOptionLabel(invite.get('fb')),
 			apptColor, apptRgbColor, calFolderName,
-            me = this;
+            me = this,
+			isMultiDay = end && ZCS.util.isMultiDay(start, end),
+			isAllDay = invite.get('isAllDay'),
+			apptTitleString = '';
 
 		var calFolder = ZCS.session.getOrganizerModel(invite.get('apptFolderId'));
 
@@ -146,13 +149,27 @@ Ext.define('ZCS.view.calendar.ZtAppointmentForm', {
 			calFolderName = calFolder.get('displayName');
 		}
 
+		if (isMultiDay) {
+			// If appt is multiday & all day then show start and end dates without respective timings
+			// else for normal multiday appt show start and end dates with respective timings
+			var formattedStart = Ext.Date.format(event.get('start'), ZtMsg.dayViewDateFormat),
+				formattedEnd = Ext.Date.format(event.get('end'), ZtMsg.dayViewDateFormat),
+				startStr = !isAllDay ? startTime + ", " + formattedStart : formattedStart,
+				endStr = !isAllDay ? endTime + ", " + formattedEnd : formattedEnd;
+
+			apptTitleString = startStr + " " + ZtMsg.to + " " + endStr;
+		}
+		else {
+			apptTitleString = isAllDay ? eventDate : (startTime + " " + ZtMsg.to + " " + endTime + ", " + eventDate);
+		}
+
 		var idParams = {
 				objType:	ZCS.constant.OBJ_INVITE,
 				msgId:	  msg.get('id')
 			},
 			data = {
 				title:  invite.get('subject'),
-				start:  invite.get('isAllDay') ? eventDate : (startTime + " - " + endTime + ", " + eventDate),
+				start:  apptTitleString,
 				location: invite.get('location'),
 				isOrganizer: invite.get('isOrganizer'),
 				organizer: ZCS.model.mail.ZtMailItem.convertAddressModelToObject(invite.get('organizer')),
