@@ -126,6 +126,11 @@ ZmHtmlEditor.prototype._resetSize =
 function() {
 	var field = this.getContentField();
 
+	if (this._resetSizeAction) {
+		clearTimeout(this._resetSizeAction);
+		this._resetSizeAction = null;
+	}
+
 	if (field) {
 		var bounds = this.boundsForChild(field);
 		Dwt.setSize(field, bounds.width, bounds.height);
@@ -135,7 +140,8 @@ function() {
 
 	if (!editor || !editor.getContentAreaContainer() || !editor.getBody()) {
 		if (this.getVisible()) {
-			setTimeout(ZmHtmlEditor.prototype._resetSize.bind(this), 100);
+			this._resetSizeAction =
+				setTimeout(ZmHtmlEditor.prototype._resetSize.bind(this), 100);
 		}
 		return;
 	}
@@ -168,7 +174,8 @@ function() {
 
 	if (isNaN(x) || x < 0 || isNaN(y) || y < 0) {
 		if (this.getVisible()) {
-			setTimeout(ZmHtmlEditor.prototype._resetSize.bind(this), 100);
+			this._resetSizeAction =
+				setTimeout(ZmHtmlEditor.prototype._resetSize.bind(this), 100);
 		}
 		return;
 	}
