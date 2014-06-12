@@ -21,6 +21,7 @@
 		font-size: $zcs-list-fontsize;
 
 		.x-list-item {
+
 			&.x-list-item-tpl::before {
 				left: 0;
 			}
@@ -37,7 +38,7 @@
 			}
 
 			&.x-item-swiping {
-				background-color: #ddd !important; // red		
+				background-color: darken($white, 50%) !important; // dark grey
 			}
 
 			&.delete-active {
@@ -54,17 +55,16 @@
 
 			.x-innerhtml {
 				padding: 0px !important;
+			}
 
-				&:before {
-					color: $white;
-					content: "T";
-					font-family: "ZimbraTouch";
-					font-size: 3em;
-					line-height: 90px;
-					position: absolute;
-					right: 30px;
-					text-align: center;
-				}
+			&:before {
+				color: $white;
+				content: "T";
+				font-family: "ZimbraTouch";
+				font-size: 3em;
+				line-height: 90px;
+				margin-right: 0.25em;
+				text-align: right;
 			}
 		}
 

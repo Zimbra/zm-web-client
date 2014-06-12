@@ -26,16 +26,21 @@ $zcs-mail-dateWidth: 6.7em;
 	width: 200%;
 
 	.zcs-mail-list-entry {
+		background-color: $white;
 		height: 90px;
-		width: 50%;
 		float: left;
 		overflow: hidden;
 		padding: 5px;
+		width: 50%;
 
 		.zcs-mail-list {
 			position: relative;
 		}
 	}
+}
+
+.x-item-swiping .zcs-mail-list-slideable .zcs-mail-list-entry {
+	background-color: darken($white, 5%);
 }
 
 .zcs-conv-list {
