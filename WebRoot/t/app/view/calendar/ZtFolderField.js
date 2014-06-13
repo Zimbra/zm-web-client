@@ -53,33 +53,47 @@ Ext.define('ZCS.view.calendar.ZtFolderField', {
     },
 
     setCalendarFolders: function() {
+
         var arr = [],
-        // get the organizer data for this app
             listType = ZCS.constant.ORG_LIST_SELECTOR,
             organizerData = {
                 items: ZCS.session.findOrganizersByAttribute('folderType', ZCS.constant.ORG_CALENDAR, ZCS.constant.APP_CALENDAR)
             };
 
         Ext.each(organizerData.items, function(folder) {
-            if (folder.zcsId !== ZCS.constant.ID_TRASH && folder.folderType === ZCS.constant.ORG_CALENDAR) {
-                if (folder.isMountpoint) {
-                    arr.push({text:folder.displayName, value:folder.remoteAccountId + ':' + folder.remoteFolderId})
-                } else {
-                    arr.push({text:folder.displayName, value:folder.zcsId});
+
+	        var zcsId = folder.get('zcsId'),
+		        folderType = folder.get('folderType'),
+		        isMountpoint = folder.get('isMountpoint'),
+		        displayName = folder.get('displayName'),
+		        remoteId = folder.get('remoteId');
+
+            if (zcsId !== ZCS.constant.ID_TRASH && folderType === ZCS.constant.ORG_CALENDAR) {
+                if (isMountpoint) {
+                    arr.push({ text: displayName, value: remoteId });
                 }
-                Ext.each(folder.items, function(child) {
-                    //subfolders, if any
-                    var data;
-                    if (child.isMountpoint) {
-                        data = {text: child.displayName, value:child.remoteAccountId + ':' + child.remoteFolderId}
-                    } else {
-                        data = {text: child.displayName, value:child.zcsId};
+                else {
+                    arr.push({ text: displayName, value: zcsId });
+                }
+
+                Ext.each(folder.childNodes, function(child) {
+
+	                var isMountpoint = folder.get('isMountpoint'),
+		                displayName = folder.get('displayName'),
+		                remoteId = folder.get('remoteId'),
+                        data;
+
+                    if (isMountpoint) {
+                        data = { text: displayName, value: remoteId };
+                    }
+                    else {
+                        data = { text: displayName, value: zcsId };
                     }
                     arr.push(data);
                 }, this);
             }
         } , this);
+
         return arr;
     }
-
 });
